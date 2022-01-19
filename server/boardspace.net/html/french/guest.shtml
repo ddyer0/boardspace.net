@@ -1,0 +1,90 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+  <head>
+    <title>BoardSpace.net Login Page</title>
+    <meta http-equiv="Content-Type" content="text/html;
+      charset=windows-1252">
+    <script src="/js/site.js">
+  </script>
+    <meta content="MSHTML 6.00.6000.16525" name="GENERATOR">
+  </head>
+  <body background="/images/background-image.jpg">
+    <script language="javascript">
+	redirectIfNoJava('login-jws.shtml');
+    </script>
+    <h1 style="TEXT-ALIGN: center"><img title="" style="WIDTH: 600px;
+        HEIGHT: 100px" alt="boardspace.net"
+        src="/images/master-logo.jpg"></h1>
+    <h1 style="TEXT-ALIGN: center">Connexion comme visiteur</h1>
+    <div style="TEXT-ALIGN: center">Les visiteurs peuvent observer des
+      parties en cours ou jouer. Mais ils ne peuvent pas obtenir de
+      classement.<br>
+    </div>
+    <br>
+    <div style="TEXT-ALIGN: center"><br>
+      <form name="login" action="/cgi-bin/login.cgi" method="post">
+        <table style="MARGIN-LEFT: auto; WIDTH: 50%; MARGIN-RIGHT: auto;
+          TEXT-ALIGN: left" border="1" cellpadding="2" cellspacing="2">
+          <tbody>
+            <tr style="FONT-WEIGHT: bold">
+              <td style="VERTICAL-ALIGN: top">Nom du joueur:<br>
+              </td>
+              <td style="VERTICAL-ALIGN: top"><input value="guest"
+                  name="pname" type="hidden"> Invité <input
+                  value="guestx" name="password" type="hidden"><br>
+              </td>
+              <td rowspan="2">
+                <!--#include virtual="/cgi-bin/applettag.cgi?tagname=version" -->
+                <br>
+                <!--#include virtual="/cgi-bin/applettag.cgi?tagname=jwslink" -->
+              </td>
+            </tr>
+            <tr>
+              <td style="VERTICAL-ALIGN: top"><span style="FONT-WEIGHT:
+                  bold">Langue préférée </span><br>
+              </td>
+              <td style="VERTICAL-ALIGN: top">
+                <!--#include virtual="/cgi-bin/tlib/selectors.cgi?what=language" -->
+                <br>
+              </td>
+            </tr>
+            <tr>
+              <td style="VERTICAL-ALIGN: top" colspan="3">Le bouton
+                Login lance l'applet Lobby (ou hall d'entrée). C'est le
+                lieu central du site où vous pouvez lancer une partie ou
+                observer des parties en cours ou archivées.&nbsp;&nbsp;
+                Voyez la<a href="lobby-help.html" target="_new"> page
+                  d'aide </a> pour en savoir plus sur le lobby.<br>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        &nbsp;<input value="Login" type="submit"> <br>
+      </form>
+    </div>
+    <center>
+      <div style="TEXT-ALIGN: left">Boardspace.net utilise Java.&nbsp;
+        Si l'applet ne s'ouvre pas, voyez la page <a href="needsjava.html">NécessiteJava </a>pour quelques
+        conseils.<br>
+      </div>
+      <hr style="WIDTH: 100%; HEIGHT: 2px"> <br>
+      <table style="WIDTH: 100%">
+        <tbody>
+          <tr>
+            <td align="left"><font size="-1">Courriel:
+                <script language="javascript">
+document.write("<a href='mailto:gamemaste");
+document.write("r\@board");
+document.write("space.net'>gamemaste<n>r@board<n>space.net</a>");
+      </script> </font></td>
+            <td style="VERTICAL-ALIGN: top; TEXT-ALIGN: center"><br>
+            </td>
+            <td align="right"><a href="/">Page d'accueil de
+                BoardSpace.net</a> </td>
+          </tr>
+        </tbody>
+      </table>
+    </center>
+  
+
+</body></html>

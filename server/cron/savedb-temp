@@ -1,0 +1,20 @@
+#!/bin/csh
+set echo
+
+source ~/cgi-bin/include.csh
+set sunset=2
+set now=`date`
+set month=$now[2]"-"$now[6]
+set name="tantrixdb-$month.txt"
+set mrname="$rankingdir/Monthly-Rankings-$month.html"
+set mdname="$rankingdir/Doubles-Monthly-Rankings-$month.html"
+set rname="$rankingdir/Rankings-$month.html"
+set masterrname="$rankingdir/Master-Rankings-$month.html"
+set doublesrname="$rankingdir/Doubles-Rankings-$month.html"
+
+cd ~/cgi-bin
+./gs_rankings2.cgi "n=99999" "header=yy Monthly Tantrix Rankings for $month" > tempfile  
+
+
+
+

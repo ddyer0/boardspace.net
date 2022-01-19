@@ -1,0 +1,322 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <title>LOA tournament status</title>
+  <script language="JavaScript">
+ win = null; 
+function launchwith(name) 
+{ 
+  if(win == null) { 
+    win = window.open("", "appletWindow", "width=600,height=480,status=yes"); 
+      } 
+    win.document.write("<HTML><HEAD><TITLE>Lines of Action</TITLE></HEAD>"); 
+    win.document.writeln("<BODY>"); 
+   win.document.writeln("<applet code=\"loa/ui/LoaApplet.class\" name=\"LoaApplet\" codebase=\"java/\" archive=\"LoaLib.zip\" width=550 height=450>");
+   win.document.writeln("<PARAM NAME=\"filename\" VALUE=\"games/tournament-1.sgf\">");
+   win.document.writeln("<param name=\"gamename\" value=\"LoA Board " + name + "\">");
+   win.document.writeln("<param name=\"panel\" value=\"true\">");
+    win.document.writeln("<param name=\"flags\" value=\"0\">");
+    win.document.writeln("If you are seeing this message, your browser is not Java-Enabled.  There's");
+    win.document.writeln("still hope, if you can run the java viewer standalone on your machine.");
+    win.document.writeln("See the <A HREF=\"Programs.html#java\">Java Programs</A> page.");
+    win.document.writeln("</applet>");
+    win.document.writeln("</body>");
+   win.document.close();}
+
+  </script>
+</head>
+<body background="/images/background-image.jpg">
+<h1> Loa Tournament status</h1>
+The first Email LOA tournament is over. The next tournament is
+tentatively scheduled to start around November 1, 1997. If you might be
+interested in playing, send a message to <a href="javascript:email()">ddyer@real<n>-me.net</n></a>
+<p>The tournament was a seven player round robin, played on <a
+ href="http://eiss.erols.com/pbmserv/">Richard's email server</a>,
+starting on October 24, 1996 and ending on February 18, 1997.
+<table>
+  <tbody>
+    <tr>
+      <td>
+      <table>
+        <caption>
+        <center>Tournament Results</center>
+        </caption> <tbody>
+          <tr>
+            <td>player</td>
+            <td>wins</td>
+            <td>losses</td>
+            <td>ties</td>
+            <td>initial rating</td>
+            <td>final rating</td>
+          </tr>
+          <tr>
+            <td>ddyer</td>
+            <td>6</td>
+            <td>0</td>
+            <td>0</td>
+            <td>1728</td>
+            <td>1793</td>
+          </tr>
+          <tr>
+            <td>lgaum</td>
+            <td>2</td>
+            <td>4</td>
+            <td>0</td>
+            <td>none</td>
+            <td>1697</td>
+          </tr>
+          <tr>
+            <td>charly</td>
+            <td>3</td>
+            <td>3</td>
+            <td>0</td>
+            <td>1701</td>
+            <td>1687</td>
+          </tr>
+          <tr>
+            <td>sharkey</td>
+            <td>5</td>
+            <td>1</td>
+            <td>0</td>
+            <td>1792</td>
+            <td>1815</td>
+          </tr>
+          <tr>
+            <td>mburke</td>
+            <td>0</td>
+            <td>6</td>
+            <td>0</td>
+            <td>1345</td>
+            <td>1555</td>
+          </tr>
+          <tr>
+            <td>meikel</td>
+            <td>2</td>
+            <td>4</td>
+            <td>0</td>
+            <td>1849</td>
+            <td>1668</td>
+          </tr>
+          <tr>
+            <td>sbateman</td>
+            <td>3</td>
+            <td>3</td>
+            <td>0</td>
+            <td>1743</td>
+            <td>1710</td>
+          </tr>
+        </tbody>
+      </table>
+      </td>
+      <td>
+      <table>
+        <caption>
+        <center>The games and commentaries</center>
+        </caption> <tbody>
+          <tr>
+            <td>The games have been commented, mostly by me (ddyer).
+The skill levels of the players varied widely, which made a interesting
+mix of games - some blowouts, some tightly contested battles. In any
+case, with the comments these games are an excellent educational
+resource.</td>
+          </tr>
+          <tr>
+            <td>The games themselves are in a <a
+ href="games/tournament-1.sgf">"sgf format" archive</a> , which is
+somewhat human readable. You can download the game records for offline
+study, with or without the Java viewer.</td>
+          </tr>
+        </tbody>
+      </table>
+      </td>
+    </tr>
+  </tbody>
+</table>
+</p>
+<p> </p>
+<hr>
+<table>
+  <caption><a name="table"></a>
+  <center>
+  <p>7 Player Round Robin LOA Tournament</p>
+  </center>
+Click on the buttons to launch the viewer, or redirect a launched
+viewer to the game indicated.</caption> <tbody>
+    <tr>
+      <td><br>
+      </td>
+      <td>sbateman</td>
+      <td>meikel</td>
+      <td>mburke</td>
+      <td>sharkey</td>
+      <td>charly</td>
+      <td>lgaum</td>
+    </tr>
+    <tr>
+      <td>ddyer</td>
+      <td>Black: sbateman <br>
+White: ddyer <br>
+ddyer won&nbsp;
+      <form name="form1"><input type="button" name="314"
+ value="game 314" onclick="launchwith(314)"></form>
+      </td>
+      <td>Black: meikel <br>
+White: ddyer <br>
+ddyer won&nbsp;
+      <form name="form1"><input type="button" name="323"
+ value="game 323" onclick="launchwith(323)"></form>
+      </td>
+      <td>Black: mburke <br>
+White: ddyer <br>
+ddyer won&nbsp;
+      <form name="form1"><input type="button" name="333"
+ value="game 333" onclick="launchwith(333)"></form>
+      </td>
+      <td>Black: ddyer <br>
+White: sharkey <br>
+ddyer won&nbsp;
+      <form name="form1"><input type="button" name="329"
+ value="game 329" onclick="launchwith(329)"></form>
+      </td>
+      <td>Black: ddyer <br>
+White: charley <br>
+ddyer won&nbsp;
+      <form name="form1"><input type="button" name="306"
+ value="game 306" onclick="launchwith(306)"></form>
+      </td>
+      <td>Black: ddyer <br>
+White: lgaum <br>
+ddyer won&nbsp;
+      <form name="form1"><input type="button" name="315"
+ value="game 315" onclick="launchwith(315)"></form>
+      </td>
+    </tr>
+    <tr>
+      <td>lgaum</td>
+      <td>Black: sbateman <br>
+White: lgaum <br>
+sbateman won&nbsp;
+      <form name="form1"><input type="button" name="322"
+ value="game 322" onclick="launchwith(322)"></form>
+      </td>
+      <td>Black: meikel <br>
+White: lgaum <br>
+meikel won&nbsp;
+      <form name="form1"><input type="button" name="324"
+ value="game 324" onclick="launchwith(324)"></form>
+      </td>
+      <td>Black: lgaum <br>
+White: mburke <br>
+lgaum won&nbsp;
+      <form name="form1"><input type="button" name="347"
+ value="game 347" onclick="launchwith(347)"></form>
+      </td>
+      <td>Black: lgaum <br>
+White: sharkey <br>
+Sharkey won&nbsp;
+      <form name="form1"><input type="button" name="332"
+ value="game 332" onclick="launchwith(332)"></form>
+      </td>
+      <td>Black: lgaum <br>
+White: charley <br>
+lgaum won&nbsp;
+      <form name="form1"><input type="button" name="346"
+ value="game 346" onclick="launchwith(346)"></form>
+      </td>
+    </tr>
+    <tr>
+      <td>charly</td>
+      <td>Black: sbateman <br>
+White: charley <br>
+charly won&nbsp;
+      <form name="form1"><input type="button" name="318"
+ value="game 318" onclick="launchwith(318)"></form>
+      </td>
+      <td>Black: charley <br>
+White: meikel <br>
+charley won&nbsp;
+      <form name="form1"><input type="button" name="344"
+ value="game 344" onclick="launchwith(344)"></form>
+      </td>
+      <td>Black: charley <br>
+White: mburke <br>
+charly won&nbsp;
+      <form name="form1"><input type="button" name="320"
+ value="game 320" onclick="launchwith(320)"></form>
+      </td>
+      <td>Black: charley <br>
+White: sharkey <br>
+sharkey won&nbsp;
+      <form name="form1"><input type="button" name="345"
+ value="game 345" onclick="launchwith(345)"></form>
+      </td>
+    </tr>
+    <tr>
+      <td>sharkey</td>
+      <td>Black: sharkey <br>
+White: sbateman <br>
+sharkey won&nbsp;
+      <form name="form1"><input type="button" name="319"
+ value="game 319" onclick="launchwith(319)"></form>
+      </td>
+      <td>Black: sharkey <br>
+White: meikel <br>
+shakey won&nbsp;
+      <form name="form1"><input type="button" name="326"
+ value="game 326" onclick="launchwith(326)"></form>
+      </td>
+      <td>Black: sharkey <br>
+White: mburke <br>
+sharkey won&nbsp;
+      <form name="form1"><input type="button" name="321"
+ value="game 321" onclick="launchwith(321)"></form>
+      </td>
+    </tr>
+    <tr>
+      <td>mburke</td>
+      <td>Black: mburke <br>
+White: sbateman <br>
+sbateman won&nbsp;
+      <form name="form1"><input type="button" name="316"
+ value="game 316" onclick="launchwith(316)"></form>
+      </td>
+      <td>Black: mburke <br>
+White: meikel <br>
+meikel won&nbsp;
+      <form name="form1"><input type="button" name="325"
+ value="game 325" onclick="launchwith(325)"></form>
+      </td>
+    </tr>
+    <tr>
+      <td>meikel</td>
+      <td>Black: meikel <br>
+White: sbateman <br>
+sbateman won&nbsp;
+      <form name="form1"><input type="button" name="317"
+ value="game 317" onclick="launchwith(317)"></form>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<p> </p>
+<hr>
+<p>information about other <a href="tournaments.html">tournaments</a> </p>
+</body>
+
+<table style="width: 100%;">
+  <tbody>
+    <tr>
+      <td align="left"> <font size="-1">
+E-mail: <script language="javascript">
+document.write("<a href='mailto:gamemaste");
+document.write("r\@board");
+document.write("space.net'>gamemaste<n>r@board<n>space.net</a>");
+</script>
+ </font>
+      </td>
+      <td align="right">Go to <a href="/">BoardSpace.net home page</a>
+      </td>
+    </tr>
+  </tbody>
+</table>
+</html>

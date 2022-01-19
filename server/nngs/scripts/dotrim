@@ -1,0 +1,5 @@
+#!/bin/sh
+
+cat $1 | tail -20 > $1.o
+mv $1.o $1
+

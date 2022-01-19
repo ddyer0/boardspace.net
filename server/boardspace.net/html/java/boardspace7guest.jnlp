@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jnlp spec="1.0+" codebase="http://boardspace.net/java/" href="boardspace7guest.jnlp">
+    <information>
+        <title>Boardspace Guest</title>
+        <vendor>Boardspace.net</vendor>
+        <description>Boardpace launcher using Java Web Start</description>
+        <description kind="short">Boardspace Lobby</description>
+        <icon href="boardspace-icon.jpg" kind="default"/>
+        <icon href="boardspace-splash.jpg" kind="splash"/>
+        <shortcut online="true">
+       	 <desktop/>
+        </shortcut>
+    </information>
+    <update check="timeout" policy="always"/>
+    <resources>
+        <j2se version="1.5+"/>
+        <jar href="jws/Launcher.jar" main="true" download="eager"/>
+        <!--#include virtual="/cgi-bin/applettag.cgi?tagname=appjars" -->
+    </resources>
+    <security>
+     <all-permissions/>
+    </security> 
+   <application-desc main-class="util.JWSApplication">
+    <argument>servername</argument>
+    <argument>boardspace.net</argument>
+    <argument>jws_guest</argument>
+    <argument>true</argument>
+     </application-desc>
+</jnlp>

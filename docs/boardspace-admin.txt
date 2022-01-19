@@ -1,0 +1,12 @@
+boardspace.net admin log
+
+11/2006 removed dnsbl-1.uceprotect.net from rtbl list, because they
+were erroneously blocking superdupergames.org 63.231.195.112
+
+remaining spam blacklists are
+bl.spamcop.net
+sbl-xbl.spamhaus.org
+
+had steadfast add a "spf" record to the domain service, so boardspace
+designates itself as a permitted sender of email.
+

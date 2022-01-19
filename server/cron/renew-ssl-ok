@@ -1,0 +1,14 @@
+#!/bin/csh
+#
+# this script has to run as root, not as boardspa.  Put it in the root cron jobs
+# to test the process  ~boardspa/certbot-auto renew --dry-run
+# to see expiration dates, ~boardspa/certbot-auto certificates
+#
+cd ~boardspa/cron
+#env > renew.log
+./dtest.csh $0 10
+date >> renew.log
+../certbot-auto --apache renew >> renew.log
+#echo "turned off, see cron/renew-ssl" >> renew.log
+
+

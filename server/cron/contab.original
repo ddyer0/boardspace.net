@@ -1,0 +1,4 @@
+15,45 * * * * cron/checkspace.csh > /dev/null
+0 3 * * * cron/savegames_if_enough > /dev/null
+5 3 * * * cron/savedb > /dev/null
+5 0 1 * * cron/savedb_monthly > /dev/null

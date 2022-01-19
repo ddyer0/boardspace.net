@@ -1,0 +1,196 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta http-equiv="content-type"
+ content="text/html; charset=ISO-8859-1">
+  <title>Mutton at Boardspace.net</title>
+</head>
+<body style="background-image: url(../images/background-image.jpg);">
+<table style="width: 100%; text-align: left;" border="0" cellpadding="2"
+ cellspacing="0">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top;">
+      <h4><a href="about_arimaa.html">Arimaa</a></h4>
+      </td>
+      <td style="vertical-align: top;">
+      <h1 style="text-align: center;"><img alt="boardspace.net"
+ src="master-logo.jpg" style="width: 600px; height: 100px;"></h1>
+      </td>
+      <td style="vertical-align: top;"><a href="about_triad.html"><span
+ style="font-weight: bold;">Triad</span></a></td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table
+ style="text-align: left; margin-left: auto; margin-right: auto; width: 995px; height: 46px;"
+ border="0" cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top; text-align: center;"><small><font
+ size="+1"><small><a href="register.shtml"><span
+ style="font-weight: bold;">Register</span></a></small></font><br>
+      </small></td>
+      <td style="vertical-align: top; text-align: center;"><small><font
+ size="+2"><small><a style="font-weight: bold;" href="login.shtml">Log
+in and
+Play<br>
+      </a></small></font></small></td>
+      <td style="vertical-align: top; text-align: center;"><small><font
+ size="+1"><small><a href="guest.shtml"><span style="font-weight: bold;">Guest
+Login</span></a></small></font><br>
+      </small></td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<br>
+<table style="width: 100%; text-align: left;" border="1" cellpadding="2"
+ cellspacing="2">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top;">
+      <h1 style="text-align: center;"><big>Mutton</big><br>
+      </h1>
+Mutton is a deductive game for two players.&nbsp; One player plays as
+wolves who disguise themselves as sheep in order to eat as many sheep
+as they can.&nbsp; The other player is the farmer who tries to kill the
+wolves before they eat too many sheep.<br>
+      <br>
+The full rules are available <a
+ href="http://www.cameronius.com/games/mutton/">here </a><br>
+      <br>
+Only one round is played in this version.&nbsp; The first player sets
+up the board and decides how many dead sheep the wolf player needs to
+cause in order to win.&nbsp; The second player then chooses to play as
+the wolf or the farmer.&nbsp; The farmer player wins if he can shoot
+all 4 wolves before the targeted number of sheep are killed (either by
+being eaten by the wolf or shot by the farmer.) The wolf player wins if
+the targeted number of sheep are killed before all 4 wolves are killed.<br>
+      <br>
+If you prefer to turn off the score sheet and keep score yourself, <a
+ href="http://www.cameronius.com/games/mutton/scoresheet.pdf">printable
+score sheets</a> are available at Cameron Brownes site.<br>
+      <br>
+      <span style="font-weight: bold;">Robots:</span> Dumbbot currently
+chooses randomly from valid moves and is fairly easy to beat.<br>
+      <br>
+      <span style="font-weight: bold;"></span><br>
+      </td>
+      <td style="vertical-align: top;"><img
+ style="width: 600px; height: 410px;" alt="muttob"
+ src="../images/MuttonScreen_600x410.jpg"><br>
+      <br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><span style="font-weight: bold;">Inventor
+Credits:<br>
+      </span>Mutton was created by Cameron Browne &amp; Stephen Tavener.</td>
+      <td style="vertical-align: top;"><span style="font-weight: bold;">Programmer
+Credit:</span><br>
+The Mutton implementation at Boardspace was created primarily by
+Richard Walter (rwalter42 here).&nbsp; It's his first contribution
+here, but
+I hope not his last!</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><span style="font-weight: bold;">Artwork
+Credits</span>:<br>
+      <ul>
+        <li>Sheep &amp; wolf images drawn by Reiner "Tiles" Prokein and
+were
+downloaded from his website at http://reinerstileset.4players.de&nbsp;
+They
+are specifically licensed as freeware for others to use.</li>
+      </ul>
+      <ul>
+        <li>Yellow star where farmer chooses target score drawn by
+ensarija and is available from http://openclipart.org/ and is in the
+public domain.</li>
+      </ul>
+      </td>
+      <td style="vertical-align: top;"><span style="font-weight: bold;">Sound
+Credits</span><br>
+Sounds are created from sound files downloaded from the free sound
+project at http://www.freesound.org <br>
+      <ul>
+        <li>Sheep bleat by Erdie (Sheep.flac)</li>
+        <li>Wollf howl by Robinhood76 (00829 wolf howl one shot.wav)</li>
+        <li>Eating sound by gabemiller74 (WereWolfM2.aif)</li>
+        <li>Gun shot by fastson (RemingtonGunshot.wav)</li>
+        <li>Pickup sound by FreqMan (garbage bag (3).wav)</li>
+      </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<span style="font-weight: bold;"><br>
+</span>
+<div style="text-align: center;"><span style="font-weight: bold;">Links</span><br>
+<span style="font-weight: bold;"></span></div>
+<table style="width: 100%; text-align: left;" border="0" cellpadding="2"
+ cellspacing="2">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top;"><a
+ href="http://www.boardspace.net/cgi-bin/boardspace_rankings.cgi?game=mu">Mutton
+rankings
+at
+Boardspace</a><br>
+      </td>
+      <td style="vertical-align: top;"><a
+ href="http://boardgamegeek.com/boardgame/38975/">Mutton at
+BoardGameGeek</a><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><a
+ href="http://boardspace.net/mutton/mutton-viewer.shtml">Mutton game
+archives at Boardspace</a></td>
+      <td style="vertical-align: top;"><a
+ href="http://www.cameronius.com/games/mutton/">Cameron Browne's Mutton
+Page</a><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><a
+ href="/cgi-bin/player_analysis.cgi?game=mutton">Mutton win/loss
+database</a><br>
+      </td>
+      <td style="vertical-align: top;"><a
+ href="http://www.youtube.com/watch?v=vfFTtBxRxA4">Video Review and
+Explanation</a><br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<span style="font-weight: bold;"><br>
+The back story: </span>Mutton is a successful experiment.&nbsp;
+Richard Walter chose it and developed it as a completely independent
+project.&nbsp; <br>
+<hr>
+<center>
+<table style="width: 100%;">
+  <tbody>
+    <tr>
+      <td align="left"><font size="-1">
+      <script language="javascript">
+document.write("<a href='mailto:gamemaste");
+document.write("r\@board");
+document.write("space.net'>gamemaste<n>r@board<n>space.net</a>");
+      </script></font><br>
+      </td>
+      <td style="vertical-align: top; text-align: center;"><br>
+      </td>
+      <td style="vertical-align: top;"><a href="logon-page.html">Site<br>
+&nbsp;Map</a></td>
+      <td align="right">Go to <a href="/">BoardSpace.net
+home page</a> </td>
+    </tr>
+  </tbody>
+</table>
+</center>
+</body>
+</html>

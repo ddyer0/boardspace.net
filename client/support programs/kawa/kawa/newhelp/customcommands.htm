@@ -1,0 +1,67 @@
+<html>
+
+<body bgcolor="#FFFFFF" link="#0000FF" vlink="#800080">
+
+<h1><a name="OLE_LINK2"><img src="kawacup.jpg" width="106"
+height="100">Custom commands</a></h1>
+<p><a name="OLE_LINK1"></a><a href="index.htm">Index</a> </p>
+<P>
+<font size="1.5" face="Arial">Last Modified Date - <font color=red>2/16/99</font><p>
+Please click <a href="http://www.tek-tools.com/kawa/docs/customcommands.htm">here</a> for the latest version of this document.
+<font color=red> If this is an online version of the document please right click in the browser and select 
+'Update local Kawa document' to update your local copy of this document</font>
+</font>
+<hr>
+
+<p>Select Customize/Commands menu option to setup custom commands or Kawa plugin commands under Kawa.</p>
+<p>This will display a dialog as shown below.
+
+<p align="center"><img src="customcommand.gif"></p>
+
+<p>Select New to setup a new command. Type the menu name to display for the command.
+
+<p>Select the type of command - Custom or plugin. Please refer to <a href="plugin.htm">Kawa Plugin</a> for more details on plugin command.
+
+<p>Select the command executable file under the command field. Without this field the command will not be added to the customize menu.
+
+<p>Type in any arguments in the arguments field or pick any of the standard <a href="customcmdparams.htm">Kawa parameters</a> as arguments.
+
+<p>Please select the appropriate start up directory or the parameter for the command.
+<p>Any path argument, passed by the selection of Kawa parameter, will be relative to the startup directory by default.
+Checking Use absolute paths checkbox will force the paths to be absolute instead.
+<p>Checking use project classpath will set the classpath to currently open project classpath prior to running the command.
+<p>Move Down and Move Up can be used to rearrange the commands
+in the listbox to set the order of the commands. </p>
+
+<p>Delete will delete the command from the listbox. </p>
+<p>Input/Output redirection will let you redirect the command output and
+input to different windows. The options are self-explanatory.
+
+<p><b>Command Options -</b>
+
+<p align="center"><img src="customcommandoptions.gif"></p>
+
+<p>Execute command when Kawa starts is valid for Plugin commands only.
+
+<p>Selecting add command to Customize or plugin menu will add the command 
+to the appropriate Kawa top level menu.
+
+<p>Add command to File Item right button menu in the project
+tree will add this command to the right button menu of a file
+item in the Project tree</p>
+
+<p>Add command to Project Item right button menu in the
+project tree will add this command to the right button menu of a
+project item in the Project tree</p>
+
+<p>Add command to right button in editor menu now allows menus
+to be specifically added to the context menu of the editor
+window.</p>
+
+<p>By specifying a file extension for the command, the command will now only be 
+applied to files with the matching extension. This field can only be used if the 
+add to file item or add to editor context menu is also checked. Please note the
+'.' in front of the extension name and there can be only one extension.</p>
+
+</body>
+</html>

@@ -1,0 +1,81 @@
+#main log file
+logfile,/home/boardspa/logs/Server.log
+chatfile,/home/boardspa/logs/Chat.log
+securityfile,/home/boardspa/logs/Security.log
+crash-test,0
+use-threads,1
+detatch,1
+#ip address to bind, needed if strict is enabled
+bindip,208.100.19.102
+# strict logins and checking of game results
+strict,1
+# 0 is no, 1 is normal, 2 is never score
+strict-score,1
+# game port
+port,2255
+# log level, 0=none 2=normal 3=everything
+loglevel,2
+# password for lobby commands
+password,BSxyzzy
+# realtime status monitor
+statusfile,/home/boardspa/public_html/admin/Server_Status.html
+player-info-url,/cgi-bin/edit.cgi?pname=%s
+# directories for saving games
+ngamedirs,14
+gamedir0,/home/boardspa/public_html/zertz/games/
+gamedir1,/home/boardspa/public_html/loa/loagames/
+gamedir2,/home/boardspa/public_html/plateau/plateaugames/
+gamedir3,/home/boardspa/public_html/yinsh/yinshgames/
+gamedir4,/home/boardspa/public_html/hex/hexgames/
+gamedir5,/home/boardspa/public_html/trax/traxgames/
+gamedir6,/home/boardspa/public_html/punct/punctgames/
+gamedir7,/home/boardspa/public_html/gobblet/gobbletgames/
+gamedir8,/home/boardspa/public_html/hive/hivegames/
+gamedir9,/home/boardspa/public_html/exxit/exxitgames/
+gamedir10,/home/boardspa/public_html/tablut/tablutgames/
+gamedir11,/home/boardspa/public_html/truchet/truchetgames/
+gamedir12,/home/boardspa/public_html/tumble/tumblegames/
+gamedir13,/home/boardspa/public_html/dipole/dipolegames/
+#
+#
+ngametypes,14
+gametype0,Zertz
+gametype1,LOA
+gametype2,Plateau
+gametype3,Yinsh
+gametype4,Hex
+gametype5,Trax
+gametype6,Punct
+gametype7,Gobblet
+gametype8,Hive
+gametype9,Exxit
+gametype10,Tablut
+gametype11,Truchet
+gametype12,TumblingDown
+gametype13,Dipole
+#
+#
+# first char is G or N for game type or non-game type
+#
+nroomtypes,10
+roomtype0,GGame
+roomtype1,NChat
+roomtype2,GReview
+roomtype3,NMap
+roomtype4,GUnranked
+roomtype5,GMaster
+roomtype6,
+roomtype7,
+roomtype8,
+roomtype9,
+
+
+
+# players and rooms
+players,120
+rooms,40,
+connections,25
+connections-per-session,12
+
+
+

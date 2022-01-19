@@ -1,0 +1,177 @@
+<html>
+
+<body bgcolor="#FFFFFF" link="#0000FF" vlink="#800080">
+
+<h1><img src="kawacup.jpg" width="106" height="100">Project
+Tab</h1>
+
+<p><a href="index.htm">Index</a> </p>
+<P>
+<font size="1.5" face="Arial">Last Modified Date - <font color=red>2/16/99</font><p>
+Please click <a href="http://www.tek-tools.com/kawa/docs/projecttab.htm">here</a> for the latest version of this document.
+<font color=red> If this is an online version of the document please right click in the browser and select 
+'Update local Kawa document' to update your local copy of this document</font>
+</font>
+<hr>
+
+<p align="center"><img src="projectmaint.gif" width="299"
+height="282"></p>
+
+<p>This tab has undergone significant changes lately. Project
+tab now displays all the projects that have been opened in Kawa
+so far. </p>
+
+<p>There are 3 methods to add projects to project tab. Select
+Project/Open to open the project and the new project will be
+added to the project tree and opened. The other method is to
+select Project/New and create a new project. This project is
+added to the project tab and opened. The last method is to right
+click on root Projects item and select Add Project to add a
+project to the project tree. </p>
+
+<p>Opening a project is as simple as right clicking on the
+project name and selecting Open. Open project is indicated by
+bold font and is always at the top of the list. The remaining
+projects are arranged alphabetically in the tree. There can be
+only one project open at any given time. All the Project menu
+options from the main menu are applied to the currently open
+project.</p>
+
+<p><a name="classview"><font size="5"></font></a><font
+size="5">Class View -</font></p>
+
+<p>Project tree can display either file view of the project or
+the class view of the project. File view is always the default
+view of the project. Class view will display all the packages in
+the project and the classes under each package. In the figure
+below the project AWTTest has a package called AWTTest.Test and
+this package has all the classes and interfaces shown in the
+figure. </p>
+
+<p align="center"><img src="projecttab3.gif" width="399"
+height="513"></p>
+
+<p>Selecting Project/File View or Project/Class view will
+toggle the view. Right clicking on the root Kawa Projects item
+can also access this menu option. Selecting class view will
+toggle the view for all the projects in the tree not just the
+open project.</p>
+
+<p>Following are the various tree items in the Project tree
+and their context menus. </p>
+
+<h2><a name="projectitem"></a>Project Item -</h2>
+
+<p align="center"><img src="projecttab2.gif" width="289"
+height="382"></p>
+
+<p>Double clicking on a file name under a project will display
+the file in the editor. </p>
+
+<p>Expanding the file folder with the + button next to the
+file name will parse the file automatically and display all the
+classes and interfaces defined in the file. </p>
+
+<p>Expanding the class item will display all the methods and
+variables defined in that class. Double clicking on the class
+name, method name or the variable name will open the file if
+necessary and select the appropriate line where it is defined.
+</p>
+
+<p>Files can be rearranged in the project tree by dragging and
+dropping the files in the appropriate position. This is helpful
+when doing Rebuild All as the compilation order is determined by
+the order in which files are displayed in the Project tree. </p>
+
+<p>Project context menu or right button menu options are
+self-explanatory. Add Folder options will add a new virtual
+folder to the project. </p>
+
+<p>Add Directory will add an entire directory structure to the
+project. This command will scan the directory for all the java
+files and add the entire directory to the selected folder maintaining the
+directory hierarchy. Extremely useful command when importing
+files from other editors.</p>
+
+<p>Import Kawa project will import an existing Kawa project
+along with all the virtual folders and files. </p>
+
+<p>Close will close the project if it is open. </p>
+
+<p>Update images will scan all the project files and update
+the file and folder dirty indicator. Please refer to <a
+href="dirtyfiles.htm">How to identify dirty files </a>for
+more details. </p>
+
+<p><a href="compileroptions.htm">Compiler</a>, <a
+href="interpreteroptions.htm">Interpreter </a>and
+Javadoc options will display the appropriate dialog box for
+setting the various options for this project. </p>
+
+<p>Any <a href="customcommands.htm">custom commands</a>
+defined for a project menu item will be listed at the end of this
+menu.</p>
+
+<h2>Project Virtual Folder Item -</h2>
+
+<p>Project virtual folder is a virtual folder as the name
+implies. It allows grouping of project files into folders.
+Folders can have folders and so on. The context menu for the
+folder is the same as the Project Folder menu explained above
+except any addition of files will be added to this virtual
+folder. </p>
+
+<p>Moving files into or out of the folder is a matter of
+dragging file into or out of the folder. </p>
+
+<p>Project virtual folder when closed has a check mark or a
+cross mark to indicate if the folder has dirty files which needs
+to be compiled. </p>
+
+<p>Rebuild Folder will rebuild all the files in the selected folder.
+
+<h2><a name="fileitem"></a>File Item -</h2>
+
+<p>File menu items are self-explanatory.</p>
+
+<ul>
+    <li>Browse will be enabled for HTML file and it will
+        browse the file in the default Kawa browser. </li>
+    <li>Compile will compile the file after saving the file if
+        necessary. </li>
+    <li>Main Class will set the current file as the Main class
+        file. Please refer to <a href="runapporapplet.htm">How
+        to Run an applet or application </a>for more
+        details </li>
+    <li>Main HTML will set the current file as the Main HTML
+        file. Please refer to <a href="runapporapplet.htm">How
+        to run an applet or application </a>for more
+        details. </li>
+    <li>If the Editor Option 'Parse File on Save' is unchecked
+        or if file does not belong to an open project Parse menu
+        is also available. This option will parse the file to
+        update the tree class item with updated information. </li>
+    <li>Any <a href="customcommands.htm">custom
+        commands</a> defined for a file menu item will be
+        listed at the end of this menu. There is a limit of only
+        10 custom commands that will be added to the file item
+        right button menu. </li>
+    <li>Rename will enable the renaming of file. </li>
+    <li>File Info will print some information about the file
+        like the location, clean/dirty status etc.</li>
+</ul>
+
+<h2>Class Item -</h2>
+
+<ul>
+    <li>Override menu is the same as the one in the editor
+        window context menu. Please refer to <a
+        href="baseclassoverride.htm">How to override base
+        class methods </a>for more details on this menu
+        option </li>
+    <li>Help will display the submenu of all the base classes
+        and interfaces of the selected class. Selecting a submenu
+        item will display the help for that item. </li>
+</ul>
+</body>
+</html>

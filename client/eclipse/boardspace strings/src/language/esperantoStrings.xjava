@@ -1,0 +1,925 @@
+package online.language;
+
+import online.common.internationalStrings;
+
+
+//
+// available font families: 
+//  serif (timesroman)
+//  sansserif (helvetica)
+//  monospaced (courier)
+//
+public class esperantoStrings extends internationalStrings
+{
+    static
+    {
+        put("fontfamily", "sansserif");
+
+        // lobby messages
+        put("launchfailed","La alia ludanto ne komencis \u011duste");
+        put("#1 invites #2 to join room #3", "#1 invitas #2 eniri \u0109ambron #3");
+        put("#1 invites #2 to play #3 in room #4","#1 invitas #2 ludi #3 en \u0109ambro #4");
+        put("#1 has been muted, by a consensus of the players",
+            "#1 fari\u011dis silenta, la\u016d konsento de la ludantoj");
+        put("welcome", "Bonvenon al la Vestiblo de BoardSpace, versio #1"); //version number follows
+        put("website", "#1 BoardSpace"); //pretty name for the web site
+        put("enterMessage", "#1 eniris la vestiblon"); //somebody entered
+        put("in #1", "en #1"); //followed by a session number
+        put("Move ##1", "Movo ##1"); //move number for games in lobby
+        put("News", "Nova\u0135oj"); //header for news lines
+        put("Lobby", "Vestiblo"); //the name of the lobby
+        put("Error", "Eraro"); //the name for errors
+        put("launchChat", "Lan\u0109ante babilejon en Sesio #1"); //launching a chat room
+        put("launchspectator", "Lan\u0109ante spektanton en Sesio #1"); //session id follows
+        put("launchGame", "Lan\u0109ante partion en sesio #1"); //launching a game
+        put("launchReview", "Lan\u0109ante analizan \u0109ambron en sesio #1");
+        put("Session #1: state unknown.", "Sesio #1: nekonata stato.");
+        put("Session #1 is idle.  ", "Sesio #1 estas malaktiva.  ");
+        put("Session #1 is being launched.  ", "Sesio #1 lan\u0109i\u011das.  ");
+        put("Session #1 is active.  ", "Sesio #1 estas aktiva.  ");
+        put("Session #1 is private. ", "Sesio #1 estas privata. ");
+        put("Session #1 is displaying the map of players real locations",
+            "Sesio #1 montras mapon de realaj lokoj de ludantoj");
+        put("Invite", "Inviti #1 al \u0109ambro #2");
+        put("Accept chat from #1", "Akcepti babiladon de #1");
+        put("Ignore chat from #1", "Ignori babiladon de #1");
+        put("Play #1", "Ludi #1"); //followed by robot name
+        put("Rejoin #1", "Reali\u011di #1"); //rejoin a game you were playing
+        put("Rejoin", "Reali\u011di"); //rejoin a game you were playing
+        put("noserver", "Vestiblo ne konektita al la servilo."); //status message
+        put("stillwaiting", "ankora\u016d lan\u0109ante... bonvolu atendi."); //repeated hit on launch
+        put("noresponse1", "La servilo ne respondas.");
+        put("noresponse2",
+            "Eble \u011di ne funkcias, a\u016d eble fajro\u015dirmilo malebligas la konekton.");
+        put("nolobby", "Pardonu, la vestiblo malpermesis eniri. Eble \u011di estas plena.");
+        put("timeoutWarning", "  Vestiblo mal\u015daltos sin post 1 minuto (malaktiva)."); //warning	
+        put("Lobby shutdown...", "Mal\u015dalto de vestiblo..."); //shutting down
+        put("Active in", "Aktivas en"); //header for users column
+        put("Waiting in", "Atendas en"); //header for users column
+        put("your name", "via nomo"); //your name in users, when not known
+        put("(unknown)", "(nekonata)"); //name of another player not yet known
+        put("announceOption", "Anonci Novajn Ludantojn"); //the "announce new players" menu option
+        put("Join", "Ali\u011di"); //label for the join token
+        put("Invite players to this room", "Inviti ludantojn al \u0109i tiu \u0109ambro");
+
+        /* game state messages for games scroll area */
+        put("State unknown.", "Stato nekonata."); //when game state is not yyet known
+        put("Launching...", "Lan\u0109ante..."); //game being launched
+        put("Spectate", "Spekti"); //spectate in a game (verb)
+        put("Spectator", "Spektanto"); //spectator (singular noun)
+        put("Idle.", "Malaktiva."); //game that is not in use
+        put("Players", "Ludantoj"); //generic players in a game (plural noun)
+        put("player", "ludanto"); //generic players in a game (singular noun)
+        put("Spectators", "Spektantoj"); //generic spectators in a game (plural noun)
+        put("(unoccupied)", "(vaka)"); //empty/available slot in a game
+        put("Start", "Komenci"); //start a game button
+
+        /* game description messages */
+        put("and", " kaj "); //"and" for a, b and c, including spaces
+        put("No players.", "Neniuj ludantoj."); //there are no players in this game
+        put("Player is ", "Ludanto estas "); //the single player name follows
+        put("Players are: ", "Ludantoj estas: "); //the list of player names follows
+        put("No spectators.", "Neniuj spektantoj."); //similarly for spectators
+        put("Spectator is: ", "Spektanto estas: "); //
+        put("Spectators are: ", "Spektantoj estas: "); //
+        put("loaderr", "Eraro dum \u015dutado: "); //can find classes we need
+        put("Connection error", "Konekta eraro"); //problem with the connection
+        put("Reconnecting", " ...Rekonektante..."); //attempting to reconnect
+        put("connecting", "Konektante al "); //connecting to web site	
+        put("reconok", "..rekonekto sukcesis"); //ok, we did it
+        put("nolaunch", "La servilo rifuzis lan\u0109peton; mesa\u011de estas ");
+        put("Time is ", "Tempo estas "); //followed by hh:mm
+        put("savedmsg", "Partio konservita kiel #1"); //announce saved game
+        put("guest", "gasto"); //the name for guest players
+
+        //lobby messages
+        put("Please Join Me", "Bonvolu Ali\u011di Min"); // goes with "join only if invited" and "tournament mode"
+        put("Join only if Invited", "Ali\u011du nur se invitita"); //seen in lobby game rooms
+        put("Tournament Game", "Turnira Partio"); //seen in lobby game rooms
+        put("No challenges from #1", "Neniuj invitoj de #1"); //seen in lobby player list
+        put("Allow challenges from #1", "Permesi invitojn de #1"); //seen in lobby player list
+        put("Unranked Room", "Negradita \u0108ambro"); // room for unranked games.
+        put("Games do not affect your Ranking",
+            "Partioj ne efikas al via grado"); //subheader for the room
+        put("No Challenges", "Neniuj Invitoj por Ludi");
+        put("automute", "#1 estis a\u016dtomate mutigita");
+        put("No Chat", "Neniu Babilado");
+        put("Map of Player Locations", "Mapa \u0108ambro");
+        put("Game Room", "Partia \u0108ambro");
+        put("Review Saved Games", "Analiza \u0108ambro");
+        put("Anyone can play in this room", "\u0108iu ajn povas ludi en \u0109i tiu \u0109ambro");
+        put("Master Room", "Majstra \u0108ambro");
+        put("Master ranked players can play", "Majstroj povas ludi en \u0109i tiu \u0109ambro");
+        put("Review Room", "Analiza \u0108ambro"); //for the chat room banner
+        put("Members", "Membroj"); //people in a chat room
+
+        //used by chat applet
+        put("Type your message here.", "Tajpu vian mesa\u011don \u0109i tie."); //initial contents of the message line
+        put("Message:", "Al \u0108IUJ:"); //label for the message line
+        put("MessageTo:","Al #1:");	//label for message to one user
+        put("From #1","De #1");	// label for messages from a single user
+        put("Send", "Sendi"); //label for the button to send the text
+        put("User ", "Uzanto "); //default name for unnamed client
+
+        //used by the common frame
+        put("Options", "Elektoj");
+        put("Actions", "Agoj");
+        put("Sound", "Sono");
+
+        // review rooms
+        put("Show SGF Text", "Montri SGF-Tekston"); //in action menu of review rooms
+        put("Select Game", "Elekti Partion"); //menu label in review rooms
+        put("game selector", "Ludelektilo"); // title for the game selector frame
+        put("Match words:", "Trovi vortojn:"); //used in the game selector
+        put("reading directory...", "legante dosierujon..."); //waiting for a directory to be read
+        put("Error reading directory", "Eraro legante dosierujon");
+        put("Error reading file", "Eraro legante dosieron");
+        put("reading Zip directory...", "legante Zip-dosierujon...");
+        put("Loading game file", "\u015cutante partian dosieron"); //selecting a review game
+
+        //used by the game client
+        put("You have been disconnected: #1", "Vi estis diskonektita: #1");
+        put("Calling server...", "Vokante servilon...");
+        put("Wait for opponents to arrive.", "Atendi alvenon de kontra\u016duloj.");
+        put("player ", "ludanto ");
+        put("mouse tracking disabled", "muso-spurado mal\u015daltita");
+        put("the game has resumed", "la partio rekomenci\u011dis");
+        put("Take Over Playing", "Anstata\u016dludi"); //menu item, take over playing a color
+        put("Become a Spectator", "Fari\u011di Spektanto");
+        put("Let The Robot Play", "Lasu La Roboton Ludi");
+        put("(vacancy)", "(vako)"); //player who has quit
+        put("Game in progress...", "Partio progresas...");
+        put("rankingsfailed", "\u011cisdatigo de gradoj malsukcesis");
+
+        //hints
+        put("Moves are coming in", "Movoj alvenas"); //moves arrive while in review mode	
+
+        //menu options
+        put("Messages", "Mesa\u011doj"); //name of menu
+        put("Track Mice", "Spuri Musojn");
+
+        put("See Player Comments", "Vidi Komentojn de Ludantoj");
+        put("See Spectator Comments", "Vidi Komentojn de Spektantoj");
+        put("Joint Review", "Kuna Analizo");
+ // TODO: fix joint review strings in other languages
+        put("#1 requests Joint review",
+            "#1 petas Kunan Analizon. Bonvolu elekti \"Kuna Analizo\" en la mesa\u011da menuo");
+        put("#1 starts Joint review","#1 komencas Kunan Analizon");
+        put("Timeout in 1 minute.", "Tempolimo post 1 minuto.");
+        put("Game timed out.  Session has ended.",
+            "Partia tempolimo pasis. Sesio fini\u011dis.");
+        put("Chat Room", "Babilejo"); //for the chat room banner
+        put("private room", "privata \u0109ambro");
+        put("This is now a private room", "\u0108i tio estas nun privata \u0109ambro");
+        put("This is now a public room", "\u0108i tio estas nun publika \u0109ambro");
+        put("Colorblind", "Kolorblinda");
+        put("Please respect the 15 minute time limit",
+            "Majstropartioj havas 15-minutan tempolimon");
+        put("Game", "Partio"); //name for hints from the game
+        put("Joining as a spectator", "#1 ali\u011dis kiel spektanto");
+        put("enters the room", "#1 eniris la \u0109ambron"); //new member of a chat
+        put("#1 is taking over for #2", "#1 anstata\u016das #2");
+        put("#1 is taking over playing #2 for #3",
+            "#1 anstata\u016ds #2 por #3"); // RUSS: what is 3? game title? another player? not clear.
+        put("#1 deliberately quit", "#1 intence \u0109esis");
+        put("#1 has quit and become a spectator",
+            "#1 \u0109esis kaj fari\u011dis spektanto");
+        put("#1 killed due to #2", "#1 \u0109esigita pro #2");
+        put("quitting", "#1 forlasis la \u0109ambron");
+        put("#1 quit", "#1 \u0109esis"); //quit (not deliberately)
+        put("Welcome to Game client, version #1",
+            "Bonvenon al la kliento de BoardSpace, versio #1");
+        put("play", "ludi por #1"); //play color for xx
+        put("Selecting game: #1", "Elektante partion: #1"); //loading a review game
+        put("Hint", "Propono"); //the name for hints
+
+        put("Move a ball or change a Ring", "Movu globon a\u016d \u015dan\u011du ringon");
+        put("Add a ball, remove a Ring", "Aldonu globon, forprenu ringon");
+        put("Add a ball", "Aldonu globon");
+        put("Remove a Ring", "Forprenu ringon");
+        put("Capture a ball", "Kaptu globon");
+        put("Continue Capturing", "Plu kaptu");
+        put("Finished Capturing, Click Done", "Kaptado finita, klaku Fini");
+        put("Click Done", "Klaku Fini");
+        put("Game Over", "Partio Finita");
+        put("Resign", "Kapitulaci");
+        put("Zertz", "Z\u00c8RTZ");
+        put("Zertz+11", "Z\u00c8RTZ+11");
+        put("Zertz+24", "Z\u00c8RTZ+24");
+        put("Player #1", "Player #1");
+        put("Resign State", "Klaku Fini por konfirmi vian kapitulacon");
+        put("LOA", "Lines of Action");
+        put("Plateau", "Plateau");
+
+        // loa strings
+        put("Select the #1 piece to move", "Elektu la #1 pecon por movi");
+        put("White", "Blankan"); // RUSS: assuming accusative (direct object) here, for previous sentence
+        put("Black", "Nigran"); // RUSS: assuming accusative (direct object) here, for previous sentence
+        put("Select the destination for the selected piece",
+            "Elektu la cellokon por la elektita peco");
+        put("Black Pieces", "Nigraj Pecoj");
+        put("White Pieces", "Blankaj Pecoj");
+        put("show grid", "montri kradon");
+
+        put("Done", "Fini");
+        put("Edit", "Redakti");
+
+        put("LIMBO", "LIMBO");
+        put("4w 5g 6b or 3 of each wins", "4b 5g 6n a\u016d po 3 venkas");
+        put("1 choice", "1 elekto");
+        put("#1 choices", "#1 elektoj");
+        put("Start #1", "Komencu #1");
+        put("Yinsh", "YINSH");
+        put("Dvonn", "DVONN");
+
+        // plateau strings
+        put("Move stacks around any way you want to",
+            "Movu stakojn \u0109iel ajn vi volas");
+        put("Build an initial stack of 2 to be placed",
+            "Konstruu komencan stakon de 2 por esti metita");
+        put("Place your stack on the edge of the board",
+            "Metu vian stakon sur la randon de la tabulo");
+        put("Onboard a piece, Move a stack, or Exchange",
+            "Surmetu pecon, Movu stakon, a\u016d Inter\u015dan\u011du"); //RUSS: what does "onboard" mean?
+        put("Exchange Prisoners", "Inter\u015dan\u011du Kaptitojn");
+        put("Move A Stack", "Movu Stakon");
+        put("Drop your piece onto the board or any of your stacks",
+            "Metu vian pecon sur la tabulon a\u016d sur iun ajn el viaj stakoj");
+        put("Drop your piece onto the board or any stack",
+            "Metu vian pecon sur la tabulon a\u016d sur iun ajn stakon");
+        put("Click Done to Finish the move", "Klaku Fini por fini la movon");
+        put("Drop the moving stack back on the rack",
+            "Remetu la movi\u011dantan stakon al la ujo");
+        put("Pick up and Continue your move", "Levu kaj da\u016drigu vian movon");
+        put("Shuffle pieces to the exchange area, Click Done to start the exchange",
+            "Miksu pecojn al la inter\u015dan\u011dejo; klaku Fini por komenci la inter\u015dan\u011don");
+        put("Click Done to complete the exchange",
+            "Klaku Fini por fini la inter\u015dan\u011don");
+        put("Start White", "Komencu Blanko");
+        put("Start Black", "Komencu Nigro");
+        put("Place prisoners here for exhange",
+            "Metu kaptitojn \u0109e tien por inter\u015dan\u011di");
+        put("Prisoners captured by Black are held here",
+            "Kaptitoj fare de Nigro estas \u0109i tie");
+        put("Prisoners captured by White are held here",
+            "Kaptitoj fare de Blanko estas \u0109i tie");
+        put("Move the flipped stack", "Movu la renversitan stakon");
+        put("The game record is not available during the game",
+            "La ludhistorio ne haveblas dum ludado");
+
+        put("Select Robot", "Elekti Roboton");
+
+        // yinsh strings
+        put("make 5 in a row to capture a ring, 3 rings win",
+            "faru 5 en linio por kapti ringon; 3 ringoj venkas");
+        put("Place a Ring on the board", "Metu ringon sur la tabulon");
+        put("Pick a ring to place a chip and move",
+            "Elektu ringon por meti diskon kaj movi");
+        put("Drop the ring", "Remetu la ringon");
+        put("Click DONE to confirm this placement",
+            "Klaku FINI por konfirmi \u0109i tiun meton");
+        put("Select a row of 5 to remove", "Elektu linion de 5 por forigi");
+        put("Click DONE to confirm this move", "Klaku FINI por konfirmi \u0109i tiun movon");
+        put("Click DONE to confirm removing these markers",
+            "Klaku FINI por konfirmi forigon de \u0109i tiuj diskoj");
+        put("Select a ring to remove", "Elektu ringon por forigi");
+        put("Click DONE to confirm removing this ring",
+            "Klaku FINI por konfirmi forigon de \u0109i tiu ringo");
+        put("perspective","perspektivo");
+        //
+        // hex strings
+        //
+        put("Hex","Hex");
+        put("Swap Colors","Inter\u015dan\u011di Kolorojn");
+        put("connect opposite sides with a chain of markers",
+        	"konektu kontra\u016dajn flankojn per \u0109eno de pecoj");
+        put("Click on Done to confirm your resignation", 
+       		"Klaku Fini por konfirmi vian kapitulacon");
+        put("Place a marker on any empty cell",	
+       		"Metu pecon sur iun ajn vakan \u0109elon");
+        put("Place a marker on any empty cell, or Swap Colors",
+       		"Metu pecon sur in ajn vakan \u0109elon, a\u016d Inter\u015dan\u011du Kolorojn");
+        put("Click Done to confirm swapping colors with your opponent",
+       		"Klaku Fini por konfirmi inter\u015dan\u011don de ludantaj koloroj");
+        
+        // names of game variations for the lobby
+        put("Yinsh-Blitz","Rapida YINSH");
+        put("Hex-15","Hex-15");
+        put("Hex-19","Hex-19");
+        put("Trax","Trax");
+        put("Trax_variation","norma Trax");
+        put("make 5 in a row to capture a ring and win",
+        		"faru 5 en linio por kapti ringon kaj venki");
+        
+        put("Zertz_variation","norma Z\u00c8RTZ");
+        put("Zertz+11_variation","Z\u00c8RTZ kun 11 ekstraj ringoj");
+        put("Zertz+24_variation","Z\u00c8RTZ kun 24 ekstraj ringoj");
+        put("LOA_variation","norma 8x8 Lines of Action");
+        put("LOAP_variation","ludi la programkonkursan varianton de LOA");
+        put("Plateau_variation","norma Plateau");
+        put("Yinsh_variation","norma YINSH");
+        put("Yinsh-Blitz_variation","rapida YINSH - la unua ringo venkas");
+        put("Dvonn_variation","norma Dvonn");
+        put("Tamsk_variation","norma Tamsk");
+        put("Hex_variation","11x11 Hex");
+        put("Hex-15_variation","15x15 Hex");
+        put("Hex-19_variation","19x19 Hex");
+        put("Punct_variation","norma P\u00dcNCT");
+        put("TBA1_variation","ludo estos anoncita");
+        put("TBA2_variation","ludo estos anoncita");
+        put("TBA3_variation","ludo estos anoncita");
+       
+        // trax strings
+        put("Tile Size","Grando de Pecoj");
+        put("Place a tile","Metu pecon");
+        put("make any loop, or a line which spans 8 rows or columns, in your color",
+        		"faru fermitan linion, a\u016d linion kiu transiras 8 horizontalojn a\u016d vertikalojn, de via koloro");
+        
+        // punct strings
+        put("Punct","P\u00dcNCT");
+        put("Click on the placed piece to rotate it, or Click Done",
+        		"Klaku la metitan pecon por turni \u011din, a\u016d klaku Fini");
+        put("Place a piece on the board, or move a piece already on the board",
+        		"Metu pecon sur la tabulon, a\u016d movu pecon jam sur la tabulo");
+        put("punctgoal","konektu kontra\u016dajn flankojn de la tabulo, a\u016d metu vian lastan pecon posedante pli de la mezo");
+        put("#1 left","#1 restas"); //RUSS: not sure, left/right or left=remaining?
+        put("#1 center","#1 meze"); //RUSS: not sure exactly
+     
+        // gobblet strings
+        put("make 4 in a row in any direction","faru 4 en linio en iu ajn direkto");
+        put("Place a gobblet on the board, or move a gobblet","Metu pecon sur la tabulon, a\u016d movu pecon");
+        put("Gobblet","Gobblet");
+        put("Gobbletm","GobbletM");
+        put("Gobblet_variation","Ludi kun permesita subrigardo");
+        put("Gobbletm_variation","Memoro gravas - subrigardo malpermesita");
+        put("You must move the gobblet you have picked up",
+        		"Vi devas movi la pecon, kiun vi levis");
+         put("review","analizo");
+
+        // hive strings
+        put("Hive","Hive");
+        put("Hive_variation","norma Hive");
+        put("Place a tile on the board","Metu pecon sur la tabulon");
+        put("surround your opponents queen bee","\u0109irka\u016d la abelre\u011dinon de via kontra\u016dulo");
+        put("Place your queen on the board","Metu vian abelre\u011dinon sur la tabulon");
+        put("Place a tile on the board, or move a tile","Metu pecon a\u016d movi pecon");
+        put("You have no legal moves.  Click on Done to pass",
+                "Vi ne havas validan movon.  Klaku Fini por pasi");
+        put("Click on Done to end the game as a Draw",
+        	"Klaki fini por fini la ludon sen venkanto");
+        put("Hive-L","Hive-L");
+        put("Hive-L_variation","Hive kun Ladybug aldonita");
+        put("Hive-LM","Hive-LM");
+        put("Hive-LM_variation","Hive kun Ladybug kaj Moskito");
+
+        put("#1 repetitions","#1 ripetoj");
+        // for plateau
+        put("Click on Done to complete the capture",
+        		"Klaku Fini por fini la kapton");
+        // game lobby
+        put("The game is a draw","La partio estas sen venkanto");
+        put("Game won by #1","Partion venkis #1");
+        put("You can only resign when it is your move",
+        		"Vi povas kapitulaci nur dum via movo");
+        put("Jan #1#2#3","#1 jan, #2:#3 GMT");
+        put("Feb #1#2#3","#1 feb, #2:#3 GMT");
+        put("Mar #1#2#3","#1 mar, #2:#3 GMT");
+        put("Apr #1#2#3","#1 apr, #2:#3 GMT");
+        put("May #1#2#3","#1 maj, #2:#3 GMT");
+        put("Jun #1#2#3","#1 jun, #2:#3 GMT");
+        put("Jul #1#2#3","#1 jul, #2:#3 GMT");
+        put("Aug #1#2#3","#1 a\u016dg, #2:#3 GMT");
+        put("Sep #1#2#3","#1 sep, #2:#3 GMT");
+        put("Oct #1#2#3","#1 okt, #2:#3 GMT");
+        put("Nov #1#2#3","#1 nov, #2:#3 GMT");
+        put("Dec #1#2#3","#1 dec, #2:#3 GMT");
+        
+        // exxit strings
+        put("Exxit","Exxit");
+        put("Exxit-Beginner","Exxit-Komencanta");
+        put("Exxit-Blitz","Exxit-Rapida");
+        put("Exxit-Pro","Exxit-Majstra");
+        put("Exxit_variation","ludi Exxit kun 39 pecoj");
+        put("Exxit-Blitz_variation","ludi Exxit kun 29 pecoj");
+        put("Exxit-Beginner_variation","ludi Exxit kun 19 pecoj");
+        put("Exxit-Pro_variation","ludi majstran Exxit");
+        
+        put("Rearrange things any way you want to", 
+        	"Rearan\u011du a\u0135ojn la\u016d via pla\u0109o");
+        put("Place a piece on the board","Metu pecon sur la tabulon");
+        put("Exchange an off-board piece for a new tile","Inter\u015dan\u011du ekstertabulan pecon kun nova peco");
+        put("Click on Done to confirm the Exchange","Klaku Fini por konfirmi la inter\u015dan\u011don");
+        put("Place a piece on the board, or Exchange an off-board piece for a new tile",
+        		"Metu pecon sur la tabulon, a\u016d inter\u015dan\u011du ekstertabulon pecon por nova peco");
+        put("Click on Done to end the game","Klaku Fini por fini la partion");
+        put("Make a Dance move","Faru danc-movon");
+        put("Click on Done to confirm this Dance","Klaku Fini por konfirmi \u0109i tiun dancon");
+        put("Drop a tile to enlarge the board","Metu pecon por pligrandigi la tabulon");
+        put("expand the board with your color tiles","pligrandigu la tabulon per viakoloraj pecoj");
+
+        // system error
+        put("Memory is low","Memoro mankas");
+        
+        // new strings for tablut
+        // RUSS: "fleet" is strange and doesn't seem to fit the theme as I see it explained with king and ordinary pieces.
+        put("Rearrange the gold fleet","Rearan\u011du la oran pecaron");
+        put("Rearrange the silver fleet","Rearan\u011du la ar\u011dentan pecaron");
+        put("Make your first move, or swap fleets","Faru vian unuan movon, a\u016d inter\u015dan\u011di pecarojn");
+        put("Click Done to confirm swapping fleets with your opponent",
+        		"Klaku Fini por konfirmi inter\u015dan\u011di pecarojn kun via kontra\u016dulo");
+        put("Move one ship","Movu unu pecon");
+        put("Flagship must Reach the corner to win","Re\u011do devas atingi angulon por venki");
+        put("Flagship wins at any edge square","Re\u011do venkas \u0109e iu ajn randa kvadrato");
+        put("Flagship can participate in captures","Re\u011do povas kapti");
+    	put("Flagship can not capture","Re\u011do ne povas kapti");
+   	 	put("Only the flagship can occupy the center square","Nur la re\u011do povas okupi la centran kvadraton");
+   	    put("center square is not special","centra kvadrato ne specialas");
+   	    put("Flagship must be surrounded on all 4 sides","Re\u011do devas esti \u0109irka\u016dita \u0109e \u0109iuj 4 flankoj");
+   	    put("Flagship is captured normally","Re\u011do kapteblas normale");
+   	    put("Tablut-7","Tablut 7x7");
+   	    put("Tablut-9","Tablut 9x9");
+   	    put("Tablut-11","Tablut 11x11");
+   	    put("Tablut-7_variation","Tablut sur 7x7-tabulo");
+   	    put("Tablut-9_variation","Tablut sur 9x9-tabulo");
+   	    put("Tablut-11_variation","Tablut sur 11x11-tabulo");
+   	    put("gold: escape the flagship  silver: capture gold flagship",
+   	    		"oro: la re\u011do eskapu  ar\u011dento: kaptu la oran re\u011don");
+   	    
+   	    put("Zertz+xx","Z\u00c8RTZ Ekstrema");
+   	    put("Zertz+xx_variation","Z\u00c8RTZ kun la\u016dmenda tabula aran\u011do");
+   	    put("Make the first move, or swap and move second",
+   	    		"Faru unuan movon, a\u016d inter\u015dan\u011du kaj movu due");
+   	    put("Click on Done to confirm swapping","Klaku Fini por konfirmi inter\u015dan\u011don");
+   	    put("Position the starting rings","Metu la komencajn ringojn");
+        put("Swap","Inter\u015dan\u011di");
+        put("stack six or capture six","staku ses a\u016d kaptu ses");
+        
+        
+        // stacking games
+        put("Tablut","Tablut");
+        put("Stacking Games","Stakludoj");
+        put("Truchet_variation","norma Truchet");
+        put("TumblingDown_variation","norma 8x8 TumblingDown");
+        put("Truchet","Truchet");
+        
+        //dipole
+         put("Dipole","Dipole (originala)");
+        put("Dipole-s","Dipole");
+       // put("Dipole-10","Dipole 10x10");
+        //put("Dipole-10_variation","Dipole on a 10x10 board");
+        put("Dipole-s_variation","Dipole 8x8 kun simetria komenca pozicio");
+        put("Dipole_variation","Dipole 8x8 kun malsimetria komenca pozicio");
+        put("Eliminate all your opponent's pieces","Forigu \u0109iujn pecojn de via kontra\u016dulo");
+        put("Select the stack to move from","Elektu la stakon de kiu vi movos");
+        put("You have no moves available. Click on Done to pass.","Vi ne havas validan movon. Klaku Fini por pasi.");
+        //tumblingdown
+        put("Capture your opponent's tallest king stack","Kaptu la plej altan re\u011dan stakon de via kontra\u016dulo");
+        put("Pick the stack to move","Elektu stakon por movi");
+        //truchet
+        put("Occupy 3 enemy bases","Okupu 3 kontra\u016dulajn bazojn");
+        put("Flip a tile, or Move Split or Merge a stack",
+        		"Renversu kvadraton a\u016d Movu, Dividu a\u016d Kunigu stakon");
+        put("Move, Split or Merge a stack","Movu, Dividu a\u016d Kunigu stakon");
+        put("Split or Merge this stack, or click Done",
+        		"Dividu a\u016d Kunigu \u0109i tiun stakon, a\u016d klaku Fini");
+        put("Split this stack, or click Done",
+        		"Dividu \u0109i tiun stakon, a\u016d klaku Fini");
+        put("Merge this stack, or click Done","Kunigu \u0109i tiun stakon, a\u016d klaku Fini");
+        put("Complete the split","Finu la dividon");
+        put("Complete the merge","Finu la kunigon");
+        put("Complete a split or merge","Finu dividon a\u016d kunigon");
+        put("Continue merging or click Done","Plu kunigu a\u016d klaku Fini");
+        
+        // hive-m
+        put("Hive-M","Hive-M");
+        put("Hive-M_variation","Hive kun Moskito aldonita");
+        // fanorona
+        put("Fanorona","Fanorona");
+        put("Fanorona_variation","norma Fanorona");
+        put("Click on the line to be captured","Klaku la kaptotan linion");
+        put("Make an addional capturing move, or click on Done", 
+        		"Faru aldonan kaptomovon, a\u016d klaku Fini");
+        put("Make a capturing move","Faru kaptomovon");
+        put("Move a piece one space","Movu pecon unu lokon");
+        put("Capture all of your opponent's pieces","Kaptu \u0109iujn pecojn de via kontra\u016dulo");
+        
+        // forgotten for exxit
+        put("use Wooden tiles","uzu lignajn platojn");
+        // volcano
+        put("Capture the best combinations of all 5 colors","Kaptu la plej bonajn kombina\u0135ojn de koloroj kaj grandoj");
+        put("Move a volcano cap","Movu vulkanan \u0109apon");
+        put("Volcano", "Vulkano");
+        put("Volcano_variation","norma 5x5 Vulkano");
+        put("Volcano-r","hazardkomenca Vulkano");
+        put("Volcano-r_variation","Vulkano kun hazarda komenca pozicio");
+        
+        put("Volcano-h","Hex Vulkano");
+        put("Volcano-h_variation","Vulkano sur sesangula krado");
+       
+        put("Volcano-hr","hazardkomenca Hex Vulkano");
+        put("Volcano-hr_variation"," Hex Vulkano kun hazarda komenca pozicio");
+        put("Click on Done to end the game (you lose)","Klaku Fini por fini la partion (vi malgajnas)");
+        
+        // traboulet
+        put("Traboulet","Traboulet");
+        put("Traboulet_variation","norma Traboulet");
+        put("Capture 7 red balls or all of your opponent's balls",
+        "Kaptu 7 ru\u011dajn globojn a\u016d \u0109iujn globojn de via kontra\u016dulo");
+        put("Make an addional move, or click on Done",
+        		"Faru aldonan movon, a\u016d klaku Fini");
+        
+        // dvonn
+        put("Move a ring","Movu ringon");
+        put("Place a ring on the board","Metu ringon sur la tabulon");
+        put("Click Done to confirm this placement","Klaku Fini por konfirmi \u0109i tiun meton");
+        put("Capture the most chips under your color stack","Kaptu plej multajn ringojn en viakoloraj stakoj");
+        put("Stack Height","Staka Alto");
+        
+        // restartable games
+        put("Restart","Rekomencu");
+        // tzaar
+        put("Gipf Games","Gipf-Ludoj");
+        put("Tzaar_variation","norma TZAAR");
+        put("Tzaar","TZAAR");
+        
+        put("Closing...","Fermante...");
+        put("Played on #1","Ludis sur #1");
+
+        put("...plus #1 more","...plus #1 pli");
+         
+        // tzaar
+        put("Tzaar-random_variation","TZAAR - hazarda komenca pozicio");
+        put("Tzaar-standard_variation","TZAAR - norma komenca pozicio");
+        put("Tzaar-custom_variation","TZAAR - la\u016dmenda komenca pozicio");
+        put("Tzaar-custom","TZAAR - la\u016dmenda");
+        put("Tzaar-random","TZAAR - hazardkomenca");
+        put("Tzaar-standard","TZAAR - norma");
+        put("Capture a stack","Kaptu stakon");
+        put("Combine two stacks or capture another stack",
+        		"Kunigu du stakojn, a\u016d kaptu alian stakon");
+        
+        // qyshinsu
+        put("Place a stone on the board, or remove a stone from the board",
+            "Metu \u015dtonon sur la tabulon, a\u016d forprenu \u015dtonon de la tabulo");
+        put("Return to the Way","Reveno al la Vojo");
+        put("Qyshinsu","Qyshinsu");
+        put("Qyshinsu_variation","La mistero de la vojo");
+        
+        // knockabout
+        put("Knock 5 of your opponent's dice into the gutter",
+            "Frapu 5 el la kuboj de via kontra\u016dulo eksteren");
+        put("Knockabout_variation","norma Knockabout");
+        put("Move a piece","Movu pecon");
+        put("Knockabout","Knockabout");
+        		
+        
+        // gipf
+        put("Place a chip on a starting point","Metu pecon sur komenco-punkton");
+        put("Slide the chip toward the center","Pu\u015du la pecon internen");
+        put("Designate a row to capture before your turn","Indiku vicon por kapti anta\u016d via movo");
+        put("Click on Done to finish all captures","Klaku Fini por fini \u0109iujn kaptojn");
+        put("Designate a row to capture","Indiku vicon por kapti");
+        put("Capture most of your opponent's pieces","Kaptu multajn pecojn de via kontra\u016dulo");
+        put("Gipf_variation","GIPF Baza (neniuj GIPF-pecoj)");
+        put("Gipf-standard_variation","GIPF Norma (kun GIPF-pecoj)");
+        put("Gipf", "GIPF Baza");
+        put("Gipf-standard","GIPF Norma");
+        put("Click on Gipf pieces to change their capture status",
+        		"Alklaku GIPF-pecojn por \u015dan\u011di ilian kapto-statuson");
+        put("Place a GIPF piece on a starting point","Metu GIPF-pecon sur komenco-punkton");
+        put("Designate GIPF pieces to capture, or place a GIPF chip","Indiku GIPF-pecojn por kapti, a\u016d metu GIPF-pecon");
+        put("Designate GIPF pieces to capture, or place a chip","Indiku GIPF-pecojn por kapti, a\u016d metu pecon");
+        
+        // palago
+        put("Palago_variation","norma Palago");
+        put("Palago","Palago");
+        put("select tile color","elektu pec-koloron");
+        put("Aqua","Akva");
+        put("Red","Ru\u011da");
+        put("Blue","Blua");
+        put("Place a second tile adjacent to the first",
+        		"Metu duan platon najbare al la unua");
+        put("Form a closed shape in your color","Fermu kompletan formon de via koloro");
+        
+        // santorini
+        put("Santorini","Santorini");
+        put("Santorini_variation","Santorini (sen Dioj)");
+        put("Move a Man up to level 3","Movu Homon al nivelo 3");
+        put("Build adjacent to the man you moved","Konstruu najbare al la movita viro");
+        put("Place your first man on the board","Metu vian unuan homon sur la tabulon");
+        put("Place your second man on the board","Metu vian duan homon sur la tabulon");
+        put("Move a Man","Movu Homon");
+        
+        put("Pass","Pasi");
+        put("Placing Standard Pieces","Metante Normalajn Pecojn");
+        put("Placing Gipf Pieces","Metante GIPF-pecojn");
+        put("Gipf-tournament_variation","GIPF-Altnivela (senlimaj GIPF-pecoj)");
+        put("Gipf-tournament","Gipf-Altnivela");
+        // "spangles"
+        put("Tile Pattern Games","Ludoj pri Aran\u011doj de Platoj");
+        put("form a larger triangle with your color at the tips","formu pli grandan triangulon kun verticoj de via koloro");
+        put("Spangles_variation","norma Spangles");
+        
+        put("Spangles","Spangles");
+  
+        // micropul
+        put("Micropul","Micropul");
+        put("Micropul_variation","norma Micropul");
+         put("maximize the number of tiles in your reserve",
+        		"plejgrandigu la nombron da platoj en via rezervo");
+        put("Place a Chip, or a Jewel, or a chip from the Store",
+        		"Metu Platon, a\u016d Juvelon, a\u016d platon de la Magazeno");
+
+        //Medina
+        put("Medina","Medina");
+        put("Medina_variation","norma Medina");
+        put("Place the first meeple on the board","Metu la unuan homon sur la tabulon");
+        put("Place a second piece on the board","Metu duan homon sur la tabulon");
+        put("Final Scores:","Finaj Poentoj:");
+        put("You must place a dome","Vi devas meti kupolon");
+        put("build an ideal city","konstruu idealan urbon");
+        
+        // cannon
+        put("Cannon","Kanono");
+        put("Capture your opponent's town","Kaptu la urbon de via kontra\u016dulo");
+        put("Place your town in your first row","Metu vian urbon sur vian unuan horizontalon");
+        put("Move a soldier, or fire a cannon","Movu soldaton a\u016d pafu kanonon");
+        put("Cannon_variation","norma Kanono");
+        
+        // warp 6
+        put("Warp6","Warp 6");
+        put("Warp6_variation","norma Warp 6");
+        put("Move a ship to the board","Movu \u015dipon al la tabulo");
+        put("Move 6 ships to the center","Movu 6 \u015dipojn al la centro");
+        put("Move a ship","Movu \u015dipon");
+        
+        // Triad
+        put("capture all of one opponentr's color","kaptu \u0109iujn pecojn de la koloro de unu kontra\u016dulo");
+        put("Capture a group of opponents","Kaptu grupon de kontra\u016dulo");
+        put("Drop bunny chip","Metu unu el la pecoj de la kunikla ludanto");
+        put("Triad","Triad");
+        put("Triad_variation","norma Triad");
+         
+        //Che
+        put("Che","Che");
+        put("Che_variation","norma Che");
+        put("Place a tile on any empty cell","Metu platon sur iun ajn malplenan \u0109elon");
+        put("Place a tile adjacent to those already on the board",
+        		"Metu platon najbare al plato jam sur la tabulo");
+        put("Place a second tile adjacent to those already on the board",
+        		"Metu duan platon najbare al plato jam sur la tabulo");
+        
+        // trax
+        put("Illegal - this move would form an illegal pattern of lines",
+        		"Kontra\u016dle\u011de - \u0109i tiu movo kreus kontra\u016dle\u011dan aran\u011don de linioj");
+        
+        // mutton
+        put("Capturing Games","Ludoj pri Kaptado");
+        put("Mutton","Mutton");
+        put("Mutton-shotgun","\u0108aspafila Mutton");
+        put("Mutton_variation","norma Mutton");
+        put("Mutton-shotgun_variation","Mutton - farmisto uzas \u0109aspafilon");
+        put("Farmer configuring board","Farmisto aran\u011das tabulon");
+        put("Play Farmer","Ludu Farmisto");
+        put("Hide","Ka\u015du");
+        put("Wolf player hiding","Lupo ka\u015das sin");
+        put("Wolf moving suspects","Lupo movas suspektatojn");
+        put("Eat","Man\u011du");
+        put("Wolf player eating","Lupo man\u011das");
+        put("Farmer select","Farmisto elektu");
+        put("Shoot","Pafu");
+        put("Farmer moving scared","Farmisto movas teruritajn");
+        
+        // octiles
+        put("Octiles","Octiles");
+        put("Octiles_variation","norma Octiles");
+        put("Place the next tile on the board, where a runner can move over it",
+        		"Metu la sekvan platon sur la tabulon, kie kuristo povas kuri super \u011di");
+        put("Move a runner","Movu kuriston");
+        put("Place a tile on the board, where a runner can leave a home space",
+        		"Metu platon sur la tabulon, kie kuristo povas eliri de hejmloko");
+        put("Move a runner from a home space","Movu kuriston de hejmloko");
+        put("Move your runners to the opposite side","Movu viajn kuristojn al la kontra\u016d flanko");
+        
+        // army of frogs
+        put("ArmyOfFrogs","Armeo de Ranoj");
+        put("ArmyOfFrogs_variation","norma Armeo de Ranoj");
+        put("Place a Frog on the board","Metu Ranon sur la tabulon");
+        put("Move a Frog","Movu Ranon");
+        put("Connect all your frogs (at least 7) in one cluster",
+        		"Ligu \u0109iujn viajn ranojn (almena\u016d 7) en unu grupo");
+        
+        // variation to game
+        put("Frogs","Armeo de Ranoj");
+         put("No Recent Games","Neniuj Lastatempaj Ludoj");
+        
+        // xiangqi
+        put("Traditional Pieces","Tradiciaj Pecoj");
+        put("Checkmate your opponent's general","Matu la generalon de via kontra\u016dulo");
+        put("Illegal move due to repetition - try something else",
+        		"Kontra\u016dle\u011da movo pro ripetado - provu ion alian");
+        put("Xiangqi","Xiangqi");
+        put("Xiangqi_variation","norma Xiangqi");
+        put("You have been offered a draw - Accept or Decline" ,
+        		"Vi ricevis proponon por remiso - Akceptu a\u016d Malakceptu" );
+        put("Offer a Draw","Proponu Remison");
+        put("Accept Draw","Akceptu Remison");
+        put("Decline Draw","Malakceptu Remison");
+        put("Escape from check","Eskapu de \u015dako");
+        
+        put("Click Done to offer a draw","Alklaku Fini por proponi remison");
+        put("Click Done to accept a draw","Alklaku Fini por akcepti remison");
+        put("Click Done to decline a draw","Alklaku Fini por malakcepti remison");
+        
+        // lobby
+        put("select the type of room","elektu la specon de \u0109ambro");
+        put("select the game to play","elektu la ludon por ludi");
+        put("select the game variation","elektu la lud-varianton");
+        
+        put("Dipole_family","Dipole");
+        put("Gipf_family","GIPF");
+   		put("Zertz_family","Z\u00c8RTZ");
+   		put("Yinsh_family","YINSH");
+     	put("Dvonn_family","DVONN");
+        put("Tzaar_family","TZAAR");
+        put("Punct_family","P\u00dcNCT");
+        put("Che_family","Che");
+        put("Micropul_family","Micropul");
+        put("Palago_family","Palago");
+        put("Spangles_family","Spangles");
+        put("Trax_family","Trax");
+        put("Truchet_family","Truchet");
+        put("TumblingDown_family","Tumbling Down");
+        put("Cannon_family","Kanono");
+        put("Fanorona_family","Fanorona");
+        put("Knockabout_family","Knockabout");
+        put("Traboulet_family","Traboulet");
+        put("Triad_family","Triad");
+        put("Xiangqi_family","Xiangqi");
+        put("Octiles_family","Octiles");
+        put("Warp6_family","Warp 6");
+        put("ArmyOfFrogs_family","Armeo de Ranoj");
+        put("LOA_family","Lines of Action");
+        put("Hive_family","Hive");
+        
+        put("Racing Games","Ludoj pri Vetkurado");
+        put("Connection Games","Ludoj pri Konektado");
+        put("Plateau_family","Plateau");
+        put("Hex_family","Hex");
+        put("Gobblet_family","Gobblet");
+        put("Exxit_family","Exxit");
+        put("Tablut_family","Tablut");
+        put("Volcano_family","Vulkano");
+        put("Qyshinsu_family","Qyshinsu");
+        put("Santorini_family","Santorini");
+        put("Medina_family","Medina");
+        put("Mutton_family","Mutton");
+        put("Tajii","Tajii");
+        put("Tajii_family","Tajii");
+        
+        put("LOAP","LOAP");
+        put("TumblingDown","Tumbling Down");
+        // misc
+        put("All Games","\u0108iuj Ludoj");
+        // breaking away
+        put("BreakingAway","Breaking Away");
+        put("BreakingAway_variation","norma Breaking Away");
+        put("BreakingAway_family","Breaking Away");
+        put("Adjust","Agordu");
+        put("Move a Cyclist","Movu Bicikliston");
+        put("Score the most points at the sprint and finish lines",
+        		"Akiru plej multajn poentojn \u0109e la spurta kaj fina linioj");
+        put("Adjust your starting movements","Agordu viajn komencajn movojn");
+        put("Wait for other players to adjust","Atendu dum aliaj ludantoj agordas");
+        put("The next sprint bonus is #1","La sekva spurt-premio estas #1");
+        put("#1 riders have crossed the second sprint line.",
+        		"#1 biciklistoj transiris la duan spurtan linion.");
+        put("#1 riders have crossed the first sprint line.",
+        		"#1 biciklistoj transiris la unuan spurtan linion.");
+        put("#1 riders have finished","#1 biciklistoj finis");
+        put("The next finish bonus is #1","La sekva fina premio estas #1");
+        put("Rider Size","Grandeco de Bickilisto");
+        put("Confirm Dropping this rider","Konfirmu Forigo de \u0109i tiu biciklisto");
+        put("Drop this rider from the Race","Forigu \u0109i tiun bicikliston de la Vetkuro");
+        put("Animate","Bildigi");
+        
+        // container
+        put("Container","Kontenero");
+        put("Container-First","Kontenero - Originala");
+        put("Euro Games","Europaj Ludoj");
+        put("Container-First_variation","Kontenero kun la originala regularo");
+        
+        put("Auction","A\u016dkcio");
+        put("Maximize your profits","Maksimumigu viajn profitojn");
+        put("Bank","Banko");
+        put("Loan for #1 from #2", "Pruntedono por #1 de #2");
+        put("Container_family","Kontenero");
+        put("Container_variation","Kontenero kun reguloj de Dua Sendo");
+        put("Take your first action","Faru vian unuan agon");
+        put("Click Done to confirm this action","Alklaku Fini por konfirmi \u0109i tiun agon");
+        put("Reprice the goods in your factory storage","\u015can\u011doj prezojn de la varoj en viaj fabrikoj");
+        put("Take your second action","Faru vian duan agon");
+        put("Warehouse","Magazeno");
+        put("Unsold Warehouses","Nevenditaj Magazenoj");
+        put("#1 Ship","#1 \u015cipo");
+        put("#1 Machine","#1 Ma\u015dino");
+        put("#1 #2 Containers","#1 #2 Konteneroj");
+        put("Loan Card","Pruntedona Karto");
+        put("Let someone else make the loan","Lasi iun alian pruntedoni");
+        put("I will make the loan","Mi pruntedonos");
+        put("fund a loan from a player or the bank","aran\u011di pruntedonon de ludanto a\u016d de la banko");
+        put("Load the goods you will produce","Metu la varojn, kiujn vi produktos");
+        put("set bid amount","elektu oferton");
+        put("Offer a price for the goods on the ship","Oferti prezon por la varoj sur la \u015dipo");
+        put("Load the your warehouse from the seller","Plenigi vian magazenon de la vendisto");
+        put("Reprice the goods in your warehouse storage","\u015can\u011di la prezojn de la varoj en viaj magazenoj");
+        put("Load your ship from the Dock","\u015car\u011di vian \u015dipon de la Doko");
+        put("Load more goods from the Dock","\u015car\u011di vian \u015dipon per pliaj varoj de la Doko");
+        put("Buy the goods for $#1","A\u0109eti la varojn kontra\u016d $#1");
+        put("Accept $#1 from #2","Akcepti $#1 de #2");
+        put("Bid $ #1","Oferti $ #1");
+        put("Requesting Bids","Petante Ofertojn");
+        put("you may increase your bid","vi povas pliigi vian oferton");
+        put("Wait for the other players to decide","Atendu dum aliaj ludantoj decidas");
+        put("accept the bid, or pay the amount yourself","akceptu la oferton, a\u016d vi mem pagu tiun kvanton");
+        put("trade a second container for a gold container","inter\u015dan\u011di al ora kontenero per dua kontenero");
+        put("You must take out a loan to pay interest","Vi devas pruntepreni por pagi interezon");
+        put("Requesting Loan","Petante Pruntedonon");
+        put("No, let the bank fund it","Ne, lasu la bankon pruntedoni");
+        put("Accept the loan from the bank", "Akcepti pruntedonon de la banko");
+        put("Yes, I will fund the loan","Jes, mi volas pruntedoni");
+        put("Place your bid to fund the loan","Metu vian oferton pro pruntedoni");
+        put("Decline the loan","Malakcepti la pruntedonon");
+        put("Accept this loan financing or not","Akcepti \u0109i tiun pruntedonon a\u016d ne");
+        put("Choose the penalty for non-payment of interest","Elektu la punon pro nepagon de interezo");
+        put("Loan for #1 from the bank","Pruntedono por #1 de la banko");
+        // for stats
+        put("Cash/Score","Mono/Poentoj");
+        put("Machines","Ma\u015dinoj");
+        put("Warehouses","Magazenoj");
+        put("Shipping","Sendado");
+        put("Island","Insulo");
+        put("Loans","Pruntedonoj");
+        // arimaa
+        put("Move a Rabbit to the last row","Movu Kuniklon al la lasta horizontalo");
+        put("Reverse View","Renversa Vido");
+        put("Move a piece, step #1","Movu pecon, pa\u015do #1");
+        put("Complete the push, step #1","Finu la pu\u015don, pa\u015do #1");
+        put("Complete the pull, step #1","Finu la tiron, pa\u015do #1");
+        put("Place all your pieces in your two home rows","Metu \u0109iujn viajn pecojn en viaj du hejmaj horizontaloj");
+        put("Arimaa_family","Arimaa");
+        put("Arimaa","Arimaa");
+        put("Arimaa_variation","Norma Arimaa");
+        put("Place the Rabbits","Metu la Kuniklojn");
+        put("Illegal due to repetition, try something else or resign","Kontra\u016dle\u011da pro ripeto, provu ion alian a\u016d kapitulacu");
+        
+        // entrapment
+        put("Entrapment_family","Entrapment");
+        put("Entrapment","Entrapment");
+        put("Entrapment-7x7","Entrapment");
+        put("Entrapment-7x7_variation","standard 7x7 Entrapment");
+        put("Entrapment-6x7_variation","Entrapment 6x7 - faster game");
+        put("Entrapment-6x7","Entrapment-6x7");
+        put("Entrapment-7x7x4","Entrapment-7x7x4");
+        put("Entrapment-7x7x4_variation","Entrapment-7x7 with 4 roamers");
+
+        put("Immobilize your opponent's roamers","Immobilize your opponent's roamers");
+        put("Move a roamer","Move a roamer");
+        put("Move a roamer, or place a barrier","Move a roamer, or place a barrier");
+        put("Escape forced position, or place a barrier","Escape forced position, or place a barrier");
+        put("Move a roamer or move a barrier","Move a roamer or move a barrier");
+        put("Place a roamer on the board","Place a roamer on the board");
+        put("Escape forced position, or move a barrier","Escape forced position, or move a barrier");
+        put("Escape forced position","Escape forced position");
+        put("Select which of your roamers to kill","Select which of your roamers to kill");
+        put("Select which opponent roamer to kill","Select which opponent roamer to kill");
+        
+        // lehavre
+        put("LeHavre_variation","standard LeHavre");
+        put("LeHavre_family","LeHavre");
+        put("LeHavre","LeHavre");
+
+        // crossfire
+        put("Move a stack, or add a reserve piece","Move a stack, or add a reserve piece");
+        // misc
+        
+        put("+ #1 turns","+ #1 turns");
+        put("Rotate the board 180 degrees","Rotate the board 180 degrees");
+        put("Crossfire","Crossfire");
+        put("#1 reserves","#1 reserves");
+        put("Switch to a more oblique view of the board","Switch to a more oblique view of the board");
+        put("Crossfire_family","Crossfire_family");
+        put("Complete a push or pull, step #1","Complete a push or pull, step #1");
+        put("Switch to a more overhead view of the board","Switch to a more overhead view of the board");
+        put("Spread out the stacks","Spread out the stacks");
+        put("#1 prisoners","#1 prisoners");
+        put("load a luxury container","load a luxury container");
+        put("Click Done to confirm this move","Click Done to confirm this move");
+        put("Adjust the chip spacing in stacks","Adjust the chip spacing in stacks");
+        put("own all the stacks","own all the stacks");
+        put("Spot Price #1","Spot Price #1");
+        put("click Done to finish this Auction","click Done to finish this Auction");
+        put("Crossfire_variation","Crossfire_variation");
+        
+    }
+}

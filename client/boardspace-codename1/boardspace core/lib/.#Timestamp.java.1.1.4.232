@@ -1,0 +1,4 @@
+
+				package lib;
+				public interface Timestamp { String build = "8-November-2021 19:11"; } 
+			

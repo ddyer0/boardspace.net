@@ -1,0 +1,32 @@
+
+(;
+GM[1]FF[4]AP[NNGS:1.1.17]
+US[Brought to you by No Name Go Server]
+CP[
+  Copyright This game was played on the No Name Go Server
+  Permission to reproduce this game is given,
+  as long as this copyright notice is preserved.]
+GN[GNUGo-GoFigure(B) NNGS]
+EV[none]
+RE[W+Time]
+PW[GNUGo]WR[NR ]
+PB[GoFigure]BR[NR ]
+PC[NNGS Go Program Server Clone: boardspace.net 6969]
+DT[2005-03-17]
+SZ[9]TM[600]KM[5.5]
+
+;B[cf];W[fg];B[gc];W[cc];B[ge];W[ch];B[hg];W[ed];B[bd];W[fc]C[
+gunnar started observation.
+evand NR : though not anymore...  f7 was unexpected (10)
+]
+;B[fd];W[fb];B[gb];W[dg];B[ee];W[dc];B[df];W[bc]C[
+ evand started observation.
+]
+;B[fa];W[ea];B[ga];W[db];B[ac];W[ab];B[ad];W[de];B[ce];W[dd];B[ff];W[gg]
+;B[hh]C[
+ gunnar started observation.
+]
+;W[gh];B[bg];W[hi]
+;)
+
+---

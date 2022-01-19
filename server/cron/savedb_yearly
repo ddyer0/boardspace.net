@@ -1,0 +1,31 @@
+#!/bin/csh
+#
+# save stuff at year end
+#
+~/cron/dtest.csh $0 600
+set v = $?
+#
+# dtest is a kludge to prevent scripts running twice
+#
+if ( $v == 0 ) then
+source ~/cgi-bin/include.csh
+set sunset=2
+set now=`date`
+set year=$now[6]
+set ylname = $game_completed_log-$year
+set ysname = $server_logon_log-$year
+set xylname=$ylname:t
+set xysname=$ysname:t
+#
+if(-e $ysname || -e $ylname) then
+echo "trouble brewing! $ylname or $ysname already exists!  Yearly saves aborted"
+exit
+else
+mv $server_logon_log $ysname
+mv $game_completed_log $ylname
+ln $ysname $mirror/$xysname
+ln $ylname $mirror/$xylname
+endif
+
+
+endif

@@ -1,0 +1,49 @@
+PF-Security
+Author: Manfred Duchrow
+Copyright (c) 2004-2013, by Manfred Duchrow. All rights reserved.
+=======================================================================
+
+-----------------------------------------------------------------------
+
+VERSION 1.2.0 (November 24, 2013)
+
+* Support for SHA-2 (256, 384, 512 bit)
+  > CryptoUtil
+    - Added
+      ~ public String hashed(final byte[] data, final HashMechanism hashMechanism)
+      ~ public String hashedUTF8(final String aString, final HashMechanism hashMechanism)
+      ~ public String base64EncodedWithPrefix(final byte[] hash, final HashMechanism hashMechanism)
+      ~ public String hashedUTF8(final String aString, String algorithm) 
+      ~ public MessageDigest getMessageDigest(String algorithmName)
+      ~ public byte[] generateSalt(final int length)
+      ~ public byte[] generateSalt20()
+      ~ public byte[] computeHash(final byte[] content, final String algorithm)
+      ~ public byte[] computeHash(final String text, final String charEncoding, final String algorithm)
+      ~ public boolean equals(final String str1, final String str2, CheckedCharsetName charEncoding)
+      ~ public boolean equalsUTF8(final String str1, final String str2)
+
+* New classes
+  > CheckedHashAlgorithm
+  > CryptoConstants
+  > CryptoRuntimeException   
+
+-----------------------------------------------------------------------
+
+VERSION 1.1 (June 27, 2008)
+
+* New classes
+  > HashedString
+  > CryptoUtil
+
+-----------------------------------------------------------------------
+
+VERSION 1.0 (September 25, 2004)
+
+* Created new component with class in package org.pf.security.authentication
+
+  > AutoAuthenticationManager
+  > LocationCredentials
+  > AbstractAuthenticator
+
+-----------------------------------------------------------------------
+

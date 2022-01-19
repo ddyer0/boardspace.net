@@ -1,0 +1,25 @@
+#!/bin/csh
+#set echo
+#
+# some complicated setup with .ssh/* is needed to get this to run
+# without requiring a password
+#
+crontab -l > last-crontab.txt
+#
+set partner_site = "bstt@tantrix.com:"
+set exclude_file = "cron/backup-do-not-save"
+set roots = "cron/ ddyer/ cserver/ mirror/ server/ cgi-bin/ www/"
+# add -n to test add -v to verbose
+set options = "-az"
+
+~/cron/dtest.csh $0 60
+set v = $?
+if ( $v == 0 ) then
+
+cd ~
+foreach file( $roots )
+# depends on ~/.ssh/config to set ports for ssh
+rsync $options -e ssh --exclude-from=$exclude_file $file ${partner_site}$file
+end
+endif
+

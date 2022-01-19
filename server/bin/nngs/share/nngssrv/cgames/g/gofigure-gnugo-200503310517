@@ -1,0 +1,31 @@
+
+(;
+GM[1]FF[4]AP[NNGS:1.1.17]
+US[Brought to you by No Name Go Server]
+CP[
+  Copyright This game was played on the No Name Go Server
+  Permission to reproduce this game is given,
+  as long as this copyright notice is preserved.]
+GN[GoFigure-GNUGo(B) NNGS]
+EV[none]
+RE[W+2.5]
+PW[GoFigure]WR[NR ]
+PB[GNUGo]BR[NR ]
+PC[NNGS Go Program Server Clone: boardspace.net 6969]
+DT[2005-03-30]
+SZ[9]TM[600]KM[5.5]
+
+;B[gd]C[
+ evand started observation.
+]
+;W[cg];B[fg];W[ed];B[cd];W[de];B[fc];W[ce];B[cb];W[bd];B[bc];W[eh];B[ge]
+;W[fh];B[be];W[gg];B[bf];W[hf];B[he];W[bg];B[ff];W[af];B[ae];W[ec];B[eb]
+;W[ag];B[gf];W[hg];B[dc];W[dd];B[cc];W[cf];B[ad];W[ie];B[id];W[if];B[eg]
+;W[dg];B[ef];W[fd];B[gb];W[fe];B[fb];W[ee];B[hb];W[df];B[tt];W[tt]
+;
+TB[aa][ab][ac][ba][bb][bd][ca][da][db][ea][fa][ga][gc][ha][hc][hd][ia][ib]
+[ic]
+TW[ah][ai][bh][bi][ch][ci][dh][di][ei][fi][gh][gi][hh][hi][ig][ih][ii]
+)
+
+---

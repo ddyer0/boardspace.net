@@ -1,0 +1,5 @@
+RewriteEngine on
+#RewriteBase /french/
+RewriteCond  %{REQUEST_FILENAME} !-f
+RewriteRule  ^(.*)$   ../english/$1
+

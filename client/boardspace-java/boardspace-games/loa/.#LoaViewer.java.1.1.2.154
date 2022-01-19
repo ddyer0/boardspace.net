@@ -1,0 +1,1154 @@
+package loa;
+/**
+ * TODO: slider doesn't update while dragging the thumb
+ */
+import online.common.CellId;
+import online.common.HitPoint;
+import online.common.exHashtable;
+import online.game.*;
+import online.game.sgf.sgf_game;
+import online.game.sgf.sgf_names;
+import online.game.sgf.sgf_node;
+import online.game.sgf.sgf_property;
+
+import java.awt.*;
+import java.io.*;
+import java.lang.Math;
+import java.util.*;
+
+import lib.*;
+
+public class LoaViewer extends commonCanvas implements Observer, UIC,
+    ViewerProtocol, Play2Constants, sgf_names
+{	static int nextPlayer[] = {SECOND_PLAYER_INDEX,FIRST_PLAYER_INDEX};
+    /**
+	 * 
+	 */
+	static final long serialVersionUID = 1L;
+	static final Color HighlightColor = Color.green;
+    static final int EmptyBoard = -1; // highlight points to empty board
+    static final Color vcrButtonColor = new Color(0.7f, 0.7f, 0.75f);
+    Loa_Board b = null;
+    Point selectedStone = null; // selected point
+    private int CELLSIZE = 0;
+    //private Rectangle fullRect = addRect("fullRect");
+    //private Rectangle boardRect = addRect("boardRect");
+    private Rectangle logRect = addRect("logRect"); // game log
+    private Rectangle progressRect = addRect("progressRect");
+
+    private Rectangle countP1Rect = addRect("player1Count");
+    private Rectangle countP2Rect = addRect("player2Count");
+    private Rectangle pointP1Rect = addRect("player1Points");
+    private Rectangle pointP2Rect = addRect("player2Points");
+    
+    private CellId movingObject = DefaultId.HitNoWhere; // >=0 iff a ball is moving
+
+    /* end of viewer protocol methods */
+    public boolean invalid = true;
+    private Rectangle[][] r; // where the squares are
+    private int rsize = 0;
+    private boolean last_use_grid = true;
+    boolean invert_y = true;
+    private boolean last_invert_y = true;
+    int last_board_size = 0;
+
+   
+   private int paintedSize = 0;
+   public boolean repositionBoxes()
+   {	if(paintedSize!=b.size)
+   		{ resetBounds();
+   		  return(true);
+   		}
+     return(false);
+   }
+   private void createPlayerGroup(commonPlayer pl0,Rectangle count,Rectangle point,int playerx,int playery)
+   {
+       Rectangle p0time = pl0.timeRect;
+       Rectangle p0xtime = pl0.extraTimeRect;
+       Rectangle p0anim = pl0.animRect;
+       Rectangle nameRect = pl0.nameRect;
+       Rectangle picRect = pl0.picRect;
+ 
+       //player1 balls
+       G.SetRect(nameRect,playerx, playery, CELLSIZE * 3, (CELLSIZE*2/3));
+
+       // player portrait
+       G.SetRect(picRect,G.Left( nameRect),G.Bottom( nameRect), CELLSIZE * 5/2,CELLSIZE * 5/2);      
+
+       // time dispay for player1
+       G.SetRect(p0time, G.Right(nameRect),G.Top( nameRect),3*CELLSIZE/2,G.Height( nameRect));
+       
+       G.SetRect(p0xtime,G.Left( p0time),G.Bottom(p0time),G.Width( p0time),G.Height(p0time));
+       
+       // player1 piece count
+       G.SetRect(count,G.Right( picRect),G.Bottom(p0xtime),CELLSIZE,CELLSIZE);
+       
+       G.SetRect(point,G.Left( count),G.Bottom( count),G.Height(count),G.Height(count));
+
+       G.SetRect(p0anim, G.Right(picRect),G.Top(picRect),G.Height(p0time),G.Height( p0time));
+
+   }
+   
+   public void setLocalBounds(int x, int y, int width, int height)
+    { // do layout etc.
+	   	boolean wideMode = width>(height*1.6);
+        G.SetRect(fullRect,x,y, width, height);
+        paintedSize = b.size;
+        int chatHeight = selectChatHeight(height);
+         
+        int bs = b.boardSize() + 1; // 1 for the grid
+        int nx = bs + (wideMode ? 12 : 5);
+        int ny = bs+1;
+        int cellh = wideMode ? height/ny : (height-chatHeight) / ny;
+        int cellw = width / nx;
+        int auxx =  G.Right(boardRect)+CELLSIZE*5 ;
+        
+        CELLSIZE = Math.min(cellw, cellh);
+
+        G.SetRect(boardRect, CELLSIZE/2, (wideMode ? 0 : chatHeight)+CELLSIZE/2,
+        		bs * CELLSIZE, bs * CELLSIZE);
+
+        int logW = CELLSIZE * 4;
+        int chatX = wideMode ? auxx : 0;
+        int chatW = wideMode ? width-chatX-CELLSIZE/4 : G.Width(boardRect);
+        int chatH = chatHeight;
+        int logH = wideMode ? CELLSIZE*4 : chatHeight;
+        
+        G.SetRect(logRect,wideMode ? auxx : chatX+chatW+CELLSIZE/4,y,
+        			logW,logH);
+        G.SetRect(chatRect,chatX, wideMode ? G.Bottom(logRect) : y,
+        		chatW,chatH);
+        
+        int vy = G.Bottom(boardRect)-3*CELLSIZE/2;
+        SetupVcrRects(G.Right(boardRect)+CELLSIZE/2, vy, CELLSIZE * 3, (6 * CELLSIZE) / 4);
+
+        G.SetRect( progressRect, CELLSIZE * 4,G.Bottom(boardRect), 3 * CELLSIZE, CELLSIZE / 4);
+
+        {	int playerx = G.Right(boardRect);
+        	createPlayerGroup(getPlayerOrTemp(0),countP1Rect,pointP1Rect,playerx,G.Top(boardRect));
+        	createPlayerGroup(getPlayerOrTemp(1),countP2Rect,pointP2Rect,playerx,G.Top(boardRect)+CELLSIZE*4);	
+        }
+
+        positionTheChat(chatRect,Color.white,Color.white);
+        generalRefresh();
+    }
+
+    public commonMove ParseNewMove(String st)
+    {
+        return (new Move_Spec(st, b.whoseTurnStone()));
+    }
+
+    public Move_Spec currentMove()
+    {
+        int v = (viewStep >= 0) ? (viewStep - 1) : (History.size() - 1);
+
+        if (v >= 0)
+        {
+            return ((Move_Spec) History.elementAt(v));
+        }
+
+        return (null);
+    }
+
+    public boolean Execute(commonMove mm,replayMode replay)
+    {	boolean review = reviewMode();
+        Move_Spec m = (Move_Spec) mm;
+        int step = (b.moveNumber());
+        if(!review) { viewMove = Math.max(step, viewMove);} // maintain the max move for the parents
+        mm.setSliderNumString("" + step);
+
+        b.Test_Move(m); //side effect of blessing and setting capture flag
+
+        //System.out.println("Execute "+m);
+        if (m.N() == M_Select)
+        { // just select a point
+
+            int fx = m.fromX();
+            int fy = m.fromY();
+            selectedStone = ((fx >= 0) && (fy >= 0)) ? new Point(fx, fy) : null;
+        }
+        else
+        {	mm.player = b.whoseTurn;
+            b.Execute(mm);
+        }
+        if(!review) { setDoneState(false); }
+        generalRefresh();
+        GameOverNow();
+        return (true);
+    }
+
+    public commonMove EditHistory(commonMove m)
+    { // add to history, but also edit history so redundant moves are eliminated
+
+        Move_Spec newmove = (Move_Spec) m;
+
+        if (newmove.N() == M_Select)
+        {
+            return (null);
+        }
+
+        return (newmove);
+    }
+    public void performHistoryInitialization(StringTokenizer his)
+    {   //the initialization sequence
+    	String token = his.nextToken();
+        b.doInit(token);
+    }
+
+    public synchronized void ReplayGame(sgf_game ga)
+    {	// we need to make sure the state is "standard" so lax sgf files can assume that
+    	// as a default.
+    	b.setCurrentSetup("standard");	// make sure we start as a standard setup
+    	super.ReplayGame(ga);
+    }
+    
+    public String gameType() { return(b.gametype); }
+    public String sgfGameType() { return(LOA_SGF); }
+    
+    // loa has its own version of printGameRecord to maintain some historical
+    // ideosyncrancies of format.
+    public void printGameRecord(PrintStream pw, String startingTime)
+    {
+        String nameString = "";
+
+        for (commonPlayer p = commonPlayer.firstPlayer(players); p != null;
+                p = commonPlayer.nextPlayer(players, p))
+        {
+            if (!nameString.equals(""))
+            {
+                nameString += "-";
+            }
+
+            nameString += p.trueName;
+        }
+
+        pw.println("(;");
+        pw.println("GM[" + LOA_SGF + "] VV[1]");
+        pw.println("DT[" + startingTime + "]");
+        pw.println("GN[" + nameString + "]");
+        pw.println("SU[" + b.gametype + "]");
+
+        for (commonPlayer p = commonPlayer.firstPlayer(players); p != null;
+                p = commonPlayer.nextPlayer(players, p))
+        { //don't translate color here
+            pw.println("P" + PColors[p.boardIndex] + "[" + p.trueName + "]");
+
+            {
+                String rank = p.getPlayerInfo(exHashtable.RANKING);
+
+                if ((rank != null) && !("".equals(rank)))
+                {
+                    pw.println(PColors[p.boardIndex] + "[ranking " + rank + "]");
+                }
+            }
+
+            {
+                String ct = p.getPlayerInfo(exHashtable.COUNTRY);
+
+                if ((ct != null) && !("".equals(ct)))
+                {
+                    pw.println(PColors[p.boardIndex] + "[country " + ct + "]");
+                }
+            }
+        }
+
+        //start with 1 to skip the anchor element
+        for (int i = 1; i < History.size(); i++)
+        {
+            Move_Spec m = (Move_Spec) History.elementAt(i);
+            pw.println("; " + m.color.Name_as_Char() + "[" + m.moveString() +
+                "]");
+        }
+
+        pw.println(";");
+
+        for (commonPlayer p = commonPlayer.firstPlayer(players); p != null;
+                p = commonPlayer.nextPlayer(players, p))
+        {
+            int col = p.colourIndex() % 4;
+
+            if ((col >= 0))
+            {
+                pw.println("P" + PColors[p.boardIndex] + "[time " +
+                    G.timeString(p.elapsedTime) + "]");
+            }
+        }
+
+        pw.println(")");
+    }
+    
+
+
+    public void StartDragging(HitPoint hp)
+    {	
+        CellId hitObject = hp.hitCode;
+
+        if (hitObject == VcrId.Slider)
+        {
+            movingObject = hitObject;
+            hp.dragging = true;
+            repaint(20);
+        }
+    }
+
+    public void StopDragging(HitPoint hp)
+    {
+
+        CellId hitObject =  hp.hitCode;
+
+        if (performStandardButtons(hitObject)) {}
+        else if (performVcrButton(hitObject, hp))
+        {
+        }
+        else if (hitObject == DefaultId.HitNoWhere)
+        {
+        }
+        else
+        {
+        	throw G.Error("Hit Unknown object " + hitObject);
+        }
+        movingObject = DefaultId.HitNoWhere;
+        generalRefresh();
+    }
+
+    // board things that you can only do when it's your turn
+    public HitPoint MouseMotion(int eventX, int eventY, mouseState upcode)
+    {
+        HitPoint pt = new HitPoint(eventX, eventY);
+        HitPoint drag = dragPoint;
+        pt.dragging = (drag!=null) && (upcode!=mouseState.LAST_IS_UP);
+        pt.hitCode = DefaultId.HitNoWhere;
+        pt.down = (upcode==mouseState.LAST_IS_DOWN)||(upcode==mouseState.LAST_IS_DRAG);
+        
+        if(pt.dragging && (pt.hitCode==VcrId.Slider))				// special treatment of the vcr slider
+    	{ 
+  			  drawVcrSlider(pt,null,null,null);
+  			  repaint(20);
+    	}
+        else if(adjustChatSize(pt))
+		{
+		if(upcode==mouseState.LAST_IS_DOWN)
+			{ dragSizeAdj=0; 
+			  dragPoint = pt;
+			  pt.dragging=true; 
+			}
+		}
+       	if(pt.dragging && (dragPoint.hitCode==DefaultId.HitChatButton))
+		{
+		int dist = G.Top(pt)-G.Top(dragPoint);
+    	if(dist!=dragSizeAdj)
+    		{ chatSizeAdj += dist-dragSizeAdj;
+    		  dragSizeAdj=dist;
+     		  resetBounds(); 
+    		}
+		}
+        if (fullRect.contains(eventX, eventY))
+        {
+            if (movingObject == VcrId.Slider)
+            {	pt.hitCode = VcrId.Slider;
+                drawVcrSlider(pt, null, null, null);
+            }
+            else
+            {
+                commonPlayer pl = whoseTurn();
+                Stone Black = b.blackStone();
+                Stone White = b.whiteStone();
+                Point selected = selectedStone;
+                Point p = hitTest(eventX, eventY); // see if we hit a square
+
+                if ((upcode== mouseState.LAST_IS_UP)
+                		&& (allowed_to_edit || ((pl == my) && !reviewMode()))
+                		&& (p != null)) // did the user click in a square?
+                {
+                    Stone contents = b.squareContents(G.Left(p),G.Top( p));
+
+                    if (selected == null) // yes (he hit a square), no slected stone?
+                    { // yes, (no selected stome);
+
+                        if ((contents == Black) || (contents == White)) // is square occupied?
+                        {
+                            SelectStone(p); // yes, make this the selected stone
+                        }
+                    }
+                    else if (GameOver() || (reviewMode() && !allowed_to_edit))
+                    {
+                        SelectStone(null);
+                    }
+                    else
+                    { // we have a selected stone
+
+                        LoaMove theMove = b.isLegalMove(G.Left(selected),G.Top( selected),
+                                G.Left(p),G.Top( p));
+                        SelectStone(null); // un-select the stone
+
+                        if (theMove != null)
+                        {
+                            PerformAndTransmit(theMove.moveString());
+                        }
+                    }
+
+                    invalidate();
+                    repaint(20);
+                }
+            }
+
+            // now look for things we can hit even when not our turn
+            if (!pt.dragging)
+            { //if we haven't hit anything yet, and we're not dragging anything
+                drawVcrGroup(pt, null, null, null);
+            }
+        }
+        return(SetHighlight(pt));
+       
+    }
+
+    public BoardProtocol getBoard()   {    return (b);   }
+    
+    public commonPlayer whoseTurn()
+    { // if(reviewMode())
+      // { return(viewTurn);
+      // }
+      // else
+
+        {
+            Stone who = b.whoseTurnStone();
+            int idx = (who == b.black.color) ? BLACK_INDEX : WHITE_INDEX;
+
+            return (players[idx]);
+        }
+    }
+
+    static Image textures[]=null;
+    static Image images[]=null;
+    public synchronized void preloadImages()
+    {	
+    	if (textures == null)
+    	{ 	// note that for this to work correctly, the images and masks must be the same size.  
+        	// Refer to http://www.andromeda.com/people/ddyer/java/imagedemo/transparent.html
+    		
+    		// images and textures are static variables, so they're shared by
+    		// the entire class and only get loaded once.  Special synchronization
+    		// tricks are used to make sure.
+          images = load_images(ImageDir, ImageNames, 
+        		  	load_images(ImageDir, ImageNames,"-mask")); // load the main images
+          textures = load_images(ImageDir,TextureNames);
+    	}
+    }
+    Color LoaMouseColors[] = { Color.black,Color.white};
+    Color LoaMouseDotColors[] = { Color.white,Color.black};
+    
+    public void init(exHashtable stuff)
+    {
+        super.init(stuff);
+        MouseDotColors = LoaMouseDotColors;
+        MouseColors = LoaMouseColors;
+        b = new Loa_Board(sharedInfo.getString(exHashtable.GAMETYPE,"LOA"));
+        doInit(false);
+   }
+
+    public void doInit(boolean preserve_history)
+    {
+        super.doInit(preserve_history);
+        b.doInit(b.gametype);
+        if(!preserve_history)
+    	{ PerformAndTransmit(reviewOnly?"Edit":"Start Black", false,replayMode.Replay);
+    	}
+    }
+
+    //   public void ViewerRun(boolean wait)
+    //   {
+    //       super.ViewerRun(wait);
+    //   }
+
+    public void make_invalid()
+    {
+        invalid = true;
+    }
+
+    public void make_valid()
+    {
+        if (invalid)
+        {
+            repaint(20);
+        }
+    }
+    public void drawSprite(Graphics g,int idx,int xp, int yp)
+    { //not used
+    }
+
+
+    Color table_color()
+    {
+        return (table_color);
+    }
+
+    private Stone selectedColor()
+    {
+        Point p = selectedStone;
+
+        if (p != null)
+        {
+            return (b.squareContents(G.Left(p),G.Top( p)));
+        }
+
+        return (null);
+    }
+
+    void drawMainMessage(Graphics g)
+    {	String msg = "";
+    	Color cc = Color.black;
+        G.setFont(g,standardBoldFont);
+        if(b.GameOver())
+        {
+        	msg = gameOverMessage();
+        }
+        else
+        {
+        commonPlayer p = whoseTurn();
+        Stone col = b.whoseTurnStone();
+        Stone contents = selectedColor();
+        msg = ((contents == null) || (contents != col))
+            ? s.get("Select the #1 piece to move", s.get(col.name))
+            : s.get("Select the destination for the selected piece");
+
+        if (p != null)
+        {
+            msg = p.userName + " : " + msg;
+        }
+
+        if (!reviewMode())
+        {
+            if (inLimbo)
+            {
+                msg = s.get(LimboMessage);
+            }
+
+        }}
+        G.Text(g, false, G.Left(boardRect)-CELLSIZE/2,G.Top(boardRect)-CELLSIZE/2, G.Width(boardRect),
+            CELLSIZE / 2, cc, null, msg);
+    }
+    void drawStone(Graphics g,Rectangle rec,Color fg,Color bg,String msg,int idx)
+    {	int cx = G.Width(rec)/2;
+    	int cy = G.Height(rec)/2;
+    	drawImage(g, images[idx], SCALES[idx],
+        		G.Left(rec)+cx,G.Top(rec)+cy,G.Width(rec), 1.0,0.0,msg,false);
+        
+    }
+    public void redrawBoard(Graphics g,HitPoint p)
+    {
+        LoaMove cm = currentMove();
+        Rectangle rb = boardRect;
+        int n = b.boardSize();
+        int height = G.Height(rb);
+        int width = G.Width(rb);
+        int squaresize = CELLSIZE;
+        boolean isLOAP= (b.setup==Setup_Type.LOAP);
+          
+        
+        int leftmargin = G.Left(rb) + ((width - (n * squaresize)) / 2);
+        int topmargin = G.Top(rb) + ((height - (n * squaresize)) / 2);
+
+        r = null;
+        rsize = n;
+
+        int off = Math.max(1, (int) (squaresize * 0.05));
+        int wff = off * 2;
+        Stone Empty = b.emptyStone();
+        Stone White = b.whiteStone();
+        Stone Black = b.blackStone();
+        Stone Blocked = b.blockedStone();
+        Rectangle[][] rects = new Rectangle[n][n];
+        int nwhite = 0;
+        int nblack = 0;
+        int center = n/2;
+        int edge = n-2;
+        for (int y = 0; y < n; y++)
+            for (int x = 0; x < n; x++)
+            {
+                int xc = leftmargin + (squaresize * x);
+                int yc = topmargin + (squaresize * y);
+                int s2 = squaresize / 2;
+                boolean light = (((x + y) & 1) == (isLOAP?1:0));
+                int chipindex = light ? LIGHT_TILE_INDEX : DARK_TILE_INDEX;
+                //Color squarecolor =  light ? white_square_color
+                //                           : black_square_color;
+                if(isLOAP)
+                	{ if ((x==center)&&(y==center)) 
+                		{ //squarecolor = loap_7_color;
+                		  chipindex = GREEN_TILE_INDEX;
+                		}
+                	else if(((x==edge)&&((y==1)||(y==edge)))
+                			|| ((x==1)&&((y==1)||(y==edge))))
+                		{ //squarecolor=loap_3_color;	
+                		  chipindex = YELLOW_TILE_INDEX;
+                		}
+                	}
+                	
+                rects[y][x] = new Rectangle(xc, yc, squaresize, squaresize);
+              //  g.setColor(squarecolor);
+              //  g.fillRect(xc, yc, squaresize, squaresize);
+                
+                drawImage(g, textures[chipindex], TSCALES[chipindex],
+                		xc+s2,yc+s2,squaresize);
+                
+                {
+                    Stone st = b.squareContents(x, invert_y ? (n - y - 1) : y);
+
+                    if (st == Black)
+                    {	nblack++;
+                        //G.DrawAACircle(g, xc + s2, yc + s2, s2 - off - 2,
+                        //    black_stone_color, squarecolor, true);
+                        drawImage(g, images[LIGHT_TILE_INDEX], SCALES[LIGHT_TILE_INDEX],
+                        		xc+s2,yc+s2,squaresize);
+
+                    }
+                    else if (st == White)
+                    {	nwhite++;
+                        //G.DrawAACircle(g, xc + s2, yc + s2, s2 - off - 2,
+                        //    white_stone_color, squarecolor, true);
+                        drawImage(g, images[DARK_TILE_INDEX], SCALES[DARK_TILE_INDEX],
+                        		xc+s2,yc+s2,squaresize);
+                   }
+                    else if (st == Blocked)
+                    {
+                         G.fillRect(g,blocked_square_color,xc + (off * 3), yc + (off * 3),
+                            squaresize - (wff * 3), squaresize - (wff * 3));
+                    }
+                    else if (st == Empty)
+                    {
+                    }
+                    else
+                    {
+                        throw new Error("Color " + st + " not handled");
+                    }
+                }
+            }
+        drawStone(g,countP1Rect,black_stone_color,table_color(),""+nblack,LIGHT_TILE_INDEX);
+        drawStone(g,countP2Rect,white_stone_color,table_color(),""+nwhite,DARK_TILE_INDEX);
+
+        if(isLOAP)
+        { G.setFont(g,largeBoldFont);
+          G.frameRect(g,Color.black,pointP1Rect);
+          G.Text(g,true,pointP1Rect,Color.black,null,""+b.black.loaps_points);
+          G.frameRect(g,Color.black,pointP2Rect);
+          G.Text(g,true,pointP2Rect,Color.black,null,""+b.white.loaps_points);
+        }
+        Point selected = selectedStone;
+        G.setFont(g,standardBoldFont);
+        if (selected != null)
+        {
+            int x = G.Left(selected);
+            int y = invert_y ? (n - G.Top(selected) - 1) : G.Top(selected);
+            int ox = leftmargin + (squaresize * x) + (squaresize / 2);
+            int oy = topmargin + (squaresize * y) + (squaresize / 2);
+            G.setColor(g,selected_arrow_color);
+
+            for (Enumeration<Move_Spec> moves = b.getLegalMoves(G.Left(selected), G.Top(selected));
+                    moves.hasMoreElements();)
+            {
+                LoaMove m = moves.nextElement();
+                x = m.toX();
+                y = m.toY();
+
+                if (invert_y)
+                {
+                    y = n - y - 1;
+                }
+
+                int dest_x = leftmargin + (squaresize * x) + (squaresize / 2);
+                int dest_y = topmargin + (squaresize * y) + (squaresize / 2);
+
+                //log.println("bS " + squaresize + " " + squaresize/6);
+                G.drawArrow(g, ox, oy, dest_x, dest_y, squaresize / 6);
+
+                //log.println("aS " + squaresize + " " + squaresize/6);
+            }
+        }
+
+        if ((cm != null) && (cm.N() > 0) /* n<=0 are special values */)
+        {
+            int last_from_x = cm.fromX();
+            int last_to_x = cm.toX();
+            int last_from_y = cm.fromY();
+            int last_to_y = cm.toY();
+
+            if (invert_y)
+            {
+                last_to_y = n - last_to_y - 1;
+                last_from_y = n - last_from_y - 1;
+            }
+
+            G.setColor(g,lastmove_arrow_color);
+            G.drawArrow(g,
+                (squaresize / 2) + leftmargin + (squaresize * last_from_x),
+                (squaresize / 2) + topmargin + (squaresize * last_from_y),
+                (squaresize / 2) + leftmargin + (squaresize * last_to_x),
+                (squaresize / 2) + topmargin + (squaresize * last_to_y),
+                squaresize / 6);
+        }
+
+        r = rects;
+        
+    	
+        drawPlayerStuff(g,false,p,HighlightColor,	table_color);
+
+        drawVcrGroup(p, g, HighlightColor,
+            vcrButtonColor);
+        drawMainMessage(g);
+
+        {commonPlayer pl = whoseTurn();
+
+        if (pl != null)
+        {
+            pl.drawProgressBar(g, progressRect);
+        }}
+       // draw clocks, sprites, and other ephemera
+        {
+            drawClocksAndMice(g, null);
+            redrawGameLog(g, null, logRect, table_color);
+
+            if (movingObject == VcrId.Slider)
+            {
+                drawVcrSlider(p, g, HighlightColor,
+                    vcrButtonColor);
+            }
+
+            
+            ShowStats(g, G.Left(boardRect) +G.Width( boardRect)/2, G.Bottom(boardRect) + 10);
+            showRectangles(g, CELLSIZE);
+            //DrawTileSprite(offGC);      //draw the floating tile, if present
+        }
+    }
+
+    public void drawFixedElements(Graphics g)
+    {
+            LoaMove cm = currentMove();
+            Rectangle rb = boardRect;
+            int n = b.boardSize();
+            int height = G.Height(rb);
+            int width = G.Width(rb);
+            int squaresize = CELLSIZE;
+            boolean isLOAP= (b.setup==Setup_Type.LOAP);
+            
+            G.tileImage(g,textures[BACKGROUND_TILE_INDEX], fullRect, this);   
+            if(reviewMode())
+            {	 
+              G.tileImage(g,textures[BACKGROUND_REVIEW_TILE_INDEX],boardRect, this);   
+            }
+               
+            
+            int leftmargin = G.Left(rb) + ((width - (n * squaresize)) / 2);
+            int topmargin = G.Top(rb) + ((height - (n * squaresize)) / 2);
+            int rightmargin = leftmargin + (n * squaresize);
+            int bottommargin = topmargin + (n * squaresize);
+
+            r = null;
+            rsize = n;
+
+
+            if (use_grid)
+            {
+                for (int i = 0; i < n; i++)
+                {
+                    String number = (new Integer(invert_y ? (n - i) : (i + 1))).toString();
+                    String letter = (new Character((char) ('A' + i))).toString();
+                    G.Text(g, true, leftmargin - (squaresize / 2),
+                        topmargin + (i * squaresize), squaresize / 2, squaresize,
+                        Color.black, null, number);
+                    G.Text(g, true, rightmargin, topmargin + (i * squaresize),
+                        squaresize / 2, squaresize, Color.black, null, number);
+                    G.Text(g, true, leftmargin + (i * squaresize),
+                        topmargin - (squaresize / 2), squaresize, squaresize / 2,
+                        Color.black, null, letter);
+                    G.Text(g, true, leftmargin + (i * squaresize), bottommargin,
+                        squaresize, squaresize / 2, Color.black, null, letter);
+                }
+            }
+
+            int off = Math.max(1, (int) (squaresize * 0.05));
+            int wff = off * 2;
+            Stone Empty = b.emptyStone();
+            Stone White = b.whiteStone();
+            Stone Black = b.blackStone();
+            Stone Blocked = b.blockedStone();
+            Rectangle[][] rects = new Rectangle[n][n];
+            int nwhite = 0;
+            int nblack = 0;
+            int center = n/2;
+            int edge = n-2;
+            for (int y = 0; y < n; y++)
+                for (int x = 0; x < n; x++)
+                {
+                    int xc = leftmargin + (squaresize * x);
+                    int yc = topmargin + (squaresize * y);
+                    int s2 = squaresize / 2;
+                    boolean light = (((x + y) & 1) == (isLOAP?1:0));
+                    int chipindex = light ? LIGHT_TILE_INDEX : DARK_TILE_INDEX;
+                    //Color squarecolor =  light ? white_square_color
+                    //                           : black_square_color;
+                    if(isLOAP)
+                    	{ if ((x==center)&&(y==center)) 
+                    		{ //squarecolor = loap_7_color;
+                    		  chipindex = GREEN_TILE_INDEX;
+                    		}
+                    	else if(((x==edge)&&((y==1)||(y==edge)))
+                    			|| ((x==1)&&((y==1)||(y==edge))))
+                    		{ //squarecolor=loap_3_color;	
+                    		  chipindex = YELLOW_TILE_INDEX;
+                    		}
+                    	}
+                    	
+                    rects[y][x] = new Rectangle(xc, yc, squaresize, squaresize);
+                  //  g.setColor(squarecolor);
+                  //  g.fillRect(xc, yc, squaresize, squaresize);
+                    
+                    drawImage(g, textures[chipindex], TSCALES[chipindex],
+                    		xc+s2,yc+s2,squaresize);
+                    
+                    {
+                        Stone st = b.squareContents(x, invert_y ? (n - y - 1) : y);
+
+                        if (st == Black)
+                        {	nblack++;
+                            //G.DrawAACircle(g, xc + s2, yc + s2, s2 - off - 2,
+                            //    black_stone_color, squarecolor, true);
+                            drawImage(g, images[LIGHT_TILE_INDEX], SCALES[LIGHT_TILE_INDEX],
+                            		xc+s2,yc+s2,squaresize);
+
+                        }
+                        else if (st == White)
+                        {	nwhite++;
+                            //G.DrawAACircle(g, xc + s2, yc + s2, s2 - off - 2,
+                            //    white_stone_color, squarecolor, true);
+                            drawImage(g, images[DARK_TILE_INDEX], SCALES[DARK_TILE_INDEX],
+                            		xc+s2,yc+s2,squaresize);
+                       }
+                        else if (st == Blocked)
+                        {
+                             G.fillRect(g,blocked_square_color,xc + (off * 3), yc + (off * 3),
+                                squaresize - (wff * 3), squaresize - (wff * 3));
+                        }
+                        else if (st == Empty)
+                        {
+                        }
+                        else
+                        {
+                            throw new Error("Color " + st + " not handled");
+                        }
+                    }
+                }
+            drawStone(g,countP1Rect,black_stone_color,table_color(),""+nblack,LIGHT_TILE_INDEX);
+            drawStone(g,countP2Rect,white_stone_color,table_color(),""+nwhite,DARK_TILE_INDEX);
+
+            if(isLOAP)
+            { G.setFont(g,largeBoldFont);
+              G.frameRect(g,Color.black,pointP1Rect);
+              G.Text(g,true,pointP1Rect,Color.black,null,""+b.black.loaps_points);
+              G.frameRect(g,Color.black,pointP2Rect);
+              G.Text(g,true,pointP2Rect,Color.black,null,""+b.white.loaps_points);
+            }
+            Point selected = selectedStone;
+            G.setFont(g,standardBoldFont);
+            if (selected != null)
+            {
+                int x = G.Left(selected);
+                int y = invert_y ? (n - G.Top(selected) - 1) : G.Top(selected);
+                int ox = leftmargin + (squaresize * x) + (squaresize / 2);
+                int oy = topmargin + (squaresize * y) + (squaresize / 2);
+                G.setColor(g,selected_arrow_color);
+
+                for (Enumeration<Move_Spec> moves = b.getLegalMoves(G.Left(selected), G.Top(selected));
+                        moves.hasMoreElements();)
+                {
+                    LoaMove m = moves.nextElement();
+                    x = m.toX();
+                    y = m.toY();
+
+                    if (invert_y)
+                    {
+                        y = n - y - 1;
+                    }
+
+                    int dest_x = leftmargin + (squaresize * x) + (squaresize / 2);
+                    int dest_y = topmargin + (squaresize * y) + (squaresize / 2);
+
+                    //log.println("bS " + squaresize + " " + squaresize/6);
+                    G.drawArrow(g, ox, oy, dest_x, dest_y, squaresize / 6);
+
+                    //log.println("aS " + squaresize + " " + squaresize/6);
+                }
+            }
+
+            if ((cm != null) && (cm.N() > 0) /* n<=0 are special values */)
+            {
+                int last_from_x = cm.fromX();
+                int last_to_x = cm.toX();
+                int last_from_y = cm.fromY();
+                int last_to_y = cm.toY();
+
+                if (invert_y)
+                {
+                    last_to_y = n - last_to_y - 1;
+                    last_from_y = n - last_from_y - 1;
+                }
+
+                G.setColor(g,lastmove_arrow_color);
+                G.drawArrow(g,
+                    (squaresize / 2) + leftmargin + (squaresize * last_from_x),
+                    (squaresize / 2) + topmargin + (squaresize * last_from_y),
+                    (squaresize / 2) + leftmargin + (squaresize * last_to_x),
+                    (squaresize / 2) + topmargin + (squaresize * last_to_y),
+                    squaresize / 6);
+            }
+
+            r = rects;
+ 
+    }
+    public void drawCanvas(Graphics offGC, boolean complete,HitPoint hp) // paint the board
+    {	
+        //System.out.println("Paint_board " + repaint_grid);
+        //LoaGame game = c.getGame();
+        int n = b.boardSize();
+        if ((last_board_size != n) || (last_use_grid != use_grid))
+        {
+            complete = true;
+            last_use_grid = use_grid;
+            last_board_size = n;
+        }
+
+        if (last_invert_y != invert_y)
+        {
+            complete = true;
+            last_invert_y = invert_y;
+        }
+ 
+        G.setFont(offGC,standardBoldFont);
+        drawFixedElements(offGC,complete);
+ 
+        redrawBoard(offGC,hp);
+        drawClocksAndMice(offGC, null);
+        DrawTileSprite(offGC,hp); //draw the floating tile, if present
+
+    	DrawArrow(offGC,hp);
+    	drawSprites(offGC);
+    	invalid = false;
+     }
+
+
+    private Point hitTest(int x, int y)
+    {
+        int n = rsize;
+
+        if (!invalid && (r != null))
+        {
+            for (int by = 0; by < n; by++)
+                for (int bx = 0; bx < n; bx++)
+                    if (r[by][bx].contains(x, y))
+                    {
+                        return (new Point(bx, last_invert_y ? (n - by - 1) : by));
+                    } // found it
+        }
+
+        return (null);
+    }
+
+    public void SelectStone(Point p)
+    {
+        String str = (p == null) ? "null" : U.LocationToString(G.Left(p),G.Top( p));
+        PerformAndTransmit("Select " + str);
+    }
+
+    /** factory method to create a robot */
+    public SimpleRobotProtocol newRobotPlayer() { return(new RoboPlay()); }
+
+
+    public void addStones(Stone color, String spec)
+    {
+        String str = spec;
+        Reader sr = new StringReader(str);
+        Point pt;
+
+        try
+        {
+            try
+            {
+                while ((pt = U.parsePosition(str, sr)) != null)
+                {
+                    b.make_square_be_color(G.Left(pt),G.Top( pt), (Stone_Type) color);
+                }
+            }
+            finally
+            {
+                sr.close();
+            }
+        }
+        catch (IOException err)
+        {
+        	throw G.Error(err.toString());
+        }
+    }
+
+    // loa has its own version of save game to maintain some historical
+    // ideosyncrancies of format.
+    public sgf_game save_game()
+    {
+        sgf_game game = new sgf_game();
+        sgf_node root = game.getRoot();
+        sgf_node curr = root;
+        root.set_property(gamename_property, theChat.shortNameField());
+        root.set_property(gametitle_property, theChat.nameField());
+
+        for (int i = players.length - 1; i >= 0; i--)
+        {
+            commonPlayer p = players[i];
+
+            if (p != null)
+            { //don't translate the color here
+                root.set_property("P" + i, " id " + p.trueName);
+
+                {
+                    String rank = p.getPlayerInfo(exHashtable.RANKING);
+
+                    if ((rank != null) && !("".equals(rank)))
+                    {
+                        root.set_property("P" + i, "ranking " + rank);
+                    }
+                }
+
+                {
+                    String ct = p.getPlayerInfo(exHashtable.COUNTRY);
+
+                    if ((ct != null) && !("".equals(ct)))
+                    {
+                        root.set_property("P" + i, "country " + ct);
+                    }
+                }
+            }
+        }
+
+ 
+        root.set_property("GM", LOA_SGF);
+
+        for (int i = 0; i < History.size(); i++)
+        {
+            Move_Spec m = (Move_Spec) History.elementAt(i);
+            sgf_node nn = new sgf_node();
+            curr.addElement(nn, Where.asOnly);
+            curr = nn;
+            curr.set_property("" + m.Color().getName(), m.moveString());
+
+            if (m.getComment() != null)
+            {
+                curr.set_property("C", m.getComment());
+            }
+        }
+
+        {
+            sgf_node nn = new sgf_node();
+            curr.addElement(nn, Where.asOnly);
+            curr = nn;
+        }
+
+        for (int i = players.length - 1; i >= 0; i--)
+        {
+            commonPlayer p = players[i];
+
+            if (p != null)
+            {
+                String timestring = p.getPlayerInfo("time");
+
+                if (!"".equals(timestring))
+                {
+                    timestring = " time " + timestring;
+                    curr.set_property("P" + i, timestring);
+                }
+            }
+        }
+
+        return (game);
+    }
+
+
+
+    public void ReplayMove(sgf_node no)
+    {
+        String comments = "";
+        sgf_property prop = no.properties;
+
+        while (prop != null)
+        {
+            String name = prop.getName();
+            String value = (String) prop.getValue();
+
+            if (setup_property.equals(name))
+            {
+                b.doInit(value);
+                b.setWhoseTurn(0);
+            }
+
+            if (name.equals(comment_property))
+            {
+                comments += value;
+            }
+            else if (name.equals(game_property))
+            {
+                if (!((value.equals(LOA_SGF)) || (value.toLowerCase().equals("loa"))))
+                {
+                	throw G.Error("game type " + value + " is not Expected");
+                }
+            }
+            else if (name.equals(version_property))
+            {
+                if (!value.equals("1"))
+                {
+                	throw G.Error("Game version " + value + " not handled");
+                }
+            }
+            else if ("PB".equals(name) || "PW".equals(name))
+            {
+                int player = "PB".equals(name) ? 0 : 1;
+                commonPlayer p = players[player];
+
+                if (p == null)
+                {
+                    p = players[player] = new commonPlayer(player);
+
+               }
+               if((p.trueName==null) || "".equals(p.trueName)) {  p.trueName = p.userName = value; } 
+               else
+            	  { StringTokenizer tokens = new StringTokenizer(value);
+                    String first = tokens.nextToken();
+                    parsePlayerInfo(p,first,tokens);
+            	  	}
+               // pb/pw also set time
+            }
+            else if ("W".equals(name) || "B".equals(name))
+            {
+                commonPlayer p = "B".equals(name) ? players[0] : players[1];
+                StringTokenizer tokens = new StringTokenizer(value);
+                String first = tokens.nextToken();
+
+                if(parsePlayerInfo(p,first,tokens)) {}
+                else
+                {
+                    String msg = first + " " + G.restof(tokens);
+                    b.setWhoseTurn(p.boardIndex);
+                    PerformAndTransmit(msg, false,replayMode.Replay);
+                }
+            }
+            else
+            {
+            	replayStandardProps(name,value);
+            }
+
+            prop = prop.next;
+        }
+
+        if (!"".equals(comments))
+        {
+            setComment(comments);
+        }
+    }
+
+
+}

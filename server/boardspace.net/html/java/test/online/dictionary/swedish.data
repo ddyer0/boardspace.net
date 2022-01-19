@@ -1,0 +1,3225 @@
+S 
+S #1
+K #1 #2 Containers
+V #1 #2 containrar
+S #1 Camels
+S #1 Captured, #2%
+S #1 Cards
+S #1 Gold
+S #1 Home Page
+S #1 Joining as a spectator
+K #1 Machine
+V #1 maskin
+K #1 Ship
+V #1 skepp
+K #1 center
+V #1 i mitten
+S #1 chips
+K #1 deliberately quit
+V #1 l\u00e4mnade rummet avsiktligt
+S #1 gains a card (from Jonathan the gambler)
+S #1 gets #2{ points, point, point} for unused slander
+S #1 gets 2 points for #2 influence
+S #1 gets an Artifact (from Jacko the Archivist)
+S #1 has #2 variations
+K #1 has been muted, by a consensus of the players
+V #1 har f\u00e5tt talf\u00f6rbud, i enlighet med spelarnas \u00f6nskan
+K #1 has quit and become a spectator
+V #1 har avslutat spelet och blivit \u00e5sk\u00e5dare
+K #1 invites #2 to join room #3
+V #1 bjuder in #2 till rum #3
+K #1 invites #2 to play #3 in room #4
+V #1 bjuder in #2 f\u00f6r att spela #3 i rum #4
+S #1 is cash earned per production action
+S #1 is cash earned per shipping action
+S #1 is cash earned per warehouse action
+S #1 is cash earned selling goods
+S #1 is cash reveived from auctions
+S #1 is cash spent on auctions
+S #1 is cash spent on machines and production
+S #1 is cash spent on shipping
+S #1 is cash spent on warehouses and goods
+S #1 is interest paid
+S #1 is interest payments received
+K #1 is taking over playing #2 for #3
+V #1 tar \u00f6ver spelet av #2 f\u00f6r #3
+S #1 is the effeciency of island purchases
+S #1 is the new mayor
+S #1 is the value of your goods on the island
+S #1 is your cash on hand
+S #1 is your final score
+K #1 killed due to #2
+V #1 utsl\u00e4ngd p.g.a. #2
+K #1 left
+V #1 v\u00e4nster
+S #1 points
+S #1 prisoners
+K #1 quit
+V #1 l\u00e4mnade rummet
+S #1 quitting
+K #1 repetitions
+V #1 upprepningar
+K #1 requests Joint review
+V #1 f\u00f6resl\u00e5r gemensam analys. V\u00e4lj "Gemensam analys" i menyn Meddelanden.
+S #1 reserves
+K #1 riders have crossed the first sprint line.
+V #1 \u00e5kare har passerat den f\u00f6rsta sprintlinjen.
+K #1 riders have crossed the second sprint line.
+V #1 \u00e5kare har passerat den andra sprintlinjen.
+K #1 riders have finished
+V #1 \u00e5kare har \u00e5kt i m\u00e5l
+K #1 starts Joint review
+V #1 startar gemensam analys
+S #1 victory Points
+S #1, Year #2
+S #1: Please let me undo that last move
+S #1Knowledge (thanks to Josia The Hacker)
+S #1{ Choices, Choice}
+S #1{ Points, Point, Points}
+S #1{##No Discards, Discard, Discards}
+S #1{##a possible recruit choice
+S #1{##bank is empty,bank has # chip,bank has # chips}
+S #1{##no Camels, Camel, Camels}
+S #1{##no Gold, Gold, Gold}
+S #1{##no Victory points, Victory Point, Victory Points}
+S #1{##no active recruit cards,# active recruit card,# active recruit cards}
+S #1{##no artifact cards,# artifact card,# artifact cards}
+S #1{##no authority tokens,# authority token,# authority tokens}
+S #1{##no bliss,# bliss,# bliss}
+S #1{##no cards, card, cards}
+S #1{##no chips, chip, chips}
+S #1{##no clay,# clay,# clay}
+S #1{##no discarded artifact cards,# discarded artifact card,# discarded artifact cards}
+S #1{##no energy,# energy,# energy}
+S #1{##no food,# food,# food}
+S #1{##no gold,# gold,# gold}
+S #1{##no hidden recruit cards,# hidden recruit card,# hidden recruit cards}
+S #1{##no new workers,# new worker,# new workers}
+S #1{##no prizes, prize, prizes}, total value #2
+S #1{##no recruit authority tokens,# recruit authority token,# recruit authority tokens}
+S #1{##no stones,# stone,# stones}
+S #1{##no unused dilemma cards,# unused dilemma cards,# unused dilemma cards}
+S #1{##no unused markets,# unused market,# unused markets}
+S #1{##no unused recruit cards,# unused recruit cards,# unused recruit cards}
+S #1{##no used recruit cards,# used recruit cards,# used recruit cards}
+S #1{##no water,# water,# water}
+S #1{##no workers,# worker,# workers}
+S #1{,'st,'nd,'rd,'th}
+S #2 lose #1 due to roll penalties
+S $ #1 - #2
+S (connected)
+K (unknown)
+V (ok\u00e4nt)
+K (unoccupied)
+V (ledig)
+K (vacancy)
+V (fr\u00e5nvarande)
+S + #1 turns
+S +1 #1Energy (from Gary the Electrician)
+S +1 #1Knowledge (from Lee the Gossip)
+S +1 #1Knowledge (from Maxime the Ambassador)
+S +1 #1Knowledge (from Rebecca the Peddler)
+S +1 #1Knowledge and +1 #2Morale (from Michael the Engineer)
+S +1 #1Morale (from Gary the Electrician)
+S +1 #1Morale (from Nick the Understudy)
+S +1 #1Morale (from Soulless the Plumbler)
+S +1 #1Morale (thanks to Josia the Hacker)
+S +1 #2Knowledge, +1 #1 (from Xander the Excavator)
+S +1 Artifact (from Kyle the Scavenger)
+S +1 Artifact and +1 Resource for #1 (from Steven the Scholar)
+S +1 Bliss (from Sarinee the Cloud Miner)
+S +1 Energy (from Faith the Hydroelectrician)
+S +1 Energy (from Zong the Astronomer)
+S +1 Food (from Katy the Dietician)
+S +1 Food (from Scarby the Harvester)
+S +1 Morale or -1 Knowledge
+S +1 Stone (from Maggie the Outlaw)
+S +1 Water (from Ian the Horticulturist)
+S +1 Water (from Maggie the Outlaw)
+S +1 Water (from Soulless the Plumber)
+S +1 Water (from Zong the Astronomer)
+S +1 die
+S +2 #1Knowledge +1 Artifact, +1 Tunnel (from Reitz the Archeologist)
+S +2 #1Knowledge for +1 Artifact (from Pete the Cannibal)
+S +2 #1Knowledge for +1 Artifact (from Phil the Spy)
+S +2 #1Knowledge for +2 Artifact keep 1 (from Bradley the Futurist)
+S +2 #1Knowledge to use this tunnel (from Kadan the Infiltrator)
+S +2 #1Knowledge, +1 Artifact (from Jonathan the Artist)
+S +2 #1Knowledge, +1 Resource (from Brett the Lock Picker)
+S +2 #1Morale (from Ray the Foreman)
+S +2 #2Knowledge, Extra miner movement, Extra #1 (from Dave the Demolitionist)
+S +2 Morale and -2 Knowledge
+S +2 Morale or -2 Knowledge
+S -1 #1Knowledge (from Curtis the Propagandist)
+S -1 #1Knowledge (from Sarinee the Cloud Miner)
+S -1 #1Knowledge (from Scarby the Harvester)
+S -1 #1Morale for +1 Resource (from Julia the Thought Inspector)
+S -1 #1Morale, +1 Commodity (from Lee the Gossip)
+S -1 Artifact (Book), +2 Energy +2 #1Morale (from Esme the Fireman)
+S -1 Artifact (Book), +2 Energy and -2 #1Knowledge (from Esme the Fireman)
+S -1 Artifact, +1 Energy +1 #1Morale (from Esme the Fireman)
+S -1 Artifact, +1 Energy -1 #1Knowledge (from Esme the Fireman)
+S -1 Gold to #1, +2 Cards (from Laura The Philanthropist)
+S -2 #1Knowledge (from Ray the Foreman)
+S -2 #1Knowledge instead of +2 #2Morale (from Gidget the Hypnotist)
+S -2 #1Morale +1 Artifact (from Maxime the Ambassador)
+S -2 #1Morale and +1 Artifact for #1 (from Ben the Lodologist)
+S -2 #1Morale and +1 Resource (from Rebecca the Peddler)
+S -2 #1Morale for +1 Artifact (from Sheppard the Lobotomist)
+S -2 #1Morale for +1 Resource (from Julia the Thought Inspector)
+S -2 #1Morale, +1 Artifact (from Flavio the Merchant)
+S ... or "Planet Earth"
+K ...plus #1 more
+V ...plus #1 till
+S 1 Artifact (and others +1 Artifact), or a pair of Artifacts, or 3 Artifacts
+S 1 Artifact card
+S 1 Artifact card and 1 Bliss or 1 Food
+S 1 Artifact card and 1 Resource
+S 1 Artifact card and 1 Resource or 1 Bliss
+S 1 Artifact card and 4 Food or Bliss
+S 1 Artifact card or 1 Clay
+S 1 Artifact card or 1 Gold
+S 1 Artifact card or 1 Stone
+S 1 Artifact with +1 Morale, or 1 resource, with +1 knowledge, +1 morale if you use Gold
+S 1 Balloon or 2 other Artifact cards
+S 1 Balloons Artifact card
+S 1 Bat Artifact card
+S 1 Bat or 2 other Artifact cards
+S 1 Bear Artifact card
+S 1 Bear or 2 other Artifact cards
+S 1 Bifocals Artifact card
+S 1 Bifocals or 2 other Artifact cards
+S 1 Bliss
+S 1 Bliss and 1 non-bliss Commodity
+S 1 Bliss or 1 Food
+S 1 Bliss or 1 Food or 1 Energy
+S 1 Bliss or 1 Food, plus 1 not Bliss
+S 1 Book Artifact card
+S 1 Book or 2 other Artifact cards
+S 1 Box Artifact card
+S 1 Box or 2 other Artifact cards
+S 1 Card (after preview by  Geek the Oracle)
+S 1 Card (hand limit: low Morale)
+S 1 Clay
+S 1 Clay or 1 Artifact card
+S 1 Clay or 1 Bliss
+S 1 Clay or 1 Food or 1 Bliss
+S 1 Commodity
+S 1 Commodity and 1 Balloons Artifact card
+S 1 Commodity and 1 Bat Artifact card
+S 1 Commodity and 1 Bear Artifact card
+S 1 Commodity and 1 Bifocals Artifact card
+S 1 Commodity and 1 Book Artifact card
+S 1 Commodity and 1 Box Artifact card
+S 1 Commodity or 1 Resource
+S 1 Energy
+S 1 Energy,  or click on DONE for +1 Knowledge (from Matthew the Thief)
+S 1 Food
+S 1 Food,  or click on DONE for +1 Knowledge (from Matthew the Thief)
+S 1 Gold
+S 1 Gold or 1 Artifact card
+S 1 Gold or 1 Bliss
+S 1 Gold or 1 Food or 1 Bliss
+S 1 Knowledge
+S 1 Morale
+S 1 Resource
+S 1 Resource and 4 Food or Bliss
+S 1 Resource or 1 Bliss
+S 1 Resource or 1 Food or 1 Bliss
+S 1 Stone
+S 1 Stone or 1 Artifact card
+S 1 Stone or 1 Bliss
+S 1 Stone or 1 Food or 1 Bliss
+S 1 Water
+S 1 Water (from IanTheHorticulturist)
+S 1 Water or 1 Energy (from Zong the Astronomer)
+S 1 Water or 1 Stone (from Maggie the Outlaw)
+S 1 Water, or click on DONE for +1 Knowledge (from Matthew the Thief)
+S 1 chip
+S 1 commodity (not Bliss)
+S 1 resource, with +1 knowledge, +1 morale if you use Gold
+S 2 Artifact cards
+S 2 Artifact cards, keep 1 of them
+S 2 Cards (after preview by  Geek the Oracle)
+S 2 Cards (hand limit: low Morale)
+S 2 Clay
+S 2 Commodities or Resources
+S 2 Energy
+S 2 Gold
+S 2 Knowledge
+S 2 Morale
+S 2 Stone
+S 2 resources
+S 3 Artifact cards
+S 3 Artifact cards, or a Pair of Artifact cards
+S 3 Bliss
+S 3 Cards (hand limit: low Morale)
+S 3 Commodities or Resources
+S 3 Energy
+S 3 Food
+S 3 Resources
+S 3 Water
+S 4 Bliss
+S 4 Bliss and 1 Resource
+S 4 Bliss and 1 Resource, or 5 Bliss
+S 4 Cards (hand limit: low Morale)
+S 4 Commodities or Resources
+S 4 Energy and 1 Artifact card
+S 4 Energy and 1 Clay
+S 4 Energy and 1 Clay or 1 Bliss
+S 4 Energy and 1 Clay, Bliss or Food
+S 4 Energy and 1 Stone
+S 4 Energy and 1 Stone or 1 Bliss
+S 4 Energy and 1 Stone, Bliss, or Food
+S 4 Food
+S 4 Food and 1 Artifact card
+S 4 Food and 1 Gold
+S 4 Food and 1 Gold or 1 Bliss
+S 4 Food and 1 Stone or 1 Bliss
+S 4 Food and 1 Stone or Bliss, or 5 Food
+S 4 Powwer
+S 4 Water
+S 4 Water and 1 Artifact card
+S 4 Water and 1 Clay
+S 4 Water and 1 Clay or 1 Bliss
+S 4 Water and 1 Clay, Bliss or Food
+S 4 Water and 1 Gold
+S 4 Water and 1 Gold or 1 Bliss
+S 4 Water and 1 Gold, Bliss or Food
+K 4w 5g 6b or 3 of each wins
+V 4v 5g 6s eller 3 av varje ger vinst
+S 5 Cards (hand limit: low Morale)
+S 6 Cards (hand limit: low Morale)
+K 9 men morris rules
+V move to an adjacent space, try to make a row of 3
+S <no one>
+S A draw is offered.  Accept or Decline
+K Accept $#1 from #2
+V Acceptera $#1 fr\u00e5n #2
+K Accept chat from #1
+V Acceptera chatt fr\u00e5n #1
+K Accept the loan from the bank
+V Acceptera l\u00e5n fr\u00e5n banken
+K Accept this loan financing or not
+V Acceptera denna l\u00e5nfinansiering eller inte
+K AcceptDraw
+V Accept a Draw
+K Actions
+V Funktioner
+S Active Recruit
+K Active in
+V Aktiv i
+S Add Extra Dice, or click Done to Roll
+K Add a ball
+V Placera en kula
+K Add a ball, remove a Ring
+V Placera en kula och ta bort en ring
+S Add a name
+S Add an annotation to the current board position
+S Add die
+S Add or Remove bridges, or click on Done
+S Add or remove pieces, and set up starting board position
+K Adjust
+V Justera
+S Adjust the chip spacing in stacks
+K Adjust your starting movements
+V Justera startf\u00f6rflyttningar
+S All
+K All Games
+V Alla spel
+K Allow challenges from #1
+V Till\u00e5t inbjudningar fr\u00e5n #1
+S Amanda the broker selects a #1
+S Ambush
+S Ancient Games
+K Animate
+V Animera
+S Animation Speed
+S Announce New Players
+S Any Commodity
+S Any Resource
+K Anyone can play in this room
+V Alla kan spela i detta rum
+S App Store
+K Apr #1#2#3
+V #1 Apr, #2:#3 GMT
+K Aqua
+V Turkos
+S Aquifer
+S Architect
+S Arimaa
+K Arimaa_family
+V Arimaa
+K Arimaa_variation
+V Arimaa standard
+S Arithmetic series
+K ArmyOfFrogs
+V Army of Frogs
+K ArmyOfFrogs_family
+V Army Of Frogs
+K ArmyOfFrogs_variation
+V Army of Frogs standard
+S Arrange a 10 stop trip through the London tube
+S Artifact
+S Artifact Deck
+S Artifact Discards
+S Artifact card
+S Ask your opponent to let you undo your last action
+S Assessor
+K Auction
+V Auktion
+S Auctioneer
+K Aug #1#2#3
+V #1 Aug, #2:#3 GMT
+S Authority
+S Authority token
+S Authority tokens
+S Authority zone
+S Automatic scoring failed, click for details
+S Autos
+S Available Buildings
+S Available Cards
+S Available Fields
+S Available Wines
+S Available Workers
+S Available recruits for #1
+S Award the prize
+S Azure
+S Bag
+S Banker
+S Barca
+K Barca_family
+V Barca
+K Barca_variation
+V Standard Barca
+S Barn
+S Barrel
+S Basket
+K Become a Spectator
+V Bli \u00e5sk\u00e5dare
+S Begin Scoring
+S Benefactor
+K Bid $ #1
+V Bjud $ #1
+S Bishop
+K Black
+V Svart
+S Black Palace
+S Black Palace Bonus (2 points)
+K BlackDeath
+V Black Death
+K BlackDeath_family
+V Black Death
+K BlackDeath_variation
+V Standard Black Death
+S BlackKnowledge
+S BlackMorale
+S Blacksmith
+S Bliss
+S Blooms
+S Blooms-4
+K Blooms-4_variation
+V 4x board
+S Blooms-5
+K Blooms-5_variation
+V 5x board
+S Blooms-6
+K Blooms-6_variation
+V 6x board
+S Blooms-7
+K Blooms-7_variation
+V 7x board
+K Blooms_family
+V Blooms
+K Blue
+V Bl\u00e5
+S Blue Dome
+S BlueKnowledge
+S BlueMorale
+S Board the next Train
+S Bonus Action
+S Bottler
+K BreakingAway
+V Breaking Away
+K BreakingAway-ss
+V Breaking Away-S
+K BreakingAway-ss_variation
+V stagger start
+K BreakingAwayInfoMessage
+V Side screens can be used to keep your riders movements secret,
+V ...or you can play with movements public.
+V In either case, immediately available movements are visible.
+K BreakingAway_family
+V Breaking Away
+K BreakingAway_variation
+V Breaking Away standard
+S Breeze Bar
+S Broker Buy VP
+S Broker Sell VP
+S Brown
+S Brown Palace
+S Brown Palace Bonus (3 points)
+S Build #1
+S Build Euphorian Market
+S Build Subterran Market A
+S Build Subterran Market B
+S Build Wastelander Market A
+S Build Wastelander Market B
+S Build a King
+S Build a Stack or claim a color
+S Build a Structure
+S Build a Structure or Give a Tour
+S Build a Structure with a $1 discount
+S Build a Structure with a $1 discount, or give a tour for $3
+S Build a Structure, or give a tour for $2
+S Build a building, play cards, or click on Done
+S Build a second time, or click on Done
+S Build a stack
+K Build adjacent to the man you moved
+V Bygg intill m\u00e4nniskan du flyttade
+S Build again on a different space, or click on Done
+K Build an initial stack of 2 to be placed
+V Bygg och placera en inledande h\u00f6g p\u00e5 2
+S Build or Move a man
+S Build the most stacks of colors you have claimed
+S Building
+S Buildings
+S Bumped #1 gets roll of #2 (from Julia the Thought Inspector)
+S Buy Chips
+S Buy a building with no camels
+S Buy a building with no gold
+S Buy or Sell a field
+S Buy or Sell a field for $
+K Buy the goods for $#1
+V K\u00f6p varorna f\u00f6r $#1
+S BuyChips
+S Buyer
+K C_English
+V English
+K C_German
+V German
+K C_Irish
+V Irish
+K C_Italian
+V Italian
+S Cafe
+K Calling server...
+V Ansluter till servern...
+S Camels
+S Can't contact #1, try again later
+S Cancel
+S Cannon
+K Cannon_family
+V Cannon
+K Cannon_variation
+V Cannon standard
+S Capture 50% of pieces, or 75% of value, or form a glorious victory
+K Capture 7 red balls or all of your opponent's balls
+V F\u00e5nga 7 r\u00f6da kulor eller ella motst\u00e5ndarens kulor
+K Capture a ball
+V Ta en kula
+K Capture a group of opponents
+V Er\u00f6vra en grupp motst\u00e5ndare
+K Capture a stack
+V F\u00e5nga en h\u00f6g
+S Capture all of one opponent's color
+K Capture all of your opponent's pieces
+V Er\u00f6vra alla motst\u00e5ndarpj\u00e4ser
+S Capture all your opponent's pieces
+K Capture most of your opponent's pieces
+V Er\u00f6vra s\u00e5 m\u00e5nga motst\u00e5ndarbrickor som m\u00f6jligt
+S Capture the best combinations of colors and sizes
+K Capture the most chips under your color stack
+V F\u00e5nga s\u00e5 m\u00e5nga ringar som m\u00f6jligt i dina h\u00f6gar
+S Capture the opponent king
+K Capture your opponent's tallest king stack
+V Er\u00f6vra din motst\u00e5ndares h\u00f6gsta kungsh\u00f6g.
+K Capture your opponent's town
+V Er\u00f6vra motst\u00e5ndarens stad
+K Capturing Games
+V Er\u00f6vrarspel
+S Card
+S Cards
+S Cards for #1
+S Carnac
+K Carnac_family
+V Carnac
+K Cash/Score
+V Pengar/Po\u00e4ng
+S Catastrophic! Kill a square
+S Catastrophic! Mortality phase, remove #1 of your units
+S Categories
+S Chamelion
+S Champagnes
+S Chat
+K Chat Room
+V Chattrum
+S Che
+K Che_family
+V Che
+K Che_variation
+V Che standard
+S Checkerboard overlay
+S Checkers
+K Checkers-american
+V American Checkers
+K Checkers-american_variation
+V American Checkers
+K Checkers-international
+V International Checkers
+K Checkers-international_variation
+V International Checkers
+K Checkers-turkish
+V Turkish Checkers
+K Checkers-turkish_variation
+V Turkish Checkers
+K Checkers_family
+V Checkers
+K Checkers_variation
+V Standard Checkers
+K Checkmate your opponent's general
+V S\u00e4tt motst\u00e5ndarens general schack matt
+S Checkmate your opponent's king
+S Chess
+K Chess_family
+V Chess
+K Chess_variation
+V Standard Chess
+S Chest
+S Choose 2
+S Choose Players
+S Choose a wine
+S Choose one Recruit
+S Choose only 3 players to give you a yellow or a VP, remove someone
+S Choose the god you will follow
+S Choose to play the black or white pieces
+S Choose up to 3 players to give you a yellow or a VP
+S Choose your recruits
+S Choose your starting location
+S Claim 4 stacks of 3 discs
+S Claim a color
+S Clay
+K Click Done to accept a draw
+V Klicka p\u00e5 Klar f\u00f6r att acceptera remi
+K Click Done to complete the exchange
+V Klicka p\u00e5 klar f\u00f6r att bekr\u00e4fta v\u00e4xlingen
+S Click Done to confirm removing these markers
+S Click Done to confirm removing this ring
+K Click Done to confirm swapping colors with your opponent
+V Klicka p\u00e5 Klar f\u00f6r att byta f\u00e4rg med din motst\u00e5ndare
+K Click Done to confirm swapping fleets with your opponent
+V Klicka p\u00e5 klar f\u00f6r att byta flotta med din motst\u00e5ndare
+K Click Done to decline a draw
+V Klicka p\u00e5 Klar f\u00f6r att avsl\u00e5 remierbjudande
+S Click Fire! to fire your laser
+S Click on DONE to complete placing the worker
+S Click on DONE to complete retrieval
+S Click on DONE to confirm your choice of recruits
+S Click on DONE to confirm your payment
+S Click on DONE to use Jacko The Archivist
+S Click on DONE to use Jacko The Archivist, or continue with more cards
+S Click on Done to #1
+S Click on Done to accept a draw
+S Click on Done to begin the building phase
+K Click on Done to complete the capture
+V Klicka p\u00e5 Klar f\u00f6r att bekr\u00e4fta f\u00e5ngst
+S Click on Done to confirm moving second
+S Click on Done to confirm passing
+S Click on Done to confirm paying a camel
+S Click on Done to confirm playing this card
+K Click on Done to confirm swapping
+V Klicka p\u00e5 Klar f\u00f6r att bekr\u00e4fta
+S Click on Done to confirm swapping colors
+S Click on Done to confirm swapping positions
+K Click on Done to confirm the Exchange
+V Klicka p\u00e5 Klar f\u00f6r att bekr\u00e4fta byte
+S Click on Done to confirm the new role assignments
+S Click on Done to confirm the tip direction
+K Click on Done to confirm this Dance
+V Klicka p\u00e5 Klar f\u00f6r att bekr\u00e4fta dans
+S Click on Done to confirm this card action
+S Click on Done to confirm this move
+S Click on Done to confirm using your role
+S Click on Done to confirm your choice
+S Click on Done to confirm your choices
+S Click on Done to confirm your handicap
+K Click on Done to confirm your resignation
+V Klicka p\u00e5 Klar f\u00f6r att bekr\u00e4fta
+S Click on Done to decline a draw
+K Click on Done to end the game
+V Klicka p\u00e5 Klar f\u00f6r att avsluta spelet
+K Click on Done to end the game (you lose)
+V Klicka p\u00e5 klar f\u00f6r att avsluta spelet (du f\u00f6rlorar)
+K Click on Done to end the game as a Draw
+V Klicka p\u00e5 Klar f\u00f6r att bekr\u00e4fta remi.
+S Click on Done to end the game as a Loss
+K Click on Done to finish all captures
+V Klicka p\u00e5 Klar f\u00f6r att avsluta alla er\u00f6vringar
+S Click on Done to finish placement
+S Click on Done to finish placement, or Place a slander chip
+S Click on Done to offer a draw
+S Click on Done to offer to end the game now
+S Click on Done to resume normal playing
+S Click on Done to send cubes to the carvan
+S Click on Done to start final score resolution
+K Click on Gipf pieces to change their capture status
+V Klicka p\u00e5 Gipf-brickorna f\u00f6r att \u00e4ndra deras er\u00f6vringsstatus
+S Click on the end of the line to move
+K Click on the line to be captured
+V Klicka p\u00e5 linjen som ska er\u00f6vras
+K Click on the placed piece to rotate it, or Click Done
+V Klicka p\u00e5 den placerade brickan f\u00f6r att rotera den, eller klicka p\u00e5 Klar
+S Click to select a card
+S Click to use this recruit ability
+S Client version #1
+S Close one region until your next turn
+S Closed
+S Cloud Mine
+S Coin Flip
+S Coin flip from #1 : #2
+S Collect #1 as your benefit
+S Collect all of one color, or some of each and 4 of 4 colors
+S Collect the most stations
+S Collecting more benefits
+K Colorblind
+V Svartvit
+S Colorito
+K Colorito-10
+V Colorito 10x10
+K Colorito-10_variation
+V 10x10 board
+K Colorito-6
+V Colorito 6x6
+K Colorito-6_variation
+V 6x6 board
+K Colorito-7
+V Colorito 7x7
+K Colorito-7_variation
+V 7x7 board
+K Colorito-8
+V Colorito 8x8
+K Colorito-8_variation
+V 8x8 board
+K Colorito_family
+V Colorito
+K Colorito_variation
+V Standard Colorito
+K Combine two stacks or capture another stack
+V Kombinera tv\u00e5 h\u00f6gar eller f\u00e5nga en ny h\u00f6g
+S Commit to the actions taken so far
+S Commodities
+S Commodity
+S Complete a capture
+K Complete a push or pull, step #1
+V Bekr\u00e4fta drag eller tryck, g\u00e5 till #1
+K Complete a split or merge
+V F\u00e4rdigst\u00e4ll delning eller blandning
+K Complete the merge
+V F\u00e4rdigst\u00e4ll blandning
+K Complete the pull, step #1
+V Bekr\u00e4fta drag, g\u00e5 #1
+K Complete the push, step #1
+V Bekr\u00e4fta tryck, g\u00e5 #1
+K Complete the split
+V F\u00e4rdigst\u00e4ll delning
+K Confirm Dropping this rider
+V Bekr\u00e4fta borttagning
+S Confirm using your recruit ability
+S Confirm your benefit selection
+S Confirm your choice of recruits
+S Confirm your decision to fight the Opressor
+S Confirm your decision to join the Establishment
+S Confirming card selection
+K Connect all your frogs (at least 7) in one cluster
+V Samla alla dina grodor (minst 7) i en flock
+S Connect all your pieces
+K Connection Games
+V Anslutningsspel
+K Connection error
+V Kan inte ansluta
+S Consider the bids, hit Done to continue
+S Container
+S Container Player info for #1
+K Container-First
+V Container - Original
+K Container-First_variation
+V Container med originalregler
+K ContainerGameInfoMessage
+V Side screens are recommended, to show your cash and container valuations
+V ...and of course, to make secret bids
+K Container_family
+V Container
+K Container_variation
+V Container med andra leveransregler
+K Continue Capturing
+V Forts\u00e4tt ta kulor
+S Continue collecting the same color, or click on Done
+S Continue deploying the stack
+K Continue merging or click Done
+V Forts\u00e4tt blandning eller klicka p\u00e5 klar
+S Continue moving
+S Continue with additional captures
+S Contractor
+S Control the center at the end of the game
+K Cookie-Disco
+V Cookie Disco
+K Cookie-Disco-crawl
+V Cookie Disco + Expansion
+K Cookie-Disco-crawl_variation
+V + Crawl Cookie
+K Cookie-Disco_variation
+V standard Cookie Disco
+K CookieDisco_family
+V Cookie Disco
+S Coordinator
+S Cost: #1
+S Cpu speed test
+S Craftsman
+S Crossfire
+K Crossfire_family
+V Crossfire
+K Crossfire_variation
+V standard Crossfire
+S Cubes
+S Current Directory:
+K Dec #1#2#3
+V #1 Dec, #2:#3 GMT
+S Deck
+K DeckDescriptionStringKey
+V deck contains 8 brown,7 pink, 6 blue, 5 green, 5 yellow cards
+V with borders 5 brown, 7 pink, 7 blue, 6 green, 6 yellow
+K Decline the loan
+V Avb\u00f6j l\u00e5net
+K DeclineDraw
+V Decline a Draw
+S Delete
+S Deploy the stack, or click on Done
+S Designate #1 links to be closed
+K Designate GIPF pieces to capture, or place a GIPF chip
+V V\u00e4lj Gipf-brickor att er\u00f6vra, eller placera en Gipf-bricka
+K Designate GIPF pieces to capture, or place a chip
+V V\u00e4lj Gipf-brickor att er\u00f6vra, eller placera en bricka
+K Designate a row to capture
+V V\u00e4lj en rad att er\u00f6vra
+K Designate a row to capture before your turn
+V V\u00e4lj en rad att er\u00f6vra innan ditt drag
+S Designate a zone to clear
+S Designate dead stones, click on Done when finished
+S Designate dead stones, or click on Done to end the game
+S Designate one region as the Pogrom Death Zone
+S Designer
+S Destroy a Structure
+S Destroy a strucure
+S Diagonal Blocks
+S Diagonal Blocks Duo
+K Diagonal Blocks Duo_family
+V Diagonal Blocks Duo
+K Diagonal Blocks_family
+V Diagonal Blocks
+K Diagonal-Blocks
+V Diagonal Blocks
+K Diagonal-Blocks-Duo
+V Diagonal Blocks Duo
+K Diagonal-Blocks-Duo_variation
+V 2 players
+K Diagonal-Blocks_variation
+V 3-4 players
+S Dice
+S Die 1
+S Die 2
+S Die 3
+S Die 4
+S Die 5
+S Die 6
+S Dilemma
+S Dipole
+K Dipole-s
+V Dipole
+K Dipole-s_variation
+V Dipole p\u00e5 8x8 med en symmetrisk startposition
+K Dipole_family
+V Dipole
+K Dipole_variation
+V Dipole p\u00e5 8x8 med en asymmetrisk startposition
+S Discard #1
+S Discard #1{##,# Card,# Cards}
+S Discard 1 Card
+S Discard 1 grape and 1 wine
+S Discard 1 grape and 1 wine for $3 and 3VP
+S Discard 1 grape for $3 and 1VP
+S Discard 1 grape for 2VP
+S Discard 1 wine and 3 visitor cards for 3VP
+S Discard 2 cards and draw 1 of each type of card
+S Discard 2 cards for $4
+S Discard 2 grapes for 3VP
+S Discard 2 green cards
+S Discard 2 visitor cards for 2VP
+S Discard 4 cards for 3VP
+S Discard Grapes
+S Discard This Game
+S Discard Wine
+S Discard Wine and Grape
+S Discard Wine or Grape
+S Discard a green card
+S Discard down to 7 cards
+S Discard one
+S Discard one of these cards (Oracle)
+S Discard this card
+S Discards
+S Display Only
+S Distribute roles
+S Distribute roles to your opponents
+K Done
+V Klar
+S Done Adjusting
+S Done selling cards
+S Draw #1
+S Draw Green Cards
+S Draw Purple Cards
+K Drop a tile to enlarge the board
+V Sl\u00e4pp en bricka p\u00e5 att f\u00f6rstora br\u00e4det
+K Drop bunny chip
+V Placera en av bunnyspelarens brickor
+S Drop the Disc
+S Drop the displaced chip anywhere except the top row
+S Drop the displaced chip anywhere expept the bottom row
+K Drop the moving stack back on the rack
+V Flytta h\u00f6gen tillbaka p\u00e5 st\u00e4llningen
+K Drop the ring
+V Sl\u00e4pp ringen
+K Drop this rider from the Race
+V Ta bort \u00e5karen fr\u00e5n loppet
+K Drop your piece onto the board or any of your stacks
+V Sl\u00e4pp brickan p\u00e5 br\u00e4det eller n\u00e5gon av dina h\u00f6gar
+K Drop your piece onto the board or any stack
+V Sl\u00e4pp brickan p\u00e5 br\u00e4det eller en h\u00f6g
+S Dvonn
+K Dvonn_family
+V Dvonn
+K Dvonn_variation
+V Dvonn standard
+K Eat
+V \u00c4t
+K Edit
+V \u00c4ndra
+S Election
+S Election Next Year
+S Email Game Record
+S EndSale
+S Energy
+S English influence
+S Entertainer
+S Entrapment
+S Entrapment-6x7
+K Entrapment-6x7_variation
+V 6x7 board
+K Entrapment-7x7
+V Entrapment
+K Entrapment-7x7_variation
+V 7x7 board
+S Entrapment-7x7x4
+K Entrapment-7x7x4_variation
+V 7x7 with 4 roamers
+K Entrapment_family
+V Entrapment
+S Equality
+K Error
+V Fel
+S Error reading directory #1
+S Error reading file #1
+S Eruption
+S Escape forced position
+S Escape forced position, or move a barrier
+S Escape forced position, or place a barrier
+K Escape from check
+V Fly undan schack
+S Escape! Move an animal out of danger
+S Euphoria
+K Euphoria2
+V Euphoria v2
+K Euphoria2_family
+V Euphoria with v2 recruits
+K Euphoria2_variation
+V Euphoria V2
+K EuphoriaInfoMessage
+V side screens are only needed to conceal cards
+V ...You could play open or just look away.
+K Euphoria_family
+V Euphoria
+K Euphoria_variation
+V Euphoria
+S Euphorian
+S Euphorian Authority
+S Euphorian Market
+S Euphorian Market A
+S Euphorian Market B
+S Euphorian Tunnel
+S Euphorians only: play here to get 3 Water
+K Euro Games
+V Eurospel
+S Every time you roll a 1, lose a commodity or a resource.
+S Every time you roll a 2, lose a commodity or a resource.
+S Every time you roll a 3, lose a commodity or a resource.
+S Every time you roll a 4, lose a commodity or a resource.
+S Every time you roll a 5, lose a commodity or a resource.
+S Every time you roll a 6, lose a commodity or a resource.
+K Exchange Prisoners
+V V\u00e4xla f\u00e5ngar
+K Exchange an off-board piece for a new tile
+V Byt en pj\u00e4s utanf\u00f6r br\u00e4det mot ny bricka
+S Exit at the next stop
+S Exporter
+S Extra Artifact cancelled by Registry of Personal Secrets
+S Extra Artifact peek from Geek The Oracle
+S Extra bliss cancelled by Registry of Personal Secrets
+S Extra energy cancelled by Registry of Personal Secrets
+S Extra food cancelled by Registry of Personal Secrets
+S Extra movement, Move a unit toward the west 
+S Extra water cancelled by Registry of Personal Secrets
+S Exxit
+K Exxit-Beginner
+V Exxit-nyb\u00f6rjare
+K Exxit-Beginner_variation
+V spela Exxit med 19 brickor
+K Exxit-Blitz
+V Exxit-blixt
+K Exxit-Blitz_variation
+V spela Exxit med 29 brickor
+K Exxit-Pro
+V Exxit-expert
+K Exxit-Pro_variation
+V spela Exxit-Exxit
+K Exxit_family
+V Exxit
+K Exxit_variation
+V spela Exxit med 39 brickor
+S Fails
+S Fall
+S Fanorona
+K Fanorona_family
+V Fanorona
+K Fanorona_variation
+V Fanorona standard
+S Farm
+S Farmer
+K Farmer configuring board
+V Bonden \u00e4ndrar p\u00e5 br\u00e4det
+K Farmer moving scared
+V Bonden flyttar skr\u00e4mda
+K Farmer select
+V Val av bonde
+K Feb #1#2#3
+V #1 Feb, #2:#3 GMT
+S Field
+S Fight the Opressor
+S Fill 1 wine order
+S Fill 1 wine order, + 1VP
+S Fill Wine Orders
+S Fill a wine order
+K Final Scores:
+V Slutst\u00e4llning:
+K Finished Capturing, Click Done
+V Alla kulor tagna, klicka p\u00e5 Klar
+S Fire!
+K Flagship can not capture
+V Flaggskeppet kan inte er\u00f6vra
+K Flagship can participate in captures
+V Flaggskeppet kan delta i er\u00f6vringar
+K Flagship is captured normally
+V Flaggskeppet er\u00f6vras p\u00e5 vanligt s\u00e4tt
+K Flagship must Reach the corner to win
+V Flaggskeppet m\u00e5ste n\u00e5 h\u00f6rnet f\u00f6r vinst
+K Flagship must be surrounded on all 4 sides
+V Flaggskeppet m\u00e5ste omringas p\u00e5 alla 4 sidor
+K Flagship wins at any edge square
+V Flaggskeppet m\u00e5ste n\u00e5 en kantruta f\u00f6r vinst
+S Flip Field
+K Flip a tile, or Move Split or Merge a stack
+V V\u00e4nd p\u00e5 en bricka, eller flytta, dela eller blanda en h\u00f6g.
+S Food
+S For 3 or more players
+S For the next turn, alter any virulence and mortality by 1 point
+S For the next turn, alter any virulence and motality by up to 2 and -2 points
+S For the next turn, alter any virulence or mortality by 1 point
+S Form a Syzygy - three planets in a row
+K Form a closed shape in your color
+V Forma en sluten form i din f\u00e4rg
+S France
+S Free
+S Free Energy
+S Free Food
+S Free Water
+S Free if Tunnel Open
+S Freeze
+K Frogs
+V Army of Frogs
+K From #1
+V Fr\u00e5n #1
+S From_Here
+K GainDollarOrStructure
+V Gain $1 or
+V  1 Structure Card
+S Gained 2 cards instead of 1 (from Jonathan the Gambler)
+S Gained 3 cards instead of 1 (from Jonathan the Gambler)
+S Gained no cards instead of 1 (from Jonathan the Gambler)
+K Game
+V Spel
+K Game Over
+V Spelet \u00e4r slut
+S Game Over!  Final scores 
+K Game Selector
+V spelv\u00e4ljare
+K Game in progress...
+V P\u00e5g\u00e5ende spel...
+K Game timed out.  Session has ended.
+V Spelet gjorde timeout. Sessionen avslutades.
+K Game won by #1
+V #1 vann spelet
+S Games A-Z
+K Games do not affect your Ranking
+V Spelen p\u00e5verkar inte rankingen
+S Games for #1 Players
+S Generator
+S Geometric series
+S German influence
+S Germany
+K Gipf
+V Gipf Basic
+K Gipf Games
+V Gipf-serien
+K Gipf-standard
+V Gipf Standard
+K Gipf-standard_variation
+V Gipf Standard (med Gipf-brickor)
+K Gipf-tournament
+V Gipf Expert
+K Gipf-tournament_variation
+V Gipf Expert (obegr\u00e4nsat antal Gipf-brickor)
+K Gipf_family
+V Gipf
+K Gipf_variation
+V Gipf Basic (inga Gipf-brickor)
+S Give Cards
+S Give a tour
+S Give a tour for Cash
+S Give the governor #1 a yellow card
+S Go
+K Go-11
+V Go 11x11
+K Go-11_variation
+V 11x11 board
+K Go-13
+V Go 13x13
+K Go-13_variation
+V 13x13 board
+K Go-19
+V Go
+K Go-19_variation
+V 19x19 board
+K Go-9
+V Go 9x9
+K Go-9_variation
+V 9x9 board
+K Go_family
+V Go
+K GoalExplanation2
+V The goal of the game is:
+V #1
+S Gobblet
+K Gobblet_family
+V Gobblet
+K Gobblet_variation
+V Spela med m\u00f6jlighet att tjuvkika
+K Gobbletm
+V GobbletM
+K Gobbletm_variation
+V Ingen tjuvkikning, minnet g\u00e4ller
+S Gold
+S Gounki
+K Gounki_family
+V Gounki
+K Gounki_variation
+V standard Gounki
+S Governess
+S Governor
+S Green
+S Green Dome
+S GreenKnowledge
+S GreenMorale
+S Grey Palace
+S Grey Palace Bonus (1 point)
+S Grower
+S Gyges
+K Gyges-advanced
+V Gyges (advanced rules)
+K Gyges-advanced_variation
+V with replace-and-drop
+K Gyges-beginner
+V Gyges (beginner rules)
+K Gyges-beginner_variation
+V without replace-and-drop
+K Gyges_family
+V Gyges
+K Gyges_variation
+V standard Gyges
+S Handyman
+S Harmonic series
+S Harvest 1 field
+S Harvest 1 field, and get $1
+S Harvest 2 Fields
+S Harvest Fields
+S Harvest a field or Uproot a vine
+S Harvester
+S Harvesting
+S Heads
+S Hex
+S Hex-15
+K Hex-15_variation
+V Hex 15x15
+S Hex-19
+K Hex-19_variation
+V Hex 19x19
+K Hex_family
+V Hex
+K Hex_variation
+V Hex 11x11
+S Hidden Recruit
+S Hidden Recruits
+K Hide
+V G\u00f6m dig
+S Hide the chat window
+S High Bid
+K Hint
+V Tips
+S Hive
+S Hive-L
+S Hive-LM
+K Hive-LM_variation
+V Hive with nyckelpiga och mygga
+K Hive-L_variation
+V Hive med nyckelpiga
+S Hive-M
+K Hive-M_variation
+V Hive med mygga
+S Hive-P
+S Hive-PL
+S Hive-PLM
+K Hive-PLM_variation
+V + Pillbug, Ladybug, Mosquito
+K Hive-PL_variation
+V + Pillbug, Ladybug
+S Hive-PM
+K Hive-PM_variation
+V + Pillbug, Mosquito
+K Hive-P_variation
+V + Pillbug
+K Hive-Ultimate
+V Hive Ultimate
+K Hive-Ultimate_variation
+V +- anything
+K Hive_family
+V Hive
+K Hive_variation
+V Hive standard
+S Hoist
+S Home Country
+S Homesteader
+S Horticulturist
+K I will make the loan
+V Jag tar l\u00e5net
+S I will play with the black pieces
+S I will play with the white pieces
+S Icarite
+S Icarite Authority
+K Ignore chat from #1
+V Ignorera chatt fr\u00e5n #1
+K Illegal - this move would form an illegal pattern of lines
+V Otill\u00e5tet - detta skulle bilda ett otill\u00e5tet m\u00f6nster av linjer
+K Illegal due to repetition, try something else or resign
+V Otill\u00e5tet p.g.a. dragupprepning
+K Illegal move due to repetition - try something else
+V \u00c5till\u00e5tet drag p.g.a. dragupprepning
+S Immediately roll and place the new worker (from Chase the Miner)
+S Immobilize your opponent
+S Immobilize your opponent's roamers
+S Immobilizer
+S Infection Attempts
+S Infection phase (spread only, no attacks) #1 infection attempts remaining
+S Infection phase, #1 infection attempts remaining
+S Info for #1
+S Information for #1
+S Innkeeper steal #1
+K Invite
+V Bjud in #1 till rum #2
+K Invite players to this room
+V Bjud in spelare till detta rum
+S Irish influence
+K Island
+V \u00d6
+S Italian influence
+K Jan #1#2#3
+V #1 Jan, #2:#3 GMT
+K Join
+V G\u00e5 in i
+S Join #1
+K Join only if Invited
+V Endast inbjudna kan spela
+S Join the Establishment
+K Joint Review
+V Gemensam analys
+S Judge
+K Jul #1#2#3
+V #1 Jul, #2:#3 GMT
+K Jun #1#2#3
+V #1 Jun, #2:#3 GMT
+S Just Win!
+S Kamisado
+K Kamisado_family
+V Kamisado
+K Kamisado_variation
+V Kamisado
+S Keep all three types of chip visible
+S Khet
+K Khet-classic
+V Khet 2.0 - Classic
+K Khet-classic_variation
+V Classic position
+K Khet-ihmotep
+V Khet 2.0 - Ihmotep
+K Khet-ihmotep_variation
+V Ihmotep position
+K Khet_family
+V Khet
+K Khet_variation
+V Khet
+S King
+S Knight
+K Knock 5 of your opponent's dice into the gutter
+V Knuffa 5 av motst\u00e5ndarens t\u00e4rningar i r\u00e4nnan
+S Knockabout
+K Knockabout_family
+V Knockabout
+K Knockabout_variation
+V Knockabout standard
+S Knowledge
+S Kulami
+K Kulami-R
+V Kulami Rectangular
+K Kulami-R_variation
+V 8x10 board
+K Kulami_family
+V Kulami
+K Kulami_variation
+V 8x8 board
+S LIMBO
+K LOA
+V Lines of Action
+K LOA-12
+V Loa 12x12
+K LOA-12_variation
+V 12x12 board
+S LOAP
+K LOAP_variation
+V Spela LOA programt\u00e4vlingvariant
+K LOA_family
+V Lines of Action
+K LOA_variation
+V Lines of Action standard 8x8
+S Label Factory
+S Laborer
+K LargeCellarDescription
+V large wine cellar
+V needed for 7+ value wines
+S Last
+S Last Turn
+S Last Turn before Scoring
+S Last_5
+S Last_Branch
+K Launching...
+V Startar...
+S LeHavre
+K LeHavre_family
+V LeHavre
+K LeHavre_variation
+V standard LeHavre
+K Let The Robot Play
+V L\u00e5t boten spela
+K Let someone else make the loan
+V L\u00e5t n\u00e5gon annan ta l\u00e5net
+S Load Game
+K Load more goods from the Dock
+V Lasta mer varor fr\u00e5n kajen
+K Load the goods you will produce
+V Fyll p\u00e5 varor du kommer att producera
+K Load the your warehouse from the seller
+V Lasta magasinet fr\u00e5n s\u00e4ljaren
+K Load your ship from the Dock
+V Lasta ditt skepp fr\u00e5n kajen
+K Loan Card
+V L\u00e5nekort
+K Loan for #1 from #2
+V #1 l\u00e5nar av #2
+K Loan for #1 from the bank
+V L\u00e5n f\u00f6r #1 fr\u00e5n banken
+K Loans
+V L\u00e5n
+S Lobby
+K Lobby shutdown...
+V Lobbyn st\u00e4nger...
+S Local Games
+S Log in as a guest
+S Log in to #1
+S Login
+S LongLeaper
+S Lose 1 #1Morale (from Brian the Viticulturist)
+S Lose 1 Artifact (from Brian the Viticulturist)
+S Lose a #2 to knowledge check, total was #1
+S Lose an extra #1Morale due to the Cafeteria of Nameless Meat
+S Lyngk
+S Lyngk-6
+K Lyngk-6_variation
+V 6-Stack Lyngk
+K Lyngk_family
+V Lyngk
+K Lyngk_variation
+V Standard Lyngk
+K Machines
+V Maskiner
+S Magnet
+K Magnet_family
+V Magnet
+K Magnet_variation
+V Standard Magnet
+S Majorities
+S Majorities-3
+K Majorities-3_variation
+V 3x board
+S Majorities-5
+K Majorities-5_variation
+V 5x board
+S Majorities-7
+K Majorities-7_variation
+V 7x board
+K Majorities_family
+V Majorities
+S Make #1{##No Wine,# Wine, # Wines}
+S Make 1 blush and/or 1 champagne for 1VP
+S Make Directory
+S Make Wines
+K Make a Dance move
+V G\u00f6r ett dansdrag
+K Make a capturing move
+V G\u00f6r ett er\u00f6vrande drag
+S Make a sealed bid
+S Make a second trade, or click on Done
+K Make an addional capturing move, or click on Done
+V G\u00f6r ytterligare ett er\u00f6vrande drag, eller klicka p\u00e5 Klar
+K Make an addional move, or click on Done
+V G\u00f6r ett ytterligare drag, eller klicka p\u00e5 Klar
+S Make an open bid
+S Make only Blush Wine or Champaign
+S Make the first move, or click on Done to move second
+S Make the first move, or pass and move second
+K Make the first move, or swap and move second
+V G\u00f6r det f\u00f6rsta draget, eller byt f\u00e4rg och g\u00f6r det andra draget
+S Make up to 1 wine
+S Make up to 2 Wines
+S Make up to 2 wines and fill a wine order
+S Make up to 2 wines value 4 or greater, no cellars required
+S Make up to 2 wines, #1 gets green and yellow cards if you do
+S Make up to 2 wines, 1VP for each champagne you make
+S Make up to 3 wines
+S Make up to 3 wines, 1VP for each type of wine you make
+K Make your first move, or swap fleets
+V G\u00f6r ditt f\u00f6rsta drag eller byt flotta
+S Make your first trade of VP, Grapes, $ and Cards
+S Mama Cards
+K Mancala_family
+V Mancala
+S Map
+K Map of Player Locations
+V Kartrum
+K Mar #1#2#3
+V #1 Mar, #2:#3 GMT
+S Market Cost
+S Marketer
+S Maroon
+S Master
+S Master Games
+K Master ranked players can play
+V M\u00e4stare kan spela i detta rum
+K Match words:
+V Matcha ord:
+S Max wine value is #1
+K Maximize your profits
+V Maximera vinsterna
+K May #1#2#3
+V #1 Maj, #2:#3 GMT
+S Mbrane
+K Mbrane-Simple
+V Simplified Mbrane, without influence
+K Mbrane-Simple_variation
+V Simplified Mbrane
+K Mbrane_family
+V Mbrane
+K Mbrane_variation
+V Standard Mbrane
+S Medina
+K Medina-v2
+V Medina 2'nd Edition
+K Medina-v2_variation
+V + well and tea cards
+K MedinaInfoMessage
+V side screens are only needed to hide remaining buildings
+V You could play open.
+K Medina_family
+V Medina
+K Medina_variation
+V Medina standard
+K Medium Cellar
+V medium wine cellar
+V needed for 4+ value wines
+S Meeple
+K Members
+V Medlemmar
+K Memory is low
+V Brist p\u00e5 minne
+S Menhir Size
+K Merge this stack, or click Done
+V Blanda den h\u00e4r h\u00f6gen, eller klicka p\u00e5 Klar
+K Message:
+V Till alla:
+K MessageTo:
+V Till #1:
+K Messages
+V Meddelanden
+S Micropul
+K Micropul_family
+V Micropul
+K Micropul_variation
+V standard Micropul
+S Miner
+S Minimum wine value is 4
+S Miraculous cure!  remove #1 units
+S Mixer
+K Modx
+V Mod X
+K Modx_family
+V Mod X
+K Modx_variation
+V Standard Mod X
+S Mogul
+K MogulInfoMessage
+V side screens are keep your stack of chips secret
+K Mogul_family
+V Mogul
+K Mogul_variation
+V standard Mogul
+S Morale
+S Morelli
+K Morelli_family
+V Morelli
+K Morelli_variation
+V Standard Morelli
+S Morris
+K Morris-9
+V Nine Men Morris
+K Morris-9_variation
+V Standard 9 Men Morris
+K MorrisMove a man
+V Move a man
+K Morris_family
+V Nine Men Morris
+K Morris_variation
+V Standard 9 Men Morris
+S Mortality phase, click on "Roll" to stop the dice
+S Mortality phase, remove #1 units
+S Motivator
+K Move ##1
+V Drag ##1
+K Move 6 ships to the center
+V Flytta 6 skepp till mitten
+K Move A Stack
+V Flytta en h\u00f6g
+S Move Pieces:
+K Move a Cyclist
+V Flytta en cyklist
+K Move a Frog
+V Flytta en groda
+K Move a Man
+V Flytta en m\u00e4nniska
+K Move a Man up to level 3
+V Flytta upp en m\u00e4nniska till niv\u00e5 3
+S Move a Planet
+K Move a Rabbit to the last row
+V Flytta en kanin till sista raden
+S Move a Stack or Start deploying at Stack
+K Move a Tower
+V Move any Tower
+S Move a checker
+S Move a chip
+S Move a cookie
+S Move a cube to an adjacent district, or click on Done
+K Move a piece
+V Flytta en pj\u00e4s
+S Move a piece from the row closest to the bottom of the board
+S Move a piece from the row closest to the top of the board
+S Move a piece into the row closest to the bottom of the board
+K Move a piece one space
+V Flytta en pj\u00e4s ett steg
+S Move a piece or a swap two tiles
+S Move a piece or rotate a piece
+S Move a piece toward the center
+S Move a piece, or drop a captured piece
+K Move a piece, step #1
+V Flytta en pj\u00e4s, g\u00e5 #1
+K Move a ring
+V Flytta en ring
+S Move a roamer
+S Move a roamer or move a barrier
+S Move a roamer, or place a barrier
+K Move a runner
+V Flytta en l\u00f6pare
+K Move a runner from a home space
+V Flytta en l\u00f6pare fr\u00e5n ett eget utrymme
+K Move a ship
+V Flytta ett skepp
+K Move a ship to the board
+V Flytta ett skepp till br\u00e4det
+S Move a shooter, or place a stone
+K Move a soldier, or fire a cannon
+V Flytta en soldat, eller skjut med en kanon
+S Move a stack, or add a reserve piece
+S Move a tower to your opponent's home row
+K Move a volcano cap
+V Flytta ett Volcanolock
+S Move all your chips across the board
+S Move an animal
+S Move any piece to the opposite goal space
+S Move one of your pieces
+K Move one ship
+V Flytta ett skepp
+K Move the flipped stack
+V Flytta den v\u00e4nda h\u00f6gen
+S Move the line of birds
+S Move the pawn
+S Move the pawn, or swap positions
+S Move the supervisor
+S Move the supervisor up to 3 extra spaces when you move the supervisor
+S Move without ascending
+S Move your #1 tower
+S Move your first Man, or click on Done to allow the other player to place first
+S Move your meeple
+S Move your meeple, or Carry a disk
+S Move your opponent's man, or click on Done
+K Move your runners to the opposite side
+V Flytta dina l\u00f6pare till den motsatta sidan
+K Move, Split or Merge a stack
+V Flytta, dela eller blanda en h\u00f6g
+S Movement phase, #1 movement points remaining
+S Movement phase, (your units only) #1 movement points remaining
+S Movement phase, Move a unit toward Jerusalem
+K Moves are coming in
+V Nya drag har inkommit
+S Must be a real email address
+S Mutton
+K Mutton-shotgun
+V Mutton med gev\u00e4r
+K Mutton-shotgun_variation
+V Mutton - bonden anv\u00e4nder gev\u00e4r
+K Mutton_family
+V Mutton
+K Mutton_variation
+V Mutton standard
+S N-in-a-row Games
+S New Recruit
+S New Worker
+S New worker and gain morale
+S New worker and lose knowledge
+K News
+V Mytt
+S Next Year
+S Nimbus Loft
+K No Challenges
+V Inga inbjudningar
+K No Chat
+V Ingen chatt
+S No Handicap
+S No Komi
+S No QE
+K No Recent Games
+V Inga nya spel
+S No Robot
+S No Robot speed limits
+S No Robot, Random player order
+K No challenges from #1
+V Till\u00e5t ej inbjudningar fr\u00e5n #1
+S No goal has been set
+S No loss of #1Morale (from Yordy the Demotivator)
+S No moves, click on Done to resolve the score
+S No piece movement rule yet
+K No players.
+V Inga spelare.
+K No spectators.
+V Inga \u00e5sk\u00e5dare.
+S No tile swap rule yet
+S No, don't Undo
+S No, keep playing
+K No, let the bank fund it
+V Nej, l\u00e5t banken finansiera l\u00e5net
+S Noble
+S None
+S Not #1
+S Not a valid wine
+S Not supported by your client
+K Not supported by your client_variation
+V most likely, it will be available soon
+S Nothing playing now
+K Nov #1#2#3
+V #1 Nov, #2:#3 GMT
+K Occupy 3 enemy bases
+V Ockupera 3 fiendebaser.
+K Oct #1#2#3
+V #1 Okt, #2:#3 GMT
+S Octiles
+K Octiles_family
+V Octiles
+K Octiles_variation
+V Octiles standard
+K Offer a price for the goods on the ship
+V L\u00e4gg ett bud p\u00e5 varorna p\u00e5 skeppet
+K OfferDraw
+V Offer a Draw
+S Ok! I'm ready to log in
+S Ok, Start the resolution phase
+K Onboard a piece, Move a stack, or Exchange
+V Borda en bricka, flytta en h\u00f6g eller v\u00e4xla
+K One Day In London_family
+V One Day in London
+S Oneday
+K Oneday_family
+V One Day In London
+K Oneday_variation
+V Standard One Day in London
+K Onedayinlondon
+V One Day In London
+K Onedayinlondon_variation
+V Standard One Day in London
+K Only the flagship can occupy the center square
+V Bara flaggskeppet kan ta mittrutan
+S Optimize the view for Face to Face players
+S Optimize the view for Side by Side players
+S Optionally move a piece, and then push a piece
+S Optionally move one or two pieces, and then push a piece
+K Options
+V Inst\u00e4llningar
+S Orange
+S Orange Palace
+S Orange Palace Bonus (4 points)
+S Out of the auction
+S Overseer
+S Palago
+K Palago_family
+V Palago
+K Palago_variation
+V Palago standard
+S Pan-Kai
+K Pan-Kai_family
+V Pan-Kai
+K Pan-Kai_variation
+V 2 players
+S Papa Cards
+K Pass
+V Passa
+S Pass to #1
+S Pass to end the game, or continue playing
+S Passwords must be 6 - 25 characters
+S Pawn
+S Pay
+S Pay #1 
+S Pay #1 for +2 Morale, or click on DONE to continue and -1 Morale
+S Pay #1, or click on DONE to continue with no penalty (from Yordy the Demotivator)
+S Pay Camel
+S Pay Camels
+S Pay Gold
+S Pay a camel or click Done to send the cube to the caravan
+S Pay a chip, or take the pot
+S Pay to Join the Establishment
+S Pay to fight the Opressor
+S Pay up to 3 players $2 each, gain 1VP for each
+S Pay with #1Knowledge instead of Energy (from Matthew the Thief)
+S Pay with #1Knowledge instead of Food (from Matthew the Thief)
+S Pay with #1Knowledge instead of Water (from Matthew the Thief)
+S Pay with Artifact, gain #1Morale (from Flartner the Luddite)
+S Pay with Energy, +1 #1Morale -1 #2Knowledge (from Jefferson the Shock Artist)
+K PayChip
+V Pay Chip
+S Penthouse
+K PerfectRoll
+V #1{##,##Once,##Twice} per game
+V you can guarantee a winning roll
+S Phlip
+K Phlip_family
+V Phlip
+K Phlip_variation
+V Standard Phlip
+K Pick a ring to place a chip and move
+V Flytta en ring och l\u00e4mna en bricka kvar
+S Pick the first cube to send to the caravan
+K Pick the stack to move
+V V\u00e4lj h\u00f6g att flytta.
+K Pick up and Continue your move
+V Plocka upp och forts\u00e4tt ditt drag
+S PinchingPawn
+S Pink
+S Place #1 cubes in Bag neighborhood
+S Place #1 cubes in Bag neighborhood, take a card, or move the supervisor #2 spaces
+S Place #1 cubes in Barrel neighborhood
+S Place #1 cubes in Barrel neighborhood, take a card, or move the supervisor #2 spaces
+S Place #1 cubes in Chest neighborhood
+S Place #1 cubes in Chest neighborhood, take a card, or move the supervisor #2 spaces
+S Place #1 cubes in Vase neighborhood
+S Place #1 cubes in Vase neighborhood, take a card, or move the supervisor #2 spaces
+S Place 1 star
+S Place 2 initial units
+S Place 2 tiles
+S Place 2 tiles or a bridge
+S Place Your first Boss Token
+S Place Your second Boss Token
+K Place a Chip, or a Jewel, or a chip from the Store
+V Placera en bricka, eller en \u00e4delsten, eller en bricka fr\u00e5n aff\u00e4ren
+K Place a Frog on the board
+V Placera en groda p\u00e5 br\u00e4det
+K Place a GIPF piece on a starting point
+V Placera en Gipf-bricka p\u00e5 en yttre position
+S Place a Menhir on the board
+S Place a bird on an empty cell
+S Place a bird on an empty cell, or designate a bird to fly
+S Place a bridge, or click on DONE to Pass
+K Place a chip on a starting point
+V Placera en bricka p\u00e5 en yttre position
+S Place a chip on any empty cell
+S Place a chip on the board
+S Place a chip, or Move a Stack
+S Place a chip, or shift or rotate a board
+S Place a cube in any unclaimed souk
+S Place a cube of your choice
+S Place a cube on the caravan
+K Place a gobblet on the board, or move a gobblet
+V Placera en gobblet p\u00e5 br\u00e4det, eller flytta en gobblet
+S Place a joker
+S Place a man on the board
+S Place a marble on any empty cell
+S Place a marble, or Swap Colors
+K Place a marker on any empty cell
+V Placera en bricka i en tom cell
+K Place a marker on any empty cell, or Swap Colors
+V Placera en bricka i en tom cell eller byt f\u00e4rg
+S Place a piece into the row closest to the top of the board
+K Place a piece on the board
+V Placera en pj\u00e4s p\u00e5 br\u00e4det
+K Place a piece on the board, or Exchange an off-board piece for a new tile
+V Placera en pj\u00e4s p\u00e5 br\u00e4det, eller byt en pj\u00e4s utanf\u00f6r br\u00e4det mot en ny bricka
+K Place a piece on the board, or move a piece already on the board
+V Placera en bricka p\u00e5 br\u00e4det, eller flytta en bricka som redan finns p\u00e5 br\u00e4det
+S Place a piece on the board, or swap colors with your opponent
+S Place a post on any empty point
+S Place a post on any empty point or swap colors
+K Place a ring on the board
+V Placera en ring p\u00e5 br\u00e4det
+S Place a roamer on the board
+S Place a second boss token, or a cube from Castle Cardens
+S Place a second chip on any empty cell
+K Place a second piece on the board
+V Placera den andra gubben p\u00e5 br\u00e4det
+S Place a second tile
+K Place a second tile adjacent to the first
+V Placera den andra brickan intill den f\u00f6rsta
+K Place a second tile adjacent to those already on the board
+V Placera en andra bricka intill dem som redan finns p\u00e5 br\u00e4det
+S Place a stone (either color) on any empty cell
+S Place a stone (other color) or click on Done
+S Place a stone on the board
+S Place a stone on the board, or pass to begin scoring
+K Place a stone on the board, or remove a stone from the board
+V Placera en sten p\u00e5 br\u00e4det, eller ta bort en sten fr\u00e5n br\u00e4det
+K Place a tile
+V Placera en bricka
+K Place a tile adjacent to those already on the board
+V Placera en bricka intill dem som redan finns p\u00e5 br\u00e4det
+K Place a tile on any empty cell
+V Placera en bricka i en tom cell
+S Place a tile on any empty cell, or Swap Colors
+K Place a tile on the board
+V Placera en bricka p\u00e5 br\u00e4det
+K Place a tile on the board, or move a tile
+V Placera en bricka p\u00e5 br\u00e4det, eller flytta en bricka
+K Place a tile on the board, where a runner can leave a home space
+V Placera en bricka p\u00e5 br\u00e4det, d\u00e4r en l\u00f6pare kan l\u00e4mna ett eget utrymme
+S Place a tile or one of your pieces
+S Place a worker
+S Place a worker in a future season
+S Place a worker on any empty cell
+S Place a worker or withdraw one or more workers
+K Place all your pieces in your two home rows
+V Placera alla dina pj\u00e4ser p\u00e5 dina tv\u00e5 egna rader
+S Place an X piece
+S Place an extra Authority token (from Jacko the Archivist)
+S Place another worker
+S Place another worker, or click on DONE
+S Place initial Shooters on the board
+S Place lock a district, or click on Done
+K Place or Move Influence Stars
+V Place or Move
+V Influence Stars
+K Place prisoners here for exhange
+V Placera f\u00e5ngar h\u00e4r f\u00f6r v\u00e4xling
+S Place the Pawn
+K Place the Rabbits
+V Placera kaniner
+S Place the card on one of the discard stacks
+K Place the first meeple on the board
+V Placera den f\u00f6rsta gubben p\u00e5 br\u00e4det
+S Place the magnet on any space that causes movement
+S Place the new worker, or click on DONE
+K Place the next tile on the board, where a runner can move over it
+V Placera n\u00e4sta bricka p\u00e5 br\u00e4det, d\u00e4r en l\u00f6pare kan passera \u00f6ver den
+S Place the other end of the bridge
+S Place the pieces randomly
+S Place two tiles or swap colors
+S Place you cards in your rack
+S Place your benefit here
+K Place your bid to fund the loan
+V Placera bud f\u00f6r att finansiera l\u00e5net
+S Place your cookie
+S Place your cookie, or swap colors
+K Place your first man on the board
+V Placera din f\u00f6rsta m\u00e4nniska p\u00e5 br\u00e4det
+S Place your first star
+S Place your pieces on the starting spaces
+K Place your queen on the board
+V Placera din bidrottning p\u00e5 br\u00e4det
+K Place your second man on the board
+V Placera din andra m\u00e4nniska p\u00e5 br\u00e4det
+K Place your stack on the edge of the board
+V Placera h\u00f6gen vid kanten av br\u00e4det
+K Place your town in your first row
+V Placera din stad p\u00e5 f\u00f6rsta raden
+S Place your votes for ward #1
+K Placing Gipf Pieces
+V Placerar Gipf-brickor
+K Placing Standard Pieces
+V Placerar standardbrickor
+S Planes
+S Plant 1 vine, if it is a 4 value, gain 1VP
+S Plant Vines
+S Plant a vine
+S Plant your first vine
+S Planter
+S Planting
+S Plateau
+K Plateau_family
+V Plateau
+K Plateau_variation
+V Plateau standard
+K Play #1
+V Spela mot #1
+S Play Blue Cards
+S Play Cards
+K Play Farmer
+V Spela bonden
+S Play Games
+S Play Offline
+S Play Yellow Cards
+S Play a blue card
+S Play a blue card, and get $1
+S Play a card
+S Play a second yellow card, or click on Done
+S Play a yellow card
+S Play a yellow card, and get $1
+S Play here to get Bliss
+S Play your first blue card
+S Play your first yellow card
+S Played
+K Played on #1
+V Spelad p\u00e5 #1
+K Player #1
+V Spelare #1
+S Player Cubes
+K Player is 
+V Spelaren \u00e4r 
+K Players
+V Spelare
+K Players are: 
+V Spelarna \u00e4r: 
+K Please Join Me
+V Kom och spela!
+S Please select your home country, or "Planet Earth"
+S Plus2
+S Politico
+S Polyomino Flip
+K Polyomino Flip_variation
+V Polyomino Flip
+S Polyomino Games
+K Ponte
+V Ponte Del Diavolo
+S Ponte Del Diavolo
+K Ponte_family
+V Ponte Del Diavolo
+K Ponte_variation
+V 10x10 board
+K Position the starting rings
+V Placera startringarna
+S Position your pieces on your side of the board
+S Preferred Language
+S Preferred version is #1
+K Prisoners captured by Black are held here
+V Svarta f\u00e5ngar finns h\u00e4r
+K Prisoners captured by White are held here
+V Vita f\u00e5ngar finns h\u00e4r
+S Private Structures
+S Problem saving #1
+S Professor
+S Promote any of the pieces which moved
+S Promoter
+S Pronounced: #1
+S Proteus
+K ProteusAdjacentMove
+V Move Pieces
+V Adjacent square
+K ProteusColorGoal
+V Win
+V Same color
+K ProteusColorTrade
+V Swap Tiles
+V same color
+K ProteusDifferentMove
+V Move Pieces
+V Different row/column
+K ProteusLineGoal
+V Win
+V Same line
+K ProteusPlayerTrade
+V Swap Tiles
+V Different player
+K ProteusSameMove
+V Move Pieces
+V Same row/column
+K ProteusShapeGoal
+V Win
+V Same shape
+K ProteusShapeTrade
+V Swap Tiles
+V same shape
+K Proteus_family
+V Proteus
+K Proteus_variation
+V Standard Proteus
+K Punct
+V P\u00fcnct
+K Punct_family
+V P\u00fcnct
+K Punct_variation
+V P\u00fcnct standard
+S Purple
+S PurpleKnowledge
+S PurpleMorale
+K Push Fight_family
+V Push Fight
+K PushFight
+V Push Fight
+K PushFight_variation
+V standard Push Fight
+S Q.E. Player info for #1
+K QE
+V Q.E.
+K QEInfoMessage
+V side screens are mandatory - if bids aren't secret there is no game!
+K QE_family
+V Q.E.
+K QE_variation
+V Standard Q.E.
+S Quarry
+S Queen
+S Quinamid
+K Quinamid_family
+V Quinamid
+K Quinamid_variation
+V Quinamid
+S Qyshinsu
+K Qyshinsu_family
+V Qyshinsu
+K Qyshinsu_variation
+V V\u00e4gens mysterium
+K Racing Games
+V Racingspel
+S Raj
+K RajInfoMessage
+V side screens are needed to secretly select cards to play
+K Raj_family
+V Raj
+K Raj_variation
+V Standard Raj
+S Randomized
+S Randomized Start
+S Ready to start regular play
+S Ready to start synchronous play
+S Reaper
+K Rearrange the gold fleet
+V Omarrangera guldflottan
+K Rearrange the silver fleet
+V Omarrangera silverflottan
+K Rearrange things any way you want to
+V Arrangera p\u00e5 valfritt s\u00e4tt
+S Receive 1 extra cube when you place cubes in a souk
+S Receive 2 extra gold when you take gold
+S Receive 2 extra points for each completed souk
+S Receive 3 camels
+S Receive 3 gold
+S Receive a card when you place a cube in the caravan
+K Reconnecting
+V  ...F\u00f6rs\u00f6ker \u00e5teransluta...
+S Record of Game #1
+S Recruit Authority
+S Recruits
+K Red
+V R\u00f6d
+S Red Dome
+S Red Grapes
+S Red Wines
+S RedKnowledge
+S RedMorale
+S Reduce your opponent to 2 men
+S Register
+S Register a new user
+S Registration email will be sent.
+K Rejoin
+V \u00c5teruppta match
+K Rejoin #1
+V \u00c5teruppta match mot #1
+K Remove a Ring
+V Ta bort en ring
+S Remove a barrier
+S Remove a cube, or click on Done
+S Remove a name
+S Remove a ward boss, and pay 2 influence chips
+S Remove a ward boss, and pay an influence chip
+S Replace a joker to the board
+K Reprice the goods in your factory storage
+V Byt pris p\u00e5 varorna p\u00e5 lagret
+K Reprice the goods in your warehouse storage
+V Byt pris p\u00e5 varorna i magasinet
+K Requesting Bids
+V F\u00f6resl\u00e5r bud
+K Requesting Loan
+V F\u00f6resl\u00e5r l\u00e5n
+S Reshuffle #1
+K Resign
+V Ge upp
+K Resign State
+V Klicka p\u00e5 klar f\u00f6r att bekr\u00e4fta
+S Resolve this card - chose:
+S Resolve this card, you may choose both
+S Resource
+S Resources
+K Restart
+V Starta om
+S Resume Playing
+S Retrieve one or more workers
+K Return to the Way
+V \u00c5terv\u00e4nd till v\u00e4gen
+K Reverse View
+V Motsatt vy
+K Review
+V analysera
+S Review Games
+K Rider Size
+V \u00c5karens storlek
+S Rider movement for #1
+S Ristorante
+S Rithmomachy
+K Rithmomachy_family
+V Rithmomachy
+K Rithmomachy_variation
+V Standard Rithmomachy
+S Roll
+S Rook
+S Rose Wines
+S Rotate the board 180 degrees
+S Rotate the board 90 degrees clockwise
+S Running the train simulation
+S Sacrice the worker for #1 (from Chase the Miner)
+S Sacrifice a worker (from Pete the Cannibal)
+S Sacrifice the worker for an extra Authority token
+S Santorini
+K Santorini-gods
+V Santorini + Gods
+K Santorini-gods_variation
+V with Gods
+K Santorini_family
+V Santorini
+K Santorini_variation
+V Santorini (utan gudar)
+S Satisfy the current victory condition
+S Save Game
+S Save Password
+S Scholar
+S Score the most "5" patterns
+K Score the most points at the sprint and finish lines
+V F\u00e5 s\u00e5 m\u00e5nga po\u00e4ng som m\u00f6jligt vid sprint och vid m\u00e5llinjen
+S Score the most points buying and selling cards
+S Score the most points by winning votes
+S Score the most while not using the most money
+K See Player Comments
+V Se spelarens kommentarer
+K See Spectator Comments
+V Se \u00e5sk\u00e5darnas kommentarer
+S Select #1
+K Select Game
+V V\u00e4lj spel
+K Select Robot
+V V\u00e4lj bot
+S Select Row #1
+S Select The die for Infection attempts
+S Select a different initial setup setup, or click on Done
+S Select a group of dice
+K Select a ring to remove
+V V\u00e4lj en ring att ta bort
+K Select a row of 5 to remove
+V V\u00e4lj en rad p\u00e5 5 brickor att ta bort
+S Select a wine to age twice
+S Select one wine to age
+K Select the #1 piece to move
+V Flytta bricka #1
+K Select the destination for the selected piece
+V V\u00e4lj vart brickan ska flyttas
+S Select the next prize
+K Select the stack to move from
+V V\u00e4lj h\u00f6g att flytta fr\u00e5n
+S Select the type of worker
+S Select two gods to be used in this game
+S Select two wines to age
+S Select up to 3 other players
+S Select which of your roamers to kill
+S Select which opponent roamer to kill
+S Select which piece moves
+S Select which piece reaches the magnet
+S Select your die roll (and pay 1 Bliss) or click on DONE to proceed normally
+S Select your wakeup position
+S Selected File: 
+K Selecting game: #1
+V Val av spel: #1
+S Sell
+S Sell All
+S Sell All #1 Cards
+S Sell Cards
+S Sell Wine for VP
+S Sell another #1 card
+S Sell no cards
+S Sell one wine
+S Sell one wine for VP
+S Sell some #1 cards
+S Sell wine
+S SellAll
+S SellCard
+K Send
+V Skicka
+S Send Cube
+S Send feedback
+S Sending your info to #1
+K Sep #1#2#3
+V #1 Sep, #2:#3 GMT
+K Session #1 is active.  
+V Session #1 \u00e4r aktiv.  
+K Session #1 is being launched.  
+V Session #1 startas.  
+K Session #1 is displaying the map of players real locations
+V Session #1 visar en karta \u00f6ver spelarnas geografiska l\u00e4ge.
+K Session #1 is idle.  
+V Session #1 \u00e4r inaktiv.  
+K Session #1 is private. 
+V Session #1 \u00e4r privat. 
+K Session #1: state unknown.
+V Session #1: status \u00e4r ok\u00e4nd.
+S Set Font Size
+S Set Handicap
+S Set Komi
+S Set the virulence and lethality of your disease
+S Sharecropper
+K Shipping
+V Leverans
+S Shogi
+K Shogi_family
+V Shogi
+K Shogi_variation
+V standard Shogi
+K Shoot
+V Skjut
+S Show Hints
+S Show SGF Output
+S Show a graph of points scored
+S Show available moves
+S Show info for #1
+S Show move numbers
+S Show move numbers on top of stones
+S Show the chat window
+K Shuffle pieces to the exchange area, Click Done to start the exchange
+V Blanda brickorna i v\u00e4xlingsutrymmet, klicka p\u00e5 Klar f\u00f6r att starta v\u00e4xlingen
+S Side Screens are needed to view cards privately
+S Silver
+K Sixmaking
+V Sixth
+K Sixmaking_family
+V Sixth
+K Sixmaking_variation
+V Standard Sixth
+S Sky Lounge
+S Slander a second boss, or click on Done
+S Slander a ward boss, or click on done
+S Slide the Gipf piece toward the center
+K Slide the chip toward the center
+V Skjut in brickan mot mitten
+S Slow CPU - no robots
+S Smoothly animate the game
+S Solo review of games
+S Sorry, you can't build anything
+S Sorry, you can't plant anything
+S Sorry, you have none
+K Sound
+V Ljud
+S Spangles
+K Spangles_family
+V Spangles
+K Spangles_variation
+V Spangles standard
+K SpecialWorkerInfo
+V Special Worker
+V Descriptions
+K Spectate
+V Titta p\u00e5
+K Spectator
+V \u00c5sk\u00e5dare
+K Spectator is: 
+V \u00c5sk\u00e5dare: 
+K Spectators
+V \u00c5sk\u00e5dare
+K Spectators are: 
+V \u00c5sk\u00e5dare: 
+K Split or Merge this stack, or click Done
+V Dela eller blanda den h\u00f6r h\u00f6gen, eller klicka p\u00e5 Klar
+S Split the cookies and get most of them
+K Split this stack, or click Done
+V Dela den h\u00e4r h\u00f6gen, eller klicka p\u00e5 Klar
+S Sponsor
+S Spot Price #1
+S Spread out the stacks
+S Spring
+S Stable
+S Stac
+K Stac_family
+V Stac
+K Stac_variation
+V Standard Stac
+K Stack Height
+V H\u00f6garnas h\u00f6jd
+K Stacking Games
+V Stapelspel
+S Star Influence
+K Start
+V Starta
+K Start #1
+V Starta #1
+S Start play with #1 as the current player
+S Start table server
+S Start the resolution phase
+S Statue
+S Still in the Auction
+S Stone
+S Stop playing, make changes without rules
+S Stop showing available moves
+S Stop table server
+S Structure Cards
+S Studio
+S Subterran
+S Subterran Authority
+S Subterran Market
+S Subterran Tunnel
+S Subterrans only: play here to get 3 Food
+S Succeeds
+S Success!  check your email
+S Summer
+S Summer Visitor Cards
+S Supervisor
+S Surround the most territory
+S Surveyor
+K Swap
+V Byt
+S Swap Positions
+S Swap Tiles:
+S Swap a discard or a card from the draw pile with a card in your rack
+S Swap colors, or place a chip
+S Swap colors, or place a chip, or move a board
+S Swap the top of the Draw pile for a card in your rack
+S Swapping
+S Swindler
+S Switch sides, and play red using the current position
+S Switch sides, and play white using the current position
+S Switch to traditional pieces
+S Switch to westernized pieces
+S Switch two vines
+S Switch two vines on your fields
+S Syzygy
+K Syzygy_family
+V Syzygy
+K Syzygy_variation
+V Standard Syzygy
+K TBA1_variation
+V kommande spel
+K TBA2_variation
+V kommande spel
+K TBA3_variation
+V kommande spel
+S Table
+S Table name:
+S Tablut
+K Tablut-11
+V Tablut-11x11
+K Tablut-11_variation
+V 11x11 board
+K Tablut-7
+V Tablut 7x7
+K Tablut-7_variation
+V Tablut p\u00e5 7x7
+K Tablut-9
+V Tablut 9x9
+K Tablut-9_variation
+V Tablut p\u00e5 9x9
+K Tablut_family
+V Tablut
+S Tails
+S Tajii
+K Tajii_family
+V Tajii
+S Take #1 Extra Infection Attempts, at Eastern Ports
+S Take #1 camels
+S Take #1 camels, take a card, or move the supervisor #2 spaces
+S Take #1 gold
+S Take #1 gold, take a card, or move the supervisor #2 spaces
+S Take 1 Bliss or click on DONE to lose 1 Knowledge
+S Take 1 Energy, or click on DONE to gain 1 Morale (from Gary The Electrician)
+S Take 1 Extra Infection Attempt, +1 virulence, at the Eastern Ports
+S Take 1 Food or click on DONE to lose 1 Knowledge (from Scarby the Harvester)
+S Take Card
+S Take Cards
+S Take Chips
+K Take Over Playing
+V Spela h\u00e4rifr\u00e5n
+S Take The #1 Card
+S Take a Yellow or Blue card
+S Take a card
+S Take a card (any color)
+S Take a disc of your choice
+S Take a non-bonus action from a previous season
+S Take an influence disc, or click on Done
+S Take no chips
+S Take one of your opponent's men
+S Take the card, or sell cards
+S Take the top card of 2 Discard piles
+S Take the top card of 2 card decks
+K Take your first action
+V G\u00f6r ditt f\u00f6rsta drag
+S Take your first card (any color)
+K Take your second action
+V G\u00f6r ditt andra drag
+S TakeCard
+S TakePot
+S Tako Judo
+K TakoJudo
+V Tako Judo
+K TakoJudo_family
+V Tako Judo
+K TakoJudo_variation
+V standard Tako Judo
+K Tammany
+V Tammany Hall
+S Tammany Hall
+K Tammany Hall_family
+V Tammany Hall
+K TammanyInfoMessage
+V side screens are needed for secret votes
+K Tammany_variation
+V Standard Tammany Hall
+S Tan
+S Taster
+S Tavern
+S Tea
+S Tea-back
+S Territory Games
+S The auction is for a #1 card, or the right to sell #2 cards
+K The game is a draw
+V Spelet \u00e4r remi
+K The game record is not available during the game
+V Rekordet \u00e4r inte tillg\u00e4ngligt under spelet
+K The next finish bonus is #1
+V N\u00e4sta m\u00e5lbonus \u00e4r #1
+K The next sprint bonus is #1
+V N\u00e4sta sprintbonus \u00e4r #1
+S There is no new mayor
+S This die will be rolled
+S This die will not be rolled
+K This is now a private room
+V Detta \u00e4r nu ett privat rum.
+K This is now a public room
+V Detta \u00e4r nu ett offentligt rum.
+S This version is too old.  Please visit the app store and update it
+S TicTacNine
+S TicTacNine Games
+K TicTacNine_family
+V TicTacNine
+K TicTacNine_variation
+V experimental TicTacNine board
+S Tied bids - some players must bid again
+K Tile Pattern Games
+V M\u00f6nsterspel
+K Tile Size
+V Brickstorlek
+K Timeout in 1 minute.
+V Timeout om en minut.
+S Tintas
+K Tintas_family
+V Tintas
+K Tintas_variation
+V Standard Tintas
+S Tip the last placed Menhir, or pass.
+S Toggle the view between normal and flattened
+S Total
+K Tournament Game
+V Turneringsparti
+S Tower
+S Tower 1 Bonus (1 point)
+S Tower 2 Bonus (2 points)
+S Tower 3 Bonus (3 points)
+S Tower 4 Bonus (4 points)
+S Traboulet
+K Traboulet_family
+V Traboulet
+K Traboulet_variation
+V standard Traboulet
+K Track Mice
+V Sp\u00e5ra mus
+S Trade
+S Trade Goods
+K Trade Grapes, VP, Cards or Cash
+V Trade Grapes, VP,
+V Cards or Coins
+S Trade Receive
+S Trade Sell
+S Trade VP, Grapes, $ and Cards
+S Trade camels for gold
+S Trade up to 10 gold for 1 victory point each
+S Trade up to 4 camels for 2 victory points each
+S Traded #1 camels become gold
+S Traded: #1 camels for #2 points
+S Traded: #1 gold become camels
+S Traded: #1 gold for #2 points
+K Traditional Pieces
+V Traditionella pj\u00e4ser
+S Train a worker
+S Train a worker with a $1 discount
+S Train a worker with a $1 discount, which can be used this year
+S Train a worker with a $2 discount
+S Train a worker with a $3 discount
+S Train a worker with a $4 discount
+S Train a worker with a $4 discount, which can be used this year
+S Train new Workers
+S Trains
+S Trax
+K Trax_family
+V Trax
+K Trax_variation
+V standard Trax
+S Triad
+K Triad_family
+V Triad
+K Triad_variation
+V Triad standard
+S Truchet
+K Truchet_family
+V Truchet
+K Truchet_variation
+V Truchet standard
+K TumblingDown
+V Tumbling Down
+K TumblingDown_family
+V Tumbling Down
+K TumblingDown_variation
+V TumblingDown standard 8x8
+S Twixt
+K Twixt_family
+V Twixt
+K Twixt_variation
+V Standard Twixt
+K Type your message here.
+V Skriv meddelande h\u00e4r
+S Tzaar
+K Tzaar-custom
+V Tzaar - valfri
+K Tzaar-custom_variation
+V Tzaar - valfri startposition
+K Tzaar-random
+V Tzaar - slumpgenererad
+K Tzaar-random_variation
+V Tzaar - slumpgenererad startposition
+K Tzaar-standard
+V Tzaar - standard
+K Tzaar-standard_variation
+V Tzaar - standardiserad startposition
+K Tzaar_family
+V Tzaar
+K Tzaar_variation
+V Tzaar standard
+S Ultima
+K Ultima_family
+V Ultima
+K Ultima_variation
+V Ultima Chess
+S Uncertified Architect
+S Uncertified Oenologist
+S Uncertified Teacher
+S Uncertified broker
+S Undo
+S Undo the last "Done" action
+S Unexpected response: #1
+S Unit Movements
+S United Kingdom
+S United States
+S Universe
+K Universe_family
+V Universe
+K Universe_variation
+V 3-4 players
+S Unplaced Influence Stars
+S Unranked
+S Unranked Games
+K Unsold Warehouses
+V Os\u00e5lda magasin
+S Unused Dilemmas
+S Unused Markets
+S Unused Recruits
+S Unused Workers
+S Upgrade the tunnel effect (from Andrew the Spelunker)
+S Upload your avatar at #1
+S Uproot 1 vines and gain 2VP
+S Uproot 2 vines and gain 3VP
+S Uproot a vine
+S Uprooting
+S Use Recruit Ability
+S Use your recruit's power, or click on DONE to proceed normally
+S Used Recruits
+K User 
+V Anv\u00e4ndare 
+S Vase
+S Veletas
+K Veletas-10
+V Veletas 10x10
+K Veletas-10_variation
+V 10x10 board
+K Veletas-7
+V Veletas 7x7
+K Veletas-7_variation
+V 7x7 board
+K Veletas-9
+V Veletas 9x9
+K Veletas-9_variation
+V 9x9 board
+K Veletas_family
+V Veletas
+S Veranda
+S View Card
+S Vine Cards
+S Virtual Mouse
+S Viticulture
+S Viticulture Player info for #1
+K ViticultureInfoMessage
+V side screens are needed to conceal cards
+K Viticulture_family
+V Viticulture
+K Viticulture_variation
+V Standard Viticulture
+S Volcano
+K Volcano-h
+V Hex Volcano
+K Volcano-h_variation
+V Volcano p\u00e5 ett hexagonalt br\u00e4de
+K Volcano-hr
+V Slumpgenererat Hex Volcano
+K Volcano-hr_variation
+V  Hex Volcano med slumpgenererade positioner
+K Volcano-r
+V Slumpgenererat Volcano
+K Volcano-r_variation
+V Volcano med slumpgenererade positioner
+K Volcano_family
+V Volcano
+K Volcano_variation
+V Volcano standard 5x5
+S Volo
+K Volo-84
+V small board Volo
+K Volo-84_variation
+V small board Volo
+K Volo_family
+V Volo
+K Volo_variation
+V standard Volo
+S Vote!
+S Wait for all other bids
+K Wait for opponents to arrive.
+V V\u00e4ntar p\u00e5 motst\u00e5ndaren.
+K Wait for other players to adjust
+V V\u00e4ntar p\u00e5 att motst\u00e5ndaren ska justera
+S Wait for the other player to finish setup
+K Wait for the other players to decide
+V v\u00e4nta p\u00e5 att den andra spelaren best\u00e4mmer
+S Wait for the other players to fill their racks
+S Wait for the other players to play
+S Wait for the other players to vote
+S Waiting for Re-Start
+S Waiting for the other players to choose recruits
+K Waiting in
+V V\u00e4ntar i
+S Wakeup Track 6
+S Wall
+S Ward #1
+S Ward #1 is a tie
+S Ward #1 is unclaimed
+S Ward #1 is vacant
+S Ward #1 won by #2
+K Warehouse
+V Magasin
+K Warehouses
+V Magasin
+S Warning: it's not your cube!
+K Warp6
+V Warp 6
+K Warp6_family
+V Warp 6
+K Warp6_variation
+V Warp 6 standard
+S Waste
+S Wastelander
+S Wastelander Authority
+S Wastelander Market
+S Wastelander Tunnel
+S Wastelanders only: play here to get 3 Energy
+S Water
+K Water Tower
+V water tower
+V needed for 3 value grapes
+S Well
+K White
+V Vit
+S White Grapes
+S White Wines
+S WhiteKnowledge
+S WhiteMorale
+S Win:
+S Wind Salon
+S Windmill
+S Wine Order
+S Wine Order +1
+S Wine Order Cards
+S Wine critic
+S Winter
+S Winter Visitor Cards
+S Withdrawer
+K Wolf moving suspects
+V Vargen flyttar misst\u00e4nkta
+K Wolf player eating
+V Vargen \u00e4ter
+K Wolf player hiding
+V Vargen g\u00f6mmer sig
+S Worker
+S Worker Activation A
+S Worker Activation B
+S Worker Cards
+S Xiangqi
+K Xiangqi_family
+V Xiangqi
+K Xiangqi_variation
+V Xiangqi standard
+S Year #1
+S Yellow
+S Yellow Dome
+K Yes, I will fund the loan
+V Ja, jag finansierar l\u00e5net
+S Yes, Undo
+S Yinsh
+S Yinsh-Blitz
+K Yinsh-Blitz_variation
+V Blixt-Yinsh - f\u00f6rsta ringen vinner
+K Yinsh_family
+V Yinsh
+K Yinsh_variation
+V Yinsh standard
+K Yoke Description
+V Yoke: harvest in
+V any season
+S Yordy the Demotivator selects a #1
+S You can only offer a draw when it is your move
+K You can only resign when it is your move
+V Du kan bara ge upp n\u00e4r det \u00e4r ditt drag
+S You can't offer a draw on this turn
+S You can't plant this combination
+S You cannot resign in a multiplayer game
+S You do not get allegiance track bonuses.
+S You do not have enough cash, remove someone
+S You gain knowlege when you place authority
+K You have been disconnected: #1
+V #1 har tappat anslutningen.
+K You have been offered a draw - Accept or Decline
+V Du har blivit erbjuden remi - acceptera eller avsl\u00e5
+S You have no choice, give #1 a yellow card or they get 1VP
+S You have no fillable wine orders
+K You have no legal moves.  Click on Done to pass
+V Du har inga m\u00f6jliga drag. Klicka p\u00e5 Klar f\u00f6r att passa.
+S You have no moves, click on DONE
+S You lose an extra morale when you retrieve workers for free.
+S You may Sell one wine for VP
+S You may age 1 wine twice
+S You may age 1 wine, and then fill a wine order
+S You may age 2 wines once
+S You may build a structure with a $2 discount, #1 gets 1VP
+S You may build a structure with a $2 discount, if it is a $5 or $6 structure, gain 1VP 
+S You may build a structure with a $3 discount
+S You may build a structure, gain 2VP if you have at least 6
+S You may build a structure, then plant a vine
+S You may build a structure.  If it cost $4 or more, gain 1VP
+S You may build another structure
+S You may build any $2 or $3 structrure for free
+S You may build any 2 structures (you already paid $8)
+S You may build any structure for free
+S You may buy or sell another field for $
+S You may destroy another structure
+S You may discard 1 grape or 1 wine for 1VP and $1 each year
+S You may discard 2 cards for 1VP
+S You may discard a value 7 or more wine, get 4VP
+S You may discard a wine for $4 and if it was the most valuable, gain 2VP
+S You may discard a wine valued 4 or more, gain 3VP
+S You may discard a wine, get 2VP
+S You may fill 1 wine order
+S You may fill 1 wine order, + 1VP
+S You may fill the wine order you just drew
+S You may harvest a field and fill a wine order
+S You may harvest a field and make up to 2 wines
+S You may harvest up to 1 field
+S You may harvest up to 2 Fields
+S You may harvest up to 2 fields and make up to 3 wines
+S You may harvest up to 3 Fields
+S You may make up to 3 Wines
+S You may make up to 4 Wines
+S You may move 1 Star
+S You may move 2 Stars
+S You may not add workers when you have 2 or 3 workers.
+S You may not bump your own workers from action spaces.
+S You may not place more than 1 worker per turn.
+S You may not place more than one worker in each commodity area.
+S You may not place workers in Icarus.
+S You may not place workers on constructed markets missing your authority.
+S You may not place workers on construction sites occupied by other players' workers.
+S You may not use pairs of cards at Artifact markets.
+S You may not use your activeRecruits' special abilities.
+S You may only harvest 1 field
+S You may only harvest 2 fields
+S You may pay 3 to fill a wine order for +2VP
+S You may pick a player to pay $1 to steal a visitor card
+S You may plant 1 vine
+S You may plant 1 vine - if you do #1 gains $2
+S You may plant 1 vine, even if you don't have the required structures
+S You may plant 1 vine, if you have planted at least 6, gain 2VP
+S You may plant 1 vine, if you the field has 3 different types, gain 2VP
+S You may plant 1 vine, with no limit on the value of vines on the field
+S You may plant a second vine
+S You may plant your first vine
+S You may play a bonus action
+S You may play a second blue card
+S You may retrieve your grande worker, if you do #1 gets 1VP
+S You may select a Random Card
+S You may select a player
+S You may train a worker
+S You may train a worker with a $3 discount, if you do #1 gets 1VP
+K You must move the gobblet you have picked up
+V Du m\u00e5ste flytta gobbleten du har plockat upp
+K You must place a dome
+V Du m\u00e5ste placera en kupol
+K You must take out a loan to pay interest
+V Du m\u00e5ste ta ett l\u00e5n f\u00f6r att betala r\u00e4nta
+S Your Cards
+S Your Password (again)
+S Your Turn
+S Your email address
+S Your password: 
+S Your real name
+S Your user name can't contain spaces
+S Your user name: 
+S Yspahan
+S Yspahan Player info for #1
+K YspahanInfoMessage
+V side screens can be used to keep your cards secret,
+V ...or you can play with cards visible.
+K Yspahan_family
+V Yspahan
+K Yspahan_variation
+V standard Yspahan
+K Zertz
+V Z\u00e8rtz
+K Zertz+11
+V Z\u00e8rtz+11
+K Zertz+11_variation
+V Z\u00e8rtz med 11 extra ringar
+K Zertz+24
+V Z\u00e8rtz+24
+K Zertz+24_variation
+V Z\u00e8rtz med 24 extra ringar
+K Zertz+xx
+V Z\u00e8rtz Extreme
+K Zertz+xx_variation
+V Z\u00e8rtz med valfri br\u00e4dstorlek
+K Zertz_family
+V Z\u00e8rtz
+K Zertz_variation
+V Z\u00e8rtz standard
+S Zoom=
+S a Market or Authority zone
+S a pair of Artifact cards
+K accept the bid, or pay the amount yourself
+V acceptera budet, eller betala sj\u00e4lv
+S add Icarite influence due to BrianTheViticulturist
+S add Wastelander influence due to BrianTheViticulturist
+S always fails
+S always suceeds
+K american checkers rules
+V move forward 1 space diagonally
+V mandatory capture forward diagonally
+V kings move and capture forward and backward
+S an ethical dilemma
+S an extra Euphorian Authority
+S an extra Subterran Authority
+S an extra Wastelander Authority
+K and
+V  och 
+S any 5 Bliss or food, or any 4 with a resource
+S arithmetic
+S at #1 walking toward #2
+K automute
+V #1 har automatiskt f\u00e5tt talf\u00f6rbud
+S be the most successful disease
+S bid and win the most prize value
+S blast your opponent's pharoh
+S boarding at #1
+S bridge islands of exactly 4 squares to score points
+K build an ideal city
+V bygg en ideal stad
+K carnac_10x7
+V Carnac - Medium
+K carnac_10x7_variation
+V medium board
+K carnac_14x9
+V Carnac - Large
+K carnac_14x9_variation
+V large board
+K carnac_8x5
+V Carnac - Small
+K carnac_8x5_variation
+V small board
+S catala
+K center square is not special
+V mittrutan \u00e4r inte speciell
+S chinese
+S claim most of the shooters
+S click Done to finish this Auction
+S click on "Roll" to stop the dice
+S click on "Roll" to stop the dice, or play a card
+S click on Done to finish the slander
+S click on Done to pass
+S click on Ok when you have confirmed your account
+S click to select game
+K click to select game_variation
+V Click to select a variation
+S connect all your birds into one flock
+S connect opposite sides
+K connect opposite sides with a chain of markers
+V Bind ihop dina motsatta sidor
+S control a majority of lines and directions
+S control the most 3x3 regions
+S control the most area
+K cottage
+V cottage give yellow or
+V  blue card in summer
+S do what it takes to win
+S dutch
+S end of line
+K enterMessage
+V #1 har stigit in
+K enters the room
+V #1 har stigit in
+S esperanto
+K expand the board with your color tiles
+V ut\u00f6ka br\u00e4det med brickor av din f\u00e4rg
+K extraCamelBuilding
+V Receive 1 extra camel when you take camels
+V Cost: 2 Camels
+K extraCardBuilding
+V Receive a card when you place a cube in the caravan
+V Cost: 3 Camels + 3 Gold
+K extraCubeBuilding
+V Receive 1 extra cube when you place cubes in a souk
+V Cost: 4 Camels + 4 Gold
+K extraGoldBuilding
+V Receive 2 extra gold when you take gold
+V Cost: 2 Camels + 2 Gold
+K extraMovementBuilding
+V Move the supervisor up to 3 extra spaces when you move the supervisor
+V Cost: 2 Camels + 2 Gold
+K extraPointsBuilding
+V Receive 2 extra points for each completed souk
+V Cost: 4 Camels + 4 Gold
+S field value limits apply
+S fill in your name; or whatever you want to be called.
+S flatten the perspective
+K fontfamily
+V sansserif
+S for #1 different industries
+S for #1 players
+S for #1 tiles from #2
+S for #1-#2 players
+S for creating the least money
+S for creating the most money
+S for monopy of #1 on #2
+S for value of tiles
+K form a larger triangle with your color at the tips
+V Bygg en st\u00f6rre triangel i din f\u00e4rg, mitten kan vara av motst\u00e5ndarens f\u00e4rg
+S form the most groups of 3 or more adjacent squares your color
+S french
+K fund a loan from a player or the bank
+V finansiera ett l\u00e5n fr\u00e5n en spelare eller bank
+S geometric
+S german
+S give the swindler #1 $2, or they get 1VP
+S goal
+K gold: escape the flagship  silver: capture gold flagship
+V Guld: fly med flaggskeppet; Silver: er\u00f6vra guldflaggskepept
+S greek
+K guest
+V g\u00e4st
+S harmonic
+S how to play video
+K in #1
+V i #1
+K international checkers rules
+V move forward diagonally
+V mandatory captures forward or backwards diagonally
+V flying kings move and capture diagonally
+V maximal captures are required
+S invalid swap - field limits exeeded
+K launchChat
+V Startar chattrum, session #1
+K launchGame
+V Startar spel, session #1
+K launchReview
+V Startar analysl\u00e4ge, session #1
+K launchfailed
+V Motst\u00e5ndaren startade inte spelet korrekt
+K launchspectator
+V Startar \u00e5sk\u00e5darl\u00e4ge, session #1
+S load a luxury container
+S loan #1 - #2
+K make 4 in a row in any direction
+V 4 i rad i n\u00e5gon riktning ger vinst
+S make 5 in a row
+K make 5 in a row to capture a ring and win
+V 5 brickor i rad ger vinst
+K make 5 in a row to capture a ring, 3 rings win
+V 5 brickor i rad tar bort raden och en ring, 3 ringar ger vinst
+K make any loop, or a line which spans 8 rows or columns, in your color
+V Skapa en loop, eller en linje som t\u00e4cker 8 rader eller kolumner, i din f\u00e4rg
+S make the last move
+K maximize the number of tiles in your reserve
+V Maximera antalet brickor i lagret
+S money created
+K morelli-11
+V Morelli 11x11
+K morelli-11_variation
+V 11x11 board
+K morelli-13
+V Morelli 13x13
+K morelli-13_variation
+V 13x13 board
+K morelli-9
+V Morelli 9x9
+K morelli-9_variation
+V 9x9 board
+S move a piece to the opposite side of the board
+S must be a Euphorian
+S must be a subterran
+S must be a wastelander
+S must be an icarite
+S no chips
+S no file selected
+K nolaunch
+V Kunde inte starta, felmeddelande: 
+K nolobby
+V Det gick inte att \u00f6ppna lobbyn. Den kanske \u00e4r full.
+K noresponse1
+V Servern svarar inte.
+K noresponse2
+V Den kan vara nere, eller en brandv\u00e4gg kan f\u00f6rhindra anslutning.
+S norwegian
+K noserver
+V Lobbyn \u00e4r inte ansluten till servern.
+S occupy 3 watering holes
+S on #1 moving toward #2
+S own all the stacks
+S own the most blocks
+S pay +1 #2Knowledge instead of #1 (from Matthew the Thief)
+S pay with any resource (from Michael the Engineer)
+K perspective
+V perspektiv
+S pick a new starting row
+S piece movement
+S place a stone
+S place all 10 Authority tokens
+S play here to advance the miner and gain a benefit
+S play here to contribute to building the adjacent market
+S play here to gain a Worker
+S play here to get Energy
+S play here to get Food
+S play here to get Water
+S play here to place an Authority token
+K playfor
+V play for #1
+S polish
+S portuguese
+K private room
+V privat rum
+K punctgoal
+V Bind ihop tv\u00e5 motst\u00e5ende sidor, eller placera din sista bricka n\u00e4r du kontrollerar en st\u00f6rre del av centrumhexagonen
+S push a piece
+S push one opponent piece off the board
+K quitting
+V #1 har l\u00e4mnat rummet
+K rankingsfailed
+V Uppdatering av ranking misslyckades
+S read the rules
+S reading #1
+K reading directory...
+V l\u00e4ser mapp...
+S receive an extra Water or Stone from Maggie the Outlaw
+K reconok
+V ..\u00e5teranslutning lyckades
+S replay or review saved games
+S retrieve another worker, or hit DONE
+S retrieve up to 2 workers
+S reviewing
+K reviewwelcome
+V Boardspace offline game reviewer
+S russian
+S sacrifice a worker
+S sacrifice worker for +4 Bliss and +1 Resource (from Sheppard the Lobotomist)
+K savedmsg
+V Spel sparat som #1
+S score 25 victory points
+K seeingyourcash
+V Info for #1
+K seeyourcash
+V Enlarge Info for #1
+S select a file first
+K select the game to play
+V v\u00e4lj spel
+K select the game variation
+V v\u00e4lj spelinst\u00e4llningar
+S select the seating arrangement
+K select the type of room
+V v\u00e4lj typ av rum
+K select tile color
+V V\u00f6lj brickf\u00e4rg
+K sessionexpired
+V Your session has expired.  Please log in again
+K set bid amount
+V v\u00e4lj bud
+S set the player names
+K setvotes
+V set your
+V votes
+K show grid
+V Visa koordinater
+S slander
+S spanish
+S spread the stacks for easy viewing
+K stack six or capture six
+V Stapla 6 eller er\u00f6vra 6
+K stillwaiting
+V startar fortfarande... var god v\u00e4nta.
+K surround your opponents queen bee
+V omringa din motst\u00e5ndares bidrottning
+S swap rule
+S swedish
+S swing the board 60 degrees
+S take 1 water, or click on DONE to get +1 Morale (from Soulless the Plumber)
+K tasting room
+V tasting room: +1 VP
+V once each year when giving a tour
+K the game has resumed
+V spelet har \u00e5terupptagits
+S the other Games
+S the user name "#1" is not available
+K timeoutWarning
+V   Lobbyn st\u00e4nger om en minut p.g.a. inaktivitet.
+K toward #1
+V toward
+V #1
+K trade a second container for a gold container
+V byt en andra container mot en guldcontainer
+K trellis description
+V trellis
+V needed for 2 value grapes
+K turkish checkers rules
+V move forward or sideways orthogonally
+V mandatory captures forward or sideways
+V flying kings move and capture orthoginally
+V maximal captures are required
+K unsupported game_variation
+V a game not available on this platform
+S up to #1
+S use Bliss instead of Resource (from Josh the Negotiator)
+S use Classic tiles
+K use Wooden tiles
+V Anv\u00e4nd tr\u00e4brickor
+S use the boardspace.net app on any mobile as a side screen
+S used Food instead of Bliss (from Brian the Viticulturist)
+S user names must be 3-10 characters
+S view a how to play video for this game
+S view the rankings for this game
+S view the rules for this game
+S virulence #1 = #2
+S waiting at #1
+S waiting for start
+S walk #1 minutes
+S walk to #1
+K website
+V #1 BoardSpace
+K welcome
+V V\u00e4lkommen till BoardSpace Lobby, version #1
+S windmill: +1VP when planting
+K you may increase your bid
+V du kan h\u00f6ja ditt bud
+S you may retrieve a worker (not the professore) from the current season
+S you may trade 1VP for $3
+S you should never see this
+K your name
+V Ditt namn
+S your password was rejected for some reason
+K youvoted
+V you have
+V voted
+N 2354

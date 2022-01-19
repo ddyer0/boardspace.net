@@ -1,0 +1,5 @@
+|cd /home/boardspa/cgi-bin/tlib; /usr/bin/perl procmail.pl
+|/usr/bin/maildrop /home/interworx/lib/maildrop/spamfilter
+
+
+

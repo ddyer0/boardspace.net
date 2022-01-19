@@ -1,0 +1,74 @@
+Kawa 3.21
+Tek-Tools, Inc Copyright © 1996-99
+All Rights Reserved License Agreement
+Kawa team - 3/3/1999
+=====================================
+You have different ways to order our product.  
+
+       You can place MasterCard, Visa, American Express, orders by<br>
+       phone, FAX, email, or postal mail directly through us.<br>
+
+ OnLine using
+ 
+       http://www.tek-tools.com/kawa/order.htm
+                
+ Phone 
+       1-888-866-KAWA(5292) between the hours of 9:00 am and 6:00 pm CST
+       Monday-Thursday and 9:00 am and 12:30 pm CST on Fridays, except
+       holidays.
+                 
+ Fax 
+       972-858-5348
+       See form below
+                 
+ Email 
+       contact@tek-tools.com
+                 
+ Mail 
+       Credit card and Check orders can be mailed using the form below to 
+       TEK-TOOLS, Inc
+       4300 Alpha Rd. Ste. 101 Dallas TX 75244
+                 
+ Form 
+       You can print this order form in most browsers by selecting Print from the File
+       menu. 
+                 
+
+        We do require the following information:
+
+               Product :           KAWA IDE 3.21
+               Name :              _____________________________________
+               email :             _____________________________________
+
+               Credit Card         [ ] MasterCard [ ] VISA  [ ] AMEX 
+               Credit Card Number: _____________________________________
+               Expiration Date:    _____________________________________
+               Name On Card:       _____________________________________
+               Billing Address:    _____________________________________
+                                   _____________________________________
+                                   _____________________________________
+
+               Please specify the product and quantity:
+               (These prices are subject to change. Please check the latest price
+                on the online form)	
+
+               Kawa Single Copy                          : __ x $59 = ____
+
+               Kawa Site Licenses  
+               								1 to 4		 : __ x $59 = ____
+                                            5 to 9      : __ x $49 = ____
+                                           10 to 19     : __ x $45 = ____
+                                           20 and more  : contact us
+
+               Kawa Single Copy - Students only          : __ x $25 = ____
+
+                                         ----------------------------------
+                                           Total payment :            ____
+
+               Kawa is shipped using email only.
+
+   
+      Any questions about the status of the shipment of an order, refunds,
+      registration options, product details, technical support, volume discounts,
+      dealer pricing, site licenses, etc., must be directed to Kawa Support at
+      kawa@tek-tools.com on the Internet.

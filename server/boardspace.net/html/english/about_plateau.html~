@@ -1,0 +1,152 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+
+<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+  <title>BoardSpace.net Home Page</title>
+</head>
+<body style="background-image: url(../images/background-image.jpg);">
+<table style="width: 100%; text-align: left;" border="0" cellpadding="2"
+ cellspacing="0">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top;">
+      <h4><a href="about_che.html">Che</a></h4>
+      </td>
+      <td style="vertical-align: top;">
+      <h1 style="text-align: center;"><img alt="boardspace.net"
+ src="master-logo.jpg" style="width: 600px; height: 100px;"></h1>
+      </td>
+      <td style="vertical-align: top;"><a href="about_hex.html"><span
+ style="font-weight: bold;">Hex</span></a></td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table
+ style="text-align: left; margin-left: auto; margin-right: auto; width: 995px; height: 46px;"
+ border="0" cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top; text-align: center;"><small><font
+ size="+1"><small><a href="register.shtml"><span
+ style="font-weight: bold;">Register</span></a></small></font><br>
+      </small></td>
+      <td style="vertical-align: top; text-align: center;"><small><font
+ size="+2"><small><a style="font-weight: bold;" href="login.shtml">Log
+in and
+Play<br>
+      </a></small></font></small></td>
+      <td style="vertical-align: top; text-align: center;"><small><font
+ size="+1"><small><a href="guest.shtml"><span style="font-weight: bold;">Guest
+Login</span></a></small></font><br>
+      </small></td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<br>
+<table style="width: 100%; text-align: left;" border="1" cellpadding="2"
+ cellspacing="2">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top;">
+      <h1 style="text-align: center;"><big>Plateau</big><br>
+      </h1>
+Some abstract games are based on simple rules that take only a minute
+to explain.&nbsp; Plateau is <span style="font-style: italic;">not</span>
+one of those; but don't be put off by the relatively complex <a
+ href="../plateau/english/rules.html">rules</a>; plateau is worth the
+effort.&nbsp;&nbsp; The goal of plateau is to either capture six
+opposing pieces, or construct a stack of six of your own
+pieces.&nbsp;&nbsp; The special feature of plateau is that the playing
+pieces are double sided, and your opponent does not know what
+is on the hidden side of any piece you play until you flip it over.<br>
+      <br>
+Without the hidden information, plateau would be a very boring
+capturing game.&nbsp; With the hidden information, every move is a
+potential bluff, or a potential surprise.&nbsp; There are so few
+pieces, it's sometimes possible to deduce the true identity of the
+pieces, but more often you are forced to outwit your opponent rather
+than out think them.<br>
+      <br>
+      <span style="font-weight: bold;">Robots: </span>Sorry, there's
+no robot for Plateau.&nbsp;&nbsp; It's hard!&nbsp; How do you plan when
+you don't know what the pieces are!<br>
+      </td>
+      <td style="vertical-align: top;"><img alt="plateau interface"
+ src="../images/plateau-small.jpg" style="width: 478px; height: 315px;"><br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<span style="font-weight: bold;"><br>
+</span>
+<div style="text-align: center;"><span style="font-weight: bold;">Links</span><br>
+<span style="font-weight: bold;"></span></div>
+<table style="width: 100%; text-align: left;" border="0" cellpadding="2"
+ cellspacing="2">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top;"><a
+ href="http://www.boardspace.net/cgi-bin/boardspace_rankings.cgi?game=p">Plateau
+rankings
+at Boardspace</a><br>
+      </td>
+      <td style="vertical-align: top;"><a
+ href="http://boardgamegeek.com/game/1890">Plateau at BoardGameGeek</a><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><a
+ href="http://boardspace.net/plateau/plateau-viewer.shtml">Plateau game
+archives
+at Boardspace<br>
+      </a></td>
+      <td style="vertical-align: top;"><a
+ href="http://www.plateaugame.com/">Plateau official home page</a><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><a
+ href="/cgi-bin/player_analysis.cgi?game=plateau">Plateau win/loss
+database</a><br>
+      </td>
+      <td style="vertical-align: top;"><a target="moreboardspace"
+ href="http://boardspace.net/plateau/plateau-viewer.shtml">Plateau game
+archive<br>
+      </a></td>
+    </tr>
+  </tbody>
+</table>
+<span style="font-weight: bold;"><br>
+The back story:&nbsp; </span>along with Lines of Action, Plateau had
+been on my "wish I had a server" list for a long time.&nbsp; So once I <span
+ style="font-style: italic;">did </span>have a server, Plateau was an
+immediate candidate.<br>
+<br>
+<hr>
+<center>
+<table style="width: 100%;">
+  <tbody>
+    <tr>
+      <td align="left"><font size="-1">
+      <script language="javascript">
+document.write("<a href='mailto:gamemaste");
+document.write("r\@board");
+document.write("space.net'>gamemaste<n>r@board<n>space.net</a>");
+      </script></font><br>
+      </td>
+      <td style="vertical-align: top; text-align: center;"><br>
+      </td>
+      <td style="vertical-align: top;"><a href="logon-page.html">Site<br>
+&nbsp;Map</a><br>
+      </td>
+      <td align="right">Go to <a href="/">BoardSpace.net home page</a>
+      </td>
+    </tr>
+  </tbody>
+</table>
+</center>
+</body>
+</html>

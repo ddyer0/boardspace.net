@@ -1,0 +1,35 @@
+<HTML>
+<BODY LINK="#0000ff" VLINK="#800080" BGCOLOR="#ffffff">
+
+<H1><IMG SRC="kawacup.jpg" WIDTH=106 HEIGHT=100>Base class overrides</H1>
+<P><A HREF="index.htm">Index</A> </P>
+<font size="1.5" face="Arial">Last Modified Date - <font color=red>2/16/99</font><p>
+Please click <a href="http://www.tek-tools.com/kawa/docs/baseclassoverride.htm">here</a> for the latest version of this document.
+<font color=red> If this is an online version of the document please right click in the browser and select 
+'Update local Kawa document' to update your local copy of this document</font>
+</font>
+<P><HR></P>
+<P>It is very easy to override base class methods under Kawa. If the base class is defined in the Kawa package hierarchy it is possible to override the methods. Please refer to explanation on <A HREF="packagetab.htm">Packages tab </A>for adding/deleting packages to package hierarchy. </P>
+
+<UL>
+<LI>In order to override the base class method, please click right button on the class item in the project tree or click on the new class wizard button in the main toolbar. For the latter please make sure the cursor in the editor is within the limits of the class body. Clicking on the toolbar wizard displays the following menu for a class that derives from Applet</LI></UL>
+<DIR>
+
+<P ALIGN="CENTER"><IMG SRC="baseclassoverride1.gif" WIDTH=574 HEIGHT=305></P></DIR>
+
+
+<UL>
+<LI>Override menu option will display all the base classes of the class and all the interfaces implemented by this class. </LI>
+<LI>Selecting a base class or an interface will display all the methods that can be overridden in another submenu as shown in the figure below. </LI>
+<LI>If <A HREF="methodtooltips.htm">method tooltip </A>is enabled and Java document directory is properly setup under directory options a tooltip for the method is displayed as the mouse is moved over the methods. </LI></UL>
+
+<P ALIGN="CENTER"><IMG SRC="baseclassoverride2.gif" WIDTH=570 HEIGHT=615></P>
+
+<UL>
+<LI>An asterisk in the front of the name indicates Method with multiple overloads and methods already implemented are grayed from selection. </LI>
+<LI>DEPRECATED methods are indicated by enclosing the name of the method within [] brackets. This indicator is shown only if the JDK documentation and the documentation directory is setup properly under Customize/Options/Directory. </LI>
+<LI>Finally, selecting any one of the base class methods will automatically insert the function body for the method as shown in the figure below. </LI>
+<LI>Selecting a method with multiple overloads will display a list box with all the available methods. Selecting 'ALL' options for interfaces will insert overrides for all the methods of a given interface. </LI>
+<LI>The class wizard toolbar menu is sensitive to inner classes and inner interfaces. </LI></UL>
+</BODY>
+</HTML>

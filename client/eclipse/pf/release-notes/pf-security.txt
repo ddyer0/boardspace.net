@@ -1,0 +1,25 @@
+PF-Security
+Author: Manfred Duchrow
+Copyright (c) 2004-2008, by Manfred Duchrow. All rights reserved.
+=======================================================================
+
+-----------------------------------------------------------------------
+
+VERSION 1.1 ( June 27, 2008 )
+
+* New classes
+  > HashedString
+  > CryptoUtil
+
+-----------------------------------------------------------------------
+
+VERSION 1.0 ( September 25, 2004 )
+
+* Created new component with class in package org.pf.security.authentication
+
+  > AutoAuthenticationManager
+  > LocationCredentials
+  > AbstractAuthenticator
+
+-----------------------------------------------------------------------
+

@@ -1,0 +1,4 @@
+*
+* the next game "Black Death" is available for early testing
+* think of it as a topical variant of Risk
+*

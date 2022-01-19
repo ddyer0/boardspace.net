@@ -1,0 +1,50 @@
+
+(;
+GM[1]FF[4]AP[NNGS:1.1.17]
+US[Brought to you by No Name Go Server]
+CP[
+  Copyright This game was played on the No Name Go Server
+  Permission to reproduce this game is given,
+  as long as this copyright notice is preserved.]
+GN[GNUGo-GoFigure(B) NNGS]
+EV[none]
+RE[B+12.5]
+PW[GNUGo]WR[NR ]
+PB[GoFigure]BR[NR ]
+PC[NNGS Go Program Server Clone: boardspace.net 6969]
+DT[2005-03-17]
+SZ[9]TM[600]KM[5.5]
+
+;B[dg];W[dd];B[gg];W[cg];B[cf];W[ce];B[bg];W[fd];B[be];W[bd];B[ad];W[bc]
+;B[he];W[hc]C[
+ gunnar started observation.
+ evand NR : hello :) (14)
+ gunnar NR : Hi. (14)
+]
+;B[ac];W[ab];B[ae];W[df]C[
+ gunnar NR : D4 good. (18)
+ evand NR : yeah, I was wondering when that would happen (18)
+ evand NR : what level is gnugo playing at? (18)
+ gunnar NR : 10 I think. (18)
+ evand NR : *nods* (18)
+ evand NR : has anyone run the regressions at higher levels recently? (18)
+ gunnar NR : Not that I know of. (18)
+]
+;B[ch];W[ef];B[bb];W[cb];B[aa];W[eg];B[dh];W[eh]C[
+ evand NR : d2?  whrere did that come from... (26)
+]
+;B[hd];W[cc];B[gc];W[fc];B[hb];W[hi];B[fb];W[eb];B[hh];W[gi];B[ea];W[da]
+;B[fa];W[gd];B[gb];W[gh];B[ih];W[fg]C[
+ gunnar NR : Looks like something ordinary GNU Go may play. (44)
+]
+;B[gf];W[ca];B[ei];W[ba];B[ab];W[fi];B[di];W[fh]C[
+ gunnar NR : Although not when a connection is involved as well. (52)
+]
+;B[fe];W[ee];B[ge];W[ed];B[hg];W[ii];B[ff];W[tt];B[tt]
+;
+TB[af][ag][ah][ai][bf][bh][bi][cg][ci][ga][ha][hc][hf][ia][ib][ic][id][ie]
+[if][ig]
+TW[cd][db][dc][de][ec]
+)
+
+---

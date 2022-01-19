@@ -1,0 +1,107 @@
+Pressing F1 will display the Help/Search dialog. Pressing F1 on a keyword in the editor will display the help for the keyword automatically.
+F2 in the editor will locate the class in the package tab if found. For Ex : F2 on the word applet will locate Applet under the package tab.
+CTRL+F3 will find the word at the cursor. For Ex : pressing CTRL+F3 on the word Applet will bring the find window with Applet in it.
+F4 will run the application or applet. If the project has a main file selected then main file will be run. OTOH if the project has a main HTML defined then appletviewer will be executed.
+F6 and SHIFT+F6 will find next and previous errors in the output window or next and previous results in search results window.
+CTRL+TAB will switch between various windows open including Help/Project/Search results window.
+ALT+0 will activate project space.
+ALT+1 will activate help window.
+ALT+2 will activate output window.
+ALT+3 will activate debug window.
+ALT+4 will activate search results window.
+ALT+5 will activate Project tree window if undocked or floating.
+ALT+F9 will display the breakpoints dialog.
+Pressing ESC in editor window or Help window will hide the output window and maximize the editor window.
+Disabling Auto display of images in the browser will speed up the help display. Select Options/Browser to disable this.
+F3 will repeat the previous find moving forward.
+SHIFT+F3 will repeat the previous find moving backwards.
+Kawa has right button menu defined everywhere appropriate with useful menu options. Plese try clicking right button menu anywhere you want to find powerful commands.
+Rebuild All will build all project files in the same order as the project treeview. The file order in the treeview can be rearranged by drag and drop of files. This is useful when the project has packages which needs to be compiled first.
+Now you can add virtual folders to your project to group your files by different category. Folders can have folders and so on. Just drag and drop the file to move it from one folder to another.
+Pressing ENTER twice in Help search window will display the first available topic for the selected index item.
+You can disable compilation beeps under Options/Editor.
+You can redirect input to Java application or applet when run from Kawa with View/Input Window menu option or the appropriate toolbar button.
+You can select multiple lines in the editor and press TAB or SHIFT+TAB to indent or unindent the lines.
+You can enjoy Kawa for ever by registering the copy before it expires !!!
+F5 will start the debugger and if the debugger is already running and if the debugger is at a breakpoint then F5 will continue.
+You can add override methods to your class by selecting Override... option from the right menu for the class name under the file. This will insert the template method code to the source file. Override menu is also available from the editor by clicking right button menu in any class in the editor.
+You can drag methods from the package hierarchy to the editor to override a method. For example, if you drag a method addWindowListener from Window object to a class which derives from Window the method will be added to the class automatically. That simple !!!
+You can drag a class or interface from the package to the editor to implement a new class which inherits from the dragged class or interface.
+You can add or delete packages from the Package tab by pressing insert or delete button. This is useful to add your own package to be able to override methods. Also, JDK packages can be deleted or added based on the project requirement.
+Pressing F1 on any item in the package tree view will display help for that item.
+You can add new folders and HTML items to help tab by selecting Add Folder or Add Item from the right button menu. Folders and Items can also be deleted from the Help tree view if not needed.
+Selecting Project/Default HTML will add a default HTML file to the project with appropriate class name to run if a main file is already selected in the project.
+Pressing F9 in the editor will toggle the breakpoint for that line.
+You have to set the Java documents directory and BDK documents directory for online Help to work. For JDK it is \java\docs directory and for BDK it is \bdk\doc
+The word 'Kawa' means Coffee in Polish. We thought it was appropriate after we found out !!!
+You can enable/disable auto expand of file on focus in the project tree view from Options/Editor.
+F7 will compile the current file.
+Kawa is built entirely on JDK tools and it is JDK version independent !!!
+You can display a browser toolbar from View/Browser bar.
+Move your file around in the Project Tree View using Drag and Drop feature. "Build All" will follow the tree view order.
+You can add Help files directly into the tree view
+Use the right mouse button to bring up context popupmenu.
+Customize your source file using the Options/Editor dialog box
+You can drag Java files and Kawa package files from Explorer into Kawa window to open the file
+You can double click in Debug Window on a classname:line format to open the class file. This includes even Java source file if the source file path is set properly under Options/Directory.
+You can step into Java source file during debugging if you have the source files installed and the source file path under Options/Directory is set properly
+You can search for text in multiple files now from File/Find in Files... command
+You can undock or float the project tree window by selecting View/Float Project. This will allow the project tree window to be maximized.
+You can customize the help tab by adding new folders and HTML file items and use it like you own JDK documentation index.
+You can add a bookmark at the current line by pressing CTRl+F2 and you can move to next bookmark by pressing SHIFT+F2
+SHIFT+DEL is same as CTRL+X and SHIFT+INS is same CTRL+V
+CTRL+Z will undo the last action and CTRL+Y will redo the undo. Undo buffer size can be set under Options/Editor.
+CTRL+LEFT ARROW and CTRL+RIGHT ARROW will jump words
+CTRL+HOME will move the cursor to beginning of the file and CTRL+END will move the cursor to end of the file.
+Selecting multiple lines and pressing CTRL+[ will block comment the lines if not already commented and undo the comments if already commented.
+CTRL+] in front of a brace or a paranthesis will locate the matching brace or paranthesis.
+CTRL+W will display the list of other editor views to switch to a different view
+CTRL+TAB will move to next view in the view list.
+Editor context menu has the override menu option to quickly override base class methods
+Select a block of text and drag it to a different file or same file. This can be undone if necessary.
+An asterisk in the title of the view window indicates that the file is modified
+A read only file is indicated by RO after the file path in the window title
+Selecting a block of text and performing replace all command will replace only in the selected text
+You can add Java files and text files to help tree and open the file by double clicking on the file. You can store all the previous projects in this fashion for quick retrieval.
+Press CTRL+J to switch to an alternate compiler if one is setup under compiler options.
+You can drag a method from any of the base classes in the package hierarchy to override a method.
+A read only file can be made read/write by just typing a character and selecting YES at the next message box.
+You can have multiple projects in the project tree and you can open any project quickly by right clicking on the project name and selecting open.
+You can compile file from project that is not open by right clicking the file in the project tree and selecting compile. This will compile the file with the project option.
+You can drag a class from the project tree to the editor to make a copy of the class. This can be used to store template classes or skeleton classes in a template project to make a new class quickly.
+All project files under Kawa are now stored with relative path. You can move the project to any location as long as all the files are in the same relative path.
+You can store files with same name in one project as long as they have different path.
+You can rename a file in the project tree by selecting Rename from the right button menu of a file item.
+Kawa displays inner classes and inner interfaces in the project tree under appropriate items. Override menu is sensitive to inner classes and inner interfaces.
+Kawa now supports global compiler, interpreter options and Javadoc options. This applies to all projects and non project file. This is accessed by clicking right button on the Projects root folder and selecting the menu item.
+Kawa indicates which file needs to be compiled with a red icon against a Java file name in the project tree. The file icon turns green after the file is compiled.
+You can save all files and close all files from File menu.
+You can add the current file to the project by selecting File/Add File to project...
+You can set different classpath for each project for compiler and interpreter via a listbox. This will allow Kawa to switch JDK versions on the fly.
+You can automatically check out a RO file when you try to edit by creating a custom command "checkout"...
+You can rebuild all the modified Java files and run the app simultaneously by checking the option "Check project files for dirty..." under Customize/Options/Editor... menu option.
+Build/Rebuild All menu option now compiles modified Java files in the project only.
+Compile *.java Folder command in the right button menu of a project folder in the project tree now issues compile *.java command in the directory of the top most java file in that folder.
+Kawa will automatically add current directory and JDK classes.zip to -classpath option if you check -classpath field under Compiler/Interpreter options.
+You can open an URL from Kawa by selecting open URL toolbar button from the browser toolbar or by selecting Load URL... from the browser window context menu.
+You can include environment variables in Classpath string under compiler and interpreter options by enclosing the variable name in between <> brackets. For ex. <JAVA_HOME>\classes
+You can include the current project directory in Classpath string under compiler and interpreter options by enclosing the name "project directory" in between <> brackets. For ex. <project directory>\classes
+Double click on a variable in the source window will find the variable in the debug tree if found.
+You can drag a zip or jar or class file to Kawa to add the class(es) to the package tree.
+Kawa will automatically set the package classpath when you add zip or jar or class files to package tree. This classpath is used during compilation, execution, debug etc.
+You can type input directly into output window to send input to a running program.
+You can redirect output only to the standard output window from a custom command. Useful to setup custom compilers etc.
+You can dock the project tab to the right side of the editor by selecting View/Dock Right.
+You can toggle the project view to list of classes instead of list of files by selecting Project/Class view or the toolbar button.
+You can display a tooltip for variable value by moving the cursor over the variable. Variable should be part of the debug tree for this to work.
+You can attach the debugger to a remote debug process by typing the host name and password under Project/Interprter options.
+You can toggle word wrap in the output window by selecting word wrap from the right button menu. Default value for this is set from Customize/Options/Editor.
+Want to add a main method to your class?  Right click on the class in the project tree and select 'Add method main()'.
+To add a variable to a class, right click on the class and select 'Add Variable'.  You can even add get and set methods for the variable.  If you right click on an already exisiting variable, you can add get and set methods for that variable.
+Use Ctrl + \ to cycle between the output window, project window, and active text window without ever having to leave your keyboard.
+Need to find where a class, method, interface, or variable is defined?  Use 'View/Source Browser' to find it in your project or in the JDK.
+Need to create JavaDocs for your project?  Go to 'Customize/Commands' and create your own with any parameters you need.
+Profiles now allow you to associate a JDK with a project.
+By having the cursor go to where Kawa is producing output, Kawa now works better with accessibility software, such as those that convert text to braille or to speech for the blind.
+Customize/Commands have been extended.  Check it out for creating your own solutions to problems.  Treat it as a generalized command line.
+Kawa plugin now allows you to write Java programs to control certain functions of Kawa.

@@ -1,0 +1,74 @@
+package yinsh.common;
+
+import java.awt.Image;
+import online.game.*;
+import lib.Random;
+import online.common.*;
+
+public class YinshChip extends chip 
+{	int index;
+	static final YinshChip getChip(int n) { return(CANONICAL_PIECE[n]); }
+	
+	public StockArt getAltChip(int set)
+	{	switch(set)
+		{	case 0:
+			default: return(this);
+			case 1: return(CANONICAL_PIECE[index+ALT_INDEX]);
+		}
+	}
+	private YinshChip(int idx,String fil,Image im,long rv,double sc[])
+	{
+		index = idx;
+		file = fil;
+		image = im;
+		randomv = rv;
+		scale = sc;
+	}
+    // indexes and names of the images for chips and rings
+   static final int WHITE_CHIP_INDEX = 0;
+   static final int BLACK_CHIP_INDEX = 1;
+   static final int WHITE_RING_INDEX = 2;
+   static final int BLACK_RING_INDEX = 3;
+   static final int SELECTION_INDEX = 4;
+   static final double RING_YSCALE = 0.75;
+   static final int ALT_INDEX = 5;
+   
+   static final double SCALE[][] = 
+   {{ 0.65,0.58*RING_YSCALE,1.9},
+   	{ 0.55,0.58*RING_YSCALE,1.7},
+   	{ 0.6,0.63*RING_YSCALE,2.0},
+   	{ 0.55,0.63*RING_YSCALE,1.8},
+   	{ 0.6,0.63*RING_YSCALE,1.9},
+   	{0.55,0.45,1.8},
+	{0.60,0.45,1.9},
+	{0.55,0.45,1.8},
+	{0.57,0.45,1.9},
+	{0.6,0.5,1.9}   	
+   };
+
+   static final String[] ImageNames = 
+       {
+           "white-chip", "black-chip", "white-ring", "black-ring", "selection",
+           "white-chip-np", "black-chip-np", "white-ring-np", "black-ring-np", "selection-np"
+      };
+   
+    static YinshChip[] CANONICAL_PIECE=null;
+    
+	// call from the viewer's preloadImages
+	public static void preloadImages(commonCanvas forcan,String ImageDir)
+	{ if(CANONICAL_PIECE==null)
+	  {
+	   int nColors = ImageNames.length;
+       Image IM[]=forcan.load_masked_images(ImageDir,ImageNames);
+       YinshChip CC[] = new YinshChip[nColors];
+       Random rv = new Random(4354535);		// an arbitrary number, just change it
+       for(int i=0;i<nColors;i++) 
+       	{
+       	CC[i]=new YinshChip(i,ImageNames[i],IM[i],rv.nextLong(),SCALE[i]); 
+       	}
+       CANONICAL_PIECE = CC;
+       check_digests(CC);
+	 }
+	}
+
+}

@@ -1,0 +1,318 @@
+/* Specifies the background */
+body {
+	background-image: url(images/border.gif);
+	background-repeat: repeat-y;
+	background-color: #CCDDFF;
+	padding-left: 44px;	/* The Trax tiles are 44 wide */
+	margin: 0px;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+}
+
+/* Links */
+a {
+	text-decoration: none;
+	color: #0000FF;
+}
+a:hover {
+	text-decoration: underline;
+}
+
+/* Set colour of headings to be dark blue */
+h1 {
+	color: #000066;
+	margin: 10px 0px;
+}
+h2 {
+	color: #000066;
+	margin: 10px 0px;
+}
+h3 {
+	color: #000066;
+	margin: 10px 0px;
+}
+h4 {
+	color: #000066;
+	padding: 0px;
+	margin: 5px 0px;
+}
+
+form{
+	display: block;
+	margin: 0px;
+}
+/* This is the bit across the top of the page */
+#head {
+	padding: 10px 10px 10px 10px;
+	height: 65px;
+	background-color: #880066;
+	border-bottom: 3px double #FF0000;
+}
+#logo {
+	padding: 0px;
+	float: left;
+	text-align: center;
+	color: #FFFFFF;
+	font-size: 10px;
+}
+
+/* The topnav is used for the main navigation menu */
+#topnav {
+	padding-right: 50px;
+	font-size: 10px;
+	color: #FFFF00;	
+	width: 310px;
+	float: right;
+}
+#topnav a {
+	float: left;
+	color: #FFFFFF;
+	font-size: 12px;
+	font-weight: bold;
+	line-height: 25px;
+	width: 100px;
+}
+
+#topnav p {
+	display: block;
+	margin: 0px 0px 0px 0px;
+	color: #FFFF00;	
+	line-height: 20px;
+	text-align: right;
+}
+
+#topnav p a {
+	color: #FFFFFF;	
+	line-height: 20px;
+	font-weight: normal;
+	font-size: 10px;
+	float: none;
+	width: auto;
+}
+
+/* Sidenav is used for the submenu on the side */
+#sidenav {
+	display: block;
+	color: #FFFF00;
+	width: 115px;
+	margin-top: 0px;
+	padding-top: 0px; 
+	border-bottom: 3px double #FF0000;
+	background-color: #880066;
+	font-size: 12px;
+	float: left;
+}
+#sidenav h3 {	/* Used to show the menu group */
+	color: #FFFFFF;
+	font-size: 14px;
+	font-weight: bold;
+	margin-left: 10px;
+}
+#sidenav a {
+	color: #FFFFFF;
+	text-decoration: none;
+}
+#sidenav a:hover {
+	text-decoration: underline;
+}
+#sidenav ul {
+	list-style: none;
+	margin-top: 0px;
+	margin-left: 10px;
+	margin-right: 10px;  
+	padding-left: 1em;
+	text-indent: -1em; 
+}
+#sidenav form {
+	text-align: center;
+}
+
+#sidenav form input {
+	font-size: 9px;
+}
+
+#sidenav2 {
+	border-top: 3px double #FF0000;
+}
+
+#sidenav2 span {
+	color: #FFFF00;
+	font-size: 9px;
+}
+
+#sidenav2 form {
+	padding: 15px 0px 15px 0px;
+}
+
+/* This is the id of the division that contains the page details */
+#content {
+	display: block;
+	padding: 15px 10px 20px 10px;
+	margin-left: 115px;
+}
+img {
+	border: 0px;
+	display: inline;
+}
+
+.author {
+	font-style: italic;
+	font-weight: bold;
+	margin-top: 10px;
+	margin-bottom: 10px;
+}
+
+.figure {
+	padding: 5px;
+	text-align: center;
+	width: 100%;
+}
+
+.item {
+	display: block; 
+	border-top: 5px double #880066;
+	padding: 5px 0px 5px 0px;
+	margin-top: 5px;
+}
+.group {
+	display: block;
+	padding: 5px 0px 5px 0px;
+	margin-bottom: 15px;
+}
+
+.news {
+	padding-bottom: 10px;
+}
+.new {
+	font-weight: bold;
+	color: #FF0000;
+	background-color: #FFFF00;
+}
+
+.forum {
+	background-color: #EEEEFF;
+	border: 2px solid #003399;
+	margin-bottom: 12px;
+	padding-bottom: 5px;
+}
+.forum form {
+	display: block;
+	margin: 5px 5px 0px 5px;
+}
+.fhead {
+	background-color: #BA2E97;
+	border-bottom: 1px solid #003399;
+	margin-bottom: 5px;
+}
+.fhead b {
+	color: #FFFFFF;
+}
+.fhead a {
+	color: #FFFFFF;
+}
+
+/* A list of this class uses a trax tile as a bullet */
+.traxlist {
+	list-style-image: url(images/bullet.gif);
+	margin: 0px;
+	padding-left: 40px;
+}
+.notraxlist {
+	list-style-image: none;
+}
+
+/* These are used for tournament tables */
+.results {
+	background-color: #9999FF;
+	text-align: center;
+	border: 1px solid #003399;
+}
+
+.results td {
+	border: 1px solid #003399;
+}
+
+.header {
+	background-color: #003399;
+	font-weight: bold;
+	color: #FFFFFF;
+}
+.header a {
+	color: #FFFFFF;
+}
+.winner {
+	background-color: #33FF33;
+}
+.loser {
+	background-color: #FF3333;
+}
+.roweven {
+	background-color: #FFFFCC;
+}
+.rowodd {
+	background-color: #CCFFCC;
+}
+.compulsory {
+	border: 1px solid #FF0000;
+}
+.event {
+	font-weight: bold;
+}
+
+/* This id is used for the previous / top / next buttons */
+/* This is a class, because there are multiple navigation divs. */
+.nav {
+	border-bottom: 5px double #880066; /*#880066; /*double #003399; */
+	width: 100%;
+	margin-top: 12px;
+	padding-bottom: 12px;
+}
+.nav a {
+	padding: 10px;
+}
+.nav img {
+	vertical-align: middle;
+}
+
+.pbmfig {
+	text-align: center; 
+	font-weight: bold;
+	font-size: 12px;
+}
+
+.pbmfig img {
+	display: block;
+}
+
+/* The footer includes a navigation bar that mirrors the top */
+#bottomnav {
+	display: block;
+	clear: both;
+	padding: 10px 0px 10px 0px;  
+	text-align: center;  
+	margin-left: 115px;
+	font-size: 12px;
+	font-weight: bold;
+	background-color: #880066;
+}
+#bottomnav a {
+	color: #FFFFFF; 
+}
+#bottomnav ul {
+	list-style: none; 
+	text-indent: -3em; 
+	margin-bottom: 0px;
+	margin-top: 0px;
+}
+#bottomnav ul li {
+	padding: 0px 10px 0px 10px;  
+ 	display: inline;  
+}
+
+#disclaimer {
+	display: block;
+	text-align: center;
+	font-size: 10px;
+	margin-left: 115px;
+	padding: 0px 5px;
+	color: #666666;
+}

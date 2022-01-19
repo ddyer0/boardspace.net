@@ -1,0 +1,457 @@
+<HTML><HEAD><TITLE>Options Manager - DISCUS Administration Instructions</TITLE>
+<STYLE>
+<!--
+P {text-align: justify}
+UL {text-align: justify}
+-->
+</STYLE>
+<META NAME="Robots" CONTENT="noindex,nofollow">
+<META NAME="Keywords" CONTENT="options manager,e-mail configuration,time zone,posting options,reverse messages,icons by posts,active URLs,ip banning,duplicate posting checker,message size limits,profanity filter">
+<META NAME="Description" CONTENT="Description of the Options Manager interface, which allows the superuser to configure many aspects of the Discus program, including e-mail notification and e-mail reply, posting options, message order, the profanity filter, ip banning,activated URLs, message size limits, icons by posts, image and attachment uploading restrictions, and the time zone in which the server runs.">
+
+</HEAD>
+<BODY BGCOLOR=#ffffff TEXT=#000000 LINK=#0000ff VLINK=#800080 ALINK=#ff0000>
+<FONT FACE="Verdana,Arial,Helvetica" SIZE=2>
+<TABLE WIDTH=100% BGCOLOR=#ccccff BORDER=0 CELLSPACING=0><TR><TD ALIGN=LEFT><FONT FACE="Verdana,Arial,Helvetica" SIZE=3><B>Options Manager</B></TD><TD ALIGN=RIGHT><FONT FACE="Verdana,Arial,Helvetica" SIZE=2>DISCUS Administration Instructions</FONT></TD></TR></TABLE>
+<P>
+The Options Manager is a collection of many Discus program options that do not fit well into other categories.  It allows configuration of numerous aspects of the program from one central interface.  The Options Manager is restricted to the superuser only, as it controls numerous aspects of the operation of the board.
+<P>
+Most Options Manager settings involve checking a box or filling in some text in the appropriate section.  To save the change, you must scroll to the bottom of the form and click the "Save Options" button.  This will save all of the options that are displayed on the form.
+<P>
+<FONT COLOR=#ff0000><B>IMPORTANT!</B></FONT>  DiscusWare, LLC routinely adds choices to the Options Manager.  If you have upgraded from a previous version of Discus, <B>you may notice that you apparently cannot uncheck options</B>.  This occurs when an option has been added and is, by default, checked.  To be able to uncheck that option, first click "Save Options" with that option checked.  This action writes the parameter to the file.  After saving in that way, uncheck the option as desired and save.  The option will now be unchecked and this workaround will not again be necessary for any option appearing on the page at the time you perform this workaround.
+<P>
+<BLOCKQUOTE STYLE="text-align: justify">
+<HR SIZE=0>
+<IMG SRC="icons/proonly_icon.gif" HEIGHT=15 WIDTH=29 ALT="PRO">
+Some features in this section are available in the professional version of this discussion board software only.  Those items are indicated with a notation as shown here.
+<HR SIZE=0>
+</BLOCKQUOTE>
+<P>
+<A NAME=act><H4>Activation of scripts</H4></A>
+<P>
+This section allows you to enable/disable administration, e-mail notification, posting, and (in the pro version) user self-registration on a global basis.  Each of these functions is described here.
+<P>
+<B>Administration</B><P>
+If checked, moderators will be able to access the administration program normally and will be able to use all administrative tools that they are normally able to use.  This is the default option.  If unchecked, only the superuser will be able to log in to administration (moderators will get a "Denied" message).  This is useful for shutting down a board.
+<P>
+
+<A NAME=eml><B>E-mail notification</B><P>
+If checked, e-mail notification is enabled according to the settings you configure as described in subsequent paragraphs.  If unchecked, e-mail notification messages will not be sent.
+<P>
+<B>Maintenance Mode</B>
+<P>
+If checked, the following services on the board are disabled:
+<P>
+<UL>
+<LI>Posting of new messages
+<LI>Searching for new messages or keywords
+<LI>Editing profiles
+<LI>Administration by moderators other than the superuser
+</UL>
+<P>
+This setting is intended to be invoked by the superuser during periods of temporary downtime (such as regeneration of the board, major administrative actions, reindexing, backing up, or moving the board from one server to another).  It prevents users and moderators from altering the data structure of the board.
+<P>
+<B>Posting</B>
+<P>
+If checked, moderators, users, and the public will be able to post messages according to the posting privileges you have established in the Access Manager.  This is the default option.  If unchecked, no one will be able to post new messages to your board -- this transcends all settings from the Access Manager.  This is useful for shutting down a board.
+<P>
+<B>Server is capable of sending e-mail messages</B>
+<P>
+If checked, the program will use its e-mail features as appropriate, such as for sending out e-mail notification (if enabled by the option above), and, in the professional version, for sending out initial passwords when users register for accounts.  A checked box is the default option and is highly recommended if you have a command line server installed on your system (most unix systems do).  If this box is not checked, you will not be able to check the "E-mail notification" box either, nor will you be able to use other e-mail based features of the software.
+<P>
+To configure e-mail notification for your server, click the "Configure" link next to the server e-mail option.  This brings up the "E-mail Configurator" screen.  If you have a unix server in a standard configuration, and a mail program can be located, the e-mail notification is automatically configured.  Otherwise, you will need to configure it yourself.  This requires some knowledge of the configuration of your server.  Descriptions of the available e-mail options are provided on the configuration page.  When you have specified your options, you can send a test message to yourself by entering your e-mail address and then clicking the "Test" button.  When you know that e-mail notification is working properly, click the "Save Settings" button.
+<P>
+The reply-by-email feature is also configured through this interface.  Documentation for this feature can be found at <A HREF="http://www.discusware.com/support/resources/reply" TARGET=_blank>DiscusWare's site</A>.  Discus Pro also allows moderators to perform basic administrative tasks (delete message, delete conversation, approve or reject message in queue, close conversation, and move message to predetermined location) by replying to an e-mail notification message.  Documentation for this feature is also contained on DiscusWare's site.
+<P>
+The Discus and Discus Pro programs support both the Net::SMTP and the Mail::Sendmail modules as alternatives to using command line mailers.  These are especially useful on Windows servers which do not have command line mailers built in.  To use these options, simply type the name of your SMTP server into the provided space (try "localhost" too).  Note that for these options to be available, one or both of these modules must be installed in your server's Perl library.  If your server does not have the appropriate module installed, download Net::SMTP or Mail::Sendmail from <A HREF=http://www.cpan.org TARGET=_blank>CPAN</A>.  The E-mail Configurator will not display these modules as options if your server does not support them.
+<P>
+<FONT COLOR=#ff0000>DiscusWare does <I>not</I> provide technical support with regard to setting up your e-mail settings, because these settings are server-specific.  If you do not know what mail program to use, ask your ISP.  If you are on a Windows 95/98 or a Windows NT server, a mail program is probably not available on your machine.  If you administer that server, we suggest that you download and install "Blat" mail.  If you are on a Windows NT system that doesn't offer command-line mail services, you will need to switch to a unix-based provider -- a command line mail program is an absolute system requirement for the use of e-mail notification and other e-mail based features.</FONT>
+<P>
+<CENTER>
+<TABLE BORDER=1 BORDERCOLOR=#ff0000 WIDTH=90%><TR><TD BGCOLOR=#000000 Align=Center>
+<FONT FACE="Verdana,Arial,Helvetica" SIZE=2 COLOR=#ffcccc><B>Typical Configuration of "sendmail"</B></FONT></TD></TR>
+<TR><TD BGCOLOR=#ffcccc><FONT FACE="Verdana,Arial,Helvetica" SIZE=2 COLOR=#000000>
+<U>Mail Program Location</U>: <B>/usr/lib/sendmail</B> or <B>/usr/sbin/sendmail</B> (varies).
+<BR><BR>
+<U>Mail Program Settings</U>: <B>Send input directly into the mail program (no temporary file)</B>
+<BR><BR>
+<U>Necessary Command Line Options</U>: <B>-t</B>
+<BR><BR>
+<U>TO</U>: <B>TO:</B> in the input stream
+<BR><BR>
+<U>FROM</U>: <B>FROM:</B> in the input stream
+<BR><BR>
+<U>USER</U>: <B>Do not use this parameter</B>
+<BR><BR>
+<U>BCC</U>: <B>BCC:</B> in the input stream
+<BR><BR>
+<U>SUBJECT</U>: <B>SUBJECT:</B> in the input stream
+<BR><BR>
+<U>REPLY-TO</U>: <B>REPLY-TO:</B> in the input stream
+</FONT></TD></TR></TABLE>
+</CENTER>
+<BR><BR>
+<CENTER>
+<TABLE BORDER=1 BORDERCOLOR=#ff0000 WIDTH=90%><TR><TD BGCOLOR=#000000 Align=Center>
+<FONT FACE="Verdana,Arial,Helvetica" SIZE=2 COLOR=#ffcccc><B>Typical Configuration of "mail"</B></FONT></TD></TR>
+<TR><TD BGCOLOR=#ffcccc><FONT FACE="Verdana,Arial,Helvetica" SIZE=2 COLOR=#000000>
+<U>Mail Program Location</U>: <B>/bin/mail</B> or <B>/usr/bin/mail</B> (varies).
+<BR><BR>
+<U>Mail Program Settings</U>: <B>Send input directly into the mail program (no temporary file)</B>
+<BR><BR>
+<U>Necessary Command Line Options</U>: <I>leave blank</I>
+<BR><BR>
+<U>TO</U>: <I>leave blank</I> on the command line
+<BR><BR>
+<U>FROM</U>: <B>Do not use this parameter</B>
+<BR><BR>
+<U>USER</U>: <B>Do not use this parameter</B>
+<BR><BR>
+<U>BCC</U>: <B>-b</B> on the command line
+<BR><BR>
+<U>SUBJECT</U>: <B>-s</B> on the command line
+<BR><BR>
+<U>REPLY-TO</U>: <B>Do not use this parameter</B>
+</FONT></TD></TR></TABLE>
+</CENTER>
+<BR><BR>
+<CENTER>
+<TABLE BORDER=1 BORDERCOLOR=#ff0000 WIDTH=90%><TR><TD BGCOLOR=#000000 Align=Center>
+<FONT FACE="Verdana,Arial,Helvetica" SIZE=2 COLOR=#ffcccc><B>Typical Configuration of "BLAT"</B> (<A HREF="http://www.discusware.com/support/resources/windows/blat.html" TARGET=_blank>More Information</A>)</FONT></TD></TR>
+<TR><TD BGCOLOR=#ffcccc><FONT FACE="Verdana,Arial,Helvetica" SIZE=2 COLOR=#000000>
+<U>Mail Program Location</U>: <B>C:/WINDOWS/SYSTEM/BLAT.EXE</B> (varies).
+<BR><BR>
+<U>Mail Program Settings</U>: <B>Send input into a temporary file</B>
+<BR><BR>
+<U>From Name</U>: <I>leave blank</I>
+<BR><BR>
+<U>From Address</U>: <B>Name &lt;your_email@your.domain.com&gt;</B>
+<BR><BR>
+<U>Necessary Command Line Options</U>: <B>-q</B> (leave blank on some systems)
+<BR><BR>
+<U>TO</U>: <B>-t</B> on the command line
+<BR><BR>
+<U>FROM</U>: <B>Do not use this parameter</B>
+<BR><BR>
+<U>USER</U>: <B>-f</B> on the command line
+<BR><BR>
+<U>BCC</U>: <B>-b</B> on the command line
+<BR><BR>
+<U>SUBJECT</U>: <B>-s</B> on the command line
+<BR><BR>
+<U>REPLY-TO</U>: <B>Do not use this parameter</B>
+</FONT></TD></TR></TABLE>
+</CENTER>
+<BR><BR>
+<CENTER>
+<TABLE BORDER=1 BORDERCOLOR=#ff0000 WIDTH=90%><TR><TD BGCOLOR=#000000 Align=Center>
+<FONT FACE="Verdana,Arial,Helvetica" SIZE=2 COLOR=#ffcccc><B>Typical Configuration of SMTP server</B></FONT></TD></TR>
+<TR><TD BGCOLOR=#ffcccc><FONT FACE="Verdana,Arial,Helvetica" SIZE=2 COLOR=#000000>
+<U>SMTP server</U>: <B>mail.yourdomain.com</B> (varies).
+<BR><BR>
+<I>The other parameters are not used if you have checked the "SMTP server" option.
+</FONT></TD></TR></TABLE>
+</CENTER>
+<P>
+<A NAME=user><IMG SRC="icons/proonly_icon.gif" HEIGHT=15 WIDTH=29 ALT="PRO"><B>User self-registration</B><P>
+If checked, using the User Manager, user self-registration can be enabled for specific groups.  The registration form is then provided on the "Edit Profile" screen with full instructions.  If unchecked, user self-registration is denied for all groups and is not ever displayed, regardless of any User Manager settings.  This is the default option.
+<P>
+Clicking the "Configure" link brings up three options that can be set affecting user self-registration on your board.
+<P>
+<UL>
+<LI><B>Registration Screen</B>: Select whether or not to display a list of topics on the registration screen.  If checked, a list of topics is presented, and users can check the topics they wish to join.  If unchecked, a user applies to all topics on the board.  Also available is the ability to hide any topics that are read-restricted from the topic list, should you enable it.  You have the option to have all of the boxes be checked by default if you wish.  Also available is the ability to allow only one selection from the list (this is useful only if each topic belongs to a separate group and you want users to register for only one group).
+<P>
+<LI><B>Welcome Message</B>: The "Welcome Message" is displayed to users when they first click the "Instant Registration" button.  You can customize this text by providing more specific instructions if you wish.  You may use formatting tags (except image upload) in your Welcome Message.  To save a new welcome message, click "Preview/Save Welcome Message" and on the ensuing preview screen, if the message is properly entered, click "Save Message."
+<P>
+<LI><B>Ban Abusive Domains</B>: You can prevent users from registering with e-mail addresses from certain domains. Enter the domains, one per line, to ban. This affects new user self-registrations only; it does not affect registered users or any users that moderators add.  To save a list of banned domains, click the "Save Banned Domains" button.
+</UL>
+<P>
+<A NAME=ci><H4>Contact Information</H4></A>
+<P>
+When error messages are presented to your users, they always list a general contact person.  This contact person was set up when you initially installed Discus.  To change the contact name or e-mail address, enter this new information in these provided boxes.
+<P>
+<A NAME=cm><H4>Conversation/message options</H4></A><P>
+This section allows you to set several options with respect to the appearance and function of conversations (subtopics) and messages on your board.  Descriptions of these options follow.
+<P>
+<B>Activate URLs and e-mail addresses in posts</B><P>
+If checked, this will convert any URL of the form <I>http://www.server.com/dir/page.html</I> and any e-mail address of the form <I>username@domain.com</I> to an "active link."  This is the default option, although automatic conversion is invoked only if the user has not used other formatting in the post (since it is assumed that if other formatting is used, the user would also know how to use the \link{} and \mail{} formatting tags).  If unchecked, this automatic activation does not occur.
+<P>
+<B>Allow posts as "Anonymous"</B><P>
+If checked, users, moderators, and the public can post as "Anonymous" by checking the box on the "Add a Message" form. This is the default option, although the identity of the poster can always be determined through the Page Manager by clicking on the "Info" button. If unchecked, the box for anonymous posting is removed from all forms and anonymous posting is disabled.
+<P>
+<B>Allow URLs to be entered in e-mail address box</B><P>
+If checked, when a visitor posts a message in a public area, and that visitor is not registered or did not type in a username or password, Discus will allow the e-mail field to contain a URL rather than an e-mail address.  Clicking the link under the poster's name will bring up the requested URL.  If this box is not checked, Discus will not permit URLs in the e-mail address at all.
+<P>
+<B>Allow arbitrary HTML in posts (strongly discouraged)</B><P>
+If checked, posts made to the board will not be scanned for Discus formatting tags or have HTML tags removed.  The entries to the board will be posted just as the user entered them, allowing any HTML directives that are desired.  This is strongly discouraged due to the potential for abuse, as there is nothing that will stop users from entering JavaScript, META tags, or unclosed HTML tags that will ruin the display of pages.  If you check this option, you will be making your board the security risks noted in CERT advisory 2000-02 (Malicious HTML tags embedded in client web requests).  Additionally, if your server recognizes server-parsed code (such as PHP, SSIs, or DHTML), you may also be exposing yourself to security risks.  This option should be considered for use only if the board is being accessed only by highly trusted users, and we don't even recommend enabling it then.  This is dangerous, and we don't recommend enabling it unless you know exactly what you are doing.
+<P>
+<A NAME=altclr><B>Alternating colors defined</B></A>
+<P>
+Alternating colors can be used in your template files.  Instructions on implementing these alternating colors can be found in documentation on editing the templates.  The colors are to be entered in hex codes (e.g., #FFFFFF for white or #FF0000 for red) and correspond to identifiers placed in the template files.  This is given as an option in this location for historical reasons, and the checkbox cannot be saved in an unchecked state.
+<P>
+<B>Capitalize first letter in user-created subject lines</B><P>
+If checked, when a user creates a conversation through the user interface, the first letter in the name of the conversation is automatically capitalized.  This is the default option, and in most instances, the desired behavior to make the list of subtopics more attractive.  If unchecked, the subtopic is created exactly as typed.
+<P>
+<B>Capitalize first letter in usernames</B><P>
+If checked, when a user posts a message and the username is to be displayed (in parentheses or as the name of the poster), the first letter is automatically capitalized.  If this is unchecked, the username is displayed in all lower-case letters.
+<P>
+<B>Create pages in user interface with "Add a Message" box</B><P>
+If checked, the program will create pages in the user interface with an "Add a Message" box whenever someone uses the "Create New Conversation" button to make a new discussion.  This is the default and throughout the history of Discus has been how the program works.  However, if for some reason, you don't want user-created pages to have an "Add a Message" box in them, then uncheck this box.
+<P>
+<B>Create pages in user interface with "Create New Conversation" button</B><P>
+This option essentially lets you make your board threaded. If you check it and someone uses the "Create New Conversation" button to make a new discussion, that new discussion will have a "Create New Conversation" button of its own.  Essentially you're inviting  your board to get out of hand if you use this option, although in some cases it is useful, which is why it is an option in the first place. <P>
+<B>Double post protection (prevents duplicate postings)</B><P>
+If checked, the program verifies that the same user did not post exactly that same message within the last two minutes, preventing annoying double posts.  This is the default option.  If unchecked, double post protection is not used, but we can't think of a single instance why you would not want double post protection to be enabled.
+<P>
+<B>E-mail addresses/links to profile on posts</B><P>
+If checked, the user's e-mail address from that user's profile is created as a mailto link under the user's full name and username, or if you are the pro version and the user has a profile defined, a link to the user's profile is created.  This is the default option, although it can be turned off on a per-topic basis through the Access Manager.  If unchecked, the link is not created, which is useful if you are concerned about "spambots" going through your discussion board.
+<P>
+<B>Full name on posts</B><P>
+If checked, the user's full name from that user's profile is displayed on the post.  This is the default option, although it can be turned off on a per-topic basis through the Access Manager.  If unchecked, the link is not created, which is useful if your users are abusing this function.
+<P>
+<B>Icons by posts</B><P>
+If checked, navigational icons are placed next to each post that allows the user to quickly jump to the top, the previous message, the next message, or the bottom, or to copy a hyperlink to the message.  If unchecked, these icons are not displayed.  This can be checked or unchecked as you wish, and all pages on your board will be automatically updated.  For historical reasons, this option is unchecked by default.  If you have this option checked, you can change the icon associations to any file that resides in your Discus icons directory by entering a new file name in the text box.  The script automatically sizes the icons to 12x12 in the display, so if you change the icon file names, be sure your new icons have this size.
+<P>
+<B>IP addresses on posts</B><P>
+If checked, the IP address (host and numeric address) are placed next to the user's name when a message is posted.  If unchecked, this does not occur, which is the default option. This is useful for preventing abuse on large public boards, because potential abusers are identified and discouraged from posting.  Remember that the IP information is always available from within the Page Manager by clicking on the "Info" button, regardless of whether the IP information is placed on the post.
+<P>
+<B>Issue warning JavaScript box if post preview page didn't load entirely</B>
+<P>
+If checked, Discus will use the onLoad JavaScript capabilities of the browser to make sure that the post preview page has loaded entirely before the form can be resubmitted.  If the page wasn't properly loaded, data such as the username field and the end of the text may not properly be transmitted to the server.  If you use this option and someone tries to submit the form before the page is done loading, an error message will be issued in a JavaScript box.  If you or your users will find this safeguard annoying, then don't enable this option.
+<P>
+<B>Moderators can disable e-mail notification for a given post</B><P>
+If checked, Discus will allow moderators to disable e-mail notification for a post made by that moderator.  This option is available as a checkbox when posting through Page Manager and can be selectively implemented by adding a form field named <B>no_email</B> when posting a message.  If the poster is not an authenticated moderator, this field is ignored.  The superuser has the ability to do this automatically, regardless of whether this box is checked.
+<P>
+<B>Perform HTML to formatting tag conversion</B><P>
+If checked, basic HTML tags, such as bold, italics, links, and colors, are converted into Discus formatting tags, ensuring valid HTML in the post and protecting against malicious JavaScript, SSIs, META tags, etc.  This is the default option, and is useful for large public boards with users who will be visiting infrequently and thus do not wish to learn the Discus formatting tags.  If unchecked, the HTML code will be rendered as "escaped" HTML code in the post.  Conversion is invoked only if the user has not used other formatting in the post (since it is assumed that if other formatting is used, the user knows the formatting language and does not need to use HTML).
+<P>
+<IMG SRC="icons/proonly_icon.gif" HEIGHT=15 WIDTH=29 ALT="PRO"> <B>Perform RTF to formatting tag conversion</B><P>
+If checked, an RTF file pasted directly into an "Add a Message" box is converted to Discus formatting tags.  <FONT COLOR=#ff0000>This feature is experimental and usually requires some manual editing of the resulting output.  DiscusWare does not support this function.</FONT>
+<P>
+<A NAME=profanity><B>Profanity checker</B><P>
+If checked, certain words that are defined by the administrator are replaced by red dots in the resulting post.  This is the default option.  If unchecked, profanity filtering does not occur.  To create or modify a word list, click "Edit word list" and enter the "naughty" words, one per line.  DiscusWare does not distribute a profanity list -- you'll have to make it up yourself.  You have the option of how to handle profanity, either by rejecting the post outright or by replacing the bad word with red dots.
+</P>
+<B>Send e-mail notification only to moderators</B><P>
+If checked, only moderators will be permitted to register for e-mail notification.  If unchecked, both registered users as well as moderators can register for e-mail notification.
+</P>
+<B>Spell checker button (www.spellchecker.net)</B><P>
+If checked, your board will contain a button to check spelling using the services of www.spellchecker.net.  Also, the language for the spell check can be selected using the drop-down box or by typing the appropriate language code into the provided text box, following instructions on the screen of the interface.  Finally, if you have been assigned a customer ID directly by www.spellchecker.net, you can type that into the text box.  If you have not been assigned a customer ID, just leave the box blank.  The service may not work properly if an incorrect or made-up customer ID is entered into the box.  The spellchecker.net service requires Netscape Navigator 3.0 and higher or Microsoft Internet Explorer 4.0 and higher.
+</P><P>
+You can learn more about this spell checking service from their home page, <A HREF="www.spellchecker.net" TARGET=_blank>www.spellchecker.net</A>.
+</P>
+<B>Username in (parentheses) on posts</B><P>
+If checked, posts by registered users and moderators are placed after the full name on the post to indicate that the post was made by a registered user or moderator.  If unchecked, this is not performed (this allows forgery by public users if you have public posting enabled).
+</P>
+<IMG SRC="icons/proonly_icon.gif" HEIGHT=15 WIDTH=29 ALT="PRO"> <B>Users may edit their own posts within (X) minutes</B><P>
+If checked, users will be able to edit their own posts within the number of minutes that you specify.  The default is that this option is checked and allows editing within 30 minutes, which is a sufficient "grace period" to make minor changes to the message, but does not allow users to come back many days later and alter the conversation.  If unchecked, user post editing is disabled.  If you want to allow users to edit their posts any time, check the box and set the time limit to a large number like 999999.
+<P>
+<A NAME=gen><h4>General, Miscellaneous Options</H4>
+<B>Administration: Display moderator login history</B><P>
+If enabled, the administration program will display a message to each moderator when logging in about the last time they accessed administration (date, time, and IP host), as well as any failed logins on their account.  This is a great security feature, as a moderator can tell instantly if someone is attempting to gain unauthorized access to administration.  The change will take effect when you (or another moderator) next logs in; it does not take place instantly after saving the options.
+<P>
+<B>Administration: Display version message in main menu</B><P>
+If enabled, the Discus version number is displayed at the bottom of the main menu in addition to the copyright message.  Note that the copyright message is required to be left in place under the terms of the Discus license agreement.  If this is disabled, only the copyright notice will be displayed.  The change will take effect when you (or another moderator) next logs in; it does not take place instantly after saving the options.
+<P>
+<B>Administration: Log actions of board moderators</B><P>
+If enabled, Discus will log all actions of board moderators who have logged in to the administration program.  The log is created as the file "admin-actionlog.txt" in the msg_index directory.  The file is tab-delimited and lists the username, remote address, time, script name, and form parameters that are sent.  This log is updated every time a moderator performs an administrative action through a web browser.  Passwords are not recorded in this log file.  You are cautioned that currently this file is not automatically rotated and it can grow to be very large if you or other moderators regularly access administration.  The log analysis tools in future versions of Discus may be able to analyze this log and allow you to search by moderator, action, or time.
+<P>
+<B>Board Regeneration: Use faster indexing (no gauge)</B><P>
+When the board is regenerated, a graphical gauge is displayed on the page to indicate the progress.  Checking this box turns off the graphical gauge but substantially speeds up the reindexing process.  This is a choice between aesthetic value for the superuser during regeneration and performance.  We suspect that most will check this box at some point.
+</P>
+<P>
+<B>Dates: Place a &quot;0&quot; in front of months and days less than 10</B><P>
+If this option is checked and either the month or the day (or both) is less than 10, Discus will place a "0" before the number.  For example, June 26 would be written as "6/26" with this option unchecked and "06/26" with this option checked.  April 3 would be written as "4/3" with this option unchecked and "04/03" with this option checked.  December 25 is written as "12/25" regardless of whether you have checked this option or not.
+</P>
+<P>
+<B>Disk quota checking: Disable board immediately if quota problem detected</B><P>
+If the program detects that there is a disk quota issue (files are being written with the wrong size or files cannot be written at all), Discus can disable your board immediately to prevent data loss or corruption.  Although this will temporarily shut out your users until you come back to reactivate your board, it is <B>highly recommended</B>.  If there is indeed a disk quota problem, all of your important data files will be wiped out, overwritten with zero-length files.  Enabling this option will prevent or limit this massive data loss.  Disable at your own risk...
+</P>
+<P>
+<B>Disk quota checking: Disable file size verifications (not recommended)</B>
+<P>
+If unchecked, Discus will verify the integrity of important data files (users database, password database, etc.) against possible disk quota problems.  Detected problems will result in a "quota problem" and will disable the board to prevent corruption if the above option is checked.  If you check this option, it may result in the loss of your entire user database and moderator database in addition to corruption of many files on your board.  This disk quota checking is an important feature of Discus and it is for this reason that DiscusWare strongly discourages you from checking this box.  Do so at your own risk...
+</P>
+<P>
+<B>E-mail notification: Put link to discussion prior to reply form</B>
+<P>
+If checked, Discus will put the clickable link (to the show.cgi script) prior to the e-mail reply form.  If unchecked, the reply form will go before the link.  This option is relevant only if e-mail reply has been enabled under the e-mail configuration section.  Whether or not the link is clickable depends on the end-user's e-mail client, although most modern clients support clickable links.
+</P>
+<P>
+<B>File Locking: Disable board if file locking does not work properly</B>
+<P>
+The Discus file locking system creates a "lock" file when a process attempts to write a file so as not to let other processes interfere.  However, there are some platforms (notably some Windows NT platforms) where removing a "lock" file sometimes does not work properly due to a permissions issue.  If this box is checked, Discus will disable the board if the file locking is not working properly (lock files are not being removed).  This is similar to a disk quota event.  If unchecked, Discus won't disable the board; it will simply log the error and proceed.  DiscusWare strongly urges you to leave this box checked and resolve the problem by properly setting permissions.  Uncheck at your own risk.
+</P>
+<P>
+<B>File Locking: Use file-based locking instead of directory-based locking</B>
+<P>
+The Discus file locking system most efficiently locks files by creating special files in a "locks" directory for each file being locked and then removing the file lock by deleting the file when it is finished.  This works much faster than previous versions of Discus, which recorded locked files in a special text file.  However, there are some platforms where this does not work properly due to a permissions issue (notably some Windows NT platforms).  Checking this box will cause Discus to lock files using a file that records all file locks.  Note that this message is less foolproof than the directory-based locking, and DiscusWare strongly discourages the use of this setting.  Consequences of file locking failures are corrupted board files.  This setting also makes it more likely that a user will experience a file locking error message.
+</P>
+<P>
+<B>Image Upload: Check message source for validity</B>
+<P>
+When a user uploads an image, Discus sends the source of the message in a hidden field in the upload form and uses this source to regenerate the message.  If checked, this option will compare the source sent by the browser to the source on the message page to ensure that they match.  However, this option slows down processing and, in cases where customizations have been made, may present faulty error messages.  If unchecked, a crafty user could, in theory, create a custom form to edit a message that has been posted using the image upload form.  However, this would be difficult in practice, especially if the referring page check (next item) is turned on.  In addition, since uploads and edits are not accepted after 10 minutes from the time of the post, this procedure would not be effective for long-term editing.  To summarize, by leaving this option unchecked, you improve performance and eliminate any errors that may be introduced by customization, at the risk of letting a crafty user edit his or her own post within 10 minutes of posting it.  We recommend leaving this box unchecked.
+</P>
+<P>
+<B>Image Upload: Check referring page for validity</B>
+<P>
+If checked, Discus will check the HTTP_REFERER environment variable to ensure that the image upload script is being accessed from an acceptable referring page (such as the image uplaod script or posting script).  This can cause problems on misconfigured servers or for users who operate through a proxy that disrupts this variable.  If you regularly get an error message about an invalid referring page when you upload images, disable this option.
+</P>
+
+<P>
+<B>Message Source: Do not store message source</B>
+<P>
+In previous versions of Discus, the source code for a posted message (which contains all formatting tags and the other exact formatting entered by the user) was stored in comments on the page itself.  In version 3.10, this was moved to separate files under the "msg_index" directory to reduce data transfer to the visitor.  However, it is possible with almost absolute reliability to translate the HTML code produced by the Discus formatting engine back into source code, and the input is generally identical to that entered by the user.  There is room for subtle differences with this approach which may confuse new users.  If you check this option, Discus will no longer store the message source in separate files, which reduces the amount of disk space used by the program considerably.  Also, operations dealing with messages (such as posting, editing, moving messages and subtopics, etc.) will be faster as there is no message source file operation to perform.  There is a tradeoff for better performance in terms of ensuring that the message source in "edit" boxes will always be the exact text typed in by a user, which is why we leave this as an option to you, the board administrator, to select for your board.  Note that you cannot really "undo" this later, as message source for messages posted when this option was selected will not have been stored.  That message source will always be inverse-converted to Discus formatting codes.
+</P>
+
+<P>
+<B>Navigation Bar: Use alternate URL for topics page</B>
+<P>
+If checked, Discus, instead of linking to the main Discus topics page in navigation bars, will link to the URL that you type in the box that follows on the next line.  Note that this change will affect navigation bars in the user interface only.  It will not make Discus do any special writing to the file you have selected.  There is no checking within Discus of the validity of the page you enter here, so if you do something wrong, it could create a 404 (Not Found) error when your users click the link.  It is recommended that you use a full URL (starting with <B>http://</B>) in the box when specifying this option.  Note that your changes are not automatically applied to all pages when you check or un-check this option.  To apply your changes to all pages, after saving your options, you must go to Board Manager and click the "Regenerate Pages" button.  Finally, if you leave the URL blank but you leave the box checked, Discus will not link to the topics page at all (there will be nothing displayed at all for your topics page).
+<P>
+<B>Profiles: Limit length of full name to ### characters</B>
+<P>
+If checked, Discus will limit the number of characters in a user's "Full Name" to the number of characters that you specify in this box. This is designed to prevent abuse of profile names.
+<P>
+<B>Search Engine: Do not verify IP address upon searches</B>
+<P>
+If checked, Discus will disable the check performed in keyword searching that ensures when an individual clicks "Next" or one of the similar links in a keyword search, that the requesting IP address matches the IP address with which the search was originally performed.  Certain proxy software packages result in the IP address being altered from time to time and thus produce an error message when someone attempts to view the next page in search results.  Check this box if you are having a problem with this.
+<P>
+<B>Search Engine: Use &quot;Stop Words&quot; to create smaller index files</B>
+<P>
+If checked, Discus will use the "stopwords.conf" file to remove commonly used words from the search index that is created.  Unchecking this may be necessary for some non-English languages, especially those which are not based on alphanumeric characters.  After changing this setting, it is recommended to go to Board Manager and click the button to regenerate the search index.
+</P>
+<IMG SRC="icons/proonly_icon.gif" HEIGHT=15 WIDTH=29 ALT="PRO"> <B>Skip archives in "New Messages" searches</B><P>
+If checked, archive conversations will not be displayed in the New Message search.  Archive conversations for the purposes of this feature are those conversations created by Discus Pro automatic or manual archiving procedures.  Choosing this option may improve the speed with which New Message results are displayed.
+</P>
+<IMG SRC="icons/proonly_icon.gif" HEIGHT=15 WIDTH=29 ALT="PRO"> <B>Skip archives in "Tree View"</B><P>
+If checked, archive conversations will not be displayed in the Tree View display.  Archive conversations for the purposes of this feature are those conversations created by Discus Pro automatic or manual archiving procedures.  Choosing this option may improve the speed with which Tree View results are displayed.
+</P>
+<IMG SRC="icons/proonly_icon.gif" HEIGHT=15 WIDTH=29 ALT="PRO"> <B>Spell Checker: Dictionary files not in alphabetical order</B><P>
+The Discus Pro spell checker assumes that the dictionary file is in alphabetical order.  If you get a large number of flagged misspelled words even though those words are in the dictionary, your dictionary is probably not in alphabetical order.  Checking this box will make messages with spell check take slightly longer (this depends on the words in the message) but will allow Discus to compensate for dictionaries that are not properly sorted.
+</P>
+<B>Topics Page: Do not print CSS style definitions of &lt;P class=desc&gt; tag</B><P>
+For backward compatibility, Discus prints a definition of the &lt;P class=desc&gt; tag in the header section of the topics page each time the page is regenerated.  However, in some cases this definition may interfere with other style tag definitions that are being inserted into the templates or skins by people who are customizing the look of the pages.  Checking this option will cause Discus not to print the definition of the tag onto the topics page.  If the classic or updated classic skin is being used, or any template set that defines descriptions on the topics page with this tag, the definition will be needed to be added appropriately to the template file.
+</P>
+<B>Topics Page: Do not update when posting messages, etc.</B><P>
+If checked, Discus will never attempt to update the board topics page.  Generally, the topics page needs to be updated each time a message is posted or other activity occurs so that dates, message counts, etc., are all updated.  This option should be checked only if you know exactly what you're doing!  This is a good idea only if you know that your users will not be visiting your topics page and you don't care if it looks bad.
+</P>
+<B>User Manager: Show <FONT COLOR=#ff0000>*</FONT> for users who have never logged in</B><P>
+If checked, Discus will display <FONT COLOR=#ff0000>*</FONT> next to any users who have never logged in (like in version 3.01).  Note that if you also display the "Last Logged In" data, this display is redundant, which is why it is now an option.
+</P>
+<B>User Manager: Show "Last Logged In" to moderators</B><P>
+If enabled, the User Manager will display the date when the user last accessed his or her account.  This display is similar to the display in the Moderator Manager which shows when a moderator last accessed his or her account.
+</P>
+<IMG SRC="icons/proonly_icon.gif" HEIGHT=15 WIDTH=29 ALT="PRO"> <B>User Profiles: Picture upload enabled</B><P>
+If checked, users will be able to upload pictures of themselves in their user profiles.  The file size is limited by the limits specified in the "Image and Attachment Uploading Options" section.
+</P>
+<B>Users can change their passwords</B><P>
+If checked, users will be able to change their passwords.  Moderators will <I>always</I> be able to change their passwords, and the superuser or moderators will always be able to change the passwords of users for them.
+</P>
+<IMG SRC="icons/proonly_icon.gif" HEIGHT=15 WIDTH=29 ALT="PRO"> <B>User Self-Registration: Allow self-registered users to change their e-mail address</B><P>
+If checked, all users will be able to change their e-mail addresses.  If unchecked, those individuals who register via the instant registration method will not be able to change their e-mail addresses (this prevents them from registering under a real e-mail address and then changing their e-mail address to something else after receiving their password).
+</P>
+<IMG SRC="icons/proonly_icon.gif" HEIGHT=15 WIDTH=29 ALT="PRO"> <B>User Self-Registration: Require an e-mail address to be entered upon registration</B><P>
+If checked, when registering for an account, users will need to input an e-mail address that is of valid form (including an @ sign, etc).  Note that this does <U>not</U> guarantee that the e-mail address will be valid (use the user queue or e-mail verified options to achieve this).  If unchecked, prospective users will be able to leave the e-mail address blank upon registration (note, however, that they won't ever be notified of their new account if this box is unchecked and you're using either the user queue or the e-mail verified mechanism).</P>
+
+<B>Reindexing factor</B><P>
+This number is used internally by the program to control how often the progress gauge refreshes when you are doing operations such as reindexing the board or regenerating subtopic and message lists from templates.  The larger you make this number, the <I>less</I> often the program will refresh the screen.  The default is <B>15</B> which does not let any process take more than 2-3 seconds to complete.  If you know that your server does not have time limits on processes, you can increase this number.  This will let the server work for a longer time uninterrupted and will not depend as much on the speed of your internet connection.  <U>Change this option only if you understand what this does and what you are doing!</U>
+</P>
+
+<B>Template Manager box size</B><P>
+This option controls the size of the text box in the editor portion of the Template Manager interface.  You can specify the number of rows and the number of columns that will be present in the text box.  The default is 20 rows and 75 columns for a good fit on most displays.
+</P>
+
+<A NAME=img><h4>Image and Attachment Uploading Options</H4>
+<P>
+One of the most unique features to Discus is image upload (and in-line display).  Discus Pro also allows upload of attachments (non-image files, such as documents).  Although incredibly useful, this feature has the potential to be misused, by uploading inappropriate images or very large files.
+<P>
+If the "Image uploading and attachment uploading enabled" box is checked, image uploading and attachment uploading are permitted.  This is the default option.  If unchecked, image uploading and attachment uploading will not be allowed at all on the discussion board.
+<P>
+You can also set file size limits for the uploaded images or attachments, distinguished by the privileges of the poster (public vs. registered user).  The file size limit is entered in kilobytes, and a value of "0" indicates no limit.  Setting a file size restriction of -1 effectively disables uploading, as there are no files that are less than -1000 bytes in length!  File size limits also apply to pictures uploaded with registered user profiles in Discus Pro.
+<P>
+
+
+<A NAME=intl><h4>International Character Set</H4>
+<P>
+
+If your language requires that an international character set META tag to be placed onto each page in order to have the characters display properly, you can enter the international character set in the blank.  This will be automatically placed on all pages in the Discus user interface (messages and utilities).  If you change this, you should regenerate your board by going to Board Manager and clicking the button to regenerate pages.
+
+<A NAME=ip><h4><IMG SRC="icons/proonly_icon.gif" HEIGHT=15 WIDTH=29 ALT="PRO"> IP banning</H4>
+<P>
+IP banning is offered in Discus Pro to deny all access to all scripts from the domains you specify.  This is useful in two contexts:  to ban abusive users or those who repeatedly attempt to break into your system, or to completely shut down a board that is no longer used.
+<P>
+To add a host name, IP number, or wildcard pattern to the list, type that information into the empty text box in the IP banning session, and save your settings.  To remove a host name, IP number, or wildcard pattern from the list, uncheck the box next to the existing entry and save your settings.
+<P>
+Because the message files are ordinary HTML files, your IP banning settings will not affect whether or not a person can read messages on your board.  However, IP banning will prevent someone from posting messages, registering for an account, accessing private topics, or accessing administration.
+<P>
+<FONT COLOR=#ff0000>Warning:  It is possible to lock yourself out if you enter your own host name into the blank, or you enter a wildcard pattern that your host name will match. This can be repaired only by using FTP or telnet access to remove that configuration setting from the Discus system.  Thus, use caution when specifying your settings!  If you type just "*" into the blank, all hosts (including yourself) will be banned from accessing the scripts.</FONT>
+<P>
+<A NAME=la><h4><IMG SRC="icons/proonly_icon.gif" HEIGHT=15 WIDTH=29 ALT="PRO"> Log analysis configuration</H4>
+<P>
+The <A HREF="board-admin-instr-10.html">Log Analysis</A> utility allows you to analyze a server's access log (in NCSA or NCSA extended format) to determine the number of accesses to your pages (i.e., "reads").  This requires that a log is kept somewhere and that your server has access to that log.  If you know where the log is, enter the full filename of the access log in the blank.  If you don't know where the log is, ask your server administrator or ISP.  You are permitted to specify up to 5 access logs for your system, if older rotated logs are maintained.  You should list the access logs from the most recent (at the top) to the oldest (at the bottom).
+<P>
+Analyzing the posting log will work properly regardless of whether the setting described here is properly configured, as posting log analysis uses a log file maintained by the Discus program.
+<P>
+<A NAME=ml><h4><IMG SRC="icons/proonly_icon.gif" HEIGHT=15 WIDTH=29 ALT="PRO"> Mailing list generation</H4>
+<P>
+You can generate a mailing list of all registered users on your system, all moderators on your system, or a combination list of all registered users and all moderators on your system, if the need arises to send out a mass-mailing.  The list that is generated lists each unique e-mail address only once, regardless of how many user accounts or moderator accounts have that e-mail address.  To generate a list, click the appropriate link for the mailing list you wish to generate.  You can then select the list of e-mail addresses that is produced and copy/paste it to another program.
+<P>
+<A NAME=msgsize><h4>Message size limits</h4>
+<P>
+With this option, you can put a maximum limit on the number of characters that a poster can use in their message.  This option is intended to be used to prevent abuse.  Note that most browsers have a size limit of about 32,000 characters in the text box.  Message size limits can be distinguished by the privileges of the poster (public vs. registered user).  The message size limit is entered in kilobytes, and a value of "0" indicates no limit. Note that 1,000 characters = 1 kilobyte.
+<P>
+<A NAME=newmsg><h4>New Messages Search Options</h4>
+<P>
+This section allows you to configure the look and feel of the "New Messages" page.  Your changes, once saved, become immediately viewable on the "New Messages" screen.  The choices are self-explanatory as to what they do.  Unchecking the "Show date and time of last post on search screen" will speed up the initial display of the screen slightly, as Discus will not have to examine the log files to determine the last time.  This speed improvement will be less than a second even for very large boards; however, if this page is hit frequently and this information is not needed, it will result in slight conservation of resources.
+<P>
+<A NAME=order><h4>Order of items</h4>
+<P>
+With this option, you can configure the order of items (subtopics and messages) that users add or post through the user interface.  The "normal" order, applied when all boxes are unchecked, is that new subtopics are added to the bottom of the list, and new messages are added to the bottom of the list.  You can reverse this order, meaning that new subtopics will be added to the top of the list, and new messages will be added to the top of the list.  You can also choose to alphabetize the subtopics.  (Choosing both to alphabetize and to reverse the subtopic order will result in the subtopic order being sorted from Z to A.)
+<P>
+
+<B>Add new subtopics to top</B>:  New subtopics added by users via the "Create New Conversation" button are added to the top of the list, rather than the bottom of the list.  Adding to the bottom of the list is the default.
+<P>
+<B>Alphabetize subtopics upon addition</B>:  When new subtopics are added by users via the "Create New Conversation" button, all subtopics on the list are alphabetized if this option is checked.  This option has precedence over the "Add new subtopics to top" option.
+<P>
+<B>Move active subtopic to top of list</B>:  When any post is made to a subtopic and this option is checked, that subtopic is moved to the top of the subtopic list.  In this way, active discussions are promoted to the top of the list.
+<P>
+<B>Move active subtopic's parents to top of list</B>: When any post is made to a subtopic and this option is checked, all of the subtopics above that message are moved to the top of their respective lists.  Note that topics are not reordered.  This can be selected only in conjunction with the "move active subtopic to top of list" option.
+<P>
+<B>Add new messages to top</B>: We have observed only a very few instances where reversing message order is desirable. Adding prayer requests to a list was one such instance.  However, this is not a good choice for conversational flow, since your users will not find it intuitive to start reading at the bottom, scroll up to read a discussion, and then scroll all the way back down to the bottom to post their message.  Thus, we discourage reversing message order unless you really know what you're doing.  You can always reorder existing messages using the <A HREF="board-admin-instr-05.html">Page Manager</A>.
+
+<P>
+
+<A NAME=profile><h4><IMG SRC="icons/proonly_icon.gif" HEIGHT=15 WIDTH=29 ALT="PRO"> Profile fields</h4>
+<P>
+The superuser controls the information that is requested from a user for that user's profile, as well as some options related to those information fields.  To access the profile field editor, click the "Define profile fields" link.
+<P>
+Profile fields have five main attributes, described here.
+<P>
+<UL>
+<LI><B>Shown</B><P>
+Defines whether the field is ever shown to the public.  For example, you might require each user to keep their Social Security number on file, but you don't want the public ever to be able to see that information.  This would be an instance where you would not want the field shown to the public.  In most cases, you will want the fields shown.
+<P>
+<LI><B>Field Description</B><P>
+This is the text that is displayed next to the user's answer.  In effect, this is the question that is asked of the user.
+<P>
+<LI><B>Type</B><P>
+The type can either be plain text (most cases), but can also be a URL or an e-mail address.  URLs are automatically displayed as hyperlinks, and e-mail addresses are displayed with a mailto link.
+<P>
+<LI><B>Size</B><P>
+This controls how many rows are occupied by the field.  One row is generally sufficient, but you might want to use the 3 row or the 5 row option for items such as personal quotes. The user can exceed the number of rows if you use the 3 row or 5 row option; all input must fit on the same line of you use the 1 row option.
+<P>
+<LI><B>Required</B><P>
+If a field is required, it is displayed to everyone who looks at the user's profile, and the user is not permitted to delete any text that is already in that field.
+</UL>
+<P>
+To add a new field, type a field description into the blank text box at the bottom of the list, and set the attributes of that text box.  Then click the "Save Profile Fields" button.  To delete a field, highlight and delete all text in that field's description box, and then click the "Save Profile Fields" button.
+<P>
+<A NAME=tz><h4>Time Zone</H4>
+<P>
+This option is useful if your server is located in a different part of the world from a majority of your users.  Entering a number, positive or negative, will offset the time displayed by the program for all operations (message time stamps, utilities) by the number of hours you select.  For example, if your site is hosted in California but your users are all in New York (3 hours ahead), you could type "3" for the time zone offset, which would add 3 hours to California time to give New York time.
+<P>
+By default, Discus uses the server's local time in determination of the time that an operation is being posted.  For the example above, if your server is in California and your users are in New York, the time in New York is always three hours ahead of that in California, and this automatically takes time changes into effect, since the offset is always the same.  For others, it may be more convenient to reference the time to GMT (also known as UTC or Zulu).  If you wish to do this, check the "Use GMT time in computations rather than local time" box.  This option is of use when your time does not change with the seasons.  This option affects the display of the time only, not the method in which Discus stores the time internally.
+<P>
+<TABLE WIDTH=100% BGCOLOR=#ccccff BORDER=0 CELLSPACING=0><TR><TD><FONT FACE="Verdana,Arial,Helvetica" SIZE=1>Copyright &copy; 2000, DiscusWare, LLC, all rights reserved</FONT></TD><TD ALIGN=RIGHT><A HREF="board-admin-instr-17.html"><IMG SRC="icons/prev_button.gif" HEIGHT=20 WIDTH=20></A> <A HREF="board-admin-instr-01.html"><IMG SRC="icons/top_button.gif" HEIGHT=20 WIDTH=20></A> <A HREF="board-admin-instr-19.html"><IMG SRC="icons/next_button.gif" HEIGHT=20 WIDTH=20></A></TD></TR></TABLE>
+
+</FONT></BODY></HTML>

@@ -1,0 +1,41 @@
+Rules: 1
+B_Penalty: 0
+W_Penalty: 0
+Size: 9
+TimeStart: -811645038
+W_Time: 573
+B_Time: 261
+Byo: 600
+ByoS: 25
+W_Byo: 0
+B_Byo: 0
+W_ByoStones: -1
+B_ByoStones: -1
+ClockStopped: 0
+Rated: 0
+Private: 0
+Type: 1
+TimeType: 1
+GoType: 1
+NumPass: 2
+Komi: 5.5
+Teach: 0
+Teach2: 0
+Ladder9: 0
+Ladder19: 0
+Tourn: 0
+Ladder_Possible: 0
+OnMove: 128
+MovesRNext: oinkoink
+;B[fc];W[ff];B[dg];W[de];B[ec];W[gd];B[ef];W[ee];B[bf];W[eg];B[fi];W[df]
+;B[be];W[cg];B[dh];W[cf];B[he];W[gc];B[cd];W[ch];B[fg];W[gf];B[ad];W[gg]
+;B[db];W[fh];B[dd];W[gi];B[gb];W[ei];B[bc];W[hb];B[ge];W[fd];B[hc];W[hd]
+;B[bh];W[ic];B[ha];W[bg];B[fb];W[hf];B[ed];W[fe];B[cc];W[ie];B[ag];W[di]
+;B[ah];W[ci];B[bi];W[ce];B[ga];W[eh];B[ib];W[ia];B[ae];W[ib];B[he];W[ge]
+;B[bd];W[ea];B[tt];W[da];B[cb];W[ca];B[fa];W[ba];B[tt];W[eb];B[tt];W[bb]
+;B[af];W[ab];B[hi];W[hh];B[tt];W[fi];B[tt];W[ii];B[tt];W[id];B[tt];W[ih]
+;B[tt];W[tt]
+kibitz: oink
+0  gunnar started observation.
+53  dbh started observation.
+

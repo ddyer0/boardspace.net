@@ -1,0 +1,12 @@
+# log "Match $EXT"
+ if(!lookup( $EXT, "$IW_VDOM/goodnames.dat" ))
+  { #log "no match - to junkmail"
+    # this moves to the junkmail dir
+    #IW_VPOP = "/home/vpopmail/domains/real-me.net/junkmail/Maildir"
+
+    # this actively rejects
+    IW_VPOP = "|/home/vpopmail/bin/vdelivermail '' bounce-no-mailbox"
+  }
+
+
+

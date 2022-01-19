@@ -1,0 +1,54 @@
+#!/usr/bin/perl
+#
+# nitems=nn
+#
+use CGI::Carp qw( fatalsToBrowser );
+use CGI qw(:standard);
+use Mysql;
+use Debug;
+use Time::Local;
+use strict;
+
+require "include.pl";
+require "tlib/gs_db.pl";
+require "tlib/common.pl";
+require "tlib/top_games.pl";
+
+sub rank_header 
+{	my $t0 = &trans('The games at Boardspace.net');
+  my $main = &trans('MainHeader.gif');
+	print <<Header;
+<html>
+<head>
+    <title>$t0</title>
+</head>
+
+<body background=/images/background1.jpg text="#000000" link="#0000EE" vlink="#551A8B" alink="#FF0000">
+
+<center>
+<img src="/images/$main" border=0>
+<br><h2>$t0</h2>
+<p>
+
+Header
+
+}
+
+sub show_activity
+{ my $dbh = &connect();
+  if($dbh)
+  {
+  &readtrans_db($dbh);
+  print "<center>\n";
+  &top_games_table($dbh,$'top_players_per_row,'english','',@'top_player_variations);
+  print "</center>\n";
+  &disconnect($dbh);
+  }
+}
+
+
+print header;
+param();
+if(!param('embed')) { &standard_header(); }
+&show_activity();
+if(!param('embed')) { &standard_footer(); }

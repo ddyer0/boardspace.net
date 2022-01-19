@@ -1,0 +1,233 @@
+<!DOCTYPE doctype PUBLIC "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+<script language=javascript>
+
+win = null; 
+function launchwith(name) 
+{ 
+  if(win == null) { 
+    win = window.open("", "appletWindow", "width=600,height=480,status=yes"); 
+      } 
+    win.document.write("<HTML><HEAD><TITLE>Lines of Action</TITLE></HEAD>"); 
+    win.document.writeln("<BODY>"); 
+   win.document.writeln("<applet code=\"loa/ui/LoaApplet.class\" name=\"LoaApplet\" codebase=\"../java/\" archive=\"LoaLib.zip\" width=550 height=450>");
+   win.document.writeln("<PARAM NAME=\"filename\" VALUE=\"../../games/tournament-8-final.sgf\">");
+   win.document.writeln("<param name=\"gamename\" value=\"LoA Board " + name + "\">");
+   win.document.writeln("<param name=\"panel\" value=\"true\">");
+    win.document.writeln("<param name=\"flags\" value=\"0\">");
+//	win.document.writeln("<param name=debug value=true>");
+    win.document.writeln("If you are seeing this message, your browser is not Java-Enabled.  There's");
+    win.document.writeln("still hope, if you can run the java viewer standalone on your machine.");
+    win.document.writeln("See the <A HREF=\"Programs.html#java\">Java Programs</A> page.");
+    win.document.writeln("</applet>");
+    win.document.writeln("</body>");
+   win.document.close();}
+
+  </script>
+<title>Eighth Annual Lines of Action Tournament</title>
+</head>
+
+<center><b><font size="+2">Eighth Annual Lines of Action Tournament</font></b>
+<br>
+<b><font size="+2">Final Round</font></b></center>
+<p>The players in this round consisted of the winner and runner-up from
+each
+section in the first round.&nbsp; For complete details of the first
+round
+of play, see the <a href="round1.html">Round-1 Page</a>.&nbsp;&nbsp;&nbsp;&nbsp;
+Play in the final round started on Jan 28,
+2004.&nbsp; Time was limited
+to 10 weeks per player.&nbsp;&nbsp; Play <span
+ style="font-style: italic;">finally </span>ended on May 12,
+2004;&nbsp; The winner is Marc Decroos (for the second year in a row),
+with a record of 4-1.&nbsp; Claude chaunier finished second, also 4-1,
+his only loss was to Marc.<br>
+</p>
+<p>&nbsp;&nbsp;&nbsp; <br>
+</p>
+<center>
+<table>
+  <caption><b><font size="+1">Standings in the Final Round</font></b></caption>
+  <tbody>
+    <tr>
+      <td bgcolor="#ccffff">
+      <table bgcolor="#ccffff" width="20%">
+        <tbody>
+          <tr>
+            <td><b>player</b></td>
+            <td><b>wins</b></td>
+            <td><b>losses</b></td>
+            <td><b>ties</b></td>
+          </tr>
+          <tr>
+            <td><b>chaunier</b></td>
+            <td>4<br>
+            </td>
+            <td>1<br>
+            </td>
+            <td>0</td>
+          </tr>
+          <tr>
+            <td><b>ddyer</b></td>
+            <td>1<br>
+            </td>
+            <td>4<br>
+            </td>
+            <td>0</td>
+          </tr>
+          <tr>
+            <td><b>hthordsen</b></td>
+            <td>1<br>
+            </td>
+            <td>4<br>
+            </td>
+            <td>0</td>
+          </tr>
+          <tr>
+            <td><b>kevin</b></td>
+            <td>2<br>
+            </td>
+            <td>3<br>
+            </td>
+            <td>0</td>
+          </tr>
+          <tr>
+            <td style="background-color: rgb(51, 255, 255);"><b>mdecroos</b></td>
+            <td style="background-color: rgb(51, 255, 255);">4<br>
+            </td>
+            <td style="background-color: rgb(51, 255, 255);">1<br>
+            </td>
+            <td style="background-color: rgb(51, 255, 255);">0</td>
+          </tr>
+          <tr>
+            <td><b>slowdean</b></td>
+            <td>3<br>
+            </td>
+            <td>2<br>
+            </td>
+            <td>0</td>
+          </tr>
+        </tbody>
+      </table>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+</center>
+<form method="post" name="form1">
+  <table bgcolor="#ccffff" border="1" width="91%">
+    <caption><b><font size="+1">Details for the final Round</font></b></caption>
+    <tbody>
+      <tr>
+        <td width="12%"><br>
+        </td>
+        <td width="12%"><b>chaunier</b></td>
+        <td width="12%"><b>ddyer</b></td>
+        <td width="12%"><b>hthordsen</b></td>
+        <td width="13%"><b>kevin</b></td>
+        <td width="13%"><b>mdecroos</b></td>
+      </tr>
+      <tr>
+        <td width="12%"><b>slowdean</b></td>
+        <td width="12%">Black: chaunier<br>
+White: slowdean<br>
+        <span style="font-weight: bold;">Chaunier </span>won: 
+<input value="Game j45" onclick="launchwith('j45')" type=button>
+</td>
+        <td width="12%">Black: slowdean<br>
+White: ddyer<br>
+        <span style="font-weight: bold;">Slowdean </span>won: 
+<input value="Game j56" onclick="launchwith('j56')" type=button>
+</td>
+        <td width="12%">Black: slowdean<br>
+White: hthordsen<br>
+        <span style="font-weight: bold;">Slowdean </span>won: 
+<input value="Game j51" onclick="launchwith('j51')" type=button>
+</td>
+        <td width="13%">Black: slowdean<br>
+White: kevin<br>
+        <span style="font-weight: bold;">Slowdean </span>won: 
+<input value="Game j53" onclick="launchwith('j53')" type=button>
+</td>
+        <td width="13%">Black: mdecroos<br>
+White: slowdean<br>
+        <span style="font-weight: bold;">Mdecroos </span>won game: 
+<input value="Game j25" onclick="launchwith('j25')" type=button>
+</td>
+      </tr>
+      <tr>
+        <td width="12%"><b>mdecroos</b></td>
+        <td width="12%">Black: chaunier<br>
+White: mdecroos<br>
+        <span style="font-weight: bold;">mdecroos </span>won: 
+<input value="Game j42" onclick="launchwith('j42')" type=button>
+</td>
+        <td width="12%">Black: ddyer<br>
+White: mdecroos<br>
+        <span style="font-weight: bold;">Mdecroos </span>won: 
+<input value="Game j62" onclick="launchwith('j62')" type=button>
+</td>
+        <td width="12%">Black: hthordsen<br>
+White: mdecroos<br>
+        <b>hthordsen </b>won
+game: 
+<input value="Game j12" onclick="launchwith('j12')" type=button>
+</td>
+        <td width="13%">Black: mdecroos<br>
+White: kevin<br>
+        <span style="font-weight: bold;">Mdecroos </span>won: 
+<input value="Game j23" onclick="launchwith('j23')" type=button>
+</td>
+      </tr>
+      <tr>
+        <td width="12%"><b>kevin</b></td>
+        <td width="12%">Black: kevin<br>
+White: chaunier<br>
+        <span style="font-weight: bold;">Chaumier </span>won: 
+<input value="Game j34" onclick="launchwith('j34')" type=button>
+</td>
+        <td width="12%">Black: kevin<br>
+White: ddyer<br>
+        <span style="font-weight: bold;">Kevin </span>won: 
+<input value="Game j36" onclick="launchwith('j36')" type=button>
+</td>
+        <td width="12%">Black: kevin<br>
+White: hthordsen<br>
+        <span style="font-weight: bold;">Kevin </span>won: 
+<input value="Game j31" onclick="launchwith('j31')" type=button>
+</td>
+      </tr>
+      <tr>
+        <td width="12%"><b>hthordsen</b></td>
+        <td width="12%">Black: hthordsen<br>
+White: chaunier<br>
+        <span style="font-weight: bold;">Chaunier </span>won: 
+<input value="Game j14" onclick="launchwith('j14')" type=button>
+</td>
+        <td width="12%">Black: hthordsen<br>
+White: ddyer<br>
+        <span style="font-weight: bold;">Ddyer </span>won: 
+<input value="Game j16" onclick="launchwith('j16')" type=button>
+</td>
+      </tr>
+      <tr>
+        <td width="12%"><b>ddyer</b></td>
+        <td width="12%">Black: ddyer<br>
+White: chaunier<br>
+        <span style="font-weight: bold;">Chaunier </span>won: 
+<input value="Game j64" onclick="launchwith('j64')" type=button>
+</td>
+      </tr>
+    </tbody>
+  </table>
+</form>
+
+<input value="Game xxxx" onclick="launchwith('xxxx')" type=button>
+<a name="consolation"></a>
+<center></center>
+<br>
+<br>
+</body>
+</html>

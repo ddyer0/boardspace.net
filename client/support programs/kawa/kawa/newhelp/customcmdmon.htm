@@ -1,0 +1,15 @@
+<HTML>
+<BODY LINK="#0000ff" VLINK="#800080" BGCOLOR="#ffffff">
+
+<H1><A NAME="OLE_LINK2"><IMG SRC="kawacup.jpg" WIDTH=106 HEIGHT=100>Custom Command monitoring</H1>
+<P><A NAME="OLE_LINK1"></A><A HREF="index.htm">Index</A> </P>
+<font size="1.5" face="Arial">Last Modified Date - <font color=red>2/16/99</font><p>
+Please click <a href="http://www.tek-tools.com/kawa/docs/customcmdmon.htm">here</a> for the latest version of this document.
+<font color=red> If this is an online version of the document please right click in the browser and select 
+'Update local Kawa document' to update your local copy of this document</font>
+</font><P><HR></P>
+<P>Please refer to <A HREF="customcommands.htm">How to make a custom command </A>for more details on creating a new custom command. One of the options under custom command is the ability to redirect output from the command to a MDI client window within Kawa. This will provide 2 things - firstly the ability to monitor the process output and secondly the ability to kill the process. One of the options in the right button menu of the command output window is Kill process which when selected will kill the process. </P>
+<P>In order to send input to the child process type the input text in the output window and press the enter key to send it to the child process. </P>
+<P>All the child processes are listed under Window menu right before the file name windows are listed. This is shown in the figure above where there are 2 windows one is a custom command output window and the other one is a source file. Both windows are listed under the Window menu but separated by a line. </P>
+<P>It is important to understand that every output redirected process will need 2 threads under the system. Therefore, it is important not to run too many output redirected processes simultaneously as this could slow the system considerably. </P></BODY>
+</HTML>

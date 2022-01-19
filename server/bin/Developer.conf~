@@ -1,0 +1,122 @@
+#test server configuration
+#main log file
+logfile,/home/boardspa/logs/DevlopServer.log
+chatfile,/home/boardspa/logs/DevelopChat.log
+securityfile,/home/boardspa/logs/DevelopSecurity.log
+max_logfile_megabytes,10
+crash-test,1
+use-threads,1
+detatch,1
+#ip address to bind, needed if strict is enabled
+bindip,67.202.75.88
+# strict logins and checking of game results
+strict,0
+# 0 is no, 1 is normal, 2 is never score
+strict-score,2
+# game port
+port,2256
+# log level, 0=none 2=normal 3=everything
+loglevel,2
+# password for lobby commands
+password,BSxyzzy
+# realtime status monitor
+statusfile,/home/boardspa/public_html/admin/Develop_Status.html
+player-info-url,/cgi-bin/edit.cgi?pname=%s
+#
+# first char is G or N for game type or non-game type
+#
+nroomtypes,10
+roomtype0,GGame
+roomtype1,NChat
+roomtype2,GReview
+roomtype3,NMap
+roomtype4,GUnranked
+roomtype5,GMaster
+roomtype6,
+roomtype7,
+roomtype8,
+roomtype9,
+
+# players and rooms
+players,120
+rooms,40,
+connections,25
+connections-per-session,12
+connections-per-uid,15
+gamecachedir,/home/boardspa/bin/TestGames/
+gamecacherate,4
+client-timeout,120
+lobby-timeout,120
+#list produded by database_info.pl
+ngametypes,35
+gametype0,zertz
+gametype1,loa
+gametype2,plateau
+gametype3,yinsh
+gametype4,hex
+gametype5,trax
+gametype6,punct
+gametype7,gobblet
+gametype8,hive
+gametype9,exxit
+gametype10,tablut
+gametype11,truchet
+gametype12,tumblingdown
+gametype13,dipole
+gametype14,fanorona
+gametype15,volcano
+gametype16,kuba
+gametype17,dvonn
+gametype18,tzaar
+gametype19,qyshinsu
+gametype20,knockabout
+gametype21,gipf
+gametype22,palago
+gametype23,santorini
+gametype24,spangles
+gametype25,che
+gametype26,micropul
+gametype27,yavalath
+gametype28,mutton
+gametype29,medina
+gametype30,cannon
+gametype31,warp6
+gametype32,tajii
+gametype33,triad
+gametype34,octiles
+ngamedirs,35
+gamedir0,/home/boardspa/www/zertz/games/
+gamedir1,/home/boardspa/www/loa/loagames/
+gamedir2,/home/boardspa/www/plateau/plateaugames/
+gamedir3,/home/boardspa/www/yinsh/yinshgames/
+gamedir4,/home/boardspa/www/hex/hexgames/
+gamedir5,/home/boardspa/www/trax/traxgames/
+gamedir6,/home/boardspa/www/punct/punctgames/
+gamedir7,/home/boardspa/www/gobblet/gobbletgames/
+gamedir8,/home/boardspa/www/hive/hivegames/
+gamedir9,/home/boardspa/www/exxit/exxitgames/
+gamedir10,/home/boardspa/www/tablut/tablutgames/
+gamedir11,/home/boardspa/www/truchet/truchetgames/
+gamedir12,/home/boardspa/www/tumble/tumblegames/
+gamedir13,/home/boardspa/www/dipole/dipolegames/
+gamedir14,/home/boardspa/www/fanorona/fanoronagames/
+gamedir15,/home/boardspa/www/volcano/volcanogames/
+gamedir16,/home/boardspa/www/kuba/kubagames/
+gamedir17,/home/boardspa/www/dvonn/dvonngames/
+gamedir18,/home/boardspa/www/tzaar/tzaargames/
+gamedir19,/home/boardspa/www/qyshinsu/qyshinsugames/
+gamedir20,/home/boardspa/www/knockabout/knockaboutgames/
+gamedir21,/home/boardspa/www/gipf/gipfgames/
+gamedir22,/home/boardspa/www/palago/palagogames/
+gamedir23,/home/boardspa/www/santorini/santorinigames/
+gamedir24,/home/boardspa/www/spangles/spanglesgames/
+gamedir25,/home/boardspa/www/truchet/chegames/
+gamedir26,/home/boardspa/www/micropul/micropulgames/
+gamedir27,/home/boardspa/www/yavalath/yavalathgames/
+gamedir28,/home/boardspa/www/mutton/muttongames/
+gamedir29,/home/boardspa/www/medina/medinagames/
+gamedir30,/home/boardspa/www/cannon/cannongames/
+gamedir31,/home/boardspa/www/warp6/warp6games/
+gamedir32,/home/boardspa/www/tajii/tajiigames/
+gamedir33,/home/boardspa/www/triad/triadgames/
+gamedir34,/home/boardspa/www/octiles/octilesgames/

@@ -1,0 +1,137 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1"><title>About the Site</title>
+
+<script src="/js/site.js">
+</script>
+</head>
+
+<body style="color: rgb(0, 0, 0); background-color: rgb(255, 255, 255); background-image: url(/images/background-image.jpg);" alink="#000099" link="#000099" vlink="#990099">
+<h1 style="text-align: center;"><img alt="boardspace.net" src="../images/master-logo.jpg" style="width: 600px; height: 100px;"></h1>
+<h1 style="text-align: center;">About the Site</h1>
+<ul>
+<li><span style="font-weight: bold;">Who runs the
+site?</span><br>
+Boardspace.net is a hobby, not a
+commercial site under
+development, not a technology demonstration for a software
+company.&nbsp; There is no hidden catch.&nbsp; Just enjoy it as
+my
+guest.&nbsp; My home page is <a style="font-weight: normal;" href="http://www.real-me.net/ddyer/">here</a><span style="font-weight: normal;">.</span></li>
+<li><span style="font-weight: normal;"><span style="font-weight: bold;">What's the process?&nbsp; How
+do you decide
+what is included?</span><br>
+Starting at the beginning, game #1
+was Zertz because I was obsessed with it.&nbsp; Game #2 was Lines
+of
+Action, because I had already written the applet for it, and just had
+to adapt it to my new framework.&nbsp; Game #3 was Plateau, because
+I
+really liked it and already had a working relationship with the
+inventor.&nbsp;&nbsp; After that, it got more
+complicated.&nbsp; Some
+games were momentary obsessions.&nbsp; Others were chosen in the
+hope
+that they would be popular, yet others chosen as representatives of
+some larger category.&nbsp; I've made notes on the "about this
+game"
+page for about the particulars for each game.&nbsp; Perhaps
+surprisingly, the process of choosing and developing a game doesn't
+have to involve a lot of actual play.&nbsp; Part of the point of
+the
+site is to get to play games that it's hard to find an opponent for.<br>
+</span></li>
+<li><span style="font-weight: normal;"><span style="font-weight: bold;">How do you get permission for
+these games?</span><br>
+I
+like
+to paraphrase <span style="font-style: italic;">Surely
+You're Joking Mr. Feynman</span>,&nbsp; "You
+have to ask".&nbsp;&nbsp; It's generally pretty informal, and
+no money
+ever changes hands.<br>
+</span></li>
+<li><b>Where do you get the actual games?<br>
+</b>There are several answers to this, but the most common
+answer
+is that I buy them.&nbsp; Commercial games are easy.&nbsp; Ebay
+and
+BoardgameGeek marketplace account for most of the rest - you just have
+to be patient to get the games you want for a reasonable
+price.&nbsp;&nbsp; I've made a few games myself, and some are
+completely imaginary - they exist only on your computer
+screen.&nbsp;&nbsp; For the most part, I don't get free games
+(but I do
+accept them with a provision of "no strings attached").<br>
+</li>
+<li><b>What about community input?<br>
+</b><span style="font-style: italic;">Santorini </span>and
+<span style="font-style: italic;">Micropul </span>are
+on Boardspace
+primarily because they had a loyal following on BoardGameGeek, and rose
+to the top of&nbsp; the "Proposed Boardspace.net games" geeklist I
+maintain there.&nbsp;&nbsp; Games that other people like (and
+are the
+kind of games I like too) definitely get promoted on my list of
+candidates for inclusion here..<br>
+</li>
+<li><span style="font-weight: bold;">What's the
+Master Plan?</span>&nbsp;
+The
+plan
+is
+to
+build the site into a place where you can
+drop in anytime for a game with a human opponent.&nbsp;&nbsp;
+It has
+reached the point where other players are likely to be present, but
+with so many games, finding one you both play is still
+iffy.&nbsp;&nbsp; The best strategy is to learn to like all of
+the
+games, or bring
+your own opponent.<br>
+</li>
+<li><span style="font-weight: bold;">More Games!
+Better&nbsp; Robots!
+Better Graphics! <br>
+</span>Etc. etc. etc.&nbsp; I'm always interested in
+suggestions, especially suggestions with a lot of support in the player
+community. Easy things and things that really grab my attention are
+much more likely to be implemented.&nbsp;&nbsp; If you want to
+help,&nbsp; lets talk.</li>
+<li><span style="font-weight: bold;">What does it
+take to make a site
+like this?<br>
+</span>No actual spit or baling wire is involved.
+Here's <a href="sitecomponents.html">the rundown</a>.<br>
+</li>
+</ul>
+<br>
+<hr style="width: 100%; height: 2px;">
+<table style="width: 100%;">
+<tbody>
+<tr>
+<td align="left"> <font size="-1">E-mail:
+<script language="javascript">
+document.write("<a href='mailto:gamebmaste");
+document.write("r\@board");
+document.write("space.net'>gamemaste<n>r@board<n>space.net</a>");
+</script></font>
+</td>
+<td style="vertical-align: top; text-align: center;"><a href="http://netmap.efxservices.com/cgi-bin/mapper/displaymap.pl?client=1036">
+<div id="google_translate_element"></div>
+<script type="text/javascript">
+function googleTranslateElementInit() {
+new google.translate.TranslateElement({pageLanguage: 'en', layout: google.translate.TranslateElement.InlineLayout.SIMPLE}, 'google_translate_element');
+}
+</script>
+<script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit">
+</script>
+<br>
+</a></td>
+<td align="right">Go to <a href="/">BoardSpace.net
+home page</a> </td>
+</tr>
+</tbody>
+</table>
+</body></html>

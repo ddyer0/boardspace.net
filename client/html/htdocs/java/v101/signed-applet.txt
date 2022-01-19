@@ -1,0 +1,14 @@
+
+Signed applet based on http://java.sun.com/developer/onlineTraining/Programming/JDCBook/signed.html
+
+My key generation:
+
+	keytool -genkey -alias signFiles -keystore compstore -keypass bsKeyPassword -dname "cn=Boardspace" -storepass bSpassword
+
+
+
+keytool -export -keystore compstore -storepass bSpassword -alias signFiles -file Boardspace.cer
+
+jarsigner -keystore compstore -storepass bSpassword -keypass bsKeyPassword -signedjar OnlineLobby.jar OnlineLobby-unsigned.jar signFiles
+
+Adding this signing to the applet causes scary looking warnings about security and untrusted sources.

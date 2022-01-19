@@ -1,0 +1,75 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <title>About the Robot</title>
+  <script src="site.js">
+  </script>
+</head>
+<body background="/images/background-image.jpg">
+<h1 style="TEXT-ALIGN: center"><IMG
+ title="" style   ="WIDTH: 600px;
+ HEIGHT: 100px" alt=boardspace.net src="/images/master-logo.jpg" ></h1>
+<h1 style="TEXT-ALIGN: center">Sobre os 
+Robôs
+</h1>Selecione&nbsp;um robô&nbsp;para jogar&nbsp;clicando em&nbsp; <span
+ style="FONT-STYLE: italic">selecionar o robô</span>&nbsp;próximo ao botão
+Iniciar.&nbsp;&nbsp; <br>
+<br>
+Os robôs são atualmente conhecidos como&nbsp; <span style="FONT-STYLE: italic">Dumbot,</span>
+<span style="FONT-STYLE: italic">Smartbot </span>e <span
+ style="FONT-STYLE: italic">BestBot.&nbsp;&nbsp; </span>Cada 
+jogo tem sua própria família de robôs, e alguns são melhores jogadores que outros,&nbsp;mas geralmente
+o&nbsp; <span style="FONT-STYLE: italic">Dumbot </span>joga suficientemente
+bem para vencer iniciantes, o <span style="FONT-STYLE: italic">Smartbot&nbsp;
+</span>    joga suficientemente bem para desafiar jogadores
+intermediários,&nbsp;e o&nbsp; <span style="FONT-STYLE: italic">Bestbot&nbsp; </span>é o melhor robô disponível,&nbsp;desafiador até para jogadores avançados.&nbsp;&nbsp;
+Alguns jogos podem não ter nenhum robô, ou nem todos os três.<br>
+<br>
+Os robôs foram programados 
+em&nbsp;Java,&nbsp;e rodam na sua máquina ao invés de
+em um servidor.&nbsp; Consequentemente, se o robô parecer muito lento, minha
+primeira sugestão é comprar uma máquina mais rápida.&nbsp;&nbsp;Eu calibro a velocidade
+e habilidade dos robôs&nbsp;para que eles possam responder pelo menos tão rápido quanto um
+jogador humano típico.<br>
+<br>
+Os jogos 
+contra os robôs distribuem pontuação como os jogos normais,&nbsp;e cada robô tem 
+uma pontuação para cada jogo.&nbsp;&nbsp;&nbsp;&nbsp;Nos jogos rankeados contra 
+o robô o jogador a mover primeiro é escolhido aleatóriamente,&nbsp;e os jogos 
+são lembrados se você abndoná-los.&nbsp; Consequentemente, você
+sempre pode abandonar o robô para enfrentar um jogador humano,&nbsp;e voltar para
+terminar o jogo contra o robô mais tarde,&nbsp;e também você não pode escapar de
+eventualmente terminar&nbsp;um jogo que você esteja perdendo.&nbsp; Os robôs ficarão felizes
+em jogar jogos <span style="FONT-STYLE: italic">não rankeados&nbsp; </span>
+ e deixar você escolher quem começa jogando.<br>
+<br>
+Se seu oponente 
+abandonar uma partida que
+ainda não esteja terminada,&nbsp;você pode deixar o robô terminar o jogo clicando&nbsp;no
+menu&nbsp;"ações"&nbsp;na sala de jogo.&nbsp;&nbsp;Nestes jogos,&nbsp;a vitória ou derrota do robô é creditada ao
+jogador que abandonou. <br>
+<span style="FONT-STYLE: italic"></span><br>
+<br>
+<hr style="WIDTH: 100%; HEIGHT: 2px">
+<table style="WIDTH: 100%">
+  <tbody>
+    <tr>
+      <td align="left"> <font size="-1">E-mail:
+      <script language="javascript">
+document.write("<a href='mailto:gamemaste");
+document.write("r\@board");
+document.write("space.net'>gamemaste<n>r@board<n>space.net</a>");
+      </script>
+      </font> </td>
+      <td style="VERTICAL-ALIGN: top; TEXT-ALIGN: center"><a
+ href="http://netmap.efxservices.com/cgi-bin/mapper/displaymap.pl?client=1036"><img
+ src="http://netmap.efxservices.com/cgi-bin/mapper/record-hit.pl?client=1036">mapa de
+visitantes<br>
+      </a></td>
+      <td align="right">Ir para a&nbsp; <A href="/">página inicial do BoardSpace.net</a>
+      </td>
+    </tr>
+  </tbody>
+</table>
+</body>
+</html>

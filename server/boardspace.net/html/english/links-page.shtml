@@ -1,0 +1,92 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+<meta http-equiv="content-type" content="text/html;
+charset=windows-1252">
+<script src="/js/site.js"></script><title>Site Links</title>
+
+</head>
+
+  <body style="background-image: url(/images/background-image.jpg);">
+<center>
+
+<table style="text-align: left; width: 100%;" border="1" cellpadding="2" cellspacing="2">
+<tbody>
+<tr>
+<td><h1 style="text-align: center;"><img alt="boardspace.net" src="master-logo.jpg" style="width: 600px; height: 100px;"></h1></td>
+<td>
+<div id="google_translate_element"></div>
+<script type="text/javascript">
+function googleTranslateElementInit() {
+new google.translate.TranslateElement({pageLanguage: 'en', layout: google.translate.TranslateElement.InlineLayout.SIMPLE}, 'google_translate_element');
+}
+</script>
+<script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit">
+</script>
+</td>
+</tr>
+</tbody>
+</table>
+<h1 style="text-align: center;"></h1>
+<h1 style="text-align: center;">A Place for Board Games <a href="https://www.facebook.com/pages/Boardspacenet/147924481942900" target="_new"><img src="/images/fb-like.jpg" tooltip="Like our
+facebook page" alt="Like our facebook page" height="25" width="50"></a>
+</h1>
+</center>
+<!--#include virtual="/cgi-bin/links.cgi" -->
+<table style="text-align: left; width: 100%;" border="1" cellpadding="2" cellspacing="2">
+<tbody>
+<tr>
+<td colspan="1" rowspan="3" style="text-align: left; vertical-align: middle;"><a href="https://www.facebook.com/pages/Boardspacenet/147924481942900" target="_new"><img title="Like our facebook page" src="/images/fb-like.jpg" tooltip="Like our facebook
+page" alt="" style="border: 0px solid ; width: 100px; height: 50px;"></a><br>
+<a href="https://www.facebook.com/pages/Boardspacenet/147924481942900" target="_new">Spread the word<br>
+</a></td>
+<td><a target="_new" href="lobby-help.html">Lobby
+Help</a></td>
+<td style="vertical-align: top;"><a target="_new" href="/cgi-bin/edit.cgi">Edit User Info</a> &amp;
+<a href="/cgi-bin/lost_password.cgi">Password Reset</a></td>
+<td style="vertical-align: top;"><a target="_new" href="/cgi-bin/messageboard.cgi">Message Board / </a><a target="_new" href="/BB/">User Forums</a></td>
+<td style="vertical-align: top;"><a target="_new" href="/cgi-bin/proposals.cgi">Site Wish List</a>&nbsp;</td>
+</tr>
+<tr>
+<td style="vertical-align: top;"><a target="_new" href="abouttherankings.shtml">About the Rankings</a> </td>
+<td style="vertical-align: top;"><a target="_new" href="abouttherobot.shtml">About the Robots</a> </td>
+<td style="vertical-align: top;"><a target="_new" href="/cgi-bin/tournament-signup.cgi">Tournaments</a>
+/ <a target="_new" href="/cgi-bin/meetup.cgi">Meeting
+finder</a> </td>
+<td style="vertical-align: top;"><a target="_new" href="aboutthesite.shtml">About the Site</a></td>
+</tr>
+<tr>
+<td style="vertical-align: top;"><a target="_new" href="/cgi-bin/player_analysis.cgi">Game Results Analyzer</a></td>
+<td style="vertical-align: top;"><a target="_new" href="/cgi-bin/site_active_times.cgi">Site Most Active Times</a><br>
+</td>
+<td style="vertical-align: top;"> <a href="playermap.shtml" target="_new">Player Map</a>
+/ <a target="_new" href="/cgi-bin/friends.cgi">Friend
+Locator</a> </td>
+<td style="vertical-align: top;"><a href="volunteers.html" target="_new">Thanks to ...</a><br>
+</td>
+</tr>
+</tbody>
+</table>
+<p>
+<table style="width: 100%;">
+<tbody>
+<tr>
+<td align="left"><font size="-1">
+<script language="javascript">
+document.write("<a href='mailto:gamemaste");
+document.write("r\@board");
+document.write("space.net'>gamemaste<n>r@board<n>space.net</a>");
+</script></font><br>
+</td>
+<td style="vertical-align: top; text-align: center;">
+visitors<img src="http://www3.clustrmaps.com/stats/maps-no_clusters/boardspace.net-thumb.jpg" alt="Locations of visitors to this page" height="35" width="50"><br>
+</td>
+<td style="vertical-align: top;"><a href="logon-page.html">Site<br>
+&nbsp;Map</a><br>
+</td>
+<td align="right">Go to <a href="/">BoardSpace.net
+home page</a> </td>
+</tr>
+</tbody>
+</table>
+</p>
+</body></html>

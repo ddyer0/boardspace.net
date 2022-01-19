@@ -1,0 +1,29 @@
+#!/bin/csh
+#
+source ~/cgi-bin/include.csh
+cd $1
+echo "moving old games in $1"
+set now=`date`
+set months = ("Jan" "Feb" "Mar" "Apr" "May" "Jun" "Jul" "Aug" "Sep" "Oct" "Nov" "Dec")
+set month = "$now[2]"
+#
+# 11 is the highest safe level, moves games 1 month old
+#
+set i = 11
+foreach m ($months)
+ @ i++
+ if( $i == 13) then
+  set i = 1
+  endif
+if($m ==  $month) then
+ set most = $months[$i]
+ set nonomatch
+ #echo "delete from $most"
+ foreach dir(games-$most-*)
+  if (-d $dir) then
+  mv $dir ../xGames/
+  endif
+ end
+ endif
+end
+

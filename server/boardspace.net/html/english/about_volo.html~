@@ -1,0 +1,153 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html;
+      charset=ISO-8859-1">
+    <title>About Volo</title>
+  </head>
+  <body style="background-image: url(../images/background-image.jpg);">
+    <table style="width: 100%; text-align: left;" border="0"
+      cellpadding="2" cellspacing="0">
+      <tbody>
+        <tr>
+          <td style="vertical-align: top;">
+            <h4><a href="about_hex.html"><span style="text-decoration:
+                  underline;">Hex</span></a><br>
+            </h4>
+            <h4> </h4>
+          </td>
+          <td style="vertical-align: top;">
+            <h1 style="text-align: center;"><img alt="boardspace.net"
+                src="master-logo.jpg" style="width: 600px; height:
+                100px;"></h1>
+          </td>
+          <td style="vertical-align: top;"><a href="about_trax.html"><span
+                style="font-weight: bold;">Trax</span></a></td>
+        </tr>
+      </tbody>
+    </table>
+    <br>
+    <table style="text-align: left; margin-left: auto; margin-right:
+      auto; width: 995px; height: 46px;" border="0" cellpadding="2"
+      cellspacing="2">
+      <tbody>
+        <tr>
+          <td style="vertical-align: top; text-align: center;"><small><font
+                size="+1"><small><a href="register.shtml"><span
+                      style="font-weight: bold;">Register</span></a></small></font><br>
+            </small></td>
+          <td style="vertical-align: top; text-align: center;"><small><font
+                size="+2"><small><a style="font-weight: bold;"
+                    href="login.shtml">Log in and Play<br>
+                  </a></small></font></small></td>
+          <td style="vertical-align: top; text-align: center;"><small><font
+                size="+1"><small><a href="guest.shtml"><span
+                      style="font-weight: bold;">Guest Login</span></a></small></font><br>
+            </small></td>
+        </tr>
+      </tbody>
+    </table>
+    <br>
+    <br>
+    <table style="width: 100%; text-align: left;" border="1"
+      cellpadding="2" cellspacing="2">
+      <tbody>
+        <tr>
+          <td style="vertical-align: top;">
+            <h1 style="text-align: center;"><big>Volo</big><br>
+            </h1>
+            Volo is a connection game inspired by the movement of flocks
+            of birds.&nbsp; It plays somewhat like Hex, but with limited
+            rearrangement of the pieces allowed; and elements of Lines
+            of Action mixed in.&nbsp; The <a
+              href="http://spielstein.com/games/volo/rules/official">rules</a>
+            are pretty simple - you either add a new "bird" or move a
+            line of birds in a way that enlarges the flock without
+            splitting it.<br>
+            <br>
+            <span style="font-weight: bold;">Robots:</span>&nbsp; Volo
+            is a nightmare for robots.&nbsp; They'll get better but
+            probably won't be very good.<br>
+          </td>
+          <td style="vertical-align: top;"><img style=" width: 434px;
+              height: 493px;" alt="volo starting position"
+              src="../images/volo-start.jpg"><br>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <span style="font-weight: bold;"><br>
+    </span>
+    <div style="text-align: center;"><span style="font-weight: bold;">Links</span><br>
+      <span style="font-weight: bold;"></span></div>
+    <table style="width: 100%; text-align: left;" border="0"
+      cellpadding="2" cellspacing="2">
+      <tbody>
+        <tr>
+          <td style="vertical-align: top;"><a
+              href="/cgi-bin/boardspace_rankings.cgi?game=vl">Volo
+              rankings at Boardspace</a><br>
+          </td>
+          <td style="vertical-align: top;"><a
+              href="http://boardgamegeek.com/game/83283">Volo at
+              BoardGameGeek</a><br>
+          </td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;"><a
+              href="/volo/volo-viewer.shtml">Volo game archives at
+              Boardspace<br>
+            </a></td>
+          <td style="vertical-align: top;"><a target="moreboardspace"
+              href="http://spielstein.com/games/volo">Volo official home
+              page</a> </td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;"><a
+              href="/cgi-bin/player_analysis.cgi?game=volo">Volo
+              win/loss database</a><br>
+          </td>
+          <td style="vertical-align: top;"><br>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <span style="font-weight: bold;"><br>
+      The back story:&nbsp; </span>I was attracted to volo by it's
+    concept.&nbsp; Flocks of birds have been in my consiousness since
+    the 80's, when Craig Reynolds at Symbolics had a animation program
+    called "Boids" that simulated flocks of birds.&nbsp; "Volo" was on
+    my short list for a year, but the last nudge was when my wife
+    forwarded this <a
+href="http://www.youtube.com/watch?feature=player_embedded&amp;v=eakKfY5aHmY">video
+
+
+
+    </a>to me. Small world - the same video is on the Volo home page,
+    and it was filmed near the home of another of my regular gaming
+    companions.<br>
+    <hr>
+    <center>
+      <table style="width: 100%;">
+        <tbody>
+          <tr>
+            <td align="left"><font size="-1">
+                <script language="javascript">
+document.write("<a href='mailto:gamemaste");
+document.write("r\@board");
+document.write("space.net'>gamemaste<n>r@board<n>space.net</a>");
+      </script></font><br>
+            </td>
+            <td style="vertical-align: top; text-align: center;"><br>
+            </td>
+            <td style="vertical-align: top;"><a href="logon-page.html">Site<br>
+                &nbsp;Map</a><br>
+            </td>
+            <td align="right">Go to <a href="/">BoardSpace.net home
+                page</a> </td>
+          </tr>
+        </tbody>
+      </table>
+    </center>
+  </body>
+</html>

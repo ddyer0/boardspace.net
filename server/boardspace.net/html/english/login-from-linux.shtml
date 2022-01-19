@@ -1,0 +1,89 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=windows-1252"><title>Linux Page</title>
+
+<script language="javascript">
+function submitme(form1)
+{ form1.action=form1.action+"?pname="+form1.pname.value+"&language="+form1.language.value;
+form1.submit();
+}
+</script>
+<script src="/js/site.js?1"></script></head>
+<body style="background-image: url(../images/background-image.jpg);">
+<table style="text-align: left; width: 100%;" border="1" cellpadding="2" cellspacing="2">
+<tbody>
+<tr>
+<td>
+<h1 style="text-align: center;"><img src="../images/master-logo.jpg" alt="boardspace.net" style="width: 600px; height: 100px;"></h1>
+</td>
+<td>
+<div id="google_translate_element"></div>
+<script type="text/javascript">
+function googleTranslateElementInit() {
+new google.translate.TranslateElement({pageLanguage: 'en', layout: google.translate.TranslateElement.InlineLayout.SIMPLE}, 'google_translate_element');
+}
+</script>
+<script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit">
+</script></td>
+</tr>
+</tbody>
+</table>
+
+<h1 style="text-align: center;">Boardspace from Linux</h1><div style="text-align: center;"><a href="login-from-macintosh.shtml">Macintosh download</a> &nbsp; &nbsp; <a href="login-from-windows.shtml">Windows download</a> &nbsp; <a href="login-from-android.html">Android download</a> &nbsp; &nbsp;<a href="login-from-ios.html">IPhone/Ipad download</a></div><br>Boardspace from a linux computer requires Java to be installed. &nbsp;If you do not have java yet, visit <a href="https://java.com/">Java.com</a>, download and install it.<br><a href="needsjava.shtml">This page</a>
+has other information about getting java installed and configured on
+your computer.<br><br>The
+actual boardspace application is a set of java ".jar" files which are
+downloaded once and cached locally. &nbsp;There are two variant<br><span style="font-weight: bold;">launchers</span>
+that take care of the details, and also keep your local copy up to date
+with the current version. &nbsp;Whever method you choose,<br>you'll have to cope with windows efforts to prevent you being tricked in to downloading malware. &nbsp; <br>For the record: boardspace isn't malware, doesn't damage your PC, and won't annoy you with advertising.<br><span style="font-weight: bold;"></span><br><br><span style="font-weight: bold;">Method #1</span> &nbsp;Jar files should be directly executable, but you don't get a pretty icon by default.<br>You can download the launcher <a href="../java/jws/boardspace.jar">jar file</a>, place it anywhere, and click to launch it,&nbsp;or create a shell file containing something similar to.<br>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; #!/bin/sh<br>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;java -jar boardspace.jar<br> You can also copy this exact jar file to a&nbsp;Macintosh
+or a Windows PC and launch it there.<br><br><br><span style="font-weight: bold;">Method #2</span>: Use&nbsp;
+
+<a href="<!--#include virtual=/cgi-bin/applettag.cgi?tagname=jwsrawlink -->">
+
+<img style="border: 0px solid ; width: 80px; height: 43px;" alt="java web start icon" title="click to launch boardspace with java web start" src="../images/java-web-star-icon.jpg"></a> to
+
+<a href="<!--#include virtual=/cgi-bin/applettag.cgi?tagname=jwsrawlink -->">
+
+launch</a>
+the boardspace.net client. &nbsp; Your browser may resist java web start, or may offer<br>to
+save a file instead. &nbsp;You can click to launch a ".jnlp" file that
+was downloaded. &nbsp; Historically, linux has not supported java<br>web start very well, so you may do better sticking with the simple method.<br>
+
+<br>Also
+note that Java Web Start has been deprecated by Oracle is in the
+process of&nbsp;disappearing. &nbsp;There's an open source alternative<br><a href="https://openwebstart.com/">https://openwebstart.com/ .</a> Download and install Open web start, and Java Web Start will still work.<br>
+
+<hr style="width: 100%; height: 2px;"><br><p>Whichever of these hoops you choose to jump through, when you run the launcher application you should see a window<br>similar to this, and you're on your way.</p><p><img style="width: 484px; height: 276px;" alt="login screen" src="../images/login-screen.jpg"></p><table style="width: 705px; height: 86px;">
+<tbody>
+<tr>
+<td>
+<form name="login" action="/cgi-bin/login.cgi" method="post">A general guide how to use&nbsp;Boardspace after you log in&nbsp;is <a href="lobby-help.html">here</a>
+<div style="text-align: left;">or &nbsp; <a href="help-video.html"><img alt="help video" src="../images/video_icon.png" border="0" height="49" width="50"></a>View a short video to help get you
+started. </div>
+</form>
+</td>
+<td valign="top">.<br>
+</td>
+
+</tr>
+</tbody>
+</table>
+<hr style="width: 100%; height: 2px;"><br>
+<table style="width: 100%;">
+<tbody>
+<tr>
+<td align="left"> <font size="-1">E-mail:
+<script language="javascript">
+document.write("<a href='mailto:gamemaste");
+document.write("r\@board");
+document.write("space.net'>gamemaste<n>r@board<n>space.net</a>");
+</script></font> </td>
+<td style="vertical-align: top; text-align: center;"><br>
+</td>
+<td align="right">Go to <a href="/">BoardSpace.net
+home page</a> </td>
+</tr>
+</tbody>
+</table>
+<script>document.login.pname.focus()</script>
+</body></html>

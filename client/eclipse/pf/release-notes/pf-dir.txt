@@ -1,0 +1,144 @@
+Realease-Notes of Directory Utilities
+Author: Manfred Duchrow
+Copyright (c) 2004-2006, by Manfred Duchrow. All rights reserved.
+=======================================================================
+
+-----------------------------------------------------------------------
+
+VERSION 1.3.1 (January 21, 2007)
+
+* BUGFIX: LDIFReader
+  If an LDIF file had no empty line at the end, the last attribute
+  of the last object was not processed.
+
+-----------------------------------------------------------------------
+
+VERSION 1.3 (August 22, 2006)
+
+* LdapUtil
+  > Added
+    - public String createTimestamp( Date date ) 
+    - public String createTimestamp() 
+
+* DistinguishedName
+  > Added
+    - EMPTY_DN
+    - public boolean isEmptyDN() 
+    - public DistinguishedName getParent()
+    - public boolean isDirectParentOf( DistinguishedName dn )
+    - public boolean isParentOf( DistinguishedName dn ) 
+    - public DistinguishedNameElement[] getParts() 
+    - public DistinguishedNameElement[] getPartsWithout( int skip )
+    - public int partCount() 
+    - public DistinguishedNameElement getRDN()
+    - public DistinguishedName makeChild( DistinguishedNameElement rdn )
+
+* LDAPDirEntry
+  > Added
+    - public LDAPDirEntry( LDAPDirEntry dirObject )
+    - public String getModifyTimestamp()
+    - public String getCreateTimestamp()
+    - public void setModifyTimestamp( String timestamp )
+    - public void setCreateTimestamp( String timestamp )
+    - public void updateTimestamps() 
+    - public void updateModifyTimestamp()
+    - ATTRNAME_CREATORS_NAME
+    - ATTRNAME_MODIFIERS_NAME
+    - ATTRNAME_SUBSCHEMA_SUBENTRY
+    - ATTRNAME_NAMING_CONTEXTS
+
+* LDAPDirEntryContainer
+  > Added
+    - public LDAPDirEntryContainer( DistinguishedName dn )
+    - public LDAPDirEntry findChild( LDAPDirEntryFilter filter )
+    - public LDAPSearchResult findChildren( LDAPDirEntryFilter filter, int sizeLimit )
+    - public LDAPSearchResult findChildren( LDAPDirEntryFilter filter )
+    - public LDAPSearchResult findAll( LDAPDirEntryFilter filter, int sizeLimit )
+    - public LDAPSearchResult findAll( LDAPDirEntryFilter filter )
+    - public boolean removeChild( LDAPDirEntry entry )
+    - public boolean removeChild( DistinguishedName dn )
+    - public boolean contains( DistinguishedName dn )
+    - public boolean contains( LDAPDirEntry entry ) 
+
+  > Changed
+    public LDAPDirEntryContainer( LDAPDirEntry dirObject )
+    to also take over the meta data of the given dirObject
+
+* MultiValueAttributes
+  > Changed getCopyOfAttributes() to copy all attribute if the given
+    attribute name array contains a "*" value
+  
+  > Added
+    - inst-var 'metaData' with public getter/setter
+
+* MultiValueAttribute
+  > Added
+    - public void setSoleValue( Object value )
+    - public boolean containsValue( Object value ) 
+    - public void addValues( List values )
+    - public void addValues( Object[] values )
+
+* DirectoryObject
+  > Added
+    - public int hashCode()
+    - public boolean equals( Object object )
+
+* New classes
+  > DistinguishedNameElement
+  > LDAPDirEntryFilter
+  > RDNFilter
+  > AttributeMetaData
+  > AttributesMetaData
+
+* New packages
+  > org.pf.directory.metadata
+
+-----------------------------------------------------------------------
+
+VERSION 1.2.1 (June 3, 2006)
+
+* LDAPUtil
+  > Changed visibility of constructor LDAPUtil() from private to 
+    protected
+
+-----------------------------------------------------------------------
+
+VERSION 1.2 (February 25, 2006)
+
+* DistinguishedName
+  > Added
+    - public static boolean isDistinguishedName( String name ) 
+    - public static boolean looksLikeDistinguishedName( String name ) 
+  
+-----------------------------------------------------------------------
+
+VERSION 1.1 (May 28, 2005)
+
+* Added classes 
+  > DistinguishedName
+  
+* LDAPDirEntry
+  > Added constructor
+    - public LDAPDirEntry( DistinguishedName dn )
+    
+-----------------------------------------------------------------------
+
+VERSION 1.0 ( September 26, 2004 )
+
+* Provides an LDIF file reader
+
+* Provides an LDIF file writer
+
+* Provides a generic Java object model for LDAP directory entries
+
+* Depends on 
+  > PF-File 3.2
+  > PF-OSF 1.1
+  > PF-Reflect 1.5
+  > PF-Utilities 2.5
+  > PF-Text 4.6
+  
+  All together available with pf.jar 2.4
+
+-----------------------------------------------------------------------
+

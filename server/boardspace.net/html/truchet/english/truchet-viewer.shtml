@@ -1,0 +1,8 @@
+<html>
+<head> <script src="/js/site.js"> </script></head>
+<body background="/images/background-image.jpg">
+<!--#include virtual="/cgi-bin/applettag.cgi?tagname=offlinereviewer&game=truchet&width=430&height=400" -->
+
+</body>
+</html>
+

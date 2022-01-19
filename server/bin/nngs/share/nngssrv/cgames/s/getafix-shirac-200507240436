@@ -1,0 +1,38 @@
+
+(;
+GM[1]FF[4]AP[NNGS:1.1.17]
+US[Brought to you by No Name Go Server]
+CP[
+  Copyright This game was played on the No Name Go Server
+  Permission to reproduce this game is given,
+  as long as this copyright notice is preserved.]
+GN[getafix-shirac(B) NNGS]
+EV[none]
+RE[B+Resign]
+PW[getafix]WR[UR ]
+PB[shirac]BR[UR ]
+PC[NNGS Go Program Server Clone: boardspace.net 6969]
+DT[2005-07-23]
+SZ[19]TM[480]KM[5.5]
+
+;B[pd];W[cd];B[cp];W[qq];B[eq];W[qn];B[pp];W[qp];B[on];W[pq];B[op];W[oq]
+;B[np];W[pl];B[pj];W[qj];B[qi];W[qk];B[pk];W[ol];B[pm];W[qm];B[pn];W[fc]
+;B[cj];W[ch];B[jc];W[jj];B[je];W[lf];B[le];W[mf];B[me];W[pi];B[oi];W[ph]
+;B[nj];W[qh];B[pf];W[qf];B[qe];W[rf];B[re];W[pg];B[of];W[se];B[sd];W[sf]
+;B[rd];W[og];B[nf];W[ng];B[nl];W[nm];B[ml];W[mm];B[nq];W[ll];B[ok];W[mk]
+;B[nk];W[kk];B[mj];W[lk];B[lj];W[ki];B[nh];W[mi];B[li];W[mh];B[lh];W[kh]
+;B[lm];W[om];B[kg];W[kf];B[lg];W[mg];B[jg];W[jf];B[ig];W[if];B[hg];W[gh]
+;B[hf];W[ie];B[jd];W[he];B[hh];W[hi];B[gg];W[fh];B[fg];W[eh];B[eg];W[dg]
+;B[ge];W[fe];B[gd];W[hd];B[fd];W[ee];B[ed];W[de];B[ec];W[gc];B[cc];W[bb]
+;B[cb];W[bc];B[dd];W[fb];B[eb];W[ni];B[oj];W[ri];B[fa];W[hc];B[ha];W[ib]
+;B[jb];W[ia];B[ja];W[db];B[da];W[be];B[ba];W[ff];B[gf];W[km];B[ln];W[kn]
+;B[lo];W[cm];B[ej];W[gj];B[em];W[bo];B[bp];W[bk];B[bj];W[dk];B[ck];W[cl]
+;B[bl];W[bm];B[ak];W[el];B[fl];W[ek];B[fk];W[dj];B[di];W[dl];B[ei];W[ci]
+;B[fj];W[bi];B[dh];W[gi];B[cg];W[df];B[ai];W[bg];B[bh];W[cf];B[ch];W[ag]
+;B[ii];W[ij];B[kj];W[ji];B[jk];W[kl];B[ik];W[hk];B[il];W[hl];B[im];W[hm]
+;B[ko];W[jn];B[in];W[jo];B[hn];W[gn];B[gm];W[io];B[go];W[fn];B[ho];W[fm]
+;B[gl];W[gk];B[jh];W[ih];B[ql];W[rl];B[ii];W[kp];B[hj];W[co];B[en];W[fo]
+;B[fp];W[eo];B[do]
+;)
+
+---

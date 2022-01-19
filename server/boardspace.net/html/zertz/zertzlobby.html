@@ -1,0 +1,91 @@
+<title>
+ Lobby
+</title>
+<h1>
+ Lobby
+</h1>
+<p>
+<applet codebase=java/v100 code=online.Root.class width=520 height=100>
+<xparam name=debug value="true">
+<param name=time-correction value="0">
+<param name="jdk" value="1.1">
+<param name=uid value=93>
+<param name=time-correction value="-300">
+<param name=masterrank value=1599>
+<param name=language value="englishStrings">
+<param name=chatpercent value=33>
+<param name=ranking value="ddyer 930 robot 666">
+<param name=uidranking value="93 998 1598 750 668 0">
+<param name=serverKey value="1.2.3.4">
+<param name=classname value="L:Lobby">
+<param name=game value=zertz>
+<param name=servername value="www.boardspace.net">		<-- name or ip address of the server -->
+<param name=lobbyportnumber value="2255" >	<-- 	port used by the game server on the host -->
+<xparam name=username value='test2'>
+<-- these parameters control the robot as normally seen in the lobby -->
+<param name=robotName value="Dumbot">
+<param name=robotName1 value="Robot2">
+<param name=robotName2 value="Robot3">
+<param name=robotlevel value=0>
+<param name=robotlevel1 value=-2>
+<param name=robotlevel2 value=-3>
+<param name=robotclass value=1>
+<param name=robotclass1 value=0>
+<param name=robotclass2 value=-1>
+
+<param name=bannermode value="N">
+<param name=challengevalue value=27854392>
+<param name=minplayersforlaunch value="1">
+#
+# initialization for natural experiment, repeated games
+#
+<param name=seedvalue value=989393492>
+<param name=seedset value=0>
+
+
+<-- these parameters can be used to force the same sequence of tiles to be used -->
+<-- these should never be used in live play -->
+<param name=xrandomseed value=-174556760 > <-- live name is randomseed -->
+<param name=xrandomseed1 value=-1805208729 > <-- live name is randomseed -->
+<param name=doNotRecord value="false" comment="Don't attempt to record game results">
+
+<-- these parameters create a robot as a "normal player" presence in the lobby -->
+<param name=robotlobby value="solo">	
+<param name=xrobotinlobby value="true">
+<param name=xrobotminsession value=1>
+<param name=xrobotmaxsession value=1>
+<param name=xrobotlaunchplayers value=1>
+
+<-- these parameters create a robot as the main player -->
+<param name=xrobot value="true">
+<param name=xrobotstart value="true">
+<param name=xrobotexit value="true">
+
+<param name=robotLevel0 value=0>
+<param name=xusername value="Robot">
+
+<-- these parameters pass player info -->
+<param name=playerClass value=2>
+<param name=gamesplayed value=3000 comment="used in muting logic">
+<param name=country value="United States">
+
+<-- some more switches to assist in debugging or local use -->
+<param name=extramouse value="true" comment="extra mouse actions in the lobby">
+<param name="extraactions" value="true" comment="extra mouse actions in the game">
+<param name=localfile value="true" comment="local file operations (read/save). Only useful when using JDK">
+
+<-- don't mess with these parameters -->
+<param name=userspersession value="2" 	comment="This could be used to make a lobby restricted to 2 player games">
+<param name=sessionidletime value="3600" comment="Number of seconds inactivity before the lobby disconnects">
+<param name=doautorotate value="true" 	comment="automatically rotate tiles into position">
+<param name=reviewerdir value="java/games">
+
+
+<param name=latitude value='34'>
+<param name=logitude value='-118'>
+<param name=mapcenter_x value="0.747">
+<param name=mapcenter_y value="0.0">
+<param name=imagelocation value="earthshadesmall.jpg">
+<param name=datalocation value="/cgi-bin/tlib/gs_locations.cgi">
+
+</applet>

@@ -1,0 +1,9 @@
+PATH=/sbin:/usr/sbin:/bin:/usr/bin:/usr/X11R6/bin
+MAILTO=""
+15,45 * * * * cron/checkspace.csh > /dev/null
+45 7,19 * * * cron/zoomers.csh > /dev/null
+0 3 * * * cron/savegames_if_enough > /dev/null
+5 3 * * * cron/savedb > /dev/null
+5 0 1 * * cron/savedb_monthly > /dev/null
+0,10,20,30,40,50 * * * * cron/check-nngs.csh > /dev/null
+20 4 * * * cron/backup-to-tantrix > /dev/null

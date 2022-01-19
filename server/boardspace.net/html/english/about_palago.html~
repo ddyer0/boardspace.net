@@ -1,0 +1,183 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html;
+      charset=ISO-8859-1">
+    <title>Palago at Boardspace.net</title>
+  </head>
+  <body style="background-image: url(../images/background-image.jpg);">
+    <table style="width: 100%; text-align: left;" border="0"
+      cellpadding="2" cellspacing="0">
+      <tbody>
+        <tr>
+          <td style="vertical-align: top;">
+            <h4><a href="about_trax.html">Trax</a></h4>
+            <h4> </h4>
+          </td>
+          <td style="vertical-align: top;">
+            <h1 style="text-align: center;"><img alt="boardspace.net"
+                src="master-logo.jpg" style="width: 600px; height:
+                100px;"></h1>
+          </td>
+          <td style="vertical-align: top;"><a href="about_gounki.html"><span
+                style="font-weight: bold;">Gounki</span></a></td>
+        </tr>
+      </tbody>
+    </table>
+    <br>
+    <table style="text-align: left; margin-left: auto; margin-right:
+      auto; width: 995px; height: 46px;" border="0" cellpadding="2"
+      cellspacing="2">
+      <tbody>
+        <tr>
+          <td style="vertical-align: top; text-align: center;"><small><font
+                size="+1"><small><a href="register.shtml"><span
+                      style="font-weight: bold;">Register</span></a></small></font><br>
+            </small></td>
+          <td style="vertical-align: top; text-align: center;"><small><font
+                size="+2"><small><a style="font-weight: bold;"
+                    href="login.shtml">Log
+                    in and
+                    Play<br>
+                  </a></small></font></small></td>
+          <td style="vertical-align: top; text-align: center;"><small><font
+                size="+1"><small><a href="guest.shtml"><span
+                      style="font-weight: bold;">Guest
+                      Login</span></a></small></font><br>
+            </small></td>
+        </tr>
+      </tbody>
+    </table>
+    <br>
+    <br>
+    <table style="width: 100%; text-align: left;" border="1"
+      cellpadding="2" cellspacing="2">
+      <tbody>
+        <tr>
+          <td style="vertical-align: top;">
+            <div style="text-align: left;"> </div>
+            <br>
+            <table style="text-align: left; width: 100%;" border="0"
+              cellpadding="2" cellspacing="2">
+              <tbody>
+                <tr>
+                  <td style="text-align: center; vertical-align: middle;
+                    width: 120px;">
+                    <h1 style="text-align: left;"><img
+src="file:///g:/share/usr/ddyer/mail-e7/attach/PalagoPattern_120x120.jpg"
+                        alt=""></h1>
+                  </td>
+                  <td style="text-align: center; vertical-align:
+                    middle;">
+                    <h1><big><big>Palago</big></big></h1>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <span style="font-weight: bold;">Palago</span> is a tile
+            patterning game developed by Cameron Browne.&nbsp; <br>
+            Palago uses a single hex tile which can tile a plane
+            seamlessly.&nbsp;
+            The object of the game is to form a closed shape in your
+            color.<br>
+            <br>
+            The official rules are <a
+              href="http://www.playpalago.com/PalagoRules.html">here</a>,
+            but
+            briefly,
+            you place two tiles each turn,&nbsp; the first anywhere
+            adjacent to the
+            existing pattern, the second adjacent to the first.&nbsp;
+            Small "size
+            3" loops do not count.<br>
+            <br>
+            <span style="font-weight: bold;">Robots:</span> even the
+            dumbot
+            won't
+            miss an easy win, but the experts claim smartbot and bestbot
+            give a
+            good game while they beat it.<br>
+          </td>
+          <td style="vertical-align: top;"><img style="width: 589px;
+              height: 419px;" alt="palago table"
+              src="../images/palago-small.jpg"><br>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <span style="font-weight: bold;"><br>
+    </span>
+    <div style="text-align: center;"><span style="font-weight: bold;">Links</span><br>
+      <span style="font-weight: bold;"></span></div>
+    <table style="width: 100%; text-align: left;" border="0"
+      cellpadding="2" cellspacing="2">
+      <tbody>
+        <tr>
+          <td style="vertical-align: top;"><a
+              href="/cgi-bin/boardspace_rankings.cgi?game=pa">Palago
+              rankings at
+              Boardspace</a><br>
+          </td>
+          <td style="vertical-align: top;"><a
+              href="http://boardgamegeek.com/game/38462">Palago at
+              BoardGameGeek</a><br>
+          </td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;"><a
+              href="/palago/palago-viewer.shtml">Palago game archives
+              at Boardspace<br>
+            </a></td>
+          <td style="vertical-align: top;"><a
+              href="http://www.cameronius.com/games/palago/">Cameron
+              Browne's Palago
+              page</a><br>
+          </td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;"><a
+              href="/cgi-bin/player_analysis.cgi?game=palago">Palago
+              win/loss
+              database</a><br>
+          </td>
+          <td style="vertical-align: top;"><a
+              href="http://www.playpalago.com/">Official Palago Home
+              page<br>
+            </a> </td>
+        </tr>
+      </tbody>
+    </table>
+    <span style="font-weight: bold;"><br>
+      The back story: </span>Palago is a complete "inside job".&nbsp; I
+    had
+    already worked with Cameron Browne on Truchet, and my good friends
+    at
+    Tantrix.com decided to manufacture and sell it, and supplied me with
+    sample tiles.&nbsp;&nbsp; Even so, I was skeptical until I played it
+    enough.<br>
+    <hr>
+    <center>
+      <table style="width: 100%;">
+        <tbody>
+          <tr>
+            <td align="left"><font size="-1">
+                <script language="javascript">
+document.write("<a href='mailto:gamemaste");
+document.write("r\@board");
+document.write("space.net'>gamemaste<n>r@board<n>space.net</a>");
+      </script></font><br>
+            </td>
+            <td style="vertical-align: top; text-align: center;"><a
+href="http://netmap.efxservices.com/cgi-bin/mapper/displaymap.pl?client=1036"><br>
+              </a></td>
+            <td style="vertical-align: top;"><a href="logon-page.html">Site<br>
+                &nbsp;Map</a><br>
+            </td>
+            <td align="right">Go to <a href="/">BoardSpace.net home
+                page</a> </td>
+          </tr>
+        </tbody>
+      </table>
+    </center>
+  </body>
+</html>

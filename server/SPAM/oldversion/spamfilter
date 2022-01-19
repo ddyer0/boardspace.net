@@ -1,0 +1,130 @@
+import EXT
+import HOST
+import DTLINE
+import RPLINE
+import VPOPMAIL_DOMAIN
+import TCPLOCALIP
+import TCPREMOTEIP
+
+SHELL="/bin/sh"
+
+IW_VHOME=`/home/vpopmail/bin/vuserinfo -d $EXT@$HOST`
+IW_VDOM=`/home/vpopmail/bin/vdominfo -d $HOST`
+IW_MAILDIR="$IW_VHOME/Maildir"
+IW_JUNKFOLDER="Spam"
+IW_MAXSIZE="262144"
+IW_ALLMAIL=""
+
+#logfile "/tmp/maildrop.log"
+#log "vdom: $EXT $HOST home $IW_VHOME - $IW_VDOM"
+
+`test -f $IW_VDOM/bounceon`
+if( $RETURNCODE != 1 )
+{
+   IW_DEFAULT_TO = "bounce-no-mailbox"
+}
+else
+{
+   `test -f $IW_VDOM/catchall`
+   if( $RETURNCODE != 1 )
+   {
+      IW_DEFAULT_TO = `cat $IW_VDOM/catchall`
+   }
+   else
+   {
+      IW_DEFAULT_TO = "delete"
+   }
+}
+
+IW_VPOP="|/home/vpopmail/bin/vdelivermail '' $IW_DEFAULT_TO"
+
+
+#log "$EXT@$HOST"
+
+if( $IW_VHOME )
+{ # here we have a specific home  directory we are targeting
+   `test -f $IW_VDOM/spamon`
+   if( $RETURNCODE != 1 )
+   {
+
+      if ( $SIZE < $IW_MAXSIZE )
+      {
+#         log "running: spamc -u $EXT@$HOST";
+         exception {
+            xfilter "/usr/bin/spamc -u $EXT@$HOST"
+         }
+      }
+      if (/^X-Spam-Flag: *YES/)
+      {
+         `test -d $IW_VHOME/Maildir/.$IW_JUNKFOLDER`
+         if( $RETURNCODE == 1 )
+         {
+            IW_JUNKFOLDER=tolower( $IW_JUNKFOLDER );
+            `test -d $IW_VHOME/Maildir/.$IW_JUNKFOLDER`
+            if( $RETURNCODE == 1 )
+            {
+               IW_JUNKFOLDER=toupper( $IW_JUNKFOLDER );
+               `test -d $IW_VHOME/Maildir/.$IW_JUNKFOLDER`
+               if( $RETURNCODE == 1 )
+               {
+                  IW_JUNKFOLDER=""
+               }
+            }
+         }
+         if( $IW_JUNKFOLDER )
+         {
+           to "$IW_VHOME/Maildir/.$IW_JUNKFOLDER/"
+         }
+         else
+         {
+            to $IW_VPOP
+         }
+      }
+      else
+      {
+         `test -r $IW_VHOME/.mailfilter`
+         if( $RETURNCODE == 0 )
+         {
+            exception {
+               include $IW_VHOME/.mailfilter
+            }
+         }
+
+         to $IW_VPOP
+      }
+   }
+   else
+   {
+	# 
+	# dave's custom mod.  Look for .mailfilter in the ~vpopmail/domains/ area
+	#
+         `test -r $IW_VHOME/.localmailfilter`
+         if( $RETURNCODE == 0 )
+         {
+            exception {
+               include "$IW_VHOME/.localmailfilter"
+            }
+         }
+      to $IW_VPOP
+   }
+
+}
+else
+{  # come here for every address that doesn't have a home.  If it has an alias
+   # just use it.  If no alias, filter before passing to the catchall
+   IALIAS =`/home/vpopmail/bin/valias -s $EXT@$HOST`
+   #log "alias to $IALIAS"
+   if(! $IALIAS)
+	{
+	#log "not explicitly aliased"
+         `test -r $IW_VDOM/.domainmailfilter`
+         if( $RETURNCODE == 0 )
+         {
+            exception {
+               include $IW_VDOM/.domainmailfilter
+            }
+         }
+
+	}
+   to $IW_VPOP
+}

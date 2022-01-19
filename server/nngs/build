@@ -1,0 +1,6 @@
+#!/bin/tcsh
+# cd to the new home dir and execute this script
+cp ../nngsconfig.h src/
+./configure --prefix=/home/boardspa/bin/nngs
+make
+

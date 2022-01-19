@@ -1,0 +1,41 @@
+
+   JOI - Java Object Inspector
+
+
+   This class library is freeware. All features are enabled.
+
+
+   1. All copyrights to JOI are exclusively owned by the author - Manfred Duchrow.
+
+   2. You can freely distribute the class library as long as you distribute
+      the complete package without changing.
+
+   3. JOI IS DISTRIBUTED "AS IS".
+      NO WARRANTY OF ANY KIND IS EXPRESSED OR IMPLIED. YOU
+      USE AT YOUR OWN RISK. THE AUTHOR WILL NOT BE LIABLE FOR
+      DATA LOSS, DAMAGES, LOSS OF PROFITS OR ANY OTHER KIND
+      OF LOSS WHILE USING OR MISUSING THIS SOFTWARE.
+
+   4. You may not use, copy, emulate, clone, rent, lease, sell, modify,
+      decompile, disassemble, otherwise reverse engineer, or transfer the
+      licensed class library, or any subset of the licensed program, except as
+      provided for in this agreement.  Any such unauthorized use shall
+      result in immediate and automatic termination of this license and
+      may result in criminal and/or civil prosecution.
+
+      All rights not expressly granted here are reserved by Manfred Duchrow.
+
+   5. The terms of this license, as well as the JOI interface design
+      are subjects of changes in future versions of JOI.
+
+   6. Installing and using JOI signifies acceptance of these terms
+      and conditions of the license.
+
+   7. If you do not agree with the terms of this license you must remove
+      all JOI files from your storage devices and cease to use the
+      product.
+
+      Thank you for using JOI.
+                                        Manfred Duchrow
+                                        manfred.duchrow@programmers-friend.org
+

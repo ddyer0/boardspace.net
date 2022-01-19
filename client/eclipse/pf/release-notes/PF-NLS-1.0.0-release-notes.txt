@@ -1,0 +1,22 @@
+RELEASE NOTES FOR PACKAGE PF-BIF (Basic InterFaces)
+====================================================
+
+Author      : Manfred Duchrow
+Last Update : March 24, 2006
+Version     : 1.0
+
+-------------------------------------------------------------------------------
+
+VERSION 1.0 (24/03/2006)
+
+* New classes
+  > NLSUtil
+  > NLSIniFileLoader
+  > ITextProvider
+  > IExtendedTextProvider
+  > TextContainer
+  > TextContainerList
+  > NLSIniFileDetector
+
+-------------------------------------------------------------------------------
+

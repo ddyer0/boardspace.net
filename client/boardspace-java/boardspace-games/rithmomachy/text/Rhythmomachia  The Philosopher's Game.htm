@@ -1,0 +1,704 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html><head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link type="text/css" rel="stylesheet" href="Rhythmomachia%20%20The%20Philosopher%27s%20Game_files/layout.css">
+<meta content="Andre Platzer" name="author">
+<meta content="© 1996-2013 André Platzer" name="copyright">
+<meta content="86400" http-equiv="expires">
+<link title="Start" type="text/html" rel="start" href="http://symbolaris.com/">
+<link title="Site Map" type="text/html" rel="contents" href="http://symbolaris.com/sitemap.html">
+<link title="About this web page" type="text/html" rel="help" href="http://symbolaris.com/meta/about.html">
+<link title="Copyright © 1996-2013 Andre Platzer" type="text/html" rel="copyright" href="http://symbolaris.com/meta/about.html">
+<link title="Contact" type="text/html" rel="author" href="http://symbolaris.com/andre.html">
+<link type="text/html" rel="subsection" href="#N1098A" title="A Strategy Game of High Mathematical Precision">
+<link type="text/html" rel="subsection" href="#N109CA" title="The Rules of the Game">
+<link type="text/html" rel="subsection" href="#N109D9" title="The Moves">
+<link type="text/html" rel="subsection" href="#N10A35" title="The Attacking Options">
+<link type="text/html" rel="subsection" href="#N10A9C" title="The Winning Orders">
+<link type="text/html" rel="subsection" href="#download" title="Download Rhythmomachia">
+<link type="text/html" rel="subsection" href="#N10BB2" title="Comments &amp; Puzzles">
+<link type="text/html" rel="subsection" href="#N10BE1" title="References">
+<link type="text/html" rel="up" href="http://symbolaris.com/applet/index.html">
+<link type="text/html" rel="first" href="http://symbolaris.com/applet/seti.html">
+<link type="text/html" rel="next" href="http://symbolaris.com/math/MathPlotter.html">
+<link type="text/html" rel="prev" href="http://symbolaris.com/applet/seti.html">
+<link type="text/html" rel="last" href="http://symbolaris.com/info/Knapsack.html">
+   
+<meta name="keywords" content="Rythmomachia, Rhythmomachia, Philosopher's Game, rithmomachy, rithmomachia, Rythmo Machia, Rhythmo Machia, strategy game, mathematical, number game, medievalistic, middle age, Pythagoras, arithmetic, geometric, harmonic, figure, attack, defend, value, rate, winning order, java applet">
+   
+<meta name="classification" content="Games/Video_Games/Recreation/Board_Games">
+   
+<title>Rhythmomachia: The Philosopher's Game</title>
+
+<style type="text/css"> <!--
+body {
+	/*background-color: #CCFFFF;*/
+}
+--> </style>
+
+</head>
+<body>
+<div class="header"></div>
+<div class="globalheader">
+<ul class="globalnav">
+<li class="globalnav">
+<a class="globalnav" href="http://symbolaris.com/index.html" title="André Platzer @ Carnegie Mellon University">Home</a>
+</li>
+<li class="globalnav">
+<a class="globalnav" href="http://symbolaris.com/pub/publications.html" title="Publications by André Platzer (by year)">Publications</a>
+</li>
+<li class="globalnav">
+<a class="globalnav" href="http://symbolaris.com/pub/index.html" title="Research Areas of André Platzer">Research</a>
+</li>
+<li class="selectedsubglobalnav">
+<a class="selectedsubglobalnav" href="http://symbolaris.com/info/index.html" title="Tools for Logic, Computer Science &amp; Mathematics">Tools</a>
+</li>
+<li class="globalnav">
+<a class="globalnav" href="http://symbolaris.com/course/index.html" title="Courses by André Platzer">Courses</a>
+</li>
+<li class="globalnav">
+<a class="globalnav" href="http://symbolaris.com/andre.html" title="André Platzer @ Carnegie Mellon University">A.&nbsp;Platzer</a>
+</li>
+</ul>
+</div>
+<div class="wrap">
+<a class="structLogo" href="http://symbolaris.com/andre.html"><img alt="Symbolaris by André Platzer @ Carnegie Mellon University" title="Symbolaris.com by André Platzer @ Carnegie Mellon University" class="structLogo" src="Rhythmomachia%20%20The%20Philosopher%27s%20Game_files/Symbolaris.png"></a>
+<h1>Rhythmomachia: The Philosopher's Game</h1>
+<div class="sidebar">
+<ul xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:webnav="http://symbolaris.com/2004/webnav" class="sidebarnav">
+
+<li style="padding: 0em 0.0em 0em 0.5em;" class="sidebarnav">
+<a href="http://symbolaris.com/info/KeYmaera.html" title="KeYmaera: A Hybrid Theorem Prover for Hybrid Systems" class="sidebarnav">KeYmaera</a>
+</li>
+<li style="padding: 0em 0.0em 0em 0.5em;" class="sidebarnav">
+<a href="http://symbolaris.com/info/ETCS.html" title="Case Study: European Train Control System" class="sidebarnav">Trains</a>
+</li>
+<li style="padding: 0em 0.0em 0em 0.5em;" class="sidebarnav">
+<a href="http://symbolaris.com/info/RCAS.html" title="Case Study: Formal Verification of Curved Flight Collision Avoidance Maneuvers" class="sidebarnav">Aircraft</a>
+</li>
+<li style="padding: 0em 0.0em 0em 0.5em;" class="sidebarnav">
+<a href="http://symbolaris.com/info/DCCS.html" title="Case Study: Distributed Adaptive Cruise Control" class="sidebarnav">Cars</a>
+</li>
+<li style="padding: 0em 0.0em 0em 0.5em;" class="sidebarnav">
+<a href="http://www.cs.cmu.edu/afs/cs/Web/People/smitsch/tools.html" title="Sphinx: Verification-Driven Engineering Toolkit" class="sidebarnav">Sphinx</a>
+</li>
+<li style="padding: 0em 0.0em 0em 0.5em;" class="sidebarnav">
+<a href="http://symbolaris.com/info/KeYmaeraD.html" title="KeYmaeraD: Distributed Theorem Prover for Distributed Hybrid Systems" class="sidebarnav">KeYmaeraD</a>
+</li>
+<li style="padding: 0em 0.0em 0em 0.5em;" class="sidebarnav">
+<a href="http://symbolaris.com/info/amc.html" title="AMC: Approximation Refinement Model Checker" class="sidebarnav">AMC</a>
+</li>
+<li style="padding: 0em 0.0em 0em 0.5em;" class="sidebarnav">
+<a href="http://symbolaris.com/info/saatre.html" title="SAAtRe: SAT-based Abstraction Refinement" class="sidebarnav">SAAtRe</a>
+</li>
+<li style="padding: 0em 0.0em 0em 0.5em;" class="sidebarnav">
+<a href="http://symbolaris.com/orbital/index.html" title="Orbital library" class="sidebarnav">Orbital&nbsp;library</a>
+</li>
+<li style="padding: 0em 0.0em 0em 0.5em;" class="sidebarnav">
+<a href="http://symbolaris.com/logic/jImp.html" title="j'Imp Theorem Prover" class="sidebarnav">j'Imp Prover</a>
+</li>
+<li style="padding: 0em 0.0em 0em 0.5em;" class="sidebarnav">
+<a href="http://symbolaris.com/math/jAbr.html" title="j'Abr Computer Algebra System" class="sidebarnav">j'Abr CAS</a>
+</li>
+<li style="padding: 0em 0.0em 0em 0.5em;" class="sidebarnav">
+<a href="http://symbolaris.com/info/Synx.html" title="Synx: Integrated Compiler Construction Kit" class="sidebarnav">Synx CCK</a>
+</li>
+<li style="padding: 0em 0.0em 0em 0.5em;" class="sidebarnav">
+<a href="http://symbolaris.com/applet/index.html" title="Simple Board Games and Visualisations" class="sidebarnav">Board&nbsp;Games</a>
+</li>
+<li style="padding: 0em 0.0em 0em 1.5em;" class="sidebarnav">
+<a href="http://symbolaris.com/applet/seti.html" title="Seti: An Ancient Egyptian Strategy Game" class="sidebarnav">Seti</a>
+</li>
+<li style="padding: 0em 0.0em 0em 1.5em;" class="selectedsidebarnav">
+<a href="http://symbolaris.com/applet/Rhythmomachia.html" title="Rhythmomachia: The Philosopher's Game" class="selectedsidebarnav">Rhythmomachia</a>
+</li>
+<li style="padding: 0em 0.0em 0em 1.5em;" class="sidebarnav">
+<a href="http://symbolaris.com/math/MathPlotter.html" title="Mathematical Plotting Engine" class="sidebarnav">Math&nbsp;Plotter</a>
+</li>
+<li style="padding: 0em 0.0em 0em 1.5em;" class="sidebarnav">
+<a href="http://symbolaris.com/info/Knapsack.html" title="Genetic Algorithms" class="sidebarnav">Genetic&nbsp;Algs</a>
+</li>
+<li style="padding: 0em 0.0em 0em 0.5em;" class="sidebarnav">
+<a href="http://symbolaris.com/download.html" title="Download" class="sidebarnav">Download</a>
+</li>
+
+</ul>
+</div>
+<div class="content">
+
+
+
+<table class="constructive" border="0" width="100%">
+  
+<tbody><tr>
+    
+<td>
+<table class="tableofcontents">
+<tbody><tr>
+<th class="tableofcontents">Table of Contents</th>
+</tr>
+<tr>
+<td>
+<ol class="tableofcontents">
+<li>
+<a class="tableofcontents" href="#N1098A">A Strategy Game of High Mathematical Precision</a>
+</li>
+<li>
+<a class="tableofcontents" href="#N109CA">The Rules of the Game</a>
+</li>
+<li>
+<a class="tableofcontents" href="#N109D9">The Moves</a>
+</li>
+<li>
+<a class="tableofcontents" href="#N10A35">The Attacking Options</a>
+</li>
+<li>
+<a class="tableofcontents" href="#N10A9C">The Winning Orders</a>
+</li>
+<li>
+<a class="tableofcontents" href="#download">Download Rhythmomachia</a>
+</li>
+<li>
+<a class="tableofcontents" href="#N10BB2">Comments &amp; Puzzles</a>
+</li>
+<li>
+<a class="tableofcontents" href="#N10BE1">References</a>
+</li>
+</ol>
+</td>
+</tr>
+</tbody></table>
+</td>
+    <td class="quick" style="vertical-align: top;">
+      <a href="http://symbolaris.com/applet/Rhythmomachia2.jnlp">Launch<br> Rhythmomachia&nbsp;2</a>via&nbsp;Webstart
+    </td>
+  
+</tr>
+
+</tbody></table>
+
+
+<h3 id="N1098A">A Strategy Game of High Mathematical Precision</h3>
+
+<p>
+To enjoy the full depth of Rhythmomachia, we recommend to read the rules on this page incrementally, and
+instantly try a few moves on the board.
+When you take a little time to discover its value, Rhythmomachia really is just an incredible game!
+</p>
+
+<p>Be sure to click the <kbd>End Turn</kbd> button at the end of each turn.</p>
+
+
+<center>
+        
+<applet id="Rhythmomachia" code="Rhythmomachia.class" archive="Rhythmomachia%20%20The%20Philosopher%27s%20Game_files/Rhythmomachia.jar" height="350" width="600">
+        </applet>
+</center>
+
+<p>
+
+<small>
+If your browser works correctly, you should see the board game displayed above. Otherwise, you can run
+<a href="http://symbolaris.com/applet/Rhythmomachia2.jnlp">Rhythmomachia&nbsp;2 Webstart</a> or <a href="#download">download Rhythmomachia</a>.
+Look at the <a target="_blank" href="http://symbolaris.com/applet/Rhythmomachia-help.html#buttonDescriptions">button descriptions and
+further help</a>
+if you are unsure what the buttons do. If the whole
+applet does not show, make sure you have enabled <a href="http://www.oracle.com/technetwork/java/index.html">Java</a> support for
+your browser.
+A new implementation, Rhythmomachia&nbsp;2,
+with much more features is available as a separate application
+for <a href="#download">download</a>
+or as <a href="http://symbolaris.com/applet/Rhythmomachia2.jnlp">Rhythmomachia&nbsp;2 Webstart</a>.
+</small>
+
+</p>
+
+<p>
+P.S. Note that I implemented Rhythmomachia when I was in high school 
+before I knew anything about computer science. I hope you find it 
+interesting.
+</p>
+
+<p>
+	See <a href="http://boardspace.net/english/about_rithmomachy.html">David Dyers' recent Rhythmomachia</a>
+
+</p>
+
+<h3 id="N109CA">The Rules of the Game</h3>
+
+<p>
+
+<b>Rhythmomachia</b> is a complex strategic game played on a board 
+similar to a chessboard. It is an old game supposedly invented in the 
+Middle Ages, and has several mathematical roots. Rhythmomachia is played
+ by two players. The program is based on a historical reconstruction.
+</p>
+
+<p>
+Early, there were some theoretical and mathematical examinations. Some
+concerning the best strategies, and some analyzing how far
+Rhythmomachia's tactics might relate to ancient warfare. Though some
+of these examinations might be mainly unproved or even mere fiction
+conserved over the centuries, one cannot doubt that Rhythmomachia
+makes use of certain mathematical connections known in number
+theory.
+</p>
+
+<p>
+Rhythmomachia is played by two players. Who wins and when? The
+player whose figures (pieces) are arranged in a regular mathematical
+order on the opposite yard, or has captured all opposite figures. Who
+starts?  The blue one does the first move. Then the two players
+alternate by turn.
+</p>
+
+
+<h3 id="N109D9">The Moves</h3>
+
+<p>
+For making a move, use your mouse to drag pieces to their new position
+according to the following moves:
+</p>
+
+<ul>
+  
+<li>
+<img src="Rhythmomachia%20%20The%20Philosopher%27s%20Game_files/Rm_BCircle.gif" alt="infantry man" height="20" width="20">
+    An <b>Infantry man</b>, represented by a circle,
+    moves exactly <b>two</b> fields in horizontal or vertical direction.</li>
+  
+<li>
+<img src="Rhythmomachia%20%20The%20Philosopher%27s%20Game_files/Rm_BTriangle.gif" alt="Cavalier" align="TEXTTOP" border="0" height="20" width="20">
+    A <b>Cavalier</b>, represented by a triangle,
+    moves exactly <b>three</b> fields in diagonal direction.</li>
+  
+<li>
+<img src="Rhythmomachia%20%20The%20Philosopher%27s%20Game_files/Rm_BSquare.gif" alt="Chariot" align="TEXTTOP" border="1" height="20" width="20">
+    A <b>Chariot</b>, represented by a square,
+    moves exactly <b>four</b> fields in any direction including diagonal.</li>
+  
+<li>
+<img src="Rhythmomachia%20%20The%20Philosopher%27s%20Game_files/Rm_BTower.gif" alt="Tower" align="TEXTTOP" height="20" width="20">
+    The <b>Pyramid</b>, represented by a pyramidal tower,
+    contains six or less units and can <b>choose</b> like which of those it
+    wants to move, every time. If a figure contained in the pyramidal tower is attacked
+    successfully, then it is removed and cannot be used for moving, any more.</li>
+
+</ul>
+
+<ul type="CIRCLE">
+  
+<li>
+<b>Note:</b> The number of fields moved <b>
+<emph>includes the starting and
+    ending position!</emph>
+</b> So a Cavalier has moved three fields if it has simply
+    stepped over one empty field in between. This strange calculation is important for attacks.</li>
+  
+<li>Each figure has a <b>rating </b>that determines its combat values, whereas
+    hardly any two figures have the same ratings.</li>
+
+</ul>
+  
+<p>
+  Though, if a tower looses one of its components and there is an identical
+  duplicate of the same league, the player can choose to swap them. The figure
+  in the tower which was lost is removed and the duplicate takes its place in
+  the tower, instead.
+  </p>
+
+
+<h3 id="N10A35">The Attacking Options</h3>
+
+<p>
+Though every player can only do a single move per turn, each can attack as many
+times as possible, before and/or after the move. Each figure can attack as many
+times as possible and even one attack can be lead by as many figures as
+necessary. To attack an opponent's figure successfully, one must reduce its
+rating exactly to zero (each figure that still has a negative or positive rating
+at the end of the opponents turn, will regenerate to its full rating). Since the
+ratings vary that much, it is rather difficult to attack another figure
+successfully.
+</p>
+
+<p>
+Various possibilities for a single attack of a figure do exist, each with the goal of
+reducing the target's rating to 0:</p>
+
+<ul id="attackingOptions">
+  
+<li>
+<b>Direct confrontation</b> is used if a movement of a figure would lead exactly
+    onto the target figure and the ratings are equal. This attack can only be
+    lead by a single figure at once.</li>
+  
+<li>
+<b>Combat formation in joint attack</b>
+  
+<ul id="buttonDescriptions">
+    
+<li>Choose the <dfn>kind</dfn> of attack:</li>
+    
+<ul>
+      
+<li>
+<b>Destroying Attack</b> uses reduction/subtraction for altering. A figure's combat
+        value will be subtracted from the target's rating.</li>
+      
+<li>
+<b>Reinforcement Attack</b> uses addition for altering. A figure's
+        combat value will be added to the target's rating.</li>
+    
+</ul>
+    
+<li>Choose <dfn>combat value</dfn> for an attack:</li>
+    
+<ul>
+      
+<li>
+<b>Assault</b> or <b>Multiplying Attack</b> alters the target's rating by multiplication.
+        The combat value of a figure that uses this attack will be <code>ownRating
+        * distance</code>.</li>
+      
+<li>
+<b>Infiltration Attack</b> or <b>Division Attack</b> alters the target's rating by division. The
+        combat value of a figure that uses this attack will be <code>ownRating /
+        distance</code>.</li>
+    
+</ul>
+  
+</ul>
+  
+</li>
+  
+<li>
+<b>Ambuscade</b> is used if multiple figures could move directly to the target and their respective ratings add up to the target rating.
+	  This is an optional attack generalising "Direct Confrontation". You can enable it in the options dialog.
+  </li>
+  
+<li>
+<b>Seige</b> captures pieces that are fully surrounded by enemies (optional).</li>
+
+</ul>
+When attacking, you must respect that
+<ul type="CIRCLE">
+  
+<li>a figure can only lead an attack into those directions that it can move
+    to. So for example, a Cavalier can only attack in diagonal directions.</li>
+  
+<li>a figure can attack one distinct figure only once, even though it may attack
+    any number of different figures each turn.</li>
+  
+<li>the distances are calculated like for moves (<b>including the starting
+    and ending position</b>).</li>
+
+</ul>
+
+
+<h3 id="N10A9C">The Winning Orders</h3>
+A player can win if he has arranged his figures in a distinct shape and a
+distinct order (according to their ratings). Such an arrangement must fully be
+located on the opposite yard (the half the board where the opposite player
+starts). The figures playing a role in such an arrangement must be located in a
+regular mathematical shape like:
+<ul style="vertical-align:top">
+
+<li style="vertical-align:top"> 
+  
+<table class="plain" style="vertical-align:top">
+    
+<tbody><tr>
+      
+<td>a regular triangle<img src="Rhythmomachia%20%20The%20Philosopher%27s%20Game_files/Triangle.gif" align="middle" height="30" width="30">,
+        with three figures, one placed at <tt>(i|j)</tt> and one at <tt>(i+n|j)</tt>
+        and one at <tt>(i|j+m)</tt>, with <tt>m,n</tt> being integers.<br>
+        So place these figures in a right-angled triangle. Advanced Players even
+        allow winning orders to be rotated triangles.</td>
+      <td><img src="Rhythmomachia%20%20The%20Philosopher%27s%20Game_files/Ex_Triangle.gif" align="middle" height="118" width="187"></td>
+    
+</tr>
+  
+</tbody></table>
+
+</li>
+
+<li>
+  
+<table class="plain">
+    
+<tbody><tr>
+      
+<td>a line<img src="Rhythmomachia%20%20The%20Philosopher%27s%20Game_files/Line.gif" align="middle" height="30" width="30">, with
+        three figures, one placed at one Field and the other two figures placed
+        with a distance of exactly <tt>n</tt> Fields each, on the same vertical
+        column or horizontal row, with <tt>n</tt> being an integer.<br>
+        So place these figures on one vertical or horizontal line. Advanced
+        Players even allow winning orders to be placed on diagonal lines.</td>
+      <td><img src="Rhythmomachia%20%20The%20Philosopher%27s%20Game_files/Ex_Line.gif" align="middle" height="118" width="187"></td>
+    
+</tr>
+  
+</tbody></table>
+
+</li>
+
+</ul>
+The ratings of these figures must be in a regular order like:
+<ul>
+  
+<li>
+<b>Arithmetic order </b>applies if the figures fit with an arithmetic
+    sequence <tt><font size="+1">(</font>a<sub>n</sub><font size="+1">)</font></tt>
+  
+<p>
+  with <tt>a<sub>n</sub> := b + c*n</tt>. Then it is <tt>a<sub>i</sub> - a<sub>i-1</sub>
+  = const</tt>.<br>
+  Such as: <tt>{3,5,7}</tt>, <tt>{3,9,15}</tt>, <tt>{4,8,12}</tt> or <tt>{30,36,42}</tt>.<br>
+  The name is derived from the arithmetic series <tt>b+c*<img src="Rhythmomachia%20%20The%20Philosopher%27s%20Game_files/Sum0Inf.gif" alt="sum from 0 to infinity" align="middle" height="40" width="26">1</tt>.
+  </p>
+  
+</li>
+  
+<li>
+<b>Geometric order </b>applies if the figures fit with a geometric
+    sequence <tt><font size="+1">(</font>g<sub>n</sub><font size="+1">)</font></tt>
+  
+<p>
+  with <tt>g<sub>n</sub> := c*q<sup>n</sup></tt>. Then it is <tt>g<sub>i</sub> /
+  g<sub>i-1</sub> = const</tt>.<br>
+  Such as: <tt>{4,16,64}</tt>.<br>
+  The name is derived from the geometric series <tt>b+c*<img src="Rhythmomachia%20%20The%20Philosopher%27s%20Game_files/Sum0Inf.gif" alt="sum from 0 to infinity" align="middle" height="40" width="26">q<sup>i</sup></tt>.
+  </p>
+  
+</li>
+  
+<li>
+<b>Harmonic order </b>applies if the figures fit with a harmonic sequence <tt><font size="+1">(</font>h<sub>n</sub><font size="+1">)</font></tt>
+  
+<p>
+  with <tt>h<sub>n</sub> := c / n</tt>.<br>
+  Such as: <tt>{12,6,4}</tt>.<br>
+  The name is derived from the harmonic series <tt>b+c*<img src="Rhythmomachia%20%20The%20Philosopher%27s%20Game_files/Sum1Inf.gif" alt="sum from 1 to infinity" align="middle" height="40" width="26"></tt>i<tt><sup>-r</sup></tt>
+  where mostly it is <tt>r=1</tt>.
+  </p>
+  
+</li>
+
+</ul>
+
+<ul type="CIRCLE">
+  
+<li>figures that play a role in such an arrangement need not necessarily be
+    own figures. But at least one must belong to the winners league.</li>
+
+</ul>
+
+
+
+<h3 id="download">Download Rhythmomachia</h3>
+If you liked this game, you can also download it.
+<ul>
+  
+<li>
+<a href="http://symbolaris.com/download.html" title="Download">download Rhythmomachia, release 2</a> (recommended)</li>
+  
+<li>
+<a href="http://symbolaris.com/download.html" title="Download">download Rhythmomachia, release 1</a>
+</li>
+
+</ul>
+
+Rhythmomachia 2 is very much like Rhythmomachia 1, but supports more
+rules (for example full pyramid support) and is customizable for several
+rule variants at least to some extent. It has been rewritten
+completely, in order to flexibilize the rules and make use of more
+Java features than the original version for Java Virtual Machine 1.0
+supports. This allowed beautifying the user interface. Also thanks to
+the integration in our game <a href="http://symbolaris.com/orbital/index.html" title="Orbital library">library</a>, we can now start to implement a
+computer player. Some rudimentary steps have already been taken into
+this direction, but the overall player performance is still much worse
+than that for the Seti game. There are improvements yet to come. But
+still the 2 stable preview release is recommended over Rhythmomachia
+1. Rhythmomachia 2 is not yet available as an applet, though, but has
+to be downloaded. Also, it only supports Java Virtual Machine 1.4+,
+currently.
+
+<h3 id="N10BB2">Comments &amp; Puzzles</h3>
+
+<p>
+If you have found out any mathematical properties concerning Rhythmomachia,
+or know any alternative rules then please <a href="http://symbolaris.com/feedback.html" title="Feedback &amp; Contact">tell me</a>.
+Also if you know about additional sources on the web, I can include a link to them.
+</p>
+
+<p>
+Some hints if try to solve some puzzles: a simple mathematical connection in Rhythmomachia
+concerns the starting arrangements of the figures. Some of the pieces' ratings
+follow up a sequence like:
+</p>
+
+<ul>
+  
+<li> 
+<tt>{n, n*n, n*(n+1), (n+1)*(n+1), (n+1)*(2n+1), (2n+1)*(2n+1) }</tt> 
+</li>
+
+</ul>
+for example in
+<ul>
+  
+<li> 
+<tt>{2, 4, 6, 9, 15, 25}</tt> 
+</li>
+  
+<li> 
+<tt>{7, 49, 56, 64, 120, 225}</tt> 
+</li>
+
+</ul>
+Can you find out further connections?
+<p>What figures are the most effective ones? Which can attack the most opponents
+and which can be attacked by the least? Which figures can be used best for
+winning orders? What value do these figures have then?
+</p>
+
+<p>
+Can you compute a list of all possible combinations for winning orders? My
+computer printed out this <a href="http://symbolaris.com/applet/winord.txt">list of winning orders</a>.
+</p>
+
+
+
+<h3 id="N10BE1">References</h3>
+There are quite a few books and descriptions on the deeper aspects, philosophy
+and strategy of Rhythmomachia play. Some of them further contain interesting
+historical motivations.
+
+<dl>
+
+<dt>[Bell, 1983]</dt>
+
+<dd>Bell, Robert Charles. <i>The Boardgame Book</i>. Bookthrift, 1983.
+ISBN 978-0671060305</dd>
+
+
+<dt>[Illmer et al., 1987]</dt>
+
+<dd>Illmer, Detlef &amp; Gädeke, Nora, &amp; Henge, Elisabeth &amp; Pfeiffer, Helene &amp;
+Spickler-Beck, Monika. <i>Rhythmomachia</i>. Hugendubel Verlag, 1987,
+ISBN 3-88034-3194-5 (in German)</dd>
+
+
+<dt>[Borst, 1986]</dt>
+
+<dd>Borst, Arno. <i>Das mittelalterliche Zahlenkampfspiel</i>. - Heidelberg : Winter, 1986. - 553 S. : Ill.
+(Supplemente zu den Sitzungsberichten der Heidelberger Akademie der Wissenschaften, Philosophisch-Historische Klasse ; 5)
+Literaturverz. S. 495 - 498
+ISBN 3-533-03750-9
+ISBN 3-533-03751-7
+SW: Zahlenkampfspiel ; Geschichte (in German)
+</dd>
+
+
+<dt>[Barozzi, 1572]</dt>
+
+<dd>
+Barozzi, Francesco (1538?-1587?)
+Il nobilissimo et antiqvissimo givoco Pythagoreo nominato rythmomachia 
+cioe
+battablia de consonantie de nvmeri, ritrouato per vtilita &amp; solazzo 
+delli stidiosi, et al presente in lingua volgare in modo di paraphrasi 
+composto.
+Venetia, G. Perchacino, 1572 (in Italian)
+</dd>
+
+
+<dt>[Fulke, 1563]</dt>
+
+<dd>1563 <a href="http://jducoeur.org/game-hist/fulke.html">translation</a> by
+ William Fulke of
+Boissiere's 1554/56 description of Rythmomachy. It is entry 15542a in the Short
+Title Catalog of Pollard and Redgrave, and on Reel 806 of the corresponding
+microfilm collection.
+(The sources disagree, on whether the name is Fulke or Fulwood. He lived 1538-1589.)
+</dd>
+
+
+<dt>[Moyer, 2001]</dt>
+
+<dd>
+	Moyer, Ann E.
+	The Philosophers' Game: Rithmomachia in Medieval and Renaissance Europe.
+	University of Michigan Press,
+	2001.
+	<!-- lots of history -->
+</dd>
+
+
+<dt>Description</dt>
+
+<dd>
+<a href="http://jducoeur.org/game-hist/mebben.ryth.html">
+Rithmomachia, the Philosophers' Game:
+A Mediaeval Battle of Numbers</a>
+
+</dd>
+
+
+<dt>Beschreibung</dt>
+
+<dd>
+<a href="http://www.in-nova-corpora.ch/ma_recherche/Rhyth/rhytho_text.htm">
+Rhythmomachia - das Philosophenspiel:
+Ein mittelalterlicher Zahlenkampf</a>
+
+</dd>
+
+
+
+<dt>Bibliographie</dt>
+
+<dd>More <a href="http://jfgilles.club.fr/mathematiques/rythmomachie/histoire/bibliographie.htm">bibliography</a>
+on Rhythmomachia (in French).
+</dd>
+
+
+</dl>
+
+<!--
+<br />Hotlinks:<br />
+<applet code="HotLinks.class" codebase="../" width="200" height="26">
+  <param name="LINKS" value="The Philosopher's Game|http://www.inmet.com/~justin/fulke.html;On the Wise Play|http://www.inmet.com/~justin/ace_rythmo1.txt">
+  <param name="background" value="FFFFFF">
+</applet>
+-->
+
+
+</div>
+<div class="footer">
+<!-- footer -->
+<p>
+<a class="contact" href="http://symbolaris.com/andre.html">
+	  Copyright&nbsp;©&nbsp;by&nbsp;André&nbsp;Platzer
+      </a>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+       <!-- date -->
+          Last&nbsp;modified:&nbsp;2013-10-27</p>
+</div>
+</div>
+<div class="globalfooter">
+<a href="http://symbolaris.com/index.html" title="André Platzer @ Carnegie Mellon University">Home</a>
+            |
+        <a href="http://symbolaris.com/pub/publications.html" title="Publications by André Platzer (by year)">Publications</a>
+            |
+        <a href="http://symbolaris.com/pub/index.html" title="Research Areas of André Platzer">Research</a>
+            |
+        <a href="http://symbolaris.com/info/index.html" title="Tools for Logic, Computer Science &amp; Mathematics">Tools</a>
+            |
+        <a href="http://symbolaris.com/course/index.html" title="Courses by André Platzer">Courses</a>
+            |
+        <a href="http://symbolaris.com/andre.html" title="André Platzer @ Carnegie Mellon University">A.&nbsp;Platzer</a>
+</div>
+
+
+</body></html>

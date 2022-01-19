@@ -1,0 +1,179 @@
+<HTML><HEAD><TITLE>Data Recovery - DISCUS Administration Instructions</TITLE>
+<STYLE>
+<!--
+P {text-align: justify}
+UL {text-align: justify}
+-->
+</STYLE>
+<META NAME="Robots" CONTENT="noindex,nofollow">
+<META NAME="Keywords" CONTENT="data recovery,how to restore a corrupted board-topics.html file">
+<META NAME="Description" CONTENT="Description of the Data Recovery interface, which allows the superuser to fix corrupted data files on a Discus board.">
+
+</HEAD>
+<BODY BGCOLOR=#ffffff TEXT=#000000 LINK=#0000ff VLINK=#800080 ALINK=#ff0000>
+<FONT FACE="Verdana,Arial,Helvetica" SIZE=2>
+<TABLE WIDTH=100% BGCOLOR=#ccccff BORDER=0 CELLSPACING=0><TR><TD ALIGN=LEFT><FONT FACE="Verdana,Arial,Helvetica" SIZE=3><B>Data Recovery</B></TD><TD ALIGN=RIGHT><FONT FACE="Verdana,Arial,Helvetica" SIZE=2>DISCUS Administration Instructions</FONT></TD></TR></TABLE>
+<P>
+The Discus system uses static HTML pages on your server to store its data.  Thus, if one of these files becomes damaged or corrupted, unanticipated and undesired behavior can result when using the features of the program.  Such corruption can be introduced through unintentional deletion of files, server crashes, or editing the files directly using an HTML editor such as Microsoft Front Page or Netscape Composer.
+<P>
+The Data Recovery utility assists in recovering from two types of page corruption:  corruption of the top page, and corruption of pages within topics.  Of course, the best way to recover lost data is to restore the damaged files from a recent backup.  However, it is an unfortunate and frankly surprising fact that few people keep reliable backups of essential data.
+<P>
+<B>The Data Recovery utility is <U>not</U> an "undelete" feature.</B>  Once a topic or subtopic is deleted using the administrative tools, it is gone.  The Data Recovery utility is designed only to recover those pages which might have become damaged due to a server problem or undocumented editing.
+<P>
+<A NAME=top><H4>Fixing a corrupted top page</H4></A>
+<P>
+Symptoms of a corrupted top page include:
+<UL>
+<LI>Having topics on the top page, but not being able to access them through administration
+<LI>In Netscape, the background color, text color, and link color of all utility screens (New Messages, Keyword Search, etc.) are black.
+<LI>The "Tree View" lists only the board title
+<LI>Utility screens (New Message, Keyword Search) do not list the topics on the board
+</UL>
+<P>
+There are two ways to recover the data from a corrupted top page:  salvaging the page and regenerating the page.
+<P>
+<B>Salvaging the page</B>
+<P>
+Salvaging the page attempts to recover topic data from the top page, matching information from the page if it is not entirely lost.  The salvage operation also attempts to recover your title message, top page settings, main message, and color scheme, minimizing the amount of work that you must do in the recovery.  The salvage operation is also optimized for several corruption patterns that we have observed, including corruption introduced by Microsoft Front Page and Netscape Composer.
+<P>
+However, salvaging the page is not always possible.  Regenerating the page (see below) will always work, so it is in your best interest to attempt to salvage the page before going for the full regeneration.  If salvaging fails, you can simply do the regeneration and you will be no worse off.
+<P>
+To salvage the page, from the Data Recovery screen, make sure the "Salvage Page" option is checked, and click the "Run Data Recovery" button.  When the salvage operation is complete you will be returned to the Board Manager.  You should at this point go to the board and see if the topics page looks normal.  You should also verify that the title message and main message are filled in through the Board Manager.  Based on the success of the recovery, you may choose at this point to use the Board Manager to fill in the missing or incorrect sections (such as correcting the color scheme).
+<P>
+
+<B>Regenerating the page</B>
+<P>
+If the page salvage operation was unsuccessful for any reason, you can use the page regeneration function.  This actually examines the directory structure of your board, adding each topic that is found to the top page.  These topics will likely be out of order.  In addition, the default color scheme, title message, and main message are all used, so these will need to be specified after restoring the page.
+<P>
+To run the regeneration function, from the Data Recovery screen, check the "Regenerate Page" option, and click the "Run Data Recovery" button.  This will add all topics that are found to the topics page.  You then may need to use the Board Manager to change the color scheme, change the title message or main message, or reorder the topics.
+<P>
+If the Data Recovery utility does not allow you to access the top page because it reports that the top page cannot be opened, you need to create a blank "board-topics.html" file in your "messages" directory prior to invoking this function.  Set permissions on that file to 0777 (rwxrwxrwx) if you are on a unix server.  Then access the Data Recovery utility and use the "Regenerate Page" option.
+<P>
+
+<A NAME=regenanyway><B>Regenerating despite topics being found</B></A>
+<P>
+If Data Recovery finds topics on your topics page, it concludes that your topics page is not corrupted.  However, if you are missing topics, you will still have the option to regenerate that page from scratch.  Regenerating the page from scratch causes the loss of your "Title Message," "Main Message," board color scheme, topic order, and any customizations you may have made to your topics page.  Therefore, this procedure is not recommended unless you really believe that your topics page has been corrupted or you have received explicit instructions from DiscusWare, LLC to run this procedure.
+
+<P>
+
+<A NAME=page><H4>Fixing corrupted topic/subtopic pages</H4></A>
+<P>
+Symptoms of a corrupted topic/subtopic page include:
+<UL>
+<LI>Receiving an "Undefined Error Extracting File" error or an "Extract Error" when attempting to access administrative functionality
+<LI>Receiving a "File Not Found" or "Document Contains No Data" error when attempting to read the discussion through the user interface
+<LI>Subtopics from a page that point to an area of the board that is not consistent with your present location.
+</UL>
+<P>
+To recover data from a corrupted topic/subtopic page, it is important to know in what topic on your board the corrupted page resides.  Generally this will be apparent from the section of administration that you are attempting to access.
+<P>
+Access the Data Recovery utility, which will give you the form for recovering corrupted topic/subtopic pages.  If you receive the form for recovering data from the top page (see <A HREF=#top>above</A>), then you first need to fix the top page.  The "Automatically Fix Errors" box should be checked; if you want to see a list of errors that would be automatically fixed, uncheck this box.  Click the "Run Data Recovery" button to run the data recovery process.  A summary list of fixes that were made will be generated.  If you unchecked the "Automatically Fix Errors" box, you must click the "Fix Errors" button to finish the Data Recovery procedure.
+<P>
+Data Recovery can only restore links to subtopics; it cannot restore the text of messages, about messages, announcement messages, or page structure.  Thus, when a page has been recovered, use the Page Manager to customize the page and/or reorder the subtopics if necessary.
+<P>
+
+<A NAME=specpage><H4>Fixing specific corrupted pages</H4></A>
+<P>
+If you have a page that appears normal but is missing one or more subtopics, you can regenerate that page and add back any missing subtopics.  The program does this by scanning all available pages in that topic's directory and adding back any missing subtopics to the end of the list of subtopics.
+The program also checks the list to make sure it does not contain any subtopics that should not be there; if there are such subtopics there, they are removed from the list.
+<P>
+The first step is to determine the program's internal reference for the page, which corresponds to the file name and directory location of the page.  To do this, in the user interface, navigate to the affected page.  Then use your browser's command to view the page information (View | Frame Info in Netscape, analagous commands in other browsers) and observe the file name.  It will end in <B>/###/###.html</B>.  The first number is the topic number and the second number is the page number.  For example, the page which has the URL of <B>http://www.discusware.com/discus/demo/messages/3/12.html</B> would have topic number <B>3</B> and page number <B>12</B>.
+<P>
+When you have determined the topic and page number, go to Data Recovery and scroll down to the final section which deals with a specific page missing subtopics.  Enter the topic number and page number into the boxes and click the "Fix Indicated Page" button.  Depending on the size of the topic, this procedure may take several seconds (as each file in the topic must be scanned).  The program will then report if any additional subtopics were found.
+<P>
+If additional subtopics were found, you <B>must</B> go to your Board Manager and run the procedure to reindex the board.  This is not invoked automatically as this procedure can take several minutes.  If you need to run the recovery procedure on several pages, do this before reindexing the board.  When you are done operating Data Recovery you should choose to reindex your board.  If all of your data recovery has been in one topic, you need only reindex that topic.
+<P>
+If the program reports "File Not Found" when doing the recovery, you have typed an invalid topic number or page number.  Verify that you have supplied the correct numbers from the frame information and try again.  If the program reports that there was nothing to do because no stray subtopics were found, the page was not corrupted and you need not run the reindexing routine unless you have already run Data Recovery on other pages.
+
+<P>
+<A NAME=others><H4>Other recovery options</H4></A>
+<P>
+Other data structures of the Discus program can be repaired or regenerated.  Generally, you should do these procedures only if you thoroughly understand the cause of the problem and you believe that these procedures will fix it, or if you are directed to follow one of these procedures by DiscusWare support staff or documentation.
+<P>
+<B>Rebuild Attachment Index</B>
+<P>
+Attachments (uploaded images and, in Discus Pro, uploaded attachments) are recorded in a data file that allows the program to quickly find and manipulate those images.  To rebuild that list from scratch based on the current and actual location of the attachments, use this option.
+<P>
+<B>Unlinked Attachment Cleanup</B>
+<P>
+In previous versions of Discus, attachments were not properly deleted from posts when the post or page was removed. This option will cycle through the directories and remove any attachments that are not referenced in the attachment location file.  If your upgrade to version 3.10 did not complete, we recommend first running the "Rebuild Attachment Index" command.  Otherwise, all attachments on your board could be removed.
+<P>
+<B>UNDO an Unlinked Attachment Cleanup</B>
+<P>
+This option does the opposite of an unlinked attachment cleanup; it puts the removed attachments back into their directories.  (Those attachments from the cleanup were not really deleted; they were moved into the "backups" subdirectory.)  To undo a cleanup, click this option and select the attachment cleanup to undo (these are identified by date/time and by reference number, corresponding to the file names in the "backups" directory).
+<P>
+<B>Clean and repair posting logs</B>
+<P>
+This option goes through your posting logs and compares the information in the posting logs to that contained on the pages.  If posts are missing from your posting logs, they will not show up in your New Message search.  This utility recreates post information in the posting log, if that information is missing, from the information on the page.  Information on the identity of the poster and the poster's IP address of recreated is lost when running this procedure.  If incorrect entries are found in the posting logs, these are removed.
+<P>
+<B>Clean data structure</B>
+<P>
+This option fixes all subtopic lists on the board from some problems that can occur due to file corruption.  Those problems are:
+<P>
+<UL>
+<LI>Duplicated entry in the subtopics list
+<LI>Invalid entry in subtopics list (e.g., link to the page itself)
+<LI>More than one subtopic on the same line causing program not to find both
+<LI>Invalid formats (subtopics not in Discus format)
+<LI>Links to missing pages
+<LI>Incorrect parent numbers on pages
+</UL>
+<P>
+There is essentially no risk in running this option, but be aware that if your board was corrupted with Front Page or another HTML editor, running the cleanup will remove all of the subtopics from your user interface.  We suggest making a backup of your board before running this procedure.
+<P>
+A record of all actions taken is recorded in the <U>errors.txt</U> file in your Discus administration directory.
+<P>
+<FONT COLOR=#ff0000><I>IMPORTANT:</I> after you have run a "clean data structure" operation, you should re-index your board by going to Board Manager and clicking the "Index Board" button.  Otherwise, your tree view, new messages, and administration may display incorrect data.</FONT>
+<P>
+<B>Check and clean tree file</B>
+<P>
+This option goes through your subtopics and determines which subtopics are not properly linked within your board. (These files never show up in the tree view because they are not found while indexing.)  This function regenerates subtopic lists that are missing files and when used in conjunction with the index board routine, can rebuild corrupted subtopic lists automatically.  If this function reports that it fixed errors, you should follow its advice to reindex your board.  Then return to Data Recovery and run this procedure again until there are no errors reported.
+<P>
+<B>Rebuild names on posts from logs</B>
+<P>
+This option goes through your pages and restores any missing names by analyzing your log files.  This puts back the names and profile links on the posts when the name has been removed, generally through undocumented template modification.  This option should not be necessary for most boards.
+<P>
+<B>Clean blank lines from password files</B>
+<P>
+This option goes through your passwd.txt (moderator password) and users.txt (user password) files and removes any blank lines that may be present.  Because many Discus functions read and write these files, blank lines will only serve to slow down the Discus board.  Blank lines are generally not added in by a properly functioning program but can be inadvertantly added by administrators editing the file by hand.
+<P>
+<B>Clean up any data files written in binary mode</B>
+<P>
+This option goes through your Discus data files (*.txt in your administration directory) and fixes any files that have carriage-return characters.  Those characters could have been introduced if you transferred files in binary mode by FTP, or if you moved your board from a Windows server to a unix server and you had ever transferred those files by FTP at any time.  This should be used only if the program diagnostics find a data file uploaded in binary mode and instruct you to run data recovery.
+<P>
+<B>Remove blank descriptions from topics page</B>
+<P>
+This option removes blank topic descriptions from your topics page.  On some boards, extra spaces may appear in the topics list due to descriptions that are equal to a newline character, which translates to &lt;BR&gt; in Discus formatting.  This option is equivalent to going to Board Manager and individually clicking the properties next to each topic, removing the newline from the description box, and saving the revised description.
+<P>
+<B>Fix "Unrecorded Date" messages on posts</B>
+<P>
+If you upgraded to version 3.10 of Discus during earlier beta versions and/or you had an incomplete log when you upgraded, some of your messages may bear the message "Unrecorded date," as Discus does not have a time on file for the posting of the message.  This option allows you to fix these messages. There are two steps to this process.  The first is to run the data recovery, which is described shortly.  After you have run the recovery, you need to go to Board Manager and regenerate your subtopic/message lists so that the dates are regenerated on what is displayed to your visitors.
+<P>
+The four available options are described briefly here:
+<P>
+<UL>
+<LI>Use datefix.tar in "backups" directory.
+<P>
+This allows Discus to use an old backup file to regenerate the dates.  Your backup must be in the unix tar format (backups created by the Backup Manager are in this format if you did not compress them).  To use the file, it must be uploaded to your "backups" directory and it must be named "datefix.tar".  When you have this file in this location, it can be used for recovery.
+<P>
+<LI>Use files in backups/datefix directory.
+<P>
+This allows Discus to use old files to regenerate the dates.  First, create a directory called "datefix" within your "backups" directory.  Into that "datefix" directory go subdirectories for your topics (these are named with numbers, just like the subdirectories in your "messages" directory).  Into each topic directory go the message files.  In a sense, your "datefix" directory should look much like your "messages" directory.  When you have the files in this location, they can be used for recovery.
+<P>
+<LI>Use old-log.txt file in "backups" directory.
+<P>
+When you upgrade, Discus places your old log file into the "backups" directory and names it "old-log.txt".  Although this file was used for the upgrade, it is possible that some earlier information was missed in earlier versions of 3.10 beta.  Or, if you have a log file created in your earlier version, you can try recovering time information from it.  In any case, name your Discus log file (must be the Discus log file format) as "old-log.txt" and place it in your "backups" directory.  When you have this file in this location, it can be used for recovery.
+<P>
+<LI>Reset all unrecorded times to this time:
+<P>
+This should be used only as a last resort and will place the date/time you've chosen on all messages noted as "Unrecorded date."  Use this only after you have attempted to use every conceivable backup file and log file that you have.
+</UL>
+<P>
+This utility overwrites the date/time information on posts <I>only</I> if they have the "Unrecorded date" message.  It is therefore safe to run this operation on an entirely properly functioning board, although it is a waste of time.  Once this recovery option finds a time for a post, that time is repaired permanently, regardless of how many more times you run this operation or what files you use for it.  In other words, this utility will NEVER overwrite a valid date/time with something else (and remember that the "reset" option above produces a valid date/time so once you do that, this utility can provide no further help.)  Consequently, it is safe and possible to run this operation a number of times with various backup files without fear of corrupting the information that is already there if a backup file created prior to the posting of that message is used.
+<P>
+When you finish this procedure, remember that you must use Board Manager to regenerate the subtopic/message lists in order to make the human-readable dates and times update according to the restored information.
+<P>
+<TABLE WIDTH=100% BGCOLOR=#ccccff BORDER=0 CELLSPACING=0><TR><TD><FONT FACE="Verdana,Arial,Helvetica" SIZE=1>Copyright &copy; 2000, DiscusWare, LLC, all rights reserved</FONT></TD><TD ALIGN=RIGHT><A HREF="board-admin-instr-16.html"><IMG SRC="icons/prev_button.gif" HEIGHT=20 WIDTH=20></A> <A HREF="board-admin-instr-01.html"><IMG SRC="icons/top_button.gif" HEIGHT=20 WIDTH=20></A> <A HREF="board-admin-instr-18.html"><IMG SRC="icons/next_button.gif" HEIGHT=20 WIDTH=20></A></TD></TR></TABLE>
+
+
+</FONT></BODY></HTML>

@@ -1,0 +1,34 @@
+#!/bin/sh
+#
+# 1998-11-29 [pem]: Got rid of annoying
+#   "tar: Cannot add file x*: No such file or directory" messages.
+#
+
+FILENAME=`date '+%m-%d-%y'`.tar
+DIR=$HOME/work/games/`date '+%y/%m'`
+
+# Collect old games.
+cd $HOME/src/data/stats/cgames
+find . -mtime +2 -exec mv {} $HOME/work/cgames/. \;
+
+# tar them.
+cd $HOME/work/cgames
+# If there are no files matching [a-z]*, this will cause an error message
+# on stderr and create an empty tar archive, so it will work anyway.
+ls [a-z]* | xargs tar cf $FILENAME
+gzip -9 $FILENAME
+mv $FILENAME.gz $DIR/$FILENAME.gz
+rm -f [a-z]*
+
+# Make a new index.
+cd $DIR
+echo "<HTML><BODY><PRE>" > index.html
+for j in *.gz
+do
+    echo "=================" >> index.html
+    echo "<A HREF=\"http://nngs.cosmic.org/games/`date '+%y/%m'`/$j\"> $j</A>" >> index.html
+    echo "=================" >> index.html
+    tar tzf $j >> index.html
+done
+echo "</BODY></HTML>" >> index.html
+echo "index.html created for `date '+%y/%m'`"

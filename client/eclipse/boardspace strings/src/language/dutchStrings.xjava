@@ -1,0 +1,900 @@
+package online.language;
+import online.common.internationalStrings;
+// translations by "Christian Freeling" <christian@mindsports.nl>
+//
+// available font families: 
+//  serif (timesroman)
+//  sansserif (helvetica)
+//  monospaced (courier)
+//
+public class dutchStrings extends internationalStrings
+{
+    static
+    {
+        put("fontfamily", "sansserif");
+        // lobby messages
+        put("launchfailed","De andere speler begon niet correct");
+        put("#1 invites #2 to join room #3", "#1 nodigt #2 uit in ruimte #3");
+        put("#1 invites #2 to play #3 in room #4","#1 nodigt #2 uit voor #3 in ruimte #4");
+        put("#1 has been muted, by a consensus of the players",
+            "#1 is beeindigd met wederzijds goedvinden");
+        put("welcome", "Welkom in de BoardSpace Lobby, versie #1"); //version number follows
+        put("website", "#1 BoardSpace"); //pretty name for the web site.. #1 is something like "Game Room" or "Lobby"
+        put("enterMessage", "#1 is nu in de lobby"); //somebody entered
+        put("in #1", "in #1"); //followed by a session number
+        put("Move ##1", "Zet ##1"); //move number for games in lobby
+        put("News", "Nieuws"); //header for news lines
+        put("Lobby", "Lobby"); //the name of the lobby
+        put("Error", "Fout"); //the name for errors
+        put("launchChat", "Chat is open in Ruimte #1"); //launching a chat room
+        put("launchspectator", "Toeschouwer in Ruimte #1"); //session id follows
+        put("launchGame", "Spel open in Ruimte #1"); //launching a game
+        put("launchReview", "Commentaar mogelijk in Ruimte #1");
+        put("Session #1: state unknown.", "Ruimte #1: status onbekend.");
+        put("Session #1 is idle.  ", "Ruimte #1 is niet in gebruik.  ");
+        put("Session #1 is being launched.  ", "Ruimte #1 wordt geopend.  ");
+        put("Session #1 is active.  ", "Ruimte #1 is in gebruik.  ");
+        put("Session #1 is private. ", "Ruimte #1 is prive. ");
+        put("Session #1 is displaying the map of players real locations",
+            "Ruimte #1 toont een kaart met de locatie van de spelers");
+        put("Invite", "Uitnodiging #1 in ruimte #2");
+        put("Accept chat from #1", "Accepteer chat van #1");
+        put("Ignore chat from #1", "Negeer chat van #1");
+        put("Play #1", "Speel tegen #1"); //followed by robot name
+        put("Rejoin #1", "Terug naar #1"); //rejoin a game you were playing
+        put("Rejoin", "Terug naar de partij"); //rejoin a game you were playing
+        put("noserver", "De lobby heeft geen verbinding mer de server."); //status message
+        put("stillwaiting", "Opent...geduld aub."); //repeated hit on launch
+        put("noresponse1", "De server reageert niet.");
+        put("noresponse2",
+            "Het kan uitval zijn, of een firewall die de toegang verhindert.");
+        put("nolobby", "Sorry, geen toegang tot de lobby.  Hij kan vol zijn.");
+        put("timeoutWarning", "  Lobby sluit over 1 minuut (inactief)."); //warning	
+        put("Lobby shutdown...", "Lobby sluit..."); //shutting down
+        put("Active in", "Actief in"); //header for users column
+        put("Waiting in", "Wachtend in"); //header for users column
+        put("your name", "je naam"); //your name in users, when not known
+        put("(unknown)", "(onbekend)"); //name of another player not yet known
+        put("announceOption", "Aankondiging nieuwe spelers"); //the "announce new players" menu option
+        put("Join", "Kom erbij"); //label for the join token
+        put("Invite players to this room", "Nodig spelers uit in deze ruimte");
+        /* game state messages for games scroll area */
+        put("State unknown.", "Status onbekend."); //when game state is not yyet known
+        put("Launching...", "Opent..."); //game being launched
+        put("Spectate", "Bekijk"); //spectate in a game (verb)
+        put("Spectator", "Toeschouwer"); //spectator (singular noun)
+        put("Idle.", "Inactief."); //game that is not in use
+        put("Players", "Spelers"); //generic players in a game (plural noun)
+        put("player", "speler"); //generic players in a game (singular noun)
+        put("Spectators", "Toeschouwers"); //generic spectators in a game (plural noun)
+        put("(unoccupied)", "(leeg)"); //empty/available slot in a game
+        put("Start", "Start"); //start a game button
+        /* game description messages */
+        put("and", " en "); //"and" for a, b and c, including spaces
+        put("No players.", "Geen spelers."); //there are no players in this game
+        put("Player is ", "Speler is "); //the single player name follows
+        put("Players are: ", "Spelers zijn: "); //the list of player names follows
+        put("No spectators.", "Geen toeschouwers."); //similarly for spectators
+        put("Spectator is: ", "Toeschouwer is: "); //
+        put("Spectators are: ", "Toeschouwers zijn: "); //
+        put("loaderr", "Fout bij het laden: "); //can find classes we need
+        put("Connection error", "Geen verbinding"); //problem with the connection
+        put("Reconnecting", " ...maakt verbinding..."); //attempting to reconnect
+        put("connecting", "Verbindt met "); //connecting to web site	
+        put("reconok", "...verbinding geslaagd"); //ok, we did it
+        put("nolaunch", "De server weigert verbinding, het bericht is ");
+        put("Time is ", "De tijd is nu "); //followed by hh:mm
+        put("savedmsg", "Partij opgeslagen als #1"); //announce saved game
+        put("guest", "gast"); //the name for guest players
+        //lobby messages
+        put("Please Join Me", "Ik nodig je uit"); // goes with "join only if invited" and "tournament mode"
+        put("Join only if Invited", "Toegang alleen op uitnodiging"); //seen in lobby game rooms
+        put("Tournament Game", "Tournooi Partij"); //seen in lobby game rooms
+        put("No challenges from #1", "Geen uitnodigingen van #1"); //seen in lobby player list
+        put("Allow challenges from #1", "Sta uitnodiging toe van #1"); //seen in lobby player list
+        put("Unranked Room", "Vrije speelruimte"); // room for unranked games.
+        put("Games do not affect your Ranking",
+            "Partijen hebben geen invloed op de standen"); //subheader for the room
+        put("No Challenges", "Geen uitnodigingen");
+        put("automute", "#1 is automatisch gedempt");
+        put("No Chat", "Geen Chat");
+        put("Map of Player Locations", "Kaartruimte");
+        put("Game Room", "Speelruimte");
+        put("Review Saved Games", "Commentaarruimte");	// appears as the frame name in review rooms
+        put("Anyone can play in this room", "Iedereen kan in deze ruimte spelen");
+        put("Master Room", "Meesterruimte");
+        put("Master ranked players can play", "Meesters kunnen spelen in deze ruimte");
+        put("Review Room", "Commentaarruimte"); //for the chat room banner
+        put("Members", "Leden"); //people in a chat room
+        //used by chat applet
+        put("Type your message here.", "Typ je bericht hier."); //initial contents of the message line
+        put("Message:", "Aan Allemaal:"); //label for the message line
+        put("MessageTo:","Aan #1:");	//label for message to one user
+        put("From #1","Van #1");	// label for messages from a single user
+        put("Send", "Verstuur"); //label for the button to send the text
+        put("User ", "Gebruiker "); //default name for unnamed client
+        //used by the common frame
+        put("Options", "Opties");
+        put("Actions", "Acties");
+        put("Sound", "Geluid");
+        // review rooms
+        put("Show SGF Text", "Toon SGF Tekst"); //in action menu of review rooms
+        put("Select Game", "Kies Spel"); //menu label in review rooms
+        put("game selector", "spelkeuze"); // title for the game selector frame
+        put("Match words:", "Vergelijk woorden:"); //used in the game selector
+        put("reading directory...", "leest directory..."); //waiting for a directory to be read
+        put("Error reading directory", "Fout bij lezen van directory");
+        put("Error reading file", "Fout bij lezen van bestand");
+        put("reading Zip directory...", "leest Zip directory...");
+        put("Loading game file", "Laadt partijbestand"); //selecting a review game
+        //used by the game client
+        put("You have been disconnected: #1", "De verbinding is verbroken: #1");
+        put("Calling server...", "Probeert server...");
+        put("Wait for opponents to arrive.", "Wacht op komst tegenspeler.");
+        put("player ", "speler ");
+        put("mouse tracking disabled", "Muisvolgen niet actief");
+        put("the game has resumed", "de partij is hervat");
+        put("Take Over Playing", "Neem de parij over"); //menu item, take over playing a color
+        put("Become a Spectator", "Word toeschouwer");
+        put("Let The Robot Play", "Laat de robot spelen");
+        put("(vacancy)", "(vacant)"); //player who has quit
+        put("Game in progress...", "Partij gaande...");
+        put("rankingsfailed", "Aanpassen van de stand mislukt");
+        //hints
+        put("Moves are coming in", "Zetten komen"); //moves arrive while in review mode	
+        //menu options
+        put("Messages", "Berichten"); //name of menu
+        put("Track Mice", "Volg Muis");
+        put("See Player Comments", "Zie commentaar van spelers");
+        put("See Spectator Comments", "Zie commentaar van toeschouwers");
+        put("Joint Review", "Gezamenlijk commentaar");
+        put("#1 requests Joint review",
+            "#1 verzoekt gezamenlijk commentaar.  Kies \"Gezamenlijk commentaar\" in het berichten menu");
+        put("#1 starts Joint review","#1 start gezamelijk commentaar");
+        put("Timeout in 1 minute.", "Timeout in 1 minuut.");
+        put("Game timed out.  Session has ended.",
+            "Tijd verlopen.  Sessie is beeindigd.");
+        put("Chat Room", "Chat Ruimte"); //for the chat room banner
+        put("private room", "prive ruimte");
+        put("This is now a private room", "Dit is nu een prive ruimte");
+        put("This is now a public room", "Dit is nu een publieke ruimte");
+        put("Colorblind", "Kleurenblind");
+        put("Please respect the 15 minute time limit",
+            "Meester partijen hebben een tijdslimiet van 15 minuten");
+        put("Game", "Spelhint"); //name for hints from the game
+        put("Joining as a spectator", "#1 komt erbij als toeschouwer");
+        put("enters the room", "#1 is nu in de ruimte"); //new member of a chat
+        put("#1 is taking over for #2", "#1 neemt over van #2");
+        put("#1 is taking over playing #2 for #3",
+            "#1 neemt speler #2 over van #3");
+        put("#1 deliberately quit", "#1 heeft de partij opzettelijk verlaten");
+        put("#1 has quit and become a spectator",	// quit as a player.  Not in use right now.
+            "#1 is nu een toeschouwer");
+        put("#1 killed due to #2", "#1 getermineerd door #2");
+        put("quitting", "#1 heeft de ruimte verlaten");
+        put("#1 quit", "#1 heeft de partij verlaten"); //quit (not deliberately)
+        put("Welcome to Game client, version #1",
+            "Welkom bij BoardSpace client, versie #1");
+        put("play", "speel voor #1"); //play for a player who has quit.  #1 is a player name
+        put("Selecting game: #1", "Selecteert partij: #1"); //loading a review game
+        put("Hint", "Hint"); //the name for hints
+        put("Move a ball or change a Ring", "Verplaats een bal of een Ring");
+        put("Add a ball, remove a Ring", "Plaats een bal, verwijder een Ring");
+        put("Add a ball", "Plaats een bal");
+        put("Remove a Ring", "Verwijder een Ring");
+        put("Capture a ball", "Sla een bal");
+        put("Continue Capturing", "Blijf slaan");
+        put("Finished Capturing, Click Done", "Slag beeindigd, Klik Klaar");
+        put("Click Done", "Klik Klaar");
+        put("Game Over", "Partij geeindigd");
+         put("Resign", "Geef op");
+        put("Zertz", "Zèrtz");
+        put("Zertz+11", "Zèrtz+11");
+        put("Zertz+24", "Zèrtz+24");
+        put("Player #1", "Speler #1");
+        put("Resign State", "Klik Klaar om opgave te bevestigen");
+        put("LOA", "Lines of Action");
+        put("Plateau", "Plateau");
+        // loa strings
+        put("Select the #1 piece to move", "Selecteer #1 stuk");
+        put("White", "Wit");
+        put("Black", "Zwart");
+        put("Select the destination for the selected piece",
+            "Kies veld voor het geselecteerde stuk");
+        put("Black Pieces", "Zwarte Stukken");
+        put("White Pieces", "Witte Stukken");
+        put("show grid", "toon raster");
+        put("Done", "Klaar");
+        put("Edit", "Bewerk");
+        put("LIMBO", "LIMBO");
+        put("4w 5g 6b or 3 of each wins", "4w 5g 6b of 3 van elk wint");
+        put("1 choice", "1 keuze");
+        put("#1 choices", "#1 keuzes");
+        put("Start #1", "Start #1");
+        put("Yinsh", "Yinsh");
+        put("Dvonn", "Dvonn");
+        // plateau strings
+        put("Move stacks around any way you want to",
+            "Beweeg kolommen naar believen");
+        put("Build an initial stack of 2 to be placed",
+            "Bouw een beginkolom van twee om te plaatsen");
+        put("Place your stack on the edge of the board",
+            "Plaats je kolom op een randveld");
+        put("Onboard a piece, Move a stack, or Exchange",
+            "Plaats een stuk, Verplaats een kolom, Of Ruil");
+        put("Exchange Prisoners", "Ruil Gevangenen");
+        put("Move A Stack", "Verplaats een Kolom");
+        put("Drop your piece onto the board or any of your stacks",
+            "Plaats op een vrij veld of op een stuk van eigen kleur");
+        put("Drop your piece onto the board or any stack",
+            "Plaats op een vrij veld of op een stuk");
+        put("Click Done to Finish the move", "Klik Klaar om de zet te voltooien");
+        put("Drop the moving stack back on the rack",
+            "Plaats de kolom terug in het rek");
+        put("Pick up and Continue your move", "Pak op en ga verder met de zet");
+        put("Shuffle pieces to the exchange area, Click Done to start the exchange",
+            "Schuif stukken naar de ruilbeurs, Klik Klaar om te ruilen");
+        put("Click Done to complete the exchange",
+            "Klik Klaar om de ruil te voltooien");
+        put("Start White", "Start Wit");
+        put("Start Black", "Start Zwart");
+        put("Place prisoners here for exhange",
+            "Plaats ruilgevangenen hier");
+        put("Prisoners captured by Black are held here",
+            "Gevangenen van Zwart zijn hier");
+        put("Prisoners captured by White are held here",
+            "Gevangenen van Wit zijn hier");
+        put("Move the flipped stack", "Verplaats de omgedraaide kolom");
+        put("The game record is not available during the game",
+            "Het partijverloop is niet beschikbaar tijdens de partij");
+        put("Select Robot", "Selecteer Robot");
+        // yinsh strings
+        put("make 5 in a row to capture a ring, 3 rings win",
+            "maak 5 op een rij voor een ring, 3 ringen wint");
+        put("make 5 in a row to capture a ring and win",
+        		"maak 5 op een rij voor een ring en de winst");
+        put("Place a Ring on the board", "Plaats een Ring op het bord");
+        put("Pick a ring to place a chip and move",
+            "Kies een ring voor een chip en zet");
+        put("Drop the ring", "Plaats de ring");
+        put("Click DONE to confirm this placement",
+            "Klik Klaar om het plaatsen te voltooien");
+        put("Select a row of 5 to remove", "Kies een rij van 5 om te verwijderen");
+        put("Click DONE to confirm this move", "Klik Klaar om de zet te voltooien");
+        put("Click DONE to confirm removing these markers",
+            "Klik Klaar om verwijdering van de markers te voltooien");
+        put("Select a ring to remove", "Kies een ring om te verwijderen");
+        put("Click DONE to confirm removing this ring",
+            "Klik Klaar om de verwijdering van de ring te voltooien");
+        put("perspective","perspectief");
+        //
+        // hex strings
+        //
+        put("Hex","Hex");
+        put("Swap Colors","Verwissel Kleuren");
+        put("connect opposite sides with a chain of markers",
+        	"verbind tegenoverliggende zijden met je stenen");
+        put("Click Done to confirm this move",
+       		"Klik Klaar om deze zet te voltooien");
+        put("Click on Done to confirm your resignation", 
+       		"Klik Klaar om op te geven");
+        put("Place a marker on any empty cell",	
+       		"Plaats een steen op een vrij veld");
+        put("Place a marker on any empty cell, or Swap Colors",
+       		"Plaats een steen op een vrij veld, of wissel van kleur");
+        put("Click Done to confirm swapping colors with your opponent",
+       		"Klik Klaar om de switch te voltooien");
+        
+        // names of game variations for the lobby
+        put("Yinsh-Blitz","Yinsh-Blitz");
+        put("Hex-15","Hex-15");
+        put("Hex-19","Hex-19");
+        put("Trax","Trax");
+        put("Trax_variation","standaard Trax");
+        
+        put("Zertz_variation","standaard Zèrtz");
+        put("Zertz+11_variation","Zèrtz met 11 extra ringen");
+        put("Zertz+24_variation","Zèrtz met 24 extra ringen");
+        put("LOA_variation","standaard 8x8 Lines of Action");
+        put("LOAP_variation","De LOA programma wedstijd variant");
+        put("Plateau_variation","standaard Plateau");
+        put("Yinsh_variation","standaard Yinsh");
+        put("Yinsh-Blitz_variation","blitz Yinsh - de eerste ring wint");
+        put("Dvonn_variation","standaard Dvonn");
+        put("Tamsk_variation","standaard Tamsk");
+        put("Hex_variation","11x11 Hex");
+        put("Hex-15_variation","15x15 Hex");
+        put("Hex-19_variation","19x19 Hex");
+        put("Punct_variation","standaard Pünct");
+        put("TBA1_variation","spel wordt aangekondigd");
+        put("TBA2_variation","spel wordt aangekondigd");
+        put("TBA3_variation","spel wordt aangekondigd");
+       
+        // trax strings
+        put("Tile Size","Stukgrootte");
+        put("Place a tile","Plaats een stuk");
+        put("make any loop, or a line which spans 8 rows or columns, in your color",
+        		"maak een lus, of een lijn die 8 rijen of kolommen overspant");
+        
+        // punct strings
+        put("Punct","Pünct");
+        put("Click on the placed piece to rotate it, or Click Done",
+        		"Klik op het geplaatste stuk om te roteren, of klik Klaar");
+        put("Place a piece on the board, or move a piece already on the board",
+        		"Plaats een stuk op het bord, of verplaats een stuk");
+        put("punctgoal","verbind tegenoverliggende zijden, of plaats het laatste stuk voor contole van het centrum");
+        put("#1 left","#1 links");
+        put("#1 center","#1 centrum");
+     
+        // gobblet strings
+        put("make 4 in a row in any direction","maak 4 op een rij in een willekeurige richting");
+        put("Place a gobblet on the board, or move a gobblet","Plaats een gobblet op het bord, of verplaats een gobblet");
+        put("Gobblet","Gobblet");
+        put("Gobbletm","GobbletM");
+        put("Gobblet_variation","Spieken toegestaan");
+        put("Gobbletm_variation","Spieken niet toegestaan");
+        put("You must move the gobblet you have picked up",
+        		"Je moet de geselecteerde goblet verplaatsen");
+         put("review","commentaar");
+        // hive strings
+        put("Hive","Hive");
+        put("Hive_variation","standaard Hive");
+        put("Place a tile on the board","Plaats een stuk op het bord");
+        put("surround your opponents queen bee","omsingel de koningin van de tegenspeler");
+        put("Place your queen on the board","Plaats je koningin op het bord");
+        put("Place a tile on the board, or move a tile","Plaats een stuk op het bord, of verplaats een stuk");
+        put("You have no legal moves.  Click on Done to pass",
+                "Je hebt geen legale zet.  Klik Klaar om te passen");
+        put("Click on Done to end the game as a Draw",
+        	"Klik Klaar om remise te maken");
+        put("Hive-L","Hive-L");
+        put("Hive-L_variation","Hive met extra Lieveheersbeestje");
+        put("Hive-LM","Hive-LM");
+        put("Hive-LM_variation","Hive met extra Lieveheersbeestje en Mug");
+        put("#1 repetitions","#1 herhalingen");
+        // for plateau
+        put("Click on Done to complete the capture",
+        		"Klik Klaar om het slaan te voltooien");
+        // game lobby
+        put("The game is a draw","De partij is remise");
+        put("Game won by #1","De partij is gewonnen door #1");
+        put("You can only resign when it is your move",
+        		"Je kunt alleen opgeven op je beurt");
+        put("Jan #1#2#3","#1 Jan, #2:#3 GMT");
+        put("Feb #1#2#3","#1 Feb, #2:#3 GMT");
+        put("Mar #1#2#3","#1 Mrt, #2:#3 GMT");
+        put("Apr #1#2#3","#1 Apr, #2:#3 GMT");
+        put("May #1#2#3","#1 Mei, #2:#3 GMT");
+        put("Jun #1#2#3","#1 Jun, #2:#3 GMT");
+        put("Jul #1#2#3","#1 Jul, #2:#3 GMT");
+        put("Aug #1#2#3","#1 Aug, #2:#3 GMT");
+        put("Sep #1#2#3","#1 Sep, #2:#3 GMT");
+        put("Oct #1#2#3","#1 Okt, #2:#3 GMT");
+        put("Nov #1#2#3","#1 Nov, #2:#3 GMT");
+        put("Dec #1#2#3","#1 Dec, #2:#3 GMT");
+        
+        // exxit strings
+        put("Exxit","Exxit");
+        put("Exxit-Beginner","Exxit-Beginner");
+        put("Exxit-Blitz","Exxit-Blitz");
+        put("Exxit-Pro","Exxit-Expert");
+        put("Exxit_variation","speel 39 hex Exxit");
+        put("Exxit-Blitz_variation","speel 29 hex Exxit");
+        put("Exxit-Beginner_variation","speel 19 hex Exxit");
+        put("Exxit-Pro_variation","speel expert Exxit");
+        
+        put("Rearrange things any way you want to", 
+        	"Herschik alles naar believen");
+        put("Place a piece on the board","Plaats een stuk op het bord");
+        put("Exchange an off-board piece for a new tile","Ruil een stuk naast het bord voor een nieuwe hex");
+        put("Click on Done to confirm the Exchange","Klik Klaar om de ruil te voltooien");
+        put("Place a piece on the board, or Exchange an off-board piece for a new tile",
+        		"Plaats een stuk op het bord, of Ruil een stuk naast het bord voor een nieuwe hex");
+        put("Click on Done to end the game","Klik Klaar om het spel te beeindigen");
+        put("Make a Dance move","Maak een Dans zet");
+        put("Click on Done to confirm this Dance","Klik Klaar om de Dans te voltooien");
+        put("Drop a tile to enlarge the board","Plaats een hex om het bord te vergroten");
+			  put("expand the board with your color tiles","breid het bord uit met eigen hexen");
+        // system error
+        put("Memory is low","Weinig geheugen");
+        
+        // new strings for tablut
+        put("Rearrange the gold fleet","Herschik de goudvloot");
+        put("Rearrange the silver fleet","Herschik de zilvervloot");
+        put("Make your first move, or swap fleets","Doe een eerste zet, of verwissel de kleuren");
+        put("Click Done to confirm swapping fleets with your opponent",
+        		"Klik Klaar om de switch te voltooien");
+        put("Move one ship","Verplaats een schip");
+        put("Flagship must Reach the corner to win","Het Vlaggenschip moet een hoek bereiken voor winst");
+        put("Flagship wins at any edge square","Het Vlaggenschip moet een randveld bereiken voor winst");
+        put("Flagship can participate in captures","Vlaggenschepen kunnen meedoen bij het slaan");
+    	put("Flagship can not capture","Vlaggenschepen kunnen niet meedoen bij het slaan");
+   	 	put("Only the flagship can occupy the center square","Het centrale veld is alleen voor het Vlaggenschip");
+   	    put("center square is not special","Het centrale veld heeft geen speciale rol");
+   	    put("Flagship must be surrounded on all 4 sides","Het Vlaggenschip moet aan vier kanten ingesloten zijn");
+   	    put("Flagship is captured normally","Het Vlaggenschip moet aan twee kanten ingesloten zijn");
+   	    put("Tablut-7","Tablut 7x7");
+   	    put("Tablut-9","Tablut 9x9");
+   	    put("Tablut-11","Tablut-11x11");
+   	    put("Tablut-7_variation","Tablut op een 7x7 bord");
+   	    put("Tablut-9_variation","Tablut op een 9x9 bord");
+   	    put("Tablut-11_variation","Tablut op een 11x11 bord");
+   	    put("gold: escape the flagship  silver: capture gold flagship",
+   	    		"goud: ontsnap met het Vlaggenschip  zilver: vang het Vlaggenschip");
+   	    
+   	    put("Zertz+xx","Zèrtz Extreme");
+   	    put("Zertz+xx_variation","Zèrtz met standaard bord");
+   	    put("Make the first move, or swap and move second",
+   	    		"Doe de eerste zet, of wissel kleur en zet als tweede");
+   	    put("Click on Done to confirm swapping","Klik Klaar om de switch te voltooien");
+   	    put("Position the starting rings","Plaats de startringen");
+        put("Swap","Wissel kleur");
+        put("stack six or capture six","maak een kolom van zes of sla zes stukken");
+        
+        
+        // stacking games
+        put("Tablut","Tablut");
+        put("Stacking Games","Kolom Spelen");
+        put("Truchet_variation","standaard Truchet");
+        put("TumblingDown_variation","standaard 8x8 TumblingDown");
+        put("Truchet","Truchet");
+        
+        //dipole
+         put("Dipole","Dipole (origineel)");
+        put("Dipole-s","Dipole");
+       // put("Dipole-10","Dipole 10x10");
+        //put("Dipole-10_variation","Dipole on a 10x10 board");
+        put("Dipole-s_variation","Dipole 8x8 met symmetrische beginopstelling");
+        put("Dipole_variation","Dipole 8x8 met a-symmetrische beginopstelling");
+        put("Eliminate all your opponent's pieces","Sla alle stukken van de tegenspeler");
+        put("Select the stack to move from","Selecteer de kolom vanwaar je zet");
+        put("You have no moves available. Click on Done to pass.","Je hebt geen zet. Klik Klaar om te passen.");
+        //tumblingdown
+        put("Capture your opponent's tallest king stack","Sla de grootste koningskolom van je tegenspeler");
+        put("Pick the stack to move","Kies de te verplaatsen kolom");
+        //truchet
+        put("Occupy 3 enemy bases","Bezet 3 vijandelijke bases");
+        put("Flip a tile, or Move Split or Merge a stack",
+        		"Draai een tegel, of Zet, Splits of Voeg een kolom samen");
+        put("Move, Split or Merge a stack","Zet, Splits of Voeg een kolom samen");
+        put("Split or Merge this stack, or click Done",
+        		"Splits of Voeg samen, of Klik Klaar");
+        put("Split this stack, or click Done",
+        		"Splits deze kolom, of Klik Klaar");
+        put("Merge this stack, or click Done","Voeg deze kolom same, of Klik Klaar");
+        put("Complete the split","Voltooi het splitsen");
+        put("Complete the merge","Voltooi het samenvoegen");
+        put("Complete a split or merge","Voltooi het splitsen of het samenvoegen");
+        put("Continue merging or click Done","Blijf samenvoegen of Klik Klaar");
+        
+        // hive-m
+        put("Hive-M","Hive-M");
+        put("Hive-M_variation","Hive met extra mug");
+        // fanorona
+        put("Fanorona","Fanorona");
+        put("Fanorona_variation","standaard Fanorona");
+        put("Click on the line to be captured","Klik op de lijn die gelagen moet worden");
+        put("Make an addional capturing move, or click on Done", 
+        		"Sla verder, of Klik Klaar");
+        put("Make a capturing move","Doe een slagzet");
+        put("Move a piece one space","Verplaats een stuk naar een aangrenzend veld");
+        put("Capture all of your opponent's pieces","Sla alle stukken van de tegenspeler");
+        
+        // forgotten for exxit
+        put("use Wooden tiles","gebruik Houten Hexen");
+        // volcano
+        put("Capture the best combinations of all 5 colors","Sla de beste combinatie van kleur en grootte");
+        put("Move a volcano cap","Zet een volcano cap");
+        put("Volcano", "Volcano");
+        put("Volcano_variation","standaard 5x5 Volcano");
+        put("Volcano-r","random Volcano");
+        put("Volcano-r_variation","Volcano met random posities");
+        
+        put("Volcano-h","Hex Volcano");
+        put("Volcano-h_variation","Volcano op een hexraster");
+       
+        put("Volcano-hr","random Hex Volcano");
+        put("Volcano-hr_variation"," Hex Volcano met random posities");
+        put("Click on Done to end the game (you lose)","Klik Klaar om het spel te beeindigen (je verliest)");
+        
+        // traboulet
+        put("Traboulet","Traboulet");
+        put("Traboulet_variation","standaard Traboulet");
+        put("Capture 7 red balls or all of your opponent's balls",
+        "Vang 7 rode ballen of alle ballen van de tegenspeler");
+        put("Make an addional move, or click on Done",
+        		"Doe nog een zet, of Klik Klaar");
+        
+        // dvonn
+        put("Move a ring","Verplaats een ring");
+        put("Place a ring on the board","Plaats een ring op het bord");
+        put("Click Done to confirm this placement","Klik Klaar om de plaatsing te voltooien");
+        put("Capture the most chips under your color stack","Vang de meeste chips onder je kolom");
+        put("Stack Height","Kolom Hoogte");
+        
+        // restartable games
+        put("Restart","Herstart");
+        // tzaar
+        put("Gipf Games","Gipf Spelen");
+        put("Tzaar_variation","standaard Tzaar");
+        put("Tzaar","Tzaar");
+        
+        put("Closing...","Sluit...");
+        put("Played on #1","Gespeeld op #1");
+        put("...plus #1 more","...plus #1 meer");
+         
+        // tzaar
+        put("Tzaar-random_variation","Tzaar - random beginopstelling");
+        put("Tzaar-standard_variation","Tzaar - standaard beginopstelling");
+        put("Tzaar-custom_variation","Tzaar - custom beginopstelling");
+        put("Tzaar-custom","Tzaar - custom");
+        put("Tzaar-random","Tzaar - random");
+        put("Tzaar-standard","Tzaar - standard");
+        put("Capture a stack","Sla een kolom");
+        put("Combine two stacks or capture another stack",
+        		"Voeg twee kolommen samen of sla een kolom");
+        
+        // qyshinsu
+        put("Place a stone on the board, or remove a stone from the board",
+        "Plaats een steen op het bord, of haal een steen van het bord");
+        put("Return to the Way","Ga terug naar de Weg");
+        put("Qyshinsu","Qyshinsu");
+        put("Qyshinsu_variation","Het mysterie van de weg");
+        
+        // knockabout
+        put("Knock 5 of your opponent's dice into the gutter",
+            "Sla 5 dobbelstenen van de tegenspeler in de goot");
+        put("Knockabout_variation","standaard Knockabout");
+        put("Move a piece","Zet een stuk");
+        put("Knockabout","Knockabout");
+        		
+        
+        // gipf
+        put("Place a chip on a starting point","Plaats een chip op een beginpunt");
+        put("Slide the chip toward the center","Schuif de chip naar het centrum");
+        put("Designate a row to capture before your turn","Bepaal voor je zet een rij om te slaan");
+        put("Click on Done to finish all captures","Klik Klaar om het slaan te voltooien");
+        put("Designate a row to capture","Bepaal een rij om te slaan");
+        put("Capture most of your opponent's pieces","Sla het merendeel van de stukken van je tegenspeler");
+        put("Gipf_variation","Gipf Basic (geen Gipf stukken)");
+        put("Gipf-standard_variation","Gipf Standaard (met Gipf stukken)");
+        put("Gipf", "Gipf Basic");
+        put("Gipf-standard","Gipf Standaard");
+        put("Click on Gipf pieces to change their capture status",
+        		"Klik op de stukken om hun status mbt. slaan te wijzigen");
+        put("Place a GIPF piece on a starting point","Plaats een GIPF stuk op een beginpunt");
+        put("Designate GIPF pieces to capture, or place a GIPF chip","Bepaal een GIPF stuk om te slaan, of plaats een GIPF chip");
+        put("Designate GIPF pieces to capture, or place a chip","Bepaal een GIPF stuk om te slaan, of plaats een chip");
+        
+        // palago
+        put("Palago_variation","standaard Palago");
+        put("Palago","Palago");
+        put("select tile color","kies een kleur");
+        put("Aqua","Aqua");
+        put("Red","Red");
+        put("Blue","Blue");
+        put("Place a second tile adjacent to the first",
+        		"Plaats een tweede hex grenzend aan de eerste");
+        put("Form a closed shape in your color","Maak een gesloten vorm van je kleur");
+        
+        // santorini
+        put("Santorini","Santorini");
+        put("Santorini_variation","Santorini (zonder Goden)");
+        put("Move a Man up to level 3","Verplaats een stuk naar level 3");
+        put("Build adjacent to the man you moved","Bouw naast het gezette stuk");
+        put("Place your first man on the board","Zet je eerste stuk op het bord");
+        put("Place your second man on the board","Zet je tweede stuk op het bord");
+        put("Move a Man","Verplaats een stuk");
+        
+        put("Pass","Pas");
+        put("Placing Standard Pieces","Plaats Standaard Stukken");
+        put("Placing Gipf Pieces","Plaats Gipf Stukken");
+        put("Gipf-tournament_variation","Gipf Expert (onbeperkt aantal Gipf stukken)");
+        put("Gipf-tournament","Gipf Expert");
+        // "spangles"
+        put("Tile Pattern Games","Configuratie Spelen");
+        put("form a larger triangle with your color at the tips","Leg een grotere driehoek met punten van je kleur");
+        put("Spangles_variation","standaard Spangles");
+        
+        put("Spangles","Spangles");
+  
+        // micropul
+        put("Micropul","Micropul");
+        put("Micropul_variation","standaard Micropul");
+         put("maximize the number of tiles in your reserve",
+        		"Krijg zoveel mogelijk tegeltjes in je reserve");
+        put("Place a Chip, or a Jewel, or a chip from the Store",
+        		"Plaats een Chip, of een Juweel, of een chip uit de voorraad");
+        //Medina
+        put("Medina","Medina");
+        put("Medina_variation","standaard Medina");
+        put("Place the first meeple on the board","Zet de eerste meeple op het bord");
+        put("Place a second piece on the board","Zet een tweede stuk op het bord");
+        put("Final Scores:","Eindscores:");
+        put("You must place a dome","Je moet een koepel plaatsen");
+        put("build an ideal city","bouw een ideale stad");
+        
+        // cannon
+        put("Cannon","Cannon");
+        put("Capture your opponent's town","Verover de stad van je tegenspeler");
+        put("Place your town in your first row","Plaats je stad op de eerste rij");
+        put("Move a soldier, or fire a cannon","Zet een soldaat, of vuur een kanon af");
+        put("Cannon_variation","standaard Cannon");
+        
+        // warp 6
+        put("Warp6","Warp 6");
+        put("Warp6_variation","standaard Warp 6");
+        put("Move a ship to the board","Verplaats een schip naar het bord");
+        put("Move 6 ships to the center","Verplaats 6 schepen naar het centrum");
+        put("Move a ship","Verplaats een schip");
+        
+        // Triad
+        put("capture all of one opponentr's color","capture all of one opponentr's color");
+        put("Capture a group of opponents","Vang een groep van tegenspelers");
+        put("Drop bunny chip","Plaats een chip van de Bunny speler");
+        put("Triad","Triad");
+        put("Triad_variation","standaard Triad");
+         
+        //Che
+        put("Che","Che");
+        put("Che_variation","standaard Che");
+        put("Place a tile on any empty cell","Plaats een tegel op een vrij veld");
+        put("Place a tile adjacent to those already on the board",
+        		"Plaats een tegel aangrenzend aan de bordpositie");
+        put("Place a second tile adjacent to those already on the board",
+        		"Plaats een tweede tegel aangrenzend aan de bordpositie");
+        
+        // trax
+        put("Illegal - this move would form an illegal pattern of lines",
+        		"niet legaal - deze zet vormt een illegaal lijnpatroon");
+        
+        // mutton
+        put("Capturing Games","Eliminatie Spelen");
+        put("Mutton","Mutton");
+        put("Mutton-shotgun","shotgun Mutton");
+        put("Mutton_variation","standaard Mutton");
+        put("Mutton-shotgun_variation","Mutton - de boer gebruikt een geweer");
+        put("Farmer configuring board","Boer vormt bord");
+        put("Play Farmer","Speel Boer");
+        put("Hide","Houd je schuil");
+        put("Wolf player hiding","De Wolf speler houdt zich schuil");
+        put("Wolf moving suspects","Wolf verplaatst verdachten");
+        put("Eat","Eet");
+        put("Wolf player eating","De Wolf eet");
+        put("Farmer select","Boer kiest");
+        put("Shoot","Shoot");
+        put("Farmer moving scared","Boer wordt bang");
+        
+        // octiles
+        put("Octiles","Octiles");
+        put("Octiles_variation","standaard Octiles");
+        put("Place the next tile on the board, where a runner can move over it",
+        		"Plaats een volgende tegel, zodat een renner er over kan");
+        put("Move a runner","Verpaats een renner");
+        put("Place a tile on the board, where a runner can leave a home space",
+        		"Plaats een tegel, zodat een renner een thuisbasis verlaten kan");
+        put("Move a runner from a home space","Verplaats een renner van een thuisbasis");
+        put("Move your runners to the opposite side","Breng je renners naar de overkant");
+        
+        // army of frogs
+        put("ArmyOfFrogs","Army of Frogs");
+        put("ArmyOfFrogs_variation","standaard Army of Frogs");
+        put("Place a Frog on the board","Zet een Kikker op het bord");
+        put("Move a Frog","Verplaats een Kikker");
+        put("Connect all your frogs (at least 7) in one cluster",
+        		"Breng all je Kikkers (tenminste 7) samen in een cluster");
+        
+        // variation to game
+        put("Frogs","Army of Frogs");
+         put("No Recent Games","Geen Recente Spelen");
+        
+        // xiangqi
+        put("Traditional Pieces","Traditionele Stukken");
+        put("Checkmate your opponent's general","Zet de Generaal van de tegenspeler schaakmat");
+        put("Illegal move due to repetition - try something else",
+        		"niet legaal wegens herhaling - probeer iets anders");
+        put("Xiangqi","Xiangqi");
+        put("Xiangqi_variation","standaard Xiangqi");
+        put("You have been offered a draw - Accept or Decline" ,
+        		"Er wordt remise aangeboden - Accepteer of Weiger" );
+        put("Offer a Draw","Bied remise aan");
+        put("Accept Draw","Accepteer Remise");
+        put("Decline Draw","Weiger Remise");
+        put("Escape from check","Hef het schaak op");
+        
+        put("Click Done to offer a draw","Klik Klaar om remise aan te bieden");
+        put("Click Done to accept a draw","Klik Klaar om remise te accepteren");
+        put("Click Done to decline a draw","Klik Klaar om remise te weigeren");
+        
+        // lobby
+        put("select the type of room","kies een type ruimte");
+        put("select the game to play","kies een spel om te spelen");
+        put("select the game variation","kies de spelvariant");
+        
+        put("Dipole_family","Dipole");
+        put("Gipf_family","Gipf");
+   		put("Zertz_family","Zèrtz");
+   		put("Yinsh_family","Yinsh");
+     	put("Dvonn_family","Dvonn");
+        put("Tzaar_family","Tzaar");
+        put("Punct_family","Pünct");
+        put("Che_family","Che");
+        put("Micropul_family","Micropul");
+        put("Palago_family","Palago");
+        put("Spangles_family","Spangles");
+        put("Trax_family","Trax");
+        put("Truchet_family","Truchet");
+        put("TumblingDown_family","Tumbling Down");
+        put("Cannon_family","Cannon");
+        put("Fanorona_family","Fanorona");
+        put("Knockabout_family","Knockabout");
+        put("Traboulet_family","Traboulet");
+        put("Triad_family","Triad");
+        put("Xiangqi_family","Xiangqi");
+        put("Octiles_family","Octiles");
+        put("Warp6_family","Warp 6");
+        put("ArmyOfFrogs_family","Army Of Frogs");
+        put("LOA_family","Lines of Action");
+        put("Hive_family","Hive");
+        
+        put("Racing Games","Race Spelen");
+        put("Connection Games","Connectie Spelen");
+        put("Plateau_family","Plateau");
+        put("Hex_family","Hex");
+        put("Gobblet_family","Gobblet");
+        put("Exxit_family","Exxit");
+        put("Tablut_family","Tablut");
+        put("Volcano_family","Volcano");
+        put("Qyshinsu_family","Qyshinsu");
+        put("Santorini_family","Santorini");
+        put("Medina_family","Medina");
+        put("Mutton_family","Mutton");
+        put("Tajii","Tajii");
+        put("Tajii_family","Tajii");
+        
+        put("LOAP","LOAP");
+        put("TumblingDown","Tumbling Down");
+        // misc
+        put("All Games","Alle Spelen");
+        // breaking away
+        put("BreakingAway","Breaking Away");
+        put("BreakingAway_variation","standaard Breaking Away");
+        put("BreakingAway_family","Breaking Away");
+        put("Adjust","Aanpassen");
+        put("Move a Cyclist","Beweeg een Fietser");
+        put("Score the most points at the sprint and finish lines",
+        		"Scoor de meeste punten in tussensprints en aan de finish");
+        put("Adjust your starting movements","Pas startbewegingen aan");
+        put("Wait for other players to adjust","Wacht tot anderen klaar zijn met aanpassen");
+        put("The next sprint bonus is #1","De volgende sprint bonus is #1");
+        put("#1 riders have crossed the second sprint line.",
+        		"#1 fietsers zijn over de tweede sprintlijn.");
+        put("#1 riders have crossed the first sprint line.",
+        		"#1 fietsers zijn over de eerst sprintlijn.");
+        put("#1 riders have finished","#1 fietsers zijn over de finish");
+        put("The next finish bonus is #1","De volgende finish bonus is #1");
+        put("Rider Size","Maat van de Fietser");
+        put("Confirm Dropping this rider","Bevestig het uitvallen van deze fietser");
+        put("Drop this rider from the Race","Laat deze fietser uitvallen");
+        put("Animate","Animeer");
+        
+        // container
+        put("Container","Container");
+        put("Container-First","Container - Origineel");
+        put("Euro Games","Euro Games");
+        put("Container-First_variation","Container met de oorspronkelijke regels");
+        put("Load the your warehouse from the seller","Load the your warehouse from the seller");
+     
+        put("Auction","Veiling");
+        put("Maximize your profits","Haal zoveel mogelijk voordeel");
+        put("Bank","Bank");
+        put("Loan for #1 from #2", "Lening voor #1 van #2");
+        put("Container_family","Container");
+        put("Container_variation","Container met 'tweede lading' regels");
+        put("Take your first action","Maak je eerste actie");
+        put("Click Done to confirm this action","Klik Klaar om de actie te voltooien");
+        put("Reprice the goods in your factory storage","Herprijs de goederen in je fabriek");
+        put("Take your second action","Maak je tweede actie");
+        put("Warehouse","Pakhuis");
+        put("Unsold Warehouses","Onverkochte pakhuizen");
+        put("#1 Ship","#1 Schip");
+        put("#1 Machine","#1 Machine");
+        put("#1 #2 Containers","#1 #2 Containers");
+        put("Loan Card","Leen kaart");
+        put("Let someone else make the loan","Laat iemand anders de lening sluiten");
+        put("I will make the loan","Ik zal de lening sluiten");
+        put("fund a loan from a player or the bank","garandeer een lening van een speler of de bank");
+        put("Load the goods you will produce","Laad de goederen die je gaat produceren");
+        put("set bid amount","bepaal bodhoogte");
+        put("Offer a price for the goods on the ship","Bied een prijs voor de goederen op het schip");
+        put("Reprice the goods in your warehouse storage","Herprijs de goederen in je pakhuis");
+        put("Load your ship from the Dock","Laad het schip vanaf het dok");
+        put("Load more goods from the Dock","Laad meer goederen van het dok");
+        put("Buy the goods for $#1","Koop de goederen voor $#1");
+        put("Accept $#1 from #2","Accepteer $#1 van #2");
+        put("Bid $ #1","Bied $ #1");
+        put("Requesting Bids","Vraag biedingen");
+        put("you may increase your bid","je mag je bod verhogen");
+        put("Wait for the other players to decide","Wacht tot de andere spelers beslissen");
+        put("accept the bid, or pay the amount yourself","accepteer het bod, of betaal het bedrag zelf");
+        put("trade a second container for a gold container","ruil een tweede container voor een gouden container");
+        put("You must take out a loan to pay interest","Je moet een lening afsluiten om rente te betalen");
+        put("Requesting Loan","Vraag lening aan");
+        put("No, let the bank fund it","Nee, laat de bank het garanderen");
+        put("Accept the loan from the bank", "Accepteer de lening van de bank");
+        put("Yes, I will fund the loan","Ja, ik garandeer de lening");
+        put("Place your bid to fund the loan","Bied op de garantie voor de lening");
+        put("Decline the loan","Zie af van de lening");
+        put("Accept this loan financing or not","Accepteer deze lening ongeacht garantie");
+        put("Choose the penalty for non-payment of interest","Kies de boete voor het niet betalen van rente");
+        put("Loan for #1 from the bank","Lening voor #1 van de bank");
+        put("Spot Price #1","Spot Prijs #1");
+        put("click Done to finish this Auction","Klik Klaar om de veiling te beeindigen");
+        put("load a luxury container","laad een luxury container");
+        
+        // for stats
+        put("Cash/Score","Cash/Score");
+        put("Machines","Machines");
+        put("Warehouses","Pakhuizen");
+        put("Shipping","Verschepingen");
+        put("Island","Eiland");
+        put("Loans","Leningen");
+        // arimaa
+        put("Move a Rabbit to the last row","Breng een konijn naar de laatste rij");
+        put("Reverse View","Draai bord");
+        put("Move a piece, step #1","Verplaats een stuk, stap #1");
+        put("Complete the push, step #1","Voltooi de push, stap #1");
+        put("Complete the pull, step #1","Voltooi de pull, stap #1");
+        put("Place all your pieces in your two home rows","Plaats alle stukken op de twee achterste rijen");
+        put("Arimaa_family","Arimaa");
+        put("Arimaa","Arimaa");
+        put("Arimaa_variation","Standaard Arimaa");
+        put("Place the Rabbits","Plaats de Konijnen");
+        put("Illegal due to repetition, try something else or resign","Niet legaal wegens herhaling, probeer iets anders of geef op");
+        put("Complete a push or pull, step #1","Voltooi een push of een pull, stap #1");
+        
+        // crossfire
+        put("Crossfire_family","Crossfire");
+        put("Crossfire","Crossfire");
+        put("Crossfire_variation","standaard Crossfire");
+        put("own all the stacks","maak alle kolommen jouw kleur");
+        put("#1 prisoners","#1 gevangenen");
+        put("#1 reserves","#1 reserves");
+        
+        // game controls 
+        put("Rotate the board 180 degrees","Roteer het bord 180 graden");
+        put("Spread out the stacks","Spreid de kolommen");
+        put("Adjust the chip spacing in stacks","Pas ruimte tussen schijven aan");
+        put("Switch to a more overhead view of the board","Verhoog blikveld op het bord");
+        put("Switch to a more oblique view of the board","Verlaag blikveld op het bord");
+        
+        // entrapment
+        put("Entrapment_family","Entrapment");
+        put("Entrapment","Entrapment");
+        put("Entrapment-7x7","Entrapment");
+        put("Entrapment-7x7_variation","standard 7x7 Entrapment");
+        put("Entrapment-6x7_variation","Entrapment 6x7 - faster game");
+        put("Entrapment-6x7","Entrapment-6x7");
+        put("Entrapment-7x7x4","Entrapment-7x7x4");
+        put("Entrapment-7x7x4_variation","Entrapment-7x7 with 4 roamers");
+        put("Immobilize your opponent's roamers","Immobilize your opponent's roamers");
+        put("Move a roamer","Move a roamer");
+        put("Move a roamer, or place a barrier","Move a roamer, or place a barrier");
+        put("Escape forced position, or place a barrier","Escape forced position, or place a barrier");
+        put("Move a roamer or move a barrier","Move a roamer or move a barrier");
+        put("Place a roamer on the board","Place a roamer on the board");
+        put("Escape forced position, or move a barrier","Escape forced position, or move a barrier");
+        put("Escape forced position","Escape forced position");
+        put("Select which of your roamers to kill","Select which of your roamers to kill");
+        put("Select which opponent roamer to kill","Select which opponent roamer to kill");
+        
+        // lehavre
+        put("LeHavre_variation","standard LeHavre");
+        put("LeHavre_family","LeHavre");
+        put("LeHavre","LeHavre");
+        // crossfire
+        put("Move a stack, or add a reserve piece","Move a stack, or add a reserve piece");
+        // micropul
+        put("+ #1 turns","+ #1 turns");
+        }
+}

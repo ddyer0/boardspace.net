@@ -1,0 +1,36 @@
+#!/bin/csh
+#
+source ~/cgi-bin/include.csh
+#set echo
+# database_info produces a list of directories and prefixes
+#
+cd ~/cgi-bin/tlib
+set data = `perl database_info.pl op=saverankings`
+
+while ( $#data > 0 )
+# database contains the names of the "games" directory for each game
+   set dir = $data[1];
+   shift data
+   set name = $data[1];
+   shift data
+   set key = $data[1];
+   shift data
+
+  set sdir = $dir:h
+  set sdir = $sdir:h
+  if(! -d $sdir)  mkdir $sdir
+
+  if(! -d $dir)  mkdir $dir
+  if(! -e $dir/.htaccess) then
+   cp ${www_root}/maps/.htaccess $dir
+  endif
+
+  set rdir = "${sdir}/rankings/"
+  if(! -d $rdir) mkdir $rdir
+
+  if(! -e $rdir/.htaccess) then
+   cp ${www_root}/maps/.htaccess $rdir
+  endif
+
+end
+

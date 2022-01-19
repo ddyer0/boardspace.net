@@ -1,0 +1,111 @@
+<html>
+
+<body bgcolor="#FFFFFF" link="#0000FF" vlink="#800080">
+
+<h1><img src="kawacup.jpg" width="106" height="100">Package Tab</h1>
+
+<a href="index.htm">Index</a>
+
+<P>
+<font size="1.5" face="Arial">Last Modified Date - <font color=red>2/16/99</font><p>
+Please click <a href="http://www.tek-tools.com/kawa/docs/packagetab.htm">here</a> for the latest version of this document.
+<font color=red> If this is an online version of the document please right click in the browser and select 
+'Update local Kawa document' to update your local copy of this document</font>
+</font>
+<hr>
+
+<p>Kawa package tab is a very important piece of Kawa. It is
+important to understand how packages work under Kawa in order to
+use Kawa efficiently. When Kawa is first installed it comes with
+all the packages that are defined in JDK 1.1.x packages. All the
+package information is stored in a file called kawa.pkg, which
+can be located in the Kawa files directory. It is possible to
+open a Kawa package file anytime after Kawa has started by
+selecting File/Open and selecting the .pkg file to open. This
+will populate the package tab with all the packages information
+from the opened file. </p>
+
+<p>Kawa uses the information from the package tree to provide
+the all important override feature. In order to be able to
+override from non-JDK packages it is important to first add the
+package to the Package tab by selecting one of the Add/Update
+options from the right button menu of the root item in the tree.
+JDK package information can be updated when Javasoft comes out
+with new releases by just selecting Add/Update and selecting the
+appropriate java files or class files or jar or zip file to
+update the package information. </p>
+
+<p>The only method to add classes to the package tree is via java source
+files. Please select package/Add Java... menu option and pick one or more
+Java files and Kawa will add the classes from these file to the package tree
+under the apprpriate package name.
+
+<p align="center"><img src="packagetab1.gif" width="382"
+height="428"></p>
+
+<p>As shown above the package tab </p>
+
+<ul>
+    <li>Displays all the packages defined under Kawa. Kawa
+        comes predefined with all the JDK 1.1.x packages. </li>
+    <li>Each package folder in turn lists all the classes and
+        interfaces defined under it. </li>
+    <li>Each class in turn has all the methods and variables
+        defined in it. </li>
+    <li>This information is used for the override feature of
+        Kawa. It is important to have a class defined under this
+        tab for the override menu to show the class. </li>
+    <li>If the Java source file directory and the package
+        source directory is set properly under
+        Customize/Options/Directory, then double clicking on
+        class name, method name etc. will bring up the
+        appropriate java source file. Kawa first searches the JDK
+        source directory for the file and if the file is not
+        found it walks through the package source path to find
+        the file. If the source file is found then Kawa will open
+        the file in the editor with the line under question
+        highlighted. </li>
+    <li>Pressing F2 in the editor on a word will open up the
+        appropriate class or interface if found in the package
+        hierarchy </li>
+    <li>All the package information is stored in the file
+        Kawa.pkg. It is important to have this file in the Kawa
+        files directory and Kawa files directory path should be
+        indicated under Customize/Options/Directory for this file
+        to be found </li>
+    <li>Click right button and select Find class or Find
+        interface to find a class or interface in the hierarchy.
+    </li>
+    <li>Any package or class can be deleted by selecting the
+        item and pressing the DEL key.</li>
+</ul>
+
+<h2>Class Context Menu -</h2>
+
+<p align="center"><img src="packagetab2.gif"></p>
+
+<ul>
+    <li>Help will display help on the selected item </li>
+    <li>In the above figure, the menu is a context menu for
+        Applet class. All of the base classes for the Applet are
+        listed in the menu. Selecting any one of the base classes
+        will select that class in the hierarchy. This helps
+        moving from one class to any of its base classes very
+        quickly. </li>
+    <li>Please read the notes above on all the add options. </li>
+    <li>Find class and Find Interface is for locating a class
+        or an interface in the hierarchy. </li>
+    <li>Find Next will find the previously searched item
+        again.</li>
+</ul>
+
+<p>Package tree now displays all the inner class information
+and exception thrown information as shown in the top most figure
+above. Since Kawa upgrade setup does not upgrade the package file
+it is necessary to update all the Java package files to display
+the inner class and exception information. Also, because of the
+new information displayed in the project tree the memory
+requirement for the package tree has increased. Therefore, it is
+important to keep the package tree very concise as possible.</p>
+</body>
+</html>

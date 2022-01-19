@@ -1,0 +1,33 @@
+Received: (qmail 32432 invoked by uid 108); 13 Jul 2007 09:44:18 -0000
+Message-ID: <20070713094418.32431.qmail@boardspace.net>
+Delivered-To: anonymous@boardspace.net
+Received: (qmail 32418 invoked for bounce); 13 Jul 2007 09:44:18 -0000
+Date: 13 Jul 2007 09:44:18 -0000
+From: MAILER-DAEMON@boardspace.net
+To: anonymous@boardspace.net
+Subject: failure notice
+
+Hi. This is the qmail-send program at boardspace.net.
+I'm afraid I wasn't able to deliver your message to the following addresses.
+This is a permanent error; I've given up. Sorry it didn't work out.
+
+<victorijaberi@hotmail.com>:
+65.54.244.8 does not like recipient.
+Remote host said: 550 Requested action not taken: mailbox unavailable
+Giving up on 65.54.244.8.
+
+--- Below this line is a copy of the message.
+
+Return-Path: <anonymous@boardspace.net>
+Received: (qmail 32416 invoked by uid 500); 13 Jul 2007 09:44:18 -0000
+Date: 13 Jul 2007 09:44:18 -0000
+Message-ID: <20070713094418.32415.qmail@boardspace.net>
+From: registration@boardspace.net
+To: victorijaberi@hotmail.com
+Subject: BoardSpace.net registration
+
+Thank you for registering at Boardspace.net.  To complete
+registration, click on this link:
+
+ http://www.boardspace.net/cgi-bin/confirm_register.cgi?pname=0135836&uid=3077
+

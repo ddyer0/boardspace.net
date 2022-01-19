@@ -1,0 +1,58 @@
+RELEASE NOTES FOR PACKAGE PF-Logging
+====================================
+
+Author      : Manfred Duchrow
+Last Update : August 23, 2006
+Version     : 1.2
+
+-------------------------------------------------------------------------------
+
+VERSION 1.2 (August 23, 2006)
+
+* Logger
+  > Added
+    - public boolean setLogLevel( String logLevel ) 
+    
+* NilLogger
+  > Added
+    - public boolean setLogLevel( String logLevel ) 
+
+* PrintStreamLogger
+  > Added
+    - public boolean setLogLevel( String logLevel ) 
+
+-------------------------------------------------------------------------------
+
+VERSION 1.1.1 (March 6, 2004)
+
+* PrintStreamLogger
+  - Changed visibility of LEVEL_INDICATOR from protected to private
+
+-------------------------------------------------------------------------------
+
+VERSION 1.1 (December 20, 2003)
+
+* PrintStreamLogger
+
+  - Added property "logging.level"
+  - Changed log level constants to be public
+  - Documented supported properties
+  - Check properties == null in initialize()
+  - Changed visibility of setLogLevel() from protected to public
+
+* Created test classes
+  - AllTests
+  - PrintStreamLoggerTest
+
+-------------------------------------------------------------------------------
+
+VERSION 1.0 (29.04.2002)
+
+* Provide a generic interface Logger
+
+* Provide logger that swallows all output (NilLogger)
+
+* Provide logger that writes everything to a print stream, where the default
+  is System.out (PrintStreamLogger)
+
+

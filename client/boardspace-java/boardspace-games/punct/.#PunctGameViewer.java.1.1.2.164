@@ -1,0 +1,970 @@
+package punct;
+
+import java.awt.*;
+import static java.lang.Math.atan2;
+
+import online.common.*;
+import java.util.*;
+
+import lib.ExtendedHashtable;
+import lib.G;
+import online.game.*;
+import online.game.sgf.*;
+
+/**
+ * 
+ * Change History
+ * Dec 2005 First complete implementation.
+ * 
+*/
+public class PunctGameViewer extends commonCanvas 
+	implements ViewerProtocol, PunctConstants, sgf_names
+{
+ 
+	/**
+	 * 
+	 */
+	static final long serialVersionUID = 1L;
+	// colors
+    private Color reviewModeBackground = new Color(220,165,200);
+    private Color HighlightColor = new Color(0.2f, 0.95f, 0.75f);
+    private Color RingFillColor = new Color(10, 163, 190);
+    private Color RingTextColor = Color.black;
+    private Color GridColor = Color.black;
+    private Color DotMarkerColor = new Color(0.6f,0.2f,0.7f);
+    private Color PunctMarkerColor = new Color(1.0f,0.3f,0.4f);
+    private Color rackBackGroundColor = new Color(174,197,169);
+    private Color boardBackgroundColor = new Color(220,165,155);
+    private Color vcrButtonColor = new Color(0.7f, 0.7f, 0.75f);
+
+    private boolean adjustDots=true;	// adjust dot positions rather than piece positions
+    // images
+    private static Image[] images = null; // images of black and white pieces, highlight, hex tile
+    private static Image[] textures = null;// background textures
+    private static Image[] arrows = new Image[6]; // rotated arrows
+    // private state
+    private PunctGameBoard b = null; //the board from which we are displaying
+    private int CELLSIZE; 	//size of the layout cell
+    private int CELLRADIUS; //cell raduis, about CELLSIZE/2
+    private int showLevels=0;
+    // addRect is a service provided by commonCanvas, which supports a mode
+    // to visualize the layout during development.  Look for "show rectangles"
+    // in the options menu.
+    //private Rectangle fullRect = addRect("fullRect"); //the whole viewer area
+    //private Rectangle boardRect = addRect("boardRect"); //the actual board, normally at the left edge
+    private Rectangle logRect = addRect("logRect"); //the game log, normally off the the right
+    private Rectangle stateRect = addRect("stateRect");
+    private Rectangle doneRect = addRect("doneRect");
+    private Rectangle editRect = addRect("editRect");
+    private Rectangle liftRect = addRect("liftRect");
+    private boolean lifted=false;
+    
+    private Rectangle goalRect = addRect("goalRect");
+    private Rectangle progressRect = addRect("progressRect");
+    private Rectangle repRect = addRect("repRect");
+    private Rectangle secondPlayerChipRect = addRect("secondPlayerChipRect");
+    private Rectangle firstPlayerChipRect = addRect("firstPlayerChipRect");
+
+
+    public BoardProtocol getBoard()   {    return (b);   }
+
+    public void preloadImages()
+    {	
+	    if (textures == null)
+	    { // note that for this to work correctly, the images and masks must be the same size.  
+	      // Refer to http://www.andromeda.com/people/ddyer/java/imagedemo/transparent.html
+	        images = load_images(ImageDir, ImageFileNames, 
+	        			load_images(ImageDir, ImageFileNames,"-mask")); // load the main images
+	        arrows[0] = images[RECYCLE_INDEX];
+	        for(int i=1;i<6;i++) { arrows[i] = G.Rotate(this,arrows[0],(i*Math.PI/3),0x0); }
+	        textures = load_images(ImageDir,TextureNames);
+	    }
+    }
+	/**
+	 * 
+	 * this is the real instance intialization, performed only once.
+	 * info contains all the goodies from the environment.
+	 * */
+    public void init(ExtendedHashtable info)
+    {
+        super.init(info);
+ 
+        b = new PunctGameBoard(info.getString(OnlineConstants.GAMETYPE, "Punct"));
+        doInit(false);
+    }
+
+    /** 
+     *  used when starting up or replaying and also when loading a new game 
+     *  */
+    public void doInit(boolean preserve_history)
+    {
+        //System.out.println(myplayer.trueName + " doinit");
+        super.doInit(preserve_history);				// let commonViewer do it's things
+        b.doInit(b.gametype);						// initialize the board
+        if(!preserve_history)
+    	{ PerformAndTransmit(reviewOnly?"Edit":"Start P0", false,replayMode.Live);
+    	}
+    }
+    
+    public commonMove EditHistory(commonMove m)
+    {	int sz = History.size()-1;
+    	if(m.op==MOVE_PICKB) { return(m); /* never remove picks, preserv where the floating piece came from */ }
+    	if(m.op==MOVE_DROPB && (sz>=1))
+    	{	Punctmovespec prev = (Punctmovespec)History.elementAt(sz);
+    		Punctmovespec prev2 = (Punctmovespec)History.elementAt(sz-1);
+    		Punctmovespec newmove = (Punctmovespec)m;
+    		if((prev.op == MOVE_PICKB) && (prev.to_col==newmove.to_col) && (prev.to_row==newmove.to_row))
+    		{	// second part of a rotate
+     			if((prev2.op==MOVE_DROPB) && (prev2.to_col==newmove.to_col) && (prev2.to_row==newmove.to_row))
+    			{	// drop followed by rotate
+     	  			popHistoryElement();
+     	  		 	popHistoryElement();
+    			}
+    		}
+    		else if((prev.op==MOVE_PICKB) 
+    				&& (prev2.op==MOVE_DROPB) 
+    				&& (prev2.to_col==prev.to_col)
+    				&& (prev2.to_row==prev.to_row))
+    			{	// drop and relocate 
+    				popHistoryElement();
+    				popHistoryElement();
+    			}
+    	}
+    	return(super.EditHistory(m));
+    }
+
+
+    	
+    /**
+     * calculate a metric for one of three layouts, "normal" "wide" or "tall",
+     * which should normally correspond to the area devoted to the actual board.
+     * these don't have to be different, but devices with very rectangular
+     * aspect ratios make "wide" and "tall" important.  
+     * @param width
+     * @param height
+     * @param wideMode
+     * @param tallMode
+     * @return a metric corresponding to board size
+     */
+    public int setLocalBoundsSize(int width,int height,boolean wideMode,boolean tallMode)
+    {	
+        int chatHeight = selectChatHeight(height);
+        boolean noChat = chatHeight==0;
+        int ncols = (b.ncols)+(tallMode ? (noChat ? 5 : 2) : (noChat?6:0)+(wideMode ? 20 : 8)); // more cells wide to allow for the aux displays
+        int nrows = b.nrows + (tallMode ? 9 : 0);
+        int cellw = width / ncols;
+        int cellh = (height-(wideMode ? 0 : chatHeight)) / (nrows+1);
+        
+        CELLSIZE = Math.min(cellw, cellh); //cell size appropriate for the aspect ration of the canvas
+        return(CELLSIZE);
+    }
+
+    public void setLocalBoundsWT(int x, int y, int width, int height,boolean wideMode,boolean tallMode)
+    {   
+    	
+        int chatHeight = selectChatHeight(height);
+        boolean noChat = (chatHeight==0);
+        int C2 = CELLSIZE/2;
+        int C4 = CELLSIZE/4;
+        CELLRADIUS = C2;
+
+        G.SetRect(fullRect,x,y,width,height);
+
+        // game log.  This is generally off to the right, and it's ok if it's not
+        // completely visible in all configurations.
+        
+        G.SetRect(boardRect, 
+        		-3*CELLSIZE/2,
+        		(wideMode ? 0 : chatHeight)+C2,
+        		CELLSIZE * (b.nrows+2), CELLSIZE * (b.nrows ));
+
+        G.SetRect(stateRect, G.Left(boardRect) + 2*CELLSIZE,G.Top( boardRect)-C4,
+        		G.Width( boardRect) - CELLSIZE*6, C2);
+       
+
+		// a pool of chips for the first player at the top
+        G.SetRect(firstPlayerChipRect, 
+        		tallMode ? G.Left(boardRect)+CELLSIZE*2 : G.Right(boardRect) - 4*CELLSIZE,
+        		tallMode ? G.Bottom(boardRect)+CELLSIZE : G.Top( boardRect),
+        		 8*CELLSIZE, 2*CELLSIZE);
+        // and for the second player at the bottom
+		G.SetRect(secondPlayerChipRect,
+				tallMode ? G.Right(firstPlayerChipRect)+CELLSIZE : G.Left(firstPlayerChipRect), 
+				tallMode ? G.Top(firstPlayerChipRect) : G.Bottom(boardRect)-G.Height(firstPlayerChipRect),
+				G.Width( firstPlayerChipRect),G.Height( firstPlayerChipRect));
+
+		//this sets up the "vcr cluster" of forward and back controls.
+        SetupVcrRects(CELLSIZE / 3,
+            G.Bottom(boardRect) - (2 * CELLSIZE), CELLSIZE * 5,
+            2 * CELLSIZE);
+        G.SetRect(goalRect, CELLSIZE * 3,G.Bottom(boardRect),15 * CELLSIZE, C2);
+        
+        setProgressRect(progressRect,goalRect);
+        
+        G.SetRect(repRect,G.Left( progressRect),G.Top( progressRect)-2*CELLSIZE/3,
+        		G.Width(progressRect), 2*CELLSIZE/3);
+       
+        
+
+        {
+            commonPlayer pl0 =getPlayerOrTemp(0);
+            commonPlayer pl1 = getPlayerOrTemp(1);
+            Rectangle p0time = pl0.timeRect;
+            Rectangle p1time = pl1.timeRect;
+            Rectangle p0anim = pl0.animRect;
+            Rectangle p1anim = pl1.animRect;
+            Rectangle firstPlayerRect = pl0.nameRect;
+            Rectangle secondPlayerRect = pl1.nameRect;
+            Rectangle firstPlayerPicRect = pl0.picRect;
+            Rectangle secondPlayerPicRect = pl1.picRect;
+            Rectangle p0aux = pl0.extraTimeRect;
+            Rectangle p1aux = pl1.extraTimeRect;
+          	
+            //first player name
+            G.SetRect(firstPlayerRect,
+            		tallMode ? G.Left(firstPlayerChipRect) : G.Right( boardRect)-2*CELLSIZE,
+            		G.Bottom( firstPlayerChipRect)+C2,
+            		CELLSIZE * 6,
+            		(3 * CELLSIZE) / 2);
+
+            // first player portrait
+            G.SetRect(firstPlayerPicRect,
+            		tallMode ? G.Left(firstPlayerChipRect) : G.Left( firstPlayerRect)+CELLSIZE*5, 
+            		G.Bottom(firstPlayerRect),
+            		CELLSIZE * 4,CELLSIZE * 4);
+            
+            // "done" rectangle, available in reviewers to switch to puzzle mode
+            G.SetRect(doneRect,
+            		tallMode ? G.Right(boardRect)-CELLSIZE*4 : G.Left( firstPlayerRect),
+            		tallMode ? G.Bottom(boardRect)-CELLSIZE*2 : G.Bottom(firstPlayerPicRect)+2*CELLSIZE,
+            		CELLSIZE*4, 3*CELLSIZE/2);
+            //second player name
+            G.AlignXY(secondPlayerRect,
+            		tallMode ? G.Left(secondPlayerChipRect) : G.Left( firstPlayerRect),
+            		tallMode ? G.Bottom(secondPlayerChipRect)+C2 : G.Top(secondPlayerChipRect)-C2-G.Height(firstPlayerRect),
+            		firstPlayerRect);
+
+            // player 2 portrait
+            G.AlignXY(secondPlayerPicRect,
+            		tallMode ? G.Left(secondPlayerRect) : G.Left(firstPlayerPicRect),
+            		tallMode ? G.Bottom(secondPlayerRect) : G.Top(secondPlayerRect) -G.Height( firstPlayerPicRect),
+            				 firstPlayerPicRect);
+           
+            // "edit" rectangle, should always be visible, but only active when a move is complete.
+            G.AlignXY(editRect,
+            		tallMode ? G.Left(boardRect)+CELLSIZE*2 : G.Left( doneRect),
+            		tallMode ? G.Top(boardRect)+C2 : G.Top( secondPlayerPicRect)-G.Height(doneRect)-2*CELLSIZE,
+            		doneRect);           
+
+            G.SetRect(liftRect,
+            		tallMode ? G.Right(boardRect)-CELLSIZE : G.Left( editRect)+CELLSIZE,
+            		tallMode ? G.Top(editRect) : G.Bottom( editRect)+C2,
+            		CELLSIZE*2, CELLSIZE*2);
+
+             // time display for first player
+            G.SetRect(p0time, G.Right(firstPlayerRect),G.Top( firstPlayerRect), CELLSIZE * 3, 3*CELLSIZE/4);
+            // first player "i'm alive" animation ball
+            G.SetRect(p0anim, G.Left(firstPlayerPicRect)-CELLSIZE ,G.Top(firstPlayerPicRect), CELLSIZE, CELLSIZE);
+            
+            G.AlignLeft(p0aux,G.Bottom(p0time),p0time);
+            
+            // time display for second player
+            G.AlignXY(p1time, G.Right(secondPlayerRect),G.Top(secondPlayerRect),p0time);
+            G.AlignLeft(p1anim,G.Top( secondPlayerPicRect),p0anim);
+            G.AlignLeft(p1aux, G.Bottom(p1time),p1time);
+            boolean logBot = tallMode&!noChat && (height-G.Bottom(secondPlayerPicRect)>CELLSIZE*5);
+            int logW = !logBot&(tallMode||noChat) ? CELLSIZE*6 : CELLSIZE*8;
+            int logY = logBot 
+            				? G.Bottom(secondPlayerPicRect)+C2 
+            				: noChat ? G.Bottom(liftRect)+C2 : y;
+            int logX = tallMode||noChat ? width-logW-C2 : G.Right(boardRect)+(wideMode?CELLSIZE*7:0)+C2;
+            int logH = logBot ? height-logY-C2 : wideMode||noChat ? CELLSIZE*5 : chatHeight;
+            G.SetRect(logRect, logX ,logY ,logW,logH);
+            int chatY = wideMode ? G.Bottom(logRect)+C2 : y;
+            int chatX = wideMode ? G.Left(logRect) : x;
+            G.SetRect(chatRect,
+            		chatX,
+            		chatY ,
+            		wideMode ? width-logX-C2 : logX-chatX-C2, 
+            		wideMode ? height-chatY-C2 : chatHeight);
+
+
+        }
+        positionTheChat(chatRect,Color.white,Color.white);
+        generalRefresh();
+    }
+
+    private void DrawLiftRect(Graphics gc,HitPoint highlight)
+    {	
+		 G.centerImage(gc,textures[LIFT_ICON_INDEX],liftRect,this); 
+		 G.frameRect(gc,Color.black,liftRect);
+		
+    	if(G.pointInRect(highlight,liftRect))
+    	{	highlight.hitCode = PunctId.LiftRect;
+    		highlight.spriteRect = liftRect;
+    		highlight.dragging = lifted = highlight.down;
+    	}
+    }
+	// draw a graphic at x,y.  The images are loaded and composited
+    // at init time, so they're always completely ready to draw.
+    private void drawChip(Graphics gc, Image im, double []scaleset,int x, int y, double boxw, 
+    			double jitter,int height)
+    {	drawImage(gc,im,scaleset,x,y,boxw,1.0,jitter,(height>showLevels)?""+(height+1):null,true);
+    }
+
+
+	// draw a box of spare chips. For hex it's purely for effect.
+    private void DrawChipPool(Graphics gc, Rectangle r, int player,
+        HitPoint highlight)
+    {
+        boolean canhit = b.LegalToHitChips(player) && G.pointInRect(highlight, r);
+        boolean somehit=false;
+		PunctId chipcode = playerChipCode[player];
+		int pc = getMovingObject();
+		if(gc!=null) 
+		{
+		b.WinForPlayerNow(player);	// make sure the bookeeping is up to date
+		int infowidth = 50;
+		int infoleft = G.Right(r)-infowidth;
+		int infoheight = 15;
+    	int left = NUMREALPIECES-b.piecesOnBoard[player];
+    	int cent = b.centerScore[player];
+    	G.Text(gc,false,infoleft,G.Bottom(r)-infoheight,infowidth,infoheight,Color.black,null,s.get("#1 left",""+left));
+    	G.Text(gc,false,infoleft-infowidth,G.Bottom(r)-infoheight,infowidth,infoheight,Color.black,null,s.get("#1 center",""+cent));
+  		G.frameRect(gc, Color.black, r); 
+		}
+       { // draw the unused pices
+       	PunctPiece pieces[] = b.pieces[player];
+       //tri(6) str(2) str2(4) y1(2) y2(2) y3(3)
+       	int cellw = G.Width(r)/11;
+       	int cellh = G.Height(r)/2;
+       	int cellhinc = cellh/6;
+       	int cellwinc = cellw/7;
+       	int lasttype = -1;
+       	int lastpunct = -1;
+       	int rx = G.Left(r) - cellw/3;
+       	int ry = G.Top(r)+cellh/4;
+       	int ry0 = ry;
+      	int piecetype = -1;
+    	double vadj[] = {0.55,0.1,0.8,0.4,0.0,-0.3};
+       	double hadj[] = {0.0,0.0,-0.05,0.1,0.3,0.1};
+        if (canhit)
+        {  if(pc>=0) { somehit=true; }
+           highlight.hitCode = chipcode;
+      	   highlight.arrow = StockArt.DownArrow ;
+       	   highlight.awidth = 3*cellw/2;
+       	   highlight.spriteRect = r;
+       	   highlight.spriteColor = Color.red;
+       }
+       	for(int i=1; i<pieces.length;i++)
+  
+       	{PunctPiece p = pieces[i];
+       	 int type = p.typecode;
+       	 int punct = p.punct_index;
+       	 if((punct!=lastpunct) || (type!=lasttype))	// next cell
+       	 {	rx += cellw+cellw/4;
+       	 	ry = ry0;
+       	 	lasttype=type;
+       	 	lastpunct=punct;
+       	 	piecetype++;
+       	 }
+         int yadj = (int)(vadj[piecetype]*cellh);
+       	 int xadj = (int)(hadj[piecetype]*cellw);
+       	 int chipindex = p.imageIndex();
+       	 int left = rx + (cellw / 2);
+       	 int top = ry + (cellh / 2);
+       	 if(canhit 
+       		&& (p.level==POOL_LEVEL) 
+       		&& !somehit && G.pointNearCenter(highlight,left+xadj,top-yadj,cellw,cellw))
+       	 { 
+       	   highlight.hitCode = chipPoolIndex[player];
+       	   highlight.hitObject = p;
+       	   highlight.hit_x = left+xadj;
+       	   highlight.hit_y = top;
+       	   highlight.arrow = (pc>=0) ? StockArt.DownArrow : StockArt.UpArrow;
+       	   highlight.awidth = 3*cellw/2;
+       	   highlight.spriteRect = null;
+       	   highlight.spriteColor = Color.red;
+       	   somehit=true;
+       	 }
+       	 if(gc!=null) 
+       	 { if(p.level==POOL_LEVEL) 
+       	 { double scale[]=p.scaleSet();
+       	   drawChip(gc, images[chipindex], scale, left+xadj,top-yadj,          cellw*0.9,0.0,0);
+           drawChip(gc,images[p.dotIndex()],p.dotScaleSet(),left+xadj,top-yadj,cellw,    0.0,0);
+       	 }
+       	 }
+       	 ry += cellhinc;
+       	 rx += cellwinc;
+       	}	
+      }
+     }
+
+   public void drawSprite(Graphics g,int obj,int xp,int yp)
+   {
+      	PunctPiece pp = b.allPieces[obj];
+    	
+        drawChip(g, images[pp.imageIndex()],pp.scaleSet(), xp, yp, CELLSIZE,0.0,0);
+        drawChip(g,images[pp.dotIndex()],pp.dotScaleSet(),xp, yp,CELLSIZE,0.0,0);
+   
+   }
+
+   public Point spriteDisplayPoint()
+   {	return(new Point(G.Left(boardRect)+CELLSIZE*3,G.Top(boardRect)+CELLSIZE*2));
+   }
+
+
+    /* draw the deep unchangable objects, including those that might be rather expensive
+     * to draw.  This background layer is used as a backdrop to the rest of the activity.
+     * in our cease, we draw the board and the chips on it. 
+     * */
+    public void drawFixedElements(Graphics gc)
+    { boolean review = reviewMode() && !mutable_game_record;
+      // erase
+      G.setColor(gc,review ? reviewModeBackground : boardBackgroundColor);
+      //G.fillRect(gc, fullRect);
+      G.tileImage(gc,textures[BACKGROUND_TILE_INDEX],fullRect, this);   
+      if(review)
+      {	 
+        G.tileImage(gc,textures[BACKGROUND_REVIEW_INDEX],boardRect, this);   
+      }
+  		b.SetDisplayParameters(0.9562, 0.99302, 0.05,0.05,0); //
+  		b.SetDisplayRectangle(boardRect);
+      // for us, the board is one large graphic, for which the target points
+      // are carefully matched with the abstract grid
+      G.centerImage(gc,images[BOARD_INDEX], boardRect,this);
+      
+      // draw a picture of the board. In this version we actually draw just the grid.
+      b.DrawGrid(gc, boardRect, use_grid, boardBackgroundColor, RingFillColor, RingTextColor,GridColor);
+       
+      // draw the tile grid - this is used to match the grid to the graphic, and also 
+      // is useful when tuning the position of the pieces
+      if(useAuxSliders)
+      {//if true, paint a dot grid to guide the layout process
+       for (int col = 0; col < b.ncols; col++)
+       {
+           char thiscol = (char) ('A' + col);
+           int lastincol = b.nInCol[col];
+
+           for (int thisrow0 = lastincol, thisrow = lastincol +
+                   b.firstRowInCol[col]; thisrow0 >= 1; thisrow0--, thisrow--) // start at row 1 (0 is the grid) 
+           { //where we draw the grid
+              int ypos = G.Bottom(boardRect) - b.cellToY(thiscol, thisrow);
+              int xpos = G.Left(boardRect) + b.cellToX(thiscol, thisrow);
+              drawChip(gc,images[HEXTILE_INDEX],hextile_scale,xpos,ypos,CELLSIZE,0.0,0);
+              //punctCell c = (punctCell)b.GetBoardCell(thiscol,thisrow);
+              //if(c.plines[0]>0)
+            	//  {G.Text(gc,true,xpos-CELLSIZE/2,ypos-CELLSIZE/2,CELLSIZE,CELLSIZE,
+            	//	  Color.white,null,""+c.plines[0]);}
+          }
+       }
+      }
+ 
+   }
+
+   int protation=0;
+   boolean isClockwise(PunctGameBoard gb,PunctPiece p,int hitx,int hity,int x,int y)
+   {	int cx = gb.cellToX(p.cols[0],p.rows[0]);
+   		int cy = gb.cellToY(p.cols[0],p.rows[0]);
+   		double ang0 = atan2(cy-hity,cx-hitx);
+   		double ang1 = atan2(cy-y,cx-x);
+   		if(Math.abs(ang0-ang1)>Math.PI) 
+   			{ //watch out for the cut between pi and -pi
+   			 //System.out.println("BC "+ang0 +" " + "P "+ang1);
+   			ang1+=((ang1<ang0)?2:-2)*Math.PI; 
+   			}
+   		// convert -pi to pi to 0 to 5. Save as a side effect (sorry!)
+   		protation = ((int)(((ang0+2*Math.PI+Math.PI/2+Math.PI/12)*6)/(2*Math.PI)))%6;
+  
+   		//System.out.println("C "+ang0 +" " + "P "+ang1);
+   		return(ang0<=ang1);
+    }
+   private void drawPdot(Graphics gc,PunctGameBoard gb,Rectangle brect,char col,int row,Color clr)
+   { int xpos = G.Left(brect)+gb.cellToX(col,row);
+	 int ypos = G.Bottom(brect)-gb.cellToY(col,row);
+     int sz = Math.max(3,CELLSIZE/10);
+ 	 G.DrawAACircle(gc,xpos-sz/2,ypos+sz/2+CELLSIZE/3,sz, clr,Color.black,true);
+
+   }
+   /* draw the board and the chips on it. */
+    private int liftSteps=0;
+    private void drawBoardElements(Graphics gc, PunctGameBoard gb, Rectangle brect, HitPoint highlight)
+    {
+        //
+        // now draw the contents of the board and anything it is pointing at
+        //
+    	liftSteps = lifted ? Math.min(++liftSteps,20) : (Math.max(0,--liftSteps));
+    	boolean useLift = liftSteps!=0;
+     	int liftdiv = 20;
+     	if(useLift && (liftSteps<20))
+     		{ // this induces a very simple animation
+     		repaint(20); 
+     		}
+
+     	punctCell hitCell = null;
+        boolean somehit = false;
+        int someXpos = '@';
+        int someYpos = 0;
+        int height=-1;
+        int maxheight=-1;
+        int mo = getMovingObject();
+        int rotateIndex = 0;
+        
+        if(highlight!=null)
+        { int hx = G.Left(highlight)-G.Left(brect);
+          int hy = G.Bottom(brect)-G.Top(highlight);
+          punctCell closestCell = gb.closestCell(hx,hy);
+          if(closestCell!=null)
+          {
+          int cx = gb.cellToX(closestCell.col,closestCell.row);
+          int cy = gb.cellToY(closestCell.col,closestCell.row);
+          double dis = G.distance(hx,hy,cx,cy);
+          if(dis<CELLRADIUS) 
+          	{ hitCell = closestCell;
+          	  if(hitCell.level()>=0) { highlight.hitCode=PunctId.HitOtherPiece; }
+          	}
+          }
+        }
+ 
+        if(gc!=null)
+        {
+        punctCell punctcell = b.getPunctCell();
+        if((punctcell==null)&&(hitCell!=null))
+        {	PunctPiece p = hitCell.topPiece();
+        	if(p!=null)
+        	{ if((p.cols[0]==hitCell.col)&&(p.rows[0]==hitCell.row)) { punctcell=hitCell; }
+        	}
+        }
+         if(punctcell!=null)
+        {// draw purple dots on the dots in legal directions
+         int hitz = (punctcell.col-punctcell.row);
+          for(punctCell c = gb.allCells; c!=null; c=c.next)
+         { if((punctcell.col==c.col) || (punctcell.row==c.row) ||(hitz==(c.col-c.row)))
+        		 {
+        	 	 drawPdot(gc,gb,brect,c.col,c.row,DotMarkerColor);
+        		 }
+         }}
+        }
+        //don't count the blobs, it will confuse the robot
+        //if(useAlternateBoard && (gc!=null)) { gb.countBlobs(true); }
+        while(height++<=maxheight)
+        {
+        // draw columns right to left so pieces at the same level won't shadow
+        // each other.  the artwork shadows fall from right to left.
+        for (int col = b.ncols-1; col >=0; col--)
+        {
+            char thiscol = (char) ('A' + col);
+            int lastincol = gb.nInCol[col];
+
+            for (int thisrow0 = lastincol, thisrow = lastincol +
+                    gb.firstRowInCol[col]; thisrow0 >= 1; thisrow0--, thisrow--) // start at row 1 (0 is the grid) 
+            { //where we draw the grid
+            	 int cellypos = gb.cellToY(thiscol, thisrow);
+                 int ypos = G.Bottom(brect) - cellypos;
+                 int cellxpos = gb.cellToX(thiscol, thisrow);
+                int xpos = G.Left(brect) + cellxpos;
+                punctCell cell = gb.getCell(thiscol, thisrow);
+                boolean hitpoint = !somehit 
+                	&& (cell==hitCell) 
+                	&& (cell.level()<=height)
+                	&& gb.LegalToHitBoard(thiscol, thisrow);
+                int thislevel = cell.level();
+                maxheight = Math.max(thislevel,maxheight);
+                PunctPiece piece = cell.pieceAt(height); 
+                boolean isPunct = (piece!=null) 
+                	&& ((piece.cols[0]==cell.col)&&(piece.rows[0]==cell.row));
+                // drawing
+                if(useAlternateBoard && (piece==null) && (height==0) && (gc!=null))
+                {	int bloBits = cell.bloBits;
+                	if(bloBits!=0)
+                		{Color bc = new Color(0xff-(bloBits&0xff),0xff-((bloBits>>8)&0xff),0xff-((bloBits>>16)&0xff));
+                	     int cs = CELLSIZE/5;
+                	     G.setColor(gc,bc);
+                	     G.fillOval(gc,G.Left(boardRect)+cellxpos-cs,G.Bottom(boardRect)-cellypos+CELLSIZE/4,cs*2,cs*2);
+                		}
+                }
+                if (hitpoint && ((piece==null)||(height==thislevel)))
+                {	somehit=true;
+            		someXpos = xpos;
+            		someYpos = ypos;
+            		boolean fordrop = ((piece==null)||(mo>=0));
+                    highlight.hitCode = fordrop?PunctId.EmptyBoard 
+                    		: isPunct ? PunctId.BoardLocation 
+                    	    : isClockwise(gb,piece,cellxpos,cellypos,G.Left(highlight)-G.Left(brect),G.Bottom(brect)-G.Top(highlight)) 
+                    	    	? PunctId.RotatePieceCW 
+                    	    	: PunctId.RotatePieceCCW;
+                    rotateIndex = protation; 	// side effect from isClockwise
+                    highlight.col = fordrop ? cell.col : piece.cols[0];
+                    highlight.row = fordrop ? cell.row : piece.rows[0];
+                    highlight.hit_x = xpos;
+                    highlight.hit_y = ypos+CELLSIZE/3;
+                    highlight.spriteColor = Color.red;
+                }
+
+                if (gc != null)
+                {	
+                    if(piece!=null)
+                	{
+                    // show the actual coordinates occupied, so we can
+                    // see if they match the graphic
+                    //G.Text(gc,false,xpos+CELLSIZE*2,ypos+CELLSIZE,CELLSIZE*2,CELLSIZE,
+                    //		Color.red,null,""+cell.col+cell.row+" "+pi+"/"+pl);
+                    double scale[] = piece.dotScaleSet();
+                    int liftYval = height*(useLift?(liftSteps*CELLSIZE)/liftdiv : 0);
+                    int liftXval = height*(useLift?(liftSteps*CELLSIZE)/(2*liftdiv) : 0);
+            
+                    if (isPunct)
+                    {
+                    if(adjustDots) { adjustScales(scale,piece); }
+                    {
+                    double pscale[] = piece.scaleSet();
+                    if(!adjustDots) { adjustScales(pscale,piece); }
+                    drawChip(gc, images[piece.imageIndex()], pscale,xpos+liftXval, ypos-liftYval, CELLSIZE, 0.0,0);
+                    }
+                    drawChip(gc,images[piece.dotIndex()],scale,xpos+liftXval,ypos-liftYval,CELLSIZE,0.0,height);
+                        if(gb.isDest(cell))
+                        {	drawPdot(gc,gb,brect,thiscol,thisrow,PunctMarkerColor);
+                        }
+                         // show the location of the punct so we can see
+                        // if it agrees with the graphic
+                        // G.Text(gc,false,xpos+CELLSIZE,ypos,CELLSIZE,CELLSIZE,Color.green,null,""+cell.col+cell.row);
+                	}
+                	}
+                }
+            }
+        }
+        }
+        if(gc!=null)
+        {   punctCell punctcell = b.getPunctCell();
+        	if(punctcell!=null)
+        	{ PunctPiece p = b.getPunctPiece();
+        	  char col = punctcell.col;
+        	  int row = punctcell.row;
+        	  int xx = G.Left(brect) + gb.cellToX(col, row);
+        	  int yy = G.Bottom(brect) - gb.cellToY(col, row);
+        	  drawChip(gc, images[p.imageIndex()], p.scaleSet(),xx,yy, CELLSIZE, 0.00,0);
+        	  drawPdot(gc,gb,brect,col,row,PunctMarkerColor);
+        	}
+
+        if (somehit && (highlight.hitCode instanceof PunctId))
+        { // checking for pointable position
+        	highlight.awidth = CELLSIZE;
+        	switch((PunctId)highlight.hitCode)
+        	{
+        	default: throw G.Error("unexpected hitcode");
+        	case BoardLocation:
+                highlight.arrow = StockArt.UpArrow;
+                break;
+        	case RotatePieceCCW:
+         	case RotatePieceCW:
+         		{
+         		// still drawn the old way until ver convert the main pieces to chips
+         		int aindex = (rotateIndex+((highlight.hitCode==PunctId.RotatePieceCW)?0:3))%6;
+                drawChip(gc, arrows[aindex], recycle_scale,someXpos, someYpos, CELLSIZE, 0.0,0);
+         		}
+                break;
+        	case EmptyBoard:
+                highlight.arrow = StockArt.DownArrow;
+                break;
+        	}
+
+             //G.Text(gc,false,someXpos,someYpos,CELLSIZE,CELLSIZE,Color.black,null,""+cell.col+cell.row);
+        }
+    }
+
+    }
+
+    //
+    // draw the board and things on it.  If gc!=null then actually 
+    // draw, otherwise just notice if the highlight should be on
+    //
+    public void redrawBoard(Graphics gc, HitPoint selectPos)
+    {  PunctGameBoard gb = (PunctGameBoard) disB(gc);
+       PunctState vstate = b.getState();
+       boolean moving = (getMovingObject()>=0);
+       HitPoint ourTurnSelect = OurMove() ? selectPos : null;		// hit if our turn
+       HitPoint buttonSelect = moving?null:ourTurnSelect;	// hit if nothing dragging on our turn
+       HitPoint nonDragSelect = (moving && !reviewMode()) ? null : selectPos;	// hit if nothing dragging
+       drawBoardElements(gc, gb, boardRect, ourTurnSelect);
+       DrawChipPool(gc, secondPlayerChipRect, SECOND_PLAYER_INDEX, ourTurnSelect);
+       DrawChipPool(gc, firstPlayerChipRect, FIRST_PLAYER_INDEX, ourTurnSelect);
+
+       G.setFont(gc,standardBoldFont);
+       
+       drawPlayerStuff(gc,(vstate==PunctState.PUZZLE_STATE),nonDragSelect,
+	   			HighlightColor, rackBackGroundColor);
+
+       if (vstate != PunctState.PUZZLE_STATE)
+        {
+           if (G.handleRoundButton(gc, doneRect, 
+            		(b.DoneState() ? buttonSelect : null), s.get(DoneAction),
+                    HighlightColor, rackBackGroundColor))
+            {	// always display the done button, but only make it active in
+            	// the appropriate states
+                buttonSelect.hitCode = DefaultId.HitDoneButton;
+            }
+            if (allowed_to_edit)
+            {
+                    if (G.handleRoundButton(gc, editRect, buttonSelect, s.get(EditAction),
+                                HighlightColor, rackBackGroundColor))
+                    {
+                        buttonSelect.hitCode = DefaultId.HitEditButton;
+                    }
+     
+            }
+         }
+
+ 
+
+
+
+
+        standardGameMessage(gc,
+        		vstate==PunctState.GAMEOVER_STATE?gameOverMessage():s.get(vstate.getDescription()),
+        				vstate!=PunctState.PUZZLE_STATE,
+        				gb.whoseTurn,
+        				stateRect);
+        goalAndProgressMessage(gc,nonDragSelect,s.get("punctgoal"),progressRect, goalRect);
+
+        DrawRepRect(gc,b.Digest(),repRect);
+
+        DrawLiftRect(gc,nonDragSelect);
+        redrawGameLog(gc, nonDragSelect, logRect, boardBackgroundColor);
+        drawVcrGroup(nonDragSelect, gc, HighlightColor, vcrButtonColor);
+    }
+
+    /**
+     * Execute a move by the other player, or as a result of local mouse activity,
+     * or retrieved from the move history, or replayed form a stored game. 
+     * @param m the parameter is a commonMove so the superclass commonCanvas can
+     * request execution of moves in a generic way.
+     * @return true if all went well.  Normally G.Error would be called if anything went
+     * seriously wrong.
+     */
+     public boolean Execute(commonMove m,replayMode replay)
+    {
+        if(b.getState()==PunctState.PUZZLE_STATE)
+    	{ 	m.setLineBreak(true);
+    		m.setSliderNumString("--");
+    		switch(m.op)
+    		{
+    		case MOVE_DROPB: lastDropped = b.pickedObject;
+				break;
+			default:
+				break;
+    		}
+    	}
+       
+        handleExecute(b,m,replay);						 // let the board do the dirty work
+        if(replay!=replayMode.Replay) { playSounds((Punctmovespec)m); }
+        return (true);
+    }
+  void playSounds(Punctmovespec mm)
+  {
+	  switch(mm.op)
+	  {
+	  case MOVE_DROPB:
+	  case MOVE_PICKB:
+	  case MOVE_PICK:
+	  case MOVE_DROP:
+		  playASoundClip(light_drop,100);
+		  break;
+	  default: break;
+	  }
+  }
+/**
+ * parse a move specifier on behalf of the current player.  This is called by the 
+ * "game" object when it receives a move from the other player.  Note that it may
+ * be called while we are in review mode, so the current state of the board should
+ * not be considered.
+ */
+    public commonMove ParseNewMove(String st)
+    {
+        return (new Punctmovespec(st, -1));
+    }
+
+/**
+ * the preferred mouse gesture style is to let the user "pick up" objects
+ * by simply clicking on them, but we also allow him to click and drag. 
+ * StartDragging is called when he has done this.
+ */
+    public void StartDragging(HitPoint hp)
+    {
+        int mo = getMovingObject();
+        if ((mo < 0) && (hp.hitCode instanceof PunctId))// not dragging anything yet, so maybe start
+        {
+
+        PunctId hitObject = (PunctId)hp.hitCode;
+ 	    switch(hitObject)
+	    {
+ 	    case LiftRect:  
+	    default: 
+	    	break;
+	    case Black_Chip_Pool:
+	    case White_Chip_Pool:
+	    	{PunctPiece pp = (PunctPiece)(hp.hitObject);
+	    	 if(pp!=null) { PerformAndTransmit("Pick "+playerChar[pp.player]+" "+pp.id); }
+	    	}
+	    	break;
+	    case BoardLocation:
+	    	PerformAndTransmit("Pickb "+hp.col+" "+hp.row);
+	    	break;
+        }
+
+        if (getMovingObject() >= 0)
+        {	// if we got something started, inform the mouse handler
+            hp.dragging = true;
+        } 
+        }
+    }
+	private void doDropChip(char col,int row,int rotate,boolean fromrack)
+	{	PunctState state = b.getState();
+		switch(state)
+		{
+		default: throw G.Error("Not expecting state "+state);
+		case PLAY_STATE:
+		case PUZZLE_STATE:
+			{
+			int mo = getMovingObject();
+			if(mo<0) { mo=0; }
+			PunctPiece pp = b.allPieces[mo];
+			int newrot = (pp.rotation+rotate)%6;
+			newrot = b.nextValidRotation(pp,col,row,newrot,fromrack);
+			PerformAndTransmit("dropb "+mo+" "+col+" "+row+" "+newrot);
+			}
+			break;
+ 		
+		}
+	}
+	/** 
+	 * this is called on "mouse up".  We may have been just clicking
+	 * on something, or we may have just finished a click-drag-release.
+	 * We're guaranteed just one mouse up, no bounces.
+	 */
+    public void StopDragging(HitPoint hp)
+    {
+        CellId id = hp.hitCode;
+        if(!(id instanceof PunctId)) {  missedOneClick = performStandardActions(hp,missedOneClick); }
+    	else {
+    	missedOneClick = false;
+    	PunctId hitObject = (PunctId)id;
+		PunctState state = b.getState();
+		int dorot=0;
+        switch (hitObject)
+        {
+        default:
+        	throw G.Error("Hit Unknown object " + hitObject);
+        case LiftRect: lifted=false; break;
+        case White_Chip_Pool:
+        case Black_Chip_Pool:
+        	{int mo = getMovingObject();
+        	if(mo>=0)
+        	{PunctPiece mp = b.allPieces[mo];
+        	 PerformAndTransmit("Drop "+playerChar[mp.player]+" "+mp.id);
+        	}}
+        	break;
+        	
+	    case RotatePieceCW:
+	    case RotatePieceCCW:
+	    	PerformAndTransmit("Pickb "+hp.col+" "+hp.row);
+	    	dorot=(hitObject==PunctId.RotatePieceCW)?1:5;
+			//$FALL-THROUGH$
+		case BoardLocation:	// we hit an occupied part of the board 
+        case EmptyBoard:
+	    	{int mo = getMovingObject();
+	    	if(mo>=0)
+	    	{
+			switch(state)
+			{
+				default:
+					throw G.Error("Not expecting hit in state "+state);
+				case CONFIRM_STATE:
+				case DRAW_STATE:
+				case PLAY_STATE:
+					{ 
+					  doDropChip(hp.col,hp.row,dorot,b.pickedSourceLevel==POOL_LEVEL);
+					}
+					break;
+				case PUZZLE_STATE:
+					doDropChip(hp.col,hp.row,dorot,false);
+					break;
+			}
+	    	}}
+			break;
+			
+        case HitOtherPiece:   
+        	performReset();
+            break;
+        }}
+    }
+
+    public String gameType() { return(b.gametype); }
+    public String sgfGameType() { return(Punct_SGF); }
+
+    public void performHistoryInitialization(StringTokenizer his)
+    {   //the initialization sequence
+    	String token = his.nextToken();
+        b.doInit(token);
+    }
+
+
+    /** handle action events
+     * 
+     */
+    public boolean handleDeferredEvent(Object target, String command)
+    {
+        boolean handled = super.handleDeferredEvent(target, command);
+
+        return (handled);
+    }
+
+    /** factory method to create a robot */
+    public SimpleRobotProtocol newRobotPlayer() { return(new PunctPlay()); }
+
+
+    /** replay a move specified in SGF format.  
+     * this is mostly standard stuff, but the key is to recognize
+     * the elements that we generated in sgf_save
+     */
+    public void ReplayMove(sgf_node no)
+    {
+        String comments = "";
+        sgf_property prop = no.properties;
+
+        while (prop != null)
+        {
+            String name = prop.getName();
+            String value = (String) prop.getValue();
+
+            //System.out.println("prop " + name + " " + value);
+            if (setup_property.equals(name))
+            {
+                b.doInit(value);
+             }
+            else if (name.equals(comment_property))
+            {
+                comments += value;
+            }
+            else if (name.equals(game_property))
+            {
+                if (!(value.toLowerCase().equals("punct") || value.equals(Punct_SGF)))
+                {
+                	throw G.Error("game type " + value + " is not this game");
+                }
+            }
+            else if (parseVersionCommand(name,value,2)) {}
+            else if (parsePlayerCommand(name,value)) {}
+            else
+            {
+            	replayStandardProps(name,value);
+            }
+
+            prop = prop.next;
+        }
+
+        if (!"".equals(comments))
+        {
+            setComment(comments);
+        }
+    }
+}

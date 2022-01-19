@@ -1,0 +1,22 @@
+mlr.o: mlr.c mlr.h rank.h player.h pg.h game.h circular.h error.h
+player.o: player.c player.h pg.h rank.h game.h shash.h error.h
+game.o: game.c player.h pg.h rank.h game.h shash.h error.h
+rank.o: rank.c rank.h
+weight.o: weight.c weight.h rank.h
+cmd.o: cmd.c cmd.h
+error.o: error.c error.h
+shash.o: shash.c shash.h list.h list_types.h ilog2.h
+list.o: list.c list.h list_types.h
+ilog2.o: ilog2.c ilog2.h
+rdbm.o: rdbm.c player.h pg.h rank.h rdbm.h xdbm.h xdbm.c
+hdbm.o: hdbm.c hdbm.h player.h pg.h rank.h xdbm.h xdbm.c
+result.o: result.c result.h rank.h player.h pg.h error.h
+circular.o: circular.c circular.h player.h pg.h rank.h error.h
+mlrate.o: mlrate.c mlr.h player.h pg.h rank.h game.h weight.h error.h \
+  rdbm.h xdbm.h result.h cmd.h
+anchor.o: anchor.c rank.h rdbm.h xdbm.h cmd.h error.h
+rhistory.o: rhistory.c error.h rdbm.h xdbm.h hdbm.h player.h pg.h rank.h
+t2res.o: t2res.c error.h
+itime.o: itime.c
+rdbmtool.o: rdbmtool.c rdbm.h xdbm.h error.h
+old2newres.o: old2newres.c result.h rank.h error.h

@@ -1,0 +1,6 @@
+#!/bin/sh
+
+cd /home/nngs/src/data/stats
+tail -50 logons > l
+mv l logons
+

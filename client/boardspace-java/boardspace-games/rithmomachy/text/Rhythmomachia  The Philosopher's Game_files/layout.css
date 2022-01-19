@@ -1,0 +1,560 @@
+/**
+ * @(#)layout.css 1.5 2013-01-05 Andre Platzer
+ *
+ * Copyright (c) 2000-2013 Andre Platzer. All Rights Reserved.
+ */
+
+/*
+5A5D60 darkgrey
+9E9D9D grey
+1F8BE4 blue
+blau grey 61A8D8
+light bleu 8CC4EA
+B846BF rose
+-top -right -bottom -left
+*/
+
+body {
+	margin: 0;
+	padding: 0;
+	background: #9E9D9D;
+	font-family: Georgia, serif;
+	color: #fff;
+}
+
+p {
+	margin: 0 0 10px 0;
+	padding: 0;
+	line-height: 1.2em;
+
+}
+
+a, a:visited {
+	text-decoration: none;
+	color: #AFAFAF; /*#7A2110;*/ /*#06174A;*/
+}
+
+/*h2, h3, h4, h2 a, h3 a, h4 a, h2 a:visited, h3 a:visited, h4 a:visited {
+	margin: 0;
+	color: #4B0816 !important;
+} */
+
+/* layout elements */
+
+div.globalfooter {
+	text-align: center;
+	font-size: 80%;
+}
+
+div.globalfooter a, div.globalfooter a:visited {
+	color: #E2DFDF;
+}
+
+*.wrap {
+	margin: 0 auto;
+	width: 800px;
+	background: #426EC6;
+	border-left: 5px solid #5A5D60;
+	border-right: 5px solid #5A5D60;
+	border-bottom: 5px solid #5A5D60;
+	border-bottom-left-radius: 25px;
+    -webkit-border-bottom-left-radius: 25px;
+    -moz-border-radius-bottomleft: 25px;	
+	border-bottom-right-radius: 25px;
+    -webkit-border-bottom-right-radius: 25px;
+    -moz-border-radius-bottomright: 25px;
+}
+
+*.wrap h1 {
+	margin: 0 0 -10px 0;
+	padding: 5px;
+	text-align: center;
+	background: #4B0816;
+	
+	color: #fff;
+	font-weight: normal;
+	font-family: Helvetica, sans-serif;
+	letter-spacing: -1px;
+}
+*.wrap h3 {
+	margin: 0;
+	padding: 10px;
+	text-align: center;
+	background: #4B0816;
+	
+	color: #fff;
+	font-weight: normal;
+	font-family: Helvetica, sans-serif;
+	letter-spacing: 0px;
+	font-size: medium;
+}
+*.wrap h4 {
+	background: #4B0816;
+	color: #fff;
+	margin:20px 0 0 0 !important;
+}
+*.header {
+	margin: 0 auto;
+	width: 810px;
+	text-align: center;
+}
+
+div.globalheader {
+	margin: 0 auto;
+	width: 810px;
+	background: #426EC6;
+	/*width: 800px;
+	background: #426EC6;
+	border-left: 5px solid #5A5D60;
+	border-right: 5px solid #5A5D60;
+	border-top: 5px solid #5A5D60;
+	border-top-left-radius: 25px;
+    -webkit-border-top-left-radius: 25px;
+    -moz-border-radius-topleft: 25px;	
+	border-top-right-radius: 25px;
+    -webkit-border-top-right-radius: 25px;
+    -moz-border-radius-topright: 25px;*/
+	background: url('http://symbolaris.com/wraptop.png') no-repeat top;
+	height: 50px;
+}
+
+*.globalheader ul {
+	padding: 15px;
+}
+
+*.globalheader ul li {
+	margin: 0 10px 0 10px;
+	display: inline;
+}
+
+*.globalheader ul li a {
+	color: #4B0816;
+	font-size: large;
+	text-decoration: none;
+	padding: 10px 10px 10px 10px;
+}
+
+*.globalheader ul li a.selectedglobalnav {
+	color: #fff;
+	background: #4B0816;
+	border-radius: 8px;
+    -webkit-border-radius: 8px;
+    -moz-border-radius: 8px;	
+}
+
+*.globalheader ul li a.selectedsubglobalnav {
+	color: #eee;
+	background: #4B0816;
+	border-radius: 8px;
+    -webkit-border-radius: 8px;
+    -moz-border-radius: 8px;	
+}
+
+*.content {
+	margin: 20px 0 0 0;
+	float: left;
+	width: 630px;
+	padding: 0 15px 0 15px;	
+}
+
+*.content h2 {
+	margin: 0 0 10px 0;
+	font-size: xx-large;
+}
+
+*.content h4 {
+	margin: 0 0 10px 0;
+	font-size: large;
+}
+
+
+
+div.sidebar {
+	float: left;
+	width: 135px;
+	margin: 30px 0 0 0;
+	position: relative;
+}
+
+*.sidebar ul {
+	margin: 0 0 0 0px;
+	padding: 0;
+	list-style-type: none;
+}
+
+*.sidebar ul li {
+	margin: 0 0 10px 0;
+	
+}
+
+*.sidebar a, *.sidebar a:visited {
+	color: #06174A;	
+}
+
+a.selectedsidebarnav, a.selectedsidebarnav:visited {
+	color: #fff;
+	background: #4B0816 !important;
+	/*color: #051542;*/
+	border-radius: 8px;
+    -webkit-border-radius: 8px;
+    -moz-border-radius: 8px;	
+}
+
+
+
+*.sidebar h2 {
+	background: #553f2d;
+	margin: 0 0 10px 0;
+	padding: 5px;
+	font-size: large;
+}
+
+*.footer {
+	padding: 10px;
+	clear: both;
+	font-size: small;
+}
+
+*.footer p {
+	margin: 0;
+	padding: 10px;
+/*	background: #281a0f;*/
+	background: #4B0816;
+	text-align: center;
+}
+
+*.footer a, *.footer a:visited {
+	color: white;
+}
+
+/* fancy sidebarnav buttons */
+
+a.sidebarnav, a.selectedsidebarnav, a.subnavigation, a.tableofcontents {
+    display: block; 
+}
+
+a.globalnav:hover, a.selectedglobalnav:hover, a.sidebarnav:hover, a.selectedsidebarnav:hover, a.navbar:hover, a.subnavigation:hover, a.tableofcontents:hover, a.structural:hover, *.quick>a:hover {
+    color:#A50707 !important;
+    background-color: #9BA0A5;/*/ #094ED8;/* #042a75;*/
+    text-decoration: none !important;
+	border-radius: 8px;
+    -webkit-border-radius: 8px;
+    -moz-border-radius: 8px;	
+}
+a.globalnav:active, a.selectedglobalnav:active, a.sidebarnav:active, a.selectedsidebarnav:active, a.navbar:active, a.subnavigation:active, a.tableofcontents:active, a.structural:active, *.quick>a:active {
+    color:#AA0000 !important;
+    text-decoration: none !important;
+    text-shadow: 1px 1px 1px #550000;
+}
+
+/* content elements */
+
+/* fancy borders for reference images */
+
+a img {border: none;}
+
+a>img, a.eyecatcher>img, a>img.contact, a.contact>img {
+	margin: 0em 0em;
+	border: 5pt solid transparent;
+	border-radius: 8px;
+    -webkit-border-radius: 8px;
+    -moz-border-radius: 8px;		
+    opacity: 1.0;
+}
+a:hover>img, a.eyecatcher:hover>img, a:hover>img.contact, a.contact:hover>img {
+	border: 5pt ridge #92b4ff;
+    opacity: 0.8;
+}
+a:active>img, a.eyecatcher:active>img, a:active>img.contact, a.contact:active>img {
+	border: 5pt ridge #92b4ff;
+    opacity: 0.5;
+}
+
+/* ordinary logo */
+a.structLogo>img, a.structLogo:active>img {
+	margin: 0em 0em;
+	border: 0;
+    opacity: 1.0;
+	border-radius: 0px;
+    -webkit-border-radius: 0px;
+    -moz-border-radius: 0px;		
+}
+
+
+
+/* navigational part */
+
+      /* @todo could add a little more distance between td cells of Sitemap table */
+ul.Sitemap {
+        list-style-type: none !important;
+	margin: 0em 0em 0em 0em !important; 
+	padding: .5em 0em .5em 1em !important;
+	border-radius: 10px;
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+}
+
+ul.Sitemap a {
+	color: #06174A;
+}
+
+ul.Sitemap > li {
+        list-style-type: none !important;
+        background-color: #ceddff !important;/*=hsv(222,19,100)*/ /*#dde8ff;*/ /*#fff2dd;*/
+	padding: 0em 0em 0.2em 0.4em !important;
+	border-radius: 10px;
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+}
+ul.Sitemap > li > ul.Sitemap {
+        background-color: #f0f4ff !important;/*=hsv(222,6,100)*/
+}
+ul.Sitemap > li > ul.Sitemap > li {
+        list-style-type: none !important;
+        background-color: #f0f4ff !important;
+}
+ul.Sitemap > li > ul.Sitemap > li > ul.Sitemap > li {
+        list-style-type: circle;
+}
+div.sidebarnavseparator {
+	display:block;
+	border-color: #042a75;
+	border-width: 1pt;
+	border-top-style: solid;
+	margin-left: 4pt;
+	margin-right: 8pt;
+}
+
+
+table.tableofcontents, table.subnavigation {
+    border-top: 2px solid #92b4ff !important;
+    border-bottom: 2px solid #92b4ff !important;
+    border-left: 10px solid #92b4ff !important;
+    border-right: 2px solid #92b4ff !important;
+    background-color: #7197e3 !important;
+    padding-left: 1em;
+    margin-top: 2mm;
+    margin-bottom: 2mm;
+    margin-left: 1em;
+    margin-right: 2mm;
+}
+th.tableofcontents, th.subnavigation {
+    color: #042a75;
+    text-align: left !important; 
+    font-family: "Arial", "Helvetica", Sans-serif; 
+    font-weight: bold;
+    font-size: 16pt;
+    padding-left: 2em;
+}
+th.labelled {
+    color: #042a75;
+    text-align: left !important; 
+    font-weight: bold;
+}
+ul.tableofcontents, ul.subnavigation, ol.tableofcontents, ol.subnavigation {
+}
+table.tableofcontents a, table.subnavigation a {
+	color: #06174A;
+}
+
+*.quick a {
+	text-decoration: none; 
+	font-size: 12pt;
+    color: #2e73af !important; /*#042a75;*/  /*E3F0FD;*/
+    display: block;
+}
+
+*.quick {
+    float: right;
+    /*border-top: 2px solid #92b4ff !important;
+    border-bottom: 2px solid #92b4ff !important;
+    border-left: 10px solid #92b4ff !important;
+    border-right: 2px solid #92b4ff !important;*/
+    border: 2px solid #92b4ff !important;
+    background-color: #ceddff !important;
+    padding: 2mm;
+    text-align: center;
+    vertical-align: top;
+	border-radius: 12px;
+    -webkit-border-radius: 12px;
+    -moz-border-radius: 12px;	
+}
+
+*.side {
+    float: right;	
+    text-align: center;
+    vertical-align: top;
+}
+*.side a {
+	text-decoration: none; 
+	font-size: 12pt;	
+}
+
+/* individual element styles */
+
+pre {
+	margin: .5em 0em .5em 0em;
+	background: white;
+	color: black;
+   }
+
+
+/* text in a file */
+pre.file, tt.file {  
+	background: #fff2dd; /* light orange */
+	/* #f5ffff /* light blue */
+   }
+
+a>img.contact, a.contact>img {
+    float: right;
+}
+ 
+/* experimenting with list compaction, which doesn't really work yet. */
+dl.compact dt {
+	display: inline-block;
+}
+/*dl.compact dd {
+	display: run-in;
+} */
+
+dl.compact {
+ margin: 0;
+ padding: 0;
+}
+dl.compact dt {
+ display: inline-block;
+}
+
+dl.tabcompact, dt.tabcompact, dd.tabcompact {
+ margin: 0;
+ padding: 0;
+}
+dl.tabcompact {
+ display: inline;
+}
+dl.tabcompact dt {
+ clear: left;
+ float: left;
+ width: 10%;
+}
+dl.tabcompact dd {
+ float: left;
+ width: 89%; /* 1% gap to avoid hitting both sides */
+}
+
+/* course and lectures */
+
+dl.course {margin-bottom: 1.5em;}
+dl.course dt {font-weight: bold;}
+
+*.exam {background: #4B0816; font-weight: bold; font-style: normal !important;}
+	
+*.recitation {color: yellow; font-size: 80%; font-style: normal !important;}
+
+
+table.syntax tr td {
+	vertical-align: top;
+}
+
+table.syntax tr {
+	padding-bottom: 10pt;
+}
+
+em {
+	font-weight: bold;
+	font-style: italic;
+}
+
+/* programming language syntax highlighting */
+
+  /**
+   * For language keywords.
+   */
+  *.keyword {
+  	font-weight: bold;
+  }
+  pre *.keyword {
+  	font-weight: bold;
+  	color: #0000A5;
+  }
+  /**
+   * For predefined primitive types.
+   */
+  *.primitiveType {
+  	font-weight: bold;
+  	color: #0000A5;
+  }
+  /**
+   * For operators.
+   */
+  *.operator {
+  	color: #0000A5; /*#008200;*/
+  }
+  /**
+   * For assignment operation.
+   */
+  *.assignment {
+  	color: #008200;
+  }
+
+  /**
+   * For comments.
+   */
+  *.comment {
+  	font-style: italic;
+  	color: #008284;
+  }
+  
+  /* literals */
+  
+  /**
+   * For String terminals.
+   */
+  *.string, *.String {
+  	color: #848284;
+  }
+  /* Specify pairs of quotes for two levels in two languages */
+  /* *.String:lang(en) { quotes: '"' '"' "'" "'" } */ 
+  
+  /* Insert quotes before and after *.String element content */
+  /* *.String:before { content: open-quote; }
+  *.String:after  { content: close-quote; } */
+
+  /**
+   * For number terminals.
+   */
+  *.number, *.float, *.integer, *.Number {
+  	color: red;
+  }
+  
+  /**
+   * For annotations.
+   */
+  *.annote {
+  	color: #34e92a; /*#38ff2e;*/ /*#168000;*/
+  }
+  *.annoteArg {
+  	color: #127000;
+  }
+
+  /* known classes */
+  
+  /**
+   * For java core classes.
+   */
+  *.Class {
+  	color: blue;
+  }
+  /**
+   * For classes in the Orbital library.
+   */
+  *.Orbital {
+  	color: blue;
+  }
+/**
+ * Use this class to tell the browser to use a unicode font for displaying.
+ * Most browsers are not smart enough to pick a unicode font for unicode characters.
+ */
+*.unicode {
+	font-family: unicode;
+}

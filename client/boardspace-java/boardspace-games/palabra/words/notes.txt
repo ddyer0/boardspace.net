@@ -1,0 +1,10 @@
+
+wordlist.txt from http://www-personal.umich.edu/~jlawler/wordlist
+
+words_alpha.txt from https://github.com/dwyl/english-words
+
+n-letter-words from https://www.scrabblecheat.org/word-list
+
+wordfreq.html from https://gist.github.com/h3xx/1976236
+wordfreq.txt digested with emacs
+wiki-100k.txt provided list

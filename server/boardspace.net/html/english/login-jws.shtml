@@ -1,0 +1,81 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=windows-1252"><title>Boardspace App Page</title>
+
+<script language="javascript">
+function submitme(form1)
+{ form1.action=form1.action+"?pname="+form1.pname.value+"&language="+form1.language.value;
+form1.submit();
+}
+</script>
+<script src="/js/site.js?1"></script></head>
+<body style="background-image: url(../images/background-image.jpg);">
+<table style="text-align: left; width: 100%;" border="1" cellpadding="2" cellspacing="2">
+<tbody>
+<tr>
+<td>
+<h1 style="text-align: center;"><img src="../images/master-logo.jpg" alt="boardspace.net" style="width: 600px; height: 100px;"></h1>
+</td>
+<td>
+<div id="google_translate_element"></div>
+<script type="text/javascript">
+function googleTranslateElementInit() {
+new google.translate.TranslateElement({pageLanguage: 'en', layout: google.translate.TranslateElement.InlineLayout.SIMPLE}, 'google_translate_element');
+}
+</script>
+<script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit">
+</script></td>
+</tr>
+</tbody>
+</table>
+
+<h1 style="text-align: center;">Application Loader Page</h1><div style="text-align: center;">Boardspace can run from
+all the common platforms. &nbsp; In all cases, boardspace is completely
+free, and there is no advertising or in-game purchases.<br><br><span style="font-weight: bold;">Select your platform:</span><br></div><table style="width: 973px; height: 184px; text-align: left; margin-left: auto; margin-right: auto;" border="0" cellpadding="2" cellspacing="2"><tbody><tr><td><div style="text-align: center;"><a href="login-from-windows.shtml"><img style="border: 0px solid ; width: 120px; height: 120px;" alt="windows" src="../images/windows-platform.png"></a><br></div><div style="text-align: center;"><a href="login-from-windows.shtml">Windows PC</a></div></td><td><div style="text-align: center;"><a href="login-from-macintosh.shtml"><img style="border: 0px solid ; width: 177px; height: 152px;" alt="macintosh" src="../images/mac%20platform.jpg"></a><br></div><div style="text-align: center;"><a href="login-from-macintosh.shtml">Macintosh PC</a></div></td><td><div style="text-align: center;"><a href="login-from-linux.shtml"><img style="border: 0px solid ; width: 192px; height: 143px;" alt="linux" src="../images/linux%20platform.jpg"></a><br></div><div style="text-align: center;"><a href="login-from-linux.shtml">Linux PC</a></div></td></tr></tbody></table><br><table style="width: 764px; height: 182px; text-align: left; margin-left: auto; margin-right: auto;" border="0" cellpadding="2" cellspacing="2"><tbody><tr><td style="text-align: center;"><a href="login-from-ios.html"><img style="border: 0px solid ; width: 150px; height: 150px;" alt="apple" src="../images/iOS%20platform.jpg"></a><br><a href="login-from-ios.html">Iphone or Ipad</a></td><td><div style="margin-left: 40px;"><a href="login-from-android.html"><img style="border: 0px solid ; width: 128px; height: 150px;" alt="android" src="../images/android%20platform.jpg"></a><br><a href="login-from-android.html">Android phone or tablet</a></div></td></tr></tbody></table><br><table style="width: 576px; height: 316px; text-align: left; margin-left: auto; margin-right: auto;" border="0" cellpadding="2" cellspacing="2"><tbody><tr><td>When
+you run the app from whichever platform, the first thing you should see
+is the login screen.
+&nbsp;Eventually you will want to create an account (it's free) but the
+first time you can check the "guest" box and log in as an anonymous
+guest.</td></tr><tr><td style="text-align: center;"><p><img style="width: 484px; height: 276px;" alt="login scree" src="../images/login-screen.jpg"></p></td></tr></tbody></table><p style="text-align: center;"></p><table>
+<tbody>
+<tr>
+<td>
+<form name="login" action="/cgi-bin/login.cgi" method="post"><br>
+<div style="text-align: left;">&nbsp; <a href="help-video.html"><img alt="help video" src="../images/video_icon.png" border="0" height="49" width="50"></a>View a short video to help get you
+started. </div>
+</form>
+</td>
+<td style="vertical-align: middle;">A general guide how to use the
+Boardspace lobby is <a href="lobby-help.html">here</a>.<br>
+</td>
+<td>
+<center>
+<div style="text-align: left;">On desktop pcs, you&nbsp;need to have Java installed&nbsp; and configured
+.&nbsp; <a href="needsjava.shtml">This page</a>
+has other information about getting java installed and configured on
+your computer.<br>
+</div>
+</center>
+</td>
+</tr>
+</tbody>
+</table>
+<hr style="width: 100%; height: 2px;"><br>
+<table style="width: 100%;">
+<tbody>
+<tr>
+<td align="left"> <font size="-1">E-mail:
+<script language="javascript">
+document.write("<a href='mailto:gamemaste");
+document.write("r\@board");
+document.write("space.net'>gamemaste<n>r@board<n>space.net</a>");
+</script></font> </td>
+<td style="vertical-align: top; text-align: center;"><br>
+</td>
+<td align="right">Go to <a href="/">BoardSpace.net
+home page</a> </td>
+</tr>
+</tbody>
+</table>
+<script>document.login.pname.focus()</script>
+</body></html>

@@ -1,0 +1,3 @@
+salloc.o salloc.o: salloc.c ../config.h
+
+../config.h:

@@ -1,0 +1,6 @@
+
+Steps to configure a server.  
+
+Suppose you have a virgin L.A.M.P server with only the stock starting software installed.
+These are things you need to do to make it boardspace.
+

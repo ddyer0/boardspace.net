@@ -1,0 +1,158 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html;
+      charset=ISO-8859-1">
+    <title>Gounki at Boardspace.net</title>
+  </head>
+  <body style="background-image: url(../images/background-image.jpg);">
+    <table style="width: 100%; text-align: left;" border="0"
+      cellpadding="2" cellspacing="0">
+      <tbody>
+        <tr>
+          <td style="vertical-align: top;">
+            <h4><a href="about_palago.html">Palago</a></h4>
+            <h4> </h4>
+          </td>
+          <td style="vertical-align: top;">
+            <h1 style="text-align: center;"><img alt="boardspace.net"
+                src="master-logo.jpg" style="width: 600px; height:
+                100px;"></h1>
+          </td>
+          <td style="vertical-align: top;"><a href="about_octiles.html"><span
+                style="font-weight: bold;">Octiles</span></a></td>
+        </tr>
+      </tbody>
+    </table>
+    <br>
+    <table style="text-align: left; margin-left: auto; margin-right:
+      auto; width: 995px; height: 46px;" border="0" cellpadding="2"
+      cellspacing="2">
+      <tbody>
+        <tr>
+          <td style="vertical-align: top; text-align: center;"><small><font
+                size="+1"><small><a href="register.shtml"><span
+                      style="font-weight: bold;">Register</span></a></small></font><br>
+            </small></td>
+          <td style="vertical-align: top; text-align: center;"><small><font
+                size="+2"><small><a style="font-weight: bold;"
+                    href="login.shtml">Log
+                    in and
+                    Play<br>
+                  </a></small></font></small></td>
+          <td style="vertical-align: top; text-align: center;"><small><font
+                size="+1"><small><a href="guest.shtml"><span
+                      style="font-weight: bold;">Guest
+                      Login</span></a></small></font><br>
+            </small></td>
+        </tr>
+      </tbody>
+    </table>
+    <br>
+    <br>
+    <table style="width: 100%; text-align: left;" border="1"
+      cellpadding="2" cellspacing="2">
+      <tbody>
+        <tr>
+          <td style="vertical-align: top;">
+            <h1 style="text-align: center;"><big>Gounki</big><br>
+            </h1>
+            <font face="Arial, Helvetica" size="1"><b><br>
+              </b></font>Gounki is a quick racing game with some unusual
+            move mechanics.&nbsp; The basic concept is simple - round
+            pieces move diagonally forward, and square pieces move
+            sideways or forward.&nbsp; The twist is that pieces can be
+            stacked (up to a height of 3) and the stacks acquire the
+            movement capability of the components.&nbsp; The goal is
+            simply to get any piece to the opposite side of the board.<br>
+            <br>
+            Read the official <a
+              href="http://rvo.pagesperso-orange.fr/gounki/en/rules.html">rules
+            </a>for
+            details.<br>
+            <br>
+            <span style="font-weight: bold;"></span><span
+              style="font-weight: bold;">Robots:</span> They seem pretty
+            strong, if only because the lookahead is so strange to a
+            human. <br>
+            <br>
+          </td>
+          <td style="vertical-align: top;"><img style=" width: 769px;
+              height: 485px;" alt="gounki board"
+              src="../images/gounki-small.jpg"><br>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <span style="font-weight: bold;"><br>
+    </span>
+    <div style="text-align: center;"><span style="font-weight: bold;">Links</span><br>
+      <span style="font-weight: bold;"></span></div>
+    <table style="width: 100%; text-align: left;" border="0"
+      cellpadding="2" cellspacing="2">
+      <tbody>
+        <tr>
+          <td style="vertical-align: top;"><a
+              href="/cgi-bin/boardspace_rankings.cgi?game=gk">Gounki
+              rankings at
+              Boardspace</a><br>
+          </td>
+          <td style="vertical-align: top;"><a
+              href="http://boardgamegeek.com/boardgame/8548/gounki">Gounki
+              at
+              BoardGameGeek</a><br>
+          </td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;"><a
+              href="/gounki/gounki-viewer.shtml">Gounki game archives
+              at Boardspace<br>
+            </a></td>
+          <td style="vertical-align: top;"><a
+              href="http://rvo.pagesperso-orange.fr/gounki/en/index.en.html">Gounki
+              Official home page</a><br>
+          </td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;"><a
+              href="/cgi-bin/player_analysis.cgi?game=gounki">Gounki
+              win/loss
+              database</a><br>
+          </td>
+          <td style="vertical-align: top;"><a
+              href="http://rvo.pagesperso-orange.fr/gounki/en/rules.html">Gounki
+              Rules</a><br>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <span style="font-weight: bold;"><br>
+      The back story:&nbsp; </span>Gounki's unusual name attracted my
+    attention.&nbsp; I think it means something suggestive of "capture
+    the flag", in Japanese.&nbsp;&nbsp; <br>
+    <hr>
+    <center>
+      <table style="width: 100%;">
+        <tbody>
+          <tr>
+            <td align="left"><font size="-1">
+                <script language="javascript">
+document.write("<a href='mailto:gamemaste");
+document.write("r\@board");
+document.write("space.net'>gamemaste<n>r@board<n>space.net</a>");
+      </script></font><br>
+            </td>
+            <td style="vertical-align: top; text-align: center;"><a
+href="http://netmap.efxservices.com/cgi-bin/mapper/displaymap.pl?client=1036"><br>
+              </a></td>
+            <td style="vertical-align: top;"><a href="logon-page.html">Site<br>
+                &nbsp;Map</a><br>
+            </td>
+            <td align="right">Go to <a href="/">BoardSpace.net home
+                page</a> </td>
+          </tr>
+        </tbody>
+      </table>
+    </center>
+  </body>
+</html>

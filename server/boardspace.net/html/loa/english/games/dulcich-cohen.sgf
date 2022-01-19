@@ -1,0 +1,203 @@
+(;PW[Philip Cohen]
+PB[Fabio Dulcich]
+C[Game from AISE Grand Prix, 1993.  
+Fabio Dulcich (Italy) vs Philip Cohen (USA)
+Comments by Dulcich (translations from Italian by Cohen)]
+GM[9]
+GN[Dulcich-Cohen (English)]
+GC[Dulcich-Cohen (English)]
+;B[c8-c6]
+C[]
+;C[]
+W[a4-c2]
+;C[]
+B[g8-g6]
+;C[]
+W[c2:g6]
+;C[]
+B[c6:g6]
+;C[]
+W[h7-f7]
+;C[]
+B[b8-d6]
+;C[]
+W[h6-f4]
+;B[e8-e6]
+C[
+It is not correct to develop pieces only from one side of the
+board but it's necessary to defent against a6:d6 and Black
+wanted to avoid playing c1:a3, since capturing disconnected
+or unmoved opponent pieces is equivalent to giving an 
+advantage to the opponent.]
+;W[ a7-c5]
+C[
+Blocks the Black reply f8c5.]
+;B[b1-d3]
+C[
+A poisoned piece; if a3:d3, f8:c5.]
+;C[]
+W[a5-d5]
+;C[]
+B[f1-c4]
+;W[a3:d3]
+C[An error, I think, because it unblocks f8 without 
+giving counterplay.]
+;C[]
+B[f8:c5]
+;C[]
+W[h5-e5]
+;C[]
+B[d8-c7]
+;C[]
+W[f4:c4]
+;B[g1-g3]
+C[
+Prevents h2:d6.]
+;W[f7-f6]
+C[
+Threatens a2:e6.]
+;B[c1-b2]
+C[Counterattack threatening e5.]
+;W[a2-e6]
+C[]
+;B[b2-e5]
+C[]
+;W[h3-f5]
+;B[c7-c4]
+C[Black tries to isolate a6.]
+;C[]
+W[h4-f4]
+;C[]
+B[e1-e4]
+;W[e6-g4]
+C[Black needs only two moves to finish: g6g4+ 
+and d1f3#. White has to do something fast to 
+block him.]
+;B[c5-d4]
+C[Necessary to block d3. If now White plays d3f3 
+threatening a6:c4, d5 falls.]
+;C[]
+W[d3-f3]
+;B[c4-c3]
+C[There's no hurry to play d1:d5; it's much better
+to avoid the dangerous a6:c4 and leave a6 even
+more isolated.]
+;W[h2-h3]
+C[Joins h2 to the group and parries c3:f3.]
+;B[g3-h4]
+C[Threatens h4:f6, winning next move.]
+;W[f6:h4]
+C[ The only possible move and also a good threat, 
+since now White needs only two moves to win: a6:d6++
+follwed by d5e6# or h3e6#.]
+;B[d1:d5]
+C[ The only possible move and also a good threat, 
+since now White needs only two moves to 
+win: a6:d6++ follwed by d5e6# or h3e6#.]
+;C[]
+W[f3-f6]
+;C[]
+B[g6-f7]
+;C[White     Resigns
+Unstoppable triple threat: f7e7# e5e7# e4e6#.
+]
+)
+(;PW[Philip Cohen]
+PB[Fabio Dulcich]
+GM[9]
+GN[Dulcich-Cohen (Italian)]
+GC[Dulcich-Cohen (Italian)]
+C[Game from AISE Grand Prix, 1993.  
+Fabio Dulcich (Italy) vs Philip Cohen (USA)
+Comments by Dulcich]
+;B[c8-c6]
+C[]
+;C[]
+W[a4-c2]
+;C[]
+B[g8-g6]
+;C[]
+W[c2:g6]
+;C[]
+B[c6:g6]
+;C[]
+W[h7-f7]
+;C[]
+B[b8-d6]
+;C[]
+W[h6-f4]
+;B[e8-e6]
+C[Non e' corretto sviluppare i pezzi solo 
+da un lato della scacchiera ma e' indispensabile
+difendersi da a6:d6 e il Nero voleva evitare di 
+giocare c1:a3, perche' catturare pezzi avversari
+slegati o non ancora mossi equivale a dare un vantaggio
+all'avversario.]
+;W[ a7-c5]
+C[Blocca la replica del Nero f8-c5.]
+;B[b1-d3]
+C[E' un boccone avvelenato: se a3:d3 segue f8:c5.]
+;C[]
+W[a5-d5]
+;C[]
+B[f1-c4]
+;W[a3:d3]
+C[Secondo me e' un errore perche' sblocca f8  
+senza una contropartita.]
+;C[]
+B[f8:c5]
+;C[]
+W[h5-e5]
+;C[]
+B[d8-c7]
+;C[]
+W[f4:c4]
+;B[g1-g3]
+C[Impedisce h2:d6.]
+;W[f7-f6]
+C[Minaccia a2:e6.]
+;B[c1-b2]
+C[Contrattacca minacciando il pezzo in e5.]
+;W[a2:e6]
+;C[]
+B[b2:e5]
+;C[]
+W[h3-f5]
+;B[c7:c4]
+C[Il Nero cerca di isolare a6.]
+;C[]
+W[h4-f4]
+;C[]
+B[e1-e4]
+;W[e6-g4]
+C[Al Nero mancano solo due mosse per concludere: 
+g6-g4+ e d1-f3#. Il Bianco deve fare qualcosa
+subito per bloccarlo]
+;B[c5-d4]
+C[Necessaria per bloccare d3. Se ora il Bianco 
+gioca d3-f3 minacciando a6:c4, cade d5.]
+;C[]
+W[d3-f3]
+;B[c4-c3]
+C[Non c'e' fretta di giocare d1:d5, e' assai
+meglio evitare la pericolosa a6:c4 e lasciare
+a6 sempre piu' isolato.]
+;W[h2-h3]
+C[Unisce h2 al gruppo e para c3:f3.]
+;B[g3-h4]
+C[Minaccia h4:f6 con vittoria alla successiva.]
+;W[f6:h4]
+C[E' l'unica mossa possibile e inoltre e' una
+bella minaccia perche' ora al Bianco mancano 
+solo due mosse per vincere a6:d6++ seguito da 
+d5-e6# o h3-e6#.]
+;B[d1:d5]
+C[Minaccia c3-f6#.]
+;C[]
+W[f3-f6]
+;C[]
+B[g6-f7]
+;C[White     Resigns
+Tripla minaccia imparabile: f7-e7# e5-e7# e4-e6#.
+]
+)

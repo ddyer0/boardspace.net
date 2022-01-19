@@ -1,0 +1,3 @@
+Hallo, gjest - takk for at du stikker innom! Du kan spille, se på andres partier - eller bare chatte.
+For å spille mot en robot, klikk på en mørk rute i et av spillerommene, og velg "spill mot robot".
+Eventuelt kan du vente på at en annen spiller kommer og melder seg på ditt parti.

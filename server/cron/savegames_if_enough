@@ -1,0 +1,47 @@
+#!/bin/csh
+#set echo
+#
+# link master games into an archive directory
+# save current games to an archive directory if there are enough of them
+#
+~/cron/dtest.csh $0 600
+set v = $?
+#
+# dtest is a kludge to prevent scripts running twice
+#
+if ( $v == 0 ) then
+#
+source ~/cgi-bin/include.csh
+#
+#clean up from failed uploads
+find $picture_upload_dir -name "cgi-lib*" -mtime +1 -exec rm -f {} \;
+
+# archive master games separately
+cd ~/cgi-bin/tlib
+#perl gs_master_games.pl dir=$game_dir
+perl gs_tournament_games.pl
+
+#
+# database_info produces a list of directories and prefixes
+#
+set data = `perl database_info.pl op=savegames`
+
+while ( $#data > 0 )
+	set dir = $data[1];
+        shift data
+	set key = $data[1];
+	shift data
+
+    set nonomatch
+    cd $dir
+    set count=`echo *.sgf | wc`;
+    if (${count[2]} >= $enough_games_to_save) then
+    ~/cron/savegames $dir $key
+    endif
+
+end
+
+
+
+endif
+

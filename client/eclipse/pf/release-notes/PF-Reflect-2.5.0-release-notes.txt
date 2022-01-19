@@ -1,0 +1,259 @@
+Reflection Release-Notes
+Author: Manfred Duchrow
+Copyright (c) 2002-2012, by Manfred Duchrow. All rights reserved.
+=======================================================================
+
+-----------------------------------------------------------------------
+
+VERSION 2.5.0 (August 12, 2012) 
+
+* ReflectUtil
+  > Added
+    - public List<Class> getAllTypesOf(Object object) 
+
+  > Changed to recognize Class objects
+    - public Field getField(Object object, String name)
+    - public Method getMethod(Object object, String methodName, Class[] paramTypes)
+    
+* Dynamic
+  > Added
+    - public static Object perform(Object receiver, String methodName, Object[] args, String[] signature) throws Exception
+
+-----------------------------------------------------------------------
+
+VERSION 2.4 (May 6, 2012 ) 
+
+* ReflectUtil
+  > Added
+    - public <T> T createInstanceOfType(Class<T> type, String className, Object caller, Object...params)
+	- public String getAnnotationValueFrom(Class aClass, Class<? extends Annotation> annotationType)
+    - public Class[] findClasses(String... classNames)
+	
+  > Changed signatures to support generic typing
+    - public <T> T newInstanceOf(Class<T> aClass, Object... params)
+	- public <T> Constructor<T> findConstructor( Class<T> aClass, Class[] paramTypes )
+	- public <T> T newInstance( Class<T> aClass )
+	- public <T> T newInstance(Class<T> aClass, Object[] params)
+	- public <T> T newInstance(Class<T> aClass, Object param1, Object param2)
+	- public <T> T newInstance(Class<T> aClass, Object param)
+	- public <T> T[] toArray(Collection coll, String methodName, Class<T> elementType)
+
+* New classes 
+  > XmlReflection
+  > DynamicMBeanDelegator
+
+-----------------------------------------------------------------------
+
+VERSION 2.3 ( October 16, 2011 ) 
+
+* ReflectUtil
+  > Added
+    - public Object newInstanceOf(Class aClass, Object... params)
+	- public Object createInstanceOf(String className, Object caller, Object...params)
+
+-----------------------------------------------------------------------
+
+VERSION 2.2 ( November 17, 2010 ) 
+
+* Made ClassInfo a generic type: ClassInfo<T>
+
+-----------------------------------------------------------------------
+
+VERSION 2.1 ( November 11, 2009 ) 
+
+* New classes 
+  > ObjectOrMapAccessWrapper
+  
+* ReflectUtil
+  > Added
+    - public Object[] toArray( Collection coll, String methodName, Class elementType )
+	- public String[] toStringArray( Collection coll, String methodName )
+
+* Dynamic
+  > Bugfix: Class objects couldn't be used as receiver object for dynamic
+    method invocation. That's now possible.
+	
+-----------------------------------------------------------------------
+
+VERSION 2.0 ( December 19, 2008 ) 
+
+* ReflectUtil
+  > Added
+    - public List getConstructorsOf( Object object )
+	- public Class[] getInterfacesOf( Object object ) 
+	- public Class[] getInterfacesOf( Class aClass ) 
+	- public int indexOf( Class[] classes, Class aClass )
+	- public boolean contains( Class[] classes, Class aClass ) 
+	- public boolean implementsInterface( Object object, Class anInterface )
+	- public boolean implementsInterface( Class aClass, Class anInterface )
+	
+	- EMPTY_CONSTRUCTOR_ARRAY
+	- EMPTY_METHOD_ARRAY
+	- EMPTY_FIELD_ARRAY
+	
+* New classes
+  > ObjectAccessWrapper
+
+-----------------------------------------------------------------------
+
+VERSION 1.9.1 ( March 21, 2008 ) 
+
+* ReflectUtil
+  > Added
+    - public ReflectUtil( ClassLoader classLoader )
+
+-----------------------------------------------------------------------
+
+VERSION 1.9 ( January 13, 2008 ) 
+
+* New class
+  > Modifiers
+
+* ClassInfo
+  > Added
+	- public ClassInfo( String className, boolean singleton )
+	- public ClassInfo( Class aClass, boolean singleton )
+	- public Object getInstance() 
+
+* ReflectUtil
+  > Changed 
+    public Class findClass( String className )
+	to return the correct class objects for primitive types
+
+* Dynamic
+  > BUGFIX
+    public static Object perform(Object receiver, String methodName, 
+	                             Object[] args, Class[] argTypes) 
+	Creation of exception message now appends a closing parenthesis even if
+	no argument types have been defined.
+
+-----------------------------------------------------------------------
+
+VERSION 1.8 ( March 1, 2007 ) 
+
+* ReflectUtil
+  > Added
+    - public boolean hasPublicMethod( Object obj, String methodName, Class[] paramTypes)
+    - public boolean hasPublicMethod( Class aClass, String methodName, Class[] paramTypes)
+    - public boolean isPackageVisible( Method method )
+    - public boolean isPackageVisible( Field field ) 
+    - public Field findField( Class aClass, String name )
+    - public Field findField( Class aClass, String name, int modifiers )
+    - public Method findMethod( Class aClass, String methodName, 
+                                              Class[] paramTypes, int modifiers)
+
+* BUGFIX in ReflectUtil
+  - public Method findMethod( Class aClass, String methodName, Class[] paramTypes)
+  - public Method getMethod( Object obj, String methodName, Class[] paramTypes)
+
+  A null value for paramTypes is now treated like Class[0].
+
+* ClassInfo
+  > Added
+    - public boolean isAssignableFrom( Class type ) 
+    - public boolean isAssignableTo( Class type )
+    - public boolean isInstance( Object object )
+    - public Object[] newArray( int size ) 
+
+-----------------------------------------------------------------------
+
+VERSION 1.7 ( June 4, 2006 ) 
+
+* ReflectUtil
+
+  > Changed visibility of constructor ReflectUtil() from private to protected
+
+	> Added
+	  - EMPTY_CLASS_ARRAY
+	  - public Class getTypeOf(Object object)
+	  - public Class[] getTypesFromParameters( Object[] params )
+	  - public Constructor findConstructor( Class aClass, Class[] paramTypes )
+	  - public Object newInstance( Class aClass )
+	  - public Object newInstance( Class aClass, Object param )
+	  - public Object newInstance( Class aClass, Object param1, Object param2 )
+	  - public Object newInstance( Class aClass, Object[] params )
+	  - public Object newInstance( String className )
+	  - public Object newInstance( String className, Object param )
+	  - public Object newInstance( String className, Object param1, Object param2 )
+	  - public Object newInstance( String className, Object[] params )
+    - public List getFieldsOf( Class aClass )
+    - public List getMethodsOf( Class aClass )
+		- public List getConstructorsOf( Class aClass )
+		
+* New classes
+  > ReflectionException
+
+-----------------------------------------------------------------------
+
+VERSION 1.6 ( December 23, 2005 ) 
+
+* ReflectUtil
+  > Added methods
+    - public List getMethodsOf( Object obj )
+    - public String getVisibility( int modifiers )
+
+-----------------------------------------------------------------------
+
+VERSION 1.5 ( July 3, 2004 ) 
+
+* Added new interfaces
+  > AttributeReadAccess
+  > AttributeReadWriteAccess
+
+-----------------------------------------------------------------------
+
+VERSION 1.4.1 ( March 6, 2004 )
+
+* FIXED: Internal potential bug in 
+  
+  > Dynamic
+    public static Object perform(Object receiver, String methodName, boolean arg)
+      
+  > ReflectUtil
+    public void setValueOf( Object obj, String name, boolean value )
+  
+-----------------------------------------------------------------------
+
+VERSION 1.4 ( December 22, 2003 )
+
+* New method in ReflectUtil
+  - setValueOf()
+
+-----------------------------------------------------------------------
+
+VERSION 1.3 ( February 7, 2003 )
+
+* New class ClassInfo
+
+-----------------------------------------------------------------------
+
+VERSION 1.2 ( December 14, 2002 )
+
+* New methods in Dynamic
+  - invoke() with argTypes
+  - perform() with argTypes
+
+-----------------------------------------------------------------------
+
+VERSION 1.1 ( October 24, 2002 )
+
+* New methods in ReflectUtil
+  - isDefaultVisibility()
+
+-----------------------------------------------------------------------
+
+VERSION 1.0 ( October 6, 2002 )
+
+* New class ReflectUtil with methods:
+  - classExists()
+  - findClass()
+  - findMethod()
+  - getMethod()
+  - getFieldsOf()
+  - getField()
+  - getValueOf()
+
+* Moved class Dynamic from org.pf.util to this package
+
+-----------------------------------------------------------------------
+

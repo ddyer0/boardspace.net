@@ -1,0 +1,40 @@
+<HTML>
+<HEAD>
+</HEAD>
+<BODY LINK="#0000ff" VLINK="#800080" BGCOLOR="#ffffff">
+
+<H1><IMG SRC="kawacup.jpg" WIDTH=106 HEIGHT=100>Run an application or applet</H1>
+<P><A HREF="index.htm">Index</A> </P>
+<P>
+<font size="1.5" face="Arial">Last Modified Date - <font color=red>2/16/99</font><p>
+Please click <a href="http://www.tek-tools.com/kawa/docs/runapporapplet.htm">here</a> for the latest version of this document.
+<font color=red> If this is an online version of the document please right click in the browser and select 
+'Update local Kawa document' to update your local copy of this document</font>
+</font>
+<P><HR></P>
+<P>
+Kawa automatically decides how to run an applet or application based on the following rule - 
+</P>
+<b>Project not Open -</b>
+<p>
+<UL>
+<LI>If the current open file in the editor is a Java file, Kawa checks to see if there is a class with a main method. If a class with a main method is found Kawa will run the class as an application.</LI>
+<LI>If the current open file in the editor is a HTML file, Kawa will try to run the HTML file as an applet. Please make sure the HTML file has the correct applet tag.</LI>
+<br></UL>
+<b>Project Open -</b>
+<p>
+<UL>
+<LI>Kawa first checks for the name of the run class under project interpreter options. If this field is not empty Kawa runs the class as an application. </LI>
+<LI>If the run class name is empty under interpreter options, Kawa checks for main class file. Main class file is the java file which has the class with a main method. Main class file can be set by 
+right clicking on a java file in the project tree and selecting main class menu option. If there is a main class file Kawa will run the class as an application.</LI>
+<LI>If the main class file is empty, Kawa next checks to see if main HTML is set. Main HTML can be set by right clicking on any project HTML file and selecting main HTML menu option.
+Kawa will run the main HTML file as an applet if the main HTML is set.</LI>
+<LI>If none of the above is set, Kawa parses the project looking for a class with main method. If a class is found with main method Kawa will automatically set the main class file and
+run the class as an application.</LI>
+<LI>If Kawa does not find a class with main method, Kawa will finally try to find a class derived from applet. If a class derived from applet is found, Kawa will prompt you to create a HTML
+file to run this applet derived class as an applet.</LI>
+</UL>
+<P>
+It is possible that none of the above steps can succeed. In that case please identify your project main class file or main HTML as explained above to run the application or applet.</LI>
+</BODY>
+</HTML>

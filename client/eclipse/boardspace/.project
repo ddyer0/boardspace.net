@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<projectDescription>
+	<name>boardspace games</name>
+	<comment></comment>
+	<projects>
+		<project>boardspace core</project>
+	</projects>
+	<buildSpec>
+		<buildCommand>
+			<name>org.eclipse.jdt.core.javabuilder</name>
+			<arguments>
+			</arguments>
+		</buildCommand>
+	</buildSpec>
+	<natures>
+		<nature>org.eclipse.jdt.core.javanature</nature>
+	</natures>
+	<linkedResources>
+		<link>
+			<name>boardspace-games</name>
+			<type>2</type>
+			<location>G:/share/projects/boardspace-java/boardspace-games</location>
+		</link>
+	</linkedResources>
+	<filteredResources>
+		<filter>
+			<id>1511143708915</id>
+			<name></name>
+			<type>26</type>
+			<matcher>
+				<id>org.eclipse.ui.ide.multiFilter</id>
+				<arguments>1.0-name-matches-false-false-hires-images</arguments>
+			</matcher>
+		</filter>
+		<filter>
+			<id>1511143708916</id>
+			<name></name>
+			<type>22</type>
+			<matcher>
+				<id>org.eclipse.ui.ide.multiFilter</id>
+				<arguments>1.0-name-matches-false-false-*.bak</arguments>
+			</matcher>
+		</filter>
+		<filter>
+			<id>1511143708918</id>
+			<name></name>
+			<type>30</type>
+			<matcher>
+				<id>org.eclipse.ui.ide.multiFilter</id>
+				<arguments>1.0-name-matches-false-false-hires images</arguments>
+			</matcher>
+		</filter>
+		<filter>
+			<id>1511143708920</id>
+			<name></name>
+			<type>26</type>
+			<matcher>
+				<id>org.eclipse.ui.ide.multiFilter</id>
+				<arguments>1.0-name-matches-false-false-hires_images</arguments>
+			</matcher>
+		</filter>
+		<filter>
+			<id>1508195230019</id>
+			<name>boardspace-games</name>
+			<type>10</type>
+			<matcher>
+				<id>org.eclipse.ui.ide.multiFilter</id>
+				<arguments>1.0-name-matches-false-false-hires-images</arguments>
+			</matcher>
+		</filter>
+	</filteredResources>
+</projectDescription>

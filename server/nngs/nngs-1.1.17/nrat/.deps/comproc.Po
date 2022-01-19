@@ -1,0 +1,155 @@
+comproc.o comproc.o: comproc.c ../config.h /usr/include/stdio.h \
+  /usr/include/features.h /usr/include/sys/cdefs.h \
+  /usr/include/bits/wordsize.h /usr/include/gnu/stubs.h \
+  /usr/include/gnu/stubs-32.h \
+  /usr/lib/gcc/i386-redhat-linux/4.1.2/include/stddef.h \
+  /usr/include/bits/types.h /usr/include/bits/typesizes.h \
+  /usr/include/libio.h /usr/include/_G_config.h /usr/include/wchar.h \
+  /usr/include/bits/wchar.h /usr/include/gconv.h \
+  /usr/lib/gcc/i386-redhat-linux/4.1.2/include/stdarg.h \
+  /usr/include/bits/stdio_lim.h /usr/include/bits/sys_errlist.h \
+  /usr/include/bits/stdio.h /usr/include/stdlib.h /usr/include/ctype.h \
+  /usr/include/endian.h /usr/include/bits/endian.h /usr/include/string.h \
+  /usr/include/bits/string.h /usr/include/bits/string2.h \
+  /usr/include/strings.h ../missing.h ../src/nngsconfig.h \
+  ../src/nngsmain.h command.h /usr/include/sys/types.h \
+  /usr/include/time.h ../src/common.h servercodes.h comproc.h \
+  ../src/chkaddr.h ../src/gameproc.h command.h ../src/bm.h ../src/utils.h \
+  /usr/include/sys/stat.h /usr/include/bits/stat.h \
+  /usr/include/bits/time.h /usr/include/dirent.h \
+  /usr/include/bits/dirent.h ../src/bm.h ../src/language.h \
+  ../src/formats.h ../src/files.h playerdb.h pending.h ../src/network.h \
+  ../src/channel.h ../src/variable.h gamedb.h ../src/mink.h \
+  ../src/multicol.h ../src/ladder.h ../src/emote.h ../src/plan.h \
+  ../src/censor.h ../src/alias.h ../mlrate/src/rdbm.h \
+  ../mlrate/src/xdbm.h
+
+../config.h:
+
+/usr/include/stdio.h:
+
+/usr/include/features.h:
+
+/usr/include/sys/cdefs.h:
+
+/usr/include/bits/wordsize.h:
+
+/usr/include/gnu/stubs.h:
+
+/usr/include/gnu/stubs-32.h:
+
+/usr/lib/gcc/i386-redhat-linux/4.1.2/include/stddef.h:
+
+/usr/include/bits/types.h:
+
+/usr/include/bits/typesizes.h:
+
+/usr/include/libio.h:
+
+/usr/include/_G_config.h:
+
+/usr/include/wchar.h:
+
+/usr/include/bits/wchar.h:
+
+/usr/include/gconv.h:
+
+/usr/lib/gcc/i386-redhat-linux/4.1.2/include/stdarg.h:
+
+/usr/include/bits/stdio_lim.h:
+
+/usr/include/bits/sys_errlist.h:
+
+/usr/include/bits/stdio.h:
+
+/usr/include/stdlib.h:
+
+/usr/include/ctype.h:
+
+/usr/include/endian.h:
+
+/usr/include/bits/endian.h:
+
+/usr/include/string.h:
+
+/usr/include/bits/string.h:
+
+/usr/include/bits/string2.h:
+
+/usr/include/strings.h:
+
+../missing.h:
+
+../src/nngsconfig.h:
+
+../src/nngsmain.h:
+
+command.h:
+
+/usr/include/sys/types.h:
+
+/usr/include/time.h:
+
+../src/common.h:
+
+servercodes.h:
+
+comproc.h:
+
+../src/chkaddr.h:
+
+../src/gameproc.h:
+
+command.h:
+
+../src/bm.h:
+
+../src/utils.h:
+
+/usr/include/sys/stat.h:
+
+/usr/include/bits/stat.h:
+
+/usr/include/bits/time.h:
+
+/usr/include/dirent.h:
+
+/usr/include/bits/dirent.h:
+
+../src/bm.h:
+
+../src/language.h:
+
+../src/formats.h:
+
+../src/files.h:
+
+playerdb.h:
+
+pending.h:
+
+../src/network.h:
+
+../src/channel.h:
+
+../src/variable.h:
+
+gamedb.h:
+
+../src/mink.h:
+
+../src/multicol.h:
+
+../src/ladder.h:
+
+../src/emote.h:
+
+../src/plan.h:
+
+../src/censor.h:
+
+../src/alias.h:
+
+../mlrate/src/rdbm.h:
+
+../mlrate/src/xdbm.h:

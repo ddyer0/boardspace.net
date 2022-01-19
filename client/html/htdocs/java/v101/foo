@@ -1,0 +1,907 @@
+
+G:\share\projects\boardspace-html\htdocs\java\v101>g:
+
+G:\share\projects\boardspace-html\htdocs\java\v101>cd /share/projects/boardspace-html/htdocs/java/v101 
+
+G:\share\projects\boardspace-html\htdocs\java\v101>make-online-jar
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jar -cmf manifest.txt OnlineLobby.jar online/common/*.class common/*.class vnc/*.class online/images/*.jpg  online/images/*.png  online/language/*.class  util/*.class lib/*.class bridge/*.class 
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jar -cmf manifest.txt Launcher.jar util/*.class lib/*.class bridge/*.class online/common/OnlineConstants*.class 
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jar -cmf miniloader-manifest.txt boardspace.jar *.class 
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jar -cmf generic-manifest.txt Game.jar online/game/*.class online/game/export/*.class online/game/sgf/*.class online/game/sgf/export/*.class online/search/*.class online/search/nn/*.class 
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jar -cmf generic-manifest.txt Sounds.jar bfms/*.au 
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jar -cmf generic-manifest.txt OnlineGame.jar zertz/jdk11/*.class zertz/common/*.class zertz/images/*.jpg 
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jar -cmf generic-manifest.txt OnlineLoa.jar loa/jdk11/*.class loa/*.class loa/images/*.jpg 
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jar -cmf generic-manifest.txt OnlinePlateau.jar plateau/jdk11/*.class plateau/common/*.class plateau/images/*.jpg 
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jar -cmf generic-manifest.txt OnlineYinsh.jar yinsh/jdk11/*.class yinsh/common/*.class yinsh/images/*.jpg 
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jar -cmf generic-manifest.txt Hex.jar hex/*.class hex/images/*.jpg 
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jar -cmf generic-manifest.txt Trax.jar trax/*.class trax/jdk11/*.class trax/images/*.jpg 
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jar -cmf generic-manifest.txt Punct.jar punct/*.class punct/jdk11/*.class punct/images/*.jpg 
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jar -cmf generic-manifest.txt Gobblet.jar gobblet/*.class gobblet/jdk11/*.class gobblet/images/*.jpg 
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jar -cmf generic-manifest.txt Hive.jar hive/*.class hive/images/*.jpg 
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jar -cmf generic-manifest.txt Exxit.jar exxit/*.class exxit/jdk11/*.class exxit/images/*.jpg 
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jar -cmf generic-manifest.txt Hnefatafl.jar tablut/*.class tablut/jdk11/*.class tablut/images/*.jpg 
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jar -cmf generic-manifest.txt Tumble.jar tumble/*.class tumble/jdk11/*.class tumble/images/*.jpg  
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jar -cmf generic-manifest.txt Truchet.jar truchet/*.class truchet/jdk11/*.class truchet/images/*.jpg  
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jar -cmf generic-manifest.txt Dipole.jar dipole/*.class dipole/jdk11/*.class dipole/images/*.jpg  
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jar -cmf generic-manifest.txt Fanorona.jar fanorona/*.class fanorona/jdk11/*.class fanorona/images/*.jpg 
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jar -cmf generic-manifest.txt Volcano.jar volcano/*.class volcano/jdk11/*.class volcano/images/*.jpg 
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jar -cmf generic-manifest.txt Traboulet.jar kuba/*.class kuba/images/*.jpg 
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jar -cmf generic-manifest.txt Dvonn.jar dvonn/*.class dvonn/images/*.jpg 
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jar -cmf generic-manifest.txt Tzaar.jar tzaar/*.class tzaar/images/*.jpg 
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jar -cmf generic-manifest.txt Qyshinsu.jar qyshinsu/*.class qyshinsu/images/*.jpg 
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jar -cmf generic-manifest.txt Knockabout.jar knockabout/*.class knockabout/images/*.jpg 
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jar -cmf generic-manifest.txt Gipf.jar gipf/*.class gipf/images/*.jpg 
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jar -cmf generic-manifest.txt Palago.jar palago/*.class palago/images/*.jpg 
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jar -cmf generic-manifest.txt Santorini.jar santorini/*.class santorini/images/*.jpg 
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jar -cmf generic-manifest.txt Spangles.jar spangles/*.class spangles/images/*.jpg 
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jar -cmf generic-manifest.txt Micropul.jar micropul/*.class micropul/images/*.jpg 
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jar -cmf generic-manifest.txt Medina.jar medina/*.class medina/images/*.jpg 
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jar -cmf generic-manifest.txt Cannon.jar cannon/*.class cannon/images/*.jpg 
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jar -cmf generic-manifest.txt Warp6.jar warp6/*.class warp6/images/*.jpg warp6/images/*.au 
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jar -cmf generic-manifest.txt Triad.jar triad/*.class triad/images/*.jpg 
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jar -cmf generic-manifest.txt Che.jar che/*.class che/images/*.jpg 
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jar -cmf generic-manifest.txt Mutton.jar mutton/*.class mutton/images/*.jpg mutton/images/*.png mutton/sounds/*.au 
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jar -cmf generic-manifest.txt Octiles.jar octiles/*.class octiles/images/*.jpg 
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jar -cmf generic-manifest.txt Frogs.jar frogs/*.class frogs/images/*.jpg 
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jar -cmf generic-manifest.txt Xiangqi.jar xiangqi/*.class  xiangqi/images/*.jpg 
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jar -cmf generic-manifest.txt BreakingAway.jar breakingaway/*.class  breakingaway/images/*.jpg 
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jar -cmf generic-manifest.txt Container.jar container/*.class container/images/*.jpg 
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jar -cmf generic-manifest.txt Arimaa.jar arimaa/*.class arimaa/images/*.jpg arimaa/images/*.au 
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jar -cmf generic-manifest.txt Crossfire.jar crossfire/*.class crossfire/images/*.jpg 
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jar -cmf generic-manifest.txt Quinamid.jar quinamid/*.class quinamid/images/*.jpg quinamid/images/*.au 
+
+G:\share\projects\boardspace-html\htdocs\java\v101>rem jar -cmf generic-manifest.txt Lehavre.jar lehavre/view/*.class lehavre/view/menus/*.class lehavre/view/labels/*.class lehavre/util/*.class lehavre/model/*.class lehavre/model/goods/*.class lehavre/model/buildings/standard/*.class lehavre/model/buildings/start/*.class lehavre/model/buildings/*.class 
+
+G:\share\projects\boardspace-html\htdocs\java\v101>rem jar -uf Lehavre.jar lehavre/*.class lehavre/model/buildings/special/*.class lehavre/main/*.class 
+
+G:\share\projects\boardspace-html\htdocs\java\v101>rem jar -uf Lehavre.jar lehavre/images/neutral/bits/*.jpg lehavre/images/neutral/symbols/*.jpg lehavre/images/en/*.jpg  
+
+G:\share\projects\boardspace-html\htdocs\java\v101>rem jar -uf Lehavre.jar lehavre/images/en/chits/supply/*.jpg lehavre/images/en/chits/goods/*.jpg  
+
+G:\share\projects\boardspace-html\htdocs\java\v101>rem jar -uf Lehavre.jar lehavre/images/en/cards/*.jpg lehavre/images/en/cards/ships/*.jpg lehavre/images/en/cards/rounds/*.jpg  
+
+G:\share\projects\boardspace-html\htdocs\java\v101>rem jar -uf Lehavre.jar lehavre/images/en/cards/overview/*.jpg lehavre/images/en/cards/butteries/*.jpg lehavre/images/en/cards/buildings/*.jpg 
+
+G:\share\projects\boardspace-html\htdocs\java\v101>rem jar -uf Lehavre.jar lehavre/images/de/cards/buildings/*.jpg 
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jar -cmf generic-manifest.txt Entrapment.jar entrapment/images/*.jpg entrapment/*.class 
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jar -cmf generic-manifest.txt Yspahan.jar yspahan/*.class yspahan/images/*.jpg yspahan/images/*.au 
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jar -cmf generic-manifest.txt Gounki.jar gounki/*.class gounki/images/*.jpg 
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jar -cmf generic-manifest.txt Volo.jar volo/*.class volo/images/*.jpg 
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jar -cmf generic-manifest.txt Cookie.jar cookie/*.class cookie/images/*.jpg 
+
+G:\share\projects\boardspace-html\htdocs\java\v101>rem jar -cmf generic-manifest.txt Snakes.jar snakes/*.class snakes/images/*.jpg 
+
+G:\share\projects\boardspace-html\htdocs\java\v101>rem jar -cmf generic-manifest.txt TicTacNine.jar tictacnine/*.class tictacnine/images/*.jpg 
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jar -cmf generic-manifest.txt Universe.jar universe/*.class universe/images/*.jpg 
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jar -cmf generic-manifest.txt Raj.jar raj/*.class raj/images/*.jpg 
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jar -cmf generic-manifest.txt Khet.jar khet/*.class khet/images/*jpg 
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jar -cmf generic-manifest.txt Kamisado.jar kamisado/*.class kamisado/images/*.jpg 
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jar -cmf generic-manifest.txt Syzygy.jar syzygy/*.class syzygy/images/*.jpg 
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jar -cmf generic-manifest.txt Carnac.jar carnac/*.class carnac/images/*.jpg 
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jar -cmf generic-manifest.txt Takojudo.jar takojudo/*.class takojudo/images/*.jpg 
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jar -cmf generic-manifest.txt Gyges.jar gyges/*.class gyges/images/*.jpg 
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jar -cmf generic-manifest.txt Mogul.jar mogul/*.class mogul/images/*.jpg 
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jar -cmf generic-manifest.txt Rithmomachy.jar rithmomachy/*.class rithmomachy/images/*.jpg 
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jar -cmf generic-manifest.txt Shogi.jar shogi/*.class shogi/images/*.jpg 
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jar -cmf generic-manifest.txt OnedayInLondon.jar oneday/*.class oneday/images/*.jpg 
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jar -cmf generic-manifest.txt Morelli.jar morelli/*.class morelli/images/*.jpg 
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jar -cmf generic-manifest.txt Colorito.jar colorito/*.class colorito/images/*.jpg 
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jar -cmf generic-manifest.txt Euphoria.jar euphoria/*.class euphoria/images/*.jpg euphoria/sounds/*.au euphoria/images/artifacts/*.jpg euphoria/images/dice/*.jpg euphoria/images/markets/*.jpg euphoria/images/dilemmas/*.jpg euphoria/images/recruits/*.jpg 
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jar -cmf generic-manifest.txt Ponte.jar ponte/*.class ponte/images/*.jpg 
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jar -cmf generic-manifest.txt Tammany.jar tammany/*.class tammany/images/*.jpg 
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jar -cmf generic-manifest.txt Majorities.jar majorities/*.class majorities/images/*.jpg 
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jar -cmf generic-manifest.txt Proteus.jar proteus/*.class proteus/images/*.jpg 
+
+G:\share\projects\boardspace-html\htdocs\java\v101>cp /share/projects/boardspace-java/boardspace-games/goban/shape/data/shape-data.zip goban/shape/data/shape-data.zip 
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jar -cmf generic-manifest.txt Go.jar goban/*.class goban/shape/shape/*.class goban/shape/data/*.zip goban/images/*.jpg 
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jar -cmf generic-manifest.txt Stac.jar stac/*.class stac/images/*.jpg 
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jar -cmf generic-manifest.txt Checkers.jar checkerboard/*.class checkerboard/images/*.jpg 
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jar -cmf generic-manifest.txt Morris.jar morris/*.class morris/images/*.jpg 
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jar -cmf generic-manifest.txt Sixmaking.jar sixmaking/*.class sixmaking/images/*.jpg 
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jar -cmf generic-manifest.txt Veletas.jar veletas/*.class veletas/images/*.jpg 
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jar -cmf generic-manifest.txt Modx.jar modx/*.class modx/images/*.jpg 
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jar -cmf generic-manifest.txt Lyngk.jar lyngk/*.class lyngk/images/*.jpg 
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jar -cmf generic-manifest.txt Chess.jar chess/*.class chess/images/*.jpg 
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jar -cmf generic-manifest.txt Magnet.jar magnet/*.class magnet/images/*.jpg 
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jar -cmf generic-manifest.txt Tintas.jar tintas/*.class tintas/images/*.jpg 
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jar -cmf generic-manifest.txt Barca.jar barca/*.class barca/images/*.jpg 
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jar -cmf generic-manifest.txt Twixt.jar twixt/*.class twixt/images/*.jpg 
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jar -cmf generic-manifest.txt Qe.jar qe/*.class qe/images/*.jpg 
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jar -cmf generic-manifest.txt Blooms.jar blooms/*.class blooms/images/*.jpg 
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jar -cmf generic-manifest.txt Mbrane.jar mbrane/*.class mbrane/images/*.jpg 
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jar -cmf generic-manifest.txt Viticulture.jar viticulture/images/*.au viticulture/*.class viticulture/images/automata/back.jpg  viticulture/images/automata/back-mask.jpg viticulture/images/*.jpg viticulture/images/choice/*.jpg viticulture/images/mamas-cropped/*.jpg viticulture/images/papas-cropped/*.jpg viticulture/images/specialworkers-cropped/*.jpg viticulture/images/structurecards-cropped/*.jpg viticulture/images/summer-cropped/*.jpg viticulture/images/vinecards-cropped/*.jpg viticulture/images/wineorders-cropped/*.jpg viticulture/images/wintervisitor-cropped/*.jpg 
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jar -cmf generic-manifest.txt Kulami.jar kulami/*.class kulami/images/*.jpg 
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jar -cmf generic-manifest.txt BlackDeath.jar blackdeath/*.class blackdeath/images/*.jpg 
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jar -cmf generic-manifest.txt Pushfight.jar pushfight/*.class pushfight/images/*.jpg 
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jar -cmf generic-manifest.txt Crosswords.jar crosswords/*.class crosswords/images/*.jpg 
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jar -cmf generic-manifest.txt Dictionary.jar dictionary/*.class dictionary/words/*.gz 
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jar -cmf generic-manifest.txt Language.jar languages/translations/*.data 
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jar -cmf generic-manifest.txt Dice.jar dice/*.class dice/images/*.jpg dice/images/*.au 
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jar -cmf generic-manifest.txt Stones.jar stones/images/*.jpg 
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jar -cmf generic-manifest.txt Wyps.jar wyps/*.class wyps/*.class wyps/images/*.jpg 
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jar -cmf generic-manifest.txt Jumbulaya.jar jumbulaya/*.class jumbulaya/*.class jumbulaya/images/*.jpg 
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jar -cmf generic-manifest.txt Y.jar y/*.class y/images/*.jpg 
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jar -cmf generic-manifest.txt Stymie.jar stymie/*.class stymie/images/*.jpg 
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jar -cmf generic-manifest.txt Imagine.jar imagine/*.class imagine/images/*.jpg imagine/images/*.au imagine/images/deck1/*.jpg 
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jar -cmf generic-manifest.txt Mijnlieff.jar mijnlieff/*.class mijnlieff/images/*.jpg 
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jar -i OnlineLobby.jar 
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jar -i Launcher.jar 
+
+G:\share\projects\boardspace-html\htdocs\java\v101>rm ../v102/*.jar 
+
+G:\share\projects\boardspace-html\htdocs\java\v101>rm ../jws/*.jar 
+
+G:\share\projects\boardspace-html\htdocs\java\v101>cp *.jar ../v102 
+
+G:\share\projects\boardspace-html\htdocs\java\v101>rem
+
+G:\share\projects\boardspace-html\htdocs\java\v101>rem delete old certificate 
+
+G:\share\projects\boardspace-html\htdocs\java\v101>rem keytool -storepass BSkeystore -keystore g:/share/usr/ddyer/crypto/Boardspace.keystore  -delete 
+
+G:\share\projects\boardspace-html\htdocs\java\v101>rem
+
+G:\share\projects\boardspace-html\htdocs\java\v101>rem make new certificate 
+
+G:\share\projects\boardspace-html\htdocs\java\v101>rem keytool -storepass BSkeystore -keystore g:/share/usr/ddyer/crypto/Boardspace.keystore  -genkey -validity 1000 -alias Boardspace 
+
+G:\share\projects\boardspace-html\htdocs\java\v101>rem
+
+G:\share\projects\boardspace-html\htdocs\java\v101>rem check certificate details 
+
+G:\share\projects\boardspace-html\htdocs\java\v101>rem keytool -printcert -keystore "Boardspace.p12" -storepass "davescommodocert" -list -v 
+
+G:\share\projects\boardspace-html\htdocs\java\v101>rem sign the copies, not the originals 
+
+G:\share\projects\boardspace-html\htdocs\java\v101>for %f in (../v102/*.jar) do jarsigner  -tsa http://timestamp.digicert.com -storepass BSkeystore -keystore g:/share/usr/ddyer/crypto/Boardspace-2020.p12 ../v102/%f "dave dyer 2020" 
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jarsigner  -tsa http://timestamp.digicert.com -storepass BSkeystore -keystore g:/share/usr/ddyer/crypto/Boardspace-2020.p12 ../v102/Arimaa.jar "dave dyer 2020" 
+jar signed.
+
+The signer certificate will expire on 2023-07-29.
+The timestamp will expire on 2031-01-05.
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jarsigner  -tsa http://timestamp.digicert.com -storepass BSkeystore -keystore g:/share/usr/ddyer/crypto/Boardspace-2020.p12 ../v102/Barca.jar "dave dyer 2020" 
+jar signed.
+
+The signer certificate will expire on 2023-07-29.
+The timestamp will expire on 2031-01-05.
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jarsigner  -tsa http://timestamp.digicert.com -storepass BSkeystore -keystore g:/share/usr/ddyer/crypto/Boardspace-2020.p12 ../v102/BlackDeath.jar "dave dyer 2020" 
+jar signed.
+
+The signer certificate will expire on 2023-07-29.
+The timestamp will expire on 2031-01-05.
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jarsigner  -tsa http://timestamp.digicert.com -storepass BSkeystore -keystore g:/share/usr/ddyer/crypto/Boardspace-2020.p12 ../v102/Blooms.jar "dave dyer 2020" 
+jar signed.
+
+The signer certificate will expire on 2023-07-29.
+The timestamp will expire on 2031-01-05.
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jarsigner  -tsa http://timestamp.digicert.com -storepass BSkeystore -keystore g:/share/usr/ddyer/crypto/Boardspace-2020.p12 ../v102/boardspace.jar "dave dyer 2020" 
+jar signed.
+
+The signer certificate will expire on 2023-07-29.
+The timestamp will expire on 2031-01-05.
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jarsigner  -tsa http://timestamp.digicert.com -storepass BSkeystore -keystore g:/share/usr/ddyer/crypto/Boardspace-2020.p12 ../v102/BreakingAway.jar "dave dyer 2020" 
+jar signed.
+
+The signer certificate will expire on 2023-07-29.
+The timestamp will expire on 2031-01-05.
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jarsigner  -tsa http://timestamp.digicert.com -storepass BSkeystore -keystore g:/share/usr/ddyer/crypto/Boardspace-2020.p12 ../v102/bsh.jar "dave dyer 2020" 
+jar signed.
+
+Warning: 
+POSIX file permission and/or symlink attributes detected. These attributes are ignored when signing and are not protected by the signature.
+
+The signer certificate will expire on 2023-07-29.
+The timestamp will expire on 2031-01-05.
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jarsigner  -tsa http://timestamp.digicert.com -storepass BSkeystore -keystore g:/share/usr/ddyer/crypto/Boardspace-2020.p12 ../v102/Cannon.jar "dave dyer 2020" 
+jar signed.
+
+The signer certificate will expire on 2023-07-29.
+The timestamp will expire on 2031-01-05.
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jarsigner  -tsa http://timestamp.digicert.com -storepass BSkeystore -keystore g:/share/usr/ddyer/crypto/Boardspace-2020.p12 ../v102/Carnac.jar "dave dyer 2020" 
+jar signed.
+
+The signer certificate will expire on 2023-07-29.
+The timestamp will expire on 2031-01-05.
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jarsigner  -tsa http://timestamp.digicert.com -storepass BSkeystore -keystore g:/share/usr/ddyer/crypto/Boardspace-2020.p12 ../v102/Che.jar "dave dyer 2020" 
+jar signed.
+
+The signer certificate will expire on 2023-07-29.
+The timestamp will expire on 2031-01-05.
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jarsigner  -tsa http://timestamp.digicert.com -storepass BSkeystore -keystore g:/share/usr/ddyer/crypto/Boardspace-2020.p12 ../v102/Checkers.jar "dave dyer 2020" 
+jar signed.
+
+The signer certificate will expire on 2023-07-29.
+The timestamp will expire on 2031-01-05.
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jarsigner  -tsa http://timestamp.digicert.com -storepass BSkeystore -keystore g:/share/usr/ddyer/crypto/Boardspace-2020.p12 ../v102/Chess.jar "dave dyer 2020" 
+jar signed.
+
+The signer certificate will expire on 2023-07-29.
+The timestamp will expire on 2031-01-05.
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jarsigner  -tsa http://timestamp.digicert.com -storepass BSkeystore -keystore g:/share/usr/ddyer/crypto/Boardspace-2020.p12 ../v102/Colorito.jar "dave dyer 2020" 
+jar signed.
+
+The signer certificate will expire on 2023-07-29.
+The timestamp will expire on 2031-01-05.
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jarsigner  -tsa http://timestamp.digicert.com -storepass BSkeystore -keystore g:/share/usr/ddyer/crypto/Boardspace-2020.p12 ../v102/Container.jar "dave dyer 2020" 
+jar signed.
+
+The signer certificate will expire on 2023-07-29.
+The timestamp will expire on 2031-01-05.
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jarsigner  -tsa http://timestamp.digicert.com -storepass BSkeystore -keystore g:/share/usr/ddyer/crypto/Boardspace-2020.p12 ../v102/Cookie.jar "dave dyer 2020" 
+jar signed.
+
+The signer certificate will expire on 2023-07-29.
+The timestamp will expire on 2031-01-05.
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jarsigner  -tsa http://timestamp.digicert.com -storepass BSkeystore -keystore g:/share/usr/ddyer/crypto/Boardspace-2020.p12 ../v102/Crossfire.jar "dave dyer 2020" 
+jar signed.
+
+The signer certificate will expire on 2023-07-29.
+The timestamp will expire on 2031-01-05.
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jarsigner  -tsa http://timestamp.digicert.com -storepass BSkeystore -keystore g:/share/usr/ddyer/crypto/Boardspace-2020.p12 ../v102/Crosswords.jar "dave dyer 2020" 
+jar signed.
+
+The signer certificate will expire on 2023-07-29.
+The timestamp will expire on 2031-01-05.
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jarsigner  -tsa http://timestamp.digicert.com -storepass BSkeystore -keystore g:/share/usr/ddyer/crypto/Boardspace-2020.p12 ../v102/Dice.jar "dave dyer 2020" 
+jar signed.
+
+The signer certificate will expire on 2023-07-29.
+The timestamp will expire on 2031-01-05.
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jarsigner  -tsa http://timestamp.digicert.com -storepass BSkeystore -keystore g:/share/usr/ddyer/crypto/Boardspace-2020.p12 ../v102/Dictionary.jar "dave dyer 2020" 
+jar signed.
+
+The signer certificate will expire on 2023-07-29.
+The timestamp will expire on 2031-01-05.
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jarsigner  -tsa http://timestamp.digicert.com -storepass BSkeystore -keystore g:/share/usr/ddyer/crypto/Boardspace-2020.p12 ../v102/Dipole.jar "dave dyer 2020" 
+jar signed.
+
+The signer certificate will expire on 2023-07-29.
+The timestamp will expire on 2031-01-05.
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jarsigner  -tsa http://timestamp.digicert.com -storepass BSkeystore -keystore g:/share/usr/ddyer/crypto/Boardspace-2020.p12 ../v102/Dvonn.jar "dave dyer 2020" 
+jar signed.
+
+The signer certificate will expire on 2023-07-29.
+The timestamp will expire on 2031-01-05.
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jarsigner  -tsa http://timestamp.digicert.com -storepass BSkeystore -keystore g:/share/usr/ddyer/crypto/Boardspace-2020.p12 ../v102/Entrapment.jar "dave dyer 2020" 
+jar signed.
+
+The signer certificate will expire on 2023-07-29.
+The timestamp will expire on 2031-01-05.
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jarsigner  -tsa http://timestamp.digicert.com -storepass BSkeystore -keystore g:/share/usr/ddyer/crypto/Boardspace-2020.p12 ../v102/Euphoria.jar "dave dyer 2020" 
+jar signed.
+
+The signer certificate will expire on 2023-07-29.
+The timestamp will expire on 2031-01-05.
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jarsigner  -tsa http://timestamp.digicert.com -storepass BSkeystore -keystore g:/share/usr/ddyer/crypto/Boardspace-2020.p12 ../v102/Exxit.jar "dave dyer 2020" 
+jar signed.
+
+The signer certificate will expire on 2023-07-29.
+The timestamp will expire on 2031-01-05.
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jarsigner  -tsa http://timestamp.digicert.com -storepass BSkeystore -keystore g:/share/usr/ddyer/crypto/Boardspace-2020.p12 ../v102/Fanorona.jar "dave dyer 2020" 
+jar signed.
+
+The signer certificate will expire on 2023-07-29.
+The timestamp will expire on 2031-01-05.
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jarsigner  -tsa http://timestamp.digicert.com -storepass BSkeystore -keystore g:/share/usr/ddyer/crypto/Boardspace-2020.p12 ../v102/Frogs.jar "dave dyer 2020" 
+jar signed.
+
+The signer certificate will expire on 2023-07-29.
+The timestamp will expire on 2031-01-05.
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jarsigner  -tsa http://timestamp.digicert.com -storepass BSkeystore -keystore g:/share/usr/ddyer/crypto/Boardspace-2020.p12 ../v102/Game.jar "dave dyer 2020" 
+jar signed.
+
+The signer certificate will expire on 2023-07-29.
+The timestamp will expire on 2031-01-05.
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jarsigner  -tsa http://timestamp.digicert.com -storepass BSkeystore -keystore g:/share/usr/ddyer/crypto/Boardspace-2020.p12 ../v102/Gipf.jar "dave dyer 2020" 
+jar signed.
+
+The signer certificate will expire on 2023-07-29.
+The timestamp will expire on 2031-01-05.
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jarsigner  -tsa http://timestamp.digicert.com -storepass BSkeystore -keystore g:/share/usr/ddyer/crypto/Boardspace-2020.p12 ../v102/Go.jar "dave dyer 2020" 
+jar signed.
+
+The signer certificate will expire on 2023-07-29.
+The timestamp will expire on 2031-01-05.
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jarsigner  -tsa http://timestamp.digicert.com -storepass BSkeystore -keystore g:/share/usr/ddyer/crypto/Boardspace-2020.p12 ../v102/Gobblet.jar "dave dyer 2020" 
+jar signed.
+
+The signer certificate will expire on 2023-07-29.
+The timestamp will expire on 2031-01-05.
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jarsigner  -tsa http://timestamp.digicert.com -storepass BSkeystore -keystore g:/share/usr/ddyer/crypto/Boardspace-2020.p12 ../v102/Gounki.jar "dave dyer 2020" 
+jar signed.
+
+The signer certificate will expire on 2023-07-29.
+The timestamp will expire on 2031-01-05.
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jarsigner  -tsa http://timestamp.digicert.com -storepass BSkeystore -keystore g:/share/usr/ddyer/crypto/Boardspace-2020.p12 ../v102/Gyges.jar "dave dyer 2020" 
+jar signed.
+
+The signer certificate will expire on 2023-07-29.
+The timestamp will expire on 2031-01-05.
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jarsigner  -tsa http://timestamp.digicert.com -storepass BSkeystore -keystore g:/share/usr/ddyer/crypto/Boardspace-2020.p12 ../v102/Hex.jar "dave dyer 2020" 
+jar signed.
+
+The signer certificate will expire on 2023-07-29.
+The timestamp will expire on 2031-01-05.
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jarsigner  -tsa http://timestamp.digicert.com -storepass BSkeystore -keystore g:/share/usr/ddyer/crypto/Boardspace-2020.p12 ../v102/Hive.jar "dave dyer 2020" 
+jar signed.
+
+The signer certificate will expire on 2023-07-29.
+The timestamp will expire on 2031-01-05.
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jarsigner  -tsa http://timestamp.digicert.com -storepass BSkeystore -keystore g:/share/usr/ddyer/crypto/Boardspace-2020.p12 ../v102/Hnefatafl.jar "dave dyer 2020" 
+jar signed.
+
+The signer certificate will expire on 2023-07-29.
+The timestamp will expire on 2031-01-05.
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jarsigner  -tsa http://timestamp.digicert.com -storepass BSkeystore -keystore g:/share/usr/ddyer/crypto/Boardspace-2020.p12 ../v102/Imagine.jar "dave dyer 2020" 
+jar signed.
+
+The signer certificate will expire on 2023-07-29.
+The timestamp will expire on 2031-01-05.
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jarsigner  -tsa http://timestamp.digicert.com -storepass BSkeystore -keystore g:/share/usr/ddyer/crypto/Boardspace-2020.p12 ../v102/Jumbulaya.jar "dave dyer 2020" 
+jar signed.
+
+The signer certificate will expire on 2023-07-29.
+The timestamp will expire on 2031-01-05.
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jarsigner  -tsa http://timestamp.digicert.com -storepass BSkeystore -keystore g:/share/usr/ddyer/crypto/Boardspace-2020.p12 ../v102/jzlib.jar "dave dyer 2020" 
+jar signed.
+
+The signer certificate will expire on 2023-07-29.
+The timestamp will expire on 2031-01-05.
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jarsigner  -tsa http://timestamp.digicert.com -storepass BSkeystore -keystore g:/share/usr/ddyer/crypto/Boardspace-2020.p12 ../v102/Kamisado.jar "dave dyer 2020" 
+jar signed.
+
+The signer certificate will expire on 2023-07-29.
+The timestamp will expire on 2031-01-05.
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jarsigner  -tsa http://timestamp.digicert.com -storepass BSkeystore -keystore g:/share/usr/ddyer/crypto/Boardspace-2020.p12 ../v102/Khet.jar "dave dyer 2020" 
+jar signed.
+
+The signer certificate will expire on 2023-07-29.
+The timestamp will expire on 2031-01-05.
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jarsigner  -tsa http://timestamp.digicert.com -storepass BSkeystore -keystore g:/share/usr/ddyer/crypto/Boardspace-2020.p12 ../v102/Knockabout.jar "dave dyer 2020" 
+jar signed.
+
+The signer certificate will expire on 2023-07-29.
+The timestamp will expire on 2031-01-05.
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jarsigner  -tsa http://timestamp.digicert.com -storepass BSkeystore -keystore g:/share/usr/ddyer/crypto/Boardspace-2020.p12 ../v102/Kulami.jar "dave dyer 2020" 
+jar signed.
+
+The signer certificate will expire on 2023-07-29.
+The timestamp will expire on 2031-01-05.
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jarsigner  -tsa http://timestamp.digicert.com -storepass BSkeystore -keystore g:/share/usr/ddyer/crypto/Boardspace-2020.p12 ../v102/Language.jar "dave dyer 2020" 
+jar signed.
+
+The signer certificate will expire on 2023-07-29.
+The timestamp will expire on 2031-01-05.
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jarsigner  -tsa http://timestamp.digicert.com -storepass BSkeystore -keystore g:/share/usr/ddyer/crypto/Boardspace-2020.p12 ../v102/Launcher.jar "dave dyer 2020" 
+jar signed.
+
+The signer certificate will expire on 2023-07-29.
+The timestamp will expire on 2031-01-05.
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jarsigner  -tsa http://timestamp.digicert.com -storepass BSkeystore -keystore g:/share/usr/ddyer/crypto/Boardspace-2020.p12 ../v102/Lehavre.jar "dave dyer 2020" 
+jar signed.
+
+The signer certificate will expire on 2023-07-29.
+The timestamp will expire on 2031-01-05.
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jarsigner  -tsa http://timestamp.digicert.com -storepass BSkeystore -keystore g:/share/usr/ddyer/crypto/Boardspace-2020.p12 ../v102/Lyngk.jar "dave dyer 2020" 
+jar signed.
+
+The signer certificate will expire on 2023-07-29.
+The timestamp will expire on 2031-01-05.
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jarsigner  -tsa http://timestamp.digicert.com -storepass BSkeystore -keystore g:/share/usr/ddyer/crypto/Boardspace-2020.p12 ../v102/Magnet.jar "dave dyer 2020" 
+jar signed.
+
+The signer certificate will expire on 2023-07-29.
+The timestamp will expire on 2031-01-05.
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jarsigner  -tsa http://timestamp.digicert.com -storepass BSkeystore -keystore g:/share/usr/ddyer/crypto/Boardspace-2020.p12 ../v102/Majorities.jar "dave dyer 2020" 
+jar signed.
+
+The signer certificate will expire on 2023-07-29.
+The timestamp will expire on 2031-01-05.
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jarsigner  -tsa http://timestamp.digicert.com -storepass BSkeystore -keystore g:/share/usr/ddyer/crypto/Boardspace-2020.p12 ../v102/Mbrane.jar "dave dyer 2020" 
+jar signed.
+
+The signer certificate will expire on 2023-07-29.
+The timestamp will expire on 2031-01-05.
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jarsigner  -tsa http://timestamp.digicert.com -storepass BSkeystore -keystore g:/share/usr/ddyer/crypto/Boardspace-2020.p12 ../v102/Medina.jar "dave dyer 2020" 
+jar signed.
+
+The signer certificate will expire on 2023-07-29.
+The timestamp will expire on 2031-01-05.
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jarsigner  -tsa http://timestamp.digicert.com -storepass BSkeystore -keystore g:/share/usr/ddyer/crypto/Boardspace-2020.p12 ../v102/Micropul.jar "dave dyer 2020" 
+jar signed.
+
+The signer certificate will expire on 2023-07-29.
+The timestamp will expire on 2031-01-05.
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jarsigner  -tsa http://timestamp.digicert.com -storepass BSkeystore -keystore g:/share/usr/ddyer/crypto/Boardspace-2020.p12 ../v102/Mijnlieff.jar "dave dyer 2020" 
+jar signed.
+
+The signer certificate will expire on 2023-07-29.
+The timestamp will expire on 2031-01-05.
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jarsigner  -tsa http://timestamp.digicert.com -storepass BSkeystore -keystore g:/share/usr/ddyer/crypto/Boardspace-2020.p12 ../v102/Modx.jar "dave dyer 2020" 
+jar signed.
+
+The signer certificate will expire on 2023-07-29.
+The timestamp will expire on 2031-01-05.
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jarsigner  -tsa http://timestamp.digicert.com -storepass BSkeystore -keystore g:/share/usr/ddyer/crypto/Boardspace-2020.p12 ../v102/Mogul.jar "dave dyer 2020" 
+jar signed.
+
+The signer certificate will expire on 2023-07-29.
+The timestamp will expire on 2031-01-05.
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jarsigner  -tsa http://timestamp.digicert.com -storepass BSkeystore -keystore g:/share/usr/ddyer/crypto/Boardspace-2020.p12 ../v102/Morelli.jar "dave dyer 2020" 
+jar signed.
+
+The signer certificate will expire on 2023-07-29.
+The timestamp will expire on 2031-01-05.
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jarsigner  -tsa http://timestamp.digicert.com -storepass BSkeystore -keystore g:/share/usr/ddyer/crypto/Boardspace-2020.p12 ../v102/Morris.jar "dave dyer 2020" 
+jar signed.
+
+The signer certificate will expire on 2023-07-29.
+The timestamp will expire on 2031-01-05.
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jarsigner  -tsa http://timestamp.digicert.com -storepass BSkeystore -keystore g:/share/usr/ddyer/crypto/Boardspace-2020.p12 ../v102/Mutton.jar "dave dyer 2020" 
+jar signed.
+
+The signer certificate will expire on 2023-07-29.
+The timestamp will expire on 2031-01-05.
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jarsigner  -tsa http://timestamp.digicert.com -storepass BSkeystore -keystore g:/share/usr/ddyer/crypto/Boardspace-2020.p12 ../v102/Octiles.jar "dave dyer 2020" 
+jar signed.
+
+The signer certificate will expire on 2023-07-29.
+The timestamp will expire on 2031-01-05.
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jarsigner  -tsa http://timestamp.digicert.com -storepass BSkeystore -keystore g:/share/usr/ddyer/crypto/Boardspace-2020.p12 ../v102/OnedayInLondon.jar "dave dyer 2020" 
+jar signed.
+
+The signer certificate will expire on 2023-07-29.
+The timestamp will expire on 2031-01-05.
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jarsigner  -tsa http://timestamp.digicert.com -storepass BSkeystore -keystore g:/share/usr/ddyer/crypto/Boardspace-2020.p12 ../v102/OnlineGame.jar "dave dyer 2020" 
+jar signed.
+
+The signer certificate will expire on 2023-07-29.
+The timestamp will expire on 2031-01-05.
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jarsigner  -tsa http://timestamp.digicert.com -storepass BSkeystore -keystore g:/share/usr/ddyer/crypto/Boardspace-2020.p12 ../v102/OnlineLoa.jar "dave dyer 2020" 
+jar signed.
+
+The signer certificate will expire on 2023-07-29.
+The timestamp will expire on 2031-01-05.
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jarsigner  -tsa http://timestamp.digicert.com -storepass BSkeystore -keystore g:/share/usr/ddyer/crypto/Boardspace-2020.p12 ../v102/OnlineLobby.jar "dave dyer 2020" 
+jar signed.
+
+The signer certificate will expire on 2023-07-29.
+The timestamp will expire on 2031-01-05.
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jarsigner  -tsa http://timestamp.digicert.com -storepass BSkeystore -keystore g:/share/usr/ddyer/crypto/Boardspace-2020.p12 ../v102/OnlinePlateau.jar "dave dyer 2020" 
+jar signed.
+
+The signer certificate will expire on 2023-07-29.
+The timestamp will expire on 2031-01-05.
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jarsigner  -tsa http://timestamp.digicert.com -storepass BSkeystore -keystore g:/share/usr/ddyer/crypto/Boardspace-2020.p12 ../v102/OnlineYinsh.jar "dave dyer 2020" 
+jar signed.
+
+The signer certificate will expire on 2023-07-29.
+The timestamp will expire on 2031-01-05.
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jarsigner  -tsa http://timestamp.digicert.com -storepass BSkeystore -keystore g:/share/usr/ddyer/crypto/Boardspace-2020.p12 ../v102/Palago.jar "dave dyer 2020" 
+jar signed.
+
+The signer certificate will expire on 2023-07-29.
+The timestamp will expire on 2031-01-05.
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jarsigner  -tsa http://timestamp.digicert.com -storepass BSkeystore -keystore g:/share/usr/ddyer/crypto/Boardspace-2020.p12 ../v102/pf-joi.jar "dave dyer 2020" 
+jar signed.
+
+The signer certificate will expire on 2023-07-29.
+The timestamp will expire on 2031-01-05.
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jarsigner  -tsa http://timestamp.digicert.com -storepass BSkeystore -keystore g:/share/usr/ddyer/crypto/Boardspace-2020.p12 ../v102/pf.jar "dave dyer 2020" 
+jar signed.
+
+The signer certificate will expire on 2023-07-29.
+The timestamp will expire on 2031-01-05.
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jarsigner  -tsa http://timestamp.digicert.com -storepass BSkeystore -keystore g:/share/usr/ddyer/crypto/Boardspace-2020.p12 ../v102/Ponte.jar "dave dyer 2020" 
+jar signed.
+
+The signer certificate will expire on 2023-07-29.
+The timestamp will expire on 2031-01-05.
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jarsigner  -tsa http://timestamp.digicert.com -storepass BSkeystore -keystore g:/share/usr/ddyer/crypto/Boardspace-2020.p12 ../v102/Proteus.jar "dave dyer 2020" 
+jar signed.
+
+The signer certificate will expire on 2023-07-29.
+The timestamp will expire on 2031-01-05.
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jarsigner  -tsa http://timestamp.digicert.com -storepass BSkeystore -keystore g:/share/usr/ddyer/crypto/Boardspace-2020.p12 ../v102/Punct.jar "dave dyer 2020" 
+jar signed.
+
+The signer certificate will expire on 2023-07-29.
+The timestamp will expire on 2031-01-05.
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jarsigner  -tsa http://timestamp.digicert.com -storepass BSkeystore -keystore g:/share/usr/ddyer/crypto/Boardspace-2020.p12 ../v102/Pushfight.jar "dave dyer 2020" 
+jar signed.
+
+The signer certificate will expire on 2023-07-29.
+The timestamp will expire on 2031-01-05.
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jarsigner  -tsa http://timestamp.digicert.com -storepass BSkeystore -keystore g:/share/usr/ddyer/crypto/Boardspace-2020.p12 ../v102/Qe.jar "dave dyer 2020" 
+jar signed.
+
+The signer certificate will expire on 2023-07-29.
+The timestamp will expire on 2031-01-05.
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jarsigner  -tsa http://timestamp.digicert.com -storepass BSkeystore -keystore g:/share/usr/ddyer/crypto/Boardspace-2020.p12 ../v102/Quinamid.jar "dave dyer 2020" 
+jar signed.
+
+The signer certificate will expire on 2023-07-29.
+The timestamp will expire on 2031-01-05.
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jarsigner  -tsa http://timestamp.digicert.com -storepass BSkeystore -keystore g:/share/usr/ddyer/crypto/Boardspace-2020.p12 ../v102/Qyshinsu.jar "dave dyer 2020" 
+jar signed.
+
+The signer certificate will expire on 2023-07-29.
+The timestamp will expire on 2031-01-05.
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jarsigner  -tsa http://timestamp.digicert.com -storepass BSkeystore -keystore g:/share/usr/ddyer/crypto/Boardspace-2020.p12 ../v102/Raj.jar "dave dyer 2020" 
+jar signed.
+
+The signer certificate will expire on 2023-07-29.
+The timestamp will expire on 2031-01-05.
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jarsigner  -tsa http://timestamp.digicert.com -storepass BSkeystore -keystore g:/share/usr/ddyer/crypto/Boardspace-2020.p12 ../v102/Rithmomachy.jar "dave dyer 2020" 
+jar signed.
+
+The signer certificate will expire on 2023-07-29.
+The timestamp will expire on 2031-01-05.
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jarsigner  -tsa http://timestamp.digicert.com -storepass BSkeystore -keystore g:/share/usr/ddyer/crypto/Boardspace-2020.p12 ../v102/Santorini.jar "dave dyer 2020" 
+jar signed.
+
+The signer certificate will expire on 2023-07-29.
+The timestamp will expire on 2031-01-05.
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jarsigner  -tsa http://timestamp.digicert.com -storepass BSkeystore -keystore g:/share/usr/ddyer/crypto/Boardspace-2020.p12 ../v102/Shogi.jar "dave dyer 2020" 
+jar signed.
+
+The signer certificate will expire on 2023-07-29.
+The timestamp will expire on 2031-01-05.
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jarsigner  -tsa http://timestamp.digicert.com -storepass BSkeystore -keystore g:/share/usr/ddyer/crypto/Boardspace-2020.p12 ../v102/Sixmaking.jar "dave dyer 2020" 
+jar signed.
+
+The signer certificate will expire on 2023-07-29.
+The timestamp will expire on 2031-01-05.
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jarsigner  -tsa http://timestamp.digicert.com -storepass BSkeystore -keystore g:/share/usr/ddyer/crypto/Boardspace-2020.p12 ../v102/Snakes.jar "dave dyer 2020" 
+jar signed.
+
+The signer certificate will expire on 2023-07-29.
+The timestamp will expire on 2031-01-05.
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jarsigner  -tsa http://timestamp.digicert.com -storepass BSkeystore -keystore g:/share/usr/ddyer/crypto/Boardspace-2020.p12 ../v102/Sounds.jar "dave dyer 2020" 
+jar signed.
+
+The signer certificate will expire on 2023-07-29.
+The timestamp will expire on 2031-01-05.
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jarsigner  -tsa http://timestamp.digicert.com -storepass BSkeystore -keystore g:/share/usr/ddyer/crypto/Boardspace-2020.p12 ../v102/Spangles.jar "dave dyer 2020" 
+jar signed.
+
+The signer certificate will expire on 2023-07-29.
+The timestamp will expire on 2031-01-05.
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jarsigner  -tsa http://timestamp.digicert.com -storepass BSkeystore -keystore g:/share/usr/ddyer/crypto/Boardspace-2020.p12 ../v102/Stac.jar "dave dyer 2020" 
+jar signed.
+
+The signer certificate will expire on 2023-07-29.
+The timestamp will expire on 2031-01-05.
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jarsigner  -tsa http://timestamp.digicert.com -storepass BSkeystore -keystore g:/share/usr/ddyer/crypto/Boardspace-2020.p12 ../v102/Stones.jar "dave dyer 2020" 
+jar signed.
+
+The signer certificate will expire on 2023-07-29.
+The timestamp will expire on 2031-01-05.
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jarsigner  -tsa http://timestamp.digicert.com -storepass BSkeystore -keystore g:/share/usr/ddyer/crypto/Boardspace-2020.p12 ../v102/Stymie.jar "dave dyer 2020" 
+jar signed.
+
+The signer certificate will expire on 2023-07-29.
+The timestamp will expire on 2031-01-05.
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jarsigner  -tsa http://timestamp.digicert.com -storepass BSkeystore -keystore g:/share/usr/ddyer/crypto/Boardspace-2020.p12 ../v102/Syzygy.jar "dave dyer 2020" 
+jar signed.
+
+The signer certificate will expire on 2023-07-29.
+The timestamp will expire on 2031-01-05.
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jarsigner  -tsa http://timestamp.digicert.com -storepass BSkeystore -keystore g:/share/usr/ddyer/crypto/Boardspace-2020.p12 ../v102/Takojudo.jar "dave dyer 2020" 
+jar signed.
+
+The signer certificate will expire on 2023-07-29.
+The timestamp will expire on 2031-01-05.
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jarsigner  -tsa http://timestamp.digicert.com -storepass BSkeystore -keystore g:/share/usr/ddyer/crypto/Boardspace-2020.p12 ../v102/Tammany.jar "dave dyer 2020" 
+jar signed.
+
+The signer certificate will expire on 2023-07-29.
+The timestamp will expire on 2031-01-05.
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jarsigner  -tsa http://timestamp.digicert.com -storepass BSkeystore -keystore g:/share/usr/ddyer/crypto/Boardspace-2020.p12 ../v102/TicTacNine.jar "dave dyer 2020" 
+jar signed.
+
+The signer certificate will expire on 2023-07-29.
+The timestamp will expire on 2031-01-05.
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jarsigner  -tsa http://timestamp.digicert.com -storepass BSkeystore -keystore g:/share/usr/ddyer/crypto/Boardspace-2020.p12 ../v102/Tintas.jar "dave dyer 2020" 
+jar signed.
+
+The signer certificate will expire on 2023-07-29.
+The timestamp will expire on 2031-01-05.
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jarsigner  -tsa http://timestamp.digicert.com -storepass BSkeystore -keystore g:/share/usr/ddyer/crypto/Boardspace-2020.p12 ../v102/Traboulet.jar "dave dyer 2020" 
+jar signed.
+
+The signer certificate will expire on 2023-07-29.
+The timestamp will expire on 2031-01-05.
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jarsigner  -tsa http://timestamp.digicert.com -storepass BSkeystore -keystore g:/share/usr/ddyer/crypto/Boardspace-2020.p12 ../v102/Trax.jar "dave dyer 2020" 
+jar signed.
+
+The signer certificate will expire on 2023-07-29.
+The timestamp will expire on 2031-01-05.
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jarsigner  -tsa http://timestamp.digicert.com -storepass BSkeystore -keystore g:/share/usr/ddyer/crypto/Boardspace-2020.p12 ../v102/Triad.jar "dave dyer 2020" 
+jar signed.
+
+The signer certificate will expire on 2023-07-29.
+The timestamp will expire on 2031-01-05.
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jarsigner  -tsa http://timestamp.digicert.com -storepass BSkeystore -keystore g:/share/usr/ddyer/crypto/Boardspace-2020.p12 ../v102/Truchet.jar "dave dyer 2020" 
+jar signed.
+
+The signer certificate will expire on 2023-07-29.
+The timestamp will expire on 2031-01-05.
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jarsigner  -tsa http://timestamp.digicert.com -storepass BSkeystore -keystore g:/share/usr/ddyer/crypto/Boardspace-2020.p12 ../v102/Tumble.jar "dave dyer 2020" 
+jar signed.
+
+The signer certificate will expire on 2023-07-29.
+The timestamp will expire on 2031-01-05.
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jarsigner  -tsa http://timestamp.digicert.com -storepass BSkeystore -keystore g:/share/usr/ddyer/crypto/Boardspace-2020.p12 ../v102/Twixt.jar "dave dyer 2020" 
+jar signed.
+
+The signer certificate will expire on 2023-07-29.
+The timestamp will expire on 2031-01-05.
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jarsigner  -tsa http://timestamp.digicert.com -storepass BSkeystore -keystore g:/share/usr/ddyer/crypto/Boardspace-2020.p12 ../v102/Tzaar.jar "dave dyer 2020" 
+jar signed.
+
+The signer certificate will expire on 2023-07-29.
+The timestamp will expire on 2031-01-05.
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jarsigner  -tsa http://timestamp.digicert.com -storepass BSkeystore -keystore g:/share/usr/ddyer/crypto/Boardspace-2020.p12 ../v102/Universe.jar "dave dyer 2020" 
+jar signed.
+
+The signer certificate will expire on 2023-07-29.
+The timestamp will expire on 2031-01-05.
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jarsigner  -tsa http://timestamp.digicert.com -storepass BSkeystore -keystore g:/share/usr/ddyer/crypto/Boardspace-2020.p12 ../v102/Veletas.jar "dave dyer 2020" 
+jar signed.
+
+The signer certificate will expire on 2023-07-29.
+The timestamp will expire on 2031-01-05.
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jarsigner  -tsa http://timestamp.digicert.com -storepass BSkeystore -keystore g:/share/usr/ddyer/crypto/Boardspace-2020.p12 ../v102/Viticulture.jar "dave dyer 2020" 
+jar signed.
+
+The signer certificate will expire on 2023-07-29.
+The timestamp will expire on 2031-01-05.
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jarsigner  -tsa http://timestamp.digicert.com -storepass BSkeystore -keystore g:/share/usr/ddyer/crypto/Boardspace-2020.p12 ../v102/Volcano.jar "dave dyer 2020" 
+jar signed.
+
+The signer certificate will expire on 2023-07-29.
+The timestamp will expire on 2031-01-05.
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jarsigner  -tsa http://timestamp.digicert.com -storepass BSkeystore -keystore g:/share/usr/ddyer/crypto/Boardspace-2020.p12 ../v102/Volo.jar "dave dyer 2020" 
+jar signed.
+
+The signer certificate will expire on 2023-07-29.
+The timestamp will expire on 2031-01-05.
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jarsigner  -tsa http://timestamp.digicert.com -storepass BSkeystore -keystore g:/share/usr/ddyer/crypto/Boardspace-2020.p12 ../v102/Warp6.jar "dave dyer 2020" 
+jar signed.
+
+The signer certificate will expire on 2023-07-29.
+The timestamp will expire on 2031-01-05.
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jarsigner  -tsa http://timestamp.digicert.com -storepass BSkeystore -keystore g:/share/usr/ddyer/crypto/Boardspace-2020.p12 ../v102/Wyps.jar "dave dyer 2020" 
+jar signed.
+
+The signer certificate will expire on 2023-07-29.
+The timestamp will expire on 2031-01-05.
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jarsigner  -tsa http://timestamp.digicert.com -storepass BSkeystore -keystore g:/share/usr/ddyer/crypto/Boardspace-2020.p12 ../v102/Xiangqi.jar "dave dyer 2020" 
+jar signed.
+
+The signer certificate will expire on 2023-07-29.
+The timestamp will expire on 2031-01-05.
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jarsigner  -tsa http://timestamp.digicert.com -storepass BSkeystore -keystore g:/share/usr/ddyer/crypto/Boardspace-2020.p12 ../v102/Y.jar "dave dyer 2020" 
+jar signed.
+
+The signer certificate will expire on 2023-07-29.
+The timestamp will expire on 2031-01-05.
+
+G:\share\projects\boardspace-html\htdocs\java\v101>jarsigner  -tsa http://timestamp.digicert.com -storepass BSkeystore -keystore g:/share/usr/ddyer/crypto/Boardspace-2020.p12 ../v102/Yspahan.jar "dave dyer 2020" 
+jar signed.
+
+The signer certificate will expire on 2023-07-29.
+The timestamp will expire on 2031-01-05.
+
+G:\share\projects\boardspace-html\htdocs\java\v101>rem
+
+G:\share\projects\boardspace-html\htdocs\java\v101>cp ../v102/*.jar ../jws 

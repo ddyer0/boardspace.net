@@ -1,0 +1,103 @@
+8c8
+< 130160	/home/tantrixb/mirror
+---
+> 129816	/home/tantrixb/mirror
+161,168c161
+< 4	/home/tantrixb/var/tantrix.boardspace.net/stats/analog/monthly/2016-08-01
+< 12	/home/tantrixb/var/tantrix.boardspace.net/stats/analog/monthly
+< 4	/home/tantrixb/var/tantrix.boardspace.net/stats/analog/daily/2016-09-01
+< 4	/home/tantrixb/var/tantrix.boardspace.net/stats/analog/daily/2016-08-28
+< 4	/home/tantrixb/var/tantrix.boardspace.net/stats/analog/daily/2016-08-27
+< 4	/home/tantrixb/var/tantrix.boardspace.net/stats/analog/daily/2016-09-04
+< 4	/home/tantrixb/var/tantrix.boardspace.net/stats/analog/daily/2016-09-05
+< 4	/home/tantrixb/var/tantrix.boardspace.net/stats/analog/daily/2016-08-30
+---
+> 4	/home/tantrixb/var/tantrix.boardspace.net/stats/analog/monthly
+170,173d162
+< 4	/home/tantrixb/var/tantrix.boardspace.net/stats/analog/daily/2016-08-24
+< 4	/home/tantrixb/var/tantrix.boardspace.net/stats/analog/daily/2016-08-23
+< 4	/home/tantrixb/var/tantrix.boardspace.net/stats/analog/daily/2016-08-26
+< 4	/home/tantrixb/var/tantrix.boardspace.net/stats/analog/daily/2016-08-25
+175,181d163
+< 4	/home/tantrixb/var/tantrix.boardspace.net/stats/analog/daily/2016-09-02
+< 4	/home/tantrixb/var/tantrix.boardspace.net/stats/analog/daily/2016-08-22
+< 4	/home/tantrixb/var/tantrix.boardspace.net/stats/analog/daily/2016-09-03
+< 4	/home/tantrixb/var/tantrix.boardspace.net/stats/analog/daily/2016-08-29
+< 4	/home/tantrixb/var/tantrix.boardspace.net/stats/analog/daily/2016-09-06
+< 4	/home/tantrixb/var/tantrix.boardspace.net/stats/analog/daily/2016-08-31
+< 4	/home/tantrixb/var/tantrix.boardspace.net/stats/analog/daily/2016-09-08
+183d164
+< 4	/home/tantrixb/var/tantrix.boardspace.net/stats/analog/daily/2016-09-07
+185c166
+< 268	/home/tantrixb/var/tantrix.boardspace.net/stats/analog/daily
+---
+> 52	/home/tantrixb/var/tantrix.boardspace.net/stats/analog/daily
+187,190c168,169
+< 4	/home/tantrixb/var/tantrix.boardspace.net/stats/analog/weekly/2016-08-22
+< 4	/home/tantrixb/var/tantrix.boardspace.net/stats/analog/weekly/2016-08-29
+< 28	/home/tantrixb/var/tantrix.boardspace.net/stats/analog/weekly
+< 312	/home/tantrixb/var/tantrix.boardspace.net/stats/analog
+---
+> 12	/home/tantrixb/var/tantrix.boardspace.net/stats/analog/weekly
+> 72	/home/tantrixb/var/tantrix.boardspace.net/stats/analog
+192,194c171,173
+< 452	/home/tantrixb/var/tantrix.boardspace.net/stats/awstats/daily
+< 460	/home/tantrixb/var/tantrix.boardspace.net/stats/awstats
+< 780	/home/tantrixb/var/tantrix.boardspace.net/stats
+---
+> 228	/home/tantrixb/var/tantrix.boardspace.net/stats/awstats/daily
+> 236	/home/tantrixb/var/tantrix.boardspace.net/stats/awstats
+> 316	/home/tantrixb/var/tantrix.boardspace.net/stats
+201,202c180,181
+< 1108	/home/tantrixb/var/tantrix.boardspace.net
+< 1112	/home/tantrixb/var
+---
+> 644	/home/tantrixb/var/tantrix.boardspace.net
+> 648	/home/tantrixb/var
+648c627
+< 58900	/home/tantrixb/www/english
+---
+> 58828	/home/tantrixb/www/english
+722c701
+< 668	/home/tantrixb/www/tournaments/includes
+---
+> 672	/home/tantrixb/www/tournaments/includes
+727c706
+< 7292	/home/tantrixb/www/tournaments
+---
+> 7288	/home/tantrixb/www/tournaments
+780c759
+< 174168	/home/tantrixb/www/Tantrix/TRankings
+---
+> 173648	/home/tantrixb/www/Tantrix/TRankings
+823d801
+< 1504	/home/tantrixb/www/Tantrix/TGame/TGv1.38a
+826,827c804,805
+< 1884	/home/tantrixb/www/Tantrix/TGame/Players/Upload
+< 295632	/home/tantrixb/www/Tantrix/TGame/Players
+---
+> 1788	/home/tantrixb/www/Tantrix/TGame/Players/Upload
+> 293096	/home/tantrixb/www/Tantrix/TGame/Players
+830,831c808
+< 1508	/home/tantrixb/www/Tantrix/TGame/TGv1.39
+< 523768	/home/tantrixb/www/Tantrix/TGame
+---
+> 518208	/home/tantrixb/www/Tantrix/TGame
+845c822
+< 751204	/home/tantrixb/www/Tantrix
+---
+> 745124	/home/tantrixb/www/Tantrix
+858c835
+< 13956	/home/tantrixb/www/Match/toplist
+---
+> 13740	/home/tantrixb/www/Match/toplist
+862c839
+< 50256	/home/tantrixb/www/Match
+---
+> 50040	/home/tantrixb/www/Match
+890,891c867,868
+< 1415744	/home/tantrixb/www
+< 2622676	/home/tantrixb
+---
+> 1409372	/home/tantrixb/www
+> 2615496	/home/tantrixb

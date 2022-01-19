@@ -1,0 +1,33 @@
+Rules: 1
+B_Penalty: 0
+W_Penalty: 0
+Size: 19
+TimeStart: 1177951124
+W_Time: 17641
+B_Time: 17436
+Byo: 6000
+ByoS: 25
+W_Byo: 0
+B_Byo: 0
+W_ByoStones: -1
+B_ByoStones: -1
+ClockStopped: 0
+Rated: 0
+Private: 0
+Type: 1
+TimeType: 1
+Totalticks: 18000
+GoType: 1
+NumPass: 2
+Komi: 5.5
+Teach: 0
+Teach2: 0
+Ladder9: 0
+Ladder19: 0
+Tourn: 0
+Ladder_Possible: 0
+OnMove: 0
+MovesRNext: oinkoink
+;B[hj];W[hi];B[bq];W[gj];B[cq];W[hk];B[dq];W[ij];B[tt];W[tt]
+kibitz: oink
+

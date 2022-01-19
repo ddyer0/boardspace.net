@@ -1,0 +1,5 @@
+AuthGroupFile /www/boardspace/conf/group
+AuthUserFile /www/boardspace/conf/passwd
+AuthName "/www/boardspace log files"
+AuthType Basic
+require group developer

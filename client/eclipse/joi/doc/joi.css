@@ -1,0 +1,27 @@
+body { background-color: #80B0E0 }
+h1 { color: white }
+h2 { color: white }
+hr { color: black ; height: 2 }
+table.bordered { background-color: silver ;
+        border-style: intset ;
+	      border-width: 8 ;
+ 	      border-color: white ;
+        padding: 1 ;
+      }
+
+td.top { vertical-align: top 
+   }
+
+td.transparent 
+  { background-color: #80B0E0 ;
+  }
+
+i.code  {
+          font-weight: bold ;
+        }
+
+h6.copyright { color: black ;
+               text-align: right ;
+               font-family: "arial" ;
+               font-size: 9 ;
+             }

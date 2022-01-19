@@ -1,0 +1,57 @@
+                        **** CHANGES TO NNGS ****
+   
+   
+04/05/98   Changes to the altnernative rating system (by pem)
+           --------------------------------------------------
+
+  New command: nsuggest
+  Introduced anchoring, a new ageing system, and various other adjustments.
+
+
+Dec 97:	   New alternative rating system (by pem)
+           --------------------------------------
+
+  New command: nrating
+  New help files: nratings npercent
+
+
+10/04/97:  BUG FIXES (by geek)
+           -------------------
+   
+  Undo x is fixed.
+   
+  Rresults now has correct data in it.
+   
+   
+09/25/97:  BUG FIXES AND NEW FEATURES (made by geek)
+           -----------------------------------------
+   
+  New command: rresults [user].  This command reports your RATED games
+  results, or the RATED games results of the specified user.
+   
+  Never Connected bug.  Fixed.
+   
+  Added a kibitz about the komi changing so that observers can see it.
+   
+  Added a game record comment about a user beginning to observe.
+   
+  Added check for 0 length game files.  If it is 0 length, instead
+  of crashing the server it reports error, makes an apology,
+  and continues normally.
+   
+  Attempted to fix on the who bug (who 2k-5k reported 3k-6k).
+   
+  Fixed inconsistant "player left channel xx" notification.
+   
+  Pair-go games are now unrated by default.
+   
+  The touch command now gives feedback.
+   
+  Fixed incorrect handicap in games output when an undo back to the
+  beginning of a handicap game occurs.
+   
+  Fixed censored player kibitz leak.
+   
+  Fixed censor command anomolies (probably).
+   
+

@@ -1,0 +1,121 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <title>BoardSpace.net Registration Page</title>
+  <script src="/js/site.js">
+  </script>
+</head>
+<body background="/images/background-image.jpg">
+<h1 style="TEXT-ALIGN: center"><IMG title=""
+ style="WIDTH: 600px; HEIGHT: 100px" alt =boardspace.net src="/images/master-logo.jpg" ></h1>
+<h1 style="TEXT-ALIGN: center">Registro de Jogador
+</h1>
+<br>
+     Registrar e jogar é grátis.&nbsp; Você é um
+convidado do site,&nbsp;então por favor comporte-se.&nbsp;&nbsp;Além disso, jogue limpo, e divirta-se.<br>
+<form name="register" action="/cgi-bin/register.cgi" method="post"><!--#include virtual="/cgi-bin/gs_timestamp.cgi" -->
+  <table style="WIDTH: 100%" border="1" cellpadding="2" cellspacing="2">
+    <tbody>
+      <tr>
+      </tr>
+      <tr>
+        <td style="VERTICAL-ALIGN: top">nome real<br>
+        </td>
+        <td style="VERTICAL-ALIGN: top"><input name="fullname"><br>
+        </td>
+        <td style="VERTICAL-ALIGN: top">Seu nome verdadeiro, ou qualquer coisa </td>
+        <td rowspan="4">
+        <div style="TEXT-ALIGN: left">O 
+      Boardspace.net&nbsp;usa Java.&nbsp; Antes que possa jogar, você deve ter 
+      um plugin java funcionando em seu navegador. Veja a página&nbsp; <A 
+      href="needsjava.html">NecessitaJava </A>&nbsp;para instruções.</div><!--[if !IE]> Firefox and others will use outer object --> <object style="WIDTH: 200px; HEIGHT: 50px; "
+ codebase="/java/" classid="java:online.version.class"
+ type="application/x-java-applet" ><!--<![endif]--><!-- MSIE (Microsoft Internet Explorer) will use inner object -->
+        <object classid="clsid:8AD9C840-044E-11D1-B3E9-00805F499D93"
+ > <param name="code" value="online.version"> <param
+ name="codebase" value="/java/">
+        <strong> This browser does not have a Java
+Plug-in. <br>
+        <a
+ href="http://java.sun.com/products/plugin/downloads/index.html"> Get
+the latest Java Plug-in here. </a> </strong> </object><!--[if !IE]> close outer object -->
+        </object>
+<!--<![endif]--></td>
+      </tr>
+      <tr>
+        <td style="VERTICAL-ALIGN: top">nome de login
+        </td>
+        <td style="VERTICAL-ALIGN: top"><input name="pname"><br>
+        </td>
+        <td style="VERTICAL-ALIGN: top">Nome de 
+      jogador.&nbsp;&nbsp;Pelo menos
+3 caracteres,&nbsp;letras e números apenas<br>
+        </td>
+      </tr>
+      <tr>
+        <td style="VERTICAL-ALIGN: top">senha<br>
+        </td>
+        <td style="VERTICAL-ALIGN: top"><input name="password"
+ type="password"> </td>
+        <td style="VERTICAL-ALIGN: top">Não use uma senha
+valiosa.&nbsp;Mas por favor não escolha uma completamente banal também.<br>
+        </td>
+      </tr>
+      <tr>
+        <td style="VERTICAL-ALIGN: top">confirme a senha
+        </td>
+        <td style="VERTICAL-ALIGN: top"><input name="password2"
+ type="password"><br>
+        </td>
+        <td style="VERTICAL-ALIGN: top">  Confirme
+a senha.&nbsp; Senhas esquecidas podem ser recuperadas,&nbsp;se seu email permacer válido.<br>
+        </td>
+      </tr>
+      <tr>
+        <td style="VERTICAL-ALIGN: top">email<br>
+        </td>
+        <td style="VERTICAL-ALIGN: top"><input name="email"><br>
+        </td>
+        <td style="VERTICAL-ALIGN: top"><span
+ style="FONT-WEIGHT: bold">  Será enviado um link para ativar sua
+conta</span>         ,
+estão
+o email que você fornecer deve ser válido.&nbsp; Ele não será usado
+exceto para comunicados oficiais do site (por exemplo&nbsp;enviar sua senha esquecida),&nbsp;e não será
+vendido ou repassado a nenhuma outra parte.&nbsp; Nenhum spam,&nbsp;nós prometemos.<br>
+        </td>
+      </tr>
+      <tr>
+        <td style="VERTICAL-ALIGN: top">País<br>
+        </td>
+        <td style="VERTICAL-ALIGN: top"><!--#include virtual="/cgi-bin/tlib/selectors.cgi?what=country" -->
+        <br>
+        </td>
+        <td style="VERTICAL-ALIGN: top">Para mapas,
+campeonatos, e coisas assim.&nbsp;&nbsp;Se você for realmente antinacionalista,&nbsp;escolha
+"Planeta Terra".<br>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <input value="registrar agora" onclick="checkRegisterForm(this.form)"
+ type="button"></form>
+<br>
+<hr style="WIDTH: 100%; HEIGHT: 2px">
+<table style="WIDTH: 100%">
+  <tbody>
+    <tr>
+      <td align="left"> <font size="-1">E-mail:
+      <script language="javascript">
+document.write("<a href='mailto:gamemaste");
+document.write("r\@board");
+document.write("space.net'>gamemaste<n>r@board<n>space.net</a>");
+      </script></font> </td>
+      <td style="VERTICAL-ALIGN: top; TEXT-ALIGN: center"></td>
+      <td align="right">Ir para a&nbsp; <A href="/">página inicial do BoardSpace.net</A>
+      </td>
+    </tr>
+  </tbody>
+</table>
+</body>
+</html>

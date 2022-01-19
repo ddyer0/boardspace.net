@@ -1,0 +1,66 @@
+<html>
+
+<body bgcolor="#FFFFFF" link="#0000FF" vlink="#800080">
+
+<h1><img src="kawacup.jpg" width="106" height="100">Path Settings</h1>
+
+<p><a href="index.htm">Index</a> </p>
+<P>
+<font size="1.5" face="Arial">Last Modified Date - <font color=red>2/16/99</font><p>
+Please click <a href="http://www.tek-tools.com/kawa/docs/directorysetup.htm">here</a> for the latest version of this document.
+<font color=red> If this is an online version of the document please right click in the browser and select 
+'Update local Kawa document' to update your local copy of this document</font>
+</font>
+<hr>
+
+<p>This document discusses setting up the basic JDK paths and Kawa paths. Please refer to Advanced concepts for setting
+the advanced paths. Select Customize/Options/Directories... to display the directories dialog box as
+shown below -</p>
+
+<p align="center"><img src="direct3.jpg" width="452" height="421"
+alt="wpe75.jpg (30010 bytes)"></p>
+
+<ul>
+  <li>Internet Browser file is the browser program file for the browser. This information
+    is used in some commands to open the HTML file in a browser. This field is optional. </li>
+  <li>Kawa configuration directory is the location of Kawa data files. On a single user
+    installation this location should be the same as the location of the Kawa program file. On a multi user
+    installation this location is the path to all the Kawa data files. Please refer to Kawa
+    <a href="multiusersetup.htm">multi-user setup</a> for more information on multi user or server based Kawa setup. 
+    Kawa configuration directory should be set automatically by Kawa setup but please make sure it always points to the 
+    correct location at all times.</li>
+</ul>
+
+<p><font size="4">Please refer to <a href="profile.htm">Profile</a> for more details on profiles.</font></p>
+
+<p><font size="4"><b>Java Paths -</b></font>
+
+<ul>
+  <li>Java Bin directory is the JDK bin directory. Please select the bin directory under your JDK installation.</li>
+  <li>This directory should be filled automatically by Kawa when you select the bin directory. Please check to make
+	  sure it points to the correct location</li>
+  <li>Java Source directory is the location of Java source files directory. This
+    information is used to open the source file during debugging and on double clicks from the
+    package tab. Please refer to <a href="kawasetup.htm">setup</a> document for a special note regarding JDK 1.2 with the 
+    Java source location.</li>
+  <li>Java documents directory is the location of Java document sub-directory. This
+    information is used to display context sensitive JDK help in the editor.
+  </li> 
+</ul>
+
+<p></a><font size="4"><b>Kawa Paths -</b></font>
+
+<ul>
+  <li>Please refer to advanced concepts for setting the value of Package source directories. This is an optional field.</li>
+  <li>The help index file is the file used by Kawa to load JDK HTML help information when the user presses F1 in Kawa editor. 
+  	  The default index file is Kawa.ipg and should be located in the Kawa directory. Please refer to <a href="kawasetup.htm">setup</a>
+  	  for more information on this field.</li>
+  <li>The package index file is the file used by Kawa to load the package tree with package information. The default file is called 
+  	  Kawa.pkg and should be located in the Kawa directory. Please refer to <a href="kawasetup.htm">setup</a>
+  	  for more information on this field.</li>
+</ul>
+
+<p><font size="4"><b>Advanced Paths -</b></font></p>
+<UL>All paths in this tab are set automatically by Kawa. Please read advanced concepts for more information on these paths.</UL>
+</body>
+</html>

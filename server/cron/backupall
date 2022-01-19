@@ -1,0 +1,2 @@
+#!/bin/sh
+sudo -S tar c /var/vpopmail /home/realmene /home/boardspa | gzip

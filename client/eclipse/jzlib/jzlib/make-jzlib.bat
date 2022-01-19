@@ -1,0 +1,1 @@
+jar -cmf jzlib-manifest.txt jzlib.jar jzlib\*.class

@@ -1,0 +1,861 @@
+package bridge;
+
+import static java.lang.Math.atan2;
+import java.applet.Applet;
+import java.applet.AudioClip;
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Frame;
+import java.awt.Graphics2D;
+import java.awt.GraphicsConfiguration;
+import java.awt.GraphicsEnvironment;
+
+import lib.Image;
+import lib.LFrameProtocol;
+import online.common.commonChatApplet;
+
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.Shape;
+import java.awt.Toolkit;
+import java.awt.Transparency;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.StringSelection;
+import java.awt.datatransfer.Transferable;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Dimension2D;
+import java.awt.geom.Rectangle2D;
+import java.awt.image.VolatileImage;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.PrintStream;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.net.UnknownHostException;
+import java.util.Comparator;
+import java.util.Hashtable;
+import java.util.Map;
+import java.util.TimeZone;
+
+import javax.swing.JCheckBox;
+import javax.swing.JOptionPane;
+import javax.swing.JTextArea;
+import javax.swing.UIManager;
+import javax.swing.plaf.FontUIResource;
+
+import lib.ChatInterface;
+import lib.ChatWidget;
+import lib.DeadlockDetector;
+import lib.ErrorX;
+import lib.ExtendedHashtable;
+import lib.Graphics;
+import lib.G;
+/*
+ * 
+import java.lang.management.ManagementFactory;
+import java.lang.management.ThreadMXBean;
+class DeadLockDetector extends Thread {
+    @Override
+    public void run() {
+        while (true) {
+            ThreadMXBean threadMXBean = ManagementFactory.getThreadMXBean();
+            long[] ids = threadMXBean.findDeadlockedThreads();
+            if (ids != null) {
+            	String idsStr = "";
+            	for(long id : ids) { idsStr += " "+id; }
+            	G.print("Deadlock threads: "+idsStr);
+                System.exit(127);
+            }
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {}
+        }
+    }
+}
+*/
+@SuppressWarnings("deprecation")
+public abstract class Platform implements Config
+{
+    // amazon fire [Java cpu=5.2% screen=800x1184 ppi=213 deviceDPI=213 scale =1.33125  Codename1  4.83 0 )]
+    static public boolean SIMULATE_FIRE = false;
+
+ 	protected static InstallerPackage installerPackage =  (InstallerPackage)MakeNative(InstallerPackage.class);
+  
+
+/**
+ * synchronized because two processes (lobby and loadthread for example) may try
+ * to create the first instance of a class at the same time, leading to conflicts
+ * creating required classes
+ */
+public static synchronized Object MakeInstance(String classname)
+{	String expname = "";
+    try
+    {	expname = G.expandClassName(classname);
+    	Class<?>cl = G.classForName(expname,false);
+    	if(cl==null) { throw new ClassNotFoundException(); }
+        return (cl.getDeclaredConstructor().newInstance()); //was cl.newInstance()
+    }
+    catch (Exception e)
+    {
+    	throw G.Error(expname+":"+e.toString());
+    }
+
+
+}
+	public static Rectangle getClipBounds(Graphics gc)
+	{
+		return(gc!=null ? gc.getClipBounds() : null);
+	}
+    /** 
+     * 
+     * @param gc the current gc or null
+     * @param sh the next clipping region or null
+     * normally sh would be the old value received from combinedClip
+     */
+    public static Rectangle setClip(Graphics gc,Shape sh)
+    {	Rectangle val = null;
+    	if(gc!=null) 
+    		{ val = gc.setClip(sh); 
+    		}
+    	return(val);
+    }
+    public static Shape getClip(Graphics gc)
+    {
+    	if(gc!=null) { return(gc.getClip());}
+    	return(null);
+    }
+    /**
+     * set the clipping rectangle of the graphics to include one rectangle
+     * and exclude the other.  This is used to create the cutout clipping
+     * region for the chat window in a way that is compatible with java 1.1
+     * 
+     * @param gc
+     * @param include
+     * @param exclude
+     */
+    public static void setClip(Graphics gc,Rectangle include,Rectangle exclude)
+    {  // draw the final result in one swell foop.  This is not implemented
+       // in JDK1.1 and causes errors if you try.
+       Polygon p = new Polygon();
+       if(include!=null) { p.addRect(include); }
+       if(exclude!=null) { p.addRect(exclude); }
+       gc.setClip(p);
+   }
+    /**
+     * set the color if gc is not null
+     * @param gc
+     * @param c
+     */
+    static public void setColor(Graphics gc,Color c)
+    {	if(gc!=null) { gc.setColor(c); }
+    }
+	public static Color getColor(Graphics inG) 
+	{ if(inG!=null) { return(inG.getColor()); } else { return(null); }
+	}
+   
+	static int color = 0;
+
+
+    static public void fillOval(Graphics gc,int x,int y,int w,int h)
+    {
+    	if(gc!=null) { gc.fillOval(x,y, w, h); }
+    }
+    static public void frameOval(Graphics gc,int x,int y,int w,int h)
+    {
+    	if(gc!=null) { gc.frameOval(x,y, w, h); }
+    }
+
+   /**
+     * draw the msg string with the character baseline at x,y
+     * 
+     * @param inG
+     * @param msg
+     * @param x
+     * @param y
+     */
+    static public void Text(Graphics inG,String msg,int x,int y)
+    {
+    	if(inG!=null) { inG.Text(msg,x,y); }
+    }
+    
+
+
+	  /**
+	    * set the font if gc is not null
+	    * @param gc
+	    * @param f
+	    */
+	   static public void setFont(Graphics gc,Font f)
+	   {	if(gc!=null) { gc.setFont(f); }
+	   }
+	   static public FontMetrics getFontMetrics(Graphics inG)
+	   {   if(inG!=null) { return(inG.getFontMetrics()); }
+	   	   return(null);
+	   }
+	   static public FontMetrics getFontMetrics(Component c,Font f) 
+	   {
+		   return(c.getFontMetrics(f));
+	   }
+	   static public FontMetrics getFontMetrics(Component c)
+	   {
+		   return(c.getFontMetrics(c.getFont()));
+	   }
+
+	   @SuppressWarnings("deprecation")
+	   static public FontMetrics getFontMetrics(Font f)
+	   {	
+		   return(Toolkit.getDefaultToolkit().getFontMetrics(f));
+	   }
+	   
+	   public enum Style
+	   {   Plain(Font.PLAIN),
+		   Italic(Font.ITALIC),
+		   Bold(Font.BOLD);
+		   int s;
+		   Style(int style) { s=style;}
+	   }
+
+		public static  Font getFont(String family,Style style,int size)
+		{	
+			return(new Font(family, style.s ,size));
+		}
+		
+		public static Font getFont(Font f,int size)
+		{
+			return(f.deriveFont(f.getStyle(),size));
+		}
+		
+		public static  Font getFont(Font f,Style style,int size)
+		{
+			return(f.deriveFont(style.s,size<=0?f.getSize():size));
+		}
+
+    /**
+     * @param r
+     * @return the bottom coordinate of a rectangle
+     */
+   public static int Bottom(Rectangle r) { return(r.y+r.height); }
+   
+   /**
+     * @param r
+    * @return the top coordinate of a rectangle.
+    */
+   public static int Top(Rectangle r) { return(r.y); }
+   public static void SetTop(Rectangle r,int v) { r.y = v; }
+   public static void SetTop(Point p,int v) { p.y = v; }
+   /**
+    * @param r
+    * @return  the left coordinate of a rectangle
+    */
+   public static int Left(Rectangle r) { return(r.x); }
+   public static void SetLeft(Rectangle r,int to) { r.x = to; }
+   public static void SetLeft(Point p,int v) { p.x = v; }
+   public static int centerX(Rectangle r) { return(r.x+r.width/2); }
+   public static int centerY(Rectangle r) { return(r.y+r.height/2); }
+   public static int Left(Point x) { return(x.x); }
+   public static int Top(Point x) { return(x.y); }
+  /**
+    * @param r
+    * @return  the right coordinate of a rectangle
+    */
+   public static int Right(Rectangle r) { return(r.x+r.width); }
+   public static int Width(Dimension d) { return(d.width); }
+   public static int Width(Rectangle r) { return(r.width); }
+   public static void SetWidth(Rectangle r,int v) { r.width = v; } 
+
+   public static int Width(Image im) { return(im.getWidth()); }
+   
+   public static int Height(Rectangle r) { return(r.height); }
+   public static int Height(Dimension d) { return(d.height); }
+
+   public static int Height(Image im) { return(im.getHeight()); }
+   public static void SetHeight(Rectangle r,int v) { r.height = v; }
+   public static void SetRect(Rectangle r,int l,int t,int w,int h)
+   {
+	   r.x = l;
+	   r.y = t;
+	   r.width = w;
+	   r.height = h;
+   }
+	public static int getFontSize(Font f) { return(f.getSize()); }
+
+	public static String getStackTrace(Throwable t)
+	{	Utf8OutputStream stream = new Utf8OutputStream();
+		PrintStream p = Utf8Printer.getPrinter(stream);
+		t.printStackTrace(p);
+		p.close();
+		return(stream.toString());
+	}
+	
+	   /** get the current stack trace as a String */
+    public static String getStackTrace()
+    {
+    	ByteArrayOutputStream b = new Utf8OutputStream();
+        PrintStream os = Utf8Printer.getPrinter(b);
+        try { throw new Error("Stack trace");
+        } catch (Error e)
+        {
+        	printStackTrace(e,os);
+        	os.flush();
+        }
+    	return b.toString();
+   }
+    
+	public static StackTraceElement[] getStackTraceElements(Thread th)
+	{
+		return(th.getStackTrace());
+	}
+	public static String getStackTrace(Thread th)
+	{	StringBuffer p = new StringBuffer();
+		StackTraceElement[]trace = getStackTraceElements(th);
+		p.append(th);
+		p.append('\n');
+		if(trace!=null)
+		{
+		for(int i=0;i<Math.min(trace.length,10);i++)
+		{
+			p.append(trace[i].toString());
+			p.append("\n");
+		}}
+		return(p.toString());
+	}
+	
+	public static void printStackTrace(Throwable t,PrintStream s)
+	{	
+		t.printStackTrace(s);
+	}
+	public static void setThreadName(Thread th,String na) { th.setName(na); }
+
+	public static Object clone(Hashtable<?,?>in)
+	{	return(in.clone());
+	}
+    public static int bitCount(int i) {
+        return(Integer.bitCount(i));
+    }
+    public static int bitCount(long i) {
+        return(Long.bitCount(i));
+    }
+
+    public static void runInEdt(Runnable r)
+    {
+    	r.run();
+    }
+    public static void startInEdt(Runnable r)
+    {
+    	r.run();
+    }
+    public static boolean isEdt() { return(true); }
+     
+    public static Class<?>classForName(String name,boolean testOnly)
+    {	try {
+		return(Class.forName(name));
+			} catch (ClassNotFoundException e) {
+				if(!testOnly) { throw new ErrorX(e); }
+			}
+    	return(null);
+    }
+    static public double screenDiagonal()
+    {
+    	double den = Toolkit.getDefaultToolkit().getScreenResolution();
+    	double w = (getScreenWidth()/den);
+    	double h = (getScreenHeight()/den);
+    	return(Math.sqrt(w*w+h*h)); 	
+    }
+    
+    static public String screenSize()
+    {
+    	double den = getRealScreenDPI();
+    	return(""+(getScreenWidth()/den+" x "+(getScreenHeight()/den)));
+    }
+    static public int getRealScreenDPI()
+    {	if(SIMULATE_FIRE) { return(213); }
+    	return Toolkit.getDefaultToolkit().getScreenResolution();
+    }
+    static public int getPPI() 
+	{// if(G.debug()) { return(120); }
+	  if(isGameboard()) { return(120); }
+	  if(isPlaytable()) { return(72); }	// playtable lies
+	  // some devices have insane DPI, like 400, but believing them makes the boxes too small
+	  return (Math.min(300, Math.max(96,getRealScreenDPI())));
+	}
+    static public String getScreenSize()
+    {
+    	Dimension2D con = Toolkit.getDefaultToolkit().getScreenSize();
+    	int width = (int)con.getWidth();
+    	int height = (int)con.getHeight();
+    	return(""+width+"x"+height);
+    }
+    static public int getScreenWidth()
+    {	if(SIMULATE_FIRE) { return(1184); }
+    	Dimension2D con = Toolkit.getDefaultToolkit().getScreenSize();
+    	int width = (int)con.getWidth();
+    	
+    	return width;
+    }
+    static public int getScreenHeight()
+    {	if(SIMULATE_FIRE) { return(800); }
+    	Dimension2D con = Toolkit.getDefaultToolkit().getScreenSize();
+    	int height = (int)con.getHeight();
+    	return height;
+    }
+    static public int getFrameWidth()
+    {
+    	Dimension2D con = Toolkit.getDefaultToolkit().getScreenSize();
+    	int width = (int)con.getWidth();
+    	return width;
+    }
+    static public int getFrameHeight()
+    {
+    	Dimension2D con = Toolkit.getDefaultToolkit().getScreenSize();
+    	int height = (int)con.getHeight();
+    	return height;
+    }
+    static final public boolean isCodename1() { return(false); }
+    
+    static String platformName = "Java";
+    static final public String getPlatformName() { return(platformName); }
+    static final public void setPlatformName(String n) { platformName = n; }
+    
+    static final public boolean isSimulator() 
+    {
+    	return(false);
+    }
+    static public String replace(String from, String find, String repl)
+    {	return(from.replace(find,repl));
+    }
+    static public void showDocument(URI u)
+    {	try {
+		java.awt.Desktop.getDesktop().browse(u);
+			} 
+    	catch (UnsupportedOperationException e)
+    	{
+    	G.infoEditBox("Sorry, invoking a browser is not supported here",
+    			"The URL is "+u);
+    	}
+    	catch (IOException e) {
+    		e.printStackTrace();
+    	}
+    }
+	public static void infoEditBox(String caption,String infoMessage)
+	{	G.print(caption+":"+infoMessage);
+		JTextArea message = new JTextArea(infoMessage);
+		message.setEditable(true);
+	    JOptionPane.showMessageDialog(null, message, caption, JOptionPane.INFORMATION_MESSAGE);
+	}
+	
+
+    static public void showDocument(String u)
+    {	
+    	try {
+		showDocument(new URI(u));
+    	}
+    	catch (URISyntaxException e) {
+		e.printStackTrace();
+    	}
+    }
+    
+    static public void showDocument(URL u)
+    { showDocument(u.toExternalForm()); 
+    }
+    
+    
+    // these methods are used in Codename1, here they just give the 
+    // correct responses so the flow in exCanvas ignores them.
+    // they're here so exCanvas can refer to G rather than MasterForm
+    static public boolean canRepaintLocally(Component p) { return(true); }
+    static public boolean canRepaintLocally(Graphics g) { return(true); }
+    static public boolean isCompletelyVisible(Component p) { return(true); }
+    static public boolean isPartlyVisible(Component p) { return(true); }
+    static public void moveToFront(Component p) 
+    	{ if(p==null) {}
+    	  else if(p instanceof Frame) { ((Frame)p).toFront(); }
+    	  else { moveToFront(p.getParent());}
+    	}
+
+	
+    public static final URL getResourceUrl(String xname,boolean doc)
+    {
+    	if(G.isResourceName(xname,doc)) 
+    	{ 
+    	String name = (xname.charAt(0)=='/')?xname:("/"+xname);
+    	URL u = Platform.class.getResource(name);
+    	//G.print("getResourceUrl "+name+" = "+u);
+    	return u;
+    	}
+    	return(null);
+     }
+ 
+    public static Image getImage(URL url)
+    {	
+     	//G.print("get "+url);
+    	Image im = new Image(url.toString());
+    	// load from the URL, not from an equivalent string! 
+    	// loading from a file gets local files only
+    	java.awt.Image ai = Toolkit.getDefaultToolkit().getImage(url);
+    	im.setImage(ai);
+     	return(im);
+    }
+
+
+    public static boolean isPlatformTouchInterface()
+    {
+       	return(false);
+    }
+
+    public static void startDeadlockDetector()
+    {	DeadlockDetector.startDeadlockDetector();
+    }
+
+    public static void stopDeadlockDetector()
+    {
+    	DeadlockDetector.stopInstance();
+    }
+    public static void deadlockDetector()
+    {	DeadlockDetector det = DeadlockDetector.getInstance();
+    	det.checkOnce();
+    }
+    
+    public static int getTranslateX(Graphics g0)
+    {	return(g0.getTranslateX());
+    }
+    public static int getTranslateY(Graphics g0)
+    {	return(g0.getTranslateY());
+    }
+
+    public static InputStream getResourceAsStream(String name)
+			throws IOException
+	{
+		//G.print("Loading language "+name);
+	 	URL newsu = Platform.class.getResource(name);
+	 	//G.print("Loaded "+name);
+		if(newsu==null) 
+			{ newsu = G.getUrl(name,false);
+			}
+		InputStream ins = newsu.openStream(); 
+		return(ins);
+	}
+
+
+    public static void drawFatLine(Graphics g1,int fx,int fy,int tx,int ty,double strokeWidth)
+    {
+    	if(g1!=null)
+    		{Graphics g = g1.create();
+    		BasicStroke stroke = new BasicStroke((float)strokeWidth);
+			g.setStroke(stroke);
+			g.drawLine(fx,fy,tx,ty);
+    		}
+    }
+
+    static public void drawArrow(Graphics g1, int ox, int oy, int dest_x,
+            int dest_y, int ticksize,double thickness)
+        {	if(g1!=null)
+        	{
+        	Graphics g = g1.create();
+    		BasicStroke stroke = new BasicStroke((float)thickness);
+			g.setStroke(stroke);
+            double angle = atan2((dest_y - oy), (dest_x - ox));
+
+            //log.println("A " + ox + " " + oy + " " + dest_x + " " + dest_y + " " + ticksize
+            //  + " " + angle);
+            g.drawLine(ox, oy, dest_x, dest_y);
+            g.drawLine(dest_x, dest_y,
+                (int) (dest_x - (Math.cos(angle + (Math.PI / 6)) * ticksize)),
+                (int) (dest_y - (Math.sin(angle + (Math.PI / 6)) * ticksize)));
+            g.drawLine(dest_x, dest_y,
+                (int) (dest_x - (Math.cos(angle - (Math.PI / 6)) * ticksize)),
+                (int) (dest_y - (Math.sin(angle - (Math.PI / 6)) * ticksize)));
+        }}
+    
+    
+    public static boolean getState(JCheckBox c)
+    { 	// note this is JCheckBox rather than java.awt.Checkbox because Checkbox doesn't handle fonts correctly
+    	return(c.isSelected()); 
+    }
+    public static boolean isAmazon() { return(false); }
+    public static String getFileSeparator()
+    {
+    	return System.getProperty("file.separator");
+    }
+    public static String documentBaseDir()
+    {
+    	String home = System.getProperty("user.home");
+    	home = home.replaceAll("\\\\", "/");
+    	if(!home.endsWith("/")) { home = home+"/"; }
+    	return(home);
+    }
+    public static boolean isGameboard() 
+    	{  return( ((getScreenWidth()>=1890) && (getScreenHeight()>=1890))
+    				|| G.getBoolean(G.GAMEBOARD,false)); 
+    	}
+    public static boolean isPlaytable() { return(G.getBoolean(G.PLAYTABLE,false)); }
+    public static boolean isTable() { return(isPlaytable()|isGameboard()); }
+    
+    public static int tableWidth() {
+    	return(G.getInt(G.TABLEWIDTH, 1920));
+    }
+    public static int tableHeight() {
+    	return(G.getInt(G.TABLEHEIGHT, 984));
+    }
+    public static boolean isRealPlaytable() { return(false); }
+    public static boolean logErrorsWithHttp() { return(!G.debug()); };
+	public static String getAppVersion()
+	{
+		return(Platform.versionString)	;
+	}
+	public static void setAppVersion(String s) 
+	{	versionString=s; 
+	}
+	public static String versionString = "Desktop";
+
+	public static int getAvailableProcessors()
+	{
+		return(Runtime.getRuntime().availableProcessors());
+	}
+	public static Clipboard getSystemClipboard(Component c) 
+	{ return(c.getToolkit ().getSystemClipboard ()); 
+	}
+	public static String[] getFontFamilies()
+	{	
+	    return(java.awt.GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames());
+	}
+	
+	public static AudioClip getAudioClip(URL url)
+	{	return Applet.newAudioClip(url);
+	}
+	public static int getIdentity()
+	{
+		String id = getHostUID();
+		return(G.hashChecksum(id,id.length())); 
+	}
+    /** get the current local offset from GMT in minutes */
+    static public int getLocalTimeOffset()
+    {	
+    	TimeZone tz = TimeZone.getDefault();  
+		int off = tz.getOffset(System.currentTimeMillis());
+		return(-off/(1000*60));
+		
+    }
+	public static String getHostUID()
+	{	StringBuilder b = new StringBuilder();
+		byte addr[] = getMACAddress();
+		if(addr!=null)
+		{
+			for(byte a : addr) { b.append((int)(0xff&a)); b.append('.'); }
+		}
+		b.append(getComputerName());
+		return(b.toString());
+	}
+	private static String getComputerName()
+	{
+	    Map<String, String> env = System.getenv();
+	    if (env.containsKey("COMPUTERNAME"))
+	        return env.get("COMPUTERNAME");
+	    else if (env.containsKey("HOSTNAME"))
+	        return env.get("HOSTNAME");
+	    else
+	        return "Unknown Computer";
+	}
+	public static byte[] getMACAddress()
+	{	
+		try {
+	    InetAddress address = InetAddress.getLocalHost();
+	    NetworkInterface networkInterface = NetworkInterface.getByInetAddress(address);
+	    return (networkInterface==null) ? null : networkInterface.getHardwareAddress();
+		}
+		catch (UnknownHostException err) {}
+		catch (SocketException err) {}
+		return(null);
+	}
+	private static Font defaultFont = null;
+	public static Font getGlobalDefaultFont()
+	{
+		if(defaultFont==null)
+		{
+			setGlobalDefaultFont();
+		}
+		return(defaultFont);
+	}
+	/**
+	 * set font as the global default font
+	 * @param font
+	 */
+    public static void setGlobalDefaultFont(Font font)
+    {	defaultFont = font;
+    	FontUIResource f = new javax.swing.plaf.FontUIResource(font);
+        java.util.Enumeration<Object> keys = UIManager.getDefaults().keys();
+        while (keys.hasMoreElements())
+        {
+            Object key = keys.nextElement();
+            Object value = UIManager.get(key);
+            if (value instanceof javax.swing.plaf.FontUIResource)
+            {
+                UIManager.put(key, f);
+            }
+        }
+    }
+    /**
+     * set a global default font scaled to the size of the and resolution of the screen
+     */
+    public static void setGlobalDefaultFont()
+    {	int fontHeight = Math.max(minFontHeight,Math.min(maxFontHeight,G.standardizeFontSize(G.defaultFontSize)));
+		Font f = G.getFont("Arial Unicode MS"/*"sansserif"*/, G.Style.Plain, fontHeight);
+    	setGlobalDefaultFont (f);
+    }
+    public static int getAbsoluteX(Component c)	// absolute up to the frame
+    {	int x = 0;
+    	Container next=null;
+    	while(c!=null && ((next=c.getParent())!=null)) { x += c.getX()-next.getInsets().left; c = next; }
+    	return(x);
+    }
+    public static int getAbsoluteY(Component c)  // absolute up to the frame
+    {	int y = 0;
+    	Container next = null;
+    	while(c!=null && ((next=c.getParent())!=null)) { y += c.getY()-next.getInsets().top; c = next; }
+    	return(y);
+    }
+    public static boolean equals(Rectangle r,Object o)
+    {
+    	return(r.equals(o));
+    }
+    public static void setRotation(Graphics g,double ang,int cx,int cy)
+    {	if((g!=null) && (ang!=0))
+    	{
+    		g.setRotation(ang,cx,cy);
+    	}
+    }
+ 
+    public static void resetAffine(Graphics g)
+    {	if(g!=null)
+    	{Graphics2D g2 = (Graphics2D)g.getGraphics();
+    	g2.setTransform(new AffineTransform());
+    	}
+    }
+    public static String getLocalIpAddress() 
+    {	InetAddress inetAddress;
+		try {
+		inetAddress = InetAddress.getLocalHost();
+    	return(inetAddress.getHostAddress());
+		} catch (UnknownHostException e) {	}
+		return("unknown");
+    }
+    
+ 	public static NativeInterface MakeNative(Class<?>cl)
+ 	{	String n = cl.getSimpleName();
+ 		return((NativeInterface)MakeInstance("bridge."+n+"Impl"));
+ 	}
+	public static void writeTextToClipboard(String s) {
+	    Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+	    Transferable transferable = new StringSelection(s);
+	    clipboard.setContents(transferable, null);
+	}
+	public static String readTextFromClipboard() {
+	    Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+	    try {
+			String data = (String)(clipboard.getData(DataFlavor.stringFlavor));
+			//G.print("clipboard in: "+data);
+			return(data);
+		} catch(Throwable e) {
+			return(null);
+		}
+	}
+	public static String substring(StringBuilder str,int from,int to) 
+	{ return(str.substring(from,to)); 
+	}
+	public static String replaceAll(String from,String find,String replacement)
+	{	return from.replaceAll(find, replacement);
+	}
+
+	    /**
+	     * 
+	     * @param g
+	     * @param left
+	     * @param top
+	     * @param w
+	     * @param h
+	     */
+	    static public void fillRect(Graphics g, int left, int top, int w,  int h)
+	        {	if(g!=null)
+	        	{
+	            g.fillRect(left, top, w, h);
+	        	}
+	        }
+		public static Rectangle getStringBounds(FontMetrics fm, String line, int i, int line0, Graphics g) {
+			Rectangle2D d = fm.getStringBounds(line,i,line0,g==null ? null : g.getGraphics());
+			return(new Rectangle((int)d.getX(),(int)d.getY(),(int)d.getWidth(),(int)d.getHeight()));
+		}
+		public static Rectangle getStringBounds(FontMetrics fm, String line, Graphics g) {
+			Rectangle2D d = fm.getStringBounds(line, g==null ? null : g.getGraphics());
+			return(new Rectangle((int)d.getX(),(int)d.getY(),(int)d.getWidth(),(int)d.getHeight()));
+		}
+
+
+		public static long nanoTime()
+		{
+			return(System.nanoTime());
+		}
+		
+		/**
+		 * get a platform specific "volatile image" which is more suitable for 
+		 * drawing onto.  The main motivation for adding this was the "horrible fonts"
+		 * bug on OSX Catalina (april 2020), where rendering to an ordinary image made ugly 
+		 * characters due to some bug.
+		 * @param c
+		 * @param width
+		 * @param height
+		 * @return
+		 */
+		public static Image getVolatileImage(Component c,int width,int height)
+		{
+	       GraphicsConfiguration config = c.getGraphicsConfiguration();
+	        if (config == null) {
+	            config = GraphicsEnvironment.getLocalGraphicsEnvironment().
+	                            getDefaultScreenDevice().getDefaultConfiguration();
+	        }
+	       java.awt.image.VolatileImage image = config.createCompatibleVolatileImage(width, height, Transparency.OPAQUE);
+	       return(Image.createImage(image,"volatile image"));
+		}
+		
+		public static boolean getImageValid(Component c,Image m)
+		{	java.awt.Image mm = m.getImage();
+			if(mm instanceof java.awt.image.VolatileImage)
+			{	// when moving from screen to screen, image becomes incompatible
+				java.awt.image.VolatileImage vim = ((java.awt.image.VolatileImage)mm);
+				int vu = vim.validate(c.getGraphicsConfiguration());
+				boolean valid = !(VolatileImage.IMAGE_INCOMPATIBLE==vu);
+				return(valid && !vim.contentsLost());
+			}
+			return(true);
+		}
+	    public static double adjustWindowFontSize(int w,int h)
+	    {	// this allows the fonts to grow when the windows get larger
+	    	double wfac = w/(double)standardWindowWidth;
+	    	double hfac = h/(double)standardWindowHeight;
+	    	double adj = Math.sqrt(Math.min(wfac,hfac));
+	    	return(adj);
+	    }
+	    
+	    public static final Comparator<String> CASE_INSENSITIVE_ORDER = String.CASE_INSENSITIVE_ORDER;
+	 // this is a factory for chat windows which conceals that we
+	 // removed the source code for the old style "window based" interface on codename1 
+	 public static ChatInterface CreateChat(boolean useChat,LFrameProtocol myFrame,ExtendedHashtable sharedInfo,boolean framed)
+	 {
+	     if(useChat)
+	     {	return new ChatWidget(myFrame,sharedInfo,!framed);
+	     
+	     }
+	     else {
+	    	 return new commonChatApplet(myFrame,sharedInfo,false);
+	     }
+	 }
+}

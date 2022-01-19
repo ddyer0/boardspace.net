@@ -1,0 +1,61 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <title>BoardSpace.net Picture Upload Page</title>
+  <script src="/js/site.js">
+  </script>
+</head>
+<body background="/images/background-image.jpg">
+<h1 style="text-align: center;"><img src="/images/master-logo.jpg"
+ title="" alt="boardspace.net" style="width: 600px; height: 100px;"></h1>
+<h1 style="text-align: center;">Picture Upload Page</h1>
+
+
+The photo you upload here will represent you in Boardspace games. You must supply your player name and password.
+
+<Form method="POST" enctype="multipart/form-data" action="/cgi-bin/picture_upload.cgi">
+<table>
+
+<tr>
+<td>Your Player name:</td>
+<td><input name=userid type=text></td>
+</tr>
+
+<tr>
+<td>Your Password:</td>
+<td><input name=pass type=password></td>
+</tr>
+
+<tr>
+<td>Select your Photo:</td>
+<td><input name=upfile type=file SIZE=30></td>
+</tr>
+</table>
+<br>
+
+<i>Maximum 50 KB, a small JPEG image.
+<br>Recommended 100x100 pixels or less
+</i>
+<BR><BR>
+<input type=submit value="Upload Image">
+</blockquote>
+</form>
+<hr style="width: 100%; height: 2px;"><br>
+<table style="width: 100%;">
+  <tbody>
+    <tr>
+      <td align="left"> <font size="-1">E-mail: 
+<script language="javascript">
+document.write("<a href='mailto:gamemaste");
+document.write("r\@board");
+document.write("space.net'>gamemaste<n>r@board<n>space.net</a>");
+</script>
+</font>
+      </td>
+      <td style="vertical-align: top; text-align: center;"></td>
+      <td align="right">Go to <a href="/">BoardSpace.net home page</a> </td>
+    </tr>
+  </tbody>
+</table>
+</center>
+</html>

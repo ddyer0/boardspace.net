@@ -1,0 +1,127 @@
+Power API for XML: Realease-Notes
+Author: Manfred Duchrow
+Copyright (c) 2002-2011, by Manfred Duchrow. All rights reserved.
+=======================================================================
+
+-----------------------------------------------------------------------
+
+VERSION 2.0 ( January 30, 2011 )
+
+* New classes
+  > NamespacePrefixMapper
+  > XmlUtil
+    - public Document readXmlFile(final String filename)
+    - public NamespaceContext extractNamespacesFrom( final Document document )
+	- public NamespaceContext extractNamespacesFrom( final Element rootElement )
+	- public void addNamespacesFromElementAndChildren(NamespacePrefixMapper namespaces, Element element)
+	- public void addNamespacesFrom(NamespacePrefixMapper namespaces, org.w3c.dom.Element element)
+
+-----------------------------------------------------------------------
+
+VERSION 1.4.3 ( February 7, 2010 )
+
+* DOMTreeXMLReader
+  > Added
+    - public void parse(Element element) throws SAXException
+
+-----------------------------------------------------------------------
+
+VERSION 1.4.2 ( September 4, 2009 )
+
+* Each XMLTagInterpreter must now also implement the methods of
+  interface org.xml.sax.ext.LexicalHandler.
+  BaseXMLTagInterpreter already implements empty methods for all
+  LexicalHandler interface.
+  
+-----------------------------------------------------------------------
+
+VERSION 1.4.1 ( April 8, 2006 )
+
+* DOMTreeXMLReader
+  > Bugfix for xmlns:... attributes to be SAX 2.0 compliant and ensure
+    compatibility for JDK 1.5 and JDK 1.4
+
+-----------------------------------------------------------------------
+
+VERSION 1.4 ( July 30, 2004 )
+
+* MarkupWriter can now be configured to use either apostrophes or quotes
+  > Added methods 
+    - useSingleQuotes()
+    - useDoubleQuotes()
+
+* MarkupWriter now replaces apostrophes (') by &apos; and quotes (")
+  by &quot; inside attribute values if the attribute value is enclosed 
+  by the same character.
+
+* XMLWriteController can now be configured to use either apostrophes or quotes
+  > Added methods 
+    - public void useSingleQuotes()
+    - public void useDoubleQuotes() 
+
+* New interface SAXConstants
+
+-----------------------------------------------------------------------
+
+VERSION 1.3 ( December 22, 2003 )
+
+* Changed DOMTreeXMLReader to support namespaces.
+  That means features
+  - http://xml.org/sax/features/namespaces
+  - http://xml.org/sax/features/namespace-prefixes
+  
+* Added new class LoggerProvider
+
+* Changed MarkupWriter to report exceptions to the component logger
+
+* MarkupWriter can now be configured to use apostrophes or quotes
+  - useSingleQuotes()
+  - useDoubleQuotes()
+
+-----------------------------------------------------------------------
+
+VERSION 1.2.1 ( March 17, 2003 )
+
+* Corrected Javadoc comments
+
+-----------------------------------------------------------------------
+
+VERSION 1.2 ( June 30, 2002 )
+
+* Changed package from com.just.pax to org.pf.pax
+
+* Replaced DOMTreeSAXParser with DOMTreeXMLReader which supports
+  SAX2 API
+
+* Changed all classes to support SAX2 API
+
+* XMLWriteController now flushes the output at endDocument() call
+
+* Bugfix: BaseTagInterpreterController.returnControl()
+  Set the controller as content handler of the parser after the last
+  end tag.
+  That ensures that the controller's endDocument() method will be
+  called.
+
+* MarkupWriter now uses " as qoute instead of '
+
+* MarkupWriter now uses system property "line.separator" rather than "\n"
+
+-----------------------------------------------------------------------
+
+VERSION 1.1 ( February 28, 2002 )
+
+* New class for handling of DOM tree as input for SAX parser
+  DOMTreeSAXParser
+
+* MarkupWriter, XMLWriteController, XMLWriteInterpreter
+  for writing of DOM trees
+
+-----------------------------------------------------------------------
+
+VERSION 1.0 ( May 31, 2000 )
+
+* Interfaces XMLTagInterpreter, XMLTagInterpreterController,
+  XMLTagInterpreterFactory plus base implementation classes
+
+-----------------------------------------------------------------------

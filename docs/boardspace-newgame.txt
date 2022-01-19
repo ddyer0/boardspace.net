@@ -1,0 +1,50 @@
+
+Completion Checklist for new games.
+
+-----------------------------------------------
+On Boardspace.net
+
+Add the game to the forums
+
+Add the game to the database (assign two letter short name).  Also to local development database.
+ add a row to "variation"
+ add to the enum in ranking
+ add to the enum in zertz_gamerecord or mp_gamerecord
+ The game server has to be restarted once sometime after this is done.
+
+Upload at least 2 120x120 samples to images/samples/
+Add to include.pl
+Create "about_game.html page, linked to some others and added to logon-page.html
+Edit strings in translations table.
+
+-------------------------------------------------
+On Boardgamegeek
+
+Upload a sample image
+Change info to note playable at boardspace
+add to "current games" geeklist
+remove from "proposed games" geeklist
+edit wiki to add to online games and boardspace.net page
+general announcements.
+
+-------------------------------------------------
+
+On Facebook
+announce on boardspace.net page.
+
+-------------------------------------------------
+
+In Eclipse
+
+Add a gameInfo record
+Add a link to translatable strings, Upload and Download them.
+
+-------------------------------------------------
+On development machine
+
+Resize images to delivery size
+Add game to kawa compilation
+copy images to delivery directory
+add new game to manifest.txt and make-online-jar
+create offline viewer file
+

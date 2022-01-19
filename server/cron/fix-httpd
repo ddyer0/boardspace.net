@@ -1,0 +1,22 @@
+#!/bin/csh
+#
+# this script has to run as root, not as boardspa.  Put it in the root cron jobs
+# to test the process  ~boardspa/certbot-auto renew --dry-run
+# to see expiration dates, ~boardspa/certbot-auto certificates
+#
+set echo
+cd ~boardspa/cron
+set target_file = "/etc/httpd/conf/dummy-httpd.conf"
+set target_string = '^Listen 443$'
+grep -qi "$target_string" $target_file
+set damaged = ($status == 0)
+if ($damaged) then
+echo repairing damage
+/bin/cp -f "$target_file~" "$target_file"
+endif
+
+
+
+
+
+

@@ -1,0 +1,523 @@
+(;C[]
+GC[ LoA Board a47]
+GN[ LoA Board a47]
+PW[mona]
+PB[guzzle]
+FF[4]
+IY[true]
+GM[9]
+;B[B8-B6]
+;W[A7-C7]
+;B[G8-G6]
+;W[H7-F7]
+;B[G1-G3]
+;W[A4-C2]
+;B[C8-E6]
+;W[A2-D2]
+;B[F1-D3]
+;W[H2-E2]
+;B[G6-G4]
+;W[C7-E5]
+;B[F8-D6]
+;W[A5-D5]
+;B[B6-C5]
+;W[A6-D3]
+;B[C5-C2]
+;W[H6-E6]
+;B[D6-B4]
+;W[A3-E3]
+;B[G4-D4]
+;W[H3-F5]
+;B[C1-C3]
+;W[F7-C4]
+;B[B4-C5]
+;C[]
+W[E3-G5]
+)
+(;GC[ LoA Board a27]
+GN[ LoA Board a27]
+PW[mona]
+PB[balu]
+FF[4]
+IY[true]
+GM[9]
+;B[B1-B3]
+;W[A2-C2]
+;B[C1-E3]
+;W[H2-F2]
+;B[G1-G3]
+;W[A5-C7]
+;B[B8-B6]
+;W[A7-D7]
+;B[D8-F6]
+;W[H4-F6]
+;B[G8-E6]
+;W[H7-E7]
+;B[E8-G6]
+;W[H6-F4]
+;B[F8-G7]
+;W[C2-C5]
+;B[D1-F3]
+;W[H5-F3]
+;B[F1-D3]
+;W[F3-E4]
+;B[G7-G4]
+;W[F2-F5]
+;B[G4-F3]
+;W[A4-D4]
+;B[G6-G4]
+;W[A3-D6]
+;B[E6-C4]
+;W[A6-C8]
+;B[G3-A3]
+;W[D6-G3]
+)
+(;GC[ LoA Board a67]
+GN[ LoA Board a67]
+PW[mona]
+PB[aleph]
+FF[4]
+IY[true]
+GM[9]
+;B[B8-B6]
+;W[A7-C7]
+;B[C8-E6]
+;W[H7-F7]
+;B[D8-F6]
+;W[A2-E6]
+;B[F1-F5]
+;W[H4-F6]
+;B[E1-E4]
+;W[H6-F4]
+;B[G8-G6]
+;W[H2-E5]
+;B[E8-G8]
+;W[H3-G2]
+;B[G1-E3]
+;W[G2-E4]
+;B[C1-F4]
+;W[H5-F3]
+;B[D1-F3]
+;W[A6-B5]
+;B[F8-G7]
+;W[C7-C6]
+;B[G7-H6]
+;W[A4-D7]
+;B[B6-D4]
+;W[A3-D3]
+)
+(;GC[ LoA Board a71]
+GN[ LoA Board a71]
+PW[kurtvdb]
+PB[mona]
+FF[4]
+IY[true]
+GM[9]
+;B[B1-B3]
+;W[A2-C2]
+;B[E1-G3]
+;W[A3-C5]
+;B[G1-G4]
+;W[H2-F2]
+;B[B8-B6]
+;W[A7-C7]
+;B[G8-G5]
+;W[A6-C4]
+;B[F8-D6]
+;W[A5-E5]
+;B[D8-D5]
+;W[H7-F5]
+;B[D1-D4]
+;W[F2-D2]
+;B[D6-D2]
+;W[C2-E4]
+;B[E8-E5]
+;W[H3-F1]
+;B[C8-F5]
+;W[F1-F3]
+;B[B3-E3]
+;W[F3-F5]
+;B[B6-D6]
+;W[H6-G7]
+;B[E3-C3]
+;W[F5-F4]
+;B[G4-F5]
+;W[Resign]
+)
+(;GC[ LoA Board a73]
+GN[ LoA Board a73]
+PW[pduff]
+PB[mona]
+FF[4]
+IY[true]
+GM[9]
+;B[B1-B3]
+;W[H3-E3]
+;B[E8-G6]
+;W[A5-C3]
+;B[E1-E3]
+;W[H6-E3]
+;B[C1-E3]
+;W[H4-F4]
+;B[F1-F4]
+;W[H7-F7]
+;B[B3-F7]
+;W[H5-F3]
+;B[F8-G7]
+;W[A3-E3]
+;B[G1-G5]
+;W[E3-E2]
+;B[D1-D3]
+;W[Resign]
+)
+(;GC[ LoA Board a78]
+GN[ LoA Board a78]
+PW[chaunier]
+PB[mona]
+FF[4]
+IY[true]
+GM[9]
+;B[B1-B3]
+;W[A2-C2]
+;B[E1-G3]
+;W[A5-B4]
+;B[G1-G4]
+;W[H5-F7]
+;B[B8-E5]
+;W[A7-D7]
+;B[G8-G5]
+;W[H7-E7]
+;B[C1-F4]
+;W[A4-F4]
+;B[F1-H3]
+;W[D7-G7]
+;B[B3-D5]
+;W[G7-E5]
+;B[D5-F7]
+;W[C2-E2]
+;B[C8-F5]
+;W[A6-C4]
+;B[F8-F4]
+;W[A3-D3]
+;B[F5-D3]
+;W[B4-D6]
+;B[D1-D5]
+;W[E2-G4]
+;B[D8-F8]
+;W[Resign]
+)
+(;GC[ LoA Board a75]
+GN[ LoA Board a75]
+PW[andidi]
+PB[mona]
+FF[4]
+IY[true]
+GM[9]
+;B[B1-B3]
+;W[H3-E3]
+;B[E8-G6]
+;W[H7-F7]
+;B[E1-E3]
+;W[H6-E3]
+;B[C1-E3]
+;W[A7-C7]
+;B[G8-G5]
+;W[H5-F3]
+;B[D1-F3]
+;W[H4-F4]
+;B[G5-E5]
+;W[F7-D7]
+;B[F8-F4]
+;W[D7-B7]
+;B[F1-G2]
+;W[H2-H3]
+;B[G1-G4]
+;W[H3-H4]
+;B[G2-G5]
+;W[A5-D8]
+;B[B3-D5]
+;W[A2-C4]
+;B[C8-E6]
+;W[A4-F4]
+;B[B8-D8]
+;W[A6-D6]
+;B[D8-E8]
+;W[C7-E7]
+;B[E5-D4]
+;W[Resign]
+)
+
+(;
+FF[4]
+GM[9]
+IY[false]
+GC[Game 1 Mona - YL]
+GN[Mona vs YL #1]
+PB[Mona]
+PW[YL]
+;B[d1-b3]; W[a5-c7];
+B[b1-b4]; W[a7-d7];
+B[g1-g3]; W[h3-e6];
+B[g3:c7]; W[h7-e7];
+B[f1-d3]; W[a6-d6];
+B[c1-e3]; W[a2-b1];
+B[e1:e6]; W[h6:e6];
+B[b3:e6]; W[h5-f7];
+B[g8-g7]; W[a4-b3];
+B[b4-d4]; W[b1-a1];
+B[e3:e7]; W[a1:d4];
+B[e6-g6]; W[b3-c2];
+B[b8-b7]; W[h4:e7];
+B[c8-a6]; W[d7-b5];
+B[a6:d6]; W[d4-c4];
+B[g6-e6]; W[f7-f5];
+B[d6-f6]; W[c4:c7];
+B[d3-d5]; W[b5-a6];
+B[d5:f5]; W[a3-d6];
+B[e6-c8++]
+)
+(;
+FF[4]
+GM[9]
+IY[false]
+GC[Game 2 YL - Mona]
+GN[YL vs Mona #2]
+PB[YL]
+PW[Mona]
+;B[d1-b3]; W[a5-c7];
+B[g8-d5]; W[h7-e7];
+B[b1-b4]; W[a7-d7];
+B[b8-b5]; W[h6:f8];
+B[f1-c4]; W[f8:b4];
+B[e8-g6]; W[h2-f4];
+B[g6-g4]; W[a6:c8];
+B[g1-d1]; W[c8:c4];
+B[g4:d7]; W[a3:c1];
+B[d8-d4]; W[a4-a6];
+B[d7-d3]; W[c7-e5];
+B[d5-e4]; W[c1-c3];
+B[d4-e3]; W[f4-f5];
+B[d1-f3]; W[a2-a4];
+B[e1-g3]; W[h4-f6];
+B[d3-d4]; W[h5-d5];
+B[g3:e5]; W[a6-c6];
+B[b3-d1]; W[e7-c5];
+B[b5-b7]; W[c4-b5];
+B[d1-b3]; W[c6-e6];
+B[b7-c7]; W[b4-d6];
+B[e3-f4]; W[f6-g5];
+B[d4-g7]; W[h3-h4];
+B[g7:g5]; W[a4:e4];
+B[f3-g4]; W[h4-h5];
+B[b3:b5]; W[h5-g6];
+B[b5-c4]; W[c3:e5++];
+)
+(;
+FF[4]
+GM[9]
+IY[false]
+GC[Game 3 Mona - YL]
+GN[Mona vs YL #3]
+PB[Mona]
+PW[YL]
+;B[d1-b3]; W[h4-f2];
+B[b8-b5]; W[h2-e2];
+B[g8-g6]; W[a5-c7];
+B[b1-b4]; W[h7-e7];
+B[c1:a3]; W[a7-d4];
+B[c8:a6]; W[h6-g5];
+B[e8:h5]; W[e2-g4];
+B[g1-d1]; W[a2-c2];
+B[d1:g4]; W[h3:h5];
+B[a6-d3]; W[c7-d6];
+B[f8-g7]; W[h5-e5];
+B[e1-c3]; W[e7:g7];
+B[d8-f6]; W[e5:b5];
+B[g6:d6]; W[g5-e5];
+B[f1-c4]; W[b5-d5];
+B[g4-f3]; W[e5-e4];
+B[f3-e2]; W[e4:e2];
+B[d6-e5]; W[f2-g3];
+B[e5-e3]; W[d4-b6];
+B[f6-f5]; W[d5:d3];
+B[b4-d2]; W[a4:c4];
+B[f5-f4++]
+)
+(;
+FF[4]
+GM[9]
+IY[false]
+GC[Game 4  YL - Mona]
+GN[YL vs Mona #4]
+PB[YL]
+PW[Mona]
+;B[d1-b3]; W[h4-f2];
+B[b1-b4]; W[h2-e2];
+B[f8-c5]; W[h3-e3];
+B[b8-b5]; W[e3:b3];
+B[c1-c4]; W[h6-g7];
+B[c8:a6]; W[a7-d7];
+B[e8-g6]; W[f2:c5];
+B[f1-f2]; W[c5:f2];
+B[a6:e2]; W[h5-f3];
+B[g1-g5]; W[a4-c2];
+B[c4:c2]; W[h7-e7];
+B[b5:d7]; W[g7:d7];
+B[d8-b6]; W[e7:b4];
+B[e1:b4]; W[f2-d4];
+B[b6:d4]; W[f3-c3];
+B[g5-e5]; W[a5-b6];
+B[d4:b6]; W[a3-b2];
+B[b4-c4]; W[d7-d6];
+B[b6-c5]; W[d6-d5];
+B[c4-d4]; W[a2-a3];
+B[g8-f8]; W[a3-a4];
+B[c2-e4]; W[a4:d4++]
+)
+(;
+FF[4]
+GM[9]
+IY[false]
+GC[Claude Chaunier vs Mona]
+GN[Chaunier vs Mona]
+PB[Claude Chaunier]
+PW[Mona]
+;B[c1-c3]; W[h5-f7];
+B[g8-g6]; W[h7-e7];
+B[d8-d6]; W[a7-d7];
+B[c8-c6]; W[h3:f1];
+B[g1-g3]; W[a6-c4];
+B[e1-b4]; W[h4-d4];
+B[c6-d5]; W[a4-c2];
+B[b8-b5]; W[a3-a6];
+B[d1-e2]; W[a2:e2];
+B[g6-d3]; W[h2-g1];
+B[f8:h6]; W[a6:d6];
+B[g3-e5]; W[g1-e3];
+B[h6-f6]; W[d6:f6];
+B[e8-d8]; W[a5-c7];
+B[e5:c7]; W[f6:c3];
+B[Resigns];
+)
+(;
+FF[4]
+GM[9]
+IY[false]
+GC[Dave Dyer vs Mona]
+GN[Dyer vs Mona]
+PB[Dave Dyer]
+PW[Mona]
+;B[c8-c6]; W[h5-f7];
+B[g8-g6]; W[h7-e7];
+B[e8-b5]; W[h4-f2];
+B[b1-b4]; W[h2-e2];
+B[b8-c7]; W[a2-d2];
+B[d8:a5]; W[a7-d4];
+B[d1-b3]; W[a3:c1];
+B[g1:c1]; W[e7:b4];
+B[c1-c4]; W[f7:c4];
+B[c7:c4]; W[h6-h4];
+B[g6-f7]; W[a6:c6];
+B[c4:c6]; W[a4-e4];
+B[b5:e2]; W[b4-f4];
+B[f7-d5]; W[f4-g3];
+B[Resigns]
+)
+(;
+FF[4]
+GM[9]
+IY[false]
+GC[Yu Leong Wong vs Mona]
+GN[Wong vs Mona]
+PB[ Yu Leong Wong]
+PW[Mona]
+;B[c8:a6]; W[a5-c7];
+B[g8-g6]; W[h4-f2];
+B[e8:h5]; W[h7-e7];
+B[d1-b3]; W[a7-d7];
+B[b1-b4]; W[h6:f8];
+B[c1:a3]; W[f8:b4];
+B[g1-g3]; W[h2:h5];
+B[e1-c3]; W[h3:f1];
+B[a6-c6]; W[a4-c4];
+B[g6-e6]; W[f1-d3];
+B[g3-d6]; W[e7-b7];
+B[e6-b6]; W[a2-c2];
+B[b8-a7]; W[f2-c5];
+B[a7-a5]; W[h5-e5];
+B[Resigns]
+)
+(;
+FF[4]
+GM[9]
+IY[false]
+GC[Antonio Andidi vs Mona]
+GN[Andidi vs Mona]
+PB[Antonio Andidi]
+PW[Mona]
+;B[d1-b3]; W[h4-f2];
+B[c1-c3]; W[h2-e2];
+B[e1-b4]; W[h5-f7];
+B[b1-b5]; W[h7-e7];
+B[c3-c5]; W[a7-d7];
+B[g1-g3]; W[a6-c6];
+B[f1:h3]; W[f7:b3];
+B[g3-e5]; W[a5-c7];
+B[h3-e3]; W[a3-d3];
+B[e5-f6]; W[b3-e6];
+B[f6-g7]; W[a2-d5];
+B[b4-b7]; W[f2-f4];
+B[c5-a7]; W[h6:e3];
+B[b5:d5]; W[a4-c4];
+B[d5-c5]; W[e2-b5++]
+)
+(;
+FF[4]
+GM[9]
+IY[false]
+GC[Pietro Rossi vs Mona]
+GN[Rossi vs Mona]
+PB[Pietro Rossi]
+PW[Mona]
+;B[c1-c3]; W[h5-f7];
+B[b1-b3]; W[a2-c2];
+B[g1-e3]; W[a7-d7];
+B[f1-f4]; W[f7:f4];
+B[e8-e5]; W[h6:e3];
+B[b8:f4]; W[h3:c3];
+B[g8-e6]; W[h7-f7];
+B[e1-g3]; W[c3:e5];
+B[d1-d4]; W[d7:d4];
+B[f4:f7]; W[h4-e4];
+B[f7-e7]; W[a6-a2];
+B[g3-g4]; W[h2-e2];
+B[b3:e3]; W[e2-d3];
+B[c8-f5]; W[d4-b2++]
+)
+(;
+FF[4]
+GM[9]
+IY[false]
+GC[Uli Vogel vs Mona]
+GN[Vogel vs Mona]
+PB[Uli Vogel]
+PW[Mona]
+;B[b1-b3]; W[a2-c2];
+B[g8-g6]; W[a5-c7];
+B[e1-g3]; W[a7-d7];
+B[c8:a6]; W[h7-e7];
+B[a6-d6]; W[a3:c1];
+B[b8-b6]; W[h2-f2];
+B[g1-g4]; W[h5-g5];
+B[b3-e3]; W[c1-c4];
+B[d1-f3]; W[h6:e3];
+B[g4:d7]; W[a4:d7];
+B[f8-f4]; W[c4:f4];
+B[b6:e3]; W[c2-e4];
+B[f1:h3]; W[c7-f7];
+B[d8-b8]; W[f7:f3];
+B[b8:f4]; W[e4:g6];
+B[Resigns]
+)
+
+

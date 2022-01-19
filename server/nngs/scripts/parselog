@@ -1,0 +1,12 @@
+^New connection.*
+^Login :.*
+^Logout: .*
+^Game.*
+^Disconnecting fd .*
+^Player .*
+^Mail command: .*
+^NewPlayer: .*
+^Time to re-read the ratings file..*
+^Trying to load.*
+^replaying to move nr.*
+^LOGIN: Bad userid:.*

@@ -1,0 +1,50 @@
+#!/bin/csh
+#set echo
+~/cron/dtest.csh $0 60
+source ~/cgi-bin/include.csh
+set v = $?
+if ( $v == 0 ) then
+set now=`date`
+cd ~/cron/backup
+foreach curdb($database $other_databases)
+set name="$curdb.txt.gz"
+if(-e ${name}7) rm ${name}7
+if(-e ${name}6) mv ${name}6 ${name}7
+if(-e ${name}5) mv ${name}5 ${name}6
+if(-e ${name}4) mv ${name}4 ${name}5
+if(-e ${name}3) mv ${name}3 ${name}4
+if(-e ${name}2) mv ${name}2 ${name}3
+if(-e ${name}1) mv ${name}1 ${name}2
+if(-e ${name}) mv ${name} ${name}1
+mysqldump --single_transaction -q --password=$db_password --user=$db_user $curdb | gzip > $name
+# save a link for the mirror.  These items are in the private mirror space
+if(-e $mirror/$name) rm $mirror/$name
+ln $name $mirror/$name
+
+end
+
+#
+# save other stuff there too
+#
+set name=$name_change_log
+set name=$name:t
+if(-e $mirror/$name) rm $mirror/$name
+ln $name_change_log $mirror/$name
+#
+set name=$game_completed_log
+set name=$name:t
+if(-e $mirror/$name) rm $mirror/$name
+ln $game_completed_log $mirror/$name
+#
+set name=$server_logon_log
+set name=$name:t
+if(-e $mirror/$name) rm $mirror/$name
+ln $server_logon_log $mirror/$name
+#end of per database loop
+
+#
+# clean up the lock file
+#
+cd ~
+rm -f ${0}.lock
+endif

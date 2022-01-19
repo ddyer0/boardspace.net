@@ -1,0 +1,96 @@
+Plugin Utilities Realease-Notes
+Author: Manfred Duchrow
+Copyright (c) 2003-2007, by Manfred Duchrow. All rights reserved.
+=======================================================================
+
+
+-----------------------------------------------------------------------
+
+VERSION 1.5 ( March 2, 2007 )
+
+* New classes and interfaces
+  > IInitializablePlugin
+  > PluginHolder
+  > PluginRegistry
+
+* ClassRegistry
+  > Changed
+    - public boolean remove( Object key )
+    Bug: Did not work!
+
+-----------------------------------------------------------------------
+
+VERSION 1.4.2 ( June 3, 2006 )
+
+* PluginUtil
+  > Changed visibility of constructor PluginUtil() from private to 
+    protected
+
+-----------------------------------------------------------------------
+
+VERSION 1.4.1 ( April 8, 2006 )
+
+* PluginUtilTest
+  > Changed test_getPluginClasspath_3() to concatenate classpath entries 
+    correctly 
+
+-----------------------------------------------------------------------
+
+VERSION 1.4 ( March 25, 2006 )
+
+* PluginUtil
+  > Internal refactoring - delegates now more to FileUtil
+
+-----------------------------------------------------------------------
+
+VERSION 1.3 ( December 27, 2004 )
+
+* PluginCollector
+  > Added support for plug-in properties files from within Eclipse (3.0)
+  
+  > New methods 
+    - public ClassRegistry loadPlugins( String filename, Classpath classpath )
+    - public Classpath getPluginClasspath()
+    
+  > With system property "org.pf.plugin.path" it is possible to define
+    an explicit classpath to be looked up when searching for plug-ins.
+    Such a classpath may contain patterns for Java archives (e.g. *.jar).
+    Example: -Dorg.pf.plugin.path=c:/test/classes;c:/plugins/lib/*.jar
+
+-----------------------------------------------------------------------
+
+VERSION 1.2 ( December 22, 2003 )
+
+* PluginCollector
+  - Added a system property to switch on the debug mode of this class:
+    -Dorg.pf.plugin.PluginCollector.debug=true
+    This will trace the lookup and registration of plugin definitions
+    to stdout.
+
+  - Changed to extract the classpath from the manifest file if the
+    program was started via -jar option
+    
+  - Lookup the directories defined by system property "java.ext.dirs"
+    as well for potential plug-ins.
+
+-----------------------------------------------------------------------
+
+VERSION 1.1 ( February 28, 2003 )
+
+* New methods in ClassRegistry
+  - String[] keys()
+  - CalssInfo[] values()
+  - Class[] classes()
+  - String[] classNames()
+  - ClassInfo getClassInfo( key )
+
+-----------------------------------------------------------------------
+
+VERSION 1.0 ( February 7, 2003 )
+
+* ClassRegistry
+
+* PluginCollector
+
+-----------------------------------------------------------------------
+

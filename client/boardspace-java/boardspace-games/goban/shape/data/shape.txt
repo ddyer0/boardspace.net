@@ -1,0 +1,523 @@
+/* details of possible conflicts in dropped-shape data */
+
+position conflict for merged shapes #<shape.OneShape@cbe3148e W FIVE@ 2Slb> and #<shape.ShapeNormalizer@cbe3148e W FIVE@ 8Slb p7>
+Details:
+Compare #<shape.ResultCode Slb > #<shape.ResultCode Slb >
+2 #<shape.SingleResult Alive@3 2-4L > #<shape.MultiResult 2: Alive-Alive >
+position conflict for merged shapes #<shape.OneShape@cbe3148e W FIVE@ 2Slb W FIVE@ 8Slb p7 ncopy Z FIVE@ 8Srb p3 ncopy> and #<shape.ShapeNormalizer@cbe3148e Z FIVE@ 2Slt p1>
+Details:
+Compare #<shape.ResultCode Srt > #<shape.ResultCode Srt >
+0 #<shape.SingleResult Alive@2 4-6L > #<shape.SingleResult Alive@4 4-6L >
+10 #<shape.MultiResult 2: Alive-Alive > #<shape.MultiResult 2: Alive-Alive >
+position conflict for merged shapes #<shape.OneShape@134e8b9 unnamed_50@ 16Srb> and #<shape.ShapeNormalizer@134e8b9 unnamed_50@ 2Srt p2>
+Details:
+Compare #<shape.ResultCode Frb > #<shape.ResultCode Frb >
+1 #<shape.SingleResult Alive pass 3-5L > #<shape.SingleResult Alive@2 3-5L >
+2 #<shape.SingleResult Alive pass 3-5L > #<shape.SingleResult Alive@3 3-5L >
+4 #<shape.SingleResult Alive@5 3-5L > #<shape.SingleResult Alive@2 3-5L >
+16 #<shape.SingleResult Alive@3 4-6L > #<shape.MultiResult 2: Alive-Alive >
+position conflict for merged shapes #<shape.OneShape@134e8b9 unnamed_50@ 16Srb> and #<shape.ShapeNormalizer@134e8b9 unnamed_50@ 2Srt p2>
+Details:
+Compare #<shape.ResultCode Srb > #<shape.ResultCode Srb >
+0 #<shape.MultiResult 2: Alive-Alive > #<shape.SingleResult Alive@3 4-6L >
+1 #<shape.SingleResult Alive@3 3-5L > #<shape.SingleResult Alive@5 3-5L >
+2 #<shape.SingleResult Alive@1 3-5L > #<shape.SingleResult Alive@3 3-5L >
+4 #<shape.MultiResult 2: Alive-Alive > #<shape.SingleResult Alive@5 3-5L >
+6 #<shape.SingleResult Alive@1 2-4L > #<shape.MultiResult 2: Alive-Alive >
+position conflict for merged shapes #<shape.OneShape@134e8b9 unnamed_50@ 16Srb> and #<shape.ShapeNormalizer@134e8b9 unnamed_50@ 2Srt p2>
+Details:
+Compare #<shape.ResultCode SlbScb > #<shape.ResultCode SlbScb >
+0 #<shape.SingleResult Alive@2 5-7L > #<shape.SingleResult Alive@5 5-7L >
+1 #<shape.MultiResult 2: Alive-Alive > #<shape.SingleResult Alive@5 4-6L >
+2 #<shape.SingleResult Alive@1 4-6L > #<shape.SingleResult Alive@5 4-6L >
+4 #<shape.MultiResult 2: Alive-Alive > #<shape.SingleResult Alive@5 4-6L >
+16 #<shape.MultiResult 2: Alive-Alive > #<shape.SingleResult Alive@1 4-6L >
+position conflict for merged shapes #<shape.OneShape@33706e7e WING SIX@ 8Srb> and #<shape.ShapeNormalizer@33706e7e WING SIX@ 16Srb p6>
+Details:
+Compare #<shape.ResultCode ScbSrb > #<shape.ResultCode SlbScb >
+1 #<shape.MultiResult 2: Alive-Alive > #<shape.MultiResult 2: Alive-Alive >
+3 #<shape.SingleResult Alive@4 2-4L > #<shape.MultiResult 2: Alive-Alive >
+8 #<shape.SingleResult Alive@1 4-6L > #<shape.SingleResult Alive@2 4-6L >
+17 #<shape.MultiResult 2: Alive-Alive > #<shape.SingleResult Alive@4 2-4L >
+position conflict for merged shapes #<shape.OneShape@33706e7e WING SIX@ 8Srb> and #<shape.ShapeNormalizer@33706e7e WING SIX@ 16Srb p6>
+Details:
+Compare #<shape.ResultCode Slb > #<shape.ResultCode SlbScb >
+1 #<shape.MultiResult 2: Alive-Alive > #<shape.MultiResult 2: Alive-Alive >
+3 #<shape.SingleResult Alive@4 2-4L > #<shape.MultiResult 2: Alive-Alive >
+8 #<shape.SingleResult Alive@1 4-6L > #<shape.SingleResult Alive@2 4-6L >
+17 #<shape.MultiResult 2: Alive-Alive > #<shape.SingleResult Alive@4 2-4L >
+25 #<shape.MultiResult 2: Alive-Alive > #<shape.MultiResult 2: Alive-Alive >
+position conflict for merged shapes #<shape.OneShape@33706e7e WING SIX@ 8Srb> and #<shape.ShapeNormalizer@33706e7e WING SIX@ 16Srb p6>
+Details:
+Compare #<shape.ResultCode ScbSrb > #<shape.ResultCode Srb >
+1 #<shape.MultiResult 2: Alive-Alive > #<shape.MultiResult 2: Alive-Alive >
+3 #<shape.SingleResult Alive@4 2-4L > #<shape.MultiResult 2: Alive-Alive >
+8 #<shape.SingleResult Alive@1 4-6L > #<shape.SingleResult Alive@2 4-6L >
+17 #<shape.MultiResult 2: Alive-Alive > #<shape.SingleResult Alive@4 2-4L >
+25 #<shape.MultiResult 2: Alive-Alive > #<shape.MultiResult 2: Alive-Alive >
+position conflict for merged shapes #<shape.OneShape@33706e7e WING SIX@ 8Srb> and #<shape.ShapeNormalizer@33706e7e WING SIX@ 16Srb p6>
+Details:
+Compare #<shape.ResultCode FlbFcbFrb > #<shape.ResultCode FlbFcbFrb >
+1 #<shape.SingleResult Alive pass 3-5L > #<shape.SingleResult Alive@4 3-5L >
+8 #<shape.SingleResult Alive@1 4-6L > #<shape.SingleResult Alive pass 4-6L >
+position conflict for merged shapes #<shape.OneShape@5b0decd unnamed_70@ 16Srb> and #<shape.ShapeNormalizer@5b0decd unnamed_70@ 4Srb p5>
+Details:
+Compare #<shape.ResultCode SlbScb > #<shape.ResultCode SlbScb >
+0 #<shape.SingleResult Alive@3 5-7L > #<shape.SingleResult Alive@2 5-7L >
+1 #<shape.MultiResult 2: Alive-Alive > #<shape.SingleResult Alive@2 4-6L >
+2 #<shape.MultiResult 2: Alive-Alive > #<shape.SingleResult Alive@5 4-6L >
+16 #<shape.MultiResult 2: Alive-Alive > #<shape.SingleResult Alive@2 4-6L >
+position conflict for merged shapes #<shape.OneShape@d2970eff STAIRCASE SIX@ 16Slb> and #<shape.ShapeNormalizer@d2970eff STAIRCASE SIX@ 2Srt p2>
+Details:
+Compare #<shape.ResultCode Slb > #<shape.ResultCode Slb >
+0 #<shape.SingleResult Alive@1 4-6L > #<shape.SingleResult Alive@4 4-6L >
+2 #<shape.SingleResult Alive@1 3-5L > #<shape.SingleResult Alive@4 3-5L >
+9 #<shape.SingleResult Alive@3 2-4L > #<shape.MultiResult 2: Alive-Alive >
+position conflict for merged shapes #<shape.OneShape@d2970eff STAIRCASE SIX@ 16Slb> and #<shape.ShapeNormalizer@d2970eff STAIRCASE SIX@ 2Srt p2>
+Details:
+Compare #<shape.ResultCode Flb > #<shape.ResultCode Flb >
+9 #<shape.SingleResult Alive@3 2-4L > #<shape.MultiResult 2: Alive-Alive >
+position conflict for merged shapes #<shape.OneShape@7ea16e0c STAIRCASE SIX@ 4Slb> and #<shape.ShapeNormalizer@7ea16e0c STAIRCASE SIX@ 8Srt p2>
+Details:
+Compare #<shape.ResultCode Flb > #<shape.ResultCode Flb >
+12 #<shape.SingleResult Alive@1 3-5L > #<shape.SingleResult Alive@2 3-5L >
+20 #<shape.SingleResult Alive@1 2-4L > #<shape.SingleResult Alive@2 2-4L >
+position conflict for merged shapes #<shape.OneShape@7ea16e0c STAIRCASE SIX@ 4Slb> and #<shape.ShapeNormalizer@7ea16e0c STAIRCASE SIX@ 8Srt p2>
+Details:
+Compare #<shape.ResultCode Slb > #<shape.ResultCode Slb >
+1 #<shape.MultiResult 2: Alive-Alive > #<shape.SingleResult Alive@3 3-5L >
+2 #<shape.MultiResult 2: Alive-Alive > #<shape.SingleResult Alive@3 3-5L >
+4 #<shape.SingleResult Alive@1 3-5L > #<shape.SingleResult Alive@2 3-5L >
+12 #<shape.MultiResult 2: Alive-Alive > #<shape.MultiResult 2: Alive-Alive >
+16 #<shape.SingleResult Alive@1 3-5L > #<shape.SingleResult Alive@3 3-5L >
+20 #<shape.MultiResult 2: Alive-Alive > #<shape.MultiResult 2: Alive-Alive >
+position conflict for merged shapes #<shape.OneShape@7203fe60 unnamed_118@ 16Srb> and #<shape.ShapeNormalizer@7203fe60 unnamed_118@ 2Slt p2>
+Details:
+Compare #<shape.ResultCode Srb > #<shape.ResultCode Srb >
+8 #<shape.SingleResult Alive@3 4-6L > #<shape.MultiResult 2: Alive-Alive >
+28 #<shape.MultiResult 2: Alive-Alive > #<shape.MultiResult 2: Alive-Alive >
+position conflict for merged shapes #<shape.OneShape@60a8720c unnamed_100@ 2Srt C SIX@ 32Srb p6 ncopy> and #<shape.ShapeNormalizer@60a8720c C SIX@ 4Slb p0>
+Details:
+Compare #<shape.ResultCode Slb > #<shape.ResultCode Slb >
+16 #<shape.SingleResult Alive@4 4-6L > #<shape.SingleResult Alive@3 4-6L >
+position conflict for merged shapes #<shape.OneShape@60a8720c unnamed_100@ 2Srt C SIX@ 32Srb p6 ncopy> and #<shape.ShapeNormalizer@60a8720c C SIX@ 4Slb p0>
+Details:
+Compare #<shape.ResultCode Flb > #<shape.ResultCode Flb >
+16 #<shape.SingleResult Alive pass 4-6L > #<shape.SingleResult Alive@3 4-6L >
+position conflict for merged shapes #<shape.OneShape@7f1c7ed1 unnamed_121@ 32Srb unnamed_134@ 32Srb p2 ncopy> and #<shape.ShapeNormalizer@7f1c7ed1 unnamed_134@ 1Slt p0>
+Details:
+Compare #<shape.ResultCode Slt > #<shape.ResultCode Slt >
+4 #<shape.SingleResult Alive@4 4-6L > #<shape.MultiResult 2: Alive-Alive >
+8 #<shape.SingleResult Alive@3 4-6L > #<shape.SingleResult Alive@5 4-6L >
+9 #<shape.MultiResult 2: Alive-Alive > #<shape.MultiResult 2: Alive-Alive >
+12 #<shape.SingleResult Alive@5 3-5L > #<shape.MultiResult 2: Alive-Alive >
+16 #<shape.MultiResult 2: Alive-Alive > #<shape.MultiResult 2: Alive-Alive >
+17 #<shape.MultiResult 2: Alive-Alive > #<shape.SingleResult Alive@4 3-5L >
+24 #<shape.SingleResult Alive@3 3-5L > #<shape.MultiResult 2: Alive-Alive >
+position conflict for merged shapes #<shape.OneShape@7f1c7ed1 unnamed_121@ 32Srb unnamed_134@ 32Srb p2 ncopy> and #<shape.ShapeNormalizer@7f1c7ed1 unnamed_134@ 1Slt p0>
+Details:
+Compare #<shape.ResultCode Flt > #<shape.ResultCode Flt >
+9 #<shape.SingleResult Alive@3 3-5L > #<shape.SingleResult Alive@5 3-5L >
+17 #<shape.MultiResult 2: Alive-Alive > #<shape.SingleResult Alive@4 3-5L >
+position conflict for merged shapes #<shape.OneShape@18d0a5dc :SEKI-SEVEN@ 8Srb> and #<shape.ShapeNormalizer@18d0a5dc unnamed_190@ 64Srb p0>
+Details:
+Compare #<shape.ResultCode Srb > #<shape.ResultCode Srb >
+4 #<shape.SingleResult Alive@1 3-5L > #<shape.SingleResult Alive@2 3-5L >
+5 #<shape.MultiResult 2: Alive-Alive > #<shape.SingleResult Alive@2 2-4L >
+13 #<shape.SingleResult Alive@5 2-4L > #<shape.SingleResult Alive@2 2-4L >
+21 #<shape.MultiResult 2: Alive-Alive > #<shape.SingleResult Alive@2 1-3L >
+25 #<shape.SingleResult Alive@3 2-4L > #<shape.MultiResult 2: Alive-Alive >
+26 #<shape.SingleResult Alive@1 2-9L > #<shape.SingleResult Alive@1 2-6L >
+28 #<shape.SingleResult Alive@1 2-4L > #<shape.MultiResult 2: Alive-Alive >
+36 #<shape.SingleResult Alive@1 3-5L > #<shape.SingleResult Alive@2 3-5L >
+48 #<shape.MultiResult 2: Alive-Alive > #<shape.SingleResult Alive@4 3-6L >
+50 #<shape.MultiResult 2: Alive-Alive > #<shape.MultiResult 2: Alive-Alive >
+51 #<shape.SingleResult Alive@3 1-4L > #<shape.SingleResult Alive@3 1-3L >
+position conflict for merged shapes #<shape.OneShape@18d0a5dc :SEKI-SEVEN@ 8Srb> and #<shape.ShapeNormalizer@18d0a5dc unnamed_190@ 64Srb p0>
+Details:
+Compare #<shape.ResultCode Frb > #<shape.ResultCode Frb >
+5 #<shape.MultiResult 3: Alive-Alive > #<shape.SingleResult Alive@2 2-4L >
+7 #<shape.MultiResult 2: Dead-with-Eye-Alive > #<shape.MultiResult 2: Dead-Alive >
+12 #<shape.MultiResult 2: Alive-Alive > #<shape.MultiResult 2: Alive-Alive >
+13 #<shape.SingleResult Dead-with-Eye@6 2-4L > #<shape.SingleResult Dead@6 2-4L >
+19 #<shape.MultiResult 2: Dead-with-Eye-Alive > #<shape.MultiResult 2: Dead-Alive >
+21 #<shape.MultiResult 2: Dead-with-Eye-Alive > #<shape.MultiResult 2: Dead-Alive >
+22 #<shape.MultiResult 2: Dead-with-Eye-Alive > #<shape.MultiResult 2: Dead-Alive >
+23 #<shape.MultiResult 3: Impossible-Alive > #<shape.MultiResult 3: Impossible-Alive >
+26 #<shape.SingleResult Seki@6 2-9L > #<shape.SingleResult Seki@6 2-6L >
+28 #<shape.SingleResult Alive-in-Ko@6 2-4L > #<shape.SingleResult Alive-in-Ko@6 2-3L >
+29 #<shape.MultiResult 2: Dead-with-Eye-Dead-with-Eye > #<shape.MultiResult 2: Dead-Dead >
+30 #<shape.MultiResult 2: Dead-with-Eye-Alive-in-Ko > #<shape.MultiResult 2: Dead-Alive-in-Ko >
+33 #<shape.MultiResult 2: Alive-Alive > #<shape.MultiResult 2: Alive-Alive >
+35 #<shape.SingleResult Alive-in-Ko@4 2-4L > #<shape.MultiResult 2: Alive-in-Ko-Alive >
+36 #<shape.MultiResult 2: Alive-Alive > #<shape.SingleResult Alive@4 3-5L >
+37 #<shape.SingleResult Dead-with-Eye@4 2-4L > #<shape.SingleResult Dead@4 2-4L >
+38 #<shape.SingleResult Alive-in-Ko@4 2-3L > #<shape.MultiResult 2: Alive-in-Ko-Alive >
+39 #<shape.MultiResult 2: Dead-with-Eye-Dead-with-Eye > #<shape.MultiResult 2: Dead-Dead >
+50 #<shape.SingleResult Seki@4 2-9L > #<shape.SingleResult Seki@4 2-6L >
+51 #<shape.MultiResult 2: Dead-with-Eye-Alive-in-Ko > #<shape.MultiResult 2: Dead-Alive-in-Ko >
+position conflict for merged shapes #<shape.OneShape@650bd2f0 unnamed_155@ 4Srb> and #<shape.ShapeNormalizer@650bd2f0 unnamed_190@ 16Slb p1>
+Details:
+Compare #<shape.ResultCode Flt > #<shape.ResultCode Flt >
+22 #<shape.SingleResult Dead-with-Eye@1 3-5L > #<shape.SingleResult Dead@1 3-5L >
+30 #<shape.SingleResult Dead-with-Eye@1 2-4L > #<shape.SingleResult Dead@1 2-4L >
+54 #<shape.SingleResult Dead-with-Eye@1 2-4L > #<shape.SingleResult Dead@1 2-4L >
+60 #<shape.MultiResult 2: Dead-with-Eye-Alive > #<shape.MultiResult 2: Dead-Alive >
+position conflict for merged shapes #<shape.OneShape@650bd2f0 unnamed_155@ 4Srb unnamed_190@ 16Slb p1 ncopy> and #<shape.ShapeNormalizer@650bd2f0 unnamed_190@ 2Srt p0>
+Details:
+Compare #<shape.ResultCode Frt > #<shape.ResultCode Frt >
+22 #<shape.SingleResult Dead-with-Eye@1 3-5L > #<shape.SingleResult Dead@1 3-5L >
+30 #<shape.SingleResult Dead-with-Eye@1 2-4L > #<shape.SingleResult Dead@1 2-4L >
+54 #<shape.SingleResult Dead-with-Eye@1 2-4L > #<shape.SingleResult Dead@1 2-4L >
+58 #<shape.MultiResult 2: Dead-with-Eye-Alive > #<shape.MultiResult 2: Dead-Alive >
+position conflict for merged shapes #<shape.OneShape@650bd2f0 unnamed_155@ 4Srb unnamed_190@ 16Slb p1 ncopy> and #<shape.ShapeNormalizer@650bd2f0 unnamed_190@ 2Srt p0>
+Details:
+Compare #<shape.ResultCode Srt > #<shape.ResultCode Srt >
+0 #<shape.SingleResult Alive@5 5-7L > #<shape.SingleResult Alive@1 5-7L >
+2 #<shape.SingleResult Alive@5 4-6L > #<shape.SingleResult Alive@1 4-6L >
+8 #<shape.SingleResult Alive@5 4-6L > #<shape.SingleResult Alive@2 4-6L >
+10 #<shape.MultiResult 2: Alive-Alive > #<shape.SingleResult Alive@1 3-5L >
+12 #<shape.MultiResult 2: Alive-Alive > #<shape.SingleResult Alive@1 4-6L >
+18 #<shape.SingleResult Alive@6 3-5L > #<shape.SingleResult Alive@1 3-5L >
+32 #<shape.SingleResult Alive@5 4-6L > #<shape.MultiResult 2: Alive-Alive >
+36 #<shape.MultiResult 2: Alive-Alive > #<shape.SingleResult Alive@1 4-6L >
+38 #<shape.SingleResult Alive@5 3-5L > #<shape.MultiResult 2: Alive-Alive >
+position conflict for merged shapes #<shape.OneShape@bf60d6b2 unnamed_168@ 32Srb unnamed_246@ 64Srb p6 ncopy> and #<shape.ShapeNormalizer@bf60d6b2 unnamed_246@ 2Srt p2>
+Details:
+Compare #<shape.ResultCode Slb > #<shape.ResultCode Slb >
+6 #<shape.SingleResult Alive@4 4-6L > #<shape.SingleResult Alive@5 4-6L >
+28 #<shape.SingleResult Alive@1 3-5L > #<shape.MultiResult 2: Alive-Alive >
+29 #<shape.MultiResult 2: Alive-Alive > #<shape.MultiResult 2: Alive-Alive >
+30 #<shape.MultiResult 2: Alive-Alive > #<shape.MultiResult 2: Alive-Alive >
+position conflict for merged shapes #<shape.OneShape@bd7d73ea unnamed_274@ 64Srb> and #<shape.ShapeNormalizer@bd7d73ea unnamed_274@ 1Slt p2>
+Details:
+Compare #<shape.ResultCode Srb > #<shape.ResultCode Srb >
+3 #<shape.SingleResult Alive@3 4-6L > #<shape.SingleResult Alive@4 4-6L >
+4 #<shape.SingleResult Alive@2 5-7L > #<shape.MultiResult 2: Alive-Alive >
+5 #<shape.SingleResult Alive@2 4-6L > #<shape.SingleResult Alive@4 4-6L >
+6 #<shape.SingleResult Alive@4 4-6L > #<shape.SingleResult Alive@6 4-6L >
+7 #<shape.SingleResult Alive@4 3-5L > #<shape.MultiResult 2: Alive-Alive >
+9 #<shape.MultiResult 2: Alive-Alive > #<shape.MultiResult 2: Alive-Alive >
+11 #<shape.SingleResult Alive@3 3-5L > #<shape.MultiResult 2: Alive-Alive >
+22 #<shape.MultiResult 2: Alive-Alive > #<shape.MultiResult 2: Alive-Alive >
+26 #<shape.MultiResult 2: Alive-Alive > #<shape.MultiResult 2: Alive-Alive >
+28 #<shape.SingleResult Alive@6 3-5L > #<shape.SingleResult Alive@2 3-5L >
+35 #<shape.MultiResult 2: Alive-Alive > #<shape.MultiResult 2: Alive-Alive >
+37 #<shape.SingleResult Alive@2 3-5L > #<shape.MultiResult 2: Alive-Alive >
+position conflict for merged shapes #<shape.OneShape@bd7d73ea unnamed_274@ 64Srb> and #<shape.ShapeNormalizer@bd7d73ea unnamed_274@ 1Slt p2>
+Details:
+Compare #<shape.ResultCode Frb > #<shape.ResultCode Frb >
+6 #<shape.SingleResult Alive@4 4-6L > #<shape.SingleResult Alive@6 4-6L >
+35 #<shape.SingleResult Alive@3 3-5L > #<shape.SingleResult Alive@4 3-5L >
+37 #<shape.SingleResult Alive@2 3-5L > #<shape.MultiResult 2: Alive-Alive >
+position conflict for merged shapes #<shape.OneShape@9bcd666 unnamed_281@ 8Srb> and #<shape.ShapeNormalizer@9bcd666 unnamed_281@ 64Srb p5>
+Details:
+Compare #<shape.ResultCode Frb > #<shape.ResultCode Frb >
+12 #<shape.SingleResult Alive@2 3-5L > #<shape.SingleResult Alive pass 3-5L >
+21 #<shape.SingleResult Alive@6 2-4L > #<shape.MultiResult 2: Alive-Alive >
+30 #<shape.MultiResult 2: Dead-Dead > #<shape.SingleResult Dead@6 1-3L >
+40 #<shape.SingleResult Alive@3 4-6L > #<shape.SingleResult Alive pass 4-6L >
+position conflict for merged shapes #<shape.OneShape@9bcd666 unnamed_281@ 8Srb> and #<shape.ShapeNormalizer@9bcd666 unnamed_281@ 64Srb p5>
+Details:
+Compare #<shape.ResultCode Srb > #<shape.ResultCode Srb >
+1 #<shape.MultiResult 2: Alive-Alive > #<shape.SingleResult Alive@3 4-6L >
+5 #<shape.SingleResult Alive@5 3-5L > #<shape.SingleResult Alive@2 3-5L >
+8 #<shape.SingleResult Alive@2 4-6L > #<shape.SingleResult Alive@3 4-6L >
+14 #<shape.SingleResult Alive@5 2-4L > #<shape.SingleResult Alive@6 2-4L >
+17 #<shape.MultiResult 2: Alive-Alive > #<shape.SingleResult Alive@3 3-5L >
+21 #<shape.MultiResult 2: Alive-Alive > #<shape.SingleResult Alive@2 2-4L >
+37 #<shape.SingleResult Alive@2 3-5L > #<shape.SingleResult Alive@5 3-5L >
+41 #<shape.MultiResult 2: Alive-Alive > #<shape.MultiResult 2: Alive-Alive >
+56 #<shape.MultiResult 2: Alive-Alive > #<shape.SingleResult Alive@3 3-5L >
+position conflict for merged shapes #<shape.OneShape@f5837be3 unnamed_314@ 32Srb> and #<shape.ShapeNormalizer@f5837be3 unnamed_314@ 2Slt p2>
+Details:
+Compare #<shape.ResultCode Srb > #<shape.ResultCode Srb >
+0 #<shape.SingleResult Alive@4 6-8L > #<shape.SingleResult Alive@3 6-8L >
+16 #<shape.MultiResult 2: Alive-Alive > #<shape.SingleResult Alive@3 5-7L >
+24 #<shape.SingleResult Alive@3 4-6L > #<shape.MultiResult 2: Alive-Alive >
+32 #<shape.SingleResult Alive@4 5-7L > #<shape.SingleResult Alive@3 5-7L >
+60 #<shape.MultiResult 2: Alive-Alive > #<shape.MultiResult 2: Alive-Alive >
+position conflict for merged shapes #<shape.OneShape@dd1dc4e6 unnamed_319@ 1Slt> and #<shape.ShapeNormalizer@dd1dc4e6 unnamed_319@ 8Slt p5>
+Details:
+Compare #<shape.ResultCode Slt > #<shape.ResultCode Slt >
+0 #<shape.SingleResult Alive@2 5-7L > #<shape.SingleResult Alive@4 5-7L >
+14 #<shape.MultiResult 2: Alive-Alive > #<shape.MultiResult 2: Alive-Alive >
+16 #<shape.SingleResult Alive@2 4-6L > #<shape.SingleResult Alive@4 4-6L >
+26 #<shape.MultiResult 2: Alive-Alive > #<shape.SingleResult Alive@3 2-4L >
+30 #<shape.MultiResult 2: Alive-Alive > #<shape.MultiResult 2: Alive-Alive >
+36 #<shape.MultiResult 2: Alive-Alive > #<shape.SingleResult Alive@4 4-6L >
+40 #<shape.MultiResult 2: Alive-Alive > #<shape.MultiResult 2: Alive-Alive >
+42 #<shape.MultiResult 2: Alive-Alive > #<shape.MultiResult 2: Alive-Alive >
+46 #<shape.MultiResult 2: Alive-Alive > #<shape.MultiResult 2: Alive-Alive >
+position conflict for merged shapes #<shape.OneShape@37addd8a unnamed_349@ 16Srb> and #<shape.ShapeNormalizer@37addd8a unnamed_349@ 4Slb p2>
+Details:
+Compare #<shape.ResultCode Frt > #<shape.ResultCode Frt >
+25 #<shape.MultiResult 2: Dead-in-Ko-Alive-in-Ko > #<shape.SingleResult Alive-in-Ko@2 2-5L >
+position conflict for merged shapes #<shape.OneShape@37addd8a unnamed_349@ 16Srb> and #<shape.ShapeNormalizer@37addd8a unnamed_349@ 4Slb p2>
+Details:
+Compare #<shape.ResultCode Srt > #<shape.ResultCode Srt >
+8 #<shape.SingleResult Alive@1 4-6L > #<shape.MultiResult 2: Alive-Alive >
+9 #<shape.SingleResult Alive@3 3-5L > #<shape.MultiResult 2: Alive-Alive >
+13 #<shape.SingleResult Alive@5 2-5L > #<shape.MultiResult 2: Alive-Alive >
+position conflict for merged shapes #<shape.OneShape@37addd8a unnamed_349@ 16Srb> and #<shape.ShapeNormalizer@37addd8a unnamed_349@ 4Slb p2>
+Details:
+Compare #<shape.ResultCode Srb > #<shape.ResultCode Srb >
+8 #<shape.MultiResult 2: Alive-Alive > #<shape.SingleResult Alive@5 4-6L >
+24 #<shape.SingleResult Alive@3 3-5L > #<shape.MultiResult 2: Alive-Alive >
+28 #<shape.SingleResult Alive@1 2-5L > #<shape.MultiResult 2: Alive-Alive >
+position conflict for merged shapes #<shape.OneShape@df0426c9 unnamed_418@ 64Srb> and #<shape.ShapeNormalizer@df0426c9 unnamed_418@ 4Slb p6>
+Details:
+Compare #<shape.ResultCode Frb > #<shape.ResultCode Frb >
+12 #<shape.SingleResult Alive pass 4-6L > #<shape.SingleResult Alive@6 4-6L >
+33 #<shape.SingleResult Alive pass 4-6L > #<shape.SingleResult Alive@5 4-6L >
+37 #<shape.SingleResult Alive pass 3-5L > #<shape.SingleResult Alive@2 3-5L >
+40 #<shape.SingleResult Alive@3 4-6L > #<shape.SingleResult Alive@5 4-6L >
+position conflict for merged shapes #<shape.OneShape@df0426c9 unnamed_418@ 64Srb> and #<shape.ShapeNormalizer@df0426c9 unnamed_418@ 4Slb p6>
+Details:
+Compare #<shape.ResultCode Srb > #<shape.ResultCode Srb >
+4 #<shape.SingleResult Alive@4 5-7L > #<shape.SingleResult Alive@6 5-7L >
+8 #<shape.SingleResult Alive@3 5-7L > #<shape.SingleResult Alive@6 5-7L >
+12 #<shape.SingleResult Alive@5 4-6L > #<shape.SingleResult Alive@6 4-6L >
+20 #<shape.SingleResult Alive@4 4-6L > #<shape.SingleResult Alive@6 4-6L >
+37 #<shape.MultiResult 2: Alive-Alive > #<shape.MultiResult 2: Alive-Alive >
+40 #<shape.SingleResult Alive@3 4-6L > #<shape.SingleResult Alive@5 4-6L >
+49 #<shape.MultiResult 2: Alive-Alive > #<shape.MultiResult 2: Alive-Alive >
+56 #<shape.MultiResult 2: Alive-Alive > #<shape.MultiResult 2: Alive-Alive >
+60 #<shape.MultiResult 2: Alive-Alive > #<shape.MultiResult 2: Alive-Alive >
+position conflict for merged shapes #<shape.OneShape@334a5e6 unnamed_329@ 8Slt unnamed_438@ 2Slb p3 ncopy> and #<shape.ShapeNormalizer@334a5e6 unnamed_438@ 32Slb p6>
+Details:
+Compare #<shape.ResultCode Srb > #<shape.ResultCode Srb >
+3 #<shape.MultiResult 2: Alive-Alive > #<shape.MultiResult 2: Alive-Alive >
+9 #<shape.SingleResult Alive@6 2-4L > #<shape.SingleResult Alive@2 2-4L >
+11 #<shape.SingleResult Alive@3 1-3L > #<shape.SingleResult Alive@5 1-3L >
+12 #<shape.SingleResult Alive@6 3-5L > #<shape.SingleResult Alive@2 3-5L >
+13 #<shape.MultiResult 2: Alive-Alive > #<shape.SingleResult Alive@2 2-4L >
+24 #<shape.SingleResult Alive@6 3-5L > #<shape.SingleResult Alive@3 3-5L >
+25 #<shape.MultiResult 2: Alive-Alive > #<shape.SingleResult Alive@2 2-4L >
+position conflict for merged shapes #<shape.OneShape@334a5e6 unnamed_329@ 8Slt unnamed_438@ 2Slb p3 ncopy> and #<shape.ShapeNormalizer@334a5e6 unnamed_438@ 32Slb p6>
+Details:
+Compare #<shape.ResultCode Frb > #<shape.ResultCode Frb >
+3 #<shape.SingleResult Alive@4 2-4L > #<shape.SingleResult Alive pass 2-4L >
+9 #<shape.MultiResult 2: Alive-Alive > #<shape.SingleResult Alive@2 2-4L >
+13 #<shape.MultiResult 2: Alive-Alive > #<shape.SingleResult Alive@2 2-4L >
+24 #<shape.SingleResult Alive pass 3-5L > #<shape.SingleResult Alive@3 3-5L >
+25 #<shape.MultiResult 2: Alive-Alive > #<shape.SingleResult Alive@2 2-4L >
+position conflict for merged shapes #<shape.OneShape@c719f31a unnamed_352@ 64Srb unnamed_438@ 4Srt p3 ncopy> and #<shape.ShapeNormalizer@c719f31a unnamed_438@ 16Srt p6>
+Details:
+Compare #<shape.ResultCode Slt > #<shape.ResultCode Slt >
+0 #<shape.SingleResult Alive@4 5-7L > #<shape.SingleResult Alive@1 5-7L >
+1 #<shape.SingleResult Alive@5 4-6L > #<shape.SingleResult Alive@4 4-6L >
+4 #<shape.SingleResult Alive@4 4-6L > #<shape.SingleResult Alive@1 4-6L >
+5 #<shape.SingleResult Alive@5 3-5L > #<shape.SingleResult Alive@4 3-5L >
+8 #<shape.SingleResult Alive@5 4-6L > #<shape.SingleResult Alive@1 4-6L >
+9 #<shape.SingleResult Alive@5 3-5L > #<shape.SingleResult Alive@6 3-5L >
+10 #<shape.SingleResult Alive@5 4-6L > #<shape.SingleResult Alive@1 4-6L >
+11 #<shape.MultiResult 2: Alive-Alive > #<shape.MultiResult 2: Alive-Alive >
+13 #<shape.MultiResult 2: Alive-Alive > #<shape.MultiResult 2: Alive-Alive >
+16 #<shape.MultiResult 2: Alive-Alive > #<shape.SingleResult Alive@1 4-6L >
+19 #<shape.MultiResult 2: Alive-Alive > #<shape.MultiResult 2: Alive-Alive >
+21 #<shape.MultiResult 2: Alive-Alive > #<shape.MultiResult 2: Alive-Alive >
+25 #<shape.SingleResult Alive@3 2-4L > #<shape.SingleResult Alive@6 2-4L >
+26 #<shape.MultiResult 2: Alive-Alive > #<shape.MultiResult 2: Alive-Alive >
+28 #<shape.MultiResult 2: Alive-Alive > #<shape.MultiResult 2: Alive-Alive >
+32 #<shape.MultiResult 2: Alive-Alive > #<shape.SingleResult Alive@1 4-6L >
+35 #<shape.MultiResult 2: Alive-Alive > #<shape.MultiResult 2: Alive-Alive >
+37 #<shape.MultiResult 2: Alive-Alive > #<shape.MultiResult 2: Alive-Alive >
+41 #<shape.SingleResult Alive@3 2-4L > #<shape.SingleResult Alive@5 2-4L >
+42 #<shape.MultiResult 2: Alive-Alive > #<shape.MultiResult 2: Alive-Alive >
+44 #<shape.MultiResult 2: Alive-Alive > #<shape.MultiResult 2: Alive-Alive >
+position conflict for merged shapes #<shape.OneShape@c719f31a unnamed_352@ 64Srb unnamed_438@ 4Srt p3 ncopy> and #<shape.ShapeNormalizer@c719f31a unnamed_438@ 16Srt p6>
+Details:
+Compare #<shape.ResultCode Flt > #<shape.ResultCode Flt >
+11 #<shape.SingleResult Alive@5 3-5L > #<shape.SingleResult Alive@6 3-5L >
+13 #<shape.SingleResult Alive@5 2-4L > #<shape.SingleResult Alive@6 2-4L >
+19 #<shape.SingleResult Alive pass 3-5L > #<shape.SingleResult Alive@4 3-5L >
+21 #<shape.SingleResult Alive@4 2-4L > #<shape.SingleResult Alive pass 2-4L >
+25 #<shape.SingleResult Alive@3 2-4L > #<shape.MultiResult 2: Alive-Alive >
+26 #<shape.SingleResult Alive@1 3-5L > #<shape.SingleResult Alive pass 3-5L >
+28 #<shape.SingleResult Alive pass 2-4L > #<shape.SingleResult Alive@1 2-4L >
+35 #<shape.SingleResult Alive pass 3-5L > #<shape.SingleResult Alive@4 3-5L >
+37 #<shape.SingleResult Alive@4 2-4L > #<shape.SingleResult Alive pass 2-4L >
+41 #<shape.SingleResult Alive@3 2-4L > #<shape.MultiResult 2: Alive-Alive >
+42 #<shape.SingleResult Alive@1 3-5L > #<shape.SingleResult Alive pass 3-5L >
+44 #<shape.SingleResult Alive pass 2-4L > #<shape.SingleResult Alive@1 2-4L >
+position conflict for merged shapes #<shape.OneShape@908df9f0 unnamed_252@ 8Srt unnamed_508@ 64Srb p5 ncopy> and #<shape.ShapeNormalizer@908df9f0 unnamed_508@ 4Srt p1>
+Details:
+Compare #<shape.ResultCode Srb > #<shape.ResultCode Srb >
+0 #<shape.SingleResult Alive@6 6-8L > #<shape.SingleResult Alive@4 6-8L >
+1 #<shape.SingleResult Alive@6 5-7L > #<shape.SingleResult Alive@4 5-7L >
+2 #<shape.SingleResult Alive@6 5-7L > #<shape.MultiResult 2: Alive-Alive >
+4 #<shape.SingleResult Alive@5 5-7L > #<shape.SingleResult Alive@4 5-7L >
+5 #<shape.SingleResult Alive@6 4-6L > #<shape.SingleResult Alive@4 4-6L >
+6 #<shape.SingleResult Alive@5 4-6L > #<shape.MultiResult 2: Alive-Alive >
+7 #<shape.MultiResult 2: Alive-Alive > #<shape.MultiResult 2: Alive-Alive >
+19 #<shape.MultiResult 2: Alive-Alive > #<shape.MultiResult 2: Alive-Alive >
+21 #<shape.SingleResult Alive@6 3-5L > #<shape.MultiResult 2: Alive-Alive >
+25 #<shape.MultiResult 2: Alive-Alive > #<shape.SingleResult Alive@6 3-6L >
+36 #<shape.SingleResult Alive@5 4-6L > #<shape.SingleResult Alive@4 4-6L >
+38 #<shape.SingleResult Alive@4 3-5L > #<shape.SingleResult Alive@5 3-5L >
+50 #<shape.SingleResult Alive@3 3-5L > #<shape.SingleResult Alive@4 3-5L >
+position conflict for merged shapes #<shape.OneShape@908df9f0 unnamed_252@ 8Srt unnamed_508@ 64Srb p5 ncopy> and #<shape.ShapeNormalizer@908df9f0 unnamed_508@ 4Srt p1>
+Details:
+Compare #<shape.ResultCode Frb > #<shape.ResultCode Frb >
+17 #<shape.SingleResult Alive pass 4-6L > #<shape.SingleResult Alive@6 4-6L >
+position conflict for merged shapes #<shape.OneShape@b3c246de unnamed_508@ 32Slb> and #<shape.ShapeNormalizer@b3c246de unnamed_508@ 2Slt p3>
+Details:
+Compare #<shape.ResultCode Flb > #<shape.ResultCode Flb >
+0 #<shape.SingleResult Alive@5 5-7L > #<shape.SingleResult Alive@3 5-7L >
+1 #<shape.SingleResult Alive@5 4-6L > #<shape.SingleResult Alive@3 4-6L >
+2 #<shape.SingleResult Alive@5 4-6L > #<shape.SingleResult Alive@3 4-6L >
+3 #<shape.SingleResult Alive@5 3-5L > #<shape.SingleResult Alive@3 3-5L >
+4 #<shape.SingleResult Alive@5 4-6L > #<shape.SingleResult Alive@3 4-6L >
+5 #<shape.SingleResult Alive@5 3-5L > #<shape.SingleResult Alive@3 3-5L >
+6 #<shape.SingleResult Alive@5 3-5L > #<shape.SingleResult Alive@3 3-5L >
+7 #<shape.SingleResult Alive@5 2-4L > #<shape.SingleResult Alive@3 2-4L >
+8 #<shape.SingleResult Alive@5 4-6L > #<shape.SingleResult Alive@3 4-6L >
+9 #<shape.SingleResult Alive@5 3-5L > #<shape.SingleResult Alive@3 3-5L >
+10 #<shape.SingleResult Alive@1 3-5L > #<shape.SingleResult Alive@6 3-5L >
+11 #<shape.SingleResult Alive@5 2-4L > #<shape.SingleResult Alive@3 2-4L >
+12 #<shape.SingleResult Alive@5 3-5L > #<shape.SingleResult Alive@3 3-5L >
+13 #<shape.SingleResult Alive@5 2-4L > #<shape.SingleResult Alive@3 2-4L >
+15 #<shape.MultiResult 2: Dead-Alive > #<shape.MultiResult 2: Dead-Alive >
+34 #<shape.SingleResult Alive@3 3-5L > #<shape.SingleResult Alive@6 3-5L >
+38 #<shape.SingleResult Alive@3 2-4L > #<shape.SingleResult Alive@5 2-4L >
+40 #<shape.SingleResult Alive@3 3-5L > #<shape.SingleResult Alive@6 3-5L >
+42 #<shape.SingleResult Alive@3 2-4L > #<shape.SingleResult Alive@5 2-4L >
+43 #<shape.SingleResult Dead@6 1-3L > #<shape.SingleResult Dead@1 1-3L >
+44 #<shape.SingleResult Alive@3 2-4L > #<shape.SingleResult Alive@5 2-4L >
+46 #<shape.MultiResult 2: Dead-Alive > #<shape.MultiResult 2: Dead-Alive >
+position conflict for merged shapes #<shape.OneShape@b3c246de unnamed_508@ 32Slb> and #<shape.ShapeNormalizer@b3c246de unnamed_508@ 2Slt p3>
+Details:
+Compare #<shape.ResultCode Slb > #<shape.ResultCode Slb >
+0 #<shape.SingleResult Alive@5 5-7L > #<shape.MultiResult 2: Alive-Alive >
+1 #<shape.SingleResult Alive@5 4-6L > #<shape.MultiResult 2: Alive-Alive >
+2 #<shape.SingleResult Alive@5 4-6L > #<shape.MultiResult 2: Alive-Alive >
+3 #<shape.SingleResult Alive@5 3-5L > #<shape.MultiResult 2: Alive-Alive >
+4 #<shape.SingleResult Alive@5 4-6L > #<shape.MultiResult 2: Alive-Alive >
+5 #<shape.SingleResult Alive@5 3-5L > #<shape.MultiResult 2: Alive-Alive >
+6 #<shape.SingleResult Alive@5 3-5L > #<shape.MultiResult 2: Alive-Alive >
+7 #<shape.SingleResult Alive@5 2-4L > #<shape.MultiResult 2: Alive-Alive >
+8 #<shape.SingleResult Alive@5 4-6L > #<shape.MultiResult 2: Alive-Alive >
+9 #<shape.SingleResult Alive@5 3-5L > #<shape.MultiResult 2: Alive-Alive >
+10 #<shape.SingleResult Alive@5 3-5L > #<shape.MultiResult 2: Alive-Alive >
+11 #<shape.SingleResult Alive@5 2-4L > #<shape.MultiResult 2: Alive-Alive >
+12 #<shape.SingleResult Alive@5 3-5L > #<shape.MultiResult 2: Alive-Alive >
+13 #<shape.SingleResult Alive@5 2-4L > #<shape.MultiResult 2: Alive-Alive >
+14 #<shape.SingleResult Alive@5 2-4L > #<shape.MultiResult 2: Alive-Alive >
+15 #<shape.SingleResult Alive@5 1-3L > #<shape.MultiResult 2: Alive-Alive >
+40 #<shape.MultiResult 2: Alive-Alive > #<shape.MultiResult 2: Alive-Alive >
+41 #<shape.MultiResult 2: Alive-Alive > #<shape.MultiResult 2: Alive-Alive >
+42 #<shape.MultiResult 2: Alive-Alive > #<shape.MultiResult 2: Alive-Alive >
+43 #<shape.SingleResult Alive@1 1-3L > #<shape.SingleResult Alive@6 1-3L >
+44 #<shape.MultiResult 2: Alive-Alive > #<shape.MultiResult 2: Alive-Alive >
+46 #<shape.MultiResult 2: Alive-Alive > #<shape.MultiResult 2: Alive-Alive >
+position conflict for merged shapes #<shape.OneShape@ffeb2c62 unnamed_409@ 4Slt unnamed_513@ 64Srb p0 ncopy> and #<shape.ShapeNormalizer@ffeb2c62 unnamed_513@ 1Slt p2>
+Details:
+Compare #<shape.ResultCode Srb > #<shape.ResultCode Srb >
+0 #<shape.SingleResult Alive@2 5-7L > #<shape.SingleResult Alive@3 5-7L >
+1 #<shape.SingleResult Alive@2 4-6L > #<shape.SingleResult Alive@3 4-6L >
+4 #<shape.MultiResult 2: Alive-Alive > #<shape.SingleResult Alive@4 4-6L >
+5 #<shape.SingleResult Alive@2 3-5L > #<shape.MultiResult 2: Alive-Alive >
+8 #<shape.SingleResult Alive@2 4-6L > #<shape.SingleResult Alive@3 4-6L >
+9 #<shape.SingleResult Alive@2 3-5L > #<shape.SingleResult Alive@3 3-5L >
+14 #<shape.SingleResult Alive@5 2-4L > #<shape.MultiResult 2: Alive-Alive >
+30 #<shape.MultiResult 2: Alive-Alive > #<shape.MultiResult 2: Alive-Alive >
+position conflict for merged shapes #<shape.OneShape@344d42ff unnamed_457@ 64Srb unnamed_513@ 16Srb p2 ncopy> and #<shape.ShapeNormalizer@344d42ff unnamed_513@ 4Slt p0>
+Details:
+Compare #<shape.ResultCode Slt > #<shape.ResultCode Slt >
+1 #<shape.SingleResult Alive@5 5-7L > #<shape.SingleResult Alive@4 5-7L >
+2 #<shape.SingleResult Alive@5 4-6L > #<shape.SingleResult Alive@3 4-6L >
+3 #<shape.SingleResult Alive@5 4-6L > #<shape.SingleResult Alive@3 4-6L >
+4 #<shape.SingleResult Alive@5 4-6L > #<shape.SingleResult Alive@6 4-6L >
+5 #<shape.SingleResult Alive@5 4-6L > #<shape.SingleResult Alive@4 4-6L >
+6 #<shape.SingleResult Alive@5 3-5L > #<shape.SingleResult Alive@6 3-5L >
+7 #<shape.MultiResult 2: Alive-Alive > #<shape.MultiResult 2: Alive-Alive >
+12 #<shape.SingleResult Alive@5 3-5L > #<shape.SingleResult Alive@6 3-5L >
+13 #<shape.SingleResult Alive@5 3-5L > #<shape.SingleResult Alive@6 3-5L >
+14 #<shape.MultiResult 2: Alive-Alive > #<shape.MultiResult 2: Alive-Alive >
+16 #<shape.MultiResult 2: Alive-Alive > #<shape.SingleResult Alive@3 4-6L >
+17 #<shape.MultiResult 2: Alive-Alive > #<shape.SingleResult Alive@3 4-6L >
+19 #<shape.MultiResult 2: Alive-Alive > #<shape.MultiResult 2: Alive-Alive >
+22 #<shape.SingleResult Alive@1 2-4L > #<shape.SingleResult Alive@6 2-4L >
+26 #<shape.MultiResult 2: Alive-Alive > #<shape.MultiResult 2: Alive-Alive >
+28 #<shape.SingleResult Alive@6 2-4L > #<shape.SingleResult Alive@1 2-4L >
+32 #<shape.MultiResult 2: Alive-Alive > #<shape.SingleResult Alive@3 4-6L >
+33 #<shape.MultiResult 2: Alive-Alive > #<shape.SingleResult Alive@3 4-6L >
+35 #<shape.MultiResult 2: Alive-Alive > #<shape.MultiResult 2: Alive-Alive >
+38 #<shape.SingleResult Alive@1 2-4L > #<shape.SingleResult Alive@5 2-4L >
+42 #<shape.MultiResult 2: Alive-Alive > #<shape.MultiResult 2: Alive-Alive >
+44 #<shape.SingleResult Alive@5 2-4L > #<shape.SingleResult Alive@1 2-4L >
+position conflict for merged shapes #<shape.OneShape@344d42ff unnamed_457@ 64Srb unnamed_513@ 16Srb p2 ncopy> and #<shape.ShapeNormalizer@344d42ff unnamed_513@ 4Slt p0>
+Details:
+Compare #<shape.ResultCode Flt > #<shape.ResultCode Flt >
+5 #<shape.SingleResult Alive@5 4-6L > #<shape.SingleResult Alive pass 4-6L >
+7 #<shape.SingleResult Alive@5 3-5L > #<shape.SingleResult Alive@6 3-5L >
+13 #<shape.SingleResult Alive@5 3-5L > #<shape.SingleResult Alive@6 3-5L >
+14 #<shape.SingleResult Alive@5 2-4L > #<shape.SingleResult Alive@6 2-4L >
+19 #<shape.SingleResult Alive@3 3-5L > #<shape.SingleResult Alive pass 3-5L >
+22 #<shape.SingleResult Alive@1 2-4L > #<shape.MultiResult 2: Alive-Alive >
+26 #<shape.SingleResult Alive pass 2-4L > #<shape.SingleResult Alive@3 2-4L >
+35 #<shape.SingleResult Alive@3 3-5L > #<shape.SingleResult Alive pass 3-5L >
+38 #<shape.SingleResult Alive@1 2-4L > #<shape.MultiResult 2: Alive-Alive >
+42 #<shape.SingleResult Alive pass 2-4L > #<shape.SingleResult Alive@3 2-4L >
+position conflict for merged shapes #<shape.OneShape@39d7403e unnamed_238@ 16Srb unnamed_525@ 64Srb p2 ncopy> and #<shape.ShapeNormalizer@39d7403e unnamed_525@ 16Slb p4>
+Details:
+Compare #<shape.ResultCode Slt > #<shape.ResultCode Slt >
+0 #<shape.SingleResult Alive@4 6-8L > #<shape.SingleResult Alive@3 6-8L >
+1 #<shape.SingleResult Alive@4 5-7L > #<shape.SingleResult Alive@3 5-7L >
+3 #<shape.SingleResult Alive@4 4-6L > #<shape.SingleResult Alive@3 4-6L >
+16 #<shape.SingleResult Alive@4 5-7L > #<shape.SingleResult Alive@3 5-7L >
+17 #<shape.SingleResult Alive@4 4-6L > #<shape.SingleResult Alive@3 4-6L >
+19 #<shape.MultiResult 2: Alive-Alive > #<shape.MultiResult 2: Alive-Alive >
+21 #<shape.SingleResult Alive@4 3-5L > #<shape.SingleResult Alive@2 3-5L >
+25 #<shape.SingleResult Alive@3 3-5L > #<shape.SingleResult Alive@2 3-5L >
+32 #<shape.SingleResult Alive@4 5-7L > #<shape.SingleResult Alive@3 5-7L >
+33 #<shape.SingleResult Alive@4 4-6L > #<shape.SingleResult Alive@3 4-6L >
+35 #<shape.MultiResult 2: Alive-Alive > #<shape.MultiResult 2: Alive-Alive >
+36 #<shape.SingleResult Alive@4 4-6L > #<shape.SingleResult Alive@1 4-6L >
+38 #<shape.MultiResult 2: Alive-Alive > #<shape.MultiResult 2: Alive-Alive >
+40 #<shape.SingleResult Alive@3 4-6L > #<shape.SingleResult Alive@1 4-6L >
+42 #<shape.MultiResult 2: Alive-Alive > #<shape.MultiResult 2: Alive-Alive >
+48 #<shape.SingleResult Alive@4 4-6L > #<shape.SingleResult Alive@3 4-6L >
+49 #<shape.MultiResult 2: Alive-Alive > #<shape.MultiResult 2: Alive-Alive >
+position conflict for merged shapes #<shape.OneShape@39d7403e unnamed_238@ 16Srb unnamed_525@ 64Srb p2 ncopy> and #<shape.ShapeNormalizer@39d7403e unnamed_525@ 16Slb p4>
+Details:
+Compare #<shape.ResultCode Flt > #<shape.ResultCode Flt >
+1 #<shape.SingleResult Alive@4 5-7L > #<shape.SingleResult Alive@3 5-7L >
+3 #<shape.SingleResult Alive pass 4-6L > #<shape.SingleResult Alive@3 4-6L >
+19 #<shape.SingleResult Alive@4 3-5L > #<shape.SingleResult Alive@3 3-5L >
+33 #<shape.SingleResult Alive pass 4-6L > #<shape.SingleResult Alive@3 4-6L >
+35 #<shape.SingleResult Alive@4 3-5L > #<shape.SingleResult Alive@3 3-5L >
+36 #<shape.SingleResult Alive pass 4-6L > #<shape.SingleResult Alive@1 4-6L >
+40 #<shape.SingleResult Alive pass 4-6L > #<shape.SingleResult Alive@1 4-6L >
+49 #<shape.SingleResult Alive@4 3-5L > #<shape.SingleResult Alive@3 3-5L >
+position conflict for merged shapes #<shape.OneShape@d56c7148 unnamed_525@ 2Srt> and #<shape.ShapeNormalizer@d56c7148 unnamed_525@ 4Srt p6>
+Details:
+Compare #<shape.ResultCode Sct > #<shape.ResultCode Sct >
+0 #<shape.SingleResult Alive@4 5-7L > #<shape.SingleResult Alive@5 5-7L >
+24 #<shape.SingleResult Alive@1 3-5L > #<shape.SingleResult Alive@2 3-5L >
+32 #<shape.MultiResult 2: Alive-Alive > #<shape.SingleResult Alive@5 4-6L >
+position conflict for merged shapes #<shape.OneShape@d56c7148 unnamed_525@ 2Srt> and #<shape.ShapeNormalizer@d56c7148 unnamed_525@ 4Srt p6>
+Details:
+Compare #<shape.ResultCode Fct > #<shape.ResultCode Fct >
+24 #<shape.SingleResult Alive pass 3-5L > #<shape.SingleResult Alive@2 3-5L >
+position conflict for merged shapes #<shape.OneShape@d56c7148 unnamed_525@ 2Srt> and #<shape.ShapeNormalizer@d56c7148 unnamed_525@ 4Srt p6>
+Details:
+Compare #<shape.ResultCode SltSrt > #<shape.ResultCode SltSrt >
+0 #<shape.MultiResult 2: Alive-Alive > #<shape.MultiResult 2: Alive-Alive >
+2 #<shape.MultiResult 2: Alive-Alive > #<shape.MultiResult 2: Alive-Alive >
+4 #<shape.MultiResult 2: Alive-Alive > #<shape.MultiResult 2: Alive-Alive >
+6 #<shape.MultiResult 2: Alive-Alive > #<shape.MultiResult 2: Alive-Alive >
+8 #<shape.MultiResult 2: Alive-Alive > #<shape.MultiResult 2: Alive-Alive >
+10 #<shape.MultiResult 2: Alive-Alive > #<shape.MultiResult 2: Alive-Alive >
+12 #<shape.MultiResult 2: Alive-Alive > #<shape.MultiResult 2: Alive-Alive >
+14 #<shape.MultiResult 2: Alive-Alive > #<shape.MultiResult 2: Alive-Alive >
+16 #<shape.MultiResult 2: Alive-Alive > #<shape.MultiResult 2: Alive-Alive >
+18 #<shape.MultiResult 2: Alive-Alive > #<shape.MultiResult 2: Alive-Alive >
+20 #<shape.MultiResult 2: Alive-Alive > #<shape.MultiResult 2: Alive-Alive >
+22 #<shape.MultiResult 2: Alive-Alive > #<shape.MultiResult 2: Alive-Alive >
+32 #<shape.MultiResult 2: Alive-Alive > #<shape.MultiResult 2: Alive-Alive >
+34 #<shape.MultiResult 2: Alive-Alive > #<shape.MultiResult 2: Alive-Alive >
+38 #<shape.SingleResult Alive@5 3-5L > #<shape.SingleResult Alive@4 3-5L >
+56 #<shape.MultiResult 2: Alive-Alive > #<shape.MultiResult 2: Alive-Alive >
+58 #<shape.SingleResult Alive@3 2-4L > #<shape.MultiResult 2: Alive-Alive >

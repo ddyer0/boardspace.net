@@ -1,0 +1,125 @@
+-------------------------------------------------------------------
+-- NNGS SERVER README
+-------------------------------------------------------------------
+
+The files contained in this tarball comprise the No Name Go Server
+(NNGS) source code.
+
+For licencing information, see the file COPYING.
+
+
+>> COMPILATION AND INSTALLATION
+
+Before compiling, read and edit src/nngsconfig.h and src/nngsmain.h
+Things like mail program locations are specified therein.
+You may also want to check config.h after running ./configure
+
+Configure and compile mlrate and then NNGS.  Here's how:
+(current version numbers may be different...)
+
+tar xvzf mlrate-1.0.xx.tar.gz
+cd mlrate-1.0.xx
+./configure
+make
+cd ..
+
+_READ_ the README file in the mlrate directory.  It contains much useful
+information on how to set up the ratings system to work properly.
+
+tar xvzf nngs-1.1.yy.tar.gz
+cd nngs-1.1.yy
+ln -s ../mlrate-1.0.xx mlrate
+./configure --prefix=/whatever/dir/you/want
+make install
+
+The 'make install' command installs the server and all basic
+help files necessary for its functionality.
+All files needed by the server are installed under the --prefix.
+Once running, the server will put all of it's data (players,games,logfile)
+under this prefix, too. This may grow ...
+
+To run and test it:
+$prefix/bin/nngssrv
+telnet localhost 9696
+
+>> DATA FILES
+
+Data and logfiles will be in $prefix/share/nngssrv/*
+
+Several files need to be installed manually to avoid damage
+when you update an existing server.
+
+In $prefix/share/nngssrv/ladder you will find two example ladder
+files.  Copy them (or remame them) to remove the '.example'
+
+In $prefix/share/nngssrv/messages you will find default message
+files for login, logout, etc.  Rename them to remove the 'default.'
+part to activate them.
+
+
+>> USERS AND ADMINS
+
+When you install NNGS for the first time, you'll need to manually
+create a user with 'admin' - rights. This can be ANY valid name.
+Once there is an admin-account, it can be used to grant admin-rights
+to other users.
+NOTE: the admin-status is stored in TWO places: the userfile proper,
+and a lists/admin - file. You'l need both.
+There already is a user 'admin' in the lists/admins.default -file
+, you'll need to
+1) create a user named 'admin' by logging in and using
+   the 'register' -command, and lgging out.
+2) manually edit the user file for 'admin' in .../players/a/admin:
+   change the line:
+VARS: 1:4:0:1:0:1:1:0 :0:1:1:0:1:1:0:0 :0:0:0:0:0:0:0:0 :0:4:1:3:90:19:10:25 :33:0:0:33
+   to:
+VARS: 1:4:0:1:0:1:1:0 :0:1:1:0:1:1:0:0 :0:100:0:0:0:0:0:0 :0:4:1:3:90:19:10:25 :33:0:0:33
+   (this field is the adminLevel)---------^^^
+3) on the next logon, the 'admin' account will have unlimited rights.
+
+>> DEVELOPMENT
+
+The server code is undergoing development and contributions are
+welcome.  See:
+
+<http://people.debian.org/~lohner/nngs> #Old?
+<http://www.sourceforge.org/nngs>
+
+for the latest status and sources.
+Contributions and suggestions are welcome.
+
+When sending patches that span several files, please use
+diff -ruN <orig-dir> <modified-dir>
+
+For development related discussions, come to NNGS Channel 10:
+telnet nngs.cosmic.org 9696
+<pick a random name if you're not registered>
+channel 10
+tell 10 hello
+; this text goes to channel 10
+
+
+
+>> MAJOR CHANGES
+Major changes since the beginning of this project:
+- autoconf and automake so it compiles easily on many platforms, even windoze
+- clean source tree
+... all help files, admin files etc. included
+... a 'make install' will install a working server
+... all data dirs organized into one place ($prefix/share/nngssrv)
+... all game and player dirs created on install
+- nngs local malloc() and salloc() removed
+- mlrate cleaned up
+- all format strings taken out of the code
+- internationalization
+... chinese (messages and help files) (courtesy of LGS)
+... german (messages only)
+... others to follow
+
+
+>> WINDOWS
+
+The server now works on windows as well!  Here's how:
+- Get and install cygwin (>=1.1.8) from http://www.cygwin.com
+- follow the instructions above to compile and install as on unix
+

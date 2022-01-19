@@ -1,0 +1,3 @@
+permissions: all-permissions
+codebase: *.boardspace.net
+application-name: Boardspace Games

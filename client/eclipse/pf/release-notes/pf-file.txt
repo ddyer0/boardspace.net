@@ -1,0 +1,543 @@
+File Utilities Realease-Notes
+Author: Manfred Duchrow
+Copyright (c) 2000-2009, by Manfred Duchrow. All rights reserved.
+=======================================================================
+
+-----------------------------------------------------------------------
+
+VERSION 4.2 (January 7, 2009)
+
+* FileLocator
+  > Added
+    ~ public String toString()
+
+-----------------------------------------------------------------------
+
+VERSION 4.1 (April 27, 2008)
+
+* FileInfo
+  > Added
+    - public File asFile()
+	
+* FileUtil
+  > Changed calculateClasspath() to try standard classpath if calculation
+    of Eclipse classpath returns null.
+
+-----------------------------------------------------------------------
+
+VERSION 4.0 (June 7, 2007)
+
+* FileUtil
+  > Added
+    - DEFAULT_URL_STR_ENCODING
+    - public String urlDecode( String str ) 
+    - public String urlEncode( String str ) 
+    
+  > Changed
+    - public String convertFromURLSyntax( String filename )
+      to do a URL decoding on the given filename
+
+  > Changed
+    - public String convertToURLSyntax( String filename )
+      to correctly convert the parts of the given filename separately
+      and to use forward slashes only
+
+-----------------------------------------------------------------------
+
+VERSION 3.9 (March 9, 2007)
+
+* ClasspathElement
+  > Added
+    - public FileInfo getFileInfo( String filename )
+
+* FileWalker
+  > Bugfix in 
+    public long walkThrough( String searchPattern ) 
+    Set dir to "." if it is null from the given searchPattern
+
+-----------------------------------------------------------------------
+
+VERSION 3.8.2 (September 10, 2006)
+
+* BUGFIX: ClasspathElement used prefix "file://" in createURL(String).
+  If that result was usd to create a URL and to open a stream on that
+  URL then exceptions like the following occurred:
+  java.net.UnknownHostException: S
+        at java.net.PlainSocketImpl.connect(PlainSocketImpl.java:153)
+        at java.net.Socket.connect(Socket.java:452)
+        at java.net.Socket.connect(Socket.java:402)
+        at sun.net.NetworkClient.doConnect(NetworkClient.java:139)
+        at sun.net.NetworkClient.openServer(NetworkClient.java:118)
+        at sun.net.ftp.FtpClient.openServer(FtpClient.java:423)
+        at sun.net.ftp.FtpClient.<init>(FtpClient.java:692)
+        at sun.net.www.protocol.ftp.FtpURLConnection.connect(FtpURLConnection.java:175)
+        at sun.net.www.protocol.ftp.FtpURLConnection.getInputStream(FtpURLConnection.java:257)
+        at java.net.URL.openStream(URL.java:913)
+
+  > ClasspathElement
+    - Changed createURL() used prefix from "file://" to "file:/"
+    - Changed createURL() to remove "." and ".." from the created filename
+
+-----------------------------------------------------------------------
+
+VERSION 3.8.1 (September 1, 2006)
+
+* BUGFIX: 
+  After creating a ClasspathElement on a JAR file, the underlying JAR
+  file stayed open but should be closed afterwards
+  
+	> ClasspathElement
+		- Added
+			~ public boolean isOpen()
+
+		- Changed close() to not check for validity()
+
+-----------------------------------------------------------------------
+
+VERSION 3.8 (July 28, 2006)
+
+* FileLocator
+  > Added
+    - public FileLocator getParent()
+    
+* FileUtil
+  > Changed methods that do now lazy initialization of a new inst-var
+    - calculateClasspath()
+    - getClasspath()
+    - createSystemClasspath()
+
+-----------------------------------------------------------------------
+
+VERSION 3.7 (June 9, 2006)
+
+* ClasspathElement
+  > Changed to support caching of an opened zip file
+
+* FileFinder
+  > Added
+    - public static File[] findDirectories( String startDir, String pattern, 
+    																boolean recursive, char digitWildcard )
+    - public static File[] findDirectories( String startDir, String pattern, 
+                                                         boolean recursive )
+    - public static File[] findDirectories( String startDir, String pattern )
+
+* New classes
+  > AFileProcessor
+
+* FileWalker
+  > Bugfix: The walkThrough() methods didn't stop processing immediately
+    after getting false from a method call to the FileHandler
+    
+  > Added
+  	- public FileWalker( AFileProcessor processor )
+
+-----------------------------------------------------------------------
+
+VERSION 3.6 (March 31, 2006)
+
+* PropertyFileLoader
+  > Added
+    - public static PropertiesFileContent loadFullPropertiesFile( Reader reader )
+
+* FileUtil
+  > Added
+    - public Classpath getLookupPath( String sysPropName )
+
+  > Changed default constructor from private to public
+
+* FileFinder
+  > Added
+    - public static URL locateFileOnPath( String filename, Classpath path )
+
+-----------------------------------------------------------------------
+
+VERSION 3.5.1 (March 3, 2006)
+
+* FileUtil
+  > Added
+    - public File convertFromURLSyntax( File file )
+    - public String convertFromURLSyntax( String filename )
+    - public boolean isLocalFileURL( String filename )
+    - public String convertToURLSyntax( String filename )
+
+* FileLocator
+  > BUGFIX: On Unix systems local file with URL syntax "file:/path/name"
+    are not recognized as existing because the leading slash was cut off.
+
+-----------------------------------------------------------------------
+
+VERSION 3.5 (February 25, 2006)
+
+* FileUtil
+  > Added
+    - public String readTextFrom( FileLocator fileLocator )
+    - public String[] readTextLinesFrom( Reader reader )
+    - public String[] readTextLinesFrom( InputStream inStream ) 
+    - public String[] readTextLinesFrom( FileLocator fileLocator )
+    - public String[] readTextLinesFrom( File file )
+    - public String[] readTextLinesFrom( String filename )
+	  - public String[] readTextLinesFrom( Reader reader, StringFilter filter )
+	  - public String[] readTextLinesFrom( File file, StringFilter filter )
+	  - public String[] readTextLinesFrom( FileLOcator locator, StringFilter filter )
+	  - public String[] readTextLinesFrom( String filename, StringFilter filter )
+	  - public String[] readTextLinesFrom( InputStream stream, StringFilter filter )
+
+* ExtendedFileFilter
+  > Added
+    - implements IObjectFilter
+    - public boolean matches( Object object ) 
+    
+  That means an ExtendedFileFilter now can be used as filter with all
+  CollectionUtil copy() methods for arrays and collections that expect
+  a filter as argument.
+    
+-----------------------------------------------------------------------
+
+VERSION 3.4 (December 21, 2005)
+
+* FileWalker
+  > Added methods
+    - public long walkThrough( String dir, FilenameFilter filter, 
+                                           boolean recursive )
+    - public long walkThroughDirectories( String startDir, 
+                           FilenameFilter filter, boolean recursive )
+
+* ExtendedFileFilter
+  > Added methods and constructors
+    - public void addPatterns( String patternList ) 
+    - public ExtendedFileFilter( char wildcardForDigits )
+    - public ExtendedFileFilter( char wildcardForDigits, 
+                                                 boolean restrictive )
+    - public ExtendedFileFilter( String patternList )
+    - protected void postAcceptCheck( File dir, String filename, 
+                                         File file, boolean accepted )
+
+* FileUtil
+  > Added methods
+    - public String[] standardize( String[] filenames )
+    - public String[] javaFilenames( String[] filenames )
+		- public void copyFile( URL source, File destFile )
+		- public void copyFile( FileLocator sourceFile, File destFile, 
+		                                       boolean preserveTimestamp )
+		- public boolean isInsideJavaArchive( String filename )
+
+  > Changed standardizeFilename() to better recognize Windows drive letters
+
+* FileLocator
+    - public static FileLocator create( String filename )
+      to support "jar:file:/" URLs
+    
+  > Added methods
+    - public static FileLocator create( URL url )
+  
+* FileInfo
+  > Added methods
+    - public FileLocator asFileLocator() 
+    
+* PropertyFileLoader
+  > Added
+    - public static Properties loadProperties( FileLocator locator, 
+                                                  Properties defaults )
+    - public static Properties loadProperties( FileLocator locator )
+
+-----------------------------------------------------------------------
+
+VERSION 3.3.1 (March 18, 2005)
+
+* FileLocator
+  > BUGFIX: getOriginalFileName() returned null if the specified file
+    was inside an archive (e.g. "testdata/cc.jar/META-INF/MANIFEST.MF")
+    
+  > Method getOriginalFileName() now always returns the filename with
+    forward slashes (backslashes are translated to forward slashes)
+
+-----------------------------------------------------------------------
+
+VERSION 3.3 (December 29, 2004)
+
+* FileWalker
+  > Supports now ".../**/*.xxx" patterns for recursive walk-through
+    - New method public long walkThrough( String filePattern )
+    
+* Classpath now supports definitions of elements with wildcards.
+  Example: lib/test.jar:lib/ext/*.jar:xerces.jar
+
+* Classpath
+  > New methods
+    - public void removeDuplicates()
+
+* ClasspathElement
+  > getName() now returns the name of the element in a platform 
+    independent way. Path elements are always separated by slashes,
+    never by backslashes
+    
+* FileUtil
+  > Added new method 
+    - public Classpath calculateClasspath() 
+  
+  > Changed method getClasspath() to return the same as calculateClasspath()
+
+* FileFinder
+  > Added new method 
+    - public static URL locateFile( String filename )
+
+* PropertyFileLoader
+  > Added new methods  
+    - public static Properties loadProperties( URL url, Properties defaults )
+
+  > Changed 
+    public static Properties loadProperties( String filename, Properties defaults )
+    to work URL based rather than File based
+    
+-----------------------------------------------------------------------
+
+VERSION 3.2 (October 2, 2004)
+
+* PF-File now depends on PF-Security
+
+* FileUtil
+  > Added methods
+    - public File copyToTempFile( InputStream inStream )
+    - public File copyToTempFile( InputStream inStream, String filePrefix )
+    - public File copyToTempFile( InputStream inStream, String filePrefix, 
+                                    String fileSuffix )
+    - public File copyToTempFile( InputStream inStream, String filePrefix, 
+                                    String fileSuffix, boolean deleteOnExit )
+    - public File copyToTempFile( String filename, String filePrefix, 
+                                    String fileSuffix, boolean deleteOnExit )
+    - public boolean isLocal( String filename ) 
+    - public boolean isRemote( String filename )
+
+  > Changed method standardize( String filename ) to not modify any filename
+    that starts with a protocol (e.g. ftp:// or http://)
+
+* FileLocator now supports filenames containing URLs with protocols
+  http://, https://, jar:http:// and jar:https://
+  Automatic authentication is possible via org.pf.security.AutoAuthenticationManager.
+
+  > Added methods
+    - public boolean isRemote()
+
+  > Changed declared exception from Exception to IOException in the following methods
+    - container()
+    - fileRef()
+    - archive()
+    - entryFromArchive()
+
+* PropertyFileLoader
+
+  > New methods
+    - public static PropertiesFileContent loadFullPropertiesFile( String filename )
+    - public static PropertiesFileContent loadFullPropertiesFile( InputStream stream )
+
+* Added new classes
+  > PropertiesFileWriter
+  > PropertiesFileContent
+
+-----------------------------------------------------------------------
+
+VERSION 3.1 (May 8, 2004)
+
+* FileFinder
+  > Added methods
+    - public static URL locateFileOnPath( String filename, String path )
+    - public static URL locateFileOnClasspath( String filename )
+
+* ClasspathElement
+  > Added method
+    - public URL getURL() 
+
+  > Changed
+    - public URL createURL( String filename )
+      to return a proper URL for files inside archives
+      (e.g. "jar:file:/....name.jar!/path/file.ext")
+
+-----------------------------------------------------------------------
+
+VERSION 3.0 (March 6, 2004)
+
+* FileUtil: added methods
+  - public void copyFile( File sourceFile, File destFile,
+                          boolean preserveTimestamp )
+  - public void copyFile( File sourceFile, File destFile )
+  - public void copyFile( String sourceFilename, String destFilename,
+                          boolean preserveTimestamp )
+  - public void copyFile( String sourceFilename, String destFilename )
+  - public boolean close( Reader reader )
+  - public boolean close( Writer writer )
+  
+* BUGFIX in 
+  FileUtil.processTextLines( Reader reader, LineProcessor processor )
+  Now it closes the given reader at the end of the reading process or 
+  at any case of error.
+
+-----------------------------------------------------------------------
+
+VERSION 2.9 (December 20, 2003 )
+
+* FileUtil: added method 
+  public boolean close( ZipFile zipFile )
+
+* ArchiveTOC.init() now throws IOException
+  instead of printing a stack trace, if there is a problem
+  with reading the archive
+  
+* Added new class LoggerProvider
+  This class holds the single logger for the PF-File component.
+  All logging of the component is now done through this logger.
+  Nothing is written to stdout or stderr anymore!
+
+* Classes FileWalker and ExtendedFileFilter have been changed
+  to match '*' to empty strings
+  e.g. "test.dat" must match "test*.dat" or
+       "hosts" must match "hosts*"
+
+* New classes
+  - FileDirectoryScanner
+  - FileDirectoryScannerHandler
+  - DirectoryContents
+  - TableOfContents
+
+*  Added new method to FileUtil:
+  - public String getClasspath()
+
+* New method in Classpath
+  - public ClasspathElement firstElementContaining( String filename )
+
+* Added Javadoc comment to method
+    public InputStream open( String filename )
+  in Classpath
+
+* New method in ClasspathElement
+  - createURL( String filename )
+
+-----------------------------------------------------------------------
+
+VERSION 2.8 ( July 26, 2003 )
+
+* New interface LineProcessor
+
+* New methods in FileUtil
+  - processTextLines( String, LineProcessor )
+  - processTextLines( InputStream, LineProcessor )
+  - processTextLines( Reader, LineProcessor )
+
+* BUGFIX in FileWalker.walkThrough()
+  NullPointerException if directory.listFiles(..) 
+  returns null for protected directories (e.g. "System Volume")
+
+* New methods in PropertyFileLoader
+  - loadProperties( String, Properties )
+  - loadProperties( InputStream, Properties )
+  - loadProperties( InputStream )
+
+-----------------------------------------------------------------------
+
+VERSION 2.7 ( March 21, 2003 )
+
+* New methods in FileUtil
+  - standardize()
+  - javaFilename()
+
+* Modified FileInfo to use FileUtil.javaFilename()
+
+* New methods in FileLocator
+  - getStandardizedPath()
+  - getStandardizedAbsolutePath()
+
+-----------------------------------------------------------------------
+
+VERSION 2.6 ( February 15, 2003 ) 
+
+* Reduced test data
+
+* ExtendedFileFilter now supports a digit wildcard character for
+  more specific filtering of numeric patterns in filenames.
+
+* FileWalker now supports a digit wildcard character for
+  more specific filtering of numeric patterns in filenames.
+  - setDigitWildcardChar()
+  - new constructor
+
+* New methods in FileFinder
+  - File[] findFiles( String dir, String pattern, boolean recursive,
+																	char digitWildcard )
+	- File[] findFiles( String dir, String pattern, boolean recursive )
+	- File[] findFiles( String dir, String pattern )
+
+-----------------------------------------------------------------------
+
+VERSION 2.5 ( February 7, 2003 )
+
+* New class ClasspathElement
+
+* New methods in FileUtil
+  - close(InputStream)
+  - close(OutputStream)
+
+-----------------------------------------------------------------------
+
+VERSION 2.4 ( October 24, 2002 )
+
+* New methods in FileUtil
+  - readTextFrom( InputStream )
+  - readTextFrom( String ) 
+  - readTextFrom( File )
+  - copyText( reader, writer )
+
+-----------------------------------------------------------------------
+
+VERSION 2.3 ( July 25, 2002 )
+
+* Depends now on PF-Utilities (NamedValueList, NamedValue, NamedText)
+
+* New class ArchiveTOC
+
+* New class FileInfo
+
+* Removed class ZipFileWalker
+
+-----------------------------------------------------------------------
+
+VERSION 2.2.1 ( July 19, 2002 )
+
+* BUGFIX: FileLocator did not recognize existing path that started
+  from root (e.g. /usr/mylib/tets.jar)
+
+-----------------------------------------------------------------------
+
+VERSION 2.2 ( June 21, 2002 )
+
+* New method in FileLocator: realFile()
+
+-----------------------------------------------------------------------
+
+VERSION 2.1 ( May 24, 2002 )
+
+* FileLocator supports now filenames such as
+  "file:\L:\Java\JDK1.3\lib\rt.jar!\java\util\Hashtable.class"
+
+* New methods in FileLocator
+  - toURL()
+  - getAbsolutePath()
+  - isFile()
+  - isDirectory()
+
+* FileFinder now returns a filename even if the file is inside an
+  archive, which means that it exists but is not directly accessable.
+  The best way to open an InputStream on such a file is FileLocator.
+
+* More UnitTests for PropertyFileLoader, FileFinder and FileLocator
+
+-----------------------------------------------------------------------
+
+VERSION 2.0 ( May 18, 2002 )
+
+* New class FileLocator (requires JRE 1.3.1 or later, because JRE 1.3
+  has a bug in zip.dll concerning the timestamp of zipped files)
+
+* New class FileUtil with copyStream() feature
+
+-----------------------------------------------------------------------
+
+

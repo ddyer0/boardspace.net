@@ -1,0 +1,84 @@
+Extended Text Utilities: Realease-Notes
+Author: Manfred Duchrow
+Last update: August 18, 2012
+Copyright (c) 2002-2012, by Manfred Duchrow. All rights reserved.
+=======================================================================
+
+-------------------------------------------------------------------------------
+
+VERSION 2.1.2 (18/08/2012)
+
+* StringObfuscator
+  > Bugfix: unicode encoded strings are now properly obfuscated and converted
+    back to plain strings.
+
+-----------------------------------------------------------------------
+
+VERSION 2.1.1 ( August 16, 2007 )
+
+* TextEngine
+  > Internal changes to use StringBuffer rather than string concatenation
+
+-----------------------------------------------------------------------
+
+VERSION 2.1 ( June 11, 2005 )
+
+* New class StringObfuscator 
+
+-----------------------------------------------------------------------
+
+VERSION 2.0 ( March 6, 2004 )
+
+* New methods in TextEngine
+  - public void addFrom( Map vars )
+
+* BasicTextFunctionResolver
+  Fixed potential NullPointerException in 
+  protected String funcDate( Vector parameter )
+
+-----------------------------------------------------------------------
+
+VERSION 1.9 ( October 24, 2002 )
+
+* New methods in TextEngine
+  - useDollarCurlyBrackets()
+  - allowMissingPlaceholders()
+  - forbidMissingPlaceholders()
+  - setVarStartPrefix()
+  - getVarStartPrefix()
+
+  Supports prefix character in front of placeholder indicator
+  Examples: %'var' or ${var}
+
+  Allows to supress exception, if a placeholder can't be
+  resolved. Insert the placeholder's name instead
+
+-----------------------------------------------------------------------
+
+VERSION 1.8 ( July 11, 2002 )
+
+* Added method to VariableContainer
+  - setValueFor()
+
+* Added method to GlobalLocalVariables
+  - setValueFor()
+  - setLocalObject()
+  - setGlobalObject()
+
+-----------------------------------------------------------------------
+
+VERSION 1.7 ( July 01, 2002 )
+
+* Renamed VariableResolver.getValueFor() to getValue()
+
+* Added new method knownVariableNames() to VariableResolver
+
+* New interface VariableContainer that introduces a setValue() method
+
+* Created new class GlobalLocalVariables that combines a global and
+  a local variable resolver
+
+* New class GlobalLocalPlaceholderReplacement that supports easy
+  usage of a text engine with a local and global variables
+
+-----------------------------------------------------------------------

@@ -1,0 +1,42 @@
+
+(;
+GM[1]FF[4]AP[NNGS:1.1.17]
+US[Brought to you by No Name Go Server]
+CP[
+  Copyright This game was played on the No Name Go Server
+  Permission to reproduce this game is given,
+  as long as this copyright notice is preserved.]
+GN[getafix-shirac(B) NNGS]
+EV[none]
+RE[W+Resign]
+PW[getafix]WR[UR ]
+PB[shirac]BR[UR ]
+PC[NNGS Go Program Server Clone: boardspace.net 6969]
+DT[2005-07-09]
+SZ[19]TM[480]KM[5.5]
+
+;B[pd];W[dc];B[qp];W[dq];B[oq];W[co];B[fp];W[gq];B[gp];W[hq];B[hp];W[iq]
+;B[ip];W[cf];B[jd];W[hd];B[hc];W[gc];B[gd];W[ge];B[fd];W[fc];B[fe];W[gf]
+;B[he];W[hf];B[id];W[ff];B[ee];W[ef];B[de];W[ce];B[df];W[dg];B[ec];W[eb]
+;B[fb];W[gb];B[hb];W[ed];B[dd];W[cd];B[ec];W[jp];B[ga];W[cb];B[ea];W[io]
+;B[ho];W[in];B[hn];W[hm];B[dp];W[cp];B[do];W[dn];B[eq];W[dr];B[en];W[dm]
+;B[em];W[dl];B[el];W[ek];B[gm];W[gn];B[fn];W[gl];B[go];W[fl];B[hl];W[im]
+;B[fq];W[eo];B[ep];W[fm];B[fk];W[gk];B[gr];W[er];B[fr];W[jr];B[hr];W[fs]
+;B[gs];W[es];B[ir];W[jq];B[js];W[is];B[ks];W[kr];B[dk];W[fj];B[ej];W[fk]
+;B[dj];W[cn];B[hk];W[fi];B[jo];W[ko];B[jn];W[jm];B[kn];W[ln];B[kp];W[lo]
+;B[lr];W[ls];B[ms];W[lp];B[ks];W[js];B[kq];W[lq];B[mq];W[jj];B[mp];W[mo]
+;B[no];W[nn];B[oo];W[on];B[pn];W[pm];B[qn];W[qm];B[pj];W[ol];B[mm];W[ml]
+;B[km];W[kl];B[lm];W[jl];B[ll];W[lk];B[mk];W[nl];B[kk];W[jk];B[lj];W[kj]
+;B[mn];W[gn];B[fo];W[hs];B[kp];W[eo];B[kq];W[nm];B[ok];W[pk];B[qk];W[nk]
+;B[oj];W[nj];B[ni];W[mj];B[lk];W[mi];B[nh];W[mh];B[ng];W[mg];B[if];W[ig]
+;B[jf];W[jg];B[mf];W[nf];B[of];W[ne];B[lf];W[lg];B[kg];W[kh];B[li];W[lh]
+;B[kf];W[ki];B[nd];W[oe];B[od];W[og];B[oi];W[pf];B[ph];W[me];B[md];W[qc]
+;B[pc];W[qd];B[pe];W[qe];B[qg];W[qf];B[le];W[of];B[qb];W[rb];B[qa];W[ra]
+;B[pb];W[rg];B[rh];W[sh];B[rf];W[re];B[sg];W[sc];B[db];W[cc];B[ca];W[ba]
+;B[da];W[bb];B[se];W[sd];B[si];W[sf];B[rg];W[se];B[pl];W[ql];B[rm];W[rl]
+;B[sm];W[sl];B[rn];W[rk];B[rj];W[pk];B[qj];W[ls];B[mr];W[pl];B[pg];W[hg]
+;B[oh];W[ks];B[sj];W[sk];B[dh];W[ch];B[eg];W[cg];B[ci];W[eh];B[cl];W[bk]
+;B[ck];W[bl];B[bj];W[bi];B[bh];W[di];B[ai];W[bm];B[bg];W[bf];B[af];W[ag]
+;)
+
+---

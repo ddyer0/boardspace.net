@@ -1,0 +1,56 @@
+<HTML>
+<HEAD>
+<TITLE>Kawa Project</TITLE>
+</HEAD>
+<BODY LINK="#0000ff" VLINK="#800080" BGCOLOR="#ffffff">
+
+<H1><IMG SRC="kawacup.jpg" WIDTH=106 HEIGHT=100>Tutorial 4</H1>
+<P><A HREF="index.htm">Index</A> </P>
+<font size="1.5" face="Arial">Last Modified Date - <font color=red>3/3/99</font><p>
+Please click <a href="http://www.tek-tools.com/kawa/docs/tutorial4.htm">here</a> for the latest version of this document.
+<font color=red> If this is an online version of the document please right click in the browser and select 
+'Update local Kawa document' to update your local copy of this document</font>
+</font>
+<P><HR></P>
+<h3><font color=brown>Debugging under Kawa</font></h3>
+<p>
+The steps for debugging under Kawa is the same for both JDK 1.1 and JDK 1.2. Kawa debugger is build on Java
+debugger API and these classes are shipped as part of JDK. 
+<p>
+All the JDK classes are compiled without debug information and if you are interested in stepping into JDK
+source code during debugging please refer to <a href="jdkdebugclassfile.html">Debug Class file</a> setup for
+further instructions. 
+<p>
+Please refer to <a href="kawasetup.htm">Kawa Setup</a> for more information on how to
+setting up source directory for JDK 1.2 so you can open the source files during debugging.
+<p>
+We will go back to DrawTest tutorial discussed under <a href="tutorial1.htm">tutorial 1</a> for learning how to debug. 
+<ul>
+	<li>Please select Project/Open menu option and select the DrawTest.kawa project file in the DrawTest
+	folder to make it as the current project.
+	</li>
+	<li>Please select Project/Compiler options and check the Debugging tables(-g) option so we can regenerate class
+	files with debug information
+	</li>
+	<li>Select Build/Rebuild All to rebuild the entire project.</li>
+	<li>We need to set some breakpoints in the project so the debugger will stop execution when it hits the breakpoint.</li>
+	<li>If the project is setup to run as an app please goto line 55 in DrawTest.java and press F9 to insert a breakpoint.
+	If the project is setup to run as an applet please goto line 43 and set a breakpoint</li>
+	<li>Select Build/Debug/Run or F5 to start the debugger. As soon as the breakpoint is hit, Kawa will automatically bring the
+	focus to DrawTest.java file with a green arrow indicating the current line of execution.</li>
+	<li>Also, Kawa will automatically change the project tab to debug tree which has a lot of debug information. The debug tree
+	shows all the thread information and the current stack information. Please refer to <a href="debugger.htm">debugger</a> documentation
+	for more details on some of these information.</li>
+	<li>When the debugger is at a breakpoint, you can select Build/Debug/Step into or F8 to step into next instruction. Kawa will
+	automatically open the source file if it is part of the JDK or part of the project. If the file is not part of the project and 
+	not part of the JDK then please refer to <a href="debugger.htm">debugger</a> section 'Finding package source files' for more
+	details on how to setup Kawa to open other source files</li>
+	<li>Selecting Build/Debug/Step Over or F12 will step to the next line of execution in the current stack</li>
+	<li>The debugger tree is automatically updated with new values as you step, step over or step up. Expanding an object in the
+	debugger tree will automatically put a watch on this object</li>
+	<li>You can set or clear breakpoints when the debugger is active. Selecting Continue or F5 again will continue the debugger
+	until the next breakpoint is hit.</li>
+	<li>Select Build/Debug/Exit or F10 to stop the debugger or exit the applet or application normally and the debugger will quit</li>
+</ul>
+</BODY>
+</HTML>

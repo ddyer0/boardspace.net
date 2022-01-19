@@ -1,0 +1,1165 @@
+package sixmaking;
+
+import online.common.*;
+import online.common.SimpleSprite.Movement;
+import online.game.*;
+import online.game.sgf.*;
+
+import java.awt.*;
+import java.util.*;
+
+import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JMenuItem;
+
+import lib.Drawable;
+import lib.G;
+import lib.InternationalStrings;
+import static sixmaking.SixmakingMovespec.*;
+
+/**
+ * This code shows the overall structure appropriate for a game view window.
+*/
+public class SixmakingViewer extends commonCanvas 
+	implements ViewerProtocol, SixmakingConstants, sgf_names
+{
+     /**
+	 * 
+	 */
+	static final long serialVersionUID = 1L;
+	// colors
+    private Color HighlightColor = new Color(0.2f, 0.95f, 0.75f);
+    private Color rackBackGroundColor = new Color(194,175,148);
+    private Color boardBackgroundColor = new Color(220,165,155);
+    private Color vcrButtonColor = new Color(0.7f, 0.7f, 0.75f);
+ 
+    // private state
+    private SixmakingBoard b = null; 	// the board from which we are displaying
+    private int CELLSIZE; 			// size of the layout cell.  
+    private static int SUBCELL = 4;	// number of cells in a square
+    private int SQUARESIZE;			// size of a board square
+    
+    // addRect is a service provided by commonCanvas, which supports a mode
+    // to visualize the layout during development.  Look for "show rectangles"
+    // in the options menu.
+    //public Rectangle fullRect = addRect("fullRect"); //the whole viewer area
+    //public Rectangle boardRect = addRect("boardRect"); //the actual board, normally at the left edge
+    //public Rectangle chatRect = addRect("chatRect"); // the chat window
+    private Rectangle logRect = addRect("logRect"); //the game log, normally off the the right
+    private Rectangle stateRect = addRect("stateRect");
+    private Rectangle firstPlayerChipRect = addRect("firstPlayerChipRect");
+    private Rectangle secondPlayerChipRect = addRect("secondPlayerChipRect");
+    private Rectangle reverseViewRect = addRect("reverse");
+    private JCheckBoxMenuItem reverseOption = null;
+    private JMenuItem offerDrawAction = null;
+    
+    private Rectangle doneRect = addRect("doneRect");
+    private Rectangle editRect = addRect("editRect");
+    private Rectangle goalRect = addRect("goalRect");
+    private Rectangle progressRect = addRect("progressRect");
+    private Rectangle liftRect = addRect("liftRect");
+    private Rectangle chessRect = addRect("chessRect");
+    private Rectangle repRect = addRect("repRect");
+    private Rectangle declineDrawRect = addRect("declineDraw");
+    private Rectangle acceptDrawRect = addRect("acceptDraw");	
+    private boolean lifted=false;		// true if we're expanding stacks to show their contents
+    private double chipScale = 0.75;
+    /**
+     * preload all the images associated with the game. This is delegated to the chip class.
+     */
+    public void preloadImages()
+    {	
+       	SixmakingChip.preloadImages(this,ImageDir);
+    }
+
+
+	/**
+	 * 
+	 * this is the real instance intialization, performed only once.
+	 * info contains all the goodies from the environment.
+	 * */
+    public void init(exHashtable info)
+    {	// for games with more than two players, the default players list should be 
+    	// adjusted to the actual number, adjusted by the min and max
+       	// int players_in_game = Math.max(3,info.getInt(exHashtable.PLAYERS_IN_GAME,4));
+     	int players_in_game = Math.max(2,info.getInt(exHashtable.PLAYERS_IN_GAME,2));
+    	super.init(info);
+       	// 
+    	// for games that require some random initialization, the random key should be
+    	// captured at this point and passed to the the board init too.
+        // randomKey = info.getInt(exHashtable.RANDOMSEED,-1);
+    	//
+        if(debug)
+        {	// initialize the translations when debugging, so there
+        	// will be console chatter about strings not in the list yet.
+        	InternationalStrings.put(SixmakingStrings);
+        	InternationalStrings.put(SixmakingStringPairs);
+        }
+
+        int randomKey = info.getInt(exHashtable.RANDOMSEED,-1);
+       
+        b = new SixmakingBoard(info.getString(exHashtable.GAMETYPE, Variation.Sixmaking.name),randomKey,players_in_game,repeatedPositions);
+        doInit(false);
+        reverseOption = myFrame.addOption(s.get(ReverseView),b.reverse_y,deferredEvents);
+        offerDrawAction = myFrame.addAction(s.get(OFFERDRAW),deferredEvents);       
+     }
+
+    /** 
+     *  used when starting up or replaying and also when loading a new game 
+     *  */
+    public void doInit(boolean preserve_history)
+    {	//System.out.println(myplayer.trueName + " doinit");
+        super.doInit(preserve_history);				// let commonViewer do it's things
+        int np = b.nPlayers();
+        b.doInit(b.gametype,b.randomKey,np);			// initialize the board
+        adjustPlayers(np);
+        if(!preserve_history)
+    	{ PerformAndTransmit(reviewOnly?"Edit":"Start P0", false,replayMode.Live);
+    	}
+
+    }
+    /** this is called by the game controller when all players have connected
+     * and the first player is about to be allowed to make his first move. This
+     * may be a new game, or a game being restored, or a player rejoining a game.
+     * You can override or encapsulate this method.
+     */
+    public void startPlaying()
+    {	super.startPlaying();
+    }
+
+    /**
+     * translate the mouse coordinate x,y into a size-independent representation
+     * presumably based on the cell grid.  This is used to transmit our mouse
+     * position to the other players and spectators, so it will be displayed
+     * at approximately the same visual spot on their screen.  
+     * The results of this function only have to be interpreted by {@link #decodeScreenZone}
+     * Some trickier logic may be needed if the board has several orientations,
+     * or if some mouse activity should be censored.
+     */
+    public String encodeScreenZone(int x, int y,Point p)
+    {
+    	return(super.encodeScreenZone(x,y,p));
+    }
+    /**
+     * invert the transformation done by {@link #encodeScreenZone}, returning 
+     * an x,y pixel address on the main window.
+     * @param z
+     * @param x
+     * @param y
+     * @return a point representing the decoded position
+     */
+    public Point decodeScreenZone(String z,int x,int y)
+    {
+    	return(super.decodeScreenZone(z,x,y));
+    }
+	/**
+	 * 
+	 * this is a debugging hack to give you an event based on clicking in the player name
+	 * You can take whatever action you like, or no action.
+	 */
+    public boolean inPlayRect(int eventX, int eventY)
+    {	return(super.inPlayRect(eventX,eventY));
+     }
+
+    /**
+     * update the players clocks.  The normal thing is to tick the clocks
+     * only for the player whose turn it is.  Games with a simtaneous action
+     * phase need to do something more complicated.
+     * @param inc the increment (in milliseconds) to add
+     * @param p the current player, normally the player to update.
+     */
+    public void updatePlayerTime(long inc,commonPlayer p)
+    {
+    	super.updatePlayerTime(inc,p);
+    }
+	/**
+	 * this is the main method to do layout of the board and other widgets.  I don't
+	 * use swing or any other standard widget kit, or any of the standard layout managers.
+	 * they just don't have the flexibility to produce the results I want.  Your milage
+	 * may vary, and of course you're free to use whatever layout and drawing methods you
+	 * want to.  However, I do strongly encourage making a UI that is resizable within
+	 * reasonable limits, and which has the main "board" object at the left.
+	 * 
+	 *  The basic layout technique used here is to start with a cell which is about the size
+	 *  of a board square, and lay out all the other object relative to the board or to one
+	 *  another.  The rectangles don't all have to be on grid points, and don't have to
+	 *  be nonoverlapping, just so long as the result generally looks good.
+	 *  
+	 *  When "extraactions" is available, a menu opion "show rectangles" works
+	 *  with the "addRect" mechanism to help visualize the layout.
+	 */ 
+    public void setLocalBounds(int x, int y, int width, int height)
+    {   boolean wideMode = width>height*1.7;
+    	// the overall layout is based on a nominal board size of 10x10
+    	// but the actual board may differ.
+        int sncols = (b.boardColumns*SUBCELL+20); // more cells wide to allow for the aux displays
+        int snrows = (b.boardRows)*SUBCELL+1;  
+        int cellw = width / sncols;
+        int chatHeight = selectChatHeight(height);
+        int cellh = (height-(wideMode ? 0 : chatHeight)) / snrows;
+        CELLSIZE = Math.max(1,Math.min(cellw, cellh)); //cell size appropriate for the aspect ration of the canvas
+        int ideal_logwidth = CELLSIZE * 10;
+    	// this adjusts the board size so it will fill the same rectangle
+    	// as the 10x10 board we base the layout on.
+        SQUARESIZE = (CELLSIZE*5/b.boardColumns)*SUBCELL;
+        G.SetRect(fullRect,x,y, width, height);
+
+        // game log.  This is generally off to the right, and it's ok if it's not
+        // completely visible in all configurations.
+        
+        G.SetRect(boardRect,x, (wideMode ? 0 : chatHeight), (int)(SQUARESIZE * b.boardColumns) ,(int)(SQUARESIZE * b.boardRows));
+
+        G.SetRect(stateRect,G.Left(boardRect) + CELLSIZE, (wideMode ? 0 : chatHeight) +CELLSIZE/3,
+        		G.Width( boardRect) - CELLSIZE, CELLSIZE);
+
+        G.SetRect(firstPlayerChipRect, G.Right(boardRect),G.Top( boardRect)+SQUARESIZE, SQUARESIZE, SQUARESIZE);
+ 
+        G.SetRect(secondPlayerChipRect,G.Left( firstPlayerChipRect),G.Bottom(boardRect)-CELLSIZE-SQUARESIZE,
+        		SQUARESIZE, SQUARESIZE);
+
+         
+        G.SetRect(liftRect,G.Right(boardRect)-SQUARESIZE,G.Bottom(boardRect)-3*CELLSIZE/2,
+        		CELLSIZE*2,CELLSIZE*2);
+
+        G.SetRect(chessRect, G.Right(liftRect)+CELLSIZE/2,G.Top(liftRect),CELLSIZE*2,CELLSIZE*2);
+
+        G.SetRect(reverseViewRect, G.Left(liftRect)-CELLSIZE*2-CELLSIZE/2,G.Top( liftRect), CELLSIZE*2, CELLSIZE*2);
+
+        auxSRect.max=2.0;
+        G.SetRect(goalRect,G.Left( boardRect),G.Bottom(boardRect)-CELLSIZE*3,G.Width(boardRect),CELLSIZE);
+               
+        G.SetRect(progressRect,G.Left(goalRect)+G.Width(goalRect)/6, G.Top(goalRect),G.Width( goalRect)/2, CELLSIZE/2);
+
+        {
+            commonPlayer pl0 = getPlayerOrTemp(0);
+            commonPlayer pl1 = getPlayerOrTemp(1);
+            {
+            Rectangle p0time = pl0.timeRect;
+            Rectangle p1time = pl1.timeRect;
+            Rectangle p0alt = pl0.extraTimeRect;
+            Rectangle p1alt = pl1.extraTimeRect;
+            Rectangle p0anim = pl0.animRect;
+            Rectangle p1anim = pl1.animRect;
+            
+            Rectangle firstPlayerRect = pl0.nameRect;
+            Rectangle secondPlayerRect = pl1.nameRect;
+            Rectangle firstPlayerPicRect = pl0.picRect;
+            Rectangle secondPlayerPicRect = pl1.picRect;
+            
+            //first player name
+            G.SetRect(firstPlayerRect, G.Right(firstPlayerChipRect)+CELLSIZE,G.Top( boardRect), CELLSIZE * 4, CELLSIZE);
+            //second player name
+            G.SetRect(secondPlayerRect,G.Left( firstPlayerRect), G.Bottom(boardRect) -G.Height( firstPlayerRect),
+            		G.Width( firstPlayerRect),G.Height( firstPlayerRect));
+ 
+            // first player portrait
+            G.SetRect(firstPlayerPicRect,G.Left( firstPlayerRect),G.Bottom(firstPlayerRect), CELLSIZE *4, CELLSIZE *4);
+     
+            // player 2 portrait
+            G.SetRect(secondPlayerPicRect,G.Left( firstPlayerPicRect),G.Top(secondPlayerRect) - G.Height(firstPlayerPicRect),
+            		G.Width(firstPlayerPicRect),G.Height(firstPlayerPicRect));
+         	
+            // time dispay for first player
+            G.SetRect(p0time, G.Right(firstPlayerRect),G.Top( firstPlayerRect), CELLSIZE * 3, CELLSIZE/2);
+            G.SetRect(p0alt,G.Left( p0time),G.Bottom(p0time),G.Width( p0time),G.Height(p0time));
+            
+            // tfirst player "i'm alive" anumation ball
+            G.SetRect(p0anim, G.Right(p0time),G.Top( p0time),G.Height(p0time),G.Height(p0time));
+            // time dispay for second player
+            G.SetRect(p1time, G.Right(secondPlayerRect),G.Top( secondPlayerRect),G.Width( p0time),G.Height( p0time));
+            G.SetRect(p1alt,G.Left( p1time), G.Bottom(p1time),G.Width( p1time),G.Height( p1time));
+
+            G.SetRect(p1anim,G.Right( p1time),G.Top( p1time),G.Height(p1time),G.Height(p1time));
+
+            int logx = wideMode ? G.Right(p0anim)+CELLSIZE/2 : G.Right(chatRect)+CELLSIZE/2;
+            G.SetRect(logRect, logx, y , Math.min(ideal_logwidth,width-logx-CELLSIZE/2),
+            		wideMode ? CELLSIZE*12 : chatHeight-y);
+
+            int chatX = wideMode ? G.Right(firstPlayerPicRect)+CELLSIZE/2 : 0;
+            int chatY = wideMode ? G.Bottom(logRect)+CELLSIZE: 0;
+            G.SetRect(chatRect,chatX,chatY,
+            		wideMode ? width-chatX-CELLSIZE/2 : G.Right(firstPlayerRect),
+            		wideMode ? Math.min(chatHeight,height-chatY) : chatHeight);
+                 
+                  }}  
+        
+        // "done" rectangle, should always be visible, but only active when a move is complete.
+        G.SetRect(doneRect, G.Right(boardRect), G.Bottom(firstPlayerChipRect)+CELLSIZE/2,
+        			CELLSIZE*3,CELLSIZE);
+        
+        // "edit" rectangle, available in reviewers to switch to puzzle mode
+        G.SetRect(editRect, G.Right(doneRect)+CELLSIZE/2,G.Top( doneRect),G.Width( doneRect),G.Height( doneRect));
+
+        G.SetRect(acceptDrawRect,G.Left(doneRect),G.Bottom(doneRect), CELLSIZE*6,G.Height( doneRect));
+        
+        G.SetRect(declineDrawRect,G.Left( acceptDrawRect),G.Bottom(acceptDrawRect),G.Width( acceptDrawRect),G.Height( acceptDrawRect));
+
+        G.SetRect(repRect,G.Left( goalRect)+CELLSIZE,G.Top( goalRect)-CELLSIZE,G.Width(goalRect)-CELLSIZE, CELLSIZE);
+     
+        
+
+        //this sets up the "vcr cluster" of forward and back controls.
+        SetupVcrRects(G.Left(boardRect)+CELLSIZE/2,
+        			  G.Bottom(boardRect)-CELLSIZE*2,
+            CELLSIZE * 6,
+            3 * CELLSIZE);
+ 
+        positionTheChat(chatRect,Color.white,Color.white);
+        generalRefresh();
+    }
+    
+    //
+	// reverse view icon, made by combining the stones for two colors.
+    //
+    private void DrawReverseMarker(Graphics gc, Rectangle r,HitPoint highlight)
+    {	StockArt king = SixmakingChip.getChip(b.reverse_y?1:0);
+    	StockArt reverse = SixmakingChip.getChip(b.reverse_y?0:1);
+    	reverse.drawChip(gc,this,G.Width(r),G.Left(r)+G.Width(r)/2,G.Top(r)+G.Height(r)/4,null);
+    	king.drawChip(gc,this,G.Width(r),G.Left(r)+G.Width(r)/2,G.Top(r)+G.Height(r)-G.Height(r)/4,null);
+    	if(HitPoint.setHelpText(highlight,r,s.get(ReverseViewExplanation)))
+    	{	G.frameRect(gc,Color.red,r);
+    		highlight.hitCode = SixmakingId.ReverseViewButton;
+    	}
+     }  
+    //
+    // implement a "active when pushed" button to separate stacks into
+    // their components.  This is animated gradually by the drawBoardElements method
+    //
+    private void DrawLiftRect(Graphics gc,HitPoint highlight)
+    {	boolean hit = false;
+    	if(G.pointInRect(highlight,liftRect))
+    	{	hit = true;
+    		highlight.hitCode = SixmakingId.LiftRect;
+    		highlight.dragging = lifted = highlight.down;
+    	}
+		G.centerImage(gc,SixmakingChip.liftIcon.image,liftRect,this); 
+		G.frameRect(gc,hit?HighlightColor:Color.black,liftRect);
+    }
+    //
+    // implement a "active when pushed" button to separate stacks into
+    // their components.  This is animated gradually by the drawBoardElements method
+    //
+    private void DrawChessRect(Graphics gc,HitPoint highlight)
+    {	boolean hit = false;
+    	if(G.pointInRect(highlight,chessRect))
+    	{	hit = true;
+    		highlight.hitCode = SixmakingId.ChessRect;
+    	}
+		G.centerImage(gc,showChessTops?SixmakingChip.chessIconOff.image:SixmakingChip.chessIconOn.image,
+				chessRect,this); 
+		G.frameRect(gc,hit?HighlightColor:Color.black,chessRect);
+    }
+    
+    //
+	// draw a box of spare chips. Notice if any are being pointed at.  Highlight those that are.
+    // for checkers, this is just a single checker, which also displays the number of pieces 
+    // left on the board as a sort of progress metric.
+    //
+    private void DrawCommonChipPool(Graphics gc, SixmakingBoard gb, int forPlayer, Rectangle r, int player, HitPoint highlight)
+    {	SixmakingCell chips[]= gb.rack;
+        boolean canHit = gb.LegalToHitChips(forPlayer);
+        SixmakingCell thisCell = chips[forPlayer];
+        SixmakingChip thisChip = thisCell.topChip();
+        boolean canDrop = (getMovingObject()>=0);
+        boolean canPick = (thisChip!=null);
+        HitPoint pt = (canHit && (canPick||canDrop))? highlight : null; 
+        String msg = null;
+        int sz = (int)(G.Width(r)*chipScale);
+        thisCell.drawStack(gc,this,pt,sz,G.Left(r)+sz/2,G.Top(r)+sz/2,002,0.05,msg);
+
+        if((highlight!=null) && (highlight.hitObject==thisCell))
+        {	highlight.arrow = canDrop ? StockArt.DownArrow : StockArt.UpArrow;
+        	highlight.awidth = G.Width(r)/2;
+        	highlight.hit_index = 1;
+        }
+     }
+
+    //
+    // sprites are normally a game piece that is "in the air" being moved
+    // around.  This is called when dragging your own pieces, and also when
+    // presenting the motion of your opponent's pieces, and also during replay
+    // when a piece is picked up and not yet placed.  While "obj" is nominally
+    // a game piece, it is really whatever is associated with b.movingObject()
+    //
+    public void drawSprite(Graphics g,int obj,int xp,int yp)
+    {  	// draw an object being dragged
+    	if(obj>0)
+    	{
+    		SixmakingCell stack = b.pickedStack;
+    		stack.drawStack(g,this,null,(int)(chipScale*SQUARESIZE),xp,yp,0,0.1,null);
+    	}
+     }
+
+    // also related to sprites,
+    // default position to display static sprites, typically the "moving object" in replay mode
+    public Point spriteDisplayPoint()
+	{   return(new Point(G.Right(boardRect)-SQUARESIZE/2,G.Bottom(boardRect)-SQUARESIZE/2));
+	}
+
+
+    /** this is used by the game controller to supply entertainment strings to the lobby */
+    public String gameProgressString()
+    {	// this is what the standard method does
+    	// return ((reviewer ? s.get(ReviewAction) : ("" + viewMove)));
+    	return(super.gameProgressString());
+    }
+
+
+
+    /* draw the deep unchangeable objects, including those that might be rather expensive
+     * to draw.  This background layer is used as a backdrop to the rest of the activity.
+     * in our cease, we draw the board and the chips on it. 
+     * */
+    public void drawFixedElements(Graphics gc)
+    {	boolean reviewBackground = reviewMode()&&!mutable_game_record;
+    	setBoardRect(b);
+      // erase
+      G.tileImage(gc,SixmakingChip.backgroundTile.image, fullRect, this);   
+      //gc.setColor(Color.black);
+      //G.fillRect(gc, boardRect);
+      if(reviewBackground)
+      {	 
+        G.tileImage(gc,SixmakingChip.backgroundReviewTile.image,boardRect, this);   
+      }
+       
+      // if the board is one large graphic, for which the visual target points
+      // are carefully matched with the abstract grid
+      G.centerImage(gc,SixmakingChip.board.image, boardRect,this);
+      
+      b.DrawGrid(gc,boardRect,use_grid,Color.white,Color.black,Color.blue,Color.black);
+    }
+   private boolean showChessTops = false;
+   private boolean drawChipWithIcon(Graphics gc,HitPoint hitNow,SixmakingCell cell,
+		   int size,int xpos,int ypos,int liftsteps,int heights)
+   {	
+   		SixmakingCell proxy = new SixmakingCell();
+   		proxy.copyFrom(cell);
+   		proxy.rackLocation = cell.rackLocation;
+   		proxy.row = cell.row;
+   		proxy.col = cell.col;
+   		SixmakingChip top = proxy.topChip();
+   		if(showChessTops && (top!=null))
+   		{
+   		int player = top.playerIndex();
+   		int chip = Math.min(5,proxy.height()-1);
+   		proxy.addChip(SixmakingChip.caps[player][chip]);
+   		}
+   		if(levelSelectMode!=null)
+   		{
+   			if(cell!=levelSelectMode) { hitNow=null; }
+   			else { xpos-=size/2; size = size*2; }
+   		}
+   		boolean hit = proxy.drawStack(gc,this,hitNow,size,xpos,ypos,liftSteps,0.1,null);
+   		cell.current_center_x = proxy.current_center_x;
+   		cell.current_center_y = proxy.current_center_y;
+   		
+   		if(hit) 
+   			{ if(enterLevelSelect) 
+   					{ if(cell.onBoard) { levelSelectMode = cell; repaint(); }
+   					  enterLevelSelect = false;
+   					  hitNow.hitCode = DefaultId.HitNoWhere; 
+   					}
+   			else if(b.movingObjectIndex()<0) 
+   			{
+   			  int index = hitNow.hit_index;
+   			  if(((1<<(cell.height()-index))&heights)!=0)
+   			  {
+   			  hitNow.hitObject = cell;
+   			  index--;
+   			  if(index>=0 && index<cell.height()-1)
+   			  {	proxy.setChipAtIndex(index,SixmakingChip.flat);
+   			    while(--index >=0)
+   			    { proxy.setChipAtIndex(index,SixmakingChip.blank);
+   			    }
+   			    proxy.drawStack(gc,this,null,size,xpos,ypos,liftSteps,0.1,null);
+   			    }
+   			  }
+   			  else { 
+   				  // can't hit this height due to the Ko rule.
+   				  hitNow.hitCode = DefaultId.HitNoWhere;
+   				  hitNow.hitObject = null;
+   			  }
+   		}}
+	   return(hit);   
+   }
+   /* draw the board and the chips on it. */
+    private int liftSteps=0;
+    private void drawBoardElements(Graphics gc, SixmakingBoard gb, Rectangle brect, HitPoint highlight)
+    {
+    	// this logic animates the expansion of stacks when the button is pushed.
+    	liftSteps = lifted ? Math.min(++liftSteps,12) : Math.max(--liftSteps,0);
+     	boolean dolift = (liftSteps>0);
+     	if(dolift && (liftSteps<12))
+     		{ // this induces a very simple animation
+     		repaint(20); 
+     		}
+     	
+     	// targets are the pieces we can hit right now.
+     	Hashtable<SixmakingCell,SixmakingMovespec>targets = gb.getTargets();
+     	SixmakingCell dest = gb.getDest();		// also the current dest and source
+     	SixmakingCell src = gb.getSource();
+     	SixmakingCell last = gb.getPrevDest();	// and the other player's last move
+     	//
+        // now draw the contents of the board and anything it is pointing at
+        //
+     	
+        // conventionally light source is to the right and shadows to the 
+        // left, so we want to draw in right-left top-bottom order so the
+        // solid parts will fall on top of existing shadows. 
+        // when the rotate view is in effect, top and bottom, left and right switch
+        // but this iterator still draws everything in the correct order for occlusion
+        // and shadows to work correctly.
+    	for (int row = gb.topRow(),stepRow=gb.stepRow(),lastRow=gb.bottomRow()+stepRow;
+		row!=lastRow;
+		row += stepRow)	
+    	{ 
+		for (int colNum = gb.leftColNum(),stepCol=gb.stepColNum(),lastCol=gb.rightColNum()+stepCol;
+		     colNum!=lastCol;
+		     colNum+=stepCol)
+        	{ 
+			char thiscol = (char)('A'+colNum);
+        	// note that these accessors "lastRowInColumn" etc
+        	// are not really needed for simple boards, but they
+        	// also work for hex boards and boards with cut out corners
+            SixmakingCell cell = gb.getCell(thiscol,row);
+            int ypos = G.Bottom(brect)-gb.cellToY(thiscol, row);
+            int xpos = G.Left(brect) + gb.cellToX(thiscol, row);
+            HitPoint hitNow = gb.legalToHitBoard(cell,targets) ? highlight : null;
+            SixmakingMovespec target = targets.get(cell);
+            int heights = target==null ? -1 : target.height;
+            if( drawChipWithIcon(gc,hitNow,cell,(int)(chipScale*SQUARESIZE),xpos,ypos,liftSteps,heights))
+            	{ // draw a highlight rectangle here, but defer drawing an arrow until later, after the moving chip is drawn
+            	hitNow.arrow =(getMovingObject()>=0) 
+      				? StockArt.DownArrow 
+      				: cell.topChip()!=null?StockArt.UpArrow:null;
+            	hitNow.awidth = SQUARESIZE/2;
+            	G.frameRect(gc,Color.red,xpos-CELLSIZE,ypos-CELLSIZE-(int)(0.2*hitNow.hit_index*CELLSIZE*2),CELLSIZE*2,CELLSIZE*2);
+            	}
+            if((cell==dest)||(cell==src))
+            {
+            	StockArt.SmallO.drawChip(gc,this,CELLSIZE,xpos,ypos,null);
+            }
+           if(cell==last)
+            {
+            	StockArt.Dot.drawChip(gc,this,CELLSIZE,xpos,ypos,null);
+            }
+        	}
+    	}
+    }
+     public void drawAuxControls(Graphics gc,HitPoint highlight)
+    {      	
+       DrawLiftRect(gc,highlight);
+       DrawChessRect(gc,highlight);
+       DrawReverseMarker(gc,reverseViewRect,highlight);
+    }
+    //
+    // draw the board and things on it.  If gc!=null then actually 
+    // draw, otherwise just notice if the highlight should be on
+    //
+    public void redrawBoard(Graphics gc, HitPoint highlight)
+    {  SixmakingBoard gb = (SixmakingBoard) disB(gc);
+       setBoardRect(gb);
+      boolean ourTurn = OurMove();
+      boolean moving = getMovingObject()>=0;
+      HitPoint ot = ourTurn ? highlight : null;	// hit if our turn
+      HitPoint select = moving?null:ot;	// hit if our turn and not dragging
+      HitPoint ourSelect = (moving && !reviewMode()) ? null : highlight;	// hit if not dragging
+      SixmakingState vstate = gb.getState();
+       redrawGameLog(gc, ourSelect, logRect, boardBackgroundColor);
+    
+        drawBoardElements(gc, gb, boardRect, ot);
+        DrawCommonChipPool(gc, gb,FIRST_PLAYER_INDEX,firstPlayerChipRect, gb.whoseTurn,ot);
+        DrawCommonChipPool(gc, gb, SECOND_PLAYER_INDEX, secondPlayerChipRect,gb.whoseTurn,ot);
+        G.setFont(gc,standardBoldFont);
+        switch(vstate)
+        {
+        default:
+        	if(gb.drawIsLikely())
+        	{	// if not making progress, put the draw option on the UI
+            	if(G.handleSquareButton(gc,acceptDrawRect,select,s.get(OFFERDRAW),HighlightColor,rackBackGroundColor))
+            	{
+            		select.hitCode = DefaultId.HitOfferDrawButton;
+            	}
+       		
+        	}
+        	break;
+        case AcceptOrDecline:
+        case AcceptPending:
+        case DeclinePending:
+        	if(G.handleSquareButton(gc,acceptDrawRect,select,s.get(ACCEPTDRAW),HighlightColor,rackBackGroundColor))
+        	{
+        		select.hitCode = DefaultId.HitAcceptDrawButton;
+        	}
+        	if(G.handleSquareButton(gc,declineDrawRect,select,s.get(DECLINEDRAW),HighlightColor,rackBackGroundColor))
+        	{
+        		select.hitCode = DefaultId.HitDeclineDrawButton;
+        	}
+       	break;
+        }
+        
+		if (vstate != SixmakingState.Puzzle)
+        {
+             if (G.handleRoundButton(gc, doneRect, 
+            		(b.DoneState()? select : null), s.get(DoneAction),
+                    HighlightColor, rackBackGroundColor))
+            {	// always display the done button, but only make it active in
+            	// the appropriate states
+                select.hitCode = DefaultId.HitDoneButton;
+            }
+            if (allowed_to_edit)
+            {
+            	if (G.handleRoundButton(gc, editRect, select,
+                            s.get(EditAction), HighlightColor,
+                            rackBackGroundColor))
+                {
+                    select.hitCode = DefaultId.HitEditButton;
+                }
+       }}
+
+ 		drawPlayerStuff(gc,(vstate==SixmakingState.Puzzle),moving?null:highlight,HighlightColor,rackBackGroundColor);
+
+
+        
+            standardGameMessage(gc,
+            		vstate==SixmakingState.Gameover
+            			?gameOverMessage()
+            			:s.get(vstate.getDescription()),
+            				vstate!=SixmakingState.Puzzle,
+            				gb.whoseTurn,
+            				stateRect);
+            goalAndProgressMessage(gc,highlight,Color.black,s.get(VictoryCondition),progressRect, goalRect);
+        
+        DrawRepRect(gc,b.Digest(),repRect);
+        drawVcrGroup(ourSelect, gc, HighlightColor, vcrButtonColor);
+        drawAuxControls(gc,ourSelect);
+
+    }
+    public int midGamePoint() { return(12); }	// games are short
+    /**
+     * Execute a move by the other player, or as a result of local mouse activity,
+     * or retrieved from the move history, or replayed form a stored game. 
+     * @param mm the parameter is a commonMove so the superclass commonCanvas can
+     * request execution of moves in a generic way.
+     * @return true if all went well.  Normally G.Error would be called if anything went
+     * seriously wrong.
+     */
+     public boolean Execute(commonMove mm,replayMode replay)
+    {	
+        if(b.getState()==SixmakingState.Puzzle)
+    	{   mm.setSliderNumString("--");
+    		switch(mm.op)
+        	{
+    		case MOVE_DROPB:
+    			lastDropped = b.pickedStack.topChip();
+    			break;
+        	case MOVE_PICK: 
+        	case MOVE_PICKB: 
+        		break;
+    		default:
+    			mm.setLineBreak(true);
+        	}
+    	}
+ 
+        handleExecute(b,mm,replay);
+        startBoardAnimations(replay);
+        if(replay!=replayMode.Replay) { playSounds(mm); }
+ 
+        return (true);
+    }
+     /**
+      * in general, the animation stack is a specialized communication between
+      * the board and the viewer.  Executing moves conventionally pushes pairs
+      * of source+destination on the stack.  These moves have already occurred,
+      * so if the viewer was undisturbed, it would display the final state.
+      * 
+      * the invisible trick is that the cells that are the targets of animations
+      * will reduce stack heights by the number of animations still in progress.
+      * This magically makes them seem shorter until the animation completes.
+      * 
+      * the rest of exactly how the animations are timed and structured is
+      * Idiosyncratic to a particular game.
+      * 
+      * @param replay
+      */
+     void startBoardAnimations(replayMode replay)
+     {
+        if(replay!=replayMode.Replay)
+     	{	double now = 0;
+     		while(b.animationStack.size()>1)
+     		{
+     		SixmakingCell to = b.animationStack.pop();		// source and destination for the move
+     		SixmakingCell from = b.animationStack.pop();
+     		double start = now;
+     		Drawable glyph = to.topChip();
+     		now = startAnimation(from,to,glyph,start,0);	// start it
+     		if(b.animationStack.size()>0)
+     			{	// if there are two pairs, the second pair is the captured chip
+        		SixmakingCell rack = b.animationStack.pop();
+         		SixmakingCell cap = new SixmakingCell(b.animationStack.pop());	// a fake cell
+         		cap.addChip(rack.topChip());	// and put a chip on it
+     			startAnimation(cap,cap,rack.topChip(),start,now);	// animate the captured stones standing in place
+    			startAnimation(cap,rack,rack.topChip(),now,0);		// then move on
+     			}
+     		}
+     	}
+        	b.animationStack.clear();
+     } 
+     //
+     // schedule an animation.  If end is 0 calculate an end time based on the
+     // distance flown.
+     //
+     double startAnimation(SixmakingCell from,SixmakingCell to,Drawable top,double start,double end)
+     {	if((from!=null) && (to!=null) && (top!=null))
+     	{	
+      		if(debug)
+     		{
+     			G.Assert(!((from.current_center_x==0) && (from.current_center_y==0)),"From Cell %s center is not set",from);
+        			G.Assert(!((to.current_center_x==0) && (to.current_center_y==0)),"To %s center is not set",to);
+     		}
+     		double speed = masterAnimationSpeed*0.5;
+   		
+    		// make time vary as a function of distance to partially equalize the runtim of
+     		// animations for long verses short moves.
+     		double dist = G.distance(from.current_center_x, from.current_center_y, to.current_center_x,  to.current_center_y);
+     		double full = G.distance(0,0,G.Width(boardRect),G.Height(boardRect));
+     		double endtime = end>0 ? end : speed*Math.sqrt(dist/full);
+
+     		SimpleSprite newSprite = new SimpleSprite(true,top,
+     				(int)(b.CELLSIZE*chipScale),	// use the same cell size as drawSprite would
+     				start,endtime,
+             		from.current_center_x,from.current_center_y,
+             		to.current_center_x,to.current_center_y);
+     		newSprite.movement = Movement.SlowIn;
+             to.addActiveAnimation(newSprite);
+   			addSprite(newSprite);
+   	     	return(endtime);
+   			}
+     	return(start);
+     }
+/**
+ * parse a move specifier on behalf of the current player.  This is called by the 
+ * "game" object when it receives a move from the other player.  Note that it may
+ * be called while we are in review mode, so the current state of the board should
+ * not be considered.
+ */
+    public commonMove ParseNewMove(String st)
+    {
+        return (new SixmakingMovespec(st, -1));
+    }
+
+   /** 
+     * this method is called from deep inside PerformAndTransmit, at the point
+     * where the move has been executed and the history has been edited.  It's
+     * purpose is to veryfy that the history accurately represents the current
+     * state of the game, and that the fundamental game machinery is in a consistent
+     * and reproducable state.  Basically, it works by creating a duplicate board
+     * resetting it and feeding the duplicate the entire history, and then verifying 
+     * that the duplcate is the same as the original board.  It's perfectly ok, during
+     * debugging and development, to temporarily change this method into a no-op, but
+     * be warned if you do this because it is throwing an error, there are other problems
+     * that need to be fixed eventually.
+     */
+    public void verifyGameRecord()
+    {	super.verifyGameRecord();
+    }    
+    // for reference, here's the standard definition
+    //   public void verifyGameRecord()
+    //   {	BoardProtocol ourB =  getBoard();
+    //   	int ourDig = ourB.Digest();
+    //   	BoardProtocol dup = dupBoard = ourB.cloneBoard();
+    //   	int dupDig = dup.Digest();
+    //   	G.Assert(dupDig==ourDig,"Duplicate Digest Matches");
+    //   	dup.doInit();
+    //   	int step = History.size();
+    //   	int limit = viewStep>=0 ? viewStep : step;
+    //   	for(int i=0;i<limit;i++) 
+    //   		{ commonMove mv = (commonMove)History.elementAt(i);
+    //   		  //G.print(".. "+mv);
+    //   		  dup.Execute(mv); 
+    //   		}
+    //   	int dupRedig = dup.Digest();
+    //   	G.Assert(dup.whoseTurn()==ourB.whoseTurn(),"Replay whose turn matches");
+    //   	G.Assert(dup.moveNumber()==ourB.moveNumber(),"Replay move number matches");
+    //   	if(dupRedig!=ourDig)
+    //   	{
+    //   	//int d0 = ourB.Digest();
+    //   	//int d1 = dup.Digest();
+    //   	G.Assert(false,"Replay digest matches");
+    //   	}
+    //   	// note: can't quite do this because the timing of "SetDrawState" is wrong.  ourB
+    //   	// may be a draw where dup is not if ourB is pending a draw.
+    //   	//G.Assert(dup.getState()==ourB.getState(),"Replay state matches");
+    //   	dupBoard = null;
+    //   }
+    
+private void playSounds(commonMove mm)
+{
+	SixmakingMovespec m = (SixmakingMovespec) mm;
+
+    // add the sound effects
+    switch(m.op)
+    {
+    case MOVE_BOARD_BOARD:
+    case MOVE_PICK:
+    	 playASoundClip(light_drop,100);
+    	 break;
+    case MOVE_PICKB:
+    	playASoundClip(light_drop,100);
+    	break;
+    case MOVE_DROP:
+    	break;
+    case MOVE_DROPB:
+       	 playASoundClip(heavy_drop,100);
+      	break;
+    default: break;
+    }
+	
+}
+	int startDragX = 0;
+	int startDragY = 0;
+	boolean enterLevelSelect = false;
+	SixmakingCell levelSelectMode = null;
+	
+	public void MouseDown(HitPoint hp)
+	{	super.MouseDown(hp);
+		if((mouse_move_events<10)&&(b.movingObjectIndex()<0)) 
+			{ enterLevelSelect = true;
+			  repaint();
+			}
+	}
+/**
+ * the preferred mouse gesture style is to let the user "pick up" objects
+ * by simply clicking on them, but we also allow him to click and drag. 
+ * StartDragging is called when he has done this.
+ */
+    public void StartDragging(HitPoint hp)
+    {
+        int mo = getMovingObject();
+        if ((mo < 0) && (hp.hitCode instanceof SixmakingId)) // not dragging anything yet, so maybe start
+        {
+        
+        if(hp!=null)
+        {
+        SixmakingId hitObject = (SixmakingId)hp.hitCode;
+		SixmakingCell cell = (SixmakingCell)hp.hitObject;
+		SixmakingChip chip = (cell==null) ? null : cell.topChip();
+		if(chip!=null)
+		{
+	    switch(hitObject)
+	    {
+	    case LiftRect:
+	    case ChessRect:
+             break;
+	    case Black_Chip_Pool:
+	    case White_Chip_Pool:
+	    	PerformAndTransmit("Pick "+hitObject.shortName+" "+hp.hit_index);
+	    	break;
+	    case BoardLocation:
+	    	// note, in this implementation the board squares are themselves pieces on the board
+	    	// if the board becomes a graphic, then this > should be >= to enable click-and-drag 
+	    	// behavior as well as click-to-pick
+	    	if(mouse_move_events>10)
+	    	{
+	    	if(cell.height()>0)
+	    		{
+	    		startDragX = G.Left(hp);
+	    		startDragY = G.Top(hp);
+	    		int cellh = cell.height();
+	    		int h = Math.max(1,Math.min(cellh,(cellh-hp.hit_index)));
+	    		PerformAndTransmit("Pickb "+cell.col+" "+cell.row+ " "+h);
+	    		}
+	    	}
+	    	else { // on a tablet without near field feedback
+	    		levelSelectMode = cell;
+	    		enterLevelSelect = false;
+	    	}
+	    	break;
+		default:
+			break;
+        }
+
+        if (getMovingObject() >= 0)
+        {	// if we got something started, inform the mouse handler
+            hp.dragging = true;
+        } }
+        }}
+    }
+
+ 	/** 
+	 * this is called on "mouse up".  We may have been just clicking
+	 * on something, or we may have just finished a click-drag-release.
+	 * We're guaranteed just one mouse up, no bounces.
+	 */
+    public void StopDragging( HitPoint hp)
+    {	CellId id = hp.hitCode;
+    	levelSelectMode = null;
+    	enterLevelSelect = false;
+    	if(!(id instanceof SixmakingId)) 
+    		{ // handle all the actions that aren't ours
+    			missedOneClick = performStandardActions(hp,missedOneClick); 
+    		}
+    	else {
+    	missedOneClick = false;
+        SixmakingId hitObject = (SixmakingId)id;
+		SixmakingState state = b.getState();
+		SixmakingCell cell = (SixmakingCell)hp.hitObject;
+		SixmakingChip chip = (cell==null) ? null : cell.topChip();
+        switch (hitObject)
+        {
+        default:
+        	throw G.Error("Hit Unknown object " + hitObject);
+
+        case ReverseViewButton:
+       	 reverseOption.setState(b.reverse_y = !b.reverse_y);
+       	 generalRefresh();
+       	 break;
+        case ChessRect:
+        	showChessTops = !showChessTops;
+        	break;
+        case LiftRect:
+        	break;
+         case BoardLocation:	// we hit the board 
+
+				if(b.movingObjectIndex()>=0)
+				{
+				  PerformAndTransmit("Dropb "+cell.col+" "+cell.row); 
+				}
+				else if(chip!=null)
+				{
+		    	int cellh = cell.height();
+		    	int h = Math.max(1,Math.min(cellh,(cellh-hp.hit_index)));
+				PerformAndTransmit( "Pickb "+cell.col+" "+cell.row+" "+h);
+				}
+				break;
+			
+        case White_Chip_Pool:
+        case Black_Chip_Pool:
+        	{
+        	int mov = b.movingObjectIndex();
+        	String col =  hitObject.shortName;
+            if(mov>=0) 
+			{//if we're dragging a black chip around, drop it.
+            	switch(state)
+            	{
+            	default: throw G.Error("can't drop on rack in state "+state);
+                case Play:
+            		PerformAndTransmit(RESET);
+            		break;
+
+               	case Puzzle:
+            		PerformAndTransmit("Drop "+col);
+            		break;
+            	}
+			}
+         	}
+            break;
+
+        }}
+        repaint(20);
+    }
+
+    private void setBoardRect(SixmakingBoard gb)
+    {
+    	gb.SetDisplayParameters(new double[]{0.28,0.27}, 
+    			new double[]{0.94,0.325},
+    			new double[]{0.17,0.86},
+    			new double[]{0.80,0.90});
+	    gb.SetDisplayRectangle(boardRect);
+       
+    }
+    
+    /** this is the place where the canvas is actually repainted.  We get here
+     * from the event loop, not from the normal canvas repaint request.
+     */
+    public void drawCanvas(Graphics offGC, boolean complete,HitPoint hp)
+    {
+       	drawFixedElements(offGC,complete);
+   	
+    	// draw the board contents and changing elements.
+        redrawBoard(offGC,hp);
+        //      draw clocks, sprites, and other ephemera
+        drawClocksAndMice(offGC, null);
+
+        DrawTileSprite(offGC,hp); //draw the floating tile, if present
+        DrawArrow(offGC,hp);
+                
+        drawSprites(offGC);
+        
+    }
+
+    /**
+     * this is a token or tokens that initialize the variation and
+     * set immutable parameters such as the number of players
+     * and the random key for the game.  It can be more than one
+     * token, which ought to be parseable by {@link #performHistoryInitialization}
+     * @return return what will be the init type for the game
+     */
+    public String gameType() 
+    { 
+    	return(""+b.gametype+" "+b.randomKey+" "+b.nPlayers()); 
+   }
+    public String sgfGameType() { return(Sixmaking_SGF); }
+
+    // the format is just what is produced by FormHistoryString
+    //
+    // this is completely standardized
+    //public void performHistoryTokens(StringTokenizer his)
+    //{	String command = "";
+    //    // now the rest
+    //    while (his.hasMoreTokens())
+    //    {
+    //        String token = his.nextToken();
+    //        if (",".equals(token) || ".end.".equals(token))
+    //        {
+    //            if (!"".equals(command))
+    //            {
+    //                PerformAndTransmit(command, false,false);
+    //                command = "";
+    //            }
+    //        }
+    //       else
+    //        {
+    //            command += (" " + token);
+    //        }
+    //    }	
+    //}  
+    //public void performPlayerInitialization(StringTokenizer his)
+    //{	int fp = G.IntToken(his);
+    //	BoardProtocol b = getBoard();
+    //    if (fp < 0)   {  fp = 0;  }
+    //    b.setWhoseTurn(fp);
+    //    players[fp].ordinal = 0;
+    //    players[(fp == 0) ? 1 : 0].ordinal = 1;
+    //	
+    //}
+
+    
+    
+    /**
+     * parse and perform the initialization sequence for the game, which
+     * was produced by {@link online.game.commonCanvas#gameType}
+     */
+    public void performHistoryInitialization(StringTokenizer his)
+    {	String token = his.nextToken();		// should be a checker init spec
+    	long rk = G.LongToken(his);
+    	int np = G.IntToken(his);
+    	// make the random key part of the standard initialization,
+    	// even though games like checkers probably don't use it.
+        b.doInit(token,rk);
+        adjustPlayers(np);
+
+    }
+
+    
+ //   public void doShowText()
+ //   {
+ //       if (debug)
+ //       {
+ //           super.doShowText();
+ //       }
+ //       else
+ //       {
+ //           theChat.postMessage(GAMECHANNEL,KEYWORD_CHAT,
+ //               s.get(CensoredGameRecordString));
+//        }
+//    }
+
+    /** handle action events
+     * 
+     */
+    public boolean handleDeferredEvent(Object target)
+    {
+    	if(target==offerDrawAction)
+    	{	if(OurMove() 
+    			&& (b.movingObjectIndex()<=0)
+    			&& (b.getState()==SixmakingState.Play))
+    		{
+    		PerformAndTransmit(OFFERDRAW);
+    		}
+    		return(true);
+    	}
+    	else if(target==reverseOption)
+    	{
+    	b.reverse_y = reverseOption.getState();
+    	generalRefresh();
+    	return(true);
+    	}
+    	else 
+    	return(super.handleDeferredEvent(target));
+     }
+/** handle the run loop, and any special actions we need to take.
+ * The mouse handling and canvas painting will be called automatically
+ *  */
+    
+    //   public void ViewerRun(boolean wait)
+    //   {
+    //       super.ViewerRun(wait);
+    //   }
+
+    /** start the robot.  This is used to invoke a robot player.  Mainly this needs 
+     * to know the class for the robot and any initialization it requires.  Normally
+     * the the robot player p is also returned.  Raj (and other simultaneous play games)
+     * might return a different player, the one actually started.
+     *  */
+    public commonPlayer startRobot(commonPlayer p,commonPlayer runner)
+    {	// this is what the standard method does:
+    	// int level = sharedInfo.getInt(sharedInfo.ROBOTLEVEL,0);
+    	// RobotProtocol rr = newRobotPlayer();
+    	// rr.InitRobot(sharedInfo, getBoard(), null, level);
+    	// p.startRobot(rr);
+    	return(super.startRobot(p,runner));
+    }
+
+    public BoardProtocol getBoard()   {    return (b);   }
+    public SimpleRobotProtocol newRobotPlayer() { return(new SixmakingPlay()); }
+
+
+    /** replay a move specified in SGF format.  
+     * this is mostly standard stuff, but the key is to recognise
+     * the elements that we generated in sgf_save
+     */
+    public void ReplayMove(sgf_node no)
+    {
+        String comments = "";
+        sgf_property prop = no.properties;
+
+        while (prop != null)
+        {
+            String name = prop.getName();
+            String value = (String) prop.getValue();
+
+            if (setup_property.equals(name))
+            {	StringTokenizer st = new StringTokenizer(value);
+            	String typ = st.nextToken();
+            	long ran = G.LongToken(st);
+                b.doInit(typ,ran);
+                adjustPlayers(b.nPlayers());
+             }
+            else if (name.equals(comment_property))
+            {
+                comments += value;
+            }
+            else if (name.equals(game_property))
+            {
+                if (!(value.toLowerCase().equals("checkers") || value.equals(Sixmaking_SGF)))
+                {
+                	throw G.Error("game type " + value + " is not this game");
+                }
+                adjustPlayers(b.nPlayers());
+            }
+            else if (parseVersionCommand(name,value,2)) {}
+            else if (parsePlayerCommand(name,value)) {}
+            else 
+            {
+                replayStandardProps(name,value);
+            }
+
+            prop = prop.next;
+        }
+
+        if (!"".equals(comments))
+        {
+            setComment(comments);
+        }
+    }
+}
+

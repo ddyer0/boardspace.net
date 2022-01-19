@@ -1,0 +1,198 @@
+recordedHistory player 0 superqwert player 1 PaulNotGam qi null 1000 qi null 1001 colormap 0
+1 TC None story Zertz+11 0 
+ 0 Start P0 
+ +T 5542 1 RtoB 2 2 C 2 
+ +T 10287 2 R- H 4 
+ +T 10287 3 Done 
+ +T 5189 4 R- A 1 
+ +T 17317 5 RtoB 2 1 F 5 
+ +T 19424 6 Done 
+ +T 41442 7 RtoB 2 2 D 5 
+ +T 43481 8 R- H 1 
+ +T 43481 9 Done 
+ +T 41195 10 R- B 1 
+ +T 44454 11 RtoB 2 2 D 3 
+ +T 46492 12 Done 
+ +T 46555 13 BtoB C 2 E 3 
+ +T 47562 14 Done 
+ +T 79125 15 R- A 2 
+ +T 81133 16 RtoB 2 0 D 2 
+ +T 82140 17 Done 
+ +T 111698 18 R- H 3 
+ +T 112972 19 RtoB 2 0 G 4 
+ +T 116331 20 Done 
+ +T 83300 21 BtoB G 4 E 6 
+ +T 85316 22 Done 
+ +T 122865 23 R- E 7 
+ +T 131108 24 RtoB 2 2 C 4 
+ +T 132128 25 Done 
+ +T 88394 26 BtoB D 5 B 3 
+ +T 88394 27 Done 
+ +T 160762 28 R- H 2 
+ +T 179613 29 RtoB 2 1 B 2 
+ +T 180830 30 Done 
+ +T 94594 31 BtoB B 2 B 4 
+ +T 94594 32 Done 
+ +T 181833 33 R- D 1 
+ +T 193080 34 RtoB 2 0 A 4 
+ +T 197870 35 Done 
+ +T 96634 36 BtoB A 4 C 4 
+ +T 107593 37 Done 
+ +T 199876 38 RtoB 2 0 B 3 
+ +T 201579 39 R- G 3 
+ +T 202949 40 Done 
+ +T 123082 41 BtoB B 3 D 5 
+ +T 139585 42 Done 
+ +T 206641 43 RtoB 2 0 F 3 
+ +T 211924 44 R- D 8 
+ +T 213033 45 Done 
+ +T 163425 46 BtoB F 3 D 3 
+ +T 164430 47 Done 
+ +T 214049 48 BtoB D 2 D 4 
+ +T 216357 49 BtoB D 4 D 6 
+ +T 217514 50 BtoB D 6 F 6 
+ +T 219179 51 Done 
+ +T 219930 52 RtoB 2 0 E 2 
+ +T 224118 53 R- C 1 
+ +T 225276 54 Done 
+ +T 239024 55 R- G 2 
+ +T 240044 56 RtoB 2 1 D 2 
+ +T 241272 57 Done 
+ +T 227448 58 BtoB D 2 F 2 
+ +T 228448 59 Done 
+ +T 244357 60 R- G 1 
+ +T 245428 61 RtoB 2 2 F 1 
+ +T 247501 62 Done 
+ +T 241911 63 BtoB F 1 F 3 
+ +T 242960 64 Done 
+ +T 249513 65 RtoB 2 2 F 5 
+ +T 251905 66 R- F 2 
+ +T 253392 67 Done 
+ +T 244964 68 BtoB F 6 F 4 
+ +T 245964 69 Done 
+ +T 257419 70 BtoB F 3 F 5 
+ +T 264263 71 Done 
+ +T 245000 15 R- G 5 
+ +T 245000 16 RtoB 2 0 E 5 
+ +T 245000 17 Done 
+ +T 264000 18 BtoB E 5 C 4 
+ +T 264000 19 Done 
+ +T 245000 20 RtoB 2 0 F 6 
+ +T 245000 21 R- G 4 
+ +T 245000 22 Done 
+ +T 264000 23 BtoB F 6 F 4 
+ +T 264000 24 Done 
+ +T 245000 25 RtoB 2 0 E 2 
+ +T 245000 26 R- E 1 
+ +T 245000 27 Done 
+ +T 264000 28 BtoB E 2 E 4 
+ +T 264000 29 Done 
+ +T 245000 30 BtoB F 4 D 4 
+ +T 245000 31 BtoB D 4 B 4 
+ +T 245000 32 Done 
+ +T 264000 33 RtoB 2 0 D 6 
+ +T 264000 34 R- H 3 
+ +T 264000 35 Done 
+ +T 245000 36 R- A 3 
+ +T 245000 37 RtoB 2 0 E 6 
+ +T 245000 38 Done 
+ +T 264000 39 BtoB D 6 F 6 
+ +T 264000 40 Done 
+ +T 245000 41 RtoB 2 1 F 5 
+ +T 245000 42 R- A 4 
+ +T 245000 43 Done 
+ +T 264000 44 BtoB F 6 F 4 
+ +T 264000 45 Done 
+ +T 245000 46 RtoB 2 0 C 4 
+ +T 245000 47 R- A 2 
+ +T 245000 48 Done 
+ +T 264000 49 BtoB B 4 D 4 
+ +T 264000 50 Done 
+ +T 245000 36 RtoB 2 0 E 6 
+ +T 245000 37 R- A 3 
+ +T 245000 38 Done 
+ +T 264000 39 BtoB E 6 C 5 
+ +T 264000 40 Done 
+ +T 245000 41 BtoB B 4 D 6 
+ +T 245000 42 Done 
+ +T 264000 43 RtoB 2 0 D 4 
+ +T 264000 44 R- D 1 
+ +T 264000 45 Done 
+ +T 245000 46 R- A 4 
+ +T 245000 47 RtoB 2 1 E 3 
+ +T 245000 48 Done 
+ +T 264000 49 BtoB E 3 C 4 
+ +T 264000 50 Done 
+ +T 245000 51 R- B 4 
+ +T 245000 52 RtoB 2 2 D 4 
+ +T 245000 53 Done 
+ +T 264000 54 BtoB C 4 E 3 
+ +T 264000 55 Done 
+ +T 245000 56 R- B 5 
+ +T 245000 57 RtoB 2 1 E 2 
+ +T 245000 58 Done 
+ +T 264000 59 BtoB E 2 E 4 
+ +T 264000 60 Done 
+ +T 245000 61 R- C 5 
+ +T 245000 62 RtoB 2 1 E 6 
+ +T 245000 63 Done 
+ +T 264000 64 BtoB D 6 F 6 
+ +T 264000 65 Done 
+ +T 245000 66 R- C 6 
+ +T 245000 67 RtoB 2 2 E 7 
+ +T 245000 68 Done 
+ +T 264000 69 BtoB F 6 D 8 
+ +T 264000 70 Done 
+ +T 245000 71 RtoB 2 1 C 7 
+ +T 245000 72 R- A 5 
+ +T 245000 73 Done 
+ +T 264000 74 BtoB D 8 B 6 
+ +T 264000 75 Done 
+ +T 245000 76 R- C 7 
+ +T 245000 77 RtoB 2 2 E 6 
+ +T 245000 78 Done 
+ +T 264000 39 BtoB D 6 F 6 
+ +T 264000 40 Done 
+ +T 245000 41 RtoB 2 1 E 7 
+ +T 245000 42 R- F 5 
+ +T 245000 43 Done 
+ +T 264000 44 BtoB F 6 D 8 
+ +T 264000 45 Done 
+ +T 245000 46 RtoB 2 1 E 7 
+ +T 245000 47 R- C 7 
+ +T 245000 41 R- C 7 
+ +T 245000 42 RtoB 2 1 E 7 
+ +T 245000 43 Done 
+ +T 264000 44 BtoB F 6 D 8 
+ +T 264000 45 Done 
+ +T 245000 46 R- B 6 
+ +T 245000 47 RtoB 2 1 A 4 
+ +T 245000 48 Done 
+ +T 264000 49 BtoB A 4 C 4 
+ +T 264000 50 Done 
+ +T 245000 51 R- C 6 
+ +T 245000 52 RtoB 2 1 C 5 
+ +T 245000 53 Done 
+ +T 264000 54 BtoB C 5 C 3 
+ +T 264000 55 Done 
+ +T 245000 56 RtoB 2 2 B 2 
+ +T 245000 57 R- D 7 
+ +T 245000 58 Done 
+ +T 264000 59 BtoB B 2 D 4 
+ +T 264000 60 Done 
+ +T 245000 61 RtoB 2 2 E 4 
+ +T 245000 62 R- D 6 
+ +T 245000 63 Done 
+ +T 264000 64 BtoB E 4 C 3 
+ +T 264000 65 Done 
+ +T 245000 66 R- E 6 
+ +T 245000 67 RtoB 2 2 B 2 
+ +T 245000 68 Done 
+ +T 264000 69 BtoB B 2 D 4 
+ +T 264000 70 Done 
+ +T 245000 71 RtoB 2 0 E 7 
+ +T 245000 72 R- F 6 
+ +T 245000 73 Done 
+ +T 264000 39 BtoB D 6 F 6 
+ +T 245000 36 RtoB 2 0 E 6 
+ +T 245000 15 R- G 5

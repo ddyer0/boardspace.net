@@ -1,0 +1,460 @@
+# english translations
+# rules for this file; each line is either a comment, a key line, or a continuation line
+# comments start with #
+# continuation lines start with a comma
+# key lines contain a comma; text left of the comma is the key, text right of the comma
+# is the translation.  Translations can contain #1 #2 and so on as placeholders for strings
+# to be supplied from the program, such as player names.
+#
+# translations for gs_site_stats.cgi
+#
+Site Usage Statistics,Statistiques d'utilisation du site de BoardSpace
+The following table shows the Site activity since the beginning,Le tableau suivant montre l'activité du site depuis le début
+Go to,Allez à
+BoardSpace.net home page,la page d'accueil de BoardSpace.net
+Printed: ,Imprimé :  
+E-mail:,Courriel : 
+#
+#column headers for gs_site_stats.cgi
+#
+Year,Année
+Month,Mois
+All Games,Toutes parties
+Human Games,Parties humaines
+Robot Games,Parties de robots
+Master Games,Parties de maîtres
+Unranked,Parties non classées
+Active Players,Joueurs actifs
+
+# images, new graphics needed too if you "translate" these.
+MainHeader.gif,MainHeader.gif
+rankings-header.gif,rankings-header.gif
+
+#
+# strings for gs_rankings.cgi, the main rankings page
+#
+active rankings,Le tableau suivant montre le Classement officiel à #2 des
+,<b>#1 meilleurs joueurs actifs</b> du site, établi à partir des parties jouées en ligne.
+
+#? Aren't the place holders 1 and 2 mixed up in the following?
+retired rankings,Le tableau suivant montre le classement à #2 des
+,#1 meilleurs joueurs <i>retirés</i>, ceux qui n'ont pas participé depuis un certain temps.
+#
+#in this group, #1 will be a translated country name, or "world wide"
+#
+Master Player Rankings,Classement à #2 des joueurs maîtres de #1
+Player Rankings,Classement à #2 des joueurs de #1
+Retired Master Player Rankings,Classement à #2 des joueurs maîtres retirés de #1
+Retired Player Rankings,Classement à #2 des joueurs retirés de #1
+youcanget,Vous pouvez obtenir plus d'information sur un joueur en cliquant sur son nom.
+
+#column headers for gs_rankings.cgi
+Rank,Rang
+Player,Joueur
+Ranking,Points
+Win%,%parties gagnées
+Last played,Dernière partie
+Country,Pays
+Max Ranking,Points record
+Games played,Parties jouées
+Won,Gagnées
+Lost,Perdues
+Tied,Nulles
+
+
+
+#names of countries, or "world wide"
+Select country,Choisissez un pays
+World Wide,tout pays
+Afghanistan,Afghanistan
+Albania,Albanie
+Algeria,Algérie
+Andorra,Andorre
+Angola,Angola
+Antarctica,Antarctique
+Antigua and Barbuda,Antigua-et-Barbuda
+Argentina,Argentine
+Armenia,Arménie
+Australia,Australie
+Austria,Autriche
+Azerbaijan,Azerbaïdjan
+Bahamas,Bahamas
+Bahrain,Bahreïn
+Bangladesh,Bangladesh
+Barbados,Barbade
+Belgium,Belgique
+Belize,Bélize
+Benin,Bénin
+Bermuda,Bermudes
+Bhutan,Bhoutan
+Belarus,Biélorussie
+Bolivia,Bolivie
+Bosnia Hercegovina,Bosnie-Herzégovine
+Botswana,Botswana
+Brazil,Brésil
+Brunei Darussalam,Brunei Darussalam
+Bulgaria,Bulgarie
+Burkina Faso,Burkina-Faso
+Burundi,Burundi
+Cambodia,Cambodge
+Cameroon,Cameroun
+Canada,Canada
+Cape Verde,Cap-Vert
+Chile,Chili
+China,Chine
+Cyprus,Chypre
+Colombia,Colombie
+Congo,Congo
+Costa Rica,Costa Rica
+Cote d'Ivoire,Côte d'Ivoire
+Croatia,Croatie
+Cuba,Cuba
+Denmark,Danemark
+Djibouti,Djibouti
+Dominica,Dominique
+Ecuador,Équateur
+Egypt,Égypte
+El Salvador,Salvador
+Equatorial Guinea,Guinée équatoriale
+Estonia,Estonie
+Ethiopia,Éthiopie
+Fiji,Fidji
+Finland,Finlande
+France,France
+French Guiana,Guyane française
+Gabon,Gabon
+Gambia,Gambie
+Georgia,Géorgie
+Germany,Allemagne
+Ghana,Ghana
+Greece,Grèce
+Grenada,Grenade
+Guadeloupe,Guadeloupe
+Guam,Guam
+Guatemala,Guatemala
+Guinea,Guinée
+Guinea Bissau,Guinée-Bissao
+Guyana,Guyana
+Haiti,Haïti
+Honduras,Honduras
+Hong Kong,Hongkong
+Hungary,Hongrie
+Iceland,Islande
+India,Inde
+Indonesia,Indonésie
+Iran,Iran
+Iraq,Iraq
+Ireland,Irlande
+Israel,Israël
+Italy,Italie
+Jamaica,Jamaïque
+Japan,Japon
+Jordan,Jordanie
+Kazakhstan,Kazakhstan
+Kenya,Kenya
+Kiribati,Kiribati
+Korea North,Corée du Nord
+Korea South,Corée du Sud
+Kuwait,Koweït
+Kyrgyzstan,Kirghizistan
+Laos,Laos
+Latvia,Lettonie
+Lebanon,Liban
+Lesotho,Lésotho
+Liberia,Liberia
+Libya,Libye
+Liechtenstein,Liechtenstein
+Lithuania,Lituanie
+Luxembourg,Luxembourg
+Macau,Macao
+Madagascar,Madagascar
+Malawi,Malawi
+Malaysia,Malaisie
+Maldives,Maldives
+Mali,Mali
+Malta,Malte
+Mauritania,Mauritanie
+Mauritius,Maurice
+Mexico,Mexico
+Micronesia,Micronésie
+Moldova,Moldavie
+Monaco,Monaco
+Mongolia,Mongolie
+Morocco,Maroc
+Mozambique,Mozambique
+Myanmar,Myanmar
+Namibia,Namibie
+Nauru,Nauru
+Nepal,Népal
+Netherlands,Pays-Bas
+New Caledonia,Nouvelle-Calédonie
+New Zealand,Nouvelle-Zélande
+Nicaragua,Nicaragua
+Niger,Niger
+Nigeria,Nigeria
+Niue,Niue
+Norway,Norvège
+Oman,Oman
+Pakistan,Pakistan
+Palau,Belau
+Panama,Panama
+Papua New Guinea,Papouasie-Nouvelle-Guinée
+Paraguay,Paraguay
+Peru,Pérou
+Philippines,Philippines
+Poland,Pologne
+Portugal,Portugal
+Puerto Rico,Puerto Rico
+Qatar,Qatar
+Central African Republic,République Centrafricaine
+Dominican Republic,République dominicaine
+Czech Republic,République Tchèque
+Romania,Roumanie
+Russian Federation,Fédération de Russie
+Rwanda,Rwanda
+Saint Helena,Sainte-Hélène
+Saint Kitts and Nevis,Saint-Christophe-et-Niévès
+Saint Lucia,Sainte-Lucie
+Saint Pierre and Miquelon,Saint-Pierre-et-Miquelon
+Saint Vincent and the Grenadines,Saint-Vincent-et-Grenadines
+Samoa,Samoa
+San Marino,Saint-Marin
+Sao Tome and Principe,Sao Tomé-et-Principe
+Saudi Arabia,Arabie saoudite
+Senegal,Sénégal
+Seychelles,Seychelles
+Sierra Leone,Sierra Leone
+Singapore,Singapour
+Slovenia,Slovénie
+Slovak Republic,Slovaquie
+Solomon Islands,Îles Salomon
+Somalia,Somalie
+South Africa,Afrique du Sud
+Spain,Espagne
+Sri Lanka,Sri Lanka
+Sudan,Soudan
+Suriname,Suriname
+Swaziland,Swaziland
+Sweden,Suède
+Switzerland,Suisse
+Syria,Syrie
+Taiwan,Taiwan
+Tajikistan,Tadjikistan
+Tanzania,Tanzanie
+Chad,Tchad
+Thailand,Thaïlande
+East Timor,Timor-Oriental
+Togo,Togo
+Tokelau,Tokelau
+Tonga,Tonga
+Trinidad and Tobago,Trinité-et-Tobago
+Tunisia,Tunisie
+Turkey,Turquie
+Turkmenistan,Turkménistan
+Tuvalu,Tuvalu
+Uganda,Ouganda
+Ukraine,Ukraine
+United Arab Emirates,Émirats arabes unis
+UK,Royaume-Uni
+USA,USA
+Uruguay,Uruguay
+Uzbekistan,Ouzbékistan
+Vanuatu,Vanuatu
+Vatican,Vatican
+Venezuela,Venezuela
+Vietnam,Viêt Nam
+Western Sahara,Sahara Occidental
+Yemen,Yémen
+Yugoslavia,Yougoslavie
+Zaire,Zaïre
+Zambia,Zambie
+Zimbabwe,Zimbabwe
+Planet Earth,Planète Terre
+cyberspace,Cyberspace
+
+#
+#Names of the months
+#
+January,janvier
+February,février
+March,mars
+April,avril
+May,mai
+June,juin
+July,juillet
+August,août
+September,septembre
+October,octobre
+November,novembre
+December,décembre
+
+#
+# dates and times
+#
+# #1 is the year, #2 is the name of the month, #3 is the day of the month
+datestring,#3 #2 #1
+# same as the above, plus #4 is the time of day as hh:mm:ss GMT 
+date and time,#3 #2 #1 à #4
+# never, as in "it has never happened"
+NeverHappened,Jamais
+
+View National Table,Voir le tableau national
+
+# time related strings for the "last played" column
+
+#a short strings meaning a small number whatever units ago, but always
+#plural if there is a placeholder
+minutes ago,il y a peu
+1 hour ago,il y a 1 heure
+N1 hours ago,il y a #1 heures
+yesterday,hier
+N1 days ago,il y a #1 jours
+N1 weeks ago,il y a #1 semaines
+N1 months ago,il y a #1 mois
+1 year+#1 months ago,il y a 1 an #1 mois
+N1 years ago,il y a #1 ans
+
+# language names
+english,anglais
+french,français
+slovak,slovaque
+hungarian,hongrois
+german,allemand
+danish,danois
+finnish,finnois
+spanish,espagnol
+bahasa,bahasa
+polish,polonais
+portuguese,portugais
+japanese,japonais
+italian,italien
+catala,catalan
+dutch,néerlandais
+norwegian,norvégien
+#
+loa games,LOA Games
+loap games,LOAPS Games
+zertz games,Zèrtz Games
+zertz+11 games,Zèrtz+11 Games
+zertz+24 games,Zèrtz+24 Games
+zertz+xx games,Zèrtz+xx Games
+kuba games,Kuba Games
+plateau games,Plateau Games
+yinsh games,Yinsh Games
+hex games,Hex Games
+hex-15 games,Hex-15 Games
+hex-19 games,Hex-19 Games
+yinsh-blitz games,Yinsh-Blitz Games
+trax games,Trax Games
+punct games,Pünct Games
+tamsk games,Tamsk Games
+gipf games,Gipf Games
+dvonn games,Dvonn Games
+gobblet games,Gobblet Games
+hive games,Hive Games
+exxit games,Exxit Games
+gobbletm games,GobbletM Games
+tablut games,Tablut Games
+dipole games,Dipole Games
+tumblingdown games,Tumblingdown Games
+
+Zertz+xx,Zèrtz Extreme
+TD,Tumbling Down
+KU,Kuba
+Zertz,Zèrtz
+Zertz+11,Zèrtz+11
+Zertz+24,Zèrtz+24
+LOA,Lines of Action
+LOAP,Lines of Action POTM Variation
+Plateau,Plateau
+Yinsh,Yinsh
+Hex,Hex
+Hex-15,Hex-15
+Hex-19,Hex-19
+Yinsh-Blitz,Yinsh-Blitz
+Trax,Trax
+Punct,Pünct
+Tamsk,Tamsk
+Gipf,Gipf
+Dvonn,Dvonn
+Gobblet,Gobblet
+Hive,Hive
+Exxit,Exxit
+GobbletM,GobbletM
+
+#
+# stuff for the lost password recovery page
+#
+Lost Password Recovery,retrouver le mot de passe
+My login id is ,Votre identité
+ .. or something containing this string, .. or something containing this string
+selectone,If you think one of the above users is you, 
+,and your email address listed above is valid, then check the box
+,and click on <i>send password</i>.  If not, you're out of luck.
+,Your best bet is to register again, using a password you will remember and
+,a valid email address.
+send password,Envoyez le mot de passe
+Sending password,Sending password for #1 to #2
+SorryNoMatch,Sorry, No players match.
+Unconfirmed,You haven't confirmed your registration, so first click here:
+,    #1 
+,to confirm your registration, vous n avez pas confirmé votre enregistrement, cliquez ici pour le confirmer
+SendPassword,Sending Password for #1 to #2
+EmailPassword,Subject: Your Boardspace.net password
+,
+,We received a request for your password to be sent to you.,nous avons recu une demande de mot de passe
+,This request may or may not have been initiated by yourself.,Avez-vous envoyé cette demande? 
+,
+,#1
+,Your user name is #2, votre nom
+,Your password is #3, votre mot de passe
+,
+,The Management
+,
+# days of the week
+Sunday,Dimanche
+Monday,Lundi
+Tuesday,Mardi
+Wednesday,Mercredi
+Thursday,Jeudi
+Friday,Ventredi
+Saturday,Samedi
+
+# for site busy time presentation
+Games finished at time (GMT),Games finished at time (GMT)  Lighter=more games
+#
+# top players script
+#
+Top Players,Top Players
+Top players at Boardspace.net,Top players at Boardspace.net
+
+about_gobblet,/english/about_gobblet.html
+about_hive,/english/about_hive.html
+about_exxit,/english/about_exxit.html
+about_zertz,/english/about_zertz.html
+about_yinsh,/english/about_yinsh.html
+about_punct,/english/about_punct.html
+about_hex,/english/about_hex.html
+about_plateau,/english/about_plateau.html
+about_trax,/english/about_trax.html
+about_loa,/english/about_loa.html
+full_list,-- full list --
+
+Tablut,Tablut
+about_tablut,/english/about_tablut.html
+
+truchet games,Truchet Games
+Truchet,Truchet
+about_truchet,/french/about_truchet.html
+
+Dipole,Dipole
+about_dipole,/english/about_dipole.html
+
+Tumblingdown,Tumblingdown
+about_tumblingdown,/english/about_tumblingdown.html
+
+fanorona games,Fanorona Games
+Fanorona,Fanorona
+about_fanorona,/english/about_fanorona.html
+
+# end of file

@@ -1,0 +1,30 @@
+<html>
+<title>Ajax VNC Login</title>
+<script type="text/javascript" src="/md5.js"></script>
+<script type="text/javascript">
+var sid = "[SESSION_ID]";
+
+function submitlogin()
+{
+	p = document.forms[0].password.value;
+	document.forms[0].password.value="";
+	document.forms[0].md5password.value=hex_md5(sid+p);
+	alert(document.forms[0].md5password.value);
+	return true;
+}
+
+</script>
+<body>
+<h1><a href="http://sourceforge.net/projects/ajaxvnc">Ajax VNC</a>&nbsp;1.0</h1>
+<hr>
+<form name=ajaxvnclogin action="ajaxvnc.htm" onsubmit="return submitlogin();" method=post>
+Password: <input type=password name="password">
+<input type=hidden name="md5sid">
+<input type=submit name="login" value="Login" >
+</form>
+<br>
+<br>
+<a href='kmtest.htm'>Keyboard and mouse events compatibility test</a>
+
+</body>
+</html>

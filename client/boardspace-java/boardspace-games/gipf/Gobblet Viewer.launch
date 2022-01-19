@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<launchConfiguration type="org.eclipse.jdt.launching.javaApplet">
+<listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">
+<listEntry value="/boardspace core/boardspace-core/online/Root.java"/>
+</listAttribute>
+<listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_TYPES">
+<listEntry value="1"/>
+</listAttribute>
+<intAttribute key="org.eclipse.jdt.launching.APPLET_HEIGHT" value="200"/>
+<stringAttribute key="org.eclipse.jdt.launching.APPLET_NAME" value=""/>
+<mapAttribute key="org.eclipse.jdt.launching.APPLET_PARAMETERS">
+<mapEntry key="GameType" value="gobblet"/>
+<mapEntry key="chatpercent" value="0"/>
+<mapEntry key="debug" value="true"/>
+<mapEntry key="extraactions" value="true"/>
+<mapEntry key="extramouse" value="true"/>
+<mapEntry key="final" value="true"/>
+<mapEntry key="language" value="englishStrings"/>
+<mapEntry key="localfile" value="true"/>
+<mapEntry key="reviewerdir0" value="file:///g:/share/projects/boardspace-html/htdocs/gobblet/gobbletgames/"/>
+<mapEntry key="reviewonly" value="true"/>
+<mapEntry key="servername" value="local.boardspace.net"/>
+<mapEntry key="story" value="story Gipf 0 , 0 Start P0 , 1 dropb E 1 , 2 dropb E 2 , 3 done , 4 dropb E 9 , 5 dropb E 8 , 6 done , 7 dropb E 1 , 8 dropb E 2 , 9 done , 10 dropb C 1 , 11 dropb D 2 , 12 done , 13 dropb F 1 , 14 dropb E 2 , 15 done , 16 dropb D 1 , 17 dropb E 2 , 18 done , 19 dropb G 1 , 20 dropb G 2 , 21 done , 22 dropb E 9 , 23 dropb E 8 , 24 done , 25 dropb F 8 , 26 dropb E 8 , 27 done , 28 dropb B 1 , 29 dropb C 2 , 30 done , 31 dropb G 1 , 32 dropb F 2 , 33 done , 34 dropb B 1 , 35 dropb C 2 , 36 done , 37 dropb D 1 , 38 dropb D 2 , 39 done , 40 dropb A 3 , 41 dropb B 3 , 42 done , 43 dropb E 9 , 44 dropb E 8 , 45 done , 46 remove D 4 , 47 dropb F 1 , 48 dropb F 2 , 49 done , 50 dropb I 4 , 51 dropb H 4 , 52 done , 53 dropb I 3 , 54 dropb H 4 , 55 done , 56 dropb F 8 , 57 dropb F 7 , 58 done , 59 dropb C 1 , 60 dropb D 2 , 61 done , 62 dropb I 2 , 63 dropb H 3 , 64 done , 65 dropb E 1 , 66 dropb E 2 , 67 done , 68 dropb F 8 , 69 dropb F 7 , 70 done , 71 dropb G 1 , 72 dropb F 2 , 73 done , 74 dropb F 1 , 75 dropb F 2 , 76 done , 77 dropb F 8 , 78 dropb E 8 , 79 done .end. 1000 1001 977251 772138 "/>
+<mapEntry key="viewerClass" value="gobblet.GobGameViewer"/>
+</mapAttribute>
+<intAttribute key="org.eclipse.jdt.launching.APPLET_WIDTH" value="200"/>
+<stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="online.Root"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="boardspace"/>
+</launchConfiguration>

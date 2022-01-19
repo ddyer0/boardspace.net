@@ -1,0 +1,1678 @@
+package tammany;
+
+import online.common.*;
+
+import java.awt.*;
+import java.util.*;
+
+import lib.G;
+import lib.InternationalStrings;
+import lib.PopupManager;
+import lib.TextChunk;
+import lib.Text;
+import lib.TextGlyph;
+import online.game.*;
+/**
+ * 
+ * Overall Architecture
+ * 
+ * The site provides the lobby, choice game and opponents, communication between the players, information 
+ * for spectators,  rankings, and a host of other services.  Each game has to be concerned only with 
+ * the game itself.   An individual game (say, Hex) is launched and each client independantly initializes
+ * itself to a common starting state.   Thereafter each player specifies messages to be broadcast to the
+ * other participants, and receives messages being broadcast by the other participants, which keep everyone
+ * informed about the state of the game.  There is no common "true" state of the game - all the participants
+ * keep in step by virtue of seeing the same stream of messages.    Messages are mostly simple "pick up a stone"
+ * "place a stone on space x" and so on.
+ * 
+ * The things a game must implement are specified by the class "ViewerProtocol", and a game could just
+ * start there and be implemented completely from scratch, but in practice there is another huge pile
+ * of things that every game has to do; dealing with graphis, mouse events, saving and restoring the
+ * game state from static records, replaying and reviewing games and so on.   These are implemented in the 
+ * class "commonCanvas" and by several board-like base classes for Hex and Square geometry boards.   
+ * All the existing games for boardspace use these classes to provide graphics and basic board representation.
+ * 
+ * For games with robot players, there is another huge pile of things that a robot has to do, generating
+ * moves, evaluating and choosing the best, and implementing a lookahead several moves deep.   There's a
+ * standard framework for this using the "RobotProtocol" class and the "SearchDriver" class. 
+ */
+import online.game.sgf.sgf_names;
+import online.game.sgf.sgf_node;
+import online.game.sgf.sgf_property;
+import static tammany.TammanyMovespec.*;
+
+
+/**
+ * 
+*/
+public class TammanyViewer extends commonCanvas 
+	implements ViewerProtocol, TammanyConstants, sgf_names
+{	static final long serialVersionUID = 1000;
+     // colors
+    private Color reviewModeBackground = new Color(220,165,200);
+    private Color HighlightColor = new Color(0.2f, 0.95f, 0.75f);
+    private Color chatBackgroundColor = new Color(250,250,230);
+    private Color rackBackGroundColor = new Color(178,161,112);
+    private Color boardBackgroundColor = new Color(220,165,155);
+    private Color vcrButtonColor = new Color(0.7f, 0.7f, 0.75f);
+    
+    private Color TammanyMouseColors[] = {
+    		Color.red,new Color(178,123,76),Color.black,
+    		new Color(103,39,149),Color.yellow
+    };
+    private Color TammanyMouseDotColors[] = {
+    		Color.black,Color.black,Color.white,
+    		Color.black,Color.black
+    };
+    // private state
+    private TammanyBoard bb = null; //the board from which we are displaying
+    private int CELLSIZE; 	//size of the layout cell
+ 
+    // addRect is a service provided by commonCanvas, which supports a mode
+    // to visualize the layout during development.  Look for "show rectangles"
+    // in the options menu.
+    //public Rectangle fullRect = addRect("fullRect"); //the whole viewer area
+    //public Rectangle boardRect = addRect("boardRect"); //the actual board, normally at the left edge
+    //public Rectangle chatRect = addRect("chatRect");
+    
+    //
+    // addZoneRect also sets the rectangle as specifically known to the 
+    // mouse tracker.  The zones are considered in the order that they are
+    // added, so the smaller ones should be first, then any catchall.
+    //
+    // zones ought to be mostly irrelevant if there is only one board layout.
+    //
+    private Rectangle logRect = addZoneRect("logRect"); //the game log, normally off the the right
+    private Rectangle playerRects[] = 
+    	{	addZoneRect("player1"),
+    		addZoneRect("player2"),
+    		addZoneRect("player3"),
+    		addZoneRect("player4"),
+    		addZoneRect("player5")
+    	};
+    private Rectangle wardMapRect = addRect("wardMap");
+    
+    private Rectangle stateRect = addRect("stateRect");
+    private Rectangle doneRect = addZoneRect("doneRect");
+    private Rectangle editRect = addRect("editRect");
+    private Rectangle goalRect = addRect("goalRect");
+    //private Rectangle repRect = addRect("repRect");	// not needed for tammany
+    private Rectangle progressRect = addRect("progressRect");
+    private String preparedVote = null;
+    private boolean preparedVoteSent = false;
+    private int preparedWard = -1;
+    private Rectangle infoRect = addRect("InfoRect");
+    
+/**
+ * this is called during initialization to load all the images. Conventionally,
+ * these are loading into a static variable so they can be shared by all.
+ */
+    public void preloadImages()
+    {	TammanyChip.preloadImages(this,ImageDir);	// load the images used by stones
+    }
+
+	/**
+	 * 
+	 * this is the real instance intialization, performed only once.
+	 * info contains all the goodies from the environment.
+	 * */
+    public void init(exHashtable info)
+    {	
+    	// for games with more than two players, the default players list should be 
+    	// adjusted to the actual number, adjusted by the min and max
+       	int players_in_game = Math.max(2,info.getInt(exHashtable.PLAYERS_IN_GAME,2));
+    	// 
+    	// for games that require some random initialization, the random key should be
+    	// captured at this point and passed to the the board init too.
+        int randomKey = info.getInt(exHashtable.RANDOMSEED,-1);
+        
+        super.init(info);
+        // use_grid=reviewer;// use this to turn the grid letters off by default
+
+        if(debug)
+        {	// initialize the translations when debugging, so there
+        	// will be console chatter about strings not in the list yet.
+        	InternationalStrings.put(TammanyStrings);
+        	InternationalStrings.put(TammanyStringPairs);
+        }
+         
+        MouseColors  = TammanyMouseColors;
+        MouseDotColors = TammanyMouseDotColors;
+
+        String type = info.getString(exHashtable.GAMETYPE, TammanyVariation.tammany.name);
+        // recommended procedure is to supply players and randomkey, even for games which
+        // are current strictly 2 player and no-randomization.  It will make it easier when
+        // later, some variant is created, or the game code base is re purposed as the basis
+        // for another game.
+        bb = new TammanyBoard(s,type,players_in_game,randomKey);
+        adjustPlayers(players_in_game);
+        doInit(false);
+
+    }
+
+    /** 
+     *  used when starting up or replaying and also when loading a new game 
+     *  */
+    public void doInit(boolean preserve_history)
+    {
+        //System.out.println(myplayer.trueName + " doinit");
+        super.doInit(preserve_history);				// let commonViewer do it's things
+        bb.doInit(bb.gametype);						// initialize the board
+        if(reviewOnly) { bb.setSimultaneousPlay(false); }
+        adjustPlayers(bb.nPlayers());
+        if(!preserve_history)
+    	{ PerformAndTransmit(reviewOnly?"Edit":"Start P0", false,replayMode.Live);
+    	}
+    }
+    
+    /** this is called by the game controller when all players have connected
+     * and the first player is about to be allowed to make his first move. This
+     * may be a new game, or a game being restored, or a player rejoining a game.
+     * You can override or encapsulate this method.
+     */
+    public void startPlaying()
+    {	super.startPlaying();
+    }
+    
+	/**
+	 * 
+	 * this is a debugging hack to give you an event based on clicking in the player name
+	 * You can take whatever action you like, or no action.
+	 */
+    public boolean inPlayRect(int eventX, int eventY)
+    {	return(super.inPlayRect(eventX,eventY));
+    }
+
+    /**
+     * update the players clocks.  The normal thing is to tick the clocks
+     * only for the player whose turn it is.  Games with a simtaneous action
+     * phase need to do something more complicated.
+     * @param inc the increment (in milliseconds) to add
+     * @param p the current player, normally the player to update.
+     */
+    public void updatePlayerTime(long inc,commonPlayer p)
+    {
+    	super.updatePlayerTime(inc,p);
+    }
+	/**
+	 * 
+	 * this is a debugging hack to give you an event based on clicking in the time
+	 * clock.  You can take whatever action you like, or no action.
+	 * */
+    public boolean inTimeRect(int eventX, int eventY)
+    {
+        boolean val = super.inTimeRect(eventX, eventY);
+        //if (val && extraactions)
+        //{
+        //    System.out.println(formHistoryString());
+        //}
+        return (val);
+    }
+
+
+    public void createPlayerGroup(commonPlayer pl0,Rectangle zone,int x,int y,int w,int h)
+    {	int CEL = w/10;
+    	G.SetRect(zone, x, y, w,h);
+        Rectangle p0time = pl0.timeRect;
+        Rectangle p0anim = pl0.animRect;
+        Rectangle firstPlayerRect = pl0.nameRect;
+        Rectangle firstPlayerPicRect = pl0.picRect;
+        
+        //first player name
+        G.SetRect(firstPlayerRect, x, y, CEL * 3, CEL);
+        // first player portrait
+        G.SetRect(firstPlayerPicRect, x+w-h, y, h, h);
+         
+        // time dispay for first player
+        G.SetRect(p0time, G.Right(firstPlayerRect),G.Top(firstPlayerRect), 4*CEL/2, CEL);
+        // first player "i'm alive" anumation ball
+        G.SetRect(p0anim, G.Right(p0time) ,G.Top( p0time), CEL, CEL);
+    }
+    
+	/**
+	 * this is the main method to do layout of the board and other widgets.  I don't
+	 * use swing or any other standard widget kit, or any of the standard layout managers.
+	 * they just don't have the flexibility to produce the results I want.  Your milage
+	 * may vary, and of course you're free to use whatever layout and drawing methods you
+	 * want to.  However, I do strongly encourage making a UI that is resizable within
+	 * reasonable limits, and which has the main "board" object at the left.
+	 * <p>
+	 *  The basic layout technique used here is to start with a cell which is about the size
+	 *  of a board square, and lay out all the other objects relative to the board or to one
+	 *  another.  The rectangles don't all have to be on grid points, and don't have to
+	 *  be nonoverlapping, just so long as the result generally looks good.
+	 *  <p>
+	 *  When "extraactions" is available, a menu opion "show rectangles" works
+	 *  with the "addRect" mechanism to help visualize the layout.
+	 */ 
+    public void setLocalBounds(int x, int y, int width, int height)
+    {	boolean wideFormat = (height*1.4)<width;
+    	int nPlayers = bb.nPlayers();
+        int ncols = 17; // more cells wide to allow for the aux displays
+        int extraCols = wideFormat ? 18 : 12;
+        int nrows = 20;  
+        int cellw = width / (ncols+extraCols);
+        int chatHeight = selectChatHeight(height);
+        int cellh = (height-(wideFormat?0:chatHeight)) / nrows;
+        CELLSIZE = Math.max(2,Math.min(cellw, cellh)); //cell size appropriate for the aspect ratio of the canvas
+        int boardWidth = CELLSIZE * ncols;
+        int playerWidth = CELLSIZE*11;
+        int playerHeight = CELLSIZE*3;
+          
+        G.SetRect(fullRect,x,y,width,height);
+        int boardY = wideFormat ? 0 : chatHeight;
+        G.SetRect(boardRect,x,boardY, boardWidth, CELLSIZE * nrows);  
+        G.SetRect(stateRect, CELLSIZE/2, boardY,G.Width(boardRect)-CELLSIZE, CELLSIZE/2);
+               
+        G.SetRect(infoRect,G.Left(boardRect) + (int)(G.Width(boardRect)*0.72),
+        		G.Top(boardRect) + (int)(G.Height(boardRect)*0.7),
+        		G.Width(boardRect)/5,G.Height(boardRect)/6);
+        
+        int logX = wideFormat ? boardWidth+playerWidth+CELLSIZE/2
+				:Math.min(boardWidth + playerWidth,width-10*CELLSIZE)+CELLSIZE;	// the game log
+        int logWidth = width-logX-CELLSIZE/2;
+        int playerY = G.Top(boardRect)+CELLSIZE/4;
+        int playerX = G.Right(boardRect);
+        int xoff = 0;
+        for(int i=0;i<nPlayers;i++)
+        {	createPlayerGroup(getPlayerOrTemp(i),playerRects[i],playerX+xoff,playerY,playerWidth,playerHeight);
+        	//if(wideFormat && (i>0) && ((i&1)!=0)) { xoff = playerWidth+CELLSIZE/2; }
+        	//else 
+        	{ xoff = 0; playerY += playerHeight+CELLSIZE/3; }
+        }
+        
+        G.SetRect(logRect,logX,y, logWidth, wideFormat ? playerY-playerHeight-playerHeight/2: chatHeight);
+
+        G.SetRect(goalRect, CELLSIZE*2, G.Bottom(boardRect)-2*CELLSIZE/3,G.Width(boardRect)-CELLSIZE*4,CELLSIZE);
+            
+        G.SetRect(progressRect,G.Left( goalRect)+G.Width(goalRect)/6,	// a simple progress bar when the robot is running.
+        		G.Top(goalRect),G.Width( goalRect)/2, CELLSIZE/3);
+
+          
+        // "edit" rectangle, available in reviewers to switch to puzzle mode
+        G.SetRect(doneRect, G.Right(boardRect)+CELLSIZE/2, playerY, CELLSIZE*2,CELLSIZE);
+
+        // "done" rectangle, should alway be visible, but only active when a move is complete.
+        G.SetRect(editRect,G.Left(doneRect), G.Bottom(doneRect)+CELLSIZE/2,G.Width(doneRect),G.Height(doneRect));
+        
+        int chatX = wideFormat ? G.Right(doneRect)+CELLSIZE/2:x;
+        int chatY = wideFormat ? playerY : y;
+        G.SetRect(chatRect, 
+        		chatX,		// the chat area
+        		chatY,
+        		wideFormat ? width-chatX-CELLSIZE/2 : logX-CELLSIZE/2,
+        		wideFormat?Math.min(height-chatY-CELLSIZE/2,chatHeight):chatHeight);
+
+        int wardW = 3*CELLSIZE/2;
+        G.SetRect(wardMapRect,G.Right(boardRect)-wardW,G.Bottom(boardRect)-wardW-CELLSIZE/2,wardW,wardW);
+		//this sets up the "vcr cluster" of forward and back controls.
+        SetupVcrRects(
+        		wideFormat?logX:G.Right(doneRect)+CELLSIZE,
+        		wideFormat?G.Bottom(logRect)+CELLSIZE:G.Top(doneRect),
+        		CELLSIZE*6,(CELLSIZE*6)/2);
+            
+
+        positionTheChat(chatRect,chatBackgroundColor,chatBackgroundColor);
+        generalRefresh();
+    }
+
+
+
+	// draw a box of spare chips. For tammany it's purely for effect, but if you
+    // wish you can pick up and drop chips.
+    private void drawPlayerBoard(Graphics gc, Rectangle r, int player,
+    							 HitPoint highlight,HitPoint any,TammanyBoard gb,
+    							 Hashtable<TammanyCell,TammanyMovespec>targets)
+    {	TammanyPlayer p = gb.getPlayer(player);
+    	G.frameRect(gc,Color.black,r);
+    	TammanyChip myChip = p.myBoss;
+    	int step = G.Height(r)/4;
+    	int x = G.Left(r)+step;
+    	int y = G.Top(r)+G.Height(r)-step;
+    	boolean hit = false;
+    	G.setFont(gc,largeBoldFont);
+    	G.Text(gc,true,G.Left(r),G.Top(r)+step,step+step/2,step+step/2,Color.black,null,""+p.score);
+    	myChip.drawChip(gc,this,step*2,G.Left(r)+step/2,y,null);
+    	x+= step;
+    	hit |= p.slander.drawStack(gc,this,gb.legalToHitChips(p.slander,targets)?highlight:null,step+step/2,x,y,0,-0.07,0.1,""+p.slander.height());
+    	x+= step+step/2;
+    	for(TammanyCell c : p.influence)
+    	{	int off = ((c.row&1)==0) ? -step/4 : step/4;
+        	hit |= c.drawStack(gc,this,gb.legalToHitChips(c,targets)?highlight:null,step+step/2,x,y+off,0,0.1,""+c.height());
+    		if(targets.get(c)!=null) 
+    		{
+    			StockArt.SmallO.drawChip(gc,this,step,x,y+off,null);
+    		}
+ 
+        	x+= step; 		
+    	}
+    	
+    	if(p.myRoleCard!=null)
+    	{	int w = 5*step/2;
+    		x+= step*2;
+   			HitPoint.setHelpText(any,x-w/2,y-w/2,w,w,p.myRoleCard.helpText);
+     		p.myRoleCard.drawChip(gc,this,w,x,y-step,null); 	
+     		if(p.myRole==Role.CouncilPresident)
+     		{
+     			for(int i=0;i<p.locksAvailable;i++)
+     			{
+     				TammanyChip.freezer.drawChip(gc,this,step,x,y,null);
+     				x+=step/2;
+     			}
+     		}
+       	}
+    	else { 
+    		if(player==bb.firstPlayer)
+    		{
+    			StockArt.LandingPad.drawChip(gc,this,step*2,x,y,"First\nPlayer");
+    		}
+    	}
+    	if(hit)
+    	{	highlight.arrow = (gb.pickedObject==null) ? StockArt.UpArrow : StockArt.DownArrow;
+    		highlight.awidth = step;
+    	}
+    	
+    	
+
+    }
+    /**
+    * sprites are normally a game piece that is "in the air" being moved
+    * around.  This is called when dragging your own pieces, and also when
+    * presenting the motion of your opponent's pieces, and also during replay
+    * when a piece is picked up and not yet placed.  While "obj" is nominally
+    * a game piece, it is really whatever is associated with b.movingObject()
+    
+      */
+    public void drawSprite(Graphics g,int obj,int xp,int yp)
+    {
+    	// draw an object being dragged
+    	// use the board cell size rather than the window cell size
+    	TammanyChip.getChip(obj).drawChip(g,this,CELLSIZE, xp, yp, null);
+    }
+    // also related to sprites,
+    // default position to display static sprites, typically the "moving object" in replay mode
+    //public Point spriteDisplayPoint()
+    //{	BoardProtocol b = getBoard();
+    //	int celloff = b.cellSize();
+    //	return(new Point(G.Right(boardRect)-celloff,G.Bottom(boardRect)-celloff));
+    //}  
+
+
+    /** draw the deep unchangable objects, including those that might be rather expensive
+     * to draw.  This background layer is used as a backdrop to the rest of the activity.
+     * in our cease, we draw the board and the chips on it. 
+     * */
+    public void drawFixedElements(Graphics gc)
+    { // erase
+    	boolean reviewBackground = reviewMode()&&!mutable_game_record;
+      G.setColor(gc,reviewBackground ? reviewModeBackground : boardBackgroundColor);
+      //G.fillRect(gc, fullRect);
+      G.tileImage(gc,TammanyChip.backgroundTile.image, fullRect, this);   
+      if(reviewBackground)
+      {	 
+        G.tileImage(gc,TammanyChip.backgroundReviewTile.image,boardRect, this);   
+      }
+       
+      // if the board is one large graphic, for which the visual target points
+      // are carefully matched with the abstract grid
+      G.centerImage(gc,TammanyChip.board.image, boardRect,this);
+      setDisplayParameters(bb,boardRect);
+     }
+    
+    /**
+     * translate the mouse coordinate x,y into a size-independent representation
+     * presumably based on the cell grid.  This is used to transmit our mouse
+     * position to the other players and spectators, so it will be displayed
+     * at approximately the same visual spot on their screen.  
+     * 
+     * Some trickier logic may be needed if the board has several orientations,
+     * or if some mouse activity should be censored.
+     */
+    public String encodeScreenZone(int x, int y,Point p)
+    {
+    	return(super.encodeScreenZone(x,y,p));
+    }
+
+   /** draw the board and the chips on it. the gc will normally draw on a background
+    * array which contains the slowly changing part of the board. 
+    * */
+    private void drawBoardElements(Graphics gc, TammanyBoard gb, Rectangle brect,
+    		HitPoint highlight,HitPoint any,   	Hashtable<TammanyCell,TammanyMovespec> targets)
+    {
+        //
+        // now draw the contents of the board and highlights or ornaments.  We're also
+    	// called when not actually drawing, to determine if the mouse is pointing at
+    	// something which might allow an action.  Either gc or highlight might be
+    	// null, but not both.
+        //
+
+        // this enumerates the cells in the board in an arbitrary order.  A more
+        // conventional double xy loop might be needed if the graphics overlap and
+        // depend on the shadows being cast correctly.
+    	TammanyChip.wardMap.drawChip(gc,this,wardMapRect,null);
+    	if(G.pointInRect(any,wardMapRect))
+    	{	
+    		G.setFont(gc,largeBoldFont);
+    		for(TammanyCell cell : gb.wardBosses)
+    		{	if(cell.zone!=null)
+    			{
+            	int ypos = gb.cellToY(cell);
+                int xpos = gb.cellToX(cell);
+                TammanyChip.slander.drawChip(gc,this,(int)(CELLSIZE*1.6),xpos+CELLSIZE/2,ypos+(int)(CELLSIZE*0.45),""+cell.row);
+    			}
+    		}
+    		return;
+    	}
+    	
+    	String year = gb.electionMode ? s.get(Election) : s.get(Year,gb.currentYear);
+    	String info = gb.electionMode ? s.get(Ward,gb.electionWard())
+    								: gb.GameOver() 
+    									? s.get(GameOverStateDescription)
+    									: ((gb.currentYear%4==0) 
+    											? ( ((gb.board_state==TammanyState.DistributeRoles)
+    													|| (gb.board_state==TammanyState.ConfirmNewRoles))
+    													? s.get(TammanyDistribute)
+    													: s.get(NextElection) )
+    											: "");
+    	G.setFont(gc,largeBoldFont);
+    	G.Text(gc,true,infoRect,Color.black,null,year+"\n"+info);
+    	
+    	gb.setYearMarker();
+    	gb.setScores();
+    	gb.setElectionView();
+    	
+    	{
+       	TammanyState state = gb.getState();
+       	int whoseMove = gb.whoseTurn;
+   	
+     	TammanyPlayer myPlayer = simultaneous_turns_allowed(my) ? gb.players[my.boardIndex] : gb.players[whoseMove];
+    	TammanyChip myBoss = myPlayer.myBoss;
+       	for(TammanyCell cell = gb.uiCells; cell!=null; cell=cell.next)
+          {
+           boolean hitCell = gb.LegalToHitBoard(cell,targets);
+            boolean drawhighlight = hitCell 
+   				|| ((gb.pickedObject==null) && gb.isDest(cell)) 		// is legal for a "drop" operation
+   				|| ((gb.pickedObject!=null) && gb.isSource(cell));	// is legal for a "pick" operation+
+         	int ypos = gb.cellToY(cell);
+            int xpos = gb.cellToX(cell);
+            HitPoint hit = drawhighlight ? highlight : null;
+            boolean some = false;
+            switch(cell.rackLocation())
+            {
+            case Bag:
+            	some = TammanyChip.bag.drawChip(gc,this,TammanyId.Bag,hit,CELLSIZE,xpos,ypos,null);
+            	if(bb.getDest()==bb.bag)
+            	{	// draw the chip we just dropped on top of the bag
+            		bb.bag.topChip().drawChip(gc,this,CELLSIZE,xpos,ypos,null);
+            	}
+            	bb.bag.current_center_x = xpos;
+            	bb.bag.current_center_y = ypos;
+            	if(some) { hit.hitObject = bb.bag; }
+            	break;
+            case WardBoss:
+            case WardCube:
+            	{
+                if(gb.electionMode && cell.row==gb.electionWard())
+                	{
+                		StockArt.LandingPad.drawChip(gc,this,3*CELLSIZE/2,xpos,ypos,null);
+                	}
+
+            	// spread out the stack if we might be trying to pick something from it.
+                boolean isSlander = ((state==TammanyState.SlanderPayment)||(state==TammanyState.DoubleSlander));
+            	double space = ((gb.pickedObject==null)
+            					 && ((gb.getDest()==null)||isSlander)
+            					 && G.pointInRect(hit,xpos-CELLSIZE,ypos-CELLSIZE/2,(int)(CELLSIZE*(cell.height()+1.5)*0.45),CELLSIZE))
+            					? 0.45 : 0.2;
+            	some = cell.drawStack(gc,this, hit ,CELLSIZE,xpos,ypos,0,space,0.0,null);
+            	// special case for slander, we can only slander opponent bosses
+            	if(some && isSlander)
+            		{
+            		int ind = hit.hit_index;
+            		TammanyChip ch = ((ind>=0) && (ind<cell.height())) ? cell.chipAtIndex(hit.hit_index) : null;
+            		if((bb.pickedObject!=null) ||
+            			((ch!=null)
+            				&& ((ch==TammanyChip.slander)|| ch.isBoss())
+            				&& (ch!=myPlayer.myBoss))) 
+            			{
+            			
+            			}
+            		else
+            			{ hit.hitCode = null; 
+            			  hit.hitObject = null; 
+            			  some=false;  
+            			}
+            		}
+            	}
+            	break;
+            case BossPlacement:
+            case SlanderPlacement:
+            case InfluencePlacement:
+            	if(!state.isElection())
+            	{
+                	some = cell.drawStack(gc,this, hit ,CELLSIZE,xpos,ypos,0,0.1,0.0,null);
+          		
+            	}
+           		break;
+            case ElectionDisc:
+            	// influence discs in the election grid display
+            	if(state.isElection())
+            	{	if((highlight!=null) && (cell.boss==myBoss))
+            		{
+            		String msg = "?/";
+            		TammanyChip ch = cell.topChip();
+            		boolean canVote =  (preparedVote==null) && (bb.players[my.boardIndex].pendingVote==null);
+            		int votes = (ch==null) ? 0 : myPlayer.votes[ch.myInfluenceIndex()];
+            		if(votes>=0) { msg = ""+votes+"/"; }
+                	if(cell.drawStack(gc,this,canVote ?highlight:null ,CELLSIZE,xpos,ypos,0,0.1,0.0,msg+cell.height()))
+                		{
+                		cell.drawStack(gc,this, highlight ,CELLSIZE+CELLSIZE/3,xpos,ypos,0,0.1,0.0,msg+cell.height());
+                		}
+            		}
+            		else
+            		{
+            		// draw everyone else's chips
+                    some = cell.drawStack(gc,this, null ,CELLSIZE,xpos,ypos,0,0.1,0.0,"?/"+cell.height());              			
+            		}
+            	}
+            	break;
+            case ElectionBox:
+            case ElectionBoss:
+            	// bosses in the election grid display
+            	if(state.isElection())
+            	{	// never mouse sensitive
+                	some = cell.drawStack(gc,this, null ,CELLSIZE,xpos,ypos,0,0.1,0.0,cell.label);
+            	}
+            	break;
+            case IrishLeader:			// ethnic controls
+            case EnglishLeader:
+            case GermanLeader:
+            case ItalianLeader:
+            	some = cell.drawStack(gc,this, hit ,CELLSIZE,xpos,ypos,0,0.4,0.0,null);
+            	break;
+            	
+            case DeputyMayor:
+            case CouncilPresident:
+            case PrecinctChairman:
+            case ChiefOfPolice:
+            case Mayor:
+            	// 
+            	// add a hint what the powers are
+            	//
+            	switch(cell.rackLocation())
+            	{
+            	case CouncilPresident:
+            		TammanyChip.freezer.drawChip(gc,this,CELLSIZE,xpos+CELLSIZE,ypos,null);
+            		break;
+            	case ChiefOfPolice:
+            		TammanyChip.bag.drawChip(gc,this,7*CELLSIZE/16,xpos+CELLSIZE+CELLSIZE/4,ypos,null);
+               		TammanyChip.english.drawChip(gc,this,2*CELLSIZE/3,xpos+CELLSIZE+CELLSIZE/4,ypos,null);
+            		break;
+            	case DeputyMayor:
+            		for(int off = 0;off<TammanyChip.influence.length;off++)
+            		{
+            		TammanyChip.influence[off].drawChip(gc,this,5*CELLSIZE/6,xpos+CELLSIZE+off*3,
+            				ypos-CELLSIZE/4+off*3,null);
+            		}
+            		break;
+            	case PrecinctChairman:
+            		TammanyChip.cubeMove.drawChip(gc,this,CELLSIZE,xpos+(int)(1.2*CELLSIZE),ypos-(int)(0.15*CELLSIZE),null);
+            		TammanyChip.english.drawChip(gc,this,2*CELLSIZE/3,xpos+(int)(0.8*CELLSIZE),ypos-CELLSIZE/3,null);
+            		TammanyChip.english.drawChip(gc,this,2*CELLSIZE/3,xpos+CELLSIZE+CELLSIZE/2,ypos+CELLSIZE/6,null);
+             		break;
+            		default: ;
+            	}
+            	some = cell.drawStack(gc,this, hit ,CELLSIZE,xpos,ypos,0,0.1,0.0,null);
+            	HitPoint.setHelpText(any,xpos-CELLSIZE,ypos-CELLSIZE,CELLSIZE*4,CELLSIZE*2,
+            			TammanyChip.getRoleCard(cell.rackLocation()).helpText);
+            	break;
+            case Trash:
+            	some = cell.drawStack(gc,this, hit ,CELLSIZE,xpos,ypos,0,0.3,0.0,null);
+            	break;
+           default:
+            	some = cell.drawStack(gc,this, hit ,CELLSIZE,xpos,ypos,0,0.1,0.0,null);
+            	break;
+            } 
+            if(some) {
+            	hit.awidth = CELLSIZE;
+            	hit.arrow = (gb.pickedObject!=null)?StockArt.DownArrow:StockArt.UpArrow;
+            }
+            // draw dots on the targets to help visualize and align them
+            // StockArt.SmallO.drawChip(gc,this,CELLSIZE,xpos,ypos,null);
+           }
+        }
+    }
+    
+    int gameLogScroll = 0;
+    TammanyMovespec logState[] = new TammanyMovespec[2];
+    String[] combineEvents(String first[],String second[])
+    {
+    	if(first==null) { return(second); }
+    	if(second==null) { return(first); }
+    	int lfirst = first.length;
+    	int lsecond = second.length;
+    	String res[] = new String[lfirst+lsecond];
+    	for(int i=0;i<lfirst;i++) { res[i]=first[i]; }
+    	for(int j=0;j<lsecond; j++) { res[lfirst+j] = second[j]; }
+    	return(res);
+    }
+    String combineLines(String l1, String l2)
+    {
+    	if("".equals(l1)) { return(l2); }
+    	if("".equals(l2)) { return(l1); }
+    	
+    	int l1len = l1.length();
+        String comma = "";
+        if ((l1len>0)
+           		&& (l1.charAt(l1len-1)>='0')
+           		&& (l2.charAt(0) >= 'A'))
+            { //insert a comma between move parts unless there
+              //is already some punctuation or spacing
+               comma = ",";
+               // remove identical prefixes
+               int limit = Math.min(l1len,l2.length());
+               int sidx = 0;
+               while(sidx<limit && (l1.charAt(sidx)==l2.charAt(sidx))) { sidx++; }
+               if(sidx>=3) 
+               	{  
+               	   l2 = l2.substring(sidx);
+               	}
+            }
+         return(l1+comma+l2);
+     }
+    
+    Color YellowPlayerColor = new Color(174,144,21);
+    Color PurplePlayerColor = new Color(149,90,183);
+    Color BrownPlayerColor = new Color(220,204,204);
+    Color RedPlayerColor = new Color(171,48,44);
+    
+    // these key words are colorized in the game log
+    double chipScales[] = {1.0,1.3,0.0,-0.4};
+    double cubeScales[] = {1.0,1.7,0.0,-0.2};
+    double discScales[] = {1.2,1.2,0.0,-0.2};
+    
+    Text coloredChunks[] = 
+    	{	TextGlyph.create(IrishInfluence,"xx",TammanyChip.greenDisc,this,chipScales),
+    		TextGlyph.create(GermanInfluence,"xx",TammanyChip.orangeDisc,this,chipScales),
+    		TextGlyph.create(EnglishInfluence,"xx",TammanyChip.whiteDisc,this,chipScales),
+    		TextGlyph.create(ItalianInfluence,"xx",TammanyChip.blueDisc,this,chipScales),
+    		TextGlyph.create(EnglishToken,"xx",TammanyChip.english,this,cubeScales),
+    		TextGlyph.create(ItalianToken,"xx",TammanyChip.italian,this,cubeScales),
+    		TextGlyph.create(IrishToken,"xx",TammanyChip.irish,this,cubeScales),
+    		TextGlyph.create(GermanToken,"xx",TammanyChip.german,this,cubeScales),
+    		TextGlyph.create(RedColor,"xx",TammanyChip.red,this,chipScales),
+    		TextGlyph.create(BrownColor,"xx",TammanyChip.brown,this,chipScales),
+    		TextGlyph.create(PurpleColor,"xx",TammanyChip.purple,this,chipScales),
+    		TextGlyph.create(YellowColor,"xx",TammanyChip.yellow,this,chipScales),
+    		TextGlyph.create(BlackColor,"xx",TammanyChip.black,this,chipScales), 
+    		TextGlyph.create(SlanderToken,"xx",TammanyChip.slander,this,chipScales),
+    		TextGlyph.create(FreezeToken,"xx",TammanyChip.freezer,this,chipScales),
+    	};
+    
+
+    /*
+     * draw the Tammany hall standard game log in 2 column format.  This uses the "colorize" method
+     * to add color to particular words, and specially colorizes the "vote" lines so the numbers
+     * are shown in colors corresponding to the voter color
+     */
+    public void redrawGameLog2(Graphics gc, HitPoint highlight, Rectangle r,
+        Color highlightColor,Font bold,Font normal)
+    {
+        if (gc != null)
+        {	
+            int sz = History.size();
+            int scroll = gameLogScroll;
+            int highlightIndex = -1;
+            int row = 1;
+
+            // basic layout, 1 cell for the row number, then two columns for the moves
+            G.setColor(gc,Color.black);
+            G.setFont(gc,bold);
+
+            FontMetrics myFM = G.getFontMetrics(gc);
+            int rownumWidth = myFM.stringWidth("XXXXXXXXXXXX");
+            int x = G.Left(r) + rownumWidth;
+            int y = G.Top(r);
+            int mid = (G.Width(r) - rownumWidth);
+
+            G.setFont(gc,normal);
+
+            String moven = null;
+            String prevMoven = null;
+            int player = -100;
+            String currentLine = "";
+            String gameEvents[] = null;
+            boolean linebreak = false;
+            int idx = 0;
+            int first = 0;
+            int ypos = 0;
+            int maxLineHeight = 1;
+            int totalRows = 0;
+            if(sz>0 && (History.elementAt(0).op == MOVE_START)) { idx++;  }
+            String votestring = "vote ward";
+            while (idx < sz)
+            {	
+
+            	TammanyMovespec sp = (TammanyMovespec)History.elementAt(idx);
+                String sms = sp.censoredMoveString(History,idx,bb); 
+                String newnum = sp.getSliderNumString();
+                
+                // look for reasons to break rather than add this line to the current display line
+                if((moven!=null) && (newnum!=null) && !"".equals(newnum) && !newnum.equals(moven))
+                {	// changing move number
+                	linebreak = true;
+                }
+                if((player!=-100) && (player!=sp.player)) 
+            	{ linebreak = true; 
+            	}
+               if(!linebreak) 
+                { 	// process this line
+                	if(!"".equals(newnum)) { moven = newnum; }
+                    gameEvents = combineEvents(gameEvents,sp.gameEvents);
+                    currentLine = combineLines(currentLine,sms);
+                    player = sp.player;
+                    linebreak = sp.getLineBreak();
+                    if(linebreak) { idx++; }	// skip ahead too
+                }
+            if(!linebreak) { idx++; }			// advance if we are not outputting
+            if(idx>=sz) { linebreak = true; }	// make sure we do the last line
+               	
+           	if(linebreak)
+           	{
+             Color bgcolor = null;
+             totalRows++;
+             if ((first <= viewStep) && (viewStep < idx))
+                     {
+                      bgcolor = highlightColor;
+                      highlightIndex = row;
+                    }
+             
+                	// output related to the accumulated line
+           	if(currentLine.length()>0)
+           	{	// output the line we have built
+           		
+                Text master = null;
+                if(currentLine.startsWith(votestring))
+                	{
+                	StringTokenizer msg = new StringTokenizer(currentLine.substring(votestring.length()));
+                	master = TextChunk.join(
+                        	TextChunk.create(votestring),
+                        	TextChunk.create(" "+msg.nextToken()),
+                        	TextGlyph.create("xxx","xxx",msg.nextToken(),TammanyChip.getBoss(player),this,discScales),
+                        	TextGlyph.create("xxx","xxx",msg.nextToken(),TammanyChip.greenDisc,this,discScales),
+                        	TextGlyph.create("xxx","xxx",msg.nextToken(),TammanyChip.whiteDisc,this,discScales),
+                        	TextGlyph.create("xxx","xxx",msg.nextToken(),TammanyChip.orangeDisc,this,discScales),
+                        	TextGlyph.create("xxx","xxx",msg.nextToken(),TammanyChip.blueDisc,this,discScales)
+                			);
+                		}
+                	else
+                	{	master = TextChunk.colorize(currentLine,s,coloredChunks);
+                	}
+                
+                int h =  master.lineHeight(myFM);
+                maxLineHeight = Math.max(h,maxLineHeight);
+                if(row>scroll)
+                {
+                if((ypos + h)<G.Height(r))
+                	{
+                	String mn = moven +" "+prettyName(player);
+                    if(!moven.equals(prevMoven))
+                       	{G.Text(gc, false, G.Left(r) + 2, y + ypos, x ,
+                         maxLineHeight, Color.black, bgcolor, mn);
+                       	}
+                    prevMoven = mn;
+                	master.draw(gc, false, x + 2 , y + ypos, mid - 4, h, Color.black, bgcolor );
+                	 }
+               	ypos += h;
+               }
+               	first = idx;
+                               
+              	row++;
+           	}
+            if(gameEvents!=null)
+              {
+              	for(int gameEventsIndex = 0;gameEventsIndex<gameEvents.length;gameEventsIndex++)
+            	{  
+             		String msg = gameEvents[gameEventsIndex];
+             		Text chunk = TextChunk.colorize(msg,s,coloredChunks);
+             		int h = chunk.lineHeight(myFM);
+             		if(row>scroll)
+             		{
+            		if ((ypos + h) <= G.Height(r))
+            		{
+            		chunk.draw(gc, false, x + 2 , y + ypos, mid - 4, h, Color.darkGray, bgcolor);
+            		}
+            		ypos += h;
+             		}
+             	}
+              }
+    		linebreak = false;
+            gameEvents = null;
+            player = -100;
+    		currentLine = "";
+    		moven = null;
+            }	// end of linebreak
+           	
+           } // end of while
+
+  
+          // adjust the scroll position
+          {
+            int nextscroll = gameLogScroll;
+            
+            // finally, frame the whole thing
+            G.frameRect(gc, Color.blue, G.Left(r), G.Top(r), G.Width(r), Math.min(y+ypos,G.Height(r)));
+            if (ypos <= G.Height(r))
+                {	int dec =   ((G.Height(r) - ypos) / maxLineHeight)*2/3;
+                	//more room for stuff.  2/3 adds a little hysteresis
+                    nextscroll = Math.max(0,scroll-dec);
+                }
+                else 
+                {	// more stuff is available to see.  2/3 adds a little hysteresis
+                	int inc = ((ypos - G.Height(r)) / maxLineHeight)*2/3;
+                    nextscroll = Math.min(totalRows,scroll + inc);
+                }
+
+                if (highlightIndex >= 0)
+                { 	// if we're scrolled back to a position, try to center the marker
+
+                    int nlines = (G.Height(r)+maxLineHeight) / (maxLineHeight * 2);
+                    nextscroll = Math.max(0, highlightIndex - nlines);
+                }
+
+                if (gameLogScroll != nextscroll)
+                {
+                    gameLogScroll = nextscroll;
+                    repaint(20);
+                }
+            }
+        G.setFont(gc,standardPlainFont);
+        }
+    }
+    public int ScoreForPlayer(commonPlayer p)
+    {
+    	return(bb.scoreForPlayer(p.boardIndex));
+    }
+    /**
+     * draw the main window and things on it.  
+     * If gc!=null then actually draw, 
+     * If selectPos is not null, then as you draw (or pretend to draw) notice if
+     * you are drawing under the current position of the mouse, and if so if you could
+     * click there to do something.  Care must be taken to consider if a click really
+     * ought to be allowed, considering spectator status, use of the scroll controls,
+     * if some board token is already actively moving, and if the game is active or over.
+     * <p>
+     * This dual purpose (draw, and notice mouse sensitive areas) tends to make the
+     * code a little complicated, but it is the most reliable way to make sure the
+     * mouse logic is in sync with the drawing logic.
+     * <p>
+    General GUI checklist
+<p>
+<li>vcr scroll section always tracks, scroll bar drags
+<li>lift rect always works
+<li>zoom rect always works
+<li>drag board always works
+<li>pieces can be picked or dragged
+<li>moving pieces always track
+<li>stray buttons are insensitive when dragging a piece
+<li>stray buttons and pick/drop are inactive when not on turn
+*/
+    public void redrawBoard(Graphics gc, HitPoint selectPos)
+    {  TammanyBoard gb = (TammanyBoard)disB(gc);
+       int nPlayers = gb.nPlayers();
+       TammanyState state = gb.getState();
+       boolean moving = (getMovingObject()>=0);
+       boolean simultaneous = !my.spectator && state.allowSimultaneousPlay();
+       boolean ourMove = OurMove() || simultaneous;
+  
+       setDisplayParameters(gb,boardRect);
+       // 
+       // if it is not our move, we can't click on the board or related supplies.
+       // we accomplish this by supressing the highlight pointer.
+       //
+       HitPoint ourTurnSelect = ourMove ? selectPos : null;
+       //
+       // even if we can normally select things, if we have already got a piece
+       // moving, we don't want to hit some things, such as the vcr group
+       //
+       HitPoint buttonSelect = moving ? null : ourTurnSelect;
+       // hit anytime nothing is being moved, even if not our turn or we are a spectator
+       HitPoint nonDragSelect = (moving && !reviewMode()) ? null : selectPos;
+       
+       redrawGameLog2(gc, nonDragSelect, logRect, boardBackgroundColor,standardBoldFont,standardBoldFont);
+
+       Hashtable<TammanyCell,TammanyMovespec> targets = gb.getTargets();
+       drawBoardElements(gc, gb, boardRect, ourTurnSelect,selectPos,targets);
+       for(int i=0;i<nPlayers;i++)
+       {	drawPlayerBoard(gc,playerRects[i],i,ourTurnSelect,selectPos,gb,targets);
+       }
+       
+
+
+		if (state != TammanyState.Puzzle)
+        {	// if in any normal "playing" state, there should be a done button
+			// we let the board be the ultimate arbiter of if the "done" button
+			// is currently active.
+			if(state.isElection())
+			{   if(preparedWard!=gb.electionWard())
+				{
+				preparedVote = null;
+				preparedVoteSent = false;
+				}
+				int whoseMove = simultaneous_turns_allowed(my) ? my.boardIndex : gb.whoseTurn;
+				TammanyPlayer p = gb.players[whoseMove];
+				if (G.handleRoundButton(gc, doneRect, 
+	            		((p.allVotesSet&&(preparedVote==null)) ? selectPos : null), s.get(TammanyVote),
+	                    HighlightColor, rackBackGroundColor))
+				{	
+					selectPos.hitCode = TammanyId.Vote;
+				}
+			}
+			else if (G.handleRoundButton(gc, doneRect, 
+            		(gb.DoneState() ? buttonSelect : null), s.get(DoneAction),
+                    HighlightColor, rackBackGroundColor))
+            {	// always display the done button, but only make it active in
+            	// the appropriate states
+                buttonSelect.hitCode = DefaultId.HitDoneButton;
+            }
+            if (allowed_to_edit)
+            {	// reviewer is active if there was a game here, and we were a player, 
+            	// or all the time in review rooms.
+            	// we're allowed to edit the board, so we need an edit button
+                    if (G.handleRoundButton(gc, editRect, buttonSelect, s.get(EditAction),
+                                HighlightColor, rackBackGroundColor))
+                    {
+                        buttonSelect.hitCode = DefaultId.HitEditButton;
+                    }
+            }
+        }
+
+ 
+        drawPlayerStuff(gc,state==TammanyState.Puzzle,selectPos,HighlightColor,rackBackGroundColor);
+  
+ 
+        // draw the avatars
+        	String message = null;
+        	switch(state)
+        	{
+        	case Gameover:	
+        		message = gameOverMessage();
+        		break;
+        	case SimultaneousElection:
+        	case Election:
+        	case SerialElection:
+        		if(!bb.playerCanVote(my.boardIndex) || (preparedVote!=null))  { message = WaitMessage; }
+        		else { message = s.get(state.description(),bb.electionWard()); }
+        		//message = "first: "+bb.firstPlayer+" cur: "+bb.whoseTurn+" me "+my.boardIndex;
+        		break;
+        	default: 
+        		message = s.get(state.description());
+        	}
+        	//message = my.toString()+message;
+            standardGameMessage(gc,
+            		message,
+            				(state!=TammanyState.Puzzle)&&!simultaneous_turns_allowed(my),
+            				gb.whoseTurn,
+            				stateRect);
+            goalAndProgressMessage(gc,selectPos,Color.black,s.get(TammanyVictoryCondition),progressRect, goalRect);
+         
+        // draw the vcr controls
+        drawVcrGroup(nonDragSelect, gc, HighlightColor, vcrButtonColor);
+
+    }
+
+    /**
+     * Execute a move by the other player, or as a result of local mouse activity,
+     * or retrieved from the move history, or replayed form a stored game. 
+     * @param mm the parameter is a commonMove so the superclass commonCanvas can
+     * request execution of moves in a generic way.
+     * @return true if all went well.  Normally G.Error would be called if anything went
+     * seriously wrong.
+     */
+     public boolean Execute(commonMove mm,replayMode replay)
+    {	//G.print("e "+mm);
+    	 // record some state so the game log will look pretty
+        if(bb.getState()==TammanyState.Puzzle)
+    	{   mm.setSliderNumString("--");
+    		switch(mm.op)
+        	{
+        	case MOVE_PICK: 
+        	case MOVE_PICKB: 
+        		break;
+    		default:
+    			mm.setLineBreak(true);
+        	}
+    	}
+        if(mm.op==MOVE_ELECT) { mm.setLineBreak(true); }
+        
+        handleExecute(bb,mm,replay);
+        
+        /**
+         * animations are handled by a simple protocol between the board and viewer.
+         * when stones are moved around on the board, it pushes the source and destination
+         * cells onto the animationStck.  startBoardAnimations converts those points into
+         * animation sprites.  drawBoardElements arranges for the destination stones, which
+         * are already in place, to disappear until the animation finishes.  The actual drawing
+         * is done by drawSprites at the end of redrawBoard
+         */
+        startBoardAnimations(replay);
+        
+		lastDropped = bb.lastDroppedObject;	// this is for the image adjustment logic
+		if(replay!=replayMode.Replay) { playSounds((TammanyMovespec)mm); }
+       return (true);
+    }
+     /**
+      * This is a simple animation which moves everything at the same time, at a speed proportional to the distance
+      * for tammany, this is normally just one chip moving.  Note that the interface to drawStack arranges to make the
+      * destination chip disappear until the animation is finished.
+      * @param replay
+      */
+     void startBoardAnimations(replayMode replay)
+     {
+        if(replay!=replayMode.Replay)
+     	{
+     		double full = G.distance(0,0,G.Width(boardRect),G.Height(boardRect));
+        	while(bb.animationStack.size()>1)
+     		{
+     		TammanyCell dest = bb.animationStack.pop();
+     		TammanyCell src = bb.animationStack.pop();
+    		double dist = G.distance(src.current_center_x, src.current_center_y, dest.current_center_x,  dest.current_center_y);
+    		double endTime = masterAnimationSpeed*0.5*Math.sqrt(dist/full);
+    		//
+    		// in cases where multiple chips are flying, topChip() may not be the right thing.
+    		//
+     		startAnimation(src,dest,dest.topChip(),CELLSIZE,0,endTime);
+     		}
+     	}
+        	bb.animationStack.clear();
+     } 
+
+ void playSounds(TammanyMovespec mm)
+ {
+	 switch(mm.op)
+	 {
+	 case MOVE_DROPB:
+	 case MOVE_PICKB:
+	 case MOVE_PICK:
+	 case MOVE_DROP:
+		 playASoundClip(light_drop,100);
+		 break;
+	 default: break;
+	 }
+ }
+ TammanyState pre_review_state = TammanyState.Puzzle;
+ public boolean doScrollTo(int whence)
+ {	TammanyState pre_state = bb.getState();
+ 	int pre_view = viewStep;
+ 	boolean val = super.doScrollTo(whence);
+ 	if((pre_view==-1) && (viewStep!=-1))
+ 	{	pre_review_state = pre_state;
+ 	}
+ 	return(val);
+ }
+ public boolean simultaneous_turns_allowed(commonPlayer whoseTurn)
+ {	TammanyState state = bb.getState();
+ 	return(state.allowSimultaneousPlay());
+ }
+ // 
+ // simultaneous moves occur during voting, but they are always
+ // handled by the user interface and serialized in the normal way
+ //
+ public boolean fixed_move_baseline(commonPlayer whoseTurn)
+ {	return(false);
+ }
+ public void runAsyncRobots()
+ {	
+   	if(bb.getState().allowSimultaneousPlay())
+ 	{
+ 		{
+ 		for(commonPlayer pp : players)
+ 			{ if(pp!=null)
+ 				{ startRobotTurn(pp); }
+ 			}
+ 		}
+ 	}
+ }
+ public void startRobotTurn(commonPlayer pp)
+ {	if(!reviewMode() 
+		 && ( ((bb.getState().allowSimultaneousPlay()
+				 && bb.playerCanVote(pp.boardIndex)
+				 &&!bb.playerHasPlayed(pp.boardIndex)) || (bb.whoseTurn==pp.boardIndex))))
+ 	{
+ 	super.startRobotTurn(pp);
+ 	}
+ }
+/**
+ * parse a move specifier on behalf of the current player.  This is called by the 
+ * "game" object when it receives a move from the other player.  Note that it may
+ * be called while we are in review mode, so the current state of the board should
+ * not be considered.
+ */
+    public commonMove ParseNewMove(String st)
+    {
+        return (new TammanyMovespec(st, -1));
+    }
+/**
+ * prepare to add nmove to the history list, but also edit the history
+ * to remove redundant elements, so that indecisiveness by the user doesn't
+ * result in a messy game log.  
+ * 
+ * For all ordinary cases, this is now handled by the standard implementation
+ * in commonCanvas, which uses the board's Digest() method to distinguish new
+ * states and reversions to past states.
+ * 
+ * For reference, the commented out method below does the same thing for "Hex". 
+ * You could resort to similar techniques to replace or augment what super.EditHistory
+ * does, but your efforts would probably be better spent improving your Digest() method
+ * so the commonCanvas method gives the desired result.
+ * 
+ * Note that it should always be correct to simply return nmove and accept the messy
+ * game record.
+ * 
+ * This may require that move be merged with an existing history move
+ * and discarded.  Return null if nothing should be added to the history
+ * One should be very cautious about this, only to remove real pairs that
+ * result in a null move.  It is vital that the operations performed on
+ * the history are identical in effect to the manipulations of the board
+ * state performed by "nmove".  This is checked by verifyGameRecord().
+ * 
+ * in commonEditHistory()
+ * 
+ */
+      public commonMove EditHistory(commonMove nmove)
+      {
+    	  commonMove rval = super.EditHistory(nmove,nmove.op==MOVE_RESET);
+     	  return(rval);
+      }
+
+    /** 
+     * this method is called from deep inside PerformAndTransmit, at the point
+     * where the move has been executed and the history has been edited.  It's
+     * purpose is to veryfy that the history accurately represents the current
+     * state of the game, and that the fundamental game machinery is in a consistent
+     * and reproducable state.  Basically, it works by creating a duplicate board
+     * resetting it and feeding the duplicate the entire history, and then verifying 
+     * that the duplcate is the same as the original board.  It's perfectly ok, during
+     * debugging and development, to temporarily change this method into a no-op, but
+     * be warned if you do this because it is throwing an error, there are other problems
+     * that need to be fixed eventually.
+     */
+    public void verifyGameRecord()
+    {	DISABLE_VERIFY = false;
+    	super.verifyGameRecord();
+   }
+ // for reference, here's the standard definition
+ //   public void verifyGameRecord()
+ //   {	BoardProtocol ourB =  getBoard();
+ //   	int ourDig = ourB.Digest();
+ //   	BoardProtocol dup = dupBoard = ourB.cloneBoard();
+ //   	int dupDig = dup.Digest();
+ //   	G.Assert(dupDig==ourDig,"Duplicate Digest Matches");
+ //   	dup.doInit();
+ //   	int step = History.size();
+ //   	int limit = viewStep>=0 ? viewStep : step;
+ //   	for(int i=0;i<limit;i++) 
+ //   		{ commonMove mv = History.elementAt(i);
+ //   		  //G.print(".. "+mv);
+ //   		  dup.Execute(mv); 
+ //   		}
+ //   	int dupRedig = dup.Digest();
+ //   	G.Assert(dup.whoseTurn()==ourB.whoseTurn(),"Replay whose turn matches");
+ //   	G.Assert(dup.moveNumber()==ourB.moveNumber(),"Replay move number matches");
+ //   	if(dupRedig!=ourDig)
+ //   	{
+ //   	//int d0 = ourB.Digest();
+ //   	//int d1 = dup.Digest();
+ //   	G.Assert(false,"Replay digest matches");
+ //   	}
+ //   	// note: can't quite do this because the timing of "SetDrawState" is wrong.  ourB
+ //   	// may be a draw where dup is not if ourB is pending a draw.
+ //   	//G.Assert(dup.getState()==ourB.getState(),"Replay state matches");
+ //   	dupBoard = null;
+ //   }
+    
+/**
+ * the preferred mouse gesture style is to let the user "pick up" objects
+ * by simply clicking on them, but we also allow him to click and drag. 
+ * StartDragging is called when he has done this.
+ * <p>
+ * None on debugging: If you get here mysteriously with hitOjbect and hitCode
+ * set to default values, instead of the values you expect, you're probably
+ * not setting the values when the gc is null.
+ */
+    public void StartDragging(HitPoint hp)
+    {
+        int mo = bb.movingObjectIndex();
+        if ((mo==NothingMoving) && (hp.hitCode instanceof TammanyId))// not dragging anything yet, so maybe start
+        {
+        TammanyId hitCode =  (TammanyId)hp.hitCode;
+        TammanyCell hitCell = (TammanyCell)hp.hitObject;
+ 	    switch(hitCode)
+	    {
+	    default: break;
+	    
+	    case WardBoss: 
+	    case WardCube:
+	       	if(bb.pickedObject==null)
+	    	{
+	    		PerformAndTransmit("Pickc "+hitCode.shortName+" "+hitCell.row+" "+hp.hit_index );
+	    		break;
+	    	}
+			//$FALL-THROUGH$
+		case Zone1Init:
+	    case Zone2Init:
+	    case Zone3Init:
+        case IrishLeader:
+        case EnglishLeader:
+        case CastleGardens:
+        case Mayor:
+        case DeputyMayor:
+        case CouncilPresident:
+        case PrecinctChairman:
+        case ChiefOfPolice:
+	    	PerformAndTransmit("Pickb "+hitCode.shortName+" "+hitCell.row);
+	    	break;
+        }
+
+        if (bb.movingObjectIndex() >= 0)
+	        {	// if we got something started, inform the mouse handler
+	            hp.dragging = true;
+	        } 
+        }
+    }
+   
+   PopupManager electionMenu = new PopupManager(); 
+   TammanyChip electionChip = null;
+   TammanyChip electionPlayer = null;
+   void electionMenu(TammanyCell c)
+   {
+	   electionMenu.newPopupMenu(this,deferredEvents);
+	   electionMenu.addMenuItem(s.get(ChipsNone),0);
+	   electionMenu.addMenuItem(s.get(ChipsOne),1);
+	   electionChip = c.topChip();
+	   electionPlayer = c.boss;
+	   for(int i=2;i<=c.height();i++) { electionMenu.addMenuItem(s.get(ChipsMany,i),i); }
+	   int cx = bb.cellToX(c);
+	   int cy = bb.cellToY(c);
+	   electionMenu.show(cx,cy)  ;
+   }
+	/** 
+	 * this is called on "mouse up".  We may have been just clicking
+	 * on something, or we may have just finished a click-drag-release.
+	 * We're guaranteed just one mouse up, no bounces.
+ * <p>
+ * None on debugging: If you get here mysteriously with hitOjbect and hitCode
+ * set to default values, instead of the values you expect, you're probably
+ * not setting the values when the gc is null.
+	 */
+    public void StopDragging(HitPoint hp)
+    {
+        CellId id = hp.hitCode;
+       	if(!(id instanceof TammanyId))  {   missedOneClick = performStandardActions(hp,missedOneClick);   }
+        else {
+        missedOneClick = false;
+        TammanyId hitCode = (TammanyId)id;
+        TammanyCell hitObject = (TammanyCell)hp.hitObject;
+        switch (hitCode)
+        {
+        default:
+        	if (performStandardButtons(hitCode)) {}
+        	else if (performVcrButton(hitCode, hp)) {}	// handle anything in the vcr group
+            else
+            {
+            	throw G.Error("Hit Unknown object " + hitObject);
+            }
+        	break;
+        case Vote:
+        	{
+        	int whoseMove = simultaneous_turns_allowed(my) ? my.boardIndex : bb.whoseTurn;
+        	TammanyPlayer p = bb.players[whoseMove];
+        	String votes = ""+bb.bossVotes(whoseMove);
+        	for(int i : p.votes) { votes += " "+((i>=0) ? i : 0); }
+        	if(bb.getState()==TammanyState.SimultaneousElection)
+        	{
+       		preparedVote = "Vote "+votes;
+       		preparedWard = bb.electionWard();
+        	}
+        	else
+        	{
+        	PerformAndTransmit("Vote "+votes);
+        	}
+        	}
+        	break;
+        case ElectionDisc:
+        	// pop up a menu of choices
+        	electionMenu(hitObject);
+        	break;
+        case PlayerSlander:
+        case PlayerInfluence:
+        	PerformAndTransmit(((bb.pickedObject!=null) ? "Drop ":"Pick ")+hitCode.shortName+" "+hitObject.col+" "+hitObject.row);
+        	break;
+        case WardBoss:
+        case WardCube:
+        	if(bb.pickedObject==null)
+        	{
+        		PerformAndTransmit("Pickc "+hitCode.shortName+" "+hitObject.row+" "+hp.hit_height );
+        		break;
+        	}
+			//$FALL-THROUGH$
+		case Zone1Init:	// we hit an occupied part of the board
+        case Zone2Init:
+        case Zone3Init:
+        case InfluencePlacement:
+        case IrishLeader:
+        case EnglishLeader:
+        case CastleGardens:
+        case Mayor:
+        case DeputyMayor:
+        case CouncilPresident:
+        case PrecinctChairman:
+        case ChiefOfPolice:
+        case BossPlacement:
+        case Bag:
+        case YearIndicator:
+        case LockPlacement:
+        case ScoringTrack:
+        case SlanderPlacement:
+        case Trash:
+         	PerformAndTransmit(((bb.pickedObject!=null) ? "Dropb ":"Pickb ")+hitCode.shortName+" "+hitObject.row);
+
+			break;
+			   
+        }
+        }
+         repaint(20);
+    }
+
+
+    private boolean setDisplayParameters(TammanyBoard gb,Rectangle r)
+    { 	double inner_x = 0.01;	// ad-hoc adjustment from the boardrect to the actual map coordinates
+    	double inner_y = 0.03;
+    	double inner_w = 0.01;
+    	double inner_h = 0.030;
+    	Rectangle innerRect = new Rectangle(G.Left(r)+(int)(inner_x*G.Width(r)),
+				  G.Top(r)+(int)(inner_y*G.Height(r)),
+				  G.Width(r) - (int)((inner_x+inner_w)*G.Width(r)),
+				  G.Height(r) - (int)((inner_y+inner_h)*G.Height(r)));
+      	boolean complete = false;
+      	
+      	gb.SetDisplayRectangle(innerRect);
+      						  
+      	return(complete);
+    }
+    /** this is the place where the canvas is actually repainted.  We get here
+     * from the event loop, not from the normal canvas repaint request.
+     * <p>
+     * if complete is true, we definitely want to start from scratch, otherwise
+     * only the known changed elements need to be painted.  Exactly what this means
+     * is game specific, but for tammany the underlying empty board is cached as a deep
+     * background, but the chips are painted fresh every time.
+     * <p>
+     * this used to be very important to optimize, but with faster machines it's
+     * less important now.  The main strategy we employ is to paint EVERYTHING
+     * into a background bitmap, then display that bitmap to the real screen
+     * in one swell foop at the end.
+     * 
+     * @param g the graphics object.  If gc is null, don't actually draw but do check for mouse location anyay
+     * @param complete if true, always redraw everything
+     * @param hp the mouse location.  This should be annotated to indicate what the mouse points to.
+     */
+    public void drawCanvas(Graphics offGC, boolean complete,HitPoint hp)
+    {	
+      	drawFixedElements(offGC,complete);	// draw the board into the deep background
+   	
+    	// draw the board contents and changing elements.
+        redrawBoard(offGC,hp);
+        //      draw clocks, sprites, and other ephemera
+        drawClocksAndMice(offGC, null);
+        DrawTileSprite(offGC,hp); //draw the floating tile we are dragging, if present
+        DrawArrow(offGC,hp);
+        //
+        // draw any animations that are in progress
+        //
+        drawSprites(offGC);
+        
+    }
+    
+    /**
+     * this is a token or tokens that initialize the variation and
+     * set immutable parameters such as the number of players
+     * and the random key for the game.  It can be more than one
+     * token, which ought to be parseable by {@link online.game.commonCanvas#performHistoryInitialization}
+     * @return return what will be the init type for the game
+     */
+     public String gameType() 
+    	{
+    	return(bb.gameType()); 
+    	}	
+     
+    // this is the subgame "setup" within the master type.
+    public String sgfGameType() { return(Tammany_SGF); }	// this is the official SGF number assigned to the game
+
+    // the format is just what is produced by FormHistoryString
+    //
+    // this is completely standardized
+    //public void performHistoryTokens(StringTokenizer his)
+    //{	String command = "";
+    //    // now the rest
+    //    while (his.hasMoreTokens())
+    //    {
+    //        String token = his.nextToken();
+    //        if (",".equals(token) || ".end.".equals(token))
+    //        {
+    //            if (!"".equals(command))
+    //            {
+    //                PerformAndTransmit(command, false,false);
+    //                command = "";
+    //            }
+    //        }
+    //       else
+    //        {
+    //            command += (" " + token);
+    //        }
+    //    }	
+    //} 
+    //public void performPlayerInitialization(StringTokenizer his)
+    //{	int fp = G.IntToken(his);
+    //	BoardProtocol b = getBoard();
+    //    if (fp < 0)   {  fp = 0;  }
+    //    b.setWhoseTurn(fp);
+    //    players[fp].ordinal = 0;
+    //    players[(fp == 0) ? 1 : 0].ordinal = 1;
+    //	
+    //}
+   
+    /**
+     * parse and perform the initialization sequence for the game, which
+     * was produced by {@link online.game.commonCanvas#gameType}
+     */
+     public void performHistoryInitialization(StringTokenizer his)
+    {   //the initialization sequence
+    	String token = his.nextToken();
+    	int np = G.IntToken(his);	// players always 2
+    	long rv = G.IntToken(his);
+    	int rev = G.IntToken(his);	// rev does't get used either
+    	//
+    	// in games which have a randomized start, this is the point where
+    	// the randomization is inserted
+        // int rk = G.IntToken(his);
+    	// bb.doInit(token,rk);
+        bb.doInit(token,rv,np,rev);
+    }
+
+
+    /** handle action events from menus.  Don't do any real work, just note
+     * state changes and if necessary set flags for the run loop to pick up.
+     * 
+     */
+    public boolean handleDeferredEvent(Object target)
+    {	boolean is = electionMenu.selectMenuTarget(target);
+        if(is)
+        	{
+        	TammanyPlayer p = bb.getPlayer(electionPlayer);
+        	TammanyChip top = electionChip;
+        	if(top!=null)
+        	{
+        		p.votes[top.myInfluenceIndex()] = electionMenu.value;
+         	}
+        	return(true);
+        	}
+        else { return(super.handleDeferredEvent(target)); }
+    }
+/** handle the run loop, and any special actions we need to take.
+ * The mouse handling and canvas painting will be called automatically.
+ * <p>
+ * This is a good place to make notes about threads.  Threads in Java are
+ * very dangerous and tend to lead to all kinds of undesirable and/or flakey
+ * behavior.  The fundamental problem is that there are three or four sources
+ * of events from different system-provided threads, and unless you are very
+ * careful, these threads will all try to use and modify the same data
+ * structures at the same time.   Java "synchronized" declarations are
+ * hard to get right, resulting in synchronization locks, or lack of
+ * synchronization where it is really needed.
+ * <p>
+ * This toolkit addresses this problem by adopting the "one thread" model,
+ * and this is where it is.  Any other threads should do as little as possible,
+ * mainly leave breadcrumbs that will be picked up by this thread.
+ * <p>
+ * In particular:
+ * GUI events do not respond in the native thread.  Mouse movement and button
+ * events are noted for later.  Requests to repaint the canvas are recorded but
+ * not acted upon.
+ * Network I/O events, merely queue the data for delivery later.
+ *  */
+    
+    public void ViewerRun(boolean wait)
+    {
+        super.ViewerRun(wait);
+        if(simultaneous_turns_allowed(my))
+        { 
+        	runAsyncRobots();
+        }
+        //
+        // delay sending votes until it's our natural turn
+        // the usual "OurMove" logic is not correct because
+        // it explicitly considers simultunous moves as ok
+        //
+        if(     (bb.getState()==TammanyState.Election)
+        		&& !reviewMode()
+        		&& (players[bb.whoseTurn].robotPlayer==null)
+        		&& OurMove()
+        		)
+        { 	
+        	PerformAndTransmit("Elect "+bb.nextElectionWard());
+        }
+        else if((preparedVote!=null) 
+        		&& !reviewMode() 
+        		&& (bb.whoseTurn==my.boardIndex) 
+        		&& !preparedVoteSent)
+        {	String sp = preparedVote;
+        	preparedVoteSent = true;
+        	PerformAndTransmit(sp);
+        }
+    }
+    /**
+     * returns true if the game is over "right now", but also maintains 
+     * the gameOverSeen instance variable and turns on the reviewer variable
+     * for non-spectators.
+     */
+    //public boolean GameOver()
+    //{	// the standard method calls b.GameOver() and maintains
+    	// two variables.  
+    	// "reviewer=true" means we were a player and the end of game has been reached.
+    	// "gameOverSeen=true" means we have seen a game over state 
+    //	return(super.GameOver());
+    //}
+    
+    /** this is used by the stock parts of the canvas machinery to get 
+     * access to the default board object.
+     */
+    public BoardProtocol getBoard()   {    return (bb);   }
+
+    //** this is used by the game controller to supply entertainment strings to the lobby */
+    // public String gameProgressString()
+    // {	// this is what the standard method does
+    // 	// return ((mutable_game_record ? Reviewing : ("" + viewMove)));
+    // 	return(super.gameProgressString());
+    // }
+
+
+/** this is used by the scorekeeper to determine who won. Draws are indicated
+ * by both players returning false.  Be careful not to let both players return true!
+ */
+    public boolean WinForPlayer(commonPlayer p)
+    { // this is what the standard method does
+      // return(getBoard().WinForPlayer(p.index));
+      return (super.WinForPlayer(p));
+    }
+
+    /** start the robot.  This is used to invoke a robot player.  Mainly this needs 
+     * to know the class for the robot and any initialization it requires.  The return
+     * value is the player actually started, which is normally the same as requested,
+     * but might be different in some games, notably simultaneous play games like Raj
+     *  */
+    public commonPlayer startRobot(commonPlayer p,commonPlayer runner)
+    {	// this is what the standard method does:
+    	// int level = sharedInfo.getInt(sharedInfo.ROBOTLEVEL,0);
+    	// RobotProtocol rr = newRobotPlayer();
+    	// rr.InitRobot(sharedInfo, getBoard(), null, level);
+    	// p.startRobot(rr);
+    	return(super.startRobot(p,runner));
+    }
+    /** factory method to create a robot */
+    public SimpleRobotProtocol newRobotPlayer() 
+    {  int level = sharedInfo.getInt(exHashtable.ROBOTLEVEL,0);
+       switch(level)
+       { default: 
+       	// fall through
+       	 return(new TammanyPlay(level));
+       }
+    }
+
+    /** replay a move specified in SGF format.  
+     * this is mostly standard stuff, but the contract is to recognise
+     * the elements that we generated in sgf_save
+     */
+    public void ReplayMove(sgf_node no)
+    {
+        String comments = "";
+        sgf_property prop = no.properties;
+
+        while (prop != null)
+        {
+            String name = prop.getName();
+            String value = (String) prop.getValue();
+            
+            if (setup_property.equals(name))
+            {
+                bb.doInit(value);
+                adjustPlayers(bb.nPlayers());
+              }
+            else if (name.equals(comment_property))
+            {
+                comments += value;
+            }
+            else if (name.equals(game_property))
+            {
+                if (!((value.toLowerCase().equals("tammany") || value.equals(Tammany_SGF))))
+                {
+                	throw G.Error("game type " + value + " is not this game");
+                }
+            }
+           else if (parseVersionCommand(name,value,2)) {}
+           else if (parsePlayerCommand(name,value)) {}
+            else
+            {	// handle standard game properties, and also publish any
+            	// unexpected names in the chat area
+            	replayStandardProps(name,value);
+            }
+
+            prop = prop.next;
+        }
+
+        if (!"".equals(comments))
+        {
+            setComment(comments);
+        }
+    }
+}
+

@@ -1,0 +1,44 @@
+<HTML>
+<BODY LINK="#0000ff" VLINK="#800080" BGCOLOR="#ffffff">
+
+<H1><IMG SRC="kawacup.jpg" WIDTH=106 HEIGHT=100>JDB Debugger</H1>
+<P><A HREF="index.htm">Index</A> </P>
+<P>
+<font size="1.5" face="Arial">Last Modified Date - <font color=red>2/16/99</font><p>
+Please click <a href="http://www.tek-tools.com/kawa/docs/jdbdebug.htm">here</a> for the latest version of this document.
+<font color=red> If this is an online version of the document please right click in the browser and select 
+'Update local Kawa document' to update your local copy of this document</font>
+</font>
+<P><HR></P>
+<P>JDB debugger is the other debugger under Kawa. This debugger is a simple wrapper on the jdb tool that is shipped
+with JDK.</P>
+
+<p>Please refer to <a href="debugger.htm">debugger</a> document for more details if Build/JDB debug menu command is
+disabled.
+
+<p>Select Build/JDB Debug to start the JDB debugger. Kawa will start the JDB debugger as a separate process and set
+all the breakpoints that are defined in the project.
+
+<p>You can send any custom properties to JDB debugger by setting the properties under project interpreter options or
+global interpreter options.
+
+<p>Please watch the Kawa output window for all JDB messages. This window also acts as input redirector for the JDB debugger.
+Please type any JDB command at a breakpoint and Kawa will send the command as typed to the JDB debugger.
+
+<p>The debugger behavior is identical to the other Kawa debugger. In that Kawa will try and open the source file for every
+breakpoint that is hit. Break lines are indicated by a green arrow in the left margin.
+
+<p>Please select Build/Debug/Step, Build/Debug/Step over or Build/Debug/Step up to step through the code. You can also use
+the appropriate keyboard shortcuts.
+
+<p>Double clicking on any variable name in the editor will signal Kawa to check the variable value. If required you can
+type the command yourself in the Kawa output window to check any variable value.
+
+<p>Please refer to JDK documentation on JDB for all the different JDB commands that ara available.
+
+<p>Press F10 or Build/Debug/Exit to stop the debugger. It is always recommended to stop the running application or applet
+to stop the debugger. Selecting F10 during JDB debug can leave orphan processes behind. Be sure to kill these processes
+manually if you have to press F10 for any reason.
+
+</BODY>
+</HTML>

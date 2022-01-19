@@ -1,0 +1,158 @@
+(;GM[9]
+GN[Kok-Wikman game 1]
+GC[round 1, 19-08-1997]
+PB[Fred Kok (the Netherlands)]
+PW[Ragnar Wikman (Finland)]
+C[MIND SPORTS OLYMPICS , LoA section
+London, 19 -20 august 1997
+
+Herewith some fragments of the first Olympic Loa tournament.
+The Loa section of the Mind Sports Olympic had only 4
+players, who played 6 rounds with a 30 minutes limit. Strong
+players from Knights Of the Square Table did not attend. 
+Ragnar Wikman was favorite, being the number one player
+on Richards PBEM server.
+
+But surprisingly he lost his first game.
+]
+;C[]
+B[c1-c3]
+;W[h6-f6]
+C[ Perhaps it is best to respond immediate to the threat  
+against a possible clamp to the a-file. 2.a2-c2 or 
+2.a5-c7 (see next game) are good alternatives.]
+;C[]
+B[e1-b4]
+;C[]
+W[a2-c2]
+;C[]
+B[b8-b5]
+;C[]
+W[a4:d1]
+;B[f1-c4]
+C[trying to make a flexible formation. Both b5 and c3 
+are connected by two stones.]
+;W[a7-c5]
+C[perhaps a5-c7 is a better try. White now gets 
+isolated stones.]
+;C[]
+B[d8-b6]
+;W[a3-b2]
+C[? too slow. b1 cannot be isolated]
+;B[b1-a2]
+C[!]
+;C[]
+W[b2-f2]
+;C[]
+B[g1-g3]
+;C[]
+W[h5-f7]
+;C[]
+B[e8-c6]
+;C[]
+W[a5:a2]
+;C[]
+B[g8-d8]
+;W[h4-e7]
+C[fights back!  White isolates f8 for the time being.]
+;C[]
+B[g3-e5]
+;W[a2-e2]
+C[ e7:e5 ? f8:c5 and wins!]
+;C[]
+B[d8-d6]
+;W[c2-e4]
+C[white should have blocked with f6-d8]
+;C[]
+B[f8-d8]
+;W[h2:e5]
+C[ f7-d7? b4-b7]
+;B[d8-d5]
+C[Black wins in one more move.  Black's record is now 1-0
+This loss made the second encounter Wikman-Kok crucial
+since both players kept on winning in round 2 and 3.]
+)
+(;C[This is the second game between the two players who
+eventually finished first and second in the tournament.
+
+]
+GM[9]
+PB[Ragnar Wikman (Finland)]
+PW[Fred Kok (The Netherlands)]
+GN[Wikman-Kok game 2]
+GC[Round 4, 20-08-1997]
+;C[]
+B[c1-c3]
+;C[]
+W[a5-c7]
+;C[to prevent e1-b4 or d8-b6]
+;B[b1-b3]
+C[a good move. In the Nost competition the encounter     
+Kok-Yearout followed 3.g8-g6 4.h3-e3 5.f8-f6 6.a7-d4 ]
+;C[]
+W[a2-c2]
+;C[]
+B[e1-e3]
+;C[]
+W[a7-d7]
+;C[]
+B[c3:c7]
+;C[]
+W[a6-c6]
+;C[]
+B[d1-d4]
+;C[]
+W[a4:d8]
+;C[]
+B[d4:d7]
+;C[]
+W[e8-g6]
+;C[]
+B[g8-e6]
+;C[]
+W[a3-c5]
+;B[b3-d5]
+C[both players have to connect three stones but perhaps 
+black has an advantage because he has more influence 
+by the centre (d5).]
+;W[c5-e7]
+C[because black has g1-d4 and f8-d6]
+;B[d5-f7]
+C[to prevent h7xd7 but now d5 escapes.Possible alternatives
+are c7-f4 or f1xh3 to scatter the connected H-file.]
+;C[]
+W[c6-d5]
+;B[f8:h6]
+C[to prevent f8xh6 but this moves deconnects h6. Now 
+white has the advantage.]
+;C[]
+W[c2-f5]
+;C[]
+B[h6-g7]
+;W[e7-d6]
+C[White has to deal with h2 first so h2-e5 is better]
+;B[g1-g4]
+C[23.e6-e4? 24.d6-f6 with the threats xf7 or d5-g5 and 0-1
+But black misses an oportunaty: 23.f1xh3 would have    
+continue the struggle because f7xf5 is possible.
+a variation: 24.h2-g2 25.f5xf7 26.d6-g3 27.d6-d4 
+28.d5-e6 29.f5xh5  further investigations are necessary.
+]
+;W[h7-e4]
+C[all stones are connected.
+
+Kok and Wikman kept on winning and won Gold and Silver. 
+The Bronze was for John Bosley from New Zealand by 
+winning a playoff against Bharat from England.  Play can 
+certainly be improved upon so the MSO 1998 should be a 
+great fight again !
+
+Loa strategy is still under development. These analyses
+should trigger further discussion about this interesting game.
+I invite the players to crash these analyses and improve the 
+theory.
+
+Fred Kok
+tangram@euronet.nl 
+]
+)

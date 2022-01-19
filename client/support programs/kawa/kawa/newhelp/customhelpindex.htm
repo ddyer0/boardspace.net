@@ -1,0 +1,31 @@
+<HTML>
+<BODY LINK="#0000ff" VLINK="#800080" BGCOLOR="#ffffff">
+
+<H1><A NAME="OLE_LINK2"><IMG SRC="kawacup.jpg" WIDTH=106 HEIGHT=100>Custom Help Index</H1>
+<P><A NAME="OLE_LINK1"></A><A HREF="index.htm">Index</A> </P>
+<P>
+<font size="1.5" face="Arial">Last Modified Date - <font color=red>2/16/99</font><p>
+Please click <a href="http://www.tek-tools.com/kawa/docs/customhelpindex.htm">here</a> for the latest version of this document.
+<font color=red> If this is an online version of the document please right click in the browser and select 
+'Update local Kawa document' to update your local copy of this document</font>
+</font>
+<P><HR></P>
+
+<P>With Kawa you can create your own help index file. This will provide F1 context sensitive help for your keywords in the editor.</P>
+<p>This feature will let you add custom help for other JavaSoft APIs like Java3D which Kawa does not provide.
+<P>The help index you create are is displayed as a list of keywords in the Help/Search dialog under the user tab.</P>
+<P>Custom indices can be built from any HTML file. If you are building an index from Javadoc generated HTML like all the APIs from Javasoft
+please select allnames.html to build the index from.</P>
+<p>Select Customize/User Index to build a new use help index. This will display a dialog as shown below.
+<P ALIGN="CENTER"><IMG SRC="customhelp1.gif" WIDTH=411 HEIGHT=411></P>
+<P>Select Add File... button and select one or more HTML file to scan the keywords for. Depending on the size of the HTML file this could take a few minutes.
+Please check the progress bar at the bottom of the screen.</P>
+<p>When Kawa is finished scanning the HTML file it will display a list of keywords found in the HTML file(s) as shoen below.
+<P ALIGN="CENTER"><IMG SRC="customhelp2.gif" WIDTH=409 HEIGHT=405></P>
+<P>Please Delete any indices which you don't need and select Add to add these indices to the User index.</P>
+<P>Add will close the second dialog and bring you back to the first dialog. At this time you can either save the 
+newly generated user index or cancel.
+<p>If you save the new user index and press F1 on a keyword in the editor that is part of the new user index you just built, Kawa will
+bring the HTML documentation referred to by the keyword.
+</BODY>
+</HTML>

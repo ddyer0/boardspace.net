@@ -1,0 +1,21 @@
+#!/bin/sh
+cd $HOME/src/games
+find . -mtime +10 -type f -exec rm {} \;
+#Now we compress the logfile, since it gets too large....
+
+cd $HOME/src/.logs
+mv logfile.8.gz logfile.9.gz
+mv logfile.7.gz logfile.8.gz
+mv logfile.6.gz logfile.7.gz
+mv logfile.5.gz logfile.6.gz
+mv logfile.4.gz logfile.5.gz
+mv logfile.3.gz logfile.4.gz
+mv logfile.2.gz logfile.3.gz
+mv logfile.1.gz logfile.2.gz
+mv logfile.0.gz logfile.1.gz
+cp $HOME/src/data/stats/logfile logfile.0
+echo > $HOME/src/data/stats/logfile
+grep "^ESCAPE" logfile.0 | sort >> $HOME/src/data/stats/escapes
+grep "^ADMIN" logfile.0 | sort >> $HOME/src/data/stats/admin
+grep -v -f $HOME/scripts/parselog logfile.0 | sort | mail -s"NNGS Log" nngs
+/bin/gzip -9 logfile.0

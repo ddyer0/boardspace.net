@@ -1,0 +1,7 @@
+#!/bin/sh
+for i in *
+do
+sed -f $HOME/scripts/sedscr $i > /tmp/$i
+mv /tmp/$i $i
+echo $i done
+done

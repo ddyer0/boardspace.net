@@ -1,0 +1,64 @@
+<HTML>
+<HEAD>
+<TITLE>Kawa Project</TITLE>
+</HEAD>
+<BODY LINK="#0000ff" VLINK="#800080" BGCOLOR="#ffffff">
+
+<H1><IMG SRC="kawacup.jpg" WIDTH=106 HEIGHT=100>Tutorial 2</H1>
+<P><A HREF="index.htm">Index</A> </P>
+<font size="1.5" face="Arial">Last Modified Date - <font color=red>3/3/99</font><p>
+Please click <a href="http://www.tek-tools.com/kawa/docs/tutorial2.htm">here</a> for the latest version of this document.
+<font color=red> If this is an online version of the document please right click in the browser and select 
+'Update local Kawa document' to update your local copy of this document</font>
+</font>
+<P><HR></P>
+<h3><font color=brown>Compiling and running a Swing Project with JDK 1.1</font></h3>
+<p>
+<ul>
+	<li>Please make sure you have installed Swing support for JDK 1.1. Please refer to <a href="kawasetup.htm">Kawa Setup</a>
+	for more details on how to install Swing support under Kawa.</li>
+	<li>We will pick a big sample application for this tutorial. Please find the SwingSet examples folder.</li>
+	<li>Please select Project/New to create a new project. Please pick the Swingset folder to create a new project and name the 
+	project as SwingSet</li>
+	<li>Kawa will create and open the new SwingSet project. We need to add some files to this project before we
+	can compile or run. Please right click on the project and select Add File... menu option. In the file dialog
+	please change folder to swingset/src folder and select all java files in one shot and add the files.
+	Kawa will now add all the files to the project tree</li>
+	<li>You can also add all the files to the project by selecting Project/Add Directory... menu option and picking
+	the swingset/src directory in the directory picker dialog. Kawa will add all the java files from the folder to
+	the project.</li>
+	<p>
+	<li>The way this project is setup we want all the compiled class files to fall under /classes directory because
+	this application loads certain images which can be found under /classes/images folder. Therefore, we have to set
+	the compiler output directory to /classes</li>
+	<li>Select Project/Compiler options and click on the ">>" button next to Compiler output directory field. In the
+	ensuing dialog, click on New and type "classes" Next click on Add button to add the option to the list box and close
+	the Edit output directory dialog.</li>
+	<li>Pick the newly added classes option from the drop down box of compiler output directory and check the checkbox
+	for compiler output directory field. Kawa now recognizes the output directory and sets the appropriate compiler
+	flag when you compiler</li>
+	<li>Kawa by default is not setup to work with Swing under JDK 1.1. Therefore you need to add the necessary classpath
+	for Swing. Select Project/Classpath menu option and click on File... button and select the file swingall.jar under
+	/swing folder. Click on update to add the path to the list box. This will add swingall.jar to project classpath</li>
+	<li>We are now ready to compile this project. Please select Build/Rebuild All to build all the files in the project at
+	once.</li>
+	<p>
+	<li>If all the files compiles without any error Kawa will turn the compile indicator to green for all the files. You can
+	now select Build/Run to let Kawa identify the main class automatically or select SwingSet.java as the main class file. Either 
+	way Kawa will run the Swingset application</li>
+	<li>Please be patient for this application to start as it is a big application</li>	
+</ul>
+<p>
+<h3><font color=brown>Compiling and running a Swing Project with JDK 1.2</font></h3>
+<p><ul>
+Since Swing is part of JDK 1.2 there is no need to add swingall.jar to project classpath. You can follow the
+same steps as above without setting the project classpath and you should be able to run the SwingSet example 
+under JDK 1.2 also.
+<p>
+This completes our second tutorial and we have learnt how to set Project classpath for non-JDK files and also
+we learnt how to set the compiler output directory to save the class files in a different directory other than
+the source file. By default, the compiled class files are always saved in the same directory as the source but
+by setting the appropriate compiler output directory we can generate the class files to a different location.
+</ul>
+</BODY>
+</HTML>

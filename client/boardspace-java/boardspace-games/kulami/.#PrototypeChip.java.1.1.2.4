@@ -1,0 +1,88 @@
+package prototype;
+
+import lib.DrawableImageStack;
+import lib.OStack;
+import lib.Random;
+import online.common.exCanvas;
+import online.game.chip;
+
+class ChipStack extends OStack<PrototypeChip>
+{
+	public PrototypeChip[] newComponentArray(int n) { return(new PrototypeChip[n]); }
+}
+
+/**
+ * this is a specialization of {@link chip} to represent the stones used by kulami;
+ * and also other tiles, borders and other images that are used to draw the board.
+ * 
+ * @author ddyer
+ *
+ */
+public class PrototypeChip extends chip<PrototypeChip> implements PrototypeConstants
+{
+	private int index = 0;
+	
+	private static Random r = new Random(5312324);	// this gives each chip a unique random value for Digest()
+	private static DrawableImageStack allChips = new DrawableImageStack();
+	private static boolean imagesLoaded = false;
+	public PrototypeId id;
+	
+	// constructor for the chips on the board, which are the only things that are digestable.
+	private PrototypeChip(String na,double[]sc,PrototypeId con)
+	{	index = allChips.size();
+		scale=sc;
+		file = na;
+		id = con;
+		randomv = r.nextLong();
+		allChips.push(this);
+	}
+	
+	// constructor for all the other random artwork.
+	private PrototypeChip(String na,double[]sc)
+	{	index = allChips.size();
+		scale=sc;
+		file = na;
+		allChips.push(this);
+	}
+	
+	public int chipNumber() { return(index); }
+	
+	private static double whiteScale[]={0.691,0.450,2.3};
+	public static PrototypeChip White = new PrototypeChip("orange-stone",whiteScale,PrototypeId.White_Chip_Pool);
+	
+	private static double blackScale[] = {0.66,0.458,2.099};
+	public static PrototypeChip Black = new PrototypeChip("blue-stone",blackScale,PrototypeId.Black_Chip_Pool);
+
+	public static PrototypeChip CANONICAL_PIECE[] = { White,Black };
+
+    // indexes into the balls array, usually called the rack
+    static final PrototypeChip getChip(int n) { return(CANONICAL_PIECE[n]); }
+    
+    
+
+    /* plain images with no mask can be noted by naming them -nomask */
+    static public PrototypeChip backgroundTile = new PrototypeChip("background-tile-nomask",null);
+    static public PrototypeChip backgroundReviewTile = new PrototypeChip("background-review-tile-nomask",null);
+   
+    static private double hexScale[] = {0.50,0.50,1.76};
+    static private double hexScaleNR[] = {0.50,0.50,1.58};
+    static public PrototypeChip hexTile = new PrototypeChip("hextile",hexScale);
+    static public PrototypeChip hexTileNR = new PrototypeChip("hextile-nr",hexScaleNR);
+	public static PrototypeChip Icon = new PrototypeChip("hex-icon-nomask",blackScale);
+
+    
+   
+    /**
+     * this is a fairly standard preloadImages method, called from the
+     * game initialization.  It loads the images into the stack of
+     * chips we've built
+     * @param forcan the canvas for which we are loading the images.
+     * @param Dir the directory to find the image files.
+     */
+	public static void preloadImages(exCanvas forcan,String Dir)
+	{	if(!imagesLoaded)
+		{	
+		imagesLoaded = forcan.load_masked_images(Dir,allChips);
+		}
+	}   
+}

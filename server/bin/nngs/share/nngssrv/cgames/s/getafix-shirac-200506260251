@@ -1,0 +1,25 @@
+
+(;
+GM[1]FF[4]AP[NNGS:1.1.17]
+US[Brought to you by No Name Go Server]
+CP[
+  Copyright This game was played on the No Name Go Server
+  Permission to reproduce this game is given,
+  as long as this copyright notice is preserved.]
+GN[getafix-shirac(B) NNGS]
+EV[none]
+RE[W+Resign]
+PW[getafix]WR[UR ]
+PB[shirac]BR[UR ]
+PC[NNGS Go Program Server Clone: boardspace.net 6969]
+DT[2005-06-25]
+SZ[19]TM[480]KM[5.5]
+
+;B[pd];W[dc];B[cp];W[qq];B[eq];W[po];B[oq];W[op];B[nq];W[np];B[mq];W[mp]
+;B[jp];W[pj];B[cd];W[cc];B[dd];W[ed];B[fd];W[fc];B[ee];W[ec];B[gd];W[gc]
+;B[hd];W[fe];B[ff];W[de];B[ce];W[ef];B[df];W[ee];B[dg];W[eg];B[gf];W[dh]
+;B[cg];W[ch];B[bf];W[bg];B[cf];W[bh];B[bc];W[bb];B[ad];W[af];B[ae];W[ag]
+;B[cb];W[db];B[ab];W[ca]
+;)
+
+---

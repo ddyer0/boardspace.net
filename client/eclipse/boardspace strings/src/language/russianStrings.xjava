@@ -1,0 +1,928 @@
+package online.language;
+
+import online.common.internationalStrings;
+
+// russian translations managed by Ivan Ponomarev <iponomarev@mail.ru> 
+// and Karim Garib <karim.garib@gmail.com>
+//
+// available font families: 
+//  serif (timesroman)
+//  sansserif (helvetica)
+//  monospaced (courier)
+//
+public class russianStrings extends internationalStrings
+{
+    static
+    {
+        put("fontfamily", "sansserif");
+
+        // lobby messages
+        put("launchfailed","\u0414\u0440\u0443\u0433\u043e\u043c\u0443 \u0438\u0433\u0440\u043e\u043a\u0443 \u043d\u0435 \u0443\u0434\u0430\u043b\u043e\u0441\u044c \u0432\u043e\u0439\u0442\u0438 \u0432 \u043a\u043e\u043c\u043d\u0430\u0442\u0443");
+        put("#1 invites #2 to join room #3", "#1 \u043f\u0440\u0438\u0433\u043b\u0430\u0448\u0430\u0435\u0442 #2 \u0432 \u043a\u043e\u043c\u043d\u0430\u0442\u0443 #3");
+        put("#1 invites #2 to play #3 in room #4",  "#1 \u043f\u0440\u0438\u0433\u043b\u0430\u0448\u0430\u0435\u0442 #2 \u0441\u044b\u0433\u0440\u0430\u0442\u044c \u0432 #3 \u0432 \u043a\u043e\u043c\u043d\u0430\u0442\u0435 #4");
+        put("#1 has been muted, by a consensus of the players",
+            "#1 \u0432\u044b\u043a\u043b\u044e\u0447\u0435\u043d\u043e \u043f\u043e \u0441\u043e\u0433\u043b\u0430\u0448\u0435\u043d\u0438\u044e \u0438\u0433\u0440\u043e\u043a\u043e\u0432");
+        put("welcome", "\u0414\u043e\u0431\u0440\u043e \u043f\u043e\u0436\u0430\u043b\u043e\u0432\u0430\u0442\u044c \u0432 \u0438\u0433\u0440\u043e\u0432\u043e\u0435 \u043f\u0440\u043e\u0441\u0442\u0440\u0430\u043d\u0441\u0442\u0432\u043e, \u0432\u0435\u0440\u0441\u0438\u044f #1"); //version number follows
+        put("website", "#1 BoardSpace"); //pretty name for the web site.. #1 is something like "Game Room" or "Lobby"
+        put("enterMessage", "#1 \u0432\u043e\u0448\u0435\u043b \u0432 \u043f\u0440\u043e\u0441\u0442\u0440\u0430\u043d\u0441\u0442\u0432\u043e"); //somebody entered
+        put("in #1", "\u0432 #1"); //followed by a session number
+        put("Move ##1", "\u0445\u043e\u0434 \u2116#1"); //move number for games in lobby
+        put("News", "\u041d\u043e\u0432\u043e\u0441\u0442\u0438"); //header for news lines
+        put("Lobby", "\u041f\u0440\u043e\u0441\u0442\u0440\u0430\u043d\u0441\u0442\u0432\u043e"); //the name of the lobby
+        put("Error", "\u041e\u0448\u0438\u0431\u043a\u0430"); //the name for errors
+        put("launchChat", "\u0417\u0430\u043f\u0443\u0441\u043a\u0430\u0435\u0442\u0441\u044f \u0447\u0430\u0442 \u0432 \u043a\u043e\u043c\u043d\u0430\u0442\u0435 #1"); //launching a chat room
+        put("launchspectator", "\u0417\u0430\u043f\u0443\u0441\u043a\u0430\u0435\u0442\u0441\u044f \u043d\u0430\u0431\u043b\u044e\u0434\u0430\u0442\u0435\u043b\u044c \u0432 \u043a\u043e\u043c\u043d\u0430\u0442\u0443 #1"); //session id follows
+        put("launchGame", "\u0417\u0430\u043f\u0443\u0441\u043a\u0430\u0435\u0442\u0441\u044f \u0438\u0433\u0440\u0430 \u0432 \u043a\u043e\u043c\u043d\u0430\u0442\u0435 #1"); //launching a game
+        put("launchReview", "\u0417\u0430\u043f\u0443\u0441\u043a\u0430\u0435\u0442\u0441\u044f \u043f\u0440\u043e\u0441\u043c\u043e\u0442\u0440\u043e\u0432\u0430\u044f \u0441\u0435\u0441\u0441\u0438\u044f \u0432 \u043a\u043e\u043c\u043d\u0430\u0442\u0435 #1");
+        put("Session #1: state unknown.", "\u041a\u043e\u043c\u043d\u0430\u0442\u0430 #1: \u0441\u0442\u0430\u0442\u0443\u0441 \u043d\u0435\u0438\u0437\u0432\u0435\u0441\u0442\u0435\u043d.");
+        put("Session #1 is idle.  ", "\u041a\u043e\u043c\u043d\u0430\u0442\u0430 #1 \u0441\u0432\u043e\u0431\u043e\u0434\u043d\u0430.  ");
+        put("Session #1 is being launched.  ", "\u041a\u043e\u043c\u043d\u0430\u0442\u0430 #1 \u0438\u043d\u0438\u0446\u0438\u0430\u043b\u0438\u0437\u0438\u0440\u0443\u0435\u0442\u0441\u044f.  ");
+        put("Session #1 is active.  ", "\u041a\u043e\u043c\u043d\u0430\u0442\u0430 #1 \u0430\u043a\u0442\u0438\u0432\u043d\u0430.  ");
+        put("Session #1 is private. ", "\u041a\u043e\u043c\u043d\u0430\u0442\u0430 #1 \u0437\u0430\u043a\u0440\u044b\u0442\u0430. ");
+        put("Session #1 is displaying the map of players real locations",
+            "\u041a\u043e\u043c\u043d\u0430\u0442\u0430 #1 \u043f\u043e\u043a\u0430\u0437\u044b\u0432\u0430\u0435\u0442 \u043f\u043e\u043b\u043e\u0436\u0435\u043d\u0438\u0435 \u0438\u0433\u0440\u043e\u043a\u043e\u0432 \u043d\u0430 \u043a\u0430\u0440\u0442\u0435");
+        put("Invite", "\u041f\u0440\u0438\u0433\u043b\u0430\u0441\u0438\u0442\u044c #1 \u0432 \u043a\u043e\u043c\u043d\u0430\u0442\u0443 #2");
+        put("Accept chat from #1", "\u041f\u0440\u0438\u043d\u044f\u0442\u044c \u0447\u0430\u0442 \u043e\u0442 #1");
+        put("Ignore chat from #1", "\u0418\u0433\u043d\u043e\u0440\u0438\u0440\u043e\u0432\u0430\u0442\u044c \u0447\u0430\u0442 \u043e\u0442 #1");
+        put("Play #1", "\u0418\u0433\u0440\u0430\u0442\u044c \u0441 #1"); //followed by robot name
+        put("Rejoin #1", "\u0412\u043e\u0437\u0432\u0440\u0430\u0442\u0438\u0442\u044c\u0441\u044f \u043a #1"); //rejoin a game you were playing
+        put("Rejoin", "\u0412\u043e\u0437\u0432\u0440\u0430\u0442\u0438\u0442\u044c\u0441\u044f"); //rejoin a game you were playing
+        put("noserver", "\u041f\u0440\u043e\u0441\u0442\u0440\u0430\u043d\u0441\u0442\u0432\u043e \u043d\u0435 \u0441\u043e\u0435\u0434\u0438\u043d\u0438\u043b\u043e\u0441\u044c \u0441 \u0441\u0435\u0440\u0432\u0435\u0440\u043e\u043c."); //status message
+        put("stillwaiting", "\u0417\u0430\u043f\u0443\u0441\u043a\u0430\u0435\u043c\u0441\u044f... \u0436\u0434\u0438\u0442\u0435."); //repeated hit on launch
+        put("noresponse1", "\u0421\u0435\u0440\u0432\u0435\u0440 \u043d\u0435 \u043e\u0442\u0432\u0435\u0447\u0430\u0435\u0442.");
+        put("noresponse2",
+            "\u0412\u043e\u0437\u043c\u043e\u0436\u043d\u043e \u0432\u0441\u0435 \u0443\u043f\u0430\u043b\u043e \u0438\u043b\u0438 \u0444\u0430\u0439\u0435\u0440\u0432\u043e\u043b\u043b \u0431\u043b\u043e\u043a\u0438\u0440\u043e\u0432\u0430\u043b \u0441\u043e\u0435\u0434\u0438\u043d\u0435\u043d\u0438\u0435.");
+        put("nolobby", "\u041f\u0440\u043e\u0441\u0442\u0438\u0442\u0435, \u043d\u043e \u0432\u043e\u0439\u0442\u0438 \u0432 \u0438\u0433\u0440\u043e\u0432\u043e\u0435 \u043f\u0440\u043e\u0441\u0442\u0440\u0430\u043d\u0441\u0442\u0432\u043e \u0441\u0435\u0439\u0447\u0430\u0441 \u043d\u0435\u043b\u044c\u0437\u044f. \u0412\u0435\u0440\u043e\u044f\u0442\u043d\u043e, \u043e\u043d\u043e \u043f\u0435\u0440\u0435\u043f\u043e\u043b\u043d\u0435\u043d\u043e.");
+        put("timeoutWarning", "  \u0412\u043d\u0438\u043c\u0430\u043d\u0438\u0435!!! \u0414\u043e \u0441\u0430\u043c\u043e\u0443\u043d\u0438\u0447\u043d\u0442\u043e\u0436\u0435\u043d\u0438\u044f \u043e\u0441\u0442\u0430\u043b\u0430\u0441\u044c 1 \u043c\u0438\u043d\u0443\u0442\u0430 (\u043d\u0435\u0442 \u0430\u043a\u0442\u0438\u0432\u043d\u043e\u0441\u0442\u0438)."); //warning	
+        put("Lobby shutdown...", "\u041f\u0440\u043e\u0441\u0442\u0440\u0430\u043d\u0441\u0442\u0432\u043e \u0441\u0445\u043b\u043e\u043f\u044b\u0432\u0430\u0435\u0442\u0441\u044f..."); //shutting down
+        put("Active in", "\u0410\u043a\u0442\u0438\u0432\u0435\u043d"); //header for users column
+        put("Waiting in", "\u0416\u0434\u0451\u0442"); //header for users column
+        put("your name", "\u0432\u0430\u0448\u0435 \u0438\u043c\u044f"); //your name in users, when not known
+        put("(unknown)", "(\u043d\u0435\u0438\u0437\u0432\u0435\u0441\u0442\u043d\u044b\u0439)"); //name of another player not yet known
+        put("announceOption", "\u0423\u0432\u0435\u0434\u043e\u043c\u0438\u0442\u044c \u043d\u043e\u0432\u044b\u0445 \u0438\u0433\u0440\u043e\u043a\u043e\u0432"); //the "announce new players" menu option
+        put("Join", "\u041f\u0440\u0438\u0441\u043e\u0435\u0434\u0438\u043d\u0438\u0442\u044c\u0441\u044f"); //label for the join token
+        put("Invite players to this room", "\u041f\u0440\u0438\u0433\u043b\u0430\u0441\u0438\u0442\u044c \u0438\u0433\u0440\u043e\u043a\u043e\u0432 \u0432 \u044d\u0442\u0443 \u043a\u043e\u043c\u043d\u0430\u0442\u0443");
+
+        /* game state messages for games scroll area */
+        put("State unknown.", "\u0421\u0442\u0430\u0442\u0443\u0441 \u043d\u0435\u0438\u0437\u0432\u0435\u0441\u0442\u0435\u043d."); //when game state is not yyet known
+        put("Launching...", "\u0417\u0430\u043f\u0443\u0441\u043a\u0430\u0435\u0442\u0441\u044f..."); //game being launched
+        put("Spectate", "\u041d\u0430\u0431\u043b\u044e\u0434\u0430\u0442\u044c"); //spectate in a game (verb)
+        put("Spectator", "\u0417\u0440\u0438\u0442\u0435\u043b\u044c"); //spectator (singular noun)
+        put("Idle.", "\u0421\u0432\u043e\u0431\u043e\u0434\u043d\u043e."); //game that is not in use
+        put("Players", "\u0418\u0433\u0440\u043e\u043a\u0438"); //generic players in a game (plural noun)
+        put("player", "\u0438\u0433\u0440\u043e\u043a"); //generic players in a game (singular noun)
+        put("Spectators", "\u0417\u0440\u0438\u0442\u0435\u043b\u0438"); //generic spectators in a game (plural noun)
+        put("(unoccupied)", "(\u043d\u0435 \u0437\u0430\u043d\u044f\u0442\u043e)"); //empty/available slot in a game
+        put("Start", "\u041d\u0430\u0447\u0430\u0442\u044c"); //start a game button
+
+        /* game description messages */
+        put("and", " \u0438 "); //"and" for a, b and c, including spaces
+        put("No players.", "\u041d\u0435\u0442 \u0438\u0433\u0440\u043e\u043a\u043e\u0432."); //there are no players in this game
+        put("Player is ", "\u0418\u0433\u0440\u0430\u0435\u0442 "); //the single player name follows
+        put("Players are: ", "\u0418\u0433\u0440\u0430\u044e\u0442: "); //the list of player names follows
+        put("No spectators.", "\u0417\u0440\u0438\u0442\u0435\u043b\u0435\u0439 \u043d\u0435\u0442."); //similarly for spectators
+        put("Spectator is: ", "\u041d\u0430\u0431\u043b\u044e\u0434\u0430\u0435\u0442 "); //
+        put("Spectators are: ", "\u0417\u0440\u0438\u0442\u0435\u043b\u0438: "); //
+        put("loaderr", "\u041e\u0448\u0438\u0431\u043a\u0430 \u043f\u0440\u0438 \u043f\u043e\u043f\u044b\u0442\u043a\u0435 \u0437\u0430\u0433\u0440\u0443\u0437\u0438\u0442\u044c: "); //can find classes we need
+        put("Connection error", "\u041e\u0448\u0438\u0431\u043a\u0430 \u0441\u043e\u0435\u0434\u0438\u043d\u0435\u043d\u0438\u044f"); //problem with the connection
+        put("Reconnecting", " ...\u041f\u0435\u0440\u0435\u0434\u043f\u043e\u0434\u043a\u043b\u044e\u0447\u0430\u0435\u043c\u0441\u044f..."); //attempting to reconnect
+        put("connecting", "\u041f\u043e\u0434\u043a\u043b\u044e\u0447\u0430\u0435\u043c\u0441\u044f \u043a "); //connecting to web site	
+        put("reconok", "...\u043f\u0435\u0440\u0435\u043f\u043e\u0434\u043a\u043b\u044e\u0447\u0435\u043d\u0438\u0435 \u043f\u0440\u043e\u0448\u043b\u043e \u0443\u0441\u043f\u0435\u0448\u043d\u043e"); //ok, we did it
+        put("nolaunch", "\u0421\u0435\u0440\u0432\u0435\u0440 \u043e\u0442\u043a\u043b\u043e\u043d\u0438\u043b \u0437\u0430\u043f\u0440\u043e\u0441, \u043f\u0440\u0438\u0447\u0438\u043d\u0430: ");
+        put("Time is ", "\u0412\u0440\u0435\u043c\u044f: "); //followed by hh:mm
+        put("savedmsg", "\u0418\u0440\u0430 \u0441\u043e\u0445\u0440\u0430\u043d\u0435\u043d\u0430 \u043a\u0430\u043a #1"); //announce saved game
+        put("guest", "\u0433\u043e\u0441\u0442\u044c"); //the name for guest players
+
+        //lobby messages
+        put("Please Join Me", "\u041f\u043e\u0436\u0430\u043b\u0443\u0439\u0441\u0442\u0430, \u043f\u0440\u0438\u0433\u043b\u0430\u0441\u0438\u0442\u0435 \u043c\u0435\u043d\u044f"); // goes with "join only if invited" and "tournament mode"
+        put("Join only if Invited", "\u0412\u0445\u043e\u0434 \u0442\u043e\u043b\u044c\u043a\u043e \u043f\u043e \u043f\u0440\u0438\u0433\u043b\u0430\u0448\u0435\u043d\u0438\u044f\u043c"); //seen in lobby game rooms
+        put("Tournament Game", "\u0422\u0443\u0440\u043d\u0438\u0440"); //seen in lobby game rooms
+        put("No challenges from #1", "\u041d\u0435\u0442 \u043f\u0440\u0438\u0433\u043b\u0430\u0448\u0435\u043d\u0438\u0439 \u043e\u0442 #1"); //seen in lobby player list
+        put("Allow challenges from #1", "\u0420\u0430\u0437\u0440\u0435\u0448\u0438\u0442\u044c \u043f\u0440\u0438\u0433\u043b\u0430\u0448\u0435\u043d\u0438\u044f \u043e\u0442 #1"); //seen in lobby player list
+        put("Unranked Room", "\u041a\u043e\u043c\u043d\u0430\u0442\u0430 \u0431\u0435\u0437 \u0440\u0435\u0439\u0442\u0438\u043d\u0433\u043e\u0432\u0430\u043d\u0438\u044f"); // room for unranked games.
+        put("Games do not affect your Ranking",
+            "\u0418\u0433\u0440\u044b \u043d\u0435 \u0432\u043b\u0438\u044f\u044e\u0442 \u043d\u0430 \u0412\u0430\u0448 \u0440\u0435\u0439\u0442\u0438\u043d\u0433"); //subheader for the room
+        put("No Challenges", "\u0417\u0430\u043f\u0440\u0435\u0442\u0438\u0442\u044c \u043f\u0440\u0438\u0433\u043b\u0430\u0448\u0435\u043d\u0438\u044f");
+        put("automute", "#1 \u0431\u044b\u043b \u0430\u0432\u0442\u043e\u043c\u0430\u0442\u0438\u0447\u0435\u0441\u043a\u0438 \u0432\u044b\u043a\u043b\u044e\u0447\u0435\u043d");
+        put("No Chat", "\u041d\u0435\u0442 \u0447\u0430\u0442\u0430");
+        put("Map of Player Locations", "\u0413\u0435\u043e\u0433\u0440\u0430\u0444\u0438\u0447\u0435\u0441\u043a\u0430\u044f \u043a\u043e\u043c\u043d\u0430\u0442\u0430");
+        put("Game Room", "\u0418\u0433\u0440\u043e\u0432\u0430\u044f \u043a\u043e\u043c\u043d\u0430\u0442\u0430");
+        put("Review Saved Games", "\u041f\u0440\u043e\u0441\u043c\u043e\u0442\u0440 \u0441\u043e\u0445\u0440\u0430\u043d\u0451\u043d\u043d\u044b\u0445 \u0438\u0433\u0440");	// appears as the frame name in review rooms
+        put("Anyone can play in this room", "\u0417\u0434\u0435\u0441\u044c \u043c\u043e\u0436\u0435\u0442 \u0438\u0433\u0440\u0430\u0442\u044c \u043a\u0442\u043e \u0443\u0433\u043e\u0434\u043d\u043e");
+        put("Master Room", "\u0413\u0440\u043e\u0441\u0441\u043c\u0435\u0439\u0441\u0442\u0435\u0440\u0441\u043a\u0430\u044f \u043a\u043e\u043c\u043d\u0430\u0442\u0430");
+        put("Master ranked players can play", "\u0417\u0434\u0435\u0441\u044c \u043c\u043e\u0433\u0443\u0442 \u0438\u0433\u0440\u0430\u0442\u044c \u0433\u0440\u043e\u0441\u0441\u043c\u0435\u0439\u0441\u0442\u0435\u0440\u044b");
+        put("Review Room", "\u041a\u043e\u043c\u043d\u0430\u0442\u0430 \u043f\u0440\u043e\u0441\u043c\u043e\u0442\u0440\u043e\u0432"); //for the chat room banner
+        put("Members", "\u0423\u0447\u0430\u0441\u0442\u043d\u0438\u043a\u0438"); //people in a chat room
+
+        //used by chat applet
+        put("Type your message here.", "\u041f\u0435\u0447\u0430\u0442\u0430\u0439\u0442\u0435 \u0441\u043e\u043e\u0431\u0449\u0435\u043d\u0438\u0435 \u0437\u0434\u0435\u0441\u044c"); //initial contents of the message line
+        put("Message:", "\u0421\u043e\u043e\u0431\u0449\u0435\u043d\u0438\u0435:"); //label for the message line
+        put("MessageTo:","\u0421\u043e\u043e\u0431\u0449\u0435\u043d\u0438\u0435 \u0434\u043b\u044f #1:");	//label for message to one user
+        put("From #1","\u041e\u0442 #1");	// label for messages from a single user
+        put("Send", "\u041e\u0442\u043f\u0440\u0430\u0432\u0438\u0442\u044c"); //label for the button to send the text
+        put("User ", "\u041f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u0442\u0435\u043b\u044c "); //default name for unnamed client
+
+        //used by the common frame
+        put("Options", "\u041d\u0430\u0441\u0442\u0440\u043e\u0439\u043a\u0438");
+        put("Actions", "\u0414\u0435\u0439\u0441\u0442\u0432\u0438\u044f");
+        put("Sound", "\u0417\u0432\u0443\u043a");
+
+        // review rooms
+        put("Show SGF Text", "\u041f\u043e\u043a\u0430\u0437\u0430\u0442\u044c SGF \u0442\u0435\u043a\u0441\u0442"); //in action menu of review rooms
+        put("Select Game", "\u0412\u044b\u0431\u0440\u0430\u0442\u044c \u0438\u0433\u0440\u0443"); //menu label in review rooms
+        put("game selector", "\u0432\u044b\u0431\u043e\u0440 \u0438\u0433\u0440"); // title for the game selector frame
+        put("Match words:", "\u0418\u0441\u043a\u0430\u0442\u044c:"); //used in the game selector
+        put("reading directory...", "\u0447\u0438\u0442\u0430\u0435\u0442\u0441\u044f \u043f\u0430\u043f\u043a\u0430..."); //waiting for a directory to be read
+        put("Error reading directory", "\u041e\u0448\u0438\u0431\u043a\u0430 \u0447\u0442\u0435\u043d\u0438\u044f \u043f\u0430\u043f\u043a\u0438");
+        put("Error reading file", "\u041e\u0448\u0438\u0431\u043a\u0430 \u0447\u0442\u0435\u043d\u0438\u044f \u0444\u0430\u0439\u043b\u0430");
+        put("reading Zip directory...", "\u0447\u0442\u0435\u043d\u0438\u0435 \u0437\u0430\u0437\u0438\u043f\u043e\u0432\u0430\u043d\u043d\u043e\u0439 \u043f\u0430\u043f\u043a\u0438...");
+        put("Loading game file", "\u0417\u0430\u0433\u0440\u0443\u0437\u043a\u0430 \u0444\u0430\u0439\u043b\u0430 \u0438\u0433\u0440\u044b"); //selecting a review game
+
+        //used by the game client
+        put("You have been disconnected: #1", "\u041f\u0440\u043e\u0438\u0437\u043e\u0448\u043b\u043e \u043e\u0442\u043a\u043b\u044e\u0447\u0435\u043d\u0438\u0435: #1");
+        put("Calling server...", "\u0412\u044b\u0437\u044b\u0432\u0430\u044e \u0441\u0435\u0440\u0432\u0435\u0440...");
+        put("Wait for opponents to arrive.", "\u041e\u0436\u0438\u0434\u0430\u0435\u043c \u043f\u0440\u0438\u0431\u044b\u0442\u0438\u044f \u0441\u043e\u043f\u0435\u0440\u043d\u0438\u043a\u0430.");
+        put("player ", "\u0438\u0433\u0440\u043e\u043a ");
+        put("mouse tracking disabled", "\u043e\u0442\u0441\u043b\u0435\u0436\u0438\u0432\u0430\u043d\u0438\u0435 \u043c\u044b\u0448\u0438 \u043e\u0442\u043a\u043b\u044e\u0447\u0435\u043d\u043e");
+        put("the game has resumed", "\u0438\u0433\u0440\u0430 \u0432\u043e\u0437\u043e\u0431\u043d\u043e\u0432\u0438\u043b\u0430\u0441\u044c");
+        put("Take Over Playing", "\u0412\u044b\u0431\u0435\u0440\u0438\u0442\u0435, \u0437\u0430 \u043a\u043e\u0433\u043e \u0438\u0433\u0440\u0430\u0442\u044c"); //menu item, take over playing a color
+        put("Become a Spectator", "\u0421\u0442\u0430\u0442\u044c \u0437\u0440\u0438\u0442\u0435\u043b\u0435\u043c");
+        put("Let The Robot Play", "\u041f\u0443\u0441\u0442\u044c \u0438\u0433\u0440\u0430\u0435\u0442 \u0440\u043e\u0431\u043e\u0442");
+        put("(vacancy)", "(\u0441\u0432\u043e\u0431\u043e\u0434\u043d\u043e)"); //player who has quit
+        put("Game in progress...", "\u0418\u0434\u0435\u0442 \u0438\u0433\u0440\u0430...");
+        put("rankingsfailed", "\u041e\u0448\u0438\u0431\u043a\u0430 \u043e\u0431\u043d\u043e\u0432\u043b\u0435\u043d\u0438\u044f \u0440\u0435\u0439\u0442\u0438\u043d\u0433\u0430");
+
+        //hints
+        put("Moves are coming in", "\u0425\u043e\u0434\u044b \u043f\u0440\u0438\u0445\u043e\u0434\u044f\u0442 \u0432 "); //moves arrive while in review mode	
+
+        //menu options
+        put("Messages", "\u0421\u043e\u043e\u0431\u0449\u0435\u043d\u0438\u044f"); //name of menu
+        put("Track Mice", "\u041e\u0442\u0441\u043b\u0435\u0436\u0438\u0432\u0430\u0442\u044c \u043a\u0443\u0440\u0441\u043e\u0440\u044b");
+
+        put("See Player Comments", "\u0421\u043c\u043e\u0442\u0440\u0435\u0442\u044c \u043a\u043e\u043c\u043c\u0435\u043d\u0442\u0430\u0440\u0438\u0438 \u0438\u0433\u0440\u043e\u043a\u0430");
+        put("See Spectator Comments", "\u0421\u043c\u043e\u0442\u0440\u0435\u0442\u044c \u043a\u043e\u043c\u043c\u0435\u043d\u0442\u0430\u0440\u0438\u0438 \u0437\u0440\u0438\u0442\u0435\u043b\u044f");
+        put("Joint Review", "\u041e\u0431\u0449\u0438\u0439 \u043e\u0431\u0437\u043e\u0440");
+ // TODO: fix joint review strings in other languages
+        put("#1 requests Joint review",
+            "#1 \u0437\u0430\u043f\u0440\u0430\u0448\u0438\u0432\u0430\u0435\u0442 \u043e\u0431\u0449\u0438\u0439 \u043e\u0431\u0437\u043e\u0440. \u041f\u043e\u0436\u0430\u043b\u0443\u0439\u0441\u0442\u0430, \u0432\u044b\u0431\u0435\u0440\u0438\u0442\u0435 \u005c"\u041e\u0431\u0449\u0438\u0439 \u043e\u0431\u0437\u043e\u0440\u005c" \u0432 \u043c\u0435\u043d\u044e \u0441\u043e\u043e\u0431\u0449\u0435\u043d\u0438\u0439");
+        put("#1 starts Joint review","#1 \u043d\u0430\u0447\u0438\u043d\u0430\u0435\u0442 \u043e\u0431\u0437\u043e\u0440");
+        put("Timeout in 1 minute.", "\u0412\u0440\u0435\u043c\u044f \u0438\u0441\u0442\u0435\u0447\u0451\u0442 \u0447\u0435\u0440\u0435\u0437 \u043e\u0434\u043d\u0443 \u043c\u0438\u043d\u0443\u0442\u0443");
+        put("Game timed out.  Session has ended.",
+            "\u0418\u0433\u0440\u0430 \u043f\u0440\u043e\u0441\u0440\u043e\u0447\u0435\u043d\u0430. \u0421\u0435\u0441\u0441\u0438\u044f \u0437\u0430\u043a\u0440\u044b\u0442\u0430");
+        put("Chat Room", "\u0427\u0430\u0442"); //for the chat room banner
+        put("private room", "\u0417\u0430\u043a\u0440\u044b\u0442\u044c \u043a\u043e\u043c\u043d\u0430\u0442\u0443");
+        put("This is now a private room", "\u0422\u0435\u043f\u0435\u0440\u044c \u044d\u0442\u043e \u0437\u0430\u043a\u0440\u044b\u0442\u0430\u044f \u043a\u043e\u043c\u043d\u0430\u0442\u0430");
+        put("This is now a public room", "\u0422\u0435\u043f\u0435\u0440\u044c \u044d\u0442\u043e \u043f\u0443\u0431\u043b\u0438\u0447\u043d\u0430\u044f \u043a\u043e\u043c\u043d\u0430\u0442\u0430");
+        put("Colorblind", "\u041c\u043e\u043d\u043e\u0445\u0440\u043e\u043c\u043d\u043e\u0441\u0442\u044c");
+        put("Please respect the 15 minute time limit",
+            "\u041f\u043e\u0436\u0430\u043b\u0443\u0439\u0441\u0442\u0430 \u0441\u043e\u0431\u043b\u044e\u0434\u0430\u0439\u0442\u0435 \u043e\u0433\u0440\u0430\u043d\u0438\u0447\u0435\u043d\u0438\u0435 \u043f\u043e \u0432\u0440\u0435\u043c\u0435\u043d\u0438 \u0438\u0433\u0440\u044b \u0432 15 \u043c\u0438\u043d\u0443\u0442");
+        put("Game", "\u0418\u0433\u0440\u0430"); //name for hints from the game
+        put("Joining as a spectator", "#1 \u0432\u043e\u0448\u0435\u043b \u043a\u0430\u043a \u0437\u0440\u0438\u0442\u0435\u043b\u044c");
+        put("enters the room", "#1 \u0432\u043e\u0448\u0435\u043b \u0432 \u043a\u043e\u043c\u043d\u0430\u0442\u0443"); //new member of a chat
+        put("#1 is taking over for #2", "#1 \u043f\u0440\u043e\u043f\u0443\u0441\u043a\u0430\u0435\u0442 \u0434\u043b\u044f #2");
+        put("#1 is taking over playing #2 for #3",
+            "#1 \u043f\u0440\u043e\u043f\u0443\u0441\u043a\u0430\u0435\u0442 #2 \u0434\u043b\u044f #3");
+        put("#1 deliberately quit", "#1 \u043f\u0440\u0435\u0434\u043d\u0430\u043c\u0435\u0440\u0435\u043d\u043d\u043e \u0432\u044b\u0448\u0435\u043b");
+        put("#1 has quit and become a spectator",	// quit as a player.  Not in use right now.
+            "#1 \u0432\u044b\u0448\u0435\u043b \u0438 \u0441\u0442\u0430\u043b \u0437\u0440\u0438\u0442\u0435\u043b\u0435\u043c");
+        put("#1 killed due to #2", "#1 \u0443\u0431\u0438\u0442 #2");
+        put("quitting", "#1 \u043f\u043e\u043a\u0438\u043d\u0443\u043b \u043a\u043e\u043c\u043d\u0430\u0442\u0443");
+        put("#1 quit", "#1 \u0432\u044b\u0448\u0435\u043b"); //quit (not deliberately)
+        put("Welcome to Game client, version #1",
+            "\u0414\u043e\u0431\u0440\u043e \u043f\u043e\u0436\u0430\u043b\u043e\u0432\u0430\u0442\u044c \u0432 \u0438\u0433\u0440\u043e\u0432\u043e\u0435 \u043f\u0440\u043e\u0441\u0442\u0440\u0430\u043d\u0441\u0442\u0432\u043e, version #1");
+        put("play", "\u0438\u0433\u0440\u0430\u0442\u044c \u0437\u0430 #1"); //play for a player who has quit.  #1 is a player name
+        put("Selecting game: #1", "\u0412\u044b\u0431\u043e\u0440 \u0438\u0433\u0440\u044b: #1"); //loading a review game
+        put("Hint", "\u041f\u043e\u0434\u0441\u043a\u0430\u0437\u043a\u0430"); //the name for hints
+
+        put("Move a ball or change a Ring", "\u041f\u043e\u0434\u0432\u0438\u043d\u044c\u0442\u0435 \u0448\u0430\u0440\u0438\u043a \u0438\u043b\u0438 \u0441\u043c\u0435\u043d\u0438\u0442\u0435 \u043a\u043e\u043b\u044c\u0446\u043e");
+        put("Add a ball, remove a Ring", "\u0414\u043e\u0431\u0430\u0432\u044c\u0442\u0435 \u0448\u0430\u0440\u0438\u043a, \u0443\u0431\u0435\u0440\u0438\u0442\u0435 \u043a\u043e\u043b\u044c\u0446\u043e");
+        put("Add a ball", "\u0414\u043e\u0431\u0430\u0432\u044c\u0442\u0435 \u0448\u0430\u0440\u0438\u043a");
+        put("Remove a Ring", "\u0423\u0434\u0430\u043b\u0438\u0442\u0435 \u043a\u043e\u043b\u044c\u0446\u043e");
+        put("Capture a ball", "\u0417\u0430\u0445\u0432\u0430\u0442\u0438\u0442\u0435 \u0448\u0430\u0440\u0438\u043a");
+        put("Continue Capturing", "\u041f\u0440\u043e\u0434\u043e\u043b\u0436\u0430\u0439\u0442\u0435 \u0437\u0430\u0445\u0432\u0430\u0442");
+        put("Finished Capturing, Click Done", "\u0417\u0430\u0445\u0432\u0430\u0442 \u0437\u0430\u0432\u0435\u0440\u0448\u0435\u043d, \u043d\u0430\u0436\u043c\u0438\u0442\u0435 \u0413\u043e\u0442\u043e\u0432\u043e");
+        put("Click Done", "\u041d\u0430\u0436\u043c\u0438\u0442\u0435 \u0413\u043e\u0442\u043e\u0432\u043e");
+        put("Game Over", "\u041a\u043e\u043d\u0435\u0446 \u0438\u0433\u0440\u044b");
+        put("Resign", "\u0421\u0434\u0430\u0432\u0430\u0439\u0442\u0435\u0441\u044c");
+        put("Zertz", "Z\u00e8rtz");
+        put("Zertz+11", "Z\u00e8rtz+11");
+        put("Zertz+24", "Z\u00e8rtz+24");
+        put("Player #1", "\u0418\u0433\u0440\u043e\u043a #1");
+        put("Resign State", "\u0421\u0442\u0430\u0442\u0443\u0441 \u043f\u0440\u043e\u0438\u0433\u0440\u044b\u0448\u0430");
+        put("LOA", "\u041d\u0430\u043f\u0440\u0430\u0432\u043b\u0435\u043d\u0438\u044f \u0434\u0435\u0439\u0441\u0442\u0432\u0438\u0439");
+        put("Plateau", "\u041f\u043e\u043b\u0435");
+
+        // loa strings
+        put("Select the #1 piece to move", "\u0412\u044b\u0431\u0435\u0440\u0438\u0442\u0435 #1 \u0444\u0438\u0433\u0443\u0440\u0443 \u0434\u043b\u044f \u0445\u043e\u0434\u0430");
+        put("White", "\u0411\u0435\u043b\u0430\u044f");
+        put("Black", "\u0427\u0435\u0440\u043d\u0430\u044f");
+        put("Select the destination for the selected piece",
+            "\u0412\u044b\u0431\u0435\u0440\u0438\u0442\u0435 \u043a\u0443\u0434\u0430 \u043f\u043e\u0441\u0442\u0430\u0432\u0438\u0442\u044c \u0432\u0430\u0448\u0443 \u0444\u0438\u0433\u0443\u0440\u0443");
+        put("Black Pieces", "\u0427\u0435\u0440\u043d\u044b\u0435 \u0444\u0438\u0433\u0443\u0440\u044b");
+        put("White Pieces", "\u0411\u0435\u043b\u044b\u0435 \u0444\u0438\u0433\u0443\u0440\u044b");
+        put("show grid", "\u041f\u043e\u043a\u0430\u0437\u0430\u0442\u044c \u0441\u0435\u0442\u043a\u0443");
+
+        put("Done", "\u0413\u043e\u0442\u043e\u0432\u043e");
+        put("Edit", "\u0420\u0435\u0434\u0430\u043a\u0442\u0438\u0440\u043e\u0432\u0430\u0442\u044c");
+
+        put("LIMBO", "LIMBO");
+         put("4w 5g 6b or 3 of each wins", "4w 5g 6b \u0438\u043b\u0438 3 \u0438\u0437 \u043a\u0430\u0436\u0434\u043e\u0433\u043e \u0432\u044b\u0438\u0433\u0440\u044b\u0432\u0430\u044e\u0442");
+        put("1 choice", "1 \u0432\u044b\u0431\u043e\u0440");
+        put("#1 choices", "#1 \u0432\u044b\u0431\u0438\u0440\u0430\u0435\u0442");
+        put("Start #1", "\u0421\u0442\u0430\u0440\u0442 #1");
+        put("Yinsh", "Yinsh");
+        put("Dvonn", "Dvonn");
+
+        // plateau strings
+        put("Move stacks around any way you want to",
+            "\u041f\u0435\u0440\u0435\u0434\u0432\u0438\u043d\u0443\u0442\u044c \u0441\u0442\u043e\u043f\u043a\u0443 \u0432 \u043b\u044e\u0431\u043e\u043c \u0432\u044b\u0431\u0440\u0430\u043d\u043d\u043e\u043c \u043d\u0430\u043f\u0440\u0430\u0432\u043b\u0435\u043d\u0438\u0438");
+        put("Build an initial stack of 2 to be placed",
+            "\u041f\u043e\u0441\u0442\u0440\u043e\u0438\u0442\u044c \u043d\u0430\u0447\u0430\u043b\u044c\u043d\u0443\u044e \u0441\u0442\u043e\u043f\u043a\u0443 \u0438\u0437 2-\u0445 \u0434\u043b\u044f \u0443\u0441\u0442\u0430\u043d\u043e\u0432\u043a\u0438 ");
+        put("Place your stack on the edge of the board",
+            "\u0423\u0441\u0442\u0430\u043d\u043e\u0432\u0438\u0442\u0435 \u0441\u0442\u043e\u043f\u043a\u0443 \u043d\u0430 \u043a\u0440\u0430\u0439 \u0434\u043e\u0441\u043a\u0438");
+        put("Onboard a piece, Move a stack, or Exchange",
+            "\u0423\u0441\u0442\u0430\u043d\u043e\u0432\u0438\u0442\u0435 \u0444\u0438\u0433\u0443\u0440\u0443, \u041f\u0435\u0440\u0435\u0434\u0432\u0438\u043d\u044c\u0442\u0435 \u0441\u0442\u043e\u043f\u043a\u0443 \u0438\u043b\u0438 \u041f\u043e\u043c\u0435\u043d\u044f\u0439\u0442\u0435");
+        put("Exchange Prisoners", "\u041e\u0431\u043c\u0435\u043d\u044f\u0439\u0442\u0435 \u0417\u0430\u043a\u043b\u044e\u0447\u0435\u043d\u043d\u044b\u0445");
+        put("Move A Stack", "\u041f\u0435\u0440\u0435\u0434\u0432\u0438\u043d\u0443\u0442\u044c \u0421\u0442\u043e\u043f\u043a\u0443");
+        put("Drop your piece onto the board or any of your stacks",
+            "\u0423\u0441\u0442\u0430\u043d\u043e\u0432\u0438\u0442\u0435 \u0432\u0430\u0448\u0443 \u0444\u0438\u0433\u0443\u0440\u0443 \u043d\u0430 \u0434\u043e\u0441\u043a\u0443 \u0438\u043b\u0438 \u043b\u044e\u0431\u0443\u044e \u0438\u0437 \u0432\u0430\u0448\u0438\u0445 \u0441\u0442\u043e\u043f\u043e\u043a");
+        put("Drop your piece onto the board or any stack",
+            "\u041f\u043e\u0441\u0442\u0430\u0432\u044c\u0442\u0435 \u0432\u0430\u0448\u0443 \u0444\u0438\u0433\u0443\u0440\u0443 \u043d\u0430 \u0434\u043e\u0441\u043a\u0443 \u0438\u043b\u0438 \u043d\u0430 \u043b\u044e\u0431\u0443\u044e \u0441\u0442\u043e\u043f\u043a\u0443");
+        put("Click Done to Finish the move", "\u041d\u0430\u0436\u043c\u0438\u0442\u0435 \u0413\u043e\u0442\u043e\u0432\u043e \u0434\u043b\u044f \u0437\u0430\u0432\u0435\u0440\u0448\u0435\u043d\u0438\u044f \u0445\u043e\u0434\u0430");
+        put("Drop the moving stack back on the rack",
+            "\u041f\u043e\u043b\u043e\u0436\u0438\u0442\u0435 \u043f\u0435\u0440\u0435\u0434\u0432\u0438\u0433\u0430\u0435\u043c\u0443\u044e \u0441\u0442\u043e\u043f\u043a\u0443 \u043e\u0431\u0440\u0430\u0442\u043d\u043e \u043d\u0430 \u0441\u0442\u043e\u0439\u043a\u0443");
+        put("Pick up and Continue your move", "\u0417\u0430\u0431\u0435\u0440\u0438\u0442\u0435 \u0438 \u041f\u0440\u043e\u0434\u043e\u043b\u0436\u0438\u0442\u0435 \u0438\u0433\u0440\u0443");
+        put("Shuffle pieces to the exchange area, Click Done to start the exchange",
+            "\u041e\u0442\u043b\u043e\u0436\u0438\u0442\u0435 \u0444\u0438\u0433\u0443\u0440\u044b \u0432 \u043e\u0431\u043b\u0430\u0441\u0442\u044c \u043e\u0431\u043c\u0435\u043d\u0430, \u043d\u0430\u0436\u043c\u0438\u0442\u0435 \u0413\u043e\u0442\u043e\u0432\u043e, \u0447\u0442\u043e\u0431\u044b \u043d\u0430\u0447\u0430\u0442\u044c \u043e\u0431\u043c\u0435\u043d");
+        put("Click Done to complete the exchange",
+            "\u041d\u0430\u0436\u043c\u0438\u0442\u0435 \u0413\u043e\u0442\u043e\u0432\u043e \u0434\u043b\u044f \u0437\u0430\u0432\u0435\u0440\u0448\u0435\u043d\u0438\u044f \u043e\u0431\u043c\u0435\u043d\u0430");
+        put("Start White", "\u0411\u0435\u043b\u044b\u0435 \u043d\u0430\u0447\u0438\u043d\u0430\u044e\u0442");
+        put("Start Black", "\u0427\u0451\u0440\u043d\u044b\u0435 \u043d\u0430\u0447\u0438\u043d\u0430\u044e\u0442");
+        put("Place prisoners here for exhange",
+            "\u041f\u043e\u043c\u0435\u0441\u0442\u0438\u0442\u0435 \u0437\u0430\u043a\u043b\u044e\u0447\u0435\u043d\u043d\u044b\u0445 \u0441\u044e\u0434\u0430 \u0434\u043b\u044f \u043e\u0431\u043c\u0435\u043d\u0430");
+        put("Prisoners captured by Black are held here",
+            "\u0417\u0430\u043a\u043b\u044e\u0447\u0435\u043d\u043d\u044b\u0435 \u0437\u0430\u0445\u0432\u0430\u0447\u0435\u043d\u043d\u044b\u0435 \u0447\u0435\u0440\u043d\u044b\u043c\u0438, \u0443\u0434\u0435\u0440\u0436\u0438\u0432\u0430\u044e\u0442\u0441\u044f \u0437\u0434\u0435\u0441\u044c");
+        put("Prisoners captured by White are held here",
+            "\u0417\u0430\u043a\u043b\u044e\u0447\u0435\u043d\u043d\u044b\u0435 \u0437\u0430\u0445\u0432\u0430\u0447\u0435\u043d\u043d\u044b\u0435 \u0431\u0435\u043b\u044b\u043c\u0438, \u0443\u0434\u0435\u0440\u0436\u0438\u0432\u0430\u044e\u0442\u0441\u044f \u0437\u0434\u0435\u0441\u044c");
+        put("Move the flipped stack", "\u041f\u0435\u0440\u0435\u0434\u0432\u0438\u043d\u044c\u0442\u0435 \u043f\u0435\u0440\u0435\u0432\u0435\u0440\u043d\u0443\u0442\u0443\u044e \u0441\u0442\u043e\u043f\u043a\u0443");
+        put("The game record is not available during the game",
+            "\u0417\u0430\u043f\u0438\u0441\u044c \u0438\u0433\u0440\u044b \u043d\u0435\u0432\u043e\u0437\u043c\u043e\u0436\u043d\u0430 \u0432 \u043f\u0440\u043e\u0446\u0435\u0441\u0441\u0435 \u0438\u0433\u0440\u044b");
+
+        put("Select Robot", "\u0412\u044b\u0431\u0435\u0440\u0438\u0442\u0435 \u0440\u043e\u0431\u043e\u0442\u0430");
+
+        // yinsh strings
+        put("make 5 in a row to capture a ring, 3 rings win",
+            "\u0412\u044b\u0441\u0442\u0440\u043e\u0439\u0442\u0435 5 \u0444\u0438\u0448\u0435\u043a \u0432 \u0440\u044f\u0434, \u0447\u0442\u043e\u0431\u044b \u0443\u0431\u0440\u0430\u0442\u044c \u043a\u043e\u043b\u044c\u0446\u043e, \u0443\u0431\u0440\u0430\u0432 3 \u043a\u043e\u043b\u044c\u0446\u0430 \u0432\u044b \u0432\u044b\u0438\u0433\u0440\u044b\u0432\u0430\u0435\u0442\u0435");
+        put("Place a Ring on the board","\u041f\u043e\u043b\u043e\u0436\u0438\u0442\u0435 \u043a\u043e\u043b\u044c\u0446\u043e \u043d\u0430 \u0434\u043e\u0441\u043a\u0443");
+        put("Pick a ring to place a chip and move",
+            "\u0412\u043e\u0437\u044c\u043c\u0438\u0442\u0435 \u043a\u043e\u043b\u044c\u0446\u043e, \u0447\u0442\u043e\u0431\u044b \u043f\u043e\u043b\u043e\u0436\u0438\u0442\u044c \u0444\u0438\u0448\u043a\u0443 \u0438 \u0441\u0434\u0435\u043b\u0430\u0442\u044c \u0445\u043e\u0434");
+        put("Drop the ring", "\u041f\u043e\u043b\u043e\u0436\u0438\u0442\u0435 \u043a\u043e\u043b\u044c\u0446\u043e");
+        put("Click DONE to confirm this placement",
+            "\u041d\u0430\u0436\u043c\u0438\u0442\u0435 \u0413\u043e\u0442\u043e\u0432\u043e \u0434\u043b\u044f \u043f\u043e\u0434\u0442\u0432\u0435\u0440\u0436\u0434\u0435\u043d\u0438\u044f \u0445\u043e\u0434\u0430");
+        put("Select a row of 5 to remove", "\u0412\u044b\u0431\u0435\u0440\u0438\u0442\u0435 5 \u0444\u0438\u0448\u0435\u043a \u043f\u043e\u0434\u0440\u044f\u0434 \u0434\u043b\u044f \u0443\u0434\u0430\u043b\u0435\u043d\u0438\u044f");
+        put("Click DONE to confirm this move", "\u041d\u0430\u0436\u043c\u0438\u0442\u0435 \u0413\u043e\u0442\u043e\u0432\u043e \u0434\u043b\u044f \u043f\u043e\u0434\u0442\u0432\u0435\u0440\u0436\u0434\u0435\u043d\u0438\u044f \u0445\u043e\u0434\u0430");
+        put("Click DONE to confirm removing these markers",
+            "\u041d\u0430\u0436\u043c\u0438\u0442\u0435 \u0413\u043e\u0442\u043e\u0432\u043e \u0434\u043b\u044f \u043f\u043e\u0434\u0442\u0432\u0435\u0440\u0436\u0434\u0435\u043d\u0438\u044f \u0443\u0434\u0430\u043b\u0435\u043d\u0438\u044f \u0432\u044b\u0434\u0435\u043b\u0435\u043d\u043d\u044b\u0445 \u0444\u0438\u0448\u0435\u043a");
+        put("Select a ring to remove", "\u0412\u044b\u0431\u0435\u0440\u0438\u0442\u0435 \u043a\u043e\u043b\u044c\u0446\u043e \u0434\u043b\u044f \u0443\u0434\u0430\u043b\u0435\u043d\u0438\u044f");
+        put("Click DONE to confirm removing this ring",
+            "\u041d\u0430\u0436\u043c\u0438\u0442\u0435 \u0413\u043e\u0442\u043e\u0432\u043e \u0434\u043b\u044f \u0443\u0434\u0430\u043b\u0435\u043d\u0438\u044f \u044d\u0442\u043e\u0433\u043e \u043a\u043e\u043b\u044c\u0446\u0430");
+        put("perspective","\u043f\u0435\u0440\u0441\u043f\u0435\u043a\u0442\u0438\u0432\u0430");
+        //
+        // hex strings
+        //
+        put("Hex","\u0425\u0435\u043a\u0441");
+        put("Swap Colors","\u0421\u043c\u0435\u043d\u0438\u0442\u044c \u0446\u0432\u0435\u0442\u0430");
+        put("connect opposite sides with a chain of markers",
+        	"\u0421\u043e\u0435\u0434\u0438\u043d\u0438\u0442\u0435 \u043f\u0440\u043e\u0442\u0438\u0432\u043e\u043f\u043e\u043b\u043e\u0436\u043d\u044b\u0435 \u0441\u0442\u043e\u0440\u043e\u043d\u044b \u0446\u0435\u043f\u044c\u044e \u043c\u0430\u0440\u043a\u0435\u0440\u043e\u0432");
+        put("Click Done to confirm this move",
+       		"\u041d\u0430\u0436\u043c\u0438\u0442\u0435 \u0413\u043e\u0442\u043e\u0432\u043e \u0434\u043b\u044f \u043f\u043e\u0434\u0442\u0432\u0435\u0440\u0436\u0434\u0435\u043d\u0438\u044f \u0445\u043e\u0434\u0430");
+        put("Click on Done to confirm your resignation", 
+       		"\u041d\u0430\u0436\u043c\u0438\u0442\u0435 \u0413\u043e\u0442\u043e\u0432\u043e \u0434\u043b\u044f \u043f\u043e\u0434\u0442\u0432\u0435\u0440\u0436\u0434\u0435\u043d\u0438\u044f \u0440\u0435\u0433\u0438\u0441\u0442\u0440\u0430\u0446\u0438\u0438");
+        put("Place a marker on any empty cell",	
+       		"\u041f\u043e\u043b\u043e\u0436\u0438\u0442\u0435 \u043c\u0430\u0440\u043a\u0435\u0440 \u043d\u0430 \u043b\u044e\u0431\u0443\u044e \u0441\u0432\u043e\u0431\u043e\u0434\u043d\u0443\u044e \u044f\u0447\u0435\u0439\u043a\u0443");
+        put("Place a marker on any empty cell, or Swap Colors",
+       		"\u0417\u0430\u0439\u043c\u0438\u0442\u0435 \u043b\u044e\u0431\u043e\u0435 \u0441\u0432\u043e\u0431\u043e\u0434\u043d\u043e\u0435 \u043c\u0435\u0441\u0442\u043e \u0438\u043b\u0438 \u0441\u043c\u0435\u043d\u0438\u0442\u0435 \u0446\u0432\u0435\u0442");
+        put("Click Done to confirm swapping colors with your opponent",
+       		"\u041d\u0430\u0436\u043c\u0438\u0442\u0435 \u0433\u043e\u0442\u043e\u0432\u043e \u0434\u043b\u044f \u043f\u043e\u0434\u0442\u0432\u0435\u0440\u0436\u0434\u0435\u043d\u0438\u044f \u0438\u0437\u043c\u0435\u043d\u0435\u043d\u0438\u044f \u0446\u0432\u0435\u0442\u0430 \u0432\u0430\u0448\u0438\u043c \u043f\u0440\u043e\u0442\u0438\u0432\u043d\u0438\u043a\u043e\u043c");
+        
+        // names of game variations for the lobby
+        put("Yinsh-Blitz","Yinsh-\u0411\u043b\u0438\u0446");
+        put("Hex-15","Hex-15");
+        put("Hex-19","Hex-19");
+        put("Trax","Trax");
+        put("Trax_variation","\u0421\u0442\u0430\u043d\u0434\u0430\u0440\u0442\u043d\u044b\u0439 Trax");
+        put("make 5 in a row to capture a ring and win",
+        		"\u0421\u043e\u0431\u0435\u0440\u0438\u0442\u0435 5 \u0444\u0438\u0448\u0435\u043a \u0432 \u0440\u044f\u0434 \u0434\u043b\u044f \u0443\u0431\u0438\u0440\u0430\u043d\u0438\u044f \u043a\u043e\u043b\u044c\u0446\u0430 \u0438 \u0432\u044b\u0438\u0433\u0440\u044b\u0432\u0430\u0439\u0442\u0435");
+        
+        put("Zertz_variation","\u0421\u0442\u0430\u043d\u0434\u0430\u0440\u0442\u043d\u044b\u0439 Z\u00e8rtz");
+        put("Zertz+11_variation","Z\u00e8rtz \u0441 11 \u0434\u043e\u043f\u043e\u043b\u043d\u0438\u0442\u0435\u043b\u044c\u043d\u044b\u043c\u0438 \u043a\u043e\u043b\u044c\u0446\u0430\u043c\u0438");
+        put("Zertz+24_variation","Z\u00e8rtz \u0441 24 \u0434\u043e\u043f\u043e\u043b\u043d\u0438\u0442\u0435\u043b\u044c\u043d\u044b\u043c\u0438 \u043a\u043e\u043b\u044c\u0446\u0430\u043c\u0438");
+        put("LOA_variation","\u0441\u0442\u0430\u043d\u0434\u0430\u0440\u0442\u043d\u044b\u0435 8x8 LOA");
+        put("LOAP_variation","\u0438\u0433\u0440\u0430\u0442\u044c \u0440\u0430\u0437\u043d\u043e\u0432\u0438\u0434\u043d\u043e\u0441\u0442\u044c LOA \u0434\u043b\u044f \u0441\u043e\u0440\u0435\u0432\u043d\u043e\u0432\u0430\u043d\u0438\u044f \u043f\u0440\u043e\u0433\u0440\u0430\u043c\u043c");
+        put("Plateau_variation","\u0441\u0442\u0430\u043d\u0434\u0430\u0440\u0442\u043d\u044b\u0439 Plateau");
+        put("Yinsh_variation","\u0441\u0442\u0430\u043d\u0434\u0430\u0440\u0442\u043d\u044b\u0439 Yinsh");
+        put("Yinsh-Blitz_variation","\u0411\u043b\u0438\u0446 Yinsh - \u0434\u043e \u043f\u0435\u0440\u0432\u043e\u0433\u043e \u043a\u043e\u043b\u044c\u0446\u0430");
+        put("Dvonn_variation","\u0441\u0442\u0430\u043d\u0434\u0430\u0440\u0442\u043d\u044b\u0439 Dvonn");
+        put("Tamsk_variation","\u0421\u0442\u0430\u043d\u0434\u0430\u0440\u0442\u043d\u044b\u0439 Tomsk");
+        put("Hex_variation","11x11 Hex");
+        put("Hex-15_variation","15x15 Hex");
+        put("Hex-19_variation","19x19 Hex");
+        put("Punct_variation","\u0421\u0442\u0430\u043d\u0434\u0430\u0440\u0442\u043d\u044b\u0439 P\u00fcnct");
+        put("TBA1_variation","\u0418\u0433\u0440\u0430 \u0430\u043d\u043e\u043d\u0441\u0438\u0440\u0443\u0435\u0442\u0441\u044f");
+        put("TBA2_variation","\u0418\u0433\u0440\u0430 \u0430\u043d\u043e\u043d\u0441\u0438\u0440\u0443\u0435\u0442\u0441\u044f");
+        put("TBA3_variation","\u0418\u0433\u0440\u0430 \u0430\u043d\u043e\u043d\u0441\u0438\u0440\u0443\u0435\u0442\u0441\u044f");
+       
+        // trax strings
+        put("Tile Size","\u0420\u0430\u0437\u043c\u0435\u0440 \u043f\u043b\u0438\u0442\u043a\u0438");
+        put("Place a tile","\u0423\u043b\u043e\u0436\u0438\u0442\u0435 \u043f\u043b\u0438\u0442\u043a\u0443");
+        put("make any loop, or a line which spans 8 rows or columns, in your color",
+        		"\u0421\u043e\u0437\u0434\u0430\u0439\u0442\u0435 \u043b\u044e\u0431\u043e\u0435 \u043a\u043e\u043b\u044c\u0446\u043e \u0438\u043b\u0438 \u043b\u0438\u043d\u0438\u044e, \u043a\u043e\u0442\u043e\u0440\u0430\u044f \u043f\u043e\u043a\u0440\u044b\u0432\u0430\u0435\u0442 8 \u0440\u044f\u0434\u043e\u0432 \u0438\u043b\u0438 \u043a\u043e\u043b\u043e\u043d\u043e\u043a, \u0432\u0430\u0448\u0438\u043c \u0446\u0432\u0435\u0442\u043e\u043c");
+        
+        // punct strings
+        put("Punct","P\u00fcnct");
+        put("Click on the placed piece to rotate it, or Click Done",
+        		"\u041a\u043b\u0438\u043a\u043d\u0438\u0442\u0435 \u043d\u0430 \u0443\u043b\u043e\u0436\u0435\u043d\u043d\u0443\u044e \u0444\u0438\u0433\u0443\u0440\u0443, \u0447\u0442\u043e\u0431\u044b \u043f\u043e\u0432\u0435\u0440\u043d\u0443\u0442\u044c \u0435\u0451, \u0438\u043b\u0438 \u043a\u043b\u0438\u043a\u043d\u0438\u0442\u0435 \u043d\u0430 \u0413\u043e\u0442\u043e\u0432\u043e");
+        put("Place a piece on the board, or move a piece already on the board",
+        		"\u0423\u043b\u043e\u0436\u0438\u0442\u0435 \u0444\u0438\u0433\u0443\u0440\u0443 \u043d\u0430 \u0434\u043e\u0441\u043a\u0443 \u0438\u043b\u0438 \u043f\u0435\u0440\u0435\u043c\u0435\u0441\u0442\u0438\u0442\u0435 \u0444\u0438\u0433\u0443\u0440\u0443, \u0443\u0436\u0435 \u043d\u0430\u0445\u043e\u0434\u044f\u0449\u0443\u044e\u0441\u044f \u043d\u0430 \u0434\u043e\u0441\u043a\u0435");
+        put("punctgoal","\u0441\u043e\u0435\u0434\u0438\u043d\u0438\u0442\u0435 \u043f\u0440\u043e\u0442\u0438\u0432\u043e\u043f\u043e\u043b\u043e\u0436\u043d\u044b\u0435 \u0441\u0442\u043e\u0440\u043e\u043d\u044b \u0434\u043e\u0441\u043a\u0438, \u0438\u043b\u0438 \u0441\u044b\u0433\u0440\u0430\u0439\u0442\u0435 \u0432\u0430\u0448\u0435\u0439 \u043f\u043e\u0441\u043b\u0435\u0434\u043d\u0435\u0439 \u0444\u0438\u0433\u0443\u0440\u043e\u0439, \u043a\u043e\u043d\u0442\u0440\u043e\u043b\u0438\u0440\u0443\u044f \u0431\u043e\u043b\u044c\u0448\u0435\u0435 \u043f\u0440\u043e\u0441\u0442\u0440\u0430\u043d\u0441\u0442\u0432\u043e \u0432 \u0446\u0435\u043d\u0442\u0440\u0435");
+        put("#1 left","#1 \u043b\u0435\u0432\u043e");
+        put("#1 center","#1 \u0446\u0435\u043d\u0442\u0440");
+     
+        // gobblet strings
+        put("make 4 in a row in any direction","\u0441\u043e\u0431\u0435\u0440\u0438\u0442\u0435 4 \u0432 \u0440\u044f\u0434 \u0432 \u043b\u044e\u0431\u043e\u043c \u043d\u0430\u043f\u0440\u0430\u0432\u043b\u0435\u043d\u0438\u0438");
+        put("Place a gobblet on the board, or move a gobblet","\u041f\u043e\u043b\u043e\u0436\u0438\u0442\u0435 \u0433\u043e\u0431\u0431\u043b\u0435\u0442 \u043d\u0430 \u0434\u043e\u0441\u043a\u0443 \u0438\u043b\u0438 \u043f\u0435\u0440\u0435\u043c\u0435\u0441\u0442\u0438\u0442\u0435 \u0433\u043e\u0431\u0431\u043b\u0435\u0442");
+        put("Gobblet","Gobblet");
+        put("Gobbletm","GobbletM");
+        put("Gobblet_variation","\u0418\u0433\u0440\u0430 \u0441 \u043f\u043e\u0434\u0441\u043c\u0430\u0442\u0440\u0438\u0432\u0430\u043d\u0438\u0435\u043c");
+        put("Gobbletm_variation","Memory counts, \u0431\u0435\u0437 \u043f\u043e\u0434\u0441\u043c\u0430\u0442\u0440\u0438\u0432\u0430\u043d\u0438\u044f");
+        put("You must move the gobblet you have picked up",
+        		"\u0412\u044b \u043e\u0431\u044f\u0437\u0430\u043d\u044b \u043f\u0435\u0440\u0435\u043c\u0435\u0441\u0442\u0438\u0442\u044c \u0433\u043e\u0431\u0431\u043b\u0435\u0442, \u043a\u043e\u0442\u043e\u0440\u044b\u0439 \u0432\u044b \u043f\u043e\u0434\u043e\u0431\u0440\u0430\u043b\u0438");
+         put("review","review");
+
+        // hive strings
+        put("Hive","\u0423\u043b\u0435\u0439");
+        put("Hive_variation","\u0441\u0442\u0430\u043d\u0434\u0430\u0440\u0442\u043d\u044b\u0439 \u0423\u043b\u0435\u0439");
+        put("Place a tile on the board","\u041f\u043e\u043b\u043e\u0436\u0438\u0442\u0435 \u0441\u043e\u0442\u0443 \u043d\u0430 \u0434\u043e\u0441\u043a\u0443");
+        put("surround your opponents queen bee","\u043e\u043a\u0440\u0443\u0436\u0438\u0442\u0435 \u043f\u0447\u0435\u043b\u043e\u043c\u0430\u0442\u043a\u0443 \u0432\u0430\u0448\u0435\u0433\u043e \u043e\u043f\u043f\u043e\u043d\u0435\u043d\u0442\u0430");
+        put("Place your queen on the board","\u041f\u043e\u043b\u043e\u0436\u0438\u0442\u0435 \u0441\u0432\u043e\u044e \u043f\u0447\u0435\u043b\u043e\u043c\u0430\u0442\u043a\u0443 \u043d\u0430 \u0434\u043e\u0441\u043a\u0443");
+        put("Place a tile on the board, or move a tile","\u041f\u043e\u043b\u043e\u0436\u0438\u0442\u0435 \u0441\u043e\u0442\u0443 \u043d\u0430 \u0434\u043e\u0441\u043a\u0443 \u0438\u043b\u0438 \u043f\u0435\u0440\u0435\u043c\u0435\u0441\u0442\u0438\u0442\u0435 \u0441\u043e\u0442\u0443");
+        put("You have no legal moves.  Click on Done to pass",
+                "\u0423 \u0432\u0430\u0441 \u043d\u0435\u0442 \u0434\u043e\u043f\u0443\u0441\u0442\u0438\u043c\u044b\u0445 \u0445\u043e\u0434\u043e\u0432. \u041d\u0430\u0436\u043c\u0438\u0442\u0435 \u0413\u043e\u0442\u043e\u0432\u043e \u0447\u0442\u043e\u0431\u044b \u043f\u0440\u043e\u043f\u0443\u0441\u0442\u0438\u0442\u044c \u0445\u043e\u0434.");
+        put("Click on Done to end the game as a Draw",
+        	"\u041d\u0430\u0436\u043c\u0438\u0442\u0435 \u0413\u043e\u0442\u043e\u0432\u043e, \u0447\u0442\u043e\u0431\u044b \u0437\u0430\u043a\u043e\u043d\u0447\u0438\u0442\u044c \u0438\u0433\u0440\u0443 \u0432\u043d\u0438\u0447\u044c\u044e");
+        put("Hive-L","\u0423\u043b\u0435\u0439-\u0411");
+        put("Hive-L_variation","\u0423\u043b\u0435\u0439 \u0441 \u0411\u043e\u0436\u044c\u0435\u0439 \u041a\u043e\u0440\u043e\u0432\u043a\u043e\u0439");
+        put("Hive-LM","Hive-\u0411\u041a");
+        put("Hive-LM_variation","\u0423\u043b\u0435\u0439 \u0441 \u0411\u043e\u0436\u044c\u0435\u0439 \u041a\u043e\u0440\u043e\u0432\u043a\u043e\u0439 \u0438 \u041a\u043e\u043c\u0430\u0440\u043e\u043c");
+
+        put("#1 repetitions","#1 repetitions");
+        // for plateau
+        put("Click on Done to complete the capture",
+        		"\u041d\u0430\u0436\u043c\u0438\u0442\u0435 \u0413\u043e\u0442\u043e\u0432\u043e, \u0447\u0442\u043e\u0431\u044b \u0437\u0430\u0432\u0435\u0440\u0448\u0438\u0442\u044c \u0437\u0430\u0445\u0432\u0430\u0442");
+        // game lobby
+        put("The game is a draw","\u0418\u0433\u0440\u0430 \u0441\u044b\u0433\u0440\u0430\u043d\u0430 \u0432 \u043d\u0438\u0447\u044c\u044e.");
+        put("Game won by #1","\u0418\u0433\u0440\u0443 \u0432\u044b\u0438\u0433\u0440\u0430\u043b(\u0430) #1.");
+        put("You can only resign when it is your move",
+        		"\u0412\u044b \u043c\u043e\u0436\u0435\u0442\u0435 \u0441\u0434\u0430\u0442\u044c\u0441\u044f, \u0442\u043e\u043b\u044c\u043a\u043e \u0435\u0441\u043b\u0438 \u0432\u0430\u0448 \u0445\u043e\u0434.");
+        put("Jan #1#2#3","#1 \u042f\u043d\u0432, #2:#3 GMT");
+        put("Feb #1#2#3","#1 \u0424\u0435\u0432, #2:#3 GMT");
+        put("Mar #1#2#3","#1 \u041c\u0440\u0442, #2:#3 GMT");
+        put("Apr #1#2#3","#1 \u0410\u043f\u0440, #2:#3 GMT");
+        put("May #1#2#3","#1 \u041c\u0430\u0439, #2:#3 GMT");
+        put("Jun #1#2#3","#1 \u0418\u044e\u043d, #2:#3 GMT");
+        put("Jul #1#2#3","#1 \u0418\u044e\u043b, #2:#3 GMT");
+        put("Aug #1#2#3","#1 \u0410\u0432\u0433, #2:#3 GMT");
+        put("Sep #1#2#3","#1 \u0421\u043d\u0442, #2:#3 GMT");
+        put("Oct #1#2#3","#1 \u041e\u043a\u0442, #2:#3 GMT");
+        put("Nov #1#2#3","#1 \u041d\u0431\u0440, #2:#3 GMT");
+        put("Dec #1#2#3","#1 \u0414\u0435\u043a, #2:#3 GMT");
+        
+        // exxit strings
+        put("Exxit","Exxit");
+        put("Exxit-Beginner","Exxit-\u041d\u0430\u0447\u0430\u043b\u044c\u043d\u044b\u0439");
+        put("Exxit-Blitz","Exxit-\u0411\u043b\u0438\u0446");
+        put("Exxit-Pro","Exxit-Expert");
+        put("Exxit_variation","Exxit \u0432 39 \u043f\u043b\u0438\u0442\u043e\u043a");
+        put("Exxit-Blitz_variation","Exxit \u0432 29 \u043f\u043b\u0438\u0442\u043e\u043a");
+        put("Exxit-Beginner_variation","Exxit \u0432 19 \u043f\u043b\u0438\u0442\u043e\u043a");
+        put("Exxit-Pro_variation","\u042d\u043a\u0441\u043f\u0435\u0440\u0442\u043d\u044b\u0439 Exxit");
+        
+        put("Rearrange things any way you want to", 
+        	"\u041f\u0435\u0440\u0435\u0441\u043e\u0431\u0435\u0440\u0438\u0442\u0435 \u0432\u0435\u0449\u0438, \u043a\u0430\u043a \u0432\u0430\u043c \u043d\u0440\u0430\u0432\u0438\u0442\u0441\u044f");
+        put("Place a piece on the board","\u0423\u043b\u043e\u0436\u0438\u0442\u0435 \u0444\u0438\u0433\u0443\u0440\u0443 \u043d\u0430 \u0434\u043e\u0441\u043a\u0443");
+        put("Exchange an off-board piece for a new tile","\u041f\u043e\u043c\u0435\u043d\u044f\u0439\u0442\u0435 \u0444\u0438\u0433\u0443\u0440\u0443, \u043d\u0430\u0445\u043e\u0434\u044f\u0449\u0443\u044e\u0441\u044f \u0432\u043d\u0435 \u0434\u043e\u0441\u043a\u0438, \u043d\u0430 \u043d\u043e\u0432\u0443\u044e \u043f\u043b\u0438\u0442\u043a\u0443");
+        put("Click on Done to confirm the Exchange","\u041d\u0430\u0436\u043c\u0438\u0442\u0435 \u0413\u043e\u0442\u043e\u0432\u043e, \u0447\u0442\u043e\u0431\u044b \u043f\u043e\u0434\u0442\u0432\u0435\u0440\u0434\u0438\u0442\u044c \u043e\u0431\u043c\u0435\u043d");
+        put("Place a piece on the board, or Exchange an off-board piece for a new tile",
+        		"\u0423\u043b\u043e\u0436\u0438\u0442\u0435 \u0444\u0438\u0433\u0443\u0440\u0443 \u043d\u0430 \u0434\u043e\u0441\u043a\u0443, \u0438\u043b\u0438 \u043e\u0431\u043c\u0435\u043d\u044f\u0439\u0442\u0435 \u0444\u0438\u0433\u0443\u0440\u0443, \u043d\u0430\u0445\u043e\u0434\u044f\u0449\u0443\u044e\u0441\u044f \u0432\u043d\u0435 \u0434\u043e\u0441\u043a\u0438, \u043d\u0430 \u043d\u043e\u0432\u0443\u044e \u043f\u043b\u0438\u0442\u043a\u0443");
+        put("Click on Done to end the game","\u041d\u0430\u0436\u043c\u0438\u0442\u0435 \u0413\u043e\u0442\u043e\u0432\u043e, \u0447\u0442\u043e\u0431\u044b \u0437\u0430\u043a\u043e\u043d\u0447\u0438\u0442\u044c \u0438\u0433\u0440\u0443");
+        put("Make a Dance move","\u0421\u0434\u0435\u043b\u0430\u0439\u0442\u0435 \u0422\u0430\u043d\u0446\u0443\u044e\u0449\u0438\u0439 \u0445\u043e\u0434");
+        put("Click on Done to confirm this Dance","\u041d\u0430\u0436\u043c\u0438\u0442\u0435 \u0413\u043e\u0442\u043e\u0432\u043e, \u0447\u0442\u043e\u0431\u044b \u043f\u043e\u0434\u0442\u0432\u0435\u0440\u0434\u0438\u0442\u044c \u044d\u0442\u043e\u0442 \u0422\u0430\u043d\u0446\u0443\u044e\u0449\u0438\u0439 \u0445\u043e\u0434");
+        put("Drop a tile to enlarge the board","\u0423\u043b\u043e\u0436\u0438\u0442\u0435 \u043f\u043b\u0438\u0442\u043a\u0443, \u0447\u0442\u043e\u0431\u044b \u0443\u0432\u0435\u043b\u0438\u0447\u0438\u0442\u044c \u0434\u043e\u0441\u043a\u0443");
+			  put("expand the board with your color tiles","\u0440\u0430\u0441\u0448\u0438\u0440\u044c\u0442\u0435 \u0434\u043e\u0441\u043a\u0443 \u043f\u043b\u0438\u0442\u043a\u0430\u043c\u0438 \u0432\u0430\u0448\u0435\u0433\u043e \u0446\u0432\u0435\u0442\u0430");
+
+        // system error
+        put("Memory is low","\u041d\u0435\u0445\u0432\u0430\u0442\u043a\u0430 \u0441\u0438\u0441\u0442\u0435\u043c\u043d\u043e\u0439 \u043f\u0430\u043c\u044f\u0442\u0438");
+        
+        // new strings for tablut
+        put("Rearrange the gold fleet","Rearrange the gold fleet");
+        put("Rearrange the silver fleet","Rearrange the silver fleet");
+        put("Make your first move, or swap fleets","Make your first move, or swap fleets");
+        put("Click Done to confirm swapping fleets with your opponent",
+        		"Click Done to confirm swapping fleets with your opponent");
+        put("Move one ship","Move one ship");
+        put("Flagship must Reach the corner to win","Flagship must Reach the corner to win");
+        put("Flagship wins at any edge square","Flagship wins at any edge square");
+        put("Flagship can participate in captures","Flagship can participate in captures");
+    	put("Flagship can not capture","Flagship can not capture");
+   	 	put("Only the flagship can occupy the center square","Only the flagship can occupy the center square");
+   	    put("center square is not special","center square is not special");
+   	    put("Flagship must be surrounded on all 4 sides","Flagship must be surrounded on all 4 sides");
+   	    put("Flagship is captured normally","Flagship is captured normally");
+   	    put("Tablut-7","Tablut 7x7");
+   	    put("Tablut-9","Tablut 9x9");
+   	    put("Tablut-11","Tablut-11x11");
+   	    put("Tablut-7_variation","Tablut on a 7x7 board");
+   	    put("Tablut-9_variation","Tablut on a 9x9 board");
+   	    put("Tablut-11_variation","Tablut on a 11x11 board");
+   	    put("gold: escape the flagship  silver: capture gold flagship",
+   	    		"gold: escape the flagship  silver: capture the gold flagship");
+   	    
+   	    put("Zertz+xx","Z\u00e8rtz Extreme");
+   	    put("Zertz+xx_variation","Z\u00e8rtz with custom board layout");
+   	    put("Make the first move, or swap and move second",
+   	    		"Make the first move, or swap and move second");
+   	    put("Click on Done to confirm swapping","Click on Done to confirm swapping");
+   	    put("Position the starting rings","Position the starting rings");
+        put("Swap","Swap");
+        put("stack six or capture six","stack six or capture six");
+        
+        
+        // stacking games
+        put("Tablut","Tablut");
+        put("Stacking Games","Stacking Games");
+        put("Truchet_variation","standard Truchet");
+        put("TumblingDown_variation","standard 8x8 TumblingDown");
+        put("Truchet","Truchet");
+        
+        //dipole
+         put("Dipole","Dipole (original)");
+        put("Dipole-s","Dipole");
+       // put("Dipole-10","Dipole 10x10");
+        //put("Dipole-10_variation","Dipole on a 10x10 board");
+        put("Dipole-s_variation","Dipole 8x8 with a symmetric starting position");
+        put("Dipole_variation","Dipole 8x8 with an asymmetric starting position");
+        put("Eliminate all your opponent's pieces","Eliminate all your opponent's pieces");
+        put("Select the stack to move from","Select the stack to move from");
+        put("You have no moves available. Click on Done to pass.","You have no moves available. Click on Done to pass.");
+        //tumblingdown
+        put("Capture your opponent's tallest king stack","Capture your opponent's tallest king stack");
+        put("Pick the stack to move","Pick the stack to move");
+         //truchet
+        put("Occupy 3 enemy bases","Occupy 3 enemy bases");
+        put("Flip a tile, or Move Split or Merge a stack",
+        		"Flip a tile, or Move Split or Merge a stack");
+        put("Move, Split or Merge a stack","Move, Split or Merge a stack");
+        put("Split or Merge this stack, or click Done",
+        		"Split or Merge this stack, or click Done");
+        put("Split this stack, or click Done",
+        		"Split this stack, or click Done");
+        put("Merge this stack, or click Done","Merge this stack, or click Done");
+        put("Complete the split","Complete the split");
+        put("Complete the merge","Complete the merge");
+        put("Complete a split or merge","Complete a split or merge");
+        put("Continue merging or click Done","Continue merging or click Done");
+        
+        // hive-m
+        put("Hive-M","Hive-M");
+        put("Hive-M_variation","Hive with Mosquito added");
+        // fanorona
+        put("Fanorona","Fanorona");
+        put("Fanorona_variation","standard Fanorona");
+        put("Click on the line to be captured","Click on the line to be captured");
+        put("Make an addional capturing move, or click on Done", 
+        		"Make an additional capturing move, or click on Done");
+        put("Make a capturing move","Make a capturing move");
+        put("Move a piece one space","Move a piece one space");
+        put("Capture all of your opponent's pieces","Capture all of your opponent's pieces");
+        
+        // forgotten for exxit
+        put("use Wooden tiles","use Wooden tiles");
+        // volcano
+        put("Capture the best combinations of all 5 colors","Capture the best combinations of colors and sizes");
+        put("Move a volcano cap","Move a volcano cap");
+        put("Volcano", "Volcano");
+        put("Volcano_variation","standard 5x5 Volcano");
+        put("Volcano-r","randomized Volcano");
+        put("Volcano-r_variation","Volcano with randomized positions");
+        
+        put("Volcano-h","Hex Volcano");
+        put("Volcano-h_variation","Volcano on a Hexagonal grid");
+       
+        put("Volcano-hr","randomized Hex Volcano");
+        put("Volcano-hr_variation"," Hex Volcano with randomized positions");
+        put("Click on Done to end the game (you lose)","Click on Done to end the game (you lose)");
+        
+        // traboulet
+        put("Traboulet","Traboulet");
+        put("Traboulet_variation","standard Traboulet");
+        put("Capture 7 red balls or all of your opponent's balls",
+        "Capture 7 red balls or all of your opponent's balls");
+        put("Make an addional move, or click on Done",
+        		"Make an additional move, or click on Done");
+        
+        // dvonn
+        put("Move a ring","Move a ring");
+        put("Place a ring on the board","Place a ring on the board");
+        put("Click Done to confirm this placement","Click Done to confirm this placement");
+        put("Capture the most chips under your color stack","Capture the most chips under your color stack");
+        put("Stack Height","Stack Height");
+        
+        // restartable games
+        put("Restart","Restart");
+        // tzaar
+        put("Gipf Games","Gipf Games");
+        put("Tzaar_variation","standard Tzaar");
+        put("Tzaar","Tzaar");
+        
+        put("Closing...","Closing...");
+        put("Played on #1","Played on #1");
+
+        put("...plus #1 more","...plus #1 more");
+         
+        // tzaar
+        put("Tzaar-random_variation","Tzaar - random starting position");
+        put("Tzaar-standard_variation","Tzaar - standard starting position");
+        put("Tzaar-custom_variation","Tzaar - custom starting position");
+        put("Tzaar-custom","Tzaar - custom");
+        put("Tzaar-random","Tzaar - random");
+        put("Tzaar-standard","Tzaar - standard");
+        put("Capture a stack","Capture a stack");
+        put("Combine two stacks or capture another stack",
+        		"Combine two stacks or capture another stack");
+        
+        // qyshinsu
+        put("Place a stone on the board, or remove a stone from the board",
+        "Place a stone on the board, or remove a stone from the board");
+        put("Return to the Way","Return to the Way");
+        put("Qyshinsu","Qyshinsu");
+        put("Qyshinsu_variation","The mystery of the way");
+        
+        // knockabout
+        put("Knock 5 of your opponent's dice into the gutter",
+            "Knock 5 of your opponent's dice into the gutter");
+        put("Knockabout_variation","standard Knockabout");
+        put("Move a piece","Move a piece");
+        put("Knockabout","Knockabout");
+        		
+        
+        // gipf
+        put("Place a chip on a starting point","Place a chip on a starting point");
+        put("Slide the chip toward the center","Slide the chip toward the center");
+        put("Designate a row to capture before your turn","Designate a row to capture before your turn");
+        put("Click on Done to finish all captures","Click on Done to finish all captures");
+        put("Designate a row to capture","Designate a row to capture");
+        put("Capture most of your opponent's pieces","Capture most of your opponent's pieces");
+        put("Gipf_variation","Gipf Basic (no Gipf pieces)");
+        put("Gipf-standard_variation","Gipf Standard (with Gipf pieces)");
+        put("Gipf", "Gipf Basic");
+        put("Gipf-standard","Gipf Standard");
+        put("Click on Gipf pieces to change their capture status",
+        		"Click on Gipf pieces to change their capture status");
+        put("Place a GIPF piece on a starting point","Place a GIPF piece on a starting point");
+        put("Designate GIPF pieces to capture, or place a GIPF chip","Designate GIPF pieces to capture, or place a GIPF chip");
+        put("Designate GIPF pieces to capture, or place a chip","Designate GIPF pieces to capture, or place a chip");
+        
+        // palago
+        put("Palago_variation","standard Palago");
+        put("Palago","Palago");
+        put("select tile color","select tile color");
+        put("Aqua","Aqua");
+        put("Red","Red");
+        put("Blue","Blue");
+        put("Place a second tile adjacent to the first",
+        		"Place a second tile adjacent to the first");
+        put("Form a closed shape in your color","Form a closed shape in your color");
+        
+        // santorini
+        put("Santorini","Santorini");
+        put("Santorini_variation","Santorini (without Gods)");
+        put("Move a Man up to level 3","Move a Man up to level 3");
+        put("Build adjacent to the man you moved","Build adjacent to the man you moved");
+        put("Place your first man on the board","Place your first man on the board");
+        put("Place your second man on the board","Place your second man on the board");
+        put("Move a Man","Move a Man");
+        
+        put("Pass","Pass");
+        put("Placing Standard Pieces","Placing Standard Pieces");
+        put("Placing Gipf Pieces","Placing Gipf Pieces");
+        put("Gipf-tournament_variation","Gipf Expert (unlimited Gipf pieces)");
+        put("Gipf-tournament","Gipf Expert");
+        // "spangles"
+        put("Tile Pattern Games","Tile Pattern Games");
+        put("form a larger triangle with your color at the tips","form a larger triangle with your color at the tips");
+        put("Spangles_variation","standard Spangles");
+        
+        put("Spangles","Spangles");
+  
+        // micropul
+        put("Micropul","Micropul");
+        put("Micropul_variation","standard Micropul");
+         put("maximize the number of tiles in your reserve",
+        		"maximize the number of tiles in your reserve");
+        put("Place a Chip, or a Jewel, or a chip from the Store",
+        		"Place a Chip, or a Jewel, or a chip from the Store");
+
+        //Medina
+        put("Medina","Medina");
+        put("Medina_variation","standard Medina");
+        put("Place the first meeple on the board","Place the first meeple on the board");
+        put("Place a second piece on the board","Place a second piece on the board");
+        put("Final Scores:","Final Scores:");
+        put("You must place a dome","You must place a dome");
+        put("build an ideal city","build an ideal city");
+        
+        // cannon
+        put("Cannon","Cannon");
+        put("Capture your opponent's town","Capture your opponent's town");
+        put("Place your town in your first row","Place your town in your first row");
+        put("Move a soldier, or fire a cannon","Move a soldier, or fire a cannon");
+        put("Cannon_variation","standard Cannon");
+        
+        // warp 6
+        put("Warp6","Warp 6");
+        put("Warp6_variation","standard Warp 6");
+        put("Move a ship to the board","Move a ship to the board");
+        put("Move 6 ships to the center","Move 6 ships to the center");
+        put("Move a ship","Move a ship");
+        
+        // Triad
+        put("capture all of one opponentr's color","capture all of one opponentr's color");
+        put("Capture a group of opponents","Capture a group of opponents");
+        put("Drop bunny chip","Place one of the Bunny player's chips");
+        put("Triad","Triad");
+        put("Triad_variation","standard Triad");
+         
+        //Che
+        put("Che","Che");
+        put("Che_variation","standard Che");
+        put("Place a tile on any empty cell","Place a tile on any empty cell");
+        put("Place a tile adjacent to those already on the board",
+        		"Place a tile adjacent to those already on the board");
+        put("Place a second tile adjacent to those already on the board",
+        		"Place a second tile adjacent to those already on the board");
+        
+        // trax
+        put("Illegal - this move would form an illegal pattern of lines",
+        		"Illegal - this move would form an illegal pattern of lines");
+        
+        // mutton
+        put("Capturing Games","Capturing Games");
+        put("Mutton","Mutton");
+        put("Mutton-shotgun","shotgun Mutton");
+        put("Mutton_variation","standard Mutton");
+        put("Mutton-shotgun_variation","Mutton - farmer uses a shotgun");
+        put("Farmer configuring board","Farmer configuring board");
+        put("Play Farmer","Play Farmer");
+        put("Hide","Hide");
+        put("Wolf player hiding","Wolf player hiding");
+        put("Wolf moving suspects","Wolf moving suspects");
+        put("Eat","Eat");
+        put("Wolf player eating","Wolf player eating");
+        put("Farmer select","Farmer select");
+        put("Shoot","Shoot");
+        put("Farmer moving scared","Farmer moving scared");
+        
+        // octiles
+        put("Octiles","Octiles");
+        put("Octiles_variation","standard Octiles");
+        put("Place the next tile on the board, where a runner can move over it",
+        		"Place the next tile on the board, where a runner can move over it");
+        put("Move a runner","Move a runner");
+        put("Place a tile on the board, where a runner can leave a home space",
+        		"Place a tile on the board, where a runner can leave a home space");
+        put("Move a runner from a home space","Move a runner from a home space");
+        put("Move your runners to the opposite side","Move your runners to the opposite side");
+        
+        // army of frogs
+        put("ArmyOfFrogs","Army of Frogs");
+        put("ArmyOfFrogs_variation","standard Army of Frogs");
+        put("Place a Frog on the board","Place a Frog on the board");
+        put("Move a Frog","Move a Frog");
+        put("Connect all your frogs (at least 7) in one cluster",
+        		"Connect all your frogs (at least 7) in one cluster");
+        
+        // variation to game
+        put("Frogs","Army of Frogs");
+         put("No Recent Games","No Recent Games");
+        
+        // xiangqi
+        put("Traditional Pieces","Traditional Pieces");
+        put("Checkmate your opponent's general","Checkmate your opponent's general");
+        put("Illegal move due to repetition - try something else",
+        		"Illegal move due to repetition - try something else");
+        put("Xiangqi","Xiangqi");
+        put("Xiangqi_variation","standard Xiangqi");
+        put("You have been offered a draw - Accept or Decline" ,
+        		"You have been offered a draw - Accept or Decline" );
+        put("Offer a Draw","Offer a Draw");
+        put("Accept Draw","Accept Draw");
+        put("Decline Draw","Decline Draw");
+        put("Escape from check","Escape from check");
+        
+        put("Click Done to offer a draw","Click Done to offer a draw");
+        put("Click Done to accept a draw","Click Done to accept a draw");
+        put("Click Done to decline a draw","Click Done to decline a draw");
+        
+        // lobby
+        put("select the type of room","\u0432\u044b\u0431\u0435\u0440\u0438\u0442\u0435 \u0442\u0438\u043f \u043a\u043e\u043c\u043d\u0430\u0442\u044b");
+        put("select the game to play","\u0432\u044b\u0431\u0435\u0440\u0438\u0442\u0435 \u0438\u0433\u0440\u0443");
+        put("select the game variation","\u0432\u044b\u0431\u0435\u0440\u0438\u0442\u0435 \u0440\u0430\u0437\u043d\u043e\u0432\u0438\u0434\u043d\u043e\u0441\u0442\u044c \u0438\u0433\u0440\u044b");
+        
+        put("Dipole_family","Dipole");
+        put("Gipf_family","Gipf");
+   		put("Zertz_family","Z\u00e8rtz");
+   		put("Yinsh_family","Yinsh");
+     	put("Dvonn_family","Dvonn");
+        put("Tzaar_family","Tzaar");
+        put("Punct_family","P\u00fcnct");
+        put("Che_family","Che");
+        put("Micropul_family","Micropul");
+        put("Palago_family","Palago");
+        put("Spangles_family","Spangles");
+        put("Trax_family","Trax");
+        put("Truchet_family","Truchet");
+        put("TumblingDown_family","Tumbling Down");
+        put("Cannon_family","Cannon");
+        put("Fanorona_family","Fanorona");
+        put("Knockabout_family","Knockabout");
+        put("Traboulet_family","Traboulet");
+        put("Triad_family","Triad");
+        put("Xiangqi_family","Xiangqi");
+        put("Octiles_family","Octiles");
+        put("Warp6_family","Warp 6");
+        put("ArmyOfFrogs_family","Army Of Frogs");
+        put("LOA_family","Lines of Action");
+        put("Hive_family","Hive");
+        
+        put("Racing Games","Racing Games");
+        put("Connection Games","Connection Games");
+        put("Plateau_family","Plateau");
+        put("Hex_family","Hex");
+        put("Gobblet_family","Gobblet");
+        put("Exxit_family","Exxit");
+        put("Tablut_family","Tablut");
+        put("Volcano_family","Volcano");
+        put("Qyshinsu_family","Qyshinsu");
+        put("Santorini_family","Santorini");
+        put("Medina_family","Medina");
+        put("Mutton_family","Mutton");
+        put("Tajii","Tajii");
+        put("Tajii_family","Tajii");
+        
+        put("LOAP","LOAP");
+        put("TumblingDown","Tumbling Down");
+        // misc
+        put("All Games","\u0412\u0441\u0435 \u0438\u0433\u0440\u044b");
+        // breaking away
+        put("BreakingAway","Breaking Away");
+        put("BreakingAway_variation","standard Breaking Away");
+        put("BreakingAway_family","Breaking Away");
+        put("Adjust","Adjust");
+        put("Move a Cyclist","Move a Cyclist");
+        put("Score the most points at the sprint and finish lines",
+        		"Score the most points at the sprint and finish lines");
+        put("Adjust your starting movements","Adjust your starting movements");
+        put("Wait for other players to adjust","Wait for other players to adjust");
+        put("The next sprint bonus is #1","The next sprint bonus is #1");
+        put("#1 riders have crossed the second sprint line.",
+        		"#1 riders have crossed the second sprint line.");
+        put("#1 riders have crossed the first sprint line.",
+        		"#1 riders have crossed the first sprint line.");
+        put("#1 riders have finished","#1 riders have finished");
+        put("The next finish bonus is #1","The next finish bonus is #1");
+        put("Rider Size","Rider Size");
+        put("Confirm Dropping this rider","Confirm Dropping this rider");
+        put("Drop this rider from the Race","Drop this rider from the Race");
+        put("Animate","Animate");
+        
+        // container
+        put("Container","Container");
+        put("Container-First","Container - Original");
+        put("Euro Games","Euro Games");
+        put("Container-First_variation","Container with the original rules");
+        
+        put("Auction","Auction");
+        put("Maximize your profits","Maximize your profits");
+        put("Bank","Bank");
+        put("Loan for #1 from #2", "Loan for #1 from #2");
+        put("Container_family","Container");
+        put("Container_variation","Container with second shipment rules");
+        put("Take your first action","Take your first action");
+        put("Click Done to confirm this action","Click Done to confirm this action");
+        put("Reprice the goods in your factory storage","Reprice the goods in your factory storage");
+        put("Take your second action","Take your second action");
+        put("Warehouse","Warehouse");
+        put("Unsold Warehouses","Unsold Warehouses");
+        put("#1 Ship","#1 Ship");
+        put("#1 Machine","#1 Machine");
+        put("#1 #2 Containers","#1 #2 Containers");
+        put("Loan Card","Loan Card");
+        put("Let someone else make the loan","Let someone else make the loan");
+        put("I will make the loan","I will make the loan");
+        put("fund a loan from a player or the bank","fund a loan from a player or the bank");
+        put("Load the goods you will produce","Load the goods you will produce");
+        put("set bid amount","set bid amount");
+        put("Offer a price for the goods on the ship","Offer a price for the goods on the ship");
+        put("Load the your warehouse from the seller","Load the your warehouse from the seller");
+        put("Reprice the goods in your warehouse storage","Reprice the goods in your warehouse storage");
+        put("Load your ship from the Dock","Load your ship from the Dock");
+        put("Load more goods from the Dock","Load more goods from the Dock");
+        put("Buy the goods for $#1","Buy the goods for $#1");
+        put("Accept $#1 from #2","Accept $#1 from #2");
+        put("Bid $ #1","Bid $ #1");
+        put("Requesting Bids","Requesting Bids");
+        put("you may increase your bid","you may increase your bid");
+        put("Wait for the other players to decide","Wait for the other players to decide");
+        put("accept the bid, or pay the amount yourself","accept the bid, or pay the amount yourself");
+        put("trade a second container for a gold container","trade a second container for a gold container");
+        put("You must take out a loan to pay interest","You must take out a loan to pay interest");
+        put("Requesting Loan","Requesting Loan");
+        put("No, let the bank fund it","No, let the bank fund it");
+        put("Accept the loan from the bank", "Accept the loan from the bank");
+        put("Yes, I will fund the loan","Yes, I will fund the loan");
+        put("Place your bid to fund the loan","Place your bid to fund the loan");
+        put("Decline the loan","Decline the loan");
+        put("Accept this loan financing or not","Accept this loan financing or not");
+        put("Choose the penalty for non-payment of interest","Choose the penalty for non-payment of interest");
+        put("Loan for #1 from the bank","Loan for #1 from the bank");
+        put("Spot Price #1","Spot Price #1");
+        put("click Done to finish this Auction","click Done to finish this Auction");
+        put("load a luxury container","load a luxury container");
+        
+        // for stats
+        put("Cash/Score","Cash/Score");
+        put("Machines","Machines");
+        put("Warehouses","Warehouses");
+        put("Shipping","Shipping");
+        put("Island","Island");
+        put("Loans","Loans");
+        // arimaa
+        put("Move a Rabbit to the last row","Move a Rabbit to the last row");
+        put("Reverse View","Reverse View");
+        put("Move a piece, step #1","Move a piece, step #1");
+        put("Complete the push, step #1","Complete the push, step #1");
+        put("Complete the pull, step #1","Complete the pull, step #1");
+        put("Place all your pieces in your two home rows","Place all your pieces in your two home rows");
+        put("Arimaa_family","Arimaa");
+        put("Arimaa","Arimaa");
+        put("Arimaa_variation","Standard Arimaa");
+        put("Place the Rabbits","Place the Rabbits");
+        put("Illegal due to repetition, try something else or resign","Illegal due to repetition, try something else or resign");
+        put("Complete a push or pull, step #1","Complete a push or pull, step #1");
+        
+        // crossfire
+        put("Crossfire_family","Crossfire");
+        put("Crossfire","Crossfire");
+        put("Crossfire_variation","standard Crossfire");
+        put("own all the stacks","own all the stacks");
+        put("#1 prisoners","#1 prisoners");
+        put("#1 reserves","#1 reserves");
+        
+        // game controls 
+        put("Rotate the board 180 degrees","Rotate the board 180 degrees");
+        put("Spread out the stacks","Spread out the stacks");
+        put("Adjust the chip spacing in stacks","Adjust the chip spacing in stacks");
+        put("Switch to a more overhead view of the board","Switch to a more overhead view of the board");
+        put("Switch to a more oblique view of the board","Switch to a more oblique view of the board");
+        
+        // entrapment
+        put("Entrapment_family","Entrapment");
+        put("Entrapment","Entrapment");
+        put("Entrapment-7x7","Entrapment");
+        put("Entrapment-7x7_variation","standard 7x7 Entrapment");
+        put("Entrapment-6x7_variation","Entrapment 6x7 - faster game");
+        
+        put("Immobilize your opponent's roamers","Immobilize your opponent's roamers");
+        put("Move a roamer","Move a roamer");
+        put("Move a roamer, or place a barrier","Move a roamer, or place a barrier");
+        put("Escape forced position, or place a barrier","Escape forced position, or place a barrier");
+        put("Move a roamer or move a barrier","Move a roamer or move a barrier");
+        put("Place a roamer on the board","Place a roamer on the board");
+        put("Escape forced position, or move a barrier","Escape forced position, or move a barrier");
+        put("Escape forced position","Escape forced position");
+        
+        // lehavre
+        put("LeHavre_variation","standard LeHavre");
+        put("LeHavre_family","LeHavre");
+        put("LeHavre","LeHavre");
+        
+        put("Select which opponent roamer to kill","Select which opponent roamer to kill");
+        put("Select which of your roamers to kill","Select which of your roamers to kill");
+        put("Entrapment-6x7","Entrapment-6x7");
+        put("Entrapment-7x7x4_variation","Entrapment-7x7x4_variation");
+        put("Move a stack, or add a reserve piece","Move a stack, or add a reserve piece");
+        put("+ #1 turns","+ #1 turns");
+        put("Entrapment-7x7x4","Entrapment-7x7x4");
+        
+     }
+}

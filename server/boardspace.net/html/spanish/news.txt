@@ -1,0 +1,4 @@
+*
+* new game MBrane is ready to play
+* It's Sudoku as a 2-player game
+*

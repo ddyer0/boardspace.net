@@ -1,0 +1,580 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <title>Porting Boardspace.net with Codename1</title>
+  </head>
+  <body alink="#EE0000" bgcolor="#eeeeff" link="#0000EE" text="#000000"
+    vlink="#551A8B">
+    <h1 align="center">Porting Boardspace.net using Codenameone</h1>
+    <p><br>
+    </p>
+    <h2>Executive summary:</h2>
+    <p>In two months of intense work, I ported a large java program to
+      IOS and Android using codenameone, and maintained a shared code
+      base with the starting version.&nbsp;&nbsp; There were many speed
+      bumps along the way, but the successful result did not entail any
+      substantial rewrites or major bodies of new code.&nbsp;&nbsp;
+      After the initial effort to get it working, I ported a second
+      (related) large program in about a month, spent another 4 months
+      tuning, completing features, and adding touch screen friendly
+      behaviors to both programs.<br>
+    </p>
+    <h2>The Problem Space: </h2>
+    <table border="0" cellpadding="2" cellspacing="2" width="100%">
+      <tbody>
+        <tr>
+          <td valign="top">Boardspace.net uses a java client to allow
+            users to play real time board games over the internet.&nbsp;
+            The core code that runs all of the games is packaged in a
+            small number of jar files, about a megabyte in all, built
+            from 160 source files containing 50,000 lines of Java.
+            &nbsp; &nbsp; The bulk of the porting effort is to retain
+            the functionality of this core, so that about 75 individual
+            games, consisting of a further 800 source files and 300,000
+            lines of Java could be used essentially unchanged.&nbsp; The
+            total amount of compiled code in the system (with 75 games)
+            is about 4MB, plus a lot of graphics. &nbsp; As a porting
+            problem there are several strong constraints.<br>
+            <ul>
+              <li>The biggest problem is the sheer size of the
+                code.&nbsp; Any porting approach that would require a
+                substantial rewrite is a non-starter.&nbsp; <br>
+              </li>
+              <li>Reliable TCP streams are required.&nbsp; Http
+                transactions are also used.</li>
+              <li>There is heavy use of custom graphics, constructed and
+                scaled on the fly.<br>
+              </li>
+            </ul>
+            <p>On the other side, non-constraints include:<br>
+            </p>
+            <ul>
+              <li>Swing, fancy UI widgets, or third party libraries, are
+                not required.&nbsp; Standard Java APIs from the AWT era
+                are all that are needed.<br>
+              </li>
+              <li>The games UIs are already laid out adaptively for
+                varying screen size and geometry,&nbsp; and the UI is
+                already known to work with single-finger touch
+                interfaces.&nbsp; The physical parameters of tablets
+                won't be a problem, except the physically small size on
+                some devices.</li>
+              <li>There is no requirement to use platform specific
+                capability (such as GPS) or services (such as embedding
+                Ads).<br>
+              </li>
+            </ul>
+            In view of the above, codenameone looked pretty attractive;
+            TCP sockets are supported,&nbsp; the user interface API is
+            similar to AWT, and it promised to provide IOS and Android
+            ports without major rewrites or paradigm shifts.&nbsp; <br>
+          </td>
+          <td valign="middle"><img alt="deployed windows"
+              src="window-group.jpg" height="297" width="400"><br>
+            <div align="center">lobby and games in progress<br>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <br>
+    <h2>The Plan: </h2>
+    <table border="0" cellpadding="2" cellspacing="2" width="100%">
+      <tbody>
+        <tr>
+          <td valign="top">My overall plan was to build the codenameone
+            version so it shared all except the list of imports at the
+            top of each file with the current code, so that in the
+            future, the codename1 and standard java branches would be
+            substantially identical.<br>
+            <br>
+            <ul>
+              <li>core Java classes would have to be used "as is".
+                Examples are Image,&nbsp; Graphics, Font.&nbsp; These
+                are pervasive in all the UI code, and trying to replace
+                or substantially alter them is not a good plan.<br>
+                <br>
+              </li>
+              <li>Where codenameone functionality is missing, or
+                substantially different from standard Java, create
+                adapter classes to either provide the missing
+                functionality or bridge between what codenameone
+                provides and standard Java.&nbsp; Examples: Color,&nbsp;
+                Component (the base class for all windows), and Event.<br>
+                <br>
+              </li>
+              <li>Where adapting or using as-is is not possible, drop
+                into platform-specific code which implements a new API
+                that is neither java or codename1, but which does what
+                is needed.&nbsp; Examples; Rectangles and Font
+                selection.&nbsp; Here, it is necessary, edit the code to
+                use the new API, but once edited it will be the same in
+                all branches.<br>
+                <br>
+              </li>
+              <li>Initially, set aside all but one game.&nbsp; All of
+                the games are substantially similar, and should be used
+                pretty much as-is if the core files are ported according
+                to plan.<br>
+                <br>
+              </li>
+              <li>First get the whole body of the codename1 branch
+                through the compiler.&nbsp; Then get it working.&nbsp;
+                Then back port the codename1 version to standard java
+                and get <i>that </i>working, iterate until both
+                versions are working and substantially identical (except
+                for "import" lines at the top of each file).&nbsp;
+                Isolate irreconcilable differences in a few files that
+                are not intended to be identical.<br>
+              </li>
+            </ul>
+            <br>
+          </td>
+          <td valign="top"><img alt="the desired result"
+              src="source-compare.jpg" align="middle" height="234"
+              width="300"><br>
+            <div align="center">typical source compare between standard
+              java and codename1 versions<br>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <br>
+    <br>
+    <h2>Phase 1: getting through the compiler</h2>
+    <p><br>
+      Starting with a duplicate branch of my source hierarchy as a
+      codenameone project, one file at a time, eliminate compiler
+      errors.&nbsp; This is a tedious and difficult process, because
+      nothing works yet, nothing can be tested, and every error requires
+      a treasure hunt and an educated guess how best to resolve
+      it.&nbsp;&nbsp; These guesses were frequently wrong, creating a
+      backtrack, undo and re-edit cycle.<br>
+    </p>
+    <ul>
+      <li>Core classes such as <b>Image</b>, <b>Font</b>, and <b>Graphics
+
+        </b>and <b>String</b>, which are provided by the environment
+        and which are mostly created by the system rather than by
+        calling "new", are not going to be subclassed.&nbsp; Mismatches
+        in the APIs are handled by adding new static methods to the
+        "garbage" class G which will be differently implemented in
+        codenameone and standard Java.&nbsp;&nbsp; This localizes all
+        the knowledge about differences in class G. &nbsp; Example:
+        standard Java operations on images typically require an
+        ImageObserver as one of the arguments, where otherwise similar
+        Codenameone methods do not, so define
+        G.getWidth(image,imageObserver) where the Codenameone
+        implementation will ignore the ImageObserver.<br>
+        <br>
+      </li>
+      <li>Other common classes, such as windows and widgets, have to be
+        subclassed or encapsulated, and any missing methods provided in
+        the new class.&nbsp; Initially these contain dummy methods that
+        will throw an error if called.&nbsp; This strategy accumulated
+        about 100 "bridge" classes that cover the differences between
+        Codenameone and standard Java functionality.&nbsp; Examples:
+        <b> bridge.Container</b> extends <b>com.codename1.UI.Container</b>,&nbsp;
+        <b> bridge.Date</b> encapsulates <b>java.util.date</b>.&nbsp;&nbsp;
+
+        Whenever the shared functionality is missing or probably not
+        identical, create a new "not implemented" method in the bridge
+        class to be fixed later.<br>
+        <br>
+      </li>
+      <li>Lots of little pieces of functionality from standard Java
+        libraries are just not there, or are in different places.&nbsp;
+        Examples: standard java <b>Math.pow</b> is implemented by <b>MathUtil.pow</b>;
+        <b>Integer.bitCount</b> is missing from Codename1.&nbsp;
+        Locating these missing pieces is a frustrating treasure hunt,
+        but frequently its possible to cannibalize the open source java
+        implementation.<br>
+      </li>
+    </ul>
+    <p>Two of the most difficult cases in this process proved to be <b>
+        Rectangle </b>and <b>Event</b>.&nbsp;&nbsp; These aren't
+      particularly classed as bugs or problems, only as illustration of
+      the kind of issue you can expect to contend with.<br>
+    </p>
+    <table border="1" cellpadding="2" cellspacing="2" width="100%">
+      <tbody>
+        <tr>
+          <td valign="top">
+            <p>The class <b>Rectangle </b>proved to be one of those
+              awful birthmarks that can never be erased.&nbsp; <br>
+            </p>
+            <p> &nbsp;&nbsp;&nbsp;&nbsp; Standard Java defines<br>
+              &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; <b>public integer x</b><br>
+              &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp; <b>public double
+                getX()</b></p>
+            <p> &nbsp;&nbsp;&nbsp; Codenameone defines<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b> public int getX()</b><br>
+            </p>
+            <p>there is absolutely no way these can be reconciled.&nbsp;
+              Rectangles are so common in the UI, it's just not
+              practical to replace them with an encapsulating class, and
+              switching uniformly to the accessor function getX()&nbsp;
+              will cause all manner of calculations to switch to
+              floating point in standard Java, causing compatibility
+              nightmares.&nbsp;&nbsp;&nbsp; Unfortunately rectangles are
+              ubiquitous, and in the overall code base, thousands of
+              instances of rectangle manipulation had to be manually
+              edited.&nbsp; Since my goal was to have one source, I
+              created functions like&nbsp; "public static int
+              Width(Rectangle r)" with different implementations for
+              Codename1 and standard Java.<br>
+            </p>
+          </td>
+          <td valign="top"> The class <b>Event</b>, and all its
+            subclasses, is another nasty case.&nbsp; The concept is the
+            same in Codename1 and standard Java, but the details of the
+            event types and handlers differ wildly.&nbsp;&nbsp; <br>
+            <br>
+            I ended up creating a shadow hierarchy of common window
+            types, "bridge.Container extends com.codename1.UI.Container"
+            and so on.&nbsp; The bridge classes implement the standard
+            java "addxxListener" methods, and handle them using a&nbsp;
+            "MouseAdapter" class.&nbsp; <br>
+            <br>
+            MouseAdapter receives codename1 events, transforms them, and
+            dispatches them to standard java event handlers.&nbsp; The
+            messiest part of this is that I couldn't simply implement
+            bridge.Component and let the rest of the window hierarchy
+            inherit from it.&nbsp;&nbsp; In any case, all of the window
+            types I use from AWT have quirks that are not implemented in
+            the corresponding Codename1 classes, so I needed a bridge.xx
+            class for every window type I use.<br>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    &nbsp;<br>
+    <h2>Phase 2: getting the Codename1 (Android) version working.<br>
+    </h2>
+    <p>Since this was a large body of legacy code, there were few unit
+      tests or test beds in place; but once the whole project compiles,
+      it's simple to insert scaffolding to test various pieces. I had
+      flagged a few key pieces as critical, likely to be troublesome,
+      and separable from the overall application. <br>
+    </p>
+    <table border="1" cellpadding="2" cellspacing="2" width="100%">
+      <tbody>
+        <tr>
+          <td valign="top">
+            <p>The first of these was networking.&nbsp; The framework
+              requires <b> HTTP </b>connections to negotiate login,
+              collect information from the server site, and report
+              problems back to be logged.&nbsp; The games themselves
+              require a <b>TCP </b>stream to be opened, and a
+              continuous, reliable, low bandwidth chitchat with the
+              server.&nbsp;&nbsp; <br>
+            </p>
+            <p><b>HTTP connections</b>, using a low level interface,
+              turned out to work perfectly.<br>
+            </p>
+            <b>TCP sockets</b> immediately proved to be
+            unreliable.&nbsp;&nbsp; My framework was already paranoid
+            about the reliability of the streams, so the problems showed
+            up immediately, rather than escaping into the operational
+            code.&nbsp; This prompted my first venture into the
+            Codename1 VM.&nbsp; I was able to find and fix the TCP
+            problems in a few days, and got the changes pushed back into
+            the main development line with remarkably little hassle. </td>
+          <td valign="top"><img alt="networking" src="network.jpg"
+              height="239" width="300"></td>
+        </tr>
+      </tbody>
+    </table>
+    <br>
+    <table border="1" cellpadding="2" cellspacing="2" width="100%">
+      <tbody>
+        <tr>
+          <td valign="top">The second likely source of problems I had
+            identified was image manipulation.&nbsp; My code uses an
+            unusual strategy to construct
+            images with transparency for use at run time, and unless
+            that
+            graphics pipeline could be preserved, a potentially huge
+            redesign might be required.&nbsp;&nbsp; Specifically, my
+            transparent images are constructed from pairs of ordinary
+            jpg images, which requires efficient access to the original
+            image RGB values, and the ability to construct new images
+            from raw RGB values.&nbsp;&nbsp; Fortunately this turned out
+            to be close to a non-issue.&nbsp; All the essential methods
+            for loading, manipulating, scaling and displaying images
+            existed and worked as advertised.</td>
+          <td valign="top"><img alt="image creation"
+              src="image-creation.jpg" height="239" width="300"><br>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <p><br>
+      <br>
+    </p>
+    <p>There were many more steps like these to get the whole project
+      working, but the underlying fact that the code was all known to
+      work (in the original) greatly smoothed the process.&nbsp;
+      Hundreds of bridge classes with "Error, not implemented" methods
+      were resolved one at a time, with the original behavior as a model
+      for what needed to be done.<br>
+    </p>
+    <h2>Phase 3: getting the Codename1 (IOS) version working.</h2>
+    <p>Theoretically, after getting the Android port working, the IOS
+      port should have been a matter of submitting a new build. In
+      practice it didn't work out that way.&nbsp; The IOS branch of
+      Codenameone is a much less mature product, and there were
+      quite&nbsp; a few problems getting an initial version running at
+      all, and then getting it running reliably.&nbsp; <br>
+    </p>
+    <p>Sometimes these required very painful debugging because the IOS
+      version crashed with no useful information about why.&nbsp; For
+      example, I spent 3 days generating builds containing less and less
+      code, until I <i>finally </i>discovered than an extra "static
+      main" method, left over from testing, was causing the whole
+      program to crash immediately.&nbsp; This has since been fixed; the
+      build process flags it as&nbsp; a build error.<br>
+    </p>
+    <p>On another occasion, IOS runs starting throwing errors,
+      complaining of internal inconsistencies, which turned out to be
+      that the implementation of "Random.nextLong()" was generating bad
+      values.&nbsp; Random had definitely been working the day before,
+      and by the time I diagnosed and documented it, Random()
+      mysteriously started working again.&nbsp; Some development work at
+      Codenameone had broken something for a few days, and I was the
+      victim.<br>
+    </p>
+    <p>Several ordinary Java constructions related to interfaces, or
+      default methods in interfaces, either generated build errors, or
+      built but created buggy code that crashed or misbehaved.&nbsp;
+      These were mostly fixed by restructuring my source code to avoid
+      the forms that the IOS branch of codenameone doesn't handle.&nbsp;
+      Some of these have since been fixed.&nbsp; <br>
+    </p>
+    <p>Several IOS "code generator" errors caused misbehavior at&nbsp;
+      build time, or (worse) at runtime.&nbsp; Some have been diagnosed
+      and fixed, others have been worked around.&nbsp; <br>
+    </p>
+    <h2>Surprises along the way.<br>
+    </h2>
+    <p>There were a number of noteworthy surprises that required changes
+      along the way. <br>
+    </p>
+    <ul>
+      <li><b>CPU speeds</b><b>.&nbsp;&nbsp; </b>As far as I can
+        determine, all tablets are wimps, optimized for graphics and not
+        much else.&nbsp; This caused almost all of my games' robot
+        players to be too slow to use.&nbsp; About the best cpu speed
+        I've seen in any tablet or phone is 15% the speed of a typical
+        desktop computer.&nbsp;&nbsp; A zippy robot opponent taking 10
+        seconds per move on a desktop becomes unbearably slow 60 seconds
+        per move on a tablet - and that's the best case.&nbsp;&nbsp; I
+        had to implement a new set of procedures for rating the cpu
+        speeds and robot speeds, and to politely decline to let tablet
+        users play against most of the robots.&nbsp; It's a big
+        disappointment.<br>
+        <br>
+      </li>
+      <li><b>Lack of memory </b>I thought that a tablet with 512M of
+        ram would have no trouble running my games, but it's not
+        so.&nbsp; Both android and IOS are optimized to run lots of
+        small processes, and have a strategy of randomly killing old
+        processes to make way for new ones.&nbsp;&nbsp; They're not real
+        computers.&nbsp; In the event, older tablets with 512M are on
+        the edge.&nbsp; 1G is better.<br>
+        <br>
+      </li>
+      <li><b>Not a real window system.&nbsp; </b>Android and IOS both
+        expect one active full screen process. Period.&nbsp; Even if the
+        physical and pixel sizes are generous.&nbsp; My games expected
+        to allow you to open multiple windows containing multiple games
+        and the lobby where games are set up.&nbsp;&nbsp; After some
+        initial experiments and arguments with the codename1 staff, I
+        acquiesced and implemented a tabbed interface where all my
+        independent windows became full screen tabs. &nbsp; The down
+        side of this for me is that the layouts of game windows were
+        "user optimized" by re-sizing them to a pleasant size. &nbsp; A
+        lot of the new, fixed sizes were not particularly pleasing, and
+        there are a <i>lot&nbsp; </i>of different screen
+        geometries.&nbsp;&nbsp; Making the game layout code more
+        flexible is still an ongoing process.<br>
+        <br>
+      </li>
+      <li><b>Unexpected use of Introspection, Clone, and
+          Serialize.&nbsp; </b>Although I "knew" I didn't make use of
+        these features, guess what, I did.&nbsp; Mostly not in any hard
+        to replace way, but a surprising number of cases popped up.<br>
+        <br>
+      </li>
+      <li><b>Lack of thread safety.&nbsp;&nbsp; </b>All of the
+        codename1 window system is not thread safe, and there are a lot
+        of threads floating around.&nbsp;&nbsp; Effectively all drawing
+        activity, even offscreen drawing, has to be shifted to the main
+        EDT process.&nbsp;&nbsp; Random manipulations of windows such as
+        changing text messages, adding or removing windows, also has to
+        be shifted to the EDT process.<br>
+        <br>
+      </li>
+      <li><b>Flickering displays </b>Android displays, but not IOS, had
+        a persistent problem with flickering.&nbsp; Users expect a
+        rock-solid picture.&nbsp; It turns out there are deep seated
+        problems using dynamically created bitmaps to speed up frame
+        times on Android.&nbsp; I'm avoiding these with some ad-hoc
+        methods, but it's not completely satisfactory.<br>
+        <br>
+      </li>
+      <li><b>IOS project build times&nbsp; </b>While my android build
+        times remained stable at <i>1-2 minutes</i>, as I brought more
+        games into the system my IOS build time grew
+        exponentially.&nbsp; I finally stopped to study the issue when
+        my typical IOS build time exceeded <i>1 Hour.&nbsp; </i>I
+        eventually discovered that the IOS build has a "kitchen sink"
+        approach to header files, so if you're not careful, even trivial
+        classes will be compiled with all the headers for all the
+        classes in the entire project.&nbsp;&nbsp; Several careful
+        restructurings of the classes, especially to avoid making
+        classes even theoretically visible to one another, reduced the
+        build time to 20 minutes.<br>
+      </li>
+    </ul>
+    <h2>Missing and/or Mis-features</h2>
+    <ul>
+      <li><b>Weak Hash Map</b>s are mis-implemented as "discard on GC"
+        maps. Just don't event try to use them in their intended way.</li>
+    </ul>
+    <ul>
+      <li><b>Font size and scaling</b><b>.&nbsp;&nbsp; </b>Codename1
+        has a poorly developed system for selecting fonts with size
+        appropriate to the screen pixel density, which varies a
+        lot.&nbsp; <br>
+        <br>
+      </li>
+      <li><b>Zip format</b> which I use to archive bundles of games, is
+        not supported.&nbsp; I think zip format is now semi-supported in
+        an external library.<br>
+        <br>
+      </li>
+      <li><b>Class.forName</b> is not implemented on IOS.&nbsp; Not only
+        is there no dynamic loading of classes (which I expected) but
+        you have to have an explicit list of the classes you want to
+        instantiate.<br>
+      </li>
+    </ul>
+    <h2>The Codenameone bug/fix cycle:<br>
+    </h2>
+    Support on the Codenameone <b>forums </b>and stack overflow has
+    been generally good.&nbsp;&nbsp; Posts always get a response, and
+    usually good follow up.<br>
+    <br>
+    During 7 months, I've filed 27 issues on <b>Github</b>, ranging
+    from pretty trivial to extremely serious.&nbsp; About half have been
+    closed, most of those in a manner satisfactory to me.&nbsp;&nbsp;
+    There are some serious, probably systemic problems affecting other
+    users, in the unresolved category.&nbsp; I've been fortunate that
+    I've been able to work around the issues that haven't been fixed.<br>
+    <br>
+    I've made 11 <b>pull requests</b> ranging from minor to major bug
+    fixes, and a few features big enough to affected multiple
+    files.&nbsp; The critical things were all accepted.<br>
+    <br>
+    Overall, Codenameone staff has been helpful and responsive.&nbsp; My
+    general expectation is that the larger the company, the worse they
+    treat small customers.&nbsp;&nbsp; They're a small company, and
+    still act like it.
+    <h2>Continuing annoyances</h2>
+    <h2> </h2>
+    <ul>
+      <li> Some features which I consider to be absolutely essential are
+        relegated to "premium" status.&nbsp;&nbsp; The two worst cases
+        are crash logging and participation in Apple's beta program for
+        new releases.<br>
+        <br>
+      </li>
+      <li>The build servers periodically become unstable, start
+        generating build errors for no discernible reason.&nbsp; This
+        problem has somewhat abated.<br>
+        <br>
+      </li>
+      <li>IOS build sizes are <i>really </i>big as well as slow to
+        generate.&nbsp; My complete Android build is about 22M.&nbsp;
+        The corresponding IOS build, in the app store, is 120M<br>
+        <br>
+      </li>
+      <li>Silver spoon bug reports are required.&nbsp; If you're able to
+        produce a single file, 100% reproducible test case, and submit
+        it in just the right way, codenameone staff will probably
+        respond appropriately.&nbsp; Anything less than that is likely
+        to be waved off, argued away, or ignored.</li>
+      <li>
+        <p>Generally speaking, Codenameone has shown little interest in
+          making their platform to be more compatible with standard
+          Java, or for that matter more like any of the native platforms
+          they support.&nbsp; Codenameone is its own thing, and in their
+          view you should target it, rather than expect it to target
+          you.<br>
+        </p>
+      </li>
+    </ul>
+    <h2>Conclusion</h2>
+    The proof of the pudding, as they say, is in the eating.&nbsp; My
+    project is definitely a difficult outlier for Codenameone, but I've
+    now got two completed mobile apps <br>
+    <table border="1" cellpadding="2" cellspacing="2" width="100%">
+      <tbody>
+        <tr>
+          <td valign="top"><br>
+            <ul>
+              <li>Google Play;&nbsp; <a
+                  href="https://play.google.com/store/apps/details?id=com.boardspace">Boardspace.net</a>
+                and<a
+                  href="https://play.google.com/store/apps/details?id=com.tantrix">
+                  Tantrix.com<br>
+                </a> <br>
+              </li>
+              <li>ITunes <a
+href="https://itunes.apple.com/us/app/boardspace.net/id1089274351?ls=1&amp;mt=8">Boardspace.net
+
+
+
+                </a>and <a
+href="https://itunes.apple.com/us/app/tantrix.com/id1102957653?ls=1&amp;mt=8">Tantrix.com</a>.&nbsp;&nbsp;
+
+
+                <br>
+              </li>
+            </ul>
+          </td>
+          <td valign="top"><img alt="tantrix lobby" src="tantrix.jpg"
+              height="341" width="200"><br>
+          </td>
+          <td valign="top"><img alt="tantrix game" src="tantrix2.jpg"
+              height="341" width="200"></td>
+          <td valign="top"><img alt="boardspace game"
+              src="boardspace.jpg" height="267" width="200"><br>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    The process to create them was sometimes rocky, but I can't imagine
+    any similar process, using another implementation strategy, to be
+    faster or easier.&nbsp; I'm particularly pleased that I can now
+    continue development in my traditional environment and simply deploy
+    the result to IOS and Android.&nbsp;&nbsp; It's also notable that I
+    remain completely ignorant of all the details of Android OS and
+    IOS.&nbsp; Not needing to know is a good thing.<br>
+    <br>
+    I can't emphasize enough that this would not have been possible with
+    a closed source product.&nbsp;&nbsp; The ability to immediately see
+    what was going on "under the hood" is worth more than an army of
+    tech support and a mountain of documentation.&nbsp; The ability to
+    actually fix bugs in the product, rather than just report them,
+    definitely made the difference between a project that could keep
+    moving forward and one that was stalled, waiting for a fix.<br>
+    <br>
+    <br>
+    <br>
+    <br>
+  </body>
+</html>

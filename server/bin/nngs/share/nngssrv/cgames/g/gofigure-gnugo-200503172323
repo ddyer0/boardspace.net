@@ -1,0 +1,51 @@
+
+(;
+GM[1]FF[4]AP[NNGS:1.1.17]
+US[Brought to you by No Name Go Server]
+CP[
+  Copyright This game was played on the No Name Go Server
+  Permission to reproduce this game is given,
+  as long as this copyright notice is preserved.]
+GN[GoFigure-GNUGo(B) NNGS]
+EV[none]
+RE[W+17.5]
+PW[GoFigure]WR[NR ]
+PB[GNUGo]BR[NR ]
+PC[NNGS Go Program Server Clone: boardspace.net 6969]
+DT[2005-03-17]
+SZ[9]TM[600]KM[5.5]
+
+;B[gc]C[
+ gunnar started observation.
+ evand started observation.
+]
+;W[fd];B[gd];W[fe];B[ge];W[gg];B[fc];W[cd];B[cb]C[
+ evand NR : somehow I think this depends on b ignoring the lower left :) (9)
+ gunnar NR : C8 nonsense. C3 urgent. (9)
+ evand NR : definitely (9)
+]
+;W[cg];B[ff]C[
+ gunnar NR : I'm somewhat afraid C8 is cap... (11)
+ evand NR : that would be an odd justification (11)
+]
+;W[gf]C[
+ gunnar NR : The cap pattern isn't ideally constrained. :-) (12)
+ evand NR : not too surprising, I suppose :) (12)
+]
+;B[ee];W[eg];B[de];W[ce];B[he];W[df];B[ih]C[
+ gunnar NR : D7 looks important. (19)
+ evand NR : yeah, it does... (19)
+]
+;W[dc];B[db];W[ed];B[ec];W[dd];B[bc];W[hh];B[af];W[ig];B[hf];W[hg];B[ah]
+;W[bh];B[bf];W[be];B[if];W[bd];B[ad]C[
+ gunnar NR : Huh? (37)
+]
+;W[ae];B[ac];W[ef];B[cc];W[tt];B[tt]
+;
+TB[aa][ab][ba][bb][ca][da][ea][eb][fa][fb][ga][gb][ha][hb][hc][hd][ia][ib]
+[ic][id][ie]
+TW[af][ag][ah][ai][bf][bg][bi][cf][ch][ci][de][dg][dh][di][ee][eh][ei][ff]
+[fg][fh][fi][gh][gi][hi][ih][ii]
+)
+
+---

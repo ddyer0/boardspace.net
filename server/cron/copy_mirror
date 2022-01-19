@@ -1,0 +1,21 @@
+#!/bin/csh
+source ~/cgi-bin/include.csh
+cd $mirror_in/temp
+touch dummy
+rm -f *
+touch dummy
+ftp -n -i www.tantrix.com <<EOF
+user tantrix play2win
+cd mirror
+put dummy
+mget *
+mdelete *
+quit
+EOF
+mv -f * ..
+rm ../dummy
+cd ~/cron
+
+
+
+

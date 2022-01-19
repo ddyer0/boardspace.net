@@ -1,0 +1,60 @@
+
+Steps to configure a server.  
+
+Suppose you have a virgin L.A.M.P server with only the stock starting software installed.
+These are things you need to do to make it boardspace.
+
+
+tar /etc to ~boardspa/conf/etc.tar
+tar /var/cvs to ~boardspa/conf/cvs.tar
+tar -cf ~boardspa/conf/vpopmail.tar .
+yum list > yim.txt
+tar /usr/lib/perl5/5.8.8 ~boardspa/conf/perl.tar
+mysql version Ver 14.12 Distrib 5.0.77
+
+ssh port set to 9130
+
+build steps for new boardspace cloud server
+
+created a new account and vm at steadfast.net
+https://manage.steadfast.net/client/
+https://vm.steadfast.net
+account 3392 xxxxxx
+ip 50.31.1.13 boardspace.net
+ip 50.31.1.39 real-me.net
+ip 50.31.1.14 cgos.boardspace.net
+
+added interworks control panel, tied to above ip
+added additional ips, enabled them on the interworks control panel
+used import/mass migrate to copy all siteworx accounts - boardspace, cgos, real-me, extrabs and rcs
+set mysql password
+adjust control panal services to match old boardspace cp
+manually copy and create mysql databases boardspace and phpbb
+use new https://portal.steadfast.net/extranet/ portal to set up duplicate dns records for boardspace and real-me
+change records at dnscentral to point to new domain servers
+use local hosts file to set up access to remote apache
+
+yum packages
+cpan
+xinitd
+libgd (installed by steadfast)
+uri
+unicode (huge, multipart)
+Encode
+Unicode::Escape
+
+
+
+perl cpan packages
+Bundle::Mysql
+force install Mysql
+edit httpd.conf to allow server side includes
+perl cpan install GD GD::SVG GD::Graph
+procmail (contains lockfile)
+install /var/cvs contents
+
+
+todo:
+verify backups with tantrix
+check cookie login
+check mail bounce detector

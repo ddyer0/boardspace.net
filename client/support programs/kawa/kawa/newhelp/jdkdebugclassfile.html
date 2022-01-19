@@ -1,0 +1,25 @@
+<HTML>
+<HEAD>
+<TITLE>Kawa Project</TITLE>
+</HEAD>
+<BODY LINK="#0000ff" VLINK="#800080" BGCOLOR="#ffffff">
+
+<H1><IMG SRC="kawacup.jpg" WIDTH=106 HEIGHT=100>JDK Debug Class File</H1>
+<P><A HREF="index.htm">Index</A> </P>
+<P>
+<font size="1.5" face="Arial">Last Modified Date - <font color=red>2/16/99</font><p>
+Please click <a href="http://www.tek-tools.com/kawa/docs/jdkdebugclassfile.html">here</a> for the latest version of this document.
+<font color=red> If this is an online version of the document please right click in the browser and select 
+'Update local Kawa document' to update your local copy of this document</font>
+</font>
+<P><HR></P>
+The default JDK class library, classes.zip for JDK 1.1 and rt.jar for JDK 1.2, is not compiled with debug information. Therefore,
+during debugging if you try and expand a JDK class in Kawa you get the error message that there is no debug information
+available for this class.
+<p>Please download the debug version of classes file from the <a href="http://www.tek-tools.com/kawa/relate.htm">Kawa site</a> and
+follow the instructions on the site to install this file.
+<p>Please indicate the location of debug class file under Customize/Options/Profile/Advanced paths/JDK Debug classes path. Please
+make sure the debug class file version and JDK version matches. Kawa will automatically set the classpath for this file during
+debugging.
+</BODY>
+</HTML>

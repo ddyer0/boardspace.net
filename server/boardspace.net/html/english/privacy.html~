@@ -1,0 +1,134 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html;
+      charset=windows-1252">
+    <title>BoardSpace.net Registration Page</title>
+    <script src="/js/site.js">
+  </script>
+  </head>
+  <body background="/images/background-image.jpg">
+    <h1 style="text-align: center;"><img src="/images/master-logo.jpg"
+        title="" alt="boardspace.net" style="width: 600px; height:
+        100px;"></h1>
+    <h1 style="text-align: center;">Player Registration<br>
+    </h1>
+    <br>
+    <form name="register" action="/cgi-bin/register.cgi" method="post">
+      <!--#include virtual="/cgi-bin/gs_timestamp.cgi" --><br>
+    <br>
+    <table width="100%" border="1" cellpadding="2" cellspacing="2">
+      <tbody>
+        <tr>
+          <td valign="top">
+            <table style="width: 100%;" border="1" cellpadding="2"
+              cellspacing="2">
+              <tbody>
+                <tr>
+                </tr>
+                <tr align="center">
+                  <td colspan="3" valign="top"><b>Register Here, Play
+                      from Anywhere</b><br>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="vertical-align: top;">real name<br>
+                  </td>
+                  <td style="vertical-align: top;"><input
+                      name="fullname"><br>
+                  </td>
+                  <td style="vertical-align: top;">Your real name, or
+                    whatever. </td>
+                </tr>
+                <tr>
+                  <td style="vertical-align: top;">login name<br>
+                  </td>
+                  <td style="vertical-align: top;"><input name="pname"><br>
+                  </td>
+                  <td style="vertical-align: top;">login name.&nbsp; At
+                    least 3 characters, letters and numbers only<br>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="vertical-align: top;">password<br>
+                  </td>
+                  <td style="vertical-align: top;"><input
+                      name="password" type="password"> </td>
+                  <td style="vertical-align: top;">Do not use a valuable
+                    password. but please not a completely trivial one
+                    either.<br>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="vertical-align: top;">confirm password<br>
+                  </td>
+                  <td style="vertical-align: top;"><input
+                      name="password2" type="password"><br>
+                  </td>
+                  <td style="vertical-align: top;">Confirm the
+                    password.&nbsp; Lost passwords can be recovered, if
+                    your email address remains valid.<br>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="vertical-align: top;">email<br>
+                  </td>
+                  <td style="vertical-align: top;"><input name="email"><br>
+                  </td>
+                  <td style="vertical-align: top;"><span
+                      style="font-weight: bold;">You will be emailed a
+                      link to activate your account</span>, so the email
+                    address you provide here must be valid.&nbsp; This
+                    will not be used except for official communication
+                    from the site (for example sending you your lost
+                    password), and will not be sold or passed on to any
+                    other party.&nbsp; No spam, we promise.<br>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="vertical-align: top;">Country<br>
+                  </td>
+                  <td style="vertical-align: top;">
+                    <!--#include virtual="/cgi-bin/tlib/selectors.cgi?what=country" -->
+                    <br>
+                  </td>
+                  <td style="vertical-align: top;">For maps,
+                    tournaments, and things like that.&nbsp; If you're
+                    really anti-nationalist, choose "Planet Earth".<br>
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="2" valign="top"><input value="register now" onclick="checkRegisterForm(this.form)" type="button"></td><td valign="top"><a href="/english/help-video.html"><img alt="help                  video" src="../images/video_icon.png" width="50" border="0" height="49"></a>View a short video to help
+              get you started with the game lobby. </td></tr>
+        </tbody>
+      </table></td><td valign="top"><table width="100%" border="1" cellpadding="2" cellspacing="2"><tbody><tr align="center"><td valign="top"><b>Software to Play</b><br></td></tr><tr><td valign="top"><h2>Desktops</h2><h3>Pc, Mac or Linux</h3><p>Boardspace.net uses
+                Java on desktops.&nbsp; If your browser has java support, there will<br>be a small java applet immediately below this text, 
+showing your java version.&nbsp; If it<br>does, you're good to go <a href="login.shtml">from your browser.</a><br>    
+                      <!--#include virtual="/cgi-bin/applettag.cgi?tagname=version" --><br>                       
+   <br></p><p>See <a href="file:///G:/share/projects/boardspace-html/htdocs/english/needsjava.shtml">NeedsJava </a>page for more advice.<br>
+</p></td></tr><tr><td valign="top"><h2>Android and IOS<br></h2><p><a href="https://play.google.com/store/apps/details?id=com.boardspace">Google Play (free)</a> or <a href="https://itunes.apple.com/us/app/boardspace.net/id1089274351?ls=1&amp;mt=8">Itunes store (free)</a></p><p>The apps ought to work from any modern device, but tablet-sized devices with at least 1G of memory are recommended.&nbsp;&nbsp; Phones will work, but the screens are annoyingly small. The CPUs, of mobile devices are pretty wimpy, so the robots for many of games are not playable.&nbsp; You'll have to play other people, or use your desktop mobile.<br></p><p>The apps do not have any advertising or in-app purchases.&nbsp; Just the games.<br></p></td></tr><tr></tr><tr></tr></tbody></table><br></td></tr></tbody></table>
+    Registration and play are free.&nbsp; You are a guest of the site,
+    so please behave yourself.&nbsp; Other than that, play fair, and
+    have fun.<br>
+
+    </form>
+    <hr style="width: 100%; height: 2px;">
+    <table style="width: 100%;">
+      <tbody>
+        <tr>
+          <td align="left"> <font size="-1">E-mail:
+              <script language="javascript">
+document.write("<a href='mailto:gamemaste");
+document.write("r\@board");
+document.write("space.net'>gamemaste<n>r@board<n>space.net</a>");
+      </script></font> </td>
+          <td style="vertical-align: top; text-align: center;"><br>
+          </td>
+          <td align="right">Go to <a href="/">BoardSpace.net home page</a>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  
+
+</body></html>

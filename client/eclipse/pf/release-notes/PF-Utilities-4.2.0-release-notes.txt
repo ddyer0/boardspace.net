@@ -1,0 +1,593 @@
+Utilities: Realease-Notes
+Author: Manfred Duchrow
+Copyright (c) 2002-2014, by Manfred Duchrow. All rights reserved.
+=======================================================================
+
+-----------------------------------------------------------------------
+
+VERSION 4.2.0 (19/01/2014)
+
+* New classes
+  > PropertiesMap
+
+* CollectionUtil
+  > Added
+    - public void addAll(Map<String, String> map, String... keyValuePairs)
+    - public void addAll(Properties properties, String... keyValuePairs)
+
+-----------------------------------------------------------------------
+
+VERSION 4.1.0 ( March 18, 2012 )
+
+* New classes
+  > MultiValueProperty
+  > MultiStringProperty
+  > CaseInsensitiveMultiValueProperties
+  
+* Classes changed to support generic types
+  > public class EnumerationIterator<E> implements Iterator<E>
+  > public class ObjectArrayIterator<T> implements Iterator<T>
+  > public interface ObjectFilter<T> extends IObjectFilter<T>
+  > public class ObjectCollectionFilter<T> implements ObjectFilter<T>
+  > public class OrderedCollection<E> implements Collection<E>
+  > public class MapWrapper<K, V> implements Map<K, V>, Serializable
+
+* CollectionUtil
+  > Changed method signatures to support generic types
+    - public <T> T[] toArray(Collection<T> objects, Class<T> elementType)
+	- public <T> List<T> toList(T[] objects)
+	- public <T> T[] toArray(Collection<T> objects)
+	- public <T> Iterator<T> asIterator(Enumeration<T> enumeration)
+	- public <T> List<T> asList(Enumeration<T> enumeration)
+	- public <T> Enumeration<T> asEnumeration(Collection<T> collection)
+	- public <T> Enumeration<T> asEnumeration(T... objects)
+	- public <T> Iterator<T> iterator(T... objects)
+	- public <T> T[] removeNull(T... array)
+	- public <K, V> Map<K, V> copyWithout(Map<K, V> map, IObjectFilter filter)
+	- public <T> Collection<T> copyWithout(Collection<T> objects, IObjectFilter<T> filter)
+	- public <T> T[] copyWithout(T[] objArray, IObjectFilter<T> filter)
+	- public <T> T[] copy(T... objects)
+	- public <T> T[] copy(T[] objects, IObjectFilter<T> filter)
+	- public <T> Collection<T> copy(Collection<T> objects, IObjectFilter<T> filter)
+	- public <K, V> Map<K, V> copy(Map<K, V> map, IObjectFilter filter)
+	- public <K, V> Map<K, V> copy(Map<K, V> map, IObjectFilter<Map.Entry<K, V>> filter)
+	- public <T> T[] reverseCopy(T[] array)
+	- public <T> void addAll(Collection<T> collection, T[] objects)
+	- public <T> void addAllNew(Collection<T> collection, T[] objects)
+	- public <T> T[] append(T[] objects, T object)
+	- public <T> T[] append(T[] objects, T[] appendObjects)
+	- public <T> int indexOfIdentical(T[] objArray, T searchObj)
+	- public <T> int indexOf(T[] objArray, T searchObj)
+	- public <T> int indexOf(T[] objArray, IObjectFilter<T> filter)
+	- public <T> int lastIndexOf(T[] objArray, IObjectFilter<T> filter)
+	- public <T> int indexOf(List<T> list, IObjectFilter<T> filter)
+	- public <T> int lastIndexOf(List<T> list, IObjectFilter<T> filter)
+	- public <T> T[] copyWithoutIdentical(T[] objArray, T[] skipArray)
+
+-----------------------------------------------------------------------
+
+VERSION 4.0.2 ( October 15, 2011 )
+
+* Bugfix
+  > DateUtil
+    - public Date newDate( TimeZone timezone, int year, int month, int day)
+	When executed in another timezone than GMT at a specific time 
+	(shortly after midnight) the created date was wrong (next day).
+
+-----------------------------------------------------------------------
+
+VERSION 4.0.1 ( June 23, 2011 )
+
+* SysUtil
+  > Added OS name prefixes that are recognized as Unix OS
+    - "SUNOS"
+    - "DIGITAL"
+    - "OSF1"
+    - "Irix"
+	
+-----------------------------------------------------------------------
+
+VERSION 4.0 ( November 17, 2010 )
+
+* New classes
+  > CollectionEnumeration<E>
+
+* SysUtil
+  > Added
+    - public boolean isAppletEnvironment()
+
+* DateUtil
+  > Added
+    - public static final TimeZone TIMEZONE_UTC
+    - public static final TimeZone TIMEZONE_GMT
+    - public static final TimeZone TIMEZONE_GERMANY
+    - public static final SimpleDateFormat DF_GERMAN_DATE
+    - public static final SimpleDateFormat DF_UK_DATE
+    - public static final SimpleDateFormat DF_US_DATE
+    - public static final SimpleDateFormat DF_GERMAN_DATE_TIME
+    - public Date newGMTDate( int year, int month, int day, int hour, int minute, int second)
+    - public Date newDate( TimeZone timezone, int year, int month, int day, int hour, int minute, int second)
+    - public Calendar asCalendar( Date date )
+    - public Calendar asCalendar( TimeZone timezone, Date date )
+    - public Calendar asGMTCalendar( Date date )
+    - public String convertDateIntoZuluTime( Date date )
+    - public Date convertZuluTimeIntoDate( String str )
+
+* SimpleDate
+  > Added
+    - public Date asDate() 
+
+* CollectionUtil
+  > Bugfix of methods propertiesStartingWith(...)
+    Now not throwing StringIndexOutOfBoundsException anymore if a key
+	is identical to the specified prefix
+	
+  > Added
+    - public Enumeration asEnumeration( Collection collection )
+	- public Enumeration asEnumeration( Object[] objects ) 
+	
+* Changed classes to support generic types
+  > Association
+  > NamedValue
+  > NamedText
+  > AAssociationProcessor
+  > AssociationList
+	
+-----------------------------------------------------------------------
+
+VERSION 3.6 ( November 13, 2008 )
+
+* CollectionUtil
+  > Added
+    - EMPTY_INT_ARRAY
+    - EMPTY_LONG_ARRAY
+	- public int[] append( int[] values, int[] appendValues )
+	- public long[] append( long[] values, long[] appendValues )
+
+-----------------------------------------------------------------------
+
+VERSION 3.5 ( March 8, 2008 )
+
+* New class
+  > SimpleDateFormat
+
+* CollectionUtil
+  > Added
+    - EMPTY_OBJECT_ARRAY
+    - public Object[] append( Object[] objects, Object object )
+	- public Object[] append( Object[] objects, Object[] appendObjects )
+
+* Base64Converter
+  > Changed
+    public static String encodeToString( byte[] unencoded ) 
+	to not create \n in result for line length greater than 76
+	
+  > New methods
+    - public static String encodeToStringWithLineBreaks( byte[] unencoded )
+	- public static String encodeWithLineBreaks( String unencoded )
+	- public static char[] encodeWithLineBreaks( byte[] unencoded ) 
+
+-----------------------------------------------------------------------
+
+VERSION 3.4 ( April 25, 2008 )
+
+* SysUtil
+  > Added
+    - public void addSystemExitListener( ISystemExitListener listener )
+    - public void removeSystemExitListener( ISystemExitListener listener )
+    - public void sleep( long milliseconds )
+	- public void exit( int rc ) 
+	- public void exit( int rc, long sleepBeforeExit )
+
+* New classes
+  > EnumerationIterator
+  
+* CollectionUtil
+  > Added
+    - public Iterator asIterator( Enumeration enumeration )
+	- public List asList( Enumeration enumeration )
+	
+-----------------------------------------------------------------------
+
+VERSION 3.3 ( February 10, 2007 )
+
+* New classes
+  > ObjectArrayIterator
+  > StopWatch
+
+* CollectionUtil
+  > Added methods
+    - public boolean contains( long[] valueArray, long value )
+    - public boolean contains( int[] valueArray, int value )
+    - public Iterator iterator( Object[] objects ) 
+
+* DateUtil
+  > Added
+    - public Date newDate( int year, int month, int day, int hour, int minute)
+    - public Date newDate( int year, int month, int day, int hour, int minute, 
+                           int second) 
+
+-----------------------------------------------------------------------
+
+VERSION 3.2 ( August 8, 2006 )
+
+* CollectionUtil
+  > BUGFIX: 
+    propertiesStartingWith() has cut off first character of remaining key
+    if the prefix didn't end with a dot ('.')
+
+	> Minor performance optimization in method current()
+	
+* SysUtil
+  > Caches now the value of a isEclipse() call
+
+* AssociationList
+  > Added
+    - EMPTY_ASSOCIATION_ARRAY
+    - public Association[] associationArray( IObjectFilter filter )
+    
+* NamedValueList
+  > Added    
+    - EMPTY_NAMED_VALUE_ARRAY
+    - public NamedValue[] namedValueArray( IObjectFilter filter )
+    - public boolean containsName( String name ) 
+
+* NamedTextList
+  > Added
+    - EMPTY_NAMED_TEXT_ARRAY
+		- public NamedText[] namedTextArray( IObjectFilter filter )  
+
+* BUGFIX: TemporaryMap.remove() returned an Association and not the object
+          that was put to the map before
+  > Added
+    - public Object remove( Object key )
+
+* OrderedMap
+  > Changed remove() to return the value of the internal Association rather
+    than the Association itself
+
+* New classes
+  > Countdown
+
+-----------------------------------------------------------------------
+
+VERSION 3.1 ( June 3, 2006 )
+
+* SysUtil
+  > Added
+    - public String getOsFamily()
+
+* New classes
+  > AAssociationProcessor
+
+* AssociationList
+  > Added
+    - public boolean containsKey( Object key )
+    - public void processEach( IObjectProcessor associationProcessor )
+
+-----------------------------------------------------------------------
+
+VERSION 3.0.1 ( March 12, 2006 )
+
+* SysUtil
+  > Changed isEclipse() to catch all exceptions
+  > Supports now system property "org.pf.util.isEclipse" to specify true
+    or false for the result of this method.
+
+-----------------------------------------------------------------------
+
+VERSION 3.0 ( February 24, 2006 )
+
+* AssociationList
+  > Added methods
+    - public boolean isEmpty()
+
+* CollectionUtil
+  > Added methods
+    - public boolean isNullOrEmpty( Object[] array )
+    - public boolean isNullOrEmpty( Map map )
+    - public boolean isNullOrEmpty( AssociationList associationList )
+    - public Collection copy( Collection objects, IObjectFilter filter )
+    - public Collection copyWithout( Collection objects, IObjectFilter filter)
+    - public Map copy( Map map, IObjectFilter filter )
+    - public Map copyWithout( Map map, IObjectFilter filter)
+    - public int indexOf( List list, IObjectFilter filter )
+		- public int lastIndexOf( List list, IObjectFilter filter )
+		- public int indexOf( Object[] objArray, IObjectFilter filter )
+		- public int lastIndexOf( Object[] objArray, IObjectFilter filter )
+
+* OrderedSet
+  > BUGFIX
+    - eliminated infinite recursion in 
+    	public boolean removeAll(Collection coll)
+
+  > Added
+    - implements List
+
+* CollectionDictionary
+  > BUGFIX
+    - public void putAll(Map map)
+    
+-----------------------------------------------------------------------
+
+VERSION 2.8 ( June 11, 2005 )
+
+* Exchanged the Base64 implementation to that of Robert Harder
+  (http://iharder.sourceforge.net/base64)
+
+* New class DateUtil
+
+-----------------------------------------------------------------------
+
+VERSION 2.7 ( May 27, 2005 )
+
+* AssociationList
+  > Added methods
+    - public AssociationList( Map map )
+
+  > Changed putAll( Map map ) to ensure that for subclasses
+    all entries are skipped that do not fit the key or value type
+  
+* NamedValueList
+  > Added constructor
+    - public NamedValueList( Map map )
+
+* NamedTextList
+  > Added constructor
+    - public NamedTextList( Map map )
+
+* New interfaces
+  > ObjectFilter
+  
+* New classes
+  > ObjectCollectionFilter
+  > ObjectCollectionFilterTest
+  
+* CollectionUtil
+  > Added methods
+    - public boolean isNullOrEmpty( Collection collection )
+    - public Object[] toArray( Collection objects ) 
+    - public Object[] toArray( Collection objects, Class elementType )
+    - public Object[] copyWithout( Object[] objArray, ObjectFilter filter)
+    - public List toList( Object[] objects ) 
+    - public Object[] copy( Object[] objects, ObjectFilter filter )
+
+-----------------------------------------------------------------------
+
+VERSION 2.6 ( December 27, 2004 )
+
+* New class SysUtil with methods
+  - public boolean isEclipse()
+  - public boolean isWindows()
+
+-----------------------------------------------------------------------
+
+VERSION 2.5 ( September 17, 2004 )
+
+* New class OrderedProperties
+
+-----------------------------------------------------------------------
+
+VERSION 2.4 ( July 30, 2004 )
+
+* New class Base64Converter
+
+* CollectionUtil
+  > Added constants
+    - EMPTY_SET
+    - EMPTY_LIST
+    - EMPTY_MAP
+
+* Association
+  > Added methods
+    - copyAssociation()
+  > Now implements Serializable
+  
+* NamedValue
+  > Added methods
+    - copyNamedValue()
+
+* NamedText
+  > Added methods
+    - copyNamedText()
+
+* MapWrapper
+  > Added methods
+    - protected Map createEmptyMap( int initialCapacity )
+  > Added constructors
+    - public MapWrapper( int initialCapacity )
+  > Now implements Serializable
+
+* CaseInsensitiveKeyMap
+  > Added constructor
+    - public CaseInsensitiveKeyMap( int initialCapacity )
+
+-----------------------------------------------------------------------
+
+VERSION 2.3 ( March 19, 2004 )
+
+* New class StackedMap
+
+* NamedText
+  > New method
+    - public NamedText copy()
+
+* AssociationList
+  > New methods
+    - public boolean remove( Association association )
+    - public Association remove( int index )
+    - public Association removeKey( Object key )
+    - public void removeAll( Collection assocCollection )
+    - public void setAssociationAt( int index, Association associaction )
+    - public int indexOf( Object key )
+    - public void putAll( Map map )
+    - public void putAll( Association[] associations )
+    - public void put( Association association )
+    - public void put( Object key, Object value )
+    - public List keys()
+    - public List values()
+
+* NamedValueList
+  > Added methods
+    - public void setNamedValueAt( int index, NamedValue namedValue )
+    - public NamedValue remove( String name )
+    - public List names()
+
+* NamedTextList
+  > Added method
+    -  public void setNamedTextAt( int index, NamedText namedText )
+
+* Trigger
+  > Removed unnecessary check for trigger == null from
+    - public static Trigger launch(...)
+  > Added method
+    - public void terminate()
+
+* New classes
+  > OrderedMap
+    A Map implementation that pertains the order of its elements
+    (similar to JDK 1.4 LinkedHashMap)
+  > OrderedSet
+    A Set implementation that pertains the order of its elements
+    (similar to JDK 1.4 LinkedHashSet)
+
+* Class Association now implements interface Map.Entry
+
+-----------------------------------------------------------------------
+
+VERSION 2.2 ( December 20, 2003 )
+
+* New methods in CollectionUtil
+  - contains( Object[], Object )
+  - containsIdentical( Object[], Object )
+  - indexOf( Object[], Object )
+  - indexOfIdentical( Object[], Object )
+  - copyWithout( Object[], Object[] )
+  - copyWithoutIdentical( Object[], Object[] )
+  - Object[] removeNull( Object[] array )
+
+* Added methods to AssociationList
+  - findAssociation( Object key )
+  - valueAt( Object key )
+
+* Added method to NamedValueList
+  - valueAt( String name )
+
+* Added method to NamedTextList
+  - textAt( String name )
+
+* New class WrappingRuntimeException
+
+* CollectorDictionary
+  - Implemented methods containsValue() and putAll()
+
+-----------------------------------------------------------------------
+
+VERSION 2.1 ( February 28, 2003 )
+
+* Moved interface ExceptionHandler from PF-Net to PF-Utilities
+
+* Moved class ExceptionIgnorer from PF-Net to PF-Utilities
+
+-----------------------------------------------------------------------
+
+VERSION 2.0.1 ( January 15, 2003 )
+
+* New method in CollectionUtil
+  - addAllNew( Collection, Object[] ) 
+
+-----------------------------------------------------------------------
+
+VERSION 2.0 ( December 18, 2002 )
+
+* New method in CollectionUtil
+  - addAll( Collection, Object[] ) 
+
+-----------------------------------------------------------------------
+
+VERSION 1.9.1 ( December 5, 2002 )
+
+* TemporaryMap now uses internally a synchronized HashMap rather
+  than a Hashtable.
+
+* BUGFIX: ConcurrentModificationException occured !
+  TemporaryMap.removeExpiredEntries() now iterates in a synchronized
+  block over all elements. 
+
+-----------------------------------------------------------------------
+
+VERSION 1.9 ( October 20, 2002 )
+
+* Added method to Bool
+  - toBoolean()
+
+-----------------------------------------------------------------------
+
+VERSION 1.8 ( September 28, 2002 )
+
+* Moved class Dynamic to package org.pf.reflect
+
+-----------------------------------------------------------------------
+
+VERSION 1.8 ( September 04, 2002 )
+
+* New class MapWrapper
+
+* Changed superclass of TemporaryMap from Object to MapWrapper
+
+* Created new class MapEntry
+
+* Removed inner class TemporaryMap.Entry
+
+* Created new class CaseInsensitiveKeyMap
+
+-----------------------------------------------------------------------
+
+VERSION 1.7 ( July 26, 2002 )
+
+* New methods in AssociationList:
+  - addAll( Association[] )
+
+* New methods in NamedValueList:
+  - findNamedValue()
+  - addAll( NamedValue[] )
+  - sort()
+  - sort( boolean )
+
+* New methods in NamedTextList:
+  - findNamedText()
+  - addAll( NamedText[] )
+
+* New methods in NamedValue:
+  - compareTo()
+
+* New methods in CollectionUtil:
+  - copy( Object[] )
+  - reverseCopy( Object[] )
+  - reverse( Object[] )
+
+* New methods in Association:
+  - equals()
+  - hashCode()
+
+* Complete re-implementation of TemporaryMap
+
+-----------------------------------------------------------------------
+
+VERSION 1.6 ( July 15, 2002 )
+
+* New classes
+  - Association
+  - NamedValue
+  - NamedText
+  - AssociationList
+  - NamedValueList
+  - NamedTextList
+
+-----------------------------------------------------------------------
+
+VERSION 1.5 ( May 26, 2002 )
+
+* Added Trigger and TriggerClient
+
+-----------------------------------------------------------------------

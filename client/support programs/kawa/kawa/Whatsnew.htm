@@ -1,0 +1,153 @@
+<html>
+
+<head>
+<title>Untitled</title>
+</head>
+
+<body bgcolor="#FFFFFF" link="#0000FF" vlink="#800080">
+
+<H1><IMG SRC="./newhelp/kawacup.jpg" WIDTH=106 HEIGHT=100>What's new with 3.21</H1>
+
+<p><a href="newhelp/index.htm">Index</a> </p>
+<p>
+<font size="1.5" face="Arial">
+Please click <a href="http://www.tek-tools.com/kawa/whatsnew.htm">here</a> for the latest version of this document.
+</font>
+<hr>
+This is a maintenance release for Kawa 3.2. Following changes/fixes/enhancements were made with this release.
+<ul>
+	<li>Debugger tree now displays static variables for Stack item. Also, you can enable/disable Final Static displays
+	by right clicking on the stack item and selecting the Final static menu.</li>
+	<li>Debugger now displays long variables. This was missing in the previous versions</li>
+	<li>Project/New problem with Windows 95 was fixed. This was causing Kawa to create project files with
+	.kaw extension instead of .kawa extension</li>
+	<li>We now have some new <a href="./newhelp/tutorial.htm">tutorials</a> available.
+	<li>Kawa was crashing by runnin an application with no main method. </li>
+	<li>When you compile with jikes Kawa now recognizes if there is any errors</li>
+	<li>On some Windows NT setup the compiler was unable to create temporary files. This problem has been fixed now</li>
+	<li>Plugin classpath was being ignored. This has been fixed.</li>
+	<li>Other small fixes</li>
+</ul>
+<p>
+<h2>Kawa 3.2</h2>
+<p>
+The major feature of this version is the new <a href="./newhelp/plugin.htm">Kawa Plugin</a> architecture. This architecture will now allow you
+to write Java programs to extend some of the core functionality of Kawa. Kawa now ships with a set of
+Java classes to allow developers to write Java programs to interact with Kawa. The primary design goal of this plugin
+architecture was to allow better source control integration and custom project builds with MAKE kind of features. 
+<p>
+This version is also more JDK 1.2 friendly and we have fixed most of the debugger bugs assosiated with 1.2 debugging. 
+Finally, we also took some time to streamline all the Kawa dialog boxes. The dialog boxes are now smaller in size and
+better organized with more intutive grouping of controls.
+<p>
+Following is a run down of all the new features and bug fixes with this release -
+<p><b>Debugger -</b><p> 
+	<UL>
+	<li>Found the cause for JVMDI error with 1.2 debugging.
+	</li><br><br>
+	<li>You can now step into JDK code during 1.2 debugging also. Setting up the new debug version of classes is
+	a breeze with the new UI.
+	</li><br><br>
+	<li>You can now pass property values to both native debugger and JDB debugger.
+	</li><br><br>
+	<li>Debugger under 1.2 now automatically disables JIT by setting the java.compiler property to
+	NONE.
+	</li><br><br>
+	<li>Added a new option under Customize/Options/Editor to not use the System classpath.
+	This will allow you to run the debugger with the classpath set under Kawa only.
+	</li><br><br>
+	<li>Kawa now searches for AccessControlException error after 1.2 debugger quits. If found Kawa
+	will prompt you to add a permission entry to java.policy file so applets can be debugged. 
+	This error occurs under 1.2 when debugging applets without proper security.
+	</li><br><br>
+	<li>Both native debugger and JDB debugger now reads the stack memory sizes and heap memory sizes
+	from interpeter options and passes it to the debugger. This was not being done previously.
+	</li><br><br>	
+	<li>Fixed the breakpoint remove or remove all problem where sometimes Kawa was not removing the
+	breakpoint(s)
+	</li><br><br>
+	</ul>
+<p><b>Plugin -</b><p>
+	<ul>
+	<li>Please check the plugin <a href="./plugin/docs/packages.html">packages</a> documentation for more info on Plugin.
+	Also, as part of plugin installation Kawa has copied some plugin sample programs under the plugin folder.
+	</li><br><br>
+	</ul>
+<p><b>IDE -</b><p>
+	<ul>
+	<li>Added a new Advanced tab under Customize/Options/Directories. This has the path to
+	compiler, interpreter, appletviewer and debug class file path. By default these values
+	are set to JDK standard tools except the debug class file path which is set to none. With this
+	change it is now very easy to setup a different compiler like jikes. These new advanced paths are
+	now stored as part of the profile which is stored in the project. This allows you to setup
+	each project with a different compiler if necessary by setting up a different profile for each
+	customer.
+	</li><br><br>
+	<li>Added a new top level menu Plugin to install Kawa plugins and to run plugin command.
+	</li><br><br>
+	<li>Reorganized the Customize/Options/Editor and Customize/Options/Browser dialog to make it more
+	user friendly and also to reduce the size of the entire dialog.
+	</li><br><br>
+	<li>Project/Classpath and Packages/Classpath dialog is now more intutive. The classpath is now
+	listed in a listbox with a checkbox next to it. You can selectively check or uncheck the 
+	classpaths without having to delete it. This information gets stored in the project also.
+	</li><br><br>
+	<li>Added parameters to classpath dialog, output directory options, custom options. Please select
+	the params... button in the add dialog to select the parameters. The parameters supported are
+	limited to the ones shown in the parameters list. This makes your kawa project file more portable 
+	from one computer to another.
+	</li><br><br>
+	<li>Reorganized the Custom commands dialog box. We hope this is more user friendly than the previous
+	one.
+	</li><br><br>
+	<li>Fixed some bugs with main class file and main html file.
+	</li><br><br>
+	<li>Custom commands can now print to build window
+	<li>Added nojit option under Root interpreter options.
+	</li><br><br>
+	<li>Added project level custom interpereter options.
+	</li><br><br>
+	<li>Fixed the F6 bug where sometimes it was not opening the file to point the error from a compiler
+	output. Also, fixed the F6 bug where it was crashing Kawa if the error file is deleted.
+	</li><br><br>
+	<li>File open now accepts multiple file to open.
+	</li><br><br>
+	<li>Editor window origin and size information is also stored as part of the project for each file. 
+	This applies only if the editor is in a restored state.
+	</li><br><br>
+	<li>Kawa now understands the error format from Microsoft java compiler so you can double click
+	and locate the errors.
+	</li><br><br>
+	<li>Custom commands on file item context menu and project item context menu is not limited to
+	10 anymore.
+	</li><br><br>
+	<li>Added a new disable plugin option under Editor to stop all Kawa plugins from loading.
+	</li><br><br>
+	<li>Fixed some parsing bugs with inner classes. This should also fix the dirty file icon
+	problem where Kawa was sometimes showing a clean file as dirty.
+	</li><br><br>
+	<li>Other minor bug fixes.
+	</li><br><br>
+	</ul>	
+	
+<p><i>
+Finally, Kawa's help documents have been re-written and also reorganized. Kawa help document is now
+managed from the Help tree. If you are upgrading an older version of Kawa with 3.2 release then Kawa 
+will not copy the new Kawa help tree document(kawa.hpg) because you may have customized this document.
+However, Kawwa upgrade install copies a copy of the Kawa help document as kawadocs.hpg in the Kawa
+folder. Please goto File/Open menu option and open the kawadocs.hpg document to see the new Kawa help 
+document structure.</i>
+<p>
+As you can see most of the enhancements and bug fixes were in response to your comments and feedback. 
+Obviously, we were not able to implement all the suggestions and bug fixes for this release. Since this 
+release had some important changes with 1.2 debugging we felt it was necessary to get the release out
+as quickly as we can to benefit the entire Kawa user community. We urge you once again to send as much
+feedback as possible to make Kawa the best Java IDE.
+</p>
+	
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+</body>
+</html>

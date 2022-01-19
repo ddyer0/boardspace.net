@@ -1,0 +1,95 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML><HEAD><TITLE>BoardSpace.net Registration Page</TITLE>
+<META http-equiv=Content-Type content="text/html; charset=iso-8859-1">
+<SCRIPT src="/js/site.js">
+</SCRIPT>
+
+<META content="MSHTML 6.00.6000.16525" name=GENERATOR></HEAD>
+<BODY 
+background=/images/background-image.jpg>
+<H1 style="TEXT-ALIGN: center"><IMG title="" style="WIDTH: 600px; HEIGHT: 100px" 
+alt=boardspace.net 
+src="/images/master-logo.jpg"></H1>
+<H1 style="TEXT-ALIGN: center">Inscription<BR>
+</H1><BR>
+S'inscrire et jouer sur Boardspace est gratuit.&nbsp; Vous &ecirc;tes cordialement 
+invit&eacute;s sur ce site, merci d'y respecter les r&egrave;gles de biens&eacute;ance.&nbsp;Bonnes 
+parties !<BR>
+<FORM name=register action=/cgi-bin/register.cgi method=post>
+<!--#include virtual="/cgi-bin/gs_timestamp.cgi" -->
+<TABLE style="WIDTH: 100%" cellSpacing=2 cellPadding=2 border=1>
+  <TBODY>
+  <TR></TR>
+  <TR>
+      <TD style="VERTICAL-ALIGN: top">Nom<BR>
+      </TD>
+    <TD style="VERTICAL-ALIGN: top"><INPUT name=fullname><BR></TD>
+      <TD style="VERTICAL-ALIGN: top">Votre v&eacute;ritable nom, ou autre chose 
+        !</TD>
+    <TD rowSpan=4>
+        <DIV style="TEXT-ALIGN: left">Boardspace.net utilise Java.&nbsp; Avant 
+          de pouvoir jouer, une plateforme java doit &ecirc;tre install&eacute;e 
+          pour votre explorateur. Voir la page <A 
+      href="needsjava.html">NeedsJava </A>pour 
+          quelques conseils.</DIV>
+          <!--#include virtual="/cgi-bin/applettag.cgi?tagname=version" -->
+ </TD></TR>
+  <TR>
+      <TD style="VERTICAL-ALIGN: top">Pseudo<BR>
+      </TD>
+    <TD style="VERTICAL-ALIGN: top"><INPUT name=pname><BR></TD>
+      <TD style="VERTICAL-ALIGN: top">Votre pseudo, 3 caract&egrave;res au moins, 
+        lettres et chiffres autoris&eacute;s.</TD>
+    </TR>
+  <TR>
+      <TD style="VERTICAL-ALIGN: top">mot de passe<BR>
+      </TD>
+    <TD style="VERTICAL-ALIGN: top"><INPUT type=password name=password> </TD>
+      <TD style="VERTICAL-ALIGN: top">Choisissez un mot de passe ni trop simple, 
+        ni trop complexe.<BR>
+      </TD></TR>
+  <TR>
+      <TD style="VERTICAL-ALIGN: top">confirmer le mot de passe</TD>
+    <TD style="VERTICAL-ALIGN: top"><INPUT type=password 
+name=password2><BR></TD>
+      <TD style="VERTICAL-ALIGN: top">Comfirmez le mot de passe. Un mot de passe 
+        perdu peut &ecirc;tre r&eacute;cup&eacute;r&eacute;, si votre adresse 
+        e-mail est valide.<BR>
+      </TD></TR>
+  <TR>
+    <TD style="VERTICAL-ALIGN: top">email<BR></TD>
+    <TD style="VERTICAL-ALIGN: top"><INPUT name=email><BR></TD>
+      <TD style="VERTICAL-ALIGN: top"><SPAN style="FONT-WEIGHT: bold">Vous recevrez 
+        un courriel pour activer votre compte</SPAN>, l'adresse que vous saisissez 
+        doit donc &ecirc;tre valide.&nbsp; Elle ne sera pas utilis&eacute;e en 
+        dehors des communications officielles &eacute;manant du site (pour un 
+        mot de passe oubli&eacute; par exemple) et ne sera ni vendue ni c&eacute;d&eacute;e 
+        &agrave; une tierce partie.&nbsp; Pas de spam ici.<BR>
+      </TD></TR>
+  <TR>
+      <TD style="VERTICAL-ALIGN: top">Pays<BR>
+      </TD>
+    <TD style="VERTICAL-ALIGN: top"><!--#include virtual="/cgi-bin/tlib/selectors.cgi?what=country" -->
+     <BR></TD>
+      <TD style="VERTICAL-ALIGN: top">Pour la carte des joueurs, les tournois 
+        et ce genre de choses. Si vous avez une &acirc;me d'apatride choisissez 
+        &quot;Plan&egrave;te Terre&quot;.<BR>
+      </TD></TR></TBODY></TABLE>
+  <INPUT onclick=checkRegisterForm(this.form) type=button value="S'inscrire">
+</FORM><BR>
+<HR style="WIDTH: 100%; HEIGHT: 2px">
+
+<TABLE style="WIDTH: 100%">
+  <TBODY>
+  <TR>
+    <TD align=left><FONT size=-1>Courriel: 
+      <SCRIPT language=javascript>
+document.write("<a href='mailto:gamemaste");
+document.write("r\@board");
+document.write("space.net'>gamemaste<n>r@board<n>space.net</a>");
+      </SCRIPT>
+       </FONT></TD>
+    <TD style="VERTICAL-ALIGN: top; TEXT-ALIGN: center"></TD>
+    <TD align=right><A href="/">
+Page d'accueil de BoardSpace.net</A> </TD>
+  </TR></TBODY></TABLE></BODY></HTML>

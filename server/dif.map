@@ -1,0 +1,66 @@
+8c8
+< 129632	/home/tantrixb/mirror
+---
+> 129652	/home/tantrixb/mirror
+1000a1001
+> 4	/home/tantrixb/var/tantrix.boardspace.net/stats/analog/daily/2016-08-12
+1284a1286
+> 4	/home/tantrixb/var/tantrix.boardspace.net/stats/analog/daily/2016-08-11
+1544c1546
+< 16200	/home/tantrixb/var/tantrix.boardspace.net/stats/analog/daily
+---
+> 16224	/home/tantrixb/var/tantrix.boardspace.net/stats/analog/daily
+1737c1739
+< 18108	/home/tantrixb/var/tantrix.boardspace.net/stats/analog
+---
+> 18132	/home/tantrixb/var/tantrix.boardspace.net/stats/analog
+1741c1743
+< 28332	/home/tantrixb/var/tantrix.boardspace.net/stats
+---
+> 28356	/home/tantrixb/var/tantrix.boardspace.net/stats
+1748,1749c1750,1751
+< 28660	/home/tantrixb/var/tantrix.boardspace.net
+< 28664	/home/tantrixb/var
+---
+> 28684	/home/tantrixb/var/tantrix.boardspace.net
+> 28688	/home/tantrixb/var
+2108c2110
+< 63728	/home/tantrixb/server/Games
+---
+> 64256	/home/tantrixb/server/Games
+2111c2113
+< 66852	/home/tantrixb/server
+---
+> 67380	/home/tantrixb/server
+2126,2127c2128,2129
+< 47952	/home/tantrixb/www/gfx/graph
+< 48308	/home/tantrixb/www/gfx
+---
+> 47844	/home/tantrixb/www/gfx/graph
+> 48200	/home/tantrixb/www/gfx
+2733c2735
+< 291052	/home/tantrixb/www/Tantrix/TGame/Players
+---
+> 291300	/home/tantrixb/www/Tantrix/TGame/Players
+2847c2849
+< 591644	/home/tantrixb/www/Tantrix/TGame
+---
+> 591892	/home/tantrixb/www/Tantrix/TGame
+2861c2863
+< 818560	/home/tantrixb/www/Tantrix
+---
+> 818808	/home/tantrixb/www/Tantrix
+2874c2876
+< 13620	/home/tantrixb/www/Match/toplist
+---
+> 13632	/home/tantrixb/www/Match/toplist
+2878c2880
+< 49920	/home/tantrixb/www/Match
+---
+> 49932	/home/tantrixb/www/Match
+2906,2907c2908,2909
+< 1481592	/home/tantrixb/www
+< 2779700	/home/tantrixb/
+---
+> 1481744	/home/tantrixb/www
+> 2780424	/home/tantrixb/

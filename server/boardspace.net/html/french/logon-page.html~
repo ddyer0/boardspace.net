@@ -1,0 +1,175 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <script src="/js/site.js"></script>
+  <title>Site Links</title>
+</head>
+<body style="background-image: url(/images/background-image.jpg);">
+<div style="text-align: center;">
+  <h3>Les jeux</h3>
+</div>
+<table style="width: 100%; text-align: left;" border="1" cellpadding="2"
+ cellspacing="2">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top;"><a style="font-weight: bold;"
+ href="about_dipole.html">Dipole</a><br>
+      </td>
+      
+    <td style="vertical-align: top;">Un jeu de piles jou&eacute; sur un plateau 
+      de dames anglaises.<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><a style="font-weight: bold;"
+ target="_new" href="about_exxit.html">Exxit</a><br>
+      </td>
+      
+    <td style="vertical-align: top;">Un jeu sans plateau, avec des tuiles hexagonales 
+      qui agrandissent peu &agrave; peu vos territoires. <br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><b><a target="_new"
+ href="about_gobblet.html">Gobblet</a></b></td>
+      
+    <td style="vertical-align: top;">Comme un morpion, mais avec des gobelets 
+      qui s'amusent comme des poup&eacute;es russes.<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><b><a target="_new"
+ href="about_hex.html">Hex</a></b></td>
+      
+    <td style="vertical-align: top;">Le classique des jeux de connexion.</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><b><a target="_new"
+ href="about_hive.html">Hive</a></b></td>
+      
+    <td style="vertical-align: top;">Un jeu sans plateau avec des pi&egrave;ces 
+      hexagonales et un th&egrave;me insecto&iuml;de.</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><b><a target="_new"
+ href="about_loa.html">Lines of
+Action</a></b></td>
+      
+    <td style="vertical-align: top;">Le grand jeu de connexion ; un simple jeu 
+      de dames anglaises suffit pour y jouer.</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><b><a target="_new"
+ href="about_trax.html">Trax</a></b></td>
+      
+    <td style="vertical-align: top;">Un jeu sans plateau d&eacute;sormais classique, 
+      jou&eacute; avec des tuiles d'un seul type.<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><b><a target="_new"
+ href="about_tablut.html">Tablut</a></b></td>
+      
+    <td style="vertical-align: top;">Le jeu viking.<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><a style="font-weight: bold;"
+ target="_new" href="about_truchet.html">Truchet</a><br>
+      </td>
+      
+    <td style="vertical-align: top;">Un jeu de piles bas&eacute; sur les tuiles 
+      de Truchet.</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><a style="font-weight: bold;"
+ href="about_tumblingdown.html">Tumblingdown</a></td>
+      
+    <td style="vertical-align: top;">Un jeu de piles et de mouvement, avec un 
+      m&eacute;canisme similaire &agrave; Exxit.</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><b><a target="_new"
+ href="about_plateau.html">Plateau</a></b></td>
+      
+    <td style="vertical-align: top;">Un jeu de piles et de captures qui se joue 
+      avec quelques informations cach&eacute;es.</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><b><a target="_new"
+ href="about_punct.html">P&uuml;nct</a></b></td>
+      
+    <td style="vertical-align: top;">Un jeu de connexion sur plateau hexagonal 
+      et jou&eacute; avec des triominos.</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><b><a target="_new"
+ href="about_yinsh.html">Yinsh</a></b></td>
+      
+    <td style="vertical-align: top;">Un peu &agrave; la mani&egrave;re d'un Othello, 
+      mais avec plus de possibillit&eacute;s.</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><b><a target="_new"
+ href="about_zertz.html">Z&egrave;rtz</a></b></td>
+      
+    <td style="vertical-align: top;">Un jeu de captures qui se joue sur un plateau 
+      qui va en r&eacute;tr&eacute;cissant.<br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<h3 style="text-align: center;">Le site</h3>
+<table style="text-align: left; width: 100%;" border="1" cellpadding="2"
+ cellspacing="2">
+  <tbody>
+    <tr>
+      
+    <td><a target="_new" href="lobby-help.html">Aide du Lobby (hall d'entr&eacute;e)</a></td>
+      
+    <td style="vertical-align: top;"><a target="_new"
+ href="/cgi-bin/edit.cgi">Editer un profil utilisateur / mot de passe oubli&eacute;</a></td>
+      
+    <td style="vertical-align: top;"><a target="_new"
+ href="/cgi-bin/messageboard.cgi">Tableau des messages / </a> <a
+ target="_new" href="/BB/"> Forums</a></td>
+      
+    <td style="vertical-align: top;"><a target="_new"
+ href="/cgi-bin/proposals.cgi">Liste des souhaits</a>&nbsp;</td>
+    </tr>
+    <tr>
+      
+    <td style="vertical-align: top;"><a target="_new"
+ href="abouttherankings.shtml">A propos des classements</a></td>
+      
+    <td style="vertical-align: top;"><a target="_new"
+ href="abouttherobot.shtml">A propos des robots</a></td>
+      
+    <td style="vertical-align: top;"><a target="_new"
+ href="/cgi-bin/tournament-signup.cgi">Tournois</a></td>
+      
+    <td style="vertical-align: top;"><a target="_new"
+ href="aboutthesite.shtml">A propos du site</a></td>
+    </tr>
+    <tr>
+      
+    <td style="vertical-align: top;"><a target="_new"
+ href="/cgi-bin/player_analysis.cgi">Analyseur de r&eacute;sultats</a> </td>
+      
+    <td style="vertical-align: top;"><a target="_new"
+ href="/cgi-bin/site_active_times.cgi">Activit&eacute; sur le site</a> </td>
+      <td style="vertical-align: top;">
+      <a href='playermap.shtml' target='_new'>Carte de joueur</a> / <a target='_new' href='/cgi-bin/friends.cgi'>Rephre d'ami</a>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<br>
+<p>
+</p>
+</body>
+</html>

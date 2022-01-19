@@ -1,0 +1,207 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta http-equiv="content-type"
+ content="text/html; charset=ISO-8859-1">
+  <title>BoardSpace.net Login Page</title>
+  <script src="/js/site.js">
+  </script>
+</head>
+<body style="background-image: url(/images/background-image.jpg);">
+<h1 style="text-align: center;"><img src="/images/master-logo.jpg"
+ title="" alt="boardspace.net" style="width: 600px; height: 100px;"></h1>
+<h1 style="text-align: center;">BoardSpace utilise Java !</h1>
+<!--#include virtual="/cgi-bin/applettag.cgi?tagname=version" -->
+<p><span style="font-weight: bold;">Si l'applet Java ne se lance pas,</span>
+c'est un probl&egrave;me &agrave; r&eacute;gler en
+priorit&eacute;.&nbsp; Nos jeux n&eacute;cessitent un explorateur
+adapt&eacute; &agrave; Java. La plupart des explorateurs r&eacute;cents
+depuis Netscape 3.0 ou Explorer 3.0 ... et leurs successeurs supportent
+Java,&nbsp;mais leur installation n'inclut pas toujours automatiquement
+Java.&nbsp; <br>
+</p>
+Les principales causes de "pas de java" dans un explorateur sont :
+<ul>
+  <li>Java n'est pas install&eacute;, vous devez le
+t&eacute;l&eacute;charger.&nbsp;Ou Java est install&eacute;, mais dans
+une tr&egrave;s ancienne version.&nbsp;Boarspace est programm&eacute;
+de fa&ccedil;on &agrave; fonctionner avec toutes les versions hormis
+les plus anciennes - une version 1.1 ou plus devrait suffire.&nbsp;
+Visitez<font size="+1"> <a
+ href="http://java.com/en/download/help/testvm.jsp">Java.com</a> </font>
+pour tester l'installation de Java sur votre machine et au besoin
+r&eacute;aliser cette installation.<br>
+  </li>
+  <li>Dans tous les explorateurs, il est possible de d&eacute;sactiver<i></i>
+Java &agrave; partir des pr&eacute;f&eacute;rences et parfois l'option
+par d&eacute;faut est de le d&eacute;sactiver, toutes les installations
+n'incluent pas Java par d&eacute;faut. Si votre explorateur est assez
+r&eacute;cent pour supporter Java (sinon, avec quoi surfez-vous donc
+?), v&eacute;rifiez que <b>java est activ&eacute; </b>dans les
+pr&eacute;f&eacute;rences de votre explorateur.&nbsp;Pour des raisons
+connues seulement de d&eacute;veloppeurs, ceci semble &ecirc;tre
+diff&eacute;rent pour chaque version de chaque explorateur.&nbsp;
+Java.com pr&eacute;sente les solutions pour rendre <a
+ href="http://java.com/en/download/help/enable_browser.xml">java
+activ&eacute;</a> sur la plupart des explorateurs.</li>
+  <li>Certaines versions d'explorateurs pour AOL ne supportent pas
+Java. Utilisez un explorateur directement, sans passer par AOL. </li>
+  <li>Sur Macintosh, Internet Explorer est fourni sans l'installation
+de Java (au moment o&ugrave; j'&eacute;cris ces lignes), mais vous
+pouvez <a href="http://www.apple.com/java">t&eacute;l&eacute;charger
+Java chez Apple</a> and l'installer. </li>
+</ul>
+Deux sites pour vous aider &agrave; tester votre installation de la
+plateforme Java sur votre machine : <a
+ href="http://java.com/en/download/help/testvm.xml">Java.com</a>&nbsp;
+et&nbsp; <a href="http://www.fitwise.com/testjava.asp">Fitwise.com</a><br>
+<h1>Firewalls, Routeurs, Ports et Proxies, Pertes de connexion</h1>
+<h1></h1>
+<b>Si vous obtenez un message du type "connexion impossible" dans la
+zone de chat du lobby</b> :&nbsp; l'applet Java doit pouvoir ouvrir un
+conexion tcp sortante sur le <span style="font-weight: bold;">port
+2255.&nbsp; </span>La plupart des firewalls et routeurs sont
+configur&eacute;s pour accepter cela ; mais certaines entreprises ou
+&eacute;coles et quelques firewalls personnels (blackice, zone alarm)
+peuvent bloquer ce port.&nbsp; Si la fen&ecirc;tre de l'applet est
+ouverte, mais que la connexion est impossible, voyez le probl&egrave;me
+avec le port 2255.&nbsp; L'applet peut &eacute;galement &eacute;chouer
+&agrave; se connecter si elle a &eacute;t&eacute; charg&eacute;e
+&agrave; partir d'ailleurs que Boardspace.net, ce qui peut &ecirc;tre
+un effet de bord de la configuration de certains proxies.&nbsp; <br>
+<br>
+<a href="http://www.boardspace.net:4321/"><span
+ style="font-weight: bold;"></span></a>Si vous obtenez le message<span
+ style="font-weight: bold;"> </span><font style="font-weight: bold;"
+ face="Arial, Helvetica" size="2">rcv 221 errConnection error</font>
+alors vous &ecirc;tes correctement connect&eacute; au serveur, mais la
+connexion a &eacute;t&eacute; rejet&eacute;e.&nbsp; La cause la plus
+plausible est que vous vous &ecirc;tes accidentellement connect&eacute;
+au serveur, sans passer par la proc&eacute;dure normale de
+connexion.&nbsp; Ceci peut se produire si vous utilisez l'ic&ocirc;ne
+"Page pr&eacute;c&eacute;dente" de votre explorateur ou si votre
+explorateur a mis la page de connexion en cache (et donc ne discute pas
+avec le seveur pour se connecter).&nbsp; V&eacute;rifiez les
+r&eacute;glage du cache de votre explorateur.<br>
+<br>
+<span style="font-weight: bold;">Si vous perdez la connexion en cours
+de partie : </span>pas de panique, vous pouvez vous reconnecter et
+oursuivre la partie.&nbsp;Ceci peut se produire pour tout un tas de
+raisons, aussi impr&eacute;visibles que surprenantes.&nbsp;Observez le
+petit logo&nbsp;<img alt="clock spinner" src="/images/spinner.jpg"
+ style="width: 65px; height: 17px;"> &agrave; c&ocirc;t&eacute; de
+votre pendule (et celle de votre adversaire).&nbsp; La petite aiguille
+doit chager de position en moins de dix secondes et si ce n'est pas le
+cas, la couleurs passe du vert vers le rouge.&nbsp;Apr&egrave;s deux
+minutes d'inactivit&eacute;, un "timeout" est d&eacute;clar&eacute; et
+vous pouvez vous reconnecter. <br>
+<br>
+<b>Lenteur de connexion : </b>Une fois l'applet
+t&eacute;l&eacute;charg&eacute;e, la largeur de bande n&eacute;cessaire
+au lobby et aux jeux est tr&egrave;s modeste, et n'importe quelle
+connexion internet doit faire l'affaire.&nbsp;Un probl&egrave;me
+d&eacute;j&agrave; rencontr&eacute; est que des firewalls tels que Zone
+Alarm interf&egrave;rent avec le d&eacute;bit de donn&eacute;es vers du
+serveur sans le bloquer totalement. Nous ignorons pourquoi, mais
+d&eacute;sactiver Zone Alarm r&eacute;sout le
+probl&egrave;me.&nbsp;Pour tester cette situation, changez le type
+d'une salle de jeu, disons de "Salle de jeu" &agrave; "Salle
+d'entra&icirc;nement".&nbsp; Le changement doit s'effectuer tr&egrave;s
+rapidement, dans la seconde.&nbsp;Si ce n'est pas le cas,
+v&eacute;rifiez ce type de probl&egrave;me.<br>
+<br>
+Si vous pouvez jouer normalement vos parties, mais <span
+ style="font-weight: bold;">que le calcul du score final &eacute;choue </span>:
+pour
+clore une partie normalement, l'applet doit pouvoir lancer des
+requ&ecirc;tes HTTP sur les <span style="font-weight: bold;">ports 80</span>
+ou<span style="font-weight: bold;"> 4321.&nbsp; </span>Le port 80 est
+normalement utilis&eacute; par lex explorateurs, il est donc
+usuellement ouvert, mais certains sites forcent l'utilisation d'un
+proxy et ferment le port 80.&nbsp; Occasionnellement, il y aura aussi
+&eacute;chec en cas de grose affluence sur le site, ou en raison
+d'&eacute;v&egrave;nements impr&eacute;visibles sur l'internet.&nbsp;
+si le port 80 est bloqu&eacute; defa&ccedil;on permanente, tentez
+d'acc&eacute;der &agrave; Boardspace par : <a
+ href="http://boardspace.net:4321/"><span style="font-weight: bold;">http://www.boarspace.net:4321/</span></a><br>
+<br>
+<br>
+<h1>Explorateurs, Plateformes and Versions Java</h1>
+L'applet Java qui fait tourner les jeux fonctionne avec n'importe quel
+explorateur, mais aucun explorateur aucune plateforme ne na&icirc;t
+&eacute;gale.&nbsp; Aucun n'est parfait, mais certains ont davantage
+tendance aux probl&egrave;mes que d'autres.&nbsp;&nbsp; <br>
+<br>
+<div style="margin-left: 40px;"><font size="+1"><span
+ style="font-weight: bold;">Windows (toute version)</span></font><br>
+<font size="+1"><span style="font-weight: bold;"></span></font></div>
+<div style="margin-left: 80px;">
+<p><span style="font-weight: bold;"></span><span
+ style="font-weight: bold;">Internet Explorer</span> est de loin le
+choix le plus courant, mais aussi le plus sensible aux
+probl&egrave;mes, particuli&egrave;rement les erreurs de type "out of
+memory". <span style="font-weight: bold;"></span><br>
+<span style="font-weight: bold;">Netscape </span>(anciennes versions)
+ne fait pas mieux.<span style="font-weight: bold;"></span><br>
+<span style="font-weight: bold;">Mozilla </span>or <span
+ style="font-weight: bold;">Netscape </span>(versions r&eacute;centes)
+sont meilleurs.&nbsp;&nbsp;Ces versions utilisent un plugin Java
+tr&egrave;s fiable.<br>
+<br>
+D'autres choix conviennet aussi , comme&nbsp; HotJava et Opera, mais
+leur emploi est limit&eacute; et insuffisant pour parler de leur
+fiabilit&eacute;.&nbsp;<br>
+</p>
+</div>
+<blockquote><span style="font-weight: bold;"><font size="+1">Macintosh </font></span><font
+ size="+1">et </font><span style="font-weight: bold;"><font size="+1">Linux</font><br>
+  </span></blockquote>
+<div style="margin-left: 80px;">
+<p><span style="font-weight: bold;"></span>Les quatre principaux
+explorateurs (IE, Netscape, Mozilla and Safari) utilisent le pluging
+Java, donc s'il fonctionne, c'est de fa&ccedil;on similaire.&nbsp;Le
+mot cl&eacute; &eacute;tant <i>si</i><span style="font-style: italic;">.&nbsp;
+</span>Les developpeurs d'OS et les d&eacute;veloppeurs d'explorateurs
+ne jouent pas toujours dans la m&ecirc;me cour, aussi peut-il y avoir
+des probl&egrave;mes quand certaines anciennes versions n'en supportent
+pas certaines autres.&nbsp;&nbsp; Assez peu de joueurs utilisent des
+mac ou des plateformes linux, tout ce que l'on peut dire c'est que les
+configurations classiques sont en g&eacute;n&eacute;ral ok. <span
+ style="font-style: italic;"></span><span style="font-weight: bold;"></span><br>
+<span style="font-weight: bold;"></span></p>
+</div>
+<blockquote><span style="font-weight: bold;"></span><span
+ style="font-weight: bold;"><font size="+1">Anciennes versions Java</font></span><br>
+</blockquote>
+<div style="margin-left: 80px;">Boardspace fonctionne avec&nbsp; Java
+VM version 1.4.2 ou sup&eacute;rieure.<br>
+<br>
+Sur Macintosh, certaines anciennes versions de MRJ sont bugg&eacute;es
+et ne fonctionnent pas du tout, m&ecirc;me si elles peuvent fonctionner
+avec certains autres sites. <br>
+</div>
+<blockquote><br>
+  <div align="right">Retour &agrave; la <a
+ href="javascript:window.history.go(-1)">page pr&eacute;c&eacute;dente</a>.<br>
+  </div>
+  <br>
+  <hr style="width: 100%; height: 2px;">
+  <table style="width: 100%;">
+    <tbody>
+      <tr>
+        <td align="left"> <font size="-1">Courriel :
+        <script language="javascript">
+document.write("<a href='mailto:gamemaste");
+document.write("r\@board");
+document.write("space.net'>gamemaste<n>r@board<n>space.net</a>");
+        </script></font>
+        </td>
+        <td align="right">Aller &agrave; la <a href="/">Page d'accueil
+de BoardSpace.net</a> </td>
+      </tr>
+    </tbody>
+  </table>
+  <br>
+</blockquote>
+</body>
+</html>

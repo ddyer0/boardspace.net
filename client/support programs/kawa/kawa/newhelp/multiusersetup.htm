@@ -1,0 +1,66 @@
+<html>
+
+<body bgcolor="#FFFFFF" text="#000000" link="#0000FF"
+vlink="#800080">
+
+<h1><img src="kawacup.jpg" width="106" height="100">Kawa Multi-user Setup</h1>
+
+<p><a href="index.htm">Index</a> </p>
+<font size="1.5" face="Arial">Last Modified Date - <font color=red>2/16/99</font><p>
+Please click <a href="http://www.tek-tools.com/kawa/docs/multiusersetup.htm">here</a> for the latest version of this document.
+<font color=red> If this is an online version of the document please right click in the browser and select 
+'Update local Kawa document' to update your local copy of this document</font>
+</font>
+<hr>
+
+<p>Please install Kawa as a single user setup on the server first and
+follow these steps on each client workstation that needs to access Kawa from the server.
+
+<p>Please make a directory on the client workstation for all Kawa configuration files.
+
+<p>Start Kawa on the client and goto Customize/Options/Directories and set the Kawa
+configuration directory to the directory you just created on the client.
+
+<p><b>Following are the files in the user directory - </b></p>
+
+<ul>
+<p>kawa.pkg - Package tab data file</p>
+
+<p>user.ipg - User help index file</p>
+
+<p>user.cmd - User custom commands file</p>
+
+<p>kawa.hpg - Help tab file</p>
+
+<p>kawa.proj - Kawa project file</p>
+
+</ul>
+
+If any of these files are not present on the server there is no need to copy the 
+same on the client. Also, it is important to delete these files from the server
+once copied to the client.
+
+<p><b>Following files should go to Windows/System directory. </b>
+
+<p><i>It is important to verify the version information of each DLL before
+   copying it to System directory.</i></p>
+
+<ul>
+<p>mfc42.dll</p>
+
+<p>msvcrt.dll</p>
+
+<p>msvcrt40.dll</p>
+
+<p>oleaut32.dll</p>
+
+<p>olepro32.dll</p>
+
+<p>stdole2.tlb</p>
+</ul>
+
+<p>All the remaining files can stay in the server directory. Also, when you create
+a shortcut on the client to run Kawa, please make sure the current directory is the
+directory on the server where Kawa files are residing. This is important.
+</body>
+</html>

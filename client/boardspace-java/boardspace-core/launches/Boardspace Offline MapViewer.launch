@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<launchConfiguration type="org.eclipse.jdt.launching.localJavaApplication">
+<listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">
+<listEntry value="/boardspace core/boardspace-core/util/JWSApplication.java"/>
+</listAttribute>
+<listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_TYPES">
+<listEntry value="1"/>
+</listAttribute>
+<stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="util.JWSApplication"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="servername boardspace.net&#13;&#10;reviewonly true&#13;&#10;debug true&#13;&#10;embed true&#13;&#10;datalocation http://boardspace.net/cgi-bin/tlib/gs_locations.cgi&#13;&#10;zertz.classname online.common.MapViewer&#13;&#10;imagelocation http://boardspace.net/images/earthshadelow.jpg&#13;&#10;mapcenter_x 0.747&#13;&#10;mapcenter_y 0&#13;&#10;framewidth 950&#13;&#10;frameheight 500"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="boardspace"/>
+</launchConfiguration>

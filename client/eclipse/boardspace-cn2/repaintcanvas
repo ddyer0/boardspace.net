@@ -1,0 +1,742 @@
+3c3,10
+< import java.awt.*;
+---
+> import java.awt.Canvas;
+> import java.awt.Color;
+> import java.awt.Component;
+> import java.awt.Container;
+> import java.awt.Font;
+> import java.awt.Graphics;
+> import java.awt.Image;
+> import java.awt.Rectangle;
+12d18
+< import javax.swing.JMenu;
+15,16c21,35
+< import online.common.PlayConstants.DefaultId;
+< import lib.*;
+---
+> import lib.ConnectionManager;
+> import lib.DeferredEventHandler;
+> import lib.DeferredEventManager;
+> import lib.G;
+> import lib.ImageLoader;
+> import lib.ImageLoader.ImageConsumer;
+> import lib.ImageLoaderProtocol;
+> import lib.InternationalStrings;
+> import lib.NetConn;
+> import lib.OStack;
+> import lib.RectangleStack;
+> import lib.RootAppletProtocol;
+> import lib.SimpleLock;
+> import lib.SimpleObservable;
+> import online.common.RepaintManager.RepaintHelper;
+22c41,42
+< 	implements Observer, OnlineConstants,DeferredEventHandler, CanvasProtocol,URLs,ImageLoaderProtocol
+---
+> 	implements Observer, OnlineConstants,DeferredEventHandler, CanvasProtocol,URLs,ImageLoaderProtocol,
+> 		ImageConsumer,RepaintHelper
+24,25c44,45
+< 	
+< 	// imageloaded abstracts the different ways of loading images
+---
+> 	public final RepaintManager painter = new RepaintManager(this,this);
+> // imageloaded abstracts the different ways of loading images
+27c47
+< 	final ImageLoader loader = new ImageLoader(this);
+---
+> 	final ImageLoader loader = new ImageLoader(this,this);
+68c88
+< 		CachedImageManager imageCache = new CachedImageManager(loader);
+---
+> 	final CachedImageManager imageCache = new CachedImageManager(loader);
+71d90
+<     private int paintSteps=0;
+90,92c109
+< 	public long nextWakeup = 0;
+< 	public long sleepTime = 0;
+< 	public long benchTime = 0;
+---
+> 
+147,150d163
+<     public JMenu setBuffer = null;
+<     public JMenuItem noBufferChoice = null;
+<     public JMenuItem singleBufferChoice = null;
+<     public JMenuItem doubleBufferChoice = null;
+194,196d206
+<     private Image allFixed = null; 		// for drawing unchanging elements of the board
+<     private XImage offScreen = null; 	// for drawing the main board offscreen
+<     private XImage offScreen2 = null;	// for optional double buffering 
+202d211
+<     private boolean waked = false;
+214,220c223
+<     public Slider frameTimeSlider = null;
+<     protected long releaseTime = 0;		// milliseconds delay after writing before release
+<     public Slider releaseTimeSlider = null;
+< 
+<     private long lastPaint = 0;
+<     private long paint_time = 0;
+<     private int paint_events=0;
+---
+> 
+260,261d262
+<     private boolean completeRefresh = true; //we need to repaint everything
+<     private boolean someRefresh = true;
+377,386c378,380
+<            	setBuffer = myFrame.addChoiceMenu("Set Buffering",deferredEvents);
+<            	noBufferChoice = new JMenuItem("No Buffer");
+<            	noBufferChoice.addItemListener(deferredEvents);
+<            	singleBufferChoice = new JMenuItem("Single Buffer");
+<            	singleBufferChoice.addItemListener(deferredEvents);
+<            	doubleBufferChoice = new JMenuItem("Double BUffer");
+<            	doubleBufferChoice.addItemListener(deferredEvents);
+<            	 setBuffer.add(noBufferChoice);
+<            	 setBuffer.add(singleBufferChoice);
+<            	 setBuffer.add(doubleBufferChoice);
+---
+>         	
+>         	painter.addUIChoices(myFrame,deferredEvents);
+> 
+394,395d387
+<         frameTimeSlider = new Slider("frame=",CanvasId.FrameTime,0,1,frameTime/100.0);
+<         releaseTimeSlider = new Slider("release=",CanvasId.ReleaseTime,0,1,releaseTime/100.0);
+416,418c408
+<        else if(target==noBufferChoice) { noBuffer = true; doubleBuffer=true; setOffScreen(null); doubleBuffer=false; return(true); }
+<        else if(target==doubleBufferChoice) { noBuffer = false; doubleBuffer = true;  return(true); }
+<        else if(target==singleBufferChoice) { noBuffer = doubleBuffer = false; return(true); }
+---
+>        else if(painter.handleDeferredEvent(target)) {}
+558,567d547
+<     * called with gc=null when the mouse moves, to all hp to
+<     * be updated with the tracking mouse sensitivity
+<     * @param gc
+<     * @param hp
+<     */
+<    public void redrawBoard(Graphics gc,HitPoint hp)
+<    {
+< 	   drawCanvas(gc,false,hp);
+<    }
+<    /**
+580c560
+< 	   redrawBoard(null,p);
+---
+> 	   drawCanvas(null,false,p);
+748,749c728,729
+<          	complete |= createAllFixed(width, height); // create backing bitmaps;
+<           	Image allFixed = allFixed();		 // create backing bitmaps;
+---
+>          	complete |= painter.createAllFixed(width, height); // create backing bitmaps;
+>           	Image allFixed = painter.allFixed();		 // create backing bitmaps;
+764d743
+<          	            if(stallImageWrites) { G.stallImage(this,allFixed,allFixedGC); }
+794,1002d772
+<         int errors = 0;
+<         /**
+<          * this is the method that actually draws the window, which will
+<          * can be superseded by the final window class.  This default method
+<          * creates an off screen bitmap and calls {@link #drawCanvas } with the 
+<          * gc of the off screen bitmap, so if that is the desired behavior
+<          * drawCanvas can be overridden instead. 
+<          * 
+<          * @param G a graphics object
+<          * @param complete if true, do a complete refresh
+<          * @param pt a {@link HitPoint}, representing the state of the mouse.
+<          * 
+<          * @see HitPoint
+<          */
+<     	public void paintCanvas(Graphics gc, boolean complete,HitPoint pt)
+<     	{	try {
+<     		int width = getWidth();
+<     		int height = getHeight();
+<     		if(needLocalBounds) { needLocalBounds = false; setLocalBounds(0,0,width,height); }
+<     	    XImage offScreen = createOffScreen(width,height);
+<     	    if(offScreen!=null)
+<     	    {  
+<     	    	if(doubleBuffer)
+<     	    	{
+<     	    	if(!offScreen.written())
+< 	    	    	{
+<     	   	    	long now = G.Date();
+<     	    	long delay = now-(offScreen.endReadTime+frameTime);
+<    	    	    	if(delay<0)
+<     	    		{ G.print("Reschedule "+delay);
+< 	    	    		  repaint((int)-delay);	// wait for the buffer to be cleaned
+<     	    		  return; 
+<     	    		}	// reschedule for later
+<        	    	offScreen.startWriteTime = now;
+< 	       	    	repaintCanvas(offScreen,gc,complete,pt);
+< 	       	    	offScreen.setWritten(G.Date());
+< 	    	    	}
+< 	       		swapOffScreen();
+<     	    	}
+<     	    	else 
+<     	    	{
+<     	    		repaintCanvas(offScreen,gc,complete,pt);
+<     	    	}
+<     	    }
+<     	    else if(gc!=null)
+<     	    	{
+<          		Rectangle rect = getBounds();
+<          		drawCanvas(gc,complete,pt);
+<     	    	drawCanvasSprites(gc,pt);
+<    		    	G.setColor(gc,Color.blue);
+<     		    ShowStats(gc,0,G.Bottom(rect)-15);	// add some stats on top of everything
+<         	    showRectangles(gc,100);
+<         	    
+<     	    	}
+<     		}
+<     		catch (Throwable err)
+<     		{	if(errors++<10) {	logError("in paintCanvas",err); }
+<     		}
+<      	}
+<     	private void repaintCanvas(XImage offScreen,Graphics gc,boolean complete, HitPoint pt)
+<     	{	someRefresh = false;
+< 	       	completeRefresh = false;
+<      		Rectangle rect = getBounds();
+< 	    	Graphics offGC = offScreen.getGraphics();	// also marks it as unseen
+<     	    	// font, line style, etc are not well defined at this point
+<     	    	G.setFont(offGC,standardPlainFont);
+<     	    	offGC.translate(-G.Left(rect),-G.Top(rect));
+<     		    G.setClip(offGC,rect);
+<     		    drawCanvas(offGC,complete,pt);
+<     		    
+<     		    if(stallImageWrites) { G.stallImage(this,offScreen.theImage,offGC); }
+< 
+<     		    if(gc==null)
+<     		    {
+<     		    	drawCanvasSprites(offGC,pt);
+<     		    	G.setColor(offGC,Color.blue);
+<     			    ShowStats(offGC,0,G.Bottom(rect)-15);	// add some stats on top of everything
+<     	    	    showRectangles(offGC,100);
+<     		    }
+<     		    else 
+<     		    	{
+<     		    	offScreen.startReadTime = G.Date();
+<     		    	G.drawImage(gc,offScreen.theImage,G.Left(rect),G.Top(rect),this); 
+<     	    	    lastPaint = offScreen.endReadTime = G.Date();
+<      		    	G.setColor(gc,Color.blue);
+<     		    	ShowStats(gc,0,G.Bottom(rect)-15);	// add some stats on top of everything
+<     	    	    showRectangles(gc,100);
+<       		    	}
+< 		    
+<      	}
+<         /** request a complete refresh of the window.  This may be needed
+<          * if background elements are changing
+<          */
+<         public void generalRefresh()
+<         {
+<             completeRefresh = true;
+<             repaint(20);
+<         }
+< 
+<         public boolean imageUpdate(Image img, int infoflags, int x, int y,
+<                 int width, int height)
+<             {
+<                 boolean v = super.imageUpdate(img, infoflags, x, y, width, height);
+< 
+<                 if (v == false)
+<                 { refresh();
+<                 }
+<                 return (v);
+<             }
+<         /** request a normal refresh of the window
+<          * some background elements may not be repainted.
+<          */
+<         public void repaint()
+<     	{ 	if(G.canRepaintLocally(this))
+<     		{ 
+<         		repaint(0);
+<     		}
+<     	}
+<     	
+<         public void repaint(int tm)
+<         {	long now = G.Date();
+<         	long paint = Math.max(now + tm,lastPaint+frameTime);
+<         	nextWakeup = (nextWakeup==0) ? paint : Math.min(nextWakeup,paint);
+<         	someRefresh = true;       	
+<         	if(!G.isCodename1()) { super.repaint((int)(now-nextWakeup)); }
+<         		else { 	wakeMe();   	}
+<         }
+< 
+<         boolean standardRepaint = G.isCodename1();
+<         public void setStandardRepaint(boolean b) { standardRepaint=b; }
+<         public boolean doubleBuffer = G.isCodename1() && G.isAndroid();
+<         public boolean noBuffer = false;
+<         boolean stallImageWrites = false;
+<         
+<         /**
+<          * this captures the standard java "update" request,
+<          * but doesn't do any painting.
+<          */
+<         public void update(Graphics g)
+<         { 	// this is an attempt to affect the "blank screen" problem.
+<         	// the theory is that our non-painting is resulting in a damaged
+<         	// drawing engine.
+<         	//G.combinedClip(g,0,0,0,0);
+<         	//super.update(g);
+<         	//
+<         	// also note; dealing with problems where the chat area is blank, you 
+<         	// can frequently "fix" the problem by forcing theChar.update(g) here,
+<         	// or by adding super.update(g) here.   Drawing a colored line here
+<         	// also is useful to diagnose some problems.  See comments about JPanel
+<         	// verses Panel in commonChatApplet and commonPanel.
+<         	//
+<         	if(standardRepaint)	// repaint in the repaint thread if codename1
+<         	{	paint(g);
+<         	}
+<         	else {
+<             	someRefresh=true;
+<             	wakeMe();
+<         	}
+<         }
+<          
+<         
+<         /**
+<          * this captures the normal java "paint" request, but doesn't
+<          * do any painting.  
+<          */
+<         public synchronized void paint(Graphics g)
+<         {   
+<    	     	if(standardRepaint)
+<         	{
+<         	XImage im = getOffScreen();
+<         	if(im!=null)
+<         		{
+<         		if(G.canRepaintLocally(this)
+<         				|| G.canRepaintLocally(g))
+<         		{
+<         		im.startReadTime = G.Date();
+<         		G.drawImage(g,im.theImage,0,0,this);
+<         		lastPaint = im.endReadTime = G.Date();
+<         		
+<         		swapBuffersIfReady(im);	// mark this buffer seen, swap the next if ready
+<          		//displayClipped(g,im);
+<         		super.paint(g);
+<         		//G.setColor(g,Color.blue);
+<         		//G.drawLine(g,0,0,getWidth(),getHeight());
+<         		}
+<         		}
+<         		else 
+<         		{ G.fillRect(g,Color.gray,0,0,getWidth(),getHeight());
+<         		  repaintCanvas(g);
+<         		  super.paint(g);
+<          		}
+<         	}
+<         	else
+<         	{
+<         	// this is an attempt to affect the "blank screen" problem.
+<         	// the theory is that our non-painting is resulting in a damaged
+<         	// drawing engine.
+<         	//G.combinedClip(g,0,0,0,0);
+<         	//
+<         	// also note; dealing with problems where the chat area is blank, you 
+<         	// can frequently "fix" the problem by forcing theChar.update(g) here,
+<         	// or by adding super.update(g) here.   Drawing a colored line here
+<         	// also is useful to diagnose some problems.  See comments about JPanel
+<         	// verses Panel in commonChatApplet and commonPanel.
+<         	//
+<         	completeRefresh = true;
+<             wake();
+<         	}
+<          }
+1004,1019d773
+<         public void refresh()
+<         {	someRefresh=true;
+<         }
+<         public void wakeMe()
+<         { 	refresh();
+<         	wake();
+<         	}
+<         /** wake the run loop early.  This should not normally be necessary
+<          * 
+<          *
+<          */
+<         public synchronized void wake()
+<         {
+<             waked = true;
+<             notify();
+<             }
+1027,1028c781
+<         {	int pt = (int)(paint_time / Math.max(1,paint_events));
+<         	return(" paint "+pt);
+---
+>         {	return("");
+1039,1040c792,793
+<             	   sleepTime = benchTime = 0;
+<             	   mouse.mouseSteps = inputSteps = paintSteps = runSteps = 0;
+---
+>             	   painter.clearStats();
+>              	   mouse.mouseSteps = inputSteps = runSteps = 0;
+1042,1044d794
+<                int pt = (int)(paint_time / Math.max(1,paint_events));
+<                long now = G.Date();
+<                int pctsleep = (int)(sleepTime*100/Math.max(now-benchTime,1));
+1048c798
+<             		   + " P:"+ paintSteps + " "+pt+ " S:"+pctsleep+"% ";
+---
+>             		   + painter.statString();
+1078,1340d827
+<         public void setAllFixed(Image newv)
+<         {
+<             Image im = allFixed;
+<             allFixed = newv;
+<             if ((im != null) && (im != newv))
+<             {
+<                 G.Dispose(im);
+<             }
+<         }
+<         private XImage getOffScreen() 
+<         	{ if(noBuffer) { if(offScreen!=null) { setOffScreen(null); } return(null); }
+<         	  if(offScreen!=null)
+<         		{int w = getWidth();
+<         	     int h = getHeight();
+<         	     if(needNewImage(offScreen,w,h)) { setOffScreen(null); }
+<         		}
+<         	  return(offScreen); 
+<         	}
+<         private XImage getOffScreen2() 
+<         { if(noBuffer) { setOffScreen(null); }
+<           return(doubleBuffer?offScreen2:offScreen); 
+<         }
+<         private synchronized void swapOffScreen()
+<         	{XImage off = offScreen;
+<         	XImage backBuffer = offScreen2;
+<         	if(!noBuffer && off!=null && backBuffer!=null)
+<         	{
+<         	long now = G.Date();
+<         	long delay = (backBuffer.endWriteTime+releaseTime)-now;
+<         	if(delay<=0) 
+<         	{
+<         	 backBuffer.setReadyToSee();
+<         	 if(!off.readyToSee() || off.seen())
+<         	 {
+<         		 swapOffScreenNow();
+<         	 }
+<         	 else { G.print("Buffer swap inhibited"); }
+<         	}
+<         	else
+<         	{
+<         		// let the buffer age before releasing it
+<         		someRefresh = true;
+<         		repaint((int)-delay);
+<         	}}
+<         }
+<         private void swapOffScreenNow()
+<         {	XImage off = offScreen;
+<         	 // inhibit the swap if there's an unseen frame ready
+<             offScreen = offScreen2;
+<             offScreen2=off;
+<             if(off!=null) { off.clear(); }
+<         }
+<         private synchronized void swapBuffersIfReady(XImage im)
+<         {	im.setSeen();
+<         	if(doubleBuffer)
+<         	{	XImage off = offScreen2;
+<         		if(off!=null && off.readyToSee() && !off.seen())
+<         		{	// make the current front ready to be reused
+<         			swapOffScreen();
+<         		}
+<         	}
+<         }
+<         private Image recycle(Image r,Image n,int w,int h)
+<         {	if((r==null) && (n!=null) && (G.Width(n,this)==w) && (G.Height(n,this)==h)) 
+<         		{ //G.print("recycling "+n+" from "+this);
+<         		  Graphics g = n.getGraphics();
+<         		  G.setColor(g,Color.white);
+<         		  G.fillRect(g,0,0,w,h);
+<         		  return(n); 
+<         		}
+<         	if(n!=null) { G.Dispose(n); }
+<         	return(r);
+<         }
+<         
+<         // get a recycled image with a given size, or null, and trash the other cached images.
+<         public Image getRecycledImage(int w,int h)
+<         {	Image rim = null;
+<         	if(doubleBuffer)
+<         		{	XImage im = getOffScreen2();
+<         			offScreen2=null;
+<         			if(im!=null) { rim = recycle(rim,im.theImage,w,h); }
+<         		}
+<          	{ Image im = allFixed();
+<         	  allFixed = null;
+<         	  rim = recycle(rim,im,w,h);
+<         	}
+<            	{ XImage im = getOffScreen();
+<            	offScreen = null;
+<            	  if(im!=null) { rim = recycle(rim,im.theImage,w,h); }
+<            	}
+<            	return(rim);
+<         }
+<         
+<         public void setOffScreen(XImage newv)
+<         {
+<             XImage im = offScreen;
+<             offScreen = newv;
+<             if ((im != null) && (im != newv))
+<             {
+<                 G.Dispose(im.theImage);
+<             }
+<             }
+<         private final boolean needNewImage(XImage im,int w,int h)
+<         {	return((im==null) || needNewImage(im.theImage,w,h));
+<         }
+<         private final boolean needNewImage(Image im,int w,int h)
+<         {	return((im==null)
+<         		 || (G.Width(im,this)!=w)
+<         		 || (G.Height(im,this)!=h));
+<         }
+< 
+<         int imageErrors=0;
+<         /** create a blank image with the specified size.
+<          * 
+<          * @param w
+<          * @param h
+<          * @return an Image
+<          */
+<         public Image createBlankImage(int w,int h)
+<         {	
+<             try {
+<             	Image im = //Toolkit.getDefaultToolkit().createImage();
+<             		createImage(w,h);
+<             	if(im==null)
+<             	{
+<             	 setLowMemory("CreateImage "+w+"x"+h+" failed with null");
+<             	}
+<             	return(im); 
+<             }
+<             catch (Throwable err)
+<             { imageErrors++;
+<               setLowMemory("CreateImage "+w+"x"+h+" failed with "+err);
+<               if(imageErrors<3)
+<               {
+<             	  throw G.Error("createAllFixed #"+imageErrors+" "+w+"x"+h+" "+err) ;
+<               }
+<             }
+<             return(null);
+<         }
+< 
+<         /**
+<          * create (of necessary) and return an offscreen image
+<          * with the specified size.  This image is intended to be
+<          * used to draw background, rarely changing elements in the
+<          * background.
+<          * @param w
+<          * @param h
+<          * @return true if a new image was created
+<          */
+<         public boolean createAllFixed(int w, int h)
+<         {	boolean newv=false;
+<         	if(noBuffer || lowMemory()) 
+<         	{ // by convention, the "allfixed" array is only a performance enhancement
+<         	  // and we can do without it pretty well.
+<         	  if(allFixed!=null)
+<         		{ System.out.println("Switching to low memory for "+this);
+<         		  setAllFixed(null);
+<         		  newv=true;
+<         		}
+<         	}
+<         	else
+<             if (needNewImage(allFixed,w,h))
+<             {	
+<             	setAllFixed(null);	// release the old first
+<                 setAllFixed(createBlankImage(w, h));
+<                 newv=true;
+<              }
+<            return (newv);
+<         }
+<         public Image allFixed() { return(allFixed); }
+< 
+<         /**
+<          * create (if necessary) and return an offscreen image with
+<          * a specified size.  This image is intended to be used for
+<          * routine offscreen drawing before displaying on the canvas.
+<          * If double buffering is in effect, the back buffer is returned.
+<          * 
+<          * @param w
+<          * @param h
+<          * @return true if a new image was created
+<          */
+<         public XImage createOffScreen(int w, int h)
+<         {	
+<          	XImage im = getOffScreen2();
+<         	if (noBuffer || needNewImage(im,w,h))
+<             {	setOffScreen(null);
+<             	Image newim =G.getRecycledImage(w,h);
+<             	if(newim==null) { newim = createBlankImage(w, h); }
+<             	if(newim!=null) { setOffScreen(im = new XImage(newim)); }
+<             	if(doubleBuffer)
+<                 {
+<                 	swapOffScreenNow();
+<                 	setOffScreen(null);
+<                 	Image second = createBlankImage(w, h);
+<                 	if(second!=null) {
+<                 			setOffScreen(new XImage(second));
+<                 	im = getOffScreen2();
+<                 }
+<             }
+<             }
+<            return (im);
+<         }
+<           public void repaintCanvas()
+<          {	
+<         	 Graphics g = standardRepaint ? null : this.getGraphics();
+<            	 repaintCanvas(g);
+<              if(g==null) { super.repaint(); }	// get the real repaint out
+<          }
+<          public void repaintReady() { super.repaint();}
+<          
+<          public void repaintCanvas(Graphics g)
+<          {	
+<         	 boolean complete = completeRefresh;
+<              if(complete) { paintSteps=0; } else { paintSteps++; }
+<              completeRefresh = false;		// remember we no longer need to do this
+<                  
+<              setVisible(shouldBeVisible);
+<              imageCache.clearCachedImages();
+<   
+<              final HitPoint hp = (mouse.highlightPoint == null) ?  new HitPoint(-1,-1) : mouse.highlightPoint;
+<              final Graphics hg = g;
+<              final boolean hcomplete = complete;
+<              //
+<              // start the paint with no hitobject, this makes the 
+<              // actual drawing pass behave the same as the mouse-only pass
+<              //
+<              if(!hp.dragging) 
+<              	{hp.hitCode = DefaultId.HitNoWhere;
+<              	hp.hitObject = null;
+<              	}
+<              // IOS only does rendering in EDT
+<              if(G.isCodename1())// this forces all drawing into the edt thread
+<              {
+<             	 G.runInEdt(
+<          				new Runnable () 
+<          				{	public void run() 
+<          					{ paintCanvas(hg,hcomplete,hp);
+<          					  repaintReady();
+<          					}
+<          				}); 
+<              }
+<              else {
+<              paintCanvas(hg, hcomplete,hp);
+<              }
+<          }
+<          private synchronized void waitAWhile(long now,boolean reset)
+<          {
+<         	
+<                      if (!waked)
+<                      {	long sleep = Math.min(nextWakeup-now,200);
+<                      	if(someRefresh) { sleep = Math.min(sleep,(lastPaint+frameTime)-now); }
+<                      	if(reset) { nextWakeup = now+2000; }
+<                      	if(sleep>0) 
+<                      		{ long beginsleep = G.Date(); 
+<         	 	
+<         	 		G.waitAWhile(this,sleep);
+<                      		if(benchTime==0) { benchTime = beginsleep; }
+<                      		sleepTime += G.Date()-beginsleep; 
+<         	 		
+<                  waked = false;
+<              }
+<          }
+<          }
+1354d840
+<         	boolean wasWaked = waked;
+1356d841
+<             waked = false;
+1361,1376c846
+<             if(!someRefresh && wait) { waitAWhile(now,true); }
+<             if (someRefresh 
+<             		&& initialized 
+<             		&& (wasWaked || (now>=nextWakeup))
+<             		&& (now>(lastPaint+frameTime))
+<             		&& (G.isCompletelyVisible(this) || G.isPartlyVisible(this))
+<             		)
+<             {	someRefresh=false;
+<             	nextWakeup = now+2000;
+<             	repaintCanvas();
+<                 paint_time += (G.Date()-now);
+<                 paint_events ++;
+<             }
+<             else if(wait)
+<             {	waitAWhile(now,false);	//sleep but don't reset the "next redraw" timer
+<             }
+---
+>             if(initialized) { painter.repaintAndOrSleep(wait); }
+1382,1383c852,853
+<         	setOffScreen(null);
+<             setAllFixed(null);
+---
+>         	painter.setOffScreen(null);
+>             painter.setAllFixed(null);
+1603c1073,1107
+< 		switch(cid)
+---
+> 		if (painter.performStandardButtons(cid)) {}
+> 		
+> 		}
+> 		return(false);
+> 	}
+> 	
+>     /**
+>      * this captures the normal java "paint" request, but doesn't
+>      * do any painting.  
+>      */
+>     public void paint(Graphics g)
+>     {   if(needLocalBounds) { needLocalBounds = false; setLocalBounds(0,0,getWidth(),getHeight()); }
+>     	painter.paint(g);
+>     }
+>     /** request a normal refresh of the window
+>      * some background elements may not be repainted.
+>      */
+>     public void repaint()
+> 	{ 	painter.repaint();
+> 	}
+> 	
+>     public void repaint(int tm)
+>     {	painter.repaint(tm);
+>     }
+>     /**
+>      * this captures the standard java "update" request,
+>      * but doesn't do any painting.
+>      */
+>     public void update(Graphics g)
+>     { 	painter.update(g);
+>     }
+>     // 
+>     // this is the entry point from the run loop to do general repainting activity
+>     //
+>     public void repaintCanvas()
+1605,1608c1109
+< 			case FrameTime:	frameTime = (int)(frameTimeSlider.value*100);
+< 				return(true);
+< 			case ReleaseTime: releaseTime = (int)(releaseTimeSlider.value*100);
+< 				return(true);
+---
+>     	painter.repaintCanvas();
+1609a1111,1115
+>     /** request a complete refresh of the window.  This may be needed
+>      * if background elements are changing
+>      */
+>     public void generalRefresh()
+>     {	painter.generalRefresh();
+1611c1117,1133
+< 		return(false);
+---
+> 
+>     /** wake the run loop early.  This should not normally be necessary
+>      * 
+>      *
+>      */
+>     public synchronized void wake()
+>     {	painter.wake();
+> 	}
+> 
+> 	//
+> 	// RepaintHelper methods we must provide
+>     //
+> 	public void actualPaint(Graphics g) { super.paint(g); }
+> 	public void actualRepaint() { super.repaint(); }
+> 	public void actualRepaint(int n) { super.repaint(n); }
+> 	public void handleError(String msg,String context,Throwable err)
+> 	{
+1612a1135
+> 	

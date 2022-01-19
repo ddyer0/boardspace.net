@@ -1,0 +1,296 @@
+Simple Interface for XML: Realease-Notes
+Author: Manfred Duchrow
+Copyright (c) 2002-2011, by Manfred Duchrow. All rights reserved.
+=======================================================================
+
+
+-----------------------------------------------------------------------
+
+VERSION 2.6 ( January 30, 2011 )
+
+* EmptyEntityResolver
+  - Changed class visibility from package to public
+
+  -----------------------------------------------------------------------
+
+VERSION 2.5 ( February 7, 2010 )
+
+* ModelConverter
+  > Added
+    - public String toFormattedString( Element element ) 
+	- public String toFormattedString( Element element, int indent )
+	- public String toFormattedString( Element element, int indent, boolean useSingleQuotes )
+
+* Element
+  > Added
+    - public String getLocalName() 
+	- public String getNamePrefix()
+	- public String[] getAttributeLocalNames()
+	- public Element getFirstChild() 
+	
+  > Changed getAttributes() to return a copy of the attributes map
+
+-----------------------------------------------------------------------
+
+VERSION 2.4.1 ( September 03, 2009 )
+
+* Bugfix: CDATA[] sections will now be handled correctly. That is, all
+  included whitespace characters are preserved.
+
+-----------------------------------------------------------------------
+
+VERSION 2.4 ( January 19, 2008 )
+
+* Element
+  > Added
+    - ELEMENT_ARRAY
+	- public static Element[] toArray( Collection elementCollection ) 
+	- public static List toList( Element[] elements )
+	
+* XmlWriteController
+  > Added
+    - public int getIndentIncrement()
+	- public void setIndentIncrement( int increment )
+	
+* XmlStreamWriter
+  > Added
+    - public int getIndentation() ;
+    - public void setIndentation( int indent ) ;
+    - public void appendDocumentType( Writer writer, String rootTagName, 
+	                                  String schemaName, String dtdURL )
+    - public void appendWellFormedXML( Element element, Writer writer, 
+           			String encoding, String schemaName, String dtdURL )
+    - public static void writeWellFormedXML( Element element, Writer writer, 
+			         String encoding, String schemaName, String dtdURL )
+    - public static void writeDocumentType( Writer writer, String rootTagName,
+			                      String schemaName, String dtdURL )					
+					
+-----------------------------------------------------------------------
+
+VERSION 2.3.1 ( April 8, 2006 )
+
+* Changed unit tests to be independent of XPath in order to avoid
+  incompatibility problems with JDK 1.4 and 1.5
+
+-----------------------------------------------------------------------
+
+VERSION 2.3 ( December 22, 2005 )
+
+* Element
+  > Added methods
+    - public void removeAllChildren() 
+    - public boolean removeChild( Element childElement )
+    - public boolean replaceChild( Element oldChild, Element newChild ) 
+    - public boolean insertChildAfter( Element oldChild, Element newChild ) 
+    - public boolean insertChildBefore( Element oldChild, Element newChild )
+
+-----------------------------------------------------------------------
+
+VERSION 2.2 ( May 27, 2005 )
+
+* XmlStreamWriter
+  > Added methods
+    - public void appendStylesheetPI( Writer writer, String attributes )
+    - public void appendStylesheetPI( Writer writer, Map attributes )
+    - public void appendStylesheetPI( Writer writer, NamedTextList attributes )
+    - public void appendXslStylesheetPI( Writer writer, String xslFilename )
+    
+* LoggerProvider
+  > Added methods
+    - public static void supressLogging()
+    - public static boolean isLoggingSupressed()
+
+-----------------------------------------------------------------------
+
+VERSION 2.1 ( October 22, 2004 )
+
+* XmlStreamReader now supports two new methods for more flexibility:
+  - public static Element loadFrom( InputSource source, boolean validating )
+  - public static Document loadDOM( InputSource source, boolean validating )
+
+-----------------------------------------------------------------------
+
+VERSION 2.0.2 ( October 11, 2004 )
+
+* XmlStreamWriter
+
+  BUGFIX: Changed appendDocumentStart( Writer writer, String encoding, 
+                                     boolean isStandalone )
+    to write first encoding="" and then standalone="" and not vice versa
+
+-----------------------------------------------------------------------
+
+VERSION 2.0.1 ( August 13, 2004 )
+
+* XmlStreamWriter
+
+  BUGFIX: Changed writeDocumentType() back to be a static method again
+
+-----------------------------------------------------------------------
+
+VERSION 2.0 ( July 30, 2004 )
+
+* XmlStreamWriter can now be used as an instance in addition to its
+  static methods. All static methods are still valid.
+  The instance methods have the same name except the prefix is "append"
+  rather than "write".
+  
+* XmlStreamWriter can now preserve the namespace prefix in the output.
+  Use the following method to configure that feature
+  > public void withNamespacePrefix( boolean newValue )
+
+-----------------------------------------------------------------------
+
+VERSION 1.9.1 ( May 6, 2004 )
+
+* BUGFIX: Reading an XML file with XmlStreamReader caused an
+  java.net.UnknownHostException under the following conditions:
+  - Validating (DTD) was switched off
+  - The system ID of the XML file contained a remote DTD reference
+    (e.g. "http://hostename.com/mydata.dtd")
+  The bug was fixed in FileEntityResolver.resolveEntity()
+
+-----------------------------------------------------------------------
+
+VERSION 1.9 ( March 26, 2004 )
+
+* Changed ModelConverter.toDOM() to retain namespace URIs in resulting
+  DOM.
+  
+* Added method to Element
+  - public Map getNamespaceDeclarations()
+  
+* BUGFIX: Element method
+     public String[] getAttributeNames()
+  now returns an empty array rather than null, if the element has no 
+  attribute. (Avoid NullPointerException)
+  
+* XmlStreamWriter
+  - Now writes standalone="yes" to the XML declaration line if no DTD
+    is specified
+    
+  - Added new method
+    ~ public static void writeDocumentStart( Writer writer, 
+                               String encoding, boolean isStandalone )
+
+* FileEntityResolver is now a public class
+
+-----------------------------------------------------------------------
+
+VERSION 1.8 ( December 22, 2003 )
+
+* New constructor for Element
+  - Element( String tagName, String text )
+
+-----------------------------------------------------------------------
+
+VERSION 1.7 ( March 19, 2003 )
+
+* New method for ModelConverter
+  - toSIXElement()
+
+* Added Javadoc comments where missing
+
+* Changed visibility from public to default for
+  - StringTagInterpreter
+  - StringTagInterpreterController
+  - StringTagInterpreterFactory
+
+* New methods in XmlStreamReader
+  - readFrom( filename, validating )
+  - readDOM( filename, validating )
+
+* New internal class FileEntityResolver to avoid problems
+  with Crimson's (1.1.3) entity resolver.
+
+-----------------------------------------------------------------------
+
+VERSION 1.6.1 ( September 22, 2002 )
+
+* New methods for XmlStreamReader (support DOM reading)
+  - readDOM()  (3x)
+  - loadDOM()
+
+-----------------------------------------------------------------------
+
+VERSION 1.6 ( July 24, 2002 )
+
+* New methods for Element
+  - shallowCopy()
+  - deepCopy()
+  - copy()
+
+* BUGFIX: hasAttributes() always returned true, even if there where
+  no attributes at all.
+
+-----------------------------------------------------------------------
+
+VERSION 1.5 ( July 6, 2002 )
+
+* New constructor for Element that gets the tag name as parameter
+
+* Bugfix: LoggerProvider.setLogger(null) didn't work correct
+
+* StringTagInterpreterController now reports errors with systemId
+  but without stacktrace
+
+* New find() methods in Element that include the called element
+  in the search
+
+-----------------------------------------------------------------------
+
+VERSION 1.4 ( June 30, 2002 )
+
+* New class ModelConverter to convert an Element tree to DOM tree
+
+* New class XmlStreamWriter that provides several methods to print
+  an Element tree or a DOM tree to a stream.
+
+* New class LoggerProvider that is the single access point to the
+  package's logger
+
+* Changed all classes to user the logger from LoggerProvider rather
+  than writing directly to System.out or System.err
+
+-----------------------------------------------------------------------
+
+VERSION 1.3 ( June 21, 2002 )
+
+* Provides new loadFrom() and readFrom() methods in XmlStreamReader,
+  that allow validation to be switched on/off
+
+* New internal class EmptyEntityResolver that provides an empty DTD
+  if requested
+
+* Provides an interface to set a logger that catches all exceptions
+
+-----------------------------------------------------------------------
+
+VERSION 1.2 ( May 25, 2002 )
+
+* Made getAttributes() public
+
+* Added methods
+  - removeAttribute()
+  - removeText()
+
+* Completed Javadoc comments on public methods
+
+-----------------------------------------------------------------------
+
+VERSION 1.1 ( May 17, 2002 )
+
+* Added some find methods to Element
+
+-----------------------------------------------------------------------
+
+VERSION 1.0 ( April 29, 2002 )
+
+* Reader for XML stream with most simple interface
+  build on top of PAX
+
+* Class Element that instances can holds all information from
+  an XML stream
+
+-----------------------------------------------------------------------
+

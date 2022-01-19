@@ -1,0 +1,5 @@
+#!/bin/csh
+#
+# use with a command like find ~/www/ -name xGames -execdir ~/scripts/trim 2009 \;
+#
+rm -rf xGames/*-$1

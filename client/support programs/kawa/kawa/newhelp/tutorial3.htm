@@ -1,0 +1,43 @@
+<HTML>
+<HEAD>
+<TITLE>Kawa Project</TITLE>
+</HEAD>
+<BODY LINK="#0000ff" VLINK="#800080" BGCOLOR="#ffffff">
+
+<H1><IMG SRC="kawacup.jpg" WIDTH=106 HEIGHT=100>Tutorial 3</H1>
+<P><A HREF="index.htm">Index</A> </P>
+<font size="1.5" face="Arial">Last Modified Date - <font color=red>3/3/99</font><p>
+Please click <a href="http://www.tek-tools.com/kawa/docs/tutorial3.htm">here</a> for the latest version of this document.
+<font color=red> If this is an online version of the document please right click in the browser and select 
+'Update local Kawa document' to update your local copy of this document</font>
+</font>
+<P><HR></P>
+<h3><font color=brown>Creating Packages under Kawa</font></h3>
+<p>
+In this tutorial we will learn how to make packages using Java. Packages under Java are like namespaces and 
+it is used to group class files into different namespaces based on the functionality, author etc.. Please select
+Project/Open and open the DrawTest project we created in <a href="tutorial1.htm">tutorial 1</a>.
+<ul>
+	<li>In order to create a package it is necessary to add a pacakage line to all the source files which are part
+	of a given package. For this example, we will create a package called "tutorial3.test"
+	</li>
+	<li>Please double click on DrawTest.java file to open the file in Kawa editor. Please add a line "package tutorial3.test;"
+	as the first non-commented line in the source file. It is important that the package line is the first valid source line
+	in any source file. Select File/Save to save the file.</li>
+	<li>Without setting a compiler output directory, Kawa will create the class file in the same directory as the source file.
+	However, when you create packages it is important to provide an output directory.</li>
+	<li>Please select Project/Compiler options... menu option and set the compiler output directory to project directory. This can
+	be done by setting the compiler output directory value as "<project directory>" or "." for current directory. Please refer to
+	<a href="tutorial2.htm">tutorial 2</a> for more details on setting compiler output directory.</li>
+	<li>Before we build this project we can delete all the old class files from DrawTest folder. This is optional. Select Build/Rebuild all
+	to create all the class files under the folder /tutorial3/test.</li>
+	<li>In order to run this project as an application, please select DrawTest.java as the main class file and select Build/Run to run the
+	application. Please note in the output directory that the class name is now tutorial3.test.DrawTest</li>
+	<li>In order to run this project as an applet we have to make a small change in the example1.html file. Remember our class name is now
+	<b>tutorial3.test.DrawTest</b> and not just <b>DrawTest</b>. Double click on example1.html file and find the line which says "code=Drawtest.class" and
+	change the line to read "code=tutorial3.test.DrawTest.class" and save the file.</li>
+	<li>Select example1.html as the main HTML file and select Build/Run to run this project as an applet this time</li>
+</ul>
+With this tutorial we now have learnt how to create packages under Kawa.
+</BODY>
+</HTML>

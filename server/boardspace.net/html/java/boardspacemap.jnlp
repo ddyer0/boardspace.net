@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jnlp spec="1.0+" codebase="http://boardspace.net/java" href="boardspacemap.jnlp">
+    <information>
+        <title>Boardpace Player Map</title>
+        <vendor>Boardspace.net</vendor>
+        <description>Boardpace Player Map Java Web Start</description>
+        <description kind="short">Boardspace Map</description>
+        <icon href="boardspace-icon.jpg" kind="default"/>
+        <icon href="boardspace-splash.jpg" kind="splash"/>
+        <shortcut online="true">
+       	 <desktop/>
+        </shortcut>
+    </information>
+    <update check="timeout" policy="always"/>
+    <security>
+     <all-permissions/>
+    </security>  
+    <resources>
+        <j2se version="1.5+"/>
+        <jar href="jws/Launcher.jar" main="true" download="eager"/>
+	<jar href='jws/OnlineLobby.jar'/>
+	<jar href='jws/OnlineGame.jar'/>
+    </resources>
+
+    <application-desc main-class="util.JWSApplication">
+    <argument>servername</argument>    <argument>boardspace.net</argument>
+    <argument>framewidth</argument><argument>720</argument>
+    <argument>frameheight</argument><argument>400</argument>
+    <argument>rootname</argument><argument>the Players World Map</argument>
+    <argument>viewerclass</argument><argument>G:GameReviewer</argument>
+    <argument>game</argument><argument>zertz</argument>
+    <argument>zertz.classname</argument><argument>online.common.MapViewer</argument>
+    <argument>mapcenter_x</argument><argument>0.747</argument>
+    <argument>mapcenter_y</argument><argument>0.0</argument>
+    <argument>imagelocation</argument><argument>http://boardspace.net/images/earthshadelow.jpg</argument>
+    <argument>datalocation</argument><argument>/cgi-bin/tlib/gs_locations.cgi</argument>
+    <argument>reviewonly</argument><argument>true</argument>
+    <argument>rootreviewer</argument><argument>true</argument>
+    <argument>final</argument><argument>true</argument>
+    </application-desc>
+</jnlp>

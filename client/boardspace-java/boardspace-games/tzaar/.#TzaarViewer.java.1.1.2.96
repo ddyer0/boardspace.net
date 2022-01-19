@@ -1,0 +1,828 @@
+package tzaar;
+
+import java.awt.*;
+import javax.swing.JCheckBoxMenuItem;
+import java.util.Hashtable;
+import java.util.StringTokenizer;
+
+import lib.*;
+import online.common.*;
+import online.game.*;
+import online.game.sgf.*;
+
+
+
+/**
+ * 
+ * Change History
+ *
+ * Feb 2008 initial work. 
+ *
+ * This code is derived from the "HexGameViewer" and other viewer classes.  Refer to the
+ * documentation there for overall structure notes.
+ * 
+ * TODO: enlarge the text in the score string
+*/
+public class TzaarViewer extends commonCanvas 
+	implements ViewerProtocol, TzaarConstants, sgf_names
+{
+     /**
+	 * 
+	 */
+	static final long serialVersionUID = 1L;
+	// colors
+    private Color reviewModeBackground = new Color(220,165,200);
+    private Color HighlightColor = new Color(0.2f, 0.95f, 0.75f);
+    private Color rackBackGroundColor = new Color(194,175,148);
+    private Color boardBackgroundColor = new Color(220,165,155);
+    private Color vcrButtonColor = new Color(0.7f, 0.7f, 0.75f);
+    // images
+    private static Image[] images = null; // images of black and white gobblets and board
+    private static Image[] textures = null;// background textures
+    // private state
+    private TzaarBoard b = null; 	// the board from which we are displaying
+    private int CELLSIZE; 			// size of the layout cell.  
+    private static int SUBCELL = 4;	// number of cells in a square
+    private int SQUARESIZE;			// size of a board square
+    // addRect is a service provided by commonCanvas, which supports a mode
+    // to visualize the layout during development.  Look for "show rectangles"
+    // in the options menu.
+    //private Rectangle fullRect = addRect("fullRect"); //the whole viewer area
+    //private Rectangle boardRect = addRect("boardRect"); //the actual board, normally at the left edge
+    private Rectangle logRect = addRect("logRect"); //the game log, normally off the the right
+    private Rectangle stateRect = addRect("stateRect");
+    private Rectangle firstPlayerScoreRect = addRect("firstPlayerScore");
+    private Rectangle secondPlayerScoreRect = addRect("secondPlayerScore");
+    private Rectangle doneRect = addRect("doneRect");
+    private Rectangle editRect = addRect("editRect");
+    private Rectangle passRect = addRect("passRect");
+    private Rectangle goalRect = addRect("goalRect");
+    private Rectangle progressRect = addRect("progressRect");
+    private Rectangle liftRect = addRect("liftRect");
+    private Rectangle reverseViewRect = addRect("reverse");
+    private JCheckBoxMenuItem reverseOption = null;
+
+    private Rectangle firstPlayerRack = addRect("whiteRack");
+	private Rectangle secondPlayerRack = addRect("blackRack");
+    private Color ZoomColor = new Color(0.0f,0.0f,1.0f);
+    private Color ZoomHighlightColor = new Color(150,195,166);
+
+    private boolean lifted=false;
+    
+
+    public void preloadImages()
+    {	
+    	if (textures == null)
+    	{ // note that for this to work correctly, the images and masks must be the same size.  
+      // Refer to http://www.andromeda.com/people/ddyer/java/imagedemo/transparent.html
+    	TzaarChip.preloadImages(this,ImageDir);
+    	images = load_images(ImageDir, ImageFileNames, load_images(ImageDir, ImageFileNames,"-mask")); // load the main images
+        textures = load_images(ImageDir,TextureNames);
+     	}
+    }
+
+
+	/**
+	 * 
+	 * this is the real instance intialization, performed only once.
+	 * info contains all the goodies from the environment.
+	 * */
+    public void init(exHashtable info)
+    {
+        super.init(info);
+        int randomKey = gameInfo.getInt(exHashtable.RANDOMSEED,-1);
+        
+        zoomRect = addSlider("zoomRect",s.get("Stack Height"),TzaarId.ZoomSlider);
+        zoomRect.min=MIN_CHIP_SCALE;
+        zoomRect.max=MAX_CHIP_SCALE;
+        zoomRect.value=INITIAL_CHIP_SCALE;
+        zoomRect.barColor=ZoomColor;
+        zoomRect.highlightColor = ZoomHighlightColor;
+  
+        b = new TzaarBoard(randomKey,info.getString(exHashtable.GAMETYPE, Tzaar_Standard_Init));
+        doInit(false);
+        reverseOption = myFrame.addOption(s.get(ReverseView),b.reverse_y,deferredEvents);
+        
+     }
+
+    /** 
+     *  used when starting up or replaying and also when loading a new game 
+     *  */
+    public void doInit(boolean preserve_history)
+    {
+        //System.out.println(myplayer.trueName + " doinit");
+        super.doInit(preserve_history);				// let commonViewer do it's things
+        b.doInit(b.gametype,b.randomKey);				// initialize the board
+        if(!preserve_history)
+    	{ PerformAndTransmit(reviewOnly?"Edit":"Start P0", false,replayMode.Live);
+    	}
+   }
+
+    private final int separation = 2;
+    public int setLocalBoundsSize(int width,int height,boolean wideMode,boolean tallMode)
+    {	
+        int chatHeight = selectChatHeight(height);
+        boolean noChat = chatHeight==0;
+        int ncols = b.lastColumn()-'@';
+        double sncols = (ncols+(tallMode ? 4.5 : (wideMode?9:8))); // more cells wide to allow for the aux displays
+        double snrows = ncols+(tallMode ? noChat?6:4 : 1);  
+        int cellw = (int)(width / sncols);
+        int cellh = (int)((height-(wideMode?0:chatHeight)) / snrows);
+        SQUARESIZE = Math.max(1,Math.min(cellw, cellh)); //cell size appropriate for the aspect ration of the canvas
+        CELLSIZE = SQUARESIZE/SUBCELL;
+        return(SQUARESIZE);
+    }
+    public void createPlayerGroup(boolean wideMode ,commonPlayer p0,int x,int y,Rectangle scoreRect,Rectangle rackRect)
+    {
+    	Rectangle picRect = p0.picRect;
+    	Rectangle nameRect = p0.nameRect;
+    	Rectangle p0time = p0.timeRect;
+    	Rectangle p0aux = p0.extraTimeRect;
+        Rectangle p0anim = p0.animRect;
+        Rectangle box = p0.playerBox;
+        int H = CELLSIZE*2;
+        int C2 = CELLSIZE/2;
+        //first player name
+        G.SetRect(nameRect, x,y, CELLSIZE * 9,H);
+            
+        // time display for first player
+        G.SetRect(p0time, wideMode?G.Right(nameRect)+C2:G.Left(nameRect),
+            		wideMode?G.Top(nameRect):G.Bottom(nameRect),
+            		CELLSIZE * 4, CELLSIZE*2);
+        G.AlignLeft(p0aux, G.Bottom(p0time),p0time);
+        G.SetRect(p0anim, G.Left(p0aux),G.Bottom( p0aux),H,H);
+           
+            // first player portrait
+        G.SetRect(picRect,G.Left( nameRect)+CELLSIZE*2, G.Bottom(wideMode?p0time:p0aux),
+            		G.Width(nameRect)-CELLSIZE*2,G.Width(nameRect)-CELLSIZE*2);
+
+        G.SetRect(scoreRect,G.Right(picRect),G.Bottom(picRect)-H, H*2,H);
+
+        int rackW = SQUARESIZE*3;
+        int left = x-rackW-C2;
+        G.SetRect(rackRect, left, y,rackW,rackW-CELLSIZE*3);
+
+        
+        G.SetRect(box,left,y,Math.max(G.Right(p0time),G.Right(nameRect))-left,G.Bottom(picRect)-y);
+	
+    }
+    
+    public void setLocalBoundsWT(int x, int y, int width, int height,boolean wideMode,boolean tallMode)
+    {	
+		int ncols = b.lastColumn()-'@';
+        int chatHeight = selectChatHeight(height);
+        boolean noChat = chatHeight==0;
+        int ideal_logwidth = CELLSIZE * 30;
+        int C2 = CELLSIZE/2;
+        commonPlayer pl0 = getPlayerOrTemp(0);
+        commonPlayer pl1 = getPlayerOrTemp(1);
+
+        G.SetRect(fullRect,x,y,width, height);
+
+        // game log.  This is generally off to the right, and it's ok if it's not
+        // completely visible in all configurations.
+        
+        G.SetRect(boardRect,x, (wideMode?separation*CELLSIZE:(chatHeight+3*CELLSIZE)),SQUARESIZE * (ncols+2),SQUARESIZE * (ncols-1));
+        
+        int chatWidth =  wideMode?(width-G.Width(boardRect)):Math.max(G.Width(boardRect),width-ideal_logwidth-CELLSIZE);
+
+        G.SetRect(stateRect,G.Left( boardRect) + CELLSIZE, (wideMode?0:chatHeight+CELLSIZE),
+        		G.Width( boardRect) - CELLSIZE*12, 2*CELLSIZE);
+
+         
+        G.SetRect(liftRect, G.Right(boardRect)-CELLSIZE*6, G.Top(stateRect)+CELLSIZE/3, CELLSIZE*3,CELLSIZE*3);
+        G.SetRect(zoomRect,G.Left(liftRect)-G.Width(liftRect)*2-CELLSIZE,G.Top( liftRect),G.Width(liftRect)*2, CELLSIZE);
+        
+        G.SetRect(reverseViewRect, G.Right(liftRect)+CELLSIZE,G.Top( liftRect), CELLSIZE*2,CELLSIZE*4);
+
+        G.SetRect(goalRect, G.Left(boardRect)+3*SQUARESIZE,G.Bottom(boardRect),G.Width(boardRect)-5*SQUARESIZE,CELLSIZE*2);
+        
+        setProgressRect(progressRect,goalRect);
+        
+        int rackX = tallMode ? G.Left(boardRect) : G.Right(boardRect)-C2;
+        int rackW = SQUARESIZE*3;
+     
+    
+        int logH = wideMode?(SQUARESIZE+CELLSIZE):noChat ? CELLSIZE*12 : chatHeight;
+        int rackY = tallMode 
+        			? G.Bottom(boardRect)+CELLSIZE*5
+        			: wideMode?logH+CELLSIZE:G.Top(boardRect);
+ 
+        int playerX = rackX+rackW+CELLSIZE;
+        
+        createPlayerGroup(wideMode||tallMode,pl0,playerX,rackY,
+        		firstPlayerScoreRect,firstPlayerRack);
+        createPlayerGroup(wideMode||tallMode,pl1,
+        		tallMode ? G.Right(pl0.playerBox)+rackW+CELLSIZE : playerX,
+        		tallMode ? rackY : G.Bottom(pl0.playerBox)+CELLSIZE,
+        		secondPlayerScoreRect,secondPlayerRack);
+ 
+ 
+        // "edit" rectangle, available in reviewers to switch to puzzle mode
+        G.SetRect(editRect, 
+        		G.Right(boardRect)-CELLSIZE, 
+        		tallMode ? G.Bottom(boardRect)-SQUARESIZE*3 : G.Bottom(secondPlayerRack)+CELLSIZE,
+        		CELLSIZE*6, 3*CELLSIZE);
+   
+ 
+        G.AlignXY(passRect,G.Left( boardRect)+C2,G.Top( boardRect)+CELLSIZE, editRect);
+        
+        // "done" rectangle, should always be visible, but only active when a move is complete.
+        G.AlignLeft(doneRect,
+        		G.Bottom(editRect)+3*CELLSIZE/2,
+        		editRect);
+        int lowest = Math.max(G.Bottom(secondPlayerRack),G.Bottom(doneRect)+CELLSIZE*3);
+        int logR = G.Right(pl0.playerBox)+CELLSIZE;
+        boolean roomAtRight = (width-logR>ideal_logwidth*0.7);
+        boolean logBottom = !wideMode  && ((noChat&!tallMode) || (height-lowest>CELLSIZE*12));
+        boolean logRight = wideMode & roomAtRight;
+        int logX = logRight ? logR : logBottom 
+        			? (tallMode ? x+C2 : G.Right(editRect)+C2) 
+        		    : tallMode 
+    				   ? width-ideal_logwidth-C2 
+    				   : wideMode?G.Right(boardRect)+SQUARESIZE:(chatWidth+C2) ;
+        int logW = Math.min(ideal_logwidth,width-logX-C2);
+        int logY =  logBottom 
+        				? tallMode ? lowest+C2 : G.Bottom(pl1.playerBox)+C2 
+        				: tallMode || wideMode || !noChat ? y + C2 : G.Bottom(pl1.playerBox)+C2;
+        int chatX = wideMode?(G.Right(editRect)+2*CELLSIZE):C2;
+        int chatY = wideMode?G.Top(editRect)+CELLSIZE:y+C2;
+        int chatW = wideMode|logBottom ? (width-chatX-C2):logX-chatX-C2;
+        G.SetRect(chatRect, chatX,
+        		chatY,
+        		chatW,
+        		wideMode?(height-chatY-C2):chatHeight);
+        G.SetRect(logRect, logX, logY ,	logW, 
+        		logBottom 
+        			? height-logY-C2
+        			: logRight ? chatY-logY-CELLSIZE : Math.min(logH,height-logY-C2));
+        
+ 
+ 
+ 		//this sets up the "vcr cluster" of forward and back controls.
+        SetupVcrRects(G.Left(boardRect)+C2,G.Bottom(boardRect)-CELLSIZE,
+            CELLSIZE * 10,
+            5 * CELLSIZE);
+        positionTheChat(chatRect,Color.white,Color.white);
+        generalRefresh();
+    }
+
+	// draw a box of spare . Notice if any are being pointed at.  Highlight those that are.
+    private void DrawReverseMarker(Graphics gc, Rectangle r,HitPoint highlight)
+    {	StockArt king = TzaarChip.getChip(b.reverse_y?1:0,FIRST_PLAYER_INDEX);
+    	StockArt reverse = TzaarChip.getChip(b.reverse_y?0:1,SECOND_PLAYER_INDEX);
+    	G.frameRect(gc,Color.black,r);
+    	reverse.drawChip(gc,this,G.Width(r),G.centerX(r),G.Top(r)+G.Width(r)/2,null);
+    	king.drawChip(gc,this,G.Width(r),G.centerX(r),G.Top(r)+G.Width(r)+G.Width(r)/2,null);
+    	if(HitPoint.setHelpText(highlight,r, s.get(ReverseViewExplanation)))
+    	{	highlight.spriteColor = Color.red;
+			highlight.spriteRect = r;
+    		highlight.hitCode = TzaarId.ReverseViewButton;
+    	}
+     } 
+    
+   private int liftSteps=0;
+   private int rotateSteps=0;
+   private int initial_lift_x = 0;
+   private void DrawLiftRect(Graphics gc,HitPoint highlight)
+   {	if(lifted || (liftSteps>0) || (rotateSteps>0)) { repaint(20); }
+		liftSteps = lifted ? Math.min(++liftSteps,12) : Math.max(--liftSteps,0);
+		if((liftSteps==12)&&(highlight!=null)&&lifted)
+		{
+		if(!highlight.down) {lifted=false; }
+		int dif = (G.Left(highlight)-initial_lift_x)/3;
+		dif = Math.max(-4,Math.min(4,dif));
+		if(dif!=0)
+		{ rotateSteps = Math.max(0,Math.min(30,rotateSteps+dif));
+		  initial_lift_x=G.Left(highlight);
+		}}
+		else { rotateSteps = Math.max(0,rotateSteps-1); }
+		
+		if(G.pointInRect(highlight,liftRect))
+    	{	
+    		highlight.hitCode = TzaarId.LiftRect;
+    		highlight.spriteColor = Color.red;
+    		highlight.spriteRect = liftRect;
+       		if(!lifted) { initial_lift_x = G.Left(highlight); }
+       	   	highlight.dragging = lifted = highlight.down;
+    	}
+		G.centerImage(gc,textures[LIFT_ICON_INDEX],liftRect,this); 
+		G.frameRect(gc,Color.black,liftRect);
+		
+    }
+   
+
+    public void drawSprite(Graphics g,int idx,int xp,int yp)
+    {	TzaarChip ic = TzaarChip.getChip(idx);
+    	int scl = scaleCellSize(SQUARESIZE,xp,yp,boardRect);
+    	ic.drawChip(g,this,scl,xp,yp,null);
+    }
+
+
+
+
+    /* draw the deep unchangable objects, including those that might be rather expensive
+     * to draw.  This background layer is used as a backdrop to the rest of the activity.
+     * in our cease, we draw the board and the chips on it. 
+     * */
+    public void drawFixedElements(Graphics gc)
+    {boolean review = reviewMode() && !mutable_game_record;
+      // erase
+      G.setColor(gc,review ? reviewModeBackground : boardBackgroundColor);
+      //G.fillRect(gc, fullRect);
+      G.tileImage(gc,textures[BACKGROUND_TILE_INDEX], fullRect, this);   
+      if(review)
+      {	 
+        G.tileImage(gc,textures[BACKGROUND_REVIEW_INDEX],boardRect, this);   
+      }
+       
+      // for us, the board is one large graphic, for which the target points
+      // are carefully matched with the abstract grid
+      G.centerImage(gc,images[BOARD_INDEX], boardRect,this);
+      
+	    {	// good for board-skew : gb.SetDisplayParameters(0.7,0.8,  0.0,0.00,  2.3, .15, 0.25);
+	    	// good for board-skew2 gb.SetDisplayParameters(0.67,0.72,  0.0,0.00,  14.5, .22, 0.25);
+	    	// good for board-skew3 gb.SetDisplayParameters(0.54,0.80,  0.0,-0.30,  7.0, .250, 0.32);
+	    	double lr = 30.0*rotateSteps/12;
+	    	b.SetDisplayParameters(
+	    		 1.1, //0.93,	// scale 
+	    		 0.82,	// yscale
+	    		 0.0,	// xoff
+	    		 -0.7,//-0.1,	// yoff
+	    		 -2.0+lr,	// rot
+	    		 0.14,	// xperspective
+	    		 0.11,	// yperspective
+	    		 0.0
+	    		 );
+	    	b.SetDisplayRectangle(boardRect);
+	    	}
+  
+      b.DrawGrid(gc,boardRect,use_grid,Color.white,Color.black,Color.blue,Color.black);
+    }
+    private void DrawScore(Graphics gc,Rectangle r,int player)
+    {	
+    	G.setFont(gc,largeBoldFont);
+    	G.Text(gc,true,r,0,Color.black,rackBackGroundColor,""+b.ScoreForPlayer(player,false,false));
+    	G.frameRect(gc,Color.black,r);
+    }
+    
+    private void drawRack(TzaarBoard rb,HitPoint highlight,Graphics gc,Rectangle r,int forplayer)
+    {	TzaarCell row[] = (rb.placing?rb.rack:rb.captures)[forplayer];
+     	boolean canhit = rb.LegalToHitChips(forplayer);
+    	int div = row.length;
+    	int w = G.Width(r)/div;
+    	int moving = rb.movingObjectType();
+    	int movingPlayer = rb.movingObjectPlayer();
+    	//G.frameRect(gc,Color.black,r);
+    	for(int i=0;i<div;i++)
+    	{	TzaarCell c = row[i];
+        	double zoom = zoomRect.value;
+        	int height = c.chipIndex+1;
+        	boolean lifting = (highlight!=null) && (highlight.hitCode==TzaarId.LiftRect);
+        	String msg = ((height>1) && (lifting || (zoom<=(MIN_CHIP_SCALE+0.01))))
+        				? (""+height)
+        				: null;
+   		boolean canhitthis = ((moving>=0) 
+    								? (canhit && (movingPlayer==forplayer) && (i==moving)) 
+    								: canhit); 
+   		int xp = G.Left(r)+i*w+SQUARESIZE/2;
+   		int yp = G.Top(r)+G.Height(r)-SQUARESIZE/2;
+   		if(canhitthis && (moving>=0) && (c.height()==0))
+   		{	StockArt.SmallO.drawChip(gc,this,SQUARESIZE,xp,yp,null);
+   		}
+    
+    	if(c.drawStack(gc,this,canhitthis?highlight:null,SQUARESIZE,
+    				xp,yp,liftSteps,zoomRect.value,msg))
+    		{
+    		highlight.arrow = (b.pickedObject==null)?StockArt.UpArrow:StockArt.DownArrow;
+    		highlight.awidth = SQUARESIZE/2;
+    		highlight.spriteColor = Color.red;
+    		}
+              		
+    	}
+//    	gc,highlight,secondPlayerRack.x+secondPlayerRack.width/2,secondPlayerRack.y,
+//			this,rb.LegalToHitChips(SECOND_PLAYER_INDEX),0,SQUARESIZE,INITIAL_CHIP_SCALE)	
+    }
+    
+    private int scaleCellSize(int cellsize,int x,int y,Rectangle r)
+    {	if(G.pointInRect(x,y,r))
+    	{ double scl = (((y-G.Top(r))*0.2)/G.Height(r))+0.9;
+    	  int cs = (int)(cellsize*scl);
+    	  return(cs);
+    	}
+      return(cellsize);
+     }
+   /* draw the board and the chips on it. */
+    private void drawBoardElements(Graphics gc, TzaarBoard rb, Rectangle brect, HitPoint highlight)
+    {	Hashtable<TzaarCell,TzaarCell> dests = rb.getMoveDests();
+     	boolean dolift = (liftSteps>0);
+     	int dotsize = Math.max(2,SQUARESIZE/15);
+     	setDraggingBoard(dolift);	// inhibit touch zoom while in contact
+     	if(dolift && (liftSteps<12))
+     		{ // this induces a very simple animation
+     		repaint(20); 
+     		}
+     	//
+        // now draw the contents of the board and anything it is pointing at
+        //
+       	for (int thiscolnum = rb.leftColNum(),stepcol=rb.stepColNum(),lastcolnum=rb.rightColNum()+stepcol; 
+       			thiscolnum!=lastcolnum; 
+       			thiscolnum+=stepcol)
+         { //where we draw the grid
+       		char thiscol = (char)('A'+thiscolnum);
+  	        for (int row=rb.topRowInColumn(thiscol),steprow=rb.stepRow(),frow=rb.bottomRowInColumn(thiscol)+steprow;
+  	        	row!=frow; 
+  	        	row+=steprow)	// back to front
+        	{
+            TzaarCell cell = rb.getCell(thiscol,row);
+            //if(cell!=rb.center)
+            {
+            boolean isADest = dests.get(cell)!=null;
+            boolean isSource = rb.isSource(cell);
+            boolean canHit = rb.LegalToHitBoard(cell);
+            int ypos = G.Bottom(brect) - rb.cellToY(thiscol, row);
+            int xpos = G.Left(brect) + rb.cellToX(thiscol, row);
+            double zoom = zoomRect.value;
+            int height = cell.chipIndex+1;
+            boolean lifting = (highlight!=null) && (highlight.hitCode==TzaarId.LiftRect);
+            String msg = ((height>1) && (lifting || (zoom<=(MIN_CHIP_SCALE+0.01))))
+            				? (""+height)
+            				: null;
+            int scl = scaleCellSize(SQUARESIZE,xpos,ypos,boardRect);
+            if(cell.drawStack(gc,this,canHit?highlight:null,scl,xpos,ypos,liftSteps,zoom,msg))
+            {
+            	highlight.arrow = (getMovingObject()>=0) ? StockArt.DownArrow : StockArt.UpArrow;;
+            	highlight.awidth = 3*CELLSIZE/2;
+            	highlight.spriteColor = Color.red;
+            }
+            if(gc!=null)
+            	{
+            	// temp for grid setup
+            	//G.DrawAACircle(gc,xpos+dotsize,ypos,dotsize,Color.red,Color.gray,true);
+            	if(isSource)
+            	{	G.DrawAACircle(gc,xpos+dotsize,ypos,dotsize,Color.blue,Color.gray,true);
+            	}
+            	if(isADest)
+	        	{
+	        		G.DrawAACircle(gc,xpos+dotsize,ypos,dotsize,Color.red,Color.gray,true);
+	        	}
+             	
+	        	}
+        }}}
+       	drawRack(rb,highlight,gc,firstPlayerRack,FIRST_PLAYER_INDEX);
+       	drawRack(rb,highlight,gc,secondPlayerRack,SECOND_PLAYER_INDEX);
+ 
+    }
+    
+    public void drawAuxControls(Graphics gc,HitPoint highlight)
+    {  DrawLiftRect(gc,highlight); 
+       DrawReverseMarker(gc,reverseViewRect,highlight);
+
+     }
+    //
+    // draw the board and things on it.  If gc!=null then actually 
+    // draw, otherwise just notice if the highlight should be on
+    //
+    public void redrawBoard(Graphics gc, HitPoint highlight)
+    {  TzaarBoard gb = (TzaarBoard) disB(gc);
+      boolean ourTurn = OurMove();
+      boolean moving = getMovingObject()>=0;
+      HitPoint ot = ourTurn ? highlight : null;	// hit if our turn
+      HitPoint select = moving?null:ot;	// hit if our turn and not dragging
+      HitPoint ourSelect = (moving && !reviewMode()) ? null : highlight;	// hit if not dragging
+      TzaarState vstate = b.getState();
+       redrawGameLog(gc, ourSelect, logRect, boardBackgroundColor);
+    
+   	   if(debug)
+   		   {
+   		   DrawScore(gc,firstPlayerScoreRect,FIRST_PLAYER_INDEX);
+   		   DrawScore(gc,secondPlayerScoreRect,SECOND_PLAYER_INDEX);
+   		   }
+  
+       drawBoardElements(gc, gb, boardRect, ot);
+       G.setFont(gc,standardBoldFont);
+       drawPlayerStuff(gc,(vstate==TzaarState.PUZZLE_STATE),ourSelect,
+	   			HighlightColor, rackBackGroundColor);
+
+
+		if (vstate != TzaarState.PUZZLE_STATE)
+        {
+             if (G.handleRoundButton(gc, doneRect, 
+            		(b.DoneState()? select : null), s.get(DoneAction),
+                    HighlightColor, rackBackGroundColor))
+            {	// always display the done button, but only make it active in
+            	// the appropriate states
+                select.hitCode = DefaultId.HitDoneButton;
+            }
+            boolean ispassed = ((vstate==TzaarState.CONFIRM_STATE)&&gb.isPassed());
+            if ((vstate==TzaarState.PLAY_STATE) || ispassed)
+            {
+            	if(G.handleRoundButton(gc,passRect,select,s.get(PassAction),
+            			HighlightColor, ispassed ? HighlightColor : rackBackGroundColor))
+            		{ select.hitCode = DefaultId.HitPassButton; 
+            		}
+            }
+            if (allowed_to_edit)
+            {
+     
+                    if (G.handleRoundButton(gc, editRect, select, s.get(EditAction),
+                                HighlightColor, rackBackGroundColor))
+                    {
+                        select.hitCode = DefaultId.HitEditButton;
+                    }
+     
+            }
+         }
+
+
+
+        standardGameMessage(gc,
+        		vstate==TzaarState.GAMEOVER_STATE?gameOverMessage():s.get(vstate.getDescription()),
+        				vstate!=TzaarState.PUZZLE_STATE,
+        				gb.whoseTurn,
+        				stateRect);
+        goalAndProgressMessage(gc,ourSelect,s.get("Keep all three types of chip visible"),progressRect, goalRect);
+
+        // no repetitions are possible in tzaar
+        // DrawRepRect(gc,b.Digest(),repRect);
+        drawAuxControls(gc,ourSelect);
+    	zoomRect.draw(gc,ourSelect);
+        drawVcrGroup(ourSelect, gc, HighlightColor, vcrButtonColor);
+        
+    }
+
+    /**
+     * Execute a move by the other player, or as a result of local mouse activity,
+     * or retrieved from the move history, or replayed form a stored game. 
+     * @param mm the parameter is a commonMove so the superclass commonCanvas can
+     * request execution of moves in a generic way.
+     * @return true if all went well.  Normally G.Error would be called if anything went
+     * seriously wrong.
+     */
+     public boolean Execute(commonMove mm,replayMode replay)
+    {	TzaarState state = b.getState();
+
+        if(state==TzaarState.PUZZLE_STATE)
+    	{   mm.setSliderNumString("--");
+    		switch(mm.op)
+        	{
+    		case MOVE_DROPB:
+    		case MOVE_DROPCAP:
+    			lastDropped = b.pickedObject;
+				break;
+			case MOVE_PICK: 
+        	case MOVE_PICKB: 
+        		break;
+    		default:
+    			mm.setLineBreak(true);
+        	}
+    	}
+  
+        handleExecute(b,mm,replay);
+  
+        startBoardAnimations(replay,b.animationStack,(int)b.CELLSIZE,false);
+               
+        if(replay!=replayMode.Replay) { playSounds((TzaarMovespec)mm); }
+ 
+        return (true);
+    }
+     
+
+/**
+ * parse a move specifier on behalf of the current player.  This is called by the 
+ * "game" object when it receives a move from the other player.  Note that it may
+ * be called while we are in review mode, so the current state of the board should
+ * not be considered.
+ */
+    public commonMove ParseNewMove(String st)
+    {
+        return (new TzaarMovespec(st, -1));
+    }
+    
+
+private void playSounds(TzaarMovespec m)
+{
+    // add the sound effects
+    switch(m.op)
+    {
+    case MOVE_DROPB:
+    case MOVE_DROPCAP:
+    case CAPTURE_BOARD_BOARD:
+    case MOVE_BOARD_BOARD:
+    	{ int h = m.undoInfo/100;
+    	  while(h-- > 0) { playASoundClip(light_drop,50); }
+    	}
+    	break;
+    case MOVE_DROP:
+    case MOVE_PICKB:
+    case MOVE_PICK:
+    	 playASoundClip(light_drop,50);
+    	 break;
+     default: break;
+    }
+	
+}
+
+ 
+/**
+ * the preferred mouse gesture style is to let the user "pick up" objects
+ * by simply clicking on them, but we also allow him to click and drag. 
+ * StartDragging is called when he has done this.
+ */
+    public void StartDragging(HitPoint hp)
+    {
+        int mo = getMovingObject();
+        if ((mo < 0)&&(hp.hitCode instanceof TzaarId)) // not dragging anything yet, so maybe start
+        {
+
+        TzaarId hitObject = (TzaarId)hp.hitCode;
+		TzaarCell cell = (TzaarCell)hp.hitObject;
+		TzaarChip chip = (cell==null) ? null : cell.topChip();
+		
+        if(chip!=null)
+		{
+	    switch(hitObject)
+	    {
+	    case LiftRect:
+        case ZoomSlider:
+        	break;
+        case First_Player_Rack:
+        case Second_Player_Rack:
+        	PerformAndTransmit("Pick "+hitObject.shortName+" "+cell.row);
+        	break;
+	    case BoardLocation:
+	    	if(cell.chipIndex>=0)
+	    		{
+	    		PerformAndTransmit("Pickb "+cell.col+" "+cell.row+" "+chip.typeIndex);
+	    		}
+	    	break;
+		default:
+			break;
+        }
+
+        if (getMovingObject() >= 0)
+        {	// if we got something started, inform the mouse handler
+            hp.dragging = true;
+        } }
+        }
+    }
+
+	/** 
+	 * this is called on "mouse up".  We may have been just clicking
+	 * on something, or we may have just finished a click-drag-release.
+	 * We're guaranteed just one mouse up, no bounces.
+	 */
+    public void StopDragging(HitPoint hp)
+    {
+        CellId id = hp.hitCode;
+        if(!(id instanceof TzaarId)) {   missedOneClick = performStandardActions(hp,missedOneClick);}
+    	else {
+    	TzaarId hitObject = (TzaarId)hp.hitCode;
+		TzaarCell cell = (TzaarCell)hp.hitObject;
+		TzaarChip cup = (cell==null) ? null : cell.topChip();
+		TzaarState state = b.getState();	// state without resignation
+        switch (hitObject)
+        {
+        default:
+        	if (performStandardButtons(hitObject)) {}
+        	else if (performVcrButton(hitObject, hp))	// handle anything in the vcr group
+            {
+            }
+            else
+            {
+            	throw G.Error("Hit Unknown object " + hitObject);
+            }
+        	break;
+        case PassRect:
+        	PerformAndTransmit("pass");
+        	break;
+        case ReverseViewButton:
+          	 reverseOption.setState(b.reverse_y = !b.reverse_y);
+          	 generalRefresh();
+          	 break;
+        case ZoomSlider:
+        case LiftRect:
+        	break;
+        case BoardLocation:	// we hit the board 
+			switch(state)
+			{
+			default: throw G.Error("Not expecting drop on filled board in state "+state);
+			case CONFIRM_STATE:
+			case PLAY_STATE:
+			case PUZZLE_STATE:
+			case CAPTURE_STATE:
+				if(b.movingObjectIndex()>=0)
+				{ if(cell!=null) 
+					{ TzaarChip top = cell.topChip();
+					  String opname = (top!=null)&&(top.playerIndex!=b.movingObjectPlayer())
+					  					? "Dropcap " : "Dropb ";
+					  PerformAndTransmit(opname+cell.col+" "+cell.row); 
+					}
+				}
+				else if(cup!=null)
+				{
+				PerformAndTransmit( "Pickb "+cell.col+" "+cell.row+" "+cup.pieceNumber());
+				}
+				break;
+			}
+			break;
+			
+        case First_Player_Rack:
+        case Second_Player_Rack:
+        	{
+        	int mov = b.movingObjectIndex();
+            if(mov>=0) 
+			{//if we're dragging a black chip around, drop it.
+            	switch(state)
+            	{
+            	default: throw G.Error("can't drop on rack in state "+state);
+                	case PLAY_STATE:
+            		performReset();
+            		break;
+               	case PUZZLE_STATE:
+            		PerformAndTransmit("Drop "+hitObject.shortName+" "+cell.row);
+            		break;
+            	}
+			}
+         	}
+            break;
+        }
+        }
+    }
+
+    public boolean handleDeferredEvent(Object target, String command)
+    {
+    	if(target==reverseOption)
+    	{
+    	b.reverse_y = reverseOption.getState();
+    	generalRefresh();
+    	return(true);
+    	}
+    	else 
+    	return(super.handleDeferredEvent(target,command));
+     }
+    public String gameType() { return(b.gametype+" "+b.randomKey); }
+    public String sgfGameType() { return(Tzaar_SGF); }
+    public void performHistoryInitialization(StringTokenizer his)
+    {	String token = his.nextToken();		// should be a checker init spec
+	    long rk = G.LongToken(his);
+	    b.doInit(token,rk);
+	}
+
+
+    public BoardProtocol getBoard()   {    return (b);   }
+    public SimpleRobotProtocol newRobotPlayer() { return(new TzaarPlay()); }
+
+    public boolean replayStandardProps(String name,String value)
+    {	nextIntCompatabilityKludge(b,name,value,"Oct 25 2013");
+    	return(super.replayStandardProps(name,value));
+    }
+    
+    /** replay a move specified in SGF format.  
+     * this is mostly standard stuff, but the key is to recognize
+     * the elements that we generated in sgf_save
+     */
+    public void ReplayMove(sgf_node no)
+    {
+        String comments = "";
+        sgf_property prop = no.properties;
+
+        while (prop != null)
+        {
+            String name = prop.getName();
+            String value = (String) prop.getValue();
+
+            if (setup_property.equals(name))
+            {	StringTokenizer tok = new StringTokenizer(value);
+        		String gametype = tok.nextToken();
+        		long rk = G.LongToken(tok);
+                b.doInit(gametype,rk);
+             }
+            else if (name.equals(comment_property))
+            {
+                comments += value;
+            }
+            else if (name.equals(game_property))
+            {
+                if (!value.equals(Tzaar_SGF))
+                {
+                	throw G.Error("game type " + value + " is not Tzaar");
+                }
+            }
+            else if (parseVersionCommand(name,value,2)) {}
+            else if (parsePlayerCommand(name,value)) {}
+            else
+            {
+                replayStandardProps(name,value);
+            }
+
+            prop = prop.next;
+        }
+
+        if (!"".equals(comments))
+        {
+            setComment(comments);
+        }
+    }
+}
+

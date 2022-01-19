@@ -1,0 +1,13 @@
+body
+{
+background-color: #d8d8f8;
+}
+
+a 
+{ 
+text-decoration:none; 
+color:#2255ff; 
+}
+
+a.v:visited {color:#aa55ff;}
+

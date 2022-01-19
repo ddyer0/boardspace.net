@@ -1,0 +1,20 @@
+RewriteEngine on
+#
+RewriteCond %{HTTP:Accept-Language} ^pt[-,;](.*)$ [OR]
+RewriteCond %{HTTP_COOKIE} ^(.*)language=portuguese(.*)$
+RewriteRule ^$|^index.html$ /portuguese/index.shtml [R] 
+#
+RewriteCond %{HTTP:Accept-Language} ^fr[-,;](.*)$ [OR]
+RewriteCond %{HTTP_COOKIE} ^(.*)language=french(.*)$
+RewriteRule ^$|^index.html$ /french/index.shtml [R] 
+#
+RewriteRule  ^$|^index.html$ /english/index.shtml [R]
+# rewrite missing foo-player.txt 
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^.*player.txt /english/blank-player.txt [R]
+#
+# deny access to some known bots up to no good
+#
+order allow,deny
+deny from 222.186.27.
+allow from all

@@ -1,0 +1,249 @@
+import EXT
+import HOST
+import DTLINE
+import RPLINE
+import VPOPMAIL_DOMAIN
+import TCPLOCALIP
+import TCPREMOTEIP
+
+MAILDROP_OLD_REGEXP=1
+
+SHELL="/bin/sh"
+
+IW_VHOME=`/home/vpopmail/bin/vuserinfo -d $EXT@$HOST`
+IW_VDOM=`/home/vpopmail/bin/vdominfo -d $HOST | head -n1`
+IW_FILTERDIR="$IW_VDOM/.filterrules"
+IW_MAILDIR="$IW_VHOME/Maildir"
+
+IW_JUNKFOLDER="Spam"
+
+IW_MAXSIZE_FILE=/home/interworx/lib/maildrop/spam_maxsize
+`test -f $IW_MAXSIZE_FILE`
+if( $RETURNCODE != 1 )
+{
+   IW_MAXSIZE=`cat $IW_MAXSIZE_FILE`
+}
+else
+{
+   IW_MAXSIZE="262144"
+}
+
+IW_IS_SPAM=""
+IW_IS_FILTERED=""
+
+#logfile "/tmp/maildrop.log"
+#log "vdom: $IW_VDOM"
+
+#-------------------------------------------#
+# Try to get a "drop if spam score >" value #
+#-------------------------------------------#
+
+`test -f $IW_VDOM/.dropscore`
+if( $RETURNCODE != 1 )
+{
+   IW_DROPSCORE = `cat $IW_VDOM/.dropscore`
+}
+else
+{
+   IW_DROPSCORE = "999999999";
+}
+
+#----------------------------------------------#
+# See if message bounce or catchall is enabled #
+#----------------------------------------------#
+
+`test -f $IW_VDOM/.bounceon`
+if( $RETURNCODE != 1 )
+{
+   IW_DEFAULT_TO = "bounce-no-mailbox"
+}
+else
+{
+   `test -r $IW_VDOM/.catchall`
+   if( $RETURNCODE != 1 )
+   {
+      IW_DEFAULT_TO = `cat $IW_VDOM/.catchall`
+   }
+   else
+   {
+      IW_DEFAULT_TO = "delete"
+   }
+}
+
+IW_VPOP="|/home/vpopmail/bin/vdelivermail '' $IW_DEFAULT_TO"
+
+#log "$EXT@$HOST"
+
+#------------------------#
+# check for filter rules #
+#------------------------#
+
+`test -d $IW_FILTERDIR`
+if( $RETURNCODE == 0 )
+{
+   `test -r $IW_FILTERDIR/badfrom.dat`
+   if( $RETURNCODE != 0 )
+   {
+      `touch $IW_FILTERDIR/badfrom.dat`
+   }
+
+   `test -r $IW_FILTERDIR/badsubj.dat`
+   if( $RETURNCODE != 0 )
+   {
+      `touch $IW_FILTERDIR/badsubj.dat`
+   }
+
+   if( (/^From: *!.*/    && lookup( getaddr($MATCH2), "$IW_FILTERDIR/badfrom.dat", "h")) || \
+       (/^Subject: *!.*/ && lookup(         $MATCH2,  "$IW_FILTERDIR/badsubj.dat", "h")) )
+   {
+      IW_IS_FILTERED="1"
+   }
+
+   if( $IW_IS_FILTERED )
+   {
+      `test -f $IW_FILTERDIR/treat-as-spam`
+      if( $RETURNCODE == 0 )
+      {
+         IW_IS_SPAM="1"
+      }
+      else
+      {
+         echo "dropping filtered message"
+         exit;
+      }
+   }
+}
+
+#-----------------------------------------#
+# see if this is a full fleged e-mail box #
+#-----------------------------------------#
+
+if( $IW_VHOME )
+{
+
+   #---------------------------------------------------------#
+   # check to see if SpamAssassin is enabled for this domain #
+   #---------------------------------------------------------#
+
+   `test -f $IW_VDOM/.spamon`
+   if( $RETURNCODE != 1 && $IW_IS_SPAM != 1 )
+   {
+      if ( $SIZE < $IW_MAXSIZE )
+      {
+         exception {
+
+      #---------------------------#
+	    # call SpamAssassin (spamc) #
+	    #---------------------------#
+
+            xfilter "/usr/bin/spamc -u $EXT@$HOST"
+         }
+      }
+   }
+
+   #----------------------------------------#
+   # set is_spam var if the message is spam #
+   #----------------------------------------#
+
+   if (/^X-Spam-Flag: *YES/)
+   {
+      IW_IS_SPAM="1"
+   }
+
+   #--------------------------#
+   # Determine the Spam Score #
+   #--------------------------#
+
+   MATCH2=""
+   /^X-Spam-Status: Yes, score=![:digit:]+\.[:digit:]+!.*/
+   IW_SPAMSCORE=$MATCH2
+
+   #---------------------------------#
+   # check the user mailbox settings #
+   #---------------------------------#
+
+   `test -r $IW_VHOME/.mailfilter`
+   if( $RETURNCODE == 0 )
+   {
+      exception {
+         include $IW_VHOME/.mailfilter
+      }
+   }
+
+   #-----------------------------------------------------------------#
+   # check the dropscore and drop is message is spam scored too high #
+   #-----------------------------------------------------------------#
+
+   if ( $IW_SPAMSCORE >= $IW_DROPSCORE )
+   {
+      #-----------------------#
+      # just drop the message #
+      #-----------------------#
+      echo "spamscore '$MATCH2' too high, dropping message"
+      exit
+   }
+
+
+   #----------------------------------------------------------#
+   # check for Spam Flag and deliver to Spam box if it exists #
+   #----------------------------------------------------------#
+
+   if ($IW_IS_SPAM)
+   {
+      `test -d $IW_VHOME/Maildir/.$IW_JUNKFOLDER`
+      if( $RETURNCODE == 1 )
+      {
+         IW_JUNKFOLDER=tolower( $IW_JUNKFOLDER );
+         `test -d $IW_VHOME/Maildir/.$IW_JUNKFOLDER`
+         if( $RETURNCODE == 1 )
+         {
+            IW_JUNKFOLDER=toupper( $IW_JUNKFOLDER );
+            `test -d $IW_VHOME/Maildir/.$IW_JUNKFOLDER`
+            if( $RETURNCODE == 1 )
+            {
+               IW_JUNKFOLDER=""
+            }
+         }
+      }
+      if( $IW_JUNKFOLDER )
+      {
+         echo "delivering to spam folder"
+         to "$IW_VHOME/Maildir/.$IW_JUNKFOLDER/"
+      }
+   }
+   if( $IW_IS_FILTERED )
+   {
+      echo "dropping filtered message - no spam folder found"
+      exit;
+   }
+}
+
+#-------------------------------------------#
+# check the domain wide mailfilter settings #
+#-------------------------------------------#
+
+`test -r $IW_VDOM/.mailfilter`
+if( $RETURNCODE == 0 )
+{
+   exception {
+      include $IW_VDOM/.mailfilter
+   }
+}
+
+#--------------------------------------#
+# check the global mailfilter settings #
+#--------------------------------------#
+
+`test -r /home/vpopmail/etc/global.mailfilter`
+if( $RETURNCODE == 0 )
+{
+   exception {
+      include "/home/vpopmail/etc/global.mailfilter"
+   }
+}
+
+#-------------------------------#
+# if all else fails, vpop it :) #
+#-------------------------------#
+
+to $IW_VPOP

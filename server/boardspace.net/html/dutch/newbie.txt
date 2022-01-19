@@ -1,0 +1,5 @@
+
+Hi new player - thanks for coming.  You are welcome to play, spectate or just chat.
+To play Robot, click on a dard square in an empty game room and press "Play Robot".
+Alternatively, you can wait for another player to join your game and press "Start".
+

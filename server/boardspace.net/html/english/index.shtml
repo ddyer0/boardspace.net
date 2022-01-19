@@ -1,0 +1,136 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+<meta data-rh="true" name="theme-color" content="#ffffff"/>
+<meta data-rh="true" property="og:title" content="Free Online Board Games | Play Board Games for Free"/>
+<meta name="title" content="Play Board Games Online for Free" />
+
+    <meta http-equiv="content-type" content="text/html;
+      charset=windows-1252">
+    
+    <title>BoardSpace.net Home Page</title><script src="/js/site.js"></script></head>
+
+  <body style="background-image: url(../images/background-image.jpg);">
+    <h1 style="text-align: center;"><img alt="boardspace.net" src="master-logo.jpg" style="width: 600px; height: 100px;"></h1>
+    <h1 style="text-align: center;">A place to play Board Games</h1>
+    <h3 style="text-align: center;">All these games can be played with friends - online or offline - desktop or mobile</h3>
+    <table style="width: 80%; height: 1%; text-align: left; margin-left: auto; margin-right: auto;" border="0" cellpadding="2" cellspacing="2">
+      <caption><font size="+1"><span style="font-weight: bold;"></span></font><br>
+      </caption><tbody>
+        <tr>
+
+          <td style="vertical-align: top; text-align: center;"><font size="+1"> <a href="/cgi-bin/noticeme.cgi?from=homepage">
+              </a><a href="register.shtml"><span style="font-weight: bold;">Register</span></a></font><br>
+          </td>
+          <td style="vertical-align: top; text-align: center;"><font size="+2"><a style="font-weight: bold;" href="login-jws.shtml">Download the App for your platform<br>
+              </a></font></td>
+        </tr>
+      </tbody>
+    </table>
+    <br>
+    <!--#include virtual="/cgi-bin/links.cgi?notop=1" -->
+    <!--#include virtual="/cgi-bin/top_games.cgi?embed=1" --><br>
+    
+    <center><h2>Site Stuff</h2></center>
+    <table style="text-align: left; width: 100%;" border="1" cellpadding="2" cellspacing="2">
+<tbody>
+<tr>
+<td colspan="1" rowspan="3" style="text-align: left; vertical-align: middle;"><a href="https://www.facebook.com/pages/Boardspacenet/147924481942900" target="_new"><img title="Like our facebook page" src="/images/fb-like.jpg" tooltip="Like our facebook
+page" alt="" style="border: 0px solid ; width: 100px; height: 50px;"></a><br>
+<a href="https://www.facebook.com/pages/Boardspacenet/147924481942900" target="_new">Spread the word<br>
+</a></td>
+<td><a target="_new" href="lobby-help.html">Lobby
+Help</a></td>
+<td style="vertical-align: top;"><a target="_new" href="/cgi-bin/edit.cgi">Edit User Info</a> &amp;
+<a href="/cgi-bin/lost_password.cgi">Password Reset</a></td>
+<td style="vertical-align: top;"><a target="_new" href="/cgi-bin/messageboard.cgi">Message Board / </a><a target="_new" href="/BB/">User Forums</a></td>
+<td style="vertical-align: top;"><a target="_new" href="/cgi-bin/proposals.cgi">Site Wish List</a>&nbsp;</td>
+</tr>
+<tr>
+<td style="vertical-align: top;"><a target="_new" href="abouttherankings.shtml">About the Rankings</a> </td>
+<td style="vertical-align: top;"><a target="_new" href="abouttherobot.shtml">About the Robots</a> </td>
+<td style="vertical-align: top;"><a target="_new" href="/cgi-bin/tournament-signup.cgi">Tournaments</a>
+/ <a target="_new" href="/cgi-bin/meetup.cgi">Meeting
+finder</a> </td>
+<td style="vertical-align: top;"><a target="_new" href="aboutthesite.shtml">About the Site</a></td>
+</tr>
+<tr>
+<td style="vertical-align: top;"><a target="_new" href="/cgi-bin/player_analysis.cgi">Game Results Analyzer</a></td>
+<td style="vertical-align: top;"><a target="_new" href="/cgi-bin/site_active_times.cgi">Site Most Active Times</a><br>
+</td>
+<td style="vertical-align: top;"> <a href="playermap.shtml" target="_new">Player Map</a>
+/ <a target="_new" href="/cgi-bin/friends.cgi">Friend
+Locator</a> </td>
+<td style="vertical-align: top;"><a href="volunteers.html" target="_new">Thanks to ...</a><br>
+</td>
+</tr>
+</tbody>
+</table>
+    <br>
+    <div style="text-align: center;"><span style="font-weight: bold;">Other
+        Stuff</span><br>
+    </div>
+    <table style="width: 100%; text-align: left;" border="1" cellpadding="2" cellspacing="2">
+      <tbody>
+        <tr>
+          <td style="vertical-align: top;">
+            <h3><span style="font-weight: bold;">What is the Next Game?</span></h3>
+          </td>
+          <td style="vertical-align: top;"> Candidates for the next game
+            are listed on this <a href="http://boardgamegeek.com/geeklist/12240/item/439185#item439185">geeklist</a>.;&nbsp;
+Add
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            your candidates.</td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;"><font size="+1"><a style="font-weight: bold;" href="handmade.html">Handmade
+                Games</a></font></td>
+          <td style="vertical-align: top;">In the same sense that this
+            is a handmade game site, I've always been a fan of real hand
+            made games.</td>
+        </tr>
+        
+      </tbody>
+    </table>
+    <br>
+    Translations by Babyl Fish (far from perfect, but better than
+    nothing!) <a href="http://babelfish.altavista.com/babelfish/tr?doit=done&amp;url=http://www.boardspace.net/english/index.html&amp;lp=en_es"><img alt="spanish" src="/images/flags/Spain.gif" style="border: 0px solid ; width: 30px; height: 20px;"></a><a href="http://babelfish.altavista.com/babelfish/tr?doit=done&amp;url=http://www.boardspace.net/english/index.html&amp;lp=en_de"><img alt="german" src="/images/flags/Germany.gif" style="border: 0px solid ; width: 30px; height: 20px;"></a><a href="http://babelfish.altavista.com/babelfish/tr?doit=done&amp;url=http://www.boardspace.net/english/index.html&amp;lp=en_it"><img alt="italian" src="/images/flags/Italy.gif" style="border: 0px solid ; width: 30px; height: 20px;"></a><a href="http://babelfish.altavista.com/babelfish/tr?doit=done&amp;url=http://www.boardspace.net/english/index.html&amp;lp=en_fr"><img alt="french" src="/images/flags/France.gif" style="border: 0px solid ; width: 30px; height: 20px;"></a>
+    <hr>
+    <center>
+      <table style="width: 100%;">
+        <tbody>
+          <tr>
+            <td align="left"><font size="-1">
+                <script language="javascript">
+document.write("<a href='mailto:gamemaste");
+document.write("r\@board");
+document.write("space.net'>gamemaste<n>r@board<n>space.net</a>");
+      </script></font><br>
+            </td>
+            <td style="vertical-align: top; text-align: center;">
+              visitors <a href="http://www3.clustrmaps.com/user/26511c9e6"> <img src="http://www3.clustrmaps.com/stats/maps-no_clusters/boardspace.net-thumb.jpg" alt="Locations of visitors to this page" height="35" width="50"> </a> <br>
+            </td>
+            <td style="vertical-align: top;"><a href="logon-page.html">Site<br>
+                &nbsp;Map</a><br>
+            </td>
+            <td align="right">Go to <a href="/">BoardSpace.net home
+                page</a> </td>
+          </tr>
+        </tbody>
+      </table>
+    </center>
+  </body></html>

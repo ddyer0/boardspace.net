@@ -1,0 +1,52 @@
+
+(;
+GM[1]FF[4]AP[NNGS:1.1.16]
+US[Brought to you by No Name Go Server]
+CP[
+  Copyright This game was played on the No Name Go Server
+  Permission to reproduce this game is given,
+  as long as this copyright notice is preserved.]
+GN[ManyFaces-GNUGo(B) NNGS]
+EV[none]
+RE[W+Resign]
+PW[ManyFaces]WR[NR ]
+PB[GNUGo]BR[NR ]
+PC[NNGS Go Program Server Clone: boardspace.net 9696]
+DT[2005-02-15]
+SZ[19]TM[600]KM[5.5]
+
+;B[pd];W[dp];B[pq];W[dd];B[fq]C[
+ gunnar started observation.
+]
+;W[dj];B[iq];W[dn];B[po];W[nc];B[fd];W[df];B[dc];W[cc];B[ec];W[cb];B[jc]
+;W[qf];B[oe];W[qc];B[pc];W[qd];B[og];W[ph];B[md];W[op];B[pp];W[qm];B[mc]
+;W[er];B[oq];W[oh];B[no];W[lp];B[lr];W[ln];B[fr];W[ro];B[ff];W[om];B[eh]
+;W[ch];B[mg];W[nh];B[li];W[kq];B[kr]C[
+ ddyer started observation.
+]
+;W[jq];B[ip];W[jr];B[nm];W[nl];B[np];W[mm];B[fo];W[nn];B[dq];W[dl];B[cq]
+;W[cp];B[qb];W[ep];B[eq];W[rb];B[db];W[mh];B[lh];W[fi];B[hh];W[ei];B[pb]
+;W[fp];B[gp];W[if];B[rq];W[id];B[fh];W[ic];B[ih];W[ke];B[kg];W[ng];B[mf]
+;W[kc];B[gg];W[jb];B[nb];W[ge];B[fe];W[lb];B[pg];W[qg];B[bp];W[bo];B[bq]
+;W[mq];B[mr];W[jn];B[ao];W[bn];B[lk];W[go];B[gn];W[ho];B[fn];W[in];B[oj]
+;W[il];B[nj];W[qj];B[gk];W[hj];B[pk];W[qk];B[an];W[jj];B[bm];W[hs];B[cm]
+;W[dm];B[fl];W[gq];B[gr];W[bk];B[gi];W[gj];B[hp];W[hn];B[qe];W[re];B[pe]
+;W[mi];B[mj]C[
+ ddyer started observation.
+]
+;W[nq];B[nr];W[mb];B[na];W[gm];B[gc];W[fm];B[ra];W[sb];B[he];W[ie];B[hr]
+;W[hf];B[ca];W[bb];B[rp];W[qn];B[qo];W[rn];B[mo];W[lq];B[ba];W[hb];B[cd]
+;W[ce];B[bd];W[be];B[ab];W[fb];B[ae];W[af];B[ad];W[bg];B[gb];W[ga];B[ed]
+;W[kl];B[hi];W[ir];B[ji];W[kj];B[lj];W[pl];B[lo];W[ko];B[jp];W[kp];B[pj]
+;W[ma];B[nd];W[dh];B[pi];W[qi];B[eg];W[de];B[hd];W[hc];B[gd];W[gf];B[jg]
+;W[sp];B[sq];W[so];B[cn];W[co];B[nf];W[pf];B[of];W[cl];B[gs];W[bl];B[am]
+;W[is];B[kk];W[jk];B[ki];W[ll];B[al];W[ak];B[ap];W[ks];B[ls];W[dg];B[le]
+;W[kf];B[kd];W[jd];B[ld];W[fk];B[jf];W[je];B[ij];W[hk];B[pn];W[mn];B[on]
+;W[lf];B[hg];W[ik];B[jo];W[ii];B[js];W[ns];B[ij];W[or];B[pr];W[ks];B[os]
+;W[ii];B[js];W[ac];B[bc];W[ks];B[do];W[eo];B[js];W[ps];B[ij];W[ks];B[qs]
+;W[nk];B[mk];W[eb];B[ml];W[ok];B[pm];W[ea];B[ii];W[js];B[hq];W[ef];B[lg]
+;W[lc];B[da];W[fa];B[fc];W[ha];B[io];W[ni];B[oi];W[qh];B[ee];W[ig];B[qa]
+;W[rc];B[sa];W[kn];B[oo];W[mp];B[tt];W[tt]
+;)
+
+---

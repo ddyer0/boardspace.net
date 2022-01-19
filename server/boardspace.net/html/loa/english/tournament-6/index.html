@@ -1,0 +1,444 @@
+<!DOCTYPE doctype PUBLIC "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+       
+  <script language="JavaScript">
+win = null; 
+
+function launchwith(name) 
+{ 
+  if(win == null) { 
+    win = window.open("", "appletWindow", "width=600,height=480,status=yes"); 
+      } 
+    win.document.write("<HTML><HEAD><TITLE>Lines of Action</TITLE></HEAD>"); 
+    win.document.writeln("<BODY>"); 
+   win.document.writeln("<applet code=\"loa/ui/LoaApplet.class\" name=\"LoaApplet\" codebase=\"../java/\" archive=\"LoaLib.zip\" width=550 height=450>");
+   win.document.writeln("<PARAM NAME=\"filename\" VALUE=\"../../games/tournament-6-final.sgf\">");
+   win.document.writeln("<param name=\"gamename\" value=\"LoA Board " + name + "\">");
+   win.document.writeln("<param name=\"panel\" value=\"true\">");
+    win.document.writeln("<param name=\"flags\" value=\"0\">");
+//	win.document.writeln("<param name=debug value=true>");
+    win.document.writeln("If you are seeing this message, your browser is not Java-Enabled.  There's");
+    win.document.writeln("still hope, if you can run the java viewer standalone on your machine.");
+    win.document.writeln("See the <A HREF=\"Programs.html#java\">Java Programs</A> page.");
+    win.document.writeln("</applet>");
+    win.document.writeln("</body>");
+   win.document.close();}
+
+  </script>
+  <title>Sixth Annual Lines of Action Tournament, Round 1</title>
+</head>
+  <body>
+    
+<center><b><font size="+2">Sixth Annual Lines of Action Tournament</font></b>
+ <br>
+ <b><font size="+2">Final Round</font></b></center>
+    
+<p>The tournament is over, won this year by <font size="+1"><b>uli</b></font>
+with a perfect 7-0 record, followed by <font size="+1"><b>koichin</b></font>
+6-1. &nbsp;<br>
+</p>
+<p>The players in this round consisted of the winner and runner-up from each 
+section in the first round.&nbsp; For complete details of the first round 
+of play, see the <a href="round1.html">Round-1  Page</a>.&nbsp;&nbsp;&nbsp;&nbsp;
+Play in the final round started on Jan 22, 2002 and effectively wrapped up
+at the end of May, 2002.&nbsp; Time was limited to 10 weeks per player, which
+in the case of Ragnar was used to the fullest.&nbsp; Ragnar promises to be
+faster next year, and thanks his opponents for not taking advantage of his
+time pressure at the end of the tournament. </p>
+ 
+<p>Despite stricter time controls than in previous tournaments, this one
+ran the longest ever - a total of &nbsp;8 &nbsp;months, and the last game
+in the final round was actually forfeited on time, with both players near
+the limit. &nbsp; See game <b>e34.</b><br>
+   <br>
+This year we also played a <a href="#consolation">consolation</a> round  among
+some of the losers of the frist round who feel the need for a second  chance.
+Ddyer won the consolation round with a 5-0 record, followed by mdecroos at
+4-1. <br>
+ &nbsp; <br>
+ &nbsp; <br>
+ &nbsp; </p>
+ 
+<center> 
+<table>
+  <caption><b><font size="+1">Standings in the Final Round</font></b></caption>
+  <tbody>
+     <tr>
+  <td bgcolor="#ccffff">        
+      <table width="20%" bgcolor="#ccffff">
+  <tbody>
+           <tr>
+  <td><b>player</b></td>
+   <td><b>wins</b></td>
+   <td><b>losses</b></td>
+   <td><b>ties</b></td>
+  </tr>
+   <tr>
+  <td><b>balu</b></td>
+   <td>0</td>
+   <td>7<br>
+            </td>
+   <td>0</td>
+  </tr>
+   <tr>
+  <td><b>bharat</b></td>
+   <td>2</td>
+   <td>5</td>
+   <td>0</td>
+  </tr>
+   <tr>
+  <td><b>chaunier</b></td>
+   <td>5</td>
+   <td>2</td>
+   <td>0</td>
+  </tr>
+   <tr>
+  <td><b>koichin</b></td>
+   <td>6</td>
+   <td>1</td>
+   <td>0</td>
+  </tr>
+   <tr>
+  <td><b>marconte</b></td>
+   <td>1</td>
+   <td>6</td>
+   <td>0</td>
+  </tr>
+   <tr>
+  <td><b>ragnar</b></td>
+   <td>4<br>
+            </td>
+   <td>3</td>
+   <td>0</td>
+  </tr>
+   <tr>
+  <td><b>sclark</b></td>
+   <td>3</td>
+   <td>4</td>
+   <td>0</td>
+  </tr>
+   <tr>
+  <td><b>uli</b></td>
+   <td>7</td>
+   <td>0</td>
+   <td>0</td>
+  </tr>
+           
+        </tbody>       
+      </table>
+  </td>
+  </tr>
+     
+  </tbody> 
+</table>
+  </center>
+  
+<form method="post" name="form1">    
+  <table border="1" width="91%" bgcolor="#ccffff">
+  <caption><b><font size="+1">Details for the final Round</font></b></caption>
+  <tbody>
+     <tr>
+  <td width="12%"><br>
+       </td>
+   <td width="12%"><b>balu</b></td>
+   <td width="12%"><b>bharat</b></td>
+   <td width="12%"><b>chaunier</b></td>
+   <td width="13%"><b>koichin</b></td>
+   <td width="13%"><b>marconte</b></td>
+   <td width="13%"><b>ragnar</b></td>
+   <td width="13%"><b>sclark</b></td>
+  </tr>
+   <tr>
+  <td width="12%"><b>uli</b></td>
+   <td width="12%">Black: balu <br>
+ White: uli <br>
+ <input type="button" value="Game e42" onclick="launchwith('e42')"> <br>
+ result: uli won</td>
+   <td width="12%">Black: uli <br>
+ White: bharat <br>
+ <input type="button" value="Game e27" onclick="launchwith('e27')"> <br>
+ result: uli won</td>
+   <td width="12%">Black: uli <br>
+ White: chaunier <br>
+ <input type="button" value="Game e25" onclick="launchwith('e25')"> <br>
+ result: uli won</td>
+   <td width="13%">Black: koichin <br>
+ White: uli <br>
+ <input type="button" value="Game e62" onclick="launchwith('e62')"> <br>
+ result: uli won</td>
+   <td width="13%">Black: marconte <br>
+ White: uli <br>
+ <input type="button" value="Game e12" onclick="launchwith('e12')"> <br>
+ result: uli won</td>
+   <td width="13%">Black: uli <br>
+ White: ragnar <br>
+ <input type="button" value="Game e23" onclick="launchwith('e23')"> <br>
+ result: uli won</td>
+   <td width="13%">Black: sclark <br>
+ White: uli <br>
+ <input type="button" value="Game e82" onclick="launchwith('e82')"> <br>
+ result: uli won</td>
+  </tr>
+   <tr>
+  <td width="12%"><b>sclark</b></td>
+   <td width="12%">Black: sclark <br>
+ White: balu <br>
+ <input type="button" value="Game e84" onclick="launchwith('e84')"> <br>
+ result: sclark won</td>
+   <td width="12%">Black: bharat <br>
+ White: sclark <br>
+ <input type="button" value="Game e78" onclick="launchwith('e78')"> <br>
+ result: sclark won</td>
+   <td width="12%">Black: chaunier <br>
+ White: sclark <br>
+ <input type="button" value="Game e58" onclick="launchwith('e58')"> <br>
+ result: chaunier won</td>
+   <td width="13%">Black: sclark <br>
+ White: koichin <br>
+ <input type="button" value="Game e86" onclick="launchwith('e86')"> <br>
+ result: koichin won</td>
+   <td width="13%">Black: marconte <br>
+ White: sclark <br>
+ <input type="button" value="Game e18" onclick="launchwith('e18')"> <br>
+ result: sclark won</td>
+   <td width="13%">Black: ragnar <br>
+ White: sclark <br>
+ <input type="button" value="Game e38" onclick="launchwith('e38')"> <br>
+ result: ragnar won</td>
+  </tr>
+   <tr>
+  <td width="12%"><b>ragnar</b></td>
+   <td width="12%">Black: ragnar <br>
+ White: balu <br>
+ <input type="button" value="Game e34" onclick="launchwith('e34')"></td>
+   <td width="12%">Black: bharat <br>
+ White: ragnar <br>
+ <input type="button" value="Game e73" onclick="launchwith('e73')"> <br>
+ result: ragnar won</td>
+   <td width="12%">Black: chaunier <br>
+ White: ragnar <br>
+ <input type="button" value="Game e53" onclick="launchwith('e53')"> <br>
+ result: chaunier won</td>
+   <td width="13%">Black: ragnar <br>
+ White: koichin <br>
+ <input type="button" value="Game e36" onclick="launchwith('e36')"> <br>
+ result: koichin won</td>
+   <td width="13%">Black: ragnar <br>
+ White: marconte <br>
+ <input type="button" value="Game e31" onclick="launchwith('e31')"> <br>
+ result: ragnar won</td>
+  </tr>
+   <tr>
+  <td width="12%"><b>marconte</b></td>
+   <td width="12%">Black: marconte <br>
+ White: balu <br>
+ <input type="button" value="Game e14" onclick="launchwith('e14')"> <br>
+ result: marconte won</td>
+   <td width="12%">Black: bharat <br>
+ White: marconte <br>
+ <input type="button" value="Game e71" onclick="launchwith('e71')"> <br>
+ result: bharat won</td>
+   <td width="12%">Black: chaunier <br>
+ White: marconte <br>
+ <input type="button" value="Game e51" onclick="launchwith('e51')"> <br>
+ result: chaunier won</td>
+   <td width="13%">Black: marconte <br>
+ White: koichin <br>
+ <input type="button" value="Game e16" onclick="launchwith('e16')"> <br>
+ result: koichin won</td>
+  </tr>
+   <tr>
+  <td width="12%"><b>koichin</b></td>
+   <td width="12%">Black: koichin <br>
+ White: balu <br>
+ <input type="button" value="Game e64" onclick="launchwith('e64')"> <br>
+ result: koichin won</td>
+   <td width="12%">Black: koichin <br>
+ White: bharat <br>
+ <input type="button" value="Game e67" onclick="launchwith('e67')"> <br>
+ result: koichin won</td>
+   <td width="12%">Black: chaunier <br>
+ White: koichin <br>
+ <input type="button" value="Game e56" onclick="launchwith('e56')"> <br>
+ result: koichin won</td>
+  </tr>
+   <tr>
+  <td width="12%"><b>chaunier</b></td>
+   <td width="12%">Black: balu <br>
+ White: chaunier <br>
+ <input type="button" value="Game e45" onclick="launchwith('e45')"> <br>
+ result: chaunier won</td>
+   <td width="12%">Black: bharat <br>
+ White: chaunier <br>
+ <input type="button" value="Game e75" onclick="launchwith('e75')"> <br>
+ result: chaunier won</td>
+  </tr>
+   <tr>
+  <td width="12%"><b>bharat</b></td>
+   <td width="12%">Black: balu <br>
+ White: bharat <br>
+ <input type="button" value="Game e47" onclick="launchwith('e47')"> <br>
+ result: bharat won</td>
+  </tr>
+     
+    </tbody> 
+  </table>
+ </form>
+  <a name="consolation"></a>  
+<center> 
+<table>
+  <caption><b><font size="+1">Standings in the Consolation Round</font></b></caption>
+  <tbody>
+     <tr>
+  <td bgcolor="#ffffcc">        
+      <center><b>Section 3</b></center>
+          
+      <table bgcolor="#ffffcc">
+  <tbody>
+           <tr>
+  <td><b>player</b></td>
+   <td><b>wins</b></td>
+   <td><b>losses</b></td>
+   <td><b>ties</b></td>
+  </tr>
+   <tr>
+  <td><b>aardvark</b></td>
+   <td>1</td>
+   <td>4</td>
+   <td>0</td>
+  </tr>
+   <tr>
+  <td><b>aleph</b></td>
+   <td>1</td>
+   <td>4</td>
+   <td>0</td>
+  </tr>
+   <tr>
+  <td><b>arth</b></td>
+   <td>2</td>
+   <td>3</td>
+   <td>0</td>
+  </tr>
+   <tr>
+  <td><b>ddyer</b></td>
+   <td>5</td>
+   <td>0</td>
+   <td>0</td>
+  </tr>
+   <tr>
+  <td><b>elloco</b></td>
+   <td>2</td>
+   <td>3</td>
+   <td>0</td>
+  </tr>
+   <tr>
+  <td><b>mdecroos</b></td>
+   <td>4</td>
+   <td>1</td>
+   <td>0</td>
+  </tr>
+           
+        </tbody>       
+      </table>
+  </td>
+  </tr>
+     
+  </tbody> 
+</table>
+ </center>
+    
+<table border="1" width="91%" bgcolor="#ffffcc">
+  <caption><b><font size="+1">Details for the Consolation Round</font></b></caption>
+  <tbody>
+     <tr>
+  <td width="12%"><br>
+       </td>
+   <td width="12%"><b>aardvark</b></td>
+   <td width="13%"><b>aleph</b></td>
+   <td width="13%"><b>arth</b></td>
+   <td width="13%"><b>ddyer</b></td>
+   <td width="13%"><b>elloco</b></td>
+  </tr>
+   <tr>
+  <td width="12%"><b>mdecroos</b></td>
+   <td width="12%">Black: aardvark <br>
+ White: mdecroos <br>
+ <input type="button" value="Game f16" onclick="launchwith('f16')"> <br>
+ result: mdecroos won</td>
+   <td width="13%">Black: mdecroos <br>
+ White: aleph <br>
+ <input type="button" value="Game f62" onclick="launchwith('f62')"> <br>
+ result: mdecroos won</td>
+   <td width="13%">Black: arth <br>
+ White: mdecroos <br>
+ <input type="button" value="Game f36" onclick="launchwith('f36')"> <br>
+ result: mdecroos won</td>
+   <td width="13%">Black: mdecroos <br>
+ White: ddyer <br>
+ <input type="button" value="Game f64" onclick="launchwith('f64')"> <br>
+ result: ddyer won</td>
+   <td width="13%">Black: elloco <br>
+ White: mdecroos <br>
+ <input type="button" value="Game f56" onclick="launchwith('f56')"> <br>
+ result: mdecroos won</td>
+  </tr>
+   <tr>
+  <td width="12%"><b>elloco</b></td>
+   <td width="12%">Black: elloco <br>
+ White: aardvark <br>
+ <input type="button" value="Game f51" onclick="launchwith('f51')"> <br>
+ result: elloco won</td>
+   <td width="13%">Black: aleph <br>
+ White: elloco <br>
+ <input type="button" value="Game f25" onclick="launchwith('f25')"> <br>
+ result: elloco won</td>
+   <td width="13%">Black: elloco <br>
+ White: arth <br>
+ <input type="button" value="Game f53" onclick="launchwith('f53')"> <br>
+ result: arth won</td>
+   <td width="13%">Black: ddyer <br>
+ White: elloco <br>
+ <input type="button" value="Game f45" onclick="launchwith('f45')"> <br>
+ result: ddyer won</td>
+  </tr>
+   <tr>
+  <td width="12%"><b>ddyer</b></td>
+   <td width="12%">Black: aardvark <br>
+ White: ddyer <br>
+ <input type="button" value="Game f14" onclick="launchwith('f14')"> <br>
+ result: ddyer won</td>
+   <td width="13%">Black: ddyer <br>
+ White: aleph <br>
+ <input type="button" value="Game f42" onclick="launchwith('f42')"> <br>
+ result: ddyer won</td>
+   <td width="13%">Black: arth <br>
+ White: ddyer <br>
+ <input type="button" value="Game f34" onclick="launchwith('f34')"> <br>
+ result: ddyer won</td>
+  </tr>
+   <tr>
+  <td width="12%"><b>arth</b></td>
+   <td width="12%">Black: arth <br>
+ White: aardvark <br>
+ <input type="button" value="Game f31" onclick="launchwith('f31')"> <br>
+ result: arth won</td>
+   <td width="13%">Black: aleph <br>
+ White: arth <br>
+ <input type="button" value="Game f23" onclick="launchwith('f23')"> <br>
+ result: aleph won</td>
+  </tr>
+   <tr>
+  <td width="12%"><b>aleph</b></td>
+   <td width="12%">Black: aardvark <br>
+ White: aleph <br>
+ <input type="button" value="Game f12" onclick="launchwith('f12')"> <br>
+ result: aardvark won</td>
+  </tr>
+     
+  </tbody> 
+</table>
+   <br>
+ <br>
+</body>
+</html>

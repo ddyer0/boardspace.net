@@ -1,0 +1,51 @@
+<HTML><HEAD><TITLE>Archive Manager - DISCUS Administration Instructions</TITLE>
+<STYLE>
+<!--
+P {text-align: justify}
+UL {text-align: justify}
+-->
+</STYLE>
+<META NAME="Robots" CONTENT="noindex,nofollow">
+<META NAME="Keywords" CONTENT="archive manager,create an archive,archive messages">
+<META NAME="Description" CONTENT="Description of the Archive Manager interface, which allows the superuser to set up automatic archiving of messages and manually archive messages on a board.">
+
+</HEAD>
+<BODY BGCOLOR=#ffffff TEXT=#000000 LINK=#0000ff VLINK=#800080 ALINK=#ff0000>
+<FONT FACE="Verdana,Arial,Helvetica" SIZE=2>
+<TABLE WIDTH=100% BGCOLOR=#ccccff BORDER=0 CELLSPACING=0><TR><TD ALIGN=LEFT><FONT FACE="Verdana,Arial,Helvetica" SIZE=3><B>Archive Manager</B></TD><TD ALIGN=RIGHT><FONT FACE="Verdana,Arial,Helvetica" SIZE=2>DISCUS Administration Instructions</FONT></TD></TR></TABLE>
+<P>
+
+<BLOCKQUOTE STYLE="text-align: justify">
+<HR SIZE=0>
+<IMG SRC="icons/proonly_icon.gif" HEIGHT=15 WIDTH=29 ALT="PRO">
+All features in this section are available in the professional version of this discussion board software only.
+<HR SIZE=0>
+</BLOCKQUOTE>
+
+<P>
+The "Archive Manager" automates the normal "Delete" and "Move" functions that are otherwise available through the Page Manager.  There are two ways that this archiving/pruning can be automated.  Here are the terms that this interface uses:
+<P>
+<UL>
+<LI><B>Archiving</B>:  Moving older messages into another subtopic.  This is the equivalent of selecting one or more messages in the Page Manager and clicking on the "Move" button. Then, you would scroll to the bottom of the page and select to move the messages into a new subtopic.  The net result is a new subtopic of the page on which the messages were originally posted containing the messages you have chosen to archive.
+<P>
+<LI><B>Pruning</B>: Deleting older messages.  This is the equivalent of selecting one or more messages in the Page Manager and clicking on the "Delete" button.  This permanently removes messages -- there is no way to "undelete" messages once you have pruned them using this interface or using the Page Manager.
+</UL>
+<P>
+<A NAME=auto><H4>Automatic Archiving/Pruning</H4>
+<P>
+Automatic archiving and pruning, when set up using this interface, allows you to limit the size of conversations on your board.  Automatic settings that you specify are processed <I>when messages are posted</I>, meaning that you do not have to log into administration to cause the board to archive or prune messages.  Note that when you save the settings in this section, this does <I>not</I> cause your archiving action to take effect immediately.  Archiving and pruning will take place in each conversation the next time a message is posted there.
+<P>
+To enable automatic archiving/pruning for any topic, check the "Arch." (archiving) or "Prune" (pruning) check box next to the topic.  In the first box, labeled "Invoke," enter the number of messages that must be present in the conversation in order to invoke the automatic archiving (think of this as the maximum number of messages that can ever be present in a conversation, because when the number of messages on a page reaches this number, an archiving/pruning action will occur).  In the second box, labeled "Leave," enter the number of messages to leave in the conversation when the archiving/pruning takes place.
+<P>
+For example, if you set up pruning, invoked at 10 messages, leaving 6 messages, when the conversation reached 10 messages, the first 4 (10-6=4) messages would be deleted, and the most recent 6 messages would remain.  For another example, if you set up archiving, invoked at 5 messages, leaving 0 messages, when the length of the conversation reached 5 messages, all of those messages would be moved into a subtopic.
+<P>
+<A NAME=manual><H4>Manual Archiving/Pruning</H4>
+<P>
+Manual archiving and pruning allow you to "clean up" an existing discussion board by archiving or pruning messages older than a certain date that you specify.  When you select a manual archiving/pruning operation, the operation is performed immediately when you click the button.  This is a one-time operation (although, of course, you can log into administration again at some other time and perform the operation again).
+<P>
+To set up a manual archiving or pruning operation, check the boxes next to the topic(s) in which you wish to perform the archiving/pruning operation.  Then, use the pulldown menu box to select whether you want to "Archive (move)" or "Prune (delete)" messages.  Finally, in the text box for "Days:" enter the number of days that will be the cutoff (messages older than that many days will be acted upon).  Then click on "Archive/Prune Messages" to perform the operation.
+<P>
+For example, if you wanted to remove every message older than 60 days from your board, you would check the box next to each topic, select "Prune (delete)" from the pulldown menu box, and enter "60" next to "Days:".  Then, click "Archive/Prune Messages."
+<P>
+<TABLE WIDTH=100% BGCOLOR=#ccccff BORDER=0 CELLSPACING=0><TR><TD><FONT FACE="Verdana,Arial,Helvetica" SIZE=1>Copyright &copy; 2000, DiscusWare, LLC, all rights reserved</FONT></TD><TD ALIGN=RIGHT><A HREF="board-admin-instr-14.html"><IMG SRC="icons/prev_button.gif" HEIGHT=20 WIDTH=20></A> <A HREF="board-admin-instr-01.html"><IMG SRC="icons/top_button.gif" HEIGHT=20 WIDTH=20></A> <A HREF="board-admin-instr-16.html"><IMG SRC="icons/next_button.gif" HEIGHT=20 WIDTH=20></A></TD></TR></TABLE>
+</FONT></BODY></HTML>

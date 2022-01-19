@@ -1,0 +1,29 @@
+how to release a new version
+
+for the desktop clients:
+
+open Kawa, compile "boardspace-core" and then "boardspace-games"
+open a shell, run "jdk11c"
+open winscp, copy "v102" to boardspace
+rename v102 to the next version
+edit the "jws" link to refer to the new version
+edit include.pl to refer to the new version
+
+various shortcuts are possible, but not always reliable.  In particular,
+if only one game is modified, you can upload and directly replace that
+game jar.
+
+
+for ios and android
+
+edit the "codenameone settings" be sure the version numbers have been increased
+build andoid/ios development builds in boardspace-cn2 
+build android/ios release builds in boardspace-cn1 project
+download/test the dev builds directly on devices
+download all 4 builds, rename, save in codename1/releases directory
+
+for android, upload to google play and amazon app store
+https://play.google.com/console/
+https://developer.amazon.com/
+for ios, upload to itunes
+https://itunesconnect.apple.com/login/

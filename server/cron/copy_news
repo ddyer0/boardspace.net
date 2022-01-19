@@ -1,0 +1,14 @@
+#!/bin/csh
+#
+source ~/cgi-bin/include.csh
+#
+# this script copies english news to all the other languages
+#
+foreach e ($languages)
+  if($e != 'english') then
+  echo  ~/www/english/news.txt ~/www/$e/news.txt
+  cp ~/www/english/news.txt ~/www/$e/news.txt
+  endif
+end
+
+

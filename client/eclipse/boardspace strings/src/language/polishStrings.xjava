@@ -1,0 +1,879 @@
+package online.language;
+/* polish translations prepared by "kfas" Adam Dzedzej <kfas@sphere.pl> */
+
+import online.common.internationalStrings;
+
+
+//
+// available font families: 
+//  serif (timesroman)
+//  sansserif (helvetica)
+//  monospaced (courier)
+//
+public class polishStrings extends internationalStrings
+{
+    static
+    {
+        put("fontfamily", "sansserif");
+
+        // lobby messages
+        put("launchfailed","Drugi gracz nie rozpocz\u0105\u0142 poprawnie");
+        put("#1 invites #2 to join room #3", "#1 zaprasza #2 do pokoju #3");
+        put("#1 invites #2 to play #3 in room #4",
+        		"#1 zaprasza #2 Zagraj #3 pokoju #4");
+        put("#1 has been muted, by a consensus of the players",
+            "#1 zosta\u0142a wyciszona, za zgod\u0105 obu graczy");
+        put("welcome", "Witam w Pasa\u017cu BoardSpace, wersja #1"); //version number follows
+        put("website", "#1 BoardSpace"); //pretty name for the web site
+        put("enterMessage", "#1 wszed\u0142 do Pasa\u017cu"); //somebody entered
+        put("in #1", "w #1"); //followed by a session number
+        put("Move ##1", "Ruch ##1"); //move number for games in lobby
+        put("News", "Wiadomo\u015bci"); //header for news lines
+        put("Lobby", "Pasa\u017c"); //the name of the lobby
+        put("Error", "B\u0142\u0105d"); //the name for errors
+        put("launchChat", "Uruchamiam czat w pokoju #1"); //launching a chat room
+        put("launchspectator", "Uruchamiam kibica w pokoju #1"); //session id follows
+        put("launchGame", "Uruchamiam gr\u0119 w pokoju #1"); //launching a game
+        put("launchReview", "Uruchamiam przegl\u0105danie gry w pokoju #1");
+        put("Session #1: state unknown.", "Sesja #1: stan nieznany.");
+        put("Session #1 is idle.  ", "Sesja #1 jest wolna.  ");
+        put("Session #1 is being launched.  ", "Sesja #1 jest uruchamiana.  ");
+        put("Session #1 is active.  ", "Sesja #1 jest aktywna.  ");
+        put("Session #1 is private. ", "Sesja #1 jest prywatna. ");
+        put("Session #1 is displaying the map of players real locations",
+            "Sesja #1 pokazuje map\u0119 rzeczywistych lokalizacji graczy");
+        put("Invite", "Zapro\u015b #1 do pokoju #2");
+        put("Accept chat from #1", "Akceptuj rozmow\u0119 z #1");
+        put("Ignore chat from #1", "Ignoruj rozmow\u0119 z #1");
+        put("Play #1", "Zagraj z #1"); //followed by robot name
+        put("Rejoin #1", "Wzn\u00f3w gr\u0119 z #1"); //rejoin a game you were playing
+        put("Rejoin", "Wzn\u00f3w"); //rejoin a game you were playing
+        put("noserver", "Pasa\u017c nie jest po\u0142\u0105czony z serwerem."); //status message
+        put("stillwaiting", "wci\u0105\u017c uruchamiam... prosz\u0119 czeka\u0107."); //repeated hit on launch
+        put("noresponse1", "Serwer nie odpowiada.");
+        put("noresponse2",
+            "Mo\u017ce nie dzia\u0142a\u0107 lub firewall mo\u017ce blokowa\u0107 po\u0142\u0105czenie.");
+        put("nolobby", "Przepraszam, Pasa\u017c odm\u00f3wi\u0142 wej\u015bcia.  Mo\u017cliwe, \u017ce jest pe\u0142ny.");
+        put("timeoutWarning", " Pasa\u017c zostanie zamkniety za 1 minut\u0119 (je\u015bli nie b\u0119dzie reakcji)."); //warning	
+        put("Lobby shutdown...", "Zamykanie Pasa\u017cu..."); //shutting down
+        put("Active in", "Aktywny w"); //header for users column
+        put("Waiting in", "Oczekuje w"); //header for users column
+        put("your name", "twoje imi\u0119"); //your name in users, when not known
+        put("(unknown)", "(nieznany)"); //name of another player not yet known
+        put("announceOption", "Anonsuj Nowych Graczy"); //the "announce new players" menu option
+        put("Join", "Do\u0142\u0105cz"); //label for the join token
+        put("Invite players to this room", "Zapraszaj graczy do tego pokoju");
+
+        /* game state messages for games scroll area */
+        put("State unknown.", "Stan nieznany."); //when game state is not yyet known
+        put("Launching...", "Uruchamianie..."); //game being launched
+        put("Spectate", "Kibicuj"); //spectate in a game (verb)
+        put("Spectator", "Kibic"); //spectator (singular noun)
+        put("Idle.", "Pusty."); //game that is not in use
+        put("Players", "Gracze"); //generic players in a game (plural noun)
+        put("player", "gracz"); //generic players in a game (singular noun)
+        put("Spectators", "Kibice"); //generic spectators in a game (plural noun)
+        put("(unoccupied)", "(wolne)"); //empty/available slot in a game
+        put("Start", "Start"); //start a game button
+
+        /* game description messages */
+        put("and", " i "); //"and" for a, b and c, including spaces
+        put("No players.", "Brak graczy."); //there are no players in this game
+        put("Player is ", "Gra "); //the single player name follows
+        put("Players are: ", "Graj\u0105: "); //the list of player names follows
+        put("No spectators.", "Brak kibic\u00f3w."); //similarly for spectators
+        put("Spectator is: ", "Kibicuje: "); //
+        put("Spectators are: ", "Kibicuj\u0105: "); //
+        put("loaderr", "B\u0142\u0105d przy pr\u00f3bie \u0142adowania: "); //can find classes we need
+        put("Connection error", "B\u0142\u0105d po\u0142\u0105czenia"); //problem with the connection
+        put("Reconnecting", " ...\u0141acz\u0119 ponownie..."); //attempting to reconnect
+        put("connecting", "Po\u0142\u0105czenie z "); //connecting to web site	
+        put("reconok", "..ponowne po\u0142\u0105czenie powiod\u0142o si\u0119"); //ok, we did it
+        put("nolaunch", "Serwer odm\u00f3wi\u0142 uruchomienia, wiadomo\u015b\u0107 to ");
+        put("Time is ", "Czas "); //followed by hh:mm
+        put("savedmsg", "Gra zapisana jako #1"); //announce saved game
+        put("guest", "go\u015b\u0107"); //the name for guest players
+
+        //lobby messages
+        put("Please Join Me", "Zapraszam do gry"); // goes with "join only if invited" and "tournament mode"
+        put("Join only if Invited", "Wpu\u015b\u0107 tylko zaproszonych"); //seen in lobby game rooms
+        put("Tournament Game", "Gra turniejowa"); //seen in lobby game rooms
+        put("No challenges from #1", "Nie przyjmuj zaprosze\u0144 od #1"); //seen in lobby player list
+        put("Allow challenges from #1", "Przyjmuj zaproszenia od #1"); //seen in lobby player list
+        put("Unranked Room", "Pok\u00f3j bez rankingu"); // room for unranked games.
+        put("Games do not affect your Ranking",
+            "Gry nie b\u0119d\u0105 zmienia\u0107 twojego rankingu"); //subheader for the room
+        put("No Challenges", "Nie przyjmuj zaprosze\u0144 do gry");
+        put("automute", "#1 zosta\u0142a automatycznie wyciszona");
+        put("No Chat", "Bez Rozm\u00f3w");
+        put("Map of Player Locations", "Pok\u00f3j z map\u0105 graczy");
+        put("Game Room", "Pok\u00f3j gier");
+        put("Review Saved Games", "Pok\u00f3j przegl\u0105dania");
+        put("Anyone can play in this room", "Ka\u017cdy mo\u017ce gra\u0107 w tym pokoju");
+        put("Master Room", "Pok\u00f3j Mistrz\u00f3w");
+        put("Master ranked players can play", "Mistrzowie mog\u0105 gra\u0107 w tym pokoju");
+        put("Review Room", "Pok\u00f3j przegl\u0105dania"); //for the chat room banner
+        put("Members", "Obecni"); //people in a chat room
+
+        //used by chat applet
+        put("Type your message here.", "Tu wpisz wiadomo\u015b\u0107."); //initial contents of the message line
+        put("Message:", "Do WSZYSTKICH:"); //label for the message line
+        put("MessageTo:","Do #1:");	//label for message to one user
+        put("From #1","Od #1");	// label for messages from a single user
+        put("Send", "Wy\u015blij"); //label for the button to send the text
+        put("User ", "U\u017cytkownik "); //default name for unnamed client
+
+        //used by the common frame
+        put("Options", "Opcje");
+        put("Actions", "Dzia\u0142ania");
+        put("Sound", "D\u017awi\u0119k");
+
+        // review rooms
+        put("Show SGF Text", "Poka\u017c SGF Tekst"); //in action menu of review rooms
+        put("Select Game", "Wybierz gr\u0119"); //menu label in review rooms
+        put("game selector", "Wyb\u00f3r gry"); // title for the game selector frame
+        put("Match words:", "Dopasuj s\u0142owa:"); //used in the game selector
+        put("reading directory...", "czytam katalog..."); //waiting for a directory to be read
+        put("Error reading directory", "B\u0142\u0105d odczytu katalogu");
+        put("Error reading file", "B\u0142\u0105d odczytu pliku");
+        put("reading Zip directory...", "Czytam skompresowany katalog...");
+        put("Loading game file", "\u0141aduj\u0119 plik gry"); //selecting a review game
+
+        //used by the game client
+        put("You have been disconnected: #1", "Zosta\u0142e\u015b roz\u0142\u0105czony: #1");
+        put("Calling server...", "\u0142\u0105cz\u0119 z serwerem...");
+        put("Wait for opponents to arrive.", "Czekaj na przybycie przeciwnika.");
+        put("player ", "gracz ");
+        put("mouse tracking disabled", "\u015bledzenie myszy wy\u0142\u0105czone");
+        put("the game has resumed", "przywr\u00f3cono gr\u0119");
+        put("Take Over Playing", "Przejmij gr\u0119 jako"); //menu item, take over playing a color
+        put("Become a Spectator", "Zosta\u0144 kibicem");
+        put("Let The Robot Play", "Pozw\u00f3l robotowi gra\u0107 za");
+        put("(vacancy)", "(brak)"); //player who has quit
+        put("Game in progress...", "Gra w toku...");
+        put("rankingsfailed", "Uaktualnienie ranking\u00f3w nie powiod\u0142o si\u0119");
+
+        //hints
+        put("Moves are coming in", "Ruchy dochodz\u0105"); //moves arrive while in review mode	
+
+        //menu options
+        put("Messages", "Wiadomo\u015bci"); //name of menu
+        put("Track Mice", "Sled\u017a myszy");
+
+        put("See Player Comments", "Ogl\u0105daj komentarze graczy");
+        put("See Spectator Comments", "Ogl\u0105daj komentarze kibic\u00f3w");
+        put("Joint Review", "Wsp\u00f3lne przegl\u0105danie");
+        put("Timeout in 1 minute.", "Czas minie za 1 minut\u0119.");
+        put("Game timed out.  Session has ended.","Przekroczenie czasu gry.  Sesja zako\u0144czona.");
+        put("Chat Room", "Pok\u00f3j rozm\u00f3w"); //for the chat room banner
+        put("private room", "pok\u00f3j prywatny");
+        put("This is now a private room", "To jest teraz pok\u00f3j prywatny");
+        put("This is now a public room", "To jest teraz pok\u00f3j publiczny");
+        put("Colorblind", "Colorblind");
+        put("Please respect the 15 minute time limit",
+            "Gry Mistrz\u00f3w maj\u0105 limit czasu 15 minut");
+        put("Game", "Gra"); //name for hints from the game
+        put("Joining as a spectator", "#1 do\u0142\u0105czy\u0142 jako kibic");
+        put("enters the room", "#1 wszed\u0142 do pokoju"); //new member of a chat
+        put("#1 is taking over for #2", "#1 przejmuje za #2");
+        put("#1 is taking over playing #2 for #3",
+            "#1 przejmuje gr\u0119 jako #2 za #3");
+        put("#1 deliberately quit", "#1 celowo wyszed\u0142");
+        put("#1 has quit and become a spectator",
+            "#1 wyszed\u0142 i zosta\u0142 kibicem");
+        put("#1 killed due to #2", "#1 killed #2");
+        put("quitting", "#1 opu\u015bci\u0142 pok\u00f3j");
+        put("#1 quit", "#1 wyszed\u0142"); //quit (not deliberately)
+        put("Welcome to Game client, version #1",
+            "Witam w kliencie BoardSpace, wersja #1");
+        put("play", "graj za #1"); //play color for xx
+        put("Selecting game: #1", "Wybieram gr\u0119: #1"); //loading a review game
+        put("Hint", "Podpowied\u017a"); //the name for hints
+
+        put("Move a ball or change a Ring", "Przesu\u0144 kul\u0119 lub zmie\u0144 pier\u015bcie\u0144");
+        put("Add a ball, remove a Ring", "Dodaj kul\u0119, usu\u0144 pier\u015bcie\u0144");
+        put("Add a ball", "Dodaj kul\u0119");
+        put("Remove a Ring", "Usu\u0144 pier\u015bcie\u0144");
+        put("Capture a ball", "Zbij kul\u0119");
+        put("Continue Capturing", "Kontynuuj zbijanie");
+        put("Finished Capturing, Click Done", "Je\u015bli sko\u0144czy\u0142e\u015b zbijanie, kliknij Zatwierd\u017a");
+        put("Click Done", "Wci\u015bnij Zatwierd\u017a");
+        put("Game Over", "Koniec gry");
+        put("Resign", "Poddaj gr\u0119");
+        put("Zertz", "Zertz");
+        put("Zertz+11", "Zertz+11");
+        put("Zertz+24", "Zertz+24");
+        put("Player #1", "Gracz #1");
+        put("Resign State", "Wci\u015bnij Zatwerd\u017a,aby potwierdzi\u0107 poddanie si\u0119");
+        put("LOA", "Lines of Action - Szyki");
+        put("Plateau", "Plateau");
+
+        // loa strings
+        put("Select the #1 piece to move", "Wybierz #1 pion, kt\u00f3rym ruszysz");
+        put("White", "bia\u0142y");
+        put("Black", "czarny");
+        put("Select the destination for the selected piece",
+            "Wybierz docelowe pole dla wybranego piona");
+        put("Black Pieces", "Czarne piony");
+        put("White Pieces", "Bia\u0142e piony");
+        put("show grid", "poka\u017c siatk\u0119");
+
+        put("Done", "Zatwierd\u017a");
+        put("Edit", "Edytuj");
+
+        put("LIMBO", "LIMBO");
+        put("4w 5g 6b or 3 of each wins", "4w 5g 6b or 3 of each wins");
+        put("1 choice", "1 choice");
+        put("#1 choices", "#1 choices");
+        put("Start #1", "Start #1");
+        put("Yinsh", "Yinsh");
+        put("Dvonn", "Dvonn");
+ 
+        // plateau strings
+        put("Move stacks around any way you want to",
+            "Zmieniaj po\u0142o\u017cenie stos\u00f3w jakkolwiek chcesz");
+        put("Build an initial stack of 2 to be placed",
+            "Zbuduj i umie\u015b\u0107 pocz\u0105tkowy stos dwuelementowy");
+        put("Place your stack on the edge of the board",
+            "Ustaw sw\u00f3j stos na brzegu planszy");
+        put("Onboard a piece, Move a stack, or Exchange",
+            "Wprowad\u017a kamie\u0144, przesu\u0144 stos lub wymie\u0144");
+        put("Exchange Prisoners", "wymie\u0144 je\u0144c\u00f3w");
+        put("Move A Stack", "Przesu\u0144 stos");
+        put("Drop your piece onto the board or any of your stacks",
+            "Po\u0142\u00f3\u017c kamie\u0144 na planszy, lub dowolnym swoim stosie");
+        put("Drop your piece onto the board or any stack",
+            "Po\u0142\u00f3\u017c kamie\u0144 na planszy, lub dowolnym stosie");
+        put("Click Done to Finish the move", "Kliknij Zatwierd\u017a, by zako\u0144czy\u0107 sw\u00f3j ruch");
+        put("Drop the moving stack back on the rack",
+            "Po\u0142\u00f3\u017c poruszany stos spowrotem na p\u00f3\u0142k\u0119");
+        put("Pick up and Continue your move", "Podnie\u015b i kontynuuj ruch");
+        put("Shuffle pieces to the exchange area, Click Done to start the exchange",
+            "Przenie\u015b piony na pole wymiany, kliknij Zatwierd\u017a, by rozpocz\u0105\u0107 wymian\u0119");
+        put("Click Done to complete the exchange",
+            "Kliknij Zatwierd\u017a, by zako\u0144czy\u0107 wymian\u0119");
+        put("Start White", "Start Bia\u0142ych");
+        put("Start Black", "Start Czarnych");
+        put("Place prisoners here for exhange",
+            "Tutaj umie\u015b\u0107 je\u0144c\u00f3w do wymiany");
+        put("Prisoners captured by Black are held here",
+            "Tutaj s\u0105 trzymani je\u0144cy pojmani przez Czarnych");
+        put("Prisoners captured by White are held here",
+            "Tutaj s\u0105 trzymani je\u0144cy pojmani przez Bia\u0142ych");
+        put("Move the flipped stack", "Przesu\u0144 odwr\u00f3cony stos");
+        put("The game record is not available during the game",
+            "Zapis gry nie jest dost\u0119pny w czasie trwania gry");
+
+        put("Select Robot", "Wybierz Robota");
+
+        // yinsh strings
+        put("make 5 in a row to capture a ring, 3 rings win",
+            "ustaw 5 w rz\u0119dzie, by zdoby\u0107 pier\u015bcie\u0144, 3 pier\u015bcienie wygrwaj\u0105 gr\u0119");
+        put("Place a Ring on the board", "Umie\u015b\u0107 pier\u015bcie\u0144 na planszy");
+        put("Pick a ring to place a chip and move",
+            "Wybierz pier\u015bcie\u0144 by umie\u015bci\u0107 chip i rusz si\u0119");
+        put("Drop the ring", "Postaw pier\u015bcie\u0144");
+        put("Click DONE to confirm this placement",
+            "Kliknij ZATWIERD\u0179, by potwierdzi\u0107 miejsce");
+        put("Select a row of 5 to remove", "Wybierz 5 w rz\u0119dzie do usuni\u0119cia");
+        put("Click DONE to confirm this move", "Kliknij Zatwierd\u017a by zako\u0144czy\u0107 ruch");
+        put("Click DONE to confirm removing these markers",
+            "Kliknij Zatwierd\u017a, by potwierdzi\u0107 usuni\u0119cie znacznik\u00f3w");
+        put("Select a ring to remove", "Wybierz pier\u015bcie\u0144 do usuni\u0119cia");
+        put("Click DONE to confirm removing this ring",
+            "Kliknij Zatwierd\u017a, by potwierdzi\u0107 usuni\u0119cie");
+        put("perspective","perspektywa");
+        //
+        // hex strings
+        //
+        put("Hex","Hex");
+        put("Swap Colors","Zamie\u0144 kolory");
+        put("connect opposite sides with a chain of markers",
+        	"po\u0142\u0105cz przeciwne strony \u0142a\u0144cuchem znacznik\u00f3w");
+        put("Click Done to confirm this move",
+       		"Kliknij Zatwierd\u017a, by zako\u0144czy\u0107 ruch");
+        put("Click on Done to confirm your resignation", 
+       		"Kliknij Zatwierd\u017a, by potwierdzi\u0107 poddanie si\u0119");
+        put("Place a marker on any empty cell",	
+       		"Umie\u015b\u0107 znacznik na dowolnym pustym polu");
+        put("Place a marker on any empty cell, or Swap Colors",
+       		"Umie\u015b\u0107 znacznik na dowolnym pustym polu lub zamie\u0144 kolory");
+        put("Click Done to confirm swapping colors with your opponent",
+       		"Kliknij Zatwierd\u017a, by potwierdzi\u0107 zamian\u0119 kolor\u00f3w");
+        
+        // names of game variations for the lobby
+        put("Yinsh-Blitz","Yinsh-Blitz");
+        put("Hex-15","Hex-15");
+        put("Hex-19","Hex-19");
+        put("Trax","Trax");
+        put("Trax_variation","standard Trax");
+        put("make 5 in a row to capture a ring and win",
+        		"5 w rz\u0119dzie zdobywa pier\u015bcie\u0144 i wygrywa");
+        
+        put("Zertz_variation","standard Z\u00e8rtz");
+        put("Zertz+11_variation","Z\u00e8rtz+11, z 11 dodatkowymi pier\u015bcieniami");
+        put("Zertz+24_variation","Z\u00e8rtz+24, z 24 dodatkowymi pier\u015bcieniami");
+        put("LOA_variation","standardowa wersja gry 8x8");
+        put("LOAP_variation","wersja LOAP z konkursu program\u00f3w");
+        put("Plateau_variation","Plateau");
+        put("Yinsh_variation","Yinsh standard");
+        put("Yinsh-Blitz_variation","Yinsh-blitz - pierwszy pier\u015bcie\u0144 wygrywa");
+        put("Dvonn_variation","Dvonn");
+        put("Tamsk_variation","Tamsk");
+        put("Hex_variation","Hex na planszy 11x11 (standard)");
+        put("Hex-15_variation","Hex na planszy 15x15");
+        put("Hex-19_variation","Hex na planszy 19x19");
+        put("Punct_variation","P\u00fcnct standard");
+        put("TBA1_variation","gra zostanie og\u0142oszona");
+        put("TBA2_variation","gra zostanie og\u0142oszona");
+        put("TBA3_variation","gra zostanie og\u0142oszona");
+       
+        // trax strings
+        put("Tile Size","Rozmiar kafelka");
+        put("Place a tile","Umie\u015b\u0107 kafelek");
+        put("make any loop, or a line which spans 8 rows or columns, in your color",
+        		"zamknij p\u0119tl\u0119 lub lini\u0119 w swoim kolorze, kt\u00f3ra rozci\u0105ga si\u0119 na 8 rz\u0119d\u00f3w albo kolumn");
+        
+        // punct strings
+        put("Punct","P\u00fcnct");
+        put("Click on the placed piece to rotate it, or Click Done",
+        		"Kliknij na umieszczonym klocku, aby do obr\u00f3ci\u0107 albo kliknij Zatwierd\u017a");
+        put("Place a piece on the board, or move a piece already on the board",
+        		"Umie\u015b\u0107 klocek na planszy lub rusz si\u0119 ju\u017c umieszczonym klockiem");
+        put("punctgoal","po\u0142\u0105cz przeciwne strony planszy lub zagraj ostatni kafelek kontroluj\u0105c wi\u0119ksz\u0105 cz\u0119\u015b\u0107 centrum");
+        put("#1 left","#1 lewo");
+        put("#1 center","#1 \u015brodek");
+     
+        // gobblet strings
+        put("make 4 in a row in any direction","utw\u00f3rz 4 w rz\u0119dzie w dowolnym kierunku");
+        put("Place a gobblet on the board, or move a gobblet","umie\u015b\u0107 gobblet na planszy albo przemie\u015b\u0107 gobblet");
+        put("Gobblet","Gobblet");
+        put("Gobbletm","GobbletM");
+        put("Gobblet_variation","Gra z dozwolonym podgl\u0105daniem");
+        put("Gobbletm_variation","Trzeba liczy\u0107 w pami\u0119ci - bez podgl\u0105dania");
+        put("You must move the gobblet you have picked up",
+        		"Musisz przesun\u0105\u0107 podniesiony gobblet");
+        put("review","przegl\u0105danie");
+
+        // hive strings
+        put("Hive","Hive - R\u00f3j");
+        put("Hive_variation","standardowy R\u00f3j");
+        put("Place a tile on the board","umie\u015b\u0107 owada na planszy");
+        put("surround your opponents queen bee","Otocz kr\u00f3low\u0105 pszczo\u0142\u0119 przeciwnika");
+        put("Place your queen on the board","Umie\u015b\u0107 swoj\u0105 kr\u00f3low\u0105 na planszy");
+        put("Place a tile on the board, or move a tile","Umie\u015b\u0107 owada na planszy, albo przemie\u015b\u0107 owada");
+        put("You have no legal moves.  Click on Done to pass",
+                "Nie masz dozwolonych ruch\u00f3w. Kliknij Zatwierd\u017a, aby spasowa\u0107.");
+        put("Click on Done to end the game as a Draw",
+        	"Kliknij Zatwierd\u017a, aby zako\u0144czy\u0107 gr\u0119 remisem");
+        put("#1 repetitions","#1 powt\u00f3rze\u0144");
+        // for plateau
+        put("Click on Done to complete the capture",
+        		"Kliknij zatwierd\u017a, by zako\u0144czy\u0107 zbicie.");
+        // game lobby
+        put("The game is a draw","Gra zako\u0144czy\u0142a si\u0119 remisem.");
+        put("Game won by #1","Gra wygrana przez #1");
+        put("You can only resign when it is your move",
+        		"Mo\u017cna podda\u0107 si\u0119 tylko podczas w\u0142asnego ruchu");
+        put("Jan #1#2#3","#1 Sty, #2:#3 GMT");
+        put("Feb #1#2#3","#1 Lut, #2:#3 GMT");
+        put("Mar #1#2#3","#1 Mar, #2:#3 GMT");
+        put("Apr #1#2#3","#1 Kwi, #2:#3 GMT");
+        put("May #1#2#3","#1 Maj, #2:#3 GMT");
+        put("Jun #1#2#3","#1 Cze, #2:#3 GMT");
+        put("Jul #1#2#3","#1 Lip, #2:#3 GMT");
+        put("Aug #1#2#3","#1 Sie, #2:#3 GMT");
+        put("Sep #1#2#3","#1 Wrz, #2:#3 GMT");
+        put("Oct #1#2#3","#1 Pa\u017a, #2:#3 GMT");
+        put("Nov #1#2#3","#1 Lis, #2:#3 GMT");
+        put("Dec #1#2#3","#1 Gru, #2:#3 GMT");
+        
+        // exxit strings
+        put("Exxit","Exxit");
+        put("Exxit-Beginner","Exxit-Beginner");
+        put("Exxit-Blitz","Exxit-Blitz");
+        put("Exxit-Pro","Exxit-Expert");
+        put("Exxit_variation","Exxit standard (39 kafelk\u00f3w)");
+        put("Exxit-Blitz_variation","Exxit Blitz (29 kafelk\u00f3w)");
+        put("Exxit-Beginner_variation","Exxit Beginner (19 kafelk\u00f3w)");
+        put("Exxit-Pro_variation","Exxit - wariant dla ekspert\u00f3w");
+        
+        put("Rearrange things any way you want to", 
+        	"Poprzestawiaj wszystko jakkolwiek chcesz");
+        put("Place a piece on the board","Umie\u015b\u0107 pion na planszy");
+        put("Exchange an off-board piece for a new tile","Wymie\u0144 pion spoza planszy na nowy kafelek");
+        put("Click on Done to confirm the Exchange","Kliknij Zatwierd\u017a, by zako\u0144czy\u0107 wymian\u0119");
+        put("Place a piece on the board, or Exchange an off-board piece for a new tile",
+        		"Umie\u015b\u0107 pion na planszy lub wymie\u0144 pion spoza planszy na nowy kafelek");
+        put("Click on Done to end the game","Kliknij Zatwierd\u017a, by zako\u0144czy\u0107 gr\u0119");
+        put("Make a Dance move","Wykonaj ruch Ta\u0144ca");
+        put("Click on Done to confirm this Dance","Kliknij Zatwierd\u017a, by dokona\u0107 Ta\u0144ca");
+        put("Drop a tile to enlarge the board","Umie\u015b\u0107 kafelek, by powi\u0119kszy\u0107 plansz\u0119");
+			  put("expand the board with your color tiles","powi\u0119ksz plansz\u0119 kafelkami w twoim kolorze");
+
+        // system error
+        put("Memory is low","Ma\u0142o pami\u0119ci");
+        
+        // new strings for tablut
+        put("Rearrange the gold fleet","Poprzestawiaj z\u0142ot\u0105 flot\u0119");
+        put("Rearrange the silver fleet","Poprzestawiaj srebrn\u0105 flot\u0119");
+        put("Make your first move, or swap fleets","Wykonaj sw\u00f3j pierwszy ruch lub zamie\u0144 floty");
+        put("Click Done to confirm swapping fleets with your opponent",
+        		"Kliknij Zatwierd\u017a, by dokona\u0107 zamiany floty z przeciwnikiem");
+        put("Move one ship","Przesu\u0144 jeden okr\u0119t");
+        put("Flagship must Reach the corner to win","Okr\u0119t flagowy musi dotrze\u0107 do rogu aby wygra\u0107");
+        put("Flagship wins at any edge square","Okr\u0119t flagowy wygrywa na ka\u017cdym polu kraw\u0119dzi");
+        put("Flagship can participate in captures","Okr\u0119t flagowy mo\u017ce bi\u0107");
+    	put("Flagship can not capture","Okr\u0119t flagowy nie mo\u017ce zbija\u0107");
+   	 	put("Only the flagship can occupy the center square","Tylko okr\u0119t flagowy mo\u017ce sta\u0107 na polu centralnym");
+   	    put("center square is not special","pole centralne nie ma specjalnych w\u0142asno\u015bci");
+   	    put("Flagship must be surrounded on all 4 sides","Okr\u0119t flagowy musi by\u0107 otoczony z czterech stron");
+   	    put("Flagship is captured normally","Okr\u0119t flagowy jest zbijany normalnie");
+   	    put("Tablut-7","Tablut 7x7");
+   	    put("Tablut-9","Tablut 9x9");
+   	    put("Tablut-11","Tablut-11x11");
+   	    put("Tablut-7_variation","Tablut na planszy 7x7");
+   	    put("Tablut-9_variation","Tablut na planszy 9x9 ");
+   	    put("Tablut-11_variation","Tablut na planszy 11x11");
+   	    put("gold: escape the flagship  silver: capture gold flagship",
+   	    		"z\u0142oty: ucieknij okr\u0119tem flagowym, srebrny: zbij z\u0142oty okr\u0119t flagowy");
+   	    
+   	    put("Zertz+xx","Z\u00e8rtz ekstremalny");
+   	    put("Zertz+xx_variation","Z\u00e8rtz z dowolnym ustawieniem planszy");
+   	    put("Make the first move, or swap and move second",
+   	    		"Wykonaj pierwszy ruch albo zamie\u0144 strony i rusz jako drugi");
+   	    put("Click on Done to confirm swapping","Kliknij Zatwierd\u017a by zmieni\u0107 strony");
+   	    put("Position the starting rings","Ustaw pier\u015bcienie startowe");
+        put("Swap","Zamie\u0144");
+        put("stack six or capture six","sze\u015b\u0107 na stosie lub sze\u015b\u0107 zbitych wygrywa");
+        put("Closing...","Closing...");
+        put("...plus #1 more","...plus #1 more");
+        // knockabout
+        put("Knock 5 of your opponent's dice into the gutter",
+            "Knock 5 of your opponent's dice into the gutter");
+        put("Knockabout_variation","Standard Knockabout");
+        put("Move a piece","Move a piece");
+        put("Knockabout","Knockabout");
+
+        // gipf
+        put("Place a chip on a starting point","Place a chip on a starting point");
+        put("Slide the chip toward the center","Slide the chip toward the center");
+        put("Designate a row to capture before your turn","Designate a row to capture before your turn");
+        put("Click on Done to finish all captures","Click on Done to finish all captures");
+        put("Designate a row to capture","Designate a row to capture");
+        put("Capture most of your opponent's pieces","Capture most of your opponent's pieces");
+        put("Gipf_variation","Gipf Basic (no Gipf pieces)");
+        put("Gipf-standard_variation","Gipf Standard (with Gipf pieces)");
+        put("Gipf", "Gipf Basic");
+        put("Gipf-standard","Gipf Standard");
+        put("Capture your opponent's tallest king stack","Capture your opponent's tallest king stack");
+        put("Volcano-r_variation","Volcano-r_variation");
+        put("Split or Merge this stack, or click Done","Split or Merge this stack, or click Done");
+        put("Occupy 3 enemy bases","Occupy 3 enemy bases");
+        put("Volcano-hr_variation","Volcano-hr_variation");
+        put("Move a ring","Move a ring");
+        put("Volcano_variation","Volcano_variation");
+        put("Make an addional capturing move, or click on Done","Make an addional capturing move, or click on Done");
+        put("Tablut","Tablut");
+        put("Traboulet_variation","Traboulet_variation");
+        put("Capture the most chips under your color stack","Capture the most chips under your color stack");
+        put("Tzaar-standard_variation","Tzaar-standard_variation");
+        put("Hive-M","Hive-M");
+        put("Make an addional move, or click on Done","Make an addional move, or click on Done");
+        put("Complete the split","Complete the split");
+        put("Tzaar_variation","Tzaar_variation");
+        put("Capture the best combinations of all 5 colors","Capture the best combinations of all 5 colors");
+        put("Tzaar-standard","Tzaar-standard");
+        put("Eliminate all your opponent's pieces","Eliminate all your opponent's pieces");
+        put("Tzaar-random","Tzaar-random");
+        put("Restart","Restart");
+        put("Capture 7 red balls or all of your opponent's balls","Capture 7 red balls or all of your opponent's balls");
+        put("Gipf Games","Gipf Games");
+        put("Click on Done to end the game (you lose)","Click on Done to end the game (you lose)");
+        put("Dipole","Dipole");
+        put("Truchet_variation","Truchet_variation");
+        put("Combine two stacks or capture another stack","Combine two stacks or capture another stack");
+        put("Complete the merge","Complete the merge");
+        put("Tzaar-custom","Tzaar-custom");
+        put("Return to the Way","Return to the Way");
+        put("Tzaar-custom_variation","Tzaar-custom_variation");
+        put("Volcano-hr","Volcano-hr");
+        put("Complete a split or merge","Complete a split or merge");
+        put("#1 starts Joint review","#1 starts Joint review");
+        put("Flip a tile, or Move Split or Merge a stack","Flip a tile, or Move Split or Merge a stack");
+        put("Move, Split or Merge a stack","Move, Split or Merge a stack");
+        put("Split this stack, or click Done","Split this stack, or click Done");
+        put("Pick the stack to move","Pick the stack to move");
+        put("use Wooden tiles","use Wooden tiles");
+        put("TumblingDown_variation","TumblingDown_variation");
+        put("Merge this stack, or click Done","Merge this stack, or click Done");
+        put("Continue merging or click Done","Continue merging or click Done");
+        put("You have no moves available. Click on Done to pass.","You have no moves available. Click on Done to pass.");
+        put("Place a ring on the board","Place a ring on the board");
+        put("Fanorona","Fanorona");
+        put("Volcano","Volcano");
+        put("Place a stone on the board, or remove a stone from the board","Place a stone on the board, or remove a stone from the board");
+        put("Capture a stack","Capture a stack");
+        put("Tzaar-random_variation","Tzaar-random_variation");
+        put("Qyshinsu","Qyshinsu");
+        put("Truchet","Truchet");
+        put("Stacking Games","Stacking Games");
+        put("Capture all of your opponent's pieces","Capture all of your opponent's pieces");
+        put("Dipole_variation","Dipole_variation");
+        put("Move a volcano cap","Move a volcano cap");
+        put("Traboulet","Traboulet");
+        put("Played on #1","Played on #1");
+        put("Dipole-s","Dipole-s");
+        put("Volcano-r","Volcano-r");
+        put("Fanorona_variation","Fanorona_variation");
+        put("Hive-M_variation","Hive-M_variation");
+        put("Volcano-h","Volcano-h");
+        put("Stack Height","Stack Height");
+        put("Dipole-s_variation","Dipole-s_variation");
+        put("Click on the line to be captured","Click on the line to be captured");
+        put("Move a piece one space","Move a piece one space");
+        put("Qyshinsu_variation","Qyshinsu_variation");
+        put("Volcano-h_variation","Volcano-h_variation");
+        put("Make a capturing move","Make a capturing move");
+        put("Click Done to confirm this placement","Click Done to confirm this placement");
+        put("Select the stack to move from","Select the stack to move from");
+        put("#1 requests Joint review","#1 requests Joint review");
+        put("Tzaar","Tzaar");
+        put("Click on Gipf pieces to change their capture status",
+		"Click on Gipf pieces to change their capture status");
+        // palago
+        put("Palago_variation","Standard Palago");
+        put("Palago","Palago");
+        put("select tile color","select tile color");
+        put("Aqua","Aqua");
+        put("Red","Red");
+        put("Blue","Blue");
+        put("Place a second tile adjacent to the first",
+        		"Place a second tile adjacent to the first");
+        put("Form a closed shape in your color","Form a closed shape in your color");
+        
+        // santorini
+        put("Santorini","Santorini");
+        put("Santorini_variation","Santorini (without Gods)");
+        put("Move a Man up to level 3","Move a Man up to level 3");
+        put("Build adjacent to the man you moved","Build adjacent to the man you moved");
+        put("Place your first man on the board","Place your first man on the board");
+        put("Place your second man on the board","Place your second man on the board");
+        put("Move a Man","Move a Man");
+       
+        put("Pass","Pass");
+        put("Placing Standard Pieces","Placing Standard Pieces");
+        put("Placing Gipf Pieces","Placing Gipf Pieces");
+        put("Gipf-tournament_variation","Gipf Expert (unlimited Gipf pieces)");
+        put("Gipf-tournament","Gipf Expert");
+        // "spangles"
+        put("Tile Pattern Games","Tile Pattern Games");
+        put("form a larger triangle with your color at the tips","form a larger triangle with your color at the tips");
+        put("Spangles_variation","Standard Spangles");
+
+        put("Spangles","Spangles");
+        
+        // micropul
+        put("Micropul","Micropul");
+        put("Micropul_variation","Standard Micropul");
+         put("maximize the number of tiles in your reserve",
+        		"maximize the number of tiles in your reserve");
+        put("Place a Chip, or a Jewel, or a chip from the Store",
+        		"Place a Chip, or a Jewel, or a chip from the Store");
+        
+        //Medina
+        put("Medina","Medina");
+        put("Medina_variation","Standard Medina");
+        put("Place the first meeple on the board","Place the first meeple on the board");
+        put("Place a second piece on the board","Place a second piece on the board");
+        put("Final Scores:","Final Scores:");
+        put("You must place a dome","You must place a dome");
+        put("build an ideal city","build an ideal city");
+        
+        // cannon
+        put("Cannon","Cannon");
+        put("Capture your opponent's town","Capture your opponent's town");
+        put("Place your town in your first row","Place your town in your first row");
+        put("Move a soldier, or fire a cannon","Move a soldier, or fire a cannon");
+        put("Cannon_variation","standard Cannon");
+        // warp 6
+        put("Warp6","Warp 6");
+        put("Warp6_variation","stamdard Warp 6");
+        put("Move a ship to the board","Move a ship to the board");
+        put("Move 6 ships to the center","Move 6 ships to the center");
+        put("Move a ship","Move a ship");         
+        // Triad
+        put("capture all of one opponentr's color","capture all of one opponentr's color");
+        put("Capture a group of opponents","Capture a group of opponents");
+        put("Drop bunny chip","Place one of the Bunny player's chips");
+        put("Triad","Triad");
+        put("Triad_variation","standard Triad");
+        //Che
+        put("Che","Che");
+        put("Che_variation","standard Che");
+        put("Place a tile on any empty cell","Place a tile on any empty cell");
+        put("Place a tile adjacent to those already on the board",
+        		"Place a tile adjacent to those already on the board");
+        put("Place a second tile adjacent to those already on the board",
+        		"Place a second tile adjacent to those already on the board");
+        
+        // trax
+        put("Illegal - this move would form an illegal pattern of lines",
+        		"Illegal - this move would form an illegal pattern of lines");
+        
+        put("Place a GIPF piece on a starting point","Place a GIPF piece on a starting point");
+        put("Designate GIPF pieces to capture, or place a GIPF chip","Designate GIPF pieces to capture, or place a GIPF chip");
+        put("Designate GIPF pieces to capture, or place a chip","Designate GIPF pieces to capture, or place a chip");
+
+        // mutton
+        put("Capturing Games","Capturing Games");
+        put("Mutton","Mutton");
+        put("Mutton-shotgun","shotgun Mutton");
+        put("Mutton_variation","standard Mutton");
+        put("Mutton-shotgun_variation","Mutton - farmer uses a shotgun");
+        put("Farmer configuring board","Farmer configuring board");
+        put("Play Farmer","Play Farmer");
+        put("Hide","Hide");
+        put("Wolf player hiding","Wolf player hiding");
+        put("Wolf moving suspects","Wolf moving suspects");
+        put("Eat","Eat");
+        put("Wolf player eating","Wolf player eating");
+        put("Farmer select","Farmer select");
+        put("Shoot","Shoot");
+        put("Farmer moving scared","Farmer moving scared");
+        // octiles
+        put("Octiles","Octiles");
+        put("Octiles_variation","standard Octiles");
+        put("Place the next tile on the board, where a runner can move over it",
+        		"Place the next tile on the board, where a runner can move over it");
+        put("Move a runner","Move a runner");
+        put("Place a tile on the board, where a runner can leave a home space",
+        		"Place a tile on the board, where a runner can leave a home space");
+        put("Move a runner from a home space","Move a runner from a home space");
+        put("Move your runners to the opposite side","Move your runners to the opposite side");
+         // army of frogs
+        put("ArmyOfFrogs","Army of Frogs");
+        put("ArmyOfFrogs_variation","standard Army of Frogs");
+        put("Place a Frog on the board","Place a Frog on the board");
+        put("Move a Frog","Move a Frog");
+        put("Connect all your frogs (at least 7) in one cluster",
+        		"Connect all your frogs (at least 7) in one cluster");
+        // variation to game
+        put("Frogs","Army of Frogs");
+         put("No Recent Games","No Recent Games");
+        // xiangqi
+        put("Traditional Pieces","Traditional Pieces");
+        put("Checkmate your opponent's general","Checkmate your opponent's general");
+        put("Illegal move due to repetition - try something else",
+        		"Illegal move due to repetition - try something else");
+        put("Xiangqi","Xiangqi");
+        put("Xiangqi_variation","standard Xiangqi");
+        put("You have been offered a draw - Accept or Decline" ,
+        		"You have been offered a draw - Accept or Decline" );
+        put("Offer a Draw","Offer a Draw");
+        put("Accept Draw","Accept Draw");
+        put("Decline Draw","Decline Draw");
+        put("Escape from check","Escape from check");
+        
+        put("Click Done to offer a draw","Click Done to offer a draw");
+        put("Click Done to accept a draw","Click Done to accept a draw");
+        put("Click Done to decline a draw","Click Done to decline a draw");
+        
+        put("Dipole_family","Dipole");
+        put("Gipf_family","Gipf");
+   		put("Zertz_family","Zèrtz");
+   		put("Yinsh_family","Yinsh");
+     	put("Dvonn_family","Dvonn");
+        put("Tzaar_family","Tzaar");
+        put("Punct_family","Pünct");
+        put("Che_family","Che");
+        put("Micropul_family","Micropul");
+        put("Palago_family","Palago");
+        put("Spangles_family","Spangles");
+        put("Trax_family","Trax");
+        put("Truchet_family","Truchet");
+        put("TumblingDown_family","Tumbling Down");
+        put("Cannon_family","Cannon");
+        put("Fanorona_family","Fanorona");
+        put("Knockabout_family","Knockabout");
+        put("Traboulet_family","Traboulet");
+        put("Triad_family","Triad");
+        put("Xiangqi_family","Xiangqi");
+        put("Octiles_family","Octiles");
+        put("Warp6_family","Warp 6");
+        put("ArmyOfFrogs_family","Army Of Frogs");
+        put("LOA_family","Lines of Action");
+        put("Hive_family","Hive");
+        
+        
+        put("Racing Games","Racing Games");
+        put("Connection Games","Connection Games");
+        put("Plateau_family","Plateau");
+        put("Hex_family","Hex");
+        put("Gobblet_family","Gobblet");
+        put("Exxit_family","Exxit");
+        put("Tablut_family","Tablut");
+        put("Volcano_family","Volcano");
+        put("Qyshinsu_family","Qyshinsu");
+        put("Santorini_family","Santorini");
+        put("Medina_family","Medina");
+        put("Mutton_family","Mutton");
+        put("Tajii","Tajii");
+        put("Tajii_family","Tajii");
+        
+        
+        put("LOAP","LOAP");
+        put("TumblingDown","Tumbling Down");
+        // misc
+        put("All Games","All Games");
+        // breaking away
+        put("BreakingAway","Breaking Away");
+        put("BreakingAway_variation","standard Breaking Away");
+        put("BreakingAway_family","Breaking Away");
+        put("Adjust","Adjust");
+        put("Move a Cyclist","Move a Cyclist");
+        put("Score the most points at the sprint and finish lines",
+        		"Score the most points at the sprint and finish lines");
+        put("Adjust your starting movements","Adjust your starting movements");
+        put("Wait for other players to adjust","Wait for other players to adjust");
+        put("The next sprint bonus is #1","The next sprint bonus is #1");
+        put("#1 riders have crossed the second sprint line.",
+        		"#1 riders have crossed the second sprint line.");
+        put("#1 riders have crossed the first sprint line.",
+        		"#1 riders have crossed the first sprint line.");
+        put("#1 riders have finished","#1 riders have finished");
+        put("The next finish bonus is #1","The next finish bonus is #1");
+        put("Rider Size","Rider Size");
+        put("Confirm Dropping this rider","Confirm Dropping this rider");
+        put("Drop this rider from the Race","Drop this rider from the Race");
+        put("Animate","Animate");
+        
+        put("Hive-L","Hive-L");
+        put("Hive-L_variation","Hive with LadyBug added");
+        put("Hive-LM","Hive-LM");
+        put("Hive-LM_variation","Hive with LadyBug and Mosquito");
+        // container
+        put("Container","Container");
+        put("Container-First","Container - Original");
+        put("Euro Games","Euro Games");
+        put("Container-First_variation","Container with the original rules");
+        
+        put("Auction","Auction");
+        put("Maximize your profits","Maximize your profits");
+        put("Bank","Bank");
+        put("Loan for #1 from #2", "Loan for #1 from #2");
+        put("Container_family","Container");
+        put("Container_variation","Container with second shipment rules");
+        put("Take your first action","Take your first action");
+        put("Click Done to confirm this action","Click Done to confirm this action");
+        put("Reprice the goods in your factory storage","Reprice the goods in your factory storage");
+        put("Take your second action","Take your second action");
+        put("Warehouse","Warehouse");
+        put("Unsold Warehouses","Unsold Warehouses");
+        put("#1 Ship","#1 Ship");
+        put("#1 Machine","#1 Machine");
+        put("#1 #2 Containers","#1 #2 Containers");
+        put("Loan Card","Loan Card");
+        put("Let someone else make the loan","Let someone else make the loan");
+        put("I will make the loan","I will make the loan");
+        put("fund a loan from a player or the bank","fund a loan from a player or the bank");
+        put("Load the goods you will produce","Load the goods you will produce");
+        put("set bid amount","set bid amount");
+        put("Offer a price for the goods on the ship","Offer a price for the goods on the ship");
+        put("Load the your warehouse from the seller","Load the your warehouse from the seller");
+        put("Reprice the goods in your warehouse storage","Reprice the goods in your warehouse storage");
+        put("Load your ship from the Dock","Load your ship from the Dock");
+        put("Load more goods from the Dock","Load more goods from the Dock");
+        put("Buy the goods for $#1","Buy the goods for $#1");
+        put("Accept $#1 from #2","Accept $#1 from #2");
+        put("Bid $ #1","Bid $ #1");
+        put("Requesting Bids","Requesting Bids");
+        put("you may increase your bid","you may increase your bid");
+        put("Wait for the other players to decide","Wait for the other players to decide");
+        put("accept the bid, or pay the amount yourself","accept the bid, or pay the amount yourself");
+        put("trade a second container for a gold container","trade a second container for a gold container");
+        put("You must take out a loan to pay interest","You must take out a loan to pay interest");
+        put("Requesting Loan","Requesting Loan");
+        put("No, let the bank fund it","No, let the bank fund it");
+        put("Accept the loan from the bank", "Accept the loan from the bank");
+        put("Decline the loan","Decline the loan");
+        put("Accept this loan financing or not","Accept this loan financing or not");
+        put("Choose the penalty for non-payment of interest","Choose the penalty for non-payment of interest");
+        put("Loan for #1 from the bank","Loan for #1 from the bank");
+        put("Yes, I will fund the loan","Yes, I will fund the loan");
+        put("Place your bid to fund the loan","Place your bid to fund the loan");
+       // for stats
+        put("Cash/Score","Cash/Score");
+        put("Machines","Machines");
+        put("Warehouses","Warehouses");
+        put("Shipping","Shipping");
+        put("Island","Island");
+        put("Loans","Loans");
+
+        // arimaa
+        put("Move a Rabbit to the last row","Move a Rabbit to the last row");
+        put("Reverse View","Reverse View");
+        put("Move a piece, step #1","Move a piece, step #1");
+        put("Complete the push, step #1","Complete the push, step #1");
+        put("Complete the pull, step #1","Complete the pull, step #1");
+        put("Place all your pieces in your two home rows","Place all your pieces in your two home rows");
+        put("Arimaa_family","Arimaa");
+        put("Arimaa","Arimaa");
+        put("Arimaa_variation","Standard Arimaa");
+        put("Place the Rabbits","Place the Rabbits");
+        put("Illegal due to repetition, try something else or resign","Illegal due to repetition, try something else or resign");
+        // general
+        put("select the game variation","select the game variation");
+        put("select the type of room","select the type of room");
+        put("select the game to play","select the game to play");
+        put("Complete a push or pull, step #1","Complete a push or pull, step #1");
+        put("Spot Price #1","Spot Price #1");
+        put("click Done to finish this Auction","click Done to finish this Auction");
+        put("load a luxury container","load a luxury container");
+        // crossfire
+        put("Crossfire_family","Crossfire");
+        put("Crossfire","Crossfire");
+        put("Crossfire_variation","standard Crossfire");
+        put("own all the stacks","own all the stacks");
+        put("#1 prisoners","#1 prisoners");
+        put("#1 reserves","#1 reserves");
+        
+        // game controls 
+        put("Rotate the board 180 degrees","Rotate the board 180 degrees");
+        put("Spread out the stacks","Spread out the stacks");
+        put("Adjust the chip spacing in stacks","Adjust the chip spacing in stacks");
+        put("Switch to a more overhead view of the board","Switch to a more overhead view of the board");
+        put("Switch to a more oblique view of the board","Switch to a more oblique view of the board");
+        
+        // entrapment
+        put("Entrapment_family","Entrapment");
+        put("Entrapment","Entrapment");
+        put("Entrapment-7x7","Entrapment");
+        put("Entrapment-7x7_variation","standard 7x7 Entrapment");
+        put("Entrapment-6x7_variation","Entrapment 6x7 - faster game");
+        put("Entrapment-6x7","Entrapment-6x7");
+        put("Entrapment-7x7x4","Entrapment-7x7x4");
+        put("Entrapment-7x7x4_variation","Entrapment-7x7 with 4 roamers");
+
+        put("Immobilize your opponent's roamers","Immobilize your opponent's roamers");
+        put("Move a roamer","Move a roamer");
+        put("Move a roamer, or place a barrier","Move a roamer, or place a barrier");
+        put("Escape forced position, or place a barrier","Escape forced position, or place a barrier");
+        put("Move a roamer or move a barrier","Move a roamer or move a barrier");
+        put("Place a roamer on the board","Place a roamer on the board");
+        put("Escape forced position, or move a barrier","Escape forced position, or move a barrier");
+        put("Escape forced position","Escape forced position");
+        put("Select which of your roamers to kill","Select which of your roamers to kill");
+        put("Select which opponent roamer to kill","Select which opponent roamer to kill");
+        
+        // lehavre
+        put("LeHavre_variation","standard LeHavre");
+        put("LeHavre_family","LeHavre");
+        put("LeHavre","LeHavre");
+
+        // crossfire
+        put("Move a stack, or add a reserve piece","Move a stack, or add a reserve piece");
+        // micropul
+        put("+ #1 turns","+ #1 turns");
+}
+}

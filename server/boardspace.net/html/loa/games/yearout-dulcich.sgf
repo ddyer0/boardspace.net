@@ -1,0 +1,125 @@
+(;SiZe[8]
+PW[Fabio Dulcich]
+PB[Paul Yearout]
+GaMe[9]
+GN[Yearout-Dulcich]
+GC[Yearout-Dulcich]
+C[This game is from the AISE (Italian Association of Chess Variants)
+tournament of Grand Prix, 1993.  Published also in Eteroscacco: 
+the AISE bulletin. This commentary originally appeared in
+NostAlgia #356, p33.  Reproduced with permission.
+]
+;B[b1-b3]
+;W[h3-e3]
+;B[b3- e3]
+C[The "Yearout Counterattack"]
+;W[a3-c1]
+C[It is not usually a good idea in the opening
+to capture pieces on the edge, but this has the 
+merit of threatening h6:e3]
+;B[e3-b6]
+C[?!]
+;W[a2-c4]
+;B[c8-c5]
+;W[a7-c7]
+C[!]
+;B[d1-b3]
+C[There is no good move to protect c5, so Black chooses to 
+develop elsewhere]
+;W[c1-c5]
+;B[b8-b5]
+C[Clearly, Black hopes to separate the units on a4, a5 and a6]
+;W[h5-d5]
+C[Prevents g8-d5, which would severely reinforce the b file]
+;B[f1-f3]
+;W[d5-f3]
+C[White removes this unit from its own group, 
+but it was simply necessary to prevent f3:d5,
+which would threaten g8:c4]
+;B[e1-e3]
+C[threatening g1:c5]
+;W[a4-d4]
+;B[e8-e6]
+C[threatening g8:c4]
+;W[h7-f7]
+;B[d8-d6]
+C[Paul is persistent:  
+this threatens f8:c5 and d6:d4]
+;W[a5-b4]
+C[d4:d6 would be bad because of g1:c5]
+;B[g1-g3]
+;W[d4-d6]
+C[Deciding to capture an annoying piece, 
+and also preventing g3:c7]
+;B[g8-g6]
+;W[h6-f4]
+;B[g6-f5]
+;W[c5-f5]
+C[!? The threat to c5 could also have been met by 
+a6-a5, but White thought it best to rid himself of 
+another nuisance]
+;B[b3-f3]
+;W[h4-d4]
+;B[e3-e5]
+;W[c7-c5]
+C[Black's lesser number of pieces is starting to
+make its disadvantage felt. It is not true that 
+having fewer pieces makes connection easier; 
+in fact, having more units can mean more 
+possibilities and more threats!]
+;B[g3-e3]
+;W[f5-e4]
+C[Thus White completes his subtle blockade on the 
+fourth rank to separate the dark forces; 
+however, it is a rather fragile barrier and will 
+require constant attention]
+;B[f8-e8]
+;W[h2-g2]
+;B[e3-g3]
+C[Prevents g2-g3, and makes a first attempt to breach
+the blockade with e8:e4]
+;W[b4-e7]
+;B[g3-g5]
+C[Attacking e7 and c5]
+;W[g2-g4]
+;B[g5-c5]
+;W[g4-e6]
+;B[e8-c6]
+;W[e6-d7]
+C[Hoping to play f7-d5]
+;B[b5-b3]
+;W[c4-g4]
+;B[f3-d3]
+;W[a6-c4]
+C[! After e4:c6, 24.d3e4+ White would have lost quickly]
+;B[c6-e4]
+C[The barrier could not last forever, but it
+has usefully distracted Black]
+;W[d7-c6]
+;B[d3-f3]
+C[c6 cannot be taken: 
+			  W\[e4:c6\]?
+ B\[f7-f5\]+  W\[e5-b5\]
+ B\[f5:c5\]++ W\[b5-b2\]
+ B\[e7-e6\]++]
+;W[d6-g6]
+C[The decisive move, threatening both g6:e4 
+and e7:c5]
+;B[f3-c6]
+;W[e7-c5]
+;B[b3-b5]
+;W[c4-e6]
+C[There is still no threat to connect on the 
+next move in this final position, but Fabio 
+presented a lengthy scholarly analysis to prove 
+that ALL of his opponent' s moves lose!
+Black Resigns.  Congratulations to Fabio and Paul
+for a keenly contested  and fascinating game.]
+;C[\[comments by ddyer\]  I used LOAW to search the
+continuations beyond this point, and found a forced
+win for white in 3 moves.  The best line is:
+ E4:G6  F7-D5
+ G6-F5  G4-F3
+ F5-E4  F4-E3
+]
+)

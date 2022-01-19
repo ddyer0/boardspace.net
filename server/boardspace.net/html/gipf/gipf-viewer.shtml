@@ -1,0 +1,11 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <script src="/js/site.js"> </script>
+</head>
+<body style="background-image: url(/images/background-image.jpg);">
+<br>
+<!--#include virtual="/cgi-bin/applettag.cgi?tagname=offlinereviewer&game=gipf&width=830&height=600" -->
+<br>
+</body>
+</html>

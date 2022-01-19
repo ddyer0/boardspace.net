@@ -1,0 +1,1 @@
+legal.o legal.o: legal.c

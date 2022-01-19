@@ -1,0 +1,221 @@
+<html>
+
+<body bgcolor="#FFFFFF" link="#0000FF" vlink="#800080">
+
+<h1><img src="kawacup.jpg" width="106" height="100">Menu Options</h1>
+
+<p><a href="index.htm">Index</a> </p>
+
+<P>
+<font size="1.5" face="Arial">Last Modified Date - <font color=red>2/16/99</font><p>
+Please click <a href="http://www.tek-tools.com/kawa/docs/menuoptions.htm">here</a> for the latest version of this document.
+<font color=red> If this is an online version of the document please right click in the browser and select 
+'Update local Kawa document' to update your local copy of this document</font>
+</font>
+<hr>
+
+<h3>File </h3>
+
+<ul>
+  <li>New </li>
+  <li>Open </li>
+  <li>Close </li>
+  <li>Close All - Closes all the windows open in the editor </li>
+  <li>Save </li>
+  <li>Save as </li>
+  <li>Save All - Save all the files from the current project including the project file.
+  </li>
+  <li><a href="findinfiles.htm">Find in files</a> </li>
+  <li>Add to project - Adds the current file to the project list. </li>
+  <li>Print </li>
+  <li>Print Setup </li>
+  <li>Exit - Exit the application. </li>
+</ul>
+
+<h3>Edit </h3>
+
+<ul>
+  <li>Undo - Undoes the previous action in the editor. Refer to options/Edit for setting
+    undo buffer size </li>
+  <li>Redo - Redo the last undo. </li>
+  <li>Cut </li>
+  <li>Copy </li>
+  <li>Paste </li>
+  <li>Go to - Displays a dialog to input the go to line number </li>
+  <li>Find - Find a given string in the current file. Please refer to <a
+    href="findinfiles.htm">Find in Files</a> for searching multiple files. </li>
+  <li>Find next - Find next will find the next occurrence of the previous search text. </li>
+  <li>Replace - Replace a given text with another text. Replace all button in this dialog
+    will replace all the text in the current file if there is no selection in the file. If
+    there is any selection in the file Replace all will replace text only in the selected
+    text. Both Replace and Replace All can be undone by pressing CTRL+Z or Undo. </li>
+  <li><a href="bookmarks.htm">Bookmark</a> </li>
+  <li><a href="bookmarks.htm">Next bookmark</a> </li>
+</ul>
+
+<h3>View</h3>
+
+<ul>
+  <li>Toolbar - Toggle the toolbar display. </li>
+  <li>Statusbar - Toggle the Statusbar display. </li>
+  <li>Debugbar - Toggle the Debugbar display. </li>
+  <li>Browserbar - Toggle the Browserbar display. </li>
+  <li>Profile Bar - Toggle the Profile Bar display.</li>
+  <li>Project - Toggle the visibility of the Project Window.</li>
+  <li>Float/Dock Project - Floats or docks the project tab window. </li>
+  <li>Dock Right/Dock Left - Docks the project tab left or right.</li>
+  <li>Output - Toggle the Output window.</li>
+  <li>Float Output/Dock Output - Floats or docks the output window.</li>
+  <li>Source Browse - <a href="sourcebrowsing.htm">Source browsing</a></li>
+</ul>
+
+<h3>Project</h3>
+
+<ul>
+  <li>New - Create a new project. </li>
+  <li>Open - Open existing project </li>
+  <li>Close - Close current project </li>
+  <li>Save - Save current project settings.</li>
+  <li>Class View - Toggles Project Tree between package/class view and file view.</li>
+  <li>Parse All - Parses all the project files. This option can be used if Parse on Project
+    open is disabled. </li>
+  <li>Add file - Add file to the current project </li>
+  <li>Add Directory - Adds an entire directory (including subdirectories) of java files to
+    the project. Commands will replicate the directory hierarchy also. </li>
+  <li>Add Default HTML - Adds a default HTML file to the project with an Applet Tag and a
+    class name only if the main class file is identified. If the main class file is not identified
+    then the class name can be filled in manually. Please right click on a java file in the project
+    tree and select Main Class to set the main class file.</li>
+  <li>Import Kawa Project - Adds all the files including any folders from one Kawa project
+    to other.</li>
+  <li><a href="classpath.htm">Classpath</a> </li>
+  <li><a href="compileroptions.htm">Compiler Options </a></li>
+  <li>Toggle Compiler - Toggles the current compiler between the first non-javac compiler and javac compiler for the current
+  	profile. Please see <a href="alternatecompilersvms.html">alternate compilers and VMs</a> for more details on how to set 
+  	alternate compilers and VMs. </li>
+  <li><a href="interpreteroptions.htm">Interpreter Options</a> </li>
+  <li><a href="javadocoptions.htm">Javadoc Options </a>- Please refer to JavaDoc help for
+    more details on all the different switches. </li>
+  <li><a href="breakpointlist.htm">Breakpoint List</a>- Displays all the list of
+    Breakpoints for this project.</li>
+</ul>
+
+<h3>Build</h3>
+
+<ul>
+  <li>Compile - Compiles the current Java file. The file is saved automatically if needed.
+  </li>
+  <li>Compile(*.java) - Issues &quot;javac *.java&quot; command. Please refer to <a
+    href="kawapackages.htm">How to work with Packages </a>for more details on these options.
+  </li>
+  <li>RMI Compile - Please refer to <a href="rmic.htm">RMIC option </a>for more details on
+    this command<i>.</i> </li>
+  <li>Rebuild All - Issues one compile command for all the Java files in the project. </li>
+  <li>Rebuild Dirty - Rebuilds modified files in the project only.</li>
+  <li>Javadoc - Javadoc the current open Java file. </li>
+  <li>Javadoc All - Creates Javadoc for all the project files. </li>
+  <li>Javadoc Folder - Javadoc the entire directory or folder. This is helpful to create
+    tree.htm, packages.htm and index.htm files, which are created automatically with this
+    command. The project does not have to be open for this command to be enabled however if a
+    project is open the current project Javadoc options are applied. This command displays a
+    directory picker dialog box to indicate the directory to javadoc. </li>
+  <li>Make Jar - Opens a make Jar Dialog. Please refer to <a href="makejar.htm">How to make
+    a Jar file</a> for more details on this feature. </li>
+  <li>Stop Build - Stops the Build (compile and javadoc) if running. </li>
+  <li>Stop Run - Stops the running application or applet. </li>
+  <li>Stop Debug - Stops the Debug process if running. Sometimes if this does not work it
+    is necessary to kill the JDB process manually from the task manager. </li>
+  <li>Run - Run the application or applet. Please refer to <a href="runapporapplet.htm">How
+    to Run an applet or application </a>for more details on which class or HTML file is
+    selected for run </li>
+  <li>Debug </li>
+  	   <ul>
+      <li>Run - Starts the Kawa native debugger </li>
+      <li>Cont - Continue execution if at a breakpoint. </li>
+      <li>Step - Singe Step to next execution line </li>
+      <li>Step Over - Issues next command from JDB. </li>
+      <li>Step Up - Issues step up command from JDB. </li>
+      <li>Exit - Exits the debugger if still active. </li>
+    </ul>
+  </li>
+  <li>JDB Debug - Starts the JDB debugger wrapper. </li>
+  <li>Breakpoint Set/Unset - Sets or removes the breakpoint at the current line. </li>
+</ul>
+
+<h3>Packages</h3>
+
+<ul>
+  <li>Add Java - This is the only way you can added packages to the Kawa package tree. Please pick the
+  java source file to add to the package tree. Kawa will parse the source file and add the packages found
+  to the package tree.</li>
+  <li>Delete - Deletes any selected package from the package tree</li>
+  <li>Find Class - Displays the find dialog to find a class in the kawa package tree.</li>
+  <li>Find Interface - Displays the find dialog to find an interface in the kawa package tree </li>
+  <li>Classpath - Allows you to set packages classpath outside of JDK packages. This is equivalent to setting system CLASSPATH variable. 
+  	  These classpath settings are applied universally in Kawa to all compiles, runs and debugs.
+   </li>
+</ul>
+
+<h3>Info</h3>
+
+<ul>
+  <li>Add Folder - Add folder to Kawa Help Tab </li>
+  <li>Add File(s) - Add file to Kawa Help Tab </li>
+  <li>Delete - Delete the currently selected item or folder in the Kawa Help Tab</li>
+</ul>
+
+<h3>Customize</h3>
+
+<ul>
+  <li>Options - Please refer to <a href="editoroptions.htm">Editor</a>,
+    <a href="syntaxcolor.htm">Color</a>, <a href="directorysetup.htm">Paths</a> and 
+    <a href="browseroptions.htm">Browser</a> options. </li>
+  <li>Project Root Options - <a href="globaloptions.htm">Global options</a></li>
+  <li><a href="customhelpindex.htm">User Index</a> </li>
+  <li><a href="customcommands.htm">Custom Commands</a> </li>
+  <li>All the custom commands are listed at the end of this menu item. </li>
+</ul>
+
+<h3>Customize</h3>
+
+<ul>
+  <li>Run Plugin... - Allows you to run <a href="runplugin.htm">single plugin</a> command without having to setup a custom plugin command.</li>
+  <li>All the custom plugin commands are listed at the end of this menu item. </li>
+</ul>
+  
+<h3>Window</h3>
+
+<ul>
+  <li>Cascade </li>
+  <li>Tile Horizontal</li>
+  <li>Tile Vertical</li>
+  <li>Arrange icons </li>
+  <li>Help Window - Selects or displays the help window. </li>
+  <li>Output Window - Selects or displays the output window. </li>
+  <li>Search Results - Selects or displays the Find in Files results window. </li>
+  <li>Project Tab - Selects or displays the Project tab window. </li>
+  <li>All the output redirected child processes and editor windows are listed at the end of
+    this menu item<i>.</i> </li>
+</ul>
+
+<h3>Help</h3>
+
+<ul>
+  <li>Contents - Show Kawa help contents</li>
+  <li><a href="helpsearch.htm">Search</a> </li>
+  <li>Next - Displays the next help file from the cache </li>
+  <li>Previous - Displays the previous file from the cache </li>
+  <li>History - Displays the help history items </li>
+  
+  <li>Kawa Setup - Display Kawa setup page </li>
+  <li>What&#146;s new - Displays the what's new page for new features in this release. </li>
+  <li>FAQ  - Display Kawa FAQ </li>
+  <li>Support - Displays the Kawa support information </li>
+  <li>Tip of the Day - Displays the tip of the day dialog. This dialog uses the tips.txt
+    file in the Kawa directory. </li>
+  <li>Register - <a href="Register.htm">Register</a> the key and code for Kawa to unlock the software</li>
+  <li>Kawa Homepage - Loads the Kawa homepage in a browser if one is setup. </li>
+  <li>About Kawa - Displays the Kawa version number and copyright information.</li>
+</ul>
+</body>
+</html>

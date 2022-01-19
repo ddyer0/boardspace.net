@@ -1,0 +1,56 @@
+<HTML>
+<HEAD>
+<TITLE>Kawa Project</TITLE>
+</HEAD>
+<BODY LINK="#0000ff" VLINK="#800080" BGCOLOR="#ffffff">
+
+<H1><IMG SRC="kawacup.jpg" WIDTH=106 HEIGHT=100>Kawa Plugins</H1>
+<P><A HREF="index.htm">Index</A> </P>
+<font size="1.5" face="Arial">Last Modified Date - <font color=red>2/16/99</font><p>
+Please click <a href="http://www.tek-tools.com/kawa/docs/plugin.htm">here</a> for the latest version of this document.
+<font color=red> If this is an online version of the document please right click in the browser and select 
+'Update local Kawa document' to update your local copy of this document</font>
+</font>
+<P><HR></P>
+Kawa plugin is the new plugin architecture which lets you write Java programs to control Kawa. It is like
+a Java API to extend Kawa functionality.
+
+<p>Kawa plugin architecture is based on Java's JNI interface. As part of this architecture Kawa exposes 5 Java objects -
+<a href="../plugin/docs/com.tektools.kawa.plugin.KawaApp.html">KawaApp</a>, 
+<a href="../plugin/docs/com.tektools.kawa.plugin.KawaProject.html">KawaProject</a>, 
+<a href="../plugin/docs/com.tektools.kawa.plugin.KawaEditor.html">KawaEditor</a>, 
+<a href="../plugin/docs/com.tektools.kawa.plugin.KawaFile.html">KawaFile</a> and 
+<a href="../plugin/docs/com.tektools.kawa.plugin.KawaFolder.html">KawaFolder</a>. 
+
+<p>Some of the above objects defines event objects to indicate certain events. Please refer to
+<a href="../plugin/docs/com.tektools.kawa.plugin.KawaAppEvent.html">KawaAppEvent</a>,
+<a href="../plugin/docs/com.tektools.kawa.plugin.KawaProjectEvent.html">KawaProjectEvent</a> and
+<a href="../plugin/docs/com.tektools.kawa.plugin.KawaFileEvent.html">KawaFileEvent</a>
+for more details on Kawa plugin events.
+
+<p>Each of these objects define certain methods to externally control and drive Kawa. This is a first
+iteration of this architecture and we hope to grow this architecture more and more based on your feedback.
+
+<p>The design goals for the first release of this architecture was better source control integration and
+ability to setup custom builds for some large projects. We think we have achived both these goals with 
+the first iteration.
+
+<p>The only environment where Kawa plugin can run is when launched by Kawa. You can launch a plugin
+command in 2 ways - setup a <a href="plugincommand.htm">custom plugin command</a> or use <a href="runplugin.htm">
+single run plugin menu</a> option.
+
+<p>Kawa plugins are enabled automatically. Please check Customize/Options/Editor to disable kawa plugins.
+
+<p>All plugin classes are packed into kawaclasses.zip in Kawa folder and Kawa automatically sets the classpath
+to this file. All plugin documentation files and plugin sample files are copied under /plugin folder in the
+Kawa installation directory.
+
+<p>We hope to come up with more sample plugin programs very soon. We also hope that you will get as much excited
+as we are about this new architecture. Please provide as much feedback as you can on this new feature.
+
+<p>Please click <a href="http://www.tek-tools.com/kawa/plugins.htm">here</a> to see the list of contributed plugins available for Kawa today. We will keep this list updated
+frequently with new contributions. Also, please sens us an email if you have a plugin you want to contribute to
+the Kawa user group.
+
+</BODY>
+</HTML>

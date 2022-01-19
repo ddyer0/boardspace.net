@@ -1,0 +1,3 @@
+#!/bin/sh
+cd /home/nngs/src/data/stats/player_data
+find . -type f -exec /home/nngs/scripts/dotrim {} \;

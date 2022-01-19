@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<launchConfiguration type="org.eclipse.jdt.launching.javaApplet">
+<listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">
+<listEntry value="/boardspace core/boardspace-core/online/Root.java"/>
+</listAttribute>
+<listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_TYPES">
+<listEntry value="1"/>
+</listAttribute>
+<intAttribute key="org.eclipse.jdt.launching.APPLET_HEIGHT" value="200"/>
+<stringAttribute key="org.eclipse.jdt.launching.APPLET_NAME" value=""/>
+<mapAttribute key="org.eclipse.jdt.launching.APPLET_PARAMETERS">
+<mapEntry key="bannerMode" value="N"/>
+<mapEntry key="debug" value="true"/>
+<mapEntry key="extraactions" value="true"/>
+<mapEntry key="extramouse" value="true"/>
+<mapEntry key="final" value="true"/>
+<mapEntry key="language" value="englishStrings"/>
+<mapEntry key="lobbyportnumber" value="2255"/>
+<mapEntry key="localfile" value="false"/>
+<mapEntry key="lowmemory" value="false"/>
+<mapEntry key="ngames" value="10"/>
+<mapEntry key="nrobotgames" value="9"/>
+<mapEntry key="playerclass" value="2"/>
+<mapEntry key="reviewerdir0" value="file:///g:/share/projects/boardspace.net/htdocs/zertz/games/"/>
+<mapEntry key="reviewerdir1" value="file:///g:/share/projects/boardspace.net/htdocs/loa/games/"/>
+<mapEntry key="reviewerdir10" value="file:///g:/share/projects/boardspace.net/htdocs/tablut/games/"/>
+<mapEntry key="reviewerdir13" value="file:///g:/share/projects/boardspace.net/htdocs/dipole/games"/>
+<mapEntry key="reviewerdir2" value="file:///g:/share/projects/boardspace.net/htdocs/plateau/games/"/>
+<mapEntry key="reviewerdir3" value="file:///g:/share/projects/boardspace.net/htdocs/yinsh/games"/>
+<mapEntry key="reviewerdir4" value="file:///g:/share/projects/boardspace.net/htdocs/hex/games/"/>
+<mapEntry key="reviewerdir5" value="file:///g:/share/projects/boardspace.net/htdocs/trax/games/"/>
+<mapEntry key="reviewerdir6" value="file:///g:/share/projects/boardspace.net/htdocs/punct/games/"/>
+<mapEntry key="reviewerdir7" value="file:///g:/share/projects/boardspace.net/htdocs/gobblet/games/"/>
+<mapEntry key="reviewerdir8" value="file:///g:/share/projects/boardspace.net/htdocs/hive/games/"/>
+<mapEntry key="reviewerdir9" value="file:///g:/share/projects/boardspace.net/htdocs/exxit/games/"/>
+<mapEntry key="robotlobby" value="solo"/>
+<mapEntry key="serverkey" value="1.2.3.30"/>
+<mapEntry key="servername" value="local.boardspace.net"/>
+<mapEntry key="stealth" value="false"/>
+<mapEntry key="uid" value="21005"/>
+<mapEntry key="uidranking" value="20 Z 1501   20 Z 1001 20  L 1500 20 Z11 1499"/>
+<mapEntry key="username" value="a11853"/>
+<mapEntry key="xgame" value="zertz"/>
+<mapEntry key="xuid" value="20"/>
+</mapAttribute>
+<intAttribute key="org.eclipse.jdt.launching.APPLET_WIDTH" value="200"/>
+<stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="online.Root"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="boardspace"/>
+<stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Xmx256M"/>
+</launchConfiguration>

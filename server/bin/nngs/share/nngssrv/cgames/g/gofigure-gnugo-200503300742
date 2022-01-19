@@ -1,0 +1,26 @@
+
+(;
+GM[1]FF[4]AP[NNGS:1.1.17]
+US[Brought to you by No Name Go Server]
+CP[
+  Copyright This game was played on the No Name Go Server
+  Permission to reproduce this game is given,
+  as long as this copyright notice is preserved.]
+GN[GoFigure-GNUGo(B) NNGS]
+EV[none]
+RE[B+Time]
+PW[GoFigure]WR[NR ]
+PB[GNUGo]BR[NR ]
+PC[NNGS Go Program Server Clone: boardspace.net 6969]
+DT[2005-03-30]
+SZ[9]TM[600]KM[5.5]
+
+;B[gc]C[
+ evand started observation.
+]
+;W[fd];B[gd];W[ec];B[cd];W[fe];B[hf];W[de];B[ce];W[df];B[bg];W[cb];B[fg]
+;W[dh];B[bc];W[bb];B[cf];W[cg];B[ch];W[eh];B[dg];W[eg];B[fh];W[cg];B[bh]
+;W[fb];B[gb]
+;)
+
+---

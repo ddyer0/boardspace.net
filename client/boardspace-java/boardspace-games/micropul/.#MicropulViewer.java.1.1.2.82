@@ -1,0 +1,1157 @@
+package micropul;
+
+import online.common.*;
+import online.game.*;
+import online.game.sgf.*;
+import java.awt.*;
+import java.util.*;
+import lib.G;
+
+/**
+ * 
+ * Overall Architecture
+ * 
+ * The site provides the lobby, choice game and opponents, communication between the players, information 
+ * for spectators,  rankings, and a host of other services.  Each game has to be concerned only with 
+ * the game itself.   An individual game (say, Hex) is launched and each client independantly initializes
+ * itself to a common starting state.   Thereafter each player specifies messages to be broadcast to the
+ * other participants, and receives messages being broadcast by the other participants, which keep everyone
+ * informed about the state of the game.  There is no common "true" state of the game - all the participants
+ * keep in step by virtue of seeing the same stream of messages.    Messages are mostly simple "pick up a stone"
+ * "place a stone on space x" and so on.
+ * 
+ * The things a game must implement are specified by the class "ViewerProtocol", and a game could just
+ * start there and be implemented completely from scratch, but in practice there is another huge pile
+ * of things that every game has to do; dealing with graphis, mouse events, saving and restoring the
+ * game state from static records, replaying and reviewing games and so on.   These are implemented in the 
+ * class "commonCanvas" and by several board-like base classes for Hex and Square geometry boards.   
+ * All the existing games for boardspace use these classes to provide graphics and basic board representation.
+ * 
+ * For games with robot players, there is another huge pile of things that a robot has to do, generating
+ * moves, evaluating and choosing the best, and implementing a lookahead several moves deep.   There's a
+ * standard framework for this using the "RobotProtocol" class and the "SearchDriver" class. 
+ */
+
+/**
+ * 
+ * Change History
+ */
+public class MicropulViewer extends commonCanvas 
+	implements ViewerProtocol, MicropulConstants, sgf_names
+{
+     /**
+	 * 
+	 */
+	static final long serialVersionUID = 1L;
+	// colors
+    private Color reviewModeBackground = new Color(220,165,200);
+    private Color HighlightColor = new Color(0.2f, 0.95f, 0.75f);
+    private Color rackBackGroundColor = new Color(145,192,140);
+    private Color boardBackgroundColor = new Color(220,165,155);
+    private Color vcrButtonColor = new Color(0.7f, 0.7f, 0.75f);
+    
+    // private state
+    private MicropulBoard bb = null; //the board from which we are displaying
+    private int CELLSIZE; 	//size of the layout cell
+    private final double INITIAL_TILE_SCALE = 3.0;
+    private double board_center_x = 0.0;
+    private double board_center_y = 0.0;
+
+    // addRect is a service provided by commonCanvas, which supports a mode
+    // to visualize the layout during development.  Look for "show rectangles"
+    // in the options menu.
+    //public Rectangle fullRect = addRect("fullRect"); //the whole viewer area
+    //public Rectangle boardRect = addRect("boardRect"); //the actual board, normally at the left edge
+    //public Rectangle chatRect = addRect("chatRect");
+    private Rectangle logRect = addRect("logRect"); //the game log, normally off the the right
+    private Rectangle stateRect = addRect("stateRect");
+    private Rectangle doneRect = addRect("doneRect");
+    private Rectangle editRect = addRect("editRect");
+    private Rectangle goalRect = addRect("goalRect");
+    private Rectangle progressRect = addRect("progressRect");
+    private Rectangle chipRect = addRect("chipRect");		// public chip reserve
+    
+    private Rectangle firstPlayerRack = addRect("firstPlayerRack");
+    private Rectangle firstPlayerChipRect = addRect("firstPlayerChipRect");
+    private Rectangle firstPlayerJewelRect = addRect("firstPlayerJewelRect");
+    private Rectangle firstPlayerScoreRect = addRect("firstPlayerScoreRect");
+    private Rectangle firstPlayerExtRect = addRect("firstPlayerExtRect");
+    private Rectangle secondPlayerExtRect = addRect("secondPlayerExtRect");
+    
+    private Rectangle secondPlayerRack = addRect("secondPlayerRack");
+    private Rectangle secondPlayerChipRect = addRect("secondPlayerChipRect");
+    private Rectangle secondPlayerJewelRect = addRect("secondPlayerJewelRect");
+    private Rectangle secondPlayerScoreRect = addRect("secondPlayerScoreRect");
+   	
+    private Slider zoomRect = null;
+    private Color ZoomColor = new Color(0.0f,0.0f,1.0f);
+
+	private Image textures[] = null;
+
+    public void preloadImages()
+    {	MicropulChip.preloadImages(this,ImageDir);
+    	if(textures==null)
+    	{
+            textures = load_images(ImageDir,TextureNames);
+    	}
+    }
+    Color MicropulMouseColors[] = { Color.red,Color.blue };
+    Color MicropulMouseDotColors[] = { Color.white,Color.white} ;
+	/**
+	 * 
+	 * this is the real instance intialization, performed only once.
+	 * info contains all the goodies from the environment.
+	 * */
+    public void init(exHashtable info)
+    {
+        super.init(info);
+        // use_grid=reviewer;// use this to turn the grid letters off by default
+        MouseDotColors = MicropulMouseDotColors;
+        MouseColors = MicropulMouseColors;
+        zoomRect = addSlider("zoomRect",s.get("Tile Size"),MicroId.ZoomSlider);
+        zoomRect.min=1.0;
+        zoomRect.max=5.0;
+        zoomRect.value=INITIAL_TILE_SCALE;
+        zoomRect.barColor=ZoomColor;
+        zoomRect.highlightColor = HighlightColor;    
+   	 	board_center_x = board_center_y = 0.0;
+   
+        int randomKey = sharedInfo.getInt(exHashtable.RANDOMSEED,-1);
+
+        bb = new MicropulBoard(randomKey,info.getString(exHashtable.GAMETYPE, Micropul_INIT));
+        doInit(false);
+    }
+
+    public commonMove EditHistory(commonMove m) 
+    { 	// this ia a simple fix to allow rotate moves to do nothing.
+    	return(super.EditHistory(m,(m.op==MOVE_ROTATE)||(m.op==MOVE_RRACK))); 
+    }
+    /** 
+     *  used when starting up or replaying and also when loading a new game 
+     *  */
+    public void doInit(boolean preserve_history)
+    {
+        //System.out.println(myplayer.trueName + " doinit");
+        super.doInit(preserve_history);				// let commonViewer do it's things
+         
+        bb.doInit(bb.gametype,bb.randomKey);						// initialize the board
+        
+        if(!preserve_history)
+    	{
+    	 zoomRect.setValue(INITIAL_TILE_SCALE);
+    	 board_center_x = board_center_y = 0.0;
+         PerformAndTransmit(reviewOnly?"Edit":"Start P0", false,replayMode.Live);
+    	}
+    }
+
+
+	/**
+	 * this is the main method to do layout of the board and other widgets.  I don't
+	 * use swing or any other standard widget kit, or any of the standard layout managers.
+	 * they just don't have the flexibility to produce the results I want.  Your milage
+	 * may vary, and of course you're free to use whatever layout and drawing methods you
+	 * want to.  However, I do strongly encourage making a UI that is resizable within
+	 * reasonable limits, and which has the main "board" object at the left.
+	 * 
+	 *  The basic layout technique used here is to start with a cell which is about the size
+	 *  of a board square, and lay out all the other objects relative to the board or to one
+	 *  another.  The rectangles don't all have to be on grid points, and don't have to
+	 *  be nonoverlapping, just so long as the result generally looks good.
+	 *  
+	 *  When "extraactions" is available, a menu opion "show rectangles" works
+	 *  with the "addRect" mechanism to help visualize the layout.
+	 */ 
+    public void setLocalBounds(int x, int y, int width, int height)
+    {   int SUBCELL = 4;	// number of cells in a square
+        int sncols = (11*SUBCELL); // more cells wide to allow for the aux displays
+        int snrows = 10*SUBCELL;  
+        int cellw = width / sncols;
+        int chatHeight = selectChatHeight(height);
+        int cellh = (height-chatHeight) / snrows;
+        int ideal_logwidth = CELLSIZE * 30;
+        CELLSIZE = Math.max(1,Math.min(cellw, cellh)); //cell size appropriate for the aspect ration of the canvas
+        int SQUARESIZE = CELLSIZE*SUBCELL;
+        int CELL32 = (3*CELLSIZE)/2;
+        int top_height = CELLSIZE*8;
+        int board_y = top_height+chatHeight;
+        //
+        // set up player rectangles
+        G.SetRect( fullRect,x,y,width,height);
+
+        int rackX = CELLSIZE/2;
+        int rackW = SQUARESIZE;
+        int rackH = SQUARESIZE*6;
+        G.SetRect(firstPlayerChipRect,rackX, board_y,rackW,rackW);
+        
+        G.SetRect(secondPlayerChipRect, G.Right(boardRect), board_y,rackW,rackW);
+  
+        G.SetRect(firstPlayerRack,rackX, G.Bottom(firstPlayerChipRect),	rackW,rackH);
+        int boardX = G.Right(firstPlayerRack)+CELLSIZE;
+        G.SetRect(boardRect,boardX,board_y,width-boardX*2,height-board_y-2*CELLSIZE);
+
+        G.SetRect(secondPlayerRack,G.Left( secondPlayerChipRect),G.Top( firstPlayerRack),
+        		G.Width(firstPlayerRack),G.Height(firstPlayerRack));
+        
+        G.SetRect(stateRect, CELLSIZE, chatHeight+CELLSIZE/3,G.Width( boardRect) - CELLSIZE, CELL32);
+
+        G.SetRect(chatRect,x,y,Math.min(G.Width(boardRect),width-ideal_logwidth-CELLSIZE),chatHeight);
+        int logX = G.Right(chatRect)+CELLSIZE/3;
+        G.SetRect(logRect,logX,G.Top( chatRect),
+        		Math.min(ideal_logwidth,width-logX),G.Height( chatRect));
+
+        //first player name
+        
+        { 
+        commonPlayer p0 =getPlayerOrTemp(0);
+        commonPlayer p1 = getPlayerOrTemp(1);
+        Rectangle p0name = p0.nameRect;
+        Rectangle p1name = p1.nameRect;  
+        Rectangle p0time = p0.timeRect;
+        Rectangle p1time = p1.timeRect;
+        Rectangle p0pic = p0.picRect;
+        Rectangle p1pic = p1.picRect;
+        Rectangle p0anim = p0.animRect;
+        Rectangle p1anim = p1.animRect;
+        
+        G.SetRect(p0name, CELLSIZE,chatHeight+2*CELLSIZE,CELLSIZE * 8,CELL32);
+ 
+        //second player name
+        G.SetRect(p1name, G.Right(boardRect)-G.Width(p0name),G.Top( p0name),
+        		G.Width(p0name),G.Height( p0name));
+
+        // time dispay for first player
+        G.SetRect(p0time,G.Left( p0name),G.Bottom(p0name), CELLSIZE * 5, CELL32);
+ 
+        // time dispay for second player
+        G.SetRect(p1time,G.Left( p1name),G.Top( p0time),G.Width( p0time),G.Height(p0time));
+        
+        // first player portrait
+        G.SetRect(p0pic, G.Right(p0name),G.Top(p0name),CELLSIZE * 5, CELLSIZE * 5);
+ 
+        // player 2 portrait
+        G.SetRect(p1pic,G.Left(p1name)-G.Width(p0pic),G.Top(p0pic),G.Width(p0pic),G.Height( p0pic));
+         
+        // tfirst player "i'm alive" anumation ball
+        G.SetRect(p0anim, G.Right(p0time),G.Top( p0time),G.Height( p0time),G.Height( p0time));
+
+        G.SetRect(p1anim, G.Right(p1time),G.Top(p1time),G.Height(p1time),G.Height( p1time));
+        
+        // "edit" rectangle, available in reviewers to switch to puzzle mode
+        G.SetRect(editRect, G.Right(p0pic)+CELLSIZE*2,G.Top(p0name), CELLSIZE*8, CELLSIZE*2);
+  
+        G.SetRect(firstPlayerScoreRect,G.Left( p0time), G.Bottom(p0time)+CELLSIZE/2,
+        		CELLSIZE*2,CELLSIZE*2);
+
+        G.SetRect(secondPlayerScoreRect, G.Left(p1time),G.Top( firstPlayerScoreRect), 
+        		CELLSIZE*2,CELLSIZE*2);
+
+        }
+        G.SetRect(goalRect,G.Left( boardRect)+3*SQUARESIZE,G.Bottom(boardRect),
+        		G.Width(boardRect)-6*SQUARESIZE,CELLSIZE*2);
+        
+        G.SetRect(progressRect,G.Left( goalRect)+G.Width(goalRect)/3,G.Top(goalRect),
+        		G.Width(goalRect)-2*G.Width(goalRect)/3,G.Height(goalRect));
+
+
+         
+        G.SetRect(firstPlayerExtRect, G.Right(firstPlayerScoreRect)+CELLSIZE/2,
+        		G.Top( firstPlayerScoreRect),
+        		CELLSIZE*6-CELLSIZE/2,
+        		G.Height( firstPlayerScoreRect));
+        
+		// a pool of chips for the first player at the top
+        G.SetRect(chipRect, G.Right(editRect)+CELLSIZE, chatHeight,
+        		 SQUARESIZE, top_height);
+        
+        G.SetRect(zoomRect, G.Right(boardRect)-CELLSIZE*10, G.Bottom(boardRect),
+        		CELLSIZE*8,G.Height(stateRect));
+       
+
+        G.SetRect(secondPlayerExtRect, G.Right(secondPlayerScoreRect)+CELLSIZE/2,
+        		G.Top(secondPlayerScoreRect),
+        		CELLSIZE*6-CELLSIZE/2,
+        		G.Height( secondPlayerScoreRect));
+ 
+        // "done" rectangle, should alway be visible, but only active when a move is complete.
+        G.SetRect(doneRect,G.Left(editRect),G.Bottom(editRect)+CELLSIZE/2,
+        		G.Width(editRect),G.Height( editRect));
+        
+      
+        G.SetRect(firstPlayerJewelRect,G.Left( firstPlayerRack),
+        		G.Bottom(firstPlayerRack),
+        		G.Width(firstPlayerRack),G.Height(firstPlayerRack));
+        
+        G.SetRect(secondPlayerJewelRect,G.Left( secondPlayerRack),G.Top(firstPlayerJewelRect),
+        		G.Width( firstPlayerJewelRect),G.Height( firstPlayerJewelRect));
+       
+ 
+		//this sets up the "vcr cluster" of forward and back controls.
+        SetupVcrRects(G.Left(boardRect),G.Bottom(boardRect)-4*CELLSIZE,
+            CELLSIZE * 9,
+            4 * CELLSIZE);
+        positionTheChat(chatRect,Color.white,Color.white);
+     	
+       generalRefresh();
+    }
+
+    // draw the face up chips
+    private void DrawRack(Graphics gc,Rectangle r, int player,HitPoint highlight,MicropulBoard gb)
+    {
+        int dy = G.Width(r);
+        int ww = 4*dy/5;
+        MicropulCell tiles[] = gb.rack[player];
+        for(int i=0,x=G.Left(r)+dy/2,y=G.Top(r)+dy/2;i<tiles.length;i++,y+=dy)
+        {  	MicropulCell cp = tiles[i];
+        	MicropulChip chip = cp.topChip();
+            boolean canhit = gb.LegalToHitRack(player,cp);
+            HitPoint hitp = canhit ? highlight : null;
+
+        	if(chip!=null)
+        	{
+        	chip.drawChip(gc,cp.masked?-1:cp.rotation[0],this,ww,x,y,null);
+        	}
+        	else
+        	{
+        	StockArt.SmallO.drawChip(gc,this,ww,x,y,null);	
+        	}
+            if((hitp!=null)
+            		&& ((gb.pickedObject!=null)?(chip==null):(chip!=null)))
+            {
+            if(G.pointInside(hitp, x, y,ww/2))
+            {	hitp.hitObject = cp;
+            	hitp.hitCode = cp.rackLocation;
+            	hitp.arrow = (gb.pickedObject==null)?StockArt.UpArrow:StockArt.DownArrow;
+            	hitp.awidth = G.Width(r);
+            }
+            else if(G.pointInsideSquare(hitp,x,y,ww/2))
+                {	
+            	hitp.hitCode = MicroId.RotateTile;
+            	hitp.hitObject = cp;
+            	hitp.awidth = ww;
+            	hitp.arrow = StockArt.Rotate_CW;
+           		}
+            
+            }
+
+        }   	
+    }
+
+
+    private void DrawScore(Graphics gc,int n,Rectangle R)
+    {
+    	G.frameRect(gc,Color.black,R);
+    	G.setFont(gc,largeBoldFont);
+    	G.Text(gc,true,R,Color.red,null,""+n);
+    }
+    private void DrawExtra(Graphics gc,int n,Rectangle R)
+    {
+    	G.frameRect(gc,Color.black,R);
+    	G.setFont(gc,standardPlainFont);
+    	G.Text(gc,true,R,Color.red,null, s.get("+ #1 turns",""+n));
+    }
+	// draw a box of spare chips. For hex it's purely for effect.
+    private void DrawJewels(Graphics gc, Rectangle r,  int pl,HitPoint highlight,MicropulBoard gb)
+    {	final double dxs[] = {-0.2,0,0.3};
+    	final double dys[] = {-0.2,0.2,-0.2};
+        boolean canhit = gb.LegalToHitJewels(pl) && G.pointInRect(highlight, r);
+        HitPoint hitp = canhit ? highlight : null;
+        MicropulCell cp = gb.jewels[pl];
+        MicropulChip top = cp.topChip();
+        for(int i=0;i<cp.height();i++)
+        	{
+         	cp.drawChip(gc,this,top,hitp,G.Width(r),
+        			G.Left(r)+G.Width(r)/2+(int)(dxs[i]*G.Width(r)),
+        			G.Bottom(r)-G.Width(r)/2+(int)(dys[i]*G.Width(r)),
+        			null);
+        	}
+        
+         if((hitp!=null) && (hitp.hitObject!=null))
+        {	hitp.arrow = (gb.pickedObject==null)?StockArt.UpArrow:StockArt.DownArrow;
+        	hitp.awidth = G.Width(r);
+        }
+     }
+	// draw a box of spare chips. For hex it's purely for effect.
+    private void DrawCore(Graphics gc, Rectangle r,  HitPoint highlight,MicropulBoard gb)
+    {
+        boolean canhit = gb.LegalToHitCore() && G.pointInRect(highlight,r);
+        HitPoint hitp = canhit ? highlight : null;
+        MicropulCell cp = gb.core;
+        labelColor = Color.black;
+        cp.drawStack(gc,this,hitp,CELLSIZE*2,
+        		G.Left(r)+G.Width(r)/2,G.Bottom(r)-3*CELLSIZE/2,0,0.05,""+cp.height());
+        if((hitp!=null) && (hitp.hitObject!=null))
+        {	hitp.arrow = (gb.pickedObject==null)?StockArt.UpArrow:StockArt.DownArrow;
+        	hitp.awidth = G.Width(r);
+        }
+     }
+    
+	// draw a box of spare chips. For hex it's purely for effect.
+    private void DrawSupply(Graphics gc, Rectangle r,  int player,HitPoint highlight,MicropulBoard gb)
+    {
+        boolean canhit = gb.LegalToHitSupply(player) && G.pointInRect(highlight,r);
+        HitPoint hitp = canhit ? highlight : null;
+        MicropulCell cp = gb.supply[player];
+        int rw = 4*G.Width(r)/5;
+        labelColor = Color.black;
+        cp.drawStack(gc,this,hitp,rw,
+        		G.Left(r)+G.Width(r)/2,G.Bottom(r)-3*CELLSIZE/2,0,0.05,""+cp.height());
+        if((hitp!=null) && (hitp.hitObject!=null))
+        {	hitp.arrow = (gb.pickedObject==null)?StockArt.UpArrow:StockArt.DownArrow;
+        	hitp.awidth = rw;
+        }
+     }
+    //
+    // sprites are normally a game piece that is "in the air" being moved
+    // around.  This is called when dragging your own pieces, and also when
+    // presenting the motion of your opponent's pieces, and also during replay
+    // when a piece is picked up and not yet placed.  While "obj" is nominally
+    // a game piece, it is really whatever is associated with b.movingObject()
+    //
+    public void drawSprite(Graphics g,int obj,int xp,int yp)
+    {	boolean inboard = boardRect.contains(xp,yp);
+   		int cellS = inboard? (int)(bb.CELLSIZE) : G.Width(chipRect) ;
+   		int chip = obj/100;
+   		int rot = obj%100;
+   		MicropulChip mchip = MicropulChip.getChip(chip);
+   		if(rot==4) { rot=-1; }
+   		if(mchip.isJewel()) { rot = -1; }
+    	// draw an object being dragged
+    	// use the board cell size rather than the window cell size
+    	mchip.drawChip(g,rot,this,cellS, xp, yp, null);
+    }
+    // also related to sprites,
+    // default position to display static sprites, typically the "moving object" in replay mode
+    //public Point spriteDisplayPoint()
+    //{	BoardProtocol b = getBoard();
+    //	int celloff = b.cellSize();
+    //	return(new Point(G.Right(boardRect)-celloff,G.Bottom(boardRect)-celloff));
+    //}  
+
+
+    /* draw the deep unchangable objects, including those that might be rather expensive
+     * to draw.  This background layer is used as a backdrop to the rest of the activity.
+     * in our cease, we draw the board and the chips on it. 
+     * */
+    public void drawFixedElements(Graphics gc)
+    { // erase
+      boolean review = reviewMode() && !mutable_game_record;
+      G.setColor(gc,review ? reviewModeBackground : boardBackgroundColor);
+      G.tileImage(gc,textures[BACKGROUND_TILE_INDEX], fullRect, this);   
+          G.tileImage(gc,textures[review ? BACKGROUND_REVIEW_INDEX:BACKGROUND_TABLE_INDEX],
+          		boardRect, this); 
+      G.frameRect(gc,Color.black,boardRect); 
+        
+      // draw a picture of the board. In this version we actually draw just the grid
+      // to draw the cells, set gb.Drawing_Style in the board init method.  Create a
+      // DrawGridCoord(Graphics gc, Color clt,int xpos, int ypos, int cellsize,String txt)
+      // on the board to fine tune the exact positions of the text
+      //gb.DrawGrid(gc, brect, use_grid, boardBackgroundColor, RingFillColor, RingTextColor,GridColor);
+
+      // draw the tile grid.  The positions are determined by the underlying board
+      // object, and the tile itself if carefully crafted to tile the hex board
+      // when drawn this way.  For the current Hex graphics, we could use the
+      // simpler loop for(HexCell c = b.allCells; c!=null; c=c.next) {}
+      // but for more complex graphics with overlapping shadows or stacked
+      // objects, this double loop is useful if you need to control the
+      // order the objects are drawn in.
+ 
+    }
+
+   /* draw the board and the chips on it. the gc will normally draw on a background
+    * array which contains the slowly changing part of the board. 
+    * */
+
+    private void drawBoardElements(Graphics gc, MicropulBoard gb, Rectangle tbRect,
+    		HitPoint ourTurnSelect,HitPoint anySelect)
+    {	
+       Rectangle oldClip = G.setClip(gc,tbRect);
+   	   HitPoint mo = dragPoint;
+   	   MicropulChip po = gb.pickedObject;
+   	   boolean movingJewel = (po!=null) && po.isJewel();
+       boolean dragging = (anySelect!=null) && (mo!=null) ;
+       boolean draggingBoard = dragging && (mo.hitCode==MicroId.InvisibleDragBoard);
+       gb.sweepJewels();
+       if(draggingBoard)
+    	{	double center_x = (board_center_x*G.Width(tbRect))+(G.Left(anySelect)-G.Left(mo))*12;
+    	    double center_y = (board_center_y*G.Height(tbRect))-(G.Top(anySelect)-G.Top(mo))*12;
+    	    board_center_x = center_x / G.Width(tbRect);
+    	    board_center_y = center_y / G.Height(tbRect);
+    	    G.SetTop(mo,G.Top(anySelect));
+    	    G.SetLeft(mo,G.Left(anySelect));
+    	    repaint(20);
+    	}
+    	
+
+    	//
+        // now draw the contents of the board and anything it is pointing at
+        //
+        boolean somehit = draggingBoard;
+        Hashtable<MicropulCell,MicropulCell> dests = gb.movingObjectDests();
+        MicropulCell sourceCell = gb.pickedSource; 
+        MicropulCell destCell = gb.droppedDest;
+        int cellSize = (int)gb.CELLSIZE;
+        int cellSize4 = cellSize/4;
+        int cellSize2 = cellSize/2;
+
+   	 	Point empty = gb.emptyColumn();	// get an empty col/row to start the display
+       // precalculate the spanning size of the board.
+        int ncols = gb.ncols;
+        //System.out.println("cs "+cs/CELLSIZE+ " "+cs+" "+CELLSIZE);
+         for (int col0 = ncols-1; col0 >=0 ; col0--)
+        {  int col = (col0+G.Left(empty))%ncols;
+           char thiscol = (char) ('A' + col);
+           int lastincol = gb.nInCol[col];
+           for (int thisrow0 = lastincol-1;
+             	   thisrow0 >= 0; 
+             	   thisrow0--)
+            { 
+           	int dispRow = (thisrow0+G.Top(empty))%lastincol+1 + gb.firstRowInCol[col];
+           	Point cp = gb.cellToXY(thiscol,dispRow,tbRect);	// calculate xy wrapped
+            int ypos = G.Top(cp);
+            int xpos = G.Left(cp);
+            MicropulCell cell = gb.getCell(thiscol,dispRow);
+            boolean isADest = dests.get(cell)!=null;
+            boolean isASource = (cell==sourceCell)||(cell==destCell);
+            MicropulChip topPiece = cell.topChip();
+            boolean topJewel = (topPiece!=null) && topPiece.isJewel();
+            MicropulChip bottomPiece = cell.bottomChip();
+            boolean emptyCell = (topPiece==null);
+            boolean canHitThis = !somehit && gb.LegalToHitBoard(cell);
+             //G.DrawAACircle(gc,xpos,ypos,1,tiled?Color.green:Color.blue,Color.yellow,true);
+            if(bottomPiece!=null)
+            {	String grid = use_grid ? ""+cell.col+cell.row : null;
+            	bottomPiece.drawChip(gc,cell.rotation[0],this,cellSize,xpos,ypos,grid); 
+            	for(int quad = 0; quad<4;quad++)
+            	{	MicropulChip tintCode = cell.tintCode(quad);
+            		if(tintCode!=null)
+            		{
+            		
+            		tintCode.drawChip(gc,quad,this,cellSize,xpos,ypos,null);
+            		if(cell.tintClosed(quad))
+	            		{tintCode.drawChip(gc,quad,this,cellSize,xpos,ypos,null);
+	            		 tintCode.drawChip(gc,quad,this,cellSize,xpos,ypos,null);
+	            		}
+	            	}
+            	}
+            }
+
+            if(topJewel || movingJewel)
+            {
+           	
+            if(topJewel)
+            {for(int h=1;h<cell.height();h++)
+            {
+            MicropulChip top = cell.getChipAt(h);
+            int toprot = cell.getRotationAt(h);
+            if(top==null)
+            {//G.print("notop");
+            }else
+            {
+        	top.drawChip(gc,toprot,this,cellSize,xpos,ypos,null);
+        	}}}
+
+            if(canHitThis)
+            {
+            for(int quad = 0;quad<4;quad++)
+            {
+            int xp0 = ((quad==0)||(quad==3)) ? xpos-cellSize4 : xpos+cellSize4;
+            int yp0 = (quad<2) ? ypos-cellSize4 : ypos+cellSize4;
+            
+
+            if( (movingJewel 
+            		? ((bottomPiece!=null) && bottomPiece.legalToPlaceJewel(cell,quad)) 
+            		: topJewel)
+            	&& G.pointInsideSquare(ourTurnSelect,xp0,yp0,cellSize4))
+            {	ourTurnSelect.hitCode = JCodes[quad];
+                ourTurnSelect.arrow = (po!=null)?StockArt.DownArrow:StockArt.UpArrow;
+                ourTurnSelect.awidth = cellSize/2;
+                ourTurnSelect.hitObject = cell;
+                somehit = true;
+            }}}
+            }
+            else
+            {
+            boolean hitpoint = canHitThis
+            	&& G.pointInside(ourTurnSelect, xpos, ypos, cellSize/3)    	;
+            
+            if (hitpoint)
+            {	 //if(gc!=null) { gc.drawOval(xpos-cellSize/2,ypos-cellSize/2,cellSize,cellSize); }
+                ourTurnSelect.hitCode = emptyCell?MicroId.EmptyBoard:MicroId.BoardLocation;
+                ourTurnSelect.arrow = (po!=null)?StockArt.DownArrow:StockArt.UpArrow;
+                ourTurnSelect.awidth = cellSize/2;
+                ourTurnSelect.hitObject = cell;
+                somehit = true;
+            }
+            else if(canHitThis
+            		&& (cell.topChip()!=null)
+            		&& G.pointInsideSquare(ourTurnSelect, xpos, ypos, cellSize2))
+            {
+            	ourTurnSelect.hitCode = MicroId.RotateTile;
+            	ourTurnSelect.hitObject = cell;
+            	ourTurnSelect.awidth = cellSize/2;
+            	ourTurnSelect.arrow = StockArt.Rotate_CW;
+            	somehit=true;
+           }}
+            
+            if(cell==destCell)
+            {	MicropulChip.BLANK.drawChip(gc,this,cellSize,xpos,ypos,null);
+            }
+            else if(isASource)
+            {G.DrawAACircle(gc,xpos,ypos,2,Color.green,Color.yellow,true);
+            } else
+            if(isADest)
+            {G.DrawAACircle(gc,xpos,ypos,2,Color.red,Color.yellow,true);
+            }
+            }
+        }
+ 	   	if(!somehit && G.pointInRect(anySelect,tbRect) && !G.pointInRect(anySelect,vcrRect) && ((mo==null)||draggingBoard))
+    	{ //let him drag anywhere, just don't annoy with the hand icon.
+    		anySelect.hitCode=MicroId.InvisibleDragBoard;
+    		anySelect.dragging = anySelect.down;
+    	}
+ 		G.setClip(gc,oldClip);
+    }
+
+    /*
+     * draw the main window and things on it.  
+     * If gc!=null then actually draw, 
+     * If selectPos is not null, then as you draw (or pretend to draw) notice if
+     * you are drawing under the current position of the mouse, and if so if you could
+     * click there to do something.  Care must be taken to consider if a click really
+     * ought to be allowed, considering spectator status, use of the scroll controls,
+     * if some board token is already actively moving, and if the game is active or over.
+     * 
+     * This dual purpose (draw, and notice mouse sensitive areas) tends to make the
+     * code a little complicated, but it is the most reliable way to make sure the
+     * mouse logic is in sync with the drawing logic.
+     * 
+    General GUI checklist
+
+    vcr scroll section always tracks, scroll bar drags
+    lift rect always works
+    zoom rect always works
+    drag board always works
+    pieces can be picked or dragged
+    moving pieces always track
+    stray buttons are insensitive when dragging a piece
+    stray buttons and pick/drop are inactive when not on turn
+*/
+    public void redrawBoard(Graphics gc, HitPoint selectPos)
+    {  MicropulBoard gb = (MicropulBoard)disB(gc);
+       MicropulState state = gb.getState();
+       boolean moving = (getMovingObject()>=0);
+       // 
+       // if it is not our move, we can't click on the board or related supplies.
+       // we accomplish this by supressing the highlight pointer.
+       //
+       HitPoint ourTurnSelect = OurMove() ? selectPos : null;
+       //
+       // even if we can normally select things, if we have already got a piece
+       // moving, we don't want to hit some things, such as the vcr group
+       //
+       HitPoint buttonSelect = moving ? null : ourTurnSelect;
+       // hit anytime nothing is being moved, even if not our turn or we are a spectator
+       HitPoint nonDragSelect = (moving && !reviewMode()) ? null : selectPos;
+       
+       redrawGameLog(gc, nonDragSelect, logRect, boardBackgroundColor);
+       drawBoardElements(gc, gb, boardRect, ourTurnSelect,nonDragSelect);
+       DrawCore(gc, chipRect, ourTurnSelect,gb);
+       DrawRack(gc, firstPlayerRack, FIRST_PLAYER_INDEX, ourTurnSelect,gb);
+       DrawRack(gc, secondPlayerRack, SECOND_PLAYER_INDEX, ourTurnSelect,gb);
+       DrawSupply(gc, firstPlayerChipRect, FIRST_PLAYER_INDEX, ourTurnSelect,gb);
+       DrawSupply(gc, secondPlayerChipRect, SECOND_PLAYER_INDEX, ourTurnSelect,gb);
+       DrawJewels(gc, firstPlayerJewelRect, FIRST_PLAYER_INDEX, ourTurnSelect,gb);
+       DrawJewels(gc, secondPlayerJewelRect, SECOND_PLAYER_INDEX, ourTurnSelect,gb);
+       DrawScore(gc,gb.scoreForPlayer(0),firstPlayerScoreRect);
+       DrawScore(gc,gb.scoreForPlayer(1),secondPlayerScoreRect);
+       if(gb.extraTurns>0)
+       {DrawExtra(gc,gb.extraTurns,
+    		   (gb.whoseTurn==0)?firstPlayerExtRect:secondPlayerExtRect);
+       }
+       zoomRect.draw(gc,nonDragSelect);
+       G.setFont(gc,standardBoldFont);
+
+		if (state != MicropulState.PUZZLE_STATE)
+        {	// if in any normal "playing" state, there should be a done button
+			// we let the board be the ultimate arbiter of if the "done" button
+			// is currently active.
+            if (G.handleRoundButton(gc, doneRect, 
+            		(gb.DoneState() ? buttonSelect : null), s.get(DoneAction),
+                    HighlightColor, rackBackGroundColor))
+            {	// always display the done button, but only make it active in
+            	// the appropriate states
+                buttonSelect.hitCode = DefaultId.HitDoneButton;
+            }
+            if (allowed_to_edit)
+            {	// reviewer is active if there was a game here, and we were a player, 
+            	// or all the time in review rooms.
+            	// we're allowed to edit the board, so we need an edit button
+                    if (G.handleRoundButton(gc, editRect, buttonSelect, s.get(EditAction),
+                                HighlightColor, rackBackGroundColor))
+                    {
+                        buttonSelect.hitCode = DefaultId.HitEditButton;
+                    }
+            }
+       }
+
+		drawPlayerStuff(gc,(state==MicropulState.PUZZLE_STATE),moving?null:selectPos,HighlightColor,rackBackGroundColor);
+  
+		// draw the avatars
+        standardGameMessage(gc,
+        		state==MicropulState.GAMEOVER_STATE?gameOverMessage():s.get(state.getDescription()),
+        				state!=MicropulState.PUZZLE_STATE,
+        				gb.whoseTurn,
+        				stateRect);
+       goalAndProgressMessage(gc,selectPos,s.get("maximize the number of tiles in your reserve"),progressRect, goalRect);
+        //DrawRepRect(gc,gb.Digest(),repRect);	// Not needed for hex
+    
+        // draw the vcr controls
+        drawVcrGroup(nonDragSelect, gc, HighlightColor, vcrButtonColor);
+
+    }
+
+    /**
+     * Execute a move by the other player, or as a result of local mouse activity,
+     * or retrieved from the move history, or replayed form a stored game. 
+     * @param mm the parameter is a commonMove so the superclass commonCanvas can
+     * request execution of moves in a generic way.
+     * @return true if all went well.  Normally G.Error would be called if anything went
+     * seriously wrong.
+     */
+     public boolean Execute(commonMove mm,replayMode replay)
+    {	
+    	 // record some state so the game log will look pretty
+        if(bb.getState()==MicropulState.PUZZLE_STATE)
+    	{   mm.setSliderNumString("--");
+    		switch(mm.op)
+        	{
+        	case MOVE_PICK: 
+        	case MOVE_PICKB: 
+        		break;
+    		default:
+    			mm.setLineBreak(true);
+        	}
+    	}
+        handleExecute(bb,mm,replay);
+		lastDropped = bb.lastDroppedDest;	// this is for the image adjustment logic
+		if(replay!=replayMode.Replay) { playSounds((Micropulmovespec)mm); }
+       return (true);
+    }
+ void playSounds(Micropulmovespec mm)
+ {
+	 switch(mm.op)
+	 {
+	 case MOVE_DROPB:
+	 case MOVE_PICKB:
+	 case MOVE_PICK:
+	 case MOVE_DROP:
+		 playASoundClip(light_drop,100);
+		 break;
+	 default: break;
+	 }
+ }
+/**
+ * parse a move specifier on behalf of the current player.  This is called by the 
+ * "game" object when it receives a move from the other player.  Note that it may
+ * be called while we are in review mode, so the current state of the board should
+ * not be considered.
+ */
+    public commonMove ParseNewMove(String st)
+    {
+        return (new Micropulmovespec(st, -1));
+    }
+   
+
+/**
+ * the preferred mouse gesture style is to let the user "pick up" objects
+ * by simply clicking on them, but we also allow him to click and drag. 
+ * StartDragging is called when he has done this.
+ */
+    public void StartDragging(HitPoint hp)
+    {
+        int mo = bb.movingObjectIndex();
+        if ((mo<0) && (hp.hitCode instanceof MicroId)) // not dragging anything yet, so maybe start
+        {
+
+        MicroId hitObject =  (MicroId)hp.hitCode;
+        MicropulCell c = (MicropulCell)hp.hitObject;
+ 	    switch(hitObject)
+	    {
+	    default: break;
+	    
+        case InvisibleDragBoard:
+        	if(bb.moveNumber>=1)
+        	{   hp.dragging=true;
+          	}
+        	break;
+        case RotateTile:
+        	if(c!=null)
+        	{ for(int newr=0;newr<4;newr++)
+        		{
+        		int rr = (newr+c.rotation[0]+1)%4;
+        		if(c.onBoard)
+        		{
+        		if(c.topChip().legalToPlaceMicropul(c,rr))
+        		{
+        		PerformAndTransmit("Rotate "+c.col+" "+c.row+" "+rr);
+        		break;
+        		}
+        		}
+        		else
+        		{
+        			PerformAndTransmit("RRack "+c.owner+" "+c.row+" "+rr);
+        		}
+        		}
+        	}
+        	break;
+	    case Core:
+	    case Supply:
+	    case Rack:
+	    case Jewels:
+	    	if(c!=null)
+	    		{ MicropulChip top = c.topChip();
+	    		  if(top!=null)
+	    		  {
+	    		  String msg = "Pick "+hitObject.shortName;
+	    		  String pla = "";
+	    		  String loc = "";
+	    		  switch(hitObject)
+	    		  {
+	    		  case Rack: loc = " "+c.row;
+					//$FALL-THROUGH$
+	    		  case Jewels:
+	    		  case Supply: pla = " "+c.owner;
+	    		  	break;
+	    		  case Core: break;
+	    		  default:
+					break;
+	    		  }
+	    		  PerformAndTransmit(msg+pla+loc+" "+top.index);
+	    		  }
+	    		}
+	    	break;
+	    case BoardLocation:
+	    	PerformAndTransmit("Pickb "+c.col+" "+c.row);
+	    	break;
+        }
+
+        if (bb.movingObjectIndex() >= 0)
+	        {	// if we got something started, inform the mouse handler
+	            hp.dragging = true;
+	        } 
+         }
+    }
+	private void doDropChip(MicropulCell cell,MicroId hitCode)
+	{	MicropulState state = bb.getState();
+		int jcode = hitCode.jCode();
+		switch(state)
+		{
+		default: throw G.Error("Not expecting state "+state);
+		case PUZZLE_STATE:
+		case CONFIRM_STATE:
+		case PLAY_STATE:
+			MicropulChip po = bb.pickedObject ;
+			int rot = jcode>=0 ? jcode : po.legalMicropulRotation(cell);
+			if(rot>=0)
+				{
+				// looking for the source of "dropb r -1 0" 
+				G.Assert(cell.onBoard,"should be a cell on the board");
+				PerformAndTransmit("dropb "+cell.col+" "+cell.row+" "+rot);
+				}
+			break;
+		}
+	}
+	/** 
+	 * this is called on "mouse up".  We may have been just clicking
+	 * on something, or we may have just finished a click-drag-release.
+	 * We're guaranteed just one mouse up, no bounces.
+	 */
+    public void StopDragging(HitPoint hp)
+    {
+        
+        CellId id = hp.hitCode;
+        if(!(id instanceof MicroId)) {  missedOneClick = performStandardActions(hp,missedOneClick);}
+    	else {
+    	missedOneClick = false;
+    	MicroId hitCode = (MicroId)hp.hitCode;
+        MicropulCell hitObject = (MicropulCell)hp.hitObject;
+		MicropulState state = bb.getState();
+        switch (hitCode)
+        {
+        default:
+        	throw G.Error("Hit Unknown object " + hitObject);
+        case RotateTile:
+        case InvisibleDragBoard:
+        case ZoomSlider:
+        	break;
+        case Jewel0:
+        case Jewel1:
+        case Jewel2:
+        case Jewel3:
+        case BoardLocation:	// we hit an occupied part of the board 
+			switch(state)
+			{
+			default: throw G.Error("Not expecting drop on filled board in state "+state);
+			case CONFIRM_STATE:
+			case PLAY_STATE:
+				
+				if((bb.pickedObject==null) &&!bb.isDest(hitObject))
+					{
+					// note that according to the general theory, this shouldn't
+					// ever occur because inappropriate spaces won't be mouse sensitve.
+					// this is just defense in depth.
+					throw G.Error("shouldn't hit a chip in state "+state);
+					}
+				//$FALL-THROUGH$
+			case PUZZLE_STATE:
+				if(bb.pickedObject!=null) { doDropChip(hitObject,hitCode); break; }
+				// fall through and pick up the previously dropped piece
+				PerformAndTransmit("Pickb "+hitObject.col+" "+hitObject.row);
+				break;
+			}
+			break;
+			
+        case EmptyBoard:
+			if(bb.pickedObject!=null) { doDropChip(hitObject,hitCode); }
+			break;
+        case Rack:
+        case Supply:
+        case Core:
+        case Jewels:
+           if(bb.pickedObject!=null) 
+			{//if we're dragging a black chip around, drop it.
+        	    String pla = "";
+        	    String row = "";
+            	String msg  = "Drop "+hitCode.shortName;
+            	switch(hitCode)
+            	{
+            	case Rack: row=" "+hitObject.row;
+					//$FALL-THROUGH$
+				case Jewels:
+            	case Supply: pla = " "+hitObject.owner;
+            		break;
+            	case Core: break;
+				default:
+					break;
+            	}
+            	PerformAndTransmit(msg+pla+row);
+			}
+           break;
+        }
+         }
+
+         repaint(20);
+    }
+
+
+    /** this is the place where the canvas is actually repainted.  We get here
+     * from the event loop, not from the normal canvas repaint request.
+     * 
+     * if complete is true, we definitely want to start from scratch, otherwise
+     * only the known changed elements need to be painted.  Exactly what this means
+     * is game specific, but for hex the underlying empty board is cached as a deep
+     * background, but the chips are painted fresh every time.
+     * 
+     * this used to be very important to optimize, but with faster machines it's
+     * less important now.  The main strategy we employ is to paint EVERYTHING
+     * into a background bitmap, then display that bitmap to the real screen
+     * in one swell foop at the end.
+     */
+    public void drawCanvas(Graphics offGC, boolean complete,HitPoint hp)
+    {	
+     	bb.SetDisplayParameters(zoomRect.value,1.0,board_center_x,board_center_y,0.0); // shrink a little and rotate 30 degrees
+     	bb.SetDisplayRectangle(boardRect);
+ 
+     	drawFixedElements(offGC,complete);	// draw the board into the deep background
+   	
+    	// draw the board contents and changing elements.
+        redrawBoard(offGC,hp);
+        //      draw clocks, sprites, and other ephemera
+        drawClocksAndMice(offGC, null);
+        DrawTileSprite(offGC,hp); //draw the floating tile we are dragging, if present
+        DrawArrow(offGC,hp);
+        drawSprites(offGC);
+  
+    }
+    
+    // return what will be the init type for the game
+    public String gameType() { return(""+bb.gametype+" "+bb.randomKey); }	// this is the subgame "setup" within the master type.
+    public String sgfGameType() { return(Micropul_SGF); }	// this is the official SGF number assigned to the game
+
+    // the format is just what is produced by FormHistoryString
+    //
+    // this is completely standardized
+    //public void performHistoryTokens(StringTokenizer his)
+    //{	String command = "";
+    //    // now the rest
+    //    while (his.hasMoreTokens())
+    //    {
+    //        String token = his.nextToken();
+    //        if (",".equals(token) || ".end.".equals(token))
+    //        {
+    //            if (!"".equals(command))
+    //            {
+    //                PerformAndTransmit(command, false,false);
+    //                command = "";
+    //            }
+    //        }
+    //       else
+    //        {
+    //            command += (" " + token);
+    //        }
+    //    }	
+    //} 
+    //public void performPlayerInitialization(StringTokenizer his)
+    //{	int fp = G.IntToken(his);
+    //	BoardProtocol b = getBoard();
+    //    if (fp < 0)   {  fp = 0;  }
+    //    b.setWhoseTurn(fp);
+    //    players[fp].ordinal = 0;
+    //    players[(fp == 0) ? 1 : 0].ordinal = 1;
+    //	
+    //}
+    
+    
+    // interact with the board to initialize a game
+    public void performHistoryInitialization(StringTokenizer his)
+    {   //the initialization sequence
+    	String token = his.nextToken();
+        long rk = G.LongToken(his);
+        bb.doInit(token,rk);
+     }
+
+
+    /** handle action events from menus.  Don't do any real work, just note
+     * state changes and if necessary set flags for the run loop to pick up.
+     * 
+     */
+    public boolean handleDeferredEvent(Object target)
+    {
+        boolean handled = super.handleDeferredEvent(target);
+
+ 
+        return (handled);
+    }
+/** handle the run loop, and any special actions we need to take.
+ * The mouse handling and canvas painting will be called automatically.
+ * 
+ * This is a good place to make notes about threads.  Threads in Java are
+ * very dangerous and tend to lead to all kinds of undesirable and/or flakey
+ * behavior.  The fundamental problem is that there are three or four sources
+ * of events from different system-provided threads, and unless you are very
+ * careful, these threads will all try to use and modify the same data
+ * structures at the same time.   Java "synchronized" declarations are
+ * hard to get right, resulting in synchronization locks, or lack of
+ * synchronization where it is really needed.
+ * 
+ * This toolkit addresses this problem by adopting the "one thread" model,
+ * and this is where it is.  Any other threads should do as little as possible,
+ * mainly leave breadcrumbs that will be picked up by this thread.
+ * 
+ * In particular:
+ * GUI events do not respond in the native thread.  Mouse movement and button
+ * events are noted for later.  Requests to repaint the canvas are recorded but
+ * not acted upon.
+ * Network I/O events, merely queue the data for delivery later.
+ *  */
+    
+    //   public void ViewerRun(boolean wait)
+    //   {
+    //       super.ViewerRun(wait);
+    //   }
+    /**
+     * returns true if the game is over "right now", but also maintains 
+     * the gameOverSeen instance variable and turns on the reviewer variable
+     * for non-spectators.
+     */
+    //public boolean GameOver()
+    //{	// the standard method calls b.GameOver() and maintains
+    	// two variables.  
+    	// "reviewer=true" means we were a player and the end of game has been reached.
+    	// "gameOverSeen=true" means we have seen a game over state 
+    //	return(super.GameOver());
+    //}
+    
+    /** this is used by the stock parts of the canvas machinery to get 
+     * access to the default board object.
+     */
+    public BoardProtocol getBoard()   {    return (bb);   }
+
+    /** this is used by the game controller to supply entertainment strings to the lobby */
+    public String gameProgressString()
+    {	// this is what the standard method does
+    	// return ((reviewer ? s.get(Reviewing) : ("" + viewMove)));
+    	return(super.gameProgressString()
+    			+" "+bb.scoreForPlayer(0)
+    			+" "+bb.scoreForPlayer(1));
+    }
+
+
+/** this is used by the scorekeeper to determine who won. Draws are indicated
+ * by both players returning false.  Be careful not to let both players return true!
+ */
+    public boolean WinForPlayer(commonPlayer p)
+    { // this is what the standard method does
+      // return(getBoard().WinForPlayer(p.index));
+      return (super.WinForPlayer(p));
+    }
+
+    /** factory method to create a robot */
+    public SimpleRobotProtocol newRobotPlayer() 
+    {  int level = sharedInfo.getInt(exHashtable.ROBOTLEVEL,0);
+       switch(level)
+       { default: throw G.Error("not defined");
+       case 1:
+       	 case 0:	return(new MicropulPlay());
+       }
+    }
+
+    /** replay a move specified in SGF format.  
+     * this is mostly standard stuff, but the key is to recognise
+     * the elements that we generated in sgf_save
+     */
+    public void ReplayMove(sgf_node no)
+    {
+        String comments = "";
+        sgf_property prop = no.properties;
+
+        while (prop != null)
+        {
+            String name = prop.getName();
+            String value = (String) prop.getValue();
+            
+            if (setup_property.equals(name))
+            {	StringTokenizer tok = new StringTokenizer(value);
+    			String gametype = tok.nextToken();
+    			long rk = G.LongToken(tok);
+                bb.doInit(gametype,rk);
+             }
+            else if (name.equals(comment_property))
+            {
+                comments += value;
+            }
+            else if (name.equals(game_property))
+            {
+                if (!value.equals(Micropul_SGF))
+                {
+                	throw G.Error("game type " + value + " is not this game");
+                }
+            }
+           else if (parseVersionCommand(name,value,2)) {}
+           else if (parsePlayerCommand(name,value)) {}
+            else
+            {	// handle standard game properties, and also publish any
+            	// unexpected names in the chat area
+            	replayStandardProps(name,value);
+            }
+
+            prop = prop.next;
+        }
+
+        if (!"".equals(comments))
+        {
+            setComment(comments);
+        }
+    }
+}
+

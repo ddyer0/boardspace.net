@@ -1,0 +1,573 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="GENERATOR" content="MHD">
+  <title>JOI - Java Object Inspector</title>
+  <style type="text/css">
+#pfbody {
+	background: #ddd;
+	color: #000;
+}
+
+  </style>
+
+</head>
+<body id="pfbody">
+
+<div class="app">
+
+<img src="enJOIit!.gif" border="0" align="right">
+<a name="Top"><h1>JOI - Java Object Inspector</h1></a>
+<h2>Version : 2.5</h2>
+<p>&nbsp;
+
+<a name="TOC"><h3>Table Of Contents</h3></a>
+<ol>
+  <li><a href="#Overview">Overview</a></li>
+  <li><a href="#Usage">Usage</a></li>
+  <li><a href="#Extensibility">Extensibility</a>
+    <ol >
+      <li><a href="#ObjectRendering">Object Rendering</a>
+      <li><a href="#SpecializedInspectors">Specialized Inspectors</a>
+      <li><a href="#ObjectExporter">Object Exporter</a>
+    </ol>
+  </li>
+  <li><a href="#ReleaseNotes">Release Notes</a></li>
+  <li><a href="#Future">Future Features</a></li>
+  <li><a href="#Feedback">Feedback</a></li>
+</ol>
+
+<a name="Overview"><h3>Overview</h3></a>
+<ul>
+  The <b>Java Object Inspector</b> is a free debugging tool for Java programmers.
+  It is available under the terms and conditions of the
+  <a href="cpl-v10.html">Common Public License (CPL)</a> !
+  <p>
+  Many development tools have very poor support for introspection of objects
+  in debug mode. Very often when reaching a breakpoint in debug mode it is
+  necessary to find out more about the current internal state of some objects.
+  Most tools have some support for that, but it is often a pain to use them.
+  <br>
+  However, JOI is not an extension of the debugger or using the debugging API.
+  It is just available on the level of <code>System.out.println()</code>!
+<p>
+The usage of <b>JOI</b> is made similar to the <i>Inspector</i> in Smalltalk environments.
+I guess most Smalltalkers are really missing this little tool in Java IDEs.
+So <b>JOI</b> is here to fill that gap.
+<p>
+To see the latest changes goto <a href="#ReleaseNotes">Release Notes</a>
+</ul>
+<p>
+<a href="#Top"><img src="top.gif" align="top" border="0" alt="Top"></a>
+
+<!-- ********************* Usage **************************** -->
+
+<a name="Usage"><h3>Usage</h3></a>
+<ul>
+  <strong>ATTENTION:<br>
+  <ul>
+    JOI can only be used with JDK 1.2 and higher.
+    </strong>
+  </ul>
+  <p>
+  The general idea is to use the object inspctor at places in the code where you
+  would normally add a <code>System.out.println( ... )</code> to learn more about
+  an object's internal state.
+  <p>
+  Using an inspector is very easy !<br>
+  The only method you have to know is:
+  <p>
+  <ul>
+    <i class="code">Inspector.inspect( Object obj ) ;</i>
+  </ul>
+  <p>
+  Add the archive <strong><i>pf-joi-full.jar</i></strong> to your classpath.
+  and put the inspect-statements
+  wherever you want to know more obout the current values of an object's attributes
+  ( instance variables ).<br>
+  Just give the object you are interested in to the <i class="code">inspect()</i> method.
+  This will open a window with a tree on the left side and an information view on
+  the right side. In the tree is a row for the object itself ( named <i>this</i> )
+  and a row for each instance variable.<br>
+  The type of the selected attribute and its value are displayed in the right info view.
+  <p>
+  Try the following example: <a href="Example1.java">Example1.java</a>
+  <p>
+  <img src="joi-sample1.jpg"/><br>
+  <font size="-1">
+  All internal fields of the opened Frame are listed and can be inspected as well.
+  </font>
+  <p>
+  <strong>ATTENTION:<br>
+  <ul>
+    Initially, attributes declared as <i>static</i> ( class variables ), <i>final</i> ( constants )
+    or <i>transient</i> are not shown !<br>
+    Only real instance variables, regardless if they are defined as <i>public</i>,
+    <i>protected</i>, <i>private</i> or <i>default (package)</i> are visible !<br>
+    However, that can be changed in the menu <i>'Show'</i>.
+    </strong>
+  </ul>
+  <p>
+  For a look at the <em>MapInspector</em> try the second example: <a href="Example2.java">Example2.java</a>.
+  <p>
+  As an alternative you can also execute: <em>java -jar pf-joi-full.jar</em>
+  <p>
+  <img src="joi-sample2.jpg"/><br>
+  <font size="-1">
+  System properties with the specialized <em>MapInspector</em> and <em>PropertiesRenderer</em> after
+  a sort was applied.
+  </font>
+  <p>
+  In this second example you also can see a variant of the inspect() method .
+  <p>
+  <ul>
+    <i class="code">Inspector.inspectWait( Object obj ) ;</i>
+  </ul>
+  <p>
+  This method opens the inspector window and stops the current thread until all inspector
+  windows are closed. Sometimes this is necessary to avoid the change of the inspected object
+  while it is in the inspector window. Another good reason can be seen in the example itself -
+  the program would terminate immediately after the inspector window was opened.
+  <p>
+  For the other available public methods see the <a href="apidoc/org/pf/joi/Inspector.html">Inspector API</a>.
+  <p>
+  <h4>XML Export</h4>
+  JOI can optionally be enhanced by an XML export feature.
+  To activate it you also must include the <strong><i>pf-joi-xml.jar</i></strong> in the classpath.
+  That adds a menu item 'Save as XML' to the 'File' menu of each inspector window. Invoking this
+  menu item allows to store the state of the currently displayd object into an XML file.
+</ul>
+<p>
+<a href="#Top"><img src="top.gif" align="top" border="0" alt="Top"></a>
+
+<!-- ********************* Extensibility **************************** -->
+
+<a name="Extensibility"><h3>Extensibility</h3></a>
+
+<!-- _______________ Object Rendering ________________ -->
+<a name="ObjectRendering"><h4>Object Rendering</h4></a>
+By default the value of an object or an attribute is shown as the result
+of its <i class="code">toString()</i> method. If a different, self-created string representation
+of own objects is desired, the corresponding class can implement the method
+<i class="code">inspectString()</i> which will be used by the inspector instead of
+<i class="code">toString()</i> to display the objects's value.
+<p>
+There are two ways to do this:
+<ol>
+<li>Define that the class <i>implements</i> the interface
+	<i class="code">org.pf.joi.Inspectable</i>. That is a public method
+	<i class="code">inspectString()</i>.
+</i>
+<li>Just implement <i class="code">inspectString()</i> with any visibility
+	(default | public | protected | private ) you like.
+</li>
+</ol>
+<br>
+However, the first variant makes your code dependent on JOI at compile-time, whereas the second variant
+will compile without having any JOI classes in the classpath!<br>
+JOI automatically finds the method utilizing the reflection API.
+<p>
+Another alternative is to provide an object renderer that is able to provide the string
+representation for the instances of a specific class.
+<br>
+Let's assume the value of a <em>java.awt.Color</em> object should be <b>#000000</b> rather than
+the default <em>java.awt.Color[r=0,g=0,b=0]</em> from the toString() method.<br>
+Of course this class can't be extended with a <i class="code">inspectString()</i> method.
+So the solution is to write a class that implements <i class="code">org.pf.joi.ObjectRenderer</i>
+and tell JOI to use it to render all instances of <em>java.awt.Color</em>.
+(<a href="ColorRenderer.java">ColorRenderer.java</a>)
+<br>
+Telling JOI about an object renderer is quite simple. Just put the mapping of the classes into
+a file '<b>META-INF/joi.renderer</b>' and ensure that this file is in the classpath.
+<p>
+Here's an example of such a file:
+<p>
+<ul>
+<pre>
+#
+# Defines renderer classes for specific object classes
+# The key is the class name of objects that are inspected.
+# The value is the name or the renderer class to be used
+# to display these inspected objects.
+#
+java.awt.Color=org.pf.joi.test.ColorRenderer
+java.lang.Integer[]=org.pf.joi.test.IntegerArrayRenderer
+</pre>
+</ul>
+<p>
+Since V2.1 it is also possible to provide a visual component renderer in addition to
+the string representation. Such a renderer must implement the interface
+<i class="code">org.pf.joi.ObjectRenderer2</i>. That is an extension of
+<i class="code">org.pf.joi.ObjectRenderer</i> which simply adds the method<br>
+<i class="code">public Component inspectComponent( Object obj )</i>.<br>
+As an example the <i class="code">PropertiesRenderer</i> is delivered with JOI. It will
+be used automatically whenever a Properties object is inspected. Then it is rendered to a JTable
+containing the key/value pairs (see <a href="Example2.java">Example2.java</a>).
+
+<!-- _______________ Specialized Inspectors ________________ -->
+<a name="SpecializedInspectors">
+<h4>Specialized Inspectors</h4></a>
+From the very beginning JOI was designed in a way that enables programmers
+to extend it with more specialized inspectors. Now here's a short guide
+how to do that.
+<p>
+JOI comes with a basic inspector ( class BasicInspector ), that shows all instance variables
+of any object it was opened on. However, for debugging sometimes it is more convenient to see
+a slightly different representation of an object's internals. For example Hashtable instances
+are much better to understand, if we can see the keys and their associated values rather than
+all the internal variables. Therefore a special inspector class named MapInspector is
+registered in the JOI framework to handle all instances of classes that implement the java.util.Map
+interface (e.g. java.util.Hashtable).
+<br>
+The following entry in '<b>META-INF/joi.inspector</b>' installs that special inspector:
+<ul>
+<pre>
+java.util.Map=org.pf.joi.MapInspector
+</pre>
+</ul>
+Of course everybody can create and install his/her own inspectors for classes and/or interfaces.
+Just put the appropriate class mapping in a '<b>META-INF/joi.inspector</b>' file and ensure that it
+will be found in the classpath. The best is to just deliver the inspector classes and their
+corresponding '<b>META-INF/joi.inspector</b>' file together in a JAR.
+<p>
+Example for a inspector mapping:
+<ul>
+<pre>
+com.company.business.RootObject=com.company.debug.RootObjectInspector
+</pre>
+</ul>
+<p>
+The key on the left is the class or interface the inspector
+should be used for. The value on the right is the associated inspector class wich must be a
+subclass of <i class="code">org.pf.joi.BasicInspector</i>.
+<p>
+Before that really works, you have to programm the new inspector class. Here are the steps you have
+to follow, using the implementation of StringInspector as example.
+<br>
+<ol>
+  <li>Create a subclass of AbstractObjectSpy ( ==&gt; StringSpy )</li>
+  <li>Define the constructor that gets the object to be inspected
+    <pre>
+      public StringSpy( Object obj )
+        throws SecurityException
+      {
+      	super( obj ) ;
+      } // StringSpy()
+    </pre>
+  </li>
+  <li>Create a method that provides a type-cast access to the inspected object
+    <pre>
+      protected String getString()
+      {
+      	return (String)this.getObject() ;
+      } // getString()
+    </pre>
+  </li>
+  <li>Implement the method addAllElements()<br>
+    In this method all internal elements of the inspectee must be wrapped in an ElementSpy
+    instance and then be added to the list of element holders.<br>
+    Only the elements, that are added in this method will be displayed in the inspector.
+    <pre>
+      protected void addAllElements()
+        throws SecurityException
+      {
+        ElementSpy elementSpy = null ;
+        Object element        = null ;
+        String str            = null ;
+        int index             = 0 ;
+
+        str = this.getString() ;
+        for ( index = 0 ; index < str.length() ; index++ )
+        {
+          elementSpy = new ArrayElementSpy( this, index,
+                                            new Character( str.charAt( index ) ),
+                                            Character.TYPE ) ;
+          this.getElementHolders().add( elementSpy ) ;
+        }
+      } // addAllElements()
+    </pre>
+  </li>
+  <li>Create a new inspector class as subclass of BasicInspector (StringInspector)</li>
+  <li>Add the method objectSpyFor() that returns an instance of the new spy class
+    with the object to inspect.
+    <pre>
+      protected AbstractObjectSpy objectSpyFor( Object obj )
+      {
+        return ( new StringSpy( obj ) ) ;
+      } // objectSpyFor()
+    </pre>
+  </li>
+  <li>Add the method getInspectorId() that returns the public id of the inspector.
+    <pre>
+      protected String getInspectorId()
+      {
+        return "StringInspector" ;
+      } // getInspectorId()
+    </pre>
+  </li>
+  <li>Finally propagate the existence of the new inspector for the associated class
+      (in '<b>META-INF/joi.inspector</b>'):
+    <pre>
+      java.lang.String=org.pf.joi.StringInspector
+    </pre>
+  </li>
+</ol>
+From now on the a StringInspector instance will be used for inspecting strings.
+<br>
+However, it is always still possible to open a basic inspector on a string that shows
+the <i>real</i> fields.
+
+<!-- _______________ Object Exporter ________________ -->
+<a name="ObjectExporter">
+<h4>Object Exporter</h4></a>
+This plugin is a little extension to the file menu of each opened inspector. Each implemented
+and plugged-in object exporter creates one extra menu item that allows to export the current
+object to wherever the implementation puts it.
+<p>
+So to keep an object's state persistent it is possible to write your own class that must
+implement <i class="code">org.pf.joi.ExportProvider</i>. For details see
+<a href="apidoc/org/pf/joi/ExportProvider.html">ExportProvider Javadoc</a>
+<p>
+<a href="#Top"><img src="top.gif" align="top" border="0" alt="Top"></a>
+
+<!-- *************************************************************************************** -->
+
+<a name="ReleaseNotes"><h3>Release Notes</h3></a>
+<ul>
+  <li><h4>Version 2.5</h4></li>
+	<ul>
+		<li>Added special ProxyInspector for dymanic proxies.</li>
+		<li>Added main() method to Inspector.</li>
+	</ul>
+  <li><h4>Version 2.4</h4></li>
+	<ul>
+		<li>Custom (i.e. plugged-in) inspectors are now checked for exceptions
+  before used. So stack-traces are avoided and the default or other
+  matching inspector can be used instead.</li>
+		<li>Added new standard inspector DictionaryInspector for java.util.Dictionary classes.</li>
+		<li>Added new renderer org.pf.joi.renderer.NumberArrayRenderer for numeric arrays</li>
+		<li>Changed detection of superclass for arrays. The array type of the
+  element type's superclass will be detected rather than java.lang.Object.
+  That is for example java.lang.Number[] will be detected as superclass
+  of java.lang.Integer[].</li>
+  	<li>Is now based on pf.jar 3.6.1</li>
+	</ul>
+  <li><h4>Version 2.3</h4></li>
+	<ul>
+		<li>If text is too large for the window to display a scrollbar now is
+  		available to allow scrooling through the whole text.</li>
+  	<li>New menu item under "Help" that shows all system properties in a new window</li>
+  	<li>New menu item under "Help" that shows the license for JOI in a new window</li>
+  	<li>New renderer for String[] added</li>
+  	<li>New properties to define intial filtering based on modifiers added</li>
+  	<li>Is now based on pf.jar 3.3.1</li>
+	</ul>
+  <li><h4>Version 2.2</h4></li>
+  <ul>
+    <li>Enhanced classpath lookup to find Inspector, Renderer and Exporter plug-ins even
+        if running inside Eclipse</li>
+    <li>New option 'quote.strings' in configuration file 'joi.properties' that
+        allows to supress that strings are enclosed in double quotes.</li>
+  </ul>
+  <li><h4>Version 2.1</h4></li>
+  <ul>
+    <li>Features to avoid too many open inspection windows
+      <ul>
+        <li>Open inspection on an object now is possible in a new tab of the current
+            inspection window. (press middle mouse button)</li>
+        <li>Open inspection on an object now is possible in the current window,
+            replacing the current object</li>
+      </ul>
+    </li>
+    <li>A new interface ObjectRenderer2 allows to provide java.awt.Component
+        representation of an object rather than a String representation.
+        That allows very flexible object rendering.
+        See Example2 and Example5 which use the new renderers PropertiesRenderer
+        and IconRenderer.
+    </li>
+    <li>Added a JOI specific window icon</li>
+    <li>
+      With a configuration file named 'joi.properties' some behaviour of
+      JOI can be modified to individual preferences. This file must be put at a location
+      that is in the classpath or the current work directory.
+    </li>
+    <li>
+      New option that defines whether or not the elements of an inspected
+      object should always be sorted automatically (ascending).
+    </li>
+    <li>
+      Supports editing of fields that are of type
+		  String, Integer, Long, Byte, Short, Float, Double, Boolean, Character
+	    or primitives (i.e. byte, char, short, boolean, int, long, double, float)
+      in objects, arrays and lists (i.e. java.util.List).
+    </li>
+    <li>Added a new object renderer for Properties objects (i.e. PropertiesRenderer)</li>
+    <li>
+      Changed internal package structure:
+      <ul>
+        <li>moved all specialized inspectors and their spy classes to
+          <i class="code">org.pf.joi.inspectors</i>
+        </li>
+        <li>moved all specialized remnderer implementations to
+          <i class="code">org.pf.joi.renderer</i>
+        </li>
+      </ul>
+    </li>
+  </ul>
+
+  <li><h4>Version 2.0</h4></li>
+  <ul>
+    <li>Changed packaging, due to dependencies on other <em>Programmer's Friend</em> libraries.
+        See download area for detailes.
+    </li>
+    <li>JOI now finds plug-ins automatically in the classpath. The following files are looked up
+        for specification of classes that implement one of the three plug-in interfaces of JOI.
+        <p>
+        <table border="1" cellpadding="2">
+          <tr>
+            <td><b>Interface/Superclass</b></td><td><b>Properties file for plug-in definition</b></td>
+          <tr>
+          <tr>
+            <td>BasicInspector</td><td>META-INF/joi.inspector</td>
+          <tr>
+          <tr>
+            <td>ObjectRenderer</td><td>META-INF/joi.renderer</td>
+          <tr>
+          <tr>
+            <td>ExportProvider</td><td>META-INF/joi.exporter</td>
+          <tr>
+        </table>
+    </li>
+    <li>Supports inspectors and renderers for arrays.<br>
+        Example for an entry in 'META-INF/joi.renderer':<p>
+        <em>java.lang.Sring[]=com.mycode.joi.StringArrayRenderer</em>
+    </li>
+    <li>Removed method getName() from ExportProvider</li>
+    <li>Removed unused classes (InspectorSecurityManager, AbstractObjectInspector, ImportExportProvider)</li>
+    <li>Added methods to interface ExportProvider
+      <ul>
+  		<li>getVersion()</li>
+  		<li>getVendor()</lI>
+  	  </ul>
+	</li>
+    <li>Added new submenu 'Plugins' that allows to show a list of all
+      <ul>
+        <li>inspector mappings</li>
+        <li>renderer mappings</li>
+        <li>exporter mappings</li>
+      </ul>
+    </li>
+    <li>BUGFIX: ClassCastException occured when 'Inspect Key' was applied to
+        the root object (the map itself) in MapInspector.
+        Now the root object is just opened in a new inspector.
+    </li>
+    <li>The rendering of an objects string representation was extended to
+        checks now if the object understands the method <em>inspectString()</em>.
+        If yes it will be invoked to get the display string.
+        The visibility (default,public,protected,private) of the method doesn't matter!
+        <p>
+  		So the sequence for the rendering now is:
+  	  <ol>
+  	    <li>Is instanceof Inspectable   -> obj.incspectString()</li>
+  	    <li>Has registered renderer     -> renderer.inspectString(obj)</li>
+  	    <li>Try to invoke by reflection -> obj.inspectString()</li>
+  	    <li>Standard string conversion  -> obj.toString()</li>
+  	  </ol>
+  	</li>
+  </ul>
+  <li><h4>Version 1.6</h4></li>
+  <ul>
+    <li>Changed packages to be part of <em>Programmer's Friend</em> (<b>org.pf.joi.*</b>)</li>
+  </ul>
+  <li><h4>Version 1.5</h4></li>
+  <ul>
+    <li>The internal state of an object now can be retrieved without automatically launching an inspector window.<br>
+      Use <b>Inspector.getObjectSpy( </b><i>anyObject</i><b> )</b> for that.
+    </li>
+    <li>Show visibility (public | protected | private | <i>package</i>) of variables with colored icons</li>
+    <li>Switches to select display of static, final, transient, public, protected, private and default (package)</li>
+    <li>Removed depricated class <i>AbstractInspector</i></li>
+  </ul>
+  <li><h4>Version 1.4</h4></li>
+  <ul>
+    <li>Naming of inspected objects</li>
+    <li>Export an inspected object as XML to a file</li>
+    <li>Write an object's internal state as XML to stdout or another stream</li>
+    <li>New facade JOI that automatically integrates XML features</li>
+  </ul>
+  <li><h4>Version 1.3</h4></li>
+  <ul>
+    <li>Elements of an object can be sorted in ascending order of their names ( Menu: Action/Sort )</li>
+    <li>Keys in map inspectors are now using <i>inspectString()</i> for their representation if available</li>
+    <li>All Inspector windows are opened centered on the screen</li>
+    <li>The methods <b>inspectWait()</b> and <b>basicInspectWait()</b> are giving more time to other threads now</li>
+    <li>From a <i>"waiting"</i> inspector the current process can now be continued without closing all inspectors ( Menu: Action/Continue Thread )</li>
+  </ul>
+  <li><h4>Version 1.2</h4></li>
+  <ul>
+    <li>Special inspector for strings, that displays their contents as array of characters</li>
+    <li>Character and char are shown with their integer value in decimal and hex</li>
+    <li>Created interface ObjectRenderer and Spy.registerRenderer() to support class-individual string representation</li>
+    <li>Documentation about how to extend JOI with additional inspectors</li>
+    <li>New methods <b>Inspector.inspectWait()</b> and <b>Inspector.basicInspectWait()</b> which stop execution until all inspectors are closed.</li>
+  </ul>
+  <li><h4>Version 1.1</h4></li>
+  <ul>
+    <li>Changed invocation class from <em>AbstractInspector</em> to <em>Inspector</em></li>
+    <li>Function to close all open inspectors at once</li>
+    <li>Each inspector runs now in its own thread</li>
+    <li>Support of self-defined specialized inspectors for specific classes or interfaces</li>
+    <li>Special inspector for classes implementing the <b>java.util.List</b> interface -&gt; ListInspector</li>
+    <li>Special inspector for classes implementing the <b>java.util.Map</b> interface -&gt; MapInspector</li>
+    <li>Distinguish between "Inspect" and "Basic Inspect"</li>
+    <li>Double click on left mouse button opens inspector for the clicked element</li>
+  </ul>
+  <li><h4>Version 1.0</h4></li>
+  <ul>
+    <li>Inspector window on objects and primitive types ( int, boolean, ... )</li>
+    <li>Supporting arrays</li>
+    <li>Opening new window on an attribute's value</li>
+    <li>Distinction between declared type and actual type</li>
+    <li>Support of self-defined string representation of an object ( <i>inspectString()</i> )</li>
+  </ul>
+</ul>
+<a href="#Top"><img src="top.gif" align="top" border="0" alt="Top"></a>
+<hr>
+<a name="Future"><h3>Future Features</h3></a>
+  Here is a list of things that might be supported in a future version:
+  <p>
+<ul>
+  <li>Integration into a debugger environment</li>
+  <li>Special inspector(s) for <em>Service Data Objects</em> (SDO)</li>
+</ul>
+<p>
+<a href="#Top"><img src="top.gif" align="top" border="0" alt="Top"></a>
+<hr>
+<a name="Feedback"><h3>Feedback</h3></a>
+<ul>
+  Comments, bug reports and suggestions are welcome !<br>
+  Just send me an e-mail: <a href="mailto:manfred.duchrow@programmers-friend.org">Feedback</a>
+  <p>&nbsp;
+  <a href="mailto:manfred.duchrow@programmers-friend.org"><img src="mail.gif" border="0"></a>
+</ul>
+<p>
+<a href="#Top"><img src="top.gif" align="top" border="0" alt="Top"></a>
+
+</div>
+
+<p>
+  <div id="footer">
+   <hr>
+   <table>
+    <tbody>
+      <tr>
+        <td>Last Update: December 12, 2008</td>
+        <td id="copyright">Copyright &copy; 1999-2008, by Manfred Duchrow</td>
+      </tr>
+    </tbody>
+   </table>
+  </div>
+
+</body>
+</html>

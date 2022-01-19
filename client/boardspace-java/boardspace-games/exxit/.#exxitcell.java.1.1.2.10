@@ -1,0 +1,162 @@
+package exxit;
+
+import java.util.Random;
+import online.common.G;
+import online.game.cell;
+
+//
+// specialized cell used for the game exxit, strongly 
+// related to those for hive, gobblet and hex
+// TODO: modify exxitcell to use stackCell as the base class
+public class ExxitCell extends cell implements ExxitConstants
+{
+	private ExxitPiece pieces[]=null;	// the pieces stacked on this cell
+	private int pieceIndex=-1;			// index into pieces[]
+	public int sweep_counter=0;			// used checking for valid boards
+	int blobNumber=0;					//the blob number containing this cell
+	String cellName="";					//the history name for this cell
+	
+	// short term storage, don't set piece location
+	// this is used in exchange moves
+	public void push(ExxitPiece p)
+	{	pieces[++pieceIndex] = p;
+	}
+	// inverse of push.  Only use this for the undoCell piece
+	public ExxitPiece pop()
+	{	if(pieceIndex>=0) {	return(pieces[pieceIndex--]); }
+		return(null);
+	}
+	public int height() { return(pieceIndex+1); }
+	
+	// constructor
+	public ExxitCell(char c,int r)
+	{	super(cell.Hex_Geometry,c,r);
+		pieces = new ExxitPiece[MAX_STACK_HEIGHT];
+	}
+	// constructor
+	public ExxitCell(char c,int r,int height)
+	{	super(cell.Hex_Geometry,c,r);
+		pieces = new ExxitPiece[height];
+	}
+	
+	public void doInit()
+	{	pieceIndex=-1;
+		for(int i=0;i<pieces.length;i++) { pieces[i]=null; }
+		sweep_counter=0;
+		cellName = "";
+	}
+	// true if this cell contains a tile and nothing else
+	public boolean isEmptyTile()
+	{	ExxitPiece p = topPiece();
+		return((p!=null) && (p.typecode==TILE_TYPE)); 
+	}
+	// true if this cell has a tile on the bottom
+	public boolean isTileOnBoard()
+	{
+		if(pieceIndex>=0)
+		{	ExxitPiece p = pieceAtIndex(0);
+			return(p.typecode==TILE_TYPE);
+		}
+		return(false);
+	}
+	
+	// clone the dynamic state of the cell from a cell on another board
+	void copyFrom(ExxitCell other,ExxitPiece allPieces[],ExxitPiece allTiles[])
+	{	pieceIndex = other.pieceIndex;
+		cellName = other.cellName;
+		for(int i=0;i<pieces.length;i++)
+		{	ExxitPiece o = (i<=pieceIndex)?other.pieces[i]:null;
+			if(o!=null) 
+			{ o = (o.typecode==TILE_TYPE)?allTiles[o.randomv]:allPieces[o.randomv]; 
+			  o.location = this; 
+			}
+			pieces[i]=o;
+		}
+	}
+	public void copyFrom(cell c)
+	{ G.Error("shouldn't be called");
+	}
+	// true if this board cell matches the other.  This is used to verify
+	// that a board copy is good.
+	public boolean sameCell(ExxitCell other)
+	{
+		return((col == other.col)
+				&& (row== other.row)
+				&& (pieceIndex==other.pieceIndex)
+				&& (samePieces(other)));
+	}
+	
+	// a cell can exchange if it doesn't have a tile on the bottom, 
+	// and if it is adjacent to two cells which do have tiles on the bottom
+	public boolean canExchange()
+	{	int nTiles = 0;
+		if(onBoard && (pieceIndex>=0))
+		{ ExxitPiece p = pieceAtIndex(0);
+		  if(p.typecode==CHIP_TYPE)
+		  {
+			  for(int dir = 0;dir<6;dir++)
+			  {	ExxitCell c = (ExxitCell)exitToward(dir);
+			  	if(c.isTileOnBoard()) { nTiles++; }
+			  }
+		  }
+		}
+		return(nTiles>=2);
+	}
+
+	// true if this board cell has the same stack as the other
+	boolean samePieces(ExxitCell other)
+	{	for(int i=0;i<pieceIndex;i++)
+		{ if((pieces[i].typecode!=other.pieces[i].typecode) 
+				|| (pieces[i].randomv!=other.pieces[i].randomv)) { return(false); }
+		}
+		return(true);
+	}
+
+	// add a new bug to the cell, and set its location
+	public void addPiece(ExxitPiece newbug) 
+	{ 	G.Assert((pieceIndex<0)||(onBoard==false) || (newbug.typecode==CHIP_TYPE),"can move to cell");
+		pieces[++pieceIndex] = newbug;
+		newbug.location=this;
+	}
+
+	// get the top piece or null
+	public ExxitPiece topPiece() { return((pieceIndex>=0)?pieces[pieceIndex]:null); }
+	// get a specific piece
+	public ExxitPiece pieceAtIndex(int i)
+	{	return(pieces[i]);
+	}
+	// remove the top piece
+	public ExxitPiece removeTop()
+	{	G.Assert((pieceIndex>=0),"there is no piece here");
+		ExxitPiece oldc = pieces[pieceIndex--];
+		oldc.location = null;
+		return(oldc);
+	}
+	// remove the top piece, which (as a consistancy check) must be oldcup.
+	public void removeTop(ExxitPiece oldCup)
+	{	G.Assert(topPiece()==oldCup,"removing wrong insect");
+		removeTop();
+	}
+	
+	// generate a digest of the cell, 
+	public int Digest(Random r) 
+		{ int val=1;
+		  for(int i=0;i<=pieceIndex;i++) 
+		  { int pd = pieces[i].Digest();
+		    val*=4;
+		    val += pd;
+		    //System.out.println("Pd "+pd + " = "+val);
+		  }
+		  return(val);
+		}
+	public String contentsString()
+	{	String msg="";
+		for(int i=pieceIndex;i>=0;i--)
+		{	msg += pieces[i].file;
+		}
+		return(msg);
+	}
+
+
+
+}

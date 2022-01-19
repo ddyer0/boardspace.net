@@ -1,0 +1,197 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta http-equiv="content-type"
+ content="text/html; charset=ISO-8859-1">
+  <title>Xiangqi at Boardspace.net</title>
+</head>
+<body style="background-image: url(../images/background-image.jpg);">
+<table style="width: 100%; text-align: left;" border="0" cellpadding="2"
+ cellspacing="0">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top;">
+      <h4><a href="about_cannon.html">Cannon</a></h4>
+      </td>
+      <td style="vertical-align: top;">
+      <h1 style="text-align: center;"><img alt="boardspace.net"
+ src="master-logo.jpg" style="width: 600px; height: 100px;"></h1>
+      </td>
+      <td style="vertical-align: top;"><a href="about_arimaa.html"><span
+ style="font-weight: bold;">Arimaa</span></a></td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table
+ style="text-align: left; margin-left: auto; margin-right: auto; width: 995px; height: 46px;"
+ border="0" cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top; text-align: center;"><small><font
+ size="+1"><small><a href="register.shtml"><span
+ style="font-weight: bold;">Register</span></a></small></font><br>
+      </small></td>
+      <td style="vertical-align: top; text-align: center;"><small><font
+ size="+2"><small><a style="font-weight: bold;" href="login.shtml">Log
+in and
+Play<br>
+      </a></small></font></small></td>
+      <td style="vertical-align: top; text-align: center;"><small><font
+ size="+1"><small><a href="guest.shtml"><span style="font-weight: bold;">Guest
+Login</span></a></small></font><br>
+      </small></td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<br>
+<table style="width: 100%; text-align: left;" border="1" cellpadding="2"
+ cellspacing="2">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top;">
+      <h1 style="text-align: center;"><big>Xiangqi</big><br>
+      </h1>
+Xiangqi is the member of the <span style="font-style: italic;">Chess </span>family
+which
+is
+most
+widely
+played in China.&nbsp; If you look past the
+surface details, the overall board plan and movement style is similar
+to chess; but there are a lot of interesting details.<br>
+      <br>
+The <span style="font-weight: bold;">board </span>is 10x9, and pieces
+are placed on the intersections rather than in the squares.&nbsp; The
+center of the board is called the <span style="font-style: italic;">river</span>,
+which
+
+
+
+      <span style="font-style: italic;">elephant </span>pieces cannot
+cross, and <span style="font-style: italic;">soldier</span> pieces
+become more powerful after crossing the river.&nbsp; A 3x3 square on
+the
+edge of the board is called the <span style="font-style: italic;">palace.&nbsp;
+
+
+
+
+      </span>The opposing generals and their guards are confined to
+their respective palaces.<br>
+      <br>
+The <span style="font-weight: bold;">pieces, </span>which are red and
+black, are tradionally just discs wiht chinese characters naming them.
+&nbsp; Boardspace defaults to westernized icons, but the traditional
+characters are one-click available.<span style="font-style: italic;"></span>.
+Some
+of
+the
+movements
+are identical or very similar to Chess, but
+others are unique, especially the <span style="font-style: italic;">cannon</span>.&nbsp;&nbsp;
+
+
+
+
+      <br>
+      <br>
+      <span style="font-weight: bold;">Checkmate </span>is similar to
+Chess, but perpetual check is forbidden, and stalemate is a win for the
+stalemating player.<br>
+      <br>
+Complete rules can be found <a
+ href="http://boardgamegeek.com/filepage/4187/xiangqirules-pdf">here</a>.
+
+
+
+
+      <br>
+      <br>
+      <span style="font-weight: bold;">Robots:</span>&nbsp; Adequate.<br>
+      </td>
+      <td style="vertical-align: top;"><img
+ style="width: 369px; height: 409px;" alt="xiangqi board"
+ src="../images/xiangqi-small.jpg"><br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<span style="font-weight: bold;"><br>
+</span>
+<div style="text-align: center;"><span style="font-weight: bold;">Links</span><br>
+<span style="font-weight: bold;"></span></div>
+<table style="width: 100%; text-align: left;" border="0" cellpadding="2"
+ cellspacing="2">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top;"><a
+ href="http://www.boardspace.net/cgi-bin/boardspace_rankings.cgi?game=xi">Xiangqi
+rankings
+at
+Boardspace</a><br>
+      </td>
+      <td style="vertical-align: top;"><a
+ href="http://boardgamegeek.com/boardgame/2393">Xiangqi at BoardGameGeek</a><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><a
+ href="http://boardspace.net/xiangqi/xiangqi-viewer.shtml">Xiangqi game
+archives at Boardspace</a></td>
+      <td style="vertical-align: top;"><a href="http://www.wxf.org/">World
+Xiangqi
+federation</a><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><a
+ href="/cgi-bin/player_analysis.cgi?game=xiangqi">Xiangqi win/loss
+database</a><br>
+      </td>
+      <td style="vertical-align: top;"><a
+ href="http://www.youtube.com/watch?v=Sy4xpZVFn5c&amp;feature=PlayList&amp;p=B22F8E9CC85C4A8F&amp;index=0&amp;playnext=1">Xiangqi
+video
+tutorial</a><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><a
+ href="http://www.xqinenglish.com/">XiangqiEnglish.com</a><br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<span style="font-weight: bold;"><br>
+The back story:&nbsp; </span>Xiangqi fits in at Boardspace as a little
+known classic game. I presume that a billion or so Chinese would
+disagree about the "little known".&nbsp; I hope boardspace can make it
+more acessible to the rest of the world.<br>
+<br>
+<hr>
+<center>
+<table style="width: 100%;">
+  <tbody>
+    <tr>
+      <td align="left"><font size="-1">
+      <script language="javascript">
+document.write("<a href='mailto:gamemaste");
+document.write("r\@board");
+document.write("space.net'>gamemaste<n>r@board<n>space.net</a>");
+      </script></font><br>
+      </td>
+      <td style="vertical-align: top; text-align: center;"><br>
+      </td>
+      <td style="vertical-align: top;"><a href="logon-page.html">Site<br>
+&nbsp;Map</a></td>
+      <td align="right">Go to <a href="/">BoardSpace.net
+home page</a> </td>
+    </tr>
+  </tbody>
+</table>
+</center>
+</body>
+</html>

@@ -1,0 +1,105 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+  <head>
+    <title>BoardSpace.net Login Page</title>
+    <meta http-equiv="Content-Type" content="text/html;
+      charset=windows-1252">
+    <script src="/js/site.js">
+</script>
+    <script language="javascript">
+redirectIfNoJava('login-jws.html');
+  </script>
+    <meta content="MSHTML 6.00.6000.16525" name="GENERATOR">
+  </head>
+  <body style="BACKGROUND-IMAGE: url(/images/background-image.jpg)">
+    <script language="javascript">
+if(/edge/i.test(navigator.userAgent)){
+// this is edge
+window.location = 'login-jws.shtml';
+}
+</script>
+    <h1 style="TEXT-ALIGN: center"><img title="" style="WIDTH: 600px;
+        HEIGHT: 100px" alt="boardspace.net"
+        src="/images/master-logo.jpg"></h1>
+    <h1 style="TEXT-ALIGN: center">Page de connexion<br>
+    </h1>
+    <form name="login" action="/cgi-bin/login.cgi" method="post">
+      <table style="MARGIN-LEFT: auto; WIDTH: 827px; MARGIN-RIGHT: auto;
+        HEIGHT: 348px; TEXT-ALIGN: left" border="1" cellpadding="2"
+        cellspacing="2">
+        <tbody>
+          <tr style="FONT-WEIGHT: bold">
+            <td style="VERTICAL-ALIGN: top">Pseudo<br>
+            </td>
+            <td style="VERTICAL-ALIGN: top"><input name="pname"><br>
+            </td>
+            <td rowspan="5">
+              <!--#include virtual="/cgi-bin/applettag.cgi?tagname=version" -->
+              <br>
+              <!--#include virtual="/cgi-bin/applettag.cgi?tagname=jwslink" -->
+            </td>
+          </tr>
+          <tr style="FONT-WEIGHT: bold">
+            <td style="VERTICAL-ALIGN: top">Mot de passe</td>
+            <td style="VERTICAL-ALIGN: top"><input name="password"
+                type="password"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <a
+                href="/cgi-bin/lost_password.cgi?language=french">Mot de
+                passe oublié ?</a><br>
+            </td>
+          </tr>
+          <tr>
+            <td style="VERTICAL-ALIGN: top"><span style="FONT-WEIGHT:
+                bold">Langage préféré :</span></td>
+            <td>
+              <!--#include virtual="/cgi-bin/tlib/selectors.cgi?what=language" -->
+              <br>
+            </td>
+          </tr>
+          <tr>
+            <td style="VERTICAL-ALIGN: top"><input name="cookie"
+                type="checkbox"> Connexion auto (cookie)</td>
+            <td style="VERTICAL-ALIGN: top"><font size="-1">Après votre
+                connexion, placez la page dans vos favoris pour vous
+                connecter plus simplement.</font></td>
+          </tr>
+          <tr>
+            <td>&nbsp;<input onclick="javascript:submitme(this.form)" value="Login" type="submit">&nbsp;</td>
+            <td>Le bouton "Login" lance l'applet du Lobby (ou Hall
+              d'entrée).&nbsp;&nbsp;Lisez la <a href="lobby-help.html" target="_new">page d'aide </a> pouir en savoir plus sur
+              le lobby, qui vous permet de jouer, d'observer des parties
+              en cours ou archivées.</td>
+          </tr>
+          <tr>
+          </tr>
+        </tbody>
+      </table>
+      <br>
+      <div style="TEXT-ALIGN: left"> <br>
+      </div>
+    </form>
+    <center>
+      <div style="TEXT-ALIGN: left">Boardspace.net utilise Java.&nbsp;
+        Si l'applet ne s'ouvre pas, rendez vous sur la page <a href="needsjava.html">NécessiteJava </a>pour quelques
+        conseils .</div>
+      <hr style="WIDTH: 100%; HEIGHT: 2px"> <br>
+      <table style="WIDTH: 100%">
+        <tbody>
+          <tr>
+            <td align="left"><font size="-1">Courriel:
+                <script language="javascript">
+document.write("<a href='mailto:gamemaste");
+document.write("r\@board");
+document.write("space.net'>gamemaste<n>r@board<n>space.net</a>");
+      </script> </font></td>
+            <td style="VERTICAL-ALIGN: top; TEXT-ALIGN: center"><br>
+            </td>
+            <td align="right"><a href="/">Page d'accueil de
+                BoardSpace.net</a></td>
+          </tr>
+        </tbody>
+      </table>
+    </center>
+    <script>document.login.pname.focus()</script>
+  
+
+</body></html>

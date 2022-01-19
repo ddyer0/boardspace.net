@@ -1,0 +1,108 @@
+<HTML>
+<HEAD>
+</HEAD>
+<BODY LINK="#0000ff" VLINK="#800080" BGCOLOR="#ffffff">
+
+<H1><IMG SRC="kawacup.jpg" WIDTH=106 HEIGHT=100>Kawa Setup</H1>
+<P><A HREF="index.htm">Index</A> </P>
+<P>
+<font size="1.5" face="Arial">Last Modified Date - <font color=red>2/16/99</font><p>
+Please click <a href="http://www.tek-tools.com/kawa/docs/kawasetup.htm">here</a> for the latest version of this document.
+<font color=red> If this is an online version of the document please right click in the browser and select 
+'Update local Kawa document' to update your local copy of this document</font>
+</font>
+<p>
+<HR></P>
+<P>Kawa is a thin layer on JDK and therefore it is necessary to install JDK prior to using Kawa. 
+Since Kawa is JDK version independent it can work with any version of JDK beginning with 1.02 to the 
+latest 1.2. Please download the latest version of JDK from <a href="http://www.javasoft.com/">JavaSoft</a> 
+site and select the appropriate JDK section below and follow the instructions under the section to 
+install Kawa properly.
+<p>
+<font color=brown><h2>JDK 1.0.2 or JDK 1.1.x</h2></font>
+	<UL>
+	<li>Install the appropriate version of JDK and start Kawa. If Kawa warns you about JDK bin path not
+	being set ignore the warning and go to Customize/Options dialog. Kawa should automatically take you
+	to this dialog after the warning message. In case it does not, please select Customize/Options from 
+	the menu to display the dialog.
+	</li><br><br>	
+	<li>Please set the Java bin directory under the JDK paths tab to point to JDK/bin directory. Click
+	on the button ">>" to set this value. Kawa will automatically set the Java lib directory for you based
+	on the bin path.
+	</li><br><br>	
+	<li>Please set the Java source directory to JDK/src directory if you elected to install source during
+	JDK installation.
+	</li><br><br>	
+	<li>Please select Kawa paths tab under Customize/Options dialog and set the JDK package index file to point to
+	kawa.pkg located in the Kawa installation directory.
+	</li><br><br>	
+	</ul>
+	
+	<p>
+	<i>Please follow these additional steps to setup JDK help documents under Kawa.</i>
+	<p>
+	
+	<ul>
+	</li>
+	<li>Please download the appropriate JDK HTML Windows Zip documentation from the <a href="http://www.javasoft.com/">JavaSoft</a>
+	web site and unzip the contents to JDK/docs directory.
+	</li><br><br>	
+	<li>Please set the Java documents directory under Customize/Options/JDK Paths to point to the above docs
+	directory. The docs directory is the one which has the api folder under it.
+	</li><br><br>	
+	<li>Please select Kawa paths tab under Customize/Options dialog and set the help index file to point to
+	kawa.ipg located under Kawa installation directory.
+	</li><br><br>	
+	</ul>
+	
+After you complete the above steps you should be able to compile and run java programs under JDK 1.1 and also be
+able to access context sensitive help for JDK keywords by pressing F1 key in the editor on any JDK keyword.
+<p>
+<font color=brown><h2>JDK 1.1.x with Swing</h2></font>
+	<ul>
+	<li>Please follow the above steps to install JDK 1.1 support for Kawa.
+	</li><br><br>
+	<li>Please download Swing 1.1 for JDK 1.1 from <a href="http://www.javasoft.com/">JavaSoft</a>
+	web site and install Swing on your computer.
+	</li><br><br>
+	<li>Since the standard version of Kawa does not ship with Swing help index files and
+	Swing package files you need to download these files separately from the Kawa site. Please
+	download the same from Kawa <a href="http://www.tek-tools.com/kawa/relate.htm">related</a> files 
+	download area. Please follow the instructions on the site to install the Swing support files for
+	Kawa.
+	</li><br><br>
+	<li>In order to be able to compile Swing programs under Kawa it is necessary to set appropriate classpaths
+	under Kawa. Please refer to <a href="classpath.htm">How to set classpath</a> for more details on how to
+	set the classpath to Swing swingall.jar file.
+	</li>
+	</ul>
+	
+<font color=brown><h2>JDK 1.2</h2></font>
+	<ul>
+	<li>Please download JDK 1.2 from <a href="http://www.javasoft.com/">JavaSoft</a> web site.
+	</li><br><br>
+	<li>Install JDK 1.2 and start Kawa. If Kawa warns you about JDK bin path not
+	being set ignore the warning and go to Customize/Options dialog. Kawa should automatically take you
+	to this dialog after the warning message. In case it does not, please select Customize/Options from 
+	the menu to display the dialog.
+	</li><br><br>	
+	<li>Please set the Java bin directory under the JDK paths tab to point to JDK/bin directory. Click
+	on the button ">>" to set this value. Kawa will automatically set the Java lib directory for you based
+	on the bin path.
+	</li><br><br>
+	<li>Since JDK 1.2 source comes in a jar file you need to unjar this file for Kawa to be able to recognize
+	or use the source file. Jar file can be opened using WinZip. Please unjar the file into src directory under
+	JDK 1.2 folder and set the Java source path under Customize/Options/JDK Paths to point to this folder. If
+	you decide not to unjar please set the Java source path to none.
+	</li><br><br>	
+	<li>Since the standard version of Kawa does not ship with JDK 1.2 help index files and
+	JDK 1.2 package files you need to download these files separately from the Kawa site. Please
+	download the same from Kawa <a href="http://www.tek-tools.com/kawa/relate.htm">related</a> files 
+	download area. Please follow the instructions on the site to install the JDK 1.2 support files for
+	Kawa.
+	</li><br><br>
+	</ul>
+After you complete the above steps you should be able to compile and run java programs under JDK 1.2 and also be
+able to access context sensitive help for JDK keywords by pressing F1 key in the editor on any JDK keyword.	
+</BODY>
+</HTML>

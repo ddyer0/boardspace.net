@@ -1,0 +1,27 @@
+#!/bin/csh
+#
+# this script has to run as root, not as boardspa.  Put it in the root cron jobs
+# to test the process  ~boardspa/certbot-auto renew --dry-run
+# to see expiration dates, ~boardspa/certbot-auto certificates
+#
+cd ~boardspa/cron
+#env > renew.log
+./dtest.csh $0 10
+date >> renew.log
+set target_file = "/etc/httpd/conf/httpd.conf"
+set target_string = '^Listen 443$'
+/bin/cp -f ${target_file} ${target_file}.backup
+
+/usr/local/bin/certbot-auto -n --installer apache --webroot -w /home/boardspa/boardspace.net/html/ -d www.boardspace.net,boardspace.net certonly >> renew.log
+
+/usr/local/bin/certbot-auto -n --installer apache --webroot -w /home/realmene/real-me.net/html/ -d mail.real-me.net,www.real-me.net,real-me.net certonly >> renew.log
+
+grep -qi "$target_string" $target_file
+set damaged = ($status == 0)
+if ($damaged) then
+echo "repairing damage" >> renew.log
+/bin/cp -f "${target_file}.backup" "${target_file}"
+/etc/init.d/httpd graceful
+endif
+#echo "turned off, see cron/renew-ssl" >> renew.log
+

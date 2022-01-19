@@ -1,0 +1,94 @@
+package lib;
+
+import java.awt.Color;
+import java.awt.Container;
+import java.awt.Graphics;
+import java.awt.Rectangle;
+import online.common.CanvasProtocol;
+
+public interface ChatInterface {
+
+	// note: these "channels" correspond to the server communications IDs for
+	// player connections.  They have to be greater than all "real" channels
+	// so the sounds can be customized for "real" players vs system announcements.
+	// the rest are registered in commonChatApplet to be used to identify chat lines
+	int KNOCKINTERVAL = 60000;	// minimum time between knocks
+	int LASTUCHANNEL = 1000000; //first non-user channel, first in this group
+	int BLANKCHANNEL = 1000992;	// unadorned text
+	int LOGCHANNEL = 1000993;		// log messages
+	int HINTCHANNEL = 1000994;		// used for game hints
+	int LOBBYCHANNEL = 1000995;	// used for general lobby announcements
+	int ERRORCHANNEL = 1000996;	// used to present information about errors
+	int NEWSCHANNEL = 1000997;		// used to present lobby news
+	int GAMECHANNEL = 1000999;		// used to present properties from game review
+	int ROBOTCHANNEL = 1002000;	// used as fake channel for robot players
+	void postMessage(int lobbychannel, String keywordLobbyChat, String string);
+	boolean hasUnseenContent();
+	void setHasUnseenContent(boolean v);
+	void setVisible(boolean b);
+
+	void setBackgroundColor(Color chatCol);
+
+	void setButtonColor(Color butCol);
+
+	int getX();
+	int getY();
+	Rectangle getBounds();
+	void setBounds(int i, int j, int width, int height);
+
+
+	String nameField();
+	String shortNameField();
+	void setNameField(String sf);
+	void setShortNameField(String string);
+
+	void addAMessage(String string);
+
+	void clearMessages(boolean b);
+
+	String getMessages();
+
+
+	void setMuted(boolean b);
+
+	String getUserName(int playerID);
+
+	void removeUser(int playerID);
+
+	boolean resetEventCount();
+
+	void sendAndPostMessage(int gamechannel, String keywordLobbyChat, String string);
+
+	void setConn(ConnectionManager myNetConn);
+
+	void setHideInputField(boolean b);
+
+	SimpleUser setUser(int tempID, String name);
+
+	void setMessage(String newMessage);
+
+	void setSpectator(boolean b);
+
+	String whatISaid();
+
+	void setMyUser(int serverIndex, String publicName);
+	
+    void PostNews(String showNews);
+
+	void addTo(Container commonPanel);
+	void addTo(CanvasProtocol can);
+    void addto(XFrame f);
+	void moveToFront();
+	boolean isVisible();
+	public boolean isWindow();	// return false if this window should be painted directly
+	public void redrawBoard(Graphics g,HitPoint p);
+	public void doNullLayout();
+	public boolean StopDragging(HitPoint p);
+	public void StartDragging(HitPoint hp);
+	public void setCanvas(LibCanvas can);
+	public boolean containsPoint(HitPoint p);
+	public HitPoint MouseMotion(int ex0, int ey0, MouseState upcode);
+	public boolean DoRepeat();
+	public boolean embedded();
+	public int getHeight();
+}

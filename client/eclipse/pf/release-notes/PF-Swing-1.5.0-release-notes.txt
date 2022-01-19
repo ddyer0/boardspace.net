@@ -1,0 +1,66 @@
+Swing-Utilities: Realease-Notes
+Author: Manfred Duchrow
+Copyright (c) 2002-2008, by Manfred Duchrow. All rights reserved.
+=======================================================================
+
+-----------------------------------------------------------------------
+
+VERSION 1.5 ( January 26, 2008 )
+
+* New classes
+  - ComponentPoint
+  - FocusEnforcer
+
+-----------------------------------------------------------------------
+
+VERSION 1.4.1 ( June 3, 2006 )
+
+* SwingUtil
+  > Changed visibility of constructor SwingUtil() from private to 
+    protected
+
+-----------------------------------------------------------------------
+
+VERSION 1.4 ( July 3, 2004 )
+
+* SwingUtil
+  > Added methods
+    - public Component findComponent( Container container, Class componentType, 
+                                      String componentName )
+    - public Component findComponent( Container container, String componentName )
+    - public void centerWindow( Window window, int width, int height )
+    - public void centerWindow( Window window )
+
+-----------------------------------------------------------------------
+
+VERSION 1.3 ( March 13, 2004 )
+
+* Added new classes
+  - TakeAllLayoutManager
+
+-----------------------------------------------------------------------
+
+VERSION 1.2 ( December 22, 2003 )
+
+* Added new classes
+  - RadioButton
+  - RadionButtonGroup
+  - RadioButtonBox
+  - DynamicPanel
+  - DynamicPanelSlot
+
+-----------------------------------------------------------------------
+
+VERSION 1.1 ( June 08, 2002 )
+
+* New method in SwingUtil
+  - setSystemLookAndFeel()
+
+-----------------------------------------------------------------------
+
+VERSION 1.0 ( June 08, 2002 )
+
+* Created class SwingUtil with method
+  - centerFrame()
+
+-----------------------------------------------------------------------

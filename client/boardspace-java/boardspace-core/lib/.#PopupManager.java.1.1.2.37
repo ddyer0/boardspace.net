@@ -1,0 +1,370 @@
+package lib;
+
+import bridge.PopupMenu;
+import bridge.ProxyWindow;
+import bridge.JPopupMenu;
+
+
+import javax.swing.Icon;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
+
+import java.awt.Component;
+import java.awt.Menu;
+import java.awt.MenuItem;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.security.AccessControlException;
+import java.util.Hashtable;
+
+//
+// 1/2008 some tweaks to allow non integer values
+//
+/**
+ * this is a replacement class to manage pop up menus.
+ * call newPopupMenu() to clear and prepapre for a new pop-up.
+ * then call addMenuItem for each item or submenu
+ * then call show()
+ * then call selectMenuTarget to get the integer index associated with leaf nodes
+ * create hierarchical submenus by calling newSubMenu() and adding items to the submenu
+ * instead of the main menu.
+ * 
+ * this class also addresses a nasty conundrum.  The awt based popup menu components do not support
+ * languages than need non-roman alphabets well, but linux platforms have
+ * a perpetual problem with swing-based menus relating to "setAlwaysOnTop"
+ * results in a AccessControlException.  A second problem exists with swing
+ * components - lightweight components are clipped behind windows and also
+ * do not support non-roman fonts well.
+ * After several attempts to square the circle, this version implements
+ * a runtime ac/dc strategy which will default to using swing, but back up
+ * to old components if that fails.
+
+ */
+public class PopupManager extends SimpleObservable implements ActionListener
+{
+    // menu support.  
+    //
+   public class bsMenu {
+	   private JMenu jsubmenu = null;
+	   private Menu tsubmenu = null;	
+
+	   // constructor for submenus
+	   bsMenu(boolean useSwing,String msg)
+	   {
+		   if(useSwing) { jsubmenu = new JMenu(msg);}
+		   else { tsubmenu = new Menu(msg); } 
+	   }
+	   
+	   // add a leaf item
+	   private Object addnewItem(Text item,ActionListener listener)
+	   {	
+		   if(jsubmenu!=null)
+		   {   Icon ic = item.getIcon();
+			   JMenuItem newitem = ic!=null 
+					   					? new JMenuItem(ic)
+			   							: new JMenuItem(item.getString());	// this is where we get an icon instead
+			   jsubmenu.add(newitem);
+			   newitem.addActionListener(listener);
+			   return(newitem);
+		   }
+		   else
+		   {  MenuItem newitem = new MenuItem(item.getString());
+		   	  tsubmenu.add(newitem);
+		   	  newitem.addActionListener(listener);
+		   	  return(newitem);
+		   }
+	   }
+	   
+	   // add a leaf item
+	   private Object addnewItem(String item,ActionListener listener)
+	   {
+		   if(jsubmenu!=null)
+		   {
+			   JMenuItem newitem = new JMenuItem(item);
+			   jsubmenu.add(newitem);
+			   newitem.addActionListener(listener);
+			   return(newitem);
+		   }
+		   else
+		   {  MenuItem newitem = new MenuItem(item);
+		   	  tsubmenu.add(newitem);
+		   	  newitem.addActionListener(listener);
+		   	  return(newitem);
+		   }
+	   }
+
+	   // add a submenu
+	   private void add(bsMenu item)
+	   {   if(jsubmenu!=null) { jsubmenu.add(item.jsubmenu); }
+		   else { tsubmenu.add(item.tsubmenu); }
+	   }
+	   public String toString() { return("<Box "+((jsubmenu!=null)?jsubmenu.toString():tsubmenu.toString())+">"); } 
+   }
+   
+   private Hashtable<Object,Object> popupTarget=null;
+   private ActionListener listener=null;
+   private SimpleObserver observer = null;
+   private ParentWindow parentWindow = null;
+   private MenuInterface menu = null;
+   public static boolean useSwing = false;			// default to using swing
+   private static Object nullValue=new Object();	// make it an object rather than a string
+   public int showAtX = 0;
+   public int showAtY = 0;
+   // some comparisons won't seem to be ==String
+   public int value = -1;
+   public Object rawValue=null;
+   // constructor
+   public PopupManager()
+   {	
+   }
+
+   /**
+    * show the menu at x,y
+    * @param x
+    * @param y
+    */
+    public void show(int x,int y)
+    {	MenuInterface jm = menu;
+    	showAtX = x;
+    	showAtY = y;
+    	if(jm!=null) 
+			{
+    		// show a swing menu, try lightweight if it fails, try traditional menus if
+    		// it fails twice.
+			boolean succeeded = false;
+	    	int failed = 0;
+
+	    	while(!succeeded && (failed<=1))
+	    	try 
+	    	{ if(!useSwing) { parentWindow.add(jm); parentWindow.show(jm,x,y); } 
+	    	  succeeded = true;
+	    	}
+	    	catch (ArrayIndexOutOfBoundsException err) 
+	    		{ G.print("error in java menu "+err);// shouldn't happen, but it does
+	    		  jm.setVisible(false);
+	    		}	
+	    	catch (AccessControlException err)
+	    	{ if(failed++ == 0)
+	    		{
+	    		System.out.println("trying lightweight for "+jm);
+	    		jm.setLightWeightPopupEnabled(true);
+	    		}
+	    	else { useSwing = false; }
+	    	}
+			} 
+   }
+
+  /**
+   * call this from actionEvent of the listener associated with this menu.
+   * @param otarget will be a menu from actionEvent.getTarget()
+   * @return true if this is our menu item. IE if this action occurred. If so, rawValue will
+   * be the original object associated with the menu item.
+   */
+    public boolean selectMenuTarget(Object otarget)
+	  {	if(menu!=null)
+		{Hashtable<Object,Object> h = popupTarget;
+		 popupTarget = null;
+		 menu = null;
+		 if(h!=null)
+			 { Object v =h.get(otarget);
+			 if(v instanceof Integer) 
+		  		{ value = ((Integer)v).intValue();
+		  		}
+		  		else 
+		  		{  if(nullValue==v) { rawValue=null; }
+		  		   else { rawValue = v; }
+		  		  value=-1; 
+		  		}
+		  	return(v!=null); 
+			 }
+		}
+		 return(false);
+	  }
+    /**
+     * @return true if the pop-up menu is currently visible
+     */
+    public boolean isShowing()
+    {	if(menu!=null) { return(menu.isVisible()); }
+    	return(false);
+    }
+    /**
+     * add a menu item with an associated integer
+     * @param item
+     * @param v
+     */
+    public void addMenuItem(String item,int v)
+    {	addMenuItem(null,item,v);
+    }
+    /**
+     * add a menu item with an associated integer
+     * @param item
+     * @param v
+     */
+    public void addMenuItem(Text item,int v)
+    {	addMenuItem(null,item,v);
+    }
+    
+    /**
+     * add a menu item with an associated object
+     * @param item
+     * @param v
+     */
+    public void addMenuItem(String item,Object v)
+    {	addMenuItem(null,item,v);
+    }
+    
+    /**
+     * add a menu item with an associated object
+     * @param item
+     * @param v
+     */
+    public void addMenuItem(Text item,Object v)
+    {	addMenuItem(null,item,v);
+    }
+    
+    /**
+     * add a submenu item with an associated integer
+     * @param m
+     * @param item
+     * @param v
+     */
+    public void addMenuItem(bsMenu m,String item,int v)
+    {	addMenuItem(m,item,Integer.valueOf(v));
+    }
+    /**
+     * add a submenu item with an associated integer
+     * 
+     * @param m
+     * @param item
+     * @param v
+     */
+    public void addMenuItem(bsMenu m,Text item,int v)
+    {	addMenuItem(m,item,Integer.valueOf(v));
+    }
+    
+    /**
+     * add a submenu to the main menu
+     * @param m
+     * @param sub
+     */
+    public void addMenuItem(bsMenu m,bsMenu sub)
+    {	if(m==null) 
+    		{ if(menu!=null) { menu.addItem(sub.jsubmenu); }
+    		}
+    		else { m.add(sub); }
+    }
+    /**
+     * add an array of nameproviders
+     */
+    public void addMenuItem(NameProvider... names)
+    {	for(NameProvider n : names)
+    	{
+    	addMenuItem(n.getName(),n);
+    	}
+    }
+    
+    
+    /**
+     * add an item to a submenu with an associated object
+     * @param m
+     * @param item
+     * @param v
+     */
+    public void addMenuItem(bsMenu m,String item,Object v)
+    {	Object newitem = null;
+    	if(m==null)
+    		{ 
+    		if(menu!=null) 
+    			{ 	if(useSwing)
+    				{JMenuItem newi = new JMenuItem(item);
+    				menu.addItem(newi);
+    				newitem = newi;
+    				newi.addActionListener(listener);
+    				}
+    				else
+    				{
+    				MenuItem newi = new MenuItem(item);
+    				newitem = newi;
+    				newi.addActionListener(listener);
+    				}
+    			}
+     		}
+    		else 
+    		{
+    		  newitem = m.addnewItem(item,listener);
+    		}
+		popupTarget.put(newitem,(v==null)?nullValue:v);
+    } 
+    
+    public void addMenuItem(bsMenu m,Text item,Object v)
+    {	Object newitem = null;
+    	if(m==null)
+    		{ 
+    		
+    		if(menu!=null) 
+    			{ Icon ic = item.getIcon();
+    			  JMenuItem newi = (ic!=null) 
+    					  				? new JMenuItem(ic)
+    			  						: new JMenuItem(item.toString());
+    			  menu.addItem(newi);
+    			  newitem = newi;
+    			  newi.addActionListener(listener);
+    			}
+    		}
+    		else 
+    		{
+    		  newitem = m.addnewItem(item,listener);
+    		}
+		popupTarget.put(newitem,(v==null)?nullValue:v);
+    } 
+    
+    /** add a submenu to the main menu
+     * 
+     * @param item
+     */
+    public void addMenuItem(bsMenu item)
+    {	if(menu!=null)
+    		{popupTarget.put(item,menu);
+    		 menu.addItem(item.jsubmenu);
+    		}
+     }
+
+    
+    /**
+     * start a new popup cycle for a menu that will appear on window
+     * @param window the window where the menu will appear
+     * @param listen the listener for action events associated with the menu
+     */
+    public void newPopupMenu(ParentWindow window,ActionListener listen,SimpleObserver o)
+    {	popupTarget = new Hashtable<Object,Object>();	
+    	listener = listen;
+    	observer = o;
+    	parentWindow = window;
+    	if(useSwing) 
+    		{ menu = new JPopupMenu();
+    		  menu.setLightWeightPopupEnabled(false);
+    		}
+    	else { menu =  new PopupMenu();
+    		}
+    }
+    public void newPopupMenu(ParentWindow window,ActionListener listen)
+    {
+    	newPopupMenu(window,listen,null);
+    }
+
+    /**
+     * create a submenu to be added to the menu
+     * @param msg
+     * @return the handle for the new submenu
+     */
+    public bsMenu newSubMenu(String msg)
+    {	return(new bsMenu(useSwing,msg));
+    }
+    public void actionPerformed(ActionEvent e)
+    {	if(selectMenuTarget(e.getSource()))
+    	{
+    	if(observer!=null) { observer.update(this,rawValue); }
+    	}
+    }
+    
+}

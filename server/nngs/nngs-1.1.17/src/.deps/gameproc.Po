@@ -1,0 +1,132 @@
+gameproc.o gameproc.o: gameproc.c ../config.h /usr/include/math.h \
+  /usr/include/features.h /usr/include/sys/cdefs.h \
+  /usr/include/bits/wordsize.h /usr/include/gnu/stubs.h \
+  /usr/include/gnu/stubs-32.h /usr/include/bits/huge_val.h \
+  /usr/include/bits/mathdef.h /usr/include/bits/mathcalls.h \
+  /usr/include/bits/mathinline.h /usr/include/stdlib.h \
+  /usr/lib/gcc/i386-redhat-linux/4.1.2/include/stddef.h \
+  /usr/include/assert.h /usr/include/string.h /usr/include/bits/string.h \
+  /usr/include/bits/string2.h /usr/include/endian.h \
+  /usr/include/bits/endian.h /usr/include/bits/types.h \
+  /usr/include/bits/typesizes.h /usr/include/dirent.h \
+  /usr/include/bits/dirent.h /usr/include/ctype.h /usr/include/sys/stat.h \
+  /usr/include/bits/stat.h /usr/include/sys/types.h /usr/include/time.h \
+  nngsmain.h nngsconfig.h gameproc.h ../nrat/command.h common.h \
+  ../nrat/servercodes.h ../nrat/playerdb.h ../nrat/pending.h \
+  ../nrat/gamedb.h mink.h /usr/include/stdio.h /usr/include/libio.h \
+  /usr/include/_G_config.h /usr/include/wchar.h /usr/include/bits/wchar.h \
+  /usr/include/gconv.h \
+  /usr/lib/gcc/i386-redhat-linux/4.1.2/include/stdarg.h \
+  /usr/include/bits/stdio_lim.h /usr/include/bits/sys_errlist.h \
+  /usr/include/bits/stdio.h utils.h /usr/include/bits/time.h bm.h \
+  language.h formats.h files.h ladder.h
+
+../config.h:
+
+/usr/include/math.h:
+
+/usr/include/features.h:
+
+/usr/include/sys/cdefs.h:
+
+/usr/include/bits/wordsize.h:
+
+/usr/include/gnu/stubs.h:
+
+/usr/include/gnu/stubs-32.h:
+
+/usr/include/bits/huge_val.h:
+
+/usr/include/bits/mathdef.h:
+
+/usr/include/bits/mathcalls.h:
+
+/usr/include/bits/mathinline.h:
+
+/usr/include/stdlib.h:
+
+/usr/lib/gcc/i386-redhat-linux/4.1.2/include/stddef.h:
+
+/usr/include/assert.h:
+
+/usr/include/string.h:
+
+/usr/include/bits/string.h:
+
+/usr/include/bits/string2.h:
+
+/usr/include/endian.h:
+
+/usr/include/bits/endian.h:
+
+/usr/include/bits/types.h:
+
+/usr/include/bits/typesizes.h:
+
+/usr/include/dirent.h:
+
+/usr/include/bits/dirent.h:
+
+/usr/include/ctype.h:
+
+/usr/include/sys/stat.h:
+
+/usr/include/bits/stat.h:
+
+/usr/include/sys/types.h:
+
+/usr/include/time.h:
+
+nngsmain.h:
+
+nngsconfig.h:
+
+gameproc.h:
+
+../nrat/command.h:
+
+common.h:
+
+../nrat/servercodes.h:
+
+../nrat/playerdb.h:
+
+../nrat/pending.h:
+
+../nrat/gamedb.h:
+
+mink.h:
+
+/usr/include/stdio.h:
+
+/usr/include/libio.h:
+
+/usr/include/_G_config.h:
+
+/usr/include/wchar.h:
+
+/usr/include/bits/wchar.h:
+
+/usr/include/gconv.h:
+
+/usr/lib/gcc/i386-redhat-linux/4.1.2/include/stdarg.h:
+
+/usr/include/bits/stdio_lim.h:
+
+/usr/include/bits/sys_errlist.h:
+
+/usr/include/bits/stdio.h:
+
+utils.h:
+
+/usr/include/bits/time.h:
+
+bm.h:
+
+language.h:
+
+formats.h:
+
+files.h:
+
+ladder.h:

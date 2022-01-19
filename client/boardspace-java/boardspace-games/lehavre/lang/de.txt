@@ -1,0 +1,1861 @@
+#==============================================================================#
+#                                    GERMAN                                    #
+#==============================================================================#
+#                                                                              #
+# GENERAL NOTES                                                                #
+# Feel free to edit this file to change the text displayed during the game.    #
+# However, be careful with changing button texts. Some buttons do scale to     #
+# their text size, others don't. So, if you happen to notice ill behavior,     #
+# try to shorten your button text.                                             #
+# Many of the texts and phrases given here have wildcard symbols: %s and %d.   #
+# %s represents a string (text) that the wildcard will be replaced with in     #
+# the game. %d represents a number. DO NOT delete or add any wildcards by      #
+# yourself! Also, be sure to check what these wildcards represent if you       #
+# like to change a phrase with wildcards.                                      #
+# Some of the phrases contain HTML code. If you know how to write HTML code,   #
+# feel free to change whatever you like, but DO NOT remove or add <html> tags. #
+# Also note that Java only supports HTML 3.01 and just some of the basic CSS   #
+# elements. You'll need to experminent a bit to receive best results.          #
+# Finally, like you've probably noticed already, lines starting with '#' and   #
+# empty lines in this document will be ignored by the game.                    #
+#                                                                              #
+#==============================================================================#
+#
+# All available languages.
+# Please add a line for each newly added language in each language file.
+# NOTE! Each language needs to be made out of two characters, preferrably
+# using the international standard abbreviation.
+# NOTE! The game will crash if the file name and the abbreviation provided
+# here do not match.
+#
+
+de	Deutsch
+en	Englisch
+
+#
+# Basic vocabulary.
+#
+
+and			und
+or			oder
+
+all			Alle
+override	<4 Sp.
+start		Start
+
+lose		abgeben
+receive		erhalten
+
+empty		leer
+free		lau
+nobody		Niemand
+none		keine
+
+entry		Eintritt
+foodDemand	Nahrungsforderung
+building	Gebäude
+ship		Schiff
+
+harvest		Erntezeit
+interest	Zinsen
+supply		Nachschub
+town		Die Stadt
+
+buildings	Gebäude
+debts		Schulden
+money		Bargeld
+name		Name
+rank		Platz
+score		Punkte
+ships		Schiffe
+win			gewinnen
+wins		gewinnt
+
+apply		Übernehmen
+cancel		Abbrechen
+load		Laden
+long		Langspiel
+quit		Spiel beenden
+restart		Nochmal spielen
+save		Speichern
+short		Kurzspiel
+
+#
+# Numbered words.
+#
+
+good		Ware
+good2		Waren
+good5		Waren
+
+loan		Schuldschein
+loan2		Schuldscheine
+loan5		Schuldscheine
+
+player		Spieler
+player2		Spieler
+player5		Spieler
+
+round		Runde
+round2		Runden
+round5		Runden
+
+#
+# Logger messages.
+#
+
+logLanguage			Sprache auf '%s' umgestellt.
+logLoginDataSaved	Login-Daten gespeichert: [Spiel=%s] [Name=%s]
+logDump				<b>%s öffnet das Debugfenster.</b>
+logSaveGameState	Spielzustand erfolgreich gespeichert.
+
+logRelogin			<b>%s</b> ist wieder da.
+logUserJoined		<b>%s</b> ist dem Spiel beigetreten.
+logUserReady		<b>%s</b> ist spielbereit.
+
+logSettings			Die Einstellungen wurden geändert.
+logLoadSettings		Einstellungen erfolgreich geladen.
+logSaveSettings		Einstellungen erfolgreich gespeichert.
+logBonus			<b>%s</b> erhält zu Spielbeginn folgende Waren: %s
+
+logGameStart		Es wird ein <b>%s</b> gespielt.
+logPlayOrder		Die Spielreihenfolge ist: %s
+logSetupComplete	Der Spielaufbau wurde abgeschlossen.
+logGameTurn			<b>%s</b> ist an der Reihe.
+logBack				<b>Der aktive Spieler nimmt seinen Spielzug zurück!</b>
+logSupplyChit		Neues Nachschubplättchen: %s
+logOffer			Neu hinzugekommene Waren: %s
+logOfferTaken		<b>%s</b> nimmt %s.
+logItemBought		<b>%s</b> kauft für %s: <b>%s (%d)</b>
+logItemSold			<b>%s</b> verkauft für %s: <b>%s (%d)</b>
+logItemBuilt		<b>%s</b> baut für %s: <b>%s (%d)</b>
+logEndgame			Die Schlussphase hat begonnen!
+logGameOver			Das Spiel ist zu Ende! Endstand:
+
+logBuildingUsed		<b>%s</b> betritt ein Gebäude: <b>%s</b>
+logEntryPlayer		<b>%s</b> zahlt <b>%s</b> als Eintritt %s.
+logEntryTown		<b>%s</b> zahlt der Stadt als Eintritt %s.
+logBuildingBan		<b>%s</b> vertreibt <b>%s</b> aus einem Gebäude: <b>%s (%d)</b>
+logBuildingChoose	<b>%s</b> bringt ein Sondergebäude ins Spiel: <b>%s (%d)</b>
+logTransfer			<b>%s</b> zahlt <b>%s</b> %s.
+logModernise		<b>%s</b> modernisiert die Werft mit %s.
+logSwapSpecials		<b>%s</b> vertauscht die obersten Sondergebäude.
+logDiveBar			<b>%s</b> besucht die Spelunke und gibt dort <b>%s</b> aus.
+logChangeShip		<b>%s</b> tauscht ein eigenes Schiff gegen: <b>%s (%d)</b>
+
+logBuildingRemoved	Ein Gebäude wird aus dem Spiel entfernt: <b>%s (%d)</b>
+logFinalPhase		[Schlussphase]
+logFoodDemand		Es werden <b>%s</b> verlangt.
+logFoodNeeded		<b>%s</b> muss <b>%s</b> abgeben.
+logFoodSupplied		<b>%s</b> ernährt sich über Schiffe.
+logHarvest			<b>%s</b> erhält in der Erntezeit %s.
+logNewRound			[Runde %d]
+logNewShip			Ein neues Schiff ist eingelaufen: <b>%s (%d)</b>
+logNewSpecial		Die Stadt errichtet ein Sondergebäude: <b>%s (%d)</b>
+logNewStack			Ein Gebäude wurde zu den Bauvorhaben gelegt: <b>%s (%d)</b>
+logNewStandard		Die Stadt errichtet ein Standardgebäude: <b>%s (%d)</b>
+logRoundEnd			<b>Runde %d</b> ist zu Ende.
+
+logPayment			<b>%s</b> gibt %s ab.
+logTakeLoan			<b>%s</b> nimmt %s auf.
+logInterest			<b>%s</b> zahlt %s Zinsen.
+logPayback			<b>%s</b> gibt %s zurück.
+logLose				<b>%s</b> verliert %s.
+logReceive			<b>%s</b> erhält %s.
+logEnergy			<b>%s</b> bezahlte die Energiekosten mit %s.
+
+logNoInterest		<b>%s</b> zahlt keine Zinsen auf Grund des Aktienmarkts.
+logRattletrapCar	<b>%s</b> nimmt die Rostlaube.
+logSouvenirShop		<b>%s</b> erhält <b>%s</b> durch den Souvenirladen.
+logStockMarket		<b>%s</b> erhält <b>%s</b> durch den Aktienmarkt.
+
+#
+# Text visible in the main window.
+#
+
+mainTitle		%s - Ein Wirtschaftsspiel von Uwe Rosenberg
+
+mainBack		< < <
+mainContinue	> > >
+
+mainCapacity	Kapazität: %d
+mainEnergy		Energie: %s
+mainFood		Nahrung: %s
+mainMoney		Francs: %d
+mainPoints		Punkte: %s
+mainTurns		Spielzüge: %d
+
+mainChat		Chat öffnen
+mainHelp		Hilfe anzeigen
+mainStacks		Bauvorhaben
+mainShips		Schiffe im Hafen
+mainSuffix		er
+mainFinalPhase	Schlussphase
+mainRound		Runde %d/%d
+mainRoundEnd	Rundenende
+
+mainBackInfo		Klicke diesen Button, um deinen Spielzug komplett rückgängig zu machen.
+mainBuildingInfo	Dieses Gebäude wird <b>%s</b> von der Stadt errichtet.%s
+mainCapacityInfo	Die <b>Kapazität</b> deiner Schiffe ist die Anzahl der Waren, die du mit ihrer Hilfe über die Reederei verschiffen kannst.
+mainContinueInfo	Klicke diesen Button, um deinen Spielzug zu beenden, sobald du deine Hauptaktion ausgeführt hast.
+mainEnergyInfo		Die Summe der Energiewerte aller deiner Warenmarken.
+mainFoodDeficiency	<b>Du hast nicht genug Nahrung für das Rundenende!</b> Zum Rundenende werden <b>%s</b> verlangt, du kannst allerdings nur <b>%s</b> aufbringen.
+mainFoodInfo		Die Summe der Nahrungswerte aller deiner Warenmarken.
+mainFoodSupply		Am Ende jeder Runde zahlst du <b>%s</b> weniger.
+mainLoans			Du hast derzeit <b>%s</b>. Schuldscheine können für je <b>%s</b> zurückgezahlt werden, sonst zählen sie bei Spielende je <b>&ndash;%s</b>.
+mainPointsInfo		Die Summe aller deiner Siegpunkte, also Bargeld, Schiffe, Gebäude und Bonuspunkte, sowie Schuldscheine.
+mainSpecial			Sondergebäude im Stapel: <b>noch %d</b>. Das nächste Sondergebäude wird <b>%s</b> gebaut.%s
+mainTurnsInfo		Die Anzahl deiner verbliebenen Spielzüge (inkl. Schlussaktion).
+
+mainInstructions
+	<h1>Hinweise zum Spielfenster</h1>
+	<p>Hier findest du eine detaillierte Beschreibung des Hauptspielfensters und Tipps
+	zur Bedienung des Spiels. Das Spielfenster ist überwiegend selbsterklärend und mit
+	ein paar Rechtsklicks oder ein wenig Geduld beim Drüberfahren der Maus über einigen
+	Objekten sollte man problemlos zurechtkommen.</p>
+	<p>Das Spielfenster ist in zwei Teile gegliedert. Der obere Bereich zeigt das Spielbrett,
+	während es im unteren Bereich für die Stadt und jeden Mitspieler eine Registerkarte mit
+	seinen Waren, Gebäuden, Schiffen, Statistiken usw. gibt. Es gibt keine Menüleiste, dafür
+	einige Buttons rechts oben über dem Spielbrett, die die Menüleiste ersetzen.</p>
+	<h2>Das Logo</h2>
+	<p>In der linken oberen Ecke des Spielfensters befindet sich das Logo. Man kann dort mit einem
+	Rechtsklick ein besonderes Spielmenü öffnen. Dort kann man seinen aktuellen <b>Spielzustand abspeichern</b>
+	oder das <b>Debugfenster</b> öffnen (<i>Spielzustand anzeigen</i>). Wenn es einen Fehler im Spiel gibt,
+	bitte sofort das Debugfenster öffnen, die angezeigte Zusammenfassung über den Spielzustand kopieren
+	und in einer Datei abspeichern. Das Öffnen des Debugfensters bewirkt, dass bei allen Mitspielern das
+	Debugfenster geöffnet wird. Es zeigt alle im Spiel geheimen Informationen, so dass es wirklich nur zu
+	Debugzwecken geöffnet werden sollte.</p>
+	<p>Die dritte Menüoption ist nur für ganze besondere Fehlerfälle gedacht, wenn mehrere Spieler
+	miteinander über das Internet spielen und irgend ein Spieler einen fehlerhaften Spielzustand hat.
+	Über diese Option lässt sich das Spiel zum letzten definierten Spielzustand, d. h. zum Beginn eines
+	Spielzuges, zurücksetzen. Diese Option ist noch ungetestet und daher nur auf eigene Gefahr zu verwenden.</p>
+	<p>Die letzte Menüoption zeigt allgemeine Informationen über das Spiel an.</p>
+	<h2>Die Buttons</h2>
+	<p>Die beiden mittleren Buttons sind nicht spielrelevant. Solltest du mal das
+	<b>Chatfenster</b> geschlossen haben und möchtest es wieder öffnen, dann gibt es dafür einen
+	entsprechenden Button. Daneben befindet sich der <b>Hilfebutton</b>, den du ja bereits
+	angeklickt hast.</p>
+	<p>Die zwei Buttons darunter geben Informationen über die Gebäude in den Bauvorhabenstapeln
+	sowie über alle Schiffe im Hafen von Le Havre. Der linke zeigt eine Auflistung aller Gebäude
+	in den <b>Bauvorhabenstapeln</b> in genau der Reihenfolge, wie die Gebäude in den Stapeln ausliegen.
+	Zudem werden Nummer und Gebäudewert angezeigt. Über den rechten Button erhältst du eine Auflistung
+	der Schiffe in den <b>Schiffsstapeln</b>, getrennt nach Schiffstyp. Das jeweils oberste Schiff eines
+	Stapels steht links, alle weiteren der Reihe nach rechts davon.</p>
+	<p>Oberhalb der vier Funktionsbuttons befinden sich zwei funktionslose Buttons. Der linke
+	zeigt mit der entsprechenden Hintergrundfarbe den <b>Namen</b> des Spielers, der gerade an
+	der Reihe ist. Bei Rundenende steht dort <i>Rundenende</i> auf schwarzem Hintergrund.
+	Rechts davon wird die <b>aktuelle Runde</b> angezeigt, sowie die Gesamtzahl der Runden.
+	<h2>Das Spielbrett</h2>
+	<p>Das Spielbrett dürfte allen Spielern, die es schon mal auf dem Brett gespielt haben,
+	sehr bekannt vorkommen. Im mittleren Bereich oben befinden sich die <b>Gebäudekarten</b> in den
+	Bauvorhabenstapeln. Sie sind so gefächert, dass man den unteren Bereich sehen kann. Trotz
+	Fächerung wird man die Schrift auf den Karten nicht erkennen können. Allerdings verfügt
+	jede Karte im Spiel über zwei Hilfen, mit denen man sich die aufgedruckten Informationen
+	anzeigen lassen kann. Mehr dazu in <a href="tooltip">Tooltipfenster</a>. Den Großteil
+	des Spiels über wird auf einem der obersten Gebäude ein <b>rotes Warndreieck</b> zu sehen sein.
+	Dieses informiert darüber, welches Gebäude als nächstes von der Stadt gebaut wird, wann
+	dies passiert und wer dann an der Reihe sein wird.</p>
+	<p>Links neben den Bauvorhabenstapeln befindet sich im Langspiel die Rückseite einer
+	<b>Sondergebäude</b>-Karte. Ihr Tooltip-Fenster gibt Auskunft darüber, wie viele Sondergebäude sich
+	noch im Sondergebäudestapel befinden, wann das nächste gebaut wird und welcher Spieler zu diesem
+	Zeitpunkt an der Reihe sein wird. Ansonsten erfüllt sie keine weitere Funktion.</p>
+	<p>Während des Spiels werden nach und nach immer neue <b>Schiffe</b> in Le Havre einlaufen, die
+	auf der rechten Seite des Spielbretts nach Typ sortiert auf entsprechenden Stapeln ausliegen
+	und über das Standardgebäude <i>Werft</i> gebaut werden können. Sichtbar ist jeweils nur das
+	oberste Schiff, d. h. dasjenige, das erst kürzlich eingelaufen ist. Welche anderen Schiffe
+	sich noch in den Stapeln befinden, und vor allem mit welchen Werten, erfährst du, wenn du auf
+	den entsprechenden Button rechts oberhalb des Spielbretts klickst.</p>
+	<p>Im horizontal mittleren Bereich befinden sich die <b>Vorratsfelder</b>, die auf dem Brett
+	dazu dienen, die Waren abzulegen. Im Computerspiel sind sie allerdings ohne Funktion und
+	bleiben das gesamte Spiel über leer.</p>
+	<p>Unterhalb der Vorratsfelder befinden sich die <b>Nachschubpättchen</b> und <b>Angebotsfelder</b>.
+	Zu Beginn des Spiels sind alle Nachschubplättchen überlicherweise verdeckt und werden im Verlauf
+	der ersten Runde nach und nach aufgedeckt und bleiben dann das ganze Spiel über offen liegen.
+	Ein Nachschubplättchen zeigt, welche Waren neu hinzugekommen sind. Deren aktuelle Zahl und die
+	ausliegende Sorte erkennt man im unteren Spielbrettbereich. Ein Icon zeigt die Warensorte und ein
+	Schriftzug darunter deren Anzahl. Was nicht vorhanden ist, wird ausgegraut dargestellt.</p>
+	<p>Schließlich gibt es noch rechts zwischen Schiffsfeldern und Nachschubplättchen ein Feld
+	für die aktuelle <b>Rundenkarte</b>, die Informationen über das Rundenende liefert. Darunter
+	befindet sich auch der Button, über den man seinen eigenen <b>Spielzug beenden</b> muss. Er wird
+	aktiviert, sobald man die Hauptaktion in seinem Spielzug komplett durchgeführt hat. Solange
+	dies nicht der Fall ist, bleibt der Button dunkelgrau und fällt nicht ins Auge. Im aktivierten
+	Zustand allerdings wird er orange und dürfte nicht zu übersehen sein. Oberhalb der Rundenkarte
+	ist ein ähnlicher Button, der allerdings dazu da ist seinen <b>kompletten Spielzug zurückzunehmen</b>.
+	Zu beachten ist dabei, dass nur der eigene, laufende Spielzug zurückgenommen werden kann.
+	Die Nahrungsabgabe zum Rundenende zum Beispiel kann nicht rückgängig gemacht werden!</p>
+	<h2>Die Registerkarten</h2>
+	<p>Im unteren Drittel des Spielfensters befinden sich die Registerkarten für die Stadt und
+	die Mitspieler. Sie beinhalten die Karten eines jeden Spielers sowie alle Informationen über
+	seinen Spielfortschritt. Die Registerkarte für die Stadt zeigt zudem die Übersichtskarte.</p>
+	<h3>Die Stadt</h3>
+	<p>Oben links in der Registerkarte der Stadt liegt die Übersichtskarte, die eine Zusammenfassung
+	aller Rundenkarten gibt. Eine vergrößerte Version der Karte sieht man, wenn man mit der Maus
+	drüberfährt. Näheres hierzu im Abschnitt über <a href="tooltip">Tooltipfenster</a>.
+	Direkt neben der Übersichtskarte werden alle Gebäude und Schiffe der Stadt in der Reihenfolge
+	ihres Auftretens angezeigt. Ansonsten enthält die Registerkarte der Stadt keine weiteren Dinge.</p>
+	<h3>Das Spielertab</h3>
+	<p>Die Registerkarte eines jeden Spielers enthält weit mehr Elemente als die der Stadt. Der obere
+	Bereich zeigt ganz links die <b>Speicherkarte</b> und einen <b>Nahrungsmarker</b>, der die aktuelle
+	Nahrungszufuhr durch Schiffe anzeigt. Ab und zu erscheint dort unter dem Nahrungsmarker ein großes
+	<b>gelbes Warndreieck</b>, das darauf hinweist, dass derjenige Spieler nicht genug Nahrung für das
+	Rundenende hat. Es verschwindet automatisch, sobald der betroffene Spieler genügend Nahrung aufbringen
+	kann. Dabei werden selbstverständlich die Nahrung durch Schiffe und Waren sowie der Geldbestand
+	berücksichtigt.</p>
+	<p>Neben dem Speicher befinden sich in einem eigenen Bereich alle <b>Waren</b> des Spielers. Aktuell
+	nicht in Spielerbesitz vorhandene Waren sind dabei ausgegraut. Weiter rechts neben den Waren folgen
+	die Informationen über die <b>Schiffe</b> des Spielers sortiert nach Typ sowie die Summe ihrer
+	<b>Kapazitäten</b> (interessant für die Reederei).</p>
+	<p>Wieder etwas rechts werden die aktuelle <b>Franc-</b>, <b>Nahrungs-</b> und <b>Energiemenge</b> des
+	Spielers angezeigt, sowie die Zahl der verbliebenden <b>Spielzüge</b> (dabei wird der aktuelle Spielzug
+	nicht mit eingerechnet) und schließlich &ndash; sofern dies in den Einstellungen aktiviert wurde &ndash;
+	die aktuelle <b>Punktzahl</b>.</p>
+	<p>Rechts schließlich sieht man die Gesamtzahl seiner <b>Hammer-</b> und <b>Angelsymbole</b>
+	sowie die Anzahl der <b>Handwerksbetriebe</b> im Besitz des Spielers (interessant für den Marktplatz).
+	Ganz rechts dagegen befindet sich eine <b>Schuldschein</b>-Karte, die die Zahl der eigenen Schuldscheine
+	anzeigt.</p>
+	<p>Der untere Bereich ist typischerweise zu Spielbeginn leer. Im Laufe des Spiels werden allerdings
+	ganz links unterhalb des Speichers die <b>Schiffskarten</b> gefächert ausgelegt und im verbliebenen Bereich
+	rechts davon alle erworbenen <b>Gebäudekarten</b>. Sollten mehr als 8 Gebäude erworben worden sein, muss man
+	eventuell scrollen, um die weiteren Gebäude angezeigt zu bekommen. Die Gebäude werden dabei wie folgt
+	sortiert: <i>Startgebäude</i> werden immer als erste platziert, danach in absteigender Reihenfolge der
+	Ordnungszahlen die <i>Standardgebäude</i>, die man betreten kann, und schließlich in absteigender Reihenfolge
+	die betretbaren <i>Sondergebäude</i>. Ganz hinten angereiht werden alle Gebäude mit Vorhängeschloss.</p>
+	<h2>Die Spielelemente im Einzelnen</h2>
+	<p>Nun folgt eine detaillierte Beschreibung aller oben beschriebenen Spielelemente.</p>
+	<h3><a name="tooltip"></a>Tooltipfenster</h3>
+	<p>Fahre mit der Maus über eine beliebige (spielrelevante) Karte bzw. Marke und bleibe über ihr stehen,
+	dann zeigt sich kurz darauf ein <b>Tooltipfenster</b> mit einer viel größeren Version der Karte bzw.
+	Marke, auf der man alles gut erkennen und lesen kann. Das Tooltipfenster schließt sich kurz nachdem
+	man die Maus aus dem Tooltip fährt. Nachdem es einmal geöffnet wurde, wechselt es automatisch den Inhalt,
+	wenn man von Karte zu Karte (bzw. von Marke zu Marke) fährt. Sollte das Tooltipfenster aus irgend einem
+	Grund nicht zugehen wollen, genügt ein Linksklick auf dieses, um das Schließen zu erzwingen. Dies ist
+	leider eine Macke der verwendeten grafischen Java-Komponenten.</p>
+	<p>Alternativ zum Tooltip-Fenster enthält jede Karte bzw. Marke auch einen Unterpunkt <i>Details</i>
+	im Kontextmenü, das mit einem Rechtsklick über dem entsprechenden Element geöffnet werden kann. Dort
+	werden noch einmal alle auf der Karte sichtbaren Informationen in Textform angezeigt.</p>
+	<h3>Das Kontextmenü</h3>
+	<p>Das Kontextmenü ist das wichtigste Spielelement. Nahezu jedes spielrelevante Element hat eines.
+	Geöffnet wird es über einen Rechtsklick auf das Element und enthält je nach Element die gerade benötigten
+	Funktionen. Gebäude werden zum Beispiel über das Kontextmenü betreten, gekauft, verkauft und gebaut.
+	Der jeweils letzte Menüpunkt jedes Kontextmenüs zeigt auf Wunsch alle Informationen über das Spielobjekt an.</p>
+	<h3>Die Spielerinformationen</h3>
+	<p>In der Registerkarte (Tab) jedes Spielers findet man im oberen Bereich alle Informationen über den Spieler.
+	Den Namen und die Spielerfarbe erkennt man im nicht angewählten Register. Außerdem ist der Hintergrund
+	der Registerkarte eines Spielers mit seiner Spielerfarbe gefüllt. Somit sieht man auf Anhieb, in welchem
+	Tab man sich befindet.</p>
+	<p>Ein gesonderter Bereich im Tab zeigt alle Waren und deren aufgewertete Version sowie Zahlen darunter,
+	die anzeigen, wie viele der Spieler jeweils davon besitzt. Waren, die der Spieler zur Zeit nicht besitzt,
+	sind ausgegraut. Nicht angezeigt wird in diesem Bereich, wie viel Geld der Spieler hat. Das erfährt man
+	weiter rechts, farblich zur Farbe der Franc-Münzen entsprechend. Dort wird auch die Gesamtnahrung und -energie
+	angezeigt. Dabei ist zu beachten, dass bei der Nahrung das Geld <u>nicht</u> hinzugezählt wird, und auch nicht die
+	Nahrung, die man zum Rundenende über seine Schiffe erhält. Letzteres wird ja im Speicher links oben angezeigt.</p>
+	<p>Neben Geldmenge, Nahrung und Energie werden auch die aktuellen Siegpunkte angezeigt, vorausgesetzt der
+	Spielleiter hat vor Spielbeginn die entsprechende Option in den Einstellungen gesetzt. Grundsätzlich werden
+	die Punkte nämlich ausgeblendet. Im Punktestand enthalten sind bereits eventuell vorhandene Bonuspunkte,
+	sowie -7 Punkte je Schuldschein. Die wahre Siegpunktzahl kann daher bei Spielende leicht höher liegen,
+	wenn Schuldscheine für je 5 Franc zurückgezahlt wurden.</p>
+	<p>Nützlich dürften auch sicher die Informationen über die Zahl der eigenen Hammer- und Anglersymbole sein.
+	Zudem werden die Handwerksbetriebe im Besitz des Spielers gezählt (nützlich für Marktplatzbesuche). Diese
+	und alle anderen Zahlenwerte im Spielertab werden laufend aktualisiert.</p>
+	<p>Damit man zu jedem Zeitpunkt des Spiels darüber informiert ist, wie viele Spielzüge man noch bis zum
+	Spielende hat, wird diese Zahl für jeden Spieler individuell in seinem Spielertab angezeigt. Dabei wird
+	auch die Schlussaktion mit eingerechnet, nicht jedoch der laufende Spielzug, wenn man an der Reihe ist.</p>
+	<p>Ein Schuldschein ganz rechts in der Registerkarte zeigt die Anzahl der eigenen Schuldscheine sowie in
+	seinem Tooltipfenster Informationen zur Zurückzahlung und Punktestrafe bei Nichtrückzahlung. Der Schuldschein
+	ist ausgegraut, wenn derjenige Spieler noch keine Schuldscheine besitzt. Über das Kontextmenü können die
+	Schuldscheine jederzeit teilweise oder ganz zurückgezahlt werden. Dazu muss man nicht an der Reihe sein.
+	Selbiges gilt übrigens auch für den Verkauf eigener Gebäude und Schiffe. Hat man bei Spielende noch genügend
+	Geld und noch nicht zurückgezahlte Schuldscheine, zahlt das Spiel die verbliebenen Schuldscheine, so weit es
+	geht, <b>automatisch</b> zurück.</p>
+	<p>Da die Schiffe des Spielers aus Platzgründen gefächert übereinander gelegt werden, wird im Infobereich
+	angezeigt, wie viele Schiffe jedes Typs der Spieler besitzt und wie viele Waren er mit ihnen zusammen
+	in der Reederei verschiffen kann.</p>
+	<h3>Shortcuts</h3>
+	<p>Einige Dinge im Spiel können auch über einen Doppelklick erreicht werden statt über das Kontextmenü.
+	Zur Zeit sind dies das Nehmen eines Angebots, die Bauaktionen, sowie der Eintritt in ein Gebäude.
+	Üblicherweise muss man nämlich, wenn man z. B. ein Angebot nehmen möchte, das Kontextmenü über dem
+	Warenicon öffnen und den entsprechenden Menüpunkt wählen. Für Gebäude gilt dasselbe. Abgekürzt werden
+	kann dies, wie bereits erwähnt, über einen Doppelklick.</p>
+	<p>Weitere Shortcuts, eventuell auch tastaturgesteuerte, sind für zukünftige Versionen geplant.</p>
+	<h1>Hinweise zum Spielverlauf</h1>
+	<p>Wie in einem Computerspiel üblich übernimmt der Computer die gesamte Organisation des Spielmaterials
+	sowie das Überprüfen der Spielregeln. Meistens werden unmögliche Spielaktionen von vornherein gar nicht erst
+	zugelassen, in einigen Fällen erscheint eine Fehlermeldung, wenn man einen im Moment nicht möglichen Spielzug
+	ausführen möchte. So werden bei Bauaktionen auch nur diejenigen Objekte mit einem Bausymbol markiert, die
+	der Spieler auch tatsächlich bauen kann. Das Spiel achtet sogar darauf, dass der Spieler nicht in eine
+	Sackgasse läuft, indem er z. B. genau das einzige Gebäude kauft, das er hätte bauen können. Der Eintritt
+	in ein beliebiges, unbesetztes Gebäude erscheint allerdings immer möglich. Die Überprüfung, ob der Spieler
+	auch tatsächlich die Gebäudeaktion nutzen oder den Eintritt bezahlen kann, erfolgt erst im Moment des
+	Betretens und wird verweigert, wenn das Gebäude nicht genutzt oder der Eintritt nicht bezahlt werden kann.
+	Der Grund, warum dies nicht laufend überprüft wird, ist eine bessere Performance. Selbiges gilt übrigens
+	auch für das Kaufen von Gebäuden.</p>
+	<h2>Zu Beginn des Spiels</h2>
+	<p>Der Aufbau des Spielbretts und die Verteilung des Materials zu Beginn geschieht voll automatisch.
+	Die Berechnungen dazu, zum Beispiel die Auswahl der Sondergebäude im Langspiel, übernimmt der Rechner des
+	Spielleiters und schickt die Informationen an alle Mitspieler. Ansonsten läuft das Spiel unabhängig auf
+	jedem Spielerrechner von selbst. Lediglich die getanen Aktionen werden zum Spielleiter zur Auswertung
+	geschickt und dieser veranlasst dann die Mitspielerrechner zur Ausführung der Aktion.</p>
+	<p>Ein Startspieler wird vom Spiel ausgelost, falls er nicht zuvor in der Lobby eingestellt wurde. Dieser
+	erhält auch die erste Registerkarte neben der Stadt. Die weiteren Registerkarten werden in Spielreihenfolge
+	an die Mitspieler verteilt. Daraufhin beginnt schon die erste Runde mit dem ersten Spielzug.</p>
+	<h2>Die Rundenphase</h2>
+	<p>Im Fenster des aktuellen Spielers erscheint ein Hinweisfenster, dass er dran ist. Das Hinweisfenster wird
+	allerdings im Solospiel unterdrückt. Im Chatfenster erscheint dann für alle Spieler eine Information darüber,
+	wer an der Reihe ist. Der Schiffsstein des aktuellen Spielers wird automatisch auf das nächste Nachschubplättchen
+	gelegt und dieses umgedreht, falls es noch verdeckt liegt. Die Waren werden automatisch verteilt und eine
+	Information darüber im Chatfenster angezeigt.</p>
+	<p>Danach passiert erst einmal nichts, denn der aktuelle Spieler darf nun seine Hauptaktion ausführen.
+	Entweder er nimmt ein Angebot, indem er auf das Warensymbol auf dem Spielbrett mit der rechten Maustaste klickt
+	und <i>Nehmen</i> auswählt oder einfach auf das Warensymbol einen Doppelklick ausführt. Oder er nutzt ein
+	bereits gebautes Gebäude. Dazu reicht ebenfalls ein Doppelklick oder er wählt die entsprechende Kontextmenü-Option.</p>
+	<p>Vor, während oder nach der Hauptaktion darf der Spieler wie gewohnt <i>Kaufen</i> und <i>Verkaufen</i>. Dies
+	kann nur über das Kontextmenü des entsprechenden Objekts abgewickelt werden. Der Spielzug endet erst, wenn der
+	Spieler auf den Button unterhalb der Rundenkarte klickt.</p>
+	<p>Über einen ähnlichen Button oberhalb der Rundenkarte kann der eigen Spielzug komplett zurückgenommen werden.
+	Darüber werden alle Spieler im Chat informiert. Zu beachten ist hierbei, dass nur der aktive Spieler seinen
+	Spielzug rückgängig machen kann und dass dadurch <b><u>alle</u></b> in diesem Spielzug geschehenen Dinge
+	rückgängig gemacht werden. Dies betrifft vor allem Zinszahlungen und Verkäufe durch Mitspieler. Keine Sorge,
+	es werden dann nicht etwa doppelt Zinsen gezahlt. Es wird lediglich die Zahlung wiederholt &ndash; und zwar
+	mit dem selben Geldbestand wie er vor der letzten Zahlung war. Außerdem sollten alle Mitspieler, die außerhalb
+	ihres Spielzuges verkaufen, darüber im Klaren sein, dass sie den Verkauf nicht selbst rückgängig machen müssen,
+	sondern nur der aktive Spieler dies veranlassen kann. Dies hat auch zur Folge, dass wenn verkauft wurde und
+	der aktive Spieler seinen Spielzug zurücknimmt, auch der Verkauf zurückgenommen wird.</p>
+	<p>Die Rundenphase läuft auf diese Weise von Spieler zu Spieler bis das Spielende erreicht ist. Zwischendurch
+	werden die Rundenenden abgewickelt. Jeder Spieler muss Nahrung abgeben, es kommen neue Gebäude ins Spiel und
+	Waren wie Korn und Vieh vermehren sich. Letztere Dinge geschehen automatisch; zum Zwecke der Nahrungsabgabe
+	öffnet sich ein eigenens Dialogfenster.</p>
+	<h3>Bauen von Gebäuden und Schiffen</h3>
+	<p>Mit dem Gang auf ein Baugebäude erhält man die Erlaubnis etwas zu bauen. Das Bauen selbst erledigt man
+	dann mit einer weiteren Aktion &ndash; der Bauaktion. Dazu wählt man aus dem Kontextmenü des zu bauenden Objekts
+	<i>Bauen</i> oder führt einen Doppelklick darauf aus. Ein entsprechendes Symbol informiert darüber, welche
+	Objekte überhaupt gebaut werden können. Ein Bauversuch kann nicht zurückgenommen werden, sobald man ein
+	Baugebäude betritt. Wollte man gar nicht bauen, muss man erst irgend etwas bauen und kann dann seinen Spielzug
+	zurücknehmen. Aktionen müssen nämlich immer komplett abgehandelt werden, bevor etwas anderes im Spielzug
+	möglich ist. Die Ausnahme bildet das regelkonforme Kaufen.</p>
+	<h3>Betreten von Gebäuden</h3>
+	<p>Das Betreten von Gebäuden wurde bereits weiter oben erläutert. Wichtig ist zu wissen, dass prinzipiell
+	jedes Gebäude ohne Vorhängeschloss anwählbar ist, außer bereits besetzte Gebäude. Das Spiel prüft erst beim
+	Eintrittsversuch, ob man das Gebäude überhaupt nutzen kann. Wenn nicht, erscheint eine Fehlermeldung, die den
+	Grund für das Scheitern nennt. Es kann sein, dass man die <i>Eintrittszahlung</i> nicht erfüllen kann, oder dass man
+	das Gebäude gar nicht nutzen kann, weil man zum Beispiel die zur Umwandlung geforderten Waren nicht besitzt.
+	Im Chatfenster wird über ein erfolgreiches Betreten berichtet. Der Personenstein wird wie erwartet automatisch
+	versetzt. Bei Gebäuden, die mehrere Personensteine enthalten ist nur der jeweils letzte Personenstein sichtbar.</p>
+	<p>Muss Eintritt gezahlt werden, erscheint ein Dialogfenster, das zur Warenabgabe auffordert. Bei eindeutigen
+	Eintrittsforderungen bezahlt das Spiel automatisch für den Spieler. Muss selber ausgewählt werden, was man abgibt,
+	so informiert immer eine Zahl neben der Eingabebox, wie viele Waren der entsprechenden Sorte zur Bezahlung überhaupt
+	zur Verfügung stehen. Überzahlt werden kann nur, wenn es anders nicht geht. Man kann nicht freiwillig mehr bezahlen.
+	So kann man beispielsweise, wenn man 1 Fleisch, 2 Fisch und 1 Franc besitzt, den Markplatz für 1 Fleisch, 2 Fisch
+	oder 1 Franc betreten, aber nicht freiwillig etwa 1 Franc und 1 Fisch für die Nahrungsforderung abgeben, denn der
+	eine Franc hätte bereits auch gereicht.</p>
+	<h3>Dialogtypen</h3>
+	<p>Beim Betreten von Gebäuden wird man überlicherweise über ein Dialogfenster befragt, was man in dem Gebäude
+	umwandeln/erhalten/abgeben/... möchte. Dies kann in einem von fünf möglichen Dialogen geschehen. Daneben gibt es
+	noch einige Gebäude, die ihre eigenen (einzigartigen) Dialoge haben. In jedem Fall informiert der Dialog darüber,
+	was getan werden muss und ist intuitiv bedienbar. Geschlossen werden kann er nicht, solange die Eingaben nicht
+	stimmen. Gebäude, die eine eindeutige Funktion haben, verzichten auf Dialoge. In jedem Fall aber informiert das
+	Chatfenster über das Ergebnis der Gebäudenutzung.</p>
+	<p>Der Dialog zur <b>Eintrittszahlung</b> wurde bereits erwähnt. Er zeigt typischerweise für jede verfügbare
+	Ware mit Nahrungswert ein Icon, ein Eingabefeld und in Klammern die maximale Eingabe an. Wird nichts angegeben,
+	so entspricht das der Eingabe einer Null. Wird mehr eingetragen als die Zahl in Klammern angibt, so wird diese
+	Zahl in Klammern genommen. Ist die Nahrungsforderung größer als die gesamte verfügbare Nahrung des Spielers, kann
+	er sofort auf den Button des Dialogfensters klicken. Dann wird gefragt, ob alle Nahrung angegegen und der Rest mit
+	Franc bezahlt werden soll. Dies gilt selbstverständlich auch für den Nahrungsdialog zum Rundenende.</p>
+	<p>Die Dialoge zur <b>Nahrungs-</b> und <b>Energiezahlung</b> sind genauso aufgebaut, nur dass im Falle des
+	Energiedialogs nur die Waren mit Energiewerten angezeigt werden.</p>
+	<p>Auch der Dialog zur <b>Warenauswahl</b> funktioniert nach demselben Schema, nur dass hier viel mehr Waren
+	zur Wahl stehen können. Handelt es sich um einen <i>Abgabedialog</i>, gibt man in die Eingabefelder die Mengen
+	der abzugebenen Waren ein und der Klammerwert gibt an, wie viel man besitzt. Im Fall eines <i>Warenerhalts</i>
+	gibt man an, wie viele Waren der entsprechenden Sorten man gerne erhalten möchte. Die Zahl in Klammern bedeutet
+	dann die maximale Zahl, die man von dieser Ware erhalten kann.</p>
+	<p>Schließlich gibt es noch die Dialoge zur <b>Warenumwandlung</b>. Diese zeigen ein einziges Eingabefeld, in das
+	man die gewünschte Menge an abzugebenen <i>Paketen</i> einträgt. In Klammern steht, wie viele Pakete maximal möglich
+	sind. Ein <b>Paket</b> bezeichnet hierbei ein Set von Waren, die reingesteckt werden müssen. Dies kann nur eine Ware
+	sein oder gleich eine ganze Warenkombination, etwa 1 Brot und 1 Fleisch im Paket zu bis zu viermal 6 Franc. Man
+	erhält dann automatisch die entsprechende Menge an Ausgabepaketen und muss eventuell Energie bezahlen. Will man
+	alles einsetzen, was geht, kann man direkt auf den Übernehmen-Button klicken. Dann fragt ein weiteres Dialogfenster,
+	ob man tatsächlich alles einsetzen möchte.</p>
+	<p>Einige Gebäude erlauben es abweichend zur Beschreibung des Gebäudes weniger auszuwählen als möglich. So kann
+	man etwa auf dem Marktplatz nur eine Ware auswählen statt der eigentlich erlaubten Höchstzahl. Allerdings erfolgt
+	dann eine Warnabfrage, ob man sich sicher ist, weniger ausgewählt zu haben. Auf ähnliche Weise arbeitet die Reederei.
+	Diese ist allerdings etwas kontraintuitiv.</p>
+	<p>Betritt man die <b>Reederei</b>, erscheint ein Dialogfenster mit allen Waren,
+	die man besitzt. Es zeigt die maximale Anzahl an, die man mit seinen Schiffen verschiffen könnte. Allerdings muss
+	man selbst darauf achten, dass man die richtige Anzahl Waren auswählt. Denn die Energiezahlung wird anschließend
+	an Hand der Anzahl ausgewählter Waren vorgenommen. Dabei geht das Spiel natürlich von optimaler Nutzung der Schiffe
+	aus. Versucht man Waren abzugeben, die eigentlich für die Energieversorgung benötigt würden, erscheint eine
+	Fehlermeldung. Man muss sich also die Waren, die man für die Energie eingeplant hat, im Kopf bei Seite legen.</p>
+	<p><b>Wichtiger Hinweis:</b> Für alle Dialoge gilt, dass sie nicht über den Schließen-Button geschlossen werden
+	können. Erst müssen alle Werte korrekt eingetragen werden (bis auf die Ausnahmen, die oben beschrieben wurden).
+	Außerdem kann man während eines Dialogs nicht ins Hauptfenster wechseln oder den Chat verwenden. Nur zwei Dialoge
+	erlauben es dem Spieler ins Hauptfenster zu wechseln &ndash; der Nahrungsabgabedialog zum Rundenende und der
+	Zinszahlungsdialog. Denn in beiden Fällen ist es dem Spieler erlaubt, erst ein paar Dinge zu verkaufen. Dazu minimiert
+	man einfach den entsprechenden Dialog, wechselt ins Hauptfenster und verkauft. Dann wechselt man zurück in den
+	Dialog und gibt die geforderten Werte ein.</p>
+	<h2>Die Schlussphase</h2>
+	<p>Die Schlussphase läuft genauso ab wie die Rundenphase bis auf, dass jeder Spieler nur noch einmal dran ist und
+	nun auch bereits belegte Gebäude betreten werden können. Nur das Gebäude, in dem sich der eigene Personenstein bereits
+	befindet, kann weiterhin nicht betreten werden. In der Schlussphase sind Verkäufe weiterhin möglich, aber gekauft wird
+	nicht mehr. Übrig gebliebene Schuldscheine werden soweit wie möglich automatisch zurückgezahlt.</p>
+	<p>Nach vollendetem Spiel informiert ein letztes Informationsfenster über den Endstand und die Platzierung.
+	Daraufhin kann das Spiel beendet oder in zukünftigen Versionen ein Neustart des Spiels veranlasst werden.</p>
+
+#
+# Error messages or warnings.
+#
+
+errImpossible	Ein schwerwiegender Fehler ist aufgetreten!
+errPleaseReport	Bitte unverzüglich melden!
+
+errBanUnoccupied	Vertreibung aus Gebäude fehlgeschlagen: %s.
+errBuildingUpdate	Gebäude-Update gescheitert: building == null.
+errRestoreFailed	Einlesen des Spielzustands gescheitert: state == null.
+errUseBuilding		Gebäudenutzung unmöglich: %s.
+errVersionMismatch	Inkompatibilität: %s.
+
+errCorrupt		Mindestens eine deiner Waren ist ins Minus gerutscht!
+				Dein gesamter Spielzug wird zurückgesetzt.
+				Bitte auch den Fehler melden!
+errDisabled		Dies ist zur Zeit nicht möglich!
+errLoadFailed	Laden fehlgeschlagen!
+errNaN			Das ist keine Zahl: %s
+errNoChanges	Es wurden keine Änderungen vorgenommen!
+errNoSelection	Du hast keine Wahl getroffen. Das Spiel wird nun beendet.
+errNotReady		Es sind noch nicht alle Spieler bereit!
+errRefresh		Bist du sicher, dass du den Spielstand neu laden möchtest?
+errSaveChanges	Änderungen speichern?
+errSaveFailed	Speichern fehlgeschlagen!
+errQuit			Spiel verlassen?
+errWarning		Warnung
+
+errBuildingTabu		Du darfst gerade keine Gebäude betreten!
+errMustEnter		Du musst das Gebäude nun betreten!
+errNoChoice			Du musst eine Auswahl treffen und bestätigen!
+errNotEnterable		Du kannst das Gebäude nicht betreten!
+errNotUsable		Du kannst die Gebäudeaktion nicht ausführen!
+errNotPayable		Du kannst den Eintritt nicht bezahlen!
+errPawnbrokers		Du hast noch keine Waren verpfändet!
+errPicketLine		Ein Streik ist im Gange! Du kannst daher kein Gebäude betreten, sondern lediglich ein Angebot nehmen.
+
+errAlreadyStarted		Du kannst dem Spiel nicht mehr beitreten, denn es hat bereits begonnen.
+errAlreadyOver			Du kannst dem Spiel nicht mehr beitreten, denn es ist bereits zu Ende.
+errBadAddress			Die eingegebene Adresse ist ungültig! Lass das Feld leer oder gib eine gültige IP-Adresse ein.
+errConnectionLost		<b>Ein Mitspieler ist aus dem Spiel geflogen!</b>
+errDialogClose			Du kannst dieses Fenster nur über den Button verlassen!
+errFewerChosen			Du darfst bis zu <b>%s</b> auswählen. Bist du sicher, dass du nur <b>%d</b> möchtest?
+errFoodAll				Deine Eingaben ergeben weniger Nahrung als gefordert. Möchtest du den Rest mit Francs bezahlen?
+errFoodLack				Du hast zu wenig Nahrung und wirst Schuldscheine aufnehmen müssen. Möchtest du dennoch fortfahren?
+errIllegalChars			Einer der eingegebenen Namen enthält nicht erlaubte Zeichen! <b>Erlaubt sind:</b> Buchstaben, Zahlen, Unterstrich, Minus und Leerzeichen.
+errInputAll				Du hast nichts eingegeben. Möchtest du so viel wie möglich reinstecken?
+errInputNone			Du hast nicht genug eingegeben. Bitte versuche es noch einmal.
+errMainStation			Zu Beginn deines Zuges warst du im Hauptbahnhof. Daher musst du noch ein weiteres Gebäude betreten.
+errMustChoose			Du musst eines der Gebäude doppelklicken. Dieses wird dann anstelle der Baustelle ins Spiel gebracht.
+errNameTooLong			Einer der eingegebenen Namen ist zu lang! Erlaubt sind <b>maximal 20</b> Zeichen.
+errNetwork				<p><b>Ein Verbindungsfehler ist aufgetreten!</b></p><p>%s</p>
+errNoBuildingBuying		Du kannst dieses Gebäude nicht kaufen, denn es ist das einzige, das du bauen kannst.
+errNoShipBuying			Du kannst dieses Schiff nicht kaufen, denn es ist das einzige, das du bauen kannst.
+errNoSpecials			Es werden bis zum Spielende keine Sondergebäude mehr gebaut!
+errNotUsableAfterEntry	Du kannst nach Eintrittszahlung die Gebäudeakion nicht mehr ausführen. Womöglich hast du für den Eintritt Waren bezahlt,
+						die für die Nutzung des Gebäudes benötigt werden.
+errOfferTabu			Du darfst gerade kein Angebot nehmen!
+errOverpaid				Du versuchst zu viele Waren abzugeben! Überzahlen ist OK, aber du darfst dabei keine zusätzlichen Waren abgeben.
+						Bitte korrigiere deine Eingaben und klicke erneut auf den Button.
+errPayback				Die Rückzahlung eines Schuldscheines kostet <b>%s</b>, du hast aber nur <b>%s</b>!
+errSameColors			Mindestens zwei Spielern wurde dieselbe Farbe zugeordnet!
+errShipping				Du versuchst gerade mehr Waren zu verschiffen als du nachher Energie übrig behälst, um die Verschiffung zu bezahlen!
+						Gib die gewünschten Mengen erneut ein und achte diesmal darauf, dass noch genügend Energie übrig bleibt.
+errTakeLoans			Möchtest du Schuldscheine aufnehmen, um den Betrag zu begleichen?
+errTooExpensive			Du hast nicht genug Geld! Der Preis beträgt %s, du hast aber nur %s.
+errTooFewChosen			Du hast zu wenige Waren (%d statt %d) ausgewählt! Bitte korrigiere deine Angaben und klicke erneut auf den Button.
+errTooManyChosen		Du hast zu viele Waren (%d statt %d) ausgewählt! Bitte korrigiere deine Angaben und klicke erneut auf den Button.
+errTooManyUsers			Du kannst dem Spiel nicht mehr beitreten. Es sind bereits %s eingeloggt.
+errUnpaid				Deine Eingaben decken nicht die Forderung. Bitte korrigiere sie und klicke erneut auf den Button.
+
+errEitherOr			Du kannst nicht beides tun, %s kaufen und verkaufen. Gib daher nur einen Wert ein.
+errEmporium			Du versuchst Waren im Gesamtwert von %d Francs einzukaufen, hast aber nur %d.
+errTradingFirm		Du musst Waren im Gesamtwert von %s kaufen, hast aber nur %s ausgegeben.
+
+#
+# Various popup titles.
+#
+
+popupBuilding	Gebäudedetails
+popupGood		Warendetails
+popupOffer		Angebotsdetails
+popupOverview	Übersichtskarte
+popupRound		Rundendetails
+popupShip		Schiffsdetails
+popupShips		Schiffe im Hafen
+popupSupply		Nachschubdetails
+popupLoan		Schuldscheindetails
+popupPayback	Rückzahlung
+popupRelogin	Login
+popupTurn		Aktueller Spielzug
+popupYourTurn	%s, du bist dran!
+popupStacks		Bauvorhabenfelder
+
+popupStackHead	<h3>Bauvorhabenfeld %d:</h3>
+popupStackLine	<div width="160"><span style="color:#000080;">[%02d]</span> %s <span style="color:#b8ab18;">(%d)</span></div>
+popupBuildAll	<p style="margin-top:10px;">Die Summe der Baukosten aller Gebäude beträgt <b>%s</b>.</p>
+popupPriceAll	<p style="margin-top:10px;">Um alle Gebäude zu kaufen, werden <b>%s</b> benötigt.</p>
+popupPlayer		<b style="color:#000080;">%s (%s)</b>
+popupShipping	&bull; Bis zu <b>%s</b> kosten <b>%s</b>.
+
+popupBankrupt			Du hast weder genug Nahrung noch besitzt du Gebäude, die du vekaufen könntest, um den geforderten Betrag von <b>%s</b> zu
+						bezahlen. Du verlierst daher alle Nahrung und erhältst so viele Schuldscheine wie nötig, um den Betrag zu begleichen.
+popupBusinessOffice1	<b>Diese Waren werden gegen %s getauscht. Lass die Eingabefelder leer, wenn du keinen möchtest.</b>
+popupBusinessOffice2	<b>Hast du %s erhalten, kannst du nun eine zusätzliche Ware erhalten. Anderenfalls <i>musst</i> du eine wählen.</b>
+popupBusinessOffice3	<b>Damit bezahlst du deine vorherige Wahl (%s).</b>
+popupEndgame			<span style="color:navy;">Die Schlussphase hat begonnen!</span> Jeder Spieler kann noch eine Hauptaktion ausführen.
+						Die Gebäude dürfen nun auch von mehreren Spielern genutzt werden. Kaufaktionen sind von nun an nicht mehr möglich.
+						Deine Schuldscheine werden am Ende, soweit es geht, automatisch zurückgezahlt.
+popupHarbourWatch		Wähle aus der Liste das Gebäude aus, aus dem du einen Mitspieler vertreiben und das du anschließend selbst nutzen möchtest.
+popupHaulageFirm		Wähle aus der Liste aus, welche Waren zweier benachbarter Angebotsfelder du erhalten möchtest.
+popupInput				Gib hier die Anzahl ein.
+popupIronworks			Möchtest du für <b>%s</b> ein zusätzliches Eisen?
+popupLoanInfo			<b style="color:navy;">%s</b> hat <b>%s</b>.
+popupOccupied			Zur Zeit befindet sich hier %s.
+popupOffered			<b>Im Angebot:</b> %s
+popupPaybackInfo		Du hast <b>%s</b>. Damit kannst du <b>%s</b> zurückzahlen. Wie viele möchtest du zurückzahlen?
+popupPicketLine			Nimm jetzt ein Angebot.
+popupVacantSpaces		Bitte wähle aus der Liste aus, auf wessen Position du spielen möchtest.
+popupWorkersCottages	Als Eigentümer der Arbeitersiedlung hast du jetzt zwei Hauptaktionen.
+
+popupEmporium			<b>%s kostet %s, %s kostet %s,<br>alle anderen Waren kosten je %s.</b>
+popupFleaMarket			Wähle das Angebot, das du nehmen möchtest.
+popupTradingFirm		<b>Der Gesamtwert aller Waren muss %s betragen.</b>
+popupWoodenCrane		Als Eigentümer des Holzkrans kannst du einen beliebigen Baustoff durch Holz ersetzen.
+						Wähle den gewünschten Baustoff aus der Liste aus oder brich ab, wenn du keinen
+						Baustoff durch Holz ersetzen möchtest.
+
+#
+# Menu names.
+#
+
+menuLanguage	Sprache
+menuGame		Spiel
+menuHelp		?
+
+menuBuild		Bauen
+menuEnter		Betreten
+menuBan			Vertreiben
+menuBuy			Kaufen
+menuSell		Verkaufen
+menuInfo		Details
+menuTake		Nehmen
+menuPayback		Zurückzahlen
+menuSpecial		Einsicht
+
+#
+# Menu item names.
+#
+
+itemAbout			Über JLeHavre...
+itemDumpState		Spielzustand anzeigen
+itemGlobalUndo		Spielzustand neu laden
+itemInstructions	Bedienung
+itemOpenChat		Chat-Fenster öffnen
+itemSaveState		Spielzustand speichern
+itemSettings		Einstellungen ändern
+
+#
+# Text visible in the login window.
+#
+
+loginTitle	%s - Login
+loginGame	Name des Spiels:
+loginAddr	Feste IP-Adresse:
+loginName	Dein Spielername:
+loginLoad	Spiel laden
+loginJoin	Spiel beitreten
+
+loginInstructions
+	<h1>Hinweise zum Login</h1>
+	<p>Das <b style="color:navy;">Login-Fenster</b> gliedert sich in drei Teile:</p>
+	<ul><li>Menüleiste</li><li>Logo</li><li>Login-Bereich</li></ul>
+	<p>Im folgenden werden diese Elemente kurz beschrieben.</p>
+	<h2>Wahl der Sprache</h2>
+	<p>Die verfügbaren Sprachen, in denen du das Spiel spielen kannst sind im
+	Sprachenmenü zu sehen. Sie werden automatisch aus dem Sprachdateien-Ordner
+	eingelesen und aufgelistet. Änderst du die Sprache, startet das Spiel neu.
+	Dies ist notwenig, denn die Sprachdaten werden aus Laufzeitgründen nur
+	einmal beim Programmstart geladen. Daher ist es nicht möglich die Sprache
+	während des Spiels oder nach erfolgtem Login zu ändern. Entscheide dich daher
+	möglichst sofort, in welcher Sprache du spielen möchtest.</p>
+	<h2>Der Login-Bereich</h2>
+	<p>Der <b style="color:navy;">Login-Bereich</b> besteht aus vier Teilen:</p>
+	<ul><li>Eingabefeld für den Namen des Spiels</li>
+	<li>Eingabefeld für eine feste IP-Adresse</li>
+	<li>Eingabefeld für den Spielernamen</li>
+	<li>Zwei Buttons</li></ul>
+	<p>Es sind bereits Login-Daten auf deinem Rechner hinterlegt. Jedesmal, wenn du
+	Le Havre spielst werden die aktuellen Daten gespeichert und die vorherigen
+	überschrieben. Daher sind die Eingabefelder immer vorbelegt. Ändere die Daten
+	bei Bedarf und klicke den Button, um dich ins Spiel deiner Wahl einzuloggen.
+	Dadurch wird das Login-Fenster geschlossen und das
+	<b style="color:navy;">Manager-Fenster</b> geöffnet.</p>
+	<h2>Der Name des Spiels</h2>
+	<p>Den Spielnamen kannst du frei wählen (siehe auch die Einschränkungen weiter unten).
+	Existiert bereits ein Spiel dieses Namens, wirst du diesem Spiel als Mitspieler
+	hinzugefügt und mit dem entsprechenden Server verbunden. Beachte: Sollten bereits
+	so viele Spieler in diesem Spiel eingeloggt sein wie maximal möglich sind, dann
+	erhältst du eine Fehlermeldung und das Programm schließt sich von selbst. Dann musst
+	du es neu starten und einen anderen Spielnamen wählen.</p>
+	<p>Gibt es zu deinem gewählten Spielnamen noch keinen Server, dann wird automatisch
+	ein neues Spiel auf deinem Rechner erstellt. Deine Mitspieler müssen dann nur noch
+	diesen Spielnamen angeben, um mit dir zu spielen. Das Erstellen eines neuen Spiels
+	und das Einloggen in ein bereits erstelltes funktionieren also genauso.</p>
+	<p>Zum Spielen von <b>Le Havre</b> bedarf es auch keiner Netzwerkverbindung. Durch
+	mehrmaliges Starten des Spiels auf demselben Rechner können mehrere Spieler an
+	ein und demselben Rechner spielen. Beachte, dass dabei das Spiel auch mehrfach
+	läuft und ihr euch in den vielen geöffneten Fenstern selbst zurechtfinden müsst.
+	Beachte außerdem, dass in einem solchen Fall die Login-Daten von jedem weiteren
+	Spieler überschrieben werden, da für jeden Rechner nur eine Login-Datei erstellt
+	wird.</p>
+	<h2>Die feste IP-Adresse</h2>
+	<p>Dieses Feld sollte im Normalfall leer gelassen werden. Spielt ihr über LAN,
+	dann kann es passieren, dass dein Rechner die falsche IP-Adresse im Spiel verwendet.
+	Das merkst du genau dann, wenn du nach dem Login aller Spieler außer dir niemanden
+	sonst im Managerfenster siehst. In einem solchen Fall musst du und jeder Spieler,
+	der dasselbe Problem hat, eine feste IP-Adresse beim Login eintragen. Wie du deine
+	LAN-Adresse herausfinden kannst, musst du im Internet nachschlagen oder einen
+	Mitspieler mit mehr Erfahrung erfragen, sofern du es nicht selbst schon weißt.</p>
+	<p>Dieses Feld muss ausgefüllt werden, wenn ihr mit <b>Hamachi</b> über das Internet
+	spielen möchtet. Gib deine Hamachi-IP in das Feld ein, damit dich die anderen Spieler
+	finden können und ihr ein gemeinsames Spiel starten könnt.</p>
+	<h2>Dein Spielername</h2>
+	<p>Der Spielername ist wie der Servername bis auf einige weiter unten beschriebene
+	Einschränkungen frei wählbar. Es empfiehlt sich, dass keine zwei Spieler in ein und
+	demselben Spiel denselben Namen tragen, wenn auch dies technisch möglich ist.</p>
+	<h2>Einschränkungen bei den Namen</h2>
+	<p>Die Wahl des Spiel- und Spielernamens ist frei bis auf folgende Ausnahmen:</p>
+	<ul><li>Der Name darf höchstens 20 Zeichen lang sein.</li>
+	<li>Es sind nur Buchstaben, Zahlen, Leerzeichen, Unterstrich und Minus erlaubt.</li></ul>
+	<p>Sollte einer der beiden Namen diesen Bedingungen nicht genügen, erhältst du beim
+	Klick auf einen der beiden Buttons eine Fehlermeldung. Du kannst dich solange nicht
+	einloggen oder ein Spiel laden, bis du die Fehler behoben hast.</p>
+	<p>Hast du eine Fehlermeldung beim Laden eines Spielzustands erhalten, brauchst du
+	diesen nicht erneut zu laden. Korrigiere die fehlerhaften Daten und klicke den rechten
+	Button &ndash; dein vorhin ausgewählter Spielzustand wird nun geladen. Dass ein Spielzustand
+	geladen wurde, erkennst du an der nun roten Schriftfarbe des Ladebuttons.</p>
+	<h2>Die zwei Buttons</h2>
+	<p>Im Login-Bereich befinden sich ganz unten zwei Buttons. Über den linken kannst du einen
+	gespeicherten <b>Spielzustand laden</b> und mit dem Spiel fortfahren. Über den rechten
+	Button kannst du ein <b>neues Spiel starten</b>. Sollte bereits ein Spiel unter diesem Namen
+	laufen, loggst du dich in dieses Spiel ein. Hat es bereits begonnen, erhältst du eine Fehlermeldung
+	und das Programm schließt von alleine, es sei denn ein Spieler ist aus diesem Spiel
+	geflogen und es gibt nun einen oder mehrere freie Plätze. In einem solchen Fall wirst du
+	gefragt, welchen dieser Plätze du einnehmen möchtest. Auf diese Weise kannst du also nach
+	einem Verbindungsverlust ganz einfach ins Spiel zurückkehren.</p>
+	<p><b>Achtung!</b> Das Laden eines Spielzustandes gelingt nicht, wenn ein Spiel unter dem
+	eingegebenem Namen bereits läuft. In einem solchen Fall wirst du in dieses Spiel eingeloggt.</p>
+
+#
+# Text visible in the lobby window.
+#
+
+lobbyTitle			%s - Manager
+lobbyChoiceTitle	Farbwahl
+lobbyChoiceDescr	Wähle eine Farbe aus:
+lobbyLoginArea		Eingeloggte Mitspieler
+lobbyStart			Bereit
+lobbyStartLong		Langspiel starten
+lobbyStartShort		Kurzspiel starten
+
+lobbyFormat		<html><b>%s</b><html>
+lobbyBonus		Startboni setzen
+lobbyBonusInfo	Hierüber kannst du dem Spieler zusätzliche Rohstoffe zu Beginn des Spiels als kleine Starthilfe geben.
+lobbyColor		Spielerfarbe
+lobbyColorInfo	Zum Ändern der Farbe bitte doppelklicken.
+lobbyIndex		Sitzplatznummer
+lobbyIndexInfo	Du kannst hier die Sitzplatznummer auf eine bestimmte Zahl festlegen. Lasse es bei <b>'?'</b>, um eine zufällige Position zu erhalten.
+
+lobbyInstructions
+	<h1>Hinweise zum Manager</h1>
+	<p>Das <b style="color:navy;">Manager-Fenster</b> gliedert sich in drei Teile:</p>
+	<ul><li>Spielmenü</li><li>Mitspieler-Bereich</li><li>Spielstart-Buttons</li></ul>
+	<p>Dir ist sicher aufgefallen, dass zusammen mit dem Managerfenster ein weiteres
+	aufgegangen ist - das Chatfenster. Dieses wird hier weiter unten kurz erläutert.</p>
+	<h2>Das Spielmenü</h2>
+	<p>Im <b style="color:navy;">Spielmenü</b> kann das Spiel an die eigegen Wünsche
+	oder zu Textzwecken angepasst werden. Unter <b style="color:navy;">Einstellungen</b>
+	kann man folgende Spielelemente vorab beeinflussen:</p>
+	<ul><li>Die Reihenfolge der <b style="color:green;">Nachschubplättchen</b>
+	kann ganz oder nur teilweise festgelegt werden. Zudem kann man bestimmen, welche
+	Plättchen zu Spielbeginn bereits sichtbar sind.</li>
+	<li>Welche <b style="color:green;">Sondergebäude</b> überhaupt mitspielen oder
+	in welcher Reihenfolge sie auftauchen, kann ebenfalls festgelegt werden. Nach Wunsch
+	können einige Sondergebäude sogar als Startgebäude festgelegt werden. Es ist sogar
+	möglich weniger Sondergebäude auszuwählen als vorgesehen sind.</li>
+	<li>Außerdem kann man das Bauvorhabenfeld vorgeben, auf das ein
+	<b style="color:green;">Standardgebäude</b> gelegt werden soll. Die Reihenfolge in
+	diesen wird wie gewohnt nach Ordnungszahl vorgenommen.</li>
+	<li>Eine weitere Einstellung betrifft die Anzahl der <b style="color:green;">Waren</b>
+	zu Spielbeginn. Beachte: Wird diese Option gesetzt, wird die Standardzahl ignoriert.
+	Waren, deren Werte nicht gesetzt werden, werden in der üblichen Zahl ausgelegt.</li>
+	<li>Schließlich kann man noch für das <b style="color:green;">Solospiel</b>
+	festlegen, wie viele Waren der Marktplatz bringt, bzw. ob man während des Spiels
+	seine Punkte angezeigt bekommen möchte.</li>
+	<p>Die Einstellungen können gespeichert und in einem zukünftigen Spiel geladen werden.
+	Nach dem Laden werden die Änderungen erst einmal nur im Editor angezeigt. Damit die
+	Einstellungen im Spiel berücksichtigt werden können, <b>muss</b> der Übernehmen-Button
+	geklickt werden.</p>
+	<p><b>Achtung!</b> Änderungen im Einstellungsmenü kann nur der Spielleiter durchführen.
+	Er sollte allerdings alle geplanten Änderungen vorab mit den Mitspielern absprechen.</p>
+	<h2>Der Mitspieler-Bereich</h2>
+	<p>Im <b style="color:navy;">Mitspieler-Bereich</b> werden die bereits eingeloggten
+	Spieler angezeigt. Jeder Spieler wird dort in einer Zeile angezeigt. Eine solche Zeile
+	besteht dabei aus folgenden Teilen:</p>
+	<ul><li>Sitzplatz-Position</li><li>Name des Spielers</li><li>Farbe seiner Spielfiguren</li>
+	<li>Button zum Setzen der Startboni</li></ul>
+	<p>Nur der Spiel-Ersteller kann in diesem Bereich Änderungen vornehmen.</p>
+	<h3>Sitzplatz-Positon</h3>
+	<p>Hier kann vorab eine gewünschte Spielreihenfolge festgelegt werden. Dazu sollten sich
+	die Spieler über den Chat einigen, wie verfahren wird. Der Spielleiter setzt dann die
+	gewünschten Positionen.</p>
+	<p>Ein <b>?</b> bedeutet eine zufällige Wahl unter den noch freien Positionen. Das bedeutet,
+	wird eine Zahl bei einem Spieler gesetzt, hat diese Vorrang. Alle Spieler mit '?' werden
+	dann zufällig auf die übrigen Sitzplätze verteilt.</p>
+	<p>Eine Zahl gibt einen festen Sitzplatz vor. Es ist allerdings ohne weiteres möglich
+	zwei oder mehr Spielern dieselbe Platznummer zuzuweisen. Dann werden alle mit derselben Nummer
+	untereinander zufällig angeordnet, wobei der erste den Sitzplatz mit der eingestellten
+	Nummer und die anderen die direkt weiter folgenden Positionen einnehmen.</p>
+	<p>Da immer alle Positionen zur Verfügung stehen, auch wenn nicht die Maximalzahl an
+	Spielern am Spiel teilnimmt, kann man auch Sitzplätze auswählen, die gar nicht vorhanden sind.
+	Diese Spieler werden dann hinten eingereiht.</p>
+	<h3>Spielerfarbe</h3>
+	<p>Auch die <b style="color:navy;">Spielerfarve</b> kann nur vom Spielleiter gesetzt
+	werden. Hier ist es allerdings nicht möglich mehreren Spielern dieselbe Farbe zuzuweisen.
+	Sollte versucht werden das Spiel zu starten, obwohl noch eine oder mehrere Farben gleich sind,
+	erscheint eine Fehlermeldung und der Spielstart wird nicht durchgeführt. Erst wenn alle Farben
+	einwandfrei eingestellt sind, kann das Spiel beginnen.</p>
+	<h3>Startboni</h3>
+	<p>Grundsätzlich gibt es keine <b style="color:navy;">Startboni</b>. Man kann allerdings
+	zu Testzwecken oder für Neulinge weitere Startwaren festlegen. Es ist auch genau das Gegenteil
+	möglich - man kann damit auch Handicaps einstellen, indem man weniger Waren zu Spielbeginn
+	vorsieht als im Normalfall möglich wären. Wird nämlich der Wert für eine Ware verändert, so
+	wird ihr Standardwert überschrieben. Nicht gesetzte Waren bleiben unverändert.</p>
+	<p>Eine Änderung der Startrohstoffe sollte mit den jeweiligen Spielern, am besten natürlich
+	mit allen Beteiligten abgesprochen werden. In jedem Fall werden alle Spieler vor Spielbeginn
+	über alle gesetzten Änderungen vom Spiel in Kenntnis gesetzt.</p>
+	<h2>Die Spielstart-Buttons</h2>
+	<p>Es gibt zwei Buttons zum Starten des Spiels. Das <b style="color:navy;">Langspiel</b>
+	kann über den ersten, das <b style="color:navy;">Kurzspiel</b> über den zweiten Button
+	gestartet werden. Diese Buttons erscheinen allerdings nur beim Spielleiter. Jeder andere
+	Spieler sieht nur einen einfachen <b style="color:navy;">Bereit</b>-Button. Das Spiel startet
+	erst, wenn alle Spieler auf diesen geklickt haben.</p>
+	<p>Es entscheidet immer der Spielleiter, welches Spiel gespielt wird. Es ist allerdings im
+	Regelfall zu empfehlen, sich vorher über den Chat auf eine Spielart zu einigen.</p>
+	<h1>Hinweise zum Chat-Fenster</h1>
+	<p>Das <b style="color:navy;">Chat-Fenster</b> öffnet automatisch nach erfolgtem Login
+	sowie bei jeder Nachricht, die den Spieler erreicht. Es kann bei Bedarf geschlossen und über
+	das Spielmenü wieder geöffnet werden.</p>
+	<p>Die angezeigten Nachrichten werden an das Ende der Ausgabe gehängt. Das Fenster scrollt
+	automatisch mit. Zudem sind die Nachrichten farbcodiert. Deine eigenen Nachrichten werden in
+	rot dargestellt, Nachrichten anderer Spieler ganz normal in schwarz. Systemnachrichten wie
+	Hinweise zu ausgeführten Spielzügen werden blau angezeigt.</p>
+	<p>Das Chat-Fenster hat außer der Textausgabe keine besonderen Fähigkeiten. Es gibt weder
+	Smilies noch spezielle Befehle wie in der <a href="http://www.brettspielwelt.de">Brettspielwelt</a>.
+	Die einzige Formatieroption, die der Spieler hat, ist das Auslassen des Doppelpunktes, der
+	automatisch nach dem Spielernamen geschrieben wird, indem er selbst seine Nachricht mit einem
+	Doppelpunkt beginnt.</p>
+
+#
+# Text visible in the chat window.
+#
+
+chatTitle	%s - Chat
+chatIntro	Chat gestartet...
+
+#
+# Text visible in the settings window.
+#
+
+setTitle			Einstellungen
+setSpecTitle		Sondergebäude
+setSupTitle			Nachschub
+setSupOpen			offen
+setStdTitle			Standardgebäude
+setGoodsTitle		Warenbestand
+setExtraTitle		Sonstiges
+setLoansOption		Schuldschein-Variante
+setPointsOption		Punkte offenlegen
+
+setSpecDescr
+	<html>
+	<div style="font-family:sans-serif; padding-bottom:30px; text-align:center;">
+	Hier kannst du auswählen, welche Sondergebäude für das Spiel berücksichtigt werden sollen.
+	Entferne die Markierung, um bestimmte Gebäude auszusortieren. Lege über die Liste fest, wo
+	das Gebäude im Stapel zu Spielbeginn liegen soll. Wähle '<b>?</b>' für eine zufällige
+	Position oder '<b>Start</b>', um es als zusätzliches Startgebäude auszulegen.
+	</div>
+	</html>
+setSpecCheck	Ist der Haken gesetzt, kann dieses Gebäude im Spiel verwendet werden.
+setSpecList		Wähle die Position des Gebäudes im Stapel oder lege es als Startgebäude aus.
+setSpecBase		Basisspiel
+setSpec2008		Essen 2008
+setSpecLGH		Le Grand Hameau
+
+setSupDescr
+	<html>
+	<div style="font-family:sans-serif; padding-bottom:30px; text-align:center;">
+	Hier kannst du die Reihenfolge der Nachschubplättchen im Voraus bestimmen. Du kannst einzelne
+	oder alle auch zufällig wählen lassen, indem du '<b>?</b>' aus der Liste auswählst. Markierst
+	du das Kästchen, wird das zugehörige Nachschubplättchen bereits zu Spielbeginn offen ausgelegt.
+	</div>
+	</html>
+setSupCheck		Ist der Haken gesetzt, wird dieses Nachschubplättchen offen ausgelegt.
+setSupList		Wähle die Position des Nachschubplättchens.
+
+setStdDescr
+	<html>
+	<div style="font-family:sans-serif; padding-bottom:30px; text-align:center;">
+	Hier kannst du auswählen, welche Standardgebäude für das Spiel berücksichtigt
+	werden sollen. Entferne die Markierung, um bestimmte Gebäude auszusortieren.
+	Lege über die Liste fest, auf welches Bauvorhabenfeld es zu Spielbeginn gelegt
+	werden soll. Wähle '<b>?</b>' für ein zufälliges Feld oder '<b>Start</b>', um
+	es als zusätzliches Startgebäude auszulegen.
+	<b style="font-variant:small-caps;">Experimentieren auf eigene Gefahr!</b>
+	</div>
+	</html>
+setStdCheck		Ist der Haken gesetzt, wird dieses Gebäude im Spiel verwendet.
+setStdList		Wähle das gewünschte Bauvorhabenfeld oder lege das Gebäude als Startgebäude aus.
+setStdOverride	Markiere dieses Feld, wenn du wünschst, dass auch für weniger als 4 Spieler alle von dir markierten Gebäude
+				im Spiel auftauchen, auch wenn einige von ihnen üblicherweise bei weniger Spielern nicht verwendet werden.
+
+setGoodsDescr
+	<html>
+	<div style="font-family:sans-serif; padding-bottom:30px; text-align:center;">
+	Hier kannst du die Anzahl der Waren ändern, die zu Beginn des Spiels auf
+	die Angebotsfelder gelegt werden. Erst wenn ein Wert gesetzt wird, wird
+	die Zahl dieser Ware verändert. Möchtest du also z.&nbsp;B. keinen Fisch zu
+	Beginn des Spiels, musst du explizit eine Null setzen.
+	</div>
+	</html>
+setExtraDescr
+	<html>
+	<div style="font-family:sans-serif; padding-bottom:30px; text-align:center;">
+	Lege eine Begrenzung für den <b>Marktplatz</b> im Solospiel fest.<br>
+	Es wird empfohlen eine Begrenzung zu setzen.
+	</div>
+	</html>
+setLoansDescr
+	<html>
+	<div style="font-family:sans-serif; padding-bottom:30px; text-align:center;">
+	Lege fest, ob mit der <b>Schuldschein-Variante</b> gespielt wird. Zahle 2 Francs
+	Zinsen, wenn du mindestens so viele Schuldscheine hast wie Spieler mitspielen.
+	</div>
+	</html>
+setPointsDescr
+	<html>
+	<div style="font-family:sans-serif; padding-bottom:30px; text-align:center;">
+	Lege fest, ob die <b>Siegpunkte</b> während des Spiels angezeigt werden sollen.<br>
+	Es wird empfohlen, sie nicht sichtbar zu machen.
+	</div>
+	</html>
+setExtraList	Wähle die gewünschte Obergrenze an Waren aus.
+
+#
+# Text visible in the bonus window.
+#
+
+bonusTitle		%s - Startboni setzen
+bonusDescr
+	<html>
+	<div style="font-family:sans-serif; padding-bottom:30px; text-align:center;">
+	<h1>Startboni setzen</h1>
+	<p>Hier kannst du festlegen, wie viele Waren <b>%s</b> zu Spielbeginn erhalten soll.
+	Für Waren, deren Wert nicht gesetzt wird, werden die spielüblichen Standardwerte genommen.</p>
+	</div>
+	</html>
+
+#
+# Text visible in the food payment window.
+#
+
+foodTitle		Nahrung
+foodDescr
+	<html>
+	<div style="font-family:sans-serif; padding-bottom:30px; text-align:center;">
+	<h1>Nahrung abgeben</h1>
+	<p>Am Ende jeder Runde muss Nahrung abgegeben werden. Du musst noch <b>%s</b>
+	bezahlen. Gib in den Textfeldern ein, wie viel Nahrung jeder Sorte du abgeben möchtest.
+	Parallel hierzu kannst du noch im Hauptfenster Gebäude verkaufen. Tust du dies nicht
+	und hast zu wenig Nahrung erhältst du automatisch Schuldscheine.</p>
+	</div>
+	</html>
+
+#
+# Text visible in the interest window.
+#
+
+moneyTitle		Zinsen
+moneyDescr
+	<html>
+	<div style="font-family:sans-serif; padding-bottom:30px; text-align:center;">
+	<h1>Zinsen zahlen</h1>
+	<p>Du hast <b>%s</b> und musst daher <b>%s</b> Zinsen bezahlen. Wenn du
+	Gebäude hast, kannst du sie im Hauptfenster verkaufen, um den geforderten
+	Betrag aufzubringen, oder du zahlst alle Schuldscheine zurück.
+	Sobald du damit fertig bist, klicke auf den Button.</p>
+	</div>
+	</html>
+
+#
+# Text visible in the entry payment dialog.
+#
+
+entryTitle		Eintritt
+entryDescr
+	<html>
+	<div style="font-family:sans-serif; padding-bottom:30px; text-align:center;">
+	<h1>Eintritt zahlen</h1>
+	<p>Der Besitzer dieses Gebäudes verlangt Eintritt von dir! Du musst ihm <b>%s</b>
+	bezahlen. Gib in den Textfeldern ein, mit welchen Waren du diese Forderung erfüllen
+	möchtest und klicke anschließend auf den Button.</p>
+	</div>
+	</html>
+
+#
+# Text visible in the energy payment dialog.
+#
+
+energyTitle		Energie
+energyDescr
+	<html>
+	<div style="font-family:sans-serif; padding-bottom:30px; text-align:center;">
+	<h1>%s abgeben</h1>
+	<p>Für diese Aktion musst du noch <b>%s</b> abgeben. Gib in den Textfeldern ein, mit welchen
+	Waren du diese Forderung erfüllen möchtest und klicke anschließend auf den Button.</p>
+	</div>
+	</html>
+
+#
+# Text visible in the process dialog.
+#
+
+processTitle	Warentausch
+processDescr
+	<html>
+	<div style="font-family:sans-serif; padding-bottom:30px; text-align:center;">
+	<h1>Waren umwandeln</h1>
+	<p>Gib in das Textfeld ein, wie viele Pakete bestehed aus <b>%s</b> du in
+	je <b>%s</b> umwandeln möchtest und klicke anschließend auf den Button.</p>
+	</div>
+	</html>
+
+#
+# Text visible in the choice dialog.
+#
+
+choiceTitle		Warenauswahl
+choiceDescr
+	<html>
+	<div style="font-family:sans-serif; padding-bottom:30px; text-align:center;">
+	<h1>Waren auswählen</h1>
+	<p>Gib in die Textfelder ein, wie viele Waren jeder Sorte du %s möchtest.
+	Du musst mindestens %d und darfst höchstens %d auswählen.</p>%s
+	</div>
+	</html>
+choiceDescr2
+	<html>
+	<div style="font-family:sans-serif; padding-bottom:30px; text-align:center;">
+	<h1>Waren auswählen</h1>
+	<p>Gib in die Textfelder ein, wie viele Waren jeder Sorte du %s möchtest.
+	Du musst genau %d auswählen.</p>%s
+	</div>
+	</html>
+
+#
+# Text visible in the marketplace dialog.
+#
+
+marketTitle		Sondergebäude
+marketDescr
+	<html>
+	<div style="font-family:sans-serif; padding-bottom:30px; text-align:center;">
+	<h1>Die obersten Sondergebäude</h1>
+	<p>Unten abgebildet sind die obersten beiden Karten des Sondergebäudestapels.
+	Das linke Gebäude von ihnen kommt <b>%s</b> ins Spiel.%s Das Gebäude rechts davon
+	wird <b>%s</b> gebaut.%s Mit einem Doppelklick auf eines der beiden Gebäude
+	kannst du festlegen, dass dieses als nächstes kommen soll.</p>
+	</div>
+	</html>
+
+#
+# Text visible in the handcards dialog.
+#
+
+cardsTitle		Deine Handkarten
+cardsInfo		Sobald ein Spieler die Baustelle betritt, spielt er eine seiner Handkarten aus
+cardsChoose		Führe einen Doppelklick auf eine der unten angezeigten Karten aus
+cardsDescr
+	<html>
+	<div style="font-family:sans-serif; padding-bottom:30px; text-align:center;">
+	<h1>Deine Handkarten</h1>
+	<p>Die Baustelle ist im Spiel. Jeder Spieler hat daher drei Sondergebäude
+	auf die Hand bekommen. %s. Dieses Gebäude kommt dann ins Spiel. Alle übrigen
+	Handkarten und die Baustelle werden aus dem Spiel entfernt.</p>
+	</div>
+	</html>
+
+#
+# Text visible in the scoring window.
+#
+
+scoreTitle		Wertung
+scorePoint		Siegpunkt
+scorePoint2		Siegpunkten
+scorePoint5		Siegpunkten
+scoreDescr
+	<html>
+	<div style="font-family:sans-serif; padding-bottom:30px; text-align:center;">
+	<h1>Endstand</h1>
+	<p>Das Spiel ist zu Ende!<br>
+	%s %s mit <b>%s</b>.</p>
+	</div>
+	</html>
+
+#
+# Text visible in the debug window.
+#
+
+dumpTitle	Aktueller Spielzustand
+dumpDescr
+	<html>
+	<h1>Aktueller Spielzustand</h1>
+	<p>Hier ist eine Auflistung aller Spielvariablen
+	und ihrer aktuellen Zustände. Bitte kopiere im Falle eines Bugs diese Liste
+	in eine Datei und schicke sie per Mail an <b>kobiela@gmx.de</b>. Bitte
+	schließe das Spielfenster und schicke auch die aktuelle Logdatei gleich mit.</p>
+	<h2 style="margin-bottom:10px;">Vielen Dank für deine Mithilfe!</h2>
+	<pre style="color:navy;">%s</pre>
+	</html>
+
+#
+# The player colors.
+#
+
+colorBlue	blau
+colorGreen	grün
+colorPurple	lila
+colorRed	rot
+colorWhite	weiß
+
+#
+# The Buildings.
+#
+
+buildingB1		Bauhandwerksbetrieb
+descriptionB1	Baue 1 Gebäude.
+
+buildingB2		Bauhandwerksbetrieb
+descriptionB2	Baue 1 Gebäude.
+
+buildingB3		Bauunternehmen
+descriptionB3	Baue 1 oder 2 Gebäude.
+
+building_00		Toilettenhäuschen
+description_00	Das Toilettenhäuschen wird auf das
+				Bauvorhabenfeld gelegt, dessen oberstes
+				Gebäude die höchste Ordnungszahl hat.
+
+building_01		Marktplatz
+description_01	Nimm dir 2 verschiedene Standardwaren,
+				sowie je 1 weitere unterschiedliche pro
+				Handwerksbetrieb in deinem Besitz.
+				Schaue dir außerdem die obersten beiden
+				Sondergebäudekarten an und lege sie in
+				beliebiger Reihenfolge züruck.
+
+building_02		Sägewerk
+description_02	Baue 1 Gebäude, das u. a.
+				mit Holz gebaut wird, für
+				1 Holz weniger.
+
+building_03		Fischerei
+description_03	Nimm dir 3 Fische, sowie je
+				1 Fisch extra pro Fischersymbol
+				auf Gebäuden in deinem Besitz.
+
+building_04		Schreinerei
+description_04	Verkaufe 1 Holz für 5 Franc
+				<i>oder</i> 2 Holz für 6 Franc
+				<i>oder</i> 3 Holz für 7 Franc.
+
+building_05		Backhaus
+description_05	Wandle für je 1/2 Energie
+				beliebig oft Korn in je
+				1 Brot und 1/2 Franc um.
+
+building_06		Baumarkt
+description_06	Nimm dir je 1 Holz, Ziegel und Eisen.
+
+building_07		Köhlerei
+description_07	Wandle beliebig oft Holz
+				in je 1 Holzkohle um.
+
+building_08		Räucherei
+description_08	Zahle 1 Energie und wandle bis
+				zu 6 Fisch in je 1 Räucherfisch
+				und 1/2 Franc um.
+
+building_09		Schlachthof
+description_09	Wandle beliebig oft Vieh in je 1 Fleisch
+				und 1/2 Fell (abgerundet) um.
+
+building_10		Lehmhügel
+description_10	Nimm dir 3 Lehm, sowie je 1 Lehm extra
+				pro Hammersymbol auf Gebäuden in
+				deinem Besitz.
+
+building_11		Kulturzentrum
+description_11	Nimm dir 4 Franc aus der Stadtkasse
+				pro Mitspieler in deinen Gebäuden.
+
+building_12		Werft
+description_12	<b>Baue 1 Schiff.</b>
+				Der Erste, der kein Holzschiff baut, muss
+				zuvor 1 Ziegel für die Modernisierung zahlen.
+
+building_13		Schwarzmarkt
+description_13	Nimm dir je 2 Marken jeder Sorte, deren
+				Angebotsfeld leer ist. Dies gilt auch für
+				Franc-Münzen.
+
+building_14		Ziegelei
+description_14	Wandle für je 1/2 Energie beliebig oft
+				Lehm in je 1 Ziegel und 1/2 Franc um.
+
+building_15		Amtsgericht
+description_15	Hast du 3 oder mehr Schuldscheine, dann
+				gib 2 zurück, ansonsten nur 1. Hattest du
+				genau 2 Schuldscheine, erhältst du noch
+				zusätzlich 2 Franc aus der Stadtkasse.
+
+building_16		Zeche
+description_16	Bist du im Besitz mindestens eines
+				Gebäudes mit Hammersymbol, dann
+				nimm dir 4 Kohle, ansonsten 3.
+
+building_17		Werft
+description_17	<b>Baue 1 Schiff.</b>
+				Der Erste, der kein Holzschiff baut, muss
+				zuvor 1 Ziegel für die Modernisierung zahlen.
+
+building_18		Reederei
+description_18	Verkaufe deine Waren über deine Schiffe.
+				Zahle für jedes Schiff, das zu einsetzt,
+				3 Energie. Du erhältst den aufgedruckten
+				Warenwert aus der Stadtkasse. Beachte
+				ein eventuell vorhandenes Piratennest.
+
+building_19		Lebensmittelmarkt
+description_19	Nimm dir je 1 Vieh und Fleisch, Fisch
+				und Räucherfisch, sowie Korn und Brot.
+
+building_20		Gerberei
+description_20	Wandle bis zu 4 Felle in je
+				1 Leder und 1 Franc um.
+
+building_21		Kontor
+description_21	Tausche 4 beliebige Waren gegen 1 Stahl.
+				Für eine 5. beliebige Ware darfst du dir
+				zusätzlich 1 Holzkohle, 1 Leder oder
+				1 Ziegel nehmen.
+
+building_22		Eisenhütte
+description_22	Nimm dir 3 Eisen. Für 6 Energie
+				darfst du dir ein 4. Eisen nehmen.
+
+building_23		Stahlwerk
+description_23	Wandle für je 5 Energie beliebig
+				oft Eisen in je 1 Stahl um.
+
+building_24		Lagerhaus
+description_24	Bei Spielende zusärtlich: 1/2 Franc pro Ware
+
+building_25		Kokerei
+description_25	Wandle beliebig oft Kohle in
+				je 1 Koks und 1 Franc um.
+
+building_26		Dock
+description_26	Bei Spielende zusätzlich: 4 Franc pro Schiff
+
+building_27		Seine-Brücke
+description_27	Verkaufe beliebig oft Luxuswaren für
+				je 1 Franc, sowie Standardwaren für
+				je 1/3 Franc.
+
+building_28		Rathaus
+description_28	Bei Spielende zusätzlich:
+				4 Franc pro Öffentlichem Gebäude
+				2 Franc pro Handwerksbetrieb
+
+building_29		Bank
+description_29	Bei Spielende zusätzlich:
+				4 Franc pro Industriegebäude
+				2 Franc pro Wirtschaftsgebäude
+
+building_30		Kirche
+description_30	Bist du im Besitz von mindestens 5 Broten
+				und 2 Fischen, erhältst du weitere 5 Brote
+				und 3 Fische.
+
+building_31		Fußballstadion
+description_31	Lege das Fußballstadion auf das erste frei
+				gewordene Bauvorhabenfeld. Solange noch
+				keines frei ist, kann das Fußballstadion
+				nur gekauft werden.
+
+building001		Arbeitsamt
+description001	Nimm dir 1 Fisch pro Fischersymbol,
+				sowie 1 Kohle pro Hammersymbol auf
+				Gebäuden in deinem Besitz.
+
+building002		Bäckerei
+description002	Verkaufe bis zu 6 Brote zu je 3 Franc.
+
+building003		Baguetterie
+description003	Verkaufe bis zu 4 mal Brot und Fleisch
+				zu je 6 Franc pro Paket.
+
+building004		Bauernhof
+description004	Nimm dir je 2 Fisch, Korn und Holz,
+				sowie je 1 Fell und Vieh.
+
+building005		Bekleidungsindustrie
+description005	Verkaufe beliebig oft Fell und Leder
+				zu je 7 Franc pro Paket.
+
+building006		Eisenmine und Flöz
+description006	Nimm dir 2 Eisen und 1 Kohle.
+
+building007		Fischmarkt
+description007	Verkaufe bis zu 7 Fische zu je 2 Franc.
+
+building008		Fischrestaurant
+description008	Verkaufe beliebig oft Räucherfisch
+				zu je 3 Franc.
+
+building009		Fischteich und Gehölz
+description009	Nimm dir je 3 Fisch und Holz.
+
+building010		Forststube
+description010	Verkaufe bis zu 4 mal Holz und Fleisch
+				zu je 5 Franc pro Paket.
+
+building011		Gärtnerei
+description011	Nimm dir 3 Franc und 4 Holz.
+
+building012		Gewerbegebiet
+description012	Bei Spielende zusätzlich:
+				2 Franc pro Industriegebäude
+
+building013		Gildenhaus
+description013	Bei Spielende zusätzlich:
+				2 Franc pro Wirtschaftsgebäude
+
+building014		Hafenwache
+description014	Zahle einem Mitspieler 1 Franc, um
+				ihn aus einem Gebäude zu vertreiben.
+				Betrete dieses Gebäude anschließend
+				und zahle gegebenenfalls Eintritt.
+
+building015		Hüttenwerk
+description015	Nimm dir je 1 Kohle, Koks und Eisen.
+
+building016		Imbisskette
+description016	Verkaufe bis zu 3 mal Holz, Brot und
+				Räucherfisch zu je 8 Franc pro Paket.
+
+building017		Jagdhütte
+description017	Nimm dir 2 Felle und 3 Fleisch.
+
+building018		Kohlenhandlung
+description018	Zahle 1 Nahrung und nimm dir 1 Holzkohle
+				und/oder für je 2 Nahrung bis zu 5 Kohle.
+
+building019		Konditorei
+description019	Verkaufe bis zu 3 mal Korn und Brot
+				zu je 5 Franc pro Paket.
+
+building020		Kürschnerei
+description020	Tausche beliebig oft Fell gegen Brot.
+				Zusätzlich darfst du bis zu 2 Leder
+				zu je 5 Franc verkaufen.
+
+building021		Lederindustrie
+description021	Bist du im Besitz von 14 Franc, darfst
+				du einmal genau 3 Leder für ingesamt
+				16 Franc verkaufen.
+
+building022		Lehmbrennerei
+description022	Zahle 1 Energie und tausche 1 Lehm
+				gegen 3 Ziegel ein.
+
+building023		Luxusjacht
+description023	Wer auf eine Werft geht, darf anstelle der
+				eigentlichen Aktion sein Eisenschiff aus
+				dem Spiel nehmen und dafür kostenlos
+				diese Jacht erwerben. Sie gilt als Eisen-
+				schiff, bringt aber keine Nahrung ein und
+				fährt auch nicht für die Reederei.
+				Die Luxusjacht kann selbstverständlich
+				alternativ direkt gekauft werden.
+
+building024		Mastbetrieb
+description024	Der Eigentümer erhält in jeder Erntezeit,
+				in der er 2 bis 6 Vieh besitzt, 2 Vieh statt
+				1 Vieh dazu.
+
+building025		Maurerinnung
+description025	Der Eigentümer zahlt beim Bau eines jeden
+				Gebäudes 1 Lehm oder 1 Ziegel weniger.
+
+building026		Möbelfabrik
+description026	Verkaufe beliebig oft Holz und Leder
+				zu 6 Franc pro Paket.
+
+building027		Rathausplatz
+description027	Nimm dir pro Handwerksbetrieb in deinem
+				Besitz je 1 unterschiedliche Luxusware,
+				jedoch kein Stahl.
+
+building028		Schenke
+description028	Verkaufe bis zu 4 mal Holz und Korn
+				zu je 3 Franc pro Paket.
+
+building029		Spedition
+description029	Zahle 3 Franc an die Stadtkasse und
+				nimm alle Waren von 2 benachbarten
+				Angebotsfeldern (außer Franc).
+
+building030		Schnapsbrennerei
+description030	Verkaufe bis zu 4 Korn zu je 2 Franc.
+
+building031		Stahlhütte
+description031	Zahle 15 Energie und tausche 1 Eisen
+				gegen 2 Stahl ein.
+
+building032		Steakhaus
+description032	Verkaufe bis zu 4 mal Fleisch und Holzkohle
+				zu je 6 Franc pro Paket.
+
+building033		Windmühlenpark
+description033	Der Eigentümer zahlt jedesmal insgesamt
+				3 Energie weniger, wenn er im Rahmen
+				einer Hauptaktion Energie aufwenden muss.
+
+building034		Ziegelindustrie
+description034	Bist du im Besitz von 10 Franc, darfst
+				du einmal genau 3 Ziegel für insgesamt
+				14 Franc verkaufen.
+
+building035		Zoo
+description035	Nimm dir 1/3 Franc je Fisch bzw. Vieh
+				in deinem Besitz.
+
+building036		Arbeitersiedlung
+description036	Der Eigentümer hat nach Abschluss der
+				Rundenphase noch 2 statt 1 Hauptaktion,
+				die er beide in Folge ausführt.
+
+building037		Baustelle
+description037	Jeder Spieler erhält 3 Sondergebäude auf
+				die Hand. Der Erste, der die Baustelle
+				betritt spielt eine seiner Handkarten
+				aus und nutzt dieses Gebäude sofort &ndash;
+				soweit möglich. Das Gebäude gehört der
+				Stadt. Die Eintrittsgebühr vermeidet er
+				somit nur, wenn er das Gebäude kauft.
+				Anschließend werden alle Handkarten
+				zusammen mit der Baustelle wieder aus
+				dem Spiel genommen.
+
+building038		Holzfällerlager
+description038	Tausche bis zu 7 Nahrung gegen je 1 Holz.
+
+building039		MS Dagmar
+description039	Die MS Dagmar kann gekauft oder auf einer Werft
+				gegen ein eigenes Luxusschiff getauscht werden,
+				das aus dem Spiel genommen wird. Die MS Dagmar
+				gilt als Luxusschiff.
+
+building040		Pfandleihe
+description040	Stapele unterschiedliche Waren aus deinem
+				Vorrat auf die Pfandleihe und nimm dir pro
+				Ware 2 Franc. Du kannst deine Waren jederzeit
+				(auch einzeln) für je 2 Franc wieder auslösen.
+				Zum Auslösen musst du die Pfandleihe nicht
+				betreten.
+
+building041		Piratennest
+description041	Der Eigentümer erhält von jedem Schiff, das
+				zur Reederei fährt 1 Franc vom Erlös ab.
+
+building042		Schrottplatz
+description042	Tausche bis zu 5 mal 2 Nahrung
+				gegen je 1 Eisen.
+
+building043		Spelunke
+description043	Wer heimgeschickt wird, kommt in die Spelunke und
+				zahlt 2 Franc in die Stadtkasse. Der Besitzer zahlt
+				nur 1 Franc. In der Spelunke können sich mehrere
+				Personen gleichzeitig aufhalten.
+
+building044		Streikposten
+description044	Nimm dir alle Marken aus einem Angebot. Deine
+				Mitspieler müssen in ihrem nächsten Spielzug
+				ebenfalls ein Angebot nehmen. Danach wird der
+				Streikposten aus dem Spiel genommen.
+
+building045		Tabakmanufaktur
+description045	Der Eigentümer kann jederzeit in seinem
+				Spielzug Mitspieler aus seinen eigenen
+				Gebäuden vertreiben.
+
+building046		Viehbetrieb
+description046	Du erhältst von jedem Mitspieler, der
+				mindestens 1 Vieh hat, 1 Vieh.
+				Im Spiel zu zweit erhältst du sogar
+				2 Vieh vom Gegner.
+
+buildingGH01	Holzkran
+descriptionGH01	Der Eigentümer darf beim Bauen eines jeden Gebäudes
+				einen beliebigen Baustoff durch 1 Holz ersetzen.
+				
+buildingGH02	Sägemühle
+descriptionGH02	Der Eigentümer zahlt beim Bauen eines jeden Gebäudes
+				1 Holz weniger.
+
+buildingGH03	Hauptbahnhof
+descriptionGH03	Sobald du den Hauptbahnhof verlässt, darfst du
+				2 Gebäude in Folge nutzen ohne Eintritt zu
+				bezahlen. In den Hauptbahnhof kannst du dabei
+				nicht zurückkehren. Aus dem Hauptbahnhof kannst
+				du unter keinen Umständen vertrieben werden.
+
+buildingGH04	Hotel
+descriptionGH04	Solange du im Hotel verweilst, erhältst du jedes
+				Mal 3 Franc aus der Stadtkasse, wenn du statt einer
+				Gebäudeaktion ein Angebot nimmst. Aus dem Hotel kannst
+				du unter keinen Umständen vertrieben werden.
+
+buildingGH05	Pelzmanufaktur
+descriptionGH05	Pro Leder in deinem Besitz: verkaufe bis zu zweimal
+				2 Fell für 4 Franc.
+
+buildingGH06	Wagnerei
+descriptionGH06	Pro Eisen in deinem Besitz: verkaufe 2 Holz für 5 Franc.
+
+buildingGH07	Fischerhaus
+descriptionGH07	Der Eigentümer erhält bei Rundenende 1 Fisch (bei 1-2
+				Spielern sogar 2 Fische). Als Gebäudeaktion kannst du
+				2 Fische gegen 3 Fische tauschen.
+
+buildingGH08	Suppenküche
+descriptionGH08	Bringt bei Rundenende Nahrung wie ein Holzschiff:
+				bei 1/2/3/4/5 Spielern 5/4/3/2/1 Nahrung.
+
+buildingGH09	Viehmarkt
+descriptionGH09	Entweder: kaufe bis zu 7 Vieh für je 1 Franc.
+				Oder: verkaufe bis zu 7 Vieh für je 3 Franc.
+
+buildingGH10	Ziegelhandlung
+descriptionGH10	Entweder: kaufe bis zu 5 Ziegel für je 1 Franc.
+				Oder: verkaufe bis zu 5 Ziegel für je 3 Franc.
+				
+buildingGH11	Lehmbaufachbetrieb
+descriptionGH11	Verkaufe beliebig oft Pakete aus Holz und Lehm
+				für 3 Franc pro Paket.
+
+buildingGH12	Rennofenbau
+descriptionGH12	Wandle für je 2 Energie beliebig oft Lehm in Eisen um.
+
+buildingGH13	Flohmarkt
+descriptionGH13	Nimm die Marken aus einem Angebot mit genau zwei Waren
+				(oder Franc) und zusätzlich alle Angebote mit genau
+				1 Ware (oder Franc).
+
+buildingGH14	Gaststätte
+descriptionGH14	Wandle beliebig viele Fische in Räuscherfisch um
+				und/oder verkaufe bis zu 2 Fleisch für je 4 Franc.
+
+buildingGH15	Konservenfabrik
+descriptionGH15	Verkaufe 1 Eisen und 4 Räucherfische für 18 Franc
+				und/oder 1 Eisen und 3 Fleisch für 16 Franc.
+
+buildingGH16	Fellhandlung
+descriptionGH16	Verkaufe genau 6 Fell für insgesamt 18 Franc.
+
+buildingGH17	Pelzindustrie
+descriptionGH17	Bist du im Besitz von 10 Franc, darfst
+				du einmal genau 3 Fell für insgesamt
+				12 Franc verkaufen.
+
+buildingGH18	Agraramt
+descriptionGH18	Nimm dir 1 Fleisch pro Wirtschaftsgebäude und
+				1 Brot pro Handwerksbetrieb in deinem Besitz.
+
+buildingGH19	Wirtschaftsamt
+descriptionGH19	Nimm dir 1 Eisen pro Industrie- und 2 Franc pro
+				Wirtschaftsgebäude in deinem Besitz.
+
+buildingGH20	Aktienmarkt
+descriptionGH20	Der Eigentümer erhält jedes Mal, wenn ein
+				Mitspieler das Franc-Angebot nimmt, 1 Franc
+				aus der Stadtkasse; sobald ein Mitspieler
+				die Bank baut, erhält er 3 Franc. Außerdem+
+				zahlt der Eigentümer keine Zinsen.
+
+buildingGH21	Souvenirladen
+descriptionGH21	Als Eigentümer erhältst du jedes Mal 1 Franc
+				aus der Stadtkasse, wenn ein Mitspieler eines
+				deiner Gebäude betritt.
+
+buildingGH22	Abrissunternehmen
+descriptionGH22	Zahle 3 Nahrung, um 2 Holz, 2 Lehm und 1 Eisen
+				zu erhalten, oder 6 Nahrung, um 4 Holz, 4 Lehm
+				und 2 Eisen zu erhalten.
+
+buildingGH23	Hochofen
+descriptionGH23	Nimm dir für je 3 Energie bis
+				zu 6 Eisen aus dem Vorrat.
+
+buildingGH24	Agrospritanlage
+descriptionGH24	Der Eigentümer kann die Energie für die Reederei
+				mit Korn bezahlen. Jeds Korn ist 2 Energie wert.
+
+buildingGH25	Ranch
+descriptionGH25	Bei Spielende erhöht sich für den Eigentümer
+				der Wert der Ranch um 2 Franc pro Vieh in
+				seinem Besitz.
+
+buildingGH26	Handelshaus
+descriptionGH26	Tausche mit dem Vorrat bis zu 4 Waren gegen
+				beliebig viele Waren mit insgesamt demselben
+				Franc-Wert.
+
+buildingGH27	Umschlagplatz
+descriptionGH27	Tausche bis zu 3 Standardwaren gegen 3 andere
+				Standardwaren (außer Eisen).
+				Tausche bis zu 3 Luxuswaren gegen 3 andere
+				Luxuswaren (außer Stahl).
+
+buildingGH28	Großkonzern
+descriptionGH28	Von jeder Warensorte (außer Franc), von der
+				du mind. 1 Marke besitzt, darfst du dir 1
+				weitere aus dem Vorrat nehmen. Nimmst du
+				Stahl, kostet es dich zusätzlich 3 Franc.
+
+buildingGH29	Warenhaus
+descriptionGH29	Kaufe beliebig viele unterschiedliche Luxuswaren:
+				Räucherfisch, Holzkohle, Ziegel, Brot, Fleisch,
+				Leder für je 1 Franc, Koks für 3 Franc und Stahl
+				für 5 Franc.
+
+buildingGH30	Schusterei
+descriptionGH30	Tausche beliebig viel Leder gegen
+				je 2 Brot und 2 Franc.
+
+buildingGH31	Rostlaube
+descriptionGH31	Die Rostlaube erhält derjenige Spieler, der als
+				nächster mindestens 1 Eisen (kein Stahl) nimmt.
+			 	Die Rostlaube kann nicht verkauft werden.
+
+buildingGH32	Großbäckerei
+descriptionGH32	Verkaufe beliebig viel Brot zu je 2 Franc.
+
+buildingE2010		Spielemesse
+descriptionE2010	Nimm dir 1 Schuldschein und 6
+					unterschiedliche Waren deiner Wahl (außer Stahl).
+
+bldCosts		Baukosten
+bldEntry		Eintritt
+bldFree			kostenlos
+bldNoBuild		nicht baubar
+bldNoEntry		nicht betretbar
+bldNoPurchase	nicht kaufbar
+bldPrice		Kaufpreis
+
+bldNoBuilding	Kein Gebäude
+bldSpecial		Sondergebäude
+bldStandard		Standardgebäude
+
+bldInRounds		in %s
+bldNextRound	nächste Runde
+bldThisRound	diese Runde
+bldNever		gar nicht mehr
+bldYouWill		<b>Du</b> wirst es zuerst nutzen können.
+bldOtherWill	<b>%s</b> wird es zuerst nutzen können.
+
+bldFishing		Fischer
+bldFishing2		Fischer
+bldFishing5		Fischer
+
+bldHammer		Hammer
+bldHammer2		Hammer
+bldHammer5		Hammer
+
+#
+# The building types.
+#
+
+typeCraft		Handwerksbetrieb
+typeEconomic	Wirtschaftsgebäude
+typeIndustrial	Industriegebäude
+typePublic		Öffentliches Gebäude
+typeShip		Schiff
+
+#
+# The ships.
+#
+
+shipWooden		Holzschiff
+shipIron		Eisenschiff
+shipSteel		Stahlschiff
+shipLuxury		Luxusliner
+
+shipsWooden		Holzschiffe
+shipsIron		Eisenschiffe
+shipsSteel		Stahlschiffe
+shipsLuxury		Luxusliner
+
+#
+# The goods.
+#
+
+goodFranc		Franc
+goodFranc2		Francs
+goodFranc5		Francs
+
+goodFish		Fisch
+goodFish2		Fisch
+goodFish5		Fisch
+
+goodWood		Holz
+goodWood2		Holz
+goodWood5		Holz
+
+goodClay		Lehm
+goodClay2		Lehm
+goodClay5		Lehm
+
+goodIron		Eisen
+goodIron2		Eisen
+goodIron5		Eisen
+
+goodGrain		Korn
+goodGrain2		Korn
+goodGrain5		Korn
+
+goodCattle		Vieh
+goodCattle2		Vieh
+goodCattle5		Vieh
+
+goodCoal		Kohle
+goodCoal2		Kohle
+goodCoal5		Kohle
+
+goodHides		Fell
+goodHides2		Fell
+goodHides5		Fell
+
+goodSmokedFish	Räucherfisch
+goodSmokedFish2	Räucherfisch
+goodSmokedFish5	Räucherfisch
+
+goodCharcoal	Holzkohle
+goodCharcoal2	Holzkohle
+goodCharcoal5	Holzkohle
+
+goodBrick		Ziegel
+goodBrick2		Ziegel
+goodBrick5		Ziegel
+
+goodSteel		Stahl
+goodSteel2		Stahl
+goodSteel5		Stahl
+
+goodBread		Brot
+goodBread2		Brot
+goodBread5		Brot
+
+goodMeat		Fleisch
+goodMeat2		Fleisch
+goodMeat5		Fleisch
+
+goodCoke		Koks
+goodCoke2		Koks
+goodCoke5		Koks
+
+goodLeather		Leder
+goodLeather2	Leder
+goodLeather5	Leder
+
+goodFood		Nahrung
+goodFood2		Nahrung
+goodFood5		Nahrung
+
+goodEnergy		Energie
+goodEnergy2		Energie
+goodEnergy5		Energie
+
+#
+# The About Contents.
+#
+
+about
+	<h1>Über JLeHavre...</h1>
+	<p>Das Computerspiel zum hervorragenden Brettspiel <b>Le Havre</b> des erfolgreichen
+	Spieleautors <b>Uwe Rosenberg</b> (Agricola, Bohnanza) entstand in der Zeit vom
+	7.&nbsp;Januar 2009 bis Ende März 2009, programmiert in Alleinarbeit von <b>Grzegorz
+	Kobiela</b> aus Hannover, Deutschland.</p>
+	<p>Alle Rechte an Grafiken und dem Brettspiel liegen bei den jeweiligen Autoren.
+	Der Programmierer hat die ausdrückliche Genehmigung für dieses Projekt und die Nutzung
+	der Originalgrafiken von den jeweiligen Verantwortlichen erhalten.</p>
+	<p>Eine Vervielfältigung sowie Verbreitung jeglicher Elemente des Spiels als Teile oder
+	als Ganzes sind nicht gestattet. Die Rechte der jeweiligen Rechteinhaber sind zu wahren.</p>
+	<h1>Programmierung</h2>
+	<p>Das Computerspiel zu <b>Le Havre</b> wurde in der Programmiersprache <b>Java</b>
+	geschrieben (Version 1.6). Die Netzwerkkommunikation basiert auf <b>JGroups</b>, einer
+	von Dritten speziell für Netzwerkprojekte entworfenen Klassenbibliothek. Dieses sorgt für
+	die Stabilität des Spiels sowohl zu Hause im lokalen Netzwerk als auch online.</p>
+	<p>Die vorliegende Version des Computerspiels ist eine finale Version, an der ich nicht
+	mehr weiterarbeiten werde. Stattdessen entsteht gerade eine unabhängige Zweitversion, die
+	ich hoffe besser und stabiler zu schreiben als die jetzige, und die auch hoffentlich mit
+	künstlicher Intelligenz, d.&nbsp;h. Computerspielern ausgestattet sein wird. Ich bitte
+	daher jegliche Bugs und Unstimmigkeiten zu entschuldigen. Mir sind gelegentliche Speicherlecks
+	bekannt, die das Spiel extrem langsam machen können.</p>
+	<h1>Danksagungen</h2>
+	<p>Zuallererst danke ich dem Autor der großartigen Brettspielvorlage <b>Uwe Rosenberg</b>
+	für seine Genehmigung dieses Projekts, aber vor allem für die hervorragende Unterstützung!
+	Weiter danke ich Hanno Girke von Lookout Games für sein OK, sowie Klemens Franz für die
+	exzellenten Grafiken sowie die Erlaubnis zur Nutzung und Unterstützung. Schließlich danke
+	ich <u>allen</u> meinen Testspielern, namentlich Markus Tong, Bo Link, Jake Duffy, BGG-Nutzer
+	dreadpirate, Rogério Pereira, Zach Carter und Phil Sauer. Wer nicht genannt wurde, sei mir
+	bitte nicht böse, ich habe leider nicht Buch geführt über meine Testspieler. Genannt wurden
+	all diejenigen, von denen ich eine Rückmeldung über Boardgamegeek erhalten habe. Wer nicht
+	aufgeführt ist, aber gerne genannt werden möchte, der möge sich bitte bei mir melden. Meine
+	E-Mail-Adresse steht weiter unten.</p>
+	<h1>Unterstützung</h1>
+	<p>Wer möchte, den bitte ich um eine kleine finanzielle Unterstützung. Das Spiel in seiner
+	jetzigen Version ist 100% kostenlos. Es ist niemand verpflichtet mich für meine Arbeit zu
+	bezahlen. Wem das Computerspiel allerdings gefällt und wer mich ein wenig entschädigen
+	möchte, den bitte ich um eine kleine Spende über PayPal an <b>grzesieczek@gmx.de</b>.
+	Diese wird mich zur weiteren Programmierung motivieren. An dieser Stelle möchte ich all
+	jenen danken, die bereits gespendet haben: Doug Bass, Isaac, Jan Brockmann, Markus Ellenberger,
+	Michael Nosiara und Robert Trezise.</p>
+	<p>Die angegebene Mailadresse ist auch meine Kontaktadresse für jegliche Fragen und Anregungen.
+	Ich bin auch über Boardgamegeek unter dem Benutzernamen <b>Ponton</b> jederzeit erreichbar.</p>
+	<h1>Eine letzte Bitte</h1>
+	<p>Dieses Projekt wäre niemals ohne die herausragende Leistung <b>Uwe Rosenbergs</b> und
+	des Brettspiels <b>Le Havre</b> möglich gewesen. Daher bitte ich alle, die dieses Computerspiel
+	mit Freude spielen, sich auch ein Exemplar des Brettspiels zu kaufen. Auf diese Weise könnt ihr
+	dem Autor für dieses tolle Spiel danken, ihn dazu ermutigen weitere geniale Spiele zu entwickeln
+	und damit euch selbst in der Zukunft einen Gefallen tun, wenn der nächste große Rosenberg rauskommt.</p>
+	<p>Außerdem: Was gibt es Schöneres als zusammen mit Freunden am Tisch zu sitzen und eine entspannte
+	Partie <b>Le Havre</b> und andere Spiele zu spielen? Nirgends sonst kann man sich über den
+	Gesichtsausdruck seiner Mitspieler freuen, aber auch ärgern, wenn man selbst einen genialen Coup
+	gelandet oder eins auf die Mütze erhalten hat!</p>
+	<p>Abschließend wünsche ich allen viel Spaß mit dem Spiel!</p>

@@ -1,0 +1,75 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <title>About the Robot</title>
+  <script src="site.js">
+  </script>
+</head>
+<body background="/images/background-image.jpg">
+<h1 style="text-align: center;"><img
+ style="width: 600px; height: 100px;" alt="boardspace.net" title=""
+ src="/images/master-logo.jpg"></h1>
+<h1 style="text-align: center;">A propos des robots<br>
+</h1>
+Vous pouvez s&eacute;lectionner un robot en cliquant sur le bouton <i>contre robot 
+</i>&agrave; c&ocirc;t&eacute; du bouton de lancement d'une partie.&nbsp; <br>
+<br>
+Les robots se nomment <span style="font-style: italic;">Dumbot</span> <span style="font-style: italic;">Smartbot 
+</span>et <span
+ style="font-style: italic;">BestBot.&nbsp;Chaque jeu a sa propre famille de robots</span> 
+et certains sont plus forts que d'autres, mais d'une fa&ccedil;on g&eacute;n&eacute;rale 
+<i>Dumbot</i> est assez fort pour battre les d&eacute;butants, <span style="font-style: italic;">Smartbot 
+</span>est l&agrave; pour tenter de battre les joueurs de force interm&eacute;diaire 
+, et <span style="font-style: italic;">Bestbot </span>est le plus fort possible, 
+cr&eacute;&eacute; pour relever le d&eacute;fi face aux meilleurs joueurs.&nbsp;Certains 
+jeux peuvent ne pas disposer de robot ou pas des trois.<br>
+<br>
+Le code des robots est &eacute;crit en langage Java et leur programme tourne sur 
+votre machine plut&ocirc;t que sur le serveur.&nbsp;Par cons&eacute;quent, si 
+un robot vous semble trop lent, mon premier conseil serait que vous achetiez une 
+machine plus performante.&nbsp;Les robots sont calibr&eacute;s pour jouer au moins 
+aussi rapidement qu'un &quot;joueur humain standard&quot;.<br>
+<br>
+Les parties contre lezs robots sont enregistr&eacute;es comme les autres et chaque 
+robot poss&egrave;de un classementpour chaque jeu qu'il pratique.&nbsp;Dans les 
+parties class&eacute;es contre un robot, le premier joueur est d&eacute;sign&eacute; 
+au hasard. Ces parties sont conserv&eacute;es si vous les quitt&eacute;es avant 
+la fin.&nbsp;Ainsi vous pouvez quitter la partie pour rejoindre une partie contre 
+un humain pr&eacute;sent sur le site puis revenir &agrave; la partie contre le 
+robot ensuite ... et de cette fa&ccedil;on vous ne pouvez &eacute;chapper &agrave; 
+une partie perdue contre un robot en la quittant.&nbsp;Les robots sont aussi heureux 
+de participer &agrave; des parties sans classement ; ils vous laissent alors choisir 
+le premier joueur.<br>
+<br>
+Si un adversaire humain quitte votre partie avant sa fin, vous pouvez laisser 
+un robot finir &agrave; sa place en choisissant cette option dans le menu Action.&nbsp;Dans 
+ces parties, le gain ou la d&eacute;faite du robot sera attribu&eacute; au joueur 
+qui a quitt&eacute; la partie. <br>
+<span style="font-style: italic;"></span><br>
+<br>
+<hr style="width: 100%; height: 2px;">
+<table style="width: 100%;">
+  <tbody>
+    <tr>
+      
+    <td align="left"> <font size="-1">Courriel : 
+      <script language="javascript">
+document.write("<a href='mailto:gamemaste");
+document.write("r\@board");
+document.write("space.net'>gamemaste<n>r@board<n>space.net</a>");
+      </script>
+      </font> </td>
+      
+    <td style="vertical-align: top; text-align: center;"><a
+ href="http://netmap.efxservices.com/cgi-bin/mapper/displaymap.pl?client=1036"><img
+ src="http://netmap.efxservices.com/cgi-bin/mapper/record-hit.pl?client=1036">carte 
+      des visiteurs<br>
+      </a></td>
+      
+    <td align="right">Aller &agrave; la <a href="/">Page d'accueil de BoardSpace.net</a> 
+    </td>
+    </tr>
+  </tbody>
+</table>
+</body>
+</html>

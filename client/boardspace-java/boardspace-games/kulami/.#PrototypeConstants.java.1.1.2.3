@@ -1,0 +1,156 @@
+package prototype;
+
+import lib.G;
+import lib.OStack;
+import lib.CellId;
+import online.game.Play2Constants;
+import online.game.BaseBoard.BoardState;
+
+
+public interface PrototypeConstants extends Play2Constants
+{	static int nextPlayer[] = {SECOND_PLAYER_INDEX,FIRST_PLAYER_INDEX};
+	static String PrototypeVictoryCondition = "connect opposite sides with a chain of markers";
+	static String PrototypePlayState = "Place a marker on any empty cell";
+	static String PrototypePlayOrSwapState = "Place a marker on any empty cell, or Swap Colors";
+	static String PrototypeConfirmSwapState = "Click Done to confirm swapping colors with your opponent";
+	static String SwitchMessage = "Switch sides, and play white using the current position";
+	static String PrototypeStrings[] = 
+	{  "Magnet",
+		PrototypePlayState,
+       SwitchMessage,
+       PrototypePlayOrSwapState,
+       PrototypeConfirmSwapState,
+       PrototypeVictoryCondition
+		
+	};
+	static String PrototypeStringPairs[][] = 
+	{   {"Prototype_family","Prototype"},
+	};
+
+	class StateStack extends OStack<PrototypeState>
+	{
+		public PrototypeState[] newComponentArray(int n) { return(new PrototypeState[n]); }
+	}
+	//
+    // states of the game
+    //
+	public enum PrototypeState implements BoardState
+	{
+	Puzzle(PuzzleStateDescription,false,false),
+	Resign(ResignStateDescription,true,false),
+	Gameover(GameOverStateDescription,false,false),
+	Confirm(ConfirmStateDescription,true,true),
+	ConfirmSwap(PrototypeConfirmSwapState,true,false),
+	PlayOrSwap(PrototypePlayOrSwapState,false,false),
+	Play(PrototypePlayState,false,false);
+	PrototypeState(String des,boolean done,boolean digest)
+	{
+		description = des;
+		digestState = digest;
+		doneState = done;
+	}
+	boolean doneState;
+	boolean digestState;
+	String description;
+	public boolean GameOver() { return(this==Gameover); }
+	public String description() { return(description); }
+	public boolean doneState() { return(doneState); }
+	public boolean digestState() { return(digestState); }
+	public boolean Puzzle() { return(this==Puzzle); }
+	};
+	
+    //	these next must be unique integers in the Prototypemovespec dictionary
+	//  they represent places you can click to pick up or drop a stone
+	enum PrototypeId implements CellId
+	{
+    	Black_Chip_Pool("B"), // positive numbers are trackable
+    	White_Chip_Pool("W"),
+    	BoardLocation(null),
+    	EmptyBoard(null),;
+    	String shortName = name();
+    	public String shortName() { return(shortName); }
+    	PrototypeId(String sn) { if(sn!=null) { shortName = sn; }}
+    	static public PrototypeId find(String s)
+    	{	
+    		for(PrototypeId v : values()) { if(s.equalsIgnoreCase(v.shortName)) { return(v); }}
+    		return(null);
+    	}
+    	static public PrototypeId get(String s)
+    	{	PrototypeId v = find(s);
+    		G.Assert(v!=null,IdNotFoundError,s);
+    		return(v);
+    	}
+
+	}
+    
+    /* the "external representation for the board is A1 B2 etc.  This internal representation is X,Y
+    where adjacent X's are separated by 2.  This gives the board nice mathematical properties for
+    calculating adjacency and connectivity. */
+ static int[] ZfirstInCol = { 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0 }; // these are indexes into the first ball in a column, ie B1 has index 2
+ static int[] ZnInCol = { 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11 }; // depth of columns, ie A has 4, B 5 etc.
+ //
+ // rhombix kulami board 15 per side
+ static int[] ZfirstInCol15 = { 14,13,12,11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0 }; // these are indexes into the first ball in a column, ie B1 has index 2
+ static int[] ZnInCol15 = { 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15 }; // depth of columns, ie A has 4, B 5 etc.
+ // rhombix kulami board, 19 per side
+ static int[] ZfirstInCol19 = { 18, 17, 16, 15, 14,13,12,11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0 }; // these are indexes into the first ball in a column, ie B1 has index 2
+ static int[] ZnInCol19 =     { 19,19,19,19,19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19 }; // depth of columns, ie A has 4, B 5 etc.
+
+ enum PrototypeVariation
+    {
+    	prototype("kulami",ZfirstInCol,ZnInCol);
+    	String name ;
+    	int [] firstInCol;
+    	int [] ZinCol;
+    	// constructor
+    	PrototypeVariation(String n,int []fin,int []zin) 
+    	{ name = n; 
+    	  firstInCol = fin;
+    	  ZinCol = zin;
+    	}
+    	// match the variation from an input string
+    	static PrototypeVariation findVariation(String n)
+    	{
+    		for(PrototypeVariation s : values()) { if(s.name.equalsIgnoreCase(n)) { return(s); }}
+    		return(null);
+    	}
+     	
+    }
+
+// this would be a standard kulami-kulami board with 4-per-side
+//    static int[] ZfirstInCol = { 3, 2, 1, 0, 1, 2, 3 }; // these are indexes into the first ball in a column, ie B1 has index 2
+//    static int[] ZnInCol = { 4, 5, 6, 7, 6, 5, 4 }; // depth of columns, ie A has 4, B 5 etc.
+//
+// this would be a standard kulami kulami board with 5-per-side
+//    static int[] ZfirstInCol = { 4, 3, 2, 1, 0, 1, 2, 3, 4 };
+//    static int[] ZnInCol =     {5, 6, 7, 8, 9, 8, 7, 6, 5 }; // depth of columns, ie A has 4, B 5 etc.
+//
+// this would be a standard kulami-kulami board with 7-per-side
+//	  static int[] ZfirstInCol7 = { 6, 5, 4, 3,  2,   1,  0,  1,  2,  3, 4, 5 ,6};
+//	  static int[] ZnInCol7 =     { 7, 8, 9, 10, 11, 12, 13, 12, 11, 10, 9, 8, 7 }; // depth of columns, ie A has 4, B 5 etc.
+//
+ 
+// this would be a standard yinsh board, 5-per side with the corners missing
+//    static int[] ZfirstInCol = { 6, 3, 2, 1, 0, 1, 0, 1, 2, 3, 6 }; // these are indexes into the first ball in a column, ie B1 has index 2
+//    static int[] ZnInCol = { 4, 7, 8, 9, 10, 9, 10, 9, 8, 7, 4 }; // depth of columns, ie A has 4, B 5 etc.
+//    static int[] ZfirstCol = { 1, 0, 0, 0, 0, 1, 1, 2, 3, 4, 6 }; // number of the first visible column in this row, 
+//	 standard "volo" board, 6 per side with missing corners
+//    static int[] ZfirstInCol = { 8, 5, 4, 3, 2, 1, 2, 1,  2, 3, 4, 5, 8 }; // these are indexes into the first ball in a column, ie B1 has index 2
+//    static int[] ZnInCol =   { 5, 8, 9, 10, 11, 12, 11, 12, 11, 10, 9, 8, 5 }; // depth of columns, ie A has 4, B 5 etc.
+//    static int[] ZfirstCol = { 1, 0, 0,  0,  0,  0,  1,  0,  0,  0, 0, 0, 1 };
+
+//  "snowflake" kulami board with crinkly edges, 5 per side. 
+//  Used for "crossfire" and lyngk
+//    static int[] ZfirstInCol = { 6, 3, 0, 1, 0, 1, 0, 3, 6 };
+//    static int[] ZnInCol =     {1, 4, 7, 6, 7, 6, 7, 4, 1 }; // depth of columns, ie A has 4, B 5 etc.
+	
+	// move commands, actions encoded by movespecs.  Values chosen so these
+    // integers won't look quite like all the other integers
+ 	
+    static final String Prototype_SGF = "protoype"; // sgf game number allocated for kulami
+    static final String[] PrototypeGRIDSTYLE = { "1", null, "A" }; // left and bottom numbers
+
+    // file names for jpeg images and masks
+    static final String ImageDir = "/kulami/images/";
+
+}

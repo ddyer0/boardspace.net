@@ -1,0 +1,96 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <title>BoardSpace.net Login Page</title>
+  <script src="/js/site.js">
+  </script>
+</head>
+<body background="/images/background-image.jpg">
+<h1 style="text-align: center;"><img src="/images/master-logo.jpg"
+ title="" alt="boardspace.net" style="width: 600px; height: 100px;"></h1>
+<h1 style="text-align: center;">Carte du monde des visiteurs<br>
+</h1>
+
+<p> La carte ci-dessous indique la localisation des joueurs s'&eacute;tant connect&eacute;s 
+  r&eacute;cemment, d'apr&egrave;s leurs adresses IP. Voici comment &ccedil;a 
+  fonctionne :<br>
+  <BR>
+<ul>
+  <li> <font color="#000080">Le travail de base pour cette carte est de r&eacute;cup&eacute;rer 
+    les adresses IP et leur localisation g&eacute;ographique. Le projet <a href="http://www.networldmap.com/">NetWorldMap</a> 
+    disponible gratuitement, collecte ces donn&eacute;es et permet de les utiliser. 
+    Parmi les services gratuits, une API permet aux webmestres de d&eacute;terminer 
+    la latitude et la longitude correspondant &agrave; une adresse IP.</font><BR>
+    <BR>
+</li>
+
+  <li> <font color="#000080">Losqu'un joueur se connecte, le processus de connexion 
+    demande &agrave; NetWorldMap sa localisation, et si elle est connue avec assez 
+    de certitude, met &agrave; jour la base de donn&eacute;es avec la "derni&egrave;re 
+    localisation connue" du joueur. Lattitude et longitude sont &eacute;galement 
+    envoy&eacute;es au lobby, qui peut iainsi afficher en temps r&eacute;el la 
+    localisation des joueurs connect&eacute;s.</font><br>
+<BR></li>
+
+  <li> <font color="#000080">Le visualiseur de carte est une petite application 
+    Java, qui interroge la base de donn&eacute;es pour obtenir les derni&egrave;res 
+    localisations des joueurs ayant jou&eacute; r&eacute;cemment. L'applet dig&egrave;re 
+    les donn&eacute;es et trace des cercles dont le rayon d&eacute;pend du nombre 
+    de joueurs dans une zone donn&eacute;e. Bien s&ucirc;r ce processus n'est 
+    satisfaisant que si le nombre de donn&eacute;es est assez petit.</font><br>
+
+<BR></li>
+  <li> <font color="#000080">Une fois que vous avez les outils de base, il y a 
+    des tas de choses que vous pouvez tra&icirc;ter avec des cartes. Si vous avez 
+    des id&eacute;es , contactez-moi, j'aimerais beaucoup r&eacute;aliser des 
+    id&eacute;es &agrave; la fois amusantes et utiles. <a href="http://www.andromeda.com/people/ddyer/">Dave 
+    Dyer</a>.</font></li>
+</ul>
+<BR><BR>
+
+<applet <!--#include virtual="/cgi-bin/applettag.cgi" -->   width=720 height=360>
+<param name=rootname value="the Players World Map">
+<param name=embed value="true">
+<param name="viewerclass" value="G:GameReviewer">
+<param name=game value="zertz">
+<param name=zertz.classname value="online.common.MapViewer">
+<param name=mapcenter_x value="0.747">
+<param name=mapcenter_y value="0.0">
+<param name=imagelocation value="/images/earthshadelow.jpg">
+<param name=datalocation value="/cgi-bin/tlib/gs_locations.cgi">
+<param name=rootreviewer value=true>
+</applet>
+<BR><BR><BR>
+
+
+See the <a href=/cgi-bin/gs_rankings5.cgi><b>World Popularity Table</b></a> for different view of this data.
+<br>
+If you would
+like to find players who are near you, try the <a href=/cgi-bin/friends.cgi>
+Friend Finder</a> page.
+
+<hr style="width: 100%; height: 2px;"><br>
+<table style="width: 100%;">
+  <tbody>
+    <tr>
+      <td align="left"> <font size="-1">E-mail:
+<script language="javascript">
+document.write("<a href='mailto:gamemaste");
+document.write("r\@board");
+document.write("space.net'>gamemaste<n>r@board<n>space.net</a>");
+</script>
+</font>
+      </td>
+      <td style="vertical-align: top; text-align: center;"><a
+ href="http://netmap.efxservices.com/cgi-bin/mapper/displaymap.pl?client=1036"><img
+ src="http://netmap.efxservices.com/cgi-bin/mapper/record-hit.pl?client=1036">visitor
+map<br>
+      </a></td>
+      <td align="right">Go to <a href="/">Boardspace.net home
+page</a> </td>
+    </tr>
+  </tbody>
+</table>
+
+</body>
+</HTML>

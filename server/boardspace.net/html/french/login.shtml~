@@ -1,0 +1,91 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML><HEAD><TITLE>BoardSpace.net Login Page</TITLE>
+<META http-equiv=Content-Type content="text/html; charset=iso-8859-1">
+<SCRIPT src="/js/site.js">
+</SCRIPT>
+
+<SCRIPT language=javascript>
+  function submitme(form1)
+  { form1.action=form1.action+"?pname="+form1.pname.value+"&language="+form1.language.value;
+    form1.submit();
+  }
+  </SCRIPT>
+
+<META content="MSHTML 6.00.6000.16525" name=GENERATOR></HEAD>
+<BODY style="BACKGROUND-IMAGE: url(/images/background-image.jpg)">
+<H1 style="TEXT-ALIGN: center"><IMG title="" style="WIDTH: 600px; HEIGHT: 100px" 
+alt=boardspace.net 
+src="/images/master-logo.jpg"></H1>
+<H1 style="TEXT-ALIGN: center">Page de connexion<BR>
+</H1>
+<FORM name=login action=/cgi-bin/login.cgi method=post>
+<TABLE 
+style="MARGIN-LEFT: auto; WIDTH: 827px; MARGIN-RIGHT: auto; HEIGHT: 348px; TEXT-ALIGN: left" 
+cellSpacing=2 cellPadding=2 border=1>
+  <TBODY>
+  <TR style="FONT-WEIGHT: bold">
+      <TD style="VERTICAL-ALIGN: top">Pseudo<BR>
+      </TD>
+    <TD style="VERTICAL-ALIGN: top"><INPUT name=pname><BR></TD>
+    <TD rowSpan=5><!--[if !IE]> Firefox and others will use outer object -->
+        <applet codebase="/java/" class="online/version.class"
+ height="50" width="200"><!--<![endif]--><!-- MSIE (Microsoft Internet Explorer) will use inner object -->
+      <OBJECT height=50 width=200 
+      classid=clsid:8AD9C840-044E-11D1-B3E9-00805F499D93><PARAM NAME="code" VALUE="online.version"><PARAM NAME="codebase" VALUE="/java/">
+        <strong> This browser does not have aJavaPlug-in. <br>        <a 
+      href="http://java.sun.com/products/plugin/downloads/index.html"> Getthe 
+      latest Java Plug-in here. </a> </strong> </OBJECT><!--[if !IE]> close outer object -->
+        </applet>
+<!--<![endif]--><BR></TD></TR>
+  <TR style="FONT-WEIGHT: bold">
+      <TD style="VERTICAL-ALIGN: top">Mot de passe</TD>
+    <TD style="VERTICAL-ALIGN: top"><INPUT type=password 
+      name=password>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <A 
+      href="/cgi-bin/lost_password.cgi?language=french">Mot de passe 
+        oubli&eacute; ?</A><BR>
+      </TD></TR>
+  <TR>
+      <TD style="VERTICAL-ALIGN: top"><SPAN style="FONT-WEIGHT: bold">Langage 
+        pr&eacute;f&eacute;r&eacute; :</SPAN></td><td>
+<!--#include virtual="/cgi-bin/tlib/selectors.cgi?what=language" -->
+ <BR></TD></TR>
+  <TR>
+    <TD style="VERTICAL-ALIGN: top"><INPUT type=checkbox name=cookie>
+        Connexion auto (cookie)</TD>
+      <TD style="VERTICAL-ALIGN: top"><FONT size=-1>Apr&egrave;s votre connexion, 
+        placez la page dans vos favoris pour vous connecter plus simplement.</FONT></TD>
+    </TR>
+  <TR>
+    <TD>&nbsp;<INPUT onclick=javascript:submitme(this.form) type=submit value=Login>&nbsp;</TD>
+      <TD><FONT size=-1></FONT>Le bouton &quot;Login&quot; lance l'applet du Lobby 
+        (ou Hall d'entr&eacute;e).&nbsp;&nbsp;Lisez la <A 
+      href="lobby-help.html" target=_new>page 
+        d'aide </A> pouir en savoir plus sur le lobby, qui vous permet de jouer, 
+        d'observer des parties en cours ou archiv&eacute;es.</TD>
+    </TR>
+  <TR></TR></TBODY></TABLE><BR>
+<DIV style="TEXT-ALIGN: left"> <BR></DIV></FORM>
+<CENTER>
+  <DIV style="TEXT-ALIGN: left">Boardspace.net utilise Java.&nbsp; Si l'applet 
+    ne s'ouvre pas, rendez vous sur la page <A 
+href="needsjava.html">N&eacute;cessiteJava </A>pour 
+    quelques conseils .</DIV>
+<HR style="WIDTH: 100%; HEIGHT: 2px">
+<BR>
+<TABLE style="WIDTH: 100%">
+  <TBODY>
+  <TR>
+      <TD align=left><FONT size=-1>Courriel: 
+        <SCRIPT language=javascript>
+document.write("<a href='mailto:gamemaste");
+document.write("r\@board");
+document.write("space.net'>gamemaste<n>r@board<n>space.net</a>");
+      </SCRIPT>
+       </FONT></TD>
+      <TD style="VERTICAL-ALIGN: top; TEXT-ALIGN: center"></TD>
+      <TD align=right><A href="/">Page 
+        d'accueil de BoardSpace.net</A></TD>
+    </TR></TBODY></TABLE></CENTER>
+<SCRIPT>document.login.pname.focus()</SCRIPT>
+</BODY></HTML>

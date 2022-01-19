@@ -1,0 +1,39 @@
+Rules: 1
+B_Penalty: 0
+W_Penalty: 0
+Size: 9
+TimeStart: -821866487
+W_Time: 1793
+B_Time: 1791
+Byo: 1800
+ByoS: 25
+W_Byo: 10
+B_Byo: 1
+W_ByoStones: 3
+B_ByoStones: 9
+ClockStopped: 0
+Rated: 0
+Private: 0
+Type: 1
+TimeType: 1
+GoType: 1
+NumPass: 2
+Komi: 5.5
+Teach: 0
+Teach2: 0
+Ladder9: 0
+Ladder19: 0
+Tourn: 0
+Ladder_Possible: 0
+OnMove: 128
+MovesRNext: oinkoink
+;B[eg];W[ed];B[ee];W[ce];B[fd];W[dd];B[fe];W[fb];B[fc];W[ec];B[gb];W[eb]
+;B[cg];W[df];B[dg];W[gc];B[hc];W[af];B[gh];W[be];B[bc];W[bh];B[ch];W[ef]
+;B[hf];W[ff];B[gd];W[gg];B[hh];W[de];B[bg];W[hg];B[ig];W[fh];B[fg];W[gf]
+;B[ag];W[he];B[ie];W[id];B[ic];W[ih];B[hd];W[if];B[eh];W[ga];B[ha];W[fa]
+;B[id];W[cb];B[bf];W[ae];B[ge];W[hf];B[gi];W[cf];B[tt];W[cc];B[tt];W[ib]
+;B[tt];W[ei];B[fi];W[ac];B[tt];W[bb];B[tt];W[ci];B[di];W[bd];B[tt];W[ah]
+;B[tt];W[da];B[tt];W[ba];B[tt];W[ii];B[tt];W[aa];B[tt];W[dc];B[tt];W[ig]
+;B[tt];W[hi];B[tt];W[hb];B[ia];W[hb];B[ib];W[bi];B[tt];W[tt]
+kibitz: oink
+

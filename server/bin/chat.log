@@ -1,0 +1,86 @@
+[02/12/2006 16:39:28] Starting chat server on port 5656
+[02/12/2006 16:39:28] Main process started with pid 6117
+[02/12/2006 16:39:39] Connection from 76.171.247.137
+[02/12/2006 16:39:44] Connection from 76.171.247.137
+[02/12/2006 16:39:44] Login successful from dave@76.171.247.137
+[02/12/2006 16:43:34] Connection from 76.171.247.137
+[02/12/2006 16:43:47] Connection from 76.171.247.137
+[02/12/2006 16:43:47] Login successful from joe@76.171.247.137
+[02/12/2006 16:59:38] Deconnecting 76.171.247.137
+[02/12/2006 17:03:26] Deconnecting 76.171.247.137
+[02/12/2006 17:55:36] User dave has quit (Quit : client left the page)
+[02/12/2006 19:53:58] User joe has quit (Quit : client left the page)
+[06/12/2006 15:53:35] Connection from 74.92.99.118
+[06/12/2006 15:54:25] Connection from 74.92.99.118
+[06/12/2006 15:54:30] Connection from 74.92.99.118
+[06/12/2006 15:54:30] Login successful from aa@74.92.99.118
+[06/12/2006 16:15:41] User aa has quit (Quit : client left the page)
+[06/12/2006 16:36:40] Connection from 76.171.247.137
+[06/12/2006 16:36:45] Connection from 76.171.247.137
+[06/12/2006 16:36:45] Login successful from dave@76.171.247.137
+[06/12/2006 16:36:45] Deconnecting 76.171.247.137
+[06/12/2006 16:40:49] User dave has quit (Quit : client left the page)
+[07/12/2006 21:34:46] Connection from 76.171.247.137
+[07/12/2006 21:34:49] Connection from 76.171.247.137
+[07/12/2006 21:34:49] Login successful from dave@76.171.247.137
+[07/12/2006 21:43:36] Connection from 74.92.99.118
+[07/12/2006 21:43:44] Connection from 74.92.99.118
+[07/12/2006 21:43:44] Login successful from bob@74.92.99.118
+[07/12/2006 21:49:14] User bob has quit (Quit : client left the page)
+[07/12/2006 21:49:14] Connection from 74.92.99.118
+[07/12/2006 21:49:18] Connection from 74.92.99.118
+[07/12/2006 21:49:18] Login successful from bob@74.92.99.118
+[07/12/2006 21:49:18] Deconnecting 74.92.99.118
+[07/12/2006 21:50:23] Deconnecting 74.92.99.118
+[07/12/2006 21:54:45] Deconnecting 76.171.247.137
+[07/12/2006 22:27:25] Connection from 76.171.247.137
+[07/12/2006 22:27:25] Connection from 76.171.247.137
+[07/12/2006 22:27:25] Login from dave@76.171.247.137 failed : nick in use
+[07/12/2006 22:27:30] Deconnecting 76.171.247.137
+[07/12/2006 22:27:30] Deconnecting 76.171.247.137
+[07/12/2006 22:27:50] Connection from 76.171.247.137
+[07/12/2006 22:27:51] Connection from 76.171.247.137
+[07/12/2006 22:27:51] Login successful from dave2@76.171.247.137
+[07/12/2006 22:33:38] User dave2 has quit (Quit : client left the page)
+[07/12/2006 22:33:38] Deconnecting 76.171.247.137
+[07/12/2006 22:54:24] Connection from 76.171.247.137
+[07/12/2006 22:54:24] Connection from 76.171.247.137
+[07/12/2006 22:54:24] Login successful from dave2@76.171.247.137
+[07/12/2006 22:54:33] User dave2 has quit (Quit : client left the page)
+[07/12/2006 22:54:34] Deconnecting 76.171.247.137
+[07/12/2006 23:03:58] Connection from 76.171.247.137
+[07/12/2006 23:03:58] Connection from 76.171.247.137
+[07/12/2006 23:03:58] Login successful from dave2@76.171.247.137
+[07/12/2006 23:04:02] User dave2 has quit (Quit : client left the page)
+[07/12/2006 23:04:02] Deconnecting 76.171.247.137
+[07/12/2006 23:08:12] Connection from 76.171.247.137
+[07/12/2006 23:08:12] Connection from 76.171.247.137
+[07/12/2006 23:08:12] Login successful from dave2@76.171.247.137
+[07/12/2006 23:08:17] User dave2 has quit (Quit : client left the page)
+[07/12/2006 23:08:17] Deconnecting 76.171.247.137
+[07/12/2006 23:11:01] Connection from 76.171.247.137
+[07/12/2006 23:11:02] Connection from 76.171.247.137
+[07/12/2006 23:11:02] Login successful from dave2@76.171.247.137
+[07/12/2006 23:20:04] User dave2 has quit (Quit : client left the page)
+[07/12/2006 23:20:04] Deconnecting 76.171.247.137
+[07/12/2006 23:23:42] bob tried to view the user stats of dave with a bad level (0 < 9)
+[07/12/2006 23:30:14] User bob has quit (Quit : client left the page)
+[08/12/2006 00:50:56] User dave has quit (Quit : client left the page)
+[08/12/2006 09:18:33] Connection from 74.92.99.118
+[08/12/2006 09:18:47] Connection from 74.92.99.118
+[08/12/2006 09:18:47] Login successful from bob@74.92.99.118
+[08/12/2006 09:19:56] User bob has quit (Quit : client left the page)
+[08/12/2006 09:20:11] Deconnecting 74.92.99.118
+[08/12/2006 13:05:51] Connection from 76.171.247.137
+[08/12/2006 13:05:54] Connection from 76.171.247.137
+[08/12/2006 13:05:54] Login successful from dave@76.171.247.137
+[08/12/2006 13:06:25] Connection from 76.171.247.137
+[08/12/2006 13:06:25] Connection from 76.171.247.137
+[08/12/2006 13:06:25] Login successful from bob@76.171.247.137
+[08/12/2006 13:06:25] Deconnecting 76.171.247.137
+[08/12/2006 13:06:37] User dave has quit (Quit : client left the page)
+[08/12/2006 13:06:39] User bob has quit (Quit : client left the page)
+[08/12/2006 13:25:44] Deconnecting 76.171.247.137
+[12/01/2007 12:41:23] Terminating at system request (SIGTERM), uptime 980:01:52
+[12/01/2007 12:41:23] Deconnecting 74.92.99.118
+[12/01/2007 12:41:23] Deconnecting 74.92.99.118

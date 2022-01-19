@@ -1,0 +1,16 @@
+
+nodata: 3
+rows: 13
+33.85	-117.55	ddyer
+56.67	12.86	Boerje
+53.55	-113.50	djanes
+50.35	7.60	mreitz
+33.81	-84.35	lyman
+51.52	-0.10	mrraow
+29.56	-98.41	stcharles
+58.42	15.62	chili
+45.47	9.20	Imperatore
+38.55	-121.75	dhemery
+51.22	4.42	Jix
+43.51	16.46	robin
+40.53	-78.40	krr

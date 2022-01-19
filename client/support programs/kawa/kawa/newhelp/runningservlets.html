@@ -1,0 +1,95 @@
+<HTML>
+<HEAD>
+<TITLE>Kawa Project</TITLE>
+</HEAD>
+<BODY LINK="#0000ff" VLINK="#800080" BGCOLOR="#ffffff">
+
+<H1><IMG SRC="kawacup.jpg" WIDTH=106 HEIGHT=100>Tutorial 5</H1>
+<P><A HREF="index.htm">Index</A> </P>
+<font size="1.5" face="Arial">Last Modified Date - <font color=red>3/3/99</font><p>
+Please click <a href="http://www.tek-tools.com/kawa/docs/runningservlets.htm">here</a> for the latest version of this document.
+<font color=red> If this is an online version of the document please right click in the browser and select 
+'Update local Kawa document' to update your local copy of this document</font>
+</font>
+<P><HR></P>
+We will use the SurveyServlet example from JSDK to create a sample Kawa project to explaing how to run and debug
+servlets under Kawa. The files for this project should be located under /examples directory of JSDK.
+<ul>
+<li>Please make sure you have installed JSDK first. Also, please refer to <a href="kawasetup.html">Kawa Setup</a> for more
+details on how to setup JDK under Kawa.</li>
+<p>
+<li>Please select Project/New menu option and create a new project under /examples directory of JSDK. Please type the name for
+this project as SurveyServlet. Kawa will create a new project and open it as the current project.
+</li>
+<p>
+<li>Please select Project/Add File... and select SurveyServlet.java, JdcSruvey.html and servlet.properties files to add to the 
+newly created project.
+</li>
+<p>
+<li>Since Kawa is not setup by default to work with JSDK, please set the classpath to jsdk.jar by selecting Project/Classpath
+and click on File... button to add jsdk.jar under JSDK/lib directory to the classpath.</li>
+<p>	
+<li>Please perform a rebuild all to compile all files in the project.</li>
+<p>
+<li>Next, double click on jdcsurvey.html file in the project tree and modify the POST action to call "http://localhost:8080/servlet/survey"</li>
+<p>
+<li>Next, double click on servlet.properties file in the project tree to modify the resultsDir value for survey servlet to a
+valid directory value on your computer. This is the location where the survey results 
+will be written. In the example below it is set to /temp under the same drive as JSDK installation directory
+</li>
+<p>
+<ul><ul><ul>	
+						# survey servlet<br>
+						servlet.survey.code=SurveyServlet<br>
+						servlet.survey.initArgs=\<br>
+								resultsDir=/temp<br>	
+</ul></ul></ul>	
+<p>						
+<li>Please select Project/Interpreter options to set the Java class name to run. Please set the class name to
+run to "sun.servlet.http.HttpServer" and check the box. This will force the class name to run to HttpServer
+when you select Build/Run.
+</li>
+<p>
+<li>We have to send some command line arguments to this HttpServer. Please type "-d . -r ." in the command line
+arguments field under Project/Interpereter options dialog and set the check box. Please refer to servletrunner.exe document for more
+information on these swicthes.
+</li>
+<p>
+<li>
+Select Build/Run to start the HttpServer daemon. If all the settings were done correctly Kawa output window will
+display the following lines and the deamon is started successfully.
+</li>
+<p>	
+<ul><ul><ul>	
+					servletrunner starting with settings:<br>
+				  		port = 8080<br>
+				  		backlog = 50<br>
+				  		max handlers = 100<br>
+				  		timeout = 5000<br>
+				  		servlet dir = .<br>
+				  		document dir = .<br>
+				  		servlet propfile = .\servlet.properties<br>
+</ul></ul></ul>	
+<p>						
+<li>				  		
+Now start up a browser and open the file jdcsurvey.html file under JSDK/examples directory and fill out the survey and hit submit to
+call the survey servlet. If all of the above steps were done correctly the servlet will write the results to a text file in the 
+resultsDir that was set in the servlet.properties directory.
+</li>
+<p>
+<li>
+In order to start the debugger, set some breakpoints in SurveyServlet.java file and press F5
+to start the debugger. Once again go to a browser and open the jdcsurvey.html form and fill out
+a survey and hit submit. At this time Kawa will hit the breakpoint and you can debug the servlet
+just like you would debug a non-servlet project. Please refer to debugger tutorial for more details
+on how to debug under Kawa.
+</li>
+<p>
+One important thing to note. The HttpServer for some reason seems to find classes only in the 
+current directory. If you are trying to run or debug your own servlet please make sure the working
+directory for both run and execute is the directory where your classes are located. Kawa always
+sets the working directory to project directory by default but it can be changed by setting a 
+value under interpreter options for startup directory.
+<p>
+</BODY>
+</HTML>

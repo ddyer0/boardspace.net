@@ -1,0 +1,37 @@
+<HTML>
+<BODY LINK="#0000ff" VLINK="#800080" BGCOLOR="#ffffff">
+
+<H1><IMG SRC="kawacup.jpg" WIDTH=106 HEIGHT=100>Interpreter Options</H1>
+<P><A HREF="index.htm">Index</A> </P>
+<P>
+<font size="1.5" face="Arial">Last Modified Date - <font color=red>2/16/99</font><p>
+Please click <a href="http://www.tek-tools.com/kawa/docs/interpreteroptions.htm">here</a> for the latest version of this document.
+<font color=red> If this is an online version of the document please right click in the browser and select 
+'Update local Kawa document' to update your local copy of this document</font>
+</font>
+<P><HR></P>
+
+</FONT><P>Project interpreter options is now divided into 2 tabs - basic and advanced. Please refer to the screen shot
+below for each tab options. Please refer to JDK documentation on java for more information on each of these options. Following
+is a brief description of some important options.</P>
+<P ALIGN="CENTER"><IMG SRC="interpreteroptions.gif"></P>
+<UL>
+<LI>Java command line options is for passing command line arguments to the Java program. </LI>
+<LI>Java Class name to run is the name of the class to run. Please refer to <A HREF="runapporapplet.htm">How to Run an applet or application </A>for more details on how the class name for running an application is decided. </LI>
+<LI>Execute program directory option when enabled will indicate the working directory for starting the Java application or applet.</LI>
+<LI>Custom options are sent as is to the interpreter including the debugger. Please specify the new -X properties for JDK 1.2 as custom option.</li>
+</UL>
+<p>
+<b>Advanced Options</b>
+<P ALIGN="CENTER"><IMG SRC="interpreteroptions2.gif"></P>
+<UL>
+<LI>Remote debugger host name and password option can be used to start a remote debug session. When this field is checked Kawa will try and connect to remote debugger with the remote host and password as typed in the field.
+Please note the format of this field. It should be typed "-host <host> -password <password>" Kawa will ignore any interpreter options run classname or the main class selection when remote debugger field is checked. All the 
+current project breakpoints are set with the remote debugger and if any breakpoint is hit Kawa will open the source file for the breakpoint.</LI>
+<LI>Property values are sent to the interpreter with a -D option. These properties are also sent to the debugger </li>
+</UL>
+<p>
+Please refer to JDK documentation on javac tools for all the other interpreter switches. Project interpreter options will supercede any global interpreter options set by selecting Customize/Project Root options menu item.
+Global interpreter options are a subset of the project interpreter options and is applied universally to all the projects.
+</BODY>
+</HTML>

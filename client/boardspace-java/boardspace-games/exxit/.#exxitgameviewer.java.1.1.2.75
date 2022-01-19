@@ -1,0 +1,1224 @@
+package exxit;
+
+import online.common.*;
+
+import online.game.*;
+import online.game.sgf.sgf_names;
+import online.game.sgf.sgf_node;
+import online.game.sgf.sgf_property;
+
+import java.awt.*;
+import java.util.*;
+
+import javax.swing.JCheckBoxMenuItem;
+
+
+/**
+ * 
+ * Change History
+ *
+ * December 2006  Inital version, derived from Hive  
+
+*/
+public class ExxitGameViewer extends commonCanvas 
+	implements ViewerProtocol, ExxitConstants, sgf_names
+{
+     // colors
+    private Color reviewModeBackground = new Color(220,165,200);
+    private Color HighlightColor = new Color(0.2f, 0.95f, 0.75f);
+    private Color logrectHighlightColor = new Color(0.9f,0.9f,0.3f);
+    private Color ZoomColor = new Color(0.0f,0.0f,1.0f);
+    private Color rackBackGroundColor = new Color(165,155,155);
+    private Color boardBackgroundColor = new Color(165,155,155);
+    private Color vcrButtonColor = new Color(0.7f, 0.7f, 0.75f);
+ 
+    private Font gameLogBoldFont=null;
+    private Font gameLogFont = null;
+    // images
+    private static Image[] images = null; // images of black and white bugs
+    private boolean redblack_tiles = true;
+    private JCheckBoxMenuItem useWoodenTiles = null;
+
+    private static Image[] textures = null;// background textures
+    // private state
+    private ExxitGameBoard b = null; //the board from which we are displaying
+    private int CELLSIZE; 	//size of the layout cell
+    private final double INITIAL_TILE_SCALE = 3.0;
+    private double board_center_x = 0.0;
+    private double board_center_y = 0.0;
+    private double BOARD_TILE_SCALE = 4.0;
+    private double SPRITE_TILE_SCALE = 3.5;
+    private double RACK_TILE_SCALE = 2.0;
+    // addRect is a service provided by commonCanvas, which supports a mode
+    // to visualize the layout during development.  Look for "show rectangles"
+    // in the options menu.
+    //private Rectangle fullRect = addRect("fullRect"); //the whole viewer area
+    //private Rectangle boardRect = addRect("boardRect"); //the actual board, normally at the left edge
+    private Rectangle logRect = addRect("logRect"); //the game log, normally off the the right
+    private Rectangle doneRect = addRect("doneRect");
+    private Rectangle repRect = addRect("repRect");
+    private Rectangle editRect = addRect("editRect");
+    private Rectangle goalRect = addRect("goalRect");
+    private Rectangle progressRect = addRect("progressRect");
+    private Rectangle secondPlayerChipRect = addRect("secondPlayerChipRect");
+    private Rectangle firstPlayerChipRect = addRect("firstPlayerChipRect");
+    private Rectangle secondPlayerScoreRect = addRect("secondPlayerScoreRect");
+    private Rectangle firstPlayerScoreRect = addRect("firstPlayerScoreRect");
+    private Rectangle stateRect = addRect("stateRect");
+    private Rectangle tilePoolRect = addRect("tilePoolRect");
+    private Rectangle liftRect = addRect("liftRect");
+    private boolean lifted=false;
+    private Slider zoomRect = null;
+    
+	// whem moving, these remember the object we're dragging around
+    //private HitPoint movingObject = null; // 
+
+    public void preloadImages()
+    {	
+	    if (textures == null)
+	    { // note that dfor this to work correctly, the images and masks must be the same size.  
+	      // Refer to http://www.andromeda.com/people/ddyer/java/imagedemo/transparent.html
+	      // this doesn't use the "-mask" suffix form of load images because some masks are
+	      // shared.
+	        images = load_masked_images(ImageDir, ImageFileNames); // load the main images
+	        textures = load_images(ImageDir,TextureNames);
+	    }
+    }
+    Color StandardMouseColors[] = MouseColors;
+    Color StandardMouseDotColors[] = MouseDotColors;
+    Color ExxitMouseColors[] = {Color.red,Color.black};
+    Color ExxitMouseDotColors[] = {Color.black,Color.white};
+    void setMouseColors()
+    {	if(redblack_tiles)
+    	{
+        MouseColors = ExxitMouseColors;
+        MouseDotColors = ExxitMouseDotColors;
+    	}
+    	else
+    	{
+    	MouseColors = StandardMouseColors;
+    	MouseDotColors = StandardMouseDotColors;
+    	}
+    }
+	/**
+	 * 
+	 * this is the real instance intialization, performed only once.
+	 * info contains all the goodies from the environment.
+	 * */
+    public void init(exHashtable info)
+    {
+        super.init(info);
+        setMouseColors();
+        String fontfam = s.get("fontfamily");
+        gameLogBoldFont = new Font(fontfam, Font.BOLD, FontHeight+2);
+        gameLogFont = new Font(fontfam,Font.PLAIN,FontHeight);
+        zoomRect = addSlider("zoomRect",s.get("Tile Size"),ZoomSlider);
+        zoomRect.min=1.0;
+        zoomRect.max=5.0;
+        zoomRect.value=2.0;
+        zoomRect.barColor=ZoomColor;
+        zoomRect.highlightColor = HighlightColor;
+
+        useWoodenTiles = myFrame.addOption(s.get("use Wooden tiles"),false,deferredEvents);
+       
+        b = new ExxitGameBoard(info.getString(exHashtable.GAMETYPE, "Exxit"));
+        doInit(false);
+
+        PerformAndTransmit(reviewOnly?"Edit":"Start P0", false,true);
+    }
+
+    /** 
+     *  used when starting up or replaying and also when loading a new game 
+     *  */
+    public void doInit(boolean preserve_history)
+    {
+        //System.out.println(myplayer.trueName + " doinit");
+        super.doInit(preserve_history);				// let commonViewer do it's things
+        b.doInit(b.gametype);						// initialize the board
+        if(!preserve_history)
+        	{zoomRect.setValue(INITIAL_TILE_SCALE);
+        	 board_center_x = board_center_y = 0.0;
+        	}
+   }
+    
+    
+    public int midGamePoint()
+    {	return(40);		// exxit games are long
+    }
+
+
+
+
+	/**
+	 * this is the main method to do layout of the board and other widgets.  I don't
+	 * use swing or any other standard widget kit, or any of the standard layout managers.
+	 * they just don't have the flexibility to produce the results I want.  Your milage
+	 * may vary, and of course you're free to use whatever layout and drawing methods you
+	 * want to.  However, I do strongly encourage making a UI that is resizable within
+	 * reasonable limits, and which has the main "board" object at the left.
+	 * 
+	 *  The basic layout technique used here is to start with a cell which is about the size
+	 *  of a board square, and lay out all the other object relative to the board or to one
+	 *  another.  The rectangles don't all have to be on grid points, and don't have to
+	 *  be nonoverlapping, just so long as the result generally looks good.
+	 *  
+	 *  When "extraactions" is available, a menu opion "show rectangles" works
+	 *  with the "addRect" mechanism to help visualize the layout.
+	 */ 
+    public void setLocalBounds(int x, int y, int width, int height)
+    {
+        int ncols = b.ncols+20; // more cells wide to allow for the aux displays
+        int nrows = b.nrows/2;
+        int cellw = width / ncols;
+        chatHeight = selectChatHeight(height);
+        int cellh = (height-chatHeight) / nrows;
+        CELLSIZE = Math.max(2,Math.min(cellw, cellh)); //cell size appropriate for the aspect ration of the canvas
+        int rackWidth = 12*CELLSIZE;
+
+        fullRect.x = 0;			// the whole canvas
+        fullRect.y = 0;
+        fullRect.width = width;
+        fullRect.height = height;
+
+        // game log.  This is generally off to the right, and it's ok if it's not
+        // completely visible in all configurations.
+        
+        boardRect.x = CELLSIZE/2;
+        boardRect.y = chatHeight+CELLSIZE*2;
+        boardRect.width = fullRect.width-CELLSIZE-rackWidth;
+        boardRect.height = fullRect.height-boardRect.y-CELLSIZE;
+   
+        stateRect.x = boardRect.x;
+        stateRect.y = chatHeight+CELLSIZE/4;
+        stateRect.height = 3*CELLSIZE/2;
+        stateRect.width = boardRect.width-CELLSIZE*7;
+ 
+        zoomRect.x = stateRect.x+stateRect.width;
+        zoomRect.y = stateRect.y;
+        zoomRect.width = CELLSIZE*7;
+        zoomRect.height = stateRect.height;
+ 
+        liftRect.x = zoomRect.x - CELLSIZE*2;
+        liftRect.y = chatHeight+CELLSIZE/8;
+        liftRect.height = liftRect.width=2*CELLSIZE-CELLSIZE/4;
+        
+        chatRect.x = fullRect.x;
+        chatRect.y = fullRect.y;
+        chatRect.width = boardRect.width;
+        chatRect.height = chatHeight;
+
+        logRect.x = chatRect.x + chatRect.width+CELLSIZE/2 ;
+        logRect.y = chatRect.y ;
+        logRect.width = CELLSIZE * 10;
+        logRect.height = chatRect.height;
+
+
+
+		//this sets up the "vcr cluster" of forward and back controls.
+        SetupVcrRects(CELLSIZE / 2,
+            (boardRect.y + boardRect.height) - 5*CELLSIZE/2, CELLSIZE * 5,
+            3 * CELLSIZE);
+
+        goalRect.x = CELLSIZE * 3;		// really just a general message
+        goalRect.y = boardRect.y + boardRect.height;
+        goalRect.height = CELLSIZE ;
+        goalRect.width = 30 * CELLSIZE;
+        
+        progressRect.x = goalRect.x+goalRect.width/6;	// a simple progress bar when the robot is running.
+        progressRect.width = goalRect.width/2;
+        progressRect.y = goalRect.y;
+        progressRect.height = CELLSIZE/2;
+
+   
+        {
+            commonPlayer pl0 = players[0];
+            commonPlayer pl1 = players[1];
+            if((pl0!=null)&&(pl1!=null))
+            {
+            Rectangle p0time = pl0.timeRect;
+            Rectangle p1time = pl1.timeRect;
+            Rectangle p0anim = pl0.animRect;
+            Rectangle p1anim = pl1.animRect;
+            Rectangle firstPlayerRect = pl0.nameRect;
+            Rectangle secondPlayerRect = pl1.nameRect;
+            Rectangle firstPlayerPicRect = pl0.picRect;
+            Rectangle secondPlayerPicRect = pl1.picRect;
+            
+            //first player name
+            firstPlayerRect.x = boardRect.x + boardRect.width+CELLSIZE;
+            firstPlayerRect.y = boardRect.y+CELLSIZE / 2;
+            firstPlayerRect.width = CELLSIZE * 6;
+            firstPlayerRect.height = (3 * CELLSIZE) / 2;
+
+            // time dispay for first player
+            p0time.x = firstPlayerRect.x + firstPlayerRect.width;
+            p0time.y = firstPlayerRect.y;
+            p0time.width = CELLSIZE * 4;
+            p0time.height = 3*CELLSIZE/2;
+    		// tfirst player "i'm alive" anumation ball
+            p0anim.x = p0time.x ;
+            p0anim.y = firstPlayerPicRect.y;
+            p0anim.width = CELLSIZE;
+            p0anim.height = CELLSIZE;
+            // time dispay for second player
+           p1time.x = secondPlayerRect.x + secondPlayerRect.width;
+           p1time.y = secondPlayerRect.y;
+           p1time.width = p0time.width;
+           p1time.height = p0time.height;
+           p1anim.x =p1time.x;
+           p1anim.y = secondPlayerPicRect.y+secondPlayerPicRect.height-p0anim.height;
+           p1anim.width = p0anim.width;
+           p1anim.height = p0anim.height;
+
+           firstPlayerScoreRect.x = p0time.x;
+           firstPlayerScoreRect.width = CELLSIZE*3;
+           firstPlayerScoreRect.height=CELLSIZE*2;
+           firstPlayerScoreRect.y = p0time.y+3*CELLSIZE;
+             secondPlayerScoreRect.x = p1time.x;
+           secondPlayerScoreRect.width = firstPlayerScoreRect.width;
+           secondPlayerScoreRect.height=firstPlayerScoreRect.height;
+           secondPlayerScoreRect.y = p1time.y-4*CELLSIZE;
+           p1anim.x = p1time.x;
+           // first player portrait
+           firstPlayerPicRect.x = firstPlayerRect.x;
+           firstPlayerPicRect.y = G.Bottom(firstPlayerRect);
+           firstPlayerPicRect.width = CELLSIZE * 4;
+           firstPlayerPicRect.height = CELLSIZE * 4;
+
+           
+           // "edit" rectangle, available in reviewers to switch to puzzle mode
+           editRect.x = G.Right(boardRect)+CELLSIZE/2;
+           editRect.y = firstPlayerPicRect.y+firstPlayerPicRect.height+CELLSIZE;
+           editRect.width = CELLSIZE*4;
+           editRect.height = 3*CELLSIZE/2;
+
+           //second player name
+           secondPlayerRect.x = firstPlayerRect.x;
+           secondPlayerRect.y = boardRect.y+boardRect.height - firstPlayerRect.height;
+           secondPlayerRect.width = firstPlayerRect.width;
+           secondPlayerRect.height = firstPlayerRect.height;
+
+           // player 2 portrait
+           secondPlayerPicRect.x = secondPlayerRect.x;
+           secondPlayerPicRect.height = firstPlayerPicRect.height;
+           secondPlayerPicRect.y = secondPlayerRect.y -
+               firstPlayerPicRect.height;
+           secondPlayerPicRect.width = firstPlayerPicRect.width;
+           // "done" rectangle, should alway be visible, but only active when a move is complete.
+           doneRect.x = editRect.x;
+           doneRect.y = secondPlayerPicRect.y-editRect.height-CELLSIZE;
+           doneRect.width = editRect.width;
+           doneRect.height = editRect.height;
+
+            }}
+       
+         
+        repRect.x = doneRect.x+doneRect.width+CELLSIZE;
+        repRect.y = doneRect.y;
+        repRect.height = doneRect.height;
+        repRect.width = CELLSIZE*6;
+        
+		// a pool of chips for the first player at the top
+        firstPlayerChipRect.x = (boardRect.x + boardRect.width) + CELLSIZE/2;
+        firstPlayerChipRect.y = editRect.y+editRect.height+CELLSIZE/2;
+        firstPlayerChipRect.width = 4*CELLSIZE;
+        firstPlayerChipRect.height = 3*CELLSIZE;
+        
+      
+        // and for the second player at the bottom
+		secondPlayerChipRect.x =firstPlayerChipRect.x;
+		secondPlayerChipRect.y = doneRect.y-firstPlayerChipRect.height-CELLSIZE/2;
+		secondPlayerChipRect.width = firstPlayerChipRect.width;
+		secondPlayerChipRect.height= firstPlayerChipRect.height;
+
+         
+
+		tilePoolRect.x = firstPlayerChipRect.x+firstPlayerChipRect.width+CELLSIZE;
+		tilePoolRect.y = firstPlayerChipRect.y;
+		tilePoolRect.height = secondPlayerChipRect.y+secondPlayerChipRect.height-firstPlayerChipRect.y;
+		tilePoolRect.width=CELLSIZE*7;
+		
+       
+        theChat.setBounds(chatRect.x+x,chatRect.y+y,chatRect.width,chatRect.height);
+        theChat.setVisible(true);
+        generalRefresh();
+    }
+
+    private void DrawLiftRect(Graphics gc,HitPoint highlight)
+    {	boolean hit = false;
+    	if(G.pointInRect(highlight,liftRect))
+    	{	hit = true;
+    		highlight.hitCode = LiftRect;
+    		highlight.dragging=lifted=highlight.down;
+    	}
+		if(gc!=null) 
+		{ G.centerImage(gc,textures[LIFT_ICON_INDEX],liftRect,this); 
+		  G.frameRect(gc,hit?HighlightColor:Color.black,liftRect);
+		}
+    }
+    
+	// draw a box of spare chips. For hex it's purely for effect.
+    private boolean fliptiles = false;
+    private void DrawTilePool(Graphics gc, Rectangle r, HitPoint highlight)
+    {
+      boolean canhit = b.LegalToHitTiles() && G.pointInRect(highlight, r);
+      ExxitCell c = b.tiles;
+      if(gc!=null) { G.frameRect(gc, Color.black, r); }
+      Random rand = new Random(4321); // consistant randoms, different for black and white 
+      boolean canDrop = canhit && (b.movingObjectIndex()>=0);
+      boolean hitPiece = false;
+      int height = c.height();
+      for(int i=0;i<height;i++)
+        {
+        	ExxitPiece p = c.pieceAtIndex(i);
+            int cs = CELLSIZE*7;
+            int spacex = r.width - CELLSIZE*2;
+            int spacey = r.height - CELLSIZE*2;
+ 
+            int rx = r.x+ (Math.abs(rand.nextInt()) % spacex);
+            int ry = r.y+ (Math.abs(rand.nextInt()) % spacey);
+            int index = p.imageIndex(fliptiles)
+	  			+ (redblack_tiles ? REDBLACK_OFFSET : STANDARD_OFFSET);
+	  			 
+            if(gc!=null) 
+        	{drawImage(gc, images[index], SCALES[index], rx + CELLSIZE,
+                ry +CELLSIZE, cs, 1.0,0.0);
+        	}
+        	 if(canhit && !canDrop && G.pointInRect(highlight,rx,ry,CELLSIZE*2,CELLSIZE*2))
+	        		{ highlight.hitObject = b.tiles;
+	        		  highlight.arrow = StockArt.UpArrow;
+	        		  highlight.awidth = CELLSIZE;
+	        		  hitPiece = true;
+	         		  highlight.hitCode = (p.player==(fliptiles?SECOND_PLAYER_INDEX:FIRST_PLAYER_INDEX))?White_Tile_Pool:Black_Tile_Pool;
+	        		}
+
+        }
+       if(gc!=null)
+    	   {G.Text(gc,true,r.x+r.width-CELLSIZE,r.y+r.height-CELLSIZE,CELLSIZE,CELLSIZE,Color.black,null,
+    		   	""+height);
+    	   }
+       if(canhit && canDrop) 
+       	{ highlight.hitObject = b.tiles;
+       	  highlight.hitCode = White_Tile_Pool;
+       	  highlight.arrow = StockArt.DownArrow;
+       	  highlight.awidth = CELLSIZE;
+       	  hitPiece = true;
+       	}
+       else if (canhit && !canDrop)
+       {	if(!hitPiece) { highlight.hitCode = Flip_Tiles; }
+       }
+    	
+    }
+    private void DrawScore(Graphics gc,Rectangle r,int player)
+    {	if(gc!=null)
+    	{
+    	gc.setFont(gameLogBoldFont);
+    	G.Text(gc,true,r,0,Color.black,rackBackGroundColor,""+b.scoreForPlayer(player,true));
+    	G.frameRect(gc,Color.black,r);
+    	}
+    }
+	// draw a box of spare gobblets. Notice if any are being pointed at.  Highlight those that are.
+    private void DrawChipPool(Graphics gc, int state,Rectangle r, int player,HitPoint highlight)
+    {	ExxitCell thisCell= b.rack[player];
+        boolean canhit = b.LegalToHitChips(player) && G.pointInRect(highlight, r);
+        boolean canDrop = canhit && (b.movingObjectIndex() == player) && G.pointInRect(highlight,r);
+        boolean doesHit = canDrop;
+        int cellW = r.width/2;
+        if(gc!=null) { G.frameRect(gc, Color.black, r); }
+        {	
+        	if(thisCell!=null)
+        	{
+	    		int left = r.x+cellW/2;
+	    		int height=thisCell.height();
+    		
+        		for(int bug=height; bug>0;bug--)
+        		{
+        		ExxitPiece topCup = thisCell.pieceAtIndex(height-bug);
+        		if(topCup!=null)
+        		{ int rx = left+((bug<=height/2)?cellW:0);
+        		  int ry = r.y+5*r.height/8+2-CELLSIZE/3*((bug<=height/2)?height/2-bug:height-bug);
+        		  int index = topCup.imageIndex(false)
+        		  			+ (redblack_tiles ? REDBLACK_OFFSET : STANDARD_OFFSET);
+	           	  if(canhit 
+	           			&& G.pointInRect(highlight,rx-cellW/2,ry-CELLSIZE/2,cellW,CELLSIZE*2)
+	           			&& (height>0)
+	           			)
+	        		{ doesHit = true;
+ 	        		}
+
+        		  if(gc!=null)
+                	{drawImage(gc, images[index], SCALES[index],rx,  ry,
+                			CELLSIZE*7, 1.0,0.0);
+                	//G.frameRect(gc,Color.black,left,top,cellW,SQUARESIZE);
+                	}
+       		}}
+        		
+      		if(doesHit)
+      			{highlight.hitObject = thisCell;
+      			highlight.hitCode = chipPoolIndex[player];
+      			highlight.arrow = canDrop ? StockArt.DownArrow : StockArt.UpArrow;
+      			highlight.awidth = CELLSIZE;
+      			}
+
+        		//if((gc!=null)&&(hitCell==thisCell)) { G.frameRect(gc,Color.red,left-cellW/2,top-CELLSIZE/2,cellW,2*CELLSIZE); }
+           	if((gc!=null) && ((thisCell==b.pickedSource)||(thisCell==b.droppedDest)))
+        	{ 
+            G.DrawAACircle(gc,left,r.y+CELLSIZE/2,2,Color.green,Color.yellow,true);
+            }
+        	}
+ 
+
+        }
+    }
+
+    public void drawSprite(Graphics g,int obj,int xp,int yp)
+    {
+    	int idx = obj + (redblack_tiles ? REDBLACK_OFFSET : STANDARD_OFFSET);
+      	 ;
+       	int cellS = (int)(CELLSIZE*zoomRect.value);
+       	double scale = boardRect.contains(xp,yp)?SPRITE_TILE_SCALE:RACK_TILE_SCALE;
+           drawImage(g, images[idx],SCALES[idx], xp, yp, cellS, scale,0.0);
+	
+    }
+
+
+    /* draw the deep unchangable objects, including those that might be rather expensive
+     * to draw.  This background layer is used as a backdrop to the rest of the activity.
+     * in our cease, we draw the board and the chips on it. 
+     * */
+    private void drawFixedElements(Graphics gc, ExxitGameBoard gb,Rectangle tbRect)
+    {
+      gc.setColor(reviewMode() ? reviewModeBackground : boardBackgroundColor);
+      G.tileImage(gc,textures[BACKGROUND_TILE_INDEX],fullRect, this);   
+          G.tileImage(gc,textures[reviewMode() 
+                                 ? BROWN_FELT_INDEX
+                                 : (redblack_tiles ? YELLOW_FELT_INDEX : OLD_YELLOW_FELT_INDEX)],
+          		boardRect, this); 
+      G.frameRect(gc,Color.black,tbRect);
+ 
+      // draw a picture of the board. In this version we actually draw just the grid
+      // to draw the cells, set gb.Drawing_Style in the board init method
+      //gb.DrawGrid(gc, tbRect, use_grid, boardBackgroundColor, Color.blue, Color.blue,Color.black);
+
+     }
+
+    /* draw the board and the chips on it. */
+     private int liftSteps = 0;
+     private void drawBoardElements(Graphics gc, ExxitGameBoard gb, Rectangle tbRect,
+    		 HitPoint ourTurnSelect,HitPoint anySelect)
+     {	liftSteps = lifted ? Math.min(++liftSteps,12) : Math.max(--liftSteps,0);
+     	int liftdiv = 40;
+     	boolean dolift = (liftSteps>0);
+        Rectangle oldClip = G.setClip(gc,tbRect);
+    	if(dolift && (liftSteps<12))
+     		{ // this induces a very simple animation
+     		repaint(); 
+     		}
+     	HitPoint mo = dragPoint;
+     	boolean dragging = (anySelect!=null) && (mo!=null) ;
+     	boolean draggingBoard = dragging && (mo.hitCode==InvisibleDragBoard);
+      	if(draggingBoard)
+     	{	double center_x = (board_center_x*tbRect.width)+(anySelect.x-mo.x)*12;
+     	    double center_y = (board_center_y*tbRect.height)-(anySelect.y-mo.y)*12;
+     	    board_center_x = center_x / tbRect.width;
+     	    board_center_y = center_y / tbRect.height;
+     	    mo.y = anySelect.y;
+     	    mo.x = anySelect.x;
+     	    repaint();
+     	}
+     	//
+       	// now draw the contents of the board and anything it is pointing at
+        //
+         boolean somehit = draggingBoard;
+         Hashtable dests = gb.movingObjectDests();
+         ExxitCell sourceCell = gb.pickedSource; 
+         ExxitCell destCell = gb.droppedDest;
+         double cs = (gb.cellToX('B',2)-gb.cellToX('A',2))/zoomRect.value;
+    	 Point empty = gb.emptyColumn();	// get an empty col/row to start the display
+        // precalculate the spanning size of the board.
+         int cellSize =  (int)(cs*zoomRect.value);
+         int ncols = gb.ncols;
+         int liftYval =  cellSize/6+(dolift?(liftSteps*cellSize)/liftdiv : 0);
+         int liftXval = dolift?(liftSteps*cellSize)/(2*liftdiv) : 0;
+         //System.out.println("cs "+cs/CELLSIZE+ " "+cs+" "+CELLSIZE);
+         for (int col0 = ncols-1; col0 >=0 ; col0--)
+         {	int col = (col0+empty.x)%ncols;
+            char thiscol = (char) ('A' + col);
+            int lastincol = gb.nInCol[col];
+            for (int thisrow0 = lastincol-1;
+              	   thisrow0 >= 0; 
+              	   thisrow0--) // start at row 1 (0 is the grid) 
+             { //where we draw the grid
+               	int dispRow = (thisrow0+empty.y)%lastincol+1 + gb.firstRowInCol[col];
+                Point cp = gb.cellToXY(thiscol,dispRow,tbRect);	// calculate xy wrapped
+                int xpos = cp.x;
+                int ypos = cp.y;               
+                //if(tbRect.contains(xpos,ypos))
+                 {
+                 ExxitCell cell = gb.GetExxitCell(thiscol,dispRow);
+                 boolean isADest = dests.get(cell)!=null;
+                 boolean isASource = (cell==sourceCell)||(cell==destCell);
+                 ExxitPiece piece = cell.topPiece();
+                 boolean hitpoint = !somehit
+                 	&& G.PointInside(ourTurnSelect, xpos, ypos, cellSize/2) 
+                 	&& gb.LegalToHitBoard(cell);
+                 if(hitpoint) 
+                 { somehit =true; 
+                 }
+
+                 boolean drawhighlight = hitpoint ||
+                     gb.isDest(cell) ||
+                     gb.isSource(cell);
+  
+                 // drawing
+                 if (hitpoint)
+                 {	 //if(gc!=null) { gc.drawOval(xpos-cellSize/2,ypos-cellSize/2,cellSize,cellSize); }
+                     ourTurnSelect.hitCode = isADest?EmptyBoard:BoardLocation;
+                     ourTurnSelect.arrow = isADest?StockArt.DownArrow:StockArt.UpArrow;
+                     ourTurnSelect.awidth = CELLSIZE;
+                     ourTurnSelect.col = thiscol;
+                     ourTurnSelect.row = dispRow;
+                     ourTurnSelect.hitObject = cell;
+                 }
+
+                 if (gc != null)
+                 {
+                 //G.DrawAACircle(gc,xpos,ypos,1,tiled?Color.green:Color.blue,Color.yellow,true);
+                 if(piece!=null)
+                 {	for(int hgt=cell.height()-1,lvl=0; lvl<=hgt; lvl++)
+                 	{
+                 	ExxitPiece drawPiece = cell.pieceAtIndex(lvl);
+                 	String id = (use_grid && (lvl==hgt)) ?cell.cellName:null;
+                 	drawPiece.drawChip(gc,this,cellSize,xpos,ypos,id);
+                 	}
+                }
+                 if(isASource)
+                 {G.DrawAACircle(gc,xpos,ypos,2,Color.green,Color.yellow,true);
+                 } else
+                 if(isADest)
+                 {G.DrawAACircle(gc,xpos,ypos,2,Color.red,Color.yellow,true);
+                 }
+                 }}
+             }
+         }
+         
+        if(!somehit && G.pointInRect(anySelect,tbRect) && ((mo==null)||draggingBoard))
+     	{ //let him drag anywhere, just don't annoy with the hand icon.
+     		anySelect.hitCode=InvisibleDragBoard;
+     		anySelect.dragging=anySelect.down;
+     	}
+  		G.setClip(gc,oldClip);
+     }
+
+
+    //
+    // draw the board and things on it.  If gc!=null then actually 
+    // draw, otherwise just notice if the highlight should be on
+    //
+    public void redrawBoard(Graphics gc, HitPoint selectPos)
+    {  ExxitGameBoard gb = b;
+       boolean moving = (getMovingObject()>=0);
+       HitPoint ourTurnSelect = OurMove() ? selectPos : null;
+       HitPoint buttonSelect = moving?null:ourTurnSelect;
+       HitPoint nonDraggingSelect = (moving && !reviewMode()) ? null : selectPos;
+  
+   
+       int state = b.getBoardState();
+        redrawGameLog(gc, nonDraggingSelect, logRect, logrectHighlightColor,gameLogBoldFont,gameLogFont);
+        drawBoardElements(gc, gb, boardRect, ourTurnSelect,nonDraggingSelect);
+        DrawChipPool(gc, state, secondPlayerChipRect, SECOND_PLAYER_INDEX, ourTurnSelect);
+        DrawChipPool(gc, state, firstPlayerChipRect, FIRST_PLAYER_INDEX, ourTurnSelect);
+        DrawScore(gc,firstPlayerScoreRect,FIRST_PLAYER_INDEX);
+        DrawScore(gc,secondPlayerScoreRect,SECOND_PLAYER_INDEX);
+        DrawTilePool(gc, tilePoolRect,ourTurnSelect);
+        zoomRect.draw(gc,nonDraggingSelect);
+        DrawLiftRect(gc,nonDraggingSelect);
+        DrawRepRect(gc,b.Digest(),repRect);
+        //System.out.println("dig "+b.Digest());
+        
+        if (gc != null)
+        {
+            gc.setFont(standardBoldFont);
+        }
+		if (state != PUZZLE_STATE)
+        {
+            if (gc != null)
+            {
+                gc.setFont(standardBoldFont);
+            }
+            if (G.handleRoundButton(gc, doneRect, 
+            		((b.DoneState()) ? buttonSelect : null), 
+            		s.get("Done"),
+                    HighlightColor, rackBackGroundColor))
+            {	// always display the done button, but only make it active in
+            	// the appropriate states
+            	buttonSelect.hitCode = HitDoneButton;
+            }
+            if (allowed_to_edit)
+            {
+              if (G.handleRoundButton(gc, editRect, buttonSelect, s.get("Edit"),
+                                HighlightColor, rackBackGroundColor))
+                    {
+                    	buttonSelect.hitCode = HitEditButton;
+                    }
+              }
+        }
+
+		drawPlayerStuff(gc,(state==PUZZLE_STATE)?buttonSelect:null,HighlightColor,rackBackGroundColor);
+  
+
+
+        if (gc != null)
+        {
+            standardGameMessage(gc,gb,s.get(boardStates[state]),state,stateRect);
+            goalAndProgressMessage(gc,s.get("expand the board with your color tiles"),progressRect,goalRect);
+       }
+        drawVcrGroup(nonDraggingSelect, gc, HighlightColor, vcrButtonColor);
+
+    }
+    public boolean PerformAndTransmit(commonMove m, boolean transmit,boolean playing)
+    {	// the super method in commonCanvas is where the history is actually recorded
+       	if(((m.op==MOVE_DONE) 
+       			&& (b.getBoardState()==PASS_STATE)
+       			&& OurMove() 
+       			&& playing
+       			))
+       		{	// insert a "pass" before "done"
+       		PerformAndTransmit("Pass"); 
+       		}
+       	boolean val =  super.PerformAndTransmit(m,transmit,playing);
+    	return(val);
+    }
+    /**
+     * Execute a move by the other player, or as a result of local mouse activity,
+     * or retrieved from the move history, or replayed form a stored game. 
+     * @param mm the parameter is a commonMove so the superclass commonCanvas can
+     * request execution of moves in a generic way.
+     * @return true if all went well.  Normally G.Error would be called if anything went
+     * seriously wrong.
+     */
+     public boolean Execute(commonMove mm,boolean sounds)
+    {	Exxitmovespec m = (Exxitmovespec)mm;
+ 
+    
+        if(b.getBoardState()==PUZZLE_STATE)
+    	{   m.sliderNumString = "--";
+    		switch(m.op)
+        	{
+        	case MOVE_PICK: 
+        		break;
+        	case MOVE_PICKB: 
+        		break;
+    		case MOVE_DROPB:
+    			//this is used in the aux_slider code 
+    			lastDropped = b.pickedObject;
+    			// fall into default
+    		default:
+    			m.linebreak=true;
+        	}
+    	}
+ 
+        handleExecute(b,m);
+        b.labelCells();
+        switch(m.op)
+        {
+        case MOVE_MOVE:
+        	m.shortMoveString = b.distributionLabel();
+        	break;
+        case MOVE_EXCHANGE:
+        	m.shortMoveString = b.exchangeLabel();
+        	break;
+        case MOVE_DROPB:
+        case MOVE_PICKB:
+        	{
+        	ExxitCell c = b.GetExxitCell(m.from_col,m.from_row);
+        	m.shortMoveString = c.cellName;
+        	}
+        	break;
+        }
+        if(sounds) { playSounds(m); }
+
+         return (true);
+    }
+     
+ void playSounds(Exxitmovespec mm)
+ {
+	switch(mm.op)
+	{
+	case MOVE_EXCHANGE:
+	case MOVE_MOVE:
+		int n = mm.undoDistributionInfo;
+		while(n-- >0) { playASoundClip(light_drop,100); }
+		//playASoundClip(heavy_drop,50);
+		break;
+	case MOVE_PICK:
+	case MOVE_PICKB:
+	case MOVE_DROPB:
+		playASoundClip(light_drop,100);
+		break;
+	default: break;
+	}
+ }
+/**
+ * parse a move specifier on behalf of the current player.  This is called by the 
+ * "game" object when it receives a move from the other player.  Note that it may
+ * be called while we are in review mode, so the current state of the board should
+ * not be considered.
+ */
+    public commonMove ParseNewMove(StringTokenizer st)
+    {
+        return (new Exxitmovespec(st, -1));
+    }
+/**
+ * prepare to add nmove to the history list, but also edit the history
+ * to remove redundant elements, so that indecisiveness by the user doesn't
+ * result in a messy replay.
+ * This may require that move be merged with an existing history move
+ * and discarded.  Return null if nothing should be added to the history
+ * One should be very cautious about this, only to remove real pairs that
+ * result in a null move.
+ * 
+ */
+    public commonMove EditHistory(commonMove nmove)
+    {
+        Exxitmovespec newmove = (Exxitmovespec) nmove;
+        Exxitmovespec rval = newmove;			// default returned value
+        int idx = History.size() - 1;
+        int state = b.board_state;
+
+       while (idx >= 0)
+       {
+         Exxitmovespec m = (Exxitmovespec) History.elementAt(idx);
+         int start_idx = idx;
+         if(m.next!=null) { idx = -1; }
+         else {
+         switch(newmove.op)
+         {
+         case MOVE_PICK:
+         case MOVE_DROP:
+        	 if(((m.op==MOVE_PICK)||(m.op==MOVE_DROP))
+        			 && (m.source==newmove.source))
+        	 	{ UndoHistoryElement(idx); 
+        	      rval = null;
+        	 	}
+        	 idx = -1;
+        	 break;
+ 	     case MOVE_DONE:
+	     default:
+	    		idx = -1;
+	    		break;
+         case MOVE_RESET:
+        		rval = null;		// reset is never recorded in the history
+	     case MOVE_RESIGN:
+     		 // not puzzle, fall into resign
+         		switch(m.op)
+        		{
+         		default:
+             		if(state==PUZZLE_STATE) { idx = -1; break; }
+          		case MOVE_PICKB:
+        		case MOVE_PICK:
+                    UndoHistoryElement(idx);
+                    idx--;
+        			break;
+                case MOVE_DONE: // these stop the scan 
+                case MOVE_EDIT:
+                case MOVE_START:
+                    idx = -1;
+                }
+        		break;
+   		
+     		 case MOVE_PICKB:	// never remove picks
+     			 idx=-1;
+     			 break;
+           	 case MOVE_DROPB:
+        		if( ((m.op == MOVE_PICKB)||(m.op == MOVE_DROPB))
+        			&& (newmove.from_col==m.from_col)
+        			&&(newmove.from_row==m.from_row))
+        		{	//pick/drop on the same spot
+        			UndoHistoryElement(idx);
+        			rval=null;
+        		}
+        		else if(idx>0)
+        		{
+        		Exxitmovespec m2 = (Exxitmovespec)History.elementAt(idx-1);
+        		if((m.op == MOVE_PICKB)
+        			&& (m2.op == MOVE_DROPB)
+        			&& (m2.from_col==m.from_col)
+        			&& (m2.from_row==m.from_row))
+        		{	// intermediate pick/drop from same location
+        			UndoHistoryElement(idx);
+        			UndoHistoryElement(idx-1);
+        			idx = -1;
+        		}
+        		
+        		}
+       			idx = -1;
+       			break;
+            }
+         G.Assert(idx!=start_idx,"progress made");
+       }}
+       return (rval);
+    }
+    
+
+/**
+ * the preferred mouse gesture style is to let the user "pick up" objects
+ * by simply clicking on them, but we also allow him to click and drag. 
+ * StartDragging is called when he has done this.
+ */
+    public void StartDragging(HitPoint hp)
+    {
+        int mo = b.movingObjectIndex();
+        
+        if (mo == HitNoWhere) // not dragging anything yet, so maybe start
+        {
+        int hitObject = hp.hitCode;
+		ExxitCell cell = (ExxitCell)hp.hitObject;
+		ExxitPiece bug = (cell==null) ? null : cell.topPiece();
+   		int state = b.getRawBoardState();
+      		
+  		switch(hitObject)
+	    {
+	    default: break;
+	    case Black_Tile_Pool:
+	    case White_Tile_Pool:
+            {
+            String col = (hitObject==Black_Tile_Pool) ? "BT" : "WT";
+            if(state==DROPTILE_STATE) { col = TILE_NAMES[b.whoseTurn]; }
+            PerformAndTransmit("Pick "+col);
+            }
+            break;
+	    case Flip_Tiles:
+	    	//fliptiles = !fliptiles;	// local action only
+	    	break;
+        case InvisibleDragBoard:
+        	if(b.moveNumber<=1)
+        	{ break;
+        	}
+	    case LiftRect:
+        case ZoomSlider:
+        case vcrSlider:			// this is a draggable object that the board doesn't know about
+            break;
+	    case Black_Chip_Pool:
+	    	PerformAndTransmit("Pick B "+cell.row+" "+CHIP_NAMES[bug.player]);
+	    	break;
+	    case White_Chip_Pool:
+	    	PerformAndTransmit("Pick W "+cell.row+" "+CHIP_NAMES[bug.player]);
+	    	break;
+	    case BoardLocation:
+	    	switch(state)
+	    	{
+	    	case DROPTILE_STATE:
+	    		PerformAndTransmit("Dropb "+TILE_NAMES[b.whoseTurn]+" "+hp.col+" "+hp.row);
+	    		break;
+	    	case DROP_STATE:
+	    	case EXCHANGE_STATE:
+	    	case DROP_OR_EXCHANGE_STATE:
+	    		if(cell.canExchange())
+	    				{
+	    				PerformAndTransmit("Exchange " + hp.col+" "+hp.row+" "+CHIP_NAMES[b.whoseTurn]);
+	    				}
+	    		else 
+	    			{PerformAndTransmit("Dropb "+CHIP_NAMES[b.whoseTurn]+" "+hp.col+" "+hp.row);
+	    			}
+	    		break;
+	    	case CONFIRM_STATE:
+	    	case PUZZLE_STATE:
+	    	case DISTRIBUTE_STATE:
+	    		PerformAndTransmit("Pickb "+hp.col+" "+hp.row+" "+CHIP_NAMES[bug.player]);
+	    		break;
+	    	case CONFIRM_DISTRIBUTE_STATE:
+	    	case CONFIRM_EXCHANGE_STATE:
+	    		PerformAndTransmit(commonMove.RESET);
+	    		break;
+	    	default: G.Error("Not expecting state "+state);
+	    	}
+	    	break;
+        }
+
+        if (b.movingObjectIndex() >= 0)
+	        {	// if we got something started, inform the mouse handler
+	            hp.dragging = true;
+	        } 
+         }
+    }
+
+	/** 
+	 * this is called on "mouse up".  We may have been just clicking
+	 * on something, or we may have just finished a click-drag-release.
+	 * We're guaranteed just one mouse up, no bounces.
+	 */
+    public void StopDragging(HitPoint hp)
+    {
+        int hitObject = hp.hitCode;
+		int state = b.getRawBoardState();
+		ExxitCell cell = (ExxitCell)hp.hitObject;
+		ExxitPiece bug = (cell==null) ? null : cell.topPiece();
+       	
+		switch (hitObject)
+        {
+        default:
+        	if (performStandardButtons(hitObject)) {}
+        	else if (performVcrButton(hitObject, hp))	// handle anything in the vcr group
+            {
+            }
+            else
+            {
+                G.Error("Hit Unknown object " + hitObject);
+            }
+        	break;
+        case ZoomSlider:
+        case LiftRect:
+        case InvisibleDragBoard:
+        	break;
+        case EmptyBoard:
+        case BoardLocation:	// we hit an occupied part of the board 
+			switch(state)
+			{
+			default: G.Error("Not expecting drop on filled board in state "+state);
+			case CONFIRM_STATE:
+			case CONFIRM_DISTRIBUTE_STATE:
+			case CONFIRM_EXCHANGE_STATE:
+				break;
+				
+			case DISTRIBUTE_STATE:
+			case DROP_STATE:
+			case DROP_OR_EXCHANGE_STATE:
+			case EXCHANGE_STATE:
+			case PUZZLE_STATE:
+			case DROPTILE_STATE:
+			{
+				String name = b.movingObjectName();
+				if(name!=null)
+				{ ExxitCell source = b.pickedSource;
+				  if((state==DISTRIBUTE_STATE) && (cell != source))
+					{ int dir = b.findDirection(source.col,source.row,cell.col,cell.row);
+					  PerformAndTransmit("Move "+name+" "+source.col+" "+source.row+" "+dir);
+					}
+					else
+					{ PerformAndTransmit("Dropb "+name+" "+cell.col+" "+cell.row); 
+					}
+				}
+				else if((bug!=null) && (bug.typecode==TILE_TYPE))
+				{
+				PerformAndTransmit( "pickb "+TILE_NAMES[bug.player]+" "+cell.col+" "+cell.row);
+				}
+				break;
+			}}
+			break;
+        case Black_Tile_Pool:
+        case White_Tile_Pool:
+    	{
+            String name = b.movingObjectName();
+            if(name!=null) 
+			{//if we're dragging a black chip around, drop it.
+            	switch(state)
+            	{
+            	default: G.Error("can't drop on pool in state "+state);
+            	case DROPTILE_STATE:
+               	case PUZZLE_STATE:
+                	PerformAndTransmit("Drop "+name);
+            		break;
+            	}
+			}
+        	}
+    	break;
+        case Black_Chip_Pool:
+        case White_Chip_Pool:
+    	{
+        	String name = b.movingObjectName();
+            if(name!=null) 
+			{//if we're dragging a black chip around, drop it.
+            	switch(state)
+            	{
+            	default: G.Error("can't drop on rack in state "+state);
+            	case DROP_OR_EXCHANGE_STATE:
+               	case DROP_STATE:
+               	case DISTRIBUTE_STATE:
+               	case EXCHANGE_STATE:
+               		performReset();
+            		break;
+
+               	case PUZZLE_STATE:
+            		PerformAndTransmit("Drop "+name);
+            		break;
+            	}
+			}
+        	}
+            break;
+
+        case HitNoWhere:
+        	performReset();
+            break;
+        case Flip_Tiles: break; // no action here
+        }
+
+//        movingObject = null;
+        repaint();
+    }
+
+
+    // draw the fixed elements, using the saved background if it is available
+    // and believed to be valid.
+    public void drawFixedElements(Graphics offGC,boolean complete)
+    {
+      	complete |= createAllFixed(fullRect.width, fullRect.height); // create backing bitmaps;
+    	Image allFixed = allFixed();
+        // the numbers for the square-on display are slightly ad-hoc, but they look right
+      	//tBoardRect = TransformedCopy(boardRect);
+     	if(allFixed==null)
+    	{	// no deep background, draw on the immediate background
+    		drawFixedElements(offGC, b,boardRect);	
+    	}
+    	else
+    	{	// draw the fixed background elements, either into the fixed bitmap
+        	// or to the immediate bitmap, or to the screen directly.
+        	if(complete) 
+    	    	 { // redraw the deep background
+    	    		Graphics allFixedGC = allFixed.getGraphics();
+    	    		G.setClip(allFixedGC,fullRect);
+    	            drawFixedElements(allFixedGC, b,boardRect);
+    	    	 }
+        	// draw the deep background on the immediate background
+        	offGC.drawImage(allFixed,0,0,fullRect.width,fullRect.height,this);
+    	}
+     }
+    /** this is the place where the canvas is actually repainted.  We get here
+     * from the event loop, not from the normal canvas repaint request.
+     */
+    public void paintCanvas(Graphics g, boolean complete,HitPoint hp)
+    {	ExxitGameBoard disb = (ExxitGameBoard)disB();
+    	ExxitGameBoard gb = (disb==null)?b:disb;
+    	// three ways to do this, 
+    	// Preferred: with a "deep background" screen of fixed elements. 
+    	//		This is theoretically the lowest overhead and maybe noticably
+    	//		better performance on older machines, but requires two bitmaps
+    	//		the size of the whole window.
+    	// Second: with only an immediate bitmap.  This uses one bitmap but requires
+    	//		everything to be drawn every time.  If your backgrounds are elaboate
+    	//		this might be noticably poor performance.
+    	// Third: directly to the screen.  This is definitely not recommended, unless
+    	// 		perhaps you are debugging some deep mystery about what is shown where.
+    	// 		it's very "flashy" in a bad way.
+    	// note that on machines in memory trouble, an intermediate state
+    	// to total failure might have one or both of these bitmaps 
+    	// involuntarily unavailable.
+    	//
+    	gb.SetDisplayParameters(zoomRect.value,1.0,board_center_x,board_center_y,30.0, 0, 0,0); // shrink a little and rotate 30 degrees
+    	gb.SetDisplayRectangle(boardRect);
+
+      	Image offScreen = createOffScreen(fullRect.width, fullRect.height); // create backing bitmaps;
+      	Graphics offGC = (offScreen==null) ? g : offScreen.getGraphics();
+      	G.setClip(offGC,fullRect);
+     	drawFixedElements(offGC,complete);
+   	
+    	// draw the board contents and changing elements.
+        redrawBoard(offGC,hp);
+        //      draw clocks, sprites, and other ephemera
+        drawClocksAndMice(offGC, null);
+        DrawTileSprite(offGC,hp); //draw the floating tile, if present
+        DrawArrow(offGC,hp);
+
+        // these are optional display hacks for debugging the applet,
+        // enabled by menu options under "extraactions" control.
+        //
+        ShowStats(offGC,vcrRect.x+vcrRect.width+10,vcrRect.y+vcrRect.height/2);	// add some stats on top of everything
+        showRectangles(offGC, CELLSIZE); //show rectangles in the UI
+        
+        if(offScreen!=null)
+        	{  displayClipped(g,fullRect,chatRect,offScreen);
+
+        	}
+    }
+    
+    // return what will be the init type for the game
+    public String gameType() { return(b.gametype); }
+    public String sgfGameType() { return(Exxit_SGF); }
+    public void performHistoryInitialization(StringTokenizer his)
+    {   //the initialization sequence
+    	String token = his.nextToken();
+        b.doInit(token);
+    }
+
+
+
+    /** return the player whose turn it really is.  This is used by the game controller
+     * to key sounds and other per player turn actions.
+     */
+    public BoardProtocol getBoard()
+    {
+        return (b);
+    }
+
+
+/** this is used by the game controller to supply entertainment strings to the lobby */
+    public String gameProgressString()
+    {	   return ((allowed_to_edit ? "review" : ("" + viewMove)) + " " +
+            b.scoreForPlayer(FIRST_PLAYER_INDEX,true) + " " +
+            b.scoreForPlayer(SECOND_PLAYER_INDEX,false));
+
+    }
+
+    /** handle action events
+     * 
+     */
+    public boolean handleDeferredEvent(Object target,String command)
+    {
+        boolean handled = super.handleDeferredEvent(target,command);
+        if (target == useWoodenTiles)
+        {	handled=true;
+        	redblack_tiles = !useWoodenTiles.getState();
+        	setMouseColors();
+        	generalRefresh();
+        }
+        return (handled);
+    }
+    public SimpleRobotProtocol newRobotPlayer() { return(new ExxitPlay()); }
+
+
+    /** replay a move specified in SGF format.  
+     * this is mostly standard stuff, but the key is to recognise
+     * the elements that we generated in sgf_save
+     */
+    public void ReplayMove(sgf_node no)
+    {
+        String comments = "";
+        sgf_property prop = no.properties;
+
+        while (prop != null)
+        {
+            String name = prop.getName();
+            String value = (String) prop.getValue();
+
+            if (setup_property.equals(name))
+            {
+                b.doInit(value);
+                resetBounds();
+             }
+            else if (name.equals(comment_property))
+            {
+                comments += value;
+            }
+            else if (name.equals(game_property))
+            {
+                if (!(value.toLowerCase().equals("exxit") || value.equals(Exxit_SGF)))
+                {
+                    G.Error("game type " + value + " is not this game");
+                }
+            }
+            else if (parseVersionCommand(name,value,2)) {}
+            else if (parsePlayerCommand(name,value)) {}
+            else
+            {
+                replayStandardProps(name,value);
+            }
+
+            prop = prop.next;
+        }
+
+        if (!"".equals(comments))
+        {
+            setComment(comments);
+        }
+    }
+}

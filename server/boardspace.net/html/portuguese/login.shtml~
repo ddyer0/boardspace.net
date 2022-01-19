@@ -1,0 +1,107 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <title>BoardSpace.net Login Page</title>
+  <script src="/js/site.js">
+  </script>
+  <script language="javascript">
+  function submitme(form1)
+  { form1.action=form1.action+"?pname="+form1.pname.value+"&language="+form1.language.value;
+    form1.submit();
+  }
+  </script>
+</head>
+<body style="BACKGROUND-IMAGE: url(/images/background-image.jpg)">
+<h1 style="TEXT-ALIGN: center"><IMG title=""
+ style="WIDTH: 600px; HEIGHT: 100px" alt =boardspace.net src="/images/master-logo.jpg" ></h1>
+<h1 style="TEXT-ALIGN: center">Login de Jogadores
+</h1>
+<form name="login" action="/cgi-bin/login.cgi" method="post">
+  <table
+ style="MARGIN-LEFT: auto; WIDTH: 827px; MARGIN-RIGHT: auto; HEIGHT: 348px; TEXT-ALIGN: left"
+ border="1" cellpadding="2" cellspacing="2">
+    <tbody>
+      <tr style="FONT-WEIGHT: bold">
+        <td style="VERTICAL-ALIGN: top">Nome de Jogador:<br>
+        </td>
+        <td style="VERTICAL-ALIGN: top"><input name="pname"><br>
+        </td>
+        <td rowspan="5" ><!--[if !IE]> Firefox and others will use outer object -->
+        <applet style="WIDTH: 200px; HEIGHT: 50px; " codebase="/java/" code="online/version.class" ><!--<![endif]--><!-- MSIE (Microsoft Internet Explorer) will use inner object -->
+        <object classid="clsid:8AD9C840-044E-11D1-B3E9-00805F499D93"
+ > <param name="code" value="online.version"> <param
+ name="codebase" value="/java/"><strong> This browser does not have a
+Java
+Plug-in. <br>
+        <a
+ href="http://java.sun.com/products/plugin/downloads/index.html"> Get
+the latest Java Plug-in here. </a> </strong> </object><!--[if !IE]> close outer object -->
+        </applet>
+<!--<![endif]--><br>
+        </td>
+      </tr>
+      <tr style="FONT-WEIGHT: bold">
+        <td style="VERTICAL-ALIGN: top">Senha:
+        </td>
+        <td style="VERTICAL-ALIGN: top"><input name="password"
+ type="password">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <A
+ href="/cgi-bin/lost_password.cgi">Esqueceu a Senha?</A><br>
+        </td>
+      </tr>
+      <tr>
+        <td style="VERTICAL-ALIGN: top"><span
+ style="FONT-WEIGHT: bold"> Idioma:</span>
+        </td>
+        <td style="VERTICAL-ALIGN: top"><!--#include virtual="/cgi-bin/tlib/selectors.cgi?what=language" -->
+         <br>
+        </td>
+      </tr>
+      <tr>
+        <td style="VERTICAL-ALIGN: top"><input name="cookie"
+ type="checkbox">Usar Login Cookie</td>
+        <td style="VERTICAL-ALIGN: top"><font size="-1"> Depois de
+entrar, adicione a página aos favoritos para
+retorno fácil.</font></td>
+      </tr>
+      <tr>
+        <td>&nbsp;<input onclick="javascript:submitme(this.form)"
+ value="Entrar" type="submit">&nbsp;</td>
+        <td><font size="-1"> </font>O botão 
+      "Entrar"&nbsp;o levará ao salão, que é o ponto central&nbsp;para jogar ou 
+      observar todos os tipos de jogos do&nbsp;boardspace.&nbsp;&nbsp; Veja a <A 
+      href="lobby-help.html" target=_new>página de ajuda</A> 
+ para aprender a navegar pelo salão.</td>
+      </tr>
+      <tr>
+      </tr>
+    </tbody>
+  </table>
+  <br>
+  <div style="TEXT-ALIGN: left"> <br>
+  </div>
+</form>
+<center>
+<div style="TEXT-ALIGN: left">O Boardspace.net usa 
+Java.&nbsp;&nbsp;Se o aplicativo não iniciar,&nbsp;veja a página&nbsp; <A 
+href="needsjava.html">NecessitaJava </A>&nbsp;para instruções.<BR>  </div>
+<hr style="WIDTH: 100%; HEIGHT: 2px"><br>
+<table style="WIDTH: 100%">
+  <tbody>
+    <tr>
+      <td align="left"> <font size="-1">E-mail:
+      <script language="javascript">
+document.write("<a href='mailto:gamemaste");
+document.write("r\@board");
+document.write("space.net'>gamemaste<n>r@board<n>space.net</a>");
+      </script></font>
+      </td>
+      <td style="VERTICAL-ALIGN: top; TEXT-ALIGN: center"></td>
+      <td align="right">Ir para a <A href="/">página inicial do BoardSpace.net</A>
+      </td>
+    </tr>
+  </tbody>
+</table>
+</center>
+<script>document.login.pname.focus()</script>
+</body>
+</html>

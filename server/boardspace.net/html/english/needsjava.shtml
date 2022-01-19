@@ -1,0 +1,232 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=windows-1252"><title>BoardSpace.net Login Page</title>
+
+<script src="/js/site.js">
+</script></head>
+<body style="background-image: url(/images/background-image.jpg);">
+<h1 style="text-align: center;"><img src="/images/master-logo.jpg" title="" alt="boardspace.net" style="width: 600px; height: 100px;"></h1>
+<h1 style="text-align: center;">BoardSpace needs Java!</h1>
+Although Java applets are extinct, &nbsp;Java applications are
+alive and well, and <span style="font-weight: bold;">Java
+Web Start </span>is the standard technology to launch java
+applications from browsers. &nbsp;You still need to install java,
+and grant permission for java web start to download and run the
+boardspace application. &nbsp;Also note, that if you prefer to use
+a tablet instead of &nbsp;a PC, this page is irrelevant to you.
+&nbsp;You should go to the app store and download the
+boardspace.net app.<br>
+<br>
+Java is pre-installed on many computers, in which case you don't
+need to do anything. &nbsp;If not installed yet, go to <a href="https://java.com/">Java.com</a> and install it,
+or <br>
+if you're not sure the status of java on your computer, Java.com also
+has a&nbsp;&nbsp;<a href="https://java.com/en/download/help/version_manual.xml">Troubleshooting
+page</a>&nbsp; .<br>
+using 
+<a href=<!--#include virtual="/cgi-bin/applettag.cgi?tagname=jwsrawlink" --> >
+<img style="border: 0px solid ; width: 80px; height: 43px;" alt="java web start icon" title="click to launch boardspace with java web start" src="/images/java-web-star-icon.jpg">
+</a>
+When you click on the  link from your browser, you should
+see a window like this:<br>
+<table style="text-align: left; width: 100%;" border="1" cellpadding="2" cellspacing="2">
+<tbody>
+<tr>
+<td><img style="width: 433px; height: 332px;" alt="java web start open" src="../images/java-web-start-open.jpg"></td>
+<td>Or depending on how your browser is configured to
+handle downloads, something less obvious,<br>
+for example Chrome pops&nbsp;up this notice at the bottom-left of the current
+window.<br>
+<img style="width: 531px; height: 77px;" alt="chrome download" src="../images/chrome-download.jpg"><br>
+<br>
+Or you might see nothing at all, and you need to look at the browser's
+downloads, however<br>
+is appropriate for your browser.<br>
+<img style="width: 457px; height: 166px;" alt="browser download" src="../images/browser-download.jpg">
+<br>Click right on the downloaded file, select "open with" and choose java web start launcher.
+</td>
+</tr>
+</tbody>
+</table>
+<br><h2>If java web start doesn't start anything</h2><br><table style="text-align: left; width: 100%;" border="1" cellpadding="2" cellspacing="2"><tbody><tr><td><img style="width: 684px; height: 524px;" alt="open with menu" src="../images/openwith.jpg"></td><td>Getting java web start to run depends on a file name association
+between ".jnlp" files and java web start. &nbsp;It's possible for this
+association to be broken, in which case instead of launching java
+web start, the .jnlp file will be downloaded and opened with some other
+program,typically a text editor. &nbsp; <br><br>In
+this case, you need to
+re-establish the linkage. &nbsp; First locatate the downloaded file,
+probably in your downloads directory. &nbsp;Click right and select
+"open with". &nbsp;Look for "Java web start" in the choice list. &nbsp;
+If it's not there, select "choose another app" and &nbsp;navigate to
+"javaws" in the programs directory.<br><img style="width: 828px; height: 168px;" alt="javaws" src="../images/javaws.jpg"></td></tr><tr><td></td><td></td></tr></tbody></table><br><br>
+The main theme is you need to download the small ".jnlp" file, then
+launch it using java web start. &nbsp;That will normally lead to a
+security warning<br>
+like this: &nbsp;Hint; you have to approve of the application
+running.<br>
+<br>
+<table style="text-align: left; width: 100%;" border="1" cellpadding="2" cellspacing="2">
+<tbody>
+<tr>
+<td><img style="width: 517px; height: 289px;" alt="java web start security" src="../images/jws-security.jpg"><br>
+If you check the "do not show this again" box, you won't see it again.</td>
+<td>
+<div style="text-align: center;">
+<h3>A word about security and trust</h3>
+</div>
+Any time you run any program on your computer, <span style="font-weight: bold;">you
+have to trust the party that supplied the program</span>.
+Programs can potentially
+steal, delete, or mess up all your data, hijack your machine, and
+otherwise make your online life a mess. &nbsp;There's nothing
+special about Java programs. &nbsp;There's nothing new about this.
+&nbsp;Any cute game, or useful utility, or essential business
+program you've ever installed should have same warning attached, including
+the browser you're running right now. &nbsp;On PCs, security was
+tacked on and is very imperfect.<br>
+<br>
+So don't panic. <br>
+<br>
+The situation on tablets and phones is a little better, because
+individual programs run in a more strictly controlled environment.</td>
+</tr>
+</tbody>
+</table>
+<br>
+<br>
+<br>
+After the security prompt, and some splash screens, you should <span style="font-style: italic;">finally</span> get to a
+screen like this, which is the actual application running:<br>
+<div style="text-align: center;"><img style="width: 490px; height: 246px;" alt="java web start login screen" src="../images/java-web-start-login.jpg"><br>
+</div>
+If
+you do see this, you're in good shape, the application is running and
+has successfully contacted the site. &nbsp;You can go ahead and<br>
+log in as a guest, or register an account and log in as yourself.<br>
+<br>
+After you log in, you should see a screen that looks something like
+this:<br>
+<br>
+<table style="text-align: left; width: 100%;" border="1" cellpadding="2" cellspacing="2">
+<tbody>
+<tr>
+<td style="text-align: center;">
+<h3>Good</h3>
+</td>
+<td style="text-align: center;">
+<h3>Not Good</h3>
+</td>
+</tr>
+<tr>
+<td><img style="width: 506px; height: 483px;" alt="normal lobby" src="../images/normal-lobby.jpg"><br>
+Good! &nbsp;You're logged in and ready to play.</td>
+<td>There are two not-good alternatives. &nbsp;One is
+that you see a message box like this:<br>
+<div style="text-align: center;"><img style="width: 381px; height: 119px;" alt="server not running" src="../images/server-not-running.jpg"><br>
+</div>
+This message is from the site, and probably is accurate. &nbsp;<br>
+Don't panic, It doesn't happen very often.<br>
+<br>
+The other bad outcome is to see a lobby window like the one at the left,<br>
+but it remains gray and dead, and eventuall displays a "server down"<br>
+message like this:<br>
+<div style="text-align: center;"><img style="width: 504px; height: 309px;" alt="lobby down" src="../images/normal-lobby-down.jpg"><br>
+</div>
+In this case, most likely the server is fine, but there is a networking
+problem somewhere between your machine and the server. &nbsp;See
+the section on <a href="#firewalls"><span style="font-weight: bold;">Firewalls</span> </a>below.</td>
+</tr>
+</tbody>
+</table>
+<br>
+<br>
+<h1><a name="firewalls"></a>Firewalls,
+Routers, Ports and Proxies, Lost Connections<br>
+</h1>
+<span style="font-weight: bold;">If you get some kind of
+"can't connect" message in the lobby chat area</span>:&nbsp;&nbsp;Java&nbsp;must
+be able to open an outgoing tcp connection on <span style="font-weight: bold;">port 2255.&nbsp; </span>Most
+firewalls and routers are configured allow this; but some institutions
+(work, school) and some personal firewall products (blackice, zone
+alarm) may block this port.&nbsp; If the lobby window comes up, but
+can't connect to the server, look for problems with port
+2255.&nbsp; The lobby will also fail to connect if it was loaded
+from some place other than Boardspace.net, which could be a side effect
+of some browser proxy setups.&nbsp; <br>
+<br>
+<a href="http://www.boardspace.net:4321/"><span style="font-weight: bold;"></span></a>If you get
+the message<span style="font-weight: bold;"> </span><font style="font-weight: bold;" face="Arial, Helvetica" size="2">rcv 221 errConnection error</font> then you
+have successfully connected to the server, but your connection has been
+rejected.&nbsp; The most likely cause of this is that you
+accidentally connected to the server without going through the login
+procedure, or the login process took a really long time.<br>
+<br>
+<span style="font-weight: bold;">If you lose connection in
+mid-game: </span>don't panic, you can reconnect and rejoin the
+game. &nbsp;Normally this is completely automatic, but if you are
+forced to start over and log in again, you can resume a game that was
+in process. This can happen for a variety of reasons, most of which are
+impossible to predict or control.&nbsp; Watch the little
+spinner&nbsp;<img alt="clock spinner" src="../images/spinner.jpg" style="width: 65px; height: 17px;">
+located next to your clock (and your opponents clock).&nbsp; The
+little arrow should change position at least every 10 seconds or so,
+and if it has not changed position recently, the color starts fading
+from green to red.&nbsp; After 2 minutes of no activity a timeout
+will occur and you can try to reconnect. <br>
+<br>
+<b>Slow&nbsp; connections: </b>Once the application is
+downloaded, the bandwidth required to maintain the lobby and a game is
+very modest, and any type of internet connection should work
+fine.&nbsp;&nbsp; One problem we have seen a few times is that
+firewalls such as Zone Alarm interfere with the flow of data to the
+server without completely blocking it. We don't know why, but disabling
+Zone Alarm fixes the problem.&nbsp; A test for this condition is to
+switch the type of a game room, say from "Game Room" to "Unranked
+Room".&nbsp; The changeover should happen very fast, within a
+second.&nbsp; If there is more that a very brief lag, look for this
+kind of networking problem.<br>
+<br>
+<h1>On Windows</h1>
+On windows machines, if java is installed there ought to be a java
+control panel. &nbsp;If java web start seems to be non-starting,<br>
+that's the place to look. &nbsp;Information about java web start
+programs is found under "temporary internet files". &nbsp;<br>
+<img style="width: 1224px; height: 367px;" alt="java control panel" src="../images/java-control-panel.jpg"><br>
+<br>
+<h1>On Macintosh</h1>
+Macs have a security setting that prevents "downloaded programs" from
+running, which you have to turn off to install the boardspace<br>
+application. <br>
+<table style="text-align: left; width: 100%;" border="1" cellpadding="2" cellspacing="2">
+<tbody>
+<tr>
+<td><img style="width: 905px; height: 674px;" alt="mac apple menu" src="../images/mac-jws-1.jpg"></td>
+<td></td>
+</tr>
+<tr>
+<td><img style="width: 728px; height: 747px;" alt="mac security prompt" src="../images/mac-jws-2.jpg"></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<br>
+<blockquote>
+<hr style="width: 100%; height: 2px;">
+<table style="width: 100%;">
+<tbody>
+<tr>
+<td align="left"> <font size="-1">E-mail:
+<script language="javascript">
+document.write("<a href='mailto:gamemaste");
+document.write("r\@board");
+document.write("space.net'>gamemaste<n>r@board<n>space.net</a>");
+</script></font>
+</td>
+<td align="right">Go to <a href="/">BoardSpace.net
+home page</a> </td>
+</tr>
+</tbody>
+</table>
+<br>
+</blockquote>
+</body></html>

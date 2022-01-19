@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="pf-joi-src"/>
+	<classpathentry kind="lib" path="pf-joi-full.jar"/>
+	<classpathentry kind="lib" path="pf-joi-src.jar"/>
+	<classpathentry kind="lib" path="pf-joi-test-src.jar"/>
+	<classpathentry kind="lib" path="pf-joi-test.jar"/>
+	<classpathentry kind="lib" path="pf-joi.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

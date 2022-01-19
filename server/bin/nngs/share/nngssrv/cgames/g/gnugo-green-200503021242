@@ -1,0 +1,31 @@
+
+(;
+GM[1]FF[4]AP[NNGS:1.1.16]
+US[Brought to you by No Name Go Server]
+CP[
+  Copyright This game was played on the No Name Go Server
+  Permission to reproduce this game is given,
+  as long as this copyright notice is preserved.]
+GN[GNUGo-green(B) NNGS]
+EV[none]
+RE[W+85.5]
+PW[GNUGo]WR[NR ]
+PB[green]BR[UR ]
+PC[NNGS Go Program Server Clone: boardspace.net 9696]
+DT[2005-03-02]
+SZ[9]TM[600]KM[5.5]
+
+;B[fc];W[cg];B[bd];W[fg];B[gf];W[gg];B[db];W[ff];B[gc];W[ge];B[dg];W[df]
+;B[hd];W[hf];B[dc];W[bf];B[fb];W[be];B[tt];W[cd];B[ch];W[bh];B[bc];W[cc]
+;B[gd];W[cb];B[ed];W[da];B[cf];W[bg];B[ce];W[de];B[fe];W[ea];B[he];W[gf]
+;B[ab];W[ee];B[if];W[ig];B[ce];W[eb];B[dd];W[hb];B[bb];W[ca];B[ga];W[ib]
+;B[fa];W[ba];B[eg];W[ie];B[ef];W[cf];B[eh];W[ci];B[fd];W[id];B[ad];W[gb]
+;B[fi];W[dh];B[ic];W[if];B[ha];W[hc];B[hh];W[ih];B[di];W[ch];B[ah];W[ag]
+;B[gh];W[fh];B[gi];W[ei];B[dg];W[eg];B[bi];W[ic];B[hg];W[ce];B[tt];W[tt]
+;
+TW[aa][ab][ac][ad][ae][af][ah][ai][bb][bc][bd][bi][db][dc][dd][dg][di][ec]
+[ed][ef][eh][fa][fb][fc][fd][fe][fi][ga][gc][gd][gh][gi][ha][hd][he][hg]
+[hh][hi][ia][ii]
+)
+
+---

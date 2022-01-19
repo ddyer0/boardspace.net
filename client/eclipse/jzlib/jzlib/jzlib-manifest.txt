@@ -1,0 +1,5 @@
+permissions: all-permissions
+codebase: *
+application-name: Zip loader
+
+

@@ -1,0 +1,768 @@
+RELEASE NOTES FOR PACKAGE PF-Text
+====================================
+
+Author      : Manfred Duchrow
+Last Update : June 23, 2011
+Version     : 6.1
+
+
+-------------------------------------------------------------------------------
+
+VERSION 6.1 (23/06/2011)
+
+* StringUtil
+  > Added
+    - public long asLong( String value, long defaultValue )
+	- public int asInteger( String value, int defaultValue )
+	- public boolean isLong( String value )
+	- public boolean isInteger( String value )
+
+-------------------------------------------------------------------------------
+
+VERSION 6.0 (03/01/2011)
+
+* StringUtil
+  > Added generic <String> type to various collection parameters
+  > Added
+    - public String[] asStrings( Enumeration<String> enumeration )
+    - public boolean isTrue( String string )
+	- public boolean isFalse( String string )
+	- public boolean notNullOrEmpty( String[] strings )
+    - public boolean notNullOrEmpty( String str )
+    - public boolean notNullOrBlank( String str )
+    - public boolean isAnyNullOrBlank(String...strings)
+    - public boolean isNoneNullOrBlank(String...strings)
+	- public String trim(String str) 
+
+-------------------------------------------------------------------------------
+
+VERSION 5.8 (26/06/2009)
+
+* StringUtil
+  > Added
+    - public String translate( String text, String replacementChars, String charsToReplace)
+
+-------------------------------------------------------------------------------
+
+VERSION 5.7 (07/06/2008)
+
+* StringScanner
+  > Added
+    - public int length()
+
+* StringExaminer
+  > Added
+    - public int findPositionOf( String matchString )
+	- public String upToPosition( int pos )
+	- public void appendUpToPosition( final StringBuffer strBuffer, final int pos )
+	- protected void appendUpToPosition( final StringBuffer strBuffer, int pos, final boolean peek )
+ 
+* StringUtil
+  > Added
+    - DELIMITER_QUOTE
+    - DELIMITER_APOS
+    - DEFAULT_TEXT_DELIMITERS
+    - public String getString( String text )
+    - public String getString( String text, IStringPair[] delimiters )
+    - public String getString( String text, IStringPair delimiter )
+    - public String[] parts( String text, String separators, IStringPair[] quotePairs )
+
+* Version
+  > Added
+    - public Version( Version version )
+    - public Version( int major )
+	- public Version( int major, int minor )
+	- public Version( int major, int minor, int micro )
+	- public Version( int major, int minor, int micro, String qualifier )
+	- public String[] getVersionElements()
+	- public static Version getJavaVersion()
+	- public static Version getJavaBaseVersion()
+	- public Version copy() 
+	- public boolean isEqualTo( String strVersion )
+	- public boolean isGreaterOrEqual( String strVersion )
+	- public boolean isLessOrEqual( String strVersion )
+	- public boolean isGreaterOrEqual( Version version )
+	- public boolean isLessOrEqual( Version version )
+
+-------------------------------------------------------------------------------
+
+VERSION 5.6 (24/03/2008)
+
+* New clases
+  > ObjectIdGenerator
+  
+* StringUtil
+  > Changed to properly support negative values
+    - public String leftPadCh( long value, int len, char fillChar )
+	- public String leftPadCh( int value, int len, char fillChar )
+
+  > Added
+    - STR_PACKAGE_SEPARATOR
+	- STR_INNER_CLASS_SEPARATOR
+    - public String asString( Map map, String elementSeparator, String keyValueSeparator )
+	- public String asString( Map map, String elementSeparator )
+	- public String asString( Map map ) 
+	- public void toUpperCase( String[] strings ) 
+	- public void toLowerCase( String[] strings )
+	- public String[] copyUpperCase( String[] strings )
+	- public String[] copyLowerCase( String[] strings )
+	- public void leftPadCh( StringBuffer buffer, long value, int len, char fillChar )
+	- public String getUnqualifiedClassName( String qualifiedClassName )
+	- public String getPackageName( String qualifiedClassName )
+    - public String getDelimitedSubstring( String text, IStringPair[] delimiters )
+	- public String getDelimitedSubstring( String text, IStringPair delimiter )
+	- public int indexOfString( String[] strArray, String searchStr, boolean ignoreCase )
+	- public int indexOf( char[] charArray, char ch, boolean ignoreCase )
+	- public String[] parts( String text, String separators, char[] quoteChars )
+	- public String[] allParts( String text, String separators, char[] quoteChars )
+	- public IStringPair splitStringPair( String str, String separator )
+
+* CommandLineArguments
+  > Added
+    - public String getArgumentValue( String option, String defaultValue ) 
+	- public String[] getArgumentValues( String option, String[] defaultValues )
+
+* StringPatternCollection
+  > Added
+    - public boolean matchesAll( String probe )
+	- public static StringPatternCollection create( String patterns, boolean ignoreCase )
+	- public static StringPatternCollection create( String[] patterns, boolean ignoreCase )
+
+-------------------------------------------------------------------------------
+
+VERSION 5.5.1 (16/08/2007)
+
+* MatchAttribute
+  > Refactored to automatically convert strings string arrays or string collections
+    to the expected type of the attribute (if possible)
+    Integer values will also be converted automatically to Long if necessary
+
+-------------------------------------------------------------------------------
+
+VERSION 5.5 (23/03/2007)
+
+* StringPattern
+  > Added methods
+    - public StringPattern copy() 
+    
+* StringPatternCollection
+  > Added methods
+		- public String[] getPatternStrings()   
+		- public StringPatternCollection copy() 
+		- public Collection select( Collection strings )
+		- public Collection reject( Collection strings )
+
+* StringUtil
+  > Added methods
+    - public void addAll( Collection collection, String[] strings )
+    - public void addAllNew( Collection collection, String[] strings )
+    - public String setFileNameExtension( String filename, String extension, boolean replace )
+    - public String rightPadCh( long value, int len, char fillChar )
+    - public String rightPad( long value, int len )
+    - public String leftPad( long value, int len )
+    - public String leftPadCh( long value, int len, char fillChar )
+    - public String replaceEach( String sourceStr, String oldChars, String newChars )
+
+* LdapFilterParser
+  > BUGFIX
+    parser now throws an exception if end of string not reached but parsing 
+    finished.
+
+-------------------------------------------------------------------------------
+
+VERSION 5.4 (23/08/2006)
+
+* CommandLineArguments
+  > Added
+    - public CommandLineArguments()
+    - public String[] getOptionValues( String option ) 
+
+* StringUtil
+  > Minor performance optimization in method current()
+
+-------------------------------------------------------------------------------
+
+VERSION 5.3 (03/06/2006)
+
+* Version
+  > Added
+    - public static boolean isValidVersion( String str ) 
+    - public boolean isValid() 
+    - public boolean isNumeric() 
+
+-------------------------------------------------------------------------------
+
+VERSION 5.2.1 (24/03/2006)
+
+* StringPattern
+  > Bugfix in matches() if pattern and compare string were "" and 
+    multiCharWildcardMatchesEmptyString=false then it didn't match.
+
+-------------------------------------------------------------------------------
+
+VERSION 5.2 (25/02/2006)
+
+* New classes
+  > AStringFilter
+
+* Changed to extend AStringFilter rather than implementing StringFilter
+  > StringPattern
+  > StringCollectionFilter
+  > StringPatternCollection
+  
+* StringCollectionFilter
+  > Changed constructor
+    public StringCollectionFilter( List strings )
+    to
+    public StringCollectionFilter( Collection strings )
+
+  > Added
+    - public void add( String string )
+
+* StringPattern
+  > Bugfix: "" must not match pattern "*x" !
+
+-------------------------------------------------------------------------------
+
+VERSION 5.1 (22/12/2005)
+
+* New class
+  > ReverseComparator
+
+* StringUtil
+  > Added methods
+	  - public String asSortedString( final String[] strings, final String separator, 
+	                                                     final Comparator comparator )
+		- public String asSortedString( final String[] strings, final String separator, 
+		                                                             boolean ascending )
+		- public String asSortedString( final String[] strings, final String separator )
+		- public String asSortedString( final String[] strings )
+		- public String[] copy( String[] strings )
+    - public boolean areEqualIgnoreCase( String[] strings1, String[] strings2 )
+    - public boolean areEqual( String[] strings1, String[] strings2 ) 
+
+* StringPattern
+  > Now allows to use other wildcard characters than '*' and '?'
+    - public char getMultiCharWildcard()
+    - public void setMultiCharWildcard( char )
+    - public char getSingleCharWildcard()
+    - public void setSingleCharWildcard( char )
+
+-------------------------------------------------------------------------------
+
+VERSION 5.0 (11/06/2005)
+
+* StringUtil
+  > Changed constructor from public to protected
+
+-------------------------------------------------------------------------------
+
+VERSION 4.9 (28/05/2005)
+
+* StringUtil
+  > Bugfix
+    - getDelimitedSubstring(): Now works correct for startDelimiter with more
+      than one character
+
+  > Bugfix
+    - public String asString ( String[] strings, String separator )
+      Avoid NPEif strings is null
+      
+  > New method
+    - public String[] trimmedParts( String text, String separators )
+
+* New classes
+  > StringCollectionFilter
+  > StringCollectionFilterTest
+
+-------------------------------------------------------------------------------
+
+VERSION 4.8 (06/05/2005)
+
+* New interface StringFilter
+
+* Changed StringPattern to implement StringFilter
+
+* StringPatternCollection
+  > Added
+    - implements StringFilter
+    - public void addPatterns( String[] patterns )
+    - public void addPatterns( Collection patterns )
+    - public void addPatterns( StringPatternCollection patternCollection )
+    - public StringPatternCollection( String pattern )
+    - public StringPatternCollection( String[] strPatterns )
+    - public StringPatternCollection( Collection strPatterns )
+    - public void setIgnoreCase( boolean ignore ) 
+    
+* StringUtil
+  > Added
+    - public String[] copy( String[] strings, StringFilter filter )
+    - public String[] copyWithout( String[] strings, StringFilter filter )
+    - public Collection copy( Collection strings, StringFilter filter ) 
+    - public Collection copyWithout( Collection strings, StringFilter filter ) 
+    
+-------------------------------------------------------------------------------
+
+VERSION 4.7.1 (14/01/2005)
+
+* StringUtil
+	> BUGFIX: Method
+	  protected String[] substrings( String text, String separator, boolean all )
+	  returned only last element for substrings( "1.2.3", ".", false )
+
+-------------------------------------------------------------------------------
+
+VERSION 4.7 (27/12/2004)
+
+* DefaultMatchRuleParser
+  > Added methods
+    - public static DefaultMatchRuleParser create()
+    - public static DefaultMatchRuleParser create( MatchRuleChars chars ) 
+    - public MatchRule parseTypedRule( String rule, Map datatypes )
+
+* Added support for datatype to MatchRule
+  > Use 
+    public void setDatatypes( Map datatypes )
+    to set the types for the attributes used in the rule
+    
+  The following types are currently supported:
+  - Integer.class
+  - Long.class
+  - Double.class
+  - Float.class
+  - BigDecimal.class
+  - SimpleDateFormat (an instance of it)
+
+* StringPattern
+  > Added methods
+    - public static char getDefaultMultiCharWildcard()
+    - public static char getDefaultSingleCharWildcard()
+    - public static boolean containsWildcard( String aString ) 
+
+* MatchRuleChars
+  > Added methods
+    - public char getMultiCharWildcard() 
+    - public char getSingleCharWildcard()
+
+* StringUtil
+  > Added methods
+    - public String asString ( Collection strings )
+    - public String asString ( Collection strings, String separator )
+
+-------------------------------------------------------------------------------
+
+VERSION 4.6.1 (14/08/2004)
+
+* StringUtil
+  > BUGFIX
+    - isNullOrBlank(String) was throwing a NullPointerException if the given 
+      argument was null
+
+-------------------------------------------------------------------------------
+
+VERSION 4.6 (23/07/2004)
+
+* StringUtil
+  > Added methods
+    - public boolean isNullOrEmpty( String[] strings )  
+    - public boolean isNullOrEmpty( String str )
+    - public boolean isNullOrBlank( String str )
+    - public String asString( char ch )
+    - public String[] parts( String text, String separators, char quoteChar )
+    - public String[] allParts( String text, String separators, char quoteChar )
+
+* StringPatternCollection
+  > Added methods
+    - public void addPatterns( String patternList )
+    - public void addPatterns( String patternList, String separators )
+
+* StringPattern
+  > Added methods
+    - public static StringPattern create( String pattern )
+    - public static StringPattern create( String pattern, boolean ignoreCase )
+    - public static StringPattern create( String pattern, char digitWildcard )
+    - public static StringPattern create( String pattern, boolean ignoreCase, char digitWildcard )
+
+* CommandLineArguments
+  > Added methods
+    - public int size() 
+    - public String[] getArguments() 
+    - public String getArgumentAt( int index ) 
+
+-------------------------------------------------------------------------------
+
+VERSION 4.5 (02/04/2004) 
+
+* New class Version
+
+* New in StringUtil
+  - public String[] asStrings( Collection collection )
+  - public static final String EMPTY_STRING
+  - public static final String[] EMPTY_STRING_ARRAY
+  - The public constructor StringUtil() is now deprecated
+
+* Bugfix: StringUtil.cutHead() didn't work correclty if the given separator 
+          had more than one character.
+          Now: cutHead( "org.pf.text", "pf" ) ==> ".text"
+
+* New method in StringPattern
+  - public String[] select( String[] strings )
+  - public String[] reject( String[] strings )
+
+* New method in StringPatternCollection
+  - public String[] select( String[] strings )
+  - public String[] reject( String[] strings )
+
+* BUGFIX: MatchRule
+  Changed instance variable 'parser' to transient (because of Serializable)
+
+* Extend CommandLineArguments 
+  - Support options followed directly by their value
+    Example: -mX200       
+    ==> option "-m" with value "X200"
+  - Support usage of an option with different values more than once
+    Example: -Dtest=7 -Ddebug=on -Dvalue:"more info" -D last
+    ==> option "-D" has values "test=7", "debug=on", "value:more info", "last"
+
+-------------------------------------------------------------------------------
+
+VERSION 4.4 (22/12/2003)
+
+* Added new method to MatchRule
+  - public void optimize()
+    Allows to optimize OR concatenations on the same attribute to the 
+    abbreviated form.
+    Example:
+      value{5,9,17}
+      instead of (value=5|value=9|value=17)
+
+* New class StringPatternCollection
+
+* New methods in StringPattern
+  - equals()
+  - hashCode()
+  - inspectString()
+
+* Extended StringPattern to handle '*' wildcard in the way as
+  LDAP, SQL and OS do it: * matches empty strings.
+  Examples:
+    "AB" matches "A*B"
+    "Fred" matches "Fred*"
+    "Joe" matches "*Joe"
+    "test.dat" matches "test*.d*t"
+
+* LdapFilterParser now creates by default match rules that treat names
+  case-insensitive and match empty strings to wildcard '*'.
+
+* Added new method setIgnoreCaseInNames(boolean) to MatchRule
+  to support case-insensitive names
+
+* Added new methods to DefaultMatchRuleParser to support case-insensitive
+  names and values:
+  - setIgnoreCaseInNames(boolean)
+  - setIgnoreCaseInValues(boolean)
+
+* BUGFIX in MatchRule:   - use pattern matching for '=' operator only.
+  i.e. all other oparators treat '*' and '?' as normal characters
+
+* BUGFIX in SqlMatchRuleVisitor:
+  Removed trailing space char in generated string 
+
+* Enhanced SqlMatchRuleVisitor to optimize expressions such as
+  (value=5 OR value=9 OR value=17)
+  to: value IN ( 5 , 9 , 17 )
+
+* BUGFIX in DefaultMatchRuleParser:
+  No exception was thrown for missing closing parenthesis.
+  Example: (name=John & age=9
+
+* MatchRule syntax supports quoting of of values to allow special characters:
+  Example: ( value > 'Mike' ) & ( dep = 'R&D(2)' )
+  
+* New method in StringUtil
+  public int count( String sourceStr, String subStr )
+
+-------------------------------------------------------------------------------
+
+VERSION 4.3 (21/03/2003)
+
+* New methods in StringUtil
+  - String[] remove( String[], String[] )
+  - String[] remove( String[], String )
+  - String[] removeNull( String[] )
+  - leftPad( int anInteger, int len )
+  - leftPadCh( int anInteger, int len, char ch )
+  - rightPad( int anInteger, int len )
+  - rightPadCh( int anInteger, int len, char ch )
+
+* Optimized performance of methods StringUtil.append() by using
+  System.arraycopy()
+  
+* New methods in CommandLineArguments
+  - CommandLineArguments( String[] args, String switchIndicator )
+  - copy()
+  - addOption()
+  - addOptionWithArgument()
+  - removeOption()
+  - removeOPtionWithArgument()
+
+* MatchAttribute supports now Integer values in the attributes map for proper
+  integer comparisons
+
+-------------------------------------------------------------------------------
+
+VERSION 4.2.1 (13/02/2003)
+
+* New methods in StringPattern to support digit wildcard character
+  - setDigitWildcardChar()
+  - 2 new constructors with a digit wildcard char
+
+  Allows to define match patterns like "AB-###-*" where '#' stands for
+  a single digit character (0-9) which means "AB-263-ff" would match the
+  pattern but "AB-9R1-C" won't.
+
+-------------------------------------------------------------------------------
+
+VERSION 4.2 (04/01/2003)
+
+* New method in StringPattern
+  - hasWildcard()
+
+* MatchAttribute now supports operators
+  - equals
+  - greater
+  - less
+  - greater or equal
+  - less or equal
+
+* Extended LdapFilterParser to recognize <= and >= operators
+
+* Extended MatchRuleChars with
+  - getEqualsChar(), setEqualsChar()
+  - getGreaterChar(), setGreaterChar()
+  - getLessChar(), setLessChar()
+
+* Changed MatchRuleVisitor.attribute() signature to pass the attributes
+  compare operator to it
+
+* Changed SqlMatchRuleVisitor to support the new operators
+
+* Changed LdapMatchRuleVisitor to support the new operators
+
+* Changed MatchRulePrinter to support the new operators
+
+-------------------------------------------------------------------------------
+
+VERSION 4.1.2 (22/11/2002)
+
+* Support special characters in attribute names with
+  MatchRuleChars.setSpecialNameCharacters() and
+  a modified DefaultMatchRuleParser
+  
+-------------------------------------------------------------------------------
+
+VERSION 4.1.1 (24/10/2002)
+
+* BUGFIX: In MatchGroup.doMatch()
+  Rules with different operators inside a group were evaluated wrong because
+  of 'short circuit' implementation.
+  
+-------------------------------------------------------------------------------
+
+VERSION 4.1 (30/09/2002)
+
+* New methods in StringUtil
+  - allParts()
+  - allSubstrings()
+
+* New methods in StringScanner
+  - endReached()
+  - endNotReached()
+  - atEnd()
+  - hasNext()
+  - setPosition()
+
+* New class StringExaminer
+
+* Refactored StringPattern (now using StringExaminer instead of StringScanner)
+
+* Changed all setXXXChar() methods in DefaultMatchRuleParser to
+  visibility 'public'
+
+-------------------------------------------------------------------------------
+
+VERSION 4.0 (19.09.2002)
+
+* New class DefaultMatchRuleParser which parses the normal MatchRule syntax
+  e.g. (attr1{val1,val2} &! attr2{val3} | attr3{val4} )
+
+* New class MatchRulePrinter which converts a MatchRule to a String using
+  the normal MAtchRule syntax
+
+* Re-design of MatchRule, MatchGroup and MatchAttribute
+  - Removed parsing (now done by extra class DefaultMatchRuleParser)
+  - Changed toString()
+
+* New class LdapFilterParser to parse an LDAP search filter to a MatchRule
+
+* Added two instance variables with setters and getters to MatchRuleParseException
+  - position
+  - parseString
+
+* Added new instance variable with setters and getters to MatchAttribute
+  - ignoreCaseInName
+
+* Changed methods in StringUtil
+  - suffix()      ->  Now returns the substring after the first (!) occurance
+                      of the separator
+  - cutHead()     ->  Now returns the substring after the last (!) occurance
+                      of the separator
+  - cutTail()     ->  Now returns the substring before the last (!) occurance
+                      of the separator
+
+* New methods in StringUtil
+  - upTo()
+  - startingFrom()
+  - toMap()
+  - asMap()
+  - toProperties()
+  - asProperties()
+
+* BUGFIX: StringUtil.splitNameValue() didn't remove separators with more than
+  one character correctly.
+
+-------------------------------------------------------------------------------
+
+VERSION 3.5.1 (19.09.2002)
+
+* BUGFIX: org.pf.text.StringPattern didn't handle the following example correct:
+
+    StringPattern.match( "MA_DR_HRBLUB", "*_HR*" )
+    
+    Returned false! After fixing the bug it returns true.
+    During the fix the usage of java.text.CharacterIterator was replaced by
+    org.pf.text.StringScanner.
+
+-------------------------------------------------------------------------------
+
+VERSION 3.5 (17.07.2002)
+
+* New class CommandLineArguments
+
+* BUGFIX: StringUtil.suffix() didn't work correctly for separators with more
+  than one character.
+
+-------------------------------------------------------------------------------
+
+VERSION 3.4 (06.07.2002)
+
+* Added to StringUtil
+  - indexOf( String[] strArray, StringPattern pattern )
+  - contains( String[] strArray, StringPattern pattern)
+  - reverse( String str )
+
+* StringPattern.toString() now returns the pattern string
+
+* Bugfix in StringPattern.matches()
+  Didn't match "London" on pattern "L*n"
+
+-------------------------------------------------------------------------------
+
+VERSION 3.3 (03.07.2002)
+
+* Added to StringUtil
+  - cutHead( String text, String separator )
+  - prefix( String text, String separator )
+  - suffix( String text, String separator )
+
+-------------------------------------------------------------------------------
+
+VERSION 3.2 (30.05.2002)
+
+* Added StringUtil.getDelimitedSubstring( String text, String startDelimiter,
+  																			String endDelimiter )
+
+* Added StringUtil.cutTail( String text, String separator )
+
+-------------------------------------------------------------------------------
+
+VERSION 3.1 (17.05.2002)
+
+- Added StringUtil.copyFrom()
+
+-------------------------------------------------------------------------------
+
+VERSION 3.0 (29.04.2002)
+
+- Added StringUtil.splitNameValue()
+
+- Renamed package from "com.pf.text" to "org.pf.text"
+
+-------------------------------------------------------------------------------
+
+VERSION 2.5.1 (16.01.2002)
+
+- Made StringPattern serializable
+
+-------------------------------------------------------------------------------
+
+VERSION 2.5 (11.01.2002)
+
+- New methods in StringUtil
+  - appendIfNotThere()
+  - indexOf()
+  - indexOfIgnoreCase()
+  - contains()
+  - containsIgnoreCase()
+
+-------------------------------------------------------------------------------
+
+VERSION 2.4 (08.01.2002)
+
+- Made MatchRule, MatchGroup, MatchAttributes and MatchRuleChars serializable
+
+- BUGFIX: StringPattern.match() didn't handle "*xxx" patterns (multiple equal
+  character after asterisk) correctly.
+
+-------------------------------------------------------------------------------
+
+VERSION 2.3 (24.11.2001)
+
+- MatchRule upports now String[] and java.util.List of String as values of
+  attributes inside a map.
+
+-------------------------------------------------------------------------------
+
+VERSION 2.2 (12.11.2001)
+
+- New methods append( String[], String) and append( String[], String[])
+  in StringUtil
+
+- New methods asString( String[], String separator ) and asString( String[])
+  in StringUtil
+
+- MatchRule now supports NOT (!) before a group or attribute even if there's
+  no preceeding AND/OR (&/|) operator.
+
+- Changed LdapMatchRuleVisitor and SqlMatchRuleVisitor to support NOT
+  operation correctly
+
+-------------------------------------------------------------------------------
+
+VERSION 2.1 (09.10.2001)
+
+- Changed MatchGroup and MatchAttribute and some of their methods
+  to be public, which allows external code to build rules as well.
+
+-------------------------------------------------------------------------------
+
+VERSION 2.0 (17.08.2001)
+
+- New interface MatchResultVisitor
+
+- New class SqlMatchResultVisitor
+
+- New class LdapMatchResultVisitor
+
+- New methods leftPad(), leftPadCh(), rightPad(), rightPadCh(),
+  center(), centerCh() in class StringUtil

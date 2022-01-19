@@ -1,0 +1,84 @@
+Object Search Framework Realease-Notes
+Author: Manfred Duchrow
+Copyright (c) 2004-2006, by Manfred Duchrow. All rights reserved.
+=======================================================================
+
+
+-----------------------------------------------------------------------
+
+VERSION 1.4 ( June 30, 2006 )
+
+* New classes
+  > MatchRuleFilter
+
+* ObjectContainer
+  > Added
+    - public boolean removeEqual( AttributeReadAccess object )
+
+* ObjectContainerTest
+  > Added
+    - test_remove_1() - test_remove_2()
+    - test_removeEqual_1() - test_removeEqual_2()
+
+-----------------------------------------------------------------------
+
+VERSION 1.3 ( February 24, 2006 )
+
+* ObjectContainer
+  > Changed to use IObjectFilter rather than ObjectFilter
+  
+* Depends now on PF-BIF V1.0 and PF-Utilities V3.0 or later
+  
+-----------------------------------------------------------------------
+
+VERSION 1.2 ( May 28, 2005 )
+
+* ObjectContainer
+  > New methods
+    - public AttributeReadAccess findFirst( ObjectFilter filter )
+    - public ObjectSearchResult find( ObjectFilter filter )
+    - public void find( ObjectSearchResult result, ObjectFilter filter )
+    - public ObjectContainer copy() 
+
+-----------------------------------------------------------------------
+
+VERSION 1.1 ( August 13, 2004 )
+
+* New class ObjectSearchResult
+
+* ObjectContainer
+  > Public interface changed for most find-methods
+    
+    They are now using ObjectSearchResult rather than ObjectContainer
+    for the search result. However, ObjectSearchResult is a subclass
+    of ObjectContainer which minimizes migration effort.
+    
+    - public ObjectSearchResult findIgnoreCase( String rule )
+    - public ObjectSearchResult find( MatchRule rule ) 
+    - public void find( ObjectSearchResult result, MatchRule rule )
+    - public ObjectSearchResult find( String rule ) 
+    
+  > New methods 
+    - public void find( ObjectSearchResult result, String rule, 
+                        boolean ignoreCase )
+
+* BUGFIX: find(...) in ObjectContainer returned wrong result due to
+    bug in MapFacade
+  > MapFacade
+  > Cleared cached attrNames in 
+    - public void setObject( AttributeReadAccess object ) 
+
+-----------------------------------------------------------------------
+
+VERSION 1.0 ( July 30, 2004 )
+
+* Provides three classes that support simple searching for objects
+  using rules based on the objects' attributes (see org.pf.text.MatchRule)
+    
+  > Classes
+    - ObjectContainer
+    - ExtendedMap
+    - MapFacade
+
+-----------------------------------------------------------------------
+

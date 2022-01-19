@@ -1,0 +1,81 @@
+Networking Utilities Realease-Notes
+Author: Manfred Duchrow
+Copyright (c) 2002-2010, by Manfred Duchrow. All rights reserved.
+=======================================================================
+
+-----------------------------------------------------------------------
+
+VERSION 1.4 ( November 17, 2010 )
+
+* New dependency
+  > PF-Text
+
+* New classes
+  > UniformResourceLocator
+
+-----------------------------------------------------------------------
+
+VERSION 1.3 ( August 23, 2006 )
+
+* BinarySocketConnection
+  > Changed public byte[] getData() to block until data comes in which
+    avoids unnecessary cpu time consuming looping 
+
+* PortListener
+  > Added
+    - public boolean isOpen() 
+    - public int getPort() 
+    
+* RequestServer
+  > Changed initialize() to check isOpen() of PortListener and to 
+    react accordingly	
+    
+  > Changed return value of initialize() to boolean
+    
+  > Moved all logic from run() to new method
+    - protected void listen()
+    
+  > Changed run() to close the socket in case of a RuntimeException
+
+-----------------------------------------------------------------------
+
+VERSION 1.2 ( July 30, 2004 )
+
+* New classes
+  - SocketConnection
+  - RequestProcessor
+  - RequestServer
+  - BinarySocketConnection
+  - BinaryRequestServer
+
+* TextSocketConnection
+  - Changed superclass to SocketConnection
+  - Moved many methods to new superclass SocketConnection
+
+* TextRequestProcessor
+  - Changed super interface to RequestProcessor
+
+-----------------------------------------------------------------------
+
+VERSION 1.1 ( February 28, 2003 )
+
+* Moved interface ExceptionHandler from PF-Net to PF-Utilities
+
+* Moved class ExceptionIgnorer from PF-Net to PF-Utilities
+
+-----------------------------------------------------------------------
+
+VERSION 1.0 ( December 3, 2002 )
+
+* Initial version with the following classes
+  - BaseTextRequestProcessor
+  - ConnectionPool
+  - ExceptionHandler
+  - ExceptionIgnorer
+  - PortListener
+  - TextRequestProcessor
+  - TextRequestServer
+  - TextSocketConnection
+
+-----------------------------------------------------------------------
+

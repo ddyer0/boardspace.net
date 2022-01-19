@@ -1,0 +1,3 @@
+Hola Invitado - gracias por venir. Eres bienvenido para jugar, espectar o simplemente para chatear.
+Para jugar contra el Robot, presiona sobre un cuadrado oscuro en una sala de juego vacía y haz click sobre "Juega contra Dumbot".
+Alternativamente, puedes esperar a que otro jugador se una a tu partida y presiona "Inicio".

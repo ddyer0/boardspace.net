@@ -1,0 +1,121 @@
+<html>
+
+<body bgcolor="#FFFFFF" link="#0000FF" vlink="#800080">
+
+<h1><a name="OLE_LINK2"><img src="kawacup.jpg" width="106"
+height="100">Custom command parameters </a></h1>
+
+<p><a name="OLE_LINK1"></a><a href="index.htm">Index</a> </p>
+<font size="1.5" face="Arial">Last Modified Date - <font color=red>2/16/99</font><p>
+Please click <a href="http://www.tek-tools.com/kawa/docs/customcmdparams.htm">here</a> for the latest version of this document.
+<font color=red> If this is an online version of the document please right click in the browser and select 
+'Update local Kawa document' to update your local copy of this document</font>
+</font>
+<hr>
+
+<p>Custom command parameters lets you create complex but
+generic commands that can be used under all situations. It is
+important to understand how this works. Command parameters are
+accepted in Startup directory field and arguments field in the <a
+href="customcommands.htm">Custom commands</a> dialog. </p>
+
+<p>Custom command parameters can be typed in manually or it
+can be picked from a listbox. The latter is preferable because it
+is important to type the parameter accurately for it to work.
+<p>
+Custom command parameter is not case sensitive but the syntax is
+sensitive. 
+<p>
+Using custom command parameters it is possible to
+build complex paths and names. Anything outside of custom command
+parameter is taken literally including the spaces and the quotes.
+<p>
+For example it is possible to have the argument field value
+&quot;&lt;File Name&gt;.java &quot; which will append the current
+file name in the editor with &quot;.java&quot; and make a full
+file name. 
+<p>
+Some of the parameters refer to current file.
+Current file is the file open in the editor if the command is
+picked from the main menu. However, if the command is picked from
+the project tree then current file is the selected file in the
+project tree. 
+<p>
+This is an important distinction to keep in mind
+when executing and defining the command. The same is true for
+current project. Current project is the project open when the
+menu is picked from the main menu or it is the project selected
+in the project tree when the command is picked from the project
+tree.
+<p>
+Following is a rundown of the various parameters defined under Kawa. 
+
+<p>?Your Prompt Here? - Pops up a dialog box allowing a value
+to be entered at the time the command is executed. The
+appropriate title of the dialog box is the text placed between
+the two question marks. This value can be used in the Startup
+Directory, Arguments, and Output File Name boxes, and may be used
+more than once on the arguments field.</p>
+
+<p>&lt;Class of File&gt; - Parses the file and finds the first
+class or interface and builds the class or interface name with
+the package name. For example, if there is file with the package
+Demo and class name RunDemo then &lt;Class of File&gt; will
+return Demo.RunDemo. </p>
+
+<p>&lt;ClassPath&gt; - Current classpath defined in Kawa. </p>
+
+<p>&lt;File Directory&gt; - Directory of the current file. </p>
+
+<p>&lt;File Ext&gt; - Extension of the current file with the
+dot. </p>
+
+<p>&lt;File Name With Ext&gt; - Current file name with
+extension but no path. </p>
+
+<p>&lt;File Name&gt; - Just the file name </p>
+
+<p>&lt;File Path&gt; - Full file name with path </p>
+
+<p>&lt;Open Project class files&gt; - List of all open project
+files separated by space in between. All file names are quoted to
+allow spaces in the names. </p>
+
+<p>&lt;Open Project File Names&gt; - List of all open project
+file names separated by space. The names are quoted. </p>
+
+<p>&lt;Open Project Files With Path&gt; - List of all Open
+project files with full path. The paths are quoted. </p>
+
+<p>&lt;Open Project Files WO Path&gt; - List of all Open
+project files without path. The names are quoted. </p>
+
+<p>&lt;Open Project Main Class&gt; - Full class name of the
+main class file just like &lt;Class of File&gt;. </p>
+
+<p>&lt;Open Project Main Class File Name&gt; - Name of the
+main class file of the open project. </p>
+
+<p>&lt;Open Project Main HTML File&gt; - Full path name of the
+main HTML file of the open project. </p>
+
+<p>&lt;Project Directory&gt; - Directory of the current
+project. </p>
+
+<p>&lt;Project Name&gt; - Name of the current project. </p>
+
+<p>&lt;Project Path&gt; - Path of the current project.</p>
+
+<p>&lt;Project Packages&gt; - List of all packages in the
+current project.</p>
+
+<p>&lt;Project Classes&gt; - List of all classes in the
+current project.</p>
+
+<p>&lt;Program Path&gt; - Path to directory Kawa is located
+in.</p>
+
+<p>&lt;User Path&gt; - Path to local user directory (Different
+from &lt;Program Path&gt; in a network setup).</p>
+</body>
+</html>

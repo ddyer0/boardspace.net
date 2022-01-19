@@ -1,0 +1,9 @@
+class-path: OnlineLobby.jar Game.jar Sounds.jar jzlib.jar OnlineGame.jar Exxit.jar Gobblet.jar Hex.jar Hive.jar OnlineGame.jar OnlineLoa.jar
+  OnlinePlateau.jar OnlineYinsh.jar Punct.jar Trax.jar Hnefatafl.jar Tumble.jar Truchet.jar Dipole.jar  Fanorona.jar Volcano.jar
+  Traboulet.jar Dvonn.jar Tzaar.jar Qyshinsu.jar Knockabout.jar Gipf.jar Palago.jar Santorini.jar Spangles.jar Micropul.jar
+  Medina.jar Cannon.jar Warp6.jar Triad.jar Che.jar Mutton.jar Octiles.jar Frogs.jar Xiangqi.jar BreakingAway.jar Khet.jar
+  Container.jar Arimaa.jar Crossfire.jar Entrapment.jar Quinamid.jar Gounki.jar Yspahan.jar Cookie.jar Snakes.jar TicTacNine.jar Raj.jar
+permissions: sandbox
+codebase: *.boardspace.net
+
+

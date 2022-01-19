@@ -1,0 +1,51 @@
+#!/bin/csh
+#
+source ~/cgi-bin/include.csh
+#
+#
+#clean up from failed uploads
+find $picture_upload_dir -name "cgi-lib*" -mtime +1 -exec rm -f {} \;
+#
+#archive recent games
+#
+set now=`date`
+cd $1
+echo "saving games in $1"
+#
+# find a unique name
+#
+foreach seq ("" "a" "b" "c" "d" "e" "f" "g" "h" "i" "j" "k" "l" "m" "n" "o" "p" "q" "r" "s" "t" "u" "v" "w" "x" "y" "z")
+set name="games"-$now[2]"-"$now[3]$seq"-"$now[6]
+echo try $name
+if(! -e $name) break;
+end
+#
+# make the output dir
+#
+mkdir $name
+mv *.sgf $name
+#
+# make sure the archive dir exists
+#
+if (! (-e "archive-$now[6]")) then 
+ mkdir archive-$now[6]
+ endif
+#
+# archive the files in the archive dir too
+#
+
+
+cd $name
+set aname = ../archive-$now[6]/$name.zip
+zip $aname *
+# save for mirroring
+ln $aname $web_mirror/$2$name.zip
+
+#
+# now cleanup old stuff
+#
+~/cron/move-old-games $1
+# for now we don't need to do this
+# ~/cron/move-old-archives $1
+
+

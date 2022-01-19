@@ -1,0 +1,127 @@
+<HTML><HEAD><TITLE>User Manager - DISCUS Administration Instructions</TITLE>
+<STYLE>
+<!--
+P {text-align: justify}
+UL {text-align: justify}
+-->
+</STYLE>
+<META NAME="Robots" CONTENT="noindex,nofollow">
+<META NAME="Keywords" CONTENT="administration instructions,user manager,create user accounts,manage users">
+<META NAME="Description" CONTENT="Description of the User Manager interface, including how to add, remove, and edit users in your user database.">
+
+</HEAD>
+<BODY BGCOLOR=#ffffff TEXT=#000000 LINK=#0000ff VLINK=#800080 ALINK=#ff0000>
+<FONT FACE="Verdana,Arial,Helvetica" SIZE=2>
+<TABLE WIDTH=100% BGCOLOR=#ccccff BORDER=0 CELLSPACING=0><TR><TD ALIGN=LEFT><FONT FACE="Verdana,Arial,Helvetica" SIZE=3><B>User Manager</B></TD><TD ALIGN=RIGHT><FONT FACE="Verdana,Arial,Helvetica" SIZE=2>DISCUS Administration Instructions</FONT></TD></TR></TABLE>
+
+<P>
+
+The User Manager allows moderators to give posting privileges to non-moderators through the creation of &quot;user accounts.&quot;  Moderators are given privileges to add and remove user accounts as well as to edit the user accounts (by changing the profile or the password without knowledge of the user's current password).<P>
+To access the User Manager, click on &quot;User Manager&quot; from the administration program main menu.  Then select a group in which you wish to add, remove, or edit users.  Note that you can only add, remove, or edit users in those groups to which you belong.
+
+<P>
+
+The &quot;Last Logged In&quot; entry shows the date that the user last logged in.  A user is counted as &quot;logged in&quot; when that user enters his or her username and password for any reason (checking for new messages, posting a message, being authenticated for a restricted reading topic, or editing a profile).  Note that this does not necessarily update if a user reads messages without posting, so a user may have visited your board since the time that is displayed in this box.  <B>NOTE:</B>  if this does not appear in the display, the board administrator has not enabled this display.  This is enabled by the superuser through the Options Manager interface.
+
+<P>
+
+
+<BLOCKQUOTE STYLE="text-align: justify">
+<HR SIZE=0>
+<IMG SRC="icons/proonly_icon.gif" HEIGHT=15 WIDTH=29 ALT="PRO">
+Some features in this section are available in the professional version of this discussion board software only.  Those items are indicated with a notation as shown here.
+<HR SIZE=0>
+</BLOCKQUOTE>
+
+<A NAME="delusr"><H4>Deleting users</H4></A>
+<P>
+To delete a user, click on the delete icon (<IMG SRC="icons/delete_icon.gif" ALT="[Delete Icon]" HEIGHT=25 WIDTH=25>) next to the user you wish to delete.  You may also use the check boxes in the &quot;Mark&quot;  column to select the users you wish to delete, and then click on the &quot;Delete Marked&quot; icon.  You must click on &quot;OK&quot; to confirm the deletion of a user.<P>
+Note that to remove a user completely from the discussion board system, the user must be deleted from all groups to which the user belongs.  You must therefore manually remove the user from each group separately.
+
+<A NAME="editusr"><H4>Editing users</H4></A>
+<P>
+As a moderator, you can set any of the profile options that the user is ordinarily entitled to set, as well as to deny a user the ability to edit his or her own profile.  Editing of users is accomplished through an identical interface to that which is used when you edit your own profile.<P>
+
+<A NAME="addusr"><H4>Adding users</H4></A>
+<P>
+There are two ways to add user accounts to this discussion board.  The first is to add one user account at a time.  The second is to add many user accounts at a time by pasting a tab-delimited username/password list; this is useful for adding students in a class to a list.
+<P>
+<UL>
+<LI><B>Adding one user</B><P>
+Under &quot;Add a User&quot; enter the new user's (future) username into the &quot;Username&quot; text entry box.  Enter the user's (future) password into the &quot;Password&quot; text entry box and retype the password into the &quot;Verify Password&quot; text entry box.  Click on &quot;Add this User.&quot;<P>
+
+<LI><B>Adding many users</B><P>
+The program allows moderators to paste a delimited (tab delimited, comma delimited, or semicolon delimited) list of users into a text box to add the users automatically.  The program can parse this list for usernames, passwords, full names, and e-mail addresses.  The program also has tools for manipulating the list input and extracting data.
+<P>
+Your delimited list needs to contain at least one field -- username, password, full name, or e-mail address.  This delimited list can come from a text page, a spreadsheet, or a database.  To transfer the delimited list from the source program, highlight the desired data range in the source program, select the source program's Copy command, switch to your browser, click in the text box under &quot;Add a User List,&quot; and select your browser's Paste command.  Note that your source program, upon copying, must create a tab delimited, comma delimited, or semicolon delimited list.  If this is not the case, you could paste the source program data into a spreadsheet, and then copy from the spreadsheet to the browser.
+<P>
+Once the list of users has been pasted in the box (or entered manually), click the &quot;Add these Users&quot; button to bring up the preview screen.
+<P>
+At the top of the preview screen is the list you entered, parsed by the program.  The program makes its best guess as to what each field represents.  You will likely need to adjust the program's guesses, especially to recognize which columns represent usernames and passwords.  This is done by selecting the appropriate options from the menu boxes at the top of each column.
+<P>
+The program offers a number of options for manipulating the input:
+<P>
+<UL>
+<LI><B>Generate Usernames</B><P>
+If your list did not contain usernames, you can generate usernames either from the full names (in which case the last name will be used as the username) or from e-mail addresses (in which case the username from the e-mail address will be used as the username).  To use this option, none of the columns at the top may be designated as the "username" column, and one column at the top must be designated either as the full name column or the e-mail address column, respectively.
+<P>
+<LI><B>Generate Passwords</B><P>
+If your list did not contain passwords, you can generate passwords either from full names (in which case the last name will be used as the password), from usernames (in which case the username will also be used as the password), or by giving everyone the same password.  To use this option, none of the columns at the top may be designated as the "password" column, and unless you are giving everyone the same password, one column at the top must be designated either as the full name or the username column, respectively.
+<P>
+<LI><B>Manipulate E-mail Addresses</B>
+<P>
+This allows you to append text to each e-mail address.  For example, if your e-mail addresses did not contain &quot;@yourdomain.com&quot; you could add this text to each e-mail address.  
+</UL>
+<P>
+To submit the user list with no changes, click the &quot;Accept List and Add Accounts&quot; button.  To revise the user list and refresh the preview, click the &quot;Refresh Preview&quot; button.
+<P>
+Once you have chosen to accept the list and add the user accounts, the program will perform checks to verify that all of your new user accounts are valid.  If there are errors, you will be told what the errors are and you can then fix the errors on the preview form.  When all users have been added, you will be returned to the normal User Manager screen.
+<P>
+</UL>
+<A NAME="selfreg"><H4><IMG SRC="icons/proonly_icon.gif" HEIGHT=15 WIDTH=29 ALT="PRO"> User self-registration</H4></A>
+<P>
+If enabled by the board administrator for the entire board, and by moderators for individual groups, visitors to the board can establish user accounts for themselves by clicking on a button on the "Edit Profile" page through the user interface.  The program has certain settings built in to prevent abuse; for example, a username cannot be used that is already in use by any moderator or user registered with the system, and a user account may not register with the same e-mail address as another registered account on the system.  
+
+<A NAME="selfreg1"><H4>Configuration</H4>
+<P>
+There are four possible settings for user self-registration, which will apply to all user accounts created by users in the group.
+<P>
+<UL>
+<LI><B>Disabled</B><P>
+User self-registration is not available in this group.  This is the default setting.  Users can be added only by moderators through the User Manager.
+<P>
+<LI><B>Queue applications</B><P>
+Prospective users are invited to specify a username and e-mail address and to complete the personal information section of their user profile.  Upon completing these forms, the user account is created, but the account is disabled, meaning that the user cannot log on with that account.  Moderators can use the Queue Manager to approve or reject these user account applications.
+<P>
+<LI><B>Automatic (e-mail verification)</B><P>
+Prospective users are invited to specify a username and e-mail address.  The initial password for the account is e-mailed to the user at the e-mail address that is specified.  This ensures that the user must give a valid e-mail address in order to be able to access the account.  When an account is created in this manner, the user cannot change this e-mail address without the moderator enabling this ability by editing the user's settings.
+<P>
+<LI><B>Automatic (no e-mail verification)</B><P>
+Prospective users are invited to specify a username.  The initial password for the account is displayed directly on the screen.
+</UL>
+<P>
+When the desired option has been selected, click the "Save Settings" button.  The new policy is applied automatically to all future applications for user accounts in this group.
+<P>
+<A NAME=selfreg2><H4>Queued applications</H4>
+<P>
+If you enabled the "Queue applications" option as noted in the <A HREF=#selfreg1>previous section</A>, user account applications must be acted upon by you (or another moderator with editing privileges in the group).  There are two possible actions for a user account, approve or refuse.  Approving an account will e-mail the initial password for the account to the specified user.  Refusing the account will delete all records of the application for that account.
+<P>
+If there are queued applications when you log in, a notice will be displayed on your main menu that there are queued applications.  You can click on that link to go directly to the application queue, or click on "User Manager" and use the link at the bottom of the screen. This brings up the user queue.
+<P>
+On the user queue screen, there are three options:
+<P>
+<UL>
+<LI><B>Approve Account</B><P>
+To approve an account, click on the approve icon (<IMG SRC=icons/approve_icon.gif HEIGHT=25 WIDTH=25>).  This will e-mail the initial password to the user at the e-mail address they entered.  You can then edit this user through the User Manager, to change the user's password or editing privileges.  You can also approve a group of applications my marking the applications you wish to approve, and clicking the approve icon in the "(Marked)" row.
+<P>
+<LI><B>Refuse Account</B><P>
+To refuse an account, click on the refuse icon (<IMG SRC=icons/refuse_icon.gif HEIGHT=25 WIDTH=25>).  This will delete all records of the user, including the disabled account that is prepared by the registration process. You can also refuse a group of applications my marking the applications you wish to approve, and clicking the refuse icon in the "(Marked)" row.
+<P>
+<LI><B>View Information</B><P>
+To view information about an account, click on the view icon (<IMG SRC=icons/view_icon.gif HEIGHT=25 WIDTH=25>).  This will, in the lower frame, display complete information about the account, including any profile information that the user may have specified to give you more information to consider in approving the account.  You can use the approve and refuse icons in the lower frame to act on that user; they have the same function as the equivalent icons in the upper frame.
+</UL>
+<P>
+<TABLE WIDTH=100% BGCOLOR=#ccccff BORDER=0 CELLSPACING=0><TR><TD><FONT FACE="Verdana,Arial,Helvetica" SIZE=1>Copyright &copy; 2000, DiscusWare, LLC, all rights reserved</FONT></TD><TD ALIGN=RIGHT><A HREF="board-admin-instr-06.html"><IMG SRC="icons/prev_button.gif" HEIGHT=20 WIDTH=20></A> <A HREF="board-admin-instr-01.html"><IMG SRC="icons/top_button.gif" HEIGHT=20 WIDTH=20></A> <A HREF="board-admin-instr-08.html"><IMG SRC="icons/next_button.gif" HEIGHT=20 WIDTH=20></A></TD></TR></TABLE>
+
+
+</FONT></BODY></HTML>

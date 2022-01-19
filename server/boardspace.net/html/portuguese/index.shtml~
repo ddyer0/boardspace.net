@@ -1,0 +1,131 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <title>BoardSpace.net Home Page</title>
+  <script src="/js/site.js"></script>
+</head>
+<body style="BACKGROUND-IMAGE: url(../images/background-image.jpg)">
+<h1 style="TEXT-ALIGN: center"><IMG style="WIDTH:
+ 600px; HEIGHT: 100px" alt =boardspace.net src="master-logo.jpg" ></h1>
+<h1 style="TEXT-ALIGN: center">Um lugar&nbsp;para 
+os&nbsp;Jogos de Tabuleiro</h1>
+<table
+ style="MARGIN-LEFT: auto; WIDTH: 80%; MARGIN-RIGHT: auto; HEIGHT: 1%; TEXT-ALIGN: left"
+ border="0" cellpadding="2" cellspacing="2">
+  <caption><font size="+1"><span style="FONT-WEIGHT: bold"></span></font><br>
+  </caption><tbody>
+    <tr>
+      <td style="VERTICAL-ALIGN: top; TEXT-ALIGN: center"><font
+ size="+1"><A href="register.shtml"><span style="FONT-WEIGHT: bold">Registrar</span></a></font><br>
+      </td>
+      <td style="VERTICAL-ALIGN: top; TEXT-ALIGN: center"><font
+ size="+2"><A style="FONT-WEIGHT: bold" href="login.shtml">Login de
+Jogadores<br>
+      </a></font></td>
+      <td style="VERTICAL-ALIGN: top; TEXT-ALIGN: center"><font
+ size="+1"><A href="guest.shtml"><span style="FONT-WEIGHT: bold">
+Convidados</span></a></font><br>
+      </td>
+    </tr>
+    <tr>
+      <td colspan="3" style="VERTICAL-ALIGN: top">Se você 
+      quer apenas dar uma olhada, clique no link 
+      "Convidados"&nbsp;acima.&nbsp;&nbsp; Por outro lado,&nbsp;&nbsp;leva apenas um minuto para
+registrar-se&nbsp;e jogar usando seu próprio nome.&nbsp;&nbsp;Uma vez&nbsp;que você tenha entrado,&nbsp;&nbsp;você pode
+adicionar a página aos favoritos para pular esta página e&nbsp;a de login completamente.&nbsp;O
+jogo é o negócio!<br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br><!--#include virtual="/cgi-bin/top_games.cgi?embed=1" --><br>
+<br>
+<p></p>
+<div style="TEXT-ALIGN: center"><span style="FONT-WEIGHT: bold">Outras
+Coisas</span>
+</div>
+<table style="WIDTH: 100%; TEXT-ALIGN: left" border="1" cellpadding="2"
+ cellspacing="2">
+  <tbody>
+    <tr>
+      <td style="VERTICAL-ALIGN: top">
+      <h3><span style="FONT-WEIGHT: bold">Qual será o próximo Jogo?</span></h3>
+      </td>
+      <td style="VERTICAL-ALIGN: top"> Candidatos ao próximo
+jogo estão listados nesta&nbsp; <a
+ href="http://boardgamegeek.com/geeklist/12240/item/439185#item439185">geeklist</a>.;&nbsp;
+Adicione seus candidatos.<a href="http://boardgamegeek.com/game/1337"></a></td>
+    </tr>
+    <tr>
+      <td style="VERTICAL-ALIGN: top"><font size="+1"><A
+ style="FONT-WEIGHT: bold" href="handmade.html">Jogos Caseiros</a></font></td>
+      <td style="VERTICAL-ALIGN: top">No mesmo sentido em que este
+é um site artesanal de jogos,&nbsp;eu sempre fui fã de jogos&nbsp;artesanais de verdade.</td>
+    </tr>
+    <tr>
+      <td style="VERTICAL-ALIGN: top">
+      <h3><A href="../nngs/">NNGS clone</a></h3>
+      <div style="TEXT-ALIGN: center">e também o
+      </div><A 
+      href="http://cgos.boardspace.net/">Servidor de Go 9x9</A>
+      <br>
+      </td>
+      <td style="VERTICAL-ALIGN: top"> Este é um clone do <span
+ style="FONT-STYLE: italic">No Name Go Server</span>&nbsp; e páginas relacionadas,&nbsp;o qual o Boardspace está 
+      oferecendo como
+um serviço à comunidade de programadores de Go.&nbsp;&nbsp;É claro,&nbsp;você pode jogar&nbsp;Go&nbsp;aqui mesmo
+que não tenha um programa de Go em desenvolvimento;&nbsp;mas não é esta
+sua finalidade.&nbsp;&nbsp; Também,&nbsp;exclusivamente para o desenvolvimento de programas de
+Go&nbsp;9x9,&nbsp;nós estamos oferecendo espaço para um&nbsp; <a
+ href="http://cgos.boardspace.net/">Servidor de Go 9x9</a>&nbsp;experimental que roda contínuos
+torneios para praticar.<br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+ Traduções por&nbsp;Babyl Fish (longe da perfeição, mas melhor que nada!)
+<a
+ href="http://babelfish.altavista.com/babelfish/tr?doit=done&url=http://www.boardspace.net/english/index.html&lp=en_es"><IMG
+ style="BORDER-RIGHT: 0px
+ solid; BORDER-TOP: 0px solid; BORDER-LEFT: 0px solid; WIDTH: 30px; BORDER-BOTTOM: 0px solid; HEIGHT: 20px" alt=spanish src="/images/flags/Spain.gif" ></a><a
+ href="http://babelfish.altavista.com/babelfish/tr?doit=done&url=http://www.boardspace.net/english/index.html&lp=en_de"><IMG
+ style="BORDER-RIGHT: 0px
+ solid; BORDER-TOP: 0px solid; BORDER-LEFT: 0px solid; WIDTH: 30px; BORDER-BOTTOM: 0px solid; HEIGHT: 20px" alt=german src="/images/flags/Germany.gif" ></a><a
+ href="http://babelfish.altavista.com/babelfish/tr?doit=done&url=http://www.boardspace.net/english/index.html&lp=en_it"><IMG
+ style="BORDER-RIGHT: 0px
+ solid; BORDER-TOP: 0px solid; BORDER-LEFT: 0px solid; WIDTH: 30px; BORDER-BOTTOM: 0px solid; HEIGHT: 20px" alt=italian src="/images/flags/Italy.gif" ></a><a
+ href="http://babelfish.altavista.com/babelfish/tr?doit=done&url=http://www.boardspace.net/english/index.html&lp=en_fr"><IMG
+ style="BORDER-RIGHT: 0px
+ solid; BORDER-TOP: 0px solid; BORDER-LEFT: 0px solid; WIDTH: 30px; BORDER-BOTTOM: 0px solid; HEIGHT: 20px" alt=french src="/images/flags/France.gif" ></a>
+<hr>
+<center>
+<table style="WIDTH: 100%">
+  <tbody>
+    <tr>
+      <td align="left"><font size="-1">
+      <script language="javascript">
+document.write("<a href='mailto:gamemaste");
+document.write("r\@board");
+document.write("space.net'>gamemaste<n>r@board<n>space.net</a>");
+      </script></font><br>
+      </td>
+      <td style="VERTICAL-ALIGN: top; TEXT-ALIGN: center">
+<a
+ href="http://www4.clustrmaps.com/counter/maps.php?url=http://www.boardspace.net"
+ id="clustrMapsLink"><img
+ src="http://www4.clustrmaps.com/counter/index2.php?url=http://www.boardspace.net"
+ height="35" width="50">
+      </a><br>
+      </td>
+      <td style="VERTICAL-ALIGN: top"><A href="logon-page.html">Mapa do 
+Site</a><br>
+      </td>
+      <td align="right">Ir para a&nbsp; <A href="/">página inicial do BoardSpace.net</a>
+      </td>
+    </tr>
+  </tbody>
+</table>
+</center>
+</body>
+</html>

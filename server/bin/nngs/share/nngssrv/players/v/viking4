@@ -1,0 +1,19 @@
+Name: viking4
+Fullname: Viking
+Password: eyyMjAYSXP5xs
+Email: persson@mpib-berlin.mpg.de
+Rank: NR
+Ranked: NR
+Prompt: #> 
+RegDate: Wed Feb 16 04:15:37 2005
+LastHost: -1928421592
+VARS: 1:7:1:1:0:1:1:1 :1:1:1:1:1:0:0:0 :1:2:0:0:0:0:0:0 :8:14:4:18:90:19:10:25 :-1:0:0:15
+silent_login: 0
+language: 0
+Num_plan: 4
+Viking4 is written by Magnus Persson
+It will respond to match requests
+It will not score games. It simply sends "done" until the opponent also does that.
+Use "tell viking4 handicap 7" to set the handicap to 7 before issuing the match request.
+Num_censor: 0
+Num_alias: 0

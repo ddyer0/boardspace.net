@@ -1,0 +1,167 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.5 [en] (WinNT; I) [Netscape]">
+   <title>Lines of Action puzzles and problems</title>
+</head>
+<body background="/images/background-image.jpg">
+<a NAME="puzzles-and-problems"></a><a NAME="unreachable"></a>
+<h2>
+Puzzles and Problems</h2>
+
+<h3>
+Are all positions reachable?</h3>
+This first problem relates to most of the other problems, which are likely
+to be attacked by constructing board positions without necessarily constructing
+a way to reach them from the standard starting position.
+<p>The question: starting from the standard starting position, what class
+of board positions are unreachable. I can think of two:
+<table>
+<tr>
+<td><img SRC="unreachable-1.gif" ALT="diagram of a matching position" ></td>
+
+<td>All positions with two or fewer stones (of any mix of colors) are
+unreachable, because one of the players would have won before the last
+move was made.&nbsp;</td>
+</tr>
+</table>
+
+<table>
+<tr>
+<td><img SRC="unreachable-2.gif" ALT="diagram of the described position" ></td>
+
+<td>All positions with no stones of one color are unreachable (because
+the game would have passed through "one stone of color remaining", which
+is a win.&nbsp;</td>
+</tr>
+</table>
+My initial conjecture was that all other positions are reachable, but that
+has been mooted by <a href="mailto:Joseph (JaKe) Kisenwether<jake@buttercup.cybernex.net>">Joseph
+(JaKe) Kisenwether </a>, who pointed out two additional classes of unreachable
+positions.
+<table>
+<tr>
+<td><img SRC="unreachable-3.gif" ALT="Diagram of the position" ></td>
+
+<td>Positions in which no piece has been captured and both white and black
+have all of their pieces united. The reason that this is unreachable is
+that whoever didn't move last must have united his pieces on the move before
+last and the game would have ended.&nbsp;</td>
+</tr>
+</table>
+
+<table>
+<tr>
+<td><img SRC="unreachable-4.gif" ALT="Diagram of the position" ></td>
+
+<td>Positions in which both white and black have all of their remaining
+pieces connected AND every piece borders a piece of the other color. This
+is unreachable for a similar reason to the class above: even if the last
+move was a capture, the player who made the preceding move would have completed
+a winning configuration and the game would have ended.&nbsp;</td>
+</tr>
+</table>
+
+<p><a href="mailto:Jorge Gomez Arrausi <jarrausi@picasso.lc.ehu.es>">Jorge
+G&oacute;mez Arrausi&nbsp; </a>has pointed out a related class of unreachable
+positions
+<table>
+<tr>
+<td><img SRC="unreachable-5.gif" ALT="Diagram of the position" height=219 width=219></td>
+
+<td>Positions in which one player is connected , but&nbsp; neither player
+could have created the connected position.&nbsp; In positions such as the
+one at the left, it is straighforward to generate all possible white predecessor
+positions, which have one of the white stones at some other position on
+the board, and possibly has a black stone where the white stone is now.&nbsp;
+In the board at the left, there are exactly 330 such hypothetical white
+predecessors.&nbsp; Similarly, black must have created this position by
+capturing an isolated white stone, and since all black stones are adjavent
+to white, black could not have just created this position.&nbsp;</td>
+</tr>
+</table>
+
+<p>The common thread in these classes of unreachable position seems to
+be the argument that the game would have already ended. Are there any unreachable
+conditions that dont depend on this argument?&nbsp;
+<hr>
+<h3>
+How Many Checks are possible?</h3>
+Actually, several related questions. Starting from a position where neither
+player has passed up an opportunity to win, what is the maximum number
+of winning moves available?
+<p>Related sub-questions:
+<ol>
+<li>
+What if the loser cooperates?</li>
+
+<li>
+What is the maximum number of threats to win that can be refuted? That
+is to say, the situation changes from "no immediate threat" to "n threats
+to win" and back to "no immediate threat".</li>
+</ol>
+Send in your solutions.
+<p>
+<hr>
+<h3>
+Shortest Game Constructions</h3>
+What is the shortest possible game, assuming both players cooperate to
+end the game as quickly as possible. The <a href="short-games.html">best
+known constructions</a> are 9 moves for the standard setup, and 11 moves
+for the scrambled setup. The 11 Move construction for scrambled eggs was
+discvered in May 1999 by enthusiast <a href="mailto:Jorge Gomez Arrausi <jarrausi@picasso.lc.ehu.es>">JorgeG&oacute;mez
+Arrausi</a><a href="mailto:Jorge Gómez Arrausi <jarrausi@picasso.lc.ehu.es>">
+</a>Jorge G&oacute;mez Arrausi, who improved on the previous best result
+of 13.
+<p>
+<hr>
+<h3>
+<a NAME="stalemate"></a>The Stalemate</h3>
+Are positions possible where neither player can move? I've fairly convinced
+myself that it can't occur on a normal board, but with enough extra pieces
+(for example, a fully packed board!) it clearly becomes possible. What
+is the minimum number of pieces on an 8x8 board to create a stalemated
+position?
+<br>&nbsp;
+<table>
+<tr>
+<td><img SRC="stalemate.gif" ALT="Diagram of the position" height=240 width=256></td>
+
+<td>This elegant solution uses just 24 pieces, the same number as the normal
+starting position.&nbsp; This position was devised by <a href="mailto:devjoe@wilma.che.utexas.edu">Joseph
+DeVincentis</a>, as solution to a puzzle for a rather strange game known
+as&nbsp; <a href="http://www.dpmms.cam.ac.uk/~dcr24/Nomic/Acka/">Ackanomic.</a>
+<p>His <a href="http://home.connexus.net.au/~kii/treasure/T201C.html">message
+</a>describing
+how he derived this solution is quite informative&nbsp;
+<p>This stalemate position has a predecessor, seen at the right, but of
+course, that position has more than the standard number of black pieces,
+so could not arise in a regulation game.&nbsp;
+<br>.</td>
+
+<td><img SRC="stalemate-predecessor.gif" height=112 width=144 align=RIGHT></td>
+</tr>
+</table>
+</body>
+
+
+<hr style="width: 100%; height: 2px;">
+<table style="width: 100%;">
+  <tbody>
+    <tr>
+      <td align="left"> <font size="-1">
+E-mail: <script language="javascript">
+document.write("<a href='mailto:gamemaste");
+document.write("r\@board");
+document.write("space.net'>gamemaste<n>r@board<n>space.net</a>");
+</script>
+ </font>
+      </td>
+      <td align="right">Go to <a href="/">BoardSpace.net home page</a>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+</html>

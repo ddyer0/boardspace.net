@@ -1,0 +1,35 @@
+
+
+This directory contains scripts for routine automation, and some
+results of those scripts
+
+directory "backup" contains backup copies of the tantrix player database
+cron is the actual cron table
+
+savedb is a script to save the database daily, with 7 levels of old 
+
+savedb monthly saves a permanant backup monthly, and also performs
+cleanup and maintenance on the db.  It should NOT be run at any 
+other time, since part of its task is to maintain the "monthly rankings"
+page.  Savedb-monthly also saves archive copies of the monthly standings,
+permanant standings, and the map database.
+
+savegames-if-enough is run daily, and triggers savegames if over a threshold number
+of games have been played.  The two factors affecting the sweep frequency are that
+many games is combersome, and some number, about 1000, begin to cause the shell
+problems in savegames.
+
+the script renew-ssl has to be run under root, but lives in this directory. It 
+depends on the machinery from "letsencrypt" being present and set up already.
+with something like this as the cron file
+
+    25 11,21 * * * /home/boardspa/cron/renew-ssl
+
+
+
+
+
+
+
+
+

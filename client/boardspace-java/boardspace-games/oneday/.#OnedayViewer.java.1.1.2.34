@@ -1,0 +1,1480 @@
+package oneday;
+
+
+import online.common.*;
+import online.common.SimpleSprite.Movement;
+import online.game.*;
+import online.game.sgf.*;
+
+import java.awt.*;
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
+import java.util.*;
+
+import util.Env;
+import lib.G;
+import static oneday.OnedayMovespec.*;
+
+/**
+ * The viewer for One Day in London is pretty standard except for the game setup
+ * phase, where all the players get to select and place their cards at the same time.
+ * Consequently, there can be 4 moving cards and the precise ordering of the game record 
+ * is indeterminate until sequential play begins.  A number of careful "dance moves"
+ * are needed to support this.
+ * 
+ * During placement:
+ * (1) picks and drops are ephemeral, and not transmitted to the other players.
+ *     The moving card is still known to the other player because the
+ *     mouse movement messages convey it.
+ * (2) completed pick/drop sequences that place a card are replaced by a "place" atomic
+ *     operation, which doesn't disturb the local board state machine.  That is, they
+ *     don't use the customary "pickObject" and "dropObject" subroutines.
+ * (3) formHistoryString and formEphemeralHistoryString are customized so the ephemeral
+ *     placement moves are placed in the ephemeral part.  useEphemeralBuffer is customized
+ *     to replay the ephemeral moves.  the simultaneous_moves_allowed method prevents
+ *     the game manager from consolidating the current move list until the ephemeral
+ *     phase ends.
+ * (4) at the end of the placement phase, the ephemeral moves are put into canonical
+ *     order and replaced by non-ephemeral placement moves. 
+ * (5) some special logic is needed to start robots in the asynchronous phase.  @see runAsyncRobots();
+ * (6) player clocks need to run concurrently when in simultaneous play mode @see updatePlayerTime();
+ *  
+ *  
+*/
+public class OnedayViewer extends commonCanvas 
+	implements ViewerProtocol, OnedayConstants, sgf_names
+{
+	/**
+	 * this is a filter used to eliminate ephemeral moves from the game record
+	 * used to synchronize players.
+	 * @author ddyer
+	 *
+	 */
+	class FinalFilter implements online.game.commonMove.MoveFilter
+	{ 
+		public boolean reNumber() { return(true); }
+		public boolean included(commonMove m) 
+		{	return(m.isTransmitted() && !m.isEphemeral());
+		}
+	}
+
+	/**
+	 * this is a filter used to present only the ephemeral moves
+	 * at the end of the history for use by the game filter.
+	 * @author ddyer
+	 *
+	 */
+	class EphemeralFilter implements online.game.commonMove.MoveFilter 
+	{ 
+		public boolean reNumber() { return(true); }
+		public boolean included(commonMove m) 
+		{	return(m.isTransmitted() && m.isEphemeral());
+		}
+	}
+	
+    /**
+     * this appends the ephemeral moves to the normal ephemeral history string.
+     */
+    public String formEphemeralHistoryString()
+    {	String str = super.formEphemeralHistoryString();
+    	ByteArrayOutputStream b = new ByteArrayOutputStream();
+    	PrintStream os = new PrintStream(b);
+        if (History.size() > 0)
+        {	
+            commonMove mv = History.elementAt(0);
+            // the filter removes ephemeral moves and renumbers the moves
+            mv.formHistoryTree(os,new EphemeralFilter(),0);
+           
+        }
+    	os.print(" "+KEYWORD_END_HISTORY);
+        os.flush();
+        return(str + b.toString());
+    } 
+    //
+    // convert the ephemeral moves into non-ephemeral equivalents, and
+    // sort them into canonical order.  This is called at the end of
+    // the placement phase to bake-in the players placements.
+    //
+    public void canonicalizeHistory()
+    {
+    	CommonMoveStack  h = History;
+    	CommonMoveStack  ephemera = new CommonMoveStack();
+    	CommonMoveStack  permanent = new CommonMoveStack();
+    	int firstEphemeral = 0;
+    	while(h.size()>0) 
+    		{ commonMove m = h.pop();
+    		  boolean ep = m.isEphemeral() || (m.op==MOVE_TO_RACK);
+    		  if(ep) 
+    		  { firstEphemeral = m.index;
+    		    m.evaluation = m.player*1000+m.index;	// set evaluation for the sort
+    		    ephemera.push(m); 
+    		  }
+    		  else 
+    		  { permanent.push(m); 
+    		  }
+    		}
+    	ephemera.sort(false);		// sort by evaluation
+    	
+    	commonMove prev = null;
+    	while((permanent.size()>0)||(ephemera.size()>0))
+    	{
+    		commonMove top = permanent.top();
+    		if((top==null) || (top.index>firstEphemeral))
+    		{
+    			// copy the ephemeral
+    			while(ephemera.size()>0)
+    			{
+    				OnedayMovespec m = (OnedayMovespec)ephemera.pop();
+    				switch(m.op)
+    				{
+    				default: throw G.Error("Not expecting move "+m);
+    				case EPHEMERAL_PICK: 
+    				case EPHEMERAL_DROP:
+    						break;	// remove
+    				case EPHEMERAL_TO_RACK:
+    					m.op = MOVE_TO_RACK;	// convert to a non-ephemeral move
+						//$FALL-THROUGH$
+					case MOVE_TO_RACK:
+    					m.index = h.size();
+    					m.next = null;
+    					if(prev!=null) { prev.next = m; }
+    					prev = m;
+    					h.push(m);
+    					
+     				}
+    			}
+    		}
+    		if(top!=null)
+    			{ top.index = h.size();
+    			  top.next = null;
+    			  permanent.pop();
+    			  if(prev!=null) { prev.next = top; }
+    			  h.push(top);
+    			  prev = top;
+    			}
+    	}
+    	G.print("Canonicalize to "+formStoryString());
+    	
+    }
+    //
+    // when scrolling back to look at the game, the clocks must not stop unless we've made our move
+    // so we have to remember the state when scrolling started
+    //
+    OnedayState pre_review_state = OnedayState.Puzzle;
+    public boolean doScrollTo(int whence)
+    {	OnedayState pre_state = b.getState();
+    	int pre_view = viewStep;
+    	boolean val = super.doScrollTo(whence);
+    	if((pre_view==-1) && (viewStep!=-1))
+    	{	pre_review_state = pre_state;
+    	}
+    	return(val);
+    }
+    //
+    // this signals the game controller that all players will be submitting moves, which is important
+    // for keeping the official game record consistent.  There are also some side effects in the
+    // common components of the user interface.
+    //
+    public boolean simultaneous_turns_allowed(commonPlayer whoseTurn)
+    {	OnedayState state = b.getState();
+    	switch(state)
+    	{
+    	case NormalStart:
+    	case Place:
+    		return(true);
+    	default: return(false);
+    	}
+    }
+    
+    public boolean fixed_move_baseline(commonPlayer whoseTurn)
+    {	OnedayState state = reviewMode() ? pre_review_state : b.getState();
+    	switch(state)
+    	{
+    	case NormalStart:
+    	case Place:
+    		return(true);
+    	default: return(false);
+    	}
+    }
+    /**
+     * form a canonical history string for the game synchronization that consists of only the
+     * permanent moves.  
+     */
+    public void formHistoryString(PrintStream os)
+    {	
+        os.print(gameType() + " " + 0 );
+        
+        if (History.size() > 0)
+        {	
+            commonMove mv = History.elementAt(0);
+            // the filter removes ephemeral moves and renumbers the moves
+            mv.formHistoryTree(os,new FinalFilter(),0);
+           
+        }
+    } 
+    /**
+     * the trickiest bit of simultaneous play is the inherent uncertainty that
+     * the players will all see the same sequence of moves.  With up to 5 players
+     * picking up cards and placing them, they will inevitably disagree about who
+     * was first.  The server establishes a canonical order, but it's difficult
+     * to use because the protocol is to play your move immediately rather than
+     * wait for a round trip to the server.
+     * 
+     * if two players come to disagree about the sequence of moves, every time
+     * they add a move to the server it causes consternation because it seems to
+     * be contradicting the previous player.
+     * 
+     * After a lot of thought, the solution implemented here is to remove ALL ephemeral
+     * moves from the game record, and tack on the unconfirmed, changeable, ephemeral moves
+     * as a separate list.
+     */
+    /**
+     * playback the history normal ephemeral history string, followed
+     * by an additional list of ephemeral moves.
+     */
+    public void useEphemeraBuffer(StringTokenizer his)
+    {
+    	super.useEphemeraBuffer(his);
+    	performHistoryTokens(his);		// extra tokens for ephemeral moves after the end of the standard ephemeral stuff
+    }
+    public void useStoryBuffer(String tok, StringTokenizer mySt)
+    {
+    	super.useStoryBuffer(tok,mySt);
+    }
+
+	static final long serialVersionUID = 1L;
+	// colors
+    private Color reviewModeBackground = new Color(220,165,200);
+    private Color HighlightColor = new Color(0.2f, 0.95f, 0.75f);
+    private Color boardBackgroundColor = new Color(185,164,189);
+    private Color rackBackGroundColor = new Color(155,164,189);
+    private Color vcrButtonColor = new Color(0.95f, 0.95f, 0.95f);
+ 
+    // images
+    private static Image[] textures = null;// background textures
+    private static Image[] images = null;	// images
+    // private state
+    private OnedayBoard b = null; 	// the board from which we are displaying
+    private Station featuredCard = null;
+    private int CELLSIZE; 			// size of the layout cell.  
+    private static int SUBCELL = 4;	// number of cells in a square
+    private int SQUARESIZE;			// size of a board square
+    private int CARDSIZE;
+    
+    // addRect is a service provided by commonCanvas, which supports a mode
+    // to visualize the layout during development.  Look for "show rectangles"
+    // in the options menu.
+    //public Rectangle fullRect = addRect("fullRect"); //the whole viewer area
+    //public Rectangle boardRect = addRect("boardRect"); //the actual board, normally at the left edge
+    //public Rectangle chatRect = addRect("chatRect"); // the chat window
+    private Rectangle logRect = addRect("logRect"); //the game log, normally off the the right
+    private Rectangle bigRackRect = addRect("bigRackRect");
+    private Rectangle stateRect = addRect("stateRect");
+    
+    private Rectangle playerChipRect[] = 
+    	{
+    		addRect("firstPlayerChipRect"),
+    		addRect("secondPlayerChipRect"),
+    		addRect("thirdPlayerChipRect"),
+    		addRect("fourthPlayerChipRect")
+    	};
+    private Rectangle discardPile = addRect("discardPiles");
+    private Rectangle drawPile = addRect("drawPile");
+    private Rectangle doneRect = addRect("doneRect");
+    private Rectangle editRect = addRect("editRect");
+    private Rectangle goalRect = addRect("goalRect");
+    private Rectangle progressRect = addRect("progressRect");
+    private Rectangle startingCardRect = addRect("startingCards");
+
+    public void preloadImages()
+    {	
+       	Station.preloadImages(this,ImageDir);
+        if (textures == null)
+    	{ // note that for this to work correctly, the images and masks must be the same size.  
+          // Refer to http://www.andromeda.com/people/ddyer/java/imagedemo/transparent.html
+        textures = load_images(ImageDir,TextureNames);
+        images = load_masked_images(ImageDir,ImageNames);
+    	}
+    }
+
+
+	/**
+	 * 
+	 * this is the real instance initialization, performed only once.
+	 * info contains all the goodies from the environment.
+	 * */
+    public void init(exHashtable info)
+    {	// for games with more than two players, the default players list should be 
+    	// adjusted to the actual number, adjusted by the min and max
+       	// int players_in_game = Math.max(3,info.getInt(exHashtable.PLAYERS_IN_GAME,4));
+    	int players_in_game = Math.max(2,info.getInt(exHashtable.PLAYERS_IN_GAME,2));
+    	super.init(info);
+    	G.print(Env.getSystemProperties());
+       	// 
+    	// for games that require some random initialization, the random key should be
+    	// captured at this point and passed to the the board init too.
+        // randomKey = info.getInt(exHashtable.RANDOMSEED,-1);
+    	//
+
+        int randomKey = info.getInt(exHashtable.RANDOMSEED,-1);
+       
+        b = new OnedayBoard(info.getString(exHashtable.GAMETYPE, OnedayVariation.Standard.name),randomKey,players_in_game);
+        doInit(false);
+
+        
+     }
+
+    /** 
+     *  used when starting up or replaying and also when loading a new game 
+     *  */
+    public void doInit(boolean preserve_history)
+    {	//System.out.println(myplayer.trueName + " doinit");
+        super.doInit(preserve_history);				// let commonViewer do it's things
+        int np = b.nPlayers();
+        b.doInit(b.gametype,b.randomKey,np);			// initialize the board
+        adjustPlayers(np);
+        if(!preserve_history)
+    	{ PerformAndTransmit(reviewOnly?"Edit":"Start P0", false,replayMode.Live);
+    	}
+
+    }
+
+
+    /** this is called by the game controller when all players have connected
+     * and the first player is about to be allowed to make his first move. This
+     * may be a new game, or a game being restored, or a player rejoining a game.
+     * You can override or encapsulate this method.
+     */
+    public void startPlaying()
+    {	super.startPlaying();
+    }
+
+    /**
+     * translate the mouse coordinate x,y into a size-independent representation
+     * presumably based on the cell grid.  This is used to transmit our mouse
+     * position to the other players and spectators, so it will be displayed
+     * at approximately the same visual spot on their screen.  
+     * The results of this function only have to be interpreted by {@link #decodeScreenZone}
+     * Some trickier logic may be needed if the board has several orientations,
+     * or if some mouse activity should be censored.
+     */
+    public String encodeScreenZone(int x, int y,Point p)
+    {	if(!reviewMode() && !mutable_game_record)
+    	{
+    	//
+    	// when sumultaneous moves are going on, encode the movements so they can be 
+    	// decoded as heading toward the small player racks in stead of toward the
+    	// big rack at the bottom.
+    	//
+    	G.SetLeft(p, ((x-G.Left(startingCardRect))*100)/G.Width(fullRect));
+    	G.SetTop(p, ((y-G.Top(startingCardRect))*100)/G.Height(fullRect));
+    	return("SETUP"+my.boardIndex);
+    	}
+    	else
+    	{
+    	return(super.encodeScreenZone(x,y,p));
+    	}
+    }
+    /**
+     * invert the transformation done by {@link #encodeScreenZone}, returning 
+     * an x,y pixel address on the main window.
+     * @param z
+     * @param x
+     * @param y
+     * @return a point representing the decoded position
+     */
+    public Point decodeScreenZone(String z,int x,int y)
+    {	if(z!=null && z.startsWith("SETUP"))
+    	{	int pl = (z.charAt(5)-'0');
+    		if((pl>=0)&&(pl<=playerChipRect.length))
+    		{	Rectangle chip = playerChipRect[pl];
+    			int xx = G.Left(chip) + x*G.Width(chip)/100;
+    			int yy = G.Top(chip);
+    			return(new Point(xx,yy));
+    			//int v = ((x+y)/2)*fullRect.
+    			
+    		}
+    		return(new Point(G.Left(startingCardRect)+(x*G.Width(fullRect))/100,G.Top(startingCardRect)+y*G.Height(fullRect)/100));
+    	}
+    	else { return(super.decodeScreenZone(z,x,y));
+    	}
+    }
+	/**
+	 * 
+	 * this is a debugging hack to give you an event based on clicking in the player name
+	 * You can take whatever action you like, or no action.
+	 */
+    public boolean inPlayRect(int eventX, int eventY)
+    {	if(super.inPlayRect(eventX,eventY))
+    	{
+    	
+    	}
+    	return(false);
+     }
+
+    /**
+     * update the players clocks.  The normal thing is to tick the clocks
+     * only for the player whose turn it is.  Games with a simultaneous action
+     * phase need to do something more complicated.
+     * @param inc the increment (in milliseconds) to add
+     * @param p the current player, normally the player to update.
+     */
+    public void updatePlayerTime(long inc,commonPlayer p)
+    {	if(b.getState()==OnedayState.Place)
+    	{
+    		for(commonPlayer pl : players)
+    		{
+    			if(!b.rackFull(pl.boardIndex))		// this player has not finished
+    			{
+    				super.updatePlayerTime(inc,pl); 	// keep on ticking
+    			}
+    		}
+    	}
+    	else 
+    	{ super.updatePlayerTime(inc,p); 
+    	}
+    }
+    
+    private void createPlayerGroup(commonPlayer pl0,Rectangle playerChipRect,int inx,int iny)
+    {
+        Rectangle timeRect = pl0.timeRect;
+        Rectangle altTimeRect = pl0.extraTimeRect;
+        Rectangle animRect = pl0.animRect;
+        Rectangle playerRect = pl0.nameRect;
+        Rectangle picRect = pl0.picRect;
+
+        // first player portrait
+        G.SetRect(picRect, inx, iny, CELLSIZE * 5, CELLSIZE * 5);
+        
+        //first player name
+        G.SetRect(playerRect, G.Right(picRect), iny, CELLSIZE * 10, 3*CELLSIZE/2);
+
+       	
+        // time dispay for first player
+        G.SetRect(timeRect, G.Right(playerRect),G.Top(playerRect),CELLSIZE * 3,CELLSIZE);
+        G.SetRect(altTimeRect,G.Left( timeRect),G.Bottom(timeRect), G.Width(timeRect),G.Height( timeRect));
+        
+        // tfirst player "i'm alive" anumation ball
+        G.SetRect(animRect, G.Right(timeRect),G.Top( timeRect),G.Height(timeRect),G.Height(timeRect));
+        
+        if(playerChipRect!=null)
+        {
+        	G.SetRect(playerChipRect, G.Right(picRect), G.Bottom(altTimeRect)+CELLSIZE/2,CELLSIZE*14,CELLSIZE*2);
+        }
+  
+     }
+	/**
+	 * this is the main method to do layout of the board and other widgets.  I don't
+	 * use swing or any other standard widget kit, or any of the standard layout managers.
+	 * they just don't have the flexibility to produce the results I want.  Your milage
+	 * may vary, and of course you're free to use whatever layout and drawing methods you
+	 * want to.  However, I do strongly encourage making a UI that is resizable within
+	 * reasonable limits, and which has the main "board" object at the left.
+	 * 
+	 *  The basic layout technique used here is to start with a cell which is about the size
+	 *  of a board square, and lay out all the other object relative to the board or to one
+	 *  another.  The rectangles don't all have to be on grid points, and don't have to
+	 *  be nonoverlapping, just so long as the result generally looks good.
+	 *  
+	 *  When "extraactions" is available, a menu opion "show rectangles" works
+	 *  with the "addRect" mechanism to help visualize the layout.
+	 */ 
+    public void setLocalBounds(int x, int y, int width, int height)
+    {   boolean wideMode = width>height*1.8;
+    	OnedayVariation variation = b.variation;
+    	boolean safari = (variation==OnedayVariation.Safari);
+    	int ncols = 10;
+    	int nrows = 7;
+    	int nPlayers = b.nPlayers();
+        int sncols = (ncols*SUBCELL+(wideMode?56:34)); // more cells wide to allow for the aux displays
+        int snrows = nrows*SUBCELL+(safari?1:12);  
+        int cellw = width / sncols;
+        int chatHeight = selectChatHeight(height);
+        int cellh = (height-(wideMode ? 0 : chatHeight)) / snrows;
+        int ideal_logwidth = CELLSIZE * 8 * nPlayers;
+        CELLSIZE = Math.max(1,Math.min(cellw, cellh)); //cell size appropriate for the aspect ration of the canvas
+        SQUARESIZE = CELLSIZE*SUBCELL;
+        
+        int boardX = CELLSIZE/2;
+        CARDSIZE =  (width-boardX-CELLSIZE/2)/10;
+
+        G.SetRect(fullRect,x,y,width, height);
+
+        // game log.  This is generally off to the right, and it's ok if it's not
+        // completely visible in all configurations.
+        int boardW = SQUARESIZE * ncols;
+        
+        G.SetRect(stateRect,boardX + CELLSIZE, (wideMode ? 0 : chatHeight) +CELLSIZE/3,
+        		boardW - CELLSIZE, CELLSIZE);
+
+        G.SetRect(boardRect, boardX,(wideMode ? 0 : chatHeight)+CELLSIZE, boardW , SQUARESIZE * nrows);
+
+        int playerx = 0;
+        switch(variation)
+        {
+        case Standard:
+       
+	        G.SetRect(discardPile, G.Right(boardRect)+CELLSIZE*8,
+	        		G.Top( boardRect)+CELLSIZE/2,
+	        		CELLSIZE*7,
+	        		G.Height(boardRect));
+	        
+	        G.SetRect(drawPile,G.Left( discardPile)-G.Width(discardPile)-CELLSIZE,
+	        		G.Top(discardPile),
+	        		G.Width(discardPile),
+	        		G.Height(discardPile)/3);
+	       
+	        G.SetRect(startingCardRect,G.Left(drawPile), G.Bottom(drawPile)+CELLSIZE,G.Width(drawPile),G.Height( drawPile));
+
+	        int bigW = width-G.Left(boardRect)-CELLSIZE/2;
+	        G.SetRect(bigRackRect,G.Left( boardRect), G.Bottom(boardRect),
+	        		bigW,Math.min((bigW/10)*2,height-G.Bottom(boardRect)-CELLSIZE/2));
+
+	        if(G.Height(bigRackRect)*6.5<G.Width(bigRackRect))
+	        {
+	        	G.SetWidth(bigRackRect, (int)(G.Height(bigRackRect)*6.5));
+	        }
+	        
+	        playerx =  G.Right(discardPile)+CELLSIZE/2;        
+	        break;
+	        
+        case Safari:
+        	playerx = G.Right(boardRect)+CELLSIZE/2;
+			break;
+		default:
+			break;
+	    }
+
+        G.SetRect(goalRect,G.Left( boardRect),		// really just a general message
+        		G.Bottom(boardRect)-2*CELLSIZE,
+        		G.Width( boardRect),CELLSIZE*2);
+        
+        G.SetRect(progressRect,G.Left( goalRect)+G.Width(goalRect)/6,	// a simple progress bar when the robot is running.
+        		G.Top(goalRect),
+        		G.Width(goalRect)/2,
+        		CELLSIZE/2);
+      
+        int logX =  wideMode ?  playerx : G.Right(chatRect)+CELLSIZE/3;
+        G.SetRect(logRect,logX,
+        			wideMode ?G.Top(boardRect)+CELLSIZE/2 : 0 ,
+        			width-logX-CELLSIZE,
+        			wideMode ? CELLSIZE*7 : G.Top(boardRect));
+
+        int playery = G.Bottom(logRect);
+
+        boolean columns = wideMode;
+        for(int i=0;i<nPlayers;i++)
+        {	createPlayerGroup(getPlayerOrTemp(i),(variation==OnedayVariation.Standard)?playerChipRect[i]:null,
+        		playerx+(columns?((i&1)*CELLSIZE*21):0),playery);
+
+        	playery += (columns?(i&1)*CELLSIZE*6:CELLSIZE*6);
+        }
+        if(columns && (nPlayers==3)) { playery += CELLSIZE*6; }
+ 
+        int chatX = wideMode ? playerx : 0;
+        int chatY = wideMode ? playery : 0;
+        G.SetRect(chatRect,chatX,chatY,
+        		wideMode ? width-chatX-CELLSIZE/2 : width-ideal_logwidth,
+        		wideMode ? Math.min(chatHeight,G.Bottom(boardRect)-chatY) : chatHeight);
+        
+
+        // "edit" rectangle, available in reviewers to switch to puzzle mode
+        G.SetRect(editRect, G.Right(boardRect)+CELLSIZE,G.Bottom(startingCardRect)+CELLSIZE,
+        		CELLSIZE*6,2*CELLSIZE);
+
+        
+        // "done" rectangle, should always be visible, but only active when a move is complete.
+        G.SetRect(doneRect,G.Left( editRect), G.Bottom(editRect)+CELLSIZE*2,G.Width(editRect),G.Height( editRect));
+
+        
+  
+        //this sets up the "vcr cluster" of forward and back controls.
+        SetupVcrRects(G.Right(boardRect)-CELLSIZE*11,G.Bottom(boardRect)-6*CELLSIZE,
+            CELLSIZE * 10,
+            5 * CELLSIZE);
+ 
+        positionTheChat(chatRect,Color.white,Color.white);
+        generalRefresh();
+    }
+
+	// draw a box of spare chips. Notice if any are being pointed at.  Highlight those that are.
+    private void drawSingleStack(Graphics gc, OnedayBoard gb,OnedayCell c, boolean showBacks,
+    			int forPlayer, Rectangle r,HitPoint highlight,HitPoint any)
+    {	boolean canHit = gb.LegalToHitChips(forPlayer,c);
+    	boolean canPick = gb.pickedObject==null;
+    	HitPoint pt = canHit? highlight : null;
+    	int width = G.Width(r);
+    	int height = G.Height(r);
+    	double aspect = 1.45;
+    	OnedayCell target = c;
+    	if(width*aspect>height) { width = (int)(height/aspect); }
+    	//G.frameRect(gc, Color.red, r);
+    	if(c.height()==0)
+    	{
+    		target = gb.blankCard;
+    	}
+    	else if(showBacks)
+    	{	target = gb.tempCell;
+    		target.rackLocation = c.rackLocation;
+    		target.reInit();
+    		while(target.height()<c.height()) { target.addChip(c.exposed?Station.back2:Station.back); }
+    	}
+    	int cx = G.Left(r)+G.Width(r)/2;
+    	int cy = G.Top(r)+G.Height(r)/2;
+    	if(c.rackLocation==OneDayId.StartingPile)
+    	{	// the other players starting piles are never shown, so give them the
+    		// current location
+    		for(OnedayCell d : gb.startingPile)
+    		{
+            	d.current_center_x = cx;	// set the location for animation
+            	d.current_center_y = cy;	
+    		}
+    	}
+    	else
+    	{
+        	c.current_center_x = cx;	// set the location for animation
+        	c.current_center_y = cy;	
+
+    	}
+    	String label = "";
+    	if(b.isDest(c)||b.isAnySource(c)) { label = Station.HOTFRAME; } 
+    	if(target.drawStack(gc,this,pt,width,cx,cy,0,-0.005,0,label))
+    	{	highlight.hitCode = c.rackLocation;
+    		highlight.hitObject = c;
+    		highlight.arrow = canPick ? StockArt.UpArrow : StockArt.DownArrow;
+        	highlight.awidth = G.Width(r)/2;
+    	}
+    	if(any!=null)
+    	{
+    		HitPoint.setHelpObject(any,r,c);
+    	}
+      }
+    private void drawCardRack(Graphics gc,OnedayBoard gb,OnedayCell rack[],
+    							boolean showBack,int forPlayer,Rectangle r,
+    							HitPoint p,HitPoint any,boolean showBars,String msg)
+    {
+    	int w = G.Width(r);
+    	int h = G.Height(r);
+    	boolean horizontal = w>h;
+    	int ncards = rack.length;
+    	int xstep = horizontal ? w/ncards : w;
+    	int ystep = horizontal ? h : h/ncards;
+    	int ix = G.Left(r) + (horizontal ?  (w-ncards*xstep)/2 : 0);
+    	int iy = G.Top(r) + (horizontal ? 0 : (h-ncards*ystep)/2);
+    	int iix = ix+xstep/2;
+    	int iiy = iy+ystep-h/20;
+    	for(OnedayCell c : rack)
+    	{	
+    		drawSingleStack(gc,gb,c,showBack,forPlayer,new Rectangle(ix,iy,xstep,ystep),p,any);
+    		if(horizontal) { ix += xstep; } else  { iy += ystep; }
+    	}
+    	if(showBars)
+    	{
+    	int start = 0;
+    	int nCells = rack.length;
+    	while(start<nCells)
+    	{
+    		int len = OnedayCell.lengthOfChain(rack,start);
+    		if(len>1)
+    		{
+    		Rectangle bar = new Rectangle(
+    				iix+start*(horizontal?xstep:0),
+    				iiy+start*(horizontal?0:ystep/2),
+    				xstep*(len-1),
+    				Math.max(2,h/30+(horizontal?0:ystep)*(len-1)));
+        	G.fillRect(gc,Color.black,bar);
+        	}
+       		start += Math.max(1,len);
+       	 
+    	}
+    	}
+    	if(msg!=null)
+    	{
+    		G.Text(gc,false,G.Left(r),G.Top(r),G.Width(r),G.Height(r)/20,Color.black,null,msg);
+    	}
+    }
+
+    //
+    // sprites are normally a game piece that is "in the air" being moved
+    // around.  This is called when dragging your own pieces, and also when
+    // presenting the motion of your opponent's pieces, and also during replay
+    // when a piece is picked up and not yet placed.  While "obj" is nominally
+    // a game piece, it is really whatever is associated with b.movingObject()
+    //
+    public void drawSprite(Graphics g,int objcode,int xp,int yp)
+    {  	// draw an object being dragged
+    	boolean ours = OurMove() && (objcode==getMovingObject());
+    	int obj = objcode%1000;
+    	CellId from = OneDayId.find(objcode/1000);
+    	Station ch = (!ours && ((from==OneDayId.DrawPile)||(from==OneDayId.StartingPile)||(from==OneDayId.RackLocation))) 
+    					? Station.back 			// conceal the card
+    					: Station.getCard(obj);	// Tiles have zero offset
+    	ch.drawChip(g,this,CARDSIZE,xp,yp,null);
+     }
+
+    // also related to sprites,
+    // default position to display static sprites, typically the "moving object" in replay mode
+    public Point spriteDisplayPoint()
+	{   return(new Point(G.Right(boardRect)-SQUARESIZE/2,G.Top(boardRect)+SQUARESIZE/2));
+	}
+
+
+    /** this is used by the game controller to supply entertainment strings to the lobby */
+    public String gameProgressString()
+    {	// this is what the standard method does
+    	// return ((reviewer ? s.get(ReviewAction) : ("" + viewMove)));
+    	return(super.gameProgressString());
+    }
+
+
+
+    /* draw the deep unchangable objects, including those that might be rather expensive
+     * to draw.  This background layer is used as a backdrop to the rest of the activity.
+     * in our cease, we draw the board and the chips on it. 
+     * */
+    public void drawFixedElements(Graphics gc)
+    {	boolean reviewBackground = reviewMode()&&!mutable_game_record;
+      // erase
+      G.setColor(gc,reviewBackground ? reviewModeBackground : boardBackgroundColor);
+      //G.fillRect(gc, fullRect);
+      G.tileImage(gc,textures[BACKGROUND_TILE_INDEX], fullRect, this);   
+      if(reviewBackground)
+      {	 
+        G.tileImage(gc,textures[BACKGROUND_REVIEW_INDEX],boardRect, this);   
+      }
+       
+      // if the board is one large graphic, for which the visual target points
+      // are carefully matched with the abstract grid
+      G.centerImage(gc,images[BOARD_INDEX], boardRect,this);
+	  b.SetDisplayRectangle(boardRect);
+
+	  Line.drawAllLines(gc,boardRect,0.5);
+      Station.drawAllStops(gc,this,boardRect,0.5);
+
+    }
+    private void drawTrains(Graphics gc,OnedayBoard gb,Rectangle brect)
+    {	TrainStack trains = gb.trains;
+    	for(int lim=trains.size()-1; lim>=0; lim--)
+    	{
+    		Train t = trains.elementAt(lim);
+    		int xp = t.positionOnMap_x(brect);
+    		int yp = t.positionOnMap_y(brect);
+    		StockArt.SmallO.drawChip(gc,this,G.Width(brect)/10,G.Left(brect)+xp,G.Top(brect)+yp,null);
+    	}
+    	
+    }
+   /* draw the board and the chips on it. */
+    private void drawBoardElements(Graphics gc, OnedayBoard gb, Rectangle brect, HitPoint highlight)
+    {
+     	//
+        // now draw the contents of the board and anything it is pointing at
+        //
+     	
+        int perspective_offset = 0;
+        // conventionally light source is to the right and shadows to the 
+        // left, so we want to draw in right-left top-bottom order so the
+        // solid parts will fall on top of existing shadows. 
+        // when the rotate view is in effect, top and bottom, left and right switch
+        // but this iterator still draws everything in the correct order for occlusion
+        // and shadows to work correctly.
+        if((gc!=null) && (featuredCard!=null))
+        {
+        	featuredCard.drawLines(gc,brect,1.0);
+        	featuredCard.drawStops(gc,this,brect);
+        }
+    	for(OnedayCell cell = gb.allCells; cell!=null; cell=cell.next)
+        	{ 
+            int ypos = G.Bottom(brect) - gb.cellToY(cell);
+            int xpos = G.Left(brect) + gb.cellToX(cell);
+           // Station station = cell.topChip();
+           // String name = station.station;
+           // G.Text(gc,false,xpos+CELLSIZE/2,ypos-CELLSIZE/4,CELLSIZE*4,CELLSIZE/2,Color.white,null,name);
+            if( G.pointInRect(highlight,xpos-CELLSIZE/2,ypos-CELLSIZE/2,CELLSIZE,CELLSIZE)) 
+            	{ // draw a highlight rectangle here, but defer drawing an arrow until later, after the moving chip is drawn
+            	Station top = cell.topChip();
+            	highlight.arrow =(getMovingObject()>=0) 
+      				? StockArt.DownArrow 
+      				: top!=null?StockArt.UpArrow:null;
+            	highlight.awidth = SQUARESIZE/2;
+            	if(top!=null)
+            	{ if(gc!=null)
+            	  {String activity = s.lineSplit(top.activity,G.getFontMetrics(gc),300);
+            	   highlight.setHelpText(top.station
+            		+ "\n"+ s.get(PronouncedDescription,top.pronounciation)
+            		+ "\n \n"+ activity);
+            	  }
+            	}
+            	
+            	G.frameRect(gc,Color.red,xpos-CELLSIZE,ypos-CELLSIZE-((cell.topChip()==null)?0:perspective_offset),CELLSIZE*2,CELLSIZE*2);
+            	
+            	}
+        	}
+    	
+    	switch(gb.variation)
+    	{
+    	default: throw G.Error("Not expecting "+gb.variation);
+    	case Safari:
+    		drawTrains(gc,gb,brect);
+			break;
+		case Standard:
+    		break;
+    	}
+     }
+    // this is non-standard
+    // this allows simultaneous card moves to display properly
+    public int getMovingObject()
+    {	if (OurMove()||(b.getState()==OnedayState.Place))
+    	{
+    	// encode the source of the card as well as the card, so the 
+    	// client will conceal the card identity if appropriate
+        return(b.publicMovingObjectIndex());
+    	}
+    	return(NothingMoving);
+    }
+
+
+    //
+    // draw the board and things on it.  If gc!=null then actually 
+    // draw, otherwise just notice if the highlight should be on
+    //
+    public void redrawBoard(Graphics gc, HitPoint highlight)
+    {  	OnedayBoard gb = (OnedayBoard) disB(gc);
+    	OnedayVariation variation = b.variation;
+ 
+      boolean ourTurn = allowed_to_edit?true:OurMove();
+      boolean moving = getMovingObject()>=0;
+      HitPoint ot = ourTurn ? highlight : null;	// hit if our turn
+      HitPoint select = moving?null:ot;	// hit if our turn and not dragging
+      HitPoint ourSelect = (moving && !reviewMode()) ? null : highlight;	// hit if not dragging
+      OnedayState vstate = gb.getState();
+       redrawGameLog(gc, ourSelect, logRect, boardBackgroundColor);
+    
+        drawBoardElements(gc, gb, boardRect, highlight);
+        G.setFont(gc,standardBoldFont);
+		if (vstate != OnedayState.Puzzle)
+        {
+             if (G.handleRoundButton(gc, doneRect, 
+            		(b.DoneState()? select : null), s.get(DoneAction),
+                    HighlightColor, rackBackGroundColor))
+            {	// always display the done button, but only make it active in
+            	// the appropriate states
+                select.hitCode = DefaultId.HitDoneButton;
+            }
+            if (allowed_to_edit)
+            {
+            	if (G.handleRoundButton(gc, editRect, select,
+                            s.get(EditAction), HighlightColor,
+                            rackBackGroundColor))
+                {
+                    select.hitCode = DefaultId.HitEditButton;
+                }
+       }}
+		drawPlayerStuff(gc,(vstate==OnedayState.Puzzle),moving?null:highlight,HighlightColor,rackBackGroundColor);
+ 		
+ 		if((vstate!=OnedayState.Place)&&(vstate!=OnedayState.SynchronousPlace)) 
+ 			{ drawSingleStack(gc,gb,gb.drawPile,true,gb.whoseTurn(),drawPile,ot,null);
+ 	 		  drawCardRack(gc,gb,gb.discardPile,false,gb.whoseTurn(),discardPile,ot,highlight,false,null);
+ 			}
+ 		if((vstate==OnedayState.Puzzle)||(vstate==OnedayState.Place)||(vstate==OnedayState.SynchronousPlace))
+ 			{
+ 			OnedayCell sta = gb.startingPile[allowed_to_edit?gb.whoseTurn:my.boardIndex];
+ 			drawSingleStack(gc,gb,sta,true,allowed_to_edit?gb.whoseTurn:my.boardIndex,startingCardRect,ot,null);
+ 			}
+ 		
+ 		switch(variation)
+ 		{
+ 		default: throw G.Error("Not expecting %s",variation);
+ 		case Standard:
+			if(!my.spectator || mutable_game_record)
+	 		{
+			int who = allowed_to_edit?gb.whoseTurn:my.boardIndex;
+			String msg = s.get(CardsForDescription,prettyName(who));
+			drawCardRack(gc,gb,gb.rack[who],false,who,bigRackRect,ot,highlight,true,msg);
+	 		}
+			int nPlayers = gb.nPlayers();
+	 		for(int i=0;i<nPlayers;i++)
+	 		{
+	 			drawCardRack(gc,gb,gb.rack[i],
+	 					mutable_game_record?true:my.spectator||(i!=my.boardIndex),
+	 					i,playerChipRect[i],ot,
+	 					(mutable_game_record||((i==my.boardIndex)&&!my.spectator))?highlight:null,
+	 					allowed_to_edit,null);
+	 		}
+	 		break;
+ 		case Safari:
+ 			break;
+ 		}
+
+ 		
+        if (gc != null)
+        {	featuredCard = null;
+        	if(highlight!=null)
+        	{	OnedayCell c = (OnedayCell)highlight.helpObject;
+        		if(c!=null)
+        		{switch(c.rackLocation())
+        		{
+        		default: break;
+        		case RackLocation:
+        		case DiscardPile:
+            		featuredCard = c.topChip(); 
+        		}}
+        		if(ourTurn && (gb.pickedObject!=null) && (featuredCard==null))
+        		{
+        			featuredCard = gb.pickedObject;
+        		}
+        		
+        	}}
+            standardGameMessage(gc,
+            		vstate==OnedayState.Gameover
+            			?simpleGameOverMessage()
+            			:s.get(vstate.getDescription()),
+            				vstate!=OnedayState.Puzzle && !simultaneous_turns_allowed(my),
+            				gb.whoseTurn,
+            				stateRect);
+             goalAndProgressMessage(gc,highlight,Color.white,s.get(VictoryCondition),progressRect, goalRect);
+         
+        drawVcrGroup(ourSelect, gc, HighlightColor, vcrButtonColor);
+    }
+
+    /**
+     * Execute a move by the other player, or as a result of local mouse activity,
+     * or retrieved from the move history, or replayed form a stored game. 
+     * @param mm the parameter is a commonMove so the superclass commonCanvas can
+     * request execution of moves in a generic way.
+     * @return true if all went well.  Normally G.Error would be called if anything went
+     * seriously wrong.
+     */
+     public boolean Execute(commonMove mm,replayMode replay)
+    {	OnedayState state = b.getState();
+        switch(state)
+        {	
+        case Puzzle:
+        	 mm.setSliderNumString("--");
+			//$FALL-THROUGH$
+		case Place:
+        case SynchronousPlace:
+        	switch(mm.op)
+        	{
+        	case MOVE_TO_RACK:
+        	case EPHEMERAL_TO_RACK:
+        	
+        		// set the correct player for ephemeral moves
+        		if(mm.player<0)
+        			{ OnedayMovespec m = (OnedayMovespec)mm;
+        			  m.player = (m.to_col-'A');
+        			}
+        		mm.setLineBreak(true);
+        		break;
+        	default: break;
+        	}
+			break;
+		default:
+			break;}
+        if(mm.op==NORMALSTART) { mm.setLineBreak(true); }
+         handleExecute(b,mm,replay);
+        startBoardAnimations(replay);
+        if(replay!=replayMode.Replay) { playSounds(mm); }
+ 
+        return (true);
+    }
+     
+     void startBoardAnimations(replayMode replay)
+     {	
+        if(replay!=replayMode.Replay)
+     	{	double starttime = 0.0;
+     		while(b.animationStack.size()>1)
+     		{
+     		OnedayCell dest = b.animationStack.pop();
+     		OnedayCell src = b.animationStack.pop();
+    		//
+    		// in cases where multiple chips are flying, topChip() may not be the right thing.
+    		//
+     		starttime += startAnimation(src,dest,dest.exposed?dest.topChip():Station.back,starttime);
+     		}
+     	}
+        	b.animationStack.clear();
+     } 
+     double startAnimation(OnedayCell from,OnedayCell to,Station top,double starttime)
+     {	if((from!=null) && (to!=null) && (top!=null))
+     	{	
+      		if(debug)
+     		{
+     			G.Assert(!((from.current_center_x==0) && (from.current_center_y==0)),"From Cell %s center is not set",from);
+        			G.Assert(!((to.current_center_x==0) && (to.current_center_y==0)),"To %s center is not set",to);
+     		}
+     		
+     		// make time vary as a function of distance to partially equalize the runtim of
+     		// animations for long verses short moves.
+      		double speed = masterAnimationSpeed*1.0;
+      		double dist = G.distance(from.current_center_x, from.current_center_y, to.current_center_x,  to.current_center_y);
+     		double full = G.distance(0,0,G.Width(boardRect),G.Height(boardRect));
+     		double endtime = starttime+speed*Math.sqrt(dist/full);
+     		SimpleSprite newSprite = new SimpleSprite(true,top,
+     				SQUARESIZE,	// use the same cell size as drawSprite would
+     				starttime,
+     				endtime,
+             		from.current_center_x,from.current_center_y,
+             		to.current_center_x,to.current_center_y);
+     		newSprite.movement = Movement.SlowIn;
+            to.addActiveAnimation(newSprite);
+   			addSprite(newSprite);
+   			return(endtime);
+   			}
+     	return(starttime);
+     }
+/**
+ * parse a move specifier on behalf of the current player.  This is called by the 
+ * "game" object when it receives a move from the other player.  Note that it may
+ * be called while we are in review mode, so the current state of the board should
+ * not be considered.
+ */
+    public commonMove ParseNewMove(String st)
+    {
+        return (new OnedayMovespec(st, -1));
+    }
+    
+
+
+    /**
+     * prepare to add nmove to the history list, but also edit the history
+     * to remove redundant elements, so that indecisiveness by the user doesn't
+     * result in a messy game log.  
+     * 
+     * For all ordinary cases, this is now handled by the standard implementation
+     * in commonCanvas, which uses the board's Digest() method to distinguish new
+     * states and reversions to past states.
+     * 
+     * For reference, the commented out method below does the same thing for "Hex". 
+     * You could resort to similar techniques to replace or augment what super.EditHistory
+     * does, but your efforts would probably be better spent improving your Digest() method
+     * so the commonCanvas method gives the desired result.
+     * 
+     * Note that it should always be correct to simply return nmove and accept the messy
+     * game record.
+     * 
+     * This may require that move be merged with an existing history move
+     * and discarded.  Return null if nothing should be added to the history
+     * One should be very cautious about this, only to remove real pairs that
+     * result in a null move.  It is vital that the operations performed on
+     * the history are identical in effect to the manipulations of the board
+     * state performed by "nmove".  This is checked by verifyGameRecord().
+     * 
+     * in commonEditHistory()
+     * 
+     */
+    public commonMove EditHistory(commonMove nmove)
+    {
+    	return(super.EditHistory(nmove,nmove.op==NORMALSTART));
+    }
+
+   /** 
+     * this method is called from deep inside PerformAndTransmit, at the point
+     * where the move has been executed and the history has been edited.  It's
+     * purpose is to veryfy that the history accurately represents the current
+     * state of the game, and that the fundamental game machinery is in a consistent
+     * and reproducable state.  Basically, it works by creating a duplicate board
+     * resetting it and feeding the duplicate the entire history, and then verifying 
+     * that the duplcate is the same as the original board.  It's perfectly ok, during
+     * debugging and development, to temporarily change this method into a no-op, but
+     * be warned if you do this because it is throwing an error, there are other problems
+     * that need to be fixed eventually.
+     */
+    public void verifyGameRecord()
+    {	super.verifyGameRecord();
+    }    
+    // for reference, here's the standard definition
+    //   public void verifyGameRecord()
+    //   {	BoardProtocol ourB =  getBoard();
+    //   	int ourDig = ourB.Digest();
+    //   	BoardProtocol dup = dupBoard = ourB.cloneBoard();
+    //   	int dupDig = dup.Digest();
+    //   	G.Assert(dupDig==ourDig,"Duplicate Digest Matches");
+    //   	dup.doInit();
+    //   	int step = History.size();
+    //   	int limit = viewStep>=0 ? viewStep : step;
+    //   	for(int i=0;i<limit;i++) 
+    //   		{ commonMove mv = (commonMove)History.elementAt(i);
+    //   		  //G.print(".. "+mv);
+    //   		  dup.Execute(mv); 
+    //   		}
+    //   	int dupRedig = dup.Digest();
+    //   	G.Assert(dup.whoseTurn()==ourB.whoseTurn(),"Replay whose turn matches");
+    //   	G.Assert(dup.moveNumber()==ourB.moveNumber(),"Replay move number matches");
+    //   	if(dupRedig!=ourDig)
+    //   	{
+    //   	//int d0 = ourB.Digest();
+    //   	//int d1 = dup.Digest();
+    //   	G.Assert(false,"Replay digest matches");
+    //   	}
+    //   	// note: can't quite do this because the timing of "SetDrawState" is wrong.  ourB
+    //   	// may be a draw where dup is not if ourB is pending a draw.
+    //   	//G.Assert(dup.getState()==ourB.getState(),"Replay state matches");
+    //   	dupBoard = null;
+    //   }
+    
+private void playSounds(commonMove mm)
+{
+	OnedayMovespec m = (OnedayMovespec) mm;
+
+    // add the sound effects
+    switch(m.op)
+    {
+    case MOVE_TO_DISCARD:
+    case MOVE_TO_RACK_AND_DISCARD:
+    case MOVE_TO_RACK:
+      	 playASoundClip(light_drop,100);
+       	 playASoundClip(heavy_drop,100);
+   	break;
+     case MOVE_PICK:
+    	 playASoundClip(light_drop,100);
+    	 break;
+    case MOVE_DROP:
+    	break;
+    default: break;
+    }
+	
+}
+
+ 
+/**
+ * the preferred mouse gesture style is to let the user "pick up" objects
+ * by simply clicking on them, but we also allow him to click and drag. 
+ * StartDragging is called when he has done this.
+ */
+    public void StartDragging(HitPoint hp)
+    {
+        int mo = getMovingObject();
+		if (mo < 0) // not dragging anything yet, so maybe start
+        {
+        
+        if(hp.hitCode instanceof OneDayId)
+        {
+		OnedayCell cell = (OnedayCell)hp.hitObject;
+        OneDayId hitObject = (OneDayId)hp.hitCode;
+		OnedayState state = b.getState();
+		Station chip = (cell==null) ? null : cell.topChip();
+		if(chip!=null)
+		{
+		switch(hitObject)
+		{
+        case DrawPile:
+        case StartingPile:
+        case DiscardPile:
+        case RackLocation:
+       	 if((state==OnedayState.Place)||(state==OnedayState.SynchronousPlace))
+       	 {
+       		 PerformAndTransmit("Epick "+hitObject.shortName+" "+cell.col+" "+cell.row,false,replayMode.Single);
+       	 }
+       	 else
+       	 {
+       		 PerformAndTransmit("Pick "+hitObject.shortName+" "+cell.col+" "+cell.row);
+       	 }
+       	break;
+		default:
+			break;
+		}
+       if (getMovingObject() >= 0)
+        {	// if we got something started, inform the mouse handler
+            hp.dragging = true;
+        } }
+        }}
+    }
+
+	/** 
+	 * this is called on "mouse up".  We may have been just clicking
+	 * on something, or we may have just finished a click-drag-release.
+	 * We're guaranteed just one mouse up, no bounces.
+	 */
+    public void StopDragging( HitPoint hp)
+    {
+    	CellId id = hp.hitCode;
+    	if(!(id instanceof OneDayId)) { missedOneClick = performStandardActions(hp,missedOneClick); }
+    	else
+    	{
+    	missedOneClick = false;
+        OneDayId hitObject = (OneDayId)hp.hitCode;
+		OnedayState state = b.getState();
+		OnedayCell cell = (OnedayCell)hp.hitObject;
+		
+        switch (hitObject)
+        {
+         default: throw G.Error("Hit Unknown object " + hitObject);
+         case DrawPile:
+         case StartingPile:
+         case DiscardPile:
+         case RackLocation:
+        	 if((state==OnedayState.Place)||(state==OnedayState.SynchronousPlace))
+        	 {
+        		 if(b.pickedObject==null)
+            	 {	// epicks are not to be transmitted
+            		PerformAndTransmit("Epick "+hitObject.shortName+" "+cell.col+" "+cell.row,false,replayMode.Live);
+            	 } 
+        		 else
+        		 {	// drop to undo the pick
+             		PerformAndTransmit("Edrop "+OneDayId.StartingPile.shortName+" "+cell.col+" "+cell.row,false,replayMode.Live); 
+            		if(hitObject==OneDayId.RackLocation)
+            		{ 	// do the move as an atomic.  transmit it.  replayMode.Replay suppresses the local animation
+            			PerformAndTransmit("ERack "+cell.col+" "+cell.row,true,replayMode.Replay);
+            		}
+        		 }
+        	 }
+        	 else
+        	 {
+        	 if(b.pickedObject==null)
+        	 {	
+        		 PerformAndTransmit("Pick "+hitObject.shortName+" "+cell.col+" "+cell.row);
+        	 }
+        	 else 
+        	 {
+        		 PerformAndTransmit("Drop "+hitObject.shortName+" "+cell.col+" "+cell.row);
+        	 }}
+        	break;
+        }
+         }
+        repaint(20);
+    }
+
+    /** this is the place where the canvas is actually repainted.  We get here
+     * from the event loop, not from the normal canvas repaint request.
+     */
+    public void drawCanvas(Graphics offGC, boolean complete,HitPoint hp)
+    {
+     	drawFixedElements(offGC,complete);
+   	
+    	// draw the board contents and changing elements.
+        redrawBoard(offGC,hp);
+        //      draw clocks, sprites, and other ephemera
+        drawClocksAndMice(offGC, null);
+
+        DrawTileSprite(offGC,hp); //draw the floating tile, if present
+        DrawArrow(offGC,hp);
+        
+        drawSprites(offGC);
+        
+    }
+    
+
+    
+    /**
+     * this is a token or tokens that initialize the variation and
+     * set immutable parameters such as the number of players
+     * and the random key for the game.  It can be more than one
+     * token, which ought to be parseable by {@link #performHistoryInitialization}
+     * @return return what will be the init type for the game
+     */
+    public String gameType() 
+    { 
+    	return(""+b.gametype+" "+b.randomKey+" "+b.nPlayers()); 
+   }
+    public String sgfGameType() { return(Oneday_SGF); }
+
+    // the format is just what is produced by FormHistoryString
+    //
+    // this is completely standardized
+    //public void performHistoryTokens(StringTokenizer his)
+    //{	String command = "";
+    //    // now the rest
+    //    while (his.hasMoreTokens())
+    //    {
+    //        String token = his.nextToken();
+    //        if (",".equals(token) || ".end.".equals(token))
+    //        {
+    //            if (!"".equals(command))
+    //            {
+    //                PerformAndTransmit(command, false,false);
+    //                command = "";
+    //            }
+    //        }
+    //       else
+    //        {
+    //            command += (" " + token);
+    //        }
+    //    }	
+    //}  
+    //public void performPlayerInitialization(StringTokenizer his)
+    //{	int fp = G.IntToken(his);
+    //	BoardProtocol b = getBoard();
+    //    if (fp < 0)   {  fp = 0;  }
+    //    b.setWhoseTurn(fp);
+    //    players[fp].ordinal = 0;
+    //    players[(fp == 0) ? 1 : 0].ordinal = 1;
+    //	
+    //}
+
+    
+    
+    /**
+     * parse and perform the initialization sequence for the game, which
+     * was produced by {@link online.game.commonCanvas#gameType}
+     */
+    public void performHistoryInitialization(StringTokenizer his)
+    {	String token = his.nextToken();		// should be a onday init spec
+    	long rk = G.LongToken(his);
+    	int np = G.IntToken(his);
+    	// make the random key part of the standard initialization,
+        b.doInit(token,rk,np);
+        adjustPlayers(np);
+
+    }
+
+    
+ //   public void doShowText()
+ //   {
+ //       if (debug)
+ //       {
+ //           super.doShowText();
+ //       }
+ //       else
+ //       {
+ //           theChat.postMessage(GAMECHANNEL,KEYWORD_CHAT,
+ //               s.get(CensoredGameRecordString));
+//        }
+//    }
+
+    /** handle action events
+     * 
+     */
+    public boolean handleDeferredEvent(Object target)
+    {
+ 
+    	return(super.handleDeferredEvent(target));
+     }
+    
+    long lastGameOverAnimationTime = 0;
+    public void gameOverAnimation()
+    {
+    	if(b.GameOver())
+    	{	if(G.Date()>lastGameOverAnimationTime)
+    		{
+    		TrainSimulator sim = new TrainSimulator(b.rack[b.whoseTurn]);
+    		sim.runSimulation(this,boardRect);
+    		lastGameOverAnimationTime = G.Date()+10000;
+    		}
+		}
+    	else { lastGameOverAnimationTime = 0; }
+    }
+    public void runTrains()
+    {
+    	if(b.running)
+    	{
+    		b.updateSimulations(G.Date());
+    		repaint();
+    	}
+    }
+/** handle the run loop, and any special actions we need to take.
+ * The mouse handling and canvas painting will be called automatically
+ *  */
+    
+   public void ViewerRun(boolean wait)
+   {
+       super.ViewerRun(wait);
+       switch(b.variation)
+       {
+       default: throw G.Error("Not expecting "+b.variation);
+       case Standard:
+           runAsyncRobots();
+           startSynchronousPlay();
+           gameOverAnimation();
+           break;
+       case Safari:
+    	   runTrains();
+       }
+       
+   }
+   
+   public void startSynchronousPlay()
+   {
+	   if(!reviewMode() 
+			   && allRobotsIdle()
+			   && (b.getState()==OnedayState.NormalStart))
+	   {
+		   canonicalizeHistory();
+		   PerformAndTransmit("NormalStart",false,replayMode.Live);
+	   }
+   }
+   public void startRobotTurn(commonPlayer pp)
+   {  OnedayState state = b.getState();
+	   if((state==OnedayState.SynchronousPlace)||(state==OnedayState.Place))
+	   {
+		   if((pp!=null)&&!b.rackFull(pp.boardIndex)) { super.startRobotTurn(pp); }
+	   }
+	   else { super.startRobotTurn(pp); }
+   }
+
+    //
+    // start robots if this is an asynchronous phase
+    // if it's a normal, synchronous phase, the main game
+    // controller will do it.
+    //
+    public void runAsyncRobots()
+    {	
+       	switch(b.getState())
+    	{
+    	case Place:
+    		{
+    		for(commonPlayer pp : players) {  startRobotTurn(pp); }
+    		}
+			break;
+		default: break;
+    	}
+    }
+    public BoardProtocol getBoard()   {    return (b);   }
+    public SimpleRobotProtocol newRobotPlayer() { return(new OnedayPlay()); }
+
+    /**
+     * return a score for the player in a multiplayer game. 
+     */
+    public int ScoreForPlayer(commonPlayer p)
+    {	return(b.scoreForPlayer(p.boardIndex));
+    }
+    /** replay a move specified in SGF format.  
+     * this is mostly standard stuff, but the key is to recognise
+     * the elements that we generated in sgf_save
+     */
+    public void ReplayMove(sgf_node no)
+    {
+        String comments = "";
+        sgf_property prop = no.properties;
+
+        while (prop != null)
+        {
+            String name = prop.getName();
+            String value = (String) prop.getValue();
+
+            if (setup_property.equals(name))
+            {	StringTokenizer st = new StringTokenizer(value);
+            	String typ = st.nextToken();
+            	long ran = G.LongToken(st);
+            	int np = G.IntToken(st);
+                b.doInit(typ,ran,np);
+                adjustPlayers(b.nPlayers());
+             }
+            else if (name.equals(comment_property))
+            {
+                comments += value;
+            }
+            else if (name.equals(game_property))
+            {
+                if (!(value.equals(Oneday_SGF)))
+                {
+                	throw G.Error("game type " + value + " is not this game");
+                }
+                adjustPlayers(b.nPlayers());
+            }
+            else if (parseVersionCommand(name,value,2)) {}
+            else if (parsePlayerCommand(name,value)) {}
+            else 
+            {
+                replayStandardProps(name,value);
+            }
+
+            prop = prop.next;
+        }
+
+        if (!"".equals(comments))
+        {
+            setComment(comments);
+        }
+    }
+}
+

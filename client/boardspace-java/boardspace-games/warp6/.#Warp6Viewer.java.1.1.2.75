@@ -1,0 +1,843 @@
+package warp6;
+
+import java.awt.*;
+import java.util.Hashtable;
+import java.util.StringTokenizer;
+
+import lib.G;
+
+import online.common.*;
+import online.game.*;
+import online.game.sgf.sgf_names;
+import online.game.sgf.sgf_node;
+import online.game.sgf.sgf_property;
+
+/**
+ * 
+ * Change History
+ *
+ * Feb 2008 initial work. 
+ *
+ * This code is derived from the "HexGameViewer" and other viewer classes.  Refer to the
+ * documentation there for overall structure notes.
+ * 
+*/
+public class Warp6Viewer extends commonCanvas 
+	implements ViewerProtocol, Warp6Constants, sgf_names
+{	// colors
+
+	/**
+	 * 
+	 */
+	static final long serialVersionUID = 1L;
+	private final boolean SHOW_DEBUG_GRID = false;
+    private Color reviewModeBackground = new Color(220,165,200);
+    private Color HighlightColor = new Color(0.2f, 0.95f, 0.75f);
+    private Color rackBackGroundColor = new Color(164,184,180);
+    private Color boardBackgroundColor = new Color(202,215,212);
+    private Color vcrButtonColor = new Color(0.7f, 0.7f, 0.75f);
+    private Color chatBackgroundColor = new Color(230,230,230);
+    // images
+    private static StockArt[] images = null; // images of black and white gobblets and board
+    private static Image[] textures = null;// background textures
+    // private state
+    private Warp6Board b = null; 	// the board from which we are displaying
+    private int CELLSIZE; 			// size of the layout cell.  
+    private static int SUBCELL = 4;	// number of cells in a square
+    private int SQUARESIZE;			// size of a board square
+    // addRect is a service provided by commonCanvas, which supports a mode
+    // to visualize the layout during development.  Look for "show rectangles"
+    // in the options menu.
+    //private Rectangle fullRect = addRect("fullRect"); //the whole viewer area
+    //private Rectangle boardRect = addRect("boardRect"); //the actual board, normally at the left edge
+    private Rectangle logRect = addRect("logRect"); //the game log, normally off the the right
+    private Rectangle stateRect = addRect("stateRect");
+    private Rectangle firstPlayerScoreRect = addRect("firstPlayerScore");
+    private Rectangle secondPlayerScoreRect = addRect("secondPlayerScore");
+    private Rectangle doneRect = addRect("doneRect");
+    private Rectangle repRect = addRect("reprect");
+    private Rectangle editRect = addRect("editRect");
+    private Rectangle goalRect = addRect("goalRect");
+    private Rectangle progressRect = addRect("progressRect");
+    private Rectangle firstPlayerRackRect = addRect("Player0Rack");
+    private Rectangle secondPlayerRackRect = addRect("Player1Rack");
+    
+    private Warp6Cell roll_anim_cell = null;
+    private long roll_anim_stop = 0;
+
+    public void preloadImages()
+    {	
+    	if (textures == null)
+    	{ // note that for this to work correctly, the images and masks must be the same size.  
+      // Refer to http://www.andromeda.com/people/ddyer/java/imagedemo/transparent.html
+    	Warp6Chip.preloadImages(this,ImageDir);
+    	preloadSounds(sucking_sound);
+        images = StockArt.preLoadArt(this,ImageDir, ImageFileNames,SCALES); // load the main images
+        textures = load_images(ImageDir,TextureNames);
+    	}
+    }
+
+    Color Warp6MouseColors[] = { Color.white,Color.yellow };
+    Color Warp6MouseDotColors[] = { Color.black,Color.black}; 
+	/**
+	 * 
+	 * this is the real instance intialization, performed only once.
+	 * info contains all the goodies from the environment.
+	 * */
+    public void init(exHashtable info)
+    {
+        super.init(info);
+        MouseColors = Warp6MouseColors;
+        MouseDotColors = Warp6MouseDotColors;
+        int randomKey = gameInfo.getInt(exHashtable.RANDOMSEED,-1);
+
+        b = new Warp6Board(randomKey,info.getString(exHashtable.GAMETYPE, Warp6_Standard_Init));
+        doInit(false);
+
+        
+     }
+
+    /** 
+     *  used when starting up or replaying and also when loading a new game 
+     *  */
+    public void doInit(boolean preserve_history)
+    {
+        //System.out.println(myplayer.trueName + " doinit");
+        super.doInit(preserve_history);				// let commonViewer do it's things
+        b.doInit(b.gametype,b.randomKey);				// initialize the board
+        if(!preserve_history)
+    	{ PerformAndTransmit(reviewOnly?"Edit":"Start P0", false,replayMode.Live);
+    	}
+    }
+
+
+
+    static private int ncols = 15;
+    public int setLocalBoundsSize(int width,int height,boolean wideMode,boolean tallMode)
+    {
+        int sncols = (ncols*SUBCELL)+(wideMode ? 58 : (tallMode ? 2 : 38)); // more cells wide to allow for the aux displays
+        int snrows = (ncols)*SUBCELL + (tallMode ? 42 : 6);  
+        int cellw = width*SUBCELL / sncols;
+        int chatHeight = selectChatHeight(height);
+        int cellh = (height-(wideMode?0:chatHeight))*SUBCELL / snrows;
+        SQUARESIZE = Math.max(1,Math.min(cellw, cellh)); //cell size appropriate for the aspect ration of the canvas
+        CELLSIZE = SQUARESIZE/SUBCELL;
+        return(SQUARESIZE);
+    }
+
+    public void createPlayerGroup(commonPlayer pl0,int x,int y,Rectangle scoreRect,Rectangle rackRect)
+    {
+        G.SetRect(scoreRect,	x,		y,	SQUARESIZE, SQUARESIZE);
+
+        Rectangle p0time = pl0.timeRect;
+        Rectangle p0anim = pl0.animRect;
+        Rectangle p0xtime = pl0.extraTimeRect;
+            
+        Rectangle playerRect = pl0.nameRect;
+        Rectangle picRect = pl0.picRect;
+
+        // player name
+        G.SetRect(playerRect, G.Right(scoreRect)+CELLSIZE,G.Top( scoreRect),
+            		 CELLSIZE * 12, CELLSIZE*3);
+           
+        // time display for first player
+        G.SetRect(p0time,G.Left( playerRect), G.Bottom(playerRect),CELLSIZE * 5, CELLSIZE*2);
+        G.AlignLeft(p0xtime, G.Bottom(p0time),p0time);
+        // player portrait
+        G.SetRect(picRect, G.Right(playerRect), G.Top(playerRect), CELLSIZE * 8, CELLSIZE * 8);
+            
+        G.SetRect(rackRect,G.Left( scoreRect), G.Bottom(picRect),
+            		9*SQUARESIZE, SQUARESIZE);
+            // player "i'm alive" animation ball
+        G.SetRect(p0anim, G.Right(p0time),G.Top( p0time),G.Height( p0time),G.Height( p0time));
+        
+        G.SetRect(pl0.playerBox, x, y, G.Right(picRect)-x, G.Bottom(rackRect)-y);
+
+    }
+    public void setLocalBoundsWT(int x, int y, int width, int height,boolean wideMode,boolean tallMode)
+    {  	
+        int chatHeight = selectChatHeight(height);
+        boolean noChat = chatHeight==0;
+        int ideal_logwidth = CELLSIZE * 20;
+        int logH = noChat|wideMode ? CELLSIZE*20 : chatHeight;
+        G.SetRect(fullRect,x,y,width,height);
+
+        // game log.  This is generally off to the right, and it's ok if it's not
+        // completely visible in all configurations.
+        
+        G.SetRect(boardRect, CELLSIZE, wideMode ? CELLSIZE*3 : chatHeight+CELLSIZE*3,
+        		SQUARESIZE * ncols, SQUARESIZE * ncols);
+
+        G.SetRect(stateRect,G.Left( boardRect) + CELLSIZE,G.Top( boardRect)-CELLSIZE*2,
+        		G.Width(boardRect) - CELLSIZE, CELLSIZE*2);
+
+        commonPlayer pl0 = getPlayerOrTemp(0);
+        commonPlayer pl1 = getPlayerOrTemp(1);
+
+        createPlayerGroup(pl0,
+        		tallMode ? G.Left(boardRect) : G.Right(boardRect)+CELLSIZE,
+        		tallMode ? G.Bottom(boardRect)+3*SQUARESIZE : (wideMode ? 0 : logH)+CELLSIZE,
+        		firstPlayerScoreRect,firstPlayerRackRect);
+ 
+
+        // "edit" rectangle, available in reviewers to switch to puzzle mode
+        G.SetRect(editRect, 
+        		tallMode ? G.Left(boardRect)+5*SQUARESIZE : G.Right(boardRect)+CELLSIZE, 
+        		tallMode ? G.Bottom(boardRect)+CELLSIZE*3 : G.Bottom(firstPlayerRackRect)+SQUARESIZE*2,
+        			CELLSIZE*9,4*CELLSIZE);
+
+        // "done" rectangle, should always be visible, but only active when a move is complete.
+       G.AlignXY(doneRect,
+       		tallMode ? G.Right(editRect)+CELLSIZE*2 : G.Left( editRect),
+       		tallMode ? G.Top(editRect) : G.Bottom(editRect)+3*CELLSIZE/2,
+       		editRect);
+
+       
+        G.SetRect(goalRect, G.Left(boardRect)+SQUARESIZE,G.Bottom(boardRect), G.Width(boardRect)-2*SQUARESIZE, CELLSIZE*3);
+     
+        G.SetRect(repRect,G.Left( goalRect),G.Top( goalRect)-CELLSIZE,G.Width( goalRect),G.Height( goalRect)+CELLSIZE);
+        
+        setProgressRect(progressRect,goalRect);
+
+        //this sets up the "vcr cluster" of forward and back controls.
+        SetupVcrRects(
+            		tallMode ? G.Left(boardRect) : G.Right(editRect)+3*CELLSIZE,
+            		tallMode ? G.Bottom(boardRect) : G.Top(editRect)-CELLSIZE,
+            				CELLSIZE * 18,
+            				9 * CELLSIZE);
+            
+        
+        createPlayerGroup(pl1,
+        				G.Left(pl0.playerBox),
+        				(tallMode ? G.Bottom(pl0.playerBox) : G.Bottom(vcrRect))+SQUARESIZE,
+        				secondPlayerScoreRect,secondPlayerRackRect);
+
+        if(wideMode)
+        {
+        int chatX = G.Left(firstPlayerScoreRect);
+        int chatY =  G.Bottom(pl1.playerBox)+CELLSIZE;
+        int logY = G.Top(stateRect);
+        G.SetRect(chatRect, chatX,chatY,width-chatX - CELLSIZE, Math.min(chatHeight, height-chatY-CELLSIZE));
+        G.SetRect(logRect,G.Right(firstPlayerRackRect)+CELLSIZE,logY, 
+        		Math.min(ideal_logwidth,width-chatX),logH);
+        }
+        else
+        {
+        int logX = tallMode ? G.Right(firstPlayerRackRect)+CELLSIZE : 
+        	G.Right(pl0.playerBox)-CELLSIZE*10;
+        G.SetRect(chatRect,x+CELLSIZE/2,y,(tallMode ? width : logX)-CELLSIZE,chatHeight);
+        int logY = tallMode ? G.Top(pl0.playerBox) : G.Top( chatRect);
+        G.SetRect(logRect, logX,
+        		logY,
+        			Math.min(ideal_logwidth,width-logX),
+        			tallMode ? height-logY-CELLSIZE : logH);
+        }
+        positionTheChat(chatRect,chatBackgroundColor,chatBackgroundColor);
+        generalRefresh();
+    }
+
+    public int scaleCell(int cellsize,int x,int y,Rectangle r)
+    {
+    	if(G.pointInRect(x,y,r))
+    	{
+    		double scl = ((0.2*(y-G.Top(r)))/G.Height(r))+0.9;
+    		return((int)(scl*cellsize));
+    	}
+    	return(cellsize);
+    }
+    // override so CELLSIZE has a resonable value
+    public void drawSprite(Graphics g,int idx,int xp,int yp)
+    {	Warp6Chip ic = Warp6Chip.getChip(idx);
+    	ic.drawChip(g,this,scaleCell(SQUARESIZE,xp,yp,boardRect),xp,yp,null);
+    }
+
+
+    /** this is used by the game controller to supply entertainment strings to the lobby */
+    public String gameProgressString()
+    {	// this is what the standard method does
+    	// return ((reviewer ? s.get(Reviewing) : ("" + viewMove)));
+    	return(super.gameProgressString()
+    			+" "+(5-b.chipsInWarp[0])
+    			+" "+(5-b.chipsInWarp[1]));
+    }
+
+
+    /* draw the deep unchangable objects, including those that might be rather expensive
+     * to draw.  This background layer is used as a backdrop to the rest of the activity.
+     * in our cease, we draw the board and the chips on it. 
+     * */
+    public void drawFixedElements(Graphics gc)
+    { boolean review = reviewMode() && !mutable_game_record;
+      // erase
+      G.setColor(gc,review ? reviewModeBackground : boardBackgroundColor);
+      //G.fillRect(gc, fullRect);
+      G.tileImage(gc,textures[BACKGROUND_TILE_INDEX],fullRect, this);   
+      if(review)
+      {	 
+        G.tileImage(gc,textures[BACKGROUND_REVIEW_INDEX],boardRect, this);   
+      }
+      
+      // for us, the board is one large graphic, for which the target points
+      // are carefully matched with the abstract grid
+      G.centerImage(gc,images[BOARD_INDEX].getImage(this), boardRect,this);
+	    {	// good for board-skew : gb.SetDisplayParameters(0.7,0.8,  0.0,0.00,  2.3, .15, 0.25);
+	    	// good for board-skew2 gb.SetDisplayParameters(0.67,0.72,  0.0,0.00,  14.5, .22, 0.25);
+	    	// good for board-skew3 gb.SetDisplayParameters(0.54,0.80,  0.0,-0.30,  7.0, .250, 0.32);
+	    	b.SetDisplayParameters(
+	    		 1.0, //0.93,	// scale 
+	    		 1.0,	// yscale
+	    		 0.0,	// xoff
+	    		 0.0,//-0.1,	// yoff
+	    		 0.0	// rot
+	    		 );
+    	}
+        b.SetDisplayRectangle(boardRect);
+     
+      //gb.DrawGrid(gc,brect,use_grid,Color.white,Color.black,Color.blue,Color.black);
+      if( SHOW_DEBUG_GRID)
+      {
+      for(Warp6Cell c = b.allCells;  c!=null;  c=c.next)
+      { int xx = G.Left(boardRect) + b.cellToX(c.col,c.row);
+      	int yy = G.Bottom(boardRect) - b.cellToY(c.col,c.row);
+      	Warp6Cell next = c.exitTo(Warp6Board.CELL_UP());
+      	if(next!=null)
+      	{ int x2 =  G.Left(boardRect) + b.cellToX(next.col,next.row);
+      	  int y2 = G.Bottom(boardRect) - b.cellToY(next.col,next.row);
+      	  G.setColor(gc,Color.red);
+      	  G.drawLine(gc,xx,yy,x2,y2);
+      	}
+      	Warp6Cell up = c.exitTo(Warp6Board.CELL_RIGHT());
+      	if(up!=null)
+      	{int x2 =  G.Left(boardRect) + b.cellToX(up.col,up.row);
+      	 int y2 = G.Bottom(boardRect) -b.cellToY(up.col,up.row);
+      	 G.setColor(gc,Color.yellow);
+      	 G.drawLine(gc,xx,yy,x2,y2);
+      	}
+      }
+      }
+    }
+    private void DrawScore(Graphics gc,Rectangle r,int player)
+    {	if(gc!=null)
+    	{
+    	int idx = 6-b.chipsInWarp[player];
+    	Warp6Chip cc = (idx>0) ? Warp6Chip.getChip(player,6,idx) : null;
+    	if(cc!=null) { cc.drawChip(gc,this,SQUARESIZE,G.centerX(r),G.centerY(r),null); }
+    	}
+    }
+    
+    private void drawRack(Graphics gc,HitPoint highlight,Warp6Board gb,int pla,Rectangle r)
+    {	boolean useWarp = (gb.moveNumber>50)||(gb.chipsInWarp[pla]>0);
+    	Warp6Cell rack[] = useWarp?gb.warp[pla]:gb.rack[pla];
+    	Warp6Cell warp[] = useWarp?gb.rack[pla]:gb.warp[pla];	// get the other set in for animation 
+    	int space = G.Width(r)/rack.length;
+    	Warp6State state = gb.getState();
+    	int x = G.Left(r)+space/2;
+    	int y = G.centerY(r);
+    	int mo = gb.movingObjectIndex();
+    	Warp6Cell hitCell = null;
+    	for(int i=0;i<rack.length;i++)
+    	{	Warp6Cell ch = rack[i];
+    		Warp6Cell och = warp[i];	// other set for animations
+    		boolean canHit = gb.LegalToHitChips(pla,ch);
+    		if(ch.drawStack(gc,canHit?highlight:null,x,y,this,0,space,1.0,null))
+    		{
+    			hitCell = ch;
+    		}
+    		och.current_center_x = ch.current_center_x;
+    		och.current_center_y = ch.current_center_y;
+    		switch(state)
+    		{
+    		case PLACE_STATE:
+    		case CONFIRM_STATE:
+    			if(canHit)
+    				{ StockArt.SmallO.drawChip(gc,this,space*2,x,y+space/2,null);
+    				}
+    			break;
+    		case PUZZLE_STATE:
+    			if(mo<0)
+    			{ handleRollGesture(ch,highlight,x,y);
+    			}
+    			break;
+    		default: ;
+    		}
+    		x += space;
+    	}
+    	if(hitCell!=null)
+    	{
+    		highlight.spriteColor = Color.red;
+    		highlight.awidth = CELLSIZE*2;
+    	}
+    }
+    private void handleRollGesture(Warp6Cell cell,HitPoint highlight,int xpos,int ypos)
+    {	Warp6Chip chip = cell.topChip();
+        if((chip!=null)&&(highlight!=null)&&(cell==highlight.hitObject))
+        {
+        boolean isCenter = (G.Top(highlight)<ypos) 
+        						|| G.pointInside(highlight, xpos, ypos, (int)(0.3*SQUARESIZE));
+        WarpId hitCode = null;
+        if(b.getState()==Warp6State.CONFIRM_STATE)
+        {
+        if(b.lastMove!=null)
+        {
+        switch(b.lastMove.op)
+        {
+        case MOVE_ROLLUP:	hitCode = WarpId.RollDown; break;
+        case MOVE_ROLLDOWN: hitCode = WarpId.RollUp; break;
+		default:
+			break;
+        }}
+        } else  if(!isCenter)         
+        {	// mouse adjacent to a chip in puzzle mode
+        	{	boolean left = (xpos>G.Left(highlight));
+        		if(left?chip.canSub():chip.canAdd())
+        		{
+        		hitCode = left?WarpId.RollDown:WarpId.RollUp;
+        		}
+        	}
+        }
+        
+        if(hitCode!=null)
+        {
+       	int off = (hitCode==WarpId.RollUp) ? SQUARESIZE/2 : -SQUARESIZE/2;
+       	highlight.hitCode = hitCode;
+   		highlight.arrow = images[(hitCode==WarpId.RollDown)? MINUS1_INDEX :PLUS1_INDEX];
+   		highlight.awidth = 3*SQUARESIZE/2;
+   		highlight.hitObject = cell;
+   		highlight.a_x = G.Left(highlight)-off;
+   		highlight.a_y = G.Top(highlight)-off;
+	
+        }}
+    }
+   /* draw the board and the chips on it. */
+    private void drawBoardElements(Graphics gc, Warp6Board rb, Rectangle brect, HitPoint highlight)
+    {	Hashtable<Warp6Cell,Warp6Cell> dests = rb.getMoveDests();
+    	Warp6State state = rb.getState();
+     	int dotsize = Math.max(2,SQUARESIZE/7);
+     	int mov = rb.movingObjectIndex();
+     	long now = G.Date();
+     	if(roll_anim_cell!=null) 
+     		{ 
+     		if(now > roll_anim_stop) { roll_anim_cell=null; } else { repaint(20); }
+     		} 
+     	//
+        // now draw the contents of the board and anything it is pointing at
+        //
+     	
+
+         { //where we draw the grid
+  	        for (int last=rb.lastRowInColumn('A'),row = last,frow=rb.firstRowInColumn('A');
+  	        	row>=frow; 
+  	        	row--)	// back to front
+        	{
+            Warp6Cell cell = rb.getCell(row);
+            //if(cell!=rb.center)
+            {
+            boolean isADest = dests.get(cell)!=null;
+            boolean isSource = rb.isSource(cell);
+            boolean canHit = rb.LegalToHitBoard(cell);
+            int ypos = G.Bottom(brect) - rb.cellToY('A', row);
+            int xpos =  G.Left(brect) + rb.cellToX('A', row);
+       		int scl = scaleCell(SQUARESIZE,xpos,ypos,boardRect);
+       		//StockArt.SmallO.drawChip(gc,this,SQUARESIZE,xpos,ypos,null);
+       		Warp6Chip chip = cell.topChip();
+       		Warp6Cell lastDropped = rb.lastDropped;
+            if(cell==roll_anim_cell)
+            {	
+            	if(chip!=null)
+            	{	int show = (int)(now%chip.numSides)+1;
+             		Warp6Chip alt = Warp6Chip.getChip(chip.playerIndex,chip.numSides,show);
+            		alt.drawChip(gc,this,scl,xpos,ypos,null);
+            		
+            	}
+            }
+            else
+            	{
+            	if(use_grid && (gc!=null) && (chip!=null))
+            	{
+            	G.setFont(gc,largeBoldFont);
+            	G.Text(gc,false,xpos+scl/2,ypos-scl/2,scl,scl/2,Color.white,null,""+cell.row);
+            	}
+            	if(cell==lastDropped)
+            	{
+            		StockArt.SmallO.drawChip(gc,this,scl*4,xpos,ypos,null);
+            	}
+            	cell.drawStack(gc,canHit?highlight:null,xpos,ypos,this,0,scl,1.0,null);
+            	
+            	}
+            
+           if(((state==Warp6State.PUZZLE_STATE)||(state==Warp6State.PLAY_STATE)||(state==Warp6State.CONFIRM_STATE))
+        		&& canHit
+        		&& (mov<0))
+            	{handleRollGesture(cell,highlight,xpos,ypos);
+            	}
+
+        		
+         	// temp for grid setup
+        	//G.DrawAACircle(gc,xpos+dotsize,ypos,dotsize,Color.red,Color.gray,true);
+        	if(isSource)
+        	{	G.DrawAACircle(gc,xpos+dotsize,ypos,dotsize,Color.blue,Color.gray,true);
+        	}
+        	if(isADest)
+        	{
+        		G.DrawAACircle(gc,xpos+dotsize,ypos,dotsize,Color.red,Color.gray,true);
+        	}
+         	if(cell==rb.rollCell)
+         	{	StockArt.Rotate_CW.drawChip(gc,this,3*SQUARESIZE/2,xpos,ypos,null);
+         	}
+        }}}
+       	
+        if((highlight!=null)&& (highlight.hitObject!=null) && (highlight.hitCode instanceof WarpId))
+        {	WarpId hitCode = (WarpId)highlight.hitCode;
+        		switch(hitCode)
+        		{
+        		case RollUp:
+        		case RollDown:
+        			break;
+        		default:
+       			highlight.arrow = (getMovingObject()>=0) ? StockArt.DownArrow : StockArt.UpArrow;
+        		highlight.awidth = SQUARESIZE/2;
+        		highlight.spriteColor = Color.red;
+        		}
+        }
+    }
+    
+    //
+    // draw the board and things on it.  If gc!=null then actually 
+    // draw, otherwise just notice if the highlight should be on
+    //
+    public void redrawBoard(Graphics gc, HitPoint highlight)
+    {  Warp6Board gb =(Warp6Board) disB(gc);
+       boolean ourTurn = OurMove();
+      boolean moving = getMovingObject()>=0;
+      HitPoint ot = ourTurn ? highlight : null;	// hit if our turn
+      HitPoint select = moving?null:ot;	// hit if our turn and not dragging
+      HitPoint ourSelect = (moving && !reviewMode()) ? null : highlight;	// hit if not dragging
+      Warp6State vstate = b.getState();
+       redrawGameLog(gc, ourSelect, logRect, boardBackgroundColor);
+   	   DrawScore(gc,firstPlayerScoreRect,FIRST_PLAYER_INDEX);
+   	   DrawScore(gc,secondPlayerScoreRect,SECOND_PLAYER_INDEX);
+
+       drawBoardElements(gc, gb, boardRect, ot);
+       drawRack(gc,ot, gb,FIRST_PLAYER_INDEX,firstPlayerRackRect);
+       drawRack(gc,ot, gb,SECOND_PLAYER_INDEX,secondPlayerRackRect);
+       G.setFont(gc,standardBoldFont);
+ 	   drawPlayerStuff(gc,(vstate==Warp6State.PUZZLE_STATE),ourSelect,
+  	   			HighlightColor, rackBackGroundColor);
+  	 
+       if (vstate != Warp6State.PUZZLE_STATE)
+        {
+            if (G.handleRoundButton(gc, doneRect, 
+            		(b.DoneState()? select : null), s.get(DoneAction),
+                    HighlightColor, rackBackGroundColor))
+            {	// always display the done button, but only make it active in
+            	// the appropriate states
+                select.hitCode = DefaultId.HitDoneButton;
+            }
+            if (allowed_to_edit)
+            {
+             if (G.handleRoundButton(gc, editRect, select, s.get(EditAction),
+                             HighlightColor, rackBackGroundColor))
+               {
+               select.hitCode = DefaultId.HitEditButton;
+               }
+            }
+        }
+ 
+        standardGameMessage(gc,
+        		vstate==Warp6State.GAMEOVER_STATE?gameOverMessage():s.get(vstate.getDescription()),
+        				vstate!=Warp6State.PUZZLE_STATE,
+        				gb.whoseTurn,
+        				stateRect);
+        goalAndProgressMessage(gc,ourSelect,s.get("Move 6 ships to the center"),progressRect, goalRect);
+        DrawRepRect(gc,b.Digest(),repRect);
+        drawVcrGroup(ourSelect, gc, HighlightColor, vcrButtonColor);
+
+    }
+
+    /**
+     * Execute a move by the other player, or as a result of local mouse activity,
+     * or retrieved from the move history, or replayed form a stored game. 
+     * @param mm the parameter is a commonMove so the superclass commonCanvas can
+     * request execution of moves in a generic way.
+     * @return true if all went well.  Normally G.Error would be called if anything went
+     * seriously wrong.
+     */
+     public boolean Execute(commonMove mm,replayMode replay)
+    {	Warp6State state = b.getState();
+    	Warp6Movespec m = (Warp6Movespec)mm;
+        if(state==Warp6State.PUZZLE_STATE)
+    	{   mm.setSliderNumString("--");
+    		switch(mm.op)
+        	{
+    		case MOVE_DROPB:
+    			lastDropped = b.pickedObject;
+				break;
+			case MOVE_PICKB: 
+        		break;
+    		default:
+    			mm.setLineBreak(true);
+        	}
+    	}
+        if((m.op==MOVE_DONE) && (b.rollCell!=null))
+        {	roll_anim_stop = G.Date()+600;
+        	roll_anim_cell = b.rollCell;
+        }
+        else { roll_anim_cell = null; }
+        
+        handleExecute(b,mm,replay);
+        
+        startBoardAnimations(replay);
+  		switch(mm.op)
+    	{
+		case MOVE_ROLLUP:
+		case MOVE_ROLLDOWN:
+			lastDropped = b.getCell(m.source,m.from_row).topChip();
+			break;
+		default:
+			break;
+    	}
+
+        
+        if(replay!=replayMode.Replay) { playSounds((Warp6Movespec)mm); }
+ 
+        return (true);
+    }
+     
+     // animations are serial
+     void startBoardAnimations(replayMode replay)
+     {	double time = 0.0;
+        if(replay!=replayMode.Replay)
+     	{	int lim = b.animationStack.size();
+     		if(lim>0)
+     		{
+     		Warp6Cell finalDest = b.animationStack.top();
+     		Warp6Chip chip = finalDest.topChip();
+     		for(int idx = 0; idx<lim; idx+=2)
+     		{
+     		Warp6Cell dest = b.animationStack.elementAt(idx+1);
+     		Warp6Cell src = b.animationStack.elementAt(idx);
+     		if(idx==0 && dest.onBoard &&src.onBoard)
+     		{while(src.row+1<dest.row)
+     			{	// first is a slide along the rim
+     			Warp6Cell d2 = b.getCell(src.col,src.row+1);
+     			SimpleSprite sp = startAnimation(src,d2,chip,CELLSIZE*4,time,0);
+     			time += sp.getDuration();
+     			src = d2;
+     			}
+     		}
+     		SimpleSprite sp = startAnimation(src,dest,chip,CELLSIZE*4,time,0);
+     		time += sp.getDuration();
+     		}}
+     	}
+        	b.animationStack.clear();
+     } 
+
+/**
+ * parse a move specifier on behalf of the current player.  This is called by the 
+ * "game" object when it receives a move from the other player.  Note that it may
+ * be called while we are in review mode, so the current state of the board should
+ * not be considered.
+ */
+    public commonMove ParseNewMove(String st)
+    {
+        return (new Warp6Movespec(st, -1));
+    }
+    
+
+
+private void playSounds(Warp6Movespec m)
+{
+    // add the sound effects
+    switch(m.op)
+    {
+    case MOVE_DONE:
+    	if(roll_anim_cell!=null)
+    	{	playASoundClip(diceSoundName,50);
+    	}
+    	break;
+    case MOVE_DROPB:
+    case MOVE_BOARD_BOARD:
+    case MOVE_ONBOARD:
+    	WarpId finalRack = allIds[m.undoInfo/10000];
+    	if((finalRack==WarpId.FirstPlayerWarp) || (finalRack==WarpId.SecondPlayerWarp) || (m.to_row>=NUMPOINTS))
+    	{
+    	  playASoundClip(sucking_sound,50);
+    	}
+    	else
+    	{ playASoundClip(light_drop,50);
+    	}
+    	break;
+    case MOVE_ROLLUP:
+    case MOVE_ROLLDOWN:
+    case MOVE_PICKB:
+    	 playASoundClip(light_drop,50);
+    	 break;
+     default: break;
+    }
+	
+}
+
+ 
+/**
+ * the preferred mouse gesture style is to let the user "pick up" objects
+ * by simply clicking on them, but we also allow him to click and drag. 
+ * StartDragging is called when he has done this.
+ */
+    public void StartDragging(HitPoint hp)
+    {
+        int mo = getMovingObject();
+        if ((mo < 0) && (hp.hitCode instanceof WarpId))// not dragging anything yet, so maybe start
+        {
+
+        WarpId hitObject = (WarpId)hp.hitCode;
+		Warp6Cell cell = (Warp6Cell)hp.hitObject;
+		Warp6Chip chip = (cell==null) ? null : cell.topChip();
+		
+        if(chip!=null)
+		{
+	    switch(hitObject)
+	    {
+	    case FirstPlayerRack:
+        case SecondPlayerRack:
+        case FirstPlayerWarp:
+        case SecondPlayerWarp:
+        	if(b.movingObjectIndex()<0)
+        	{	PerformAndTransmit("pick "+hitObject.shortName+" "+cell.row);
+        	}
+        	break;
+	    case BoardLocation:
+	    	if(cell.chip!=null)
+	    		{
+	    		PerformAndTransmit("Pickb "+cell.row+" "+chip.pieceNumber());
+	    		}
+	    	break;
+		default:
+			break;
+        }
+
+        if (getMovingObject() >= 0)
+        {	// if we got something started, inform the mouse handler
+            hp.dragging = true;
+        } 
+        }}
+    }
+
+	/** 
+	 * this is called on "mouse up".  We may have been just clicking
+	 * on something, or we may have just finished a click-drag-release.
+	 * We're guaranteed just one mouse up, no bounces.
+	 */
+    public void StopDragging(HitPoint hp)
+    {
+        CellId id = hp.hitCode;
+        if(!(id instanceof WarpId)) {   missedOneClick = performStandardActions(hp,missedOneClick);}
+    	else {
+    	missedOneClick = false;
+    	WarpId hitObject = (WarpId)hp.hitCode;
+		Warp6Cell cell = (Warp6Cell)hp.hitObject;
+		Warp6Chip cup = (cell==null) ? null : cell.topChip();
+		Warp6State state = b.getState();	// state without resignation
+        switch (hitObject)
+        {
+        default:
+        	throw G.Error("Hit Unknown object " + hitObject);
+	    case RollUp:	
+        case RollDown:
+      	  	  PerformAndTransmit(hitObject.shortName+" "+cell.rackLocation().shortName+" "+cell.row);
+      	  	  break;              
+        case FirstPlayerRack:
+        case SecondPlayerRack:
+        case FirstPlayerWarp:
+        case SecondPlayerWarp:
+        	if(b.movingObjectIndex()>=0)
+        	{	PerformAndTransmit("drop "+hitObject.shortName+" "+cell.row);
+        	}
+        	else
+        	{	PerformAndTransmit("pick "+hitObject.shortName+" "+cell.row);
+        	}
+        	break;
+        case BoardLocation:	// we hit the board 
+			switch(state)
+			{
+			default: throw G.Error("Not expecting drop on filled board in state "+state);
+			case CONFIRM_STATE:
+			case PLAY_STATE:
+			case PLACE_STATE:
+			case PUZZLE_STATE:
+				if(b.movingObjectIndex()>=0)
+				{ if(cell!=null) 
+					{ 
+					  PerformAndTransmit("dropb "+cell.row + " "+b.nextRandom()); 
+					}
+				}
+				else if(cup!=null)
+				{
+				PerformAndTransmit( "Pickb "+cell.row+" "+cup.pieceNumber());
+				}
+				break;
+			}
+			break;
+        }	
+        }
+    }
+
+    public String gameType() { return(b.gametype+" "+b.randomKey); }
+    public String sgfGameType() { return(warp6_SGF); }
+    public void performHistoryInitialization(StringTokenizer his)
+    {	String token = his.nextToken();		// should be a checker init spec
+    	long ran = G.LongToken(his);
+	    b.doInit(token,ran);
+	}
+
+
+    public BoardProtocol getBoard()   {    return (b);   }
+    public SimpleRobotProtocol newRobotPlayer() { return(new Warp6Play()); }
+
+     /** replay a move specified in SGF format.  
+     * this is mostly standard stuff, but the key is to recognize
+     * the elements that we generated in sgf_save
+     */
+    public void ReplayMove(sgf_node no)
+    {
+        String comments = "";
+        sgf_property prop = no.properties;
+
+        while (prop != null)
+        {
+            String name = prop.getName();
+            String value = (String) prop.getValue();
+
+            if (setup_property.equals(name))
+            {	StringTokenizer tok = new StringTokenizer(value);
+        		String gametype = tok.nextToken();
+        		long ran = G.LongToken(tok);
+                b.doInit(gametype,ran);
+             }
+            else if (name.equals(comment_property))
+            {
+                comments += value;
+            }
+            else if (name.equals(game_property))
+            {
+                if (!value.equals(warp6_SGF))
+                {
+                	throw G.Error("game type " + value + " is not Tzaar");
+                }
+            }
+            else if (parseVersionCommand(name,value,2)) {}
+            else if (parsePlayerCommand(name,value)) {}
+            else
+            {
+                replayStandardProps(name,value);
+            }
+
+            prop = prop.next;
+        }
+
+        if (!"".equals(comments))
+        {
+            setComment(comments);
+        }
+    }
+}
+

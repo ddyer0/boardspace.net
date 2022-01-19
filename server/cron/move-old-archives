@@ -1,0 +1,47 @@
+#!/bin/csh
+source ~/cgi-bin/include.csh
+cd $1
+echo "moving old archives in $1"
+#
+# delete sufficiently old archive directories
+#
+set now=`date`
+set months = ("Jan" "Feb" "Mar" "Apr" "May" "Jun" "Jul" "Aug" "Sep" "Oct" "Nov" "Dec")
+set month = "$now[2]"
+set year = "$now[6]";
+#
+# retain 4 months
+#
+set i = 8
+set ri = $i
+foreach m ($months)
+ @ i++
+ if( $i == 13) then
+  set i = 1
+  endif
+if($m ==  $month) then
+
+ while($ri > 0)
+
+ set most = $months[$i]
+ set nonomatch
+ # echo "delete from archive-$year/games-$most"
+ foreach dir(archive-$year/games-$most-*.zip)
+  #echo $dir
+  if (-e $dir) then
+  mv $dir ../xGames/
+  endif
+ end
+
+ @ ri--;
+ @ i--;
+ if($i == 0) then
+   @ year--
+   set i = 12
+   endif
+
+ end
+
+ endif
+end
+

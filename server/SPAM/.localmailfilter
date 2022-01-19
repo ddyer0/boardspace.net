@@ -1,0 +1,11 @@
+
+# log "local filtering filtering"
+
+if ( /^delivered-to:\s*(.*)@real-me.net(.*)/ && !lookup( $MATCH, "$IW_VDOM/goodnames.dat" ))
+{
+}
+else
+{ # this implements the real catchall at ddyer@real-me.net
+  IW_VPOP="$IW_VDOM/ddyer/Maildir"
+ log "TO deliver $IW_VPOP "
+}

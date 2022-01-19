@@ -1,0 +1,110 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <script src="/js/site.js">
+  </script>
+  <title>Site Links</title>
+</head>
+<body background="/images/background-image.jpg">
+<h1>Liens dans le site</h1>
+<br>
+<table style="text-align: left; width: 100%;" border="1" cellpadding="2"
+ cellspacing="2">
+  <tbody>
+    <tr>
+      
+    <td><a target="moreboardspace" href="/english/lobby-help.html">Aide du Lobby 
+      (hall d'entr&eacute;e) </a></td>
+      
+    <td style="vertical-align: top;"><a target="moreboardspace"
+ href="/cgi-bin/edit.cgi">Etition du Profil utilisateur &amp; mot de passe oubli&eacute;</a></td>
+      
+    <td style="vertical-align: top;"><a target="moreboardspace"
+ href="/cgi-bin/messageboard.cgi">Tableau d'affichage</a></td>
+      
+    <td style="vertical-align: top;"><a target="moreboardspace"
+ href="/cgi-bin/proposals.cgi">Liste de souhaits</a></td>
+    </tr>
+    <tr>
+      
+    <td style="vertical-align: top;"><a target="moreboardspace"
+ href="/english/abouttherobot.shtml">Apropos des robots</a><br>
+      </td>
+      
+    <td style="vertical-align: top;"><a target="moreboardspace"
+ href="/english/abouttherankings.shtml">a propos des classements</a><br>
+      </td>
+      
+    <td style="vertical-align: top;"><a target="moreboardspace"
+ href="/english/aboutthesite.shtml">A propos du site</a><br>
+      </td>
+      
+    <td style="vertical-align: top;"><a target="moreboardspace"
+ href="/cgi-bin/tournament-signup.cgi">Inscription aux tournois</a> </td>
+    </tr>
+    <tr>
+      
+    <td><a target="moreboardspace"
+ href="/cgi-bin/boardspace_rankings.cgi?game=z">Classement pour Zertz</a></td>
+      
+    <td><a target="moreboardspace"
+ href="/cgi-bin/boardspace_rankings.cgi?game=z11">Classement pour Z&egrave;rtz+11</a></td>
+      
+    <td style="vertical-align: top;"><a target="moreboardspace"
+ href="/cgi-bin/boardspace_rankings.cgi?game=z24">Classement pour Z&egrave;rtz+24 
+      </a></td>
+      
+    <td><a target="moreboardspace"
+ href="http://www.assimilate.de/Default.aspx?tabid=39">Avancement du tournoi de 
+      Zertz </a> </td>
+    </tr>
+    <tr>
+      
+    <td style="vertical-align: top;"><a target="moreboardspace"
+ href="/cgi-bin/boardspace_rankings.cgi?game=l">Classement pour Lines Of Actions</a></td>
+      
+    <td style="vertical-align: top;"><a target="moreboardspace"
+ href="/loa/">R&egrave;gles de Loa<br>
+      </a></td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      
+    <td style="vertical-align: top;"><a
+ href="/loa/english/tournament-9/">Avancement du tournoi de LOA</a></td>
+    </tr>
+    <tr>
+      
+    <td style="vertical-align: top;"><a target="moreboardspace"
+ href="/cgi-bin/boardspace_rankings.cgi?game=p">Classement pour Plateau</a></td>
+      
+    <td style="vertical-align: top;"><a target="moreboardspace"
+ href="/plateau/english/rules.html">R&egrave;gles de Plateau</a><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<p>
+</p>
+<hr>
+<center>
+<table width="100%">
+  <tbody>
+    <tr>
+      <td align="left"><font size="-1">Courriel : 
+        <script language="javascript">
+document.write("<a href='mailto:gamemaste");
+document.write("r\@board");
+document.write("space.net'>gamemaste<n>r@board<n>space.net</a>");
+      </script></font></td>
+      <td align="right">Aller &agrave; la <a href="/">Page d'accueil de BoardSpace.net</a> 
+      </td>
+    </tr>
+  </tbody>
+</table>
+</center>
+</body>
+</html>

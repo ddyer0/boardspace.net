@@ -1,0 +1,82 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=windows-1252"><title>Java web start login page</title>
+
+<script language="javascript">
+function submitme(form1)
+{ form1.action=form1.action+"?pname="+form1.pname.value+"&language="+form1.language.value;
+form1.submit();
+}
+
+</script>
+<script src="/js/site.js?1"></script>
+</head>
+<body style="background-image: url(/images/background-image.jpg);">
+<h1 style="text-align: center;"><img src="/images/master-logo.jpg" title="" alt="boardspace.net" style="width: 600px; height: 100px;"></h1>
+<h1 style="text-align: center;">Login Page</h1>
+<p><br>
+</p>
+<h2>PC Mac or Linux desktops</h2>
+<p>Browsers no longer support java applets, but <a href="%3C%21--#include%20virtual=%22/cgi-bin/applettag.cgi?tagname=jwsrawlink%22%20--%3E">
+<img style="border: 0px solid ; width: 80px; height: 43px;" alt="java web start icon" title="click to launch boardspace with java web start" src="/images/java-web-star-icon.jpg"></a>&nbsp;will
+launch the boardspace.net client directly, and will
+leave a desktop icon you can use next time.&nbsp;</p>
+<p>If clicking doesn't open the application, &nbsp;see <a href="needsjava.shtml">this page</a>.<br>
+</p>
+<h2>Android and IOS</h2>
+<a href="https://itunes.apple.com/us/app/boardspace.net/id1089274351?ls=1&amp;mt=8">
+<img src="/images/download-on-the-app-store.png" alt="a free app on itunes" height="50" width="150"></a><a href="javascript:link('https://play.google.com/store/apps/details?id=com.boardspace',0)">
+<img src="/images/google-play-badge.jpg" alt="a free app on google play"> </a>
+<p>The apps ought to work from any modern device, but
+tablet-sized devices with at least 1G of memory are
+recommended.&nbsp;&nbsp; Phones will work, but the screens are
+annoyingly small. The CPUs, of mobile devices are pretty wimpy, so the
+robots for many of games are noticeably weaker.<br>
+</p>
+The apps do not have any advertising or in-app purchases.&nbsp;
+Just the games.
+<p> </p>
+<table>
+<tbody>
+<tr>
+<td>
+<form name="login" action="/cgi-bin/login.cgi" method="post"><br>
+<div style="text-align: left;">&nbsp; <a href="help-video.html"><img alt="help video" src="../images/video_icon.png" border="0" height="49" width="50"></a>View a short video to help get you
+started. </div>
+</form>
+</td>
+<td valign="top">A general guide how to use the
+Boardspace lobby is <a href="lobby-help.html">here</a>.<br>
+</td>
+<td>
+<center>
+<div style="text-align: left;">With the java web
+start, you still need to have Java installed&nbsp; and configured
+.&nbsp; <a href="needsjava.shtml">This page</a>
+has other information about getting java installed and configured on
+your computer.<br>
+</div>
+</center>
+</td>
+</tr>
+</tbody>
+</table>
+<hr style="width: 100%; height: 2px;"><br>
+<table style="width: 100%;">
+<tbody>
+<tr>
+<td align="left"> <font size="-1">E-mail:
+<script language="javascript">
+document.write("<a href='mailto:gamemaste");
+document.write("r\@board");
+document.write("space.net'>gamemaste<n>r@board<n>space.net</a>");
+</script></font> </td>
+<td style="vertical-align: top; text-align: center;"><br>
+</td>
+<td align="right">Go to <a href="/">BoardSpace.net
+home page</a> </td>
+</tr>
+</tbody>
+</table>
+<script>document.login.pname.focus()</script>
+</body></html>

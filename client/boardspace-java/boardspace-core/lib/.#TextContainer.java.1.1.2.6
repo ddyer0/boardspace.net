@@ -1,0 +1,850 @@
+package lib;
+
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.geom.Rectangle2D;
+import online.common.exCanvas;
+import static online.common.OnlineConstants.clickSound;
+/**
+ * This is a window-free replacement for TextArea, coded to be used with
+ * other boardspace UI items.
+ * 
+ * Mouse activity: 
+ *   If the item is editable and the mouse is recently idle, select it and bring up the keyboard.
+ *   If you press and release while focused, move the cursor
+ *   If you press and move slowly, designate the start of a selection area. 
+ *   You can drift the selected position while viewing the magnified touch point.
+ *   Move briskly left or right from the selection point to expand the selection.
+ *   Click in the middle of a current selection to modify it to left or right.
+ *   
+ *   Move vertically to scroll vertically.
+ *   Move briskly vertically to scroll and "fling" the window to keep scrolling after release.
+ *    
+ * @author Ddyer
+ *
+ */
+public class TextContainer implements AppendInterface,KeyListener
+{
+	StringBuilder data=new StringBuilder();
+	int lastLineHeight = 10;			// this is used to scale the amound of movement needed to start scrolling
+	int caratPosition = 0;				// position in data of the blinking cursor
+	
+	boolean mouseActive = false;		// true while the mouse is down and potentially used for selecting or scrolling
+	boolean mouseSelectingStart = false;
+	boolean mouseSelectingExpand = false;
+	int mouseExpandPos1 = -1;
+	int mouseExpandPos2 = -1;
+	boolean mouseSelecting = false;		// true if the mouse is being used to select text
+	boolean caratSelecting = false;		// one time flag to set the carat to the last mouse position	
+	private int mouseSelectingX = -1;	// x tracking the mouse while selecting text
+	private int mouseSelectingY = -1;	// y tracking the mouse while selecting text
+	int selectionStart = -1;			// start of selection 
+	int selectionEnd = -1;				// end of selection
+	
+    private boolean flingFlag = false;	// the mouse was released while moving fast
+    public boolean flinging() { return(flingFlag); }
+    private long lastMouseActiveTime = 0;
+    private long flingStartTime = 0;
+    private int flingStartOffset = 0;
+    private int flingRate = 0;			// declining rate of scroll after flinging
+
+    
+	private boolean autoScroll = true;				// scroll to end to keep the end carat visible
+	private int scrollingX = -1;			// internal start position when mouse dragging
+	private int scrollingY = -1;			// internal start position when mouse dragging
+	private int scrollingOffset = -1;				// starting scroll for the current drag
+	private boolean activelyScrolling = false;		// true while mouse dragging
+    private long scrollingStartTime = 0;	// time when we started dragging
+    private int maxScroll = 0;
+	boolean editable=false;
+	
+	
+	boolean hasFocus = false;		// these are used to make a blinking cursor
+	boolean focusToggle = false;
+	long flipTime = 0;
+	int flipInterval = 750;
+	
+	int endmargin = 15;
+	public void setFocus(boolean v,int interval) 
+	{
+	  flipInterval = interval;
+	  setFocus(v);
+	}
+	public void setFocus(boolean v)
+	{	if(v!=hasFocus) { if(canvas!=null) { canvas.repaint(); }}
+		hasFocus = v;
+		focusToggle = v;
+		if(hasFocus && clearBeforeAppend) { clear(); }	
+	}
+	public boolean clearBeforeAppend = false;
+	public enum Op  { Send,Repaint; }
+	
+	
+	// special rendering options
+	public boolean renderAsButton = false;
+	public boolean singleLine = false;
+	
+	LibCanvas canvas = null;
+	Color backgroundColor = Color.white;
+	Color foregroundColor = Color.black;
+	Font font = G.getGlobalDefaultFont();
+	int x;
+	int y;
+	int width;
+	int height;
+	int scrollX=0;
+	int scrollY=0;
+	private boolean isVisible = false;
+	public boolean isVisible() { return(isVisible); }
+	public void setVisible(boolean v) { isVisible=v; }
+	
+	public Dimension getPreferredSize()
+	{
+		FontMetrics fm = G.getFontMetrics(font);
+		Rectangle2D sz = fm.getStringBounds(data.toString(),null);
+		return(new Dimension((int)sz.getWidth(),(int)sz.getHeight()));
+	}
+	private SimpleObservable observer = null;		// who to tell
+	public SimpleObservable addObserver(SimpleObserver o) {
+		if (o != null) {
+			if (observer == null) {
+				observer = new SimpleObservable(this);
+			}
+
+			observer.addObserver(o);
+		}
+		return (observer);
+	}
+	public void setChanged(Op op)
+	{	//G.startLog("changed "+op);
+		if (observer!=null) 
+			{ observer.setChanged(); 
+			  //G.addLog("notify "+op);
+			  observer.notifyObservers(op);
+			}
+	}
+	
+	CellId defaultId = null;
+	public TextContainer(CellId id) {	defaultId = id; }
+	// constructor
+	public TextContainer(String t)
+	{
+		data = (t==null) ? new StringBuilder("") : new StringBuilder(t);
+	}
+	public String getText() { return(data.toString()); }
+	public void setText(String t) 
+	{	data.setLength(0);
+		caratPosition = data.length();
+		selectionStart = -1;
+		clearBeforeAppend = false; 
+		append(t);
+	}
+	public boolean editable() 
+	{ return(editable); 
+	}
+	public void setEditable(LibCanvas can,boolean e) 
+	{ boolean wasEditable = editable;
+	  editable = e;
+	  if(can!=null)
+	  {
+	  canvas = can;
+	  //theFrame.requestFocus();
+	  if(editable && !wasEditable) 
+	  	{ 
+	  	  can.addKeyListener(this);
+	  	}
+	  if(!editable && wasEditable) 
+	  	{ 
+		  can.removeKeyListener(this); 
+		}
+	  }
+	}
+	public void setBackground(Color background) {
+		backgroundColor = background;
+	}
+	public void setForeground(Color foreground) {
+		foregroundColor = foreground;
+		setChanged(Op.Repaint);
+	}
+	public void setFont(Font basicFont) {
+		font = basicFont;
+		setChanged(Op.Repaint);
+	}
+	public void clear()
+	{
+		data.setLength(0);
+		selectionStart = -1;
+		selectionEnd = -1;
+		clearBeforeAppend = false;
+		autoScroll = true;
+		caratPosition = 0;
+	}
+	public void append(char c)
+	{
+		if(clearBeforeAppend) 	{ clear(); }
+		data.append(c);
+		caratPosition++;
+		autoScroll = true;
+		setChanged(Op.Repaint);
+	}
+	public void doDeleteSelection()
+	{
+		if(editable && selectionStart>=0) 
+		{ data.delete(selectionStart, selectionEnd);
+		  caratPosition = selectionStart;
+		  selectionStart = -1;
+		}
+
+	}
+	public void insert(char c)
+	{	if(clearBeforeAppend) { clear(); }
+		doDeleteSelection();
+		if(caratPosition<data.length()) { data.insert(caratPosition,c); }
+		else { data.append(c); }
+		autoScroll = true;
+		caratPosition++;
+		setChanged(Op.Repaint);
+	}
+	public void insert(String c)
+	{	if(clearBeforeAppend) { clear(); }
+		doDeleteSelection();
+		if(caratPosition<data.length()) { data.insert(caratPosition,c); }
+		else { data.append(c); }
+		autoScroll = true;
+		caratPosition+=c.length();
+		setChanged(Op.Repaint);
+	}
+	public void append(String newstr) {
+		if(clearBeforeAppend) { clear(); }
+		doDeleteSelection();
+		data.append(newstr); 
+		caratPosition+=newstr.length();
+		autoScroll = true;
+		setChanged(Op.Repaint);
+	}
+	public void setCaretPosition(int i) {
+		caratPosition = i;
+		setChanged(Op.Repaint);
+	}
+	public Point getLocation()
+	{
+		return(new Point(x,y));
+	}
+	public Rectangle getBounds() { return(new Rectangle(x,y,width,height)); }
+	
+	public void setBounds(int left, int top, int inWidth, int inHeight) {
+		x = left;
+		y = top;
+		width = inWidth;
+		height = inHeight;
+		setChanged(Op.Repaint);
+	}
+	public int getWidth() {
+		return(width);
+	}
+	public int getHeight() {
+		return(height);
+	}
+	public int getX() {
+		return(x);
+	}
+	public int getY() {
+		return(y);
+	}
+	private void autoScroll(int fontH,String lines[])
+	{	int pos = caratPosition;
+		int availableHeight = height-height%fontH;
+		if(pos<0) { scrollY = Math.max(0, (fontH*lines.length-availableHeight)); }
+		else {
+			int scrollLine = 0;
+			int linepos = 0;
+			while(linepos<pos && scrollLine<lines.length)
+			{  
+				linepos += lines[scrollLine].length()+1;
+				scrollLine++;
+			}
+			scrollY = (scrollLine)*fontH-height;
+		}
+	}
+	public boolean drawAsButton(Graphics g,HitPoint hp,Rectangle r,String line)
+	{	FontMetrics fm = G.getFontMetrics(font);
+		lastLineHeight = fm.getHeight();
+		if(G.handleSquareButton(g, r, hp,line,backgroundColor,backgroundColor))
+		{	
+			hp.hitCode = defaultId;
+			hp.spriteRect = r;
+			hp.spriteColor = Color.red;
+			return(true);
+		}
+		return(false);
+	}
+	
+	public boolean drawAsSingleLine(Graphics g,HitPoint hp,Rectangle r,String line)
+	{
+		boolean isIn = G.pointInRect(hp,x,y,width,height);
+		FontMetrics fm = G.getFontMetrics(font);
+		int lineh = lastLineHeight = fm.getHeight();
+		int lineX = x+4;
+		int lineY = y+lineh+2;
+		int lineStart = data.length()-line.length();
+		int select = selectionStart-lineStart;
+		int selectEnd = selectionEnd-lineStart;
+		String fullLine = line;
+
+		if(hasFocus)
+			{
+			long now = G.Date();
+			if(now>flipTime)
+				{ focusToggle = !focusToggle; 
+				  flipTime = now+flipInterval; 
+				}
+			//G.print("rep "+(int)(flipTime-now));
+			canvas.repaint((int)(flipTime-now+10));
+			}
+			if(clearBeforeAppend)
+			{
+			G.Text(g,true,lineX, lineY,width-8,height,foregroundColor,backgroundColor,line);
+			}
+			else
+		{
+			Rectangle2D from = fm.getStringBounds(line,g);
+			int maxx = (int)from.getWidth();
+			if(maxx>width-endmargin && line.length()>0)
+			{	// shorten the line at the left
+				line = "..."+line.substring(1);
+				if(select>=0) { select += 3-1; }
+				select += 3-1;
+				selectEnd += 3-1;
+				from = fm.getStringBounds(line, g);
+				maxx = (int)from.getWidth();
+				while(maxx>width-endmargin && (line.length()>4))
+				{   
+					line = "..."+line.substring(4);
+					if(select>0) { select--; }
+					if(selectEnd>0) { selectEnd--; }
+					from = fm.getStringBounds(line, g);
+					maxx = (int)from.getWidth();
+				}
+			}
+		
+		if(select>=0)
+		{	
+		Rectangle2D sbounds = fm.getStringBounds(line,select,selectEnd,g);
+		Rectangle2D leftBounds = fm.getStringBounds(line,0,select,g);
+		int xx = (int)leftBounds.getWidth();
+		G.fillRect(g, Color.lightGray, lineX+xx, lineY-lineh/2,(int)sbounds.getWidth(),lineh/2);
+		G.setColor(g,foregroundColor);
+		if(mouseSelecting)
+			{
+			G.drawLine(g,lineX+xx,lineY-lineh,lineX+xx,lineY);
+			}
+		}
+		// draw the line of text
+		G.frameRect(g,Color.black,x,y,width,height);
+		G.Text(g,line,lineX, lineY);
+			
+		if(focusToggle||mouseSelecting)
+			{
+			drawFocusLine(g,fm,lineX,lineY,line,data.length()-(mouseSelecting ? selectionEnd : caratPosition));
+			}
+		}
+			
+		if(mouseSelecting)
+		{   int mousePos1=-1;
+			int mousePos2=-1;
+			if(G.pointInRect(mouseSelectingX,mouseSelectingY,x,lineY-lineh,width,lineh)) 
+				{ mousePos1 =  findPositionInLine(fm,g,line,fullLine,mouseSelectingX-lineX);	
+				}
+			if(G.pointInRect(scrollingX,scrollingY,x,lineY-lineh,width,lineh)) 
+				{ mousePos2 =  findPositionInLine(fm,g,line,fullLine,scrollingX-lineX); 
+				}
+			if(mousePos1>=0 && mousePos2>=0 && mousePos1>mousePos2) 
+				{ int x = mousePos1;
+				  mousePos1=mousePos2; 
+				  mousePos2 = x; 
+				}
+			if(mouseSelectingStart 
+					&& (mousePos1>=0)
+					&& (mousePos2>=mousePos1)
+					&& (selectionStart>=0)
+					&& ((mousePos1>=selectionStart && mousePos1<=selectionEnd)
+							|| (mousePos2>=selectionStart && mousePos2<=selectionEnd)))
+			{	mouseSelectingExpand = true;
+				mouseExpandPos2 = mousePos2;
+				mouseExpandPos1 = mousePos1;
+			}	
+			else if(mouseSelectingExpand && (mousePos1>=0) && (mousePos2>=mousePos1))
+			{	
+				if((mousePos1<mouseExpandPos1))
+				{	
+					selectionStart = Math.max(0, mousePos1-1);
+				}
+				if((mousePos2>mouseExpandPos2))
+				{	
+					caratPosition = selectionEnd = mousePos2;
+				}
+			}
+			else if((mousePos1>=0) && (mousePos2>=mousePos1))
+			{
+			selectionStart = Math.max(0, mousePos1-1);
+			caratPosition = selectionEnd = mousePos2;
+			}
+			mouseSelectingStart = false;
+			
+		}
+		if(caratSelecting)
+		{	caratSelecting = false;
+			if(G.pointInRect(scrollingX,scrollingY,x,lineY-lineh,width,lineh)) 
+			{ caratPosition =  Math.max(0, Math.min(line.length(),findPositionInLine(fm,g,line,fullLine,scrollingX-lineX))); 
+			}
+		}
+		if(isIn) { hp.hitCode = defaultId;}
+		return(isIn);
+	}
+	private void drawFocusLine(Graphics g,FontMetrics fm,int lineX,int lineY,String line,int caratInLine)
+	{
+		if(focusToggle || mouseSelecting)
+		{ // draw a blinking bar for the character position
+		  int caratBeforeLine = line.length()-caratInLine;
+		  if(caratBeforeLine>=0)
+			  {	// if the carat position is in the last line
+				  Rectangle2D beforeCarat = fm.getStringBounds(line, 0,caratBeforeLine,g);
+				  int pos = lineX+(int)beforeCarat.getWidth();
+			  G.drawLine(g, pos ,lineY-fm.getHeight(), pos ,lineY); 
+			}
+		}
+	}
+	public boolean drawAsMultipleLines(Graphics g,HitPoint hp,Rectangle r,String lines[])
+	{
+		boolean isIn = G.pointInRect(hp,x,y,width,height);
+		FontMetrics fm = G.getFontMetrics(font);
+		int lineh = lastLineHeight = fm.getHeight();
+		if(autoScroll && !mouseActive) { autoScroll(lineh,lines); }
+		G.fillRect(g,backgroundColor,x,y,width,height);
+		G.frameRect(g, isIn? Color.blue : Color.black, x,y,width,height);
+		maxScroll = lineh*lines.length-height/2;
+		int mousePos1 = -1;
+		int mousePos2 = -1;
+		int charCount = 0;
+		for(int linen = 0,ypos = 0;linen<lines.length;linen++,ypos+=lineh)
+		{	int realY = y+ypos-scrollY;
+			String line = lines[linen];
+			int linelen = line.length();
+			int xpos = x+4;
+			
+			if((ypos>=scrollY+lineh) && ypos<=scrollY+height)
+			{
+			boolean containsAny = charCount>=selectionStart && charCount<=selectionEnd;
+			boolean containsStart = selectionStart>=0 && selectionStart>=charCount && selectionStart<=charCount+linelen;
+			boolean containsEnd = selectionEnd>=0 && selectionEnd>=charCount && selectionEnd<=charCount+linelen;
+
+			if(containsStart || containsEnd || containsAny)
+			{
+				int line0 = containsStart ? selectionStart-charCount : 0;
+				int line1 = containsEnd ? selectionEnd-charCount : linelen;
+				Rectangle2D line0P = fm.getStringBounds(line,0,line0,g);
+				Rectangle2D line1P = fm.getStringBounds(line,0,line1,g);
+				G.setColor(g,Color.lightGray);
+				int left = (int)(xpos+line0P.getWidth());
+				int right = (int)(xpos+line1P.getWidth());
+				G.fillRect(g, left, realY-lineh/2,right-left,lineh/2);
+				if(mouseSelecting)
+				{
+				if(containsStart)
+				{
+				G.drawLine(g, left, realY-lineh,left,realY);
+				}
+				if(containsEnd)
+				{
+				G.drawLine(g, right, realY-lineh,right,realY);
+				}}
+			}
+			G.setColor(g,foregroundColor); 
+
+			G.Text(g,line,xpos, realY);
+		
+			
+			if(mouseSelecting)
+			{
+				if(G.pointInRect(mouseSelectingX,mouseSelectingY,x,realY-lineh,width,lineh)) 
+					{ mousePos1 = charCount +  findPositionInLine(fm,g,line,line,mouseSelectingX-xpos); 
+					}
+				if(G.pointInRect(scrollingX,scrollingY,x,realY-lineh,width,lineh)) 
+					{ mousePos2 = charCount +  findPositionInLine(fm,g,line,line,scrollingX-xpos); 
+					}
+
+				
+			}
+			}
+			charCount += linelen+1;
+		}
+		if(mouseSelecting && (mousePos1>=0) && (mousePos2>=0))
+		{
+			if(mousePos1>mousePos2) { int x = mousePos1; mousePos1=mousePos2; mousePos2 = x; }
+			
+			if(mouseSelectingStart 
+					&& (selectionStart>=0)
+					&& ((mousePos1>=selectionStart && mousePos1<=selectionEnd)
+							|| (mousePos2>=selectionStart && mousePos2<=selectionEnd)))
+			{	mouseSelectingExpand = true;
+				mouseExpandPos2 = mousePos2;
+				mouseExpandPos1 = mousePos1;
+				mouseSelectingStart = false;
+			}				
+			else if (mouseSelectingExpand && (mousePos1>=0) && (mousePos2>=mousePos1))
+			{
+				if((mousePos1>=0) && (mousePos1<mouseExpandPos1))
+				{	
+					selectionStart = Math.max(0, mousePos1-1);
+				}
+				if((mousePos2>=0) && (mousePos2>mouseExpandPos2))
+				{	
+					selectionEnd = mousePos2;
+				}
+			}
+			else if((mousePos1>=0)&&(mousePos2>mousePos1))
+			{
+			selectionStart = Math.max(0, mousePos1-1);
+			selectionEnd = mousePos2;
+			}
+			
+		}
+		G.frameRect(g,Color.black,x,y,width,height);
+		if(isIn) { hp.hitCode = defaultId;}
+		return(isIn);
+	}
+	public int findPositionInLine(FontMetrics fm,Graphics g,String line,String fullLine,int x)
+	{	int linelen = line.length();
+		int fulllen = fullLine.length();
+		for(int i=1;i<linelen;i++)
+		{
+			Rectangle2D rect = fm.getStringBounds(line, 0,i,g);
+			if(rect.getWidth()>x)
+				{ 
+					return(i+(fulllen-linelen)); 
+				}
+		}
+		return(fulllen);
+	}
+	
+	public boolean redrawBoard(Graphics g,HitPoint hp) 
+	{	Rectangle r = new Rectangle(x, y, width, height);
+		boolean hit = false;		
+		if(isVisible)
+		{
+		G.setFont(g,font);
+		String dataString = data.toString();
+		String lines[] = G.split(dataString,'\n');
+		if(renderAsButton)
+		{
+			hit = drawAsButton(g,hp,r,lines[0]);
+		}
+		else if(singleLine)
+		{	hit = drawAsSingleLine(g,hp,r,lines[lines.length-1]);
+		}
+		else
+		{ 	hit = drawAsMultipleLines(g,hp,r,lines);
+		}}
+		//G.addLog("painted");
+		//G.finishLog();
+		return(hit);
+	}
+
+	public void keyTyped(KeyEvent e) {
+		if(editable)
+		{	int mod = e.getModifiersEx();
+			char code = e.getKeyChar();
+			hasFocus = true;
+			if((mod & KeyEvent.CTRL_DOWN_MASK)!=0)
+			{
+				code = (char)(0x40|code);
+				switch(code)
+				{
+				case 'A':	
+						selectAll();
+						setChanged(Op.Repaint);
+						break;
+				case 'B':
+						doBack();
+						break;
+				case 'C':
+					doCopy();
+					break;
+				case 'D':
+						doDel(true);
+						break;
+				case 'E':
+						doToEnd();
+						break;
+				case 'F':
+						doForward();
+						break;
+				case 'H':
+						doDel(false);
+						break;
+				case 'I':
+						insert('\t');
+						break;
+				case 'M':
+						doSend();
+						break;
+				case 'V':
+						doPaste();
+						break;
+				default: break;
+				}
+			}
+			else {
+				switch(code)
+				{
+				case '\n':
+					doSend();
+					break;
+				case '\u007f':	// del
+				case '\b':	// backspace
+					doDel(false);
+					break;
+				case 37:
+				case '\u2190':
+					doBack();
+					break;
+				case 39:
+				case '\u2192':
+					doForward();
+					break;
+				default:
+					insert(code);
+					break;
+				}
+			}
+		}
+		//G.print("Key typed "+e);
+	}
+	public void doSend()
+	{
+		setChanged(Op.Send);
+	}
+	
+	public void doDel(boolean forward)
+	{
+		if(data.length()>0)
+		{
+		if(selectionStart>=0)
+		{
+			doDeleteSelection();
+		}
+		else
+		{	if(forward) { if(caratPosition>=data.length()) { return; }}
+			else if(caratPosition>0) { caratPosition--; };
+			data.deleteCharAt(caratPosition);
+		}
+		setChanged(Op.Repaint);
+		}
+	}
+	public void doBack()
+	{
+		if(caratPosition>0) { caratPosition--; }
+		setChanged(Op.Repaint);
+	}
+	public void doForward()
+	{
+		if(caratPosition<data.length()) { caratPosition++; }
+		setChanged(Op.Repaint);
+	}
+	public void selectAll()
+	{
+		selectionStart = 0;
+		selectionEnd = data.length();
+	}
+	public void keyPressed(KeyEvent e) {
+		int code = e.getKeyCode();
+		switch(code)
+		{
+		case 222:
+			append('\'');
+			break;
+		case 37:
+			doBack();
+			break;
+		case 39:
+			doForward();
+			break;
+		default: break;
+		}
+	}
+	public void keyReleased(KeyEvent e) {
+		//G.print("Key released "+e);
+	}
+	public void doCopy()
+	{
+		if((selectionStart>=0)&&(selectionEnd>selectionStart))
+		{	
+			String str = G.substring(data,selectionStart,selectionEnd-((data.charAt(selectionEnd-1)=='\n')?1 : 0));
+			G.writeTextToClipboard(str);
+			if(canvas!=null && canvas.doSound())
+			  {
+				  SoundManager.playASoundClip(clickSound,100);
+			  }
+		}
+	}
+	public void doPaste()
+	{
+		String str = G.readTextFromClipboard();
+		if(str!=null)
+		{
+			insert(str);
+		}
+	}
+	public void doToEnd()
+	{
+		selectionStart = -1;
+		caratPosition = data.length();
+		setChanged(Op.Repaint);
+	}
+	private void setScrollY(int to)
+	{
+		scrollY = Math.min(maxScroll, Math.max(0,to));
+	}
+	public boolean doMouseDrag(int ex,int ey)
+	{	if(!G.pointInRect(ex, ey,x,y,width,height)) { return(false); }
+		long now = G.Date();
+		if(!mouseActive)
+			{ mouseActive = true;
+			  scrollingX = ex; 
+			  scrollingY=ey;
+			  mouseSelectingX = ex;
+			  mouseSelectingY = ey;
+			  autoScroll = false;
+			  flingFlag = false;
+			  mouseSelecting = false;
+			  scrollingOffset = scrollY;
+			  scrollingStartTime = now;
+			}
+		else if((ex!=scrollingX) || (ey!=scrollingY))
+    	{
+			lastMouseActiveTime = now;
+			//G.print("Drag "+(x-scrollingX)+" "+(y-scrollingY)+" - "+scrollingX+" "+scrollingY+" "+activelyScrolling);
+        	long ydist = Math.abs(ey-scrollingY);
+        	long xdist = Math.abs(ex-scrollingX);
+         	if(!mouseSelecting && ydist>lastLineHeight)// move more than than a line 
+         		{	activelyScrolling = true;
+               		//G.print("Drag move to "+(scrollingOffset + (scrollingY-ey)));
+         			setScrollY(scrollingOffset + ((scrollingY-ey)));
+        		}
+         	else if(!activelyScrolling)
+         	{	if(!mouseSelecting && xdist>lastLineHeight)
+         			{
+         			mouseSelectingStart = mouseSelecting = true;
+        			}
+         		else if(!mouseSelecting)
+         		{
+         			if(now-scrollingStartTime>500)
+         			{	// if he pauses before making a big move, recenter
+         				scrollingX = ex;
+         				scrollingY = ey;
+         				scrollingStartTime = now;
+         			}
+         		}
+         		mouseSelectingX = ex;
+         		mouseSelectingY = ey;
+
+         	}
+         	
+         		
+         	return(mouseActive);
+    	}
+    	return(false);
+	}
+	public boolean containsPoint(HitPoint p) { return(G.pointInRect(p, x,y,width,height)); }
+	
+	public boolean doMouseUp()
+	{	
+		flingFlag = maybeFling();
+		if(mouseSelecting) 
+			{ doCopy();
+			  
+			}
+		{
+		// if no selection or scrolling happened, just reposition 
+		// the blinking carat 
+		if((mouseActive||hasFocus) && !mouseSelecting && !activelyScrolling)
+			{
+			selectionStart = -1;
+			selectionEnd = -1;
+			caratSelecting = true;
+			}
+		}
+
+		mouseActive = false;
+		activelyScrolling = false;
+		mouseSelecting = mouseSelectingExpand = mouseSelectingStart = false;
+		return(false);
+	}
+	public void doMouseMove(int ex, int ey,MouseState upcode)
+	{	
+		switch(upcode)
+		{
+		case LAST_IS_DOWN:
+			flingFlag = false;	// stop any sling scrolling that's still going on
+			scrollingX = ex;
+			scrollingY = ey;
+			break;
+		case LAST_IS_DRAG:
+			doMouseDrag(ex,ey); 
+			break;
+		case LAST_IS_UP:
+			doMouseUp();
+			default: 
+			break;
+		}
+	}
+	// this tests if the mouse is idle enough that we just want
+	// to select the current widget.
+	public boolean idle()
+	{	// 1.5 seconds since the drag stopped
+		return(G.Date()-lastMouseActiveTime>1500);
+	}
+	// when the mouse goes up, decide if the movement was fast enough
+	// to continue scrolling with a residual fling effect
+    public boolean maybeFling()
+    {	if(flingFlag) { return(true); }
+    	if(activelyScrolling)
+    	{
+    		long now =G.Date();
+    		long interval = now-scrollingStartTime;
+    		if(interval>0 && interval<500)	// flings have to be fast
+    		{	long dist = ((scrollY-scrollingOffset)*1000)/interval;
+    			flingRate = (int)dist; 	// distance to fling in a second
+    			flingStartOffset = scrollY;
+    			flingStartTime = now;	// when we started
+    		}
+    		return(true);
+    	}
+    	return(false);
+    }
+    
+    // this is the repeat scroll while flinging hasn't wound down to 0 yet.
+    public boolean DoRepeat()
+	    {
+	    	if (flingFlag)
+	    	{	long now = G.Date();
+	    		long interval = now-flingStartTime;
+	    		if(interval>2000) { flingFlag = false; }	// 2 second fling
+	    		else 
+	    			{  int distance = (int)(Math.sqrt(interval/2000.0)*flingRate);
+	    			   //G.print("Fling "+distance + " " +(flingStartOffset+distance));
+	    			   setScrollY(flingStartOffset + distance);
+	    			   return(true);
+	    			}
+	    		
+	    	}
+	    	return(false);
+	    }
+}

@@ -1,0 +1,68 @@
+migration checklist
+
+firewall settings
+mailer settings
+ssl sockets 
+ssl certificates
+databases and mysql config
+apache config
+check cron scripts are running, including root crontab for renew-ssl
+
+
+
+// manual changes
+
+edit apache config to include "Includes" in the options directive
+
+edit ftp server config to OFF and no auto-restart
+
+edit ssh server config to no root login, port 9130
+
+edit mail server specs to use real-me.net instead of boardspace.net, other
+changes, refer to boardspace-mail-1.jpg and boardspace-mail-2.jpg
+
+manually run the backup-to-boardspace script on tantrix.com, ssh key will have changed
+
+// package installs
+yum install perl-CGI
+yum install perl-JSON
+yum install perl-GD
+yum install perl-GDGraph
+yum install xinetd
+yum install cvs
+
+configure firewall
+close 22 (ssl) and 3301 (mtsql)
+open for boardspace they are 2244 2256 12257 (test server) and 9130 (ssh) and 2401 (cvs)
+potentially also 8081 and 8443 for jetty java serverlet
+
+install "lockfile" (request to steadfast to find it and install)
+
+copy /usr/local/lib64/perl5/Mysql.pm and Mysql/Statement.pm
+
+
+// misc tweaks
+edit cron/checkspace.csh to check for the physical name (instead of /dev/xv)
+
+copy/paste ssl certificate stuff from siteworx/ssl section 
+for real-me.net and boardspace.net
+
+one time changes
+changed perl scripts for check_server in login.cgi and tlib/ranking.pl
+to use "localhost" instead of $'ip_host,
+this ought to be the same, but in the migration setup it was contacting the 
+real server.
+
+https://alexhunt86.wordpress.com/2013/10/31/how-to-set-up-cvs-server-in-linux/
+add cvs user and cvs group
+	adduser cvsuser
+	groupadd cvsgroup
+	usermod -a -G cvsgroup cvsuser
+
+mkdir /srv/cvsroot &&
+chmod 1777 /srv/cvsroot &&
+export CVSROOT=/srv/cvsroot &&
+cvs init
+copy /var/cvs contents
+systemctl restart xinetd
+

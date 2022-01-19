@@ -1,0 +1,144 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta http-equiv="content-type"
+ content="text/html; charset=ISO-8859-1">
+  <title>Triad at Boardspace.net</title>
+</head>
+<body style="background-image: url(../images/background-image.jpg);">
+<table style="width: 100%; text-align: left;" border="0" cellpadding="2"
+ cellspacing="0">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top;">
+      <h4><a href="about_mutton.html">Mutton</a></h4>
+      </td>
+      <td style="vertical-align: top;">
+      <h1 style="text-align: center;"><img alt="boardspace.net"
+ src="master-logo.jpg" style="width: 600px; height: 100px;"></h1>
+      </td>
+      <td style="vertical-align: top;"><a href="about_crossfire.html"><span
+ style="font-weight: bold;">Crossfire</span></a></td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table
+ style="text-align: left; margin-left: auto; margin-right: auto; width: 995px; height: 46px;"
+ border="0" cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top; text-align: center;"><small><font
+ size="+1"><small><a href="register.shtml"><span
+ style="font-weight: bold;">Register</span></a></small></font><br>
+      </small></td>
+      <td style="vertical-align: top; text-align: center;"><small><font
+ size="+2"><small><a style="font-weight: bold;" href="login.shtml">Log
+in and
+Play<br>
+      </a></small></font></small></td>
+      <td style="vertical-align: top; text-align: center;"><small><font
+ size="+1"><small><a href="guest.shtml"><span style="font-weight: bold;">Guest
+Login</span></a></small></font><br>
+      </small></td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<br>
+<table style="width: 100%; text-align: left;" border="1" cellpadding="2"
+ cellspacing="2">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top;">
+      <h1 style="text-align: center;"><big>Triad</big><br>
+      </h1>
+Triad is a three player capturing game that was specifically designed
+to be balanced, and to avoid the "kingmaker" problem that is common in
+multiplayer games.&nbsp;&nbsp; The objective of the game is to
+eliminate all of one player's stones, while keeping the largest number
+of stones on the board.&nbsp;&nbsp; Consequently, both the second place
+and third place player at any time are motivated to work against the
+first place player.&nbsp; The other unusual feature of the game is that
+the turn order is not fixed.&nbsp; The rules are very simple, read the
+complete rules <a
+ href="http://www.cameronius.com/games/triad/triad-20.rtf">here</a>.<br>
+      <br>
+Triad is only playable by three players.&nbsp; At boardspace, you can
+play either with three human players or with two humans and a robot.<br>
+      <br>
+      <span style="font-weight: bold;">Robots:</span>&nbsp; To be
+determined.<br>
+      </td>
+      <td style="vertical-align: top;"><img
+ style="width: 450px; height: 424px;" alt="triad"
+ src="../images/triad-small.jpg"><br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<span style="font-weight: bold;"><br>
+</span>
+<div style="text-align: center;"><span style="font-weight: bold;">Links</span><br>
+<span style="font-weight: bold;"></span></div>
+<table style="width: 100%; text-align: left;" border="0" cellpadding="2"
+ cellspacing="2">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top;"><a
+ href="http://www.boardspace.net/cgi-bin/boardspace_rankings.cgi?game=ta">Triad
+rankings
+at
+Boardspace</a><br>
+      </td>
+      <td style="vertical-align: top;"><a
+ href="http://boardgamegeek.com/boardgame/17587">Triad at BoardGameGeek</a><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><a
+ href="http://boardspace.net/triad/triad-viewer.shtml">Triad game
+archives at Boardspace</a></td>
+      <td style="vertical-align: top;"><a
+ href="http://www.cameronius.com/games/triad/">Cameron Browne's Triad
+page</a><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><a
+ href="/cgi-bin/player_analysis.cgi?game=triad">Triad win/loss database</a><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<span style="font-weight: bold;"><br>
+The back story: </span>Triad was selected as the first boardspace game
+for more than 2 players. It's definitely a pure abstract, and it's
+designed to be balanced with 3, and I already had a good working
+relationship with Cameron Browne.<br>
+<hr>
+<center>
+<table style="width: 100%;">
+  <tbody>
+    <tr>
+      <td align="left"><font size="-1">
+      <script language="javascript">
+document.write("<a href='mailto:gamemaste");
+document.write("r\@board");
+document.write("space.net'>gamemaste<n>r@board<n>space.net</a>");
+      </script></font><br>
+      </td>
+      <td style="vertical-align: top; text-align: center;"><br>
+      </td>
+      <td style="vertical-align: top;"><a href="logon-page.html">Site<br>
+&nbsp;Map</a></td>
+      <td align="right">Go to <a href="/">BoardSpace.net
+home page</a> </td>
+    </tr>
+  </tbody>
+</table>
+</center>
+</body>
+</html>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="bsh"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="lib/bsf.jar"/>
+	<classpathentry kind="lib" path="lib/javacc.jar"/>
+	<classpathentry kind="lib" path="lib/servlet.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/pf"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/joi"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

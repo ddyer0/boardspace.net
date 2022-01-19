@@ -1,0 +1,180 @@
+<HTML>
+<HEAD>
+<meta http-equiv="imagetoolbar" content="no" /> 
+</HEAD>
+<TITLE>Ajax VNC</TITLE>
+<script type="text/javascript" src="/ajaxvnc.js"></script>
+
+<SCRIPT language="JavaScript1.1">
+
+var req;
+var sessionId = <SESSION>;
+var mouseX;
+var mouseY;
+var px;
+var py;
+
+function errormessage() {
+return;
+var errorText=document.getElementById("failureDIV").innerHTML;
+document.write("<HTML><HEAD><TITLE>Failue</TITLE><style>");
+document.write("  .HeaderTest { font-family: Arial,Helvetica,sans-serif; font-size: 30px;  color: rgb(255, 255, 255);    }");
+document.write("  .BodyText { font-family: Arial,Helvetica,sans-serif;    font-size: 15px;    color: rgb(255, 255, 255);    }");
+document.write("  .a.BodyText { font-family: Arial,Helvetica,sans-serif;    font-size: 15px;    color: rgb(255, 255, 255);    }");
+document.write("  </style></HEAD><BODY>");
+document.write(errorText);
+document.write("</BODY></HTML>");
+}
+
+function loadXMLDoc(url) {
+    // branch for native XMLHttpRequest object
+ 
+ try {
+ 
+    if (window.XMLHttpRequest) {
+        req = new XMLHttpRequest();
+        req.onreadystatechange = processReqChange;
+        req.open("GET", url, true);
+        req.send(null);
+    // branch for IE/Windows ActiveX version
+    } else if (window.ActiveXObject) {
+        isIE = true;
+        req = new ActiveXObject("Microsoft.XMLHTTP");
+        if (req) {
+            req.onreadystatechange = processReqChange;
+            req.open("GET", url, true);
+            req.send();
+        }
+    }
+    
+ } 
+  catch(e) 
+ {
+
+   errormessage();
+   
+ }   
+    
+    
+}
+
+function processReqChange() {
+
+try {
+
+    // only if req shows "loaded"
+    if (req.readyState == 4) {
+        // only if "OK"
+        if (req.status == 200) {
+          //document.getElementById("displayDIV").innerHTML=req.responseText;
+          //dosomething.  
+          //alert(req.responseText);
+          eval(req.responseText);
+         } else {
+            alert("There was a problem retrieving the XML data:\n" +
+                req.statusText);
+         }
+    }
+    if (req.readyState == 1) {
+    	//alert("loading");
+	self.status = req.responseText;
+    }
+    
+ } 
+  catch(e) 
+ {
+ 
+   errormessage();
+   
+ }   
+    
+}
+
+
+function update() {
+   
+   loadXMLDoc("getScnUpdate?sid=" + sessionId + "&c=" + Math.random());
+   setTimeout('javascript:update();', <TIMEOUT>);
+
+}
+
+function updateMouse() {
+	if (px!=mouseX || py!=mouseY) {
+		loadXMLDoc("sendMouse?sid=" + sessionId + "&x=" + mouseX + "&y=" + mouseY + "&act=none&button=0&c=" + Math.random());
+		px = mouseX;
+		py = mouseY;
+	}
+	setTimeout('javascript:updateMouse();', 250);
+}
+
+function load() {
+
+  setTimeout('javascript:update();', 1000);
+  setTimeout('javascript:updateMouse();', 250);
+}
+
+
+function keyHandler(code) {
+	self.status = new Date() + ":  Keyboard event: Keycode = " + code;
+	loadXMLDoc("sendKey?sid=" + sessionId + "&key=" + code + "&c=" + Math.random());	
+}
+
+function mousemoveHandler(x, y) {
+	self.status = new Date() + ":  MouseMove event: x = " + x + "; y = " + y;
+	mouseX = x;
+	mouseY = y;
+}
+
+function mousebuttonHandler(act, button) {
+	self.status = new Date() + ":  MouseButton event: action = " + act + "; button = " + button;
+	loadXMLDoc("sendMouse?sid=" + sessionId + "&x=" + mouseX + "&y=" + mouseY + "&act=" + act + "&button=" + button + "&c=" + Math.random());	
+}
+
+startKeyListener(keyHandler);
+startMouseMoveListener(mousemoveHandler);
+startMouseButtonListener(mousebuttonHandler);
+setInterval(autoScrolling, 100);
+alert("Testing Script Started");
+
+</SCRIPT>
+
+<BODY onLoad="javascript:load();" topmargin="0" leftmargin="0" marginheight="0" marginwidth="0" oncontextmenu="return false">
+
+<DYNAMICTEXT>
+
+
+<DIV id="failureDIV" style="display: none">
+<BR>
+<BR>
+<BR>
+<BR>
+<table style="background-color: rgb(81, 99, 215); width: 951px; height: 100px; text-align: left; margin-left: auto; margin-right: auto;" border="0" cellpadding="2" cellspacing="0">
+  <tbody>
+    <tr>
+      <td class="BodyText" style="text-align: center;"><img style="width: 128px; height: 128px;" alt="Computer" src="flame.png"></td>
+      <td style="height: 150px; text-align: center;"><span class="HeaderTest">AJAX Remote Desktop Failure</span></td>
+    </tr>
+    <tr>
+      <td style="height: 2px; background-color: rgb(255, 255, 255);" colspan="2" rowspan="1"></td>
+    </tr>
+    <tr class="BodyText">
+      <td style="height: 100px; text-align: center;" colspan="2" rowspan="1"><span class="a BodyText">The
+application server has stopped responding. Please click the link below
+to re-initiate a connection to the server. You may want to alter the
+application parameters so that it performs optimally for your network
+configuration.<br>
+      </span><a class="a BodyText" href="remotedesktop.html"><br>
+Click Here to View the Remote Desktop</a><br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+</DIV>
+
+</BODY>
+</HTML>
+
+
+
+

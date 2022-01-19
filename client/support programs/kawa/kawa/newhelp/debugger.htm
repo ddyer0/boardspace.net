@@ -1,0 +1,183 @@
+<html>
+
+<body bgcolor="#FFFFFF" text="#000000" link="#0000FF"
+vlink="#800080">
+
+<h1><a name="OLE_LINK2"><img src="kawacup.jpg" width="106"
+height="100">Kawa Debugger</a></h1>
+
+<p><a name="OLE_LINK1"></a><a href="index.htm">Index</a> </p>
+
+<P>
+<font size="1.5" face="Arial">Last Modified Date - <font color=red>2/16/99</font><p>
+Please click <a href="http://www.tek-tools.com/kawa/docs/debugger.htm">here</a> for the latest version of this document.
+<font color=red> If this is an online version of the document please right click in the browser and select 
+'Update local Kawa document' to update your local copy of this document</font>
+</font>
+<hr>
+<p>
+Kawa debugger requires you to create a <a href="kawaproject.html">project</a> first. Without project you cannot debug under Kawa.
+<p>
+There are 2 debuggers under Kawa - Kawa debugger and JDB debugger. This document is for Kawa debugger only. Please refer
+to <a href="jdbdebug.htm">JDB Debugger</a> documentation for more details on JDB debugger.
+<p>
+You can start the Kawa debugger by selecting Build/Debug/Run menu or F5 key or by clicking on the toolbar button.
+<p>
+This menu option is enabled only if the following conditions are met -
+<ul>
+	<li>A Kawa project is currently open. Please select Project/Open to open a project</li>
+	<li>A main class file or a main HTML file is selected in the project. Please refer to <a href="runapporapplet.htm">How to
+	run an app or applet</a> for more details on how to set the main class file or main HTML.</li>
+	<li>The application or applet is not currently running</li>
+	<li>JDB debugger is not currently running</li>
+	<li>Compiler is not currently compiling files</li>
+	<li>Finally, JDK bin path is setup properly under Customize/Options/Profiles. Please refer to
+	<a href="kawasetup.htm">Kawa setup</a> for more details on this.
+</ul>
+<p><i>Please note that checking <a href="compileroptions.htm">compiler option</a> -g or debug flag is not a requirement for start debug menu
+option to be enabled. However, Kawa will warn you if your compiler -g switch is not enabled because there is not much you can do
+with debugging if you don't have debug information in your class files.</i>
+
+<p>Please refer to <a href="jdkdebugclassfile.html">JDK debug class file</a> for more details on how to obtain and setup debug class information for JDK classes
+so Kawa can step into JDK classes during debugging.
+
+<p>At this time you should be able to start the debugger for a given project in Kawa. In order to use the debugger you
+have to set some breakpoints in your project.
+
+<p><b>Breakpoint -</b></p>
+
+<p>In order to set breakpoints under Kawa, open a project source file and press F9 to set or unset breakpoint at a given
+line in the project. Kawa will indicate the breakpoint with a red circle on the left margin.
+
+<p>You can also set a breakpoint by selecting the menu option Breakpoint Set/Unset under Build.
+
+<p>Please refer to <a href="breakpointlist.htm">Breakpoint</a> document for more details on managing project 
+breakpoints and to list all the breakpoints in the current project.
+
+<p><b>Debugger Tree -</b></p>
+
+<p>During debugging if the debugger hits one of the breakpoint set by you, Kawa will automatically
+open the source file and show the breakline with a green arrow as shown in the figure below.
+
+<p align="center"><img src="debugger1.gif" width="633"
+height="329"></p>
+
+<p>The debugger tree is active only when the debugger is at a breakpoint. This is the normal
+behavior for the debugger tree.
+
+<p>The debugger tree displays all the different thread groups that are 
+currently active in the application.
+
+<p>The thread group can be further expanded to check all the threads under each
+group. Each thread in turn can be expanded to display all the
+stacks under the thread.</p>
+
+<p>The debug tree always automatically adds the breakthread as
+the last item of the tree and auto expands the breakthread to
+display all the stack information as shown in the figure above.
+
+<p>Each stack can be further expanded to display all the variables in that
+stack.
+
+<p>The object value displayed is the return value of toString
+call on the object. Expanding an object displays all the member
+variables of that object
+
+<p align="center"><img src="debugger2.gif" width="399"
+height="568"></p>
+
+<p>The variables are arranged alphabetically under each object.
+
+<p>All static variables are displayed in bold and is placed at the top of the tree followed by
+non-static variables. 
+
+<p>Static Final variables can be toggled on/off by right clicking on an object in the debugger tree
+and unchecking Static Final menu option. This is convenient to reduce the number of items
+in the tree.</p>
+
+<p><b>Step, Step Over and Step Up -</b></p>
+
+<p>When Kawa is at a breakpoint you can either step, step over or step
+up. 
+
+<p>Step will execute one line of instruction and the current line indicator is
+updated appropriately.
+
+<p>step over will step to the next line in the source skipping any method calls.
+
+<p>step up will execute the entire method and return back to the caller. The caller 
+is indicated in the call stack in the debug tree.</p>
+
+<p>Please refer to <a href="keyboard.html">Keyboard shortcuts</a> for appropriate keyboard
+shortcuts for these actions.
+
+<p><b>Watch Variable -</b></p>
+
+<p>Setting a watch on variable is as easy and as expanding an object in the current stack. 
+
+<p>In the above figure the object named 'this' has been expanded
+to watch the changes in that object as we step through the code.
+
+<p>Expanding too many objects in the tree will make your step and step
+over very slow as Kawa has to update all the expaned objects for each step or step over.
+
+<p align="center"><img src="debugger3.gif" width="411"
+height="608"></p>
+
+<p><b>Set Variable -</b></p>
+
+<p>In order to set the value of a variable double click on the
+variable and this will display an appropriate dialog box to set
+the value of the variable. 
+
+<p>Kawa currently support only simple data types -
+int, long, float, double, char, byte and Boolean for sets.
+
+<p><b>Suspend and Resume Threads -</b></p>
+
+<p>Threads can be suspended or resumed just by right clicking on the 
+thread item in the debug tree and selecting the appropriate menu item.
+
+<p>Suspended threads are drawn with bold font.</p>
+
+<p><b>Finding Package source files -</b></p>
+
+<p>Kawa tries and opens the source file for every breakpoint that is hit during debugging. 
+Kawa first searches the current project for the breakpoint class and opens the
+source file if found. If the class is not found Kawa then looks in the package tree for the 
+class.
+
+<p>Since Kawa is automatically shipped with all JDK classes it will always find JDK classes and the
+JDK source file if the Java source path is setup correctly under Customize/Options/
+Profiles. Please refer to <a href="kawasetup.htm">Kawa setup</a> for more details
+on setting up this field.
+
+<p>For non-JDK classes it is important to add the classes to the package tree so Kawa
+can find the class. The only method to add classes to the package tree is by adding
+the source files. In addition to adding the non-JDK class files to the package tree it is
+necessary to set the package source paths under Customize/Options/Directories/Kawa Paths to 
+include the source file directories for the non-JDK class source files. These paths can be 
+separated by semi-colon if you have more than one source path.
+
+<p><b>Temporary Breakpoint -</b></p>
+
+<p>It is possible to set temporary breakpoints when the
+debugger is at a breakpoint by right clicking on any line in the
+editor and selecting Break At Cursor line option from the context
+menu. This will set a temporary breakpoint at the cursor line and
+execute the debugger until that line.</p>
+
+<p><b>Tooltip Display -</b></p>
+
+<p>Holding the cursor for a fraction of a second on a variable
+in the editor will display a tooltip value for the variable. 
+
+<p>The tooltip value is displayed only if the variable is found in the breakthread 
+of the current stack. The search for the variable begins with the
+'this' object and if not found it extends to other stacks in the break thread.</p>
+
+<p>The debugger can be stopped anytime by selecting Build/Debug/Exit
+or the appropriate toolbar button or the appropriate shortcut.</p>
+
+</body>
+</html>

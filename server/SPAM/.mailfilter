@@ -1,0 +1,76 @@
+log "Match $EXT $HOST"
+
+SOME = 0
+ALL = ""
+
+foreach /^(To|Cc): .*/
+{
+    foreach (getaddr $MATCH) =~ /.+/
+    {
+	ALL = "to: $MATCH , $ALL"
+        PREMATCH = $MATCH
+	if(lookup($PREMATCH,"$IW_VDOM/badnames.dat" ))
+	{
+	IW_VPOP = "|cat >> /tmp/lastjunk"
+        SOME = 1
+	}
+    }
+}
+foreach /^(From|Subject): .*/
+{
+        PREMATCH = $MATCH
+	if(lookup($PREMATCH,"$IW_VDOM/badsenders.dat" ))
+	{
+	IW_VPOP = "|cat >> /tmp/lastjunk"
+	ALL = "Bad Header $MATCH , $ALL"
+        SOME = 1
+	}
+}
+
+if (($SOME == 0) && lookup($EXT, "$IW_VDOM/badnames.dat" ))
+{
+	log "to $EXT is a bad name too matching $MATCH"
+	IW_VPOP = "|cat >> /tmp/lastjunk"
+        SOME = 1
+	ALL = "E: $EXT && $ALL"
+}
+
+log "all is $ALL"
+if ($SOME == 0)
+{
+if($IW_VHOME)
+{
+log "$EXT has a real mailbox $IW_VHOME"
+}
+else 
+{ IW_VALIAS = `/home/vpopmail/bin/valias -s $EXT@$HOST`
+  if($IW_VALIAS)
+  { 
+  log "$EXT@$HOST is an alias"
+  }
+  else 
+  {
+  if(!lookup( $EXT, "$IW_VDOM/goodnames.dat" ))
+  { #log "no match - to junkmail"
+# this moves to the junkmail dir to be received
+#	IW_VPOP = "/home/vpopmail/domains/real-me.net/junkmail/Maildir"
+# this actively rejects
+#    log "bounced $EXT by .mailfilter"
+#    IW_VPOP = "|/home/vpopmail/bin/vdelivermail '' bounce-no-mailbox"
+#
+# this blackholes it
+#    log "blackholed $EXT by .mailfilter"
+#	IW_VPOP = "|cat > /dev/null"
+# this logs just the last in /tmp/lastjunk
+	IW_VPOP = "|cat >> /tmp/lastjunk"
+  }
+else
+{
+ log "cleared $EXT by .mailfilter"
+}
+}
+}
+}
+else
+{ log "rejected by SOME of $ALL"
+}

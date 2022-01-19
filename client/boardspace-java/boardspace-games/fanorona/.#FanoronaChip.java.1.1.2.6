@@ -1,0 +1,48 @@
+package fanorona;
+import java.awt.Image;
+import lib.Random;
+
+import online.game.chip;
+import online.common.exCanvas;
+
+public class FanoronaChip extends chip
+{
+	public int playerIndex;
+	static FanoronaChip getChip(int n) {	return(PROTOTYPE_CHIPS[n]); }
+	
+	private FanoronaChip(int idx,String fil,Image im,long rv,double []sca)
+	{	playerIndex = idx;
+		file = fil;
+		image = im;
+		randomv = rv;
+		scale = sca;
+	};
+
+	static double SCALES[][] = 
+	{{0.562,0.447,1.19},	// white chip
+	 {0.572,0.473,1.08},	// dark chip
+	};
+	static final String[] ImageNames = 
+       {"white-chip","black-chip"};
+	static FanoronaChip[] PROTOTYPE_CHIPS=null;
+    static final String[] chipColorString = { "L", "D" };
+
+	// call from the viewer's preloadImages
+	public static void preloadImages(exCanvas forcan,String ImageDir)
+	{	if(PROTOTYPE_CHIPS==null)
+		{
+		int nColors = ImageNames.length;
+        Image IM[]=forcan.load_masked_images(ImageDir,ImageNames);
+        FanoronaChip CC[] = new FanoronaChip[nColors];
+        Random r = new Random(230694);
+        for(int i=0;i<nColors;i++) 
+        	{
+        	CC[i]=new FanoronaChip(i,ImageNames[i],IM[i],r.nextLong(),SCALES[i]); 
+        	}
+        PROTOTYPE_CHIPS = CC;
+        check_digests(CC);
+		}
+	}
+
+
+}

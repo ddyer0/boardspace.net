@@ -1,0 +1,12 @@
+#!/bin/sh
+#
+# this script commented out 9/2010 by ddyer. It created /var/lib/mlocate/mlocate.db
+# which is an index used by "locate".  Since I don't use it and I'm the only user,
+# this removes both a few gigs of disk space and a huge monthly thrash generating
+# the database that no one used.
+#
+# commented out rather than removed from cron to avoid resurrectiuon
+#
+#nodevs=$(< /proc/filesystems awk '$1 == "nodev" { print $2 }')
+#renice +19 -p $$ >/dev/null 2>&1
+#/usr/bin/updatedb -f "$nodevs"

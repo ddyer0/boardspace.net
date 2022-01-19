@@ -1,0 +1,150 @@
+<!DOCTYPE doctype PUBLIC "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   
+  <meta http-equiv="Content-Type"
+ content="text/html; charset=iso-8859-1">
+   
+  <meta name="GENERATOR"
+ content="Mozilla/4.73 [en] (WinNT; U) [Netscape]">
+  <title>The Lines of Action Programmer's Corner</title>
+</head>
+<body background="/images/background-image.jpg">
+<h2>The Lines of Action Programmer's Corner</h2>
+Since it's likely to be a specialty interest, even within the obscure specialty
+of Lines of Action, I've moved items of interest mainly to programmers who
+might working on or thinking about programs that play the game. Ultimately
+I suppose the goal might be to have a computer tournament, but there's a
+long way to go before that can be a primary goal. Of much greater interest,
+to me anyway, is getting programs out there to help people play with each
+other, over the network, and to help spread the game to new people.<br>
+<br>
+<hr width="100%" size="2"><b><font size="+1">More Links<br>
+</font></b>Links to other sites with things of interest to LOA programmers<br>
+<br>
+<a href="http://www.icga.org/games/loa">ICGA web site</a> - this is mainly
+another "links" page, but I won't duplicate all the links here.<br>
+<br>
+<hr width="100%" size="2"><br>
+<b><font size="+1">The Mailing List</font></b><br>
+There has been a surge of interest in LOA programming, so I've established
+a mailing list for devotees to share their obsession.&nbsp; Links to subscribe
+and so on can be found at <a
+ href="http://games.groups.yahoo.com/group/loa-programmers/">yahoogroups.com</a><br>
+<hr>
+<h3>Generating Legal Moves</h3>
+<hr>
+<h3>Static evaluation for nonterminal positions</h3>
+<hr><a name="connectivity"></a>
+<h3>The Connectivity Problem</h3>
+In conversations with the authors of several LOA programs, the most commonly
+mentioned difficulty writing an effecient evaluator is that it is very time
+consuming to count the groups (to determine if the game is over). There is
+a way to reliably deduce ""game not over yet" in with an easy calculation,
+taking constant time.
+<p>The "obvious" effecient solution incrementally maintains a count of groups,
+and updates the groups incrementally as moves are made. A recursive enumeration
+of each group is performed to determine the new group topology. Most of the
+proposed implementations I've hear of are along the same lines. There is
+a better solution.</p>
+<h4>Oh all right, what is this better solution?</h4>
+The better solution is based on combining two fairly well known facts in a
+novel way. One is the <i>Totol Curvature Theorem</i>, a well known result
+from calculus, which states that the total curvature around any closed figure
+on a plane is a multiple of 2 Pi. The quantity that is derived is commonly
+called "Euler Number" The second fact is that curvature is a <b>locally countable</b>
+property. For example, consider the types of 2x2 neighborhoods that can occur;
+there aren't very many of them! In fact, there are just four equaivalence
+classes, each with a characteristic curvature.
+<ul>
+  <li><b>Q0</b>,<b>Q2</b>, and <b>Q4</b>; quads with no pieces, two pieces
+adjacent, or all four squares occupied. These have no curvature, and are
+not important to determining the number of groups.</li>
+  <li><b>Q1</b>; quads with one out of four squares occupied. These have
+Pi/2 curvature.</li>
+  <li><b>Qd</b>; quads with two pieces on a diagonal. These have -Pi curvature,
+because in LOA they are considered to be connected. If they were considered
+disconnected, as is the case in "Go", then the curvature would be +Pi. It's
+easy to visualize the curvature of Qd's if you imagine that the diagonal's
+slightly overlap, or just fail to meet, depending on if you want to consider
+diagonals to be connected or not.</li>
+  <li><b>Q3</b>; quads with three out of four squares occupied. These have
+-Pi/2 curvature.</li>
+</ul>
+So, as applied to LOA, if you incrementally maintain the counts of several
+types of quads, and do a little extra arithmetic to account for multiple counting,
+you can derive the number of objects (minus the number of holes) without
+actually finding the sizes and extents of the objects themselves.
+<p>The actual formula for Euler number(W) is 4W=n(Q1)-n(Q3)-2n(Qd)</p>
+<p>This last qualification, about the number of holes, is the reason why this
+method isn't a complete solution. If the number of objects according to the
+quad count is greater than one, then the game is definitely not over. If
+the number of objects is one or fewer, then it is necessary to use some other
+method to determine if it really is a win, or if there are holes.</p>
+<p>These quad counts are basic measurements which might also be useful in
+other ways; consider Qd's are very weak and easy to cut, whereas Q3 and Q4
+are solid and impossible to cut with a single capture.</p>
+<h4>Experimental results</h4>
+Using my program as a test bed, here are some results, using a "play self"
+game to provide data, timing three different strategies to determine if the
+game is over:
+<ol>
+  <li>the obvious way, count the groups and if n=1, it's a win. This took
+    <b>512</b>uSec per static evaluation</li>
+  <li>the obvious improvement, count only the first group, and if the number
+of stones in the first group is all of them, it's a win. This took <b>325</b>
+uSec per static evaluation</li>
+  <li>using Euler number as a hint that the game is not yet over. This took
+    <b>310</b>uSec per static evaluation.</li>
+</ol>
+In other words, the clever, nonintuitive algorithm is not much better than
+the clever, obvious algorithm. This is due to two things.
+<ol>
+  <li>Method #2 is a big improvement over #1, such that the program hardly
+ever has to count very many stones.</li>
+  <li>the bookeeping to incrementally update the quad counts, which determine
+the euler number, is pretty expensive; <b>52</b> usec per change; and there
+are 2 or 3 changes per move</li>
+</ol>
+. The good news is that Euler number alone is enough to determine that the
+game is not over in 99+ % of positions.
+<p><b>Conclusion:</b> quad counting is a useful, but not world-beating, improvement.
+Perhaps the major benefit of this counting method will be that the quad counts
+themselves will be useful in the static evaluator.&nbsp;</p>
+<hr>
+<p>Another amusing side note; my former employer, Information International,
+built a special purpose computer called a BIP (binary image processor) which
+used this algorithm as part of an early OCR system. I cut some of my best
+programming teeth while working on this beast, which is why I happen to be
+familiar with this obscure pair of results.&nbsp; The original publication
+was <i>IEEE transactions on Computers, Volume C-20 Number 5, May 1971 (good
+luck finding that!).&nbsp; </i>I have scanned and converted this classic to
+gif files that are small enough and legible enough to read or print out.&nbsp;
+11 Pages:&nbsp; <a href="quad/p-551.gif">1</a>&nbsp; <a
+ href="quad/p-552.gif">2</a>&nbsp;<a href="quad/p-553.gif">3</a>&nbsp; <a
+ href="quad/p-554.gif">4</a>&nbsp;<a href="quad/p-555.gif">5</a>&nbsp; <a
+ href="quad/p-556.gif">6</a>&nbsp;<a href="quad/p-557.gif">7</a>&nbsp; <a
+ href="quad/p-558.gif">8</a>&nbsp;<a href="quad/p-559.gif">9</a>&nbsp; <a
+ href="quad/p-560.gif">10</a>&nbsp;<a href="quad/p-561.gif">11</a><br>
+&nbsp;</p>
+<br>
+</body>
+<hr style="width: 100%; height: 2px;">
+<table style="width: 100%;">
+  <tbody>
+    <tr>
+      <td align="left"> <font size="-1">
+E-mail: <script language="javascript">
+document.write("<a href='mailto:gamemaste");
+document.write("r\@board");
+document.write("space.net'>gamemaste<n>r@board<n>space.net</a>");
+</script>
+ </font>
+      </td>
+      <td align="right">Go to <a href="/">BoardSpace.net home page</a>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+</html>

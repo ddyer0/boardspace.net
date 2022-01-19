@@ -1,0 +1,200 @@
+#+1615162966
+cd ddyer
+#+1615162985
+cd cserver/
+#+1615162989
+ls er*
+#+1615162994
+error 104
+#+1615163004
+ls -alt err*
+#+1615163048
+./error
+#+1615163082
+make error
+#+1615163088
+rm error
+#+1615163181
+emacs error.c
+#+1615163251
+./error 104 105
+#+1615163662
+man sscanf
+#+1615163744
+make
+#+1615163749
+./error 104
+#+1615163768
+gdb error 104
+#+1615163779
+exec /chroot/home/boardspa/cserver/error
+#+1615163908
+exec /chroot/home/boardspa/cserver/error 104
+#+1615164011
+error -104
+#+1615164016
+./error -104
+#+1616716721
+emacs bs_query.cgi
+#+1616717051
+grep printResult *
+#+1616717137
+mysql boardspa
+#+1616725984
+grep "from notes" *
+#+1616726217
+perl bs_query2.cgi params=dCmDVOsvT1McDINuuPgzt38zuQ5clTTR6WlKtG1UkYAt7BeomnAB6uPuMQVTUeuV
+#+1616726258
+diff bs_query.cgi bs_query2.cgi
+#+1616726296
+cp bs_query2.cgi bs_query.cgi
+#+1616726628
+perl bs_query.cgi params=dCmDVOsvT1McDINuuPgzt38zuQ5clTTR6WlKtG1UkYAt7BeomnAB6uPuMQVTUeuV
+#+1616726936
+grep uniDecode *
+#+1616726949
+grep uniDecode *.pl
+#+1616726951
+pwsd
+#+1616726961
+grep uniDecode *.cgi
+#+1616727015
+grep utfDecode *
+#+1616783737
+ls bs_m*
+#+1616783744
+ls *2.cgi
+#+1616783753
+rm bs_query2.cgi
+#+1616783756
+ls *~
+#+1616783764
+rm *~
+#+1617474094
+cd Server
+#+1617569614
+cd lgs
+#+1619372914
+cd tlib
+#+1619373120
+grep -i "popular games" *.pl
+#+1619373137
+emacs gamepop-table.pl
+#+1620404508
+sudo su -
+#+1620404511
+su -
+#+1620771247
+emacs Server-May\ 10\ 18-45-56.log
+#+1621371557
+emacs Server-May\ 17\ 18-51-09.log
+#+1622916311
+cd /tmp
+#+1622916316
+ls -al
+#+1622916325
+tail lastjunk
+#+1625947846
+pwd
+#+1626858954
+emacs Server.lofg
+#+1629595705
+emacs mysql_debug.log
+#+1630973755
+cd java/
+#+1630973760
+cd v5.64
+#+1630973768
+touch *
+#+1631636885
+cd jumbulaya/
+#+1631636897
+cd jumbulayagames/
+#+1631637747
+emacs
+#+1632610097
+cd www
+#+1632610101
+cd dayandnight/
+#+1632610103
+cd dayandnightgames/
+#+1632610112
+emacs U!DN-ddyer-apl74-2021-09-25-2041.sgf
+#+1634140455
+cd logs/
+#+1634514493
+su
+#+1635190185
+tail -f java_error.log
+#+1635551699
+grep Evaluate_And_Sort_Moves *
+#+1635551855
+emacs "Server-Oct  9 06-46-00.log"
+#+1636658363
+grep " Ios]" * > speed.txt
+#+1636658380
+rm speed.txt
+#+1636658397
+grep " Ios]" * > ~/speed.txt
+#+1636658488
+emacs speed.txt
+#+1636658729
+grep " 15." speed.txt > speed2.txt
+#+1636658832
+grep "Codename1  15." speed.txt > speed2.txt
+#+1636658837
+cat speed2.txt
+#+1636658846
+emacs speed2.txt
+#+1637959162
+cd loigs
+#+1637959166
+cd cgi-bin/
+#+1637959180
+cd util/
+#+1637959188
+ls
+#+1637959241
+emacs getLocation.pl
+#+1637959317
+cd ..
+#+1637959321
+grep -i ipstack *
+#+1637959341
+cd tlib/
+#+1637959344
+grep -i freegeo *
+#+1637959405
+dir
+#+1640721400
+grep -i unusual Server.log
+#+1640721423
+cd
+#+1640721427
+cd server/
+#+1641185318
+df
+#+1641185462
+tail -100 mysql_debug.log
+#+1641186476
+tail game-results.log
+#+1641248589
+ls -altr
+#+1641258830
+tail -f Server.log
+#+1641345567
+emacs java_error.log
+#+1641582955
+cd logs
+#+1641582959
+emacs Server.log
+#+1641583146
+cd ~/www/
+#+1641583343
+b
+#+1641583523
+diff foo.sgf bar.sgf
+#+1641583567
+fg
+#+1641584959
+exit

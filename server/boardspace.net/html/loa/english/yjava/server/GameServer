@@ -1,0 +1,4 @@
+#!/bin/csh
+set classpath=" /usr/local/java1.1/kaffe/share/kaffe/;usr/home/ddyer/www/loa/java/server/"
+java1.1 GameServer &
+

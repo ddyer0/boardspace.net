@@ -1,0 +1,40 @@
+
+nodata: 1
+rows: 37
+33.85	-117.55	ddyer
+56.67	12.86	Boerje
+37.54	-121.99	djanes
+50.35	7.60	mreitz
+33.81	-84.35	lyman
+51.52	-0.10	mrraow
+29.56	-98.41	stcharles
+58.42	15.62	chili
+55.70	13.18	minismurf
+45.47	9.20	Imperatore
+38.55	-121.75	dhemery
+52.52	13.40	taral
+51.22	4.42	Jix
+43.51	16.46	robin
+40.53	-78.40	krr
+51.08	-114.08	Baldboy1
+41.59	-93.62	bobc
+45.44	12.33	Rampa
+52.13	4.67	tangram
+51.22	4.42	Marduk
+39.00	-76.88	Koronin
+51.52	-0.10	eratos
+42.36	-83.10	shanedavis
+42.36	-83.10	Helian
+43.68	-79.77	UnLoopy
+59.92	10.75	Viseus
+27.97	-82.47	delirina
+51.75	-1.25	sebastian
+33.44	-86.75	narcolepsy
+43.25	-2.97	jarrausi
+41.38	2.18	Slowdean
+40.11	-74.35	Maverick
+40.36	-74.26	blad
+45.75	4.85	clauchau
+51.22	4.42	mdecroos
+40.36	-74.26	genius
+40.75	-73.98	lohroffc

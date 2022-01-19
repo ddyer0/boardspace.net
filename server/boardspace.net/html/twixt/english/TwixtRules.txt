@@ -1,0 +1,54 @@
+                         THE OFFICAL RULES OF TWIXT
+
+Twixt is a two-player game, invented by Alex Randolph.
+
+The board is a 24x24 grid of holes, minus the corner holes.
+The rows around the edges of the board are referred to as border rows.
+The red border rows are along the "top" and "bottom," and the black border rows
+are along the left and right edges. (Some sets may use different colors.)
+
+Each player has a collection of pegs and links of their color.
+40 of each piece, a total of 160 pieces, is an ample supply.
+
+The board is empty at the start. Red moves first. On your turn you may:
+
+0. Remove as many of YOUR OWN links from the board as you wish.
+   This is rarely done, but sometimes you need the "elbow room."
+
+1. Place one peg of your color in any vacant hole EXCEPT you may not play in
+   either of your opponent's border rows.
+
+2. Add as many legal links between pegs of your color as you wish. A link is
+   legal when the two pegs are at opposite corners of a six-hole rectangle
+   (like a knight's move in chess), and no other link crosses the linking
+   path, not even one of your own.
+
+After Red places the first peg on the board, the opponent has the option to
+either respond normally as Black, or swap sides. If sides are swapped, the
+player who moved first as Red is now Black, and makes the next move. Sides may
+be swapped only once per game. If the 2nd player chooses not to swap after
+Red's first move, then sides may not be swapped at all that game. (The purpose
+of this rule is to reduce the first move advantage, making the game more fair.)
+
+The object is to connect a peg in one of your border rows to a peg in your
+other border row, with a continuous chain of linked pegs. If neither side can
+achieve this, the game is a draw.
+
+
+FOUR-PLAYER VARIANT: See the 3M rules for details. If sides are swapped in a
+four-player game, the board may be rotated a quarter turn if all players
+agree, and play then continues with the partner of the player who made the
+first move. 
+
+
+ROW HANDICAPPING: Two players of differing strengths can both enjoy a
+challenging game, if a handicap is given. The smallest handicap is to play
+without the swap option. Beyond that, one dimension of the grid is reduced,
+bringing one of the red border rows closer to the other. For example, a six-row
+handicap would occur on a 24x18 grid of holes. The new location of the border
+row could be indicated by two tokens, which are clearly NOT Twixt pieces,
+placed over top of the new corner holes (which are out of play for this game.)
+Or, a very large rubber band might be stretched across the board to indicate
+the new red border. The weaker player should always move first, to be certain
+of receiving a handicap. Of course, the swap option is never available in a
+handicap game.

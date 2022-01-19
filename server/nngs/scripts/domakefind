@@ -1,0 +1,5 @@
+#!/bin/sh
+cd $HOME/src
+./makefind new-players
+sort -f -t@ +1 makelist.out > data/find.out
+#./html_ladder > /usr/local/bin/websk/doc/ladder.html

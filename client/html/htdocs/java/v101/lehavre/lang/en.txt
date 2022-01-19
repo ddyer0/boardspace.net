@@ -1,0 +1,1810 @@
+#==============================================================================#
+#                                   ENGLISH                                    #
+#==============================================================================#
+#                                                                              #
+# GENERAL NOTES                                                                #
+# Feel free to edit this file to change the text displayed during the game.    #
+# However, be careful with changing button texts. Some buttons do scale to     #
+# their text size, others don't. So, if you happen to notice ill behavior,     #
+# try to shorten your button text.                                             #
+# Many of the texts and phrases given here have wildcard symbols: %s and %d.   #
+# %s represents a string (text) that the wildcard will be replaced with in     #
+# the game. %d represents a number. DO NOT delete or add any wildcards by      #
+# yourself! Also, be sure to check what these wildcards represent if you       #
+# like to change a phrase with wildcards.                                      #
+# Some of the phrases contain HTML code. If you know how to write HTML code,   #
+# feel free to change whatever you like, but DO NOT remove or add <html> tags. #
+# Also note that Java only supports HTML 3.01 and just some of the basic CSS   #
+# elements. You'll need to experminent a bit to receive best results.          #
+# Finally, like you've probably noticed already, lines starting with '#' and   #
+# empty lines in this document will be ignored by the game.                    #
+#                                                                              #
+#==============================================================================#
+#
+# All available languages.
+# Please add a line for each newly added language in each language file.
+# NOTE! Each language needs to be made out of two characters, preferrably
+# using the international standard abbreviation.
+# NOTE! The game will crash if the file name and the abbreviation provided
+# here do not match.
+#
+
+de	German
+en	English
+
+#
+# Basic vocabulary.
+#
+
+and			and
+or			or
+
+all			all
+override	<4 pl.
+start		start
+
+lose		discard
+receive		receive
+
+empty		empty
+free		free
+nobody		Nobody
+none		none
+
+entry		entry
+foodDemand	Food demand
+building	Building
+ship		Ship
+
+harvest		Harvest
+interest	Interest
+supply		Supply
+town		The Town
+
+buildings	Buildings
+debts		Debts
+money		Money
+name		Name
+rank		Rank
+score		Score
+ships		Ships
+win			have won
+wins		has won
+
+apply		Apply
+cancel		Cancel
+load		Load
+long		Long Game
+quit		Quit
+restart		Restart
+save		Save
+short		Short Game
+
+#
+# Numbered words.
+#
+
+good		good
+good2		goods
+good5		goods
+
+loan		loan
+loan2		loans
+loan5		loans
+
+player		player
+player2		players
+player5		players
+
+round		round
+round2		rounds
+round5		rounds
+
+#
+# Logger messages.
+#
+
+logLanguage			Language set to '%s'.
+logLoginDataSaved	Login data saved: [Game=%s] [Name=%s]
+logDump				<b>%s opens the debug window.</b>
+logSaveGameState	Game State successfully saved.
+
+logRelogin			<b>%s</b> is back.
+logUserJoined		<b>%s</b> joined the game.
+logUserReady		<b>%s</b> is ready to play.
+
+logSettings			The game settings have been changed.
+logLoadSettings		Game Settings successfully loaded.
+logSaveSettings		Game Settings successfully saved.
+logBonus			<b>%s</b> will receive additional goods at the beginning of the game: %s
+
+logGameStart		We will play the <b>%s</b>.
+logPlayOrder		The turn order is: %s
+logSetupComplete	Game setup completed.
+logGameTurn			It's <b>%s</b>'s turn.
+logBack				<b>The active player undid their move!</b>
+logSupplyChit		New supply chit revealed: %s
+logOffer			New goods supplied: %s
+logOfferTaken		<b>%s</b> takes %s.
+logItemBought		<b>%s</b> buys for %s: <b>%s (%d)</b>
+logItemSold			<b>%s</b> sells for %s: <b>%s (%d)</b>
+logItemBuilt		<b>%s</b> builds for %s: <b>%s (%d)</b>
+logEndgame			The final action phase has begun!
+logGameOver			The game is over! Final scores:
+
+logBuildingUsed		<b>%s</b> enters a building: <b>%s</b>
+logEntryPlayer		<b>%s</b> pays <b>%s</b> %s as entry fee.
+logEntryTown		<b>%s</b> pays the town %s as entry fee.
+logBuildingBan		<b>%s</b> bans <b>%s</b> from a building: <b>%s (%d)</b>
+logBuildingChoose	<b>%s</b> introduces a new special building: <b>%s (%d)</b>
+logTransfer			<b>%s</b> pays <b>%s</b> %s.
+logModernise		<b>%s</b> modernises the Wharf with %s.
+logSwapSpecials		<b>%s</b> swaps the two topmost special buildings.
+logDiveBar			<b>%s</b> visits the Dive Bar and loses <b>%s</b> there.
+logChangeShip		<b>%s</b> swaps one of their ships for: <b>%s (%d)</b>
+
+logBuildingRemoved	A building has been removed from the game: <b>%s (%d)</b>
+logFinalPhase		[Final Action Phase]
+logFoodDemand		<b>%s</b> are due at the end of the round.
+logFoodNeeded		<b>%s</b> needs to pay <b>%s</b>.
+logFoodSupplied		<b>%s</b> has enough food from ships.
+logHarvest			<b>%s</b> receives %s in the harvest.
+logNewRound			[Round %d]
+logNewShip			A new ship enters the game: <b>%s (%d)</b>
+logNewSpecial		The town constructs a new special building: <b>%s (%d)</b>
+logNewStack			A new building is placed on a building stack: <b>%s (%d)</b>
+logNewStandard		The town constructs a new standard building: <b>%s (%d)</b>
+logRoundEnd			<b>Round %d</b> is finished.
+
+logPayment			<b>%s</b> discards %s.
+logTakeLoan			<b>%s</b> takes %s.
+logInterest			<b>%s</b> pays %s of interest.
+logPayback			<b>%s</b> returns %s.
+logLose				<b>%s</b> loses %s.
+logReceive			<b>%s</b> receives %s.
+logEnergy			<b>%s</b> pays the energy cost with %s.
+
+logNoInterest		<b>%s</b> doesn't pay interest due to the Stock Market.
+logRattletrapCar	<b>%s</b> takes the Rattletrap Car.
+logSouvenirShop		<b>%s</b> receives <b>%s</b> from the Souvenir Shop.
+logStockMarket		<b>%s</b> receives <b>%s</b> from the Stock Market.
+
+#
+# Text visible in the main window.
+#
+
+mainTitle		%s - An Economic Game by Uwe Rosenberg
+
+mainBack		< < <
+mainContinue	> > >
+
+mainCapacity	Capacity: %d
+mainEnergy		Energy: %s
+mainFood		Food: %s
+mainMoney		Francs: %d
+mainPoints		Score: %s
+mainTurns		Turns Left: %d
+
+mainChat		Open Chat
+mainHelp		Help Window
+mainStacks		Building Stacks
+mainShips		Available Ships
+mainSuffix		er
+mainFinalPhase	Final Action
+mainRound		Round %d/%d
+mainRoundEnd	End of Round
+
+mainBackInfo		Click here to restart your turn and take back all actions.
+mainBuildingInfo	This building will be built by the town <b>%s</b>.%s
+mainCapacityInfo	The <b>capacity</b> is the amount of goods you're able to ship on the Shipping Line.
+mainContinueInfo	Click here to finish your turn after performing the main action.
+mainEnergyInfo		The sum of the energy values of your goods.
+mainFoodDeficiency	<b>You are missing food for the end of the round!</b> You need to have <b>%s</b> by the end of the round, but currently you have only <b>%s</b>.
+mainFoodInfo		The sum of the food values of your goods.
+mainFoodSupply		You need to pay <b>%s</b> less at the end of the round.
+mainLoans			You currently have got <b>%s</b>. Loans may be returned for <b>%s</b>, otherwise they count as <b>&ndash;%s</b> at the end of the game.
+mainPointsInfo		Your current score, i. e. the victory points from your money, ships, buildings and bonuses, as well as loans.
+mainSpecial			Special buildings left: <b>%d</b>. The next one will be built <b>%s</b>.%s
+mainTurnsInfo		The amount of turns left you have until the game ends (including final action).
+
+mainInstructions
+	<h1>The Main Window</h1>
+	<p>The main window opens once the game initiator hits one of his two buttons.
+	The starting player will be notified to do their move, now. But let us first see what
+	elements we can find in the main window.</p>
+	<h2>The Game Board</h2>
+	<p>In the upper part of the main window you'll find the familiar <b>game board</b>.
+	All <b>buildings</b> are stacked like in the board game and if you're playing the long game
+	the back of a <b>special building</b> card can be seen in the proper place. The <b>supply
+	tokens</b> and <b>round cards</b> are laid out.</p>
+	<p>Let us look at the <b>offer spaces</b>: You can see a good on each of the offer spaces
+	and a number underneath. The number tells you how many goods of that type are lying on the
+	offer space. If there are no goods of that type, you'll see a 0 and the whole space is greyed
+	out.</p>
+	<p>You'll notice that the <b>supply spaces</b> are empty. They are not needed in the computer
+	game. The game will do everything automatically as far as possible.</p>
+	<h2>The Game Logo</h2>
+	<p>There is the well-known Le Havre logo above the game board. If you right-click it, a context
+	menu will be opened with 4 options. The first one allows you to create a savegame file. The next
+	one opens a window with debug information. If you encounter a bug in the game, quickly open this
+	debug window, copy and paste the text into a file and send it to my email address with further
+	information on what you've done to get the bug. This will help to fix it.</p>
+	<p>Sometimes, when playing online with other players, a weird bug may corrupt another player's
+	game state. In this case, you should try to synchronize game states by selecting the third option
+	of the logo context menu. This is an untested feature (you know, it's hard to cause bugs on purpose),
+	so use it with caution.</p>
+	<p>The last option opens a window with some general information about the game.</p>
+	<h2>The Buttons</h2>
+	<p>On and above the game board you'll notice some buttons. Above and below the round card are
+	the two buttons to <b>finish</b> your turn or completely <b>redo</b> it (if you've messed up
+	your move). They are greyed out if you can't use them and turn light orange as soon as they are
+	available (after you've performed an action, for instance).</p>
+	<p>Above the game board, you'll find 6 buttons on the right side, they are more important during
+	the game. One of them opens the <b>Help Window</b> that you're currently reading. In case you've
+	forgotten how to do something in the game, make sure you look it up here.</p>
+	<p>Another button re-opens the <b>Chat Window</b> if you've closed it by accident. Please note, that
+	the chat window opens itself whenever a message was received, either from another player or the system.</p>
+	<p>Another button is quite useful during the game as it opens a window that lists all the buildings lying
+	in the <b>Building Stacks</b>, so you can easily look them up with a quick glance. As everything in the
+	window is rather tiny, you might want to check this information frequently before building. Usually,
+	you need to put the mouse over a card to open a tooltip window that shows a much larger image of
+	the card that is easily legible. Also, this popup window shows you the overall building costs of all
+	the remaining buildings and their added-up prices for quick reference.</p>
+	<p>The fourth button does the same as the previously described one, but for the ships within the
+	<b>Ship Stacks</b>. It lists all the ships in the order they are lying in their stacks. As you can
+	see just the topmost ship card on each stack during the game, it might be helpful to look here from
+	time to time to know which other ships are lying in the stack underneath the topmost one.</p>
+	<p>The last two buttons are fake buttons that just show you some information directly. One tells
+	you the <b>Round</b> you're currently in and how many rounds will be played in total, the other one
+	tells you whose <b>Turn</b> it is.</p>
+	<p>There are a few more things to mention about the game board that might be pretty useful during
+	the game. If you right-click any card or chit in the game you can choose <b><i>Details</i></b> from
+	the displayed options to get all the information you need on the object in text format. If you hold
+	the mouse over an element, a <b>Tooltip</b> opens a larger image (as mentioned above) for 5 seconds.
+	The <b>Special Buildings</b> card, for instance, tells you how many special buildings are still in the
+	stack, when the next one is due and whose turn it will be at the moment of construction.</p>
+	<p>As long as there are standard buildings to be built during the game, you'll notice a small <b>Red
+	Warning Triangle</b> on one of the buildings in the building stacks. This is the next building to be
+	built by the town. Place the mouse over this icon to get further information like when this will
+	happen and which player will be the first to be able to enter this building once it is built.</p>
+	<h2>The Tabbed Sections</h2>
+	<p>Below the game board there is a small area with tabs for the <b>Players</b> and the <b>Town</b>.
+	Here you can switch between the tabs to see the cards and goods owned by a specific player as well
+	as a lot of information on their game progress. The tabs are sorted by play order with the town tab
+	being the first one.</p>
+	<p>The town tab shows the <b>Overview Card</b> for the proper number of players and game type, so that
+	you can easily check out the next round cards to come. Next to the overview card are all the buildings
+	and ships in the town's possession in the order of their appearance.</p>
+	<p>A player tab contains much more information. The next section describes in detail what you can find
+	in any player's tab.</p>
+	<h2>The Player Tabs</h2>
+	<p>The player tab consists of six main parts. You'll find four of them at the top of the tab and the last
+	two at the bottom. Please note, that each tab is painted in the player's color.</p>
+	<p>At the top of the player tab are these four sections: the buttery, the goods panel, the
+	information panel and the loan card. The <b>Buttery</b> holds a ship token that shows the number of food
+	you're getting from all of your ships at the end of a round. During the game you might notice a big
+	<b>Yellow Warning Triangle</b> here that indicates that you've got less food than needed at the end of
+	the current round. This symbol disappears once you've got enough food and reappears whenever this state
+	changes. Of course, it includes all available sources of food: food from your ships, food from your goods
+	and your current cash.</p>
+	<p>Next to the buttery there is the <b>Goods Panel</b>. It shows all of the 16 available goods in the game,
+	the 8 basic ones and their 8 upgraded versions. A number below a good tells you how many goods you own
+	of that type. Good and number are greyed out if you don't own any chits of the specific type. You won't find
+	your francs here. Cash is displayed in the next section.</p>
+	<p>The <b>Information Panel</b> gives you some useful information on your game progress. Firstly, it shows
+	you how many ships of each type there are in your possession for a quick reference, and it sums up their
+	shipping capacities (to ship goods on the Shipping Line). Next to it you'll find information on your overall
+	cash (francs), food (sum of all food values of your goods) and energy (sum of all energy values of your goods).</p>
+	<p>If the option to view the victory points is set (this can be done in the Settings Window before the game starts),
+	you'll see them below the information mentioned above.
+	Regardless of this, the total number of turns you've got before the game ends is displayed. Please note,
+	this number does not include your current turn if it's your turn. It does, however, include the final action.</p>
+	<p>At the right hand side of the information panel you'll finally find a <b>Craft</b>, <b>Hammer</b> and
+	<b>Fishing</b> symbol and numbers next to them. They tell you, how many of these symbols you own. The game
+	does not, however, count the other building symbols as they are only used on bonus buildings.</p>
+	<p>Finally, the top row of a player tab shows a <b>Loan Card</b>. It tells you how many loans you have and
+	gives you information on payback and the penalty if you don't pay them back in its tooltip. Right-click the
+	card to pay back some or all loans. This is, by the way, done automatically by the game at the end of it.
+	If you have no loans, the card is greyed out.</p>
+	<p>Now, let us look at the final two sections of the player tab. Below the buttery card there is the
+	<b>Ships Panel</b> that will hold all of your ship cards you'll own. They will be placed staggered like
+	in the building stacks to save space. Their amounts will be displayed in the information panel anyway,
+	so this doesn't hurt.</p>
+	<p>Finally, next to the ships panel, there is the <b>Buildings Panel</b>. It holds all of your buildings
+	in a specific order. 8 buildings fit into one row, so if you own more than 8, you'll need to scroll down
+	to see the other ones. The order they're sorted is the following: the starting buildings (B1, B2 and B3)
+	will always be placed first. All enterable special buildings will be placed next to them in the order of
+	their numbers (highest number first). Next to them, you'll find your enterable standard buildings in the
+	order of their numbers. Finally, the non-enterable buildings are placed at the end of the list. This order
+	will suit most purposes as you'll want to use higher numbered buildings later in the game, and preferrably
+	the special buildings over the standard ones.</p>
+	<h1>The Game Components in Detail</h1>
+	<p>In this section I will talk about the various game components you know from the board game and what you
+	can do with them in the computer game.</p>
+	<h2>The Supply Tokens</h2>
+	<p>The supply tokens are placed on the appropriate spaces on the game board at the beginning of the game.
+	They will be revealed during the first round and stay where they are unvealed during the rest of the game.
+	Place the mouse over one of them to view a bigger version of the image. Right-click the chit to open the
+	context menu and choose the details option. It'll open a popup window that tells you what you can see on
+	the supply token. The players' ship markers will be placed on the supply chits when the game progresses
+	and moved automatically from turn to turn. Hold the mouse over a ship token to view its owner.</p>
+	<h2>The Goods Chits</h2>
+	<p>You can find goods chits on various places in the game. They lay out on the offer spaces and in the
+	goods panel of each player. But they may also appear in various dialog windows during the game. Hold
+	the mouse over a chit to view a bigger version of it. Right-click the chit and choose <i>Details</i>
+	to get the information on the chit in text format. The goods on the offer spaces additionally show the
+	<i>Take</i> option in their context menus. Choose it if it's your turn and you wish to take an offer.
+	Alternatively, double-click the offered good chit to take the offer.</p>
+	<h2>The Round Card</h2>
+	<p>The round card shows information about the end of the current round. It tells you how many food you need to pay,
+	if there is a harvest, and which (if any) building will be built next. The appropriate line is marked with
+	a thick black border to help you find it more easily (as I use the original cards). Hold the mouse over
+	the card to see a bigger version or choose "details" from the context menu for the information in text
+	format.</p>
+	<h2>The Special Building Card</h2>
+	<p>This card does not have any purpose. It just tells you how many special buildings are still in the
+	stack. If you play the short game, you won't see this card.</p>
+	<h2>Buildings and Ships</h2>
+	<p>Buildings and ships both show bigger versions of their image if you hold the mouse over them.
+	The <i>Details</i> option from their context menu describes the card in text format. Another option
+	from the context menu allows you to sell and buy them. You can sell cards you own at any time, even
+	if it's not your turn.</p>
+	<p>To build a building or ship you need to enter the appropriate building. Afterwards a symbol appears
+	on all the cards you are able to build. Double-click the card to build it or choose the appropriate context menu
+	option.</p>
+	<p>Most buildings can be entered as your main action. Double-click the building you want to enter or
+	choose the appropriate context menu option. If you can't use this building or pay the entry, an error
+	message will notify you about this fact. It won't tell you any specifics, though. In this case, choose
+	another building to use.</p>
+	<p>If you have a building that allows you to ban people from buildings, another option appears in the
+	context menu of each building where there is another player. Choose it to perform the ban.</p>
+	<p>A last context menu option displays the player who is currently using/blocking this building. Some
+	special buildings work differently, like the Construction Site that shows you your handcards.</p>
+	<h2>The Red Warning Triangle</h2>
+	<p>I've described this triangle in the beginning of the tutorial. It is displayed as long as there
+	are buildings in the building stacks that will be built by the town. Hold the mouse over the symbol
+	to get further information on when this happens and who will be the first to profit from it.</p>
+	<h2>The Buttery</h2>
+	<p>The buttery is meaningless. The round ship token on it is more useful as it shows you the amount
+	of food you get from your ships at the end of each round. If this number is greater than 0, a tooltip
+	will explicitly give you this information.</p>
+	<h2>The Yellow Warning Triangle</h2>
+	<p>It appears whenever your overall food is lower than needed at the end of the current round and
+	vanishes as soon as you've got enough food. Read the description of the player tabs to get further
+	information.</p>
+	<h1>The Game Flow</h1>
+	<p>If it's your turn, a <b>Popup Window</b> will appear and notify you unless you're playing solo.
+	Sometimes it might happen to you that you clicked somewhere in the window exactly at the time the
+	popup window pops up. This might cause the window to minimize and block any mouse controls. This is
+	no error in the game, but rather a problem with your operating system. Just open the popup window by
+	clicking on it in the taskbar and close it by hitting its button.</p>
+	<p>After you've closed the popup window, you can either take an offer by double-clicking it or enter
+	a building by also double-clicking it. Navigate through the tabs to find the building you want to
+	enter. In-between you're free to buy and sell your items.</p>
+	<p>Once you've done an action, the <b>Redo Button</b> above the round card is activated. Please be
+	careful with performing your action and take the time you need to think it over. Try to use the redo
+	button as little as possible as it undoes your entire turn and any actions other players did
+	simultaneously (paying back loans, selling buildings). Also, the interest payment needs to be
+	redone if it was due this turn. However, of course, you won't pay the interest twice. It's more
+	that the entire game state will be reset to the state before your turn and so anything that happened
+	during your turn must be redone.</p>
+	<p>After you've performed the main action of your turn, the <b>Continue Button</b> is activated.
+	You need to press it to finish your turn and pass it to the next player. Whenever nothing happens
+	during the game, make sure you've hit the continue button if it was your turn.</p>
+	<p>Everything you do in your turn will be displayed in the <b>Chat Window</b> to notify all players
+	about your moves. This makes it much easier to follow the game. System messages like this will be
+	displayed in blue whereas any messages you write will appear red in your chat window and black in
+	any other player's window. So, it's no problem to follow the game and the chat between the players.</p>
+	<h2>Interest Payment</h2>
+	<p>Once in seven turns every player who owns one or more loans will need to pay the interest.
+	The game halts at this moment and asks the involved players to make the payment. At this moment,
+	you can minimize the payment window and sell items to get cash. Pay back all of your loans to
+	avoid the interest payment or collect cash to pay it. Anyway, if you hit the button in the
+	payment window, the game performs the payment if you still own at least one loan. If you don't
+	have any money to pay, you'll get another loan automatically.</p>
+	<h2>Round End</h2>
+	<p>The current round ends after seven turns and each player needs to pay the food demand.
+	Players who have enough food provided by their ships need not to do anything now. All the
+	other players get a payment window and need to enter the goods they want to pay with. You
+	can sell items prior to finalizing the payment like during interest payments. If you've got
+	less food in goods than needed, you need not to enter anything if you want to pay the rest
+	with francs. Just hit the button - the game asks you in this case if you like to pay all
+	goods with food values and pay the rest with francs. Hit OK to do it or cancel if you want
+	to pay differently (like saving some goods and paying more francs).</p>
+	<p>After all players are done, the next round begins. A new ship enters the game and is
+	placed on top of the appropriate stack. If there was a harvest, each player matching the
+	conditions get their harvested goods. If there is a building to be built, the town gets the
+	appropriate building card.</p>
+	<h2>The Final Action Phase</h2>
+	<p>The final action phase begins after the last round card was evaluated. Each player now has
+	one final action and can enter any building except the one they're already in. No goods are
+	added to the offer spaces any more, but you can still take them as your final action. Items
+	still can be sold, but not purchased as per the rules. After everybody's done with their
+	final action, the game ends and the scoring window appears. This will be described later.</p>
+	<h1>Entering Buildings</h1>
+	<p>Whenever you enter a building the game checks if you're able to pay the entry fee.
+	If yes, it then checks if you are able to perform the action. You can't enter a building
+	unless you can use it.</p>
+	<h2>The Entry Dialog</h2>
+	<p>If you need to pay an entry fee, the game first checks if the payment is clear, ie.
+	if there is just one way to pay it. In this case, the game performs the payment automatically.
+	Otherwise, an entry payment dialog opens and you need to specify how to pay the entry fee.
+	You can't overpay in the sense that you freely give more goods than needed, but, of course,
+	you may overpay like 1 meat if only 1-2 food was asked.</p>
+	<p>After this, you enter the building. If the building has a unique function, it will be
+	performed automatically, like getting 1 wood, 1 brick and 1 iron in the Hardware Store.
+	Buildings that ask you to pay or choose goods will be described in the next sections.
+	Finally, there are some very special buildings that work differently. These won't be
+	described here as they are very intuitive.</p>
+	<h2>The Process Dialog</h2>
+	<p>Process dialogs show up if you enter a building like the Bakehouse, where you need to
+	input some goods to get other goods as output. As there always is a unique way to process
+	such goods, the dialog consists of the following elements: A description tells you which
+	goods you need to put in and which ones you'll get out. It won't mention energy or other
+	costs as they are shown on the card and you could've checked prior to entering the building.
+	Below the description there is an input box and a number in brackets next to it. The number
+	tells you how many "packages" of goods you can throw in. Enter the number of packages you
+	want to put in or leave this box empty if you want to throw in as much as possible (the
+	number in the brackets). Hit the button once you've entered the information (or not). The
+	game now processes your goods. In case you can only process one package, the game won't
+	popup the dialog, but process this one package, immediately.</p>
+	<h2>The Choice Dialog</h2>
+	<p>Choice dialogs appear whenever a building asks you to choose goods you want to get or
+	discard, like in the Marketplace. Only the available goods are displayed and a number in
+	brackets tells you how many of this type of good there is to choose from. The description
+	informs you of hthe minimum and maximum number of goods you need to choose. Enter the
+	numbers in the appropriate input boxes and hit the button. There is no way to speed up
+	this process as in process dialogs.</p>
+	<p>Some special buildings use the choice dialog rather than a process dialog like the Coal
+	Trader and Junkyard. Thus, it's not possible to get the full possible load by leaving the
+	input boxes empty.</p>
+	<h2>The Energy Dialog</h2>
+	<p>An energy dialog pops up if you need to pay energy for the current action. Like in the
+	food dialog at the end of the round, enter the goods you want to pay with and hit the button.
+	If there is only one way to pay, the game does it itself and doesn't pop up a dialog window.</p>
+	<h2>The Food Dialog</h2>
+	<p>Please do not confuse these with those that pop up at the end of a round. Food dialogs may
+	pop up like energy dialogs whenever an action requires you to pay food like a visit to the
+	Coal Trader or Junkyard. Again, if there's only one way to pay, the game automatically pays
+	this way and doesn't open the dialog.</p>
+	<h2>The Marketplace</h2>
+	<p>In the long game, if you enter the Marketplace you get to see the two topmost special
+	buildings lying on the special buildings stack. These will be displayed only if the game
+	still is to build any special buildings. In this case a special dialog window pops up that
+	shows you the two buildings and lets you choose which one to place on top. It also informs
+	you which players will be the first to use these buildings once they are built. Double-click
+	on the building you want to be on top or hit the button if you're content with their order.
+	The left one will be on top, the right one underneath.</p>
+	<h2>The Shipping Line</h2>
+	<p>Due to performance this building is slightly counter-intuitive, therefore I need to
+	describe its functionality here. If you enter the Shipping Line you'll get a normal choice
+	dialog first that asks you to choose the goods you want to ship. However, you'll notice it
+	shows all of your goods, even those you might want to use to pay the energy cost. The game
+	won't predict which goods you might want to use for energy. Therefore keep track for yourself
+	which goods you want to pay the energy costs with.</p>
+	<p>However, the description gives you a hint, how many energy is needed for all possible
+	shipments. Of course, once you've entered the numbers and hit the button, the game checks
+	if you're able to pay this shipment. If not, you'll get an error message and need to correct
+	your input. If everything is OK with your shipment, the energy dialog pops up if needed and
+	you'll need to pay the energy cost, now.</p>
+	<p>All the other buildings are rather intuitive. Read their descriptions carefully to
+	use them properly.</p>
+	<h1>The Scoring Window</h1>
+	<p>Once the game is over, the scoring window pops up to show you the final scores.
+	It names the winner(s) and their winning score and lists all players and a complete
+	summary of their achievements divided in: victory points through cash, ships, buildings
+	and their bonuses, and minuses through unpaid loans. Please note, that there is no way
+	to transfer this data to a public server for any kind of rankings.</p>
+	<p>The window shows two buttons. The right one quits the game, the left one was planned
+	to start another session. However, I haven't bothered to implement this feature, so
+	ignore this fake button.</p>
+
+#
+# Error messages or warnings.
+#
+
+errImpossible	A fatal error has occured!
+errPleaseReport	Please report the issue!
+
+errBanUnoccupied	Failed to ban from building: %s.
+errBuildingUpdate	Failed to update a building: [building == null].
+errRestoreFailed	Failed restoring Game State: [state == null].
+errUseBuilding		Use of building impossible: %s.
+errVersionMismatch	Version mismatch: %s.
+
+errCorrupt		You've got a negative amount of one or more goods!
+				Your turn will be reset. Please report the issue!
+errDisabled		This function is unavailable at the moment!
+errLoadFailed	Loading failed!
+errNaN			This is no number: %s
+errNoChanges	You didn't make any changes!
+errNoSelection	You didn't select anything. The game will be terminated.
+errNotReady		You need to wait until everyone is ready!
+errRefresh		Are you sure to refresh the game state?
+errSaveChanges	Save changes?
+errSaveFailed	Saving failed!
+errQuit			Do you want to quit the game?
+errWarning		Warning
+
+errBuildingTabu		You may not enter any buildings at the moment!
+errMustEnter		You need to enter this building now!
+errNoChoice			You need to select a value and hit the button!
+errNotEnterable		You can't enter the building!
+errNotUsable		You can't use the building action!
+errNotPayable		You can't pay the entry fee!
+errPawnbrokers		You haven't pawned any goods, yet!
+errPicketLine		A strike is under way! You can't visit buildings, you need to take an Offer instead.
+
+errAlreadyStarted		You can't join the game as it has already started!
+errAlreadyOver			You can't join the game as it is already over!
+errBadAddress			The address you've entered is not valid! Leave this field empty or enter a valid IP address.
+errConnectionLost		<b>A player has lost connection!</b>
+errDialogClose			You need to hit the button in order to close the window!
+errFewerChosen			You're able to choose up to <b>%s</b>. Are you sure, you want just <b>%d</b>?
+errFoodAll				You've entered less food than demanded. Do you want to pay the rest with money?
+errFoodLack				You don't have enough food. You'll need to take loans. Do you want to proceed anyway?
+errIllegalChars			At least one of the names you've entered contains illegal characters! <b>Legal are:</b> letters, numbers, underscore, dash and space.
+errInputAll				You didn't enter anything. Do you want to proceed with all you have?
+errInputNone			You didn't enter enough. Please try again.
+errMainStation			You have to visit another building now as you've started your turn at the Main Station. 
+errMustChoose			You need to double-click on one of the displays buildings. This one will replace the Construction Site.
+errNameTooLong			At least one of the names you've entered is too long! Please do not enter more than <b>20</b> characters.
+errNetwork				<p><b>There is a problem with the connection!</b></p><p>%s</p>
+errNoBuildingBuying		You mustn't buy this building as it's the only one you're able to build.
+errNoShipBuying			You mustn't buy this ship as it's the only one you're able to build.
+errNoSpecials			There will be no more special buildings built in this game!
+errNotUsableAfterEntry	You can't perform the building action after paying the entry fee.
+						Most probably, you have discarded goods you would need to use the building.
+errOfferTabu			You may not take an Offer at the moment!
+errOverpaid				You're trying to discard too many goods! You may overpay, but not more than needed.
+						Please correct your input and hit the button again.
+errPayback				You need to have <b>%s</b> to pay loans back, but you have only <b>%s</b>!
+errSameColors			At least two players have the same color!
+errShipping				You're trying to ship more goods than you're able to pay the energy costs afterwards!
+						Please correct your input and pay attention to leave enough energy to pay the shipment.
+errTakeLoans			Do you want to take loans to pay the duty?
+errTooExpensive			You're short on money! The price is %s, but you have only %s.
+errTooFewChosen			You've chosen too few goods (%d instead of %d)! Please correct your input and hit the button again.
+errTooManyChosen		You've chosen too many goods (%d instead of %d)! Please correct your input and hit the button again.
+errTooManyUsers			You can't join the game! There are already %s.
+errUnpaid				The values you've entered result in less than demanded. Please correct your input and hit the button again.
+
+errEitherOr			You can't do both, sell and buy %s. Please enter only one value.
+errEmporium			You're trying to purchase goods for a total of %d Francs, but you've got only %d left.
+errTradingFirm		You need to buy goods for a total of %s, but you've spent %s only.
+
+#
+# Various popup titles.
+#
+
+popupBuilding	Building Details
+popupGood		Good Details
+popupOffer		Offer Details
+popupOverview	Overview Card
+popupRound		Round Details
+popupShip		Ship Details
+popupShips		Available Ships
+popupSupply		Supply Details
+popupLoan		Loan Details
+popupPayback	Payback
+popupRelogin	Login
+popupTurn		Current Turn
+popupYourTurn	%s, it's your turn!
+popupStacks		Building Stacks
+
+popupStackHead	<h3>Building Stack %d:</h3>
+popupStackLine	<div width="160"><span style="color:#000080;">[%02d]</span> %s <span style="color:#b8ab18;">(%d)</span></div>
+popupBuildAll	<p>The cumulated building costs of all buildings are <b>%s</b>.</p>
+popupPriceAll	<p>To buy all of the buildings you need <b>%s</b>.</p>
+popupPlayer		<b style="color:#000080;">%s (%s)</b>
+popupShipping	&bull; Up to <b>%s</b> cost <b>%s</b>.
+
+popupBankrupt			You don't have enough food and you don't own anything you might sell to get the <b>%s</b> needed.
+						Therefore you'll lose all of your food and money and you'll get as many loans as needed.
+popupBusinessOffice1	<b>These goods will be turned in for %s. Leave the fields empty if you don't want any.</b>
+popupBusinessOffice2	<b>If you've got %s, you can now get an additional good, otherwise you <i>must</i> choose one.</b>
+popupBusinessOffice3	<b>This is to pay your previous selection (%s).</b>
+popupEndgame			<span style="color:navy;">The final action phase has begun!</span> Each player may perform one last main action.
+						Buildings may now be used by multiple players. Purchases are no more possible. At the end of the game, as many of
+						your loans as possible will be paid back automatically.
+popupHarbourWatch		Select the building whose worker you want to ban from and use it on your own.
+popupHaulageFirm		Select the two offer spaces you want to take the goods from.
+popupInput				Enter the numbers here.
+popupIronworks			Do you want an additional iron for <b>%s</b>?
+popupLoanInfo			<b style="color:navy;">%s</b> has <b>%s</b>.
+popupOccupied			%s is here at the moment.
+popupOffered			<b>Offered Good:</b> %s
+popupPaybackInfo		You've got <b>%s</b>. This is enough to pay back up to <b>%s</b>. How many do you want to pay back?
+popupPicketLine			Now, take an Offer.
+popupVacantSpaces		Please select from the list below the player that you want to play for.
+popupWorkersCottages	As the owner of the Workers' Cottages, you now have two main actions.
+
+popupEmporium			<b>%s costs %s, %s costs %s,<br>all the other goods costs %s each.</b>
+popupFleaMarket			Select the Offer you want to take.
+popupTradingFirm		<b>The total value of all goods must be %s.</b>
+popupWoodenCrane		As the owner of the Wooden Crane, you are allowed to replace one token of any one
+						building material with Wood. Select the good to replace from the list below or
+						cancel if you don't want to exchange anything.
+
+#
+# Menu names.
+#
+
+menuLanguage	Language
+menuGame		Game
+menuHelp		?
+
+menuBuild		Build
+menuEnter		Enter
+menuBan			Ban
+menuBuy			Purchase
+menuSell		Sell
+menuInfo		Details
+menuTake		Take
+menuPayback		Pay back
+menuSpecial		View
+
+#
+# Menu item names.
+#
+
+itemAbout			About JLeHavre...
+itemDumpState		Dump Game State
+itemGlobalUndo		Refresh Game State
+itemInstructions	Instructions
+itemOpenChat		Open Chat Window
+itemSaveState		Save Game State
+itemSettings		Change Settings
+
+#
+# Text visible in the login window.
+#
+
+loginTitle	%s - Login
+loginGame	Game Name:
+loginAddr	Bind IP Address:
+loginName	Your Username:
+loginLoad	Load Game
+loginJoin	Join Game
+
+loginInstructions
+	<h1>The Login Window</h1>
+	<p>This window consists of three elements:</p>
+	<ul><li>the menu bar</li><li>the logo image</li><li>the login area</li></ul>
+	<p>Here is a short description of these elements.</p>
+	<h2>Choice of Language</h2>
+	<p>You'll find the available languages in the language menu. They are read
+	automatically from the language file folder. If you change the language, the
+	game restarts, because the language data needs to be read again. This is the
+	reason why you can't change the language once you've logged into the game.
+	So choose carefully when selecting the language before you start the game.</p>
+	<h2>The Login Area</h2>
+	<p>The login area consists of four parts:</p>
+	<ul><li>input field for the name of the game</li>
+	<li>input field for a preset IP address</li>
+	<li>input field for the player's name</li>
+	<li>two buttons</li></ul>
+	<p>The data you enter here will be saved on your computer and read the next time
+	you open the game. Please note, however, that if you start a parallel game with
+	other data on the same computer, the data will be overwritten by the second instance
+	of the game. This won't affect the running games, but you'll need to enter the data
+	you wish again next time you create a game.
+	<h2>The Name of the Game</h2>
+	<p>You can enter any name here with some restrictions that are mentioned below.
+	If there is already a game with this name created in your local area network, you'll
+	join this game and will be able to take part. There is no way to just watch a game,
+	however. If the game has already been started or if there are already the maximum
+	number of players logged into the game, you can't enter.</p>
+	<p>If there is no game with this name, it will be created automatically and your
+	opponents will be able to join you. They just need to enter the same name for their
+	game. The default name is 'Le Havre', but you can change it to whatever fits your
+	taste.</p>
+	<p>You don't need a network running to play <b>Le Havre</b>. If you want to play a
+	multiplayer game on the same computer, just start the game multiple times. Please note,
+	however, that the game will be running in multiple windows and you'll need to organize
+	them yourself.</p>
+	<h2>The Preset IP Address</h2>
+	<p>Usually, you won't need to enter a value here and may leave this field blank.
+	If your computer supports multiple networks, however, it might be necessary to enter
+	your LAN IP address manually into this field to ensure that the computers will find
+	each other. You'll know that you failed to connect with other players if you're the
+	only one in the Lobby Window. Please consult the internet or a more experienced player
+	to learn how to get your IP address.</p>
+	<p>If you want to play over the internet via <b>Hamachi</b>, you need to enter your
+	Hamachi IP address here to get a game running. Please note, there have been multiple
+	problems with Hamachi if you've got a WLAN connection to the internet. Such problems
+	may occur in the middle of the game and there is no way to fix them. This is a problem
+	with Hamachi only and not the game itself.</p>
+	<h2>The Player's Name</h2>
+	<p>You can choose any name to represent yourself in the game. There are only a few
+	restrictions mentioned below. Although technically possible, I wouldn't recommend
+	two players using the same username.</p>
+	<h2>Restrictions on Names</h2>
+	<p>You can enter any names that follow these restrictions:</p>
+	<ul><li>It may not be longer than 20 characters.</li>
+	<li>You may not use any characters other than letters, numbers, underscore, blank and minus.</li></ul>
+	<p>If you don't follow these restrictions, you'll get an error message when you try to
+	log into the game. If you get such an error message and you've loaded a savegame, you
+	won't need to load the savegame again.</p>
+	<h2>The Buttons</h2>
+	<p>At the bottom of the window you'll find two buttons. The left one allows you to
+	<b>load a savegame</b> and continue the saved game. The right button <b>logs you into the game</b>.
+	If there is a game with the given name already created, you'll join it. If you load a savegame
+	or if you enter a running game where a player is missing, you'll be asked to select your seat
+	and continue the game.</p>
+	<p><b>Please note!</b> You can't load a savegame if there is a game currently running under
+	the same name. In this case you'll join the running game rather than the savegame.</p>
+
+#
+# Text visible in the lobby window.
+#
+
+lobbyTitle			%s - Manager
+lobbyChoiceTitle	Choice of Color
+lobbyChoiceDescr	Choose a color:
+lobbyLoginArea		Logged In Players
+lobbyStart			Ready
+lobbyStartLong		Start the Long Game
+lobbyStartShort		Start the Short Game
+
+lobbyFormat		<html><b>%s</b><html>
+lobbyBonus		Set Extra Goods
+lobbyBonusInfo	Click here to set additonal goods for this player at the beginning of the game.
+lobbyColor		Player Color
+lobbyColorInfo	Double-click to change the color.
+lobbyIndex		Seat Number
+lobbyIndexInfo	You can set the turn order here. Select <b>'?'</b> to create a random one.
+
+lobbyInstructions
+	<h1>The Lobby Window</h1>
+	<p>This window consists of three elements:</p>
+	<ul><li>Game Menu</li><li>Lobby Area</li><li>Start Buttons</li></ul>
+	<p>Surely, you've noticed that along with this window another one has been openened.
+	This window is the chat window and will be explained at the bottom of this page.</p>
+	<h2>The Game Menu</h2>
+	<p>This menu allows you to change the settings of the game. These are the game elements
+	that can be changed in the <b>Settings Window</b>:</p>
+	<ul><li>You can change the order of the <b style="color:green;">Supply Tokens</b>
+	partly or entirely. Also, you can set some of the tokens to be visible from start.</li>
+	<li>Then, you can ban certain or all of the <b style="color:green;">Special Buildings</b>.
+	Also, you can set their position within the special buildings stack, or use some of them
+	as additional start buildings.</li>
+	<li>Further, you can define which building stack certain <b style="color:green;">Standard
+	Buildings</b> will be placed in. Within these, they will be ordered according to the rules.</li>
+	<li>Another possible setting is to change the amount of <b style="color:green;">Goods</b>
+	displayed at the beginning of the game. If you do not enter any value at specific goods,
+	they will be laid out in the default amount defined in the rules.</li>
+	<li>A last thing you can change is the maximum amount of goods you'll get from a visit of
+	the Marketplace in the <b style="color:green;">Solo Game</b>. Also, if you wish to always
+	see the current victory points of each player, check the apporpriate box.</li>
+	<p>You can save the settings to a file and re-use them in future games. Please note, however,
+	if you load the settings from a file, they only will be displayed in the editor at first.
+	To actually use them you need to hit the <b>Apply</b> button.</p>
+	<p><b>Attention!</b> Only the first player that logged into the game can perform changes
+	on the settings. Use the chat window to discuss any changes so that everyone agrees upon them.</p>
+	<h2>The Lobby Area</h2>
+	<p>Here you can see who has already joined the game. Each player will be displayed in a single
+	line. Such a line consists of the following elements:</p>
+	<ul><li>The Seat Position</li><li>The Player's Name</li><li>The Player's Color</li>
+	<li>A Button for Additional Goods</li></ul>
+	<p>Only the game initiator will be able to change these values.</p>
+	<h3>The Seat Position</h3>
+	<p>You can preset the play order by selecting a seat position for every player.
+	Use the chat to discuss a preferred play order or let the game randomly decide it.</p>
+	<p>A <b>?</b> is used to assign a random position to a given player. The game will then
+	assign the preset positions first and then randomly place the remaining players.</p>
+	<p>If you assign the same seat number for two or more players, the order between them
+	will be determined randomly. Note, however, that this order will have a higher priority
+	than all of the '?'.</p>
+	<p>Don't worry about selecting a seat number that doesn't exist (like seat 5 with 3 players).
+	These players will be positioned correctly at the end of the play order.</p>
+	<h3>The Player Color</h3>
+	<p>As anything in the lobby window, the player color also can only be changed by the
+	game initiator. Use the chat to tell him which color you prefer. However, you can't assign
+	the same color to more than one player, or you'll get an error message if you try to start
+	the game. Only after all colors have been properly set, you can start the game.</p>
+	<h3>Additional Goods</h3>
+	<p>Usually, you won't need to set additional goods, but you can if you like start with more or
+	less than usual if you play with unexperienced players. Leave a field blank if you don't want
+	to change its default value. Enter a 0 explicitely, if you don't want to get this good.</p>
+	<p>As with everything, only the game initiator can perform these changes and should discuss
+	them via the chat window with the other players. In any case, all players will be informed
+	by the system about any changes the game initiator does in the lobby.</p>
+	<h2>The Start Buttons</h2>
+	<p>There are two buttons to start the game. Use the left one to start a <b style="color:navy;">Long
+	Game</b> and the right one to start <b style="color:navy;">Short Game</b>. However, only the game
+	initiator will see these buttons. Every other player has only one button to notify the game initiator
+	that he's ready to start. Every player needs to hit this button before the game initiator can start
+	the game.</p>
+	<p>Again, use the chat window to agree upon a type of game and let the game initiator start it
+	by hitting the appropriate button.</p>
+	<h1>The Chat Window</h1>
+	<p>The chat window opens automatically when logging into the game and whenever a message
+	comes in. You can close it if you like and re-open through the game menu. It is used to
+	enable the players to communicate with each other during the game, as well as display
+	system messages like what a player currently does (like which building he enters).</p>
+	<p>New messages will be added to the end of the chat window and it'll scroll automatically to
+	the newest message. Also, the messages are color coded. You'll see your own messages in red,
+	other players' messages in black and system notifications in blue.</p>
+	<p>The chat window doesn't have any special abilities. There are no implemented smilies or
+	special commands but the one you probably know from <b>Brettspielwelt</b> that allows you to
+	suppress the colon. Start your message with a colon to do so.</p>
+
+#
+# Text visible in the chat window.
+#
+
+chatTitle	%s - Chat
+chatIntro	Chat started...
+
+#
+# Text visible in the settings window.
+#
+
+setTitle			Settings
+setSpecTitle		Special Buildings
+setSupTitle			Supply Chits
+setSupOpen			visible
+setStdTitle			Standard Building
+setGoodsTitle		Start Goods
+setExtraTitle		Extras
+setLoansOption		Loan Variant
+setPointsOption		Visible Score
+
+setSpecDescr
+	<html>
+	<div style="font-family:sans-serif; padding-bottom:30px; text-align:center;">
+	You can select here which special buildings may be used in the game.
+	Uncheck buildings you don't want to come into play. If you like,
+	select a position within the special buildings stack. Select '<b>?</b>'
+	for a random selection or '<b>start</b>' to use it as a starting building.
+	</div>
+	</html>
+setSpecCheck	If checked, this building might come into play.
+setSpecList		Select the position of the building within the special buildings stack or use it as a starting building.
+setSpecBase		Basegame
+setSpec2008		Essen 2008
+setSpecLGH		Le Grand Hameau
+
+setSupDescr
+	<html>
+	<div style="font-family:sans-serif; padding-bottom:30px; text-align:center;">
+	You can select here which order the supply chits will come into play.
+	Select '<b>?</b>' from the list for a random selection. Check the box
+	to reveal a chit at the beginning of the game.
+	</div>
+	</html>
+setSupCheck		Check this box to reveal the supply chit at the beginning of the game.
+setSupList		Select the position of the supply chit.
+
+setStdDescr
+	<html>
+	<div style="font-family:sans-serif; padding-bottom:30px; text-align:center;">
+	You can select here which standard buildings will be used in the game.
+	Uncheck buildings you don't want to use, although they usually come into
+	play. Select which building stack to put a building into at the beginning
+	of the game. Select '<b>?</b>' for a random selection or '<b>start</b>' to
+	use the building as a starting building.
+	<b style="font-variant:small-caps;">Experiment at your own risk!</b>
+	</div>
+	</html>
+setStdCheck		Check this box to use this building in the game.
+setStdList		Select the building stack or use the building as a starting building.
+setStdOverride	Check this box to force the game to use the selected buildings
+				even if you're playing with less than 4 players.
+
+setGoodsDescr
+	<html>
+	<div style="font-family:sans-serif; padding-bottom:30px; text-align:center;">
+	You can change the amount of goods in the offers at the beginning of the game.
+	You need to explicitely enter a number to set the amount to the entered value,
+	unless you don't want to change it. For instance, if you want there to be no
+	fish at the beginning of the game, you need to enter 0, explicitely.
+	</div>
+	</html>
+setExtraDescr
+	<html>
+	<div style="font-family:sans-serif; padding-bottom:30px; text-align:center;">
+	Set a limit for the <b>Marketplace</b> in solo games.<br>
+	It is recommended to set a limit.
+	</div>
+	</html>
+setLoansDescr
+	<html>
+	<div style="font-family:sans-serif; padding-bottom:30px; text-align:center;">
+	Set if you want to play the <b>Loan Variant</b>. Pay 2 francs of interest
+	if your number of loans is greater than or equal to the number of players.
+	</div>
+	</html>
+setPointsDescr
+	<html>
+	<div style="font-family:sans-serif; padding-bottom:30px; text-align:center;">
+	Set if you want to have the <b>Victory Points</b> displayed during the game.<br>
+	It is recommended to hide them.
+	</div>
+	</html>
+setExtraList	Select the maximum amount of goods.
+
+#
+# Text visible in the bonus window.
+#
+
+bonusTitle		%s - Additional goods
+bonusDescr
+	<html>
+	<div style="font-family:sans-serif; padding-bottom:30px; text-align:center;">
+	<h1>Set additional goods</h1>
+	<p>You can set the amount of goods <b>%s</b> will get at the beginning of the game, here.
+	Leave a field blank if you want to use the default value for a specific good.</p>
+	</div>
+	</html>
+
+#
+# Text visible in the food payment window.
+#
+
+foodTitle		Food
+foodDescr
+	<html>
+	<div style="font-family:sans-serif; padding-bottom:30px; text-align:center;">
+	<h1>Pay the food demand</h1>
+	<p>At the end of each round, everyone needs to pay food. You need to still pay
+	<b>%s</b>. Enter in the fields below how many goods of each type you want
+	to pay with. You can still sell buildings in the main window, if you like.
+	If you don't and you're lacking food, you'll need to take loans.</p>
+	</div>
+	</html>
+
+#
+# Text visible in the interest window.
+#
+
+moneyTitle		Interest
+moneyDescr
+	<html>
+	<div style="font-family:sans-serif; padding-bottom:30px; text-align:center;">
+	<h1>Pay the interest</h1>
+	<p>You've got <b>%s</b> and need to pay <b>%s</b> of interest.
+	If you own any buildings or ships, you can sell them in the main window to
+	get the amount needed, or pay back all loans. Hit the button if you're done
+	with that or if you don't want to sell or pay back anything.</p>
+	</div>
+	</html>
+
+#
+# Text visible in the entry payment dialog.
+#
+
+entryTitle		Entry
+entryDescr
+	<html>
+	<div style="font-family:sans-serif; padding-bottom:30px; text-align:center;">
+	<h1>Pay the entry fee</h1>
+	<p>You need to pay entry to the owner of this building!
+	You need to pay <b>%s</b>. Enter in the fields below which
+	goods you want to satisfy the demand with and hit the button.</p>
+	</div>
+	</html>
+
+#
+# Text visible in the energy payment dialog.
+#
+
+energyTitle		Energy
+energyDescr
+	<html>
+	<div style="font-family:sans-serif; padding-bottom:30px; text-align:center;">
+	<h1>Pay %s</h1>
+	<p>You need to pay <b>%s</b> for this action. Enter in the fields below
+	which goods you want to satisfy the demand with and hit the button.</p>
+	</div>
+	</html>
+
+#
+# Text visible in the process dialog.
+#
+
+processTitle	Process goods
+processDescr
+	<html>
+	<div style="font-family:sans-serif; padding-bottom:30px; text-align:center;">
+	<h1>Process goods</h1>
+	<p>Enter in the field below how many units of <b>%s</b> you want to
+	process into <b>%s</b> each and hit the button.</p>
+	</div>
+	</html>
+
+#
+# Text visible in the choice dialog.
+#
+
+choiceTitle		Select goods
+choiceDescr
+	<html>
+	<div style="font-family:sans-serif; padding-bottom:30px; text-align:center;">
+	<h1>Select goods</h1>
+	<p>Enter in the fields below how many goods of each type you want to %s.
+	You need to select at least %d and %d at most.</p>%s
+	</div>
+	</html>
+choiceDescr2
+	<html>
+	<div style="font-family:sans-serif; padding-bottom:30px; text-align:center;">
+	<h1>Select goods</h1>
+	<p>Enter in the fields below how many goods of each type you want to %s.
+	You need to select exactly %d.</p>%s
+	</div>
+	</html>
+
+#
+# Text visible in the marketplace dialog.
+#
+
+marketTitle			Special buildings
+marketDescr
+	<html>
+	<div style="font-family:sans-serif; padding-bottom:30px; text-align:center;">
+	<h1>The topmost special buildings</h1>
+	<p>These are the two topmost cards of the special buildings stack.
+	The left building will come into play %s.%s The right one will be built %s.%s
+	Double-click the special building you want to be the next one to come
+	into play.</p>
+	</div>
+	</html>
+
+#
+# Text visible in the handcards dialog.
+#
+
+cardsTitle		Your hand cards
+cardsInfo		The next player to enter the Construction Site selects one of their hand cards
+cardsChoose		Double-click on one of your hand cards you see below
+cardsDescr
+	<html>
+	<div style="font-family:sans-serif; padding-bottom:30px; text-align:center;">
+	<h1>Your hand cards</h1>
+	<p>The Construction Site is in play. Therefore each player has got three special
+	buildings. %s. This one will come into play. Afterwards, all the other hand cards
+	and the Construction Site will be removed from the game.</p>
+	</div>
+	</html>
+
+#
+# Text visible in the scoring window.
+#
+
+scoreTitle		Scoring
+scorePoint		victory point
+scorePoint2		victory points
+scorePoint5		victory points
+scoreDescr
+	<html>
+	<div style="font-family:sans-serif; padding-bottom:30px; text-align:center;">
+	<h1>Final Results</h1>
+	<p>The game is over!<br>
+	%s %s with <b>%s</b>.</p>
+	</div>
+	</html>
+
+#
+# Text visible in the debug window.
+#
+
+dumpTitle	Current Game State
+dumpDescr
+	<html>
+	<h1>Current Game State</h1>
+	<p>This is a list of all game objects and their current states.
+	In case of a bug, please copy this list and save it to a text file.
+	Send this text file along with the log file to <b>kobiela@gmx.de</b>.
+	You need to close the window properly to get a valid log file.</p>
+	<h2 style="margin-bottom:10px;">Thank you for your time and help!</h2>
+	<pre style="color:navy;">%s</pre>
+	</html>
+
+#
+# The player colors.
+#
+
+colorBlue	blue
+colorGreen	green
+colorPurple	purple
+colorRed	red
+colorWhite	white
+
+#
+# The Buildings.
+#
+
+buildingB1		Building Firm #1
+descriptionB1	Build 1 Building.
+
+buildingB2		Building Firm #2
+descriptionB2	Build 1 Building.
+
+buildingB3		Construction Firm
+descriptionB3	Build 1 or 2 buildings.
+
+building_00		Dunny
+description_00	As soon as the Dunny is turned over
+				place it on the building proposal pile
+				with the highest number card on top.
+
+building_01		Marketplace
+description_01	Take (2 + #Craft symbols) different
+				standard goods, including hides
+				and coal but not francs.
+				Look at the top 2 special buldings
+				and return them in any order.
+
+building_02		Sawmill
+description_02	Build 1 building that requires
+				Wood, for 1 fewer Wood.
+
+building_03		Fishery
+description_03	Take (3 + #Fisherman) Fish.
+
+building_04		Joinery
+description_04	Sell 1, 2, or 3 Wood
+				for 5, 6, or 7 Francs,
+				respectively.
+
+building_05		Bakehouse
+description_05	For 1/2 energy per Grain,
+				turn in any number of Grain for
+				1 Bread and 1/2 Franc each.
+
+building_06		Hardware Store
+description_06	Take 1 Wood, 1 Brick, and 1 Iron.
+
+building_07		Charcoal Kiln
+description_07	Turn in any number of Wood
+				for 1 Charcoal each.
+
+building_08		Smokehouse
+description_08	For 1 energy, turn in up to
+				6 Fish for 1 Smoked Fish
+				and 1/2 Franc each.
+
+building_09		Abattoir
+description_09	Turn in any number of Cattle for
+				1 Meat and 1/2 Hide each.
+
+building_10		Clay Mound
+description_10	Take (3 + #Hammer) Clay.
+
+building_11		Arts Centre
+description_11	Take 4 Francs for each other player
+				in one of your buildings.
+
+building_12		Wharf
+description_12	<b>Build 1 ship.</b>
+				The first player to build a non wooden
+				ship at a particular Wharf must place
+				an additional brick on the Wharf
+				to modernise it.
+
+building_13		Black Market
+description_13	Take 2 tokens of each type whose
+				Offer Space is empty (including Francs).
+
+building_14		Brickworks
+description_14	For 1/2 energy per Clay, turn in any
+				number of Clay for 1 Brick
+				and 1/2 Franc each.
+
+building_15		Local Court
+description_15	If you have 1 loan, return it.
+				If 2 loans, return 1 and take 2 Francs.
+				If 3 or more loans, return 2 of them
+				or return 1 and take 2 Francs.
+
+building_16		Colliery
+description_16	Take 3 Coal,
+				and if you have at least one Hammer,
+				take 1 additional Coal.
+
+building_17		Wharf
+description_17	<b>Build 1 ship.</b>
+				The first player to build a non wooden
+				ship at a particular Wharf must place
+				an additional brick on the Wharf
+				to modernise it.
+
+building_18		Shipping Line
+description_18	For 3 energy per ship,
+				sell goods for Francs (note ship load limits).
+				Beware of the Pirates' Lair!
+
+building_19		Grocery Market
+description_19	Take 1 Cattle, 1 Meat, 1 Fish,
+				1 Smoked Fish, 1 Grain, and 1 Bread.
+
+building_20		Tannery
+description_20	Turn in up to 4 Hides for
+				1 Leather and 1 Franc each.
+
+building_21		Business Office
+description_21	Turn in any 4 goods for 1 Steel
+				and/or 1 good for either 1 Charcoal,
+				Leather, or Brick.
+
+building_22		Ironworks
+description_22	Take 3 Iron, and choose whether to pay
+				6 energy for 1 additional Iron.
+
+building_23		Steel Mill
+description_23	For 5 energy per Iron, turn in
+				any number of Iron for 1 Steel each.
+
+building_24		Storehouse
+description_24	Value increases by 1/2 Franc for each good.
+
+building_25		Cokery
+description_25	Turn in any number of Coal
+				for 1 Coke and 1 Franc each.
+
+building_26		Dock
+description_26	Value increases by 4 Francs for each ship.
+
+building_27		Bridge over the Seine
+description_27	Get 1 Franc for each upgraded good
+				or for any 3 standard goods.
+
+building_28		Town Hall
+description_28	At game end, the card value increases by:
+				4 Francs for each Public building;
+				2 Francs for each Craftsman’s Building.
+
+building_29		Bank
+description_29	At game end, the card value increases by:
+				4 Franc for each industrial Building;
+				2 Franc for each Economic Building.
+
+building_30		Church
+description_30	Turn 5 Bread and 2 Fish
+				into 10 Bread and 5 Fish.
+
+building_31		Football Stadium
+description_31	Can be bought at any time.
+				Can only be built after
+				one of the Building Proposals
+				spaces has been emptied.
+
+building001		Labour Exchange
+description001	Take 1 Fish per Fisherman,
+				take 1 Coal per Hammer.
+
+building002		Bakery
+description002	Turn in up to 6 Bread for 3 Francs each.
+
+building003		Baguette Shop
+description003	Turn in up to 4 Bread/Meat pairs
+				 for 6 Francs per pair.
+
+building004		Farm
+description004	Take 2 Fish, 2 Grain, 2 Wood,
+				1 Hide, and 1 Cattle.
+
+building005		Clothing Industry
+description005	Turn in any number of Hide/Leather pairs
+				for 7 Francs per pair.
+
+building006		Iron Mine and Coal Seam
+description006	Take 2 Iron and 1 Coal.
+
+building007		Fish Market
+description007	Turn in up to 7 Fish for 2 Francs each.
+
+building008		Fish Restaurant
+description008	Turn in any number of Smoked Fish
+				for 3 Francs each.
+
+building009		Fishpond and Wood
+description009	Take 3 Fish and 3 Wood.
+
+building010		Forest Hut
+description010	Turn in up to 4 Wood/Meat pairs
+				for 5 Francs per pair.
+
+building011		Plant Nursery
+description011	Take 3 Francs and 4 Wood.
+
+building012		Business Park
+description012	At game end, the card value increases by:
+				2 Francs per Industrial building
+
+building013		Guildhouse
+description013	At game end, the card value increases by:
+				2 Francs per Economic building
+
+building014		Harbour Watch
+description014	Pay 1 Franc to another player
+				to remove them from a building.
+				Enter that building, and,
+				if required, pay the Entry fee.
+
+building015		Smelter
+description015	Take 1 Coal, 1 Coke, and 1 Iron.
+
+building016		Diner
+description016	Turn in up to
+				3 Wood/Bread/Smoked Fish sets
+				for 8 Francs per set.
+
+building017		Hunting Lodge
+description017	Take 2 Hides and 3 Meat.
+
+building018		Coal Trader
+description018	Turn in 1 Food for 1 Charcoal (max once)
+				and/or 2 Food for 1 Coal (max 5 times).
+
+building019		Patisserie
+description019	Turn in up to 3 Grain/Bread pairs
+				for 5 Francs per pair.
+
+building020		Furriery
+description020	Turn in 1 Leather for 5 Francs (max twice)
+				and/or 1 Hide for 1 Bread (no max).
+
+building021		Leather Industry
+description021	Turn in 3 Leather and 14 Francs
+				for 30 Francs.
+
+building022		Kiln
+description022	Turn in 1 Clay and 1 Energy
+				for 3 Bricks.
+
+building023		Luxury Yacht
+description023	A player who enters a Wharf may swap 
+				his/her iron ship for a Luxury Yacht
+				Alternatively, a player may buy
+				the Luxury Yacht.
+				The Yacht provides no food and
+				cannot ship any goods for the Shipping Line.
+			
+building024		Feedlot
+description024	If the owner has 2-6 Cattle,
+				they get an additional Cattle during a Harvest.
+
+building025		Masons' Guild
+description025	The owner pays 1 fewer Clay or Brick
+				to build a building.
+
+building026		Furniture Factory
+description026	Turn in any number of Wood/Leather pairs
+				for 6 Francs per pair.
+
+building027		Town Square
+description027	Take 1 different upgraded good (not Steel)
+				for each owned Craftsman’s Building.
+
+building028		Tavern
+description028	Turn in up to 4 Wood/Grain pairs
+				for 3 Francs per pair.
+
+building029		Haulage Firm
+description029	Pay 3 Francs to take all the goods
+				from 2 adjoining Offer spaces (not Francs).
+
+building030		Schnaps Distillery
+description030	Turn in up to 4 Grain for 2 Francs each.
+
+building031		Steelworks
+description031	Turn in 1 Iron and 15 Energy
+				for 2 Steel.
+
+building032		Steakhouse
+description032	Turn in up to 4 Meat/Charcoal pairs
+				for 6 Francs per pair.
+
+building033		Wind Farm
+description033	Receive a discount of 3 Energy
+				when using Energy as
+				part of a Main action.
+
+building034		Brick Manufacturer
+description034	Turn in 3 Brick and 10 Francs
+				for 24 Francs.
+
+building035		Zoo
+description035	Take 1/3 Franc for
+				each Fish and/or Cattle.
+
+building036		Workers' Cottages
+description036	The owner of this card has 2 Main actions
+				instead of 1 during the Final Stage.
+				He performs the actions one after another.
+
+building037		Construction Site
+description037	Deal each player a hand of 3 Special Buildings
+				The first player to enter the Construction
+				Site exchanges it for one of the 3 Special
+				Buildings in his/her hand and
+				uses that building, if possible.
+				The player can only avoid paying the Entry Fee
+				if he/she buys the building.
+				After this, all players discard their hand
+				of special building cards.
+
+building038		Logging Camp
+description038	Turn in up to 7 food for 1 wood each.
+
+building039		MS Dagmar
+description039	A player who enters a modernised Wharf
+				may swap his/her Luxury Yacht
+				for the MS Dagmar. Alternatively, a player
+				may buy the MS Dagmar.
+				The MS Dagmar is treated as a Luxury Yacht.
+
+building040		Pawnbrokers'
+description040	Pile different goods from your Supply
+				on the Pawnbrokers, and take 2 Francs
+				good. You can redeem your goods at any
+				time (2 Francs per good).
+				You need not visit the Pawnbrokers to
+				redeem goods.
+
+building041		Pirate's Lair
+description041	The player that owns Pirate's Lair
+				receives 1 Franc from each ship that
+				sails the Shipping Line.
+
+building042		Junkyard
+description042	Turn in 2 food for 1 iron (max 5 times).
+
+building043		Dive Bar
+description043	When a player is sent home, he goes to
+				the Dive Bar and pays 2 Francs to the
+				Treasury. The owner of the Dive Bar
+				only pays 1 Franc.
+
+building044		Picket Line
+description044	Take the tokens from one Offer space.
+				In their next turn, all other players
+				must also take tokens from Offer spaces
+				as their Main Action. After that, the
+				Picket Line is removed from the game.
+				(The Picket line can no longer be entered
+				from the start of the last Round.)
+
+building045		Tabacco Factory
+description045	The owner of the Tobacco Factory may
+				remove players from his/her buildings
+				during his/her turn.
+
+building046		Cattle Drive
+description046	Each other player who has at least
+				1 cattle must give you 1 cattle.
+				In a 2 player game, you recieve
+				2 Cattle from your opponent.
+
+buildingGH01	Wooden Crane
+descriptionGH01	The owner may replace one token of any one building
+				material with Wood when constructing a building.
+				
+buildingGH02	Lumber Mill
+descriptionGH02	The owner pays 1 less Wood to build each building.
+
+buildingGH03	Main Station
+descriptionGH03	When leaving the Main Station, visit two different
+				buildings, one after another, without paying the
+				Entry costs. You may not return to the Main Station
+				as one of these visits. You can't be banned from the
+				Main Station. (no action on entry)
+
+buildingGH04	Hotel
+descriptionGH04	While occupying the Hotel, you get 3 Francs from the
+				Treasury each time you take an Offer. You can't be
+				banned from the Hotel. (no action on entry)
+
+buildingGH05	Fur Factory
+descriptionGH05	For each Leather you own: Turn in up to 2 Hides
+				for 4 Francs each.
+
+buildingGH06	Wainwright's
+descriptionGH06	For each Iron you own: Turn in 2 Wood for 5 Francs.
+
+buildingGH07	Fisherman's Hut
+descriptionGH07	The owner gets 1 Fish (2 Fishes with 1-2 players)
+				from the Supply at the end of each round.
+				As an action, turn in 2 Fishes for 3 Fishes,
+				unlimited.
+
+buildingGH08	Soup Kitchen
+descriptionGH08	Provides Food at the end of the round:
+				5/4/3/2/1 Food with 1/2/3/4/5 players.
+
+buildingGH09	Cattle Market
+descriptionGH09	Either: turn in up to 7 Francs for 1 Cattle each.
+				Or: turn in up to 7 Cattle for 3 Francs each.
+
+buildingGH10	Brick Trader
+descriptionGH10	Either: turn in up to 5 Francs for 1 Brick each.
+				Or: turn in up to 5 Bricks for 3 Franc each.
+				
+buildingGH11	Clay Company
+descriptionGH11	Turn in any number of Clay/Wood pairs for
+				3 Francs per pair.
+				
+buildingGH12	Smelting Furnace
+descriptionGH12	For 2 Energy per Clay, turn in any number of
+				Clay for 1 Iron each.
+
+buildingGH13	Flea Market
+descriptionGH13	Take an Offer with exactly 2 tokens and,
+				also, all Offers with exactly 1 token.
+
+buildingGH14	Inn
+descriptionGH14	Turn in any number of Fish for 1 Smoked Fish each,
+				and/or turn in up to 2 Meat for 4 Francs each.
+
+buildingGH15	Cannery Row
+descriptionGH15	Turn in 1 Iron and 4 Smoked Fishes for 18 Francs,
+				and/or turn in 1 Iron and 3 Meat for 16 Francs.
+
+buildingGH16	Hides Trader
+descriptionGH16	Turn in exactly 6 Hides for a total of 18 Francs.
+
+buildingGH17	Fur Industry
+descriptionGH17	Turn in 3 Hides and 10 Francs for 22 Francs.
+
+buildingGH18	Department of Agriculture
+descriptionGH18	Take 1 Meat per owned Economic symbol, and 1 Bread
+				per owned Craftman's symbol.
+
+buildingGH19	Department of Economics
+descriptionGH19	Take 1 Iron per owned Industrial symbol, and
+				2 Francs per owned Economic symbol.
+
+buildingGH20	Stockmarket
+descriptionGH20	The owner gets 1 Franc from the Treasury
+				whenever an opponent takes the Franc Offer;
+				and 3 Francs, when the Bank is built by an
+				opponent. He/she doesn't pay interest
+				any more.
+
+buildingGH21	Souvenir Shop
+descriptionGH21	As the owner of the Souvenir Shop, get
+				1 Franc from the Treasury whenever an
+				opponent visits one of your buildings.
+
+buildingGH22	Wrecker's
+descriptionGH22	Turn in 3 Food for 2 Wood, 2 Clay and 1 Iron;
+				or 6 food for 4 Wood, 4 Clay and 2 Iron.
+
+buildingGH23	Blast Furnace
+descriptionGH23	For 3 Energy per Iron, take up to 6 Iron from
+				the Supply.
+
+buildingGH24	Biofuel Facility
+descriptionGH24	The owner of the Biofuel Facility may pay
+				1 Grain for each 2 energy needed at the
+				Shipping Line.
+
+buildingGH25	Ranch
+descriptionGH25	At the end of the game, worth 2 Francs per
+				Cattle left in the owner's supply.
+
+buildingGH26	Trading Firm
+descriptionGH26	Turn in up to 4 goods for any number of
+				goods with the same total monetary value.
+				
+buildingGH27	Trafficking Spot
+descriptionGH27	Turn in up to 3 standard goods for the same
+				amount of other standard goods (except Iron),
+				and/or turn in up to 3 upgraded goods for the
+				same amount of other upgraded goods (except Steel).
+
+buildingGH28	Major Corporation
+descriptionGH28	For each type of good in your supply (except Franc)
+				take 1 token of this good from the general supply.
+				Pay 3 Francs if you take Steel.
+
+buildingGH29	Emporium
+descriptionGH29	Purchase any number of different upgraded goods.
+				Smoked Fish, Charcoal, Bricks, Bread, Meat and
+				Leather cost 1 Franc each, Coke costs 3 Francs,
+				and Steel costs 5 Francs.
+
+buildingGH30	Cobbler's
+descriptionGH30	Turn in any number of Leather for 2 Bread and
+				2 Francs each.
+
+buildingGH31	Rattletrap car
+descriptionGH31	The Rattletrap car must be taken by the next
+				player getting at least 1 Iron (not Steel).
+				The Rattlerap car cannot be sold.
+
+buildingGH32	Wholesale Bakery
+descriptionGH32	Sell any number of Bread for 2 Francs each.
+
+buildingE2010		Toy fair
+descriptionE2010	Take 1 Loan and 6 different
+					goods (except Steel).
+
+bldCosts		Building Costs
+bldEntry		Entry Fee
+bldFree			free
+bldNoBuild		no building
+bldNoEntry		no entry
+bldNoPurchase	no purchase
+bldPrice		Price
+
+bldNoBuilding	No Building
+bldSpecial		Special Building
+bldStandard		Standard Building
+
+bldInRounds		in %s
+bldNextRound	next round
+bldThisRound	this round
+bldNever		never
+bldYouWill		<b>You</b> will be the first to use it.
+bldOtherWill	<b>%s</b> will be the first to use it.
+
+bldFishing		Fisherman
+bldFishing2		Fishermen
+bldFishing5		Fishermen
+
+bldHammer		Hammer
+bldHammer2		Hammers
+bldHammer5		Hammers
+
+#
+# The building types.
+#
+
+typeCraft		Craft Building
+typeEconomic	Economic Building
+typeIndustrial	Industrial Building
+typePublic		Public Building
+typeShip		Ship
+
+#
+# The ships.
+#
+
+shipWooden		Wooden Ship
+shipIron		Iron Ship
+shipSteel		Steel Ship
+shipLuxury		Luxury Liner
+
+shipsWooden		Wooden Ships
+shipsIron		Iron Ships
+shipsSteel		Steel Ships
+shipsLuxury		Luxury Liners
+
+#
+# The goods.
+#
+
+goodFranc		Franc
+goodFranc2		Francs
+goodFranc5		Francs
+
+goodFish		Fish
+goodFish2		Fishes
+goodFish5		Fishes
+
+goodWood		Wood
+goodWood2		Wood
+goodWood5		Wood
+
+goodClay		Clay
+goodClay2		Clay
+goodClay5		Clay
+
+goodIron		Iron
+goodIron2		Iron
+goodIron5		Iron
+
+goodGrain		Grain
+goodGrain2		Grain
+goodGrain5		Grain
+
+goodCattle		Cattle
+goodCattle2		Cattle
+goodCattle5		Cattle
+
+goodCoal		Coal
+goodCoal2		Coal
+goodCoal5		Coal
+
+goodHides		Hides
+goodHides2		Hides
+goodHides5		Hides
+
+goodSmokedFish	Smoked Fish
+goodSmokedFish2	Smoked Fishes
+goodSmokedFish5	Smoked Fishes
+
+goodCharcoal	Charcoal
+goodCharcoal2	Charcoal
+goodCharcoal5	Charcoal
+
+goodBrick		Brick
+goodBrick2		Bricks
+goodBrick5		Bricks
+
+goodSteel		Steel
+goodSteel2		Steel
+goodSteel5		Steel
+
+goodBread		Bread
+goodBread2		Breads
+goodBread5		Breads
+
+goodMeat		Meat
+goodMeat2		Meat
+goodMeat5		Meat
+
+goodCoke		Coke
+goodCoke2		Coke
+goodCoke5		Coke
+
+goodLeather		Leather
+goodLeather2	Leather
+goodLeather5	Leather
+
+goodFood		Food
+goodFood2		Food
+goodFood5		Food
+
+goodEnergy		Energy
+goodEnergy2		Energy
+goodEnergy5		Energy
+
+#
+# The About Contents.
+#
+
+about
+	<h1>About JLeHavre...</h1>
+	<p>The work on the computer version of the great board game <b>Le Havre</b> by successful
+	designer <b>Uwe Rosenberg</b> (Agricola, Bohnanza) started on January&nbsp;7th, 2009 and
+	went on until end of March. It was solely done by <b>Grzegorz Kobiela</b> from Hanover,
+	Germany.</p>
+	<p>All rights on the graphics and the board game are reserved to their proper owners.
+	The programmer has got the explicit approval of the respective rights-holders to publish
+	this project and to use the original graphics.</p>
+	<p>The duplication and distribution of parts of or the whole game are prohibited.
+	The rights of the respective rights-holders must be preserved.</p>
+	<h1>Programming</h2>
+	<p>The computer version of <b>Le Havre</b> was written in the programming language <b>Java</b>
+	(version 1.6). The network communication is based on <b>JGroups</b>, a class library designed
+	by a third party to help with network projects in Java. The stability of the game offline and online is
+	mainly based on their library.</p>
+	<p>This version of the computer game is final and I won't continue the work on it. Meanwhile,
+	I'm creating another version from scratch and hope to make it more stable and better than this one,
+	and hopefully it'll have artificial intelligence, i.&nbsp;e. computer players. I strongly apologize
+	for any bugs and other problems you might encounter with the game. I do know that there might be
+	occasional memory leaks.</p>
+	<h1>Acknowledgments</h2>
+	<p>First of all I want to thank the ingenious designer of this tremendous board game, <b>Uwe Rosenberg</b>,
+	for his approval of this project, but above all I'm very grateful for his great support! Next I want to
+	thank Hanno Girke from Lookout Games for his OK, and Klemens Franz for his excellent graphic design,
+	his approval to use it and support. Finally, I want to thank <u>all</u> of my playtesters, namely Markus Tong,
+	Bo Link, Jake Duffy, BGG user dreadpirate, Rogério Pereira, Zach Carter and Phil Sauer. I apologize to all
+	of those of you who haven't been named here. I didn't keep track of my playtesters, so I may have forgotten
+	some of you. I'm so sorry! I could only name those who answered me through boardgamegeek. So, if you weren't
+	named here, but would like to (as you deserve it!), please contact me and I'll add you here. You'll find my
+	email address below.</p>
+	<p>Also, great thanks to Micheal Murphy for checking the English language file.</p>
+	<h1>Support</h1>
+	<p>I kindly ask everyone who is willing for a small donation. This first version of the computer game is
+	100% free and nobody needs to pay me for my work. However, if you love this computer version  and if you want to
+	compensate my effort, please send a little money via PayPal to <b>grzesieczek@gmx.de</b>. Your donations
+	will give me motivation to continue programming. That said, I'd like to thank to all of those who have already
+	made a donation: Doug Bass, Isaac, Jan Brockmann, Markus Ellenberger, Michael Nosiara und Robert Trezise.</p>
+	<p>This email address is also my contact address if you have any questions or suggestions. Also, you can
+	contact me via Boardgamegeek at any time under the user name <b>Ponton</b>.</p>
+	<h1>A Last Plea</h1>
+	<p>This project would never exist if there wasn't the outstanding work of designer <b>Uwe Rosenberg</b> and
+	his marvelous board game <b>Le Havre</b>. Therefore I ask everyone who loves to play this computer version
+	to also consider the purchase of the original board game! This way you can express your gratitude for this
+	great game to its designer and encourage him to design further ingenious games in the future. This way you
+	do yourself a favor when there will be the next great Rosenberg game.</p>
+	<p>Also: Is there anything better than sitting with friends at the table and having a relaxed session of
+	<b>Le Havre</b> and other board games? Where else will you get to laugh about the expression on your opponent's
+	face if you make a perfect move, or will you see red if your opponent crushes you!</p>
+	<p>Finally, I wish all of you a lot of fun with this game!</p>

@@ -1,0 +1,52 @@
+<html><body><title>Noughts & Crosses by rhuk</title>
+
+<center>
+
+<body dd-bgcolor="#021D0F">
+
+<IMG SRC="jpgs/title.jpg" WIDTH=208 HEIGHT=232 BORDER=0>
+
+<BR><BR>
+
+<A HREF="http://www.jars.com/jul96five.html"><IMG SRC="5perc.gif" WIDTH=115 HEIGHT=95 BORDER=0></A><BR><BR>
+
+
+
+<IMG SRC="jpgs/tothedeath.jpg" WIDTH=230 HEIGHT=45 BORDER=0>
+
+<BR><BR>
+
+<IMG SRC="jpgs/click.jpg" WIDTH=200 HEIGHT=68 BORDER=0>
+
+<BR><BR>
+
+<IMG SRC="jpgs/leftarrow.jpg" WIDTH=108 HEIGHT=73 BORDER=0>
+
+<!--#exec cgi="/cgi-bin/GameServer" -->
+<applet code="NCClient.class" width=70 height=70>
+<param name="hhost" VALUE="http://extlab1.entnem.ufl.edu/rhuk/">
+<param name="hhost" VALUE="http://9.0.2.16/rhuk/">
+<param name="host" VALUE="http://andromeda.com">
+</applet>
+
+<IMG SRC="jpgs/rightarrow.jpg" WIDTH=108 HEIGHT=73 BORDER=0>
+
+<BR><BR>
+
+<A HREF="source/source.html"><IMG SRC="jpgs/source.jpg" WIDTH=117 HEIGHT=22 BORDER=0></A>
+
+<BR><BR>
+
+<A HREF="MAILTO:rhuk@cis.ufl.edu"><IMG SRC="jpgs/rhuk.jpg" WIDTH=97 HEIGHT=54 BORDER=0></A>
+
+<BR>
+
+<A HREF="http://www.cis.ufl.edu/~rhuk"><IMG SRC="jpgs/andy.JPG" WIDTH=95 HEIGHT=19 BORDER=0></A>
+
+</center>
+
+
+
+<img src="/cgi-bin/counter.exe?link=javaproj&style=small&width=5" WIDTH=22 HEIGHT=10><br>
+
+</body></html>

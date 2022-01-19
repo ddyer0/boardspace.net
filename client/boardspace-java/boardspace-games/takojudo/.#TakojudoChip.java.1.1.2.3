@@ -1,0 +1,88 @@
+package takojudo;
+
+import java.awt.Image;
+import lib.Random;
+import online.game.chip;
+import online.game.commonCanvas;
+
+/*
+ * generic "playing piece class, provides canonical playing pieces, 
+ * image artwork, scales, and digests.  For our purposes, the squares
+ * on the board are pieces too, so there are four of them.
+ * 
+ */
+public class TakojudoChip extends chip
+{	
+	private int colorIndex;
+	private int chipIndex;
+	private String name = "";
+	private boolean isHead;
+	public int chipNumber() { return(chipIndex); }
+
+
+	private TakojudoChip(String na,int ind,Image im,long rv,double scl[])
+	{	name = na;
+		colorIndex=ind&1;
+		chipIndex = ind;
+		isHead = ind<2;
+		image = im;
+		randomv = rv;
+		scale = scl;
+	}
+	public String toString()
+	{	return("<"+ name+" #"+colorIndex+" "+isHead+">");
+	}
+	public String contentsString() 
+	{ return(name); 
+	}
+	public int playerIndex() { return(colorIndex); }
+	public boolean isHead()
+	{	return(isHead);
+	}
+	// note, do not make these private, as some optimization failure
+	// tries to access them from outside.
+    static private TakojudoChip CANONICAL_PIECE[] = null;	// created by preload_images
+    static private double SCALES[][] =
+    {	{0.4,0.65,2.888},		// light head
+    	{0.4,0.65,2.888},		// dark head
+    	{0.578,0.5,1.43},	// white tenticle
+    	{0.546,0.5,1.38},	// dark tenticle
+    };
+     
+
+	public static TakojudoChip getChip(int color)
+	{	return(CANONICAL_PIECE[color]);
+	}
+	public static TakojudoChip getChip(int pl,int color)
+	{
+		return(CANONICAL_PIECE[+pl+color]);
+	}
+  /* pre load images and create the canonical pieces
+   * 
+   */
+ 
+   static final String[] ImageNames = 
+       {"light-head","dark-head","white-chip-np","black-chip-np"};
+   static final int N_STANDARD_CHIPS = ImageNames.length;
+   static final int FIRST_TILE_INDEX = 0;
+   static final int HEAD_INDEX = 0;
+   static final int TENTACLE_INDEX = 2; 
+	// call from the viewer's preloadImages
+	public static void preloadImages(commonCanvas forcan,String ImageDir)
+	{	if(CANONICAL_PIECE==null)
+		{
+		int nColors = ImageNames.length;
+        Image IM[]=forcan.load_masked_images(ImageDir,ImageNames);
+        TakojudoChip CC[] = new TakojudoChip[nColors];
+        Random rv = new Random(343535);		// an arbitrary number, just change it
+        for(int i=0;i<nColors;i++) 
+        	{
+        	CC[i]=new TakojudoChip(ImageNames[i],i,IM[i],rv.nextLong(),SCALES[i]); 
+        	}
+        CANONICAL_PIECE = CC;
+        check_digests(CC);
+		}
+	}
+
+
+}

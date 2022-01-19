@@ -1,0 +1,49 @@
+#Develop server configuration
+#main log file
+logfile,/home/boardspa/logs/DevelopServer.log
+chatfile,/home/boardspa/logs/DevelopChat.log
+securityfile,/home/boardspa/logs/DevelopSecurity.log
+max_logfile_megabytes,10
+crash-test,1
+use-threads,1
+detatch,1
+#ip address to bind, needed if strict is enabled
+bindip,67.202.75.88
+# strict logins and checking of game results
+strict,0
+# 0 is no, 1 is normal, 2 is never score
+strict-score,2
+# game port
+port,2256
+# log level, 0=none 2=normal 3=everything
+loglevel,2
+# password for lobby commands
+password,BSxyzzy
+# realtime status monitor
+statusfile,/home/boardspa/public_html/admin/Develop_Status.html
+player-info-url,/cgi-bin/edit.cgi?pname=%s
+#
+# first char is G or N for game type or non-game type
+#
+nroomtypes,10
+roomtype0,GGame
+roomtype1,NChat
+roomtype2,GReview
+roomtype3,NMap
+roomtype4,GUnranked
+roomtype5,GMaster
+roomtype6,
+roomtype7,
+roomtype8,
+roomtype9,
+
+# players and rooms
+players,120
+rooms,40,
+connections,25
+connections-per-session,12
+connections-per-uid,15
+gamecachedir,/home/boardspa/bin/DevelopGames/
+gamecacherate,4
+client-timeout,120
+lobby-timeout,120

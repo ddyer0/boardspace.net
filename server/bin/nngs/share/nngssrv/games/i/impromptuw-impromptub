@@ -1,0 +1,37 @@
+Rules: 1
+B_Penalty: 0
+W_Penalty: 0
+Size: 9
+TimeStart: 1283208434
+W_Time: 4800
+B_Time: 4800
+Byo: 4800
+ByoS: 25
+W_Byo: 0
+B_Byo: 0
+W_ByoStones: -1
+B_ByoStones: -1
+ClockStopped: 0
+Rated: 0
+Private: 0
+Type: 1
+TimeType: 0
+Totalticks: 4800
+GoType: 1
+NumPass: 2
+Komi: 5.5
+Teach: 0
+Teach2: 0
+Ladder9: 0
+Ladder19: 0
+Tourn: 0
+Ladder_Possible: 0
+OnMove: 0
+MovesRNext: oinkoink
+;B[fe];W[de];B[dd];W[cd];B[dc];W[ee];B[fd];W[ff];B[gf];W[gg];B[ce];W[cf]
+;B[be];W[eg];B[bf];W[gc];B[cg];W[df];B[ed];W[dg];B[ge];W[bd];B[cc];W[ch]
+;B[bg];W[fc];B[ad];W[ec];B[eb];W[fb];B[db];W[hf];B[he];W[hg];B[hc];W[hb]
+;B[hd];W[bh];B[gd];W[gb];B[ha];W[ib];B[ah];W[ic];B[id];W[bi];B[ag];W[fa]
+;B[if];W[ig];B[ie];W[ea];B[da];W[tt];B[ai];W[dh];B[tt];W[tt]
+kibitz: oink
+

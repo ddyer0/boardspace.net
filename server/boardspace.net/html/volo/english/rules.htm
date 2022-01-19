@@ -1,0 +1,420 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html><head>
+<meta name="keywords" content="games boardgames abstract gamedesign
+gamedesigner spiele spielautor spieleautoren autorenspiele
+spielstein quiz rätsel rätselfragen konzepte ideen brettspiele
+gesellschaftsspiele unterhaltung unterhaltungsspiele entwicklung">
+<meta name="description" content="spielstein - spiele &amp; rätsel">
+<meta http-equiv="imagetoolbar" content="no">
+<meta http-equiv="content-type" content="text/html; charset=UTF-8"><title>spielstein - games &amp; puzzles by Dieter Stein</title>
+
+<link href="rules_files/css_002.css" rel="stylesheet" type="text/css">
+<link href="rules_files/css.css" rel="stylesheet" type="text/css">
+<link href="rules_files/css_003.css" rel="stylesheet" type="text/css">
+<script src="rules_files/jquery.js"></script>
+<style type="text/css">
+/*<![CDATA[*/
+div.sdj {
+background-image: url(/images/games/mixtour/mixt_trans.png);
+background-repeat: no-repeat;
+background-position: top right;
+}
+div.sdj a {
+font-weight: normal;
+}
+table.notation td {
+font-family: monospace;
+font-size: 12px;
+}
+body {
+margin: 0;
+padding: 0;
+font-family: 'Source Sans Pro', arial, geneva, sans-serif;
+font-size: 15px;
+/*background-color: #2A579A;*/
+background-color: #FFF;
+color: #333;
+/*background-image: url(/images/shadow.png);*/
+background-repeat: repeat-x;
+background-position: top center;
+}
+img {
+border: 0;
+}
+.shadow {
+-moz-box-shadow: 0px 3px 10px #7C7C7C;
+-webkit-box-shadow: 0px 3px 10px #7C7C7C;
+box-shadow: 0px 3px 10px #7C7C7C;
+}
+.special {
+display: none;
+}
+a {
+text-decoration: none;
+color: #1BA3D1;
+font-weight: bold;
+}
+a:hover {
+text-decoration: underline;
+}
+ul, ol {
+padding-left: 0;
+}
+li {
+padding-left: 0;
+margin-left: 2em;
+}
+input[type=text] {
+width: 300px;
+padding: 4px;
+font-size: 16px;
+font-family: 'Source Sans Pro', arial, geneva, sans-serif;
+border: 1px solid #CCC;
+border-radius: 4px;
+}
+textarea {
+width: 500px;
+padding: 4px;
+font-size: 16px;
+font-family: 'Source Sans Pro', arial, geneva, sans-serif;
+border: 1px solid #CCC;
+border-radius: 4px;
+}
+dt {
+font-weight: bold;
+margin-top: 1em;
+}
+.new {
+background-color: #FEFF9F; }
+p.ref {
+font-size: 11px;
+text-align: right;
+border: 1px solid #CCC;
+padding: 2px 4px;
+margin: 3ex 0 1ex 0;
+}
+h1 {
+margin: 20px 0 10px 0;
+font-weight: normal;
+font-size: 275%
+}
+h1 a, h2 a, h3 a, h4 a, h5 a, h6 a {
+color: inherit;
+}
+h1.sup {
+font-size: 12pt;
+margin-bottom: -20px;
+}
+h1, h2, h3, h4, h5, h6 {
+font-family: 'Montserrat', sans-serif;
+color: #82979B;
+/*text-shadow: 0 2px 3px #DDD;*/
+}
+table {
+margin: 0;
+padding: .5em;
+width: 100%;
+}
+th, td {
+padding: .25em 1em .25em 0;
+}
+th {
+text-align: left;
+border-bottom: 2px solid #CCC;
+}
+td {
+vertical-align: top;
+border-bottom: 1px dotted #CCC;
+}
+td.left {
+padding: 0 1em 0 0;
+width: 180px;
+text-align: center;
+}
+table.clean td, table.clean th {
+border: 0;
+}
+div#contents {
+width: 800px;
+margin: 0 auto;
+padding: 0;
+background: white;
+}
+p {
+margin-bottom: .25em;
+}
+.fig {
+font-size: 90%;
+padding: 2px 2px 2px 10px;
+margin-bottom: 2em;
+border-left: 3px solid #CCC;
+}
+.deprecated {
+text-decoration: line-through;
+color: #999;
+}
+p.blue-box {
+padding: .5em;
+background-color: #F3F7F8;
+border: 1px solid #C0E1E7;
+-webkit-border-radius: 5px;
+-moz-border-radius: 5px;
+border-radius: 5px;
+}
+p.green-box {
+padding: .5em;
+background-color: #FAFFE0;
+border: 1px solid #BCD636;
+-webkit-border-radius: 5px;
+-moz-border-radius: 5px;
+border-radius: 5px;
+}
+div.blue-box {
+margin-top: 1em;
+padding: 0 1em;
+background-color: #F3F7F8;
+border: 1px solid #C0E1E7;
+-webkit-border-radius: 5px;
+-moz-border-radius: 5px;
+border-radius: 5px;
+}
+div.green-box {
+margin-top: 1em;
+padding: 0 1em;
+background-color: #FAFFE0;
+border: 1px solid #BCD636;
+-webkit-border-radius: 5px;
+-moz-border-radius: 5px;
+border-radius: 5px;
+}
+.small {
+font-size: 90%;
+}
+.footer {
+clear: both;
+background-color: #262626;
+color: white;
+padding: 15px 20px 20px 20px;
+font-size: 75%;
+width: 760px;
+margin: 0 auto;
+}
+blockquote {
+font-style: italic;
+border-left: 5px solid #EEE;
+padding-left: 10px;
+}
+/*]]>*/
+</style>
+<style>@-webkit-keyframes popxzyjgjqdxcabstcdeslqsuapvujqbtamwhae {50% {-webkit-transform:scale(1.2);}100% {-webkit-transform:scale(1);}}@keyframes popxzyjgjqdxcabstcdeslqsuapvujqbtamwhae {50% {-webkit-transform:scale(1.2);transform:scale(1.2);}100% {-webkit-transform:scale(1);transform:scale(1);}}#xzyjgjqdxcabstcdeslqsuapvujqbtamwhae{padding:0;margin:0;font:13px Arial,Helvetica;text-transform:none;font-size: 100%;vertical-align:baseline;line-height:normal;color:#fff;position:static;border:solid 2px #fff !important;color:#fff !important;display:block !important;height:auto !important;margin:0 !important;opacity:0.9 !important;padding:7px 10px !important;position:fixed !important;visibility:visible !important;width:auto !important;z-index:2147483647 !important;-moz-border-radius:5px !important;border-radius:5px !important;-moz-box-shadow:0px 0px 20px #000 !important;box-shadow:0px 0px 20px #000 !important;}.xzyjgjqdxcabstcdeslqsuapvujqbtamwhae-blocked{padding:0;margin:0;font:13px Arial,Helvetica;text-transform:none;font-size: 100%;vertical-align:baseline;line-height:normal;color:#fff;position:static;color:#AAA !important;display:inline !important;text-decoration:line-through !important;}#xzyjgjqdxcabstcdeslqsuapvujqbtamwhae br{display:inline-block !important;padding:0;margin:0;font:13px Arial,Helvetica;text-transform:none;font-size: 100%;vertical-align:baseline;line-height:normal;color:#fff;position:static;}#xzyjgjqdxcabstcdeslqsuapvujqbtamwhae span{background:transparent !important;padding:0;margin:0;font:13px Arial,Helvetica;text-transform:none;font-size: 100%;vertical-align:baseline;line-height:normal;color:#fff;position:static;}#xzyjgjqdxcabstcdeslqsuapvujqbtamwhae div{padding:0;margin:0;font:13px Arial,Helvetica;text-transform:none;font-size: 100%;vertical-align:baseline;line-height:normal;color:#fff;position:static;border:0 !important;margin:0 !important;padding:0 !important;width:auto !important;letter-spacing:normal !important;font:13px Arial,Helvetica !important;text-align:left !important;text-shadow:none !important;text-transform:none !important;word-spacing:normal !important;}#xzyjgjqdxcabstcdeslqsuapvujqbtamwhae a{padding:0;margin:0;font:13px Arial,Helvetica;text-transform:none;font-size: 100%;vertical-align:baseline;line-height:normal;color:#fff;position:static;font-weight:normal !important;background:none !important;text-decoration:underline !important;color:#fff !important;}a#xzyjgjqdxcabstcdeslqsuapvujqbtamwhae-gear{padding:0;margin:0;font:13px Arial,Helvetica;text-transform:none;font-size: 100%;vertical-align:baseline;line-height:normal;color:#fff;position:static;text-decoration:none !important;position:absolute !important;display:none !important;font-size:20px !important;width:20px !important;height:20px !important;line-height:20px !important;text-align:center !important;background-color:rgba(255,255,255,.8) !important;background-image:url(resource://firefox-at-ghostery-dot-com/ghostery/data/images/gear.svg) !important;background-size:16px 16px !important;background-position:center center !important;background-repeat:no-repeat !important;text-decoration:none !important;}a#xzyjgjqdxcabstcdeslqsuapvujqbtamwhae-gear:hover{-webkit-animation-name:popxzyjgjqdxcabstcdeslqsuapvujqbtamwhae !important;animation-name:popxzyjgjqdxcabstcdeslqsuapvujqbtamwhae !important;-webkit-animation-duration:0.3s !important;animation-duration:0.3s !important;}#xzyjgjqdxcabstcdeslqsuapvujqbtamwhae:hover #xzyjgjqdxcabstcdeslqsuapvujqbtamwhae-gear{text-decoration:none !important;display:inline-block !important;}#xzyjgjqdxcabstcdeslqsuapvujqbtamwhae hr{visibility:hidden !important;padding:0;margin:0;font:13px Arial,Helvetica;text-transform:none;font-size: 100%;vertical-align:baseline;line-height:normal;color:#fff;position:static;height:1em;}@media print{#xzyjgjqdxcabstcdeslqsuapvujqbtamwhae{display:none !important;}}</style>
+<link href="rules_files/socialwidgets.css" type="text/css" rel="stylesheet">
+</head>
+
+  <body>
+<div id="contents"><div style="text-align: center;">
+</div><table style="text-align: left; width: 100%;" border="1" cellpadding="2" cellspacing="2">
+<tbody>
+<tr>
+<td style="text-align: center;"><h1>Rules for Volo</h1></td>
+<td>
+<div id="google_translate_element"></div>
+<script type="text/javascript">
+function googleTranslateElementInit() {
+new google.translate.TranslateElement({pageLanguage: 'en', layout: google.translate.TranslateElement.InlineLayout.SIMPLE}, 'google_translate_element');
+}
+</script>
+<script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit">
+</script>
+</td>
+</tr>
+</tbody>
+</table>
+<br>
+&nbsp;
+<div style="padding: 0pt 20px 20px;">
+<div style="padding: 0pt 20px 20px 0pt; float: left; width: 540px;">
+
+<p>An abstract game for 2 players by Dieter Stein</p>
+<p><strong>This game is dedicated to the nature and beauty
+of birds. Their colors, their singing, and the art of flight.</strong></p>
+<blockquote style="font-style: italic; font-size: 90%;">
+<p>The simplest mathematical models of animal aggregations
+generally instruct the individual animals to follow three rules:</p>
+<ol>
+<li>Move in the same direction as your neighbor</li>
+<li>Remain close to your neighbors</li>
+<li>Avoid collisions with your neighbors</li>
+</ol>
+<p style="text-align: right;"><i style="font-size: 90%;">from Wikipedia, <a href="http://en.wikipedia.org/wiki/Collective_animal_behavior">Collective
+animal behavior</a></i></p>
+</blockquote>
+<h2>Material</h2>
+<ul>
+<li>Hexagonal board, edge size 7, the “sky” (without 6 corners
+and center space)</li>
+<li>120 playing pieces (60 orange and 60 blue “birds”)</li>
+</ul>
+<p><img src="rules_files/material.png" alt=""></p>
+<p class="fig"><strong>Figure 1</strong> – The
+hexagonal board with 120 spaces (intersection of lines) and 2 × 60
+pieces.</p>
+<h2>Preparation</h2>
+<p>Each player gets 60 birds of one color and adds 3 of them to
+the board according to the following figure.</p>
+<p><img src="rules_files/setup.png" alt=""></p>
+<p class="fig"><strong>Figure 2</strong> –
+Initial setup.</p>
+<h2>Objective</h2>
+<p>The aim of the game seems simple: <strong>Bring all of
+your birds in the sky together into one contiguous flock.</strong></p>
+<blockquote>
+<p><em>Yet the flight of the birds is not that simple.
+You must add new birds to the sky to let them fly together and this is
+where the competition unfolds.</em></p>
+</blockquote>
+<h2>Play</h2>
+<p>Players take turns, starting with Orange. In each turn you
+choose <strong>one</strong> of the following options:</p>
+<ul>
+<li><strong>add a bird</strong></li>
+<li><strong>let the birds fly</strong></li>
+</ul>
+<p>If no legal moves are available, pass your turn.</p>
+<h3>Add a Bird</h3>
+<p>Place a single bird anywhere, but <strong>not adjacent</strong>
+to any other <strong>friendly</strong> bird already on the
+board and <strong>not into a region controlled by the opponent.</strong>
+Such a region has no open path to any other friendly bird (see chapter
+“Regions” below).</p>
+<p><img src="rules_files/enter.png" alt=""></p>
+<p class="fig"><strong>Figure 3</strong> –
+Orange may place a bird anywhere but not adjacent to a friendly bird or
+into a region controlled by the opponent.</p>
+<h3>Let the Birds Fly</h3>
+<p>A single bird or a line of birds move in a straight line, over
+vacant spaces and must always stop <strong>next to another
+friendly bird</strong> and in this way <strong><em>enlarge</em>
+one or more other flocks.</strong> (A single bird can also be
+referred to as a “flock”.)</p>
+<p>You may <strong>never split</strong> an existing
+flock.</p>
+<p><img src="rules_files/move_single.png" alt=""></p>
+<p class="fig"><strong>Figure 4</strong> – The
+marked orange bird has 8 moves. Note that the bird may pass friendly
+birds while flying as long as the final stop is adjacent to another
+flock.</p>
+<p>A <strong>straight</strong> line of any number of
+birds of one color may fly <strong>in file</strong> or <strong>side
+by side.</strong></p>
+<p><img src="rules_files/move_flock_1.png" alt=""></p>
+<p class="fig"><strong>Figure 5</strong> – The
+marked flock of 3 birds has 5 moves: either 2 or 3 steps to the upper
+left creating a flock of 4 or 5, or to the lower left flying in single
+file connecting to a single bird. Opponent birds block possible moves.</p>
+<p>You may rearrange an existing flock if it is <strong>not
+split</strong> and also <strong>enlarged</strong>
+after the move.</p>
+<p><img src="rules_files/move_flock_2.png" alt=""></p>
+<p class="fig"><strong>Figure 6</strong> – The
+orange flock has <strong>only one</strong> move. It cannot
+be split. But it can be rearranged as long as it grew larger after the
+move.</p>
+<h3>Regions</h3>
+<p>If a player’s birds are separated from each other in different
+regions, i.e. there exists <strong>no open path to any other
+friendly bird,</strong> they are removed from the board – they
+fly away. “Open path” means vacant spaces or spaces occupied only by
+friendly birds.</p>
+<p>The player who made the move can choose which region must be
+cleared. It is possible that more than two regions are created. Clear
+any of these regions but leave <strong>one</strong> region
+untouched.</p>
+<p>It is possible that the opponent is left with a single flock
+and the game is lost immediately.</p>
+<blockquote>
+<p><em>Note that usually creating regions and removing
+birds is beneficial only for your opponent.</em></p>
+</blockquote>
+<p><img src="rules_files/regions.png" alt=""></p>
+<p class="fig"><strong>Figure 7</strong> –
+Orange created 3 regions A, B, and C and must now choose 2 of them,
+remove all birds there and give them back to the opponent player. In
+this example, if region B (with a single bird) would remain on the
+board, Blue would win the game immediately.</p>
+<p><img src="rules_files/regions_result.png" alt=""></p>
+<p class="fig"><strong>Figure 8</strong> –
+Orange removed all birds in the regions A and B.</p>
+<h3>Pass</h3>
+<p>There may be a situation where you neither can (or want) to
+add a bird, nor let one of your flocks fly.</p>
+<p>If no action is possible you <strong>must</strong>
+pass your turn. If however, birds could possibly be <strong>added,</strong>
+but only in regions <strong>of your own</strong> then you <strong>may</strong>
+pass your turn. If both players pass their turn, the game ends in a
+draw.</p>
+<p><img src="rules_files/pass.png" alt=""></p>
+<p class="fig"><strong>Figure 9</strong> – In
+this situation both players have no moves available. They could add
+birds, but only in their own regions (marked red and yellow). Here both
+players pass their turns and the game ends in a draw.</p>
+<h2>End of the Game</h2>
+<p>You win by ending up with all your birds in <strong>one
+contiguous flock</strong> of any size.</p>
+<p><img src="rules_files/win.png" alt=""></p>
+<p class="fig"><strong>Figure 10</strong> –
+Blue wins.</p>
+<p>Note that the effect of regions is always secondary. If you
+accomplish a winning formation and simultaneously divide your
+opponent’s birds into two or more contiguous flocks, each in one
+region, <strong>you</strong> win. There is no need for you
+to clear any regions and thus create a winning position for your
+opponent as well.</p>
+<h2>Examples</h2>
+<p><img src="rules_files/example_1.png" alt=""></p>
+<p class="fig"><strong>Figure 11</strong> –
+Orange to move and must avoid the decisive move for Blue A to space 1,
+thus an orange bird enters at space 2. After that, the blue bird B
+flies to space 3 and Orange cannot block the winning flight of Blue A
+to space 4 (see winning position above, figure 10).</p>
+<p><img src="rules_files/example_2.png" alt=""></p>
+<p class="fig"><strong>Figure 12</strong> –
+Orange to move and win in 5 half-moves. Do you see how? <a href="https://spielstein.com/games/volo/puzzles/1">Solution</a></p>
+<audio src="rules_files/blackbird.oga" autoplay="autoplay" loop="loop"></audio> </div>
+<div style="padding: 5px 20px; margin-left: 560px; width: 180px; font-size: 90%;">
+<div style="border-bottom: 3px solid rgb(227, 227, 227); padding-bottom: 1em;">
+<p><a href="https://spielstein.com/games/volo"><img src="rules_files/logo.png" alt=""></a></p>
+<p><strong>il volo</strong>, <em>ital.:</em>
+“(bird) flight”</p>
+<p>This version: August 31, 2010</p>
+<h2>License</h2>
+<p>This work is licensed under a Creative Commons
+Attribution-Noncommercial 3.0 License.</p>
+<p><a href="http://creativecommons.org/licenses/by-nc/3.0/"><img src="rules_files/88x31.png" alt=""></a></p>
+<p><a href="http://creativecommons.org/licenses/by-nc/3.0/">http://creativecommons.org<br>
+/licenses/by-nc/3.0/</a></p>
+<p class="small">This means that you are free to copy and
+use these rules, but you must include the designer’s name (Dieter
+Stein) and a link back to the website (spielstein.com) if you publish
+them.</p>
+<p class="small">Unless otherwise agreed, commercial use
+is disallowed.</p>
+</div>
+</div>
+<div style="padding-bottom: 5em;">&nbsp;</div>
+</div>
+<div class="footer">
+<div style="float: left;"> Copyright © 2015 Dieter Stein.
+Some rights reserved. </div>
+<div style="text-align: right;"> <a style="color: white; font-weight: normal;" href="https://spielstein.com/de/impressum">Impressum</a>
+</div>
+</div>
+</div>
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+ga('create', 'UA-35053344-1', 'auto');
+ga('send', 'pageview');
+</script>
+</body></html>

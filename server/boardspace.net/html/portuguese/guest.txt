@@ -1,0 +1,4 @@
+
+Olá, Convidado - obrigado por vir. Você é benvindo a jogar, assitir ou apenas bater papo.
+Para enfrentar o Robô, clique em um retângulo escuro em uma sala de jogo vazia e aperte "Enfrentar o Robô".
+Alternativamente, você pode aguardar que outro jogador junte-se a você e clique em "Iniciar".

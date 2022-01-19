@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jnlp spec="1.0+" codebase="http://boardspace.net/java/" href="testlaunch.jnlp">
+    <information>
+        <title>Boardpace Application Launcher</title>
+        <vendor>Boardspace.net</vendor>
+        <description>Boardpace launcher using Java Web Start</description>
+        <description kind="short">Boardspace Lobby</description>
+        <icon href="boardspace-icon.jpg" kind="default"/>
+        <icon href="boardspace-splash.jpg" kind="splash"/>
+        <shortcut online="true">
+       	 <desktop/>
+        </shortcut>
+        <offline-allowed/>
+    </information>
+    <update check="timeout" policy="always"/>
+    <resources>
+        <j2se version="1.6+"/>
+        <jar href="testlaunch/Launcher.jar" main="true" download="eager"/>
+	<jar href="<!--#include virtual="/cgi-bin/applettag.cgi?tagname=classdir" -->/OnlineLobby.jar" />
+    </resources>
+    <application-desc main-class="util.JWSApplication">
+    <argument>servername</argument>
+    <argument>boardspace.net</argument>
+    </application-desc>
+</jnlp>

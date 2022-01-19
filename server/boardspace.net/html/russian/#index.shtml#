@@ -1,0 +1,162 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html;
+      charset=ISO-8859-1">
+    <title>BoardSpace.net Home Page</title>
+    <script src="/js/site.js"></script>
+  </head>
+  <body style="background-image: url(../images/background-image.jpg);">
+    <h1 style="text-align: center;"><img alt="boardspace.net"
+        src="master-logo.jpg" style="width: 600px; height: 100px;"></h1>
+    <h1 style="text-align: center;">&#1047;&#1076;&#1077;&#1089;&#1100; &#1080;&#1075;&#1088;&#1072;&#1102;&#1090; &#1074; &#1085;&#1072;&#1089;&#1090;&#1086;&#1083;&#1082;&#1080;.<br>
+    </h1>
+    <table style="width: 80%; height: 1%; text-align: left; margin-left:
+      auto; margin-right: auto;" border="0" cellpadding="2"
+      cellspacing="2">
+      <caption><font size="+1"><span style="font-weight: bold;"></span></font><br>
+      </caption><tbody>
+        <tr>
+          <td style="vertical-align: top; text-align: center;"><font
+              size="+1"><a href="register.shtml"><span
+                  style="font-weight: bold;">&#1056;&#1077;&#1075;&#1080;&#1089;&#1090;&#1088;&#1072;&#1094;&#1080;&#1103;</span></a></font><br>
+          </td>
+          <td style="vertical-align: top; text-align: center;"><font
+              size="+2"><a style="font-weight: bold;" href="login.shtml">&#1042;&#1086;&#1081;&#1090;&#1080;
+                &#1080; &#1080;&#1075;&#1088;&#1072;&#1090;&#1100;!<br>
+              </a></font></td>
+          <td style="vertical-align: top; text-align: center;"><font
+              size="+1"><a href="guest.shtml"><span style="font-weight:
+                  bold;">&#1043;&#1086;&#1089;&#1090;&#1077;&#1074;&#1086;&#1081; &#1074;&#1093;&#1086;&#1076;</span></a></font><br>
+          </td>
+        </tr>
+        <tr>
+          <td colspan="3" style="vertical-align: top;">
+            <div style="text-align: center;">&#1063;&#1090;&#1086;&#1073;&#1099; &#1086;&#1089;&#1084;&#1086;&#1090;&#1088;&#1077;&#1090;&#1100;&#1089;&#1103; &#1079;&#1076;&#1077;&#1089;&#1100;,
+              &#1085;&#1072;&#1078;&#1084;&#1080;&#1090;&#1077; "&#1043;&#1086;&#1089;&#1090;&#1077;&#1074;&#1086;&#1081; &#1074;&#1093;&#1086;&#1076;". &#1051;&#1080;&#1073;&#1086; &#1079;&#1072;&#1088;&#1077;&#1075;&#1080;&#1089;&#1090;&#1088;&#1080;&#1088;&#1091;&#1081;&#1090;&#1077;&#1089;&#1100; (&#1101;&#1090;&#1086;
+              &#1079;&#1072;&#1081;&#1084;&#1077;&#1090; &#1086;&#1082;&#1086;&#1083;&#1086; &#1084;&#1080;&#1085;&#1091;&#1090;&#1099;) &#1080; &#1080;&#1075;&#1088;&#1072;&#1081;&#1090;&#1077; &#1087;&#1086;&#1076; &#1089;&#1074;&#1086;&#1080;&#1084; &#1080;&#1084;&#1077;&#1085;&#1077;&#1084;.<br>
+            </div>
+            <div style="text-align: center;">&#1054;&#1076;&#1085;&#1072;&#1078;&#1076;&#1099; &#1074;&#1086;&#1081;&#1076;&#1103; &#1087;&#1086;&#1076; &#1089;&#1074;&#1086;&#1080;&#1084;&#1080;
+              &#1080;&#1084;&#1077;&#1085;&#1077;&#1084;, &#1042;&#1099; &#1089;&#1084;&#1086;&#1078;&#1077;&#1090;&#1077; &#1074; &#1076;&#1072;&#1083;&#1100;&#1085;&#1077;&#1081;&#1096;&#1077;&#1084; &#1089;&#1088;&#1072;&#1079;&#1091; &#1087;&#1086;&#1087;&#1072;&#1076;&#1072;&#1090;&#1100; &#1085;&#1072; &#1089;&#1090;&#1088;&#1072;&#1085;&#1080;&#1094;&#1091;
+              &#1089; &#1080;&#1075;&#1088;&#1072;&#1084;&#1080;.<br>
+            </div>
+            <div style="text-align: center;">&#1048;&#1075;&#1088;&#1072; - &#1101;&#1090;&#1086; &#1042;&#1045;&#1065;&#1068;! :)<br>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <br>
+    <!--#include virtual="/cgi-bin/top_games.cgi?embed=1" --><br>
+    <br>
+    <div style="text-align: center;"><span style="font-weight: bold;">Other
+        Stuff</span><br>
+    </div>
+    <table style="width: 100%; text-align: left;" border="1"
+      cellpadding="2" cellspacing="2">
+      <tbody>
+        <tr>
+          <td style="vertical-align: top;">
+            <h3><span style="font-weight: bold;">&#1050;&#1072;&#1082;&#1072;&#1103; &#1080;&#1075;&#1088;&#1072; &#1087;&#1086;&#1103;&#1074;&#1080;&#1090;&#1089;&#1103;
+                &#1079;&#1076;&#1077;&#1089;&#1100; &#1089;&#1083;&#1077;&#1076;&#1091;&#1102;&#1097;&#1077;&#1081;?</span></h3>
+          </td>
+          <td style="vertical-align: top;">&#1055;&#1086;&#1089;&#1084;&#1086;&#1090;&#1088;&#1080; <a
+              href="http://boardgamegeek.com/geeklist/12240/item/439185#item439185">&#1089;&#1087;&#1080;&#1089;&#1086;&#1082;</a>
+            &#1082;&#1072;&#1085;&#1076;&#1080;&#1076;&#1072;&#1090;&#1086;&#1074; &#1085;&#1072; &#1076;&#1086;&#1073;&#1072;&#1074;&#1083;&#1077;&#1085;&#1080;&#1077; &#1080; &#1076;&#1086;&#1073;&#1072;&#1074;&#1100; &#1089;&#1074;&#1086;&#1102; &#1080;&#1075;&#1088;&#1091;!<br>
+          </td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;"><font size="+1"><a
+                style="font-weight: bold;" href="handmade.html">&#1061;&#1101;&#1085;&#1076;&#1084;&#1101;&#1081;&#1076;
+                &#1085;&#1072;&#1089;&#1090;&#1086;&#1083;&#1082;&#1080;<br>
+              </a></font></td>
+          <td style="vertical-align: top;">&#1042;&#1086;&#1086;&#1073;&#1097;&#1077;, &#1103; &#1074;&#1089;&#1077;&#1075;&#1076;&#1072; &#1073;&#1099;&#1083; &#1092;&#1072;&#1085;&#1072;&#1090;&#1086;&#1084;
+            &#1080;&#1075;&#1088;, &#1089;&#1076;&#1077;&#1083;&#1072;&#1085;&#1085;&#1099;&#1093; &#1074;&#1088;&#1091;&#1095;&#1085;&#1091;&#1102;. &#1069;&#1090;&#1086;&#1090; &#1089;&#1072;&#1081;&#1090; &#1074; &#1082;&#1072;&#1082;&#1086;&#1084;-&#1090;&#1086; &#1089;&#1084;&#1099;&#1089;&#1083;&#1077; &#1090;&#1086;&#1078;&#1077;
+            &#1093;&#1101;&#1085;&#1076;&#1084;&#1101;&#1081;&#1076;.</td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;">
+            <h3><a href="../nngs/">&#1050;&#1083;&#1086;&#1085; NNGS<br>
+              </a></h3>
+            <div style="text-align: center;">&#1072; &#1090;&#1072;&#1082;&#1078;&#1077;<br>
+            </div>
+            <a href="http://cgos.boardspace.net/">9x9 &#1043;&#1086; &#1089;&#1077;&#1088;&#1074;&#1077;&#1088;</a><br>
+            <br>
+          </td>
+          <td style="vertical-align: top;">&#1069;&#1090;&#1086; &#1082;&#1083;&#1086;&#1085; <span
+              style="font-style: italic;">No Name Go Server</span>,
+            &#1082;&#1086;&#1090;&#1086;&#1088;&#1099;&#1081; Boardspace &#1087;&#1088;&#1077;&#1076;&#1086;&#1089;&#1090;&#1072;&#1074;&#1083;&#1103;&#1077;&#1090; &#1074; &#1087;&#1086;&#1076;&#1076;&#1077;&#1088;&#1078;&#1082;&#1091; &#1089;&#1086;&#1086;&#1073;&#1097;&#1077;&#1089;&#1090;&#1074;&#1072;
+            &#1043;&#1086;-&#1087;&#1088;&#1086;&#1075;&#1088;&#1072;&#1084;&#1084;&#1080;&#1089;&#1090;&#1086;&#1074;. &#1058;&#1072;&#1084; &#1084;&#1086;&#1078;&#1085;&#1086; &#1087;&#1088;&#1086;&#1089;&#1090;&#1086; &#1087;&#1086;&#1080;&#1075;&#1088;&#1072;&#1090;&#1100; &#1074; &#1043;&#1086;, &#1085;&#1086; &#1091; &#1089;&#1072;&#1081;&#1090;&#1072;
+            &#1085;&#1077;&#1084;&#1085;&#1086;&#1075;&#1086; &#1076;&#1088;&#1091;&#1075;&#1080;&#1077; &#1094;&#1077;&#1083;&#1080;.<br>
+            &#1058;&#1072;&#1082;&#1078;&#1077;, &#1080;&#1089;&#1082;&#1083;&#1102;&#1095;&#1080;&#1090;&#1077;&#1083;&#1100;&#1085;&#1086; &#1074; &#1094;&#1077;&#1083;&#1103;&#1093; &#1088;&#1072;&#1079;&#1074;&#1080;&#1090;&#1080;&#1103; &#1087;&#1088;&#1086;&#1075;&#1088;&#1072;&#1084;&#1084;, &#1080;&#1075;&#1088;&#1072;&#1102;&#1097;&#1080;&#1093; &#1074;
+            &#1043;&#1086; &#1085;&#1072; &#1087;&#1086;&#1083;&#1077; 9&#1093;9, &#1084;&#1099; &#1087;&#1088;&#1077;&#1076;&#1086;&#1089;&#1090;&#1072;&#1074;&#1083;&#1103;&#1077;&#1084; &#1084;&#1077;&#1089;&#1090;&#1086; &#1087;&#1086;&#1076; &#1101;&#1082;&#1089;&#1087;&#1077;&#1088;&#1080;&#1084;&#1077;&#1085;&#1090;&#1072;&#1083;&#1100;&#1085;&#1099;&#1081;
+            <a href="http://cgos.boardspace.net/">9x9 &#1043;&#1086;-&#1089;&#1077;&#1088;&#1074;&#1077;&#1088;</a> &#1085;&#1072;
+            &#1082;&#1086;&#1090;&#1086;&#1088;&#1086;&#1084; &#1087;&#1086;&#1089;&#1090;&#1086;&#1103;&#1085;&#1085;&#1086; &#1087;&#1088;&#1086;&#1093;&#1086;&#1076;&#1103;&#1090; &#1090;&#1091;&#1088;&#1085;&#1080;&#1088;&#1099;.<br>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <br>
+    &#1055;&#1086;&#1087;&#1088;&#1086;&#1073;&#1091;&#1081;&#1090;&#1077; &#1087;&#1077;&#1088;&#1077;&#1074;&#1086;&#1076; &#1087;&#1088;&#1086;&#1075;&#1088;&#1072;&#1084;&#1084;&#1099; Babyl Fish (&#1076;&#1072;&#1083;&#1077;&#1082; &#1086;&#1090; &#1089;&#1086;&#1074;&#1077;&#1088;&#1096;&#1077;&#1085;&#1089;&#1090;&#1074;&#1072;, &#1085;&#1086;
+    &#1083;&#1091;&#1095;&#1096;&#1077; &#1095;&#1077;&#1084; &#1085;&#1080;&#1095;&#1077;&#1075;&#1086;!)
+    <a
+href="http://babelfish.altavista.com/babelfish/tr?doit=done&amp;url=http://www.boardspace.net/english/index.html&amp;lp=en_es"><img
+        alt="spanish" src="/images/flags/Spain.gif" style="border: 0px
+        solid ; width: 30px; height: 20px;"></a><a
+href="http://babelfish.altavista.com/babelfish/tr?doit=done&amp;url=http://www.boardspace.net/english/index.html&amp;lp=en_de"><img
+        alt="german" src="/images/flags/Germany.gif" style="border: 0px
+        solid ; width: 30px; height: 20px;"></a><a
+href="http://babelfish.altavista.com/babelfish/tr?doit=done&amp;url=http://www.boardspace.net/english/index.html&amp;lp=en_it"><img
+        alt="italian" src="/images/flags/Italy.gif" style="border: 0px
+        solid ; width: 30px; height: 20px;"></a><a
+href="http://babelfish.altavista.com/babelfish/tr?doit=done&amp;url=http://www.boardspace.net/english/index.html&amp;lp=en_fr"><img
+        alt="french" src="/images/flags/France.gif" style="border: 0px
+        solid ; width: 30px; height: 20px;"></a>
+    <hr>
+    <center>
+      <table style="width: 100%;">
+        <tbody>
+          <tr>
+            <td align="left"><font size="-1">
+                <script language="javascript">
+document.write("<a href='mailto:gamemaste");
+document.write("r\@board");
+document.write("space.net'>gamemaste<n>r@board<n>space.net</a>");
+      </script></font><br>
+            </td>
+            <td style="vertical-align: top; text-align: center;">&#1082;&#1072;&#1088;&#1090;&#1072;
+              &#1087;&#1086;&#1089;&#1077;&#1090;&#1080;&#1090;&#1077;&#1083;&#1077;&#1081; <a
+href="http://www4.clustrmaps.com/counter/maps.php?url=http://www.boardspace.net"
+                id="clustrMapsLink"><img
+src="http://www4.clustrmaps.com/counter/index2.php?url=http://www.boardspace.net"
+                  height="35" width="50"> </a><br>
+            </td>
+            <td style="vertical-align: top;"><a href="logon-page.html">&#1057;&#1072;&#1081;&#1090;<br>
+                &#1050;&#1072;&#1088;&#1090;&#1072; &#1089;&#1072;&#1081;&#1090;&#1072;</a><br>
+            </td>
+            <td>
+              <script type="text/javascript">
+
+// Google Internal Site Search script- By JavaScriptKit.com (http://www.javascriptkit.com)
+// For this and over 400+ free scripts, visit JavaScript Kit- http://www.javascriptkit.com/
+// This notice must stay intact for use
+
+//Enter domain of site to search.
+var domainroot="www.boardspace.net"
+function Gsitesearch(curobj){
+curobj.q.value="site:"+domainroot+" "+curobj.qfront.value
+}
+      </script>
+              <form action="http://www.google.com/search" method="get"
+                onsubmit="Gsitesearch(this)"><input name="q"
+                  type="hidden"> <input name="qfront" style="width:
+                  120px;" type="text"> <input value="Search this site"
+                  type="submit"> </form>
+            </td>
+            <td align="right"><a href="/">&#1053;&#1072; &#1075;&#1083;&#1072;&#1074;&#1085;&#1091;&#1102;</a> </td>
+          </tr>
+        </tbody>
+      </table>
+    </center>
+  </body>
+</html>

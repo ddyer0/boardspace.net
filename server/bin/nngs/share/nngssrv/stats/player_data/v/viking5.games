@@ -1,0 +1,13 @@
+viking5    [ NR ](W) : viking4    [ NR ](B) H 0 K 5.5 9x9 W+3.5 200502171209
+viking5    [ NR ](W) : GoFigure   [ NR ](B) H 0 K 5.5 9x9 W+Time 200502221908
+viking5    [ NR ](W) : antigo     [ NR ](B) H 0 K 5.5 9x9 W+12.5 200502281300
+antigo     [ NR ](B) : viking5    [ NR ](W) H 0 K 5.5 9x9 B+Resign 200502281312
+GNUGo      [ NR ](W) : viking5    [ NR ](B) H 0 K 5.5 9x9 W+86.5 200502281335
+viking5    [ NR ](W) : antigo     [ NR ](B) H 0 K 5.5 9x9 W+21.5 200502281353
+GNUGo      [ NR ](W) : viking5    [ NR ](B) H 0 K 5.5 9x9 W+6.5 200502281617
+evand      [ NR ](W) : viking5    [ NR ](B) H 0 K 5.5 9x9 W+84.5 200502282154
+evand      [ NR ](W) : viking5    [ NR ](B) H 0 K 5.5 9x9 W+85.5 200502282219
+antigo     [ NR ](B) : viking5    [ NR ](W) H 0 K 5.5 9x9 B+46.5 200503010055
+antigo     [ NR ](B) : viking5    [ NR ](W) H 0 K 5.5 9x9 B+5.5 200503010109
+viking5    [ NR ](W) : antigo     [ NR ](B) H 0 K 5.5 9x9 W+25.5 200503010159
+viking5    [ NR ](W) : antigo     [ NR ](B) H 0 K 5.5 9x9 W+5.5 200503010219

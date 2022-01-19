@@ -1,0 +1,1 @@
+a:8:{s:25:"disable_all_notify_update";i:0;s:8:"timezone";i:0;s:6:"apikey";s:0:"";s:7:"apipass";s:0:"";s:8:"ftp_user";s:0:"";s:8:"ftp_pass";s:0:"";s:7:"host_sm";s:0:"";s:19:"no_new_editor_alert";s:0:"";}

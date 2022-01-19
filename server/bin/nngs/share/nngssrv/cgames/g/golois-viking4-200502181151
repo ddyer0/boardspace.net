@@ -1,0 +1,26 @@
+
+(;
+GM[1]FF[4]AP[NNGS:1.1.16]
+US[Brought to you by No Name Go Server]
+CP[
+  Copyright This game was played on the No Name Go Server
+  Permission to reproduce this game is given,
+  as long as this copyright notice is preserved.]
+GN[golois-viking4(B) NNGS]
+EV[none]
+RE[W+3.5]
+PW[golois]WR[NR ]
+PB[viking4]BR[NR ]
+PC[NNGS Go Program Server Clone: boardspace.net 9696]
+DT[2005-02-18]
+SZ[9]TM[600]KM[5.5]
+
+;B[df];W[fd];B[ff];W[gf];B[cc];W[ge];B[fb];W[db];B[dc];W[eb];B[ec];W[fh]
+;B[fc];W[ch];B[bf];W[ef];B[eg];W[ee];B[eh];W[de];B[cf];W[fg];B[bd];W[dg]
+;B[bh];W[dh];B[hc];W[gc];B[hb];W[hd];B[bi];W[gb];B[ga];W[gd];B[ce];W[ic]
+;B[ib];W[id];B[ha];W[cg];B[bg];W[di];B[dd];W[ed];B[tt];W[tt]
+;
+TB[ia]
+)
+
+---

@@ -1,0 +1,302 @@
+<HTML><HEAD><TITLE>Template Manager - DISCUS Administration Instructions</TITLE>
+<STYLE>
+<!--
+P {text-align: justify}
+UL {text-align: justify}
+-->
+</STYLE>
+<META NAME="Robots" CONTENT="noindex,nofollow">
+<META NAME="Keywords" CONTENT="template manager,edit templates,control board">
+<META NAME="Description" CONTENT="Description of the Template Manager interface, which allows the superuser to edit template files directly through a WWW browser.">
+
+</HEAD>
+<BODY BGCOLOR=#ffffff TEXT=#000000 LINK=#0000ff VLINK=#800080 ALINK=#ff0000>
+<FONT FACE="Verdana,Arial,Helvetica" SIZE=2>
+<TABLE WIDTH=100% BGCOLOR=#ccccff BORDER=0 CELLSPACING=0><TR><TD ALIGN=LEFT><FONT FACE="Verdana,Arial,Helvetica" SIZE=3><B>Template Manager </B></TD><TD ALIGN=RIGHT><FONT FACE="Verdana,Arial,Helvetica" SIZE=2>DISCUS Administration Instructions</FONT></TD></TR></TABLE>
+
+<P>
+
+The Template Manager interface allows the board administrator to update the look of the board and to edit template file directly through the WWW browser.  The Template Manager also permits the installation of template sets, or "skins," which can provide a coherent set of integrated templates.  The Template Manager is an interface that has significant functionality, and its documentation is divided into the following sections:
+
+<P>
+<OL>
+<LI><A HREF=#skins><B>Basics of Discus Appearance "Skins"</B></A></LI>
+<UL>
+<LI><A HREF=#skins-intro>Introduction to Discus Appearance Skins</A>
+<LI><A HREF=#skins-none>The Special "None" Skin</A>
+<LI><A HREF=#skins-security>Security Notes for Skins</A>
+<LI><A HREF=#skins-safe>DiscusWare's Distributed "Safe" Skins</A>
+<LI><A HREF=#skins-preview>Previewing Skins</A>
+<LI><A HREF=#skins-apply>Applying Skins</A>
+</UL>
+<LI><A HREF=#developer><B>Developer's Guide to Skins and Customizations</B></A>
+<UL>
+<LI><A HREF=#developer-determine>Determining Which File to Edit</A>
+<LI><A HREF=#developer-method>Methods of Editing Files</A>
+<LI><A HREF=#developer-order>How Discus Determines Which Template to Use</A>
+<LI><A HREF=#developer-links>Additional Information</A>
+</UL>
+<LI><A HREF=#creator><B>Skin Creator</B></A>
+<UL>
+<LI><A HREF=#creator-1st>Read Me First</A>
+<LI><A HREF=#creator-howto>How to Create a Skin</A>
+</UL>
+<LI><A HREF=#editor><B>Template Editors</B></A>
+<UL>
+<LI><A HREF=#editor-advisory>Important Advisory</A>
+<LI><A HREF=#editor-howto>How to Use the Template Editors</A>
+</UL>
+<LI><A HREF=#faq><B>Frequently Asked Questions (FAQ)</B></A>
+<UL>
+<LI><A HREF=#faq-5a>5A.  When I edit my templates, why don't changes appear on my board?</A>
+<LI><A HREF=#faq-5b>5B.  How do I change the background color of the top line in the topics table?</A>
+<LI><A HREF=#faq-5c>5C.  How do I change the background color of the top line in the subtopics table?</A>
+<LI><A HREF=#faq-5d>5D.  How do I change the alternating color scheme?</A>
+</UL>
+
+</OL>
+<P>
+
+<A NAME=skins><H4>1. Basics of Discus Appearance "Skins"</H4></A>
+
+<A NAME=skins-intro><B><FONT COLOR=#0000aa>Introduction to Discus Appearance Skins</FONT></B></A>
+
+<P>
+
+This section permits the board administrator to implement pre-made template sets, or "skins," that will control the templates for the entire board.  These "skins" include and supercede the following templates from the Discus administration directory:
+<P>
+<UL>
+<LI>addmessage-private.conf
+<LI>addmessage-public.conf
+<LI>newpage.conf
+<LI>messages.conf
+<LI>subtopics.conf
+<LI>topics.conf
+</UL>
+<P>
+A Discus "skin" file has the following attributes:
+<P>
+<UL>
+<LI>It is created with the Discus format for a skin file
+<LI>It has the extension <B>.skin</B>
+<LI>It is placed in the Discus administration files directory
+</UL>
+<P>
+<A NAME=skins-none><B><FONT COLOR=#0000aa>The Special "None" Skin</FONT></B></A>
+<P>
+One special "skin" is named "None" and is always the first entry in the table.  If this skin is selected, Discus does not read the template information from any <B>.skin</B> file; rather, it takes its input directly from the appropriate template files.  Listed in the table are all skins that are found in the Discus administration directory, and the radio button next to the currently working skin is checked for the user.  The name of the skin, as well as the author, copyright information, and description are displayed.
+<P>
+<A NAME="a"></A>
+<A NAME=skins-security><B><FONT COLOR=#0000aa>Security Notes for Skins</FONT></B></A>
+<P>
+Skins are template files for Discus that control aspects of how the pages are generated on the Discus board.  There are several considerations that you must make when you choose to install a skin.  These include:
+<P>
+<OL>
+<LI> The skin will be in control of files created on your web server. Just as you wouldn't give someone
+you didn't know permission to access your server and do whatever they want, you should not install
+a skin from an untrusted source without first looking it over.
+<P>
+<LI> An intentionally or accidentally miswritten skin could cause data loss on your board, and this data
+may not be recoverable.
+<P>
+<LI> The author attribute of the could be forged. The only skins distributed by DiscusWare, LLC
+that are created by DiscusWare are those available from the "Template Gallery" in the Discus Support
+Center. If you got the skin from anywhere else and the authors claim to be DiscusWare, or any
+person associated with DiscusWare, it may not be an actual skin written by DiscusWare.
+<P>
+<LI>DiscusWare recommends installing only those skins you obtain through the Discus
+Template Gallery, found at <A HREF=http://www.discusware.com/support/resources/templates/gallery TARGET=_blank>this location</A>. Installing skins from other sources may result in data loss or security problems!
+<P>
+<LI>The author name is just a text attribute in the skin, and there is no guarantee that the author's name that appears on the skin is actually the person or organization who created the skin.  The only skins distributed by DiscusWare, LLC that are created by DiscusWare are those available from the "Template Gallery" in the Discus Support Center, or the four skins distributed with Discus (classic, updated classic, tables, and support forum). If you got the skin from anywhere else and the authors claim to be DiscusWare, or any person associated with DiscusWare, it may not be an actual skin written by DiscusWare.
+<P>
+</OL>
+<P>
+<A NAME=skins-safe></A>
+<A NAME="safe"></A>
+<B><FONT COLOR=#0000aa SIZE=2>DiscusWare's Distributed "Safe" Skins</FONT></B>
+<P>
+DiscusWare, LLC distributes four skins along with the Discus software package.  These distributed files are indicated by the symbol <B><FONT COLOR=#00aa00 SIZE=2>*Safe*</FONT></B> as they appear in the menu of available skins.  These skins can be trusted as verified by DiscusWare, LLC even though you have not downloaded them from the Template Gallery.  <FONT COLOR=#ff0000><B>EXCEPTION:</B></FONT> If you have downloaded a skin from somewhere else that is named classic.skin, updatedclassic.skin, supportforum.skin, or tables.skin, and overwrote the existing skin, the file may not be safe.  However, if you have done this, we assume you know what you are doing and that you have verified the integrity of the skin you downloaded.  Just because a skin is not designated as safe does not mean that it is unsafe. It merely means that the skin was not part of the Discus distribution and you should exercise due caution when installing it.
+<P>
+<A NAME=skins-preview><B><FONT COLOR=#0000aa>Previewing Skins</FONT></B></A>
+<P>
+It is possible to preview your Discus Appearance Skin before saving and applying it to the board.  To do so, select the skin you wish to preview and click the &quot;Preview&quot; button.  You can preview the topics page, a list of subtopics, and a list of messages.  The list of subtopics and list of messages for your preview is taken from actual data on your board (the most recently active discussion topic having a child page with between 4 and 15 subtopics or messages is chosen for the preview).
+<P>
+Note that previewing is a good and recommended first step toward verifying the integrity of the skin.  If you see malicious code occurring when previewing the skin, you know that it should never be installed.  However, malicious code or improper construction may not be apparent from your preview!  You should still follow the precautions noted above before choosing to install any skin.
+<P>
+If you are using topic descriptions, be sure these descriptions appear in the preview of the topic list. Some topic list templates do not contain code necessary to insert topic descriptions.  If you are not using topic descriptions at this time, but you believe you may in the future, look at the last topic on your topics list.  A sample description is specified for that topic.  If no sample description appears, the skin you are considering does not support topic descriptions.
+<P>
+Previews of skins are shown as if you have chosen to accept the skin's pre-defined color, font, and alternating color schemes, if such schemes are defined.  If those schemes are not defined, your current settings are used in the preview.
+<P>
+If you have selected "None" from the list, the preview that is shown is of your current newpage.conf, topics.conf, subtopics.conf, and messages.conf files, as if you had made them into a skin and then installed it on your board.  Please note that if you are designing new templates and trying them out in preview mode, you should put your board into Maintenance Mode by selecting that option in your Options Manager.  If you do not, and any activity (like a post) takes place on your board while your new, untested template file is on your system, you could experience data loss, as that template will be used when regenerating the affected pages.
+<P>
+<A NAME=skins-apply><B><FONT COLOR=#0000aa SIZE=2>Applying Skins</FONT></B></A>
+<P>
+<P>
+When you have obtained a skin from a reputable source and verified by inspection that the skin is appropriate for your needs and will not corrupt your data, the skin can be installed as follows:
+<P>
+<OL>
+<LI>Upload the file, <I>file</I><B>.skin</B>, using FTP to your Discus administration directory (the same directory that contains the discus.conf file).  Use ASCII mode.  Permissions on the file can be set to 0755 (rwxr-xr-x).
+<P>
+<LI>Log into administration as the superuser and go to the Template Manager interface.
+<P>
+<LI>Check the radio button next to the skin you wish to install and click the "Save and Apply" button.
+<P>
+<LI>Read carefully any information given on the ensuing "Skin Validator" interface.
+<P>
+<UL>
+<LI><B>Basic Information About Skin</B>: Gives the name of the skin, the author, the copyright information, and the description of the skin.  Keep in mind that the author can be forged.  Specifically, do not trust any skins claiming to be from DiscusWare that you did not personally download from DiscusWare's template gallery.
+<P>
+<LI><B>Grant Appearance Change Request</B>:  If the skin you are installing contains a recommended color scheme, that color scheme is presented.  The color scheme controls the background, text, unvisited link, visited link, and active link colors.  If you want to give the skin permission to overwrite your current color scheme, check the box immediately to the left of the heading.  If you do not give the skin permission, your current settings will not be changed.
+<P>
+<LI><B>Grant Font Change Request</B>:  If the skin you are installing contains a recommended font scheme, that font scheme is presented.  The font scheme controls the font size and face.  If you want to give the skin permission to overwrite your current font scheme, check the box immediately to the left of the heading.  If you do not give the skin permission, your current settings will not be changed.
+<P>
+<LI><B>Grant Alternating Color Change Request</B>:  If the skin you are installing contains a recommended alternating color scheme, that alternating color scheme is presented.  The alternating colors appear in some templates in the topics, subtopics, and messages section, and are generally used in conjunction with background colors in tables.  If you want to give the skin permission to overwrite your current font scheme, check the box immediately to the left of the heading.  If you do not give the skin permission, your current settings will not be changed.
+<P>
+<LI><B>Potential problems found with this skin</B>:  Discus provides a <I>rough</I> (<U>NOT</U> thorough) analysis of the skin, checking it for major problems.  Any problem denoted as "High Risk" is probably reason enough for you not to install the skin.  You should be sure that you thoroughly understand any "High Risk" error message before you choose to install a skin, as you may subject yourself to unrecoverable data loss or security vulnerabilities by using the skin with such risks.  Moderate risk situations and low risk situations are also presented; these situations would not result in data loss, but malicious code could cause your board to behave in undesirable ways.
+<P>
+</UL>
+<P>
+<LI>After you have assessed the skin for security and integrity concerns, if you decide to apply the skin to your board, click the "Save and Apply" button.  Wait for the Discus board to go through the normal regeneration cycle, at which time any change requests are processed and the board is regenerated with your template settings.
+<P>
+Note that the entire text file for the skin is displayed at the bottom of the page for your reference.
+<P>
+</OL>
+<P>
+
+<A NAME=developer><H4>2. Developer's Guide to Skins and Customizations</H4></A>
+
+<A NAME=developer-determine><B><FONT COLOR=#0000aa>Determining Which File to Edit</FONT></B></A>
+<P>
+The first step in customizing the appearance of your board is determining which file to modify.  To do this, go to your Template Manager and note the radio button that is checked in the "Choose" column.  If the button next to "None" is checked, then you should edit the individual *.conf files in your Discus administration directory.  If any other button is checked, observe the bold file name in the "Name" column to know what skin file to edit.  For example, if the button next to <B><FONT SIZE=1>tables</FONT></B> is checked, then you need to edit the "tables.skin" file.
+<P>
+<A NAME=developer-method><B><FONT COLOR=#0000aa>Methods of Editing Files</FONT></B></A>
+<P>
+You can edit files in one of two ways.  The first is to use the built-in Discus template editor by clicking on the appropriate file name from the "Template Editors" section at the bottom of the Template Manager.  (Hint: if you want to change the size of the text editor box, look in your Options Manager.)  The second method of editing files is to use a TEXT editor (such as NotePad or UltraEdit) on your local machine (or a text editor on the server itself).  If you use this method, be absolutely certain that you transfer files by FTP using ASCII mode only.  Also, we strongly recommend that you do NOT use a WYSIWYG editor (such as Word, Front Page, Netscape Composer, Page Mill, etc.) when editing template files or skins.
+<P>
+<A NAME=developer-method><B><FONT COLOR=#0000aa>How Discus Determines Which Template to Use</FONT></B></A>
+<P>
+Discus determines the templates to use in the following order:
+<P>
+<OL>
+<LI>newpage_dynamic.conf is used if the need is for the page template, the screen is dynamic (except in previewing skins), and this file exists.
+<P>
+<LI>Any *.conf file within the topic directory (e.g., $html_dir/messages/2/newpage.conf), if the operation includes building a topic page.
+<P>
+<LI>The configuration file from the "default.skin" file within the topic directory, if the operation includes building a topic page.
+<P>
+<LI>The file is obtained from the corresponding file within the skin, if a skin is selected.
+<P>
+<LI>The original template file from the administration directory is used, if it exists.
+<P>
+<LI>Discus returns an error if you are at this point and none of the above steps worked.
+</OL>
+<P>
+<UL>
+<TABLE BGCOLOR=#ffcccc><TR><TD><FONT FACE="Verdana,Arial,Helvetica" SIZE=2>
+Notice, in particular, that if you have selected a skin, then the individual template files in your Discus administration directory are <B>ignored</B>.  To customize the appearance of the board, you must either customize the skin directly or stop using the skin (perhaps manually extracting the data into the individual template files).  Please read <A HREF=#developer-determine>Determining Which File to Edit</A> if you need additional assistance.</FONT></TD></TR></TABLE>
+</UL>
+<P>
+<A NAME=developer-links><B><FONT COLOR=#0000aa>Additional Information</FONT></B></A>
+<P>
+DiscusWare maintains a library of customization documents in the Discus Support Center.  The Support Center also features a search engine.  You can find the Support Center at this location:
+<P>
+<CENTER><A HREF=http://www.discusware.com/support TARGET=_blank>http://www.discusware.com/support</A></CENTER>
+<P>
+If you experience any problems in editing and applying skins, please read the <A HREF=#faq>FAQ</A> section below.  If you still have problems after reading this document, consult the Support Center.
+<P>
+
+<A NAME=creator><H4>3. Skin Creator</H4></A>
+
+<A NAME=creator-1st><B><FONT COLOR=#0000aa>Read Me First</FONT></B></A>
+<P>
+The DiscusWare Skin Creator allows you to share your customized template files with other Discus users by distributing them as skins.  We suggest that you send skins to DiscusWare, LLC and let us distribute them from our site should you choose to do this.  Discus users will not be likely to trust third-party skins, as we advise them not to in this document, for obvious reasons.  For this, an automatic submission utility is included in the skin creator utility.
+<P>
+If you have selected "None" as your currently applied skin, the Skin Creator works by creating a skin from your <B>individual template files</B> (newpage.conf, messages.conf, ...) in your administration directory.  If you have modified the look of your board by modifying another skin file and have selected a skin file for display on your board, this section will simply print out or submit the skin file you are currently using on your board.  This is a slight departure from behavior in the earlier versions of Discus that included this skin creator section.
+<P>
+<A NAME=creator-howto><B><FONT COLOR=#0000aa>How to Create a Skin</FONT></B></A>
+<P>
+To create a skin, fill in the following items:
+
+<P>
+<UL>
+<LI>Name of Skin: We suggest a short (50 characters or less) name for your skin.
+<P>
+<LI>Your Name: Enter your first and last name or the company you represent.
+<P>
+<LI>Copyright Info: Enter copyright information for the skin.  We suggest &quot;Public Domain&quot; if you are giving away the script with no copyright, or &quot;Copyright (c) 2000, <I>yourname</I>&quot; if you wish to copyright the skin.
+<P>
+<LI>Description: Enter a description of the skin (500 characters or less) that describes what the user will see from the various templates.
+</UL>
+<P>
+Then decide whether the color scheme your board is currently using should be bundled with the skin.  If you have hard-coded some color information into the skin, you will probably want your color scheme and alternating colors to be bundled with the skin.  If you do, check the &quot;Write my board's color scheme with this skin&quot; box.  This color scheme consists of the values you have entered in your Board Manager in the &quot;Board Appearance&quot; section.
+<P>
+Also decide whether you want your board's alternating color scheme to be distributed with the skin.  If you do, check the &quot;Write my board's alternating color settings with this skin&quot; box.  This alternating color scheme consists of the values you have entered in your Options Manager in the alternating colors section.
+<P>
+When you have entered the desired parameters, click the &quot;Save to Your Computer&quot; button.  This will present the skin you created in the browser window.  Click in the frame with the text and use the "Save Frame As..." command from your browser's "File" menu to save the file to your hard disk (your browser's actual commands may vary).  You have now saved the skin file on your hard drive.
+<P>
+If you would like DiscusWare to add the skin to our template gallery, click the "Submit to DiscusWare" button. This will bring up a screen that allows you to send the skin directly to our server, where we will review it and consider making it publicly available for download.  We appreciate your contributions sincerely!
+<P>
+
+<A NAME=editor><H4>4. Template Editors</H4></A>
+
+<A NAME=editor-advisory><B><FONT COLOR=#0000aa>Important Advisory</FONT></B></A>
+<P>
+The Template Manager interface allows the superuser to edit template files directly through a WWW browser rather than editing the files and transferring them to the server.  <B><FONT COLOR=#ff0000>DiscusWare, LLC does not support the editing of templates or configuration files.</FONT></B>  Resources describing how to edit those files are contained in the <A HREF="http://www.discusware.com/support" TARGET=_blank>Discus Support Center</A>.
+<P>
+<A NAME=editor-howto><B><FONT COLOR=#0000aa>How to Use the Template Editors</FONT></B></A>
+<P>
+<B>Status of files</B>:  If the file is reported as "Read/Write," you will be able to edit the file through the Template Manager and save your changes.  If it is reported as "Read Only," you will be able to view the content but you will not be permitted to save your changes.  To make the file have "Read/Write" privileges, if it does not already, log in by FTP and <A HREF="http://www.discusware.com/discus/ftp/ftp-chmod.html" TARGET=_blank>change permissions</A> on the desired file to 0777 (rwxrwxrwx).
+
+<P>
+<B>Editing a file</B>:  Click on the file name to edit the file.  An editor box (generated by JavaScript) will pop up in a new window for editing.  The size of the window that pops up and the size of the text box within that window can be changed in the Options Manager interface under &quot;General, Miscellaneous Options.&quot;  If you wish to use your own text editor, this is fine.  Obtain your template files by FTP, edit them locally with a text editor, and transfer them back to your server once they are edited.
+
+<P>
+After you have edited a template file, you may need to <A HREF="board-admin-instr-11.html#tns">regenerate your board from your new templates</A>.  Click on the provided link for more instructions.
+
+<P>
+
+<A NAME=faq><H4>5. Frequently Asked Questions</H4></A>
+
+<P>
+<A NAME=faq-5a><B><FONT COLOR=#0000aa>5A.  When I edit my templates, why don't changes appear on my board?</FONT></B></A>
+
+<P>
+
+This is the most frequently asked question, and it has two possible explanations.  These are as follows:
+<P>
+<UL>
+<B>Explanation 1: You did not regenerate your board</B>
+<P>
+If you have changed a template file or a skin, you need to regenerate the pages on your board in order to display your changes from the template.  There are several ways to regenerate your board:
+<P>
+<UL>
+<LI>You can regenerate all parts of your board through the Template Manager by choosing to "Save and Apply" the skin you have edited, or "None" if you have edited templates directly.
+<P>
+<LI>You can regenerate specific parts of your board through the Board Manager if you do not need to regenerate every portion of the board.  See the Board Manager for details.
+</UL>
+<P>
+<B>Explanation 2: You edited the wrong file</B>
+<P>
+If, after regeneration, your changes still did not show up, it is likely that you edited the wrong file.  For help on determining which file you need to edit, please read the section of this document entitled <A HREF=#developer-determine>Determining Which File to Edit</A>.
+</UL>
+<P>
+<A NAME=faq-5b><B><FONT COLOR=#0000aa>5B.  How do I change the background color of the top line in the topics table?</FONT></B></A>
+<P>
+This setting is hard-coded into the topics.conf file.  You need to edit the topics.conf file (or the topics section of your selected skin) to change this value.  See <A HREF=#developer-determine>Determining Which File to Edit</A> to determine which file needs to be edited.
+<P>
+<A NAME=faq-5c><B><FONT COLOR=#0000aa>5C.  How do I change the background color of the top line in the subtopics table?</FONT></B></A>
+<P>
+This setting is hard-coded into the newpage.conf file (NOT the subtopics.conf file).  You need to edit the newpage.conf file (or the topics section of your selected skin) to change this value.  See <A HREF=#developer-determine>Determining Which File to Edit</A> to determine which file needs to be edited.
+<P>
+<A NAME=faq-5d><B><FONT COLOR=#0000aa>5D.  How do I change the alternating color scheme?</FONT></B></A>
+<P>
+Read the section on <A HREF=board-admin-instr-18.html#altclr>alternating colors</A> in your Options Manager documentation.  In short, go to your Options Manager and set it up there.  You will then need to regenerate your board as explained in explanation 1 to <A HREF=#faq-5a>FAQ 5A</A>.
+
+
+
+<P>
+
+<TABLE WIDTH=100% BGCOLOR=#ccccff BORDER=0 CELLSPACING=0><TR><TD><FONT FACE="Verdana,Arial,Helvetica" SIZE=1>Copyright &copy; 2000, DiscusWare, LLC, all rights reserved</FONT></TD><TD ALIGN=RIGHT><A HREF="board-admin-instr-18.html"><IMG SRC="icons/prev_button.gif" HEIGHT=20 WIDTH=20></A> <A HREF="board-admin-instr-01.html"><IMG SRC="icons/top_button.gif" HEIGHT=20 WIDTH=20></A> <A HREF="board-admin-instr-01.html"><IMG SRC="icons/next_button.gif" HEIGHT=20 WIDTH=20></A></TD></TR></TABLE>
+
+
+</FONT></BODY></HTML>

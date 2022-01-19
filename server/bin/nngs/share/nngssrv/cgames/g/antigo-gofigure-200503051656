@@ -1,0 +1,46 @@
+
+(;
+GM[1]FF[4]AP[NNGS:1.1.17]
+US[Brought to you by No Name Go Server]
+CP[
+  Copyright This game was played on the No Name Go Server
+  Permission to reproduce this game is given,
+  as long as this copyright notice is preserved.]
+GN[antigo-GoFigure(B) NNGS]
+EV[none]
+RE[B+Resign]
+PW[antigo]WR[NR ]
+PB[GoFigure]BR[NR ]
+PC[NNGS Go Program Server Clone: boardspace.net 6969]
+DT[2005-03-05]
+SZ[9]TM[1800]KM[5.5]
+
+;B[dg];W[dd];B[gg];W[gd]C[
+dbh started observation.
+]
+;B[fc];W[fd];B[ce]C[
+evand started observation.
+]
+;W[cd];B[gc];W[ec];B[eb];W[be];B[he];W[hd]C[
+evand started observation.
+]
+;B[db];W[cf]C[
+evand started observation.
+]
+;B[cg];W[bf]C[
+dbh started observation.
+evand NR : sigh....  the "slow" setting is really too slow :( (18)
+]
+;B[hc];W[de];B[bc];W[cc];B[bb]C[
+ evand started observation.
+ dbh started observation.
+]
+;W[cb];B[ca];W[dc];B[ee];W[ef];B[eg];W[fe];B[id];W[ff];B[fg];W[df];B[bg]
+;W[ed];B[ag];W[fb];B[gb];W[fa];B[ga];W[hg];B[hf];W[hh];B[gh];W[bd];B[ac]
+;W[gf];B[ie];W[ge];B[ad];W[ae];B[af];W[da];B[ea];W[ic];B[ib];W[gi];B[fi]
+;W[hi];B[if];W[ei];B[di];W[fh];B[eh];W[fi];B[ch];W[ig];B[ic];W[bi];B[ci]
+;W[ah];B[ih];W[ii];B[ih];W[fi];B[gi];W[ba];B[aa];W[hi];B[tt];W[hh];B[tt]
+;W[ha];B[tt];W[hg];B[tt];W[tt]
+;)
+
+---

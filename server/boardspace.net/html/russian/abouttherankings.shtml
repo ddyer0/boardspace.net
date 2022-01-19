@@ -1,0 +1,85 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <title>About the Rankings</title>
+  <script src="/js/site.js">
+  </script>
+</head>
+<body background="/images/background-image.jpg">
+<h1 style="text-align: center;"><img
+ style="width: 600px; height: 100px;" alt="boardspace.net" title=""
+ src="/images/master-logo.jpg"></h1>
+<h1 style="text-align: center;">About the Rankings<br>
+</h1>
+<br>
+The ranking system is an ELO style system, with a few tweaks to
+accomodate networked play.&nbsp; The main parameters are:<br>
+<ul>
+  <li>the center of the system is 1500.&nbsp; The average ranking of
+all active players should always be close to 1500.&nbsp; One of the
+tweaks is that a few bonus points are awarded to every game to
+continuously rebalance the system; so if players leave, or stop
+playing, the ranks of all the other players are gradually adjusted to
+bring the system back into balance.</li>
+  <li>The most that can be gained or lost in a single game is
+approximately 20 points, in a game between players of equal rank.&nbsp;
+The stake is less proportional to the difference in rank, up to about
+900 points where the higher ranked player can't gain points and the
+lower ranked player can't lose points.&nbsp; New players have less
+influence on the change in rankings, so it is hard to gain or lose
+points by playing beginners.<br>
+  </li>
+  <li><span style="font-weight: bold;">Cheating</span>:&nbsp; anyone
+suspected of playing games against themselves, or against shill
+players, or against the villiage idiot,&nbsp; for the purpose of
+inflating their rankings will be summarily disciplined.&nbsp; Likewise,
+anyone using any program not provided by this site to assist during a
+game, or using any tool or device not also used by his opponent, or
+.... you get the idea. Play fair.&nbsp; If you want to experiment, play
+unranked games.</li>
+</ul>
+Generally speaking, the rankings are a very rough guide to how strong a
+player is, especially players who haven't played many games.&nbsp; The
+rankings depend as much on who you choose to play as on how good you
+are.<br>
+<h1 style="text-align: center;">About Master Rankings</h1>
+The master ranking system is a parallel ranking system, which uses the
+same basic formula as the regular ranking system.&nbsp; The main
+difference is that master rankings are based only on serious games
+between serious players.&nbsp; Eventually, comparing master rankings
+might be a fairly reliable guide to the relative playing strength of
+master players.<br>
+<ul>
+  <li><span style="font-weight: bold;">Ok, so how do I become a master?</span>&nbsp;&nbsp;
+The current benchmark is to achieve an <span
+ style="font-style: italic;">honest&nbsp;</span> lobby ranking of 2000
+for any game.&nbsp; The management is alerted automatically when a new
+candidate qualifies.&nbsp; Your recent games will be reviewed to be
+sure you're not using some trick to artificially inflate your
+ranking.&nbsp; Master player's names appear in blue ink in the lobby,
+and masters can play games in master rooms, which count toward master
+ratings.<br>
+  </li>
+</ul>
+<br>
+<br>
+<hr style="width: 100%; height: 2px;">
+<table style="width: 100%;">
+  <tbody>
+    <tr>
+      <td align="left"> <font size="-1">E-mail:
+      <script language="javascript">
+document.write("<a href='mailto:gamemaste");
+document.write("r\@board");
+document.write("space.net'>gamemaste<n>r@board<n>space.net</a>");
+      </script></font> </td>
+      <td style="vertical-align: top; text-align: center;"><a
+ href="http://netmap.efxservices.com/cgi-bin/mapper/displaymap.pl?client=1036"><br>
+      </a></td>
+      <td align="right">Go to <a href="/">BoardSpace.net home page</a>
+      </td>
+    </tr>
+  </tbody>
+</table>
+</body>
+</html>

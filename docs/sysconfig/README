@@ -1,0 +1,16 @@
+
+This folder contains bits and pieces needed to fully configure boardspace.net
+from a generic unix server.   These are things that might be overlooked at
+first, if moving to a new server.
+
+SSH setup.
+
+ Remove root login access - require login to a non-root account first
+
+ Set up passwordless authentication for tantrix/boardspace backup.  Some
+obscure ssh setup was needed, resulting in the files in the ssh.tar file
+here.  These set up a public/private key pair for public key authenticaion
+and enable that flavor or authentication to ssh
+
+
+

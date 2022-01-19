@@ -1,0 +1,63 @@
+<HTML><HEAD><TITLE>Backup Manager - DISCUS Administration Instructions</TITLE>
+<STYLE>
+<!--
+P {text-align: justify}
+UL {text-align: justify}
+-->
+</STYLE>
+<META NAME="Robots" CONTENT="noindex,nofollow">
+<META NAME="Keywords" CONTENT="backup manager,create a tar file of the Discus board">
+<META NAME="Description" CONTENT="Description of the Backup Manager interface, which allows the superuser to create backup files of a Discus board or to restore a board's data file from those backup files.">
+
+</HEAD>
+<BODY BGCOLOR=#ffffff TEXT=#000000 LINK=#0000ff VLINK=#800080 ALINK=#ff0000>
+<FONT FACE="Verdana,Arial,Helvetica" SIZE=2>
+<TABLE WIDTH=100% BGCOLOR=#ccccff BORDER=0 CELLSPACING=0><TR><TD ALIGN=LEFT><FONT FACE="Verdana,Arial,Helvetica" SIZE=3><B>Backup Manager</B></TD><TD ALIGN=RIGHT><FONT FACE="Verdana,Arial,Helvetica" SIZE=2>DISCUS Administration Instructions</FONT></TD></TR></TABLE>
+<P>
+
+<BLOCKQUOTE STYLE="text-align: justify">
+<HR SIZE=0>
+<IMG SRC="icons/proonly_icon.gif" HEIGHT=15 WIDTH=29 ALT="PRO">
+All features in this section are available in the professional version of this discussion board software only.
+<HR SIZE=0>
+</BLOCKQUOTE>
+<P>
+The "Backup Manager" allows you to create backups of files from your discussion board, including message and administration files.  You can back up the documentation files, script files, and source files, if you so choose.  You can also restore message files and administration files from existing backups.  Backups are stored in the unix "tar" format, so you can download the backups you create and work with them using an ordinary program that can handle the unix tar format.
+<P>
+<A NAME=work><H4>Working with existing backups</H4>
+<P>
+Several operations can be performed on existing backups using the interface provided.
+<P>
+<UL>
+<LI><B>Deleting a backup</B><P>
+Choosing to delete a backup removes it from the system.  To delete a backup archive, click the delete icon (<IMG SRC="icons/delete_icon.gif" HEIGHT=25 WIDTH=25 ALT="[Delete Icon]">). You can also mark more than one existing backup file and then click the delete icon in the "(Marked)" row.  Note that there is no "undelete" function, so be careful when deleting backup archives.
+<P>
+<LI><B>Getting information</B><P>
+To get information about a backup archive, click on the information icon (<IMG SRC="icons/info_icon.gif" HEIGHT=25 WIDTH=25 ALT="[Information Icon]">) next to the desired backup archive.  This reports several statistics about the archive, including a summary of the files it contains.
+<P>
+<LI><B>Opening an archive</B><P>
+To restore files from an archive (or to further examine the comments), click the open icon (<IMG SRC="icons/extract_icon.gif" HEIGHT=25 WIDTH=25 ALT="[Open Icon]">) next to the desired backup archive.  This presents you with the option to restore the files from the archive.
+<P>
+If the archive file contains at least a "Minimal backup" (message files and data files), you will have the option to perform an automatic file restoration.  This will overwrite all files on your board with the files from the backup archive.  Performing this action is the most thorough and comprehensive way to restore the files on your discussion board from a backup should this be necessary.  To perform the restoration, click "Restore All Files."
+<P>
+You also have the option to restore specific files from the archive under the "Manual File Restoration" section.  This is intended to be used by the most advanced users only who know specifically what they are doing.  Mixing older versions of data files with newer versions of message files, for example, could cause erratic behavior when using certain features of the board.  To restore files, select the file(s) you wish to restore from the file list (hints about selecting multiple files are provided in the interface screen itself).  Then choose whether you want to overwrite damaged files (zero-length files or missing files) or all files.  To perform the restoration, click "Perform Selected Action."
+<P>
+<LI><B>Compressing/decompressing an archive</B><P>
+To compress or decompress an archive, click the compress icon (<IMG SRC="icons/compress_icon.gif" HEIGHT=25 WIDTH=25 ALT="[Compress Icon]">) next to the desired backup archive.  Clicking this icon decompresses the archive if it is compressed, and vice versa.  This is intended to allow you to save disk space when working with backups.
+<P>
+NOTE:  This function is available only if your system contains the Perl <FONT FACE="Courier New" SIZE=2><B>Compress::Zlib</B></FONT> module.  This depends on how Perl is installed on your system (it does not depend on the way you installed Discus).  If you do not see this option, ask your system administrator to install the Perl module noted above.
+<P>
+<LI><B>Downloading an archive</B><P>
+To download an archive from the server to your local machine, click on the download icon (<IMG SRC="icons/download_icon.gif" HEIGHT=25 WIDTH=25 ALT="[Download Icon]">) next to the desired backup archive.  Your browser, if correctly configured, should prompt you to save the archive to your hard drive.  Note that if compression is available, the file will transfer more quickly if you have first compressed the file.
+</UL>
+<P>
+It is also possible to use a backup that you have downloaded to your machine in the Discus backup manager.  Use your FTP program to transfer the backup archive from your local machine to the WWW server, placing it in the administration/backups directory.  Note that this transfer should be made in binary mode.
+<P>
+<A NAME=create><H4>Creating a new backup</H4>
+<P>
+To create a new backup, scroll to the "Create New Backup" section of the Backup Manager screen.  Using the check boxes, choose which elements of your board you wish to back up (it is strongly recommended that you perform at least a "Minimal Backup" which consists of backing up the data files and message files on your board).  You can also use the radio buttons on the left side of the box to select among the most common backup types, which changes the check boxes automatically to indicate which components have been selected. You can give your backup file a file name by filling in the "File Name:" box.  Then, click "Create Backup" to make the backup file (if you specify a file that already exists, the file name will be modified to make it unique).  If you have a large board, creating the backup could require several seconds, so be patient.
+<P>
+<TABLE WIDTH=100% BGCOLOR=#ccccff BORDER=0 CELLSPACING=0><TR><TD><FONT FACE="Verdana,Arial,Helvetica" SIZE=1>Copyright &copy; 2000, DiscusWare, LLC, all rights reserved</FONT></TD><TD ALIGN=RIGHT><A HREF="board-admin-instr-15.html"><IMG SRC="icons/prev_button.gif" HEIGHT=20 WIDTH=20></A> <A HREF="board-admin-instr-01.html"><IMG SRC="icons/top_button.gif" HEIGHT=20 WIDTH=20></A> <A HREF="board-admin-instr-17.html"><IMG SRC="icons/next_button.gif" HEIGHT=20 WIDTH=20></A></TD></TR></TABLE>
+
+
+</FONT></BODY></HTML>

@@ -1,0 +1,4 @@
+0 3 * * * cron/savegames_if_enough > /dev/null
+5 3 * * * cron/savedb > /dev/null
+5 0 1 * * cron/savedb_monthly > /dev/null
+45 7,19 * * * cron/zoomers.csh > /dev/null

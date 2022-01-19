@@ -1,0 +1,95 @@
+#!/bin/csh
+#
+# set echo
+# save a monthly copy of the database
+# also make monthly alterations
+#   remove "deadwood" players who have never played 
+# depends on path set for mysql and database
+#
+~/cron/dtest.csh $0 600
+set v = $?
+#
+# dtest is a kludge to prevent scripts running twice
+#
+if ( $v == 0 ) then
+source ~/cgi-bin/include.csh
+set sunset=2
+set now=`date`
+set month=$now[2]"-"$now[6]
+set monthname="$month.txt"
+
+#
+#
+# save the map data
+#
+set rname2="$www_root/maps/PlayerMap-$month.txt"
+cd ~/cgi-bin/tlib
+./gs_locations.cgi "header=Tantrix Player Map as of $month" > tempfile
+#remove content_type line
+sed 1D tempfile > $rname2
+rm tempfile
+#save for mirroring
+set mname=$rname2:t
+if(-e $web_mirror/$mname) rm $web_mirror/$mname
+ln $rname2 $web_mirror/$mname
+
+# end or master if for the whole file
+endif
+
+#
+# database_info produces a list of directories and prefixes
+#
+cd ~/cgi-bin/tlib
+set data = `perl database_info.pl op=saverankings`
+
+while ( $#data > 0 )
+# database contains the names of the "games" directory for each game
+   set dir = $data[1];
+   shift data
+   set name = $data[1];
+   shift data
+   set key = $data[1];
+   shift data
+
+  set sdir = $dir:h
+  set sdir = $sdir:h
+  if(! -d $sdir)  mkdir $sdir
+
+  if(! -d $dir)  mkdir $dir
+  if(! -e $dir/.htaccess) then
+   cp ${www_root}/maps/.htaccess $dir
+  endif
+
+  set rdir = "${sdir}/rankings/"
+  if(! -d $rdir) mkdir $rdir
+
+  if(! -e $rdir/.htaccess) then
+   cp ${www_root}/maps/.htaccess $rdir
+  endif
+
+  set rname="${rdir}${name}-Rankings-$month.html"
+  cd ~/cgi-bin/
+  ./boardspace_rankings.cgi "game=$key" "n=99999" "header=Worldwide $name Rankings as of $month" > tempfile
+  sed 1D tempfile > $rname
+  rm tempfile
+  set xname=$rname:t
+  if(-e $web_mirror/$xname) rm $web_mirror/$xname
+  ln $rname $web_mirror/$xname
+
+end
+
+#
+# save the databases for the current month
+#
+cd ~/cron/backup
+foreach curdb($database $other_databases)
+ set name = "$curdb-$monthname"
+ mysqldump  --single_transaction -q --password=$db_password --user=$db_user $curdb | gzip > $name
+end
+
+
+mysql --password=$db_password --user=$db_user $database << UPDATESTEPS
+DELETE FROM players WHERE last_logon < (UNIX_TIMESTAMP()-(60*60*$sunset*30*24)) AND locked!='y' AND (status='unconfirmed' OR  games_played=0 <= 0)\g
+UPDATESTEPS
+
+endif

@@ -1,0 +1,5 @@
+#!/bin/csh
+env > myenv.txt
+which java
+which jar
+

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<launchConfiguration type="org.eclipse.jdt.launching.javaApplet">
+<listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">
+<listEntry value="/boardspace"/>
+</listAttribute>
+<listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_TYPES">
+<listEntry value="4"/>
+</listAttribute>
+<intAttribute key="org.eclipse.jdt.launching.APPLET_HEIGHT" value="600"/>
+<stringAttribute key="org.eclipse.jdt.launching.APPLET_NAME" value=""/>
+<mapAttribute key="org.eclipse.jdt.launching.APPLET_PARAMETERS">
+<mapEntry key="bar" value="barval"/>
+<mapEntry key="debug" value="true"/>
+<mapEntry key="extraactions" value="true"/>
+<mapEntry key="extramouse" value="true"/>
+<mapEntry key="foo" value="fooval"/>
+<mapEntry key="jws_parameters" value="foo bar"/>
+<mapEntry key="serverName" value="boardspace.net"/>
+</mapAttribute>
+<intAttribute key="org.eclipse.jdt.launching.APPLET_WIDTH" value="510"/>
+<stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="util.JWSApplet"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="boardspace"/>
+<stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Xmx256M"/>
+</launchConfiguration>

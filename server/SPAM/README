@@ -1,0 +1,72 @@
+
+
+SPAM WARS
+
+added to /var/qmail/control, a file called doublebounceto
+containing the name of the account that to which "double bounce"
+messages are sent.  Must restart mail server to take effect.
+this is a standard feature which is not available in the control
+panel.
+
+The "spamfilter" file is the one that picks up the catchall address from
+the local "catchall" file.
+
+spamfilter has some capability to run a per user mail filtering extension,
+but not turned on. possibly this is the hook to spamassin.
+
+I added a second hook to run a .domainmailfilter in the local directory.
+
+spamfilter-orginal is from /home/interworx/lib/maildrop
+spamfilter is the one I installed as an alternate
+
+** useful technique: turn on "logfile" in spamfilter file
+** and use tail -f to watch messages realtime.
+
+**also use tail -f /var/log/smtp/current to monitor the RBL and incoming mail
+**also use tail -f /var/log/send/current to monitor outgoing mail
+The actual local filtering implemented by .domainmailfilter is to 
+check the delivery address to see if it contains one of the strings
+contained in "goodnames.dat".  The effect of this is intended
+to allow accepting any email address containing "dyer" as 
+a valid catch all, but reject the rest.
+
+/home/realmene/var/real-me.net/mail/badnames.dat
+
+mail deemed acceptable is forwarded to the catchall address.
+the filtered mail is either bounced or absorbed depending 
+on the content of the domain filter.
+
+detailed behavior of mail delivery is controlled by files in
+/home/boardspa/var/boardspace.net/mail/
+such as .qmail-bouncedatabase and .qmail-default
+
+     .qmail-default is the file that determines default "catchall" mail delivery.
+     it runs a script called /usr/bin/maildrop which uses a file called
+     /home/interworks/lib/maildrop/spamfilter to direct delivery.
+
+     .qmail-bounce bounces with "no such mailbox"
+     .qmail-blackhole goes to /dev/null
+
+     .qmail-bouncedatabase runs a special filter that tries to note
+	bouncing outgoing mail from boardspace.  It looks for a 
+	special x-boardspace-user header to identify who the mail
+	was intended for.
+
+	maintain the aliases list for boardspace carefully.  Some of the
+	addresses directed to bouncedatabase are not obviously needed, but are.
+
+--
+
+the key directory for mail delivery and spam control is 
+~vpopmail/domains/real-me.net/
+mailbox "junkmail" is used for a real junk mailbox.
+
+Another anti-spamblock action, much easier than battleing the blockages, is to assign a new IP to use 
+for mail sending.  Pick a clean ip address from the pool, and assign it as the outgoing ip using /var/qmail/control/
+
+--
+
+On two occasions, the catch-all filtering has broken, with the mysterious effect that
+only mail directly to ddy@real-me.net gets through.   Most recent incarnation of
+a fix/explanaiton:
+

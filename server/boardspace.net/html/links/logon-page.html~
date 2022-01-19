@@ -1,0 +1,59 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <script src="/js/site.js">
+  </script><base href="login.shtml">
+  <title>Site Links</title>
+</head>
+<body
+ style="background-image: url(http://zertz/images/background-image.jpg);">
+<br>
+<script language="javascript">
+ var im = new Image;
+ im.src="http://button.geobutton.com/~730/1/1/showbutton?1079242734";
+</script>
+<noscript><img ISMAP
+SRC="http://button.geobutton.com/~730/1/1/showbutton?1079242734" NOSAVE
+BORDER=0 height=1 width=1>
+</noscript>
+<script language="javascript">var $myname='ddyer';var $myplace="We think you are located in Corona, California, United States.  If that is not correct, please tell us by clicking on this button: <a href='http://www.networldmap.com/'><img height=12 width=67 alt='the NetworldMap site' src='/images/geobutton.gif'></a> ";</script>
+<h1>Site Links</h1>
+<br>
+<table cellpadding="2" cellspacing="2" border="1"
+ style="text-align: left; width: 100%;">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top;"><a href="abouttherobot.shtml">About
+the Robot</a><br>
+      </td>
+      <td style="vertical-align: top;"><a href="abouttherankings.shtml">About
+the Rankings</a><br>
+      </td>
+      <td style="vertical-align: top;"><a href="aboutthesite.shtml">About
+the Site</a><br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<p>
+</p>
+<hr>
+<center>
+<table _base_href="http://www.boardspace.net/english/login.shtml"
+ width="100%">
+  <tbody _base_href="http://www.boardspace.net/english/login.shtml">
+    <tr _base_href="http://www.boardspace.net/english/login.shtml">
+      <td _base_href="http://www.boardspace.net/english/login.shtml"
+ align="left"><font size="-1">E-mail: <a
+ _base_href="http://www.boardspace.net/english/login.shtml"
+ href="mailto:webmaster@boardspace.net">webmaster@boardspace.net</a> </font></td>
+      <td _base_href="http://www.boardspace.net/english/login.shtml"
+ align="right">Go to <a
+ _base_href="http://www.boardspace.net/english/login.shtml" href="/">BoardSpace.net
+home page</a> </td>
+    </tr>
+  </tbody>
+</table>
+</center>
+</body>
+</html>

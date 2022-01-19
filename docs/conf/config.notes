@@ -1,0 +1,18 @@
+
+edited /etc/http/httpd.conf and conf.d/boardpace.net.conf to add port 4321
+
+added .htaccess to games directories so they can be scanned.
+
+(ticketed)
+enable ssi for apache
+upgrade mysql
+install gcc and gdb
+
+
+
+cleanup:
+
+yearly or so delete excess files from ~/boardspace.net/stats/
+yearly or so delete excess game files from www/xGames
+	find . -type d -wholename "*xGames/games*2008" -print -exec  rm -rf {} \;
+

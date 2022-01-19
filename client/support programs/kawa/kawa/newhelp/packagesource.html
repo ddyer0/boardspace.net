@@ -1,0 +1,25 @@
+<HTML>
+<HEAD>
+<TITLE>Kawa Project</TITLE>
+</HEAD>
+<BODY LINK="#0000ff" VLINK="#800080" BGCOLOR="#ffffff">
+
+<H1><IMG SRC="kawacup.jpg" WIDTH=106 HEIGHT=100>Kawa Setup</H1>
+<P><A HREF="index.htm">Index</A> </P>
+<font size="1.5" face="Arial">Last Modified Date - <font color=red>2/16/99</font><p>
+Please click <a href="http://www.tek-tools.com/kawa/docs/packagesource.html">here</a> for the latest version of this document.
+<font color=red> If this is an online version of the document please right click in the browser and select 
+'Update local Kawa document' to update your local copy of this document</font>
+</font>
+<P><HR></P>
+<p>Kawa tries to open the JDK source file or non-JDK source file during debugging and double clicks in the output
+window.
+<p>Kawa first tries to locate the class name in the current project. If the class name is not found then it will
+check the package tree for the same class. 
+<p>If the class is found in the package tree Kawa will try to find the source file for the class under the Java
+source path as set under Customize/Options/Directories/Java source path. If the source is not found in the Java
+source path, Kawa will check the path value under Package source path for the same file and open the file if found.
+<p>Package source path can be a semi-colon delimited list of paths and is set under Customize/Options/Directories/Kawa Paths.
+<p>Please refer to <a href="kawasetup.htm">Kawa setup</a> and <a href="directorysetup.htm">Directory setup</a> for more details on setting various JDK and Kawa paths.
+</BODY>
+</HTML>

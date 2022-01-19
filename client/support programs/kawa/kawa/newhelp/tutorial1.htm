@@ -1,0 +1,48 @@
+<HTML>
+<HEAD>
+<TITLE>Kawa Project</TITLE>
+</HEAD>
+<BODY LINK="#0000ff" VLINK="#800080" BGCOLOR="#ffffff">
+
+<H1><IMG SRC="kawacup.jpg" WIDTH=106 HEIGHT=100>Tutorial 1</H1>
+<P><A HREF="index.htm">Index</A> </P>
+<font size="1.5" face="Arial">Last Modified Date - <font color=red>3/3/99</font><p>
+Please click <a href="http://www.tek-tools.com/kawa/docs/tutorial1.htm">here</a> for the latest version of this document.
+<font color=red> If this is an online version of the document please right click in the browser and select 
+'Update local Kawa document' to update your local copy of this document</font>
+</font>
+<P><HR></P>
+<h3><font color=brown>Compiling and running a Java app or applet Project</font></h3>
+<p>
+<ul>
+	<li>
+	We have chosen the DrawTest applet that is shipped with all versions of JDK for this tutorial. Please make sure
+	you have installed all the demo programs when you install JDK. Locate the DrawTest demo program files. Under JDK 1.1 you 
+	can find this under /demo/drawtest/1.1 and under JDK 1.2 you can find the same under /demo/applets/DrawTest.
+	</li>
+	<li>Please start Kawa and select Project/New menu option and change folder to DrawTest folder and create a project by name
+	"DrawTest". This will create a new project DrawTest and open the project in Kawa.
+	</li>
+	<li>Next, we need to add some files to the project. Please right click on the project name DrawTest or select Project/Add File...
+	menu option and pick the DrawTest.java file to add to the project. Kawa will add the file to the project tree.
+	</li>
+	<li>Please make sure your JDK paths are setup properly. Please refer to <a href="kawasetup.htm">Kawa Setup</a> for more details.</li>
+	<li>Select Build/Rebuild All to compile all the files in the project. Please make sure there are no errors in
+	the output window.</li>
+	<li>In order to run this as an app we have to select the main class file or the file which has the class with main method defined. Right
+	click your mouse on DrawTest.java file in the project tree and select Main Class from the ensuing menu. This will draw a red border
+	aroud the file icon to indicate the main class file</li>
+	<li>Select Build/Run menu option to run and you should see the DrawTest app run and the main window show up</li>
+	<p>
+	<li>We can also run this project as an applet because DrawTest is written to be run as an app or applet. In order to run an applet under
+	Kawa we have to first add a HTML file to the project and select the HTML as main HTML file.</li>
+	<li>Select Project/Add File... menu and  pick the example1.html to add to the project.</li>
+	<li>Please right click your mouse on example1.html file in the project and select Main HTML menu option this time. Kawa will draw a blue
+	border around the file icon to indicate main HTML file</li>
+	<li>Select Build/Run menu option to now run DrawTest as an applet and you should see appletviewer running with the DrawTest applet</li>
+<p>
+</ul>
+This finishes our first tutorial. We learnt how to create a new project, add files to project and build all the files in the project and run
+the project.	
+</BODY>
+</HTML>

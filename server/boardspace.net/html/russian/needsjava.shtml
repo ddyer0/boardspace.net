@@ -1,0 +1,194 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html;
+      charset=windows-1252">
+    <title>BoardSpace.net Login Page</title>
+    <script src="/js/site.js">
+  </script>
+  </head>
+  <body style="background-image: url(/images/background-image.jpg);">
+    <h1 style="text-align: center;"><img src="/images/master-logo.jpg"
+        title="" alt="boardspace.net" style="width: 600px; height:
+        100px;"></h1>
+    <h1 style="text-align: center;">BoardSpace needs Java!</h1>
+    <!--#include virtual="/cgi-bin/applettag.cgi?tagname=version" -->
+    <p><span style="font-weight: bold;">If the applet doesn't appear at
+        all,</span> this is the first problem to solve.&nbsp; Our games
+      require a Java-enabled browser. Most modern browsers support Java,
+      but some installations don't automatically include
+      java.&nbsp;&nbsp; <br>
+    </p>
+    <p> </p>
+    The major causes of "no java" in browsers are:
+    <ul>
+      <li>If java is not installed, you need to download it.&nbsp; Or if
+        installed, it might be an old version.&nbsp; Boardspace is
+        designed to run with any modern version of java, but current
+        security concerns make running old versions of java problematic,
+        at best.<br>
+      </li>
+      <li>On all browsers, it is possible to <i>disable</i> Java in the
+        browser's preferences, and sometimes the default is to be
+        disabled, and not all installations include java by default. If
+        your browser should be new enough to include java, check that <b>java
+
+
+
+
+          is enabled </b>in your browser preferences.&nbsp; For reasons
+        best known to the developers, this seems to be different in
+        every version of every browser.&nbsp; Java.com has instructions
+        where to find the <a
+          href="http://java.com/en/download/help/enable_browser.xml">java
+
+
+
+
+
+          enable</a> options for most browsers.</li>
+      <li>Security measures may require you to grant permission for java
+        to run separately for each applet or each site.&nbsp; Use the
+        "activate all" option for Boardspace applets. Some confused
+        browsers display a small red icon next to the URL line instead
+        of a pop-up.&nbsp; <br>
+        <img style=" width: 180px; height: 31px;" alt="the button"
+          src="../images/appletbutton.jpg">&nbsp; Click on it and select
+        "activate all" </li>
+      <li>If all else fails, uninstall all versions of java your machine
+        thinks are installed and reinstall just the latest.</li>
+    </ul>
+    Two sites that will help you test and diagnose java on your browser
+    are <a href="http://java.com/en/download/help/testvm.xml">Java.com</a>&nbsp;
+
+
+
+
+
+    and&nbsp; <a href="http://www.fitwise.com/testjava.asp">Fitwise.com</a><br>
+    <h1>Firewalls, Routers, Ports and Proxies, Lost Connections<br>
+    </h1>
+    <span style="font-weight: bold;">If you get some kind of "can't
+      connect" message in the lobby chat area</span>:&nbsp; The Java
+    applet must be able to open an outgoing tcp connection on <span
+      style="font-weight: bold;">port 2255.&nbsp; </span>Most firewalls
+    and routers are configured allow this; but some institutions (work,
+    school) and some personal firewall products (blackice, zone alarm)
+    may block this port.&nbsp; If the applet window comes up, but can't
+    connect to the server, look for problems with port 2255.&nbsp; The
+    applet will also fail to connect if it was loaded from some place
+    other than Boardspace.net, which could be a side effect of some
+    browser proxy setups.&nbsp; <br>
+    <br>
+    <a href="http://www.boardspace.net:4321/"><span style="font-weight:
+        bold;"></span></a>If you get the message<span
+      style="font-weight: bold;"> </span><font style="font-weight:
+      bold;" face="Arial, Helvetica" size="2">rcv 221 errConnection
+      error</font> then you have successfully connected to the server,
+    but your connection has been rejected.&nbsp; The most likely cause
+    of this is that you accidentally connected to the server without
+    going through the login procedure.&nbsp; This can happen if you use
+    your browser's <span style="font-style: italic;">back</span>
+    button, or if your browser has cached the login page (and so didn't
+    to chat with the server about your login).&nbsp; Check your browser
+    cache settings.<br>
+    <br>
+    <span style="font-weight: bold;">If you lose connection in mid-game:
+    </span>don't panic, you can reconnect and rejoin the game.&nbsp;
+    This can happen for a variety of reasons, most of which are
+    impossible to predict or control.&nbsp; Watch the little
+    spinner&nbsp;<img alt="clock spinner" src="/images/spinner.jpg"
+      style="width: 65px; height: 17px;"> located next to your clock
+    (and your opponents clock).&nbsp; The little arrow should change
+    position at least every 10 seconds or so, and if it has not changed
+    position recently, the color starts fading from green to red.&nbsp;
+    After 2 minutes of no activity a timeout will occur and you can try
+    to reconnect. <br>
+    <br>
+    <b>Slow&nbsp; connections: </b>Once the applet is downloaded, the
+    bandwidth required to maintain the lobby and a game is very modest,
+    and any type of internet connection should work fine.&nbsp;&nbsp;
+    One problem we have seen a few times is that firewalls such as Zone
+    Alarm interfere with the flow of data to the server without
+    completely blocking it. We don't know why, but disabling Zone Alarm
+    fixes the problem.&nbsp; A test for this condition is to switch the
+    type of a game room, say from "Game Room" to "Unranked Room".&nbsp;
+    The changeover should happen very fast, within a second.&nbsp; If
+    there is more that a very brief lag, look for this kind of
+    networking problem.<br>
+    <br>
+    If you successfully play games, but <span style="font-weight:
+      bold;">scoring the game fails</span>: To score games properly, the
+    applet must be able to make HTTP requests on either <span
+      style="font-weight: bold;">port 80</span> or<span
+      style="font-weight: bold;"> port 4321.&nbsp; </span>Port 80 is
+    normally used by browsers, so it is usually open, but some sites
+    enforce the use of a http proxy server by blocking port 80.&nbsp;
+    Scoring a game fails occasionally if the server is unusually busy,
+    or just due to random internet glitches.&nbsp; If port 80 is
+    permanently blocked, try referring to boardspace.net as <a
+      href="http://boardspace.net:4321/"><span style="font-weight:
+        bold;">http://www.boardspace.net:4321/</span></a><br>
+    <br>
+    <br>
+    <h1>Browsers, Platforms and Java Versions</h1>
+    The Java applet that runs the game works in any browser that
+    supports Java, but not all browsers or platforms are created
+    equal.&nbsp; Be advised that running old, unpatched versions of
+    browsers and/or java is considered dangerous. &nbsp; <br>
+    <br>
+    <div style="margin-left: 40px;"><font size="+1"><span
+          style="font-weight: bold;">Windows (any version)</span></font><br>
+      <br>
+      <font size="+1"><span style="font-weight: bold;"></span></font></div>
+    <div style="margin-left: 80px;"><span style="font-weight: bold;"></span><span
+        style="font-weight: bold;"></span><span style="font-weight:
+        bold;">Firefox, Chrome, Safari and IE </span>all work.<br>
+    </div>
+    <blockquote><span style="font-weight: bold;"><font size="+1">Macintosh</font></span><span
+        style="font-weight: bold;"><br>
+      </span></blockquote>
+    <div style="margin-left: 80px;"><span style="font-weight: bold;">Safari,
+
+
+
+
+
+        Chrome and Firefox </span>all work<br>
+      <span style="font-weight: bold;"></span></div>
+    <blockquote><span style="font-weight: bold;"></span><span
+        style="font-weight: bold;"><font size="+1">Linux<br>
+        </font></span>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; Relatively
+      few of our players use Linux , the only general statement we can
+      make is that the most current combinations work ok. <br>
+      <br>
+      <span style="font-weight: bold;"><font size="+1">Old Java Versions</font></span><br>
+    </blockquote>
+    <div style="margin-left: 80px;">Browsers now block old versions of
+      java because of known security holes.&nbsp; You must run a current
+      version of java.<br>
+    </div>
+    <blockquote><br>
+      <div align="right">Back to the <a
+          href="javascript:window.history.go(-1)">previous page</a>.<br>
+      </div>
+      <br>
+      <hr style="width: 100%; height: 2px;">
+      <table style="width: 100%;">
+        <tbody>
+          <tr>
+            <td align="left"> <font size="-1">E-mail:
+                <script language="javascript">
+document.write("<a href='mailto:gamemaste");
+document.write("r\@board");
+document.write("space.net'>gamemaste<n>r@board<n>space.net</a>");
+        </script></font> </td>
+            <td align="right">Go to <a href="/">BoardSpace.net home
+                page</a> </td>
+          </tr>
+        </tbody>
+      </table>
+      <br>
+    </blockquote>
+  </body>
+</html>

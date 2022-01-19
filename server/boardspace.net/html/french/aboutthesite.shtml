@@ -1,0 +1,149 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <title>About the Site</title>
+  <script src="/js/site.js">
+  </script>
+</head>
+<body
+ style="color: rgb(0, 0, 0); background-color: rgb(255, 255, 255); background-image: url(/images/background-image.jpg);"
+ alink="#000099" link="#000099" vlink="#990099">
+<h1 style="text-align: center;"><img alt="boardspace.net"
+ src="../images/master-logo.jpg" style="width: 600px; height: 100px;"></h1>
+<h1 style="text-align: center;">A propos du site</h1>
+<ul>
+  <li><span style="font-weight: bold;">Qui fait fonctionner ce site ?</span><br>
+    Boardspace.net est un hobby, pas un site commercial en d&eacute;veloppement, 
+    pas une d&eacute;monstration technologique pour une quelconque entreprise.&nbsp;Rien 
+    n'est cach&eacute; sous la table.&nbsp;Prenez-y simplement du plaisir, en 
+    tant que mon invit&eacute;.&nbsp;Ma page personnelle est <a style="font-weight: normal;"
+ href="http://www.real-me.net/ddyer/">ici</a><span
+ style="font-weight: normal;">.</span></li>
+  <li><span style="font-weight: bold;">Pourquoi Z&egrave;rtz ? Yinsh ? Punct ?<br>
+    </span></li>
+  Originellement, je me suis fait accrocher par Zertz sur le <a href="http://www.gamerz.net/"> 
+  PBEM server</a>, en utilisant <a
+ href="http://assimilate.int.webmatrixhosting.net/zf1/">Z&egrave;rtz for One</a> 
+  comme un moyen d'&eacute;tude des coups.&nbsp;C'est g&eacute;nial de passer 
+  des heures &agrave; planifier des coups, mais jouer face &agrave; face est un 
+  autre d&eacute;fi.&nbsp;J'ai attendu un an qu'un site de jeu en direct apparaisse.&nbsp;Mais 
+  puisque rien ne vint, je pris la d&eacute;cision de le faire moi-m&ecirc;me.&nbsp;<span
+ style="font-weight: bold;">Kris Burm, </span>l'auteur de Zertz, n'est pas directement 
+  impliqu&eacute; dans cette r&eacute;alisation mais l'approuve. <span
+ style="font-weight: bold;">Michael Reitz</span> (qui a &eacute;crit ZF1)&nbsp; 
+  m'a fait profiter de ses conseils m&ecirc;me s'il n'est pas directment impliqu&eacute; 
+  dans l'implementation ou la structuration de ce site.&nbsp;Les autres jeux du 
+  projet Gipf sont des candidats qui poussent &agrave; la porte pour entrer sur 
+  le site.<br>
+  <li><span style="font-weight: bold;">Pourquoi Lines of Action ?<br>
+    </span><a href="/loa/">Lines of Action</a> est un jeu auquel je jouais, mais 
+    dont je savais peu de choses et je ne conaissais personne d'autre qui y jouait.&nbsp;Aussi, 
+    lorsque l'internet pris sa place dans les consciences, je fis le projet de 
+    d&eacute;velopper LOA.&nbsp;J'ai r&eacute;alis&eacute; un programme pour jouer 
+    et rejouer les parties, et une page pour regrouper les informations sur le 
+    jeu.&nbsp;J'ai toujours eu le d&eacute;sir d'en faire un jeu en ligne, &ccedil;a 
+    a juste pris du temps.</li>
+  <li><span style="font-weight: bold;">Pourquoi Plateau ?<br>
+    </span>Ce qui m'attire dans <a href="http://www.plateaugame.com/">Plateau</a> 
+    C'est qu'il s'agit davantage d'un jeu psychologique que d'un jeu strat&eacute;gique 
+    ou tactique.&nbsp;L'information cach&eacute;e rend le jeu et la planification 
+    incalculables - Il n'y a pas de strat&eacute;gie gagnante. Plateau est un 
+    jeu vraiment agr&eacute;able qui m&eacute;rite une plus large audience. <br>
+  </li>
+  <li><span style="font-weight: bold;">Pourquoi Hex ?</span><br>
+    Hex est l'un de ces grands classiques auxquels il semble que personne ne joue.&nbsp;J'ai 
+    &eacute;t&eacute; surpris de constat&eacute; que le jeu est vraiment interessant, 
+    tout particuli&egrave;rement pour un joueur de Go.&nbsp;Hex me rappelle un 
+    passage de <span style="font-style: italic;">Creatures of Light and Darkness.&nbsp; 
+    </span>(des points bonus vous seront attribu&eacute;s si vous pouvez me dire 
+    lequel et pourquoi)<br>
+  </li>
+  <li><span style="font-weight: bold;">Pourquoi Trax ? </span></li>
+  <br>
+  Trax est un autre jeu classique m&eacute;sestim&eacute;.&nbsp;C'est probablement 
+  le jeu de ce site le plus analys&eacute; et les meilleurs joueurs y sont r&eacute;ellement 
+  bons, pas de simples amateurs.&nbsp;Ah oui, mes amis de Tantrix.com distribuent 
+  ces tuiles, aussi esp&eacute;r&eacute;-je un peu de traffic crois&eacute;.<br>
+  <li><span style="font-weight: bold;"> Pourquoi Gobblet ?<br>
+    </span>Gobblet fut une d&eacute;couverte pas tout &agrave; fait accidentelle 
+    - mon &eacute;pouse me l'a offert pour No&euml;l. Parmi la tripot&eacute;e 
+    de jeux dont j'ai fait l'acquisition ces derni&egrave;res ann&eacute;es, il 
+    gagne le plus du plus amusant petit jeu abstrait.&nbsp; </li>
+  <li><span style="font-weight: bold;"> Pourquoi Hive ?<br>
+    </span>Hive a sa place parce qu'en plus d'&ecirc;tre un jeu r&eacute;cent 
+    particuli&egrave;rement bien class&eacute;, il semble avoir des fans allant 
+    bien au del&agrave; d'un &quot;oh-oui-bon-jeu&quot;.&nbsp;Ces fans m&eacute;ritent 
+    une r&eacute;compense.</li>
+  <li><span style="font-weight: bold;">Pourquoi Exxit ?</span><br>
+    Exxit attira mon attention sur BoiteAJeux.net, un site de jeu en ligne au 
+    tour par tour.&nbsp; Le jeu est, relativement &agrave; ses r&egrave;gles tr&egrave;s 
+    simples, tr&egrave;s frustrant et difficile.&nbsp; IEn d'autres mots, juste 
+    le genre de jeux que j'aime. Je pense qu'Exxit a un &eacute;norme potentiel.</li>
+  <li><span style="font-weight: bold;">Pourquoi Tablut ?<br>
+    </span>C'est un classique- litt&eacute;ralement - jou&eacute; depuis plus 
+    de mille ans.&nbsp;Une des ses variantes modernes, nomm&eacute;e Breakthru, 
+    &eacute;tait un de mes jeux favoris.&nbsp;Il s'agit d'une classe de jeux qui 
+    m&eacute;rite d'&ecirc;tre davantage connue.</li>
+  <li><span style="font-weight: bold;">Pourquoi Dipole ?<br>
+    </span>La d&eacute;marche aust&egrave;re de Mark Steere dans la cr&eacute;ation 
+    m&egrave;ne &agrave; des jeux &quot;pour joueurs&quot; : finis, ne pardonnant 
+    aucune erreur, et demandant une r&eacute;flexion en profondeur.&nbsp;Dipole 
+    est son meilleur jeu &agrave; ce jour.</li>
+  <li><span style="font-weight: bold;">Pourquoi Tumblingdown ?<br>
+    </span>Quelqu'un m'a fait remarquer la similarit&eacute; du m&eacute;canisme 
+    de d&eacute;placement entre TumblingDown et Exxit, et ce jeu fut finaliste 
+    d'un concours de cr&eacute;ation ... avant d'&ecirc;tre promptement oubli&eacute;.</li>
+  <li><span style="font-weight: bold;">Pourquoi Truchet ?<br>
+    </span>Aucun doute : mon attirance est due aux tuiles.<br>
+    <br>
+  </li>
+  <li><span style="font-weight: bold;">Quel est le plan directeur ?</span>&nbsp; 
+    <br>
+    Le plan est de b&acirc;tir un site o&ugrave; l'on peut &agrave; tout moment 
+    lancer une partie.&nbsp; Sous quelque conditions raisonnables, il suffit (seulement) 
+    d'environ 200 joueurs r&eacute;guliers pour atteindre le point critique o&ugrave; 
+    vous trouverez presque &agrave; coup s&ucirc;r un autre joueur dans le lobby 
+    en l'espace de quelques minutes.&nbsp;Malheureusement, il faut compter 200 
+    s&eacute;par&eacute;ment pour chaque jeu, aussi avoir beaucoup de jeux n'aide 
+    pas directement.&nbsp;Atteindre ce nombre de 200 n'est pas facile.&nbsp;&nbsp;&nbsp; 
+    En attendant, venez avec votre adversaire !</li>
+  <li><span style="font-weight: bold;">Plus de jeux ! De meilleurs robots ! De 
+    plus beaux graphiques ! </span>etc.&nbsp;Toute suggestion m'interesse et plus 
+    particuli&egrave;rement toute suggestion support&eacute;e par la communaut&eacute; 
+    des joueurs. Les choses faciles &agrave; faire et celles qui m'accrochent 
+    vraiment ont le plus de chance d'&ecirc;tre impl&eacute;ment&eacute;es.&nbsp;Si 
+    vous voulez donner un coup de main, parlons-en.</li>
+  <li><span style="font-weight: bold;">Que faut-il pour faire un site comme celui-ci 
+    ?&nbsp; </span><br>
+    Alors l&agrave;, ce doit &ecirc;tre une expression bien connue ... mot &agrave; 
+    mot &ccedil;a nous donne : aucun fil de broche ou d'emballage n'est impliqu&eacute; 
+    ... . Voici <a href="sitecomponents.html">le mat&eacute;riel</a>.<br>
+  </li>
+</ul>
+<br>
+<hr style="width: 100%; height: 2px;">
+<table style="width: 100%;">
+  <tbody>
+    <tr>
+      
+    <td align="left"> <font size="-1">Courriel : 
+      <script language="javascript">
+document.write("<a href='mailto:gamemaste");
+document.write("r\@board");
+document.write("space.net'>gamemaste<n>r@board<n>space.net</a>");
+      </script></font>
+      </td>
+      
+    <td style="vertical-align: top; text-align: center;"><a
+ href="http://netmap.efxservices.com/cgi-bin/mapper/displaymap.pl?client=1036"><img
+ src="http://netmap.efxservices.com/cgi-bin/mapper/record-hit.pl?client=1036">carte 
+      des visiteurs<br>
+      </a></td>
+      
+    <td align="right">Aller &agrave; la <a href="/">Page d'accueil de BoardSpace.net</a> 
+    </td>
+    </tr>
+  </tbody>
+</table>
+</body>
+</html>

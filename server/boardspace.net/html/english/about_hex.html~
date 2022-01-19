@@ -1,0 +1,184 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html;
+      charset=ISO-8859-1">
+    <title>About Hex</title>
+  </head>
+  <body style="background-image: url(../images/background-image.jpg);">
+    <table style="width: 100%; text-align: left;" border="0"
+      cellpadding="2" cellspacing="0">
+      <tbody>
+        <tr>
+          <td style="vertical-align: top;">
+            <h4><a href="about_plateau.html">Plateau</a></h4>
+            <h4> </h4>
+          </td>
+          <td style="vertical-align: top;">
+            <h1 style="text-align: center;"><img alt="boardspace.net"
+                src="master-logo.jpg" style="width: 600px; height:
+                100px;"></h1>
+          </td>
+          <td style="vertical-align: top;"><a href="about_volo.html"><span
+                style="font-weight: bold;">Volo</span></a></td>
+        </tr>
+      </tbody>
+    </table>
+    <br>
+    <table style="text-align: left; margin-left: auto; margin-right:
+      auto; width: 995px; height: 46px;" border="0" cellpadding="2"
+      cellspacing="2">
+      <tbody>
+        <tr>
+          <td style="vertical-align: top; text-align: center;"><small><font
+                size="+1"><small><a href="register.shtml"><span
+                      style="font-weight: bold;">Register</span></a></small></font><br>
+            </small></td>
+          <td style="vertical-align: top; text-align: center;"><small><font
+                size="+2"><small><a style="font-weight: bold;"
+                    href="login.shtml">Log
+                    in and
+                    Play<br>
+                  </a></small></font></small></td>
+          <td style="vertical-align: top; text-align: center;"><small><font
+                size="+1"><small><a href="guest.shtml"><span
+                      style="font-weight: bold;">Guest
+                      Login</span></a></small></font><br>
+            </small></td>
+        </tr>
+      </tbody>
+    </table>
+    <br>
+    <br>
+    <table style="width: 100%; text-align: left;" border="1"
+      cellpadding="2" cellspacing="2">
+      <tbody>
+        <tr>
+          <td style="vertical-align: top;">
+            <h1 style="text-align: center;"><big>Hex</big><br>
+            </h1>
+            Hex is a classic, well studied
+            and widely admired game.&nbsp;&nbsp; The <a
+              href="http://www.hexwiki.org/index.php?title=Rules">rules</a>&nbsp;
+are
+trivial.&nbsp;
+            Just connect the opposite sides of the board with a
+            chain of stones.&nbsp;&nbsp; The amazing and infuriating
+            thing about
+            hex is that direct strategies to connect do not work, so you
+            are forced
+            to consider indirect methods, which do not obviously lead
+            anywhere.<br>
+            <br>
+            A lot more people have heard of Hex than have ever played
+            it, which is
+            too bad, because it's a really interesting game!<br>
+            <br>
+            <span style="font-weight: bold;">Robots:</span>&nbsp; Alas,
+            the
+            robot player for Hex is really, really dumb.&nbsp; This is
+            primarily
+            because hex is a pretty difficult problem for a
+            computer.&nbsp; <br>
+            <br>
+          </td>
+          <td style="vertical-align: top;"><img alt="hex interface"
+              src="../images/hex-small.jpg" style="width: 412px; height:
+              282px;"><br>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <span style="font-weight: bold;"><br>
+    </span>
+    <div style="text-align: center;"><span style="font-weight: bold;">Links</span><br>
+      <span style="font-weight: bold;"></span></div>
+    <table style="width: 100%; text-align: left;" border="0"
+      cellpadding="2" cellspacing="2">
+      <tbody>
+        <tr>
+          <td style="vertical-align: top;"><a
+              href="/cgi-bin/boardspace_rankings.cgi?game=h">Hex-11
+              rankings at Boardspace</a><br>
+          </td>
+          <td style="vertical-align: top;"><a
+              href="http://boardgamegeek.com/game/4112">Hex at
+              BoardGameGeek</a><br>
+          </td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;"> <a
+              href="/cgi-bin/boardspace_rankings.cgi?game=h15">Hex-15
+              rankings at Boardspace</a></td>
+          <td style="vertical-align: top;"><a
+              href="http://www.hexwiki.org/">The
+              Hex
+              Wiki</a><span style="text-decoration: underline;"></span>
+          </td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;"><a
+              href="/cgi-bin/boardspace_rankings.cgi?game=h19">Hex-19
+              rankings at Boardspace</a></td>
+          <td style="vertical-align: top;"><span style="text-decoration:
+              underline;"><a
+                href="http://en.wikipedia.org/wiki/Hex_%28board_game%29">Hex
+                at
+                Wikipaeda.org</a></span> </td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;"><a
+              href="/hex/hex-viewer.shtml">Hex
+              game
+              archives
+              at Boardspace<br>
+            </a></td>
+          <td style="vertical-align: top;"><a target="moreboardspace"
+              href="/hex/hex-viewer.shtml">Boardspace Hex&nbsp; game
+              archive</a> </td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;"><a
+              href="/cgi-bin/player_analysis.cgi?game=hex">Hex win/loss
+              database</a><br>
+          </td>
+          <td style="vertical-align: top;"><br>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <span style="font-weight: bold;"><br>
+      The back story:&nbsp; </span>I chose Hex as an official "sample
+    game"
+    for developers who want to add their own games to Boardspace.&nbsp;
+    It's a good game in it's own right of course, but it's also close to
+    the simplest imaginable game to implement.&nbsp;&nbsp; The sources
+    for
+    Hex (which developers get from me) are heavily annotated to make
+    them
+    the best possible template for boardspace games.<br>
+    <hr>
+    <center>
+      <table style="width: 100%;">
+        <tbody>
+          <tr>
+            <td align="left"><font size="-1">
+                <script language="javascript">
+document.write("<a href='mailto:gamemaste");
+document.write("r\@board");
+document.write("space.net'>gamemaste<n>r@board<n>space.net</a>");
+      </script></font><br>
+            </td>
+            <td style="vertical-align: top; text-align: center;"><br>
+            </td>
+            <td style="vertical-align: top;"><a href="logon-page.html">Site<br>
+                &nbsp;Map</a><br>
+            </td>
+            <td align="right">Go to <a href="/">BoardSpace.net home
+                page</a> </td>
+          </tr>
+        </tbody>
+      </table>
+    </center>
+  </body>
+</html>

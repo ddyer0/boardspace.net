@@ -1,0 +1,5 @@
+Bonjour invité - merci d'être venu. Vous êtes les bienvenus pour jouer, regarder ou simplement discuter.
+
+Pour jouer à A Robot, cliquez sur un siège dans une salle de jeux vide et appuyez sur "Play Robot".
+
+Alternativement, vous pouvez attendre qu'un autre joueur rejoigne votre jeu et appuyer sur "Play".

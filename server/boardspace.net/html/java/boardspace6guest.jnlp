@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jnlp spec="1.0+" codebase="http://boardspace.net/java/" href="boardspace6guest.jnlp">
+    <information>
+        <title>Boardspace Lobby - JWS Applet</title>
+        <vendor>Boardspace.net</vendor>
+        <description>Boardpace launcher using Java Web Start</description>
+        <description kind="short">Boardspace Lobby</description>
+        <icon href="boardspace-icon.jpg" kind="default"/>
+        <icon href="boardspace-splash.jpg" kind="splash"/>
+        <shortcut online="true">
+       	 <desktop/>
+        </shortcut>
+    </information>
+    <update check="timeout" policy="always"/>
+    <resources>
+        <j2se version="1.5+"/>
+        <jar href="jws/Launcher.jar" main="true" download="eager"/>
+        <!--#include virtual="/cgi-bin/applettag.cgi?tagname=appjars" -->
+    </resources>
+    <security>
+     <all-permissions/>
+    </security> 
+    <applet-desc 
+	      name="Boardspace Applet"
+	      width = 510
+	      height = 550
+	      main-class="util.JWSApplet">
+      <param name="jws_nickname" value="guest"></param>
+      <param name="jws_parameters" value="jws_nickname"></param>
+      </applet-desc>
+</jnlp>

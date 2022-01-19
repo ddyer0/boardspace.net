@@ -1,0 +1,928 @@
+package online.language;
+
+import online.common.internationalStrings;
+
+/* maintained by "solsting" Simon Ingelman-Sundberg <simon_i_s@hotmail.com>
+ * last update Jan 10 2011
+ */
+//
+// available font families: 
+//  serif (timesroman)
+//  sansserif (helvetica)
+//  monospaced (courier)
+//
+public class swedishStrings extends internationalStrings
+{
+    static
+    {
+        put("fontfamily", "sansserif");
+
+        // lobby messages
+        put("launchfailed","Motståndaren startade inte spelet korrekt");
+        put("#1 invites #2 to join room #3", "#1 bjuder in #2 till rum #3");
+        put("#1 invites #2 to play #3 in room #4","#1 bjuder in #2 för att spela #3 i rum #4");
+        put("#1 has been muted, by a consensus of the players",
+            "#1 har fått talförbud, i enlighet med spelarnas önskan");
+        put("welcome", "Välkommen till BoardSpace Lobby, version #1"); //version number follows
+        put("website", "#1 BoardSpace"); //pretty name for the web site
+        put("enterMessage", "#1 har stigit in"); //somebody entered
+        put("in #1", "i #1"); //followed by a session number
+        put("Move ##1", "Drag ##1"); //move number for games in lobby
+        put("News", "Mytt"); //header for news lines
+        put("Lobby", "Lobby"); //the name of the lobby
+        put("Error", "Fel"); //the name for errors
+        put("launchChat", "Startar chattrum, session #1"); //launching a chat room
+        put("launchspectator", "Startar åskådarläge, session #1"); //session id follows
+        put("launchGame", "Startar spel, session #1"); //launching a game
+        put("launchReview", "Startar analysläge, session #1");
+        put("Session #1: state unknown.", "Session #1: status är okänd.");
+        put("Session #1 is idle.  ", "Session #1 är inaktiv.  ");
+        put("Session #1 is being launched.  ", "Session #1 startas.  ");
+        put("Session #1 is active.  ", "Session #1 är aktiv.  ");
+        put("Session #1 is private. ", "Session #1 är privat. ");
+        put("Session #1 is displaying the map of players real locations",
+            "Session #1 visar en karta över spelarnas geografiska läge.");
+        put("Invite", "Bjud in #1 till rum #2");
+        put("Accept chat from #1", "Acceptera chatt från #1");
+        put("Ignore chat from #1", "Ignorera chatt från #1");
+        put("Play #1", "Spela mot #1"); //followed by robot name
+        put("Rejoin #1", "Återuppta match mot #1"); //rejoin a game you were playing
+        put("Rejoin", "Återuppta match"); //rejoin a game you were playing
+        put("noserver", "Lobbyn är inte ansluten till servern."); //status message
+        put("stillwaiting", "startar fortfarande... var god vänta."); //repeated hit on launch
+        put("noresponse1", "Servern svarar inte.");
+        put("noresponse2",
+            "Den kan vara nere, eller en brandvägg kan förhindra anslutning.");
+        put("nolobby", "Det gick inte att öppna lobbyn. Den kanske är full.");
+        put("timeoutWarning", "  Lobbyn stänger om en minut p.g.a. inaktivitet."); //warning	
+        put("Lobby shutdown...", "Lobbyn stänger..."); //shutting down
+        put("Active in", "Aktiv i"); //header for users column
+        put("Waiting in", "Väntar i"); //header for users column
+        put("your name", "Ditt namn"); //your name in users, when not known
+        put("(unknown)", "(okänt)"); //name of another player not yet known
+        put("announceOption", "Nya spelare"); //the "announce new players" menu option
+        put("Join", "Gå in i"); //label for the join token
+        put("Invite players to this room", "Bjud in spelare till detta rum");
+
+        /* game state messages for games scroll area */
+        put("State unknown.", "Okänd status"); //when game state is not yyet known
+        put("Launching...", "Startar..."); //game being launched
+        put("Spectate", "Titta på"); //spectate in a game (verb)
+        put("Spectator", "Åskådare"); //spectator (singular noun)
+        put("Idle.", "Inaktivt"); //game that is not in use
+        put("Players", "Spelare"); //generic players in a game (plural noun)
+        put("player", "spelare"); //generic players in a game (singular noun)
+        put("Spectators", "Åskådare"); //generic spectators in a game (plural noun)
+        put("(unoccupied)", "(ledig)"); //empty/available slot in a game
+        put("Start", "Starta"); //start a game button
+
+        /* game description messages */
+        put("and", " och "); //"and" for a, b and c, including spaces
+        put("No players.", "Inga spelare."); //there are no players in this game
+        put("Player is ", "Spelaren är "); //the single player name follows
+        put("Players are: ", "Spelarna är: "); //the list of player names follows
+        put("No spectators.", "Inga åskådare."); //similarly for spectators
+        put("Spectator is: ", "Åskådare: "); //
+        put("Spectators are: ", "Åskådare: "); //
+        put("loaderr", "Kan inte ladda: "); //can find classes we need
+        put("Connection error", "Kan inte ansluta"); //problem with the connection
+        put("Reconnecting", " ...Försöker återansluta..."); //attempting to reconnect
+        put("connecting", "Ansluter till "); //connecting to web site	
+        put("reconok", "..återanslutning lyckades"); //ok, we did it
+        put("nolaunch", "Kunde inte starta, felmeddelande: ");
+        put("Time is ", "Klockan är "); //followed by hh:mm
+        put("savedmsg", "Spel sparat som #1"); //announce saved game
+        put("guest", "gäst"); //the name for guest players
+
+        //lobby messages
+        put("Please Join Me", "Kom och spela!"); // goes with "join only if invited" and "tournament mode"
+        put("Join only if Invited", "Endast inbjudna kan spela"); //seen in lobby game rooms
+        put("Tournament Game", "Turneringsparti"); //seen in lobby game rooms
+        put("No challenges from #1", "Tillåt ej inbjudningar från #1"); //seen in lobby player list
+        put("Allow challenges from #1", "Tillåt inbjudningar från #1"); //seen in lobby player list
+        put("Unranked Room", "Orankat rum"); // room for unranked games.
+        put("Games do not affect your Ranking",
+            "Spelen påverkar inte rankingen"); //subheader for the room
+        put("No Challenges", "Inga inbjudningar");
+        put("automute", "#1 har automatiskt fått talförbud");
+        put("No Chat", "Ingen chatt");
+        put("Map of Player Locations", "Kartrum");
+        put("Game Room", "Spelrum");
+        put("Review Saved Games", "Analysrum");
+        put("Anyone can play in this room", "Alla kan spela i detta rum");
+        put("Master Room", "Mästarrum");
+        put("Master ranked players can play", "Mästare kan spela i detta rum");
+        put("Review Room", "Analysrum"); //for the chat room banner
+        put("Members", "Medlemmar"); //people in a chat room
+
+        //used by chat applet
+        put("Type your message here.", "Skriv meddelande här"); //initial contents of the message line
+        put("Message:", "Till alla:"); //label for the message line
+        put("MessageTo:","Till #1:");	//label for message to one user
+        put("From #1","Från #1");	// label for messages from a single user
+        put("Send", "Skicka"); //label for the button to send the text
+        put("User ", "Användare "); //default name for unnamed client
+
+        //used by the common frame
+        put("Options", "Inställningar");
+        put("Actions", "Funktioner");
+        put("Sound", "Ljud");
+
+        // review rooms
+        put("Show SGF Text", "Visa SGF"); //in action menu of review rooms
+        put("Select Game", "Välj spel"); //menu label in review rooms
+        put("game selector", "spelväljare"); // title for the game selector frame
+        put("Match words:", "Matcha ord:"); //used in the game selector
+        put("reading directory...", "läser mapp..."); //waiting for a directory to be read
+        put("Error reading directory", "Kan inte läsa mapp");
+        put("Error reading file", "Kan inte läsa fil");
+        put("reading Zip directory...", "läser komprimerad mapp...");
+        put("Loading game file", "Laddar spelfil"); //selecting a review game
+
+        //used by the game client
+        put("You have been disconnected: #1", "#1 har tappat anslutningen.");
+        put("Calling server...", "Ansluter till servern...");
+        put("Wait for opponents to arrive.", "Väntar på motståndaren.");
+        put("player ", "spelare ");
+        put("mouse tracking disabled", "musspårning avaktiverad");
+        put("the game has resumed", "spelet har återupptagits");
+        put("Take Over Playing", "Spela härifrån"); //menu item, take over playing a color
+        put("Become a Spectator", "Bli åskådare");
+        put("Let The Robot Play", "Låt boten spela");
+        put("(vacancy)", "(frånvarande)"); //player who has quit
+        put("Game in progress...", "Pågående spel...");
+        put("rankingsfailed", "Uppdatering av ranking misslyckades");
+
+        //hints
+        put("Moves are coming in", "Nya drag har inkommit"); //moves arrive while in review mode	
+
+        //menu options
+        put("Messages", "Meddelanden"); //name of menu
+        put("Track Mice", "Spåra mus");
+
+        put("See Player Comments", "Se spelarens kommentarer");
+        put("See Spectator Comments", "Se åskådarnas kommentarer");
+        put("Joint Review", "Gemensam analys");
+        put("#1 requests Joint review",
+            "#1 föreslår gemensam analys. Välj \"Gemensam analys\" i menyn Meddelanden.");
+        put("#1 starts Joint review","#1 startar gemensam analys");
+        put("Timeout in 1 minute.", "Timeout om en minut.");
+        put("Game timed out.  Session has ended.",
+            "Spelet gjorde timeout. Sessionen avslutades.");
+        put("Chat Room", "Chattrum"); //for the chat room banner
+        put("private room", "privat rum");
+        put("This is now a private room", "Detta är nu ett privat rum.");
+        put("This is now a public room", "Detta är nu ett offentligt rum.");
+        put("Colorblind", "Svartvit");
+        put("Please respect the 15 minute time limit",
+            "Mästarspel har en tidsgräns på 15 minuter");
+        put("Game", "Spel"); //name for hints from the game
+        put("Joining as a spectator", "#1 är nu åskådare");
+        put("enters the room", "#1 har stigit in"); //new member of a chat
+        put("#1 is taking over for #2", "#1 tar över för #2");
+        put("#1 is taking over playing #2 for #3",
+            "#1 tar över spelet av #2 för #3");
+        put("#1 deliberately quit", "#1 lämnade rummet avsiktligt");
+        put("#1 has quit and become a spectator",
+            "#1 har avslutat spelet och blivit åskådare");
+        put("#1 killed due to #2", "#1 utslängd p.g.a. #2");
+        put("quitting", "#1 har lämnat rummet");
+        put("#1 quit", "#1 lämnade rummet"); //quit (not deliberately)
+        put("Welcome to Game client, version #1",
+            "Välkommen till BoardSpace klient, version #1");
+        put("play", "spela #1"); //play color for xx
+        put("Selecting game: #1", "Val av spel: #1"); //loading a review game
+        put("Hint", "Tips"); //the name for hints
+
+        put("Move a ball or change a Ring", "Flytta en kula eller ändra en ring");
+        put("Add a ball, remove a Ring", "Placera en kula och ta bort en ring");
+        put("Add a ball", "Placera en kula");
+        put("Remove a Ring", "Ta bort en ring");
+        put("Capture a ball", "Ta en kula");
+        put("Continue Capturing", "Fortsätt ta kulor");
+        put("Finished Capturing, Click Done", "Alla kulor tagna, klicka på Klar");
+        put("Click Done", "Klicka på Klar");
+        put("Game Over", "Spelet är slut");
+        put("Resign", "Ge upp");
+        put("Zertz", "Zèrtz");
+        put("Zertz+11", "Zèrtz+11");
+        put("Zertz+24", "Zèrtz+24");
+        put("Player #1", "Spelare #1");
+        put("Resign State", "Klicka på klar för att bekräfta");
+        put("LOA", "Lines of Action");
+        put("Plateau", "Plateau");
+
+        // loa strings
+        put("Select the #1 piece to move", "Flytta bricka #1");
+        put("White", "Vit");
+        put("Black", "Svart");
+        put("Select the destination for the selected piece",
+            "Välj vart brickan ska flyttas");
+        put("Black Pieces", "Svarta brickor");
+        put("White Pieces", "Vita brickor");
+        put("show grid", "Visa koordinater");
+
+        put("Done", "Klar");
+        put("Edit", "Ändra");
+
+        put("LIMBO", "LIMBO");
+        put("4w 5g 6b or 3 of each wins", "4v 5g 6s eller 3 av varje ger vinst");
+        put("1 choice", "1 val");
+        put("#1 choices", "#1 väljer");
+        put("Start #1", "Starta #1");
+        put("Yinsh", "Yinsh");
+        put("Dvonn", "Dvonn");
+
+        // plateau strings
+        put("Move stacks around any way you want to",
+            "Flytta högarna på valfritt sätt");
+        put("Build an initial stack of 2 to be placed",
+            "Bygg och placera en inledande hög på 2");
+        put("Place your stack on the edge of the board",
+            "Placera högen vid kanten av brädet");
+        put("Onboard a piece, Move a stack, or Exchange",
+            "Borda en bricka, flytta en hög eller växla");
+        put("Exchange Prisoners", "Växla fångar");
+        put("Move A Stack", "Flytta en hög");
+        put("Drop your piece onto the board or any of your stacks",
+            "Släpp brickan på brädet eller någon av dina högar");
+        put("Drop your piece onto the board or any stack",
+            "Släpp brickan på brädet eller en hög");
+        put("Click Done to Finish the move", "Klicka på Klar för att avsluta draget");
+        put("Drop the moving stack back on the rack",
+            "Flytta högen tillbaka på ställningen");
+        put("Pick up and Continue your move", "Plocka upp och fortsätt ditt drag");
+        put("Shuffle pieces to the exchange area, Click Done to start the exchange",
+            "Blanda brickorna i växlingsutrymmet, klicka på Klar för att starta växlingen");
+        put("Click Done to complete the exchange",
+            "Klicka på klar för att bekräfta växlingen");
+        put("Start White", "Starta vit");
+        put("Start Black", "Starta svart");
+        put("Place prisoners here for exhange",
+            "Placera fångar här för växling");
+        put("Prisoners captured by Black are held here",
+            "Svarta fångar finns här");
+        put("Prisoners captured by White are held here",
+            "Vita fångar finns här");
+        put("Move the flipped stack", "Flytta den vända högen");
+        put("The game record is not available during the game",
+            "Rekordet är inte tillgängligt under spelet");
+
+        put("Select Robot", "Välj bot");
+
+        // yinsh strings
+        put("make 5 in a row to capture a ring, 3 rings win",
+            "5 brickor i rad tar bort raden och en ring, 3 ringar ger vinst");
+        put("Place a Ring on the board", "Placera en ring på brädet");
+        put("Pick a ring to place a chip and move",
+            "Flytta en ring och lämna en bricka kvar");
+        put("Drop the ring", "Släpp ringen");
+        put("Click DONE to confirm this placement",
+            "Klicka på Klar för att bekräfta");
+        put("Select a row of 5 to remove", "Välj en rad på 5 brickor att ta bort");
+        put("Click DONE to confirm this move", "Klicka på Klar för att bekräfta");
+        put("Click DONE to confirm removing these markers",
+            "Klicka på klar för att bekräfta");
+        put("Select a ring to remove", "Välj en ring att ta bort");
+        put("Click DONE to confirm removing this ring",
+            "Klicka på Klar för att bekräfta");
+        put("perspective","perspektiv");
+        //
+        // hex strings
+        //
+        put("Hex","Hex");
+        put("Swap Colors","Byt färg");
+        put("connect opposite sides with a chain of markers",
+        	"Bind ihop dina motsatta sidor");
+        put("Click Done to confirm this move",
+       		"Klicka på Klar för att bekräfta");
+        put("Click on Done to confirm your resignation", 
+       		"Klicka på Klar för att bekräfta");
+        put("Place a marker on any empty cell",	
+       		"Placera en bricka i en tom cell");
+        put("Place a marker on any empty cell, or Swap Colors",
+       		"Placera en bricka i en tom cell eller byt färg");
+        put("Click Done to confirm swapping colors with your opponent",
+       		"Klicka på Klar för att byta färg med din motståndare");
+        
+        // names of game variations for the lobby
+        put("Yinsh-Blitz","Yinsh-Blitz");
+        put("Hex-15","Hex-15");
+        put("Hex-19","Hex-19");
+        put("Trax","Trax");
+        put("Trax_variation","standard Trax");
+        put("make 5 in a row to capture a ring and win",
+        		"5 brickor i rad ger vinst");
+        
+        put("Zertz_variation","Zèrtz standard");
+        put("Zertz+11_variation","Zèrtz med 11 extra ringar");
+        put("Zertz+24_variation","Zèrtz med 24 extra ringar");
+        put("LOA_variation","Lines of Action standard 8x8");
+        put("LOAP_variation","Spela LOA programtävlingvariant");
+        put("Plateau_variation","Plateau standard");
+        put("Yinsh_variation","Yinsh standard");
+        put("Yinsh-Blitz_variation","Blixt-Yinsh - första ringen vinner");
+        put("Dvonn_variation","Dvonn standard");
+        put("Tamsk_variation","Tamsk standard");
+        put("Hex_variation","Hex 11x11");
+        put("Hex-15_variation","Hex 15x15");
+        put("Hex-19_variation","Hex 19x19");
+        put("Punct_variation","Pünct standard");
+        put("TBA1_variation","kommande spel");
+        put("TBA2_variation","kommande spel");
+        put("TBA3_variation","kommande spel");
+       
+        // trax strings
+        put("Tile Size","Brickstorlek");
+        put("Place a tile","Placera en bricka");
+        put("make any loop, or a line which spans 8 rows or columns, in your color",
+        		"Skapa en loop, eller en linje som täcker 8 rader eller kolumner, i din färg");
+        
+        // punct strings
+        put("Punct","Pünct");
+        put("Click on the placed piece to rotate it, or Click Done",
+        		"Klicka på den placerade brickan för att rotera den, eller klicka på Klar");
+        put("Place a piece on the board, or move a piece already on the board",
+        		"Placera en bricka på brädet, eller flytta en bricka som redan finns på brädet");
+        put("punctgoal","Bind ihop två motstående sidor, eller placera din sista bricka när du kontrollerar en större del av centrumhexagonen");
+        put("#1 left","#1 vänster");
+        put("#1 center","#1 i mitten");
+     
+        // gobblet strings
+        put("make 4 in a row in any direction","4 i rad i någon riktning ger vinst");
+        put("Place a gobblet on the board, or move a gobblet","Placera en gobblet på brädet, eller flytta en gobblet");
+        put("Gobblet","Gobblet");
+        put("Gobbletm","GobbletM");
+        put("Gobblet_variation","Spela med möjlighet att tjuvkika");
+        put("Gobbletm_variation","Ingen tjuvkikning, minnet gäller");
+        put("You must move the gobblet you have picked up",
+        		"Du måste flytta gobbleten du har plockat upp");
+         put("review","analysera");
+
+        // hive strings
+        put("Hive","Hive");
+        put("Hive_variation","Hive standard");
+        put("Place a tile on the board","Placera en bricka på brädet");
+        put("surround your opponents queen bee","omringa din motståndares bidrottning");
+        put("Place your queen on the board","Placera din bidrottning på brädet");
+        put("Place a tile on the board, or move a tile","Placera en bricka på brädet, eller flytta en bricka");
+        put("You have no legal moves.  Click on Done to pass",
+                "Du har inga möjliga drag. Klicka på Klar för att passa.");
+        put("Click on Done to end the game as a Draw",
+        	"Klicka på Klar för att bekräfta remi.");
+        put("Hive-L","Hive-L");
+        put("Hive-L_variation","Hive med nyckelpiga");
+        put("Hive-LM","Hive-LM");
+        put("Hive-LM_variation","Hive with nyckelpiga och mygga");
+
+        put("#1 repetitions","#1 upprepningar");
+        // for plateau
+        put("Click on Done to complete the capture",
+        		"Klicka på Klar för att bekräfta fångst");
+        // game lobby
+        put("The game is a draw","Spelet är remi");
+        put("Game won by #1","#1 vann spelet");
+        put("You can only resign when it is your move",
+        		"Du kan bara ge upp när det är ditt drag");
+        put("Jan #1#2#3","#1 Jan, #2:#3 GMT");
+        put("Feb #1#2#3","#1 Feb, #2:#3 GMT");
+        put("Mar #1#2#3","#1 Mar, #2:#3 GMT");
+        put("Apr #1#2#3","#1 Apr, #2:#3 GMT");
+        put("May #1#2#3","#1 Maj, #2:#3 GMT");
+        put("Jun #1#2#3","#1 Jun, #2:#3 GMT");
+        put("Jul #1#2#3","#1 Jul, #2:#3 GMT");
+        put("Aug #1#2#3","#1 Aug, #2:#3 GMT");
+        put("Sep #1#2#3","#1 Sep, #2:#3 GMT");
+        put("Oct #1#2#3","#1 Okt, #2:#3 GMT");
+        put("Nov #1#2#3","#1 Nov, #2:#3 GMT");
+        put("Dec #1#2#3","#1 Dec, #2:#3 GMT");
+        
+        // exxit strings
+        put("Exxit","Exxit");
+        put("Exxit-Beginner","Exxit-nybörjare");
+        put("Exxit-Blitz","Exxit-blixt");
+        put("Exxit-Pro","Exxit-expert");
+        put("Exxit_variation","spela Exxit med 39 brickor");
+        put("Exxit-Blitz_variation","spela Exxit med 29 brickor");
+        put("Exxit-Beginner_variation","spela Exxit med 19 brickor");
+        put("Exxit-Pro_variation","spela Exxit-Exxit");
+        
+        put("Rearrange things any way you want to", 
+        	"Arrangera på valfritt sätt");
+        put("Place a piece on the board","Placera en pjäs på brädet");
+        put("Exchange an off-board piece for a new tile","Byt en pjäs utanför brädet mot ny bricka");
+        put("Click on Done to confirm the Exchange","Klicka på Klar för att bekräfta byte");
+        put("Place a piece on the board, or Exchange an off-board piece for a new tile",
+        		"Placera en pjäs på brädet, eller byt en pjäs utanför brädet mot en ny bricka");
+        put("Click on Done to end the game","Klicka på Klar för att avsluta spelet");
+        put("Make a Dance move","Gör ett dansdrag");
+        put("Click on Done to confirm this Dance","Klicka på Klar för att bekräfta dans");
+        put("Drop a tile to enlarge the board","Släpp en bricka på att förstora brädet");
+			  put("expand the board with your color tiles","utöka brädet med brickor av din färg");
+
+        // system error
+        put("Memory is low","Brist på minne");
+        
+        // new strings for tablut
+        put("Rearrange the gold fleet","Omarrangera guldflottan");
+        put("Rearrange the silver fleet","Omarrangera silverflottan");
+        put("Make your first move, or swap fleets","Gör ditt första drag eller byt flotta");
+        put("Click Done to confirm swapping fleets with your opponent",
+        		"Klicka på klar för att byta flotta med din motståndare");
+        put("Move one ship","Flytta ett skepp");
+        put("Flagship must Reach the corner to win","Flaggskeppet måste nå hörnet för vinst");
+        put("Flagship wins at any edge square","Flaggskeppet måste nå en kantruta för vinst");
+        put("Flagship can participate in captures","Flaggskeppet kan delta i erövringar");
+    	put("Flagship can not capture","Flaggskeppet kan inte erövra");
+   	 	put("Only the flagship can occupy the center square","Bara flaggskeppet kan ta mittrutan");
+   	    put("center square is not special","mittrutan är inte speciell");
+   	    put("Flagship must be surrounded on all 4 sides","Flaggskeppet måste omringas på alla 4 sidor");
+   	    put("Flagship is captured normally","Flaggskeppet erövras på vanligt sätt");
+   	    put("Tablut-7","Tablut 7x7");
+   	    put("Tablut-9","Tablut 9x9");
+   	    put("Tablut-11","Tablut-11x11");
+   	    put("Tablut-7_variation","Tablut på 7x7");
+   	    put("Tablut-9_variation","Tablut på 9x9");
+   	    put("Tablut-11_variation","Tablut on a 11x11 board");
+   	    put("gold: escape the flagship  silver: capture gold flagship",
+   	    		"Guld: fly med flaggskeppet; Silver: erövra guldflaggskepept");
+   	    
+   	    put("Zertz+xx","Zèrtz Extreme");
+   	    put("Zertz+xx_variation","Zèrtz med valfri brädstorlek");
+   	    put("Make the first move, or swap and move second",
+   	    		"Gör det första draget, eller byt färg och gör det andra draget");
+   	    put("Click on Done to confirm swapping","Klicka på Klar för att bekräfta");
+   	    put("Position the starting rings","Placera startringarna");
+        put("Swap","Byt");
+        put("stack six or capture six","Stapla 6 eller erövra 6");
+        
+        
+        // stacking games
+        put("Tablut","Tablut");
+        put("Stacking Games","Stapelspel");
+        put("Truchet_variation","Truchet standard");
+        put("TumblingDown_variation","TumblingDown standard 8x8");
+        put("Truchet","Truchet");
+        
+        //dipole
+         put("Dipole","Dipole (original)");
+        put("Dipole-s","Dipole");
+       // put("Dipole-10","Dipole 10x10");
+        //put("Dipole-10_variation","Dipole på 10x10");
+        put("Dipole-s_variation","Dipole på 8x8 med en symmetrisk startposition");
+        put("Dipole_variation","Dipole på 8x8 med en asymmetrisk startposition");
+        put("Eliminate all your opponent's pieces","Eliminera alla motståndarens pjäser");
+        put("Select the stack to move from","Välj hög att flytta från");
+        put("You have no moves available. Click on Done to pass.","Du har inga möjliga drag. Klicka på Klar för att passa.");
+        //tumblingdown
+        put("Capture your opponent's tallest king stack","Erövra din motståndares högsta kungshög.");
+        put("Pick the stack to move","Välj hög att flytta.");
+       //truchet
+        put("Occupy 3 enemy bases","Ockupera 3 fiendebaser.");
+        put("Flip a tile, or Move Split or Merge a stack",
+        		"Vänd på en bricka, eller flytta, dela eller blanda en hög.");
+        put("Move, Split or Merge a stack","Flytta, dela eller blanda en hög");
+        put("Split or Merge this stack, or click Done",
+        		"Dela eller blanda den hör högen, eller klicka på Klar");
+        put("Split this stack, or click Done",
+        		"Dela den här högen, eller klicka på Klar");
+        put("Merge this stack, or click Done","Blanda den här högen, eller klicka på Klar");
+        put("Complete the split","Färdigställ delning");
+        put("Complete the merge","Färdigställ blandning");
+        put("Complete a split or merge","Färdigställ delning eller blandning");
+        put("Continue merging or click Done","Fortsätt blandning eller klicka på klar");
+        
+        // hive-m
+        put("Hive-M","Hive-M");
+        put("Hive-M_variation","Hive med mygga");
+        // fanorona
+        put("Fanorona","Fanorona");
+        put("Fanorona_variation","Fanorona standard");
+        put("Click on the line to be captured","Klicka på linjen som ska erövras");
+        put("Make an addional capturing move, or click on Done", 
+        		"Gör ytterligare ett erövrande drag, eller klicka på Klar");
+        put("Make a capturing move","Gör ett erövrande drag");
+        put("Move a piece one space","Flytta en pjäs ett steg");
+        put("Capture all of your opponent's pieces","Erövra alla motståndarpjäser");
+        
+        // forgotten for exxit
+        put("use Wooden tiles","Använd träbrickor");
+        // volcano
+        put("Capture the best combinations of all 5 colors","Erövra den bästa kombinationen av färger och storlekar");
+        put("Move a volcano cap","Flytta ett Volcanolock");
+        put("Volcano", "Volcano");
+        put("Volcano_variation","Volcano standard 5x5");
+        put("Volcano-r","Slumpgenererat Volcano");
+        put("Volcano-r_variation","Volcano med slumpgenererade positioner");
+        
+        put("Volcano-h","Hex Volcano");
+        put("Volcano-h_variation","Volcano på ett hexagonalt bräde");
+       
+        put("Volcano-hr","Slumpgenererat Hex Volcano");
+        put("Volcano-hr_variation"," Hex Volcano med slumpgenererade positioner");
+        put("Click on Done to end the game (you lose)","Klicka på klar för att avsluta spelet (du förlorar)");
+        
+        // traboulet
+        put("Traboulet","Traboulet");
+        put("Traboulet_variation","standard Traboulet");
+        put("Capture 7 red balls or all of your opponent's balls",
+        "Fånga 7 röda kulor eller ella motståndarens kulor");
+        put("Make an addional move, or click on Done",
+        		"Gör ett ytterligare drag, eller klicka på Klar");
+        
+        // dvonn
+        put("Move a ring","Flytta en ring");
+        put("Place a ring on the board","Placera en ring på brädet");
+        put("Click Done to confirm this placement","Klicka på klar för att bekräfta");
+        put("Capture the most chips under your color stack","Fånga så många ringar så möjligt i dina högar");
+        put("Stack Height","Högarnas höjd");
+        
+        // restartable games
+        put("Restart","Starta om");
+        // tzaar
+        put("Gipf Games","Gipf-serien");
+        put("Tzaar_variation","Tzaar standard");
+        put("Tzaar","Tzaar");
+        
+        put("Closing...","Stänger...");
+        put("Played on #1","Spelad på #1");
+
+        put("...plus #1 more","...plus #1 till");
+         
+        // tzaar
+        put("Tzaar-random_variation","Tzaar - slumpgenererad startposition");
+        put("Tzaar-standard_variation","Tzaar - standardiserad startposition");
+        put("Tzaar-custom_variation","Tzaar - valfri startposition");
+        put("Tzaar-custom","Tzaar - valfri");
+        put("Tzaar-random","Tzaar - slumpgenererad");
+        put("Tzaar-standard","Tzaar - standard");
+        put("Capture a stack","Fånga en hög");
+        put("Combine two stacks or capture another stack",
+        		"Kombinera två högar eller fånga en ny hög");
+        
+        // qyshinsu
+        put("Place a stone on the board, or remove a stone from the board",
+        "Placera en sten på brädet, eller ta bort en sten från brädet");
+        put("Return to the Way","Återvänd till vägen");
+        put("Qyshinsu","Qyshinsu");
+        put("Qyshinsu_variation","Vägens mysterium");
+        
+        // knockabout
+        put("Knock 5 of your opponent's dice into the gutter",
+            "Knuffa 5 av motståndarens tärningar i rännan");
+        put("Knockabout_variation","Knockabout standard");
+        put("Move a piece","Flytta en pjäs");
+        put("Knockabout","Knockabout");
+        		
+        
+        // gipf
+        put("Place a chip on a starting point","Placera en bricka på en yttre position");
+        put("Slide the chip toward the center","Skjut in brickan mot mitten");
+        put("Designate a row to capture before your turn","Välj en rad att erövra innan ditt drag");
+        put("Click on Done to finish all captures","Klicka på Klar för att avsluta alla erövringar");
+        put("Designate a row to capture","Välj en rad att erövra");
+        put("Capture most of your opponent's pieces","Erövra så många motståndarbrickor som möjligt");
+        put("Gipf_variation","Gipf Basic (inga Gipf-brickor)");
+        put("Gipf-standard_variation","Gipf Standard (med Gipf-brickor)");
+        put("Gipf", "Gipf Basic");
+        put("Gipf-standard","Gipf Standard");
+        put("Click on Gipf pieces to change their capture status",
+        		"Klicka på Gipf-brickorna för att ändra deras erövringsstatus");
+        put("Place a GIPF piece on a starting point","Placera en Gipf-bricka på en yttre position");
+        put("Designate GIPF pieces to capture, or place a GIPF chip","Välj Gipf-brickor att erövra, eller placera en Gipf-bricka");
+        put("Designate GIPF pieces to capture, or place a chip","Välj Gipf-brickor att erövra, eller placera en bricka");
+        
+        // palago
+        put("Palago_variation","Palago standard");
+        put("Palago","Palago");
+        put("select tile color","Völj brickfärg");
+        put("Aqua","Turkos");
+        put("Red","Röd");
+        put("Blue","Blå");
+        put("Place a second tile adjacent to the first",
+        		"Placera den andra brickan intill den första");
+        put("Form a closed shape in your color","Forma en sluten form i din färg");
+        
+        // santorini
+        put("Santorini","Santorini");
+        put("Santorini_variation","Santorini (utan gudar)");
+        put("Move a Man up to level 3","Flytta upp en människa till nivå 3");
+        put("Build adjacent to the man you moved","Bygg intill människan du flyttade");
+        put("Place your first man on the board","Placera din första människa på brädet");
+        put("Place your second man on the board","Placera din andra människa på brädet");
+        put("Move a Man","Flytta en människa");
+        
+        put("Pass","Passa");
+        put("Placing Standard Pieces","Placerar standardbrickor");
+        put("Placing Gipf Pieces","Placerar Gipf-brickor");
+        put("Gipf-tournament_variation","Gipf Expert (obegränsat antal Gipf-brickor)");
+        put("Gipf-tournament","Gipf Expert");
+        // "spangles"
+        put("Tile Pattern Games","Mönsterspel");
+        put("form a larger triangle with your color at the tips","Bygg en större triangel i din färg, mitten kan vara av motståndarens färg");
+        put("Spangles_variation","Spangles standard");
+        
+        put("Spangles","Spangles");
+  
+        // micropul
+        put("Micropul","Micropul");
+        put("Micropul_variation","standard Micropul");
+         put("maximize the number of tiles in your reserve",
+        		"Maximera antalet brickor i lagret");
+        put("Place a Chip, or a Jewel, or a chip from the Store",
+        		"Placera en bricka, eller en ädelsten, eller en bricka från affären");
+
+        //Medina
+        put("Medina","Medina");
+        put("Medina_variation","Medina standard");
+        put("Place the first meeple on the board","Placera den första gubben på brädet");
+        put("Place a second piece on the board","Placera den andra gubben på brädet");
+        put("Final Scores:","Slutställning:");
+        put("You must place a dome","Du måste placera en kupol");
+        put("build an ideal city","bygg en ideal stad");
+        
+        // cannon
+        put("Cannon","Cannon");
+        put("Capture your opponent's town","Erövra motståndarens stad");
+        put("Place your town in your first row","Placera din stad på första raden");
+        put("Move a soldier, or fire a cannon","Flytta en soldat, eller skjut med en kanon");
+        put("Cannon_variation","Cannon standard");
+        
+        // warp 6
+        put("Warp6","Warp 6");
+        put("Warp6_variation","Warp 6 standard");
+        put("Move a ship to the board","Flytta ett skepp till brädet");
+        put("Move 6 ships to the center","Flytta 6 skepp till mitten");
+        put("Move a ship","Flytta ett skepp");
+        
+        // Triad
+        put("capture all of one opponentr's color","Erövra alla i en motståndarfärg");
+        put("Capture a group of opponents","Erövra en grupp motståndare");
+        put("Drop bunny chip","Placera en av bunnyspelarens brickor");
+        put("Triad","Triad");
+        put("Triad_variation","Triad standard");
+         
+        //Che
+        put("Che","Che");
+        put("Che_variation","Che standard");
+        put("Place a tile on any empty cell","Placera en bricka i en tom cell");
+        put("Place a tile adjacent to those already on the board",
+        		"Placera en bricka intill dem som redan finns på brädet");
+        put("Place a second tile adjacent to those already on the board",
+        		"Placera en andra bricka intill dem som redan finns på brädet");
+        
+        // trax
+        put("Illegal - this move would form an illegal pattern of lines",
+        		"Otillåtet - detta skulle bilda ett otillåtet mönster av linjer");
+        
+        // mutton
+        put("Capturing Games","Erövrarspel");
+        put("Mutton","Mutton");
+        put("Mutton-shotgun","Mutton med gevär");
+        put("Mutton_variation","Mutton standard");
+        put("Mutton-shotgun_variation","Mutton - bonden använder gevär");
+        put("Farmer configuring board","Bonden ändrar på brädet");
+        put("Play Farmer","Spela bonden");
+        put("Hide","Göm dig");
+        put("Wolf player hiding","Vargen gömmer sig");
+        put("Wolf moving suspects","Vargen flyttar misstänkta");
+        put("Eat","Ät");
+        put("Wolf player eating","Vargen äter");
+        put("Farmer select","Val av bonde");
+        put("Shoot","Skjut");
+        put("Farmer moving scared","Bonden flyttar skrämda");
+        
+        // octiles
+        put("Octiles","Octiles");
+        put("Octiles_variation","Octiles standard");
+        put("Place the next tile on the board, where a runner can move over it",
+        		"Placera nästa bricka på brädet, där en löpare kan passera över den");
+        put("Move a runner","Flytta en löpare");
+        put("Place a tile on the board, where a runner can leave a home space",
+        		"Placera en bricka på brädet, där en löpare kan lämna ett eget utrymme");
+        put("Move a runner from a home space","Flytta en löpare från ett eget utrymme");
+        put("Move your runners to the opposite side","Flytta dina löpare till den motsatta sidan");
+        
+        // army of frogs
+        put("ArmyOfFrogs","Army of Frogs");
+        put("ArmyOfFrogs_variation","Army of Frogs standard");
+        put("Place a Frog on the board","Placera en groda på brädet");
+        put("Move a Frog","Flytta en groda");
+        put("Connect all your frogs (at least 7) in one cluster",
+        		"Samla alla dina grodor (minst 7) i en flock");
+        
+        // variation to game
+        put("Frogs","Army of Frogs");
+         put("No Recent Games","Inga nya spel");
+        
+        // xiangqi
+        put("Traditional Pieces","Traditionella pjäser");
+        put("Checkmate your opponent's general","Sätt motståndarens general schack matt");
+        put("Illegal move due to repetition - try something else",
+        		"Åtillåtet drag p.g.a. dragupprepning");
+        put("Xiangqi","Xiangqi");
+        put("Xiangqi_variation","Xiangqi standard");
+        put("You have been offered a draw - Accept or Decline" ,
+        		"Du har blivit erbjuden remi - acceptera eller avslå" );
+        put("Offer a Draw","Bjud remi");
+        put("Accept Draw","Acceptera remi");
+        put("Decline Draw","Avslå remierbjudande");
+        put("Escape from check","Fly undan schack");
+        
+        put("Click Done to offer a draw","Klicka på Klar för att bjuda remi");
+        put("Click Done to accept a draw","Klicka på Klar för att acceptera remi");
+        put("Click Done to decline a draw","Klicka på Klar för att avslå remierbjudande");
+        
+        // lobby
+        put("select the type of room","välj typ av rum");
+        put("select the game to play","välj spel");
+        put("select the game variation","välj spelinställningar");
+        
+        put("Dipole_family","Dipole");
+        put("Gipf_family","Gipf");
+   		put("Zertz_family","Zèrtz");
+   		put("Yinsh_family","Yinsh");
+     	put("Dvonn_family","Dvonn");
+        put("Tzaar_family","Tzaar");
+        put("Punct_family","Pünct");
+        put("Che_family","Che");
+        put("Micropul_family","Micropul");
+        put("Palago_family","Palago");
+        put("Spangles_family","Spangles");
+        put("Trax_family","Trax");
+        put("Truchet_family","Truchet");
+        put("TumblingDown_family","Tumbling Down");
+        put("Cannon_family","Cannon");
+        put("Fanorona_family","Fanorona");
+        put("Knockabout_family","Knockabout");
+        put("Traboulet_family","Traboulet");
+        put("Triad_family","Triad");
+        put("Xiangqi_family","Xiangqi");
+        put("Octiles_family","Octiles");
+        put("Warp6_family","Warp 6");
+        put("ArmyOfFrogs_family","Army Of Frogs");
+        put("LOA_family","Lines of Action");
+        put("Hive_family","Hive");
+        
+        put("Racing Games","Racingspel");
+        put("Connection Games","Anslutningsspel");
+        put("Plateau_family","Plateau");
+        put("Hex_family","Hex");
+        put("Gobblet_family","Gobblet");
+        put("Exxit_family","Exxit");
+        put("Tablut_family","Tablut");
+        put("Volcano_family","Volcano");
+        put("Qyshinsu_family","Qyshinsu");
+        put("Santorini_family","Santorini");
+        put("Medina_family","Medina");
+        put("Mutton_family","Mutton");
+        put("Tajii","Tajii");
+        put("Tajii_family","Tajii");
+        
+        put("LOAP","LOAP");
+        put("TumblingDown","Tumbling Down");
+        // misc
+        put("All Games","Alla spel");
+        // breaking away
+        put("BreakingAway","Breaking Away");
+        put("BreakingAway_variation","Breaking Away standard");
+        put("BreakingAway_family","Breaking Away");
+        put("Adjust","Justera");
+        put("Move a Cyclist","Flytta en cyklist");
+        put("Score the most points at the sprint and finish lines",
+        		"Få så många poäng som möjligt vid sprint och vid mållinjen");
+        put("Adjust your starting movements","Justera startförflyttningar");
+        put("Wait for other players to adjust","Väntar på att motståndaren ska justera");
+        put("The next sprint bonus is #1","Nästa sprintbonus är #1");
+        put("#1 riders have crossed the second sprint line.",
+        		"#1 åkare har passerat den andra sprintlinjen.");
+        put("#1 riders have crossed the first sprint line.",
+        		"#1 åkare har passerat den första sprintlinjen.");
+        put("#1 riders have finished","#1 åkare har åkt i mål");
+        put("The next finish bonus is #1","Nästa målbonus är #1");
+        put("Rider Size","Åkarens storlek");
+        put("Confirm Dropping this rider","Bekräfta borttagning");
+        put("Drop this rider from the Race","Ta bort åkaren från loppet");
+        put("Animate","Animera");
+        
+        // container
+        put("Container","Container");
+        put("Container-First","Container - Original");
+        put("Euro Games","Eurospel");
+        put("Container-First_variation","Container med originalregler");
+        
+        put("Auction","Auktion");
+        put("Maximize your profits","Maximera vinsterna");
+        put("Bank","Bank");
+        put("Loan for #1 from #2", "#1 lånar av #2");
+        put("Container_family","Container");
+        put("Container_variation","Container med andra leveransregler");
+        put("Take your first action","Gör ditt första drag");
+        put("Click Done to confirm this action","Klicka på Klar för att bekräfta");
+        put("Reprice the goods in your factory storage","Byt pris på varorna på lagret");
+        put("Take your second action","Gör ditt andra drag");
+        put("Warehouse","Magasin");
+        put("Unsold Warehouses","Osålda magasin");
+        put("#1 Ship","#1 skepp");
+        put("#1 Machine","#1 maskin");
+        put("#1 #2 Containers","#1 #2 containrar");
+        put("Loan Card","Lånekort");
+        put("Let someone else make the loan","Låt någon annan ta lånet");
+        put("I will make the loan","Jag tar lånet");
+        put("fund a loan from a player or the bank","finansiera ett lån från en spelare eller bank");
+        put("Load the goods you will produce","Fyll på varor du kommer att producera");
+        put("set bid amount","välj bud");
+        put("Offer a price for the goods on the ship","Lägg ett bud på varorna på skeppet");
+        put("Load the your warehouse from the seller","Lasta magasinet från säljaren");
+        put("Reprice the goods in your warehouse storage","Byt pris på varorna i magasinet");
+        put("Load your ship from the Dock","Lasta ditt skepp från kajen");
+        put("Load more goods from the Dock","Lasta mer varor från kajen");
+        put("Buy the goods for $#1","Köp varorna för $#1");
+        put("Accept $#1 from #2","Acceptera $#1 från #2");
+        put("Bid $ #1","Bjud $ #1");
+        put("Requesting Bids","Föreslår bud");
+        put("you may increase your bid","du kan höja ditt bud");
+        put("Wait for the other players to decide","vänta på att den andra spelaren bestämmer");
+        put("accept the bid, or pay the amount yourself","acceptera budet, eller betala själv");
+        put("trade a second container for a gold container","byt en andra container mot en guldcontainer");
+        put("You must take out a loan to pay interest","Du måste ta ett lån för att betala ränta");
+        put("Requesting Loan","Föreslår lån");
+        put("No, let the bank fund it","Nej, låt banken finansiera lånet");
+        put("Accept the loan from the bank", "Acceptera lån från banken");
+        put("Yes, I will fund the loan","Ja, jag finansierar lånet");
+        put("Place your bid to fund the loan","Placera bud för att finansiera lånet");
+        put("Decline the loan","Avböj lånet");
+        put("Accept this loan financing or not","Acceptera denna lånfinansiering eller inte");
+        put("Choose the penalty for non-payment of interest","Välj straff för utebliven betalning av ränta");
+        put("Loan for #1 from the bank","Lån för #1 från banken");
+        // for stats
+        put("Cash/Score","Pengar/Poäng");
+        put("Machines","Maskiner");
+        put("Warehouses","Magasin");
+        put("Shipping","Leverans");
+        put("Island","Ö");
+        put("Loans","Lån");
+        // arimaa
+        put("Move a Rabbit to the last row","Flytta en kanin till sista raden");
+        put("Reverse View","Motsatt vy");
+        put("Move a piece, step #1","Flytta en pjäs, gå #1");
+        put("Complete the push, step #1","Bekräfta tryck, gå #1");
+        put("Complete the pull, step #1","Bekräfta drag, gå #1");
+        put("Place all your pieces in your two home rows","Placera alla dina pjäser på dina två egna rader");
+        put("Arimaa_family","Arimaa");
+        put("Arimaa","Arimaa");
+        put("Arimaa_variation","Arimaa standard");
+        put("Place the Rabbits","Placera kaniner");
+        put("Illegal due to repetition, try something else or resign","Otillåtet p.g.a. dragupprepning");
+        
+        put("Complete a push or pull, step #1","Complete a push or pull, step #1");
+        put("Spot Price #1","Spot Price #1");
+        put("click Done to finish this Auction","click Done to finish this Auction");
+        put("load a luxury container","load a luxury container");
+        // crossfire
+        put("Crossfire_family","Crossfire");
+        put("Crossfire","Crossfire");
+        put("Crossfire_variation","standard Crossfire");
+        put("own all the stacks","own all the stacks");
+        put("#1 prisoners","#1 prisoners");
+        put("#1 reserves","#1 reserves");
+        
+        // game controls 
+        put("Rotate the board 180 degrees","Rotate the board 180 degrees");
+        put("Spread out the stacks","Spread out the stacks");
+        put("Adjust the chip spacing in stacks","Adjust the chip spacing in stacks");
+        put("Switch to a more overhead view of the board","Switch to a more overhead view of the board");
+        put("Switch to a more oblique view of the board","Switch to a more oblique view of the board");
+        
+        // entrapment
+        put("Entrapment_family","Entrapment");
+        put("Entrapment","Entrapment");
+        put("Entrapment-7x7","Entrapment");
+        put("Entrapment-7x7_variation","standard 7x7 Entrapment");
+        put("Entrapment-6x7_variation","Entrapment 6x7 - faster game");
+        put("Entrapment-6x7","Entrapment-6x7");
+        put("Entrapment-7x7x4","Entrapment-7x7x4");
+        put("Entrapment-7x7x4_variation","Entrapment-7x7 with 4 roamers");
+
+        put("Immobilize your opponent's roamers","Immobilize your opponent's roamers");
+        put("Move a roamer","Move a roamer");
+        put("Move a roamer, or place a barrier","Move a roamer, or place a barrier");
+        put("Escape forced position, or place a barrier","Escape forced position, or place a barrier");
+        put("Move a roamer or move a barrier","Move a roamer or move a barrier");
+        put("Place a roamer on the board","Place a roamer on the board");
+        put("Escape forced position, or move a barrier","Escape forced position, or move a barrier");
+        put("Escape forced position","Escape forced position");
+        put("Select which of your roamers to kill","Select which of your roamers to kill");
+        put("Select which opponent roamer to kill","Select which opponent roamer to kill");
+        
+        // lehavre
+        put("LeHavre_variation","standard LeHavre");
+        put("LeHavre_family","LeHavre");
+        put("LeHavre","LeHavre");
+
+        // crossfire
+        put("Move a stack, or add a reserve piece","Move a stack, or add a reserve piece");
+        // micropul
+        put("+ #1 turns","+ #1 turns");
+     }
+}

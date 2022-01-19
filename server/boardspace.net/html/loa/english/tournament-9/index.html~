@@ -1,0 +1,204 @@
+<!DOCTYPE doctype PUBLIC "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+  <script language="JavaScript"></script>
+  <title>Nineth Annual Lines of Action Tournament</title>
+  <script language="javascript">
+function email()
+{
+document.location=("mailto: ddye" + "r\@real" + "-me.net");
+}
+win = null; 
+function launchwith(file) 
+{ 
+  if(win == null) { 
+    win = window.open("", "appletWindow", "width=600,height=480,status=yes"); 
+      } 
+    win.document.write("<HTML><HEAD><TITLE>Lines of Action</TITLE></HEAD>"); 
+    win.document.writeln("<BODY>"); 
+   win.document.writeln("<applet code=\"loa/ui/LoaApplet.class\" name=\"LoaApplet\" codebase=\"../java/\" width=550 height=450>");
+   win.document.writeln("<PARAM NAME=\"filename\" VALUE=\"../../loagames/"+file+".sgf\">");
+//   win.document.writeln("<param name=\"gamename\" value=\"LoA Board " + name + "\">");
+    win.document.writeln("<param name=\"panel\" value=\"true\">");
+    win.document.writeln("<param name=\"flags\" value=\"0\">");
+//	win.document.writeln("<param name=debug value=true>");
+    win.document.writeln("If you are seeing this message, your browser is not Java-Enabled.  There's");
+    win.document.writeln("still hope, if you can run the java viewer standalone on your machine.");
+    win.document.writeln("See the <A HREF=\"Programs.html#java\">Java Programs</A> page.");
+    win.document.writeln("</applet>");
+    win.document.writeln("</body>");
+   win.document.close();}
+
+  </script>
+</head>
+<body>
+<div style="text-align: center;"><b><font size="+2">Nineth Annual Lines
+of Action Tournament</font></b>
+<br>
+<br>
+</div>
+&nbsp;
+The 2004 Lines of Action tournament is to be played face-to-face rather
+than by email, at BoardSpace.net, during te month of December.&nbsp;
+It's inexplicable to me, but most of the regular email players have not
+migrated to the realtime game, so the tournament is small, an
+"intimate" group of 6.&nbsp; The parameters for the tournament are as
+follows.<br>
+<ul>
+  <li>Round Robin format, with 2 games per&nbsp; opponent, one as white
+and one as black.</li>
+  <li>30 minutes per player time limit.</li>
+  <li>Games to be played at any mutually agreeable time between Dec 1,
+2004 and Jan 1 2005</li>
+</ul>
+<div style="text-align: center;"><span style="font-weight: bold;">Player
+named below plays black</span><br>
+</div>
+<table
+ style="width: 100%; text-align: left; background-color: rgb(204, 255, 255);"
+ border="1" cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td
+ style="vertical-align: top; background-color: rgb(255, 255, 204);"><br>
+      </td>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 255); font-weight: bold;">ddyer
+      </td>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 255); font-weight: bold;">jarrausi
+      </td>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 255); font-weight: bold;">kanchis
+      </td>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 255); font-weight: bold;">Koni
+      </td>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 255); font-weight: bold;">Mattw
+      </td>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 255); font-weight: bold;">Slowdean
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; font-weight: bold;">ddyer<br>
+      </td>
+      <td
+ style="vertical-align: top; background-color: rgb(255, 255, 204);"><br>
+      </td>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 255);"><br>
+      </td>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 255);">winner:
+<a href="javascript:launchwith('T!L-kanchis-ddyer-2004-12-08-0025')">ddyer</a><br>
+      </td>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 255);"><br>
+      </td>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 255);"><br>
+      </td>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 255);"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; font-weight: bold;">jarrausi </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td
+ style="vertical-align: top; background-color: rgb(255, 255, 204);"><br>
+      </td>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 255);"><br>
+      </td>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 255);"><br>
+      </td>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 255);"><br>
+      </td>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 255);"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; font-weight: bold;">kanchis </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td
+ style="vertical-align: top; background-color: rgb(255, 255, 204);"><br>
+      </td>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 255);"><br>
+      </td>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 255);"><br>
+      </td>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 255);"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; font-weight: bold;">Koni </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td
+ style="vertical-align: top; background-color: rgb(255, 255, 204);"><br>
+      </td>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 255);"><br>
+      </td>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 255);"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; font-weight: bold;">Mattw </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td
+ style="vertical-align: top; background-color: rgb(255, 255, 204);"><br>
+      </td>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 255);"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; font-weight: bold;">Slowdean </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td
+ style="vertical-align: top; background-color: rgb(255, 255, 204);"><br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<div style="text-align: center;"><span style="font-weight: bold;">Player
+named at left plays black</span><br>
+</div>
+<br>
+</body>
+</html>
