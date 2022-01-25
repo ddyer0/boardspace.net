@@ -12,7 +12,9 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.StringTokenizer;
 import java.util.Vector;
+import java.util.prefs.Preferences;
 
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.Session;
@@ -332,7 +334,7 @@ public class downloadLanguages {
 		  	}	  
 
 	  }
-
+ 
 	  public static void main(String args[])
 	  {	  String pass = "";
 	  	  String host = "";
@@ -343,10 +345,18 @@ public class downloadLanguages {
 	  	  int sshPort = 22;
 	  	  String out = null;
 	  	  boolean download = false;
-	  	  boolean trouble = (args.length==0) || ((args.length&1)!=0);
-	  	  for(int i=0;i<args.length;i+=2)
-	  	  {	String str = args[i];
-	  	  	String val = args[i+1];
+	  	  Preferences prefs = Preferences.userRoot();
+	  	  String initialValue = prefs.get("DownloadStrings","");
+	  	  String pars = G.textAreaDialog(null,"Parameters for download strings",initialValue);
+	  	  boolean trouble = true;
+	  	  if(pars!=null) 
+	  	  { 
+	  	  trouble = false;
+	  	  prefs.put("DownloadStrings",pars);
+	  	  StringTokenizer tok = new StringTokenizer(pars);
+	  	  while(tok.hasMoreElements())
+	  	  {	String str = tok.nextToken();
+	  	  	String val = tok.hasMoreTokens() ? tok.nextToken() : "";
 	  	  	if(str.equals("-p")) { pass = val; }
 	  	  	else if("-sshuser".equalsIgnoreCase(str)) { sshUser = val; }
 	  	  	else if("-sshpass".equalsIgnoreCase(str)) { sshPass = val; }
@@ -357,7 +367,7 @@ public class downloadLanguages {
 	  	  	else if(str.equals("-o")) { out = val; download = true; }
 	  	  	else if(str.equals("-download")) { download = true; }
 	  	  	else { trouble=true; System.out.println(str + " "+ val+" not understood"); }
-	  	  }
+	  	  }}
 	  	  if(!download ) { trouble = true; }
 	  	  if(trouble) 
 	  	  	{ System.out.println("use: -sshuser user -sshpass pass -sshport port -h host -u user -p password -d database -o path -download");

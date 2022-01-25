@@ -385,7 +385,7 @@ public class TestStrings
   	  //String pass = "greatpumpkin";
 	  //String host = "localhost";
 	  String host = "boardspace.net";
-  	  String pass = "xxxxxx";
+  	  String pass = "xxxxx";
 	  //blessStrings();
 	  updateEnglish(host,"boardspace","root",pass);
 	  //updateLanguage("chinese",host,"boardspace","root",pass);

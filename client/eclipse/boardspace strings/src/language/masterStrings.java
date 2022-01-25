@@ -2,6 +2,7 @@ package language;
 
 import lib.ChatWidget;
 import colorito.ColoritoConstants;
+import common.GameInfo;
 import breakingaway.BreakingAwayConstants;
 import cannon.CannonConstants;
 import container.ContainerConstants;
@@ -51,7 +52,6 @@ import morris.MorrisConstants;
 import mutton.MuttonConstants;
 import nuphoria.EuphoriaConstants;
 import octiles.OctilesConstants;
-import online.common.GameInfo;
 import online.common.LobbyConstants;
 import online.common.SeatingViewer;
 import online.common.Session;

@@ -3,6 +3,7 @@ package language;
 
 import java.sql.*;
 import java.util.*;
+import java.util.prefs.Preferences;
 
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.Session;
@@ -287,16 +288,44 @@ public class UploadStrings
 	
 
   public static void main(String args[])
-  {   //String host = "boardspace.net";
-  	  //String pass = "greatpumpkin";
-	  //String host = "localhost";
+  {   
 	  String host = "boardspace.net";
 	  String user = "root";
-  	  String pass = "xxxxxx";
+  	  String pass = "xxxxx";
   	  String sshUser = "boardspa";
-  	  String sshPass = "xxxxxx";
+  	  String sshPass = "xxxx";
+  	  String database = "boardspace";
   	  int sshPort = 9130;
-	  //blessStrings();
-	  updateEnglish(host,sshUser,sshPass,sshPort,"boardspace",user,pass);
+  	  
+  	  Preferences prefs = Preferences.userRoot();
+  	  String initialValue = prefs.get("UploadStrings","");
+  	  String pars = G.textAreaDialog(null,"Parameters for Upload strings",initialValue);
+  	  boolean trouble = true;
+  	  if(pars!=null)
+  	  {	  trouble = false;
+	  	  prefs.put("UploadStrings",pars);
+	  	  StringTokenizer tok = new StringTokenizer(pars);
+	  	  while(tok.hasMoreTokens())
+	  	  {
+	  		String str = tok.nextToken();
+	  	  	String val = tok.hasMoreTokens() ? tok.nextToken() : "";
+	  	  	if(str.equals("-p")) { pass = val; }
+	  	  	else if("-sshuser".equalsIgnoreCase(str)) { sshUser = val; }
+	  	  	else if("-sshpass".equalsIgnoreCase(str)) { sshPass = val; }
+	  	  	else if("-sshport".equalsIgnoreCase(str)) { sshPort = Integer.parseInt(val); }
+	  	  	else if("-d".equalsIgnoreCase(str)) { database = val; }
+	  	  	else if(str.equals("-h")) { host = val; }
+	  	  	else if(str.equals("-u")) { user = val; }
+	  	  	else { trouble=true; System.out.println(str + " "+ val+" not understood"); }  
+	  	  }
+  	  }
+  	  if(trouble)
+  	  {
+  		  G.print("parameters -d <database> -p <databasepassword> -h <databasehost> -u <databaseuser> -sshuser <user> -sshpass <password> -sshport <port>");
+  	  }
+  	  else {
+  		  updateEnglish(host,sshUser,sshPass,sshPort,database,user,pass);
+  	  }
+	  
   }
 }
