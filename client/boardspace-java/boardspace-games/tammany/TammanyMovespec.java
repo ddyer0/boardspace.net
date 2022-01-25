@@ -429,53 +429,49 @@ public class TammanyMovespec extends commonMPMove implements TammanyConstants
     by the constructors, and only secondarily human readable */
     public String moveString()
     {
-        String ind = "";
-
-        if (index() >= 0)
-        {
-            ind += (index() + " ");
-        }
+		String indx = indexString();
+		String opname = indx+D.findUnique(op)+" ";
         // adding the move index as a prefix provides numbers
         // for the game record and also helps navigate in joint
         // review mode
         switch (op)
         {
         case MOVE_ELECT:
-        	return(ind+D.findUnique(op)+" "+to_row);
+        	return(opname+to_row);
         case MOVE_CUBE:
-          	return (ind+D.findUnique(op) +" " + source.shortName + " " + from_row+" "+from_cube+" "+dest.shortName + " " + to_row);
+          	return (opname + source.shortName + " " + from_row+" "+from_cube+" "+dest.shortName + " " + to_row);
  
         case MOVE_SLANDER:
-        	return (ind+D.findUnique(op) +" " + dest.shortName + " " + to_row);
+        	return (opname+ dest.shortName + " " + to_row);
        	
         case MOVE_PICK_CUBE:
-        	return (ind+D.findUnique(op) +" " + source.shortName + " " + from_row+" "+from_cube);
+        	return (opname + source.shortName + " " + from_row+" "+from_cube);
  
          case MOVE_VOTE:
            	{
             	int vals[] = decodeVotes(to_row);
-            	return(ind+D.findUnique(op) +" "+from_row+" "+vals[0]+" "+vals[1]+" "+vals[2]+" "+vals[3]);
+            	return(opname+from_row+" "+vals[0]+" "+vals[1]+" "+vals[2]+" "+vals[3]);
             	}
 
         case MOVE_FROM_TO:
-        	return (ind+D.findUnique(op) +" " + source.shortName + " "+from_col+" " + from_row+" "+dest.shortName +" "+ to_col+" " + to_row);
+        	return (opname+ source.shortName + " "+from_col+" " + from_row+" "+dest.shortName +" "+ to_col+" " + to_row);
 
         case MOVE_PICKB:
-	        return (ind+D.findUnique(op) +" " + source.shortName + " " + from_row);
+	        return (opname+ source.shortName + " " + from_row);
 
 		case MOVE_DROPB:
-	        return (ind+D.findUnique(op) + " "+dest.shortName + " " + to_row);
+	        return (opname+dest.shortName + " " + to_row);
 
         case MOVE_DROP:
-            return (ind+D.findUnique(op) + " "+dest.shortName +" "+to_col+" "+to_row);
+            return (opname+dest.shortName +" "+to_col+" "+to_row);
         case MOVE_PICK:
-            return (ind+D.findUnique(op) + " "+source.shortName+" "+from_col+" "+from_row);
+            return (opname+source.shortName+" "+from_col+" "+from_row);
 
         case MOVE_START:
-            return (ind+"Start P" + player);
+            return (indx+"Start P" + player);
 
         default:
-            return (ind+D.findUnique(op));
+            return (opname);
         }
     }
 

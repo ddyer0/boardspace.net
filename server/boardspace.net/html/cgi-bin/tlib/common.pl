@@ -29,11 +29,11 @@ use Digest::MD5 'md5_hex';
      "pl"=>"polish",
      "pt"=>"portuguese",
      "jp"=>"japanese",
-#     "it"=>"italian",
+     "it"=>"italian",
      "no"=>"norwegian",
 	"ru"=>"russian",
      "ca"=>"catala",
-     "nl"=>"dutch"
+     "nl"=>"dutch",
 	);
 #
 # list the files in a directory, given a fullpath.  The returned list
@@ -659,6 +659,10 @@ sub log_error()
 {	my ($message,$source)=@_;
 	my ($package, $filename, $line) = caller;
 	if($source eq "") { $source = "$filename line $line"; }
+	if($'debug_mysql)
+	{
+		$source = $source . &stacktrace();
+	}
 	&log_error_event($'perl_log,$source,$message);
 }
 
@@ -818,7 +822,16 @@ sub rawtrans()
 	my ($package,$file,$line) = caller;
 	return(0,&rawtrans_caller($package,$file,$line,@args));
 }
-
+sub stacktrace()
+{
+	my $i = 1;
+	my $msg = "Stack Trace:<br>\n";
+	while ( (my @call_details = (caller($i++))) ){
+		my $detail = $call_details[1].":".$call_details[2]." in function ".$call_details[3]."<br>\n";
+		$msg = $msg . $detail;
+	}
+	return $msg;
+}
 #
 # translate with caller id in case we start something new
 #
@@ -859,7 +872,14 @@ sub rawtrans_caller()
 	{	substr($val,$ll,length($ss),$args[$i]);
 	}
 	else
-	{	&log_error("missing $'language translation key $ss for $varname in value $val");
+	{	if($'debug_mysql)
+			{ 
+			&log_error("missing $'language translation key $ss for $varname in value $val");
+			}
+			else
+			{
+			&log_event("missing $'language translation key $ss for $varname in value $val");
+			}
 	}
    }
   }

@@ -240,12 +240,8 @@ public class EntrapmentMovespec extends commonMove implements EntrapmentConstant
     by the constructors, and are also human readable */
     public String moveString()
     {
-        String ind = "";
-
-        if (index() >= 0)
-        {
-            ind += (index() + " ");
-        }
+		String indx = indexString();
+		String opname = indx+D.findUnique(op)+" ";
         // adding the move index as a prefix provides numnbers
         // for the game record and also helps navigate in joint
         // review mode
@@ -253,28 +249,28 @@ public class EntrapmentMovespec extends commonMove implements EntrapmentConstant
         {
 		case MOVE_ADD:
 		case MOVE_RACK_BOARD:
-			return(ind+D.findUnique(op) + " " +source.shortName+" " +dest.shortName+" "+ to_col + " " + to_row);
+			return(opname+source.shortName+" " +dest.shortName+" "+ to_col + " " + to_row);
 
 		case MOVE_BOARD_BOARD:
-			return(ind+D.findUnique(op) + " " + source.shortName+" "+from_col + " " + from_row+" "+dest.shortName+" "+  to_col + " " + to_row);
+			return(opname+ source.shortName+" "+from_col + " " + from_row+" "+dest.shortName+" "+  to_col + " " + to_row);
 
 		case MOVE_PICK:
-            return (ind+D.findUnique(op) + " "+source.shortName);
+            return (opname+source.shortName);
 		case MOVE_DROP:
-            return (ind+D.findUnique(op) + " "+dest.shortName);
+            return (opname+dest.shortName);
 
 		case MOVE_PICKB:
 		case MOVE_REMOVE:
-			return(ind+D.findUnique(op) + " "+source.shortName+" "+from_col+" "+from_row);
+			return(opname+source.shortName+" "+from_col+" "+from_row);
 			
 		case MOVE_DROPB:
-			return(ind+D.findUnique(op) + " "+ dest.shortName+" "+to_col+" "+to_row);
+			return(opname+ dest.shortName+" "+to_col+" "+to_row);
 			
         case MOVE_START:
-            return (ind+"Start P" + player);
+            return (indx+"Start P" + player);
 
         default:
-            return (ind+D.findUnique(op));
+            return (opname);
         }
     }
 

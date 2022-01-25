@@ -207,6 +207,8 @@ class PlayerBoard implements Digestable,CompareTo<PlayerBoard>
 		to.temporaryCards.copyFrom(temporaryCards);
 		parent.getCell(to.closedRegions,closedRegions);
 		to.closedLinks.copyFrom(closedLinks);
+		parent.copyFrom(to.mortalityCells,mortalityCells);
+		parent.copyFrom(to.virulenceCells,virulenceCells);
 		return(to);
 	}
 	
@@ -2508,7 +2510,7 @@ public class BlackDeathBoard extends RBoard<BlackDeathCell> implements BoardProt
         default:
         	throw G.Error("Not expecting Hit Board state " + board_state);
         case Puzzle:
-            return (true);
+            return ((c.topChip()==null)!=(pickedObject==null));
         }
     }
     

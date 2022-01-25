@@ -17,7 +17,6 @@ public interface TumbleConstants
     	Black_Chip_Pool("B"), // positive numbers are trackable
     	White_Chip_Pool("W"),
     	BoardLocation(null),
-    	LiftRect(null),
     	ZoomSlider(null),
     	ReverseViewButton(null),;
 

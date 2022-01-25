@@ -1743,7 +1743,7 @@ public class YspahanBoard extends BaseBoard implements BoardProtocol,
 		YspahanChip ch = pickedObject;
 		if (ch != null) {
 			return (ch.chipNumber() + Math
-					.max(0, (pickedObjectCount.top() - 1)) * 100);
+					.max(0, (pickedObjectCount.topz(0) - 1)) * 100);
 		}
 		return (NothingMoving);
 	}

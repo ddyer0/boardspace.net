@@ -359,7 +359,7 @@ public class NetConn extends CommonNetConn<String> implements Runnable,Config
             {
                 String msg = "outgoing message too long, limit is " + maxlen +
                     " length is " + inBufLength + " message starts " +
-                    theBuffStr.substring(0, 30);
+                    theBuffStr.substring(0, Math.min(inBufLength, 30));
                 logError(msg, null);
 
                 return (false);

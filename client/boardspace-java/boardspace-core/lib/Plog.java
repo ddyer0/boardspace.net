@@ -1,9 +1,5 @@
 package lib;
 
-import java.io.PrintStream;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-
 /**
  * private log object, continuously logs recent events with low overhead.
  * only a fixed number of events are saved on a ring
@@ -170,7 +166,7 @@ public class Plog {
 	   {	finishEvent();
 			int size = events.length;
 			int idx = (totalEvents-from)>=size
-							? index+1		// log is full, we lost some events
+							? (index+1)%size		// log is full, we lost some events
 							: from%size;	// recent events only
 			if(idx!=index)
 			{
@@ -180,7 +176,7 @@ public class Plog {
 				b.append(events[idx]);
 				b.append('\n');
 				idx++;
-				if(idx>=events.length) { idx = 0; }
+				if(idx>=size) { idx = 0; }
 			}
 			return(b.toString());
 			}

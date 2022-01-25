@@ -165,7 +165,6 @@ public abstract class commonMove implements lib.CompareTo<commonMove> , Opcodes,
 	 */
 	public boolean isEphemeral() { return(false); }		// ephemeral moves that will be replaced
 	public boolean isTransmitted() { return(true); }	// moves that will be transmitted to others
-	
 	/**
 	 * this can be overridden to not care or care about numbers other than 2
 	 * @param n
@@ -728,5 +727,6 @@ public abstract class commonMove implements lib.CompareTo<commonMove> , Opcodes,
 	public int size() { return(1); }
 	// this is available for debugging, return true if this is a move "of interest"
 	public boolean visit() { return(false); };
-	
+	public String indexString() { int ind = index();  return (ind<0 ? "" : ind+" "); }
+
 }

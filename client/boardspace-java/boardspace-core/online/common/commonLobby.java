@@ -29,6 +29,7 @@ import lib.Http;
 import lib.LFrameProtocol;
 import lib.LoadThread;
 import lib.NetConn;
+import lib.Plog;
 import lib.Random;
 import lib.SimpleObservable;
 import lib.SoundManager;
@@ -462,7 +463,7 @@ private void setGameTime()
 }
 
   void handleError(String cxt,String lastMsg,Throwable err) 
-  { 
+  {
     String msg = cxt + " " 
                     + err 
                     + ((lastMsg!=null) ? (" last message was " + lastMsg+"\n") : "")
@@ -505,7 +506,7 @@ private void setGameTime()
   public boolean sendMessage(String message)
   { if(G.offline())
   	{
-	  G.print("Skip message "+message);
+	  Plog.log.addLog("offline skip message ",message);
   	}
   else {
 	myNetConn.na.getLock();
@@ -2023,7 +2024,7 @@ private boolean processEchoRoomtype(String messType,StringTokenizer localST)
     if(needRank) 
       { needRank=false;    //try again in 10 seconds
         doTouch();		   //we just closed a frame, make sure the lobby gets a new lease
-        SetMyRank(); 
+        if(!G.offline()) { SetMyRank(); } 
       }
      showRanking();        //update the displayed ranking if now available
      ConnectionState state = getLobbyState();

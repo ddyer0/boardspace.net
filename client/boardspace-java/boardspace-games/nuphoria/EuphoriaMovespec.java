@@ -500,7 +500,7 @@ public class EuphoriaMovespec extends commonMPMove implements EuphoriaConstants
     by the constructors, and only secondarily human readable */
     public String moveString()
     {
-		String ind = (index() >= 0) ? (index() + " ") : "";
+		String ind = indexString();
         String main = mainMoveString();
         String card = cardMoveString();
         return(ind+main+card);
@@ -516,44 +516,44 @@ public class EuphoriaMovespec extends commonMPMove implements EuphoriaConstants
         
         public String mainMoveString()
         {
-        String opname = D.findUnique(op);
+        String opname = D.findUnique(op)+" ";
         switch (op)
         {
         case MOVE_ITEM_TO_BOARD:
-        	return(opname+" "+from_color.name()+" "+source.name()+" "+from_row+" "+dest.name()+" "+to_row);
+        	return(opname+from_color.name()+" "+source.name()+" "+from_row+" "+dest.name()+" "+to_row);
         case MOVE_ITEM_TO_PLAYER:
-        	return(opname+" "+source.name()+" "+from_row+" "+to_color.name()+ " "+dest.name());
+        	return(opname+source.name()+" "+from_row+" "+to_color.name()+ " "+dest.name());
          	
         case MOVE_CHOOSE_RECRUIT:
         case EPHEMERAL_CHOOSE_RECRUIT:
-        	return(opname+" "+from_color.name()+" "+source.name()+" "+dest.name());
+        	return(opname+from_color.name()+" "+source.name()+" "+dest.name());
         	
         case MOVE_PICKB:
-	        return (opname +" " + source.name() + " " + from_row);
+	        return (opname + source.name() + " " + from_row);
 
 		case MOVE_DROPB:
-	        return (opname + " "+ dest.name()+" " + to_row);
+	        return (opname + dest.name()+" " + to_row);
 
         case MOVE_DROP:
         case EPHEMERAL_DROP:
-        	return(opname + " "+to_color.name() +" "+ dest.name());
+        	return(opname +to_color.name() +" "+ dest.name());
         case MOVE_PICK:
         case EPHEMERAL_PICK:
-            return (opname +" "+ from_color.name()+" "+source.name()+" "+from_row);
+            return (opname + from_color.name()+" "+source.name()+" "+from_row);
 
         case MOVE_START:
             return ("Start P" + player);
         case MOVE_RETRIEVE_WORKER:
-        	return(opname+" "+source.name()+" "+from_row+" "+to_color.name()+" "+dest.name());
+        	return(opname+source.name()+" "+from_row+" "+to_color.name()+" "+dest.name());
         case MOVE_PLACE_WORKER:
-        	return(opname+" "+from_color.name()+" "+source.name()+" "+from_row+" "+dest.name()+" "+to_row);
+        	return(opname+from_color.name()+" "+source.name()+" "+from_row+" "+dest.name()+" "+to_row);
         	
         case USE_DIE_ROLL:
-        	return(opname+" "+source.name());
+        	return(opname+source.name());
         case CONFIRM_RECRUITS:
         case EPHEMERAL_CONFIRM_RECRUITS:
         case EPHEMERAL_CONFIRM_ONE_RECRUIT:
-           	return(opname+" "+from_color.name());
+           	return(opname+from_color.name());
        	
         default:
              return (opname);

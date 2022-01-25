@@ -4,8 +4,6 @@ import lib.DrawableImageStack;
 import lib.ImageLoader;
 import lib.Random;
 import online.game.chip;
-import ponte.PonteConstants.Bridge;
-import ponte.PonteConstants.PonteId;
 
 /*
  * generic "playing piece class, provides canonical playing pieces, 
@@ -13,7 +11,7 @@ import ponte.PonteConstants.PonteId;
  * on the board are pieces too, so there are four of them.
  * 
  */
-public class PonteChip extends chip<PonteChip>
+public class PonteChip extends chip<PonteChip> implements PonteConstants
 {	private static Random r = new Random(343535);	// this gives each chip a unique random value for Digest()
 	private static DrawableImageStack allChips = new DrawableImageStack();
 	private static boolean imagesLoaded = false;
@@ -64,8 +62,7 @@ public class PonteChip extends chip<PonteChip>
 			new double[] { 1.0,1.4,0,-0.4},
 			new double[]{0.605,0.503,1.446},null);
 	
-    static Bridge bridges[] = { Bridge.b_30,Bridge.b_45,Bridge.b_60,Bridge.b_90,Bridge.b_120,Bridge.b_135,Bridge.b_150,Bridge.b_180};
-
+ 
 	static public PonteChip Bridge_30 = new PonteChip(PonteId.Bridge_30,"bridge-30",-1,2,
 			new double[] { 1.0, 0.8, 0.2, -1.0},
 			new double[]{0.944,0.083,2.0},bridges[0]);

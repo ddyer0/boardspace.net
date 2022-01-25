@@ -11,7 +11,6 @@ import java.awt.Shape;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.net.URL;
-import javax.swing.JOptionPane;
 import bridge.Config;
 
 /* below here should be the same for codename1 and standard java */
@@ -38,7 +37,6 @@ import lib.MouseState;
 import lib.NetConn;
 import lib.PopupManager;
 import online.common.Session.JoinMode;
-import online.common.Session.SessionState;
 import udp.UDPService;
 import lib.Random;
 import lib.ScrollArea;
@@ -1018,15 +1016,6 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	  
 	  
 
-	  private PopupManager userMenu = new PopupManager();
-	 
-	  private void changeUser(Session sess,int slot,int ex,int ey)
-	  {	changeRoom = sess;
-	  	changeSlot = slot;
-	  	users.changeUserMenu(userMenu,sess!=null,this,slot,ex,ey);
-	  }
-
-	  
 	  private PopupManager subroomMenu = new PopupManager();
 	  private void changeSubmode(Session sess,int ex,int ey)
 	  {  changeRoom = sess;
@@ -1398,7 +1387,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	      
       }
 	  String showBotName = null;
-	  { boolean imReady = (G.offline() || imInThisSession) 
+	  { boolean imReady = imInThisSession
     		  				&& ready_to_start(session) ;	// possible side effect of changing the bot
 	
       Bot bot = session.currentRobot;
@@ -2058,7 +2047,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 
 	private boolean readyToStart(Session sess)
 	{	return(sess.isAGameRoom()
-			&& (G.offline() || (users.primaryUser().session()==sess))
+			&& (users.primaryUser().session()==sess)
 		    && !users.primaryUser().automute
 		    && (sess.mode==sess.pendingMode)
 		    && !ImMuted(sess)
@@ -2143,7 +2132,6 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	      &&(users.primaryUser().session()==sess)
 	      && sess.iOwnTheRoom
 	      && inviteModeRect.contains(localX,localY)
-	      && !G.offline()
 	      ) ;
 	}  
 
@@ -2217,7 +2205,6 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	}
 	private PopupManager roomMenu = new PopupManager();
 	private Session changeRoom = null;
-	private int changeSlot=0;
 	private void changeRoom(Session sess,int ex,int ey)
 	{	changeRoom = sess;
 		roomMenu.newPopupMenu(this,deferredEvents);
@@ -2255,18 +2242,12 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 		 case highlight_player6:
 			 {
 			 int playpos = highlight.ordinal()-LobbyId.highlight_player1.ordinal();
-			 if(G.offline())
-			 {
-				 changeUser(sess,playpos,inX,inY);
-			 }
-			 else
-			 {
 			 User player = sess.players[playpos];
 		     if (player==null)
 		      { //click on an empty session, move there
 			    moveToSess(sess,playpos);
 		        return(true);
-		      }}
+		      }
 			 }
 			 break;
 		 case highlight_room: 
@@ -2343,11 +2324,6 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	    		  { sess.launchSpectator(users.primaryUser(),myFrame.doSound()); 
 	   	       		lobby.startingSession = null;
 	   	       		lobby.clearedForLaunch = false; 	
-		   	       if(G.offline())
-			       {	sess.playFrame = null;
-			       		sess.playingInSession = false;
-			    	   	sess.SetGameState(SessionState.Idle); 
-			       }	   	       		
 		   	       lobby.startingSession = null;
 	   	       	   lobby.clearedForLaunch = false; 		  
 	    		  }
@@ -2686,8 +2662,6 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	      if(sess!=null && (sess!=users.primaryUser().session())) { sess.resetRobotname(true);}
 	      lobby.PutInSess(users.primaryUser(),sess,playpos);
 	      lobby.updatePending = true;
-	      if(!G.offline())
-	      {
 	      if(sess!=null)
 	        {// don't send submode here, so we won't change the setting based on possibly
 	         // incomplete information
@@ -2698,13 +2672,6 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	    	 lobby.sendMyInfo = true;
 
 	        }
-	      else 
-	      {lobby.movingToSess = 0;
-	       sendMessage(NetConn.SEND_LOBBY_INFO + "0 0 0");
-	       sendMessage(NetConn.SEND_GROUP+KEYWORD_IMIN+" 0 0 0"); 
-	       lobby.sendMyInfo = true;
-
-	      }}
 	  }
 	  
 	public void handleMouseUpEvent(int x,int y)
@@ -2839,40 +2806,6 @@ public boolean handleDeferredEvent(Object otarget, String command)
 	else if(muteMenu.selectMenuTarget(otarget))
 	{	
 		changeMute(muteMenu.value);
-	}
-	else if(userMenu.selectMenuTarget(otarget))
-	{	Object val = userMenu.rawValue;
-		boolean add = AddAName==val;
-		boolean remove = RemoveAName==val;
-		boolean empty = EmptyName==val;
-		if(changeRoom==null)
-		{	// second pass, remove now
-			if(val instanceof User)
-			{ users.changeOfflineUser(((User)val).name,true); 
-			}			
-		}
-		else if(empty)
-		{	changeRoom.clearUserSlot(changeSlot);
-		}
-		else if(add)
-		{
-			String name = JOptionPane.showInputDialog(AddAName);
-			if(name!=null)
-			{ name = name.trim();
-			  if(!"".equals(name)) { users.changeOfflineUser(name.trim(),remove); }
-			}
-			changeUser(changeRoom,changeSlot,userMenu.showAtX,userMenu.showAtY);
-		}
-		else if(remove)
-		{	// recurse
-			changeUser(null,changeSlot,userMenu.showAtX,userMenu.showAtY);
-		}
-		else if (val instanceof User)
-		{User newchoice = (User)userMenu.rawValue;
-		if(newchoice!=null)
-		{	
-			lobby.PutInSess(newchoice,changeRoom,changeSlot);
-		}}
 	}
 	else if(robotMenu.selectMenuTarget(otarget))
 	{ Bot newchoice = Bot.findIdx(robotMenu.value) ;

@@ -274,7 +274,6 @@ public class EuphoriaViewer extends CCanvas<EuphoriaCell,EuphoriaBoard> implemen
     				default: throw G.Error("Not expecting move %s",m);
     				case EPHEMERAL_PICK: 
     				case EPHEMERAL_DROP:
-     				case NORMALSTART:
     						break;	// remove
      				case EPHEMERAL_CONFIRM_ONE_RECRUIT:
     				case EPHEMERAL_CONFIRM_RECRUITS:
@@ -318,6 +317,13 @@ public class EuphoriaViewer extends CCanvas<EuphoriaCell,EuphoriaBoard> implemen
     			  top.next = null;
     			  permanent.pop();
     			  if(prev!=null) { prev.next = top; }
+    			  if(top.op==NORMALSTART)
+    			  {	  // the NORMALSTART move is performed separately by 
+    				  // each of the clients, so they all will get a different 
+    				  // elapsed time.  They must all be the same so the ongoing
+    				  // game state remains identical for all clients.
+    				  top.setElapsedTime(prev.elapsedTime());
+    			  }
     			  h.push(top);
     			  prev = top;
     			}

@@ -6,6 +6,7 @@ import lib.AR;
 import lib.Digestable;
 import lib.G;
 import lib.IStack;
+import lib.Plog;
 import lib.Random;
 /**
  * this is the recommended lowest level class for Boardspace boards.  
@@ -388,13 +389,13 @@ public abstract class BaseBoard implements Opcodes,Digestable
 	
 	// called by game initialization as each client checks in
 	public void setClientRevisionLevel(int n) 
-	{	G.print(G.uniqueName()+" Set rev ",n," was ",clientRevisionLevel);
+	{	Plog.log.addLog(G.uniqueName()," Set rev ",n," was ",clientRevisionLevel);
 		if(n>0)
 			{ 
 			  if(clientRevisionLevel==0) { clientRevisionLevel = n; }
 		      else if(n<clientRevisionLevel) 
 		      	{ 
-		    	  if(started) { G.print(G.uniqueName()+" already started, reduce to "+n); }
+		    	  if(started) { Plog.log.addLog(G.uniqueName()," already started, reduce to ",n); }
 		    	  clientRevisionLevel = n;
 		      	} 
 			}
@@ -414,7 +415,7 @@ public abstract class BaseBoard implements Opcodes,Digestable
 		started = true;
 		//Log.addLog("checkClientRevision");
 		if(clientRevisionLevel>0 && revision>0 && clientRevisionLevel<revision) 
-			{ G.print(G.uniqueName()+" Reinit to change revision");
+			{ Plog.log.addLog(G.uniqueName()," Reinit to change revision from ",revision," to ",clientRevisionLevel);
 			  revision = clientRevisionLevel;
 			  doInit(); 
 			  return(true);

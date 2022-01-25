@@ -261,29 +261,29 @@ public class Pushfightmovespec extends commonMove implements PushfightConstants
     by the constructors, and only secondarily human readable */
     public String moveString()
     {
-		String ind = (index() >= 0) ? (index() + " ") : "";
-		String opname = D.findUnique(op)+" ";
+		String indx = indexString();
+		String opname = indx+D.findUnique(op)+" ";
         // adding the move index as a prefix provides numnbers
         // for the game record and also helps navigate in joint
         // review mode
         switch (op)
         {
         case MOVE_PICKB:
-	        return (ind+opname + (char)(from_col-1) + " " + from_row);
+	        return (opname + (char)(from_col-1) + " " + from_row);
 
 		case MOVE_DROPB:
-	        return (ind+opname + (char)(to_col-1) + " " + to_row);
+	        return (opname + (char)(to_col-1) + " " + to_row);
 	       
 		case MOVE_PUSH:
 		case MOVE_FROM_TO:
-			return(ind+opname+(char)(from_col-1) + " " + from_row+" "+(char)(to_col-1) + " " + to_row);
+			return(opname+(char)(from_col-1) + " " + from_row+" "+(char)(to_col-1) + " " + to_row);
 
 
         case MOVE_START:
-            return (ind+"Start P" + player);
+            return (indx+"Start P" + player);
 
         default:
-            return (ind+opname);
+            return (opname);
         }
     }
 

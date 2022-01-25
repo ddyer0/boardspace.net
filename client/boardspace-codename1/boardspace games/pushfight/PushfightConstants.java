@@ -14,18 +14,20 @@ public interface PushfightConstants
 	static String PushMove1StateDescription = "Optionally move a piece, and then push a piece";
 	static String PushStateDescription = "push a piece";
 	static String InitialPositionStateDescription = "Position your pieces on your side of the board";
+	static String GameAllButOverStateDescription = "No push is possible, if you make this move you lose";
 	static String PushfightStrings[] = 
 	{  "Push Fight",
 		PushMove2StateDescription,
 		PushMove1StateDescription,
 		PushStateDescription,
 		InitialPositionStateDescription,
-       PushVictoryCondition
+       PushVictoryCondition,
+       GameAllButOverStateDescription
 		
 	};
 	static String PushfightStringPairs[][] = 
 	{ 
-		{"PushFight_family","Push Fight"},
+		{"Push Fight_family","Push Fight"},
 		{"PushFight_variation","standard Push Fight"},
 	};
 
@@ -45,6 +47,7 @@ public interface PushfightConstants
 	Puzzle(PuzzleStateDescription,false,false),
 	Resign(ResignStateDescription,true,false),
 	Gameover(GameOverStateDescription,false,false),
+	GameAllButOver(GameAllButOverStateDescription,true,true),
 	Confirm(ConfirmStateDescription,true,true),
 	Push(PushStateDescription,false,false),
 	PushMove2(PushMove2StateDescription,false,false),

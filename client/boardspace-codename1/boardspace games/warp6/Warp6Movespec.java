@@ -294,37 +294,33 @@ public class Warp6Movespec extends commonMove implements Warp6Constants
     by the constructors, and are also human readable */
     public String moveString()
     {
-        String ind = "";
-
-        if (index() >= 0)
-        {
-            ind += (index() + " ");
-        }
-        // adding the move index as a prefix provides numnbers
+		String indx = indexString();
+		String opname = indx+D.findUnique(op)+" ";
+       // adding the move index as a prefix provides numnbers
         // for the game record and also helps navigate in joint
         // review mode
         switch (op)
         {
          case MOVE_PICKB:
-	        return (ind+D.findUnique(op) + " " + from_row);
+	        return (opname+ from_row);
          case MOVE_PICK:
          case MOVE_DROP:
-         	return(""+D.findUnique(op)+" "+source.shortName+" "+to_row);
+         	return(opname+source.shortName+" "+to_row);
         
 		case MOVE_DROPB:
-	        return (ind+D.findUnique(op) + " " + to_row+" "+rollAmount);
+	        return (opname+ to_row+" "+rollAmount);
 		case MOVE_ROLLUP:
 		case MOVE_ROLLDOWN:
-			return(ind+D.findUnique(op)+" "+source.shortName+" "+from_row);
+			return(opname+source.shortName+" "+from_row);
 		case MOVE_ONBOARD:
-			return(ind+D.findUnique(op)+" "+source.shortName+" "+from_row+" "+to_row+" "+rollAmount);
+			return(opname+source.shortName+" "+from_row+" "+to_row+" "+rollAmount);
 		case MOVE_BOARD_BOARD:
-			return(ind+D.findUnique(op) + " "  + from_row+" "  + to_row+" "+rollAmount);
+			return(opname  + from_row+" "  + to_row+" "+rollAmount);
         case MOVE_START:
-            return (ind+"Start P" + player);
+            return (indx+"Start P" + player);
 
         default:
-            return (ind+D.findUnique(op));
+            return (opname);
         }
     }
 

@@ -167,6 +167,7 @@ public class TextContainer implements AppendInterface,KeyListener
 		if(canvas!=null) { canvas.repaint(0,"new text"); }
 
 	}
+
 	public boolean editable() 
 	{ return(editable); 
 	}

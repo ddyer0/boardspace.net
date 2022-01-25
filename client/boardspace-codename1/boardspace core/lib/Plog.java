@@ -1,4 +1,5 @@
 package lib;
+
 /**
  * private log object, continuously logs recent events with low overhead.
  * only a fixed number of events are saved on a ring
@@ -25,41 +26,41 @@ public class Plog {
 	}
 	
 	// start a new event, add timestamps and thread stamps
-	public synchronized void startEvent()
+	public synchronized StringBuilder startEvent()
 	{
 	    finishEvent();
 		setLogThread();
-		eventLog = new StringBuilder();
+		StringBuilder el = eventLog = new StringBuilder();
 		long now60 = G.nanoTime()%60000000000l;			// 60 seconds
 		int secs = (int)(now60/1000000000l);			//
 		int nanos = (int)(now60%1000000000l);
-	    if(isLogThread()) {eventLog.append("E "); }
-	    else { eventLog.append(Thread.currentThread().getName()); eventLog.append(" "); }
+	    if(isLogThread()) {el.append("E "); }
+	    else { el.append(Thread.currentThread().getName()); el.append(" "); }
 	   
 		int micros = (int)((nanos+500)/1000);
 		int millis = micros/1000;
 		micros=micros%1000;
-		if(secs<10) { eventLog.append(' '); }
-		eventLog.append(secs);
-		eventLog.append('+');
-   		eventLog.append(millis);
-   		eventLog.append('.');
-   		if(micros<10) { eventLog.append("00"); }
-   		else if(micros<100) { eventLog.append("0");}
-   		eventLog.append(micros);
-		eventLog.append(" ");
-
-
+		if(secs<10) { el.append(' '); }
+		el.append(secs);
+		el.append('+');
+   		el.append(millis);
+   		el.append('.');
+   		if(micros<10) { el.append("00"); }
+   		else if(micros<100) { el.append("0");}
+   		el.append(micros);
+		el.append(" ");
+		return(el);
 	}
 	/**
 	 * start a new event and leave it open for additional data
 	 * @param msg
 	 */
-	public synchronized void appendNewLog(String msg)
+	public synchronized StringBuilder appendNewLog(String msg)
 	   {		
-	    startEvent();	    
-   		eventLog.append(msg);
-	   }
+	    StringBuilder ev = startEvent();	    
+   		ev.append(msg);
+   		return(ev);
+  	   }
 	/**
 	 * clear the event log
 	 */
@@ -68,7 +69,7 @@ public class Plog {
 	   		totalEvents = index = 0;
 	   		AR.setValue(events,null);
 	   }
-	
+
 	/**
 	 * add a complete event
 	 * 
@@ -103,13 +104,12 @@ public class Plog {
 	   }
 	
 	public synchronized void finishEvent()
-	   {
-		if(eventLog!=null)
-		{			
-			String msg = events[index++] = eventLog.toString();
+	   {StringBuilder ev = eventLog;
+		if(ev!=null)
+		{	eventLog = null;	
+			String msg = events[index++] = ev.toString();
 			totalEvents++;
 			if(index>=events.length) { index = 0;}		
-			eventLog = null;
 			if(verbose) { G.print(msg); }
 		}
 	   }
@@ -118,34 +118,36 @@ public class Plog {
 	 * @param msg
 	 */
 	public synchronized void appendLog(String msg)
-	   {	if(eventLog!=null) { eventLog.append(msg); }
-	   	}
+	   {	StringBuilder ev = eventLog;
+	   		if(ev!=null) { ev.append(msg); }
+	   }
 	/**
 	 * append to the current event
 	 * @param msg
 	 */
 	public synchronized void appendLog(int msg)
-	   {	if(eventLog!=null) { eventLog.append(msg); }
+	   {	StringBuilder ev = eventLog;
+  			if(ev!=null) { ev.append(msg); }
 	   }
 	/**
 	 * append to the current event
 	 * @param msg
 	 */
 	public synchronized void appendLog(char msg)
-	   {
-		   if(eventLog!=null) { eventLog.append(msg); }
+	   {StringBuilder ev = eventLog;
+  		if(ev!=null) { ev.append(msg); }
 	   }
 	public synchronized void appendLog(Object s)
-	{
-		   if(eventLog!=null) { eventLog.append(s.toString()); };
+	{	StringBuilder ev = eventLog;
+		if(ev!=null) { ev.append(s.toString()); };
 	}
 	/**
 	 * append to the current event
 	 * @param msg
 	 */
 	public synchronized void appendLog(double msg)
-	   {	
-		   if(eventLog!=null) { eventLog.append(msg); }
+	   {	StringBuilder ev = eventLog;
+  			if(ev!=null) { ev.append(msg); }
 	   }
 	/**
 	 * get the current event log as a single string with line breaks
@@ -160,11 +162,11 @@ public class Plog {
 		startingEvent = totalEvents;
 		return getLog(se);
 	}
-	private String getLog(int from)
-	{		finishEvent();
+	private synchronized String getLog(int from)
+	   {	finishEvent();
 			int size = events.length;
 			int idx = (totalEvents-from)>=size
-							? index+1		// log is full, we lost some events
+							? (index+1)%size		// log is full, we lost some events
 							: from%size;	// recent events only
 			if(idx!=index)
 			{
@@ -174,7 +176,7 @@ public class Plog {
 				b.append(events[idx]);
 				b.append('\n');
 				idx++;
-				if(idx>=events.length) { idx = 0; }
+				if(idx>=size) { idx = 0; }
 			}
 			return(b.toString());
 			}

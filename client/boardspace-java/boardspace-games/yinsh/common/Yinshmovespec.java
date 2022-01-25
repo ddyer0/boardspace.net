@@ -261,21 +261,16 @@ public class Yinshmovespec extends commonMove implements YinshConstants
     by the constructors, and are also human readable */
     public String moveString()
     {
-        String ind = "";
-
-        if (index() >= 0)
-        {
-            ind += (index() + " ");
-        }
+		String indx = indexString();
+		String opname = indx+D.findUnique(op)+" ";
 
         switch (op)
         {
         default:
-            ind += shortMoveString();
+            return (opname);
 
-            break;
        case MOVE_MOVE:
-            return (ind+"move "+from_col + " "+ from_row + " " +  to_col + " "+ to_row);
+            return (opname+from_col + " "+ from_row + " " +  to_col + " "+ to_row);
        case MOVE_REMOVE:
         {
             String what = object.shortName;
@@ -298,45 +293,32 @@ public class Yinshmovespec extends commonMove implements YinshConstants
                 break;
             }
 
-            ind += (D.findUnique(op) + " " + what + " " + from_col + " " +
-            from_row + rest);
+            return(opname+ what + " " + from_col + " " +  from_row + rest);
         }
-
-        break;
 
         case MOVE_PICK:
         {
             String rest = (object == YinshId.BoardLocation)
                 ? (" " + " " + from_col + " " + from_row) : "";
-            ind += (D.findUnique(op) + " " +object.shortName + rest);
+            return(opname+object.shortName + rest);
         }
-
-        break;
 
         case MOVE_DROP:
         {
             String rest = (object == YinshId.BoardLocation)
                 ? (" " + " " + to_col + " " + to_row) : "";
-            ind += (D.findUnique(op) + " " + object.shortName + rest);
+            return(opname+ object.shortName + rest);
         }
-
-        break;
 
         case MOVE_PLACE:
-            ind += (D.findUnique(op) + " " + object.shortName + " " + " " + to_col + " " + to_row);
-
-            break;
+            return (opname+object.shortName + " " + " " + to_col + " " + to_row);
 
         case MOVE_DONE:
-            ind += D.findUnique(op);
-
-            break;
+            return(opname);
 
         case MOVE_START:
-            ind += ((player == SECOND_PLAYER_INDEX) ? "Start Black" : "Start White");
+            return indx+((player == SECOND_PLAYER_INDEX) ? "Start Black" : "Start White");
         }
-
-        return (ind);
     }
 
 }

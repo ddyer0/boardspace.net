@@ -1,6 +1,7 @@
 package arimaa;
 
 import lib.CellId;
+import lib.G;
 import lib.InternationalStrings;
 import lib.OStack;
 
@@ -73,6 +74,11 @@ public enum ArimaaId implements CellId
 	ReverseViewButton,
 	HitPlaceRabbitsButton,
 	;
+	public static ArimaaId find(String wp)
+	{
+		for(ArimaaId id : values()) { if (wp.equalsIgnoreCase(id.name())) { return(id); }}
+		throw G.Error("Id %s not found",wp);
+	}
 	public String shortName() { return(name()); }
 }
 

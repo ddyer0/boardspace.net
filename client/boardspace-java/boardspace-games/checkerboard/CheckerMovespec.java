@@ -222,41 +222,41 @@ public class CheckerMovespec
     by the constructors, and are also human readable */
     public String moveString()
     {
-		String ind = (index() >= 0) ? (index() + " ") : "";
-		String opname = D.findUnique(op)+" ";
+		String indx = indexString();
+		String opname = indx+D.findUnique(op)+" ";
        // adding the move index as a prefix provides numbers
         // for the game record and also helps navigate in joint
         // review mode
         switch (op)
         {
         case MOVE_PICKB:
-	        return (G.concat(ind,opname,  from_col , " " , from_row));
+	        return (G.concat(opname,  from_col , " " , from_row));
 
 		case MOVE_DROPB:
-	        return (G.concat(ind,opname , to_col , " " , to_row));
+	        return (G.concat(opname , to_col , " " , to_row));
 
 		case MOVE_JUMP:
-			return G.concat(ind,opname,  from_col , " " , from_row
+			return G.concat(opname,  from_col , " " , from_row
 					, " " , target_col," ",target_row
 					, " " , to_col , " " , to_row);
 		case MOVE_DROPC:
-			return G.concat(ind,opname
+			return G.concat(opname
 					, target_col," ",target_row
 					, " " , to_col , " " , to_row);
 		case MOVE_BOARD_BOARD:
-			return G.concat(ind,opname ,from_col , " " , from_row
+			return G.concat(opname ,from_col , " " , from_row
 					, " " , to_col , " " , to_row);
         case MOVE_PICK:
-            return G.concat(ind,opname , source.shortName, " ",from_row);
+            return G.concat(opname , source.shortName, " ",from_row);
 
         case MOVE_DROP:
-             return G.concat(ind,opname, source.shortName, " ",to_row);
+             return G.concat(opname, source.shortName, " ",to_row);
 
         case MOVE_START:
-            return G.concat(ind,"Start P" , player);
+            return G.concat(indx,"Start P" , player);
 
         default:
-            return G.concat(ind,D.findUnique(op));
+            return G.concat(D.findUnique(op));
         }
     }
     /*

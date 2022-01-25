@@ -349,9 +349,6 @@ public class sgf_reader implements sgf_names
     {
         int nitems = 0;
         sgf_gamestack s = new sgf_gamestack();
-        Plog.log.appendNewLog("Parse ");
-        Plog.log.appendLog(filename);
-        Plog.log.finishEvent();
         sgf_game newgame = null;
 
         while ((newgame = parse_sgf_game()) != null)

@@ -31,6 +31,7 @@ public class GoChip extends chip<GoChip> implements CommonConfig
 	{	file = na;
 		scale = scl;
 		otherChips.push(this);
+		randomv = r.nextLong();
 	}
 	// constructor for chips using an image from elsewhere
 	private GoChip(String na,Image im,double scl[])

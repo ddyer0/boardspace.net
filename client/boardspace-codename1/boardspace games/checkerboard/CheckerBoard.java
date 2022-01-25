@@ -603,7 +603,7 @@ class CheckerBoard extends rectBoard<CheckerCell> implements BoardProtocol
     {	CheckerChip ch = pickedObject;
     	if(ch!=null)
     		{ int nn = ch.chipNumber();
-    		  return(nn+((pickedHeight.top()==2)?100:0));
+    		  return(nn+((pickedHeight.topz(0)==2)?100:0));
     		}
         return (NothingMoving);
     }

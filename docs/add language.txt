@@ -1,0 +1,18 @@
+
+Add the new language to the list in cgi-bin/tlib/common.pl
+
+Add the new language to the translations table enum in the database
+
+These first two steps are enough for translations to begin.
+
+Add a new class to the languages list
+
+Add the new class to the kawa compile script
+
+Run upload/download strings
+
+Also, presumably the motivation for adding a new language is to add a
+new translator.  Use the admin web interface to edit the player and
+give them the "is translator" permission.
+
+

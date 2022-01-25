@@ -467,8 +467,8 @@ public class ContainerMovespec extends commonMPMove implements ContainerConstant
     by the constructors, and are also human readable */
     public String moveString()
     {
-		String ind = (index() >= 0) ? (index() + " ") : "";
-		String opname = D.findUnique(op)+" ";
+		String indx = indexString();
+		String opname = indx+D.findUnique(op)+" ";
         // adding the move index as a prefix provides numnbers
         // for the game record and also helps navigate in joint
         // review mode
@@ -476,42 +476,42 @@ public class ContainerMovespec extends commonMPMove implements ContainerConstant
         {
  
 		case MOVEC_FROM_TO:
-			return(ind+opname +D.findUnique(source.IID())
+			return(opname +D.findUnique(source.IID())
 					+ " " + from_col+" "+from_row
 					+ " " + D.findUnique(container&0xfff)
 					+ " " + D.findUnique(dest.IID())
 					+ " " + to_col + " " + to_row);
 
 		case MOVE_FROM_TO:
-			return(ind+opname +D.findUnique(source.IID())
+			return(opname +D.findUnique(source.IID())
 					+ " " + from_col+" "+from_row
 					+ " " + D.findUnique(dest.IID())
 					+ " " + to_col + " " + to_row);
 
 	    case MOVE_DROP:
-            return (ind+opname+D.findUnique(dest.IID())+ " " + to_col+" "+to_row);
+            return (opname+D.findUnique(dest.IID())+ " " + to_col+" "+to_row);
 
 	    case MOVE_PICK:
-            return (ind+opname+D.findUnique(source.IID())+ " " + from_col+" "+from_row);
+            return (opname+D.findUnique(source.IID())+ " " + from_col+" "+from_row);
 
 	    case MOVE_PICKC:
-            return (ind+opname+D.findUnique(source.IID())+ " " + from_col+" "+from_row+" "
+            return (opname+D.findUnique(source.IID())+ " " + from_col+" "+from_row+" "
             		+D.findUnique(container&0xfff));
 
         case MOVE_EPHEMERAL_DECLINE:
         case MOVE_EPHEMERAL_FUND:
         case MOVE_START:
-            return (ind+opname+"P" + player);
+            return (indx+"Start P" + player);
         case MOVE_EPHEMERAL_AUCTION_BID:
         case MOVE_EPHEMERAL_LOAN_BID:
-        	return (ind+opname+to_row+" P"+player);
+        	return (opname+to_row+" P"+player);
         case MOVE_ACCEPT_LOAN:
         case MOVE_BID:
         case MOVE_ACCEPT:
         case MOVE_BUY:
-        	return(ind + opname+to_row);
+        	return( opname+to_row);
         default:
-            return (ind+opname);
+            return (opname);
         }
     }
 

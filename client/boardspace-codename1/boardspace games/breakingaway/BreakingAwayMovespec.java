@@ -275,8 +275,8 @@ public class BreakingAwayMovespec extends commonMPMove
     by the constructors, and are also human readable */
     public String moveString()
     {
-		String ind = (index() >= 0) ? (index() + " ") : "";
-		String opname = ind+D.findUnique(op)+" ";
+		String indx = indexString();
+		String opname = indx+D.findUnique(op)+" ";
         // adding the move index as a prefix provides numnbers
         // for the game record and also helps navigate in joint
         // review mode
@@ -309,7 +309,7 @@ public class BreakingAwayMovespec extends commonMPMove
         case MOVE_DROPB:
 	        return (opname + to_col + " " + to_row+" "+playerNumber+" "+cycleIndex);
         case MOVE_START:
-            return ("Start P" + player);
+            return (indx+"Start P" + player);
         case MOVE_MOVE:
         	return(opname+playerNumber+" "+cycleIndex+" "+from_col+" "+from_row+" "+to_col+" " +to_row);
         default:

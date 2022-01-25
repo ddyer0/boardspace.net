@@ -42,12 +42,6 @@ class PonteBlob extends OStack<PonteCell>
 
 public class PonteBoard extends rectBoard<PonteCell> implements BoardProtocol,PonteConstants
 {	
-	static final int DEFAULT_COLUMNS = 10;	// 10x10 board
-	static final int DEFAULT_ROWS = 10;
-	static final int INITIAL_CHIPS = 40;
-	static final int INITIAL_BRIDGES = 15;
-    static final String[] GRIDSTYLE = { "1", null, "A" }; // left and bottom numbers
-   
     public int boardColumns = DEFAULT_COLUMNS;	// size of the board
     public int boardRows = DEFAULT_ROWS;
     public void SetDrawState() { setState(PonteState.Draw); }
@@ -1263,7 +1257,7 @@ public class PonteBoard extends rectBoard<PonteCell> implements BoardProtocol,Po
 	PonteChip top = c.topChip();
 	PonteChip targetChip = PonteChip.getTile(playerRack[whoseTurn]);
 	 if(top==targetChip)
-	 	{	for(Bridge b : PonteChip.bridges)
+	 	{	for(Bridge b : bridges)
 	 		{
 	 		if(c.canPlaceBridge(b))
 	 			{	some = true;

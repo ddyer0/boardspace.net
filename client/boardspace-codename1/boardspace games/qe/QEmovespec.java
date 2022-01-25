@@ -229,8 +229,8 @@ public class QEmovespec extends commonMPMove implements QEConstants
     by the constructors, and only secondarily human readable */
     public String moveString()
     {
-		String ind = (index() >= 0) ? (index() + " ") : "";
-		String opname = D.findUnique(op)+" ";
+		String indx = indexString();
+		String opname = indx+D.findUnique(op)+" ";
         // adding the move index as a prefix provides numnbers
         // for the game record and also helps navigate in joint
         // review mode
@@ -238,20 +238,20 @@ public class QEmovespec extends commonMPMove implements QEConstants
         {
         case MOVE_OPENBID:
         case MOVE_SECRETBID:
-        	return(ind+opname+amount);
+        	return(opname+amount);
         case MOVE_EBID:
-        	return(ind+opname+player+" "+amount);
+        	return(opname+player+" "+amount);
         case MOVE_ECOMMIT:
-        	return(ind+opname+player);
+        	return(opname+player);
         case MOVE_DROP:
         case MOVE_PICK:
-            return (ind+opname+source.shortName+" "+amount+" "+to_height);
+            return (opname+source.shortName+" "+amount+" "+to_height);
 
         case MOVE_START:
-            return (ind+"Start P" + player);
+            return (indx+"Start P" + player);
 
         default:
-            return (ind+opname);
+            return (opname);
         }
     }
 

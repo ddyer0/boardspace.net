@@ -292,69 +292,65 @@ public class GoMovespec extends commonMove implements GoConstants
     by the constructors, and are also human readable */
     public String moveString()
     {
-        String ind = "";
-
-        if (index() >= 0)
-        {
-            ind += (index() + " ");
-        }
+		String indx = indexString();
+		String opname = indx+D.findUnique(op)+" ";
         // adding the move index as a prefix provides numbers
         // for the game record and also helps navigate in joint
         // review mode
         switch (op)
         {
         case MOVE_HANDICAP:
-        	return(ind+"Handicap "+to_row);
+        	return(opname+to_row);
         case MOVE_UNDEAD:
-        	return(ind+"Undead "+from_col+" "+from_row);
+        	return(opname+from_col+" "+from_row);
         	
         case MOVE_DEAD:
-        	return(ind+"Dead "+from_col+" "+from_row);
+        	return(opname+from_col+" "+from_row);
 
         case MOVE_SAFE:
-        	return(ind+"Safe "+from_col+" "+from_row);
+        	return(opname+from_col+" "+from_row);
 
         case MOVE_PICKB:
-	        return (ind+D.findUnique(op) + " " + from_col + " " + from_row);
+	        return (opname + from_col + " " + from_row);
 	        
         case MOVE_ANNOTATE:
 		case MOVE_DROPB:
-	        return (ind+D.findUnique(op) + " " + to_col + " " + to_row);
+	        return (opname+ to_col + " " + to_row);
 
 		case MOVE_RACK_BOARD:
-			return(ind+D.findUnique(op) + " " +source.shortName+ " "+from_row
+			return(opname+source.shortName+ " "+from_row
 					+ " " + to_col + " " + to_row);
         case MOVE_PICK:
         	switch(source)
         	{
         	case AnnotationViewButton:
-        		return (ind+D.findUnique(op) + " "+source.shortName+ " "+Annotation.values()[from_row].name());
+        		return (opname+source.shortName+ " "+Annotation.values()[from_row].name());
         	default:
-        		return (ind+D.findUnique(op) + " "+source.shortName+ " "+from_row);
+        		return (opname+source.shortName+ " "+from_row);
         	}
 
         case MOVE_DROP:
-             return (ind+D.findUnique(op) + " "+source.shortName+ " "+to_row);
+             return (opname+source.shortName+ " "+to_row);
 
         case MOVE_START:
-            return (ind+"Start P" + player);
+            return (indx+"Start P" + player);
 
         case MOVE_DROP_BLACK:
-        	return(ind+"B "+to_col+(char)('A'-to_row-1));
+        	return(indx+"B "+to_col+(char)('A'-to_row-1));
         	
         case MOVE_DROP_WHITE:
-        	return(ind+"W "+to_col+(char)('A'-to_row-1));
+        	return(indx+"W "+to_col+(char)('A'-to_row-1));
  
         case MOVE_ADD_BLACK:
-        	return(ind+"AB "+to_col+(char)('A'-to_row-1));
+        	return(indx+"AB "+to_col+(char)('A'-to_row-1));
         	
         case MOVE_ADD_WHITE:
-        	return(ind+"AW "+to_col+(char)('A'-to_row-1));
+        	return(indx+"AW "+to_col+(char)('A'-to_row-1));
  
         case MOVE_KOMI:
-        	return(ind+"KM "+(to_row/2.0));
+        	return(indx+"KM "+(to_row/2.0));
         default:
-            return (ind+D.findUnique(op));
+            return (opname);
         }
     }
 

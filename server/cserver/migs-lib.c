@@ -1,7 +1,6 @@
 
 #include "migs-declarations.h"
 
-
 #if WIN32
 static int Winsock_Started=0;
 void Start_Winsock()

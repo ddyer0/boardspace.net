@@ -692,8 +692,8 @@ public class Viticulturemovespec extends commonMPMove implements ViticultureCons
     by the constructors, and only secondarily human readable */
     public String moveString()
     {
-		String ind = (index() >= 0) ? (index() + " ") : "";
-		String opname = ind+D.findUnique(op)+" ";
+		String indx = indexString();
+		String opname = indx+D.findUnique(op)+" ";
 
         // adding the move index as a prefix provides numnbers
         // for the game record and also helps navigate in joint
@@ -716,7 +716,7 @@ public class Viticulturemovespec extends commonMPMove implements ViticultureCons
           
 
         case MOVE_RETRIEVE:
-        	return(opname+" "+source.name()+" "+from_col+" "+from_row+" "+from_index+" "+dest.name()+" "+to_col + extraChips());
+        	return(opname+source.name()+" "+from_col+" "+from_row+" "+from_index+" "+dest.name()+" "+to_col + extraChips());
 
         case MOVE_TRADE:
         	return(opname+source.name()+" "+from_col+" "+from_row+" "+from_index+" "+dest.name() + extraChips());
@@ -740,7 +740,7 @@ public class Viticulturemovespec extends commonMPMove implements ViticultureCons
 			return(opname+dest.name()+" "+to_col+" "+ChipType.values()[from_index]);
 			
         case MOVE_START:
-            return (ind+"Start P" + player + extraChips());
+            return (indx+"Start P" + player + extraChips());
 
         case MOVE_SELLWINE:
         case MOVE_FILLWINE:
@@ -758,7 +758,7 @@ public class Viticulturemovespec extends commonMPMove implements ViticultureCons
         case MOVE_BUILD:
         	return(opname+dest.name()+" "+to_col + extraChips());
         case MOVE_NEWWAKEUP:
-        	return(ind+D.findUnique(op)+" "+to_col+" "+to_row + extraChips());
+        	return(opname+to_col+" "+to_row + extraChips());
         	
         case MOVE_STAR:
         	return(opname+from_row+" "+from_index+" "+to_row + extraChips());

@@ -34,7 +34,7 @@ public class MasterForm extends Form implements com.codename1.ui.events.ActionLi
 	bridge.Container tabs = new bridge.Container();
 	bridge.Container menus = new bridge.Container();
 	String appname = "unnamed";
-	com.codename1.ui.Container titleBar;
+	private com.codename1.ui.Container titleBar;
 	boolean recordEvents = true;
 	
 	@SuppressWarnings("deprecation")

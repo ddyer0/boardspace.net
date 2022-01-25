@@ -181,28 +181,28 @@ public class Gipfmovespec extends commonMove implements GipfConstants
     by the constructors, and are also human readable */
     public String moveString()
     {
-		String ind = (index() >= 0) ? (index() + " ") : "";
-		String opname = D.findUnique(op)+" ";
+		String indx = indexString();
+		String opname = indx+D.findUnique(op)+" ";
 
         switch (op)
         {
         case MOVE_PICK:
         case MOVE_DROP:
-        	return(ind+opname+source.shortName);
+        	return(opname+source.shortName);
         case MOVE_PICKB:
         case MOVE_REMOVE:
         case MOVE_PRESERVE:
-        	return(ind+opname+from_col+" "+from_row);
+        	return(opname+from_col+" "+from_row);
         case MOVE_DROPB:
-           	return(ind+opname+to_col+" "+to_row);
+           	return(opname+to_col+" "+to_row);
         case MOVE_START:
-            return (ind+"Start P"+player);
+            return (indx+"Start P"+player);
         case MOVE_SLIDEFROM:
         case MOVE_SLIDE:
-        	return(ind+opname+from_col+" "+from_row+" "+to_col+" "+to_row);
+        	return(opname+from_col+" "+from_row+" "+to_col+" "+to_row);
 
         default:
-            return (ind+opname);
+            return (opname);
             
         }
     }

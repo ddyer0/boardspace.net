@@ -467,8 +467,8 @@ public class Hivemovespec extends commonMove implements HiveConstants
     by the constructors, and are also human readable */
     public String moveString()
     {
-		String ind = (index() >= 0) ? (index() + " ") : "";
-		String opname = D.findUnique(op);
+		String indx = indexString();
+		String opname = indx+D.findUnique(op)+" ";
         // adding the move index as a prefix provides numnbers
         // for the game record and also helps navigate in joint
         // review mode
@@ -476,7 +476,7 @@ public class Hivemovespec extends commonMove implements HiveConstants
         {
         	
         case MOVE_PICKB:
-	        return (ind+opname +" " + from_col + " " + from_row+" "+object.exactBugName());
+	        return (opname+ from_col + " " + from_row+" "+object.exactBugName());
 
         case MOVE_MOVE:
         case MOVE_PMOVE:
@@ -484,25 +484,25 @@ public class Hivemovespec extends commonMove implements HiveConstants
         case MOVE_MOVE_DONE:
         	{
         	HivePiece bug = object;
-	        return (ind+opname + " "+bug.color.shortName()+" "+bug.exactBugName()+" " + to_col + " " + to_row+" "+attachment);
+	        return (opname +bug.color.shortName()+" "+bug.exactBugName()+" " + to_col + " " + to_row+" "+attachment);
         	}
         case MOVE_DROPB:
         case MOVE_PDROPB:
-	        return (ind+opname + " "+object.exactBugName()+" " + to_col + " " + to_row+" "+attachment);
+	        return (opname +object.exactBugName()+" " + to_col + " " + to_row+" "+attachment);
 
         case MOVE_DROP:
-            return (ind+opname + " "+source.shortName+" "+to_row+" "+object.exactBugName()+" "+attachment);
+            return (opname +source.shortName+" "+to_row+" "+object.exactBugName()+" "+attachment);
 
         case MOVE_PICK:
         	{
        		HivePiece bug =object;
-            return (ind+opname + " "+source.shortName+" "+from_row+" "+bug.exactBugName());
+            return (opname +source.shortName+" "+from_row+" "+bug.exactBugName());
         	}
         case MOVE_START:
-            return (ind+"Start P" + player);
+            return (indx+"Start P" + player);
 
         default:
-            return (ind+opname);
+            return (opname);
         }
     }
 

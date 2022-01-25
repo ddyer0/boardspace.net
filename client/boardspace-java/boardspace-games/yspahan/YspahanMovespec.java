@@ -288,12 +288,8 @@ public class YspahanMovespec extends commonMPMove implements YspahanConstants
     by the constructors, and are also human readable */
     public String moveString()
     {
-        String ind = "";
-
-        if (index() >= 0)
-        {
-            ind += (index() + " ");
-        }
+		String indx = indexString();
+		String opname = indx+D.findUnique(op)+" ";
         // adding the move index as a prefix provides numnbers
         // for the game record and also helps navigate in joint
         // review mode
@@ -301,19 +297,19 @@ public class YspahanMovespec extends commonMPMove implements YspahanConstants
         {
 
 		case MOVE_BOARD_BOARD:
-			return(ind+D.findUnique(op) + " " +source.name+" "+from_col + " " + from_row + " " + depth + " "           //Ro
+			return(opname+source.name+" "+from_col + " " + from_row + " " + depth + " "           //Ro
 					+ dest.name+" " + to_col + " " + to_row);
         case MOVE_PICK:
-            return (ind+D.findUnique(op) + " "+source.name+" "+ from_col+" "+from_row+" "+depth);
+            return (opname+source.name+" "+ from_col+" "+from_row+" "+depth);
 
         case MOVE_DROP:
-             return (ind+D.findUnique(op) + " "+dest.name+ " "+to_col+" " +to_row);
+             return (opname+dest.name+ " "+to_col+" " +to_row);
 
         case MOVE_START:
-            return (ind+"Start P" + player);
+            return (indx+"Start P" + player);
 
         default:
-            return (ind+D.findUnique(op));
+            return (opname);
         }
     }
 

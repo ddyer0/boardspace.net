@@ -429,8 +429,8 @@ public class BlackDeathMovespec extends commonMPMove
     by the constructors, and only secondarily human readable */
     public String moveString()
     {
-		String ind = (index() >= 0) ? (index() + " ") : "";
-		String opname = D.findUnique(op)+" ";
+		String indx = indexString();
+		String opname = indx+D.findUnique(op)+" ";
 
         // adding the move index as a prefix provides numnbers
         // for the game record and also helps navigate in joint
@@ -438,13 +438,13 @@ public class BlackDeathMovespec extends commonMPMove
         switch (op)
         {
         case MOVE_PERFECTROLL:
-        	return(G.concat(ind,opname,color.name()));
+        	return(G.concat(opname,color.name()));
         	
         case MOVE_ROLL2:
         	{
         	int r1 = to_row/10;
         	int r2 = to_row%10;
-        	return(G.concat(ind,opname,color.name()," ",r1," ",r2));
+        	return(G.concat(opname,color.name()," ",r1," ",r2));
         	}
         case MOVE_ROLL:
         case MOVE_VIRULENCE:
@@ -453,10 +453,10 @@ public class BlackDeathMovespec extends commonMPMove
         case MOVE_TEMPORARY_CHANGE_MORTALITY:
         case MOVE_MORTALITY:
         case MOVE_TEMPORARY_SWAP_VIRULENCE:
-        	return G.concat(ind,opname,color.name()," "+to_row);
+        	return G.concat(opname,color.name()," "+to_row);
 
         case MOVE_PICKB:
-	        return G.concat(ind,opname, from_name);
+	        return G.concat(opname, from_name);
         case MOVE_KILL:
         case MOVE_KILLANDREMOVE:
         case MOVE_CURE:
@@ -464,30 +464,30 @@ public class BlackDeathMovespec extends commonMPMove
         case MOVE_QUARANTINE:
         case MOVE_POGROM:
 		case MOVE_DROPB:
-	        return G.concat(ind,opname,to_name);
+	        return G.concat(opname,to_name);
 		case MOVE_FROM_TO:
-			return G.concat(ind,opname,from_name," ",to_name," "+cost);			
+			return G.concat(opname,from_name," ",to_name," "+cost);			
 		case MOVE_INFECTION_ATTEMPT:
 		case MOVE_TEMPORARY_CLOSE:
-			return G.concat(ind,opname,from_name," ",to_name);
+			return G.concat(opname,from_name," ",to_name);
 		case MOVE_REINFECT:
 		case MOVE_INFECT:
-			return G.concat(ind,opname,to_name);
+			return G.concat(opname,to_name);
 		case MOVE_DROP:
-            return G.concat(ind,opname, color.name()," ",source.shortName);
+            return G.concat(opname, color.name()," ",source.shortName);
 
 		case MOVE_PLAYCARD:
-	           return G.concat(ind,opname,color.name()," ",source.shortName," "+to_row," ",from_name);
+	           return G.concat(opname,color.name()," ",source.shortName," "+to_row," ",from_name);
 		
 		case MOVE_PICK:
-            return G.concat(ind,opname, color.name()," ",source.shortName," "+to_row);
+            return G.concat(opname, color.name()," ",source.shortName," "+to_row);
 
         case MOVE_START:
-            return (G.concat(ind,"Start P" ,player));
+            return (G.concat(indx,"Start P" ,player));
         case MOVE_USE_PERFECTROLL:
         case MOVE_ESCAPE:
         default:
-            return (G.concat(ind,opname));
+            return (G.concat(opname));
         }
     }
     /**

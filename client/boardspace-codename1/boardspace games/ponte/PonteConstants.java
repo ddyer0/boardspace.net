@@ -8,11 +8,21 @@ import online.game.BaseBoard.BoardState;
 
 
 public interface PonteConstants 
-{	
+{	static String VictoryCondition = "bridge islands of exactly 4 squares to score points";
+	static String PonteStrings[] =
+	{	"Ponte Del Diavolo",
+		VictoryCondition
+	};
+	static String PonteStringPairs[][] = 
+	{   {"Ponte_family","Ponte Del Diavolo"},
+		{"Ponte","Ponte Del Diavolo"},
+		{"Ponte_variation","10x10 board"},
+	};
+	static final int DEFAULT_COLUMNS = 10;	// 10x10 board
+	static final int DEFAULT_ROWS = 10;
 	static final String Ponte_INIT = "ponte";	//init for standard game
-    static final int White_Chip_Index = 0;
-    static final int Red_Chip_Index = 1;
-    static final int Bridge_Index = 2;
+	static final int INITIAL_CHIPS = 40;
+	static final int INITIAL_BRIDGES = 15;
 
     static enum Bridge
     {	b_30(-2,-1,PonteId.Bridge_30),
@@ -37,6 +47,7 @@ public interface PonteConstants
     		return(null);
     	}
     }
+    static Bridge bridges[] = { Bridge.b_30,Bridge.b_45,Bridge.b_60,Bridge.b_90,Bridge.b_120,Bridge.b_135,Bridge.b_150,Bridge.b_180};
    
     //	these next must be unique integers in the dictionary
 	static enum PonteId implements CellId
@@ -73,6 +84,10 @@ public interface PonteConstants
 		 	throw G.Error(IdNotFoundError,str);
 		 }
 	}
+    static final int White_Chip_Index = 0;
+    static final int Red_Chip_Index = 1;
+    static final int Bridge_Index = 2;
+    
     static final PonteId RackLocation[] =
     	{
     	PonteId.White_Chip_Pool,PonteId.Red_Chip_Pool,
@@ -119,6 +134,21 @@ public interface PonteConstants
 
 
 	
+    static final String Ponte_SGF = "PonteDelDiavolo"; // sgf game number allocated for ponte
+    static final String[] GRIDSTYLE = { "1", null, "A" }; // left and bottom numbers
 
+ 
+    // file names for jpeg images and masks
+    static final String ImageDir = "/ponte/images/";
+	// sounds
+    static final int BACKGROUND_TILE_INDEX = 0;
+    static final int BACKGROUND_REVIEW_INDEX = 1;
+    static final int ICON_INDEX = 2;
+    static final String TextureNames[] = 
+    	{ "background-tile" ,
+    	  "background-review-tile",
+    	  "ponte-icon-nomask"};
+    static final int BOARD_INDEX = 0;
+    static final String ImageNames[] = {"board"};
 
 }

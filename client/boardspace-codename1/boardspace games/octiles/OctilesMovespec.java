@@ -288,8 +288,8 @@ public class OctilesMovespec extends commonMPMove implements OctilesConstants
     by the constructors, and are also human readable */
     public String moveString()
     {
-		String ind = (index() >= 0) ? (index() + " ") : "";
-		String opname = D.findUnique(op)+" ";
+		String indx = indexString();
+		String opname = indx+D.findUnique(op)+" ";
         // adding the move index as a prefix provides numnbers
         // for the game record and also helps navigate in joint
         // review mode
@@ -297,24 +297,24 @@ public class OctilesMovespec extends commonMPMove implements OctilesConstants
         {
 
         case MOVE_PICKB:
-	        return (ind+opname + from_col + " " + from_row+" "+object);
+	        return (opname + from_col + " " + from_row+" "+object);
 
 		case MOVE_DROPB:
 		case MOVE_ROTATE:
-	        return (ind+opname + to_col + " " + to_row+" "+object+" "+rotation);
+	        return (opname + to_col + " " + to_row+" "+object+" "+rotation);
 
 		case DROP_AND_MOVE:
-			return(ind+opname+ drop_col+" "+drop_row+" "+object+" "+rotation+" "
+			return(opname+ drop_col+" "+drop_row+" "+object+" "+rotation+" "
 					+ from_col + " " + from_row+" "+to_col+" "+to_row);
         case MOVE_PICK:
         case MOVE_DROP:
-             return (ind+opname+object);
+             return (opname+object);
 
         case MOVE_START:
-            return (ind+"Start P" + player);
+            return (indx+"Start P" + player);
 
         default:
-            return (ind+opname);
+            return (opname);
         }
     }
 

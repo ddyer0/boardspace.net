@@ -244,39 +244,35 @@ public class PonteMovespec extends commonMove
     by the constructors, and are also human readable */
     public String moveString()
     {
-        String ind = "";
-
-        if (index() >= 0)
-        {
-            ind += (index() + " ");
-        }
+		String indx = indexString();
+		String opname = indx+D.findUnique(op)+" ";
         // adding the move index as a prefix provides numnbers
         // for the game record and also helps navigate in joint
         // review mode
         switch (op)
         {
         case MOVE_PLACE_TILE:
-        	return(ind+D.findUnique(op)+" "+source.name()+" "+col+" "+row);
+        	return(opname+source.name()+" "+col+" "+row);
 
         case MOVE_PLACE_BRIDGE:
-        	return(ind+D.findUnique(op)+" "+source.name()+" "+col+" "+row);
+        	return(opname+source.name()+" "+col+" "+row);
 
         case MOVE_PICKB:
         case MOVE_BRIDGE_END:
 		case MOVE_DROPB:
-	        return (ind+D.findUnique(op) + " " + col + " " + row);
+	        return (opname+ col + " " + row);
 
 		case MOVE_PICK:
-            return (ind+D.findUnique(op) + " "+D.findUnique(source.ordinal()+100));
+            return (opname+D.findUnique(source.ordinal()+100));
 
         case MOVE_DROP:
-             return (ind+D.findUnique(op) + " "+D.findUnique(source.ordinal()+100));
+             return (opname+D.findUnique(source.ordinal()+100));
 
         case MOVE_START:
-            return (ind+"Start P" + player);
+            return (indx+"Start P" + player);
 
         default:
-            return (ind+D.findUnique(op));
+            return (opname);
         }
     }
 

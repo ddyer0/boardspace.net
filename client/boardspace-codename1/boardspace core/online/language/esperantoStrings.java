@@ -11,4 +11,4 @@ import lib.InternationalStrings;
 //
 public class esperantoStrings extends InternationalStrings
 {  public esperantoStrings() { name = "esperanto"; }
-	}
+}

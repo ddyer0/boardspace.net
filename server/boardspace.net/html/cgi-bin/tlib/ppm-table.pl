@@ -1,4 +1,4 @@
-
+﻿
 use CGI qw(:standard);
 use CGI::Carp qw( fatalsToBrowser );
 use Mysql;
@@ -54,7 +54,6 @@ sub ppm_table()
 {
 	my ($dbh,$months,$nitems,$mode,$retired,$leaguesize,$brief) = @_;
 	
-	my $t = &current_time_string();
 	if($months=='') { $months=$'retire_months; }
 	if($nitems=='') { $nitems=100; }
 	my $rtestdir = $retired ? "<" : ">=";
@@ -75,8 +74,7 @@ sub ppm_table()
 	my $ptype = $retired ? "Retired" : "Regular";
 	my $showall=0;
 #print "$query<br>\n";
-	my $tit = &trans("Players per million of population, active over the previous #1 months",$months);
-	print "<p><center><TABLE align=center BORDER=0 CELLPADDING=2 CELLSPACING=4 title=$tit";
+	print "<p><center><TABLE align=center BORDER=0 CELLPADDING=2 CELLSPACING=4";
 
         my $minp = ($mode eq 'master') ? 1 : 3;
 

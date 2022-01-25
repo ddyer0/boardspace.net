@@ -297,7 +297,7 @@ class EntrapmentBoard extends squareBoard<EntrapmentCell> implements BoardProtoc
      *  */
     public void copyFrom(EntrapmentBoard from_b)
     {	super.copyFrom(from_b);
-    	revision = from_b.revision;
+    	revision = from_b.revision;  // not redundant, keep this
     	randomKey = from_b.randomKey;
         robotDepth = from_b.robotDepth;
         pickedObject = from_b.pickedObject;

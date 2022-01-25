@@ -98,6 +98,10 @@
 #include <fcntl.h>
 #include <io.h>
 #define fcntl ioctlsocket
+#ifdef EWOULDBLOCK
+#undef EWOULDBLOCK
+#endif
+
 #define EWOULDBLOCK WSAEWOULDBLOCK 
 #define FILESEPARATOR '\\'
 #else

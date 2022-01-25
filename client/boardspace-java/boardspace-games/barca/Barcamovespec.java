@@ -21,7 +21,7 @@ public class Barcamovespec extends commonMove
     			"Pickb", MOVE_PICKB,
     			"Dropb", MOVE_DROPB,
     			"Move", MOVE_FROM_TO);
-  }
+    }
     //
     // adding these makes the move specs use Same_Move_P instead of == in hash tables
     //needed when doing chi square testing of random move generation, but possibly
@@ -205,8 +205,8 @@ public class Barcamovespec extends commonMove
     by the constructors, and only secondarily human readable */
     public String moveString()
     {
-		String ind = (index() >= 0) ? (index() + " ") : "";
-		String opname = D.findUnique(op)+" ";
+		String indx = indexString();
+		String opname = indx+D.findUnique(op)+" ";
 
         // adding the move index as a prefix provides numnbers
         // for the game record and also helps navigate in joint
@@ -214,20 +214,20 @@ public class Barcamovespec extends commonMove
         switch (op)
         {
         case MOVE_PICKB:
-	        return (ind+opname+ from_col + " " + from_row);
+	        return (opname+ from_col + " " + from_row);
 
 		case MOVE_DROPB:
-	        return (ind+opname+  to_col + " " + to_row);
+	        return (opname+  to_col + " " + to_row);
 
         case MOVE_FROM_TO:
-	        return (ind+opname + from_col + " " + from_row+" "+to_col + " " + to_row);
+	        return (opname + from_col + " " + from_row+" "+to_col + " " + to_row);
 
         case MOVE_START:
-            return (ind+"Start P" + player);
+            return (indx+"Start P" + player);
 
         default:
-        	return (ind+opname);
+        	return (opname);
         }
     }
-    	
+
 }

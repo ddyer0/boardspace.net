@@ -312,51 +312,50 @@ public class OnedayMovespec extends commonMPMove implements OnedayConstants
     by the constructors, and are also human readable */
     public String moveString()
     {
-		String ind = (index() >= 0) ? (index() + " ") : "";
-		String opname = D.findUnique(op);
+		String indx = indexString();
+		String opname = indx+D.findUnique(op)+" ";
         // adding the move index as a prefix provides numnbers
         // for the game record and also helps navigate in joint
         // review mode
         switch (op)
         {
         case MOVE_RUN:
-        	return(ind+opname+" "+timeStep);
+        	return(opname+timeStep);
         	
         case MOVE_BOARD:
         case MOVE_EXIT:
-        	return(ind+opname
-        				+" "+timeStep);
+        	return(opname+timeStep);
         	
         case MOVE_WALK:
         	
-        	return(ind+opname
-        				+" "+timeStep
+        	return(opname
+        				+ timeStep
         				+" "+location.getStation().getUid()
         				+" "+location.getLine().getUid()
         				+" "+location.getPlatform().getUid());
         	
         case EPHEMERAL_PICK:
         case MOVE_PICK:
-  	        return (ind+opname +" "+source.shortName+ " " + from_col + " " + from_row);
+  	        return (opname + source.shortName+ " " + from_col + " " + from_row);
 		case MOVE_DROP:
 		case EPHEMERAL_DROP:
-	        return (ind+opname+ " "+source.shortName+" " + to_col + " " + to_row);
+	        return (opname + source.shortName+" " + to_col + " " + to_row);
 		case EPHEMERAL_TO_RACK:
 		case MOVE_TO_RACK:
-			return(ind+opname +" "+ to_col + " " + to_row);
+			return(opname + to_col + " " + to_row);
 		case MOVE_TO_RACK_AND_DISCARD:
-			return(ind+opname +" "+source.shortName+" " + from_col + " " + from_row
+			return(opname + source.shortName+" " + from_col + " " + from_row
 					+ " " + to_col + " " + to_row+ " "+discard);
 		case MOVE_TO_DISCARD:
-			return(ind+opname+" "+ source.shortName+" " + from_col + " " + from_row
+			return(opname+ source.shortName+" " + from_col + " " + from_row
 					+" "+discard);
 
         case MOVE_START:
-            return (ind+"Start P" + player);
+            return (indx+"Start P" + player);
 
         default:
 
-            return (ind+opname);
+            return (opname);
         }
     }
 

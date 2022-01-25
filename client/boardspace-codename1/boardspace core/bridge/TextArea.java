@@ -14,6 +14,7 @@ import com.codename1.ui.Form;
 import com.codename1.ui.Graphics;
 import com.codename1.ui.geom.Dimension;
 
+
 // this is unused as long as we don't reinstate the window based chat
 
 public class TextArea extends com.codename1.ui.TextArea 
@@ -23,9 +24,48 @@ public class TextArea extends com.codename1.ui.TextArea
 	public Color getForeground() { return(new Color(getStyle().getFgColor())); }
 	public void startEditing() { }
 	public void startEditingAsync() { }
+	/*
+	public void showInfo(String msg)
+	{
+        Form form = Display.getInstance().getCurrent();
+            Container contentPane = form.getContentPane();
+            if (!contentPane.contains(this)) {
+                contentPane = form;
+            }
+        Style contentPaneStyle = contentPane.getStyle();
+        int vkbHeight = form.getInvisibleAreaUnderVKB();
+        int h = getHeight();
+        int scroll = contentPane.getScrollY();
+        int absolute = contentPane.getAbsoluteY();
+        int pad = contentPaneStyle.getPaddingTop();
+        int minY = absolute + scroll + pad;
+        int disph = Display.getInstance().getDisplayHeight();
+        int maxH = disph - minY - vkbHeight;
+        int y = getAbsoluteY() + getScrollY();
+        G.infoBox(msg,"vpbHeight "+vkbHeight+"\nHeight = "+h
+        		+ "\nminY = "+minY
+        		+ "\nmaxH = "+maxH
+        		+ "\ny = "+y
+        		+ "\nabsolute = "+absolute
+        		+ "\nscroll = "+scroll
+        		+ "\npad = "+pad
+        		+ "\ndispH = "+disph
+        		+ "\nthis = "+this
+        		+ "\ncontent = "+contentPane
+        		
+        		);
+        		 
+	}
+	*/
 	public void pointerReleased(int x ,int y) 
 	{ if(isEditable()) 
-		{ super.pointerReleased(x,y);  
+		{ 
+
+        //showInfo("Start editing");
+ 		super.pointerReleased(x,y);  
+ 		//showInfo("In Editing");
+
+		
 		}
 	}
 	
@@ -196,6 +236,7 @@ public class TextArea extends com.codename1.ui.TextArea
 	public void actionPerformed(ActionEvent evt) {
 		if(isSingleLineTextArea())	// only if we're a single line
 		{
+		//showInfo("close editing");
 		if(okCommand!=null)	// and we know what the ok command is.
 		{	Form upd = Display.getInstance().getCurrent();		// get the current form
 		    upd.dispatchCommand(okCommand,new com.codename1.ui.events.ActionEvent(okCommand));

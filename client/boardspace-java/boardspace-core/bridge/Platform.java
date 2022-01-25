@@ -38,6 +38,7 @@ import java.util.TimeZone;
 
 import javax.swing.JCheckBox;
 import javax.swing.JOptionPane;
+import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.UIManager;
 import javax.swing.plaf.FontUIResource;
@@ -351,7 +352,22 @@ public static synchronized Object MakeInstance(String classname)
 		message.setEditable(true);
 	    JOptionPane.showMessageDialog(null, message, caption, JOptionPane.INFORMATION_MESSAGE);
 	}
-	
+	public static String textAreaDialog(Object obj, String title, String text) {
+		    if(title == null) {
+		        title = "Your input";
+		    }
+		    JTextArea textArea = new JTextArea(text);
+		    textArea.setColumns(30);
+		    textArea.setRows(10);
+		    textArea.setLineWrap(true);
+		    textArea.setWrapStyleWord(true);
+		    textArea.setSize(textArea.getPreferredSize().width, textArea.getPreferredSize().height);
+		    int ret = JOptionPane.showConfirmDialog((Component) obj, new JScrollPane(textArea), title, JOptionPane.OK_OPTION);
+		    if (ret == 0) {
+		        return textArea.getText();
+		    } 
+		    return null;
+		}
 
     static public void showDocument(String u)
     {	

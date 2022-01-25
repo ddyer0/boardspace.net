@@ -1,6 +1,7 @@
 package online.game;
 
 import bridge.*;
+import bridge.File;
 import common.Crypto;
 import common.GameInfo;
 import online.common.*;
@@ -1208,7 +1209,7 @@ public class Game extends commonPanel implements PlayConstants,Opcodes,DeferredE
         	//
         	// x2 203 1496 1 1 2355 toks 1
         	// x3 203 1498 2 0 2 Dumbot 1000
-        	
+        	Plog.log.addLog("echo intro ",fullMsg);
  
         	int tempID = G.IntToken(myST);
         	int haspw = G.IntToken(myST);
@@ -2552,8 +2553,10 @@ public class Game extends commonPanel implements PlayConstants,Opcodes,DeferredE
         	  { args += "&u"+idx+"=" + pl.uid;
         	    idx++;
         	  }}
+        	if(!G.offline()) { 
             String fetch = rankingURL + args;
             Http.postAsyncUrl(serverName,fetch,"",null);
+        			}
             //G.print("fetch "+fetch);
             startRecorded = true;
         }
@@ -2759,6 +2762,16 @@ public class Game extends commonPanel implements PlayConstants,Opcodes,DeferredE
 		boolean zeroOrigin = globalGameCap>=2;
 		if(order>=1000) { order = order%1000; /* compatibility with old mobiles 2.71 and before */ }
 		int rev = 0;
+		boolean revKnown = false;
+		/*
+		 note that this "newplayer" message is received twice, once
+		 when the connection is established, and a second time when
+		 the player announces himself.  The second time around, they
+		 also supply the rules revision they are playing.  This following
+		 bit is crucial to down-revise the rules to the lowest value.
+		 This whole dance allows bugs to be fixed in a regression free 
+		 manner.
+		 */
 		if(myST.hasMoreTokens()) 
 			{ String revString = myST.nextToken();
 			  rev = G.IntToken(revString);
@@ -2766,6 +2779,7 @@ public class Game extends commonPanel implements PlayConstants,Opcodes,DeferredE
 			  if((b!=null) && !startplaying_called) 
 			  	{ // do this only on the initial connection before the game starts.
 				  b.setClientRevisionLevel(rev);
+				  revKnown = rev>=0;
 			  	}
 			}		
 		G.Assert((order>=-1)&&(order<=6),"bad order %s",order);
@@ -2775,7 +2789,7 @@ public class Game extends commonPanel implements PlayConstants,Opcodes,DeferredE
     	commonPlayer p = createPlayer(chan,name,order,uid,understandsTime,zeroOrigin);
 		theChat.setUser(chan,name);		// and tell the chat his name too
 		p.readyToPlayTime = G.Date();
-		p.readyToPlay = true;
+		p.readyToPlay |= revKnown;		// we're only ready to play once the revision level is known
 		p.launchUser = findLaunchUser(p);
 		addPlayerConnection(p,p);	// reorder
 	
@@ -3922,7 +3936,7 @@ public class Game extends commonPanel implements PlayConstants,Opcodes,DeferredE
                 if(p!=null)
                 {
                 some = true;
-                if (started ? !p.startedToPlay : !p.readyToPlay )
+                if (started ? !p.startedToPlay : !p.readyToPlay)
                     {
                 		return (false);
                 		}

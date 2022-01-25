@@ -18,7 +18,7 @@ import online.search.*;
  * @author ddyer
  *
  */
-public class PontePlay extends commonRobot<PonteBoard> implements Runnable,
+public class PontePlay extends commonRobot<PonteBoard> implements Runnable, PonteConstants,
     RobotProtocol
 {   
 	private boolean UCT_WIN_LOSS = false;			// if true, score montebot strictly on win/loss
@@ -30,7 +30,6 @@ public class PontePlay extends commonRobot<PonteBoard> implements Runnable,
 	private int playRate = 80000;
 	private int weakPlayRate = 4000;
 	private PonteBoard GameBoard = null;			// this is the "real" game board we're starting from
- 
     /* constructor */
     public PontePlay()
     {
@@ -94,6 +93,7 @@ public class PontePlay extends commonRobot<PonteBoard> implements Runnable,
         GameBoard = (PonteBoard) gboard;
         board = (PonteBoard)GameBoard.cloneBoard();
         MONTEBOT = true;
+        terminalNodeOptimize = true;
         switch(strategy)
         {
         case WEAKBOT_LEVEL:
@@ -113,9 +113,11 @@ public class PontePlay extends commonRobot<PonteBoard> implements Runnable,
         	break;
 
         case MONTEBOT_LEVEL:
-        	optimizeRandom = false;
+         	bridgeMultiplier = 2.0;
+        	optimizeRandom = true;
         	timePerMove = 15;
-        	playRate = 80000;
+        	playRate = 130000;
+        	terminalNodeOptimize = false;
         	break;
         default: throw G.Error("Not expecting strategy %s",strategy);
         }
@@ -210,6 +212,7 @@ public class PontePlay extends commonRobot<PonteBoard> implements Runnable,
         monte_search_state.max_random_moves_per_second = 180000;
         monte_search_state.maxThreads = DEPLOY_THREADS;
         G.print("Optimize Random "+optimizeRandom);
+        monte_search_state.terminalNodeOptimization = terminalNodeOptimize;
         move = monte_search_state.getBestMonteMove();
   		}
       finally { ; }

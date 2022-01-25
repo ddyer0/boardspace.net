@@ -4,3 +4,40 @@ Steps to configure a server.
 Suppose you have a virgin L.A.M.P server with only the stock starting software installed.
 These are things you need to do to make it boardspace.
 
+SSH:
+
+Disable ssh logins from root.  When doing root things, you will have to login to a 
+user account first, then su to root.
+
+Change the ssh port.  There are random bots trolling the standard port, tying passwords, all
+the fucking time.
+
+MYSQL:
+
+Disable mysql login from remote hosts.  Instead, to do mysql things remotely, use
+the path that uses ssh to a user account, tunneled to mysql.  Mysqladmin supports this.
+
+Create and install the databases.  The "boardspace" database us all that's reqired, 
+but the phpbb database is also used.  The verion of phpbb used on boardspace is ancient,
+but has been specially modified to share boardspace' login information.  If the php database
+is not installed, some of the boardspace registration and account editing scripts will malfunction.
+
+YUM packages
+
+cpan
+xinitd
+libgd (installed by steadfast)
+uri
+unicode (huge, multipart)
+Encode
+Unicode::Escape
+
+PERL cpan packages
+
+Bundle::Mysql
+force install Mysql
+edit httpd.conf to allow server side includes
+perl cpan install GD GD::SVG GD::Graph
+procmail (contains lockfile)
+
+CRON

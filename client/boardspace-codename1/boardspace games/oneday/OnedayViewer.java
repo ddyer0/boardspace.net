@@ -65,7 +65,7 @@ public class OnedayViewer extends CCanvas<OnedayCell,OnedayBoard> implements One
     				default: throw G.Error("Not expecting move %s",m);
     				case EPHEMERAL_PICK: 
     				case EPHEMERAL_DROP:
-    						break;	// remove
+						return(null);		// remove
     				case EPHEMERAL_TO_RACK:
     					m.op = MOVE_TO_RACK;	// convert to a non-ephemeral move
 			break;			
@@ -484,11 +484,8 @@ public class OnedayViewer extends CCanvas<OnedayCell,OnedayBoard> implements One
             	d.setCurrentCenter(cx,cy);	
     		}
     	}
-    	else
-    	{
         	c.setCurrentCenter( cx, cy);	
 
-    	}
     	String label = "";
     	if(b.isDest(c)||b.isAnySource(c)) { label = Station.HOTFRAME; } 
     	
@@ -575,6 +572,7 @@ public class OnedayViewer extends CCanvas<OnedayCell,OnedayBoard> implements One
     	if(hot) { xp-=CARDSIZE/6; yp-=CARDSIZE/6; }
     	ch.drawChip(g,this,CARDSIZE,xp,yp,hot?Station.HOTFRAME:null);
      }
+
 
 
     /** this is used by the game controller to supply entertainment strings to the lobby */
@@ -1257,7 +1255,14 @@ public class OnedayViewer extends CCanvas<OnedayCell,OnedayBoard> implements One
      * 
      */
     public commonMove EditHistory(commonMove nmove)
+    {	if(nmove.op==NORMALSTART)
     {
+    		commonMove prev = History.top();
+    		// coerce the time for the normalstart to be consistent 
+    		// 
+    		nmove.setElapsedTime(prev.elapsedTime());
+ 
+    		}
     	return(EditHistory(nmove,(nmove.op==NORMALSTART) || (nmove.op==MOVE_RUN)));
     }
 
@@ -1400,9 +1405,6 @@ private void playSounds(commonMove m)
             		if(hitObject==OneDayId.RackLocation)
             		{ 	// do the move as an atomic.  transmit it.  replayMode.Replay suppresses the local animation
             			PerformAndTransmit("ERack "+cell.col+" "+cell.row,true,replayMode.Replay);
-            			// this sets the time for the ephemeral move.  Recording the time was inhibited
-            			// by the use of .Replay
-            			History.top().setElapsedTime((int)getActivePlayer().elapsedTime);
             		}
         		 }
         	 }

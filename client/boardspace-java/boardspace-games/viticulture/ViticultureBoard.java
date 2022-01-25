@@ -148,7 +148,6 @@ class ViticultureBoard extends RBoard<ViticultureCell> implements BoardProtocol,
 										// revision 150 fixed scholar "both" option with oracle drawing cards
 
 public int getMaxRevisionLevel() { return(REVISION); }
-	public int getActiveRevisionLevel() { return(revision); }
 	PlayerBoard pbs[] = null;		// player boards
 	public PlayerBoard getPlayerBoard(int n) 
 	{ 	PlayerBoard p[] =pbs;

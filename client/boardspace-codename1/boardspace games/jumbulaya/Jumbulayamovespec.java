@@ -397,8 +397,8 @@ public class Jumbulayamovespec extends commonMPMove
     by the constructors, and only secondarily human readable */
     public String moveString()
     {
-        String ind = (index() >= 0) ? (index() + " ") : "";
-        String opname = ind+D.findUnique(op)+" ";
+        String indx = indexString();
+        String opname = indx+D.findUnique(op)+" ";
         // adding the move index as a prefix provides numnbers
         // for the game record and also helps navigate in joint
         // review mode
@@ -416,7 +416,7 @@ public class Jumbulayamovespec extends commonMPMove
 		case MOVE_JUMBULAYA:
 			{
 	      	StringBuilder b = new StringBuilder();
-	      	b.append(ind);
+	      	b.append(indx);
 	      	b.append("Jumbulaya ");
 	      	b.append(word);
 	      	b.append(" ");
@@ -447,7 +447,7 @@ public class Jumbulayamovespec extends commonMPMove
         case MOVE_PLAYWORD:
         	return G.concat(opname ,to_col," ",to_row," ",word);
         case MOVE_START:
-            return G.concat(ind,"Start P",player);
+            return G.concat(indx,"Start P",player);
         case MOVE_SEE:
         case MOVE_SHOW:
         	return G.concat(opname,to_col,((to_row==0)?" false" : " true"));

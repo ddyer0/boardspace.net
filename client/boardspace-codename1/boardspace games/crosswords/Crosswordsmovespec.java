@@ -325,7 +325,7 @@ public class Crosswordsmovespec extends commonMPMove implements CrosswordsConsta
     by the constructors, and only secondarily human readable */
     public String moveString()
     {
-        String ind = (index() >= 0) ? (index() + " ") : "";
+        String ind = indexString();
         String opname = ind+D.findUnique(op)+" ";
 
         // adding the move index as a prefix provides numnbers

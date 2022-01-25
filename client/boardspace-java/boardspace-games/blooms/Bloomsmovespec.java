@@ -192,7 +192,7 @@ public class Bloomsmovespec extends commonMove
         	return (D.findUnique(op));
         }
     }
-
+    
     /**
      * shortMoveText lets you return colorized text or mixed text and graphics.
      * @see lib.Text
@@ -203,7 +203,7 @@ public class Bloomsmovespec extends commonMove
      */
     public Text shortMoveText(commonCanvas v)
     {  	switch (op)
-        {
+    {
         case MOVE_PICKB:
             return TextChunk.create(""+ to_col + to_row+">");
 
@@ -239,29 +239,29 @@ public class Bloomsmovespec extends commonMove
     by the constructors, and only secondarily human readable */
     public String moveString()
     {
-		String ind = (index() >= 0) ? (index() + " ") : "";
-		String opname = D.findUnique(op)+" ";
+		String indx = indexString();
+		String opname = indx+D.findUnique(op)+" ";
         // adding the move index as a prefix provides numnbers
         // for the game record and also helps navigate in joint
         // review mode
         switch (op)
         {
         case MOVE_PICKB:
-	        return (ind+opname+ to_col + " " + to_row);
+	        return (opname+ to_col + " " + to_row);
 
 		case MOVE_DROPB:
-	        return (ind+opname+source.shortName+" " + to_col + " " + to_row);
+	        return (opname+source.shortName+" " + to_col + " " + to_row);
 
         case MOVE_DROP:
         case MOVE_PICK:
-            return (ind+opname+source.shortName);
+            return (opname+source.shortName);
 
         case MOVE_START:
-            return (ind+"Start P" + player);
+            return (indx+"Start P" + player);
 
         default:
-            return (ind+opname);
+            return (opname);
         }
     }
-  
+
 }

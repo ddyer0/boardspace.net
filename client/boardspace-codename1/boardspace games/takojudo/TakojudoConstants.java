@@ -14,11 +14,11 @@ public interface TakojudoConstants
        "Tako Judo",
        EndGameAsLoss,
        VictoryCondition,
-       TakojudoPlayState,
+       TakojudoPlayState,   	
     };
     static String TakojudoStringPairs[][]=
     {
-    	{"Tako Judo_family","Tako Judo"},
+    	{"TakoJudo_family","Tako Judo"},
     	{"TakoJudo","Tako Judo"},
     	{"TakoJudo_variation","standard Tako Judo"},
     	
@@ -40,7 +40,7 @@ public interface TakojudoConstants
     	;
     	public String shortName() { return(name()); }
 
-  }
+   }
     public enum TakojudoState implements BoardState
     {	PUZZLE_STATE(PuzzleStateDescription),
     	RESIGN_STATE(ResignStateDescription),

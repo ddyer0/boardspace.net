@@ -207,8 +207,8 @@ public class Ymovespec
     by the constructors, and only secondarily human readable */
     public String moveString()
     {
-		String ind = (index() >= 0) ? (index() + " ") : "";
-		String opname = D.findUnique(op)+" ";
+		String indx = indexString();
+		String opname = indx+D.findUnique(op)+" ";
         // adding the move index as a prefix provides numnbers
         // for the game record and also helps navigate in joint
         // review mode
@@ -216,17 +216,17 @@ public class Ymovespec
         {
         case MOVE_PICKB:
 		case MOVE_DROPB:
-	        return (ind+opname + to_col + " " + to_row);
+	        return (opname + to_col + " " + to_row);
 
         case MOVE_DROP:
         case MOVE_PICK:
-            return (ind+opname+source.shortName);
+            return (opname+source.shortName);
 
         case MOVE_START:
-            return (ind+"Start P" + player);
+            return (indx+"Start P" + player);
 
         default:
-            return (ind+opname);
+            return (opname);
         }
     }
 

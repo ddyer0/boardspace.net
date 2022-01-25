@@ -22,7 +22,10 @@ public interface ViticultureConstants
 
    	enum ScoreType
    	{
-   		WineOrder,WineSale,YellowCard,BlueCard,OrangeCard,Star,Other,
+   		WineOrder,WineSale,
+  		OrangeCard,Star,Other,  	
+   		ReceiveYellow,PlayYellow,ScoreYellow,
+   		ReceiveBlue,PlayBlue,ScoreBlue,
    	}
 	static String NextSeasons[] = {
 			VitiSummer,

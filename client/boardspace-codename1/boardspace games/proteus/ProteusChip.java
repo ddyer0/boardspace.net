@@ -4,11 +4,6 @@ import lib.ImageLoader;
 import lib.OStack;
 import lib.Random;
 import online.game.chip;
-import proteus.ProteusConstants.Goal;
-import proteus.ProteusConstants.Move;
-import proteus.ProteusConstants.PieceColor;
-import proteus.ProteusConstants.Shape;
-import proteus.ProteusConstants.Trade;
 
 
 class ChipStack extends OStack<ProteusChip>
@@ -21,7 +16,7 @@ class ChipStack extends OStack<ProteusChip>
  * on the board are pieces too.
  * 
  */
-public class ProteusChip extends chip<ProteusChip>
+public class ProteusChip extends chip<ProteusChip> implements ProteusConstants
 {	
 	private static Random r = new Random(343535);	// this gives each chip a unique random value for Digest()
 	private static ChipStack allChips = new ChipStack();

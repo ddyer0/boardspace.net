@@ -153,7 +153,7 @@ public class ArimaaMovespec extends commonMove implements ArimaaConstants
         case MOVE_UNKNOWN:
         	throw G.Error("Can't parse %s", cmd);
         case MOVE_RACK_BOARD:	// a robot move from the rack to the board
-            source = ArimaaId.valueOf(msg.nextToken());	// white rack or black rack
+            source = ArimaaId.find(msg.nextToken());	// white rack or black rack
             from_col = '@';						// always
             from_row = G.IntToken(msg);			// index into the rack
  	        to_col = G.CharToken(msg);			// destination cell col
@@ -192,13 +192,13 @@ public class ArimaaMovespec extends commonMove implements ArimaaConstants
             break;
 
         case MOVE_PICK:
-        	source = ArimaaId.valueOf(msg.nextToken());
+        	source = ArimaaId.find(msg.nextToken());
             from_col = '@';
             from_row = G.IntToken(msg);
             break;
             
         case MOVE_DROP:
-            source = ArimaaId.valueOf(msg.nextToken());
+            source = ArimaaId.find(msg.nextToken());
             to_col = '@';
             to_row = G.IntToken(msg);
             break;
@@ -281,42 +281,42 @@ public class ArimaaMovespec extends commonMove implements ArimaaConstants
     by the constructors, and are also human readable */
     public String moveString()
     {
-		String ind = (index() >= 0) ? (index() + " ") : "";
-		String opname = D.findUnique(op)+" ";
+		String indx = indexString();
+		String opname = indx+D.findUnique(op)+" ";
         // adding the move index as a prefix provides numnbers
         // for the game record and also helps navigate in joint
         // review mode
         switch (op)
         {
         case MOVE_PICKB:
-	        return G.concat(ind,opname , from_col , " ", from_row);
+	        return G.concat(opname , from_col , " ", from_row);
 
 		case MOVE_DROPB:
-	        return G.concat(ind+opname  , to_col , " " , to_row);
+	        return G.concat(opname  , to_col , " " , to_row);
 
 		case MOVE_RACK_BOARD:
-			return G.concat(ind,opname  ,source.name(), " ",from_row
+			return G.concat(opname  ,source.name(), " ",from_row
 					, " " , to_col , " " , to_row);
 		case MOVE_PUSH:
 		case MOVE_PULL:
-			return G.concat(ind,opname, from_col , " " , from_row
+			return G.concat(opname, from_col , " " , from_row
 					, " " , to_col , " " , to_row, " ",pushPullDirection);
 		case MOVE_BOARD_BOARD:
 		case MOVE_FINISH_PULL:
 		case MOVE_FINISH_PUSH:
-			return G.concat(ind,opname , from_col , " " , from_row
+			return G.concat(opname , from_col , " " , from_row
 					, " " , to_col , " " , to_row);
         case MOVE_PICK:
-            return G.concat(ind,opname ,source.name(), " ",from_row);
+            return G.concat(opname ,source.name(), " ",from_row);
 
         case MOVE_DROP:
-             return G.concat(ind,opname,source.name(), " ",to_row);
+             return G.concat(opname,source.name(), " ",to_row);
 
         case MOVE_START:
-            return G.concat(ind,"Start P" , player);
+            return G.concat(indx,"Start P" , player);
 
         default:
-        	return G.concat(ind,opname);
+        	return G.concat(opname);
         }
     }
 

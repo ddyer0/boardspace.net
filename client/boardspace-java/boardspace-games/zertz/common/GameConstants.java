@@ -113,13 +113,13 @@ public interface GameConstants
     };
 
     // move commands, actions encoded by movespecs
-    static final int MOVE_BtoB = 1;
-    static final int MOVE_BtoR = 2;
-    static final int MOVE_RtoR = 3;
-    static final int MOVE_RtoB = 4;
-    static final int MOVE_R_PLUS = 6;
-    static final int MOVE_R_MINUS = 7;
-    static final int MOVE_SETBOARD = 8;
+    static final int MOVE_BtoB = 101;
+    static final int MOVE_BtoR = 102;
+    static final int MOVE_RtoR = 103;
+    static final int MOVE_RtoB = 104;
+    static final int MOVE_R_PLUS = 106;
+    static final int MOVE_R_MINUS = 107;
+    static final int MOVE_SETBOARD = 108;
     static final String Zertz_SGF = "22"; // sgf game number allocated for zertz
     static final String SGF_GAME_VERSION = "2";
     

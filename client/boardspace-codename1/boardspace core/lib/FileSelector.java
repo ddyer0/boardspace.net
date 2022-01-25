@@ -1,6 +1,8 @@
 package lib;
 
 import bridge.*;
+import bridge.File;
+
 import com.codename1.ui.geom.Dimension;
 import net.sf.jazzlib.ZipEntry;
 import net.sf.jazzlib.ZipInputStream;

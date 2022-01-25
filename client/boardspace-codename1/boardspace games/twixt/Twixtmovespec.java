@@ -251,19 +251,15 @@ public class Twixtmovespec extends commonMove implements TwixtConstants
     by the constructors, and only secondarily human readable */
     public String moveString()
     {
-        String ind = "";
-
-        if (index() >= 0)
-        {
-            ind += (index() + " ");
-        }
+		String indx = indexString();
+		String opname = indx+D.findUnique(op)+" ";
         // adding the move index as a prefix provides numnbers
         // for the game record and also helps navigate in joint
         // review mode
         switch (op)
         {
         case MOVE_PICKB:
-	        return (ind+D.findUnique(op) +" " + from_col + " " + from_row + ((dest==null) ? "" : " "+dest.shortName));
+	        return (opname+ from_col + " " + from_row + ((dest==null) ? "" : " "+dest.shortName));
 
 		case MOVE_DROPB:
 			{
@@ -272,31 +268,31 @@ public class Twixtmovespec extends commonMove implements TwixtConstants
 			{
 				for(int i=0;i<target.size();i++) { annotations += " "+target.elementAt(i).id.shortName; }
 			}
-	        return (ind+D.findUnique(op) +" "+ to_col + " " + to_row+ annotations);
+	        return (opname+ to_col + " " + to_row+ annotations);
 			}
         case MOVE_PICK:
         	switch(source)
         	{
         	case Red_Chip_Pool:
         	case Black_Chip_Pool:
-        		return (ind+D.findUnique(op) + " "+source.shortName+
+        		return (opname+source.shortName+
                 		" "+from_row);
         	default:
-        		return (ind+D.findUnique(op) + " "+source.shortName);
+        		return (opname+source.shortName);
         	}
             
        	
         case MOVE_DROP:
-            return (ind+D.findUnique(op) + " "+dest.shortName);
+            return (opname+dest.shortName);
             
         case MOVE_FROM_TO:
-            return (ind+D.findUnique(op) + from_col+" "+from_row+" "+dest.shortName+" "+to_row);
+            return (opname + from_col+" "+from_row+" "+dest.shortName+" "+to_row);
 
         case MOVE_START:
-            return (ind+"Start P" + player);
+            return (indx+"Start P" + player);
 
         default:
-           return (ind+D.findUnique(op));
+           return (opname);
         }
     }
 

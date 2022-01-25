@@ -1182,7 +1182,8 @@ public class OnedayBoard extends RBoard<OnedayCell> implements BoardProtocol,One
     	}
     }
     public boolean Execute(commonMove mm,replayMode replay)
-    { 	switch(variation)
+    { 	
+    	switch(variation)
     	{
     	default: throw G.Error("Not expecting %s",variation);
     	case Safari:	return(ExecuteSafari(mm,replay));

@@ -1,5 +1,57 @@
 #include "migs-declarations.h"
+#if 0
 
+  This is the server that provides communications among clients for boardspace.net and tantrix.com.  It evolved
+  from a very simple server that did very little more than transmit lines of text back and forth, as you might do
+  in a student proof of concept client/server.  Over time, many more features were added, but never enough at one
+  time to trigger a complete rewrite.  So remember, don't fix what's not broken.  This server is very reliable
+  and much higher performance than required by the current or any likely server load.
+
+    The basic transmission is still based on a line of text, but over time, the lines have acquired the ability
+    to restart games (both after crashes and when interrupted by the clients), log events and rotate the logs,
+    sequence numbers, checksums, encryption, and support for binary transmission.  
+
+    The key uglyness is that a "packet" is still terminated by a newline.
+
+    The server runs a few threads; one to multiplex I/O among the game clients, one to write logs, one to save games
+    in progress as an insurance against crashes or shutdowns, and one to save completed games.
+				     
+    The server maintains activity logs, by default at the level of connections, and rotates the logs based on a size
+    limit.   There are actually 3 separate logs, the general log, a security alert log, and a chat log.
+
+    The server maintains a "canonical state" for each game, which is used to start spectators, restart games that
+    were abandoned, or were in progress when the server is deliberately shut down or crashes.  Crashes are very rare.
+    These game states are dribbled out to a directory at a fixed rate, so if there were a zillion active games, the
+    rewrite activity in the game cache would remain the same, and potentially the saved state would lag behind 
+
+
+
+coventry 9/26/2008
+Files analyzed                 : 3
+Total LoC input to cov-analyze : 82401
+Functions analyzed             : 166
+Classes/structs analyzed       : 185
+Paths analyzed                 : 26027
+New defects found              : 108 Total
+                                   1 BUFFER OVERFLOW
+                                   3 LOGIC ERROR
+                                  85 MEMORY CORRUPTION
+
+    the played state.   This lag is unimportant given that the server never crashes and is rarely shut down deliberately.
+
+    The server does not interact with the mysql database in any way.  There are some vestiges of a plan to bundle
+    this interactions into the server, but they've never been completed.
+
+    Completed games are written to a directory specific to the game, but of course the location of those directories
+    is not a parameter supplied from the clients.
+
+Access Control
+
+     An external perl script validates the user's login, and creates a time-limited token that will allow a client
+     to connect.  Communications that don't start by presenting a token are closed and banned.  One of the irritants in the
+     network environment is random clients connecting, looking for proxy ports.
+				    
+#endif
 #if 0
 // coventry 9/26/2008
 Files analyzed                 : 3
@@ -5154,8 +5206,10 @@ void process_send_intro(char *data,User *u,char *seq)
 			  int r3=(key>>16)&0xff;
 			  int r4=(key>>24)&0xff;
 			  BOOLEAN passwordOk = ((idx4>0) && (strcmp(password,s->sessionURLs)==0));
-			  time_t now = time(NULL);	// system clock time, not uptime
-			  time_t nowtime = now;
+			  time_t realtime = time(NULL);
+			  int hitime = (int)(realtime /  1000000);
+			  int lowtime = (int)(realtime % 1000000);		// time_t mught be a long long, and will overflow on 19 January 2038
+			  unsigned int nowtime = (unsigned int)(realtime & 0xffffffff);	// overflow on jan 19 2035
 			  BOOLEAN passwordSupplied = strcmp(password,"<none>")!=0;
 			  // [3/2013]
 			  // don't allow connections as a player to sessions that are
@@ -5194,11 +5248,13 @@ void process_send_intro(char *data,User *u,char *seq)
 			   // a bit of obfuscation, encode the requirement for
 			   // encryption into the time. If serverlevel is 15
 			   // the java clients use this to decide.
-			  if(require_rng) { nowtime |= 1; } else { nowtime &= ~1; }
+			  if (require_rng) 
+				{ nowtime |= 1; lowtime |= 1; }
+				 else { nowtime &= ~1; lowtime &= ~1;  }
 
-			  lsprintf(u->tempBufSize,u->tempBufPtr,ECHO_INTRO_SELF "%d %d %d %d.%d.%d.%d %d.%d.%d.%d %d %d %d %d",
+			  lsprintf(u->tempBufSize,u->tempBufPtr,ECHO_INTRO_SELF "%d %d %d %d.%d.%d.%d %d.%d.%d.%d %d%06d %d %d %d",
 				  sessionNum,u->userNUM,SERVERID,
-				  r1,r2,r3,r4,b1,b2,b3,b4,nowtime,MAX_INPUT_BUFFER_SIZE,s->population,passw);
+				  r1,r2,r3,r4,b1,b2,b3,b4,hitime,lowtime,MAX_INPUT_BUFFER_SIZE,s->population,passw);
 			  }
 			  doEchoSelf(u,u->tempBufPtr,0);	// no sequence number here
 		
@@ -5206,7 +5262,8 @@ void process_send_intro(char *data,User *u,char *seq)
 			  {
 			  if(require_rng)
 			  {	  char rngbuf[SMALLBUFSIZE];
-				  // java clients have to construct identical strings.
+			   
+				  // java clients have to construct identical strings. nowtime must be an int
 				  lsprintf(sizeof(rngbuf),rngbuf,"%d.%d.%d.%d.%d",r1+1,r2+2,r3+3,r4+4,nowtime+2);
 				  init_rng_in(u,rngbuf);
 				  lsprintf(sizeof(rngbuf),rngbuf,"%d.%d.%d.%d.%d",r1+3,r2+6,r3+9,r4+12,nowtime+1);
@@ -5766,10 +5823,10 @@ void lockSomeOtherUserForSession(Session *S)
 }
 //
 // get a process lock on the session
-// format "338 1" or "338 0"
+// format "342 1" or "342 0"
 // always get back immediately either 338 0 or 338 1.
 // if you requested lock on and didn't get it, you will eventually
-// receive another 338 1.
+// receive another 342 1.
 // you must relinquish the lock when you are done.
 //
 void process_lock_game(char *data,User *u,char *seq)

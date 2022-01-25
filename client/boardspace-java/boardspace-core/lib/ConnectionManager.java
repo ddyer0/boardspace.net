@@ -212,13 +212,13 @@ public class ConnectionManager
     	serverID = G.IntToken(myST);
         sessionKey = myST.nextToken();
         ip = myST.nextToken();
-        String nowtime = myST.nextToken();		// server time of day
+        String nowtime = myST.nextToken();		// server time of day - overflow 32 bits 19 January 2038
         setBufSize(G.IntToken(myST));
         initialSessionPop=G.IntToken(myST);
         
         {	
             long now = G.Date();
-            long server_correction = Long.parseLong(nowtime,10);
+            long server_correction = G.LongToken(nowtime);
             serverGMT = (+1000 *  server_correction) - now;
 
             //System.out.println("Offset to GMT is "+(serverGMT/1000.0) + " seconds");
@@ -237,7 +237,7 @@ public class ConnectionManager
         }
         if(serverID>=15)
         	{	// has encryption option
-        	int uid = G.IntToken(nowtime);
+        	long uid = G.LongToken(nowtime);
         	if((uid&1)!=0)
         	{
         	int dot1 = sessionKey.indexOf('.',0);
@@ -248,7 +248,7 @@ public class ConnectionManager
         	int r3 = G.IntToken(sessionKey.substring(dot2+1,dot3));
         	int r4 = G.IntToken(sessionKey.substring(dot3+1));
         	
-        	myNetConn.initObf(r1,r2,r3,r4,uid);
+        	myNetConn.initObf(r1,r2,r3,r4,(int)uid);
             }
         	}
         if(serverID>=16)
@@ -379,10 +379,12 @@ public class ConnectionManager
 	            {
 	                password = "<none>";
 	            }
-	            // send SEND_INTRO to the server to register us.
+	            // send SEND_INTRO to the server to register us.  These args can't be changed
+	            // without coordinating with the server and all the existing clients.
 	            String msg = NetConn.SEND_INTRO + info.getInt(ROOMNUMBER) + " " +
 	                info.get(USERNAME) + "#" + info.getString(UID) + " " +
 	                info.getString(SERVERKEY) + " " + password + " " +
+	                "0" + " "+		// placeholder for a browser cookie we no longer use
 	                info.getString(BANNERMODE, "N") + " " +
 	                info.getString(UID, "");
 	            myNetConn.alwaysSendMessage(msg);	// bypass the normal sendmessage

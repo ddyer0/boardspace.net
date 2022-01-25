@@ -190,37 +190,33 @@ public class TumbleMovespec extends commonMove implements TumbleConstants
     by the constructors, and are also human readable */
     public String moveString()
     {
-        String ind = "";
-
-        if (index() >= 0)
-        {
-            ind += (index() + " ");
-        }
-        // adding the move index as a prefix provides numnbers
+		String indx = indexString();
+		String opname = indx+D.findUnique(op)+" ";
+       // adding the move index as a prefix provides numnbers
         // for the game record and also helps navigate in joint
         // review mode
         switch (op)
         {
 
         case MOVE_PICKB:
-	        return (ind+D.findUnique(op) + " " + from_col + " " + from_row+" "+originalHeight);
+	        return (opname + from_col + " " + from_row+" "+originalHeight);
 
 		case MOVE_DROPB:
-	        return (ind+D.findUnique(op) + " " + to_col + " " + to_row+" "+originalHeight);
+	        return (opname + to_col + " " + to_row+" "+originalHeight);
 
 		case MOVE_BOARD_BOARD:
-			return(ind+D.findUnique(op) + " " + from_col + " " + from_row+" " + to_col + " " + to_row);
+			return(opname+ from_col + " " + from_row+" " + to_col + " " + to_row);
         case MOVE_PICK:
-            return (ind+D.findUnique(op) + " "+source.shortName+ " "+from_row+" "+originalHeight);
+            return (opname+source.shortName+ " "+from_row+" "+originalHeight);
 
         case MOVE_DROP:
-             return (ind+D.findUnique(op) + " "+source.shortName+ " "+to_row+" "+originalHeight);
+             return (opname+source.shortName+ " "+to_row+" "+originalHeight);
 
         case MOVE_START:
-            return (ind+"Start P" + player);
+            return (indx+"Start P" + player);
 
         default:
-            return (ind+D.findUnique(op));
+            return (opname);
         }
     }
 

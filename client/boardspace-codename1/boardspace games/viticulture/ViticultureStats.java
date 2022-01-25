@@ -43,7 +43,7 @@ public class ViticultureStats implements ViticultureConstants
 		for(int lim = ss.size()-1; lim>=0; lim--)
 		{
 			ScoreEvent ev = ss.elementAt(lim);
-			categories[ev.type.ordinal()] += ev.change;
+			categories[ev.type.ordinal()] += ev.changeSummary();
 		}
 	}
 	static void printLegend(PrintStream out)

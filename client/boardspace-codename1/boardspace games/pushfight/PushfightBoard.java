@@ -391,6 +391,7 @@ class PushfightBoard extends squareBoard<PushfightCell> implements BoardProtocol
         case Push:
         case InitialPosition:
         case Confirm:
+        case GameAllButOver:
         case Resign:
             moveNumber++; //the move is complete in these states
             initMoves = 0;
@@ -603,7 +604,7 @@ class PushfightBoard extends squareBoard<PushfightCell> implements BoardProtocol
     			else {
     				// can't push, you lose
     				win[nextPlayer[whoseTurn]]=true;
-    				setState(PushfightState.Gameover);
+    				setState(PushfightState.GameAllButOver);
     			}
     		}
     		// otherwise continue in PushMove2 state
@@ -618,6 +619,7 @@ class PushfightBoard extends squareBoard<PushfightCell> implements BoardProtocol
     	case Draw_State:
     		setState(PushfightState.Gameover);
     		break;
+       	case GameAllButOver:
     	case Resign:
     		win[whoseTurn] = true;
     		setState(PushfightState.Gameover);
@@ -846,6 +848,7 @@ class PushfightBoard extends squareBoard<PushfightCell> implements BoardProtocol
 		case PushMove2:
 			return(targets.get(c)!=null || ((pickedObject!=null) && isSource(c)));
 		case Confirm:
+		case GameAllButOver:
 			return(isDest(c));
         default:
         	throw G.Error("Not expecting Hit Board state " + board_state);
@@ -1615,6 +1618,7 @@ class PushfightBoard extends squareBoard<PushfightCell> implements BoardProtocol
  		{
  		case Resign:
  		case Confirm:
+ 		case GameAllButOver:
  		case Draw_State:
  			all.push( Pushfightmovespec.create(MOVE_DONE,whoseTurn));		
  			break;

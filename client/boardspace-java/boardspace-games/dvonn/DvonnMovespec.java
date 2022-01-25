@@ -209,7 +209,7 @@ public class DvonnMovespec extends commonMove implements DvonnConstants
     /* construct a move string for this move.  These are the inverse of what are accepted
     by the constructors, and are also human readable */
     public Text shortMoveText(commonCanvas v)
-    {	
+    {
         switch (op)
         {
         case MOVE_PICKB:
@@ -284,32 +284,32 @@ public class DvonnMovespec extends commonMove implements DvonnConstants
     by the constructors, and are also human readable */
     public String moveString()
     {
-		String ind = (index() >= 0) ? (index() + " ") : "";
-		String opname = D.findUnique(op)+" ";
+		String indx = indexString();
+		String opname = indx+D.findUnique(op)+" ";
         // adding the move index as a prefix provides numnbers
         // for the game record and also helps navigate in joint
         // review mode
         switch (op)
         {
         case MOVE_PICKB:
-	        return (ind+opname +from_col + " " + from_row);
+	        return (opname +from_col + " " + from_row);
 
 		case MOVE_DROPB:
-	        return (ind+opname +  to_col + " " + to_row);
+	        return (opname +  to_col + " " + to_row);
 
 		case MOVE_BOARD_BOARD:
-			return(ind+opname + from_col + " " + from_row+" " + to_col + " " + to_row);
+			return(opname + from_col + " " + from_row+" " + to_col + " " + to_row);
         case MOVE_PICK:
-            return (ind+opname +source.shortName+ " "+from_row);
+            return (opname +source.shortName+ " "+from_row);
 
         case MOVE_DROP:
-             return (ind+opname +source.shortName+ " "+to_row);
+             return (opname +source.shortName+ " "+to_row);
 
         case MOVE_START:
-            return (ind+"Start P" + player);
+            return (indx+"Start P" + player);
 
         default:
-            return (ind+opname);
+            return (opname);
         }
     }
 }

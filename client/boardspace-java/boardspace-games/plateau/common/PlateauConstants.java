@@ -161,11 +161,11 @@ public interface PlateauConstants
     static final String[] origins = { "U", "R", "C", "T", "B" };
 
     // move commands, actions encoded by movespecs
-    static final int MOVE_ONBOARD = 1;
-    static final int MOVE_PICK = 2;
-    static final int MOVE_DROP = 3;
-    static final int MOVE_FLIP = 6;
-     static final int MOVE_FROMTO = 11;
+    static final int MOVE_ONBOARD = 101;
+    static final int MOVE_PICK = 102;
+    static final int MOVE_DROP = 103;
+    static final int MOVE_FLIP = 106;
+     static final int MOVE_FROMTO = 111;
     static final String Plateau_SGF = "23"; // sgf game number allocated for plateau
 
     // color logic for the robot.  These are powers of two

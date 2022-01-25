@@ -16,7 +16,6 @@ import lib.ExtendedHashtable;
 import lib.G;
 import lib.GC;
 import lib.HitPoint;
-import lib.Http;
 import lib.Image;
 import lib.InternationalStrings;
 import lib.Keyboard;

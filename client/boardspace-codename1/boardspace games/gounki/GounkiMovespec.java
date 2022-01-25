@@ -243,8 +243,8 @@ public class GounkiMovespec extends commonMove implements GounkiConstants
     by the constructors, and are also human readable */
     public String moveString()
     {
-		String ind = (index() >= 0) ? (index() + " ") : "";
-		String opname = D.findUnique(op);
+		String indx = indexString();
+		String opname = indx+D.findUnique(op)+" ";
         // adding the move index as a prefix provides numnbers
         // for the game record and also helps navigate in joint
         // review mode
@@ -252,24 +252,24 @@ public class GounkiMovespec extends commonMove implements GounkiConstants
         {
   
         case MOVE_PICKB:
-	        return (ind+opname + " " + from_col + " " + (from_row-2));
+	        return (opname  + from_col + " " + (from_row-2));
 
 
 		case MOVE_DEPLOY:
         	String third = (to_col3>='A') ? " "+to_col3+" "+(to_row3-2) : "";
-        	return(ind+opname+" "+from_col+" "+ (from_row-2)+" "+to_col +" "+ (to_row-2)+" "+to_col2+" "+(to_row2-2)+third);
+        	return(opname+from_col+" "+ (from_row-2)+" "+to_col +" "+ (to_row-2)+" "+to_col2+" "+(to_row2-2)+third);
 		case MOVE_BOARD_BOARD:
-			return(ind+opname + " " + from_col + " " + (from_row-2)+ " " + to_col + " " + (to_row-2));
+			return(opname  + from_col + " " + (from_row-2)+ " " + to_col + " " + (to_row-2));
 
 		case MOVE_DEPLOYSTEP:
 		case MOVE_DROPB:
-	        return (ind+opname + " " + to_col + " " + (to_row-2));
+	        return (opname  + to_col + " " + (to_row-2));
 
         case MOVE_START:
-            return (ind+"Start P" + player);
+            return (indx+"Start P" + player);
 
         default:
-            return (ind+opname);
+            return (opname);
         }
     }
 

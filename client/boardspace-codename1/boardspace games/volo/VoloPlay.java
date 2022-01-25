@@ -237,6 +237,7 @@ public class VoloPlay extends commonRobot<VoloBoard> implements Runnable, VoloCo
         // strategy with be 0,1,2 for Dumbot, Smartbot, Bestbot
         evaluator = Evaluator.Select(strategy);
         MONTEBOT = (Evaluator.AlphaBeta!=evaluator);
+        terminalNodeOptimize = true;
         UCT_WIN_LOSS = evaluator.uct_win_loss;
      }
 
@@ -346,7 +347,7 @@ public void PrepareToMove(int playerIndex)
         monte_search_state.simulationsPerNode = 1;
         monte_search_state.blitz=false;
         monte_search_state.killHopelessChildrenShare = 1.0;		// very aggressive
-        monte_search_state.terminalNodeOptimization = true;
+        monte_search_state.terminalNodeOptimization = terminalNodeOptimize;
         move = monte_search_state.getBestMonteMove();
         }
  		}

@@ -202,36 +202,34 @@ public class plateaumove extends commonMove implements PlateauConstants
     /* construct a move string for this move.  These are the inverse of what are accepted
     by the constructors, and are also human readable */
     public String moveString()
-    {	String ind = "";
-        if (index() >= 0)
-        {
-            ind += (index() + " ");
-        }
+    {	String indx = indexString();
+		String opname = indx+D.findUnique(op)+" ";
+
         switch (op)
         {
         case MOVE_ONBOARD:
-            return (ind+"Onboard " + locus + " " + level + " " + realColors + " " +
+            return (opname + locus + " " + level + " " + realColors + " " +
             pieces);
 
         case MOVE_FROMTO:
-            return (ind+"Move " + (flip ? "F" : "") + locus + " " + level + " " +
+            return (opname + (flip ? "F" : "") + locus + " " + level + " " +
             realColors + " " + tolocus);
 
         case MOVE_FLIP:
-            return (ind+"Flip " + pick + " " + locus + " " + pubColors);
+            return (opname + pick + " " + locus + " " + pubColors);
 
         case MOVE_PICK:
-        	if("".equals(locus)) { return(ind+"Pick "+pick); }
-            return (ind+"Pick " + pick + " " + locus + " " + level);
+        	if("".equals(locus)) { return(opname+pick); }
+            return (opname + pick + " " + locus + " " + level);
 
         case MOVE_DROP:
-            return (ind+"Drop " + drop + " " + level + " " + locus);
+            return (opname + drop + " " + level + " " + locus);
 
         case MOVE_START:
-            return (ind+"Start P" + player);
+            return (indx+"Start P" + player);
 
         default:
-        	return(ind+D.findUnique(op));
+        	return(opname);
  
         }
     }

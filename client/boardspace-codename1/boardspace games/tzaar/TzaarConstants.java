@@ -39,12 +39,11 @@ public interface TzaarConstants
 	{	First_Player_Rack("wr"), 		// positive numbers are trackable
     	Second_Player_Rack("br"),		// second player rack and captures are odd
     	BoardLocation(null),
-    	LiftRect(null),
     	ZoomSlider(null),
     	ReverseViewButton(null),;
    	String shortName = name();
 	public String shortName() { return(shortName); }
-   	TzaarId(String sn) { if(sn!=null) { shortName = sn; }}
+  	TzaarId(String sn) { if(sn!=null) { shortName = sn; }}
 	static public TzaarId find(String s)
 	{	
 		for(TzaarId v : values()) { if(s.equalsIgnoreCase(v.shortName)) { return(v); }}

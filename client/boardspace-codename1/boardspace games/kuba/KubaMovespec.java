@@ -235,8 +235,8 @@ public class KubaMovespec extends commonMove implements KubaConstants
     by the constructors, and are also human readable */
     public String moveString()
     {
-		String ind = (index() >= 0) ? (index() + " ") : "";
-		String opname = D.findUnique(op)+" ";
+		String indx = indexString();
+		String opname = indx+D.findUnique(op)+" ";
         // adding the move index as a prefix provides numnbers
         // for the game record and also helps navigate in joint
         // review mode
@@ -245,21 +245,21 @@ public class KubaMovespec extends commonMove implements KubaConstants
         case MOVE_PICKB:
         case MOVE_PICKT:
         case MOVE_PICKG:
-	        return (ind+opname+ from_col + " " + from_row+" "+object);
+	        return (opname+ from_col + " " + from_row+" "+object);
 
 		case MOVE_DROPB:
 		case MOVE_DROPG:
 		case MOVE_DROPT:
-	        return (ind+opname+ to_col + " " + to_row+" "+object);
+	        return (opname+ to_col + " " + to_row+" "+object);
 
 	    case MOVE_BOARD_BOARD:
-			return(ind+opname+ from_col + " " + from_row+ " " + to_col + " " + to_row);
+			return(opname+ from_col + " " + from_row+ " " + to_col + " " + to_row);
  
         case MOVE_START:
-            return (ind+"Start P" + player);
+            return (indx+"Start P" + player);
 
         default:
-            return (ind+opname);
+            return (opname);
         }
     }
 

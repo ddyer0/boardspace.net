@@ -421,8 +421,8 @@ public class Http implements Config,Crypto {
          	 G.printStackTrace(err,os);
          }
  
-         String errorContext = Plog.log.getLog();
-         if(!"".equals(errorContext))
+         String errorContext = Plog.log.getUnseen();
+         if(errorContext!=null)
          {	os.println("[history:\n"+errorContext+"]");
          }
          os.flush();

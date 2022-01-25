@@ -82,7 +82,9 @@ public abstract class InternationalStrings implements Config
     		String lcKey = key.toLowerCase();
     		String oldval = val.get(lcKey);
     		String newval = strs.get(key);
-    		if(oldval!=null) { System.out.println("Key "+key+" already exists old: "+oldval+" new: "+newval); }
+    		if(oldval!=null) 
+    			{ Plog.log.addLog("Key ",key," already exists old: ",oldval," new: ",newval);
+    			}
     		val.put(lcKey,newval);
     	}
     	return(val);
@@ -275,7 +277,7 @@ public abstract class InternationalStrings implements Config
     		{ base = base.substring(0, index) + tok + base.substring(index + 2);
     		}
     		else
-    		{ System.out.println("missing index for "+target+" in \""+sub+"\"");
+    		{ Plog.log.addLog("missing index for ",target," in \"",sub,"\"");
     		}
     	}
     	return(base);
@@ -351,7 +353,7 @@ public abstract class InternationalStrings implements Config
 	    	{ str = sub;
 	    	  newkeys.put(sub,sub);
 			  strs.put(sub,sub);
-			  System.out.println("adding key \"" + sub + "\"");
+			  Plog.log.addLog("adding key \"" , sub , "\"");
 	     	}	// autokey for undefined
     	return(str);
     }
@@ -399,7 +401,7 @@ public abstract class InternationalStrings implements Config
         	}
             str = (str.substring(0, index) + arg + rest);
            }
-           else {   System.out.println("missing index for "+target+ " in \"" + str + "\""); }
+           else {   Plog.log.addLog("missing index for ",target, " in \"" , str , "\""); }
         }
         return (str);
     }
@@ -459,21 +461,29 @@ public abstract class InternationalStrings implements Config
     
     public void readData(String fileName)
     {	
-		if(fileName!=null) { readDataFile(LANGUAGEPATH+fileName+".data"); }
+		if(fileName!=null)
+			{ boolean ok = readDataFile(LANGUAGEPATH+fileName+".data"); 
+			  if(!ok && !"english".equals(fileName))
+			  {
+				  readDataFile(LANGUAGEPATH+"english.data"); 
+			  }
+			}
     }
     
  
-    public void readDataFile(String name)
+    public boolean readDataFile(String name)
     {	if(hasDataFiles)
     	{
     	try
     	{
     		InputStream ins = G.getResourceAsStream(name);
     		readDataStream(ins);
+    		return(true);
     	}
      	catch (IOException err) 
-    	{ G.print("reading language data ",name," ",err.toString()); 
+    	{ Plog.log.addLog("reading language data ",name," ",err.toString()); 
     	}}
+    	return(false);
      }
 
      public void readDataStream(InputStream ins) throws IOException
@@ -556,7 +566,7 @@ public abstract class InternationalStrings implements Config
          }
          catch (Throwable err)
          {
- 			 G.print("Language "+lit+" "+err);
+ 			 Plog.log.addLog("Language ",lit," ",err);
  			 if(!"english".equalsIgnoreCase(lit))
  			 {
  				 G.putGlobal(G.LANGUAGE,"english");

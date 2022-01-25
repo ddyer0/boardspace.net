@@ -12,4 +12,4 @@ import lib.InternationalStrings;
 public class dutchStrings extends InternationalStrings
 {
     public dutchStrings() { name = "dutch"; }
-}
+ }

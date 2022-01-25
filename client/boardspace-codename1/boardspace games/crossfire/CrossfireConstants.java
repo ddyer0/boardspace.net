@@ -1,6 +1,7 @@
 package crossfire;
 
 import lib.G;
+import lib.InternationalStrings;
 import lib.CellId;
 
 import online.game.BaseBoard.BoardState;
@@ -45,7 +46,7 @@ public interface CrossfireConstants
 
     // init strings for variations of the game.
     static final String Crossfire_INIT = "crossfire"; //init for standard game
- 
+
     /* the "external representation for the board is A1 B2 etc.  This internal representation is X,Y
        where adjacent X's are separated by 2.  This gives the board nice mathematical properties for
        calculating adjacency and connectivity. */
@@ -82,7 +83,7 @@ public interface CrossfireConstants
  
 
     static void putStrings()
-    { /*
+    {
     		String CrossfireStrings[] = 
     		{	"Crossfire",
     	        CrossFirePlayDescription,
@@ -100,5 +101,5 @@ public interface CrossfireConstants
     		};
     		InternationalStrings.put(CrossfireStrings);
     		InternationalStrings.put(CrossfireStringPairs);
-    */ }
+    }
 }

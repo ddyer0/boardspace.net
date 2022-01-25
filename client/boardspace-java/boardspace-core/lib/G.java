@@ -1270,7 +1270,7 @@ public class G extends Platform implements Timestamp
 	// present a messagebox
 	//
 	public static void infoBox(String caption,String infoMessage)
-	{	G.print(caption+":"+infoMessage);
+	{	Plog.log.addLog(caption,":",infoMessage);
 	    JOptionPane.showMessageDialog(null, infoMessage, caption, JOptionPane.INFORMATION_MESSAGE);
 	}
 	

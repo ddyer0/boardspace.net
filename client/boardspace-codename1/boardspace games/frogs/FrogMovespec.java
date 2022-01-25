@@ -240,8 +240,8 @@ public class FrogMovespec extends commonMPMove implements FrogConstants
     by the constructors, and are also human readable */
     public String moveString()
     {
-		String ind = (index() >= 0) ? (index() + " ") : "";
-		String opname = ind+D.findUnique(op)+" ";
+		String indx = indexString();
+		String opname = indx+D.findUnique(op)+" ";
         // adding the move index as a prefix provides numbers
         // for the game record and also helps navigate in joint
         // review mode
@@ -261,7 +261,7 @@ public class FrogMovespec extends commonMPMove implements FrogConstants
             return (opname+source.handNum()+" "+from_row);
 
         case MOVE_START:
-            return (ind+"Start P" + player);
+            return (indx+"Start P" + player);
         case MOVE_ONBOARD:
         	return(opname+source.handNum()+" "+from_row+" "+to_col+" "+to_row);
         case MOVE_MOVE:

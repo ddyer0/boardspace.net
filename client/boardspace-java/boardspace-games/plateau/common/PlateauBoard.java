@@ -2330,7 +2330,7 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
             for (int row = 0; row <= nrows; row++)
             {
                 int thisy = ymin + (2 * row * ystep);
-                lib.GC.drawLine(gc,xmin, thisy, xmax, thisy);
+                GC.drawLine(gc,xmin, thisy, xmax, thisy);
 
                 if (grid && (row < nrows))
                 {
@@ -2343,7 +2343,7 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
             for (int col = 0; col <= ncols; col++) // vertical grid lines
             {
                 int thisx = xmin + (col * 2 * xstep);
-                lib.GC.drawLine(gc,thisx, ymin, thisx, ymax);
+                GC.drawLine(gc,thisx, ymin, thisx, ymax);
 
                 if (grid && (col < ncols))
                 {

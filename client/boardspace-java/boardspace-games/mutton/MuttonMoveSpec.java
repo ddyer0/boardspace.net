@@ -238,49 +238,44 @@ public class MuttonMoveSpec extends commonMove implements MuttonConstants
 	 * These are used to recreate the message that was parsed.
 	 **/
 	public String moveString () {
-		String ind = "";
-
-		if (index() >= 0) {
-			ind += (index() + " ");
-		}
+		String indx = indexString();
+		String opname = indx+D.findUnique(op)+" ";
 
 		// adding the move index as a prefix provides numbers
 		// for the game record and also helps navigate in joint
 		// review mode.
 		switch (op) {
 			case MOVE_FINISHED_HIDING :
-				return (ind + "Wolves_Hidden" + intArrayToString(sheepIds));
+				return (opname+ intArrayToString(sheepIds));
 
 			case MOVE_EAT :
 				if (sheepIds.length > 0) {
-					return (ind + "Eat " + sheepIds[0]);
+					return (opname + sheepIds[0]);
 				} else {
-					return (ind + "Eat ");
+					return (opname);
 				}
 
 			case MOVE_SHOOT :
-				return (ind + "Shoot" + intArrayToString(sheepIds));
+				return (opname + intArrayToString(sheepIds));
 
 			case MOVE_PICKUP :
-				return (ind + "Pickup " + sheepIds[0]);
+				return (opname + sheepIds[0]);
 
 			case MOVE_RELOCATE :
-				return (ind + "Relocate " + sheepIds[0] + " " + destination[0] + " " + destination[1]);
+				return (opname + sheepIds[0] + " " + destination[0] + " " + destination[1]);
 
-			case MOVE_DONE_RELOCATING :
-				return (ind + "Done_Relocating");
 
 			case MOVE_BOARD_STATE :
-				return (ind + "Board_State " + boardStateString);
+				return (opname + boardStateString);
 
-			case MOVE_SWAP :
-				return (ind + "Swap");
 
 			case MOVE_START:
-				return (ind + "Start P" + player);
+				return (indx + "Start P" + player);
 
+			case MOVE_DONE_RELOCATING :
+			case MOVE_SWAP :
 			default:
-				return (ind + D.findUnique(op));
+				return (opname);
 		}
 	}
 
@@ -310,7 +305,7 @@ public class MuttonMoveSpec extends commonMove implements MuttonConstants
 		String result = "";
 
 		for (int i=0; i < a.length; i++) {
-			result += (" " + a[i]);
+			result += (a[i]+" ");
 		}
 
 		return result;

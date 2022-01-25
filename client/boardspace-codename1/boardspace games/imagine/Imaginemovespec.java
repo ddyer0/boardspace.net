@@ -289,8 +289,8 @@ public class Imaginemovespec
     by the constructors, and only secondarily human readable */
     public String moveString()
     {
-		String ind = (index() >= 0) ? (index() + " ") : "";
-		String opname = D.findUnique(op)+" ";
+		String indx = indexString();
+		String opname = indx+D.findUnique(op)+" ";
         // adding the move index as a prefix provides numnbers
         // for the game record and also helps navigate in joint
         // review mode
@@ -298,35 +298,35 @@ public class Imaginemovespec
         {
         case EPHEMERAL_SET_READY:
         case SET_READY:
-        	return G.concat(G.concat(ind,opname,to_col));
+        	return G.concat(G.concat(opname,to_col));
 
         case SET_CHOICE:
         case EPHEMERAL_SET_CHOICE:
         case SET_CANDIDATE:
         case EPHEMERAL_SET_CANDIDATE:
-        	return G.concat(ind,opname,to_col,
+        	return G.concat(opname,to_col,
         			" ",to_row,
         			" ",Base64.encodeSimple(chip.deck),
         			" ",Base64.encodeSimple(chip.name));
         	
         case SET_STORY:
-        	return G.concat(ind,opname,to_row,
+        	return G.concat(opname,to_row,
         			" ",Base64.encodeSimple(chip.deck),
         			" ",Base64.encodeSimple(chip.name),
         			" ",Base64.encodeSimple(story));
         case EPHEMERAL_SET_STAKE:
         case SET_STAKE:
-        	return G.concat(ind,opname,to_col, " ",to_row);
+        	return G.concat(opname,to_col, " ",to_row);
         case EPHEMERAL_MOVE_SELECT:
         case MOVE_SELECT:
-	        return G.concat(ind,opname,source.shortName," " , to_col , " " , to_row);
+	        return G.concat(opname,source.shortName," " , to_col , " " , to_row);
 
         case MOVE_DROP:
         case MOVE_PICK:
-            return G.concat(ind,opname,source.shortName);
+            return G.concat(opname,source.shortName);
 
         case MOVE_START:
-            return G.concat(ind,"Start P" , player);
+            return G.concat(indx,"Start P" , player);
 
         default: 
         case MOVE_GETNEW:
@@ -334,7 +334,7 @@ public class Imaginemovespec
         case MOVE_COMMIT:
         case MOVE_SCORE:
         case MOVE_UNKNOWN:
-            return G.concat(ind,opname);
+            return G.concat(opname);
         }
     }
 

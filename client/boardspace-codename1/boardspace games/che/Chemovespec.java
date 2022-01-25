@@ -162,8 +162,8 @@ public class Chemovespec extends commonMove implements CheConstants
     by the constructors, and are also human readable */
     public String moveString()
     {
-        String ind = (index() >= 0) ? (index() + " ") : "";
-        String opname = D.findUnique(op)+" ";
+        String indx = indexString();
+        String opname = indx+D.findUnique(op)+" ";
         
         // adding the move index as a prefix provides numnbers
         // for the game record and also helps navigate in joint
@@ -171,18 +171,18 @@ public class Chemovespec extends commonMove implements CheConstants
         switch (op)
         {
         case MOVE_PICKB:
-	        return G.concat(ind,opname ,to_col , " " , to_row);
+	        return G.concat(opname ,to_col , " " , to_row);
         case MOVE_ROTATE:
 		case MOVE_DROPB:
-	        return G.concat(ind,opname,  to_col , " " , to_row," ",object);
+	        return G.concat(opname,  to_col , " " , to_row," ",object);
 
          case MOVE_PICK:
-            return G.concat(ind,opname ,object);
+            return G.concat(opname ,object);
 
         case MOVE_START:
-            return G.concat(ind,"Start P" , player);
+            return G.concat(indx,"Start P" , player);
         default:
-            return G.concat(ind,opname);
+            return G.concat(opname);
         }
     }
 

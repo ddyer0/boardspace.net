@@ -4,10 +4,6 @@ import com.codename1.ui.Command;
 import com.codename1.ui.Component;
 import com.codename1.ui.Dialog;
 
-//
-// present a messagebox
-//
-
 public class JOptionPane extends Component {
 	public static int INFORMATION_MESSAGE = 0;
 
@@ -48,9 +44,8 @@ public class JOptionPane extends Component {
 	TextArea text = new TextArea(message);
 	text.setSingleLineTextArea(true);		// used as a flag to cause the textarea to activate on newline
 	Command cmds[] = makeCommands("Ok","Cancel");
-	text.okCommand = cmds[0];
-	
-	Command v = /* Interaction*/Dialog.show(message,text,cmds,Dialog.TYPE_INFO,null);
+	text.okCommand = cmds[0];	
+	Command v = Dialog.show(message,text,cmds,Dialog.TYPE_INFO,null);
 	if(v==cmds[0])
 	{
 	String msg = text.getText();

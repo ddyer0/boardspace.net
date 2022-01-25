@@ -3908,7 +3908,6 @@ public abstract class commonCanvas extends exCanvas
        	else if (Execute(m,mode))
         {
         	repaint(20);					 // states will have changed.
-            
             boolean added = AddToHistory(m);
             
             // this is the active part of the "Start Evaluator" feature
@@ -3937,7 +3936,14 @@ public abstract class commonCanvas extends exCanvas
             	}
             if(mode==replayMode.Live) { verifyGameRecord(); }
             if (transmit && (allowed_to_edit || !getActivePlayer().spectator))
-            {	if(added) { str = "+T "+m.elapsedTime()+" "+str; }	// add the move time stamp
+            {	if(m.elapsedTime()<=0)
+            	{
+            	// this may not have been done yet if the game is messing with "replaymode" 
+            	// for whatever reason.
+            	commonPlayer p = getPlayerOrTemp(m.player);
+            	m.setElapsedTime((int)p.elapsedTime);
+            	}
+            	str = "+T "+m.elapsedTime()+" "+str; 	// add the move time stamp
                 addEvent(str);
             }
             if((mode==replayMode.Live) && playerChanging()) { playTurnChangeSounds(); }
@@ -7394,8 +7400,7 @@ public void canonicalizeHistory()
 	CommonMoveStack permanent = new CommonMoveStack();
 	while(h.size()>0) 
 		{ commonMove m = h.pop();
-		  boolean ep = m.isEphemeral();
-		  if(ep) 
+		  if(m.isEphemeral())
 		  { m.setEvaluation(m.player*1000+m.index());	// set evaluation for the sort
 		    ephemera.push(m); 
 		  }
@@ -7416,7 +7421,8 @@ public void canonicalizeHistory()
 	}
 	// copy the ephemeral
 	while(ephemera.size()>0)
-	{
+	{	// convert to synchronous changes the opcode and makes any other necessary 
+		// changes.  It can return null to remove the move completely.
 		commonMove m = convertToSynchronous(ephemera.pop());
 		if(m!=null)
 		{

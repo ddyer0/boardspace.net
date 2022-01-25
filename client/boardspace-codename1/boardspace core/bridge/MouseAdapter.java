@@ -215,7 +215,8 @@ public class MouseAdapter
 			b.addActionListener(this);
 		}else
 		{
-		if(cn1Component!=null) { cn1Component.addPointerReleasedListener(this); }
+		if(cn1Component!=null) 
+			{ cn1Component.addPointerReleasedListener(this); }
 		}
 	}
 	public void addItemListener(ItemListener m) 

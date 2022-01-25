@@ -1,6 +1,7 @@
 package hex;
 
 import lib.G;
+import lib.InternationalStrings;
 import lib.OStack;
 import lib.CellId;
 
@@ -105,7 +106,7 @@ public interface HexConstants
     	}
      	
     }
-
+ 
 //this would be a triangle of hexes, with 13 hexes at the base, used in Wyps
 // static int[] ZnInTriangle13 = { 1,2,3,4,5,6,7,8,9,10,11,12,13 }; // these are indexes into the first ball in a column, ie B1 has index 2
 // static int[] ZTriangle13 = {12,11,10,9,8,7,6,5,4,3,2,1,0 }; // depth of columns, ie A has 4, B 5 etc.
@@ -141,7 +142,7 @@ public interface HexConstants
 //  Used for "crossfire" and lyngk
 //    static int[] ZfirstInCol = { 6, 3, 0, 1, 0, 1, 0, 3, 6 };
 //    static int[] ZnInCol =     {1, 4, 7, 6, 7, 6, 7, 4, 1 }; // depth of columns, ie A has 4, B 5 etc.
-	
+
 //
 //this would be a standard tintas board with 49 cells in a pattern with 2 cells
 //on each edge
@@ -150,9 +151,9 @@ public interface HexConstants
 
 	// move commands, actions encoded by movespecs.  Values chosen so these
     // integers won't look quite like all the other integers
- 	
+    
     static void putStrings()
-    { /*
+    {
     	// there should be a line in masterstrings.java which causes
     	// these to be included in the upload/download process for 
     	// translation.  Also a line in the viewer init process to
@@ -177,7 +178,8 @@ public interface HexConstants
     	};
     	InternationalStrings.put(HexStrings);
     	InternationalStrings.put(HexStringPairs);
- */
-}
+
+
+    }
 
 }

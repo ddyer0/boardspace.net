@@ -107,7 +107,7 @@ public class JWSApplication implements Config,Runnable
 			RootAppletProtocol realRoot = new online.common.commonRootApplet();
 			G.setGlobalDefaultFont();	// set a reasonable global default
 			// copy the web start parameters
-			for(int i=0; i<args.length; i+=2)
+			for(int i=0; i<args.length-1; i+=2)
 			{	String par = args[i].toLowerCase();
 				String arg = args[i+1];
 				if(arg!=null) 

@@ -261,8 +261,8 @@ public class Micropulmovespec extends commonMove implements MicropulConstants
     by the constructors, and are also human readable */
     public String moveString()
     {
-		String ind = (index() >= 0) ? (index() + " ") : "";
-		String opname = D.findUnique(op)+" ";
+		String indx = indexString();
+		String opname = indx+D.findUnique(op)+" ";
         // adding the move index as a prefix provides numnbers
         // for the game record and also helps navigate in joint
         // review mode
@@ -270,19 +270,19 @@ public class Micropulmovespec extends commonMove implements MicropulConstants
         {
 
         case MOVE_MOVE:
-        	return(ind+opname+source.shortName
+        	return(opname+source.shortName
     			+ " " + from_col+" "+from_row
     			+ " " + dest.shortName
     			+ " " + to_col+" "+to_row
     			+ " " + rotation);
 
         case MOVE_PICKB:
-	        return (ind+opname+ from_col + " " + from_row);
+	        return (opname+ from_col + " " + from_row);
         case MOVE_RRACK:
-	        return (ind+opname + D.findUnique(player) + " " + to_row+" "+rotation);
+	        return (opname + D.findUnique(player) + " " + to_row+" "+rotation);
         case MOVE_ROTATE:
  		case MOVE_DROPB:
-	        return (ind+opname + to_col + " " + to_row+" "+rotation);
+	        return (opname + to_col + " " + to_row+" "+rotation);
 
         case MOVE_PICK:
     	{
@@ -320,10 +320,10 @@ public class Micropulmovespec extends commonMove implements MicropulConstants
 	        return (msg);
     	}
      case MOVE_START:
-            return (ind+"Start P" + player);
+            return (indx+"Start P" + player);
 
      default:
-    	 return (ind+opname);
+    	 return (opname);
         }
     }
 

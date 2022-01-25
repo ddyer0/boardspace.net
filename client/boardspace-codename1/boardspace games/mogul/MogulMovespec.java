@@ -160,7 +160,7 @@ public class MogulMovespec extends commonMPMove implements MogulConstants
     by the constructors, and are also human readable */
     public String moveString()
     {
-		String ind = (index() >= 0) ? (index() + " ") : "";
+		String ind = indexString();
         // adding the move index as a prefix provides numnbers
         // for the game record and also helps navigate in joint
         // review mode

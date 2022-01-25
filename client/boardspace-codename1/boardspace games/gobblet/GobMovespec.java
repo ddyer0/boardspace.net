@@ -215,40 +215,36 @@ public class GobMovespec extends commonMove implements GobConstants
     by the constructors, and are also human readable */
     public String moveString()
     {
-        String ind = "";
-
-        if (index() >= 0)
-        {
-            ind += (index() + " ");
-        }
-        // adding the move index as a prefix provides numnbers
+		String indx = indexString();
+		String opname = indx+D.findUnique(op)+" ";
+         // adding the move index as a prefix provides numnbers
         // for the game record and also helps navigate in joint
         // review mode
         switch (op)
         {
         case MOVE_PICKB:
-	        return (ind+D.findUnique(op) + " " + from_col + " " + from_row+" "+object);
+	        return (opname + from_col + " " + from_row+" "+object);
 
 		case MOVE_DROPB:
-	        return (ind+D.findUnique(op) + " " + to_col + " " + to_row+" "+object);
+	        return (opname+ to_col + " " + to_row+" "+object);
 
 		case MOVE_RACK_BOARD:
-			return(ind+D.findUnique(op) + " " +D.findUnique(source.IID())+ " "+from_row+" "+object
+			return(opname +D.findUnique(source.IID())+ " "+from_row+" "+object
 					+ " " + to_col + " " + to_row);
 		case MOVE_BOARD_BOARD:
-			return(ind+D.findUnique(op) + " " + from_col + " " + from_row+" "+object
+			return(opname + from_col + " " + from_row+" "+object
 					+ " " + to_col + " " + to_row);
         case MOVE_PICK:
-            return (ind+D.findUnique(op) + " "+D.findUnique(source.IID())+ " "+from_row+" "+object);
+            return (opname+D.findUnique(source.IID())+ " "+from_row+" "+object);
 
         case MOVE_DROP:
-             return (ind+D.findUnique(op) + " "+D.findUnique(source.IID())+ " "+to_row+" "+object);
+             return (opname+D.findUnique(source.IID())+ " "+to_row+" "+object);
 
         case MOVE_START:
-            return (ind+"Start P" + player);
+            return (indx+"Start P" + player);
 
         default:
-            return (ind+D.findUnique(op));
+            return (opname);
         }
     }
 

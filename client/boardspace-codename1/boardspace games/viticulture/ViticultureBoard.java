@@ -79,7 +79,7 @@ action will be taken in the spring.
   
  */
 class ViticultureBoard extends RBoard<ViticultureCell> implements BoardProtocol,ViticultureConstants
-{	static int REVISION = 149;			// 100 represents the initial version of the game
+{	static int REVISION = 150;			// 100 represents the initial version of the game
 										// games with no revision information will be 100
 										// revision 101, correct the sale price of champagne to 4
 										// revision 102, fix the cash distribution for the cafe
@@ -145,7 +145,7 @@ class ViticultureBoard extends RBoard<ViticultureCell> implements BoardProtocol,
 										// revision 148 fixes an interaction of inkeeper and soldato
 										// revision 149 fixes an interaction of mafioso and soldato
 										//   and fixes soldato cost of max 3 if soldatos are on the overflow space
-
+										// revision 150 fixed scholar "both" option with oracle drawing cards
 
 public int getMaxRevisionLevel() { return(REVISION); }
 	public int getActiveRevisionLevel() { return(revision); }
@@ -235,6 +235,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
 		NextPlayerInMentorCycle,
 		PoliticoTradeExtra,
 		Harvest2Optional,
+		TrainScholarWorker,
 		// add new continuations to the end to avoid changing the digest, which breaks shuffles
 		// likewise for adding new states and new cards
 		
@@ -253,6 +254,14 @@ public int getMaxRevisionLevel() { return(REVISION); }
 		Continuation next = (continuation.size()==0) ? Continuation.NextPlayer : continuation.pop();
 		switch(next)
 		{
+		case TrainScholarWorker:
+			{
+			// train a worker after the scholar draws cards, doing both
+			// the vp has already been deducted.
+			ViticultureState nextState = doTrainWorker(pb,1,false,false,replay);  
+			if(nextState!=null) { setState(resetState = nextState); }
+			}
+			break;
 		case Flip:
 			setState(resetState = ViticultureState.Flip);
 			break;
@@ -2223,6 +2232,18 @@ public int getMaxRevisionLevel() { return(REVISION); }
     		String msg = DrawSomething;
     		if(pb!=pbs[whoseTurn]) { msg = pb.getRooster().colorPlusName()+" "+msg; }
     		logRawGameEvent(msg,chip.type.name());
+
+    		switch(chip.type)
+    		{
+    		case YellowCard:
+    			pb.recordEvent("Take Yellow",chip,ScoreType.ReceiveYellow);
+    			break;
+    		case BlueCard:
+    			pb.recordEvent("Take Blue",chip,ScoreType.ReceiveBlue);   	
+    			break;
+    		default: break;
+    		}
+    		
     		if(replay!=replayMode.Replay)
     		{
     			animationStack.push(from);
@@ -3613,7 +3634,9 @@ public int getMaxRevisionLevel() { return(REVISION); }
     // user clicks "done" after deploying a blue card.  Decide what to do next
     private ViticultureState playBlueCard(PlayerBoard pb,ViticultureChip card,replayMode replay,Viticulturemovespec m)
     {	ViticultureState nextState = null;
+
     	G.Assert(card.type==ChipType.BlueCard,"must be a blue card");
+		pb.recordEvent("Play Blue",card,ScoreType.PlayBlue);   	
     	discardCard(pb.cards,card,replay,PlayCardMessage);
     	if(pb.hasInn()) { changeCash(pb,1,pb.destroyStructureWorker,replay); }
     	if(pb.hasTapRoom()) { addContinuation(Continuation.DiscardWineFor2VP); }
@@ -3878,7 +3901,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
        			break;
        		case Choice_B:
            		//p1("surveyor b");
-       			changeScore(pb,pb.nPlantedFields(),replay,Surveyor,card,ScoreType.YellowCard);
+       			changeScore(pb,pb.nPlantedFields(),replay,Surveyor,card,ScoreType.ScoreYellow);
        			break;
        		default: ;
        		}
@@ -3889,11 +3912,11 @@ public int getMaxRevisionLevel() { return(REVISION); }
        		case Choice_A:
            		//Continuation.p1("broker a");
        			changeCash(pb,-9,yokeCash,replay);
-    			changeScore(pb,3,replay,BrokerBuy,card,ScoreType.YellowCard);
+    			changeScore(pb,3,replay,BrokerBuy,card,ScoreType.ScoreYellow);
     			break;
        		case Choice_B:
            		//p1("broker b");
-       			changeScore(pb,-2,replay,BrokerSell,card,ScoreType.YellowCard);
+       			changeScore(pb,-2,replay,BrokerSell,card,ScoreType.ScoreYellow);
     			changeCash(pb,6,yokeCash,replay);
        			break;
        		default: ;
@@ -3925,12 +3948,12 @@ public int getMaxRevisionLevel() { return(REVISION); }
     		{
     		case Choice_AandB:
        			//p1("contractor aandb");
-       			changeScore(pb,1,replay,Contractor,card,ScoreType.YellowCard);
+       			changeScore(pb,1,replay,Contractor,card,ScoreType.ScoreYellow);
        			nextState = ViticultureState.BuildStructureOptional;
      			break;
     		case Choice_AandC:
        			//p1("contractor aandc");
-       			changeScore(pb,1,replay,Contractor,card,ScoreType.YellowCard);
+       			changeScore(pb,1,replay,Contractor,card,ScoreType.ScoreYellow);
       			nextState = ViticultureState.Plant1VineOptional;
     			break;
     		case Choice_BandC:
@@ -3939,7 +3962,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
     			break;
     		case Choice_A:
        			//p1("contractor a");
-       			changeScore(pb,1,replay,Contractor,card,ScoreType.YellowCard);
+       			changeScore(pb,1,replay,Contractor,card,ScoreType.ScoreYellow);
      			break;
     		case Choice_B:
        			//p1("contractor b");
@@ -3987,13 +4010,13 @@ public int getMaxRevisionLevel() { return(REVISION); }
        		{
        		case Choice_A:
            		//p1("uncertified broker a");
-    			changeScore(pb,-3,replay,UncertifiedBroker,card,ScoreType.YellowCard);
+    			changeScore(pb,-3,replay,UncertifiedBroker,card,ScoreType.ScoreYellow);
     			changeCash(pb,9,yokeCash,replay);
        			break;
        		case Choice_B:
            		//p1("uncertified broker b");
       			changeCash(pb,-6,yokeCash,replay);
-    			changeScore(pb,2,replay,UncertifiedBroker,card,ScoreType.YellowCard);
+    			changeScore(pb,2,replay,UncertifiedBroker,card,ScoreType.ScoreYellow);
     			break;
     		default: ;
        		}
@@ -4009,7 +4032,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
 				break;
 	   		case Choice_B:
 	       		//p1("planter b");
-	   			if(revision<124) { changeScore(pb,2,replay,Planter,card,ScoreType.YellowCard); }
+	   			if(revision<124) { changeScore(pb,2,replay,Planter,card,ScoreType.ScoreYellow); }
 				nextState = ViticultureState.Uproot1For2;
 				break;
 			default: ;
@@ -4061,7 +4084,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
        			{
        			int n = pb.nStructuresWithValueExactly(4);
            		//p1("architect b "+n);
-       			changeScore(pb,n,replay,Architect,card,ScoreType.YellowCard);
+       			changeScore(pb,n,replay,Architect,card,ScoreType.ScoreYellow);
        			}
        			break;
     		default: ;
@@ -4073,12 +4096,12 @@ public int getMaxRevisionLevel() { return(REVISION); }
      		{
      		case Choice_A:
            		//p1("uncertified architect a");
-     			changeScore(pb,-1,replay,UncertifiedArchitect,card,ScoreType.YellowCard);
+     			changeScore(pb,-1,replay,UncertifiedArchitect,card,ScoreType.ScoreYellow);
     			nextState = ViticultureState.BuildStructure23Free;
     			break;
      		case Choice_B:
            		//p1("uncertified architect b");
-    			changeScore(pb,-2,replay,UncertifiedArchitect,card,ScoreType.YellowCard);
+    			changeScore(pb,-2,replay,UncertifiedArchitect,card,ScoreType.ScoreYellow);
     			nextState = ViticultureState.BuildStructureFree;
     			break;
     		default:;
@@ -4275,7 +4298,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
     		{
        		case Choice_AandB:
        			//p1("homesteader choice a and b");
-       			changeScore(pb,-1,replay,Homesteader,card,ScoreType.YellowCard);
+       			changeScore(pb,-1,replay,Homesteader,card,ScoreType.ScoreYellow);
     			addContinuation(Continuation.Plant2VinesOnly);
 				//$FALL-THROUGH$
        		case Choice_A:
@@ -4359,7 +4382,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
     		{
     		case Choice_AandB:
            		//p1("sponsor aandb");
-           		changeScore(pb,-1,replay,Sponsor,card,ScoreType.YellowCard);
+           		changeScore(pb,-1,replay,Sponsor,card,ScoreType.ScoreYellow);
 				//$FALL-THROUGH$
 			case Choice_B:
 	       		//p1("sponsor b");
@@ -4487,7 +4510,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
     		case Choice_B:
     			{
     			//p1("swindler choice b");
-    			changeScore(anchor,1,replay,Swindler,card,ScoreType.YellowCard);
+    			changeScore(anchor,1,replay,Swindler,card,ScoreType.ScoreYellow);
     			String to = pbs[targetPlayer].getRooster().colorPlusName();
     			String msg = G.concat(pb.getRooster().colorPlusName()," : ",to," 1VP"); 
            		logRawGameEvent(msg);
@@ -4502,7 +4525,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
     	case 3:	// banker
     		if(resolution==ViticultureId.Choice_A)
     		{
-    			changeScore(pb,-1,replay,Banker,card,ScoreType.YellowCard);
+    			changeScore(pb,-1,replay,Banker,card,ScoreType.ScoreYellow);
     			changeCash(pb,3,yokeCash,replay);
     		}
     		break;
@@ -4538,7 +4561,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
         		default:
         		}
         		changeCash(pb,2,yokeCash,replay);
-        		changeScore(pb,1,replay,BuyerSellGrape,card,ScoreType.YellowCard);
+        		changeScore(pb,1,replay,BuyerSellGrape,card,ScoreType.ScoreYellow);
 
     		}
     		break;
@@ -4580,7 +4603,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
     		addContinuation(Continuation.TrainGuestWorker);
     		switch(resolution)
     		{	case Choice_A:
-       			if(whoseTurn!=targetPlayer) { changeScore(pbs[targetPlayer],1,replay,UncertifiedTeacher,card,ScoreType.BlueCard); }
+       			if(whoseTurn!=targetPlayer) { changeScore(pbs[targetPlayer],1,replay,UncertifiedTeacher,card,ScoreType.ScoreBlue); }
     			nextState = doTrainWorker(pb,3,false,false,replay);
      			break;
     		default:
@@ -4590,10 +4613,10 @@ public int getMaxRevisionLevel() { return(REVISION); }
     	case 9:  // governor: lose a yellow or give a vp
     		if(pb.hasCard(ChipType.YellowCard)) 
     			{ nextState = ViticultureState.GiveYellow; 
-  			  	  logRawGameEvent(pb.getRooster().colorPlusName()+" : "+pbs[targetPlayer].getRooster().colorPlusName()+" YellowCard");
+  			  	  logRawGameEvent(pb.getRooster().colorPlusName()+" : "+pbs[targetPlayer].getRooster().colorPlusName()+" ScoreYellow");
     			}
     		else 
-    			{ changeScore(pbs[targetPlayer],1,replay,Governor,card,ScoreType.BlueCard);
+    			{ changeScore(pbs[targetPlayer],1,replay,Governor,card,ScoreType.ScoreBlue);
     			  logRawGameEvent(pb.getRooster().colorPlusName()+" : "+pbs[targetPlayer].getRooster().colorPlusName()+" 1VP");
     			}
     		break;
@@ -4888,7 +4911,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
 				found = true;
 				pb.workers.addChip(grande);
 				if(whoseTurn!=targetPlayer) 
-					{ changeScore(pbs[targetPlayer],1,replay,Motivator,ViticultureChip.MotivatorCard,ScoreType.BlueCard);
+					{ changeScore(pbs[targetPlayer],1,replay,Motivator,ViticultureChip.MotivatorCard,ScoreType.ScoreBlue);
 		   			  String to = pbs[targetPlayer].getRooster().colorPlusName();
 	    			  String msg = ">>"+pb.getGrandeWorker().colorPlusName()+"  &  #1 1VP"; 
 	           		  logRawGameEvent(msg,to);
@@ -4993,7 +5016,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
         		nextState = drawCards(2,yellowCards,pb,replay,m);
         		if(revision>=132) { changeCash(pb,1,yokeCash,replay); }
         		// in between you get both, nice bug
-        		if(revision<143){ changeScore(pb,1,replay,Marketer,card,ScoreType.BlueCard); }
+        		if(revision<143){ changeScore(pb,1,replay,Marketer,card,ScoreType.ScoreBlue); }
     			break;
     		case Choice_B:
     			//p1("marketer b");
@@ -5027,7 +5050,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
     		case Choice_A:
        			//p1("uncertified teacher a");
     			if((pb.nWorkers<MAX_WORKERS) && (pb.score>MIN_SCORE)) 
-    			{	changeScore(pb,-1,replay,UncertifiedTeacher,card,ScoreType.BlueCard);
+    			{	changeScore(pb,-1,replay,UncertifiedTeacher,card,ScoreType.ScoreBlue);
     				nextState = doTrainWorker(pb,BASE_COST_OF_WORKER,false,false,replay);
     			}
     			break;
@@ -5039,7 +5062,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
     			{	
     				if(p!=pb && p.nWorkers==6) { n++; }
     			}
-    			changeScore(pb,n,replay,UncertifiedTeacher,card,ScoreType.BlueCard);
+    			changeScore(pb,n,replay,UncertifiedTeacher,card,ScoreType.ScoreBlue);
     			}
     			break;
     		default: ;
@@ -5097,7 +5120,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
     		case Choice_B:
        			//p1("blue 10 b");
        			if(pb.cards.height()>0)
-    			{	changeScore(pb,2,replay,Assessor,card,ScoreType.BlueCard);
+    			{	changeScore(pb,2,replay,Assessor,card,ScoreType.ScoreBlue);
     				while(pb.cards.height()>0)
     				{
     					discardCard(pb.cards,pb.cards.removeTop(),replay,DiscardSomething);
@@ -5118,7 +5141,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
     			break;
     		case Choice_B:
        			//p1("harvester b");
-       			changeScore(pb,1,replay,Harvester,card,ScoreType.BlueCard);
+       			changeScore(pb,1,replay,Harvester,card,ScoreType.ScoreBlue);
     			break;
     		default: ;
     		}
@@ -5129,7 +5152,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
     		if(pb.nWorkers==MAX_WORKERS)
     		{
        			//p1("professor a");
-       			changeScore(pb,2,replay,Professor,card,ScoreType.BlueCard); 
+       			changeScore(pb,2,replay,Professor,card,ScoreType.ScoreBlue); 
     		}
     		else 
     		{
@@ -5168,7 +5191,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
        			//p1("uncertified oenologist b");
     			// upgrade for 1 vp 
     			if(upgradeCellar(pb,true,replay)>0)
-    				{changeScore(pb,-1,replay,UncertifiedOenologist,card,ScoreType.BlueCard);
+    				{changeScore(pb,-1,replay,UncertifiedOenologist,card,ScoreType.ScoreBlue);
     				}
      			break;
       		default: ;
@@ -5320,8 +5343,16 @@ public int getMaxRevisionLevel() { return(REVISION); }
     			break;
     		case Choice_AandB:
        			//p1("scholar aandb");
+    			changeScore(pb,-1,replay,Scholar,card,ScoreType.ScoreBlue);
+    			if(revision>=150)
+       			{	
+       				addContinuation(Continuation.TrainScholarWorker); 
+       				// if an oracle is drawing this will have a nextState
+       				nextState = drawCards(2,purpleCards,pb,replay,m);
+       				break;
+       			}
+    			// pre-150, this let the oracle draw 3 and keep them.
        			nextState = drawCards(2,purpleCards,pb,replay,m);
-    			changeScore(pb,-1,replay,Scholar,card,ScoreType.BlueCard);
 				//$FALL-THROUGH$
 			case Choice_B:
 	   			//p1("scholar b");
@@ -5375,7 +5406,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
        			break;
        		case Choice_AandC:
        			//p1("craftsman aandc");
-       			changeScore(pb,1,replay,Craftsman,card,ScoreType.BlueCard);
+       			changeScore(pb,1,replay,Craftsman,card,ScoreType.ScoreBlue);
 				//$FALL-THROUGH$
        		case Choice_A: 
        			//p1("craftsman a");
@@ -5390,7 +5421,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
 				//$FALL-THROUGH$
 			case Choice_C:
 	   			//p1("craftsman c");
-	   			changeScore(pb,1,replay,Craftsman,card,ScoreType.BlueCard);
+	   			changeScore(pb,1,replay,Craftsman,card,ScoreType.ScoreBlue);
        			break;
        		default: ;
        		}
@@ -5426,7 +5457,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
     			break;
     		case Choice_AandB:
        			//p1("laborer aandb");
-       			changeScore(pb,-1,replay,Laborer,card,ScoreType.BlueCard);
+       			changeScore(pb,-1,replay,Laborer,card,ScoreType.ScoreBlue);
        			if((revision<136) || (firstChoice!=ViticultureId.Choice_MakeWineFirst))
        				{
        				nextState = ViticultureState.Harvest2AndMake3;
@@ -5476,7 +5507,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
     		case Choice_B:
            		//p1("noble b");
     			changeResidual(pb,-2,replay);
-    			changeScore(pb,2,replay,Noble,card,ScoreType.BlueCard);
+    			changeScore(pb,2,replay,Noble,card,ScoreType.ScoreBlue);
     			break;
     		default: ;
     		}
@@ -5531,6 +5562,8 @@ public int getMaxRevisionLevel() { return(REVISION); }
     private ViticultureState playYellowCard(PlayerBoard pb,ViticultureChip card,replayMode replay,Viticulturemovespec m)
     {	ViticultureState nextState = null;
     	G.Assert(card.type==ChipType.YellowCard,"must be a yellow card");
+		pb.recordEvent("Play Yellow",card,ScoreType.PlayYellow);   	
+
     	discardCard(pb.cards,card,replay,PlayCardMessage);
     	if(pb.hasInn()) { changeCash(pb,1,pb.destroyStructureWorker,replay); }
        	if(pb.hasTapRoom()) { addContinuation(Continuation.DiscardWineFor2VP); }
@@ -5862,7 +5895,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
        	case Discard4CardsFor3: // auctioneer
        		{
        		discardSelectedCards(pb,replay);
-       		changeScore(pb,3,replay,Auctioneer,ViticultureChip.AuctioneerCard,ScoreType.YellowCard);
+       		changeScore(pb,3,replay,Auctioneer,ViticultureChip.AuctioneerCard,ScoreType.ScoreYellow);
        		}
        		break;
     	case DiscardCards:
@@ -5959,7 +5992,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
          	if((resetState==ViticultureState.BuildAtDiscount2)
          			&& (cost>=5))
          		{
-         		changeScore(pb,1,replay,Blacksmith,ViticultureChip.BlacksmithCard,ScoreType.YellowCard);	// also score a VP
+         		changeScore(pb,1,replay,Blacksmith,ViticultureChip.BlacksmithCard,ScoreType.ScoreYellow);	// also score a VP
          		}
          	if(isStructureCard)
          		{ changeScore(pb,1,replay,BuildStructureMode,chip,ScoreType.OrangeCard);
@@ -5979,7 +6012,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
         		break;
         	case BuildStructureVP:	// from designer
         		if(pb.nStructuresWithValueAtLeast(0)>=6) 
-        		{ changeScore(pb,2,replay,Designer,ViticultureChip.DesignerCard,ScoreType.BlueCard); 
+        		{ changeScore(pb,2,replay,Designer,ViticultureChip.DesignerCard,ScoreType.ScoreBlue); 
         		}
         		break;
         	case BuildStructureForBeforePlant:
@@ -5987,7 +6020,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
         		break;
         	case BuildAtDiscount2forVP:	// handyman
         		if(whoseTurn!=targetPlayer) 
-        		{ changeScore(pbs[targetPlayer],1,replay,Handyman,ViticultureChip.HandymanCard,ScoreType.YellowCard); }	// give the trigger 1 vp
+        		{ changeScore(pbs[targetPlayer],1,replay,Handyman,ViticultureChip.HandymanCard,ScoreType.ScoreYellow); }	// give the trigger 1 vp
     			do {
     				nextState = setNextPlayerInCycle();
       				pb = pbs[whoseTurn];
@@ -6011,7 +6044,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
 			break;
 		case Harvest3Optional:
 			if(doHarvest(pb,replay)==3) 
-			{ changeScore(pb,2,replay,Reaper,ViticultureChip.ReaperCard,ScoreType.BlueCard); 
+			{ changeScore(pb,2,replay,Reaper,ViticultureChip.ReaperCard,ScoreType.ScoreBlue); 
 			}
 			break;
 		case Harvest2AndMake3:
@@ -6034,7 +6067,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
 				)
 			{	// we succeeded and the number of vines will be 6
 				//p1("Plant1For2VPVolume payoff");
-				changeScore(pb,2,replay,Grower,ViticultureChip.GrowerCard,ScoreType.YellowCard);
+				changeScore(pb,2,replay,Grower,ViticultureChip.GrowerCard,ScoreType.ScoreYellow);
 			}
 			//$FALL-THROUGH$
 		case PlantVine4ForVP:
@@ -6074,14 +6107,14 @@ public int getMaxRevisionLevel() { return(REVISION); }
 				switch(resetState)
 				{
 				case Uproot2For3: //horticulturist
-					changeScore(pb,3,replay,Horticulturist,ViticultureChip.HorticulturistCard,ScoreType.YellowCard);
+					changeScore(pb,3,replay,Horticulturist,ViticultureChip.HorticulturistCard,ScoreType.ScoreYellow);
 					break;
 				case Uproot1For2: // sharecropper or planter
 					changeScore(pb,2,replay,
 								(cardBeingResolved == ViticultureChip.SharecropperCard) 
 									? Sharecropper
 									: Planter ,
-								ViticultureChip.SharecropperCard,ScoreType.YellowCard);
+								ViticultureChip.SharecropperCard,ScoreType.ScoreYellow);
 					break;
 				case HarvestOrUproot:
 				default: 
@@ -6116,7 +6149,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
 				if(vineCard.totalVineValue()==4)
 				{
 					//p1("overseer payoff");
-					changeScore(pb,1,replay,Overseer,ViticultureChip.OverseerCard,ScoreType.YellowCard);
+					changeScore(pb,1,replay,Overseer,ViticultureChip.OverseerCard,ScoreType.ScoreYellow);
 				}
 				break;
 			case Plant1For2VPDiversity: // agriculturist
@@ -6130,7 +6163,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
 					if(profile.size()>=3) 
 						{ 
 						//p1("agriculturist payoff");
-						changeScore(pb,2,replay,Grower,ViticultureChip.GrowerCard,ScoreType.YellowCard); 	// 2 points for 3 types of grape
+						changeScore(pb,2,replay,Grower,ViticultureChip.GrowerCard,ScoreType.ScoreYellow); 	// 2 points for 3 types of grape
 						}
 				}
 				break;
@@ -6227,7 +6260,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
 		case Discard2CardsFor2VP: // benefactor
 			G.Assert(pb.selectedCards.height()==2,"discarding 2 cards");
 			discardSelectedCards(pb,replay);
-			changeScore(pb,2,replay,Benefactor,ViticultureChip.BenefactorCard,ScoreType.BlueCard);
+			changeScore(pb,2,replay,Benefactor,ViticultureChip.BenefactorCard,ScoreType.ScoreBlue);
 			break;
 		case Discard3CardsAnd1WineFor3VP: //entertainer
 			{
@@ -6235,14 +6268,14 @@ public int getMaxRevisionLevel() { return(REVISION); }
 			G.Assert(pb.selectedCards.height()==3 && pb.selectedCells.size()==1,"expect selected");
 			removeTop(pb.selectedCells.pop(),replay);
 			discardSelectedCards(pb,replay);
-			changeScore(pb,3,replay,Entertainer,ViticultureChip.EntertainerCard,ScoreType.BlueCard);
+			changeScore(pb,3,replay,Entertainer,ViticultureChip.EntertainerCard,ScoreType.ScoreBlue);
 			}
 			break;
        	case Sell1VPfor3: // banker
        		switch(cardResolution)
        		{
        		case Choice_A:
-       			changeScore(pb,-1,replay,Banker,ViticultureChip.BankerCard,ScoreType.YellowCard);
+       			changeScore(pb,-1,replay,Banker,ViticultureChip.BankerCard,ScoreType.ScoreYellow);
        			changeCash(pb,3,yokeCash,replay);
        			String msg = pb.getRooster().colorPlusName()+" + $2 $1 - 1VP ";
        			logRawGameEvent(msg);
@@ -6410,7 +6443,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
            		break;
         	case DiscardGrapeOrWine: //promoter
         		changeResidual(pb,1,replay);
-        		changeScore(pb,1,replay,Promoter,ViticultureChip.PromoterCard,ScoreType.BlueCard);
+        		changeScore(pb,1,replay,Promoter,ViticultureChip.PromoterCard,ScoreType.ScoreBlue);
         		break;
         	case DiscardWineForCashAndVP: // taster
         		{
@@ -6425,24 +6458,24 @@ public int getMaxRevisionLevel() { return(REVISION); }
         		{	//p1("best value discard payoff");
         			if(p.hasWineWithValue(value)) { best=false; } 
         		}
-        		if(best) { changeScore(pb,2,replay,Taster,ViticultureChip.TasterCard,ScoreType.BlueCard); }
+        		if(best) { changeScore(pb,2,replay,Taster,ViticultureChip.TasterCard,ScoreType.ScoreBlue); }
         		}
         		break;
         	case DiscardWineFor3VP:	// judge
         		{
 	        	int value = ViticultureChip.minimumWineValue(sold.rackLocation())+sold.row;
-        		if(value>=4) { changeScore(pb,3,replay,Judge,ViticultureChip.JudgeCard,ScoreType.BlueCard); }
+        		if(value>=4) { changeScore(pb,3,replay,Judge,ViticultureChip.JudgeCard,ScoreType.ScoreBlue); }
         		else { G.Error("shouldn't discard for no benefit"); }
         		}
         		break;
         	case DiscardWineFor2VP: // governess or tap room
         		changeScore(pb,2,replay,triggerCard.cardName,triggerCard,
-        				triggerCard==ViticultureChip.GovernessCard ? ScoreType.BlueCard : ScoreType.OrangeCard);
+        				triggerCard==ViticultureChip.GovernessCard ? ScoreType.ScoreBlue : ScoreType.OrangeCard);
         		break;
         	case DiscardWineFor4VP: //wine critic
         		{
 	        	int value = ViticultureChip.minimumWineValue(sold.rackLocation())+sold.row;
-        		if(value>=7) { changeScore(pb,4,replay,WineCritic,ViticultureChip.WineCriticCard,ScoreType.BlueCard); }
+        		if(value>=7) { changeScore(pb,4,replay,WineCritic,ViticultureChip.WineCriticCard,ScoreType.ScoreBlue); }
         		else { G.Error("Shouldn't discard for no benefit"); }
         		}
         		break;
@@ -6674,7 +6707,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
         			PlayerBoard toplayer = pbs[mm2.from_col-'A'];
         			changeCash(pb,-2,toplayer.cashDisplay,replay);
         			changeCash(toplayer,2,pb.cashDisplay,replay);
-        			changeScore(pb,1,replay,"Wedding party",ViticultureChip.WeddingPartyCard,ScoreType.YellowCard);
+        			changeScore(pb,1,replay,"Wedding party",ViticultureChip.WeddingPartyCard,ScoreType.ScoreYellow);
         		}
         	}
         	setState(ViticultureState.Confirm);
@@ -6725,7 +6758,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
     				}
     			}
     			int ntypes = G.bitCount(typeMask);
-    			changeScore(pb,ntypes,replay,BottlerBonus,ViticultureChip.BottlerCard,ScoreType.BlueCard);
+    			changeScore(pb,ntypes,replay,BottlerBonus,ViticultureChip.BottlerCard,ScoreType.ScoreBlue);
     			break;
     		case Make2WinesVP:
     			//p1("supervisor");
@@ -6734,7 +6767,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
     			{	Viticulturemovespec mv = (Viticulturemovespec)pendingMoves.elementAt(lim);
     			    if (mv.dest == ViticultureId.Champaign) { nChamp++; } 
     			}
-    			changeScore(pb,nChamp,replay,SupervisorBonus,ViticultureChip.SupervisorCard,ScoreType.BlueCard);
+    			changeScore(pb,nChamp,replay,SupervisorBonus,ViticultureChip.SupervisorCard,ScoreType.ScoreBlue);
     			break;
     		 
     		case MakeMixedWinesForVP:

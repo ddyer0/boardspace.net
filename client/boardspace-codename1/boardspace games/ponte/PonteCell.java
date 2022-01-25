@@ -3,15 +3,13 @@ package ponte;
 import lib.OStack;
 import lib.Random;
 import online.game.stackCell;
-import ponte.PonteConstants.Bridge;
-import ponte.PonteConstants.PonteId;
 
 class CellStack extends OStack<PonteCell>
 {
 	public PonteCell[] newComponentArray(int n) { return(new PonteCell[n]); }
 }
 
-public class PonteCell extends stackCell<PonteCell,PonteChip> 
+public class PonteCell extends stackCell<PonteCell,PonteChip> implements PonteConstants
 {	public int sweepCounter = 0;
 	public boolean underBridge = false;
 	public PonteBlob blob = null;
@@ -184,7 +182,7 @@ public class PonteCell extends stackCell<PonteCell,PonteChip>
 		return(true);	// no B side
 	}
 	
-	boolean canPlaceBridge(Bridge b)
+	boolean canPlaceBridge(PonteChip.Bridge b)
 	{	int dx = b.otherEnddx;
 		int dy = b.otherEnddy;
 		if((notShadowB(dx,dy)

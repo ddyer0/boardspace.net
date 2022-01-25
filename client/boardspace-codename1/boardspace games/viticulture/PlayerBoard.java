@@ -34,6 +34,17 @@ public class PlayerBoard
 			message = msg;
 			visual = hint;
 		}
+		public int changeSummary() {
+			switch(type)
+			{
+			case PlayBlue:
+			case PlayYellow:
+			case ReceiveBlue:
+			case ReceiveYellow:
+				return(1);	// count events for these that don't directly change the score
+			default: return(change);
+			}
+		}
 	}
 	class ScoreStack extends OStack<ScoreEvent>
 	{
@@ -136,8 +147,12 @@ public class PlayerBoard
 			scoreString.append(statCount[ord]);
 			scoreString.append(" ");
 			scoreString.append(e.name());
+			int ss = statSummary[ord];
+			if(ss!=0)
+			{
 			scoreString.append(" for ");
-			scoreString.append(statSummary[ord]);
+			scoreString.append(ss);
+			}
 			scoreString.append("\n");
 			}
 		}
@@ -457,27 +472,34 @@ public class PlayerBoard
 		case 1:	//alaena
 			cards.addChip(bb.greenCards.removeTop());
 			cards.addChip(bb.yellowCards.removeTop());
+			recordEvent("Take Yellow",cards.topChip(),ScoreType.ReceiveYellow);	
 			cards.addChip(bb.purpleCards.removeTop());
 			break;
 		case 2:	//alyssa
 			cards.addChip(bb.greenCards.removeTop());
 			cards.addChip(bb.yellowCards.removeTop());
+			recordEvent("Take Yellow",cards.topChip(),ScoreType.ReceiveYellow);	
 			cards.addChip(bb.blueCards.removeTop());
+			recordEvent("Take Blue",cards.topChip(),ScoreType.ReceiveBlue);	
 			break;
 		case 3:	//deann
 			cards.addChip(bb.greenCards.removeTop());
 			cards.addChip(bb.purpleCards.removeTop());
 			cards.addChip(bb.blueCards.removeTop());
+			recordEvent("Take Blue",cards.topChip(),ScoreType.ReceiveBlue);	
 			break;
 		case 4:	//margot
 			cards.addChip(bb.yellowCards.removeTop());
+			recordEvent("Take Yellow",cards.topChip(),ScoreType.ReceiveYellow);	
 			cards.addChip(bb.purpleCards.removeTop());
 			cards.addChip(bb.blueCards.removeTop());
+			recordEvent("Take Blue",cards.topChip(),ScoreType.ReceiveBlue);	
 			break;
 		case 5:	//margret
 			cards.addChip(bb.greenCards.removeTop());
 			cards.addChip(bb.greenCards.removeTop());
 			cards.addChip(bb.yellowCards.removeTop());
+			recordEvent("Take Yellow",cards.topChip(),ScoreType.ReceiveYellow);	
 			break;
 		case 6:	//nici
 			cards.addChip(bb.greenCards.removeTop());
@@ -488,21 +510,29 @@ public class PlayerBoard
 			cards.addChip(bb.greenCards.removeTop());
 			cards.addChip(bb.greenCards.removeTop());
 			cards.addChip(bb.blueCards.removeTop());
+			recordEvent("Take Blue",cards.topChip(),ScoreType.ReceiveBlue);	
 			break;
 		case 8:	//emily
 			cards.addChip(bb.greenCards.removeTop());
 			cards.addChip(bb.yellowCards.removeTop());
+			recordEvent("Take Yellow",cards.topChip(),ScoreType.ReceiveYellow);	
 			cards.addChip(bb.yellowCards.removeTop());
+			recordEvent("Take Yellow",cards.topChip(),ScoreType.ReceiveYellow);	
 			break;
 		case 9:	//rebecca
 			cards.addChip(bb.yellowCards.removeTop());
+			recordEvent("Take Yellow",cards.topChip(),ScoreType.ReceiveYellow);	
 			cards.addChip(bb.yellowCards.removeTop());
+			recordEvent("Take Yellow",cards.topChip(),ScoreType.ReceiveYellow);	
 			cards.addChip(bb.purpleCards.removeTop());
 			break;
 		case 10: //danyel
 			cards.addChip(bb.yellowCards.removeTop());
+			recordEvent("Take Yellow",cards.topChip(),ScoreType.ReceiveYellow);	
 			cards.addChip(bb.yellowCards.removeTop());
+			recordEvent("Take Yellow",cards.topChip(),ScoreType.ReceiveYellow);	
 			cards.addChip(bb.blueCards.removeTop());
+			recordEvent("Take Blue",cards.topChip(),ScoreType.ReceiveBlue);	
 			break;
 		case 11:	//laura
 			cards.addChip(bb.greenCards.removeTop());
@@ -511,6 +541,7 @@ public class PlayerBoard
 			break;
 		case 12:	//jess
 			cards.addChip(bb.yellowCards.removeTop());
+			recordEvent("Take Yellow",cards.topChip(),ScoreType.ReceiveYellow);	
 			cards.addChip(bb.purpleCards.removeTop());
 			cards.addChip(bb.purpleCards.removeTop());
 			break;
@@ -518,29 +549,39 @@ public class PlayerBoard
 			cards.addChip(bb.purpleCards.removeTop());
 			cards.addChip(bb.purpleCards.removeTop());
 			cards.addChip(bb.blueCards.removeTop());
+			recordEvent("Take Blue",cards.topChip(),ScoreType.ReceiveBlue);	
 			break;
 		case 14:	//christine
 			cards.addChip(bb.greenCards.removeTop());
 			cards.addChip(bb.blueCards.removeTop());
+			recordEvent("Take Blue",cards.topChip(),ScoreType.ReceiveBlue);	
 			cards.addChip(bb.blueCards.removeTop());
+			recordEvent("Take Blue",cards.topChip(),ScoreType.ReceiveBlue);	
 			break;
 		case 15:	//naja
 			cards.addChip(bb.yellowCards.removeTop());
+			recordEvent("Take Yellow",cards.topChip(),ScoreType.ReceiveYellow);	
 			cards.addChip(bb.blueCards.removeTop());
+			recordEvent("Take Blue",cards.topChip(),ScoreType.ReceiveBlue);	
 			cards.addChip(bb.blueCards.removeTop());
+			recordEvent("Take Blue",cards.topChip(),ScoreType.ReceiveBlue);	
 			break;
 		case 16:	//falon
 			cards.addChip(bb.purpleCards.removeTop());
 			cards.addChip(bb.blueCards.removeTop());
+			recordEvent("Take Blue",cards.topChip(),ScoreType.ReceiveBlue);	
 			cards.addChip(bb.blueCards.removeTop());
+			recordEvent("Take Blue",cards.topChip(),ScoreType.ReceiveBlue);	
 			break;
 		case 17:	//nicole
 			cards.addChip(bb.greenCards.removeTop());
 			cards.addChip(bb.blueCards.removeTop());
+			recordEvent("Take Blue",cards.topChip(),ScoreType.ReceiveBlue);	
 			cash += 2;
 			break;
 		case 18:	//ariel
 			cards.addChip(bb.yellowCards.removeTop());
+			recordEvent("Take Yellow",cards.topChip(),ScoreType.ReceiveYellow);	
 			cards.addChip(bb.purpleCards.removeTop());
 			cash += 2;
 			break;
@@ -1196,6 +1237,10 @@ public class PlayerBoard
 		scoreString.append('\n');
 		score = Math.max(MIN_SCORE, Math.min(score+n,MAX_SCORE));
     	scoreEvents.push(new ScoreEvent(bb.season,bb.year,n,score,reason,hint,type));
+	}
+	public void recordEvent(String reason,ViticultureChip hint,ScoreType type)
+	{
+		scoreEvents.push(new ScoreEvent(bb.season,bb.year,0,0,reason,hint,type));
 	}
 	// count soldatos in a row containing this cell, or a single cell
 	public int nOpponentSoldato(ViticultureCell cell)

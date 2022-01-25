@@ -216,8 +216,8 @@ public class QuinamidMovespec extends commonMove implements QuinamidConstants
     by the constructors, and are also human readable */
     public String moveString()
     {
-		String ind = (index() >= 0) ? (index() + " ") : "";
-		String opname = D.findUnique(op)+" ";
+		String indx = indexString();
+		String opname = indx+D.findUnique(op)+" ";
         // adding the move index as a prefix provides numnbers
         // for the game record and also helps navigate in joint
         // review mode
@@ -228,25 +228,25 @@ public class QuinamidMovespec extends commonMove implements QuinamidConstants
         case MOVE_SHIFT:
         	{
         	char ch = (char)('A'+to_row); 
-        	return(ind+opname+ch+" "+shift.shortName);
+        	return(opname+ch+" "+shift.shortName);
         	}
         case MOVE_PICKB:
 		case MOVE_DROPB:
-	        return (ind+opname + to_col + " " + to_row);
+	        return (opname + to_col + " " + to_row);
 
 		case MOVE_RACK_BOARD:
-			return(ind+opname +source.shortName+" " + to_col +  " "+to_row	);
+			return(opname +source.shortName+" " + to_col +  " "+to_row	);
         case MOVE_PICK:
-            return (ind+opname+source.shortName);
+            return (opname+source.shortName);
 
         case MOVE_DROP:
-             return (ind+opname+source.shortName+ " "+to_row);
+             return (opname+source.shortName+ " "+to_row);
 
         case MOVE_START:
-            return (ind+"Start P" + player);
+            return (indx+"Start P" + player);
 
         default:
-            return (ind+opname);
+            return (opname);
         }
     }
 

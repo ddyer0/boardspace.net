@@ -248,54 +248,43 @@ public class movespec extends commonMove implements GameConstants
     by the constructors, and are also human readable */
     public String moveString()
     {
-        String ind = "";
-
-        if (index() >= 0)
-        {
-            ind += (index() + " ");
-        }
-
-        switch (op)
+		String indx = indexString();
+		String opname = indx+D.findUnique(op)+" ";
+ 
+		switch (op)
         {
         case MOVE_SETBOARD:
-        	return(ind+"SetBoard "+Zvariation.values()[to_row].shortName);
+        	return(opname+Zvariation.values()[to_row].shortName);
         	
         case MOVE_BtoB:
-            return (ind + "BtoB " + from_col + " " + from_row + " " + to_col +
+            return (opname + from_col + " " + from_row + " " + to_col +
             " " + to_row);
 
         case MOVE_BtoR:
-            return (ind + "BtoR " + from_col + " " + from_row + " " + to_rack);
+            return (opname + from_col + " " + from_row + " " + to_rack);
 
         case MOVE_RtoB:
-            return (ind + "RtoB " + from_rack + " " + color + " " + to_col +
+            return (opname + from_rack + " " + color + " " + to_col +
             " " + to_row);
 
         case MOVE_RtoR:
-            return (ind + "RtoR " + from_rack + " " + color + " " + to_rack);
+            return (opname + from_rack + " " + color + " " + to_rack);
 
         case MOVE_R_PLUS:
-            return ("R+ " + to_col + " " + to_row);
+            return (opname + to_col + " " + to_row);
 
         case MOVE_R_MINUS:
-            return (ind + "R- " + from_col + " " + from_row);
+            return (opname+ from_col + " " + from_row);
 
         case MOVE_START:
-            return (ind + "Start P" + player);
+            return (indx + "Start P" + player);
 
         case MOVE_SWAP: 
-        	return(ind+SWAP);
-        	
         case MOVE_EDIT:
-            return (ind + EDIT);
-
         case MOVE_RESIGN:
-            return (ind + RESIGN);
-
         case MOVE_DONE:
-            return (ind + "Done");
         default:
-        	return( ind+ D.findUnique(op));
+        	return( opname);
         }
     }
 
