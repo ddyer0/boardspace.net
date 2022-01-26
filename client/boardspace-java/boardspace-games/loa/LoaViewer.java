@@ -177,8 +177,7 @@ public class LoaViewer extends commonCanvas implements UIC,GameLayoutClient
    int SQUARESIZE = 0;
  
     public commonMove ParseNewMove(String st, int player)
-    {
-        return (new Move_Spec(st, b.whoseTurnStone()));
+    {	return new Move_Spec(st, b.whoseTurnStone(),player);
     }
 
     private Move_Spec currentMove()

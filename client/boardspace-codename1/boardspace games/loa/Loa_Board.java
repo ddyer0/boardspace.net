@@ -114,10 +114,7 @@ public class Loa_Board extends BaseBoard implements BoardProtocol,UIC
         return (size);
     }
 
-    public LoaMove newMove(String spec)
-    {
-        return (new Move_Spec(spec, whoseTurnStone()));
-    }
+
     public boolean WinForPlayer(int idx)
     { boolean over = GameOver() ;
 	  if(over) 

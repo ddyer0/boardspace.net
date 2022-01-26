@@ -19,9 +19,10 @@ public class Move_Spec extends Stone_Spec implements UIC, LoaMove
     public String playerString() { return(color.Name_as_String()); }
     
     // initializers 
-    Move_Spec(String spec, Stone_Type c)
+    Move_Spec(String spec, Stone_Type c,int p)
     {
         color = c;
+        player = p;
         parse(spec);
     }
 

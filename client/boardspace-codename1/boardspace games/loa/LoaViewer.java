@@ -47,6 +47,7 @@ public class LoaViewer extends commonCanvas implements UIC,GameLayoutClient
     private Rectangle points[] = addRect("points",2);
     private Rectangle undoRect =  addRect("undo") ;
     private Rectangle repRect = addRect("reprect");
+ 
     /* end of viewer protocol methods */
     public boolean invalid = true;
     private boolean last_use_grid = true;
@@ -175,8 +176,7 @@ public class LoaViewer extends commonCanvas implements UIC,GameLayoutClient
    int SQUARESIZE = 0;
 
     public commonMove ParseNewMove(String st, int player)
-    {
-        return (new Move_Spec(st, b.whoseTurnStone()));
+    {	return new Move_Spec(st, b.whoseTurnStone(),player);
     }
 
     private Move_Spec currentMove()
