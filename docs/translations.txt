@@ -1,0 +1,36 @@
+
+Boardspace translations for languages other than English are stored
+in an online database, which can be editing using the script
+https://boardspace.net/cgi-bin/translation.cgi
+
+Permission to use this script is granted by the "is_translator" property
+of a user account at boardspace.  Which can be set using the script
+https://boardspace.net/cgi-bin/edit.cgi with the supervisor capability
+
+The primary list of keys in the translations comes from 2 sources, #1 is
+the set of cgi scripts themselves, which self-create keys simply by using
+them.  #2 is all the java files in the system.   Conventionally, java
+source files maintain lists of keys, most of which are "self keys" where
+the key is also the english translation.  
+
+The java project "boardspace strings" collects the keys from all the active
+files, uploads them to the database, does some maintenance, and downloads
+the resulting database as a set of "<languagename>.data" files.  These
+are positioned so that the build script for new desktop releases will 
+automatically include the latest translations. 
+
+The translations for desktop are bundled as though the were a game, in 
+"languages.jar".  
+
+The translations for mobiles have to be manually edited into "languages.res"
+
+The overall structure is intended so that the exact set of strings in the
+active apps isn't a critical factor; if anything is out of sync with the
+latest distributed apps, nothing bad will happen.
+
+If anything ever does seriously damage the translations database, it can be 
+recovered (with considerable inconvenience) from the database backups.  In
+principle it could also be reconstructed from the language data files, but
+there isn't a program to do that.
+
+

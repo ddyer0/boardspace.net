@@ -19,7 +19,7 @@
 		<link>
 			<name>boardspace-games</name>
 			<type>2</type>
-			<location>G:/share/projects/boardspace-java/boardspace-games</location>
+			<location>F:/github/boardspace.net/client/boardspace-java/boardspace-games</location>
 		</link>
 	</linkedResources>
 	<filteredResources>
@@ -57,15 +57,6 @@
 			<matcher>
 				<id>org.eclipse.ui.ide.multiFilter</id>
 				<arguments>1.0-name-matches-false-false-hires_images</arguments>
-			</matcher>
-		</filter>
-		<filter>
-			<id>1508195230019</id>
-			<name>boardspace-games</name>
-			<type>10</type>
-			<matcher>
-				<id>org.eclipse.ui.ide.multiFilter</id>
-				<arguments>1.0-name-matches-false-false-hires-images</arguments>
 			</matcher>
 		</filter>
 	</filteredResources>
