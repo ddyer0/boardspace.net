@@ -2656,6 +2656,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	      if(sess!=null && (sess!=users.primaryUser().session())) { sess.resetRobotname(true);}
 	      lobby.PutInSess(users.primaryUser(),sess,playpos);
 	      lobby.updatePending = true;
+	      lobby.sendMyInfo = true;
 	      if(sess!=null)
 	        {// don't send submode here, so we won't change the setting based on possibly
 	         // incomplete information
@@ -2666,6 +2667,11 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	    	 lobby.sendMyInfo = true;
 
 	        }
+	      else {
+	    	  lobby.movingToSess = 0;
+	    	  sendMessage(NetConn.SEND_LOBBY_INFO+"0 0 0 0");
+	    	  sendMessage(NetConn.SEND_GROUP+KEYWORD_IMIN+" 0 0 0 0");
+	      }
 	  }
 	  
 	public void handleMouseUpEvent(int x,int y)
