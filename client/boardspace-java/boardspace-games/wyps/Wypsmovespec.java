@@ -245,7 +245,7 @@ public class Wypsmovespec extends commonMPMove implements WypsConstants
             dest = WypsId.valueOf(msg.nextToken());
             to_col = G.CharToken(msg);
             to_row = G.IntToken(msg);
-            mapped_row = -1;
+            mapped_row = msg.hasMoreTokens() ? G.IntToken(msg) : -1;
             break;
 
         case MOVE_START:
@@ -359,7 +359,7 @@ public class Wypsmovespec extends commonMPMove implements WypsConstants
 			
 		case MOVE_REPLACE:
         case MOVE_DROP:
-            return G.concat(opname,dest.shortName()," ",to_col," ",to_row);
+            return G.concat(opname,dest.shortName()," ",to_col," ",to_row," ",mapped_row);
         case MOVE_PLAYWORD:
         	return G.concat(opname,to_col," ",to_row," ",directionMap," ",word," ",from_col," ",from_row);
         case MOVE_START:

@@ -73,9 +73,10 @@ public interface WypsConstants
 	{
     	BoardLocation,
     	Rack,
-    	RackMap,
     	LocalRack,
-    	RemoteRack,
+    	RackMap,
+    	//LocalRack,
+    	//RemoteRack,
     	DrawPile,
     	EmptyBoard,
      	Swap,

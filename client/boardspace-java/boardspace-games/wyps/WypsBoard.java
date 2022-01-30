@@ -571,10 +571,20 @@ class WypsBoard extends hexBoard<WypsCell> implements BoardProtocol,WypsConstant
     {	int full = map[0].length;
     	int max = revision<103 ? full : handSize;
     	int off = (full-max)/2;
-    	for(int []row : map)
-    	{	for(int i=0; i<row.length;i++) 
-    			{ row[i] = (i>=off && i<max+off) ? i-off : -1; 
+    	for(int rown = 0;rown<map.length;rown++)
+    	{	int row[] = map[rown];
+    		WypsCell cells[] = rack[rown];
+    		int cellIdx = 0;
+    		int rowIdx = off;
+    		AR.setValue(row,-1);
+    		while(cellIdx<cells.length)
+    		{
+    			if(cells[cellIdx].topChip()!=null)
+    			{
+    				row[rowIdx++] = cellIdx;
     			}
+    			cellIdx++;
+    		}
     	}
     }
     
@@ -709,7 +719,7 @@ class WypsBoard extends hexBoard<WypsCell> implements BoardProtocol,WypsConstant
 	    // set the initial contents of the board to all empty cells
         animationStack.clear();
         moveNumber = 1;
-
+        validateMap();
         // note that firstPlayer is NOT initialized here
     }
 
@@ -1211,12 +1221,10 @@ class WypsBoard extends hexBoard<WypsCell> implements BoardProtocol,WypsConstant
 	    	mapPick[idx]=-1;
 	    	mapTarget[idx]=-1;
 	    	int map[] = rackMap[idx];
-	    	validateMap(idx);
 	    	for(int i=0;i<map.length;i++) { if(map[i]==c.row) { map[i]=-1; break; }} 
 	      	WypsChip po = c.removeTop();
 	        lastPicked = pickedObject = po;
 	     	lastDroppedObject = null;
-	     	validateMap(c.col-'A'); 
 	    	}
 			break;
 		case DrawPile:
@@ -1335,6 +1343,7 @@ class WypsBoard extends hexBoard<WypsCell> implements BoardProtocol,WypsConstant
     private void drawNewTiles(replayMode replay)
     {	WypsCell myrack[] = rack[whoseTurn];
     	WypsCell mapped[] = mappedRack[whoseTurn];
+    	int mymap[] = rackMap[whoseTurn];
     	int n=0;
     	validateMap(whoseTurn);
     	for(WypsCell c : myrack) { if(c.topChip()!=null) { n++; }}
@@ -1356,9 +1365,18 @@ class WypsBoard extends hexBoard<WypsCell> implements BoardProtocol,WypsConstant
     				  animationStack.push(cd);
     			  }
     			  }
+		 		int empty = -1;
+				boolean filled = false;
+				int rackIdx = c.row;
+				for(int mapidx = 0;!filled && mapidx<mapped.length; mapidx++)
+				{	int mapv = mymap[mapidx];
+					if(mapv==rackIdx) { filled = true; }
+					else if((empty<0) && (mapv<0)) { empty = mapidx; }
+				}
+				if(!filled) { mymap[empty] = rackIdx; }
     		}
     	if(revision>=104)
-    	{ // mark the permanantly empty cells are placable
+    	{ // mark the permanently empty cells are placeable
        	int ma[] = rackMap[whoseTurn];
     	for(int i=0;i<ma.length;i++)
     		{	
@@ -1366,6 +1384,7 @@ class WypsBoard extends hexBoard<WypsCell> implements BoardProtocol,WypsConstant
     		if((v>=0) && (myrack[v].topChip()==null)) { ma[i] = -1; }
     		}
     	}
+    	validateMap(whoseTurn);
 
     }
     
@@ -1632,7 +1651,7 @@ class WypsBoard extends hexBoard<WypsCell> implements BoardProtocol,WypsConstant
     	}}
     	int direction = dest>=pick ? -1 : 1;
     	
-    	if(replay==replayMode.Single)
+    	if((replay==replayMode.Single) && (from!=null))
 		{
 			animationStack.push(from);
 			animationStack.push(rcells[dest]);
@@ -1650,14 +1669,12 @@ class WypsBoard extends hexBoard<WypsCell> implements BoardProtocol,WypsConstant
 			dest += direction;
 		}
 		map[dest] = moving;
-		validateMap(who);
 	}
 	
 
     public boolean Execute(commonMove mm,replayMode replay)
     {	Wypsmovespec m = (Wypsmovespec)mm;
         if(replay!=replayMode.Replay) { animationStack.clear(); }
-        //validateMap(whoseTurn);
         //G.print("E "+m+" for "+whoseTurn+" "+board_state);
         switch (m.op)
         {
@@ -1695,7 +1712,6 @@ class WypsBoard extends hexBoard<WypsCell> implements BoardProtocol,WypsConstant
         	{	int idx = map[lim];
         		if((idx>=0) && (r[idx].topChip()==null)) { map[lim]=-1; }
         	}
-        	validateMap(whoseTurn);
         	setNextStateAfterDrop(null,null,replay);
         	if(flipTiles())
         		{
@@ -1793,7 +1809,6 @@ class WypsBoard extends hexBoard<WypsCell> implements BoardProtocol,WypsConstant
     		break;
     		
         case MOVE_REPLACE:
-        	if(pickedObject!=null)
         	{
 	    	int who = m.to_col-'A';
 	    	WypsCell rcells[] = mappedRack[who];
@@ -1807,10 +1822,7 @@ class WypsBoard extends hexBoard<WypsCell> implements BoardProtocol,WypsConstant
 	    	mapTarget[who] = -1;
 	    	dropAndSlide(who,rcells[pick],moving,pick,dest,replay);
 	    	}
-        	else {
-        		G.print("Empty drop "+m);
-        		m.op = MOVE_CANCELLED;
-        	}
+
 	    	break;
             
         case MOVE_REMOTELIFT:
@@ -1829,13 +1841,11 @@ class WypsBoard extends hexBoard<WypsCell> implements BoardProtocol,WypsConstant
         	break;
         case MOVE_MOVETILE:
         	{
-        	validateMap(whoseTurn);
         	WypsCell src = getCell(m.source,m.from_col,m.from_row);
         	WypsCell dest = getCell(m.dest,m.to_col,m.to_row);
         	pickObject(src);
         	WypsChip po = m.chip = pickedObject;
         	dropObject(dest);
-           	validateMap(whoseTurn);
            	// no animation needed because this is really from 
         	// a pick/drop pair sourced in the rack
             if(replay==replayMode.Single)
@@ -1872,18 +1882,29 @@ class WypsBoard extends hexBoard<WypsCell> implements BoardProtocol,WypsConstant
     		break;
 
         case MOVE_DROP: // drop on chip pool;
-        	if(pickedObject!=null)
-        	{
-            WypsCell dest = getCell(m.dest,m.to_col,m.to_row);
-            if(isASource(dest)) { unPickObject(dest); }
-            else 
-            { dropObject(dest); 
-            }
+        	{	G.Assert(m.dest==WypsId.Rack,"should be to rack");
+        		WypsCell dest = getCell(m.dest,m.to_col,m.to_row);
+        		if(isASource(dest)) 
+        			{ unPickObject(dest); 
+        			}   
+        		else {
+        			dropObject(dest);
+        		}
+  		  		int who = m.to_col-'A';
+  		  		int dl = m.to_row; 
+  		  		int slot = m.mapped_row;
+  		  		int map[] = rackMap[who];
+  		  		int mapl = map.length;
+  		  		int dx = 0;
+  		  		while((slot<0) && dx<mapl)
+  		  		{	// find an empty slot
+  		  			if((dl+dx<mapl) && (map[dl+dx]<0)) { slot = dl+dx; }
+  		  			else if((dl-dx>=0) && (map[dl]<0)) { slot = dl-dx; }
+  		  			dx++;
+  		  		}
+  		  		dropAndSlide(who,null,dl,-1,slot,replay);
         	}
-        	else {
-        		G.print("Empty drop "+m);
-        		m.op = MOVE_CANCELLED;
-        	}
+
            break;
  
         case MOVE_START:
@@ -1916,7 +1937,9 @@ class WypsBoard extends hexBoard<WypsCell> implements BoardProtocol,WypsConstant
 
         if(gameEvents.size()>0) { m.gameEvents = gameEvents.toArray(); gameEvents.clear(); }
         //System.out.println("Ex "+m+" for "+whoseTurn+" "+state);
-        //validateMap(whoseTurn);
+        
+        validateMap();
+        
         return (true);
     }
     public boolean LegalToHitPool(boolean picked)
@@ -2307,6 +2330,11 @@ public int checkDictionaryWords(DictionaryHash subDictionary,WypsCell rack[],lon
  		}
  	GC.Text(gc, false, xpos, ypos, -1, 0,clt, null, txt);
  }
+ public void validateMap()
+ {
+	 validateMap(0);
+	 validateMap(1);
+ }
  @SuppressWarnings("unused")
  public void validateMap(int forplayer)
  {		int used = 0;
@@ -2329,7 +2357,7 @@ public int checkDictionaryWords(DictionaryHash subDictionary,WypsCell rack[],lon
  				else { G.Error("index "+idx+" maps to empty", idx); }
  			}
  		}
- 		G.Assert(nmapped==used,"map not complete");
+ 		G.Advise(nmapped==used,"map not complete");
  		}
 
 }

@@ -400,11 +400,9 @@ public class WypsViewer extends CCanvas<WypsCell,WypsBoard> implements WypsConst
     	int tileSize = (int)(xstep*1);
     	int cx = G.Left(rack)+(w-xstep*nsteps)/2+xstep/2;
        	GC.frameRect(gc, Color.black, rack);
-
        	//.print("");
        	// for remote viewers, always use this size
-       	if(remoteViewer>=0) { CELLSIZE = tileSize; }
-       	
+       	/*
        	if(G.debug())
        	{
        	int cx0 = cx;
@@ -419,7 +417,7 @@ public class WypsViewer extends CCanvas<WypsCell,WypsBoard> implements WypsConst
       	if(dtop!=null) { d.drawChip(gc, this, dtop, tileSize*2/3, cx0, cy+tileSize*2/3, null);}
       	cx0 += xstep;
        	}}}
-
+       	 */
     	for(int idx = 0;idx<nsteps;idx++)
 		{
     	int mapValue = map[idx];
@@ -455,7 +453,8 @@ public class WypsViewer extends CCanvas<WypsCell,WypsBoard> implements WypsConst
     		StockArt.SmallO.drawChip(gc,this,tileSize,cx,cy,null);
     		
     	}  
-     	if((canPick||canDrop) && G.pointInRect(highlight, cx-tileSize/2,cy-h/tileSize,h,h))
+    	boolean ptin =  G.pointInRect(highlight, cx-tileSize/2,cy-tileSize/2,tileSize,h);
+     	if((canPick||canDrop) && ptin)
     	{
    			highlight.hit_x = cx;
     		highlight.hit_y = cy;
@@ -468,35 +467,21 @@ public class WypsViewer extends CCanvas<WypsCell,WypsBoard> implements WypsConst
     				}
     		    if(c!=null)
     		    {
-    			highlight.hitObject = G.concat("dropFromBoard ",c.col," ",c.row," ", idx);	
-    			highlight.hitCode = WypsId.Rack ;
+    			highlight.hitObject = G.concat("Drop Rack ",c.col," ",c.row," ", idx);	
     		    }
     		    else { highlight.spriteColor = null; }
-    		}
-    		else if(remoteViewer>=0)
-    		{	
-    			if(localDrop)
-    			{
-    				highlight.hitObject = G.concat("remotedrop Rack ",myCol," ",idx);
-    			}
-    			else
-    			{
-    				// pick by a remote viewer
-    				highlight.hitObject = G.concat("rlift Rack ",myCol," ",idx," ",map[idx]);
-    			}
-    			highlight.hitCode = WypsId.RemoteRack ;
+    			highlight.hitCode = WypsId.Rack;
     		}
     		else if(localDrop )
-    		{	
-    			highlight.hitObject = G.concat("replace Rack ",myCol," ",idx);
+    		{
+    			highlight.hitObject = G.concat("Replace Rack ",myCol," ",idx);
     			highlight.hitCode = WypsId.LocalRack;
-    			
-    		}
+	
+        			}
     		else
-    		{   highlight.hitObject = G.concat("lift Rack ",myCol," ",idx," ",map[idx]);
+    		{   highlight.hitObject = G.concat("Lift Rack ",myCol," ",idx," ",map[idx]);
     			highlight.hitCode = WypsId.LocalRack;
     		}
-			
     	}
 		cx += xstep;
 		}
@@ -519,10 +504,6 @@ public class WypsViewer extends CCanvas<WypsCell,WypsBoard> implements WypsConst
     
     private WypsCell getPickedRackCell(HitPoint highlight)
     {
-    	if(remoteViewer>=0)
-    	{	WypsCell c = getMovingTile(remoteViewer);
-    		if(c!=null) { return(c); }
-    	}
     	{int ap = allowed_to_edit||G.offline() ? bb.whoseTurn : getActivePlayer().boardIndex;
     	 WypsCell c = getMovingTile(ap);
     	 if(c!=null) { return(c); }
@@ -1192,14 +1173,12 @@ public void setLetterColor(Graphics gc,WypsBoard gb,WypsCell cell)
 	    {
 	    default: break;
 	       case Rack:
-	        case LocalRack:
-	        case RemoteRack:
+	       case LocalRack:
 	    		{
 	    		// drawing the rack prepares the move
 	            String msg = (String)hp.hitObject;
 	            // transmit only drop from the board, not shuffling of the rack
-	            boolean transmit = (hitObject==WypsId.Rack) 
-	            		|| ((bb.whoseTurn==remoteViewer)&&(hitObject==WypsId.RemoteRack));
+	            boolean transmit = (hitObject==WypsId.Rack);
 	            if(msg.startsWith("remotedrop "))
 	        	{
 	        		PerformAndTransmit(G.replace(msg,"remotedrop","replace"),false,replayMode.Live);
@@ -1246,7 +1225,7 @@ public void setLetterColor(Graphics gc,WypsBoard gb,WypsCell cell)
         	else if (performVcrButton(hitCode, hp)) {}	// handle anything in the vcr group
             else
             {
-            	throw G.Error("Hit Unknown object " + hp);
+            	throw G.Error("Hit Unknown object " , hp);
             }
         	break;
         case Swap:
@@ -1284,7 +1263,14 @@ public void setLetterColor(Graphics gc,WypsBoard gb,WypsCell cell)
         	}
         	break;
         case LocalRack:
-        case RemoteRack:
+        	break;
+        case Rack:
+			{
+			// drawing the rack prepares the move
+	        String msg = (String)hp.hitObject;
+	        // transmit only drop from the board, not shuffling of the rack
+	        PerformAndTransmit(msg,true,replayMode.Live);
+	    	}
          	break;
         case DrawPile:
         case EmptyBoard:
