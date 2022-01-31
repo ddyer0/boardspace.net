@@ -1240,7 +1240,7 @@ public class PlayerBoard
 	}
 	public void recordEvent(String reason,ViticultureChip hint,ScoreType type)
 	{
-		scoreEvents.push(new ScoreEvent(bb.season,bb.year,0,0,reason,hint,type));
+		scoreEvents.push(new ScoreEvent(bb.season,bb.year,0,score,reason,hint,type));
 	}
 	// count soldatos in a row containing this cell, or a single cell
 	public int nOpponentSoldato(ViticultureCell cell)
