@@ -757,6 +757,7 @@ class WypsBoard extends hexBoard<WypsCell> implements BoardProtocol,WypsConstant
         for(Option o : Option.values()) { setOptionValue(o,from_b.getOptionValue(o)); }
         getCell(occupiedCells,from_b.occupiedCells);
         getCell(emptyCells,from_b.emptyCells);
+        getCell(lastLetters,from_b.lastLetters);
         AR.copy(nOnBoard,from_b.nOnBoard);
         sameboard(from_b); 
     }
@@ -1968,6 +1969,7 @@ class WypsBoard extends hexBoard<WypsCell> implements BoardProtocol,WypsConstant
         default:
         	throw G.Error("Not expecting Legal Hit state " + board_state);
         case FirstPlay: 
+        case FlipTiles:
         	return(false); 
         case Confirm:
         case ConfirmFirstPlay:
@@ -2280,7 +2282,18 @@ public int checkDictionaryWords(DictionaryHash subDictionary,WypsCell rack[],lon
  	G.print("accepted ",candidateWords.accepted," declined ",candidateWords.declined);
  }
 
-
+ private void addFlipTileMoves(CommonMoveStack all,int who)
+ {
+	 for(int lim = lastLetters.size()-1; lim>=0; lim--)
+	 {	
+		 WypsCell c = lastLetters.elementAt(lim);
+		 WypsChip ch = c.topChip();
+		 if(ch.getColor()!=playerColor[who])
+		 {
+			 all.push(new Wypsmovespec(MOVE_FLIP,c.col,c.row,who));
+		 }
+	 }
+ }
  CommonMoveStack  GetListOfMoves()
  {	CommonMoveStack all = new CommonMoveStack();
     recordProgress(0);
@@ -2288,6 +2301,9 @@ public int checkDictionaryWords(DictionaryHash subDictionary,WypsCell rack[],lon
     switch(board_state)
     {
     default: throw G.Error("Not expecting ", board_state);
+    case FlipTiles:
+    	addFlipTileMoves(all,whoseTurn);
+    	break;
     case Confirm:
     case ConfirmPass:
     case FirstPlay:

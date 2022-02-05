@@ -33,7 +33,8 @@ import online.game.*;
  */
 
 class TabGameBoard extends rectBoard<TabCell> implements BoardProtocol,TabConstants
-{	
+{	public static int REVISION = 101;		// revision 101 fixes the "no move" bug
+	public int getMaxRevisionLevel() { return(REVISION); }
 	private TablutState unresign;
 	private TablutState board_state;
 	CellStack animationStack = new CellStack();
@@ -77,7 +78,7 @@ class TabGameBoard extends rectBoard<TabCell> implements BoardProtocol,TabConsta
     }
 
     public String gameType()
-    {	String val = gametype;
+    {	String val = gametype +" rev "+revision;
     	for(int i=0; i<optionNames.length; i++)
     	{	val += " "+optionNames[i].shortName+" "+getOptionValue(optionNames[i]);
     	}
@@ -89,16 +90,21 @@ class TabGameBoard extends rectBoard<TabCell> implements BoardProtocol,TabConsta
     	Flagship_Owns_Center = false;
     	Flagship_Can_Capture = true;
     	Flagship_Four_Sided_Capture = false;	// standardize
+    	boolean hasRev = false;
+    	boolean hasSome = false;
     	while(tok.hasMoreTokens())
     	{	String m = tok.nextToken();
-    		if(! (".end.".equals(m) || ENDOPTIONS.equals(m))) 
+    		if(m.equalsIgnoreCase("rev")) { revision = G.IntToken(tok); hasRev = true; }
+    		else if(! (".end.".equals(m) || ENDOPTIONS.equals(m))) 
     		{
     		TabId b = TabId.get(tok.nextToken());
+    		hasSome = true;
     		setOptionValue(TabId.get(m),b);
     		}
     	}
     	if(canCaptureCompatibility) { Flagship_Can_Capture = true; }
     	if(captureCompatibility2) { Flagship_Owns_Center = true; }
+    	if(hasSome && !hasRev) { revision = 100; }
     }
     //
     // private variables
@@ -160,8 +166,8 @@ class TabGameBoard extends rectBoard<TabCell> implements BoardProtocol,TabConsta
     {
         drawing_style = DrawingStyle.STYLE_NOTHING; // don't draw the cells.  STYLE_CELL to draw them
         Grid_Style = TABGRIDSTYLE;
-
         setColorMap(map);
+        revision = REVISION;
         doInit(init); // do the initialization 
     }
     public TabGameBoard cloneBoard() 
@@ -327,10 +333,14 @@ class TabGameBoard extends rectBoard<TabCell> implements BoardProtocol,TabConsta
 
         sameboard(from_b);
     }
-    public void doInit() { doInit(gameType(),randomKey); }
+    public void doInit() { doInit(gameType(),randomKey,revision); }
     /* initialize a board back to initial empty state */
     public void doInit(String gtype,long key)
+    {	doInit(gtype,key,revision);
+    }
+    public void doInit(String gtype,long key,int rev)
     {	randomKey = key;
+    	adjustRevision(rev);
     	Random r = new Random(645462);
         goldPool = new TabCell(r,TabChip.GoldShip,TabId.GoldShipLocation);	// dummy source for the chip pools
         silverPool = new TabCell(r,TabChip.SilverShip,TabId.SilverShipLocation);
@@ -682,11 +692,14 @@ void doSwap()
           		animationStack.push(pickedSource);
           		animationStack.push(c);
           	}
-           	SetBoard(c,pickedObject);
-            droppedDest = c;
-            pickedObject = null;
-			
-            setNextStateAfterDrop();
+          	if((revision>101) && (c==pickedSource)) { unPickObject(); } 
+          	else 
+          	{ 
+          		SetBoard(c,pickedObject);
+          		droppedDest = c;
+          		pickedObject = null;
+          		setNextStateAfterDrop();
+          	}
 
             break;
 

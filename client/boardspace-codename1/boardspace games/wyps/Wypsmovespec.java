@@ -115,10 +115,10 @@ public class Wypsmovespec extends commonMPMove implements WypsConstants
     /** constructor for robot moves.  Having this "binary" constor is dramatically faster
      * than the standard constructor which parses strings
      */
-    public Wypsmovespec(int opc,char col,int row,WypsId what,int who)
+    public Wypsmovespec(int opc,char col,int row,int who)
     {
     	op = opc;
-    	dest = what;
+    	dest = WypsId.BoardLocation;
     	to_col = col;
     	to_row = row;
     	player = who;
