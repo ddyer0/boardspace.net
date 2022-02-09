@@ -108,7 +108,7 @@ public class Login implements SimpleObserver,Config,Crypto
     public static String platformString()
     {
     	return("&" + PlatformParameterName + "="+Http.escape(G.getPlatformName()
-				+(G.isTable()?" playtable": (G.isGameboard()?"gameboard" : ""))
+				+(G.isCheerpj() ? "cheerpj" : G.isTable()?" playtable": (G.isGameboard()?"gameboard" : ""))
 				+"-"+G.getAppVersion()));
     }
     @SuppressWarnings("deprecation")

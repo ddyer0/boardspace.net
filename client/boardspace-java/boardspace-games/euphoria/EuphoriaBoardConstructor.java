@@ -463,9 +463,6 @@ abstract class EuphoriaBoardConstructor extends RBoard<EuphoriaCell> implements
 		;
 	}
 
-	void addArtifact(EuphoriaChip c) {
-		usedArtifacts.addChip(c);
-	}
 
 	void addRecruit(EuphoriaChip c) {
 		usedRecruits.addChip(c);

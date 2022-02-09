@@ -18,9 +18,8 @@ import static euphoria.EuphoriaMovespec.*;
  *
  */
 public class EuphoriaBoard extends EuphoriaBoardConstructor implements EuphoriaConstants
-{	static int REVISION = 122;			// revision numbers start at 100
-
-
+{	static int REVISION = 123;			// revision numbers start at 100
+	boolean LOG_ARTIFACTS = false;
 	public class ContinuationStack extends OStack<Continuation>
 	{
 		public Continuation[] newComponentArray(int n) { return(new Continuation[n]); }
@@ -49,7 +48,8 @@ public class EuphoriaBoard extends EuphoriaBoardConstructor implements EuphoriaC
 	// revision 120 checks for hidden recruits again after all continuations are done.
 	// revision 121 fixes esme the fireman benefit when book is used.
 	// revision 122 removes knowledge checks other than at rolls.
-	
+	// revision 123 fixes recycling of some artifacts - they weren't and so couldn't come up again
+
 	public int getMaxRevisionLevel() { return(REVISION); }
 	
 	/**
@@ -697,8 +697,13 @@ public class EuphoriaBoard extends EuphoriaBoardConstructor implements EuphoriaC
 		throw G.Error("No player uses %s",c);
 		}
 	
+	void recycleArtifact(EuphoriaChip a)
+	{	if(LOG_ARTIFACTS) { G.print(moveNumber," recycle ",unusedArtifacts.height()," ",a); }
+		usedArtifacts.addChip(a);
+	}
+	
 	EuphoriaChip getArtifact()
-	{
+	{	if(LOG_ARTIFACTS) { G.print(moveNumber," na ",unusedArtifacts.height()," ",usedArtifacts.height()," ",usedArtifacts.topChip()); }
 		if(unusedArtifacts.height()==0)
 		{
 			while(usedArtifacts.height()>0) { unusedArtifacts.addChip(usedArtifacts.removeTop()); }
@@ -708,6 +713,8 @@ public class EuphoriaBoard extends EuphoriaBoardConstructor implements EuphoriaC
 		if(unusedArtifacts.height()>0) { return(unusedArtifacts.removeTop()); }
 		return(null);	// this should never happen but...
 	}
+
+	
 
 	// bounds of the commodity site, indexed by allegiance
 	double commodityBounds[][] = { euphorianGeneratorBounds,subterranAquiferBounds,wasteLanderFarmBounds,icariteCloudMineBounds};
@@ -1317,7 +1324,10 @@ public class EuphoriaBoard extends EuphoriaBoardConstructor implements EuphoriaC
     public Random newRandomizer(long salt)
     {	if(revision>=102)
     	{	rollNumber++;
-    		return(new Random((randomKey*(rollNumber*1000))*salt));
+    	long key = (randomKey*(rollNumber*1000))*salt;
+    	//G.print("");
+    	//G.print("Roll er "+rollNumber+" "+key);
+    		return(new Random(key));
     	}
     	else {  
     		
@@ -1331,6 +1341,7 @@ public class EuphoriaBoard extends EuphoriaBoardConstructor implements EuphoriaC
     	{
     		unusedArtifacts.addChip(usedArtifacts.removeTop());
     	}
+    	if(LOG_ARTIFACTS) { G.print(moveNumber,"reshuffle ",unusedArtifacts.height());}
     	unusedArtifacts.shuffle(newRandomizer(0x6466712));
     }
     
@@ -1752,7 +1763,10 @@ public class EuphoriaBoard extends EuphoriaBoardConstructor implements EuphoriaC
         	   if(rack==EuphoriaId.PlayerActiveRecruits) 
         	   	{ getPlayer(c.color).addActiveRecruit(pickedObject); 
         	   	}
-        	   else 
+        	   else if(c==usedArtifacts)
+        	   {
+        		recycleArtifact(pickedObject);   
+        	   }else
         	   	{ c.addChip(pickedObject); 
         	   	}
         	}
@@ -2355,7 +2369,7 @@ public class EuphoriaBoard extends EuphoriaBoardConstructor implements EuphoriaC
   			{
  			// throw away the rejected card
   			EuphoriaChip discard = marketBasket.removeTop();
-  			if((discard!=null)&&(discard.isArtifact())) { addArtifact(discard); }
+  			if((discard!=null)&&(discard.isArtifact())) { recycleArtifact(discard); }
  			if(replay!=replayMode.Replay) { animateReturnArtifact(marketBasket); }
    			}
    			acceptPlacement();
@@ -3998,7 +4012,7 @@ private void doAmandaTheBroker(EuphoriaCell dest,replayMode replay,RecruitChip a
     		  	logGameEvent(Gained3Cards);
     		  	}
     		  else { 
-    			    usedArtifacts.addChip(t3);
+    			    recycleArtifact(t3);
     			  	logGameEvent(JonathanGain2);
     			  	if(replay!=replayMode.Replay)
     		  		{
@@ -4010,7 +4024,7 @@ private void doAmandaTheBroker(EuphoriaCell dest,replayMode replay,RecruitChip a
     		{
     		p.addArtifact(top);
     		p.addArtifact(t3);
-    		usedArtifacts.addChip(t2);
+    		recycleArtifact(t2);
   		  	logGameEvent(Gained2Cards);
 	    		if(replay!=replayMode.Replay)
 	    		{
@@ -4020,7 +4034,7 @@ private void doAmandaTheBroker(EuphoriaCell dest,replayMode replay,RecruitChip a
     	else if(t2==t3)
     		{ p.addArtifact(t2);
     		  p.addArtifact(t3); 
-    		  usedArtifacts.addChip(top);
+    		  recycleArtifact(top);
     		  logGameEvent(Gained2Cards);
     		  if(replay!=replayMode.Replay)
     		  	{ 
@@ -4028,9 +4042,9 @@ private void doAmandaTheBroker(EuphoriaCell dest,replayMode replay,RecruitChip a
     		  	}
     		  }
     		  else { 
-    			  usedArtifacts.addChip(top);
-    			  usedArtifacts.addChip(t2);
-    			  usedArtifacts.addChip(t3);
+    			  recycleArtifact(top);
+    			  recycleArtifact(t2);
+    			  recycleArtifact(t3);
     			  logGameEvent(Gained0Cards);
     			  if(replay!=replayMode.Replay) 
     			  	{  
@@ -4694,7 +4708,7 @@ private void doAmandaTheBroker(EuphoriaCell dest,replayMode replay,RecruitChip a
         	setStatusDisplays();
         }
         //if(!robotBoard) { G.print("A "+m+" for "+whoseTurn+" "+board_state+" #"+moveNumber+" "+Digest()); }
-       // G.print("E "+m+" for "+whoseTurn+" "+board_state+" "+Digest()); 
+        //G.print("EE "+m+" for "+whoseTurn+" "+board_state+" "+Digest()); 
         switch (m.op)
         {
         case MOVE_PEEK:

@@ -32,6 +32,8 @@ public class PunctPiece implements PunctConstants,Drawable
   PunctGameBoard board=null;			//our associated board
   int rows[]=new int[3];	// the rows this piece occupies, first index is the punct
   public String getName() { return(toString()); }
+  public int getWidth() { return(0); }
+  public int getHeight() { return(0); }
   public PunctPiece copy()
   {
 	  PunctPiece p = new PunctPiece(board,id,color,typecode,punct_index,cr_offsets);

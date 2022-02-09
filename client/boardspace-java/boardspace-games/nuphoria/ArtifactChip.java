@@ -24,6 +24,10 @@ public class ArtifactChip extends EuphoriaChip implements EuphoriaConstants
 	static final int FIRST_ARTIFACT = 2;
 	public EuphoriaChip subtype() { return(CardBack); }
 	public static EuphoriaChip Subtype() { return(CardBack); }
+	public int typeMask()
+	{	return(1<<id.ordinal());
+	}
+	
 	private ArtifactChip(Artifact a,String c)
 	{	
 		super(artifactCardOffset+a.ordinal(),

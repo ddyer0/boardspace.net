@@ -1395,7 +1395,7 @@ public void setLetterColor(Graphics gc,CrosswordsBoard gb,CrosswordsCell cell)
  * not setting the values when the gc is null.
  */
     public void StartDragging(HitPoint hp)
-    {
+    {	G.print("Start "+hp);
         if (hp.hitCode instanceof CrosswordsId)// not dragging anything yet, so maybe start
         {
         CrosswordsId hitObject =  (CrosswordsId)hp.hitCode;
@@ -1454,7 +1454,7 @@ public void setLetterColor(Graphics gc,CrosswordsBoard gb,CrosswordsCell cell)
  * not setting the values when the gc is null.
 	 */
     public void StopDragging(HitPoint hp)
-    {
+    {	G.print("Stop "+hp);
         CellId id = hp.hitCode;
         bigString = null;
 

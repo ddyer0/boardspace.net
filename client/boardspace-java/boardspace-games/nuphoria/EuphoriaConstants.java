@@ -6,6 +6,8 @@ import lib.G;
 import lib.IntObjHashtable;
 import lib.InternationalStrings;
 import lib.OStack;
+import nuphoria.EuphoriaConstants.Cost;
+import nuphoria.EuphoriaConstants.EuphoriaId;
 import lib.CellId;
 import online.game.BaseBoard.BoardState;
 
@@ -34,6 +36,7 @@ public interface EuphoriaConstants
 	static String EuphoriaVictoryCondition = "place all 10 Authority tokens";
 	static String EuphoriaPlayState = "Place a worker or withdraw one or more workers";
 	static String EuphoriaRetrieveState = "Retrieve one or more workers";
+	static String EuphoriaCommodityRetrieveState = "You may retrieve workers from commodity spaces";
 	static String EuphoriaPlaceState = "Place a worker";
 	static String ChooseRecruitState = "Choose your recruits";
 	static String RecruitsForPlayer = "Available recruits for #1";
@@ -154,8 +157,10 @@ public interface EuphoriaConstants
 	static String costAddon = "Cost: #1";
 	static String ServiceName = "Information for #1";
 
-	
-	enum Allegiance { Euphorian, Subterran, Wastelander, Icarite;
+	static String ConfirmUseMwicheOrContinueState = "Click on Done to use the tunnel normally, or add more Water";
+	static String UseMwicheTheFlusher = "pay 3 Water for benefit + 2 Morale (from Mwiche the Flusher)";
+	static String UseCaryTheCarebear = "get Food and Commodity (from Cary the Carebear)";
+	enum Allegiance { Euphorian, Subterran, Wastelander, Icarite, Factionless;
 		static void putStrings() { for(Allegiance a : values()) { InternationalStrings.put(a.name()); }}
 		};
 	
@@ -356,6 +361,58 @@ public interface EuphoriaConstants
 		GoldOrFoodOrBliss("1 Gold or 1 Food or 1 Bliss"),
 		ResourceOrBlissOrFood("1 Resource or 1 Food or 1 Bliss"),
 		ArtifactJackoTheArchivist_V2("1 Artifact (and others +1 Artifact), or a pair of Artifacts, or 3 Artifacts"),
+
+		
+		// new costs for IIB
+		Balloon_Stone("1 Balloons Artifact card and 1 Stone"),
+		BookBalloon_Stone("Book Artifact card or 1 Balloons Artifact card, and 1 Stone"),
+		
+		Box_Food_Bliss("1 Box Artifact card, 1 Food and 1 Bliss"),
+		BookBox_Food_Bliss("1 Book Artifact card or 1 Box Artifact card, 1 Food and 1 Bliss"),
+		
+		Balloon_Energy_Bliss("1 Balloons Artifact card, 1 Energy and 1 Bliss"),
+		BookBalloon_Energy_Bliss("1 Book Artifact card or 1 Balloons Artifact card, 1 Energy and 1 Bliss"),
+		
+		Glasses_Water_Bliss("1 Glasses Artifact card, 1 Water and 1 Bliss"),
+		BookGlasses_Water_Bliss("1 Book Artifact card or 1 Glasses Artifact card, 1 Water and 1 Bliss"),
+
+		Book_Energy_Water("1 Book Artifact card, 1 Energy and 1 Water"),
+		
+		Bear_Energy_Food("1 Bear Artifact card, 1 Energy and 1 Food"),
+		BookBear_Energy_Food("1 Book Artifact card or 1 Bear Artifact card, 1 Energy and 1 Food"),
+
+		Glasses_Gold("1 Glasses Artifact card and 1 Gold"),
+		BookGlasses_Gold("1 Glasses Artifact card and 1 Gold"),
+
+		Bear_Gold("1 Bear Artifact card and 1 Gold"),
+		BookBear_Gold("1 Book Artifact card or 1 Bear Artifact card, and 1 Gold"),
+
+		
+		Book_Brick("1 Book Artifact card and 1 Brick"),
+		
+		Box_Gold("1 Box Artifact card and 1 Gold"),
+		BookBox_Gold("1 Book Artifact or 1 Box Artifact, card and 1 Gold"),
+
+		Book_Card("1 Book Artifact card and 1 Artifact card"),
+
+		Box_Brick("1 Box Artifact card and 1 Brick"),
+		BookBox_Brick("1 Book Artifact or 1 Box Artifact card, and 1 Brick"),
+
+		Bat_Stone("1 Bat Artifact card and 1 Stone"),
+		BookBat_Stone("1 Book Artifact card or 1 Bat Artifact card, and 1 Stone"),
+		
+		Book_Stone("1 Book Artifact card and 1 Stone"),
+		
+		Glasses_Brick("1 Glasses Artifact card and 1 Brick"),
+		BookGlasses_Brick("1 Book Artifact card or 1 Glasses Artifact card, and 1 Brick"),
+
+		Bat_Brick("1 Bat Artifact card and 1 Brick"),
+		BookBat_Brick("1 Book Artifact card or 1 Bat Artifact card and 1 Brick"),
+		
+		EnergyMwicheTheFlusher("1 Energy, or 3 Water for 1 gold 1 artifact card and 2 morale"),
+		FoodMwicheTheFlusher("1 Food, or 3 Water for 1 brick 1 artifact card and 2 morale"),
+		WaterMwicheTheFlusher("1 Water or 3 Water for 1 stone 1 artifact card and 2 morale"),
+
 		;
 		String description = null;
 		Cost(String s)
@@ -465,7 +522,18 @@ public interface EuphoriaConstants
 		DropWorkerWithoutPayment,
 		DropWorkerAfterBenefit,
 		BumpWorkerJuliaTheThoughtInspector_V2,
-		JoinTheEstablishment;
+		JoinTheEstablishment,
+		
+		// V3 functions
+		DoSamuelTheZapper,			// offer to retrieve workers
+		RetrieveCommodityWorkers,	// do the retrieval
+		BumpWorkerCheckKhaleef,		// check khaleef the bruiser
+		DoKhaleefTheBruiser,		// get resource after bump
+		DoMilosTheBrainwasher,		// milos the brainwasher 
+		ReRollWorkersAfterMilos,	//
+		NormalDouble,				// receive 2x + - knowledge
+		DoJosephTheAntiquer,		// take artifact instead
+		;
 	}
 
 	enum MarketPenalty
@@ -488,10 +556,30 @@ public interface EuphoriaConstants
 		LoseItemOn3("Every time you roll a 3, lose a commodity or a resource."),
 		LoseItemOn4("Every time you roll a 4, lose a commodity or a resource."),
 		LoseItemOn5("Every time you roll a 5, lose a commodity or a resource."),
-		LoseItemOn6("Every time you roll a 6, lose a commodity or a resource.");
+		LoseItemOn6("Every time you roll a 6, lose a commodity or a resource."),
+		//
+		// ignorance is bliss market penalties
+		//
+		PayBeforeBumping("Pay 1 commodity before bumping your own worker"),	// 21 Agency of Progressive Backstabbing
+		LimitOf2Commodities("NOTHING GAINED (due to Lottery of Diminishing Returns)"), // 22 Lottery of Diminishing Returns
+		UpgradeWorkerKnowledge("Treat newly rolled 1 or 2 as 3 for the knownledge check"), // 23 Institute of Orwellian Optimism
+		NotIf6OnBoard("You can't place workers on the board if any of yours on the board are 6"),//24 natural floridated spring
+		NoStarOnEmpty("You can't place stars on empty territory"), //25 field of agorophobia
+		FreeRetrieval("When you retrieve workers, the players on your right and left may retrieve 1"), //26 dilemmas prisoner
+		ExtraCostArtifacts("Artifacts except the rightmost cost 1 extra"), // 27 department of bribe regulation
+		LoseMoraleForStar("When placing a star, lose 1 morale"), //28 atheneum of mandatory guidelines
+		WorkerLimit2("You can't place workers if you have 2 or more on the board"), //29 bureau of restricted tourism
+		MoraleLimit3("You can't gain morale if you have 3 or more"), //30 concert hall of harmonious discord
+		ResourceLimit3("You can't gain resources if you have 3 or more"), // 31 palace of forced altruism
+		ArtifactsDifferent("You can only gain artifacts different than you already have"), // 32 storage of insufficient capacity
+		Knowledgest14("Knowledge tests have a threshold of 14 instead of 16"), // 33 the carousel
+		CommodityMinus1("You always gain 1 less commodity (minimum 1)"), //34 theater of endless monotony
+		KnowledgePlusDoubles("After a knowledge check, gain knowledge if at least 2 of your workers have the same knowledge"), // 35 thought police of the open mind
+		Knowledge6Bump("You must have less than 6 knowledge to bump your own workers.  If you do gain knowledge"), // 36 together we work alone camp
+		;
 		String explanation;
 		MarketPenalty(String a) { explanation=a; }
-		static void putStrings() { for(MarketPenalty a : values()) { InternationalStrings.put(a.explanation); }}
+		static void putStrings() { for(MarketPenalty a : values()) { InternationalStrings.put(a.name(),a.explanation); }}
 
 
 	}
@@ -546,6 +634,10 @@ public interface EuphoriaConstants
 	ConfirmFightTheOpressor(ConfirmFightTheOpressorState,true,false),
 	ChooseOneRecruit(ChooseOneRecruitState,false,false),
 	ConfirmOneRecruit(ConfirmOneRecruitState,true,false),
+
+	// IIB states
+	RetrieveCommodityWorkers(EuphoriaCommodityRetrieveState,true,false),
+	ConfirmUseMwicheOrContinue(ConfirmUseMwicheOrContinueState,true,false),
 
 	;
 	EuphoriaState(String des,boolean done,boolean digest)
@@ -635,6 +727,7 @@ public interface EuphoriaConstants
 		CardAndStone("1 Artifact card or 1 Stone"),	// the string is only seen when the ministry of personal secrets is in effect
 		WaterSelection("Water"),		// water from aquifer depending on total knowledge
 		Food("1 Food"),
+		Foodx2("2 Food"),
 		Foodx3("3 Food"),
 		Foodx4("4 Food"),
 		
@@ -669,6 +762,7 @@ public interface EuphoriaConstants
 		Bliss("1 Bliss"),		// AmandaTheBroker
 		Blissx4("4 Bliss"),		// one of SheppardTheLobotomist benefits
 		Commodity("1 Commodity"),
+		Commodityx2("2 Commodity"),
 		Resource("1 Resource"),
 		
 		WaterOrStone("1 Water or 1 Stone (from Maggie the Outlaw)"),	// Maggie the outlaw's bonus
@@ -680,6 +774,8 @@ public interface EuphoriaConstants
 		SubterranStar("an extra Subterran Authority"),
 		WastelanderStar("an extra Wastelander Authority"),
 
+		// IIB benefits
+		Morale("1 morale")	// samuel the zapper
 		;
 		
 		String description=null;
@@ -1006,7 +1102,13 @@ public interface EuphoriaConstants
 			  InternationalStrings.put(id.defaultDescription); 
 			}
 		}
-		
+		public boolean isCommodityArea()
+		{
+			return ((this==SubterranAquifer)
+					||( this==WastelanderFarm) 
+					|| (this==IcariteCloudMine)
+					|| (this==EuphorianGenerator));
+		}
 		boolean isWorkerCell() { return(isWorkerCell); }
 		int getNumber() { return(200+ordinal());}
 		// find he number or return null
@@ -1080,7 +1182,9 @@ public interface EuphoriaConstants
     static enum Variation 
     {
     	Euphoria,
-    	Euphoria2;
+    	Euphoria2,
+    	Euphoria3;
+    	boolean isIIB() { return(this==Euphoria3); }
     	static Variation find(String a) 
     	{ for(Variation v : values()) 
     		{ if(a.equalsIgnoreCase(v.name())) { return(v); }
@@ -1113,6 +1217,9 @@ public interface EuphoriaConstants
 		};
 
 	static final Benefit[] UPGRADED_BENEFIT = {Benefit.CardAndGold,Benefit.CardAndStone,Benefit.CardAndClay};
+	
+	// some v1 and v2 market penalties are "lose a resource or commodity
+	// up to 4 workers can be rerolled so up to 4x the penanalty might apply
     static final Cost[] REROLL_PENALTIES = {null,Cost.CommodityOrResourcePenalty,Cost.CommodityOrResourcex2Penalty,Cost.CommodityOrResourcex3Penalty,Cost.CommodityOrResourcex4Penalty};
     // how many worker tokens must be in place to open a market
     static final int TOKENS_TO_OPEN_MARKET[] = {0,1,2,2,3,4,4};	
@@ -1288,18 +1395,27 @@ public interface EuphoriaConstants
     	 	   "Artifact card",
     	 	   "Knowledge",
     	 	   "Morale",
-    	 	   "New Worker"
+    	 	   "New Worker",
     			
+    	 	   // IIB strings
+    	 	  ConfirmUseMwicheOrContinueState,
+    	 	  UseMwicheTheFlusher,
+    	 	  UseCaryTheCarebear,
     		};
     		String EuphoriaStringPairs[][] = 
     		{   {"Euphoria_family","Euphoria"},
     			{"Euphoria_variation","Euphoria"},
     			{"Euphoria2_variation","Euphoria V2"},
     			{"Euphoria2","Euphoria v2"},
+    			{"Euphoria3","Ignorance Is Bliss"},
     			{"Euphoria2_family","Euphoria with v2 recruits"}
     		};
     		InternationalStrings.put(EuphoriaStrings);
     		InternationalStrings.put(EuphoriaStringPairs);
     		EuphoriaState.putStrings();
     }
+ // places on the board that get you commodities
+    static EuphoriaId CommodityIds[] = { EuphoriaId.SubterranAquifer,EuphoriaId.WastelanderFarm,EuphoriaId.IcariteCloudMine,EuphoriaId.EuphorianGenerator};
+  
+    
 }

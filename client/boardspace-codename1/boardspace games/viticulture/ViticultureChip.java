@@ -5,6 +5,7 @@ package viticulture;
 import com.codename1.ui.geom.Rectangle;
 
 import lib.Graphics;
+import lib.HitPoint;
 import lib.Image;
 import lib.ImageLoader;
 import lib.CompareTo;
@@ -1003,9 +1004,9 @@ public class ViticultureChip extends chip<ViticultureChip>
     	//G.print("sz "+sum/1e6);
     	return(sum);
     }
-    public static void showGrid(Graphics gc,exCanvas can,Rectangle r)
+    public static void showGrid(Graphics gc,exCanvas can,HitPoint hp,Rectangle r)
     	{
-    	showGrid(gc,can,allChips.toArray(),r);
+    	showGrid(gc,can,hp,allChips.toArray(),r);
     	}
 	public int compareTo(ViticultureChip o) {
 		return(o.type.sortOrder()-type.sortOrder());

@@ -599,7 +599,7 @@ public class LoaViewer extends commonCanvas implements UIC,GameLayoutClient
             redrawGameLog(g, p, logRect, table_color);
 
             
-            ShowStats(g, G.centerX(boardRect), G.Bottom(boardRect) + 10);
+            ShowStats(g,p, G.centerX(boardRect), G.Bottom(boardRect) + 10);
             showRectangles(g, CELLSIZE);
             //DrawTileSprite(offGC);      //draw the floating tile, if present
         }

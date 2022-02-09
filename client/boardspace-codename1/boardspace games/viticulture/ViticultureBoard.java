@@ -148,7 +148,6 @@ class ViticultureBoard extends RBoard<ViticultureCell> implements BoardProtocol,
 										// revision 150 fixed scholar "both" option with oracle drawing cards
 
 public int getMaxRevisionLevel() { return(REVISION); }
-	public int getActiveRevisionLevel() { return(revision); }
 	PlayerBoard pbs[] = null;		// player boards
 	public PlayerBoard getPlayerBoard(int n) 
 	{ 	PlayerBoard p[] =pbs;
@@ -1222,12 +1221,6 @@ public int getMaxRevisionLevel() { return(REVISION); }
 	   	
 	    reInit(magnifiers);
 	    for(ViticultureCell c : magnifiers) { c.addChip(ViticultureChip.Magnifier); } 
-	   	// deal a mama and a papa to each player, and the starting workers
-	   	for(PlayerBoard pb : pbs)
-	   	{	pb.mama = mamaCards.removeTop();
-	   		pb.papa = papaCards.removeTop();
-	   		pb.resolveMama();
-	   	}
 	   	
 	    whoseTurn = FIRST_PLAYER_INDEX;
 	    seasonRow = 0;
@@ -1248,6 +1241,15 @@ public int getMaxRevisionLevel() { return(REVISION); }
 		unselect();
         animationStack.clear();
         moveNumber = 1;
+	   	// deal a mama and a papa to each player, and the starting workers
+        season = 0;
+        year = 1;
+        // this season and year is where the mamma and pappa card draws will be recorded
+	   	for(PlayerBoard pb : pbs)
+	   	{	pb.mama = mamaCards.removeTop();
+	   		pb.papa = papaCards.removeTop();
+	   		pb.resolveMama();
+	   	}
         startingYear = year = -1;			// year -1 resolve papas year 0 select roosters
 	    startNewYear(replayMode.Replay);				
         season = 3;			// start in winter for positioning of the roosters

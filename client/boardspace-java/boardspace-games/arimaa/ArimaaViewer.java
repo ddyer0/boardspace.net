@@ -679,7 +679,7 @@ private void playSounds(commonMove mm)
 	 * We're guaranteed just one mouse up, no bounces.
 	 */
     public void StopDragging( HitPoint hp)
-    {
+    {	
         CellId id = hp.hitCode;
        	if(!(id instanceof ArimaaId)) { missedOneClick = performStandardActions(hp,missedOneClick);}
     	else

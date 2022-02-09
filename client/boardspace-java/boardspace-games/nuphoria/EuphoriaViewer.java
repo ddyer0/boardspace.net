@@ -657,7 +657,7 @@ private Color playerBackground[] = {
     	boolean reviewBackground = reviewMode()&&!mutable_game_record;
       GC.setColor(gc,reviewBackground ? reviewModeBackground : boardBackgroundColor);
       //G.fillRect(gc, fullRect);
-     textures[BACKGROUND_TILE_INDEX].tileImage(gc, fullRect);   
+     textures[BACKGROUND_REVIEW_INDEX].tileImage(gc, fullRect);   
       if(reviewBackground)
       {	 
        textures[BACKGROUND_REVIEW_INDEX].tileImage(gc,boardRect);   
@@ -695,7 +695,7 @@ private Color playerBackground[] = {
      	int ord = allegiance.ordinal();
      	int val = gb.getAllegianceValue(allegiance);
      	
-     	if(allegiance!=Allegiance.Icarite)
+     	if((allegiance!=Allegiance.Icarite) && (allegiance!=Allegiance.Factionless))
      	{	
      		int tunnelPos = gb.getTunnelPosition(allegiance);
      		if(tunnelPos<gb.euphorianTunnelSteps.length-1)
@@ -1815,6 +1815,7 @@ private Color playerBackground[] = {
     		break;
     	case PayCost:
     	case ConfirmUseJackoOrContinue:
+    	case ConfirmUseMwicheOrContinue:
     	case ConfirmUseJacko:
     	case ConfirmPayCost:
     		switch(gb.pendingCost())
@@ -2398,7 +2399,9 @@ private Color playerBackground[] = {
  */
       public commonMove EditHistory(commonMove nmove)
       {	
-    	  boolean oknone = (nmove.op==NORMALSTART);
+    	  boolean oknone = ((nmove.op==NORMALSTART) 
+    			  				|| (nmove.op==EPHEMERAL_CONFIRM_ONE_RECRUIT)
+    			  				|| (nmove.op==EPHEMERAL_CONFIRM_RECRUITS));
        	  if(nmove.op==EPHEMERAL_DROP)
     	  {	// special problem if ephemeral_drop and ephemeral_pick get separated by an intervening
     		// ephemeral_choose from another player.
@@ -2441,7 +2444,7 @@ private Color playerBackground[] = {
     //{	//DISABLE_VERIFY = true;
     //	super.verifyGameRecord();
     //}
-
+      public void verifyGameRecord() {}
     
     private void doDrop(EuphoriaCell target,replayMode replay)
     {

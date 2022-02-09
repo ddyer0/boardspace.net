@@ -7,6 +7,7 @@ import lib.ExtendedHashtable;
 import lib.G;
 import lib.Http;
 import lib.OfflineGames;
+import lib.Plog;
 import lib.RootAppletProtocol;
 import lib.SoundManager;
 import lib.StringStack;
@@ -50,7 +51,9 @@ public class JWSApplication implements Config,Runnable
 			// the global state table can be contaminated during play.  In case of 
 			// a loop around, we save the original contents and restore it.
 			ExtendedHashtable savedGlobals = G.getGlobals().copy();
-			UDPService.start(false);	// listen for tables
+			
+			// remove this for cheerpj debugging, it doesn't work and doesn't cause a trap
+			if(!G.isCheerpj()) { UDPService.start(false);	} // listen for tables
 			G.doDelay(1000);
 			UDPService.stop();			
 			Login login = new Login();
@@ -112,7 +115,7 @@ public class JWSApplication implements Config,Runnable
 				String arg = args[i+1];
 				if(arg!=null) 
 					{ G.putGlobal(par,arg);
-					  //System.out.println("put "+par+" "+arg);
+					  Plog.log.addLog("put arg " ,par," ",arg);
 					}
 			}
 			String serverName = G.getString(SERVERNAME,DEFAULT_SERVERNAME);

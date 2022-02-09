@@ -927,9 +927,9 @@ public abstract class Platform implements Config{
 						
 						time.currentNanoTime();
 						nanotimeSupported = true;
-						}
-					catch (Throwable err)
-					{
+				}
+				catch (Throwable err)
+						{
 						nanotimeSupported = false;
 						/* some android platforms don't support nanotime
 						 * [2022/01/07 20:26:30] log request from com.boardspace.BoardspaceLauncher (131.100.104.245)
@@ -938,8 +938,8 @@ public abstract class Platform implements Config{
 						 * java.lang.NoSuchMethodError: android.os.SystemClock.elapsedRealtimeNanos
 						 */
 						Plog.log.addLog("currentNanoTime failed:",err.toString());
-					}
-				}
+						}
+			}
 				// recurse this once, either use the native code or avoid it.
 				return(nanoTime());
 			}

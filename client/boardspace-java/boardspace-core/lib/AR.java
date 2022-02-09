@@ -1,5 +1,10 @@
 package lib;
-
+/**
+ * static array manipulation methods
+ * 
+ * @author ddyer
+ *
+ */
 public class AR {
 
 	/**

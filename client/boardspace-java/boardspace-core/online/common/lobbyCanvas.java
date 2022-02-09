@@ -1,11 +1,17 @@
 package online.common;
 
-import com.codename1.ui.Font;
+import bridge.Polygon;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.FontMetrics;
 
-import com.codename1.ui.geom.Dimension;
-import com.codename1.ui.geom.Rectangle;
-import com.codename1.ui.geom.Shape;
-import bridge.*;
+import java.awt.Rectangle;
+import java.awt.Shape;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseWheelEvent;
+import java.net.URL;
+import bridge.Config;
 
 /* below here should be the same for codename1 and standard java */
 import common.CommonConfig;
@@ -295,7 +301,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	  
 	  private Session Sessions[]={};
 	  public void setSessions(Session nn[])  { Sessions = nn; }
-	  
+	 
 	private void sendMessage(String str)
 	{	addEvent(str);
 	}
@@ -317,7 +323,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	      }
 	     return("");
 	  }
-	  
+	   
 	public void adjustFonts(double scale0)
 	{
 	    String fam = s.get("fontfamily");
@@ -369,7 +375,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 		  return new Dimension(DEFAULTWIDTH,DEFAULTHEIGHT);
 	  }
 	private Rectangle frameTimeSliders = new Rectangle();
-
+	
 
 	public void setLocalBounds(int inX,int inY,int inWidth,int inHeight)
 	{   Dimension dim = getMinimumSize();
@@ -389,7 +395,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 			{
 				SCALE = Math.max(SCALE,Math.min(gameH/(s_GAMEHEIGHT*1.2),((double)(spare/2+s_minw)/s_minw)));
 			}
-		} 
+		}
 		else if(inWidth>s_minw)
 			{	// expand to fill the width, but preserve a minimim of a full game panel
 				SCALE = Math.max(SCALE,Math.min(gameH/(s_GAMEHEIGHT*1.2),(double)inWidth/s_minw));
@@ -406,7 +412,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 		MINGAMEHEIGHT = (int)(s_MINGAMEHEIGHT*scale);
 		STANDARDGAMEHEIGHT = (int)(s_STANDARDGAMEHEIGHT*scale);
 		PLAYERCELLSIZE = (int)(s_PLAYERCELLSIZE*scale);
-		GAMEHEIGHT = (int)(s_GAMEHEIGHT*scale);		
+		GAMEHEIGHT = (int)(s_GAMEHEIGHT*scale);
 		GAMEIMAGEWIDTH = (int)(s_GAMEIMAGEWIDTH*scale);
 		SCROLLBARWIDTH = (int)(ScrollArea.DEFAULT_SCROLL_BAR_WIDTH*scale);
 		USERIMAGEWIDTH = (int)(s_USERIMAGEWIDTH*scale);
@@ -502,21 +508,21 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
     	int nusers = Math.min(lobby.serverNumberOfUsers,users.numberOfUsers()+nusercopies);
     	int userH = USERHEIGHT*nusers;	// scrollable height
    	 	int gameH = MINGAMEHEIGHT*lobby.serverNumberOfSessions;
-   	 	UserScrollArea.InitScrollDimensions(
+    	 UserScrollArea.InitScrollDimensions(
     			 0, 
     			 userRect,
     			 LEFTSCROLLBARWIDTH,
     			 userH,
                  USERHEIGHT,							// small jump size
                  (nusercopies/2)*USERHEIGHT);			// big jump size
-
+    	      	 
 	     GameScrollArea.InitScrollDimensions(
-	    		G.Right(gameRect),  
-	    		gameRect,
-	            SCROLLBARWIDTH, 
-	            gameH - MINGAMEHEIGHT,	// scrollable height
-	            MINGAMEHEIGHT/2,								// small jump size
-		        MINGAMEHEIGHT
+	    		 G.Right(gameRect),  
+		    		gameRect,
+		            SCROLLBARWIDTH, 
+		            gameH - MINGAMEHEIGHT,		// scrollable height
+		            MINGAMEHEIGHT/2,			// small jump size
+		            MINGAMEHEIGHT
 	    		);					// big jump size
 	     repaint(20);
 	     setScrollXPos(getScrollXPos());	// reset the scroll, which may not be appropriate for the new dimensions
@@ -534,7 +540,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	}
 	
 	public void drawOtherUsers(Graphics inG,HitPoint hp) 
-	  {
+	{ 
 	  Shape sh = GC.getClip(inG);
 	  UserScrollArea.drawScrollBar(inG);
 	  GC.setColor(inG,lightBGgray);
@@ -604,54 +610,54 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 		int right = G.Right(R);
 		FontMetrics myFM = GC.getFontMetrics(inG);
 		Color nameColor = user.playerNameColor();
-	      String rankstring =  bestRankString(user);
-	      String rank = rankstring;
-	      String name = user.name;
-	      if(name==null) { name = s.get(UnknownPlayerMessage); }
-	      GC.setColor(inG,(lobbyState == ConnectionState.IDLE) ?Color.gray : Color.blue);
-	      if((user.chatTime+CHATINTERVAL)>now) 
-	          { GC.setColor(inG,lightBlue); 
-	            chatRedraw=Math.max(user.chatTime+CHATINTERVAL,chatRedraw);
-	          }
+		String rankstring =  bestRankString(user);
+		String rank = rankstring;
+		String name = user.name;
+		if(name==null) { name = s.get(UnknownPlayerMessage); }
+		GC.setColor(inG,(lobbyState == ConnectionState.IDLE) ?Color.gray : Color.blue);
+		if((user.chatTime+CHATINTERVAL)>now) 
+		{ GC.setColor(inG,lightBlue); 
+		chatRedraw=Math.max(user.chatTime+CHATINTERVAL,chatRedraw);
+		}
 		int polyXoffset=six+(USERIMAGEWIDTH-six)/2;  
 		int polyYoffset = positionCtr*USERHEIGHT+USERHEIGHT/2+two /* PLAYERHALFHEIGHT+6*/;
 			{ // drawn relative to the player polygon
 			  int ypos=myFM.getMaxAscent()/2;
 			  boolean high = (highlightedUser==user);
 			  GC.translate(inG,polyXoffset, polyYoffset);
-	  widePoly.fillPolygon(inG);
-      GC.setColor(inG,high ?AttColor : Color.black);
-      widePoly.framePolygon(inG);
+			  widePoly.fillPolygon(inG);
+			  GC.setColor(inG,high ?AttColor : Color.black);
+			  widePoly.framePolygon(inG);
 			  GC.setColor(inG,nameColor);
 				  {String str=name+rank;
 				  int xpos = -myFM.stringWidth(str)/2;
 				  // draw the name
 				  GC.Text(inG,str,xpos,ypos);
 				  }
-	  if(high)
+				  if(high)
 				  {	
-	  	 if(mouse.getIdleTime()>idleTimeout)
-	  	 {
-  		 // draw a bubble with the player's favorite games
-		 String fav = user.getInfo(OnlineConstants.FAVORITES);
-		 if("".equals(fav) || (fav==null)) { fav = s.get(NoGamesMessage); }
-		 else { StringTokenizer tok = new StringTokenizer(fav);
-		 		fav = "";
-		 		while(tok.hasMoreTokens())
-		 		{	fav += s.get(G.Capitalize(tok.nextToken()))+" ";
-		 		}
-		 }
-		 hp.setHelpText(fav);
-	  	 }
+				  	 if(mouse.getIdleTime()>idleTimeout)
+				  	 {
+			  		 // draw a bubble with the player's favorite games
+					 String fav = user.getInfo(OnlineConstants.FAVORITES);
+					 if("".equals(fav) || (fav==null)) { fav = s.get(NoGamesMessage); }
+					 else { StringTokenizer tok = new StringTokenizer(fav);
+					 		fav = "";
+					 		while(tok.hasMoreTokens())
+					 		{	fav += s.get(G.Capitalize(tok.nextToken()))+" ";
+					 		}
+					 }
+					 hp.setHelpText(fav);
+				  	 }
 					 StockArt.Pulldown.drawChip(inG,this,h,right-h/2,top+h/2,""); 
 				  }	
 				  GC.translate(inG,-polyXoffset, -polyYoffset);
-	  }
+			}
 
 			if(myLanguage.equalsIgnoreCase(user.getInfo(G.LANGUAGE)))
-	      { GC.setColor(inG,Color.yellow);
+		      { GC.setColor(inG,Color.yellow);
 		        GC.frameOval(inG,two,polyYoffset-two,six,six);  //mark players with the same language
-	      }
+		      }
 
 		Session nameSession = null;
 		user.clickSession = null;
@@ -667,7 +673,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 		  if(user==highlightedUserLeft)
 	 	     {drawSessionBubble(hp,sessionloc);
 	 	     c = AttColor;
-		  }
+	 	     }
 	         GC.setColor(inG,c);
 	         int xpos = polyXoffset-right-myFM.stringWidth(sstr);
 	         // active Session at the left
@@ -676,23 +682,23 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 
 		  { // waiting for a game
 			Session sess = user.session();
-	    if(sess!=null)
-	    {
-	    int n = sess.gameIndex;
-	    String sstr=""+n;
-	    Color c = SessionColor(sess);
+		    if(sess!=null)
+		    {
+		    int n = sess.gameIndex;
+		    String sstr=""+n;
+		    Color c = SessionColor(sess);
 		    nameSession = sess;
 		    user.clickSession = sess;
-	    if(user==highlightedUserRight)
-    	{ 
-    	  drawSessionBubble(hp,sess);
-    	  c = AttColor;
-    	}
-	    GC.setColor(inG,c);
+		    if(user==highlightedUserRight)
+	    	{ 
+	    	  drawSessionBubble(hp,sess);
+	    	  c = AttColor;
+	    	}
+		    GC.setColor(inG,c);
 		    int xpos = (right+polyXoffset+six);
 		    // draw waiting room number at the right
 		    GC.Text(inG,sstr,xpos,polyYoffset+h/3);
-	    }}
+		    }}
 		  GameInfo game = null;
 		  if(nameSession!=null && nameSession.isAGameRoom() )
 		  {	  // not for a non-game room
@@ -700,7 +706,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 		  }
 		  else
 		  {	game = user.preferredGame;
-	 	     }
+		  }
 		  if(game!=null)
 			  {	// we're operating the an X offeset zero at the user image rect
 				boolean high = user==highlightedUserGame;
@@ -719,7 +725,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 		GC.fillRect(g,Color.blue,left,top,w,h);
 		GC.frameRect(g, Color.black, left,top,w,h);
 		GC.Text(g, true, left+h/10, top, w-h/5, h/3,Color.yellow,null,s.get(WantToPlayMessage));
-
+		
 		User my = users.primaryUser();
 		GameInfo preferred = my.preferredGame;
 		boolean selected = highlightedItem == LobbyId.highlight_setpreferred;
@@ -728,8 +734,8 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 		int tleft =  left+h/20;
 		int tw = GC.Text(g, true,tleft, top+h/3,aw,h*2/3,color,null,s.get(name));
 		StockArt.Pulldown.drawChip(g,this,selected?2*h/6:3*h/12,tleft+aw/2+tw/2+h/10,top+2*h/3,"");
-	    
-	  }
+
+	}
 	public void drawOwner(Graphics inG) 
 	  {
 	    GC.setFont(inG,basicFont);
@@ -761,7 +767,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 
 	      { User my = users.primaryUser();
 	        Session sessn=my.session();
-		     String name = (my.publicName==null)
+	        String name = (my.publicName==null)
 		        ?s.get(YourNameMessage)
 		        :my.publicName;
 		    String msg = (sessn == null)? name : s.get(InRoomMessage,name,""+sessn.gameIndex);
@@ -778,8 +784,8 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	        bottomOwner-four);
 	    }
 	  GC.draw_anim(inG,animRect,G.Width(animRect)/2-2,lobby.lastInputTime,lobby.progress);
-		}
-	
+	  }
+
 	public void drawGames(Graphics inG,HitPoint hp) 
 	{	Shape sh = GC.getClip(inG);
 		GameScrollArea.drawScrollBar(inG);
@@ -789,7 +795,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 		int top = G.Top(gameRect);
 		GC.translate(inG,left,top);
 		G.translate(hp, -left,-top);
-  
+		
 	    GC.setColor(inG,Color.black);
 	    if(Sessions!=null)
 	    	{for(int i=0;i<Sessions.length;i++) { Sessions[i].currentScreenHeight=0; }
@@ -867,7 +873,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	    if(mapper!=null)
 	    { mapper.initData(numberOfUsers+1);
 	      for (int sidx=0;sidx<numberOfUsers;sidx++) 
-	      {  User user = uarr[sidx];
+	      { User user = uarr[sidx];
 	        if(user!=null)
 	        { String lat = user.getInfo(OnlineConstants.LATITUDE);
 	          String lon = user.getInfo(OnlineConstants.LOGITUDE);
@@ -908,8 +914,8 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	      DrawInviteBox(inG,session);
 	      }
 	     GC.setColor(inG,Color.black);
-	     if(tournament && session.isAGameRoom())
-	     { //tournament notification for spectators
+	     if(tournament && session.isAGameRoom()) 
+	        { //tournament notification for spectators
 	          GC.Text(inG,false,gameTournamentRect,
 	              Color.black,null,s.get(Session.TournamentGame));
 	        }
@@ -1007,8 +1013,8 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	  	}
 	  	robotMenu.show(ex,ey);
 	  }
-
-	  	
+	  
+	  
 
 	  private PopupManager subroomMenu = new PopupManager();
 	  private void changeSubmode(Session sess,int ex,int ey)
@@ -1086,7 +1092,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
  	  }
 	  private void addGameMenu(Session sess,String name,String groupName,GameInfo[]games,ESet typeClass)
 	  {	// groupName is null for the "all games" menu.
-    	  MenuInterface subm = gameTypeMenu.newSubMenu(name);
+		  MenuInterface subm = gameTypeMenu.newSubMenu(name);
           for(int gi=0;gi<games.length;gi++)
         	  { GameInfo var = games[gi];
         	    addVariationMenu(sess,subm,groupName,var,typeClass);
@@ -1274,7 +1280,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 		    }
 	      
 	      GC.Text(inG,true,four,two,w,h,tc,null,name);
-	  
+		  
 	      }}
 	    }
 	    else if ((session.state == Session.SessionState.Idle)
@@ -1356,7 +1362,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	  GC.frameRoundRect(inG,three,five,GAMEIMAGEWIDTH-six,height-ten,thirty,thirty);
 	  GC.setFont(inG,bigFont);
 	  String header = s.get(session.mode.modeName);
-  
+	  
 	  drawRoomTitle(session,inG,hp,header);
 
 	  GC.setFont(inG,boldBasicFont);
@@ -1377,31 +1383,31 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	  else if(!"".equals(statemessage))
 	    {  
 		 
-	      DrawSpectateButton(inG,session,statemessage,rejoin);
+		  DrawSpectateButton(inG,session,statemessage,rejoin);
 	      
       }
 	  String showBotName = null;
 	  { boolean imReady = imInThisSession
     		  				&& ready_to_start(session) ;	// possible side effect of changing the bot
-
-	  Bot bot = session.currentRobot;
+	
+      Bot bot = session.currentRobot;
       boolean restartable = session.restartable();
-		  
+
 	  Rectangle botRect = centerSelectRobotRect;
-	  {
+ 	  {
 	  
 	  
       if(restartable  
     		  && (session.state == Session.SessionState.Idle)
     		  && (session.mode==Session.Mode.Unranked_Mode))
-          {	
+      {	
         if(session.iOwnTheRoom)
         {
         botRect = selectRobotRect;
-          	GC.Text(inG,false,discardGameRect,
-          			(highlightedItem==LobbyId.highlight_discardgame)?Color.red:Color.black,
-          			null,DiscardGameMessage);	    	  
-          }
+      	GC.Text(inG,false,discardGameRect,
+      			(highlightedItem==LobbyId.highlight_discardgame)?Color.red:Color.black,
+      			null,DiscardGameMessage);
+        }
       }
 
 	  if(playersInSession>0)
@@ -1410,7 +1416,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 		  {
 		  
 
-		   String msg = null;
+          String msg = null;
           if(!canAddRobot)
           {
         	  switch(bot)
@@ -1422,12 +1428,12 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
         		  bot = session.defaultNoRobot();
         	  }
           }
-		   switch(bot)
+          switch(bot)
 		   {
 		   case NoRobotRandom: msg = RandomizedMessage ;
 		   		break;
 		   case NoRobot: msg = NoRobotMessage;
-		   			break;
+		   		break;
 		   default:  
 			   if(canAddRobot)
 			   {
@@ -1457,7 +1463,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 				   light ? AttColor : Color.black,
 				  null,msg);
 		   if(session.iOwnTheRoom)
-		      {	int h = G.Height(botRect);
+		   {	int h = G.Height(botRect);
 		      	StockArt.Pulldown.drawChip(inG,this,h,
 		      			G.Left(botRect)+w+h/2,
 		      			G.centerY(botRect),"");
@@ -1486,7 +1492,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	          GC.myDrawPolygon(inG,STARTXOFFSET,STARTYOFFSET,startPoly,Color.white,Color.black,
 	                        enabled ?(robo
 	                        			? s.get((restartable?RejoinMessage:PlayMessage),bot.name)
-	                        				: s.get(restartable?RestartMessage:StartMessage))
+	                        			: s.get(restartable?RestartMessage:StartMessage))
 	                        		: "",
 	                        startcolor);
 	          
@@ -1513,9 +1519,9 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 					  ;
 	          GC.Text(inG, false,G.Left(bb)+STARTXOFFSET,G.Top(bb)+STARTYOFFSET,G.Width(bb),G.Height(bb),Color.black,null,msg);
 			  }
-	           
+
 	         }
-	        }  
+	        } 
 	  }
 
 	  // here we reset the separation boundary between the setup information
@@ -1535,18 +1541,18 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 		  GC.translate(inG, 0, bottomSpacing);
 		  G.translate(hp, 0,-bottomSpacing);
 	  }
-
-	    GC.setColor(inG,Color.black);
-	    {
+	  
+	  GC.setColor(inG,Color.black);
+	  {
 	  if(!gameInProgress)
-	          { 
+	    {  
 	      rwidth = GC.Text(inG,false,G.Left(gamePlayerRect),
 	    		  	G.Top(gamePlayerRect),
 	    		  	G.Width(gamePlayerRect),G.Height(gamePlayerRect),
 	        Color.black,null,s.get(PlayersMessage));
-	      	}
+	     }
 	  else
-	      {
+	    {  
 		     //int infoyline = PLAYERTITLEYOFFSET+voff-SPECTATORBUTTONYOFFSET/2;
 		     if(session.activeGameInfo!=null)
 		      { GC.Text(inG,false,G.Left(gamePlayerRect)+one,G.Top(gamePlayerRect),
@@ -1554,13 +1560,13 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 		    		  G.Height(gamePlayerRect),
 		          Color.black,null,session.activeGameInfo);
 		      rwidth = GAMEIMAGEWIDTH-SPECTATORTITLEXOFFSET-five;
-
-		    }
-	    }
+		      
+		      } 
+      }
 	  GC.drawLine(inG,G.Left(gamePlayerRect),PLAYERTITLEYOFFSET,
 			  G.Left(gamePlayerRect)+rwidth,PLAYERTITLEYOFFSET);
-	    }
-	  	
+	  }
+
 	  // draw the players waiting for the game to start
 	  int maxPolyY = drawPlayerBoxes(inG,session,gameInProgress,showBotName);
 	  	
@@ -1570,7 +1576,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
       spectext = ""+session.numberOfSpectators+" "+spectext; 
 	  drawActualSpectators(session,inG,maxPolyY+thirty,spectext);
       }
-
+      
       if(extraSpacing>0)
       {
     	  GC.translate(inG,0,-extraSpacing);
@@ -1584,7 +1590,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	{  boolean hi = (highlightedSession==session) && (highlightedItem == LobbyId.highlight_submodebox);
 	  GC.setFont(inG,boldBasicFont);
 	  String name = s.get(session.submode.name);
-	  int w = GC.Text(inG,true,inviteModeRect,  	hi  ? AttColor : Color.blue,null, name);
+	  int w = GC.Text(inG,true,inviteModeRect, 	hi  ? AttColor : Color.blue,null, name);
 	  if(session.iOwnTheRoom)
 	  {
 	  int h = G.Height(inviteModeRect);
@@ -1902,7 +1908,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	  		int xp = getScrollXPos();
 	  		int yp = getScrollYPos();
 	  		if(!complete)
-	  {	
+	  		{ 
 	  		  if(k!=null)
 	  		  {
 	  	      // chat window doesn't pan
@@ -1929,7 +1935,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	  		  GC.translate(offGC, -xp, 0);
 	  		  drawKeyboard(offGC,hp);
 	  		}
-		    
+
 		    
 		    // ui hack to provide a visible interface for frame delays
 		    painter.positionSliders(offGC,hp,frameTimeSliders);
@@ -2025,11 +2031,11 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	{  return(subgameSelectRect.contains(localX,localY)
 				&& sess.canChangeGameInfo(isPassAndPlay()));
 	}
-	  
+	
 	private boolean canChangeSessionType(Session sess)
 	{
-	  return((sess.state==Session.SessionState.Idle) 
-	    && (sess.numberOfPlayers()<=1)
+		return((sess.state==Session.SessionState.Idle) 
+			    && (sess.numberOfPlayers()<=1)
 			    );
 	}
 	private boolean inSessionName(Session sess,int localX, int localY) 
@@ -2318,8 +2324,8 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	    		  { sess.launchSpectator(users.primaryUser(),myFrame.doSound()); 
 	   	       		lobby.startingSession = null;
 	   	       		lobby.clearedForLaunch = false; 	
-	   	       		lobby.startingSession = null;
-	   	       		lobby.clearedForLaunch = false; 		  
+		   	       lobby.startingSession = null;
+	   	       	   lobby.clearedForLaunch = false; 		  
 	    		  }
 	      }
 			 break;
@@ -2348,7 +2354,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 		 		  }
 		 		}
 		 	}
-			 break;
+			 break;			 
 		 case highlight_rankings: 
 		 	{
 			 	GameInfo game = sess.currentGame;
@@ -2383,11 +2389,11 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 		}
 	}
 	private void scrollToSession(Session sess)
-	{
+	  { 
 		int scr = (sess.gameIndex-1)*MINGAMEHEIGHT;
 		GameScrollArea.setScrollPosition(scr);
 	}
-	
+
 	public void StopDragging(HitPoint hp)
 	  { 
 		if(menu!=null) { return; }
@@ -2407,8 +2413,8 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	    User primaryUser = users.primaryUser();
 	  	User user=null;
 	    repaint("mouse down");
-	      highlightedItem=LobbyId.highlight_none;
-	      if (lobby.startingSession==null) 
+	    highlightedItem=LobbyId.highlight_none;
+	    if (lobby.startingSession==null) 
 	      { if ( (lobbyState == ConnectionState.MYTURN) && inHomeToken(ex,ey))
 	        { 
      
@@ -2544,69 +2550,69 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	    case LAST_IS_EXIT:
 	    case LAST_IS_IDLE:
 	    case LAST_IS_ENTER:
-	    	{
-	    	boolean some=false;
-			User oldHighlightedLeft = highlightedUserLeft;
-			User oldHighlightedRight = highlightedUserRight;
+	{
+		boolean some=false;
+	    User oldHighlightedLeft = highlightedUserLeft;
+	    User oldHighlightedRight = highlightedUserRight;
 	    User oldHighlightedGame = highlightedUserGame;
-			highlightedItem = LobbyId.highlight_none;
-			highlightedUser=null;
-			highlightedUserLeft = null;
-			highlightedUserRight = null;
+	    highlightedItem = LobbyId.highlight_none;
+		highlightedUser=null;
+		highlightedUserLeft = null;
+		highlightedUserRight = null;
 		highlightedUserGame = null;
-			highlightedSession=null;
+		highlightedSession=null;
 	    if(GameScrollArea.inScrollBarRect( ex,ey))
-				{ highlightedItem=LobbyId.highlight_gamescroll; }
+		{ highlightedItem=LobbyId.highlight_gamescroll; }
 		else if(UserScrollArea.inScrollBarRect(ex,ey)) 
-				{ highlightedItem=LobbyId.highlight_userscroll; }
-			else if(inHomeToken(ex,ey))
-				{ highlightedItem = LobbyId.highlight_hometoken; 
-				}
+		{ highlightedItem=LobbyId.highlight_userscroll; }
+		else if(inHomeToken(ex,ey))
+		{ highlightedItem = LobbyId.highlight_hometoken; 
+		}
 		else if(inSetPreferredGame(ex,ey))
 		{
 			highlightedItem = LobbyId.highlight_setpreferred;
 		}
-			else
-				{
+		else
+		{
 			    Session sess = inSession(ex,ey);
-			    if(sess!=null)
-			    {
-			    int localX = ex - G.Left(gameRect);
-			    int localY = ey - sess.currentScreenY;
-				highlightedItem = getHighlightedItem(sess,localX,localY);
-			    }
-				else
-					{User hit = inAnyUserToken(ex,ey);
-					 if(hit!=null)
-					 {
-					 highlightedItem = LobbyId.highlight_user;;
-					 if(ex-G.Left(userRect) < (SCALE*35))
-					 { highlightedUserLeft = hit;
-					   some = (oldHighlightedLeft!=highlightedUserLeft);
-					 }
+	    if(sess!=null)
+	    {
+	    int localX = ex - G.Left(gameRect);
+	    int localY = ey - sess.currentScreenY;
+		highlightedItem = getHighlightedItem(sess,localX,localY);
+	    }
+		else
+			{User hit = inAnyUserToken(ex,ey);
+			 if(hit!=null)
+			 {
+			 highlightedItem = LobbyId.highlight_user;;
+			 if(ex-G.Left(userRect) < (SCALE*35))
+			 { highlightedUserLeft = hit;
+			   some = (oldHighlightedLeft!=highlightedUserLeft);
+			 }
 			 else if(ex>=G.Left(playingRect))
 			 {
 				 highlightedUserGame = hit;
 				 some = (oldHighlightedGame!=highlightedUserGame);
 			 }
-					 else if((G.Right(userRect)-ex)< (SCALE*35))
-					 { highlightedUserRight = hit;
-					   some = (oldHighlightedRight != highlightedUserRight);
-					 }		     
-					 else
-				     { highlightedUser = hit;
+			 else if((G.Right(userRect)-ex)< (SCALE*35))
+			 { highlightedUserRight = hit;
+			   some = (oldHighlightedRight != highlightedUserRight);
+			 }		     
+			 else
+		     { highlightedUser = hit;
 		       some=true;
 		     }
 			 }
-					}
-				 if(highlightedItem!=LobbyId.highlight_none)
-				 { 
-			         highlightedSession=sess;
-			         some=true;	
-					 repaint("dragme"); 
-				 }
-			    }
-	    	if(some) {repaint("Something"); }
+			}
+		 if(highlightedItem!=LobbyId.highlight_none)
+		 { 
+	         highlightedSession=sess;
+	         some=true;	
+			 repaint("dragme"); 
+		 }
+	    }
+		if(some) {repaint("Something"); }
 	    	}
 			break;
 	    case LAST_IS_DRAG:
@@ -2635,16 +2641,16 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 			handleMouseUpEvent(ex,ey);
 	    }
 
-		p.hitCode = highlightedItem;
+		p.hitCode = highlightedItem; 
 		HitPoint sp = setHighlightPoint(((highlightedItem==LobbyId.highlight_none)&&!p.dragging) ? null : p);
 		repaintSprites();
 		return(sp);
-	  }
+		}
 	  }
 	public void DoMouseExited(int x,int y)
 	{ 
 	  inUserArea=false;
-	   highlightedSession=null;    
+	  highlightedSession=null;
 	  theChat.MouseMotion(x,y,MouseState.LAST_IS_EXIT);
 	  repaint(1000,"exitmouse");
 	}
@@ -2660,7 +2666,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	      if(sess!=null)
 	        {// don't send submode here, so we won't change the setting based on possibly
 	         // incomplete information
-	    	  lobby.movingToSess = sess.gameIndex;
+	    	 lobby.movingToSess = sess.gameIndex;
 	    	 String msg = sess.gameIndex+" "+m_movingToPos + " -1";	
 	    	 sendMessage(NetConn.SEND_LOBBY_INFO+msg);
 	         sendMessage(NetConn.SEND_GROUP+KEYWORD_IMIN+" "+msg);
@@ -2698,7 +2704,7 @@ public void shutDown()
 public void ViewerRun(int wait)
 {	long now = G.Date();
 	if(UserScrollArea.doRepeat() || GameScrollArea.doRepeat() || theChat.doRepeat())  
-		{ repaint(10,"fling"); 
+		{ repaint(10,"fling");
 		}
 	super.ViewerRun(wait);
 	//updateFrameIcon(fullRect); not pretty enough
@@ -2770,7 +2776,7 @@ public boolean handleDeferredEvent(Object otarget, String command)
 	  { 
 	  	int newchoice = gameTypeMenu.value;
 	    if(newchoice>=0)
-	      {  
+	      {
 	    	GameInfo game = GameInfo.findByNumber(newchoice);
 	    	if(changeRoom==Sessions[0])
 			{
@@ -2779,12 +2785,12 @@ public boolean handleDeferredEvent(Object otarget, String command)
 				if(s!=null)
 				{
 					scrollToSession(s);
-	      }
+				}
 			}else
 			{
 	      	 lobby.setRoomType(changeRoom,changeRoom.mode,game,false);
 	      }}
-	  } 
+	  }
 	else 
 	if (variationMenu.selectMenuTarget(otarget))
 	  {	int newchoice = variationMenu.value;
@@ -2812,7 +2818,7 @@ public boolean handleDeferredEvent(Object otarget, String command)
 	  if(newchoice!=null) 
 	  	{ lobby.setRoomRobot(changeRoom,newchoice,true); 
 	  	}
-	  	}
+	}
 	else if(timeControlKindMenu!=null && timeControlKindMenu.selectMenuTarget(otarget))
 	{	TimeControl.Kind kind = (TimeControl.Kind)timeControlKindMenu.rawValue;
 		if(kind!=null) 
@@ -2894,7 +2900,7 @@ public void changeMute(int index)
 						sendMessage(NetConn.SEND_GROUP+"usermenu 0 "+muteUser.serverIndex+" "+muteUser.ignored); 
 					}
 				break;
-    case 1:	
+		case 1:	
 			muteUser.nochallenge = !muteUser.nochallenge;
 			sendMessage(NetConn.SEND_MESSAGE_TO + muteUser.serverIndex+" usermenu 1 "+ muteUser.serverIndex +" "+ muteUser.nochallenge); 
 			break;
@@ -2921,7 +2927,7 @@ public void changeMute(int index)
 		default: 
 		}
 	}
-
+	  
 /*
  * this scrolling is implemented in a way that is appropriate ONLY for the peculiar
  * circumstances of the lobby.  The actual window stays the same size as the frame,
@@ -2984,7 +2990,7 @@ public boolean touchZoomEnabled()
 	return(true);
 	
 }
-	
+
 public void drawCanvasSprites(Graphics gc, HitPoint pt) 
 {
 	if(mouseTrackingAvailable(pt)) { magnifier.DrawTileSprite(gc,pt); }

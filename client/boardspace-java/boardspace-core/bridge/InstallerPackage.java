@@ -1,5 +1,10 @@
 package bridge;
 
+/** information functions, used on the codename1 branch
+ * 
+ * @author ddyer
+ *
+ */
 
 public interface InstallerPackage extends NativeInterface
 {

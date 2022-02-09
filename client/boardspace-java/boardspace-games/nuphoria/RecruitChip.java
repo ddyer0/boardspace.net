@@ -9,6 +9,10 @@ import online.common.exCanvas;
 
 /*
  * extension of EuphoriaChip for recruit cards.  Remember that these are treated as Immutable.
+ * 
+ * original recruits are numbered 100-148
+ * v2 recruits are numbered 200-214
+ * iib recruits are numbers 220-274
  */
 public class RecruitChip extends EuphoriaChip implements EuphoriaConstants
 {
@@ -32,6 +36,8 @@ public class RecruitChip extends EuphoriaChip implements EuphoriaConstants
 	static private Image recruitMask = null;
 	static private String recruitDir = null;
 	static private boolean deferLoad = true;
+	public boolean isIIB() { return(chipNumber()>recruitCardOffset+220); }	// iib recruits start at 220
+	
 	
 	private RecruitChip(Allegiance a,String test,String n,int idx)
 	{	super(recruitCardOffset+idx,
@@ -244,6 +250,140 @@ public class RecruitChip extends EuphoriaChip implements EuphoriaConstants
 	static RecruitChip BrianTheViticulturist_V2 = new RecruitChip(Allegiance.Wastelander,null,
 			"Brian the Viticulturist V2",216);
 
+	//
+	// IIB recruits
+	//
+	static RecruitChip LeiveTheBriber = new RecruitChip(Allegiance.Icarite,null,
+			"Lieve the Briber",221);
+	static RecruitChip AhmedTheArtifactDealer = new RecruitChip(Allegiance.Icarite,null,
+			"Ahmed The Artifact Dealer",222);
+	static RecruitChip AminaTheBlissBringer = new RecruitChip(Allegiance.Icarite,null,
+			"Amina the Bliss Bringer",223);
+	static RecruitChip TerriTheBlissTrader = new RecruitChip(Allegiance.Icarite,null,
+			"Terri the Bliss Trader",224);
+	static RecruitChip TedTheContingencyPlanner = new RecruitChip(Allegiance.Icarite,null,
+			"Ted the Contingency Planner",225);
+	static RecruitChip GaryTheForgetter = new RecruitChip(Allegiance.Icarite,null,
+			"Gary the Forgetter",226);
+	static RecruitChip BokTheGameMaster = new RecruitChip(Allegiance.Icarite,null,
+			"Bok the Game Master",227);
+	static RecruitChip KebTheInformationTrader = new RecruitChip(Allegiance.Icarite,null,
+			"Keb the Information Trader",228);
+	static RecruitChip BrendaTheKnowledgeBringer = new RecruitChip(Allegiance.Icarite,null,
+			"Brenda the Knowledge Bringer",229);
+	static RecruitChip MosiThePatron = new RecruitChip(Allegiance.Icarite,null,
+			"Mosi the Patron",230);
+	static RecruitChip JadwigaTheSleepDeprivator = new RecruitChip(Allegiance.Icarite,null,
+			"Jadwiga the Sleep Deprivator",231);
+	static RecruitChip ZaraTheSolipsist = new RecruitChip(Allegiance.Icarite,null,
+			"Zara the Solipsist",232);
+	static RecruitChip JonTheAmateurHandyman = new RecruitChip(Allegiance.Euphorian,null,
+			"Jon the Amateur Handyman",233);
+	static RecruitChip DougTheBuilder = new RecruitChip(Allegiance.Euphorian,null,
+			"Doug the Builder",234);
+	static RecruitChip CaryTheCarebear = new RecruitChip(Allegiance.Euphorian,null,
+			"Cary the Carebear",235);	// coded and tested 7 Feb
+	static RecruitChip EkaterinaTheCheater = new RecruitChip(Allegiance.Euphorian,null,
+			"Ekaternia the Cheater",236);
+	static RecruitChip MiroslavTheConArtist = new RecruitChip(Allegiance.Euphorian,null,
+			"Miroslav the Con Artist",237);
+	static RecruitChip SteveTheDoubleAgent = new RecruitChip(Allegiance.Euphorian,null,
+			"Steve the Double Agent",238);
+	static RecruitChip PmaiTheNurse = new RecruitChip(Allegiance.Euphorian,null,
+			"Pmai the Nurse",239);
+	static RecruitChip ChagaTheGamer = new RecruitChip(Allegiance.Euphorian,null,
+			"Chaga the Gamer",240);
+	static RecruitChip HajoonTheColdTrader = new RecruitChip(Allegiance.Euphorian,null,
+			"Ha-Joon the Cold Trader",241);
+	static RecruitChip RowenaTheMentor = new RecruitChip(Allegiance.Euphorian,null,
+			"Rowena the Mentor",242);
+	static RecruitChip FrazerTheMotivator = new RecruitChip(Allegiance.Euphorian,null,
+			"Frazer the Motivator",243);
+	static RecruitChip SamuelTheZapper = new RecruitChip(Allegiance.Euphorian,null,
+			"Samuel the Zapper",244);
+	static RecruitChip LarsTheBallooneer = new RecruitChip(Allegiance.Wastelander,null,
+			"Lars the Ballooneer",245);
+	static RecruitChip XyonTheBrainSurgeon = new RecruitChip(Allegiance.Wastelander,null,
+			"Xyon the Brain Surgeon",246);
+	static RecruitChip JuliaTheAcolyte = new RecruitChip(Allegiance.Wastelander,null,
+			"Julia the Acolyte",247);
+	static RecruitChip TaedTheBrickTrader = new RecruitChip(Allegiance.Wastelander,null,
+			"Taed the Brick Trader",248);
+	static RecruitChip LionelTheCook = new RecruitChip(Allegiance.Wastelander,null,
+			"Lionel the Cook",249);
+	static RecruitChip AlexandraTheHeister = new RecruitChip(Allegiance.Wastelander,null,
+			"Alexandra the Heister",250);
+	static RecruitChip GeorgeTheLazyCraftsman = new RecruitChip(Allegiance.Wastelander,null,
+			"George the Lazy Craftsman",251);
+	static RecruitChip GwenTheMinerologist = new RecruitChip(Allegiance.Wastelander,null,
+			"Gwen the Minerologist",252);
+	static RecruitChip JoseThePersuader = new RecruitChip(Allegiance.Wastelander,null,
+			"Jose the Persuader",253);
+	static RecruitChip JedidiahTheInciter = new RecruitChip(Allegiance.Wastelander,null,
+			"Jedidiah the Inciter",254);
+	static RecruitChip DarrenTheRepeater = new RecruitChip(Allegiance.Wastelander,null,
+			"Darren the Repeater",255);
+	static RecruitChip HighGeneralBaron = new RecruitChip(Allegiance.Wastelander,null,
+			"High General Baron",256);
+	static RecruitChip JosephTheAntiquer = new RecruitChip(Allegiance.Subterran,null,
+			"Joseph the Antiquer",257);
+	static RecruitChip MilosTheBrainwasher = new RecruitChip(Allegiance.Subterran,null,
+			"Milos the Brainwasher",258);
+	static RecruitChip KhaleefTheBruiser = new RecruitChip(Allegiance.Subterran,null,
+			"Khaleef the Bruiser",259);		// coded and tested feb 6
+	static RecruitChip PedroTheCollector = new RecruitChip(Allegiance.Subterran,null,
+			"Pedro The Collector",260);
+	static RecruitChip ShaheenaTheDigger = new RecruitChip(Allegiance.Subterran,null,
+			"Shaheena the Digger",261);
+	static RecruitChip DustyTheEnforcer = new RecruitChip(Allegiance.Subterran,null,
+			"Dusty the Enforcer",262);
+	static RecruitChip MwicheTheFlusher = new RecruitChip(Allegiance.Subterran,null,
+			"Mwiche the Flusher",263);													// coded, tested feb 7
+	static RecruitChip MakatoTheForger = new RecruitChip(Allegiance.Subterran,null,
+			"MakatoTheForger",264);
+	static RecruitChip AlbertTheFounder = new RecruitChip(Allegiance.Subterran,null,	// coded, tested feb 6
+			"Albert the Founder",265);
+	static RecruitChip PamhdzaiTheReader = new RecruitChip(Allegiance.Subterran,null,
+			"Pamhidzai the Reader",266);
+	static RecruitChip BoraTheStoryteller = new RecruitChip(Allegiance.Subterran,null,
+			"Bora The Storyteller",267);
+	static RecruitChip JavierTheUndergroundLibrarian = new RecruitChip(Allegiance.Subterran,null,
+			"Javier the Underground Librarian",268);
+	static RecruitChip ChristineTheAnarchist = new RecruitChip(Allegiance.Factionless,null,
+			"Christine the Anarchist",269);
+	static RecruitChip KofiTheHermit = new RecruitChip(Allegiance.Factionless,null,
+			"Kofi the Hermit",270);
+	static RecruitChip JeroenTheHoarder = new RecruitChip(Allegiance.Factionless,null,
+			"Jeroen the Hoarder",271);
+	static RecruitChip SpirosTheModelCitizen = new RecruitChip(Allegiance.Factionless,null,
+			"Spiros the Model Citizen",272);
+	static RecruitChip DavaaTheShredder = new RecruitChip(Allegiance.Factionless,null,
+			"Davaa the Shredder",273);
+	static RecruitChip YoussefTheTunneler = new RecruitChip(Allegiance.Factionless,null,
+			"YoussefTheTunneler",274);
+
+	static RecruitChip IIBRecruits[] = {
+			CardBack,		CardBlank,	
+			// icarites
+			LeiveTheBriber,AhmedTheArtifactDealer,AminaTheBlissBringer,TerriTheBlissTrader,
+			TedTheContingencyPlanner,GaryTheForgetter,BokTheGameMaster,KebTheInformationTrader,
+			BrendaTheKnowledgeBringer,MosiThePatron,JadwigaTheSleepDeprivator,ZaraTheSolipsist,
+			// euphorians
+			JonTheAmateurHandyman,DougTheBuilder,CaryTheCarebear,EkaterinaTheCheater,
+			MiroslavTheConArtist,SteveTheDoubleAgent,PmaiTheNurse,ChagaTheGamer,HajoonTheColdTrader,
+			RowenaTheMentor,FrazerTheMotivator,SamuelTheZapper,
+			// wastelanders
+			LarsTheBallooneer,XyonTheBrainSurgeon,JuliaTheAcolyte,TaedTheBrickTrader,LionelTheCook,
+			AlexandraTheHeister,GeorgeTheLazyCraftsman,GwenTheMinerologist,JoseThePersuader,
+			JedidiahTheInciter,DarrenTheRepeater,HighGeneralBaron,
+			// subterrans
+			JosephTheAntiquer,MilosTheBrainwasher,KhaleefTheBruiser,PedroTheCollector,ShaheenaTheDigger,
+			DustyTheEnforcer,MwicheTheFlusher,MakatoTheForger,AlbertTheFounder,PamhdzaiTheReader,
+			BoraTheStoryteller,JavierTheUndergroundLibrarian,
+			// factionless
+			ChristineTheAnarchist,KofiTheHermit,JeroenTheHoarder,SpirosTheModelCitizen,
+			DavaaTheShredder,YoussefTheTunneler,
+			};
 	public EuphoriaChip getSpriteProxy() { return(this); } 
 	static RecruitChip allRecruits[] = 
 		{
@@ -315,11 +455,12 @@ public class RecruitChip extends EuphoriaChip implements EuphoriaConstants
 		{
 		loadRecruits(forcan,allRecruits);
 		loadRecruits(forcan,V2Recruits);
+		loadRecruits(forcan,IIBRecruits);
 		}
 		CardBack = allRecruits[0];     
 		CardBlank = allRecruits[1];
         
         ImagesLoaded = true;
 		}
-	}   
-}
+	}
+	}

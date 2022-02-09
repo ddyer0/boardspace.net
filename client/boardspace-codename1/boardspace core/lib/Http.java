@@ -455,6 +455,8 @@ public class Http implements Config,Crypto {
     	            					? (String)caller 
     	            					: (caller.getClass().getName());
     	            Plog.log.addLog("Log request from " ,cname);
+    	            if(G.isCheerpj()) { Plog.log.addLog(msg);}
+    	            
     	            String finalmsg = "&tagname=posterror&name="+Http.escape(cname)
     	            	+ "&data=" + Http.escape(msg);
     	            if((hostName!=null) 

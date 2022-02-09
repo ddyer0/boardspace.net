@@ -80,6 +80,8 @@ public abstract class cell<FINALTYPE
 {	/** Geometry is the number of neighbors a cell has.  Normally the main board
 	has a grid of cells with uniform, or almost uniform, geometry */
 	public String getName() { return(toString()); }
+	public int getWidth() { return lastSize(); }
+	public int getHeight() { return lastSize(); }
 	public enum Geometry 
 	{	/** isolated cell, no neighbors */
 		Standalone(0),

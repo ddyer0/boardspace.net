@@ -47,5 +47,7 @@ public interface Drawable {
 	 */
 	public int animationHeight();
 	public String getName();
+	public int getWidth();
+	public int getHeight();
 	
 }

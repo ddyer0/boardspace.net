@@ -9,6 +9,7 @@ public class JTextArea extends TextArea
 	  setText(string); 
 	}
 	public JTextArea() { super();	}
+	
 
 
 }

@@ -255,7 +255,7 @@ public class RepaintManager implements VncScreenInterface,Config
 		public void setLowMemory(String s);					// memory ran out while getting buffers
 		public void handleError(String s,String context,Throwable r);	// report an error
 		public void drawClientCanvas(Graphics g,boolean complete,HitPoint p);	// actual drawing, usually to a buffer
-		public void ShowStats(Graphics gc, int i, int j);
+		public void ShowStats(Graphics gc, HitPoint hp,int i, int j);
 		public void showRectangles(Graphics gc, int i);
 		public Font getDefaultFont();
 		public void manageCanvasCache(int time);
@@ -1229,7 +1229,7 @@ public class RepaintManager implements VncScreenInterface,Config
 		 	    	paintedAFrame = true;
 		      		GC.setColor(gc,Color.blue);
 		        	helper.showRectangles(gc,100);
-		        	helper.ShowStats(gc,0,0);
+		        	helper.ShowStats(gc,pt,0,0);
 	    	
 		    	}
 	    	}
@@ -1254,15 +1254,17 @@ public class RepaintManager implements VncScreenInterface,Config
 	  		// font, line style, etc are not well defined at this point
 	  		helper.drawClientCanvas(offGC,complete,pt);
 	  		paintedAFrame = true;
-	    	if(repaintStrategy==RepaintStrategy.Deferred)
-	    	{	
-	    		helper.paintSprites(offGC,pt);
-	    	}
 			    
 	    	helper.showRectangles(offGC,100);
 	    	GC.setColor(offGC,Color.blue);
 	    	GC.translate(offGC,-x,-y);
-	    	helper.ShowStats(offGC,0,0);	// add some stats on top of everything
+	    	helper.ShowStats(offGC,pt,0,0);	// add some stats on top of everything
+
+	    	if(repaintStrategy==RepaintStrategy.Deferred)
+	    	{	
+	    		helper.paintSprites(offGC,pt);
+	    	}
+
 	    	//G.addLog("writing "+offScreen);
 	    	drawToRealScreen(gc,offScreen);
 		    

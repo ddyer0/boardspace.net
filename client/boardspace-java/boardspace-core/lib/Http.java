@@ -248,10 +248,10 @@ public class Http implements Config,Crypto {
             String data,UrlResult result) 
         {	String subdata = data==null ? "<null>" : "data["+data.length()+"]";
      		Plog.log.addLog("postURLStream ",url,"\n",subdata);
-   	 	if(hostName!=null) { setHostName(host); }
-            // if data is not null, also subsume any data in the url. 
-            // you can still force a "get" style url by having data
-    	 	if(data!=null)
+   	 		if(hostName!=null) { setHostName(host); }
+        // if data is not null, also subsume any data in the url. 
+        // you can still force a "get" style url by having data
+     	if(data!=null)
     	 	{
                 int idx = url.indexOf('?');
                 if (idx >= 0)
@@ -453,6 +453,8 @@ public class Http implements Config,Crypto {
     	            					? (String)caller 
     	            					: (caller.getClass().getName());
     	            Plog.log.addLog("Log request from " ,cname);
+    	            if(G.isCheerpj()) { Plog.log.addLog(msg);}
+    	            
     	            String finalmsg = "&tagname=posterror&name="+Http.escape(cname)
     	            	+ "&data=" + Http.escape(msg);
     	            if((hostName!=null) 

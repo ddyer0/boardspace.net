@@ -137,7 +137,7 @@ public class TextWindow extends Canvas implements MouseListener,MouseMotionListe
 			  repaint(100);
 			}
 	}
-	public void ShowStats(Graphics gc, int i, int j) {
+	public void ShowStats(Graphics gc, HitPoint hp,int i, int j) {
 		
 	}
 	public void showRectangles(Graphics gc, int i) {

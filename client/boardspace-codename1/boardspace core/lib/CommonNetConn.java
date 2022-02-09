@@ -207,7 +207,9 @@ public abstract class CommonNetConn<TYPE> implements Runnable, Config
 
         //System.out.println("Sock: "+sock);
         if (sock == null)
-        {	setExitFlag("Can't get socket");
+        {	String msg = "Can't get socket "+machineName+":"+machinePort;
+        	Plog.log.addLog(msg);
+        	setExitFlag(msg);
             return (false);
         }
         return connectToSocket(sock);
@@ -223,8 +225,10 @@ public abstract class CommonNetConn<TYPE> implements Runnable, Config
         }
         catch (IOException e)
         {	hadConn = true;
-            setExitFlag(myName + " IOException on input stream open for " +
-                machineName + ":" + machinePort + " - " + e);
+        	String msg = myName + " IOException on input stream open for " +
+                    machineName + ":" + machinePort + " - " + e;
+        	Plog.log.addLog(msg);
+            setExitFlag(msg);
 
             return (false);
         }
@@ -484,9 +488,9 @@ public abstract class CommonNetConn<TYPE> implements Runnable, Config
             boolean isError = (err != null);
 
             if (isError)
-            {
+            {	Plog.log.addLog("network error: ",err);
                 setExitFlag(err);
-                Http.postError(this, "network error: "+err, null);
+                Http.postError(this, "network error: "+ err,null);
             }
 
             return (!isError);
@@ -678,9 +682,11 @@ public abstract class CommonNetConn<TYPE> implements Runnable, Config
     writer = null;
     }
 	public static SocketProxy makeSocketConnection(String server,int port) throws IOException
-	{
-		return(USE_NATIVE_SOCKETS && !G.isIOS()
+	{	Plog.log.addLog("Open socket ",server,":",port);
+		SocketProxy p = (USE_NATIVE_SOCKETS && !G.isIOS()
 		? new ClientSocket(server, port)
 		: new Socket(server,port));
+		Plog.log.addLog("opened socket ",p);
+		return(p);
 	}
 }

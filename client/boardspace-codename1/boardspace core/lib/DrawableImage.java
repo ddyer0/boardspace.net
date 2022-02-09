@@ -26,6 +26,8 @@ public class DrawableImage<T> implements Drawable,StackIterator<T>
 {
 	public void rotateCurrentCenter(double amount,int x,int y,int cx,int cy) {};
  	public double activeAnimationRotation() { return(0); }
+ 	public int getWidth() { return(0); }
+ 	public int getHeight() { return(0); }
 	// implement "StackIterator".  This allows a singleton piece of art
 	// to be morped into a stack of art (if manipulated correctly)
 	public int size() { return(1); }		// stack size is always 1
@@ -593,7 +595,7 @@ public static boolean load_images(ImageLoader forcan, String dir,DrawableImage<?
  * @param allChips
  * @param r
  */
-public static void showGrid(Graphics gc,exCanvas can,Drawable allChips[],Rectangle r)
+public static void showGrid(Graphics gc,exCanvas can,HitPoint hp,Drawable allChips[],Rectangle r)
 {
 int sz = allChips.length;
 int w = G.Width(r);
@@ -616,6 +618,7 @@ try {
 			GC.frameRect(gc, Color.blue,xpos-dsize/2-2,ypos-dsize/2-2,dsize+4,dsize+4);
 		}
 		im.drawChip(gc, can, dsize, xpos, ypos, null);
+		HitPoint.setHelpText(hp, dsize,xpos,ypos,im.getName()+" "+im.getWidth()+"x"+im.getHeight());
 		xpos += cell;
 		if((xpos+cell/2)>(xpos0+w)) { xpos = xpos0; ypos+=cell; }
 	}

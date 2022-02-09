@@ -34,7 +34,8 @@ public class MultiGlyph implements Drawable {
 	{	MultiGlyph m = new MultiGlyph();
 		return(m);
 	}
-
+	public int getWidth() { return(0); }
+	public int getHeight() { return(0); }
 	/**
 	 * append a drawable object to be drawn before this object
 	 * @param d the drawable object

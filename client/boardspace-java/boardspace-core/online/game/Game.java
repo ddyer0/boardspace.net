@@ -2770,7 +2770,7 @@ public class Game extends commonPanel implements PlayConstants,DeferredEventHand
 		/*
 		 note that this "newplayer" message is received twice, once
 		 when the connection is established, and a second time when
-		 the player announces himself.  The second time around, they
+		 the player announces themself.  The second time around, they
 		 also supply the rules revision they are playing.  This following
 		 bit is crucial to down-revise the rules to the lowest value.
 		 This whole dance allows bugs to be fixed in a regression free 

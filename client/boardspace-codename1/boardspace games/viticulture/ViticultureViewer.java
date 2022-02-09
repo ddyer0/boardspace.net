@@ -2923,7 +2923,7 @@ private void drawPlayerBoard(Graphics gc,
     	}
     	return(over);
     }
-    // show scoring information
+    // show scoring information at the endgame
     public void showScoreSheet(Graphics gc,ViticultureBoard gb,Rectangle br,
     		HitPoint highlight,HitPoint highlightAll,Hashtable<ViticultureCell,Viticulturemovespec>targets)
     {	int boardW = G.Width(br);

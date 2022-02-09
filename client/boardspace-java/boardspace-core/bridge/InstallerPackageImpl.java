@@ -2,7 +2,13 @@ package bridge;
 
 import java.net.InetAddress;
 import java.lang.Throwable;
-
+/**
+ * this is mostly a dummy class, to provide harmless implementations
+ * of some information function that are used by the codename1 branch
+ * 
+ * @author ddyer
+ *
+ */
 public class InstallerPackageImpl implements InstallerPackage
 {
     public String getPackages() {

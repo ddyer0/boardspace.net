@@ -10,6 +10,7 @@ import java.awt.FontMetrics;
 import java.awt.Frame;
 
 import lib.LFrameProtocol;
+import lib.Plog;
 import online.common.commonChatApplet;
 
 import java.awt.Point;
@@ -258,12 +259,73 @@ public static synchronized Object MakeInstance(String classname)
      
     public static Class<?>classForName(String name,boolean testOnly)
     {	try {
+    	Plog.log.addLog("classForName ",name);
 		return(Class.forName(name));
 			} catch (ClassNotFoundException e) {
 				if(!testOnly) { throw new ErrorX(e); }
 			}
     	return(null);
     }
+    
+	public static byte[] getMACAddress()
+	{	
+		try {
+	    InetAddress address = InetAddress.getLocalHost();
+	    if(address!=null)
+	    	{ NetworkInterface networkInterface = NetworkInterface.getByInetAddress(address);
+	    	  return (networkInterface==null) ? null : networkInterface.getHardwareAddress();
+	    	}
+		}
+		catch (NullPointerException err) { Plog.log.addLog("getMacAddress ",err); }
+		catch (UnknownHostException err) {}
+		catch (SocketException err) {}
+		return(null);
+	}
+	
+    /* hacked up version for cheerpj debugging
+    public static Class<?>classForName(String name,boolean testOnly)
+    {	Class<?> z = null;
+    	try {
+    	Plog.log.addLog("classForName for ",name);
+    	if(name.equals("online.game.Game")) 
+    			{ Plog.log.addLog("No Need to ask for ",name);
+    			  z = online.game.Game.class; 				// evidence is that this causes a classnotfoundexception trap
+    			  Plog.log.addLog("z set fixed",z);
+    			}	
+		    	else {
+		    		Plog.log.addLog("Really ask ",name);
+					z= Class.forName(name);
+					Plog.log.addLog("z set find ",z);
+		    	}
+    	}
+		catch (Exception e) {
+			if(!testOnly) { throw new ErrorX(e); }
+		}
+    	Plog.log.addLog("classforName is ",z);
+    	return(z);
+    }
+    
+   	public static byte[] getMACAddress()
+	{	
+		try {
+	    InetAddress address = InetAddress.getLocalHost();
+	    G.print("Local host "+address);
+	    if(address!=null)
+	    {
+	    NetworkInterface networkInterface = NetworkInterface.getByInetAddress(address);	// evidence is this causes a nullpointerexception
+	    G.print("Net interface "+networkInterface);
+	    if(networkInterface!=null)
+	    {
+	    	byte [] ad = networkInterface.getHardwareAddress();
+	    	G.print("ad "+ad);
+	    	return(ad);
+	    }
+		}}
+		catch (Throwable err) { G.print("getMACAdress "+err); }
+		return(null);
+	}
+	
+    */
     static public double screenDiagonal()
     {
     	double den = Toolkit.getDefaultToolkit().getScreenResolution();
@@ -321,7 +383,6 @@ public static synchronized Object MakeInstance(String classname)
     	return height;
     }
     static final public boolean isCodename1() { return(false); }
-    
     static String platformName = "Java";
     static final public String getPlatformName() { return(platformName); }
     static final public void setPlatformName(String n) { platformName = n; }
@@ -531,17 +592,7 @@ public static synchronized Object MakeInstance(String classname)
 	    else
 	        return "Unknown Computer";
 	}
-	public static byte[] getMACAddress()
-	{	
-		try {
-	    InetAddress address = InetAddress.getLocalHost();
-	    NetworkInterface networkInterface = NetworkInterface.getByInetAddress(address);
-	    return (networkInterface==null) ? null : networkInterface.getHardwareAddress();
-		}
-		catch (UnknownHostException err) {}
-		catch (SocketException err) {}
-		return(null);
-	}
+
 	private static Font defaultFont = null;
 	public static Font getGlobalDefaultFont()
 	{

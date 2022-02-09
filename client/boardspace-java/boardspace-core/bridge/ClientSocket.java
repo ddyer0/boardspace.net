@@ -6,6 +6,7 @@ import java.io.OutputStream;
 import java.net.InetAddress;
 
 import lib.G;
+import lib.Plog;
 import lib.SocketProxy;
 
 // this version if used if USE_SERVER_SOCKETS is true.  This ultimately uses
@@ -32,7 +33,7 @@ public class ClientSocket implements SocketProxy
 			int connection = sockImpl.connect(s,n);
 			socketErrorMessage = sockImpl.getIOExceptionMessage(connection);
 			if(socketErrorMessage!=null)
-			{
+			{	Plog.log.addLog("socket ioexception ",socketErrorMessage);
 				throw new IOException(socketErrorMessage);
 			}
 			if(connection>=0)

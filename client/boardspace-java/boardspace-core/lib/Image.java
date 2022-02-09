@@ -317,9 +317,9 @@ public class Image extends SystemImage implements Drawable,CompareTo<Image>
 	    	 * platforms turned out to be because "available" doesn't return the entire image length, which is
 	    	 * explicitly warned as possible.  So as of now, this is not the preferred method any more.
 	    	 */
-	    	Plog.log.appendNewLog("getImage ");
-	    	Plog.log.appendLog(imageName);
-	    	Plog.log.finishEvent();
+	    	//Plog.log.appendNewLog("getImage ");
+	    	//Plog.log.appendLog(imageName);
+	    	//Plog.log.finishEvent();
 	           try {
 	           img = new Image(imageName);
 	           img.loadImage(imageName);

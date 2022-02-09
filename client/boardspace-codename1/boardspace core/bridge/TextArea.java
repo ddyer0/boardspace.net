@@ -85,11 +85,6 @@ public class TextArea extends com.codename1.ui.TextArea
 	public void addActionListener(ActionListener t) { mouse.addActionListener(t); }
 	public void addMouseListener(MouseListener m) { mouse.addMouseListener(m); }
 	public void addMouseMotionListener(MouseMotionListener m) { mouse.addMouseMotionListener(m); }
-	public TextArea(String m) 
-	{ super(m);
-	  addActionListener(this);
-	}
-	
 	public void setWidth(int w) 
 	{ final int fw = w;
 		G.runInEdt(new Runnable() { public void run() { actualSetWidth(fw); }});
@@ -117,12 +112,20 @@ public class TextArea extends com.codename1.ui.TextArea
 		}
 	}
 
+	public TextArea(String m) 
+	{ super(m);
+	  //putClientProperty("ios.asyncEditing", Boolean.FALSE);
+	  addActionListener(this);
+	}
+	
 	public TextArea(String string, int i, int j)
 	{ 	super(string,i,j);
+		//putClientProperty("ios.asyncEditing", Boolean.FALSE);
 	}
 	public TextArea() 
 	{	super();
 		getStyle().setOpacity(255);
+		//putClientProperty("ios.asyncEditing", Boolean.FALSE);
 	}
 	public void setBackground(Color color) { getStyle().setBgColor(color.getRGB()); }
 	public void setForeground(Color color) { getStyle().setFgColor(color.getRGB()); }
@@ -242,4 +245,5 @@ public class TextArea extends com.codename1.ui.TextArea
 		    upd.dispatchCommand(okCommand,new com.codename1.ui.events.ActionEvent(okCommand));
 		}}
 	}
+
 }

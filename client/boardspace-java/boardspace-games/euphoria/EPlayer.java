@@ -539,7 +539,7 @@ public boolean moraleCheck(replayMode replay)
 	cardsLost += nart-morale;
 	if(allOneArtifactType())  
 		{ while(nart-->morale)
-			{  b.addArtifact(artifacts.removeTop()); 
+			{  b.recycleArtifact(artifacts.removeTop()); 
 		  	   if(replay!=replayMode.Replay)  { b.animateReturnArtifact(artifacts); } 
 		  	}
 		}
@@ -1277,7 +1277,7 @@ private void shedOneCommodity(replayMode replay)
 private void shedCards(int n,replayMode replay)
 {	while(n-- > 0)
 	{
-		b.addArtifact(artifacts.removeTop()); 
+		b.recycleArtifact(artifacts.removeTop()); 
 		if(replay!=replayMode.Replay)
 	  		{  b.animateReturnArtifact(artifacts);
 	  		}
@@ -1289,7 +1289,7 @@ private boolean doFlartner(replayMode replay)
 {
 	if(!allOneArtifactType()) { return(false); }	// dialog required if both artifacts and gold, or mixed artifacts
 	
-	b.addArtifact(artifacts.removeTop());
+	b.recycleArtifact(artifacts.removeTop());
 	incrementMorale();
 	b.logGameEvent(FlartnerTheLudditeEffect);
 	if(replay!=replayMode.Replay) { b.animateReturnArtifact(artifacts);}
@@ -1340,12 +1340,16 @@ void sendBliss(int n,replayMode replay)
 }
 void sendArtifacts(int n,replayMode replay)
 {
-	for(int i=0;i<n;i++) { b.addArtifact(artifacts.removeTop()); if(replay!=replayMode.Replay) { b.animateReturnArtifact(artifacts); }}
+	for(int i=0;i<n;i++) { b.recycleArtifact(artifacts.removeTop()); if(replay!=replayMode.Replay) { b.animateReturnArtifact(artifacts); }}
 }
 
-boolean artifactChip(ArtifactChip which,replayMode replay)
+// note, before rev 123 this version had a bug that didn't have an immediately
+// visible effect - it failed torecycle the card.  To maintain compatibility,
+// we have to maintain the bug!
+boolean artifactChipBuggy(ArtifactChip which,replayMode replay)
 {
 	artifacts.removeChip(which);
+	if(b.revision>=123) { b.recycleArtifact(which); }
 	if(replay!=replayMode.Replay) { b.animateReturnArtifact(artifacts); }
 	return(true);
 }
@@ -2012,7 +2016,7 @@ boolean payCost(Cost item0,replayMode replay)
 		if(nKindsOfCommodity()==1)
 		{
 			shedOneCommodity(replay);
-			b.addArtifact(artifacts.removeChip(ArtifactChip.Bear));
+			b.recycleArtifact(artifacts.removeChip(ArtifactChip.Bear));
 			if(replay!=replayMode.Replay) { b.animateReturnArtifact(artifacts); }
 			return(true);
 		}
@@ -2021,7 +2025,7 @@ boolean payCost(Cost item0,replayMode replay)
 		if(nKindsOfCommodity()==1)
 		{
 			shedOneCommodity(replay);
-			b.addArtifact(artifacts.removeChip(ArtifactChip.Bifocals));
+			b.recycleArtifact(artifacts.removeChip(ArtifactChip.Bifocals));
 			if(replay!=replayMode.Replay) { b.animateReturnArtifact(artifacts); }
 			return(true);
 		}
@@ -2030,7 +2034,7 @@ boolean payCost(Cost item0,replayMode replay)
 		if(nKindsOfCommodity()==1)
 		{
 			shedOneCommodity(replay);
-			b.addArtifact(artifacts.removeChip(ArtifactChip.Balloons));
+			b.recycleArtifact(artifacts.removeChip(ArtifactChip.Balloons));
 			if(replay!=replayMode.Replay) { b.animateReturnArtifact(artifacts); }
 			return(true);
 		}
@@ -2039,7 +2043,7 @@ boolean payCost(Cost item0,replayMode replay)
 		if(nKindsOfCommodity()==1)
 		{
 			shedOneCommodity(replay);
-			b.addArtifact(artifacts.removeChip(ArtifactChip.Box));
+			b.recycleArtifact(artifacts.removeChip(ArtifactChip.Box));
 			if(replay!=replayMode.Replay) { b.animateReturnArtifact(artifacts); }
 			return(true);
 		}
@@ -2048,7 +2052,7 @@ boolean payCost(Cost item0,replayMode replay)
 		if(nKindsOfCommodity()==1)
 		{
 			shedOneCommodity(replay);
-			b.addArtifact(artifacts.removeChip(ArtifactChip.Bat));
+			b.recycleArtifact(artifacts.removeChip(ArtifactChip.Bat));
 			if(replay!=replayMode.Replay) { b.animateReturnArtifact(artifacts); }
 			return(true);
 		}
@@ -2057,7 +2061,7 @@ boolean payCost(Cost item0,replayMode replay)
 		if(nKindsOfCommodity()==1)
 		{
 			shedOneCommodity(replay);
-			b.addArtifact(artifacts.removeChip(ArtifactChip.Book));
+			b.recycleArtifact(artifacts.removeChip(ArtifactChip.Book));
 			if(replay!=replayMode.Replay) { b.animateReturnArtifact(artifacts); }
 			return(true);
 		}
@@ -2066,22 +2070,22 @@ boolean payCost(Cost item0,replayMode replay)
 
 		// artifact costs
 	case Bear:
-		return(artifactChip(ArtifactChip.Bear,replay));
+		return(artifactChipBuggy(ArtifactChip.Bear,replay));
 			
 	case Box:
-		return(artifactChip(ArtifactChip.Box,replay));
+		return(artifactChipBuggy(ArtifactChip.Box,replay));
 			
 	case Book:
-		return(artifactChip(ArtifactChip.Book,replay));
+		return(artifactChipBuggy(ArtifactChip.Book,replay));
 			
 	case Bifocals:
-		return(artifactChip(ArtifactChip.Bifocals,replay));
+		return(artifactChipBuggy(ArtifactChip.Bifocals,replay));
 		
 	case Bat:
-		return(artifactChip(ArtifactChip.Bat,replay));
+		return(artifactChipBuggy(ArtifactChip.Bat,replay));
 			
 	case Balloons:
-		return(artifactChip(ArtifactChip.Balloons,replay));
+		return(artifactChipBuggy(ArtifactChip.Balloons,replay));
 
 	// artifact costs
 	case BearOrCardx2:

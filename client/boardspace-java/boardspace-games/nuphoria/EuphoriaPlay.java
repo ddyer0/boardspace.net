@@ -201,7 +201,7 @@ public class EuphoriaPlay extends commonRobot<EuphoriaBoard> implements Runnable
     	if(newn<boardMoveNumber)
     		{ // we detect that the UCT run has restarted at the top
     		  // so we need to re-randomize the hidden state.
-    		  board.randomizeHiddenState(robotRandom,robotPlayer);
+    //		  board.randomizeHiddenState(robotRandom,robotPlayer);
     		  terminatedWithPrejudice = -1;
     		}
     	boardMoveNumber = newn;
@@ -436,11 +436,13 @@ public void PrepareToMove(int playerIndex)
 {	
 	//use this for a friendly robot that shares the board class
 	board.copyFrom(GameBoard);
+	board.sameboard(GameBoard);;
 	board.setRobotBoard();
     board.sameboard(GameBoard);	// check that we got a good copy.  Not expensive to do this once per move
     robotPlayer = playerIndex;
     robotRandom = new Random(board.Digest());
     board.SIMULTANEOUS_PLAY = false;
+    board.robot = this;
     board.setWhoseTurn(robotPlayer);
     if(board.continuationStack.size()==0) 
     	{	// this is needed to prevent "unexpected turn change" if the robot
@@ -449,7 +451,7 @@ public void PrepareToMove(int playerIndex)
     		// may be temporary "current player" currently in effect.
     		board.currentPlayerInTurnOrder = robotPlayer; 
     	}
-    board.randomizeHiddenState(robotRandom,playerIndex);
+  //  board.randomizeHiddenState(robotRandom,playerIndex);
     terminatedWithPrejudice = -1;
     board.activePlayer = robotPlayer;
     if(!board.hasReducedRecruits) 
@@ -504,7 +506,7 @@ public void PrepareToMove(int playerIndex)
         monte_search_state.randomize_uct_children = true;     
         monte_search_state.random_moves_per_second = WEAKBOT ? 6000 : 250000;
         monte_search_state.max_random_moves_per_second = 300000;
-        monte_search_state.maxThreads = evaluator.threads;	// 1 = test with a single thread, 0=don't use threads
+        monte_search_state.maxThreads = 0;//evaluator.threads;	// 1 = test with a single thread, 0=don't use threads
         //
         // terminal node optimizations don't work with Euphoria, because the things
         // it sees are only possibilities, not facts.  So seeing the possibility of

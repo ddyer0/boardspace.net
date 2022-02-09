@@ -305,6 +305,7 @@ public class NetConn extends CommonNetConn<String> implements Runnable,Config
     private int writeErr=0;
     boolean realSendMessage(OutputStream os,String theBuffStr)
     {
+            
      try
      {
       boolean split = false;
@@ -424,6 +425,7 @@ public class NetConn extends CommonNetConn<String> implements Runnable,Config
                         count_writes++;
                         sum_writes += (packet-i);
                         last_write = G.Date();
+
                         os.write(outBuf, i, packet);
                         if(writeErr!=0) { writeErr=0; throw new IOException(); }
 
@@ -452,7 +454,10 @@ public class NetConn extends CommonNetConn<String> implements Runnable,Config
             }
  		   catch (ThreadDeath err) { throw err;}
            catch (Throwable e)
-           {setExitFlag("Unusual write error:"+e);
+           {
+        	Plog.log.addLog("Unusual write error ",e," ",os," ",theBuffStr);
+        	System.out.println(Plog.log.getLog());
+        	setExitFlag("Unusual write error:"+e);
             Http.postError(this,"Unusual write error:",e);
             return(false);
            }

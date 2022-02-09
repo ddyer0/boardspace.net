@@ -33,6 +33,12 @@ import javax.imageio.stream.ImageOutputStream;
 import lib.G;
 import lib.Image;
 
+/**
+ * these are the system dependent functions used by the common lib.Image class
+ * 
+ * @author ddyer
+ *
+ */
 public abstract class SystemImage implements ImageObserver
 {
 	public static int SCALE_DEFAULT = java.awt.Image.SCALE_DEFAULT;

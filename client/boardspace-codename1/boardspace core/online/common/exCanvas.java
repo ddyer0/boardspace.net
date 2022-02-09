@@ -8,6 +8,7 @@ import com.codename1.ui.geom.Rectangle;
 
 /* below here should be the same for codename1 and standard java */
 import bridge.*;
+import bridge.ThreadDeath;
 
 import java.io.PrintStream;
 import java.util.Enumeration;
@@ -1542,7 +1543,7 @@ graphics when using a touch screen.
         	
         	return(" I: "+(int)megabytes);
         }
-        public void ShowStats(Graphics gc, int x, int y)
+        public void ShowStats(Graphics gc,HitPoint hp, int x, int y)
         {	
         	boolean showImage = (l.showImages!=null) && l.showImages.getState();
         	boolean showing = (l.showStats != null) && (l.showStats.getState());
@@ -1575,17 +1576,17 @@ graphics when using a touch screen.
                 
                 if(showImage)
                 {
-                	showImages(gc,l.loadedImages);
+                	showImages(gc,hp,l.loadedImages);
                 }
             }
             else { l.showStatsWasOn = false; }
         }
-        private void showImages(Graphics gc,ImageStack loadedImages)
+        private void showImages(Graphics gc,HitPoint hp,ImageStack loadedImages)
         {	if(loadedImages!=null)
         	{
         	loadedImages.sort(false);
         	Drawable ims[] = (Drawable[])loadedImages.toArray();
-        	DrawableImage.showGrid(gc, null, ims, new Rectangle(0,100,getWidth(),getHeight()-100));
+        	DrawableImage.showGrid(gc, null, hp,ims, new Rectangle(0,100,getWidth(),getHeight()-100));
         	}
         }
         public void setLowMemory(String msg)

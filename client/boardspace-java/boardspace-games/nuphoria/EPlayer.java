@@ -4,7 +4,6 @@ package nuphoria;
 import java.util.Hashtable;
 
 import lib.Random;
-
 import online.game.replayMode;
 import lib.AR;
 import lib.G;
@@ -55,7 +54,7 @@ EuphoriaChip ephemeralPickedObject = null;
 
 EuphoriaCell marketBasket;		// temp for MoraleOrKnowledge
 
-int knowlegeLimit = 16;			// actually a constant, but we'll treat it as a variable.
+static final int KnowledgeLimit = 16;			// a constant, but can be modified by market penalty
 int knowledge = 3;				// current knowledge
 int morale = 1;					// current morale
 int totalWorkers = 0;			// workers in hand + on board.  Limit is 4
@@ -73,6 +72,12 @@ private boolean hasUsedGeekTheOracle = false;
 private boolean hasGainedWorker = false;
 private boolean hasUsedBrianTheViticulturist = false;
 private boolean mandatoryEquality = false;	// market penalty for mandatory equality
+int bearsGained = 0;
+
+boolean hasUsedSamuelTheZapper = false;		// true when we reroll additional workers 
+boolean usingSamuelTheZapper =false;		// true when we have paid and willretrieve
+int samuelTheZapperLevel = 0;				// the number of retrieved workers when we start
+boolean usingMwicheTheFlusher = false;		// true if actually paying mwiche 3 waters.
 
 public EuphoriaCell placedWorkers[] = new EuphoriaCell[MAX_WORKERS];
 public void placeWorker(EuphoriaCell c)
@@ -125,16 +130,24 @@ public void newMarketOpened()
 }
 
 // clear status at the start of a new turn
-public void startNewTurn()
+public void startNewTurn(replayMode replay)
 {	hasLostAWorker = false;
 	hasAddedArtifactLast = hasAddedArtifact;
 	hasAddedArtifact = false;
 	hasPeeked = false;
 	hasUsedGeekTheOracle = false;
 	hasGainedWorker = false;
+	bearsGained = 0;
 	resultsInDoubles = false;
 	hasUsedJonathanTheGambler = false;
 	hasUsedBrianTheViticulturist = false;
+	usingSamuelTheZapper = false;
+	usingMwicheTheFlusher = false;
+	samuelTheZapperLevel = 0;
+	if(hasUsedSamuelTheZapper)
+	{	hasUsedSamuelTheZapper = false;
+		collectBenefit(Benefit.Morale,replay);
+	}
 	checkMandatoryEquality();
 }
 
@@ -173,7 +186,17 @@ boolean incrementKnowledge(replayMode replay)
 public void setKnowledge(int n) { knowledge = n; }
 boolean decrementKnowledge() 
 	{ if(knowledge>MIN_KNOWLEDGE_TRACK) { knowledge--; return(true); } return(false); }
-boolean incrementMorale() { if(morale<MAX_MORALE_TRACK) { morale++; return(true); } return(false); }
+boolean incrementMorale() 
+{ 
+	if(morale>=3 && penaltyAppliesToMe(MarketChip.ConcertHallOfHarmoniousDischord))
+	{	MarketPenalty p = MarketChip.ConcertHallOfHarmoniousDischord.marketPenalty;
+		b.p1("inhibit morale gain");
+		b.logGameEvent(p.explanation);
+		return(false);
+	}
+	if(morale<MAX_MORALE_TRACK) { morale++; return(true); } return(false);
+
+}
 private boolean decrementMorale() 
 { if(morale>MIN_KNOWLEDGE_TRACK)	 
 	{ morale--; 
@@ -193,6 +216,7 @@ public void setMorale(int n) { morale = n; }
 public void addArtifact(EuphoriaChip c) 
 {	hasAddedArtifact = true;		// bookkeeping for GeekTheOracle and JonathanTheGambler
 	artifacts.addChip(c); 
+	if(c==ArtifactChip.Bear) { bearsGained++; }	// count for carythecarebear 
 	//G.print("add a "+this+" ="+artifacts.height()+" "+morale);
 }
 public boolean setHasPeeked(boolean v) 
@@ -214,6 +238,14 @@ public void addFood(EuphoriaChip c) { food.addChip(c); }
 public EuphoriaChip getAuthorityToken() 
 {	if(authority.height()>0)
 		{
+		if(penaltyAppliesToMe(MarketChip.AthenaeumOfMandatoryGuidelines))
+			{
+			MarketPenalty p = MarketChip.AthenaeumOfMandatoryGuidelines.marketPenalty;
+			if(decrementMorale())
+				{ //b.p1("lose morale due to AthenaeumOfMandatoryGuidelines" );
+				  b.logGameEvent(p.explanation);	
+				}
+			}
 		clearCostCache();
 		return(authority.removeTop());
 		}
@@ -228,6 +260,33 @@ public int hasWorkersLike(WorkerChip c)
 	return(n);
 }
 
+// true if there's a worker on the board with 6 knowledge
+public boolean hasBoardWorkerWith6()
+{
+	for(EuphoriaCell c : placedWorkers)
+	{
+		if(c!=null)
+		{
+			EuphoriaChip ch = c.topChip();
+			if(ch.isWorker() && (ch.knowledge()==6))
+			{
+				return true;
+			}
+		}
+	}
+	return(false);
+}
+public boolean hasDoubles()
+{
+	for(int lim = workers.height()-1; lim>0; lim--)
+	{	EuphoriaChip ch = workers.chipAtIndex(lim);
+		for(int i = lim-1; i>=0; i--)
+		{
+			if(ch==workers.chipAtIndex(i)) { return(true);}
+		}
+	}
+	return(false);
+}
 // test if this market has our authority token on it.
 public boolean hasAuthorityOnMarket(EuphoriaCell c)
 {
@@ -393,11 +452,16 @@ void doInit(EuphoriaCell rec,EuphoriaCell dil)
 	hasPeeked = false;
 	mandatoryEquality = false;
 	hasUsedJonathanTheGambler = false;
+	hasUsedSamuelTheZapper = false;
+	usingSamuelTheZapper =false;
+	usingMwicheTheFlusher = false;
+	samuelTheZapperLevel = 0;
 	originalHiddenRecruit = null;
 	originalActiveRecruit = null;
 	penaltyMoves = 0;
 	cardsLost = 0;
 	workersLost = 0;
+	bearsGained = 0;
 	placements = 0;
 	retrievals = 0;
 	marketStars = 0;
@@ -455,8 +519,13 @@ public void copyFrom(EPlayer other)
     hasPeeked = other.hasPeeked;
     mandatoryEquality = other.mandatoryEquality;
     hasUsedJonathanTheGambler = other.hasUsedJonathanTheGambler;
+    hasUsedSamuelTheZapper = other.hasUsedSamuelTheZapper;
+    usingSamuelTheZapper = other.usingSamuelTheZapper;
+    usingMwicheTheFlusher = other.usingMwicheTheFlusher;
+    samuelTheZapperLevel = other.samuelTheZapperLevel;
     originalHiddenRecruit = other.originalHiddenRecruit;
     originalActiveRecruit = other.originalActiveRecruit;
+    bearsGained = other.bearsGained;
     for(int lim=placedWorkers.length-1; lim>=0; lim--)
     {
     	placedWorkers[lim] = b.getCell(other.placedWorkers[lim]);
@@ -478,6 +547,7 @@ public boolean hasWorkersOnBoard()
 {
 	return((workers.height()+newWorkers.height()) < totalWorkers);
 }
+
 public boolean hasNewWorkers() { return(newWorkers.height()>0); }
 public int workersOnBoard() { return(totalWorkers-(workers.height()+newWorkers.height())); }
 public boolean hasWorkersInHand()
@@ -502,12 +572,28 @@ public void removeWorker(WorkerChip c)	// remove one worker with value c
 
 // check total knowledge and dump a worker if needed.  
 // return true if a worker was lost.
-public boolean knowledgeCheck(replayMode replay)			// check for knowledge and remove if necessary
+public boolean knowledgeCheck(int extraKnowledge,replayMode replay)			// check for knowledge and remove if necessary
 {	WorkerChip worker = null;
 	int workerIndex = -1;
-	int know = totalKnowlege();
-	if(know>=knowlegeLimit && !hasLostAWorker) 
+	int know = totalKnowlege()+extraKnowledge;
+	int limit = KnowledgeLimit;
+	if(penaltyAppliesToMe(MarketChip.TheCarousel))
+	{
+		limit = 14;
+	}
+	if(know>=limit && !hasLostAWorker) 
 	{	workersLost++;
+		if(know-extraKnowledge<limit)
+		{	//b.p1("lost worker due to OrwellianOptimism");
+			MarketPenalty p = MarketChip.InstituteOfOrwellianOptimism.marketPenalty;
+			b.logGameEvent(p.explanation);
+		}
+		if(know<KnowledgeLimit)
+		{	// we're losing only due to penalty
+			//b.p1("lose worker due to the Carousel");
+			MarketPenalty p = MarketChip.TheCarousel.marketPenalty;
+			b.logGameEvent(p.explanation);
+		}
 		int nworkers = workers.height();
 		hasLostAWorker = true;		// can only lose 1 worker per turn
 		// remove the smartest worker
@@ -529,6 +615,7 @@ public boolean knowledgeCheck(replayMode replay)			// check for knowledge and re
 		}
 		return(true);
 	}
+
 	return(false);
 }
 // return true if we need a UI to discard a card
@@ -539,7 +626,7 @@ public boolean moraleCheck(replayMode replay)
 	cardsLost += nart-morale;
 	if(allOneArtifactType())  
 		{ while(nart-->morale)
-			{  b.addArtifact(artifacts.removeTop()); 
+			{  b.recycleArtifact(artifacts.removeTop()); 
 		  	   if(replay!=replayMode.Replay)  { b.animateReturnArtifact(artifacts); } 
 		  	}
 		}
@@ -583,6 +670,25 @@ public boolean allOneArtifactType()
 		if(ch!=artifacts.chipAtIndex(lim)) { return(false); }
 	}
 	return(true);
+}
+public int nArtifactsOfType(ArtifactChip a)
+{	int n = 0;
+	for(int lim = artifacts.height()-1; lim>=0; lim--)
+	{
+		if(artifacts.chipAtIndex(lim)==a) { n++;}
+	}
+	return n;
+}
+public int nTypesOfArtifact()
+{	int n = 0;
+	int mask = 0;
+	for(int lim = artifacts.height()-1; lim>=0; lim--)
+	{
+		ArtifactChip a = (ArtifactChip)artifacts.chipAtIndex(lim);
+		int chip = a.typeMask();
+		if((chip&mask)==0) { mask |= chip; n++; }
+	}
+	return(n);
 }
 public ArtifactChip hasArtifactPair()
 {
@@ -829,6 +935,42 @@ private Cost alternateCostForMichaelTheEngineer(Cost cost)
 	}
 	return(cost);
 }
+private Cost alternateCostForJavierTheUndergroundLibrarian(Cost cost)
+{	// use book in place of another artifact.  Presumably the only
+	// costs that matter are the markets for IIB, all the other costs
+	// that use an artifact are generic
+	switch(cost)
+	{
+	case Balloon_Stone:
+		return(Cost.BookBalloon_Stone);
+	case Box_Food_Bliss:
+		return(Cost.BookBox_Food_Bliss);
+	case Balloon_Energy_Bliss:
+		return(Cost.BookBalloon_Energy_Bliss);
+	case Glasses_Water_Bliss:
+		return (Cost.BookGlasses_Water_Bliss);
+	case Bear_Energy_Food:
+		return(Cost.BookBear_Energy_Food);
+	case Glasses_Gold:
+		return Cost.BookGlasses_Gold;
+	case Bear_Gold:
+		return Cost.BookBear_Gold;
+	case Box_Gold:
+		return Cost.BookBox_Gold;
+	case Box_Brick:
+		return Cost.BookBox_Brick;		
+	case Bat_Stone:
+		return Cost.BookBat_Stone;
+	case Glasses_Brick:
+		return Cost.BookGlasses_Brick;
+	case Bat_Brick:
+		return Cost.BookBat_Brick;
+		
+	default: break;
+	}
+	return(cost);
+}
+
 private Cost alternateCostForMatthewTheThief(Cost cost)
 {
 	switch(cost)
@@ -878,7 +1020,10 @@ Cost alternateCostWithRecruits(Cost cost)
 {	Cost alt = cachedCost.get(cost);
 	if(!verify && (alt!=null)) { return(alt); }
 	Cost originalCost = cost;
-	
+	if(recruitAppliesToMe(RecruitChip.JavierTheUndergroundLibrarian))
+		{
+			cost = alternateCostForJavierTheUndergroundLibrarian(cost);
+		}
 	if(recruitAppliesToMe(RecruitChip.MatthewTheThief))
 		{
 			cost = alternateCostForMatthewTheThief(cost);
@@ -1246,6 +1391,130 @@ boolean canPay(Cost item0)
 	case CommodityOrResourcex2Penalty:
 	case CommodityOrResourcePenalty:	// some markets impose this cost to non-participants
 		return(true); 			// you can always pay this because you can pay nothing if you have nothing.
+
+	// costs new to IIB
+	case Balloon_Stone:
+		return (artifacts.containsChip(ArtifactChip.Balloons) 
+				&& (stone.height()>0));
+	case BookBalloon_Stone:
+		return ((artifacts.containsChip(ArtifactChip.Balloons) 
+				|| artifacts.containsChip(ArtifactChip.Book))
+				&& (stone.height()>0));
+	case Box_Food_Bliss:
+		return (artifacts.containsChip(ArtifactChip.Box)
+				&& (food.height()>0)
+				&& (bliss.height()>0));
+	case BookBox_Food_Bliss:
+		return ((artifacts.containsChip(ArtifactChip.Box)
+				|| artifacts.containsChip(ArtifactChip.Book))
+				&& (food.height()>0)
+				&& (bliss.height()>0));
+	case Balloon_Energy_Bliss:
+		return (artifacts.containsChip(ArtifactChip.Balloons)
+				&& (energy.height()>0)
+				&& (bliss.height()>0));
+	case BookBalloon_Energy_Bliss:
+		return ((artifacts.containsChip(ArtifactChip.Balloons)
+				||artifacts.containsChip(ArtifactChip.Book))
+				&& (energy.height()>0)
+				&& (bliss.height()>0));
+	case Glasses_Water_Bliss:
+		return (artifacts.containsChip(ArtifactChip.Bifocals)
+				&& (water.height()>0)
+				&& (bliss.height()>0));
+	case BookGlasses_Water_Bliss:
+		return ((artifacts.containsChip(ArtifactChip.Bifocals)
+				||artifacts.containsChip(ArtifactChip.Book))
+				&& (water.height()>0)
+				&& (bliss.height()>0));
+	case Book_Energy_Water:
+		return (artifacts.containsChip(ArtifactChip.Book)
+				&& (energy.height()>0)
+				&& (water.height()>0));
+	case Bear_Energy_Food:
+		return (artifacts.containsChip(ArtifactChip.Bear)
+				&& (energy.height()>0)
+				&& (food.height()>0));
+	case BookBear_Energy_Food:
+		return ((artifacts.containsChip(ArtifactChip.Bear)
+				 || artifacts.containsChip(ArtifactChip.Book))
+				&& (energy.height()>0)
+				&& (food.height()>0));
+		
+	case Glasses_Gold:
+		return (artifacts.containsChip(ArtifactChip.Bifocals)
+				&& (gold.height()>0));
+		
+	case BookGlasses_Gold:
+		return ((artifacts.containsChip(ArtifactChip.Bifocals)
+				|| artifacts.containsChip(ArtifactChip.Book))
+				&& (gold.height()>0));
+	case Bear_Gold:
+		return (artifacts.containsChip(ArtifactChip.Bear)
+				&& (gold.height()>0));
+		
+	case BookBear_Gold:
+		return ((artifacts.containsChip(ArtifactChip.Bear)
+				|| artifacts.containsChip(ArtifactChip.Book))
+				&& (gold.height()>0));
+	case Book_Brick:
+		return (artifacts.containsChip(ArtifactChip.Book)
+				&& (clay.height()>0));
+			
+	case Box_Gold:
+		return (artifacts.containsChip(ArtifactChip.Box)
+				&& (gold.height()>0));
+		
+	case BookBox_Gold:
+		return ((artifacts.containsChip(ArtifactChip.Box)
+				|| artifacts.containsChip(ArtifactChip.Book))
+				&& (gold.height()>0));
+	case Book_Card:
+		return ((artifacts.height()>=2)
+				&& artifacts.containsChip(ArtifactChip.Book));
+	case Box_Brick:
+		return (artifacts.containsChip(ArtifactChip.Box)
+				&& (clay.height()>0));
+	case BookBox_Brick:
+		return ((artifacts.containsChip(ArtifactChip.Box)
+				|| artifacts.containsChip(ArtifactChip.Book))
+				&& (clay.height()>0));
+	case Bat_Stone:
+		return (artifacts.containsChip(ArtifactChip.Bat)
+				&& (stone.height()>0));
+	case BookBat_Stone:
+		return ((artifacts.containsChip(ArtifactChip.Bat)
+				||artifacts.containsChip(ArtifactChip.Book))
+				&& (stone.height()>0));		
+	case Book_Stone:
+		return (artifacts.containsChip(ArtifactChip.Book)
+				&& (stone.height()>0));
+	case Glasses_Brick:
+		return (artifacts.containsChip(ArtifactChip.Bifocals)
+				&& (clay.height()>0));
+	case BookGlasses_Brick:
+		return ((artifacts.containsChip(ArtifactChip.Bifocals)
+				|| artifacts.containsChip(ArtifactChip.Book))
+				&& (clay.height()>0));
+	case Bat_Brick:
+		return (artifacts.containsChip(ArtifactChip.Bat)
+				&& (clay.height()>0));
+
+	case BookBat_Brick:
+		return ((artifacts.containsChip(ArtifactChip.Bat)
+				|| artifacts.containsChip(ArtifactChip.Book))
+				&& (clay.height()>0));
+		
+	case EnergyMwicheTheFlusher:
+		return ((energy.height()>=1) || (water.height()>=3));
+	
+	case FoodMwicheTheFlusher:
+		return ((food.height()>=1) || (water.height()>=3));
+		
+	case WaterMwicheTheFlusher:
+		return (water.height()>=3);
+		
+
 	}
 }
 
@@ -1274,14 +1543,19 @@ private void shedOneCommodity(replayMode replay)
 	else if(bliss.height()>0) {  b.addBliss(bliss.removeTop()); if(replay!=replayMode.Replay) { b.animateReturnBliss(bliss); }}
 	else { throw G.Error("Ran out of commodities"); }
 }
-private void shedCards(int n,replayMode replay)
-{	while(n-- > 0)
+
+private boolean shedCards(int n,replayMode replay)
+{	if(artifacts.height()>=n)
+	{while(n-- > 0)
 	{
-		b.addArtifact(artifacts.removeTop()); 
+		b.recycleArtifact(artifacts.removeTop()); 
 		if(replay!=replayMode.Replay)
 	  		{  b.animateReturnArtifact(artifacts);
 	  		}
 	}
+	return(true);
+	}
+	return(false);
 }
 
 // supply a card instead of a resource if it is unambiguous
@@ -1289,7 +1563,7 @@ private boolean doFlartner(replayMode replay)
 {
 	if(!allOneArtifactType()) { return(false); }	// dialog required if both artifacts and gold, or mixed artifacts
 	
-	b.addArtifact(artifacts.removeTop());
+	b.recycleArtifact(artifacts.removeTop());
 	incrementMorale();
 	b.logGameEvent(FlartnerTheLudditeEffect);
 	if(replay!=replayMode.Replay) { b.animateReturnArtifact(artifacts);}
@@ -1308,48 +1582,125 @@ void sacrificeWorker(EuphoriaCell c,replayMode replay)
 	totalWorkers--;
 	if(replay!=replayMode.Replay) { b.animateSacrificeWorker(c,(WorkerChip)ch);}
 }
-void sendStone(int n,replayMode replay)
-{
-	for(int i=0;i<n;i++) { b.addStone(stone.removeTop()); if(replay!=replayMode.Replay) { b.animateReturnStone(stone); }}
+boolean sendStone(int n,replayMode replay)
+{	if(stone.height()>=n)
+	{
+	for(int i=0;i<n;i++) 
+		{ b.addStone(stone.removeTop()); if(replay!=replayMode.Replay)
+		{ b.animateReturnStone(stone); }}
+	return(true);
+	}
+	return(false);
 }
-void sendGold(int n,replayMode replay)
-{
+boolean sendGold(int n,replayMode replay)
+{	if(gold.height()>=n)
+	{
 	for(int i=0;i<n;i++) { b.addGold(gold.removeTop()); if(replay!=replayMode.Replay) { b.animateReturnGold(gold); }}
+	return(true);
+	}
+	return(false);
 }
-void sendClay(int n,replayMode replay)
-{
+boolean sendClay(int n,replayMode replay)
+{	if(clay.height()>=n)
+	{
 	for(int i=0;i<n;i++) { b.addClay(clay.removeTop()); if(replay!=replayMode.Replay) { b.animateReturnClay(clay); }}
+	return(true);
+	}
+	return(false);
 }
 
-void sendEnergy(int n,replayMode replay)
-{
+boolean sendEnergy(int n,replayMode replay)
+{	if(energy.height()>=n)
+	{
 	for(int i=0;i<n;i++) { b.addEnergy(energy.removeTop()); if(replay!=replayMode.Replay) { b.animateReturnEnergy(energy); }}
+	return(true);
+	}
+	return(false);
 }
-void sendFood(int n,replayMode replay)
-{
+boolean sendFood(int n,replayMode replay)
+{	if(food.height()>=n)
+	{
 	for(int i=0;i<n;i++) { b.addFood(food.removeTop()); if(replay!=replayMode.Replay) { b.animateReturnFood(food); }}
+	return(true);
+	}
+	return false;
 }
-void sendWater(int n,replayMode replay)
-{
+
+boolean sendWater(int n,replayMode replay)
+{	if(water.height()>=n)
+	{
 	for(int i=0;i<n;i++) { b.addWater(water.removeTop()); if(replay!=replayMode.Replay) { b.animateReturnWater(water); }}
+	return(true);
+	}
+	return(false);
 }
 
-void sendBliss(int n,replayMode replay)
-{
+boolean sendBliss(int n,replayMode replay)
+{	if(bliss.height()>=n)
+	{
 	for(int i=0;i<n;i++) { b.addBliss(bliss.removeTop()); if(replay!=replayMode.Replay) { b.animateReturnBliss(bliss); }}
+	return(true);
+	}
+	return(false);
 }
-void sendArtifacts(int n,replayMode replay)
-{
-	for(int i=0;i<n;i++) { b.addArtifact(artifacts.removeTop()); if(replay!=replayMode.Replay) { b.animateReturnArtifact(artifacts); }}
+boolean sendArtifacts(int n,replayMode replay)
+{	if(artifacts.height()>=n)
+	{
+	for(int i=0;i<n;i++) { b.recycleArtifact(artifacts.removeTop()); if(replay!=replayMode.Replay) { b.animateReturnArtifact(artifacts); }}
+	return(true);
+	}
+	return(false);
 }
 
+//note, before rev 123 this version had a bug that didn't have an immediately
+//visible effect - it failed torecycle the card.  To maintain compatibility,
+//we have to maintain the bug!
+boolean artifactChipBuggy(ArtifactChip which,replayMode replay)
+{
+	artifacts.removeChip(which);
+	if(b.revision>=123) { b.recycleArtifact(which); }
+	if(replay!=replayMode.Replay) { b.animateReturnArtifact(artifacts); }
+	return(true);
+}
 boolean artifactChip(ArtifactChip which,replayMode replay)
 {
 	artifacts.removeChip(which);
+	b.recycleArtifact(which);
 	if(replay!=replayMode.Replay) { b.animateReturnArtifact(artifacts); }
 	return(true);
 }
 
+// pay one artifact or another, return false if there is ambiguity and interaction is necessary
+boolean artifactAorB(ArtifactChip a,ArtifactChip b,replayMode replay)
+{	int h = artifacts.height();
+	switch(h)
+	{
+	case 0:	return(false);
+	case 1: 
+		EuphoriaChip ch = artifacts.topChip();
+		if((ch==a)||(ch==b)) { return sendArtifacts(1,replay); }
+		return(false);
+	default:
+		if(!artifacts.containsChip(a)) { return(artifactChip(b,replay));}
+		if(!artifacts.containsChip(b)) { return(artifactChip(a,replay));}
+		// contains both, will have to interact
+		return(false);
+	}
+}
+// pay 1 of a specified type + 1 other, return false if there is ambiguity and interaction is necessary
+boolean artifact1XPlus1(ArtifactChip a,replayMode replay)
+{	G.Assert(artifacts.containsChip(a),"must contain ",a);
+	if(allOneArtifactType() || (artifacts.height()==2)) { sendArtifacts(2,replay); }
+	if((nArtifactsOfType(a)==1)
+			&& (nTypesOfArtifact()==2))
+	{
+		// there is one of the specific type, and only one other type
+		return (artifactChip(a,replay)
+				&& sendArtifacts(1,replay));
+	}
+	return(false);
+	
+}
 boolean artifactx2OrSpecific(ArtifactChip which,replayMode replay)
 {	
 	if(b.revision>=103)
@@ -1386,8 +1737,11 @@ boolean artifactx2OrSpecific(ArtifactChip which,replayMode replay)
 	}}
 
 	return(false);
-
 	
+}
+void payCostOrElse(Cost item,replayMode replay)
+{
+	G.Assert(payCost(item,replay),"Payment %s failed");
 }
 /**
  * 
@@ -1446,7 +1800,7 @@ boolean payCost(Cost item0,replayMode replay)
 		
 	// MatthewTheThief
 	case WaterOrKnowledge:
-		if(water.height()==0) 
+		if(!b.variation.isIIB() && (water.height()==0)) 
 			{ if(b.revision>=108)
 				{
 				G.Assert(knowledge<MAX_KNOWLEDGE_TRACK,"can gain knowledge");
@@ -1459,7 +1813,7 @@ boolean payCost(Cost item0,replayMode replay)
 		return(false);
 		
 	case EnergyOrKnowledge:
-		if(energy.height()==0) 
+		if(!b.variation.isIIB() && (energy.height()==0)) 
 			{ if(b.revision>=108)
 				{G.Assert(knowledge<MAX_KNOWLEDGE_TRACK,"can gain knowledge");
 				incrementKnowledge(replay);
@@ -1471,7 +1825,7 @@ boolean payCost(Cost item0,replayMode replay)
 		return(false);
 		
 	case FoodOrKnowledge:
-		if(food.height()==0)
+		if(!b.variation.isIIB() && (food.height()==0))
 			{ if(b.revision>=108)
 				{G.Assert(knowledge<MAX_KNOWLEDGE_TRACK,"can gain knowledge");
 			     incrementKnowledge(replay);
@@ -1479,7 +1833,7 @@ boolean payCost(Cost item0,replayMode replay)
 				}
 			  return(true); 
 			}
-		if(knowledge==MAX_KNOWLEDGE_TRACK) { sendFood(1,replay); return(true); }
+		if(knowledge==MAX_KNOWLEDGE_TRACK) { return sendFood(1,replay); }
 		return(false);
 		
 	case IsEuphorian:
@@ -1514,8 +1868,7 @@ boolean payCost(Cost item0,replayMode replay)
 		// or fall into regular gold	
 		//$FALL-THROUGH$
 	case ConstructionSiteStone:		// building markets
-		sendStone(1,replay);
-		return(true);
+		return sendStone(1,replay);
 		
 	case ClayOrArtifact:
 		if(clay.height()==0) { return(doFlartner(replay)); }
@@ -1528,13 +1881,10 @@ boolean payCost(Cost item0,replayMode replay)
 		
 		
 	case Foodx4:	
-		sendFood(4,replay);
-		return(true);
+		return sendFood(4,replay);
 	case Food:	
-		sendFood(1,replay);
-		return(true);
+		return sendFood(1,replay);
 		
-
 	case Energyx4:
 			commoditiesNeeded++;
 		//$FALL-THROUGH$
@@ -1702,8 +2052,7 @@ boolean payCost(Cost item0,replayMode replay)
 		if(energy.height()>0)
 			{
 			if((bliss.height()==0) && (food.height()==0)) 
-			{sendEnergy(1,replay);
-			 return(true);
+			{return sendEnergy(1,replay);
 			}
 			return(false);		// force interaction
 			}
@@ -1712,15 +2061,16 @@ boolean payCost(Cost item0,replayMode replay)
 		//$FALL-THROUGH$
 	case BlissOrFood:		// pay for retrieval
 		
-		if(bliss.height()==0) { if(food.height()>0) { sendFood(1,replay); return(true); } } 
-		else if(food.height()==0) {sendBliss(1,replay); return(true); }
+		if(bliss.height()==0) { if(food.height()>0) { return sendFood(1,replay);  } } 
+		else if(food.height()==0) {return sendBliss(1,replay); }
 		return(false);		// force interaction
 		
 	/* prices for open markets */
 	case Energyx4_StoneOrBlissOrFood:
 		if(food.height()>0)
 			{
-			if((bliss.height()==0) && (stone.height()==0)) { sendFood(1,replay); sendEnergy(4,replay); return(true); }
+			if((bliss.height()==0) && (stone.height()==0)) 
+				{ return (sendFood(1,replay) && sendEnergy(4,replay)); }
 			return(false);	// must interact
 			}
 		// or fall into stoneOrBliss
@@ -1729,24 +2079,22 @@ boolean payCost(Cost item0,replayMode replay)
 		if(bliss.height()>0)
 		{
 			if(stone.height()>0) { return(false); }	// interact
-			sendBliss(1,replay);
-			sendEnergy(4,replay);
 			b.logGameEvent(JoshTheNegotiatorEffect);
-			return(true);
+			return (sendBliss(1,replay)
+					&& sendEnergy(4,replay));
 		}
 		// fall into energyx4_stone
 		//$FALL-THROUGH$
 	case Energyx4_Stone:
-		{	b.addStone(stone.removeTop());
-			b.animateReturnStone(stone);
-			sendEnergy(4,replay);
-			return(true);
+		{	
+			return (sendStone(1,replay)
+					&& sendEnergy(4,replay));
 		}
 
 	case Waterx4_ClayOrBlissOrFood:
 		if(food.height()>0)
 		{
-			if((clay.height()==0)&&(bliss.height()==0)) { sendWater(4,replay); sendFood(1,replay); return(true); }
+			if((clay.height()==0)&&(bliss.height()==0)) { return (sendWater(4,replay) && sendFood(1,replay)); }
 			return(false); 	// have to interact
 		}
 		// or fall into ClayOrBliss
@@ -1755,17 +2103,15 @@ boolean payCost(Cost item0,replayMode replay)
 		if(bliss.height()>0)
 		{
 			if(clay.height()>0) { return(false); } // interact
-			sendBliss(1,replay);
-			sendWater(4,replay);
 			b.logGameEvent(JoshTheNegotiatorEffect);
-			return(true);
+			return (sendBliss(1,replay)
+					&& sendWater(4,replay));
 		}
 		// or fall into regular waterx4_clay
 		//$FALL-THROUGH$
 	case Waterx4_Clay:
-		{	sendClay(1,replay);
-			sendWater(4,replay);
-			return(true);
+		{	return (sendClay(1,replay)
+					&& sendWater(4,replay));
 		}
 	
 	case Waterx4_GoldOrBlissOrFood:
@@ -1780,38 +2126,35 @@ boolean payCost(Cost item0,replayMode replay)
 		if(bliss.height()>0)
 		{
 			if(gold.height()>0) { return(false); } 	// interact
-			sendBliss(1,replay);
-			sendWater(4,replay);
 			b.logGameEvent(JoshTheNegotiatorEffect);
-			return(true);
+			return (sendBliss(1,replay)
+					&& sendWater(4,replay));
 		}
 		// else fall into regular waterx4_gold
 		//$FALL-THROUGH$
 	case Waterx4_Gold:
-		{	sendGold(1,replay);
-			sendWater(4,replay);
-			return(true);
+		{	return (sendGold(1,replay)
+					&& sendWater(4,replay));
 		}
 	case Foodx4_GoldOrBliss:
 		if(bliss.height()>0)
 		{
 			if(gold.height()>0) { return(false); } 	// interact
-			sendBliss(1,replay);
-			sendFood(4,replay);
-			return(true);
+			return (sendBliss(1,replay)
+					&& sendFood(4,replay));
 		}
 		// else fall into regular foodx4_gold
 		//$FALL-THROUGH$
 	case Foodx4_Gold:
 		{
-		sendGold(1,replay);
-		sendFood(4,replay);
-		return(true);
+		return (sendGold(1,replay)
+				&& sendFood(4,replay));
 		}
 
 	case Energyx4_ClayOrBlissOrFood:
 		if(food.height()>0)
-		{	if((clay.height()==0)&&(bliss.height()==0)) { sendEnergy(4,replay); sendFood(1,replay); return(true); } 
+		{	if((clay.height()==0)&&(bliss.height()==0)) 
+				{ return (sendEnergy(4,replay) && sendFood(1,replay)); } 
 			return(false);	// have to interact
 		}
 		// or fall into regular clayOrbliss
@@ -1820,26 +2163,23 @@ boolean payCost(Cost item0,replayMode replay)
 		if(bliss.height()>0)
 		{
 			if(clay.height()>0) { return(false); } 	// interact
-			sendBliss(1,replay);
-			sendEnergy(4,replay);
 			b.logGameEvent(JoshTheNegotiatorEffect);
-
-			return(true);
+			return (sendBliss(1,replay)
+					&& sendEnergy(4,replay));
 		}
 		// else fall into regular energyx4_clay
 		//$FALL-THROUGH$
 	case Energyx4_Clay:
 		{
-		sendClay(1,replay);
-		sendEnergy(4,replay);
-		return(true);
+		return (sendClay(1,replay)
+				&& sendEnergy(4,replay));
 		}
 
 
 	case Foodx4_StoneOrBlissOrFood:
 		if(food.height()>0)
 		{
-		if((stone.height()==0)&&(bliss.height()==0)&&(food.height()>=5)) { sendFood(5,replay); return(true); }
+		if((stone.height()==0)&&(bliss.height()==0)&&(food.height()>=5)) { return sendFood(5,replay); }
 		return(false);	// have to interact
 		}
 		// or fall into stone or bliss
@@ -1848,19 +2188,16 @@ boolean payCost(Cost item0,replayMode replay)
 		if(bliss.height()>0)
 		{
 			if(stone.height()>0) { return(false); } 	// interact
-			sendBliss(1,replay);
-			sendFood(4,replay);
 			b.logGameEvent(JoshTheNegotiatorEffect);
-
-			return(true);
+			return (sendBliss(1,replay)
+					&& sendFood(4,replay));
 		}
 		// else fall into regular foodx4_stone
 		//$FALL-THROUGH$
 	case Foodx4_Stone:
 		{
-		sendStone(1,replay);
-		sendFood(4,replay);
-		return(true);
+			return (sendStone(1,replay)
+					&& sendFood(4,replay));
 		}
 	case Card_ResourceOrBlissOrFood:
 		if(!allOneArtifactType()) { return(false); }	// choice of artifact is implied
@@ -1868,9 +2205,8 @@ boolean payCost(Cost item0,replayMode replay)
 		if(food.height()>0)
 		{	if(nKindsOfResource()>0) { return(false); }
 			if(bliss.height()>0) { return(false); }
-			sendFood(1,replay);
-			sendArtifacts(1,replay);
-			return(true);
+			return (sendFood(1,replay)
+					&& sendArtifacts(1,replay));
 		}
 		// no food, try bliss and resource
 		//$FALL-THROUGH$
@@ -1879,10 +2215,9 @@ boolean payCost(Cost item0,replayMode replay)
 		if(nKindsOfResource()>1) { return(false); }
 		if(bliss.height()>0)
 		{	if(nKindsOfResource()>0) { return(false); }
-			sendBliss(1,replay);
-			sendArtifacts(1,replay);
 			b.logGameEvent(JoshTheNegotiatorEffect);
-			return(true);
+			return (sendBliss(1,replay)
+					&& sendArtifacts(1,replay));
 		}
 		// else fall into regular card_resource
 		//$FALL-THROUGH$
@@ -1895,21 +2230,18 @@ boolean payCost(Cost item0,replayMode replay)
 		
 	case Waterx4_Card:
 		if(!allOneArtifactType()) { return(false); }
-		sendArtifacts(1,replay);
-		sendWater(4,replay);
-		return(true);
+		return (sendArtifacts(1,replay)
+				&& sendWater(4,replay));
 
 	case Energyx4_Card:
 		if(!allOneArtifactType()) { return(false); }
-		sendArtifacts(1,replay);
-		sendEnergy(4,replay);
-		return(true);
+		return (sendArtifacts(1,replay)
+				&& sendEnergy(4,replay));
 		
 	case Foodx4_Card:
 		if(!allOneArtifactType()) { return(false); }
-		sendArtifacts(1,replay);
-		sendFood(4,replay);
-		return(true);
+		return (sendArtifacts(1,replay)
+				&& sendFood(4,replay));
 		
 	case BlissOrFoodx4_Resource:
 		if(nKindsOfResource()!=1) { return(false); }	// interact
@@ -1937,8 +2269,7 @@ boolean payCost(Cost item0,replayMode replay)
 		
 		if(nKindsOfResource()==1)
 		{	shedOneResource(replay);
-			sendBliss(4,replay);
-			return(true);
+			return sendBliss(4,replay);
 		}
 		return(false);
 
@@ -1951,12 +2282,14 @@ boolean payCost(Cost item0,replayMode replay)
 		int nRes = nKindsOfResource();
 		int nBliss = bliss.height();
 		if(nRes==0) 		 // no resources
-			{ if(nBliss==0) { sendFood(5,replay); return(true); }
-			  if((nFood+nBliss)==5) {sendFood(nFood,replay); sendBliss(nBliss,replay); return(true); }
+			{ if(nBliss==0) { return sendFood(5,replay);  }
+			  if((nFood+nBliss)==5) { return (sendFood(nFood,replay)&& sendBliss(nBliss,replay));  }
 			  return(false); 	// interact
 			}
 		if(nRes==1)
-			{	if((nFood+nBliss)==4) {  shedOneResource(replay); sendFood(nFood,replay); sendBliss(nBliss,replay); return(true); }
+			{	if((nFood+nBliss)==4) 
+				{  shedOneResource(replay); 
+				   return (sendFood(nFood,replay) && sendBliss(nBliss,replay)); }
 			}	
 		return(false);
 		}}
@@ -1966,15 +2299,14 @@ boolean payCost(Cost item0,replayMode replay)
 		{
 		int nRes = nKindsOfResource();
 		if(nRes==0) 
-			{ sendBliss(5,replay);
+			{ 
 			b.logGameEvent(JoshTheNegotiatorEffect);
-			return(true); 
+			return sendBliss(5,replay);
 			}
 		else if((nRes==1)&&(bliss.height()==4)) 
 			{ shedOneResource(replay);
-			  sendBliss(4,replay);
 			  b.logGameEvent(JoshTheNegotiatorEffect);
-			  return(true); 
+			  return sendBliss(4,replay);
 			}
 		return(false);
 		}
@@ -2003,85 +2335,73 @@ boolean payCost(Cost item0,replayMode replay)
 	case Blissx4_Card:
 		if(allOneArtifactType())
 			{
-			sendBliss(4,replay);
-			sendArtifacts(1,replay);
-			return(true);
+			return (sendBliss(4,replay)
+					&& sendArtifacts(1,replay));
 			}
 		return(false);
 	case Commodity_Bear:
 		if(nKindsOfCommodity()==1)
 		{
 			shedOneCommodity(replay);
-			b.addArtifact(artifacts.removeChip(ArtifactChip.Bear));
-			if(replay!=replayMode.Replay) { b.animateReturnArtifact(artifacts); }
-			return(true);
+			return artifactChip(ArtifactChip.Bear,replay);
 		}
 		return(false);
 	case Commodity_Bifocals:
 		if(nKindsOfCommodity()==1)
 		{
 			shedOneCommodity(replay);
-			b.addArtifact(artifacts.removeChip(ArtifactChip.Bifocals));
-			if(replay!=replayMode.Replay) { b.animateReturnArtifact(artifacts); }
-			return(true);
+			return artifactChip(ArtifactChip.Bifocals,replay);
 		}
 		return(false);	
 	case Commodity_Balloons:
 		if(nKindsOfCommodity()==1)
 		{
 			shedOneCommodity(replay);
-			b.addArtifact(artifacts.removeChip(ArtifactChip.Balloons));
-			if(replay!=replayMode.Replay) { b.animateReturnArtifact(artifacts); }
-			return(true);
+			return artifactChip(ArtifactChip.Balloons,replay);
 		}
 		return(false);
 	case Commodity_Box:
 		if(nKindsOfCommodity()==1)
 		{
 			shedOneCommodity(replay);
-			b.addArtifact(artifacts.removeChip(ArtifactChip.Box));
-			if(replay!=replayMode.Replay) { b.animateReturnArtifact(artifacts); }
-			return(true);
+			return artifactChip(ArtifactChip.Box,replay);
+			
 		}
 		return(false);
 	case Commodity_Bat:
 		if(nKindsOfCommodity()==1)
 		{
 			shedOneCommodity(replay);
-			b.addArtifact(artifacts.removeChip(ArtifactChip.Bat));
-			if(replay!=replayMode.Replay) { b.animateReturnArtifact(artifacts); }
-			return(true);
+			return artifactChip(ArtifactChip.Bat,replay);
 		}
 		return(false);
 	case Commodity_Book:
 		if(nKindsOfCommodity()==1)
 		{
 			shedOneCommodity(replay);
-			b.addArtifact(artifacts.removeChip(ArtifactChip.Book));
-			if(replay!=replayMode.Replay) { b.animateReturnArtifact(artifacts); }
-			return(true);
+			return artifactChip(ArtifactChip.Book,replay);
 		}
 		return(false);
 
 
 		// artifact costs
 	case Bear:
-		return(artifactChip(ArtifactChip.Bear,replay));
+		return(artifactChipBuggy(ArtifactChip.Bear,replay));
 			
 	case Box:
-		return(artifactChip(ArtifactChip.Box,replay));
+		return(artifactChipBuggy(ArtifactChip.Box,replay));
 			
 	case Book:
-		return(artifactChip(ArtifactChip.Book,replay));
+		return(artifactChipBuggy(ArtifactChip.Book,replay));
 			
 	case Bifocals:
-		return(artifactChip(ArtifactChip.Bifocals,replay));
+		return(artifactChipBuggy(ArtifactChip.Bifocals,replay));
 		
 	case Bat:
-		return(artifactChip(ArtifactChip.Bat,replay));
+		return(artifactChipBuggy(ArtifactChip.Bat,replay));
 			
 	case Balloons:
-		return(artifactChip(ArtifactChip.Balloons,replay));
+		return(artifactChipBuggy(ArtifactChip.Balloons,replay));
 
 	// artifact costs
 	case BearOrCardx2:
@@ -2126,26 +2446,27 @@ boolean payCost(Cost item0,replayMode replay)
 	// as a penalty when morale declines.
 	//
 	case Cardx6:
-		if(allOneArtifactType() || (artifacts.height()==6)) { shedCards(6,replay) ; return(true); };
+		if(allOneArtifactType() || (artifacts.height()==6)) { return shedCards(6,replay); };
 		return(false);
 	case Cardx5:
-		if(allOneArtifactType() || (artifacts.height()==5)) { shedCards(5,replay) ; return(true); };
+		if(allOneArtifactType() || (artifacts.height()==5)) { return shedCards(5,replay); };
 		return(false);
 
 	case Cardx4:
-		if(allOneArtifactType() || (artifacts.height()==4)) { shedCards(4,replay) ; return(true); };
+		if(allOneArtifactType() || (artifacts.height()==4)) { return shedCards(4,replay); };
 		return(false);
 	case Cardx3:
-		if(allOneArtifactType() || ( (artifacts.height()==3) && (hasArtifactPair()==null))) { shedCards(3,replay) ; return(true); };
+		if(allOneArtifactType() || ( (artifacts.height()==3) && (hasArtifactPair()==null))) 
+			{ return shedCards(3,replay) ; };
 		return(false);
 	case Cardx2:
 	case CardForGeekx2:
-		if(allOneArtifactType() || (artifacts.height()==2)) { shedCards(2,replay) ; return(true); };
+		if(allOneArtifactType() || (artifacts.height()==2)) { return shedCards(2,replay); };
 		return(false);
 	case Card:
 	case Artifact:
 	case CardForGeek:
-		if(allOneArtifactType() || (artifacts.height()==1)) { shedCards(1,replay) ; return(true); };
+		if(allOneArtifactType() || (artifacts.height()==1)) { return shedCards(1,replay) ;  };
 		return(false);
 		
 	// unlike the rest of the costs, these are an optional penalty,
@@ -2165,6 +2486,129 @@ boolean payCost(Cost item0,replayMode replay)
 		if((tot==1)||(sum<=commoditiesNeeded)) { payCommodityOrResource(Math.min(commoditiesNeeded,sum),replay); return(true); }	// no choice
 		else { return(false); }
 		}
+		
+	// costs new to IIB
+	case Balloon_Stone:
+		return (artifactChip(ArtifactChip.Balloons,replay)
+				&& sendStone(1,replay));
+		
+	case BookBalloon_Stone:
+		return (artifactAorB(ArtifactChip.Balloons,ArtifactChip.Book,replay)
+				&& sendStone(1,replay));
+	case Box_Food_Bliss:
+		return (artifactChip(ArtifactChip.Box,replay)
+				&& sendFood(1,replay)
+				&& sendBliss(1,replay));
+	case BookBox_Food_Bliss:
+		return (artifactAorB(ArtifactChip.Box,ArtifactChip.Book,replay)
+				&& sendFood(1,replay)
+				&& sendBliss(1,replay));
+	case Balloon_Energy_Bliss:
+		return (artifactChip(ArtifactChip.Balloons,replay)
+				&& sendEnergy(1,replay)
+				&& sendBliss(1,replay));
+	case BookBalloon_Energy_Bliss:
+		return (artifactAorB(ArtifactChip.Balloons,ArtifactChip.Book,replay)
+				&& sendEnergy(1,replay)
+				&& sendBliss(1,replay));
+		
+	case Glasses_Water_Bliss:
+		return (artifactChip(ArtifactChip.Bifocals,replay)
+				&& sendWater(1,replay)
+				&& sendBliss(1,replay));
+		
+	case BookGlasses_Water_Bliss:
+		return (artifactAorB(ArtifactChip.Bifocals,ArtifactChip.Book,replay)
+				&& sendWater(1,replay)
+				&& sendBliss(1,replay));
+	case Book_Energy_Water:
+		return (artifactChip(ArtifactChip.Book,replay)
+				&& sendEnergy(1,replay)
+				&& sendWater(1,replay));
+	case Bear_Energy_Food:
+		return (artifactChip(ArtifactChip.Bear,replay)
+				&& sendEnergy(1,replay)
+				&& sendFood(1,replay));
+	case BookBear_Energy_Food:
+		return (artifactAorB(ArtifactChip.Bear,ArtifactChip.Book,replay)
+				&& sendEnergy(1,replay)
+				&& sendFood(1,replay));		
+	case Glasses_Gold:
+		return (artifactChip(ArtifactChip.Bifocals,replay)
+				&& sendGold(1,replay));
+		
+	case BookGlasses_Gold:
+		return (artifactAorB(ArtifactChip.Bifocals,ArtifactChip.Book,replay)
+				&& sendGold(1,replay));
+	case Bear_Gold:
+		return (artifactChip(ArtifactChip.Bear,replay)
+				&& sendGold(1,replay));
+		
+	case BookBear_Gold:
+		return (artifactAorB(ArtifactChip.Bear,ArtifactChip.Book,replay)
+				&& sendGold(1,replay));
+	case Book_Brick:
+		return (artifactChip(ArtifactChip.Book,replay)
+				&& sendClay(1,replay));
+			
+	case Box_Gold:
+		return (artifactChip(ArtifactChip.Box,replay)
+				&& sendGold(1,replay));
+		
+	case BookBox_Gold:
+		return (artifactAorB(ArtifactChip.Box,ArtifactChip.Book,replay)
+				&& sendGold(1,replay));
+	case Book_Card:
+		return(artifact1XPlus1(ArtifactChip.Book, replay));
+
+	case Box_Brick:
+		return (artifactChip(ArtifactChip.Box,replay)
+				&& sendClay(1,replay));
+	case BookBox_Brick:
+		return (artifactAorB(ArtifactChip.Box,ArtifactChip.Book,replay)
+				&& sendClay(1,replay));
+	case Bat_Stone:
+		return (artifactChip(ArtifactChip.Bat,replay)
+				&& sendStone(1,replay));
+	case BookBat_Stone:
+		return (artifactAorB(ArtifactChip.Bat,ArtifactChip.Book,replay)
+				&& sendStone(1,replay));
+		
+	case Book_Stone:
+		return (artifactChip(ArtifactChip.Book,replay)
+				&& sendStone(1,replay));
+	case Glasses_Brick:
+		return (artifactChip(ArtifactChip.Bifocals,replay)
+				&& sendClay(1,replay));
+	case BookGlasses_Brick:
+		return (artifactAorB(ArtifactChip.Bifocals,ArtifactChip.Book,replay)
+				&& sendClay(1,replay));
+	case Bat_Brick:
+		return (artifactChip(ArtifactChip.Bat,replay)
+				&& sendClay(1,replay));
+	
+	case BookBat_Brick:
+		return (artifactAorB(ArtifactChip.Bat,ArtifactChip.Book,replay)
+				&& sendClay(1,replay));
+		
+	//mwiche the flusher
+	case EnergyMwicheTheFlusher:
+		if(water.height()<3) { return sendEnergy(1,replay); }	// not enough water, send energy
+		if(energy.height()==0) { usingMwicheTheFlusher = true; return sendWater(3,replay); }	// not enough food, send water
+		//b.p1("mwitche option for energy");
+		return(false);  	// have to interact
+				
+	case FoodMwicheTheFlusher:
+		if(water.height()<3)  { return sendFood(1,replay); }
+		if(food.height()==0) { usingMwicheTheFlusher = true; return sendWater(3,replay); }
+		//b.p1("mwitche option for food");
+		return(false);
+		
+	case WaterMwicheTheFlusher:
+		if(water.height()<3) { return sendWater(1,replay); }
+		//b.p1("mwitche option for water");
+		return(false);
+
 	}
 }
 
@@ -2197,11 +2641,9 @@ boolean doFoodSelection(EuphoriaBoard b,replayMode replay)
 		if(replay!=replayMode.Replay) { b.animateNewFood(food); }
 	}
 	else
-	{
-		addFood(b.getFood());
-		addFood(b.getFood());
-		if(replay!=replayMode.Replay) { b.animateNewFood(food);  b.animateNewFood(food); }
-		incrementKnowledge(replay);
+	{	// handles joseph the antiquer
+		b.doDoubleSelection(this,Benefit.Food,replay);
+
 	}
 	return(true);
 }
@@ -2210,12 +2652,14 @@ boolean hasMyAuthorityToken(EuphoriaCell c)
 	return(c.containsChip(myAuthority));
 }
 boolean penaltyAppliesToMe(MarketChip c)
-{	EuphoriaCell m = b.getOpenMarketCell(c);
+{	if(c.isIIB() != b.variation.isIIB()) { return false;}	// not an appropriate test, so doesn't appluy
+	EuphoriaCell m = b.getOpenMarketCell(c);
 	if((m!=null) && !hasMyAuthorityToken(m)) { return(true); }
 	return(false);
 }
 boolean recruitAppliesToMe(RecruitChip c)
-{	if(mandatoryEquality) { return(false); }
+{	if(c.isIIB() != b.variation.isIIB()) { return false; }	// from a different variation
+	if(mandatoryEquality) { return(false); }
 	if(hasUsedGeekTheOracle && (c==RecruitChip.GeekTheOracle)) { return(false); }	// once per turn
 	return(activeRecruits.containsChip(c));
 }
@@ -2233,30 +2677,20 @@ boolean doPowerSelection(EuphoriaBoard b,replayMode replay)
 			MarketChip.RegistryOfPersonalSecrets.logGameEvent(b,NoExtraEnergy);
 		}
 		else 
-		{ energy.addChip(b.getEnergy()); 
-		  if(replay!=replayMode.Replay) 
-			{ b.animateNewEnergy(energy);  
-			}
+		{ doEnergy(1,b,replay);
 		}
 	}
 	if(know<=4) 
-	{
-		addEnergy(b.getEnergy());
+	{	doEnergy(1,b,replay);
 		b.incrementAllegiance(Allegiance.Euphorian,replay);
-		if(replay!=replayMode.Replay) { b.animateNewEnergy(energy); }
 	}
 	else if(know<=8)
-	{
-		addEnergy(b.getEnergy());
+	{	doEnergy(1,b,replay);
 		decrementKnowledge();
-		if(replay!=replayMode.Replay) { b.animateNewEnergy(energy); }
 	}
 	else
-	{
-		addEnergy(b.getEnergy());
-		addEnergy(b.getEnergy());
-		if(replay!=replayMode.Replay) { b.animateNewEnergy(energy); b.animateNewEnergy(energy);}
-		incrementKnowledge(replay);
+	{	// handles joseph the antiquer
+		b.doDoubleSelection(this,Benefit.Energy,replay);
 	}
 	return(true);
 }
@@ -2269,8 +2703,7 @@ boolean doWaterSelection(EuphoriaBoard b,replayMode replay)
 	if(recruitAppliesToMe(RecruitChip.FaithTheElectrician))
 	{
 		if(artifacts.height()==0) 
-			{	addEnergy(b.getEnergy());
-				if(replay!=replayMode.Replay) { b.animateNewEnergy(energy); }
+			{	doEnergy(1,b,replay);
 				b.logGameEvent(FaithTheHydroelectricianEffect);
 			}
 	}
@@ -2283,31 +2716,21 @@ boolean doWaterSelection(EuphoriaBoard b,replayMode replay)
 		{MarketChip.RegistryOfPersonalSecrets.logGameEvent(b,NoExtraWater);
 		}
 		else
-		{ addWater(b.getWater()); 
-		
-		if(replay!=replayMode.Replay) 
-			{b.animateNewWater(water);  
-			}
+		{ 
+			doWater(1,b,replay);
 		}
 	}
 	if(know<=4) 
-	{
-		addWater(b.getWater());
-		if(replay!=replayMode.Replay) { b.animateNewWater(water); }
+	{	doWater(1,b,replay);
 		b.incrementAllegiance(Allegiance.Subterran,replay);
 	}
 	else if(know<=8)
-	{
-		addWater(b.getWater());
-		if(replay!=replayMode.Replay) { b.animateNewWater(water); }
+	{	doWater(1,b,replay);
 		decrementKnowledge();
 	}
 	else
-	{
-		addWater(b.getWater());
-		addWater(b.getWater());
-		if(replay!=replayMode.Replay) { b.animateNewWater(water); b.animateNewWater(water); }
-		incrementKnowledge(replay);
+	{	// handles joseph the antiquer
+		b.doDoubleSelection(this,Benefit.Water,replay);
 	}
 	return(true);
 }
@@ -2320,29 +2743,24 @@ boolean doBlissSelection(EuphoriaBoard b,replayMode replay)
 	{	// get extra food if you have the correct allegiance
 		boolean secrets = penaltyAppliesToMe(MarketChip.RegistryOfPersonalSecrets);
 		if(secrets)  { MarketChip.RegistryOfPersonalSecrets.logGameEvent(b,NoExtraBliss); }
-		else { addBliss(b.getBliss()); 
-			if(replay!=replayMode.Replay) { b.animateNewBliss(bliss); }
+		else { doBliss(1,b,replay);
 			} 
 	}
 	if(know<=4) 
 	{
-		addBliss(b.getBliss());
+		doBliss(1,b,replay);
 		b.incrementAllegiance(Allegiance.Icarite,replay);
-		if(replay!=replayMode.Replay) { b.animateNewBliss(bliss); }
 	}
 	else if(know<=8)
 	{
-		addBliss(b.getBliss());
-		if(replay!=replayMode.Replay) { b.animateNewBliss(bliss); }
+		doBliss(1,b,replay);
 		decrementKnowledge();
 	}
 	else
-	{
-		addBliss(b.getBliss());
-		addBliss(b.getBliss());
-		if(replay!=replayMode.Replay) { b.animateNewBliss(bliss);  b.animateNewBliss(bliss);}
-		incrementKnowledge(replay);
+	{	// joseph the antiquer
+		b.doDoubleSelection(this,Benefit.Bliss,replay);
 	}
+
 	return(true);
 }
 // authority token and influence for the main territory track
@@ -2394,29 +2812,6 @@ private void doInfluence(EuphoriaBoard b,replayMode replay,Allegiance aa)
 		b.incrementAllegiance(aa,replay);
 }
 
-void distributeResources(EuphoriaCell c)
-{
-	while(c.height()>0)
-	{
-		EuphoriaChip ch = c.removeTop();
-		distributeItem(ch);
-	}
-}
-//
-// this should be the ONLY portal by which stuff is added
-// to the player's stocks or resources, artifacts, or commodities.
-//
-void distributeItem(EuphoriaChip ch)
-{
-		if(ch==EuphoriaChip.Clay) { addClay(ch); }
-		else if(ch==EuphoriaChip.Gold) { addGold(ch); }
-		else if(ch==EuphoriaChip.Stone) { addStone(ch); }
-		else if(ch.isArtifact()) { addArtifact(ch); }
-		else if(ch==EuphoriaChip.Water) { addWater(ch); }
-		else if(ch==EuphoriaChip.Energy) { addEnergy(ch); }
-		else if(ch==EuphoriaChip.Bliss) { addBliss(ch); }
-		else { throw G.Error("Not expecting resource %s",ch); }
-}
 /**
  * confirm payment of the placement cost (and do whatever bookeeping needs to be done)
  * Note that "cost" is the original one, not the derived cost based on recruits and
@@ -2431,6 +2826,11 @@ void confirmPayment(Cost cost,Cost actualCost,CellStack dest,replayMode replay)
 {	
 	switch(actualCost)
 	{
+ 	 case WaterMwicheTheFlusher:
+ 	 case EnergyMwicheTheFlusher:
+ 	 case FoodMwicheTheFlusher:
+ 		 usingMwicheTheFlusher = (dest.size()==3);
+ 		 break;
 	 case StoneOrBliss:				// these are the one we expect to encounter, after the fixed costs
 	 case ClayOrBliss:
 	 case GoldOrBliss:
@@ -2571,6 +2971,19 @@ void confirmPayment(Cost cost,Cost actualCost,CellStack dest,replayMode replay)
 	case Energyx4_Card:
 	case Waterx4_Card:
 	case Artifactx2:
+	case Bear_Gold:
+	case Glasses_Brick:
+	case Glasses_Water_Bliss:
+	case BookBalloon_Energy_Bliss:
+	case Balloon_Energy_Bliss:
+	case BookBear_Energy_Food:
+	case Book_Card:
+	case Bear_Energy_Food:
+	case Bat_Stone:
+	case Box_Food_Bliss:
+	case Water:		// with mwiche these can be unresolved
+	case Energy:
+	case Food:
 		break;
 	default: throw G.Error("not expecting %s",cost);
 	}
@@ -2690,15 +3103,14 @@ void satisfyBenefit(replayMode replay,Benefit benefit,CellStack dest)
 			{G.Assert(dest.size()==1,"should be one resouce");
 			}
 		break;
+	case Commodityx2:
+		if(dest!=null) { G.Assert(dest.size()==2,"should be 2 commodities"); }
+		break;
 	default: throw G.Error("Not expecting to collect deferred benefit %s",benefit);
 	}
 }
 
 
-void distributeBenefit(replayMode replay,Benefit benefit,EuphoriaCell c)
-{	satisfyBenefit(replay,benefit,null);
-	distributeResources(c);
-}
 // place a star on one of the markets or in the market territory
 // and gain influence on the authority track.
 boolean collectMarketAuthority(EuphoriaBoard b,Allegiance a,replayMode replay,boolean influence)
@@ -2722,20 +3134,38 @@ boolean collectMarketAuthority(EuphoriaBoard b,Allegiance a,replayMode replay,bo
 		}
 		return(false);	// have to decide
 }
-private void doBliss(int n,EuphoriaBoard b,replayMode replay)
+
+// limit increases of commodities due to market penalty LotteryOfDiminishingReturns
+int doLottery(int n,EuphoriaCell c)
 {
+	int height = c.height();
+	if((height+n>2)
+		&& penaltyAppliesToMe(MarketChip.LotteryOfDiminishingReturns))
+		{  
+		n = Math.min(n, 2-height);
+		MarketPenalty mp = MarketChip.LotteryOfDiminishingReturns.marketPenalty;
+		//b.p1("limit commodities due to LotteryOfDiminishingReturns ");
+		b.logGameEvent(mp.explanation);
+		}
+	return(n);
+}
+
+void doBliss(int n0,EuphoriaBoard b,replayMode replay)
+{	int n = doLottery(n0,bliss);
 	for(int i=0;i<n;i++) { addBliss(b.getBliss()); if(replay!=replayMode.Replay) { b.animateNewBliss(bliss); }}
 }
-private void doFood(int n,EuphoriaBoard b,replayMode replay)
-{
+void doFood(int n0,EuphoriaBoard b,replayMode replay)
+{	int n = doLottery(n0,food);
 	for(int i=0;i<n;i++) { addFood(b.getFood()); if(replay!=replayMode.Replay) { b.animateNewFood(food); }}
 }
-private void doWater(int n,EuphoriaBoard b,replayMode replay)
-{
+void doWater(int n0,EuphoriaBoard b,replayMode replay)
+{	int n = doLottery(n0,water);
 	for(int i=0;i<n;i++) { addWater(b.getWater()); if(replay!=replayMode.Replay) { b.animateNewWater(water); }}
 }
-private void doEnergy(int n,EuphoriaBoard b,replayMode replay)
-{
+
+void doEnergy(int n0,EuphoriaBoard b,replayMode replay)
+{	
+	int n = doLottery(n0,energy);
 	for(int i=0;i<n;i++) { addEnergy(b.getEnergy()); if(replay!=replayMode.Replay) { b.animateNewEnergy(energy); }}
 }
 private void doClay(int n,EuphoriaBoard b,replayMode replay)
@@ -2759,6 +3189,28 @@ private void doStone(int n,EuphoriaBoard b,replayMode replay)
 	if(replay!=replayMode.Replay) { b.animateNewStone(stone); }
 	}
 }
+public void doArtifact(int n,EuphoriaBoard b,replayMode replay)
+{
+	while(n-- > 0)
+	{
+		EuphoriaChip a = b.getArtifact();
+		if(a!=null)
+		{	addArtifact(a);
+			if(replay!=replayMode.Replay) { b.animateNewArtifact(artifacts); }			
+		}
+	}
+}
+public int doMonotony(int n)
+{
+	if((n>1) && penaltyAppliesToMe(MarketChip.TheaterOfEndlessMonotony))
+	{
+		MarketPenalty p = MarketChip.TheaterOfEndlessMonotony.marketPenalty;
+		//b.p1("lose commodity due to TheaterOfEndlessMonotony"); tested feb 6
+		b.logGameEvent(p.explanation);
+		return(n-1);
+	}
+	return n;
+}
 /**
  *  return true if the choice action is fully resolved, 
  * @param benefit
@@ -2776,33 +3228,32 @@ boolean collectBenefit(Benefit benefit,replayMode replay)
 	case Artifactx2for1:	// always interact
 		return(false);
 	case Stonex2:
-		doStone(2,b,replay);
+		doStone(doMonotony(2),b,replay);
 		return(true);
 	case Goldx2:
-		doGold(2,b,replay);
+		doGold(doMonotony(2),b,replay);
 		return(true);
 	case Clayx2:
-		doClay(2,b,replay);
+		doClay(doMonotony(2),b,replay);
 		return(true);
 	case Bliss: 	//AmandaTheBroker
 		doBliss(1,b,replay);
 		return(true);
 	case Blissx4:	//ShepphardTheLobotomist
-		doBliss(4,b,replay);
+		doBliss(doMonotony(4),b,replay);
 		return(true);
 	case Commodity:
+	case Commodityx2:
 	case Resource:
 	case WaterOrStone:
 	case WaterOrEnergy:
 		return(false);
 	case Artifactx2:	// collect 2 artifact cards
-		addArtifact(b.getArtifact());
-		if(replay!=replayMode.Replay) { b.animateNewArtifact(artifacts); }
-		// fall into one card
-		//$FALL-THROUGH$
+		doArtifact(2,b,replay);
+		return(true);
+
 	case Artifact:	// collect a single card
-		addArtifact(b.getArtifact());
-		if(replay!=replayMode.Replay) { b.animateNewArtifact(artifacts); }
+		doArtifact(1,b,replay);
 		return(true);
 		
 	case FoodSelection:
@@ -2816,6 +3267,7 @@ boolean collectBenefit(Benefit benefit,replayMode replay)
 		return(doWaterSelection(b,replay));
 	case BlissSelection:
 		return(doBlissSelection(b,replay));
+		
 	case NewWorkerAndKnowledge:
 		
 		if( (totalWorkers>=2) 
@@ -2837,6 +3289,7 @@ boolean collectBenefit(Benefit benefit,replayMode replay)
 		}
 		decrementKnowledge();
 		decrementKnowledge();	
+		doAlbertTheFounder(replay);
 		return(true);
 		
 	case NewWorkerAndMorale:
@@ -2858,6 +3311,7 @@ boolean collectBenefit(Benefit benefit,replayMode replay)
 		}	
 		incrementMorale();
 		incrementMorale();
+		doAlbertTheFounder(replay);
 		return(true);
 		
 	case CardAndGold:
@@ -2869,11 +3323,8 @@ boolean collectBenefit(Benefit benefit,replayMode replay)
 		}
 		else
 		{
-		addGold(b.getGold());
-		EuphoriaChip art = b.getArtifact();
-		if(art!=null) {addArtifact(art); }	// should never be null, but..
-		if(replay!=replayMode.Replay) { b.animateNewGold(gold); if(art!=null) { b.animateNewArtifact(artifacts); }} 
-
+		doGold(1,b,replay);
+		doArtifact(1,b,replay);
 		}}
 		return(true);
 		
@@ -2885,10 +3336,8 @@ boolean collectBenefit(Benefit benefit,replayMode replay)
 		}
 		else
 		{
-		 addStone(b.getStone());
-		 EuphoriaChip art = b.getArtifact();
-		 if(art!=null) { addArtifact(art); }	// should never be null, but..		
-		 if(replay!=replayMode.Replay) { b.animateNewStone(stone); if(art!=null) { b.animateNewArtifact(artifacts); }} 
+		 doStone(1,b,replay);
+		 doArtifact(1,b,replay);
 		}
 		return(true);
 	case CardAndClay:
@@ -2898,34 +3347,34 @@ boolean collectBenefit(Benefit benefit,replayMode replay)
 		return(collectBenefit(Benefit.CardOrClay,replay));
 		}
 		else
-		{
-		 addClay(b.getClay());
-		 EuphoriaChip art = b.getArtifact();
-		 if(art!=null) { addArtifact(art); }	// should never be null, but..		
-		 if(replay!=replayMode.Replay) { b.animateNewClay(clay); if(art!=null) { b.animateNewArtifact(artifacts); }} 
+		{doClay(1,b,replay);
+		 doArtifact(1,b,replay);
 		}
 		return(true);
 	case Waterx3:
-		doWater(3,b,replay);
+		doWater(doMonotony(3),b,replay);
 		return(true);
 	case Energy:
 		doEnergy(1,b,replay);
 		return(true);
 	case Energyx2:
-		doEnergy(2,b,replay);
+		doEnergy(doMonotony(2),b,replay);
 		return(true);
 		
 	case Energyx3:
-		doEnergy(3,b,replay);
+		doEnergy(doMonotony(3),b,replay);
 		return(true);
 	case Foodx4:
-		doFood(4,b,replay);
+		doFood(doMonotony(4),b,replay);
 		return(true);
 	case Foodx3:
-		doFood(3,b,replay);
+		doFood(doMonotony(3),b,replay);
 		return(true);
 	case Food:
 		doFood(1,b,replay);
+		return(true);
+	case Foodx2:
+		doFood(2,b,replay);
 		return(true);
 	case MoraleOrKnowledge:
 		if(morale == MAX_MORALE_TRACK)
@@ -2962,13 +3411,7 @@ boolean collectBenefit(Benefit benefit,replayMode replay)
 		
 	case IcariteInfluenceAndCardx2:
 		{b.incrementAllegiance(Allegiance.Icarite,replay);
-		 EuphoriaChip art = b.getArtifact();
-		 if(art!=null) 
-		 	{ addArtifact(art); 
-		 	  art = b.getArtifact();
-		 	  if(art!=null) { addArtifact(art); }
-		 	  if(replay!=replayMode.Replay) { b.animateNewArtifact(artifacts); b.animateNewArtifact(artifacts); }
-		 	}	// should never be null, but..		
+		 doArtifact(2,b,replay);
 		}
 		return(true);
 
@@ -2981,10 +3424,7 @@ boolean collectBenefit(Benefit benefit,replayMode replay)
 			{ MarketChip.RegistryOfPersonalSecrets.logGameEvent(b);
 			}
 			else 
-			{ addArtifact(b.getArtifact()); 
-			  if(replay!=replayMode.Replay)
-			  	{ b.animateNewArtifact(artifacts); 
-			  	}
+			{ doArtifact(1,b,replay);
 			}
 			
 			}
@@ -3065,13 +3505,77 @@ boolean collectBenefit(Benefit benefit,replayMode replay)
 	case CardOrStone:
 	case CardOrClay:
 		return(false);		// interact to get these
-		
+	
+	case Morale:	// samuel the zapper
+		return incrementMorale();
 
 	}
 
 }
+private void doAlbertTheFounder(replayMode replay)
+{
+	if(recruitAppliesToMe(RecruitChip.AlbertTheFounder)
+			&& (totalWorkers<MAX_WORKERS))
+	{	// b.p1("use albert the founder");
+		// gain another worker and a resoruce
+		addNewWorker(WorkerChip.getWorker(color,1));	// will be rerolled
+		totalWorkers++;
+		if(replay!=replayMode.Replay)
+		{
+			b.animateNewWorkerA(newWorkers);
+		}
+		b.collectResourceNext();
+	}
+}
+
 public boolean canResolveDilemma()
 {	return(!dilemmaResolved && canPay(((DilemmaChip)dilemma.topChip()).cost));
+}
+
+// check a version 3 recruit if we think it's handled for this purpose
+public void checkV3DropWorker(EuphoriaCell dest,replayMode replay) {
+	for(int lim=activeRecruits.height()-1; lim>=0; lim--)
+	{
+		RecruitChip ch = (RecruitChip)activeRecruits.chipAtIndex(lim);
+		if(ch.isIIB())
+		{
+		switch(ch.recruitId)
+		{
+		case 257:	// joseph the antiquer changes the benefit from commodities to cards
+		case 247:	// julia the acolyte, no action on drop, special actions when bumped
+		default:	
+			b.p1("drop with "+ch.name+" #"+ch.recruitId);
+			//throw G.Error("recruit %s #%s not handled for DropWorker",ch,ch.recruitId);
+			break;
+
+		case 235:	// cary the care bear, extra stuff when gaining a bear
+		case 241:	// ha-joon the gold trader,no action on drop
+		case 244:   // samuel the zapper, believed to be complete 2/1/2022
+					// lots of nuances for samuelthezapper!		
+		case 256:	// high general baron, no action on drop
+		case 258:	// Milos the Brainwasher, pay to skip knowledge check
+		case 259:	// kaleef the browuiser, action on bump worker
+		case 263:	// mwichwe the flusher, special cost/benedif at tunnels
+		case 265:	// albert the founder
+		case 267:	// borna the storyteller, no action on drop
+		case 268:	// javier the underground librarian, no action on drop
+			break;
+		
+		}}
+	}
+}
+
+// return true if any of our workers are on a commodity space
+public boolean hasCommodityWorkers()
+{	
+	for(EuphoriaCell c : placedWorkers)
+	{	if(c!=null)
+		{
+		EuphoriaId rack = c.rackLocation();
+		if(G.arrayContains(CommodityIds, rack)) { return(true); }
+		}
+	}
+	return(false);
 }
 
 }

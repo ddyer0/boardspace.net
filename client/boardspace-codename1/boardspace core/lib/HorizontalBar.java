@@ -16,6 +16,8 @@ public class HorizontalBar implements Drawable
 		double h;
 		double percent;
 		Color color;
+		public int getWidth() { return((int)w); }
+		public int getHeight() { return((int)h); }
 		public HorizontalBar(double wid,double hei,double pc,Color c)
 		{
 			w = wid;

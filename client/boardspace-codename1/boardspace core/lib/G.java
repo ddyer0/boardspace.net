@@ -1607,7 +1607,7 @@ static public String getSystemProperties()
     		prop = G.getPlatformName();
     		}
      	}
-    	if(prop!=null) {  ss += " "+prop; }
+    	if(prop!=null) {  ss += " "+propname+"="+prop; }
     }
 
     return( ss + "]");
@@ -1639,6 +1639,8 @@ private static final String JAVA_VERSION = "java.version";
 private static ExtendedHashtable globals = new ExtendedHashtable(true);
 // constants expected to be used with globals
 public static final String LOWMEMORY = "lowmemory";
+
+static final public boolean isCheerpj() { return("cheerpj".equals(System.getProperty(G.OS_ARCH))); }
 
 public static ExtendedHashtable getGlobals() { return(globals); }
 public static void setGlobals(ExtendedHashtable e) { globals = e; }
