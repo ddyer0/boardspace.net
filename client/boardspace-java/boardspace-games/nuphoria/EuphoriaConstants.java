@@ -6,8 +6,6 @@ import lib.G;
 import lib.IntObjHashtable;
 import lib.InternationalStrings;
 import lib.OStack;
-import nuphoria.EuphoriaConstants.Cost;
-import nuphoria.EuphoriaConstants.EuphoriaId;
 import lib.CellId;
 import online.game.BaseBoard.BoardState;
 
@@ -160,6 +158,13 @@ public interface EuphoriaConstants
 	static String ConfirmUseMwicheOrContinueState = "Click on Done to use the tunnel normally, or add more Water";
 	static String UseMwicheTheFlusher = "pay 3 Water for benefit + 2 Morale (from Mwiche the Flusher)";
 	static String UseCaryTheCarebear = "get Food and Commodity (from Cary the Carebear)";
+	static String UseJosephTheAntiquer = "Took Artifact instead of Commodity (from Jopseph the Antiquer)";
+	static String UseBokTheGameMaster = "You learn nothing (from Bok the Game Master)";
+	static String UseBokTheGameMasterNow = "You know less now (from Bok the Game Master)";
+	static String UseKebTheInformationTrader = "gain something (due to Keb the Information Trader)";
+	static String MoraleFromTedTheConingencyPlanner = "+1 #1 from Ted the Contingency Planner";
+	static String SavedByDustyTheEnforcer = "-1 #1 and save worker (due to Dusty the Enforcer)";
+	
 	enum Allegiance { Euphorian, Subterran, Wastelander, Icarite, Factionless;
 		static void putStrings() { for(Allegiance a : values()) { InternationalStrings.put(a.name()); }}
 		};
@@ -202,7 +207,6 @@ public interface EuphoriaConstants
 	
 	enum Cost
 	{	Free("Free"),			// no cost placement
-		Mostly_Free("Free"),	// no cost except to Brian the Viticulturist V2
 		NonBlissCommodity("1 commodity (not Bliss)"),
 		IsIcarite("must be an icarite"),
 		IsSubterran("must be a subterran"),
@@ -213,18 +217,17 @@ public interface EuphoriaConstants
 		ConstructionSiteStone("1 Stone"),		// building markets
 		ConstructionSiteClay("1 Clay"),		// building markets
 		
-		GoldOrArtifact("1 Gold or 1 Artifact card"),		// building with FlartnerTheLuddite
-		ClayOrArtifact("1 Clay or 1 Artifact card"),		// building with FlartnerTheLuddite
+		GoldOrArtifact("1 Gold or 1 Artifact"),		// building with FlartnerTheLuddite
+		ClayOrArtifact("1 Clay or 1 Artifact"),		// building with FlartnerTheLuddite
 		
-		StoneOrArtifact("1 Stone or 1 Artifact card"),		// building with FlartnerTheLuddite
+		StoneOrArtifact("1 Stone or 1 Artifact"),		// building with FlartnerTheLuddite
 		
-		Artifactx3Only("3 Artifact cards"),		// various markets
-		ArtifactPair("a pair of Artifact cards"),		// alternative 
-		Artifactx2("2 Artifact cards"),			// JackoTheMerchant
-		Artifactx3("3 Artifact cards, or a Pair of Artifact cards"),			// combo by default
-		Morale_Artifactx3("3 Artifact cards, or a Pair of Artifact cards"),
-		Mostly_Artifactx3("3 Artifact cards, or a Pair of Artifact cards"),	// for brian the viticulturist v2
-		Smart_Artifact("1 Artifact card"),
+		Artifactx3Only("3 Artifact"),		// various markets
+		ArtifactPair("a pair of Artifact"),		// alternative 
+		Artifactx2("2 Artifact"),			// JackoTheMerchant
+		Artifactx3("3 Artifact, or a Pair of Artifact"),			// combo by default
+		Morale_Artifactx3("3 Artifact, or a Pair of Artifact"),
+		Smart_Artifact("1 Artifact"),
 		Energy("1 Energy"),		// euphorian mine
 		Food("1 Food"),		// wastelander mine
 		Water("1 Water"),		// subterran mine
@@ -243,11 +246,11 @@ public interface EuphoriaConstants
 		Commodity("1 Commodity"),
 		Resourcex3("3 Resources"),	// nimbus loft
 		Morale_Resourcex3("3 Resources"),	// nimbus loft
-		Mostly_Resourcex3("3 Resources"),	// nimbus loft
 		Energyx3("3 Energy"),	// worker training
 		Waterx3("3 Water"),	// worker training
 		Bliss_Commodity("1 Bliss and 1 non-bliss Commodity"),				// breeze bar and sky lounge
-		Mostly_Bliss_Commodity("1 Bliss and 1 non-bliss Commodity"),		// breeze bar and sky lounge
+		NonBliss("1 non-bliss Commodity"),
+		
 		BlissOrFoodPlus1("1 Bliss or 1 Food, plus 1 not Bliss"),	// bliss_commodity with BrianTheViticulturist
 		Morale_BlissOrFoodPlus1("1 Bliss or 1 Food, plus 1 not Bliss"),	// bliss_commodity with BrianTheViticulturist
 		
@@ -256,20 +259,26 @@ public interface EuphoriaConstants
 		Closed("Closed"),		// never open
 		DisplayOnly("Display Only"),	// only for the UI to use
 		BlissOrFood("1 Bliss or 1 Food"),	// retrieval cost for workers
+		ClayOrFood("1 Clay or 1 Food"),
+		GoldOrFood("1 Gold or 1 Food"),
+		BlissOrEnergy("1 Bliss or 1 Energy"),
+		BlissOrWater("1 Bliss or 1 Water"),
+		
 		EnergyOrBlissOrFood("1 Bliss or 1 Food or 1 Energy"),	// with JeffersonTheShockArtist
 		// market costs
-		Card_Resource("1 Artifact card and 1 Resource"),	
-		Card_ResourceOrBliss("1 Artifact card and 1 Resource or 1 Bliss"),//  for JoshTheNegotiator
+		Card_Resource("1 Artifact and 1 Resource"),	
+		Card_ResourceOrBliss("1 Artifact and 1 Resource or 1 Bliss"),//  for JoshTheNegotiator
 		Waterx4("4 Water"),
 		Energyx4("4 Powwer"),
 		Foodx4("4 Food"),
 		Blissx4("4 Bliss"),
 		Blissx3("3 Bliss"),
 		Bliss("1 Bliss"),
-		Waterx4_Card("4 Water and 1 Artifact card"),
+		Waterx4_Card("4 Water and 1 Artifact"),
 		
 		Energyx4_StoneOrBliss("4 Energy and 1 Stone or 1 Bliss"),	// total cost for JoshTheNegotiator
 		StoneOrBliss("1 Stone or 1 Bliss"),			// collected cost for JoshTheNegotiator
+		StoneOrFood("1 Stone or 1 Food"),
 		Energyx4_Stone("4 Energy and 1 Stone"),		
 		
 		Waterx4_ClayOrBliss("4 Water and 1 Clay or 1 Bliss"),	// total cost for JoshTheNegotiator
@@ -282,7 +291,7 @@ public interface EuphoriaConstants
 		
 		Foodx4_GoldOrBliss("4 Food and 1 Gold or 1 Bliss"),
 		Foodx4_Gold("4 Food and 1 Gold"),	
-		Foodx4_Card("4 Food and 1 Artifact card"), 
+		Foodx4_Card("4 Food and 1 Artifact"), 
 		
 		Blissx4_Resource("4 Bliss and 1 Resource"),		
 		Blissx4_ResourceOrBliss("4 Bliss and 1 Resource, or 5 Bliss"),
@@ -293,34 +302,34 @@ public interface EuphoriaConstants
 		Energyx4_ClayOrBliss("4 Energy and 1 Clay or 1 Bliss"),		// JoshTheNegotiator
 		Energyx4_Clay("4 Energy and 1 Clay"),			// 
 		
-		Blissx4_Card("1 Artifact card"),			// normal mode
-		BlissOrFoodx4_Card("1 Artifact card and 4 Food or Bliss"),		// Blissx4_Card with BrianTheViticulturist
-		Energyx4_Card("4 Energy and 1 Artifact card"),
+		Blissx4_Card("1 Artifact"),			// normal mode
+		BlissOrFoodx4_Card("1 Artifact and 4 Food or Bliss"),		// Blissx4_Card with BrianTheViticulturist
+		Energyx4_Card("4 Energy and 1 Artifact"),
 
 		Foodx4_StoneOrBliss("4 Food and 1 Stone or 1 Bliss"),
 		Foodx4_Stone("1 Stone or 1 Bliss"),			// string only becomes visible if JoshTheNegotiator is in effect
 		
-		Commodity_Bear("1 Commodity and 1 Bear Artifact card"),
-		Commodity_Bifocals("1 Commodity and 1 Bifocals Artifact card"),
-		Commodity_Balloons("1 Commodity and 1 Balloons Artifact card"),
-		Commodity_Box("1 Commodity and 1 Box Artifact card"),
-		Commodity_Bat("1 Commodity and 1 Bat Artifact card"),
-		Commodity_Book("1 Commodity and 1 Book Artifact card"),
+		Commodity_Bear("1 Commodity and 1 Bear Artifact"),
+		Commodity_Bifocals("1 Commodity and 1 Bifocals Artifact"),
+		Commodity_Balloons("1 Commodity and 1 Balloons Artifact"),
+		Commodity_Box("1 Commodity and 1 Box Artifact"),
+		Commodity_Bat("1 Commodity and 1 Bat Artifact"),
+		Commodity_Book("1 Commodity and 1 Book Artifact"),
 		
-		Balloons("1 Balloons Artifact card"),
-		Bat("1 Bat Artifact card"),
-		Bifocals("1 Bifocals Artifact card"),
-		Box("1 Box Artifact card"),
-		Bear("1 Bear Artifact card"),
-		Book("1 Book Artifact card"),
+		Balloons("1 Balloons Artifact"),
+		Bat("1 Bat Artifact"),
+		Bifocals("1 Bifocals Artifact"),
+		Box("1 Box Artifact"),
+		Bear("1 Bear Artifact"),
+		Book("1 Book Artifact"),
 	
 		// dilemma costs
-		BearOrCardx2("1 Bear or 2 other Artifact cards"),
-		BoxOrCardx2("1 Box or 2 other Artifact cards"),
-		BifocalsOrCardx2("1 Bifocals or 2 other Artifact cards"),
-		BalloonsOrCardx2("1 Balloon or 2 other Artifact cards"),
-		BatOrCardx2("1 Bat or 2 other Artifact cards"),
-		BookOrCardx2("1 Book or 2 other Artifact cards"),
+		BearOrCardx2("1 Bear or 2 other Artifact"),
+		BoxOrCardx2("1 Box or 2 other Artifact"),
+		BifocalsOrCardx2("1 Bifocals or 2 other Artifact"),
+		BalloonsOrCardx2("1 Balloon or 2 other Artifact"),
+		BatOrCardx2("1 Bat or 2 other Artifact"),
+		BookOrCardx2("1 Book or 2 other Artifact"),
 		
 		// loss of morale
 		Card("1 Card (hand limit: low Morale)"),
@@ -332,7 +341,7 @@ public interface EuphoriaConstants
 		Cardx5("5 Cards (hand limit: low Morale)"),
 		Cardx6("6 Cards (hand limit: low Morale)"),
 		
-		Artifact("1 Artifact card"),
+		Artifact("1 Artifact"),
 		Morale("1 Morale"),
 		Moralex2("2 Morale"),			//for use with MaximeTheAmbassador
 		Knowledge("1 Knowledge"),
@@ -352,7 +361,7 @@ public interface EuphoriaConstants
 		Waterx4_GoldOrBlissOrFood("4 Water and 1 Gold, Bliss or Food"),
 		Energyx4_ClayOrBlissOrFood("4 Energy and 1 Clay, Bliss or Food"),
 		Foodx4_StoneOrBlissOrFood("4 Food and 1 Stone or Bliss, or 5 Food"),
-		Card_ResourceOrBlissOrFood("1 Artifact card and 1 Bliss or 1 Food"),
+		Card_ResourceOrBlissOrFood("1 Artifact and 1 Bliss or 1 Food"),
 		BlissOrFoodx4_ResourceOrBlissOrFood("any 5 Bliss or food, or any 4 with a resource"),
 		
 		// the corresponding simplifications
@@ -364,55 +373,101 @@ public interface EuphoriaConstants
 
 		
 		// new costs for IIB
-		Balloon_Stone("1 Balloons Artifact card and 1 Stone"),
-		BookBalloon_Stone("Book Artifact card or 1 Balloons Artifact card, and 1 Stone"),
+		CommodityX2("2 Commodities"),
+		Balloon_Stone("1 Balloons Artifact and 1 Stone"),
 		
-		Box_Food_Bliss("1 Box Artifact card, 1 Food and 1 Bliss"),
-		BookBox_Food_Bliss("1 Book Artifact card or 1 Box Artifact card, 1 Food and 1 Bliss"),
+		Box_Food_Bliss("1 Box Artifact, 1 Food and 1 Bliss"),
 		
-		Balloon_Energy_Bliss("1 Balloons Artifact card, 1 Energy and 1 Bliss"),
-		BookBalloon_Energy_Bliss("1 Book Artifact card or 1 Balloons Artifact card, 1 Energy and 1 Bliss"),
+		Balloon_Energy_Bliss("1 Balloons Artifact, 1 Energy and 1 Bliss"),
 		
-		Glasses_Water_Bliss("1 Glasses Artifact card, 1 Water and 1 Bliss"),
-		BookGlasses_Water_Bliss("1 Book Artifact card or 1 Glasses Artifact card, 1 Water and 1 Bliss"),
+		Glasses_Water_Bliss("1 Glasses Artifact, 1 Water and 1 Bliss"),
 
-		Book_Energy_Water("1 Book Artifact card, 1 Energy and 1 Water"),
+		Book_Energy_Water("1 Book Artifact, 1 Energy and 1 Water"),
 		
-		Bear_Energy_Food("1 Bear Artifact card, 1 Energy and 1 Food"),
-		BookBear_Energy_Food("1 Book Artifact card or 1 Bear Artifact card, 1 Energy and 1 Food"),
-
-		Glasses_Gold("1 Glasses Artifact card and 1 Gold"),
-		BookGlasses_Gold("1 Glasses Artifact card and 1 Gold"),
-
-		Bear_Gold("1 Bear Artifact card and 1 Gold"),
-		BookBear_Gold("1 Book Artifact card or 1 Bear Artifact card, and 1 Gold"),
-
+		Bear_Energy_Food("1 Bear Artifact, 1 Energy and 1 Food"),
 		
-		Book_Brick("1 Book Artifact card and 1 Brick"),
+		Glasses_Gold("1 Glasses Artifact and 1 Gold"),
+
+		Bear_Gold("1 Bear Artifact and 1 Gold"),
 		
-		Box_Gold("1 Box Artifact card and 1 Gold"),
-		BookBox_Gold("1 Book Artifact or 1 Box Artifact, card and 1 Gold"),
-
-		Book_Card("1 Book Artifact card and 1 Artifact card"),
-
-		Box_Brick("1 Box Artifact card and 1 Brick"),
-		BookBox_Brick("1 Book Artifact or 1 Box Artifact card, and 1 Brick"),
-
-		Bat_Stone("1 Bat Artifact card and 1 Stone"),
-		BookBat_Stone("1 Book Artifact card or 1 Bat Artifact card, and 1 Stone"),
+		Book_Brick("1 Book Artifact and 1 Brick"),
 		
-		Book_Stone("1 Book Artifact card and 1 Stone"),
+		Box_Gold("1 Box Artifact and 1 Gold"),
 		
-		Glasses_Brick("1 Glasses Artifact card and 1 Brick"),
-		BookGlasses_Brick("1 Book Artifact card or 1 Glasses Artifact card, and 1 Brick"),
+		Book_Card("1 Book Artifact and 1 Artifact"),
 
-		Bat_Brick("1 Bat Artifact card and 1 Brick"),
-		BookBat_Brick("1 Book Artifact card or 1 Bat Artifact card and 1 Brick"),
+		Box_Brick("1 Box Artifact and 1 Brick"),
+
+		Bat_Stone("1 Bat Artifact and 1 Stone"),
+		
+		Book_Stone("1 Book Artifact and 1 Stone"),
+		
+		Glasses_Brick("1 Glasses Artifact and 1 Brick"),
+
+		Bat_Brick("1 Bat Artifact and 1 Brick"),
 		
 		EnergyMwicheTheFlusher("1 Energy, or 3 Water for 1 gold 1 artifact card and 2 morale"),
 		FoodMwicheTheFlusher("1 Food, or 3 Water for 1 brick 1 artifact card and 2 morale"),
 		WaterMwicheTheFlusher("1 Water or 3 Water for 1 stone 1 artifact card and 2 morale"),
+		
+		EnergyAndCommodity("1 Energy and 1 Commodity"),	// for agency of progressive backstabbing
+		FoodAndCommodity("1 Food and 1 Commodity"),
+		WaterAndCommodity("1 Water and 1 Commodity"),	
+		WaterX3AndCommodity("3 Water and 1 Commodity"),
+		EnergyX3AndCommodity("3 Energy and 1 Commodity"),
+		ArtifactX3AndCommodity("3 Artifact, or a Pair of Artifact, and a Commodity"),
+		ResourceX3AndCommodity("3 Resource and a Commodity"),
+		BlissAndNonBlissAndCommodity("1 Bliss, 1 Non Bliss, and 1 Other Commodity"),
+		IsEuphorianAndCommodity("Euphorian, and 1 Commodity"),
+		IsWastelanderAndCommodity("Wastlander, and 1 Commodity"),
+		IsSubterranAndCommodity("Subterran, and 1 Commodity"),
+		Variable("Variable"),
+		
+		CommodityX3("3 Commodities"),
+		Balloon_StoneAndCommodity("1 Balloons Artifact and 1 Stone and 1 Commodity"),
+		
+		Box_Food_BlissAndCommodity("1 Box Artifact, 1 Food and 1 Bliss and 1 Commodity"),
+		
+		Balloon_Energy_BlissAndCommodity("1 Balloons Artifact, 1 Energy and 1 Bliss and 1 Commodity"),
+		
+		Glasses_Water_BlissAndCommodity("1 Glasses Artifact, 1 Water and 1 Bliss and 1 Commodity"),
+		Glasses_Commodity("1 Glasses Artifact and 1 Commodity"),
+		
+		Book_Energy_WaterAndCommodity("1 Book Artifact, 1 Energy and 1 Water and 1 Commodity"),
+		
+		Bear_Energy_FoodAndCommodity("1 Bear Artifact, 1 Energy and 1 Food and 1 Commodity"),
 
+		Glasses_GoldAndCommodity("1 Glasses Artifact and 1 Gold and 1 Commodity"),
+
+		Bear_GoldAndCommodity("1 Bear Artifact and 1 Gold and 1 Commodity"),
+		
+		Book_BrickAndCommodity("1 Book Artifact and 1 Brick and 1 Commodity"),
+		
+		Box_GoldAndCommodity("1 Box Artifact and 1 Gold and 1 Commodity"),
+		
+		Book_CardAndCommodity("1 Book Artifact and 1 Artifact and 1 Commodity"),
+
+		Box_BrickAndCommodity("1 Box Artifact and 1 Brick and 1 Commodity"),
+		
+		Bat_StoneAndCommodity("1 Bat Artifact and 1 Stone and 1 Commodity"),
+		
+		Book_StoneAndCommodity("1 Book Artifact and 1 Stone and 1 Commodity"),
+		
+		Glasses_BrickAndCommodity("1 Glasses Artifact and 1 Brick and 1 Commodity"),
+
+		Bat_BrickAndCommodity("1 Bat Artifact and 1 Brick and 1 Commodity"),
+		
+		EnergyMwicheTheFlusherAndCommodity("1 Energy, or 3 Water for 1 gold 1 artifact card and 2 morale and 1 Commodity"),
+		FoodMwicheTheFlusherAndCommodity("1 Food, or 3 Water for 1 brick 1 artifact card and 2 morale and 1 Commodity"),
+		WaterMwicheTheFlusherAndCommodity("1 Water or 3 Water for 1 stone 1 artifact card and 2 morale and 1 Commodity"),
+
+		NonBlissAndCommodity("1 Non-Bliss and 1 other Commodity"),
+		StoneOrBlissOrFood("1 Stone or 1 Bliss or 1 Food"),
+		ClayOrBlissOrFood("1 Clay or 1 Bliss or 1 Food"),
+		GoldOrBlissOrFood("1 Gold or 1 Bliss or 1 Food"),
+		Card_BlissOrFood("1 Artifact and 1 Bliss or 1 Food"),
+		Card_FoodOrResource("1 Artifact and Food or 1 Resource"),
+		BlissOrFoodx4("4 total Food or Bliss"),
 		;
 		String description = null;
 		Cost(String s)
@@ -531,11 +586,20 @@ public interface EuphoriaConstants
 		DoKhaleefTheBruiser,		// get resource after bump
 		DoMilosTheBrainwasher,		// milos the brainwasher 
 		ReRollWorkersAfterMilos,	//
-		NormalDouble,				// receive 2x + - knowledge
-		DoJosephTheAntiquer,		// take artifact instead
+		PayForCard,					// pay for an artifact card
+		ReRollWorkersAfterKeb,		// continue after checking for KebTheInformationTrader
+		DoPmaiTheNurse,
+		DontPmaiTheNurse,
+		DoPamhidzai,
+		DontPamhidzai,
+		DoBrendaTheKnowledgeBringer,
+		DoDustyTheEnforcer,
+		DontDustyTheEnforcer,
+		ReRollWorkersAfterCheck,
+		CollectBenefitAfterArtifacts,
 		;
 	}
-
+	
 	enum MarketPenalty
 	{	// penalties that apply to particular markets if they are open and 
 		// a player has no authority star on them
@@ -715,16 +779,16 @@ public interface EuphoriaConstants
 		
 		EuphorianAuthority2("a Market or Authority zone"),
 		EuphorianAuthorityAndInfluence("Authority zone"),
-		CardOrGold("1 Artifact card or 1 Gold"),
-		CardAndGold("1 Artifact card or 1 Gold"),	// the string is only seen when the ministry of personal secrets is in effect
+		CardOrGold("1 Artifact or 1 Gold"),
+		CardAndGold("1 Artifact or 1 Gold"),	// the string is only seen when the ministry of personal secrets is in effect
 		PowerSelection("Energy"),		// power from the generator depending on total knowledge
 		Waterx3("3 Water"),
 		Water("1 Water (from IanTheHorticulturist)"),
 		SubterranAuthority2("a Market or Authority zone"),
 		SubterranAuthorityAndInfluence("Authority zone"),
 
-		CardOrStone("1 Artifact card or 1 Stone"),
-		CardAndStone("1 Artifact card or 1 Stone"),	// the string is only seen when the ministry of personal secrets is in effect
+		CardOrStone("1 Artifact or 1 Stone"),
+		CardAndStone("1 Artifact or 1 Stone"),	// the string is only seen when the ministry of personal secrets is in effect
 		WaterSelection("Water"),		// water from aquifer depending on total knowledge
 		Food("1 Food"),
 		Foodx2("2 Food"),
@@ -738,8 +802,8 @@ public interface EuphoriaConstants
 		
 		WastelanderAuthority2("a Market or Authority zone"),
 		WastelanderAuthorityAndInfluence("Authority zone"),
-		CardOrClay("1 Artifact card or 1 Clay"),
-		CardAndClay("1 Artifact card or 1 Clay"),	// the string is only seen when the ministry of personal secrets is in effect
+		CardOrClay("1 Artifact or 1 Clay"),
+		CardAndClay("1 Artifact or 1 Clay"),	// the string is only seen when the ministry of personal secrets is in effect
 		FoodSelection("Food"),		// food depending on total knowledge
 		Energyx3("3 Energy"),
 		Energy("1 Energy"),
@@ -753,16 +817,17 @@ public interface EuphoriaConstants
 		Clay("1 Clay"),
 		Stone("1 Stone"),
 		IcariteAuthorityAndInfluence("Authority zone"),
-		IcariteInfluenceAndCardx2("2 Artifact cards"),
+		IcariteInfluenceAndCardx2("2 Artifact"),
 		IcariteInfluenceAndResourcex2("2 resources"),
 		BlissSelection("Bliss"),
 		Artifact("Artifact"),
-		Artifactx2("2 Artifact cards"),
-		Artifactx2for1("2 Artifact cards, keep 1 of them"),
+		Artifactx2("2 Artifact"),
+		Artifactx2for1("2 Artifact, keep 1 of them"),
 		Bliss("1 Bliss"),		// AmandaTheBroker
 		Blissx4("4 Bliss"),		// one of SheppardTheLobotomist benefits
 		Commodity("1 Commodity"),
 		Commodityx2("2 Commodity"),
+		Commodityx3("3 Commodity"),
 		Resource("1 Resource"),
 		
 		WaterOrStone("1 Water or 1 Stone (from Maggie the Outlaw)"),	// Maggie the outlaw's bonus
@@ -775,7 +840,12 @@ public interface EuphoriaConstants
 		WastelanderStar("an extra Wastelander Authority"),
 
 		// IIB benefits
-		Morale("1 morale")	// samuel the zapper
+		Morale("1 Morale"),	// samuel the zapper
+		ArtifactOrWaterX2("1 Artifact or 2 Water"),	// joseph the antiquer
+		ArtifactOrBlissX2("1 Artifact or 2 Bliss"),	// joseph the antiquer
+		ArtifactOrFoodX2("1 Artifact or 2 Food"),		// joseph the antiquer
+		ArtifactOrEnergyX2("1 Artifact or 2 Energy"),	// joseph the antiquer
+		ResourceOrCommodity("1 Resource or 1 Commodity"),	// kebtheinformationtrader
 		;
 		
 		String description=null;
@@ -810,16 +880,25 @@ public interface EuphoriaConstants
 			case CardOrStone:
 			case Resource:
 			case Commodity:
+			case Commodityx2:
+			case Commodityx3:
 			case IcariteInfluenceAndResourcex2:
 			case EuphorianAuthority2:
 			case SubterranAuthority2:
 			case WaterOrStone:
-
+			case IcariteInfluenceAndCardx2:		// these only get used in IIB where cards
+			case Artifact:						// always require an interaction
 			case Artifactx2for1:
 			case WaterOrEnergy:
 			case WastelanderAuthority2:		
 			case MoraleOrKnowledge:
 			case Moralex2OrKnowledgex2:
+			case ArtifactOrWaterX2:
+			case ArtifactOrBlissX2:
+			case ArtifactOrFoodX2:
+			case ArtifactOrEnergyX2:
+			case ResourceOrCommodity:
+			case IcariteAuthorityAndInfluence:		// IIB, icarite also gets a card
 				return(EuphoriaState.CollectBenefit);
 			case KnowledgeOrBliss:
 			case MoraleOrEnergy:
@@ -829,7 +908,7 @@ public interface EuphoriaConstants
 			default:
 				break;
 			}
-			throw G.Error("not expecting %s",this);
+			throw G.Error("not expecting %s in collectionState()",this);
 		}
 		EuphoriaState confirmState()
 		{
@@ -901,7 +980,7 @@ public interface EuphoriaConstants
 	    		"#1{##a possible recruit choice"),
 	    PlayerNewRecruits3(null,"New Recruit",true,false,false,false,		false,false,
 	    		"#1{##a possible recruit choice"),
-	    PlayerArtifacts(null,"Artifact card",true,false,false,false,			true,false,
+	    PlayerArtifacts(null,"Artifact",true,false,false,false,			true,false,
 	    		"#1{##no artifact cards,# artifact card,# artifact cards}"),	// stack of cards
 	    		
 		PlayerArtifact0(null,"Artifact",true,false,false,false,		false,false,
@@ -1001,10 +1080,16 @@ public interface EuphoriaConstants
 	    		"play here to gain a Worker"),
 	    AllegianceTrack(null,"",false,true,false,false,false,false,null),
 	    Market(null,"",false,true,false,false,			false,false,null),			// revealed market cells (not the worker cells)
+	    // artifact deck and discards for v1 and v2
 	    ArtifactDeck(null,"Artifact Deck",false,false,false,false,	true,false,
 	    		"#1{##no artifact cards,# artifact card,# artifact cards}"),
+	    // artifact market for iib
 	    ArtifactDiscards(null,"Artifact Discards",false,false,false,false,	true,false,
 	    		"#1{##no discarded artifact cards,# discarded artifact card,# discarded artifact cards}"),
+	    
+	    ArtifactMarket(null,"Artifact Market",false,true,false,false,false,false,
+	    		"Artifcact Card Available Now"),
+	    		
 	    MarketBasket(null,"Basket",false,false,false,false,	true,false,null),			// an interchange cell for costs and benefits
 	    
 	    // cells for display only
@@ -1392,7 +1477,7 @@ public interface EuphoriaConstants
     	 	   "Stone",
     	 	   "Clay",
     	 	   "Authority token",
-    	 	   "Artifact card",
+    	 	   "Artifact",
     	 	   "Knowledge",
     	 	   "Morale",
     	 	   "New Worker",
@@ -1401,6 +1486,12 @@ public interface EuphoriaConstants
     	 	  ConfirmUseMwicheOrContinueState,
     	 	  UseMwicheTheFlusher,
     	 	  UseCaryTheCarebear,
+    	 	  UseJosephTheAntiquer,
+    	 	  UseBokTheGameMaster,
+    	 	  UseBokTheGameMasterNow,
+    	 	  UseKebTheInformationTrader,
+    	 	  MoraleFromTedTheConingencyPlanner,
+    	 	  SavedByDustyTheEnforcer,
     		};
     		String EuphoriaStringPairs[][] = 
     		{   {"Euphoria_family","Euphoria"},

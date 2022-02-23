@@ -131,7 +131,8 @@ public class EuphoriaViewer extends CCanvas<EuphoriaCell,EuphoriaBoard> implemen
 	static final int BACKGROUND_TILE_INDEX = 0;
 	static final int BACKGROUND_REVIEW_INDEX = 1;
 	static final int BOARD_INDEX = 2;
-	static final String TextureNames[] = { "background-tile" ,"background-review-tile", "board-notext"};
+	static final int PLAYMAT_INDEX = 3;
+	static final String TextureNames[] = { "background-tile" ,"background-review-tile", "board-notext","PlayMat"};
     // some general constants that might not always be
     static final int MAX_WORKERS = 4;
     static final int STARTING_RECRUITS = 4;
@@ -609,8 +610,6 @@ private Color playerBackground[] = {
     	// can intrude too.
     	G.SetRect(goalRect, boardX, boardBottom-stateH,boardW,stateH);      
     	
-    	
-
         setProgressRect(progressRect,goalRect);
         positionTheChat(chatRect,chatBackgroundColor,rackBackGroundColor);
     }
@@ -670,7 +669,19 @@ private Color playerBackground[] = {
     	  textures[BOARD_INDEX].centerImage(gc, brect);
     	  if(gc!=null) { drawDecorations(gc,gb,brect); }
       }
-      
+      if(isIIB())
+      {
+      	int boardX = G.Left(brect);
+      	int boardY = G.Top(brect);
+      	int boardW = G.Width(brect);
+  		int boardH = G.Height(brect);
+    	double cardzone[] = bb.cardArea;
+    	int x0 = boardX+(int)(boardW*cardzone[0]/100);
+    	int x1 = boardX+(int)(boardW*cardzone[2]/100);
+    	int y0 = boardY+(int)(boardH*cardzone[1]/100);
+    	int y1 = boardY+(int)(boardH*cardzone[3]/100);
+    	EuphoriaChip.CardMarket.getImage().centerImage(gc, x0,y0,x1-x0,y1-y0);
+      }
     }
     private void drawDecorations(Graphics gc, EuphoriaBoard gb,Rectangle brect)
    {	GC.setFont(gc,standardBoldFont());
@@ -986,6 +997,7 @@ private Color playerBackground[] = {
     private void framePlayer(Graphics gc,EPlayer p,Rectangle r)
     {
      	GC.fillRect(gc,playerBackground[p.color.ordinal()],r);
+     	//EuphoriaChip.PlayMat.getImage().centerImage(gc,r);
     	GC.frameRect(gc,Color.black,r);
 
     }
@@ -1233,6 +1245,7 @@ private Color playerBackground[] = {
     	}
     	
      }
+    boolean isIIB() { return bb.variation.isIIB(); }
     private EuphoriaChip popupDisplay = null;
     private int popupDisplay_x = 0;
     private int popupDisplay_y = 0;
@@ -1283,18 +1296,26 @@ private Color playerBackground[] = {
 				hit = cell.drawStack(gc,this,highlight,CELLSIZE,xpos,ypos,0,-0.25,0.25,null);
     			break;
     		case ArtifactDiscards:
+    			{
     			cell.defaultScale = CELLSIZE;
+    			if(isIIB())
+    				{ ypos+= CELLSIZE*2.4; 
+    				  xpos -= CELLSIZE/3;
+    				}
     			if(cell.height()==0)
     			{
     				hit = drawCardProxy(gc,highlight,CELLSIZE,cell,xpos,ypos,ArtifactChip.CardBlank,0.01,0.0,null);
     			}
     			else {
     				hit = cell.drawStack(gc,this,highlight,CELLSIZE,xpos,ypos,0,0.0,0.0,null);
-    			}
+    			}}
     			break;
     		case ArtifactDeck:
+    			if(!isIIB())
+    			{
 				cell.defaultScale = CELLSIZE;
     			hit = drawCardProxy(gc,highlight,CELLSIZE,cell,xpos,ypos,ArtifactChip.CardBack,0.01,0.0,null);
+    			}
     			break;
     		case MarketBasket:
 				cell.defaultScale = CELLSIZE;
@@ -1786,11 +1807,16 @@ private Color playerBackground[] = {
     		case CardOrGold:
     		case CardOrStone:
     		case CardOrClay:  
+    		case CardAndStone:
+    		case CardAndGold:
+    		case CardAndClay:
        		case Resource:
     		case IcariteInfluenceAndResourcex2:
-      		   	zoom = gb.resourceArea;
+      		   	zoom = isIIB() ? gb.resourceArea_IIB : gb.resourceArea;
       		   	break;
     		case Commodity:
+    		case Commodityx2:
+    		case Commodityx3:
     		case WaterOrEnergy:
     		case KnowledgeOrFood:
     		case MoraleOrEnergy:
@@ -1807,6 +1833,9 @@ private Color playerBackground[] = {
     		case WaterOrStone:
       			 zoom = gb.commodityAndResourceArea;
       			 break;
+       		case IcariteInfluenceAndCardx2:	// in IIB, taking a card requires an interaction
+       		case Artifact:
+       			zoom = gb.cardArea;
     		}
     		break;
     	case PayForOptionalEffect:
@@ -1818,7 +1847,10 @@ private Color playerBackground[] = {
     	case ConfirmUseMwicheOrContinue:
     	case ConfirmUseJacko:
     	case ConfirmPayCost:
-    		switch(gb.pendingCost())
+    		Cost pend = gb.pendingCost();
+    		if(pend==null) { bb.p1("Pending cost shouldn't be null"); }
+    		else
+    		switch(pend)
     		{
     		
     		// dilemma costs
@@ -1827,10 +1859,6 @@ private Color playerBackground[] = {
      		case BoxOrCardx2:
     		case BalloonsOrCardx2:
      		case BifocalsOrCardx2:
-      		case Blissx4_Card:
-    		case Foodx4_Card:
-    		case Energyx4_Card:
-    		case Waterx4_Card:
       		case BookOrCardx2:
        		case Card:
        		case Artifact:
@@ -1845,18 +1873,14 @@ private Color playerBackground[] = {
        		case Artifactx3:
        		case Artifactx2:
        		case Morale_Artifactx3:
-       		case Mostly_Artifactx3:
+
      			zoom = gb.cardArea;
           		costIncludesArtifacts = true;
 
      			break;
-    		case Blissx4_Resource:
-     			zoom = gb.resourceArea;
-    			break;
        		case Commodity_Bear:
     		case Commodity_Bifocals:
     		case Bliss_Commodity:	// breeze bar and sky lounge
-    		case Mostly_Bliss_Commodity:
     			zoom = gb.commodityArea;
  
     			break;
@@ -1879,6 +1903,7 @@ private Color playerBackground[] = {
       	return(null);
       	}
     }
+    
     public boolean zoomIsActive() { return(startZoom>0); }
 
     int gameLogScroll = 0;

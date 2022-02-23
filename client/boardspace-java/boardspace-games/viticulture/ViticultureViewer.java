@@ -2631,8 +2631,8 @@ private void drawPlayerBoard(Graphics gc,
     			Color.black,null,s.get(MaxWineValueMessage,""+maxWineValue));
     	
     	int xstep = step*3/2;
-		showOtherWines(gc,pb,highlightAll,resetState,
-				new Rectangle(x+xstep,y+h-xstep,xleft-x-xstep,xstep),targets);
+		showOtherWines(gc,gb,pb,null,highlightAll,resetState,
+				new Rectangle(x+xstep,y+h-xstep,xleft-x-xstep,xstep),targets,StockArt.Checkmark);
 
 		Rectangle makeRect = new Rectangle((int)(x+0.65*w),(int)(y+0.85*h),(int)(0.25*w),(int)(0.08*h));
     	
@@ -2700,6 +2700,7 @@ private void drawPlayerBoard(Graphics gc,
      	int h = w/2;
      	int x = cx-w/2;
      	int y = cy-h/2;
+     	StockArt mark = StockArt.Checkmark;
      	Rectangle tradeRect = new Rectangle(x,y,w,h);
 
        ViticultureChip.Scrim.image.stretchImage(gc, tradeRect); 
@@ -2773,7 +2774,7 @@ private void drawPlayerBoard(Graphics gc,
     			}
     		if(pb.selectedCells.contains(reverse.get(m)))
     		{
-    			StockArt.Checkmark.drawChip(gc,this,step/2,boxx+step+step/4,y+step+step/4,null);
+    			mark.drawChip(gc,this,step/2,boxx+step+step/4,y+step+step/4,null);
     		}
        	
  
@@ -2781,6 +2782,7 @@ private void drawPlayerBoard(Graphics gc,
     	}
     	String message = null;
     	String noMessage = null; 
+    	boolean selectable = true;
     	switch(state)
     	{
     	case DiscardGrapeAndWine:
@@ -2797,17 +2799,20 @@ private void drawPlayerBoard(Graphics gc,
     		message = SelectWineAge;
     		break;
     	case Discard2GrapesFor3VP:
+    		selectable = false;
     		message = DiscardTwoMessage;
     		noMessage = NoDiscardMessage;
     		break;
     		
-    	case DiscardWineFor3VP:
-    	case DiscardGrapeOrWine:    	
+    	case DiscardGrapeFor2VP:
     	case DiscardGrapeFor3And1VP:
+    		selectable = false;
+			//$FALL-THROUGH$
+		case DiscardWineFor3VP:
+    	case DiscardGrapeOrWine:    	
     	case DiscardWineFor4VP:
     	case DiscardWineFor2VP:
     	case DiscardWineForCashAndVP:
-    	case DiscardGrapeFor2VP:
     		message = DiscardOneMessage;
     		noMessage = NoDiscardMessage;
     		break;
@@ -2837,7 +2842,7 @@ private void drawPlayerBoard(Graphics gc,
 			GC.Text(gc, true, x, y+step/2, w,step*3/2,Color.black,null,HaveNoneMessage);
 		}
 		Rectangle wrect = new Rectangle(x+step,y+h-step,w-step,step);
-		int wx = showOtherWines(gc,pb,highlightAll,state,wrect,targets);
+		int wx = showOtherWines(gc,gb,pb,selectable ? highlight : null,highlightAll,state,wrect,targets,mark);
 		G.SetLeft(wrect,wx);
 		G.SetWidth(wrect, w-(wx-x));
 		showWineOrders(gc,gb,pb,highlight,wrect,highlight==null);
@@ -2854,8 +2859,8 @@ private void drawPlayerBoard(Graphics gc,
     }
     
    // show the wines not in "targets" in the given rectangle
-    private int showOtherWines(Graphics gc,PlayerBoard pb,HitPoint highlightAll,
-    		ViticultureState state,Rectangle r,Hashtable<ViticultureCell,Viticulturemovespec>targets)
+    private int showOtherWines(Graphics gc,ViticultureBoard gb,PlayerBoard pb,HitPoint highlight,HitPoint highlightAll,
+    		ViticultureState state,Rectangle r,Hashtable<ViticultureCell,Viticulturemovespec>targets,StockArt mark)
     {
     	CellStack otherwines = new CellStack();
     	accumulate(pb.whiteWine,otherwines,targets);
@@ -2868,7 +2873,15 @@ private void drawPlayerBoard(Graphics gc,
 		for(int i=0;i<otherwines.size(); i++,left+=step/3)
 			{
 			ViticultureCell cell = otherwines.elementAt(i);
-			drawStack(gc,state,null,cell,null,highlightAll,step*3/4,left,y+step*2/3,0,0,0,""+(cell.row+ViticultureChip.minimumWineValue(cell.rackLocation())));
+			if(drawStack(gc,state,null,cell,highlight,highlightAll,step*3/4,left,y+step*2/3,0,0,0,""+(cell.row+ViticultureChip.minimumWineValue(cell.rackLocation()))))
+				{
+				commonMove m = new Viticulturemovespec(MOVE_SELLWINE,cell,gb.whoseTurn);
+				highlight.hitObject = m;
+				}
+    		if(pb.selectedCells.contains(cell) && (mark!=null))
+    		{
+    			mark.drawChip(gc,this,step/4,left,y+4*step/5,null);
+    		}
 			}
 		return(left);
     }
@@ -3225,7 +3238,10 @@ private void drawPlayerBoard(Graphics gc,
         boolean cardBacks = false;
         boolean apCards = false;
         boolean showFields = true;
-        boolean swapMode = false;
+     	ViticultureState state = gb.resetState;
+     	boolean swapMode = false;
+        boolean isDiscard = state.discardCards();
+        StockArt mark = (isDiscard?StockArt.Exmark:StockArt.Checkmark);
         boolean quickExit = false;
         PlayerBoard pb = gb.getCurrentPlayerBoard();
        	ViticultureCell cards = pb.cards;
@@ -3273,7 +3289,6 @@ private void drawPlayerBoard(Graphics gc,
 			break;
 		default: G.Error("Not expecting %s",uimode);
         }
-     	ViticultureState state = gb.resetState;
      	boolean cardAndWineMode = false;
      	boolean destroyMode = false;
      	boolean uncensored = false;
@@ -3465,7 +3480,7 @@ private void drawPlayerBoard(Graphics gc,
        	{	
        		int lleft = mleft+step+step/3;
        		Rectangle wr = new Rectangle(lleft,top-step/3,totalW-lleft,step/2+step/3);
-    		showOtherWines(gc,pb,highlightAll,state,wr,targets);
+    		showOtherWines(gc,gb,pb,highlight,highlightAll,state,wr,targets,mark);
 
        	}
 		
@@ -3545,8 +3560,8 @@ private void drawPlayerBoard(Graphics gc,
 				ViticultureChip ch = cardDisplay1.chipAtIndex(i);
 				int xpos = xp+cardStep+cardStep*i;
 				if(discards.containsChip(ch)) {
-					boolean isDiscard = state.discardCards();
-		     		(isDiscard?StockArt.Exmark:StockArt.Checkmark).drawChip(gc,this,cardStep/2,xpos,cardy2,null);
+					
+		     		mark.drawChip(gc,this,cardStep/2,xpos,cardy2,null);
 				}
 				Rectangle sr = new Rectangle(xpos-cardStep/2,cardy2+cardStep/2,cardStep,cardStep/3);
 				viewCard(highlight,sr,ch);
@@ -3595,8 +3610,7 @@ private void drawPlayerBoard(Graphics gc,
 			ViticultureChip ch = cardDisplay.chipAtIndex(i);
 			int xpos = xp+cardStep+cardStep*i;
 			if(discards.containsChip(ch)) {
-				boolean isDiscard = state.discardCards();
-	     		(isDiscard?StockArt.Exmark:StockArt.Checkmark).drawChip(gc,this,cardStep/2,xpos,cardY,null);
+	     		mark.drawChip(gc,this,cardStep/2,xpos,cardY,null);
 			}
 			Rectangle sr = new Rectangle(xpos-cardStep/2,cardY+cardStep/2,cardStep,cardStep/3);
 			viewCard(highlight,sr,ch);
@@ -3618,8 +3632,8 @@ private void drawPlayerBoard(Graphics gc,
 					highlight.hitCode = ViticultureId.WineDisplay;
 				}
 				if(pb.selectedCells.contains(matchingCell))
-				{	boolean isDiscard = state.discardCards();
-	     			(isDiscard?StockArt.Exmark:StockArt.Checkmark).drawChip(gc, this, fstep/3, fxp, fieldY+fstep/4,null);
+				{	
+	     			mark.drawChip(gc, this, fstep/3, fxp, fieldY+fstep/4,null);
 				}
 			}
 			GC.Text(gc, true, fieldX-step/4, yp, fieldW,step/2,Color.black,null,s.get(AvailableWinesMessage));
@@ -5203,6 +5217,10 @@ private void drawPlayerBoard(Graphics gc,
         	break;
         
         case WineSelection:	// also player selection
+        case WhiteWine:
+        case RedWine:
+        case RoseWine:
+        case Champaign:
         	PerformAndTransmit(((Viticulturemovespec)hp.hitObject).moveString());
         	break;
         case WineBin:	// display bin for wines being made

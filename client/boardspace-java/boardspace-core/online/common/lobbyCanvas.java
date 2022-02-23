@@ -306,9 +306,10 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	{	addEvent(str);
 	}
 	private Color SessionColor(Session sess)
-	{ if(sess.submode==Session.JoinMode.Tournament_Mode) { return(tourneyBlue); }
+	{ if(sess.getSubmode()==Session.JoinMode.Tournament_Mode) { return(tourneyBlue); }
 	  switch(sess.mode)
-	  {case Master_Mode: return(User.PlayerClass.Master.color);
+	  {case Tournament_Mode: return tourneyBlue;
+	   case Master_Mode: return(User.PlayerClass.Master.color);
 	   case Chat_Mode: return(Color.blue);
 	   default: return(Color.white);
 	  }
@@ -816,7 +817,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	      GC.translate(inG,0,voff);
 	      G.translate(hp, 0, -voff);
 	      switch(session.mode)
-	        {
+	        { case Tournament_Mode:
 	          case Master_Mode:
 	          case Unranked_Mode:
 	          case Game_Mode: 
@@ -893,7 +894,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
  
 
 	void DrawSpectateButton(Graphics inG,Session session,String statemessage,boolean rejoin)
-	{ boolean tournament = session.submode==Session.JoinMode.Tournament_Mode;
+	{ boolean tournament = session.getSubmode()==Session.JoinMode.Tournament_Mode;
 	  if (/* now ok any time (my.sessionLocation==0) && */
 	        (rejoin || !session.playingInSession)
 	          && (lobby.startingSession != session))
@@ -973,7 +974,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	    				&& G.allowRobots()
 	    				&& (session.includeRobot()!=null)
 	    				&& (playersInSession<maxp) 
-	    				&& (G.TimedRobots() || !session.submode.isTimed())
+	    				&& (G.TimedRobots() || !session.getSubmode().isTimed())
 	    				&& ((session.resetRobotname(false)
 	    						&& session.canIUseThisRobot(session.currentRobot))
 	    						|| G.debug()
@@ -1104,7 +1105,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	  {	changeRoom = sess;
 	    gameTypeMenu.newPopupMenu(this,deferredEvents);
 	    GameInfo currentGame = sess.currentGame;
-	    ESet typeClass = sess.getGameTypeClass(isTestServer,isPassAndPlay());
+	    ESet typeClass = sess.getGameTypeClass(isTestServer,false);
 	    GameInfo gameNames[] = currentGame.groupMenu(typeClass,0);
 	    int n_games = gameNames.length;
 	    
@@ -1148,7 +1149,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	  changeRoom=sess;
 	  variationMenu.newPopupMenu(this,deferredEvents);
 	  GameInfo currentGame = sess.currentGame;
-	  ESet typeClass = sess.getGameTypeClass(isTestServer,isPassAndPlay());
+	  ESet typeClass = sess.getGameTypeClass(isTestServer,false);
 	  //(sess.mode == Session.Mode.Review_Mode)
 	   	//	? new ESet(GameInfo.ES.review,GameInfo.ES.game)
 	   	//	: new ESet(GameInfo.ES.game);  
@@ -1248,7 +1249,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	    }
 	    if((u!=null)
 	       && (name!=null) 
-	       && ((session.mode==Session.Mode.Master_Mode)||(session.mode==Session.Mode.Game_Mode))
+	       && session.mode.isRanked()
 	       && !gameInProgress)
 	       { String rankstring = bestRankString(u);
 	         if((rankstring!=null)&& !"".equals(rankstring))
@@ -1302,13 +1303,14 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	    boolean canAddRobot = session.canAddRobot();
 	  	int specheight = requiredSpectatorHeight(session,(int)(10*SCALE),SPECTATORCOLUMNWIDTH);
 	  	Session.SessionState state = session.state;
-	  	boolean tournamentMode = session.submode==JoinMode.Tournament_Mode;
+	  	boolean tournamentMode = session.getSubmode()==JoinMode.Tournament_Mode;
 	    boolean imInThisSession = session.containsUser(my);
 	    // set color and state message
 	    String statemessage = state.message;
 	    Color sc = state.color;
 	    boolean rejoin = false;
 	    boolean gameInProgress = false;
+	    boolean editable = session.editable();
 	    switch(state)
 	    {
 	    case Idle:
@@ -1330,7 +1332,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	    	break;
 	    default: break;
 	    }
-	  	boolean timedMode = !gameInProgress && session.submode.isTimed();
+	  	boolean timedMode = !gameInProgress && session.getSubmode().isTimed();
 	  	int extraSpacing = (G.TimeControl() && timedMode) ? G.Height(timeControlRect) : 0;
 	  	if(!gameInProgress) { extraSpacing = extraSpacing*2; }
 	  	int height = Math.min(GAMEHEIGHT,STANDARDGAMEHEIGHT 
@@ -1374,10 +1376,10 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	    {  
 	       GC.Text(inG,false,SPECTATORTITLEXOFFSET,PLAYERTITLEYOFFSET-15,GAMEIMAGEWIDTH-SPECTATORTITLEXOFFSET-5,15,
 	        Color.black,null,statemessage);
-	      if((session.state==Session.SessionState.Idle)
-	        && (playersInSession>0)
-	          ) 
-	      drawInviteModeBox(inG,session);  
+	      if(session.state==Session.SessionState.Idle) 
+	      	{
+	    	  drawInviteModeBox(inG,session);  
+	      	}
 
 	     }
 	  else if(!"".equals(statemessage))
@@ -1410,7 +1412,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
         }
       }
 
-	  if(playersInSession>0)
+	  if((playersInSession>0)||tournamentMode)
 	  {	  
 		  if(session.state == Session.SessionState.Idle)
 		  {
@@ -1456,13 +1458,13 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 		   {
 		   msg = s.get(msg);
 		   boolean light = (highlightedSession==session)
-				   &&(session.iOwnTheRoom)
+				   && editable
 				   &&(highlightedItem==LobbyId.highlight_selectrobot);
 		   activeSelectRobotRect = botRect;
 		   int w = GC.Text(inG,false,botRect,
 				   light ? AttColor : Color.black,
 				  null,msg);
-		   if(session.iOwnTheRoom)
+		   if(editable)
 		   {	int h = G.Height(botRect);
 		      	StockArt.Pulldown.drawChip(inG,this,h,
 		      			G.Left(botRect)+w+h/2,
@@ -1473,7 +1475,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 
 	  }
 	  }
-	  if (imReady && session.iOwnTheRoom )
+	  if (imReady && editable)
 	    { 
 		  Color startcolor = Color.black;
 	      boolean canrobo = (playersInSession<maxPlayers);
@@ -1537,7 +1539,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	  	  // we don't want to pass hp here because the box highlighting is nonstandard for the lobby
 	  	  // some investigation into using the standard HitCode based tracking show it's even more
 	  	  // of a nightmare than is obvious.
-	  	  session.timeControl().drawTimeControl(inG,this,session.iOwnTheRoom,null,timeControlRect);	  	  
+	  	  session.timeControl().drawTimeControl(inG,this,editable,null,timeControlRect);	  	  
 		  GC.translate(inG, 0, bottomSpacing);
 		  G.translate(hp, 0,-bottomSpacing);
 	  }
@@ -1589,9 +1591,9 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	private void drawInviteModeBox(Graphics inG,Session session)
 	{  boolean hi = (highlightedSession==session) && (highlightedItem == LobbyId.highlight_submodebox);
 	  GC.setFont(inG,boldBasicFont);
-	  String name = s.get(session.submode.name);
+	  String name = s.get(session.getSubmode().name);
 	  int w = GC.Text(inG,true,inviteModeRect, 	hi  ? AttColor : Color.blue,null, name);
-	  if(session.iOwnTheRoom)
+	  if(session.iOwnTheRoom && (session.mode!=Session.Mode.Tournament_Mode))
 	  {
 	  int h = G.Height(inviteModeRect);
 	  StockArt.Pulldown.drawChip(inG,this,h,G.centerX(inviteModeRect)+(w+h)/2,G.centerY(inviteModeRect),"");  
@@ -1603,7 +1605,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	   GC.setFont(inG,bigFont);
 	   if(session.currentGame!=null)
 	     {String gname = session.currentGame.variationName;
-	      boolean newb = isNewbieOrGuest() && session.canChangeGameInfo(isPassAndPlay());
+	      boolean newb = isNewbieOrGuest() && session.canChangeGameInfo();
 	      {
 	      boolean highlight = ((highlightedSession==session)
 					&& (highlightedItem == LobbyId.highlight_gametype));
@@ -2011,7 +2013,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	private boolean inChangeGame(Session sess,int localX,int localY)
 	{  return(
 		    gameTypeRect.contains(localX,localY)
-		    && sess.canChangeGameInfo(isPassAndPlay())
+		    && sess.canChangeGameInfo()
 			);
 	}
 	private boolean ImMuted(Session sess)
@@ -2029,7 +2031,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 
 	private boolean inChangeSubgame(Session sess,int localX,int localY)
 	{  return(subgameSelectRect.contains(localX,localY)
-				&& sess.canChangeGameInfo(isPassAndPlay()));
+				&& sess.canChangeGameInfo());
 	}
 	
 	private boolean canChangeSessionType(Session sess)
@@ -2130,7 +2132,8 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	  return((sess.state==Session.SessionState.Idle)
 	      && (sess.numberOfPlayers()>=1)
 	      &&(users.primaryUser().session()==sess)
-	      && sess.iOwnTheRoom
+	      && sess.editable()
+	      && (sess.mode!=Session.Mode.Tournament_Mode)
 	      && inviteModeRect.contains(localX,localY)
 	      ) ;
 	}  
@@ -2157,8 +2160,8 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	}
 	public boolean inChangeTimeControl(Session sess,int localX,int localY)
 	{	if(G.TimeControl() && isPendingSession(sess)
-			&& sess.submode.isTimed()
-			&& sess.iOwnTheRoom
+			&& sess.getSubmode().isTimed()
+			&& sess.editable()
 			&& sess.timeControl().inModeRect(localX,localY))
 		{
 			return(true);
@@ -2167,8 +2170,8 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	}
 	public boolean inChangeBaseTime(Session sess,int localX,int localY)
 	{	if(G.TimeControl() && isPendingSession(sess)
-			&& sess.submode.isTimed()
-			&& sess.iOwnTheRoom
+			&& sess.getSubmode().isTimed()
+			&& sess.editable()
 			&& sess.timeControl().inMainRect(localX,localY))
 		{
 			return(true);
@@ -2177,8 +2180,8 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	}
 	public boolean inChangeExtraTime(Session sess,int localX,int localY)
 	{	if(G.TimeControl() && isPendingSession(sess)
-			&& sess.submode.isTimed()
-			&& sess.iOwnTheRoom
+			&& sess.getSubmode().isTimed()
+			&& sess.editable()
 			&& sess.timeControl().inExtraRect(localX,localY))
 		{
 			return(true);
@@ -2191,7 +2194,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	  if( isPendingSession(sess))
 	    {
 		// in tournament mode, add extra spacing for the time management info
-		int off = (G.TimeControl() && sess.submode.isTimed()) ? G.Height(timeControlRect)*2 : 0;
+		int off = (G.TimeControl() && sess.getSubmode().isTimed()) ? G.Height(timeControlRect)*2 : 0;
 		int localY = localY0-off;
 		for (int playerSpaceIndex=0;playerSpaceIndex<Session.MAXPLAYERSPERGAME;playerSpaceIndex++) 
 	    {
@@ -2214,9 +2217,9 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	}	
 	public boolean iCanEnterRoom(Session sess)
 	{	return( sess.gameIsAvailable()
-				&& ((sess.mode!=Session.Mode.Master_Mode) 
-				&& (sess.pendingMode!=Session.Mode.Master_Mode))
-					|| (users.primaryUser().getPlayerClass()==User.PlayerClass.Master));
+				&& ((sess.mode!=Session.Mode.Master_Mode)
+						&& (sess.pendingMode!=Session.Mode.Master_Mode))
+				|| (users.primaryUser().getPlayerClass()==User.PlayerClass.Master));
 	}
 	
 	PopupManager timeControlKindMenu = null;
@@ -2432,7 +2435,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	        }
 	      else if(inSetPreferredGame(ex,ey))
 	      	{ Session sess = Sessions[0];
-	      	  sess.mode = Session.Mode.Review_Mode; 
+	      	  sess.setMode(Session.Mode.Review_Mode,false); 
 	      	  changeGameType(sess,ex,ey);
 	      	}
 	      	else if((user=inAnyUserToken(ex,ey))!=null)
@@ -2724,7 +2727,7 @@ public Session findSessionWithGame(GameInfo g,boolean empty)
 		if((s.mode==Session.Mode.Game_Mode)
 		   && (s.currentGame.gameName.equalsIgnoreCase(gamename))
 		   && (s.state==Session.SessionState.Idle)
-		   && (s.submode==Session.JoinMode.Open_Mode))
+		   && (s.getSubmode()==Session.JoinMode.Open_Mode))
 		{	int np = s.numberOfPlayers();
 			if( (np<s.currentGame.maxPlayers)
 				&& (empty ? np==0 : np>0))

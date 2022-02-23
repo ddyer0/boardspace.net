@@ -1219,7 +1219,8 @@ public class Game extends commonPanel implements PlayConstants,DeferredEventHand
         	int haspw = G.IntToken(myST);
         	switch(haspw)
         	{
-        	default: throw G.Error("Not expecting pw %s",haspw);
+        	default: 
+        		throw G.Error("Not expecting pw %s",haspw);
         	case 0:	DoIntroduction(tempID,myST); break;
         	case 1: DoNewPlayer(tempID,myST); break;
         	case 2: DoNewRobot(tempID,myST);	break;

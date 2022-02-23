@@ -79,7 +79,7 @@ action will be taken in the spring.
   
  */
 class ViticultureBoard extends RBoard<ViticultureCell> implements BoardProtocol,ViticultureConstants
-{	static int REVISION = 150;			// 100 represents the initial version of the game
+{	static int REVISION = 151;			// 100 represents the initial version of the game
 										// games with no revision information will be 100
 										// revision 101, correct the sale price of champagne to 4
 										// revision 102, fix the cash distribution for the cafe
@@ -146,7 +146,7 @@ class ViticultureBoard extends RBoard<ViticultureCell> implements BoardProtocol,
 										// revision 149 fixes an interaction of mafioso and soldato
 										//   and fixes soldato cost of max 3 if soldatos are on the overflow space
 										// revision 150 fixed scholar "both" option with oracle drawing cards
-
+										// revision 151 makes the "sell wines" overlay behave as radio buttons
 public int getMaxRevisionLevel() { return(REVISION); }
 	PlayerBoard pbs[] = null;		// player boards
 	public PlayerBoard getPlayerBoard(int n) 
@@ -1698,6 +1698,15 @@ public int getMaxRevisionLevel() { return(REVISION); }
     		if(revision>=141) { v = false; }
     		}
     		break;
+    	case DiscardWineFor2VP:
+    		if (revision>=151)
+    		{
+    		PlayerBoard pb = getCurrentPlayerBoard();
+    		if(pb.selectedCells.size()>1) { v = false; }
+    		break;
+    		}
+    		// old games fall into the old default clause
+			//$FALL-THROUGH$
     	default: 
     		if((revision>=127) && underHarvest()) 
     			{ // don't declare underharvest as automatically done states.
@@ -5336,7 +5345,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
    			nextState = ViticultureState.Make2WinesVP;
     		break;
     	case 23: // scholar
-    		//p1("Scholar");
+    		if(resolution==null) { p1("Scholar null"); }
     		switch(resolution)
     		{	
     		case Choice_A:
@@ -5346,15 +5355,14 @@ public int getMaxRevisionLevel() { return(REVISION); }
     		case Choice_AandB:
        			//p1("scholar aandb");
     			changeScore(pb,-1,replay,Scholar,card,ScoreType.ScoreBlue);
-    			if(revision>=150)
-       			{	
+    			nextState = drawCards(2,purpleCards,pb,replay,m);
+    			
+    			if((nextState!=null) && (revision>=150))
+       			{	//p1("scholar a and b and oracle");
        				addContinuation(Continuation.TrainScholarWorker); 
-       				// if an oracle is drawing this will have a nextState
-       				nextState = drawCards(2,purpleCards,pb,replay,m);
        				break;
        			}
-    			// pre-150, this let the oracle draw 3 and keep them.
-       			nextState = drawCards(2,purpleCards,pb,replay,m);
+    			//p1("scholar a and b normal");
 				//$FALL-THROUGH$
 			case Choice_B:
 	   			//p1("scholar b");
@@ -6130,6 +6138,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
 			ViticultureCell field = pb.selectedCells.pop();
 			ViticultureCell vine = pb.vines[field.row];
 			ViticultureChip vineCard = pb.cards.removeChip(card);
+			flashChip = vineCard;
 			vine.addChip(vineCard);
 			if(replay!=replayMode.Replay)
 				{
@@ -6425,13 +6434,15 @@ public int getMaxRevisionLevel() { return(REVISION); }
    			while(pb.selectedCells.size()>0)
         		{
         		sold = pb.selectedCells.pop();
+        		if(sold.topChip()!=null)
+        		{
         		sold.removeTop();
 	        	if(replay!=replayMode.Replay)
 	    		{
 	        		ViticultureCell dest = getCell(sold.rackLocation(),'@',0);
 	        		animationStack.push(sold);
 	        		animationStack.push(dest);
-	    		}}
+	    		}}}
 
         	switch(resetState)
         	{
@@ -7549,6 +7560,45 @@ public int getMaxRevisionLevel() { return(REVISION); }
         }
         return(nwines);
 	}
+	
+	boolean addToSelectedCells(CellStack selected,ViticultureCell src,int nCellsTargeted,
+			boolean oneOrTwo,boolean grapeAndWine)
+	{
+			boolean radio = revision>=151;	// treat the selections as radio buttons
+			int nGrapes = 0;
+			int nWines = 0;
+ 			ViticultureCell removed = selected.remove(src,false);
+			if(nCellsTargeted==1) { selected.clear(); }		// enforce a single selection 
+			if(removed==null) { selected.push(src); }
+			if(  radio
+					&& (removed==null) 
+					&& grapeAndWine 
+					&& (selected.size()>1))
+			{	boolean srcIsWine = src.rackLocation().isWine();
+				// make sure only one of each type is selected
+				for(int lim = selected.size()-1; lim>=0; lim--)
+				{
+					ViticultureCell c = selected.elementAt(lim);
+					if((c!=src) && c.rackLocation().isWine()==srcIsWine)
+					{
+						selected.remove(lim);
+					}
+				}
+			}
+   			for(int lim=selected.size()-1; lim>=0; lim--)
+   			{
+   				ViticultureCell c = selected.elementAt(lim);
+   				if(c.topChip()==null) { p1("no chip"); }
+   				boolean isWine = c.rackLocation().isWine();
+   				if(isWine) { nWines++; } else { nGrapes++; }
+   			}
+   			
+			boolean confirm = (((selected.size()==nCellsTargeted)
+									|| (oneOrTwo && selected.size()==1))
+								&& (!grapeAndWine || ((nGrapes==1) && (nWines==1))));
+			return(confirm);
+	}
+	
     public boolean Execute(commonMove mm,replayMode replay)
     {	Viticulturemovespec m = (Viticulturemovespec)mm;
         if(replay!=replayMode.Replay) { animationStack.clear(); }
@@ -7574,6 +7624,18 @@ public int getMaxRevisionLevel() { return(REVISION); }
         		setState(ViticultureState.Confirm);
         	}
         	break;
+        	
+        case MOVE_SELLWINE:       	
+        	if(revision<151)
+        	{
+ 			   CellStack dest = pb.selectedCells;
+ 			   ViticultureCell wine = getCell(m.source,m.from_col,m.from_row);
+ 			   ViticultureCell removed = dest.remove(wine,false);
+ 			   if(removed==null) { dest.push(wine); }
+ 			   setState(dest.size()==1 ? ViticultureState.Confirm : resetState);
+ 	        	break;
+        	}
+			//$FALL-THROUGH$
         case MOVE_AGEONE:
         case MOVE_DISCARD:
         	{
@@ -7639,6 +7701,14 @@ public int getMaxRevisionLevel() { return(REVISION); }
            			switch(resetState)
     				{
            			default: throw G.Error("Not expecting %s", resetState);
+           			case Sell1Wine:
+           			case DiscardWineFor2VP:
+           			case DiscardWineFor4VP:
+           			case DiscardWineForCashAndVP:
+           			case DiscardWineFor3VP:
+           			case Sell1WineOptional:
+           				nCellsTargeted = 1;
+           				break;
            			case Age2Once:
            				nCellsTargeted = 2;
            				oneOrTwo = true;
@@ -7662,40 +7732,12 @@ public int getMaxRevisionLevel() { return(REVISION); }
     					nCellsTargeted = 2;
     					break;
     				}        		    
-        			CellStack selectedCells = pb.selectedCells;
-        			int nGrapes = 0;
-        			int nWines = 0;
-         			ViticultureCell removed = selectedCells.remove(src,false);
-        			if(nCellsTargeted==1) { selectedCells.clear(); }		// enforce a single selection 
-        			if(removed==null) { selectedCells.push(src); }
+         			boolean conf = addToSelectedCells(pb.selectedCells,src,nCellsTargeted,oneOrTwo,grapeAndWine)
+							&& ((resetState!=ViticultureState.Age2Once) || canAgeSelected(pb))
+							&& (pb.selectedCards.height()==nCardsTargeted);
         			
-           			for(int lim=selectedCells.size()-1; lim>=0; lim--)
-           			{
-           				ViticultureCell c = selectedCells.elementAt(lim);
-           				if(c.topChip()==null) { p1("no chip"); }
-           				ChipType type = c.topChip().type;
-           				switch(type)
-           				{	
-           				case WhiteGrape:
-           				case RedGrape: 
-           					nGrapes++;
-           					break;
-           				case WhiteWine:
-           				case RedWine:
-           				case RoseWine:
-           				case Champagne:
-           					nWines++;
-           					break;
-           				default: G.Error("Not expecting %s", type);
-           				}
-           			}
            			
-        			boolean confirm = (((selectedCells.size()==nCellsTargeted)
-        									|| (oneOrTwo && selectedCells.size()==1))
-        								&& ((resetState!=ViticultureState.Age2Once) || canAgeSelected(pb))
-        								&& (pb.selectedCards.height()==nCardsTargeted)
-        								&& (!grapeAndWine || ((nGrapes==1) && (nWines==1))));
-        			setState(confirm ? ViticultureState.Confirm : resetState);
+          			setState(conf ? ViticultureState.Confirm : resetState);
         			}
         			break;
         		default: G.Error("Not expecting %s",m.source);
@@ -7777,15 +7819,6 @@ public int getMaxRevisionLevel() { return(REVISION); }
         	m.currentWorker = chip;
         	if(G.debug()) { G.Assert(chip==null || (chip.type!=null && chip.color!=null),"currentworker bad");}
         	setState(pendingMoves.size()==1 ? ViticultureState.Confirm : resetState);
-        	}
-        	break;
-        case MOVE_SELLWINE:
-        	{
-			   CellStack dest = pb.selectedCells;
-			   ViticultureCell wine = getCell(m.source,m.from_col,m.from_row);
-			   ViticultureCell removed = dest.remove(wine,false);
-			   if(removed==null) { dest.push(wine); }
-			   setState(dest.size()==1 ? ViticultureState.Confirm : resetState);
         	}
         	break;
       	   
@@ -10155,6 +10188,7 @@ public void placeWorkerInAction(PlayerBoard pb,int action,int lastSlot,
 		break;
 		
 	case Discard3CardsAnd1WineFor3VP:	// 3 visitor cards and 1 wine
+		//p1("discard cards and wine");
 		if((generator==MoveGenerator.All) || (pb.selectedCells.size()==0)) 
 			{ addSellWineMoves(pb,all,MOVE_DISCARD,0); 
 			}
@@ -10451,10 +10485,12 @@ public void placeWorkerInAction(PlayerBoard pb,int action,int lastSlot,
 		addSwitchVineMoves(pb,all);
 		break;
 	case Discard2GrapesFor3VP:
+		//p1("discard 2 grapes");
 		addSellGrapeMoves(pb,all,2,generator);
 		break;
 	case DiscardGrapeFor3And1VP:
 	case DiscardGrapeFor2VP:
+		//p1("discard grape");
 		addSellGrapeMoves(pb,all,1,generator);
 		break;
 	case DiscardGrapeAndWine:	// ristorante
@@ -10468,6 +10504,7 @@ public void placeWorkerInAction(PlayerBoard pb,int action,int lastSlot,
 			//$FALL-THROUGH$
 		case RedGrape:
 		case WhiteGrape:
+			//p1("discard grape and");
 			addSellWineMoves(pb,all,MOVE_DISCARD,0);
 			break;
 		case Champagne:
@@ -10481,19 +10518,24 @@ public void placeWorkerInAction(PlayerBoard pb,int action,int lastSlot,
 		break;
 		}
 	case DiscardGrapeOrWine:
+		//p1("discard grape or");
 		addSellWineMoves(pb,all,MOVE_DISCARD,0);
 		addSellGrapeMoves(pb,all,1,generator);
 		break;
 	case DiscardWineFor4VP:
+		//p1("discard wine 4");
 		addSellWineMoves(pb,all,MOVE_SELLWINE,7);
 		break;
 	case DiscardWineFor2VP:
+		//p1("discard wine2");
 		addSellWineMoves(pb,all,MOVE_SELLWINE,0);
 		break;
 	case DiscardWineFor3VP:
+		//p1("discard wine3");
 		addSellWineMoves(pb,all,MOVE_SELLWINE,4);
 		break;
 	case DiscardWineForCashAndVP:
+		//p1("discard wine cash");
 		addSellWineMoves(pb,all,MOVE_SELLWINE,0);
 		for(int value = 9; value>0; value--)
 		{ 	

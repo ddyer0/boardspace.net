@@ -27,8 +27,9 @@ public class ArtifactChip extends EuphoriaChip implements EuphoriaConstants
 	public int typeMask()
 	{	return(1<<id.ordinal());
 	}
+	public static int allTypesMask() { return(0x3f); }
 	
-	private ArtifactChip(Artifact a,String c)
+	private ArtifactChip(Artifact a,String c,RecruitChip bene)
 	{	
 		super(artifactCardOffset+a.ordinal(),
 			artifactCardBaseName+a,
@@ -36,7 +37,9 @@ public class ArtifactChip extends EuphoriaChip implements EuphoriaConstants
 			artifactCardRandom.nextLong());
 		id = a;
 		name = c;
+		benefactor = bene;	// associated recruit for wild card use and bonus resources
 	}
+	public RecruitChip benefactor = null; 
 	private ArtifactChip(String a,int n,String c)
 	{	
 		super(artifactCardOffset+n,
@@ -50,12 +53,12 @@ public class ArtifactChip extends EuphoriaChip implements EuphoriaConstants
 	static boolean ImagesLoaded = false;
 	static ArtifactChip CardBack = new ArtifactChip("back",-1,"Card Back");
 	static ArtifactChip CardBlank = new ArtifactChip("blank",-2,"Card Blank");
-	static ArtifactChip Bear = new ArtifactChip(Artifact.Bear,"Choose true love");
-	static ArtifactChip Book = new ArtifactChip(Artifact.Book,"Read a Book");
-	static ArtifactChip Balloons = new ArtifactChip(Artifact.Balloon,"Help a Friend");
-	static ArtifactChip Bifocals = new ArtifactChip(Artifact.Bifocals,"Publish an Exposee");
-	static ArtifactChip Box = new ArtifactChip(Artifact.Box,"Let workers relax");
-	static ArtifactChip Bat = new ArtifactChip(Artifact.Bat,"Fight the Opressor");
+	static ArtifactChip Bear = new ArtifactChip(Artifact.Bear,"Choose true love",RecruitChip.MiroslavTheConArtist);
+	static ArtifactChip Book = new ArtifactChip(Artifact.Book,"Read a Book",RecruitChip.JavierTheUndergroundLibrarian);
+	static ArtifactChip Balloons = new ArtifactChip(Artifact.Balloon,"Help a Friend",RecruitChip.AlexandraTheHeister);
+	static ArtifactChip Bifocals = new ArtifactChip(Artifact.Bifocals,"Publish an Exposee",RecruitChip.MakatoTheForger);
+	static ArtifactChip Box = new ArtifactChip(Artifact.Box,"Let workers relax",RecruitChip.EkaterinaTheCheater);
+	static ArtifactChip Bat = new ArtifactChip(Artifact.Bat,"Fight the Opressor",RecruitChip.JoseThePersuader);
 	
 	static ArtifactChip allArtifacts[] = 
 		{

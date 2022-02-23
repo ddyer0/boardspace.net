@@ -18,7 +18,7 @@ public interface Config extends CommonConfig
 
    // if true, use the NativeSockets implementation for networking
     // to make the overall code structure more like the codename1 implementation
-   static final boolean USE_NATIVE_SOCKETS = false; 
+   static final boolean USE_NATIVE_SOCKETS = true; 
    public static final int standardDisplayDensity = 96;
  
    // dictionary defs are loaded from the same resource as the basic words

@@ -132,7 +132,9 @@ public class JumbulayaViewer extends CCanvas<JumbulayaCell,JumbulayaBoard> imple
         	// will be console chatter about strings not in the list yet.
         	JumbulayaConstants.putStrings();
         }
-        
+        MouseColors = new Color[]{Color.red,Color.green,Color.blue,Color.yellow};
+        MouseDotColors = new Color[]{ Color.white,Color.white,Color.white,Color.black};
+     
         String type = info.getString(OnlineConstants.GAMETYPE, JumbulayaVariation.Jumbulaya.name);
         // recommended procedure is to supply players and randomkey, even for games which
         // are current strictly 2 player and no-randomization.  It will make it easier when

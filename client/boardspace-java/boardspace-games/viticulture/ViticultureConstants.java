@@ -1078,6 +1078,19 @@ public interface ViticultureConstants
     	}
 		public long Digest() { return((ordinal()+1)*463472); }
 		public long Digest(Random r) { return(r.nextLong()*(ordinal()+1)); }
+		
+		public boolean isWine()
+		{
+			switch(this)
+			{
+			case RedWine:
+			case WhiteWine:
+			case RoseWine:
+			case Champaign:
+				return(true);
+			default: return(false);
+			}
+		}
 
 	}
  enum MoveGenerator

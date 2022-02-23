@@ -4558,23 +4558,22 @@ public abstract class commonCanvas extends exCanvas
         	}
         }
 
-        if (viewer && extraactions)
+       if (extraactions)
+        {
+        	l.debugSwitch = myFrame.addOption("debug",G.debug(),deferredEvents);
+        	l.copyBoardSwitch = myFrame.addOption("allow drawing to board copy",l.enableCopyBoard,deferredEvents);
+        	l.debugOnceSwitch = myFrame.addOption("debug once", false,deferredEvents);
+        	l.layoutAction = myFrame.addAction("check layouts",deferredEvents);
+           	hidden.saveGame = myFrame.addAction("Save Single Game",deferredEvents); 
+           	if(viewer) 
         {	
-        	hidden.saveGame = myFrame.addAction("Save Single Game",deferredEvents);
         	hidden.saveCollection = myFrame.addAction("Save Game Collection",deferredEvents);
         	hidden.loadGame = myFrame.addAction("Load Game File",deferredEvents);
         	hidden.gamesMenu = new XJMenu(SelectAGameMessage,true);
             myFrame.addToMenuBar(hidden.gamesMenu);
             hidden.gamesMenu.addItemListener(deferredEvents);
-        }
 
-        if (extraactions)
-        {	l.debugSwitch = myFrame.addOption("debug",G.debug(),deferredEvents);
-        	l.copyBoardSwitch = myFrame.addOption("allow drawing to board copy",l.enableCopyBoard,deferredEvents);
-        	l.debugOnceSwitch = myFrame.addOption("debug once", false,deferredEvents);
-        	l.layoutAction = myFrame.addAction("check layouts",deferredEvents);
-        	if(viewer) 
-        	{ hidden.replayCollection = myFrame.addAction("Replay Game Collection",deferredEvents); 
+        		hidden.replayCollection = myFrame.addAction("Replay Game Collection",deferredEvents); 
         	  hidden.replayFolder = myFrame.addAction("Replay games in folder",deferredEvents);
         	}
         	{

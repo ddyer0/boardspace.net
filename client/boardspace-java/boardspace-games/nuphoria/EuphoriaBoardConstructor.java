@@ -110,15 +110,14 @@ abstract class EuphoriaBoardConstructor extends RBoard<EuphoriaCell> implements
 
 	// create a 1d horizontal array of cells
 	private EuphoriaCell[] arrayOfCells(Allegiance al, EuphoriaChip sub,int n, double[] bounds,
-			EuphoriaId rack) {
+			EuphoriaId rack,Cost cost) {
 		EuphoriaCell v[] = new EuphoriaCell[n];
 		double step = (bounds[2] - bounds[0]) / n;
 		double cy = (bounds[1] + bounds[3]) / 2;
 		double cx = bounds[0] + step / 2;
 		G.Assert(rack.isArray, "%s should be an array rack ", rack);
 		for (int i = 0; i < n; i++) {
-			v[i] = newCell(al, sub,rack, i, cx + i * step, cy,
-					Cost.DisplayOnly, null);
+			v[i] = newCell(al, sub,rack, i, cx + i * step, cy,	cost, null);
 		}
 		return (v);
 	}
@@ -146,11 +145,11 @@ abstract class EuphoriaBoardConstructor extends RBoard<EuphoriaCell> implements
 	static double knowlegeTrackBounds[] = { 3.8, 20, 19, 26 }; // Knowledge track, 1-6/ for each player
 	static double allegianceTrackBounds[] = { 69.5, 82, 97, 98 }; // 2d track of allegiance for each region
 
-	EuphoriaCell moraleTrack[] = arrayOfCells(null, EuphoriaChip.MoraleMarkers[0].subtype(),DieTrackLength,	euphoriaTrackBounds, EuphoriaId.MoraleTrack);
+	EuphoriaCell moraleTrack[] = arrayOfCells(null, EuphoriaChip.MoraleMarkers[0].subtype(),DieTrackLength,	euphoriaTrackBounds, EuphoriaId.MoraleTrack,Cost.DisplayOnly);
 
-	EuphoriaCell knowlegeTrack[] = arrayOfCells(null, EuphoriaChip.KnowledgeMarkers[0].subtype(),DieTrackLength,	knowlegeTrackBounds, EuphoriaId.KnowledgeTrack);
+	EuphoriaCell knowlegeTrack[] = arrayOfCells(null, EuphoriaChip.KnowledgeMarkers[0].subtype(),DieTrackLength,	knowlegeTrackBounds, EuphoriaId.KnowledgeTrack,Cost.DisplayOnly);
 
-	EuphoriaCell allegianceTrack[] = arrayOfCells(null,EuphoriaChip.AllegianceMarker.subtype(), AllegianceSteps,	Allegiance.values().length, allegianceTrackBounds,
+	EuphoriaCell allegianceTrack[] = arrayOfCells(null,EuphoriaChip.AllegianceMarker.subtype(), AllegianceSteps,	allegianceTrackBounds.length, allegianceTrackBounds,
 			EuphoriaId.AllegianceTrack, Cost.DisplayOnly, null);
 
 	EuphoriaCell workerActivationA = newCell(null,EuphoriaId.WorkerActivationA, 5.75, 90.5, 
@@ -268,15 +267,15 @@ abstract class EuphoriaBoardConstructor extends RBoard<EuphoriaCell> implements
 
 	EuphoriaCell subterranTunnelSteps[] = {
 			newCell(Allegiance.Subterran,EuphoriaChip.Miner.subtype(), EuphoriaId.SubterranTunnel, 0, 68,77, Cost.DisplayOnly, null),
-			newCell(Allegiance.Subterran,EuphoriaChip.Miner.subtype(), EuphoriaId.SubterranTunnel, 1, 69.5,76.1, Cost.DisplayOnly, null),
-			newCell(Allegiance.Subterran,EuphoriaChip.Miner.subtype(), EuphoriaId.SubterranTunnel, 2, 71,75.2, Cost.DisplayOnly, null),
-			newCell(Allegiance.Subterran,EuphoriaChip.Miner.subtype(), EuphoriaId.SubterranTunnel, 3, 72.5,74.3, Cost.DisplayOnly, null),
-			newCell(Allegiance.Subterran,EuphoriaChip.Miner.subtype(), EuphoriaId.SubterranTunnel, 4, 74,73.4, Cost.DisplayOnly, null),
-			newCell(Allegiance.Subterran,EuphoriaChip.Miner.subtype(), EuphoriaId.SubterranTunnel, 5, 75.5,72.5, Cost.DisplayOnly, null),
-			newCell(Allegiance.Subterran,EuphoriaChip.Miner.subtype(), EuphoriaId.SubterranTunnel, 6, 77,71.6, Cost.DisplayOnly, null),// reveal
-			newCell(Allegiance.Subterran,EuphoriaChip.Miner.subtype(), EuphoriaId.SubterranTunnel, 7, 78.7,70.8, Cost.DisplayOnly, null),
-			newCell(Allegiance.Subterran,EuphoriaChip.Miner.subtype(), EuphoriaId.SubterranTunnel, 8, 80.2,69.7, Cost.DisplayOnly, null),
-			newCell(Allegiance.Subterran,EuphoriaChip.Miner.subtype(), EuphoriaId.SubterranTunnel, 9, 81.4,	68.25, Cost.DisplayOnly, null) 
+			newCell(Allegiance.Subterran,EuphoriaChip.Miner.subtype(), EuphoriaId.SubterranTunnel, 1, 70.0,76.1, Cost.DisplayOnly, null),
+			newCell(Allegiance.Subterran,EuphoriaChip.Miner.subtype(), EuphoriaId.SubterranTunnel, 2, 72,75.2, Cost.DisplayOnly, null),
+			newCell(Allegiance.Subterran,EuphoriaChip.Miner.subtype(), EuphoriaId.SubterranTunnel, 3, 73.5,74.3, Cost.DisplayOnly, null),
+			newCell(Allegiance.Subterran,EuphoriaChip.Miner.subtype(), EuphoriaId.SubterranTunnel, 4, 75,73.4, Cost.DisplayOnly, null),
+			newCell(Allegiance.Subterran,EuphoriaChip.Miner.subtype(), EuphoriaId.SubterranTunnel, 5, 76.4,72.4, Cost.DisplayOnly, null),
+			newCell(Allegiance.Subterran,EuphoriaChip.Miner.subtype(), EuphoriaId.SubterranTunnel, 6, 77.8,71.3, Cost.DisplayOnly, null),// reveal
+			newCell(Allegiance.Subterran,EuphoriaChip.Miner.subtype(), EuphoriaId.SubterranTunnel, 7, 79.3,70.3, Cost.DisplayOnly, null),
+			newCell(Allegiance.Subterran,EuphoriaChip.Miner.subtype(), EuphoriaId.SubterranTunnel, 8, 81.4,69.0, Cost.DisplayOnly, null),
+			newCell(Allegiance.Subterran,EuphoriaChip.Miner.subtype(), EuphoriaId.SubterranTunnel, 9, 82.4,	67.5, Cost.DisplayOnly, null) 
 			};
 
 	static double wastelanderMarketABounds[] = { 70.75, 29.5, 81.5, 41.8 };
@@ -338,17 +337,17 @@ abstract class EuphoriaBoardConstructor extends RBoard<EuphoriaCell> implements
 
 	static double icariteCloudMineBounds[] = { 71, 3.5, 77.25, 14 };
 	EuphoriaCell icariteWindSalon = newCell(Allegiance.Icarite,EuphoriaId.IcariteWindSalon, 33.75, 8.5, 
-			Cost.Mostly_Artifactx3,Benefit.IcariteAuthorityAndInfluence);
+			Cost.Artifactx3,Benefit.IcariteAuthorityAndInfluence);
 	EuphoriaCell icariteNimbusLoft = newCell(Allegiance.Icarite,	EuphoriaId.IcariteNimbusLoft, 46.25, 4.5, 
-					Cost.Mostly_Resourcex3,Benefit.IcariteAuthorityAndInfluence);
+					Cost.Resourcex3,Benefit.IcariteAuthorityAndInfluence);
 	EuphoriaCell icariteBreezeBar = newCell(Allegiance.Icarite,	EuphoriaId.IcariteBreezeBar, 57.5, 4.5,
-			Cost.Mostly_Bliss_Commodity,
+			Cost.Bliss_Commodity,
 			Benefit.IcariteInfluenceAndCardx2);
 	EuphoriaCell icariteSkyLounge = newCell(Allegiance.Icarite,	EuphoriaId.IcariteSkyLounge, 69, 4.5,
-			Cost.Mostly_Bliss_Commodity,
+			Cost.Bliss_Commodity,
 			Benefit.IcariteInfluenceAndResourcex2);
 	EuphoriaCell icariteCloudMine[] = arrayOfCells(Allegiance.Icarite, WorkerChip.Subtype(),3, 4,icariteCloudMineBounds, EuphoriaId.IcariteCloudMine,
-			Cost.Mostly_Free,	Benefit.BlissSelection);
+			Cost.Free,	Benefit.BlissSelection);
 	EuphoriaCell icariteAuthority[] = {
 			newCell(Allegiance.Icarite, EuphoriaChip.AuthorityMarkers[0].subtype(),EuphoriaId.IcariteAuthority, 0, 90.5,8.1, null, null),
 			newCell(Allegiance.Icarite, EuphoriaChip.AuthorityMarkers[0].subtype(),EuphoriaId.IcariteAuthority, 1, 93,5.1, null, null),
@@ -380,6 +379,12 @@ abstract class EuphoriaBoardConstructor extends RBoard<EuphoriaCell> implements
 	// misc places
 	protected EuphoriaCell usedArtifacts = newCell(null,ArtifactChip.Subtype(),EuphoriaId.ArtifactDiscards, 35, 23, null);
 	protected EuphoriaCell unusedArtifacts = newCell(null,ArtifactChip.Subtype(),EuphoriaId.ArtifactDeck, 40, 23, null);
+	
+	double cardArea[] = { 25,13,47,33 };
+	double artifactArea[] = { 26.5, 18, 45.5, 26.0};
+	protected EuphoriaCell artifactMarket[] = 
+			arrayOfCells(null, null,4,	artifactArea, EuphoriaId.ArtifactMarket,null);
+	
 	protected EuphoriaCell clayPit = newCell(Allegiance.Wastelander,EuphoriaChip.Clay.subtype(),EuphoriaId.ClayPit, 50,31, Cost.DisplayOnly);
 	protected EuphoriaCell quarry = newCell(Allegiance.Subterran,EuphoriaChip.Stone.subtype(),EuphoriaId.StoneQuarry, 57,26, Cost.DisplayOnly);
 	protected EuphoriaCell goldMine = newCell(Allegiance.Euphorian,EuphoriaChip.Gold.subtype(),EuphoriaId.GoldMine, 51,24, Cost.DisplayOnly);
@@ -403,8 +408,8 @@ abstract class EuphoriaBoardConstructor extends RBoard<EuphoriaCell> implements
 	double wastelanderMarketArea[] = {56,15,100,65};
 	double subterranMarketArea[] = {17,59,68,100};
 
-	double cardArea[] = { 25,13,47,33 };
 	double resourceArea[] = {31,10,59,30 };
+	double resourceArea_IIB[] = {26,10,59,30 };
 	double commodityArea[] = { 58,10,90,30};
 	double commodityAndResourceArea[] = {31,10,90,30};
 	double marketBasketZone[] = {55,50,70,60};

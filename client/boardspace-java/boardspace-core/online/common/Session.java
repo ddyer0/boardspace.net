@@ -39,7 +39,9 @@ public class Session implements LobbyConstants
 	static final String ChatRoom = "Chat Room";
 	static final String ReviewRoom = "Review Games";
 	static final String MasterRoom = "Master Games";
+	static final String TournamentRoom = "Tournament Games";
 	static final String MasterDescription = "Master ranked players can play";
+	static final String TournamentDescription = "Play Tournament games here";
 	static final String MapRoom = "Map of Player Locations";
 	static final String GameRoomDescription = "Anyone can play in this room";
 	static final String ReviewRoomDescription = "replay or review saved games";
@@ -67,6 +69,7 @@ public class Session implements LobbyConstants
 			TimedGameMessage,PleaseJoinMessage,JoinOnlyMessage,
 			GameRoom,GameRoomDescription,ChatRoom,ReviewRoom,ReviewRoomDescription,
 			MapRoom,UnrankedRoom,UnrankedDescription,MasterRoom,MasterDescription,
+			TournamentRoom,TournamentDescription,
 			TournamentGame,SpectatorMessage,
 	};
 	public boolean resumableGameType()
@@ -80,7 +83,15 @@ public class Session implements LobbyConstants
 		default: return(false);
 		}	
 	}
-
+	/**
+	 * return true if the session settings are generally editable.  At present this means
+	 * you own the room, or this is a tournament session that is unoccupied
+	 * @return
+	 */
+	public boolean editable()
+	{
+		return (iOwnTheRoom || ((numberOfPlayers()==0) && (mode==Mode.Tournament_Mode)));
+	}
 	// select Randomize or Not when there will be no robots
 	public Bot defaultNoRobot()
 	{	
@@ -103,7 +114,8 @@ public class Session implements LobbyConstants
 		Review_Mode("Review",ReviewRoom,ReviewRoomDescription,LaunchReviewMessage,true), 
 		Map_Mode("Map",MapRoom,"","",false), 
 		Unranked_Mode("Unranked",UnrankedRoom,UnrankedDescription,LaunchGameMessage,true), 
-		Master_Mode("Master",MasterRoom,MasterDescription,LaunchGameMessage,false);
+		Master_Mode("Master",MasterRoom,MasterDescription,LaunchGameMessage,false),
+		Tournament_Mode("Tournament",TournamentRoom,TournamentDescription,LaunchGameMessage,false);
 		public boolean availableOffline;
 		public String shortName;
 		public String modeName;
@@ -117,7 +129,29 @@ public class Session implements LobbyConstants
 		subHead = sub;
 		availableOffline = offline;
 		}
-
+		public boolean isAGameMode()
+		{	switch(this)
+			{
+			default: return false;
+			case Game_Mode:
+			case Master_Mode:
+			case Unranked_Mode:
+			case Tournament_Mode: return(true);
+			}
+		}
+		
+		public boolean isRanked()
+		{
+			switch(this)
+			{
+			default: return false;
+			case Game_Mode:
+			case Master_Mode:
+			case Tournament_Mode:
+				return(true);
+			}
+		
+		}
 		public static void getRoomMenu(InternationalStrings s,PopupManager roomMenu)
 		{	
 			for(Mode el : values())
@@ -246,7 +280,13 @@ public class Session implements LobbyConstants
     //public int variation = 0;
     public Mode mode = Mode.Game_Mode;
     public Mode pendingMode = Mode.Game_Mode;
-    public JoinMode submode = JoinMode.Open_Mode;
+    private JoinMode submode = JoinMode.Open_Mode;
+    public void setSubmode(JoinMode m)
+    {
+    	submode = m;
+    }
+    public JoinMode getSubmode() { return submode; }
+    
     SessionState state = SessionState.Unknown;
     int gameIndex = 0;
     public Bot currentRobot=null;
@@ -349,12 +389,8 @@ public class Session implements LobbyConstants
     {
     	return((currentGame!=null)&&currentGame.okForPlaytable);
     }
-    public boolean isAGameMode(Mode m)
-    {
-    	return((m == Mode.Game_Mode) || (m == Mode.Master_Mode) || (m == Mode.Unranked_Mode));
-    }
     public boolean isAGameRoom()
-    {	return isAGameMode(mode);
+    {	return mode.isAGameMode();
     }
     public boolean isAGameOrReviewRoom()
     {	return((mode==Mode.Review_Mode) || isAGameRoom());
@@ -412,7 +448,7 @@ public class Session implements LobbyConstants
     {	
         if (mode != m)
         {	
-        	boolean nowIsGame = isAGameMode(m);
+        	boolean nowIsGame = m.isAGameMode();
         	switch(state)
         	{
         	case Idle:
@@ -429,6 +465,13 @@ public class Session implements LobbyConstants
         	mode = m;
             if(isAGameRoom() && (currentGame!=null) && (currentGame.enabled!=GameInfo.ES.game))
             { setCurrentGame(GameInfo.firstGame,true,isPassAndPlay);
+            }
+            if(m==Mode.Tournament_Mode)
+            {
+            	setSubmode(JoinMode.Tournament_Mode);
+            	resetRobotname(false);
+            }else {
+            	setSubmode(JoinMode.Open_Mode);
             }
 
          }
@@ -549,6 +592,7 @@ public class Session implements LobbyConstants
 	  	int maxPlayers =currentMaxPlayers();
 	    boolean canAddRobot = G.allowRobots() 
 	    						&& (playersInSession < maxPlayers)
+	    						&& (mode != Mode.Tournament_Mode)
 	    						&& (mode != Mode.Master_Mode);
 	    return(canAddRobot);
     }
@@ -790,12 +834,10 @@ public class Session implements LobbyConstants
 	       launchGame(primaryUser,sound,null);
 	     
 	}
-	public boolean canChangeGameInfo(boolean isPassAndPlay)
+	public boolean canChangeGameInfo()
 	{	return((state==Session.SessionState.Idle) 
 		    && isAGameOrReviewRoom() 
-		   	&& (isPassAndPlay
-		   			|| ((numberOfPlayers()<=1)
-		   				&& ((numberOfPlayers()==0) || iOwnTheRoom))));
+		   	&& editable());
 	}
     
 }

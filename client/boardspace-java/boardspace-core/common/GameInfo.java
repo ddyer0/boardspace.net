@@ -635,7 +635,7 @@ synchronized(allGames) {
 			 String euphoriaRules ="/euphoria/english/EuphoriaRules_2ndEd.pdf";
 			 String euphoriaViewer =  "nuphoria.EuphoriaViewer";
 			 String euphoriaVideo = "https://boardgamegeek.com/video/90203/euphoria-build-better-dystopia/euphoria-how-play-watch-it-played";
-			 GameInfo mm = put(new GameInfo(144,ES.game,70,"EU",EuroGames,"Nuphoria","Euphoria",
+			 {GameInfo mm = put(new GameInfo(144,ES.game,70,"EU",EuroGames,"Nuphoria","Euphoria",
 						OneBotPlus,
 						new double[]{1.0,0.01},
 						euphoriaViewer,euphoriaRules,
@@ -646,7 +646,8 @@ synchronized(allGames) {
 				 mm.hasHiddenInformation = true;
 				 // only requires card concealment for the player cards and hidden recruits
 				 mm.longMessage = mmside;
-
+			 }
+			 {
 				 GameInfo m2 = put(new GameInfo(143,ES.game,70,"EU",EuroGames,"Nuphoria","Euphoria2",
 						OneBotPlus,
 						new double[]{1.0,0.01},
@@ -659,19 +660,21 @@ synchronized(allGames) {
 				 m2.randomizeFirstPlayer = true;
 				 // only requires card concealment for the player cards and hidden recruits
 				 m2.longMessage = mmside;
-				 
+			 }
+			 {
 		   GameInfo m3 = put(new GameInfo(142,ES.test,70,"EU",EuroGames,"Nuphoria","Euphoria3",
 					OneBotPlus,
 					new double[]{1.0,0.01},
 					euphoriaViewer,euphoriaRules,
 					euphoriaVideo,false, ecolors));
-			 m2.minPlayers = 2;
-			 m2.maxPlayers = 6;
-			 m2.groupSortKey = "00041";
-			 m2.hasHiddenInformation = true;
-			 m2.randomizeFirstPlayer = true;
+		   	m3.minPlayers = 2;
+		   	m3.maxPlayers = 6;
+		   	m3.groupSortKey = "00041";
+		   	m3.hasHiddenInformation = true;
+		   	m3.randomizeFirstPlayer = true;
 			 // only requires card concealment for the player cards and hidden recruits
-			 m2.longMessage = mmside;
+		   	m3.longMessage = mmside;
+			 }
 
 		}
 	

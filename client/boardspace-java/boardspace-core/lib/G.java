@@ -207,7 +207,7 @@ public class G extends Platform implements Timestamp
     public static boolean Assert(boolean condition, String message)
     {	if (!condition)
         {
-        	throw new ErrorX(message);
+    	throw new ErrorX(message);
         }
         return (true);
     }

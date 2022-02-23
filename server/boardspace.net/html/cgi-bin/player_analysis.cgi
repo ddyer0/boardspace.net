@@ -267,7 +267,7 @@ sub print_summary
 sub playerclause()
 {	my ($multi,$uid) = @_;
 	my $res = "(player1=$uid) or (player2=$uid)";
-	if($multi) { $res .= "or (player3=$uid) or (player4=$uid)" }
+	if($multi) { $res .= "or (player3=$uid) or (player4=$uid) or (player5=$uid) or (player6=$uid)" }
 	return("($res)");
 }
 sub getGameInfo()
@@ -660,6 +660,8 @@ sub compare_players
   my %robots;	# player robot status index by UID
 
 	my $numr = &numRows($sth);
+
+	#print "<p>returned $numr rows<p>";
 
 	if($numr >= $limit) 
 	{ my $lim = &trans("These results are limited to a subset of #1 games",$limit);

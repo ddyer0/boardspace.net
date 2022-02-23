@@ -57,7 +57,6 @@ public abstract class BaseBoard implements Opcodes,Digestable
     {	
         whoseTurn = (who<0)?0:who;
     }
-
 	/**
 	 * the current move number
 	 */

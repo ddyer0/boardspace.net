@@ -265,11 +265,11 @@ public class RecruitChip extends EuphoriaChip implements EuphoriaConstants
 			"Ted the Contingency Planner",225);
 	static RecruitChip GaryTheForgetter = new RecruitChip(Allegiance.Icarite,null,
 			"Gary the Forgetter",226);
-	static RecruitChip BokTheGameMaster = new RecruitChip(Allegiance.Icarite,null,
+	static RecruitChip BokTheGameMaster = new RecruitChip(Allegiance.Icarite,null,	// max 4 on the knowledge track
 			"Bok the Game Master",227);
-	static RecruitChip KebTheInformationTrader = new RecruitChip(Allegiance.Icarite,null,
+	static RecruitChip KebTheInformationTrader = new RecruitChip(Allegiance.Icarite,null,		// gain resources after knowledge check
 			"Keb the Information Trader",228);
-	static RecruitChip BrendaTheKnowledgeBringer = new RecruitChip(Allegiance.Icarite,null,
+	static RecruitChip BrendaTheKnowledgeBringer = new RecruitChip(Allegiance.Icarite,null,		// gain extra knowledge and card
 			"Brenda the Knowledge Bringer",229);
 	static RecruitChip MosiThePatron = new RecruitChip(Allegiance.Icarite,null,
 			"Mosi the Patron",230);
@@ -279,17 +279,17 @@ public class RecruitChip extends EuphoriaChip implements EuphoriaConstants
 			"Zara the Solipsist",232);
 	static RecruitChip JonTheAmateurHandyman = new RecruitChip(Allegiance.Euphorian,null,
 			"Jon the Amateur Handyman",233);
-	static RecruitChip DougTheBuilder = new RecruitChip(Allegiance.Euphorian,null,
+	static RecruitChip DougTheBuilder = new RecruitChip(Allegiance.Euphorian,null,		// sacrifice worker to build
 			"Doug the Builder",234);
 	static RecruitChip CaryTheCarebear = new RecruitChip(Allegiance.Euphorian,null,
 			"Cary the Carebear",235);	// coded and tested 7 Feb
-	static RecruitChip EkaterinaTheCheater = new RecruitChip(Allegiance.Euphorian,null,
+	static RecruitChip EkaterinaTheCheater = new RecruitChip(Allegiance.Euphorian,null,	// box artifact wildcard
 			"Ekaternia the Cheater",236);
-	static RecruitChip MiroslavTheConArtist = new RecruitChip(Allegiance.Euphorian,null,
+	static RecruitChip MiroslavTheConArtist = new RecruitChip(Allegiance.Euphorian,null,	// bear artifact wildcard
 			"Miroslav the Con Artist",237);
 	static RecruitChip SteveTheDoubleAgent = new RecruitChip(Allegiance.Euphorian,null,
 			"Steve the Double Agent",238);
-	static RecruitChip PmaiTheNurse = new RecruitChip(Allegiance.Euphorian,null,
+	static RecruitChip PmaiTheNurse = new RecruitChip(Allegiance.Euphorian,null,	// lowers your knowledge in commodity payment
 			"Pmai the Nurse",239);
 	static RecruitChip ChagaTheGamer = new RecruitChip(Allegiance.Euphorian,null,
 			"Chaga the Gamer",240);
@@ -311,13 +311,13 @@ public class RecruitChip extends EuphoriaChip implements EuphoriaConstants
 			"Taed the Brick Trader",248);
 	static RecruitChip LionelTheCook = new RecruitChip(Allegiance.Wastelander,null,
 			"Lionel the Cook",249);
-	static RecruitChip AlexandraTheHeister = new RecruitChip(Allegiance.Wastelander,null,
+	static RecruitChip AlexandraTheHeister = new RecruitChip(Allegiance.Wastelander,null,	// balloons artifact wildcard
 			"Alexandra the Heister",250);
 	static RecruitChip GeorgeTheLazyCraftsman = new RecruitChip(Allegiance.Wastelander,null,
 			"George the Lazy Craftsman",251);
 	static RecruitChip GwenTheMinerologist = new RecruitChip(Allegiance.Wastelander,null,
 			"Gwen the Minerologist",252);
-	static RecruitChip JoseThePersuader = new RecruitChip(Allegiance.Wastelander,null,
+	static RecruitChip JoseThePersuader = new RecruitChip(Allegiance.Wastelander,null,	// bat artifact wildcard
 			"Jose the Persuader",253);
 	static RecruitChip JedidiahTheInciter = new RecruitChip(Allegiance.Wastelander,null,
 			"Jedidiah the Inciter",254);
@@ -335,19 +335,19 @@ public class RecruitChip extends EuphoriaChip implements EuphoriaConstants
 			"Pedro The Collector",260);
 	static RecruitChip ShaheenaTheDigger = new RecruitChip(Allegiance.Subterran,null,
 			"Shaheena the Digger",261);
-	static RecruitChip DustyTheEnforcer = new RecruitChip(Allegiance.Subterran,null,
+	static RecruitChip DustyTheEnforcer = new RecruitChip(Allegiance.Subterran,null,	// saves workers using a bat
 			"Dusty the Enforcer",262);
 	static RecruitChip MwicheTheFlusher = new RecruitChip(Allegiance.Subterran,null,
 			"Mwiche the Flusher",263);													// coded, tested feb 7
-	static RecruitChip MakatoTheForger = new RecruitChip(Allegiance.Subterran,null,
+	static RecruitChip MakatoTheForger = new RecruitChip(Allegiance.Subterran,null,		// bifocals artifact wildcard
 			"MakatoTheForger",264);
 	static RecruitChip AlbertTheFounder = new RecruitChip(Allegiance.Subterran,null,	// coded, tested feb 6
 			"Albert the Founder",265);
-	static RecruitChip PamhdzaiTheReader = new RecruitChip(Allegiance.Subterran,null,
+	static RecruitChip PamhidzaiTheReader = new RecruitChip(Allegiance.Subterran,null,	// take resoruces instsead of artifact
 			"Pamhidzai the Reader",266);
 	static RecruitChip BoraTheStoryteller = new RecruitChip(Allegiance.Subterran,null,
 			"Bora The Storyteller",267);
-	static RecruitChip JavierTheUndergroundLibrarian = new RecruitChip(Allegiance.Subterran,null,
+	static RecruitChip JavierTheUndergroundLibrarian = new RecruitChip(Allegiance.Subterran,null,	// book artifact wildcard, and gain resource
 			"Javier the Underground Librarian",268);
 	static RecruitChip ChristineTheAnarchist = new RecruitChip(Allegiance.Factionless,null,
 			"Christine the Anarchist",269);
@@ -378,7 +378,7 @@ public class RecruitChip extends EuphoriaChip implements EuphoriaConstants
 			JedidiahTheInciter,DarrenTheRepeater,HighGeneralBaron,
 			// subterrans
 			JosephTheAntiquer,MilosTheBrainwasher,KhaleefTheBruiser,PedroTheCollector,ShaheenaTheDigger,
-			DustyTheEnforcer,MwicheTheFlusher,MakatoTheForger,AlbertTheFounder,PamhdzaiTheReader,
+			DustyTheEnforcer,MwicheTheFlusher,MakatoTheForger,AlbertTheFounder,PamhidzaiTheReader,
 			BoraTheStoryteller,JavierTheUndergroundLibrarian,
 			// factionless
 			ChristineTheAnarchist,KofiTheHermit,JeroenTheHoarder,SpirosTheModelCitizen,
@@ -435,7 +435,8 @@ public class RecruitChip extends EuphoriaChip implements EuphoriaConstants
 		super.drawChip(gc,can,wid,scale,dx,dy,ms);
 		if(can. getAltChipset()==1)
 		{
-			if(allegiance!=null) { EuphoriaChip.allegianceMedallions[allegiance.ordinal()].drawChip(gc,can,wid/2,scale,dx-4*wid/10,dy,null); }
+			if(allegiance!=null && allegiance!=Allegiance.Factionless) 
+				{ EuphoriaChip.allegianceMedallions[allegiance.ordinal()].drawChip(gc,can,wid/2,scale,dx-4*wid/10,dy,null); }
 		}
 	}
 	public static void loadRecruits(ImageLoader forcan,RecruitChip recruitList[])

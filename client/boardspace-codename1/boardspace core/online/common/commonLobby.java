@@ -839,8 +839,8 @@ private void PreloadClass(String classname)
             user.setSession(null,0);
 			if(fromSess!=toSess)
 			   { int nPlayers=fromSess.numberOfPlayers();
-			     if(nPlayers==0) 
-			     	{   fromSess.submode=Session.JoinMode.Open_Mode; 
+			     if((nPlayers==0)&&(fromSess.mode!=Session.Mode.Tournament_Mode)) 
+			     	{   fromSess.setSubmode(Session.JoinMode.Open_Mode); 
 			     	}
 			     if(user==myUser)
 			     {//I leave the room I own
@@ -936,6 +936,7 @@ private boolean processEchoGroup(String messType,StringTokenizer localST,String 
     if(messType.equals(NetConn.ECHO_GROUP))
     {
       int playerID = G.IntToken(localST);
+      boolean remain = false;
       String commandStr = localST.nextToken();
       boolean isimin = commandStr.equals(KEYWORD_IMIN);
       if (isimin || commandStr.equals(KEYWORD_UIMIN)) 
@@ -950,11 +951,9 @@ private boolean processEchoGroup(String messType,StringTokenizer localST,String 
           */
           sess.SetGameState(Session.SessionState.Idle); 
         }
-        parseImin(sess,localST);;
-        
-
+        remain = parseImin(sess,localST);;
         }
-      PutInSess(user,sess,toPlay);
+      if((sess==null) || !remain) { PutInSess(user,sess,toPlay); } 
       }
       else if(handleChat(playerID,commandStr,localST)) {}
       else if(commandStr.equals(KEYWORD_RANK))
@@ -1091,12 +1090,12 @@ private boolean processEchoGroup(String messType,StringTokenizer localST,String 
 } 
   return(false);  
 }
-  private void parseImin(Session sess,StringTokenizer localST)
-  {
+  private boolean parseImin(Session sess,StringTokenizer localST)
+  {	boolean remain = false;
       if(localST.hasMoreTokens()) 
       { Session.JoinMode usecode=Session.JoinMode.findMode(G.IntToken(localST));
-        if((usecode != null) && (sess.submode!=usecode))
-        {sess.submode = usecode;
+        if((usecode != null) && (sess.getSubmode()!=usecode))
+        {sess.setSubmode(usecode);
          v.repaint("setOnly");
 
        }}
@@ -1106,15 +1105,17 @@ private boolean processEchoGroup(String messType,StringTokenizer localST,String 
       	sess.setCurrentRobot(Bot.findIdx(localST.nextToken()));
       	v.repaint("setRobo");
       }
-      if(localST.hasMoreTokens())
+      while(localST.hasMoreTokens())
       {
       	String cmd = localST.nextToken();
+      	if(cmd.equalsIgnoreCase("remain")) { remain = true; }
       	if(cmd.equalsIgnoreCase(sgf_names.timecontrol_property))
       	{
       	sess.setTimeControl(TimeControl.parse(localST));
       	v.repaint("timecontrol");
       	}
       }
+      return remain;
   }
   private boolean processEchoQueryGame(String messType,StringTokenizer localST)
   {
@@ -1193,7 +1194,7 @@ private boolean processEchoGroup(String messType,StringTokenizer localST,String 
              {	TimeControl time = TimeControl.parse(localST);
              	sess.setTimeControl(time);
              	mt = localST.hasMoreTokens() ? localST.nextToken() : "";
-             	if(time.kind!=TimeControl.Kind.None && !"t".equals(mt) && (sess.submode!=Session.JoinMode.Tournament_Mode))
+             	if(time.kind!=TimeControl.Kind.None && !"t".equals(mt) && (sess.getSubmode()!=Session.JoinMode.Tournament_Mode))
              		{ 
               		newsub = Session.JoinMode.Timed_Mode; 
              		} 
@@ -1219,7 +1220,7 @@ private boolean processEchoGroup(String messType,StringTokenizer localST,String 
              		: null;
              }}
             if(newsub!=null) 
-            	{ sess.submode = newsub;              
+            	{ sess.setSubmode(newsub);       
             	}
            }
         if ((numOccupied > 0) && (passwordSet == 0)) 
@@ -1401,12 +1402,19 @@ private boolean processEchoGroup(String messType,StringTokenizer localST,String 
           int toSess = G.IntToken(localST);
           int toPlay = G.IntToken(localST);
           Session sess = getSession(toSess);
-          PutInSess(user,sess,toPlay);
           if(localST.hasMoreTokens()) 
           { G.IntToken(localST);	// skip useCode, whatever that is.
           }
+      boolean put = sess==null;
+      if(localST.hasMoreTokens())
+      {
+    	  String rem = localST.nextToken();
+    	  if("remain".equalsIgnoreCase(rem)) { put = false; }
       }
-      else if(commandStr.equals(KEYWORD_LAUNCH))
+      if(put) { PutInSess(user,sess,toPlay); }
+      }
+      else 
+      if(commandStr.equals(KEYWORD_LAUNCH))
         { //launch code from us
         LaunchGameNow(localST);        
         }
@@ -1528,6 +1536,7 @@ private boolean processEchoGroup(String messType,StringTokenizer localST,String 
       int playerID = G.IntToken(localST);
       int passwordFlag = G.IntToken(localST);
       boolean paint=false;
+      boolean join = true;
       String theRealName=localST.nextToken();
       Session sess = getSession(sessNum);
       String theUID = localST.nextToken();
@@ -1631,8 +1640,6 @@ private boolean processEchoGroup(String messType,StringTokenizer localST,String 
         								? Session.JoinMode.findMode(G.IntToken(localST))
         								: null;
         	Bot bot = null;
-         	User us = users.getExistingUser(playerID);
-         		if(us!=null) { PutInSess(us,inSess,pos); }
          	
           	if(inSess!=null)
             	{
@@ -1641,15 +1648,16 @@ private boolean processEchoGroup(String messType,StringTokenizer localST,String 
          	// only manipulate the session submode, bot and time control properties
          	// if the session is not a game in progress
            	if(mode!=null)
-           		{ inSess.submode = mode; 
+           		{ inSess.setSubmode(mode); 
            		}
             
             if(localST.hasMoreTokens())
             {	bot = Bot.findIdx(localST.nextToken());
             }
-            if(localST.hasMoreTokens())
+           	while (localST.hasMoreTokens())
             {
             	String cmd = localST.nextToken();
+            	if(cmd.equalsIgnoreCase("remain")) { join = false; }
             	if(cmd.equalsIgnoreCase(sgf_names.timecontrol_property))
             	{	// only set the mode if were'setting everything
             		// this avoids the mode ping-ponging
@@ -1657,7 +1665,14 @@ private boolean processEchoGroup(String messType,StringTokenizer localST,String 
             		inSess.setCurrentRobot(bot);
             	}
             }}
-        }}
+        }
+          	
+       if(join)
+    	   {User us = users.getExistingUser(playerID);
+    	   if(us!=null) { PutInSess(us,inSess,pos); }
+    	   }
+
+        }
       }
       return(true);
     }
@@ -1911,9 +1926,9 @@ private boolean processEchoRoomtype(String messType,StringTokenizer localST)
    {
    int sessn = muSess.gameIndex;
    String msg = NetConn.SEND_MESSAGE_TO+him+" "+KEYWORD_UIMIN+" "+ sessn+" "+mu.playLocation();
-   if(muSess.iOwnTheRoom)
+   if(muSess.editable())
    {
-   int code =  muSess.submode.ordinal();
+   int code =  muSess.getSubmode().ordinal();
    int bot = (muSess!=null) ? muSess.currentRobot.idx : -1;
    msg += " " + code+ " "+bot;
    }
@@ -2092,7 +2107,7 @@ private boolean processEchoRoomtype(String messType,StringTokenizer localST)
         User user = users.primaryUser();
         updatePending = false;
         	Session sess = getSession(movingToSess);
-        if(sess!=null) { sendLobbyInfo(sess,KEYWORD_UIMIN,sess.iOwnTheRoom); }
+        if(sess!=null) { sendLobbyInfo(sess,KEYWORD_UIMIN,sess.editable()); }
   
           if (!"".equals(user.name))
         {
@@ -2160,9 +2175,9 @@ private boolean processEchoRoomtype(String messType,StringTokenizer localST)
 
 public void setRoomSubMode(Session sess,Session.JoinMode submode)
 { 
-  if((submode != sess.submode))
+  if((submode != sess.getSubmode()))
   { 
-  	sess.submode = submode; 
+  	sess.setSubmode(submode); 
     sess.resetRobotname(false);
   	sendLobbyInfo(sess,KEYWORD_IMIN,true);
   }
@@ -2170,14 +2185,19 @@ public void setRoomSubMode(Session sess,Session.JoinMode submode)
 private void sendLobbyInfo(Session sess,String key2,boolean own)
 {	User me = users.primaryUser();
 	int myloc = me.playLocation();
-	String msg0 = sess.gameIndex + " " +myloc+" "+sess.submode.ordinal();
-	sendMessage(NetConn.SEND_GROUP+key2+" " + msg0);
+	String msg0 = sess.gameIndex + " " +myloc+" "+sess.getSubmode().ordinal()+" "+sess.currentRobot.idx;
+	String rem = sess.iOwnTheRoom ? "" : " remain";
+	sendMessage(NetConn.SEND_GROUP+key2+" " + msg0+rem);
 	if(own) 
 		{
 	String time = G.TimeControl() 
 					? " "+sgf_names.timecontrol_property+" "+sess.timeControl().print() 
 					: "";
-		String msg = msg0+" "+sess.currentRobot.idx + time;
+		String msg = msg0 + time;
+		if(!sess.iOwnTheRoom)
+		{
+			msg += " remain";
+		}
 		sendMessage(NetConn.SEND_LOBBY_INFO + msg); 
 		}
 }
@@ -2453,7 +2473,7 @@ void LaunchGameNow(StringTokenizer localST)
 			// this allows rooms to be flipped back and forth into tournament mode
 			// without losing the timer information, but we still want non-tournament
 			// games to show up as untimed games.
-			if(!sess.submode.isTimed()) { time = new TimeControl(TimeControl.Kind.None);  }
+			if(!sess.getSubmode().isTimed()) { time = new TimeControl(TimeControl.Kind.None);  }
 
 			sess.startingTimeControl = time;
 		}
