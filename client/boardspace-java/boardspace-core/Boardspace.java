@@ -404,13 +404,14 @@ public class Boardspace extends URLClassLoader implements Runnable,LoaderConfig
 		//
 		String firstLine = reader.readLine().toLowerCase();
 		if(verbose) { Boardspace.out.println("webinfo:"+firstLine); }
-		String specs[] = firstLine.split(",");
-		boolean mismatch = !(firstLine.equals(getCacheName(cacheDir)));
-		if(specs.length==3
+		String specs[] = firstLine==null ? null : firstLine.split(",");
+		if(specs!=null
+			&& specs.length==3
 			&& "version".equals(specs[0]))
 		{
 		if("1".equals(specs[1]))		// require an exact match on version we expect
 		{
+		boolean mismatch = !(firstLine.equals(getCacheName(cacheDir)));
 		String line = null;
 		int nlines = 0;
 		while( (line=reader.readLine())!=null)

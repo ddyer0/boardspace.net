@@ -356,9 +356,11 @@ public class DataCache implements Runnable
 		File []cachedFiles = cacheDir.listFiles();			// what's already in the cache
 		String dir = getCacheSource(webUrl);
 		if(dir==null)
-		{	// reuse the existing cache, regardless of condition....
+		{	// can't talk to the server, reuse the existing cache, regardless of condition....
 			long cacheTime = G.Date();
 			String firstLine = getCacheName(cacheDir);
+			if(firstLine!=null)
+			{
 			String specs[] = G.split(firstLine,',');
 			String name = specs.length>=3 ? specs[2] : "";
 			for(File f :cachedFiles)
@@ -366,7 +368,7 @@ public class DataCache implements Runnable
 				String className = name+cacheName;
 				fileCache.put(cacheName,new CacheInfo(cacheTime,className,true));
 			}
-		}
+		}}
 		else
 		{
 		// validate the cache against the available files online, reload

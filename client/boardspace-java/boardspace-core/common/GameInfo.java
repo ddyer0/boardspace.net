@@ -312,7 +312,6 @@ public class GameInfo implements lib.CompareTo<GameInfo>,LobbyConstants
 		G.Assert((bots==null) || (speed.length == bots.length),"mismatched speed");
 		robotSpeed = speed;
 		viewerClass = viewer;
-		
 		// for codename1 and other incomplete interfaces, test if the class is available
 		if(G.isCodename1())
 		{
@@ -635,7 +634,7 @@ synchronized(allGames) {
 			 String euphoriaRules ="/euphoria/english/EuphoriaRules_2ndEd.pdf";
 			 String euphoriaViewer =  "nuphoria.EuphoriaViewer";
 			 String euphoriaVideo = "https://boardgamegeek.com/video/90203/euphoria-build-better-dystopia/euphoria-how-play-watch-it-played";
-			 {GameInfo mm = put(new GameInfo(144,ES.game,70,"EU",EuroGames,"Nuphoria","Euphoria",
+			 {GameInfo mm = put(new GameInfo(144,ES.test,70,"EU",EuroGames,"Nuphoria","Euphoria",
 						OneBotPlus,
 						new double[]{1.0,0.01},
 						euphoriaViewer,euphoriaRules,
@@ -648,7 +647,7 @@ synchronized(allGames) {
 				 mm.longMessage = mmside;
 			 }
 			 {
-				 GameInfo m2 = put(new GameInfo(143,ES.game,70,"EU",EuroGames,"Nuphoria","Euphoria2",
+				 GameInfo m2 = put(new GameInfo(143,ES.test,70,"EU",EuroGames,"Nuphoria","Euphoria2",
 						OneBotPlus,
 						new double[]{1.0,0.01},
 						euphoriaViewer,euphoriaRules,
@@ -1022,6 +1021,10 @@ synchronized(allGames) {
 	put(new GameInfo(590,ES.game,4,"H",ConnectionGames,"Hex","Hex",
 			OneBotPlus,
 			new double[]{1.0,0.01},
+			hexViewer,hexRules,
+			null,false, WhiteOverBlack));
+	put(new GameInfo(599,ES.game,4,"H14",ConnectionGames,"Hex","Hex-14",
+			NoBots,null,
 			hexViewer,hexRules,
 			null,false, WhiteOverBlack));
 	put(new GameInfo(600,ES.game,4,"H15",ConnectionGames,"Hex","Hex-15",

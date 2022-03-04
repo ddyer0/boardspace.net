@@ -33,7 +33,9 @@ public class EuphoriaMovespec extends commonMPMove implements EuphoriaConstants
     static final int CONFIRM_RECRUITS = 223;
     static final int EPHEMERAL_CONFIRM_RECRUITS = 224;
     static final int EPHEMERAL_CONFIRM_ONE_RECRUIT = 225;
-     
+    static final int MOVE_MOVE_WORKER = 226;			// move worker board-to-board
+    static final int MOVE_ITEM = 227;					// move some item board-to-bopard
+    
     /* this is used by the move filter to select ephemeral moves */
     public boolean isEphemeral()
 	{
@@ -78,6 +80,8 @@ public class EuphoriaMovespec extends commonMPMove implements EuphoriaConstants
         	"Roll",USE_DIE_ROLL,
         	"NoRoll",DONT_USE_DIE_ROLL,
         	"NormalStart",NORMALSTART,
+        	"Relocate",MOVE_MOVE_WORKER,
+        	"MoveItem",MOVE_ITEM,
         	EuphoriaId.RecruitOption.name(),USE_RECRUIT_OPTION,
         	EuphoriaId.FightTheOpressor.name(),FIGHT_THE_OPRESSOR,
         	EuphoriaId.JoinTheEstablishment.name(),JOIN_THE_ESTABLISHMENT,
@@ -167,7 +171,7 @@ public class EuphoriaMovespec extends commonMPMove implements EuphoriaConstants
     	
     }
     /* constructor for retrieve worker */
-    public EuphoriaMovespec(EuphoriaCell s,EuphoriaCell d,WorkerChip worker,int pl)
+    public EuphoriaMovespec(EuphoriaCell s ,EuphoriaCell d,WorkerChip worker,int pl)
     {
     	op = MOVE_RETRIEVE_WORKER;
     	source = s.rackLocation();
@@ -175,8 +179,7 @@ public class EuphoriaMovespec extends commonMPMove implements EuphoriaConstants
     	dest = d.rackLocation();
     	to_color = worker.color;
     	player = pl;
-    }
-    
+    }  
 
     
     /*  move item to board and choose_recruit */
@@ -184,9 +187,9 @@ public class EuphoriaMovespec extends commonMPMove implements EuphoriaConstants
     {
     	op = o;
     	from_color = p.color;
-    	from_row = 0;
     	to_color = p.color;
     	source = s.rackLocation();
+    	from_row = s.row;
     	dest = d.rackLocation();
     	to_row = d.row;
     	player = p.boardIndex;
@@ -304,6 +307,15 @@ public class EuphoriaMovespec extends commonMPMove implements EuphoriaConstants
         	break;
         case DONT_USE_DIE_ROLL:
         	break;
+        	
+        case MOVE_ITEM:
+        case MOVE_MOVE_WORKER:
+           	source = EuphoriaId.get(msg.nextToken());
+           	from_row = G.IntToken(msg);
+           	dest = EuphoriaId.get(msg.nextToken());
+           	to_row = G.IntToken(msg);
+           	break;
+           	
         case MOVE_RETRIEVE_WORKER:
         	source = EuphoriaId.get(msg.nextToken());
     		from_row = G.IntToken(msg);
@@ -482,6 +494,14 @@ public class EuphoriaMovespec extends commonMPMove implements EuphoriaConstants
            			TextGlyph.create("xx",chip,v,scale(chip)),
          			TextChunk.create(" from "+ source.prettyName)));
 
+        case MOVE_MOVE_WORKER:
+        case MOVE_ITEM:
+        	return TextChunk.join(
+           			TextGlyph.create("xx",chip,v,scale(chip)),
+         			TextChunk.create(" from "+ source.prettyName),
+         			TextGlyph.create("xx",chip,v,scale(chip)),
+        			TextChunk.create(" to "+dest.prettyName));
+        	
         case USE_RECRUIT_OPTION:
         	return(TextChunk.create("Use "+((chip==null)?"":(" "+((RecruitChip)chip).name))));
         			
@@ -500,23 +520,23 @@ public class EuphoriaMovespec extends commonMPMove implements EuphoriaConstants
     by the constructors, and only secondarily human readable */
     public String moveString()
     {
-		String ind = indexString();
         String main = mainMoveString();
         String card = cardMoveString();
-        return(ind+main+card);
+        return(main+card);
     }
     String cardMoveString()
     {
     	return((chip==null)?"":(" \""+chip.name+"\""));
     }
-        // adding the move index as a prefix provides numnbers
+        // adding the move index as a prefix provides numbers
         // for the game record and also helps navigate in joint
         // review mode
         
         
         public String mainMoveString()
         {
-        String opname = D.findUnique(op)+" ";
+        String ind = indexString();
+        String opname = ind+" "+D.findUnique(op)+" ";
         switch (op)
         {
         case MOVE_ITEM_TO_BOARD:
@@ -547,6 +567,10 @@ public class EuphoriaMovespec extends commonMPMove implements EuphoriaConstants
         	return(opname+source.name()+" "+from_row+" "+to_color.name()+" "+dest.name());
         case MOVE_PLACE_WORKER:
         	return(opname+from_color.name()+" "+source.name()+" "+from_row+" "+dest.name()+" "+to_row);
+        
+        case MOVE_MOVE_WORKER:
+        case MOVE_ITEM:
+        	return G.concat(opname,source.name()," ",from_row," ",dest.name()," ",to_row);
         	
         case USE_DIE_ROLL:
         	return(opname+source.name());

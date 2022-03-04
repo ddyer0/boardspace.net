@@ -14,25 +14,27 @@ public interface EuphoriaConstants
 
 
 	// misc strings used in the program
-	static String BrianTheVitculturistLoseCard = "Lose 1 Artifact (from Brian the Viticulturist)";
-	static String BrianTheViticulturistMorale = "Lose 1 #1Morale (from Brian the Viticulturist)";
-	static String CardFromJacko = "#1 gets an Artifact (from Jacko the Archivist)";
-	static String UseDaveTheDemolitionist = "+2 #2Knowledge, Extra miner movement, Extra #1 (from Dave the Demolitionist)";
+	static String BrianTheVitculturistLoseCard = "Lose 1 Artifact (Brian the Viticulturist)";
+	static String BrianTheViticulturistMorale = "Lose 1 #1Morale (Brian the Viticulturist)";
+	static String CardFromJacko = "#1 gets an Artifact (Jacko the Archivist)";
+	static String UseDaveTheDemolitionist = "+2 #2Knowledge, Extra miner movement, Extra #1 (Dave the Demolitionist)";
 	static String LoseAWorker = "Lose a #2 to knowledge check, total was #1";
 	static String EuphoriaRetrieveOrConfirm = "retrieve another worker, or hit DONE";
 	static String FlartnerGold = "1 Gold or 1 Artifact";
 	static String FlartnerStone = "1 Stone or 1 Artifact";
-	static String UsingStevenTheScholar = "+1 Artifact and +1 Resource for #1 (from Steven the Scholar)";
-	static String UsingPeteTheCannibal = "Sacrifice a worker (from Pete the Cannibal)";
+	static String UsingStevenTheScholar = "+1 Artifact and +1 Resource for #1 (Steven the Scholar)";
+	static String UsingPeteTheCannibal = "Sacrifice a worker (Pete the Cannibal)";
 	static String FlartnerClay = "1 Clay or 1 Artifact";
-	static String BrettTheLockpickerEffect = "+2 #1Knowledge, +1 Resource (from Brett the Lock Picker)";
-	static String Gained3Cards = "Gained 3 cards instead of 1 (from Jonathan the Gambler)";
-	static String Gained2Cards = "Gained 2 cards instead of 1 (from Jonathan the Gambler)";
-	static String Gained0Cards = "Gained no cards instead of 1 (from Jonathan the Gambler)";
-	static String JonathanTheGamblerBonus = "#1 gains a card (from Jonathan the gambler)";
+	static String BrettTheLockpickerEffect = "+2 #1Knowledge, +1 Resource (Brett the Lock Picker)";
+	static String Gained3Cards = "Gained 3 Artifact instead of 1 (Jonathan the Gambler)";
+	static String Gained2Cards = "Gained 2 Artifact instead of 1 (Jonathan the Gambler)";
+	static String Gained0Cards = "Gained no Artifact instead of 1 (Jonathan the Gambler)";
+	static String JonathanTheGamblerBonus = "#1 gains 1 Artifact (Jonathan the gambler)";
 	static String NormalStartState = "Waiting for the other players to choose recruits";
 	static String EuphoriaVictoryCondition = "place all 10 Authority tokens";
 	static String EuphoriaPlayState = "Place a worker or withdraw one or more workers";
+	static String EuphoriaReplayState = "Bump your previous worker";
+	static String BumpOpponentState = "Bump an opponent from your commodity space";
 	static String EuphoriaRetrieveState = "Retrieve one or more workers";
 	static String EuphoriaCommodityRetrieveState = "You may retrieve workers from commodity spaces";
 	static String EuphoriaPlaceState = "Place a worker";
@@ -60,7 +62,7 @@ public interface EuphoriaConstants
 	static String CostPrompt = "Pay the cost of your placement";
 	static String ConfirmPayCostState = "Click on DONE to confirm your payment";
 	static String ConfirmJackoState = "Click on DONE to use Jacko The Archivist";
-	static String ConfirmJackoOrContinueState = "Click on DONE to use Jacko The Archivist, or continue with more cards";
+	static String ConfirmJackoOrContinueState = "Click on DONE to use Jacko The Archivist, or continue with more Artifact";
 	static String PayForEffectState = "Pay #1 for +2 Morale, or click on DONE to continue and -1 Morale";
 	static String ConfirmPayForEffectState = "Click on DONE to confirm your payment";
 	static String FightTheOpressor = "Fight the Opressor";
@@ -73,98 +75,108 @@ public interface EuphoriaConstants
 	static String DieSelectOptionState = "Select your die roll (and pay 1 Bliss) or click on DONE to proceed normally";
 	static String ConfirmRecruitOptionState = "Confirm using your recruit ability";
 	static String UseRecruitAbility = "Click to use this recruit ability";
-	static String DontUseRecruitAbility = "Click to not use this recruit ability";
+	static String DontUseRecruitAbility = "Do Not use this recruit ability";
 	
 	static String NoExtraFood = "Extra food cancelled by Registry of Personal Secrets";
 	static String NoExtraWater = "Extra water cancelled by Registry of Personal Secrets";
 	static String NoExtraEnergy = "Extra energy cancelled by Registry of Personal Secrets";
 	static String NoExtraBliss = "Extra bliss cancelled by Registry of Personal Secrets";
 	static String NoExtraCard = "Extra Artifact cancelled by Registry of Personal Secrets";
-	static String CardPeek = "Extra Artifact peek from Geek The Oracle";
+	static String CardPeek = "Extra Artifact peek (Geek The Oracle)";
 	static String ExtraWaterOrStone = "receive an extra Water or Stone from Maggie the Outlaw"; 
 	static String LoseGoods = "#2 lose #1 due to roll penalties";
-	static String YordySavesTheDay = "No loss of #1Morale (from Yordy the Demotivator)";
+	static String YordySavesTheDay = "No loss of #1Morale (Yordy the Demotivator)";
 	static String NamelessMeat = "Lose an extra #1Morale due to the Cafeteria of Nameless Meat";
-	static String EsmeTheFiremanMorale = "-1 Artifact, +1 Energy +1 #1Morale (from Esme the Fireman)";
-	static String EsmeTheFiremanMoralex2 = "-1 Artifact (Book), +2 Energy +2 #1Morale (from Esme the Fireman)";
-	static String EsmeTheFiremanKnowledge = "-1 Artifact, +1 Energy -1 #1Knowledge (from Esme the Fireman)";
-	static String EsmeTheFiremanKnowledgex2 = "-1 Artifact (Book), +2 Energy and -2 #1Knowledge (from Esme the Fireman)";
-	static String CurtisThePropagandistEffect = "-1 #1Knowledge (from Curtis the Propagandist)";
-	static String JeffersonTheShockArtistEffect = "Pay with Energy, +1 #1Morale -1 #2Knowledge (from Jefferson the Shock Artist)";
-	static String LauraThePhilanthropistEffect = "-1 Gold to #1, +2 Cards (from Laura The Philanthropist)";
-	static String FlartnerTheLudditeEffect = "Pay with Artifact, gain #1Morale (from Flartner the Luddite)";
-	static String JackoTheArchivistEffect = "Place an extra Authority token (from Jacko the Archivist)";
-	static String AndrewTheSpelunkerEffect = "Upgrade the tunnel effect (from Andrew the Spelunker)";
-	static String RayTheForemanHelped = "+2 #1Morale (from Ray the Foreman)";
-	static String RayTheFormanNoHelp = "-2 #1Knowledge (from Ray the Foreman)";
+	static String EsmeTheFiremanMorale = "-1 Artifact, +1 Energy +1 #1Morale (Esme the Fireman)";
+	static String EsmeTheFiremanMoralex2 = "-1 Artifact (Book), +2 Energy +2 #1Morale (Esme the Fireman)";
+	static String EsmeTheFiremanKnowledge = "-1 Artifact, +1 Energy -1 #1Knowledge (Esme the Fireman)";
+	static String EsmeTheFiremanKnowledgex2 = "-1 Artifact (Book), +2 Energy and -2 #1Knowledge (Esme the Fireman)";
+	static String CurtisThePropagandistEffect = "-1 #1Knowledge (Curtis the Propagandist)";
+	static String JeffersonTheShockArtistEffect = "Pay with Energy, +1 #1Morale -1 #2Knowledge (Jefferson the Shock Artist)";
+	static String LauraThePhilanthropistEffect = "-1 Gold to #1, +2 Artifact (Laura The Philanthropist)";
+	static String FlartnerTheLudditeEffect = "Pay with Artifact, gain #1Morale (Flartner the Luddite)";
+	static String JackoTheArchivistEffect = "Place an extra Authority token (Jacko the Archivist)";
+	static String AndrewTheSpelunkerEffect = "Upgrade the tunnel effect (Andrew the Spelunker)";
+	static String RayTheForemanHelped = "+2 #1Morale (Ray the Foreman)";
+	static String RayTheFormanNoHelp = "-2 #1Knowledge (Ray the Foreman)";
 	static String NakagawaTheTributeEffect = "Sacrifice the worker for an extra Authority token"; 
-	static String GaryTheElectricianEnergy = "+1 #1Energy (from Gary the Electrician)";
-	static String GaryTheElectricianMorale = "+1 #1Morale (from Gary the Electrician)";
-	static String KadanTheInfiltratorEffect = "+2 #1Knowledge to use this tunnel (from Kadan the Infiltrator)";
-	static String FlavioTheMerchantEffect = "-2 #1Morale, +1 Artifact (from Flavio the Merchant)";
-	static String IanTheHorticulturistEffect = "+1 Water (from Ian the Horticulturist)";
-	static String ChaseTheMinerRoll = "Immediately roll and place the new worker (from Chase the Miner)";
-	static String ChaseTheMinerSacrifice = "Sacrice the worker for #1 (from Chase the Miner)";
-	static String RebeccaThePeddlerEffect = "-2 #1Morale and +1 Resource (from Rebecca the Peddler)";
-	static String RebeccaThePeddlerOtherEffect = "+1 #1Knowledge (from Rebecca the Peddler)";
-	static String ScarbyTheHarvesterFood = "+1 Food (from Scarby the Harvester)";
-	static String ScabyTheHarvesterKnowledge = "-1 #1Knowledge (from Scarby the Harvester)";
-	static String SarineeTheCloudMinerBliss = "+1 Bliss (from Sarinee the Cloud Miner)";
-	static String SarineeTheCloudMinerKnowledge = "-1 #1Knowledge (from Sarinee the Cloud Miner)";
-	static String JonathanTheArtistEffect = "+2 #1Knowledge, +1 Artifact (from Jonathan the Artist)";
-	static String LeeTheGossipOtherEffect = "+1 #1Knowledge (from Lee the Gossip)";
-	static String LeeTheGossipEffect = "-1 #1Morale, +1 Commodity (from Lee the Gossip)";
-	static String MatthewTheThiefEffect = "pay +1 #2Knowledge instead of #1 (from Matthew the Thief)";
-	static String PeteTheCannibalNewWorker = "+2 #1Knowledge for +1 Artifact (from Pete the Cannibal)";
-	static String PhilTheSpyEffect = "+2 #1Knowledge for +1 Artifact (from Phil the Spy)";
-	static String ReitzTheArcheologistEffect = "+2 #1Knowledge +1 Artifact, +1 Tunnel (from Reitz the Archeologist)";
-	static String SoullessThePlumberWater = "+1 Water (from Soulless the Plumber)";
-	static String SoullessThePlumberMorale = "+1 #1Morale (from Soulless the Plumbler)";
-	static String XanderTheExcavatorBenefit = "+1 #2Knowledge, +1 #1 (from Xander the Excavator)";
-	static String BradleyTheFuturistEffect = "+2 #1Knowledge for +2 Artifact keep 1 (from Bradley the Futurist)";
-	static String YordyTheDemotivatorPayment = "Pay #1, or click on DONE to continue with no penalty (from Yordy the Demotivator)";
-	static String ZongTheAstronomerWater = "+1 Water (from Zong the Astronomer)";
-	static String ZongTheAstronomerEnergy = "+1 Energy (from Zong the Astronomer)";
-	static String MaggieTheOutlawWater = "+1 Water (from Maggie the Outlaw)";
-	static String MaggieTheOutlawStone = "+1 Stone (from Maggie the Outlaw)";
-	static String FaithTheHydroelectricianEffect = "+1 Energy (from Faith the Hydroelectrician)";
-	static String GidgetTheHypnotistEffect = "-2 #1Knowledge instead of +2 #2Morale (from Gidget the Hypnotist)";
-	static String MichaelTheEngineerGold = "+1 #1Knowledge and +1 #2Morale (from Michael the Engineer)";
-	static String MichaelTheEngineerAny = "pay with any resource (from Michael the Engineer)";
-	static String BrianTheViticulturistEffect = "used Food instead of Bliss (from Brian the Viticulturist)";
-	static String MaximeTheAmbassadorEffect = "-2 #1Morale +1 Artifact (from Maxime the Ambassador)";
-	static String MaximeTheAmbassadorOther = "+1 #1Knowledge (from Maxime the Ambassador)";
-	static String KatyTheDieticianEffect = "+1 Food (from Katy the Dietician)";
-	static String NickTheUnderstudyEffect = "+1 #1Morale (from Nick the Understudy)";
-	static String KyleTheScavengerEffect = "+1 Artifact (from Kyle the Scavenger)";
-	static String SheppardTheLobotomistSacrifice = "sacrifice worker for +4 Bliss and +1 Resource (from Sheppard the Lobotomist)";
-	static String SheppardTheLobotomistRoll = "-2 #1Morale for +1 Artifact (from Sheppard the Lobotomist)";
-	static String BenTheLudologistEffect = "-2 #1Morale and +1 Artifact for #1 (from Ben the Lodologist)";
-	static String JuliaTheThoughtInspectorEffect = "-2 #1Morale for +1 Resource (from Julia the Thought Inspector)";
-	static String JuliaTheThoughtInspectorV2Effect = "-1 #1Morale for +1 Resource (from Julia the Thought Inspector)";
-	static String JuliaTheThoughtInspectorV2RollEffect = "Bumped #1 gets roll of #2 (from Julia the Thought Inspector)";
-	static String JoshTheNegotiatorEffect = "use Bliss instead of Resource (from Josh the Negotiator)";
-	static String JonathanGain2 = "Gained 2 cards instead of 1 (from Jonathan the Gambler)";
+	static String GaryTheElectricianEnergy = "+1 #1Energy (Gary the Electrician)";
+	static String GaryTheElectricianMorale = "+1 #1Morale (Gary the Electrician)";
+	static String KadanTheInfiltratorEffect = "+2 #1Knowledge to use this tunnel (Kadan the Infiltrator)";
+	static String FlavioTheMerchantEffect = "-2 #1Morale, +1 Artifact (Flavio the Merchant)";
+	static String IanTheHorticulturistEffect = "+1 Water (Ian the Horticulturist)";
+	static String ChaseTheMinerRoll = "Immediately roll and place the new worker (Chase the Miner)";
+	static String ChaseTheMinerSacrifice = "Sacrice the worker for #1 (Chase the Miner)";
+	static String RebeccaThePeddlerEffect = "-2 #1Morale and +1 Resource (Rebecca the Peddler)";
+	static String RebeccaThePeddlerOtherEffect = "+1 #1Knowledge (Rebecca the Peddler)";
+	static String ScarbyTheHarvesterFood = "+1 Food (Scarby the Harvester)";
+	static String ScabyTheHarvesterKnowledge = "-1 #1Knowledge (Scarby the Harvester)";
+	static String SarineeTheCloudMinerBliss = "+1 Bliss (Sarinee the Cloud Miner)";
+	static String SarineeTheCloudMinerKnowledge = "-1 #1Knowledge (Sarinee the Cloud Miner)";
+	static String JonathanTheArtistEffect = "+2 #1Knowledge, +1 Artifact (Jonathan the Artist)";
+	static String LeeTheGossipOtherEffect = "+1 #1Knowledge (Lee the Gossip)";
+	static String LeeTheGossipEffect = "-1 #1Morale, +1 Commodity (Lee the Gossip)";
+	static String MatthewTheThiefEffect = "pay +1 #2Knowledge instead of #1 (Matthew the Thief)";
+	static String PeteTheCannibalNewWorker = "+2 #1Knowledge for +1 Artifact (Pete the Cannibal)";
+	static String PhilTheSpyEffect = "+2 #1Knowledge for +1 Artifact (Phil the Spy)";
+	static String ReitzTheArcheologistEffect = "+2 #1Knowledge +1 Artifact, +1 Tunnel (Reitz the Archeologist)";
+	static String SoullessThePlumberWater = "+1 Water (Soulless the Plumber)";
+	static String SoullessThePlumberMorale = "+1 #1Morale (Soulless the Plumbler)";
+	static String XanderTheExcavatorBenefit = "+1 #2Knowledge, +1 #1 (Xander the Excavator)";
+	static String BradleyTheFuturistEffect = "+2 #1Knowledge for +2 Artifact keep 1 (Bradley the Futurist)";
+	static String YordyTheDemotivatorPayment = "Pay #1, or click on DONE to continue with no penalty (Yordy the Demotivator)";
+	static String ZongTheAstronomerWater = "+1 Water (Zong the Astronomer)";
+	static String ZongTheAstronomerEnergy = "+1 Energy (Zong the Astronomer)";
+	static String MaggieTheOutlawWater = "+1 Water (Maggie the Outlaw)";
+	static String MaggieTheOutlawStone = "+1 Stone (Maggie the Outlaw)";
+	static String FaithTheHydroelectricianEffect = "+1 Energy (Faith the Hydroelectrician)";
+	static String GidgetTheHypnotistEffect = "-2 #1Knowledge instead of +2 #2Morale (Gidget the Hypnotist)";
+	static String MichaelTheEngineerGold = "+1 #1Knowledge and +1 #2Morale (Michael the Engineer)";
+	static String MichaelTheEngineerAny = "pay with any resource (Michael the Engineer)";
+	static String BrianTheViticulturistEffect = "used Food instead of Bliss (Brian the Viticulturist)";
+	static String MaximeTheAmbassadorEffect = "-2 #1Morale +1 Artifact (Maxime the Ambassador)";
+	static String MaximeTheAmbassadorOther = "+1 #1Knowledge (Maxime the Ambassador)";
+	static String KatyTheDieticianEffect = "+1 Food (Katy the Dietician)";
+	static String NickTheUnderstudyEffect = "+1 #1Morale (Nick the Understudy)";
+	static String KyleTheScavengerEffect = "+1 Artifact (Kyle the Scavenger)";
+	static String SheppardTheLobotomistSacrifice = "sacrifice worker for +4 Bliss and +1 Resource (Sheppard the Lobotomist)";
+	static String SheppardTheLobotomistRoll = "-2 #1Morale for +1 Artifact (Sheppard the Lobotomist)";
+	static String BenTheLudologistEffect = "-2 #1Morale and +1 Artifact for #1 (Ben the Lodologist)";
+	static String JuliaTheThoughtInspectorEffect = "-2 #1Morale for +1 Resource (Julia the Thought Inspector)";
+	static String JuliaTheThoughtInspectorV2Effect = "-1 #1Morale for +1 Resource (Julia the Thought Inspector)";
+	static String JuliaTheThoughtInspectorV2RollEffect = "Bumped #1 gets roll of #2 (Julia the Thought Inspector)";
+	static String JoshTheNegotiatorEffect = "use Bliss instead of Resource (Josh the Negotiator)";
+	static String JonathanGain2 = "Gained 2 Artifact instead of 1 (Jonathan the Gambler)";
 	static String MoraleFromJosiaTheHacker = "+1 #1Morale (thanks to Josia the Hacker)";
 	static String KnowledgeFromJosiaTheHacker = "#1Knowledge (thanks to Josia The Hacker)";
 	static String AmandaTheBrokerSelects = "Amanda the broker selects a #1";
 	static String YordyTheDemotivatorSelects = "Yordy the Demotivator selects a #1";
-	static String MatthewTheThiefEnergy = "Pay with #1Knowledge instead of Energy (from Matthew the Thief)";
-	static String MatthewTheThiefFood = "Pay with #1Knowledge instead of Food (from Matthew the Thief)";
-	static String MatthewTheThiefWater = "Pay with #1Knowledge instead of Water (from Matthew the Thief)";
+	static String MatthewTheThiefEnergy = "Pay with #1Knowledge instead of Energy (Matthew the Thief)";
+	static String MatthewTheThiefFood = "Pay with #1Knowledge instead of Food (Matthew the Thief)";
+	static String MatthewTheThiefWater = "Pay with #1Knowledge instead of Water (Matthew the Thief)";
 	static String costAddon = "Cost: #1";
 	static String ServiceName = "Information for #1";
 
 	static String ConfirmUseMwicheOrContinueState = "Click on Done to use the tunnel normally, or add more Water";
-	static String UseMwicheTheFlusher = "pay 3 Water for benefit + 2 Morale (from Mwiche the Flusher)";
-	static String UseCaryTheCarebear = "get Food and Commodity (from Cary the Carebear)";
-	static String UseJosephTheAntiquer = "Took Artifact instead of Commodity (from Jopseph the Antiquer)";
-	static String UseBokTheGameMaster = "You learn nothing (from Bok the Game Master)";
-	static String UseBokTheGameMasterNow = "You know less now (from Bok the Game Master)";
-	static String UseKebTheInformationTrader = "gain something (due to Keb the Information Trader)";
+	static String UseMwicheTheFlusher = "pay 3 Water for benefit + 2 Morale (Mwiche the Flusher)";
+	static String UseCaryTheCarebear = "get Food and Commodity (Cary the Carebear)";
+	static String UseJosephTheAntiquer = "Took Artifact instead of Commodity (Jopseph the Antiquer)";
+	static String UseBokTheGameMaster = "You learn nothing (Bok the Game Master)";
+	static String UseBokTheGameMasterNow = "You know less now (Bok the Game Master)";
+	static String UseKebTheInformationTrader = "gain something (Keb the Information Trader)";
 	static String MoraleFromTedTheConingencyPlanner = "+1 #1 from Ted the Contingency Planner";
-	static String SavedByDustyTheEnforcer = "-1 #1 and save worker (due to Dusty the Enforcer)";
-	
+	static String SavedByDustyTheEnforcer = "-1 #1 and save worker (Dusty the Enforcer)";
+	static String SavedByAminaTheBlissBringer = "save worker (Amina the Bliss Bringer)";
+	static String SavedByXyonTheBrainSurgeon = "pay Artifact to save worker and lose 2 Knowledge (Xyon the Brain Surgeon)";
+	static String ArtifactInPlaceOf = "you may take Artifact instead of #1 (Joseph the Antiquer)";
+	static String ResourceInPlaceOfCommodity = "you may take 1 #1 instead of 1 #2 (Gwen the Minerologist)";
+	static String NoBonusChristineTheAnarchist = "No bonus #1 (Christine the Anarchist)";
+	static String BonusChristineTheAnarchist = "get #1 Commodity (Christine the Anarchist)";
+	static String UsePedroTheCollector = "get 1 Resource and 1 Commodity (Pedro the Collector)";
+	static String EuphoriaReuseState = "use the same worker again (Lars the Ballooner)";
+	static String TogetherPenalty = "+1 Knowledge (Together We Work Alone Camp";
+	static String LoseResourcesFromPalace = "lose #1 Resources (Palace of Forced Altruism)";
+	static String UseGwenTheMinerologist = "get 1 #1 instead of #2 (Gwen the Minerologist)";
 	enum Allegiance { Euphorian, Subterran, Wastelander, Icarite, Factionless;
 		static void putStrings() { for(Allegiance a : values()) { InternationalStrings.put(a.name()); }}
 		};
@@ -213,8 +225,8 @@ public interface EuphoriaConstants
 		IsEuphorian("must be a Euphorian"),
 		IsWastelander("must be a wastelander"),
 
-		ConstructionSiteGold("1 Gold"),		// building markets
-		ConstructionSiteStone("1 Stone"),		// building markets
+		ConstructionSiteGold("1 Gold"),		// building markets.  Note these are still differentiated by location, primarily to 
+		ConstructionSiteStone("1 Stone"),	// building markets	  satisfy the requirements for MichaelTheEngineer.
 		ConstructionSiteClay("1 Clay"),		// building markets
 		
 		GoldOrArtifact("1 Gold or 1 Artifact"),		// building with FlartnerTheLuddite
@@ -236,9 +248,9 @@ public interface EuphoriaConstants
 		WaterForMatthewTheThief("you should never see this"),
 		FoodForMatthewTheThief("you should never see this"),
 		EnergyForMatthewTheThief("you should never see this"),
-		WaterOrKnowledge("1 Water, or click on DONE for +1 Knowledge (from Matthew the Thief)"),
-		FoodOrKnowledge("1 Food,  or click on DONE for +1 Knowledge (from Matthew the Thief)"),
-		EnergyOrKnowledge("1 Energy,  or click on DONE for +1 Knowledge (from Matthew the Thief)"),
+		WaterOrKnowledge("1 Water, or click on DONE for +1 Knowledge (Matthew the Thief)"),
+		FoodOrKnowledge("1 Food,  or click on DONE for +1 Knowledge (Matthew the Thief)"),
+		EnergyOrKnowledge("1 Energy,  or click on DONE for +1 Knowledge (Matthew the Thief)"),
 		// combo of flartner the luddite and michael the engineer
 		ResourceAndKnowledgeAndMoraleOrArtifact("1 Artifact with +1 Morale, or 1 resource, with +1 knowledge, +1 morale if you use Gold"),
 		ResourceAndKnowledgeAndMorale("1 resource, with +1 knowledge, +1 morale if you use Gold"),
@@ -247,7 +259,9 @@ public interface EuphoriaConstants
 		Resourcex3("3 Resources"),	// nimbus loft
 		Morale_Resourcex3("3 Resources"),	// nimbus loft
 		Energyx3("3 Energy"),	// worker training
+		Energyx3OrBlissx3("3 Energy or 3 Bliss"),	// worker training with gary the forgetter
 		Waterx3("3 Water"),	// worker training
+		Waterx3OrBlissx3("3 Water or 3 Bliss"),		// worker training with gary the forgetter
 		Bliss_Commodity("1 Bliss and 1 non-bliss Commodity"),				// breeze bar and sky lounge
 		NonBliss("1 non-bliss Commodity"),
 		
@@ -467,7 +481,11 @@ public interface EuphoriaConstants
 		GoldOrBlissOrFood("1 Gold or 1 Bliss or 1 Food"),
 		Card_BlissOrFood("1 Artifact and 1 Bliss or 1 Food"),
 		Card_FoodOrResource("1 Artifact and Food or 1 Resource"),
-		BlissOrFoodx4("4 total Food or Bliss"),
+		BlissOrFoodx4("4 total Food or Bliss"), 
+		GoldOrCommodityX3("1 Gold or 3 Commodity"),
+		StoneOrCommodityX3("1 Stone or 3 Commodity"),
+		ClayOrCommodityX3("1 Clay or 3 Commodity"),
+		Artifactx3OrArtifactAndBliss("3 Artifact or a Pair of Artifact or 1 Artifact and 2 Bliss"),	// mosi the patron
 		;
 		String description = null;
 		Cost(String s)
@@ -494,6 +512,8 @@ public interface EuphoriaConstants
 			return(EuphoriaState.PayCost);
 		}
 	}
+	Benefit MultipleCommodities[] = { Benefit.Commodity,Benefit.Commodityx2,Benefit.Commodityx3};
+	
 	enum Function
 	{	Return,							// pop this continuation
 		ReRoll,
@@ -580,16 +600,18 @@ public interface EuphoriaConstants
 		JoinTheEstablishment,
 		
 		// V3 functions
-		DoSamuelTheZapper,			// offer to retrieve workers
-		RetrieveCommodityWorkers,	// do the retrieval
+		DoSamuelTheZapper,	// do the retrieval
 		BumpWorkerCheckKhaleef,		// check khaleef the bruiser
 		DoKhaleefTheBruiser,		// get resource after bump
 		DoMilosTheBrainwasher,		// milos the brainwasher 
 		ReRollWorkersAfterMilos,	//
+		ReRollWorkersAfterJeroen,		// JeroenTheHoarder gets resoruce when retrieving
+		ReRollWorkersAfterChristine,	// get resoruces when when retrieving
 		PayForCard,					// pay for an artifact card
 		ReRollWorkersAfterKeb,		// continue after checking for KebTheInformationTrader
 		DoPmaiTheNurse,
-		DontPmaiTheNurse,
+		DropWorkerCollectBenefit,
+		DoZaraTheSolipsist,
 		DoPamhidzai,
 		DontPamhidzai,
 		DoBrendaTheKnowledgeBringer,
@@ -597,6 +619,20 @@ public interface EuphoriaConstants
 		DontDustyTheEnforcer,
 		ReRollWorkersAfterCheck,
 		CollectBenefitAfterArtifacts,
+		DoXyonTheBrainSurgeon,
+		ReRollWorkersAfterXyon,
+		DoShaheenaTheDigger,
+		DontShaheenaTheDigger,
+		AfterShaheenaTheDigger,
+		DoLieveTheBriber,
+		DoDarrenTheRepeater,
+		DontDarrenTheRepeater,
+		DoJedidiahTheInciter,
+		DropAfterPedroTheCollector,
+		DoLarsTheBallooneer,
+		DontLarsTheBallooneer,
+		DoTerriTheBlissTrader,
+		DontTerriTheBlissTrader,
 		;
 	}
 	
@@ -625,7 +661,7 @@ public interface EuphoriaConstants
 		// ignorance is bliss market penalties
 		//
 		PayBeforeBumping("Pay 1 commodity before bumping your own worker"),	// 21 Agency of Progressive Backstabbing
-		LimitOf2Commodities("NOTHING GAINED (due to Lottery of Diminishing Returns)"), // 22 Lottery of Diminishing Returns
+		LimitOf2Commodities("NOTHING GAINED (Lottery of Diminishing Returns)"), // 22 Lottery of Diminishing Returns
 		UpgradeWorkerKnowledge("Treat newly rolled 1 or 2 as 3 for the knownledge check"), // 23 Institute of Orwellian Optimism
 		NotIf6OnBoard("You can't place workers on the board if any of yours on the board are 6"),//24 natural floridated spring
 		NoStarOnEmpty("You can't place stars on empty territory"), //25 field of agorophobia
@@ -637,7 +673,7 @@ public interface EuphoriaConstants
 		ResourceLimit3("You can't gain resources if you have 3 or more"), // 31 palace of forced altruism
 		ArtifactsDifferent("You can only gain artifacts different than you already have"), // 32 storage of insufficient capacity
 		Knowledgest14("Knowledge tests have a threshold of 14 instead of 16"), // 33 the carousel
-		CommodityMinus1("You always gain 1 less commodity (minimum 1)"), //34 theater of endless monotony
+		CommodityMinus1("gain 1 less commodity"), //34 theater of endless monotony
 		KnowledgePlusDoubles("After a knowledge check, gain knowledge if at least 2 of your workers have the same knowledge"), // 35 thought police of the open mind
 		Knowledge6Bump("You must have less than 6 knowledge to bump your own workers.  If you do gain knowledge"), // 36 together we work alone camp
 		;
@@ -673,7 +709,6 @@ public interface EuphoriaConstants
 	ConfirmPlace(ConfirmPlaceState,true,false),				// confirm placement of worker
 	ConfirmRetrieve(ConfirmRetrieveState,true,false),		// confirm retrieval of workers
 	
-	
 	CollectOptionalBenefit(CollectOptionalBenefitState,true,false),
 	ExtendedBenefit(ExtendedBenefitState,false,false),
 	CollectBenefit(CollectBenefitState,false,false),		// collecting some benefit involving a choice
@@ -702,6 +737,11 @@ public interface EuphoriaConstants
 	// IIB states
 	RetrieveCommodityWorkers(EuphoriaCommodityRetrieveState,true,false),
 	ConfirmUseMwicheOrContinue(ConfirmUseMwicheOrContinueState,true,false),
+	
+	BumpOpponent(BumpOpponentState,false,false),	// jedidiah the inciter, bump opponent from commodity space
+	ConfirmBump(ConfirmRetrieveState,true,false),
+	RePlace(EuphoriaReplayState,false,false),		// darren the repeater, bump self for second action
+	ReUseWorker(EuphoriaReuseState,false,false),	// lars the ballooner, re use a worker
 
 	;
 	EuphoriaState(String des,boolean done,boolean digest)
@@ -771,6 +811,7 @@ public interface EuphoriaConstants
 	public boolean digestState() { return(digestState); }
 	public boolean Puzzle() { return(this==Puzzle); } 
 	}
+	
 	enum Benefit
 	{
 		None(null),
@@ -780,15 +821,15 @@ public interface EuphoriaConstants
 		EuphorianAuthority2("a Market or Authority zone"),
 		EuphorianAuthorityAndInfluence("Authority zone"),
 		CardOrGold("1 Artifact or 1 Gold"),
-		CardAndGold("1 Artifact or 1 Gold"),	// the string is only seen when the ministry of personal secrets is in effect
+		CardAndGold("1 Artifact and 1 Gold"),	// the string is only seen when the ministry of personal secrets is in effect
 		PowerSelection("Energy"),		// power from the generator depending on total knowledge
 		Waterx3("3 Water"),
-		Water("1 Water (from IanTheHorticulturist)"),
+		Water("1 Water (IanTheHorticulturist)"),
 		SubterranAuthority2("a Market or Authority zone"),
 		SubterranAuthorityAndInfluence("Authority zone"),
 
 		CardOrStone("1 Artifact or 1 Stone"),
-		CardAndStone("1 Artifact or 1 Stone"),	// the string is only seen when the ministry of personal secrets is in effect
+		CardAndStone("1 Artifact and 1 Stone"),	// the string is only seen when the ministry of personal secrets is in effect
 		WaterSelection("Water"),		// water from aquifer depending on total knowledge
 		Food("1 Food"),
 		Foodx2("2 Food"),
@@ -803,7 +844,7 @@ public interface EuphoriaConstants
 		WastelanderAuthority2("a Market or Authority zone"),
 		WastelanderAuthorityAndInfluence("Authority zone"),
 		CardOrClay("1 Artifact or 1 Clay"),
-		CardAndClay("1 Artifact or 1 Clay"),	// the string is only seen when the ministry of personal secrets is in effect
+		CardAndClay("1 Artifact and 1 Clay"),	// the string is only seen when the ministry of personal secrets is in effect
 		FoodSelection("Food"),		// food depending on total knowledge
 		Energyx3("3 Energy"),
 		Energy("1 Energy"),
@@ -812,14 +853,16 @@ public interface EuphoriaConstants
 		Moralex2OrKnowledgex2("+2 Morale or -2 Knowledge"),	// esmethefireman_v2
 		Moralex2AndKnowledgex2("+2 Morale and -2 Knowledge"),	// esmethefireman_v2 after rev 121
 		
-		WaterOrMorale("take 1 water, or click on DONE to get +1 Morale (from Soulless the Plumber)"),	// soulless the plumber
+		WaterOrMorale("take 1 water, or click on DONE to get +1 Morale (Soulless the Plumber)"),	// soulless the plumber
 		Gold("1 Gold"),		// LauraThePhilanthropist gives this out
 		Clay("1 Clay"),
 		Stone("1 Stone"),
 		IcariteAuthorityAndInfluence("Authority zone"),
-		IcariteInfluenceAndCardx2("2 Artifact"),
+		IcariteInfluenceAndCardx2("Second Artifact"),
+		FirstArtifact("First Artifact"),
 		IcariteInfluenceAndResourcex2("2 resources"),
 		BlissSelection("Bliss"),
+		
 		Artifact("Artifact"),
 		Artifactx2("2 Artifact"),
 		Artifactx2for1("2 Artifact, keep 1 of them"),
@@ -830,11 +873,11 @@ public interface EuphoriaConstants
 		Commodityx3("3 Commodity"),
 		Resource("1 Resource"),
 		
-		WaterOrStone("1 Water or 1 Stone (from Maggie the Outlaw)"),	// Maggie the outlaw's bonus
-		KnowledgeOrFood("Take 1 Food or click on DONE to lose 1 Knowledge (from Scarby the Harvester)"),
+		WaterOrStone("1 Water or 1 Stone (Maggie the Outlaw)"),	// Maggie the outlaw's bonus
+		KnowledgeOrFood("Take 1 Food or click on DONE to lose 1 Knowledge (Scarby the Harvester)"),
 		KnowledgeOrBliss("Take 1 Bliss or click on DONE to lose 1 Knowledge"),
-		WaterOrEnergy("1 Water or 1 Energy (from Zong the Astronomer)"),
-		MoraleOrEnergy("Take 1 Energy, or click on DONE to gain 1 Morale (from Gary The Electrician)"),
+		WaterOrEnergy("1 Water or 1 Energy (Zong the Astronomer)"),
+		MoraleOrEnergy("Take 1 Energy, or click on DONE to gain 1 Morale (Gary The Electrician)"),
 		EuphorianStar("an extra Euphorian Authority"),
 		SubterranStar("an extra Subterran Authority"),
 		WastelanderStar("an extra Wastelander Authority"),
@@ -842,10 +885,29 @@ public interface EuphoriaConstants
 		// IIB benefits
 		Morale("1 Morale"),	// samuel the zapper
 		ArtifactOrWaterX2("1 Artifact or 2 Water"),	// joseph the antiquer
+		ArtifactOrWaterX3("1 Artifact or 3 Water"),	//
 		ArtifactOrBlissX2("1 Artifact or 2 Bliss"),	// joseph the antiquer
+		ArtifactOrBlissX3("1 Artifact or 3 Bliss"),	
 		ArtifactOrFoodX2("1 Artifact or 2 Food"),		// joseph the antiquer
+		ArtifactOrFoodX3("1 Artifact or 3 Food"),
+		ArtifactOrClayOrFoodX2("1 Artifact or 2 Food or 1 Food and 1 Clay"),	// Gwen the Minerologist and joseph the antiquer
+		ArtifactOrClayOrFoodX3("1 Articfact or 3 Food or 2 Food and 1 Clay"),
+		ArtifactOrStoneOrWaterX2("1 Artifact or 2 Water or 1 Water and 1 Stone"),	// Gwen the Minerologist and joseph the antiquer
+		ArtifactOrStoneOrWaterX3("1 Artifact or 3 Water or 2 Water and 1 Stone"),	//
+	
 		ArtifactOrEnergyX2("1 Artifact or 2 Energy"),	// joseph the antiquer
+		ArtifactOrEnergyX3("1 Artifact or 3 Energy"),	// joseph the antiquer
+		ArtifactOrGoldOrEnergyX2("1 Artifact or 2 Energy or 1 Energy and 1 Gold"),	// Gwen the Minerologist + joseph the antiquer
+		ArtifactOrGoldOrEnergyX3("1 Artifact or 3 Energy or 2 Energy and 1 Gold"),	// Gwen the Minerologist + joseph the antiquer
+
 		ResourceOrCommodity("1 Resource or 1 Commodity"),	// kebtheinformationtrader
+		ResourceAndCommodity("1 Resource and 1 Commodity"),	// pedro the collector
+		FreeArtifact("1 Artifact for free"),	// shaheena the digger
+		
+		GoldOrEnergy("1 Gold or 1 Energy"),		// gwen the minerologist
+		StoneOrWater("1 Stone or 1 Water"),
+		ClayOrFood("1 Clay or 1 Food"),
+
 		;
 		
 		String description=null;
@@ -869,46 +931,14 @@ public interface EuphoriaConstants
 		{
 			switch(this)
 			{
-			case CardAndClay:
-			case CardAndGold:
-			case CardAndStone:	// these occur when 
-			case EuphorianStar:
-			case SubterranStar:
-			case WastelanderStar:			
-			case CardOrClay:
-			case CardOrGold:
-			case CardOrStone:
-			case Resource:
-			case Commodity:
-			case Commodityx2:
-			case Commodityx3:
-			case IcariteInfluenceAndResourcex2:
-			case EuphorianAuthority2:
-			case SubterranAuthority2:
-			case WaterOrStone:
-			case IcariteInfluenceAndCardx2:		// these only get used in IIB where cards
-			case Artifact:						// always require an interaction
-			case Artifactx2for1:
-			case WaterOrEnergy:
-			case WastelanderAuthority2:		
-			case MoraleOrKnowledge:
-			case Moralex2OrKnowledgex2:
-			case ArtifactOrWaterX2:
-			case ArtifactOrBlissX2:
-			case ArtifactOrFoodX2:
-			case ArtifactOrEnergyX2:
-			case ResourceOrCommodity:
-			case IcariteAuthorityAndInfluence:		// IIB, icarite also gets a card
+			default:
 				return(EuphoriaState.CollectBenefit);
 			case KnowledgeOrBliss:
 			case MoraleOrEnergy:
 			case WaterOrMorale:
 			case KnowledgeOrFood: 
 				return(EuphoriaState.CollectOptionalBenefit);
-			default:
-				break;
 			}
-			throw G.Error("not expecting %s in collectionState()",this);
 		}
 		EuphoriaState confirmState()
 		{
@@ -1087,8 +1117,8 @@ public interface EuphoriaConstants
 	    ArtifactDiscards(null,"Artifact Discards",false,false,false,false,	true,false,
 	    		"#1{##no discarded artifact cards,# discarded artifact card,# discarded artifact cards}"),
 	    
-	    ArtifactMarket(null,"Artifact Market",false,true,false,false,false,false,
-	    		"Artifcact Card Available Now"),
+	    ArtifactBazaar(null,"Artifact Bazaar",false,true,false,false,false,false,
+	    		"Artifact Card Available Now"),
 	    		
 	    MarketBasket(null,"Basket",false,false,false,false,	true,false,null),			// an interchange cell for costs and benefits
 	    
@@ -1100,6 +1130,8 @@ public interface EuphoriaConstants
 	    BlissPool(null,"Bliss",false,false,false,false,		true,true,"Bliss"),		// unlimited bliss
 	    FarmPool(null,"Food",false,false,false,false,		true,true,"Food"),		// unlimited food
 	    AquiferPool(null,"Water",false,false,false,false,		true,true,"Water"),		// unlimited water
+	    GenericPool(null,"Generic",false,false,false,false,		true,true,"Generic"),		// unlimited junk
+	    GenericSink(null,"GenericSink",false,false,false,false,		true,true,"GenericSink"),		// unlimited junk
 	    
 	    // cells for setup and debugging only
 	    UnusedRecruits(null,"Unused Recruits",false,false,false,false, true,false,"#1{##no unused recruit cards,# unused recruit cards,# unused recruit cards}"),
@@ -1139,6 +1171,7 @@ public interface EuphoriaConstants
 	    {
 	    	switch(this)
 	    	{
+	    	case GenericPool:
 	    	case GoldMine:
 	    	case StoneQuarry:
 	    	case ClayPit: return(true);
@@ -1150,6 +1183,7 @@ public interface EuphoriaConstants
 	    boolean isCommodityCell()
 	    {	switch(this)
 	    	{
+	    	case GenericPool:
 	    	case FarmPool:
 	    	case AquiferPool:
 	    	case EnergyPool:
@@ -1492,6 +1526,19 @@ public interface EuphoriaConstants
     	 	  UseKebTheInformationTrader,
     	 	  MoraleFromTedTheConingencyPlanner,
     	 	  SavedByDustyTheEnforcer,
+    	 	  SavedByXyonTheBrainSurgeon,
+    	 	  ArtifactInPlaceOf,
+    	 	  ResourceInPlaceOfCommodity,
+    	 	  SavedByAminaTheBlissBringer,
+    	 	  NoBonusChristineTheAnarchist,
+    	 	 BonusChristineTheAnarchist,
+    	 	EuphoriaReplayState,
+    	 	BumpOpponentState,
+    	 	UsePedroTheCollector,
+    	 	EuphoriaReuseState,
+    	 	TogetherPenalty,
+    	 	LoseResourcesFromPalace,
+    	 	UseGwenTheMinerologist,
     		};
     		String EuphoriaStringPairs[][] = 
     		{   {"Euphoria_family","Euphoria"},

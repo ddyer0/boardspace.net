@@ -2007,8 +2007,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	private boolean inChangeGame(Session sess,int localX,int localY)
 	{  return(
 		    gameTypeRect.contains(localX,localY)
-		    && sess.canChangeGameInfo()
-			);
+		    && (sess.iOwnTheRoom || (sess.numberOfPlayers()==0)));
 	}
 	private boolean ImMuted(Session sess)
 	{

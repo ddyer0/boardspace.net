@@ -110,6 +110,7 @@ public class G extends Platform implements Timestamp
 		}
 		return(false);
 	}
+
     /**
      * utility to print test messages, use "find callers" to find messages still in place.
      * This method also interfaces with shells created by the "open shell" menu item.  If
@@ -2011,7 +2012,7 @@ public static String expandClassName(String classname)
     
     public static int[]parseColorMap(String value)
     {
-   	String ints[] = G.split(value, ',');
+    	String ints[] = G.split(value, ',');
     	int map[] = new int[ints.length];
     	for(int i=0;i<ints.length; i++) { map[i]=G.IntToken(ints[i]); }
     	return(map);

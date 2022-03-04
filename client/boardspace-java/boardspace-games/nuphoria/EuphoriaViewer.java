@@ -1238,7 +1238,7 @@ private Color playerBackground[] = {
     	if(G.offline() 
     			&& !fromHiddenWindow 
     			&& enableDone()
-    			
+    			&& plannedSeating()
     			)
     	{	int dw = unitSize*3;
     		handleDone(gc,highlight,new Rectangle(leftR+widthR-dw,topR,dw,dw/2));
@@ -1377,7 +1377,13 @@ private Color playerBackground[] = {
     			cell.defaultScale = CELLSIZE;
     			hit = cell.drawStack(gc,this,highlight,cell.defaultScale,xpos,ypos,0,0.0,0.0,null);
     			break;
-
+    		case ArtifactBazaar:
+    			{
+    			cell.defaultScale = CELLSIZE;
+    			hit = cell.drawStack(gc,this,highlight,cell.defaultScale,xpos,ypos,0,0.0,0.0,null);
+    			break;
+ 			
+    			}
     		default:
 				cell.defaultScale = CELLSIZE;
 				if(rack.isWorkerCell)
@@ -1404,7 +1410,8 @@ private Color playerBackground[] = {
     	if(doTips)
     	{	String desc = rack.defaultDescription;
         	if(cell.marketPenalty!=null)
-        	{
+        	{ 
+        		StockArt.SmallX.drawChip(gc,this,cell.lastSize(),cell.centerX(),cell.centerY(),null);
         		desc = cell.marketPenalty.getExplanation();
         	}
         	desc = s.get0or1(desc,cell.height());
@@ -1651,16 +1658,23 @@ private Color playerBackground[] = {
     		  }
     		  else
     		  {
-        	  Rectangle r = new Rectangle(xp,yp+3*ystep/2,xstep,ystep/5);
-        	  String message = (state==EuphoriaState.RecruitOption)
-    				  			? s.get(UseRecruitAbility)
-    				  			: s.get(DontUseRecruitAbility);
+    		  int buttony = yp+3*ystep/2;
+    		  int buttonh = ystep/4;
+    		  Rectangle r = new Rectangle(xp,buttony,xstep,buttonh);
+              Rectangle rl = new Rectangle(xp,buttony+buttonh*2,xstep,buttonh);
+              GC.setFont(gc,largeBoldFont());
     		  if(GC.handleSquareButton(gc,r, 
-              		highlight,message,
+              		highlight,s.get(UseRecruitAbility),
                       HighlightColor, rackBackGroundColor))
   				{ 
   				highlight.hitCode = EuphoriaId.RecruitOption; 
   				}
+    		  if(GC.handleSquareButton(gc,rl, 
+                		highlight,s.get(DontUseRecruitAbility),
+                        HighlightColor, rackBackGroundColor))
+    				{ 
+    				highlight.hitCode =GameId.HitDoneButton;
+    				}
     		  }
     		}
     		break;
@@ -1797,8 +1811,26 @@ private Color playerBackground[] = {
     	case CollectOptionalBenefit:
     	case ConfirmBenefit:
     		Benefit bene = gb.pendingBenefit();
+    		if(bene!=null) // if it is null, something is terribly wrong in the board engine
+    		{
     		switch(bene)
     		{
+     		case ArtifactOrWaterX2:
+       		case ArtifactOrBlissX2:
+       		case ArtifactOrEnergyX2:
+       		case ArtifactOrFoodX2:
+       		case ArtifactOrEnergyX3:
+       		case ArtifactOrFoodX3:
+       		case ArtifactOrBlissX3:
+       		case ArtifactOrWaterX3:
+       		case ArtifactOrGoldOrEnergyX2:
+       		case ArtifactOrGoldOrEnergyX3:
+      		case ArtifactOrClayOrFoodX2:
+       		case ArtifactOrClayOrFoodX3:
+      		case ArtifactOrStoneOrWaterX2:
+       		case ArtifactOrStoneOrWaterX3:
+       			zoom = gb.artifactsAndCommodities;
+       			break;
     		case EuphorianAuthority2:
     		case WastelanderAuthority2:
     		case SubterranAuthority2:
@@ -1810,10 +1842,11 @@ private Color playerBackground[] = {
     		case CardAndStone:
     		case CardAndGold:
     		case CardAndClay:
-       		case Resource:
     		case IcariteInfluenceAndResourcex2:
       		   	zoom = isIIB() ? gb.resourceArea_IIB : gb.resourceArea;
       		   	break;
+       		case Resource:
+       			return gb.resourceOnlyArea; 
     		case Commodity:
     		case Commodityx2:
     		case Commodityx3:
@@ -1831,12 +1864,19 @@ private Color playerBackground[] = {
     				zoom = gb.marketBasketZone;
     				break;
     		case WaterOrStone:
+    		case ClayOrFood:
+    		case StoneOrWater:
+    		case GoldOrEnergy:
+    		case ResourceOrCommodity:
+    		case ResourceAndCommodity:
       			 zoom = gb.commodityAndResourceArea;
       			 break;
        		case IcariteInfluenceAndCardx2:	// in IIB, taking a card requires an interaction
        		case Artifact:
+       		case FirstArtifact:
+       		case FreeArtifact:
        			zoom = gb.cardArea;
-    		}
+    		}}
     		break;
     	case PayForOptionalEffect:
     	case ConfirmPayForOptionalEffect:
@@ -1929,11 +1969,16 @@ private Color playerBackground[] = {
        		TextGlyph.create("Water","xx",EuphoriaChip.Water,this,chipScales),
        		TextGlyph.create("Miner","xx",EuphoriaChip.Miner,this,chipScales),
        		TextGlyph.create("Energy","xx",EuphoriaChip.Energy,this,chipScales),
+       		TextGlyph.create("Food","xx",EuphoriaChip.Food,this,chipScales),
+       		TextGlyph.create("Bliss","xx",EuphoriaChip.Bliss,this,chipScales),
+       		
        		TextGlyph.create("Gold","xx",EuphoriaChip.Gold,this,chipScales),
        		TextGlyph.create("Stone","xx",EuphoriaChip.Stone,this,stoneScales),
-       		TextGlyph.create("Food","xx",EuphoriaChip.Food,this,chipScales),
        		TextGlyph.create("Clay","xx",EuphoriaChip.Clay,this,chipScales),
-       		TextGlyph.create("Bliss","xx",EuphoriaChip.Bliss,this,chipScales),
+       		TextGlyph.create("ConstructionSiteGold","xx",EuphoriaChip.Gold,this,chipScales),
+       		TextGlyph.create("ConstructionSiteStone","xx",EuphoriaChip.Stone,this,stoneScales),
+       		TextGlyph.create("ConstructionSiteClay","xx",EuphoriaChip.Clay,this,chipScales),
+
        		TextGlyph.create("Artifact","xx",ArtifactChip.CardBack,this,cardScales),
     		TextGlyph.create("Commodity","xx",EuphoriaChip.Commodity,this,new double[]{1.0,1.0,0,-0.5}),
     		TextGlyph.create("Resource","xx",EuphoriaChip.Resource,this,new double[]{1.0,1.0,0,-0.5}),
@@ -2210,7 +2255,9 @@ private Color playerBackground[] = {
         for(int i=0;i<nPlayers;i++)
         {  	EPlayer p = gb.getPlayer(i);
         	commonPlayer cp = getPlayerOrTemp(i);
-        	boolean allowSelection = ((state==EuphoriaState.Puzzle)||(i==whoseMove));
+        	boolean allowSelection = ((state==EuphoriaState.Puzzle)
+        								||(state==EuphoriaState.ConfirmBump)
+        								||(i==whoseMove));
         	// don't allow the player picture to be hit when expanding cards that will cover it.
         	// (or an auxiliary button)
         	boolean allowPlayerSelection = allowSelection 
@@ -2224,7 +2271,8 @@ private Color playerBackground[] = {
     		cp.setRotatedContext(gc, selectPos, true);
     		// unrotate so the rotate won't be a duplicate, then rerotate
         	drawPlayerStuff(gc,cp,(state==EuphoriaState.Puzzle),allowPlayerSelection?nonDragSelect:null,HighlightColor,rackBackGroundColor);
-    		cp.setRotatedContext(gc, selectPos, false);
+    		cp.setRotatedContext(gc, selectPos, false);    		
+    		
     		// draw in this order so the background, usual player sstuff, and foreground are in that order
         	drawPlayerStuff(gc,gb,allowSelection ? ourTurnSelect : null,	cp.playerBox,i,sources,dests,selectPos,false);        	
         	cp.setRotatedContext(gc, selectPos, true);
@@ -2352,6 +2400,13 @@ private Color playerBackground[] = {
 
  void playSounds(commonMove mm)
  {
+	 EPlayer p = bb.getCurrentPlayer();
+	 if(p.someLostToAltruism)
+	 {	// TODO: replace swish with a better sound
+		 p.someLostToAltruism=false;
+		 playASoundClip(swish,100);
+	 }
+	 
 	 switch(mm.op)
 	 {
 	 case MOVE_DONE:
@@ -2383,6 +2438,9 @@ private Color playerBackground[] = {
 		 break;
 	 default: break;
 	 }
+
+	 
+	 
  }
 /**
  * parse a move specifier on behalf of the current player.  This is called by the 

@@ -76,6 +76,13 @@ public interface HexConstants
     calculating adjacency and connectivity. */
  static int[] ZfirstInCol = { 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0 }; // these are indexes into the first ball in a column, ie B1 has index 2
  static int[] ZnInCol = { 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11 }; // depth of columns, ie A has 4, B 5 etc.
+ 
+ //
+ // rhombix hex board 14 per side
+ static int[] ZfirstInCol14 = { 13,12,11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0 }; // these are indexes into the first ball in a column, ie B1 has index 2
+ static int[] ZnInCol14 = {  14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14 }; // depth of columns, ie A has 4, B 5 etc.
+
+ 
  //
  // rhombix hex board 15 per side
  static int[] ZfirstInCol15 = { 14,13,12,11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0 }; // these are indexes into the first ball in a column, ie B1 has index 2
@@ -87,6 +94,7 @@ public interface HexConstants
  enum HexVariation
     {
     	hex("hex",ZfirstInCol,ZnInCol),
+    	hex_14("hex-14",ZfirstInCol14,ZnInCol14),
     	hex_15("hex-15",ZfirstInCol15,ZnInCol15),
     	hex_19("hex-19",ZfirstInCol19,ZnInCol19);
     	String name ;
@@ -159,7 +167,7 @@ public interface HexConstants
     	// translation.  Also a line in the viewer init process to
     	// add them for debugging purposes.
     		String HexStrings[] = 
-    	{  "Hex","Hex-15","Hex-19",
+    	{  "Hex","Hex-14","Hex-15","Hex-19",
            HexPlayState,
            SwitchMessage,
            HexPlayOrSwapState,
@@ -173,6 +181,7 @@ public interface HexConstants
     		String HexStringPairs[][] = 
     	{   {"Hex_family","Hex"},
     		{"Hex_variation","11x11 board"},
+    		{"Hex-14_variation","14x14 board"},
     		{"Hex-15_variation","15x15 board"},
     		{"Hex-19_variation","19x19 board"}
     	};

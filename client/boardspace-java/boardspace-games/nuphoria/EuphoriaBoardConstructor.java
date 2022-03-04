@@ -379,11 +379,12 @@ abstract class EuphoriaBoardConstructor extends RBoard<EuphoriaCell> implements
 	// misc places
 	protected EuphoriaCell usedArtifacts = newCell(null,ArtifactChip.Subtype(),EuphoriaId.ArtifactDiscards, 35, 23, null);
 	protected EuphoriaCell unusedArtifacts = newCell(null,ArtifactChip.Subtype(),EuphoriaId.ArtifactDeck, 40, 23, null);
-	
+	protected  EuphoriaCell genericSource = newCell(null,EuphoriaChip.Nocard,	EuphoriaId.GenericPool, 38, 29, Cost.Free);
+
 	double cardArea[] = { 25,13,47,33 };
 	double artifactArea[] = { 26.5, 18, 45.5, 26.0};
 	protected EuphoriaCell artifactMarket[] = 
-			arrayOfCells(null, null,4,	artifactArea, EuphoriaId.ArtifactMarket,null);
+			arrayOfCells(null, null,4,	artifactArea, EuphoriaId.ArtifactBazaar,null);
 	
 	protected EuphoriaCell clayPit = newCell(Allegiance.Wastelander,EuphoriaChip.Clay.subtype(),EuphoriaId.ClayPit, 50,31, Cost.DisplayOnly);
 	protected EuphoriaCell quarry = newCell(Allegiance.Subterran,EuphoriaChip.Stone.subtype(),EuphoriaId.StoneQuarry, 57,26, Cost.DisplayOnly);
@@ -410,8 +411,12 @@ abstract class EuphoriaBoardConstructor extends RBoard<EuphoriaCell> implements
 
 	double resourceArea[] = {31,10,59,30 };
 	double resourceArea_IIB[] = {26,10,59,30 };
-	double commodityArea[] = { 58,10,90,30};
-	double commodityAndResourceArea[] = {31,10,90,30};
+	double artifactsAndCommodities[] = {26,10,90,30 };
+
+	double commodityArea[] = { 57,10,85,20};
+	double commodityAndResourceArea[] = {41,10,84,22};//
+	double resourceOnlyArea[] = { 42,14,62,28};
+	
 	double marketBasketZone[] = {55,50,70,60};
 	/*
 	 * 
@@ -424,6 +429,8 @@ abstract class EuphoriaBoardConstructor extends RBoard<EuphoriaCell> implements
 	protected EuphoriaCell unusedMarkets = newCell(null,MarketChip.Subtype(),		EuphoriaId.UnusedMarkets, 5, 80,  Cost.DisplayOnly);
 	protected EuphoriaCell unusedDilemmas = newCell(null,DilemmaChip.Subtype(),		EuphoriaId.UnusedDilemmas, 5, 70,  Cost.DisplayOnly);
 	protected EuphoriaCell usedRecruits = newCell(null,	RecruitChip.Subtype(),		EuphoriaId.UsedRecruits, 5, 60,  Cost.DisplayOnly);
+	protected EuphoriaCell genericSink = newCell(null,EuphoriaChip.Nocard,	EuphoriaId.GenericSink, 38.4, 29, Cost.DisplayOnly);
+
 	protected EuphoriaCell unusedWorkers[] =
 			{
 			newCell(null,WorkerChip.Subtype(),EuphoriaId.UnusedWorkers,0, 16, 85,  Cost.DisplayOnly,null),

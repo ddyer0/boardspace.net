@@ -156,7 +156,6 @@ public abstract class cell<FINALTYPE
 			{ G.print(G.getStackTrace()); }
 		screenData = d; 
 	}
-	public int setLastSize() { return getScreenData().lastSize; }
 	public void setLastSize(int d) { getScreenData().lastSize = d; }
 	public void setCurrentRotation(double d) { getScreenData().current_rotation = d; }
 	public void setCurrentCenterX(int c) { getScreenData().current_center_x = c; }

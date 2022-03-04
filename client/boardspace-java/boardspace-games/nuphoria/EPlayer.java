@@ -45,7 +45,6 @@ EuphoriaCell water;				// one water per water
 EuphoriaCell food;
 EuphoriaCell bliss;
 EuphoriaCell energy;
-
 // likewise for resources and artifacts
 EuphoriaCell gold ;
 EuphoriaCell stone;
@@ -63,7 +62,6 @@ int morale = 1;					// current morale
 int totalWorkers = 0;			// workers in hand + on board.  Limit is 4
 int finalRandomizer = 0;		// final randomizer for this player, the final tie breaker
 int marketStars = 0;			// authority tokens on markets
-
 //
 // these variables reflect events on the current turn
 //
@@ -74,17 +72,36 @@ private boolean hasPeeked = false;		// has seen the new card
 private boolean hasUsedGeekTheOracle = false;
 private boolean hasGainedWorker = false;
 private boolean hasUsedBrianTheViticulturist = false;
+boolean hasUsedDarrenTheRepeater = false;
+
 private boolean mandatoryEquality = false;	// market penalty for mandatory equality
+int lostToAltruism = 0;			// lost resources to altryism this turn
+boolean someLostToAltruism = false;
 int bearsGained = 0;
+int balloonsGained = 0;
+int energyGainedThisTurn = 0;
+int commodityKnowledge = 0;	// differential for knowledge on commodity spaces, PmaiTheNurse
 
 boolean hasUsedSamuelTheZapper = false;		// true when we reroll additional workers 
 boolean usingSamuelTheZapper =false;		// true when we have paid and willretrieve
 int samuelTheZapperLevel = 0;				// the number of retrieved workers when we start
 boolean usingMwicheTheFlusher = false;		// true if actually paying mwiche 3 waters.
+boolean askedShaheenaTheDigger = false;		// true if traded stone for artifact
+int terriAuthorityHeight = 0;	//
+
+
+private boolean triggerPedroTheCollector = false;	// true if uses 3 artifacts
+public boolean getTriggerPedroTheCollector() { return triggerPedroTheCollector; }
+public void setTriggerPedroTheCollector(boolean v) 
+{ if(recruitAppliesToMe(RecruitChip.PedroTheCollector))
+	{ triggerPedroTheCollector = v; }
+}
 
 public EuphoriaCell placedWorkers[] = new EuphoriaCell[MAX_WORKERS];
 public void placeWorker(EuphoriaCell c)
-{   
+{   WorkerChip top = (WorkerChip)c.topChip();
+	b.Assert(top.color == color,"worker color matches");
+
 	if(c.rackLocation()==EuphoriaId.UnusedWorkers)
 	{    		
 		totalWorkers--;
@@ -147,13 +164,22 @@ public void startNewTurn(replayMode replay)
 	hasUsedGeekTheOracle = false;
 	hasGainedWorker = false;
 	bearsGained = 0;
+	lostToAltruism = 0;
+	someLostToAltruism = false;
+	balloonsGained = 0;
+	energyGainedThisTurn = 0;
+	commodityKnowledge = 0;
 	resultsInDoubles = false;
 	hasUsedJonathanTheGambler = false;
 	hasUsedBrianTheViticulturist = false;
 	usingSamuelTheZapper = false;
 	usingMwicheTheFlusher = false;
 	usedAlternateArtifact = null;
-	samuelTheZapperLevel = 0;
+	triggerPedroTheCollector = false;
+	askedShaheenaTheDigger = false;
+	usingMwicheTheFlusher = false;
+	commodityKnowledge = 0;
+	samuelTheZapperLevel = authority.height();
 	if(hasUsedSamuelTheZapper)
 	{	hasUsedSamuelTheZapper = false;
 		collectBenefit(Benefit.Morale,replay);
@@ -202,15 +228,15 @@ boolean incrementKnowledge(replayMode replay)
 public void setKnowledge(int n) { knowledge = n; }
 boolean decrementKnowledge() 
 	{ if(knowledge>MIN_KNOWLEDGE_TRACK) { knowledge--; return(true); } return(false); }
-boolean incrementMorale() 
+Benefit incrementMorale() 
 { 
-	if(morale>=3 && penaltyAppliesToMe(MarketChip.ConcertHallOfHarmoniousDischord))
-	{	MarketPenalty p = MarketChip.ConcertHallOfHarmoniousDischord.marketPenalty;
+	if(morale>=3 && penaltyAppliesToMe(MarketChip.IIB_ConcertHallOfHarmoniousDischord))
+	{	MarketPenalty p = MarketChip.IIB_ConcertHallOfHarmoniousDischord.marketPenalty;
 		//b.p1("inhibit morale gain");
 		b.logGameEvent(p.explanation);
-		return(false);
+		return(Benefit.Morale);
 	}
-	if(morale<MAX_MORALE_TRACK) { morale++; return(true); } return(false);
+	if(morale<MAX_MORALE_TRACK) { morale++; return(null); } return(Benefit.Morale);
 
 }
 private boolean decrementMorale() 
@@ -233,6 +259,7 @@ public void addArtifact(EuphoriaChip c)
 {	hasAddedArtifact = true;		// bookkeeping for GeekTheOracle and JonathanTheGambler
 	artifacts.addChip(c); 
 	if(c==ArtifactChip.Bear) { bearsGained++; }	// count for carythecarebear 
+	if(c==ArtifactChip.Balloons) { balloonsGained++; }	//count for lars the ballooner
 	//G.print("add a "+this+" ="+artifacts.height()+" "+morale);
 }
 public boolean setHasPeeked(boolean v) 
@@ -254,11 +281,11 @@ public void addFood(EuphoriaChip c) { food.addChip(c); }
 public EuphoriaChip getAuthorityToken() 
 {	if(authority.height()>0)
 		{
-		if(penaltyAppliesToMe(MarketChip.AthenaeumOfMandatoryGuidelines))
+		if(penaltyAppliesToMe(MarketChip.IIB_AthenaeumOfMandatoryGuidelines))
 			{
-			MarketPenalty p = MarketChip.AthenaeumOfMandatoryGuidelines.marketPenalty;
+			MarketPenalty p = MarketChip.IIB_AthenaeumOfMandatoryGuidelines.marketPenalty;
 			if(decrementMorale())
-				{ //b.p1("lose morale due to AthenaeumOfMandatoryGuidelines" );
+				{ //b.p1("lose morale due to IIB_AthenaeumOfMandatoryGuidelines" );
 				  b.logGameEvent(p.explanation);	
 				}
 			}
@@ -472,16 +499,35 @@ void doInit(EuphoriaCell rec,EuphoriaCell dil)
 	hasUsedSamuelTheZapper = false;
 	usingSamuelTheZapper =false;
 	usingMwicheTheFlusher = false;
+	askedShaheenaTheDigger = false;
+	triggerPedroTheCollector = false;
 	samuelTheZapperLevel = 0;
+	terriAuthorityHeight = authority.height();
 	originalHiddenRecruit = null;
 	originalActiveRecruit = null;
 	penaltyMoves = 0;
 	cardsLost = 0;
 	workersLost = 0;
 	bearsGained = 0;
+	lostToAltruism = 0;
+	someLostToAltruism = false;
+	balloonsGained = 0;
 	placements = 0;
+	energyGainedThisTurn = 0;
+	commodityKnowledge = 0;
 	retrievals = 0;
 	marketStars = 0;
+	
+	hasLostAWorker = false;
+	hasAddedArtifact = false;
+	hasAddedArtifactLast = false;
+	hasPeeked = false;		// has seen the new card
+	hasUsedGeekTheOracle = false;
+	hasGainedWorker = false;
+	hasUsedBrianTheViticulturist = false;
+	hasUsedDarrenTheRepeater = false;
+
+	
 	AR.setValue(placedWorkers,null);
 }
 
@@ -496,7 +542,25 @@ public long Digest(Random r)
 	v ^= r.nextLong()*(hasAddedArtifact?1:2);
 	v ^= r.nextLong()*(mandatoryEquality?2:1);
 	v ^= alternateArtifacts.Digest();
+	v ^= r.nextLong()*energyGainedThisTurn;
+	v ^= r.nextLong()*commodityKnowledge;
+	v ^= r.nextLong()*bearsGained;
+	v ^= r.nextLong()*lostToAltruism;	// somelosttoaltruism is not included
+	v ^= r.nextLong()*balloonsGained;
 	v ^= EuphoriaChip.Digest(r,usedAlternateArtifact);
+	v ^= r.nextLong()*(usingMwicheTheFlusher?1:0);
+	v ^= r.nextLong()*(askedShaheenaTheDigger?1:0);
+	v ^= r.nextLong()*(triggerPedroTheCollector?1:0);
+    v ^= r.nextLong()*(hasLostAWorker ? 1 : 0);
+    v ^= r.nextLong()*(hasAddedArtifact ? 1 : 0);
+    v ^= r.nextLong()*(hasAddedArtifactLast ? 1 : 0);
+    v ^= r.nextLong()*(hasPeeked ? 1 : 0);
+    v ^= r.nextLong()*(hasUsedGeekTheOracle ? 1 : 0);
+    v ^= r.nextLong()*(hasGainedWorker ? 1 : 0);
+    v ^= r.nextLong()*(hasUsedBrianTheViticulturist ? 1 : 0);
+    v ^= r.nextLong()*(hasUsedDarrenTheRepeater ? 1 : 0);
+    v ^= r.nextLong()*samuelTheZapperLevel;
+    v ^= r.nextLong()*terriAuthorityHeight;
 	return(v);
 }
 
@@ -513,7 +577,25 @@ public void sameBoard(EPlayer other)
 	G.Assert(dilemmaResolved==other.dilemmaResolved,"dilemma resolved mismatch");
 	G.Assert(alternateArtifacts.sameContents(other.alternateArtifacts),"alternate artifacts mismatch");
 	G.Assert(usedAlternateArtifact == other.usedAlternateArtifact,"used alternate artifact mismatch");
- 
+	G.Assert(energyGainedThisTurn==other.energyGainedThisTurn,"energy gained mismatch");
+	G.Assert(bearsGained == other.bearsGained, "bears gained mismatch");
+	G.Assert(lostToAltruism == other.lostToAltruism, "lostToAltruism mismatch");	// somelosttoaltruism is not included
+	G.Assert(balloonsGained == other.balloonsGained, "balloons gained mismatch");
+	G.Assert(commodityKnowledge==other.commodityKnowledge,"commodity dif mismatch");
+	G.Assert(usingMwicheTheFlusher==other.usingMwicheTheFlusher,"usingMwicheTheFlusher mismatch");
+	G.Assert(askedShaheenaTheDigger==other.askedShaheenaTheDigger,"askedShaheenaTheDigger mismatch");
+	G.Assert(triggerPedroTheCollector==other.triggerPedroTheCollector,"triggerPedroTheCollector mismatch");
+	G.Assert(   hasLostAWorker == other.hasLostAWorker, "hasLostAWorker mismatch");
+	G.Assert(    hasAddedArtifact == other.hasAddedArtifact, "hasAddedArtifact mismatch");
+	G.Assert(    hasAddedArtifactLast == other.hasAddedArtifactLast, "hasAddedArtifactLast mismatch");
+	G.Assert(    hasPeeked == other.hasPeeked, "hasPeeked mismatch");
+	G.Assert(    hasUsedGeekTheOracle == other.hasUsedGeekTheOracle, "hasUsedGeekTheOracle mismatch");
+	G.Assert(    hasGainedWorker == other.hasGainedWorker, "hasGainedWorker mismatch");
+	G.Assert(    hasUsedBrianTheViticulturist == other.hasUsedBrianTheViticulturist, "hasUsedBrianTheViticulturist mismatch");
+	G.Assert(    hasUsedDarrenTheRepeater == other.hasUsedDarrenTheRepeater, "hasUsedDarrenTheRepeater mismatch");
+	G.Assert(terriAuthorityHeight==other.terriAuthorityHeight,"terriAuthorityHeight mismatch");
+	G.Assert(samuelTheZapperLevel==other.samuelTheZapperLevel,"samuelTheZapperLevel mismatch");
+
 }
 public static void sameBoard(EPlayer p,EPlayer o)
 {	G.Assert((p==null)==(o==null),"board players mismatch");
@@ -543,12 +625,31 @@ public void copyFrom(EPlayer other)
     hasUsedSamuelTheZapper = other.hasUsedSamuelTheZapper;
     usingSamuelTheZapper = other.usingSamuelTheZapper;
     usingMwicheTheFlusher = other.usingMwicheTheFlusher;
+    askedShaheenaTheDigger = other.askedShaheenaTheDigger;
+    triggerPedroTheCollector = other.triggerPedroTheCollector;
     samuelTheZapperLevel = other.samuelTheZapperLevel;
+    terriAuthorityHeight = other.terriAuthorityHeight;
     originalHiddenRecruit = other.originalHiddenRecruit;
     originalActiveRecruit = other.originalActiveRecruit;
     bearsGained = other.bearsGained;
+    lostToAltruism = other.lostToAltruism;
+    someLostToAltruism = other.someLostToAltruism;
+    balloonsGained = other.balloonsGained;
+    energyGainedThisTurn = other.energyGainedThisTurn;
+    commodityKnowledge = other.commodityKnowledge;
     alternateArtifacts.copyFrom(other.alternateArtifacts);
     usedAlternateArtifact = other.usedAlternateArtifact;
+    
+    hasLostAWorker = other.hasLostAWorker;
+    hasAddedArtifact = other.hasAddedArtifact;
+    hasAddedArtifactLast = other.hasAddedArtifactLast;
+    hasPeeked = other.hasPeeked;
+    hasUsedGeekTheOracle = other.hasUsedGeekTheOracle;
+    hasGainedWorker = other.hasGainedWorker;
+    hasUsedBrianTheViticulturist = other.hasUsedBrianTheViticulturist;
+    hasUsedDarrenTheRepeater = other.hasUsedDarrenTheRepeater;
+
+    
     for(int lim=placedWorkers.length-1; lim>=0; lim--)
     {
     	placedWorkers[lim] = b.getCell(other.placedWorkers[lim]);
@@ -600,22 +701,35 @@ public boolean knowledgeCheck(int extraKnowledge,replayMode replay)			// check f
 	int know = totalKnowlege()+extraKnowledge;
 	int limit = KnowledgeLimit;
 	lostWorkerKnowledge = know;
-	if(penaltyAppliesToMe(MarketChip.TheCarousel))
+	if(penaltyAppliesToMe(MarketChip.IIB_TheCarousel))
 	{
 		limit = 14;
+	}
+
+	if(recruitAppliesToMe(RecruitChip.AminaTheBlissBringer))
+	{	// amina makes you immune to the carousel
+		if(know==16)
+			{ gainMorale(); 
+			}
+		if((know>=limit)&&(know<17))
+		{	//b.p1("saved by amina");
+			b.logGameEvent(SavedByAminaTheBlissBringer);
+		}
+		limit = 17;
+
 	}
 	if(know>=limit && !hasLostAWorker) 
 	{	
 		if(know-extraKnowledge<limit)
 		{	//b.p1("lost worker due to OrwellianOptimism");
-			MarketPenalty p = MarketChip.InstituteOfOrwellianOptimism.marketPenalty;
+			MarketPenalty p = MarketChip.IIB_InstituteOfOrwellianOptimism.marketPenalty;
 			b.logGameEvent(p.explanation);
 		}
 		
 		if(know<KnowledgeLimit)
 		{	// we're losing only due to penalty
 			//b.p1("lose worker due to the Carousel");
-			MarketPenalty p = MarketChip.TheCarousel.marketPenalty;
+			MarketPenalty p = MarketChip.IIB_TheCarousel.marketPenalty;
 			b.logGameEvent(p.explanation);
 		}
 
@@ -815,7 +929,7 @@ private Cost payUniqueArtifactPair(Cost residual,replayMode replay)
 			}
 		}
 	}
-	G.Assert(pairMask!=0,"must be a pair");
+	b.Assert(pairMask!=0,"must be a pair");
 	if(G.bitCount(pairMask)==2)
 	{
 		// must be using a wildcard for one
@@ -886,7 +1000,7 @@ boolean loseMorale(replayMode replay)	// retrieving workers without paying.  ret
 
 boolean gainMorale()
 {
-	return incrementMorale();
+	return (incrementMorale()==null);
 }
 
 //
@@ -1025,6 +1139,17 @@ Cost alternateCostForKadanTheInfiltrator(Cost cost)
 	}
 	return(cost);
 }
+private Cost alternateCostForJonTheHandyman(Cost cost)
+{	Cost newcost = null;
+	switch(cost)
+	{
+	case ConstructionSiteGold:	newcost = Cost.GoldOrCommodityX3; break;
+	case ConstructionSiteStone: newcost = Cost.StoneOrCommodityX3; break;
+	case ConstructionSiteClay: newcost = Cost.ClayOrCommodityX3; break;
+	default: return cost;
+	}
+	return newcost;
+}
 private Cost alternateCostForMichaelTheEngineer(Cost cost)
 {
 	switch(cost)
@@ -1106,10 +1231,51 @@ Cost alternateCostWithRecruits(EuphoriaCell dest,Cost cost)
 	alternateArtifacts.reInit();
 	if(b.variation.isIIB())
 	{
+	if((dest!=null) && recruitAppliesToMe(RecruitChip.GaryTheForgetter))
+	{
+		EuphoriaId loc = dest.rackLocation();
+		switch(loc)
+		{
+		case WorkerActivationA:
+		case WorkerActivationB:
+			switch(cost)
+			{
+			case Waterx3:	cost = Cost.Waterx3OrBlissx3; break;
+			case Energyx3:	cost = Cost.Energyx3OrBlissx3; break;
+			default: b.Error("not expecting cost "+cost); break;
+				
+			}
+			break;
+
+		default: break;
+		}
+	}
+	if((dest!=null) && recruitAppliesToMe(RecruitChip.MosiThePatron))
+	{	switch(dest.rackLocation())
+		{
+		default: break;
+		case IcariteWindSalon:
+		case WastelanderUseMarket:
+		case EuphorianUseMarket:
+		case SubterranUseMarket:
+			
+			switch(cost)
+			{
+			default: throw b.Error("Not expecting costs %s"+cost);
+			case Artifactx3:
+				cost = Cost.Artifactx3OrArtifactAndBliss;
+			}
+		}
+	}
+
+	if(recruitAppliesToMe(RecruitChip.JonTheAmateurHandyman))
+	{
+		cost = alternateCostForJonTheHandyman(cost);
+	}
 	if(recruitAppliesToMe(RecruitChip.AhmedTheArtifactDealer))
 		{
 		 // TODO: when AhmedTheArtifactDealer is in effect, modify the cost displays
-		 if((dest!=null) && (dest.rackLocation()==EuphoriaId.ArtifactMarket))
+		 if((dest!=null) && (dest.rackLocation()==EuphoriaId.ArtifactBazaar))
 		 {	 //b.p1("use Ahmed the artifact dealer");
 			 switch(cost)
 			 {
@@ -1201,7 +1367,7 @@ Cost alternateCostWithRecruits(EuphoriaCell dest,Cost cost)
 	if(verify && (alt!=null))
 		{ 
 		
-		G.Assert(cost==alt,"cached cost is %s but live cost is %s",alt,cost); 
+		b.Assert(cost==alt,"cached cost is %s but live cost is %s",alt,cost); 
 		}
 	else 
 		{
@@ -1209,6 +1375,10 @@ Cost alternateCostWithRecruits(EuphoriaCell dest,Cost cost)
 		}
 	
 	return(cost);
+}
+boolean hasArtifact(EuphoriaChip euphoriaChip)
+{	// for StorageOfInsufficientCapacity
+	return artifacts.containsChip(euphoriaChip);
 }
 boolean hasArtifactOrAlternate(ArtifactChip ch)
 {	if(artifacts.containsChip(ch)) { return(true); }
@@ -1230,12 +1400,22 @@ boolean hasArtifactOrAlternate(ArtifactChip ch)
 // without considering special rules that might apply to the transaction
 boolean canPay(EuphoriaCell dest,Cost item0)
 {	Cost item = alternateCostWithRecruits(dest,item0);
+	return canPayAlt(dest,item);
+}
+boolean canPayAlt(EuphoriaCell dest,Cost item)
+{
 	switch(item)
 	{
 	default: throw G.Error("Unexpected payment test for %s",item);
+	case Artifactx3OrArtifactAndBliss: 
+		return (canPayAlt(dest,Cost.Artifactx3) ||(( bliss.height()>=2) && (artifacts.height()>0)));
+	case Energyx3OrBlissx3: return((bliss.height()>=3) || (energy.height()>=3));
+	case Waterx3OrBlissx3: return((bliss.height()>=3) || (water.height()>=3));
 	
 	// agency of progressive backstabbing adds a commodity
-	
+	case StoneOrCommodityX3: return ((stone.height()>=1) || (totalCommodities()>=3));
+	case GoldOrCommodityX3: return ((gold.height()>=1) || (totalCommodities()>=3));
+	case ClayOrCommodityX3: return ((clay.height()>=1) || (totalCommodities()>=3));
 	case WaterAndCommodity:  return (water.height()>=1 && totalCommodities()>=2); 	
 	case EnergyAndCommodity: return (energy.height()>=1 && totalCommodities()>=2);
 	case FoodAndCommodity: return(food.height()>=1 && totalCommodities()>=2);
@@ -1774,7 +1954,7 @@ private Cost doFlartner(replayMode replay)
 void sacrificeWorker(EuphoriaCell c,replayMode replay)
 {
 	EuphoriaChip ch = c.removeTop();
-	G.Assert(ch.isWorker() && (ch.color==color),"expected one of our workers");
+	b.Assert(ch.isWorker() && (ch.color==color),"expected one of our workers");
 	if(c.onBoard) { unPlaceWorker(c); }
 	totalWorkers--;
 	if(replay!=replayMode.Replay) { b.animateSacrificeWorker(c,(WorkerChip)ch);}
@@ -1862,7 +2042,7 @@ Cost artifactChipBuggy(ArtifactChip which,Cost cost,replayMode replay)
 	}
 	else
 	{
-	G.Assert(alternateArtifacts.height()==0,"no alternats artifacts allowed");
+	b.Assert(alternateArtifacts.height()==0,"no alternats artifacts allowed");
 	artifacts.removeChip(which);	
 	// do not recycle the artifact, that's the bug
 	if(replay!=replayMode.Replay) { b.animateReturnArtifact(artifacts); }
@@ -1902,7 +2082,7 @@ private void checkHasPaidArtifact(ArtifactChip ch)
 		}
 	}
 	if(alt!=null)
-	{ b.p1("paid with alternate "+alt.id+" for "+(ch==null ? "any" : ch.id));
+	{	// b.p1("paid with alternate "+alt.id+" for "+(ch==null ? "any" : ch.id));
 		setUsedAlternate(alt); 
     }
 }
@@ -2024,7 +2204,7 @@ private Cost payCostArtifactx3(boolean andCommodity0,replayMode replay)
 	if(payCommodity) { shedOneCommodity(replay); andCommodity = false; }
 
 	if(penaltyAppliesToMe(MarketChip.CourthouseOfHastyJudgement))
-	{	G.Assert(!andCommodity,"shouldn't be combined");
+	{	b.Assert(!andCommodity,"shouldn't be combined");
 		return(payCostAlt(Cost.Artifactx3Only,replay));
 	}
 	
@@ -2039,7 +2219,8 @@ private Cost payCostArtifactx3(boolean andCommodity0,replayMode replay)
 	if((artifacts.height()==3)
 			&& (countArtifactPairs()==0)) 
 		{ 
-		G.Assert(payCostAlt(Cost.Artifactx3Only,replay)==null,"must succeed"); 
+		b.Assert(payCostAlt(Cost.Artifactx3Only,replay)==null,"must succeed"); 
+		setTriggerPedroTheCollector(true);
 		return(andCommodity ? Cost.Commodity : null);
 		}
 	return(andCommodity ? Cost.ArtifactX3AndCommodity : Cost.Artifactx3);
@@ -2095,6 +2276,45 @@ Cost payCostAlt(Cost item,replayMode replay)
 				
 	default: throw G.Error("Unexpected payment test for %s",item);
 	
+	case Artifactx3OrArtifactAndBliss:
+		if(artifacts.height()==1) 		// can't pay with multiple cards
+				{  sendBliss(2,replay); 
+				   sendArtifact(0,replay); 
+				   //b.p1("use mosi the patron");
+				   return(null); 
+				}				
+		if(bliss.height()<2)
+		{	// cant pay with bliss
+			return(payCostAlt(Cost.Artifactx3,replay));
+		}
+		//b.p1("can use mosi the patron");
+		return(item);
+
+	case Waterx3OrBlissx3:
+		if(bliss.height()<3) { return(payCostAlt(Cost.Waterx3,replay)); }
+		if(water.height()<3) { return(payCostAlt(Cost.Blissx3,replay)); }
+		return item;
+		
+	case Energyx3OrBlissx3:
+		if(bliss.height()<3) { return(payCostAlt(Cost.Energyx3,replay)); }
+		if(energy.height()<3) { return(payCostAlt(Cost.Blissx3,replay)); }
+		return item;
+		
+	case StoneOrCommodityX3:
+		if(stone.height()==0) { return(payCostAlt(Cost.CommodityX3,replay)); }
+		if(totalCommodities()<3) { return(payCostAlt(Cost.ConstructionSiteStone,replay)); }
+		return(item);
+		
+	case GoldOrCommodityX3:
+		if(gold.height()==0) { return(payCostAlt(Cost.CommodityX3,replay)); }
+		if(totalCommodities()<3) { return(payCostAlt(Cost.ConstructionSiteGold,replay)); }
+		return(item);
+		
+	case ClayOrCommodityX3:
+		if(clay.height()==0) { return(payCostAlt(Cost.CommodityX3,replay)); }
+		if(totalCommodities()<3) { return(payCostAlt(Cost.ConstructionSiteClay,replay)); }
+		return(item);
+		
 	case ResourceX3AndCommodity:
 		boolean payCommodity = (nKindsOfCommodity()==1);
 		boolean payResource = (nKindsOfResource()==1)||(totalResources()==3);
@@ -2135,6 +2355,8 @@ Cost payCostAlt(Cost item,replayMode replay)
 		sendBliss(1,replay);
 		return(payCostAlt(Cost.NonBlissAndCommodity,replay));
 
+	case CommodityX3:
+		return sendCommodity(3,Cost.CommodityX3,replay);
 	case CommodityX2:	
 		return sendCommodity(2,Cost.CommodityX2,replay);
 		
@@ -2158,14 +2380,16 @@ Cost payCostAlt(Cost item,replayMode replay)
 		{
 			EuphoriaChip shed = shedOneResource(replay);
 			if(item==Cost.ResourceAndKnowledgeAndMorale)
+			{
 			if((shed==EuphoriaChip.Gold))
 				{	// special effect of MichaelTheEngineer
-				G.Assert(recruitAppliesToMe(RecruitChip.MichaelTheEngineer),"should be MichaelTheEngineer");				
+				b.Assert(recruitAppliesToMe(RecruitChip.MichaelTheEngineer),"should be MichaelTheEngineer");				
 				incrementKnowledge(replay);
 				incrementMorale();
 				b.logGameEvent(MichaelTheEngineerGold,getPlayerColor(),getPlayerColor());
 				}
 			else { b.logGameEvent(MichaelTheEngineerAny); }
+			}
 			return(null);
 		}
 		return(item);
@@ -2175,7 +2399,7 @@ Cost payCostAlt(Cost item,replayMode replay)
 		if(!b.variation.isIIB() && (water.height()==0)) 
 			{ if(b.revision>=108)
 				{
-				G.Assert(knowledge<MAX_KNOWLEDGE_TRACK,"can gain knowledge");
+				b.Assert(knowledge<MAX_KNOWLEDGE_TRACK,"can gain knowledge");
 				incrementKnowledge(replay);
 				b.logGameEvent(MatthewTheThiefWater,getPlayerColor());
 				}
@@ -2187,7 +2411,7 @@ Cost payCostAlt(Cost item,replayMode replay)
 	case EnergyOrKnowledge:
 		if(!b.variation.isIIB() && (energy.height()==0)) 
 			{ if(b.revision>=108)
-				{G.Assert(knowledge<MAX_KNOWLEDGE_TRACK,"can gain knowledge");
+				{b.Assert(knowledge<MAX_KNOWLEDGE_TRACK,"can gain knowledge");
 				incrementKnowledge(replay);
 			  	b.logGameEvent(MatthewTheThiefEnergy,getPlayerColor());
 				}
@@ -2199,7 +2423,7 @@ Cost payCostAlt(Cost item,replayMode replay)
 	case FoodOrKnowledge:
 		if(!b.variation.isIIB() && (food.height()==0))
 			{ if(b.revision>=108)
-				{G.Assert(knowledge<MAX_KNOWLEDGE_TRACK,"can gain knowledge");
+				{b.Assert(knowledge<MAX_KNOWLEDGE_TRACK,"can gain knowledge");
 			     incrementKnowledge(replay);
 			     b.logGameEvent(MatthewTheThiefFood,getPlayerColor());
 				}
@@ -2304,7 +2528,7 @@ Cost payCostAlt(Cost item,replayMode replay)
 		return(Cost.Artifactx2);
 		
 	case Artifactx3Only:		// various markets.  Usually take 3 cards or a pair
-		G.Assert(artifacts.height()>=3,"not enough artifacts");
+		b.Assert(artifacts.height()>=3,"not enough artifacts");
 		if((artifacts.height()==3) || allOneArtifactType())
 			{ sendArtifacts(3,replay);
 			  return(null);  
@@ -2315,7 +2539,7 @@ Cost payCostAlt(Cost item,replayMode replay)
 	case ArtifactPair:
 		{
 		ArtifactChip ch = hasArtifactPair();
-		G.Assert(ch!=null,"has an artifact pair");
+		b.Assert(ch!=null,"has an artifact pair");
 		return payUniqueArtifactPair(Cost.ArtifactPair,replay);
 		}
 		
@@ -2323,7 +2547,7 @@ Cost payCostAlt(Cost item,replayMode replay)
 		if(artifacts.height()==1)
 		{	// only one way to do it.  Otherwise he gets to choose
 			if(b.revision<117)
-				{G.Assert((knowledge+2)<=MAX_KNOWLEDGE_TRACK,"knowledge <=4");
+				{b.Assert((knowledge+2)<=MAX_KNOWLEDGE_TRACK,"knowledge <=4");
 				incrementKnowledge(replay);
 				incrementKnowledge(replay);
 				}
@@ -2336,7 +2560,7 @@ Cost payCostAlt(Cost item,replayMode replay)
 		// this is used when brian the viticulturist has to discard a card
 		// and he has no choice about which one to discard because he has
 		// to preserve his pair.
-		G.Assert((hasArtifactPair()!=null)
+		b.Assert((hasArtifactPair()!=null)
 				&& ((artifacts.height()==3)
 				&& !penaltyAppliesToMe(MarketChip.CourthouseOfHastyJudgement)),"must be forced artifact");
 		if(artifacts.chipAtIndex(0)==artifacts.chipAtIndex(1)) { artifacts.removeChipAtIndex(2); }
@@ -2348,7 +2572,7 @@ Cost payCostAlt(Cost item,replayMode replay)
 		// this is special logic for BrianTheViticulturist
 		if(morale<=artifacts.height()) 
 			{ return(Cost.Morale_Artifactx3); } 	// have to interact
-		G.Assert(morale>=2,"morale>=2");
+		b.Assert(morale>=2,"morale>=2");
 		decrementMorale();	
 		if(b.revision<123)
 		{
@@ -2367,7 +2591,7 @@ Cost payCostAlt(Cost item,replayMode replay)
 		return payCostArtifactx3(true,replay);
 		
 	case Morale_Resourcex3:
-		G.Assert(morale>=2,"morale>=2");
+		b.Assert(morale>=2,"morale>=2");
 		decrementMorale();
 		//$FALL-THROUGH$
 	case Resourcex3:	// nimbus loft
@@ -2389,7 +2613,7 @@ Cost payCostAlt(Cost item,replayMode replay)
 			}
 		return Cost.NonBlissCommodity;
 	case Morale_BlissOrFoodPlus1:
-		G.Assert(morale>=2,"morale>=2");
+		b.Assert(morale>=2,"morale>=2");
 		decrementMorale();
 		//$FALL-THROUGH$
 	case BlissOrFoodPlus1:	// breeze bar and sky lounge with BrianTheViticulturist
@@ -2890,21 +3114,21 @@ Cost payCostAlt(Cost item,replayMode replay)
 		return(artifactx2OrSpecific(ArtifactChip.Balloons,replay));
 
 	case Knowledge:
-		G.Assert((knowledge+1)<=MAX_KNOWLEDGE_TRACK,"knowledge <=2");
+		b.Assert((knowledge+1)<=MAX_KNOWLEDGE_TRACK,"knowledge <=2");
 		incrementKnowledge(replay);
 		return(null);
 		
 	case Knowledgex2:
-		G.Assert((knowledge+2)<=MAX_KNOWLEDGE_TRACK,"knowledge <=4");
+		b.Assert((knowledge+2)<=MAX_KNOWLEDGE_TRACK,"knowledge <=4");
 		incrementKnowledge(replay);
 		incrementKnowledge(replay);
 		return(null);
 	case Morale:
-		G.Assert(morale>=2,"morale>=2");
+		b.Assert(morale>=2,"morale>=2");
 		decrementMorale();
 		return(null);
 	case Moralex2:
-		G.Assert(morale>=3,"morale>=3");
+		b.Assert(morale>=3,"morale>=3");
 		decrementMorale();
 		decrementMorale();
 		return(null);
@@ -3109,48 +3333,76 @@ Cost payCostAlt(Cost item,replayMode replay)
 
 // get different mixes of food and knowledge depending
 // on the knowledge of the workers in the farm.
-boolean doFoodSelection(EuphoriaBoard b,replayMode replay)
-{	int know = b.totalKnowledgeOnFarm();
+Benefit doFoodSelection(EuphoriaBoard b,replayMode replay,int know)
+{	int n = 1;
+
 	if(hasActiveRecruit(Allegiance.Wastelander) 
 			&& b.getAllegianceValue(Allegiance.Wastelander)>=ALLEGIANCE_TIER_1)
 	{	// get extra food if you have the correct allegiance
 		boolean secrets = penaltyAppliesToMe(MarketChip.RegistryOfPersonalSecrets);
-		if(secrets) {MarketChip.RegistryOfPersonalSecrets.logGameEvent(b,NoExtraFood); }
+		if(secrets)
+			{MarketChip.RegistryOfPersonalSecrets.logGameEvent(b,NoExtraFood); }
 		else 
-		{ addFood(b.getFood()); 
-			if(replay!=replayMode.Replay)
-				{  b.animateNewFood(food);
-				}
-			}
-		}
+		{			if(recruitAppliesToMe(RecruitChip.ChristineTheAnarchist))
+		{
+			b.logGameExplanation(NoBonusChristineTheAnarchist,"Food");
+		}else
+		{ n++;	// 1 extra
+		}}}
+	
 	if(know<=4) 
-	{
-		addFood(b.getFood());
+	{	
 		b.incrementAllegiance(Allegiance.Wastelander,replay);
-		if(replay!=replayMode.Replay) { b.animateNewFood(food); }
 	}
 	else if(know<=8)
-	{
-		addFood(b.getFood());
+	{	
 		decrementKnowledge();
-		if(replay!=replayMode.Replay) { b.animateNewFood(food); }
 	}
 	else
 	{	// handles joseph the antiquer
-		int n = doMonotony(2);
+		n ++;	// to 2 or 3
 		incrementKnowledge(replay);
-		if(b.variation.isIIB() && (n==2) && recruitAppliesToMe(RecruitChip.JosephTheAntiquer))
-		{
-			b.makeContinuation(Benefit.ArtifactOrFoodX2,Function.Return,this);
-		}
-		else
-		{
-		doFood(n,b,replay);
-		}
-
 	}
-	return(true);
+	n = doMonotony(n);
+	if(b.variation.isIIB())
+	{	
+		Benefit bene = null;
+		if(	(n>=2)
+			&& recruitAppliesToMe(RecruitChip.JosephTheAntiquer))
+		{	b.logGameExplanation(ArtifactInPlaceOf,"Food");
+			switch(n)
+			{	
+			case 2:	bene = Benefit.ArtifactOrFoodX2; break;
+			case 3: bene = Benefit.ArtifactOrFoodX3; break;
+			default: throw G.Error("Not expecting %s",n);
+			}	
+		}
+		if((know>=9) && recruitAppliesToMe(RecruitChip.GwenTheMinerologist))
+			{
+			b.logGameExplanation(ResourceInPlaceOfCommodity,"Clay","Food");
+			//b.p1("use gwen for food");
+			if(bene!=null) 
+				{
+				switch(bene)
+				{
+				case ArtifactOrFoodX2:	bene = Benefit.ArtifactOrClayOrFoodX2; break;
+				case ArtifactOrFoodX3:	bene = Benefit.ArtifactOrClayOrFoodX3; break;
+				default: throw G.Error("Not expecting %s",n);
+				}
+				//b.p1("both joseph and gren for clay");
+				}
+				else 
+				{
+					doFood(n-1,b,replay);
+					bene = Benefit.ClayOrFood;
+				}
+			}
+		if(bene!=null) { return(bene); }
+		}
+	doFood(n,b,replay);
+	return null;
 }
+
 boolean hasMyAuthorityToken(EuphoriaCell c)
 {
 	return(c.containsChip(myAuthority));
@@ -3170,8 +3422,9 @@ boolean recruitAppliesToMe(RecruitChip c)
 
 //get different mixes of energy and knowledge depending
 //on the knowledge of the workers in the farm.
-boolean doPowerSelection(EuphoriaBoard b,replayMode replay)
-{	int know = b.totalKnowledgeOnGenerator();
+Benefit doPowerSelection(EuphoriaBoard b,replayMode replay,int know)
+{	int n = 1;
+
 	if(hasActiveRecruit(Allegiance.Euphorian) 
 			&& b.getAllegianceValue(Allegiance.Euphorian)>=ALLEGIANCE_TIER_1)
 	{	// get extra food if you have the correct allegiance
@@ -3181,45 +3434,80 @@ boolean doPowerSelection(EuphoriaBoard b,replayMode replay)
 			MarketChip.RegistryOfPersonalSecrets.logGameEvent(b,NoExtraEnergy);
 		}
 		else 
-		{ doEnergy(1,b,replay);
-		}
+		{if(recruitAppliesToMe(RecruitChip.ChristineTheAnarchist))
+			{
+				b.logGameExplanation(NoBonusChristineTheAnarchist,"Energy");
+			}else
+		{ n++;	// 1 extra
+		}}
 	}
+	
 	if(know<=4) 
-	{	doEnergy(1,b,replay);
+	{	
 		b.incrementAllegiance(Allegiance.Euphorian,replay);
 	}
 	else if(know<=8)
-	{	doEnergy(1,b,replay);
+	{	
 		decrementKnowledge();
 	}
 	else
 	{	// handles joseph the antiquer
-		int n = doMonotony(2);
+		n ++;	// to 2 or 3
 		incrementKnowledge(replay);
-		if(b.variation.isIIB() && (n==2) && recruitAppliesToMe(RecruitChip.JosephTheAntiquer))
-		{
-			b.makeContinuation(Benefit.ArtifactOrEnergyX2,Function.Return,this);
-		}
-		else
-		{
-		doEnergy(n,b,replay);
-		}
 	}
-	return(true);
+	n = doMonotony(n);
+	if(b.variation.isIIB())
+		{
+		Benefit bene = null;
+		if( (n>=2) 
+			&& recruitAppliesToMe(RecruitChip.JosephTheAntiquer))
+		{	b.logGameExplanation(ArtifactInPlaceOf,"Energy");
+			switch(n)
+			{	
+			case 2:	bene = Benefit.ArtifactOrEnergyX2; break;
+			case 3: bene = Benefit.ArtifactOrEnergyX3; break;
+			default: throw G.Error("Not expecting %s",n);
+			}
+		}
+		if((know>=9) && recruitAppliesToMe(RecruitChip.GwenTheMinerologist))
+		{
+		//b.p1("use gwen for energy");
+		b.logGameExplanation(ResourceInPlaceOfCommodity,"Gold","Energy");
+		if(bene!=null) 
+			{ 
+			
+			switch(bene)
+			{
+			case ArtifactOrEnergyX2:	bene = Benefit.ArtifactOrGoldOrEnergyX2; break;
+			case ArtifactOrEnergyX3:	bene = Benefit.ArtifactOrGoldOrEnergyX3; break;
+			default: throw G.Error("Not expecting %s",n);
+			}
+			//b.p1("both joseph and gren for gold");
+			}
+			else {
+				doEnergy(n-1,b,replay);
+				bene = Benefit.GoldOrEnergy;
+			}
+		
+		}
+		if(bene!=null) { return(bene); }		
+		}
+	
+	return doEnergy(n,b,replay);
 }
 
 //get different mixes of food and knowledge depending
 //on the knowledge of the workers in the farm.
-boolean doWaterSelection(EuphoriaBoard b,replayMode replay)
+Benefit doWaterSelection(EuphoriaBoard b,replayMode replay,int know)
 {	
-	int know = b.totalKnowledgeOnAquifer();
+	int n = 1;
 	if(recruitAppliesToMe(RecruitChip.FaithTheElectrician))
-	{
+		{
 		if(artifacts.height()==0) 
-			{	doEnergy(1,b,replay);
+			{	doEnergy(1,b,replay);	// yes, it's supposed to be energy
 				b.logGameEvent(FaithTheHydroelectricianEffect);
 			}
-	}
+		}
 	if(hasActiveRecruit(Allegiance.Subterran) 
 			&& b.getAllegianceValue(Allegiance.Subterran)>=ALLEGIANCE_TIER_1)
 	{	// get extra food if you have the correct allegiance
@@ -3230,105 +3518,127 @@ boolean doWaterSelection(EuphoriaBoard b,replayMode replay)
 		}
 		else
 		{ 
-			doWater(1,b,replay);
+			if(recruitAppliesToMe(RecruitChip.ChristineTheAnarchist))
+			{
+				b.logGameExplanation(NoBonusChristineTheAnarchist,"Water");
+			}else
+			{n++;	// 1 extra
+			}
 		}
 	}
+	
 	if(know<=4) 
-	{	doWater(1,b,replay);
+	{	
 		b.incrementAllegiance(Allegiance.Subterran,replay);
 	}
 	else if(know<=8)
-	{	doWater(1,b,replay);
+	{	
 		decrementKnowledge();
 	}
 	else
 	{	// handles joseph the antiquer
-		int n = doMonotony(2);
+		n++;	// to 2 or 3
 		incrementKnowledge(replay);
-		if(b.variation.isIIB() && (n==2) && recruitAppliesToMe(RecruitChip.JosephTheAntiquer))
-		{
-			//b.p1("try joseph2");
-			b.makeContinuation(Benefit.ArtifactOrWaterX2,Function.Return,this);
+	}	
+	n = doMonotony(n);
+	if(b.variation.isIIB())
+	{	Benefit bene = null;
+		if( (n>=2) 
+			&& recruitAppliesToMe(RecruitChip.JosephTheAntiquer))
+		{	b.logGameExplanation(ArtifactInPlaceOf,"Water");
+			//b.p1("try the antiquer for water ");
+			switch(n)
+			{	
+			case 2:	bene = Benefit.ArtifactOrWaterX2; break;
+			case 3: bene = Benefit.ArtifactOrWaterX3; break;
+			default: throw G.Error("Not expecting %s",n);
+			}
 		}
-		else
+		if((know>=9) && recruitAppliesToMe(RecruitChip.GwenTheMinerologist))
 		{
-		doWater(n,b,replay);
+			b.logGameExplanation(ResourceInPlaceOfCommodity,"Stone","Water");
+			//b.p1("use gwen for water");
+			if(bene!=null) 
+			{
+				switch(bene)
+				{
+				case ArtifactOrWaterX2:	bene = Benefit.ArtifactOrStoneOrWaterX2; break;
+				case ArtifactOrWaterX3:	bene = Benefit.ArtifactOrStoneOrWaterX3; break;
+				default: throw G.Error("Not expecting %s",n);
+				}
+				//b.p1("both joseph and gren for stone");
+				}
+				else {
+					doWater(n-1,b,replay);
+					bene = Benefit.StoneOrWater;
+				}
 		}
-	}
-	return(true);
+		if(bene!=null) { return(bene); }		
+		}
+
+	doWater(n,b,replay);
+	return null;
 }
+
 //get different mixes of food and knowledge depending
 //on the knowledge of the workers in the farm.
-void doCommoditySelection(EuphoriaBoard b,replayMode replay)
-{	int know = b.totalKnowledgeOnCloudMine();
+Benefit doBlissSelection(EuphoriaBoard b,replayMode replay,int know)
+{	
+	int n = 1;
 
 	if(hasActiveRecruit(Allegiance.Icarite) 
 			&& b.getAllegianceValue(Allegiance.Icarite)>=ALLEGIANCE_TIER_1)
 	{	// get extra food if you have the correct allegiance
 		boolean secrets = penaltyAppliesToMe(MarketChip.RegistryOfPersonalSecrets);
 		if(secrets)  { MarketChip.RegistryOfPersonalSecrets.logGameEvent(b,NoExtraBliss); }
-		else { doBliss(1,b,replay);
+		else 
+			{ 
+			if(recruitAppliesToMe(RecruitChip.ChristineTheAnarchist))
+			{
+				b.logGameExplanation(NoBonusChristineTheAnarchist,"Bliss");
+			}else
+			{				n++;	// +1 extra
 			} 
+			}
 	}
-	if(recruitAppliesToMe(RecruitChip.PmaiTheNurse))
-	{
-		switch(know)
-		{
-		case 9:
-		case 5:
-			// decreasing by 1 will change the choices
-			b.setPmai(Allegiance.Icarite,know);		
-			return ;
-		default:
-			
-			break;
-		}
-	}
-	dontPmaiTheNurse(Allegiance.Icarite,replay,know);
-}
 
-void doPmaiTheNurse(Allegiance bene,replayMode replay,int know)
-	{
-		dontPmaiTheNurse(bene,replay,know-1);
-	}
-void dontPmaiTheNurse(Allegiance bene,replayMode replay,int know)
-	{
 	if(know<=4) 
 	{
-		doCommodity(1,bene,replay);
-		b.incrementAllegiance(bene,replay);
+		b.incrementAllegiance(Allegiance.Icarite,replay);
 	}
 	else if(know<=8)
 	{
-		doCommodity(1,bene,replay);
 		decrementKnowledge();
 	}
 	else
-	{	
+	{	n++;		// to two or 3
 		boolean knowMore = incrementKnowledge(replay);
-		if(b.variation.isIIB())
-		{
-		int n = doMonotony(2);
 		if(knowMore
-				&& (bene==Allegiance.Icarite)
-				&& canPay(null,Cost.Knowledge)
+				&& canPayAlt(null,Cost.Knowledge)
 				&& recruitAppliesToMe(RecruitChip.BrendaTheKnowledgeBringer))
-		{
-			b.makeBrenda(this);
+		{	// option to also lose knowledge and gain artifact
+			b.makeBrenda(this);	// proceed normally
 		}
-		if(b.variation.isIIB() && (n==2) && recruitAppliesToMe(RecruitChip.JosephTheAntiquer))
-		{
-			b.makeContinuation(Benefit.ArtifactOrBlissX2,Function.Return,this);
+	}		
+	n = doMonotony(n);
+	if(b.variation.isIIB() 
+			&& (n>=2)
+			&& recruitAppliesToMe(RecruitChip.JosephTheAntiquer))
+		{	b.logGameExplanation(ArtifactInPlaceOf,"Bliss");
+			switch(n)
+			{	
+			case 2:	return Benefit.ArtifactOrBlissX2;
+			case 3: return Benefit.ArtifactOrBlissX3;
+			default: throw G.Error("Not expecting %s",n);
+			}
 		}
 		else
 		{
-		doCommodity(n,bene,replay);
-		}}	// end of IIB complications
-		else {
-			doCommodity(2,bene,replay);
+		doBliss(n,b,replay);
+		return null;
 		}
 	}
-}
+
 // authority token and influence for the main territory track
 private void doAuthorityAndInfluence(EuphoriaBoard b,Allegiance aa,replayMode replay,boolean influence)
 {
@@ -3458,14 +3768,14 @@ void confirmPayment(Cost cost,Cost actualCost,CellStack dest,replayMode replay)
 	case ResourceAndKnowledgeAndMoraleOrArtifact:	// either michael the engineer or flartner the luddite
 		if(dest.top().topChip().isArtifact())
 		{
-			G.Assert(recruitAppliesToMe(RecruitChip.FlartnerTheLuddite),"should be flartner");
+			b.Assert(recruitAppliesToMe(RecruitChip.FlartnerTheLuddite),"should be flartner");
 			incrementMorale();
 			b.logGameEvent(FlartnerTheLudditeEffect,getPlayerColor());
 			break;
 		}
 		//$FALL-THROUGH$
 	case ResourceAndKnowledgeAndMorale:
-		G.Assert(recruitAppliesToMe(RecruitChip.MichaelTheEngineer),"should be michael");
+		b.Assert(recruitAppliesToMe(RecruitChip.MichaelTheEngineer),"should be michael");
 		if(dest.top().topChip()==EuphoriaChip.Gold)
 			{
 			incrementKnowledge(replay);
@@ -3497,7 +3807,7 @@ void confirmPayment(Cost cost,Cost actualCost,CellStack dest,replayMode replay)
 	case Cardx4:
 	case Cardx3:
 	case Cardx2:
-	case Card:
+	case Card:			// discards due to morale checks, not payments
 	case Artifact:
 	case ConstructionSiteStone:
 	case ConstructionSiteGold:
@@ -3519,7 +3829,6 @@ void confirmPayment(Cost cost,Cost actualCost,CellStack dest,replayMode replay)
 		
 	case Energyx4_Card:
 	case Waterx4_Card:
-	case Artifactx2:
 	case Water:		// with mwiche these can be unresolved
 	case Energy:
 	case Food:
@@ -3531,12 +3840,15 @@ void confirmPayment(Cost cost,Cost actualCost,CellStack dest,replayMode replay)
 	case Waterx3:
 	case Energyx3:
 
-		
+		break;
+
 	case Artifactx3:
+	case Artifactx2:
 	case Morale_Artifactx3:
-		if(b.droppedDestStack.size()==2)
-		{
-			checkHasPaidArtifact(null);		// any wildcard artifact in a pair
+		{	
+		int ds = b.droppedDestStack.size();
+		if(ds==3) { setTriggerPedroTheCollector(true); }
+		if(ds==2) {	checkHasPaidArtifact(null);	}// any wildcard artifact in a pair
 		}
 		break;
 		
@@ -3590,12 +3902,18 @@ void confirmPayment(Cost cost,Cost actualCost,CellStack dest,replayMode replay)
 	}
 }
 private void artifactIsDest(CellStack dest)
-{
+{	int n = artifacts.height();
 	for(int lim=dest.size()-1; lim>=0; lim--)
 	{
 		EuphoriaCell c = dest.elementAt(lim);
-		if(c.rackLocation()==EuphoriaId.PlayerArtifacts) { hasAddedArtifact = true; }
-	}
+		if(c.rackLocation()==EuphoriaId.PlayerArtifacts) 
+			{ hasAddedArtifact = true; 
+			  n--;
+			  EuphoriaChip chip = artifacts.chipAtIndex(n);
+			  if(chip==ArtifactChip.Balloons) { balloonsGained++; }
+			  else if(chip==ArtifactChip.Bear) { bearsGained++; }
+			  }
+			}
 }
 /**
  * come here to finalize a benefit that involved a user interaction.  Put the stuff in
@@ -3703,36 +4021,67 @@ void satisfyBenefit(replayMode replay,Benefit benefit,CellStack dest)
 	case IcariteInfluenceAndCardx2:		// breeze bar, take 2 cards 1 at a time
 	case IcariteAuthorityAndInfluence:	// other icarite spaces can get a card
 	case Artifact:
+	case FirstArtifact:
 	case ResourceOrCommodity:
+	case FreeArtifact:
 	case Artifactx2for1:
+	case StoneOrWater:
+	case GoldOrEnergy:
+	case ClayOrFood:
 		if(dest!=null)
-			{G.Assert(dest.size()==1,"should be one resouce");
+			{b.Assert(dest.size()==1,"should be one resouce");
 			}
 		break;
 		
+	case ArtifactOrGoldOrEnergyX2:
+	case ArtifactOrGoldOrEnergyX3:
+		if(b.hasTaken(b.goldMine))
+		{
+			b.logGameEvent(UseGwenTheMinerologist,"Gold","Energy");
+		}
+		//$FALL-THROUGH$
+	case ArtifactOrStoneOrWaterX2:
+	case ArtifactOrStoneOrWaterX3:
+		if(b.hasTaken(b.quarry))
+		{
+			b.logGameEvent(UseGwenTheMinerologist,"Stone","Water");
+		}
+		//$FALL-THROUGH$
+	case ArtifactOrClayOrFoodX2:
+	case ArtifactOrClayOrFoodX3:		
+	    if(b.hasTaken(b.clayPit))
+	    {
+	    	b.logGameEvent(UseGwenTheMinerologist,"Clay","Food");
+	    }
+		//$FALL-THROUGH$
 	case ArtifactOrWaterX2:
 	case ArtifactOrBlissX2:
 	case ArtifactOrFoodX2:
 	case ArtifactOrEnergyX2:
+	case ArtifactOrEnergyX3:
+	case ArtifactOrBlissX3:
+	case ArtifactOrFoodX3:
+	case ArtifactOrWaterX3:	
 		if(dest.size()==1)
 		{
 			b.logGameEvent(UseJosephTheAntiquer);
 		}
 		break;
 	case Commodityx3:
-		if(dest!=null) { G.Assert(dest.size()==3,"should be 3 commodities"); }		
+		if(dest!=null) { b.Assert(dest.size()==3,"should be 3 commodities"); }		
 		break;
 	case Commodityx2:
-		if(dest!=null) { G.Assert(dest.size()==2,"should be 2 commodities"); }
+	case ResourceAndCommodity:
+		if(dest!=null) { b.Assert(dest.size()==2,"should be 2 items"); }
 		break;
-	default: throw G.Error("Not expecting to collect deferred benefit %s",benefit);
+	default: throw b.Error("Not expecting to collect deferred benefit %s",benefit);
 	}
 }
 
 
 // place a star on one of the markets or in the market territory
 // and gain influence on the authority track.
-boolean collectMarketAuthority(EuphoriaBoard b,Allegiance a,replayMode replay,boolean influence)
+Benefit collectMarketAuthority(EuphoriaBoard b,Benefit bene,Allegiance a,replayMode replay,boolean influence)
 {	EuphoriaCell mA = b.getMarketA(a);
 	EuphoriaCell mB = b.getMarketB(a);
 	EuphoriaCell mC = b.getAvailableAuthorityCell(a);
@@ -3749,21 +4098,21 @@ boolean collectMarketAuthority(EuphoriaBoard b,Allegiance a,replayMode replay,bo
 			else if(marketAvailableB) { doMarketAndInfluence(b,replay,a,mB,influence); }
 			else if(territoryAvailable) { doAuthorityAndInfluence(b,a,replay,influence); }
 			else { doInfluence(b,replay,a); }	// not an error if there is no place to put a star
-		return(true);
+		return(null);
 		}
-		return(false);	// have to decide
+		return(bene);	// have to decide
 }
 
-// limit increases of commodities due to market penalty LotteryOfDiminishingReturns
+// limit increases of commodities due to market penalty IIB_LotteryOfDiminishingReturns
 int doLottery(int n,EuphoriaCell c)
 {
 	int height = c.height();
 	if((height+n>2)
-		&& penaltyAppliesToMe(MarketChip.LotteryOfDiminishingReturns))
+		&& penaltyAppliesToMe(MarketChip.IIB_LotteryOfDiminishingReturns))
 		{  
 		n = Math.min(n, 2-height);
-		MarketPenalty mp = MarketChip.LotteryOfDiminishingReturns.marketPenalty;
-		//b.p1("limit commodities due to LotteryOfDiminishingReturns ");
+		MarketPenalty mp = MarketChip.IIB_LotteryOfDiminishingReturns.marketPenalty;
+		//b.p1("limit commodities due to IIB_LotteryOfDiminishingReturns ");
 		b.logGameEvent(mp.explanation);
 		}
 	return(n);
@@ -3782,47 +4131,71 @@ void doWater(int n0,EuphoriaBoard b,replayMode replay)
 	for(int i=0;i<n;i++) { addWater(b.getWater()); if(replay!=replayMode.Replay) { b.animateNewWater(water); }}
 }
 
-void doEnergy(int n0,EuphoriaBoard b,replayMode replay)
+Benefit doEnergy(int n0,EuphoriaBoard b,replayMode replay)
 {	
 	int n = doLottery(n0,energy);
+	int egg = energyGainedThisTurn;
+	energyGainedThisTurn += n;
 	for(int i=0;i<n;i++) { addEnergy(b.getEnergy()); if(replay!=replayMode.Replay) { b.animateNewEnergy(energy); }}
+	if((egg<3) 
+			&& (energyGainedThisTurn>=3)
+			&& recruitAppliesToMe(RecruitChip.FrazerTheMotivator))
+	{
+		//b.p1("use frazerthemotivator for "+n0);
+		energy.removeTop();   // take one back
+		return Benefit.Commodity;
+	}
+	return null;
 }
 
-void doCommodity(int n,Allegiance type,replayMode replay)
-{
-	switch(type)
-	{
-	default: throw G.Error("Not expecting %s",type);
-	case Icarite:	doBliss(n,b,replay); break;
-	case Subterran: doWater(n,b,replay); break;
-	case Wastelander: doFood(n,b,replay); break;
-	case Euphorian: doEnergy(n,b,replay); break;
-	}
-}
-private void doClay(int n,EuphoriaBoard b,replayMode replay)
-{	while(n-- > 0)
+private void doClay(int n0,EuphoriaBoard b,replayMode replay)
+{	int n = doForcedAltruism(n0);
+	while(n-- > 0)
 	{
 	addClay(b.getClay());		
 	if(replay!=replayMode.Replay) { b.animateNewClay(clay); }
 	}
 }
-private void doGold(int n,EuphoriaBoard b,replayMode replay)
-{	while(n-- > 0)
+private void doGold(int n0,EuphoriaBoard b,replayMode replay)
+{	int n = doForcedAltruism(n0);
+	while(n-- > 0)
 	{
 	addGold(b.getGold());		
 	if(replay!=replayMode.Replay) { b.animateNewGold(gold); }
 	}
 }
-private void doStone(int n,EuphoriaBoard b,replayMode replay)
-{	while(n-- > 0)
+int doForcedAltruism(int n)
+{
+	if(penaltyAppliesToMe(MarketChip.IIB_PalaceOfForcedAltruism))
+	{
+		int tot = totalResources();
+		int newn = Math.min(Math.max(0,3-tot),3);
+		if(newn<n)
+		{	b.p1("lose resoruces to altruism");
+			int lost = (n-newn);
+			b.logGameEvent(LoseResourcesFromPalace,""+lost);
+			lostToAltruism += lost;
+			someLostToAltruism = true;
+			return(newn);
+		}
+	}
+	return n;
+}
+private void doStone(int n0,EuphoriaBoard b,replayMode replay)
+{	
+	int n = doForcedAltruism(n0);
+	while(n-- > 0)
 	{
 	addStone(b.getStone());		
 	if(replay!=replayMode.Replay) { b.animateNewStone(stone); }
 	}
 }
-public void doArtifact(int n,EuphoriaBoard b,replayMode replay)
+public Benefit doArtifact(int n,EuphoriaBoard b,replayMode replay)
 {	// IIB can't just give you an artifact
-	b.assert_isV12();
+	if(b.variation.isIIB())
+	{	G.Assert(n==1,"only one");
+		return Benefit.Artifact;
+	}
 	while(n-- > 0)
 	{
 		EuphoriaChip a = b.getArtifact();
@@ -3831,13 +4204,16 @@ public void doArtifact(int n,EuphoriaBoard b,replayMode replay)
 			if(replay!=replayMode.Replay) { b.animateNewArtifact(artifacts); }			
 		}
 	}
+	return(null);
 }
+
+// gain 1 less commodity, but at least 1
 public int doMonotony(int n)
 {
-	if((n>1) && penaltyAppliesToMe(MarketChip.TheaterOfEndlessMonotony))
+	if((n>1) && penaltyAppliesToMe(MarketChip.IIB_TheaterOfEndlessMonotony))
 	{
-		MarketPenalty p = MarketChip.TheaterOfEndlessMonotony.marketPenalty;
-		//b.p1("lose commodity due to TheaterOfEndlessMonotony"); tested feb 6
+		MarketPenalty p = MarketChip.IIB_TheaterOfEndlessMonotony.marketPenalty;
+		//b.p1("lose commodity due to IIB_TheaterOfEndlessMonotony"); tested feb 6
 		b.logGameEvent(p.explanation);
 		return(n-1);
 	}
@@ -3845,7 +4221,16 @@ public int doMonotony(int n)
 }
 boolean collectBenefitOrElse(Benefit benefit,replayMode replay)
 {
-	return G.Assert(collectBenefit(benefit,replay),"collection must succeed");
+	return G.Assert(collectBenefit(benefit,replay)==null,"collection must succeed");
+}
+private void checkGaryTheForgetter()
+{
+	if(recruitAppliesToMe(RecruitChip.GaryTheForgetter))
+	{	//b.p1("use gary the forgetter");
+		b.logGameEvent("lose 2 Knowledge (Gary the Forgetter)");
+		decrementKnowledge();
+		decrementKnowledge();
+	}
 }
 /**
  *  return true if the choice action is fully resolved, 
@@ -3854,59 +4239,65 @@ boolean collectBenefitOrElse(Benefit benefit,replayMode replay)
  * @param replay
  * @return false if we need to interact with the user to resolve it.
  */
-boolean collectBenefit(Benefit benefit,replayMode replay)
+Benefit collectBenefit(Benefit benefit,replayMode replay)
 {	
 	switch(benefit)
 	{
-	default: throw G.Error("Unexpected benefit code %s",benefit);
+	default: throw b.Error("Unexpected benefit code %s",benefit);
+	
+	case ArtifactOrClayOrFoodX2:	// interaction with gwen the minerologist
+	case ArtifactOrClayOrFoodX3:
+	case ArtifactOrStoneOrWaterX2:
+	case ArtifactOrStoneOrWaterX3:
+	case ArtifactOrGoldOrEnergyX2:
+	case ArtifactOrGoldOrEnergyX3:
+		return(benefit);
+		
 	case None:	
-		return(true);
+		return(null);
 	case Artifactx2for1:	// always interact
-		return(false);
+		return(benefit);
 	case Stonex2:
 		doStone(doMonotony(2),b,replay);
-		return(true);
+		return(null);
 	case Goldx2:
 		doGold(doMonotony(2),b,replay);
-		return(true);
+		return(null);
 	case Clayx2:
 		doClay(doMonotony(2),b,replay);
-		return(true);
+		return(null);
 	case Bliss: 	//AmandaTheBroker
 		doBliss(1,b,replay);
-		return(true);
+		return(null);
 	case Blissx4:	//ShepphardTheLobotomist
 		doBliss(doMonotony(4),b,replay);
-		return(true);
+		return(null);
 	case Commodity:
 	case Commodityx2:
 	case Commodityx3:
 	case Resource:
 	case WaterOrStone:
 	case WaterOrEnergy:
-		return(false);
+		return(benefit);
 	case Artifactx2:	// collect 2 artifact cards
-		if(b.variation.isIIB()) { return(false); }	// must interact
-		doArtifact(2,b,replay);
-		return(true);
-
+		if(b.variation.isIIB()) { return(benefit); }	// must interact
+		return doArtifact(2,b,replay);
+	case FirstArtifact:	// first of 2
 	case Artifact:	// collect a single card
-		if(b.variation.isIIB()) { return(false); }	// must interact
-		doArtifact(1,b,replay);
-		return(true);
+		return doArtifact(1,b,replay);
 		
 	case FoodSelection:
-		return(doFoodSelection(b,replay));
+		return(doFoodSelection(b,replay,commodityKnowledge));
 	case PowerSelection:
-		return(doPowerSelection(b,replay));
+		return(doPowerSelection(b,replay,commodityKnowledge));
 	case Water:
 		doWater(1,b,replay);
-		return(true);
+		return(null);
 	case WaterSelection:
-		return(doWaterSelection(b,replay));
+		return(doWaterSelection(b,replay,commodityKnowledge));
 	case BlissSelection:
-		doCommoditySelection(b,replay);
-		return true;
+		doBlissSelection(b,replay,commodityKnowledge);
+		return null;
 
 		
 	case NewWorkerAndKnowledge:
@@ -3930,8 +4321,9 @@ boolean collectBenefit(Benefit benefit,replayMode replay)
 		}
 		decrementKnowledge();
 		decrementKnowledge();	
+		checkGaryTheForgetter();
 		doAlbertTheFounder(replay);
-		return(true);
+		return(null);
 		
 	case NewWorkerAndMorale:
 		if((totalWorkers>=2) 
@@ -3952,8 +4344,9 @@ boolean collectBenefit(Benefit benefit,replayMode replay)
 		}	
 		incrementMorale();
 		incrementMorale();
+		checkGaryTheForgetter();
 		doAlbertTheFounder(replay);
-		return(true);
+		return(null);
 		
 	case CardAndGold:
 		{
@@ -3962,12 +4355,10 @@ boolean collectBenefit(Benefit benefit,replayMode replay)
 		MarketChip.RegistryOfPersonalSecrets.logGameEvent(b); 
 		return(collectBenefit(Benefit.CardOrGold,replay));
 		}
-		else if(b.variation.isIIB()) { return(false); }	// must interact
 		else {
 		doGold(1,b,replay);
-		doArtifact(1,b,replay);
+		return doArtifact(1,b,replay);
 		}}
-		return(true);
 		
 	case CardAndStone:
 		if(penaltyAppliesToMe(MarketChip.RegistryOfPersonalSecrets))
@@ -3975,74 +4366,70 @@ boolean collectBenefit(Benefit benefit,replayMode replay)
 		MarketChip.RegistryOfPersonalSecrets.logGameEvent(b); 
 		return(collectBenefit(Benefit.CardOrStone,replay));
 		}
-		else if(b.variation.isIIB()) { return(false); }	// must interact
 		else
 		{
 		 doStone(1,b,replay);
-		 doArtifact(1,b,replay);
+		 return doArtifact(1,b,replay);
 		}
-		return(true);
 	case CardAndClay:
 		if(penaltyAppliesToMe(MarketChip.RegistryOfPersonalSecrets))
 		{
 		MarketChip.RegistryOfPersonalSecrets.logGameEvent(b); 
 		return(collectBenefit(Benefit.CardOrClay,replay));
 		}
-		else if(b.variation.isIIB()) { return(false); }	// must interact
 		else
 		{doClay(1,b,replay);
-		 doArtifact(1,b,replay);
+		 return doArtifact(1,b,replay);
 		}
-		return(true);
 	case Waterx3:
 		doWater(doMonotony(3),b,replay);
-		return(true);
+		return(null);
 	case Energy:
-		doEnergy(1,b,replay);
-		return(true);
+		return doEnergy(1,b,replay);
+
 	case Energyx2:
-		doEnergy(doMonotony(2),b,replay);
-		return(true);
+		return doEnergy(doMonotony(2),b,replay);
 		
 	case Energyx3:
-		doEnergy(doMonotony(3),b,replay);
-		return(true);
+		int n = doMonotony(3);
+		return doEnergy(n,b,replay);
+
 	case Foodx4:
 		doFood(doMonotony(4),b,replay);
-		return(true);
+		return(null);
 	case Foodx3:
 		doFood(doMonotony(3),b,replay);
-		return(true);
+		return(null);
 	case Food:
 		doFood(1,b,replay);
-		return(true);
+		return(null);
 	case Foodx2:
 		doFood(2,b,replay);
-		return(true);
+		return(null);
 	case MoraleOrKnowledge:
 		if(morale == MAX_MORALE_TRACK)
 		{	decrementKnowledge(); 
 			b.logGameEvent(EsmeTheFiremanKnowledge,getPlayerColor());
-			return(true); 
+			return(null); 
 		} if(knowledge==1)
 			{ incrementMorale();
 				b.logGameEvent(EsmeTheFiremanMorale,getPlayerColor());
-			  return(true);
+			  return(null);
 			}
-		return(false);
+		return(benefit);
 	case Moralex2OrKnowledgex2:
 		if(morale == MAX_MORALE_TRACK)
 		{	decrementKnowledge();
 			decrementKnowledge();
 			b.logGameEvent(EsmeTheFiremanKnowledgex2,getPlayerColor());
-			return(true); 
+			return(null); 
 		} if(knowledge==1)
 			{ incrementMorale();
 			  incrementMorale();
 			  b.logGameEvent(EsmeTheFiremanMoralex2,getPlayerColor());
-			  return(true);
+			  return(null);
 			}
-		return(false);
+		return(benefit);
 		
 	case Moralex2AndKnowledgex2:
 		decrementKnowledge();
@@ -4050,14 +4437,14 @@ boolean collectBenefit(Benefit benefit,replayMode replay)
 		incrementMorale();
 		incrementMorale();
 		b.logGameEvent(EsmeTheFiremanKnowledgex2,getPlayerColor());
-		return(true); 
+		return(null); 
 		
 	case IcariteInfluenceAndCardx2:
-		if(b.variation.isIIB()) { return(false); }	// must interact
+		if(b.variation.isIIB()) { return(benefit); }	// must interact
 		else {b.incrementAllegiance(Allegiance.Icarite,replay);
 		 doArtifact(2,b,replay);
 		}
-		return(true);
+		return(null);
 
 	case IcariteAuthorityAndInfluence:
 		doAuthorityAndInfluence(b,Allegiance.Icarite,replay,true);
@@ -4067,81 +4454,80 @@ boolean collectBenefit(Benefit benefit,replayMode replay)
 			if(penaltyAppliesToMe(MarketChip.RegistryOfPersonalSecrets)) 
 			{ MarketChip.RegistryOfPersonalSecrets.logGameEvent(b);
 			}
-			else if(b.variation.isIIB()) { return(false); }	// must interact
+			else if(b.variation.isIIB()) { return(Benefit.Artifact); }	// must interact
 			else 
 			{ doArtifact(1,b,replay);
 			}
 			
 			}
-		return(true);
+		return(null);
 		
 	case EuphorianStar:
 		doAuthority(b,Allegiance.Euphorian,replay);
-		return(true);
+		return(null);
 
 	case WastelanderStar:
 		doAuthority(b,Allegiance.Wastelander,replay);
-		return(true);
+		return(null);
 
 	case SubterranStar:
 		doAuthority(b,Allegiance.Subterran,replay);
-		return(true);
+		return(null);
 		
 	case EuphorianAuthorityAndInfluence:
 		doAuthorityAndInfluence(b,Allegiance.Euphorian,replay,true);
-		return(true);
+		return(null);
 		
 	case WastelanderAuthorityAndInfluence:
 		doAuthorityAndInfluence(b,Allegiance.Wastelander,replay,true);
-		return(true);
+		return(null);
 		
 	case SubterranAuthorityAndInfluence:
 		doAuthorityAndInfluence(b,Allegiance.Subterran,replay,true);
-		return(true);
+		return(null);
 		
 	case WastelanderAuthority2:
-		return(collectMarketAuthority(b,Allegiance.Wastelander,replay,true));
+		return(collectMarketAuthority(b,benefit,Allegiance.Wastelander,replay,true));
 		
 	case EuphorianAuthority2:
-		return(collectMarketAuthority(b,Allegiance.Euphorian,replay,true));
+		return(collectMarketAuthority(b,benefit,Allegiance.Euphorian,replay,true));
 		
 	case SubterranAuthority2:
-		return(collectMarketAuthority(b,Allegiance.Subterran,replay,true));
+		return(collectMarketAuthority(b,benefit,Allegiance.Subterran,replay,true));
 
 	case WaterOrMorale:		// soulless the plumber
-		if(morale==MAX_MORALE_TRACK) { doWater(1,b,replay); return(true); }
-		return(false);
+		if(morale==MAX_MORALE_TRACK) { doWater(1,b,replay); return(null); }
+		return(benefit);
 		
 	case Gold:	// LauraThePhilanthropist gives this away
 		doGold(1,b,replay);
-		return(true);
+		return(null);
 	case Clay:
 		doClay(1,b,replay);
-		return(true);
+		return(null);
 	case Stone:
 		doStone(1,b,replay);
-		return(true);
+		return(null);
 	case MoraleOrEnergy:
 		if(morale==MAX_MORALE_TRACK)
 		{
-			doEnergy(1,b,replay);
-			return(true);
+			return doEnergy(1,b,replay);
 		}
-		return(false);
+		return(benefit);
 	case KnowledgeOrFood:	// scarby the harvester
 		if(knowledge==1) 	// if knowledge is already at minimum, take food
 		{
 			doFood(1,b,replay);
-			return(true);
+			return(null);
 		}
-		return(false);
+		return(benefit);
 	case KnowledgeOrBliss:
 		if(knowledge==1)
 		{
 			doBliss(1,b,replay);
-			return(true);
+			return(null);
 		}
-		return(false);
+		return(benefit);
 		
 
 
@@ -4149,7 +4535,7 @@ boolean collectBenefit(Benefit benefit,replayMode replay)
 	case CardOrGold:
 	case CardOrStone:
 	case CardOrClay:
-		return(false);		// interact to get these
+		return(benefit);		// interact to get these
 	
 	case Morale:	// samuel the zapper
 		return incrementMorale();
@@ -4186,32 +4572,50 @@ public void checkV3DropWorker(EuphoriaCell dest,replayMode replay) {
 		{
 		switch(ch.recruitId)
 		{
-		case 251:	// GeorgeTheLazyCraftsman self-bump when placing on some markets
-		case 247:	// julia the acolyte, no action on drop, special actions when bumped
 		case 234:	// DougTheBuilder, sacrifice a worker instead of paying 
-
+		case 240:	// chaga the gamer, pay box to activate another recruit
+		case 242:	// RowenaTheMentor ignore market penalties for 1 turn
+		case 247:	// julia the acolyte, no action on drop, special actions when bumped
+		case 249:	// lionel the cook, use food to ignore market penalty
+		case 251:	// GeorgeTheLazyCraftsman self-bump when placing on some markets
+			
 		default:	
 			b.p1("drop with "+ch.name+" #"+ch.recruitId);
-			//throw G.Error("recruit %s #%s not handled for DropWorker",ch,ch.recruitId);
+			//throw b.Error("recruit %s #%s not handled for DropWorker",ch,ch.recruitId);
 			break;
+		case 221:	// Lieve the Briber pay bliss for card on tunnel spaces
 		case 222:	// AhmedTheArtifactDealer, discount on artifacts
+		case 223:	// amina the bliss bringer, lose worker at 17 instead of 16
+		case 224:	// terri the bliss trader, trade bliss for other resource when gain star
 		case 225:	// ted the contingency planner, can use bliss in tunnels
+		case 226:	// gary the forgetter can use bliss to train workers, lose extra knowledge
 		case 227:	// BokTheGameMaster, max 4 on the knowledge track
 		case 228:	// KebTheInformationTrader gets resource or commodity on risky roll
 		case 229:	// BrendaTheKnowledgeBringer get extra card for extra knowledge
+		case 230:	// Mosi the Patron, use bliss instead of card in artifact markets
+		case 232:	// zara the solophist, double knowledge on commodity areas
+		case 233:	// jon the amateur handyman allows using 3 commodity to build a market
 		case 235:	// cary the care bear, extra stuff when gaining a bear
 		case 236:	// EkaterinaTheCheater, box artifact wildcard
 		case 237:	// MiroslavTheConArtist, bear artifact wildcard 
 		case 239:	// PmaiTheNurse lets you move down in commodity knowledge
 		case 241:	// ha-joon the gold trader,no action on drop
+		case 243:	// frazerTheMotivator, gain any commodity instead of third energy
 		case 244:   // samuel the zapper, believed to be complete 2/1/2022
 					// lots of nuances for samuelthezapper!		
+		case 245:	// lars the ballooner, take a second action if you gain a balloon
+		case 246:	// xyonthebrainsurgeon rescues a worker with a card
 		case 250:	// alexandra the heister, artifact balloon wildcard
-		case 253:	// JoseThePersuader, bat artifact wildcard
+		case 252:	// gwen the minerologist, get resource instead of 1 commodity
+		case 253:	// JoseThePersuader, bat artifact wildcard\
+		case 254:	// jedidiahtheinciter, bump a worker from commodity area
+		case 255:	// DarrenTheRepeater, lose morale to bump yourself
 		case 256:	// high general baron, no action on drop
 		case 257:	// Joseph the antiquer, switch to artifact benefit 
 		case 258:	// Milos the Brainwasher, pay to skip knowledge check
 		case 259:	// kaleef the browuiser, action on bump worker
+		case 260:	// pedro the collector, get commodity and resource when paying 3 cards
+		case 261:	// shaheena the digger, artifact for stone at the end of turn
 		case 263:	// mwichwe the flusher, special cost/benedif at tunnels
 		case 264:	// MakatoTheForger, bifocals artifact wildcard
 		case 265:	// albert the founder
@@ -4219,6 +4623,8 @@ public void checkV3DropWorker(EuphoriaCell dest,replayMode replay) {
 		case 266:	// PamhidzaiTheReader trade card for 3 resources
 		case 267:	// borna the storyteller, no action on drop
 		case 268:	// javier the underground librarian, artifact book wildcard
+		case 269:	// christine the anarchist, bonus when retrieving
+		case 271:	// jeroen the hoarder, gain resource when retrieving workers
 			break;
 		
 		}}

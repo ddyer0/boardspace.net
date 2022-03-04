@@ -148,6 +148,7 @@ class HexGameBoard extends hexBoard<hexCell> implements BoardProtocol,HexConstan
 		default: throw G.Error("Not expecting variation %s",variation);
 		case hex_19:
 		case hex_15:
+		case hex_14:
 		case hex:
 			reInitBoard(variation.firstInCol,variation.ZinCol,null);
 		}
@@ -1065,6 +1066,7 @@ void doSwap(replayMode replay)
 	 			xpos-=3*cellsize/4;
 	 			break;
 	 		case hex_15:
+	 		case hex_14:
 	 			xpos -= 2*cellsize/3;
 	 			break;
 	 		case hex:

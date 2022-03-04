@@ -638,11 +638,11 @@ public abstract class commonCanvas extends exCanvas
     // and also for rpc local mirror moves.
     private boolean performMessage(String st0,int player)
     {	boolean playing = !mutable_game_record;
-    	Plog.log.appendNewLog("performMessage ");
-    	Plog.log.appendLog(player<0 ? whoseTurn() : player);
-    	Plog.log.appendLog(' ');
-    	Plog.log.appendLog(st0);
-    	Plog.log.finishEvent();
+    	//Plog.log.appendNewLog("performMessage ");
+    	//Plog.log.appendLog(player<0 ? whoseTurn() : player);
+    	//Plog.log.appendLog(' ');
+    	//Plog.log.appendLog(st0);
+    	//Plog.log.finishEvent();
     	String st = preprocessMessage(st0);
     	
     	boolean success=false;

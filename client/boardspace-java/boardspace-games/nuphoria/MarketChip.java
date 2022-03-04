@@ -102,7 +102,7 @@ public class MarketChip extends EuphoriaChip implements EuphoriaConstants
 	static MarketChip TheaterOfRevelatoryPropaganda = new MarketChip(10,null,Cost.Energyx4_Clay,
 			"Theater of Revelatory Propaganda",MarketPenalty.GainKnowledgeWithAuthority);
 	
-	static MarketChip RegistryOfPersonalSecrets = new MarketChip(11,null,Cost.Blissx4_Card,
+	static MarketChip RegistryOfPersonalSecrets = new MarketChip(11,null,Cost.Blissx4_Card,	// no bonuses on tunnels
 			"Registry of Personal Secrrets",MarketPenalty.NoAllegianceBonus);
 	
 	static MarketChip ArenaOfPeacefulConflict = new MarketChip(12,null,Cost.Foodx4_Stone,
@@ -127,53 +127,53 @@ public class MarketChip extends EuphoriaChip implements EuphoriaConstants
 			"Center for Reduced Literacy",MarketPenalty.LoseItemOn6);
 	
 	// IIB markets are numbered 20 and up
-	static MarketChip AgencyOfProgressiveBackstabbing = new MarketChip(21,null,Cost.Balloon_Stone,
+	static MarketChip IIB_AgencyOfProgressiveBackstabbing = new MarketChip(21,null,Cost.Balloon_Stone,
 			"Agency of Progressive Backstabbing",MarketPenalty.PayBeforeBumping);		// penalty coded not tested
 	
-	static MarketChip LotteryOfDiminishingReturns = new MarketChip(22,null,Cost.Box_Food_Bliss,
+	static MarketChip IIB_LotteryOfDiminishingReturns = new MarketChip(22,null,Cost.Box_Food_Bliss,
 	"Lottery of Diminishing Returns",MarketPenalty.LimitOf2Commodities);	// penalty coded tested feb 7
 	
-	static MarketChip InstituteOfOrwellianOptimism = new MarketChip(23,null,Cost.Balloon_Energy_Bliss,	
+	static MarketChip IIB_InstituteOfOrwellianOptimism = new MarketChip(23,null,Cost.Balloon_Energy_Bliss,	
 	"Institute of Orwellian Optimism",MarketPenalty.UpgradeWorkerKnowledge);		// penalty coded not tested
 	
-	static MarketChip NaturalFlouridatedSpring = new MarketChip(24,null,Cost.Glasses_Water_Bliss,
+	static MarketChip IIB_NaturalFlouridatedSpring = new MarketChip(24,null,Cost.Glasses_Water_Bliss,
 	"Natural Floridated Spring",MarketPenalty.NotIf6OnBoard);	// penalty coded and tested feb 6
 	
-	static MarketChip FieldOfAgorophobia = new MarketChip(25,null,Cost.Book_Energy_Water,
+	static MarketChip IIB_FieldOfAgorophobia = new MarketChip(25,null,Cost.Book_Energy_Water,
 	"Field of Agorophobia",MarketPenalty.NoStarOnEmpty);
 	
-	static MarketChip DilemmasPrisoner = new MarketChip(26,null,Cost.Bear_Energy_Food,
+	static MarketChip IIB_DilemmasPrisoner = new MarketChip(26,null,Cost.Bear_Energy_Food,
 	"Dilemmas Prisoner",MarketPenalty.FreeRetrieval);
 	
-	static MarketChip DepartmentOfBribeRegulation = new MarketChip(27,null,Cost.Glasses_Gold,
+	static MarketChip IIB_DepartmentOfBribeRegulation = new MarketChip(27,null,Cost.Glasses_Gold,
 	"Department of Bribe Regulation",MarketPenalty.ExtraCostArtifacts);
 	
-	static MarketChip AthenaeumOfMandatoryGuidelines = new MarketChip(28,null,Cost.Bear_Gold,
+	static MarketChip IIB_AthenaeumOfMandatoryGuidelines = new MarketChip(28,null,Cost.Bear_Gold,
 	"Atheneum of Mandatory Guidelines",MarketPenalty.LoseMoraleForStar);	// penalty coded and tested feb 6
 	
-	static MarketChip BureauOfRestrictedTourism = new MarketChip(29,null,Cost.Book_Brick,
+	static MarketChip IIB_BureauOfRestrictedTourism = new MarketChip(29,null,Cost.Book_Brick,
 	"Bureau of Restricted Tourism",MarketPenalty.WorkerLimit2);		// penalty coded not tested
 	
-	static MarketChip ConcertHallOfHarmoniousDischord = new MarketChip(30,null,Cost.Box_Gold,
+	static MarketChip IIB_ConcertHallOfHarmoniousDischord = new MarketChip(30,null,Cost.Box_Gold,
 	"Concert Hall of Harmonious Discord",MarketPenalty.MoraleLimit3);		// penalty coded not tested
 	
-	static MarketChip PalaceOfForcedAltruism = new MarketChip(31,null,Cost.Book_Card,
+	static MarketChip IIB_PalaceOfForcedAltruism = new MarketChip(31,null,Cost.Book_Card,
 	"Palace of Forced Altruism",MarketPenalty.ResourceLimit3);
 	
-	static MarketChip StorageOfInsufficientCapacity = new MarketChip(32,null,Cost.Box_Brick,
-	"Storage of Insufficient Capacity",MarketPenalty.ArtifactsDifferent);
+	static MarketChip IIB_StorageOfInsufficientCapacity = new MarketChip(32,null,Cost.Box_Brick,	
+	"Storage of Insufficient Capacity",MarketPenalty.ArtifactsDifferent); // no duplicate artifacts, tested March 2
 	
-	static MarketChip TheCarousel = new MarketChip(33,null,Cost.Bat_Stone,
+	static MarketChip IIB_TheCarousel = new MarketChip(33,null,Cost.Bat_Stone,
 	"The Carousel",MarketPenalty.Knowledgest14);	// penalty coded not tested
 	
-	static MarketChip TheaterOfEndlessMonotony = new MarketChip(34,null,Cost.Book_Stone,
+	static MarketChip IIB_TheaterOfEndlessMonotony = new MarketChip(34,null,Cost.Book_Stone,
 	"Theater of Endless Monotony",MarketPenalty.CommodityMinus1);		// penalty coded and tested feb 6
 	
-	static MarketChip ThoughtPoliceOfTheOpenMind = new MarketChip(35,null,Cost.Glasses_Brick,
+	static MarketChip IIB_ThoughtPoliceOfTheOpenMind = new MarketChip(35,null,Cost.Glasses_Brick,
 	"Thought Police of the Open Mind",MarketPenalty.KnowledgePlusDoubles);	// penalty coded and tested feb 6
 	
-	static MarketChip TogetherWeWorkAloneCamp = new MarketChip(36,null,Cost.Bat_Brick,
-	"Together We Work Alone Camp",MarketPenalty.Knowledge6Bump);		// penalty coded not tested
+	static MarketChip IIB_TogetherWeWorkAloneCamp = new MarketChip(36,null,Cost.Bat_Brick,
+	"Together We Work Alone Camp",MarketPenalty.Knowledge6Bump);		// penalty coded tested mar 2
 
 	static MarketChip allMarkets[] = 
 		{
@@ -201,22 +201,22 @@ public class MarketChip extends EuphoriaChip implements EuphoriaConstants
 		//
 		// IIB markets
 		// 
-		AgencyOfProgressiveBackstabbing,
-		LotteryOfDiminishingReturns,
-		InstituteOfOrwellianOptimism,
-		NaturalFlouridatedSpring,
-		FieldOfAgorophobia,
-		DilemmasPrisoner,
-		DepartmentOfBribeRegulation,
-		AthenaeumOfMandatoryGuidelines,
-		BureauOfRestrictedTourism,
-		ConcertHallOfHarmoniousDischord,
-		PalaceOfForcedAltruism,
-		StorageOfInsufficientCapacity,
-		TheCarousel,
-		TheaterOfEndlessMonotony,
-		ThoughtPoliceOfTheOpenMind,
-		TogetherWeWorkAloneCamp,
+		IIB_AgencyOfProgressiveBackstabbing,
+		IIB_LotteryOfDiminishingReturns,
+		IIB_InstituteOfOrwellianOptimism,
+		IIB_NaturalFlouridatedSpring,
+		IIB_FieldOfAgorophobia,
+		IIB_DilemmasPrisoner,
+		IIB_DepartmentOfBribeRegulation,
+		IIB_AthenaeumOfMandatoryGuidelines,
+		IIB_BureauOfRestrictedTourism,
+		IIB_ConcertHallOfHarmoniousDischord,
+		IIB_PalaceOfForcedAltruism,
+		IIB_StorageOfInsufficientCapacity,
+		IIB_TheCarousel,
+		IIB_TheaterOfEndlessMonotony,
+		IIB_ThoughtPoliceOfTheOpenMind,
+		IIB_TogetherWeWorkAloneCamp,
 		
 		
 	};
@@ -247,22 +247,22 @@ public class MarketChip extends EuphoriaChip implements EuphoriaConstants
 		//
 		// IIB markets
 		// 
-		AgencyOfProgressiveBackstabbing,
-		LotteryOfDiminishingReturns,
-		InstituteOfOrwellianOptimism,
-		NaturalFlouridatedSpring,
-		FieldOfAgorophobia,
-		DilemmasPrisoner,
-		DepartmentOfBribeRegulation,
-		AthenaeumOfMandatoryGuidelines,
-		BureauOfRestrictedTourism,
-		ConcertHallOfHarmoniousDischord,
-		PalaceOfForcedAltruism,
-		StorageOfInsufficientCapacity,
-		TheCarousel,
-		TheaterOfEndlessMonotony,
-		ThoughtPoliceOfTheOpenMind,
-		TogetherWeWorkAloneCamp,	
+		IIB_AgencyOfProgressiveBackstabbing,
+		IIB_LotteryOfDiminishingReturns,
+		IIB_InstituteOfOrwellianOptimism,
+		IIB_NaturalFlouridatedSpring,
+		IIB_FieldOfAgorophobia,
+		IIB_DilemmasPrisoner,
+		IIB_DepartmentOfBribeRegulation,
+		IIB_AthenaeumOfMandatoryGuidelines,
+		IIB_BureauOfRestrictedTourism,
+		IIB_ConcertHallOfHarmoniousDischord,
+		IIB_PalaceOfForcedAltruism,
+		IIB_StorageOfInsufficientCapacity,
+		IIB_TheCarousel,
+		IIB_TheaterOfEndlessMonotony,
+		IIB_ThoughtPoliceOfTheOpenMind,
+		IIB_TogetherWeWorkAloneCamp,	
 	};
 	public static void preloadImages(ImageLoader forcan,String Dir)
 	{	if(!ImagesLoaded)

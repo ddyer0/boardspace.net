@@ -253,7 +253,7 @@ public class RecruitChip extends EuphoriaChip implements EuphoriaConstants
 	//
 	// IIB recruits
 	//
-	static RecruitChip LeiveTheBriber = new RecruitChip(Allegiance.Icarite,null,
+	static RecruitChip LieveTheBriber = new RecruitChip(Allegiance.Icarite,null,
 			"Lieve the Briber",221);
 	static RecruitChip AhmedTheArtifactDealer = new RecruitChip(Allegiance.Icarite,null,
 			"Ahmed The Artifact Dealer",222);
@@ -271,7 +271,7 @@ public class RecruitChip extends EuphoriaChip implements EuphoriaConstants
 			"Keb the Information Trader",228);
 	static RecruitChip BrendaTheKnowledgeBringer = new RecruitChip(Allegiance.Icarite,null,		// gain extra knowledge and card
 			"Brenda the Knowledge Bringer",229);
-	static RecruitChip MosiThePatron = new RecruitChip(Allegiance.Icarite,null,
+	static RecruitChip MosiThePatron = new RecruitChip(Allegiance.Icarite,null,			// use bliss+card at artifact markets
 			"Mosi the Patron",230);
 	static RecruitChip JadwigaTheSleepDeprivator = new RecruitChip(Allegiance.Icarite,null,
 			"Jadwiga the Sleep Deprivator",231);
@@ -321,11 +321,11 @@ public class RecruitChip extends EuphoriaChip implements EuphoriaConstants
 			"Jose the Persuader",253);
 	static RecruitChip JedidiahTheInciter = new RecruitChip(Allegiance.Wastelander,null,
 			"Jedidiah the Inciter",254);
-	static RecruitChip DarrenTheRepeater = new RecruitChip(Allegiance.Wastelander,null,
+	static RecruitChip DarrenTheRepeater = new RecruitChip(Allegiance.Wastelander,null,	// bump self for a second action
 			"Darren the Repeater",255);
 	static RecruitChip HighGeneralBaron = new RecruitChip(Allegiance.Wastelander,null,
 			"High General Baron",256);
-	static RecruitChip JosephTheAntiquer = new RecruitChip(Allegiance.Subterran,null,
+	static RecruitChip JosephTheAntiquer = new RecruitChip(Allegiance.Subterran,null,			// gain card instead of 2x resource
 			"Joseph the Antiquer",257);
 	static RecruitChip MilosTheBrainwasher = new RecruitChip(Allegiance.Subterran,null,
 			"Milos the Brainwasher",258);
@@ -365,7 +365,7 @@ public class RecruitChip extends EuphoriaChip implements EuphoriaConstants
 	static RecruitChip IIBRecruits[] = {
 			CardBack,		CardBlank,	
 			// icarites
-			LeiveTheBriber,AhmedTheArtifactDealer,AminaTheBlissBringer,TerriTheBlissTrader,
+			LieveTheBriber,AhmedTheArtifactDealer,AminaTheBlissBringer,TerriTheBlissTrader,
 			TedTheContingencyPlanner,GaryTheForgetter,BokTheGameMaster,KebTheInformationTrader,
 			BrendaTheKnowledgeBringer,MosiThePatron,JadwigaTheSleepDeprivator,ZaraTheSolipsist,
 			// euphorians

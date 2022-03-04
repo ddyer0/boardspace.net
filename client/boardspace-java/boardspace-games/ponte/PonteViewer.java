@@ -26,9 +26,7 @@ import static ponte.PonteMovespec.*;
  * This code shows the overall structure appropriate for a game view window.
 */
 public class PonteViewer extends CCanvas<PonteCell,PonteBoard> implements PonteConstants, GameLayoutClient
-{
-	static final long serialVersionUID = 1;
-	
+{	
      // colors
     private Color reviewModeBackground = new Color(220,165,200);
     private Color HighlightColor = new Color(0.2f, 0.95f, 0.75f);
@@ -51,6 +49,7 @@ public class PonteViewer extends CCanvas<PonteCell,PonteBoard> implements PonteC
 			HighlightColor, rackBackGroundColor);
     private Rectangle scoreRects[] =addRect(",score",2);
     private Rectangle bridgeRect = addRect("bridgeRect");
+    private Rectangle bigBridgeRect = addRect(".bigBridge");
     private Rectangle playerChip[] = addRect(",chip",2);
 
     public void preloadImages()
@@ -194,6 +193,7 @@ public class PonteViewer extends CCanvas<PonteCell,PonteBoard> implements PonteC
     	G.SetRect(chipRects[0],boardRight,boardY+SQUARESIZE*2,chipW,chipW);
     	G.SetRect(chipRects[1],boardRight,boardBottom-SQUARESIZE*2,chipW,chipW);
     	G.SetRect(bridgeRect,boardRight+SQUARESIZE,boardY+boardH/2-SQUARESIZE,chipW,chipW);
+    	G.SetRect(bigBridgeRect,boardRight,boardY+boardH/2-SQUARESIZE,chipW+SQUARESIZE,chipW+chipW/3);
  /*   	
         G.SetRect(bridgeRect, 
         		G.Left( firstPlayerChipRect)+(tallMode ?SQUARESIZE*5 : CELLSIZE*4)-SQUARESIZE,
@@ -210,8 +210,8 @@ public class PonteViewer extends CCanvas<PonteCell,PonteBoard> implements PonteC
     }
 
 	// draw the unused components
-    private void DrawCommonChipPool(Graphics gc, PonteBoard gb, int forPlayer, Rectangle r, int player, HitPoint highlight,double vstep)
-    {	
+    private void DrawCommonChipPool(Graphics gc, PonteBoard gb, int forPlayer,Rectangle bigR, Rectangle r, int player, HitPoint highlight,double vstep)
+    {	if(bigR==null) { bigR = r; }
         PonteCell thisCell = gb.getPlayerChips(forPlayer);
         PonteChip thisChip = thisCell.topChip();
         boolean canHit = gb.LegalToHitChips(forPlayer<=1?forPlayer:gb.whoseTurn,thisCell);
@@ -220,16 +220,16 @@ public class PonteViewer extends CCanvas<PonteCell,PonteBoard> implements PonteC
         HitPoint pt = (canHit && (canPick||canDrop))? highlight : null; 
         String msg = null;
         int step = G.Height(r);
-        boolean isRect = G.pointInRect(pt, r);
-        if(thisCell.drawStack(gc,this,pt,step,G.Right(r)-step/2,G.centerY(r),0,vstep,msg)
-        	|| isRect)
+        boolean isRect = G.pointInRect(pt, bigR);
+        // note that using "isRect" is because the standard logic doesn't do well
+        // because of the extreme aspect ratio of the bridge pieces
+        if(thisCell.drawStack(gc,this,pt,step,G.Right(r)-step/2,G.centerY(r),0,vstep,msg) || 
+        		isRect)
         {	highlight.arrow = canDrop ? StockArt.DownArrow : StockArt.UpArrow;
         	highlight.awidth = step/2;
-        	if(isRect) 
-        		{ highlight.spriteRect = r;
-        		  highlight.hitObject = thisCell;
-        		  highlight.hitCode = thisCell.rackLocation();
-        		  }
+        	highlight.spriteRect = bigR;
+        	highlight.hitObject = thisCell;
+        	highlight.hitCode = thisCell.rackLocation();
         	highlight.spriteColor = Color.red;
         }
      }
@@ -389,7 +389,7 @@ public class PonteViewer extends CCanvas<PonteCell,PonteBoard> implements PonteC
         
         for(int i=FIRST_PLAYER_INDEX; i<=SECOND_PLAYER_INDEX;i++)
         {	commonPlayer pl = getPlayerOrTemp(i);
-        	DrawCommonChipPool(gc, gb,i,chipRects[i], gb.whoseTurn,ot,0.05);
+        	DrawCommonChipPool(gc, gb,i,null,chipRects[i], gb.whoseTurn,ot,0.05);
         	pl.setRotatedContext(gc, highlight, false);
             DrawPlayerScore(gc,gb,i,scoreRects[i]);
             gb.getPlayerChip(i).drawChip(gc,this,playerChip[i],null);
@@ -402,7 +402,7 @@ public class PonteViewer extends CCanvas<PonteCell,PonteBoard> implements PonteC
         }	
 
  
-        DrawCommonChipPool(gc, gb, Bridge_Index, bridgeRect,gb.whoseTurn,ot,0.1);
+        DrawCommonChipPool(gc, gb, Bridge_Index, bigBridgeRect,bridgeRect,gb.whoseTurn,ot,0.1);
         commonPlayer pl = getPlayerOrTemp(gb.whoseTurn);
         double messageRotation = pl.messageRotation();
         
