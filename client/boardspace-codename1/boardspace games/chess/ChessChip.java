@@ -228,11 +228,12 @@ public class ChessChip extends chip<ChessChip> implements ChessConstants,Config
 	{	
 		drawRotatedChip(gc,canvas,getChipRotation(canvas),SQUARESIZE,xscale,cx,cy,label);
 	}
-	
+	static double noscale[]= {0,0,1};
 	public static ChessChip backgroundTile = new ChessChip( "background-tile-nomask",null,allTiles);
 	public static ChessChip backgroundReviewTile = new ChessChip( "background-review-tile-nomask",null,allTiles);
-	public static ChessChip standard = new ChessChip("standard",null);
-	public static ChessChip ultima = new ChessChip("ultima",null);
+	public static ChessChip standard = new ChessChip("standard",noscale);
+	public static ChessChip ultima = new ChessChip("ultima",noscale);
+	public static ChessChip chess960 = new ChessChip("chess960",noscale);
 	public static ChessChip QueenChip[] = new ChessChip[]{whiteQueen,blackQueen};
 	public static ChessChip PawnChip[] = new ChessChip[]{whitePawn,blackPawn};
 	public static ChessChip PromotedPawnChip[] = new ChessChip[]{whitePromotedPawn,blackPromotedPawn};

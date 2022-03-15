@@ -1024,7 +1024,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	  // build a menu of subgames.  This might be the standalone subgame menu or
 	  // the main game menu which is a 2-level accordian
 	  private String[] subGameMenu(PopupManager manager,GameInfo items[], MenuInterface myMenu,int n_games,int base)
-	  {
+	  {	if(items==null) { return null; }
 		  int nitems = items.length;
 		  String names[]=new String[nitems];
 		  for(int i=0;i<nitems;i++)
@@ -1037,10 +1037,10 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 		  return(names);
 	  }
 	  private void addVariationMenu(Session sess,MenuInterface subm,String groupName,GameInfo var,ESet typeClass)
-	  {
-  	  	GameInfo vars[] = var.variationMenu(var.gameName,typeClass,0);
+	  { int pc = sess.mode==Session.Mode.Review_Mode ? 0 : var.maxPlayers;
+  	  	GameInfo vars[] = var.variationMenu(var.gameName,typeClass,pc);
 	    String menuName = s.get(var.gameName+"_family");
-	  	if((vars.length<=1) ||  (sess.mode==Session.Mode.Review_Mode)) 
+	  	if((vars==null) || (vars.length<=1)) 
 	  		{ gameTypeMenu.addMenuItem(subm,menuName,var.publicID);
 	  		}
 	  	else
@@ -1147,8 +1147,9 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	  //(sess.mode == Session.Mode.Review_Mode)
 	   	//	? new ESet(GameInfo.ES.review,GameInfo.ES.game)
 	   	//	: new ESet(GameInfo.ES.game);  
+	  int pc = (sess.mode==Session.Mode.Review_Mode) ? 0 : sess.currentGame.maxPlayers;
 	  subGameMenu(variationMenu,
-			  	sess.currentGame.variationMenu(currentGame.gameName,typeClass,0),
+			  	sess.currentGame.variationMenu(currentGame.gameName,typeClass,pc),
 			  	null,1,0);
 	  variationMenu.show(ex,ey);
 	 }
@@ -2007,7 +2008,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	private boolean inChangeGame(Session sess,int localX,int localY)
 	{  return(
 		    gameTypeRect.contains(localX,localY)
-		    && (sess.iOwnTheRoom || (sess.numberOfPlayers()==0)));
+		    && sess.canChangeGameInfo());
 	}
 	private boolean ImMuted(Session sess)
 	{

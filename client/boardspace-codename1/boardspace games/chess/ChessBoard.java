@@ -111,7 +111,7 @@ class ChessBoard extends rectBoard<ChessCell> implements BoardProtocol,ChessCons
     private boolean kingHasMoved[] = new boolean[2];
     private boolean kingRookHasMoved[] = new boolean[2];
     private boolean queenRookHasMoved[] = new boolean[2];
-    
+    private ChessMovespec castleMove = null;
 	// factory method
 	public ChessCell newcell(char c,int r)
 	{	return(new ChessCell(c,r));
@@ -160,7 +160,7 @@ class ChessBoard extends rectBoard<ChessCell> implements BoardProtocol,ChessCons
     
     @SuppressWarnings("unused")
 	private void checkOccupied()
-    {	for(int j=0;j<2;j++)
+    {	/*for(int j=0;j<2;j++)
     	{
     	CellStack cs = occupiedCells[j];
     	ChessId targetColor = playerColor[j];
@@ -170,7 +170,7 @@ class ChessBoard extends rectBoard<ChessCell> implements BoardProtocol,ChessCons
     			ChessChip top = c.topChip();
     			G.Assert((top!=null) && (top.color==targetColor),"incorrectly occupied");
     		}
-    	}
+    	}*/
     }
 
     /** 
@@ -256,6 +256,7 @@ class ChessBoard extends rectBoard<ChessCell> implements BoardProtocol,ChessCons
         board_state = from_b.board_state;
         lastProgressMove = from_b.lastProgressMove;
         lastDrawMove = from_b.lastDrawMove;
+        castleMove = from_b.castleMove;
         getCell(lastDest,from_b.lastDest);
         getCell(lastSrc,from_b.lastSrc);
         unresign = from_b.unresign;
@@ -308,6 +309,7 @@ class ChessBoard extends rectBoard<ChessCell> implements BoardProtocol,ChessCons
      	{
      	default:  throw G.Error(WrongInitError,gtype);
      	case Chess:
+     	case Chess960:
     	case Ultima:
      		boardColumns = variation.size;
      		boardRows = variation.size;
@@ -365,6 +367,57 @@ class ChessBoard extends rectBoard<ChessCell> implements BoardProtocol,ChessCons
 	    	rack[first] = ChessChip.whiteImmobilizer;
 	    	rack[second] = ChessChip.blackImmobilizer;
 	    	break;
+	    case Chess960:
+	    {	IStack all = new IStack();
+	    	Random random = new Random(rv);
+	    	for(int i=0;i<ncols; i++) { all.push(i); }
+	    	int kingCol = 1+random.nextInt(ncols-2);
+	    	// rooks on opposite sides of the king
+	    	int lrookCol = random.nextInt(kingCol);
+	    	int rrookCol = 1+kingCol+random.nextInt(ncols-kingCol-1);
+	    	all.removeValue(kingCol,true);
+	    	all.removeValue(lrookCol,true);
+	    	all.removeValue(rrookCol,true);
+	    	// bishops on opposite colors
+	    	int lbishopCol = all.elementAt(random.nextInt(all.size()));
+	    	all.removeValue(lbishopCol,true);
+	    	int rbishopCol = lbishopCol;
+	    	while(((rbishopCol^lbishopCol)&1)==0) { rbishopCol = all.elementAt(random.nextInt(all.size())); }    	
+	    	all.removeValue(rbishopCol,true);
+	    	int queenCol = all.elementAt(random.nextInt(all.size()));
+	    	all.removeValue(queenCol,true);
+	    	int lknightCol = all.pop();
+	    	int rknightCol = all.pop();
+	    	
+	    	addChip(getCell((char)('A'+kingCol),Starting_Row[FIRST_PLAYER_INDEX]),ChessChip.whiteKing);
+	    	addChip(getCell((char)('A'+kingCol),Starting_Row[SECOND_PLAYER_INDEX]),ChessChip.blackKing);
+	    	addChip(getCell((char)('A'+queenCol),Starting_Row[FIRST_PLAYER_INDEX]),ChessChip.whiteQueen);
+	    	addChip(getCell((char)('A'+queenCol),Starting_Row[SECOND_PLAYER_INDEX]),ChessChip.blackQueen);
+	    	
+	    	addChip(getCell((char)('A'+lbishopCol),Starting_Row[FIRST_PLAYER_INDEX]),ChessChip.whiteBishop);
+	    	addChip(getCell((char)('A'+lbishopCol),Starting_Row[SECOND_PLAYER_INDEX]),ChessChip.blackBishop);
+	    	addChip(getCell((char)('A'+rbishopCol),Starting_Row[FIRST_PLAYER_INDEX]),ChessChip.whiteBishop);
+	    	addChip(getCell((char)('A'+rbishopCol),Starting_Row[SECOND_PLAYER_INDEX]),ChessChip.blackBishop);
+	    	
+	    	addChip(getCell((char)('A'+lknightCol),Starting_Row[FIRST_PLAYER_INDEX]),ChessChip.whiteKnight);
+	    	addChip(getCell((char)('A'+lknightCol),Starting_Row[SECOND_PLAYER_INDEX]),ChessChip.blackKnight);
+	    	addChip(getCell((char)('A'+rknightCol),Starting_Row[FIRST_PLAYER_INDEX]),ChessChip.whiteKnight);
+	    	addChip(getCell((char)('A'+rknightCol),Starting_Row[SECOND_PLAYER_INDEX]),ChessChip.blackKnight);
+	    	
+	    	addChip(getCell((char)('A'+lrookCol),Starting_Row[FIRST_PLAYER_INDEX]),ChessChip.whiteRook);
+	    	addChip(getCell((char)('A'+lrookCol),Starting_Row[SECOND_PLAYER_INDEX]),ChessChip.blackRook);
+	    	addChip(getCell((char)('A'+rrookCol),Starting_Row[FIRST_PLAYER_INDEX]),ChessChip.whiteRook);
+	    	addChip(getCell((char)('A'+rrookCol),Starting_Row[SECOND_PLAYER_INDEX]),ChessChip.blackRook);
+	    	
+	    	for(int col = 0; col<ncols;col++)
+	    	{		    	
+	    		addChip(getCell((char)('A'+col),Pawn_Starting_Row[SECOND_PLAYER_INDEX]),ChessChip.blackPawn);
+	    		addChip(getCell((char)('A'+col),Pawn_Starting_Row[FIRST_PLAYER_INDEX]),ChessChip.whitePawn);
+	    	}
+	    	rack[first] = ChessChip.whitePawn;
+	    	rack[second] = ChessChip.blackPawn;
+	    	}
+	    	break;
 	    	
 	    default: break;
 
@@ -372,6 +425,7 @@ class ChessBoard extends rectBoard<ChessCell> implements BoardProtocol,ChessCons
 
 	    lastProgressMove = 0;
 	    lastDrawMove = 0;
+	    castleMove = null;
 	    robotDepth = 0;
 	    robotState.clear();
 	    robotLast.clear();
@@ -579,6 +633,7 @@ class ChessBoard extends rectBoard<ChessCell> implements BoardProtocol,ChessCons
     public void acceptPlacement()
     {	
         pickedObject = null;
+        castleMove = null;
         droppedDestStack.clear();
         dropState.clear();
         captureStack.clear();
@@ -999,6 +1054,11 @@ class ChessBoard extends rectBoard<ChessCell> implements BoardProtocol,ChessCons
     	case King: 	
 	    	{	int dcol = dest.col-src.col;
 	    		kingHasMoved[whoseTurn]=true; 
+	    		switch(variation)
+	    		{
+	    		case Chess960: break;
+	    		default:
+	    		case Chess:
 	    		if(dcol==2)
 	    		{	// castle king side
 	    			ChessCell rd = dest.exitTo(CELL_LEFT);
@@ -1025,7 +1085,7 @@ class ChessBoard extends rectBoard<ChessCell> implements BoardProtocol,ChessCons
 	    				animationStack.push(rd);
 	    			}
 	    		}
-	    	}
+	    	}}
     				break;
     	case Rook:	if(src.row==startingRow(whoseTurn))
     				{	if(src.col==ChessChip.kingRookCol)
@@ -1046,7 +1106,7 @@ class ChessBoard extends rectBoard<ChessCell> implements BoardProtocol,ChessCons
         		doCapture(dest,replay);
         		dest.addChip(ChessChip.QueenChip[colorIndex]);
         		occupiedCells[whoseTurn].push(dest);
-        		//checkOccupied();
+        		checkOccupied();
         		if(replay!=replayMode.Replay)
         		{	
         		    animationStack.push(captured[whoseTurn]);
@@ -1117,8 +1177,8 @@ class ChessBoard extends rectBoard<ChessCell> implements BoardProtocol,ChessCons
     public boolean Execute(commonMove mm,replayMode replay)
     {	ChessMovespec m = (ChessMovespec)mm;
         if(replay!=replayMode.Replay) { animationStack.clear(); }
-        //System.out.println("E "+m+" for "+whoseTurn);
-        //checkOccupied();
+       // System.out.println("E "+m+" for "+whoseTurn);
+        checkOccupied();
         switch (m.op)
         {
         case MOVE_STALEMATE:
@@ -1136,6 +1196,55 @@ class ChessBoard extends rectBoard<ChessCell> implements BoardProtocol,ChessCons
 			setNextStateAfterDrop();
         	}
         	break;
+
+        case MOVE_CASTLE:
+        	{
+           	// castles are coded as though the king were going to capture its own rook.
+        	// chess960 castles such that the king and rook end in the same positions
+        	// as castling in normal chess, regardless how that translates into moves
+        	// of the king and rook.
+        	if(pickedObject!=null) 
+        		{ G.Assert(pickedObject.isKing(),"not the king");
+        		  unPickObject();
+        		}
+        	ChessCell king = getCell(m.from_col,m.from_row);
+        	ChessCell rook = getCell(m.to_col,m.to_row);
+        	ChessChip r = rook.topChip();
+        	ChessChip k = king.topChip();
+        	G.Assert(r.piece==ChessPiece.Rook && k.piece==ChessPiece.King,"incorrect pieces");
+        	rook.removeTop();
+        	pickObject(king,-1);
+        	
+        	ChessCell rdest =null;
+        	ChessCell kdest =null;
+        	if(rook.col<king.col)
+        	{
+        		// king side castle
+        		rdest = getCell('D',rook.row);
+        		kdest = getCell('C',rook.row);
+        	}
+        	else 
+        	{	// queen side castle
+        		rdest = getCell('F',rook.row);
+        		kdest = getCell('G',rook.row);
+        	}
+    		rdest.addChip(r);
+    		dropObject(kdest,replay);
+
+    		occupiedCells[whoseTurn].remove(rook,false);
+    		occupiedCells[whoseTurn].push(rdest);
+    		
+    		if(replay!=replayMode.Replay)
+    		{
+    			animationStack.push(rook);
+    			animationStack.push(rdest);
+        	}
+        	kingHasMoved[whoseTurn] = true;		// sometimes it makes no apparent move, but it has
+        	castleMove = m;
+        	setState(ChessState.Confirm);
+        	}
+        	break;
+
         case MOVE_BOARD_BOARD:
         	switch(board_state)
         	{	default: throw G.Error("Not expecting robot in state %s",board_state);
@@ -1190,9 +1299,39 @@ class ChessBoard extends rectBoard<ChessCell> implements BoardProtocol,ChessCons
         case MOVE_PICKB:
         	// come here only where there's something to pick, which must
         	// be a temporary p
-        	if(isDest(getCell(m.from_col,m.from_row)))
-        		{ unDropObject(); 
+        	ChessCell dest = getCell(m.from_col,m.from_row);
+        	if(isDest(dest))
+        		{ 
+        		if(castleMove!=null)
+        		{
+        			// very special case
+        			
+                	ChessCell king = getCell(castleMove.from_col,castleMove.from_row);
+                	ChessCell rook = getCell(castleMove.to_col,castleMove.to_row);
+                	ChessCell rdest =null;
+                	ChessCell kdest =null;
+                	if(rook.col<king.col)
+                	{
+                		// king side castle
+                		rdest = getCell('D',rook.row);
+                		kdest = getCell('C',rook.row);
+                	}
+                	else 
+                	{	// queen side castle
+                		rdest = getCell('F',rook.row);
+                		kdest = getCell('G',rook.row);
         		}
+                	unDropObject();
+                	rook.addChip(rdest.removeTop());
+                	occupiedCells[whoseTurn].remove(rdest,false);
+                	occupiedCells[whoseTurn].push(rook);
+                	castleMove = null;
+                	kingHasMoved[whoseTurn]=false;
+       			
+        		}
+        		else {
+        		unDropObject(); 
+        		}}
         	else 
         		{ pickObject(getCell(ChessId.BoardLocation, m.from_col, m.from_row),-1);
         		  m.chip = pickedObject;
@@ -1279,7 +1418,6 @@ class ChessBoard extends rectBoard<ChessCell> implements BoardProtocol,ChessCons
             setState(ChessState.Puzzle);
  
             break;
-            
 		case MOVE_GAMEOVERONTIME:
 			setGameOver(true,false);
 			break;
@@ -1288,7 +1426,7 @@ class ChessBoard extends rectBoard<ChessCell> implements BoardProtocol,ChessCons
         	cantExecute(m);
         }
 
-        //checkOccupied();
+        checkOccupied();
 
         return (true);
     }
@@ -1362,7 +1500,6 @@ class ChessBoard extends rectBoard<ChessCell> implements BoardProtocol,ChessCons
     */
     public void RobotExecute(ChessMovespec m,boolean strict)
     {
-        // G.print("R "+m);
         robotState.push(board_state);
         robotLast.push(lastDest[whoseTurn]);
         robotLast.push(lastSrc[whoseTurn]);
@@ -1370,6 +1507,7 @@ class ChessBoard extends rectBoard<ChessCell> implements BoardProtocol,ChessCons
         robotCapture.push(kingRookHasMoved[whoseTurn]?1:0);
         robotCapture.push(queenRookHasMoved[whoseTurn]?1:0);
         robotDepth++;
+        //G.print("R "+m +" "+robotDepth+" "+robotCapture.size());
         
         if (Execute(m,replayMode.Replay))
         {	
@@ -1397,8 +1535,8 @@ class ChessBoard extends rectBoard<ChessCell> implements BoardProtocol,ChessCons
    //
     public void UnExecute(ChessMovespec m)
     {
-        // G.print("U "+m+" for "+whoseTurn); 
-    	//checkOccupied();
+        // G.print("U "+m+" for "+robotDepth+" "+robotCapture.size()); 
+    	checkOccupied();
     	robotDepth--;
         ChessCell dest=null;
         ChessCell src = null;
@@ -1411,6 +1549,32 @@ class ChessBoard extends rectBoard<ChessCell> implements BoardProtocol,ChessCons
    	    default:
    	    	cantUnExecute(m);
         	break;
+   	    case MOVE_CASTLE:
+   	    	{
+   	       	ChessCell king = getCell(m.from_col,m.from_row);
+        	ChessCell rook = getCell(m.to_col,m.to_row);        	
+        	ChessCell rdest =null;
+        	ChessCell kdest =null;
+        	if(rook.col<king.col)
+        	{
+        		// king side castle
+        		rdest = getCell('D',rook.row);
+        		kdest = getCell('C',rook.row);
+        	}
+        	else 
+        	{	// queen side castle
+        		rdest = getCell('F',rook.row);
+        		kdest = getCell('G',rook.row);
+        	}
+    		pickObject(kdest,-1);
+    		rook.addChip(rdest.removeTop());
+    		dropObject(king,replayMode.Replay);
+    		occupiedCells[whoseTurn].remove(rdest,false);
+    		occupiedCells[whoseTurn].push(rook);
+    		acceptPlacement();
+   	    	}
+    
+   	    	break;
         case MOVE_STALEMATE:
         case MOVE_DONE:
            break;
@@ -1427,6 +1591,11 @@ class ChessBoard extends rectBoard<ChessCell> implements BoardProtocol,ChessCons
    			    dropObject(src,replayMode.Replay); 
    			    acceptPlacement();
    			    
+   			    switch(variation)
+   			    {
+   			    case Chess960: break;
+   			    default:
+   			    case Chess:
    			    if(moved.piece==ChessPiece.King)
    			    {
    			    	int dcol = dest.col-src.col;
@@ -1447,9 +1616,9 @@ class ChessBoard extends rectBoard<ChessCell> implements BoardProtocol,ChessCons
    		    			occupiedCells[whoseTurn].push(rd);
    		    		}
    			    }
+   			    	break;
    			    	
-   			    
-     			}
+     			}}
 
         	break;
  
@@ -1491,7 +1660,7 @@ class ChessBoard extends rectBoard<ChessCell> implements BoardProtocol,ChessCons
         queenRookHasMoved[whoseTurn] = robotCapture.pop()!=0;
         kingRookHasMoved[whoseTurn] = robotCapture.pop()!=0;
         kingHasMoved[whoseTurn] = robotCapture.pop()!=0;
-    	//checkOccupied();
+    	checkOccupied();
   }
 
 private void loadHash(CommonMoveStack all,Hashtable<ChessCell,ChessMovespec>hash,boolean from)
@@ -1502,6 +1671,7 @@ private void loadHash(CommonMoveStack all,Hashtable<ChessCell,ChessMovespec>hash
 		switch(m.op)
 		{
 		default: break;
+		case MOVE_CASTLE:
 		case MOVE_SUICIDE:
 		case MOVE_BOARD_BOARD:
 			if(from) { hash.put(getCell(m.source,m.from_col,m.from_row),m); }
@@ -1835,7 +2005,81 @@ private boolean addSuicideMove(CommonMoveStack all,ChessCell cell,int who)
  private void sweepKingMoves(ChessCell from,int who,boolean chamelion)
  {	sweepSingleMoves(from,queenDirections,who,chamelion);
  }
+ 
+ private boolean add960CastlingMoves(CommonMoveStack all,ChessCell from,int who)
+ {	boolean some = false;
+	 if(!kingHasMoved[who] && (board_state!=ChessState.Check))
+	 {	ChessCell start = kingLocation[who];
+	 	int other = nextPlayer[who];
+		if(!kingRookHasMoved[who])
+		{	
+			int dir = CELL_RIGHT;
+			ChessCell next = start.exitTo(dir);
+			ChessCell rdest = getCell('F',start.row);	// where the rook will end up
+			if((rdest==start) || (rdest.topChip()==null))
+			{
+			// the eventual destination of the rook has to be vacant or currently occupied by the king
+			while(next!=null)
+			{
+				ChessChip top = next.topChip();
+				if(top!=null)
+				{
+				if(top.piece==ChessPiece.Rook 
+						&& (playerIndex(top)==who))
+						// special case where the king won't move, the rook hops over
+				{	// reached the rook
+					if(all==null) { return(true); }
+					some = true;
+					all.push(new ChessMovespec(MOVE_CASTLE,start,next,who));
+				}
+				next = null; 
+				}
+				else if(attackingSquare(next,other)) { next = null; }	// can't move through an attack
+				else { 
+					next = next.exitTo(dir); 
+					}
+			}}
+		}
+		if(!queenRookHasMoved[who])
+		{
+			int dir = CELL_LEFT;
+			ChessCell next = start.exitTo(dir);
+			ChessCell rdest = getCell('D',start.row);	// where the rook will end up
+			if((rdest==start) || (rdest.topChip()==null))
+			{
+			while(next!=null)
+			{
+				ChessChip top = next.topChip();
+				if(top!=null)
+				{
+				if(top.piece==ChessPiece.Rook 
+						&& (playerIndex(top)==who))
+				{	// reached the rook
+					if(all==null) { return true; }
+					some = true;
+					all.push(new ChessMovespec(MOVE_CASTLE,start,next,who));
+				}
+				next = null;
+				}
+				else if(attackingSquare(next,other)) { next = null; }	// can't move through an attack
+				else { 
+					next = next.exitTo(dir); 
+					}
+			}}
+		}
+	 }
+	 return(some);
+ }
  private boolean addCastlingMoves(CommonMoveStack all,ChessCell from,int who)
+ {
+	 switch(variation)
+	 {
+	 case Chess960:	return add960CastlingMoves(all,from,who);
+	 case Chess: return(addStandardCastlingMoves(all,from,who));
+	 default: throw G.Error("not expecting %s",variation);
+	 }
+ }
+ private boolean addStandardCastlingMoves(CommonMoveStack all,ChessCell from,int who)
  {
 	 if(!kingHasMoved[who] && (board_state!=ChessState.Check))
 	 {	ChessCell start = kingLocation[who];
@@ -2382,6 +2626,7 @@ private boolean addSuicideMove(CommonMoveStack all,ChessCell cell,int who)
 	 {
 	 default: throw G.Error("Not expecting %s",variation); 
 	 case Ultima:
+	 case Chess960:
 	 case Chess:
  		 // captures are mandatory
 		 CellStack cells =  occupiedCells[who];
@@ -2421,6 +2666,7 @@ private boolean addSuicideMove(CommonMoveStack all,ChessCell cell,int who)
 	 {
 	 default: throw G.Error("Not expecting %s",variation); 
 	 case Ultima:
+	 case Chess960:
 	 case Chess:
  		 // captures are mandatory
  		 switch(board_state)

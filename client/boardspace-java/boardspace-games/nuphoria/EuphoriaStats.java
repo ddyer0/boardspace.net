@@ -13,6 +13,7 @@ import online.game.sgf.sgf_game;
 import online.game.sgf.sgf_reader;
 import lib.ErrorX;
 import lib.OStack;
+import nuphoria.EPlayer.PFlag;
 import nuphoria.EuphoriaConstants.*;
 class StatStack extends OStack<EuphoriaStats>
 {
@@ -55,7 +56,7 @@ public class EuphoriaStats {
 		morale = p.morale;
 		knowledge = p.knowledge;
 		allegiance = p.allegianceStars.height();
-		dilemma = p.dilemmaResolved;
+		dilemma = p.testPFlag(PFlag.HasResolvedDilemma);
 		market = p.marketStars;
 		workers = p.totalWorkers;
 		placedWorker = p.placements;

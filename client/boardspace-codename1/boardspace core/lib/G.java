@@ -107,6 +107,7 @@ public class G extends Platform implements Timestamp
 		}
 		return(false);
 	}
+
     /**
      * utility to print test messages, use "find callers" to find messages still in place.
      * This method also interfaces with shells created by the "open shell" menu item.  If

@@ -92,7 +92,7 @@ public class CookieViewer extends CCanvas<CookieCell,CookieBoard> implements Coo
     {	CookieChip.preloadImages(loader,ImageDir);
     	if(textures==null)
     	{
-            textures = loader.load_images(ImageDir,TextureNames);
+            textures =loader.load_images(ImageDir,TextureNames);
     	}
     	gameIcon = CookieChip.getChip(0).image;
     }

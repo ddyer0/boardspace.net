@@ -301,8 +301,8 @@ public class RecruitChip extends EuphoriaChip implements EuphoriaConstants
 			"Frazer the Motivator",243);
 	static RecruitChip SamuelTheZapper = new RecruitChip(Allegiance.Euphorian,null,
 			"Samuel the Zapper",244);
-	static RecruitChip LarsTheBallooneer = new RecruitChip(Allegiance.Wastelander,null,
-			"Lars the Ballooneer",245);
+	static RecruitChip LarsTheBallooneer = new RecruitChip(Allegiance.Wastelander,null,	
+			"Lars the Ballooneer",245);													// re use worker if you acquired a balloon
 	static RecruitChip XyonTheBrainSurgeon = new RecruitChip(Allegiance.Wastelander,null,
 			"Xyon the Brain Surgeon",246);
 	static RecruitChip JuliaTheAcolyte = new RecruitChip(Allegiance.Wastelander,null,
@@ -333,7 +333,7 @@ public class RecruitChip extends EuphoriaChip implements EuphoriaConstants
 			"Khaleef the Bruiser",259);		// coded and tested feb 6
 	static RecruitChip PedroTheCollector = new RecruitChip(Allegiance.Subterran,null,
 			"Pedro The Collector",260);
-	static RecruitChip ShaheenaTheDigger = new RecruitChip(Allegiance.Subterran,null,
+	static RecruitChip ShaheenaTheDigger = new RecruitChip(Allegiance.Subterran,null,	// gain resource and commodity if you pay 3 cards
 			"Shaheena the Digger",261);
 	static RecruitChip DustyTheEnforcer = new RecruitChip(Allegiance.Subterran,null,	// saves workers using a bat
 			"Dusty the Enforcer",262);

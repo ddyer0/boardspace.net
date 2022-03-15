@@ -173,6 +173,7 @@ public void setLocalBounds(int x,int y,int width,int height)
 	layout.placeDrawGroup(G.getFontMetrics(standardPlainFont()),acceptDrawRect,declineDrawRect);
    	layout.placeDoneEdit(buttonW,3*buttonW/2,doneRect,editRect);
 	layout.placeTheVcr(this,vcrW,vcrW*3/2);
+	layout.placeRectangle(bannerRect,vcrW,vcrW/4,BoxAlignment.Top);
 	Rectangle main = layout.getMainRectangle();
 	int mainX = G.Left(main);
 	int mainY = G.Top(main);
@@ -408,6 +409,7 @@ public void setLocalBounds(int x,int y,int width,int height)
     {  
        ChessChip banner = b.variation.banner;
        banner.getImage(loader).centerImage(gc, bannerRect);
+       GC.frameRect(gc,Color.red,bannerRect);
        DrawReverseMarker(gc,reverseViewRect,highlight,ChessId.ReverseViewButton);
        DrawEyeMarker(gc,eyeRect,highlight);
     }
@@ -692,7 +694,20 @@ private void playSounds(commonMove m)
 				{
 				if(b.movingObjectIndex()>=0)
 				{ 
+				  if((chip!=null) 
+						  && b.pickedObject.isKing() 
+						  && (chip.piece==ChessPiece.Rook)
+						  && (chip.color==b.pickedObject.color))
+				  {
+				  ChessCell src = b.getSource();
+				  // special signature, castling looks like the king capturing
+				  // its own rook.
+				  PerformAndTransmit("Castle "+src.col+" "+src.row+" "+cell.col+" "+cell.row);
+				  }
+				  else
+				  {
 				  PerformAndTransmit("Dropb "+cell.col+" "+cell.row); 
+				}
 				}
 				else if(chip!=null)
 				{

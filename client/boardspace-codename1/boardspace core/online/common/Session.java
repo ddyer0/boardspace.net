@@ -89,7 +89,7 @@ public class Session implements LobbyConstants
 	 */
 	public boolean editable()
 	{
-		return (iOwnTheRoom || ((numberOfPlayers()==0) && (mode==Mode.Tournament_Mode)));
+		return (iOwnTheRoom || (numberOfPlayers()==0));
 	}
 	// select Randomize or Not when there will be no robots
 	public Bot defaultNoRobot()

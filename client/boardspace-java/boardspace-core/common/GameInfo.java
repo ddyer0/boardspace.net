@@ -245,8 +245,15 @@ public class GameInfo implements lib.CompareTo<GameInfo>,LobbyConstants
 		return(false);
 	}
 	// select a variation of a single game.  Name is the name of a game in the main menu.
+	// player count is 0 for review mode rooms, which produce subgames only if they are
+	// stored in a different directory.  
+	// When called from the seating viewer, the exact player count is known and
+	// is used to filter out inappropriate games.
+	// 
 	public GameInfo[] variationMenu(String name,ESet includedTypes,int playercount)
 	{	Vector<GameInfo> included = new Vector<GameInfo>();
+		boolean sameReviewDir = true;
+		int reviewdir = -1;
 		for(int lim = allGames.size()-1; lim>=0; lim--)
 		{	GameInfo info = allGames.elementAt(lim);
 			if( (info!=null)
@@ -257,8 +264,11 @@ public class GameInfo implements lib.CompareTo<GameInfo>,LobbyConstants
 				&& ((playercount==0) || ((info.minPlayers<=playercount) && (info.maxPlayers>=playercount)))
 				)
 				{ included.addElement(info);
+				  if(reviewdir==-1) { reviewdir = info.dirNum; }
+				  sameReviewDir &= (reviewdir==info.dirNum);
 				}
 		}
+		if((playercount==0) && sameReviewDir) { return(null); }	// no variations menu needed
 		GameInfo g[] = included.toArray(new GameInfo[included.size()]);
 		Sort.sort(g,true);	// sort by number
 		return(g);
@@ -387,9 +397,12 @@ synchronized(allGames) {
 			chessBot,"chess.ChessViewer","/chess/english/BasicChessRules.pdf",
 			null,false, WhiteOverBlack));
 	  put(new GameInfo(781,ES.game,83,"UL",AncientGames,"Chess","Ultima",OneBotPlus,
-				chessBot,"chess.ChessViewer","/chess/english/BasicChessRules.pdf",
+				chessBot,"chess.ChessViewer","/chess/english/ultima-rules.html",
 				null,false, WhiteOverBlack));
-	  put(new GameInfo(781,ES.game,83,"UL",OtherGames,"Ultima","Ultima",OneBotPlus,
+	  put(new GameInfo(782,ES.game,105,"C9",AncientGames,"Chess","Chess960",OneBotPlus,
+				chessBot,"chess.ChessViewer","/chess/english/chess960-rules.html",
+				null,false, WhiteOverBlack));
+	  put(new GameInfo(783,ES.game,83,"UL",OtherGames,"Ultima","Ultima",OneBotPlus,
 				new double[]{0.5,0.05},
 				"chess.ChessViewer","/chess/english/ultima-rules.html",
 				null,false, WhiteOverBlack));	  
@@ -1383,6 +1396,13 @@ synchronized(allGames) {
 			new double[]{0.08,0.01},
 			"kamisado.KamisadoViewer","/kamisado/english/RULES%20ENG.pdf",
 			null,false, BlackOverGold));
+	
+	put(new GameInfo(346,ES.test,106,"IR",RacingGames,"Iro","Iro",
+			OneBotPlus,
+			new double[]{0.08,0.01},
+			"iro.IroViewer","/iro/english/iroprules.html",
+				null,false, WhiteOverBlack));
+
 	{
 	String truclass = "truchet.TruGameViewer";
 	String trurules = "/truchet/english/truchet_rules.html";

@@ -167,24 +167,24 @@ abstract class EuphoriaBoardConstructor extends RBoard<EuphoriaCell> implements
 
 	EuphoriaCell euphorianBuildMarketA[] = // chits to build a market
 	{
-			newCell(Allegiance.Euphorian, WorkerChip.Subtype(),EuphoriaId.EuphorianBuildMarketA, 0,	18.25, 32.5, Cost.ConstructionSiteClay, Benefit.None),
-			newCell(Allegiance.Euphorian, WorkerChip.Subtype(),EuphoriaId.EuphorianBuildMarketA, 1,	18.25, 35.8, Cost.ConstructionSiteGold, Benefit.None),
-			newCell(Allegiance.Euphorian, WorkerChip.Subtype(),EuphoriaId.EuphorianBuildMarketA, 2,	18.25, 39, Cost.ConstructionSiteGold, Benefit.None),
-			newCell(Allegiance.Euphorian, WorkerChip.Subtype(),EuphoriaId.EuphorianBuildMarketA, 3,	18.25, 42, Cost.ConstructionSiteGold, Benefit.None) 
+			newCell(Allegiance.Euphorian, WorkerChip.Subtype(),EuphoriaId.EuphorianBuildMarketA, 0,	18.25, 32.5, Cost.Clay, Benefit.None),
+			newCell(Allegiance.Euphorian, WorkerChip.Subtype(),EuphoriaId.EuphorianBuildMarketA, 1,	18.25, 35.8, Cost.Gold, Benefit.None),
+			newCell(Allegiance.Euphorian, WorkerChip.Subtype(),EuphoriaId.EuphorianBuildMarketA, 2,	18.25, 39, Cost.Gold, Benefit.None),
+			newCell(Allegiance.Euphorian, WorkerChip.Subtype(),EuphoriaId.EuphorianBuildMarketA, 3,	18.25, 42, Cost.Gold, Benefit.None) 
 			};
 
 	EuphoriaCell euphorianMarketA = newCell(Allegiance.Euphorian,
 			EuphoriaId.EuphorianMarketA, 28.4, 33, Cost.MarketCost,
-			Benefit.EuphorianAuthorityAndInfluence);
+			Benefit.EuphorianAuthorityAndInfluenceA);
 	EuphoriaCell euphorianBuildMarketB[] = {
-			newCell(Allegiance.Euphorian, WorkerChip.Subtype(),EuphoriaId.EuphorianBuildMarketB, 0,18.25, 45.5, Cost.ConstructionSiteStone, Benefit.None),
-			newCell(Allegiance.Euphorian, WorkerChip.Subtype(),EuphoriaId.EuphorianBuildMarketB, 1,18.25, 48.5, Cost.ConstructionSiteGold, Benefit.None),
-			newCell(Allegiance.Euphorian, WorkerChip.Subtype(),EuphoriaId.EuphorianBuildMarketB, 2,18.25, 51.5, Cost.ConstructionSiteGold, Benefit.None),
-			newCell(Allegiance.Euphorian, WorkerChip.Subtype(),EuphoriaId.EuphorianBuildMarketB, 3,18.25, 55, Cost.ConstructionSiteGold, Benefit.None) 
+			newCell(Allegiance.Euphorian, WorkerChip.Subtype(),EuphoriaId.EuphorianBuildMarketB, 0,18.25, 45.5, Cost.Stone, Benefit.None),
+			newCell(Allegiance.Euphorian, WorkerChip.Subtype(),EuphoriaId.EuphorianBuildMarketB, 1,18.25, 48.5, Cost.Gold, Benefit.None),
+			newCell(Allegiance.Euphorian, WorkerChip.Subtype(),EuphoriaId.EuphorianBuildMarketB, 2,18.25, 51.5, Cost.Gold, Benefit.None),
+			newCell(Allegiance.Euphorian, WorkerChip.Subtype(),EuphoriaId.EuphorianBuildMarketB, 3,18.25, 55, Cost.Gold, Benefit.None) 
 			};
 	EuphoriaCell euphorianMarketB = newCell(Allegiance.Euphorian,	EuphoriaId.EuphorianMarketB, 28.4, 46,
 			Cost.MarketCost,
-			Benefit.EuphorianAuthorityAndInfluence);
+			Benefit.EuphorianAuthorityAndInfluenceB);
 
 	EuphoriaCell euphorianTunnelMouth = newCell(Allegiance.Euphorian,EuphoriaId.EuphorianTunnelMouth, 7.75, 47.5,
 			Cost.Energy,
@@ -226,24 +226,24 @@ abstract class EuphoriaBoardConstructor extends RBoard<EuphoriaCell> implements
 			Cost.Artifactx3, 
 			Benefit.SubterranAuthority2);
 	EuphoriaCell subterranBuildMarketA[] = {
-			newCell(Allegiance.Subterran, WorkerChip.Subtype(),EuphoriaId.SubterranBuildMarketA, 0,	29.5, 74.5, Cost.ConstructionSiteGold, Benefit.None),
-			newCell(Allegiance.Subterran, WorkerChip.Subtype(),EuphoriaId.SubterranBuildMarketA, 1,	29.5, 77.5, Cost.ConstructionSiteStone, Benefit.None),
-			newCell(Allegiance.Subterran, WorkerChip.Subtype(),EuphoriaId.SubterranBuildMarketA, 2,	29.5, 81, Cost.ConstructionSiteStone, Benefit.None),
-			newCell(Allegiance.Subterran, WorkerChip.Subtype(),EuphoriaId.SubterranBuildMarketA, 3,	29.5, 84, Cost.ConstructionSiteStone, Benefit.None) 
+			newCell(Allegiance.Subterran, WorkerChip.Subtype(),EuphoriaId.SubterranBuildMarketA, 0,	29.5, 74.5, Cost.Gold, Benefit.None),
+			newCell(Allegiance.Subterran, WorkerChip.Subtype(),EuphoriaId.SubterranBuildMarketA, 1,	29.5, 77.5, Cost.Stone, Benefit.None),
+			newCell(Allegiance.Subterran, WorkerChip.Subtype(),EuphoriaId.SubterranBuildMarketA, 2,	29.5, 81, Cost.Stone, Benefit.None),
+			newCell(Allegiance.Subterran, WorkerChip.Subtype(),EuphoriaId.SubterranBuildMarketA, 3,	29.5, 84, Cost.Stone, Benefit.None) 
 			};
 	EuphoriaCell subterranMarketA = newCell(Allegiance.Subterran,EuphoriaId.SubterranMarketA, 38.5, 75, 
 			Cost.MarketCost,
-			Benefit.SubterranAuthorityAndInfluence);
+			Benefit.SubterranAuthorityAndInfluenceA);
 	EuphoriaCell subterranBuildMarketB[] = {
-			newCell(Allegiance.Subterran, WorkerChip.Subtype(),EuphoriaId.SubterranBuildMarketB, 0,29.5, 87.5, Cost.ConstructionSiteClay, Benefit.None),
-			newCell(Allegiance.Subterran, WorkerChip.Subtype(),EuphoriaId.SubterranBuildMarketB, 1,29.5, 90.5, Cost.ConstructionSiteStone, Benefit.None),
-			newCell(Allegiance.Subterran, WorkerChip.Subtype(),EuphoriaId.SubterranBuildMarketB, 2,29.5, 93.75, Cost.ConstructionSiteStone, Benefit.None),
-			newCell(Allegiance.Subterran, WorkerChip.Subtype(),EuphoriaId.SubterranBuildMarketB, 3,29.5, 97, Cost.ConstructionSiteStone, Benefit.None) 
+			newCell(Allegiance.Subterran, WorkerChip.Subtype(),EuphoriaId.SubterranBuildMarketB, 0,29.5, 87.5, Cost.Clay, Benefit.None),
+			newCell(Allegiance.Subterran, WorkerChip.Subtype(),EuphoriaId.SubterranBuildMarketB, 1,29.5, 90.5, Cost.Stone, Benefit.None),
+			newCell(Allegiance.Subterran, WorkerChip.Subtype(),EuphoriaId.SubterranBuildMarketB, 2,29.5, 93.75, Cost.Stone, Benefit.None),
+			newCell(Allegiance.Subterran, WorkerChip.Subtype(),EuphoriaId.SubterranBuildMarketB, 3,29.5, 97, Cost.Stone, Benefit.None) 
 			};
 
 	EuphoriaCell subterranMarketB = newCell(Allegiance.Subterran,EuphoriaId.SubterranMarketB, 38.5, 88, 
 			Cost.MarketCost,
-			Benefit.SubterranAuthorityAndInfluence);
+			Benefit.SubterranAuthorityAndInfluenceB);
 
 	EuphoriaCell subterranAquifer[] = arrayOfCells(Allegiance.Subterran, WorkerChip.Subtype(),3, 4,subterranAquiferBounds, EuphoriaId.SubterranAquifer,
 			Cost.Free, 
@@ -304,24 +304,24 @@ abstract class EuphoriaBoardConstructor extends RBoard<EuphoriaCell> implements
 			Cost.Artifactx3, 
 			Benefit.WastelanderAuthority2);
 	EuphoriaCell wastelanderBuildMarketA[] = {
-			newCell(Allegiance.Wastelander, WorkerChip.Subtype(),EuphoriaId.WastelanderBuildMarketA,	0, 69, 31, Cost.ConstructionSiteStone, Benefit.None),
-			newCell(Allegiance.Wastelander, WorkerChip.Subtype(),EuphoriaId.WastelanderBuildMarketA,	1, 69, 34, Cost.ConstructionSiteClay, Benefit.None),
-			newCell(Allegiance.Wastelander, WorkerChip.Subtype(),EuphoriaId.WastelanderBuildMarketA,	2, 69, 37, Cost.ConstructionSiteClay, Benefit.None),
-			newCell(Allegiance.Wastelander, WorkerChip.Subtype(),EuphoriaId.WastelanderBuildMarketA,	3, 69, 40.5, Cost.ConstructionSiteClay, Benefit.None)
+			newCell(Allegiance.Wastelander, WorkerChip.Subtype(),EuphoriaId.WastelanderBuildMarketA,	0, 69, 31, Cost.Stone, Benefit.None),
+			newCell(Allegiance.Wastelander, WorkerChip.Subtype(),EuphoriaId.WastelanderBuildMarketA,	1, 69, 34, Cost.Clay, Benefit.None),
+			newCell(Allegiance.Wastelander, WorkerChip.Subtype(),EuphoriaId.WastelanderBuildMarketA,	2, 69, 37, Cost.Clay, Benefit.None),
+			newCell(Allegiance.Wastelander, WorkerChip.Subtype(),EuphoriaId.WastelanderBuildMarketA,	3, 69, 40.5, Cost.Clay, Benefit.None)
 			};
 	EuphoriaCell wastelanderMarketA = newCell(Allegiance.Wastelander,EuphoriaId.WastelanderMarketA, 78.75, 31.75,
 			Cost.MarketCost, 
-			Benefit.WastelanderAuthorityAndInfluence);
+			Benefit.WastelanderAuthorityAndInfluenceA);
 	EuphoriaCell wastelanderBuildMarketB[] = {
-			newCell(Allegiance.Wastelander, WorkerChip.Subtype(),EuphoriaId.WastelanderBuildMarketB,	0, 69, 44, Cost.ConstructionSiteGold, Benefit.None),
-			newCell(Allegiance.Wastelander, WorkerChip.Subtype(),EuphoriaId.WastelanderBuildMarketB,	1, 69, 47.2, Cost.ConstructionSiteClay, Benefit.None),
-			newCell(Allegiance.Wastelander, WorkerChip.Subtype(),EuphoriaId.WastelanderBuildMarketB,	2, 69, 50.5, Cost.ConstructionSiteClay, Benefit.None),
-			newCell(Allegiance.Wastelander, WorkerChip.Subtype(),EuphoriaId.WastelanderBuildMarketB,	3, 69, 53.5, Cost.ConstructionSiteClay, Benefit.None) 
+			newCell(Allegiance.Wastelander, WorkerChip.Subtype(),EuphoriaId.WastelanderBuildMarketB,	0, 69, 44, Cost.Gold, Benefit.None),
+			newCell(Allegiance.Wastelander, WorkerChip.Subtype(),EuphoriaId.WastelanderBuildMarketB,	1, 69, 47.2, Cost.Clay, Benefit.None),
+			newCell(Allegiance.Wastelander, WorkerChip.Subtype(),EuphoriaId.WastelanderBuildMarketB,	2, 69, 50.5, Cost.Clay, Benefit.None),
+			newCell(Allegiance.Wastelander, WorkerChip.Subtype(),EuphoriaId.WastelanderBuildMarketB,	3, 69, 53.5, Cost.Clay, Benefit.None) 
 			};
 
 	EuphoriaCell wastelanderMarketB = newCell(Allegiance.Wastelander,EuphoriaId.WastelanderMarketB, 78.75, 45,
 			Cost.MarketCost,
-			Benefit.WastelanderAuthorityAndInfluence);
+			Benefit.WastelanderAuthorityAndInfluenceB);
 
 	EuphoriaCell wastelanderFarm[] = arrayOfCells(Allegiance.Wastelander,WorkerChip.Subtype(), 3, 4,	wasteLanderFarmBounds, EuphoriaId.WastelanderFarm,
 			Cost.Free,
@@ -380,10 +380,11 @@ abstract class EuphoriaBoardConstructor extends RBoard<EuphoriaCell> implements
 	protected EuphoriaCell usedArtifacts = newCell(null,ArtifactChip.Subtype(),EuphoriaId.ArtifactDiscards, 35, 23, null);
 	protected EuphoriaCell unusedArtifacts = newCell(null,ArtifactChip.Subtype(),EuphoriaId.ArtifactDeck, 40, 23, null);
 	protected  EuphoriaCell genericSource = newCell(null,EuphoriaChip.Nocard,	EuphoriaId.GenericPool, 38, 29, Cost.Free);
+	protected  EuphoriaCell trash = newCell(null,null,	EuphoriaId.Trash, 44, 29, Cost.Free);
 
 	double cardArea[] = { 25,13,47,33 };
 	double artifactArea[] = { 26.5, 18, 45.5, 26.0};
-	protected EuphoriaCell artifactMarket[] = 
+	protected EuphoriaCell artifactBazaar[] = 
 			arrayOfCells(null, null,4,	artifactArea, EuphoriaId.ArtifactBazaar,null);
 	
 	protected EuphoriaCell clayPit = newCell(Allegiance.Wastelander,EuphoriaChip.Clay.subtype(),EuphoriaId.ClayPit, 50,31, Cost.DisplayOnly);
@@ -480,31 +481,38 @@ abstract class EuphoriaBoardConstructor extends RBoard<EuphoriaCell> implements
 	}
 
 	EuphoriaChip getFood() {
-		return (farm.topChip());
+		if(farm.topChip()==null) { farm.addChip(EuphoriaChip.Food); }
+		return (farm.removeTop());
 	}
 
 	EuphoriaChip getBliss() {
-		return (bliss.topChip());
+		if(bliss.topChip()==null) { bliss.addChip(EuphoriaChip.Bliss); }
+		return (bliss.removeTop());
 	}
 
 	EuphoriaChip getEnergy() {
-		return (generator.topChip());
+		if(generator.topChip()==null) { generator.addChip(EuphoriaChip.Energy); }
+		return (generator.removeTop());
 	}
 
 	EuphoriaChip getWater() {
-		return (aquifer.topChip());
+		if(aquifer.topChip()==null) { aquifer.addChip(EuphoriaChip.Water); }
+		return (aquifer.removeTop());
 	}
 
 	EuphoriaChip getStone() {
-		return (quarry.topChip());
+		if(quarry.topChip()==null) { quarry.addChip(EuphoriaChip.Stone); }
+		return (quarry.removeTop());
 	}
 
 	EuphoriaChip getGold() {
-		return (goldMine.topChip());
+		if(goldMine.topChip()==null) { goldMine.addChip(EuphoriaChip.Gold); }
+		return (goldMine.removeTop());
 	}
 
 	EuphoriaChip getClay() {
-		return (clayPit.topChip());
+		if(clayPit.topChip()==null) { clayPit.addChip(EuphoriaChip.Clay); }
+		return (clayPit.removeTop());
 	}
 public int positionToX(double pos)
 {	return((int)(G.Left(boardRect)+((G.Width(boardRect)*pos))));

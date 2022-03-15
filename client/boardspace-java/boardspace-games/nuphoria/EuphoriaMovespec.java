@@ -35,6 +35,11 @@ public class EuphoriaMovespec extends commonMPMove implements EuphoriaConstants
     static final int EPHEMERAL_CONFIRM_ONE_RECRUIT = 225;
     static final int MOVE_MOVE_WORKER = 226;			// move worker board-to-board
     static final int MOVE_ITEM = 227;					// move some item board-to-bopard
+    static final int USE_SECOND_RECRUIT_OPTION = 228;	// only for julia the acolyte
+    static final int USE_FIRST_RECRUIT_OPTION = 229;	// only for julia the acolyte
+    static final int EPHEMERAL_CONFIRM_DISCARD = 230;	// confirm discarding recruits
+    static final int CONFIRM_DISCARD = 231;				
+    static final int MOVE_SACRIFICE = 232;	// sacrifice a worker
     
     /* this is used by the move filter to select ephemeral moves */
     public boolean isEphemeral()
@@ -46,6 +51,7 @@ public class EuphoriaMovespec extends commonMPMove implements EuphoriaConstants
 		case EPHEMERAL_CHOOSE_RECRUIT:
 		case EPHEMERAL_CONFIRM_RECRUITS:
 		case EPHEMERAL_CONFIRM_ONE_RECRUIT:
+		case EPHEMERAL_CONFIRM_DISCARD:
 			return(true);
 		default: return(false);
 		}
@@ -82,7 +88,12 @@ public class EuphoriaMovespec extends commonMPMove implements EuphoriaConstants
         	"NormalStart",NORMALSTART,
         	"Relocate",MOVE_MOVE_WORKER,
         	"MoveItem",MOVE_ITEM,
+        	"Sacrifice",MOVE_SACRIFICE,
+           	EuphoriaId.ConfirmDiscard.name(),CONFIRM_DISCARD,
+           	EuphoriaId.EConfirmDiscard.name(),EPHEMERAL_CONFIRM_DISCARD,
         	EuphoriaId.RecruitOption.name(),USE_RECRUIT_OPTION,
+        	EuphoriaId.RecruitFirstJuliaOption.name(),USE_FIRST_RECRUIT_OPTION,
+        	EuphoriaId.RecruitSecondJuliaOption.name(),USE_SECOND_RECRUIT_OPTION,
         	EuphoriaId.FightTheOpressor.name(),FIGHT_THE_OPRESSOR,
         	EuphoriaId.JoinTheEstablishment.name(),JOIN_THE_ESTABLISHMENT,
         	EuphoriaId.ConfirmRecruits.name(),CONFIRM_RECRUITS,
@@ -180,7 +191,17 @@ public class EuphoriaMovespec extends commonMPMove implements EuphoriaConstants
     	to_color = worker.color;
     	player = pl;
     }  
-
+    
+    /*  sacrifice a worker */
+    public EuphoriaMovespec(int o,EPlayer p,EuphoriaCell s,int idx)
+    {
+    	op = o;
+    	from_color = p.color;
+    	to_color = p.color;
+    	source = s.rackLocation();
+    	from_row = idx;
+    	player = p.boardIndex;
+    }
     
     /*  move item to board and choose_recruit */
     public EuphoriaMovespec(int o,EPlayer p,EuphoriaCell s,EuphoriaCell d)
@@ -307,7 +328,13 @@ public class EuphoriaMovespec extends commonMPMove implements EuphoriaConstants
         	break;
         case DONT_USE_DIE_ROLL:
         	break;
-        	
+        
+        case MOVE_SACRIFICE:
+       		from_color = Colors.get(msg.nextToken());
+    		source = EuphoriaId.get(msg.nextToken());
+    		from_row = G.IntToken(msg);
+           	break;
+           	
         case MOVE_ITEM:
         case MOVE_MOVE_WORKER:
            	source = EuphoriaId.get(msg.nextToken());
@@ -323,6 +350,7 @@ public class EuphoriaMovespec extends commonMPMove implements EuphoriaConstants
     		dest = EuphoriaId.get(msg.nextToken());
          	break;
         case USE_RECRUIT_OPTION:
+        case USE_SECOND_RECRUIT_OPTION:
         	break;
         case MOVE_ITEM_TO_BOARD:
        		to_color = from_color = Colors.get(msg.nextToken());
@@ -363,7 +391,10 @@ public class EuphoriaMovespec extends commonMPMove implements EuphoriaConstants
             from_row = G.IntToken(msg);
 
             break;
-
+		case CONFIRM_DISCARD:
+		case EPHEMERAL_CONFIRM_DISCARD:
+          	from_color = Colors.get(msg.nextToken());		
+			break;
 		case EPHEMERAL_DROP:
         case MOVE_DROP:
           	to_color = Colors.get(msg.nextToken());
@@ -494,6 +525,11 @@ public class EuphoriaMovespec extends commonMPMove implements EuphoriaConstants
            			TextGlyph.create("xx",chip,v,scale(chip)),
          			TextChunk.create(" from "+ source.prettyName)));
 
+        case MOVE_SACRIFICE:
+        	return TextChunk.join(
+           			TextGlyph.create("xx",chip,v,scale(chip)),
+         			TextChunk.create(" from "+ source.prettyName));
+        	
         case MOVE_MOVE_WORKER:
         case MOVE_ITEM:
         	return TextChunk.join(
@@ -501,7 +537,7 @@ public class EuphoriaMovespec extends commonMPMove implements EuphoriaConstants
          			TextChunk.create(" from "+ source.prettyName),
          			TextGlyph.create("xx",chip,v,scale(chip)),
         			TextChunk.create(" to "+dest.prettyName));
-        	
+        case USE_SECOND_RECRUIT_OPTION:
         case USE_RECRUIT_OPTION:
         	return(TextChunk.create("Use "+((chip==null)?"":(" "+((RecruitChip)chip).name))));
         			
@@ -539,8 +575,12 @@ public class EuphoriaMovespec extends commonMPMove implements EuphoriaConstants
         String opname = ind+" "+D.findUnique(op)+" ";
         switch (op)
         {
+        case CONFIRM_DISCARD:
+        case EPHEMERAL_CONFIRM_DISCARD:
+        	return G.concat(opname,from_color.name());
+        	
         case MOVE_ITEM_TO_BOARD:
-        	return(opname+from_color.name()+" "+source.name()+" "+from_row+" "+dest.name()+" "+to_row);
+        	return G.concat(opname,from_color.name()," ",source.name()," ",from_row," ",dest.name()," ",to_row);
         case MOVE_ITEM_TO_PLAYER:
         	return(opname+source.name()+" "+from_row+" "+to_color.name()+ " "+dest.name());
          	
@@ -567,7 +607,10 @@ public class EuphoriaMovespec extends commonMPMove implements EuphoriaConstants
         	return(opname+source.name()+" "+from_row+" "+to_color.name()+" "+dest.name());
         case MOVE_PLACE_WORKER:
         	return(opname+from_color.name()+" "+source.name()+" "+from_row+" "+dest.name()+" "+to_row);
-        
+       
+        case MOVE_SACRIFICE:
+           	return G.concat(opname,from_color.name()," ",source.name()," ",from_row);
+        	
         case MOVE_MOVE_WORKER:
         case MOVE_ITEM:
         	return G.concat(opname,source.name()," ",from_row," ",dest.name()," ",to_row);

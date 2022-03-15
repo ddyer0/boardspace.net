@@ -27,7 +27,10 @@ public class ChessPlay extends commonRobot<ChessBoard> implements Runnable
 	private static final int BESTBOT_DEPTH = 10;
 	private static final double VALUE_OF_WIN = 1000000.0;
 	private int MAX_DEPTH = BESTBOT_DEPTH;
-
+	
+	// in games like chess, where the robot auto-adds a done, this is needed so "save current variation" works correctly
+	public commonMove getCurrentVariation() { return getCurrent2PVariation(); }
+	
     /** constructor.  Must be zero argument so copying robot players will work.
      * 
      */

@@ -236,12 +236,13 @@ public class PonteBoard extends rectBoard<PonteCell> implements BoardProtocol,Po
      }
     boolean updateBlobs(PonteCell c,PonteChip chip)
     {	if(!blobsValid) { return(false); }
-    	if(chip.bridge!=null)
+    	Bridge b = chip.bridge;
+    	if(b!=null)
     	{
-		int endx = chip.bridge.otherEnddx;
-		int endy = chip.bridge.otherEnddy;
-		c.markShadowA(endx,endy);
-		c.markShadowB(endx,endy);
+		int endx = b.otherEnddx;
+		int endy = b.otherEnddy;
+		c.markShadowB(endx,endy,b);
+		c.markShadowA(endx,endy,b);
 		return(true);
     	}
     	else
@@ -293,7 +294,7 @@ public class PonteBoard extends rectBoard<PonteCell> implements BoardProtocol,Po
    			{ //boolean hasChips = c.topChip()!=null;
    			  //G.Assert(occupiedCells.contains(c)==hasChips,"occupied mismatch");
    			  //G.Assert(emptyCells.contains(c)!=hasChips,"empty mismatch");
-   			  c.underBridge = false; 
+   			  c.shadowBridge = null;
    			  c.blob = null; 
    			}
    		for(int lim = occupiedCells.size()-1; lim>=0; lim--)
@@ -1252,7 +1253,7 @@ public class PonteBoard extends rectBoard<PonteCell> implements BoardProtocol,Po
  boolean addBridgeMoves(CommonMoveStack  all,int whoseTurn,PonteCell c)
  { 	
 	boolean some = false;
- 	if(!c.underBridge)
+ 	if(c.shadowBridge==null)
  	{
 	PonteChip top = c.topChip();
 	PonteChip targetChip = PonteChip.getTile(playerRack[whoseTurn]);
@@ -1323,7 +1324,7 @@ public class PonteBoard extends rectBoard<PonteCell> implements BoardProtocol,Po
  }
  boolean validTileMove(PonteCell c,PonteChip targetColor)
  {
-	 if(!c.underBridge)
+	 if(c.shadowBridge==null)
 	 {	int sum = sumOfAdjacentBlobs(c,targetColor);
 	 	switch(sum)
 	 	{

@@ -1,0 +1,31 @@
+
+Steps to add a new game to the database.
+
+Generally, everything here has to be done twice, once to the development
+database on your local machine, and again on the live database.  It's not
+critical when, except of course the changes have to be made sometime before
+the game goes live.
+
+Open the database using Mysql Workbench or similar tool of your choice.
+
+Add a new row to the "variations" table.  This contains several crucial
+things which also have to be known to the GameInfo entry for the game.
+
+These next two items trigger massive internal changes in mysql which alter
+every record.  I've never had any trouble resulting, but be cautious.
+
+Use "edit table" to change the enum "variations" in EITHER the zertz_gamerecord
+or the mp_gamerecord table.  Zertz-gamecord for strictly 2 player games, mp_gamerecord
+for games with potentially more than 2 players.
+
+Use edit table to change the enum "variations" in the "ranking" table.
+
+Sometime after these changes are made to the database, the game server has 
+to be restarted.  The restart script extracts the new data from the database
+and configures the server.   In particular, the "directory number" and 
+corresponding physical directory location of the new game needs to be known
+to the server.
+
+The new game's short name (2 letter name) and full name, and directory number
+need to be installed in the new game's GameInfo record, and naturally must
+agree with the database values.

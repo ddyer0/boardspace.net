@@ -82,8 +82,8 @@ public interface CookieConstants
     	
     	};
     		String[][] CookieStringPairs = {
-    		{"Cookie-Disco","Cookie Disco"},
-    		{"Cookie-Disco_variation","standard Cookie Disco"},
+    		{"CookieDisco","Cookie Disco"},
+    		{"Cookie-Disco_variation","Cookie Disco"},
     		{"CookieDisco_family", "Cookie Disco"},
     		{"Cookie-Disco-crawl","Cookie Disco + Expansion"},
     		{"Cookie-Disco-crawl_variation","+ Crawl Cookie"},

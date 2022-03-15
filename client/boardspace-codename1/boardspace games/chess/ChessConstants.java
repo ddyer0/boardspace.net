@@ -16,7 +16,8 @@ public interface ChessConstants
 	{	
 		
 		Chess(ChessChip.standard,null,"chess",8),		// empty chess board size 8
-		Ultima(ChessChip.ultima,null,"ultima",8);		// ultima chess
+		Ultima(ChessChip.ultima,null,"ultima",8),		// ultima chess
+		Chess960(ChessChip.chess960,null,"chess960",8);	// chess 960
 		int size;
 		String name;
 		ChessChip banner;

@@ -24,7 +24,9 @@ import lib.StockArt;
 import lib.Text;
 import lib.TextChunk;
 import lib.TextGlyph;
+import nuphoria.EPlayer.PFlag;
 import nuphoria.EPlayer.PlayerView;
+import nuphoria.EPlayer.TFlag;
 import nuphoria.EuphoriaBoardConstructor.Decoration;
 import online.game.*;
 import online.game.sgf.sgf_game;
@@ -270,7 +272,10 @@ public class EuphoriaViewer extends CCanvas<EuphoriaCell,EuphoriaBoard> implemen
     				switch(m.op)
     				{
     				default: throw G.Error("Not expecting move %s",m);
-    				case EPHEMERAL_PICK: 
+       				case EPHEMERAL_CONFIRM_DISCARD:
+       					m.op = CONFIRM_DISCARD;
+       					break;
+       				case EPHEMERAL_PICK: 
     				case EPHEMERAL_DROP:
     						break;	// remove
      				case EPHEMERAL_CONFIRM_ONE_RECRUIT:
@@ -852,7 +857,7 @@ private Color playerBackground[] = {
        		case PlayerDilemma:
        			cell.defaultScale = CELLSIZE;
        			EPlayer p = gb.getPlayer(cell.color);
-       			if(p.dilemmaResolved)
+       			if(p.testPFlag(PFlag.HasResolvedDilemma))
        			{
        			 hit = cell.drawStack(gc,this,null,CELLSIZE, xpos,ypos,0,0,null);
        			}
@@ -960,6 +965,7 @@ private Color playerBackground[] = {
                         HighlightColor, rackBackGroundColor))
     				{ hit = true;
     				  highlight.hitCode = EuphoriaId.FightTheOpressor; 
+    				  highlight.setHelpText(s.get(ExplainFightTheOpressor));
     				} 
     			
     			if(GC.handleSquareButton(gc,join, 
@@ -967,6 +973,7 @@ private Color playerBackground[] = {
                         HighlightColor, rackBackGroundColor))
     				{ hit = true;
     				highlight.hitCode = EuphoriaId.JoinTheEstablishment; 
+    				highlight.setHelpText(s.get(ExplainJoinTheEstablishment,p.color.name()));
     				}
 
     		}
@@ -1116,7 +1123,7 @@ private Color playerBackground[] = {
          	drawStackOnPlayer(gc,pl,gb,gb.legalToHitPlayer(p.dilemma,sources,dests)?highlight:null,pr,p.dilemma,xp+unitSize*3-unitSize/3,G.Top(r)+unitSize/2,tip,fromHiddenWindow);
         	if( (p.dilemma.height()>0)
         			&& G.pointInRect(tip,xp+unitSize*2,G.Top(r),unitSize*2,unitSize) 
-        			&& (p.dilemmaResolved || anySelectionAllowed)
+        			&& (p.testPFlag(PFlag.HasResolvedDilemma) || anySelectionAllowed)
         			&& (tip.hitCode==DefaultId.HitNoWhere))
          	{	tip.hitCode = EuphoriaId.ShowPlayerView;
          		tip.hitObject = p.artifacts;
@@ -1245,7 +1252,7 @@ private Color playerBackground[] = {
     	}
     	
      }
-    boolean isIIB() { return bb.variation.isIIB(); }
+    boolean isIIB() { return bb.isIIB(); }
     private EuphoriaChip popupDisplay = null;
     private int popupDisplay_x = 0;
     private int popupDisplay_y = 0;
@@ -1601,7 +1608,7 @@ private Color playerBackground[] = {
     {	EuphoriaState state = gb.getState();
     	EPlayer p = gb.getPlayer(pl);
     	commonPlayer cpl = getPlayerOrTemp(pl);
-    	boolean showHidden = fromHidden || !G.offline() || showHiddenUI;
+    	boolean showHidden = reviewOnly || fromHidden || !G.offline() || showHiddenUI;
     	double rotation = cpl.displayRotation;
     	int cx=0;
     	int cy=0;
@@ -1624,16 +1631,16 @@ private Color playerBackground[] = {
    		int stepX = w/8;
    		int stepY = h/4;
    		int siz = Math.min(stepX*2, stepY*2);
-
+   		boolean discard = false;
 		int CELLSIZE = gb.CELLSIZE;
 		int cardScale = siz+siz/2;
     	if(gc!=null) {EuphoriaChip.CloudBackground.getImage(loader).drawImage(gc,x,y,w,h); }
     	switch(state)
     	{
     	default: 
-    			//G.Error("not expecting %s",state);
+    			G.Error("not expecting %s",state);
     		break;
-    	case RecruitOption:
+     	case RecruitOption:
     	case DieSelectOption:
     	case ConfirmRecruitOption:
     		{ RecruitChip recruit = gb.activeRecruit();
@@ -1660,15 +1667,47 @@ private Color playerBackground[] = {
     		  {
     		  int buttony = yp+3*ystep/2;
     		  int buttonh = ystep/4;
+    		  xp -= xstep/6;
+    		  xstep += xstep/3;
     		  Rectangle r = new Rectangle(xp,buttony,xstep,buttonh);
               Rectangle rl = new Rectangle(xp,buttony+buttonh*2,xstep,buttonh);
               GC.setFont(gc,largeBoldFont());
-    		  if(GC.handleSquareButton(gc,r, 
+             if(recruit==RecruitChip.JuliaTheAcolyte)
+             {	// options are keep the same or use bumper's value
+            	 WorkerChip bumpee = gb.bumpedWorker;
+            	 WorkerChip bumper = (WorkerChip)gb.lastDroppedWorker.topChip();
+            	 int bumperK = bumper.knowledge();
+            	 Text option1 = TextChunk.join(TextChunk.create(s.get(EuphoriaId.RecruitFirstJuliaOption.prettyName)),
+            				TextGlyph.create("xxxx",bumpee,this,new double[] {1.0,1.0,0.25,-0.25}));
+            	 G.SetTop(r,G.Top(r)-G.Height(r)*2/3);
+            	 if(GC.handleSquareButton(gc,0,r, highlight,option1,	
+            			 	Color.black,Color.white,
+                           HighlightColor, rackBackGroundColor))
+            	 {
+            	 		highlight.hitCode = EuphoriaId.RecruitFirstJuliaOption;
+            	 		highlight.hitObject = bumpee;          		 
+            	 }
+            	 if(bumpee.knowledge()!=bumperK)
+            	 {	G.SetTop(r,G.Top(r)+G.Height(r)*4/3);
+            	 	Text option2 = TextChunk.join(TextChunk.create(s.get(EuphoriaId.RecruitSecondJuliaOption.prettyName)),
+         				TextGlyph.create("xxxx",bumper,this,new double[] {1.0,1.0,0.25,-0.25}));
+            	 	if(GC.handleSquareButton(gc,0,r, highlight,option2,	
+             			 	Color.black,Color.white,
+                            HighlightColor, rackBackGroundColor))
+            	 		{
+            	 		highlight.hitCode = EuphoriaId.RecruitSecondJuliaOption;
+            	 		highlight.hitObject = bumper;
+            	 		}
+            	 }
+            	 
+             }
+             else if(GC.handleSquareButton(gc,r, 
               		highlight,s.get(UseRecruitAbility),
                       HighlightColor, rackBackGroundColor))
   				{ 
   				highlight.hitCode = EuphoriaId.RecruitOption; 
   				}
+             
     		  if(GC.handleSquareButton(gc,rl, 
                 		highlight,s.get(DontUseRecruitAbility),
                         HighlightColor, rackBackGroundColor))
@@ -1693,7 +1732,13 @@ private Color playerBackground[] = {
 		   	drawStackOnRecruit(gc,showHidden,gb,gb.canHitRecruit(hidden,p,sources,dests)?highlight:null,hidden,cardScale,xp+xstep,yp+ystep*2,hidden.label);
 		   	}
 		   	break;
-       	case ChooseRecruits:
+    	case DiscardFactionless:
+    	case EphemeralDiscardFactionless:
+       	case EphemeralConfirmDiscardFactionless:
+    	case ConfirmDiscardFactionless:
+    		discard = true;
+			//$FALL-THROUGH$
+		case ChooseRecruits:
     	case EphemeralChooseRecruits:
     	case ConfirmRecruits:
     	case EphemeralConfirmRecruits:
@@ -1707,7 +1752,26 @@ private Color playerBackground[] = {
     			drawStackOnRecruit(gc,true,gb,gb.canHitRecruit(c1,p,sources,dests)?highlight:null,
     					c1,siz,x+stepX*(2*i+1),y+stepY+stepY/4,c1.label);
     		}
-     	   	// draw the currently chosen recruits
+    		if(discard)	// draw the discarded recruits
+    		{
+    			yp += yp0+stepY*2;
+    			EuphoriaCell c1 = p.discardedRecruits;
+    			GC.setFont(gc,largeBoldFont());
+    			GC.Text(gc, true,x, y+stepY*2,stepX*4 ,stepY/4, Color.yellow,null,c1.label);
+    			int actY = y+stepY*3;
+    			drawStackOnRecruit(gc,true,gb,gb.canHitRecruit(c1,p,sources,dests)?highlight:null,c1,siz+siz/2,x+stepX*4,actY,c1.label);
+
+       			if(c1.topChip()!=null)
+       			{	int doneX = x+w/2+stepX*2;
+       				int doneY = actY - stepX/2; 
+       				Rectangle done = new Rectangle(doneX,doneY,stepX*2,stepX);
+       				if(handleDoneButton(gc,done,highlight,HighlightColor,rackBackGroundColor))
+       				{	
+       					highlight.hitCode = EuphoriaId.EConfirmDiscard;
+       				}
+       			}   			
+    		}
+    		else // draw the currently chosen recruits
       		{	yp += yp0+stepY*2;
     			xp = x+stepX/2;
     			EuphoriaCell c1 = p.activeRecruits;
@@ -1735,6 +1799,7 @@ private Color playerBackground[] = {
      		}
     		
     		break;
+    
     	}
     	if((gc!=null) 
     			&& (highlight!=null) 
@@ -1962,10 +2027,17 @@ private Color playerBackground[] = {
     }
 
     
-    double chipScales[] = {1.0,1.4,0.0,-0.25};
+    double chipScales[] = {1.2,1.4,0.-0.5,-0.0};
     double stoneScales[] = {1.0,1.4,0.5,-0.25};
     double cardScales[] = {1.0,0.55,0,-0.35};
-    Text gameEventText[] = {
+    double[] escale = {1.0,1.0,0,-0.5};
+       Text gameEventText[] = {
+    		
+       		TextGlyph.create("Euphorian","xx",EuphoriaChip.Euphorian,this,escale),
+       		TextGlyph.create("Wastelander","xx",EuphoriaChip.Wastelander,this,escale),
+       		TextGlyph.create("Subterran","xx",EuphoriaChip.Subterran,this,escale),
+       		TextGlyph.create("Icarite","xx",EuphoriaChip.Icarite,this,escale),
+       		
        		TextGlyph.create("Water","xx",EuphoriaChip.Water,this,chipScales),
        		TextGlyph.create("Miner","xx",EuphoriaChip.Miner,this,chipScales),
        		TextGlyph.create("Energy","xx",EuphoriaChip.Energy,this,chipScales),
@@ -1985,6 +2057,13 @@ private Color playerBackground[] = {
     		TextGlyph.create("Commodities","xx",EuphoriaChip.Commodity,this,new double[]{1.0,1.0,0,-0.5}),
     		TextGlyph.create("Resources","xx",EuphoriaChip.Resource,this,new double[]{1.0,1.0,0,-0.5}),
     		
+    		TextGlyph.create("RedStar","xx",EuphoriaChip.AuthorityMarkers[Colors.Red.ordinal()],this,chipScales),
+       		TextGlyph.create("GreenStar","xx",EuphoriaChip.AuthorityMarkers[Colors.Green.ordinal()],this,chipScales),
+       		TextGlyph.create("BlueStar","xx",EuphoriaChip.AuthorityMarkers[Colors.Blue.ordinal()],this,chipScales),
+       		TextGlyph.create("PurpleStar","xx",EuphoriaChip.AuthorityMarkers[Colors.Purple.ordinal()],this,chipScales),
+       		TextGlyph.create("BlackStar","xx",EuphoriaChip.AuthorityMarkers[Colors.Black.ordinal()],this,chipScales),
+       		TextGlyph.create("WhiteStar","xx",EuphoriaChip.AuthorityMarkers[Colors.White.ordinal()],this,chipScales),
+       	    		
     		TextGlyph.create("RedKnowledge","xx",EuphoriaChip.KnowledgeMarkers[Colors.Red.ordinal()],this,chipScales),
     		TextGlyph.create("RedMorale","xx",EuphoriaChip.MoraleMarkers[Colors.Red.ordinal()],this,chipScales),
     		
@@ -2003,7 +2082,6 @@ private Color playerBackground[] = {
     		TextGlyph.create("WhiteKnowledge","xx",EuphoriaChip.KnowledgeMarkers[Colors.White.ordinal()],this,chipScales),
     		TextGlyph.create("WhiteMorale","xx",EuphoriaChip.MoraleMarkers[Colors.White.ordinal()],this,chipScales),
   };
-    double[] escale = {1.0,1.0,0,-0.5};
     Text gameMoveText[] =   
     {	TextGlyph.create("Generator","xx",EuphoriaChip.Energy,this,escale),
     	TextGlyph.create("Aquifer","xx",EuphoriaChip.Water,this,escale),
@@ -2087,6 +2165,7 @@ private Color playerBackground[] = {
         boolean simultaneous = !getActivePlayer().spectator && state.simultaneousTurnsAllowed();
         int pl = selectedRecruitPlayer();
         boolean ourMove = OurMove() || simultaneous;
+ 
     	return ((startedPlaying||reviewOnly) 
     			&& state.hasRecruitGui() 
     			&& (state==EuphoriaState.RecruitOption)
@@ -2218,9 +2297,13 @@ private Color playerBackground[] = {
        		Rectangle rect = playerRecruitRect;
  			  switch(state)
  			  {
+ 			  case DiscardFactionless:
+ 			  case EphemeralDiscardFactionless:
  			  case EphemeralChooseRecruits:
  			  case ChooseRecruits:
  			  case ConfirmRecruits:
+ 			  case EphemeralConfirmDiscardFactionless:
+ 			  case ConfirmDiscardFactionless:	 
  				  rect = fullPlayerRecruitRect;
  				  break;
  			  default: break;
@@ -2401,9 +2484,9 @@ private Color playerBackground[] = {
  void playSounds(commonMove mm)
  {
 	 EPlayer p = bb.getCurrentPlayer();
-	 if(p.someLostToAltruism)
+	 if(p.testTFlag(TFlag.SomeLostToAltruism))
 	 {	// TODO: replace swish with a better sound
-		 p.someLostToAltruism=false;
+		 p.clearTFlag(TFlag.SomeLostToAltruism);
 		 playASoundClip(swish,100);
 	 }
 	 
@@ -2683,7 +2766,10 @@ private Color playerBackground[] = {
 					{	
 					HiddenGameWindow hidden = findHiddenWindow(hp);
 					if(hidden!=null) { hiddenChooseRecruit[hp.hit_index] = true; }
-					else { recruitPlayer = hp.hit_index; }
+					else 
+						{ recruitPlayer = hp.hit_index; 
+						bb.setRecruitDialogState(bb.players[recruitPlayer]);
+						}
 					}
 					break;
 				case Magnifier: magnifier = true; break;
@@ -2702,6 +2788,8 @@ private Color playerBackground[] = {
 						   PerformAndTransmit("Roll "+rack.name());
 						}
 					break;
+				case ConfirmDiscard:
+				case EConfirmDiscard:
 				case EConfirmOneRecruit:
 				case EConfirmRecruits:
 					{
@@ -2747,7 +2835,16 @@ private Color playerBackground[] = {
 					p.view = p.pendingView = EPlayer.PlayerView.Normal;
 					}
 					break;
-			
+				case RecruitFirstJuliaOption:
+				case RecruitSecondJuliaOption:
+					{
+						PerformAndTransmit(rack.name() +" \""+bb.activeRecruit().name+"\"");
+						EPlayer p = bb.getCurrentPlayer();
+						p.view = p.pendingView = EPlayer.PlayerView.Normal;
+						autoCardMode = false;
+					}
+					break;
+					
 				default: throw G.Error("not expecting special command %s",rack);
 				}
 			}

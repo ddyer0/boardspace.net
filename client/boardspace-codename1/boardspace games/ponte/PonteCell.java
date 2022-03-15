@@ -11,7 +11,7 @@ class CellStack extends OStack<PonteCell>
 
 public class PonteCell extends stackCell<PonteCell,PonteChip> implements PonteConstants
 {	public int sweepCounter = 0;
-	public boolean underBridge = false;
+	public Bridge shadowBridge = null;
 	public PonteBlob blob = null;
 	public PonteChip bridgeEnd = null;
 	public PonteChip[] newComponentArray(int n) { return(new PonteChip[n]); }
@@ -36,10 +36,11 @@ public class PonteCell extends stackCell<PonteCell,PonteChip> implements PonteCo
 			PonteChip top = topChip();
 			if(top.isBridge())
 			{	// if it's a bridge, mark the shadow squares
-				int endx = top.bridge.otherEnddx;
-				int endy = top.bridge.otherEnddy;
-				markShadowA(endx,endy);
-				markShadowB(endx,endy);
+				Bridge b = top.bridge;
+				int endx = b.otherEnddx;
+				int endy = b.otherEnddy;
+				markShadowA(endx,endy,b);
+				markShadowB(endx,endy,b);
 			}
 		}
 		PonteChip myContents = blob.color;
@@ -92,7 +93,7 @@ public class PonteCell extends stackCell<PonteCell,PonteChip> implements PonteCo
 
 	// mark the "A" shadow squares of the bridge.  Bridges with diagonal, horizontal, or vertical angles
 	// have only A squares.  The three off-angles also have a "B" shadow square.
-	void markShadowA(int dx,int dy)
+	void markShadowA(int dx,int dy,Bridge bridge)
 	{	PonteCell hub = this;
 		// step in the X direction first
 		if(dx<0) { hub = hub.exitTo(PonteBoard.CELL_LEFT()); dx += 1; }
@@ -100,26 +101,33 @@ public class PonteCell extends stackCell<PonteCell,PonteChip> implements PonteCo
 		if(hub!=null)
 			{ if(dy<0) { hub = hub.exitTo(PonteBoard.CELL_DOWN()); dy += 1; }
 			if(hub!=null)
-			{hub.underBridge = true;
-			 if(dx!=0 || dy!=0) { hub.markShadowA(dx,dy); }
+			{
+			 hub.shadowBridge = bridge;
+			 if(dx!=0 || dy!=0) { hub.markShadowA(dx,dy,bridge); }
 			}}
 	}
 	
 	// at some angles, two squares are in shadow
-	void markShadowB(int dx,int dy)
+	void markShadowB(int dx,int dy,Bridge bridge)
 	{	switch(dy)
 		{
 		case -1:
 			// dy=-1 means dx is +-2
 			{PonteCell side = exitTo((dx<0)?PonteBoard.CELL_LEFT():PonteBoard.CELL_RIGHT());
-			 if(side!=null) { side.underBridge = true; }
+			 if(side!=null) 
+			 	{
+			 	  side.shadowBridge = bridge;
+			 	}
 			}
 			break;
 		case -2:
 			// 
 			if(Math.abs(dx)!= -dy) 
 			{ PonteCell down = exitTo(PonteBoard.CELL_DOWN());
-			  if(down!=null) { down.underBridge = true; }
+			  if(down!=null) 
+			  	{ 
+			  	  down.shadowBridge = bridge;
+			  	}
 			}
 			break;
 		default: ;
@@ -139,10 +147,12 @@ public class PonteCell extends stackCell<PonteCell,PonteChip> implements PonteCo
 			hub = hub.exitTo(PonteBoard.CELL_DOWN()); dy += 1; 
 		}
 		return(hub);
-
+	}
+	boolean underDifferentBridge(Bridge b)
+	{	return ((shadowBridge!=null) && (shadowBridge!=b));
 	}
 	// return true if the A shadow squares for this dx,dy are free for placement of opposite color squares
-	boolean notShadowA(int dx,int dy)
+	boolean notShadowA(int dx,int dy,Bridge b)
 	{	PonteCell hub = this;
 		// step in the X direction first
 		if(dx<0) { hub = hub.exitTo(PonteBoard.CELL_LEFT()); dx += 1; }
@@ -150,23 +160,23 @@ public class PonteCell extends stackCell<PonteCell,PonteChip> implements PonteCo
 		if(hub==null) { return(false); }
 		if(dy<0) { hub = hub.exitTo(PonteBoard.CELL_DOWN()); dy += 1; }
 		if(hub==null) { return(false); }
-		if(hub.underBridge || (hub.topChip()!=null)) { return(false); }
-		return(notShadowC(hub,dx,dy));  
+		if(hub.underDifferentBridge(b) || (hub.topChip()!=null)) { return(false); }
+		return(notShadowC(hub,dx,dy,b));  
 	}
 	// endpoint of a bridge, must be occupied by a cell of our color
-	boolean notShadowC(PonteCell hub,int dx,int dy)
+	boolean notShadowC(PonteCell hub,int dx,int dy,Bridge b)
 	{	// must be a cell of the same color not already in shadow
 		if(dx<0) { hub = hub.exitTo(PonteBoard.CELL_LEFT()); dx += 1; }
 		else if(dx>0) { hub = hub.exitTo(PonteBoard.CELL_RIGHT()); dx -=1; }
 		if(hub==null) { return(false); }
 		if(dy<0) { hub = hub.exitTo(PonteBoard.CELL_DOWN()); dy += 1; }
-		if((hub==null) || hub.underBridge) { return(false); }
+		if((hub==null) || hub.underDifferentBridge(b)) { return(false); }
 		PonteChip top = hub.topChip();
 		if(top!=chipAtIndex(0)) { return(false); }
 		return(true);
 	}
 	// return true if the B shadow squares for this dx,dy are free
-	private boolean notShadowB(int dx,int dy)
+	private boolean notShadowB(int dx,int dy,Bridge b)
 	{	PonteCell hub=null;
 		switch(dy)
 		{
@@ -178,15 +188,15 @@ public class PonteCell extends stackCell<PonteCell,PonteChip> implements PonteCo
 			break;
 		default: ;
 		}
-		if((hub!=null) && (hub.underBridge || (hub.topChip()!=null))) { return(false); }
+		if((hub!=null) && (hub.underDifferentBridge(b) || (hub.topChip()!=null))) { return(false); }
 		return(true);	// no B side
 	}
 	
 	boolean canPlaceBridge(PonteChip.Bridge b)
 	{	int dx = b.otherEnddx;
 		int dy = b.otherEnddy;
-		if((notShadowB(dx,dy)
-				&& notShadowA(dx,dy)))
+		if(notShadowB(dx,dy,b)
+				&& notShadowA(dx,dy,b))
 		{
 			switch(b)
 			{
@@ -242,7 +252,7 @@ public class PonteCell extends stackCell<PonteCell,PonteChip> implements PonteCo
 	{	//PonteCell other = (PonteCell)ot;
 		// copy any variables that need copying
 		super.copyFrom(ot);
-		underBridge = ot.underBridge;
+		shadowBridge = ot.shadowBridge;
 		bridgeEnd = ot.bridgeEnd;
 		rackLocation = ot.rackLocation;
 	}
@@ -253,7 +263,7 @@ public class PonteCell extends stackCell<PonteCell,PonteChip> implements PonteCo
 	public void reInit()
 	{
 		super.reInit();
-		underBridge = false;
+		shadowBridge = null;
 		sweepCounter = 0;
 		blob = null;
 		bridgeEnd = null;

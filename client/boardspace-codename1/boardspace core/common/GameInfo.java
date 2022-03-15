@@ -245,8 +245,15 @@ public class GameInfo implements lib.CompareTo<GameInfo>,LobbyConstants
 		return(false);
 	}
 	// select a variation of a single game.  Name is the name of a game in the main menu.
+	// player count is 0 for review mode rooms, which produce subgames only if they are
+	// stored in a different directory.  
+	// When called from the seating viewer, the exact player count is known and
+	// is used to filter out inappropriate games.
+	// 
 	public GameInfo[] variationMenu(String name,ESet includedTypes,int playercount)
 	{	Vector<GameInfo> included = new Vector<GameInfo>();
+		boolean sameReviewDir = true;
+		int reviewdir = -1;
 		for(int lim = allGames.size()-1; lim>=0; lim--)
 		{	GameInfo info = allGames.elementAt(lim);
 			if( (info!=null)
@@ -257,8 +264,11 @@ public class GameInfo implements lib.CompareTo<GameInfo>,LobbyConstants
 				&& ((playercount==0) || ((info.minPlayers<=playercount) && (info.maxPlayers>=playercount)))
 				)
 				{ included.addElement(info);
+				  if(reviewdir==-1) { reviewdir = info.dirNum; }
+				  sameReviewDir &= (reviewdir==info.dirNum);
 				}
 		}
+		if((playercount==0) && sameReviewDir) { return(null); }	// no variations menu needed
 		GameInfo g[] = included.toArray(new GameInfo[included.size()]);
 		Sort.sort(g,true);	// sort by number
 		return(g);
@@ -387,9 +397,12 @@ synchronized(allGames) {
 			chessBot,"chess.ChessViewer","/chess/english/BasicChessRules.pdf",
 			null,false, WhiteOverBlack));
 	  put(new GameInfo(781,ES.game,83,"UL",AncientGames,"Chess","Ultima",OneBotPlus,
-				chessBot,"chess.ChessViewer","/chess/english/BasicChessRules.pdf",
+				chessBot,"chess.ChessViewer","/chess/english/ultima-rules.html",
 				null,false, WhiteOverBlack));
-	  put(new GameInfo(781,ES.game,83,"UL",OtherGames,"Ultima","Ultima",OneBotPlus,
+	  put(new GameInfo(782,ES.game,105,"C9",AncientGames,"Chess","Chess960",OneBotPlus,
+				chessBot,"chess.ChessViewer","/chess/english/chess960-rules.html",
+				null,false, WhiteOverBlack));
+	  put(new GameInfo(783,ES.game,83,"UL",OtherGames,"Ultima","Ultima",OneBotPlus,
 				new double[]{0.5,0.05},
 				"chess.ChessViewer","/chess/english/ultima-rules.html",
 				null,false, WhiteOverBlack));	  
@@ -627,6 +640,53 @@ synchronized(allGames) {
 		 m2.randomizeFirstPlayer = true;
 		 // only requires card concealment for the player cards and hidden recruits
 		 m2.longMessage = mmside;
+		}
+		 {
+			 Color []ecolors = {  Color.red, Color.green, Color.blue, Color.black, Color.lightGray, bsPurple };
+			 String mmside = "EuphoriaInfoMessage";
+			 String euphoriaRules ="/euphoria/english/EuphoriaRules_2ndEd.pdf";
+			 String euphoriaViewer =  "nuphoria.EuphoriaViewer";
+			 String euphoriaVideo = "https://boardgamegeek.com/video/90203/euphoria-build-better-dystopia/euphoria-how-play-watch-it-played";
+			 {GameInfo mm = put(new GameInfo(144,ES.test,70,"EU",EuroGames,"Nuphoria","Euphoria",
+						OneBotPlus,
+						new double[]{1.0,0.01},
+						euphoriaViewer,euphoriaRules,
+						euphoriaVideo,false, ecolors));		// euphoria first player is determined by the initial die roll
+				 mm.minPlayers = 2;
+				 mm.maxPlayers = 6;
+				 mm.randomizeFirstPlayer = true;
+				 mm.hasHiddenInformation = true;
+				 // only requires card concealment for the player cards and hidden recruits
+				 mm.longMessage = mmside;
+			 }
+			 {
+				 GameInfo m2 = put(new GameInfo(143,ES.test,70,"EU",EuroGames,"Nuphoria","Euphoria2",
+						OneBotPlus,
+						new double[]{1.0,0.01},
+						euphoriaViewer,euphoriaRules,
+						euphoriaVideo,false, ecolors));
+				 m2.minPlayers = 2;
+				 m2.maxPlayers = 6;
+				 m2.groupSortKey = "00041";
+				 m2.hasHiddenInformation = true;
+				 m2.randomizeFirstPlayer = true;
+				 // only requires card concealment for the player cards and hidden recruits
+				 m2.longMessage = mmside;
+			 }
+			 {
+		   GameInfo m3 = put(new GameInfo(142,ES.test,70,"EU",EuroGames,"Nuphoria","Euphoria3",
+					OneBotPlus,
+					new double[]{1.0,0.01},
+					euphoriaViewer,euphoriaRules,
+					euphoriaVideo,false, ecolors));
+		   	m3.minPlayers = 2;
+		   	m3.maxPlayers = 6;
+		   	m3.groupSortKey = "00041";
+		   	m3.hasHiddenInformation = true;
+		   	m3.randomizeFirstPlayer = true;
+			 // only requires card concealment for the player cards and hidden recruits
+		   	m3.longMessage = mmside;
+			 }
 		
 		}
 	
@@ -1336,6 +1396,13 @@ synchronized(allGames) {
 			new double[]{0.08,0.01},
 			"kamisado.KamisadoViewer","/kamisado/english/RULES%20ENG.pdf",
 			null,false, BlackOverGold));
+	
+	put(new GameInfo(346,ES.test,106,"IR",RacingGames,"Iro","Iro",
+			OneBotPlus,
+			new double[]{0.08,0.01},
+			"iro.IroViewer","/iro/english/iroprules.html",
+				null,false, WhiteOverBlack));
+
 	{
 	String truclass = "truchet.TruGameViewer";
 	String trurules = "/truchet/english/truchet_rules.html";

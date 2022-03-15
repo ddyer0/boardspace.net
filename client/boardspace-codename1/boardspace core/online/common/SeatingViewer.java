@@ -778,7 +778,8 @@ public class SeatingViewer extends exCanvas implements LobbyConstants
 			}
 			GC.frameRect(gc,Color.black,iconRect);
 			GameInfo variations[] = selectedGame.variationMenu(selectedGame.gameName,typeClass,nplayers);
-			if(variations.length>1 && (selectedChart!=null) && selectedChart.getNSeats()>0)
+			if((variations!=null) && (variations.length>1) 
+					&& (selectedChart!=null))					
 			{	int avspace = Math.min(vspace, (h-vspace*4)/(variations.length+2));
 				if(variantY + (avspace*(variations.length+4))>h) { variantY = t+avspace; }
 				GC.Text(gc,false,variantX,variantY,gameColumnWidth,avspace,Color.black,null,

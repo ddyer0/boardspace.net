@@ -139,6 +139,7 @@ public class EuphoriaChip extends chip<EuphoriaChip>
     static public EuphoriaChip Commodity = new EuphoriaChip(27,"commodity",chipScale);
     static public EuphoriaChip Resource = new EuphoriaChip(28,"resource",chipScale);
     static public EuphoriaChip Nocard = new EuphoriaChip(29,"nocard",chipScale);
+    static public EuphoriaChip Trash = new EuphoriaChip(70,"waste",new double[]{0.5,0.4,0.8});
 
     static public EuphoriaChip CardMarket = new EuphoriaChip(0,"cardmarket",null);
     

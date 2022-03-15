@@ -21,6 +21,7 @@ public class ChessMovespec extends commonMove implements ChessConstants
     static final int MOVE_BOARD_BOARD = 210;	// move board to board
     static final int MOVE_SUICIDE = 211;
     static final int MOVE_STALEMATE = 212;
+    static final int MOVE_CASTLE = 213;		// castling used in chess960
 
     static
     {
@@ -32,7 +33,8 @@ public class ChessMovespec extends commonMove implements ChessConstants
         	"Dropb", MOVE_DROPB,
  			"Move",MOVE_BOARD_BOARD,
  			"Suicide",MOVE_SUICIDE,
- 			"Stalemate",MOVE_STALEMATE);
+ 			"Stalemate",MOVE_STALEMATE,
+ 			"Castle",MOVE_CASTLE);
    }
 
     ChessId source; // where from/to
@@ -61,6 +63,7 @@ public class ChessMovespec extends commonMove implements ChessConstants
     	to_col = to.col;
     	to_row = to.row;
     }	
+
     /* constructor */
     public ChessMovespec(String str, int p)
     {
@@ -154,7 +157,7 @@ public class ChessMovespec extends commonMove implements ChessConstants
 	        to_row = G.IntToken(msg);
 	        dest = ChessBoard.CaptureLocation[to_row];
 	        break;
-       	
+        case MOVE_CASTLE:
         case MOVE_BOARD_BOARD:			// robot move from board to board
         	dest = source = ChessId.BoardLocation;		
             from_col = G.CharToken(msg);	//from col,row
@@ -220,7 +223,8 @@ public class ChessMovespec extends commonMove implements ChessConstants
         	return(icon(v,from_col,from_row,"-",to_col, to_row));
         case MOVE_DONE:
             return (icon(v,""));
-
+        case MOVE_CASTLE:
+        	return icon(v,(from_col>to_col ? "O-O-O" : "O-O"));
         default:
             return (icon(v,D.findUnique(op)));
         }
@@ -244,6 +248,7 @@ public class ChessMovespec extends commonMove implements ChessConstants
 	        return (opname + to_col + " " + to_row);
 		case MOVE_SUICIDE:
 		case MOVE_BOARD_BOARD:
+		case MOVE_CASTLE:
 			return(opname+ from_col + " " + from_row
 					+ " " + to_col + " " + to_row);
         case MOVE_PICK:

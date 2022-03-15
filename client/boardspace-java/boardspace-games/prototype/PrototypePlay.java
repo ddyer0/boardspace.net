@@ -330,7 +330,7 @@ public void PrepareToMove(int playerIndex)
     movingForPlayer = GameBoard.getCurrentPlayerChip();
 }
 
-
+	// in games where the robot auto-adds a done, this is needed so "save current variation" works correctly
 	public commonMove getCurrentVariation()
 	{	
 		return getCurrent2PVariation();
