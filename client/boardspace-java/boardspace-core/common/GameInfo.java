@@ -607,7 +607,7 @@ synchronized(allGames) {
 				ThreeBotsPlus,
 				new double[]{1.0,1.0,1.0,0.01},
 				pfViewer,pfRules,
-				pfVideo,false, pfColors));		// euphoria first player is determined by the initial die roll
+				pfVideo,false, pfColors));		
 		
 	}
 
@@ -647,7 +647,7 @@ synchronized(allGames) {
 			 String euphoriaRules ="/euphoria/english/EuphoriaRules_2ndEd.pdf";
 			 String euphoriaViewer =  "nuphoria.EuphoriaViewer";
 			 String euphoriaVideo = "https://boardgamegeek.com/video/90203/euphoria-build-better-dystopia/euphoria-how-play-watch-it-played";
-			 {GameInfo mm = put(new GameInfo(144,ES.test,70,"EU",EuroGames,"Nuphoria","Euphoria",
+			 {GameInfo mm = put(new GameInfo(244,ES.test,70,"EU",EuroGames,"Nuphoria","Euphoria",
 						OneBotPlus,
 						new double[]{1.0,0.01},
 						euphoriaViewer,euphoriaRules,
@@ -660,7 +660,7 @@ synchronized(allGames) {
 				 mm.longMessage = mmside;
 			 }
 			 {
-				 GameInfo m2 = put(new GameInfo(143,ES.test,70,"EU",EuroGames,"Nuphoria","Euphoria2",
+				 GameInfo m2 = put(new GameInfo(243,ES.test,70,"EU",EuroGames,"Nuphoria","Euphoria2",
 						OneBotPlus,
 						new double[]{1.0,0.01},
 						euphoriaViewer,euphoriaRules,
@@ -674,7 +674,7 @@ synchronized(allGames) {
 				 m2.longMessage = mmside;
 			 }
 			 {
-		   GameInfo m3 = put(new GameInfo(142,ES.test,70,"EU",EuroGames,"Nuphoria","Euphoria3",
+		   GameInfo m3 = put(new GameInfo(242,ES.test,70,"EU",EuroGames,"Nuphoria","Euphoria3",
 					OneBotPlus,
 					new double[]{1.0,0.01},
 					euphoriaViewer,euphoriaRules,
