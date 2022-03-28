@@ -30,6 +30,8 @@ import online.game.*;
 
 /*
  * 
+ * TODO: change producer to only forbid self-retrieval
+ * 
 Interesting special cases, choices and resolutions.  A lot of odd things arise from
 the combination of "Mentor", a blue card which lets you take an action from a previous
 season, and using that action to play a yellow card. Yellow cards generally assume the

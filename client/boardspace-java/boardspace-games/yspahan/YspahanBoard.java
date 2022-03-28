@@ -1551,7 +1551,7 @@ public class YspahanBoard extends BaseBoard implements BoardProtocol,YspahanCons
 	}
 
 	private void sendCubeToCaravan(YspahanCell myCubes, boolean undo,boolean usingCard,replayMode replay)
-	{	scoreCaravanIfFull(replay);
+	{	if(!undo) { scoreCaravanIfFull(replay); }
 		YspahanCell caravanCubes = undo ? caravan.lastFilledCell() : caravan
 				.firstEmptyCell();
 		YspahanCell from = undo ? caravanCubes : myCubes;
@@ -3155,6 +3155,7 @@ public class YspahanBoard extends BaseBoard implements BoardProtocol,YspahanCons
 				}
 				return (false);
 			}
+			case PLAY_CARD_EFFECT_STATE:	// should be impossible - this is only when a card is pickedobject
 			case PAID_CAMEL_STATE:
 				return (false);
 			case PAY_CAMEL_STATE:

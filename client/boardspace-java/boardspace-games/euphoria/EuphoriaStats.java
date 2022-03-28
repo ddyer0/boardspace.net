@@ -8,10 +8,12 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 
 import bridge.Utf8Printer;
+import euphoria.EPlayer.PFlag;
+import euphoria.EuphoriaConstants.Allegiance;
+import euphoria.EuphoriaConstants.Colors;
 import online.game.commonPlayer;
 import online.game.sgf.sgf_game;
 import online.game.sgf.sgf_reader;
-import euphoria.EuphoriaConstants.*;
 import lib.ErrorX;
 import lib.OStack;
 class StatStack extends OStack<EuphoriaStats>
@@ -55,7 +57,7 @@ public class EuphoriaStats {
 		morale = p.morale;
 		knowledge = p.knowledge;
 		allegiance = p.allegianceStars.height();
-		dilemma = p.dilemmaResolved;
+		dilemma = p.testPFlag(PFlag.HasResolvedDilemma);
 		market = p.marketStars;
 		workers = p.totalWorkers;
 		placedWorker = p.placements;
@@ -166,7 +168,7 @@ public class EuphoriaStats {
 	}
 	public static void saveStats()
 	{
-		String ss = sgf_reader.do_sgf_dialog(FileDialog.SAVE,"euphoria", "*.txt");
+		String ss = sgf_reader.do_sgf_dialog(FileDialog.SAVE,"nuphoria", "*.txt");
 		if(ss!=null)
 		{
 			File f = new File(ss);

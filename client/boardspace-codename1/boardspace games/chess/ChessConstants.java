@@ -132,6 +132,7 @@ public interface ChessConstants
     			{"Chess_variation","Standard Chess"},
     			{"Ultima_variation","Ultima Chess"},
     			{"Ultima_family","Ultima"},
+    			{"Chess960_variation","Chess 960"},
     		};
     		InternationalStrings.put(ChessStrings);
     		InternationalStrings.put(ChessStringPairs);

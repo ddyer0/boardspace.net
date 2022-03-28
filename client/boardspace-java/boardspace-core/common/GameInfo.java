@@ -273,7 +273,8 @@ public class GameInfo implements lib.CompareTo<GameInfo>,LobbyConstants
 		Sort.sort(g,true);	// sort by number
 		return(g);
 	}
-	
+	static IntObjHashtable<GameInfo> allids = new IntObjHashtable<GameInfo>();
+		
 	/**
 	 * constructor
 	 * @param uid
@@ -281,6 +282,7 @@ public class GameInfo implements lib.CompareTo<GameInfo>,LobbyConstants
 	 * @param directory number, must agree with the database "variation" table
 	 * @param ID short ID, must agree with the database "variation" table
 	 * @param group the group header
+	 * @param gameName exact game name
 	 * @param variation the exact game variation
 	 * @param bots number of robot levels to allow
 	 * @param speed requirements for the bots
@@ -312,6 +314,7 @@ public class GameInfo implements lib.CompareTo<GameInfo>,LobbyConstants
 		// the (directory+1)*1000 encoding is known to the server, used for
 		// the status page to display the game type.
 		publicID = (directory+1)*1000+uid%1000;	
+		
 		dirNum = directory;
 		groupName=group;
 		gameName = gamen;
@@ -332,6 +335,10 @@ public class GameInfo implements lib.CompareTo<GameInfo>,LobbyConstants
 			}
 		}
 		rules = rul;
+		GameInfo existing = allids.get(publicID);
+		G.Advise(existing==null || existing.variationName.equals(variationName),
+				"Duplicate uid %s for %s and %s",uid,existing,this);
+		allids.put(publicID,this);
 	}
 
 	public static GameInfo put(GameInfo n)
@@ -427,7 +434,12 @@ synchronized(allGames) {
 	put(new GameInfo(752,ES.game,74,"GO",AncientGames,"Go","Go-11",NoBots,null,
 			"goban.GoViewer","/english/about_go.html",null,false, BlackOverWhite));
 	
-	put(new GameInfo(751,ES.game,74,"GO",AncientGames,"Go","Go-19",NoBots,null,
+	put(new GameInfo(751,ES.game,74,"GO",AncientGames,"Go","Go-13",
+			NoBots,null,
+			"goban.GoViewer","/english/about_go.html",
+			null,false, BlackOverWhite));
+	
+	put(new GameInfo(750,ES.game,74,"GO",AncientGames,"Go","Go-19",NoBots,null,
 			"goban.GoViewer","/english/about_go.html",null,false, BlackOverWhite));
 	
 	put(new GameInfo(753,ES.game,74,"GO",TerritoryGames,"Go","Go-9",NoBots,null,
@@ -614,9 +626,11 @@ synchronized(allGames) {
 	{	Color []ecolors = {  Color.red, Color.green, Color.blue, Color.black, Color.lightGray, bsPurple };
 		String mmside = "EuphoriaInfoMessage";
 		String euphoriaRules ="/euphoria/english/EuphoriaRules_2ndEd.pdf";
+		String euphoriaRulesIIB =  "/euphoria/english/EuphExpRulebook_r14.pdf";
+				
 		String euphoriaViewer =  "euphoria.EuphoriaViewer";
 		String euphoriaVideo = "https://boardgamegeek.com/video/90203/euphoria-build-better-dystopia/euphoria-how-play-watch-it-played";
-		GameInfo mm = put(new GameInfo(144,ES.game,70,"EU",EuroGames,"Euphoria","Euphoria",
+		{GameInfo mm = put(new GameInfo(144,ES.game,70,"EU",EuroGames,"Euphoria","Euphoria",
 				OneBotPlus,
 				new double[]{1.0,0.01},
 				euphoriaViewer,euphoriaRules,
@@ -627,7 +641,8 @@ synchronized(allGames) {
 		 mm.hasHiddenInformation = true;
 		 // only requires card concealment for the player cards and hidden recruits
 		 mm.longMessage = mmside;
-
+		}
+		 {
 		 GameInfo m2 = put(new GameInfo(143,ES.game,70,"EU",EuroGames,"Euphoria","Euphoria2",
 				OneBotPlus,
 				new double[]{1.0,0.01},
@@ -640,56 +655,39 @@ synchronized(allGames) {
 		 m2.randomizeFirstPlayer = true;
 		 // only requires card concealment for the player cards and hidden recruits
 		 m2.longMessage = mmside;
-		}
+		 }
+		
 		 {
-			 Color []ecolors = {  Color.red, Color.green, Color.blue, Color.black, Color.lightGray, bsPurple };
-			 String mmside = "EuphoriaInfoMessage";
-			 String euphoriaRules ="/euphoria/english/EuphoriaRules_2ndEd.pdf";
-			 String euphoriaViewer =  "nuphoria.EuphoriaViewer";
-			 String euphoriaVideo = "https://boardgamegeek.com/video/90203/euphoria-build-better-dystopia/euphoria-how-play-watch-it-played";
-			 {GameInfo mm = put(new GameInfo(244,ES.test,70,"EU",EuroGames,"Nuphoria","Euphoria",
-						OneBotPlus,
-						new double[]{1.0,0.01},
-						euphoriaViewer,euphoriaRules,
-						euphoriaVideo,false, ecolors));		// euphoria first player is determined by the initial die roll
-				 mm.minPlayers = 2;
-				 mm.maxPlayers = 6;
-				 mm.randomizeFirstPlayer = true;
-				 mm.hasHiddenInformation = true;
-				 // only requires card concealment for the player cards and hidden recruits
-				 mm.longMessage = mmside;
-			 }
-			 {
-				 GameInfo m2 = put(new GameInfo(243,ES.test,70,"EU",EuroGames,"Nuphoria","Euphoria2",
-						OneBotPlus,
-						new double[]{1.0,0.01},
-						euphoriaViewer,euphoriaRules,
-						euphoriaVideo,false, ecolors));
-				 m2.minPlayers = 2;
-				 m2.maxPlayers = 6;
-				 m2.groupSortKey = "00041";
-				 m2.hasHiddenInformation = true;
-				 m2.randomizeFirstPlayer = true;
-				 // only requires card concealment for the player cards and hidden recruits
-				 m2.longMessage = mmside;
-			 }
-			 {
-		   GameInfo m3 = put(new GameInfo(242,ES.test,70,"EU",EuroGames,"Nuphoria","Euphoria3",
+		   GameInfo m3 = put(new GameInfo(142,ES.game,70,"EU",EuroGames,"Euphoria","Euphoria3",
 					OneBotPlus,
 					new double[]{1.0,0.01},
-					euphoriaViewer,euphoriaRules,
+					euphoriaViewer,euphoriaRulesIIB,
 					euphoriaVideo,false, ecolors));
 		   	m3.minPlayers = 2;
 		   	m3.maxPlayers = 6;
-		   	m3.groupSortKey = "00041";
+		   	m3.groupSortKey = "00042";
 		   	m3.hasHiddenInformation = true;
 		   	m3.randomizeFirstPlayer = true;
 			 // only requires card concealment for the player cards and hidden recruits
 		   	m3.longMessage = mmside;
 			 }
+		 {
+			 GameInfo m3 = put(new GameInfo(140,ES.test,70,"EU",EuroGames,"Euphoria","Euphoria3T",
+					OneBotPlus,
+					new double[]{1.0,0.01},
+					euphoriaViewer,euphoriaRulesIIB,
+					euphoriaVideo,false, ecolors));
+			m3.minPlayers = 2;
+			m3.maxPlayers = 6;
+			m3.groupSortKey = "00043";
+			m3.hasHiddenInformation = true;
+			m3.randomizeFirstPlayer = true;
+			 // only requires card concealment for the player cards and hidden recruits
+			m3.longMessage = mmside;
+			 }
 
-		}
-	
+
+	}
 
 
 	{	
@@ -1975,7 +1973,7 @@ synchronized(allGames) {
 
 }
 	// this is used as a placeholder when the identity of the game is unknown to the app
-	public static GameInfo futureGame = new GameInfo(860,ES.disabled,66,"??",UnsupportedGameMessage,
+	public static GameInfo futureGame = new GameInfo(160,ES.disabled,66,"??",UnsupportedGameMessage,
 			UnsupportedGameMessage,UnsupportedGameMessage,
 			null,null,null,null,null,false, null);
 	public String toString() { return("<gameinfo "+variationName+">"); }

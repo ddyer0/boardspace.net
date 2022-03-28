@@ -15,9 +15,9 @@ class CellStack extends OStack<EuphoriaCell>
 	public EuphoriaCell[] newComponentArray(int n) { return(new EuphoriaCell[n]); }
 }
 /**
- * specialized cell used for the game euphoria, not for all games using a euphoria board.
+ * specialized cell used for the game nuphoria, not for all games using a nuphoria board.
  * <p>
- * the game euphoria needs only a single object on each cell, or empty.
+ * the game nuphoria needs only a single object on each cell, or empty.
  *  @see chipCell 
  *  @see stackCell
  * 
@@ -33,7 +33,7 @@ public class EuphoriaCell extends stackCell<EuphoriaCell,EuphoriaChip>
 	public EuphoriaCell nextInGroup = null;
 	public String label = null;
 	public boolean displayOnly = false;		// true if this cell is only used in the viewer
-	
+	public Colors ignoredForPlayer = null;	// lionel the cook can ignore some market
 	/* cost code for the default cost at the current time.  Applies only to worker cells */
 	public Cost placementCost = Cost.Closed;
 	public Benefit placementBenefit = Benefit.None;

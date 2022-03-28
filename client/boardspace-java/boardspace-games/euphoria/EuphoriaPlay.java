@@ -2,6 +2,7 @@ package euphoria;
 
 
 import static euphoria.EuphoriaMovespec.*;
+
 import lib.*;
 import online.game.*;
 import online.game.export.ViewerProtocol;
@@ -52,7 +53,8 @@ public class EuphoriaPlay extends commonRobot<EuphoriaBoard> implements Runnable
     private int boardMoveNumber = 0;				// the starting move number on the search board
     private int robotPlayer = 0;					// the player we're playing for
     private Random robotRandom = null;				// random numbers for randomizing playouts
-
+    boolean randomize = true;
+    
     enum Bias {
     	B_00,	// no pre-bias
     	B_01,
@@ -200,7 +202,7 @@ public class EuphoriaPlay extends commonRobot<EuphoriaBoard> implements Runnable
     	if(newn<boardMoveNumber)
     		{ // we detect that the UCT run has restarted at the top
     		  // so we need to re-randomize the hidden state.
-    		  board.randomizeHiddenState(robotRandom,robotPlayer);
+    		  if(randomize) { board.randomizeHiddenState(robotRandom,robotPlayer); }
     		  terminatedWithPrejudice = -1;
     		}
     	boardMoveNumber = newn;
@@ -414,6 +416,11 @@ public class EuphoriaPlay extends commonRobot<EuphoriaBoard> implements Runnable
         case MONTEBOT_LEVEL:
         	evaluator = Evaluator.Baseline_Monte_07; 
         	break;
+        case TESTBOT_LEVEL_1:
+           	evaluator = Evaluator.Baseline_Dumbot_09;
+        	WEAKBOT = true;
+        	randomize = false;
+        	break;
         }
     }
 /**
@@ -422,6 +429,7 @@ public class EuphoriaPlay extends commonRobot<EuphoriaBoard> implements Runnable
 public void copyFrom(commonRobot<EuphoriaBoard> p)
 {	super.copyFrom(p);
 	robotRandom = new Random();
+	randomize = ((EuphoriaPlay)p).randomize;
 }
 
 /** PrepareToMove is called in the thread of the main game run loop at 
@@ -435,11 +443,13 @@ public void PrepareToMove(int playerIndex)
 {	
 	//use this for a friendly robot that shares the board class
 	board.copyFrom(GameBoard);
+	board.sameboard(GameBoard);;
 	board.setRobotBoard();
     board.sameboard(GameBoard);	// check that we got a good copy.  Not expensive to do this once per move
     robotPlayer = playerIndex;
     robotRandom = new Random(board.Digest());
     board.SIMULTANEOUS_PLAY = false;
+    board.robot = this;
     board.setWhoseTurn(robotPlayer);
     if(board.continuationStack.size()==0) 
     	{	// this is needed to prevent "unexpected turn change" if the robot
@@ -448,7 +458,7 @@ public void PrepareToMove(int playerIndex)
     		// may be temporary "current player" currently in effect.
     		board.currentPlayerInTurnOrder = robotPlayer; 
     	}
-    board.randomizeHiddenState(robotRandom,playerIndex);
+    if(randomize) { board.randomizeHiddenState(robotRandom,playerIndex); }
     terminatedWithPrejudice = -1;
     board.activePlayer = robotPlayer;
     if(!board.hasReducedRecruits) 
@@ -459,7 +469,7 @@ public void PrepareToMove(int playerIndex)
 
 
 
- // this is the monte carlo robot, which for euphoria is much better then the alpha-beta robot
+ // this is the monte carlo robot, which for nuphoria is much better then the alpha-beta robot
  // for the monte carlo bot, blazing speed of playouts is all that matters, as there is no
  // evaluator other than winning a game.
  public commonMove DoMonteCarloFullMove()
@@ -484,10 +494,12 @@ public void PrepareToMove(int playerIndex)
         monte_search_state.blitz = BLITZ;			// no undo, just copy and descend.
         
         monte_search_state.initialWinRateWeight = evaluator.weight;
-        monte_search_state.final_depth = (evaluator.depth/2)*board.nPlayers();	// note needed for euphoria which is always finite
+        monte_search_state.final_depth = (evaluator.depth/2)*board.nPlayers();	// note needed for nuphoria which is always finite
         // in startup choice moves, give more time and more exploration
         double speedMultiplier = board.nPlayers()<=2 ? 1 : 1.5;
-        monte_search_state.timePerMove = choice?4:(speedMultiplier*evaluator.time)/2;	// 5 seconds per move
+        monte_search_state.timePerMove = randomize 
+        									? choice?4:(speedMultiplier*evaluator.time)/2
+        									: 1;	
         monte_search_state.alpha =choice ? 1.0 : evaluator.alpha;
         monte_search_state.sort_moves = evaluator.sortmoves;
            
@@ -503,7 +515,7 @@ public void PrepareToMove(int playerIndex)
         monte_search_state.randomize_uct_children = true;     
         monte_search_state.random_moves_per_second = WEAKBOT ? 6000 : 250000;
         monte_search_state.max_random_moves_per_second = 300000;
-        monte_search_state.maxThreads = evaluator.threads;	// 1 = test with a single thread, 0=don't use threads
+        monte_search_state.maxThreads = randomize ? evaluator.threads : 0;	// 1 = test with a single thread, 0=don't use threads
         //
         // terminal node optimizations don't work with Euphoria, because the things
         // it sees are only possibilities, not facts.  So seeing the possibility of
@@ -525,7 +537,8 @@ public void PrepareToMove(int playerIndex)
       else { EuphoriaMovespec m = (EuphoriaMovespec)move;
       		 EuphoriaChip ch = m.chip;
       		 // sanitize the "chip" field so we don't force a pick based on randomness in the replay
-      		if((ch!=null) && (ch.isArtifact() || ch.isRecruit() || ch.isMarket()||ch.isWorker()))
+      		if((m.op!=USE_RECRUIT_OPTION)
+      			&& (ch!=null) && (ch.isArtifact() || ch.isRecruit() || ch.isMarket()||ch.isWorker()))
       		{	m.chip = null;
       		}
       		if(move!=null  

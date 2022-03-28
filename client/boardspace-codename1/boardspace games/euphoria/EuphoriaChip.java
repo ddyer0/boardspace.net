@@ -136,10 +136,13 @@ public class EuphoriaChip extends chip<EuphoriaChip>
     static public EuphoriaChip Subterran = new EuphoriaChip(24,"subterran",chipScale);
     static public EuphoriaChip Wastelander = new EuphoriaChip(25,"wastelander",chipScale);
     static public EuphoriaChip Icarite = new EuphoriaChip(26,"icarite",chipScale); 
-    
     static public EuphoriaChip Commodity = new EuphoriaChip(27,"commodity",chipScale);
     static public EuphoriaChip Resource = new EuphoriaChip(28,"resource",chipScale);
-    		 
+    static public EuphoriaChip Nocard = new EuphoriaChip(29,"nocard",chipScale);
+    static public EuphoriaChip Trash = new EuphoriaChip(70,"waste",new double[]{0.5,0.4,0.8});
+
+    static public EuphoriaChip CardMarket = new EuphoriaChip(0,"cardmarket",null);
+    
     static public EuphoriaChip allegianceMedallions[] = {
        	Euphorian,
        	Subterran,
@@ -170,7 +173,7 @@ public class EuphoriaChip extends chip<EuphoriaChip>
     static EuphoriaChip MoraleMarkers[] = colorArray(30,"Morale");
     static EuphoriaChip KnowledgeMarkers[] = colorArray(40,"Knowlege");
     static EuphoriaChip AuthorityMarkers[] = colorArray(50,"Authority");
-    
+    static EuphoriaChip ArtifactMarket[] = colorArray(60,"Artifact");
       
     static public EuphoriaChip getKnowledge(Colors c) { return(KnowledgeMarkers[c.ordinal()]); }
     static public EuphoriaChip getMorale(Colors c) { return(MoraleMarkers[c.ordinal()]); }

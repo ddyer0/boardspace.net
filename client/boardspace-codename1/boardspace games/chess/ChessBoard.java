@@ -45,6 +45,11 @@ class ChessBoard extends rectBoard<ChessCell> implements BoardProtocol,ChessCons
 	static final ChessId CaptureLocation[] = { ChessId.White_Captured, ChessId.Black_Captured};
     static final String[] GRIDSTYLE = { "1", null, "A" }; // left and bottom numbers
 
+    static final char OOO_KING = 'C';	// castling destinations
+    static final char OOO_ROOK = 'D';
+    static final char OO_KING = 'G';
+    static final char OO_ROOK = 'F';
+
 	public int getMaxRevisionLevel() { return(REVISION); }
 	
 	static int ForwardDirection[] = { CELL_UP, CELL_DOWN};
@@ -1219,14 +1224,14 @@ class ChessBoard extends rectBoard<ChessCell> implements BoardProtocol,ChessCons
         	ChessCell kdest =null;
         	if(rook.col<king.col)
         	{
-        		// king side castle
-        		rdest = getCell('D',rook.row);
-        		kdest = getCell('C',rook.row);
+        		// queen side castle
+        		rdest = getCell(OOO_ROOK ,rook.row);
+        		kdest = getCell(OOO_KING ,rook.row);
         	}
         	else 
-        	{	// queen side castle
-        		rdest = getCell('F',rook.row);
-        		kdest = getCell('G',rook.row);
+        	{	// king side castle
+        		rdest = getCell(OO_ROOK,rook.row);
+        		kdest = getCell(OO_KING,rook.row);
         	}
     		rdest.addChip(r);
     		dropObject(kdest,replay);
@@ -1309,17 +1314,14 @@ class ChessBoard extends rectBoard<ChessCell> implements BoardProtocol,ChessCons
                 	ChessCell king = getCell(castleMove.from_col,castleMove.from_row);
                 	ChessCell rook = getCell(castleMove.to_col,castleMove.to_row);
                 	ChessCell rdest =null;
-                	ChessCell kdest =null;
                 	if(rook.col<king.col)
                 	{
                 		// king side castle
-                		rdest = getCell('D',rook.row);
-                		kdest = getCell('C',rook.row);
+                		rdest = getCell(OOO_ROOK,rook.row);
                 	}
                 	else 
                 	{	// queen side castle
-                		rdest = getCell('F',rook.row);
-                		kdest = getCell('G',rook.row);
+                		rdest = getCell(OO_ROOK,rook.row);
         		}
                 	unDropObject();
                 	rook.addChip(rdest.removeTop());
@@ -1366,6 +1368,10 @@ class ChessBoard extends rectBoard<ChessCell> implements BoardProtocol,ChessCons
         case MOVE_START:
             setWhoseTurn(m.player);
             acceptPlacement();
+            AR.setValue(kingHasMoved,false);
+            AR.setValue(kingRookHasMoved,false);
+            AR.setValue(queenRookHasMoved,false);
+            
             unPickObject();
             // standardize the gameover state.  Particularly importing if the
             // sequence in a game is resign/start
@@ -1557,14 +1563,14 @@ class ChessBoard extends rectBoard<ChessCell> implements BoardProtocol,ChessCons
         	ChessCell kdest =null;
         	if(rook.col<king.col)
         	{
-        		// king side castle
-        		rdest = getCell('D',rook.row);
-        		kdest = getCell('C',rook.row);
+        		// queen side castle
+        		rdest = getCell(OOO_ROOK,rook.row);
+        		kdest = getCell(OOO_KING,rook.row);
         	}
         	else 
-        	{	// queen side castle
-        		rdest = getCell('F',rook.row);
-        		kdest = getCell('G',rook.row);
+        	{	// king side castle
+        		rdest = getCell(OO_ROOK,rook.row);
+        		kdest = getCell(OO_KING,rook.row);
         	}
     		pickObject(kdest,-1);
     		rook.addChip(rdest.removeTop());
@@ -2009,67 +2015,54 @@ private boolean addSuicideMove(CommonMoveStack all,ChessCell cell,int who)
  private boolean add960CastlingMoves(CommonMoveStack all,ChessCell from,int who)
  {	boolean some = false;
 	 if(!kingHasMoved[who] && (board_state!=ChessState.Check))
-	 {	ChessCell start = kingLocation[who];
-	 	int other = nextPlayer[who];
-		if(!kingRookHasMoved[who])
 		{	
-			int dir = CELL_RIGHT;
-			ChessCell next = start.exitTo(dir);
-			ChessCell rdest = getCell('F',start.row);	// where the rook will end up
-			if((rdest==start) || (rdest.topChip()==null))
-			{
-			// the eventual destination of the rook has to be vacant or currently occupied by the king
-			while(next!=null)
-			{
-				ChessChip top = next.topChip();
-				if(top!=null)
-				{
-				if(top.piece==ChessPiece.Rook 
-						&& (playerIndex(top)==who))
-						// special case where the king won't move, the rook hops over
-				{	// reached the rook
-					if(all==null) { return(true); }
-					some = true;
-					all.push(new ChessMovespec(MOVE_CASTLE,start,next,who));
+	 	if(!kingRookHasMoved[who])	{	some |= add960CastlingMoves(all,from,who,OO_KING,OO_ROOK,CELL_RIGHT); }
+	 	if(!queenRookHasMoved[who]) {	some |= add960CastlingMoves(all,from,who,OOO_KING,OOO_ROOK,CELL_LEFT); }
 				}
-				next = null; 
+	 return some;
 				}
-				else if(attackingSquare(next,other)) { next = null; }	// can't move through an attack
-				else { 
-					next = next.exitTo(dir); 
+ 
+ private boolean add960CastlingMoves(CommonMoveStack all,ChessCell king_src,int who,char king_col,char rook_col,int direction)
+ {	
+ 	ChessCell king_dest = getCell(king_col,king_src.row);
+ 	// find the rook
+ 	ChessCell rook_src = king_src;
+ 	ChessChip myRook = null;
+ 	ChessChip myKing = pickedObject!=null ? pickedObject : king_src.topChip();
+ 	do { rook_src = rook_src.exitTo(direction);
+ 		 if(rook_src!=null) { myRook= rook_src.topChip(); } 
 					}
-			}}
-		}
-		if(!queenRookHasMoved[who])
+ 	while(rook_src!=null && (myRook==null || (myRook.piece!=ChessPiece.Rook) || (myRook.color!=myKing.color)));
+
+ 	ChessCell rook_dest = getCell(rook_col,king_src.row);
+ 	if((rook_dest!=rook_src)
+ 			&& (rook_dest!=king_src)
+ 			&& (rook_dest.topChip()!=null))
+ 		{ return false; }	// destination must be empty unless one of the involved pieces
+
+ 	if(rook_src==null) { return false; }	// rook captured
+ 	
+ 	// spaces between the king source and dest must be empty and not en prise
+ 	int move_dir = king_src.col>king_col ? CELL_LEFT : CELL_RIGHT;
+ 	int other = nextPlayer[who];
+ 	ChessCell step = king_src.exitTo(move_dir);
+ 	boolean fail = false;
+ 	while(!fail && step!=king_dest && step!=null)
+ 	{	if(step!=rook_src)
 		{
-			int dir = CELL_LEFT;
-			ChessCell next = start.exitTo(dir);
-			ChessCell rdest = getCell('D',start.row);	// where the rook will end up
-			if((rdest==start) || (rdest.topChip()==null))
-			{
-			while(next!=null)
-			{
-				ChessChip top = next.topChip();
-				if(top!=null)
-				{
-				if(top.piece==ChessPiece.Rook 
-						&& (playerIndex(top)==who))
-				{	// reached the rook
-					if(all==null) { return true; }
-					some = true;
-					all.push(new ChessMovespec(MOVE_CASTLE,start,next,who));
+ 			ChessChip top = step.topChip();
+ 			if(top!=null) { fail = true; }	// must be empty
+ 			else if(attackingSquare(step,other)) { fail = true; }
 				}
-				next = null;
+ 		step = step.exitTo(move_dir);
 				}
-				else if(attackingSquare(next,other)) { next = null; }	// can't move through an attack
-				else { 
-					next = next.exitTo(dir); 
+ 	if(!fail && (all!=null))
+ 	{	
+ 		all.push(new ChessMovespec(MOVE_CASTLE,king_src,rook_src,who));
 					}
-			}}
-		}
-	 }
-	 return(some);
+ 	return !fail;
  }
+
  private boolean addCastlingMoves(CommonMoveStack all,ChessCell from,int who)
  {
 	 switch(variation)

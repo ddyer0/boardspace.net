@@ -3922,7 +3922,7 @@ private void drawPlayerBoard(Graphics gc,
     double structureLoc[][] = {{0.822,0.125,0.06}};		// structure
     double yokeLoc[][] = {
     		{0.925,0.74,0.04},
-    		{0.92,0.68,0.04},};
+    		{0.92,0.67,0.04},};
     double yokeLocRest[][] = {
     		{0.64,0.48,0.02},
     		{0.66,0.48,0.02},
