@@ -3,9 +3,10 @@ package online.common;
 import java.awt.Color;
 
 import common.GameInfo;
+import common.GameInfo.ES;
 import lib.AR;
+import lib.Bitset;
 import lib.ConnectionManager;
-import lib.ESet;
 import lib.ExtendedHashtable;
 import lib.G;
 import lib.IStack;
@@ -180,22 +181,22 @@ public class Session implements LobbyConstants
 		return(null);
 	}
 	
-	public ESet getGameTypeClass(boolean isTestServer,boolean isPassAndPlay)
+	public Bitset<ES> getGameTypeClass(boolean isTestServer,boolean isPassAndPlay)
 	{	boolean review = (mode==Mode.Review_Mode );
-		ESet typeClass = review
-					? new ESet(GameInfo.ES.review,GameInfo.ES.game)
-					: new ESet(GameInfo.ES.game);  
-		if(isTestServer) { typeClass.add(GameInfo.ES.test); }
+		Bitset<ES> typeClass = review
+					? new Bitset<ES>(GameInfo.ES.review,GameInfo.ES.game)
+					: new Bitset<ES>(GameInfo.ES.game);  
+		if(isTestServer) { typeClass.set(GameInfo.ES.test); }
 		if(G.debug()) { 
-			typeClass.add(GameInfo.ES.test);
-			typeClass.add(GameInfo.ES.disabled);
+			typeClass.set(GameInfo.ES.test);
+			typeClass.set(GameInfo.ES.disabled);
 		}
 		if(mode==Mode.Unranked_Mode)
 			{
-			 typeClass.add(GameInfo.ES.unranked);
+			 typeClass.set(GameInfo.ES.unranked);
 			}
 		if(isPassAndPlay && !review) 
-			{ typeClass.add(GameInfo.ES.passandplay);
+			{ typeClass.set(GameInfo.ES.passandplay);
 			}
 		return(typeClass);
 	}
@@ -261,7 +262,7 @@ public class Session implements LobbyConstants
     public boolean drewVideo = false;
     
     public void setCurrentGame(GameInfo n,boolean debug,boolean isPassAndPlay)
-    {	ESet included = getGameTypeClass(debug,isPassAndPlay);
+    {	Bitset<ES> included = getGameTypeClass(debug,isPassAndPlay);
     	if(!(isAGameOrReviewRoom()
     			&& (n!=null)
     			&& n.allowedBySet(included)

@@ -259,7 +259,7 @@ public static synchronized Object MakeInstance(String classname)
      
     public static Class<?>classForName(String name,boolean testOnly)
     {	try {
-    	Plog.log.addLog("classForName ",name);
+    	//Plog.log.addLog("classForName ",name);
 		return(Class.forName(name));
 			} catch (ClassNotFoundException e) {
 				if(!testOnly) { throw new ErrorX(e); }

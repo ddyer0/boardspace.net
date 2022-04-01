@@ -4,7 +4,8 @@ import lib.Random;
 import lib.StackIterator;
 import blackdeath.BlackDeathConstants.BlackDeathColor;
 import blackdeath.BlackDeathConstants.BlackDeathId;
-import lib.ESet;
+import blackdeath.BlackDeathConstants.DiseaseMod;
+import lib.Bitset;
 import lib.OStack;
 import online.game.*;
 
@@ -35,7 +36,7 @@ public class BlackDeathCell extends stackCell<BlackDeathCell,BlackDeathChip>
 	BlackDeathCell sisterCity;
 	BlackDeathCell parentCity;
 	String label=null;
-	ESet climate = null;
+	Bitset<DiseaseMod> climate = null;
 	public String toString() { return("<"+rackLocation()+" "+name+">"); }
 	LinkStack links = new LinkStack();
 	public int distance;

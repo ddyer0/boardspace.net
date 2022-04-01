@@ -811,7 +811,7 @@ private Color playerBackground[] = {
     				case PlaceNew:
     				case Place:
     				case PlaceAnother:
-    					highlight.hit_index = cell.findChip(gb.doublesElgible);
+    					if(gb.usingDoubles) { highlight.hit_index = cell.findChip(gb.doublesElgible); }
     					break;
     					default: break;
     				}
@@ -1174,8 +1174,8 @@ private Color playerBackground[] = {
     		}
     		break;
     	case Dilemma:
-    		p.dilemma.defaultScale = unitSize*8;
-    		hit = p.dilemma.drawStack(gc,this,null,unitSize*6,xp+unitSize*4,yp-unitSize*2,0,1.5,0.0,null); 
+    		p.dilemma.defaultScale = unitSize*9;
+    		hit = p.dilemma.drawStack(gc,this,null,unitSize*6,xp+unitSize*5,yp-unitSize*2,0,1.5,0.0,null); 
     		if(!fromHiddenWindow) 
     			{ hit |= drawPlayerRecruits(gc,gb,player,p, p.dilemma,playerRecruitRect,highlight,tip); 
     			} 
@@ -1212,7 +1212,7 @@ private Color playerBackground[] = {
         	xp+= unitSize*4;
         	drawStackOnPlayer(gc,pl,gb,gb.legalToHitPlayer(p.workers,sources,dests)?highlight:null,pr,p.workers,xp,yp,tip,fromHiddenWindow);
         	StockArt.SmallO.drawChip(gc,this,unitSize*5/2,xp+unitSize/2,yp,""+p.totalWorkers);
-         	drawStackOnPlayer(gc,pl,gb,gb.legalToHitPlayer(p.dilemma,sources,dests)?highlight:null,pr,p.dilemma,xp+unitSize*3-unitSize/3,G.Top(r)+unitSize/2,tip,fromHiddenWindow);
+         	drawStackOnPlayer(gc,pl,gb,gb.legalToHitPlayer(p.dilemma,sources,dests)?highlight:null,pr,p.dilemma,xp+unitSize*3,G.Top(r)+unitSize/2,tip,fromHiddenWindow);
         	if( (p.dilemma.height()>0)
         			&& G.pointInRect(tip,xp+unitSize*2,G.Top(r),unitSize*2,unitSize) 
         			&& (p.testPFlag(PFlag.HasResolvedDilemma) || anySelectionAllowed)
@@ -1256,7 +1256,7 @@ private Color playerBackground[] = {
 
           	}
 
-        	xp += 2*unitSize;
+        	xp += 2*unitSize+unitSize/2;
         	// require accurate placement for recruit cards because there are 2 piles.
         	drawStackOnPlayer(gc,pl,gb,gb.legalToHitPlayer(p.activeRecruits,sources,dests)?highlight:null,null,p.activeRecruits,xp,yp,tip,fromHiddenWindow);
            	
@@ -1451,13 +1451,12 @@ private Color playerBackground[] = {
     		case Market:	// the big market chips, sometimes with authority tokens
     			// pay for lionel is when lionel the cook is dropping food.  It doesn't drop here.
     			boolean lionel = gb.board_state==EuphoriaState.PayForLionel;
-    			boolean drop = gb.pickedObject!=null;
-    			cell.defaultScale = CELLSIZE;
+     			cell.defaultScale = CELLSIZE;
     			if((cell.height()>0) && (cell.topChip()!=MarketChip.CardBack))
     				{
     				EuphoriaChip ch = cell.chipAtIndex(0);
     				//String tested = ch.tested;
-       				hit = cell.drawStack(gc,this,(!lionel && drop) ? highlight : null,CELLSIZE,xpos-3*CELLSIZE/2,ypos,0,0.3,-0.1,null);
+       				hit = cell.drawStack(gc,this,highlight,CELLSIZE,xpos-3*CELLSIZE/2,ypos,0,0.3,-0.1,null);
        				
        				if(G.pointInRect(tip,xpos-2*CELLSIZE,ypos-2*CELLSIZE,2*CELLSIZE,2*CELLSIZE))
        					{	popupDisplay = ch;
@@ -1998,7 +1997,7 @@ private Color playerBackground[] = {
     private boolean payingCards = false;
     private boolean autoCardMode = true;
 	private double cardArea[] = { 25,15,47,33 };
-	private double artifactsAndCommodities[] = {26,10,90,30 };
+	private double artifactsAndCommodities[] = { 25,10,84,30 };//
 	private double commodityArea[] = { 57,10,85,20};
 	private double commodityAndResourceArea[] = {41,10,84,22};//
 	private double resourceOnlyArea[] = { 42,14,62,28};
@@ -2118,6 +2117,13 @@ private Color playerBackground[] = {
     		case Artifactx3OrArtifactAndBlissx2:
     		case Artifactx3OrArtifactAndBlissx2AndCommodity:
     		case BlissOrFoodx4_Card:
+    		case Commodity_Artifact:
+    		case Commodity_Book:
+    		case Commodity_Bifocals:
+    		case Commodity_Balloons:
+    		case Commodity_Box:
+    		case Commodity_Bat:
+    		case Commodity_Bear:
     			zoom = artifactsAndCommodities;
     			break;
     		// dilemma costs
@@ -2139,7 +2145,7 @@ private Color playerBackground[] = {
        		case ArtifactJackoTheArchivist_V2:
        		case Artifactx3:
        		case Artifactx2:
-       		case Morale_Artifactx3:
+       		case Morale_Artifactx3_Brian:
        		case Book_Card:
        		case Box:
        		case Book:
@@ -2151,8 +2157,6 @@ private Color playerBackground[] = {
           		costIncludesArtifacts = true;
 
      			break;
-       		case Commodity_Bear:
-    		case Commodity_Bifocals:
     		case Bliss_Commodity:	// breeze bar and sky lounge
     			zoom = commodityArea;
  
@@ -2302,7 +2306,7 @@ private Color playerBackground[] = {
         				if(gb.getDest()!=null) { msg = Cost.Artifactx3.description; }
         				return(s.get(val,s.get(msg)));
  
-        			case BlissOrFood:
+        			case BlissOrFoodRetrieval:
         				if((gb.getCurrentPlayer().totalWorkers==2) 
        						&& gb.recruitAppliesToCurrentPlayer(RecruitChip.YordyTheDemotivator))
         				{	val = YordyTheDemotivatorPayment;

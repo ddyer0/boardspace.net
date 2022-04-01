@@ -101,7 +101,7 @@ class PlayerBoard implements Digestable,CompareTo<PlayerBoard>
 		case Wet:
 			return((usedAutomaticWin<automaticWinLimit())
 					&& (city.climate!=null)
-					&& city.climate.contains(mod));
+					&& city.climate.test(mod));
 		}
 	}
 	
@@ -128,7 +128,7 @@ class PlayerBoard implements Digestable,CompareTo<PlayerBoard>
 	
 	public int adjustedVirulence(BlackDeathCell c)
 	{	int v = virulence;
-		if((c.climate!=null) && c.climate.contains(modChip.getDiseaseMod())) { return(v++); }
+		if((c.climate!=null) && c.climate.test(modChip.getDiseaseMod())) { return(v++); }
 		return(v);
 	}
 	public int adjustedMortality(BlackDeathCell c)
@@ -530,10 +530,10 @@ public class BlackDeathBoard extends RBoard<BlackDeathCell> implements BoardProt
     private Hashtable<String,BlackDeathCell>cities = new Hashtable<String,BlackDeathCell>();
     // construct a city cell
     private Random randomInit;
-    private BlackDeathCell bd(String name,double px,double py, int co,ESet set)
+    private BlackDeathCell bd(String name,double px,double py, int co,Bitset<DiseaseMod> set)
     {	
     	BlackDeathCell c = new BlackDeathCell(randomInit,BlackDeathId.BoardLocation,name);
-    	if(set==null) { set = new ESet(); }
+    	if(set==null) { set = new Bitset<DiseaseMod>(); }
     	c.climate = set;
     	c.xpos = px;
     	c.ypos = py;
@@ -598,13 +598,13 @@ public class BlackDeathBoard extends RBoard<BlackDeathCell> implements BoardProt
        	initialDice1 = bd("dice_top",19,18,0,null);		// display dice location
        	initialDice2 = bd("dice_middle",19,22,0,null);	// display dice location
         initialDice3 = bd("dice_bottom",19,26,0,null);	
-       	bd("Oslo",43.9,24.6,-1,new ESet(DiseaseMod.Cold));
+       	bd("Oslo",43.9,24.6,-1,new Bitset<DiseaseMod>(DiseaseMod.Cold));
     	bd("Stockholm",52,25.4,-1,null);
     	bd("Copenhagen",46.3,34.0,0,null);
     	bd("Edinburgh",26.3,32.4,0,null);
-    	bd("London",28.5,44,1,new ESet(DiseaseMod.Wet));
-    	bd("London#3",27,40,0,new ESet(DiseaseMod.Wet));
-    	bd("London#2",30,40,0,new ESet(DiseaseMod.Wet));
+    	bd("London",28.5,44,1,new Bitset<DiseaseMod>(DiseaseMod.Wet));
+    	bd("London#3",27,40,0,new Bitset<DiseaseMod>(DiseaseMod.Wet));
+    	bd("London#2",30,40,0,new Bitset<DiseaseMod>(DiseaseMod.Wet));
     	bd("Amsterdam",36.5,41.8,-1,null);	
     	bd("Brussels",35,47.4,0,null);
     	bd("Lubeck",42.4,40.4,-1,null);
@@ -612,9 +612,9 @@ public class BlackDeathBoard extends RBoard<BlackDeathCell> implements BoardProt
     	bd("Gdansk",54.4,37.4,0,null);
     	bd("Warsaw",58.2,42.4,0,null);
     	bd("Prague",49.3,48,0,null);
-    	bd("Paris",31.2,51.8,0,new ESet(DiseaseMod.Crowd));
-    	bd("Paris#2",28.2,51.8,0,new ESet(DiseaseMod.Crowd));
-    	bd("Paris#3",29.7,55.6,1,new ESet(DiseaseMod.Crowd));
+    	bd("Paris",31.2,51.8,0,new Bitset<DiseaseMod>(DiseaseMod.Crowd));
+    	bd("Paris#2",28.2,51.8,0,new Bitset<DiseaseMod>(DiseaseMod.Crowd));
+    	bd("Paris#3",29.7,55.6,1,new Bitset<DiseaseMod>(DiseaseMod.Crowd));
     	bd("Munich",44.5,52.8,-1,null);
     	bd("Vienna",52.5,52.9,0,null);
     	bd("Budapest",57,54,0,null);
@@ -623,43 +623,43 @@ public class BlackDeathBoard extends RBoard<BlackDeathCell> implements BoardProt
     	bd("Marseille",35,65,0,null);
     	bd("Genoa",41,61.5,0,null);
     	bd("Genoa#2",41,65,1,null);
-    	bd("Venice",46.4,59.7,0,new ESet(DiseaseMod.Wet));
-    	bd("Venice#2",49.3,59.7,1,new ESet(DiseaseMod.Wet));
+    	bd("Venice",46.4,59.7,0,new Bitset<DiseaseMod>(DiseaseMod.Wet));
+    	bd("Venice#2",49.3,59.7,1,new Bitset<DiseaseMod>(DiseaseMod.Wet));
     	bd("Belgrade",59.7,60.4,0,null);
     	bd("Bucharest",68.8,59,0,null);
-    	bd("Rome",45.7,67.1,0,new ESet(DiseaseMod.Wet));
-    	bd("Rome#",48.4,67.1,1,new ESet(DiseaseMod.Wet));
+    	bd("Rome",45.7,67.1,0,new Bitset<DiseaseMod>(DiseaseMod.Wet));
+    	bd("Rome#",48.4,67.1,1,new Bitset<DiseaseMod>(DiseaseMod.Wet));
     	bd("Barcelona",29.5,69,0,null);
     	bd("Algiers",30,80.7,0,null);
-    	bd("Tunis",43.2,80.8,0,new ESet(DiseaseMod.Warm));
+    	bd("Tunis",43.2,80.8,0,new Bitset<DiseaseMod>(DiseaseMod.Warm));
     	bd("Naples",50.9,72.1,0,null);
     	bd("Naples#2",53.6,72.1,1,null);
-    	bd("Cadiz",13.2,78.4,0,new ESet(DiseaseMod.Warm));
+    	bd("Cadiz",13.2,78.4,0,new Bitset<DiseaseMod>(DiseaseMod.Warm));
     	bd("Lisbon",9.4,71.6,0,null);
-    	bd("Madrid",20.5,70,1,new ESet(DiseaseMod.Crowd));
-    	bd("Madrid#2",17.7,70,0,new ESet(DiseaseMod.Crowd));
+    	bd("Madrid",20.5,70,1,new Bitset<DiseaseMod>(DiseaseMod.Crowd));
+    	bd("Madrid#2",17.7,70,0,new Bitset<DiseaseMod>(DiseaseMod.Crowd));
     	bd("Bilbao",21.9,63.2,0,null);
     	bd("Dublin",20.7,38.3,0,null);
     	bd("Reykjavik",12.5,8.5,-1,null);
-    	bd("Helsinki",59.7,22.1,-1,new ESet(DiseaseMod.Cold));
-    	bd("Novgorod",67.5,24,1,new ESet(DiseaseMod.Cold));
-    	standardInitialPlacement.push(bd("Moscow",75.5,28,0,new ESet(DiseaseMod.Cold,DiseaseMod.Crowd,DiseaseMod.Wet)));
-    	standardInitialPlacement.push(bd("Moscow#2",78.3,28,1,new ESet(DiseaseMod.Cold,DiseaseMod.Crowd,DiseaseMod.Wet)));
+    	bd("Helsinki",59.7,22.1,-1,new Bitset<DiseaseMod>(DiseaseMod.Cold));
+    	bd("Novgorod",67.5,24,1,new Bitset<DiseaseMod>(DiseaseMod.Cold));
+    	standardInitialPlacement.push(bd("Moscow",75.5,28,0,new Bitset<DiseaseMod>(DiseaseMod.Cold,DiseaseMod.Crowd,DiseaseMod.Wet)));
+    	standardInitialPlacement.push(bd("Moscow#2",78.3,28,1,new Bitset<DiseaseMod>(DiseaseMod.Cold,DiseaseMod.Crowd,DiseaseMod.Wet)));
     	bd("Kaffa",82.2,53.4,0,null);
     	bd("Istanbul",73.3,64.3,0,null);
     	bd("Istanbul#2",76,64.3,1,null);
     	bd("Istanbul#3",73.3,68,0,null);
     	bd("Istanbul#4",76,68,0,null);
     	bd("Athens",67,75.8,0,null);
-    	standardInitialPlacement.push(bd("Damascus",90.8,78.6,0,new ESet(DiseaseMod.Warm)));
-    	standardInitialPlacement.push(bd("Damascus#2",93.5,78.6,1,new ESet(DiseaseMod.Warm)));
+    	standardInitialPlacement.push(bd("Damascus",90.8,78.6,0,new Bitset<DiseaseMod>(DiseaseMod.Warm)));
+    	standardInitialPlacement.push(bd("Damascus#2",93.5,78.6,1,new Bitset<DiseaseMod>(DiseaseMod.Warm)));
     	standardInitialPlacement.push(bd("Jerusalem",90.5,84,0,null));
     	bd("Alexandria",80.6,86.5,1,null);
     	bd("Alexandria#2",80.6,90.1,0,null);
-    	standardInitialPlacement.push(bd("Cairo",84.5,90.1,0,new ESet(DiseaseMod.Crowd,DiseaseMod.Warm)));
-    	standardInitialPlacement.push(bd("Cairo#2",87.5,90.1,1,new ESet(DiseaseMod.Crowd,DiseaseMod.Warm)));
-    	standardInitialPlacement.push(bd("Cairo#3",84.5,93.9,0,new ESet(DiseaseMod.Crowd,DiseaseMod.Warm)));
-    	standardInitialPlacement.push(bd("Cairo#4",87.5,93.9,0,new ESet(DiseaseMod.Crowd,DiseaseMod.Warm)));  
+    	standardInitialPlacement.push(bd("Cairo",84.5,90.1,0,new Bitset<DiseaseMod>(DiseaseMod.Crowd,DiseaseMod.Warm)));
+    	standardInitialPlacement.push(bd("Cairo#2",87.5,90.1,1,new Bitset<DiseaseMod>(DiseaseMod.Crowd,DiseaseMod.Warm)));
+    	standardInitialPlacement.push(bd("Cairo#3",84.5,93.9,0,new Bitset<DiseaseMod>(DiseaseMod.Crowd,DiseaseMod.Warm)));
+    	standardInitialPlacement.push(bd("Cairo#4",87.5,93.9,0,new Bitset<DiseaseMod>(DiseaseMod.Crowd,DiseaseMod.Warm)));  
     	bd("Greenland",2,1,-100,null);
     	ln("Greenland","Reykjavik",-1);
     	externalPlacement.push(bd("Sahara",43.4,99,-100,null));

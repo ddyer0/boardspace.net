@@ -223,13 +223,13 @@ public void newMarketOpened()
 public void startNewTurn(replayMode replay)
 {	boolean aa = testTFlag(TFlag.AddedArtifact);
 	boolean sam = testTFlag(TFlag.UsedSamuelTheZapper);
+	startNewWorker();
 	tf.clear();
 	if(aa) { setTFlag(TFlag.AddedArtifactLast); }
 	bearsGained = 0;
 	lostToAltruism = 0;
 	energyGainedThisTurn = 0;
 	commodityKnowledge = 0;
-	usedAlternateArtifact = null;
 	commodityKnowledge = 0;
 	samuelTheZapperLevel = authority.height();
 	if(sam)
@@ -237,6 +237,18 @@ public void startNewTurn(replayMode replay)
 		collectBenefit(Benefit.Morale,replay);
 	}
 	checkMandatoryEquality();
+	
+}
+
+public void startNewWorker()
+{
+	usedAlternateArtifact = null;
+	tf.clear(TFlag.AddedArtifact,
+			 TFlag.GainedWorker, 
+			 TFlag.TriggerKofiTheHermit,
+			 TFlag.UsedJonathanTheGamblerThisWorker,
+			 TFlag.AskedJonathanTheGambler);
+
 }
 
 // cache the status of AcadamyOfMandatoryEquality, which interferes with recruit abilities.
@@ -800,6 +812,7 @@ public void removeWorker(WorkerChip c)	// remove one worker with value c
 	{	// bug let you continue even if the doubles worker was killed by a morale check
 		if(b.doublesCount--<=1)
 			{ b.doublesElgible = null; 
+			  b.usingDoubles = false;
 			}
 	}
 }
@@ -1133,14 +1146,14 @@ private Cost alternateCostForBrianTheViticulturist_V2(EuphoriaCell dest,Cost cos
 	switch(cost)
 		{
 		case Free:	// applies to the bliss factory.  Mostly free is free except to Brian
-			return(Cost.Morale);
+			return(Cost.Morale_Brian);
 		case Resourcex3:		// mostly_resourcex3 is just resourcex3 except to brian
-			return(Cost.Morale_Resourcex3);
+			return(Cost.Morale_Resourcex3_Brian);
 		case Bliss_Commodity:	// mostly bliss_commodity is just bliss_commodity except to brian
 										// but he can still pay food
-			return(Cost.Morale_BlissOrFoodPlus1);
+			return(Cost.Morale_BlissOrFoodPlus1_Brian);
 		case Artifactx3:		// mostly_artifactx3 is just artifactx3 except to brian
-			return(Cost.Morale_Artifactx3);
+			return(Cost.Morale_Artifactx3_Brian);
 		default: break;
 
 		}
@@ -1149,7 +1162,7 @@ private Cost alternateCostForBrianTheViticulturist_V2(EuphoriaCell dest,Cost cos
 
 }
 private Cost alternateCostForBrianTheViticulturist(Cost cost)
-{
+{	//b.p1("brian alternate 2");
 	switch(cost)
 	{
 	case Bliss_Commodity:
@@ -1191,7 +1204,7 @@ private Cost alternateCostForJeffersonTheShockArtist(Cost cost)
 {
 	 switch(cost)
 	 {
-	 case BlissOrFood: return(Cost.EnergyOrBlissOrFood);
+	 case BlissOrFoodRetrieval: return(Cost.EnergyOrBlissOrFoodRetrieval);
 	 
 	 default: return(cost); 
 	 }
@@ -1354,7 +1367,7 @@ Cost alternateCostWithRecruits(EuphoriaCell dest,Cost cost0,boolean placed)
 					switch (cost)
 					{
 					case Energy: cost = Cost.BlissOrEnergy; break;
-					case Food: cost = Cost.BlissOrFood; break;
+					case Food: cost = Cost.BlissOrFoodExactly; break;
 					case Water: cost = Cost.BlissOrWater; break;
 					default: b.Error("not expecting cost "+cost);
 					}
@@ -1377,7 +1390,7 @@ Cost alternateCostWithRecruits(EuphoriaCell dest,Cost cost0,boolean placed)
 	    				}
 	    				break;
 	    			case BlissOrEnergy: cost = Cost.BlissOrEnergyMwicheTheFlusher; break;
-	    			case BlissOrFood: cost = Cost.BlissOrFoodMwicheTheFlusher; break;
+	    			case BlissOrFoodExactly: cost = Cost.BlissOrFoodMwicheTheFlusher; break;
 	    			case BlissOrWater:	cost = Cost.BlissOrWaterMwicheTheFlusher; break;
 	    			case Energy: cost = Cost.EnergyMwicheTheFlusher; break;
 	    			case Food: cost = Cost.FoodMwicheTheFlusher; break;
@@ -1510,11 +1523,10 @@ Cost alternateCostWithRecruits(EuphoriaCell dest,Cost cost0,boolean placed)
     			case Waterx3OrBlissx3: cost = Cost.Waterx3OrBlissx3AndCommodity; break;
     			case BlissOrEnergy: cost= Cost.BlissOrEnergyAndCommodity; break;
     			case BlissOrWater: cost= Cost.BlissOrWaterAndCommodity; break;
-    			case BlissOrFood: cost = Cost.BlissOrFoodAndCommodity; break;
+    			case BlissOrFoodExactly: cost = Cost.BlissOrFoodAndCommodity; break;
     			case Artifactx3OrArtifactAndBlissx2:
     				cost = Cost.Artifactx3OrArtifactAndBlissx2AndCommodity; break;
     			default: 
-    				b.p1("progressive backstabbing "+cost);
     				b.Error("Not expecting %s",cost);
     			}
     	}
@@ -1648,16 +1660,27 @@ boolean canPay(EuphoriaCell dest)
 	return canPayX(item);
 }
 
-boolean canPay(EuphoriaCell dest,Cost item0,boolean placed)
-{	Cost item = alternateCostWithRecruits(dest,item0,placed);
-	return canPayX(item);
-}
+
+/**
+ * canPay considers the full cost-chain, including alternates such as food for bliss 
+ * or bat for any artifact.
+ * 
+ * @param item0
+ * @return
+ */
 boolean canPay(Cost item0)
 {
 	Cost alt = alternateCostWithRecruits(null,item0,true);
-	if(alt!=item0) { b.p1("Cost "+item0+" could be "+alt); }
-	return canPayX(item0);
+	//if(alt!=item0) { b.p1("Cost "+item0+" could be "+alt); }
+	return canPayX(alt);
 }
+/**
+ * canPayX considers an exact cost, already digested for alternates.  Normally it should
+ * be used only for non-fungible items such as knowledge or morale.
+ * 
+ * @param item
+ * @return
+ */
 boolean canPayX(Cost item)
 {
 	switch(item)
@@ -1808,10 +1831,11 @@ boolean canPayX(Cost item)
 		boolean canUse2 = (hasArtifactPair()!=null) && !penaltyAppliesToMe(MarketChip.CourthouseOfHastyJudgement);
 		return(canUse2 && (artifacts.height()==3));
 		}
-	case Morale_Artifactx3:
+	case Morale_Artifactx3_Brian:
 		{
 		boolean canUse2 = (hasArtifactPair()!=null) && !penaltyAppliesToMe(MarketChip.CourthouseOfHastyJudgement);
-		int needed = canUse2 ? 3 : 4;
+		int doubles = (b.revision>=123 && b.usingDoubles && !testTFlag(TFlag.HasLostMorale)) ? 1 : 0;
+		int needed = doubles+(canUse2 ? 3 : 4);
 		if(morale<needed) { return(false); }	// to lost one morale and pay a pair of artifacts, you have to have at least 3 to start
 		}
 		//$FALL-THROUGH$
@@ -1832,8 +1856,11 @@ boolean canPayX(Cost item)
 	case Water:		// subterran mine
 		return(water.height()>=1);
 		
-	case Morale_Resourcex3:
-		if(morale<=1) { return(false); }
+	case Morale_Resourcex3_Brian:
+		{
+		int limit = ((b.revision>=123) && b.usingDoubles && !testTFlag(TFlag.HasLostMorale)) ? 2 : 1;
+		if(morale<=limit) { return(false); }
+		}
 		//$FALL-THROUGH$
 	case Resourcex3:	// nimbus loft
 		return((stone.height()+clay.height()+gold.height())>=3);
@@ -1844,11 +1871,12 @@ boolean canPayX(Cost item)
 	case Waterx3:	// worker training
 		// you can pay for the other effects even if you have 4 workers
 		return(water.height()>=3);
-	case EnergyOrBlissOrFood:
+	case EnergyOrBlissOrFoodRetrieval:
 		if(energy.height()>0) { return(true); }
 		// or fall into regular blissorfood
 		//$FALL-THROUGH$
-	case BlissOrFood:
+	case BlissOrFoodRetrieval:
+	case BlissOrFoodExactly:
 		// no special effect for brian the viticulturist
 		
 		return((bliss.height()>0) || (food.height()>0));
@@ -1868,8 +1896,9 @@ boolean canPayX(Cost item)
 				&& (totalCommodities()>=2));
 	
 	// prices for opened markets
-	case Morale_BlissOrFoodPlus1:
-		if(morale<=1)  { return(false); }
+	case Morale_BlissOrFoodPlus1_Brian:
+		int limit = ((b.revision>=123) && b.usingDoubles && !testTFlag(TFlag.HasLostMorale)) ? 2 : 1;
+		if(morale<=limit)  { return(false); }
 		// fall through
 		//$FALL-THROUGH$
 	case BlissOrFoodPlus1:	// used by BrianTheViticulturist
@@ -2015,6 +2044,11 @@ boolean canPayX(Cost item)
 		return((hasArtifactOrAlternate(ArtifactChip.Bifocals)) || (artifacts.height()>=2) );
 	
 	// loss of morale
+	case Morale_Brian:
+		{
+		int doubles = (b.revision>=123 && b.usingDoubles && !testTFlag(TFlag.HasLostMorale)) ? 3 : 2;
+		return morale>=doubles;
+		}
 	case Morale:
 		return(morale>=2);
 	case Moralex2:
@@ -2281,7 +2315,9 @@ void sacrificeWorker(EuphoriaCell c,replayMode replay)
 	totalWorkers--;
 	if(b.isIIB()||(b.revision>=123)) { if(ch==b.doublesElgible)
 	{ if(b.doublesCount--<=1) 
-		{ b.doublesElgible = null; }} }
+		{ b.doublesElgible = null;
+		  b.usingDoubles = false;
+		}} }
 	if(replay!=replayMode.Replay) { b.animateSacrificeWorker(c,(WorkerChip)ch);}
 }
 private void sendStone(int n,replayMode replay)
@@ -2794,7 +2830,7 @@ Cost payCost(Cost item,replayMode replay)
 			shedOneResource(replay);
 			return(payCommodity ? null : Cost.Commodity);
 		}
-		else { return(payCommodity ? Cost.Resourcex3 : null); }
+		else { return(payCommodity ? Cost.Resourcex3 : item); }
 		
 	// agency of progressive backstabbing adds a commodity to afixed cost
 	// pay the fixed cost and if there is no choice, also pay the kicker
@@ -3062,10 +3098,10 @@ Cost payCost(Cost item,replayMode replay)
 		else { artifacts.removeChipAtIndex(0); }
 		return(null);
 		
-	case Morale_Artifactx3:
+	case Morale_Artifactx3_Brian:
 		// this is special logic for BrianTheViticulturist
 		if(morale<=artifacts.height()) 
-			{ return(Cost.Morale_Artifactx3); } 	// have to interact
+			{ return(Cost.Morale_Artifactx3_Brian); } 	// have to interact
 		b.Assert(morale>=2,"morale>=2");
 		decrementMorale(replay);	
 		if(b.revision<123)
@@ -3074,7 +3110,7 @@ Cost payCost(Cost item,replayMode replay)
 			Cost residual = payCostArtifactx3(false,replay);
 			if(residual!=null)
 			{
-				return Cost.Morale_Artifactx3;
+				return Cost.Morale_Artifactx3_Brian;
 			}
 			return null;
 		}
@@ -3084,8 +3120,8 @@ Cost payCost(Cost item,replayMode replay)
 	case ArtifactX3AndCommodity:
 		return payCostArtifactx3(true,replay);
 		
-	case Morale_Resourcex3:
-		b.Assert(morale>=2,"morale>=2");
+	case Morale_Resourcex3_Brian:
+		b.Assert(morale>=2,"morale ge 2");
 		decrementMorale(replay);
 		//$FALL-THROUGH$
 	case Resourcex3:	// nimbus loft
@@ -3098,7 +3134,16 @@ Cost payCost(Cost item,replayMode replay)
 			return(null);
 		}
 		return(Cost.Resourcex3);
-		
+	case Card_BlissOrFood:
+		{
+		Cost residualFood = payCost(Cost.BlissOrFoodExactly,replay);
+		Cost residualCard = payCost(Cost.Artifact,replay);
+		if(residualFood==null) { return(residualCard); }
+		if(residualCard==null) { return(residualFood); }
+		b.Assert((residualFood==Cost.BlissOrFoodExactly) && (residualCard==Cost.Artifact),
+				"not expecting residuals %s %s",residualFood,residualCard);
+		return item;
+		}
 	case NonBlissCommodity:
 		if(nKindsOfCommodityExceptBliss()==1)
 			{
@@ -3106,8 +3151,8 @@ Cost payCost(Cost item,replayMode replay)
 			return(null);
 			}
 		return Cost.NonBlissCommodity;
-	case Morale_BlissOrFoodPlus1:
-		b.Assert(morale>=2,"morale>=2");
+	case Morale_BlissOrFoodPlus1_Brian:
+		b.Assert(morale>=2,"morale ge 2");
 		decrementMorale(replay);
 		//$FALL-THROUGH$
 	case BlissOrFoodPlus1:	// breeze bar and sky lounge with BrianTheViticulturist
@@ -3169,7 +3214,7 @@ Cost payCost(Cost item,replayMode replay)
 		return Cost.NonBlissCommodity;
 
 		
-	case EnergyOrBlissOrFood:
+	case EnergyOrBlissOrFoodRetrieval:
 		{ // pay with energy instead of food or bliss
 		if(energy.height()>0)
 			{
@@ -3177,16 +3222,17 @@ Cost payCost(Cost item,replayMode replay)
 			{ sendEnergy(1,replay);
 			  return null;
 			}
-			return(Cost.EnergyOrBlissOrFood);		// force interaction
+			return(item);		// force interaction
 			}
 		}
 		// or fall into blissorfood
 		//$FALL-THROUGH$
-	case BlissOrFood:		// pay for retrieval
+	case BlissOrFoodRetrieval:		// pay for retrieval
+	case BlissOrFoodExactly:
 		
 		if(bliss.height()==0) { return(payCost(Cost.Food,replay)); } 
 		else if(food.height()==0) { return(payCost(Cost.Bliss,replay)); }
-		return(Cost.BlissOrFood);		// force interaction
+		return(item);		// force interaction
 		
 	case BlissOrEnergy:		// pay for retrieval
 		
@@ -3235,7 +3281,7 @@ Cost payCost(Cost item,replayMode replay)
 		sendWater(4,replay);
 		//$FALL-THROUGH$
 	case ClayOrBlissOrFood:
-		if(clay.height()==0) { return payCost(Cost.BlissOrFood,replay); }
+		if(clay.height()==0) { return payCost(Cost.BlissOrFoodExactly,replay); }
 		if(bliss.height()==0) { return payCost(Cost.ClayOrFood,replay); }
 		if(food.height()==0) { return payCost(Cost.ClayOrBliss,replay); }
 		return Cost.ClayOrBlissOrFood;
@@ -3285,7 +3331,7 @@ Cost payCost(Cost item,replayMode replay)
 		//$FALL-THROUGH$
 	case GoldOrBlissOrFood:
 		if(food.height()==0) { return(payCost(Cost.GoldOrBliss,replay)); }
-		if(gold.height()==0) { return(payCost(Cost.BlissOrFood,replay)); }
+		if(gold.height()==0) { return(payCost(Cost.BlissOrFoodExactly,replay)); }
 		if(bliss.height()==0) { return(payCost(Cost.GoldOrFood,replay)); }
 		return Cost.GoldOrBlissOrFood;
 		
@@ -3335,7 +3381,7 @@ Cost payCost(Cost item,replayMode replay)
 	case StoneOrBlissOrFood:
 		if(food.height()==0) { return payCost(Cost.StoneOrBliss,replay); }
 		if(bliss.height()==0) { return payCost(Cost.StoneOrFood,replay); }
-		if(stone.height()==0) { return payCost(Cost.BlissOrFood,replay); }
+		if(stone.height()==0) { return payCost(Cost.BlissOrFoodExactly,replay); }
 		return Cost.StoneOrBlissOrFood;
 
 	case StoneOrFood:
@@ -3353,6 +3399,10 @@ Cost payCost(Cost item,replayMode replay)
 		sendStone(1,replay);
 		sendFood(4,replay);
 		return null;
+	case FoodOrResource:
+		if(food.height()==0) { return(payCost(Cost.Resource,replay));}
+		if(totalResources()==0) { return(payCost(Cost.Food,replay)); }
+		return(item);
 
 	case Card_FoodOrResource:
 		{
@@ -3362,13 +3412,29 @@ Cost payCost(Cost item,replayMode replay)
 		if(residual==null) { return(payCost(Cost.FoodOrResource,replay)); }
 		return(item);
 		}		
+	case ResourceOrBlissOrFood:
+		if(totalResources()==0) { return payCost(Cost.BlissOrFoodExactly,replay); }
+		if(food.height()==0) { return payCost(Cost.ResourceOrBliss,replay); }
+		if(bliss.height()==0) { return payCost(Cost.FoodOrResource,replay); }
+		return(item);
+		
 	case Card_ResourceOrBlissOrFood:
 		if(b.revision>=123)
 			{
-			if(totalResources()==0) { return payCost(Cost.Card_BlissOrFood,replay); }
-			if(food.height()==0) { return payCost(Cost.Card_ResourceOrBliss,replay); }
-			if(bliss.height()==0) { return payCost(Cost.Card_FoodOrResource,replay); }
+			Cost residualCard = payCost(Cost.Artifact,replay);
+			Cost residualBliss = payCost(Cost.ResourceOrBlissOrFood,replay);
+			if(residualCard==null) {  return residualBliss; }
+			if(residualBliss==null) { return residualCard; }
+			switch(residualBliss)
+			{
+			case ResourceOrBlissOrFood: return item;
+			case BlissOrFoodExactly: return Cost.Card_BlissOrFood;
+			case ResourceOrBliss: return Cost.Card_ResourceOrBliss;
+			case FoodOrResource: return Cost.Card_FoodOrResource;
+			default: throw b.Error("not expecting residual %s",residualBliss);
 			}
+			}
+		
 		if(!allOneArtifactType()) { return(Cost.Card_ResourceOrBlissOrFood); }	// choice of artifact is implied
 		if(nKindsOfResource()>1) { return(Cost.Card_ResourceOrBlissOrFood); }		// choice of resource is implied
 		if(food.height()>0)
@@ -3381,6 +3447,16 @@ Cost payCost(Cost item,replayMode replay)
 		// no food, try bliss and resource
 		//$FALL-THROUGH$
 	case Card_ResourceOrBliss:
+		if(b.revision>=123)
+		{
+			Cost residualCard = payCost(Cost.Artifact,replay); 
+			Cost residualBliss = payCost(Cost.ResourceOrBliss,replay);
+			if(residualCard==null) { return residualBliss; }
+			if(residualBliss==null) { return residualCard; }
+			b.Assert((residualBliss==Cost.ResourceOrBliss)&&(residualCard==Cost.Artifact),
+						"not expecing residual %s",residualBliss);
+			return item;
+		}
 		if(!allOneArtifactType()) { return(Cost.Card_ResourceOrBliss); }
 		if(nKindsOfResource()>1) { return(Cost.Card_ResourceOrBliss); }
 		if(bliss.height()>0)
@@ -3501,7 +3577,28 @@ Cost payCost(Cost item,replayMode replay)
 		return(Cost.ResourceOrBliss);
 		}
 	case BlissOrFoodx4_Card:
-		if(!allOneArtifactType()) { return(Cost.BlissOrFoodx4_Card); }	// interact
+		// brian the viticulturist
+		if(b.revision>=123)
+		{	// tested 3/31
+			Cost residualFood = payCost(Cost.BlissOrFoodx4,replay);
+			Cost residualCard = payCost(Cost.Artifact,replay);
+			if(residualFood==null) { return(residualCard); }
+			if(residualCard==null) { return(residualFood); }
+			b.Assert((residualCard==Cost.Artifact)
+					 && (residualFood==Cost.BlissOrFoodx4), "not expexcting residuals for BlissOrFoodx4_Card");
+			return item;
+		}
+		if(!allOneArtifactType())
+			{ 
+			if(b.revision<123)	return(Cost.BlissOrFoodx4_Card); 
+			Cost residual = payCost(Cost.BlissOrFoodx4,replay);
+			if(residual==null) { return(Cost.Artifact); }
+			switch(residual)
+			{
+			case BlissOrFoodx4: return( item); 
+			default: throw b.Error("not expecting residual %s",residual);
+			}
+			}// interact
 		{
 		int blissH =  bliss.height();
 		int foodH = food.height();
@@ -3527,7 +3624,7 @@ Cost payCost(Cost item,replayMode replay)
 		// 4 with some mix of bliss and food
 		int blissH =  bliss.height();
 		int foodH = food.height();
-		b.p1("bliss and foodx4 "+foodH+" "+blissH);
+		// b.p1("bliss and foodx4 "+foodH+" "+blissH); // tested 3/31
 		if(blissH==0) { sendFood(4,replay); return null; }
 		if(foodH==0) {  sendBliss(4,replay); return null;  }
 		if(blissH+foodH==4) { sendFood(foodH,replay); sendBliss(blissH,replay);  return null; }
@@ -3642,6 +3739,7 @@ Cost payCost(Cost item,replayMode replay)
 		incrementKnowledge(replay);
 		incrementKnowledge(replay);
 		return(null);
+	case Morale_Brian:
 	case Morale:
 		b.Assert(morale>=2,"morale>=2");
 		decrementMorale(replay);
@@ -3703,6 +3801,19 @@ Cost payCost(Cost item,replayMode replay)
 		sendStone(1,replay);
 		return uniqueArtifactChip(ArtifactChip.Balloons,Cost.Balloons,replay);
 
+	case Box_Food_BlissAndCommodity:
+		{
+		Cost residual = payCost(Cost.Box_Food_Bliss,replay);
+		if(residual==null) { return(payCost(Cost.Commodity,replay)); }
+		Cost residual_commod = payCost(Cost.Commodity,replay);
+		if(residual_commod==null) { return(residual); }
+		switch(residual)
+		{
+		case Box:	return Cost.Commodity_Box;
+		default: throw b.Error("Not expecting residual %s",residual);
+		}
+		}
+		
 	case Box_Food_Bliss:
 		sendBliss(1,replay);
 		sendFood(1,replay);
@@ -3739,6 +3850,10 @@ Cost payCost(Cost item,replayMode replay)
 		sendFood(1,replay);
 		return uniqueArtifactChip(ArtifactChip.Bear,Cost.Bear,replay);		
 		
+	case Bifocals_GoldAndCommodity:
+		sendGold(1,replay);
+		return payCost(Cost.Commodity_Bifocals,replay);
+		
 	case Bifocals_Gold:
 		sendGold(1,replay);
 		return uniqueArtifactChip(ArtifactChip.Bifocals,Cost.Bifocals,replay);
@@ -3768,13 +3883,29 @@ Cost payCost(Cost item,replayMode replay)
 		return uniqueArtifactChip(ArtifactChip.Box,Cost.Box,replay);	
 
 	case Book_CardAndCommodity:
-		{
+		{	// palace of forced altruism + agency of progressive backstabbing
+		b.p1("book card and commodity");
 		Cost residual_commodity = payCost(Cost.Commodity,replay);
 		Cost residual_book = payCost(Cost.Book_Card,replay);
 		if(residual_book==null) { return(residual_commodity); }
 		if(residual_commodity==null) { return(residual_book); }
-		b.Assert(residual_commodity==Cost.Commodity &&residual_book == Cost.Book_Card,"not expected");
-		return item;	// have to interact for the whole thing
+		b.Assert(residual_commodity==Cost.Commodity,"residual should be Cost.Commodity");
+		switch(residual_book)
+		{
+		case Artifact:	return Cost.Commodity_Artifact; 
+		case Book_Card: return item;
+		default: throw b.Error("Expecting residual %s for Cost.Book_Card");
+		}
+
+		}
+	case Commodity_Artifact:
+		{
+		if(nKindsOfCommodity()==1)
+			{ sendCommodity(1,Cost.Commodity,replay); 
+			  return(payCost(Cost.Artifact,replay));
+			}
+		if(payCost(Cost.Artifact,replay) == null) { return(Cost.Commodity); }
+		return item;
 		}
 	case Book_Card:	// prepay the book
 		return(artifact1XPlus1(ArtifactChip.Book,Cost.Book_Card, replay));
@@ -4305,7 +4436,7 @@ private void finishDougTheBuilder(Cost cost,replayMode replay)
 	case Gold:	doGold(1,b,replay); break;
 	case Stone: doStone(1,b,replay); break;
 	case Clay: doClay(1,b,replay); break;
-	default: b.Error("Not expecting cost "+cost);
+	default: b.Error("Not expecting cost %s",cost);
 	}
 }
 
@@ -4398,7 +4529,10 @@ void confirmPayment(Cost cost,Cost actualCost,CellStack dest,replayMode replay)
 		
 		WorkerChip sacrificed = (WorkerChip)b.trash.topChip();
 		if(((b.isIIB()||b.revision>=123)) && (sacrificed==b.doublesElgible)) 
-			{ if(b.doublesCount-- <=1) { b.doublesElgible = null; } 
+			{ if(b.doublesCount-- <=1) 
+				{ b.doublesElgible = null;
+				  b.usingDoubles = false;
+				} 
 			}
 		unPlaceWorker(b.trash);
 		b.animateSacrificeWorker(b.getSource(),sacrificed);
@@ -4457,7 +4591,7 @@ void confirmPayment(Cost cost,Cost actualCost,CellStack dest,replayMode replay)
  	case Foodx4_StoneOrBlissOrFood: 
  	case Card_ResourceOrBlissOrFood:
 	case BlissOrFoodx4_Resource:
-	case Morale_BlissOrFoodPlus1:
+	case Morale_BlissOrFoodPlus1_Brian:
 	case BlissOrFoodPlus1:
 		{
 		// brian the viticulturist lets us use food instead of bliss
@@ -4591,7 +4725,7 @@ void confirmPayment(Cost cost,Cost actualCost,CellStack dest,replayMode replay)
 
 	case Artifactx3:
 	case Artifactx2:
-	case Morale_Artifactx3:
+	case Morale_Artifactx3_Brian:
 		setTriggerPedroTheCollector(hasPaid3DifferentArtifacts(b.droppedDestStack,b.usedArtifacts));
 		break;
 	default: break;	

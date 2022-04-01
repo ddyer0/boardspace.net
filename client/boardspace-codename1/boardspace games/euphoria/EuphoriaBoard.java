@@ -22,7 +22,10 @@ import online.game.*;
  *
  */
 public class EuphoriaBoard extends EuphoriaBoardConstructor implements EuphoriaConstants
-{	static int REVISION = 123;			// revision numbers start at 100
+{		static int REVISION = 124;			// revision numbers start at 100
+//TODO: rotate market cards when enlarged
+//TODO: open artifacts when unseen on touch screens
+//TODO: tweak side screen layout for more square screen shape
 
 	boolean LOG_ARTIFACTS = false;
 
@@ -56,6 +59,7 @@ public class EuphoriaBoard extends EuphoriaBoardConstructor implements EuphoriaC
 	// revision 122 removes knowledge checks other than at rolls.
 	// revision 123 fixes recycling of some artifacts - they weren't and so couldn't come up again. 
 	//				this also is the demarcation between traditional and ignorance is bliss rules
+	// revision 124 adds the "lose morale" payment for doubles
 	public int getMaxRevisionLevel() { return(REVISION); }
 	
 	
@@ -208,7 +212,7 @@ public class EuphoriaBoard extends EuphoriaBoardConstructor implements EuphoriaC
 			originalPendingCost = pendingCost = cost;
 			pendingState = cost.paymentState();
 			Assert(pendingState!=null, "state must not be null");
-			pendingContinuation = cont; 
+			pendingContinuation = pendingUnpaidContinuation = cont; 
 			if(p!=null) { pendingEPlayer = p.boardIndex; }
 		}
 
@@ -671,12 +675,12 @@ public class EuphoriaBoard extends EuphoriaBoardConstructor implements EuphoriaC
      	case JoinTheEstablishment:
      		setState(EuphoriaState.ConfirmJoinTheEstablishment);
      		stepNumber++;
-     		doDone(replay);
-     		break;
+     		doDone(null,replay);
+      		break;
     	case FightTheOpressor:
      		setState(EuphoriaState.ConfirmFightTheOpressor);
      		stepNumber++;
-     		doDone(replay);
+     		doDone(null,replay);
      		break;
      		
     	case DoZongTheAstronomer_V2:
@@ -799,6 +803,8 @@ public class EuphoriaBoard extends EuphoriaBoardConstructor implements EuphoriaC
      		{	
      		EPlayer p = players[cont.pendingEPlayer];
      		proceedGameStep = ProceedStep.Start;
+     		usingDoubles = false;
+     		doublesElgible = null;
      		setState(EuphoriaState.Place);
      		p.setTFlag(TFlag.UsedSpirosTheModelCitizen);
      		p.payCostOrElse(Cost.Morale,replay);
@@ -808,6 +814,8 @@ public class EuphoriaBoard extends EuphoriaBoardConstructor implements EuphoriaC
      	case DoLarsTheBallooneer:
      		
      		//p1("use lars the ballooner");
+     		usingDoubles = false;
+     		doublesElgible = null;
      		lastDroppedWorker = cont.pendingContinuationCell();
      		players[cont.pendingEPlayer].setTFlag(TFlag.UsedLarsTheBallooneer);
      		proceedGameStep = ProceedStep.Start;
@@ -880,6 +888,7 @@ public class EuphoriaBoard extends EuphoriaBoardConstructor implements EuphoriaC
         		proceedGameStep = ProceedStep.Start;
         		doublesElgible = null;
         		doublesCount = 0;
+        		usingDoubles = false;
          		setState(EuphoriaState.Place);
       		}
      		break;
@@ -932,7 +941,13 @@ public class EuphoriaBoard extends EuphoriaBoardConstructor implements EuphoriaC
 			dropWorkerPay2(p,cont.pendingContinuationCell(),replay);
 			return;			
 		}
-
+		case FinishChagaTheGamer:
+			{
+			EPlayer p = players[cont.pendingEPlayer];
+			finishChagaTheGamer(p);
+			return;			
+			}
+		
      	default: throw Error("Not expecting continuation %s",cc);
      	}
      }
@@ -1049,6 +1064,7 @@ public class EuphoriaBoard extends EuphoriaBoardConstructor implements EuphoriaC
 		return(path);
 	}
 	public int CELLSIZE ;
+	EuphoriaPlay robot = null;
 	private boolean robotBoard = false;
 	private EuphoriaCell workerCells[] = null;
 	int currentPlayerInTurnOrder = 0;
@@ -1570,6 +1586,8 @@ public class EuphoriaBoard extends EuphoriaBoardConstructor implements EuphoriaC
     	 shuffledADeck = false;
     	 openedAMarketLastTurn = false;
     	 shuffledADeckLastTurn = false;
+    	 robotBoard = false;
+    	 robot = null;
     	 setStatusDisplays();		// start with the displays set up
         // note that firstPlayer is NOT initialized here
     }
@@ -1789,6 +1807,8 @@ public class EuphoriaBoard extends EuphoriaBoardConstructor implements EuphoriaC
         finalPath.copyFrom(from_b.finalPath);
         droppedStateStack.copyFrom(from_b.droppedStateStack);
         robotBoard = from_b.robotBoard;
+       // G.print("T "+from_b.robot+" "+from_b+" > "+this+" "+this.robot);
+        robot = from_b.robot;
         lastPicked = null;
         CELLSIZE = from_b.CELLSIZE;
         sameboard(from_b); 
@@ -2398,6 +2418,15 @@ public class EuphoriaBoard extends EuphoriaBoardConstructor implements EuphoriaC
 		case Market:
 			if(pickedObject==EuphoriaChip.Food) { c.ignoredForPlayer = players[whoseTurn].color; }
 			else { c.addChip(pickedObject); }
+			if((c.height()==1) && pickedObject.isMarket()) 
+			{ // rearranging the markets manually
+				for(int i=0;i<markets.length;i++)
+				{ if(markets[i]==c) 
+					{
+					useMarkets[i].placementCost =((MarketChip)pickedObject).placementCost;
+					}
+				}
+			}
 			break;
 		default:  
 			c.addChip(pickedObject);  
@@ -2627,21 +2656,10 @@ public class EuphoriaBoard extends EuphoriaBoardConstructor implements EuphoriaC
 			//$FALL-THROUGH$
 		case Step4: registerStep(ProceedStep.Step4);
 			// handle doubles and chase the miner
-			p.clearTFlag(TFlag.AddedArtifact);		// don't ask again
-			p.clearTFlag(TFlag.GainedWorker);
-			p.clearTFlag(TFlag.UsedJonathanTheGamblerThisWorker);
-			p.clearTFlag(TFlag.AskedJonathanTheGambler);
-			if(((doublesElgible!=null)
-					&& (doublesCount>0)
-					&& p.hasWorkersInHand()
-					&& ((revision<123) || p.testTFlag(TFlag.HasLostMorale) || p.canPayX(Cost.Morale)))
-						|| p.testTFlag(TFlag.UsedChaseTheMiner))
-					{
-					// play another after doubles, or chase the miner allows immediate use
-					proceedGameStep = ProceedStep.Start;
-					setNextStateAfterDone(replay);  
-					return;
-					}
+			if(!doMoraleCheck(p,replay,null,Function.ProceedWithTheGame)) 
+				{ return; }		// adjust morale dialog is needed
+		
+			p.startNewWorker();
 
 			// various recruits 
 			if(p.taedAuthorityHeight>p.authority.height()
@@ -2670,6 +2688,7 @@ public class EuphoriaBoard extends EuphoriaBoardConstructor implements EuphoriaC
 		case Step4AfterTerri:
 			registerStep(ProceedStep.Step4AfterTerri);
 			if((lastDropped!=null) 	// this is null when the current move is a retrieve
+					&& (lastDropped.topChip()!=null)	// and it is still there
 					&& p.testTFlag(TFlag.TriggerLarsTheBallooneer)
 					&& !p.testTFlag(TFlag.UsedLarsTheBallooneer)
 					&& p.recruitAppliesToMe(RecruitChip.LarsTheBallooneer))
@@ -2681,6 +2700,7 @@ public class EuphoriaBoard extends EuphoriaBoardConstructor implements EuphoriaC
 				// for example if the lars worker was first of a doubles, or one of the other recruits
 				// was active that could allow another worker to be placed.
 				//
+				//p1("lars "+lastDropped.rackLocation()+" "+(lastDropped.topChip()!=null));
 				p.clearTFlag(TFlag.TriggerLarsTheBallooneer);
 				setContinuation(new Continuation(RecruitChip.LarsTheBallooneer,lastDropped,Function.DoLarsTheBallooneer,Function.DontLarsTheBallooneer,p));
 				return;
@@ -2688,6 +2708,18 @@ public class EuphoriaBoard extends EuphoriaBoardConstructor implements EuphoriaC
 			//$FALL-THROUGH$
 		case Step4AfterLars:
 			registerStep(ProceedStep.Step4AfterLars);
+
+			if(((doublesElgible!=null)
+					&& (doublesCount>0)
+					&& p.hasWorkersInHand()
+					&& ((revision<123) || p.testTFlag(TFlag.HasLostMorale) || p.canPayX(Cost.Morale)))
+						|| p.testTFlag(TFlag.UsedChaseTheMiner))
+					{
+					// play another after doubles, or chase the miner allows immediate use
+					proceedGameStep = ProceedStep.Start;
+					setNextStateAfterDone(replay);  
+					return;
+					}
 		
 		if(!p.testTFlag(TFlag.UsedJadwigaTheSleepDeprivator)
 				&& p.canPay(Cost.Knowledgex2)
@@ -2991,7 +3023,7 @@ void dontDarrenTheRepeater(EPlayer p,replayMode replay)
 		case PlaceNew:
 		case RePlace:	break;
 		}
-		
+				
 		if(p.testPFlag(PFlag.ReceiveStartingBonus))
 		{	//p1("give starting bonus "+p.color);
 			p.clearPFlag(PFlag.ReceiveStartingBonus);
@@ -3293,8 +3325,10 @@ void dontDarrenTheRepeater(EPlayer p,replayMode replay)
     {
     	return (RecruitChip)unusedRecruits.removeTop();
     }
-    private void doDone(replayMode replay)
+    private void doDone(EuphoriaChip chipin,replayMode replay)
     {	EPlayer p = players[whoseTurn];
+    	openedMarket = null;
+    	marketToOpen = (chipin!=null && chipin.isMarket()) ? chipin : null;
         switch(board_state)
         {
         case Resign:
@@ -3460,6 +3494,7 @@ void dontDarrenTheRepeater(EPlayer p,replayMode replay)
    			break;
    		case PlaceAnother:	// hit Done without placing another worker.
    			doublesElgible = null;
+   			usingDoubles = false;
 			//$FALL-THROUGH$
 		case PlaceNew:		// place the new worker, only from ChaseTheMiner
    			acceptPlacement();		
@@ -3526,9 +3561,9 @@ void dontDarrenTheRepeater(EPlayer p,replayMode replay)
         		}
         		acceptPlacement();
         		// retrieval cost can be modified
-        		if(p.canPay(null,Cost.BlissOrFood,true))
-        		{	Cost cost = p.alternateCostWithRecruits(null,Cost.BlissOrFood,true);
-        			setContinuation(new Continuation(Cost.BlissOrFood,cost,Function.ReRollWithPayment,
+        		if(p.canPay(Cost.BlissOrFoodRetrieval))
+        		{	Cost cost = p.alternateCostWithRecruits(null,Cost.BlissOrFoodRetrieval,true);
+        			setContinuation(new Continuation(Cost.BlissOrFoodRetrieval,cost,Function.ReRollWithPayment,
         								Function.ReRollWithoutPayment,p));
          		}
         		else 
@@ -3805,7 +3840,8 @@ void dontDarrenTheRepeater(EPlayer p,replayMode replay)
  		case ClayOrBliss:
  		case StoneOrBliss:
  		case GoldOrBliss:
- 		case BlissOrFood:
+ 		case BlissOrFoodRetrieval:
+ 		case BlissOrFoodExactly:
  		case BlissOrWater:
  		case BlissOrEnergy:
  		case ResourceOrBlissOrFood:
@@ -3829,6 +3865,11 @@ void dontDarrenTheRepeater(EPlayer p,replayMode replay)
 		case SacrificeOrClay:
 		case SacrificeOrGold:
 		case SacrificeOrStone:
+		case StoneOrFood:
+		case StoneOrBlissOrFood:
+		case ClayOrBlissOrFood:
+		case ClayOrFood:
+		case FoodOrResource:
 			return(droppedDestStack.size()==1);
 			
 		case SacrificeOrGoldOrCommodityX3:
@@ -3853,7 +3894,7 @@ void dontDarrenTheRepeater(EPlayer p,replayMode replay)
 			// otherwise fall into normal artifactx3 test
 			//$FALL-THROUGH$
 		case Artifactx3:
-		case Morale_Artifactx3:
+		case Morale_Artifactx3_Brian:
 			if(p.penaltyAppliesToMe(MarketChip.CourthouseOfHastyJudgement))
 			{
 				return(boardSatisfiesCost(p,Cost.Artifactx3Only));
@@ -3867,7 +3908,8 @@ void dontDarrenTheRepeater(EPlayer p,replayMode replay)
 		case Artifactx3Only:		// various markets.  Usually take 3 cards or a pair
 		case Resourcex3:			// nimbus loft
 		case CommodityX3:			// jon the amateur handyman
-		case Morale_Resourcex3:
+		case Morale_Resourcex3_Brian:
+		case Book_CardAndCommodity:
 			return(droppedDestStack.size()==3);
 			
 		case Artifactx2:
@@ -3929,7 +3971,7 @@ void dontDarrenTheRepeater(EPlayer p,replayMode replay)
 		case CardForGeek:
 			return(droppedDestStack.size()>nCards);
 		case BlissOrFoodPlus1:
-		case Morale_BlissOrFoodPlus1:
+		case Morale_BlissOrFoodPlus1_Brian:
 			return(droppedDestStack.size()==2);
 		case BlissOrFoodx4_Card:
 		case BlissOrFoodx4_Resource:
@@ -3948,6 +3990,7 @@ void dontDarrenTheRepeater(EPlayer p,replayMode replay)
 			return(droppedDestStack.size()==nCommodities);
 		// iib payments
 		case Book_Card:
+		case Commodity_Artifact:
 		case FoodAndCommodity:
 		case EnergyAndCommodity:
 		case WaterAndCommodity:
@@ -3961,6 +4004,7 @@ void dontDarrenTheRepeater(EPlayer p,replayMode replay)
 		case Commodity_Bat:
 		case Commodity_Box:
 		case Commodity_Balloons:
+		case Card_BlissOrFood:
 			return(droppedDestStack.size()==2);
 			
 		case FreeOrWaterMwicheTheFlusher:
@@ -4779,7 +4823,7 @@ private void doAmandaTheBroker(EuphoriaCell dest,replayMode replay,RecruitChip a
 		Assert(!(rack.canBeBumped && (dest.height()>1)),"should have been bumped");
 		if(p.testTFlag(TFlag.UsedBrianTheViticulturist)
 				&& p.canPayX(Cost.Knowledge))
-		{	p.payCostOrElse(Cost.Knowledge,replay);
+			{	p.payCostOrElse(Cost.Knowledge,replay);
 				p.clearTFlag(TFlag.UsedBrianTheViticulturist);
 			if(revision>=116)
 			{	// influence to Wastelander, not Icarite
@@ -5867,8 +5911,10 @@ private void doAmandaTheBroker(EuphoriaCell dest,replayMode replay,RecruitChip a
     		{ setContinuation(new Continuation(dest,EuphoriaState.ExtendedBenefit, cont,p));
     		  setWhoseTurnTo(p.boardIndex,"cardsGained"); 
     		}
-     	if(p.testTFlag(TFlag.AddedArtifact) && !p.testTFlag(TFlag.AskedJonathanTheGambler))
-     	{
+     	if(p.testTFlag(TFlag.AddedArtifact)) 
+     	{	
+     		if(!p.testTFlag(TFlag.AskedJonathanTheGambler))
+     		{
      		boolean usedJonathan = 
      				(revision>=124)
      					? p.testTFlag(TFlag.UsedJonathanTheGamblerThisTurn)
@@ -5877,9 +5923,9 @@ private void doAmandaTheBroker(EuphoriaCell dest,replayMode replay,RecruitChip a
      			&& p.recruitAppliesToMe(RecruitChip.JonathanTheGambler_V2))
      		{
      		p.setTFlag(TFlag.AskedJonathanTheGambler);
-      		addToFinalPath("Planning DoJonathanTheGambler");
+     		addToFinalPath("Planning DoJonathanTheGambler");
       		// old bug allows to use twice with doubles!
-    		setContinuation((dest==null) 
+     		setContinuation((dest==null) 
 					? new Continuation(RecruitChip.JonathanTheGambler_V2,Function.DoJonathanTheGambler,Function.MoraleCheck,p)
 					: new Continuation(RecruitChip.JonathanTheGambler_V2,dest,Function.DoJonathanTheGambler,Function.MoraleCheck,p));
      		}
@@ -5888,13 +5934,16 @@ private void doAmandaTheBroker(EuphoriaCell dest,replayMode replay,RecruitChip a
      				&& p.canPayX(Cost.Knowledge))
     		{	
      		p.setTFlag(TFlag.AskedJonathanTheGambler);
-         		addToFinalPath("Planninning DoJonathanTheGambler");
+     		addToFinalPath("Planninning DoJonathanTheGambler");
     			setContinuation((dest==null) 
     					? new Continuation(RecruitChip.JonathanTheGambler,Function.DoJonathanTheGambler,Function.MoraleCheck,p)
     					: new Continuation(RecruitChip.JonathanTheGambler,dest,Function.DoJonathanTheGambler,Function.MoraleCheck,p));
     		}
     		else { doMoraleCheck(p,replay,dest,Function.Return);
-    		}
+    		}}
+     		else {
+     			doMoraleCheck(p,replay,dest,Function.Return);
+     		}
     	}
      	
     }
@@ -5935,7 +5984,7 @@ private void doAmandaTheBroker(EuphoriaCell dest,replayMode replay,RecruitChip a
 		{ p.setTFlag(TFlag.UsedJonathanTheGamblerThisTurn); 
 		}
 		p.setTFlag(TFlag.UsedJonathanTheGamblerThisWorker);
-    	if(active==RecruitChip.JonathanTheGambler_V2)
+		if(active==RecruitChip.JonathanTheGambler_V2)
     	{	p.collectBenefitOrElse(Benefit.Artifact,replay);
     		logGameEvent(JonathanGain2);
     		if(p.hasArtifactPair()!=null)
@@ -6322,7 +6371,7 @@ private void doAmandaTheBroker(EuphoriaCell dest,replayMode replay,RecruitChip a
     private void dropWorkerPay1(EuphoriaCell dest,replayMode replay)
     {
     	EPlayer p = players[whoseTurn];
-     	if((doublesElgible!=null) && revision>=124 && !p.testTFlag(TFlag.HasLostMorale))
+     	if(usingDoubles && revision>=124 && !p.testTFlag(TFlag.HasLostMorale))
        	{	// theoretically this should never happen any more
      		// if(p.morale<=p.artifacts.height()) { p1("doubles need to lose a card"); }
        		if(!doLoseMorale(p,1,replay,dest,Function.DropWorkerPay2))
@@ -6334,7 +6383,7 @@ private void doAmandaTheBroker(EuphoriaCell dest,replayMode replay,RecruitChip a
     }
     private void dropWorkerPay2(EPlayer p,EuphoriaCell dest,replayMode replay)
     {
-       	Cost originalcost = dest.placementCost;
+        	Cost originalcost = dest.placementCost;
        	
 
     	if((dest!=null) 
@@ -6351,7 +6400,7 @@ private void doAmandaTheBroker(EuphoriaCell dest,replayMode replay,RecruitChip a
     		// extract the fixed part of the cost, change the cost to just the remainder
     		switch(cost)
     		{
-    		case Morale_Artifactx3:
+    		case Morale_Artifactx3_Brian:
     			// unusual case for Brian the Viticulturist V2, we have to lose a card before paying 3 cards (or a pair)
     			setContinuation(new Continuation(originalcost,Cost.Artifactx3,dest,Function.DropWorkerWithoutPayment,
         							Function.DropWorkerBump));
@@ -6406,6 +6455,7 @@ private void doAmandaTheBroker(EuphoriaCell dest,replayMode replay,RecruitChip a
     		p.incrementKnowledge(replay);
     		logGameEvent(MatthewTheThiefEffect,dest.placementCost.name(),currentPlayerColor());
     		break;
+    	
     	default: throw Error("not expecting %s",dest.placementCost);
     	}
     	}
@@ -6598,7 +6648,8 @@ private void doAmandaTheBroker(EuphoriaCell dest,replayMode replay,RecruitChip a
     boolean marketIsOpen(int idx) { return(marketIsOpen(markets[idx])); }	// open if we've removed the cover
     boolean marketIsOpen(EuphoriaCell c)   
     { EuphoriaChip chip = c.topChip(); 
-      return((chip!=null) && chip.isAuthorityMarker());   }
+      return(chip!=MarketChip.CardBack);  
+    }
     
     // find a currently open market which has the given penalty
     public EuphoriaCell getOpenMarketCell(MarketChip ch)
@@ -6626,12 +6677,23 @@ private void doAmandaTheBroker(EuphoriaCell dest,replayMode replay,RecruitChip a
     	}
     	return(false);
     }
+    private EuphoriaChip openedMarket = null;
+    private EuphoriaChip marketToOpen = null;
+    
     private void openMarket(int idx,replayMode replay)
     {	revealedNewInformation = openedAMarket = true;
 		addToFinalPath("openmarket");
 		// remove the cap from the market, revealing the market underneath
    		markets[idx].removeTop();
-
+   		if(marketToOpen!=null)
+   		{
+   			markets[idx].removeTop();
+   			markets[idx].addChip(marketToOpen);
+   			marketToOpen = null;
+   		}
+   		openedMarket = markets[idx].topChip();
+   		logGameEvent("Market: #1",openedMarket.name);
+   		
    		// randomize the market at the time it is actually opened
      	if(variation==Variation.Euphoria3T)
     	{	EuphoriaChip old = markets[idx].removeTop();
@@ -6697,8 +6759,33 @@ private void doAmandaTheBroker(EuphoriaCell dest,replayMode replay,RecruitChip a
     	}
     }
     
+    // this is experimental
+    void substitutePick(EuphoriaCell to,EuphoriaMovespec m)
+    { EuphoriaChip ch = m.chipIn;
+    	  if(ch!=null)
+    	  {
+    		 switch(to.rackLocation())
+    		 {
+    		 case PlayerActiveRecruits:
+    		 case PlayerHiddenRecruits:
+    			 unusedArtifacts.removeChip(ch);
+				//$FALL-THROUGH$
+			case PlayerArtifacts:
+    			 if(ch!=pickedObject) 
+    			 {
+    				 G.print("switching "+pickedObject+" to "+ch);
+    				 pickedObject = ch;
+    				 break;
+    			 }
+    			 break;
+    			 default: break;
+    		 }
+    	 }
+    	  
+    }
     public boolean Execute(commonMove mm,replayMode replay)
     {	EuphoriaMovespec m = (EuphoriaMovespec)mm;
+    	openedMarket = null;
         if(replay!=replayMode.Replay) { animationStack.clear(); gameEvents.clear(); }
         if(board_state==EuphoriaState.Puzzle)
         {
@@ -6710,9 +6797,35 @@ private void doAmandaTheBroker(EuphoriaCell dest,replayMode replay,RecruitChip a
         {
         case MOVE_RECRUIT:
         	{	// for testing purposes, just add a recruit
-        		EPlayer p = getPlayer(whoseTurn);
-        		p.addActiveRecruit(unusedRecruits.removeTop(),replay);
+        		EPlayer p = getPlayer(m.player);
+        		RecruitChip newguy = (RecruitChip)m.chipIn;
+        		if(newguy==null)
+        		{
+        		RecruitChip masterlist[] = getMasterRecruitList();  
+        		for(int i=0;i<masterlist.length;i++)
+        			{
+        			newguy = masterlist[i];
+        			if(!p.activeRecruits.containsChip(newguy))
+        				{ p.addActiveRecruit(newguy,replay);
+        				logGameEvent("Added recruit #1",newguy.getName());
+        				}
+        			}
+        		}
+        		else {
+        		unusedRecruits.removeChip(newguy); 
+        		p.addActiveRecruit(newguy,replay);
+        		logGameEvent("Added recruit #1",newguy.getName());
+        		m.chip = newguy;
+        		}
         		if(checkGameOver()) {  setState(EuphoriaState.Gameover); }
+        	}
+        	break;
+        case MOVE_MARKET:
+        	{
+        	EuphoriaCell dest = getCell(m.dest,m.to_row);
+        	dest.removeChipAtIndex(0);
+        	dest.insertChipAtIndex(0,m.chip);
+        	useMarkets[m.to_row].placementCost = ((MarketChip)m.chip).placementCost;
         	}
         	break;
         case MOVE_PEEK:
@@ -6759,10 +6872,11 @@ private void doAmandaTheBroker(EuphoriaCell dest,replayMode replay,RecruitChip a
         case MOVE_DONE:
         	REINIT_SIMULTANEOUS_PLAY = SIMULTANEOUS_PLAY = false;
         	stepNumber++;
-        	doDone(replay);
+        	doDone(m.chipIn,replay);
+        	m.chip = openedMarket;
         	break;
         case NORMALSTART:
-        	if(!hasReducedRecruits) { moveNumber--; doDone(replay); }
+        	if(!hasReducedRecruits) { moveNumber--; doDone(null,replay); }
            	REINIT_SIMULTANEOUS_PLAY = SIMULTANEOUS_PLAY = false;
        		for(EPlayer p : players) { p.transferDiscardedRecruits(usedRecruits); }
        		
@@ -6803,7 +6917,7 @@ private void doAmandaTheBroker(EuphoriaCell dest,replayMode replay,RecruitChip a
         	WorkerChip top = bumpingWorker;
          	cont.extraChip = WorkerChip.getWorker(bumpedWorker.color,top.knowledge());
         	setState(EuphoriaState.ConfirmRecruitOption);
-        	doDone(replay);
+        	doDone(null,replay);
         	}
         	break;
         	
@@ -6812,7 +6926,7 @@ private void doAmandaTheBroker(EuphoriaCell dest,replayMode replay,RecruitChip a
         	Continuation cont = continuationStack.top();
         	cont.extraChip = bumpedWorker;
         	setState(EuphoriaState.ConfirmRecruitOption);
-        	doDone(replay);
+        	doDone(null,replay);
         	}
         	break;
      	
@@ -6834,8 +6948,9 @@ private void doAmandaTheBroker(EuphoriaCell dest,replayMode replay,RecruitChip a
 
         		if(p.payCost(Cost.Box,replay)!=null)
         		{
-        			setContinuation(new Continuation(Cost.Box,Function.Return,p));
+        			setContinuation(new Continuation(Cost.Box,Function.FinishChagaTheGamer,p));
         		}
+        		finishChagaTheGamer(p);
         	}
         	else {
         	switch(board_state)
@@ -6843,7 +6958,7 @@ private void doAmandaTheBroker(EuphoriaCell dest,replayMode replay,RecruitChip a
         	case RecruitOption:	
          			setState(EuphoriaState.ConfirmRecruitOption);
         			activeRecruit = m.chip;
-           			if(revision>=123) { doDone(replay);  }
+           			if(revision>=123) { doDone(null,replay);  }
         			break;
         	case ConfirmRecruitOption: 
         			activeRecruit = null;
@@ -6889,18 +7004,12 @@ private void doAmandaTheBroker(EuphoriaCell dest,replayMode replay,RecruitChip a
 	           	EuphoriaCell from = getCell(m.source,m.from_row);
 	        	EuphoriaCell to = getCell(m.to_color,m.dest);
 	        	pickObject(from,m.from_row);
-	        	if((m.chip!=null)&&(m.chip!=pickedObject))
-	        			{
-	        			// this is important for the robot, when replaying moves from the leading part of the 
-	        			// move tree, the deck has been re-randomized, so the cards might not be the same.
-	        			// BUT for the move tree to be sensible, the picks have to be the same
-	        			if(!robotBoard) { G.print("Dissonant pick - expected "+m.chip+" but got "+pickedObject); }
-	        			//
-	        			// it also potentially comes into play replaying games when the software has been changed
-	        			//
-	        			pickedObject = m.chip;
-	        			}
-				m.chip = pickedObject; 
+	        	
+	        	// handle out of sync replays
+	        	// substitutePick(to,m);
+	        	
+	        	m.chip = pickedObject; 
+
 				EPlayer dp = getPlayer(m.to_color);
 	        	setNextStateAfterPick(dp);
 	        	dropObject(to,replay);
@@ -7002,6 +7111,7 @@ private void doAmandaTheBroker(EuphoriaCell dest,replayMode replay,RecruitChip a
         	// don't use the regular pick/drop code here, because this is used
         	// by the asynchronous robot and we don't want to mess up the active player.
         	pickObject(from,m.from_row);
+        	//substitutePick(to,m);
 			m.chip = pickedObject; 
 			EPlayer dp = getPlayer(m.from_color);
         	setNextStateAfterPick(dp);
@@ -7094,11 +7204,14 @@ private void doAmandaTheBroker(EuphoriaCell dest,replayMode replay,RecruitChip a
  			    }
    				else 
    				{	lastUndrop = null;
-   					int hgt =  revision>=104 
-   							? (((board_state==EuphoriaState.Puzzle) || (src.row>=0) || (revision>=111 && (m.source==EuphoriaId.MarketBasket))) 
+   					int hgt =  (board_state==EuphoriaState.Puzzle)
+   								? src.height()-1
+   								: revision>=104 
+   							? (((src.row>=0) 
+   									|| (revision>=111 && (m.source==EuphoriaId.MarketBasket))) 
    	   								? m.from_row
    	   								: src.height()-1)
-   	   						    : (((board_state==EuphoriaState.Puzzle) || (src.row>=0))
+   	   						    : ((src.row>=0)
    	   						    		?src.height()
    	   						    		:m.from_row);
    					 pickObject(src,hgt);
@@ -7201,7 +7314,13 @@ private void doAmandaTheBroker(EuphoriaCell dest,replayMode replay,RecruitChip a
         return (true);
     }
  
-    // return true if this is a cell where workers can be placed.
+    private void finishChagaTheGamer(EPlayer p) {
+    	// this happens at the beginning, we need to reset to the beginning.
+		p.startNewWorker();
+	}
+
+
+	// return true if this is a cell where workers can be placed.
     private boolean canPlaceWorker(EPlayer p,EuphoriaChip ch,EuphoriaCell c)
     {	
     	int cellH = c.height();
@@ -7701,7 +7820,8 @@ private void doAmandaTheBroker(EuphoriaCell dest,replayMode replay,RecruitChip a
       			}
     		}
      	}
- 
+     	if(!isIIB())	// in IIB we know what artifacts they have
+     	{
      	for(EPlayer p : players)
     	{	p.clearUCTStats();
     		if((p!=robo) && (p!=players[whoseTurn]))		// don't randomize the current player in mid turn
@@ -7715,9 +7835,10 @@ private void doAmandaTheBroker(EuphoriaCell dest,replayMode replay,RecruitChip a
     		}
     		// swap out the hidden recruit for one of the unknowns
     		// if we're in the initial stages, swap out the active recruits too
-    	}
+    	}}
        	unusedArtifacts.shuffle(r);
-    	for(EPlayer p : players)
+       	if(!isIIB())	// in IIB we know what artifacts they have
+       	{for(EPlayer p : players)
     	{	p.clearUCTStats();
     		if((p!=robo) && (p!=players[whoseTurn]))		// don't randomize the current player in mid turn
     		{	
@@ -7727,7 +7848,7 @@ private void doAmandaTheBroker(EuphoriaCell dest,replayMode replay,RecruitChip a
     				cards.setChipAtIndex(lim,unusedArtifacts.removeTop());
     			}
     		}
-    	}
+    	}}
 		{	int nMarkets = unusedMarkets.height();
 			for(EuphoriaCell market : markets)
 			{ if(!marketIsOpen(market))
@@ -7766,23 +7887,26 @@ private void doAmandaTheBroker(EuphoriaCell dest,replayMode replay,RecruitChip a
 
         switch(board_state)
         {
-		case EphemeralConfirmRecruits:
-        case ConfirmRecruitOption:
-        case ConfirmRecruits:
-        case ConfirmRetrieve:
         case ConfirmPayForOptionalEffect:
         case ConfirmPlace:
         case ConfirmPayCost:
+           	m.chip = openedMarket;
+			//$FALL-THROUGH$
         case ConfirmBenefit:
+        case ConfirmRetrieve:
+        case ConfirmRecruitOption:
+        case ConfirmRecruits:
+		case EphemeralConfirmRecruits:
+        case ConfirmActivateRecruit:
+        case ConfirmOneRecruit:
         case ConfirmFightTheOpressor:
         case ConfirmJoinTheEstablishment:
-        case ConfirmOneRecruit:
-        case ConfirmActivateRecruit:
-        	m.followedByDone = true;
-        	stepNumber++; 
-        	doDone(replayMode.Replay);
+         	m.followedByDone = true;
+         	stepNumber++; 
+         	doDone(m.chipIn,replayMode.Replay);
+           	break;
+      default:       	
         	break;
-        default: break;
         }
     }
     int step=0;
@@ -7897,16 +8021,20 @@ private void doAmandaTheBroker(EuphoriaCell dest,replayMode replay,RecruitChip a
 			switch(c.rackLocation())
 			{
 			case SubterranAquifer:
-				if(placedAquifer || (p.water.height()>=10)) {skip = true; } else { placedAquifer=canPlaceWorker(p,worker,c); skip=!placedAquifer;}
+				if(placedAquifer || (p.water.height()>=10)) {skip = true; } 
+					else { placedAquifer=canPlaceWorker(p,worker,c); skip=!placedAquifer;}
 				break;
 			case WastelanderFarm:	
-				if(placedFarm || (p.food.height()>=10)) { skip=true; } else { placedFarm=canPlaceWorker(p,worker,c); skip=!placedFarm;}
+				if(placedFarm || (p.food.height()>=10)) { skip=true; } 
+					else { placedFarm=canPlaceWorker(p,worker,c); skip=!placedFarm;}
 				break;
 			case IcariteCloudMine:	
-				if(placedCloud || (p.bliss.height()>=10)) { skip= true; } else { placedCloud=canPlaceWorker(p,worker,c); skip=!placedCloud;}
+				if(placedCloud || (p.bliss.height()>=10)) { skip= true; } 
+					else { placedCloud=canPlaceWorker(p,worker,c); skip=!placedCloud;}
 				break;
 			case EuphorianGenerator: 
-				if(placedGenerator || (p.energy.height()>=10)) { skip=true;  } else { placedGenerator=canPlaceWorker(p,worker,c); skip=!placedGenerator; }
+				if(placedGenerator || (p.energy.height()>=10)) { skip=true;  } 
+					else { placedGenerator=canPlaceWorker(p,worker,c); skip=!placedGenerator; }
 				break;
 			default: skip = !canPlaceWorker(p,worker,c);
 			break;
@@ -8105,7 +8233,7 @@ private void doAmandaTheBroker(EuphoriaCell dest,replayMode replay,RecruitChip a
  			case CollectBenefit:
  			{	Benefit bene = pendingBenefit();
  				if(forcedAltruism)
- 				{ p1("discard resources altruism "+bene);
+ 				{
  				  addDiscardResourceMoves(all,p,null); 
  				}
  				switch(bene)
@@ -8289,7 +8417,7 @@ private void doAmandaTheBroker(EuphoriaCell dest,replayMode replay,RecruitChip a
 	 }
  }
  public void addLarsTheBallooneerMoves(CommonMoveStack all,EPlayer p,EuphoriaCell c)
- {	 Assert(c.height()==1,"should be a single worker");
+ {	 Assert(c.height()==1,"y should be a single worker");
 	 addWorkerPlacementMoves(all,p,c,(WorkerChip)c.topChip(),0);
  }
  public void addBumpOpponentMoves(CommonMoveStack all,EPlayer p,EuphoriaCell c)
@@ -9112,7 +9240,6 @@ private void doAmandaTheBroker(EuphoriaCell dest,replayMode replay,RecruitChip a
 	 // at most 1 non-water
 	 return (true);
  }
- 
  boolean legalEnergyx3OrBlissx3AndCommodity(EuphoriaCell added)
  {
 	 int tot = droppedDestStack.size() + (added==null ? 0 : 1);
@@ -9123,9 +9250,25 @@ private void doAmandaTheBroker(EuphoriaCell dest,replayMode replay,RecruitChip a
 	 int nfood = numberPaid(farm) + (added == farm ? 1 : 0);
 	 int nenergy = numberPaid(generator) + (added==generator? 1 : 0);
 	 int nwater = numberPaid(aquifer) + (added == aquifer ? 1 : 0);
-	 
-	 if(nfood+nwater>1) { return(false); }
+	 if(nenergy>0 && nbliss>0 && (nfood+nwater)>0) { return(false); }
+	 if(nfood+nwater>1) { return(false); }		// the other 2 commodities
 	 if(nenergy>=2 && nbliss>=2) { return(false); }
+	 return(true);
+	 
+ }
+ boolean legalWaterx3OrBlissx3AndCommodity(EuphoriaCell added)
+ {
+	 int tot = droppedDestStack.size() + (added==null ? 0 : 1);
+ 	 if (tot<=1) { return(true); }	// first can be anything
+ 	 if(tot>4) { return(false); }
+ 	 
+	 int nbliss = numberPaid(bliss) + (added == bliss ? 1 : 0);
+	 int nfood = numberPaid(farm) + (added == farm ? 1 : 0);
+	 int nenergy = numberPaid(generator) + (added==generator? 1 : 0);
+	 int nwater = numberPaid(aquifer) + (added == aquifer ? 1 : 0);
+	 if(nwater>0 && nbliss>0 && (nfood+nenergy)>0) { return false; }
+	 if(nfood+nenergy>1) { return(false); }		// the other 2 commodities
+	 if(nwater>=2 && nbliss>=2) { return(false); }
 	 return(true);
 	 
  }
@@ -9286,8 +9429,10 @@ private void doAmandaTheBroker(EuphoriaCell dest,replayMode replay,RecruitChip a
 	 	break;
 	 	
 	 case Energyx3OrBlissx3AndCommodity:
-		 p1("pay "+cost);	
-		 if(p.totalCommodities()>7) { p1("try Energyx3OrBlissx3AndCommodity "+p.totalCommodities()); }
+		 // p1("pay "+cost); 
+		 // tested 3/30.  To get here you have to have the penalty from agency of progressive
+		 // backstabbing and the recruit gary the forgetter, and be bumping yourself to from
+		 // the worker activation tank
 		 if(legalEnergyx3OrBlissx3AndCommodity(generator)) { addPayEnergyMoves(all,p); }
 		 if(legalEnergyx3OrBlissx3AndCommodity(farm)) { addPayFoodMoves(all,p); }
 		 if(legalEnergyx3OrBlissx3AndCommodity(bliss)) { addPayBlissMoves(all,p); }
@@ -9303,6 +9448,17 @@ private void doAmandaTheBroker(EuphoriaCell dest,replayMode replay,RecruitChip a
 		 }
 		 break;
 		 
+	 case Waterx3OrBlissx3AndCommodity:
+		 // p1("pay "+cost); 
+		 // tested 3/30.  To get here you have to have the penalty from agency of progressive
+		 // backstabbing and the recruit gary the forgetter, and be bumping yourself to from
+		 // the worker activation tank
+		 if(legalWaterx3OrBlissx3AndCommodity(generator)) { addPayEnergyMoves(all,p); }
+		 if(legalWaterx3OrBlissx3AndCommodity(farm)) { addPayFoodMoves(all,p); }
+		 if(legalWaterx3OrBlissx3AndCommodity(bliss)) { addPayBlissMoves(all,p); }
+		 if(legalWaterx3OrBlissx3AndCommodity(aquifer)) { addPayWaterMoves(all,p); }
+		 break;
+		 
 	 case Waterx3OrBlissx3:
 		 // p1("pay "+cost); // tested 3/23	
 		 if(hasPaid(bliss)) { addPayBlissMoves(all,p); }
@@ -9312,13 +9468,28 @@ private void doAmandaTheBroker(EuphoriaCell dest,replayMode replay,RecruitChip a
 		 	addPayWaterMoves(all,p);
 		 }
 		 break;
-
+	 case Commodity_Artifact:
+		 // p1("pay "+cost); tested 3/31
+		 if(!hasPaidArtifact(p,null)) { addPayArtifactMoves(all,p); }
+		 if(!hasPaidCommodity()) { addPayCommodityMoves(all,p,true); }
+		 break;
+		 
 	 case Book_Card:
 		 // p1("pay "+cost); // tested 3/21	
 		 // 2 cards, one must be book-compatible
 		 addPay2ArtifactMoves(all, p, ArtifactChip.Book);
 		 break;
 		 
+	 case Book_CardAndCommodity:
+		 //p1("Pay "+cost); // tested 3/31
+		 if(!hasPaidCommodity()) { addPayCommodityMoves(all,p,true); }
+		 if(numberOfArtifactsPaid()<2)
+			 {	if(hasPaidArtifact(p,ArtifactChip.Book)) 
+			 		{ addPayArtifactMoves(all,p,ArtifactChip.Book,null); 
+			 		}
+			 	else { addPayArtifactMoves(all,p); }
+			 }
+		break;
 	 case Commodity_Box:
 	 case Commodity_Balloons:
 	 case Commodity_Bifocals:
@@ -9338,10 +9509,12 @@ private void doAmandaTheBroker(EuphoriaCell dest,replayMode replay,RecruitChip a
 		 break;
 	 case ResourceX3AndCommodity:
 	 	{
-	 	p1("pay "+cost);	
+	 	//p1("pay "+cost);	// tested 3/31
 	 	boolean hp = hasPaidCommodity();
 	 	if(!hp) { addPayCommodityMoves(all,p,true); }
-	 	if((droppedDestStack.size()<3) || hp) { addPayCommodityMoves(all,p,true); }
+	 	if((droppedDestStack.size()<3) || hp) 
+	 		{ addPayResourceMoves(all,p); 
+	 		}
 	 	}
 		 break;
 		 
@@ -9356,7 +9529,21 @@ private void doAmandaTheBroker(EuphoriaCell dest,replayMode replay,RecruitChip a
 		 if(!hasPaidSomething()) { addPayClayMoves(all,p); }
 		 addPayCommodityMoves(all,p,true);
 		 break;
-		 
+	 case ClayOrBlissOrFood:
+		 addPayBlissMoves(all,p);
+		//$FALL-THROUGH$
+	case ClayOrFood:
+		 addPayClayMoves(all,p);
+		 addPayFoodMoves(all,p);
+		 break;
+	 case StoneOrBlissOrFood:
+		 addPayBlissMoves(all,p);
+		//$FALL-THROUGH$
+	case StoneOrFood:
+		 //("pay "+cost.name()); // tested 4/1
+		 addPayStoneMoves(all,p); 
+		 addPayFoodMoves(all,p);
+		 break;
 	 case StoneOrCommodityX3:
 		 //p1("pay "+cost);	// tessted 3/21
 		 if(!hasPaidSomething()) { addPayStoneMoves(all,p);} 
@@ -9383,10 +9570,11 @@ private void doAmandaTheBroker(EuphoriaCell dest,replayMode replay,RecruitChip a
 		 addPayBlissMoves(all,p);
 		 addPayFoodMoves(all,p);
 		 break;
-	 case EnergyOrBlissOrFood:
+	 case EnergyOrBlissOrFoodRetrieval:
 		 addPayEnergyMoves(all,p);
 		 //$FALL-THROUGH$
-	 case BlissOrFood:
+	 case BlissOrFoodRetrieval:
+	 case BlissOrFoodExactly:
 		 addPayBlissMoves(all,p);
 		//$FALL-THROUGH$
 	 case Food:
@@ -9440,9 +9628,13 @@ private void doAmandaTheBroker(EuphoriaCell dest,replayMode replay,RecruitChip a
 	case EnergyOrKnowledge:
 		addPayEnergyMoves(all,p);
 		break;
+	case FoodOrResource:
+		addPayResourceMoves(all,p);
+		//$FALL-THROUGH$
 	case FoodOrKnowledge:
 		addPayFoodMoves(all,p);
 		break;
+		
 	case BlissOrWater:
 		addPayWaterMoves(all,p);
 		addPayBlissMoves(all,p);
@@ -9496,15 +9688,23 @@ private void doAmandaTheBroker(EuphoriaCell dest,replayMode replay,RecruitChip a
 		addPayEnergyMoves(all,p);
 		 break;
 		 
-	 case Morale_Artifactx3:
+	 case Morale_Artifactx3_Brian:
 	 case Artifactx3:
 		 addPayCardMoves(all,p);
 
 		 	break;
-		 
+		
+	 case Card_BlissOrFood:
+	 	{
+	 	//p1("Pay "+cost); // tested 4/1
+	 	if(!hasPaid(usedArtifacts)) { addRobotUnpairedDiscardMoves(all,p); }
+	 	if(!hasPaidCommodity()) { addPayBlissMoves(all,p); addPayFoodMoves(all,p);}
+	 	}
+	 	break;
 	 case Card_ResourceOrBlissOrFood:
 	 	{
-	 	p1("pay "+cost);	
+	 	// this involves brian the vituculturist
+	 	//p1("pay "+cost); // tested 4/1	
 		boolean hasCard = hasPaid(usedArtifacts);
 		boolean hasBliss = hasPaid(bliss);
 		boolean hasFood = hasPaid(farm);
@@ -9520,7 +9720,8 @@ private void doAmandaTheBroker(EuphoriaCell dest,replayMode replay,RecruitChip a
 	 	break;
 	 case Card_FoodOrResource:
 	 	{
-	 	p1("pay "+cost);	
+	    // this is a subcost of Card_ResourceOrBlissOrFood 
+	 	// p1("pay "+cost); // tested 4/1	
 	 	boolean hasCard = hasPaid(usedArtifacts);
 	 	boolean hasFood = hasPaid(farm);
 	 	boolean hasResource = hasPaidResource();
@@ -9536,7 +9737,8 @@ private void doAmandaTheBroker(EuphoriaCell dest,replayMode replay,RecruitChip a
 		 
 	 case Card_ResourceOrBliss:
 	 	{
-	 	p1("pay "+cost);	
+	 	//p1("pay "+cost); tested 4/1	
+	 	// this is a subcost of Card_ResourceOrBlissOrFood 
 	 	boolean hasCard = hasPaid(usedArtifacts);
 	 	boolean hasBliss = hasPaid(bliss);
 	 	boolean hasResource = hasPaidResource();
@@ -9551,6 +9753,8 @@ private void doAmandaTheBroker(EuphoriaCell dest,replayMode replay,RecruitChip a
 	 	break;
 	 case Card_Resource: // card and a resource for a market
 	 	{
+	 	// josh the negotiator, lab of selective genetics
+	 	// p1("pay "+cost); // tested 3/31
 		boolean hasCard = hasPaid(usedArtifacts);;
 	 	boolean hasResource = hasPaidSomething()&&!hasCard;
 	 	if(!hasCard) 
@@ -9561,8 +9765,9 @@ private void doAmandaTheBroker(EuphoriaCell dest,replayMode replay,RecruitChip a
 		 break;
 		 
 	 case BlissOrFoodx4_ResourceOrBlissOrFood:
-	 	{	// at most 1 resource, the rest can be food or bliss
-	 		p1("pay "+cost);	
+	 	{	
+	 	// at most 1 resource, the rest can be food or bliss.  Brian the viticulturist
+	 	//p1("pay "+cost); //tested 3/31	
 		int blissorfood = countBlissOrFood(droppedDestStack);
 		boolean hasResource = droppedDestStack.size()>blissorfood;
 	    if(!hasResource) 
@@ -9573,8 +9778,8 @@ private void doAmandaTheBroker(EuphoriaCell dest,replayMode replay,RecruitChip a
 	 	}
 	 	break;
 	 case BlissOrFoodx4_Card: 
-	 	{
-			 p1("pay "+cost);	
+	 	{	// brian the viticulturist
+	 	//p1("pay "+cost);	// tested 3/31
 	 	int blissorfood = countBlissOrFood(droppedDestStack);
 	 	boolean hasCard = droppedDestStack.size()>blissorfood;
 	 	boolean roomForFood = (blissorfood<4);
@@ -9593,8 +9798,8 @@ private void doAmandaTheBroker(EuphoriaCell dest,replayMode replay,RecruitChip a
 		 addPayBlissMoves(all,p);
 		 break;
 	 case BlissOrFoodx4_Resource:
-	 	{
-			 p1("pay "+cost);	
+	 	{	// brian the viticulturist
+		//	 p1("pay "+cost);	// tested 3/31
 	 	int blissorfood = countBlissOrFood(droppedDestStack);
 	 	boolean hasResource = droppedDestStack.size()>blissorfood;
 	 	boolean roomForFood = (blissorfood<4);
@@ -9616,7 +9821,7 @@ private void doAmandaTheBroker(EuphoriaCell dest,replayMode replay,RecruitChip a
 		//$FALL-THROUGH$
 	 case ResourceAndKnowledgeAndMorale:
 	 case Resource:
-	 case Morale_Resourcex3:
+	 case Morale_Resourcex3_Brian:
 	 case Resourcex3:	// pay 3 resources (nimbus loft)
 		 addPayResourceMoves(all,p);
 		 break;
@@ -10827,7 +11032,7 @@ EPlayer robotPlayer = null;
  		//throw G.Error("No moves generated for state %s for player %s",board_state,p);
  		//GetListOfMoves();
  	}
- 	if(robotBoard) { Assert(all.size()>0,"produced no moves #1",board_state); }
+ 	if(robotBoard) { Assert(all.size()>0,"x produced no moves for state %s",board_state); }
  	return(all);
  }
  
@@ -10898,7 +11103,6 @@ EPlayer robotPlayer = null;
 		EPlayer p = players[ind];
 		p.setHasPeeked(v);
 	}
-	public EuphoriaPlay robot = null;
 	public boolean p1(String msg)
 	{
 		if(G.p1(msg) && (robot!=null))

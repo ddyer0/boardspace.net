@@ -198,6 +198,7 @@ public class EuphoriaPlay extends commonRobot<EuphoriaBoard> implements Runnable
  */
     public CommonMoveStack  List_Of_Legal_Moves()
     {	int newn = board.moveNumber();
+    	board.robot = this;
     	boolean needassign = (newn<=boardMoveNumber);
     	if(newn<boardMoveNumber)
     		{ // we detect that the UCT run has restarted at the top
@@ -280,7 +281,6 @@ public class EuphoriaPlay extends commonRobot<EuphoriaBoard> implements Runnable
     //
     public commonMove Get_Random_Move(Random r)
     {	if(evaluator.weight==0) { return(super.Get_Random_Move(r)); }
- 
     	CommonMoveStack all = List_Of_Legal_Moves();
     	double total = assignMonteCarloWeights(all);
     	double target = r.nextDouble()*total;			// target weight uniformly distributed from 0-total
@@ -373,7 +373,7 @@ public class EuphoriaPlay extends commonRobot<EuphoriaBoard> implements Runnable
     	}
     }
 
-
+int strategy = 0;
 /** prepare the robot, but don't start making moves.  G is the game object, gboard
  * is the real game board.  The real board shouldn't be changed.  Evaluator and Strategy
  * are parameters from the applet that can be interpreted as desired.  The debugging 
@@ -381,7 +381,7 @@ public class EuphoriaPlay extends commonRobot<EuphoriaBoard> implements Runnable
  * really used at this point, but was intended to be the class name of a plugin
  * evaluator class
  */
- public void InitRobot(ViewerProtocol newParam, ExtendedHashtable info,BoardProtocol gboard,String s, int strategy)
+ public void InitRobot(ViewerProtocol newParam, ExtendedHashtable info,BoardProtocol gboard,String s, int strat)
     {
         InitRobot(newParam, info, strategy);
         GameBoard = (EuphoriaBoard) gboard;
@@ -395,6 +395,7 @@ public class EuphoriaPlay extends commonRobot<EuphoriaBoard> implements Runnable
         // vs baseline_dumbot_07 // 60%
         //
         MONTEBOT = true;
+        strategy = strat;
         switch(strategy)
         {
         default: throw G.Error("Not expecting strategy %s",strategy);
@@ -421,6 +422,11 @@ public class EuphoriaPlay extends commonRobot<EuphoriaBoard> implements Runnable
         	WEAKBOT = true;
         	randomize = false;
         	break;
+        case TESTBOT_LEVEL_2:
+           	evaluator = Evaluator.Baseline_Dumbot_09;
+        	WEAKBOT = false;
+        	randomize = false;
+        	break;
         }
     }
 /**
@@ -429,7 +435,21 @@ public class EuphoriaPlay extends commonRobot<EuphoriaBoard> implements Runnable
 public void copyFrom(commonRobot<EuphoriaBoard> p)
 {	super.copyFrom(p);
 	robotRandom = new Random();
+	getBoard().robot = this;
 	randomize = ((EuphoriaPlay)p).randomize;
+}
+public RobotProtocol copyPlayer(String name)
+{
+	RobotProtocol c = super.copyPlayer(name);
+	((EuphoriaBoard)c.getBoard()).robot = (EuphoriaPlay)c;
+	return(c);
+}
+public EuphoriaBoard getBoard()
+{
+	EuphoriaBoard b = super.getBoard();
+	b.robot = this;
+	return b;
+	
 }
 
 /** PrepareToMove is called in the thread of the main game run loop at 
@@ -499,7 +519,7 @@ public void PrepareToMove(int playerIndex)
         double speedMultiplier = board.nPlayers()<=2 ? 1 : 1.5;
         monte_search_state.timePerMove = randomize 
         									? choice?4:(speedMultiplier*evaluator.time)/2
-        									: 1;	
+        									: strategy==TESTBOT_LEVEL_2 ? 60 : 1;	
         monte_search_state.alpha =choice ? 1.0 : evaluator.alpha;
         monte_search_state.sort_moves = evaluator.sortmoves;
            
@@ -528,8 +548,7 @@ public void PrepareToMove(int playerIndex)
  	  catch (ErrorX err)
  		{
  		  err.addExtraInfo("finalPath: "+ board.getFinalPath()
- 				  +"continuation:" + board.getContinuationStack()
- 				  + "variation:" + getCurrentVariationString());
+ 				  +"continuation:" + board.getContinuationStack());
  		  throw(err);
  		}
       finally { ; }

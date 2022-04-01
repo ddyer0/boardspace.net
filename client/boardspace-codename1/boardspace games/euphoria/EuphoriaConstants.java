@@ -266,7 +266,7 @@ public interface EuphoriaConstants
 		ArtifactPair("a pair of Artifact"),		// alternative 
 		Artifactx2("2 Artifact"),			// JackoTheMerchant
 		Artifactx3("3 Artifact, or a Pair of Artifact"),			// combo by default
-		Morale_Artifactx3("3 Artifact, or a Pair of Artifact"),
+		Morale_Artifactx3_Brian("3 Artifact, or a Pair of Artifact"),
 		Smart_Artifact("1 Artifact"),
 		Energy("1 Energy"),		// euphorian mine
 		Food("1 Food"),		// wastelander mine
@@ -294,7 +294,8 @@ public interface EuphoriaConstants
 		Resource("1 Resource"),	// fixed cost + resource
 		Commodity("1 Commodity"),
 		Resourcex3("3 Resources"),	// nimbus loft
-		Morale_Resourcex3("3 Resources"),	// nimbus loft
+		Morale_Resourcex3_Brian("3 Resources"),	// nimbus loft for brian the viticulturist
+		Morale_Brian("Free"),  // breeze bar
 		Energyx3("3 Energy"),	// worker training
 		Energyx3OrBlissx3("3 Energy or 3 Bliss"),	// worker training with gary the forgetter
 		Waterx3("3 Water"),	// worker training
@@ -303,19 +304,20 @@ public interface EuphoriaConstants
 		NonBliss("1 non-bliss Commodity"),
 		
 		BlissOrFoodPlus1("1 Bliss or 1 Food, plus 1 not Bliss"),	// bliss_commodity with BrianTheViticulturist
-		Morale_BlissOrFoodPlus1("1 Bliss or 1 Food, plus 1 not Bliss"),	// bliss_commodity with BrianTheViticulturist
+		Morale_BlissOrFoodPlus1_Brian("1 Bliss or 1 Food, plus 1 not Bliss"),	// bliss_commodity with BrianTheViticulturist
 		
 		MarketCost("Market Cost"),	// dynamically assigned, changes with the market
 		TunnelOpen("Free if Tunnel Open"),	// tunnel has been opened
 		Closed("Closed"),		// never open
 		DisplayOnly("Display Only"),	// only for the UI to use
-		BlissOrFood("1 Bliss or 1 Food"),	// retrieval cost for workers
+		BlissOrFoodRetrieval("1 Bliss or 1 Food"),	// retrieval cost for workers
+		BlissOrFoodExactly("1 Bliss or 1 Food"), // bliss or food NOT related to retrieval
 		ClayOrFood("1 Clay or 1 Food"),
 		GoldOrFood("1 Gold or 1 Food"),
 		BlissOrEnergy("1 Bliss or 1 Energy"),
 		BlissOrWater("1 Bliss or 1 Water"),
 		
-		EnergyOrBlissOrFood("1 Bliss or 1 Food or 1 Energy"),	// with JeffersonTheShockArtist
+		EnergyOrBlissOrFoodRetrieval("1 Bliss or 1 Food or 1 Energy"),	// with JeffersonTheShockArtist
 		// market costs
 		Card_Resource("1 Artifact and 1 Resource"),	
 		FoodOrResource("1 Food or 1 Resource"),
@@ -363,19 +365,19 @@ public interface EuphoriaConstants
 		Foodx4_StoneOrBliss("4 Food and 1 Stone or 1 Bliss"),
 		Foodx4_Stone("1 Stone or 1 Bliss"),			// string only becomes visible if JoshTheNegotiator is in effect
 		
-		Commodity_Bear("1 Commodity and 1 Bear Artifact"),
-		Commodity_Bifocals("1 Commodity and 1 Bifocals Artifact"),
-		Commodity_Balloons("1 Commodity and 1 Balloons Artifact"),
-		Commodity_Box("1 Commodity and 1 Box Artifact"),
-		Commodity_Bat("1 Commodity and 1 Bat Artifact"),
-		Commodity_Book("1 Commodity and 1 Book Artifact"),
-		
-		Balloons("1 Balloons Artifact"),
-		Bat("1 Bat Artifact"),
-		Bifocals("1 Bifocals Artifact"),
-		Box("1 Box Artifact"),
-		Bear("1 Bear Artifact"),
-		Book("1 Book Artifact"),
+		Commodity_Bear("1 Commodity and 1 Bear"),
+		Commodity_Bifocals("1 Commodity and 1 Bifocals"),
+		Commodity_Balloons("1 Commodity and 1 Balloons"),
+		Commodity_Box("1 Commodity and 1 Box"),
+		Commodity_Bat("1 Commodity and 1 Bat"),
+		Commodity_Book("1 Commodity and 1 Book"),
+		Commodity_Artifact("1 Commodity and 1 Artifact"),
+		Balloons("1 Balloons"),
+		Bat("1 Bat"),
+		Bifocals("1 Bifocals"),
+		Box("1 Box"),
+		Bear("1 Bear"),
+		Book("1 Book"),
 	
 		// dilemma costs
 		BearOrCardx2("1 Bear or 2 other Artifact"),
@@ -406,9 +408,9 @@ public interface EuphoriaConstants
 		// unlike the rest of the costs, these are an optional penalty,
 		// which you only have to pay what you have.
 		CommodityOrResourcePenalty("1 Commodity or 1 Resource"),		// some markets impose this penalty
-		CommodityOrResourcex2Penalty("2 Commodities or Resources"),		// some markets impose this penalty
-		CommodityOrResourcex3Penalty("3 Commodities or Resources"),		// some markets impose this penalty
-		CommodityOrResourcex4Penalty("4 Commodities or Resources"),		// some markets impose this penalty
+		CommodityOrResourcex2Penalty("2 Commodity or Resource"),		// some markets impose this penalty
+		CommodityOrResourcex3Penalty("3 Commodity or Resource"),		// some markets impose this penalty
+		CommodityOrResourcex4Penalty("4 Commodity or Resource"),		// some markets impose this penalty
 		
 		// interactions between JoshTheNegotiator and Brian the Viticulturist
 		Energyx4_StoneOrBlissOrFood("4 Energy and 1 Stone, Bliss, or Food"),
@@ -416,7 +418,7 @@ public interface EuphoriaConstants
 		Waterx4_GoldOrBlissOrFood("4 Water and 1 Gold, Bliss or Food"),
 		Energyx4_ClayOrBlissOrFood("4 Energy and 1 Clay, Bliss or Food"),
 		Foodx4_StoneOrBlissOrFood("4 Food and 1 Stone or Bliss, or 5 Food"),
-		Card_ResourceOrBlissOrFood("1 Artifact and 1 Bliss or 1 Food"),
+		Card_ResourceOrBlissOrFood("1 Artifact and 1 Resource or Bliss or Food"),
 		BlissOrFoodx4_ResourceOrBlissOrFood("any 5 Bliss or food, or any 4 with a resource"),
 		
 		// the corresponding simplifications
@@ -424,7 +426,7 @@ public interface EuphoriaConstants
 		ClayOrFoodOrBliss("1 Clay or 1 Food or 1 Bliss"),
 		GoldOrFoodOrBliss("1 Gold or 1 Food or 1 Bliss"),
 		ResourceOrBlissOrFood("1 Resource or 1 Food or 1 Bliss"),
-		ArtifactJackoTheArchivist_V2("1 Artifact (and others +1 Artifact), or a pair of Artifacts, or 3 Artifacts"),
+		ArtifactJackoTheArchivist_V2("1 Artifact (and others +1 Artifact), or a pair of Artifact, or 3 Artifact"),
 
 		
 		// new costs for IIB
@@ -564,8 +566,8 @@ public interface EuphoriaConstants
 			case EnergyOrKnowledge:
 			case FoodOrKnowledge:
 								
-			case BlissOrFood:
-			case EnergyOrBlissOrFood:
+			case BlissOrFoodRetrieval:
+			case EnergyOrBlissOrFoodRetrieval:
 				return(EuphoriaState.PayForOptionalEffect);
 				
 			default:
@@ -704,8 +706,8 @@ public interface EuphoriaConstants
 		DoJuliaTheAcolyte, 			DontJuliaTheAcolyte,
 		DoTaedTheBrickTrader, 		DontTaedTheBrickTrader, 
 		DoHajoon, DontHajoon, AfterHajoon, 
-		DoHighGeneralBaron, DontHighGeneralBaron, 
-		DropWorkerPay2, 
+		DoHighGeneralBaron, DontHighGeneralBaron,
+		DropWorkerPay2, FinishChagaTheGamer, 
 		;
 		
 	}

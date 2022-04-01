@@ -182,18 +182,18 @@ public class GameInfo implements lib.CompareTo<GameInfo>,LobbyConstants
 		// null for not found, rather than futureGame
 		return(null);
 	}
-	public boolean allowedBySet(ESet includedTypes)
+	public boolean allowedBySet(Bitset<ES> includedTypes)
 	{	if(this==futureGame)  { return(true); }
-		return(includedTypes.contains(enabled)
+		return(includedTypes.test(enabled)
 				&& startable
 				&& (groupName!=null)
-				&& (okForPlaytable || !includedTypes.contains(ES.playtable))
-				&& (okForPassAndPlay || !includedTypes.contains(ES.passandplay))
-				&& (maxPlayers>=3 || !includedTypes.contains(ES.multiplayer))
-				&& (!unrankedOnly || includedTypes.contains(ES.unranked))
+				&& (okForPlaytable || !includedTypes.test(ES.playtable))
+				&& (okForPassAndPlay || !includedTypes.test(ES.passandplay))
+				&& (maxPlayers>=3 || !includedTypes.test(ES.multiplayer))
+				&& (!unrankedOnly || includedTypes.test(ES.unranked))
 				);
 	}
-	public GameInfo[] groupMenu(ESet includedTypes,int playercount)
+	public GameInfo[] groupMenu(Bitset<ES> includedTypes,int playercount)
 	{	Hashtable<String,GameInfo>included = new Hashtable<String,GameInfo>();
 		for(int lim = allGames.size()-1; lim>=0; lim--)
 		{	GameInfo gi = allGames.elementAt(lim);
@@ -215,12 +215,12 @@ public class GameInfo implements lib.CompareTo<GameInfo>,LobbyConstants
 		return(g);
 	}
 	
-	public static GameInfo nthGame(int n,ESet included,int playercount)
+	public static GameInfo nthGame(int n,Bitset<ES> included,int playercount)
 	{
 		GameInfo g[] = allGames.elementAt(0).gameMenu(null,included,playercount);
 		return((g!=null && g.length>n) ? g[n%g.length] : futureGame);
 	}
-	public GameInfo[] gameMenu(String name,ESet includedTypes,int playercount)
+	public GameInfo[] gameMenu(String name,Bitset<ES> includedTypes,int playercount)
 	{	Hashtable<String,GameInfo> included = new Hashtable<String,GameInfo>();
 		for(int lim = allGames.size()-1; lim>=0; lim--)
 		{	GameInfo info = allGames.elementAt(lim);
@@ -250,7 +250,7 @@ public class GameInfo implements lib.CompareTo<GameInfo>,LobbyConstants
 	// When called from the seating viewer, the exact player count is known and
 	// is used to filter out inappropriate games.
 	// 
-	public GameInfo[] variationMenu(String name,ESet includedTypes,int playercount)
+	public GameInfo[] variationMenu(String name,Bitset<ES> includedTypes,int playercount)
 	{	Vector<GameInfo> included = new Vector<GameInfo>();
 		boolean sameReviewDir = true;
 		int reviewdir = -1;
@@ -259,7 +259,7 @@ public class GameInfo implements lib.CompareTo<GameInfo>,LobbyConstants
 			if( (info!=null)
 				&& (info.gameName.equals(name))
 				&& info.allowedBySet(includedTypes) 
-				&& includedTypes.contains(info.enabled)
+				&& includedTypes.test(info.enabled)
 				&& !containsId(included,info)
 				&& ((playercount==0) || ((info.minPlayers<=playercount) && (info.maxPlayers>=playercount)))
 				)

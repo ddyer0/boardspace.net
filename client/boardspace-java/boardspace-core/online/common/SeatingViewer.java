@@ -9,10 +9,11 @@ import javax.swing.JOptionPane;
 
 import common.GameInfo;
 import common.GameInfoStack;
+import common.GameInfo.ES;
 import lib.AR;
+import lib.Bitset;
 import lib.CellId;
 import lib.DefaultId;
-import lib.ESet;
 import lib.ExtendedHashtable;
 import lib.G;
 import lib.GC;
@@ -601,7 +602,7 @@ public class SeatingViewer extends exCanvas implements LobbyConstants
 		if(game!=null)
 		{
 		int nplayers = selectedChart.getNSeats();
-		ESet typeClass = sess.getGameTypeClass(false,isPassAndPlay());
+		Bitset<ES> typeClass = sess.getGameTypeClass(false,isPassAndPlay());
 		int w = G.Width(r);
 		int l = G.Left(r);
 		int t = G.Top(r);

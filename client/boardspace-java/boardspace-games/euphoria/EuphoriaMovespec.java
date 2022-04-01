@@ -1,11 +1,10 @@
 package euphoria;
 
-import java.util.*;
-
 import lib.G;
 import lib.Text;
 import lib.TextChunk;
 import lib.TextGlyph;
+import lib.Tokenizer;
 import online.game.*;
 import lib.ExtendedHashtable;
 
@@ -42,6 +41,7 @@ public class EuphoriaMovespec extends commonMPMove implements EuphoriaConstants
     static final int MOVE_SACRIFICE = 232;	// sacrifice a worker
     static final int MOVE_RECRUIT = 233;	// add a random new recruit (for testing)
     static final int MOVE_LOSEMORALE = 234;	// lose 1 morale to allow placing a second worker
+    static final int MOVE_MARKET = 235;
     
     /* this is used by the move filter to select ephemeral moves */
     public boolean isEphemeral()
@@ -92,6 +92,7 @@ public class EuphoriaMovespec extends commonMPMove implements EuphoriaConstants
         	"MoveItem",MOVE_ITEM,
         	"Sacrifice",MOVE_SACRIFICE,
         	"newrecruit",MOVE_RECRUIT,
+        	"newmarket",MOVE_MARKET,
         	"losemorale",MOVE_LOSEMORALE,
            	EuphoriaId.ConfirmDiscard.name(),CONFIRM_DISCARD,
            	EuphoriaId.EConfirmDiscard.name(),EPHEMERAL_CONFIRM_DISCARD,
@@ -126,6 +127,7 @@ public class EuphoriaMovespec extends commonMPMove implements EuphoriaConstants
     int from_row;
     int to_row;
     EuphoriaChip chip;
+    EuphoriaChip chipIn;
     boolean followedByDone = false;
     double montecarloWeight = 1.0;
     public String []gameEvents=null;
@@ -281,6 +283,7 @@ public class EuphoriaMovespec extends commonMPMove implements EuphoriaConstants
     	to.from_color = from_color;
     	to.chip = chip;
     	to.to_color = to_color;
+    	to.chipIn = chipIn;
         to.gameEvents = gameEvents;
        if( (op==USE_RECRUIT_OPTION) && (chip==null)) { G.Error("Missing recruit") ; }
     }
@@ -295,6 +298,14 @@ public class EuphoriaMovespec extends commonMPMove implements EuphoriaConstants
 
         return (yto);
     }
+    private void parseExtra(Tokenizer msg)
+    {
+   		if(msg.hasMoreElements())
+		{
+			String card = msg.nextToken();	
+			chipIn = chip = ArtifactChip.find(card);
+		}
+    }
 
     /* parse a string into the state of this move.  Remember that we're just parsing, we can't
      * refer to the state of the board or the game.  This parser follows the recommended practice
@@ -304,7 +315,7 @@ public class EuphoriaMovespec extends commonMPMove implements EuphoriaConstants
      * @param the player index for whom the move will be.
      * */
     private void parse(String omsg, int p)
-    {	StringTokenizer msg = new StringTokenizer(omsg);
+    {	Tokenizer msg = new Tokenizer(omsg);
         String cmd = msg.nextToken();
         player = p;
 
@@ -325,6 +336,11 @@ public class EuphoriaMovespec extends commonMPMove implements EuphoriaConstants
         op = D.getInt(cmd, MOVE_UNKNOWN);
         switch (op)
         {
+        case MOVE_MARKET:
+        	dest = EuphoriaId.get(msg.nextToken());
+        	to_row = msg.intToken();
+        	parseExtra(msg);
+        	break;
         case MOVE_UNKNOWN:
         	throw G.Error("Can't parse %s", cmd);
         case USE_DIE_ROLL:
@@ -336,20 +352,20 @@ public class EuphoriaMovespec extends commonMPMove implements EuphoriaConstants
         case MOVE_SACRIFICE:
        		from_color = Colors.get(msg.nextToken());
     		source = EuphoriaId.get(msg.nextToken());
-    		from_row = G.IntToken(msg);
+    		from_row = msg.intToken();
            	break;
            	
         case MOVE_ITEM:
         case MOVE_MOVE_WORKER:
            	source = EuphoriaId.get(msg.nextToken());
-           	from_row = G.IntToken(msg);
+           	from_row = msg.intToken();
            	dest = EuphoriaId.get(msg.nextToken());
-           	to_row = G.IntToken(msg);
+           	to_row = msg.intToken();
            	break;
            	
         case MOVE_RETRIEVE_WORKER:
         	source = EuphoriaId.get(msg.nextToken());
-    		from_row = G.IntToken(msg);
+    		from_row = msg.intToken();
     		to_color = Colors.get(msg.nextToken());
     		dest = EuphoriaId.get(msg.nextToken());
          	break;
@@ -359,16 +375,18 @@ public class EuphoriaMovespec extends commonMPMove implements EuphoriaConstants
         case MOVE_ITEM_TO_BOARD:
        		to_color = from_color = Colors.get(msg.nextToken());
     		source = EuphoriaId.get(msg.nextToken());
-    		from_row = G.IntToken(msg);
+    		from_row = msg.intToken();
     		dest = EuphoriaId.get(msg.nextToken());
-    		to_row = G.IntToken(msg);
+    		to_row = msg.intToken();
     		break;
     		
         case MOVE_ITEM_TO_PLAYER:
     		source = EuphoriaId.get(msg.nextToken());
-    		from_row = G.IntToken(msg);
+    		from_row = msg.intToken();
     		to_color = Colors.get(msg.nextToken());
     		dest = EuphoriaId.get(msg.nextToken());
+    		parseExtra(msg);
+ 
     		break;
 
         case EPHEMERAL_CHOOSE_RECRUIT:
@@ -377,22 +395,23 @@ public class EuphoriaMovespec extends commonMPMove implements EuphoriaConstants
         		source = EuphoriaId.get(msg.nextToken());
         		dest = EuphoriaId.get(msg.nextToken());
         		player = p;
+        		parseExtra(msg);
         		break;
         case MOVE_PLACE_WORKER:
         		from_color = Colors.get(msg.nextToken());
         		source = EuphoriaId.get(msg.nextToken());
-        		from_row = G.IntToken(msg);
+        		from_row = msg.intToken();
         		dest = EuphoriaId.get(msg.nextToken());
-        		to_row = G.IntToken(msg);
+        		to_row = msg.intToken();
         		break;
         case MOVE_DROPB:
 				dest = EuphoriaId.get(msg.nextToken());	// B or W
-	            to_row = G.IntToken(msg);
+	            to_row = msg.intToken();
 	            break;
 
 		case MOVE_PICKB:
 			source = EuphoriaId.get(msg.nextToken());
-            from_row = G.IntToken(msg);
+            from_row = msg.intToken();
 
             break;
 		case CONFIRM_DISCARD:
@@ -409,7 +428,7 @@ public class EuphoriaMovespec extends commonMPMove implements EuphoriaConstants
         case MOVE_PICK:
         	from_color  = Colors.get(msg.nextToken());
             source  = EuphoriaId.get(msg.nextToken());
-            from_row = G.IntToken(msg);
+            from_row = msg.intToken();
             break;
 
         case MOVE_START:
@@ -422,7 +441,12 @@ public class EuphoriaMovespec extends commonMPMove implements EuphoriaConstants
         	from_color = Colors.get(msg.nextToken());
         	player = p;
         	break;
-
+        case MOVE_DONE:
+        case MOVE_RECRUIT:
+        	{
+        	parseExtra(msg);
+        	}
+        	break;
         default:
             break;
         }
@@ -468,6 +492,9 @@ public class EuphoriaMovespec extends commonMPMove implements EuphoriaConstants
     {
         switch (op)
         {
+        case MOVE_RECRUIT:
+        	return TextChunk.create("New "+((chip==null)?"":chip.getName()));
+        	
         case MOVE_PICKB:
         	if(chip.isWorker())
         	{
@@ -541,6 +568,9 @@ public class EuphoriaMovespec extends commonMPMove implements EuphoriaConstants
          			TextChunk.create(" from "+ source.prettyName),
          			TextGlyph.create("xx",chip,v,scale(chip)),
         			TextChunk.create(" to "+dest.prettyName));
+        case MOVE_MARKET:
+        	return(TextChunk.create(dest.name()+" "+to_row+" "+chip.name));
+        	
         case USE_SECOND_RECRUIT_OPTION:
         case USE_RECRUIT_OPTION:
         	return(TextChunk.create("Use "+((chip==null)?"Recruit":((RecruitChip)chip).name)));
@@ -604,7 +634,9 @@ public class EuphoriaMovespec extends commonMPMove implements EuphoriaConstants
         case MOVE_PICK:
         case EPHEMERAL_PICK:
             return (opname + from_color.name()+" "+source.name()+" "+from_row);
-
+        case MOVE_MARKET:
+        	return(G.concat(opname,dest.name()," ",to_row));
+        	
         case MOVE_START:
             return ("Start P" + player);
         case MOVE_RETRIEVE_WORKER:

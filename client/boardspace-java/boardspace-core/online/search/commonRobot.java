@@ -226,7 +226,6 @@ public abstract class commonRobot<BOARDTYPE extends BoardProtocol> implements Ru
 		threadName = name;
 		return(c);
 	}
-    
     public commonMove getCurrentVariation()
     {	return(search_driver.getCurrentVariation());
     }

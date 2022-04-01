@@ -14,6 +14,8 @@ import lib.Random;
 import online.game.*;
 
 /**
+ * TODO: implement the new rules for scoring
+ * 
  * BloomdBoard knows all about the game of Hex, which is played
  * on a hexagonal board. It gets a lot of logistic support from 
  * common.hexBoard, which knows about the coordinate system.  

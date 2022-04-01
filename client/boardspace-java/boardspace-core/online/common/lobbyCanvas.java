@@ -16,16 +16,17 @@ import bridge.Config;
 /* below here should be the same for codename1 and standard java */
 import common.CommonConfig;
 import common.GameInfo;
+import common.GameInfo.ES;
 
 import java.util.Hashtable;
 import java.util.StringTokenizer;
 import lib.Graphics;
 import lib.Image;
 import lib.Keyboard;
+import lib.Bitset;
 import lib.CanvasProtocol;
 import lib.CellId;
 import lib.ChatInterface;
-import lib.ESet;
 import lib.ExtendedHashtable;
 import lib.G;
 import lib.GC;
@@ -1042,7 +1043,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 		  }  
 		  return(names);
 	  }
-	  private void addVariationMenu(Session sess,MenuInterface subm,String groupName,GameInfo var,ESet typeClass)
+	  private void addVariationMenu(Session sess,MenuInterface subm,String groupName,GameInfo var,Bitset<ES> typeClass)
 	  { int pc = sess.mode==Session.Mode.Review_Mode ? 0 : var.maxPlayers;
   	  	GameInfo vars[] = var.variationMenu(var.gameName,typeClass,pc);
 	    String menuName = s.get(var.gameName+"_family");
@@ -1059,7 +1060,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	  		  gameTypeMenu.addMenuItem(subm,sub2);
 	  		}
 	  }
-	  private void addAZMenu(Session sess,String name,GameInfo[]games,ESet typeClass)
+	  private void addAZMenu(Session sess,String name,GameInfo[]games,Bitset<ES> typeClass)
 	  {		// build an a-z menu of games
 		  MenuInterface subm = gameTypeMenu.newSubMenu(name);
     	  Hashtable<Character,MenuInterface>submenus=new Hashtable<Character,MenuInterface>();
@@ -1091,7 +1092,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 		  // add the main menu to the real menu
 		  gameTypeMenu.addMenuItem(subm);
  	  }
-	  private void addGameMenu(Session sess,String name,String groupName,GameInfo[]games,ESet typeClass)
+	  private void addGameMenu(Session sess,String name,String groupName,GameInfo[]games,Bitset<ES> typeClass)
 	  {	// groupName is null for the "all games" menu.
 		  MenuInterface subm = gameTypeMenu.newSubMenu(name);
           for(int gi=0;gi<games.length;gi++)
@@ -1105,7 +1106,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	  {	changeRoom = sess;
 	    gameTypeMenu.newPopupMenu(this,deferredEvents);
 	    GameInfo currentGame = sess.currentGame;
-	    ESet typeClass = sess.getGameTypeClass(isTestServer,false);
+	    Bitset<ES> typeClass = sess.getGameTypeClass(isTestServer,false);
 	    GameInfo gameNames[] = currentGame.groupMenu(typeClass,0);
 	    int n_games = gameNames.length;
 	    
@@ -1149,7 +1150,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	  changeRoom=sess;
 	  variationMenu.newPopupMenu(this,deferredEvents);
 	  GameInfo currentGame = sess.currentGame;
-	  ESet typeClass = sess.getGameTypeClass(isTestServer,false);
+	  Bitset<ES> typeClass = sess.getGameTypeClass(isTestServer,false);
 	  //(sess.mode == Session.Mode.Review_Mode)
 	   	//	? new ESet(GameInfo.ES.review,GameInfo.ES.game)
 	   	//	: new ESet(GameInfo.ES.game);  
