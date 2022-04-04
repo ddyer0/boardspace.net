@@ -1,0 +1,23 @@
+<html>
+<title>Dipole Viewer</title>
+<script src="https://cjrtnc.leaningtech.com/2.2/loader.js"></script>
+<head> <script src="/js/site.js"> </script></head>
+<body background="/images/background-image.jpg">
+<meta charset="utf-8">
+ <script>
+      cheerpjInit({javaProperties:["java.protocol.handler.pkgs=com.leaningtech.handlers"]});
+      cheerpjCreateDisplay(1200,1200);
+      cheerpjRunMain("util.JWSApplication", "/app/java/jws/OnlineLobby.jar",
+			"servername","boardspace.net",
+			"rootviewer","true",
+			"reviewonly","true",
+			"framewidth","700",
+			"gameindex","13",
+			"reviewerdir13","/dipole/dipolegames/",
+			"rootname","Offline viewer for Dipole",
+			"gamename","dipole"
+			); 
+  </script>
+
+</body>
+</html>

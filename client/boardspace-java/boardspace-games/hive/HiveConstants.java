@@ -1,8 +1,8 @@
 package hive;
 
-import lib.ESet;
 import lib.G;
 import lib.InternationalStrings;
+import lib.Bitset;
 import lib.CellId;
 
 import online.game.BaseBoard.BoardState;
@@ -61,17 +61,17 @@ public interface HiveConstants
     	hive_plm("hive-plm",true,true,true,false),
     	hive_u("hive-ultimate",true,true,true,true);
     	String name = null;
-    	ESet included = new ESet();
+    	Bitset<PieceType> included = new Bitset<PieceType>();
     	variation(String n,boolean i_m,boolean i_l,boolean i_p,boolean i_u)
     	{	name = n;
     		included.clear();
     		for(PieceType p : PieceType.values())
-    		{	if(p.standard) { included.add(p); }
+    		{	if(p.standard) { included.set(p); }
     		}
-    		if(i_p) { included.add(PieceType.PILLBUG); }
-    		if(i_l) { included.add(PieceType.LADYBUG); }
-    		if(i_m) { included.add(PieceType.MOSQUITO); }
-    		if(i_u) { included.add(PieceType.BLANK); }
+    		if(i_p) { included.set(PieceType.PILLBUG); }
+    		if(i_l) { included.set(PieceType.LADYBUG); }
+    		if(i_m) { included.set(PieceType.MOSQUITO); }
+    		if(i_u) { included.set(PieceType.BLANK); }
     	}
     	static variation find_variation(String n)
     	{	
@@ -79,7 +79,7 @@ public interface HiveConstants
     		return(null);
     	}
     	static {
-    		hive_u.included.add(PieceType.BLANK);
+    		hive_u.included.set(PieceType.BLANK);
     	}
     	
     }

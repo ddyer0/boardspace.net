@@ -571,7 +571,13 @@ public class Viticulturemovespec extends commonMPMove implements ViticultureCons
         	String name = currentWorkerName();
         	return(name==null ? source.shortName : "Retrieve "+name);
 
-		case MOVE_DROPB:
+        case MOVE_DROP:
+        	switch(dest)
+        	{
+        	case WineBin: return "";
+        	default: return dest.shortName();
+        	}
+  		case MOVE_DROPB:
 			return (dest.shortName);
 		case MOVE_TAKEACTION:
 			return("takeaction "+source.shortName);
@@ -593,10 +599,9 @@ public class Viticulturemovespec extends commonMPMove implements ViticultureCons
 		
         case MOVE_UPROOT:
         	return ("Uproot "+from_row+" "+from_index);
-        	
-        case MOVE_DROP:
-        case MOVE_DISCARD:
+ 
         case MOVE_SELECT:
+        case MOVE_DISCARD:
         case MOVE_PICK:
         case MOVE_UNSELECT:
         case MOVE_DONE:

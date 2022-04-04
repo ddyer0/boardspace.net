@@ -131,8 +131,7 @@ public class EuphoriaViewer extends CCanvas<EuphoriaCell,EuphoriaBoard> implemen
 	static final int BACKGROUND_TILE_INDEX = 0;
 	static final int BACKGROUND_REVIEW_INDEX = 1;
 	static final int BOARD_INDEX = 2;
-	static final int PLAYMAT_INDEX = 3;
-	static final String TextureNames[] = { "background-tile" ,"background-review-tile", "board-notext","PlayMat"};
+	static final String TextureNames[] = { "background-tile" ,"background-review-tile", "board-notext"};
     // some general constants that might not always be
     static final int MAX_WORKERS = 4;
     static final int STARTING_RECRUITS = 4;

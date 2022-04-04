@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <script src="cheerpOS.js"></script>
+    <script>
+        // Copyright 2018 Leaning Technologies Ltd
+	var controlPort = null;
+        function handleMessage(e)
+        {
+		var d = e.data;
+		switch(d.t)
+		{
+			case "port":
+				controlPort = d.port;
+				window.removeEventListener("message", handleMessage);
+				controlPort.onmessage = handleMessage;
+				break;
+			case "load":
+				var dl = new DirectDownloader(d.url, d.method, d.accumulate);
+				dl.onStart = function(resp)
+				{
+					controlPort.postMessage({url: this.url, responseURL: this.responseURL, fileLength: this.fileLength, idx: d.idx, from: "onStart"});
+				};
+				dl.onData = function(resp)
+				{
+					controlPort.postMessage({url: this.url, responseURL: this.responseURL, fileLength: this.fileLength, idx: d.idx, from: "onData", resp: resp});
+				};
+				dl.onEnd = function()
+				{
+					controlPort.postMessage({url: this.url, responseURL: this.responseURL, fileLength: this.fileLength, tmpChunk: this.tmpChunk,  idx: d.idx, from: "onEnd"});
+				};
+				dl.send();
+				break;
+			default:
+				debugger;
+		}
+        }
+        window.addEventListener("message", handleMessage);
+    </script>
+  </head>
+  <body>
+  </body>
+</html>

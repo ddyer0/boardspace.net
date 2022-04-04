@@ -97,7 +97,7 @@ class HiveGameBoard extends hexBoard<HiveCell> implements BoardProtocol,HiveCons
 	}
 public CellStack animationStack = new CellStack();
 public variation gamevariation = variation.hive;
-	public ESet pieceTypeIncluded; 
+	public Bitset<PieceType> pieceTypeIncluded; 
     public int numActivePieceTypes()
     {  return(pieceTypeIncluded.size());
     }
@@ -348,8 +348,8 @@ public variation gamevariation = variation.hive;
     //
     private int legalPillbugDests(HiveCell source,HiveId forColor,boolean picked,HivePiece moving,HiveCell dests[],int startidx,int idx,CellStack path,boolean onlyone)
     {   
-    	if((pieceTypeIncluded.contains(PieceType.PILLBUG)
-    			|| pieceTypeIncluded.contains(PieceType.ORIGINAL_PILLBUG))
+    	if((pieceTypeIncluded.test(PieceType.PILLBUG)
+    			|| pieceTypeIncluded.test(PieceType.ORIGINAL_PILLBUG))
     	        && ((source.height()+((pickedObject!=null)?1:0))==1)			// pieces on top can't be flipped
     			&& validHive(source))	// pieces that would break the hive can't be flipped
     	{
@@ -1481,7 +1481,7 @@ public variation gamevariation = variation.hive;
              	  		 // do while the object is still picked
        	  		 		 dropObject(dest);
 	 
-            	  		 prestun = (pieceTypeIncluded.contains(PieceType.PILLBUG)||pmove) 
+            	  		 prestun = (pieceTypeIncluded.test(PieceType.PILLBUG)||pmove) 
             	  		 				? dest 	// new pillbug, all moved pieces are stunned
             	  		 				: null;	// stunned only if moved by pillbug
             	  		 setNextStateAfterDrop(replay);
@@ -1948,7 +1948,7 @@ boolean GetListOfMoves1(CommonMoveStack all)
  		if((bug!=null) 
  				&& (include_queen || (bug.type!=PieceType.QUEEN))
  				&& (!require_queen || (bug.type==PieceType.QUEEN))
- 				&& pieceTypeIncluded.contains(bug.type))
+ 				&& pieceTypeIncluded.test(bug.type))
  		 {	if(bug.type==PieceType.BLANK)
  		 		{	if(tempBlankDests==null)
  		 				{tempBlankDests = getTempDest();

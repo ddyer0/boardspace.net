@@ -101,8 +101,11 @@ public class GameInfo implements lib.CompareTo<GameInfo>,LobbyConstants
 	public ES enabled;
 	public boolean startable = true;		// true if this game can be started by this interface 
 	public int dirNum;				// this is the game's directory number, used in communication with the server.
-	public int publicID=0;					// this games unique id, which is determined submenu sort order 
-	public String id;				// this is the game's 1 or 2 letter designator for scorekeeping
+	public int publicID=0;			// this games unique id.  This could almost be assigned automatically, except
+									// that it also determines if the game matches on different platforms, so the
+									// ultimate way to make a new version incompatible among clients is to give it
+									// a new ID.
+	public String id;				// this is the game's 1 or 2 letter designator for score keeping
 	public String groupName;		// the main menu this item appears under
 	public String gameName;			// game itself
 	public String variationName;	// the exact name this item appears under

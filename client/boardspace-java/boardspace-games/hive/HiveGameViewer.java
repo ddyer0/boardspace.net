@@ -372,7 +372,7 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
 		int pieceSize = RACKSCALE = (int)(cellW*3.5);
        int cellIndex = 0;
        for(PieceType pt : PieceType.values())
-        {	if(gb.pieceTypeIncluded.contains(pt))
+        {	if(gb.pieceTypeIncluded.test(pt))
         	{
          	int cellX = (G.Width(r)-(cellW*nCells))/2+cellW*cellIndex;
         	HiveCell thisCell = cells[pt.ordinal()];
@@ -433,7 +433,7 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
         int pieceSize = (int)(cellW*3.5);
        int cellIndex = 0;
        for(PieceType pt : PieceType.values())
-        {	if(gb.pieceTypeIncluded.contains(pt))
+        {	if(gb.pieceTypeIncluded.test(pt))
         	{
          	int cellX = (G.Width(r)-(cellW*nCells))/2+cellW*cellIndex;
         	HiveCell thisCell = cells[pt.ordinal()];

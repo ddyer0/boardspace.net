@@ -245,7 +245,6 @@ public void startNewWorker()
 	usedAlternateArtifact = null;
 	tf.clear(TFlag.AddedArtifact,
 			 TFlag.GainedWorker, 
-			 TFlag.TriggerKofiTheHermit,
 			 TFlag.UsedJonathanTheGamblerThisWorker,
 			 TFlag.AskedJonathanTheGambler);
 
@@ -1360,12 +1359,13 @@ Cost alternateCostWithRecruits(EuphoriaCell dest,Cost cost0,boolean placed)
 				b.useRecruit(RecruitChip.DavaaTheShredder,"can use");
 				cost = Cost.Free;
 				}
-			else if (recruitAppliesToMe(RecruitChip.TedTheContingencyPlanner)
+			if (recruitAppliesToMe(RecruitChip.TedTheContingencyPlanner)
 					  && (canPayX(Cost.Bliss)))
 					{
 					b.useRecruit(RecruitChip.TedTheContingencyPlanner,"can use");
 					switch (cost)
 					{
+					case Free: cost = Cost.BlissOrFree; break;
 					case Energy: cost = Cost.BlissOrEnergy; break;
 					case Food: cost = Cost.BlissOrFoodExactly; break;
 					case Water: cost = Cost.BlissOrWater; break;
@@ -1389,6 +1389,7 @@ Cost alternateCostWithRecruits(EuphoriaCell dest,Cost cost0,boolean placed)
 	    				default: b.Error("not expecting cost "+original);
 	    				}
 	    				break;
+	    			case BlissOrFree: cost = Cost.BlissOrFreeMwicheTheFlusher; break;
 	    			case BlissOrEnergy: cost = Cost.BlissOrEnergyMwicheTheFlusher; break;
 	    			case BlissOrFoodExactly: cost = Cost.BlissOrFoodMwicheTheFlusher; break;
 	    			case BlissOrWater:	cost = Cost.BlissOrWaterMwicheTheFlusher; break;
@@ -1526,7 +1527,21 @@ Cost alternateCostWithRecruits(EuphoriaCell dest,Cost cost0,boolean placed)
     			case BlissOrFoodExactly: cost = Cost.BlissOrFoodAndCommodity; break;
     			case Artifactx3OrArtifactAndBlissx2:
     				cost = Cost.Artifactx3OrArtifactAndBlissx2AndCommodity; break;
-    			default: 
+      			case BlissOrFoodMwicheTheFlusher: 
+    				cost= Cost.BlissOrFoodMwicheTheFlusherAndCommodity; break;
+      			case BlissOrWaterMwicheTheFlusher: 
+    				cost= Cost.BlissOrWaterMwicheTheFlusherAndCommodity; break;
+      			case BlissOrEnergyMwicheTheFlusher: 
+    				cost= Cost.BlissOrEnergyMwicheTheFlusherAndCommodity; break;
+      			case FreeOrWaterMwicheTheFlusher:
+      				cost = Cost.FreeOrWaterMwicheTheFlusherAndCommodity; break;
+      			case FreeOrFoodMwicheTheFlusher:
+      				cost = Cost.FreeOrFoodMwicheTheFlusherAndCommodity; break;
+      			case FreeOrEnergyMwicheTheFlusher:
+      				cost = Cost.FreeOrEnergyMwicheTheFlusherAndCommodity; break;
+      			case BlissOrFreeMwicheTheFlusher:
+      				cost = Cost.BlissOrFreeMwicheTheFlusherAndCommodity; break;
+     			default: 
     				b.Error("Not expecting %s",cost);
     			}
     	}
@@ -1685,7 +1700,17 @@ boolean canPayX(Cost item)
 {
 	switch(item)
 	{
+	case FreeOrWaterMwicheTheFlusherAndCommodity:
+	case FreeOrFoodMwicheTheFlusherAndCommodity:
+	case FreeOrEnergyMwicheTheFlusherAndCommodity:
+
+	
 	default: throw b.Error("Unexpected payment test for %s",item);
+	
+	case BlissOrFreeMwicheTheFlusher:
+	case BlissOrFree: 
+		return true;
+	
 	case Infinite: return(false);	// Kofi the hermit
 	case Artifactx3OrArtifactAndBlissx2AndCommodity:
 		return (canPayX(Cost.ArtifactX3AndCommodity)
@@ -2204,6 +2229,15 @@ boolean canPayX(Cost item)
 	case FreeOrWaterMwicheTheFlusher:
 	case FreeOrEnergyMwicheTheFlusher:
 		return true;
+
+	case BlissOrEnergyMwicheTheFlusherAndCommodity:
+		{
+		int tot = totalCommodities();
+		int toteb = energy.height()+bliss.height();
+		if(toteb==0) { return((tot>=4) && (water.height()>=3)); }	// have to use water
+		return (tot>=2);
+		}
+
 	case EnergyMwicheTheFlusherAndCommodity:
 		{
 		int tot = totalCommodities();
@@ -2217,7 +2251,11 @@ boolean canPayX(Cost item)
 		//$FALL-THROUGH$
 	case EnergyMwicheTheFlusher:
 		return ((energy.height()>=1) || (water.height()>=3));
-	
+	case MwicheTheFlusher:
+		return (water.height()>=3);
+	case MwicheTheFlusherAndCommodity:
+		return ((water.height()>=3) && (totalCommodities()>=4));
+		
 	case FoodMwicheTheFlusherAndCommodity:
 		{
 		int tot = totalCommodities();
@@ -2225,7 +2263,12 @@ boolean canPayX(Cost item)
 		if(totfood==0) { return((tot>=4) && (water.height()>=3)); }	// have to use water
 		return (tot>=2);
 		}
+		
 
+	case BlissOrFoodMwicheTheFlusherAndCommodity:
+		return ( ((bliss.height()>=1) && (totalCommodities()>=2))
+				 || ((water.height()>=3) && (totalCommodities()>=4)));
+		
 	case BlissOrFoodMwicheTheFlusher:
 		if (bliss.height()>=1) { return(true); }
 		//$FALL-THROUGH$
@@ -2238,6 +2281,10 @@ boolean canPayX(Cost item)
 		int wat = water.height();
 		return ((wat>=1) && (tot>=2));
 		}
+	case BlissOrWaterMwicheTheFlusherAndCommodity:
+		return (((bliss.height()>=1)||(water.height()>=1)) 	// has a bliss or a water and 2 commodities total
+					&& (totalCommodities()>=2));
+		
 	case BlissOrWaterMwicheTheFlusher:
 		if(bliss.height()>=1) { return(true); }
 		//$FALL-THROUGH$
@@ -2653,9 +2700,64 @@ Cost payCost(Cost item,replayMode replay)
 	case DisplayOnly:
 	case MarketCost:
 	case TunnelOpen:
-				
+
+	case BlissOrFreeMwicheTheFlusher:
+		if(bliss.height()==0) { return payCost(Cost.FreeMwicheTheFlusher,replay); }
+		if(water.height()<3) { return payCost(Cost.BlissOrFree,replay); }
+		return item;
+		
+	case BlissMwicheTheFlusher:
+		if(bliss.height()==0) { sendWater(3,replay); return null; }
+		if(water.height()<3) { sendBliss(1,replay); return(null); }
+		return item;
+		
+	case FreeMwicheTheFlusher:
+		if(water.height()<3) { return null; }	// have to be free
+		return item;
+		
+	case BlissMwicheTheFlusherAndCommodity:
+		if(bliss.height()==0) { return payCost(Cost.MwicheTheFlusherAndCommodity,replay); }
+		if(water.height()<3) { return payCost(Cost.Bliss_Commodity,replay); }
+		//b.p1("pay "+item);
+		return item;
+	case BlissOrFoodMwicheTheFlusherAndCommodity:
+		if(bliss.height()==0) { return payCost(Cost.FoodMwicheTheFlusherAndCommodity,replay); }
+		if(food.height()==0) { return payCost(Cost.BlissMwicheTheFlusherAndCommodity,replay); }
+		if(water.height()<3) { return payCost(Cost.BlissOrFoodAndCommodity,replay); }
+		//b.p1("pay "+item);
+		return item;
+	case BlissOrWaterMwicheTheFlusherAndCommodity:
+		if(bliss.height()==0) { return payCost(Cost.WaterMwicheTheFlusherAndCommodity,replay); }
+		if(water.height()==0) { return payCost(Cost.Bliss_Commodity,replay); }
+		//b.p1("pay "+item);
+		return item;
+	case BlissOrEnergyMwicheTheFlusherAndCommodity:
+		if(bliss.height()==0) { return payCost(Cost.EnergyMwicheTheFlusherAndCommodity,replay); }
+		if(energy.height()==0) { return payCost(Cost.BlissMwicheTheFlusherAndCommodity,replay); }
+		//b.p1("pay "+item);
+		return item;
+	case FreeOrWaterMwicheTheFlusherAndCommodity:
+		if(water.height()==0) { return null; }	// have to take free
+		b.p1("pay "+item);
+		return item;
+	case FreeOrMwicheTheFlusherAndCommodity:
+		if(water.height()<3) { return null; }	// have to take free
+		b.p1("pay "+item);
+		return item;
+	case FreeOrFoodMwicheTheFlusherAndCommodity:
+		if(food.height()==0) { return payCost(Cost.FreeOrMwicheTheFlusherAndCommodity,replay); }	
+		b.p1("pay "+item);
+		return item;
+	case FreeOrEnergyMwicheTheFlusherAndCommodity:
+		if(energy.height()==0) { return payCost(Cost.FreeOrMwicheTheFlusherAndCommodity,replay); }
+		b.p1("pay "+item);
+		return item;
 	default: throw b.Error("Unexpected payment for %s",item);
 	
+	case BlissOrFree:
+		if(bliss.height()==0) { return null; }	// have to accept free
+		return item;	// we always have to choose
+		
 	case SacrificeOrCommodityX3:
 		if(totalCommodities()<3) { return payCost(Cost.SacrificeAvailableWorker,replay); }
 		if(!hasWorkersInHand()) { return payCost(Cost.CommodityX3,replay); }
@@ -3835,6 +3937,18 @@ Cost payCost(Cost item,replayMode replay)
 		sendWater(1,replay);
 		return uniqueArtifactChip(ArtifactChip.Bifocals,Cost.Bifocals,replay);
 
+	case Book_Energy_WaterAndCommodity:
+		{
+		sendWater(1,replay);
+		sendEnergy(1,replay);
+		Cost residualBook = payCost(Cost.Book,replay);
+		Cost residualCommodity = payCost(Cost.Commodity,replay);
+		if(residualBook==null) { return residualCommodity; }
+		if(residualCommodity==null) { return residualBook; }
+		b.Assert((residualBook==Cost.Book) && (residualCommodity==Cost.Commodity),
+				"unexpected residuals %s %s",residualBook,residualCommodity);
+		return Cost.Commodity_Book;
+		}
 	case Book_Energy_Water:
 		sendWater(1,replay);
 		sendEnergy(1,replay);
@@ -3953,7 +4067,6 @@ Cost payCost(Cost item,replayMode replay)
 	case FreeOrEnergyMwicheTheFlusher:
 		if((energy.height()==0) && (water.height()<3)) { return null; } // must take free
 		return(item);
-		
 	case FreeOrFoodMwicheTheFlusher:
 		if((food.height()==0)&&(water.height()<3)) { return null; }	// must take free
 		return(item);
@@ -3969,7 +4082,15 @@ Cost payCost(Cost item,replayMode replay)
 		if(energy.height()==0) { setTFlag(TFlag.UsingMwicheTheFlusher); return payCost(Cost.Waterx3,replay); }	// not enough food, send water
 		//b.p1("mwitche option for energy");
 		return(Cost.EnergyMwicheTheFlusher);  	// have to interact
-	
+
+	case MwicheTheFlusher:
+		sendWater(3,replay);
+		return null;
+		
+	case MwicheTheFlusherAndCommodity:
+		sendWater(3,replay);
+		return payCost(Cost.Commodity,replay);
+		
 		//mwiche the flusher
 	case BlissOrWaterMwicheTheFlusher:
 		if(bliss.height()>0) { return item; }			
@@ -3991,6 +4112,8 @@ Cost payCost(Cost item,replayMode replay)
 		
 	case WaterMwicheTheFlusherAndCommodity:
 		{
+		// the order of these matters, the "rest" will only fill if the user has only water
+		// if he has exactly 3 water, he'll be left with 2 which cant support mwiche. 
 		Cost rest = payCost(Cost.Commodity,replay);
 		Cost main = payCost(Cost.WaterMwicheTheFlusher,replay);
 		if(rest==null) { return(main); }
@@ -4540,19 +4663,33 @@ void confirmPayment(Cost cost,Cost actualCost,CellStack dest,replayMode replay)
 		}
 		break;
 		
-	
-	case 	FreeOrEnergyMwicheTheFlusher:
-	case 	FreeOrFoodMwicheTheFlusher:
-	case 	FreeOrWaterMwicheTheFlusher:
-	case 	BlissOrEnergyMwicheTheFlusher:
-	case 	BlissOrFoodMwicheTheFlusher:
-	case 	BlissOrWaterMwicheTheFlusher:
+		
+
+	case MwicheTheFlusher:
+	case BlissMwicheTheFlusher:
+	case FreeMwicheTheFlusher:
+	case BlissOrFreeMwicheTheFlusher:
+	case FreeOrEnergyMwicheTheFlusher:
+	case FreeOrFoodMwicheTheFlusher:
+	case FreeOrWaterMwicheTheFlusher:
+	case BlissOrEnergyMwicheTheFlusher:
+	case BlissOrFoodMwicheTheFlusher:
+	case BlissOrWaterMwicheTheFlusher:
 		if(dest.size()==3) { setTFlag(TFlag.UsingMwicheTheFlusher); }
 		break;
 		
+	case MwicheTheFlusherAndCommodity:
+	case FreeOrEnergyMwicheTheFlusherAndCommodity:
+	case FreeOrFoodMwicheTheFlusherAndCommodity:
+	case FreeOrWaterMwicheTheFlusherAndCommodity:
+	case BlissOrFreeMwicheTheFlusherAndCommodity:
+	case BlissOrFoodMwicheTheFlusherAndCommodity:
+	case BlissOrEnergyMwicheTheFlusherAndCommodity:
 	case EnergyMwicheTheFlusherAndCommodity:
 	case FoodMwicheTheFlusherAndCommodity:
 	case WaterMwicheTheFlusherAndCommodity:
+	case BlissMwicheTheFlusherAndCommodity:
+	case BlissOrWaterMwicheTheFlusherAndCommodity:
 		if(dest.size()==4) { setTFlag(TFlag.UsingMwicheTheFlusher); }
 		break;
 		
@@ -4706,7 +4843,12 @@ void confirmPayment(Cost cost,Cost actualCost,CellStack dest,replayMode replay)
 		checkHasPaidArtifact(ArtifactChip.Box);
 		break;
 
-	default: break;
+	default: 
+		if(actualCost.name().indexOf("Flusher")>0) 
+		{
+			b.p1("Probably should not be default "+actualCost);
+		}
+		break;
 	}
 	
 	// consider the original cost and maybe make some annotation

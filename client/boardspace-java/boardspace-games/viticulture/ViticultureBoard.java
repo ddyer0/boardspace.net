@@ -3624,7 +3624,10 @@ public int getMaxRevisionLevel() { return(REVISION); }
     		if((vine.height()>0) && (field.topChip()!=ViticultureChip.Bead))
     		{
     		field.addChip(ViticultureChip.Bead);
-    		pb.harvest(vine,replay);
+    		int harvest[] = pb.harvest(vine,replay);
+    		logGameEvent(G.concat("+ ",
+    								harvest[0]>0 ? "RedGrape " : "",
+    								harvest[1]>0 ? "WhiteGrape" : ""));
     		n++;
     		}
     	}

@@ -442,8 +442,12 @@ public class EuphoriaMovespec extends commonMPMove implements EuphoriaConstants
         	player = p;
         	break;
         case MOVE_DONE:
+        	parseExtra(msg);
+        	break;
+        
         case MOVE_RECRUIT:
         	{
+        	to_row = msg.intToken();
         	parseExtra(msg);
         	}
         	break;
@@ -493,7 +497,7 @@ public class EuphoriaMovespec extends commonMPMove implements EuphoriaConstants
         switch (op)
         {
         case MOVE_RECRUIT:
-        	return TextChunk.create("New "+((chip==null)?"":chip.getName()));
+        	return TextChunk.create("New "+to_row+" "+((chip==null)?"":chip.getName()));
         	
         case MOVE_PICKB:
         	if(chip.isWorker())
@@ -657,7 +661,8 @@ public class EuphoriaMovespec extends commonMPMove implements EuphoriaConstants
         case EPHEMERAL_CONFIRM_RECRUITS:
         case EPHEMERAL_CONFIRM_ONE_RECRUIT:
            	return(opname+from_color.name());
-       	
+        case MOVE_RECRUIT:
+        	return G.concat(opname,to_row);
         default:
              return (opname);
         }

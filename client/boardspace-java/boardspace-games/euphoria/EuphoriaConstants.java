@@ -36,9 +36,9 @@ public interface EuphoriaConstants
 	static String EuphoriaVictoryCondition = "place all 10 Authority tokens";
 	static String EuphoriaPlayState = "Place a worker or withdraw one or more workers";
 	static String EuphoriaReplayState = "Bump your previous worker";
-	static String BumpOpponentState = "Bump an opponent from your commodity space";
+	static String BumpOpponentState = "Bump an opponent from your Commodity space";
 	static String EuphoriaRetrieveState = "Retrieve one or more workers";
-	static String EuphoriaCommodityRetrieveState = "You may retrieve workers from commodity spaces";
+	static String EuphoriaCommodityRetrieveState = "You may retrieve workers from Commodity spaces";
 	static String EuphoriaPlaceState = "Place a worker";
 	static String ChooseRecruitState = "Choose your recruits";
 	static String DiscardFactionlessState = "Discard a factionless recruit";
@@ -251,7 +251,7 @@ public interface EuphoriaConstants
 	
 	enum Cost
 	{	Free("Free"),			// no cost placement
-		NonBlissCommodity("1 commodity (not Bliss)"),
+		NonBlissCommodity("1 Commodity (not Bliss)"),
 		IsIcarite("must be an icarite"),
 		IsSubterran("must be a subterran"),
 		IsEuphorian("must be a Euphorian"),
@@ -316,6 +316,7 @@ public interface EuphoriaConstants
 		GoldOrFood("1 Gold or 1 Food"),
 		BlissOrEnergy("1 Bliss or 1 Energy"),
 		BlissOrWater("1 Bliss or 1 Water"),
+		BlissOrFree("1 Bliss or Free"),
 		
 		EnergyOrBlissOrFoodRetrieval("1 Bliss or 1 Food or 1 Energy"),	// with JeffersonTheShockArtist
 		// market costs
@@ -430,7 +431,7 @@ public interface EuphoriaConstants
 
 		
 		// new costs for IIB
-		CommodityX2("2 Commodities"),
+		CommodityX2("2 Commodity"),
 		Balloon_Stone("1 Balloons Artifact and 1 Stone"),
 		
 		Box_Food_Bliss("1 Box Artifact, 1 Food and 1 Bliss"),
@@ -462,65 +463,78 @@ public interface EuphoriaConstants
 		Bifocals_Brick("1 Glasses Artifact and 1 Brick"),
 
 		Bat_Brick("1 Bat Artifact and 1 Brick"),
-		
-		EnergyMwicheTheFlusher("1 Energy, or 3 Water for Gold Artifact and 2 morale"),
-		FoodMwicheTheFlusher("1 Food, or 3 Water for Brick Artifact and 2 morale"),
-		WaterMwicheTheFlusher("1 Water or 3 Water for Stone Artifact and 2 morale"),
-		FreeOrEnergyMwicheTheFlusher("Free, or 1 Energy, or 3 Water for Gold Artifact and 2 morale"),
-		FreeOrFoodMwicheTheFlusher("Free, or 1 Food, or 3 Water for Brick Artifact and 2 morale"),
-		FreeOrWaterMwicheTheFlusher("Free or 1 Water or 3 Water for Stone Artifact and 2 morale"),
-		BlissOrEnergyMwicheTheFlusher("1 Bliss or 1 Energy, or 3 Water for Gold Artifact and 2 morale"),
-		BlissOrFoodMwicheTheFlusher("1 Bliss or 1 Food, or 3 Water for Brick Artifact and 2 morale"),
-		BlissOrWaterMwicheTheFlusher("1 Bliss or 1 Water or 3 Water for 1 Stone Artifact and 2 morale"),
-		EnergyMwicheTheFlusherAndCommodity("1 Commodity + Energy, or 3 Water for Gold Artifact and 2 Morale"),
-		FoodMwicheTheFlusherAndCommodity("1 Commodity + 1 Food, or 3 Water for Brick Artifact and 2 Morale"),
-		WaterMwicheTheFlusherAndCommodity("1 Commodity + 1 Water or 3 Water for Stone Artifact and 2 Morale"),
+		MwicheTheFlusher("3 Water (Mwiche the Flusher)"),		
+		MwicheTheFlusherAndCommodity("1 Commodity + 3 Water (Mwiche the Flusher)"),		
+		EnergyMwicheTheFlusher("1 Energy, or 3 Water (Mwiche the Flusher)"),
+		FoodMwicheTheFlusher("1 Food, or 3 Water (Mwiche the Flusher)"),
+		WaterMwicheTheFlusher("1 Water or 3 Water (Mwiche the Flusher)"),
+		FreeOrEnergyMwicheTheFlusher("1 Energy, Free (Davaa the Shredder), or  3 Water (Mwiche the Flusher)"),
+		FreeOrEnergyMwicheTheFlusherAndCommodity("1 Commodity + Free (Davaa the Shredder), or 1 Energy, or 3 Water (Mwiche the Flusher)"),
+		FreeOrFoodMwicheTheFlusher("Free (Davaa the Shredder), or 1 Food, or 3 Water (Mwiche the Flusher)"),
+		FreeOrFoodMwicheTheFlusherAndCommodity("1 Commodity + Free (Davaa the Shredder), or 1 Food, or 3 Water (Mwiche the Flusher)"),
+		FreeOrWaterMwicheTheFlusher("Free (Davaa the Shredder) or 1 Water or 3 Water (Mwiche the Flusher)"),
+		FreeOrWaterMwicheTheFlusherAndCommodity("1 Commodity + Free or 1 Water or 3 Water (Mwiche the Flusher)"),
+		FreeOrMwicheTheFlusherAndCommodity("1 Commodity + Free (Davaa the Shredder) or 3 Water (Mwiche the Flusher)"),
+		BlissOrEnergyMwicheTheFlusher("1 Bliss or 1 Energy, or 3 Water (Mwiche the Flusher)"),
+		BlissOrFreeMwicheTheFlusher("Free (Davaa the Shredder) or 1 Bliss or 3 Water (Mwiche the Flusher)"),
+		BlissOrFreeMwicheTheFlusherAndCommodity("1 Commodity + Free (Davaa the Shredder) or 1 Bliss or 3 Water (Mwiche the Flusher)"),
+		BlissOrEnergyMwicheTheFlusherAndCommodity("1 Commodity + 1 Bliss or 1 Energy, or 3 Water (Mwiche the Flusher)"),
+		BlissOrFoodMwicheTheFlusher("1 Bliss or 1 Food, or 3 Water  (Mwiche the Flusher)"),
+		BlissOrFoodMwicheTheFlusherAndCommodity("1 Commodity + 1 Bliss or 1 Food, or 3 Water (Mwiche the Flusher)"),
+		BlissOrWaterMwicheTheFlusher("1 Bliss or 1 Water or 3 Water (Mwiche the Flusher)"),
+		BlissOrWaterMwicheTheFlusherAndCommodity("1 Commodity + 1 Bliss or 1 Water or 3 Water (Mwiche the Flusher)"),
+		EnergyMwicheTheFlusherAndCommodity("1 Commodity + Energy, or 3 Water  (Mwiche the Flusher)"),
+		FoodMwicheTheFlusherAndCommodity("1 Commodity + 1 Food, or 3 Water (Mwiche the Flusher)"),
+		WaterMwicheTheFlusherAndCommodity("1 Commodity + 1 Water or 3 Water (Mwiche the Flusher)"),
+		BlissMwicheTheFlusherAndCommodity("1 Commodity + 1 Bliss, or 3 Water (Mwiche the Flusher)"),
+		BlissMwicheTheFlusher("1 Bliss, or 3 Water (Mwiche the Flusher)"),
+		FreeMwicheTheFlusher("Free (Davaa the Shredder), or 3 Water (Mwiche the Flusher)"),
 	
-		EnergyAndCommodity("1 Energy + 1 Commodity"),	// for agency of progressive backstabbing
-		FoodAndCommodity("1 Food + 1 Commodity"),
-		WaterAndCommodity("1 Water + 1 Commodity"),	
-		WaterX3AndCommodity("3 Water + 1 Commodity"),
-		EnergyX3AndCommodity("3 Energy + 1 Commodity"),
-		ArtifactX3AndCommodity("3 Artifact, or a Pair of Artifact, + 1 Commodity"),
-		ResourceX3AndCommodity("3 Resource and a Commodity"),
-		BlissAndNonBlissAndCommodity("1 Bliss, 1 Non Bliss, + 1 Commodity"),
-		IsEuphorianAndCommodity("Euphorian, + 1 Commodity"),
-		IsWastelanderAndCommodity("Wastlander, + 1 Commodity"),
-		IsSubterranAndCommodity("Subterran, + 1 Commodity"),
+		EnergyAndCommodity("1 Commodity + 1 Energy"),	// for agency of progressive backstabbing
+		FoodAndCommodity("1 Commodity + 1 Food"),
+		WaterAndCommodity("1 Commodity + 1 Water"),	
+		WaterX3AndCommodity("1 Commodity + 3 Water"),
+		EnergyX3AndCommodity("1 Commodity + 3 Energy"),
+		ArtifactX3AndCommodity("1 Commodity + 3 Artifact, or a Pair of Artifact"),
+		ResourceX3AndCommodity("1 Commodity + 3 Resource"),
+		BlissAndNonBlissAndCommodity(" 1 Commodity + 1 Bliss and 1 Non Bliss"),
+		IsEuphorianAndCommodity("1 Commodity + Euphorian"),
+		IsWastelanderAndCommodity("1 Commodity + Wastlander"),
+		IsSubterranAndCommodity("1 Commodity + Subterran"),
 		Variable("Variable"),
 		
 		CommodityX3("3 Commodities"),
-		Balloon_StoneAndCommodity("1 Balloons Artifact and 1 Stone + 1 Commodity"),
+		Balloon_StoneAndCommodity("1 Commodity + 1 Balloons and 1 Stone"),
 		
-		Box_Food_BlissAndCommodity("1 Box Artifact, 1 Food and 1 Bliss + 1 Commodity"),
+		Box_Food_BlissAndCommodity(" 1 Commodity + 1 Box, 1 Food and 1 Bliss"),
 		
-		Balloon_Energy_BlissAndCommodity("1 Balloons Artifact, 1 Energy and 1 Bliss + 1 Commodity"),
+		Balloon_Energy_BlissAndCommodity("1 Commodity + 1 Balloons, 1 Energy and 1 Bliss"),
 		
-		Bifocals_Water_BlissAndCommodity("1 Glasses Artifact, 1 Water and 1 Bliss + 1 Commodity"),
+		Bifocals_Water_BlissAndCommodity("1 Commodity + 1 Glasses, 1 Water and 1 Bliss"),
 		
-		Book_Energy_WaterAndCommodity("1 Book Artifact, 1 Energy and 1 Water + 1 Commodity"),
+		Book_Energy_WaterAndCommodity("1 Commodity + 1 Book, 1 Energy and 1 Water"),
 		
-		Bear_Energy_FoodAndCommodity("1 Bear Artifact, 1 Energy and 1 Food + 1 Commodity"),
+		Bear_Energy_FoodAndCommodity("1 Commodity + 1 Bear, 1 Energy and 1 Food"),
 
-		Bifocals_GoldAndCommodity("1 Glasses Artifact and 1 Gold + 1 Commodity"),
+		Bifocals_GoldAndCommodity("1 Commodity + 1 Glasses and 1 Gold"),
 
-		Bear_GoldAndCommodity("1 Bear Artifact and 1 Gold + 1 Commodity"),
+		Bear_GoldAndCommodity("1 Commodity + 1 Bear and 1 Gold"),
 		
-		Book_BrickAndCommodity("1 Book Artifact and 1 Brick + 1 Commodity"),
+		Book_BrickAndCommodity("1 Commodity + 1 Book and 1 Brick"),
 		
-		Box_GoldAndCommodity("1 Box Artifact and 1 Gold + 1 Commodity"),
+		Box_GoldAndCommodity("1 Commodity + 1 Box and 1 Gold"),
 		
-		Book_CardAndCommodity("1 Book Artifact and 1 Artifact + 1 Commodity"),
+		Book_CardAndCommodity("1 Commodity + 1 Book and 1 Artifact"),
 
-		Box_BrickAndCommodity("1 Box Artifact and 1 Brick + 1 Commodity"),
+		Box_BrickAndCommodity("1 Commodity + 1 Box and 1 Brick"),
 		
-		Bat_StoneAndCommodity("1 Bat Artifact and 1 Stone + 1 Commodity"),
+		Bat_StoneAndCommodity("1 Commodity + 1 Bat and 1 Stone"),
 		
-		Book_StoneAndCommodity("1 Book Artifact and 1 Stone + 1 Commodity"),
+		Book_StoneAndCommodity("1 Commodity + 1 Book and 1 Stone"),
 		
-		Bifocals_BrickAndCommodity("1 Glasses Artifact and 1 Brick + 1 Commodity"),
+		Bifocals_BrickAndCommodity("1 Commodity + 1 Glasses and 1 Brick"),
 
-		Bat_BrickAndCommodity("1 Bat Artifact and 1 Brick + 1 Commodity"),
+		Bat_BrickAndCommodity("1 Commodity + 1 Bat and 1 Brick"),
 		
 		NonBlissAndCommodity("1 Non-Bliss and 1 other Commodity"),
 		StoneOrBlissOrFood("1 Stone or 1 Bliss or 1 Food"),
@@ -534,14 +548,14 @@ public interface EuphoriaConstants
 		ClayOrCommodityX3("1 Clay or 3 Commodity"),
 		SacrificeOrCommodityX3("Sacrifice a worker or 3 Commodity"),
 		Artifactx3OrArtifactAndBlissx2("3 Artifact or a Pair of Artifact or 1 Artifact and 2 Bliss"),	// mosi the patron
-		Artifactx3OrArtifactAndBlissx2AndCommodity("3 Artifact or a Pair of Articact or 1 Artifact and 2 Bliss, Plus 1 Commodity"),
+		Artifactx3OrArtifactAndBlissx2AndCommodity("1 Commodity + 3 Artifact or a Pair of Articact or 1 Artifact and 2 Bliss"),
 		ArtifactAndBlissx2("1 Artifact and 2 Bliss"),
-		ArtifactAndBlissx2AndCommodity("1 Artifact and 2 Bliss + 1 Commodity"),
-		Energyx3OrBlissx3AndCommodity("3 Energy or 3 Bliss + 1 Commodity"),
-		Waterx3OrBlissx3AndCommodity("3 Water or 3 Bliss + 1 Commodity"),
-		BlissOrEnergyAndCommodity("1 Bliss or 1 Energy + 1 Commodity"),
-		BlissOrWaterAndCommodity("1 Bliss or 1 Water + 1 Commodity"),
-		BlissOrFoodAndCommodity("1 Bliss or 1 Food + 1 Commodity"),
+		ArtifactAndBlissx2AndCommodity(" 1 Commodity + 1 Artifact and 2 Bliss"),
+		Energyx3OrBlissx3AndCommodity("1 Commodity + 3 Energy or 3 Bliss"),
+		Waterx3OrBlissx3AndCommodity("1 Commodity + 3 Water or 3 Bliss"),
+		BlissOrEnergyAndCommodity("1 Commodity + 1 Bliss or 1 Energy"),
+		BlissOrWaterAndCommodity("1 Commodity + 1 Bliss or 1 Water"),
+		BlissOrFoodAndCommodity("1 Commodity + 1 Bliss or 1 Food"),
 		
 		SacrificeOrGold("Sacrifice a worker or 1 Gold"),				// doug the builder
 		SacrificeOrStone("Sacrifice a worker or 1 Stone"),
@@ -736,7 +750,7 @@ public interface EuphoriaConstants
 		//
 		// ignorance is bliss market penalties
 		//
-		PayBeforeBumping("Pay 1 commodity before bumping your own worker"),	// 21 Agency of Progressive Backstabbing
+		PayBeforeBumping("Pay 1 Commodity before bumping your own worker"),	// 21 Agency of Progressive Backstabbing
 		LimitOf2Commodities("NOTHING GAINED (Lottery of Diminishing Returns)"), // 22 Lottery of Diminishing Returns
 		UpgradeWorkerKnowledge("Treat newly rolled 1 or 2 as 3 for the knownledge check"), // 23 Institute of Orwellian Optimism
 		NotIf6OnBoard("You can't place workers on the board if any of yours on the board are 6"),//24 natural floridated spring

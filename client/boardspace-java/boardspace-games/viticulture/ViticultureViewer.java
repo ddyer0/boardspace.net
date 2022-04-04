@@ -4644,6 +4644,9 @@ private void drawPlayerBoard(Graphics gc,
  {
 	 switch(mm.op)
 	 {
+	 case MOVE_SELECT:
+		 mm.setLineBreak(true);	// this helps the formatting of the game log
+		 break;
 	 case MOVE_DROPB:
 	 case MOVE_PICKB:
 	 case MOVE_PICK:
@@ -5596,22 +5599,23 @@ private void drawPlayerBoard(Graphics gc,
     	{
     	double[] escale = {1,1,0,-0.3};
     	double[] bscale = {2,2,0,-0.2};
+    	double[] bbscale = {1,2,0,-0.2};
     	double[] cscale = {1.5,2,0,-0.2};
     	double[] vscale = {1.5,1.4,0,-0.4}; 
     	double[] xscale = {1.5,1.7,0.0,-0.4}; 
-    	double[] gscale = {1.2,1.2,0,-0.4}; 
+    	double[] gscale = {1.0,0.8,0,-0.4}; 
     	TextStack texts = new TextStack();
     	icons(texts,ViticultureChip.Roosters,cscale);
     	icons(texts,ViticultureChip.CardBacks,escale);
-    	icons(texts,ViticultureChip.Buildings,bscale);
+    	icons(texts,ViticultureChip.Buildings,bbscale);
     	icons(texts,ViticultureChip.SpecialWorkers,bscale);
     	icons(texts,ViticultureChip.GrapesAndWines,bscale);
     	icons(texts,ViticultureChip.Stars,bscale);
     	texts.push(TextGlyph.create("$5","xx",ViticultureChip.Coin_5,this,xscale));
     	texts.push(TextGlyph.create("$2","xx",ViticultureChip.Coin_2,this,xscale));
     	texts.push(TextGlyph.create("$1","xx",ViticultureChip.Coin_1,this,xscale));
-    	texts.push(TextGlyph.create("RedGrape","xx",ViticultureChip.RedGrape,this,gscale));   	
-    	texts.push(TextGlyph.create("WhiteGrape","xx",ViticultureChip.WhiteGrape,this,gscale));   	
+    	texts.push(TextGlyph.create("RedGrape","xxx",ViticultureChip.RedGrape,this,gscale));   	
+    	texts.push(TextGlyph.create("WhiteGrape","xxx",ViticultureChip.WhiteGrape,this,gscale));   	
     	texts.push(TextGlyph.create("1VP","xx",ViticultureChip.VictoryPoint_1,this,vscale));
     	texts.push(TextGlyph.create("2VP","xx",ViticultureChip.VictoryPoint_2,this,vscale));
     	texts.push(TextGlyph.create("3VP","xx",ViticultureChip.VictoryPoint_3,this,vscale));

@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8"><title>Tintas Rules</title>
+
+
+<link rel="stylesheet" href="tintas-rules_files/source-code-pro.css">
+<link rel="stylesheet" href="tintas-rules_files/source-sans-pro.css">
+<link rel="stylesheet" href="tintas-rules_files/semantic.css">
+<link rel="stylesheet" href="tintas-rules_files/app.css">
+<link rel="stylesheet" href="tintas-rules_files/main.css">
+
+
+<style>@media print {#ghostery-purple-box {display:none !important}}</style>
+<script src="tintas-rules_files/jquery.js"></script>
+<script src="tintas-rules_files/semantic.js"></script>
+</head>
+<body>
+<header class="ui fixed borderless pointing menu grid"> </header>
+
+<h1><span style="padding: 0px 0.25em; color: rgb(221, 221, 221);"></span><span style="padding: 0px 0.25em; color: rgb(221, 221, 221);"></span><span style="padding: 0px 0.25em; color: rgb(221, 221, 221);"></span>
+Tintas Rules</h1>
+<div id="play-modal" class="ui modal" style="height: 540px;">
+<div class="header"><span id="game-name"></span>
+challenge </div>
+<div class="image content">
+<div class="ui medium image"><img id="game-image"></div>
+<div id="game-image-svg"></div>
+<div class="description">
+<form action="/matches" method="post" class="ui form"><input name="csrf" value="XYDKV8SLruJ8Mzwq3n5VR5zlcWxtmgrw" type="hidden"> <input name="game-id" id="game-id" type="hidden">
+<div class="field"><label>Opponent</label>
+<div id="user-search" class="ui search category">
+<div class="ui icon input"><input id="opponent-name" name="opponent-name" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" class="prompt" type="text"> </div>
+<div class="results"></div>
+</div>
+</div>
+<div id="ai-level-div" class="field" style="display: none;"><label>AI level</label> <input name="ai-level" id="ai-level-input" min="" max="" value="50" style="width: 100%;" type="range"> <span id="ai-method"></span> <span id="ai-level-value"></span></div>
+<div class="field"><label for="message">Message</label>
+<textarea id="message" name="message" rows="4" maxlength="200" class="fluid"></textarea></div>
+<div class="field"><label>Side</label>
+<div _class="ui radio checkbox"><input id="side-left" name="side" value="0" type="radio"> <label for="side-left">First</label> <input id="side-right" name="side" value="1" type="radio">
+<label for="side-right">Second</label> <input id="side-random" name="side" value="-1" checked="checked" type="radio"> <label for="side-random">Random</label></div>
+</div>
+<div class="fields">
+<div class="field"><label>Minutes per side</label>
+<input name="duration" id="duration-input" min="0" max="180" value="5" type="range"> <span id="duration-value">5</span></div>
+<div class="field"><label>Time increment in seconds</label>
+<input name="increment" id="increment-input" min="0" max="180" value="10" type="range"> <span id="increment-value">10</span></div>
+<div class="field"><label>Days per move</label>
+<input name="days" id="days-nput" min="1" max="14" value="2" type="range"> <span id="days-value">2</span></div>
+</div>
+</form>
+</div>
+</div>
+<div class="actions"><button class="ui approve primary button">OK</button> <button class="ui deny button">Cancel</button></div>
+</div>
+<div class="ui stackable divided grid">
+<div class="twelve wide column">
+<h1 class="ui header">
+<div class="sub header" style="border-bottom: 2px solid rgb(221, 221, 221); padding-bottom: 10px;">A
+color collection game for 2 players</div>
+</h1>
+<h2>Material</h2>
+<ul class="ui list">
+<li>Game board with 49 hexagonal spaces</li>
+<li>49 pieces in seven colors (7 × 7)</li>
+<li>1 pawn</li>
+</ul>
+<h2>Objective</h2>
+<p>Get all seven pieces of one color or win by majority.</p>
+<h2>Preparation</h2>
+<p>Spread all pieces <strong>at random</strong> onto
+the game board.</p>
+<p>It doesn’t matter if two or more pieces of the same color wind
+up laying next to one another. Only if seven pieces of the same color
+are adjacent to another should you change the distribution.</p>
+<p><figure data-v-261542aa=""></figure></p>
+<div data-v-261542aa="" class="image" style="max-width: 350px;"><img data-v-261542aa="" src="tintas-rules_files/setup.png"></div>
+<figcaption data-v-261542aa=""><span data-v-261542aa="" class="label">Figure 1</span> <span data-v-261542aa="" class="dot">·</span> <span data-v-261542aa="" class="text">A possible game
+set-up.</span></figcaption>
+<p>The starting player is determined by lot. He gets the pawn.
+Players then alternate turns.</p>
+<h2>Play</h2>
+<p>The starting player places the pawn on a hexagonal space of
+his choice, takes the playing piece lying there and places it in front
+of him. This ends his game turn. Now it is the other player’s turn.</p>
+<p><figure data-v-261542aa=""></figure></p>
+<div data-v-261542aa="" class="image" style="max-width: 350px;"><img data-v-261542aa="" src="tintas-rules_files/1st_move.png"></div>
+<figcaption data-v-261542aa=""><span data-v-261542aa="" class="label">Figure 2</span> <span data-v-261542aa="" class="dot">·</span> <span data-v-261542aa="" class="text">A possible first
+move. Placing the pawn and taking a piece from the board.</span></figcaption>
+<p>From now on, the active player has to move the pawn in <strong>any
+of the six possible directions</strong> – straight and, if
+applicable, accross unoccupied spaces – until it gets to an <strong>occupied
+space.</strong> He collects the playing piece lying on that space
+and places the pawn there.</p>
+<p>If he can collect another <strong>piece of the same
+color</strong> by continuing to move the pawn, the active player
+may keep going until he is no longer <strong>able or willing</strong>
+to collect another same-colored piece.</p>
+<p><figure data-v-261542aa=""></figure></p>
+<div data-v-261542aa="" class="image" style="max-width: 350px;"><img data-v-261542aa="" src="tintas-rules_files/move_1.png"></div>
+<figcaption data-v-261542aa=""><span data-v-261542aa="" class="label">Figure 3.1</span> <span data-v-261542aa="" class="dot">·</span> <span data-v-261542aa="" class="text">Three purple pieces
+are collected in one turn.</span></figcaption>
+<p><figure data-v-261542aa=""></figure></p>
+<div data-v-261542aa="" class="image" style="max-width: 350px;"><img data-v-261542aa="" src="tintas-rules_files/move_2.png"></div>
+<figcaption data-v-261542aa=""><span data-v-261542aa="" class="label">Figure 3.2</span> <span data-v-261542aa="" class="dot">·</span> <span data-v-261542aa="" class="text">Moves can be stringed
+together in any direction.</span></figcaption>
+<p>If a player has <strong>no possibility of moving</strong>
+because the pawn is not in line with any occupied space, he has to jump
+the pawn to any space and collect the piece lying there. As before, he
+leaves the pawn on this space, and his turn ends.</p>
+<p><figure data-v-261542aa=""></figure></p>
+<div data-v-261542aa="" class="image" style="max-width: 350px;"><img data-v-261542aa="" src="tintas-rules_files/no_move.png"></div>
+<figcaption data-v-261542aa=""><span data-v-261542aa="" class="label">Figure 4</span> <span data-v-261542aa="" class="dot">·</span> <span data-v-261542aa="" class="text">If the pawn cannot
+reach an occupied space it has to jump.</span></figcaption>
+<h2>End of the game</h2>
+<p>If one player has collected all seven pieces of one color, he
+wins <strong>immediately.</strong></p>
+<p><strong>Otherwise,</strong> the player who has
+collected four or more pieces in at least four colors by the end of the
+game wins.</p>
+<blockquote>
+<p><strong>Watch out:</strong> As long as one
+player can still get seven pieces of one color to win, the game goes on!</p>
+</blockquote>
+</div><h2>Credits</h2>Tintas was designed by&nbsp; Dieter Stein<br>for more information, the official web site is <a href="http://spielstein.com/">spielstein.com</a></div></body></html>

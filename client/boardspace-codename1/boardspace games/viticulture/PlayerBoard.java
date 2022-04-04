@@ -827,7 +827,7 @@ public class PlayerBoard
 			  }
 			};
 	}
-	public void harvest(ViticultureCell vine,replayMode replay)
+	public int[] harvest(ViticultureCell vine,replayMode replay)
 	{
 		int sumOfWhites = 0;
 		int sumOfReds = 0;
@@ -838,6 +838,7 @@ public class PlayerBoard
 		}
 		addWineOrGrapeChip(redGrape,ViticultureChip.RedGrape,sumOfReds,replay);
 		addWineOrGrapeChip(whiteGrape,ViticultureChip.WhiteGrape,sumOfWhites,replay);		
+		return new int[] {sumOfReds,sumOfWhites};
 	}
 	// count fields not sold but empty
 	public int nEmptyFields()

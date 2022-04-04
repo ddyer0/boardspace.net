@@ -12,6 +12,7 @@ public class Bitset <P extends Enum<?>>
 	{
 		members |= 1L<<val.ordinal();
 	}
+	public int size() { return G.bitCount(members); }
 	public void set(@SuppressWarnings("unchecked") P...mods)
 	{
 		for(P m : mods) { set(m); }

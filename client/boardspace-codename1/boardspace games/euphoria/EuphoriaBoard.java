@@ -2216,6 +2216,13 @@ public class EuphoriaBoard extends EuphoriaBoardConstructor implements EuphoriaC
     			Cost pend = pendingCost();
     			switch(pend)
     			{
+    			case FreeMwicheTheFlusher:
+    			case BlissOrFreeMwicheTheFlusherAndCommodity:  				
+     			case FreeOrMwicheTheFlusherAndCommodity:
+    			case FreeOrEnergyMwicheTheFlusherAndCommodity:
+    			case FreeOrFoodMwicheTheFlusherAndCommodity:
+    			case FreeOrWaterMwicheTheFlusherAndCommodity:
+    			case BlissOrFreeMwicheTheFlusher:
     			case FreeOrWaterMwicheTheFlusher:
     			case FreeOrEnergyMwicheTheFlusher:
     			case FreeOrFoodMwicheTheFlusher:
@@ -2923,6 +2930,8 @@ public class EuphoriaBoard extends EuphoriaBoardConstructor implements EuphoriaC
     
 void doDarrenTheRepeater(EPlayer p,replayMode replay)
 {	p.payCostOrElse(Cost.Morale,replay);
+	usingDoubles = false;
+	doublesElgible = null;
 	//if(p.artifacts.height()>p.morale) { p1("do darren the repeater with morale check");}
 	if(doMoraleCheck(p,replay,null,Function.ContinueDarrenTheRepeater))
 		{	continueDarrenTheRepeater(p,replay); 
@@ -2935,7 +2944,11 @@ void continueDarrenTheRepeater(EPlayer p,replayMode replay)
 		setState(EuphoriaState.RePlace);
 	}
 	else 
-	{ p1("darrent the repeater still can't play");
+	{ //p1("darren the repeater still can't play");
+	  // this is a rare occurrence where invoking darren involves a morale
+	  // check and the loss of an artifact, after which the original space
+	  // is no longer reachable.   Sometimes this is inevitable (and theoretically
+	  // preventable) , but other times it depends on which card was discarded.
 	  setState(EuphoriaState.DumbKoff); 
 	}	
 }
@@ -3830,6 +3843,10 @@ void dontDarrenTheRepeater(EPlayer p,replayMode replay)
     	optionalSatisfaction = false;
  		switch(cost)
 		{
+		case BlissOrFree:
+ 			 optionalSatisfaction = !hasPaidSomething(); 
+ 			 return true;
+
  		case IsEuphorianAndCommodity:
  		case IsWastelanderAndCommodity:
  		case IsSubterranAndCommodity:
@@ -4030,6 +4047,8 @@ void dontDarrenTheRepeater(EPlayer p,replayMode replay)
 			optionalSatisfaction = (sz==1);
 			return ((sz==1)||(sz==3));
 			}
+		case BlissOrFreeMwicheTheFlusher:
+			optionalSatisfaction = !hasPaidSomething();
 		case BlissOrFoodMwicheTheFlusher:
 			if(hasPaid(bliss)) { return(true); }
 			//$FALL-THROUGH$
@@ -4061,16 +4080,52 @@ void dontDarrenTheRepeater(EPlayer p,replayMode replay)
 		{	// energy+commodity
 			// 3 water + commodity
 			int sz = droppedDestStack.size();
-			if((sz==2) && hasPaid(farm)) { optionalSatisfaction = true; return(true); }
+			if((sz==2) && hasPaid(farm)) 
+				{ optionalSatisfaction = hasPaid(aquifer); return(true); }
+			return (sz==4);
+		}
+		case BlissOrFoodMwicheTheFlusherAndCommodity:
+		{	// bliss+commodity or energy+commodity
+			// 3 water + commodity
+			int sz = droppedDestStack.size();
+			if((sz==2) && (hasPaid(bliss)||hasPaid(farm)))
+				{ optionalSatisfaction = hasPaid(aquifer); return(true); }
 			return (sz==4);
 		}
 		
+		case BlissOrWaterMwicheTheFlusherAndCommodity:
+		{	// bliss+commodity or energy+commodity
+			// 3 water + commodity
+			int sz = droppedDestStack.size();
+			if((sz==2) && (hasPaid(bliss)||hasPaid(aquifer))) 
+					{ optionalSatisfaction = hasPaid(aquifer); return(true); }
+			return (sz==4);
+		}
+
+		case BlissOrEnergyMwicheTheFlusherAndCommodity:
+		{	// bliss+commodity or energy+commodity
+			// 3 water + commodity
+			int sz = droppedDestStack.size();
+			if((sz==2) 
+					&& (hasPaid(bliss)||hasPaid(generator))) 
+						{ optionalSatisfaction = hasPaid(aquifer) ; return(true); }
+			return (sz==4);
+		}
+		case BlissMwicheTheFlusherAndCommodity:
+			{	// bliss+commodity
+				// 3 water + commodity
+			int sz = droppedDestStack.size();
+			if((sz==2) && hasPaid(bliss)) 
+				{ optionalSatisfaction = hasPaid(aquifer); return(true); }
+			return (sz==4);
+		}
 			
 		case EnergyMwicheTheFlusherAndCommodity:
 			{	// energy+commodity
 				// 3 water + commodity
 				int sz = droppedDestStack.size();
-				if((sz==2) && hasPaid(generator)) { optionalSatisfaction = true; return(true); }
+				if((sz==2) && hasPaid(generator))
+					{ optionalSatisfaction = hasPaid(aquifer); return(true); }
 				return (sz==4);
 			}
 			
@@ -6802,9 +6857,11 @@ private void doAmandaTheBroker(EuphoriaCell dest,replayMode replay,RecruitChip a
         		if(newguy==null)
         		{
         		RecruitChip masterlist[] = getMasterRecruitList();  
-        		for(int i=0;i<masterlist.length;i++)
+        		int n = Math.min(m.to_row,masterlist.length-2);
+        		Random r = newRandomizer(0x6246264+m.player);
+        		for(int i=0;i<n;i++)
         			{
-        			newguy = masterlist[i];
+        			newguy = masterlist[r.nextInt(masterlist.length-2)+2];
         			if(!p.activeRecruits.containsChip(newguy))
         				{ p.addActiveRecruit(newguy,replay);
         				logGameEvent("Added recruit #1",newguy.getName());
@@ -9212,6 +9269,75 @@ private void doAmandaTheBroker(EuphoriaCell dest,replayMode replay,RecruitChip a
 	 return ((nbliss+nfood+nenergy)<=1);
  }
  
+ boolean legalBlissEnergyMwicheTheFlusherAndCommodity(EuphoriaCell added)
+ {	 int tot = droppedDestStack.size() + (added==null ? 0 : 1);
+ 	 if (tot<=1) { return(true); }	// first can be anything
+ 	 
+	 int nbliss = numberPaid(bliss) + (added == bliss ? 1 : 0);
+	 int nfood = numberPaid(farm) + (added == farm ? 1 : 0);
+	 int nenergy = numberPaid(generator) + (added==generator? 1 : 0);
+	 int nwater = numberPaid(aquifer) + (added == aquifer ? 1 : 0);
+	 
+	 if(nbliss>2) { return false; }
+	 if(nenergy>2) { return false; }
+	 if(nfood>1) { return false; }
+	 
+	 if((tot==2)&&((nenergy+nbliss+nwater)>=1)) { return(true); }
+	 // at most 1 non-water
+	 return ((nbliss+nfood+nenergy)<=1);
+ }
+ boolean legalBlissMwicheTheFlusherAndCommodity(EuphoriaCell added)
+ {	 int tot = droppedDestStack.size() + (added==null ? 0 : 1);
+ 	 if (tot<=1) { return(true); }	// first can be anything
+ 	 
+	 int nbliss = numberPaid(bliss) + (added == bliss ? 1 : 0);
+	 int nfood = numberPaid(farm) + (added == farm ? 1 : 0);
+	 int nenergy = numberPaid(generator) + (added==generator? 1 : 0);
+	 
+	 if(nbliss>2) { return false; }
+	 if(nenergy>1) { return false; }
+	 if(nfood>1) { return false; }
+	 
+	 if((tot==2)&&(nbliss>=1)) { return(true); }
+	 // at most 1 non-water
+	 return ((nbliss+nfood+nenergy)<=1);
+ }
+ 
+ boolean legalBlissWaterMwicheTheFlusherAndCommodity(EuphoriaCell added)
+ {	 int tot = droppedDestStack.size() + (added==null ? 0 : 1);
+ 	 if (tot<=1) { return(true); }	// first can be anything
+ 	 
+	 int nbliss = numberPaid(bliss) + (added == bliss ? 1 : 0);
+	 int nfood = numberPaid(farm) + (added == farm ? 1 : 0);
+	 int nenergy = numberPaid(generator) + (added==generator? 1 : 0);
+	 int nwater = numberPaid(aquifer) + (added == aquifer ? 1 : 0);
+	 
+	 if(nbliss>2) { return false; }
+	 if(nenergy>1) { return false; }
+	 if(nfood>1) { return false; }
+	 
+	 if((tot==2)&&((nbliss+nwater)>=1)) { return(true); }
+	 // at most 1 non-water
+	 return ((nbliss+nfood+nenergy)<=1);
+ }
+ 
+ boolean legalBlissFoodMwicheTheFlusherAndCommodity(EuphoriaCell added)
+ {	 int tot = droppedDestStack.size() + (added==null ? 0 : 1);
+ 	 if (tot<=1) { return(true); }	// first can be anything
+	 int nbliss = numberPaid(bliss) + (added == bliss ? 1 : 0);
+	 int nfood = numberPaid(farm) + (added == farm ? 1 : 0);
+	 int nenergy = numberPaid(generator) + (added==generator? 1 : 0);
+	 int nwater = numberPaid(aquifer) + (added == aquifer ? 1 : 0);
+	 
+	 if(nbliss>2) { return false; }
+	 if(nfood>2) { return false; }
+	 if(nenergy>1) { return false; }
+	 
+	 if((tot==2)&&((nfood+nbliss+nwater)>=1)) { return(true); }
+	 // at most 1 non-water
+	 return ((nbliss+nfood+nenergy)<=1);
+ }
+ 
  boolean legalFoodMwicheTheFlusherAndCommodity(EuphoriaCell added)
  {	 int tot = droppedDestStack.size() + (added==null ? 0 : 1);
  	 if (tot<=1) { return(true); }	// first can be anything
@@ -9296,7 +9422,6 @@ private void doAmandaTheBroker(EuphoriaCell dest,replayMode replay,RecruitChip a
 		 addPayCommodityMoves(all,p,true);
 		 if(!hasPaidSomething()) { addPaymentMoves(all,p,Cost.SacrificeAvailableWorker); }
 		 break;
-		 
 	 case SacrificeOrGoldOrCommodityX3:
 		 //p1("pay "+cost);	// tested 3/21
 		 addPayCommodityMoves(all,p,true); 
@@ -9344,7 +9469,10 @@ private void doAmandaTheBroker(EuphoriaCell dest,replayMode replay,RecruitChip a
 		 	  addPayWaterMoves(all,p); 
 		 	}
 		break;
-		
+	 case BlissOrFree:
+		 addPayBlissMoves(all,p);
+		 break;
+		 
 	 case BlissOrFoodAndCommodity:
 		 //p1("pay "+cost);	tested 3/21
 		 if(!hasPaidSomething() || hasPaid(bliss) || hasPaid(farm) )
@@ -9859,6 +9987,12 @@ private void doAmandaTheBroker(EuphoriaCell dest,replayMode replay,RecruitChip a
 
 		
      // iib payments
+	case BlissOrFreeMwicheTheFlusher:
+		// p1("pay "+cost); // tested 4/3
+		if(!hasPaidSomething()) { addPayBlissMoves(all,p); }	
+		addPayWaterMoves(all,p); 
+		break;
+		
 	case BlissOrEnergyMwicheTheFlusher:
 		if(!hasPaidSomething()) { addPayBlissMoves(all,p); }			
 		//$FALL-THROUGH$
@@ -9869,6 +10003,7 @@ private void doAmandaTheBroker(EuphoriaCell dest,replayMode replay,RecruitChip a
 		addPayWaterMoves(all,p); 
 		break;
 		
+
 	case WaterMwicheTheFlusherAndCommodity:
 		 // p1("pay "+cost); // tested 3/21
 		if(legalWaterMwicheTheFlusherAndCommodity(aquifer)) { addPayWaterMoves(all,p); }
@@ -9885,7 +10020,43 @@ private void doAmandaTheBroker(EuphoriaCell dest,replayMode replay,RecruitChip a
 		if(legalFoodMwicheTheFlusherAndCommodity(generator)) { addPayEnergyMoves(all,p); }
 		if(legalFoodMwicheTheFlusherAndCommodity(bliss)) { addPayBlissMoves(all,p); }
 		break;
+	
+	
+	case BlissOrWaterMwicheTheFlusherAndCommodity:
+		 //p1("pay "+cost); // tested 4/3	
+		if(legalBlissWaterMwicheTheFlusherAndCommodity(aquifer)) { addPayWaterMoves(all,p); }
+		if(legalBlissWaterMwicheTheFlusherAndCommodity(farm)) { addPayFoodMoves(all,p); }
+		if(legalBlissWaterMwicheTheFlusherAndCommodity(generator)) { addPayEnergyMoves(all,p); }
+		if(legalBlissWaterMwicheTheFlusherAndCommodity(bliss)) { addPayBlissMoves(all,p); }
+		break;
+	
 		
+	case BlissMwicheTheFlusherAndCommodity:
+		// p1("pay "+cost); // tested 4/3
+		if(legalBlissMwicheTheFlusherAndCommodity(aquifer)) { addPayWaterMoves(all,p); }
+		if(legalBlissMwicheTheFlusherAndCommodity(farm)) { addPayFoodMoves(all,p); }
+		if(legalBlissMwicheTheFlusherAndCommodity(generator)) { addPayEnergyMoves(all,p); }
+		if(legalBlissMwicheTheFlusherAndCommodity(bliss)) { addPayBlissMoves(all,p); }
+		break;
+
+		
+		//$FALL-THROUGH$
+	case BlissOrEnergyMwicheTheFlusherAndCommodity:
+		 // p1("pay "+cost); tested 4/3	
+		if(legalBlissEnergyMwicheTheFlusherAndCommodity(aquifer)) { addPayWaterMoves(all,p); }
+		if(legalBlissEnergyMwicheTheFlusherAndCommodity(farm)) { addPayFoodMoves(all,p); }
+		if(legalBlissEnergyMwicheTheFlusherAndCommodity(generator)) { addPayEnergyMoves(all,p); }
+		if(legalBlissEnergyMwicheTheFlusherAndCommodity(bliss)) { addPayBlissMoves(all,p); }
+		break;
+		
+	case BlissOrFoodMwicheTheFlusherAndCommodity:
+		// p1("pay "+cost); // tested 4/3	
+		if(legalBlissFoodMwicheTheFlusherAndCommodity(aquifer)) { addPayWaterMoves(all,p); }
+		if(legalBlissFoodMwicheTheFlusherAndCommodity(farm)) { addPayFoodMoves(all,p); }
+		if(legalBlissFoodMwicheTheFlusherAndCommodity(generator)) { addPayEnergyMoves(all,p); }
+		if(legalBlissFoodMwicheTheFlusherAndCommodity(bliss)) { addPayBlissMoves(all,p); }
+		break;
+	
 	case EnergyMwicheTheFlusherAndCommodity:
 		// p1("pay "+cost);	 // tested 3/21
 		if(legalEnergyMwicheTheFlusherAndCommodity(aquifer)) { addPayWaterMoves(all,p); }
@@ -9893,13 +10064,16 @@ private void doAmandaTheBroker(EuphoriaCell dest,replayMode replay,RecruitChip a
 		if(legalEnergyMwicheTheFlusherAndCommodity(generator)) { addPayEnergyMoves(all,p); }
 		if(legalEnergyMwicheTheFlusherAndCommodity(bliss)) { addPayBlissMoves(all,p); }
 		break;
-	 case BlissOrFoodMwicheTheFlusher:
+	
+
+	case BlissOrFoodMwicheTheFlusher:
 		 if(!hasPaidSomething()) { addPayBlissMoves(all,p); }			
 		//$FALL-THROUGH$
 	case FoodMwicheTheFlusher:
 		 	if(!hasPaidSomething()) { addPayFoodMoves(all,p); }
 		 	addPayWaterMoves(all,p);
 		 	break;
+		
 	case FreeOrFoodMwicheTheFlusher:
 	case BlissOrWaterMwicheTheFlusher:
 		if(!hasPaidSomething()) { addPayBlissMoves(all,p); }		

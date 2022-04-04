@@ -1,0 +1,125 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <title>Site Components</title>
+  <script src="/js/site.js">
+  </script>
+</head>
+<body
+ style="color: rgb(0, 0, 0); background-color: rgb(255, 255, 255); background-image: url(/images/background-image.jpg);"
+ alink="#000099" link="#000099" vlink="#990099">
+<h1 style="text-align: center;"><img alt="boardspace.net"
+ src="../images/master-logo.jpg" style="width: 600px; height: 100px;"></h1>
+<h1 style="text-align: center;">Site Components</h1>
+<div style="text-align: center;">for the curious, and potential
+webmasters, here's what it takes to build and run this site.<br>
+</div>
+<br>
+<table style="text-align: left; width: 100%;" border="1" cellpadding="2"
+ cellspacing="2">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top; text-align: center;">
+      <h3><span style="font-weight: bold;">Component</span></h3>
+      </td>
+      <td style="vertical-align: top; text-align: center;">
+      <h3><span style="font-weight: bold;">Details</span></h3>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><span style="font-weight: bold;">Hardware
+and Operating System</span><br>
+      </td>
+      <td style="vertical-align: top;">Boardspace runs on a low end
+Unix VPS (virtual private server).&nbsp; That means that from the
+inside, it looks like it runs all alone on a Linux machine.&nbsp;
+Maintenance for the operating system, the real hardware, power, and
+network access are all handled by the service provider, Steadfast.net.
+&nbsp; The service has been excellent.&nbsp; The total cost of this
+package, including domain registration and other incidentals, is about
+$400/year.<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><span style="font-weight: bold;">Stock
+Software</span><br>
+      </td>
+      <td style="vertical-align: top;">In addition to the basic Linux
+tools, Boardspace uses the Apache web server, Mysql database, and Perl.<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><span style="font-weight: bold;">Game
+Server</span><br>
+      </td>
+      <td style="vertical-align: top;">The game server is a custom
+application written in C, approximately 5000 lines of code.&nbsp; It's
+really a pretty simple application whose primary job is to multiplex
+the I/O among game clients.&nbsp; It knows very little about games, and
+nothing about any particular game.<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><span style="font-weight: bold;">Game
+Clients</span><br>
+      </td>
+      <td style="vertical-align: top;">All the game specific software,
+including the Robots, is written in Java and actually runs on the
+clients machines, not on the server.&nbsp; The "core" Java code in the
+framework that serves all the games is about 20,000 lines.&nbsp; Each
+game has it's own support structure which amounts to another 3000-5000
+lines.<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><span style="font-weight: bold;">Development
+and Testing</span><br>
+      </td>
+      <td style="vertical-align: top;">Most of the development and
+testing occurs on a Windows platform.&nbsp; Windows versions of Apache,
+Perl, and Mysql are basically identical to unix versions.&nbsp; A
+little care is needed to keep the C server compatible with both MSVC
+and GCC.&nbsp; Eclipse is used as a development platform for Java.<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><span style="font-weight: bold;">Personnel</span><br>
+      </td>
+      <td style="vertical-align: top;">volunteers 1: paid 0.&nbsp;
+Maintenance time (in the absence of emergencies) is less than an hour a
+week.<br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<span style="font-weight: bold;">The bottom line</span>: As you can see
+from this rundown, provided you have the software in hand, you don't
+need a rich benefactor or to have a lot of time on your hands to run a
+site like this, but if you add up the number of lines of code, you can
+expect to spend a lot of time and/or a lot of money developing the
+custom software.<br>
+<br>
+<hr style="width: 100%; height: 2px;">
+<table style="width: 100%;">
+  <tbody>
+    <tr>
+      <td align="left"> <font size="-1">E-mail:
+      <script language="javascript">
+document.write("<a href='mailto:gamemaste");
+document.write("r\@board");
+document.write("space.net'>gamemaste<n>r@board<n>space.net</a>");
+      </script></font>
+      </td>
+      <td style="vertical-align: top; text-align: center;"><a
+ href="http://netmap.efxservices.com/cgi-bin/mapper/displaymap.pl?client=1036"><img
+ src="http://netmap.efxservices.com/cgi-bin/mapper/record-hit.pl?client=1036">visitor
+map<br>
+      </a></td>
+      <td align="right">Go to <a href="/">BoardSpace.net home page</a>
+      </td>
+    </tr>
+  </tbody>
+</table>
+</body>
+</html>

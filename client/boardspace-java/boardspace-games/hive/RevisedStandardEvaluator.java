@@ -99,7 +99,7 @@ class RevisedStandardEvaluator extends DefaultEvaluator implements Evaluator
 				{
 				PieceType bugtype = bug.type;
 				int pieceordinal = bugtype.ordinal();
-				if(board.pieceTypeIncluded.contains(bugtype) && loc.onBoard)
+				if(board.pieceTypeIncluded.test(bugtype) && loc.onBoard)
 				{	double weight = 0.6*piece_mobility_weight[pieceordinal];
 					double distancemul = queen_distance_multiplier[pieceordinal];
 					HiveCell tempDests[] = board.getTempDest();
