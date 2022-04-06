@@ -52,4 +52,5 @@ public interface LFrameProtocol extends MenuParentInterface
 	public void setIconAsImage(Image icon);
 	public int getX();
 	public int getY();
+	public void initMenus();
 }

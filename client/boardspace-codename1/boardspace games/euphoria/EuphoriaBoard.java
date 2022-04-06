@@ -4049,6 +4049,7 @@ void dontDarrenTheRepeater(EPlayer p,replayMode replay)
 			}
 		case BlissOrFreeMwicheTheFlusher:
 			optionalSatisfaction = !hasPaidSomething();
+			//$FALL-THROUGH$
 		case BlissOrFoodMwicheTheFlusher:
 			if(hasPaid(bliss)) { return(true); }
 			//$FALL-THROUGH$

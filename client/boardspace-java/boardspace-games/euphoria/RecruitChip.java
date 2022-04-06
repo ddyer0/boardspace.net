@@ -1,5 +1,6 @@
 package euphoria;
 
+import lib.G;
 import lib.Graphics;
 import lib.Image;
 
@@ -34,8 +35,18 @@ public class RecruitChip extends EuphoriaChip implements EuphoriaConstants
 	public static EuphoriaChip Subtype() { return(CardBack); }
 	public String toString() { return("<recruit "+name+"#"+recruitId+">"); } 
 	static private Image recruitMask = null;
-	static private String recruitDir = null;
+    static final String recruitDir =
+			G.isCodename1() 
+				? "/appdata/euphoria-recruits-v12/images/" 
+				: "/euphoria/images/recruits-v12/";
+
+    static final String recruitDirIIB = 
+			G.isCodename1() 
+				? "/appdata/euphoria-recruits-iib/images/" 
+				: "/euphoria/images/recruits-iib/";
+
 	static private boolean deferLoad = true;
+	private String fromDir = null;
 	public boolean isIIB() { return(chipNumber()>recruitCardOffset+220); }	// iib recruits start at 220
 	
 	
@@ -53,7 +64,7 @@ public class RecruitChip extends EuphoriaChip implements EuphoriaConstants
 	{
 		if(image==null && forcan!=null)
 		{	// load on demand
-			image = forcan.load_image(recruitDir,file,recruitMask);
+			image = forcan.load_image(fromDir,file,recruitMask);
 		}
 		return(image);
 	}
@@ -440,25 +451,30 @@ public class RecruitChip extends EuphoriaChip implements EuphoriaConstants
 				{ EuphoriaChip.allegianceMedallions[allegiance.ordinal()].drawChip(gc,can,wid/2,scale,dx-4*wid/10,dy,null); }
 		}
 	}
-	public static void loadRecruits(ImageLoader forcan,RecruitChip recruitList[])
+	public static void loadRecruits(boolean defer,String dir,ImageLoader forcan,RecruitChip recruitList[])
 	{
 		String imageNames[] = new String[recruitList.length];
+		for(RecruitChip c : recruitList) { if(c.fromDir==null) { c.fromDir = dir; }}
+		if(!defer)
+		{
 		for(int i=0;i<imageNames.length; i++) { imageNames[i] = recruitList[i].file; }
-		Image images[] = forcan.load_images(recruitDir, imageNames,recruitMask);
+		Image images[] = forcan.load_images(dir, imageNames,recruitMask);
 		int idx = 0;
-		for(RecruitChip c : recruitList) { c.image = images[idx]; idx++; }
+		for(RecruitChip c : recruitList)
+			{ 
+			  c.image = images[idx]; 
+			  idx++; 
+			}}
 	}
-	public static void preloadImages(ImageLoader forcan,String Dir)
+	
+	public static void preloadImages(ImageLoader forcan)
 	{	if(!ImagesLoaded)
 		{
-		recruitDir =Dir + "recruits/";
 		recruitMask = forcan.load_image(recruitDir, "recruitcard-mask");
-		if(!deferLoad)
-		{
-		loadRecruits(forcan,allRecruits);
-		loadRecruits(forcan,V2Recruits);
-		loadRecruits(forcan,IIBRecruits);
-		}
+		loadRecruits(deferLoad,recruitDir,forcan,allRecruits);
+		loadRecruits(deferLoad,recruitDir,forcan,V2Recruits);
+		loadRecruits(deferLoad,recruitDirIIB,forcan,IIBRecruits);
+
 		CardBack = allRecruits[0];     
 		CardBlank = allRecruits[1];
         

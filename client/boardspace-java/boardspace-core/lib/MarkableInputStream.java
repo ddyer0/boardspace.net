@@ -4,7 +4,11 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-
+//
+// this class is believed to be obsolete and should be removed
+// it was formerly used by sgf_reader
+// ddyer 4/5/2022
+//
 public class MarkableInputStream extends InputStream
 {
 	InputStream in = null;

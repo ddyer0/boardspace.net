@@ -410,6 +410,9 @@ public abstract class exCanvas extends Canvas
     {	
         sharedInfo = info;
         myFrame = frame;
+        
+        myFrame.initMenus();
+        
         SCALE = G.getDisplayScale();
         chatPercent = info.getInt(BOARDCHATPERCENT,chatPercent);
         extraactions = G.getBoolean(EXTRAACTIONS, extraactions);

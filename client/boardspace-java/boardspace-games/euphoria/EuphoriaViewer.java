@@ -112,7 +112,6 @@ public class EuphoriaViewer extends CCanvas<EuphoriaCell,EuphoriaBoard> implemen
     // file names for jpeg images and masks
     static final String SoundDir = G.isCodename1() ? "/appdata/euphoria-other/data/" : "/euphoria/sounds/";
     static final String ImageDir = G.isCodename1() ? "/appdata/euphoria-other/images/" : "/euphoria/images/";
-    static final String ImageDirRecruits = G.isCodename1() ? "/appdata/euphoria-recruits/images/" : "/euphoria/images/";
 	// sound files
 	static String CARD_PLACE = SoundDir + "Card place #2"+ Config.SoundFormat;
 	static String CARD_SHUFFLE = SoundDir + "Card shuffle #2"+ Config.SoundFormat;
@@ -203,9 +202,10 @@ public class EuphoriaViewer extends CCanvas<EuphoriaCell,EuphoriaBoard> implemen
 	   }
  	   return(false);
     } 
+
     // this is non-standard
     // this allows simultaneous card moves to display properly
-    public int getMovingObject(HitPoint highlight)
+    public int getOurMovingObject(HitPoint highlight)
     {	if(bb.ephemeralRecruitMode())
     	{	
     		int rp = selectedRecruitPlayer(highlight);
@@ -425,7 +425,7 @@ private Color playerBackground[] = {
     	}
 		gameIcon = textures[BOARD_INDEX];
 		// do the recruits last so codename1 will swap out the main res file	
-		RecruitChip.preloadImages(loader, ImageDirRecruits);	// recruit cards
+		RecruitChip.preloadImages(loader);	// recruit cards
     }
 	/**
 	 * 
@@ -909,25 +909,19 @@ private Color playerBackground[] = {
     		}
 
     }  
+   
     // this is where recruits are drawn, most for presentation only, but the
     // two notable exceptions are Rowena the Mentor and Chaga the Gamer
-    private boolean drawPlayerRecruits(Graphics gc,EuphoriaBoard gb,int playerIndex,EPlayer p,EuphoriaCell c,Rectangle brect,HitPoint highlight,HitPoint tip)
-    {	
-    	commonPlayer pl = getPlayerOrTemp(playerIndex);
-    	commonPlayer cpl = getPlayerOrTemp(bb.whoseTurn);
-    	double rotation = pl.displayRotation;
-    	double newrotation = cpl.displayRotation;
+    private boolean drawPlayerRecruits(Graphics gc,EuphoriaBoard gb,commonPlayer pl,EuphoriaCell c,Rectangle brect,HitPoint highlight,HitPoint tip)
+    {	EPlayer p = gb.getPlayer(pl.boardIndex);
+      	double newrotation = pl.displayRotation;
     	boolean activeRecruits = c.rackLocation==EuphoriaId.PlayerActiveRecruits;
     	int cx=0;
     	int cy=0;
     	// this is called in the context of drawing the player's stuff, so the player's
     	// rotation is in effect.  We want to rotate the recruits so the will be displayed
     	// to the current player.
-    	if(rotation!=0)
-    	{
-    	pl.setRotatedContext(gc, tip, true);	// back to standard graphics
-    	}
-    	if(newrotation!=0)
+     	if(newrotation!=0)
     	{
     	cx = G.centerX(brect);
     	cy = G.centerY(brect);
@@ -962,9 +956,15 @@ private Color playerBackground[] = {
     	EuphoriaChip recruit = c.chipAtIndex(idx);
     	EuphoriaId rack = c.rackLocation();
     	boolean hit = recruit.drawChip(gc,this,null,rack,sz,xp,yp,test);
-   
     	somehit |= hit;
-    	if(activeRecruits && (recruit==RecruitChip.RowenaTheMentor) && (highlight!=null))
+    	// draw the eye box
+		  if(StockArt.Eye.drawChip(gc,this,tip,EuphoriaId.ShowChip,sz/12,xp+(int)(sz*0.45),yp-(int)(sz*0.28),null,1,1.33))
+		  {
+			  tip.hitObject = recruit;
+			  tip.hit_index = pl.boardIndex;
+		  }
+
+		if(activeRecruits && (recruit==RecruitChip.RowenaTheMentor) && (highlight!=null))
     	{	if(p.canUseRowenaTheMentor())
     		{
     		Rectangle r = new Rectangle(xp-sz/2+sz/10,yp+sz/20,sz/2,sz/8);
@@ -1033,17 +1033,12 @@ private Color playerBackground[] = {
     		p.pendingView = EPlayer.PlayerView.Normal;
     		tip.hitObject = p.artifacts;
     		tip.awidth =CELLSIZE/4;
-    		tip.arrow = StockArt.NoEye;
      		tip.spriteColor = Color.red;
     	}
     	if(newrotation!=0)
     	{
     	GC.setRotation(gc, -newrotation, cx, cy);
         G.setRotation(tip,-newrotation, cx, cy);
-    	}
-    	if(rotation!=0)
-    	{
-    	pl.setRotatedContext(gc, tip, false);		// restore the twisted coordinate system
     	}
     	return(somehit);
     }
@@ -1089,6 +1084,27 @@ private Color playerBackground[] = {
     		}
     		break;
     	default: break;
+    	}
+    }
+    private int globalPlayer = 0;
+    EuphoriaCell globalRecruits = null;
+    private void drawGlobalRecruits(Graphics gc,EuphoriaBoard gb,HitPoint any)
+    {	if(globalRecruits!=null)
+    	{
+			 drawPlayerRecruits(gc,gb,getPlayerOrTemp(globalPlayer), globalRecruits,playerRecruitRect,
+					 globalPlayer==gb.whoseTurn?any:null,any); 
+    	}
+    }
+    
+    private EuphoriaChip bigChip = null;
+    private int bigChipPlayer = 0;
+    private void drawBigChip(Graphics gc,double rotation,Rectangle r,HitPoint hp)
+    {	EuphoriaChip ch = bigChip;
+    	if(ch!=null)
+    	{
+        	if(rotation!=0) { GC.setRotatedContext(gc,r,hp,rotation); }
+        	if(ch.drawChip(gc,this,r,hp,EuphoriaId.ShowChip,null)) { hp.hitObject = null;}
+        	if(rotation!=0) { GC.unsetRotatedContext(gc,hp); }
     	}
     }
     //
@@ -1141,16 +1157,11 @@ private Color playerBackground[] = {
        		int h = c.height();
        		int sz = unitSize*((h<=1) ? 8 : 4);
        		c.defaultScale = unitSize*6;
-       		hit = c.drawStack(gc,this,highlight,sz,xp+unitSize*4,yp-unitSize*2,0,(h<=2?1.0:0.55),0.0,null);
-       		if(hit) 
-       			{ p.pendingView = PlayerView.Normal; 
-       			  highlight.hitCode = EuphoriaId.ShowPlayerView;
-     			  highlight.spriteRect = null;
-     			  highlight.spriteColor = null;
-      			}
+       		drawRecruitStack(p,gc,p.hiddenRecruits,tip,sz,xp+unitSize*4,yp-unitSize*2,(h<=2?1.0:0.55),0.0);
+       		
        		if(!fromHiddenWindow) 
-       			{ 
-       			  hit = drawPlayerRecruits(gc,gb,player,p, c,playerRecruitRect,null,tip); 
+       			{ globalPlayer = player;
+       			  globalRecruits = c;
        			}
        		}
     		break;
@@ -1161,22 +1172,23 @@ private Color playerBackground[] = {
     		int sz = unitSize*((h<=1) ? 8 : 4);
     		c.defaultScale = unitSize*6;
     		
-    		hit = c.drawStack(gc,this,highlight,sz,xp+unitSize*4,yp-unitSize*2,0,(h<=2?1.0:h<=4 ? 0.55 : 0.4),0.1,null); 
-    		if(hit) { 
-    			p.pendingView = PlayerView.Normal; 
-    			highlight.hitCode = EuphoriaId.ShowPlayerView;
-    			highlight.spriteRect = null;
-    			highlight.spriteColor = null;
-    		}
+    		hit = drawRecruitStack(p,gc,c,tip,
+    					sz,xp+unitSize*4,yp-unitSize*2,
+    					(h<=2?1.0:h<=4 ? 0.55 : 0.4),0.1); 
     		if(!fromHiddenWindow) 
-    			{ hit = drawPlayerRecruits(gc,gb,player,p, c,playerRecruitRect,highlight,tip); }
+    			{ globalPlayer = player;
+    			  globalRecruits = c;
+    				//hit = drawPlayerRecruits(gc,gb,player,p, c,playerRecruitRect,highlight,tip); 
+    			}
     		}
     		break;
     	case Dilemma:
     		p.dilemma.defaultScale = unitSize*9;
     		hit = p.dilemma.drawStack(gc,this,null,unitSize*6,xp+unitSize*5,yp-unitSize*2,0,1.5,0.0,null); 
     		if(!fromHiddenWindow) 
-    			{ hit |= drawPlayerRecruits(gc,gb,player,p, p.dilemma,playerRecruitRect,highlight,tip); 
+    			{ globalPlayer = player;
+    			  globalRecruits = p.dilemma;
+    				//hit |= drawPlayerRecruits(gc,gb,player,p, p.dilemma,playerRecruitRect,highlight,tip); 
     			} 
     		break;
     	case Artifacts:
@@ -1200,7 +1212,7 @@ private Color playerBackground[] = {
      		break;
      	case Normal:
      		{
-   		{
+   		{	if(globalPlayer==player) { globalRecruits = null; }
      	   	// draw new workers over the player picture.
            	if(state!=EuphoriaState.Puzzle)
            		{drawStackOnPlayer(gc,pl,gb,gb.legalToHitPlayer(p.marketBasket,sources,dests)?highlight:null,pr,p.marketBasket,xp+unitSize*2,yp,tip,fromHiddenWindow);
@@ -1220,7 +1232,6 @@ private Color playerBackground[] = {
          		tip.hitObject = p.artifacts;
          		p.pendingView =  EPlayer.PlayerView.Dilemma;
          		tip.awidth =unitSize;
-        		tip.arrow = StockArt.Eye;
         		tip.spriteColor = Color.red;
 
           	}
@@ -1685,7 +1696,7 @@ private Color playerBackground[] = {
     	}
     }
     
-    private void drawStackOnRecruit(Graphics gc,boolean showHidden,EuphoriaBoard gb,HitPoint highlight,EuphoriaCell cell,int size,int xpos,int ypos,String msg)
+    private void drawStackOnRecruit(int pl,Graphics gc,boolean showHidden,EuphoriaBoard gb,HitPoint highlight,EuphoriaCell cell,int size,int xpos,int ypos,String msg)
     {	cell.rotateCurrentCenter(gc,xpos,ypos);
     	cell.defaultScale = size;
      	if(drawStack(gc,highlight,size,cell,xpos,ypos,0.0,0.6,showHidden ? msg : "?"))
@@ -1694,6 +1705,39 @@ private Color playerBackground[] = {
 		highlight.spriteColor = Color.red;
     	highlight.arrow = (gb.movingObjectIndex()>0) ? StockArt.DownArrow : StockArt.UpArrow;
     	}
+     	if(cell.height()==1)
+     	{
+			  if(StockArt.Eye.drawChip(gc,this,highlight,EuphoriaId.ShowChip,size/8,xpos+(int)(size*0.43),ypos-(int)(size*0.26),null,1,1.33))
+			  {
+				  highlight.hitObject = cell.topChip();
+				  highlight.awidth = size/10;
+				  highlight.hit_index = pl;
+			  }
+		
+     	}
+    }
+    public boolean drawRecruitStack(EPlayer p,Graphics gc,EuphoriaCell c,HitPoint hp,int sz,int cx,int cy,double xo,double yo)
+    {	boolean hit = false;
+    	boolean hitEye = false;
+    	for(int i=0;i<c.height();i++)
+    	{	int xpos = (int)(cx+i*sz*xo);
+    		int ypos = (int)(cy+i*sz*yo);
+    		EuphoriaChip ch = c.chipAtIndex(i);
+    		if(ch.drawChip(gc,this,hitEye?null:hp,c.rackLocation,sz,xpos,ypos,null,1,1))
+    		{	
+    		p.pendingView = PlayerView.Normal; 
+			hp.hitCode = EuphoriaId.ShowPlayerView;
+			hp.hitObject = c;
+			hp.spriteRect = null;
+			hp.spriteColor = null;
+    		}
+    		if(StockArt.Eye.drawChip(gc,this,hp,EuphoriaId.ShowChip,sz/10,xpos+(int)(sz*0.42),ypos-(int)(sz*0.25),null,1,1.33))
+    		{	hitEye = true;
+    			hp.hitObject = ch;
+    			hp.hit_index = p.boardIndex;
+    		}
+    	}
+    	return hit;
     }
     private int recruitPlayer = -1;
     private boolean showHiddenUI = false;
@@ -1720,6 +1764,9 @@ private Color playerBackground[] = {
     }
     
     // TODO: tune up the gui for activating recruits
+    boolean useEphemeralPick = false;
+    EuphoriaChip ephemeralPick = null;
+    
     private void drawRecruitElements(Graphics gc,EuphoriaBoard gb,int pl,Rectangle brect,HitPoint highlight,HitPoint anySelect,
     			Hashtable<EuphoriaCell,EuphoriaMovespec>sources,Hashtable<EuphoriaCell,EuphoriaMovespec>dests,boolean fromHidden)
     {	EuphoriaState state = gb.getState();
@@ -1727,6 +1774,8 @@ private Color playerBackground[] = {
     	commonPlayer cpl = getPlayerOrTemp(pl);
     	boolean showHidden = reviewOnly || fromHidden || !G.offline() || showHiddenUI;
     	double rotation = cpl.displayRotation;
+    	EuphoriaChip epicked = p.ephemeralPickedObject;
+    	if(useEphemeralPick) { ephemeralPick = epicked; }
     	int cx=0;
     	int cy=0;
     	
@@ -1765,7 +1814,18 @@ private Color playerBackground[] = {
     	case DieSelectOption:
     	case ConfirmRecruitOption:
     		{ RecruitChip recruit = gb.activeRecruit();
-    		  if(gc!=null) { recruit.drawChip(gc,this,xstep+xstep/2,xp+xstep/2,yp+ystep/2,null); }
+ 
+    			{ int xx = xp+xstep/2;
+    			  int yy = yp+ystep/2;
+    			  int sz = xstep+xstep/2;
+    			  recruit.drawChip(gc,this,sz,xx,yy,null); 
+				  if(StockArt.Eye.drawChip(gc,this,anySelect,EuphoriaId.ShowChip,sz/12,xx+(int)(sz*0.45),yy-(int)(sz*0.28),null,1,1.33))
+				  {
+					  anySelect.hitObject = recruit;
+					  anySelect.hit_index = pl;
+				  }
+ 			
+    			}
     		  
     		  if((recruit==RecruitChip.AmandaTheBroker)
     				  ||(recruit==RecruitChip.AmandaTheBroker_V2)
@@ -1851,11 +1911,11 @@ private Color playerBackground[] = {
 		   	int bigCardScale = siz*2;
 		   	if((a1.topChip()!=null) || (a2.topChip()!=null))
 		   	{
-		   	drawStackOnRecruit(gc,showHidden,gb,gb.canHitRecruit(a1,p,sources,dests)?highlight:null,a1,bigCardScale,xp,yp,null);
-		   	drawStackOnRecruit(gc,showHidden,gb,gb.canHitRecruit(a2,p,sources,dests)?highlight:null,a2,bigCardScale,xp+bigCardScale,yp,null);
+		   	drawStackOnRecruit(pl,gc,showHidden,gb,gb.canHitRecruit(a1,p,sources,dests)?highlight:null,a1,bigCardScale,xp,yp,null);
+		   	drawStackOnRecruit(pl,gc,showHidden,gb,gb.canHitRecruit(a2,p,sources,dests)?highlight:null,a2,bigCardScale,xp+bigCardScale,yp,null);
 		   	}
-		   	drawStackOnRecruit(gc,true,gb,gb.canHitRecruit(active,p,sources,dests)?highlight:null,active,cardScale,xp,yp+ystep*2,active.label);
-		   	drawStackOnRecruit(gc,showHidden,gb,gb.canHitRecruit(hidden,p,sources,dests)?highlight:null,hidden,cardScale,xp+xstep,yp+ystep*2,hidden.label);
+		   	drawStackOnRecruit(pl,gc,true,gb,gb.canHitRecruit(active,p,sources,dests)?highlight:null,active,cardScale,xp,yp+ystep*2,active.label);
+		   	drawStackOnRecruit(pl,gc,showHidden,gb,gb.canHitRecruit(hidden,p,sources,dests)?highlight:null,hidden,cardScale,xp+xstep,yp+ystep*2,hidden.label);
 		   	}
 		   	break;
     	case DiscardFactionless:
@@ -1879,7 +1939,7 @@ private Color playerBackground[] = {
        		{
     		for(int i=0;i<p.newRecruits.length;i++)
     		{	EuphoriaCell c1 = p.newRecruits[i];
-    			drawStackOnRecruit(gc,true,gb,gb.canHitRecruit(c1,p,sources,dests)?highlight:null,
+    			drawStackOnRecruit(pl,gc,true,gb,gb.canHitRecruit(c1,p,sources,dests)?highlight:null,
     					c1,siz,x+stepX*(2*i+1),y+stepY+stepY/4,c1.label);
     		}}
     		if(discard)	// draw the discarded recruits
@@ -1889,7 +1949,7 @@ private Color playerBackground[] = {
     			GC.setFont(gc,largeBoldFont());
     			GC.Text(gc, true,x, y+stepY*2,stepX*4 ,stepY/4, Color.yellow,null,c1.label);
     			int actY = y+stepY*3;
-    			drawStackOnRecruit(gc,true,gb,gb.canHitRecruit(c1,p,sources,dests)?highlight:null,c1,siz+siz/2,x+stepX*4,actY,c1.label);
+    			drawStackOnRecruit(pl,gc,true,gb,gb.canHitRecruit(c1,p,sources,dests)?highlight:null,c1,siz+siz/2,x+stepX*4,actY,c1.label);
 
        			if(c1.topChip()!=null)
        			{	int doneX = x+w/2+stepX*2;
@@ -1912,8 +1972,8 @@ private Color playerBackground[] = {
     			GC.Text(gc, true,x, y+stepY*2,stepX*4 ,stepY/4, Color.yellow,null,c1.label);
     			GC.Text(gc, true,x+stepX*4,y+stepY*2, stepX*4,stepY/4, Color.yellow,null,c2.label);
     			int actY = y+stepY*3;
-    			drawStackOnRecruit(gc,true,gb,gb.canHitRecruit(c1,p,sources,dests)?highlight:null,c1,siz+siz/2,x+stepX*2,actY,c1.label);
-       			drawStackOnRecruit(gc,true,gb,gb.canHitRecruit(c2,p,sources,dests)?highlight:null,c2,siz+siz/2,x+stepX*6,actY,c2.label);
+    			drawStackOnRecruit(pl,gc,true,gb,gb.canHitRecruit(c1,p,sources,dests)?highlight:null,c1,siz+siz/2,x+stepX*2,actY,c1.label);
+       			drawStackOnRecruit(pl,gc,true,gb,gb.canHitRecruit(c2,p,sources,dests)?highlight:null,c2,siz+siz/2,x+stepX*6,actY,c2.label);
 
        			if((state!=EuphoriaState.ActivateOneRecruit) && (c1.topChip()!=null)&&(c2.topChip()!=null))
        			{	int doneX = x+w/2-stepX;
@@ -2425,8 +2485,9 @@ private Color playerBackground[] = {
        boolean simultaneous = !reviewMode() && !getActivePlayer().spectator && state.simultaneousTurnsAllowed();
        boolean ourMove = OurMove() || simultaneous;
        boolean recruitGui = useRecruitGui(state);
-      
-       boolean anyAuxGui = recruitGui ;
+       boolean recruitOverlay = globalRecruits!=null;
+       boolean bigChipOverlay = bigChip!=null; 
+       boolean anyAuxGui = recruitGui|recruitOverlay|bigChipOverlay ;
        HitPoint ourTurnSelect = ourMove ? selectPos : null;
        
        //
@@ -2456,6 +2517,7 @@ private Color playerBackground[] = {
        drawHiddenWindows(gc, selectPos);
 
        double []currentZoom = zoomZone(gb);
+       
    	   if(currentZoom==null) { magnifier = true; }	// turn it back on for next time
    	   {
    		Hashtable<EuphoriaCell,EuphoriaMovespec>dests = moving ? gb.getDests(whoseMove) : null;
@@ -2473,7 +2535,7 @@ private Color playerBackground[] = {
        		ch.drawChip(gc,this,magnifierRect,ourTurnSelect,rack,null);
        }
 	   int who = selectedRecruitPlayer();
-      if(recruitGui)
+	   if(recruitGui)
        {    
     	   if(who>=0)
     	   {
@@ -2508,11 +2570,19 @@ private Color playerBackground[] = {
  			}
        	   }
        }
+	   
+	   if (recruitOverlay)
+	   {
+		   drawGlobalRecruits(gc,gb, selectPos);
+	   }
        else 
        { showHiddenUI = false;	// make sure we will start hiding
          minimizeOverlay = false;
        }
-
+	   if(bigChipOverlay)
+	   {   commonPlayer p = getPlayerOrTemp(bigChipPlayer);
+		   drawBigChip(gc,p.displayRotation,boardRect,selectPos);
+	   }
       commonPlayer pl = getPlayerOrTemp(gb.whoseTurn);
       double messageRotation = pl.messageRotation();
 
@@ -2852,6 +2922,8 @@ private Color playerBackground[] = {
            if(simultaneous)
            {	// ephemeral picks are not transmitted
         	   PerformAndTransmit("EPick "+hitCell.color+" "+hitObject.name()+" "+((hitCell.row>=0)?hitCell.row:hp.hit_index),false,replayMode.Live);
+        	   HiddenGameWindow hidden = findHiddenWindow(hp);
+        	   if(hidden==null) { useEphemeralPick = true; }
            }
            else if(hitObject.perPlayer)
         	{ 
@@ -2947,8 +3019,10 @@ private Color playerBackground[] = {
     {	//G.print("Stop "+hp);
         CellId id = hp.hitCode;
         activeReset = false;
+        useEphemeralPick = false;
         if(!(id instanceof EuphoriaId)) 
         { 	missedOneClick = performStandardActions(hp,missedOneClick); 
+        	if(missedOneClick) {  bigChip = null; }
         	if(activeReset)
         	{	
         		int player = selectedRecruitPlayer(hp);
@@ -2973,6 +3047,10 @@ private Color playerBackground[] = {
 				{
 				case CloseBox:	
 					minimizeOverlay = !minimizeOverlay;
+					break;
+				case ShowChip:
+					bigChip = (EuphoriaChip)hp.hitObject;
+					bigChipPlayer = hp.hit_index;
 					break;
 				case ChooseRecruit:
 					{	
@@ -3026,6 +3104,7 @@ private Color playerBackground[] = {
 					if((hidden!=null)||(remoteViewer>=0)) { p.hiddenView = p.pendingView; }
 					else { p.view = p.pendingView; }
 					autoCardMode = false;
+					bigChip = null;
 					if(!reviewMode()) 
 						{ PerformAndTransmit(new EuphoriaMovespec(MOVE_PEEK,getActivePlayer().boardIndex),true,replayMode.Live); 
 						}
@@ -3380,5 +3459,10 @@ private Color playerBackground[] = {
     				Color.red,null,YourTurnMessage);
     		}
     	}
+     	if(bigChip!=null)
+     	{
+     		drawBigChip(gc,0,r,hp);
+     	}
+
     }}
 }

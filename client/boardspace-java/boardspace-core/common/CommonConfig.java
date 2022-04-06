@@ -46,6 +46,9 @@ public interface CommonConfig {
 	static final String feedbackUrl = "mailto:gamemaster@boardspace.net";
 	static final String postRegisterUrl = "/cgi-bin/bs_register.cgi" ;	// where to send a registration form
 
+	static final String DataCacheUrl = "/cgi-bin/applettag.cgi?tagname=appdata";
+	static final String[] BlacklistedDataFiles = {"euphoria-recruits.res"};
+	
     public static final String guestName = "guest";
     // bs_uni1 had just the basic scoring
     // bs_uni2 adds master scoring

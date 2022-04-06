@@ -3,25 +3,121 @@ package bridge;
 import java.io.IOException;
 import java.io.InputStream;
 
+import com.codename1.ui.Display;
+import com.codename1.ui.Image;
 import com.codename1.ui.util.Resources;
 
 import lib.DataCache;
 import lib.G;
 import lib.Plog;
+import net.sf.jazzlib.ZipInputStream;
 
 /*
  * resource bundle is a cache on the resources provided by codename1,
  * and also wraps some really awful APIs into more reasonable ones.
  * 
+ * TODO: do something about resource file size limits.
+ * as it is, the underlying codename1 implementation reads the whole thing into memory
+ * which effectively limits the size of resource files, especially on cheap tablets.
+ * Possible workarounds
+ *  - manually or automatically splitting resources into multiple files
+ *  - reimplementing .res reader to build a directory
+ *  - switching to .zip (aka .jar) format (assuming the zip reader doesn't have this problem) 
+ * 
  */
+
+
+// this is a step toward replacing .res files with .zip files in the data cache
+// and maybe also in the embedded resources
+//
+interface ResourceInterface
+{	
+	public InputStream getData(String name) ;
+
+	public Image getImage(String name) ;
+
+	public String[] getDataResourceNames()  ;
+
+	public String[] getImageResourceNames() ;
+}
+
+class CN1Resources  implements ResourceInterface
+{	Resources res = null;
+	public CN1Resources(String name) throws IOException {
+		res = Resources.open(name);	
+	}
+	public CN1Resources(InputStream name) throws IOException {
+		res = Resources.open(name);	
+	}
+	public InputStream getData(String name) {
+		return res.getData(name);
+	}
+	public Image getImage(String name) {
+		return res.getImage(name);
+	}
+	public String[] getDataResourceNames() {
+		return res.getDataResourceNames();
+	}
+	public String[] getImageResourceNames() {
+		return res.getImageResourceNames();
+	}
+}
+
+class ZipResources implements ResourceInterface
+{
+	ZipInputStream zip = null;
+	
+	public ZipResources() {}
+	
+	public ZipResources(String input) throws IOException
+	{
+		zip = new ZipInputStream(Display.getInstance().getResourceAsStream(null, input));
+	}
+	public ZipResources(InputStream input) throws IOException
+	{
+		zip = new ZipInputStream(input);		
+	}
+	
+	public InputStream getData(String name) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public Image getImage(String name) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public String[] getDataResourceNames() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public String[] getImageResourceNames() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	
+}
 public class ResourceBundle
 {	
-	Resources res = null;
+	ResourceInterface res = null;
 	String resFile = "";
 	String dataNames[] = null;
 	String imageNames[] = null;
 	boolean loadedOK = false;
 	
+	ResourceInterface openFile(String f) throws IOException
+	{   
+		if(f.endsWith(".zip")) { return new ZipResources(f); }
+		else { return new CN1Resources(f); }
+	}
+	ResourceInterface openFile(boolean zip,InputStream f) throws IOException
+	{	
+		if(zip) { return new ZipResources(f); }
+		else { return new CN1Resources(f); }
+	}
 	// constructor for resources embedded in the app
 	 ResourceBundle(String file)
 	 {	
@@ -29,7 +125,8 @@ public class ResourceBundle
 		loadedOK = false;
 		try {
 		//G.print("Loading resource bundle "+file+":"+firstName);
-		res = Resources.open(file);
+		Plog.log.addLog("open ",file);
+		res = openFile(resFile);
     	dataNames = res.getDataResourceNames();
     	imageNames = res.getImageResourceNames();
     	loadedOK = true;
@@ -43,7 +140,8 @@ public class ResourceBundle
 	 {	resFile = name;
 	 	loadedOK = false;
 		try {
-		 res = Resources.open(new FileInputStream(in));
+		 Plog.log.addLog("open ",name);
+		 res = openFile(resFile.endsWith(".zip"),new FileInputStream(in));
 		 dataNames = res.getDataResourceNames();
 		 imageNames = res.getImageResourceNames();
 		 loadedOK = true;
@@ -53,20 +151,16 @@ public class ResourceBundle
  		G.print("Appdata resource file missing "+in+ ":"+err);
  		}	
 	 }
-
-	 // return true of name is an image in this bundle
+	// return true of name is an image in this bundle
 	 public boolean isImage(String name)
 	 {	// 12/2020 codename1 fixed their api to not include a null pointer exception
-		 return((res!=null) && res.isImage(name)); 
+		 return((res!=null) && res.getImage(name)!=null); 
 	 }
 
 	// return true if name is a data file in this bundle
     public boolean isData(String name)
-    {
-    	try {
-    		if(res!=null) { return(res.isData(name)); }
-    	} catch (NullPointerException e) { }
-    	return(false);
+    {	// 12/2020 codename1 fixed their api to not include a null pointer exception
+    	return ((res!=null) && (res.getData(name)!=null));
     }
     // get a data file from this bundle
     public InputStream getData(String name)
@@ -99,7 +193,10 @@ public class ResourceBundle
     				{
     				Plog.log.addLog("Load resource data ",file);
     				res = new ResourceBundle(f,file);
-    				if(res.loadedOK) { appdata = res; } else { res = null; }
+    				if(res.loadedOK) 
+    					{ appdata = res; } 
+    						else 
+    					{ res = null; }
     				}
     	}
     	return(res);

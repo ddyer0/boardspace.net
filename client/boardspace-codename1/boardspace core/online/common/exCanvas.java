@@ -404,6 +404,9 @@ public abstract class exCanvas extends ProxyWindow
     {	
      	sharedInfo = info;
         myFrame = frame;
+        
+        myFrame.initMenus();
+        
         SCALE = G.getDisplayScale();
         chatPercent = info.getInt(BOARDCHATPERCENT,chatPercent);
         extraactions = G.getBoolean(EXTRAACTIONS, extraactions);

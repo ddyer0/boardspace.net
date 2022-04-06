@@ -1306,7 +1306,7 @@ public interface EuphoriaConstants
 		EConfirmRecruits(null,"Confirm your choice of recruits",false,false,false,true,false,false,null),
 		EConfirmOneRecruit(null,"Confirm your choice of recruits",false,false,false,true,false,false,null), 
 		CloseBox(null,"Close this display temporarily",false,false,false,true,false,false,null), 
-   
+		ShowChip(null,"view this, LARGE",false,false,false,true,false,false,null), 
 	    ;	
 	    String prettyName = "";
 	    Allegiance allegiance;

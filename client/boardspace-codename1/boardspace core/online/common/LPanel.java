@@ -79,11 +79,6 @@ public class LPanel extends FullscreenPanel implements LFrameProtocol, WindowLis
      	JPopupMenu.setDefaultLightWeightPopupEnabled(false);
         options = new XJMenu(s.get(OptionsMessage),true);
         actions = new XJMenu(s.get(ActionsMessage),true);
-        boolean defaultSound = Config.Default.getBoolean(Config.Default.sound);
-        soundCheckBox = addOption(s.get(SoundMessage), defaultSound,null);
-        if(theLobby instanceof online.common.commonLobby)
-        {	soundCheckBox.setForeground(Color.blue); 
-        }
         
         if(frame!=null)
         {	frame.addToMenuBar(options);
@@ -93,6 +88,25 @@ public class LPanel extends FullscreenPanel implements LFrameProtocol, WindowLis
         setTitle(inStr);	// defer this until after the menus are added
         add(theLobby);
     }
+    public void initMenus()
+    {	initMenu(actions);
+    	initMenu(options);
+        boolean defaultSound = Config.Default.getBoolean(Config.Default.sound);
+        soundCheckBox = addOption(s.get(SoundMessage), defaultSound,null);
+        if(theLobby instanceof online.common.commonLobby)
+        {	soundCheckBox.setForeground(Color.blue); 
+        }
+    }
+    public void initMenu(JMenu m)
+    {	if(m!=null)
+    	{
+    	while(m.getItemCount()>0)
+    		{
+    		m.remove(m.getItem(0));
+    		}
+    	}
+     }
+    
     public void setVisible(boolean v)
     {
     	super.setVisible(v);

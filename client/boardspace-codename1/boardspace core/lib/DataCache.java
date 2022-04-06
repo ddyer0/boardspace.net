@@ -16,7 +16,7 @@ import java.io.ByteArrayOutputStream;
  * @author Ddyer
  *
  */
-
+import bridge.Config;
 import bridge.BufferedReader;
 import bridge.File;
 import bridge.FileInputStream;
@@ -57,20 +57,32 @@ import java.util.Hashtable;
  * @author Ddyer
  *
  */
-class CacheInfo {
+class CacheInfo implements Config
+{
 	long date;			// unix date, seconds since the epoch
 	String name;		// the name of the remote jar file
 	boolean loaded;		// true if this jar has been copied and is up to date
+	boolean blacklisted;	// deleted due to blacklist
 	static boolean test = false; // true when using the test server
 	static final int BUFFERSIZE = 100*1024;			// copy jar buffer size, 100K
 	static boolean verbose = false;
 	static boolean uncache = false;
+	// items from the upstream cache that should not be deleted and ignored
+	// this is used to remove obsolete files created by reorganization
+	static String[] blackList = BlacklistedDataFiles;	
 	//constructor
-	CacheInfo(long d,String n,boolean l) 
+	CacheInfo(long d,String n,String cacheName,boolean l) 
 	{
 		date = d;
 		name = n;
 		loaded = l;
+		blacklisted = isBlacklisted(cacheName);
+	}
+	public String toString() { return("<cacheinfo "+name+(loaded?" loaded ":"")+(blacklisted ? " blacklisted" : "")+">"); }
+	private File localFileName(String from,File to)
+	{
+		String name = from.substring(from.lastIndexOf('/')+1);
+		return new File(to,name);	
 	}
 	/**
 	 * copy a file from the web host to the cache
@@ -88,8 +100,7 @@ class CacheInfo {
 		{
 		if(verbose) { log("Copying "+from+" > "+to); }
 
-		String name = from.substring(from.lastIndexOf('/')+1);
-		File toFile = new File(to,name);
+		File toFile = localFileName(from,to);
 		OutputStream output = new FileOutputStream(toFile);
 		byte buffer[] = new byte[BUFFERSIZE];
 		int nbytes = 0;
@@ -110,12 +121,29 @@ class CacheInfo {
 	{	G.print(msg);
 		//DataCache.out.println("cache "+name);
 	}
+	private boolean isBlacklisted(String name)
+	{
+		for(String str : blackList)
+		{
+			if(str.equals(name)) { return true; }
+		}
+		return false;
+	}
 	// synchronize minimally here, so we don't block the broader cache loader
 	synchronized void cacheFile(String host,File localDir) throws IOException
 	{
 		if(verbose) { log("cache "+name); }
-		if(!loaded)	// if multiple threads get caught, only load once
-		{	copyUrl(host,name,localDir,date);
+		if(blacklisted)
+		{ 	if(loaded)
+			{
+			File localPath = localFileName(name,localDir);
+			localPath.delete();
+			log("Deleting obsolete file "+localPath);
+			}
+		}
+		else if(!loaded)	// if multiple threads get caught, only load once
+		{	
+			copyUrl(host,name,localDir,date); 
 			loaded = true;
 		}
 	}
@@ -134,10 +162,10 @@ class CacheInfo {
  * @author Ddyer
  *
  */
-public class DataCache implements Runnable
+public class DataCache implements Runnable,Config
 {	
 	static String cacheRoot = "java/appdata/";
-	static final String webUrl = "/cgi-bin/applettag.cgi?tagname=appdata";	// url to fetch the list of jars
+	static final String webUrl = DataCacheUrl;	// url to fetch the list of jars
 
 	static boolean test = false;
 	static String activeProtocol = "https:";
@@ -176,17 +204,16 @@ public class DataCache implements Runnable
 		if(info==null) 
 		{ if(verbose) { DataCache.out.println("No info for "+name0); } 
 		}
-		if(info!=null && !info.loaded)
-		{	
+		else {
 			try {
 				if(verbose) { DataCache.out.println("cache "+name); }
 				info.cacheFile(webHost(),localCacheDir);
 			}
 			catch (Exception e)
 			{
+				info.loaded = true;		// we tried, don't try again
 				showError("Error fetching "+name+" from "+webHost(),e);
 			}
-			info.loaded = true;
 			return(info);
 		}
 		return(info);
@@ -366,7 +393,7 @@ public class DataCache implements Runnable
 			for(File f :cachedFiles)
 			{	String cacheName = f.getName();
 				String className = name+cacheName;
-				fileCache.put(cacheName,new CacheInfo(cacheTime,className,true));
+				fileCache.put(cacheName,new CacheInfo(cacheTime,className,cacheName,true));
 			}
 		}}
 		else
@@ -398,7 +425,7 @@ public class DataCache implements Runnable
 			String className = parts[1];
 			File f = mismatch ? null : exists(className,cacheTime,cachedFiles);
 			String cacheName = new File(className).getName();
-			fileCache.put(cacheName,new CacheInfo(cacheTime,className,f!=null));
+			fileCache.put(cacheName,new CacheInfo(cacheTime,className,cacheName,f!=null));
 			}}
 			//
 			// if the server is internally misconfigured, and delivers no details of the jars

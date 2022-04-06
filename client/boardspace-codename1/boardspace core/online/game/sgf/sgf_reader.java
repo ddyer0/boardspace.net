@@ -270,10 +270,8 @@ public class sgf_reader implements sgf_names
                     	else if (name.equals(zipname) || takeAll)
                         {	
                         	sgf_game newgame = null;
-                        	MarkableInputStream mzip = new MarkableInputStream(zip);
-                        	mzip.mark(10000);
                         	try {
-                        		stream = new Utf8Reader(mzip);
+                        		stream = new Utf8Reader(zip);
                         		newgame = parse_sgf_game();
 
                             zipname = filename = name;
