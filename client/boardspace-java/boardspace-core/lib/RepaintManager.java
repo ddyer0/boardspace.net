@@ -1256,16 +1256,16 @@ public class RepaintManager implements VncScreenInterface,Config
 	  		paintedAFrame = true;
 			    
 	    	helper.showRectangles(offGC,100);
-	    	GC.setColor(offGC,Color.blue);
-	    	GC.translate(offGC,-x,-y);
-	    	helper.ShowStats(offGC,pt,0,0);	// add some stats on top of everything
 
 	    	if(repaintStrategy==RepaintStrategy.Deferred)
 	    	{	
 	    		helper.paintSprites(offGC,pt);
 	    	}
+	    	helper.ShowStats(offGC,pt,x,y);	// add some stats on top of everything
 
-	    	//G.addLog("writing "+offScreen);
+	    	GC.setColor(offGC,Color.blue);
+	    	GC.translate(offGC,-x,-y);
+    	//G.addLog("writing "+offScreen);
 	    	drawToRealScreen(gc,offScreen);
 		    
 		    offScreen.mustBeComplete = false;

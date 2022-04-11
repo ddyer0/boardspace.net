@@ -54,7 +54,7 @@ public class EuphoriaPlay extends commonRobot<EuphoriaBoard> implements Runnable
     private int robotPlayer = 0;					// the player we're playing for
     private Random robotRandom = null;				// random numbers for randomizing playouts
     boolean randomize = true;
-    
+    boolean UCT_WIN_LOSS = true;
     enum Bias {
     	B_00,	// no pre-bias
     	B_01,
@@ -64,41 +64,44 @@ public class EuphoriaPlay extends commonRobot<EuphoriaBoard> implements Runnable
     	B_05,	// reduce score for retrieval moves
     	B_06,	// changes to B_01 to emulate longer search gtime
     	B_07,
-    	B_08;
+    	B_08,
+    	B_09;
     }
     enum Score {
     	S_00,	// simplest hill climber
     	S_01,	// standard dumbot
-    	S_02,	// experimental
+    	S_02,	// standard dumbot
+    	S_03;	// experimental
     	;
     }
     enum Evaluator {
-    	None(false,5,0,200,Bias.B_00,Score.S_00,0.,0),
-        Baseline_Dumbot_None(false,5,100,200,Bias.B_01,Score.S_00,0.5,NO_THREADS),		// MINIMAL EVALUATOR
-        Baseline_Dumbot_Sort(true,5,100,200,Bias.B_01,Score.S_00,0.5,NO_THREADS),		// MINIMAL EVALUATOR
-        Baseline_Dumbot_06(false,5,100,200,Bias.B_06,Score.S_00,0.5,NO_THREADS),
-        Baseline_Dumbot_07(false,5,100,200,Bias.B_07,Score.S_00,0.5,NO_THREADS),
-        Baseline_Dumbot_08(false,5,100,200,Bias.B_08,Score.S_00,0.5,NO_THREADS),
-        Baseline_Dumbot_09(false,5,100,200,Bias.B_08,Score.S_00,0.5,DEPLOY_THREADS),
+    	None(false,5,0,200,Bias.B_00,Score.S_00,0.,0,false),
+        Baseline_Dumbot_None(false,5,100,200,Bias.B_01,Score.S_00,0.5,NO_THREADS,false),		// MINIMAL EVALUATOR
+        Baseline_Dumbot_Sort(true,5,100,200,Bias.B_01,Score.S_00,0.5,NO_THREADS,false),		// MINIMAL EVALUATOR
+        Baseline_Dumbot_06(false,5,100,200,Bias.B_06,Score.S_00,0.5,NO_THREADS,false),
+        Baseline_Dumbot_07(false,5,100,200,Bias.B_07,Score.S_00,0.5,NO_THREADS,false),
+        Baseline_Dumbot_08(false,5,100,200,Bias.B_08,Score.S_00,0.5,NO_THREADS,false),
+        Baseline_Dumbot_09(false,5,100,200,Bias.B_08,Score.S_00,0.5,DEPLOY_THREADS,false),
+        Baseline_Dumbot_10(false,5,100,200,Bias.B_09,Score.S_02,0.5,DEPLOY_THREADS,true),
 
-        Baseline_Monte_07(false,20,100,200,Bias.B_07,Score.S_00,0.5,NO_THREADS),
-        Baseline_Monte_08(false,20,100,200,Bias.B_07,Score.S_00,0.5,DEPLOY_THREADS),
-        Baseline_Monte_None(false,20,100,200,Bias.B_01,Score.S_00,0.5,NO_THREADS),
-       	Baseline_Dumbot_01(false,5,100,200,Bias.B_01,Score.S_01,0.5,NO_THREADS),
+        Baseline_Monte_07(false,20,100,200,Bias.B_07,Score.S_00,0.5,NO_THREADS,false),
+        Baseline_Monte_08(false,20,100,200,Bias.B_07,Score.S_00,0.5,DEPLOY_THREADS,false),
+        Baseline_Monte_None(false,20,100,200,Bias.B_01,Score.S_00,0.5,NO_THREADS,false),
+       	Baseline_Dumbot_01(false,5,100,200,Bias.B_01,Score.S_01,0.5,NO_THREADS,false),
        
-       	None_Lite(false,5,0,200,Bias.B_00,Score.S_02,0.5,NO_THREADS),
-    	None_Deep(false,5,0,400,Bias.B_00,Score.S_00,0.5,NO_THREADS),
-    	None_03(false,5,100,200,Bias.B_03,Score.S_00,0.5,NO_THREADS),
+       	None_Lite(false,5,0,200,Bias.B_00,Score.S_02,0.5,NO_THREADS,false),
+    	None_Deep(false,5,0,400,Bias.B_00,Score.S_00,0.5,NO_THREADS,false),
+    	None_03(false,5,100,200,Bias.B_03,Score.S_00,0.5,NO_THREADS,false),
     	
-     	Baseline_Monte_01(false,20,100,200,Bias.B_01,Score.S_01,0.5,NO_THREADS),
-    	Baseline_Smartbot_02(false,5,100,100,Bias.B_02,Score.S_01,0.5,NO_THREADS),		// shallower search
+     	Baseline_Monte_01(false,20,100,200,Bias.B_01,Score.S_01,0.5,NO_THREADS,false),
+    	Baseline_Smartbot_02(false,5,100,100,Bias.B_02,Score.S_01,0.5,NO_THREADS,false),		// shallower search
 
-    	Baseline_Dumbot_03(false,5,100,200,Bias.B_03,Score.S_01,0.5,NO_THREADS),		// add allegiance bonus
-      	Baseline_Smartbot_03(false,5,50,200,Bias.B_03,Score.S_01,0.5,NO_THREADS),		// add retrieval penalty
+    	Baseline_Dumbot_03(false,5,100,200,Bias.B_03,Score.S_01,0.5,NO_THREADS,false),		// add allegiance bonus
+      	Baseline_Smartbot_03(false,5,50,200,Bias.B_03,Score.S_01,0.5,NO_THREADS,false),		// add retrieval penalty
 
-      	Baseline_Monte_03(false,20,100,200,Bias.B_03,Score.S_01,0.5,NO_THREADS),		// add allegiance bonus
-    	Alpha_Smartbot_03(false,5,100,200,Bias.B_03,Score.S_01,0.75,NO_THREADS);
-    	Evaluator(boolean sort,int t,double w,int d,Bias b,Score s,double al,int th)
+      	Baseline_Monte_03(false,20,100,200,Bias.B_03,Score.S_01,0.5,NO_THREADS,false),		// add allegiance bonus
+    	Alpha_Smartbot_03(false,5,100,200,Bias.B_03,Score.S_01,0.75,NO_THREADS,false);
+    	Evaluator(boolean sort,int t,double w,int d,Bias b,Score s,double al,int th,boolean proportional)
     	{	time = t;
     		weight = w;
     		alpha = al;
@@ -107,9 +110,11 @@ public class EuphoriaPlay extends commonRobot<EuphoriaBoard> implements Runnable
     		score = s;
     		sortmoves = sort;
     		threads = th;
+    		scoreProportional = proportional;
     	}
     	int time = 5;
     	int threads = 0;
+    	boolean scoreProportional = true;
     	boolean sortmoves = false;
     	double weight = 100.0;
     	double alpha = 0.5;
@@ -257,7 +262,10 @@ public class EuphoriaPlay extends commonRobot<EuphoriaBoard> implements Runnable
     		case B_08:
     			score = board.scoreAsMontecarloMove_08(m);
     			break;
-    		default: throw G.Error("Not expecting evaluator %s",evaluator);
+    		case B_09:
+    			score = board.scoreAsMontecarloMove_09(m);
+    			break;
+    		default: throw G.Error("Not expecting evaluator %s",evaluator.bias);
      		}
     		m.montecarloWeight = score;
     		total += score;		// add up the weights, 
@@ -313,18 +321,12 @@ public class EuphoriaPlay extends commonRobot<EuphoriaBoard> implements Runnable
     	case S_00: return(evboard.scoreEstimate_00(player,print));
      	case S_01: return(evboard.scoreEstimate_01(player,print));	
      	case S_02: return(evboard.scoreEstimate_02(player,print));
+     	case S_03: return(evboard.scoreEstimate_03(player,print));
        	default: throw G.Error("not expecting %s",evaluator.score);
     	}
     }
 
-    /**
-     * this re-evaluates the current position from the viewpoint of forplayer.
-     * for 2 player games this is to trivially negate the value, but for multiplayer
-     * games it requires considering multiple player's values.
-     */
-    public double reScorePosition(commonMove m,int forplayer)
-    {	return(m.reScorePosition(forplayer,VALUE_OF_WIN));
-    }
+
     /** this is called from the search driver to evaluate a particular position. The driver
      * calls List_of_Legal_Moves, then calls Make_Move/Static_Evaluate_Position/UnMake_Move
      *  for each and sorts the result to preorder the tree for further evaluation
@@ -357,7 +359,10 @@ public class EuphoriaPlay extends commonRobot<EuphoriaBoard> implements Runnable
 	 	for(int i=0;i<nplay; i++)
 	 	{	mm.playerScores[i] = ScoreForPlayer(board,i,false);
 	 	}
-	return(mm.reScorePosition(playerindex,VALUE_OF_WIN));	
+	return( evaluator.scoreProportional 
+				? mm.reScoreProportional(playerindex,VALUE_OF_WIN)
+				: mm.reScorePosition(playerindex,VALUE_OF_WIN));
+	
     }
     
     /**
@@ -404,7 +409,7 @@ int strategy = 0;
         	WEAKBOT = true;
         	break;
         case DUMBOT_LEVEL:  
-        	evaluator = Evaluator.Baseline_Dumbot_09;
+        	evaluator = Evaluator.Baseline_Dumbot_10;
         	WEAKBOT = false;
         	break;
         
@@ -415,7 +420,7 @@ int strategy = 0;
         	evaluator = Evaluator.None; 
         	break;
         case MONTEBOT_LEVEL:
-        	evaluator = Evaluator.Baseline_Monte_07; 
+        	evaluator = Evaluator.Baseline_Dumbot_10; 
         	break;
         case TESTBOT_LEVEL_1:
            	evaluator = Evaluator.Baseline_Dumbot_09;
@@ -578,6 +583,7 @@ public void PrepareToMove(int playerIndex)
       
      return(move);
  }
+
  /**
   * for UCT search, return the normalized value of the game, with a penalty
   * for longer games so we try to win in as few moves as possible.  Values

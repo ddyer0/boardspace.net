@@ -1,9 +1,9 @@
 package lib;
 
 import bridge.JCheckBoxMenuItem;
+import bridge.WindowListener;
 import bridge.JMenu;
 import bridge.JMenuItem;
-import bridge.WindowListener;
 /**
  * services provided by the frame which encloses a game window
  * 
@@ -11,7 +11,7 @@ import bridge.WindowListener;
  *
  */
 public interface LFrameProtocol extends MenuParentInterface
-{   public void setParentBounds(int theX, int theY, int theW, int theH);
+{   public void setInitialBounds(int theX, int theY, int theW, int theH);
 	public boolean killed();
 	/**
 	 * query if sound is on.  You should call this before playing any sound.

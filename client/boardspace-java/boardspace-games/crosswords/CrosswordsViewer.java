@@ -907,9 +907,12 @@ public void setLetterColor(Graphics gc,CrosswordsBoard gb,CrosswordsCell cell)
         	{	all.hitCode = CrosswordsId.Definition;
         		all.hitObject = closestCell;
         		all.setHelpText(s.get(GetDefinitionMessage,word.name));
+        		definitionCell = closestCell;
         	}
         	}
-        	if(definitionCell!=closestCell) { definitionCell = null; }
+        	if(definitionCell!=closestCell)
+        		{ definitionCell = null; 
+        		}
         }
         // this enumerates the cells in the board in an arbitrary order.  A more
         // conventional double xy loop might be needed if the graphics overlap and
@@ -957,7 +960,7 @@ public void setLetterColor(Graphics gc,CrosswordsBoard gb,CrosswordsCell cell)
         }
     }
     public void drawDefinition(Graphics gc,CrosswordsBoard gb,HitPoint hp)
-    {
+    {	
     	CrosswordsCell target = definitionCell;
     	StringBuilder message = new StringBuilder();
     	WordStack words = gb.words;
@@ -1395,7 +1398,7 @@ public void setLetterColor(Graphics gc,CrosswordsBoard gb,CrosswordsCell cell)
  * not setting the values when the gc is null.
  */
     public void StartDragging(HitPoint hp)
-    {	G.print("Start "+hp);
+    {
         if (hp.hitCode instanceof CrosswordsId)// not dragging anything yet, so maybe start
         {
         CrosswordsId hitObject =  (CrosswordsId)hp.hitCode;
@@ -1454,7 +1457,7 @@ public void setLetterColor(Graphics gc,CrosswordsBoard gb,CrosswordsCell cell)
  * not setting the values when the gc is null.
 	 */
     public void StopDragging(HitPoint hp)
-    {	G.print("Stop "+hp);
+    {
         CellId id = hp.hitCode;
         bigString = null;
 

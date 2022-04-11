@@ -1131,7 +1131,7 @@ public abstract class commonCanvas extends exCanvas
 	    	panel.setCanvas(treeViewer);
 	    	treeViewer.setVisible(true);
 	    	
-	    	frame.setParentBounds(100,100,(int)(SCALE*800),(int)(SCALE*600));
+	    	frame.setInitialBounds(100,100,(int)(SCALE*800),(int)(SCALE*600));
 	    	frame.setVisible(true);
 	    	panel.start();
 	    }
@@ -4546,6 +4546,7 @@ public abstract class commonCanvas extends exCanvas
         	l.zoomButton = myFrame.addAction("Zoom Up",deferredEvents);
         	l.unzoomButton = myFrame.addAction("Un Zoom",deferredEvents);
     	}
+        if(l.gameInfo!=null) {  myFrame.setTitle(l.gameInfo.gameName);}
         myFrame.setIconAsImage(gameIcon);
         
         hidden.controlToken = use_grid = mutable_game_record = allowed_to_edit = reviewOnly = sharedInfo.getBoolean(Config.REVIEWONLY);

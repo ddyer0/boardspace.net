@@ -1198,10 +1198,14 @@ public class EuphoriaBoard extends EuphoriaBoardConstructor implements EuphoriaC
     {
     	for(EPlayer p : players) { p.awardAllegianceStars(faction,replay); }
     }
+    boolean canIncrementAllegiance(Allegiance faction)
+    {	int ord = faction.ordinal();
+    	return (allegiance[ord] < AllegianceSteps-1);
+    }
     // return true if actually incremented
     boolean incrementAllegiance(Allegiance faction,replayMode replay)
     {	int ord = faction.ordinal();
-    	if(allegiance[ord] < AllegianceSteps-1) 
+    	if(canIncrementAllegiance(faction)) 
     		{ 
     		allegiance[ord]++;
     		if(allegiance[ord]==(AllegianceSteps-1)) { awardAllegianceStars(faction,replay); }
@@ -1306,7 +1310,7 @@ public class EuphoriaBoard extends EuphoriaBoardConstructor implements EuphoriaC
     public EuphoriaCell getDest() { return(droppedDestStack.top()); }
     public boolean isSource(EuphoriaCell c)  {	return(c==pickedSourceStack.top());   }
     public boolean isDest(EuphoriaCell d) { return(d==droppedDestStack.top()); }
-     
+    private int nOpenMarkets = 0;
    
     public EuphoriaChip lastDroppedObject = null;	// for image adjustment logic
     private boolean reUsingWorker = false;
@@ -1481,7 +1485,10 @@ public class EuphoriaBoard extends EuphoriaBoardConstructor implements EuphoriaC
     	// create the recruit deck and shuffle it
     	getAllRecruits(unusedRecruits);
      	unusedRecruits.shuffle(gameRandom);
-     	if(isIIB()) { Assert(unusedRecruits.containsChip(RecruitChip.YoussefTheTunneler),"should be there");}
+
+     	//unusedRecruits.addChip(unusedRecruits.removeChip(RecruitChip.DavaaTheShredder));
+     	//unusedRecruits.addChip(unusedRecruits.removeChip(RecruitChip.JeroenTheHoarder));
+     	
     	// create the ethical dilemma deck and shuffle it
      	for(int i=1;i<DilemmaChip.allDilemmas.length;i++)
     	{	unusedDilemmas.addChip(DilemmaChip.allDilemmas[i]);
@@ -1579,6 +1586,7 @@ public class EuphoriaBoard extends EuphoriaBoardConstructor implements EuphoriaC
         moveNumber = 1;
         stepNumber = 0;
         rollNumber = 0;
+        nOpenMarkets = 0;
         revealedNewInformation = false;
     	lastDroppedWorker = null;
     	currentPlayerInTurnOrder = -1;
@@ -1651,6 +1659,7 @@ public class EuphoriaBoard extends EuphoriaBoardConstructor implements EuphoriaC
         Assert(selectedDieRoll==from_b.selectedDieRoll,"selectedDieRoll mismatch");
         Assert(activeRecruit==from_b.activeRecruit,"activeRecruit mismatch");
         Assert(stepNumber == from_b.stepNumber,"stepnumber matches");
+        Assert(nOpenMarkets == from_b.nOpenMarkets,"nOpenMarkets mismatch");
         // this is a good overall check that all the copy/check/digest methods
         // are in sync, although if this does fail you'll no doubt be at a loss
         // to explain why.
@@ -1729,6 +1738,7 @@ public class EuphoriaBoard extends EuphoriaBoardConstructor implements EuphoriaC
 		v ^= Digest(r,currentPlayerInTurnOrder);
 		v ^= Digest(r,stepNumber);
 		v ^= Digest(r,rollNumber);
+		v ^= Digest(r,nOpenMarkets);
 		
 		for(int lim=pickedStateStack.size()-1; lim>=0; lim--)
 		{
@@ -1788,7 +1798,7 @@ public class EuphoriaBoard extends EuphoriaBoardConstructor implements EuphoriaC
         currentPlayerInTurnOrder = from_b.currentPlayerInTurnOrder;
         stepNumber = from_b.stepNumber;
         rollNumber = from_b.rollNumber;
-
+        nOpenMarkets = from_b.nOpenMarkets;
         pickedStateStack.copyFrom(from_b.pickedStateStack);
         reRollPlayers.copyFrom(from_b.reRollPlayers);
         continuationStack.clear();
@@ -2062,6 +2072,7 @@ public class EuphoriaBoard extends EuphoriaBoardConstructor implements EuphoriaC
     			}
     		}
     	}
+    	doNormalStart();
     }
     
     boolean readyToStartNormal()
@@ -6706,7 +6717,6 @@ private void doAmandaTheBroker(EuphoriaCell dest,replayMode replay,RecruitChip a
     { EuphoriaChip chip = c.topChip(); 
       return(chip!=MarketChip.CardBack);  
     }
-    
     // find a currently open market which has the given penalty
     public EuphoriaCell getOpenMarketCell(MarketChip ch)
     {
@@ -6739,6 +6749,7 @@ private void doAmandaTheBroker(EuphoriaCell dest,replayMode replay,RecruitChip a
     private void openMarket(int idx,replayMode replay)
     {	revealedNewInformation = openedAMarket = true;
 		addToFinalPath("openmarket");
+		nOpenMarkets++;
 		// remove the cap from the market, revealing the market underneath
    		markets[idx].removeTop();
    		if(marketToOpen!=null)
@@ -6839,6 +6850,32 @@ private void doAmandaTheBroker(EuphoriaCell dest,replayMode replay,RecruitChip a
     	 }
     	  
     }
+    private void doNormalStart()
+    {
+    	if(!normalStartSeen)
+    	{
+   		for(EPlayer p : players) { p.transferDiscardedRecruits(usedRecruits); }
+   		
+   		// remove factionless recruits
+   		if(variation==Variation.Euphoria3T)
+   		{	// remove only kofi
+   			unusedRecruits.removeChip(RecruitChip.KofiTheHermit);
+   			while(usedRecruits.height()>0) { unusedRecruits.addChip(usedRecruits.removeTop()); }
+   			Random r = newRandomizer(0x63464735);
+   			unusedRecruits.shuffle(r);
+   		}
+   		else
+   		{
+   		for(int lim=unusedRecruits.height()-1; lim>=0; lim--)
+   		{ 	RecruitChip recruit = (RecruitChip)unusedRecruits.chipAtIndex(lim);
+   			if(recruit.allegiance==Allegiance.Factionless) 
+   				{ unusedRecruits.removeChipAtIndex(lim);
+   				}
+   		}}
+       	normalStartSeen = true;
+    	}
+    }
+    
     public boolean Execute(commonMove mm,replayMode replay)
     {	EuphoriaMovespec m = (EuphoriaMovespec)mm;
     	openedMarket = null;
@@ -6923,7 +6960,7 @@ private void doAmandaTheBroker(EuphoriaCell dest,replayMode replay,RecruitChip a
    			boolean ready = true;
    			for(EPlayer pl : players) { ready &= pl.hasReducedRecruits(); }
    			if(ready) { setState(EuphoriaState.NormalStart); }
-   			else { setState(EuphoriaState.EphemeralChooseRecruits); }   
+   			else { setRecruitDialogState(getPlayer(activePlayer)); }   
        		}
        		break;
         case CONFIRM_RECRUITS:
@@ -6936,26 +6973,8 @@ private void doAmandaTheBroker(EuphoriaCell dest,replayMode replay,RecruitChip a
         case NORMALSTART:
         	if(!hasReducedRecruits) { moveNumber--; doDone(null,replay); }
            	REINIT_SIMULTANEOUS_PLAY = SIMULTANEOUS_PLAY = false;
-       		for(EPlayer p : players) { p.transferDiscardedRecruits(usedRecruits); }
-       		
-       		// remove factionless recruits
-       		if(variation==Variation.Euphoria3T)
-       		{	// remove only kofi
-       			unusedRecruits.removeChip(RecruitChip.KofiTheHermit);
-       			while(usedRecruits.height()>0) { unusedRecruits.addChip(usedRecruits.removeTop()); }
-       			Random r = newRandomizer(0x63464735);
-       			unusedRecruits.shuffle(r);
-       		}
-       		else
-       		{
-       		for(int lim=unusedRecruits.height()-1; lim>=0; lim--)
-       		{ 	RecruitChip recruit = (RecruitChip)unusedRecruits.chipAtIndex(lim);
-       			if(recruit.allegiance==Allegiance.Factionless) 
-       				{ unusedRecruits.removeChipAtIndex(lim);
-       				}
-       		}}
-           	normalStartSeen = true;
-             break;
+           	doNormalStart();
+           	break;
         case USE_DIE_ROLL:
         	{
         	selectedDieRoll = WorkerChip.getWorker(players[whoseTurn].color,m.source.ordinal()-EuphoriaId.SelectDie1.ordinal()+1);
@@ -7031,13 +7050,14 @@ private void doAmandaTheBroker(EuphoriaCell dest,replayMode replay,RecruitChip a
         	EPlayer p = players[m.player];
         	DilemmaChip dilemma = (DilemmaChip)p.dilemma.chipAtIndex(0);
         	Cost cost = dilemma.cost;
-        	if(p.payCost(cost,replay)==null) 
+        	Cost residual = p.payCost(cost,replay);
+        	if(residual==null) 
         		{ 
         		  setState(EuphoriaState.ConfirmFightTheOpressor); 
         		}
         	else 
         		{
-        		setContinuation(new Continuation(cost,Function.FightTheOpressor,p));
+        		setContinuation(new Continuation(residual,Function.FightTheOpressor,p));
         		}
         	}
         	break;
@@ -7046,12 +7066,13 @@ private void doAmandaTheBroker(EuphoriaCell dest,replayMode replay,RecruitChip a
         	EPlayer p = players[m.player];
         	DilemmaChip dilemma = (DilemmaChip)p.dilemma.chipAtIndex(0);
         	Cost cost = dilemma.cost;
-        	if(p.payCost(cost,replay)==null) 
+        	Cost residual = p.payCost(cost,replay);
+        	if(residual==null) 
         		{ setState(EuphoriaState.ConfirmJoinTheEstablishment); 
         		}
         	else 
         		{ 
-        		setContinuation(new Continuation(cost,Function.JoinTheEstablishment,p));
+        		setContinuation(new Continuation(residual,Function.JoinTheEstablishment,p));
           		}
         	}
        		break;
@@ -7157,7 +7178,7 @@ private void doAmandaTheBroker(EuphoriaCell dest,replayMode replay,RecruitChip a
     			to.addChip(po);
     			m.chip = po; 
     			m.player = p.boardIndex;
-            	setRecruitDialogState(p);
+    			setRecruitDialogState(getPlayer(activePlayer));
     		}
     		break;
         case MOVE_CHOOSE_RECRUIT:
@@ -7329,9 +7350,13 @@ private void doAmandaTheBroker(EuphoriaCell dest,replayMode replay,RecruitChip a
             clearSteps();
             proceedGameStep = ProceedStep.Start;
             continuationStack.clear();
+            if(!hasReducedRecruits)
+            {
             if(SIMULTANEOUS_PLAY)
             {
             	setRecruitDialogState(getPlayer(activePlayer));
+                }
+            	else { setRecruitDialogState(getPlayer(whoseTurn)); }
             }
             else {     proceedWithTheGame(replay); }
             setWhoseTurn(m.player); 
@@ -7732,20 +7757,23 @@ private void doAmandaTheBroker(EuphoriaCell dest,replayMode replay,RecruitChip a
     {	EPlayer p = players[pl];
     	return(1.0-p.authority.height()*0.1);
     }
-    // add light penalties for wasted moves, wasted cards
+    // add light penalties for wasted moves, wasted cards, and leftover resoruces
     public double scoreEstimate_02(int pl,boolean pr)
     {	EPlayer p = players[pl];
     	int tokens = p.authority.height();
     	double val = 1.0-tokens*0.1;
-    	if(tokens>0)
     	{
+    	double ideal_resources = (6-nOpenMarkets)/2.0;
     	double penalty = p.penaltyMoves*0.001;
-        double cards = p.cardsLost*0.001;
-        val -= (penalty+cards);
+        double cards = p.cardsLost*0.002;
+        int commod = p.totalCommodities();
+        int res = p.totalResources();
+        double commodities = Math.max(0,commod-3)*0.001;
+        double resources = Math.max(0,(res-ideal_resources))*0.002;
+        val -= (penalty+cards+commodities+resources);
     	}
     	return(val);
     }
-    
     // score estimate for a player, in range 0-1.0.  Note that this is applied
     // at the bottom of the monte carlo descent, so it scores the overall progress
     // toward victory.  Except for the number of stars placed, the factors are 
@@ -7769,6 +7797,46 @@ private void doAmandaTheBroker(EuphoriaCell dest,replayMode replay,RecruitChip a
     	val += cards;
     	val += market;
     	val += resources;
+    	val -= p.cardsLost*0.01;
+    	val -= lost;	// penalty for losing workers, scaled by number of retrievals
+    	val -= (p.totalCommodities()-10)*0.001;		// discourage collecting a lot of commodities
+    	val -= p.knowledge*0.001;
+    	val += p.morale*0.001;
+    	val += retrieve;	// favor high ratio of placements over retrievals
+    	val += scoreRecruit(p.activeRecruits);
+    	val += (scoreRecruit(p.hiddenRecruits)*0.5);
+
+    	return(Math.max(0,Math.min(1.0,val)));
+    }  
+    // score estimate for a player, in range 0-1.0.  Note that this is applied
+    // at the bottom of the monte carlo descent, so it scores the overall progress
+    // toward victory.  Except for the number of stars placed, the factors are 
+    // influences toward what I perceive as generic good play. Ie; minimizing
+    // loss of workers, minimizing retrievals, not stockpiling excessive quantities
+    // of goods and so on.
+    public double scoreEstimate_03(int pl,boolean pr)
+    {	EPlayer p = players[pl];
+    	double stars = p.authority.height();
+    	if(stars==0) { return(1.0); }
+    	
+    	double val = 0.85-stars*0.1;
+    	double market = 0.02*p.marketStars;
+    	double idealResources = (6-nOpenMarkets)/2;
+    	double resourceWeight = 0.01;
+    	double cardWeight = 0.01 + 0.001*nOpenMarkets;		// cards become more valuable
+    	
+    	double retrieve = (((p.placements+1.0)/(p.retrievals+1))-1)*0.015;
+    	double lost = (p.workersLost*0.1)/(p.retrievals+1);
+    	double penalty = p.penaltyMoves*0.1;
+    	double cards = p.artifacts.height()*cardWeight;
+    	double resources = -Math.abs(p.totalResources()-idealResources)*resourceWeight;
+    	double commodities = -Math.abs(p.totalCommodities()-2)*0.01;
+    	if(pr) { G.print(""+p+" r="+retrieve+" l="+lost+" p="+(-penalty)); }
+    	val -= penalty;
+    	val += cards;
+    	val += market;
+    	val += resources;
+    	val += commodities;
     	val -= p.cardsLost*0.01;
     	val -= lost;	// penalty for losing workers, scaled by number of retrievals
     	val -= (p.totalCommodities()-10)*0.001;		// discourage collecting a lot of commodities
@@ -7850,7 +7918,9 @@ private void doAmandaTheBroker(EuphoriaCell dest,replayMode replay,RecruitChip a
      	//
      	for(EPlayer p : players)
      	{	
-     		if(p==robo)
+         	p.cardsLost = 0;
+         	p.penaltyMoves = 0;
+    		if(p==robo)
      		{
      		// remove the robot's recruits from the pool.
      		removeRecruits(unusedRecruits,robo.newRecruits);
@@ -8065,6 +8135,14 @@ private void doAmandaTheBroker(EuphoriaCell dest,replayMode replay,RecruitChip a
  	return(val);
  }
  
+ private boolean shouldSkipStar(EPlayer p,EuphoriaCell c,WorkerChip worker)
+ {	
+	 Allegiance allegiance = c.allegiance;
+	 EuphoriaCell aa = getAvailableAuthorityCell(p,allegiance);
+	 if(aa==null && !canIncrementAllegiance(allegiance)) { return true; }
+		else { return !canPlaceWorker(p,worker,c); }
+ }
+ 
  public void addWorkerPlacementMoves(CommonMoveStack all,EPlayer p,EuphoriaCell src,WorkerChip worker,int idx)
  {	boolean placedAquifer = false;
  	boolean placedGenerator = false;
@@ -8078,20 +8156,33 @@ private void doAmandaTheBroker(EuphoriaCell dest,replayMode replay,RecruitChip a
 		// avoid excessive placements on the commodity sources.
 			switch(c.rackLocation())
 			{
+			case EuphorianUseMarket:
+			case WastelanderUseMarket:
+			case SubterranUseMarket:
+			case EuphorianMarketA:
+			case EuphorianMarketB:
+			case WastelanderMarketA:
+			case WastelanderMarketB:
+			case SubterranMarketA:
+			case SubterranMarketB:
+			case IcariteNimbusLoft:
+			case IcariteWindSalon:
+				skip = shouldSkipStar(p,c,worker);  // skip if there are no stars to be placed
+				break;
 			case SubterranAquifer:
-				if(placedAquifer || (p.water.height()>=10)) {skip = true; } 
+				if(placedAquifer || (p.water.height()>=6)) {skip = true; } 
 					else { placedAquifer=canPlaceWorker(p,worker,c); skip=!placedAquifer;}
 				break;
 			case WastelanderFarm:	
-				if(placedFarm || (p.food.height()>=10)) { skip=true; } 
+				if(placedFarm || (p.food.height()>=6)) { skip=true; } 
 					else { placedFarm=canPlaceWorker(p,worker,c); skip=!placedFarm;}
 				break;
 			case IcariteCloudMine:	
-				if(placedCloud || (p.bliss.height()>=10)) { skip= true; } 
+				if(placedCloud || (p.bliss.height()>=6)) { skip= true; } 
 					else { placedCloud=canPlaceWorker(p,worker,c); skip=!placedCloud;}
 				break;
 			case EuphorianGenerator: 
-				if(placedGenerator || (p.energy.height()>=10)) { skip=true;  } 
+				if(placedGenerator || (p.energy.height()>=6)) { skip=true;  } 
 					else { placedGenerator=canPlaceWorker(p,worker,c); skip=!placedGenerator; }
 				break;
 			default: skip = !canPlaceWorker(p,worker,c);
@@ -10534,7 +10625,7 @@ EPlayer robotPlayer = null;
 			 }
 		 // 07 applies commodity limits to tunnel end goods
 		 case WastelanderTunnelEnd:	// gets power
-			 return(Math.max(0.0,Math.min(1.0,1.0-(p.water.height()-5)*0.3)));
+			 return(Math.max(0.0,Math.min(1.0,1.0-(p.energy.height()-5)*0.3)));
 		 case EuphorianGenerator:	
 			 {double weight = recruitAdvantage_08(p,m);
 			  return(Math.max(0.0,Math.min(weight,weight-(p.energy.height()-5)*0.3)));
@@ -10601,18 +10692,165 @@ EPlayer robotPlayer = null;
 	 case MOVE_ITEM_TO_PLAYER:
 		 // deprecate taking cards if we are at the card limit
 	 	{
-		if(m.source == EuphoriaId.ArtifactDeck)
-			{	// 07 tries to reduce choice of cards when they will be lost 
-				if(p.artifacts.height()>=p.morale)
-					{ return(0.01); }
+	 	double baseline = 1.0;
+	 	switch(m.source)
+	 	{
+	 	default: break;
+	 	case ArtifactBazaar:
+	 		// in ignorance is bliss, one has to pay for some artifacts
+	 		switch(m.from_row) {
+	 		case 3: 
+	 			baseline = 2.0;
+	 			break;
+	 		case 1:
+	 		case 2:	baseline = 1.0;
+	 			break;
+	 		case 0:
+	 		default: baseline = 0.5;
+	 		}
+			//$FALL-THROUGH$
+		case ArtifactDeck:
+	 		if(p.artifacts.height()>=p.morale)
+			{ return(0.01*baseline); 
 			}
-			return(2.0); 
-
+	 		break;
+	 	}
+	 	return baseline;
 	 	}
 	 default: break;
 	 }
 	 return(m.montecarloWeight);
  }
+  
+ public double scoreAsMontecarloMove_09(EuphoriaMovespec m)
+ {	EPlayer p = players[m.player];
+	 switch(m.op)
+	 {	
+	 case MOVE_DONE:
+		 switch(board_state)
+		 {
+		 case PlaceAnother:
+			 return(0.02);		// do nothing when you could place another worker
+		 default: return(1.0);
+		 }
+	 case MOVE_PLACE_WORKER:
+		 
+		
+		switch(m.dest)
+	 	{
+		 case IcariteCloudMine:
+		 case WastelanderFarm:
+		 case EuphorianGenerator:	
+		 case SubterranAquifer:
+		 	{double weight = recruitAdvantage_08(p,m);
+		 	int commod = p.totalCommodities();
+		 	double penalty = (commod-5)*0.3;
+		 	return(Math.max(0.0,weight-penalty));
+		 	}
+
+		 case SubterranTunnelEnd:	// gets food
+		 case WastelanderTunnelEnd:	// gets power
+		 case EuphorianTunnelEnd:	// gets water
+		 	{
+			 int commod = p.totalCommodities();
+			 double penalty = (commod-5)*0.3;
+			 return(Math.max(0.0,1.0-penalty));
+		 	}
+		 case EuphorianBuildMarketA:
+		 case EuphorianBuildMarketB:
+		 case SubterranBuildMarketA:
+		 case SubterranBuildMarketB:
+		 case WastelanderBuildMarketA:
+		 case WastelanderBuildMarketB:
+		 	{
+			 double sc = neededToCompleteScore_06(m.dest);
+			 if(sc<0) { return(-sc); }	// we can open the market
+			 int availableWorkers = p.totalWorkers-workersOnMarket;
+			 switch(availableWorkers)
+			 {
+			 case 0:
+			 case 1: return(0.1*sc);
+			 case 2: return(0.2*sc);
+			 case 3: return(2*sc);
+			 case 4: return(3*sc);
+			 default: throw Error("not expecting %s",availableWorkers);
+			 }
+		 	}
+		 
+		 case IcariteSkyLounge:
+		 case IcariteBreezeBar:
+			 return(10.0);		// 07 incentivizes the icarite exchanges
+			 
+		 case EuphorianTunnelMouth:
+		 case WastelanderTunnelMouth:
+		 case SubterranTunnelMouth:
+		 	{int commod = p.totalResources();
+		 	 if((commod>=3) && (p.artifacts.height()>=p.morale)) { return 0;}
+			 return(2.0);
+		 	}
+		 case WorkerActivationA:
+		 case WorkerActivationB:
+			 return((4-p.totalWorkers)*15);
+		 default: break;
+	 	} 
+	 	break;
+	 case MOVE_RETRIEVE_WORKER:
+		 switch(m.source)
+		 {
+		 case EuphorianBuildMarketA:
+		 case EuphorianBuildMarketB:
+		 case SubterranBuildMarketA:
+		 case SubterranBuildMarketB:
+		 case WastelanderBuildMarketA:
+		 case WastelanderBuildMarketB:
+			 return(0.0);	// for random tree, this really is zero
+		 default: 
+			 switch(board_state)
+			 {
+			 case Retrieve: break;
+			 case RetrieveOrConfirm: return(3.0);
+			 default: return(0);
+			 }
+		 }
+		 break;
+	 case MOVE_ITEM_TO_PLAYER:
+		 // deprecate taking cards if we are at the card limit
+	 	{
+	 	double baseline = 1.0;
+	 	switch(m.source)
+	 	{
+	 	default: break;
+	 	case WastelanderFarm:
+	 	case SubterranAquifer:
+	 	case EuphorianGenerator:
+	 		baseline += (6-p.totalCommodities())*0.05;
+	 		break;
+	 	case ArtifactBazaar:
+	 		// in ignorance is bliss, one has to pay for some artifacts
+	 		switch(m.from_row) {
+	 		case 3: 
+	 			baseline = 2.0;
+	 			break;
+	 		case 1:
+	 		case 2:	baseline = 1.0;
+	 			break;
+	 		case 0:
+	 		default: baseline = 0.5;
+	 		}
+			//$FALL-THROUGH$
+		case ArtifactDeck:
+	 		if(p.artifacts.height()>=p.morale)
+			{ return(0.005*baseline); 
+			}
+	 		break;
+	 	}
+	 	return baseline;
+	 	}
+	 default: break;
+	 }
+	 return(m.montecarloWeight);
+ }
+  
  public double scoreAsMontecarloMove_03(EuphoriaMovespec m)
  {	 EPlayer p = players[m.player];
  	 double base = 0.0;

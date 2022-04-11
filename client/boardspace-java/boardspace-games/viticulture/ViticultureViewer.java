@@ -54,6 +54,8 @@ public class ViticultureViewer extends CCanvas<ViticultureCell,ViticultureBoard>
     private Color boardBackgroundColor = new Color(140,165,140);
     LateDrawingStack lateTips = new LateDrawingStack();
     static boolean BACKGROUND_OPTIMIZATION = true;
+    boolean showBuildings = false;
+    
     public void testSwitch()
     {
     	BACKGROUND_OPTIMIZATION = !BACKGROUND_OPTIMIZATION;
@@ -3763,6 +3765,7 @@ private void drawPlayerBoard(Graphics gc,
     	int cy = G.centerY(br);
     	int nBuilds = 0;
     	int tourBuilds = 0;
+    	HitPoint mainHighlight = showBuildings ? null : highlight;
        	ViticultureState state = gb.resetState;
        	boolean censor = !reviewOnly && censor(pb,highlightAll);
        	switch(state)
@@ -3773,7 +3776,8 @@ private void drawPlayerBoard(Graphics gc,
   			break;
   		default: break;
     	}
-
+       	if(showBuildings) { nBuilds = pb.buildable.length;}
+       	else {
     	for(int lim=pb.buildable.length-1; lim>=0; lim--)
     	{
     		ViticultureCell c = pb.unBuilt[lim];
@@ -3781,19 +3785,32 @@ private void drawPlayerBoard(Graphics gc,
     		{
     			nBuilds++;
     		}
-    	}
-    	Viticulturemovespec cardRoot = null;
+    	}}
     	ViticultureCell cardDisplay = gb.cardDisplay;
-    	
+    	cardDisplay.reInit();
+    	if(showBuildings) 
+    	{	
+    		ViticultureCell cards = pb.cards;
+    		for(int lim=cards.height()-1; lim>=0; lim--)
+    		{
+    			ViticultureChip ch = cards.chipAtIndex(lim);
+    			if(ch.type==ChipType.StructureCard) 
+    				{ nBuilds++; 
+    				cardDisplay.addChip(ch);
+    				}
+    		}
+    	}
+    	else
+    	{
     	if(gb.legalToHit(pb.cards,targets))
-    	{	cardDisplay.reInit();
-    		Viticulturemovespec m = cardRoot = targets.get(pb.cards);
+    	{	
+    		Viticulturemovespec m = targets.get(pb.cards);
     		while(m!=null) 
     			{ nBuilds++;
     			cardDisplay.addChip(pb.cards.chipAtIndex(m.from_index));
     			m=(Viticulturemovespec)m.next; 
     			}
-    	}
+    	}}
 
     	int step = (int)(w/Math.max(6,(nBuilds+tourBuilds+2)));
     	 
@@ -3808,7 +3825,7 @@ private void drawPlayerBoard(Graphics gc,
     	int xp0 = xp;
     	Rectangle frame = new Rectangle(xp,yp,frameW,frameH);
     	yp += step;
-    ViticultureChip.Scrim.image.stretchImage(gc, frame);  
+    	ViticultureChip.Scrim.image.stretchImage(gc, frame);  
     	
 
        	if(G.pointInRect(highlightAll, frame)) { highlightAll.neutralize(); }
@@ -3827,27 +3844,27 @@ private void drawPlayerBoard(Graphics gc,
     	for(int lim=pb.buildable.length-1; lim>=0; lim--)
     	{
     		ViticultureCell c = pb.unBuilt[lim];
-    		if(gb.legalToHit(c,targets))
+    		if(showBuildings || gb.legalToHit(c,targets))
     		{
     			ViticultureCell d = pb.unBuilt[lim];
     			ViticultureCell built = pb.buildable[lim];
     			ViticultureChip chip = pb.getContent(c);
     			d.reInit();
     			d.addChip(chip);
-    			if(drawStack(gc,state,null, d,highlight,highlightAll, step,xp,yp+step/3, 0,0.0,0.0,null))
+    			if(drawStack(gc,state,null, d,mainHighlight,highlightAll, step,xp,yp+step/3, 0,0.0,0.0,null))
     				{	highlight.setHelpText(s.get(built.toolTip));
     				}
     			GC.setFont(gc, standardBoldFont());
     			GC.Text(gc, true,(int)(xp-step*0.4),yp+step*2/3,(int)(step*0.8),step/4,Color.black,null,chip.type.prettyName());
     			loadCoins(pb.cashDisplay,pb.buildable[lim].cost);
     			pb.cashDisplay.selected = false;
-    			drawStack(gc,state,null, pb.cashDisplay,null,highlightAll, step/2,xp-step/6,yp+step*8/5, 0,0.5,0.00,null);
+    			drawStack(gc,state,null, pb.cashDisplay,null,highlightAll, step/2,xp-step/6,yp+step*6/5, 0,0.5,0.00,null);
     			xp += (int)(0.9*step);
     		}
     	}
-    	if(cardRoot!=null)
+    	if(cardDisplay.height()>0)
     	{
-    		if(drawStack(gc,state,null,cardDisplay,highlight,highlightAll,step,xp+step/4,yp+step*2/3,0,1,0,censor ? ViticultureChip.BACK : null))
+    		if(drawStack(gc,state,null,cardDisplay,mainHighlight,highlightAll,step,xp+step/4,yp+step*2/3,0,1,0,censor ? ViticultureChip.BACK : null))
     		{
     			highlight.hitObject = cardDisplay.chipAtIndex(highlight.hit_index);
     		}
@@ -4031,9 +4048,13 @@ private void drawPlayerBoard(Graphics gc,
         ViticultureState state = gb.getState();
         commonPlayer pl = getPlayerOrTemp(gb.whoseTurn());
         boolean tempOff = currentZoomZone!=null;
-
+        
+        double build[] = new double[] { 0.255,0.630,0.1 };
+        StockArt.Dot.drawChip(gc,this,highlightAll,ViticultureId.ShowBuildings,gb.pToS(build[2]),gb.pToX(build[0]),gb.pToY(build[1]),"?");
+        
         if(showBigStack) { hitBoard = null; tempOff = true; }
         HitPoint tipHighlight = (ui==UI.Main)||overlayClosed ? highlightAll : null;
+        if(ui==UI.Main && showBuildings) { ui = UI.ShowBuildable; }
         switch(ui)
         {
 		case ShowWakeup:
@@ -4864,6 +4885,7 @@ private void drawPlayerBoard(Graphics gc,
        	{   // only do standard actions (like reset) if it is our turn
        		if(hiddenPlayerOrMainMove(findHiddenWindow(hp)))
        			{ missedOneClick = performStandardActions(hp,missedOneClick);   
+       			showBuildings = false;     	     
        			} 
        	}
         else {
@@ -4879,6 +4901,9 @@ private void drawPlayerBoard(Graphics gc,
         default:
         	doPickDrop(hp,gb);
          	break;
+        case ShowBuildings:
+        	showBuildings = !showBuildings;
+        	break;
         case CloseOverlay:
         	setOverlayClosed(gb,!overlayClosed);
         	break;

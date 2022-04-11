@@ -2568,7 +2568,7 @@ private Cost artifact1XPlus1(ArtifactChip a,Cost cost,replayMode replay)
 //
 // this extracts the payment for fullfilling the secret goal
 // 1 specific card or any 2.
-private Cost artifactx2OrSpecific(ArtifactChip which,replayMode replay)
+private Cost artifactx2OrSpecific(ArtifactChip which,Cost residual,replayMode replay)
 {	
 	if(b.revision>=103)
 	{	int match = uniqueMatchingIndex(which);	// match exact or alternate
@@ -2601,7 +2601,7 @@ private Cost artifactx2OrSpecific(ArtifactChip which,replayMode replay)
 		sendArtifacts(2,replay);
 		return(null);
 	}}
-	return Cost.Artifactx2;
+	return residual;
 	
 }
 /**
@@ -3814,22 +3814,22 @@ Cost payCost(Cost item,replayMode replay)
 
 	// artifact costs
 	case BearOrCardx2:
-		return(artifactx2OrSpecific(ArtifactChip.Bear,replay));
+		return(artifactx2OrSpecific(ArtifactChip.Bear,item,replay));
 		
 	case BoxOrCardx2:
-		return(artifactx2OrSpecific(ArtifactChip.Box,replay));
+		return(artifactx2OrSpecific(ArtifactChip.Box,item,replay));
 		
 	case BookOrCardx2:
-		return(artifactx2OrSpecific(ArtifactChip.Book,replay));
+		return(artifactx2OrSpecific(ArtifactChip.Book,item,replay));
 		
 	case BifocalsOrCardx2:
-		return(artifactx2OrSpecific(ArtifactChip.Bifocals,replay));
+		return(artifactx2OrSpecific(ArtifactChip.Bifocals,item,replay));
 	
 	case BatOrCardx2:
-		return(artifactx2OrSpecific(ArtifactChip.Bat,replay));
+		return(artifactx2OrSpecific(ArtifactChip.Bat,item,replay));
 		
 	case BalloonsOrCardx2:
-		return(artifactx2OrSpecific(ArtifactChip.Balloons,replay));
+		return(artifactx2OrSpecific(ArtifactChip.Balloons,item,replay));
 
 	case Knowledge:
 		b.Assert((knowledge+1)<=MAX_KNOWLEDGE_TRACK,"knowledge <=2");

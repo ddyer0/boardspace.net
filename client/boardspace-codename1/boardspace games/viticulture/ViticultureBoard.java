@@ -10601,6 +10601,15 @@ public int cellToX(ViticultureCell c) {
 public int cellToY(ViticultureCell c) {
 	throw G.Error("Not expected");
 }
+public int pToX(double pos)
+{
+	return(G.Left(boardRect)+(int)(pos*G.Width(boardRect)));
+}
+public int pToY(double pos)
+{
+	return(G.Top(boardRect)+(int)(pos*G.Height(boardRect)));
+}
+public int pToS(double sz) { return((int)(sz*G.Width(boardRect))); }
 
 // this is called from robot initialization so the bot moves
 // don't know the actual card order

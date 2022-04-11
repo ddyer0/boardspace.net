@@ -1047,7 +1047,7 @@ public class SeatingViewer extends exCanvas implements LobbyConstants
     	panel.setCanvas(viewer);
     	viewer.setVisible(true);
     	double scale = G.getDisplayScale();
-    	frame.setParentBounds(100,100,(int)(scale*800),(int)(scale*600));
+    	frame.setInitialBounds(100,100,(int)(scale*800),(int)(scale*600));
     	frame.setVisible(true);
     	panel.start();
     	}

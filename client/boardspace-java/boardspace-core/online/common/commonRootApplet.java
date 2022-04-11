@@ -179,7 +179,7 @@ public class commonRootApplet implements  RootAppletProtocol, Runnable,  LobbyCo
             					? server.getHostName()
             					: isTable 
             						? UDPService.getPlaytableName()
-            						: G.getString(OnlineConstants.GAMETYPE,"Lobby");
+            						: G.getString(OnlineConstants.GAMETYPE,offlineLauncher?"Offline Launcher" :"Lobby");
             myLF = NewLPanel(rootname, myL,fr);
              
             ExtendedHashtable sharedInfo = G.getGlobals();
@@ -201,28 +201,24 @@ public class commonRootApplet implements  RootAppletProtocol, Runnable,  LobbyCo
             	  myL.setCanvas(viewer);
             	  }
             	}
+            int fx = 5;
+            int fy = 10;
+            int fw = G.tableWidth();
+            int fh = G.tableHeight();
+            
             if(G.debug()&&(G.isTable()))
-            {
-                myLF.setParentBounds(5, 10, G.tableWidth(),G.tableHeight() );
-           	
-            }
-            else
-            if(offlineLauncher)
-            {
-                myLF.setParentBounds(100, 50, 
-                		(int)(G.getDisplayScale()*G.getInt(OnlineConstants.FRAMEWIDTH,1000)),
-                		(int)(G.getDisplayScale()*G.getInt(OnlineConstants.FRAMEHEIGHT,700)));          	
+            {      	
             }
             else
             {
-            int dw = G.getInt(OnlineConstants.FRAMEWIDTH,DEFAULTWIDTH);
-            int dh = G.getInt(OnlineConstants.FRAMEHEIGHT,DEFAULTHEIGHT);
             double sc = G.getDisplayScale();
-            //G.print("w "+dw+" h "+dh+" "+sc);
-            myLF.setParentBounds(100, 50, 
-                		(int)(sc*dw),
-                		(int)(sc*dh));
+            fx = 100;
+            fy = 50;
+            fw = (int)(sc*G.getInt(OnlineConstants.FRAMEWIDTH,offlineLauncher?1000 : DEFAULTWIDTH));
+            fh = (int)(sc*G.getInt(OnlineConstants.FRAMEHEIGHT,offlineLauncher ? 700 : DEFAULTHEIGHT));
             }
+            myLF.setInitialBounds(fx,fy,fw,fh );
+                      
       	 	if(fr!=null) { fr.setVisible(true); } 
 
             myL.run();

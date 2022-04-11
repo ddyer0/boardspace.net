@@ -752,12 +752,12 @@ public class Session implements LobbyConstants
 		 
 		 if(G.isCodename1()) 
 			 {
-			 	frame.setParentBounds(0,0,G.getFrameWidth(),G.getFrameHeight());
+			 	frame.setInitialBounds(0,0,G.getFrameWidth(),G.getFrameHeight());
 			 }
 		 	else {
 		 	  if(G.debug()&&G.isTable())
 		 	  {
-		 		 frame.setParentBounds(10, 30, 
+		 		 frame.setInitialBounds(10, 30, 
 	                		G.tableWidth(),G.tableHeight());
 	  
 		 	  }
@@ -770,7 +770,7 @@ public class Session implements LobbyConstants
 			  int h = Math.min(screenH,(int)(scale*CLIENTHEIGHT));
 			  int x = Math.min(screenW-w,CLIENTX);
 			  int y = Math.min(screenH-h,CLIENTY);
-			  			  frame.setParentBounds(x,y,w,h);
+			  			  frame.setInitialBounds(x,y,w,h);
 		 	  }
 			 }
 		 frame.setVisible(true);

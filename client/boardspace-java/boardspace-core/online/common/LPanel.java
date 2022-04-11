@@ -5,9 +5,11 @@ import java.awt.Container;
 import java.awt.Dimension;
 import lib.Image;
 import java.awt.Insets;
+import java.awt.Rectangle;
 import java.awt.event.KeyListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.util.prefs.Preferences;
 
 import javax.swing.BoxLayout;
 import javax.swing.JCheckBoxMenuItem;
@@ -284,13 +286,41 @@ public class LPanel extends FullscreenPanel implements LFrameProtocol, WindowLis
         }
     }
     boolean recurse=false;
-    public void setParentBounds(int inx,int iny,int inw,int inh)
+    public void setInitialBounds(int inx,int iny,int inw,int inh)
     {
     	if(theFrame!=null) 
     		{ if(G.isCodename1()) 
     			{ theFrame.expand(inw,inh);
     			} 
-    			else { theFrame.setBounds(inx,iny,inw,inh); } 
+    			else if(theLobby!=null)
+    			{ 	int fx = inx;
+    				int fy = iny;
+    				int fw = inw;
+    				int fh = inh;
+    	            Preferences prefs = Preferences.userRoot();
+    	            String suffix ="-"+getTitle();
+    	            String bounds = prefs.get(OnlineConstants.FRAMEBOUNDS+suffix,null);
+    	            if(bounds!=null) { 
+    	            	String split[] = G.split(bounds,',');
+    	            	if(split!=null && split.length==4)
+    	            	{
+    	            		fx = G.IntToken(split[0]);
+    	            		fy = G.IntToken(split[1]);
+    	            		fw = G.IntToken(split[2]);
+    	            		fh = G.IntToken(split[3]);
+    	            	}
+    	            	
+    	            }
+    	            //
+    	            // make sure the bounds are minimally acceptable
+    	            int screenW = G.getScreenWidth();
+    	            int screenH = G.getScreenHeight();
+    	            fw = Math.max(screenW/5,Math.min(fw,screenW));
+    	            fh = Math.max(screenH/5,Math.min(fh,screenH));
+    	            fx = Math.max(0,Math.min(screenW-fw,fx));
+    	            fy = Math.max(0,Math.min(screenH-fh,fy));
+    				theFrame.setBounds(fx,fy,fw,fh);   			
+    			} 
     		}
     }
 
@@ -314,6 +344,17 @@ public class LPanel extends FullscreenPanel implements LFrameProtocol, WindowLis
     public void killFrame()
     { 
         pleaseKill = true;			// remember some tried to do it
+        //
+        // record the default position and size
+        if((theLobby!=null) && !G.isCodename1())
+        {
+            String suffix = "-"+ getTitle();
+	       	Preferences prefs = Preferences.userRoot();
+        	Rectangle dim = theFrame.getBounds();
+        	prefs.put(OnlineConstants.FRAMEBOUNDS+suffix,
+        			""+G.Left(dim)+","+G.Top(dim)+","+G.Width(dim)+","+G.Height(dim));
+        	
+        }
         //G.print("Killframe");
         if ((dontKill == false)		// temporarily inhibited?
         		&&(killed==false))	// already killed

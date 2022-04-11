@@ -165,6 +165,8 @@ public interface OnlineConstants extends Config {
     static final String REVIEWERDIR = "reviewerdir";
     static final String GAME = "game";
     static final String FRAMEWIDTH = "framewidth";
+    static final String FRAMEBOUNDS = "framebounds";
+    
     static final String FRAMEHEIGHT = "frameheight";
     static final String PLAYERS_IN_GAME = "playersingame";
     static final String CHATWIDGET = "chatwidget";

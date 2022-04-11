@@ -555,7 +555,7 @@ class Decoration { double left; double right; double top; double bottom; String 
 			new Decoration(91.2,95.3,13.9,16.1,"Icarite\nTerritory"),
 			new Decoration(88.5,93.3,38.4,40.6,"Wastelander\nTerritory"),
 
-			new Decoration(29.55, 34.95, 14.7,16.4, "Wind Saloon"),
+			new Decoration(29.55, 34.95, 14.7,16.4, "Wind Salon"),
 			new Decoration(41.0, 46.0,  14.7,16.4, "Nimbus Loft"),
 			new Decoration(52.5,57.0,  14.7,16.4, "Breeze Bar"),
 			new Decoration(64.1,68.5,  14.7,16.4, "Sky Lounge"),

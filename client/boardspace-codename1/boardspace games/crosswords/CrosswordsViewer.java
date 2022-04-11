@@ -912,9 +912,12 @@ public void setLetterColor(Graphics gc,CrosswordsBoard gb,CrosswordsCell cell)
         	{	all.hitCode = CrosswordsId.Definition;
         		all.hitObject = closestCell;
         		all.setHelpText(s.get(GetDefinitionMessage,word.name));
+        		definitionCell = closestCell;
         	}
         	}
-        	if(definitionCell!=closestCell) { definitionCell = null; }
+        	if(definitionCell!=closestCell)
+        		{ definitionCell = null; 
+        	}
         }
         // this enumerates the cells in the board in an arbitrary order.  A more
         // conventional double xy loop might be needed if the graphics overlap and

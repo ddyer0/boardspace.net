@@ -44,19 +44,45 @@ public abstract class commonMPMove extends commonMove implements Play6Constants 
     {	
 	    int nplay = playerScores.length;
 	   	double val = playerScores[forplayer];
+		double max = 0;
 	   	if(nplay>1)
 	   	{
-		double max = val;
+	   	boolean first = true;
 		for(int i=0;i<nplay;i++)
 		{
 			if(i!=forplayer) 
 			{ double thisv =playerScores[i];
-			  if(max<thisv) { max = thisv; }
+			  if(first || (max<thisv)) { max = thisv; first = true; }
 			}
 		}
 	    if(val>=VALUE_OF_WIN) { return(VALUE_OF_WIN); }
 	    if(max>=VALUE_OF_WIN) { return(-VALUE_OF_WIN); }
 	    double v = val-max;
+	    return(v);
+	   	}
+	   	else {
+		    if(val>=VALUE_OF_WIN) { return(VALUE_OF_WIN); }
+		    return(val);
+	   	}
+   } 
+    public double reScoreProportional(int forplayer,double VALUE_OF_WIN)
+    {	
+	    int nplay = playerScores.length;
+	   	double val = playerScores[forplayer];
+	   	double max = 0;
+	   	if(nplay>1)
+	   	{
+	   	boolean first = true;
+		for(int i=0;i<nplay;i++)
+		{
+			if(i!=forplayer) 
+			{ double thisv =playerScores[i];
+			  if(first || (max<thisv)) { max = thisv; first = false; }
+			}
+		}
+	    double v = val-max;
+	    if(v>=VALUE_OF_WIN) { return VALUE_OF_WIN; }
+	    else if(v<=-VALUE_OF_WIN) { return -VALUE_OF_WIN; }
 	    return(v);
 	   	}
 	   	else {

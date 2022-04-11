@@ -1032,6 +1032,7 @@ public interface ViticultureConstants
     	ShowScores(null),
 		CloseOverlay(null),
 		ScoreSummary(null),
+		ShowBuildings("Show all Buildings"),
     	;
     	String shortName = name();
     	public String shortName() { return(shortName); }

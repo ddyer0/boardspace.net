@@ -3123,9 +3123,11 @@ private Color playerBackground[] = {
 				case FightTheOpressor:
 				case JoinTheEstablishment:
 					{
-					PerformAndTransmit(rack.name());
 					EPlayer p = bb.getCurrentPlayer();
 					p.view = p.pendingView = EPlayer.PlayerView.Normal;
+					globalRecruits = null;
+					bigChip = null;
+					PerformAndTransmit(rack.name());
 					}
 					break;
 				case RecruitFirstJuliaOption:
