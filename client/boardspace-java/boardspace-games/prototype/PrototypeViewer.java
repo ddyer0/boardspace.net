@@ -135,6 +135,14 @@ public class PrototypeViewer extends CCanvas<PrototypeCell,PrototypeBoard> imple
 		gameIcon = PrototypeChip.Icon.image;
     }
 
+    /**
+     * this is the hook for substituting alternate tile sets.  This is called at a low level
+     * from drawChip, and the result is passed to the chip's getAltChip method to substitute
+     * a different chip.
+     */
+    public int getAltChipset() { return(0); }
+    
+ 
 	/**
 	 * 
 	 * this is the real instance intialization, performed only once.

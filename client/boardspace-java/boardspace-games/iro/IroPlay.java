@@ -76,8 +76,10 @@ public class IroPlay extends commonRobot<IroBoard> implements Runnable, IroConst
     private double NODE_EXPANSION_RATE = 1.0;
     private double CHILD_SHARE = 0.5;				// aggressiveness of pruning "hopeless" children. 0.5 is normal 1.0 is very agressive	
     private boolean STORED_CHILD_LIMIT_STOP = false;	// if true, stop the search when the child pool is exhausted.
-
-    
+    private int MONTEBOT_DEPTH = 100;
+    private int MONTEBOT_TIME = 5;
+    private double MONTE_POSITION_WEIGHT = 0.5;
+    private double MONTE_WOOD_WEIGHT = 0.5;
      /**
      *  Constructor, strategy corresponds to the robot skill level displayed in the lobby.
      * 
@@ -93,7 +95,9 @@ public class IroPlay extends commonRobot<IroBoard> implements Runnable, IroConst
     	IroPlay cc = (IroPlay)c;
     	cc.Strategy = Strategy;
     	cc.movingForPlayer = movingForPlayer; 
-    	return(c);
+    	cc.MONTE_WOOD_WEIGHT = MONTE_WOOD_WEIGHT;
+       	cc.MONTE_POSITION_WEIGHT = MONTE_POSITION_WEIGHT;
+       	return(c);
     }
 
     /** return true if the search should be depth limited at this point.  current
@@ -150,10 +154,19 @@ public class IroPlay extends commonRobot<IroBoard> implements Runnable, IroConst
      * pruned with alpha-beta.
      */
         public CommonMoveStack  List_Of_Legal_Moves()
-        {
-            return(board.GetListOfMoves());
+        {	board.robotBoard = true;
+        	CommonMoveStack all = board.GetListOfMoves();
+        	G.Assert(all.size()>0,"should be moves");
+        	return all;
         }
-
+        
+        public commonMove Get_Random_Move(Random rand)
+        {	
+        	commonMove m = board.getRandomMove(rand);
+        	if(m==null) { m = super.Get_Random_Move(rand); }
+        	return m;
+        }
+        
     /** return a value of the current board position for the specified player.
      * this should be greatest for a winning position.  The evaluations ought
      * to be stable and greater scores should indicate some degree of progress
@@ -286,22 +299,41 @@ public class IroPlay extends commonRobot<IroBoard> implements Runnable, IroConst
         switch(strategy)
         {
         default: throw G.Error("Not expecting strategy "+strategy);
-        case -100:	// old dumbot, before shift in pruning and randomization 
-        	MONTEBOT = DEPLOY_MONTEBOT; break;
-        case SMARTBOT_LEVEL:
-        	MONTEBOT=DEPLOY_MONTEBOT;
-        	NODE_EXPANSION_RATE = 0.25;
-        	ALPHA = 1.0;
-         	break;
         case WEAKBOT_LEVEL:
         	WEAKBOT = true;
 			//$FALL-THROUGH$
-		case DUMBOT_LEVEL:
-           	MONTEBOT=false;
-           	MAX_DEPTH = DUMBOT_DEPTH;
+        case BESTBOT_LEVEL:
+          	MONTEBOT=DEPLOY_MONTEBOT;
+           	ALPHA = 0.5;
+           	MONTEBOT_DEPTH = 1000;
+           	MONTEBOT_TIME = 5;
+         	MONTE_WOOD_WEIGHT = 0;
+           	MONTE_POSITION_WEIGHT = 0;
+          	break;
+        case SMARTBOT_LEVEL:
+           	MONTEBOT=DEPLOY_MONTEBOT;
+           	ALPHA = 0.5;
+           	NODE_EXPANSION_RATE = 1.0;
+           	MONTEBOT_TIME = 5;
+           	MONTEBOT_DEPTH = 200;
+           	MONTE_WOOD_WEIGHT = 0.75;
+           	MONTE_POSITION_WEIGHT = 0.25;
+         	break;
+         case DUMBOT_LEVEL:
+           	MONTEBOT=DEPLOY_MONTEBOT;
+           	ALPHA = 0.5;
+           	NODE_EXPANSION_RATE = 1.0;
+           	MONTEBOT_TIME = 5;
+           	MONTEBOT_DEPTH = 200;
+           	MONTE_WOOD_WEIGHT = 0.75;
+           	MONTE_POSITION_WEIGHT = 0.25;
          	break;
         	
-        case MONTEBOT_LEVEL: ALPHA = .25; MONTEBOT=true; EXP_MONTEBOT = true; break;
+        case MONTEBOT_LEVEL: 
+        	ALPHA = .25; 
+        	MONTEBOT=true; 
+        	EXP_MONTEBOT = true; 
+        	break;
         }
     }
 
@@ -358,25 +390,27 @@ public void PrepareToMove(int playerIndex)
         double randomn = (RANDOMIZE && (board.moveNumber <= 4))
         						? 0.1/board.moveNumber
         						: 0.0;
+        IroState state = board.getState();
         UCTMoveSearcher monte_search_state = new UCTMoveSearcher(this);
         monte_search_state.save_top_digest = true;	// always on as a background check
         monte_search_state.save_digest=false;	// debugging non-blitz only
         monte_search_state.win_randomization = randomn;		// a little bit of jitter because the values tend to be very close
-        monte_search_state.timePerMove = 15;		// seconds per move
+
+        monte_search_state.timePerMove = state==IroState.Play ? MONTEBOT_TIME : 1;		// seconds per move
         monte_search_state.stored_child_limit = 100000;
         monte_search_state.verbose = verbose;
         monte_search_state.alpha = ALPHA;
-        monte_search_state.blitz = false;			// for pushfight, blitz is 2/3 the speed of normal unwinds
+        monte_search_state.blitz = true;			// blitz around is 2/3 the speed of normal unwinds
         monte_search_state.sort_moves = false;
         monte_search_state.only_child_optimization = true;
         monte_search_state.dead_child_optimization = true;
         monte_search_state.simulationsPerNode = 1;
         monte_search_state.killHopelessChildrenShare = CHILD_SHARE;
-        monte_search_state.final_depth = 9999;		// note needed for pushfight which is always finite
+        monte_search_state.final_depth = MONTEBOT_DEPTH;	
         monte_search_state.node_expansion_rate = NODE_EXPANSION_RATE;
         monte_search_state.randomize_uct_children = true;     
         monte_search_state.maxThreads = DEPLOY_THREADS;
-        monte_search_state.random_moves_per_second = WEAKBOT ? 15000 : 400000;		// 
+        monte_search_state.random_moves_per_second = WEAKBOT ? 222322 : 2223223;		// 
         monte_search_state.max_random_moves_per_second = 5000000;		// 
         // for Hex, the child pool is exhausted very quickly, but the results
         // still get better the longer you search.  Other games may work better
@@ -423,9 +457,13 @@ public void PrepareToMove(int playerIndex)
  {	int player = lastMove.player;
  	boolean win = board.winForPlayerNow(player);
  	if(win) { return(UCT_WIN_LOSS? 1.0 : 0.8+0.2/boardSearchLevel); }
- 	boolean win2 = board.winForPlayerNow(nextPlayer[player]);
+ 	int nextP = nextPlayer[player];
+ 	boolean win2 = board.winForPlayerNow(nextP);
  	if(win2) { return(- (UCT_WIN_LOSS?1.0:(0.8+0.2/boardSearchLevel))); }
- 	return(0);
+ 	double ss0 = board.simpleScore(player,MONTE_POSITION_WEIGHT,MONTE_WOOD_WEIGHT);
+ 	double ss1 = board.simpleScore(nextP,MONTE_POSITION_WEIGHT,MONTE_WOOD_WEIGHT);
+ 	double val = ss0-ss1;
+ 	return(val);
  }
 /**
  * for a multiplayer game, it would be something like this

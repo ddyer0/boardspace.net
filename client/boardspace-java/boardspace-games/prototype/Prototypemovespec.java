@@ -215,11 +215,11 @@ public class Prototypemovespec
         {
         case MOVE_PICKB:
 		case MOVE_DROPB:
-	        return G.concat(opname , " ", to_col , " " , to_row);
+	        return G.concat(opname , to_col , " " , to_row);
 
         case MOVE_DROP:
         case MOVE_PICK:
-            return G.concat(opname , " ",source.shortName());
+            return G.concat(opname , source.shortName());
 
         case MOVE_START:
             return G.concat(indx,"Start P" , player);

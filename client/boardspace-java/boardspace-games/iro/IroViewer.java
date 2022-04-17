@@ -14,10 +14,10 @@ import lib.ExtendedHashtable;
 import lib.G;
 import lib.GC;
 import lib.HitPoint;
-import lib.Random;
-import lib.StockArt;
 import lib.TextButton;
+import lib.Toggle;
 import lib.LFrameProtocol;
+import lib.StockArt;
 import online.game.*;
 import online.game.sgf.sgf_node;
 import online.game.sgf.sgf_property;
@@ -93,6 +93,9 @@ public class IroViewer extends CCanvas<IroCell,IroBoard> implements IroConstants
     private Color boardBackgroundColor = new Color(220,165,155);
     
 
+    public int getAltChipset() { return(colorBlind ? 0 : 1); }
+    
+    
      
     // private state
     private IroBoard bb = null; //the board from which we are displaying
@@ -116,16 +119,18 @@ public class IroViewer extends CCanvas<IroCell,IroBoard> implements IroConstants
     //
     private Rectangle chipRects[] = addZoneRect("chip",2);
  
- 	private TextButton swapButton = addButton(SWAP,GameId.HitSwapButton,SwapDescription,
+ 	private TextButton doneButton = addButton(DoneAction,GameId.HitDoneButton,ExplainDone,
 			HighlightColor, rackBackGroundColor,rackIdleColor);
-	private TextButton doneButton = addButton(DoneAction,GameId.HitDoneButton,ExplainDone,
-			HighlightColor, rackBackGroundColor,rackIdleColor);
+	private Rectangle rotate = addRect("rotate");
 	
+	private Toggle altChip = new Toggle(this,"altchip",
+			IroChip.ColorBlind,IroId.SetColorBlind,UseColorblindTiles,
+			IroChip.Normal,IroId.ClearColorBlind,NoColorblindTiles
+			);
+			
 	// private menu items
-    private JCheckBoxMenuItem rotationOption = null;		// rotate the board view
-    private boolean doRotation=true;					// current state
-    private boolean lastRotation=!doRotation;			// user to trigger background redraw
-    
+    private JCheckBoxMenuItem colorBlindOption = null;	// 
+    boolean colorBlind = false;
 /**
  * this is called during initialization to load all the images. Conventionally,
  * these are loading into a static variable so they can be shared by all.
@@ -160,10 +165,12 @@ public class IroViewer extends CCanvas<IroCell,IroBoard> implements IroConstants
         	// will be console chatter about strings not in the list yet.
         	IroConstants.putStrings();
         }
-         
-        rotationOption = myFrame.addOption("rotate board",true,deferredEvents);
+        boolean cb = Default.getBoolean(Default.colorblind);
+        colorBlindOption = 
+        		 myFrame.addOption(s.get(ColorBlindOption), colorBlind,deferredEvents);
+        setColorBlind(cb);
         
-        String type = info.getString(OnlineConstants.GAMETYPE, PrototypeVariation.prototype.name);
+        String type = info.getString(OnlineConstants.GAMETYPE, IroVariation.iro.name);
         // recommended procedure is to supply players and randomkey, even for games which
         // are current strictly 2 player and no-randomization.  It will make it easier when
         // later, some variant is created, or the game code base is re purposed as the basis
@@ -264,14 +271,9 @@ public class IroViewer extends CCanvas<IroCell,IroBoard> implements IroConstants
  //   	setLocalBoundsWT(x,y,width,height,useWide,useTall);
  //   }
 
-    boolean traditionalLayout = false;
     public void setLocalBounds(int x, int y, int width, int height)
     {
-    	if(traditionalLayout) { super.setLocalBounds(x, y, width, height); }
-    	else { modernLayout(x,y,width,height); }
-    }
-    private void modernLayout(int x, int y, int width, int height)
-    {	G.SetRect(fullRect, x, y, width, height);
+    	G.SetRect(fullRect, x, y, width, height);
     	GameLayoutManager layout = selectedLayout;
     	int nPlayers = nPlayers();
        	int chatHeight = selectChatHeight(height);
@@ -316,12 +318,12 @@ public class IroViewer extends CCanvas<IroCell,IroBoard> implements IroConstants
     	// "my side" orientation, such as chess, use seatingFaceToFaceRotated() as
     	// the test.  For boards that are noticably rectangular, such as Push Fight,
     	// use mainW<mainH
-    	boolean rotate = mainW<mainH;	
-        int nrows = rotate ? 24 : 15;  // b.boardRows
-        int ncols = rotate ? 15 : 24;	 // b.boardColumns
+    	int nrows = 8;  // b.boardRows
+        int ncols = 6;	 // b.boardColumns
+        int stateH = fh*3;
   	
     	// calculate a suitable cell size for the board
-    	double cs = Math.min((double)mainW/ncols,(double)mainH/nrows);
+    	double cs = Math.min((double)mainW/ncols,(double)(mainH-stateH)/nrows);
     	CELLSIZE = (int)cs;
     	//G.print("cell "+cs0+" "+cs+" "+bestPercent);
     	// center the board in the remaining space
@@ -338,21 +340,13 @@ public class IroViewer extends CCanvas<IroCell,IroBoard> implements IroConstants
     	//
         int stateY = boardY;
         int stateX = boardX;
-        int stateH = fh*3;
-        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,noChatRect);
+        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,altChip,rotate,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
-    	if(rotate)
-    	{	// this conspires to rotate the drawing of the board
-    		// and contents if the players are sitting opposite
-    		// on the short side of the screen.
-    		G.setRotation(boardRect,-Math.PI/2);
-    		contextRotation = -Math.PI/2;
-    	}
     	
     	// goal and bottom ornaments, depending on the rendering can share
     	// the rectangle or can be offset downward.  Remember that the grid
     	// can intrude too.
-    	G.SetRect(goalRect, boardX, boardBottom-stateH,boardW,stateH);       
+    	G.SetRect(goalRect, boardX, boardBottom-stateH/2,boardW,stateH);       
         setProgressRect(progressRect,goalRect);
         positionTheChat(chatRect,chatBackgroundColor,rackBackGroundColor);
  	
@@ -360,8 +354,10 @@ public class IroViewer extends CCanvas<IroCell,IroBoard> implements IroConstants
     public Rectangle createPlayerGroup(int player,int x,int y,double rotation,int unitsize)
     {	commonPlayer pl = getPlayerOrTemp(player);
     	Rectangle chip = chipRects[player];
-    	G.SetRect(chip,	x,	y,	4*unitsize,	3*unitsize);
-    	Rectangle box =  pl.createRectangularPictureGroup(x+2*unitsize,y,2*unitsize/3);
+    	Rectangle box =  pl.createRectangularPictureGroup(x,y,2*unitsize/3);
+    	
+       	G.SetRect(chip,	x,	y+G.Height(box),	12*unitsize,	2*unitsize);
+        
     	Rectangle done = doneRects[player];
     	int doneW = plannedSeating()? unitsize*3 : 0;
     	G.SetRect(done,G.Right(box)+unitsize/2,G.Top(box)+unitsize/2,doneW,doneW/2);
@@ -370,161 +366,25 @@ public class IroViewer extends CCanvas<IroCell,IroBoard> implements IroConstants
     	return(box);
     }
     
-    private Rectangle createPlayerGroup(commonPlayer pl,int x,int y,Rectangle chipRect,int unitsize)
-    {
-		// a pool of chips for the first player at the top
-        G.SetRect(chipRect,	x,	y,	2*unitsize,	3*unitsize);
-        Rectangle box = pl.createRectangularPictureGroup(x+2*unitsize,y,2*unitsize/3);
-        G.union(box, chipRect);
-        return(box);
-    }
-    
-    /**
-     * calculate a metric for one of three layouts, "normal" "wide" or "tall",
-     * which should normally correspond to the area devoted to the actual board.
-     * these don't have to be different, but devices with very rectangular
-     * aspect ratios make "wide" and "tall" important.  
-     * @param width
-     * @param height
-     * @param wideMode
-     * @param tallMode
-     * @return a metric corresponding to board size
-     */
-    public int setLocalBoundsSize(int width,int height,boolean wideMode,boolean tallMode)
-    {	
-        int ncols = tallMode ? 29 : wideMode ? 42 : 37; // more cells wide to allow for the aux displays
-        int nrows = tallMode ? 27 : 20;  
-        int cellw = width / ncols;
-        int chatHeight = selectChatHeight(height);
-        int cellh = (height-(wideMode?0:chatHeight)) / nrows;
-        
-        CELLSIZE = ((chatHeight==0)&&wideMode) 
-        				? 0	// no chat, never select wide mode 
-        				: Math.max(2,Math.min(cellw, cellh)); //cell size appropriate for the aspect ratio of the canvas
-        return(CELLSIZE);
-    }
-    public void setLocalBoundsWT(int x, int y, int width, int height,boolean wideMode,boolean tallMode)
-    {   
-        int nrows = 20;  
-        int chatHeight = selectChatHeight(height);
-        boolean noChat = (chatHeight==0);
-        int logHeight = wideMode||noChat||tallMode ? CELLSIZE*5 : chatHeight;
-        int C2 = CELLSIZE/2;
-        G.SetRect(fullRect,0, 0,width, height);
-
-        G.SetRect(boardRect, 0, wideMode ? 0 : chatHeight+C2,
-        		CELLSIZE * (int)(nrows*1.5), CELLSIZE * (nrows ));
-        int stateY = G.Top( boardRect);
-        int stateX = C2;
-        int stateH = CELLSIZE;
-        int stateW = G.Width(boardRect);
-        G.placeRow(stateX+stateH,stateY,stateW-stateH,stateH,stateRect,noChatRect);
-        G.SetRect(iconRect, stateX, stateY, stateH, stateH);
-        
- 		G.SetRect(swapButton,G.Left( boardRect) + CELLSIZE, G.Top(boardRect)+(doRotation?2:12)*CELLSIZE,
- 				 CELLSIZE * 5, 3*CELLSIZE/2 );
-
-		// a pool of chips for the first player at the top
-        int px = tallMode ? G.Left(boardRect)+CELLSIZE : G.Right(boardRect) - (wideMode? 0 : 11*CELLSIZE);
-        int py = tallMode ? G.Bottom(boardRect)+CELLSIZE : wideMode? CELLSIZE: chatHeight+CELLSIZE;
-        int lowest = py;
-        for(int pn = 0;pn<bb.players_in_game;pn++)
-        {	commonPlayer pl = getPlayerOrTemp(pn);
-        	createPlayerGroup(pl,px,py,chipRects[pn],CELLSIZE);
-        	int pw = G.Width(pl.playerBox)+C2;
-        	int ph = G.Height(pl.playerBox);
-        	lowest = Math.max(lowest, py+ph);
-        	px += tallMode ? 0 : wideMode ? pw : pw;
-        	py += tallMode ? ph : wideMode ? 0 : 0;
-         }
-
-		//this sets up the "vcr cluster" of forward and back controls.
-        SetupVcrRects(C2,
-            G.Bottom(boardRect) - (5 * CELLSIZE),
-            CELLSIZE * 6,
-            CELLSIZE*3);
-        
-        G.SetRect(goalRect, CELLSIZE * 5, G.Bottom(boardRect)-CELLSIZE,G.Width(boardRect)-16*CELLSIZE , CELLSIZE);
-        
-        setProgressRect(progressRect,goalRect);
-  
-            // "edit" rectangle, available in reviewers to switch to puzzle mode
-            G.SetRect(editRect, 
-            		G.Right(boardRect)-CELLSIZE*5,G.Bottom(boardRect)-5*CELLSIZE/2,
-            		CELLSIZE*3,3*CELLSIZE/2);
-          
-            int chatX = wideMode ? G.Right(boardRect):G.Left(fullRect);
-            int chatY = wideMode ? lowest : G.Top(fullRect);
-            boolean logBottom = tallMode & (height-lowest>CELLSIZE*6);
-            int logW = CELLSIZE * (logBottom ? 8 : 6);
-            int logX = wideMode 
-            			? G.Right(boardRect)-logW-CELLSIZE*2 
-            			: noChat&&!tallMode ? G.Right(boardRect) : width-logW-C2;
-
-            G.SetRect(chatRect, 
-            		chatX,		// the chat area
-            		chatY,
-            		width-(tallMode ? C2 : (wideMode?chatX:logW)+CELLSIZE),
-            		wideMode?height-chatY-C2:chatHeight);
-            int logY = logBottom 
-            			? lowest+C2 
-            			: noChat
-            			  ? (tallMode ? 0 : lowest+CELLSIZE)
-            			  : tallMode ? G.Bottom(chatRect)+CELLSIZE : y ;
-            G.SetRect(logRect,logX,    		logY,logW,
-            		logBottom ? height-lowest-CELLSIZE : logHeight);
-
-          
-            // "done" rectangle, should always be visible, but only active when a move is complete.
-            G.AlignXY(doneButton, G.Left(editRect)-4*CELLSIZE,
-            		G.Top(editRect),
-            		editRect);
-
-        positionTheChat(chatRect,chatBackgroundColor,rackBackGroundColor);
-        generalRefresh();
-    }
-
-
 
 	// draw a box of spare chips. For pushfight it's purely for effect, but if you
     // wish you can pick up and drop chips.
     private void DrawChipPool(Graphics gc, Rectangle r, commonPlayer pl, HitPoint highlight,IroBoard gb)
     {	int player = pl.boardIndex;
         boolean canhit = gb.legalToHitChips(player) && G.pointInRect(highlight, r);
-        if (canhit)
+        
+        IroCell row = gb.getPlayerCell(player);
+        int h = row.height();
+        int sz = Math.min(CELLSIZE,G.Height(r));
+        GC.frameRect(gc, Color.black, r);
+        double space = Math.min(1,G.Width(r)/((h+1)*(double)sz));
+        if(row.drawStack(gc,this,canhit?highlight:null,sz,G.Left(r)+sz/2,G.centerY(r),0,space,0,null))
         {
-            highlight.hitCode = gb.getPlayerColor(player);
-            highlight.arrow = (gb.pickedObject!=null)?StockArt.DownArrow:StockArt.UpArrow;
-            highlight.awidth = CELLSIZE;
+        	highlight.awidth = sz;
+        	highlight.spriteColor = Color.red;
         }
-
-        if (gc != null)
-        { // draw a random pile of chips.  It's just for effect
-
-            int spacex = G.Width(r) - CELLSIZE;
-            int spacey = G.Height(r) - CELLSIZE;
-            Random rand = new Random(4321 + player); // consistent randoms, different for black and white 
-
-            if (canhit)
-            {	// draw a highlight background if appropriate
-                GC.fillRect(gc, HighlightColor, r);
-            }
-
-            GC.frameRect(gc, Color.black, r);
-            IroChip chip = gb.getPlayerChip(player);
-            IroCell cell = gb.getPlayerCell(player);
-            int nc = 20;	
-            // draw 20 chips
-            if(spacex>0 && spacey>0)
-            {
-            while (nc-- > 0)
-            {	int rx = Random.nextInt(rand, spacex);
-                int ry = Random.nextInt(rand, spacey);
-                // using the cell to draw the chip has the side effect of setting
-                // the cell's location for animation.
-                cell.drawChip(gc,this,chip,gb.cellSize(),G.Left(r)+CELLSIZE/2+rx,G.Top(r)+CELLSIZE/2+ry,null);
-             }}
-        }
+ 
+  
      }
     /**
      * return the dynamically adjusted size during an animation.  This allows
@@ -545,7 +405,14 @@ public class IroViewer extends CCanvas<IroCell,IroBoard> implements IroConstants
     {
     	// draw an object being dragged
     	// use the board cell size rather than the window cell size
-    	IroChip.getChip(obj).drawChip(g,this,bb.cellSize(), xp, yp, null);
+    	IroChip chip = IroChip.getChip(obj);
+    	double rotation = 0;
+    	if(chip.id==IroId.Tile) 
+    	{
+    		IroCell src = bb.getSource();
+    		rotation = rotations[src.rotation];
+    	}
+    	chip.drawRotatedChip(g,this,rotation,bb.cellSize(), 1, xp, yp, null);
     }
     // also related to sprites,
     // default position to display static sprites, typically the "moving object" in replay mode
@@ -565,6 +432,8 @@ public class IroViewer extends CCanvas<IroCell,IroBoard> implements IroConstants
      IroChip.backgroundTile.image.tileImage(gc, fullRect);   
       drawFixedBoard(gc);
      }
+    
+    double rotations[] = {0,-Math.PI/2,Math.PI,-Math.PI*3/2};
     
     // land here after rotating the board drawing context if appropriate
     public void drawFixedBoard(Graphics gc,Rectangle brect)
@@ -586,7 +455,6 @@ public class IroViewer extends CCanvas<IroCell,IroBoard> implements IroConstants
 	      // to draw the cells, set gb.Drawing_Style in the board init method.  Create a
 	      // DrawGridCoord(Graphics gc, Color clt,int xpos, int ypos, int cellsize,String txt)
 	      // on the board to fine tune the exact positions of the text
-	      gb.DrawGrid(gc, brect, use_grid, boardBackgroundColor, GridColor, GridColor, GridColor);
 
 	      // draw the tile grid.  The positions are determined by the underlying board
 	      // object, and the tile itself if carefully crafted to tile the pushfight board
@@ -595,27 +463,48 @@ public class IroViewer extends CCanvas<IroCell,IroBoard> implements IroConstants
 	      // but for more complex graphics with overlapping shadows or stacked
 	      // objects, this double loop is useful if you need to control the
 	      // order the objects are drawn in.
-          IroChip tile = lastRotation?IroChip.hexTile:IroChip.hexTileNR;
-          int left = G.Left(brect);
-          int top = G.Bottom(brect);
-          int xsize = gb.cellSize();//((lastRotation?0.80:0.8)*);
+          GC.fillRect(gc,Color.gray,brect);
+	      gb.DrawGrid(gc, brect, use_grid, boardBackgroundColor, GridColor, GridColor, GridColor);
+    }
+    private void drawFixedTiles(Graphics gc,IroBoard gb,Rectangle brect)
+    {	boolean reverse = gb.reverseY();
+    	int dir = reverse?-1:1;
+    	int roff = reverse ? 2 : 0;
+    	int left = G.Left(brect);
+    	int top = G.Bottom(brect);
+    	int cs = gb.cellSize();
+    	IroCell anchor = reverse 
+    			? gb.getCell((char)('A'+IroBoard.nCols-1),1)
+    			: gb.getCell('A',IroBoard.nRows);
+    	int lx =(int)(left+ gb.cellToX(anchor)-cs*0.55);
+    	int ly = (int)(top-gb.cellToY(anchor)-cs*0.55);
+    	GC.fillRect(gc,Color.black,lx,ly,cs*IroBoard.nCols+(int)(cs*0.1),cs*IroBoard.nRows+(int)(cs*0.1));
+    	for(Enumeration<IroCell>cells = gb.getIterator(Itype.TBRL); cells.hasMoreElements(); )
+          { //where we draw the grid
+        	  IroCell cell = cells.nextElement();
+        	  
+        	  if(cell.isTileAnchor && !cell.isPicked)
+        	  {
+               	  int ypos = top - gb.cellToY(cell);
+            	  int xpos = left + gb.cellToX(cell);
+            	  int rv = (cell.rotation+roff)%4;
+            	  double rot = rotations[rv];
+        		  cell.tile.drawRotatedChip(gc,this,rot,(int)(cs*2.02),1.0,xpos+dir*cs/2,ypos+dir*cs/2,null);
+        	  }	             
+	       } 
+          /*
           for(Enumeration<IroCell>cells = gb.getIterator(Itype.TBRL); cells.hasMoreElements(); )
           { //where we draw the grid
         	  IroCell cell = cells.nextElement();
         	  int ypos = top - gb.cellToY(cell);
         	  int xpos = left + gb.cellToX(cell);
-        	  int thiscol = cell.col;
-        	  int thisrow = cell.row;
-        	  // double scale[] = TILESCALES[hidx];
-        	  //adjustScales(scale,null);		// adjust the tile size/position.  This is used only in development
-        	  // to fine tune the board rendering.
-        	  //G.print("cell "+CELLSIZE+" "+xsize);
-        	  tile.getAltDisplayChip(thiscol*thisrow^thisrow).drawChip(gc,this,xsize,xpos,ypos,null);
-        	  //equivalent lower level draw image
-        	  // drawImage(gc,tileImages[hidx].image,tileImages[hidx].getScale(), xpos,ypos,gb.CELLSIZE,1.0);
-        	  //
-	               
-	       }       	
+        	  StockArt.SmallO.drawChip(gc,this,cs,xpos,ypos,cell.color.name());
+         	  // double scale[] = TILESCALES[hidx];
+  
+	             
+	       } 
+	       */
+       
     }
     
     /**
@@ -643,21 +532,63 @@ public class IroViewer extends CCanvas<IroCell,IroBoard> implements IroConstants
      */
     public void drawBoardElements(Graphics gc, IroBoard gb, Rectangle brect, HitPoint highlight)
     {
+    	drawFixedTiles(gc,gb,brect);
+    	IroState state = gb.getState();
         //
         // now draw the contents of the board and highlights or ornaments.  We're also
     	// called when not actually drawing, to determine if the mouse is pointing at
     	// something which might allow an action.  
     	Hashtable<IroCell,Iromovespec> targets = gb.getTargets();
-
-    	for(IroCell cell = gb.allCells; cell!=null; cell=cell.next)
+    	boolean reverse = gb.reverseY();
+    	IroChip picked = gb.pickedObject;
+        boolean setup = ((state!=IroState.Play) 
+        					&& (state!=IroState.Confirm) 
+        					&& (state!=IroState.Gameover));
+        		 
+        for(IroCell cell = gb.allCells; cell!=null; cell=cell.next)
           {
          	int ypos = G.Bottom(brect) - gb.cellToY(cell);
             int xpos = G.Left(brect) + gb.cellToX(cell);
+            int xpos0 = xpos;
+            int ypos0 = ypos;
             boolean canHit = gb.legalToHitBoard(cell,targets);
+            boolean offset = false;
+            // special offset for tile swapping
+            if(canHit
+            		&& setup
+            		&& (picked==null ? cell.isEmpty() : picked.id==IroId.Tile))
+            {	offset = true;
+            	int dif = reverse ? CELLSIZE/-2 : CELLSIZE/2;
+            	xpos += dif;
+            	ypos += dif;
+            }
             if(cell.drawStack(gc,this,canHit?highlight:null,CELLSIZE,xpos,ypos,0,0.1,0.1,null))
             		{
             		highlight.spriteColor = Color.red;
                 	highlight.awidth = CELLSIZE;
+            		}
+            else if(offset && G.pointNearCenter(highlight,xpos0,ypos0,CELLSIZE,CELLSIZE))
+            {	Rectangle target =  new Rectangle(xpos-CELLSIZE,ypos-CELLSIZE,CELLSIZE*2,CELLSIZE*2);
+            	
+            	highlight.hitObject = cell;
+            	if(G.Left(highlight)>xpos)
+            	{	highlight.spriteRect = target;
+            		highlight.spriteColor = Color.red;
+            		highlight.hitCode = IroId.RotateCW;
+            		highlight.arrow = StockArt.Rotate_CW;
+            		highlight.awidth = CELLSIZE/2;
+            	}
+            	else
+            	{
+               		highlight.hitCode = IroId.RotateCCW;
+            		highlight.arrow = StockArt.Rotate_CCW;
+            		highlight.awidth = CELLSIZE/2;
+           		
+            	}
+            }
+            if((picked!=null) && targets.get(cell)!=null)
+            {
+            	StockArt.SmallO.drawChip(gc,this,CELLSIZE,xpos,ypos,null);
             }
         }
     }
@@ -692,7 +623,7 @@ public class IroViewer extends CCanvas<IroCell,IroBoard> implements IroConstants
        // used for everything called from here.  Also beware that the board structures
        // seen by the user interface are not the same ones as are seen by the execution engine.
        IroBoard gb = disB(gc);
-       PrototypeState state = gb.getState();
+       IroState state = gb.getState();
        boolean moving = hasMovingObject(selectPos);
    	   if(gc!=null)
    		{
@@ -741,15 +672,8 @@ public class IroViewer extends CCanvas<IroCell,IroBoard> implements IroConstants
        
        GC.setFont(gc,standardBoldFont());
        
-       // draw the board control buttons 
-		if((state==PrototypeState.ConfirmSwap) 
-			|| (state==PrototypeState.PlayOrSwap) 
-			|| (state==PrototypeState.Puzzle))
-			{// make the "swap" button appear if we're in the correct state
-				swapButton.show(gc, buttonSelect);
-			}
-
-		if (state != PrototypeState.Puzzle)
+ 
+		if (state != IroState.Puzzle)
         {	// if in any normal "playing" state, there should be a done button
 			// we let the board be the ultimate arbiter of if the "done" button
 			// is currently active.
@@ -762,19 +686,21 @@ public class IroViewer extends CCanvas<IroCell,IroBoard> implements IroConstants
 
 		// if the state is Puzzle, present the player names as start buttons.
 		// in any case, pass the mouse location so tooltips will be attached.
-        drawPlayerStuff(gc,(state==PrototypeState.Puzzle),buttonSelect,HighlightColor,rackBackGroundColor);
+        drawPlayerStuff(gc,(state==IroState.Puzzle),buttonSelect,HighlightColor,rackBackGroundColor);
   
  
         // draw the avatars
         standardGameMessage(gc,messageRotation,
-            				state==PrototypeState.Gameover?gameOverMessage():s.get(state.description()),
-            				state!=PrototypeState.Puzzle,
+            				state==IroState.Gameover?gameOverMessage():s.get(state.description()),
+            				state!=IroState.Puzzle,
             				gb.whoseTurn,
             				stateRect);
         gb.getPlayerChip(gb.whoseTurn).drawChip(gc,this,iconRect,null);
         goalAndProgressMessage(gc,nonDragSelect,Color.black,s.get(VictoryCondition),progressRect, goalRect);
             //      DrawRepRect(gc,pl.displayRotation,Color.black,b.Digest(),repRect);
         
+        StockArt.Rotate180.drawChip(gc, this, rotate,selectPos, IroId.Rotate, s.get(ReverseViewExplanation));
+        altChip.draw(gc,selectPos);
         
         // draw the vcr controls, last so the pop-up version will be above everything else
         drawVcrGroup(nonDragSelect, gc);
@@ -885,8 +811,7 @@ public class IroViewer extends CCanvas<IroCell,IroBoard> implements IroConstants
  */
       public commonMove EditHistory(commonMove nmove)
       {	  // some damaged games ended up with naked "drop", this lets them pass 
-    	  boolean oknone = (nmove.op==MOVE_DROP);
-    	  commonMove rval = EditHistory(nmove,oknone);
+    	  commonMove rval = EditHistory(nmove,false);
      	     
     	  return(rval);
       }
@@ -959,16 +884,16 @@ public class IroViewer extends CCanvas<IroCell,IroBoard> implements IroConstants
  */
     public void StartDragging(HitPoint hp)
     {
-        if (hp.hitCode instanceof PrototypeId)// not dragging anything yet, so maybe start
+        if (hp.hitCode instanceof IroId)// not dragging anything yet, so maybe start
         {
-        PrototypeId hitObject =  (PrototypeId)hp.hitCode;
+        IroId hitObject =  (IroId)hp.hitCode;
  	    switch(hitObject)
 	    {
 	    default: break;
 	    
  	    case Black:
  	    case White:
-	    	PerformAndTransmit(G.concat("Pick " , hitObject.shortName()));
+	    	PerformAndTransmit(G.concat("Pick " , hitObject.shortName()," ",hp.hit_index));
 	    	break;
 	    case BoardLocation:
 	        IroCell hitCell = hitCell(hp);
@@ -982,7 +907,7 @@ public class IroViewer extends CCanvas<IroCell,IroBoard> implements IroConstants
         }
     }
 	private void doDropChip(char col,int row)
-	{	PrototypeState state = bb.getState();
+	{	IroState state = bb.getState();
 		switch(state)
 		{
 		default: throw G.Error("Not expecting state "+state);
@@ -991,14 +916,12 @@ public class IroViewer extends CCanvas<IroCell,IroBoard> implements IroConstants
 		IroChip mo = bb.pickedObject;
 		if(mo==null) { mo=bb.lastPicked; }
 		if(mo==null) { mo=bb.getPlayerChip(bb.whoseTurn); }
-		PerformAndTransmit(G.concat("dropb ",mo.id.shortName()," ",col," ",row));
+		PerformAndTransmit(G.concat("dropb ",col," ",row));
 		}
 		break;
 		case Confirm:
 		case Play:
-		case PlayOrSwap:
-			IroChip mo=bb.getPlayerChip(bb.whoseTurn);	
-			PerformAndTransmit(G.concat("dropb ",mo.id.shortName()," ",col," ",row));
+			PerformAndTransmit(G.concat("dropb ",col," ",row));
 			break;
 					                 
 		
@@ -1016,14 +939,14 @@ public class IroViewer extends CCanvas<IroCell,IroBoard> implements IroConstants
     public void StopDragging(HitPoint hp)
     {
         CellId id = hp.hitCode;
-       	if(!(id instanceof PrototypeId))  {   missedOneClick = performStandardActions(hp,missedOneClick);   }
+       	if(!(id instanceof IroId))  {   missedOneClick = performStandardActions(hp,missedOneClick);   }
         else {
         missedOneClick = false;
-        PrototypeId hitCode = (PrototypeId)id;
+        IroId hitCode = (IroId)id;
         
         // if direct drawing, hp.hitObject is a cell from a copy of the board
         IroCell hitObject = bb.getCell(hitCell(hp));
-		PrototypeState state = bb.getState();
+		IroState state = bb.getState();
         switch (hitCode)
         {
         default:
@@ -1031,16 +954,38 @@ public class IroViewer extends CCanvas<IroCell,IroBoard> implements IroConstants
         	else if (performVcrButton(hitCode, hp)) {}	// handle anything in the vcr group
             else
             {
-            	throw G.Error("Hit Unknown object " + hitObject);
+            	throw G.Error("Hit Unknown object %s %s", id, hitObject);
             }
         	break;
+        case RotateCCW:
+        	PerformAndTransmit(G.concat("rotate ",hitObject.col," ",hitObject.row," ",(hitObject.rotation+1)%4));
+        	break;
+        case RotateCW:
+        	PerformAndTransmit(G.concat("rotate ",hitObject.col," ",hitObject.row," ",(4+hitObject.rotation-1)%4));
+        	break;
+        case ClearColorBlind:
+        	setColorBlind(false);
+        	break;
+        case SetColorBlind:
+        	setColorBlind(true);
+        	break;
+        case Rotate:
+	        {
+	         boolean v = !bb.reverseY();
+	         bb.setReverseY(v);
+	         generalRefresh("reverseView");
+	        }
+      	  break;
+
         case BoardLocation:	// we hit an occupied part of the board 
 			switch(state)
 			{
 			default: throw G.Error("Not expecting drop on filled board in state "+state);
 			case Confirm:
+			case FirstPlay:
+			case ConfirmSetup:
+			case InvalidBoard:
 			case Play:
-			case PlayOrSwap:
 				// fall through and pick up the previously dropped piece
 				//$FALL-THROUGH$
 			case Puzzle:
@@ -1057,7 +1002,7 @@ public class IroViewer extends CCanvas<IroCell,IroBoard> implements IroConstants
         case White:
            if(bb.pickedObject!=null) 
 			{//if we're dragging a black chip around, drop it.
-            	PerformAndTransmit(G.concat("Drop ",bb.pickedObject.id.shortName()));
+            	PerformAndTransmit(G.concat("Drop ",bb.pickedObject.id.name()," ",hp.hit_index));
 			}
            break;
  
@@ -1065,26 +1010,18 @@ public class IroViewer extends CCanvas<IroCell,IroBoard> implements IroConstants
         }
     }
 
-
+    private void setColorBlind(boolean v)
+    {
+      	colorBlind = v;
+       	colorBlindOption.setState(v);
+       	altChip.setValue(!v);
+    	Default.setBoolean(Default.colorblind,colorBlind);
+     }
 
     private boolean setDisplayParameters(IroBoard gb,Rectangle r)
     {
       	boolean complete = false;
-      	if(doRotation!=lastRotation)		//if changing the whole orientation of the screen, unusual steps have to be taken
-      	{ complete=true;					// for sure, paint everything
-      	  lastRotation=doRotation;			// and only do this once
-      	  if(doRotation)
-      	  {
-      	  // 0.95 and 1.0 are more or less magic numbers to match the board to the artwork
-          gb.SetDisplayParameters(0.95, 1.0, 0,0,60); // shrink a little and rotate 60 degrees
-     	  }
-      	  else
-      	  {
-          // the numbers for the square-on display are slightly ad-hoc, but they look right
-          gb.SetDisplayParameters( 0.825, 0.94, 0,0,28.2); // shrink a little and rotate 30 degrees
-      	  }
-      	}
-      	gb.SetDisplayRectangle(r);
+     	gb.SetDisplayRectangle(r);
       	if(complete) { generalRefresh(); }
       	return(complete);
     }
@@ -1176,11 +1113,9 @@ public class IroViewer extends CCanvas<IroCell,IroBoard> implements IroConstants
     {
         boolean handled = super.handleDeferredEvent(target, command);
 
-        if(target==rotationOption)
+        if(target==colorBlindOption)
         {	handled=true;
-        	doRotation = rotationOption.getState();
-        	resetBounds();
-        	repaint(20);
+        	setColorBlind(colorBlindOption.getState());
         }
 
         return (handled);

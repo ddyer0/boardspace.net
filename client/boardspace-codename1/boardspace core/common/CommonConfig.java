@@ -121,6 +121,7 @@ public interface CommonConfig {
 		   announce("true"),
 		   fontsize(""+standardFontHeight),
 		   ticktock("true"),
+		   colorblind("false"),
 		   ;
 		   String value;
 		   Default(String v) { value = v; }

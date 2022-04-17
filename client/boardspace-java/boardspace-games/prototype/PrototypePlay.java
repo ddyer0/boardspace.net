@@ -154,6 +154,16 @@ public class PrototypePlay extends commonRobot<PrototypeBoard> implements Runnab
             return(board.GetListOfMoves());
         }
 
+        /**
+         * this works very ineffeciently by generating all moves and picking one.
+         * for many games, this can be replaced with a slightly less random but
+         * much faster process.
+         */
+        public commonMove Get_Random_Move(Random rand)
+        {	
+        	return super.Get_Random_Move(rand);
+        }
+        
     /** return a value of the current board position for the specified player.
      * this should be greatest for a winning position.  The evaluations ought
      * to be stable and greater scores should indicate some degree of progress

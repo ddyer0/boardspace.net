@@ -82,7 +82,7 @@ public class QyshinsuViewer extends CCanvas<QyshinsuCell,QyshinsuBoard> implemen
         super.init(info,frame);
         use_grid = false;
         gridOption.setState(false);
-
+        colorBlind = Default.getBoolean(Default.colorblind);
         colorBlindOption = myFrame.addOption(s.get(ColorBlindOption), colorBlind,deferredEvents);
 
         MouseColors[1] = new Color(0.7f,0.2f,0.2f);
@@ -616,6 +616,7 @@ private void playSounds(commonMove m)
     {  if (target == colorBlindOption)
     	{	
     	colorBlind = colorBlindOption.getState();
+    	Default.setBoolean(Default.colorblind,colorBlind);
     	generalRefresh();
     	return(true);
     	}

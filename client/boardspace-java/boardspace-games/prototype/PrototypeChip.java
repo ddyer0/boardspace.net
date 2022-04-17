@@ -71,7 +71,16 @@ public class PrototypeChip extends chip<PrototypeChip> implements CommonConfig
     // indexes into the balls array, usually called the rack
     static final PrototypeChip getChip(int n) { return(PrototypeId.values()[n].chip); }
     
-    
+    /**
+     * this is the basic hook to substitute an alternate chip for display.  The canvas getAltChipSet
+     * method is called from drawChip, and the result is passed here to substitute a different chip.
+     * 
+     */
+	public PrototypeChip getAltChip(int set)
+	{	
+		return this;
+	}
+
 
     /* plain images with no mask can be noted by naming them -nomask */
     static public PrototypeChip backgroundTile = new PrototypeChip("background-tile-nomask",null);

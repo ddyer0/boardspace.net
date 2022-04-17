@@ -33,7 +33,7 @@ public class YspahanMovespec extends commonMPMove implements YspahanConstants
     int depth;
     String moveInfo;	// auxiliary move info
     
-    
+    public boolean isDone() { return op==MOVE_DONE;}
     public YspahanMovespec()
     {
     } // default constructor

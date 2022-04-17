@@ -776,9 +776,9 @@ sub show_matches_in_group()
 	# come from matchparticipant records.  The 'A' in the admin select is a 
 	# trick to make it sort last.
 	#
-	my $q = "select player,outcome,points,played,comment,matchid,uid from matchparticipant"
+	my $q = "select player,outcome,points,played,unix_timestamp(played),comment,matchid,uid from matchparticipant"
 		. " where (matchstatus!='notready') and tournament=$qturn and tournament_group=$qgroup "
-		. " union select -2,if(admin!='winner',admin,admin_winner),0,played,comment, matchid,'A' from matchrecord "
+		. " union select -2,if(admin!='winner',admin,admin_winner),0,played,unix_timestamp(played),comment, matchid,'A' from matchrecord "
 		. " where(matchstatus!='notready') and tournament=$qturn and tournament_group=$qgroup "
 		. " order by $or,uid";
 	my $sth = &query($dbh,$q);
@@ -834,6 +834,7 @@ sub show_matches_in_group()
 	my $first = 1;
 	my $comm = "";
 	my $change = "";
+	my $changeint = 0;
 	my $out = "";
 	my $points = "";
 	my $winner = "";
@@ -841,7 +842,7 @@ sub show_matches_in_group()
 	my $pn = 0;
 	while($nr-- > 0)
 	{
-	my ($pl1,$outcome,$player1_points,$played,$comment,$matchid,$uid) = &nextArrayRow($sth);
+	my ($pl1,$outcome,$player1_points,$played,$playedint,$comment,$matchid,$uid) = &nextArrayRow($sth);
 	$pn++;
 	# remove trailing nulls from colums damaged by the query
 	$outcome =~ s/\x00*$//g;
@@ -856,6 +857,7 @@ sub show_matches_in_group()
 	    $out = "";
 	    $winner = "";
 	    $change = "";
+	    $changeint = 0;
 	    $conflict = 0;
 	    $points = "";
 		if($admin)
@@ -875,7 +877,7 @@ sub show_matches_in_group()
 		{
 		$hasmatch{$pl1} = 1;
 		
-		if($change eq '' || ($played && ($played>$change))) { $change = $played; }
+		if($changeint eq 0 || ($played && ($playedint>$changeint))) { $change = $played; $changeint=$playedint ; }
 		
 			#
 			# combine outcome and comment sections

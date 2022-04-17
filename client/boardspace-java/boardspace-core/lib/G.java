@@ -309,6 +309,7 @@ public class G extends Platform implements Timestamp
       				out.append("(%");
       				out.append(next);
       				out.append(")");
+      				break;
     			case 'X':
     			case 'x':
     				{
@@ -328,6 +329,8 @@ public class G extends Platform implements Timestamp
      			case 'd':
     			case 'D':
     				decimal = true;
+    			case 'f':
+     			case 'F':
     			case 's':
     			case 'S':
     			{

@@ -239,7 +239,7 @@ public class YspahanPlay extends commonRobot<YspahanBoard> implements Runnable, 
       }
        
         continuous = false;
-        throw G.Error("Robot: No move generared!"  + " , state= " + board.board_state);
+        throw G.Error("Robot: No move generated!"  + " , state= " + board.board_state);
     }
  
 

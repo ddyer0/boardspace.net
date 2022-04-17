@@ -137,7 +137,7 @@ public class YspahanPlayStratMoveGen {
 		int ins = -1;
 		for (int i = robotMoveList.size()-1; i >= 0; i--)
 		{
-			if (robotMoveList.get(i).moveString().toLowerCase().endsWith("done"))  //used cards before main action
+			if (robotMoveList.get(i).isDone())  //used cards before main action
 			{
 				ins = i;
 				break;

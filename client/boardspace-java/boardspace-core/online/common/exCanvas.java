@@ -1075,10 +1075,31 @@ graphics when using a touch screen.
     	for(int i=0;i<n;i++) { v[i] = addRect(name+i); }
     	return(v);
     }
+    /**
+     * add a text button that will have standard button behavior.
+     * 
+     * @param name 	the text for the button
+     * @param id	id when the button is clicked
+     * @param help	help text for mouse-over the button
+     * @param high	highlighted color
+     * @param back	background color
+     * @return true if the button is hit
+     */
     public TextButton addButton(String name,CellId id,String help,Color high,Color back)
     {
     	return addButton(name,id,help,high,back,back);
     }
+    /**
+     * add a text button that will have the standard button behavior
+     * 
+    * @param name 	the text for the button
+     * @param id	id when the button is clicked
+     * @param help	help text for mouse-over the button
+     * @param high	highlighted color
+     * @param back	background color
+     * @param idle	text color when inactive
+     * @return true of the button is hit
+     */
     public TextButton addButton(String name,CellId id,String help,Color high,Color back,Color idle)
     {
     	TextButton b = new TextButton(s.get(name),id,s.get(help),high,back,idle); 
@@ -1086,9 +1107,21 @@ graphics when using a touch screen.
     	return(b);
     }
     
+    /**
+     * @return return true if global zoom is being used
+     */
+    
       public boolean zoomIsActive() { return(false); }
+      /**
+       * return true if the image cache may need management
+       */
       public boolean needsCacheManagement() 
-      { return(imageCache.needsManagement() || Image.getImageCache().needsManagement()); }
+      { return(imageCache.needsManagement() || Image.getImageCache().needsManagement()); 
+      }
+      /**
+       * spend time managing the cache.  Call this when needsCacheManagenment is true
+       * and you're about to become idle for a while
+       */
       public void manageCanvasCache(int time)
       {	  if(!zoomIsActive())
     	  {long now = G.Date();

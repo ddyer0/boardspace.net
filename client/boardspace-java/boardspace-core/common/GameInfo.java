@@ -846,6 +846,16 @@ synchronized(allGames) {
 			null,true, new Color[] {Color.lightGray,Color.blue}));
 	    mm.groupSortKey = "00090";
 	}
+	// racing games
+	{ GameInfo mm = put(new GameInfo(445,ES.game,106,"IR",RacingGames,"Iro","Iro",
+			OneBotPlus,
+			new double[]{0.41,0.01},
+			"iro.IroViewer","/iro/english/IroRules.htm",
+			null,
+			false, BlackOverWhite));
+	  mm.groupSortKey = "00070";
+	}
+
 	{
 	put(new GameInfo(7500,ES.game,75,"ST",StackingGames,"Stac","Stac",
 			TwoBotsPlus,
@@ -1398,7 +1408,7 @@ synchronized(allGames) {
 			"kamisado.KamisadoViewer","/kamisado/english/RULES%20ENG.pdf",
 			null,false, BlackOverGold));
 	
-	put(new GameInfo(346,ES.test,106,"IR",RacingGames,"Iro","Iro",
+	put(new GameInfo(445,ES.game,106,"IR",RacingGames,"Iro","Iro",
 			OneBotPlus,
 			new double[]{0.08,0.01},
 			"iro.IroViewer","/iro/english/iroprules.html",
