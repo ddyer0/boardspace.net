@@ -68,6 +68,7 @@ public class ModxPlay extends commonRobot<ModxBoard> implements Runnable, ModxCo
         GameBoard = (ModxBoard) gboard;
         board = (ModxBoard)GameBoard.cloneBoard();
         MONTEBOT = true;
+        terminalNodeOptimize = true;
         switch(strategy)
         {
         case WEAKBOT_LEVEL:
@@ -208,7 +209,7 @@ public class ModxPlay extends commonRobot<ModxBoard> implements Runnable, ModxCo
         		WEAKBOT ? 5000 : USE_BLITZ ? 60000 : 100000;	
         monte_search_state.blitz = USE_BLITZ;
         monte_search_state.maxThreads = DEPLOY_THREADS;
-        monte_search_state.terminalNodeOptimization = true;
+        monte_search_state.terminalNodeOptimization = terminalNodeOptimize;
         move = monte_search_state.getBestMonteMove();
         }
  		}

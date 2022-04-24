@@ -309,6 +309,8 @@ public class UniverseViewer extends CCanvas<UniverseCell,UniverseBoard> implemen
 
 
     private double aspect = 1.0;
+    private boolean flatten = false;
+    
     public Rectangle createPlayerGroup(int player,int x,int y,double rotation,int unit)
     {	
     	int rows = b.rules.numberOfShapes()<20 ? 2 : 3;
@@ -321,7 +323,14 @@ public class UniverseViewer extends CCanvas<UniverseCell,UniverseBoard> implemen
 		Rectangle score = playerScore[player];
 		Rectangle box = pl0.createRectangularPictureGroup(x+sz,y,unit);
 		G.SetRect(score, x, y, sz, sz);
+		if(flatten)
+		{
+			G.SetRect(done,x+u2,G.Bottom(box)+u2,doneW,doneW/2);		
+		}
+		else 
+		{
 		G.SetRect(done, G.Right(box)+u2,y+u2,doneW,doneW/2);
+		}
 		G.union(box,done,score);
 		int rackw = unit*22;
 		int rackh = (int)((unit*rows*5/2));
@@ -337,21 +346,29 @@ public class UniverseViewer extends CCanvas<UniverseCell,UniverseBoard> implemen
 			rackw = G.Width(box);
 			rackh = area/rackw;
 			}
+		if(flatten)
+		{
+			G.SetRect(rack,G.Right(box)+u2,y,rackw,rackh);			
+		}
+		else
+		{
 		G.SetRect(rack,x+u2,G.Bottom(box),rackw,rackh);
+		}
 		pl0.displayRotation = rotation;
 		G.union(box, rack);
 	    return(box);
     }
-    double aspects[] = {0.9,1.0,1.1};
+    double aspects[] = {0.9,1.0,1.1,-0.9,-1,-1.1};
     public void setLocalBounds(int x,int y,int width,int height)
     {
     	setLocalBoundsV(x,y,width,height,aspects) ;
     }
     public double setLocalBoundsA(int x,int y,int width,int height,double v)
-    {   
+    {	flatten = v<0;
+    
     	// this is slightly nonstandard, we use the variable parameter v to change
     	// the aspect ratio of the player's rack, rather than of the board.
-    	aspect = v;
+    	aspect = Math.abs(v);
     	G.SetRect(fullRect, x, y, width, height);
         boolean isNudoku = b.rules.isNudoku();
     	GameLayoutManager layout = selectedLayout;
@@ -373,8 +390,8 @@ public class UniverseViewer extends CCanvas<UniverseCell,UniverseBoard> implemen
     			margin,	
     			0.5,		// % of space allocated to the board
     			0.9,		// aspect ratio for the board
-    			fh*2,
-    			fh*2.5,	// maximum cell size based on font size
+    			fh*2.5,
+    			fh*3.5,		// maximum cell size based on font size
     			0.1		// preference for the designated layout, if any
     			);
     	
@@ -573,8 +590,10 @@ public class UniverseViewer extends CCanvas<UniverseCell,UniverseBoard> implemen
 		    	cx = resetCx;
 		    	// max height increases as we go, so don't reset it.
 		    	// maxHeight = 0;
-		    	maxHeightThisRow = 0;
+		    	maxHeightThisRow = sh;
 		    }
+		//   G.print("b ",i,protoChip," ",cx," ",cy," ",sw,"x",sh);
+		//     { GC.frameRect(gc,Color.blue,cx,cy,sw,sh);}
 		    int yoff = (maxHeight-sh)/2;
 		    int myx = cx - G.Left(bounds);		// x and y where we will draw
 		    int myy = cy  +yoff- G.Top(bounds);
@@ -618,6 +637,7 @@ public class UniverseViewer extends CCanvas<UniverseCell,UniverseBoard> implemen
 		    cx += sw+square/2;
 		  }
 		G.SetHeight(brect, cy-G.Top(r) + maxHeightThisRow);
+		
 		G.SetWidth(brect,Math.max(G.Width(brect),cx-resetCx));
 		return(brect);
 	}

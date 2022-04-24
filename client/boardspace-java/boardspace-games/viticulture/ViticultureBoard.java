@@ -3609,7 +3609,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
     	from.removeChip(ch);
     	ViticultureCell dest = discardPile(ch);
     	dest.addChip(ch);
-    	logGameEvent(msg,ch.type.toString());
+    	logGameEvent(msg,ch.type.toString(),ch.description);
     	if(replay != replayMode.Replay)
     	{ 	animationStack.push(from);
     		animationStack.push(dest);

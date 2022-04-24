@@ -2849,7 +2849,7 @@ private Color playerBackground[] = {
     		while(idx>0)
     		{
     			EuphoriaMovespec m = (EuphoriaMovespec)History.elementAt(idx);
-    			if((m.op==EPHEMERAL_PICK) && (m.dest==target.source))
+    			if((m.op==EPHEMERAL_PICK) && (m.dest==target.source) && (m.player==target.player))
     			{
     				removeHistoryElement(idx);
     				nmove = null;
@@ -2879,11 +2879,10 @@ private Color playerBackground[] = {
      * be warned if you do this because it is throwing an error, there are other problems
      * that need to be fixed eventually.
      */
-    //public void verifyGameRecord()
-    //{	//DISABLE_VERIFY = true;
-    //	super.verifyGameRecord();
-    //}
-      public void verifyGameRecord() {}
+    public void verifyGameRecord()
+    {	//DISABLE_VERIFY = true;
+    	super.verifyGameRecord();
+    }
     
     private void doDrop(EuphoriaCell target,replayMode replay)
     {

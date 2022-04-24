@@ -62,12 +62,10 @@ public class IroPlay extends commonRobot<IroBoard> implements Runnable, IroConst
     
 	// alpha beta parameters
     private static final double VALUE_OF_WIN = 10000.0;
-    private int DUMBOT_DEPTH = 7;
     private int MAX_DEPTH = 7;						// search depth.
     private static final boolean KILLER = false;	// if true, allow the killer heuristic in the search
     private static final double GOOD_ENOUGH_VALUE = VALUE_OF_WIN;	// good enough to stop looking
-    private int boardSearchLevel = 0;				// the current search depth
-  
+    private int boardSearchLevel = 1;				// the current search depth
     // mcts parameters
     // also set MONTEBOT = true;
     private boolean UCT_WIN_LOSS = false;		// use strict win/loss scoring  
@@ -80,6 +78,9 @@ public class IroPlay extends commonRobot<IroBoard> implements Runnable, IroConst
     private int MONTEBOT_TIME = 5;
     private double MONTE_POSITION_WEIGHT = 0.5;
     private double MONTE_WOOD_WEIGHT = 0.5;
+    private boolean BIAS_MOVES = false;
+    private boolean SORT_MOVES = false;
+    private double ALPHABETA_TIME = 20;
      /**
      *  Constructor, strategy corresponds to the robot skill level displayed in the lobby.
      * 
@@ -97,7 +98,9 @@ public class IroPlay extends commonRobot<IroBoard> implements Runnable, IroConst
     	cc.movingForPlayer = movingForPlayer; 
     	cc.MONTE_WOOD_WEIGHT = MONTE_WOOD_WEIGHT;
        	cc.MONTE_POSITION_WEIGHT = MONTE_POSITION_WEIGHT;
-    	return(c);
+       	cc.BIAS_MOVES = BIAS_MOVES;
+       	
+       	return(c);
     }
 
     /** return true if the search should be depth limited at this point.  current
@@ -147,7 +150,13 @@ public class IroPlay extends commonRobot<IroBoard> implements Runnable, IroConst
         board.RobotExecute(mm);
         boardSearchLevel++;
     }
-
+    public void startRandomDescent()
+    {
+    	// we detect that the UCT run has restarted at the top
+    	// so we need to re-randomize the hidden state.
+    	//if(randomize) { board.randomizeHiddenState(robotRandom,robotPlayer); }
+    	//terminatedWithPrejudice = -1;
+    }
     /** return a Vector of moves to consider at this point.  It doesn't have to be
      * the complete list, but that is the usual procedure. Moves in this list will
      * be evaluated and sorted, then used as fodder for the depth limited search
@@ -155,11 +164,21 @@ public class IroPlay extends commonRobot<IroBoard> implements Runnable, IroConst
      */
         public CommonMoveStack  List_Of_Legal_Moves()
         {	board.robotBoard = true;
+	    
         	CommonMoveStack all = board.GetListOfMoves();
-        	G.Assert(all.size()>0,"should be moves");
+        	int sz = all.size();
+        	G.Assert(sz>0,"should be moves");
+ 
         	return all;
         }
-        
+        // bias the win rate of a new UCT node. 
+        public void setInitialWinRate(UCTNode node,int visits,commonMove m,commonMove mm[]) 
+        {	if(BIAS_MOVES)
+        		{ 
+        		node.setBiasVisits(((Iromovespec)m).monteCarloWeight*visits,visits);        		
+        		}
+        }
+
         public commonMove Get_Random_Move(Random rand)
         {	
         	commonMove m = board.getRandomMove(rand);
@@ -176,9 +195,10 @@ public class IroPlay extends commonRobot<IroBoard> implements Runnable, IroConst
      * @return
      */
     double ScoreForPlayer(IroBoard evboard,int player,boolean print)
-    {	
-		double val = 0.0;
-		G.Error("Score for player not implemented");
+    {	boolean win = board.winForPlayerNow(player);
+    	if(win) { return VALUE_OF_WIN+1/boardSearchLevel; }
+		double val = board.simpleScore(player,0.25,0.75);
+		
      	return(val);
     }
 
@@ -210,6 +230,8 @@ public class IroPlay extends commonRobot<IroBoard> implements Runnable, IroConst
         if(val1>=VALUE_OF_WIN) { return(-val1); }
         return(val0-val1);
     }
+
+
     /**
      * called as a robot debugging hack from the viewer.  Print debugging
      * information about the static analysis of the current position.
@@ -222,7 +244,7 @@ public class IroPlay extends commonRobot<IroBoard> implements Runnable, IroConst
             double val1 = ScoreForPlayer(evboard,SECOND_PLAYER_INDEX,true);
             System.out.println("Eval is "+ val0 +" "+val1+ " = " + (val0-val1));
     }
-
+    
     public commonMove DoAlphaBetaFullMove()
     {
            Iromovespec move = null;
@@ -231,9 +253,10 @@ public class IroPlay extends commonRobot<IroBoard> implements Runnable, IroConst
           	
                // it's important that the robot randomize the first few moves a little bit.
                int randomn = RANDOMIZE ? ((board.moveNumber <= 6) ? (14 - 2*board.moveNumber) : 0) : 0;
-               boardSearchLevel = 0;
-
-               int depth = MAX_DEPTH;	// search depth
+               boardSearchLevel = 1;
+               IroState state = board.getState();
+               int depth = state==IroState.Play ? MAX_DEPTH : MAX_DEPTH-2;	// search depth
+               double time = state==IroState.Play ? ALPHABETA_TIME : 1;
                double dif = 0.0;		// stop randomizing if the value drops this much
                // if the "dif" and "randomn" arguments to Find_Static_Best_Move
                // are both > 0, then alpha-beta will be disabled to avoid randomly
@@ -243,7 +266,7 @@ public class IroPlay extends commonRobot<IroBoard> implements Runnable, IroConst
                // for games such as pushfight, where there are no "fools mate" type situations
                // the best solution is to use dif=0.0;  For games with fools mates,
                // set dif so the really bad choices will be avoided
-               Search_Driver search_state = Setup_For_Search(depth, false);
+               Search_Driver search_state = Setup_For_Search(depth,time );
                search_state.save_all_variations = SAVE_TREE;
                search_state.good_enough_to_quit = GOOD_ENOUGH_VALUE;
                search_state.verbose = verbose;
@@ -305,34 +328,37 @@ public class IroPlay extends commonRobot<IroBoard> implements Runnable, IroConst
         case BESTBOT_LEVEL:
           	MONTEBOT=DEPLOY_MONTEBOT;
            	ALPHA = 0.5;
-           	MONTEBOT_DEPTH = 1000;
+           	MONTEBOT_DEPTH = 100;
            	MONTEBOT_TIME = 5;
          	MONTE_WOOD_WEIGHT = 0;
            	MONTE_POSITION_WEIGHT = 0;
           	break;
+          	
         case SMARTBOT_LEVEL:
-        	MONTEBOT=DEPLOY_MONTEBOT;
-           	ALPHA = 0.5;
-           	NODE_EXPANSION_RATE = 1.0;
-           	MONTEBOT_TIME = 5;
-           	MONTEBOT_DEPTH = 200;
-           	MONTE_WOOD_WEIGHT = 0.75;
-           	MONTE_POSITION_WEIGHT = 0.25;
-         	break;
-		case DUMBOT_LEVEL:
+          	MONTEBOT=false;
+          	MAX_DEPTH = 6;
+          	verbose = 0;
+          	break;
+          	
+        case DUMBOT_LEVEL:
+          	MONTEBOT=false;
+          	MAX_DEPTH = 6;
+          	verbose = 0;
+          	break;
+
+        case MONTEBOT_LEVEL:
+        	// these were the best tuned parameters for MCTS
+        	// which were still disappointingly weak.
            	MONTEBOT=DEPLOY_MONTEBOT;
            	ALPHA = 0.5;
            	NODE_EXPANSION_RATE = 1.0;
-           	MONTEBOT_TIME = 5;
-           	MONTEBOT_DEPTH = 200;
+           	CHILD_SHARE = 1.0;
+           	BIAS_MOVES = false;
+           	SORT_MOVES = false;
+           	MONTEBOT_TIME = 20;
+           	MONTEBOT_DEPTH = 50;
            	MONTE_WOOD_WEIGHT = 0.75;
            	MONTE_POSITION_WEIGHT = 0.25;
-         	break;
-        	
-        case MONTEBOT_LEVEL: 
-        	ALPHA = .25; 
-           	MONTEBOT=true;
-        	EXP_MONTEBOT = true; 
          	break;
         }
     }
@@ -359,6 +385,7 @@ public void PrepareToMove(int playerIndex)
 	board.copyFrom(GameBoard);
     board.sameboard(GameBoard);	// check that we got a good copy.  Not expensive to do this once per move
     board.initRobotValues();
+    board.acceptPlacement();
     movingForPlayer = GameBoard.getCurrentPlayerChip();
 }
 
@@ -367,7 +394,10 @@ public void PrepareToMove(int playerIndex)
 	{	
 		return getCurrent2PVariation();
 	}
- 
+	public double Static_Evaluate_Uct_Move(commonMove mm,int current_depth,CommonDriver master)
+	{
+		return ((Iromovespec)mm).monteCarloWeight;
+	}
  // this is the monte carlo robot, which for pushfight is much better then the alpha-beta robot
  // for the monte carlo bot, blazing speed of playouts is all that matters, as there is no
  // evaluator other than winning a game.
@@ -395,23 +425,24 @@ public void PrepareToMove(int playerIndex)
         monte_search_state.save_top_digest = true;	// always on as a background check
         monte_search_state.save_digest=false;	// debugging non-blitz only
         monte_search_state.win_randomization = randomn;		// a little bit of jitter because the values tend to be very close
-
+        monte_search_state.initialWinRateWeight = BIAS_MOVES ? 1.0 : 0;
+        monte_search_state.sort_moves = SORT_MOVES;
+        monte_search_state.randomize_uct_children = !SORT_MOVES;
+        
         monte_search_state.timePerMove = state==IroState.Play ? MONTEBOT_TIME : 1;		// seconds per move
-        monte_search_state.stored_child_limit = 100000;
+        monte_search_state.stored_child_limit = 100000*(WEAKBOT?1:5);
         monte_search_state.verbose = verbose;
         monte_search_state.alpha = ALPHA;
-        monte_search_state.blitz = true;			// blitz around is 2/3 the speed of normal unwinds
-        monte_search_state.sort_moves = false;
-        monte_search_state.only_child_optimization = true;
+        monte_search_state.blitz = false;			// blitz around is 2/3 the speed of normal unwinds
+       monte_search_state.only_child_optimization = true;
         monte_search_state.dead_child_optimization = true;
         monte_search_state.simulationsPerNode = 1;
         monte_search_state.killHopelessChildrenShare = CHILD_SHARE;
         monte_search_state.final_depth = MONTEBOT_DEPTH;	
         monte_search_state.node_expansion_rate = NODE_EXPANSION_RATE;
-        monte_search_state.randomize_uct_children = true;     
         monte_search_state.maxThreads = DEPLOY_THREADS;
-        monte_search_state.random_moves_per_second = WEAKBOT ? 222322 : 2223223;		// 
-        monte_search_state.max_random_moves_per_second = 5000000;		// 
+        monte_search_state.random_moves_per_second = WEAKBOT ? 87783 : 877837;		// 
+        monte_search_state.max_random_moves_per_second = 2000000;		// 
         // for Hex, the child pool is exhausted very quickly, but the results
         // still get better the longer you search.  Other games may work better
         // the other way.
@@ -456,10 +487,12 @@ public void PrepareToMove(int playerIndex)
  public double NormalizedScore(commonMove lastMove)
  {	int player = lastMove.player;
  	boolean win = board.winForPlayerNow(player);
- 	if(win) { return(UCT_WIN_LOSS? 1.0 : 0.8+0.2/boardSearchLevel); }
+ 	if(win) 
+ 		{ return(UCT_WIN_LOSS? 1.0 : 0.8+0.2/boardSearchLevel); }
  	int nextP = nextPlayer[player];
  	boolean win2 = board.winForPlayerNow(nextP);
- 	if(win2) { return(- (UCT_WIN_LOSS?1.0:(0.8+0.2/boardSearchLevel))); }
+ 	if(win2)
+ 		{ return(- (UCT_WIN_LOSS?1.0:(0.8+0.2/boardSearchLevel))); }
  	double ss0 = board.simpleScore(player,MONTE_POSITION_WEIGHT,MONTE_WOOD_WEIGHT);
  	double ss1 = board.simpleScore(nextP,MONTE_POSITION_WEIGHT,MONTE_WOOD_WEIGHT);
  	double val = ss0-ss1;

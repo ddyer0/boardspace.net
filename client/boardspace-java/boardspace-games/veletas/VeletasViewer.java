@@ -123,18 +123,33 @@ public class VeletasViewer extends CCanvas<VeletasCell,VeletasBoard> implements 
     	Rectangle chip = chipRects[player];
     	int chipW = unitsize*4;
     	int chipH = unitsize*3;
-    	int doneW = unitsize*5;
+    	int doneW = plannedSeating() ? unitsize*5 : 0;
     	Rectangle done = doneRects[player];
     	G.SetRect(chip, x, y, chipW, chipH);
-    	G.SetRect(done, x, y+chipH+unitsize, doneW, plannedSeating()?doneW/2:0);
     	Rectangle box = pl.createRectangularPictureGroup(x+chipW,y,unitsize);
+    	if(flatten)
+    	{
+    	G.SetRect(done,G.Right(box)+unitsize/3,y+unitsize/3,doneW,doneW/2);
+    	}
+    	else
+    	{
+    	G.SetRect(done, x, y+chipH+unitsize, doneW, doneW/2);
+    	}
     	pl.displayRotation = rotation;
     	G.union(box, chip,done);
     	return(box);
     }
     
+    
+    private boolean flatten = false;
     public void setLocalBounds(int x, int y, int width, int height)
-    {	G.SetRect(fullRect, x, y, width, height);
+    {
+    	setLocalBoundsV(x,y,width,height,new double[] {1,-1});
+    }
+
+    public double setLocalBoundsA(int x, int y, int width, int height,double a)
+    {	flatten = a<0;	
+    	G.SetRect(fullRect, x, y, width, height);
 	  	GameLayoutManager layout = selectedLayout;
 		int nPlayers = nPlayers();
 	   	int chatHeight = selectChatHeight(height);
@@ -203,7 +218,7 @@ public class VeletasViewer extends CCanvas<VeletasCell,VeletasBoard> implements 
 		G.SetRect(goalRect, boardX, boardBottom-stateH,boardW,stateH);       
 	    setProgressRect(progressRect,goalRect);
 	    positionTheChat(chatRect,Color.white,rackBackGroundColor);
-
+	    return boardW*boardH;
     }
 
     
@@ -280,7 +295,6 @@ public class VeletasViewer extends CCanvas<VeletasCell,VeletasBoard> implements 
      }
 
  
-
    /* draw the board and the chips on it. */
     private void drawBoardElements(Graphics gc, VeletasBoard gb, Rectangle brect, HitPoint highlight)
     {

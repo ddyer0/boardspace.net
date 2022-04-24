@@ -62,7 +62,6 @@ public class MagnetPlay extends commonRobot<MagnetBoard> implements Runnable,
     private double ALPHA = 1.0;
     private double NODE_EXPANSION_RATE = 1.0;
     private double CHILD_SHARE = 0.5;				// aggressiveness of pruning "hopeless" children. 0.5 is normal 1.0 is very agressive
-    private int boardMoveNumber;
     private boolean STORED_CHILD_LIMIT_STOP = false;	// if true, stop the search when the child pool is exhausted.
     private boolean changedToSynchronous = false;
     private int Strategy = DUMBOT_LEVEL;
@@ -118,6 +117,11 @@ public class MagnetPlay extends commonRobot<MagnetBoard> implements Runnable,
         board.RobotExecute(mm);
         boardSearchLevel++;
     }
+    
+    public void startRandomDescent()
+    {
+  		  board.randomizeHiddenState(robotRandom,robotPlayer);	
+    }
 
 /** return a Vector of moves to consider at this point.  It doesn't have to be
  * the complete list, but that is the usual procedure. Moves in this list will
@@ -126,14 +130,6 @@ public class MagnetPlay extends commonRobot<MagnetBoard> implements Runnable,
  */
     public CommonMoveStack  List_Of_Legal_Moves()
     {
-    	int newn = board.moveNumber();
-    	if(newn<=boardMoveNumber)
-    		{ // we detect that the UCT run has restarted at the top
-    		  // so we need to re-randomize the hidden state.
-    		  board.randomizeHiddenState(robotRandom,robotPlayer);
-    		  //G.print("Randomize @"+newn + " "+boardMoveNumber);
-    		}
-    	boardMoveNumber = newn;
         CommonMoveStack all = board.GetListOfMoves();
         return(all);
     }
@@ -240,7 +236,6 @@ public void PrepareToMove(int playerIndex)
  	try {
  		// record the top level move for this search.  We use this to trigger
  		// re-randomization of the hidden values of moves on the board.
-        boardMoveNumber = board.moveNumber();       
          	// this is a test for the randomness of the random move selection.
          	// "true" tests the standard slow algorithm
          	// "false" tests the accelerated random move selection

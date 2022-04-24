@@ -421,6 +421,32 @@ public class DrawableImage<T> implements Drawable,StackIterator<T>
 	{
 		return(drawChip(gc,drawOn,highlight,rackLocation,squareWidth,e_x,e_y,thislabel,0.66,1.33));
 	}
+	
+	/**
+	 * draw a chip and test for mouse sensitivity.  If the highlight is hit, the width is 
+	 * increased by 1/3 to give a visual "pop" to indicate the hit.
+	 * @param gc			// the graphics to draw with
+	 * @param drawOn		// the canvas to do the drawing
+	 * @param highlight		// the mouse point, or null.  Receives hit information
+	 * @param rackLocation	// the cellId to use for this if hit
+	 * @param tooltip		// the tool tip to show
+	 * @param squareWidth	// the overall scale of the object
+	 * @param e_x			// the center of the object
+	 * @param e_y			// the center y of the object
+	 * @param thislabel		// label to print on top
+	 * @return true if this chip is hit
+	 */
+	public boolean drawChip(Graphics gc,exCanvas drawOn,HitPoint highlight,CellId rackLocation,String toolTip,
+			int squareWidth,int e_x,int e_y,String thislabel)
+	{
+		if(drawChip(gc,drawOn,highlight,rackLocation,squareWidth,e_x,e_y,thislabel,0.66,1.33))
+		{
+			highlight.setHelpText(toolTip);
+			return(true);
+		}
+		return false;
+	}
+	
 	/**
 	 * draw a chip and test for mouse sensitivity.  If the highlight is hit, the width is 
 	 * multiplied by "expansion" to give a visual "pop" to indicate the hit.

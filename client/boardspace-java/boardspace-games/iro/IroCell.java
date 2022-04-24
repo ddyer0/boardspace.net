@@ -95,7 +95,7 @@ public class IroCell
 	public long Digest()
 	{ return(super.Digest() 
 			+ (isTileAnchor 
-					? ( tile.Digest() ^ rotation*1232035 )
+					? ( tile.Digest()*col*row ^ rotation*1232035 )
 					: 0)); }
 	
 	/**

@@ -54,7 +54,7 @@ public class SeatingViewer extends exCanvas implements LobbyConstants
 	Rectangle versionRect = addRect("version");
 	Rectangle gearRect = addRect("Gear");
 	TextContainer namefield = new TextContainer(SeatId.TableName);
-	SeatingChart selectedChart = SeatingChart.blank;
+	SeatingChart selectedChart = SeatingChart.defaultPassAndPlay;
 	UserManager users = new UserManager();
 	int numberOfUsers = 0;
 	Session sess = new Session(1);
@@ -105,6 +105,7 @@ public class SeatingViewer extends exCanvas implements LobbyConstants
         sess.setCurrentGame(GameInfo.firstGame,false,isPassAndPlay());
         if(G.debug()) {
         	InternationalStrings.put(GameInfo.GameInfoStringPairs);
+        	SeatingChart.putStrings();
         }
         String name = UDPService.getPlaytableName();
         namefield.setText(name);
@@ -416,6 +417,12 @@ public class SeatingViewer extends exCanvas implements LobbyConstants
 			String name = (bubbleSelect==null) ? null : User.prettyName(sess.players[i]);
 			if(name==null) { name = s.get(PlayerNumber,playerNumber); } 
 			GC.setRotation(gc, -rotation, xc,yc);
+			boolean bubbleOffset = (i==0) && (bubbleSelect!=null) && (chart==SeatingChart.faceLandscape);
+			if(bubbleOffset)
+			{	// special hack for 2 player landscape face to face
+				yc += tableSize/8;
+			}
+			
 			if(StockArt.SmallO.drawChip(gc,this,bubbleSelect,SeatId.NameSelected,(int)(tableSize*0.8),xc,yc,
 					bubbleSelect==null ? null : name,0.3,1.2)
 					)
@@ -441,11 +448,13 @@ public class SeatingViewer extends exCanvas implements LobbyConstants
 				{
 				int xo1 = xo + (center ? 0 : tableSize/15);
 				int yo1 = yo + (center ? Math.abs(xb/9) : 0);
+				if(bubbleOffset) { yo1+=tableSize/8; }
 				Rectangle r = new Rectangle(xo1,yo1,colorStep*2,colorStep*2);
 				drawColorBox(gc,i,bubbleSelect,map[colorIndex[i]],r);
 
 				}
 			}
+			
 		}
 		if(bubbleSelect!=null)
 		{
@@ -480,7 +489,13 @@ public class SeatingViewer extends exCanvas implements LobbyConstants
 			int xs = xs0 ;
 			int ys = ys0 ;
 			Rectangle r = new Rectangle(centerX-xs,centerY-ys,xs*2,ys*2);		// start
-			Rectangle dr = new Rectangle(centerX-xs,centerY+ys*3/2,xs*2,ys);	// discard 
+			Rectangle dr = new Rectangle(centerX-xs*3/2,centerY+ys*5/4,xs*3,ys*3/2);	// discard 
+
+			if((selectedGame==null) && (chart.explanation!=null))
+			{	GC.frameRect(gc,Color.black,dr);
+				GC.Text(gc,true,dr,Color.black,null,s.get(chart.explanation));
+			}
+
 			if(mainMessage==StartMessage)
 			{
 			sess.setCurrentGame(selectedVariant,false,isPassAndPlay());
@@ -882,7 +897,7 @@ public class SeatingViewer extends exCanvas implements LobbyConstants
 
 		drawSeatingCharts(gc,seatingSelectRect,pt);
 		drawMainSelector(gc,seatingChart,gameSelectionRect,pt);
-		if(G.debug()||G.isTable()) { StockArt.Gear.drawChip(gc, this, gearRect, pt,SeatId.GearMenu,null); }
+		if(G.debug()||G.isTable()) { StockArt.Gear.drawChip(gc, this, gearRect, pt,SeatId.GearMenu,s.get(ExitOptions)); }
 		if(!G.isIOS() 
 				&& GC.handleRoundButton(gc,startStopRect,pt,
 						s.get(serviceRunning() ? StopTableServerMessage : StartTableServerMessage),
@@ -1004,9 +1019,11 @@ public class SeatingViewer extends exCanvas implements LobbyConstants
 	static String PlayOnlineMessage = "Play Online";
 	static String TableNameMessage = "Table Name: ";
 	static String SeatPositionMessage = "SeatPositionMessage";
+	static String ExitOptions = "Exit options";
 	public static String[]SeatingStrings =
 		{	SelectChartMessage,
 			TableNameMessage,
+			ExitOptions,
 			PlayOnlineMessage,
 			StartTableServerMessage,
 			StopTableServerMessage,

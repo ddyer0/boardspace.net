@@ -126,8 +126,15 @@ public class ShogiViewer extends CCanvas<ShogiCell,ShogiBoard> implements ShogiC
    }
 
     
+    private boolean flatten = false;
     public void setLocalBounds(int x, int y, int width, int height)
-    {	G.SetRect(fullRect, x, y, width, height);
+    {
+    	setLocalBoundsV(x,y,width,height,new double[] {1,-1});
+    }
+
+    public double setLocalBoundsA(int x, int y, int width, int height,double a)
+    {	flatten = a<0;	
+    	G.SetRect(fullRect, x, y, width, height);
     	GameLayoutManager layout = selectedLayout;
     	int nPlayers = nPlayers();
        	int chatHeight = selectChatHeight(height);
@@ -197,7 +204,7 @@ public class ShogiViewer extends CCanvas<ShogiCell,ShogiBoard> implements ShogiC
     	}
         setProgressRect(progressRect,goalRect);
         positionTheChat(chatRect,Color.white,Color.white);
- 	
+        return boardW*boardH;
     }
 
     
@@ -208,11 +215,20 @@ public class ShogiViewer extends CCanvas<ShogiCell,ShogiBoard> implements ShogiC
     	Rectangle chip = chipRects[player];
     	Rectangle rack = rackRects[player];
     	Rectangle done = doneRects[player];
+    	int doneW = plannedSeating()?unit*6:0;
     	Rectangle box = pl0.createRectangularPictureGroup(x+chipW, y, unit);
     	G.SetRect(chip, x, y, chipW,chipW);
     	int bb = G.Bottom(box);
-    	G.SetRect(rack, x, bb, rackW,rackW);
-    	G.SetRect(done, x+rackW+unit/2, bb+unit/2, plannedSeating()?unit*6:0, unit*3);
+    	if(flatten)
+    	{
+    	   G.SetRect(done,G.Right(box)+unit/3,y,doneW,doneW/2);
+    	   G.SetRect(rack,G.Right(done),y,rackW*3/2,rackW*2/3); 			   
+    	}
+    	else {
+    	   	G.SetRect(rack, x, bb, rackW,rackW);
+        	G.SetRect(done, x+rackW+unit/2, bb+unit/2, doneW, doneW/2);
+        		
+    	}
     	G.union(box, chip,done,rack);
     	pl0.displayRotation = rotation;
         return(box);
@@ -250,12 +266,17 @@ public class ShogiViewer extends CCanvas<ShogiCell,ShogiBoard> implements ShogiC
     {	ShogiCell chips[]= b.rack[player];
     	commonPlayer cp = getPlayerOrTemp(player);
         boolean canHit = b.LegalToHitChips(player);
-        int xs = G.Width(r)/3;
-        int ys = G.Height(r)/3;
+        int w = G.Width(r);
+        int h = G.Height(r);
+        boolean wide = w>h;
+        int rows = wide ? 2 : 3;
+        int cols = wide ? 5 : 3;
+        int xs = w/cols;
+        int ys = h/rows;
         int x = G.Left(r) + xs/2;
-        int y = G.Top(r) + ys/2;
+        int y = G.Top(r) + ys*2/3;
         int bishop = ShogiChip.PieceType.Bishop.ordinal();
-        
+      
         GC.frameRect(gc,Color.black,r);
         for(ShogiChip.PieceType type : ShogiChip.PieceType.values())
         {
@@ -270,9 +291,9 @@ public class ShogiViewer extends CCanvas<ShogiCell,ShogiBoard> implements ShogiC
                 double dx = (type==ShogiChip.PieceType.Pawn) 
                 		? Math.min(0.2,0.2-0.1/15*(thisCell.height()-5)) 
                 		: 0.0;
-                double dy = (dx==0.0) ? 0.2 : 0.0;
-                int xp = x+xs*((ord-bishop)%3);
-                int yp = y+ys*((ord-bishop)/3);
+                double dy = (dx==0.0) ? 0.15 : 0.0;
+                int xp = x+xs*((ord-bishop)%cols);
+                int yp = y+ys*((ord-bishop)/cols);
                 thisCell.drawUnpromotedStack(gc,this,pt,ys,xp,yp,0,dx,dy,msg);
                 if((highlight!=null) && (highlight.hitObject==thisCell))
                 {	highlight.arrow = canDrop ? StockArt.DownArrow : StockArt.UpArrow;

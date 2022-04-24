@@ -1,6 +1,7 @@
 package online.common;
 
 import lib.G;
+import lib.InternationalStrings;
 
 public class SeatingChart {
 
@@ -64,10 +65,16 @@ public class SeatingChart {
 
 	public DefinedSeating id;
 	Seating seats[] = null;
+	String explanation = null;
 	public SeatingChart(DefinedSeating idd,Seating[]specs)
 	{	id=idd;
 		seats = specs==null ? new Seating[0] : specs;
 	}
+	public SeatingChart(DefinedSeating idd,Seating[]specs,String expl)
+	{	this(idd,specs);
+		explanation = expl;
+	}
+
 	public boolean seatingPortrait() { return(id.seatingPortrait());}
 	public boolean seatingFaceToFace() { return(id.seatingFaceToFace()); }
 	public boolean seatingAround() { return(id.seatingAround); }
@@ -78,28 +85,36 @@ public class SeatingChart {
 	
 	public Seating[]getSeats() { return(seats); }
 	public int getNSeats() { return(seats.length); }
-	public static SeatingChart blank = new SeatingChart(DefinedSeating.Undefined,null);
-	private static SeatingChart defaultReview = new SeatingChart(DefinedSeating.Undefined,soloReview);
-	private static SeatingChart defaultPassAndPlay = new SeatingChart(DefinedSeating.SideBySide,sideBySide);
-	private static SeatingChart defaultPortrait = new SeatingChart(DefinedSeating.Undefined,soloPortrait);
-	private static SeatingChart defaultLandscape = new SeatingChart(DefinedSeating.Undefined,soloLandscape);
-	private static SeatingChart default3P = new SeatingChart(DefinedSeating.ThreeAcross,threeAcross);
-	private static SeatingChart default4P = new SeatingChart(DefinedSeating.FourAcross,fourAcross);
-	private static SeatingChart default5P = new SeatingChart(DefinedSeating.FiveAcross,fiveAcross);
-	private static SeatingChart default6P = new SeatingChart(DefinedSeating.SixAcross,sixAcross);
-	private static SeatingChart facePortrait = new SeatingChart(DefinedSeating.FaceToFacePortrait,faceToFacePortrait);
-	private static SeatingChart leftCorner2P = new SeatingChart(DefinedSeating.LeftCorner,leftCorner);
-	private static SeatingChart rightCorner2P = new SeatingChart(DefinedSeating.RightCorner,rightCorner);
-	private static SeatingChart leftCorner3P = new SeatingChart(DefinedSeating.ThreeLeftL,leftL);
-	private static SeatingChart rightCorner3P = new SeatingChart(DefinedSeating.ThreeRightL,rightL);
+	static String OnePlayerExplanation = "oneplayerexplanation";
+	static String BlankExplanation = "blankseatingexplanation";
+	static String TwoPlayerExplanation = "twoplayerexplanation";
+	static String ThreePlayerExplanation = "threeplayerexplanation";
+	static String FourPlayerExplanation = "fourplayerexplanation";
+	static String FivePlayerExplanation = "fiveplayerexplanation";
+	static String SixPlayerExplanation = "sixplayerexplanation";
 	
-	private static SeatingChart faceLandscape = new SeatingChart(DefinedSeating.FaceToFaceLandscapeSide,faceToFaceLandscape);
+	public static SeatingChart blank = new SeatingChart(DefinedSeating.Undefined,null,BlankExplanation);
+	private static SeatingChart defaultReview = new SeatingChart(DefinedSeating.Undefined,soloReview,BlankExplanation);
+	public static SeatingChart defaultPassAndPlay = new SeatingChart(DefinedSeating.SideBySide,sideBySide,TwoPlayerExplanation);
+	private static SeatingChart defaultPortrait = new SeatingChart(DefinedSeating.Undefined,soloPortrait,OnePlayerExplanation);
+	private static SeatingChart defaultLandscape = new SeatingChart(DefinedSeating.Undefined,soloLandscape,OnePlayerExplanation);
+	private static SeatingChart default3P = new SeatingChart(DefinedSeating.ThreeAcross,threeAcross,ThreePlayerExplanation);
+	private static SeatingChart default4P = new SeatingChart(DefinedSeating.FourAcross,fourAcross,FourPlayerExplanation);
+	private static SeatingChart default5P = new SeatingChart(DefinedSeating.FiveAcross,fiveAcross,FivePlayerExplanation);
+	private static SeatingChart default6P = new SeatingChart(DefinedSeating.SixAcross,sixAcross,SixPlayerExplanation);
+	private static SeatingChart facePortrait = new SeatingChart(DefinedSeating.FaceToFacePortrait,faceToFacePortrait,TwoPlayerExplanation);
+	private static SeatingChart leftCorner2P = new SeatingChart(DefinedSeating.LeftCorner,leftCorner,TwoPlayerExplanation);
+	private static SeatingChart rightCorner2P = new SeatingChart(DefinedSeating.RightCorner,rightCorner,TwoPlayerExplanation);
+	private static SeatingChart leftCorner3P = new SeatingChart(DefinedSeating.ThreeLeftL,leftL,TwoPlayerExplanation);
+	private static SeatingChart rightCorner3P = new SeatingChart(DefinedSeating.ThreeRightL,rightL,TwoPlayerExplanation);
+	
+	public static SeatingChart faceLandscape = new SeatingChart(DefinedSeating.FaceToFaceLandscapeSide,faceToFaceLandscape,TwoPlayerExplanation);
 	
 
-	private static SeatingChart default3POffline = new SeatingChart(DefinedSeating.Undefined,threeBelow);
-	private static SeatingChart default4POffline = new SeatingChart(DefinedSeating.Undefined,fourBelow);
-	private static SeatingChart default5POffline = new SeatingChart(DefinedSeating.Undefined,fiveBelow);
-	private static SeatingChart default6POffline = new SeatingChart(DefinedSeating.Undefined,sixBelow);
+	private static SeatingChart default3POffline = new SeatingChart(DefinedSeating.Undefined,threeBelow,ThreePlayerExplanation);
+	private static SeatingChart default4POffline = new SeatingChart(DefinedSeating.Undefined,fourBelow,FourPlayerExplanation);
+	private static SeatingChart default5POffline = new SeatingChart(DefinedSeating.Undefined,fiveBelow,FivePlayerExplanation);
+	private static SeatingChart default6POffline = new SeatingChart(DefinedSeating.Undefined,sixBelow,SixPlayerExplanation);
 
 	public static SeatingChart defaultSeatingChart(int nplayers)
 	{
@@ -215,6 +230,24 @@ public class SeatingChart {
 		public boolean seatingFaceToFace() { return(seatingFaceToFace); }
 		public boolean seatingAssigned() { return(seatingFaceToFace||seatingAround); }
 		
+	}
+	static String SeatingChartStrings [] = {
+			
+	};
+	static String SeatingChartStringPairs[][] =
+{
+		{BlankExplanation,"prepare a reviewer for games which\n were played online at Boardspace.net\nor locally on this device"
+		},
+		{OnePlayerExplanation,"Set up to play a solo game\n on this device"},
+		{TwoPlayerExplanation,"Set up to play a 2 player game\n sharing this device"},
+		{ThreePlayerExplanation,"Set up to play a 3 player game\n sharing this device"},
+		{FourPlayerExplanation,"Set up to play a 4 player game\n sharing this device"},
+		{FivePlayerExplanation,"Set up to play a 5 player game\n sharing this device"},
+		{SixPlayerExplanation,"Set up to play a 6 player game\n sharing this device"},
+};
+	public static void putStrings()
+	{	InternationalStrings.put(SeatingChartStrings);
+		InternationalStrings.put(SeatingChartStringPairs);
 	}
 
 }

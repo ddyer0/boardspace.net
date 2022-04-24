@@ -50,7 +50,6 @@ public class EuphoriaPlay extends commonRobot<EuphoriaBoard> implements Runnable
     private boolean BLITZ = true;					// the only way for this game, unwinding is just too difficult
     private int terminatedWithPrejudice = -1;
     private Evaluator evaluator = Evaluator.Baseline_Dumbot_01;
-    private int boardMoveNumber = 0;				// the starting move number on the search board
     private int robotPlayer = 0;					// the player we're playing for
     private Random robotRandom = null;				// random numbers for randomizing playouts
     boolean randomize = true;
@@ -198,29 +197,24 @@ public class EuphoriaPlay extends commonRobot<EuphoriaBoard> implements Runnable
         board.RobotExecute(mm);
     }
 
+    public void startRandomDescent()
+    {
+		  if(randomize) { board.randomizeHiddenState(robotRandom,robotPlayer); }
+		  terminatedWithPrejudice = -1;
+    	
+    }
+	public void prepareForDescent(UCTMoveSearcher from)
+	{
+	}
+
 /** return a Vector of moves to consider at this point.  It doesn't have to be
  * the complete list, but that is the usual procedure. 
  */
     public CommonMoveStack  List_Of_Legal_Moves()
-    {	int newn = board.moveNumber();
+    {	
     	board.robot = this;
-    	boolean needassign = (newn<=boardMoveNumber);
-    	if(newn<boardMoveNumber)
-    		{ // we detect that the UCT run has restarted at the top
-    		  // so we need to re-randomize the hidden state.
-    		  if(randomize) { board.randomizeHiddenState(robotRandom,robotPlayer); }
-    		  terminatedWithPrejudice = -1;
-    		}
-    	boardMoveNumber = newn;
     	CommonMoveStack all = board.GetListOfMoves();
-    	if(needassign)
-    		{ // assign weights to the moves.  If we're still in the UCT tree, these
-    		  // are used to pre-bias the win rate of the nodes.  If we're in the random
-    		  // playout portion, this is used to bias the probability of picking an individual 
-    		  // branch. These are not quite semantically the same, but we use the same weights
-    		  // for both.
-    		assignMonteCarloWeights(all); 
-    		}
+    	assignMonteCarloWeights(all); 
         return(all);
     }
     
@@ -441,7 +435,8 @@ public void copyFrom(commonRobot<EuphoriaBoard> p)
 {	super.copyFrom(p);
 	robotRandom = new Random();
 	getBoard().robot = this;
-	randomize = ((EuphoriaPlay)p).randomize;
+	EuphoriaPlay ep = (EuphoriaPlay)p;
+	randomize = ep.randomize;
 }
 public RobotProtocol copyPlayer(String name)
 {
@@ -511,7 +506,6 @@ public void PrepareToMove(int playerIndex)
          	//RandomMoveQA qa = new RandomMoveQA();
          	//qa.runTest(this, new Random(),100,false);
          	//qa.report();
-        boardMoveNumber = board.moveNumber();
         // it's important that the robot randomize the first few moves a little bit, but the
         // selection of recruits is random enough
         double randomn = 0.0; //(RANDOMIZE && (board.moveNumber <= 6)) ? 0.01/board.moveNumber : 0.0;

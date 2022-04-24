@@ -224,18 +224,31 @@ class UCTThread extends Thread implements Opcodes
 	
 	private commonMove randomSimulationFirstMove = null;
 	private int randomSimulationDepth=0;
+	
+	//
+	// this is written precisely this way so that if the assertion fails, it's
+	// easy to restart at this frame from the debugger, and investigate why.
+	//
+	private double normalizedScore(commonMove lastMove)
+	{
+		double val =  robot.NormalizedScore(lastMove);	// assign the value for the root move of the search
+		G.Assert((val>=-1.0)&&(val<=1.0),"simulation value %f is out of range -1 to 1",val); 
+		return val;
+	}
 	/*
 	 * Will simulate rest of the game and returns a double indicating the result
 	 * nominally, the result is in the range -1 to 1, with 1 indicating a win and -1 a loss.
 	 * some games may choose to return only those values, or a sliding scale between -1 and 1.
 	 */
-	public double runSimulation(commonMove lastMove,int startingDepth) {
+	public double runSimulation(commonMove lastMove) {
 		//	System.out.println("starting simulation");
 		boolean depthLimited = false;		
 		int entryBacktrack = backTrack.size();
 		randomSimulationFirstMove = null;
 		randomSimulationDepth = 0;
 		boolean gameOver = false;
+		robot.startRandomDescent();
+		
 		while (!gameOver && !depthLimited)
 		{		// reply move conceptually allows the robot to remember the last response to a particular move that
 				// was successful (context free) and reuse it. This is to help with miai.
@@ -256,9 +269,7 @@ class UCTThread extends Thread implements Opcodes
 		// the current board position is either endgame or depth limited.  Calling 
 		// NormalizedScore assigns the current game value to it.  It doesn't matter 
 		// what the move at the bottom of the simulation was.
-		double val =  robot.NormalizedScore(lastMove);	// assign the value for the root move of the search
-		G.Assert((val>=-1.0)&&(val<=1.0),"simulation value %f is out of range -1 to 1",val); 
-
+    	double val = normalizedScore(lastMove);
 		if(backTrack.size()>entryBacktrack)
 			{			
 			commonMove prevMove = backTrack.pop();
@@ -332,7 +343,7 @@ class UCTThread extends Thread implements Opcodes
 		for(int i=0;i<lim;i++)
 		{	// normalize the scored values
 			commonMove m = mm[i];
-			m.setEvaluation ((m.local_evaluation()-sortedMin)/range-1.0);
+			m.setEvaluation ((Static_Evaluate_Move(mm[i])-sortedMin)/range-1.0);
 		}
         // subtle point here.  If all the moves are terminals, we may apply the depth limit optimization
         // and if so, the first move must really be the best, not necessarily the best terminal
@@ -624,7 +635,7 @@ class UCTThread extends Thread implements Opcodes
 		while(sims++<master.simulationsPerNode)
 			{ 
 			  robot.Start_Simulation(master,currentNode);
-			  double val0 =runSimulation(currentMove,current_depth);
+			  double val0 =runSimulation(currentMove);
 			  if( (randomSimulationDepth==1) 
 					  && master.terminalNodeOptimization
 					  && ((val0>0)==(currentMove.player==randomSimulationFirstMove.player))
@@ -722,8 +733,9 @@ class UCTThread extends Thread implements Opcodes
 			double rescore = currentMove.player==scoreForPlayer ? val : -val;
 			UCTNode nn = currentMove.uctNode();
 			if(master.sort_moves && (nn.getVisits() == 0) && (current_depth<master.uct_sort_depth))
-			{	G.Assert((currentMove.evaluation()>=-1.0) && (currentMove.evaluation()<=1.0),"in range");
-				nn.update(currentMove.evaluation(),1,master.alpha);
+			{	double ev = currentMove.evaluation();
+				G.Assert((ev>=-1.0) && (ev<=1.0),"evaluation out of range %s",ev);
+				nn.update(ev,1,master.alpha);
 			}
 			if(gameOver)	// gameover and a win for the current player
 				{
@@ -1135,6 +1147,7 @@ public class UCTMoveSearcher extends CommonDriver
 			long before = System.currentTimeMillis();
 			long after;
 			{
+			leadRobot.prepareForDescent(this);
 			CommonMoveStack moves = leadRobot.List_Of_Legal_Moves();
 			max_depth = final_depth;
 			

@@ -114,7 +114,7 @@ public class ModxViewer extends CCanvas<ModxCell,ModxBoard> implements ModxConst
     	}
 
     }
-
+    private boolean flatten = false;
     public Rectangle createPlayerGroup(int player,int x,int y,double rotation,int unitsize)
     {	commonPlayer pl = getPlayerOrTemp(player);
     	Rectangle chip = playerChipRect[player];
@@ -129,15 +129,27 @@ public class ModxViewer extends CCanvas<ModxCell,ModxBoard> implements ModxConst
     	G.SetRect(chip, x, y, chipW, chipH);
     	G.SetRect(flat,x+chipW,y,chipW,chipH);
     	G.SetRect(score, x+chipW*2+unitsize/2, y,scoreW,scoreW);
+    	if(flatten)
+    	{
+    	G.SetRect(done, G.Right(box)+unitsize/4,G.Top(box),doneW,plannedSeating()?doneW/2:0);    		
+    	}
+    	else
+    	{
     	G.SetRect(done, x+unitsize/2,y+chipH+unitsize/2,doneW,plannedSeating()?doneW/2:0);
-    	
+    	}
     	pl.displayRotation = rotation;
     	
     	G.union(box, chip,done,flat,score);
     	return(box);
     }
     public void setLocalBounds(int x, int y, int width, int height)
-    {	G.SetRect(fullRect, x, y, width, height);
+    {
+    	setLocalBoundsV(x,y,width,height,new double[] {1,-1});
+    }
+
+    public double setLocalBoundsA(int x, int y, int width, int height,double a)
+    {	flatten = a<0;
+    	G.SetRect(fullRect, x, y, width, height);
     	GameLayoutManager layout = selectedLayout;
     	int nPlayers = nPlayers();
      	int chatHeight = selectChatHeight(height);
@@ -155,11 +167,11 @@ public class ModxViewer extends CCanvas<ModxCell,ModxBoard> implements ModxConst
     	//double bestPercent = 
     	layout.selectLayout(this, nPlayers, width, height,
     			margin,	
-    			0.75,	// 60% of space allocated to the board
+    			0.65,	// 60% of space allocated to the board
     			1.0,	// 1:1 aspect ratio for the board
     			fh*2.5,	// minimum cell size
     			fh*3.5,	// maximum cell size
-    			0.7		// preference for the designated layout, if any
+    			0.5		// preference for the designated layout, if any
     			);
     	
         // place the chat and log automatically, preferring to place
@@ -203,7 +215,7 @@ public class ModxViewer extends CCanvas<ModxCell,ModxBoard> implements ModxConst
     	G.SetRect(goalRect, boardX, boardBottom-stateH*2,boardW,stateH);       
         setProgressRect(progressRect,goalRect);
         positionTheChat(chatRect,Color.white,Color.white);
- 	
+        return boardW*boardH;
     }
 
     

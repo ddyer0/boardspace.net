@@ -84,6 +84,7 @@ public class QyshinsuViewer extends CCanvas<QyshinsuCell,QyshinsuBoard> implemen
         gridOption.setState(false);
         colorBlind = Default.getBoolean(Default.colorblind);
         colorBlindOption = myFrame.addOption(s.get(ColorBlindOption), colorBlind,deferredEvents);
+        colorBlindOption.setForeground(Color.blue);
 
         MouseColors[1] = new Color(0.7f,0.2f,0.2f);
         MouseColors[0] = Color.black;

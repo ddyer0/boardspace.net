@@ -177,7 +177,13 @@ public class ViticulturePlay extends commonRobot<ViticultureBoard> implements Ru
         mm.cards = null;
         board.RobotExecute(mm);
     }
-
+    public void startRandomDescent()
+    {
+    	// we detect that the UCT run has restarted at the top
+    	// so we need to re-randomize the hidden state.
+    	//board.randomizeHiddenState(robotRandom,robotPlayer);
+    }
+    
 /** return a Vector of moves to consider at this point.  It doesn't have to be
  * the complete list, but that is the usual procedure. Moves in this list will
  * be evaluated and sorted, then used as fodder for the depth limited search
@@ -187,11 +193,6 @@ public class ViticulturePlay extends commonRobot<ViticultureBoard> implements Ru
     {
         int newn = board.moveNumber();
     	boolean needassign = (newn<=boardMoveNumber);
-    	if(newn<boardMoveNumber)
-    		{ // we detect that the UCT run has restarted at the top
-    		  // so we need to re-randomize the hidden state.
-    		  //board.randomizeHiddenState(robotRandom,robotPlayer);
-    		}
     	boardMoveNumber = newn;
     	CommonMoveStack all = board.GetListOfMoves(MoveGenerator.Robot);
     	if(needassign)

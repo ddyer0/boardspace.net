@@ -205,7 +205,17 @@ public interface RobotProtocol extends SimpleRobotProtocol
      */
     public commonMove getBestWinrateMove(UCTNode parent,Random r,UCTMoveSearcher randomization);
     public double Static_Evaluate_Search_Move(commonMove mm,int current_depth,CommonDriver master);
+    public double Static_Evaluate_Uct_Move(commonMove mm,int current_depth,CommonDriver master);
+    
+    /**
+     * this is called as the robot starts a new pass down the tree of UCT nodes
+     * @param from
+     */
 	public void prepareForDescent(UCTMoveSearcher from);
+	/**
+	 * this is called as the robot begins the random playout phase
+	 */
+	public void startRandomDescent();
 
 	
 	// *** TEMPORARILY RESTORED ***

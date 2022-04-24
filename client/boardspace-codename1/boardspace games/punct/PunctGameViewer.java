@@ -134,8 +134,15 @@ public class PunctGameViewer extends CCanvas<punctCell,PunctGameBoard> implement
     	return(super.EditHistory(m));
     }
 
+    private boolean flatten = false;
     public void setLocalBounds(int x, int y, int width, int height)
-    {	G.SetRect(fullRect, x, y, width, height);
+    {
+    	setLocalBoundsV(x,y,width,height,new double[] {1,-1});
+    }
+
+    public double setLocalBoundsA(int x, int y, int width, int height,double a)
+    {	flatten = a<0;	
+    	G.SetRect(fullRect, x, y, width, height);
     	GameLayoutManager layout = selectedLayout;
     	int nPlayers = nPlayers();
         int chatHeight = selectChatHeight(height);
@@ -155,7 +162,7 @@ public class PunctGameViewer extends CCanvas<punctCell,PunctGameBoard> implement
     	//double bestPercent = 
     	layout.selectLayout(this, nPlayers, width, height,
     			margin,	
-    			0.75,	// 60% of space allocated to the board
+    			0.65,	// 60% of space allocated to the board
     			0.8,	// aspect ratio for the board
     			fh*2.0,
     			fh*3,	// maximum cell size
@@ -205,7 +212,7 @@ public class PunctGameViewer extends CCanvas<punctCell,PunctGameBoard> implement
     	G.SetRect(goalRect, boardX, boardBottom-stateH,boardW,stateH);       
         setProgressRect(progressRect,goalRect);
         positionTheChat(chatRect,chatBackgroundColor,rackBackGroundColor);
-
+        return boardW*boardH;
          }
     public Rectangle createPlayerGroup(int player,int x,int y,double rotation,int unitsize)
     {	commonPlayer pl = getPlayerOrTemp(player);
@@ -216,7 +223,14 @@ public class PunctGameViewer extends CCanvas<punctCell,PunctGameBoard> implement
     	int doneW = plannedSeating()? unitsize*4 : 0;
     	G.SetRect(punct,x,y,unitsize*2,unitsize*2);
     	G.SetRect(done,G.Right(box)+unitsize/2,G.Top(box)+unitsize/2,doneW,doneW/2);
+       	if(flatten)
+       	{
+       		G.SetRect(chip,	G.Right(done)+unitsize/3,	y,unitsize*16,	4*unitsize);
+       	}
+       	else
+       	{
        	G.SetRect(chip,	x,	G.Bottom(box),unitsize*16,	4*unitsize);
+       	}
        	G.union(box, done,chip,punct);
     	pl.displayRotation = rotation;
     	return(box);
@@ -490,7 +504,7 @@ public class PunctGameViewer extends CCanvas<punctCell,PunctGameBoard> implement
                 boolean isPunct = (piece!=null) 
                 	&& ((piece.cols[0]==cell.col)&&(piece.rows[0]==cell.row));
                 // drawing
-                if((gb!=b) && (piece==null) && (height==0) && (gc!=null))
+                if(gb!=b && (piece==null) && (height==0) && (gc!=null))
                 {	int bloBits = cell.bloBits;
                 	if(bloBits!=0)
                 		{Color bc = new Color(0xff-(bloBits&0xff),0xff-((bloBits>>8)&0xff),0xff-((bloBits>>16)&0xff));

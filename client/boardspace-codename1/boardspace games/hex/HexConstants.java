@@ -13,6 +13,8 @@ public interface HexConstants
 	static String HexPlayState = "Place a marker on any empty cell";
 	static String HexPlayOrSwapState = "Place a marker on any empty cell, or Swap Colors";
 	static String SwitchMessage = "Switch sides, and play white using the current position";
+	static String RhombusView = "switch to a \"rhombus\" view";
+	static String DiamondView = "switch to a \"diamond\" view";
 	class StateStack extends OStack<HexState>
 	{
 		public HexState[] newComponentArray(int n) { return(new HexState[n]); }
@@ -171,7 +173,9 @@ public interface HexConstants
            HexPlayState,
            SwitchMessage,
            HexPlayOrSwapState,
-    	   HexVictoryCondition
+    	   HexVictoryCondition,
+    	   RhombusView,
+    	   DiamondView,
     		
     	};
     	// there should be a line in masterstrings.java which causes

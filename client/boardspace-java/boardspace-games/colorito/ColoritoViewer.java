@@ -127,13 +127,28 @@ public class ColoritoViewer extends CCanvas<ColoritoCell,ColoritoBoard> implemen
     	Rectangle chip = chipRects[player];
     	Rectangle done = doneRects[player];
     	G.SetRect(chip, x, y, unitsize*2, unitsize*2);
-    	G.SetRect(done, x, y+unitsize*2, unitsize*3,plannedSeating()?unitsize+unitsize/2:0);
+    	int doneW = plannedSeating() ? unitsize*3 : 0;
+    	if(flatten)
+    	{
+    		G.SetRect(done, G.Right(box)+unitsize/3,y, doneW,doneW/2);
+    	}
+    	else
+    	{
+    	G.SetRect(done, x, y+unitsize*2, doneW,doneW/2);
+    	}
     	pl.displayRotation = rotation;
     	G.union(box, done,chip);
     	return(box);
     }
+    private boolean flatten = false;
     public void setLocalBounds(int x, int y, int width, int height)
-    {	G.SetRect(fullRect, x, y, width, height);
+    {
+    	setLocalBoundsV(x,y,width,height,new double[] {1,-1});
+    }
+
+    public double setLocalBoundsA(int x, int y, int width, int height,double a)
+    {	flatten = a<0;	
+    	G.SetRect(fullRect, x, y, width, height);
     	GameLayoutManager layout = selectedLayout;
     	int nPlayers = nPlayers();
        	int chatHeight = selectChatHeight(height);
@@ -145,7 +160,6 @@ public class ColoritoViewer extends CCanvas<ColoritoCell,ColoritoBoard> implemen
         int minLogH = fh*10;	
         int margin = fh/2;
         int buttonW = fh*8;
-        boolean rotate = seatingFaceToFaceRotated();
         int nrows = b.boardRows;
         int ncols = b.boardColumns;
         	// this does the layout of the player boxes, and leaves
@@ -153,14 +167,15 @@ public class ColoritoViewer extends CCanvas<ColoritoCell,ColoritoBoard> implemen
     	//double bestPercent = 
     	layout.selectLayout(this, nPlayers, width, height,
     			margin,	
-    			0.7,	// 60% of space allocated to the board
+    			0.6,	// 60% of space allocated to the board
     			0.9,	// aspect ratio for the board
     			fh*3,
     			fh*3.5,	// maximum cell size
     			0.4		// preference for the designated layout, if any
     			);
     	
-        // place the chat and log automatically, preferring to place
+        boolean rotate = seatingFaceToFaceRotated();
+       // place the chat and log automatically, preferring to place
     	// them together and not encroaching on the main rectangle.
     	layout.placeTheChatAndLog(chatRect, minChatW, chatHeight,minChatW*2,3*chatHeight/2,logRect,
     			minLogW, minLogH, minLogW*3/2, minLogH*3/2);
@@ -209,7 +224,7 @@ public class ColoritoViewer extends CCanvas<ColoritoCell,ColoritoBoard> implemen
     	G.SetRect(goalRect, boardX, boardBottom-stateH,boardW,stateH);       
         setProgressRect(progressRect,goalRect);
         positionTheChat(chatRect,Color.white,rackBackGroundColor);
- 	
+        return boardW*boardH;
     }
 
     

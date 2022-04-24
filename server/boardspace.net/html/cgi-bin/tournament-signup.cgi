@@ -133,6 +133,8 @@ sub print_header
 <HEAD>
 <TITLE>$tmh</TITLE>
 $am
+<link rel="stylesheet" href="/js/rome.css">
+<script  type='text/javascript' src='/js/rome.js'></script>\n
 </HEAD>
 <center><H2>$tm</h2>
 <br>$use
@@ -776,9 +778,9 @@ sub show_matches_in_group()
 	# come from matchparticipant records.  The 'A' in the admin select is a 
 	# trick to make it sort last.
 	#
-	my $q = "select player,outcome,points,played,unix_timestamp(played),comment,matchid,uid from matchparticipant"
+	my $q = "select player,outcome,points,played,unix_timestamp(played),scheduled,comment,matchid,uid from matchparticipant"
 		. " where (matchstatus!='notready') and tournament=$qturn and tournament_group=$qgroup "
-		. " union select -2,if(admin!='winner',admin,admin_winner),0,played,unix_timestamp(played),comment, matchid,'A' from matchrecord "
+		. " union select -2,if(admin!='winner',admin,admin_winner),0,played,unix_timestamp(played),scheduled,comment, matchid,'A' from matchrecord "
 		. " where(matchstatus!='notready') and tournament=$qturn and tournament_group=$qgroup "
 		. " order by $or,uid";
 	my $sth = &query($dbh,$q);
@@ -838,11 +840,12 @@ sub show_matches_in_group()
 	my $out = "";
 	my $points = "";
 	my $winner = "";
+	my $scheduled = "";
 	my $conflict = 0;
 	my $pn = 0;
 	while($nr-- > 0)
 	{
-	my ($pl1,$outcome,$player1_points,$played,$playedint,$comment,$matchid,$uid) = &nextArrayRow($sth);
+	my ($pl1,$outcome,$player1_points,$played,$playedint,$scheduled,$comment,$matchid,$uid) = &nextArrayRow($sth);
 	$pn++;
 	# remove trailing nulls from colums damaged by the query
 	$outcome =~ s/\x00*$//g;
@@ -877,7 +880,7 @@ sub show_matches_in_group()
 		{
 		$hasmatch{$pl1} = 1;
 		
-		if($changeint eq 0 || ($played && ($playedint>$changeint))) { $change = $played; $changeint=$playedint ; }
+		if($changeint eq 0 || ($played && ($playedint>$changeint))) { $change = substr($played,0,-3); $changeint=$playedint ; }
 		
 			#
 			# combine outcome and comment sections
@@ -890,6 +893,16 @@ sub show_matches_in_group()
 			  # if outcome is a number
 			  if($outcome =~/\d/) { $out = &trans("#1 won",$names{$outcome}) . "<br>\n"; }
 			   elsif($outcome && !($outcome eq 'none')) { $out = $outcome; }
+			}
+			elsif ((($outcome eq 'none') || ($outcome eq 'scheduled')) && 
+				!($scheduled eq '') && 
+				!($scheduled eq '0000-00-00 00:00:00')
+				)
+			{	
+				my $prop = $outcome;
+				my $sched = substr($scheduled,0,-3);
+				if($outcome eq 'none') { $prop = 'proposed'; }
+				$out .=  "<b>$name1</b>:$prop $sched<br>";
 			}
 			elsif($outcome && !($outcome eq 'none')) 
 				{ 
@@ -1333,13 +1346,13 @@ sub show_edit_match()
 	# come from matchparticipant records.  The 'A' in the admin select is a 
 	# trick to make it sort last.
 	#
-	my $q = "select matchgroup.status,player,points,tournament,outcome,played,"
+	my $q = "select matchgroup.status,player,points,tournament,outcome,played,scheduled,"
 				. " matchparticipant.comment,tournament_group,matchparticipant.uid"
 				. " from matchparticipant left join matchgroup "
 				. " on matchparticipant.tournament = matchgroup.uid and matchgroup.name = matchparticipant.tournament_group "
 				. " where matchid=$qm "
 				# note that because of the particular structure of this join query, $outcome seems to be padded with a lot of nulls
-				. " union select matchgroup.status,-2,0,tournament,if(admin='winner',admin_winner,admin),played,"
+				. " union select matchgroup.status,-2,0,tournament,if(admin='winner',admin_winner,admin),played,scheduled,"
 				. " matchrecord.comment,tournament_group,'A'"
 				. " from matchrecord left join matchgroup "
 				. "	on matchrecord.tournament = matchgroup.uid and matchgroup.name = matchrecord.tournament_group "
@@ -1352,6 +1365,8 @@ sub show_edit_match()
 	my $fromoutcome;
 	my $fromcomment;
 	my $fromtournament;
+	my $fromscheduled;
+	my $scheduled;
 	my @playeruids;
 	my $closed = 0;
 	#print "Q : $q<p>";
@@ -1367,7 +1382,7 @@ sub show_edit_match()
 		my $pn = 0;
 		while($nr-- > 0)
 		{
-		my ($status,$player,$points,$tournament,$outcome,$played,$comment,$tournament_group,$uid,$matchid) = &nextArrayRow($sth);
+		my ($status,$player,$points,$tournament,$outcome,$played,$scheduled,$comment,$tournament_group,$uid,$matchid) = &nextArrayRow($sth);
 
 		# note that because of the particular structure of the join query, $outcome and $uid seem to be padded with a lot of nulls
 		# this removes the nulls
@@ -1376,10 +1391,6 @@ sub show_edit_match()
 		$pn++;
 		$closed = ($status eq 'closed');
 		$fromtournament = $tournament;
-		if($player == $fromuid) 
-			{ $fromoutcome = $outcome; 
-			  $fromcomment = $comment;
-			}
 			
 		if(!$filled)
 		{	#once we have the tournament, fill the name table 
@@ -1387,6 +1398,12 @@ sub show_edit_match()
 			$fromuid = ($admin&&($fromname eq '')) ? -2 : $lcuids{lc($fromname)};
 			$filled = 1;
 		}
+
+		if($player == $fromuid) 
+			{ $fromoutcome = $outcome; 
+			  $fromcomment = $comment;
+			  $fromscheduled = substr($scheduled,0,-3);
+			}
 		my $name1 = $names{$player};
 		if($player>0) { push(@playeruids,$player); }
 		if($admin || ($player>0))
@@ -1422,7 +1439,13 @@ sub show_edit_match()
 		{	my $out = $outcome;
 			# if the outcome is a number,it's a player id
 		    if($outcome =~ /\d/) {$out = "$names{$outcome} won"; }
-			print "<td>$out</td>";
+			my $sched = "";
+			my $outname = $out;
+			if(($out eq 'none') || ($out eq 'scheduled'))
+				{ $sched = "<br>" . substr($scheduled,0,-3);
+				  if($out eq 'none') { $outname = 'proposed'; }
+				}
+			print "<td>$outname$sched</td>";
 			if($admin)
 			{	
 				my $epoints = &encode_entities($points);
@@ -1441,7 +1464,7 @@ sub show_edit_match()
 			}	
 		}
 		
-		print "<td>$played</td><td colspan=2>$comment</td>";
+		print "<td>" . substr($played,0,-3) . "</td><td colspan=2>$comment</td>";
 
 		print "</tr>\n";
 		}	# end of if admin
@@ -1458,9 +1481,9 @@ sub show_edit_match()
 		if(!$admin) { print "</td><td>$pw <input type=password name=passwd value='' SIZE=20 MAXLENGTH=25>"; }
 		print "</td></tr>\n";
 		{
-		print "<tr><td>outcome</td>";
+		print "<tr><td>status</td>";
 		print "<td><select name=outcome>";
-		&print_option("none",$fromoutcome,'none');
+		&print_option("none",$fromoutcome,'proposed');
 		&print_option('cancelled',$fromoutcome,'cancelled');
 		&print_option('scheduled',$fromoutcome,'scheduled');
 		&print_option('draw',$fromoutcome,'draw');
@@ -1480,6 +1503,12 @@ sub show_edit_match()
 		print "</select>\n";
 		print "</td></tr>";
 		}
+		print "<tr><td>date/time (GMT) </td>";
+		print "<td><div master>";
+  		print "<input name='scheduled' value ='$fromscheduled' class=input ";
+		 print "onclick=javascript:rome(scheduled,options={appendTo:'parent'})>";
+		print "</div></td>";
+		print "</tr>\n";
 
 		my $ent = &encode_entities($fromcomment);
 
@@ -1527,6 +1556,8 @@ sub do_edit_match()
 	my $qmatch = $dbh->quote($matchid);
 	my $qpl = $dbh->quote($playerid);
 	my $qtid = $dbh->quote($tid);
+	my $sched = &param('scheduled');
+	my $qsched = $dbh->quote($sched);
 	if($admin)
 	{	my $npla = &param('nplayers');
 		while($npla>0)
@@ -1560,6 +1591,7 @@ sub do_edit_match()
 		 }
 	my $q = "update matchrecord set admin=$qoutcome,"
 		. "comment=$qcom,"
+		. "scheduled=$qsched,"
 		. $win
 		. "played=CURRENT_TIMESTAMP"
 		. " where matchid=$qmatch and tournament=$qtid";
@@ -1569,9 +1601,11 @@ sub do_edit_match()
 	{
 	my $q = "update matchparticipant set outcome=$qoutcome,"
 		. "comment=$qcom,"
+		. "scheduled=$qsched,"
 		. "played=CURRENT_TIMESTAMP"
 		. " where matchid=$qmatch and player=$qpl and tournament=$qtid";
 	&commandQuery($dbh,$q);
+	#print "q: $q<br>";
 	}
 	if($email) { &sendMatchNotify($dbh,$matchid); } else { print "No emails sent<br>"; }
 

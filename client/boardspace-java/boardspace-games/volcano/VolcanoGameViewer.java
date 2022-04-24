@@ -120,25 +120,41 @@ public class VolcanoGameViewer extends CCanvas<VolcanoCell,VolcanoBoard> impleme
     public Rectangle createPlayerGroup(int player,int x,int y,double rotation,int unitsize)
     {	commonPlayer pl = getPlayerOrTemp(player);
 		int scoreW = unitsize*2;
-		int doneW = unitsize*5;
+		int doneW = plannedSeating() ?  unitsize*5 : 0;
     	Rectangle box = pl.createRectangularPictureGroup(x+scoreW+unitsize,y,unitsize);
     	Rectangle chip = chipRects[player];
     	Rectangle done = doneRects[player];
     	Rectangle score = scoreRects[player];
+    	int boxW = G.Width(box);
     	G.SetRect(score, x+unitsize/2, y, scoreW,scoreW);
-    	G.SetRect(done, G.Right(box), y+unitsize/2, doneW,plannedSeating()?doneW/2:0);
+    	if(flatten)
+    	{
+        	G.SetRect(done, x, G.Bottom(box)+unitsize/3, doneW,doneW/2);
+        	G.SetRect(chip, G.Right(box),y,boxW,unitsize*6);
+        	G.union(box, chip,done);
+    		
+    	}
+    	else
+    	{
+    	G.SetRect(done, G.Right(box), y+unitsize/2, doneW,doneW/2);
     	G.union(box, done,score);
-    	G.SetRect(chip, x, G.Bottom(box),G.Width(box),unitsize*6);
+    	G.SetRect(chip, x, G.Bottom(box),boxW,unitsize*6);
     	G.union(box, chip);
+    	}
     	pl.displayRotation = rotation;
     	return(box);
     }
-    double aspects[] = { 0.7,1.0,1.4};
+    double aspects[] = { 0.7,1.0,1.4,-0.7,-1.0,-1.4};
+    private boolean flatten = false;
     public void setLocalBounds(int x, int y, int width, int height)
-    {	setLocalBoundsV(x,y,width,height,aspects);
+    {
+    	setLocalBoundsV(x,y,width,height,new double[] {1,-1});
     }
-    public double setLocalBoundsA(int x, int y, int width, int height,double aspect)
-    {	G.SetRect(fullRect, x, y, width, height);
+
+    public double setLocalBoundsA(int x, int y, int width, int height,double a)
+    {	flatten = a<0;	
+    	double aspect = Math.abs(a);
+    	G.SetRect(fullRect, x, y, width, height);
     	GameLayoutManager layout = selectedLayout;
     	int nPlayers = nPlayers();
        	int chatHeight = selectChatHeight(height);

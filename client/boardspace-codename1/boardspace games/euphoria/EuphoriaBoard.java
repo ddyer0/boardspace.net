@@ -3132,7 +3132,9 @@ void dontDarrenTheRepeater(EPlayer p,replayMode replay)
     	int factionLess = p.countRecruits(Allegiance.Factionless);
     	if(SIMULTANEOUS_PLAY)
     	{	
-    		if(p.hasReducedRecruits()) { setState(EuphoriaState.NormalStart); }
+   			boolean ready = true;
+   			for(EPlayer pl : players) { ready &= pl.hasReducedRecruits(); }
+    		if(ready) { setState(EuphoriaState.NormalStart); }
     		else if(recruitsReady) { setState(EuphoriaState.EphemeralConfirmRecruits); }
     		else if(factionLess>1) 
     			{ setState((p.discardedRecruits.height()>0)
@@ -6957,10 +6959,7 @@ private void doAmandaTheBroker(EuphoriaCell dest,replayMode replay,RecruitChip a
   			p.discardNewRecruits(true);
   			moveNumber++; 
    			SIMULTANEOUS_PLAY = true;	// replay of the final NormalStart turns this off
-   			boolean ready = true;
-   			for(EPlayer pl : players) { ready &= pl.hasReducedRecruits(); }
-   			if(ready) { setState(EuphoriaState.NormalStart); }
-   			else { setRecruitDialogState(getPlayer(activePlayer)); }   
+   			setRecruitDialogState(getPlayer(activePlayer));  
        		}
        		break;
         case CONFIRM_RECRUITS:
@@ -7178,7 +7177,7 @@ private void doAmandaTheBroker(EuphoriaCell dest,replayMode replay,RecruitChip a
     			to.addChip(po);
     			m.chip = po; 
     			m.player = p.boardIndex;
-    			setRecruitDialogState(getPlayer(activePlayer));
+    			setRecruitDialogState(p);
     		}
     		break;
         case MOVE_CHOOSE_RECRUIT:
@@ -7246,7 +7245,7 @@ private void doAmandaTheBroker(EuphoriaCell dest,replayMode replay,RecruitChip a
         	dp.ephemeralPickedSource = null;
         	dest.addChip(dp.ephemeralPickedObject);
         	dp.ephemeralPickedObject = null;
-        	setNextStateAfterDrop(dp);
+        	setRecruitDialogState(dp);
         	}
             break;
             

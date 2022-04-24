@@ -116,7 +116,11 @@ public class ViticultureChip extends chip<ViticultureChip>
 		order = ord;			// order in array of similar cards
 		allChips.push(this);
 	}
-	
+	private ViticultureChip(String na,double sc[])
+	{
+		file = na;
+		scale =sc;
+	}
 	private ViticultureChip(ViticultureId ids,DrawableImage<?> from)
 	{
 		id = ids;
@@ -173,7 +177,7 @@ public class ViticultureChip extends chip<ViticultureChip>
 
     static private ViticultureChip[] colorArray(String basename,ViticultureId idtype,ChipType type,double []scale)
     {	ViticultureColor co[] = ViticultureColor.values();
-    	ViticultureChip val[] = new ViticultureChip[co.length-1];
+     	ViticultureChip val[] = new ViticultureChip[co.length -1];
     	for(ViticultureColor c : co)
     	{	if(c!=ViticultureColor.Gray)
     		{int idx = c.ordinal();
@@ -321,7 +325,6 @@ public class ViticultureChip extends chip<ViticultureChip>
 
     static double watertowerScale[]= {0.5,0.5,1};
     static ViticultureChip Watertowers[] = colorArray("watertower",ViticultureId.WaterTower,ChipType.WaterTower,watertowerScale);
-
     static double mafiosoScale[]= {0.5,0.5,1};
     static ViticultureChip Mafiosos[] = colorArray("mafioso",ViticultureId.Workers,ChipType.Mafioso,mafiosoScale);
 
@@ -824,7 +827,9 @@ public class ViticultureChip extends chip<ViticultureChip>
     static ViticultureChip WineCaveCard = getChip(ChipType.StructureCard,"Wine Cave");
     static ViticultureChip GuestHouseCard = getChip(ChipType.StructureCard,"Guest House");
     static ViticultureChip MercadoCard = getChip(ChipType.StructureCard,"Mercado");
+
     // add new cards here
+    static ViticultureChip NeutralBuilding = new ViticultureChip("watertower",watertowerScale);
     
     /**
      * this is a fairly standard preloadImages method, called from the
@@ -838,6 +843,7 @@ public class ViticultureChip extends chip<ViticultureChip>
 		{	
 		// buildings
 		loadChips.copyFrom(allChips);
+		loadChips.push(NeutralBuilding);
 		autoloadMaskGroup(Dir,Stars,"authority-mask");
 		autoloadMaskGroup(Dir,Yokes,"yoke-mask");
 		autoloadMaskGroup(Dir,Meeples,"meeple-mask");

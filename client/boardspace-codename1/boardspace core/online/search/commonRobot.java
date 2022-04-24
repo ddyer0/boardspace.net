@@ -834,7 +834,10 @@ public abstract class commonRobot<BOARDTYPE extends BoardProtocol> implements Ru
 		 		}
 				return(best);
 			}
-	 
+	 public double Static_Evaluate_Uct_Move(commonMove mm,int current_depth,CommonDriver master)
+	 {
+		 return Static_Evaluate_Search_Move(mm,current_depth,master);
+	 }
 	 public double Static_Evaluate_Search_Move(commonMove mm,int current_depth,CommonDriver master)
 	    {  
 	     	Make_Move(mm);
@@ -940,6 +943,15 @@ public abstract class commonRobot<BOARDTYPE extends BoardProtocol> implements Ru
 	    	// it's also possible to implement quiescence search by carefully adjusting when
 	    	// this method returns true.
 	        return(current>=max);
+	   }
+	    /**
+	     * this is called as the robot begins the random playout phase of a MCTS search
+	     * this is intended to be used to do bookkeeping and rearrangement related to 
+	     * any hidden state in the game, which has to be concealed or re-randomized
+	     */
+	   public void startRandomDescent()
+	   {
+		   
 	   }
 	    
 	    // ** TEMPORARILY RESTORED ***

@@ -3758,7 +3758,9 @@ private void drawPlayerBoard(Graphics gc,
     }
     public void showBuildable(Graphics gc, ViticultureBoard gb, Rectangle br,
     		HitPoint highlight,HitPoint highlightAll,Hashtable<ViticultureCell,Viticulturemovespec>targets)
-    {	PlayerBoard pb = gb.getCurrentPlayerBoard();
+    {	PlayerBoard pb = (showBuildings && !allowed_to_edit)
+    						? gb.getPlayerBoard(getActivePlayer().boardIndex)
+    						: gb.getCurrentPlayerBoard();
     	boolean quickExit = false;
     	int w = G.Width(br);
     	int cx = G.centerX(br);
@@ -3910,6 +3912,8 @@ private void drawPlayerBoard(Graphics gc,
     	else
     	{
            	int csize = frameW/20;
+           	if(!showBuildings)
+           	{
            	if(gb.triggerCard!=null)
            	{
            		gb.triggerCard.drawChip(gc, this, highlightAll, ViticultureId.ShowBigChip, w/15,xp0+frameW-csize,yp0+frameH-csize*3/2,null);
@@ -3920,8 +3924,9 @@ private void drawPlayerBoard(Graphics gc,
            					highlight,NoBuildMessage,HighlightColor,rackBackGroundColor))
            	{
            		highlight.hitCode = GameId.HitDoneButton;
-           	}
-           	StockArt.FancyCloseBox.drawChip(gc, this, highlightAll, ViticultureId.CloseOverlay,csize, xp0+frameW-csize,yp0+csize,null);
+           	}}
+           	StockArt.FancyCloseBox.drawChip(gc, this, highlightAll, 
+           			showBuildings ? ViticultureId.CancelBigChip: ViticultureId.CloseOverlay,csize, xp0+frameW-csize,yp0+csize,null);
     	}
     }
     double decksLoc[][] = {
@@ -4049,8 +4054,10 @@ private void drawPlayerBoard(Graphics gc,
         commonPlayer pl = getPlayerOrTemp(gb.whoseTurn());
         boolean tempOff = currentZoomZone!=null;
         
-        double build[] = new double[] { 0.255,0.630,0.1 };
-        StockArt.Dot.drawChip(gc,this,highlightAll,ViticultureId.ShowBuildings,gb.pToS(build[2]),gb.pToX(build[0]),gb.pToY(build[1]),"?");
+        double build[] = new double[] { 0.21,0.570,0.04 };
+        ViticultureChip.NeutralBuilding.drawChip(gc,this,highlightAll,
+        			ViticultureId.ShowBuildings,s.get(ShowBuildingInfo),
+        			gb.pToS(build[2]),gb.pToX(build[0]),gb.pToY(build[1]),null);
         
         if(showBigStack) { hitBoard = null; tempOff = true; }
         HitPoint tipHighlight = (ui==UI.Main)||overlayClosed ? highlightAll : null;
@@ -4973,6 +4980,7 @@ private void drawPlayerBoard(Graphics gc,
         	}}
         	break;
         case CancelBigChip:
+        	showBuildings = false;
         	if(hiddenPb!=null) { hiddenPb.showHiddenBigStack = false; }
         	else { changeBigStack((ViticultureChip)null);
         	}

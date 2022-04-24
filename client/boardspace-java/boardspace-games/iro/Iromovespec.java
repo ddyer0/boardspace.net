@@ -59,6 +59,7 @@ public class Iromovespec
     IroChip chip2;
     char from_col;
     int from_row;
+    double monteCarloWeight = 1.0;
     
     // these provide an interface to log annotations that will be seen in the game log
     String gameEvents[] = null;
@@ -91,7 +92,7 @@ public class Iromovespec
         G.Assert(op!=MOVE_SWAPB || source==IroId.Black || source==IroId.White,"oops");
      }
     // constructor used for move from-to
-    public Iromovespec(int opc,IroCell c,IroCell d,int p)
+    public Iromovespec(int opc,IroCell c,IroCell d,int p,double weight)
     {	source = c.rackLocation();
     	op = opc;
     	from_col = c.col;
@@ -99,19 +100,21 @@ public class Iromovespec
     	to_col = d.col;
     	to_row = d.row;
     	player = p;
+    	monteCarloWeight = weight;
         G.Assert(op!=MOVE_SWAPB || source==IroId.Black || source==IroId.White,"oops");
      }
     
 
     // constructor for placement and swap
-    public Iromovespec(int opc, IroCell from, int lim, IroCell c, int who) {
+    public Iromovespec(int opc, IroCell from, int lim, IroCell c, int who,double weight) {
 		op = opc;
 		player = who;
 		source = from.rackLocation();
 		from_row = lim;
 		to_col = c.col;
 		to_row = c.row;
-	       G.Assert(op!=MOVE_SWAPB || source==IroId.Black || source==IroId.White,"oops");
+		monteCarloWeight = weight;
+		G.Assert(op!=MOVE_SWAPB || source==IroId.Black || source==IroId.White,"oops");
 	}
 
 	/**
@@ -140,6 +143,7 @@ public class Iromovespec
         to.chip2 = chip2;
         to.from_col = from_col;
         to.from_row = from_row;
+        to.monteCarloWeight = monteCarloWeight;
     }
 
     public commonMove Copy(commonMove to)
@@ -260,7 +264,7 @@ public class Iromovespec
         case MOVE_FROM_TO:
         	return icon(v,from_col,from_row," - ",to_col,to_row);
         case MOVE_PLACE:
-           	return icon(v,"place ",from_row," ",to_col,to_row);
+           	return icon(v,"place ",to_col,to_row);
             
         case MOVE_SWAPB:
         	return icon(v,"<>",to_col,to_row);
@@ -272,7 +276,8 @@ public class Iromovespec
             return icon(v,to_col , to_row);
 
 		case MOVE_DROPB:
-            return TextChunk.create(" "+to_col+to_row+" ");
+			if(chip==null) {   return TextChunk.create("- "+to_col+to_row+" "); }
+			else { return(TextChunk.join(TextChunk.create(G.concat(((chip.playerIndex==player)?"<>" : "x "),to_col,to_row," ")),icon(v)));  }
 
         case MOVE_DROP:
         case MOVE_PICK:

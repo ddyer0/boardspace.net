@@ -14,6 +14,7 @@ import lib.HitPoint;
 import lib.Random;
 import lib.StockArt;
 import lib.TextButton;
+import lib.Toggle;
 import lib.LFrameProtocol;
 import online.game.*;
 /**
@@ -137,10 +138,12 @@ public class HexGameViewer extends CCanvas<hexCell,HexGameBoard> implements HexC
     private Rectangle chipRects[] = addZoneRect("chip",2);
 	private TextButton swapButton = addButton(SWAP,GameId.HitSwapButton,SwitchMessage,
 			HighlightColor, rackBackGroundColor);
-	private Rectangle rotationRect=addRect("rotation");
+	private Toggle rotation=
+			new Toggle(this,"rotation",
+					hexChip.HexIcon ,hexChip.HexIcon.id,RhombusView,
+					hexChip.HexIconR,hexChip.HexIconR.id,DiamondView);
 	// private menu items
-    private boolean doRotation=true;					// current state
-    private boolean lastRotation=!doRotation;			// user to trigger background redraw
+    private boolean lastRotation=!rotation.isOnNow();			// user to trigger background redraw
     
 /**
  * this is called during initialization to load all the images. Conventionally,
@@ -168,7 +171,8 @@ public class HexGameViewer extends CCanvas<hexCell,HexGameBoard> implements HexC
         
         super.init(info,frame);
         // use_grid=reviewer;// use this to turn the grid letters off by default
-
+        rotation.setValue(true);
+        lastRotation = false;
         if(G.debug())
         {	// initialize the translations when debugging, so there
         	// will be console chatter about strings not in the list yet.
@@ -332,7 +336,7 @@ public class HexGameViewer extends CCanvas<hexCell,HexGameBoard> implements HexC
         int stateY = boardY;
         int stateX = boardX;
         int stateH = fh*3;
-        G.placeStateRow(stateX,stateY,boardW,stateH,iconRect,stateRect,rotationRect,noChatRect);
+        G.placeStateRow(stateX,stateY,boardW,stateH,iconRect,stateRect,rotation,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	
     	if(rotate)
@@ -658,11 +662,9 @@ public class HexGameViewer extends CCanvas<hexCell,HexGameBoard> implements HexC
 		// if the state is Puzzle, present the player names as start buttons.
 		// in any case, pass the mouse location so tooltips will be attached.
         drawPlayerStuff(gc,(state==HexState.Puzzle),buttonSelect,HighlightColor,rackBackGroundColor);
-  
-        hexChip icon = doRotation ? hexChip.HexIcon : hexChip.HexIconR;
  
-        icon.drawChip(gc, this,  rotationRect, selectPos, icon.id, null);
- 
+        rotation.draw(gc,selectPos);
+
         // draw the avatars
         standardGameMessage(gc,messageRotation,
             		state==HexState.Gameover?gameOverMessage():s.get(state.description()),
@@ -940,7 +942,7 @@ public class HexGameViewer extends CCanvas<hexCell,HexGameBoard> implements HexC
         default:
             	throw G.Error("Hit Unknown: %s", hitCode);
         case ChangeRotation:
-        	doRotation = !doRotation;
+        	rotation.toggle();
         	break;
         case BoardLocation:	// we hit an occupied part of the board 
         	{
@@ -990,10 +992,11 @@ public class HexGameViewer extends CCanvas<hexCell,HexGameBoard> implements HexC
     private boolean setDisplayParameters(HexGameBoard gb,Rectangle r)
     {
       	boolean complete = false;
-      	if(doRotation!=lastRotation)		//if changing the whole orientation of the screen, unusual steps have to be taken
+      	boolean rot = rotation.isOnNow();
+      	if(rot!=lastRotation)		//if changing the whole orientation of the screen, unusual steps have to be taken
       	{ complete=true;					// for sure, paint everything
-      	  lastRotation=doRotation;			// and only do this once
-      	  if(doRotation)
+      	  lastRotation=rot;			// and only do this once
+      	  if(rot)
       	  {
       	  // 0.95 and 1.0 are more or less magic numbers to match the board to the artwork
           gb.SetDisplayParameters(0.95, 1.0, 0,0,60); // shrink a little and rotate 60 degrees

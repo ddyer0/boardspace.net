@@ -241,9 +241,13 @@ public class MijnlieffViewer extends CCanvas<MijnlieffCell,MijnlieffBoard> imple
  //   	setLocalBoundsWT(x,y,width,height,useWide,useTall);
  //   }
 
-    boolean traditionalLayout = false;
     public void setLocalBounds(int x, int y, int width, int height)
     {
+    	setLocalBoundsV(x,y,width,height,new double[] {1,-1});
+    }
+
+    public double setLocalBoundsA(int x, int y, int width, int height,double a)
+    {	flat = a<0;
     	G.SetRect(fullRect, x, y, width, height);
     	GameLayoutManager layout = selectedLayout;
     	int nPlayers = nPlayers();
@@ -262,11 +266,11 @@ public class MijnlieffViewer extends CCanvas<MijnlieffCell,MijnlieffBoard> imple
     	//double bestPercent = 
     	layout.selectLayout(this, nPlayers, width, height,
     			margin,	
-    			0.75,	// 60% of space allocated to the board
+    			0.65,	// 60% of space allocated to the board
     			1.0,	// aspect ratio for the board
-    			fh*3,	// minimum cell size
+    			fh*2.5,	// minimum cell size
     			fh*4,	// maximum cell size
-    			0.7		// preference for the designated layout, if any
+    			0.4		// preference for the designated layout, if any
     			);
     	
         // place the chat and log automatically, preferring to place
@@ -318,8 +322,10 @@ public class MijnlieffViewer extends CCanvas<MijnlieffCell,MijnlieffBoard> imple
     	G.SetRect(goalRect, boardX, boardBottom-stateH*3/2,boardW,stateH);       
         setProgressRect(progressRect,goalRect);
         positionTheChat(chatRect,chatBackgroundColor,rackBackGroundColor);
- 	
+        return boardW*boardH;
     }
+    
+    private boolean flat = false;
     public Rectangle createPlayerGroup(int player,int x,int y,double rotation,int unitsize)
     {	commonPlayer pl = getPlayerOrTemp(player);
     	Rectangle chip = chipRects[player];
@@ -330,7 +336,11 @@ public class MijnlieffViewer extends CCanvas<MijnlieffCell,MijnlieffBoard> imple
     	int doneW = plannedSeating()? unitsize*3 : 0;
     	G.SetRect(done,G.Right(box)+unitsize/2,G.Top(box)+unitsize/2,doneW,doneW/2);
     	G.union(box, done,chip);
-    	G.SetRect(rack, x, G.Bottom(box),unitsize*15,unitsize*3);
+    	if(flat)
+    	{
+    	G.SetRect(rack,G.Right(box),G.Top(box),unitsize*15,unitsize*3);
+    	}
+    	else { G.SetRect(rack, x, G.Bottom(box),unitsize*15,unitsize*3); }
     	G.union(box, rack);
     	pl.displayRotation = rotation;
     	return(box);

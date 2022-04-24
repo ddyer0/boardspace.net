@@ -82,7 +82,7 @@ public class IroViewer extends CCanvas<IroCell,IroBoard> implements IroConstants
 {		// move commands, actions encoded by movespecs.  Values chosen so these
     // integers won't look quite like all the other integers
  	
-    static final String Prototype_SGF = "protoype"; // sgf game number allocated for hex
+    static final String Iro_SGF = "iro"; // sgf game number allocated for hex
 
     // file names for jpeg images and masks
     static final String ImageDir = "/iro/images/";
@@ -171,6 +171,7 @@ public class IroViewer extends CCanvas<IroCell,IroBoard> implements IroConstants
         boolean cb = Default.getBoolean(Default.colorblind);
         colorBlindOption = 
         		 myFrame.addOption(s.get(ColorBlindOption), colorBlind,deferredEvents);
+        colorBlindOption.setForeground(Color.blue);
         setColorBlind(cb);
         
         String type = info.getString(OnlineConstants.GAMETYPE, IroVariation.iro.name);
@@ -178,13 +179,15 @@ public class IroViewer extends CCanvas<IroCell,IroBoard> implements IroConstants
         // are current strictly 2 player and no-randomization.  It will make it easier when
         // later, some variant is created, or the game code base is re purposed as the basis
         // for another game.
-        bb = new IroBoard(type,players_in_game,randomKey,getStartingColorMap(),IroBoard.REVISION);
+        int map[] = getStartingColorMap();
+        bb = new IroBoard(type,players_in_game,randomKey,map,IroBoard.REVISION);
         //
         // this gets the best results on android, but requires some extra care in
         // the user interface and in the board's copyBoard operation.
         // in the user interface.
         useDirectDrawing();
         doInit(false);
+        if(seatingFaceToFace() && map[0]==0) { bb.setReverseY(!bb.reverseY()); }
         adjustPlayers(players_in_game);
     }
 
@@ -317,12 +320,14 @@ public class IroViewer extends CCanvas<IroCell,IroBoard> implements IroConstants
     	int mainW = G.Width(main);
     	int mainH = G.Height(main);
     	
+    	boolean rotateBoard = seatingFaceToFaceRotated();
+    	
     	// There are two classes of boards that should be rotated. For boards with a strong
     	// "my side" orientation, such as chess, use seatingFaceToFaceRotated() as
     	// the test.  For boards that are noticably rectangular, such as Push Fight,
     	// use mainW<mainH
-    	int nrows = 8;  // b.boardRows
-        int ncols = 6;	 // b.boardColumns
+    	int nrows = rotateBoard ? 6 : 8;  // b.boardRows
+        int ncols = rotateBoard ? 8 : 6;	 // b.boardColumns
         int stateH = fh*3;
   	
     	// calculate a suitable cell size for the board
@@ -346,6 +351,12 @@ public class IroViewer extends CCanvas<IroCell,IroBoard> implements IroConstants
         G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,altChip,rotate,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	
+    	if(rotateBoard)
+    	{
+    		G.setRotation(boardRect, -Math.PI/2);
+    		contextRotation = -Math.PI/2;
+    	}
+
     	// goal and bottom ornaments, depending on the rendering can share
     	// the rectangle or can be offset downward.  Remember that the grid
     	// can intrude too.
@@ -709,6 +720,29 @@ public class IroViewer extends CCanvas<IroCell,IroBoard> implements IroConstants
         drawVcrGroup(nonDragSelect, gc);
 
     }
+
+    private boolean undone = false;
+	public boolean allowPartialUndo()
+	  {	 
+		  if(allowUndo())
+		  {
+			  switch(bb.getState())
+			  {
+			  case InvalidBoard: return(true);
+			  
+			  case FirstPlay:	
+				  // limit undo to 1 piece placement
+				  if(bb.pickedObject!=null) { undone = true; return true; }
+				  undone = !undone;
+				  return(undone);
+				  
+			  default: return(super.allowPartialUndo());
+			  }
+			  
+		  }
+		  return false;
+	  }
+	  
 
     /**
      * Execute a move by the other player, or as a result of local mouse activity,
@@ -1084,7 +1118,7 @@ public class IroViewer extends CCanvas<IroCell,IroBoard> implements IroConstants
     	}	
      
     // this is the subgame "setup" within the master type.
-    public String sgfGameType() { return(Prototype_SGF); }	// this is the official SGF number assigned to the game
+    public String sgfGameType() { return(Iro_SGF); }	// this is the official SGF number assigned to the game
 
    
     /**
@@ -1231,6 +1265,12 @@ public class IroViewer extends CCanvas<IroCell,IroBoard> implements IroConstants
             }
            else if (parseVersionCommand(name,value,2)) {}
            else if (parsePlayerCommand(name,value)) {}
+           else if (name.equalsIgnoreCase(game_property))
+           {	G.Assert(value.equalsIgnoreCase("protoype")	// oops
+        		   || value.equalsIgnoreCase(sgfGameType()),
+        		   WrongInitError,value);
+           }
+
             else
             {	// handle standard game properties, and also publish any
             	// unexpected names in the chat area
@@ -1329,6 +1369,10 @@ public class IroViewer extends CCanvas<IroCell,IroBoard> implements IroConstants
     // the robots to start at the beginning of the async phase.
     public boolean allowRobotsToRun() {
     	return super.allowRobotsToRun();
+    }
+    public void performReset()
+    {
+    	super.performReset();
     }
 }
 

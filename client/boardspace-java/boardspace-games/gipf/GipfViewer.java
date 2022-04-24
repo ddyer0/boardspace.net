@@ -144,9 +144,15 @@ public class GipfViewer extends CCanvas<GipfCell,GipfBoard> implements GipfConst
     	}
     	return(EditHistory(m,okno));
     }
-   
+    private boolean flatten = false;
     public void setLocalBounds(int x, int y, int width, int height)
-    {	G.SetRect(fullRect, x, y, width, height);
+    {
+    	setLocalBoundsV(x,y,width,height,new double[] {1,-1});
+    }
+
+    public double setLocalBoundsA(int x, int y, int width, int height,double a)
+    {	flatten = a<0;
+    	G.SetRect(fullRect, x, y, width, height);
     	GameLayoutManager layout = selectedLayout;
     	int nPlayers = nPlayers();
        	int chatHeight = selectChatHeight(height);
@@ -213,7 +219,7 @@ public class GipfViewer extends CCanvas<GipfCell,GipfBoard> implements GipfConst
     	G.SetRect(goalRect, boardX, boardBottom-stateH,boardW,stateH);       
         setProgressRect(progressRect,goalRect);
         positionTheChat(chatRect,chatBackGroundColor,rackBackGroundColor);
- 	
+        return boardW*boardH;
     }
     public Rectangle createPlayerGroup(int player,int x,int y,double rotation,int unitsize)
     {	commonPlayer pl = getPlayerOrTemp(player);
@@ -235,7 +241,24 @@ public class GipfViewer extends CCanvas<GipfCell,GipfBoard> implements GipfConst
     	G.SetRect(chip, x, y, chipw, chipw);
     	bbox+= boxh;
         // in perspective mode, tall columns of chips
+    	G.union(box, done);
+    	int bx = G.Right(box)+unitsize/2;
     	if(perspective)
+    	{
+    	if(flatten)
+    	{	
+    		G.SetRect(player1Reserve,
+    	        		bx,
+    	        		y, 
+    	        		CELLSIZE,
+    	        		CELLSIZE*2);          
+    		G.SetRect(player1Captures, 
+    					G.Right(player1Reserve),
+    	        		y,
+    	        		CELLSIZE,CELLSIZE*2);
+   	
+    	}
+    	else 
     	{
         G.SetRect(player1Reserve,
         		x,
@@ -246,6 +269,21 @@ public class GipfViewer extends CCanvas<GipfCell,GipfBoard> implements GipfConst
         		G.Right(player1Reserve)+unitsize,
         		G.Top( player1Reserve),
         		CELLSIZE,CELLSIZE*2);
+    	}}
+    	else
+    	{
+    	if(flatten)
+    	{
+    		G.SetRect(player1Reserve,
+   	        		bx,
+   	        		y, 
+   	        		CELLSIZE*4,
+   	        		CELLSIZE);          
+   	        G.SetRect(player1Captures, 
+   	        		bx,
+   	        		G.Bottom( player1Reserve)+unitsize,
+   	        		CELLSIZE*4,CELLSIZE);
+ 		
     	}
     	else
     	{
@@ -258,7 +296,7 @@ public class GipfViewer extends CCanvas<GipfCell,GipfBoard> implements GipfConst
     	        		x,
     	        		G.Bottom( player1Reserve)+unitsize,
     	        		CELLSIZE*4,CELLSIZE);
-    	    		
+    	}		
     	}
     	G.union(box, done,player1Reserve,player1Captures,chip,standard);
     	pl.displayRotation = rotation;

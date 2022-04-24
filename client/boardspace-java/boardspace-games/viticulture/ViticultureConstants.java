@@ -106,8 +106,8 @@ public interface ViticultureConstants
 	static String TradeSell = "Trade Sell";
 	static String TradeReceive = "Trade Receive";
 	static String FromStudio = "Studio";
-	static String DiscardSomething = "Discard #1";
-	static String PlayCardMessage = "Play #1";
+	static String DiscardSomething = "Discard #1 #2";
+	static String PlayCardMessage = "#1 #2";
 	static String DrawSomething = "Draw #1";
 	static String VerandaBonus = "Veranda";
 	static String ViticultureInfoMessage = "Side Screens are needed to view cards privately";
@@ -236,9 +236,11 @@ public interface ViticultureConstants
     static String NoDiscardMessage = "Do Not Discard";
     static String NoSellMessage = "Do Not Sell";
     static String NoPlantMessage = "Do Not Plant";
+    static String ShowBuildingInfo = "Show info about Buildings";
 	static String ViticultureStrings[] = 
 	{  "Viticulture",
 		NoPlantMessage,
+		ShowBuildingInfo,
 		NoSellMessage,
 		DontStealMessage,
 		NoDiscardMessage,
@@ -997,7 +999,7 @@ public interface ViticultureConstants
     	BuildStructureWorker("Build"),
     	StarPlacementWorker("Place Star"),
     	
-    	PlayYellowWorker("Yellow Card"),
+    	PlayYellowWorker("Play Yellow Card"),
      	PlantWorker("Plant"),
     	TradeWorker("Trade"),
     	FlipWorker("Flip Field"),

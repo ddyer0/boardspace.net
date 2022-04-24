@@ -145,7 +145,6 @@ public class TruGameViewer extends CCanvas<TruCell,TruGameBoard> implements TruC
         int margin = fh/2;
         int buttonW = fh*8;
         int nrows = b.boardSize;  
-        boolean rotate = seatingFaceToFaceRotated();
         // this does the layout of the player boxes, and leaves
     	// a central hole for the board.
     	//double bestPercent = 
@@ -158,7 +157,8 @@ public class TruGameViewer extends CCanvas<TruCell,TruGameBoard> implements TruC
     			0.4		// preference for the designated layout, if any
     			);
     	
-        // place the chat and log automatically, preferring to place
+        boolean rotate = seatingFaceToFaceRotated();
+      // place the chat and log automatically, preferring to place
     	// them together and not encroaching on the main rectangle.
     	layout.placeTheChatAndLog(chatRect, minChatW, chatHeight,minChatW*2,3*chatHeight/2,logRect,
     			minLogW, minLogH, minLogW*3/2, minLogH*3/2);

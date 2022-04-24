@@ -66,7 +66,7 @@ public class PrototypePlay extends commonRobot<PrototypeBoard> implements Runnab
     private int MAX_DEPTH = 7;						// search depth.
     private static final boolean KILLER = false;	// if true, allow the killer heuristic in the search
     private static final double GOOD_ENOUGH_VALUE = VALUE_OF_WIN;	// good enough to stop looking
-    private int boardSearchLevel = 0;				// the current search depth
+    private int boardSearchLevel = 1;				// the current search depth
   
     // mcts parameters
     // also set MONTEBOT = true;
@@ -143,6 +143,19 @@ public class PrototypePlay extends commonRobot<PrototypeBoard> implements Runnab
         board.RobotExecute(mm);
         boardSearchLevel++;
     }
+    
+	public void prepareForDescent(UCTMoveSearcher from)
+	{
+		// called at the top of the tree descent
+	}
+    public void startRandomDescent()
+    {
+    	// we detect that the UCT run has restarted at the top
+    	// so we need to re-randomize the hidden state.
+    	//if(randomize) { board.randomizeHiddenState(robotRandom,robotPlayer); }
+    	//terminatedWithPrejudice = -1;
+    }
+
 
     /** return a Vector of moves to consider at this point.  It doesn't have to be
      * the complete list, but that is the usual procedure. Moves in this list will
@@ -207,6 +220,14 @@ public class PrototypePlay extends commonRobot<PrototypeBoard> implements Runnab
         if(val1>=VALUE_OF_WIN) { return(-val1); }
         return(val0-val1);
     }
+    /**
+     * this is called from UCT setup to get the evaluation, prior to ordering the UCT move lists.
+     */
+	public double Static_Evaluate_Uct_Move(commonMove mm,int current_depth,CommonDriver master)
+	{
+		throw G.Error("Not implemented");
+	}
+
     /**
      * called as a robot debugging hack from the viewer.  Print debugging
      * information about the static analysis of the current position.
@@ -352,6 +373,7 @@ public void PrepareToMove(int playerIndex)
  public commonMove DoMonteCarloFullMove()
  {	commonMove move = null;
  	UCT_WIN_LOSS = EXP_MONTEBOT;
+ 	boardSearchLevel = 1;
  	try {
          	// this is a test for the randomness of the random move selection.
          	// "true" tests the standard slow algorithm

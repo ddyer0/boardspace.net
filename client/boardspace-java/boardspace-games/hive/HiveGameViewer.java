@@ -75,8 +75,6 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
 
     private Rectangle idRects[] = addRect("id",2);
     private Rectangle[]chipRects = addRect("chip",2);
-    private Rectangle declineDrawRect = chipRects[0];
-    private Rectangle acceptDrawRect = chipRects[1];	
     private Rectangle[]setupRects = addRect("setup",2);
     private Rectangle tilesetRect = addRect("tilesetRect");
     private Rectangle reverseRect = addRect("reverseRect");
@@ -177,7 +175,7 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
  
     int minLogRows = 10;
     private int rackCells() { return ((b.numActivePieceTypes()+1)*2); }
-
+    private boolean flatten = false;
     public Rectangle createPlayerGroup(int player, int x, int y, double rotation, int unit) 
     {	commonPlayer pl0 = getPlayerOrTemp(player);
     	pl0.displayRotation = rotation;
@@ -191,15 +189,15 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
     	Rectangle setupRect = setupRects[player];
     	Rectangle done = doneRects[player];
     	int doneW = plannedSeating()?unit*5:0;
-    	boolean chipsRight = false;
-    	boolean chipsBelow = true;
+    	boolean chipsRight = flatten;
+    	boolean chipsBelow = !flatten;
     	
     	Rectangle box = pl0.createRectangularPictureGroup(x+chipW,y,unit);
     	
     	G.SetRect(done, G.Right(box)+C2, y, doneW,doneW/2);
     	G.SetRect(idRect, x, y, chipW, chipW);
     	
-    	int chipX = chipsRight ? G.Right(box) : x;
+    	int chipX = chipsRight ? G.Right(done)+unit/4 : x;
     	int chipY = chipsRight 
     			? y 
     			: chipsBelow ? (C2+G.Bottom(box)) : y-rackH-C2;
@@ -210,11 +208,10 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
         		chipY, 
         		rackWidth,rackH);
 
-    	G.union(box,chipRect,done);
     	G.SetRect(setupRect,chipX,chipY+(chipsBelow?rackH:-setupRectHeight),
         		rackWidth,setupRectHeight);
        
-    	G.union(box,setupRect);
+    	G.union(box,chipRect,done,idRect,setupRect);
     	return(box);
     	
     }
@@ -222,10 +219,12 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
     {
     	setLocalBoundsV(x,y,width,height,aspects);
     }
-    static double aspects[] = { 0.8,1.4,1};
+    static double aspects[] = { 0.8,1.4,1,-0.8,-1.4,-1};	// negative values encode "flattened" player group
     
-    public double setLocalBoundsA(int x, int y, int width, int height,double aspect)
-    {	G.SetRect(fullRect, x, y, width, height);
+    public double setLocalBoundsA(int x, int y, int width, int height,double aspect0)
+    {	flatten = aspect0<0;
+    	double aspect = Math.abs(aspect0);
+    	G.SetRect(fullRect, x, y, width, height);
 		int fh = G.defaultFontSize;//standardFontSize();
     	double zoom = getGlobalZoom();
    
@@ -666,13 +665,14 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
         switch(state)
         {     
         default:
-        	boolean drawPending = (state==HiveState.DrawPending);
-	    	if(drawPending || canOfferDraw(gb))
+	    	if(canOfferDraw(gb))
 	    	{	// if not making progress, put the draw option on the UI
+	        	boolean drawPending = (state==HiveState.DrawPending);
 	    		String offer = s.get(OFFERDRAW);
+	    		Rectangle acceptDrawRect = chipRects[nextPlayer[gb.whoseTurn]];
 	        	if(GC.handleSquareButton(gc,messageRotation,acceptDrawRect,ourTurnSelect,offer,
 	        				HighlightColor,
-	        				rackBackGroundColor))
+	        				drawPending ? HighlightColor : rackBackGroundColor))
 	        	{
 	        		ourTurnSelect.hitCode = GameId.HitOfferDrawButton;
 	        	}	
@@ -685,6 +685,8 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
 	    	String decline = s.get(DECLINEDRAW);
 	    	Color hitAccept = (state==HiveState.AcceptPending)?HighlightColor:rackBackGroundColor;
 	    	Color hitDecline = (state==HiveState.DeclinePending) ? HighlightColor : rackBackGroundColor; 
+	    	Rectangle acceptDrawRect = chipRects[gb.whoseTurn];
+	    	Rectangle declineDrawRect = chipRects[nextPlayer[gb.whoseTurn]];
 	    	if(GC.handleSquareButton(gc,messageRotation,acceptDrawRect,ourTurnSelect,accept,HighlightColor,hitAccept))
 	    	{
 	    		ourTurnSelect.hitCode = GameId.HitAcceptDrawButton;

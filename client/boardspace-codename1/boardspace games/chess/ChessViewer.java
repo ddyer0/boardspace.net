@@ -130,19 +130,34 @@ public Rectangle createPlayerGroup(int player,int x,int y,double rotate,int unit
     	Rectangle capturedRect = capRects[player];
     	Rectangle done = doneRects[player];
     	int chipW = unit*3;
-    	int doneW = unit*5;
+    	int doneW = plannedSeating() ? unit*5 : 0;
         G.SetRect(chipRect,x,y,chipW,chipW*3/2);
         Rectangle box = p0.createRectangularPictureGroup(x+chipW,y,unit);
-        G.SetRect(done, G.Right(box)+unit/2, y+unit/3,plannedSeating()?doneW:0,doneW/2);
+        int boxw = G.Width(box);
+        G.SetRect(done, G.Right(box)+unit/2, y+unit/3,doneW,doneW/2);
         G.union(box,done,chipRect);
+        if(flatten)
+        {
+        G.SetRect(capturedRect, G.Right(done)+unit/3,y,boxw,unit*3);
+        }
+        else
+        {
         G.SetRect(capturedRect, x,G.Bottom(box),G.Width(box),unit*3);
+        }
         G.union(box, capturedRect);
         p0.displayRotation = rotate;
         return(box);
     }	
     
-public void setLocalBounds(int x,int y,int width,int height)
-{	G.SetRect(fullRect, x, y, width, height);
+private boolean flatten = false;
+public void setLocalBounds(int x, int y, int width, int height)
+{
+	setLocalBoundsV(x,y,width,height,new double[] {1,-1});
+}
+
+public double setLocalBoundsA(int x, int y, int width, int height,double a)
+{	flatten = a<0;	
+	G.SetRect(fullRect, x, y, width, height);
 	GameLayoutManager layout = selectedLayout;
 	int nPlayers = nPlayers();
     int chatHeight = selectChatHeight(height);
@@ -213,6 +228,7 @@ public void setLocalBounds(int x,int y,int width,int height)
 	}
     setProgressRect(progressRect,goalRect);
     positionTheChat(chatRect,Color.white,Color.white);
+    return boardW*boardH;
 }
 
     /** this is called by the game controller when all players have connected
@@ -759,9 +775,6 @@ private void playSounds(commonMove m)
        ChessChip.backgroundReviewTile.image.tileImage(gc,brect);   
       }
        
-      Variation v = b.variation;
-      if(v.banner!=null) {v.banner.image.centerImage(gc,bannerRect); }
-      
       b.DrawGrid(gc,brect,use_grid,Color.white,Color.black,Color.blue,Color.black);
     } 
     

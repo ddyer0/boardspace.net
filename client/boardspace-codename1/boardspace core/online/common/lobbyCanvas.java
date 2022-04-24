@@ -2032,7 +2032,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	private boolean canChangeSessionType(Session sess)
 	{
 	  return((sess.state==Session.SessionState.Idle) 
-	    && (sess.numberOfPlayers()<=1)
+			    && (sess.editable())
 			    );
 	}
 	private boolean inSessionName(Session sess,int localX, int localY) 

@@ -134,6 +134,7 @@ public class TintasPlay extends commonRobot<TintasBoard> implements Runnable, Ti
         GameBoard = (TintasBoard) gboard;
         board = GameBoard.cloneBoard();
         MONTEBOT = true;
+        terminalNodeOptimize = true;
         // strategy with be 0,1,2 for Dumbot, Smartbot, Bestbot
         switch(strategy)
         {
@@ -193,7 +194,7 @@ public void PrepareToMove(int playerIndex)
 	 public commonMove getBestWinrateMove(UCTNode parent,Random r,UCTMoveSearcher search)
 	 {	int nChildren = parent.getNoOfChildren();
 	 	if(nChildren>1)
-	 	{if(nChildren>1) { return(parent.getChild(1)); }
+	 	{
 		 parent.sortBy(UCTNode.key.visits);
 		 commonMove bestChild = parent.getChild(0);
 		 UCTNode node = bestChild.uctNode();
@@ -255,7 +256,7 @@ public void PrepareToMove(int playerIndex)
         // still get better the longer you search.  Other games may work better
         // the other way.
         monte_search_state.stored_child_limit_stop = STORED_CHILD_LIMIT_STOP;
-        monte_search_state.terminalNodeOptimization = true;
+        monte_search_state.terminalNodeOptimization = terminalNodeOptimize;
         move = monte_search_state.getBestMonteMove();
 
  		}

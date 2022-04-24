@@ -9,7 +9,6 @@ import iro.IroChip.IColor;
 import lib.*;
 import lib.Random;
 import online.game.*;
-import online.game.commonCanvas.Itype;
 
 /**
  * StymieBoard knows all about the game of Prototype, which is played
@@ -45,6 +44,7 @@ class IroBoard
 	boolean robotBoard = false;				// set to true if this is a copy of the board being used by the robot
 	private Random robotRandom = new Random();		// a source of randomness for the robot
 	private StateStack robotState = new StateStack();
+	private IStack robotStack = new IStack();
 	
 	static final int nCols =6;
 	static final int nRows = 8;	
@@ -75,6 +75,7 @@ class IroBoard
 	public IroId getPlayerColor(int p) { return(playerColor[p]); }
 	public IroCell getPlayerCell(int p) { return(playerCell[p]); }
 	public IroCell getPlayerCell(IroChip ch) { return (ch.id==playerColor[0]?playerCell[0]:playerCell[1]);}
+	public IroCell getOtherPlayerCell(IroChip ch) { return (ch.id==playerColor[1]?playerCell[0]:playerCell[1]);}
 	public IroChip getCurrentPlayerChip() { return(playerChip[whoseTurn]); }
     private CellStack[] occupiedCells = { new CellStack(),new CellStack() };
 
@@ -192,13 +193,21 @@ class IroBoard
     	ChipStack tiles = new ChipStack();
     	for(IroChip c : IroChip.tiles) { tiles.push(c);  tiles.push(c); }
     	tiles.shuffle(r);
-    	for(Enumeration<IroCell>cells = getIterator(Itype.TBRL); cells.hasMoreElements(); )
-    	{	IroCell c = cells.nextElement();
+    	// note that this doesn't use iterators, because we always want to do it 
+    	// in the same order.
+    	for(int coln = nCols-1; coln>=0;coln--)
+    	{
+    		for(int row = nRows; row>=1; row--)
+    			
+    		{
+    			IroCell c = getCell((char)('A'+coln),row);
     		if(c.isTileAnchor)
     		{
     			placeTile(c,tiles.pop(),r.nextInt(4));   
     		}
     	}
+    	}
+
     	makeValidRow(r,playerFirstRow(FIRST_PLAYER_INDEX));
     	makeValidRow(r,playerFirstRow(SECOND_PLAYER_INDEX));
     }
@@ -227,6 +236,7 @@ class IroBoard
 		variation = IroVariation.findVariation(gtype);
 		G.Assert(variation!=null,WrongInitError,gtype);
 		robotState.clear();
+		robotStack.clear();
 		gametype = gtype;
 		pickedIndex.clear();
 		
@@ -236,21 +246,27 @@ class IroBoard
 		case iro:
 			// using reInitBoard avoids thrashing the creation of cells 
 			// when reviewing games.
-			initBoard(nCols,nRows);
-			for(Enumeration<IroCell>cells = getIterator(Itype.TBRL); cells.hasMoreElements(); )
-	          { //where we draw the grid
-	        	  IroCell cell = cells.nextElement();
-	        	  
+			reInitBoard(nCols,nRows);
+			for(IroCell cell = allCells; cell!=null; cell=cell.next)
+				{ 
 	        	  if(((cell.row&1)==0) && ((cell.col&1)==1))	// mark the anchor cells
 	        	  {	cell.isTileAnchor = true; }
 	        	  
 	          }
 		}
 
+		
+	    int map[]=getColorMap();
+		playerColor[map[0]]=IroId.White;
+		playerColor[map[1]]=IroId.Black;
+		playerChip[map[0]]=IroChip.wchips[0];
+		playerChip[map[1]]=IroChip.bchips[0];
+	    playerCell[map[0]] = whiteChipPool; 
+	    playerCell[map[1]] = blackChipPool; 
+		whiteChipPool.reInit();
+		blackChipPool.reInit();
+		
 		randomInitialBoard();	// cover with tiles
- 		
-	    playerCell[FIRST_PLAYER_INDEX] = whiteChipPool; 
-	    playerCell[SECOND_PLAYER_INDEX] = blackChipPool; 
 	    reInit(occupiedCells);
 	    
 	    whoseTurn = FIRST_PLAYER_INDEX;
@@ -259,14 +275,6 @@ class IroBoard
 
 	    resetState = null;
 	    lastDroppedObject = null;
-	    int map[]=getColorMap();
-		playerColor[map[0]]=IroId.White;
-		playerColor[map[1]]=IroId.Black;
-		playerChip[map[0]]=IroChip.wchips[0];
-		playerChip[map[1]]=IroChip.bchips[0];
-	    
-		whiteChipPool.reInit();
-		blackChipPool.reInit();
 		for(IroChip ch : IroChip.bchips) { blackChipPool.addChip(ch); }
 		for(IroChip ch : IroChip.wchips) { whiteChipPool.addChip(ch); }
 		
@@ -292,6 +300,8 @@ class IroBoard
     {
         super.copyFrom(from_b);
         robotState.copyFrom(from_b.robotState);
+        robotStack.copyFrom(from_b.robotStack);
+        
         unresign = from_b.unresign;
         board_state = from_b.board_state;
         getCell(droppedDestStack,from_b.droppedDestStack);
@@ -307,6 +317,7 @@ class IroBoard
         AR.copy(playerColor,from_b.playerColor);
         AR.copy(playerChip,from_b.playerChip);
         getCell(occupiedCells,from_b.occupiedCells);
+        robotBoard = from_b.robotBoard;
         sameboard(from_b); 
     }
 
@@ -338,7 +349,9 @@ class IroBoard
         // this is a good overall check that all the copy/check/digest methods
         // are in sync, although if this does fail you'll no doubt be at a loss
         // to explain why.
-        G.Assert(Digest()==from_b.Digest(),"Digest matches");
+        long d1 = Digest();
+        long d2 = from_b.Digest();
+        G.Assert(d1==d2,"Digest matches");
 
     }
 
@@ -385,7 +398,6 @@ class IroBoard
 		v ^= Digest(r,droppedDestStack);
 		v ^= Digest(r,pickedIndex);
 		v ^= Digest(r,revision);
-		v ^= Digest(r,occupiedCells);
 		v ^= r.nextLong()*(board_state.ordinal()*10+whoseTurn);
         return (v);
     }
@@ -787,7 +799,8 @@ class IroBoard
 				}
 				else 
 				{
-				m.chip = pickedObject;
+				IroChip top = dest.topChip();
+				m.chip = top;
 		           
 	            dropObject(dest,m.to_row);
 	            /**
@@ -893,10 +906,11 @@ class IroBoard
 
        case MOVE_ROTATE:
        		{
-    	   IroCell dest = getCell(m.to_col,m.to_row);
-    	   placeTile(dest,dest.tile,m.from_row);
-    	   setNextStateAfterDrop(replay);
-       		}
+       			IroCell dest = getCell(m.to_col,m.to_row);
+      			if(robotBoard) { robotStack.push(dest.rotation); }
+       			placeTile(dest,dest.tile,m.from_row);
+       			setNextStateAfterDrop(replay);
+        		}
        		break;
        case MOVE_CAPTURE:
        case MOVE_PLACE:
@@ -992,7 +1006,7 @@ class IroBoard
     executing.
     */
     public void RobotExecute(Iromovespec m)
-    {
+    {	robotBoard = true;
         robotState.push(board_state); //record the starting state. The most reliable
         // to undo state transistions is to simple put the original state back.
         
@@ -1000,6 +1014,7 @@ class IroBoard
 
         Execute(m,replayMode.Replay);
         acceptPlacement();
+        if(board_state.doneState()) { doDone(replayMode.Replay); }
        
     }
  
@@ -1013,17 +1028,68 @@ class IroBoard
     {
         //System.out.println("U "+m+" for "+whoseTurn);
     	IroState state = robotState.pop();
+    	G.Assert(robotBoard,"should be");
         switch (m.op)
         {
         default:
    	    	throw G.Error("Can't un execute " + m);
+        case MOVE_RESIGN:
         case MOVE_DONE:
             break;
             
-        case MOVE_DROPB:
-        	SetBoard(getCell(m.to_col,m.to_row),null);
+        case MOVE_ROTATE:
+        	{
+    	    	IroCell from = getCell(m.to_col,m.to_row);
+    	    	int rot = robotStack.pop();
+    	    	placeTile(from,from.tile,rot);
+    	    	acceptPlacement();
+        	}
         	break;
-        case MOVE_RESIGN:
+        case MOVE_CAPTURE:
+	    	{
+	    	IroCell from = getCell(m.from_col,m.from_row);
+	    	IroCell to = getCell(m.to_col,m.to_row);
+	    	pickObject(to,-1);
+	    	IroChip po = pickedObject;
+	    	dropObject(from,m.from_row);
+	    	IroCell rack = getCell(getOtherPlayerCell(po));
+	    	pickObject(rack,-1);
+	    	dropObject(to,-1);
+	    	acceptPlacement();
+	    	
+	    	}
+	    	break;
+
+        case MOVE_FROM_TO:
+	    	{
+	    	IroCell from = getCell(m.from_col,m.from_row);
+	    	IroCell to = getCell(m.to_col,m.to_row);
+	    	pickObject(to,-1);
+	    	dropObject(from,m.from_row);
+	    	acceptPlacement();
+	    	}
+	    	break;
+	    	
+        case MOVE_SWAPB:
+        	{
+        	IroCell from = getCell(m.source,m.from_col,m.from_row);
+        	IroCell to = getCell(m.to_col,m.to_row);
+        	pickObject(to,-1);
+        	dropObject(from,m.from_row);
+        	pickObject(from,-1);
+        	dropObject(to,-1);
+        	acceptPlacement();
+        	}
+	    	break;
+	        
+        case MOVE_PLACE:
+        	{
+        	IroCell from = getCell(m.source,m.from_col,m.from_row);
+        	IroCell to = getCell(m.to_col,m.to_row);
+        	pickObject(to,-1);
+        	dropObject(from,m.from_row);
+        	acceptPlacement();
+        	}
             break;
         }
         setState(state);
@@ -1050,9 +1116,14 @@ class IroBoard
  {
 	 for(IroCell d = allCells; d!=null; d=d.next)
 	 {
-		 if(d!=c && d.isTileAnchor && d.isEmptyTile() && (any || isOnPlayerSide(d,who)))
+		 if(d!=c 
+			&& d.isTileAnchor 
+			&& d.isEmptyTile() 
+			&& (( c.tile!=d.tile)|| (c.rotation!=d.rotation))
+			&& (any || isOnPlayerSide(d,who))
+			)
 		 {
-			 all.push(new Iromovespec(MOVE_FROM_TO,c,d,who));
+			 all.push(new Iromovespec(MOVE_FROM_TO,c,d,who,0));
 		 }
 	 }
  }
@@ -1064,9 +1135,12 @@ class IroBoard
    	 {
    		 int row = who==0 ? rown : nRows-rown+1;
    		 IroCell c = getCell('A',row);
+   		 int n = 0;
    		 while(c!=null) 
    		 	{ if(c.isEmpty())
    		 		{ addChipPlacementMoves(all,c,who);  
+   		 		  n++;
+   		 		  if(robotBoard && n==3) { return; }	// robot only needs to try one at a time
    		 		}
    		 	  c = c.exitTo(CELL_RIGHT); 
    		 	}
@@ -1077,7 +1151,7 @@ class IroBoard
  {	IroCell from = getPlayerCell(who);
 	for(int lim= from.height()-1; lim>=0; lim--)
 	{
-		all.push(new Iromovespec(MOVE_PLACE,from,lim,c,who));
+		all.push(new Iromovespec(MOVE_PLACE,from,lim,c,who,0));
 	}
  }
  // place a particular reserve chip
@@ -1089,7 +1163,7 @@ class IroBoard
 		 IroCell c = getCell('A',row);
 		 while(c!=null) 
 		 	{
-			 if(c.isEmpty()) { all.push(new Iromovespec(MOVE_PLACE,from,index,c,who)); }  
+			 if(c.isEmpty()) { all.push(new Iromovespec(MOVE_PLACE,from,index,c,who,0)); }  
 		 	 c = c.exitTo(CELL_RIGHT); 
 		 	}
 	 }
@@ -1104,7 +1178,7 @@ class IroBoard
 	 {	IroCell c = occ.elementAt(lim);
 	 	IroChip to = c.topChip();
 		G.Assert(to.id==top.id,"not the same");
-		all.push(new Iromovespec(MOVE_SWAPB,from,idx,c,who)) ;
+		all.push(new Iromovespec(MOVE_SWAPB,from,idx,c,who,0.25)) ;
 	 }
  }
  
@@ -1143,6 +1217,8 @@ class IroBoard
 	 }
 	 return(all);
  }
+
+ 
  // add piece movement moves from a particular starting cell, top is the chip that
  // is moving, which might or might not be present in the cell.
  private void addPieceMoves(CommonMoveStack all,IroCell from,IroChip top,int who)
@@ -1153,18 +1229,83 @@ class IroBoard
 	 if(robotBoard)
 	 {	// add one random swap so it will be a possibility but not overwhelming
 		int idx = robotRandom.nextInt( to.height());
-		all.push(new Iromovespec(MOVE_SWAPB,to,idx,from,who));
+		all.push(new Iromovespec(MOVE_SWAPB,to,idx,from,who,0.25));
+		int idx2 = robotRandom.nextInt( to.height());
+		if(idx2!=idx)
+		{
+		all.push(new Iromovespec(MOVE_SWAPB,to,idx2,from,who,0.25));
+		}
 	 }
 	 else
 	 {
 	 for(int lim=to.height()-1; lim>=0; lim--)
 	 {
-		 all.push(new Iromovespec(MOVE_SWAPB,to,lim,from,who));
+		 all.push(new Iromovespec(MOVE_SWAPB,to,lim,from,who,0));
 	 }}
  }
+ // add piece movement moves from a particular starting cell, top is the chip that
+ // is moving, which might or might not be present in the cell.
+ private int countPieceMoves(IroCell from,IroChip top,int who)
+ {	int nMoves = 0;
+	 nMoves += countPieceMoves(from,from,from,top,0,who);	// 3 unused color positions
+	 return nMoves;
+	 
+ }
+ 
  // mask is of the unused positions in the piece color map.  Start is the staring cell,from is the current intermediate cell
- private void addPieceMoves(CommonMoveStack all,IroCell start,IroCell mid,IroCell from,IroChip top,int mask,int who)
+ private boolean addPieceMoves(CommonMoveStack all,IroCell start,IroCell mid,IroCell from,IroChip top,int mask,int who)
  {	IroId playerId = getPlayerChip(who).id;
+	IColor topC[] = top.colors;
+	int nColors = topC.length;
+	boolean some = false;
+	int allMask = (1<<nColors)-1;
+	for(int dir = 0,last = from.geometry.n; dir<last; dir++)
+	{
+		IroCell adj = from.exitTo(dir);
+		if((adj!=null) && (adj!=mid) && (adj!=start))
+		{	IColor adjColor = adj.color;
+			boolean matched = false;
+			for(int i=0,bit=1;!matched && i<nColors;i++,bit=bit<<1) 
+				{ 
+				if( (topC[i]==adjColor) && ((mask&bit)==0))
+				{	matched = true;
+					int nextMask = mask|bit;
+					IroChip atop = adj.topChip();
+					if(atop==null)
+						{ 
+						if(nextMask==allMask)
+						{
+							all.push(new Iromovespec(MOVE_FROM_TO,start,adj,who,0.5)); 
+							some = true;
+						}
+						else {
+							// non terminal move, less likely to be correct
+							boolean some2 = addPieceMoves(all,start,mid==start?adj:mid,adj,top,nextMask,who);
+							all.push(new Iromovespec(MOVE_FROM_TO,start,adj,who,some2 ? 0.5 :0.25)); 
+							some = true;
+						}
+						}
+					else if(atop.id==playerId)
+					{	// one of ours, not allowed to stop
+						if(nextMask!=allMask) 
+							{ some |= addPieceMoves(all,start,mid==start?adj:mid,adj,top,nextMask,who); 
+							}
+					}
+					else 
+					{	// one of opponents, must stop
+						all.push(new Iromovespec(MOVE_CAPTURE,start,adj,who,1.0)); 
+						some = true;
+					}
+					}
+				}
+		}
+	}
+	return some;
+ }
+ // mask is of the unused positions in the piece color map.  Start is the staring cell,from is the current intermediate cell
+ private int countPieceMoves(IroCell start,IroCell mid,IroCell from,IroChip top,int mask,int who)
+ {	int nMoves = 0;
+ 	IroId playerId = getPlayerChip(who).id;
 	IColor topC[] = top.colors;
 	int nColors = topC.length;
 	int allMask = (1<<nColors)-1;
@@ -1181,25 +1322,32 @@ class IroBoard
 					int nextMask = mask|bit;
 					IroChip atop = adj.topChip();
 					if(atop==null)
-						{ all.push(new Iromovespec(MOVE_FROM_TO,start,adj,who)); 
-						  if(nextMask!=allMask) 
-						  	{ addPieceMoves(all,start,mid==start?adj:mid,adj,top,nextMask,who); 
-						  	}
+						{ 
+						if(nextMask==allMask)
+						{
+							nMoves++;
+						}
+						else {
+							// non terminal move, less likely to be correct
+							nMoves+=countPieceMoves(start,mid==start?adj:mid,adj,top,nextMask,who);
+							nMoves++;
+						}
 						}
 					else if(atop.id==playerId)
 					{	// one of ours, not allowed to stop
 						if(nextMask!=allMask) 
-							{ addPieceMoves(all,start,mid==start?adj:mid,adj,top,nextMask,who); 
+							{ nMoves += countPieceMoves(start,mid==start?adj:mid,adj,top,nextMask,who); 
 							}
 					}
 					else 
 					{	// one of opponents, must stop
-						all.push(new Iromovespec(MOVE_CAPTURE,start,adj,who)); 
+						nMoves++;
 					}
 					}
 				}
 		}
 	}
+	return nMoves;
  }
  
  //
@@ -1233,7 +1381,7 @@ class IroBoard
 					  	{ Iromovespec m = getFirstPieceMove(robotRandom.nextInt(nDirections),step-1,start,mid==start?adj:mid,adj,top,nextMask,who);
 					  	  if(m!=null) { return m;}
 					  	}
-					  return new Iromovespec(MOVE_FROM_TO,start,adj,who); 
+					  return new Iromovespec(MOVE_FROM_TO,start,adj,who,0.5); 
 					}
 				else if(atop.id==playerId)
 				{	// one of ours, not allowed to stop
@@ -1245,7 +1393,7 @@ class IroBoard
 				}
 				else 
 				{	// one of opponents, must stop
-					return new Iromovespec(MOVE_CAPTURE,start,adj,who); 
+					return new Iromovespec(MOVE_CAPTURE,start,adj,who,0.5); 
 				}
 			}}
 		}
@@ -1264,6 +1412,19 @@ class IroBoard
  		addPieceMoves(all,c,top,who);
 	 }
  }
+ 
+ private int countPieceMoves(int who)
+ {	int nMoves = 0;
+ 	CellStack occ = occupiedCells[who];
+ 	for(int lim=occ.size()-1; lim>=0; lim--)
+ 	{	IroCell c = occ.elementAt(lim);
+ 		IroChip top = c.topChip();
+ 		G.Assert(top.playerIndex==who,"player mismatch");
+ 		nMoves += countPieceMoves(c,top,who);
+	 }
+ 	return nMoves;
+ }
+ 
  CommonMoveStack  GetListOfMoves()
  {	robotBoard = true;
  	return getListOfMoves(whoseTurn);
@@ -1324,7 +1485,7 @@ class IroBoard
 			 IroChip chip = c.topChip();
 			 if((chip!=null) && (chip.id==pid))
 			 {	// add moves to take chips back
-				 all.push(new Iromovespec(MOVE_FROM_TO,c,d,who));
+				 all.push(new Iromovespec(MOVE_FROM_TO,c,d,who,0));
 			 }
 		 }
 		 break;
@@ -1428,14 +1589,22 @@ public commonMove getRandomMove(Random rand)
 	int step = rand.nextInt(5);		// usually step all the way, occasionally stop short
 	int direction = rand.nextInt(c.geometry.n);	
 	IroChip top = c.topChip();
-	m =getFirstPieceMove(direction,step,c,c,c,top,0,whoseTurn);
-	}
+	int origin = playerFirstRow(whoseTurn);
+	int distance = 0;
+	for(int i=0;i<4;i++)
+	{
+		Iromovespec nextm =getFirstPieceMove(direction,step,c,c,c,top,0,whoseTurn);
+		if(nextm == null) { break; }
+		int newdistance = nextm.to_row-origin;
+		if(nextm.op==MOVE_CAPTURE) { m = nextm; distance = newdistance; break; }
+		if((m==null) || (newdistance>distance)) { m = nextm; distance = newdistance; }
+	}}
 	
 	if(m==null)	// no standard moves or we decided to swap
 	{
 		IroCell rack = getPlayerCell(whoseTurn);
 		int from = rand.nextInt(rack.height());
-		m  = new Iromovespec(MOVE_SWAPB,rack,from,c,whoseTurn);
+		m  = new Iromovespec(MOVE_SWAPB,rack,from,c,whoseTurn,0.5);
 	}
 	}}
 	return m;
@@ -1450,20 +1619,34 @@ public double simpleScore(int player,double position_weight,double wood_weight)
 	int nleft = occ.size();
 	double wood = (double)(nleft*wood_weight)/(nCols*2);// 0-0.5 for the wood
 	//G.Assert(wood<=wood_weight,"wood bug");
-	if(nleft>0 && position_weight>0)
+	switch(board_state)
 	{
-	double rowsum = 0;
-	int frow = playerFirstRow(player);
-	double quant = position_weight/(nleft*nRows);
-	while(--nleft >= 0)
-	{
-		IroCell c = occ.elementAt(nleft);
-		rowsum += Math.abs(c.row-frow);	
-	}
-	double position = quant*rowsum;
-	//G.Assert(position<position_weight,"position bug");
-	wood += position;
-	}
-	return (wood);
-	}
+	case FirstPlay:
+	case InvalidBoard:
+	case ConfirmSetup:
+		{
+		// use the number of available moves as a proxy for good position
+		CellStack c = occupiedCells[player];
+		int cs = c.size();
+		if(cs==0) { return 0; }
+		int nMoves = countPieceMoves(player);
+		return (double)nMoves;
+		}
+	default:
+		if(nleft>0 && position_weight>0)
+		{
+		double rowsum = 0;
+		int frow = playerFirstRow(player);
+		double quant = position_weight/(nleft*nRows);
+		while(--nleft >= 0)
+		{
+			IroCell c = occ.elementAt(nleft);
+			rowsum += Math.abs(c.row-frow);	
+		}
+		double position = quant*rowsum;
+		//G.Assert(position<position_weight,"position bug");
+		wood += position;
+		}
+		return (wood);
+	}}
 }

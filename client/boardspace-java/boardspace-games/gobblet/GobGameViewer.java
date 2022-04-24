@@ -142,20 +142,33 @@ public class GobGameViewer extends CCanvas<GobCell,GobGameBoard> implements GobC
     	Rectangle chip = chipRects[player];
     	int chipW = unitsize*14;
     	int chipH = unitsize*6;
-    	int doneW = unitsize*5;
+    	boolean planned = plannedSeating();
+    	int doneW = planned ? unitsize*5 : 0;
     	Rectangle box = pl.createRectangularPictureGroup(x,y,unitsize);
     	Rectangle done = doneRects[player];
-    	
+    	G.SetRect(done, G.Right(box)+unitsize/2,y+unitsize/2,doneW,doneW/2);
+    	if(flatten)
+    	{
+    	G.SetRect(chip, G.Right(done)+unitsize/2, y, chipW, chipH);
+    	}
+    	else
+    	{
     	G.SetRect(chip, x, G.Bottom(box), chipW, chipH);
-    	G.SetRect(done, G.Right(box)+unitsize/2,y+unitsize/2,doneW,plannedSeating()?doneW/2:0);
-    	
+    	}
     	pl.displayRotation = rotation;
     	
     	G.union(box, chip,done);
     	return(box);
     }
+    private boolean flatten = false;
     public void setLocalBounds(int x, int y, int width, int height)
-    {	G.SetRect(fullRect, x, y, width, height);
+    {
+    	setLocalBoundsV(x,y,width,height,new double[] {1,-1});
+    }
+
+    public double setLocalBoundsA(int x, int y, int width, int height,double a)
+    {	flatten = a<0;	
+    	G.SetRect(fullRect, x, y, width, height);
     	GameLayoutManager layout = selectedLayout;
     	int nPlayers = nPlayers();
        	int chatHeight = selectChatHeight(height);
@@ -223,7 +236,7 @@ public class GobGameViewer extends CCanvas<GobCell,GobGameBoard> implements GobC
     	G.SetRect(goalRect, boardX, boardBottom-stateH,boardW,stateH);       
         setProgressRect(progressRect,goalRect);
         positionTheChat(chatRect,Color.white,Color.white);
- 	
+        return boardW*boardH;
     }
 
 

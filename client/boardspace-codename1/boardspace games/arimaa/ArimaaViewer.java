@@ -211,7 +211,6 @@ public class ArimaaViewer extends CCanvas<ArimaaCell,ArimaaBoard> implements Ari
         int vcrW = fh*16;
         int margin = fh/2;
         int buttonW = fh*9;
-    	boolean rotate = seatingFaceToFaceRotated();
         int nRows = 8;  // b.boardRows
         	// this does the layout of the player boxes, and leaves
     	// a central hole for the board.
@@ -224,7 +223,8 @@ public class ArimaaViewer extends CCanvas<ArimaaCell,ArimaaBoard> implements Ari
     			0.3		// preference for the designated layout, if any
     			);
     	
-        // place the chat and log automatically, preferring to place
+       	boolean rotate = seatingFaceToFaceRotated();
+       // place the chat and log automatically, preferring to place
     	// them together and not encroaching on the main rectangle.
     	layout.placeTheChatAndLog(chatRect, minChatW, chatHeight,minChatW*2,3*chatHeight/2,logRect,
     			minLogW, minLogH, minLogW*3/2, minLogH*2);

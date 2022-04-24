@@ -127,9 +127,16 @@ public class TintasViewer extends CCanvas<TintasCell,TintasBoard> implements Tin
     	startFirstPlayer();
     	}
     }
-
+    
+    private boolean flatten = false;
     public void setLocalBounds(int x, int y, int width, int height)
-    {	G.SetRect(fullRect, x, y, width, height);
+    {
+    	setLocalBoundsV(x,y,width,height,new double[] {1,-1});
+    }
+
+    public double setLocalBoundsA(int x, int y, int width, int height,double a)
+    {	flatten = a<0;	
+    	G.SetRect(fullRect, x, y, width, height);
     	GameLayoutManager layout = selectedLayout;
     	int nPlayers = nPlayers();
        	int chatHeight = selectChatHeight(height);
@@ -197,7 +204,7 @@ public class TintasViewer extends CCanvas<TintasCell,TintasBoard> implements Tin
     	G.SetRect(goalRect, boardX, boardBottom-stateH,boardW,stateH);       
         setProgressRect(progressRect,goalRect);
         positionTheChat(chatRect,chatBackgroundColor,rackBackGroundColor);
-
+        return boardW*boardH;
     }
  
     
@@ -205,9 +212,20 @@ public class TintasViewer extends CCanvas<TintasCell,TintasBoard> implements Tin
     {	commonPlayer pl0 = getPlayerOrTemp(player);
     	Rectangle chip = chipRects[player];
     	Rectangle done = doneRects[player];
+    	int doneW = plannedSeating()?unit*6:0;
     	Rectangle box = pl0.createRectangularPictureGroup(x, y, unit);
-    	G.SetRect(chip, x, G.Bottom(box), unit*18,unit*8);
-    	G.SetRect(done, G.Right(box)+unit/2, y+unit/2, plannedSeating()?unit*6:0, unit*3);
+    	int chipW = unit*18;
+    	int chipH = unit*8;
+    	if(flatten)
+    	{
+    	   	 G.SetRect(done,x,G.Bottom(box)+unit/2,doneW,doneW/2);
+    	   	 G.SetRect(chip,G.Right(box),y,chipW,chipH);
+    	}
+    	else
+    	{
+    	G.SetRect(chip, x, G.Bottom(box), chipW,chipH);
+    	G.SetRect(done, G.Right(box)+unit/2, y+unit/2, doneW, doneW/2);
+    	}
     	G.union(box, chip,done);
     	pl0.displayRotation = rotation;
         return(box);

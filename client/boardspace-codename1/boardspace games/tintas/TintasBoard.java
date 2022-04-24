@@ -966,6 +966,7 @@ class TintasBoard extends hexBoard<TintasCell> implements BoardProtocol,TintasCo
  	{
  	default:throw G.Error("not expecting %s",board_state);
  	case Confirm:
+ 	case Resign:
  	case ConfirmFinal:
  	case ConfirmSwap:
  		all.push(new Tintasmovespec(MOVE_DONE,whoseTurn));
