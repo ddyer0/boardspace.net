@@ -135,6 +135,7 @@ public class PalagoViewer extends CCanvas<PalagoCell,PalagoBoard> implements Pal
         labelColor = Color.red;
         labelFont = largeBoldFont();
         bb = new PalagoBoard(info.getString(OnlineConstants.GAMETYPE, "Palago"),getStartingColorMap());
+        //useDirectDrawing(); // not tested yet
         doInit(false);
     }
 

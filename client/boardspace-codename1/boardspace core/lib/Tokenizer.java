@@ -1,5 +1,7 @@
 package lib;
 
+import java.util.Enumeration;
+
 /**
  * this is a replacement for StringTokenizer.  If double quote is included
  * in the delimiters list (it is by default) then substrings withing double
@@ -8,7 +10,7 @@ package lib;
  * @author ddyer
  *
  */
-public class Tokenizer 
+public class Tokenizer implements Enumeration<String>
 {	String basis = "";
 	String next = null;
 	int maxIndex = 0;
@@ -23,7 +25,7 @@ public class Tokenizer
 		if(str!=null)
 		{
 			maxIndex = str.length();
-			next = getNextElement();
+			next = nextElement();
 		}
 	}
 	public boolean hasMoreElements() {
@@ -31,14 +33,14 @@ public class Tokenizer
 	}
 	public String nextToken()
 	{	String n = next;
-		next = getNextElement();
+		next = nextElement();
 		return(n);
 	}
 	public int intToken() { return G.IntToken(nextToken()); }
 	
 	public String getRest() { return(basis.substring(restIndex)); }
 
-	public String getNextElement() {
+	public String nextElement() {
 		restIndex = index;
 		boolean inquote = false;
 		boolean literal = false;
@@ -78,5 +80,6 @@ public class Tokenizer
 		}
 	}
 	*/
+
 
 }

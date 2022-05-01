@@ -179,6 +179,7 @@ public class KulamiViewer extends CCanvas<KulamiCell,KulamiBoard> implements Kul
         // later, some variant is created, or the game code base is re purposed as the basis
         // for another game.
         bb = new KulamiBoard(type,players_in_game,randomKey,getStartingColorMap(),KulamiBoard.REVISION);
+        //useDirectDrawing(); // not tested yet
         doInit(false);
         adjustPlayers(players_in_game);
     }

@@ -21,7 +21,7 @@ import net.sf.jazzlib.ZipInputStream;
  * which effectively limits the size of resource files, especially on cheap tablets.
  * Possible workarounds
  *  - manually or automatically splitting resources into multiple files
- *  - reimplementing .res reader to build a directory
+ *  - reimplementing .res reader to build a directory id actual files
  *  - switching to .zip (aka .jar) format (assuming the zip reader doesn't have this problem) 
  * 
  */
@@ -79,23 +79,19 @@ class ZipResources implements ResourceInterface
 	}
 	
 	public InputStream getData(String name) {
-		// TODO Auto-generated method stub
-		return null;
+		throw G.Error("Not implemented");
 	}
 
 	public Image getImage(String name) {
-		// TODO Auto-generated method stub
-		return null;
+		throw G.Error("Not implemented");
 	}
 
 	public String[] getDataResourceNames() {
-		// TODO Auto-generated method stub
-		return null;
+		throw G.Error("Not implemented");
 	}
 
 	public String[] getImageResourceNames() {
-		// TODO Auto-generated method stub
-		return null;
+		throw G.Error("Not implemented");
 	}
 
 	

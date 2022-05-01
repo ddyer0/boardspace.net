@@ -288,7 +288,6 @@ public class FileSelector extends FullscreenPanel
 
         filterField.addActionListener(deferredEvents);
         gameList.addListSelectionListener(deferredEvents);
-        gameList.addListSelectionListener(deferredEvents);
         dirList.addListSelectionListener(deferredEvents);
         dirField.addActionListener(deferredEvents);
         cancelButton.addActionListener(deferredEvents);  
@@ -296,9 +295,7 @@ public class FileSelector extends FullscreenPanel
        	saveButton.addActionListener(deferredEvents);
     	mkdirButton.addActionListener(deferredEvents);
     	deleteButton.addActionListener(deferredEvents);
-
     }
-    
     // constructor for multiple sources of files
     public FileSelector(FileSource... source)
     {
@@ -973,7 +970,6 @@ public class FileSelector extends FullscreenPanel
 			deferredEvents.handleDeferredEvent(this);
 			G.doDelay(100);
 			} 
-	    	catch (ThreadDeath err) { throw err;}
 			catch (Throwable er)
 				{ G.print("Error in file handler "+er);}			
 				}
@@ -1004,6 +1000,7 @@ public class FileSelector extends FullscreenPanel
 
 	public boolean handleDeferredEvent(Object e, String command) 
 	{
+		G.print("Deferred "+e+command);
 		DoActionEvent(e,command);
 		itemStateChanged(e);
 		return(true);

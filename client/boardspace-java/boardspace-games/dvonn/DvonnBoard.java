@@ -30,7 +30,6 @@ import lib.Random;
  * Note that none of this class shows through to the game controller.  It's purely
  * a private entity used by the viewer and the robot.
  * 
- * TODO: fix replay glitch in some old games, see cmango*1634
  * @author ddyer
  *
  */
@@ -645,44 +644,47 @@ class DvonnBoard extends hexBoard<DvonnCell> implements BoardProtocol,DvonnConst
     		}
     	}
     }
+    private void adjustPosition(DvonnCell an,DvonnCell c,DvonnChip prev,int off)
+    {
+    	int yoffset = (int)((off-1)*c.lastSize()*c.lastYScale());
+		int xoffset = (int)((off-1)*c.lastSize()*c.lastXScale());
+		an.duplicateCurrentCenter(c);
+		an.setCurrentCenter(c.centerX()-xoffset,c.centerY()+yoffset);
+		animationStack.push(an);
+		animationStack.push(captures[prev.colorIndex]);
+		
+    }
     // remove a stack of chips, place the removed in the captured stack
     public void removeStack(DvonnCell c,replayMode replay)
-    {	DvonnCell white = null;
-    	DvonnCell black = null;
-    	if(replay!=replayMode.Replay)
-    	{	// the whole stack is split and divided to the capture stacks, so we animate
-    		// by creating a separate stack for each pile, which migrate to their respective
-    		// corners.
-    		white = c.copy();		// copy to get the coordinates
-    		black = c.copy();
-    		black.reInit();			// clear to empty them
-    		white.reInit();
+    {	DvonnChip prev = null;
+    	DvonnCell an = null;
+    	int off = -1;
+    	while(c.topChip()!=null)
+    	{   
+    		DvonnChip ch = c.removeTop();
+    		DvonnCell dest = captures[ch.colorIndex];
+        	dest.addChip(ch);
+        	off++;
+        	if(replay!=replayMode.Replay)
+        	{	if((prev==null) || (ch!=prev)) 
+        		{ 
+        		if(an!=null)
+        		{	adjustPosition(an,c,prev,off);
+        		}
+        		an = c.copy();
+        		an.reInit();
+        		}
+        		an.addChip(ch);
+        		prev = ch;
+         	}
     	}
-    	while(c.chipIndex>=0)
+    	if(an!=null)
     	{
-    	DvonnChip ch = c.removeTop();
-    	DvonnCell dest = captures[ch.colorIndex];
-    	dest.addChip(ch);
-    	if(replay!=replayMode.Replay)
-    		{
-    		// stack the chips that will animate to the capture pile
-    		((ch.colorIndex==0) ? white : black).addChip(ch); 
-     		}
+    		adjustPosition(an,c,prev,off);
     	}
-    	if(replay!=replayMode.Replay)
-    	{
-    		if(white.height()>0) { animationStack.push(white); animationStack.push(captures[FIRST_PLAYER_INDEX]); }
-    		if(black.height()>0) { animationStack.push(black); animationStack.push(captures[SECOND_PLAYER_INDEX]); }
-    		if((white.height()>0) && (black.height()>0))
-    		{	// tall stacks will start out sort of floating above where the original
-    			// stack once stood.  This isn't entirely deliberate, but it's satisfactory
-    			// in the context of the general chaos of chips flying toward the capure piles.
-    			white.setCurrentCenterX((int)(white.centerX()- displayParameters.CELLSIZE/5));
-    			black.setCurrentCenterY((int)(white.centerY()+displayParameters.CELLSIZE/5));
-    		}
-    	}
+
     }
-    
+     
     // sweep the board and remove chips that are not in contact 
     // with any dvonn piece
     public String sweepForDvonnContact(replayMode replay)

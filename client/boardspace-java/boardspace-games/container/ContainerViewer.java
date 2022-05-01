@@ -225,6 +225,7 @@ public class ContainerViewer extends CCanvas<ContainerCell,ContainerBoard> imple
         if(G.debug()) {
         	ContainerConstants.putStrings();
         }
+        //useDirectDrawing();	// not checked yet
         doInit(false);
 
         

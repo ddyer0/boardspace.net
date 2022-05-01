@@ -50,7 +50,7 @@ public class DipoleGameViewer extends CCanvas<DipoleCell,DipoleBoard> implements
 	    static final int LIFT_ICON_INDEX = 2;
 	    static final String TextureNames[] = 
 	    	{ "background-tile" ,
-	    	  "background-review-tile",
+	    	  "background-review-tile",    	  
 	    	  "lift-icon-nomask"
 	    	  };
 	// colors
@@ -58,7 +58,7 @@ public class DipoleGameViewer extends CCanvas<DipoleCell,DipoleBoard> implements
     private Color rackBackGroundColor = new Color(194,175,148);
     private Color boardBackgroundColor = new Color(220,165,155);
     
- 
+
     // images
     private static Image[] images = null; // images of black and white gobblets and board
     private static Image[] textures = null;// background textures

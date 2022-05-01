@@ -133,6 +133,7 @@ public class MicropulViewer extends CCanvas<MicropulCell,MicropulBoard> implemen
         int randomKey = sharedInfo.getInt(OnlineConstants.RANDOMSEED,-1);
 
         bb = new MicropulBoard(randomKey,info.getString(OnlineConstants.GAMETYPE, Micropul_INIT),getStartingColorMap());
+        //useDirectDrawing(); // not tested yet
         doInit(false);
     }
 

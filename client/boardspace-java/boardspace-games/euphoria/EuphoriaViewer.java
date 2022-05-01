@@ -1763,7 +1763,6 @@ private Color playerBackground[] = {
     	StockArt.Checkmark.drawChip(gc, this, highlight,EuphoriaId.CloseBox,w/20,G.centerX(r),G.centerY(r),null);
     }
     
-    // TODO: tune up the gui for activating recruits
     boolean useEphemeralPick = false;
     EuphoriaChip ephemeralPick = null;
     

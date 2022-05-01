@@ -185,6 +185,7 @@ public class TwixtViewer extends CCanvas<TwixtCell,TwixtBoard> implements TwixtC
         // later, some variant is created, or the game code base is re purposed as the basis
         // for another game.
         bb = new TwixtBoard(type,players_in_game,randomKey,getStartingColorMap(),TwixtBoard.REVISION);
+        //useDirectDrawing(); // not tested yet
         doInit(false);
 
     }

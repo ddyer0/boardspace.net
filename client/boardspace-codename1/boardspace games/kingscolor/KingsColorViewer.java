@@ -637,8 +637,6 @@ public class KingsColorViewer extends CCanvas<KingsColorCell,KingsColorBoard> im
 	 {
 	 case MOVE_DROPB:
 	 case MOVE_PICKB:
-	 case MOVE_PICK:
-	 case MOVE_DROP:
 		 playASoundClip(light_drop,100);
 		 break;
 	 case MOVE_DONE:
@@ -690,13 +688,12 @@ public class KingsColorViewer extends CCanvas<KingsColorCell,KingsColorBoard> im
  * in commonEditHistory()
  * 
  */
-      public commonMove EditHistory(commonMove nmove)
-      {	  // some damaged games ended up with naked "drop", this lets them pass 
-    	  boolean oknone = (nmove.op==MOVE_DROP);
-    	  commonMove rval = EditHistory(nmove,oknone);
-     	     
-    	  return(rval);
-      }
+     // public commonMove EditHistory(commonMove nmove)
+     // {	  // some damaged games ended up with naked "drop", this lets them pass 
+     //	  commonMove rval = EditHistory(nmove,oknone);
+     //	     
+     //	  return(rval);
+     // }
       /**
        *  the default behavior is if there is a picked PieceType, unpick it
        *  but if no picked PieceType, undo all the way back to the done.

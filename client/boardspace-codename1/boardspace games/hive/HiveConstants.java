@@ -18,6 +18,7 @@ public interface HiveConstants
 	static final String PlayWhiteAction = "I will play with the white pieces";
 	static final String PlayBlackAction = "I will play with the black pieces";
 	static final String TextLogMessage = "use text in Game Log";
+    static final String SeeMovableMessage = "Show movable bugs";
     
     enum HiveId implements CellId
     {
@@ -31,7 +32,8 @@ public interface HiveConstants
     	White_Setup_Pool("WS"),
     	Black_Setup_Pool("BS"),
     	HitPlayWhiteAction("PlayWhite"),
-    	HitPlayBlackAction("PlayBlack");
+    	HitPlayBlackAction("PlayBlack"), 
+    	SeeMovable(null);
 	String shortName = name();
 	public String shortName() { return(shortName); }
 	HiveId(String sn) { if(sn!=null) { shortName = sn; }}
@@ -155,6 +157,7 @@ public interface HiveConstants
     	        HiveGoal,
     	        PlayWhiteAction,
     	        PlayBlackAction,
+    	        SeeMovableMessage,
     		};
     
     		String HiveStringPairs[][] = 

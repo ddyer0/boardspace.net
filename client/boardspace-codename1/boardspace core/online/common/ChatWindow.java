@@ -40,9 +40,7 @@ public class ChatWindow extends exCanvas
 	}
 
 
-	@Override
 	public void Pinch(int x, int y, double amount, double twist) {
-		// TODO Auto-generated method stub
 		
 	}
 	public boolean touchZoomEnabled() { return(true); }

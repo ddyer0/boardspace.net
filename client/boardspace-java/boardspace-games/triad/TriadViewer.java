@@ -133,6 +133,7 @@ public class TriadViewer extends CCanvas<TriadCell,TriadBoard> implements TriadC
         // use_grid=reviewer;// use this to turn the grid letters off by default      
         bb = new TriadBoard(info.getString(OnlineConstants.GAMETYPE, Triad_INIT),
         		getStartingColorMap());
+        //useDirectDrawing(); // not tested yet
         doInit(false);
     }
 

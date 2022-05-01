@@ -127,6 +127,7 @@ public class TraxGameViewer extends commonCanvas implements TraxConstants, GameL
         
         b = new TraxGameBoard(info.getString(OnlineConstants.GAMETYPE, "Trax"),
         		getStartingColorMap());
+        //useDirectDrawing(); // not tested yet
         doInit(false);
    }
 

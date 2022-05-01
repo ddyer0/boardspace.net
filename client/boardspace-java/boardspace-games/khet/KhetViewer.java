@@ -24,7 +24,6 @@ import lib.*;
  * This code is derived from the "HexGameViewer" class.  Refer to the
  * documentation there for overall structure notes.
  * 
- * TODO: animate rotation
  */
 public class KhetViewer extends CCanvas<KhetCell,KhetBoard> implements  KhetConstants,  GameLayoutClient
 {
@@ -111,6 +110,7 @@ public class KhetViewer extends CCanvas<KhetCell,KhetBoard> implements  KhetCons
         int map[] = getStartingColorMap();
         b = new KhetBoard(info.getString(OnlineConstants.GAMETYPE, Khet_Classic_Init),randomKey,map);
         if(seatingFaceToFace()) { b.autoReverseYNormal(); }
+        useDirectDrawing();
         doInit(false);
         
      }
@@ -549,7 +549,7 @@ public class KhetViewer extends CCanvas<KhetCell,KhetBoard> implements  KhetCons
      		}
      		else { start = maxStart; }
      		if(dest.rackLocation==KhetId.EyeProxy) { blastSize = Math.max(SQUARESIZE/5,(int)(blastSize/Math.sqrt(2))); }
-      		startAnimation(src,dest,top,start,speed,animsize,animsize);
+     		startAnimation(src,dest,top,start,speed,animsize,animsize);
      		if(!dest.onBoard)
      		{	// it's a capturing move.  Keep a proxy visible until it moves off
      			startAnimation(src,src,top,0.0,maxStart,itemsize,itemsize);
@@ -572,13 +572,21 @@ public class KhetViewer extends CCanvas<KhetCell,KhetBoard> implements  KhetCons
      // animations on the same cell will be drawn in the reverse of the order they are added.
      // this is needed so transparent crawl cookies are drawn after the solid underlying cookie.
      //
-     void startAnimation(KhetCell from,KhetCell to,KhetChip top,double start,double speed,int size,int finalsize)
-     {	SimpleSprite sprite = super.startAnimation(from,to,top,size,start,speed);
+     SimpleSprite startAnimation(KhetCell from,KhetCell to,KhetChip top,double start,double speed,int size,int finalsize)
+     {	
+    	SimpleSprite sprite = super.startAnimation(from,to,top,size,start,speed);
      	if(sprite!=null)
      	{
      		sprite.finalsize = finalsize;
      		sprite.movement = Movement.Linear;
+     		if(from==to && from==b.rotatedCell)
+      		{	
+     			sprite.start_rotation = Math.PI/2*(b.rotatedDirection==RotateCCW?1:-1);
+     			sprite.specifiedDuration = 0.5*masterAnimationSpeed;
+      		}
+ 
      	}
+     	return sprite;
      }  
 /**
  * parse a move specifier on behalf of the current player.  This is called by the 

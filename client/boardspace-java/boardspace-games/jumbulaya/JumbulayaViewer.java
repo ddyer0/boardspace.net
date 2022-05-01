@@ -1736,7 +1736,7 @@ public void setLetterColor(Graphics gc,JumbulayaBoard gb,JumbulayaCell cell)
         createHiddenWindows(n,HiddenViewWidth,HiddenViewHeight);
         }
     }
-    // TODO: add "your turn" indicator
+
     public void drawHiddenWindow(Graphics gc,HitPoint hp,int index,Rectangle bounds)
     {	
     	int margin = G.minimumFeatureSize()/4;

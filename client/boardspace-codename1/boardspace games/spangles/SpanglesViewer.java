@@ -82,6 +82,7 @@ public class SpanglesViewer extends CCanvas<SpanglesCell,SpanglesBoard> implemen
         zoomRect.highlightColor = HighlightColor;       
         bb = new SpanglesBoard(info.getString(OnlineConstants.GAMETYPE, Spangles_INIT),
         		getStartingColorMap());
+        //useDirectDrawing(); // not tested yet
         doInit(false);
     }
 
@@ -258,10 +259,10 @@ public class SpanglesViewer extends CCanvas<SpanglesCell,SpanglesBoard> implemen
  
     }
 
+    
    /* draw the board and the chips on it. the gc will normally draw on a background
     * array which contains the slowly changing part of the board. 
     * */
-
     private void drawBoardElements(Graphics gc, SpanglesBoard gb, Rectangle tbRect,
     		HitPoint ourTurnSelect,HitPoint anySelect)
     {	

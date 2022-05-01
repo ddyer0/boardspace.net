@@ -87,6 +87,11 @@ public User getExistingUserName(String playerName)
   if(bu!=null) { return(bu.getUser()); }
   return(null);
 }
+public boolean isActiveUser(User u)
+{	if(u==primary) { return(true); }
+	for(int i=0;i<numberOfUsers;i++) { if(Users[i]==u) { return(true); }}
+	return false;
+}
 
 /**
  * find user by server channel
@@ -164,18 +169,19 @@ public void changeOfflineUser(String newname,boolean remove)
 	}}
 }
 
-public void removeUserFromUserlist(User u)
+public synchronized void removeUserFromUserlist(User u)
   {
 	u.dead = true;
+
       for(int i=0;i<numberOfUsers;i++) 
       {if(Users[i]==u)
-        { for(int j=i+1;j<numberOfUsers;j++)
-          { Users[i++]=Users[j];
-          }
-          numberOfUsers--;
+        { numberOfUsers--;
+          Users[i] = Users[numberOfUsers];	// swap the current last into position  
+          Users[numberOfUsers] = null;		// make an empty slot
           break;
         }}
   }
+
 public void FlushDeadUsers()
 { // flush the dead users at a safe point where the user list is not being held by the mouse
   if(all_users_seen)
@@ -188,7 +194,12 @@ public void FlushDeadUsers()
       removeUserFromUserlist(user);
       }
   }
+  synchronized (this)
+  {	
+  // this needs to be synchronized against removeUserFromUserList
+  // so the sort won't encounter nulls in the list
   Sort.sort(Users,0,numberOfUsers-1);
+  }
   }
 }
 	

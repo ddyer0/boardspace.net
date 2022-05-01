@@ -23,6 +23,7 @@ public class KhetCell extends stackCell<KhetCell,KhetChip>
 		super(Geometry.Standalone,c,r);
 		rackLocation = rack;
 	}
+
 	// get the piece from cell in direction.  Special logic for the
 	// lasers which are off board
 	public KhetChip pieceInDirection(int dir)

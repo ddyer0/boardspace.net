@@ -18,7 +18,7 @@ public class DipoleChip extends chip<DipoleChip> implements DipoleConstants ,Con
 		chipNumber=idx;
 		image = im;
 		scale = sc;
-		file = fl;
+		file = fl;		
 		randomv = rv;
 	}
 	/* image initialization and drawing */

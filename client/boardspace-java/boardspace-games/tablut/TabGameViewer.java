@@ -126,6 +126,7 @@ public class TabGameViewer extends CCanvas<TabCell,TabGameBoard> implements TabC
         super.init(info,frame);
        
         b = new TabGameBoard(info.getString(OnlineConstants.GAMETYPE, Default_Tablut_Game),getStartingColorMap());
+        //useDirectDrawing(); // not tested yet
         doInit(false);
    }
 

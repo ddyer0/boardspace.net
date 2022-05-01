@@ -127,7 +127,7 @@ public class PalabraViewer extends CCanvas<PalabraCell,PalabraBoard> implements 
         bb = new PalabraBoard(info.getString(OnlineConstants.GAMETYPE, Palabra_init),randomKey,np);
         
         printButton = myFrame.addAction("Print deck",deferredEvents);
-
+        //useDirectDrawing(); // not tested yet
         doInit(false);
 
     }

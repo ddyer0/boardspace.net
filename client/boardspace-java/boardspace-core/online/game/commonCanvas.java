@@ -91,7 +91,7 @@ public abstract class commonCanvas extends exCanvas
 	implements PlayConstants,ViewerProtocol,CanvasProtocol,sgf_names,ActionListener,Opcodes
 { // state shared with parent frame
     // aux sliders
-    private static final String LiftExplanation = "spread stacks for easy viewing";
+    public static final String LiftExplanation = "spread stacks for easy viewing";
     public  static final String AnimationSpeed = "Animation Speed";
     private  static final String CantResign = "You can only resign when it is your move";
     public  static final String CantDraw = "You can only offer a draw when it is your move";
@@ -8286,16 +8286,19 @@ public void verifyGameRecord()
 	    //
 	    public String fixedServerRecordMessage(String fixedHist)
 	    {
+	    	// note that the exact text of this string has to be the same as generated
+	    	// by all players, otherwise mismatches will occur in appended game state
 	        String ephemera = formEphemeralHistoryString();
 	        commonPlayer pl = whoseTurn();
 	        int order = (pl==null)?0:pl.getOrder();
 	        String msg = 
+	        	G.concat(
 	        	fixedHist 
 	        	// add the ephemeral part
-	        	+ " " + KEYWORD_END_HISTORY
-	        	+ " " + order 			// player to move, ignored but informative
-	        	+ " " + getActivePlayer().getOrder() 	// my player
-	        	+ " " + ephemera;
+	        	, " " , KEYWORD_END_HISTORY
+	        	, " " , order 			// player to move, ignored but informative
+	        	, " " , getActivePlayer().getOrder() 	// my player
+	        	, " " , ephemera);
 	        	// even the "fixed" history may not be fixed, because it reflects
 	        // the user's random mouse gestures and undos
 	        return(msg);
@@ -8318,7 +8321,11 @@ public void verifyGameRecord()
 	    // -- previous to 2.72, we tracked him by the seat position chosen.
 	    
 	    public String fixedServerRecordString(String orderInit,boolean includePlayerNames)
-	    {	//
+	    {	
+	    	// note that the exact text of this string has to be the same as generated
+	    	// by all players, otherwise mismatches will occur in appended game state
+	    	
+	    	//
 	    	// history is based on player indexes - p0 moves first, p1 second
 	    	// note well: case (and everything else) of these strings must match among players
 	    	//
@@ -8326,9 +8333,8 @@ public void verifyGameRecord()
 	    	// we can always send move times to the server if it is new enough, 
 	    	// old clients will never see them because they will be filtered out
 	        String hist = formStoryString(true, true);
-	        String playerinfo = "";
-	        String robotInfo = "";
-	        String orderinfo = orderInit;
+	        StringBuilder playerinfo = new StringBuilder();
+	        StringBuilder orderinfo = new StringBuilder(orderInit);
 	        {
 	        
 	        commonPlayer players[] = getPlayers();
@@ -8339,19 +8345,28 @@ public void verifyGameRecord()
 	        		if(p!=null) 
 	        		{   if(includePlayerNames)
 	        	        {	
-	        			playerinfo += KEYWORD_PLAYER + " "+i+" "+G.encodeAlphaNumeric(p.trueName)+ " ";
+	        			G.append(playerinfo, KEYWORD_PLAYER , " ",i," ",G.encodeAlphaNumeric(p.trueName), " ");
 	        	        }
-	         			orderinfo += KEYWORD_PINFO2 + " "+p.uid + " "+(p.getOrder()+1000)+" " ;
+	         			G.append(orderinfo, KEYWORD_PINFO2 , " ",p.uid , " ",(p.getOrder()+1000)," ") ;
 	         		}
 	        	}}
+	        playerinfo.append(orderinfo.toString());
+
 	        String map = colorMapString();
-	        String colorMapString = (USE_COLORMAP&&map!=null) ? KEYWORD_COLORMAP+" "+map+" " : "";
+	        
+	        if (USE_COLORMAP&&map!=null) { G.append(playerinfo, KEYWORD_COLORMAP," ",map," " ); }
+	        
 	        TimeControl time = timeControl();
-	        String timeString = (G.TimeControl() && time!=null) 
-	        						? sgf_names.timecontrol_property + " "+time.print()+" "
-	        						: "";
-	        String fixedHist = robotInfo+playerinfo + orderinfo + colorMapString + timeString + KEYWORD_START_STORY + " "+hist;
-	        return(fixedHist);
+	        
+	        if(G.TimeControl() && time!=null)
+	        {
+	        	G.append(playerinfo,sgf_names.timecontrol_property , " ",time.print()," ");
+	        }
+
+	        G.append(playerinfo, KEYWORD_START_STORY , " ",hist);
+	        
+	        String val = playerinfo.toString();
+	       return(val);
 	    }
 
 	    //

@@ -94,6 +94,7 @@ public class SixmakingViewer extends CCanvas<SixmakingCell,SixmakingBoard> imple
        
         b = new SixmakingBoard(info.getString(OnlineConstants.GAMETYPE, Variation.Sixmaking.name),
         		randomKey,players_in_game,repeatedPositions,getStartingColorMap());
+        //useDirectDrawing(); // not tested yet
         doInit(false);
         offerDrawAction = myFrame.addAction(s.get(OFFERDRAW),deferredEvents);       
      }

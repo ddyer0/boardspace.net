@@ -89,6 +89,7 @@ public class PunctGameViewer extends CCanvas<punctCell,PunctGameBoard> implement
         super.init(info,frame);
  
         b = new PunctGameBoard(info.getString(OnlineConstants.GAMETYPE, "Punct"),getStartingColorMap());
+        //useDirectDrawing(); // not tested yet
         doInit(false);
     }
 

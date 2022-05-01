@@ -149,6 +149,9 @@ public interface OnlineConstants extends Config {
     static final String KEYWORD_TMCHAT = "tmchat";
     static final String KEYWORD_SCHAT = "schat";
     static final String KEYWORD_PSCHAT = "pschat";
+    static final String KEYWORD_ASK = "ask";
+    static final String KEYWORD_ANSWER = "answer";
+    
     static final String KEYWORD_LOBBY_CHAT = "lchat";
     static final String KEYWORD_BADHINT = "badhint";
     static final String KEYWORD_ID = "id";

@@ -280,5 +280,16 @@ public class AR {
 		   for(int i=0;i<n;i++) { ar[i]=i; }
 		   return(ar);
 	   }
-
+/**
+ * return the index of content "i" in array a, or -1 if its not there
+ * 
+ * @param a
+ * @param i
+ * @return
+ */
+	   static public int indexOf(Object []a,Object i)
+	   {
+		   for(int lim = a.length-1; lim>=0; lim--) { if (a[lim]==i) return lim; }
+		   return(-1);
+	   }
 }

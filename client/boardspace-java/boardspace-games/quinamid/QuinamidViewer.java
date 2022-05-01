@@ -120,6 +120,7 @@ public class QuinamidViewer extends CCanvas<QuinamidCell,QuinamidBoard> implemen
         }
         b = new QuinamidBoard(info.getString(OnlineConstants.GAMETYPE, Quinamid_INIT),
         		key,getStartingColorMap());
+        //useDirectDrawing(); // not tested yet
         doInit(false);
 
         

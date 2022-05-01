@@ -93,6 +93,7 @@ public class TzaarViewer extends CCanvas<TzaarCell,TzaarBoard> implements TzaarC
   
         b = new TzaarBoard(randomKey,info.getString(OnlineConstants.GAMETYPE, Tzaar_Standard_Init),
         		getStartingColorMap());
+        //useDirectDrawing(); // not tested yet
         doInit(false);
         reverseOption = myFrame.addOption(s.get(ReverseView),b.reverseY(),deferredEvents);
         if(G.debug()) {

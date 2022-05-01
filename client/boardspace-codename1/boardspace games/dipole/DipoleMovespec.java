@@ -181,10 +181,10 @@ public class DipoleMovespec extends commonMove implements DipoleConstants
         switch (op)
         {
         case MOVE_PICKB:
-            return (from_col + " "+from_row);
+            return G.concat(from_col,from_row);
 
 		case MOVE_DROPB:
-            return (" - "+to_col + " " + to_row);
+            return G.concat(" - ",to_col,to_row);
 
         case MOVE_DROP:
         case MOVE_PICK:
@@ -192,9 +192,9 @@ public class DipoleMovespec extends commonMove implements DipoleConstants
         	
             return (source.shortName+object);
         case MOVE_BOARD_WASTE:
-        	return(""+from_col+" "+from_row+" - X "+to_row);
+        	return G.concat(from_col,from_row," - X ",to_row);
          case MOVE_BOARD_BOARD:
-        	return(""+from_col + from_row+" "+to_col + " " + to_row);
+ 			return G.concat(from_col, from_row," - ", to_col , to_row);
         case MOVE_DONE:
             return ("");
         default:

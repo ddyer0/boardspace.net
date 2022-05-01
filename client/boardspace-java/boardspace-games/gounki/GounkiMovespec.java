@@ -219,7 +219,7 @@ public class GounkiMovespec extends commonMove implements GounkiConstants
         switch (op)
         {
         case MOVE_PICKB:
-            return icon(v,from_col,(from_row-2));
+            return icon(v,from_col,(from_row-2),"-");
 
         case MOVE_DEPLOYSTEP:
 		case MOVE_DROPB:

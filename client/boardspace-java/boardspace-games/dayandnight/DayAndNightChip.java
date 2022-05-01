@@ -2,8 +2,8 @@ package dayandnight;
 
 import bridge.Config;
 import dayandnight.DayAndNightConstants.DayAndNightId;
+import lib.AR;
 import lib.DrawableImageStack;
-import lib.G;
 import lib.ImageLoader;
 import lib.Random;
 import online.game.chip;
@@ -18,7 +18,7 @@ public class DayAndNightChip extends chip<DayAndNightChip> implements Config
 
 
 	public int chipNumber() 
-	{	return(G.indexOf(chips,this));
+	{	return(AR.indexOf(chips,this));
 	}
 	public static DayAndNightChip getChipNumber(int id)
 	{	return(chips[id]);

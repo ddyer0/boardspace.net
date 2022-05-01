@@ -28,11 +28,9 @@ import lib.StockArt;
  *
  * Feb 2008 initial work. 
  * 
- * TODO rotate board if ftf portrait
  * This code is derived from the "HexGameViewer" and other viewer classes.  Refer to the
  * documentation there for overall structure notes.
  * 
- * TODO: change the replay animation to show the volcano cap in place instead of in the corner
 */
 public class VolcanoGameViewer extends CCanvas<VolcanoCell,VolcanoBoard> implements VolcanoConstants, GameLayoutClient
 {	
@@ -89,6 +87,7 @@ public class VolcanoGameViewer extends CCanvas<VolcanoCell,VolcanoBoard> impleme
         int randomKey = sharedInfo.getInt(OnlineConstants.RANDOMSEED,-1);
 
         b = new VolcanoBoard(randomKey,info.getString(OnlineConstants.GAMETYPE, "volcano"));
+        useDirectDrawing(); 
         doInit(false);
         
      }
@@ -193,7 +192,6 @@ public class VolcanoGameViewer extends CCanvas<VolcanoCell,VolcanoBoard> impleme
     	int mainW = G.Width(main);
     	int mainH = G.Height(main);
         int stateH = fh*2;
-  	
     	// calculate a suitable cell size for the board
     	double cs = Math.min((double)mainW/ncols,(double)(mainH-stateH)/nrows);
     	SQUARESIZE = (int)cs;
@@ -213,6 +211,11 @@ public class VolcanoGameViewer extends CCanvas<VolcanoCell,VolcanoBoard> impleme
         int stateY = boardY-stateH/2;
         int stateX = boardX;
         
+        boolean rotate = seatingFaceToFaceRotated();
+        if(rotate)
+        {
+        	contextRotation = -Math.PI/2;
+        }
         G.placeRow(stateX,stateY,boardW,stateH,stateRect,liftRect,viewsetRect,noChatRect);
         
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
@@ -391,8 +394,11 @@ public class VolcanoGameViewer extends CCanvas<VolcanoCell,VolcanoBoard> impleme
       HitPoint ourSelect = (moving && !reviewMode()) ? null : highlight;	// hit if not dragging
        VolcanoState vstate = gb.getState();
        redrawGameLog(gc, ourSelect, logRect, boardBackgroundColor);
-       drawBoardElements(gc, gb, boardRect, ot);
        
+       GC.setRotatedContext(gc,boardRect,highlight,contextRotation);     
+       drawBoardElements(gc, gb, boardRect, ot);
+       GC.unsetRotatedContext(gc,highlight);
+
        boolean planned = plannedSeating();
        commonPlayer pl = getPlayerOrTemp(gb.whoseTurn);
        

@@ -92,7 +92,7 @@ public class ScrollableList<E> extends JList implements MouseListener
 		
 	}
 	public void mousePressed(MouseEvent e) {
-		
+		nothingSelected = false;
 	}
 	public void mouseReleased(MouseEvent e) {
 		

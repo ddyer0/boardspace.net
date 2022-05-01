@@ -84,9 +84,6 @@ public class CannonViewer extends CCanvas<CannonCell,CannonBoard> implements Can
     public void init(ExtendedHashtable info,LFrameProtocol frame)
     {
         super.init(info,frame);
-        //not suitable for cannon because cannon animation makes copies
-        //of some destination cells
-        //useDirectDrawing();
         MouseColors = CannonMouseColors;
         MouseDotColors = CannonMouseDotColors;
         b = new CannonBoard(info.getString(OnlineConstants.GAMETYPE, Cannon_INIT),
@@ -158,10 +155,10 @@ public class CannonViewer extends CCanvas<CannonCell,CannonBoard> implements Can
 		//double bestPercent = 
 		layout.selectLayout(this, nPlayers, width, height,
 				margin,	
-				0.75,	// 60% of space allocated to the board
+				0.65,	// 60% of space allocated to the board
 				1.0,	// aspect ratio for the board
 				fh*3,	// maximum cell size
-				0.4		// preference for the designated layout, if any
+				0.3		// preference for the designated layout, if any
 				);
 		
 	    // place the chat and log automatically, preferring to place

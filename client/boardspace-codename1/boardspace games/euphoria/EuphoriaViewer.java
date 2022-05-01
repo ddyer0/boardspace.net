@@ -40,7 +40,6 @@ import rpc.RpcService;
 import vnc.VNCService;
 
 /**
- * TODO: add "eye" to click on recruitcards in opening selection
  * 
  * Overall Architecture
  * 
@@ -64,7 +63,6 @@ import vnc.VNCService;
  * moves, evaluating and choosing the best, and implementing a lookahead several moves deep.   There's a
  * standard framework for this using the "RobotProtocol" class and the "SearchDriver" class. 
  */
-// TODO: display moving recruit card when choosing recruits
 /**
  * 
  * This is intended to be maintained as the reference example how to interface to boardspace.
@@ -1766,7 +1764,6 @@ private Color playerBackground[] = {
     	StockArt.Checkmark.drawChip(gc, this, highlight,EuphoriaId.CloseBox,w/20,G.centerX(r),G.centerY(r),null);
     }
     
-    // TODO: tune up the gui for activating recruits
     boolean useEphemeralPick = false;
     EuphoriaChip ephemeralPick = null;
     

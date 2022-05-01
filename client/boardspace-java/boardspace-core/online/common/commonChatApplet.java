@@ -782,5 +782,15 @@ public class commonChatApplet extends FullscreenPanel
 	public String getUnseenContent() {
 		return null;
 	}
-	
+	public void getEncodedContents(StringBuilder b) {
+		b.append(SIMPLETEXT);
+		b.append(Base64.encodeSimple(messages.getText()));
+	}
+	public void setEncodedContents(StringTokenizer contents) {
+		String kind = contents.nextToken();
+		if(SIMPLETEXT.equals(kind))
+		{
+		messages.setText(Base64.decodeString(contents.nextToken()));
+		}
+	}
 }

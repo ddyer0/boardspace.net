@@ -73,6 +73,15 @@ class ScreenData
 	  	}
 	  return(0);
 	}
+	public void copyFrom(ScreenData o)
+	{
+		current_center_x = o.current_center_x;
+		current_center_y = o.current_center_y;
+		lastXScale = o.lastXScale;
+		lastYScale = o.lastYScale;
+		current_rotation = o.current_rotation;
+		lastSize = o.lastSize;
+	}
 }
 public abstract class cell<FINALTYPE 
 	extends cell<FINALTYPE>> 
@@ -145,7 +154,15 @@ public abstract class cell<FINALTYPE
 		da.lastXScale = x;
 		da.lastYScale = y;
 	}
+	/**
+	 * for stacks, this will correspond to the top of the stack
+	 * @return
+	 */
 	public int centerY() { return getScreenData().current_center_y; }
+	/**
+	 * for stacks, this will correspond to the top of the stack
+	 * @return
+	 */
 	public int centerX() { return getScreenData().current_center_x; }
 	public double currentRotation() { return getScreenData().current_rotation; }
 	public int lastSize() { return(getScreenData().lastSize);}
@@ -178,7 +195,12 @@ public abstract class cell<FINALTYPE
 	/**
 	 * copy the current location (used for animations) from another cell.  Unusually
 	 * for "copy" semantics, it will also copy data from this cell to the "from" cell
-	 * if this cell has data and the "from" cell does not.
+	 * if this cell has data and the "from" cell does not.  In any case, this will
+	 * share the screendata with the from cell.  The intent of this oddness is that
+	 * the center x,y and so on that are developed in the UI will be passed back
+	 * to the real board, so that animations using the real board will have the
+	 * correct coordinates.
+	 * 
 	 * @param from
 	 */
 	public void copyCurrentCenter(FINALTYPE from)
@@ -187,7 +209,19 @@ public abstract class cell<FINALTYPE
 		else { setScreenData(from.getScreenData());}
 
 	}
-
+	/**
+	 * duplicate the screen data of the "from" cell, but do not share structure.  This
+	 * ought to be used when you create a proxy cell for animations.
+	 * @param from
+	 */
+	public void duplicateCurrentCenter(FINALTYPE from)
+	{	
+		if(from==null || !from.hasScreenData()) {  return; }
+		ScreenData sd = getScreenData();
+		ScreenData fd = from.getScreenData();
+		if(sd==fd) { setScreenData(null); sd = getScreenData(); }
+		sd.copyFrom(fd);
+	}
 	/**
 	 * starting Y position for animations of chips for this stack.  This number is
 	 * always in "real window" coordinates, compensated for any rotation during drawing.

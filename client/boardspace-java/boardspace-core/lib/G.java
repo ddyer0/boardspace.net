@@ -1993,11 +1993,6 @@ public static String expandClassName(String classname)
 		int dy = y-cy;
 		return((int)(cy+sina*dx+cosa*dy));
     }
-    public static int indexOf(Object[]ar,Object t)
-    {
-    	for(int lim=ar.length-1; lim>=0; lim--) { if(ar[lim]==t) { return(lim); }}
-    	return(-1);
-    }
     public static void show(Component window, MenuInterface menu, int x, int y) throws AccessControlException
 	{
 		NativeMenuInterface nativeMenu = menu.getNativeMenu();
@@ -2033,15 +2028,14 @@ public static String expandClassName(String classname)
 	     * @param strings
 	     */
 		public static void append(StringBuilder val, Object...strings)
-		{	for(Object s : strings) { val.append(s.toString()); }
+		{	for(Object s : strings) { val.append(s==null ? "null" : s.toString()); }
 		}
 		/** concatenate the strings 
 		 * 
 		 */
 		public static String concat(Object...strings)
 		{	StringBuilder b = new StringBuilder();
-			
-			for(Object s : strings)	{ append(b,s.toString()); }
+			append(b,strings);
 			return(b.toString());
 		}
 	    static public double rangeLimit(double val,double range)

@@ -13,8 +13,6 @@ public class KingsColormovespec
 		extends commonMove	// for a multiplayer game, this will be commonMPMove
 {	// this is the dictionary of move names
     static ExtendedHashtable D = new ExtendedHashtable(true);
-    static final int MOVE_PICK = 204; // pick a chip from a pool
-    static final int MOVE_DROP = 205; // drop a chip
     static final int MOVE_PICKB = 206; // pick from the board
     static final int MOVE_DROPB = 207; // drop on the board
     static final int MOVE_FROM_TO = 208;	// complete move
@@ -24,9 +22,7 @@ public class KingsColormovespec
     {	// load the dictionary
         // these int values must be unique in the dictionary
     	addStandardMoves(D,	// this adds "start" "done" "edit" and so on.
-        	"Pick", MOVE_PICK,
         	"Pickb", MOVE_PICKB,
-        	"Drop", MOVE_DROP,
         	"Dropb", MOVE_DROPB,
         	"Move",MOVE_FROM_TO,
         	"Stalemate",MOVE_STALEMATE,
@@ -168,11 +164,6 @@ public class KingsColormovespec
 
             break;
 
-        case MOVE_DROP:
-        case MOVE_PICK:
-            source = ColorId.get(msg.nextToken());
-
-            break;
         case MOVE_CAPTURE:
         case MOVE_FROM_TO:
             source = ColorId.BoardLocation;
@@ -215,15 +206,12 @@ public class KingsColormovespec
         switch (op)
         {
         case MOVE_PICKB:
+            return icon(v,to_col ,to_row," - ");
 		case MOVE_DROPB:
-            return icon(v,to_col ,to_row);
+			return TextChunk.create(""+to_col+to_row);
 		case MOVE_CAPTURE:
 		case MOVE_FROM_TO:
-			return icon(v,from_col,from_row," ",to_col,to_row);
-			
-        case MOVE_DROP:
-        case MOVE_PICK:
-            return icon(v,source.shortName());
+			return icon(v,from_col,from_row," - ",to_col,to_row);
 
         case MOVE_DONE:
             return TextChunk.create("");
@@ -255,10 +243,6 @@ public class KingsColormovespec
         case MOVE_PICKB:
 		case MOVE_DROPB:
 	        return G.concat(opname , " ", to_col , " " , to_row);
-
-        case MOVE_DROP:
-        case MOVE_PICK:
-            return G.concat(opname , " ",source.shortName());
 
         case MOVE_START:
             return G.concat(indx,"Start P" , player);

@@ -144,6 +144,7 @@ public class PushfightViewer extends CCanvas<PushfightCell,PushfightBoard> imple
         // later, some variant is created, or the game code base is re purposed as the basis
         // for another game.
         bb = new PushfightBoard(type,players_in_game,randomKey,getStartingColorMap(),PushfightBoard.REVISION);
+        //useDirectDrawing(); // not tested yet
         doInit(false);
         bb.setReverseY(preferredRotation());
         reverseOption = myFrame.addOption(s.get(ReverseView),bb.reverseY(),deferredEvents);

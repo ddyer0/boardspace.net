@@ -31,7 +31,7 @@ public class SimpleSprite implements SpriteProtocol
 	}
 	public Movement movement = Movement.SlowInOut;
 	double specifiedStart;			// starting time from activation in seconds
-	double specifiedDuration;		// duration in seconds
+	public double specifiedDuration;		// duration in seconds
 	public double getStart() { return(specifiedStart); }
 	public double getDuration() { return(specifiedDuration); }
 	private long initialNow;		// absolute time in milliseconds
@@ -42,7 +42,8 @@ public class SimpleSprite implements SpriteProtocol
 	int end_x;						//
 	int end_y;						//
 	public boolean overlapped = false;
-	public double rotation = 0;
+	public double start_rotation = 0;
+	public double end_rotation = 0;
 	public boolean isAlwaysActive = false;
 	public boolean isAlwaysActive() { return(isAlwaysActive); }
 	public int wander_x=-1;
@@ -91,6 +92,7 @@ public class SimpleSprite implements SpriteProtocol
 	}
 	/**
 	 * constructor 
+	 * @param randomize if true, randomize the animation path
 	 * @param ch a stockart chip to be drawn
 	 * @param width the chip's display size
 	 * @param start the number of seconds to delay before starting
@@ -101,10 +103,29 @@ public class SimpleSprite implements SpriteProtocol
 	 * @param to_y ending y coordinate
 	 */
 	public SimpleSprite(boolean randomize,Drawable ch,int width,double start,double duration,int from_x,int from_y,int to_x,int to_y,double rot)
+	{	this(randomize,ch,width,start,duration,from_x,from_y,to_x,to_y,rot,rot);
+	}
+	/**
+	 * 
+	 * constructor 
+	 * @param randomize if true, randomize the animation path
+	 * @param ch a stockart chip to be drawn
+	 * @param width the chip's display size
+	 * @param start the number of seconds to delay before starting
+	 * @param duration the number of seconds to the end of the animation
+	 * @param from_x staring x coordinate
+	 * @param from_y starting y coordinate
+	 * @param to_x ending x coordinate
+	 * @param to_y ending y coordinate
+	 * @param from_rot starting rotation
+	 * @param end_rot ending rotation
+	 */
+	public SimpleSprite(boolean randomize,Drawable ch,int width,double start,double duration,int from_x,int from_y,int to_x,int to_y,double from_rot,double end_rot)
 	{	specifiedStart =start;
 		specifiedDuration = duration;
 		size = width;
-		rotation = rot;
+		end_rotation = end_rot;
+		start_rotation = from_rot;
 		finalsize = size;
 		start_x = from_x;
 		start_y = from_y;
@@ -113,6 +134,7 @@ public class SimpleSprite implements SpriteProtocol
 		chip = ch;
 		if(randomize) { setRandomWander(); }
 	}
+
 	/**
 	 * return the height of this animation element.  This is used to reduce the
 	 * height of the destination stack when animating a move.  In most cases this
@@ -122,18 +144,36 @@ public class SimpleSprite implements SpriteProtocol
 	public int animationHeight() { return(chip.animationHeight()); }
 	/**
 	 * constructor 
-	 * @param ch a stockart chip to be drawn
+	 * @param randomize if true, randomize the animation path
+	 * @param ch a stock art chip to be drawn
 	 * @param width the chip's display size
 	 * @param seconds the number of seconds to the end of the animation
 	 * @param from_x staring x coordinate
 	 * @param from_y starting y coordinate
 	 * @param to_x ending x coordinate
 	 * @param to_y ending y coordinate
+	 * @param rot the piece rotation
 	 */
 	public SimpleSprite(boolean randomize,Drawable ch,int width,double seconds,int from_x,int from_y,int to_x,int to_y,double rot)
 	{	this(randomize,ch,width,0.0,seconds, from_x, from_y, to_x, to_y,rot);
 	}
 
+	/**
+	 * constructor 
+	 * @param randomize if true, randomize the animation path
+	 * @param ch a stock art chip to be drawn
+	 * @param width the chip's display size
+	 * @param seconds the number of seconds to the end of the animation
+	 * @param from_x staring x coordinate
+	 * @param from_y starting y coordinate
+	 * @param to_x ending x coordinate
+	 * @param to_y ending y coordinate
+	 * @param from_rot the starting piece rotation
+	 * @param end_rot the final piece rotation
+	 */
+	public SimpleSprite(boolean randomize,Drawable ch,int width,double seconds,int from_x,int from_y,int to_x,int to_y,double from_rot,double end_rot)
+	{	this(randomize,ch,width,0.0,seconds, from_x, from_y, to_x, to_y,from_rot,end_rot);
+	}
 
 	private double interpolate(long now)
 	{	// calculate the linear range
@@ -181,14 +221,15 @@ public class SimpleSprite implements SpriteProtocol
 		int thissize = G.interpolate(frac,size,finalsize);
 		int posx = G.interpolate(frac,start_x,target_x);
 		int posy = G.interpolate(frac,start_y,target_y);
+		double er = G.interpolateD(frac,start_rotation,end_rotation);
 		//StockArt.SmallO.drawChip(gc,c,size,end_x,end_y,null);
 		//StockArt.SmallX.drawChip(gc,c,size,wander_x,wander_y,null);
-		GC.setRotation(gc,rotation, posx,posy);
+		GC.setRotation(gc,er, posx,posy);
 		int sz = c.activeAnimationSize(chip,thissize);
 		if(G.Advise(sz>2,"animation too small %s",this))
 			{ chip.drawChip(gc,c,sz, posx,posy,null); 
 			}
-		GC.setRotation(gc,-rotation, posx,posy);
+		GC.setRotation(gc,-er, posx,posy);
 		}
 	}
 /**

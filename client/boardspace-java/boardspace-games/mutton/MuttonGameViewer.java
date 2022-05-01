@@ -211,6 +211,7 @@ public class MuttonGameViewer extends commonCanvas implements MuttonConstants
 		// Create the board
 		myBoard = new MuttonGameBoard (info.getString(OnlineConstants.GAMETYPE, Mutton_INIT),
 		                               sharedInfo.getInt(OnlineConstants. RANDOMSEED , -1));
+        //useDirectDrawing(); // not tested yet
 		doInit(false);
 
 		// Initialize custom stuff

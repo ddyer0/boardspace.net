@@ -738,7 +738,7 @@ public class GoBoard extends squareBoard<GoCell> implements BoardProtocol,GoCons
         	CellStack remember = new CellStack();
         	doCaptures(dest);
         	m.source = top==GoChip.white ? GoId.White_Chip_Pool : GoId.Black_Chip_Pool;
-        	int who = G.indexOf(playerChip,top);
+        	int who = AR.indexOf(playerChip,top);
         	m.viewerInfo = remember;
         	captureGroup(dest,who,remember);
         	}
@@ -1066,7 +1066,7 @@ public class GoBoard extends squareBoard<GoCell> implements BoardProtocol,GoCons
 			else if(ntop!=null)
 			{
 				if(!next.hasLiberties()) 
-					{ captureGroup(next,G.indexOf(playerChip, ntop),null); captureOrEmpty = true; }
+					{ captureGroup(next,AR.indexOf(playerChip, ntop),null); captureOrEmpty = true; }
 			}
 			else { captureOrEmpty = true; }
 		}
@@ -1100,7 +1100,7 @@ public class GoBoard extends squareBoard<GoCell> implements BoardProtocol,GoCons
   	int sz = cap.size();
   	GoChip top = c.topChip();
     if(!doCaptures(c,top,sweepCounter))
-    	{ captureGroup(c,G.indexOf(playerChip,top),null); 
+    	{ captureGroup(c,AR.indexOf(playerChip,top),null); 
     	}
     if(cap.size()-1==sz) 
     {

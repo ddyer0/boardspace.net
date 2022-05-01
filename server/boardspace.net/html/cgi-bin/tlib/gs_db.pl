@@ -59,6 +59,8 @@ sub logError()
 	my $e = "($ENV{'REMOTE_ADDR'} $ENV{'REQUEST_URI'} : $context) $DBI::errstr";
   __dStart( "$'debug_log", $'parent_script );
   __d("Error $com:\n ->$e\n");
+  my $trace = &stacktrace();
+  __d("$trace");
   &showForm();
   __dEnd();
   #
@@ -235,9 +237,25 @@ sub numRows()
 }
 sub nextArrayRow()
 {	my ($sth)=@_;
-	return($sth ? $sth->fetchrow_array : 0);
+	if(!$sth)
+	{
+	    &logError("nextArrayRow on null");
+	    &CgiDie("nextArrayRow on null");
+	}
+	else
+	{
+	my @val = $sth->fetchrow_array; 
+	if($sth->err)
+	{   my $err = $sth->errstr; 
+	    &logError("in nextArrayRow");
+	    &CgiDie("in nextArrayRow");
+	}
+	else
+	{
+	    return @val;
+	}}
 }
-
+	
 #return true for successful cleanup of a successful command
 sub finishQuery()
 {	my ($sth)=@_;

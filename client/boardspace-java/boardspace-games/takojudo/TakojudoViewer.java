@@ -87,6 +87,7 @@ public class TakojudoViewer extends CCanvas<TakojudoCell,TakojudoBoard> implemen
        
         b = new TakojudoBoard(info.getString(OnlineConstants.GAMETYPE, Tacojudo_INIT),
         		randomKey,repeatedPositions,getStartingColorMap());
+        //useDirectDrawing(); // not tested yet
         doInit(false);
         reverseOption = myFrame.addOption(s.get(ReverseView),b.reverseY(),deferredEvents);
 

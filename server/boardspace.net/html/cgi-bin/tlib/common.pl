@@ -659,10 +659,7 @@ sub log_error()
 {	my ($message,$source)=@_;
 	my ($package, $filename, $line) = caller;
 	if($source eq "") { $source = "$filename line $line"; }
-	if($'debug_mysql)
-	{
-		$source = $source . &stacktrace();
-	}
+	$source = $source . "\n" . &stacktrace();
 	&log_error_event($'perl_log,$source,$message);
 }
 
@@ -714,7 +711,8 @@ sub PrintHtmlHeader()
 sub CgiDie {
   my (@msg) = @_;
   &CgiError (@msg);
-  die "fatal error (@msg)";
+  my $trace = $'debug_mysql ? &stacktrace() : "";
+  die "fatal error (@msg)$trace";
 }
 
 #

@@ -7,42 +7,19 @@ import online.search.*;
 
 
 /** 
- * the Robot player only has to implement the basic methods to generate and evaluate moves.
- * the actual search is handled by the search driver framework.
- * <p>
- * in general, the Robot has it's own thread and operates on a copy of the board, so the
- * main UI can continue unaffected by the processing of the robot.
- * <p>
- * Notwithstanding the "only" above, debugging robot players can be very
- * difficult, both at the elementary level when the robot crashes out or
- * produces obviously wrong results, or at the advanced level when the robot
- * produces an undesirable result that is not blatantly wrong.
- * <p>
- * debugging aids:
- * <p>
- * <li>{@link #List_Of_Legal_Moves} should produce only legal moves, and should
- * by default produce all legal moves, but if your board class has some consistency
- * checking, errors constructing the move list might be detected. 
- * 
- * <li>Turn on the "start evaluator" action, and experiment with board positions
- * in puzzle mode.  Each new position will print the current evaluation.
- * 
- * <li>when the robot is stopped at a breakpoint (for example in {@link #Static_Evaluate_Position}
- * turn on the "show alternate board" option to visualize the board position.  It's usually
- * not a good idea to leave the option on when the robot is running because there will be
- * two threads using the data simultaneously, which is not expected.
- *
- * <li>turn on the save_digest and check_duplicate_digest flags.
- *
- ** <li>set {@link #verbose} to 1 or 2.  These produce relatively small amounts
- * of output that can be helpful understanding the progress of the search
- *
- ** <li>set a breakpoint at the exit of {@link #DoFullMove} and example the
- * top_level_moves variable of the search driver.  It contains a lot of information
- * about the search variations that were actually examined.
- *
- * <li>for a small search (shallow depth, few nodes) turn on {@link #SAVE_TREE}
- * and set a breakpoint at the exit of {@link #DoFullMove}
+
+ Iro development notes.
+ 
+ I originally assumed Iro would be a slam-dunk for MCTS, but that turned out not to be the case.  
+ 
+ The confounding factor seems to be the "swap" move, which multiplies the available moves
+ to greater and greater extent as the game goes on and more pieces are captured.  Also the
+ lack of a compulsion to finish the game (in the rules) allows a lot of meandering.
+ 
+ Fortunately, a couple simple heuristics seem to work very well in alpha-beta evaluation
+ - counting the wood, and moving forward.   The alpha-beta mode still arbitrarily limits
+ some swap moves.
+ 
  * @author ddyer
  *
  */
@@ -498,18 +475,5 @@ public void PrepareToMove(int playerIndex)
  	double val = ss0-ss1;
  	return(val);
  }
-/**
- * for a multiplayer game, it would be something like this
- * 
- public double NormalizedScore(commonMove lastMove)
- {	int player = lastMove.player;
- 	double max = 0.0;
- 	double omax = 0.0;
-  	for(int i=0,lim=board.nPlayers(); i<lim; i++)
- 	{	double sc =  board.winForPlayerNow(i) ? 1 : 0;
- 		if(i==player) {max = Math.max(sc,max); } else {  omax = Math.max(sc,omax); } 
- 	}
-  	return((max-omax));
- }
- */
+
  }

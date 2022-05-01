@@ -1734,7 +1734,7 @@ private boolean processEchoRoomtype(String messType,StringTokenizer localST)
   
   private void doMYTURN(String messType,StringTokenizer localST,String fullMessage) 
   {  
-   // System.out.println("Active process " + fullMessage);
+    //System.out.println("Active process " + fullMessage);
     boolean processed = 
       processPlayerQuit(messType,localST)
       || processIgnoredMessages(messType,localST)

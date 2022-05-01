@@ -353,6 +353,8 @@ public class ViticultureViewer extends CCanvas<ViticultureCell,ViticultureBoard>
         			mainBoard.blueCards,mainBoard.structureCards};
         
         scoreRect.setValue(true);	// turn it on
+        //believed to work, but the display on android is too glitchy
+        //useDirectDrawing(); 
         doInit(false);
         adjustPlayers(players_in_game);
     }

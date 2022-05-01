@@ -1262,6 +1262,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
        		residualTrack[0].addChip(pb.getResidualMarker());
        	 
         }
+
         // note that firstPlayer is NOT initialized here
     }
     private void setInitialWakeupPositions(int startPosition)
@@ -1316,7 +1317,6 @@ public int getMaxRevisionLevel() { return(REVISION); }
         currentAction = getCell(from_b.currentAction);
         currentMove = Viticulturemovespec.copyFrom(from_b.currentMove);
         currentReplay = from_b.currentReplay;
-        
         for(int i=0;i<pbs.length;i++) { pbs[i].copyFrom(from_b.pbs[i]); }
 
         triggerCard = from_b.triggerCard;
@@ -1342,7 +1342,14 @@ public int getMaxRevisionLevel() { return(REVISION); }
 	    seasonRow = from_b.seasonRow;
 	    targetPlayer = from_b.targetPlayer;
 	    suspendedWhoseTurn = from_b.suspendedWhoseTurn;
-	    	    
+	   
+	    // user interface cells
+	    copyFrom(grapeDisplay,from_b.grapeDisplay);
+	    copyFrom(wineDisplay,from_b.wineDisplay);
+	    yokeCash.copyCurrentCenter(from_b.yokeCash);
+	    grapeDisplayCount = from_b.grapeDisplayCount;
+	    wineDisplayCount = from_b.wineDisplayCount;
+	    
 	    sameboard(from_b); 
     }
 

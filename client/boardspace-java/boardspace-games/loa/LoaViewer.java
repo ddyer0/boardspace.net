@@ -364,6 +364,7 @@ public class LoaViewer extends commonCanvas implements UIC,GameLayoutClient
         MouseDotColors = LoaMouseDotColors;
         MouseColors = LoaMouseColors;
         b = new Loa_Board(sharedInfo.getString(OnlineConstants.GAMETYPE,"LOA"),getStartingColorMap());
+        //useDirectDrawing(); // not tested yet
         doInit(false);
    }
 

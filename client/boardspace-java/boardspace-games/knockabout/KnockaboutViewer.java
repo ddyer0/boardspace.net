@@ -82,6 +82,7 @@ public class KnockaboutViewer extends CCanvas<KnockaboutCell,KnockaboutBoard> im
         int randomKey = sharedInfo.getInt(OnlineConstants.RANDOMSEED,-1);
         b = new KnockaboutBoard(randomKey,info.getString(OnlineConstants.GAMETYPE, Knockabout_Standard_Init),
         		getStartingColorMap());
+        //useDirectDrawing(); // not tested yet
         doInit(false);
         
      }

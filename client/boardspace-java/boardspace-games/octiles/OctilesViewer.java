@@ -111,6 +111,7 @@ public class OctilesViewer extends CCanvas<OctilesCell,OctilesBoard> implements 
         int map[]=getStartingColorMap();
         b = new OctilesBoard(info.getString(OnlineConstants.GAMETYPE, Octiles_INIT),players_in_game,
         		randomKey,map);
+        //useDirectDrawing(); // not tested yet
         doInit(false);
 
          

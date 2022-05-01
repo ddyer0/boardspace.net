@@ -81,6 +81,7 @@ public class SpanglesViewer extends CCanvas<SpanglesCell,SpanglesBoard> implemen
         zoomRect.highlightColor = HighlightColor;       
         bb = new SpanglesBoard(info.getString(OnlineConstants.GAMETYPE, Spangles_INIT),
         		getStartingColorMap());
+        //useDirectDrawing(); // not tested yet
         doInit(false);
     }
 
@@ -257,10 +258,10 @@ public class SpanglesViewer extends CCanvas<SpanglesCell,SpanglesBoard> implemen
  
     }
 
+    
    /* draw the board and the chips on it. the gc will normally draw on a background
     * array which contains the slowly changing part of the board. 
     * */
-
     private void drawBoardElements(Graphics gc, SpanglesBoard gb, Rectangle tbRect,
     		HitPoint ourTurnSelect,HitPoint anySelect)
     {	
@@ -274,7 +275,7 @@ public class SpanglesViewer extends CCanvas<SpanglesCell,SpanglesBoard> implemen
         Hashtable<SpanglesCell,SpanglesCell> dests = gb.movingObjectDests();
         SpanglesCell sourceCell = gb.pickedSource; 
         SpanglesCell destCell = gb.droppedDest;
-
+         
    	 	int left = G.Left(tbRect);
    	 	int top = G.Bottom(tbRect);
    	 	for(Enumeration<SpanglesCell>cells = gb.getIterator(Itype.TBRL); cells.hasMoreElements();)
@@ -283,15 +284,15 @@ public class SpanglesViewer extends CCanvas<SpanglesCell,SpanglesBoard> implemen
    	 		 int xpos = left + gb.cellToX(cell);
    	 		 int ypos = top - gb.cellToY(cell);
    	 		 boolean isADest = dests.get(cell)!=null;
-                boolean isASource = (cell==sourceCell)||(cell==destCell);
-                SpanglesChip piece = cell.topChip();
-                boolean isSource = gb.isSource(cell);
-                boolean hitpoint = !draggingBoard
+   	 		 boolean isASource = (cell==sourceCell)||(cell==destCell);
+   	 		 SpanglesChip piece = cell.topChip();
+   	 		 boolean isSource = gb.isSource(cell);
+   	 		 boolean hitpoint = !draggingBoard
                 	&& gb.LegalToHitBoard(cell)
                 	&& cell.closestPointToCell(ourTurnSelect,cellSize*2, xpos, ypos) 
                 	;
                 
-                 boolean drawhighlight = hitpoint || isSource || gb.isDest(cell) ;
+   	 		 boolean drawhighlight = hitpoint || isSource || gb.isDest(cell) ;
  
                 // drawing
         if (hitpoint)
@@ -310,7 +311,7 @@ public class SpanglesViewer extends CCanvas<SpanglesCell,SpanglesBoard> implemen
         {	//SpanglesCell et = (SpanglesCell)cell.exitToward(2);
         	//String ets = (et==null) ? "" : ("->"+et.col+et.row);
         	// ""+cell.col+cell.row+ets
-        	String gridmsg = use_grid ? ""+cell.col+cell.row : null;
+                	String gridmsg = use_grid ? ""+cell.col+cell.row : null;
         	GC.setColor(gc,Color.black);
         	piece.drawChip(gc,this,cellSize,xpos,ypos,gridmsg); 
             if (drawhighlight)
@@ -318,15 +319,15 @@ public class SpanglesViewer extends CCanvas<SpanglesCell,SpanglesBoard> implemen
               //  drawChip(gc, SELECTION_INDEX, xpos, ypos, cellSize, 1.0,0.0);
                     }
 
-                }
-                if(isASource)
-                {GC.cacheAACircle(gc,xpos,ypos,2,Color.green,Color.yellow,true);
-                } else
-                if(isADest)
-                {GC.cacheAACircle(gc,xpos,ypos,2,Color.red,Color.yellow,true);
+        }
+        if(isASource)
+        	{GC.cacheAACircle(gc,xpos,ypos,2,Color.green,Color.yellow,true);
+        	} else
+        if(isADest)
+        	{GC.cacheAACircle(gc,xpos,ypos,2,Color.red,Color.yellow,true);
  
-                }
-               }}
+        	}
+                                }}
    	 	doBoardDrag(tbRect,anySelect,cellSize,SpanglesId.InvisibleDragBoard);
  		GC.setClip(gc,oldClip);
     }

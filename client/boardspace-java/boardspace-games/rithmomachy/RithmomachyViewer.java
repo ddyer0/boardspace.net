@@ -98,6 +98,7 @@ public class RithmomachyViewer extends CCanvas<RithmomachyCell,RithmomachyBoard>
        
         b = new RithmomachyBoard(info.getString(OnlineConstants.GAMETYPE, Rithmomachy_INIT),
         		randomKey,players_in_game,getStartingColorMap());
+        //useDirectDrawing(); // not tested yet
         doInit(false);
         b.setReverseY(preferredRotation());
         reverseOption = myFrame.addOption(s.get(ReverseView),b.reverseY(),deferredEvents);

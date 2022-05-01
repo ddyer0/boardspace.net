@@ -117,6 +117,7 @@ public class TammanyViewer extends CCanvas<TammanyCell,TammanyBoard> implements 
         // for another game.
         bb = new TammanyBoard(s,type,players_in_game,randomKey,getStartingColorMap(),TammanyBoard.REVISION);
         adjustPlayers(players_in_game);
+        //useDirectDrawing(); // not tested yet
         doInit(false);
 
     }

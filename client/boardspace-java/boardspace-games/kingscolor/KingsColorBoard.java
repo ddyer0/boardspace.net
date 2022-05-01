@@ -835,7 +835,6 @@ class KingsColorBoard
         	}
              break;
 
-        case MOVE_PICK:
  		case MOVE_PICKB:
         	// come here only where there's something to pick, which must
  			{
@@ -849,22 +848,6 @@ class KingsColorBoard
  			}}
             break;
 
-        case MOVE_DROP: // drop on chip pool;
-        	if(pickedObject!=null)
-        	{
-            KingsColorCell dest = getCell(m.source,m.to_col,m.to_row);
-            if(isSource(dest)) { unPickObject(); }
-            else 
-            	{
-		        if(replay==replayMode.Live)
-	        	{ lastDroppedObject = pickedObject.getAltDisplayChip(dest);
-	        	  //G.print("last ",lastDroppedObject); 
-	        	}      	
-            	dropObject(dest); 
-            
-            	}
-        	}
-            break;
  
         case MOVE_START:
             setWhoseTurn(m.player);

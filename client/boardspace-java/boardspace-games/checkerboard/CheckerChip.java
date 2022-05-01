@@ -2,9 +2,9 @@ package checkerboard;
 
 import bridge.Config;
 import checkerboard.CheckerConstants.CheckerId;
+import lib.AR;
 import lib.Drawable;
 import lib.DrawableImageStack;
-import lib.G;
 import lib.ImageLoader;
 import lib.MultiGlyph;
 import lib.Random;
@@ -20,7 +20,7 @@ public class CheckerChip extends chip<CheckerChip> implements Config
 
 
 	public int chipNumber() 
-	{	return(G.indexOf(chips,this));
+	{	return(AR.indexOf(chips,this));
 	}
 	public static CheckerChip getChipNumber(int id)
 	{	return(chips[id]);

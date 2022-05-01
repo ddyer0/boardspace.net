@@ -106,6 +106,7 @@ public class VoloViewer extends CCanvas<VoloCell,VoloBoard> implements VoloConst
         
         bb = new VoloBoard(info.getString(OnlineConstants.GAMETYPE, Volo_Init),
         		getStartingColorMap());
+        //useDirectDrawing(); // not tested yet
         doInit(false);
 
     }

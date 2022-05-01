@@ -111,6 +111,7 @@ public class MedinaViewer extends CCanvas<MedinaCell,MedinaBoard> implements Med
         int randomKey = info.getInt(OnlineConstants.RANDOMSEED,-1);
         String game = info.getString(OnlineConstants.GAMETYPE, Variation.Medina_V1.shortName);
         b = new MedinaBoard(game,randomKey,players_in_game,getStartingColorMap(),MedinaBoard.REVISION);
+        //useDirectDrawing(); // not tested yet
         doInit(false);
 
         if(extraactions)

@@ -59,7 +59,7 @@ class Bbox
         }
 	}
 }
-public abstract class gBoard<CELLTYPE extends cell<CELLTYPE>> extends RBoard<CELLTYPE>
+public abstract class gBoard<CELLTYPE extends cell<CELLTYPE>> extends RBoard<CELLTYPE> implements Opcodes
 {	
 	
 	/**
@@ -94,7 +94,6 @@ public abstract class gBoard<CELLTYPE extends cell<CELLTYPE>> extends RBoard<CEL
     	{	type = typ;
     		b = board;
     		swapXY = b.displayParameters.swapXY;
-    		
     		switch(type)
     		{
     		case LRBT:
@@ -122,10 +121,10 @@ public abstract class gBoard<CELLTYPE extends cell<CELLTYPE>> extends RBoard<CEL
     		case RLTB:
     		case TBRL:
     			// right to left
+      			stepCol = -b.stepColNum();
+    			swapOn = swapXY;
     			firstCol = thisCol = b.rightColNum();
     			lastCol =  b.leftColNum();
-    			stepCol = -b.stepColNum();
-    			swapOn = swapXY;
      			break;
     		}
     		switch(type)
@@ -143,9 +142,9 @@ public abstract class gBoard<CELLTYPE extends cell<CELLTYPE>> extends RBoard<CEL
     		case RLTB:
     		case TBRL:
     			// top to bottom
+    			stepRow = b.stepRow();
     		thisRow = b.topRowInColumn((char)('A'+thisCol));
     		lastRow = b.bottomRowInColumn((char)('A'+thisCol));
-    		stepRow = b.stepRow();
     		}
    			if(swapOn)
 			{
@@ -163,7 +162,8 @@ public abstract class gBoard<CELLTYPE extends cell<CELLTYPE>> extends RBoard<CEL
     	}
     	
     	public CELLTYPE nextElement()
-    	{	CELLTYPE c = b.getCell((char)('A'+thisCol),thisRow);
+    	{	
+     		CELLTYPE c = b.getCell((char)('A'+thisCol),thisRow);
     		seq++;
     		switch(type)
     		{
@@ -177,6 +177,7 @@ public abstract class gBoard<CELLTYPE extends cell<CELLTYPE>> extends RBoard<CEL
 	    				if(thisCol==lastCol) { hasMore = false; }
 	    				else {
 	    				thisCol += stepCol;
+
 	    				switch(type)
 	    				{
 	    				case TBLR:
@@ -235,8 +236,6 @@ public abstract class gBoard<CELLTYPE extends cell<CELLTYPE>> extends RBoard<CEL
 	    		}
 	    		break;
     		}
-    		G.Assert(!hasMore || getCell((char)('A'+thisCol),thisRow)!=null,
-    				"should be a cell");
     		return(c);
     	}
         
@@ -849,7 +848,8 @@ public abstract class gBoard<CELLTYPE extends cell<CELLTYPE>> extends RBoard<CEL
   * @return an integer
   */
  public int cellToX(CELLTYPE c)
- {	return(cellToX(c.col,c.row));
+ {	
+	 return cellToX(c.col,c.row);
  }
 
  //
@@ -902,7 +902,7 @@ public abstract class gBoard<CELLTYPE extends cell<CELLTYPE>> extends RBoard<CEL
   * @return an integer
   */
  public int cellToY(CELLTYPE c)
- {	return(cellToY(c.col,c.row));
+ {	return cellToY(c.col,c.row);
  }
 
  /**
@@ -1238,5 +1238,6 @@ public abstract class gBoard<CELLTYPE extends cell<CELLTYPE>> extends RBoard<CEL
     		}
     	return(got);
     }
+    
 
 }

@@ -94,6 +94,7 @@ public class StymieViewer extends CCanvas<StymieCell,StymieBoard> implements Sty
         // later, some variant is created, or the game code base is re purposed as the basis
         // for another game.
         bb = new StymieBoard(type,players_in_game,randomKey,getStartingColorMap(),StymieBoard.REVISION);
+        //useDirectDrawing(); // not tested yet
         doInit(false);
         adjustPlayers(players_in_game);
     }

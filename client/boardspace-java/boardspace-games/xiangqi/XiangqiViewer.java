@@ -119,6 +119,7 @@ public class XiangqiViewer extends CCanvas<XiangqiCell,XiangqiBoard> implements 
     	
         b = new XiangqiBoard(info.getString(OnlineConstants.GAMETYPE, Xiangqi_INIT),randomKey,
         		repeatedPositions,getStartingColorMap());
+        //useDirectDrawing(); // not tested yet
         doInit(false);
         chipsetOption = myFrame.addOption(s.get("Traditional Pieces"),traditional_chips,deferredEvents);
         reverseOption = myFrame.addOption(s.get(ReverseView),b.reverseY(),deferredEvents);

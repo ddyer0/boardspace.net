@@ -23,7 +23,30 @@ public abstract class triBoard<CELLTYPE extends cell<CELLTYPE>> extends gBoard<C
     public static final int CELL_FULL_TURN  = 3;
     public double yCellRatio() { return(Math.sqrt(3.0)); }
     public double yGridRatio() { return(Math.sqrt(3.0)); }
-    
+
+    public int cellToX(CELLTYPE c)
+    {	
+   	 int xp = cellToX(c.col,c.row);
+   	 if(isTorus)
+   	 { 	if(xp+displayParameters.xspandist<0) { xp = cellToX((char)(c.col+ncols),c.row); }
+   	 		else if(xp-displayParameters.xspandist>displayParameters.WIDTH) { xp = cellToX((char)(c.col-ncols),c.row); }
+   	 }
+   	 return xp;
+    }
+    public int cellToY(CELLTYPE c)
+    {	int yp = cellToY(c.col,c.row);
+    	if(isTorus)
+    	{
+    		if(yp+displayParameters.yspandist<0) 
+    			{ yp = cellToY(c.col,c.row+nrows); 
+    			}
+    		else if(yp-displayParameters.yspandist>displayParameters.HEIGHT)
+    		{
+    			yp = cellToY(c.col,c.row-nrows);
+    		}
+    	}
+    	return yp;
+    }
 
     /**
      *  convert col,row to y with no rotation or perspective
@@ -131,7 +154,7 @@ public abstract class triBoard<CELLTYPE extends cell<CELLTYPE>> extends gBoard<C
         G.Assert(fc.length==nc.length,"rows and cols match");
         for (int i = 0; i < ncols; i++)
         {
-            nrows = Math.max(nrows, fc[i] + nc[i]+1);
+            nrows = Math.max(nrows, nc[i]);
         }
 
         firstRowInCol = fcol;

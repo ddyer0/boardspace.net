@@ -88,6 +88,7 @@ public class TruGameViewer extends CCanvas<TruCell,TruGameBoard> implements TruC
         		info.getString(exHashtable.GAMEUID,
         		G.getString(exHashtable.GAMEUID,"testgame")),
         		getStartingColorMap());
+        //useDirectDrawing(); // not tested yet
         doInit(false); 
      }
 

@@ -511,6 +511,7 @@ public Rectangle createPlayerGroup(int player,int x,int y,double rotation,int un
      		// if there is only one pair on the stack it's an ordinary move, and we
      		// migrate it cleanly.  If there are multiple pairs, the later pairs are
      		// captured chips which we want to send off in a staggered manner
+     		
      		for(int idx = 0,lim=b.animationStack.size(); idx<lim; idx+=2)
      		{
      		DvonnCell dest = b.animationStack.elementAt(idx+1);
@@ -522,7 +523,8 @@ public Rectangle createPlayerGroup(int player,int x,int y,double rotation,int un
      			SimpleSprite ss = startAnimation(src,src,src,CELLSIZE,0,start);		// stand the stacks while waiting to start moving
      			ss.overlapped = true;	// this keeps the stack visible despite an animation in progress.
      		}
-     		startAnimation(src,dest,src,CELLSIZE,start,speed);
+     		SimpleSprite s = startAnimation(src,dest,src,CELLSIZE,start,speed);
+     		s.isAlwaysActive = true;	// this makes the destination stack grow monotonically
      		start += masterAnimationSpeed*0.2;
      		speed = masterAnimationSpeed*1.0;
      		later = true;

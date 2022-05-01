@@ -904,6 +904,7 @@ public void setLetterColor(Graphics gc,CrosswordsBoard gb,CrosswordsCell cell)
           highlight.arrow = (empty||picked) ? StockArt.DownArrow : StockArt.UpArrow;
           highlight.awidth = CELLSIZE;
         }
+        definitionCell = null;
         if(closestCell!=null && all!=null && !gb.isADest(closestCell))
         {	for(int lim=gb.words.size()-1; lim>=0; lim--)
         	{
@@ -915,10 +916,8 @@ public void setLetterColor(Graphics gc,CrosswordsBoard gb,CrosswordsCell cell)
         		definitionCell = closestCell;
         	}
         	}
-        	if(definitionCell!=closestCell)
-        		{ definitionCell = null; 
-        	}
-        }
+         }
+
         // this enumerates the cells in the board in an arbitrary order.  A more
         // conventional double xy loop might be needed if the graphics overlap and
         // depend on the shadows being cast correctly.

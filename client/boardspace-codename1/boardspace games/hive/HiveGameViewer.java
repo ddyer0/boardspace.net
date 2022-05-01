@@ -20,13 +20,12 @@ import lib.GC;
 import lib.HitPoint;
 import lib.LFrameProtocol;
 import lib.StockArt;
+import lib.Toggle;
 
 /**
  * 
  * Change History
  *
- * TODO: A feature to show the movable pieces is a good idea.
- *  
  * June 2006  initial work in progress.  
 
 */
@@ -76,6 +75,8 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
     private Rectangle[]setupRects = addRect("setup",2);
     private Rectangle tilesetRect = addRect("tilesetRect");
     private Rectangle reverseRect = addRect("reverseRect");
+    private Toggle seeMobile = new Toggle(this,"eye",StockArt.Eye,HiveId.SeeMovable,true,"See Movable Pieces");
+ 
     private int tileColorSet = 0;
     public int getAltChipset() 
     	{ return(tileColorSet); }
@@ -217,7 +218,7 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
     {
     	setLocalBoundsV(x,y,width,height,aspects);
     }
-    static double aspects[] = { 0.8,1.4,1,-0.8,-1.4,-1};
+    static double aspects[] = { 0.8,1.4,1,-0.8,-1.4,-1};	// negative values encode "flattened" player group
    
     public double setLocalBoundsA(int x, int y, int width, int height,double aspect0)
     {	flatten = aspect0<0;
@@ -292,7 +293,7 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
         int boardY = stateY+stateH+C4;
         int boardBottom = G.Bottom(main)-stateH-C4;
         int boardH = boardBottom-boardY;
-        G.placeRow(stateX+stateH,stateY,mainW-stateH,stateH,stateRect,reverseRect,liftRect,noChatRect);
+        G.placeRow(stateX+stateH,stateY,mainW-stateH,stateH,stateRect,reverseRect,liftRect,seeMobile,noChatRect);
         G.placeRow(stateX,boardBottom+C4,mainW,stateH,goalRect,tilesetRect);
        
         G.placeRight(stateRect, zoomRect, zoomW);
@@ -514,6 +515,7 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
      	Rectangle oldClip = GC.combinedClip(gc,boardRect);
         int csize = gb.cellSize();
      	boolean dolift = doLiftAnimation();
+     	boolean see = seeMobile.isOnNow();
      	
      	//
          // now draw the contents of the board and anything it is pointing at
@@ -542,8 +544,9 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
                  HivePiece piece = cell.topChip();
                  int aaheight = cell.activeAnimationHeight();
                  int cheight = cell.height()-aaheight;
+        	 boolean canHit = gb.LegalToHitBoard(cell);
                  boolean hitpoint = !somehit
-                	&& gb.LegalToHitBoard(cell)
+                	&& canHit
                  	&& inside ;
                  cell.rotateCurrentCenter(gc,xpos,ypos);
                  //G.DrawAACircle(gc,xpos,ypos,1,tiled?Color.green:Color.blue,Color.yellow,true);
@@ -578,7 +581,6 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
                    	GC.setColor(gc,Color.yellow);
                  	StockArt.SmallO.drawChip(gc,this,(int)(actCellSize*0.5),xp,yp,id);
                  	}
-
                  	}
                  }
                  else {
@@ -595,7 +597,7 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
              		ourTurnSelect.spriteColor = Color.red;
              		}
                  }
-                 if(isASource)
+             if(isASource || (see && canHit))
                  {GC.cacheAACircle(gc,xpos,ypos,2,Color.green,Color.yellow,true);
                  } else
                  if(isADest)
@@ -660,6 +662,7 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
  
         DrawRepRect(gc,messageRotation,Color.black,b.Digest(),repRect);
         DrawReverseMarker(gc,reverseRect,nonDraggingSelect,HiveId.ReverseRect);
+        seeMobile.draw(gc,nonDraggingSelect);
         switch(state)
         {     
         default:
@@ -885,6 +888,9 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
         {
         default:
         	throw G.Error("Hit Unknown: %s", hitObject);
+        case SeeMovable:
+        	seeMobile.toggle();
+        	break;
         case HitPlayBlackAction:
         	PerformAndTransmit("PlayBlack");
         	break;

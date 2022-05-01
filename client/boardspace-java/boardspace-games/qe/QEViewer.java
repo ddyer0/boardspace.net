@@ -212,6 +212,7 @@ public void ViewerRun(int wait)
         // later, some variant is created, or the game code base is re purposed as the basis
         // for another game.
         bb = new QEBoard(type,players_in_game,randomKey,QEBoard.REVISION);
+        //useDirectDrawing(); // not tested yet
         doInit(false);
 
     }

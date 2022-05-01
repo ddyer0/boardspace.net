@@ -112,6 +112,7 @@ public class KamisadoViewer extends CCanvas<KamisadoCell,KamisadoBoard> implemen
         int randomKey = info.getInt(OnlineConstants.RANDOMSEED,-1);
        
         b = new KamisadoBoard(info.getString(OnlineConstants.GAMETYPE, Kamisado_INIT),randomKey);
+        //useDirectDrawing();	// not tested yet
         doInit(false);
         reverseOption = myFrame.addOption(s.get(ReverseView),b.reverseY(),deferredEvents);
 

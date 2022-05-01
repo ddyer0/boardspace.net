@@ -120,6 +120,7 @@ public class WypsViewer extends CCanvas<WypsCell,WypsBoard> implements WypsConst
         // for another game.
         bb = new WypsBoard(type,players_in_game,randomKey,getStartingColorMap(),dictionary,WypsBoard.REVISION);
         robotGame = sharedInfo.get(exHashtable.ROBOTGAME)!=null;
+        //useDirectDrawing(); // not tested yet
         doInit(false);
         adjustPlayers(players_in_game);
         

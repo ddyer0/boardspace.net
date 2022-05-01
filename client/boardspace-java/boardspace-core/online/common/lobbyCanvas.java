@@ -46,7 +46,6 @@ import lib.SoundManager;
 import lib.StockArt;
 import lib.TimeControl;
 
-// TODO: spectators not credited in lobby
 public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProtocol
 {	// TODO: fix ios direct drawing so pop up menus don't show white background instead of the lobby
 
@@ -1224,7 +1223,8 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 
 	  for (int draw=0,j=0;j<maxPlayers;j++) 
 	    {
-	    boolean emptyslot = (session.players[j] == null);
+		User u = session.players[j];
+	    boolean emptyslot = (u == null);
 	    GC.translate(inG,POLYXOFFSETS[draw],POLYYOFFSETS[draw]);
 	    if(!gameInProgress || !emptyslot)
 	    {
@@ -1241,8 +1241,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	    playPoly.framePolygon(inG);
 	    GC.setColor(inG,Color.black);
 	    String name = session.playerName[j];
-	    if(name==null) { name = User.prettyName(session.players[j]); }
-	    User u = session.players[j];
+	    if(name==null) { name = User.prettyName(u); }
 	    if(name==null
 	    		&& (showBotName!=null))
 	    {
@@ -1300,7 +1299,6 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	  private int DrawGameSession(Session session,Graphics inG,HitPoint hp)
 	  { User my=users.primaryUser();
 	    boolean enabled = session.gameIsAvailable();
-	    int playersInSession=session.numberOfPlayers();
 	  	int maxPlayers = session.currentMaxPlayers();
 	    boolean canAddRobot = session.canAddRobot();
 	  	int specheight = requiredSpectatorHeight(session,(int)(10*SCALE),SPECTATORCOLUMNWIDTH);
@@ -1312,12 +1310,17 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	    Color sc = state.color;
 	    boolean rejoin = false;
 	    boolean gameInProgress = false;
-	    boolean editable = session.editable();
 	    switch(state)
 	    {
 	    case Idle:
 	    	statemessage = "";
 	    	if(imInThisSession)	{ sc =  redder_rose; statemessage = ""; }
+	    	for(int i=0;i<maxPlayers;i++)
+	    	{ User u = session.players[i];
+			  if(u!=null && !users.isActiveUser(u))
+			  	{ session.players[i]=null; // player went away
+			  	}
+			}	
 	    	break;
 	    case InProgress:
 	    	gameInProgress = true;
@@ -1334,6 +1337,10 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	    	break;
 	    default: break;
 	    }
+	    int playersInSession=session.numberOfPlayers();	// do this after potentially removing players    
+	    if(!gameInProgress && imInThisSession && (playersInSession==1)) { session.iOwnTheRoom = true; }
+	    boolean editable = session.editable();	    
+	    
 	  	boolean timedMode = !gameInProgress && session.getSubmode().isTimed();
 	  	int extraSpacing = (G.TimeControl() && timedMode) ? G.Height(timeControlRect) : 0;
 	  	if(!gameInProgress) { extraSpacing = extraSpacing*2; }

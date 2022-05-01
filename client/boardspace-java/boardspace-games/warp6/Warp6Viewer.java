@@ -89,6 +89,7 @@ public class Warp6Viewer extends CCanvas<Warp6Cell,Warp6Board> implements Warp6C
 
         b = new Warp6Board(randomKey,info.getString(OnlineConstants.GAMETYPE, Warp6_Standard_Init),
         		getStartingColorMap());
+        //useDirectDrawing(); // not tested yet
         doInit(false);
 
         

@@ -188,6 +188,12 @@ public class PlayerBoard
 		bb.register(c);
 		return(c);
 	}
+	private ViticultureCell newUIcell(ViticultureId id, char charcode, int row, ChipType ctype,String des) 
+	{
+		ViticultureCell c = newUIcell(id,charcode,row,ctype);
+		c.toolTip = des;
+		return c;
+	}
 	public boolean isMyWorker(ViticultureChip ch)
 	{
 		return(ch.color==color || ch==grayWorker);
@@ -278,14 +284,14 @@ public class PlayerBoard
 		hiddenCardDisplay1 = newUIcell(ViticultureId.CardDisplay,colCode,0,ChipType.Card);
 		hiddenCardDisplay2 = newUIcell(ViticultureId.CardDisplay,colCode,1,ChipType.Card);
 	
-		unbuiltTrellis = newUIcell(ViticultureId.UnbuiltTrellis,colCode,0,ChipType.Trellis);	// off the books cells
-		unbuiltWaterTower = newUIcell(ViticultureId.UnbuiltWaterTower,colCode,0,ChipType.WaterTower);
-		unbuiltTastingRoom = newUIcell(ViticultureId.UnbuiltTastingRoom,colCode,0,ChipType.TastingRoom);
-		unbuiltWindmill = newUIcell(ViticultureId.UnbuiltWindmill,colCode,0,ChipType.Windmill);
-		unbuiltYoke = newUIcell(ViticultureId.UnbuiltYoke,colCode,0,ChipType.Yoke);
-		unbuiltCottage = newUIcell(ViticultureId.UnbuiltCottage,colCode,0,ChipType.Cottage);
-		unbuiltMediumCellar = newUIcell(ViticultureId.UnbuiltMediumCellar,colCode,0,ChipType.MediumCellar);
-		unbuiltLargeCellar = newUIcell(ViticultureId.UnbuiltLargeCellar,colCode,0,ChipType.LargeCellar);
+		unbuiltTrellis = newUIcell(ViticultureId.UnbuiltTrellis,colCode,0,ChipType.Trellis,TrellisDescription);	// off the books cells
+		unbuiltWaterTower = newUIcell(ViticultureId.UnbuiltWaterTower,colCode,0,ChipType.WaterTower,WaterTowerDescription);
+		unbuiltTastingRoom = newUIcell(ViticultureId.UnbuiltTastingRoom,colCode,0,ChipType.TastingRoom,TastingRoomDescription);
+		unbuiltWindmill = newUIcell(ViticultureId.UnbuiltWindmill,colCode,0,ChipType.Windmill,WindmillDescription);
+		unbuiltYoke = newUIcell(ViticultureId.UnbuiltYoke,colCode,0,ChipType.Yoke,YokeDescription);
+		unbuiltCottage = newUIcell(ViticultureId.UnbuiltCottage,colCode,0,ChipType.Cottage,CottageDescription);
+		unbuiltMediumCellar = newUIcell(ViticultureId.UnbuiltMediumCellar,colCode,0,ChipType.MediumCellar,MediumCellarDescription);
+		unbuiltLargeCellar = newUIcell(ViticultureId.UnbuiltLargeCellar,colCode,0,ChipType.LargeCellar,LargeCellarDescription);
 		
 		unBuilt = new ViticultureCell[] {
 				unbuiltTrellis,unbuiltWaterTower,unbuiltWindmill,
@@ -456,6 +462,8 @@ public class PlayerBoard
 		oracleCards.copyFrom(other.oracleCards);
 		oracleColors = other.oracleColors;
 		roosterDisplay.selected = other.roosterDisplay.selected;
+	    bb.copyFrom(unBuilt,other.unBuilt);
+	       
 	}
 	
 	ViticultureChip mama;

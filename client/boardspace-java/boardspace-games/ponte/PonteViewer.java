@@ -86,6 +86,7 @@ public class PonteViewer extends CCanvas<PonteCell,PonteBoard> implements PonteC
        
         b = new PonteBoard(info.getString(OnlineConstants.GAMETYPE, Ponte_INIT),randomKey,
         		players_in_game,getStartingColorMap());
+        //useDirectDrawing(); // not tested yet
         doInit(false);
 
         

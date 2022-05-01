@@ -109,6 +109,7 @@ public class TintasViewer extends CCanvas<TintasCell,TintasBoard> implements Tin
         // later, some variant is created, or the game code base is re purposed as the basis
         // for another game.
         bb = new TintasBoard(type,players_in_game,randomKey,TintasBoard.REVISION);
+        //useDirectDrawing(); // not tested yet
         doInit(false);
 
     }

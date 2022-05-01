@@ -3,6 +3,7 @@ package lib;
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.Rectangle;
+import java.util.StringTokenizer;
 
 import bridge.Config;
 import online.common.exCanvas;
@@ -15,6 +16,8 @@ public interface ChatInterface extends Config {
 	// player connections.  They have to be greater than all "real" channels
 	// so the sounds can be customized for "real" players vs system announcements.
 	// the rest are registered in commonChatApplet to be used to identify chat lines
+	static String SIMPLETEXT = "simpletext";
+
 	int KNOCKINTERVAL = 60000;	// minimum time between knocks
 	int LASTUCHANNEL = 1000000; //first non-user channel, first in this group
 	int BLANKCHANNEL = 1000992;	// unadorned text
@@ -23,7 +26,7 @@ public interface ChatInterface extends Config {
 	int ERRORCHANNEL = 1000996;	// used to present information about errors
 	int NEWSCHANNEL = 1000997;		// used to present lobby news
 	int GAMECHANNEL = 1000999;		// used to present properties from game review
-	int ROBOTCHANNEL = 1002000;	// used as fake channel for robot players
+	int CONTROLCHANNEL = 1002000;	// used for silent control strings
 	String chatSoundName = SOUNDPATH + "rchatchimes" + Config.SoundFormat;
 	String goodHintSoundName = SOUNDPATH + "goodhint" + Config.SoundFormat;
 	String badHintSoundName = SOUNDPATH + "badhint" + Config.SoundFormat;
@@ -136,4 +139,6 @@ public interface ChatInterface extends Config {
 	public boolean activelyScrolling();
 	public boolean doMouseWheel(int x,int y,int amount);
 	public void postHostMessages(String host);
+	public void getEncodedContents(StringBuilder b);
+	public void setEncodedContents(StringTokenizer contents);
 }

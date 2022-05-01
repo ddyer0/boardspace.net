@@ -65,6 +65,8 @@ public class Game extends commonPanel implements PlayConstants,Opcodes,DeferredE
     static final String KEYWORD_RESERVE = "<private>";
 
     public static final String NEWSPECTATOR = "#1 Joining as a spectator";
+    public static final String CHATSPECTATOR = "#1 has entered the room";
+
     static final String CallServerMessage = "Calling server...";
     static final String SAVEDMSG = "savedmsg";
     static final String RobotPlayMessage = "Let The Robot Play";
@@ -865,7 +867,10 @@ public class Game extends commonPanel implements PlayConstants,Opcodes,DeferredE
     	    	  // instead of the old CONTROL/NOCONTROL protocol
     	    	  v.setControlToken(false,0);  
     	    	}
+            
+  
             setGameState(my.spectator ? ConnectionState.SPECTATE : ConnectionState.CONNECTED);
+
 	        my.localIP = myNetConn.getLocalAddress();
             connectionTimeout=0;
             if (myNetConn.reconnecting)
@@ -935,7 +940,8 @@ public class Game extends commonPanel implements PlayConstants,Opcodes,DeferredE
 
                 { 
                     sendMessage(NetConn.SEND_GROUP+KEYWORD_TRANSLATE_CHAT+" " +
-                        (chatOnly ? "enters the room" : NEWSPECTATOR));
+                    	" " +	// extra space is voodoo to tell listeners we accept ASK/ANSWER
+                        (chatOnly ? CHATSPECTATOR : NEWSPECTATOR));
                 }
 
                 setGameState(ConnectionState.SPECTATE);
@@ -1380,6 +1386,11 @@ public class Game extends commonPanel implements PlayConstants,Opcodes,DeferredE
 		                }
 		                theChat.postMessage(ChatInterface.GAMECHANNEL, commandStr,
 		                		s.get(trimmed,theChat.getUserName(playerID)));
+		                char ch = msgstr.charAt(0);
+		                if((ch==' ') && trimmed.equals(CHATSPECTATOR) || trimmed.equals(NEWSPECTATOR))
+		                {	// this is a side channel that signals the sender will accept ASK/ANSWER
+		                	doAsk(playerID);
+		                }
 		            }
 		            else
 		            {
@@ -1446,7 +1457,7 @@ public class Game extends commonPanel implements PlayConstants,Opcodes,DeferredE
                // if(my.spectator) 
                // 	{ System.out.println(tempString); 
                // 	}
-           		commonPlayer player = reviewOnly ? my : getValidPlayer(playerID, "process213");
+           		commonPlayer player = reviewOnly ? my : getValidPlayer(playerID, fullMsg);
            		boolean wait = player.robotWait()!=null;
                 boolean ismyrobot = wait||(player.robotPlayer != null);
                 String rest = G.restof(myST);
@@ -1501,10 +1512,16 @@ public class Game extends commonPanel implements PlayConstants,Opcodes,DeferredE
             }
             else if(commandStr.startsWith(KEYWORD_SPARE))	// spare spare1 etc.
             {
-            	if(v.processSpareMessage(commandStr,fullMsg)) {}
+               	//String tok = myST.nextToken();
+            	//if(KEYWORD_ASK.equals(tok)) { processAsk(myST); }
+            	//else if(KEYWORD_ANSWER.equals(tok)) { processAnswer(myST);}
+            	//else 
+            	if(v!=null && v.processSpareMessage(commandStr,fullMsg)) {}
             	// just ignore info.  This provides a loophole for new information and commands
             	// to be inserted into the data stream
-            	else { G.print("Unexpected message: ",fullMsg); }
+            	else { 
+            		if(G.debug()) { G.print("Unexpected message: ",fullMsg);  }
+            	}
             }
             else if (KEYWORD_FOCUS.equals(commandStr))
             {
@@ -1602,6 +1619,12 @@ public class Game extends commonPanel implements PlayConstants,Opcodes,DeferredE
                     }
                 }}
             }
+            else if(KEYWORD_ASK.equals(commandStr))
+            {	processAsk(myST,playerID);        	
+            }
+            else if(KEYWORD_ANSWER.equals(commandStr))
+            {	processAnswer(myST);
+            }
             else if (!expectingHistory && (gameState != ConnectionState.LIMBO))
             {
                 commonPlayer player = getValidPlayer(playerID, "process213");
@@ -1655,7 +1678,6 @@ public class Game extends commonPanel implements PlayConstants,Opcodes,DeferredE
                     		fullMsg);
                 }
             }
-
             return (true);
         }
         else if(cmdStr.equals(NetConn.ECHO_GROUP_SELF))
@@ -1678,6 +1700,50 @@ public class Game extends commonPanel implements PlayConstants,Opcodes,DeferredE
         }
 
         return (false);
+    }
+    private void processAsk(StringTokenizer myST,int to)
+    {
+    	String question = myST.nextToken();
+    	if(KEYWORD_CHAT.equals(question))
+    	{
+    		doAsk(to);
+    	}
+    }
+    // find the active connection with the highest number. There's no special
+    // magic to this, simply a way to get a consensus choice to respond to 
+    // a query.
+    private int findEldest(commonPlayer connections[],int not, int eld)
+    {
+    	int eldest = eld;
+       	for(commonPlayer p : connections)
+    	{
+    		if((p!=null) && (p.channel>eldest) && (p.channel!=not) && (p.qcode==null)) { eldest = p.channel; }
+    	}
+       	return eldest;
+    }
+    private boolean imTheOldest(int not)
+    {	int eldest = findEldest(spectatorConnections,not,findEldest(playerConnections,not,my.channel));
+    	return eldest==my.channel;
+    }
+    private void doAsk(int to)
+    {
+    	if((theChat!=null) && imTheOldest(to))
+		{	StringBuilder b = new StringBuilder();
+			G.append(b,NetConn.SEND_MESSAGE_TO,to," ",KEYWORD_ANSWER," ",KEYWORD_CHAT," ");
+			theChat.getEncodedContents(b);
+			sendMessage(b.toString());
+		}
+    }
+    
+    private void processAnswer(StringTokenizer myST)
+    {
+    	String question = myST.nextToken();
+    	if(KEYWORD_CHAT.equals(question))
+    	{
+    	if(theChat!=null)
+    	{
+    		theChat.setEncodedContents(myST);
+    	}}
     }
     private void restartRobots()
     {	boolean needRobot = false;
@@ -3282,7 +3348,6 @@ public class Game extends commonPanel implements PlayConstants,Opcodes,DeferredE
     private void doSPECTATE(String cmd,StringTokenizer localST,String fullMsg)
     { // state 7
         initialized = true;
-
         if (fullMsg != null)
         {
             StandardProcessing("doSpectate",cmd,localST,fullMsg);
@@ -3602,6 +3667,7 @@ public class Game extends commonPanel implements PlayConstants,Opcodes,DeferredE
             }
             long checkTime = 0;
             boolean hadMessage = true;
+  
             for (;!exitFlag;)
             {	
                 try
@@ -4374,6 +4440,7 @@ public class Game extends commonPanel implements PlayConstants,Opcodes,DeferredE
 		        PrivateRoomMessage,
 		        PublicRoomMessage,
 		        NEWSPECTATOR,
+		        CHATSPECTATOR,
 		        TakeOverDetail,
 		        QuitMessage,
 		        ToSpectatorMessage,
@@ -4386,7 +4453,6 @@ public class Game extends commonPanel implements PlayConstants,Opcodes,DeferredE
 	
 	public static final String GameStringPairs[][] = {
         {"rankingsfailed", "Updating the rankings failed"},
-        {"enters the room", "#1 has entered the room"}, //new member of a chat
         {"quitting", "#1 has left the room"},
         {PlayForMessage, "play for #1"},//play for a player who has quit.  #1 is a player name
         {RequestJointReview,

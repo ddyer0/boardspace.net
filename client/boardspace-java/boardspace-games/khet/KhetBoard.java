@@ -579,7 +579,8 @@ class KhetBoard extends rectBoard<KhetCell> implements BoardProtocol,KhetConstan
     {	KhetChip top = c.topChip();
     	boolean isEye = top!=null && top.isEye(); 
     	KhetCell p = new KhetCell(isEye?KhetId.EyeProxy:KhetId.LaserProxy,(char)('@'+step),distance);
-    	p.copyCurrentCenter(c);
+    	// we want to not share any structure with the original cell
+    	p.duplicateCurrentCenter(c);
     	if(dest) { p.addChip(KhetChip.Blast); }
     	return(p);
     }
@@ -685,6 +686,11 @@ class KhetBoard extends rectBoard<KhetCell> implements BoardProtocol,KhetConstan
         		rotatedCell = dest; 
         		rotatedDirection = m.to_row; 
         		setNextStateAfterDrop();
+        		if(replay!=replayMode.Replay)
+        			{
+        			animationStack.push(dest);
+        			animationStack.push(dest);
+        			}
         		}
         		else 
         		{ G.Assert(rotatedCell==dest && rotatedDirection==-m.to_row,"unrotating");
@@ -716,7 +722,13 @@ class KhetBoard extends rectBoard<KhetCell> implements BoardProtocol,KhetConstan
         			m.piece = pickedObject;
         			if(to.topChip()!=null) { from.addChip(to.removeTop()); }
         			dropObject(to); 
- 				    setNextStateAfterDrop();
+        			if(replay!=replayMode.Replay)
+        			{
+        				animationStack.push(to);
+        				animationStack.push(from);
+        			}
+
+        			setNextStateAfterDrop();
         			}
         			break;
         	}
@@ -740,6 +752,11 @@ class KhetBoard extends rectBoard<KhetCell> implements BoardProtocol,KhetConstan
             			KhetCell src = getSource();
             			src.addChip(back);
             			dropObject(c);
+            			if(replay!=replayMode.Replay)
+            			{
+            				animationStack.push(c);
+            				animationStack.push(src);
+            			}
             		}
             		else
             		{

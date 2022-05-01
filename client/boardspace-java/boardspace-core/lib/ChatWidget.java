@@ -16,6 +16,8 @@ import java.io.InputStream;
 import java.net.URL;
 import java.security.AccessControlException;
 import java.util.Hashtable;
+import java.util.StringTokenizer;
+
 import bridge.Config;
 import bridge.Utf8OutputStream;
 import lib.TextContainer.Op;
@@ -433,7 +435,7 @@ public class ChatWidget
                 }
                 else if (command.equals(KEYWORD_QCHAT))
                 {
-                    /* no clip */
+                    /* quiet chat */
 				}
                 else
                 {	
@@ -999,5 +1001,19 @@ public class ChatWidget
 		}
 		
 		return(null);
+	}
+	
+	public void getEncodedContents(StringBuilder b) {
+		b.append(SIMPLETEXT);
+		b.append(" ");
+		b.append(Base64.encodeSimple(activePane().getText()));
+	}
+	/** change the text as shared over the network */
+	public void setEncodedContents(StringTokenizer contents) {
+		String kind = contents.nextToken();
+		if(SIMPLETEXT.equals(kind))
+		{
+		activePane().setText(Base64.decodeString(contents.nextToken()));
+		}
 	}
 }

@@ -92,6 +92,7 @@ public class QyshinsuViewer extends CCanvas<QyshinsuCell,QyshinsuBoard> implemen
         MouseDotColors[0]= Color.white;
 
         b = new QyshinsuBoard(info.getString(OnlineConstants.GAMETYPE, "Qyshinsu"),getStartingColorMap());
+        //useDirectDrawing(); // not tested yet
         doInit(false);
        
      }

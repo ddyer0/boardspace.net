@@ -669,12 +669,12 @@ class DayAndNightBoard
 				}
 				else 
 				{
-				if(pickedObject==null)
+				if(po==null)
 				{	DayAndNightCell src = (board_state==DayAndNightState.Puzzle) ? getHomeCell(lastPicked) : null;
 					if(src==null) { src= playerCell[whoseTurn]; }
 					pickObject(src);
+					m.chip = pickedObject;
 				}
-				m.chip = pickedObject;
 		        lastDropped = pickedObject.getAltDisplayChip(dest);
 	            dropObject(dest);
 	            

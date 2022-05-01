@@ -152,7 +152,7 @@ public class commonPlayer implements Opcodes,lib.CompareTo<commonPlayer>
 
     public commonPlayer(int iidx)
     {  	boardIndex = iidx;
-        order = 1000+iidx;		// offset so it can't be used as an index
+        order = iidx;		// offset so it can't be used as an index
         channel = 50000 + iidx; //channels are fake
   }
     public SimpleObservable addObserver(SimpleObserver o)
