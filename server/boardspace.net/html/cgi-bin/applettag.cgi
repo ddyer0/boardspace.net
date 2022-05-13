@@ -162,7 +162,8 @@ sub print_language_list()
 #	  * @return the translated Base64 string (not null)
 #	  */
     sub encode64long()
-    {	my ($buf) = @_;
+    {	# this version is obsolete, in the future use the version in params.pl
+		my ($buf) = @_;
 		my @ALPHABET = unpack("W*","ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/");
 		my $str = "";
         my $i=0;
@@ -322,6 +323,8 @@ sub print_appjarinfo()
 	my $host = $test ? "/$'java_dir/$'test_class_dir/" : "/$'java_dir/$'class_dir/";
 	my $dir = $ENV{'DOCUMENT_ROOT'} . $host;
 	#print "Dir = $dir<p>";
+	#my $par = &param('environment');
+	#print "Env = $par\n";
 	my (@jars) = &list_dir($dir);
 	print "version,1,$host\n";
 	foreach my $jar (@jars)
@@ -391,7 +394,7 @@ sub print_tag()
 	else
 	{
 	my $dbh = &connect();
-	if($dbh)
+	if($dbh && (&allow_ip_access($dbh,$ENV{'REMOTE_ADDR'})>=0))
 		{
 		&readtrans_db($dbh);
 		my $game = &param('game');
@@ -417,9 +420,8 @@ sub print_tag()
 		{
 		&log_error("applet tag $tagname is not defined",$ENV{'SCRIPT_NAME'});
 		}
-		
-		&disconnect($dbh);
 		}
+	&disconnect($dbh);
 	}
 }
 

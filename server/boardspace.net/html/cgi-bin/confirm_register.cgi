@@ -104,4 +104,5 @@ if( param() )
 	else
 	{  print "<h2>Sorry, registration is temporarily unavailable</h2>\n";
 	}
+  &disconnect($dbh);
 }

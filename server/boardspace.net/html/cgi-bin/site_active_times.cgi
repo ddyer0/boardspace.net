@@ -38,9 +38,13 @@ Header
 sub show_activity
 {
   my $dbh = &connect();
+  if($dbh && (&allow_ip_access($dbh,$ENV{'REMOTE_ADDR'})>=0))
+  {
   my $uid = &param('uid');
   my $ndays = &param('months');
   &show_activity_table($dbh,$uid,$ndays,&timezoneCookie());
+  }
+  &disconnect($dbh);
 }
 
 

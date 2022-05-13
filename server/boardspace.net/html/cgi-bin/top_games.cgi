@@ -15,7 +15,7 @@ require "tlib/common.pl";
 require "tlib/top_games.pl";
 
 sub rank_header 
-{	my $t0 = &trans('The games at Boardspace.net');
+{ my $t0 = &trans('The games at Boardspace.net');
   my $main = &trans('MainHeader.gif');
 	print <<Header;
 <html>
@@ -36,7 +36,7 @@ Header
 
 sub show_activity
 { my $dbh = &connect();
-  if($dbh)
+  if($dbh && (&allow_ip_access($dbh,$ENV{'REMOTE_ADDR'})>=0))
   {
   &readtrans_db($dbh);
   print "<center>\n";

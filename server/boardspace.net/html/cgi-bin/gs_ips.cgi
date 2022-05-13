@@ -231,12 +231,12 @@ sub doit()
   }
   else
   {
-  if($dbh)
-  	{
-  	if($password) 
+      if($dbh)
+      {
+  	if($password && !($password eq $'sendmessage_password))
   		{
   		&note_failed_login($dbh,$myaddr,"IP: view '$ENV{'REQUEST_URI'}");
-        &note_failed_login($dbh,$bannercookie,"CK: view '$ENV{'REQUEST_URI'}");
+                &note_failed_login($dbh,$bannercookie,"CK: view '$ENV{'REQUEST_URI'}");
  		}
   	}
   print "<br>password: ";

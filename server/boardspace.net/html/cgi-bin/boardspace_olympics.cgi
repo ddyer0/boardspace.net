@@ -43,6 +43,7 @@ sub doit()
 	&show_ordinal_rankings($dbh,$num,$months,-1);
 	&standard_footer();
 	}
+	&disconnect($dbh);
 }
 
 &doit();

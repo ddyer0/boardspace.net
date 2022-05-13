@@ -188,7 +188,7 @@ sub do_meetup()
   
   my $months = param('months');
   my $dbh = &connect();
-  if($dbh)
+  if($dbh && (&allow_ip_access($dbh,$ENV{'REMOTE_ADDR'})>=0))
   { 
   &readtrans_db($dbh,$language);
       
@@ -201,6 +201,7 @@ sub do_meetup()
   &print_meetup_form($dbh,$player1,$player2,$player1zone,$player2zone,$language);
   &standard_footer();
   }
+  &disconnect($dbh);
 }
  
 #__dend();

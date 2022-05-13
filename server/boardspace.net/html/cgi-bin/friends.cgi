@@ -74,7 +74,7 @@ sub printRow()
 sub show_friends()
 { my ($pname,$months,$klicks) = @_;
 	my $dbh = &connect();
-	if($dbh)
+        if($dbh && (&allow_ip_access($dbh,$ENV{'REMOTE_ADDR'})>=0))
 	{
 	&readtrans_db($dbh);
 	&friend_header($pname,$months,$klicks);
@@ -152,10 +152,10 @@ sub show_friends()
 	print "<p>";
 	print "<br>$wherem;<br>";
 	print &geobutton(730);	# 938 for testing also prints some stuff
+	}
+	}
 	&disconnect($dbh);
 
-	}
-	}
   &standard_footer();
 }
 

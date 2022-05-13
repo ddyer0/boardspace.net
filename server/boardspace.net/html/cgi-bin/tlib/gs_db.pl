@@ -141,6 +141,8 @@ sub datestring()
 # disconnect from the database
 sub disconnect()
 {	my ($dbh) = @_;
+	if($dbh)
+	{
 	my $kk;
 	if($dbh == $'standard_database_connection)
 	{
@@ -173,7 +175,7 @@ sub disconnect()
 	my $itime = int($'single_ip_query_time);
 	my $ltime = $itime*$'long_time_multiplier;
 	my $newtime = "short_time=UNIX_TIMESTAMP()+$itime,long_time=GREATEST(long_time+$ltime,UNIX_TIMESTAMP()+$ltime)";
-	my $qtime = $dbh->quote("excess time=$itime");
+	my $qtime = $dbh->quote("excess time=$itime from $ENV{'SCRIPT_NAME'}");
 	my $da = $dbh->quote(&datestring());
 	
 	if($'single_ip_uid)
@@ -197,7 +199,8 @@ sub disconnect()
 		my $key = $'lastquery{$kk};
         if(($db eq $dbh) && $key) { &logError("query not finished at disconnect:",$key); }
         }
-	$dbh->disconnect();
+	     $dbh->disconnect();
+    }
 }
 
 # return an executed query, ready to be interrogated, or null
@@ -387,7 +390,7 @@ sub allow_ip_access()
    my $ii = $dbh->quote($intip);
    my $bantime = $'bad_login_time*60;
    my $range = "($ii>=min and $ii<=max)";
-   my $query = "SELECT status,uid,if((UNIX_TIMESTAMP(changed)+$bantime)>UNIX_TIMESTAMP(),1,0),min,max,UNIX_TIMESTAMP(),short_time,long_time from ipinfo where $range";
+   my $query = "SELECT status,uid,if((UNIX_TIMESTAMP(changed)+$bantime)>UNIX_TIMESTAMP(),1,0),min,max,UNIX_TIMESTAMP(changed),UNIX_TIMESTAMP(),short_time,long_time from ipinfo where $range";
    my $sth = &query($dbh,$query);
    my $numrows = &numRows($sth);
    my $gooduid = 0;
@@ -396,11 +399,17 @@ sub allow_ip_access()
 
    while ($numrows>0)
    {   $numrows--;
-       my ($st,$uid,$changed,$min,$max,$now,$short_time,$long_time) = &nextArrayRow($sth);
+       my ($st,$uid,$changed,$min,$max,$changedtime,$now,$short_time,$long_time) = &nextArrayRow($sth);
        #print "Ban $st,$uid,$changed ($min - $max)<br>\n";
        if( (($st eq 'autobanned') && $changed) || ($st eq 'banned') )
-       {my $uu = $dbh->quote($uid);
+       {my $dt = $now-$changedtime;
+	#&logSilent("reject","reject $changedtime $now $dt");
+	if($dt>60)
+	{
+	#only make new database entries once per minute to avoid floods
+	my $uu = $dbh->quote($uid);
         &commandQuery($dbh,"update ipinfo SET rejectcount=rejectcount+1 where $uu=uid");
+	}
         $loginok = 0;
        }
        elsif($min eq $max)

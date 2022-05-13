@@ -83,23 +83,21 @@ sub get_link()
 
 sub update_rankings 
 { 		
-	my $myname=param('myname');
-    my $vname = &param('game');
-
-    &bless_parameter_length($myname,20);
-    &bless_parameter_length($vname,20);
-
 
     my $dbh = &connect();              # connect to local mysqld
-	if($dbh)
-	{
+    if($dbh && (&allow_ip_access($dbh,$ENV{'REMOTE_ADDR'})>=0))
+    {
 	&readtrans_db($dbh);
-  
-	if(&allow_ip_access($dbh,$ENV{'REMOTE_ADDR'})>=0)
-	{
+
+	my $myname= &param('myname');
+	my $vname = &param('game');
+
+	&bless_parameter_length($myname,20);
+	&bless_parameter_length($vname,20);
+
 	my $variation = &gamecode_to_gamename($dbh,$vname ? $vname : "Z");
 	my $t = &current_time_string();
-    my $qvar = $dbh->quote($variation);
+	my $qvar = $dbh->quote($variation);
     
 	&rank_header($dbh,$variation,$myname,$vname);
 	
@@ -134,13 +132,11 @@ sub update_rankings
 	print "</tr>";
 	}
 	print "</table>";
-	}
-	&disconnect($dbh);
 	
-	
-  &honeypot();
- 
-}}
+	&honeypot();
+    }
+    &disconnect($dbh);
+}
 
 print header;
 &init();
