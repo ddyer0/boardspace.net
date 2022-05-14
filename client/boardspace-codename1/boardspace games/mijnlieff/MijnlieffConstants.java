@@ -30,7 +30,7 @@ public interface MijnlieffConstants
 	Gameover(GameOverStateDescription,false,false),
 	Confirm(ConfirmStateDescription,true,true),
 	Pass(PassStateDescription,true,true),
-	FirstPlay(FirstPlayDescription,true,true),
+	FirstPlay(FirstPlayDescription,false,false),
 	Play(PlayState,false,false);
 	
 	MijnlieffState(String des,boolean done,boolean digest)
@@ -46,7 +46,8 @@ public interface MijnlieffConstants
 	public String description() { return(description); }
 	public boolean doneState() { return(doneState); }
 	public boolean digestState() { return(digestState); }
-		public boolean Puzzle() { return(this==Puzzle); } public boolean simultaneousTurnsAllowed() { return(false); }
+	public boolean Puzzle() { return(this==Puzzle); } 
+	public boolean simultaneousTurnsAllowed() { return(false); }
 	};
 	
 	

@@ -420,7 +420,6 @@ public abstract class BaseBoard implements Opcodes,Digestable
 			}
 		return(false);
 	}
-	public cell<?> getCorrespondingCell(cell<?>from) { return(from); }
 	public boolean canResign()
 	{
 		return(players_in_game<=2);

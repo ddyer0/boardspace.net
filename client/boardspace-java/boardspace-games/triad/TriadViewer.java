@@ -133,7 +133,7 @@ public class TriadViewer extends CCanvas<TriadCell,TriadBoard> implements TriadC
         // use_grid=reviewer;// use this to turn the grid letters off by default      
         bb = new TriadBoard(info.getString(OnlineConstants.GAMETYPE, Triad_INIT),
         		getStartingColorMap());
-        //useDirectDrawing(); // not tested yet
+        useDirectDrawing(true); 
         doInit(false);
     }
 
@@ -248,11 +248,11 @@ public class TriadViewer extends CCanvas<TriadCell,TriadBoard> implements TriadC
         }
 
         if (gc != null)
-        { 	TriadChip chip = gb.getPlayerChip(player);
+        { 	TriadCell c = gb.getPlayerCell(player);
         	int siz = G.Width(r)*2/3;
         	int cx = G.centerX(r);
         	int cy = G.centerY(r);
-        	chip.drawChip(gc,this,siz,cx,cy,null);
+        	c.drawChip(gc,this,siz,cx,cy,null);
         	if(player==gb.candidate_player)
         	{	tileImages[CANDIDATE_INDEX].drawChip(gc,this,siz,cx,cy,null);
         	}
@@ -453,9 +453,9 @@ public class TriadViewer extends CCanvas<TriadCell,TriadBoard> implements TriadC
        }
        
        GC.setFont(gc,standardBoldFont());
-
-		commonPlayer pl = getPlayerOrTemp(gb.whoseTurn);
-		double messageRotation = pl.messageRotation();
+       int whoseTurn = gb.whoseTurn;
+       commonPlayer pl = getPlayerOrTemp(whoseTurn);
+       double messageRotation = pl.messageRotation();
 
 		if (state != TriadState.PUZZLE_STATE)
         {	// if in any normal "playing" state, there should be a done button
@@ -477,9 +477,10 @@ public class TriadViewer extends CCanvas<TriadCell,TriadBoard> implements TriadC
              standardGameMessage(gc,messageRotation,
             		state==TriadState.GAMEOVER_STATE?gameOverMessage():s.get(state.getDescription()),
             				state!=TriadState.PUZZLE_STATE,
-            				gb.whoseTurn,
+            				whoseTurn,
             				stateRect);
-            DrawChipPool(gc, iconRect, gb.whoseTurn,null,gb);
+             TriadChip cc = gb.getPlayerChip(whoseTurn);
+             cc.drawChip(gc,this,iconRect,null,0.7);
             goalAndProgressMessage(gc,nonDragSelect,s.get(GoalMessage),progressRect, goalRect);
             DrawRepRect(gc,0,Color.black, gb.Digest(),repRect);	
          }
@@ -499,6 +500,8 @@ public class TriadViewer extends CCanvas<TriadCell,TriadBoard> implements TriadC
      public boolean Execute(commonMove mm,replayMode replay)
     {	
         handleExecute(bb,mm,replay);
+        int cellSize = (int)(bb.cellSize()*xscale);
+        startBoardAnimations(replay,bb.animationStack,cellSize,MovementStyle.SequentialFromStart);
 		lastDropped = bb.lastDroppedObject;	// this is for the image adjustment logic
 		if(replay!=replayMode.Replay) { playSounds(mm); }
        return (true);

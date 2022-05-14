@@ -405,7 +405,7 @@ public class ConnectionManager
 	        		do_not_reconnect = true;
 	        		myNetConn.setExitFlag("unexpected: "+cmd);
 	        		state = State.disconnected;
-	        		LogMessage("Unexpected first response: "+item); 
+	        		LogMessage("Unexpected first response: ",item); 
 	        		}
 	        	   else {
 	        		processServerID(msg);
@@ -430,7 +430,11 @@ public class ConnectionManager
     { 
     	messages.addLog(m);
     }
-    
+    public synchronized void LogMessage(String m,Object... m2)
+    { 
+    	messages.addLog(m,m2);
+    }
+
     public String PrintLog()
     {	return messages.getUnseen();
     }
@@ -467,7 +471,7 @@ public class ConnectionManager
 
     }
 
-    
+
     // this must be synchronized because it is used asynchronously by
     // the chat window and the game/lobby loops
     public synchronized boolean sendMessage(String message)
@@ -478,10 +482,10 @@ public class ConnectionManager
         		) 
         	{  
         	if( message.indexOf("trackMouse")<0) 
-        		{ LogMessage("out: " + message);	// don't log messages that are messages, avoid ever growing messages
+        		{ LogMessage("out: " , message);	// don't log messages that are messages, avoid ever growing messages
         		}
         	}
-        	else { LogMessage("out: "+message.substring(0,10)+" ..."); }
+        	else { LogMessage("out: ",message.substring(0,10)+" ..."); }
         if (silent)
         {
             return (true);
@@ -520,7 +524,7 @@ public class ConnectionManager
         if (message != null)
         {	if(message.indexOf("trackMouse")<0)
         	{
-            LogMessage(" in: " + message);
+            LogMessage(" in: ",message);
         	}
         }
         return (message);

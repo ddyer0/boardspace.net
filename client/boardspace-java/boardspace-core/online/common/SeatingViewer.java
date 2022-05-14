@@ -416,13 +416,16 @@ public class SeatingViewer extends exCanvas implements LobbyConstants
 			}
 			String name = (bubbleSelect==null) ? null : User.prettyName(sess.players[i]);
 			if(name==null) { name = s.get(PlayerNumber,playerNumber); } 
-			GC.setRotation(gc, -rotation, xc,yc);
-			boolean bubbleOffset = (i==0) && (bubbleSelect!=null) && (chart==SeatingChart.faceLandscape);
+			
+			boolean bubbleOffset = (i==0) 
+					&& (bubbleSelect!=null) 
+					&& (chart==SeatingChart.faceLandscape);
 			if(bubbleOffset)
 			{	// special hack for 2 player landscape face to face
-				yc += tableSize/8;
+			yc += tableSize/8; 
 			}
-			
+
+			GC.setRotation(gc, -rotation, xc,yc);
 			if(StockArt.SmallO.drawChip(gc,this,bubbleSelect,SeatId.NameSelected,(int)(tableSize*0.8),xc,yc,
 					bubbleSelect==null ? null : name,0.3,1.2)
 					)
@@ -448,7 +451,9 @@ public class SeatingViewer extends exCanvas implements LobbyConstants
 				{
 				int xo1 = xo + (center ? 0 : tableSize/15);
 				int yo1 = yo + (center ? Math.abs(xb/9) : 0);
-				if(bubbleOffset) { yo1+=tableSize/8; }
+				if(bubbleOffset) 
+					{ yo1+=tableSize/8; 
+					}
 				Rectangle r = new Rectangle(xo1,yo1,colorStep*2,colorStep*2);
 				drawColorBox(gc,i,bubbleSelect,map[colorIndex[i]],r);
 

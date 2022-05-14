@@ -29,9 +29,21 @@ public class TriadCell extends chipCell<TriadCell,TriadChip> implements TriadCon
 	public double sensitiveSizeMultiplier() { return(4.0); }
 
 	// constructor a cell not on the board, with a chip.  Used to construct the pool chips
-	public TriadCell(TriadChip cont)
+	public TriadCell(TriadId rack,TriadChip ch)
 	{	super();
-		chip = cont;
+		rackLocation = rack;
 		onBoard=false;
+		addChip(ch);
 	}
+	public int activeAnimationHeight()
+	{	switch(rackLocation())
+		{
+		case BoardLocation:
+		case EmptyBoard: 
+			return super.activeAnimationHeight();
+		default: return(0);
+		}
+	}
+
+
 }

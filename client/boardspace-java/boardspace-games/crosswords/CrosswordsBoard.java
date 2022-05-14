@@ -291,7 +291,7 @@ class CrosswordsBoard extends rectBoard<CrosswordsCell> implements BoardProtocol
 		}
 		if(np==1) { win[maxp] = true; }
 	}
-	private CrosswordsCell rack[][] = null;
+	CrosswordsCell rack[][] = null;
 	private CrosswordsCell mappedRack[][] = null;
 	
 	public CrosswordsCell[] getPlayerRack(int n)
@@ -1544,7 +1544,8 @@ class CrosswordsBoard extends rectBoard<CrosswordsCell> implements BoardProtocol
         	for(CrosswordsCell c : rack[whoseTurn])
         	{	CrosswordsChip top = c.topChip();
         		if(top!=null)
-        			{ drawPile.addChip(top); c.removeTop(); 
+        			{ drawPile.addChip(top);
+        			  c.removeTop(); 
         			  if(replay!=replayMode.Replay)
         			  {
         				  animationStack.push(c);
@@ -1565,7 +1566,7 @@ class CrosswordsBoard extends rectBoard<CrosswordsCell> implements BoardProtocol
             		{
             		CrosswordsCell c = ra[i];        		   
             		c.addChip(drawPile.removeTop());
-            		if(replay!=replayMode.Replay)
+            		if(replay!=replayMode.Replay && (c!=null))
             		{
             			animationStack.push(drawPile);
             			animationStack.push(c);
@@ -1650,7 +1651,7 @@ class CrosswordsBoard extends rectBoard<CrosswordsCell> implements BoardProtocol
     	}}
     	int direction = dest>=pick ? -1 : 1;
     	
-    	if(replay==replayMode.Single)
+    	if(replay==replayMode.Single && from!=null)
 		{
 			animationStack.push(from);
 			animationStack.push(rcells[dest]);

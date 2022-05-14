@@ -111,7 +111,7 @@ public class EntrapmentViewer extends CCanvas<EntrapmentCell,EntrapmentBoard> im
        
         b = new EntrapmentBoard(info.getString(OnlineConstants.GAMETYPE, Entrapment_INIT),
         		randomKey,getStartingColorMap(),EntrapmentBoard.REVISION);
-        useDirectDrawing();
+        useDirectDrawing(true);
         doInit(false);
         reverseOption = myFrame.addOption(s.get(ReverseView),b.reverseY(),deferredEvents);
 
@@ -134,7 +134,7 @@ public class EntrapmentViewer extends CCanvas<EntrapmentCell,EntrapmentBoard> im
     {	commonPlayer pl = getPlayerOrTemp(player);
     	Rectangle barrier = barrierRects[player];
     	Rectangle roamer = roamerRects[player];
-    	int chipW = unitsize*4;
+    	int chipW = unitsize*3;
     	int doneW = unitsize*4;
     	Rectangle box = pl.createRectangularPictureGroup(x+chipW,y,unitsize);
     	Rectangle chip = chipRects[player];
@@ -144,7 +144,7 @@ public class EntrapmentViewer extends CCanvas<EntrapmentCell,EntrapmentBoard> im
     	
     	G.SetRect(barrier,x+doneW+unitsize/3, G.Bottom(box),G.Width(box)-doneW-unitsize/3,unitsize*3);
     	G.union(box, done,chip,barrier);
-    	G.SetRect(roamer, G.Right(box), y, unitsize*3,G.Height(box));
+    	G.SetRect(roamer, G.Right(box), y, unitsize*2,G.Height(box));
     	G.union(box, roamer);
     	pl.displayRotation = rotation;
     	return(box);
@@ -276,7 +276,8 @@ public class EntrapmentViewer extends CCanvas<EntrapmentCell,EntrapmentBoard> im
         if(canHit && canDrop) 
         	{ StockArt.SmallO.drawChip(gc,this,w*3,xp,yp,null); 
         	}
-        thisCell.drawStack(gc,this,pt,G.Width(r),xp,yp,0,-0.4,null);
+        int wp = G.Width(r);
+        thisCell.drawStack(gc,this,pt,(int)(wp*1.3),xp+wp/8,yp,0,-0.6,null);
 
         if((highlight!=null) && (highlight.hitObject==thisCell))
         {	highlight.arrow = canDrop ? StockArt.DownArrow : StockArt.UpArrow;
@@ -564,8 +565,8 @@ public class EntrapmentViewer extends CCanvas<EntrapmentCell,EntrapmentBoard> im
         	}
             DrawBarrierPool(gc, i,barrierRects[i], gb.whoseTurn,ot);
             DrawRoamerPool(gc, i,roamerRects[i], gb.whoseTurn,ot);
- 
-        	EntrapmentChip.getRoamer(gb.getColorMap()[i]).drawChip(gc,this,chipRects[i],null);
+            Rectangle cr = chipRects[i];
+        	EntrapmentChip.getRoamer(gb.getColorMap()[i]).drawChip(gc,this,cr,null,1);
         	pl.setRotatedContext(gc, highlight,true);
         }
         commonPlayer pl = getPlayerOrTemp(gb.whoseTurn);

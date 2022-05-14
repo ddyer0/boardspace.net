@@ -93,7 +93,7 @@ public class TzaarViewer extends CCanvas<TzaarCell,TzaarBoard> implements TzaarC
   
         b = new TzaarBoard(randomKey,info.getString(OnlineConstants.GAMETYPE, Tzaar_Standard_Init),
         		getStartingColorMap());
-        //useDirectDrawing(); // not tested yet
+        useDirectDrawing(true); // not tested yet
         doInit(false);
         reverseOption = myFrame.addOption(s.get(ReverseView),b.reverseY(),deferredEvents);
         if(G.debug()) {
@@ -115,7 +115,7 @@ public class TzaarViewer extends CCanvas<TzaarCell,TzaarBoard> implements TzaarC
     	}
    }
 
-
+    boolean horizontal = false;
     public Rectangle createPlayerGroup(int player,int x,int y,double rotation,int unitsize)
     {	commonPlayer pl = getPlayerOrTemp(player);
     	Rectangle done = doneRects[player];
@@ -124,15 +124,16 @@ public class TzaarViewer extends CCanvas<TzaarCell,TzaarBoard> implements TzaarC
     	Rectangle chip = playerChip[player];
     	int chipW = unitsize*2;
     	int C2 = unitsize/2;
-    	int scoreW = G.debug() ? unitsize*2 : 0;
-    	int rackW = chipW*3;
+    	int scoreW = 0;//G.debug() ? unitsize*2 : 0;
+    	int rackW = chipW*2;
     	int doneW = plannedSeating() ? unitsize*4 : 0;
-    	int rackH = Math.max(doneW/2, unitsize*6);
+    	int rackH = Math.max(doneW/2, unitsize*4);
     	G.SetRect(rack, x,y,rackW,rackH);
     	G.SetRect(chip, x+rackW,y,chipW,chipW);
     	Rectangle box = pl.createRectangularPictureGroup(x+chipW+rackW,y,unitsize);
     	int boxBottom = G.Bottom(box);
-    	G.SetRect(done,x+rackW+C2,boxBottom+C2,doneW,doneW/2);
+    	G.SetRect(done,horizontal ? G.Right(box)+unitsize/4:x+rackW+C2,
+    				horizontal ? y+unitsize/2 : boxBottom+C2,doneW,doneW/2);
     	G.SetRect(score, G.Right(box), y, scoreW,scoreW);
     	G.union(box, done,score,rack, chip);
     	pl.displayRotation = rotation;
@@ -140,7 +141,12 @@ public class TzaarViewer extends CCanvas<TzaarCell,TzaarBoard> implements TzaarC
     }
     
     public void setLocalBounds(int x, int y, int width, int height)
+    {	
+    	setLocalBoundsV(x,y,width,height,new double[] {1,-1});
+    }
+    public double setLocalBoundsA(int x, int y, int width, int height,double aspect)
     {	G.SetRect(fullRect, x, y, width, height);
+    	horizontal = aspect<0;
     	GameLayoutManager layout = selectedLayout;
     	int nPlayers = nPlayers();
        	int chatHeight = selectChatHeight(height);
@@ -210,8 +216,8 @@ public class TzaarViewer extends CCanvas<TzaarCell,TzaarBoard> implements TzaarC
     	G.SetRect(goalRect, boardX, boardBottom,boardW,stateH);       
         setProgressRect(progressRect,goalRect);
         positionTheChat(chatRect,Color.white,Color.white);
- 	
-    }
+        return boardW*boardH;
+    }	
 
 
 	

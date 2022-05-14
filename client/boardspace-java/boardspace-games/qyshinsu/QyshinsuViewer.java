@@ -92,7 +92,7 @@ public class QyshinsuViewer extends CCanvas<QyshinsuCell,QyshinsuBoard> implemen
         MouseDotColors[0]= Color.white;
 
         b = new QyshinsuBoard(info.getString(OnlineConstants.GAMETYPE, "Qyshinsu"),getStartingColorMap());
-        //useDirectDrawing(); // not tested yet
+        useDirectDrawing(true); // not tested yet
         doInit(false);
        
      }
@@ -112,21 +112,24 @@ public class QyshinsuViewer extends CCanvas<QyshinsuCell,QyshinsuBoard> implemen
     	}
     }
 
-    
+    boolean horizontal = false;
     public Rectangle createPlayerGroup(int player,int x,int y,double rotation,int unitsize)
     {	commonPlayer pl = getPlayerOrTemp(player);
-    	int chipW = unitsize*18;
-    	int chipH = unitsize*3;
-    	Rectangle box = pl.createRectangularPictureGroup(x+chipW+unitsize,y,unitsize*3/2);
     	Rectangle chip = chipRects[player];
     	Rectangle done = doneRects[player];
-    	G.SetRect(chip, x, G.Top(box)+unitsize, chipW,chipH);
-    	G.SetRect(done, G.Right(box)+unitsize/2, y+unitsize/2, unitsize*4,plannedSeating()?unitsize*2:0);
+    	boolean planned = plannedSeating();
+    	int chipW = unitsize*16;
+    	int chipH = unitsize*3;
+    	int doneW = planned ? unitsize * 4 : 0;
+    	Rectangle box = pl.createRectangularPictureGroup(x+(horizontal ? chipW+unitsize : 0),y,unitsize*3/2);
+    	G.SetRect(done, G.Right(box)+unitsize/2, y+unitsize/2, doneW,doneW/2);
+    	G.union(box,done);
+     	G.SetRect(chip, x, horizontal ? G.Top(box)+unitsize : G.Bottom(box)+unitsize, chipW,chipH);
     	pl.displayRotation = rotation;
-    	G.union(box,chip,done);
+    	G.union(box,chip);
     	return(box);
     }
-    double aspects[] = { 0.7,1.4,1.0,};
+    double aspects[] = { -1,1};
     public void setLocalBounds(int x,int y,int w,int h)
     {
     	setLocalBoundsV(x,y,w,h,aspects);
@@ -136,6 +139,7 @@ public class QyshinsuViewer extends CCanvas<QyshinsuCell,QyshinsuBoard> implemen
     	GameLayoutManager layout = selectedLayout;
     	int nPlayers = nPlayers();
        	int chatHeight = selectChatHeight(height);
+       	horizontal = aspect<0;
        	// ground the size of chat and logs in the font, which is already selected
     	// to be appropriate to the window size
     	int fh = standardFontSize();
@@ -153,7 +157,7 @@ public class QyshinsuViewer extends CCanvas<QyshinsuCell,QyshinsuBoard> implemen
     	layout.selectLayout(this, nPlayers, width, height,
     			margin,	
     			0.6,	// 60% of space allocated to the board
-    			aspect,	// aspect ratio for the board
+    			1,	// aspect ratio for the board
     			fh*2,
     			fh*3,	// maximum cell size
     			0.4		// preference for the designated layout, if any

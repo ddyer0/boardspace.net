@@ -398,8 +398,6 @@ public class Game extends commonPanel implements PlayConstants,DeferredEventHand
 
         if (gameState != newstate)
         { 	//System.out.println(my.trueName+": state is "+stateNames[newstate]);
-        	String msg = "Newstate: " + newstate.name;
-        	//G.print(msg);
         	
             if (myNetConn != null)
             {		if(((newstate==ConnectionState.NOTMYTURN)
@@ -407,7 +405,7 @@ public class Game extends commonPanel implements PlayConstants,DeferredEventHand
     						|| (newstate==ConnectionState.SPECTATE)))
     				{ myNetConn.can_reconnect = true; 
     				}
-                myNetConn.LogMessage(msg);
+                myNetConn.LogMessage("Newstate: ",newstate.name);
             }
         }
         gameState = newstate;
@@ -466,6 +464,7 @@ public class Game extends commonPanel implements PlayConstants,DeferredEventHand
     }
 
     int sentMessages = 0;
+
     public boolean sendMessage(String message)
     { //hack to disable communication for a while
         //if(showHints) { return(true); } else
@@ -737,7 +736,7 @@ public class Game extends commonPanel implements PlayConstants,DeferredEventHand
 	        myNetConn = new ConnectionManager(info);
 	        //System.out.println("Cookie for local is "+my.cookie);
 	        info.put(exHashtable.NETCONN,myNetConn);
-	        myNetConn.LogMessage("random seed is " + seedValue);
+	        myNetConn.LogMessage("random seed is " ,seedValue);
 	        }
         my.spectator = info.getBoolean(exHashtable.SPECTATOR,false);
         LaunchUser lu = (LaunchUser)info.get(ConnectionManager.LAUNCHUSER);
@@ -1450,7 +1449,7 @@ public class Game extends commonPanel implements PlayConstants,DeferredEventHand
             {
             	if(deferActionsSwitch)
             	{
-            	myNetConn.LogMessage("defer: "+commandStr+" "+Thread.currentThread());
+            	myNetConn.LogMessage("defer: ",commandStr," ",Thread.currentThread());
             	deferredActions.push(fullMsg);	
             	}
             	else
@@ -1463,7 +1462,7 @@ public class Game extends commonPanel implements PlayConstants,DeferredEventHand
            		boolean wait = player.robotWait()!=null;
                 boolean ismyrobot = wait||(player.robotPlayer != null);
                 String rest = G.restof(myST);
-                myNetConn.LogMessage("echo: "+wait+" "+ismyrobot+" "+rest+" "+player);
+                myNetConn.LogMessage("echo: ",wait," ",ismyrobot," ",rest," ",player);
                 boolean parsed = wait || v.ParseMessage(rest, player.boardIndex);
                 // here we've received a move from another player, presumable one that
                 // he recorded, so we don't need to record it, only remember the current state.
@@ -1481,7 +1480,7 @@ public class Game extends commonPanel implements PlayConstants,DeferredEventHand
                 	//
                 	doSendState();
                     player.UpdateLastInputTime();
-                    myNetConn.LogMessage("stop robot wait "+player+" "+Thread.currentThread());
+                    myNetConn.LogMessage("stop robot wait ",player," ",Thread.currentThread());
                     player.setRobotWait(null,"Stop waiting (done)");
                     SetWhoseTurn();
 
@@ -1785,7 +1784,7 @@ public class Game extends commonPanel implements PlayConstants,DeferredEventHand
     			&& (p.robotRunner==null))
     		{	Bot bot = (robot==null) ? v.salvageRobot() : robot;
     		    //G.print("Starting robot "+p+" for "+my);
-    			myNetConn.LogMessage("stop robot wait (restart)"+p+" "+Thread.currentThread());
+    			myNetConn.LogMessage("stop robot wait (restart)",p," ",Thread.currentThread());
     			//G.print("Start robot "+p+" run by "+my+" "+Thread.currentThread());
     			commonPlayer started = v.startRobot(p,my,bot);
 	        	if(started!=null) { started.runRobot(true); }
@@ -1849,7 +1848,7 @@ public class Game extends commonPanel implements PlayConstants,DeferredEventHand
         	Bot weak = v.salvageRobot();
         	theChat.postMessage(ChatInterface.LOBBYCHANNEL, KEYWORD_CHAT,
                 s.get("#1 is taking over for #2", weak.name, p.trueName));
-            myNetConn.LogMessage("stop robot wait (takeover) "+p+" "+Thread.currentThread());
+            myNetConn.LogMessage("stop robot wait (takeover) ",p," ",Thread.currentThread());
             p.setRobotWait(null,"robot takeover");
             //
             // don't set robotGame here, as this isn't really a robot game, just a takeover.
@@ -2945,8 +2944,110 @@ public class Game extends commonPanel implements PlayConstants,DeferredEventHand
             }
         }
     }
+    private void appendNotes(StringBuilder urlStr)
+    {
+        //add fraud detection hacks
+    	int focus = focusPercent();
+
+        if (focus > 25)
+        {
+            G.append(urlStr , "&focus=" , focus);
+        }
+
+       if (robot==null)
+        {
+            if (my.sameIP(playerConnections))
+            {
+               G.append( urlStr , "&samepublicip=1");
+            }
+
+            if (my.sameHost(playerConnections))
+            {
+                G.append(urlStr , "&samelocalip=1");
+            }
+
+            if (my.sameClock(playerConnections))
+            {
+                G.append(urlStr ,"&sameclock=1");
+            }
+        }
+        String fn = fileNameString();
+        G.append(urlStr ,"&fname=" , fn,"&xx=xx");	// dummy at the end to avoid "gord's problem"
+
+    }
     // get the scoring string for a 2 player game
     private String getUrlStr()
+    {//u1=2&s1=0&t1=1&de=-218389066&dm=0&game=PT&u2=20&s2=1&t2=0&de=-218389066&dm=0&game=PT&key=159.4.159.157&session=1&sock=2255&mode=&samepublicip=1&samelocalip=1&fname=PT-ddyer-spec-2008-11-26-0723
+        int realPCtr = 1;
+        int digest = (int)v.Digest();		// digest is int for downstream use
+        int mid = (int)midDigest;
+        boolean allwin = true;
+        String gametype = gameTypeString;
+        String mode = modeString();
+        String tm = tournamentMode ? "&tournament=1" : "";
+        StringBuilder urlStr = new StringBuilder();
+        G.append(urlStr,
+        		"&de=" , digest , "&dm=" , mid , "&game=" , gametype 
+        				,   (masterMode ? "&mm=true" : "")) ;
+ 
+        for (commonPlayer p = commonPlayer.firstPlayer(playerConnections); p != null;
+                p = commonPlayer.nextPlayer(playerConnections, p))
+        {
+            String name = p.trueName;
+            String uid = p.uid;
+
+            if (uid == null)
+            {
+                uid = "";
+            }
+
+            if (name != null)
+            {	boolean wp = v.WinForPlayer(p);
+                String scor = (wp ? "=1" : "=0");
+                allwin &= wp;
+                G.append(urlStr,
+                		"&u" , realPCtr , "=" , uid , "&s" , realPCtr,
+                		scor );
+                if(follow_state_warning>1) 
+                {	G.append(urlStr,"&fsw=",follow_state_warning);               
+                }
+                
+                if(p.focuschanged > 10)
+                {
+                	G.append(urlStr,"&fch" , realPCtr , "=" , p.focuschanged);
+                }
+                if(unrankedMode) 
+                {
+                	G.append(urlStr,"&nr",realPCtr,"=true") ;
+                }
+                G.append(urlStr,"&t" ,realPCtr , "=" , ((int) (p.elapsedTime / 1000)));
+                
+                realPCtr++;
+            }
+        }
+
+        G.append(urlStr,"&key=" , myNetConn.sessionKey ,
+        		"&session=",sessionNum ,
+        		"&sock=" , sharedInfo.getInt(OnlineConstants.LOBBYPORT) , 
+        		"&mode=" ,mode , tm);
+
+        appendNotes(urlStr);
+        
+        G.Assert(!allwin,"all players won! game %s",fileNameString());
+        String str = urlStr.toString();
+        /*
+        String oldStr = getUrlStrOld();
+        if(!str.equals(oldStr))
+        {
+        	sendMessage(NetConn.SEND_NOTE + "mismatch in getUrlStr: \nold "+oldStr+"\nnew "+str);
+        	str = oldStr;
+        }
+        */
+        return (str);
+    }
+    /*
+    // get the scoring string for a 2 player game
+    private String getUrlStrOld()
     {//u1=2&s1=0&t1=1&de=-218389066&dm=0&game=PT&u2=20&s2=1&t2=0&de=-218389066&dm=0&game=PT&key=159.4.159.157&session=1&sock=2255&mode=&samepublicip=1&samelocalip=1&fname=PT-ddyer-spec-2008-11-26-0723
         int realPCtr = 1;
         int digest = (int)v.Digest();		// digest is int for downstream use
@@ -3024,8 +3125,82 @@ public class Game extends commonPanel implements PlayConstants,DeferredEventHand
         G.Assert(!allwin,"all players won! game %s",fileNameString());
         return (urlStr);
     }
+*/
     // get the scoring string for a 4 player game
     private String getUrlStr4()
+    {//u1=2&s1=0&t1=1&de=-218389066&dm=0&game=PT&u2=20&s2=1&t2=0&de=-218389066&dm=0&game=PT&key=159.4.159.157&session=1&sock=2255&mode=&samepublicip=1&samelocalip=1&fname=PT-ddyer-spec-2008-11-26-0723
+         int realPCtr = 1;
+        int digest = (int)v.Digest();
+        int mid = (int)midDigest;
+        String gametype = gameTypeString;
+        String mode = modeString();
+        String tm = tournamentMode ? "&tournament=1" : "";
+        StringBuilder urlStr = new StringBuilder();
+        G.append(urlStr,"&de=",  digest , "&dm=", mid , "&game=" , gametype
+        		+ (masterMode ? "&mm=true" : "") );
+
+        int nPlayers = 0;
+        for (commonPlayer p = commonPlayer.firstPlayer(playerConnections); p != null;
+                p = commonPlayer.nextPlayer(playerConnections, p))
+        {
+            String name = p.trueName;
+            String uid = p.uid;
+            nPlayers++;
+            if (uid == null)
+            {
+                uid = "";
+            }
+
+            if (name != null)
+            {	int wp = v.ScoreForPlayer(p);
+                G.append(urlStr,
+                		"&u" , realPCtr ,
+                		"=" , uid , 
+                		"&s" , realPCtr ,
+                		"=",wp);           
+            }
+              // register the possible follower fraud with the game
+            if(follow_state_warning>1) 
+            {
+            	G.append(urlStr,"&fsw=",follow_state_warning);
+            	
+            }
+            if(p.focuschanged > 10)
+            {
+            	G.append(urlStr,"&fch" , realPCtr , "=" , p.focuschanged);
+            }
+            if(unrankedMode) { G.append(urlStr,"&nr",realPCtr , "=true") ; }
+            G.append(urlStr, "&t" , realPCtr, "=" , ((int) (p.elapsedTime / 1000)));
+            realPCtr++;
+            }
+ 
+        
+        if((nPlayers==1) && v.UsingAutoma())
+        {
+        	Bot bot = Bot.Automa;
+        	G.append(urlStr,"&u" , realPCtr ,"=" , bot.uid , "&s" , realPCtr ,"=" , v.ScoreForAutoma());
+        	if(unrankedMode)
+        	{
+        		G.append(urlStr ,"&nr",realPCtr,"=true");
+        	}
+        }
+        G.append(urlStr,"&key=" , myNetConn.sessionKey , "&session=" , sessionNum,
+        				"&sock=" , sharedInfo.getInt(OnlineConstants.LOBBYPORT) ,"&mode=" , mode , tm);
+        appendNotes(urlStr);
+        String str = urlStr.toString();
+        /*
+        String oldStr = getUrlStr4Old();
+        if(!str.equals(oldStr))
+        {
+        	sendMessage(NetConn.SEND_NOTE + "mismatch in getUrlStr4: \nold "+oldStr+"\nnew "+str);
+        	str = oldStr;
+        }
+        */
+        return (str);
+    }
+    /*
+    // get the scoring string for a 4 player game
+    private String getUrlStr4Old()
     {//u1=2&s1=0&t1=1&de=-218389066&dm=0&game=PT&u2=20&s2=1&t2=0&de=-218389066&dm=0&game=PT&key=159.4.159.157&session=1&sock=2255&mode=&samepublicip=1&samelocalip=1&fname=PT-ddyer-spec-2008-11-26-0723
          int realPCtr = 1;
         int digest = (int)v.Digest();
@@ -3108,7 +3283,7 @@ public class Game extends commonPanel implements PlayConstants,DeferredEventHand
         urlStr += ("&xx=xx");	// dummy at the end to avoid "gord's problem"
         return (urlStr);
     }
-
+*/
     //
     // this ought to be part of the netconn class, but it uses several resources from the game class too.
     //
@@ -4253,7 +4428,7 @@ public class Game extends commonPanel implements PlayConstants,DeferredEventHand
     		}
     		else 
     		{
-    		if(myNetConn!=null) { myNetConn.LogMessage("start robot wait "+p+" "+Thread.currentThread()+" "+str); }
+    		if(myNetConn!=null) { myNetConn.LogMessage("start robot wait ",p," ",Thread.currentThread()," ",str); }
 
        		p.setRobotWait("transmited move","robot player move");
        		String time = "+T "+p.elapsedTime+" " ;

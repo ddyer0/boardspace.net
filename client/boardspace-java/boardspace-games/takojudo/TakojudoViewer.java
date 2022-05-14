@@ -87,7 +87,7 @@ public class TakojudoViewer extends CCanvas<TakojudoCell,TakojudoBoard> implemen
        
         b = new TakojudoBoard(info.getString(OnlineConstants.GAMETYPE, Tacojudo_INIT),
         		randomKey,repeatedPositions,getStartingColorMap());
-        //useDirectDrawing(); // not tested yet
+        useDirectDrawing(true); // not tested yet
         doInit(false);
         reverseOption = myFrame.addOption(s.get(ReverseView),b.reverseY(),deferredEvents);
 
@@ -103,16 +103,17 @@ public class TakojudoViewer extends CCanvas<TakojudoCell,TakojudoBoard> implemen
     	}
 
     }
+    boolean horizontal = false;
     
     public Rectangle createPlayerGroup(int player,int x,int y,double rotation,int unitsize)
     {	commonPlayer pl = getPlayerOrTemp(player);
     	Rectangle chip = chipRects[player];
     	int chipW = unitsize*4;
-    	int doneW = unitsize*6;
+    	int doneW = plannedSeating() ? unitsize*6 : 0;
     	Rectangle done = doneRects[player];
     	G.SetRect(chip, x, y, chipW, chipW);
-    	G.SetRect(done, x, y+chipW, doneW, plannedSeating()?doneW/2:0);
-    	Rectangle box = pl.createRectangularPictureGroup(x+chipW,y,unitsize);
+     	Rectangle box = pl.createRectangularPictureGroup(x+chipW,y,unitsize);
+       	G.SetRect(done, horizontal ? G.Right(box)+unitsize/4 : x, y+(horizontal ? unitsize/2 : chipW), doneW, doneW/2);
     	pl.displayRotation = rotation;
     	G.union(box, chip,done);
     	return(box);
@@ -121,8 +122,13 @@ public class TakojudoViewer extends CCanvas<TakojudoCell,TakojudoBoard> implemen
     public boolean usePerspective() { return(super.getAltChipset()==0); }
     
     public void setLocalBounds(int x, int y, int width, int height)
+    {	
+    	setLocalBoundsV(x,y,width,height,new double[] {1,-1});
+    }
+    public double setLocalBoundsA(int x,int y,int width,int height,double a)
     {	G.SetRect(fullRect, x, y, width, height);
     	GameLayoutManager layout = selectedLayout;
+    	horizontal = a<0;
     	int nPlayers = nPlayers();
        	int chatHeight = selectChatHeight(height);
        	// ground the size of chat and logs in the font, which is already selected
@@ -172,7 +178,7 @@ public class TakojudoViewer extends CCanvas<TakojudoCell,TakojudoBoard> implemen
     	int boardH = (int)(nrows*SQUARESIZE);
     	int extraW = Math.max(0, (mainW-boardW)/2);
     	int extraH = Math.max(0, (mainH-stateH*2-boardH)/2);
-    	int boardX = mainX+extraW+stateH;
+    	int boardX = mainX+extraW;
     	int boardY = mainY+extraH+stateH;
     	int boardBottom = boardY+boardH;
     	//
@@ -194,7 +200,7 @@ public class TakojudoViewer extends CCanvas<TakojudoCell,TakojudoBoard> implemen
     	G.SetRect(goalRect, boardX, boardBottom,boardW,stateH);       
         setProgressRect(progressRect,goalRect);
         positionTheChat(chatRect,Color.white,Color.white);
- 	
+        return boardW*boardH;
     }
 	
     private void DrawReverseMarker(Graphics gc, Rectangle r,HitPoint highlight)

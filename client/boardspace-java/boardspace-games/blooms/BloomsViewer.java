@@ -145,7 +145,7 @@ public class BloomsViewer extends CCanvas<BloomsCell,BloomsBoard> implements Blo
         // later, some variant is created, or the game code base is re purposed as the basis
         // for another game.
         bb = new BloomsBoard(type,players_in_game,randomKey,getStartingColorMap(),BloomsBoard.REVISION);
-        useDirectDrawing();
+        useDirectDrawing(true);
         doInit(false);
     }
 

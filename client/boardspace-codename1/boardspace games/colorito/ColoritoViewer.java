@@ -101,7 +101,7 @@ public class ColoritoViewer extends CCanvas<ColoritoCell,ColoritoBoard>	implemen
        
         b = new ColoritoBoard(info.getString(OnlineConstants.GAMETYPE, Variation.Colorito_10.name),randomKey,
         		players_in_game,repeatedPositions,getStartingColorMap());
-        useDirectDrawing();
+        useDirectDrawing(true);
         doInit(false);
         reverseOption = myFrame.addOption(s.get(ReverseView),b.reverseY(),deferredEvents);
         
@@ -346,7 +346,7 @@ public class ColoritoViewer extends CCanvas<ColoritoCell,ColoritoBoard>	implemen
     //
     public void redrawBoard(Graphics gc, HitPoint highlight)
     {  ColoritoBoard gb = disB(gc);
-       
+      int whoseTurn = gb.whoseTurn;
       boolean ourTurn = OurMove();
       boolean moving = hasMovingObject(highlight);
       HitPoint ot = ourTurn ? highlight : null;	// hit if our turn
@@ -363,7 +363,7 @@ public class ColoritoViewer extends CCanvas<ColoritoCell,ColoritoBoard>	implemen
         {	commonPlayer pl = getPlayerOrTemp(i);
         	pl.setRotatedContext(gc, highlight,false);
             DrawCommonChipPool(gc, gb,i,chipRects[i]);
-            if(planned && (i==gb.whoseTurn))
+            if(planned && (i==whoseTurn))
             {
             	handleDoneButton(gc,doneRects[i],(gb.DoneState() ? select : null), 
     					HighlightColor, rackBackGroundColor);	
@@ -371,7 +371,7 @@ public class ColoritoViewer extends CCanvas<ColoritoCell,ColoritoBoard>	implemen
             pl.setRotatedContext(gc, highlight,true);
         }
         
-      commonPlayer pl = getPlayerOrTemp(gb.whoseTurn);
+      commonPlayer pl = getPlayerOrTemp(whoseTurn);
       double messageRotation = pl.messageRotation();
 		 
         GC.setFont(gc,standardBoldFont());
@@ -391,11 +391,11 @@ public class ColoritoViewer extends CCanvas<ColoritoCell,ColoritoBoard>	implemen
             			?gameOverMessage()
             			:s.get(vstate.getDescription()),
             				vstate!=ColoritoState.Puzzle,
-            				gb.whoseTurn,
+            				whoseTurn,
             				stateRect);
-        DrawCommonChipPool(gc, gb,gb.whoseTurn,iconRect);
+        DrawCommonChipPool(gc, gb,whoseTurn,iconRect);
         goalAndProgressMessage(gc,ourSelect,Color.black,s.get(VictoryCondition),progressRect, goalRect);
-        DrawRepRect(gc,messageRotation,Color.black,b.Digest(),repRect);
+        DrawRepRect(gc,messageRotation,Color.black,gb.Digest(),repRect);
         drawAuxControls(gc,ourSelect);
         drawVcrGroup(ourSelect, gc);
 

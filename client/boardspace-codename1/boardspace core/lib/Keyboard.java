@@ -42,25 +42,64 @@ public class Keyboard implements Config
 	CalculatorButton[] produceLayout(boolean up)
 	{	CalculatorButtonStack buttons = new CalculatorButtonStack();
 		double rowStart[] = {0.08,0.08,0.09,0.10,0.11};
-		double row1Y = includeDisplay ?0.33 :  0.18 ;
-		double buttonw = 0.062;
-		double buttonh = buttonw*(includeDisplay ? 2.0: 2.5);
-		double buttonSpace = 0.00;
+		double row1Y = narrow 
+						? includeDisplay ?0.25 :  0.18
+						: includeDisplay ?0.33 :  0.18 ;
+		double buttonw = narrow ? 0.082 : 0.062;
+		double scale = narrow ? (includeDisplay ? 1.77 : 1.9)
+							: (includeDisplay ? 2.0: 2.5);
+		double buttonh = buttonw*scale;
 		double rowSpace = 0.00;
 		
 	    String keytopsDown[][] = 
-	    	{{"`","1","2","3","4","5","6","7","8","9","0","-","+","del"},
-	    	 {"Tab","q","w","e","r","t","y","u","i","o","p","[","]","\\"},
+	    	{{"`","1","2","3","4","5","6","7","8","9","0","-","+","Ndel"},
+	    	 {"Ntab","q","w","e","r","t","y","u","i","o","p","[","]","\\"},
 	    	 {"Caps","a","s","d","f","g","h","j","k","l",";","'","Enter"},
 	    	 {"Shift","z","x","c","v","b","n","m",",",".","/","\u2190","\u2192"  },
-	    	 {"Ctrl","Bar","\u25bd"  }};
+	    	 {"Ctrl",CalculatorButton.id.Nspacebar.name(),CalculatorButton.id.CloseKeyboard.name()  }};
 	    String keytopsUp[][] = 
+	    	{{"~","!","@","#","$","%","^","&","*","(",")","_","+","Ndel"},
+	    	 {"Ntab","Q","W","E","R","T","Y","U","I","O","P","{","}","|"},
+	    	 {"Caps","A","S","D","F","G","H","J","K","L",":","\"","Enter"},
+	    	 {"Shift","Z","X","C","V","B","N","M","<",">","?","\u2190","\u2192" },
+	    	 {"Ctrl",CalculatorButton.id.Nspacebar.name(),CalculatorButton.id.CloseKeyboard.name()}};
+	    
+	    String keytopsDown_Narrow[][] = 
+	    	{{"1","2","3","4","5","6","7","8","9","0","Ndel"},		
+	    	 {"Ntab","q","w","e","r","t","y","u","i","o","p"},
+	    	 {"Caps","a","s","d","f","g","h","j","k","l"}, // 
+	    	 {"Shift","z","x","c","v","b","n","m",",","."},	
+	    	 {"Ctrl",CalculatorButton.id.NSymbol.name(),CalculatorButton.id.NNspacebar.name(),"Enter",CalculatorButton.id.NarrowCloseKeyboard.name()  }};
+
+	    String keytopsUp_Narrow[][] = 
+	    	{{"1","2","3","4","5","6","7","8","9","0","Ndel"},				
+	    	 {"Ntab","Q","W","E","R","T","Y","U","I","O","P"},
+	    	 {"Caps","A","S","D","F","G","H","J","K","L"}, 
+	    	 {"Shift","Z","X","C","V","B","N","M", ",",".",},	
+	    	 {"Ctrl",CalculatorButton.id.NSymbol.name(),CalculatorButton.id.NNspacebar.name(),"Enter",CalculatorButton.id.NarrowCloseKeyboard.name()  }};
+	    
+	    String keytopsSymbol_Narrow[][] =
+	    	{{"~","|",  "+",  "*",   "#",  "$", "{",  "}","Ndel"},
+	    	 { "`",  "=",  "/",  "\\", "<",  ">",  "[",  "]" },
+	    	 {"!",  "@",  "%",  "^",  "&",  "*",  "(",  ")", "Nleft","Nright"},
+	    	 {"-",  "_",  "'",  "`",  ":",  ";",  ",",  "?",  },	    		
+	    	 {CalculatorButton.id.NAlpha.name(),
+	          CalculatorButton.id.NNspacebar.name(),
+	          "Enter",
+	          CalculatorButton.id.NarrowCloseKeyboard.name()},		
+	    	}
+	    		
+	    		;
+/*
 	    	{{"~","!","@","#","$","%","^","&","*","(",")","_","+","del"},
 	    	 {"Tab","Q","W","E","R","T","Y","U","I","O","P","{","}","|"},
 	    	 {"Caps","A","S","D","F","G","H","J","K","L",":","\"","Enter"},
 	    	 {"Shift","Z","X","C","V","B","N","M","<",">","?","\u2190","\u2192" },
 	    	 {"Ctrl","Bar","\u25bd"}};
-	    String keytops[][] = up ? keytopsUp : keytopsDown;
+*/
+	    String keytops[][] = narrow 
+	    						? (symbol ? keytopsSymbol_Narrow : (up ? keytopsUp_Narrow : keytopsDown_Narrow))
+	    						: up ? keytopsUp : keytopsDown;
 	    for(int row=0;row<keytops.length;row++)
 	    {	double rowx = rowStart[row];
 	    	String rowChars[] = keytops[row];
@@ -69,24 +108,26 @@ public class Keyboard implements Config
 	    	{
 	    		String top = rowChars[col];
 	    		CalculatorButton.id id = CalculatorButton.id.find(top);
-	    		if(top.length()==1)
-	    		{	if(id==CalculatorButton.id.Nleft) { rowx+=0.04; rowy+= 0.03; }
-	    			if(id==CalculatorButton.id.NcloseKeyboard) { rowx += 0.13; rowy+= 0.05; }
-	    			buttons.push(new CalculatorButton(id,Keytop,rowx,rowy,buttonw));
-	    			rowx += buttonw+buttonSpace;
-	    		}
-	    		else if("Bar".equals(top))
-	    		{	// special logic for the space bar
-	    			double sp = buttonw*8.85;
+	    		G.Assert(id!=null,"not found: %s",top);
+	    		double dx = id.dx*buttonw;
+	    		double dy = id.dy*buttonw;
+	    		//double dh = id.dh;
+	    		double dw = id.dw;
+	    		rowx += dx;
+	    		rowy += dy;
+	    		if(id.ival==' ') {
 	    			buttons.push(new CalculatorButton(id,KeytopLeft,KeytopCenter,KeytopRight,
-	    					rowx,rowy,sp,buttonh));
-	    			rowx += sp+0.03;
+	    					rowx,rowy,buttonw*dw,buttonh));
 	    		}
-	    		else {
-	    			rowx += buttonw/3;
-	    			buttons.push(new CalculatorButton(id,KeytopW,rowx,rowy,buttonw));
-	    			rowx += buttonw+buttonw/4+buttonSpace;
+	    		else if(dw<1.5)
+	    		{
+	    			buttons.push(new CalculatorButton(id,Keytop,rowx,rowy,buttonw));
 	    		}
+	    		else 
+	    		{ buttons.push(new CalculatorButton(id,KeytopW,rowx+buttonw/2,rowy,buttonw)); 
+	    		  rowx -= buttonw/4;
+	    		}
+	    		rowx += buttonw*dw + (dy==0 ? buttonw*dx : 0);
 	    	}
 	    }
 	    return(buttons.toArray());
@@ -113,8 +154,9 @@ public class Keyboard implements Config
 	public boolean shift = false;
 	public boolean control = false;
 	public boolean shiftLock = false;
+	public boolean symbol = false;
 	public boolean closed = false;
-	
+	public boolean narrow = false;
 	public static String formatDisplay(String n)
 	{	int len = n.length();
 		if(len<=3) { return(n); }
@@ -128,14 +170,16 @@ public class Keyboard implements Config
 		Rectangle parentBounds = showOn.getBounds();
 		FontMetrics fm = G.getFontMetrics(showOn.largeBoldFont());
 		int lineH = fm.getHeight();
+		int feature = G.minimumFeatureSize();
 		int newW = G.Width(parentBounds);
-		int newH = Math.min(20*lineH, Math.min(G.Height(parentBounds),Math.max(lineH*12,newW/2)));
+		int newH = Math.min(20*lineH, Math.min(G.Height(parentBounds),Math.max(lineH*15,newW/2)));
+		narrow = newW<feature*20;
 		int newY;
 		int newX = G.Left(parentBounds);
 		newW = Math.min((int)(newH*2.5), newW);
 		if(dis!=null)
 		{
-			newH = (int)(newW*0.4);
+			newH = (int)(newW*(narrow?0.55:0.4));
 			Rectangle dr = dis.getBounds();
 			newY = G.Bottom(dr);
 			if(newY>G.centerY(parentBounds) && newY+newH>G.Bottom(parentBounds))
@@ -157,7 +201,7 @@ public class Keyboard implements Config
 		  dis = new TextContainer(CalculatorButton.id.Display);
 		  dis.singleLine = true;
 		  dis.setEditable(showOn,true);
-		  newH = (int)(newW*0.5);
+		  newH = (int)(newW*(narrow?0.55:0.5));
 		  newY = G.centerY(parentBounds)-newH/2;
 		  if(targetDisplay!=null) 
 		  	{ String msg = targetDisplay.getText();
@@ -214,10 +258,7 @@ public class Keyboard implements Config
 			if(showOn!=null && showOn.doSound()) { SoundManager.playASoundClip(clickSound,100); }
 			CalculatorButton.id bcode = (CalculatorButton.id)hp.hitCode;
 			display.setFocus(true);
-			if((bcode.ival>=0) && (bcode.ival<=9)) 
-				{ display.append((char)(bcode.ival+'0')); 
-				}
-			else if((bcode.ival>=' ') && (bcode.ival<0xff)) 
+			if((bcode.ival>=' ') && (bcode.ival<0xff)) 
 				{
 				char ch = (char)(bcode.ival);
 				if(control)
@@ -255,7 +296,11 @@ public class Keyboard implements Config
 			else {
 				switch(bcode)
 				{
-				case NcloseKeyboard:
+				case Ntab: 
+					display.insert('\t');
+					break;
+				case CloseKeyboard:
+				case NarrowCloseKeyboard:
 					setClosed();
 					break;
 				case Nenter:
@@ -268,6 +313,13 @@ public class Keyboard implements Config
 						{ closed |= display.doSend();
 						}
 					break;
+				case NAlpha:
+					symbol = false;
+					shift = false;
+					break;
+				case NSymbol:
+					symbol = !symbol;
+					break;
 				case Nshift:
 					shift = !shift;
 					break;
@@ -278,7 +330,7 @@ public class Keyboard implements Config
 					shiftLock = !shiftLock;
 					shift = false;
 					break;
-				case Back: 
+				case Ndel:
 					display.doDel(false);
 					break;
 				case Clear: 
@@ -297,7 +349,7 @@ public class Keyboard implements Config
 				case Nright:
 					display.doForward();
 					break;
-				default: G.print("hit unknown button %s",bcode);
+				default: G.print("hit unknown button ",bcode);
 				
 				}
 			}
@@ -334,6 +386,9 @@ public class Keyboard implements Config
     	{	
     		switch(button.value)
     		{
+    		case NSymbol:
+    			button.textColor = symbol ? Color.blue : Color.black;
+    			break;
     		case Ncontrol:
     			button.textColor = control ? Color.blue : Color.black;
     			break;
@@ -354,7 +409,7 @@ public class Keyboard implements Config
     	display.setBounds(left+(int)(0.1*w),
     					  top+(int)(0.1*h),
     					  (int)(0.8*w),
-    					  Math.min((int)(0.15*h),Math.max(fontH*2, (int)(0.1*h))));
+    					  Math.min((int)((narrow?0.1:0.15)*h),Math.max(fontH*2, (int)((narrow?0.07:0.1)*h))));
     	display.setVisible(true);
     	display.redrawBoard(gc,highlight);
     	}

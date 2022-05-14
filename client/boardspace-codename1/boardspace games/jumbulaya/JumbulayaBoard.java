@@ -1597,7 +1597,7 @@ class JumbulayaBoard extends squareBoard<JumbulayaCell> implements BoardProtocol
     	}}
     	int direction = dest>=pick ? -1 : 1;
     	
-    	if(replay==replayMode.Single)
+    	if(replay==replayMode.Single && from!=null)
 		{
 			animationStack.push(from);
 			animationStack.push(rcells[dest]);

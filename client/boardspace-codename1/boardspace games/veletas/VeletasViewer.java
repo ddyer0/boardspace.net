@@ -97,7 +97,7 @@ public class VeletasViewer extends CCanvas<VeletasCell,VeletasBoard> implements 
         b = new VeletasBoard(info.getString(OnlineConstants.GAMETYPE, Variation.Veletas_10.name),
         		randomKey,players_in_game,getStartingColorMap(),VeletasBoard.REVISION);
         doInit(false);
-    	useDirectDrawing();
+    	useDirectDrawing(true);
         reverseOption = myFrame.addOption(s.get(ReverseView),b.reverseY(),deferredEvents);
         offerDrawAction = myFrame.addAction(s.get(OFFERDRAW),deferredEvents);     
         

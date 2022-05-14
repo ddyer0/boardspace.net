@@ -181,6 +181,7 @@ public class KulamiViewer extends CCanvas<KulamiCell,KulamiBoard> implements Kul
         // later, some variant is created, or the game code base is re purposed as the basis
         // for another game.
         bb = new KulamiBoard(type,players_in_game,randomKey,getStartingColorMap(),KulamiBoard.REVISION);
+        useDirectDrawing(true); // not tested yet
         doInit(false);
         adjustPlayers(players_in_game);
     }
@@ -238,7 +239,7 @@ public class KulamiViewer extends CCanvas<KulamiCell,KulamiBoard> implements Kul
     	int fh = standardFontSize();
     	int minLogW = fh*15;	
        	int minChatW = fh*40;	
-        int minLogH = fh*10;	
+        int minLogH = fh*14;	
         int margin = fh/2;
         int buttonW = fh*8;
         int nrows = bb.nrows;
@@ -302,12 +303,14 @@ public class KulamiViewer extends CCanvas<KulamiCell,KulamiBoard> implements Kul
     public Rectangle createPlayerGroup(int player,int x,int y,double rotation,int unitsize)
     {	commonPlayer pl = getPlayerOrTemp(player);
     	Rectangle chip = chipRect[player];
+    	int chipW = 2*unitsize;
+    	int doneW = plannedSeating()?unitsize*7/4:0;
     	Rectangle scoreRect = scoreRects[player];
     	Rectangle done = doneRects[player];
-    	G.SetRect(chip,	x,	y,	3*unitsize,	3*unitsize);
-    	Rectangle box = pl.createRectangularPictureGroup(x+3*unitsize,y,2*unitsize/3);
+    	G.SetRect(chip,	x,	y,	chipW, chipW);
+    	Rectangle box = pl.createRectangularPictureGroup(x+chipW,y,2*unitsize/3);
     	G.SetRect(scoreRect,x+unitsize*4,y+unitsize*5/2,unitsize*3/2,unitsize/2);
-    	G.SetRect(done, G.Right(scoreRect)+unitsize/4, G.Bottom(pl.picRect)+unitsize/4, plannedSeating()?unitsize*3:0, unitsize+unitsize/2);
+    	G.SetRect(done, x, G.Bottom(box), doneW, doneW/2);
     	G.union(box, chip,scoreRect,done);
    
     	pl.displayRotation = rotation;

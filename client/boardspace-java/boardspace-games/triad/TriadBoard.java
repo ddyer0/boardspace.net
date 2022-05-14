@@ -39,6 +39,7 @@ class TriadBoard extends hexBoard<TriadCell> implements BoardProtocol,TriadConst
 {	
 	private TriadState unresign;
  	private TriadState board_state;
+ 	CellStack animationStack = new CellStack();
 	public TriadState getState() {return(board_state); }
 	public void setState(TriadState st) 
 	{ 	unresign = (st==TriadState.RESIGN_STATE)?board_state:null;
@@ -54,9 +55,15 @@ class TriadBoard extends hexBoard<TriadCell> implements BoardProtocol,TriadConst
     private TriadChip playerChip[]= new TriadChip[3];
     private TriadId playerColorPool[] = new TriadId[3];
     
+    private TriadCell blue = new TriadCell(TriadId.Blue_Chip_Pool,TriadChip.BlueStone);
+    private TriadCell green = new TriadCell(TriadId.Green_Chip_Pool,TriadChip.GreenStone);
+    private TriadCell red =	new TriadCell(TriadId.Red_Chip_Pool,TriadChip.RedStone);
+    private TriadCell playerCell[] = { red,	green, blue};
+    
     // get the chip pool and chip associated with a player.  these are not 
     // constants because of the swap rule.
 	public TriadChip getPlayerChip(int p) { return(playerChip[p]); }
+	public TriadCell getPlayerCell(int p) { return(playerCell[p]); }
 	public TriadId getPlayerColor(int p) { return(playerColorPool[p]); }
 
 	// this is called when 3 reps are detected.  Out to be extremely rare in Triad
@@ -138,7 +145,7 @@ class TriadBoard extends hexBoard<TriadCell> implements BoardProtocol,TriadConst
     	else { throw G.Error(WrongInitError,game); }
         gametype = game;
         setState(TriadState.PUZZLE_STATE);
-        initBoard(firstcol, ncol, ZInCol); //this sets up the hex board
+        reInitBoard(firstcol, ncol, ZInCol); //this sets up the hex board
         
       	setBorderDirections();	// mark the border cells for use in painting
         
@@ -149,8 +156,11 @@ class TriadBoard extends hexBoard<TriadCell> implements BoardProtocol,TriadConst
         AR.setValue(win, false);
         int map[]=getColorMap();
         playerChip[map[0]] = TriadChip.RedStone;
+        playerCell[map[0]] = red;
         playerChip[map[1]] = TriadChip.GreenStone;
+        playerCell[map[1]] = green;
         playerChip[map[2]] = TriadChip.BlueStone;
+        playerCell[map[2]] = blue;
         playerColorPool[map[0]] = TriadId.Red_Chip_Pool;
         playerColorPool[map[1]] = TriadId.Green_Chip_Pool;
         playerColorPool[map[2]] = TriadId.Blue_Chip_Pool;
@@ -253,7 +263,6 @@ class TriadBoard extends hexBoard<TriadCell> implements BoardProtocol,TriadConst
     {
         TriadBoard from_b = from_board;
         super.copyFrom(from_b);
-
         board_state = from_b.board_state;
         unresign = from_b.unresign;
         bunny_player = from_b.bunny_player;
@@ -265,17 +274,17 @@ class TriadBoard extends hexBoard<TriadCell> implements BoardProtocol,TriadConst
         lastPicked = null;
         pickedObject = from_b.pickedObject;
         AR.copy(chips_on_board,from_b.chips_on_board);
+        copyFrom(playerCell,from_board.playerCell);	// needed so screen location is propagated
 
         sameboard(from_b); 
     }
 
     /* initialize a board back to initial empty state */
     public void doInit(String gtype,long key)
-    {	Random r = new Random(10506946);
+    {	
     	randomKey = key;
-       Init_Standard(gtype);
-       allCells.setDigestChain(r);
-        moveNumber = 1;
+    	Init_Standard(gtype);
+    	moveNumber = 1;
         captureCellStack.clear();
         captureChipStack.clear();
         captureIndex = 0;
@@ -457,27 +466,43 @@ class TriadBoard extends hexBoard<TriadCell> implements BoardProtocol,TriadConst
     	}
       	return (NothingMoving);
     }
+    private TriadCell getCell(TriadId source, char from_col, int from_row) 
+    {
+ 		switch(source) {
+ 		case BoardLocation:
+ 		case EmptyBoard: return getCell(from_col,from_row);
+ 		case Blue_Chip_Pool: return blue;
+ 		case Red_Chip_Pool: return red;
+ 		case Green_Chip_Pool: return green;
+ 		default: throw G.Error("Not expecting %s",source);
+ 		}
+ 	}
+    private TriadCell getCell(TriadChip c)
+    {
+    	for(TriadCell d :  playerCell) { if(d.topChip()==c) { return d; }}
+    	return null;
+    }
+
 	// pick something up.  Note that when the something is the board,
     // the board location really becomes empty, and we depend on unPickObject
     // to replace the original contents if the pick is cancelled.
-    private void pickObject(TriadId source, char col, int row)
-    {
-        switch (source)
+    private void pickObject(TriadCell src)
+    {	
+        switch (src.rackLocation())
         {
         default:
-        	throw G.Error("Not expecting source %s", source);
+        	throw G.Error("Not expecting source %s", src);
          case BoardLocation:
         	{
-        	TriadCell c =getCell(col,row);
-        	boolean wasDest = isDest(c);
+        	boolean wasDest = isDest(src);
         	unDropObject(); 
         	if(!wasDest)
         	{
-            pickedSource = c;
-            lastPicked = pickedObject = c.topChip();
+            pickedSource = src;
+            lastPicked = pickedObject = src.topChip();
          	bunnyDrop = null;
          	droppedDest = null;
-			SetBoard(c,null);
+			SetBoard(src,null);
         	}}
             break;
         case Blue_Chip_Pool:
@@ -516,7 +541,7 @@ class TriadBoard extends hexBoard<TriadCell> implements BoardProtocol,TriadConst
     	for(int i=0;i<3;i++) { if(co==playerChip[i]) { return(i); }}
     	throw G.Error("no one has chip "+co);
     }
-    private void setNextStateAfterDrop()
+    private void setNextStateAfterDrop(replayMode replay)
     {  
 
         switch (board_state)
@@ -532,7 +557,7 @@ class TriadBoard extends hexBoard<TriadCell> implements BoardProtocol,TriadConst
  			setState(TriadState.DROP_STATE);
  			candidate_player = playerForColor(droppedDest.color);
  			bunny_player = thirdPlayer(whoseTurn,candidate_player);
-        	doCaptures(droppedDest);
+        	doCaptures(droppedDest,replay);
         	if(GameOverNow()) 
             {	setState(TriadState.CONFIRM_END_STATE);
             }
@@ -591,7 +616,7 @@ class TriadBoard extends hexBoard<TriadCell> implements BoardProtocol,TriadConst
     }
     
     // do the captures for this move, store undo unformation on the capture stack
-    private void doCaptures(TriadCell dest)
+    private void doCaptures(TriadCell dest,replayMode replay)
     {	TriadChip top = dest.topChip();
     	if(top!=null)
     	{
@@ -605,6 +630,11 @@ class TriadBoard extends hexBoard<TriadCell> implements BoardProtocol,TriadConst
     			  captureChipStack.push(adjTop);
     			  captureCellStack.push(adj);
     			  SetBoard(adj,null);
+    			  if(replay!=replayMode.Replay)
+    			  {
+    				  animationStack.push(adj);
+    				  animationStack.push(getCell(adjTop));
+    			  }
     			  }
     			}
 	    	}
@@ -639,10 +669,19 @@ class TriadBoard extends hexBoard<TriadCell> implements BoardProtocol,TriadConst
 
             break;
         case MOVE_MOVE:
+        	{
         	// point to point movement for the robot
-        	pickObject(m.source, m.from_col, m.from_row);
-        	dropObject(getCell(m.to_col,m.to_row));
-        	setNextStateAfterDrop();
+        	TriadCell src = getCell(m.source, m.from_col, m.from_row);
+        	TriadCell dest = getCell(m.to_col,m.to_row);
+        	pickObject(src);
+        	dropObject(dest);
+        	if(replay!=replayMode.Replay)
+        	{
+        		animationStack.push(src);
+        		animationStack.push(dest);
+        	}
+        	setNextStateAfterDrop(replay);
+        	}
         	break;
         case MOVE_DROPB:
 			//pickObject(m.object, m.to_col, m.to_row);
@@ -655,16 +694,24 @@ class TriadBoard extends hexBoard<TriadCell> implements BoardProtocol,TriadConst
  			if((board_state==TriadState.PLAY_STATE) && isSource(c)) { unPickObject(); }
  			else
  			{
-			pickObject(m.source, m.to_col, m.to_row);
-            dropObject(getCell(m.to_col,m.to_row));
-            setNextStateAfterDrop();
+ 			boolean prepick = pickedObject!=null;
+ 			TriadCell src = getCell(m.source, m.to_col, m.to_row);
+ 			TriadCell dest = getCell(m.to_col,m.to_row);
+			pickObject(src);
+            dropObject(dest);
+            if((replay==replayMode.Single) || (replay==replayMode.Live && !prepick))
+            {
+            	animationStack.push(src);
+            	animationStack.push(dest);
+            }
+            setNextStateAfterDrop(replay);
             m.from_row = candidate_player;		// save for the robot
             m.from_col = (char)('A'+bunny_player);
  			}
             break;
 
         case MOVE_PICK:
-           	pickObject(m.source, m.to_col, m.to_row);
+           	pickObject(getCell(m.source, m.to_col, m.to_row));
             break;  
         case MOVE_PICKB:
         	// come here only where there's something to pick, which must
@@ -672,10 +719,10 @@ class TriadBoard extends hexBoard<TriadCell> implements BoardProtocol,TriadConst
          	switch(board_state)
         	{
         	case PUZZLE_STATE:
-               	pickObject(m.source, m.to_col, m.to_row);
+               	pickObject(getCell(m.source, m.to_col, m.to_row));
         		break;
         	case PLAY_STATE:
-               	pickObject(m.source, m.to_col, m.to_row);
+               	pickObject(getCell(m.source, m.to_col, m.to_row));
                	break;
         	case CONFIRM_END_STATE:
         	case DROP_STATE:
@@ -734,7 +781,8 @@ class TriadBoard extends hexBoard<TriadCell> implements BoardProtocol,TriadConst
         return (true);
     }
 
-    // legal to hit the chip storage area
+
+	// legal to hit the chip storage area
     public boolean LegalToHitChips(int player)
     {
         switch (board_state)

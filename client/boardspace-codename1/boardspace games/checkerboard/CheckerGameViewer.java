@@ -93,7 +93,7 @@ public class CheckerGameViewer extends CCanvas<CheckerCell,CheckerBoard> impleme
        
         b = new CheckerBoard(info.getString(OnlineConstants.GAMETYPE, Variation.Checkers_10.name),randomKey,players_in_game,
         			repeatedPositions,getStartingColorMap(),CheckerBoard.REVISION);
-        useDirectDrawing();
+        useDirectDrawing(true);
         doInit(false);
         reverseOption = myFrame.addOption(s.get(ReverseView),b.reverseY(),deferredEvents);
         offerDrawAction = myFrame.addAction(s.get(OFFERDRAW),deferredEvents);     
@@ -217,14 +217,13 @@ public class CheckerGameViewer extends CCanvas<CheckerCell,CheckerBoard> impleme
     	int bannerH = fh*4;
         int stateH = fh*2;
         int buttonW = fh*8;
-    	layout.placeDrawGroup(G.getFontMetrics(standardPlainFont()),acceptDrawRect,declineDrawRect);
-      	layout.placeDoneEditRep(buttonW, buttonW*3/2, doneRect, editRect, repRect);
       	layout.placeTheVcr(this,vcrW,vcrMW);
       	layout.placeRectangle(bannerRect,bannerW,bannerH,bannerW*2,bannerH*2,BoxAlignment.Top,true);
-      	// placing the chat and log last improves the stability of the layout
        	layout.placeTheChatAndLog(chatRect, minChatW, chatHeight, minChatW*2, 3*chatHeight/2, logRect,
     			ideal_logwidth,logH,ideal_logwidth*2,logH*2);
  
+      	layout.placeDoneEditRep(buttonW, buttonW*3/2, doneRect, editRect, repRect);
+    	layout.placeDrawGroup(G.getFontMetrics(standardPlainFont()),acceptDrawRect,declineDrawRect);
 
     	Rectangle main = layout.getMainRectangle();
       
@@ -406,6 +405,7 @@ public class CheckerGameViewer extends CCanvas<CheckerCell,CheckerBoard> impleme
     //
     public void redrawBoard(Graphics gc, HitPoint highlight)
     { CheckerBoard gb = disB(gc);
+      int whoseTurn = gb.whoseTurn;
       boolean ourTurn = OurMove();
       boolean moving = hasMovingObject(highlight);
       HitPoint ourTurnSelect = ourTurn ? highlight : null;	// hit if our turn
@@ -422,15 +422,15 @@ public class CheckerGameViewer extends CCanvas<CheckerCell,CheckerBoard> impleme
         {
     	commonPlayer pl = getPlayerOrTemp(i);
     	pl.setRotatedContext(gc, highlight,false);
-        DrawCommonChipPool(gc, gb,i,playerChipRect[i], gb.whoseTurn,ourTurnSelect);
-        if(planned && (i==gb.whoseTurn)) 
+        DrawCommonChipPool(gc, gb,i,playerChipRect[i], whoseTurn,ourTurnSelect);
+        if(planned && (i==whoseTurn)) 
         	{handleDoneButton(gc,doneRects[i],(b.DoneState()? ourButtonSelect : null),HighlightColor, rackBackGroundColor);
         	}
     	pl.setRotatedContext(gc, highlight,true);
         }
 
       GC.setFont(gc,standardBoldFont());
-      commonPlayer pl = getPlayerOrTemp(gb.whoseTurn);
+      commonPlayer pl = getPlayerOrTemp(whoseTurn);
       double messageRotation = pl.messageRotation();
       switch(vstate)
         {
@@ -475,13 +475,13 @@ public class CheckerGameViewer extends CCanvas<CheckerCell,CheckerBoard> impleme
             			?gameOverMessage()
             			:s.get(vstate.getDescription()),
             				vstate!=CheckerState.Puzzle,
-            				gb.whoseTurn,
+            				whoseTurn,
             				stateRect);
-            gb.playerChip(gb.whoseTurn).drawChip(gc, this, iconRect,null);
+            gb.playerChip(whoseTurn).drawChip(gc, this, iconRect,null);
         }
         goalAndProgressMessage(gc,vcrSelect,Color.black,s.get(VictoryCondition),progressRect, goalRect);
    
-        DrawRepRect(gc,messageRotation,Color.black,b.Digest(),repRect);
+        DrawRepRect(gc,messageRotation,Color.black,gb.Digest(),repRect);
         drawAuxControls(gc,vcrSelect);
         // draw last so pop-up version is over everything else
         drawVcrGroup(vcrSelect, gc);

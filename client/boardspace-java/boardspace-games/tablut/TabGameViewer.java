@@ -126,7 +126,7 @@ public class TabGameViewer extends CCanvas<TabCell,TabGameBoard> implements TabC
         super.init(info,frame);
        
         b = new TabGameBoard(info.getString(OnlineConstants.GAMETYPE, Default_Tablut_Game),getStartingColorMap());
-        //useDirectDrawing(); // not tested yet
+        useDirectDrawing(true); // not tested yet
         doInit(false);
    }
 
@@ -147,13 +147,13 @@ public class TabGameViewer extends CCanvas<TabCell,TabGameBoard> implements TabC
     {	commonPlayer pl = getPlayerOrTemp(player);
     	Rectangle chip = shipRects[player];
     	int chipW = unitsize*4;
-    	int chipH = unitsize*3;
-    	int doneW = unitsize*4;
+    	int chipH = unitsize*2;
+    	int doneW = plannedSeating()?unitsize*4:0;
     	Rectangle box = pl.createRectangularPictureGroup(x+chipW,y,unitsize);
     	Rectangle done = doneRects[player];
     	
     	G.SetRect(chip, x, y, chipW, chipH);
-    	G.SetRect(done, x+chipW,G.Bottom(box),doneW,plannedSeating()?doneW/2:0);
+    	G.SetRect(done, x,y+chipH+unitsize/4,doneW,doneW/2);
     	
     	pl.displayRotation = rotation;
     	
@@ -368,7 +368,8 @@ public class TabGameViewer extends CCanvas<TabCell,TabGameBoard> implements TabC
             highlight.hitCode = pool.rackLocation;
         }
       	int cx = G.centerX(r);
-    	int cy = G.centerY(r);
+      	int h = G.Height(r);
+    	int cy = G.centerY(r)+h/4;
 
         if (gc != null)
         { 

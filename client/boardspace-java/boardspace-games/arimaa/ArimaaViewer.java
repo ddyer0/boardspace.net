@@ -148,7 +148,7 @@ public class ArimaaViewer extends CCanvas<ArimaaCell,ArimaaBoard> implements Ari
         
         b = new ArimaaBoard(info.getString(OnlineConstants.GAMETYPE, Arimaa_Init),randomKey,
         		repeatedPositions, getStartingColorMap());
-    	useDirectDrawing();
+    	useDirectDrawing(true);
     	doInit(false);
         reverseOption = myFrame.addOption(s.get(ReverseView),b.reverseY(),deferredEvents);
         if(!seatingFaceToFace()) { currentViewset = ViewSet.Normal; }

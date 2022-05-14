@@ -210,6 +210,7 @@ public void ViewerRun(int wait)
         // later, some variant is created, or the game code base is re purposed as the basis
         // for another game.
         bb = new QEBoard(type,players_in_game,randomKey,QEBoard.REVISION);
+        //useDirectDrawing(); // not tested yet
         doInit(false);
 
     }
@@ -504,7 +505,7 @@ public void ViewerRun(int wait)
       // to draw the cells, set gb.Drawing_Style in the board init method.  Create a
       // DrawGridCoord(Graphics gc, Color clt,int xpos, int ypos, int cellsize,String txt)
       // on the board to fine tune the exact positions of the text
-     QEChip.Board.getImage(loader).centerImage(gc, boardRect);
+      if(remoteViewer<0) { QEChip.Board.getImage(loader).centerImage(gc, boardRect); }
       bb.SetDisplayRectangle(boardRect);
      }
     
@@ -531,7 +532,7 @@ public void ViewerRun(int wait)
     	if(gc!=null) { cell.copyCurrentCenter(target); }
     }
     public static CalculatorButton QEButtons[] = { 
-        	new CalculatorButton(CalculatorButton.id.Back,Calculator.Keytop,		0.84,0.4,	0.2),
+        	new CalculatorButton(CalculatorButton.id.Ndel,Calculator.Keytop,		0.84,0.4,	0.2),
         	new CalculatorButton(CalculatorButton.id.Clear,Calculator.Keytop,     0.84,0.53,	0.2),
         	new CalculatorButton(CalculatorButton.id.Cancel,Calculator.Keytop,	0.84,0.65,		0.2),
 
@@ -790,7 +791,7 @@ public void ViewerRun(int wait)
         	for(int i=0;i<gb.nPlayers();i++)
         	{
         	QEPlayer pl = gb.getPlayer(i);
-        	if(ob!=pl)
+        	if(ob!=null && ob!=pl)
         		{	Rectangle r = new Rectangle(x,y,stepx,stepy);
         			commonPlayer ap = getActivePlayer();
         			QEState uis = getUIState(i);
@@ -1483,7 +1484,8 @@ public void ViewerRun(int wait)
        * @see online.game.commonCanvas#drawHiddenWindow(Graphics, lib.HitPoint, online.game.HiddenGameWindow)
      */
     public void drawHiddenWindow(Graphics gc,HitPoint hp,int index,Rectangle bounds,Calculator cal)
-    {	QEPlayer pl = bb.getPlayer(index);
+    {	
+    	QEPlayer pl = bb.getPlayer(index);
     	if(pl!=null)
     	{
         int margin = G.minimumFeatureSize()/2;
@@ -1495,7 +1497,9 @@ public void ViewerRun(int wait)
   	    boolean censor = pl.hiddenCensoring;
     	int stateH = fh*8;
     	Font myfont = G.getFont(largeBoldFont(), stateH/3);
-       QEChip.backgroundTile.image.tileImage(gc, bounds);
+        if (remoteViewer<0) 
+        { QEChip.backgroundTile.image.tileImage(gc, bounds);
+        }
        	int stateX = left+CELLSIZE+stateH;
        	
        	int calcW = width/5;

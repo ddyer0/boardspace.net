@@ -190,7 +190,7 @@ public class YspahanViewer extends CCanvas<YspahanCell,YspahanBoard> implements 
         MouseDotColors = yMouseDotColors;
         b = new YspahanBoard(info.getString(OnlineConstants.GAMETYPE, Yspahan_INIT),
         		randomKey,getStartingColorMap(),players_in_game);
-        useDirectDrawing();
+        useDirectDrawing(true);
     	adjustPlayers(players_in_game);
      	doInit(false);
      }

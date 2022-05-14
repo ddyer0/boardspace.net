@@ -94,7 +94,7 @@ public class SixmakingViewer extends CCanvas<SixmakingCell,SixmakingBoard> imple
        
         b = new SixmakingBoard(info.getString(OnlineConstants.GAMETYPE, Variation.Sixmaking.name),
         		randomKey,players_in_game,repeatedPositions,getStartingColorMap());
-        //useDirectDrawing(); // not tested yet
+        useDirectDrawing(true); // not tested yet
         doInit(false);
         offerDrawAction = myFrame.addAction(s.get(OFFERDRAW),deferredEvents);       
      }
@@ -119,12 +119,14 @@ public class SixmakingViewer extends CCanvas<SixmakingCell,SixmakingBoard> imple
     public Rectangle createPlayerGroup(int player,int x,int y,double rotation,int unitsize)
     {	commonPlayer pl = getPlayerOrTemp(player);
     	Rectangle chip = chipRects[player];
-    	int chipW = unitsize*5;
-    	int chipH = unitsize*7;
+    	int chipW = unitsize*3;
+    	int chipH = unitsize*5;
+    	boolean planned = plannedSeating();
+    	int doneW = planned ? unitsize*4 : 0;
     	Rectangle done = doneRects[player];
     	G.SetRect(chip, x, y, chipW, chipH);
     	Rectangle box = pl.createRectangularPictureGroup(x+chipW,y,unitsize);
-    	G.SetRect(done, x+chipW+unitsize/2, G.Bottom(box)+unitsize/2, chipW, plannedSeating()?chipW/2:0);
+    	G.SetRect(done, x+chipW+unitsize/2, G.Bottom(box), doneW, doneW/2);
     	pl.displayRotation = rotation;
     	G.union(box, chip,done);
     	return(box);
@@ -154,7 +156,7 @@ public class SixmakingViewer extends CCanvas<SixmakingCell,SixmakingBoard> imple
     	int minLogW = fh*18;	
     	int vcrw = fh*16;
        	int minChatW = fh*40;	
-        int minLogH = fh*10;	
+        int minLogH = fh*15;	
         int buttonW = fh*8;
     	
         // place the chat and log automatically, preferring to place
@@ -250,10 +252,11 @@ public class SixmakingViewer extends CCanvas<SixmakingCell,SixmakingBoard> imple
         boolean canPick = (thisChip!=null);
         HitPoint pt = (canHit && (canPick||canDrop))? highlight : null; 
         String msg = null;
-        int sz = (int)(G.Width(r)*chipScale);
-        int xp = G.Left(r)+sz/2;
-        int yp = G.Bottom(r)-sz/2;
-        if(thisCell.drawStack(gc,this,pt,sz,xp,yp,002,0.04,msg))
+        int w = G.Width(r);
+        int sz = (int)(w*chipScale*1.3);
+        int xp = G.centerX(r);
+        int yp = G.Bottom(r)-w/3;
+        if(thisCell.drawStack(gc,this,pt,sz,xp,yp,002,0.03,msg))
         {	highlight.arrow = canDrop ? StockArt.DownArrow : StockArt.UpArrow;
         	highlight.awidth = sz/3;
         	highlight.hit_index = 1;

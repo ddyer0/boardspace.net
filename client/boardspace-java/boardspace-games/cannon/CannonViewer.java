@@ -88,7 +88,7 @@ public class CannonViewer extends CCanvas<CannonCell,CannonBoard> implements Can
         MouseDotColors = CannonMouseDotColors;
         b = new CannonBoard(info.getString(OnlineConstants.GAMETYPE, Cannon_INIT),
         		getStartingColorMap());
-        useDirectDrawing();
+        useDirectDrawing(true);
         doInit(false);
         reverseOption = myFrame.addOption(s.get(ReverseView),b.reverseY(),deferredEvents);
      }
@@ -157,7 +157,8 @@ public class CannonViewer extends CCanvas<CannonCell,CannonBoard> implements Can
 				margin,	
 				0.65,	// 60% of space allocated to the board
 				1.0,	// aspect ratio for the board
-				fh*3,	// maximum cell size
+				fh*2,	// maximum cell size
+				fh*3,
 				0.3		// preference for the designated layout, if any
 				);
 		

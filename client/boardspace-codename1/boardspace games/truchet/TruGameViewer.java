@@ -90,6 +90,7 @@ public class TruGameViewer extends CCanvas<TruCell,TruGameBoard> implements TruC
         		info.getString(exHashtable.GAMEUID,
         		G.getString(exHashtable.GAMEUID,"testgame")),
         		getStartingColorMap());
+        //useDirectDrawing(); // not tested yet
         doInit(false);
      }
 
@@ -107,18 +108,19 @@ public class TruGameViewer extends CCanvas<TruCell,TruGameBoard> implements TruC
         }
    }
     
-
+    boolean horizontal = false;
     public Rectangle createPlayerGroup(int player,int x,int y,double rotation,int unitsize)
     {	commonPlayer pl = getPlayerOrTemp(player);
     	Rectangle chip = chipRects[player];
     	int chipW = unitsize*4;
-    	int doneW = unitsize*6;
+    	int doneW = plannedSeating() ? unitsize*6 : 0;
     	Rectangle done = doneRects[player];
     	G.SetRect(chip, x, y, chipW, chipW);
-    	G.SetRect(done, x, y+chipW, doneW, plannedSeating()?doneW/2:0);
     	Rectangle box = pl.createRectangularPictureGroup(x+chipW,y,unitsize);
     	Rectangle captures = captureRects[player];
     	G.SetRect(captures, G.Right(box),y,unitsize*2,unitsize*5);	// a little taller than necessary so overall layout is better
+    	G.SetRect(done, horizontal ? G.Right(captures)+unitsize/4:x, 
+    				horizontal ? y+unitsize/2 : y+chipW, doneW, doneW/2);
 
     	pl.displayRotation = rotation;
     	G.union(box, chip,done,captures);
@@ -127,7 +129,7 @@ public class TruGameViewer extends CCanvas<TruCell,TruGameBoard> implements TruC
     
     public boolean usePerspective() { return(super.getAltChipset()==0); }
     
-    private double aspect[] = { 0.7,1.0,1.4};
+    private double aspect[] = {-1,1};
     public void setLocalBounds(int x, int y, int width, int height)
     {
     	setLocalBoundsV(x,y,width,height,aspect);
@@ -135,6 +137,7 @@ public class TruGameViewer extends CCanvas<TruCell,TruGameBoard> implements TruC
     public double setLocalBoundsA(int x, int y, int width, int height,double aspect)
     {	G.SetRect(fullRect, x, y, width, height);
     	GameLayoutManager layout = selectedLayout;
+    	horizontal = aspect<0;
     	int nPlayers = nPlayers();
         int chatHeight = selectChatHeight(height);
        	// ground the size of chat and logs in the font, which is already selected
@@ -429,6 +432,7 @@ public class TruGameViewer extends CCanvas<TruCell,TruGameBoard> implements TruC
     {  TruGameBoard gb = disB(gc);
       boolean ourTurn = OurMove();
       boolean moving = hasMovingObject(highlight);
+      int whoseTurn = gb.whoseTurn;
       HitPoint ot = ourTurn ? highlight : null;	// hit if our turn
       HitPoint select = moving?null:ot;	// hit if our turn and not dragging
       HitPoint ourSelect = (moving && !reviewMode()) ? null : highlight;	// hit if not dragging
@@ -441,7 +445,7 @@ public class TruGameViewer extends CCanvas<TruCell,TruGameBoard> implements TruC
 
       
       boolean planned = plannedSeating();
-      commonPlayer pl = getPlayerOrTemp(gb.whoseTurn);
+      commonPlayer pl = getPlayerOrTemp(whoseTurn);
       
       for(int i=FIRST_PLAYER_INDEX; i<=SECOND_PLAYER_INDEX; i++)
       {
@@ -449,7 +453,7 @@ public class TruGameViewer extends CCanvas<TruCell,TruGameBoard> implements TruC
       cpl.setRotatedContext(gc, highlight, false);
       DrawCommonChipPool(gc, i,chipRects[i],ot,true);
       DrawCaptures(gc,i,captureRects[i],highlight);
-      if(planned && (gb.whoseTurn==i))
+      if(planned && (whoseTurn==i))
       {
 			handleDoneButton(gc,doneRects[i],(gb.DoneState() ? select : null), 
 					HighlightColor, rackBackGroundColor);

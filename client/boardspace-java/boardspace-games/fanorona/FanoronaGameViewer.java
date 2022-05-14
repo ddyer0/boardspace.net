@@ -108,7 +108,7 @@ public class FanoronaGameViewer extends CCanvas<FanoronaCell,FanoronaBoard> impl
          
         b = new FanoronaBoard(info.getString(OnlineConstants.GAMETYPE, "Fanorona"),getStartingColorMap());
         offerDrawAction = myFrame.addAction(s.get(OFFERDRAW),deferredEvents);     
-        useDirectDrawing();
+        useDirectDrawing(true);
         doInit(false);
      }
     
@@ -152,7 +152,7 @@ public class FanoronaGameViewer extends CCanvas<FanoronaCell,FanoronaBoard> impl
     	// to be appropriate to the window size
     	int fh = standardFontSize();
     	int vcrW = fh*15;
-    	int minLogW = fh*25;	
+    	int minLogW = fh*15;	
        	int minChatW = fh*40;	
        	int margin = fh/2;
         int minLogH = fh*10;	
@@ -238,7 +238,7 @@ public class FanoronaGameViewer extends CCanvas<FanoronaCell,FanoronaBoard> impl
     {	commonPlayer pl = getPlayerOrTemp(player);
     	Rectangle sq = chipRects[player];
     	Rectangle done = doneRects[player];
-    	int boxsize = unitsize*6;
+    	int boxsize = unitsize*3;
     	Rectangle box = pl.createRectangularPictureGroup(x+boxsize,y,unitsize);
     	G.SetRect(sq, x, y, boxsize,boxsize);
     	if(plannedSeating()) 
@@ -405,6 +405,7 @@ public class FanoronaGameViewer extends CCanvas<FanoronaCell,FanoronaBoard> impl
     public void redrawBoard(Graphics gc, HitPoint highlight)
     { 
       FanoronaBoard gb = disB(gc);
+      int whoseTurn = gb.whoseTurn;
       boolean planned = plannedSeating(); 
       boolean ourTurn = OurMove();
       boolean moving = hasMovingObject(highlight);
@@ -418,15 +419,15 @@ public class FanoronaGameViewer extends CCanvas<FanoronaCell,FanoronaBoard> impl
         for(int i=FIRST_PLAYER_INDEX;i<=SECOND_PLAYER_INDEX;i++)
         {	commonPlayer p = getPlayerOrTemp(i);
         	p.setRotatedContext(gc, highlight, false);
-        	DrawCommonChipPool(gc,i,chipRects[i], gb.whoseTurn,ot);
-        	if(planned && (i==gb.whoseTurn)) 
+        	DrawCommonChipPool(gc,i,chipRects[i], whoseTurn,ot);
+        	if(planned && (i==whoseTurn)) 
         		{ handleDoneButton(gc,doneRects[i],(gb.DoneState() ? select : null),HighlightColor,rackBackGroundColor); 
         		}
         	p.setRotatedContext(gc, highlight, true);
         }
         
         GC.setFont(gc,standardBoldFont());
-        commonPlayer pl = getPlayerOrTemp(gb.whoseTurn);
+        commonPlayer pl = getPlayerOrTemp(whoseTurn);
 		double messageRotation = pl.messageRotation();
 		
         switch(vstate)
@@ -475,7 +476,7 @@ public class FanoronaGameViewer extends CCanvas<FanoronaCell,FanoronaBoard> impl
 		gb.playerChip[gb.whoseTurn].drawChip(gc,this,iconRect,null);
         goalAndProgressMessage(gc,ourSelect,s.get(GoalMessage),progressRect, goalRect);
          
-        DrawRepRect(gc,messageRotation,Color.black,b.Digest(),repRect);
+        DrawRepRect(gc,messageRotation,Color.black,gb.Digest(),repRect);
         DrawReverseMarker(gc,reverseRect,ourSelect,FanId.Reverse);
         drawVcrGroup(ourSelect, gc);
 

@@ -1587,7 +1587,6 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
       {
     	  GC.translate(inG,0,-extraSpacing);
     	  G.translate(hp, 0, extraSpacing);
-    	  height += extraSpacing;
       }
 	  return(height);
 	  }

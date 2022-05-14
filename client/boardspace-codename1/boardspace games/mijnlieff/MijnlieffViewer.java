@@ -151,7 +151,7 @@ public class MijnlieffViewer extends CCanvas<MijnlieffCell,MijnlieffBoard> imple
         // this gets the best results on android, but requires some extra care in
         // the user interface and in the board's copyBoard operation.
         // in the user interface.
-        useDirectDrawing();
+        useDirectDrawing(true);
         doInit(false);
         adjustPlayers(players_in_game);
     }
@@ -514,6 +514,7 @@ public class MijnlieffViewer extends CCanvas<MijnlieffCell,MijnlieffBoard> imple
        // seen by the user interface are not the same ones as are seen by the execution engine.
        MijnlieffBoard gb = disB(gc);
        MijnlieffState state = gb.getState();
+       int whoseTurn = gb.whoseTurn;
        boolean moving = hasMovingObject(selectPos);
    	   if(gc!=null)
    		{
@@ -538,11 +539,7 @@ public class MijnlieffViewer extends CCanvas<MijnlieffCell,MijnlieffBoard> imple
        // for a multiplayer game, this would likely be redrawGameLog2
        redrawGameLog(gc, nonDragSelect, logRect,Color.black, boardBackgroundColor,standardBoldFont(),standardBoldFont());
 
-       // this does most of the work, but other functions also use contextRotation to rotate
-       // animations and sprites.
-       GC.setRotatedContext(gc,boardRect,selectPos,contextRotation);
        drawBoardElements(gc, gb, boardRect, ourTurnSelect);
-       GC.unsetRotatedContext(gc,selectPos);
        
        boolean planned = plannedSeating();
        
@@ -550,14 +547,14 @@ public class MijnlieffViewer extends CCanvas<MijnlieffCell,MijnlieffBoard> imple
        	{ commonPlayer pl = getPlayerOrTemp(player);
        	   pl.setRotatedContext(gc, selectPos,false);
     	   DrawChipPool(gc, chipRects[player],rackRects[player],pl, ourTurnSelect,gb);
-    	   if(planned && gb.whoseTurn==player)
+    	   if(planned && whoseTurn==player)
     	   {
     		   handleDoneButton(gc,doneRects[player],(gb.DoneState() ? buttonSelect : null), 
    					HighlightColor, rackBackGroundColor);
     	   }
        	   pl.setRotatedContext(gc, selectPos,true);
        	}
-       commonPlayer pl = getPlayerOrTemp(gb.whoseTurn);
+       commonPlayer pl = getPlayerOrTemp(whoseTurn);
        double messageRotation = pl.messageRotation();
        
        GC.setFont(gc,standardBoldFont());
@@ -582,9 +579,9 @@ public class MijnlieffViewer extends CCanvas<MijnlieffCell,MijnlieffBoard> imple
         standardGameMessage(gc,messageRotation,
             				state==MijnlieffState.Gameover?gameOverMessage():s.get(state.description()),
             				state!=MijnlieffState.Puzzle,
-            				gb.whoseTurn,
+            				whoseTurn,
             				stateRect);
-        gb.getPlayerChip(gb.whoseTurn).drawChip(gc,this,iconRect,null);
+        gb.getPlayerChip(whoseTurn).drawChip(gc,this,iconRect,null);
         goalAndProgressMessage(gc,nonDragSelect,Color.black,s.get(VictoryCondition),progressRect, goalRect);
             //      DrawRepRect(gc,pl.displayRotation,Color.black,b.Digest(),repRect);
         

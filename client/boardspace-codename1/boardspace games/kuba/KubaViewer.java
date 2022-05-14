@@ -105,6 +105,7 @@ public class KubaViewer extends CCanvas<KubaCell,KubaBoard> implements KubaConst
         
         b = new KubaBoard(info.getString(OnlineConstants.GAMETYPE, "Traboulet"),
         		getStartingColorMap());
+        useDirectDrawing(true); 	// not tested yet
         doInit(false);
         
      }

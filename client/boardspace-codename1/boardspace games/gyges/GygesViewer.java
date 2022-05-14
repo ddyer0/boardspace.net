@@ -122,7 +122,7 @@ public class GygesViewer extends CCanvas<GygesCell,GygesBoard> implements GygesC
     
     public Rectangle createPlayerGroup(int player,int x,int y,double rotation,int unitsize)
     {	commonPlayer pl = getPlayerOrTemp(player);
-    	int doneW = plannedSeating()?unitsize*5:0;
+    	int doneW = plannedSeating()?unitsize*4:0;
     	Rectangle box = pl.createRectangularPictureGroup(x+doneW+unitsize/4,y,unitsize);
     	Rectangle done = doneRects[player];
     	G.SetRect(done, x, y, doneW,doneW/2);

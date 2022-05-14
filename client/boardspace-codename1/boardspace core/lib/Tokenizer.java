@@ -4,7 +4,7 @@ import java.util.Enumeration;
 
 /**
  * this is a replacement for StringTokenizer.  If double quote is included
- * in the delimiters list (it is by default) then substrings withing double
+ * in the delimiters list (it is by default) then substrings within double
  * quotes are included as a single token.
  * 
  * @author ddyer

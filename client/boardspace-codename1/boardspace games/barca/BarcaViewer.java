@@ -109,7 +109,7 @@ public class BarcaViewer extends CCanvas<BarcaCell,BarcaBoard> implements BarcaC
         // later, some variant is created, or the game code base is re purposed as the basis
         // for another game.
         bb = new BarcaBoard(type,players_in_game,randomKey,getStartingColorMap(),BarcaBoard.REVISION);
-        useDirectDrawing();
+        useDirectDrawing(true);
         doInit(false);
 
     }
@@ -218,11 +218,12 @@ public class BarcaViewer extends CCanvas<BarcaCell,BarcaBoard> implements BarcaC
     {	commonPlayer pl = getPlayerOrTemp(player);
     	int ux4 = unitsize*4;
     	int ux2 = unitsize*2;
+    	int doneW = plannedSeating() ? ux4 : 0;
     	Rectangle box = pl.createRectangularPictureGroup(x+ux4,y,unitsize);
     	Rectangle chip = chipRects[player];
     	Rectangle done = doneRects[player];
     	G.SetRect(chip, x,y, ux4 ,ux2);
-    	G.SetRect(done, x,y+ux2, ux4, plannedSeating()?ux2:0);
+    	G.SetRect(done, x,y+ux2, doneW, doneW/2);
     	pl.displayRotation = rotation;
     	G.union(box, chip, done);
     	return(box);
@@ -254,9 +255,10 @@ public class BarcaViewer extends CCanvas<BarcaCell,BarcaBoard> implements BarcaC
     public void drawCommonChipPool(Graphics gc,int pl,Rectangle r)
     {	int cx = G.centerX(r);
     	int cy = G.centerY(r);
-    	BarcaChip.mice[bb.playerColor[pl]].drawRotatedChip(gc,this,0,CELLSIZE,1,cx+CELLSIZE/2,cy,null);
-    	BarcaChip.lions[bb.playerColor[pl]].drawRotatedChip(gc,this,0,CELLSIZE,1,cx,cy+CELLSIZE/8,null);
-    	BarcaChip.elephants[bb.playerColor[pl]].drawRotatedChip(gc,this,0,CELLSIZE,1.0,cx-CELLSIZE/2,cy+CELLSIZE/4,null);    	
+    	int size = G.Height(r)*3/4;
+    	BarcaChip.mice[bb.playerColor[pl]].drawRotatedChip(gc,this,0,size,1,cx+size/2,cy,null);
+    	BarcaChip.lions[bb.playerColor[pl]].drawRotatedChip(gc,this,0,size,1,cx,cy+size/8,null);
+    	BarcaChip.elephants[bb.playerColor[pl]].drawRotatedChip(gc,this,0,size,1.0,cx-size/2,cy+size/4,null);    	
     }
     /** draw the deep unchangeable objects, including those that might be rather expensive
      * to draw.  This background layer is used as a backdrop to the rest of the activity.

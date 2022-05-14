@@ -102,7 +102,7 @@ public class ChessViewer extends CCanvas<ChessCell,ChessBoard> implements ChessC
         int map[] = getStartingColorMap();
         b = new ChessBoard(info.getString(OnlineConstants.GAMETYPE, Variation.Chess.name),randomKey,players_in_game,
         		repeatedPositions,map,ChessBoard.REVISION);
-        useDirectDrawing();
+        useDirectDrawing(true);
         doInit(false);
         reverseOption = myFrame.addOption(s.get(ReverseView),b.reverseY(),deferredEvents);
         offerDrawAction = myFrame.addAction(s.get(OFFERDRAW),deferredEvents);     
@@ -435,6 +435,7 @@ public double setLocalBoundsA(int x, int y, int width, int height,double a)
     //
     public void redrawBoard(Graphics gc, HitPoint highlight)
     { ChessBoard gb = disB(gc);
+      int whoseTurn = gb.whoseTurn;
       boolean ourTurn = OurMove();
       boolean moving = hasMovingObject(highlight);
       HitPoint ot = ourTurn ? highlight : null;	// hit if our turn
@@ -455,14 +456,14 @@ public double setLocalBoundsA(int x, int y, int width, int height,double a)
          {	commonPlayer pl = getPlayerOrTemp(i);
          	pl.setRotatedContext(gc, highlight, false);
             DrawCaptured(gc, gb,pl,ot,targets);
-         	if(planned && (i==gb.whoseTurn))
+         	if(planned && (i==whoseTurn))
          	{
          		handleDoneButton(gc,doneRects[i],(gb.DoneState() ? ot : null), 
      					HighlightColor, rackBackGroundColor);
          	}       
          	pl.setRotatedContext(gc, highlight, true);
        }
-       commonPlayer pl = getPlayerOrTemp(gb.whoseTurn);
+       commonPlayer pl = getPlayerOrTemp(whoseTurn);
 
 		double messageRotation = pl.messageRotation();
         
@@ -511,9 +512,9 @@ public double setLocalBoundsA(int x, int y, int width, int height,double a)
             			?gameOverMessage()
             			:s.get(vstate.getDescription()),
             				vstate!=ChessState.Puzzle,
-            				gb.whoseTurn,
+            				whoseTurn,
             				stateRect);
-            gb.rack[gb.whoseTurn].drawChip(gc,this,iconRect,null,2);
+            gb.rack[whoseTurn].drawChip(gc,this,iconRect,null,2);
         }
         goalAndProgressMessage(gc,highlight,Color.black,s.get(VictoryCondition),progressRect, goalRect);
    

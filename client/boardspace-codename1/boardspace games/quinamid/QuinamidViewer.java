@@ -121,6 +121,7 @@ public class QuinamidViewer extends CCanvas<QuinamidCell,QuinamidBoard> implemen
         }
         b = new QuinamidBoard(info.getString(OnlineConstants.GAMETYPE, Quinamid_INIT),
         		key,getStartingColorMap());
+        //useDirectDrawing(); // not tested yet
         doInit(false);
 
         
@@ -280,6 +281,7 @@ public class QuinamidViewer extends CCanvas<QuinamidCell,QuinamidBoard> implemen
     	QuinamidChip ch = QuinamidChip.getChip(obj);// Tiles have zero offset
     	ch.drawChip(g,this,SQUARESIZE,xp,yp,null);
      }
+
 
 
     //** this is used by the game controller to supply entertainment strings to the lobby */
@@ -602,6 +604,7 @@ public class QuinamidViewer extends CCanvas<QuinamidCell,QuinamidBoard> implemen
     //
     public void redrawBoard(Graphics gc, HitPoint highlight)
     {  QuinamidBoard gb = disB(gc);
+      int whoseTurn = gb.whoseTurn;
       boolean ourTurn = OurMove();
       boolean moving = hasMovingObject(highlight);
       HitPoint ot = showingHelp ? null : ourTurn ? highlight : null;	// hit if our turn
@@ -616,7 +619,7 @@ public class QuinamidViewer extends CCanvas<QuinamidCell,QuinamidBoard> implemen
           {	commonPlayer pl = getPlayerOrTemp(i);
           	pl.setRotatedContext(gc, highlight,false);
           	DrawCommonChipPool(gc, i,chipRects[i],ot);
-              if(planned && (i==gb.whoseTurn))
+              if(planned && (i==whoseTurn))
               {
               	handleDoneButton(gc,doneRects[i],(gb.DoneState() ? select : null), 
       					HighlightColor, rackBackGroundColor);	
@@ -624,7 +627,7 @@ public class QuinamidViewer extends CCanvas<QuinamidCell,QuinamidBoard> implemen
               pl.setRotatedContext(gc, highlight,true);
           }
         
-        commonPlayer pl = getPlayerOrTemp(gb.whoseTurn);
+        commonPlayer pl = getPlayerOrTemp(whoseTurn);
         double messageRotation = pl.messageRotation();
         
         if((vstate==QuinamidState.CONFIRM_STATE && gb.swapPending)
@@ -646,13 +649,13 @@ public class QuinamidViewer extends CCanvas<QuinamidCell,QuinamidBoard> implemen
         standardGameMessage(gc,messageRotation,
         		vstate==QuinamidState.GAMEOVER_STATE?gameOverMessage():s.get(vstate.getDescription()),
         				vstate!=QuinamidState.PUZZLE_STATE,
-        				gb.whoseTurn,
+        				whoseTurn,
         				stateRect);
-        gb.playerChip[gb.whoseTurn].drawChip(gc, this, iconRect,null);
+        gb.playerChip[whoseTurn].drawChip(gc, this, iconRect,null);
         
         goalAndProgressMessage(gc,ourSelect,s.get("make 5 in a row"),progressRect, goalRect);
      
-        DrawRepRect(gc,messageRotation,Color.black,b.Digest(),repRect);
+        DrawRepRect(gc,messageRotation,Color.black,gb.Digest(),repRect);
         drawAuxControls(gc,ourSelect);
         drawVcrGroup(ourSelect, gc);
 

@@ -229,7 +229,7 @@ public class PushfightViewer extends CCanvas<PushfightCell,PushfightBoard> imple
     	int minLogW = fh*14;	
     	int vcrw = fh*16;
        	int minChatW = fh*40;	
-        int minLogH = fh*10;	
+        int minLogH = fh*15;	
         int margin = fh/2;
         int buttonW = fh*8;
         	// this does the layout of the player boxes, and leaves

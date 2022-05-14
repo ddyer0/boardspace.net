@@ -197,8 +197,6 @@ public interface BoardProtocol extends Digestable
 	 * forget any previous game revision information.  Use this when starting replay of a new game.
 	 */
 	public void resetClientRevision();
-
-	public cell<?> getCorrespondingCell(cell<?>from);
 	
 	public String getName();
 	public void setName(String s);

@@ -289,7 +289,7 @@ public class UniverseViewer extends CCanvas<UniverseCell,UniverseBoard> implemen
         {
         	findGivensItem = myFrame.addAction("find givens",deferredEvents);
         }
-        useDirectDrawing();
+        useDirectDrawing(true);
         doInit(false);
          
      }

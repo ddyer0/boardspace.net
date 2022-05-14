@@ -103,7 +103,7 @@ public class DipoleGameViewer extends CCanvas<DipoleCell,DipoleBoard> implements
         
         b = new DipoleBoard(info.getString(OnlineConstants.GAMETYPE, "Dipole"),
         		getStartingColorMap());
-        useDirectDrawing();
+        useDirectDrawing(true);
         doInit(false);
         b.setReverseY(!b.reverseY());
         

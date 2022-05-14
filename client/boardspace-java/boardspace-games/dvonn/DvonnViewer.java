@@ -125,7 +125,7 @@ public class DvonnViewer extends CCanvas<DvonnCell,DvonnBoard> implements DvonnC
  
         b = new DvonnBoard(randomKey,info.getString(OnlineConstants.GAMETYPE, "dvonn"),
         		getStartingColorMap());
-        useDirectDrawing();
+        useDirectDrawing(true);
         doInit(false);
         reverseOption = myFrame.addOption(s.get(ReverseView),b.reverseY(),deferredEvents);
         

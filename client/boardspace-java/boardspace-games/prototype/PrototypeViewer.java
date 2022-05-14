@@ -181,7 +181,7 @@ public class PrototypeViewer extends CCanvas<PrototypeCell,PrototypeBoard> imple
         // this gets the best results on android, but requires some extra care in
         // the user interface and in the board's copyBoard operation.
         // in the user interface.
-        useDirectDrawing();
+        useDirectDrawing(true);
         doInit(false);
         adjustPlayers(players_in_game);
     }
@@ -732,19 +732,19 @@ public class PrototypeViewer extends CCanvas<PrototypeCell,PrototypeBoard> imple
        GC.unsetRotatedContext(gc,selectPos);
        
        boolean planned = plannedSeating();
-       
+       int whoseTurn = gb.whoseTurn;
        for(int player=0;player<gb.players_in_game;player++)
        	{ commonPlayer pl = getPlayerOrTemp(player);
        	  pl.setRotatedContext(gc, selectPos,false);
     	   DrawChipPool(gc, chipRects[player],pl, ourTurnSelect,gb);
-    	   if(planned && gb.whoseTurn==player)
+    	   if(planned && whoseTurn==player)
     	   {
     		   handleDoneButton(gc,doneRects[player],(gb.DoneState() ? buttonSelect : null), 
    					HighlightColor, rackBackGroundColor);
     	   }
        	   pl.setRotatedContext(gc, selectPos,true);
        	}
-       commonPlayer pl = getPlayerOrTemp(gb.whoseTurn);
+       commonPlayer pl = getPlayerOrTemp(whoseTurn);
        double messageRotation = pl.messageRotation();
        
        GC.setFont(gc,standardBoldFont());

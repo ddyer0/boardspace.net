@@ -156,7 +156,7 @@ public class DayAndNightViewer extends CCanvas<DayAndNightCell,DayAndNightBoard>
         // this gets the best results on android, but requires some extra care in
         // the user interface and in the board's copyBoard operation.
         // in the user interface.
-        useDirectDrawing();
+        useDirectDrawing(true);
         doInit(false);
         adjustPlayers(players_in_game);
     }

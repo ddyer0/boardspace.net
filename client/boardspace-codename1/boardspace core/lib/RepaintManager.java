@@ -126,6 +126,21 @@ public class RepaintManager implements VncScreenInterface,Config
            	parent.add(v.menu);
 	    	}
 		}
+		public static void setMenuChoice(RepaintStrategy current)
+		{
+			for(RepaintStrategy v : values()) 
+			{	if(v.menu!=null)
+				{
+				if(v==current) 
+				{
+					v.menu.setState(true);
+				}
+				else 
+				{
+					v.menu.setState(false);
+				}}
+			}
+		}
 		public static RepaintStrategy isMenu(Object target,RepaintStrategy current)
 		{	RepaintStrategy value = null;
 			for(RepaintStrategy v : values()) 
@@ -284,7 +299,6 @@ public class RepaintManager implements VncScreenInterface,Config
 	public RepaintManager(RepaintHelper cl,RepaintStrategy m)
 	{	this(cl);
 		repaintStrategy = m;
-		repaintStrategy.setSliders();
 	}
 	
 	// 
@@ -662,6 +676,7 @@ public class RepaintManager implements VncScreenInterface,Config
 
    		if(pinch && ZOOM_IS_SLOW)
    		{	// to make pan/zoom responsive, work from a saved bitmap of some kind
+   			//Plog.log.addLog("Pinch in repaint manager");
    			if(pinchBuffer==null)
    			{
    				XImage pbuffer = getOrCreateViewBuffer();
@@ -1041,8 +1056,9 @@ public class RepaintManager implements VncScreenInterface,Config
 	    		 || (im.getHeight()!=h));
 	    }
 	    public void setRepaintStrategy(RepaintStrategy strat)
-	    {
+	    {	
 	    	repaintStrategy = strat;
+	    	RepaintStrategy.setMenuChoice(strat);
 	    	repaintStrategy.setSliders();
 	    	switch(strat)
 	    	{

@@ -150,7 +150,7 @@ public class BlackDeathViewer extends CCanvas<BlackDeathCell,BlackDeathBoard> im
         // later, some variant is created, or the game code base is re purposed as the basis
         // for another game.
         bb = new BlackDeathBoard(type,players_in_game,randomKey,getStartingColorMap(),BlackDeathBoard.REVISION);
-        useDirectDrawing();
+        useDirectDrawing(true);
         doInit(false);
         adjustPlayers(players_in_game);
     }

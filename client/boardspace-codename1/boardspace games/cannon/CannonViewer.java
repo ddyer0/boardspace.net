@@ -88,7 +88,7 @@ public class CannonViewer extends CCanvas<CannonCell,CannonBoard> implements Can
         MouseDotColors = CannonMouseDotColors;
         b = new CannonBoard(info.getString(OnlineConstants.GAMETYPE, Cannon_INIT),
         		getStartingColorMap());
-        useDirectDrawing();
+        useDirectDrawing(true);
         doInit(false);
         reverseOption = myFrame.addOption(s.get(ReverseView),b.reverseY(),deferredEvents);
      }

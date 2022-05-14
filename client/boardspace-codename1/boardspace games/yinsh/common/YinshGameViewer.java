@@ -71,6 +71,7 @@ public class YinshGameViewer extends CCanvas<YinshCell,YinshBoard> implements Yi
         super.init(info,frame);
         
         b = new YinshBoard(info.getString(OnlineConstants.GAMETYPE, "Yinsh"),getStartingColorMap());
+        useDirectDrawing(true); 
         doInit(false);
    }
 
@@ -86,9 +87,14 @@ public class YinshGameViewer extends CCanvas<YinshCell,YinshBoard> implements Yi
     	{ startFirstPlayer();
     	}
      }
-
+    boolean horizontal = false;
     public void setLocalBounds(int x, int y, int width, int height)
+    {
+    	setLocalBoundsV(x,y,width,height,new double[] {1,-1});
+    }
+    public double setLocalBoundsA(int x, int y, int width, int height,double par)
     {	G.SetRect(fullRect, x, y, width, height);
+    	horizontal = par<0;
     	GameLayoutManager layout = selectedLayout;
     	int nPlayers = nPlayers();
         int chatHeight = selectChatHeight(height);
@@ -162,21 +168,31 @@ public class YinshGameViewer extends CCanvas<YinshCell,YinshBoard> implements Yi
     	G.SetRect(goalRect, boardX, boardBottom-stateH,boardW,stateH);       
         setProgressRect(progressRect,goalRect);
         positionTheChat(chatRect,chatBackgroundColor,rackBackGroundColor);
-
+        return(boardW*boardH);
         }
     public Rectangle createPlayerGroup(int player,int x,int y,double rotation,int unitsize)
     {	commonPlayer pl = getPlayerOrTemp(player);
     	Rectangle chip = chipRects[player];
     	Rectangle cap = capturedRects[player];
-    	int ringW = unitsize*8;
-    	int ringH = unitsize*3;
-    	G.SetRect(chip,	x,	y,	ringW,	ringH);
-    	G.SetRect(cap, x, y, ringW, ringH);
-    	
-    	Rectangle box =  pl.createRectangularPictureGroup(x+ringW,y,unitsize);
     	Rectangle done = doneRects[player];
     	int doneW = plannedSeating()? unitsize*4 : 0;
-    	G.SetRect(done,G.Right(box)+unitsize/2,G.Top(box)+unitsize/2,doneW,doneW/2);
+ 	
+    	Rectangle box =  pl.createRectangularPictureGroup(x,y,unitsize);
+    	int boxW = G.Width(box);
+    	int ringW = boxW/2;
+    	int boxH = G.Height(box);
+    	int ringH = boxH*2/3;
+    	if(horizontal)
+    	{
+    	   	G.SetRect(chip,	x+boxW,	y,	ringW,	ringH);		
+        	G.SetRect(done,x+boxW+ringW+unitsize/2,y+unitsize/2,doneW,doneW/2);
+    	}
+    	else
+    	{	G.SetRect(done,x+ringW+unitsize/2,y+ringH+unitsize/2,doneW,doneW/2);
+    		G.SetRect(chip,	x,	y+boxH+boxH/4,	ringW,	ringH);		
+    	}
+    	G.copy(cap,chip);
+    	
     	G.union(box, done,chip,cap);
     	pl.displayRotation = rotation;
     	return(box);

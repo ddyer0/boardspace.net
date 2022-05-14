@@ -327,8 +327,6 @@ public class ProteusViewer extends CCanvas<ProteusCell,ProteusBoard> implements 
      }
 
 
-
-
     /* draw the deep unchangable objects, including those that might be rather expensive
      * to draw.  This background layer is used as a backdrop to the rest of the activity.
      * in our cease, we draw the board and the chips on it. 
@@ -430,6 +428,7 @@ public class ProteusViewer extends CCanvas<ProteusCell,ProteusBoard> implements 
     public void redrawBoard(Graphics gc, HitPoint highlight)
     {  ProteusBoard gb = disB(gc);
        boolean ourTurn = OurMove();
+       int whoseTurn = gb.whoseTurn;
       boolean moving = hasMovingObject(highlight);
       HitPoint ot = ourTurn ? highlight : null;	// hit if our turn
       HitPoint select = moving?null:ot;	// hit if our turn and not dragging
@@ -444,20 +443,20 @@ public class ProteusViewer extends CCanvas<ProteusCell,ProteusBoard> implements 
           {	commonPlayer pl = getPlayerOrTemp(i);
           	pl.setRotatedContext(gc, highlight, false);
           	drawPlayerId(gc,chipRects[i],i);
-          	if(planned && (i==gb.whoseTurn))
+          	if(planned && (i==whoseTurn))
           	{
           		handleDoneButton(gc,doneRects[i],(gb.DoneState() ? select : null), 
       					HighlightColor, rackBackGroundColor);
           	}
           	pl.setRotatedContext(gc, highlight, true);
           }	
-        commonPlayer pl = getPlayerOrTemp(gb.whoseTurn);
+        commonPlayer pl = getPlayerOrTemp(whoseTurn);
         double messageRotation = pl.messageRotation();
         
         
-        drawCommonChipPool(gc, gb,FIRST_PLAYER_INDEX,mainChipRect, gb.whoseTurn,ot,highlight);
-        drawPlayerPieces(gc,gb,FIRST_PLAYER_INDEX,blackChipRect,gb.whoseTurn,ot);
-        drawPlayerPieces(gc,gb,SECOND_PLAYER_INDEX,whiteChipRect,gb.whoseTurn,ot);
+        drawCommonChipPool(gc, gb,FIRST_PLAYER_INDEX,mainChipRect, whoseTurn,ot,highlight);
+        drawPlayerPieces(gc,gb,FIRST_PLAYER_INDEX,blackChipRect,whoseTurn,ot);
+        drawPlayerPieces(gc,gb,SECOND_PLAYER_INDEX,whiteChipRect,whoseTurn,ot);
         GC.setFont(gc,standardBoldFont());
 		if (vstate != ProteusState.Puzzle)
         {
@@ -476,9 +475,9 @@ public class ProteusViewer extends CCanvas<ProteusCell,ProteusBoard> implements 
             			?gameOverMessage()
             			:s.get(vstate.getDescription()),
             				vstate!=ProteusState.Puzzle,
-            				gb.whoseTurn,
+            				whoseTurn,
             				stateRect);
-            drawPlayerId(gc,iconRect,gb.whoseTurn);
+            drawPlayerId(gc,iconRect,whoseTurn);
             GC.setFont(gc,largeBoldFont());
             goalAndProgressMessage(gc,ourSelect,Color.black,"",progressRect, goalRect);
             GC.setFont(gc,largeBoldFont());
@@ -486,7 +485,7 @@ public class ProteusViewer extends CCanvas<ProteusCell,ProteusBoard> implements 
             TextChunk.colorize(G.replace(s.get(gb.move.desc),"\n",": "),s,colorText).draw(gc,messageRotation,true,movementRect,Color.black, null);
             TextChunk.colorize(G.replace(s.get(gb.goal.desc),"\n",": "),s,colorText).draw(gc,messageRotation,true,goalRect,Color.black, null);
          
-        DrawRepRect(gc,messageRotation,Color.black, b.Digest(),repRect);
+        DrawRepRect(gc,messageRotation,Color.black, gb.Digest(),repRect);
         drawAuxControls(gc,ourSelect);
         drawVcrGroup(ourSelect, gc);
 

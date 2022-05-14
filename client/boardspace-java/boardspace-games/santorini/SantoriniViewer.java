@@ -103,7 +103,7 @@ public class SantoriniViewer extends CCanvas<SantoriniCell,SantoriniBoard> imple
         int map[]=AR.intArray(2);
         if(first==1) { map[0] = 1; map[1]=0; }
         b = new SantoriniBoard(info.getString(OnlineConstants.GAMETYPE, Santorini_INIT),map);
-        useDirectDrawing();
+        useDirectDrawing(true);
         doInit(false);
         if(G.debug())
         {	// initialize the translations when debugging, so there
@@ -127,26 +127,39 @@ public class SantoriniViewer extends CCanvas<SantoriniCell,SantoriniBoard> imple
         	startFirstPlayer();
     	}
    }
+    boolean horizontal = false;
     public Rectangle createPlayerGroup(int player,int x,int y,double rot,int unit)
     {	commonPlayer pl = getPlayerOrTemp(player);
     	int manW = unit*4;
-    	int doneW = unit*5;
+    	int doneW = plannedSeating() ? unit*5 : 0;
     	Rectangle box = pl.createRectangularPictureGroup(x+manW,y,unit);   
     	Rectangle man = manRects[player];
     	Rectangle god = godRects[player];
     	Rectangle done = doneRects[player];
     	boolean gods = (b.variation!=Variation.santorini); 	
+    	int godw = gods ? unit*4 : 0;
     	G.SetRect(man, x, y, manW, manW);
-    	G.SetRect(done, x, y+manW,doneW,plannedSeating()?doneW/2:0);
-    	G.SetRect(god,G.Right(box),y,gods?unit*4:0,unit*6);
-    	pl.displayRotation = rot;
+    	G.SetRect(god,G.Right(box),y,godw,godw*3/2);
+    	if(horizontal && doneW>0 && godw==0)
+    	{
+    		G.SetRect(done, G.Right(box)+unit/4, G.Top(box)+unit/2,doneW,doneW/2);
+    	}
+    	else
+    	{
+       	G.SetRect(done, x, y+manW,doneW,doneW/2);
+    	}
+       	pl.displayRotation = rot;
     	G.union(box, man,god,done);
     	return(box);
     }
     
     public void setLocalBounds(int x, int y, int width, int height)
+    {	setLocalBoundsV( x,  y, width,  height,new double[] {1,-1});
+    }
+    public double setLocalBoundsA(int x, int y, int width, int height,double a)
     {	G.SetRect(fullRect, x, y, width, height);
     	GameLayoutManager layout = selectedLayout;
+    	horizontal = a<0;
     	int nPlayers = nPlayers();
        	int chatHeight = selectChatHeight(height);
        	// ground the size of chat and logs in the font, which is already selected
@@ -184,24 +197,35 @@ public class SantoriniViewer extends CCanvas<SantoriniCell,SantoriniBoard> imple
     	int mainY = G.Top(main);
     	int mainW = G.Width(main);
     	int mainH = G.Height(main);
-    	
+    	boolean vertical = mainH>mainW;
+    	int cols = vertical ? ncols : ncols+4;
+    	int rows = vertical ? nrows+4 : nrows;
     	// calculate a suitable cell size for the board
-    	double cs = Math.min((double)mainW/(ncols+4),(double)mainH/nrows);
+    	double cs = Math.min((double)mainW/cols,(double)mainH/rows);
     	int CELLSIZE = (int)cs;
     	SQUARESIZE = CELLSIZE*2;
     	//G.print("cell "+cs0+" "+cs+" "+bestPercent);
     	// center the board in the remaining space
-    	int boardW = (int)(ncols*CELLSIZE);
-    	int boardH = (int)(nrows*CELLSIZE);
+    	int boardW = (ncols*CELLSIZE);
+    	int boardWF = (cols*CELLSIZE);
+    	int boardH =  (nrows*CELLSIZE);
+    	int boardHF = (rows*CELLSIZE);
     	int squareW = CELLSIZE*2;
     	int squareH = CELLSIZE*4;
-    	int extraW = Math.max(0, (mainW-boardW-squareW*2)/2);
-    	int extraH = Math.max(0, (mainH-boardH)/2);
+    	int extraW = Math.max(0, (mainW-boardWF)/2);
+    	int extraH = Math.max(0, (mainH-boardHF)/2);
     	int boardX = mainX+extraW;
     	int boardY = mainY+extraH;
     	int boardBottom = boardY+boardH;
     	int boardRight = boardX+boardW;
-    	G.SetRect(squareRect,boardRight+squareW/2,boardY+(boardH-squareH)/2,squareW,squareH);
+    	if(vertical)
+    		{
+    		G.SetRect(squareRect,boardX+(boardW-squareH)/2,boardBottom,squareH,squareW); 		
+    		}
+    		else
+    		{
+    		G.SetRect(squareRect,boardRight+squareW/2,boardY+(boardH-squareH)/2,squareW,squareH);
+    		}
 
     	//
     	// state and top ornaments snug to the top of the board.  Depending
@@ -221,7 +245,7 @@ public class SantoriniViewer extends CCanvas<SantoriniCell,SantoriniBoard> imple
     	G.SetRect(goalRect, boardX, boardBottom-stateH,boardW,stateH);       
         setProgressRect(progressRect,goalRect);
         positionTheChat(chatRect,Color.white,Color.white);
- 	
+        return boardW*boardH;
     }
 
  
@@ -244,7 +268,12 @@ public class SantoriniViewer extends CCanvas<SantoriniCell,SantoriniBoard> imple
     private void DrawCommonChipPool(Graphics gc, int forPlayer, Rectangle r,
     		SantoriniCell []chips,HitPoint highlight,int lim)
     {	boolean canHit = b.LegalToHitChips(forPlayer);
-    	int step = G.Width(r);
+    	int w = G.Width(r);
+    	int h = G.Height(r);
+    	boolean vertical = w<h;
+    	int step = vertical ? w : h;
+    	int xp = G.Left(r)+step/2;
+    	int yp = G.Top(r)+step/2;
     	SantoriniCell hitCell = null;
         boolean canDrop = hasMovingObject(highlight);
         for(int i=0;i<lim;i++)
@@ -254,9 +283,15 @@ public class SantoriniViewer extends CCanvas<SantoriniCell,SantoriniBoard> imple
         boolean canPick = (thisChip!=null);
         HitPoint pt = (canHit && (canPick||canDrop))? highlight : null; 
         String msg = "";
-        if(thisCell.drawStack(gc,this,pt,step,G.Left(r)+step/2,G.Bottom(r)-(i*step)-step/2,step/10,0,msg))
+        if(thisCell.drawStack(gc,this,pt,step,xp,yp,step/10,0,msg))
         	{
         	hitCell = thisCell;
+        	}
+        if(vertical) { yp+=step; }
+        	else 
+        	{ // normally this would be just "step", but the artwork for the blue dome is offsert
+        	  xp+=step+step/3; 
+        	  yp -= step/5; 
         	}
         }
     	if(hitCell!=null)

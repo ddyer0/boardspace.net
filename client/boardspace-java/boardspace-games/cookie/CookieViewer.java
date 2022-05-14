@@ -81,8 +81,7 @@ public class CookieViewer extends CCanvas<CookieCell,CookieBoard> implements Coo
     
 	private TextButton swapButton = addButton(SWAP,GameId.HitSwapButton,SwapDescription,
 			HighlightColor, rackBackGroundColor);
-    private Rectangle repRect = addRect("repRect");	// not needed for hex
-    private Rectangle chipRect = addRect("firstPlayerChipRect");
+	private Rectangle chipRect = addRect("firstPlayerChipRect");
     private Color ZoomColor = new Color(0.0f,0.0f,1.0f);
 
 	private Image textures[] = null;
@@ -119,7 +118,7 @@ public class CookieViewer extends CCanvas<CookieCell,CookieBoard> implements Coo
         
         bb = new CookieBoard(info.getString(OnlineConstants.GAMETYPE, "cookie-disco"),
         		getStartingColorMap());
-        useDirectDrawing();
+        useDirectDrawing(true);
         Random r = new Random(randomKey);
         int pat = Random.nextInt(r,startPatterns.length);
         doInit(false,randomKey,pat);
@@ -192,7 +191,7 @@ public class CookieViewer extends CCanvas<CookieCell,CookieBoard> implements Coo
        	layout.placeRectangle(chipRect, chipW, chipH,chipW,chipH,
        			chipH,chipW, chipH,chipW,BoxAlignment.Center,true);
    	
-    	layout.placeDoneEditRep(CELLSIZE*3, CELLSIZE*3, doneRect, editRect, repRect);
+    	layout.placeDoneEdit(CELLSIZE*3, CELLSIZE*3, doneRect, editRect);
     	layout.placeRectangle(swapButton, CELLSIZE*3,CELLSIZE+C2,CELLSIZE*3,CELLSIZE+C2,BoxAlignment.Center,true);
       	
        	
@@ -549,9 +548,10 @@ public class CookieViewer extends CCanvas<CookieCell,CookieBoard> implements Coo
             				gb.whoseTurn,
             				stateRect);
             gb.playerChip[gb.whoseTurn].topChip().drawChip(gc,this,iconRect,null);
+            if(!DrawRepRect(gc,messageRotation,Color.black,gb.Digest(),goalRect))
+            {
             goalAndProgressMessage(gc,nonDragSelect,s.get(GoalMessage),progressRect, goalRect);
-            DrawRepRect(gc,messageRotation,Color.black,gb.Digest(),repRect);	
-        
+            }
         // draw the vcr controls
         drawVcrGroup(nonDragSelect, gc);
 

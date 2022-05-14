@@ -112,7 +112,7 @@ public class KhetViewer extends CCanvas<KhetCell,KhetBoard> implements KhetConst
         int map[] = getStartingColorMap();
         b = new KhetBoard(info.getString(OnlineConstants.GAMETYPE, Khet_Classic_Init),randomKey,map);
         if(seatingFaceToFace()) { b.autoReverseYNormal(); }
-        useDirectDrawing();
+        useDirectDrawing(true);
         doInit(false);
         
      }
@@ -168,9 +168,10 @@ public class KhetViewer extends CCanvas<KhetCell,KhetBoard> implements KhetConst
     	//double bestPercent = 
     	layout.selectLayout(this, nPlayers, width, height,
     			margin,	
-    			0.75,	// 60% of space allocated to the board
+    			0.75,	// % of space allocated to the board
     			1.2,	// 1.2:1 aspect ratio for the board
-    			fh*2.5,	// maximum cell size
+    			fh*2.0,	//  cell size
+    			fh*2.5,
     			0.4		// preference for the designated layout, if any
     			);
     	

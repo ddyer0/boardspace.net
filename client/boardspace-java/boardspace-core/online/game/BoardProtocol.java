@@ -198,8 +198,6 @@ public interface BoardProtocol extends Digestable
 	 */
 	public void resetClientRevision();
 
-	public cell<?> getCorrespondingCell(cell<?>from);
-	
 	public String getName();
 	public void setName(String s);
 	public BoardState getState();

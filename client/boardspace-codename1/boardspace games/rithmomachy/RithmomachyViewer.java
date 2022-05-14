@@ -93,6 +93,7 @@ public class RithmomachyViewer extends CCanvas<RithmomachyCell,RithmomachyBoard>
        
         b = new RithmomachyBoard(info.getString(OnlineConstants.GAMETYPE, Rithmomachy_INIT),
         		randomKey,players_in_game,getStartingColorMap());
+        //useDirectDrawing(); // not tested yet
         doInit(false);
         b.setReverseY(preferredRotation());
         reverseOption = myFrame.addOption(s.get(ReverseView),b.reverseY(),deferredEvents);
@@ -730,6 +731,7 @@ public class RithmomachyViewer extends CCanvas<RithmomachyCell,RithmomachyBoard>
     //
     public void redrawBoard(Graphics gc, HitPoint highlight)
     {  RithmomachyBoard gb = disB(gc);
+      int whoseTurn = gb.whoseTurn;
       boolean ourTurn = OurMove();
       boolean moving = hasMovingObject(highlight);
       HitPoint ot = ourTurn ? highlight : null;	// hit if our turn
@@ -746,22 +748,22 @@ public class RithmomachyViewer extends CCanvas<RithmomachyCell,RithmomachyBoard>
           {	commonPlayer pl = getPlayerOrTemp(i);
           	pl.setRotatedContext(gc, highlight, false);
           	
-            DrawCommonChipPool(gc, gb,i,capturedRects[i], gb.whoseTurn,ot);
+            DrawCommonChipPool(gc, gb,i,capturedRects[i], whoseTurn,ot);
             drawScore(gc,gb,i,scoreRects[i]);
             
             DrawPlayerIcon(gc,i,chipRects[i]);
 
-           	if(planned && (i==gb.whoseTurn))
+           	if(planned && (i==whoseTurn))
           	{
            		handleDoneButton(gc,doneRects[i],(gb.DoneState() ? select : null), 
       					HighlightColor, rackBackGroundColor);
           			}
           	pl.setRotatedContext(gc, highlight, true);
           }	
-        commonPlayer pl = getPlayerOrTemp(gb.whoseTurn);
+        commonPlayer pl = getPlayerOrTemp(whoseTurn);
 		double messageRotation = pl.messageRotation();
 		 
-		drawResult(gc,gb,gb.whoseTurn,resultRect);
+ 		drawResult(gc,gb,whoseTurn,resultRect);
 
         drawCalculator(gc,gb,calculatorRect,highlight);
         GC.setFont(gc,standardBoldFont());
@@ -785,7 +787,7 @@ public class RithmomachyViewer extends CCanvas<RithmomachyCell,RithmomachyBoard>
         				stateRect);
         gb.playerChip[gb.whoseTurn].drawChip(gc,this,iconRect,null);
         goalAndProgressMessage(gc,ourSelect,s.get(VictoryCondition),progressRect, goalRect);
-        DrawRepRect(gc,messageRotation,Color.black,b.Digest(),repRect);
+        DrawRepRect(gc,messageRotation,Color.black,gb.Digest(),repRect);
         drawAuxControls(gc,ourSelect);
         drawVcrGroup(ourSelect, gc);
 

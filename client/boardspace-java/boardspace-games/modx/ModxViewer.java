@@ -94,7 +94,7 @@ public class ModxViewer extends CCanvas<ModxCell,ModxBoard> implements ModxConst
        
         b = new ModxBoard(info.getString(OnlineConstants.GAMETYPE, Variation.Modx.name),
         		randomKey,players_in_game,repeatedPositions,getStartingColorMap(),ModxBoard.REVISION);
-        useDirectDrawing();
+        useDirectDrawing(true);
         doInit(false);
         offerDrawAction = myFrame.addAction(s.get(OFFERDRAW),deferredEvents);     
         

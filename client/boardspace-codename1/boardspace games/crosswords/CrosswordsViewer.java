@@ -249,7 +249,7 @@ public class CrosswordsViewer extends CCanvas<CrosswordsCell,CrosswordsBoard> im
     	layout.placeTheVcr(this,vcrw,vcrw*3/2);
        	
        	commonPlayer pl = getPlayerOrTemp(0);
-       	int spare = G.Height(pl.playerBox)*2/3;
+       	int spare = G.Height(pl.playerBox)/2;
        	layout.placeRectangle(drawPileRect,spare,spare,BoxAlignment.Center);
        	       	
     	Rectangle main = layout.getMainRectangle();
@@ -330,7 +330,7 @@ public class CrosswordsViewer extends CCanvas<CrosswordsCell,CrosswordsBoard> im
     	G.SetRect(notice, donel , G.Bottom(done),doneW*2,doneW/4);
     	G.union(box, done,score,eye,notice);
     	int unith = rackSize*unitsize;
-       	G.SetRect(chip,	x,	G.Bottom(box),	unith*3*9/4,unith);
+       	G.SetRect(chip,	x,	G.Bottom(box),	unith*20/4,unith*7/8);
         G.union(box, chip);
     	pl.displayRotation = rotation;
     	return(box);
@@ -462,7 +462,7 @@ public class CrosswordsViewer extends CCanvas<CrosswordsCell,CrosswordsBoard> im
     {
     	int h = G.Height(rack);
     	int w = G.Width(rack);
-    	int cy = G.centerY(rack);
+    	int cy = G.centerY(rack)-h/10;
     	int nsteps = map.length;
     	int xstep = Math.min(w/(nsteps+1),h*3/4); 
     	int tileSize = (int)(xstep*1);
@@ -472,8 +472,8 @@ public class CrosswordsViewer extends CCanvas<CrosswordsCell,CrosswordsBoard> im
        	//.print("");
        	// for remote viewers, always use this size
        	if(remoteViewer>=0) { CELLSIZE = tileSize; }
-       	
-       	if(G.debug())
+       	/* this was useful when debugging rack manipulation code 
+       	if(false)//G.debug())
        	{
        	int cx0 = cx;
      	for(int idx = 0;idx<cells.length;idx++)
@@ -487,7 +487,7 @@ public class CrosswordsViewer extends CCanvas<CrosswordsCell,CrosswordsBoard> im
       	if(dtop!=null) { d.drawChip(gc, this, dtop, tileSize*2/3, cx0, cy+tileSize*2/3, null);}
       	cx0 += xstep;
        	}}}
-
+       	 */
     	for(int idx = 0;idx<nsteps;idx++)
 		{
     	int mapValue = map[idx];
@@ -516,6 +516,7 @@ public class CrosswordsViewer extends CCanvas<CrosswordsCell,CrosswordsBoard> im
       	setLetterColor(gc,gb,mc);
       	//print("Draw "+idx+" "+c+" "+top+" @ "+cx);
     	mc.drawChip(gc, this, top, tileSize, cx, cy, censor ? CrosswordsChip.BACK : null);
+    	if(c!=null) { c.copyCurrentCenter(mc);	}// set the center so animations look right
        	}
 
     	if(canDrop && top==null)
@@ -917,7 +918,6 @@ public void setLetterColor(Graphics gc,CrosswordsBoard gb,CrosswordsCell cell)
         	}
         	}
          }
-
         // this enumerates the cells in the board in an arbitrary order.  A more
         // conventional double xy loop might be needed if the graphics overlap and
         // depend on the shadows being cast correctly.

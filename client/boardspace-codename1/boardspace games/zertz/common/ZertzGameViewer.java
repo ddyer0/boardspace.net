@@ -70,7 +70,7 @@ public class ZertzGameViewer extends CCanvas<zCell,GameBoard> implements GameCon
     private Rectangle reserveRect = addRect("reserveRect");
     private Rectangle variationRect = addRect("variationRect");
     public Rectangle rackRects[] = addRect("rack",2);
-	private TextButton swapButton = addButton(SWAP,GameId.HitSwapButton,SwapDescription,
+    private TextButton swapButton = addButton(SwapFirst,GameId.HitSwapButton,SwapFirst,
 			HighlightColor, rackBackGroundColor);
     private Rectangle repRect = addRect("repRect");
     private static int HitNoWhere = -101;
@@ -114,7 +114,7 @@ public class ZertzGameViewer extends CCanvas<zCell,GameBoard> implements GameCon
         MouseDotColors = zMouseDotColors;
      
         b = new GameBoard(info.getString(OnlineConstants.GAMETYPE, "Zertz"));
-        useDirectDrawing();
+        useDirectDrawing(true);
         doInit(false);
    }
 
@@ -171,7 +171,9 @@ public class ZertzGameViewer extends CCanvas<zCell,GameBoard> implements GameCon
     	// them together and not encroaching on the main rectangle.
     	layout.placeTheChatAndLog(chatRect, minChatW, chatHeight,minChatW*2,3*chatHeight/2,logRect,
     			minLogW, minLogH, minLogW*3/2, minLogH*3/2);
-       	layout.placeDoneEditRep(buttonW,buttonW*4/3,doneRect,editRect,swapButton);
+       	layout.placeDoneEditRep(buttonW,buttonW*4/3,doneRect,editRect);
+       	Rectangle rack = rackRects[1];
+       	G.copy(swapButton,rack);
     	layout.placeTheVcr(this,vcrw,vcrw*3/2);
     	if(reviewOnly || (b.variation==Zvariation.Zertz_h))
     		{ layout.placeRectangle(variationRect, vcrw, vcrw/4,BoxAlignment.Edge);
@@ -583,14 +585,14 @@ public class ZertzGameViewer extends CCanvas<zCell,GameBoard> implements GameCon
         GC.setFont(gc,standardBoldFont());
        drawPlayerStuff(gc,(vstate==ZertzState.PUZZLE_STATE),nonDragSelect,
  	   			HighlightColor, rackBackGroundColor);
-
-        commonPlayer pl = getPlayerOrTemp(b.whoseTurn);
+        int whoseTurn = bd.whoseTurn;
+        commonPlayer pl = getPlayerOrTemp(whoseTurn);
         double messageRotation = pl.messageRotation();
        // draw the board control buttons 
         if (vstate != ZertzState.PUZZLE_STATE)
         {
 			if(!planned)
-				{handleDoneButton(gc,messageRotation, doneRect,(b.DoneState() ? buttonSelect : null), 
+				{handleDoneButton(gc,messageRotation, doneRect,(bd.DoneState() ? buttonSelect : null), 
 					HighlightColor, rackBackGroundColor);
 				}
 			handleEditButton(gc,messageRotation,editRect,buttonSelect,selectPos, HighlightColor, rackBackGroundColor);
@@ -604,12 +606,12 @@ public class ZertzGameViewer extends CCanvas<zCell,GameBoard> implements GameCon
         standardGameMessage(gc,messageRotation,
         		vstate==ZertzState.GAMEOVER_STATE?gameOverMessage():s.get(vstate.getDescription()),
         				vstate!=ZertzState.PUZZLE_STATE,
-        				bd.whoseTurn,
+        				whoseTurn,
         				stateRect);
         goalAndProgressMessage(gc,nonDragSelect,
 				s.get(GoalMessage),progressRect, goalRect);
 
-        DrawRepRect(gc,messageRotation,Color.black, b.Digest(),repRect);	// Not needed for barca
+        DrawRepRect(gc,messageRotation,Color.black, bd.Digest(),repRect);	// Not needed for barca
         drawVcrGroup(nonDragSelect, gc);
         drawVariation(gc,ourTurnSelect);
     }

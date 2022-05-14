@@ -1221,23 +1221,4 @@ public abstract class gBoard<CELLTYPE extends cell<CELLTYPE>> extends RBoard<CEL
 	}
 
 
-
-    /**
-     * this is a special hack used by startBoardAnimations to convert the
-     * real board cells in the animation stack to the corresponding cells
-     * in the safe display board.   It proved way to hard to add this 
-     * functionality in a clean way by extending BoardProtocol to know
-     * about the actual types of the board and cells.
-     */
-    @SuppressWarnings("unchecked")
-	public cell<?> getCorrespondingCell(cell<?>from)
-    {	
-    	cell<?>got = getCell((CELLTYPE)from);
-    	if(got==null)
-    		{ System.out.println("getCorrespondingCell "+from+" returned null"); got = from; 
-    		}
-    	return(got);
-    }
-    
-
 }

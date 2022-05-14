@@ -119,7 +119,7 @@ public class GounkiViewer extends CCanvas<GounkiCell,GounkiBoard> implements Gou
     public Rectangle createPlayerGroup(int player,int x,int y,double rotation,int unitsize)
     {	commonPlayer pl = getPlayerOrTemp(player);
     	Rectangle chip = chipRects[player];
-    	int chipW = unitsize*3;
+    	int chipW = unitsize*2;
     	int chipH = unitsize*2;
     	int doneW = unitsize*4;
     	Rectangle box = pl.createRectangularPictureGroup(x+chipW,y,unitsize);
@@ -128,7 +128,7 @@ public class GounkiViewer extends CCanvas<GounkiCell,GounkiBoard> implements Gou
     	
     	G.SetRect(chip, x, y, chipW, chipH);
     	G.SetRect(done, x+chipW,G.Bottom(box),doneW,plannedSeating()?doneW/2:0);
-    	G.SetRect(rack,G.Right(box),y,unitsize*6,unitsize*5);
+    	G.SetRect(rack,G.Right(box),y,unitsize*4,unitsize*4);
     	
     	pl.displayRotation = rotation;
     	

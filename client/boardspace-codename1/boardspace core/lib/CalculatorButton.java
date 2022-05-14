@@ -20,17 +20,18 @@ public class CalculatorButton {
 	Color textColor = Color.black;
 	boolean visible = true;
 	boolean enabled = true;
+	
 	public enum id implements CellId {
-	N0("0",0),
-	N1("1",1),
-	N2("2",2),
-	N3("3",3),
-	N4("4",4),
-	N5("5",5),
-	N6("6",6),
-	N7("7",7),
-	N8("8",8),
-	N9("9",9),
+	N0("0",'0'),
+	N1("1",'1'),
+	N2("2",'2'),
+	N3("3",'3'),
+	N4("4",'4'),
+	N5("5",'5'),
+	N6("6",'6'),
+	N7("7",'7'),
+	N8("8",'8'),
+	N9("9",'9'),
 	Na("a",'a'),
 	Nb("b",'b'),
 	Nc("c",'c'),
@@ -89,7 +90,8 @@ public class CalculatorButton {
 	Ntilde("~",'~'),
 	Nlbrack("[",'['),
 	Nrbrack("]",']'),
-	Ntab("Tab",'\t'),
+	Ntab("\u21e8",'\t'),
+	Ndel("\u232B",0xff),
 	Nbackslash("\\",'\\'),
 	Ndquote("\"",'"'),
 	Ncolon(":",':'),
@@ -122,32 +124,45 @@ public class CalculatorButton {
 	Nbackquote("`",'`'),
 	Ndown("\u2193",0x2193),
 	Nup("\u2191",0x2191),
-	Nleft("\u2190",0x2190),
+	Nleft("\u2190",0x2190,0.6,0.3,1),
 	Nright("\u2192",0x2192),
-	NcloseKeyboard("\u25bd",0x25bd),
-	Ncaps("Caps",1000),
-	Nenter("Enter",1001),
-	Nshift("Shift",1002),
-	Ncontrol("Ctrl",1003),
-	Nspacebar("Bar",' '),
-	Back("del",-1),
-	Clear("clr",-2),
-	Cancel("X",-3),
-	NoQE("No QE",-4),
-	Text1("message",-5),
-	Display("message",-6),
-	Ok("bid",-7),
-	Text2("message",-8),
-	Nunk("???",-9);
+	NarrowCloseKeyboard("\u25bd",0x25bd,0.5,0.2,1),
+	CloseKeyboard("\u25bd",0x25bd,1.13,0.4,1),
+	Ncaps("Caps",1000,0,0,2),
+	Nenter("Enter",1001,0,0,2),
+	Nshift("Shift",1002,0,0,2),
+	Ncontrol("Ctrl",1003,0,0,2),
+	NSymbol("#*%",1004,0,0,2),
+	NAlpha("abc",1005,0,0,2),
+	Nspacebar(" ",' ',0.2,0,8.85),
+	NNspacebar(" ",' ',0,0,4),
+	Clear("clr",-2,0,0,2),
+	Cancel("\u26DD",-3),
+	NoQE("No QE",-4,0,0,2),
+	Text1("message",-5,0,0,2),
+	Display("message",-6,0,0,2),
+	Ok("bid",-7,0,0,2),
+	Text2("message",-8,0,0,2),
+	Nunk("???",-9,0,0,2);
 
 	String shortName=name();
 	public String shortName() { return(shortName); }
 	int ival = 0;
-	id(String n,int v) { shortName=n; ival=v; }
-	
+	double dx = 0;
+	double dy = 0;
+	double dw = 1;
+	id(String n,int v) { shortName=n; ival=v; dx=0; dy=0; dw=shortName.length();  }
+	id(String n,int v, double dxx,double dyy, double dww)
+	{ shortName = n;
+	  ival = v;
+	  dx = dxx;
+	  dy = dyy;
+	  dw = dww;
+	}
 	public static id find(String name)
 		{
-		for(id item : values()) { if(item.shortName.equals(name)) { return(item); }}
+		for(id item : values())
+			{ if(item.shortName.equals(name) || item.name().equals(name)) { return(item); }}
 		G.print("Can't find "+name);
 		return(Nunk);
 		}

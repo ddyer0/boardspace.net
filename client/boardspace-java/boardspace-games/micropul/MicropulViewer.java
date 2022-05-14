@@ -609,14 +609,13 @@ public class MicropulViewer extends CCanvas<MicropulCell,MicropulBoard> implemen
     public void redrawBoard(Graphics gc, HitPoint selectPos)
     {  MicropulBoard gb = disB(gc);
        MicropulState state = gb.getState();
-   	if(gc!=null)
-   	{
+	   	if(gc!=null)
+	   	{
    		// note this gets called in the game loop as well as in the display loop
    		// and is pretty expensive, so we shouldn't do it in the mouse-only case
-
-       bb.SetDisplayParameters(zoomRect.value,1.0,board_center_x,board_center_y,0.0); // shrink a little and rotate 30 degrees
-       bb.SetDisplayRectangle(boardRect);
-   	}
+	   	gb.SetDisplayParameters(zoomRect.value,1.0,board_center_x,board_center_y,0.0); // shrink a little and rotate 30 degrees
+	   	gb.SetDisplayRectangle(boardRect);
+	   	}
        boolean moving = hasMovingObject(selectPos);
        // 
        // if it is not our move, we can't click on the board or related supplies.

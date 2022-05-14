@@ -963,7 +963,7 @@ public class GameBoard extends hexBoard<zCell> implements BoardProtocol,GameCons
         	}
 			//$FALL-THROUGH$
         default:
-        	throw G.Error("Undefined state for MoveBtoB: %s",board_state); //gameover?
+        	throw G.Error("Undefined state for MoveBtoB: "+board_state); //gameover?
         }
     }
 
@@ -1677,7 +1677,7 @@ public class GameBoard extends hexBoard<zCell> implements BoardProtocol,GameCons
         case MOVE_R_PLUS:
         case MOVE_START:
         case MOVE_EDIT:default:
-        	throw G.Error("Illegal move for ExpressExecute: %s" + m);
+        	throw G.Error("Illegal move for ExpressExecute: " + m);
         }
     	turnStack.push(who);
 
@@ -1790,7 +1790,7 @@ public class GameBoard extends hexBoard<zCell> implements BoardProtocol,GameCons
         case MOVE_R_PLUS:
         case MOVE_START:
         case MOVE_EDIT:
-        	throw G.Error("Illegal move for ExpressUnExecute: %s" + m);
+        	throw G.Error("Illegal move for ExpressUnExecute: " + m);
 		default:
 			break;
         }

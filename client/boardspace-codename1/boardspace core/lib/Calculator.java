@@ -31,7 +31,7 @@ public class Calculator implements Config
 		}
 	}
     public static CalculatorButton StandardButtons[] = { 
-    	new CalculatorButton(CalculatorButton.id.Back,Keytop,		0.84,0.4,	0.2),
+    	new CalculatorButton(CalculatorButton.id.Ndel,Keytop,		0.84,0.4,	0.2),
     	new CalculatorButton(CalculatorButton.id.Clear,Keytop,     0.84,0.53,	0.2),
     	new CalculatorButton(CalculatorButton.id.Cancel,Keytop,	0.84,0.65,		0.2),
 
@@ -84,7 +84,9 @@ public class Calculator implements Config
 		if(hp.hitCode instanceof CalculatorButton.id)
 		{
 			CalculatorButton.id bcode = (CalculatorButton.id)hp.hitCode;
-			if(bcode.ival>=0) { svalue = null; value = value*10 + bcode.ival; }
+			if((bcode.ival>='0') && (bcode.ival<='9'))
+				{ svalue = null; value = value*10 + (bcode.ival-'0');
+				}
 			else {
 				switch(bcode)
 				{
@@ -92,7 +94,7 @@ public class Calculator implements Config
 					value=0;
 					svalue = bcode.shortName;
 					break;
-				case Back: 
+				case Ndel: 
 					svalue = null;
 					value = value/10;
 					break;

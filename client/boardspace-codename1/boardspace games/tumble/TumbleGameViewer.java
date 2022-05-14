@@ -99,6 +99,7 @@ public class TumbleGameViewer extends CCanvas<TumbleCell,TumbleBoard> implements
        
         b = new TumbleBoard(info.getString(OnlineConstants.GAMETYPE, "Tumblingdown"),
         		getStartingColorMap());
+        useDirectDrawing(true);
         doInit(false);
         reverseOption = myFrame.addOption(s.get(ReverseView),b.reverseY(),deferredEvents);
         

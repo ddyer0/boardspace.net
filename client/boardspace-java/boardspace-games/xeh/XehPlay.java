@@ -1005,6 +1005,33 @@ private GenericNetwork createF8PC()
    			ncells+1				// 18 fully connected layer 	
   				);	// learn with all sigmoid nodes
   }
+  private GenericNetwork createSimple()
+  {	int ncells = board.nCells();
+  	return new GenericNetwork(
+  				"NAME F8PCB"
+  				+ " LEARNING_RATE 0.0005"
+  				+ " LAYER 0 (TYPE I ID IN )"		// normalized to white pieces
+  				+ " LAYER 1 (TYPE I ID IN2 )"		// normalized to black pieces
+  				
+  				+ " LAYER 2 (TO IN TO IN2 TYPE FC)"
+  				+ " LAYER 3 (TO 2 TYPE FC)"
+ 				+ " LAYER 4 (TO 3 TYPE FC)"
+ 				+ " LAYER 5 (TO 4 TYPE FC)"
+ 				+ " LAYER 6 (TO 5 TYPE FC)"
+ 				+ " LAYER 7 (TO 6 TYPE FC)"
+ 				+ " LAYER 8 (TO 7 TYPE O)"
+   				
+  				+ " COORDINATES HEX "+board.ncols
+  				+ " TRANSFER_FUNCTION SIGMOID"
+  				,
+  				ncells,			// 0 input layer
+  				ncells,			// 1 extra input layer
+  				// 7 connected layers
+  				ncells*2,ncells*2,ncells*2,ncells*2,ncells*2,ncells*2,ncells*2,
+  				// output layer 	
+  				ncells				
+  				);	// learn with all sigmoid nodes
+  }
 
   // net with an extra input layer for last 2 moves, which
   // feeds into 2 of the 4 filter stacks
@@ -1615,8 +1642,9 @@ private GenericNetwork createF4()
 								//createF8PIC()	// 4 filter layers with lastmove at the head
 								//createF8PID()	// 2 filter layers, deeper network
 								//createF8PC()
-								createF8PCB();	// 4 filter layers, lastmove only at output
+								//createF8PCB()	// 4 filter layers, lastmove only at output
 								//createF8PICW()
+						createSimple()	// 7 fully connected layers
 								;			
 						}
 					}
@@ -1811,7 +1839,7 @@ public void PrepareToMove(int playerIndex)
             {	// randomn takes the a random element among the first N
             	// to provide variability.  The second parameter is how
             	// large a drop in the expectation to accept.  For hex this
-            	// doesn't really matter, but some games have disasterous
+            	// doesn't really matter, but some games have disastrous
             	// opening moves that we wouldn't want to choose randomly
                 move = (XehMovespec) search_state.Find_Static_Best_Move(randomn,dif);
                 if((move!=null) && (level8Net!=null))

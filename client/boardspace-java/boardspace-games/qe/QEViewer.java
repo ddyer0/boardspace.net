@@ -534,7 +534,7 @@ public void ViewerRun(int wait)
     	if(gc!=null) { cell.copyCurrentCenter(target); }
     }
     public static CalculatorButton QEButtons[] = { 
-        	new CalculatorButton(CalculatorButton.id.Back,Calculator.Keytop,		0.84,0.4,	0.2),
+        	new CalculatorButton(CalculatorButton.id.Ndel,Calculator.Keytop,		0.84,0.4,	0.2),
         	new CalculatorButton(CalculatorButton.id.Clear,Calculator.Keytop,     0.84,0.53,	0.2),
         	new CalculatorButton(CalculatorButton.id.Cancel,Calculator.Keytop,	0.84,0.65,		0.2),
 
@@ -793,7 +793,7 @@ public void ViewerRun(int wait)
         	for(int i=0;i<gb.nPlayers();i++)
         	{
         	QEPlayer pl = gb.getPlayer(i);
-        	if(ob!=pl)
+        	if(ob!=null && ob!=pl)
         		{	Rectangle r = new Rectangle(x,y,stepx,stepy);
         			commonPlayer ap = getActivePlayer();
         			QEState uis = getUIState(i);

@@ -109,7 +109,7 @@ public class CheViewer extends CCanvas<CheCell,CheBoard> implements CheConstants
         zoomRect.highlightColor = HighlightColor;       
         bb = new CheBoard(info.getString(OnlineConstants.GAMETYPE, Che_INIT),
         		getStartingColorMap());
-        useDirectDrawing();
+        useDirectDrawing(true);
         doInit(false);
         labelColor = Color.red;
         labelFont = largeBoldFont();

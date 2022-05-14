@@ -9,6 +9,7 @@ import lib.G;
  */
 public class FCNeuron extends SimpleNeuron
 {	Connection inputConnections[] = null;
+	public double bias = 0;
 	public Connection[] getInputConnections() { return(inputConnections); }
 	public Weight[] getWeights() { 	return(inputConnections);	}
 	
@@ -29,7 +30,7 @@ public class FCNeuron extends SimpleNeuron
 	 */
 	public void calculate() 
 	{
-		double nextVal = 0;
+		double nextVal = bias;
 		Connection connections[] = getInputConnections();
 		if(connections!=null)
 		{

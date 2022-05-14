@@ -145,7 +145,7 @@ public class CrossfireViewer extends CCanvas<CrossfireCell,CrossfireBoard> imple
         
         bb = new CrossfireBoard(info.getString(OnlineConstants.GAMETYPE, Crossfire_INIT),
         		repeatedPositions,getStartingColorMap());
-        useDirectDrawing();
+        useDirectDrawing(true);
         doInit(false);
         reverseOption = myFrame.addOption(s.get(ReverseView),bb.reverseY(),deferredEvents);
 
@@ -165,14 +165,18 @@ public class CrossfireViewer extends CCanvas<CrossfireCell,CrossfireBoard> imple
     }
     
     public Rectangle createPlayerGroup(int player,int x,int y,double rotation,int unitsize)
-    {	commonPlayer pl = getPlayerOrTemp(player);
-    	Rectangle box = pl.createRectangularPictureGroup(x+3*unitsize,y,2*unitsize/3);
+    {   boolean planned = plannedSeating() ;
+		int buttonH = unitsize*3/2;
+
+    	commonPlayer pl = getPlayerOrTemp(player);
+    	Rectangle box = pl.createRectangularPictureGroup(x+(planned?0:buttonH),y,2*unitsize/3);
     	Rectangle chip = chipRects[player];
     	Rectangle done = doneRects[player];
     	Rectangle prisoner = prisonerRects[player];
-    	
-    	G.SetRect(chip, x, y, unitsize*2, unitsize*2);
-    	G.SetRect(done, x, y+unitsize*2, plannedSeating()?unitsize*3:0,unitsize+unitsize/2);
+    	int boxH = G.Height(box);
+    	int doneW = planned ? buttonH*2 : 0;
+    	G.SetRect(chip, x, y+(planned ? boxH:0), buttonH,buttonH);
+    	G.SetRect(done, x+buttonH+buttonH/4, y+boxH, doneW,doneW/2);
       	G.SetRect(prisoner,G.Right(box),y,unitsize*2,unitsize*3);
     	pl.displayRotation = rotation;
     	G.union(box, done,chip,prisoner);

@@ -3429,7 +3429,7 @@ private void drawPlayerBoard(Graphics gc,
 		int nCards = cardDisplay.height();
 		int nCardSlots = (nCards==1 ? 2 : nCards);
 		int nFieldSlots = (wineIndex==0) ? 0 : (wineIndex+1);
-		int step = Math.min(G.Height(br)/4,w/Math.max(5, 1+(nCardSlots+nFieldSlots)));
+		int step = Math.min(3*G.Height(br)/10,w/Math.max(5, 1+(nCardSlots+nFieldSlots)));
 		
 		int fstep = cardAndWineMode ? step*2/3 : step*6/5;
       	String cardLabel = censor ? ViticultureChip.BACK : null;
@@ -3529,7 +3529,7 @@ private void drawPlayerBoard(Graphics gc,
 						? s.get(OtherCardsMessage,apname)
 						: s.get(apCards ?  YourCardsMessage : AvailableCardsMessage);
 		GC.Text(gc, true, xp+totalW/20, yp, cardW,step/2,Color.black,null,cardMessage);
-		int cardStep = Math.min(cardH/4,(int)( cardW/Math.max(3, (nCards+1))));
+		int cardStep = Math.min(cardH/((cardDisplay1==null)?3:4),(int)( cardW/Math.max(3, (nCards+1))));
 		int secondCardStep = cardStep;
 		int cardY = yp+step*3/2;
 		if(unusedCards.height()>0) 

@@ -191,6 +191,7 @@ public abstract class cell<FINALTYPE
 	public void assertCenterSet()
 	{
 		G.Assert(hasScreenData(),"From Cell %s has no screen data",this);
+		G.Assert(centerX()>10 && centerY()>10,"real");
 	}
 	/**
 	 * copy the current location (used for animations) from another cell.  Unusually

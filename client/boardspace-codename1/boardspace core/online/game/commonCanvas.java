@@ -1568,6 +1568,12 @@ public abstract class commonCanvas extends exCanvas
     { ConnectionManager myNetConn = (ConnectionManager)sharedInfo.get(exHashtable.NETCONN);
       if(myNetConn!=null) { myNetConn.LogMessage(ev); }
     }
+    
+    private void LogMessage(String ev,Object ...od)
+    { ConnectionManager myNetConn = (ConnectionManager)sharedInfo.get(exHashtable.NETCONN);
+      if(myNetConn!=null) { myNetConn.LogMessage(ev,od); }
+    }
+    
     /** draw a mouse sprite for a particular player, and if there is a moving
      * object, draw a representation of the object for the player in control.
      * @param g
@@ -3302,7 +3308,7 @@ public abstract class commonCanvas extends exCanvas
         {
             commonMove m1 = History.elementAt(sliderPos);
             commonMove m = m1.findVariation(command);
-            LogMessage("selected variation is "+command);
+            LogMessage("selected variation is ",command);
             if (m != null)
             {	if(m1.next == m) 
             		{ hidden.doForward(replayMode.Replay); }
@@ -3315,7 +3321,7 @@ public abstract class commonCanvas extends exCanvas
         if (hitPoint != null)
         {
         	int next = nextSliderPosition(hitPoint);
-        	LogMessage("scroll to "+next);
+        	LogMessage("scroll to ",next);
             doScrollTo(next);
         }
     }
@@ -4265,20 +4271,22 @@ public abstract class commonCanvas extends exCanvas
      * @param digest
      * @param r
      */
-    public void DrawRepRect(Graphics gc,long digest,Rectangle r)
+    public boolean DrawRepRect(Graphics gc,long digest,Rectangle r)
     {
-    	 	DrawRepRect(gc,0,Color.black,digest,r);
+    	 	return DrawRepRect(gc,0,Color.black,digest,r);
     }
-   public void DrawRepRect(Graphics gc,double rotation,Color textColor,long digest,Rectangle r)
+   public boolean DrawRepRect(Graphics gc,double rotation,Color textColor,long digest,Rectangle r)
    {
     	if(gc!=null)
     	{	
     		int nreps = repeatedPositions.numberOfRepeatedPositions(digest);
     		GC.setFont(gc,largeBoldFont());
     		if(nreps>1) 
-    		{ GC.Text(gc,rotation,false,r,textColor,null,s.get(RepetitionsMessage,nreps)); 
+    		{ GC.Text(gc,rotation,true,r,textColor,null,s.get(RepetitionsMessage,nreps)); 
+    		  return true;
     		}
     	}
+    	return false;
     }  
 
     /** handle the boilerplate editing options involving punting on a resign,
@@ -5395,8 +5403,9 @@ public abstract class commonCanvas extends exCanvas
      * Common problems when enabling this feature involve animations where the 
      * animation origin or destination is not set, usually on cells used only in the UI
      * This generally means the cell copyFrom operation wasn't called as part of board copyFrom.  
+     * @param unbuffered TODO
      */
-    public void useDirectDrawing()
+    public void useDirectDrawing(boolean unbuffered)
     {	if(l.enableCopyBoard)
     	{
          painter.drawLockRequired = false;
@@ -5405,7 +5414,7 @@ public abstract class commonCanvas extends exCanvas
          saveDisplayBoard(getBoard());	// make sure there are two
          useCopyBoard = true;
          G.print("use direct drawing for "+getBoard());
-         if(G.isCodename1()) 
+         if(G.isCodename1() && unbuffered) 
      		{	 
         	 painter.setRepaintStrategy(RepaintStrategy.Direct_Unbuffered); 
      		}
@@ -5588,7 +5597,7 @@ public abstract class commonCanvas extends exCanvas
 				} 
 			} );
     	G.print("summary:\n",problems.toString());
-    	G.print(""+l.fileVisits+" files visited "+l.fileProblems+ " problems");
+    	G.print(l.fileVisits," files visited ",l.fileProblems, " problems");
 
     	}
 
@@ -6754,6 +6763,8 @@ public HitPoint MouseMotion(int eventX, int eventY, MouseState upcode)
 		setHasGameFocus(true);
 		break;
 	case LAST_IS_IDLE: 
+	case LAST_IS_DRAG:
+	case LAST_IS_PINCH:
 		repaint(20,"mouse motion"); 
 		break;
 	default: break;
@@ -7562,7 +7573,7 @@ public void verifyGameRecord()
     public boolean globalPinchInProgress()
     {
     	return(super.globalPinchInProgress()
-    			|| mouse.mouse_pinch
+    			|| ( mouse.mouse_pinch && !inBoardZoom)
     			);
     }
 
@@ -7719,9 +7730,11 @@ public void verifyGameRecord()
 		int y = cy+realy;
 		
     	if(doBoardPinch(x,y,val)) {
+    		//Plog.log.addLog("board pinch ",x,",",y," ",val);
     	}
     	else 
-    	{	super.Pinch(realx,realy,val,twist);
+    	{   
+    		super.Pinch(realx,realy,val,twist);
     	}
     }
  
@@ -8174,13 +8187,13 @@ public void verifyGameRecord()
 		{	commonPlayer wt = whoseTurn();
 			return wt==null ? 0 : wt.displayRotation;
 		}
-		
+		boolean inBoardZoom = false;
 		private boolean inBoardZoom(int x,int y)
-		{
-			return((getGlobalZoom()<=MINIMUM_ZOOM)	// global zoom not in effect
-					&& (globalZoomRect!=null) 
-					&& zoomRect!=null
-					&& G.pointInRect(x,y,boardRect));
+		{	inBoardZoom = (getGlobalZoom()<=MINIMUM_ZOOM)	// global zoom not in effect
+							&& (globalZoomRect!=null) 
+							&& zoomRect!=null
+							&& G.pointInRect(x,y,boardRect);
+			return(inBoardZoom);
 		}
 		
 		public boolean doBoardPinch(int x,int y,double amount)

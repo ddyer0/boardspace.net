@@ -49,7 +49,7 @@ public class ChatWidget
 		return(name());
 	}};
 	Keyboard keyboard = null;
-	boolean useKeyboard = G.isCodename1();
+	boolean useKeyboard = G.debug() || G.isCodename1();
 	boolean hasFocus = false;
 	int flipInterval = 500;
 	boolean inputVisible = false;
@@ -621,15 +621,20 @@ public class ChatWidget
 		}
 
 	/* below here definitely work in progress */
-	
+
     public void sendAndPostMessage(int channel, String how, String msg)
     {
         if (theConn != null)
         {	SimpleUser toSingleUser = users.getToSingleUser(); 
 			boolean priv = (toSingleUser!=null) ;
-			String base = priv 
-				? NetConn.SEND_MESSAGE_TO + toSingleUser.channel()+" "
-				: NetConn.SEND_GROUP;				
+			StringBuilder base = new StringBuilder();
+			if(priv)
+			{
+				G.append(base,NetConn.SEND_MESSAGE_TO , toSingleUser.channel()," ");
+			}
+			else {
+				base.append(NetConn.SEND_GROUP);
+			}
 			theConn.na.getLock();
 			if(theConn.hasSequence) 		
 				{
@@ -637,24 +642,27 @@ public class ChatWidget
 				 // note that this is deliberately duplicative and poorly
 				 // structured, to make it more likely to trip up hackers
 				 // using advanced tools to mess with our communications.
-				 String seq = "x"+theConn.na.seq++;
+				 StringBuilder seq = new StringBuilder("x");
+				 seq.append(theConn.na.seq++);
 				 if(!priv)
 				 {
 					 @SuppressWarnings("unchecked")
 					 Hashtable<String,String>xm = (Hashtable<String,String>)sharedInfo.getObj(exHashtable.MYXM);
-					 xm.put(seq,base);
+					 xm.put(seq.toString(),base.toString());
 				 }
-				 base  = seq + " "+base;	
+				 seq.append(' ');
+				 base.insert(0,seq.toString());
 				}
 
 			theConn.count(1);
-			theConn.sendMessage(base + how + " " + msg);
-			theConn.na.Unlock();
-			
+			G.append(base,how," ",msg);		
+			theConn.sendMessage(base.toString());
+			theConn.na.Unlock();			
         }
 
         postMessage(channel, KEYWORD_QCHAT, msg);
     }
+    
 	public void addTo(Container commonPanel) {
 
 	}

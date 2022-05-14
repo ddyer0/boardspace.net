@@ -124,6 +124,8 @@ public class WypsViewer extends CCanvas<WypsCell,WypsBoard> implements WypsConst
         // for another game.
         bb = new WypsBoard(type,players_in_game,randomKey,getStartingColorMap(),dictionary,WypsBoard.REVISION);
         robotGame = sharedInfo.get(exHashtable.ROBOTGAME)!=null;
+        // flickers background, keep off 5/13/2022
+        // useDirectDrawing(G.isIOS());
         doInit(false);
         adjustPlayers(players_in_game);
         
@@ -282,7 +284,7 @@ public class WypsViewer extends CCanvas<WypsCell,WypsBoard> implements WypsConst
     	int doneW = plannedSeating()? unitsize*4 : 0;
     	G.SetRect(done,G.Right(box)+unitsize/2,G.Top(box)+unitsize/2,doneW,doneW/2);
     	G.union(box, done);
-    	int unith = rackSize*unitsize;
+    	int unith = (rackSize-2)*unitsize;
        	G.SetRect(chip,	x,	G.Bottom(box),	unith*3*7/4,unith);
         G.union(box, chip);
     	pl.displayRotation = rotation;
@@ -450,6 +452,8 @@ public class WypsViewer extends CCanvas<WypsCell,WypsBoard> implements WypsConst
       	setLetterColor(gc,gb,mc);
       	//print("Draw "+idx+" "+c+" "+top+" @ "+cx);
     	mc.drawChip(gc, this, top, tileSize, cx, cy, censor ? WypsChip.BACK : null);
+       	if(c!=null) { c.copyCurrentCenter(mc);	}// set the center so animations look right
+
     	}
     	
     	if(canDrop && top==null)

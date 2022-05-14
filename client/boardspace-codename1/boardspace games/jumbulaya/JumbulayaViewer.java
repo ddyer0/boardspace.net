@@ -94,7 +94,6 @@ public class JumbulayaViewer extends CCanvas<JumbulayaCell,JumbulayaBoard> imple
     int boardRotation = 0;
     double effectiveBoardRotation = 0.0;
     private Rectangle bigRack = addZoneRect("bigrack");
-    private Rectangle openRect = addRect("openrack");
     private Rectangle iconRect = addRect("icon");
     private TextButton passButton = addButton(PASS,GameId.HitPassButton,ExplainPass,
 			HighlightColor, rackBackGroundColor);
@@ -229,13 +228,14 @@ public class JumbulayaViewer extends CCanvas<JumbulayaCell,JumbulayaBoard> imple
     			fh*4,	// maximum cell size
     			0.4		// preference for the designated layout, if any
     			);
+       	boolean planned = plannedSeating();
     	
         // place the chat and log automatically, preferring to place
     	// them together and not encroaching on the main rectangle.
     	layout.placeTheChat(chatRect, minChatW, chatHeight,minChatW*2,3*chatHeight/2);
-    	layout.placeRectangle(logRect,minLogW, minLogW, minLogW*3/2, minLogW*3/2,BoxAlignment.Edge,true);
+    	layout.placeRectangle(logRect,minLogW, minLogW, minLogW*3/2, minLogW/2,BoxAlignment.Edge,true);
     	layout.alwaysPlaceDone = false;
-       	layout.placeDoneEditRep(buttonW,buttonW*4/3,doneRect,editRect,startJRect);
+       	layout.placeDoneEditRep(buttonW,buttonW*4/3,doneRect,editRect,planned?null:startJRect);
        	G.copy(endJRect,startJRect);
     	layout.placeTheVcr(this,vcrw,vcrw*3/2);
        	int doneW = G.Width(editRect);
@@ -243,7 +243,7 @@ public class JumbulayaViewer extends CCanvas<JumbulayaCell,JumbulayaBoard> imple
     	layout.alwaysPlaceDone = false;
     	layout.placeDoneEditRep(doneW,doneW,checkWordsButton, checkJumbulayaButton,vocabularyRect);
        	commonPlayer pl = getPlayerOrTemp(0);
-       	int spare = G.Height(pl.playerBox)*2/3;
+       	int spare = G.Height(pl.playerBox)/3;
        	layout.placeRectangle(drawPileRect,spare,spare,BoxAlignment.Center);
        	       	
     	Rectangle main = layout.getMainRectangle();
@@ -256,11 +256,10 @@ public class JumbulayaViewer extends CCanvas<JumbulayaCell,JumbulayaBoard> imple
     	// "my side" orientation, such as chess, use seatingFaceToFaceRotated() as
     	// the test.  For boards that are noticably rectangular, such as Push Fight,
     	// use mainW<mainH
-    	boolean planned = plannedSeating();
     	int brows = bb.nrows;
     	int bcols = bb.ncols;
         int ncols =  bcols;
-    	int nrows =  planned ? ncols : brows+2;
+    	int nrows =  planned ? brows+1 : brows+2;
   	
     	// calculate a suitable cell size for the board
     	double cs = Math.min((double)mainW/ncols,(double)(mainH-stateH)/nrows);
@@ -281,17 +280,13 @@ public class JumbulayaViewer extends CCanvas<JumbulayaCell,JumbulayaBoard> imple
     	//
         int stateY = boardY-stateH/2;
         int stateX = boardX;
-    	int stripeW = CELLSIZE;
     	G.placeStateRow(stateX,stateY,boardW ,stateH/2,iconRect,stateRect,rotateRect,lockRect,altNoChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	G.SetRect(goalRect, boardX, G.Bottom(boardRect)-stateH/4,boardW,stateH/2);   
     	G.SetRect(timeRect, boardX, G.Bottom(goalRect),boardW,timeControl().timeControlMessage()==null ? 0 : stateH/2);   
-    	G.SetRect(bigRack, boardX+CELLSIZE/2, G.Bottom(timeRect), boardW-CELLSIZE-stripeW, planned?0:CELLSIZE*3/2);
+    	G.SetRect(bigRack, boardX+CELLSIZE/2, G.Bottom(timeRect), boardW-CELLSIZE, planned?0:CELLSIZE*3/2);
     	G.SetRect(largerBoardRect,mainX+extraW,mainY+extraH,largeW,largeH);
 
-    	int stripeLeft = G.Right(largerBoardRect)-stripeW-CELLSIZE/3;
-    	int stripeTop = boardY+boardH-9*stripeW;
-    	G.SetRect(openRect,stripeLeft,stripeTop,stripeW,stripeW);
   
 
     	// goal and bottom ornaments, depending on the rendering can share
@@ -318,10 +313,9 @@ public class JumbulayaViewer extends CCanvas<JumbulayaCell,JumbulayaBoard> imple
     	int doneW = planned ? unitsize*4 : 0;
     	int donel = G.Right(box)+unitsize/2;
     	G.SetRect(done,donel,G.Top(box)+unitsize/4,doneW,doneW/2);
-    	G.SetRect(jrect,donel,G.Bottom(done)+unitsize/4,doneW*2,doneW/3);
+    	G.SetRect(jrect,donel,G.Bottom(done)+unitsize/4,doneW*3/2,doneW/3);
     	G.union(box, done,score,eye,jrect);
-    	int unith = (5+rackSize)*unitsize;
-       	G.SetRect(chip,	x,	G.Bottom(box),	unith*2,unitsize*2+(planned ? unitsize : 0));
+       	G.SetRect(chip,	x,	G.Bottom(box),	G.Width(box),unitsize*2+(planned ? unitsize : 0));
         G.union(box, chip);
     	pl.displayRotation = rotation;
     	return(box);
@@ -443,8 +437,8 @@ public class JumbulayaViewer extends CCanvas<JumbulayaCell,JumbulayaBoard> imple
        //.print("");
        	// for remote viewers, always use this size
        	if(remoteViewer>=0) { CELLSIZE = tileSize; }
-       	
-       	if(G.debug())
+       	/* this was useful while debugging rack manipulation
+       	if(false) // G.debug())
        	{
        	int cx0 = cx;
      	for(int idx = 0;idx<nsteps;idx++)
@@ -458,7 +452,7 @@ public class JumbulayaViewer extends CCanvas<JumbulayaCell,JumbulayaBoard> imple
       	if(dtop!=null) { d.drawChip(gc, this, dtop, tileSize*2/3, cx0, cy+tileSize*2/3, null);}
       	cx0 += xstep;
        	}}}
-
+	*/
     	for(int idx = 0;idx<nsteps;idx++)
 		{
     	int mapValue = map[idx];
@@ -487,6 +481,7 @@ public class JumbulayaViewer extends CCanvas<JumbulayaCell,JumbulayaBoard> imple
       	setLetterColor(gc,gb,mc);
       	//print("Draw "+idx+" "+c+" "+top+" @ "+cx);
     	mc.drawChip(gc, this, top, tileSize, cx, cy, censor ? JumbulayaChip.BACK : null);
+       	if(c!=null) { c.copyCurrentCenter(mc);	}// set the center so animations look right
        	}
 
     	if(canDrop && top==null)

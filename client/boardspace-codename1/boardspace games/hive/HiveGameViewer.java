@@ -147,7 +147,7 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
 
  
         b = new HiveGameBoard(info.getString(OnlineConstants.GAMETYPE, "Hive"),getStartingColorMap());
-        useDirectDrawing();
+        useDirectDrawing(true);
         textNotation = myFrame.addOption(TextLogMessage,false,deferredEvents);
         offerDrawAction = myFrame.addAction(s.get(OFFERDRAW),deferredEvents);     
         if(G.debug()) {
@@ -634,13 +634,14 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
        gb.SetDisplayParameters(zoomRect.value,1.0,board_center_x,board_center_y,30.0); // shrink a little and rotate 30 degrees
        gb.SetDisplayRectangle(boardRect);
        }
+   	   int whoseTurn = gb.whoseTurn();
        boolean moving = hasMovingObject(selectPos);
        HitPoint ourTurnSelect = OurMove() ? selectPos : null;
        HitPoint buttonSelect = moving?null:ourTurnSelect;
        HitPoint nonDraggingSelect = (moving && !reviewMode()) ? null : selectPos;
        HiveState state = gb.getState();
        redrawGameLog(gc, nonDraggingSelect, logRect, Color.black,logrectHighlightColor,gameLogBoldFont,gameLogFont);
-       commonPlayer pl = getPlayerOrTemp(b.whoseTurn);
+       commonPlayer pl = getPlayerOrTemp(whoseTurn);
        double messageRotation = pl.messageRotation(); 		// this is correct because we currently only do face to face layout
         drawBoardElements(gc, gb, boardRect, ourTurnSelect,nonDraggingSelect);
        	
@@ -660,7 +661,7 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
         drawLiftRect(gc,liftRect,nonDraggingSelect,textures[LIFT_ICON_INDEX]);
         DrawTilesetRect(gc,nonDraggingSelect);
  
-        DrawRepRect(gc,messageRotation,Color.black,b.Digest(),repRect);
+        DrawRepRect(gc,messageRotation,Color.black,gb.Digest(),repRect);
         DrawReverseMarker(gc,reverseRect,nonDraggingSelect,HiveId.ReverseRect);
         seeMobile.draw(gc,nonDraggingSelect);
         switch(state)
@@ -670,7 +671,7 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
 	    	{	// if not making progress, put the draw option on the UI
         	boolean drawPending = (state==HiveState.DrawPending);
 	    		String offer = s.get(OFFERDRAW);
-	    		Rectangle acceptDrawRect = chipRects[nextPlayer[gb.whoseTurn]];
+	    		Rectangle acceptDrawRect = chipRects[nextPlayer[whoseTurn]];
 	        	if(GC.handleSquareButton(gc,messageRotation,acceptDrawRect,ourTurnSelect,offer,
 	        				HighlightColor,
 	        				drawPending ? HighlightColor : rackBackGroundColor))
@@ -686,8 +687,8 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
 	    	String decline = s.get(DECLINEDRAW);
 	    	Color hitAccept = (state==HiveState.AcceptPending)?HighlightColor:rackBackGroundColor;
 	    	Color hitDecline = (state==HiveState.DeclinePending) ? HighlightColor : rackBackGroundColor; 
-	    	Rectangle acceptDrawRect = chipRects[gb.whoseTurn];
-	    	Rectangle declineDrawRect = chipRects[nextPlayer[gb.whoseTurn]];
+	    	Rectangle acceptDrawRect = chipRects[whoseTurn];
+	    	Rectangle declineDrawRect = chipRects[nextPlayer[whoseTurn]];
 	    	if(GC.handleSquareButton(gc,messageRotation,acceptDrawRect,ourTurnSelect,accept,HighlightColor,hitAccept))
 	    	{
 	    		ourTurnSelect.hitCode = GameId.HitAcceptDrawButton;
@@ -699,7 +700,7 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
         }}
         GC.setFont(gc,standardBoldFont());
 		if (state != HiveState.PUZZLE_STATE)
-        {	HitPoint ds = (b.DoneState() ? buttonSelect : null);
+        {	HitPoint ds = (gb.DoneState() ? buttonSelect : null);
         	if(!plannedSeating())
         		{ handleDoneButton(gc,messageRotation,doneRect,ds,HighlightColor, 
         				ds==null ? rackBackGroundColor : rackActiveColor); //215,197,157
@@ -715,9 +716,9 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
         standardGameMessage(gc,messageRotation,
             		state==HiveState.GAMEOVER_STATE?gameOverMessage():s.get(state.getDescription()),
             				state!=HiveState.PUZZLE_STATE,
-            				gb.whoseTurn(),
+            				whoseTurn,
             				stateRect);
-    	HivePiece idbug = HivePiece.getCanonicalChip(b.playerColor(b.whoseTurn),PieceType.QUEEN);
+    	HivePiece idbug = HivePiece.getCanonicalChip(gb.playerColor(whoseTurn),PieceType.QUEEN);
     	int h = G.Height(stateRect);
     	idbug.drawChip(gc, this, h*3, G.Left(stateRect)-h/2, G.centerY(stateRect),null);
         goalAndProgressMessage(gc,nonDraggingSelect,s.get(HiveGoal),progressRect, goalRect);
