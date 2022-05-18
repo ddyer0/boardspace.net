@@ -25,7 +25,7 @@ sub doit()
 	my $from = &param('from');
 	my $dbh = &connect();
 	print header;
-	if($dbh)
+	if($dbh && (&allow_ip_access($dbh,$ip)>=0))
 	{
 	&banme($dbh,$ip,$from);
 	}

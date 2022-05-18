@@ -223,13 +223,14 @@ sub show_messageboard_rss()
 {
   my ($dbh,$number) = @_;
 
-  if($dbh)
+  if($dbh && (&allow_ip_access($dbh,$ENV{'REMOTE_ADDR'})>=0))
   {
   &readtrans_db($dbh);
 
   &show_messages_rss($dbh,$number);
 
   }
+  &disconnect($dbh);
 }
 
 1

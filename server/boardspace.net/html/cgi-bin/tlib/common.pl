@@ -818,7 +818,7 @@ sub trans()
 sub rawtrans()
 {	my (@args) = @_;
 	my ($package,$file,$line) = caller;
-	return(0,&rawtrans_caller($package,$file,$line,@args));
+	return(0,&rawtrans_caller(1,$package,$file,$line,@args));
 }
 sub stacktrace()
 {
