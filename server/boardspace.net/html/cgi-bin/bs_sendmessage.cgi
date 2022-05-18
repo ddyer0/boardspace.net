@@ -420,9 +420,9 @@ param();
 	print "<input type=checkbox name=cctd $ctd>cc the td\n";
 	}
 	print "</form>\n";
+   &standard_footer();
   }
   &disconnect($dbh);
-  &standard_footer();
   }
 }
 

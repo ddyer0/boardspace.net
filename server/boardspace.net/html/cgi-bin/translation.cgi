@@ -455,7 +455,7 @@ sub do_translation()
 								# which is taken from include.pl.  All the local
 								# functions are passed either this password or null
   my $dbh = &connect();
-  if($dbh)
+  if($dbh && (&allow_ip_access($dbh,$ENV{'REMOTE_ADDR'})>=0))
   {
   &readtrans_db($dbh);
   my $uid = 0;
@@ -485,8 +485,9 @@ sub do_translation()
 	  if($admin)
 	  {	&show_admin_panel($dbh,$admin,$default,$operation);
 	  }
-    }
   &standard_footer();
+  }
+  &disconnect($dbh);
 }
 
 do_translation();

@@ -134,6 +134,7 @@ sub update_rankings
 	print "</table>";
 	
 	&honeypot();
+	&standard_footer();
     }
     &disconnect($dbh);
 }
@@ -141,5 +142,4 @@ sub update_rankings
 print header;
 &init();
 &update_rankings();
-&standard_footer();
 	

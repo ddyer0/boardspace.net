@@ -15,8 +15,8 @@ require "tlib/gs_db.pl";
 require "tlib/common.pl";
 
 sub write_png
-{	my ($filename, $graph_data, $legend , $size) = @_;
-	my $graph = GD::Graph::lines->new(700, 400);
+{	my ($filename, $graph_data, $legend , $wid,$height, $size) = @_;
+	my $graph = GD::Graph::lines->new($wid, $height);
 	$graph->set(
 	#    x_label           => 'Time',
 		y_label           => 'Number of Players',
@@ -53,13 +53,21 @@ sub write_png
 }
 
 sub playerGraph
-{	my ($filename,$dates,$players) = @_;
-	my @legends = ("active players");
+{	my ($filename,$data,$legends) = @_;
 
-	my @graph_data = ($dates, $players);
+	my @graph_data = @$data;
 
 	print "<BR><BR>";
-	my $format = write_png($filename,\@graph_data,\@legends);
+	my $format = write_png($filename,\@graph_data,$legends,700,400);
+	print "<IMG SRC=\"../gfx/graph/$filename.$format\"><BR><BR><BR><BR><P><after call F:$filename>";		
+}
+sub gameGraph
+{	my ($filename,$data,$legends) = @_;
+
+	my @graph_data = @$data;
+
+	print "<BR><BR>";
+	my $format = write_png($filename,\@graph_data,$legends,1200,900);
 	print "<IMG SRC=\"../gfx/graph/$filename.$format\"><BR><BR><BR><BR><P><after call F:$filename>";		
 }
 
@@ -257,7 +265,7 @@ sub btrans()
 sub show_activity()
 {
 	my $dbh = &connect();
-	if($dbh)
+	if($dbh && (&allow_ip_access($dbh,$ENV{'REMOTE_ADDR'})>=0))
 	{ &readtrans_db($dbh);
       my ($sec,$min,$hour,$mday,$thismonth,$thisyear) = localtime(time);
       my @variations = &all_variations($dbh);
@@ -323,6 +331,7 @@ sub show_activity()
 	my @dates;
 	my @players;
 	my $rownumber;
+	my %vardata;
 	push @dates,0;
 	while($n-- >=0)
 	{ my ($date,$stat,$val) = &nextArrayRow($sth);
@@ -347,6 +356,9 @@ sub show_activity()
 	  
 	  foreach my $na (@variations)
 	  {	push @row,$pairs{$na};
+	    my $vdata = $vardata{$na};
+	    if(!$vdata) { my @vd = (); $vdata = \@vd; $vardata{$na} = $vdata; }
+	    push @$vdata,$pairs{$na};
 	  }
 
 	  push @row, "";
@@ -365,10 +377,37 @@ sub show_activity()
 	&finishQuery($sth);
 	@dates = reverse(@dates);
 	@players = reverse(@players);
-	&playerGraph("active_players",\@dates,\@players);
+	my @legends = ("active players");
+	my @data;
+	push @data,\@dates;
+	push @data,\@players;
+	&playerGraph("active_players",\@data, \@legends);
 	
-	&disconnect($dbh);
+	my @gamedata;
+	my @gamenames;
+	my $group = 1;
+	my $seq = 1;
+	foreach my $na (@variations)
+	{	push @gamenames,$na;
+		my $vdata = $vardata{$na};
+		@$vdata = reverse(@$vdata);
+		push @gamedata,$vdata;
+		$seq++;
+		if($seq==10)
+		{
+		&gameGraph("game_data_$group",\@gamedata, \@gamenames);
+		$group++;
+		$seq = 1;
+		@gamedata = ();
+		@gamenames = ();
+		}
 	}
+	if($seq>1)
+	{&gameGraph("game_data_$group",\@gamedata, \@gamenames);
+	}
+	&standard_footer();
+	}
+	&disconnect($dbh);
 }
 
 
@@ -377,4 +416,3 @@ param();
 &standard_header();
 &show_activity();
 
-&standard_footer();

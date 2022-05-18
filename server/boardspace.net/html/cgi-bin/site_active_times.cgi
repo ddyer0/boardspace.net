@@ -43,6 +43,7 @@ sub show_activity
   my $uid = &param('uid');
   my $ndays = &param('months');
   &show_activity_table($dbh,$uid,$ndays,&timezoneCookie());
+  &standard_footer();
   }
   &disconnect($dbh);
 }
@@ -52,5 +53,3 @@ print header;
 param();
 &standard_header();
 &show_activity();
-
-&standard_footer();

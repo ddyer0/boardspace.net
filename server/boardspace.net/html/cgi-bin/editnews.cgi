@@ -44,8 +44,8 @@ sub do_gs_edit()
 	my $written=param('written');
 	my $dbh = &connect();
 	my $myaddr = $ENV{'REMOTE_ADDR'};
-	if($dbh)
-  	{
+	if($dbh  && (&allow_ip_access($dbh,$ENV{'REMOTE_ADDR'})>=0))
+	{
 	&readtrans_db($dbh);
 	my $languagename = &select_language(param('language'));
 	my $newsname = "$ENV{'DOCUMENT_ROOT'}/$languagename/news.txt";
@@ -81,13 +81,12 @@ sub do_gs_edit()
 	print "<p><input type=submit value='Change News'>\n";
 	print "</form>\n";
 	
-    &disconnect($dbh);
-	}		
+	&standard_footer();
 	
-  &standard_footer();
-
-
+	}		
+  &disconnect($dbh);
   }
+
 }
 
 do_gs_edit();

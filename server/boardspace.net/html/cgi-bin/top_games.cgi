@@ -42,8 +42,9 @@ sub show_activity
   print "<center>\n";
   &top_games_table($dbh,$'top_players_per_row,'english','',@'top_player_variations);
   print "</center>\n";
-  &disconnect($dbh);
+  if(!param('embed')) { &standard_footer(); }
   }
+  &disconnect($dbh);
 }
 
 
@@ -51,4 +52,4 @@ print header;
 param();
 if(!param('embed')) { &standard_header(); }
 &show_activity();
-if(!param('embed')) { &standard_footer(); }
+

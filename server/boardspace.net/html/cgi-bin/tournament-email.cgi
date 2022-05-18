@@ -125,7 +125,7 @@ sub do_gs_edit()
 {
 param();
   my $dbh = &connect();
-  if($dbh)
+  if($dbh && (&allow_ip_access($dbh,$ENV{'REMOTE_ADDR'})>=0))
   {
   &readtrans_db($dbh);
   my $unbounce=0;
@@ -310,9 +310,9 @@ param();
 	print "<input type=checkbox name=cctd $ctd>cc the td\n";
 	print "</form>\n";
   }
-  &disconnect($dbh);
   &standard_footer();
   }
+  &disconnect($dbh);
 }
 
 do_gs_edit();

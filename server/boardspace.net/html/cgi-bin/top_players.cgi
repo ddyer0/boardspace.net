@@ -36,19 +36,20 @@ Header
 
 sub show_activity
 { my $dbh = &connect();
-  if($dbh)
+  if($dbh && (&allow_ip_access($dbh,$ENV{'REMOTE_ADDR'})>=0))
   {
   &readtrans_db($dbh);
+  if(!param('embed')) { &standard_header(); }
   print "<center>\n";
   &top_players_table($dbh,$'top_players_per_row,'english','',@'top_player_variations);
   print "</center>\n";
-  &disconnect($dbh);
+  if(!param('embed')) { &standard_footer(); }
   }
+  &disconnect($dbh);
 }
 
 
 print header;
 param();
-if(!param('embed')) { &standard_header(); }
 &show_activity();
-if(!param('embed')) { &standard_footer(); }
+

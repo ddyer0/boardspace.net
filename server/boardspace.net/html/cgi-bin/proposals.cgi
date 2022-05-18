@@ -596,9 +596,9 @@ Head_end
   	{	print "<p><a href='$thisurl?edit=-1$suplink'>Start a new Proposal</a>\n";
   	}
    
-  &disconnect($dbh);
   &standard_footer();
     }
+  &disconnect($dbh);
 
 }
 

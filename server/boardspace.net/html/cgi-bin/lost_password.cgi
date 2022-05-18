@@ -223,25 +223,23 @@ print header;
 init();
 param();
   my $dbh = &connect();
-  if($dbh)
-  {
+ if($dbh  && (&allow_ip_access($dbh,$ENV{'REMOTE_ADDR'})>=0))
+ {
   &readtrans_db($dbh);
   
   my $header=&trans("Password Change");
   &rank_header($header,0);
-   my $allow = (&allow_ip_access($dbh,$ENV{'REMOTE_ADDR'})>=0);
-
-   if($allow)
-  {
+ 
   print "<center><p>";
   print &trans("We don't remember your password either, but you can change it");
   print "</center>";
   my $key = param('key');
   if('' eq $key) { &doacquire($dbh); }
   else { &doreset($dbh,$key); }
+ 
+    &standard_footer();
   }
-  }
-  &standard_footer();
+  &disconnect($dbh);
   }
 
 

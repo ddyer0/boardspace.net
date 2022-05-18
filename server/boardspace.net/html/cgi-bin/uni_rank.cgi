@@ -1,6 +1,7 @@
 #!/usr/bin/perl 
 #
 # July 2003 gs_uidrank display rank of players retrieved by uid
+# this is called from the client code to start a game
 #
 use CGI qw(:standard);
 use strict;
@@ -14,17 +15,17 @@ sub init {
 
 init();
 {   print header;
-		my $ok=0;
+    my $ok=0;
     if( param() ) 
     {
-		my $dbh = &connect($ENV{'REQUEST_URI'});
+    my $dbh = &connect($ENV{'REQUEST_URI'});
     my $pstart = param("start");
-	  my $i;
-	  #
-	  # get player score
-  	#
-	 if( $dbh)
-	 {
+    my $i;
+    #
+    # get player score
+    #
+    if($dbh && (&allow_ip_access($dbh,$ENV{'REMOTE_ADDR'})>=0))
+     {
       my $game = &gamecode_to_gamename($dbh,param("game"));
       my $qgame = $dbh->quote($game);
 	  print "OK";
@@ -53,7 +54,9 @@ init();
 	    	}
 	  }}
 	print "\n";
-  }}
+     }
+    &disconnect($dbh);
+}
   
   if(!$ok)
     	{	print "NOT OK\n";

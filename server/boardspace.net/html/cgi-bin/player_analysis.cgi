@@ -463,7 +463,7 @@ sub compare_players
 
 	&readtrans_db($dbh);
 	{
-    my $t = &current_time_string();
+        my $t = &current_time_string();
 	my ($maxplayers) = &getGameInfo($dbh,$game);
 	my $multiplayer = ($maxplayers > 2);
 	my @players;				# player names used in the form
@@ -1074,10 +1074,10 @@ sub compare_players
 
 #	&finishQuery($sth);
   }}
+	&standard_footer();
+  }
   &disconnect($dbh);
-
-  &standard_footer();
-}}
+ }
 }
 
 print header;

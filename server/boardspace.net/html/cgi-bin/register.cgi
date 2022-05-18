@@ -288,20 +288,18 @@ sub register()
 
 &init();
 
+print header;
 
 if( param() ) 
 {
+
 	my ($dbh) = &connect();
 	my $ok = &useCombinedParams($'tea_key);
-	if($ok)
-	{
-	print header;
 	my $jws = param('jws');		# if true, registration from the app rather than the browser
-
+	if($ok && $dbh && (&allow_ip_access($dbh,$ENV{'REMOTE_ADDR'})>=0))
+	{
 	__dStart( "$'debug_log",$ENV{'SCRIPT_NAME'} );
 
-	if($dbh && (&allow_ip_access($dbh,$ENV{'REMOTE_ADDR'})>=0))
-	{
 	my $fullname = param('fullname');
 	 if('' eq $fullname) { $fullname = param('realName'); }
 	$fullname = &decode_entities($fullname);
@@ -356,18 +354,18 @@ if( param() )
 	&note_failed_login($dbh,$bannercookie,"CK: bad register timestamp '$qpname'");
 	&countEvent("spam registration attempt",50,200);
 	&regError($jws,"Registration failed (code 2)!");
+
 	}
-   &disconnect($dbh);
+   __dEnd( "end!" );
     }
-  else
-  {
-	if($jws)
+    else
+    {
+ 	if($jws)
 	 { print "bad Sorry, registration is temporarily unavailable"; 
 	 }
 	 else
 	 { print "<p>Sorry, registration is temporarily unavailable<p>"; 
 	 }
-  }
-  __dEnd( "end!" );
-}
-}
+     }
+	&disconnect($dbh);
+ }
