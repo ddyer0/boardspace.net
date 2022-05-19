@@ -92,7 +92,7 @@ public class TintasViewer extends CCanvas<TintasCell,TintasBoard> implements Tin
     	// for games that require some random initialization, the random key should be
     	// captured at this point and passed to the the board init too.
         int randomKey = info.getInt(OnlineConstants.RANDOMSEED,-1);
-        
+      
         super.init(info,frame);
         // use_grid=reviewer;// use this to turn the grid letters off by default
 
@@ -110,6 +110,7 @@ public class TintasViewer extends CCanvas<TintasCell,TintasBoard> implements Tin
         // later, some variant is created, or the game code base is re purposed as the basis
         // for another game.
         bb = new TintasBoard(type,players_in_game,randomKey,TintasBoard.REVISION);
+        useDirectDrawing(true);
         doInit(false);
 
     }

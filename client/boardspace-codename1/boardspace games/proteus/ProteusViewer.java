@@ -100,6 +100,7 @@ public class ProteusViewer extends CCanvas<ProteusCell,ProteusBoard> implements 
        
         b = new ProteusBoard(info.getString(OnlineConstants.GAMETYPE, Variation.Proteus.name()),
         		randomKey,players_in_game,getStartingColorMap(),ProteusBoard.REVISION);
+        useDirectDrawing(true); 
         doInit(false);
         reverseOption = myFrame.addOption(s.get(ReverseView),b.reverseY(),deferredEvents);
 

@@ -35,6 +35,9 @@ import static proteus.ProteusMovespec.*;
 class ProteusBoard extends rectBoard<ProteusCell> implements BoardProtocol,ProteusConstants
 {	public static int REVISION = 101;  	// revision 101 fixes the tile 
 	public int getMaxRevisionLevel() { return(REVISION); }
+	
+    static final String[] GRIDSTYLE = { "1", null, "A" }; // left and bottom numbers
+
     public int boardColumns;	// size of the board
     public int boardRows;
     public void SetDrawState() { setState(ProteusState.Draw); }
@@ -196,7 +199,7 @@ class ProteusBoard extends rectBoard<ProteusCell> implements BoardProtocol,Prote
     	String typ = tok.nextToken();
     	int np = tok.hasMoreTokens() ? G.IntToken(tok) : players_in_game;
     	long ran = tok.hasMoreTokens() ? G.IntToken(tok) : rv;
-    	int rev = tok.hasMoreTokens() ? G.IntToken(tok) : 100;
+    	int rev = tok.hasMoreTokens() ? G.IntToken(tok) : revision;
     	doInit(typ,ran,np,rev);
     }
     /* initialize a board back to initial empty state */

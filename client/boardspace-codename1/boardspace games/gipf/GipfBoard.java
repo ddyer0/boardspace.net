@@ -218,7 +218,7 @@ public class GipfBoard extends hexBoard<GipfCell> implements BoardProtocol,GipfC
         gametype = type;
         standard_setup = Gipf_Standard_Init.equalsIgnoreCase(type);
         tournament_setup = Gipf_Tournament_Init.equalsIgnoreCase(type);
-        initBoard(ZfirstInCol, ZnInCol, null);
+        reInitBoard(ZfirstInCol, ZnInCol, null);
         while(stackIndex>=0) 
         	{ pickedSource[stackIndex]=droppedDest[stackIndex]=null;
         	  dropUndo[stackIndex]=0;
@@ -278,11 +278,18 @@ public class GipfBoard extends hexBoard<GipfCell> implements BoardProtocol,GipfC
         for(GipfCell c=allCells; c!=null; c=c.next)
         {	v ^= c.Digest(r);
         }
+        //G.print();
+        //G.print("d1 ",v);
         for(int i=0;i<2;i++) { v ^= (reserve[i].Digest(r)); v^=(captures[i].Digest(r)); }
+        //G.print("d2 ",v);
 		for(int i=0;i<2;i++) { v^= r.nextLong()^currentGipfCount[i]; }
+        //G.print("d3 ",v);
 		v ^= chip.Digest(r,pickedObject);
+        //G.print("d4 ",v);
 		v ^= cell.Digest(r,getSource());
+        //G.print("d5 ",v);
 		v ^= r.nextLong()*(board_state.ordinal()*10+whoseTurn);
+        //G.print("d6 ",v);
         return (v);
     }
     // get a hash of moves destinations, used by the viewer

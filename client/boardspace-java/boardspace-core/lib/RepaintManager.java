@@ -104,7 +104,7 @@ public class RepaintManager implements VncScreenInterface,Config
 		// double buffer strategy, there is always a frame available for immediate viewing.
 		// if the back buffer is ready to view, flip it and make the new back buffer available for drawing
 		// if the back buffer has been drawn and not seen, defer this drawing operation under the buffer flips.
-		DoubleBuffer(60,0,"Double Buffer")			//used by codename1 android
+		DoubleBuffer(80,0,"Double Buffer")			//used by codename1 android
 		;
 		int delayBeforeWriting;		// time to delay after reading before rewriting
 		int delayBeforeReading;		// time to delay after writing before reading
@@ -125,6 +125,21 @@ public class RepaintManager implements VncScreenInterface,Config
            	v.menu.setState(v==current);
            	parent.add(v.menu);
 	    	}
+		}
+		public static void setMenuChoice(RepaintStrategy current)
+		{
+			for(RepaintStrategy v : values()) 
+			{	if(v.menu!=null)
+				{
+				if(v==current) 
+				{
+					v.menu.setState(true);
+				}
+				else 
+				{
+					v.menu.setState(false);
+				}}
+			}
 		}
 		public static RepaintStrategy isMenu(Object target,RepaintStrategy current)
 		{	RepaintStrategy value = null;
@@ -284,7 +299,6 @@ public class RepaintManager implements VncScreenInterface,Config
 	public RepaintManager(RepaintHelper cl,RepaintStrategy m)
 	{	this(cl);
 		repaintStrategy = m;
-		repaintStrategy.setSliders();
 	}
 	
 	// 
@@ -1043,6 +1057,7 @@ public class RepaintManager implements VncScreenInterface,Config
 	    public void setRepaintStrategy(RepaintStrategy strat)
 	    {
 	    	repaintStrategy = strat;
+	    	RepaintStrategy.setMenuChoice(strat);
 	    	repaintStrategy.setSliders();
 	    	switch(strat)
 	    	{

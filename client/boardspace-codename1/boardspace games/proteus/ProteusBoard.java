@@ -127,7 +127,7 @@ class ProteusBoard extends rectBoard<ProteusCell> implements BoardProtocol
 
     /** 
      * Digest produces a 64 bit hash of the game state.  This is used in many different
-     * ways to identify "same" board states.  Some are germaine to the ordinary operation
+     * ways to identify "same" board states.  Some are germane to the ordinary operation
      * of the game, others are for system record keeping use; so it is important that the
      * game Digest be consistent both within a game and between games over a long period
      * of time which have the same moves. 
@@ -209,7 +209,7 @@ class ProteusBoard extends rectBoard<ProteusCell> implements BoardProtocol
     	String typ = tok.nextToken();
     	int np = tok.hasMoreTokens() ? G.IntToken(tok) : players_in_game;
     	long ran = tok.hasMoreTokens() ? G.IntToken(tok) : rv;
-    	int rev = tok.hasMoreTokens() ? G.IntToken(tok) : 100;
+    	int rev = tok.hasMoreTokens() ? G.IntToken(tok) : revision;
     	doInit(typ,ran,np,rev);
     }
     /* initialize a board back to initial empty state */

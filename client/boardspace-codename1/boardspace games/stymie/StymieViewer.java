@@ -97,6 +97,7 @@ public class StymieViewer extends CCanvas<StymieCell,StymieBoard> implements Sty
         // later, some variant is created, or the game code base is re purposed as the basis
         // for another game.
         bb = new StymieBoard(type,players_in_game,randomKey,getStartingColorMap(),StymieBoard.REVISION);
+        useDirectDrawing(true); 
         doInit(false);
         adjustPlayers(players_in_game);
     }
@@ -694,6 +695,8 @@ public class StymieViewer extends CCanvas<StymieCell,StymieBoard> implements Sty
 		case Puzzle:
 		{
 		StymieChip mo = bb.pickedObject;
+		if(mo==null) { mo = bb.lastDroppedObject; }
+		if(mo==null) { mo = bb.getPlayerChip(bb.whoseTurn); }
 		PerformAndTransmit("dropb "+mo.id.shortName+" "+dest.col+" "+dest.row);
 		}
 		break;
@@ -701,7 +704,7 @@ public class StymieViewer extends CCanvas<StymieCell,StymieBoard> implements Sty
 		case Play:
 			{
 			Hashtable<StymieCell,Stymiemovespec>targets = bb.getTargets();
-			Stymiemovespec m = targets.get(dest);
+			Stymiemovespec m = targets.get(bb.getCell(dest));
 			if(m!=null)
 				{
 				PerformAndTransmit(m.moveString());
@@ -775,10 +778,8 @@ public class StymieViewer extends CCanvas<StymieCell,StymieBoard> implements Sty
 			break;
 			
         case EmptyBoard:
-        	{	Hashtable<StymieCell,Stymiemovespec> targets = bb.getTargets();
-        		Stymiemovespec m = targets.get(hitObject);
-        		if(m!=null) { PerformAndTransmit(m.moveString()); }
-        		else if(bb.pickedObject!=null) { doDropChip(hitObject); }
+        	{	
+        		doDropChip(hitObject); 
 			}
 			break;
         case Silver_Captives:	

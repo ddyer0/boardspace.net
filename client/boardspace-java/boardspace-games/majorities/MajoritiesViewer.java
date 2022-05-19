@@ -153,7 +153,7 @@ public class MajoritiesViewer extends CCanvas<MajoritiesCell,MajoritiesBoard> im
         // later, some variant is created, or the game code base is re purposed as the basis
         // for another game.
         bb = new MajoritiesBoard(type,players_in_game,randomKey,getStartingColorMap(),MajoritiesBoard.REVISION);
-        //useDirectDrawing(); // not tested yet
+        useDirectDrawing(true); 
         doInit(false);
 
     }

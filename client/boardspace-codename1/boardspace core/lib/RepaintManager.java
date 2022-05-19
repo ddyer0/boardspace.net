@@ -104,7 +104,7 @@ public class RepaintManager implements VncScreenInterface,Config
 		// double buffer strategy, there is always a frame available for immediate viewing.
 		// if the back buffer is ready to view, flip it and make the new back buffer available for drawing
 		// if the back buffer has been drawn and not seen, defer this drawing operation under the buffer flips.
-		DoubleBuffer(60,0,"Double Buffer")			//used by codename1 android
+		DoubleBuffer(80,0,"Double Buffer")			//used by codename1 android
 		;
 		int delayBeforeWriting;		// time to delay after reading before rewriting
 		int delayBeforeReading;		// time to delay after writing before reading
@@ -676,7 +676,6 @@ public class RepaintManager implements VncScreenInterface,Config
 
    		if(pinch && ZOOM_IS_SLOW)
    		{	// to make pan/zoom responsive, work from a saved bitmap of some kind
-   			//Plog.log.addLog("Pinch in repaint manager");
    			if(pinchBuffer==null)
    			{
    				XImage pbuffer = getOrCreateViewBuffer();

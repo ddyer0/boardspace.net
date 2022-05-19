@@ -11,6 +11,7 @@ public class QyshinsuCell extends stackCell<QyshinsuCell,QyshinsuChip> implement
 {	public QyshinsuChip[] newComponentArray(int n) { return(new QyshinsuChip[n]); }
 	public QyshinsuCell(char column,int rown)
 	{	super(Geometry.Oct,column,rown);
+		rackLocation = QIds.BoardLocation;
 	}
 	public QyshinsuCell(Random r,char column,int rown)
 	{	super(r,Geometry.Oct,column,rown);

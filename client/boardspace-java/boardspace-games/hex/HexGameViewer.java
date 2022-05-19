@@ -186,6 +186,7 @@ public class HexGameViewer extends CCanvas<hexCell,HexGameBoard> implements HexC
         // later, some variant is created, or the game code base is re purposed as the basis
         // for another game.
         bb = new HexGameBoard(type,players_in_game,randomKey,getStartingColorMap(),HexGameBoard.REVISION);
+        useDirectDrawing(true);
         doInit(false);
 
     }

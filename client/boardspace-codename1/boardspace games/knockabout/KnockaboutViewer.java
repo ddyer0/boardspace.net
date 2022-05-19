@@ -82,6 +82,7 @@ public class KnockaboutViewer extends CCanvas<KnockaboutCell,KnockaboutBoard> im
         int randomKey = sharedInfo.getInt(OnlineConstants.RANDOMSEED,-1);
         b = new KnockaboutBoard(randomKey,info.getString(OnlineConstants.GAMETYPE, Knockabout_Standard_Init),
         		getStartingColorMap());
+        useDirectDrawing(true); // not tested yet
         doInit(false);
         
      }
@@ -145,8 +146,8 @@ public class KnockaboutViewer extends CCanvas<KnockaboutCell,KnockaboutBoard> im
     			fh*2.5,	// maximum cell size
     			0.4		// preference for the designated layout, if any
     			);
+    	boolean rotate = seatingFaceToFaceRotated();
 
-       	boolean rotate = seatingFaceToFaceRotated();
        	// place the chat and log automatically, preferring to place
     	// them together and not encroaching on the main rectangle.
     	layout.placeTheChatAndLog(chatRect, minChatW, chatHeight,minChatW*2,3*chatHeight/2,
@@ -244,7 +245,7 @@ public class KnockaboutViewer extends CCanvas<KnockaboutCell,KnockaboutBoard> im
       // are carefully matched with the abstract grid
 
 
-     images[BOARD_INDEX].getImage(loader).centerImage(gc, brect);
+     images[BOARD_INDEX].getImage(this.loader).centerImage(gc, brect);
       b.SetDisplayParameters(
        		 0.965, //0.93,	// scale 
        		 0.8,	// yscale
@@ -274,7 +275,6 @@ public class KnockaboutViewer extends CCanvas<KnockaboutCell,KnockaboutBoard> im
     private void drawBoardElements(Graphics gc, KnockaboutBoard rb, Rectangle brect, HitPoint highlight)
     {	Hashtable<KnockaboutCell,KnockaboutCell> dests = rb.getMoveDests();
     	KnockaboutState state = rb.getState();
-    	
      	int dotsize = Math.max(2,SQUARESIZE/15);
      	int mov = rb.movingObjectIndex();
      	long now = G.Date();

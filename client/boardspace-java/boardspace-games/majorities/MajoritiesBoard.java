@@ -260,8 +260,7 @@ class MajoritiesBoard extends hexBoard<MajoritiesCell> implements BoardProtocol,
 		emptyCells.clear();
 		for(MajoritiesCell c = allCells; c!=null; c=c.next) { c.chip=null; if(!c.removed) { emptyCells.push(c); }}
 		fullBoard = emptyCells.size();
-		   
-        animationStack.clear();
+		animationStack.clear();
         moveNumber = 1;
 
         // note that firstPlayer is NOT initialized here
@@ -296,7 +295,9 @@ class MajoritiesBoard extends hexBoard<MajoritiesCell> implements BoardProtocol,
         pickedObject = from_b.pickedObject;
         resetState = from_b.resetState;
         lastPicked = null;
-
+		blackChipPool.copyCurrentCenter(from_b.blackChipPool);
+		whiteChipPool.copyCurrentCenter(from_b.whiteChipPool);
+		 
         AR.copy(playerColor,from_b.playerColor);
         AR.copy(playerChip,from_b.playerChip);
  
@@ -663,7 +664,7 @@ class MajoritiesBoard extends hexBoard<MajoritiesCell> implements BoardProtocol,
              * removed from the game record, so there are never picked stones in
              * single step replays.
              */
-            if(replay!=replayMode.Replay && (po==null))
+            if(replay==replayMode.Single || (po==null))
             	{ animationStack.push(animsrc==null?src:animsrc);
             	  animationStack.push(dest); 
             	}

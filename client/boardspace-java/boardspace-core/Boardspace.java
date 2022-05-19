@@ -191,13 +191,13 @@ public class Boardspace extends URLClassLoader implements Runnable,LoaderConfig
 			try {
 				if(verbose) { Boardspace.out.println("cache "+name); }
 				info.cacheFile(webHost(),localCacheDir);
+				info.loaded = true;
 			}
 			catch (Exception e)
 			{
 				showError("Error fetching "+name+" from "+webHost(),e);
 			}
-			info.loaded = true;
-			return(true);
+			return(info.loaded);
 		}
 		return(false);
 	}
@@ -207,16 +207,22 @@ public class Boardspace extends URLClassLoader implements Runnable,LoaderConfig
     public Class<?> findClass(String name) throws ClassNotFoundException
 	{	
 		if(verbose) { Boardspace.out.println("Find class "+name); }
-		assureCached(name);
+		if(assureCached(name))
+		{
 		return(super.findClass(name));
+		}
+		return null;
 	}
 
     public URL findResource(String name)
 	{	if(verbose) { Boardspace.out.println("Find "+name); }
     	// resource names have paths with /, and typically filename.type
     	// so we need to strip off the actual name leaving the path
-		assureCached(name.substring(0,name.lastIndexOf('/')+1));
-		return(super.findResource(name));
+		if(assureCached(name.substring(0,name.lastIndexOf('/')+1)))
+			{
+			return(super.findResource(name));
+			}
+		return null;
 	}
 
 	/**

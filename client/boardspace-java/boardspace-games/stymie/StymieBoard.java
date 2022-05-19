@@ -122,7 +122,7 @@ class StymieBoard extends rectBoard<StymieCell> implements BoardProtocol,StymieC
  	private StymieState resetState = StymieState.Puzzle; 
  	private boolean setupDone = false;
  	
-    public DrawableImage<?> lastDroppedObject = null;	// for image adjustment logic
+    public StymieChip lastDroppedObject = null;	// for image adjustment logic
 
 	// factory method to generate a board cell
 	public StymieCell newcell(char c,int r)
@@ -849,8 +849,8 @@ class StymieBoard extends rectBoard<StymieCell> implements BoardProtocol,StymieC
 				}
 				else 
 				{
-				if(po==null) { pickObject(getCell(m.source,m.from_col,m.from_row)); }
 				if(src==null || !src.onBoard) { m.chip = pickedObject; }
+				if(po==null) { src = getCell(m.source,m.from_col,m.from_row); pickObject(src); }
 				StymieChip dropped = pickedObject;
 				dropObject(dest);
 				captureStack.push(null);
@@ -873,8 +873,8 @@ class StymieBoard extends rectBoard<StymieCell> implements BoardProtocol,StymieC
 	             * removed from the game record, so there are never picked stones in
 	             * single step replays.
 	             */
-	            if(replay!=replayMode.Replay && (po==null))
-	            	{ animationStack.push(getSource());
+	            if(replay==replayMode.Single || (po==null))
+	            	{ animationStack.push(src);
 	            	  animationStack.push(dest); 
 	            	}
 	            setNextStateAfterDrop(replay,false);

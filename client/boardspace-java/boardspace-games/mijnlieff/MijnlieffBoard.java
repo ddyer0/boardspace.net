@@ -672,7 +672,7 @@ class MijnlieffBoard
 	             * removed from the game record, so there are never picked stones in
 	             * single step replays.
 	             */
-	            if(replay!=replayMode.Replay && (po==null))
+	            if(replay==replayMode.Single || (po==null))
 	            	{ animationStack.push(getSource());
 	            	  animationStack.push(dest); 
 	            	}

@@ -164,7 +164,7 @@ public class MagnetViewer extends CCanvas<MagnetCell,MagnetBoard> implements Mag
         bb = new MagnetBoard(type,players_in_game,randomKey,getActivePlayer(),MagnetBoard.REVISION);
         reverseOption = myFrame.addOption(s.get(ReverseView),bb.reverseY(),deferredEvents);
         if(reviewOnly) { bb.setSimultaneousPlay(false); }
-        //useDirectDrawing(); // not tested yet
+        useDirectDrawing(true); // not tested yet
         doInit(false);
 
     }

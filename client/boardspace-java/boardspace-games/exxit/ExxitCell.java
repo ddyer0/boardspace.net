@@ -1,6 +1,7 @@
 package exxit;
 
 import lib.Random;
+import lib.AR;
 import lib.G;
 import lib.OStack;
 import online.game.cell;
@@ -29,6 +30,15 @@ public class ExxitCell extends cell<ExxitCell> implements ExxitConstants
 	int blobNumber=0;					//the blob number containing this cell
 	String cellName="";					//the history name for this cell
 	
+	public void reInit()
+	{
+		super.reInit();
+		AR.setValue(pieces,null);
+		sweep_counter = 0;
+		pieceIndex = -1;
+		blobNumber = 0;
+		cellName ="";
+	}
 	// short term storage, don't set piece location
 	// this is used in exchange moves
 	public void push(ExxitPiece p)
@@ -76,7 +86,8 @@ public class ExxitCell extends cell<ExxitCell> implements ExxitConstants
 	
 	// clone the dynamic state of the cell from a cell on another board
 	void copyFrom(ExxitCell other,ExxitPiece allPieces[],ExxitPiece allTiles[])
-	{	pieceIndex = other.pieceIndex;
+	{	super.copyFrom(other);
+		pieceIndex = other.pieceIndex;
 		cellName = other.cellName;
 		for(int i=0;i<pieces.length;i++)
 		{	ExxitPiece o = (i<=pieceIndex)?other.pieces[i]:null;

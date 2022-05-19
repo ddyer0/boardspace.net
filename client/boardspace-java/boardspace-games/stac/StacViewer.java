@@ -92,7 +92,7 @@ public class StacViewer extends CCanvas<StacCell,StacBoard> implements StacConst
        
         b = new StacBoard(info.getString(OnlineConstants.GAMETYPE, Variation.Stac.name),
         		randomKey,players_in_game,repeatedPositions,getStartingColorMap(),StacBoard.REVISION);
-        //useDirectDrawing(); // not tested yet
+        useDirectDrawing(true); // not tested yet
         doInit(false);
         reverseOption = myFrame.addOption(s.get(ReverseView),b.reverseY(),deferredEvents);
         offerDrawAction = myFrame.addAction(s.get(OFFERDRAW),deferredEvents);

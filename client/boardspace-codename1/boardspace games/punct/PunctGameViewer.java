@@ -16,6 +16,7 @@ import lib.G;
 import lib.GC;
 import lib.HitPoint;
 import lib.LFrameProtocol;
+import lib.RepaintManager.RepaintStrategy;
 import lib.StockArt;
 import online.game.*;
 import online.game.sgf.*;
@@ -91,6 +92,13 @@ public class PunctGameViewer extends CCanvas<punctCell,PunctGameBoard> implement
         super.init(info,frame);
  
         b = new PunctGameBoard(info.getString(OnlineConstants.GAMETYPE, "Punct"),getStartingColorMap());
+        //direct drawing doesn't work as-is.  The whole model of cells and pieces
+        //is nonstandard so substantial work may be needed
+        //useDirectDrawing(true); 
+        if(G.isCodename1()) 
+ 		{	 
+    	 painter.setRepaintStrategy(RepaintStrategy.Direct_Unbuffered); 
+ 		}
         doInit(false);
     }
 

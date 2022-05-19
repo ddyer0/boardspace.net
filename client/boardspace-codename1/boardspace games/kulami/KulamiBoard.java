@@ -346,6 +346,8 @@ class KulamiBoard extends squareBoard<KulamiCell> implements BoardProtocol,Kulam
         AR.copy(playerNChips,from_b.playerNChips);
         AR.copy(playerColor,from_b.playerColor);
         AR.copy(playerChip,from_b.playerChip);
+        redChipPool.copyCurrentCenter(from_b.redChipPool);
+        blackChipPool.copyCurrentCenter(from_b.blackChipPool);
         sameboard(from_b); 
     }
 
@@ -761,7 +763,7 @@ void doSwap(replayMode replay)
 	             * removed from the game record, so there are never picked stones in
 	             * single step replays.
 	             */
-	            if(replay!=replayMode.Replay && (po==null))
+	            if(replay==replayMode.Single || (po==null))
 	            	{ animationStack.push(src);
 	            	  animationStack.push(dest); 
 	            	}

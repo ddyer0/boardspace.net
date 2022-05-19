@@ -82,7 +82,7 @@ public class KnockaboutViewer extends CCanvas<KnockaboutCell,KnockaboutBoard> im
         int randomKey = sharedInfo.getInt(OnlineConstants.RANDOMSEED,-1);
         b = new KnockaboutBoard(randomKey,info.getString(OnlineConstants.GAMETYPE, Knockabout_Standard_Init),
         		getStartingColorMap());
-        //useDirectDrawing(); // not tested yet
+        useDirectDrawing(true); // not tested yet
         doInit(false);
         
      }
@@ -275,8 +275,7 @@ public class KnockaboutViewer extends CCanvas<KnockaboutCell,KnockaboutBoard> im
     private void drawBoardElements(Graphics gc, KnockaboutBoard rb, Rectangle brect, HitPoint highlight)
     {	Hashtable<KnockaboutCell,KnockaboutCell> dests = rb.getMoveDests();
     	KnockaboutState state = rb.getState();
-    	
-     	int dotsize = Math.max(2,SQUARESIZE/15);
+      	int dotsize = Math.max(2,SQUARESIZE/15);
      	int mov = rb.movingObjectIndex();
      	long now = G.Date();
      	if(roll_anim_cell!=null) 

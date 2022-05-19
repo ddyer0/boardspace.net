@@ -148,6 +148,18 @@ class KubaBoard extends rectBoard<KubaCell> implements BoardProtocol,KubaConstan
     {   drawing_style = DrawingStyle.STYLE_NOTHING; // STYLE_CELL or STYLE_LINES
     	Grid_Style = KUBAGRIDSTYLE; //coordinates left and bottom
     	setColorMap(map);
+        Random r = new Random(6454267);
+        for(int i=LeftIndex;i<=BottomIndex;i++)
+    		{	{
+    			KubaCell grow[] = gutters[i];
+    			for(int j=0;j<grow.length;j++) { grow[j]=new KubaCell(r,Gutters[i],j);}
+    			}
+    			{
+    			KubaCell trow[] = trays[i];
+    			for(int j=0;j<trow.length;j++) { trow[j]=new KubaCell(r,Trays[i],j); }
+    			}	
+        }
+
         doInit(init); // do the initialization 
      }
 
@@ -175,20 +187,10 @@ class KubaBoard extends rectBoard<KubaCell> implements BoardProtocol,KubaConstan
     	else { throw G.Error(WrongInitError,game); }
         gametype = game;
         setState(KubaState.PUZZLE_STATE);
-        Random r = new Random(6454267);
-        initBoard(DEFAULT_COLUMNS,DEFAULT_ROWS); //this sets up the board and cross links
-        allCells.setDigestChain(r);
-        for(int i=LeftIndex;i<=BottomIndex;i++)
-   		{	{
-   			KubaCell grow[] = gutters[i];
-   			for(int j=0;j<grow.length;j++) { grow[j]=new KubaCell(r,Gutters[i],j);}
-   			}
-   			{
-   			KubaCell trow[] = trays[i];
-   			for(int j=0;j<trow.length;j++) { trow[j]=new KubaCell(r,Trays[i],j); }
-   			}	
-       }
-        // set up a clockwise ring of gutter cells, left and top increasing, right and bottom decreasing
+        reInitBoard(DEFAULT_COLUMNS,DEFAULT_ROWS); //this sets up the board and cross links
+        reInit(gutters);
+        reInit(trays);
+         // set up a clockwise ring of gutter cells, left and top increasing, right and bottom decreasing
        {
        int gindex = 0;
        for(int i=0;i<DEFAULT_COLUMNS;i++)
@@ -648,8 +650,10 @@ class KubaBoard extends rectBoard<KubaCell> implements BoardProtocol,KubaConstan
     int dropInGutterNear(KubaCell from,KubaChip chip,KubaCell c,replayMode replay)
     {	int center = c.myIndex;
     	for(int i=0;i<allGutters.length;i++)
-    	{	if(gutterCell(center+i).topChip()==null) { return(100*center+slideRow(from,center+i,center,chip,replay)); };
-    		if(gutterCell(center-i).topChip()==null) { return(100*center+slideRow(from,center-i,center,chip,replay)); };
+    	{	if(gutterCell(center+i).topChip()==null)
+    			{ return(100*center+slideRow(from,center+i,center,chip,replay)); };
+    		if(gutterCell(center-i).topChip()==null) 
+    			{ return(100*center+slideRow(from,center-i,center,chip,replay)); };
     	}
     	throw G.Error("Not expecting this exit");
     	

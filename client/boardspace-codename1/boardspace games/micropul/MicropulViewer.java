@@ -135,6 +135,7 @@ public class MicropulViewer extends CCanvas<MicropulCell,MicropulBoard> implemen
         int randomKey = sharedInfo.getInt(OnlineConstants.RANDOMSEED,-1);
 
         bb = new MicropulBoard(randomKey,info.getString(OnlineConstants.GAMETYPE, Micropul_INIT),getStartingColorMap());
+        useDirectDrawing(true); 
         doInit(false);
     }
 
@@ -614,9 +615,8 @@ public class MicropulViewer extends CCanvas<MicropulCell,MicropulBoard> implemen
    		{
    			// note this gets called in the game loop as well as in the display loop
    			// and is pretty expensive, so we shouldn't do it in the mouse-only case
-
-       bb.SetDisplayParameters(zoomRect.value,1.0,board_center_x,board_center_y,0.0); // shrink a little and rotate 30 degrees
-       bb.SetDisplayRectangle(boardRect);
+	   	gb.SetDisplayParameters(zoomRect.value,1.0,board_center_x,board_center_y,0.0); // shrink a little and rotate 30 degrees
+	   	gb.SetDisplayRectangle(boardRect);
    		}
        boolean moving = hasMovingObject(selectPos);
        // 

@@ -131,7 +131,7 @@ public class RajViewer extends CCanvas<RajCell,RajBoard> implements RajConstants
         int np = Math.max(2,info.getInt(OnlineConstants.PLAYERS_IN_GAME));
          
         bb = new RajBoard(info.getString(OnlineConstants.GAMETYPE, Raj_INIT),randomKey,np,getStartingColorMap());
-        //useDirectDrawing(); // not tested yet
+        useDirectDrawing(true); // not tested yet
         doInit(false);
 
     }

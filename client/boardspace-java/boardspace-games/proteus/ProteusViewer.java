@@ -29,10 +29,8 @@ import static proteus.ProteusMovespec.*;
 */
 public class ProteusViewer extends CCanvas<ProteusCell,ProteusBoard> implements ProteusConstants, GameLayoutClient
 {
-     /**
-	 * 
-	 */
-	static final long serialVersionUID = 1L;
+    static final String Proteus_SGF = "Proteus"; // sgf game number allocated for hex
+    static final String ImageDir = "/proteus/images/";
 	// colors
     private Color reviewModeBackground = new Color(220,165,200);
     private Color HighlightColor = new Color(0.2f, 0.95f, 0.75f);
@@ -102,7 +100,7 @@ public class ProteusViewer extends CCanvas<ProteusCell,ProteusBoard> implements 
        
         b = new ProteusBoard(info.getString(OnlineConstants.GAMETYPE, Variation.Proteus.name()),
         		randomKey,players_in_game,getStartingColorMap(),ProteusBoard.REVISION);
-        //useDirectDrawing(); // not tested yet
+        useDirectDrawing(true); 
         doInit(false);
         reverseOption = myFrame.addOption(s.get(ReverseView),b.reverseY(),deferredEvents);
 

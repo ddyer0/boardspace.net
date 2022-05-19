@@ -181,6 +181,7 @@ public class ProteusPlay extends commonRobot<ProteusBoard> implements Runnable,
         monte_search_state.blitz = true;
         monte_search_state.randomize_uct_children = true;     
         monte_search_state.random_moves_per_second = WEAKBOT ? 4000 : 120000;
+        monte_search_state.terminalNodeOptimization = terminalNodeOptimize;
         move = monte_search_state.getBestMonteMove();
         }
  		}

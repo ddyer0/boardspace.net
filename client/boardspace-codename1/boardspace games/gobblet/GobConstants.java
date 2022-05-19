@@ -79,4 +79,5 @@ public interface GobConstants
 		InternationalStrings.put(GobbletStringPairs);
     	 */
     }
+	
 }

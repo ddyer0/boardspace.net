@@ -460,7 +460,7 @@ public abstract class Platform implements Config{
     static public double screenDiagonal()
     {
     	double den = G.isAndroid() 
-    			? installerPackage.getScreenDPI()
+    			? getScreenDPI()
     			: getPPI();	// convert to inches
     	double w = (getScreenWidth()/den);
     	double h = (getScreenHeight()/den);
@@ -469,13 +469,59 @@ public abstract class Platform implements Config{
     
     static int simulator[] = null;//{1080,2134,450};// { 2134, 1080, 450};	// galaxy s10
     
+    static public int getDisplayDPI()
+    {
+       	int dens = Display.getInstance().getDeviceDensity();
+    	switch(dens)
+    	{
+    	/*
+    	case CN1Constants.DENSITY_LOW: 	return 120;
+    	case CN1Constants.DENSITY_MEDIUM: return 160;
+    	case CN1Constants.DENSITY_HIGH: return 220;
+    	case CN1Constants.DENSITY_VERY_HIGH: return 320;
+    	case CN1Constants.DENSITY_HD: return 400;
+    	case CN1Constants.DENSITY_2HD: return 560;
+    	case CN1Constants.DENSITY_4K: return 640;
+    	*/
+    	default:
+    		int d = dens*96/30;
+    		return d;
+    	}
+    }
+    //
+    // samsung galaxy phones have a "game optimization" that reduces
+    // the apparent screen resulution by 25%, and there is little control
+    // over when this is done.  We detect it by checking that the raw screen 
+    // is a lot higher than the presented resolution.  The actual effect
+    // of this isn't terrible, but it does make some ad-hoc decisions about
+    // screen layout problematic.  The most noticible was that the lobby
+    // came up in "scrollable" mode rather than perfect fit mode.
+    //
+    static boolean SAMSUNG_REDUCED_RESOLUTION = false;
+    
+    static public int getScreenDPI()
+    {	
+    	int d =  getDisplayDPI();
+    	if(installerPackage!=null && installerPackage.isSupported())
+    	{
+    	//G.print(installerPackage.getOSInfo());
+    	int raw = (int)installerPackage.getScreenDPI();
+    	int stable = raw>>22;
+    	int x = raw>>11 & 0x7ff;
+    	int z = raw & 0x7ff;
+    	SAMSUNG_REDUCED_RESOLUTION = (z<stable*0.8);
+    	//if(SAMSUNG_REDUCED_RESOLUTION) { G.print("Samsung game hack detected"); }
+    	//G.print("xdpi ",x," stable dpi ",stable, " s ",z ," dis ",d);
+    	//return fd;
+    	return(Math.max(Math.max(x,d),z));
+    	}
+    	return d;
+    }
+    
     static public int getRealScreenDPI()
     {	if(simulator!=null) { return(simulator[2]); }
     	if(isRealInfinityTable()) { return(70); }
-    	return ((int)(!isSimulator() && ((installerPackage!=null) && installerPackage.isSupported())
-    				? (installerPackage.getScreenDPI())
-    				: Display.getInstance().getDeviceDensity()*96/30));
-  
+    	return getScreenDPI();
     }
     static public int getScreenWidth()
     {	if(simulator!=null) { return(simulator[0]); }
@@ -502,7 +548,9 @@ public abstract class Platform implements Config{
 	{ if(isRealInfinityTable()) { return(70); }
 	  int sz = (int)getRealScreenDPI();
 	  if(G.isAndroid()) { sz = Math.max(120, sz); }
-	  return (Math.min(300, Math.max(96, sz))); 
+	  // this hack prevents the lobby from entering "scrollable" mode
+	  int limit = SAMSUNG_REDUCED_RESOLUTION ? 210 : 300;
+	  return (Math.min(limit, Math.max(96, sz))); 
 	}
     
     static public String replace(String from, String find, String repl)
@@ -731,10 +779,13 @@ public abstract class Platform implements Config{
     }
     public static boolean isRealPlaytable() 
     { 	String info = getOSInfo();
+    //G.print(info);
     	boolean alps = info.indexOf("manufacturer=alps")>=0;
     	boolean doppler = info.indexOf("display=Doppler.")>=0;
     	boolean original = info.indexOf("display=PlayTableV")>=0;
-    	return(isRealPlaytable =  original || (doppler && alps));
+    	isRealPlaytable =  original || (doppler && alps);
+   // 	G.print("Real ",isRealPlaytable," ",original);
+    	return(isRealPlaytable);
     	/*
     	synchronized (playtablekeys) 
     	{

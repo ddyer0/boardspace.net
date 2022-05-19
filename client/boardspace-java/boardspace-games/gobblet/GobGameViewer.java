@@ -120,7 +120,8 @@ public class GobGameViewer extends CCanvas<GobCell,GobGameBoard> implements GobC
     public void init(ExtendedHashtable info,LFrameProtocol frame)
     {
         super.init(info,frame);
-        b = new GobGameBoard(info.getString(OnlineConstants.GAMETYPE, "Gobblet"),getStartingColorMap());        
+        b = new GobGameBoard(info.getString(OnlineConstants.GAMETYPE, "Gobblet"),getStartingColorMap());   
+        useDirectDrawing(true);
         doInit(false);
         
      }

@@ -103,6 +103,7 @@ public class GounkiViewer extends CCanvas<GounkiCell,GounkiBoard> implements Gou
         b = new GounkiBoard(info.getString(OnlineConstants.GAMETYPE, Gounki_INIT),
         		randomKey,map);
         if(seatingFaceToFace()) { b.autoReverseYNormal(); }
+        useDirectDrawing(true);
         doInit(false);
         
      }
@@ -365,7 +366,7 @@ public class GounkiViewer extends CCanvas<GounkiCell,GounkiBoard> implements Gou
             int rawy = gb.cellToY(cell);
             int ypos = G.Bottom(brect) - rawy;
             int xpos = G.Left(brect) + gb.cellToX(cell);
-            boolean legal = gb.LegalToHitBoard(cell);
+            boolean legal = gb.LegalToHitBoard(cell,dests);
             double yscl = perspective 
             				? (twist?0.9:1.0)*yScale(rawy-G.Top(brect),G.Height(brect))
             				: 1.0;
@@ -564,7 +565,7 @@ public boolean PerformAndTransmit(String str)
    		missedOneClick = false;
    		GounkiId hitObject =(GounkiId)hp.hitCode;
         GounkiState state = b.getState();
-		GounkiCell cell = hitCell(hp);
+		GounkiCell cell = b.getCell(hitCell(hp));
 		GounkiChip chip = (cell==null) ? null : cell.topChip();
         switch (hitObject)
         {

@@ -93,7 +93,10 @@ class QyshinsuBoard extends circBoard<QyshinsuCell> implements BoardProtocol,Qys
 		else if(row>boardRows) { row-=boardRows; }
     	return(super.getCell(col,row));
     }
-
+    public QyshinsuCell getCell(QyshinsuCell c)
+    {
+    	return c==null ? null : getCell(c.rackLocation(),c.col,c.row);
+    }
 	// factory method
 	public QyshinsuCell newcell(char c,int r)
 	{	return(new QyshinsuCell(c,r));
@@ -225,7 +228,7 @@ class QyshinsuBoard extends circBoard<QyshinsuCell> implements BoardProtocol,Qys
  		copyFrom(rack,from_b.rack);
         board_state = from_b.board_state;
         unresign = from_b.unresign;
-
+        pickedSource = getCell(from_b.pickedSource);
         sameboard(from_b);
     }
  
@@ -435,38 +438,28 @@ class QyshinsuBoard extends circBoard<QyshinsuCell> implements BoardProtocol,Qys
     		}
         return (NothingMoving);
     }
+    public QyshinsuCell getCell(QIds source,char col,int row)
+    {
+    	switch(source)
+    	{
+    	default: throw G.Error("source %s not expected",source);
+    	case BoardLocation:
+    		return  getCell(col,row);
+    	case Second_Player_Pool:
+    		return rack[getColorMap()[SECOND_PLAYER_INDEX]][row];
+    	case First_Player_Pool:
+    		return rack[getColorMap()[FIRST_PLAYER_INDEX]][row];
+    	}
+    }
  
 	// pick something up.  Note that when the something is the board,
     // the board location really becomes empty, and we depend on unPickObject
     // to replace the original contents if the pick is cancelled.
     private QyshinsuCell pickObject(QIds source, char col, int row)
     {	G.Assert((pickedObject==null)&&(pickedSource==null),"ready to pick");
-    
-        switch (source)
-        {
-        default:
-        	throw G.Error("Not expecting source %s", source);
-
-        case BoardLocation:
-         	{
-        	QyshinsuCell c = pickedSource = getCell(col,row);
-        	pickedObject = c.removeTop();
-         	break;
-         	}
-        case Second_Player_Pool:
-        	{
-        	QyshinsuCell c = pickedSource = rack[getColorMap()[SECOND_PLAYER_INDEX]][row];
-        	pickedObject = c.removeTop();
-        	break;
-        	}
-        case First_Player_Pool:
-        	{
-        	QyshinsuCell c = pickedSource = rack[getColorMap()[FIRST_PLAYER_INDEX]][row];
-        	pickedObject = c.removeTop();
-        	break;
-        	}
-        }
-        return(pickedSource);
+    	QyshinsuCell c = pickedSource = getCell(source,col,row);
+    	pickedObject = c.removeTop();
+    	return c;
    }
 
     //

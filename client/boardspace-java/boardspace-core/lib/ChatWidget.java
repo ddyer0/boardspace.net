@@ -49,7 +49,7 @@ public class ChatWidget
 		return(name());
 	}};
 	Keyboard keyboard = null;
-	boolean useKeyboard = G.debug() || G.isCodename1();
+	boolean useKeyboard = G.isCodename1();
 	boolean hasFocus = false;
 	int flipInterval = 500;
 	boolean inputVisible = false;

@@ -47,7 +47,8 @@ public class punctCell extends cell<punctCell> implements PunctConstants
 		return(true);
 	}
 	void copyFrom(punctCell other,PunctPiece allPieces[])
-	{	height = other.height;
+	{	super.copyFrom(other);
+		height = other.height;
 		plines[0]=other.plines[0];
 		plines[1]=other.plines[1];
 		bloBits = other.bloBits;

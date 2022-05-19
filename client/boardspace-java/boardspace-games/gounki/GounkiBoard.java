@@ -209,7 +209,16 @@ class GounkiBoard extends rectBoard<GounkiCell> implements BoardProtocol,GounkiC
         AR.copy(chipsOnBoard,from_b.chipsOnBoard);
         board_state = from_b.board_state;
         unresign = from_b.unresign;
-
+        getCell(pickedSourceStack,from_b.pickedSourceStack);
+        getCell(droppedDestStack,from_b.droppedDestStack);
+        pickedObject = from_b.pickedObject;
+        deployMoves.copyFrom(from_b.deployMoves);
+        moveMoves.copyFrom(from_b.moveMoves);
+        dropMoveStack.copyFrom(from_b.dropMoveStack);
+        getCell(cellsForCurrentMove,from_b.cellsForCurrentMove);
+        getCell(cellsForPrevMove,from_b.cellsForPrevMove);
+        pickedStateStack.copyFrom(from_b.pickedStateStack);
+       
         sameboard(from_b);
     }
 
@@ -858,7 +867,7 @@ default:
         }
     }
   
-    public boolean LegalToHitBoard(GounkiCell c)
+    public boolean LegalToHitBoard(GounkiCell c,Hashtable<GounkiCell,GounkiMovespec>dests)
     {	
         switch (board_state)
         {
@@ -867,7 +876,6 @@ default:
         case DEPLOY_STATE:
         	if(pickedObject==null)
         	{	if(isDest(c)) { return(true); }
-        		Hashtable<GounkiCell,GounkiMovespec>dests = getDests();
         		if(dests.get(c)!=null) { return(true); }
         		return(false);
         	}
@@ -883,7 +891,6 @@ default:
  				}
  			else 
  			{	if(isSource(c)) { return(true); }
- 				Hashtable<GounkiCell,GounkiMovespec>dests = getDests();
  				return(dests.get(c)!=null);
  			}
 		case GAMEOVER_STATE:

@@ -147,9 +147,5 @@ public interface ProteusConstants
     }
 
 
-	
-    static final String Proteus_SGF = "Proteus"; // sgf game number allocated for hex
-    static final String[] GRIDSTYLE = { "1", null, "A" }; // left and bottom numbers
-    static final String ImageDir = "/proteus/images/";
 
 }

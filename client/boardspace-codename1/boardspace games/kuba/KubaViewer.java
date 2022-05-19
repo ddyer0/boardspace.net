@@ -267,7 +267,7 @@ public class KubaViewer extends CCanvas<KubaCell,KubaBoard> implements KubaConst
         int top = G.Bottom(brect);
         int left =  G.Left(brect);
         char firstCol = 'A';
-        char lastCol = (char)('A'+gb.ncols);
+        char lastCol = (char)('A'+gb.ncols-1);
         int lastRow = gb.nrows;
         for(Enumeration<KubaCell> cells = gb.getIterator(Itype.TBRL); cells.hasMoreElements();)
        		{ //where we draw the grid

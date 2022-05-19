@@ -98,6 +98,7 @@ public class GipfViewer extends CCanvas<GipfCell,GipfBoard> implements GipfConst
         }
 
         b = new GipfBoard(info.getString(OnlineConstants.GAMETYPE, "Gipf"),getStartingColorMap(),GipfBoard.REVISION);
+        useDirectDrawing(true);
         doInit(false);
     }
 

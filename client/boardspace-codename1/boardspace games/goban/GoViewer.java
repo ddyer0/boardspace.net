@@ -154,6 +154,7 @@ public class GoViewer extends CCanvas<GoCell,GoBoard> implements GoConstants, Ga
        
         b = new GoBoard(info.getString(OnlineConstants.GAMETYPE, Variation.Go_19.name),
         		randomKey,players_in_game,getStartingColorMap());
+        useDirectDrawing(true);
         doInit(false);
         reverseOption = myFrame.addOption(s.get(ReverseView),b.reverseY(),deferredEvents);
         if(G.debug())

@@ -461,11 +461,11 @@ public class KulamiViewer extends CCanvas<KulamiCell,KulamiBoard> implements Kul
     	//drawFixedElements(gc);
     	//lastDropped = KulamiChip.board_3x2;
     	
-    	Hashtable<KulamiCell,KulamiCell> targets = bb.getTargets();
+    	Hashtable<KulamiCell,KulamiCell> targets = gb.getTargets();
     	boolean selective = targets.size()<30;
        	GC.setColor(gc, Color.black);
-       	KulamiCell prev1 = bb.prevLoc(1);
-       	KulamiCell prev2 = bb.prevLoc(2);
+       	KulamiCell prev1 = gb.prevLoc(1);
+       	KulamiCell prev2 = gb.prevLoc(2);
        	int ballsize = gb.cellSize();
        	int largeBallsize = ballsize*7/6;
        	// this enumerates the cells in the board in an arbitrary order.  A more
@@ -474,7 +474,7 @@ public class KulamiViewer extends CCanvas<KulamiCell,KulamiBoard> implements Kul
         {
         for(KulamiCell cell = gb.allCells; cell!=null; cell=cell.next)
           {	
-            boolean drawhighlight = bb.legalToHitBoard(cell,targets)
+            boolean drawhighlight = gb.legalToHitBoard(cell,targets)
             							|| gb.isDest(cell) 		// is legal for a "drop" operation
             							|| gb.isSource(cell);	// is legal for a "pick" operation+
          	int ypos = G.Bottom(brect) - gb.cellToY(cell);

@@ -155,7 +155,7 @@ public class LyngkViewer extends CCanvas<LyngkCell,LyngkBoard> implements LyngkC
         // later, some variant is created, or the game code base is re purposed as the basis
         // for another game.
         bb = new LyngkBoard(type,players_in_game,randomKey,LyngkBoard.REVISION);
-        //useDirectDrawing(); // not tested yet
+        useDirectDrawing(true); // not tested yet
         doInit(false);
 
     }
