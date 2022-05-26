@@ -35,6 +35,12 @@ import lib.Random;
 
 class PalagoBoard extends hexBoard<PalagoCell> implements BoardProtocol,PalagoConstants
 {	
+    static final String[] PalagoGRIDSTYLE = { "1", null, "A" }; // left and bottom numbers
+    /* the "external representation for the board is A1 B2 etc.  This internal representation is X,Y
+    where adjacent X's are separated by 2.  This gives the board nice mathematical properties for
+    calculating adjacency and connectivity. */
+    static int[] ZfirstInCol19 = { 18, 17, 16, 15, 14,13,12,11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0 }; // these are indexes into the first ball in a column, ie B1 has index 2
+    static int[] ZnInCol19 =     { 19,19,19,19,19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19 }; // depth of columns, ie A has 4, B 5 etc.
 	private PalagoState unresign;
 	private PalagoState board_state;
 	public PalagoState getState() {return(board_state); }

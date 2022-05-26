@@ -9,6 +9,7 @@ public interface PalagoConstants
 {   //	these next must be unique integers in the Hexmovespec dictionary
 	//  they represent places you can click to pick up or drop a stone
 	
+	static final String TileColorMessage = "select tile color";
 	
 	enum PalagoId implements CellId
 	{
@@ -50,6 +51,21 @@ public interface PalagoConstants
     static final int MOVE_DROPB = 207; // drop on the board
  		
 
-
+    //
+    //ad hoc scale factors to fit the stones to the board
+    static void putStrings()
+    {/*	String palagoStrings[] = 
+			{"Palago",
+			 "select tile color",
+			 "Place a second tile adjacent to the first",
+			 "Form a closed shape in your color"};
+    	String palagoStringPairs[][] = {
+    			{"Palago_variation","standard Palago"},
+    			{"Palago_family","Palago"},
+    	};
+        InternationalStrings.put(palagoStrings);
+        InternationalStrings.put(palagoStringPairs);
+    */
+	}
 
 }

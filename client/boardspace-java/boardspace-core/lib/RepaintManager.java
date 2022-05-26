@@ -78,6 +78,21 @@ class PTStack extends OStack<PaintTimer>
 		if(top==null) { return(def); }
 		return(top.expiration);
 	}
+	
+	public String show()
+	{
+		long n = G.Date();
+		StringBuilder b = new StringBuilder("\n");
+		for(int lim = size()-1; lim>=0; lim--)
+		{	PaintTimer t = elementAt(lim);
+			b.append("time ");
+			b.append(t.expiration-n);
+			b.append(" ");
+			b.append(t.why);
+			b.append("\n");
+		}
+		return b.toString();
+	}
 }
 
 public class RepaintManager implements VncScreenInterface,Config
@@ -93,6 +108,8 @@ public class RepaintManager implements VncScreenInterface,Config
 	private int repaintReadyCount = 0;
 	public boolean deferSprites() { return(deferSprites && (repaintStrategy!=RepaintStrategy.Deferred)); }
 	boolean useFixedBackground = true; 
+	public boolean trigger = true;
+	public String showTimers() { return timers.show(); }
 	public enum RepaintStrategy {
 		Direct_SingleBuffer(0,30,"Direct Single Buffer"),
 		Direct_Unbuffered(0,0,"Direct Unbuffered"),		// used by android textwindow and ios
@@ -343,7 +360,8 @@ public class RepaintManager implements VncScreenInterface,Config
 					  timers.setElementAt(newtime,lim);  
 				  	}
 				  else { 
-				  		timers.insertElementAt(newtime,lim+1); }
+				  		timers.insertElementAt(newtime,lim+1); 
+				  	}
 				  some = true; 
 				}
 			else if(nextTimer.why==why) 
@@ -1342,9 +1360,7 @@ public class RepaintManager implements VncScreenInterface,Config
 	 	}
 	     public void repaint(int tm,String w)
 	     {	
-	    	 long now = G.Date();
-	    	 // no matter how much of a hurry, don't paint again too soon
-	    	 addTimer(now,(int)tm,RefreshReason.Paint,w);
+	    	 addTimer(0,tm,RefreshReason.Paint,w);
 	     }
 
 	     private boolean sleeping = false;
@@ -1483,11 +1499,12 @@ public class RepaintManager implements VncScreenInterface,Config
 		   		if(next!=null)
 		   			{
 		   			final int nextv = (int)(next.expiration-now);
-		   		if(nextv>0 && helper.needsCacheManagement())
+		   		    if(nextv>0 && helper.needsCacheManagement())
    						{
 		   				G.startInEdt(new Runnable() { public void run()	{ 	 helper.manageCanvasCache(nextv); 	}});
    						}
 		   			waited |= waitAWhile(next);
+				   	next = getNextTimer();
 					setBoundsNonPaint();
 		   			{ if(setPaintNeeded(false) && !paintedAFrame)
 		   				{

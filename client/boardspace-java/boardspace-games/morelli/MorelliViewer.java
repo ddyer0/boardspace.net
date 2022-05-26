@@ -90,7 +90,7 @@ public class MorelliViewer extends CCanvas<MorelliCell,MorelliBoard> implements 
        
         b = new MorelliBoard(info.getString(OnlineConstants.GAMETYPE, Variations.morelli_13.name),
         		randomKey,players_in_game,getStartingColorMap(),MorelliBoard.REVISION);
-        //useDirectDrawing(); // not tested yet
+        useDirectDrawing(true); // not tested yet
         doInit(false);
         checkerOption = myFrame.addOption(s.get(CheckerEffect),checkerEffect,deferredEvents);
 

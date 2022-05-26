@@ -79,17 +79,20 @@ public abstract class square_geo_board<CELLTYPE extends cell<CELLTYPE>> extends 
      * @param fc
      * @param nc
      * @param fcol
+     * @return true if this is the first time - ie; is init rather than re-init
      */
-	public void reInitBoard(int ncol,int nrow)
+	public boolean reInitBoard(int ncol,int nrow)
 	{
 		if((nrows==nrow) && (ncols==ncol) && (allCells!=null))
 		{
 			for(CELLTYPE c = allCells ; c!=null; c=c.next) { c.reInit(); } 
+			return false;
 		}
 		else 
 		{ initBoard(ncol,nrow);
 		  Random r = new Random(0xf267*nrows*ncols);
 		  allCells.setDigestChain(r);
+		  return true;
 		}
 	}
 	

@@ -18,6 +18,7 @@ import lib.InternationalStrings;
 import lib.LFrameProtocol;
 import lib.StockArt;
 import lib.TextButton;
+import lib.Toggle;
 import online.game.*;
 import online.game.sgf.sgf_node;
 import online.game.sgf.sgf_property;
@@ -63,11 +64,12 @@ public class TintasViewer extends CCanvas<TintasCell,TintasBoard> implements Tin
     //
 
     private Rectangle chipRects[] = addZoneRect("chip",2);
-	private Rectangle eyeRect = addRect("eyeRect");
+    private Toggle eyeRect = new Toggle(this,"eye",
+			StockArt.NoEye,TintasId.EyeRect,NoeyeExplanation,
+			StockArt.Eye,TintasId.EyeRect,EyeExplanation
+			);
 	private TextButton swapButton = addButton(SWAP,GameId.HitSwapButton,SwapDescription,
 			HighlightColor, rackBackGroundColor);
-	boolean showTargetsOn = false;
-	boolean showTargets = false;
     
 /**
  * this is called during initialization to load all the images. Conventionally,
@@ -233,10 +235,8 @@ public class TintasViewer extends CCanvas<TintasCell,TintasBoard> implements Tin
     }
 
     private void drawAuxControls(Graphics gc,HitPoint highlight)
-    {	
-    	StockArt eye = showTargetsOn ? StockArt.NoEye : StockArt.Eye;
-    	String msg = showTargetsOn ? NoeyeExplanation : EyeExplanation;
-    	showTargets = showTargetsOn | eye.drawChip(gc,this,eyeRect,highlight,TintasId.EyeRect,s.get(msg));
+    {	eyeRect.activateOnMouse = true;
+    	eyeRect.draw(gc,highlight);
     }
 
 	// draw a box of spare chips. For tintas it's purely for effect, but if you
@@ -370,6 +370,7 @@ public class TintasViewer extends CCanvas<TintasCell,TintasBoard> implements Tin
         // depend on the shadows being cast correctly.
     	TintasCell pawnLocation = gb.pawnStack.top();
     	boolean perspective = usePerspective();
+    	boolean showTargets = eyeRect.isOnNow();
         for(TintasCell cell = gb.allCells; cell!=null; cell=cell.next)
           { boolean isDest = gb.isDest(cell);
             boolean isSource = gb.isASource(cell); 
@@ -652,7 +653,7 @@ public class TintasViewer extends CCanvas<TintasCell,TintasBoard> implements Tin
         default:
         	throw G.Error("Hit Unknown: %s", hitCode);
          case EyeRect:	
-        	showTargetsOn = !showTargetsOn; 
+        	eyeRect.toggle();
         	break;
         case PawnHome:
         case RackLocation:

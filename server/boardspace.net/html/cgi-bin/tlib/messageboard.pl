@@ -95,7 +95,7 @@ sub show_input_form
   my $msg = &trans("Player:");
   print "<table><tr><td>$msg ";
   print "<input type=text name=fromname value='$fromname' size=12>\n";
-  my $msg = &trans("Your Password:");
+  my $msg = &trans("Your password:");
   print "</td><td>$msg ";
   print "<input type=password name=passwd value='$passwd' SIZE=20 MAXLENGTH=25>\n";
   my $msg = &trans("Expires in");

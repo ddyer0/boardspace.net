@@ -76,6 +76,7 @@ public enum CheckerId implements CellId
 	White_Chip_Pool("W"),
     BoardLocation(null),
     ReverseViewButton(null),
+    ToggleEye(null),
 ;
 	String shortName = name();
 	public String shortName() { return(shortName); }

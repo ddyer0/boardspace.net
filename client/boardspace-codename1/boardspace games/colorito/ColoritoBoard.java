@@ -47,8 +47,9 @@ class ColoritoBoard extends rectBoard<ColoritoCell> implements BoardProtocol,Col
 	static final ColoritoId RackLocation[] = { ColoritoId.White_Chip_Pool,ColoritoId.Black_Chip_Pool};
 
 	public ColoritoCell rack[] = null;						// holds the sample chips for the viewer
-    public int boardColumns = Variation.Colorito_10.size;	// size of the board
-    public int boardRows = Variation.Colorito_10.size;
+	
+    public int boardColumns = Variation.Colorito_10.cols;	// size of the board
+    public int boardRows = Variation.Colorito_10.rows;
     public void SetDrawState() { setState(ColoritoState.Draw); }
     public CellStack animationStack = new CellStack();
     public CellStack occupiedCells = new CellStack();
@@ -59,6 +60,7 @@ class ColoritoBoard extends rectBoard<ColoritoCell> implements BoardProtocol,Col
 	private RepeatedPositions repeatedPositions = null;
 	private int passedMoves = 0;
     private int sweep_counter=0;
+    private boolean firstMove[]=new boolean[2];
     private Variation variation = Variation.Colorito_10;
     private ColoritoState board_state = ColoritoState.Play;	// the current board state
     private ColoritoState unresign = null;					// remembers the previous state when "resign"
@@ -112,6 +114,7 @@ class ColoritoBoard extends rectBoard<ColoritoCell> implements BoardProtocol,Col
        	G.Assert(sameCells(pickedSourceStack,from_b.pickedSourceStack),"pickedSourceStack mismatch");
         G.Assert(sameCells(droppedDestStack,from_b.droppedDestStack),"droppedDestStack mismatch");
         G.Assert(pickedObject==from_b.pickedObject,"pickedObject doesn't match");
+        G.Assert(AR.sameArrayContents(firstMove,from_b.firstMove),"firstMove mismatch");
         // this is a good overall check that all the copy/check/digest methods
         // are in sync, although if this does fail you'll no doubt be at a loss
         // to explain why.
@@ -158,6 +161,7 @@ class ColoritoBoard extends rectBoard<ColoritoCell> implements BoardProtocol,Col
 		v ^= chip.Digest(r,pickedObject);
 		v ^= Digest(r,pickedSourceStack);
 		v ^= Digest(r,droppedDestStack);
+		v ^= Digest(r,firstMove);
 		v ^= (board_state.ordinal()*10+whoseTurn)*r.nextLong();
         return (v);
     }
@@ -182,6 +186,7 @@ class ColoritoBoard extends rectBoard<ColoritoCell> implements BoardProtocol,Col
         getCell(droppedDestStack,from_b.droppedDestStack);
         getCell(occupiedCells,from_b.occupiedCells);
         AR.copy(playerColor,from_b.playerColor);
+         AR.copy(firstMove,from_b.firstMove);
         passedMoves = from_b.passedMoves;
         board_state = from_b.board_state;
         unresign = from_b.unresign;
@@ -231,8 +236,9 @@ class ColoritoBoard extends rectBoard<ColoritoCell> implements BoardProtocol,Col
      		case Colorito_8:
      		case Colorito_7:
      		case Colorito_6:
-      		boardColumns = variation.size; 
-     		boardRows = variation.size;
+     		case Colorito_6_10:
+      		boardColumns = variation.cols; 
+     		boardRows = variation.rows;
      		gametype = gtype;
      		reInitBoard(boardColumns,boardRows); //this sets up the board and cross links
      	}
@@ -273,6 +279,7 @@ class ColoritoBoard extends rectBoard<ColoritoCell> implements BoardProtocol,Col
 		playerColor[SECOND_PLAYER_INDEX]=ColoritoId.Black_Chip_Pool;
 		pickedSourceStack.clear();
 		droppedDestStack.clear();
+		AR.setValue(firstMove,true);
 		pickedObject = null;
         AR.setValue(win,false);
         moveNumber = 1;
@@ -296,6 +303,7 @@ class ColoritoBoard extends rectBoard<ColoritoCell> implements BoardProtocol,Col
         case Draw:
         case Resign:
             moveNumber++; //the move is complete in these states
+            firstMove[whoseTurn]=false;
             setWhoseTurn(nextPlayer[whoseTurn]);
             return;
         }
@@ -331,6 +339,7 @@ class ColoritoBoard extends rectBoard<ColoritoCell> implements BoardProtocol,Col
     	if(board_state==ColoritoState.Gameover) { return(win[player]); }
     	boolean mismatch = false;
     	boolean oppmatch = false;
+    	boolean allOppmatch = !firstMove[player];
     	boolean match = false;
     	int []map = getColorMap();
     	for(int row = 1; row<=2; row++)
@@ -344,6 +353,7 @@ class ColoritoBoard extends rectBoard<ColoritoCell> implements BoardProtocol,Col
     			{	ColoritoCell home = chipHomes.get(top);
     				mismatch |= (c!=home);
     				match = true;
+    				allOppmatch = false;
     				
     			}
     			else
@@ -352,7 +362,7 @@ class ColoritoBoard extends rectBoard<ColoritoCell> implements BoardProtocol,Col
     			c = c.exitTo(CELL_RIGHT);
     		}
     	}
-    	return( oppmatch ? match : !mismatch);
+    	return( allOppmatch ? true : oppmatch ? match : !mismatch);
     }
     // estimate the value of the board position.
     public double ScoreForPlayer(int player,boolean print,double cup_weight,double ml_weight,boolean dumbot)

@@ -1235,6 +1235,10 @@ public abstract class commonCanvas extends exCanvas
 	    	long ptime = review ? pl.reviewTime : pl.elapsedTime;
  	    	long ftime = time==null ? 0 : time.fixedTime;
 	    	int warntime = 30*1000;
+	    	Color col = Color.blue;
+	    	Font f = standardBoldFont();
+	    	StringBuilder b = new StringBuilder();
+	    	int dtime = 0;
 	    	switch(kind)
 	    	{
 	    	default: G.Error("Not expecting kind %s",kind);
@@ -1246,36 +1250,45 @@ public abstract class commonCanvas extends exCanvas
 		    	{
 		    		if(p!=null) { mintime = Math.min(mintime,review?p.reviewTime : p.elapsedTime); }
 		    	}
-	    		if(ptime>mintime)
+	     		if(ptime<=mintime) { return; };	// don't print anything
+
+	     		dtime = (int)(ptime-mintime);
+	    		
+	    		if(kind==TimeControl.Kind.Differential)
 	    		{
-	    		int dtime = (int)(ptime-mintime);
-	    		Color col = (kind==TimeControl.Kind.None)
-	    						? Color.blue
-	    						: ! ((ptime>time.fixedTime) &&	(dtime>time.differentialTime))
+	    			col = ! ((ptime>time.fixedTime) &&	(dtime>time.differentialTime))
 	    							? ((ptime+warntime<time.fixedTime)||(dtime+warntime<time.differentialTime))
 	    								? Color.blue 
 	    								: Color.yellow
 	    							: Color.red;
-	    		GC.printTimeC(gc, pl.extraTimeRect, "+ "+G.briefTimeString(dtime),
-	    				col,null, standardBoldFont());
-	    		}}
+	    		}
+	    		b.append("+ ");
+	    		}
 	    		break;
 	    	case PlusTime:
 	    		ftime += numberOfCompletedMoves(pl)*time.moveIncrement;
 	    	case Fixed:
 	    		{
-	    		int atime = (int)(ftime -ptime);
-	    		Color col = (atime>0) 
-	    					? atime<warntime ? Color.yellow : Color.blue 
+	    		dtime = (int)(ftime -ptime);
+	    		col = (dtime>0) 
+	    					? dtime<warntime ? Color.yellow : Color.blue 
 	    					: Color.red;
-	    		GC.printTimeC(gc, pl.extraTimeRect,
-	    					(atime>=0?"":"-")+G.briefTimeString(Math.abs(atime+499)),	// round up
-	    					col,null, standardBoldFont());
+	    		if(dtime<0) { b.append("-"); }
 	    		
 	    		}
-	    		break;
-	    		
 	    	}
+    	
+	    	b.append(G.briefTimeString(Math.abs(dtime)));
+	    		if(col==Color.yellow) 
+	    		{	f = largeBoldFont();
+	    			b.append(".");
+	    			b.append((dtime%1000)/100);
+	    			repaint(100);	// don't miss any ticks
+	    		}
+	    		GC.printTimeC(gc, pl.extraTimeRect,
+	    					b.toString(),	// round up
+	    					col,null, f);
+	
 	    }
 	    private int numberOfCompletedMoves(commonPlayer pl)
 	    {	// this might seem be more complicated than strictly necessary,

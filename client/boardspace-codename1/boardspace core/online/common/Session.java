@@ -554,7 +554,7 @@ public class Session implements LobbyConstants
         playingInSession = false;
         numberOfSpectators = 0;
         readySoundPlayed = false;
-        submode = JoinMode.Open_Mode;
+        submode = mode==Mode.Tournament_Mode ? JoinMode.Tournament_Mode : JoinMode.Open_Mode;
         timeControl = new TimeControl(Kind.None);
         restartable_pending = false;
         restartable = false;

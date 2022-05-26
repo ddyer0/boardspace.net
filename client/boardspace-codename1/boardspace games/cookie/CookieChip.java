@@ -10,14 +10,15 @@ class ChipStack extends OStack<CookieChip>
 {
 	public CookieChip[] newComponentArray(int n) { return(new CookieChip[n]); }
 }
-public class CookieChip extends chip<CookieChip>
+public class CookieChip extends chip<CookieChip> implements CookieConstants
 {
 	public int index = 0;
 	public String name = "";
 	public int value = 0;
+	public String description = "";
 	// constructor
 	
-	private CookieChip(int i0,Image im,String na,double[]sc,long ran,String nam,int va)
+	private CookieChip(int i0,Image im,String na,double[]sc,long ran,String nam,int va,String des)
 	{	index = i0;
 		scale=sc;
 		value = va;
@@ -25,6 +26,7 @@ public class CookieChip extends chip<CookieChip>
 		file = na;
 		randomv = ran;
 		name = nam;
+		description = des;
 		
 	}
 	public int chipNumber() { return(index); }
@@ -65,7 +67,12 @@ public class CookieChip extends chip<CookieChip>
         };
 
     static final String names[]={"Sugae","Ginger","Chocolate","Orange","Blue","crawl","Cherry"};
-    
+    static final String descriptions[] = {
+    		SugarCookieDescription,
+    		GingerCookieDescription,
+    		ChocolateCookieDescription,
+    		"","","",""
+    };
     static long Digest(Random r,CookieChip c)
     {
     	return(c==null ? r.nextLong() : c.Digest(r));
@@ -86,7 +93,8 @@ public class CookieChip extends chip<CookieChip>
         Image IM[]=forcan.load_masked_images(Dir,ImageNames);
         CookieChip CC[] = new CookieChip[nImages];
         for(int i=0;i<nImages;i++) 
-        	{CC[i]=new CookieChip(i,IM[i],ImageNames[i],SCALES[i],rv.nextLong(),names[i],values[i]); 
+        	{CC[i]=new CookieChip(i,IM[i],ImageNames[i],SCALES[i],
+        			rv.nextLong(),names[i],values[i],descriptions[i]) ;
         	}
         CANONICAL_PIECE = CC;
         playerChip[0] = CC[ORANGE_CHIP_INDEX];

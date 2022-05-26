@@ -18,7 +18,9 @@ import online.search.*;
  */
 public class OctilesPlay extends commonRobot<OctilesBoard> implements Runnable, OctilesConstants,
     RobotProtocol
-{   boolean SAVE_TREE = false;				// debug flag for the search driver
+{  
+	static final double VALUE_OF_WIN = 1000000.0;
+	boolean SAVE_TREE = false;				// debug flag for the search driver
     boolean KILLER = false;					// probably ok for all games with a 1-part move
     static final int DUMBOT_DEPTH = 4;
     static final int GOODBOT_DEPTH = 5;

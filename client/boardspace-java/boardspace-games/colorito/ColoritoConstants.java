@@ -13,13 +13,15 @@ public interface ColoritoConstants
 	
 	static enum Variation
 	{
-		Colorito_10("colorito-10",10),
-		Colorito_8("colorito-8",8),
-		Colorito_7("colorito-7",7),
-		Colorito_6("colorito-6",6);
-		int size;
+		Colorito_10("colorito-10",10,10),
+		Colorito_8("colorito-8",8,8),
+		Colorito_7("colorito-7",7,7),
+		Colorito_6("colorito-6",6,6),
+		Colorito_6_10("colorito-6-10",6,10);
+		int rows;
+		int cols;
 		String name;
-		Variation(String n,int sz) {name = n;  size = sz; }
+		Variation(String n,int co,int ro) {name = n;  cols=co; rows=ro; }
 		static Variation findVariation(String n)
     	{
 			for(Variation s : values()) { if(s.name.equalsIgnoreCase(n)) { return(s); }}
@@ -34,7 +36,8 @@ public interface ColoritoConstants
     	White_Chip_Pool("W"),
     	BoardLocation(null),
     	LiftRect(null),
-    	ReverseViewButton(null);
+    	ReverseViewButton(null), 
+    	ToggleEye(null);
     	String shortName = name();
     	public String shortName() { return(shortName); }
     	ColoritoId(String sn) { if(sn!=null) { shortName = sn; }}
@@ -93,8 +96,10 @@ public interface ColoritoConstants
     			{"Colorito-10_variation","10x10 board"},
     			{"Colorito-7","Colorito 7x7"},
     			{"Colorito-6","Colorito 6x6"},
+    			{"Colorito-6-10","Colorito 6x10"},
     			{"Colorito-7_variation","7x7 board"},
     			{"Colorito-6_variation","6x6 board"},
+    			{"Colorito-6-10_variation","6x10 board"},
 
     		};
     		InternationalStrings.put(ColoritoStrings);

@@ -14,7 +14,9 @@ public interface CookieConstants
 	static final String MoveMessage = "Move a cookie";
 	static final String FirstMoveMessage = "Place your cookie";
 	static final String MoveOrSwapMessage = "Place your cookie, or swap colors";
-	
+	static final String SugarCookieDescription = "Sugar cookies, 1 point each";
+	static final String GingerCookieDescription = "Ginger cookies, 2 points each";
+	static final String ChocolateCookieDescription = "Chocolate cookies, 3 points each";
 
 	enum CookieId implements CellId
 	{
@@ -79,6 +81,9 @@ public interface CookieConstants
             MoveOrSwapMessage,
             GoalMessage,
             MoveMessage,
+            SugarCookieDescription,
+            GingerCookieDescription,
+            ChocolateCookieDescription,
     	
     	};
     		String[][] CookieStringPairs = {

@@ -2452,6 +2452,7 @@ private void drawPlayerBoard(Graphics gc,
      	}
  
     }
+    private int lastWleft=0;
     // show potential wines
     public void showWines(Graphics gc,ViticultureBoard gb,Rectangle br,
     		HitPoint highlight,HitPoint highlightAll,Hashtable<ViticultureCell,Viticulturemovespec>targets)
@@ -2532,9 +2533,7 @@ private void drawPlayerBoard(Graphics gc,
     		int ypos = y+step;
     		int frameX = xpos;
     		int frameY = ypos;
-    		GC.frameRect(gc, Color.black, xpos,ypos,boxw,boxw/2);
-    		ypos += step/2;
-    		int nreds = 0;
+     		int nreds = 0;
     		int nwhites = 0;
     		int totalvalue = 0;
     		for(int lim=c.height()-1; lim>=0; lim--)
@@ -2546,19 +2545,22 @@ private void drawPlayerBoard(Graphics gc,
     			default: G.Error("Not expecting %s",ch);
     			}
     		}
-    		ViticultureChip actualArt = null;	// for mixer
+    		boolean useCharmat = charmat && nreds==1 && nwhites==1;
+    		int boxh = useCharmat ? boxw*2/3 : boxw/2;
+       		GC.frameRect(gc, Color.black, xpos,ypos,boxw,boxh);
+       		ypos += step/2;
+       		ViticultureChip actualArt = null;	// for mixer
     		// display a suitable wine bottle as a reminder of the state of the box
     		ViticultureChip art = ViticultureChip.GenericWine;
     		if(nreds==2 ) { art = ViticultureChip.Champagne; }
     		else if(nwhites==1) { art = nreds==1 ? ViticultureChip.RoseWine : ViticultureChip.WhiteWine; }
     		else if(nreds==1) { art = ViticultureChip.RedWine; }
-    		boolean useCharmat = charmat && nreds==1 && nwhites==1;
     		boolean makeChampaign = false;
     		actualArt = art;
     		if(useCharmat)
     		{	boolean valid = false;
     			if(art.drawChip(gc, this, highlight, ViticultureId.Choice_A, grapew, xpos+step/4, ypos,null,1.1,1.3))
-    			{
+    			{	highlight.setHelpText(MakeRoseWine);
     				highlight.hitObject = c;
     			}
     			if(c.cost == ViticultureId.Choice_A.ordinal()) 
@@ -2566,9 +2568,9 @@ private void drawPlayerBoard(Graphics gc,
     				StockArt.Checkmark.drawChip(gc, this, grapew/2, xpos+grapew/4, ypos+grapew/4,null);
     			}
     			xpos+=step/2;
-    			if(ViticultureChip.Champagne.drawChip(gc, this, highlight, ViticultureId.Choice_B, grapew, xpos+step/6, ypos,null))
+    			if(ViticultureChip.Champagne.drawChip(gc, this, highlight, ViticultureId.Choice_B, grapew, xpos+step/7, ypos,null))
     			{	makeChampaign = false;
-    				actualArt = ViticultureChip.RoseWine;
+    				highlight.setHelpText(MakeChampagne);
     				highlight.hitObject = c;
     			}
     			if(c.cost == ViticultureId.Choice_B.ordinal()) 
@@ -2581,7 +2583,40 @@ private void drawPlayerBoard(Graphics gc,
     			// always display the choice
     			Text msg = TextChunk.create(SelectWineType);
     			msg.colorize(s,gameMoveText());
-    			GC.Text(gc,true,xpos0,ypos+step/3,boxw,step/2,Color.black,null,msg);
+    			int h0 = step/2;
+    			int h1 = step*2/3;
+    			int ypos0 = ypos+h0;
+    			// this is very messy and ad-hoc.  A cleaner way would be a general set
+    			// of Text methods that includes a HitPoint.  Additional complication
+    			// is that when gc==null, w1 = 0;
+    			int w0 = lastWleft;
+    			int w1 = GC.Text(gc,true,xpos0,ypos0,boxw,step/2,Color.black,null,msg);
+    			if(w1>0) { lastWleft = w0 = w1;}
+    			int xo = (boxw-w0)/2;
+    			
+    			int h1w = (int)(w0*0.3);
+    			int x1 = xpos0+xo+w0-h1w;
+    			Rectangle r0 = new Rectangle(x1+h1w/4,ypos0,h1w,h1);
+    			Rectangle r1 = new Rectangle(x1-h1w,ypos0,h1w,h1);
+    			
+				if(HitPoint.setHelpText(highlight,r0,MakeChampagne))
+    				{ highlight.spriteRect = r0;
+    				  highlight.spriteColor = Color.blue;
+    				  highlight.hitObject = c;
+    				  valid = true;
+    				  makeChampaign = true;
+    				  highlight.hitCode = ViticultureId.Choice_B;
+    				}
+    			
+    			if(HitPoint.setHelpText(highlight,r1,MakeRoseWine))
+    				{ highlight.spriteRect = r1;
+    				  highlight.spriteColor = Color.red;
+    				  highlight.hitObject = c;
+    				  valid = true;
+    				  makeChampaign = false;
+    				  highlight.hitCode = ViticultureId.Choice_A;
+    				}
+    				
     		}
     		else
     		{
@@ -2650,7 +2685,6 @@ private void drawPlayerBoard(Graphics gc,
 		drawStack(gc,resetState,null, gb.boardMagnifier,highlight,highlightAll,step/2,x+w-step/4,y+h-step/4,0,0,0,null);
        	StockArt.FancyCloseBox.drawChip(gc, this, highlightAll, ViticultureId.CloseOverlay,csize, x+w-csize,y+csize,null);
 
-		 
     }
     
     // used to display the special worker cards "really big" so they can be read.
@@ -4063,7 +4097,7 @@ private void drawPlayerBoard(Graphics gc,
         
         if(showBigStack) { hitBoard = null; tempOff = true; }
         HitPoint tipHighlight = (ui==UI.Main)||overlayClosed ? highlightAll : null;
-        if(ui==UI.Main && showBuildings) { ui = UI.ShowBuildable; }
+        if(showBuildings) { ui = UI.ShowBuildable; overlayClosed = false; }
         switch(ui)
         {
 		case ShowWakeup:

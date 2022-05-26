@@ -14,6 +14,13 @@ import online.search.*;
  * 
  * in general, the Robot has it's own thread and operates on a copy of the board, so the
  * main UI can continue unaffected by the processing of the robot.
+ * 
+ * Colorito on the smaller 6x6 and 7x7 boards tend to be drawish if played
+ * properly, because there are very few fulcrum points that allow pieces
+ * to cross the board.  If played improperly, the agressive player that crosses
+ * as much and as fast as possible will allow the opponent to advance even 
+ * more, and result in a "smothered mate" situation.   
+ * 
  * @author ddyer
  *
  */
@@ -137,6 +144,14 @@ public class ColoritoPlay extends commonRobot <ColoritoBoard>implements Runnable
          	DUMBOT=true;
          	MONTEBOT = false;
         	break;
+        case SMARTBOT_LEVEL:
+        	MAX_DEPTH = DUMBOT_DEPTH;
+         	DUMBOT=true;
+         	// experiment 5/2022 to try both allow_kill and allow_best_killer, 
+         	// neither made a difference or caused any problem
+         	KILLER = true;
+         	MONTEBOT = false;
+        	break;
  
         default: throw G.Error("Not expecting strategy %s",strategy);
         }
@@ -171,7 +186,7 @@ public class ColoritoPlay extends commonRobot <ColoritoBoard>implements Runnable
             				? ((board.moveNumber <= 4) ? (20 - board.moveNumber) : 0)
             				: 0;
             int depth = MAX_DEPTH;	// search depth
-            double dif = 0.0;		// stop randomizing if the value drops this much
+            double dif = 1000.0;		// stop randomizing if the value drops this much
             // if the "dif" and "randomn" arguments to Find_Static_Best_Move
             // are both > 0, then alpha-beta will be disabled to avoid randomly
             // picking moves whose value is uncertain due to cutoffs.  This makes
@@ -184,7 +199,7 @@ public class ColoritoPlay extends commonRobot <ColoritoBoard>implements Runnable
 
             Search_Driver search_state = Setup_For_Search(depth,0.5,depth-2);
             search_state.save_all_variations = SAVE_TREE;
-            search_state.allow_killer = KILLER;
+            search_state.allow_best_killer = KILLER;
             search_state.verbose=verbose;			// debugging
             search_state.save_top_digest = true;	// always on as a background check
             search_state.save_digest=false;	// debugging only

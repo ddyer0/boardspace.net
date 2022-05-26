@@ -126,6 +126,7 @@ public class OctilesViewer extends CCanvas<OctilesCell,OctilesBoard> implements 
         int map[]=getStartingColorMap();
         b = new OctilesBoard(info.getString(OnlineConstants.GAMETYPE, Octiles_INIT),players_in_game,
         		randomKey,map);
+        useDirectDrawing(true); // not tested yet
         doInit(false);
 
          
@@ -245,6 +246,7 @@ public class OctilesViewer extends CCanvas<OctilesCell,OctilesBoard> implements 
     	OctilesChip ch = OctilesChip.getChip(obj);// Tiles have 1 as the first offset
     	ch.drawChip(g,this,SQUARESIZE,xp,yp,null,rot,0);
      }
+
 
     private void setDisplayRectangle(Rectangle r)
     {

@@ -161,6 +161,7 @@ public class PlateauGameViewer extends commonCanvas implements PlateauConstants
         }
 
         b = new PlateauBoard(info.getString(OnlineConstants.GAMETYPE, "Plateau"));
+        // believed to be difficult 5/2022
         //useDirectDrawing(); // not tested yet
         doInit(false);
     }

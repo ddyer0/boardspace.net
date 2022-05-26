@@ -2,6 +2,7 @@ package lyngk;
 
 import javax.swing.JCheckBoxMenuItem;
 
+
 import java.awt.*;
 
 import static lyngk.LyngkMovespec.*;
@@ -17,6 +18,7 @@ import lib.GC;
 import lib.HitPoint;
 import lib.LFrameProtocol;
 import lib.StockArt;
+import lib.Toggle;
 import online.game.*;
 import online.game.sgf.sgf_node;
 import online.game.sgf.sgf_property;
@@ -107,7 +109,10 @@ public class LyngkViewer extends CCanvas<LyngkCell,LyngkBoard> implements LyngkC
     private Rectangle tiebreakRects[] = addZoneRect("TieBreak",2);
     private Rectangle unclaimedChipRect = addRect("unclaimed chips");
     private Rectangle rotateRect = addRect("rotateRect");
-    private Rectangle eyeRect = addRect("eyerect");
+    private Toggle eyeRect = new Toggle(this,"eye",
+			StockArt.NoEye,LyngkId.ShowMoves,NoeyeExplanation,
+			StockArt.Eye,LyngkId.ShowMoves,EyeExplanation
+			);
 
 	// private menu items
     private JCheckBoxMenuItem rotationOption = null;		// rotate the board view
@@ -313,6 +318,7 @@ public class LyngkViewer extends CCanvas<LyngkCell,LyngkBoard> implements LyngkC
     {	boolean hit = false;
     	int sz = (int)(gb.cellSize() * (usePerspective()? 1.0 : 1.08));
     	boolean canDrop = gb.movingObjectIndex()>0;
+    	boolean show = eyeRect.isOnNow();
     	if(c.drawStack(gc, this, highlight, sz, x,y,  0, perspective?0:-ystep,perspective?ystep:0,msg))
     	{
 		highlight.arrow = canDrop ? StockArt.DownArrow : StockArt.UpArrow;
@@ -321,7 +327,7 @@ public class LyngkViewer extends CCanvas<LyngkCell,LyngkBoard> implements LyngkC
     	highlight.hitCode = c.rackLocation();
 		hit=true;
     	}
-		if(showTargets && highlight!=null)
+		if(show && highlight!=null)
 		{
 			StockArt.SmallO.drawChip(gc, this, CELLSIZE*2,x,y,null);
 		}
@@ -450,10 +456,7 @@ public class LyngkViewer extends CCanvas<LyngkCell,LyngkBoard> implements LyngkC
       bb.DrawGrid(gc, boardRect, use_grid, Color.black,  Color.black,  Color.black,Color.black);
 
      }
-    
-    boolean showTargets = false;
-    boolean showTargetsOn = false;
- 
+  
     /**
 	 * draw the board and the chips on it.  This is also called when not actually drawing, to
 	 * track the mouse.
@@ -473,13 +476,14 @@ public class LyngkViewer extends CCanvas<LyngkCell,LyngkBoard> implements LyngkC
     	LyngkCell last = gb.lastMove[nextPlayer[gb.whoseTurn]];
     	boolean perspective = usePerspective();
         Enumeration<LyngkCell>cells = gb.getIterator(Itype.TBLR);
+        boolean show = eyeRect.isOnNow();
     	while(cells.hasMoreElements())
           { LyngkCell cell = cells.nextElement();
          	int ypos = G.Bottom(brect) - gb.cellToY(cell);
             int xpos = G.Left(brect) + gb.cellToX(cell);
             boolean canHit = !dolift && gb.LegalToHitBoard(cell,targets);
             drawStack(perspective,gc, canHit ? highlight : null, gb,cell, xpos,ypos,CELLSPACING+0.01*liftSteps,(cell==last)?".":null);
-      		if(showTargets && (targets.get(cell)!=null))
+      		if(show && (targets.get(cell)!=null))
     		{
     			StockArt.SmallO.drawChip(gc, this, CELLSIZE*2,xpos,ypos,null);
     		}
@@ -712,7 +716,7 @@ public class LyngkViewer extends CCanvas<LyngkCell,LyngkBoard> implements LyngkC
         {
         default:
         	throw G.Error("Hit Unknown: %s", hitObject);
-        case EyeRect:	showTargetsOn = !showTargetsOn; break;
+        case ShowMoves:	eyeRect.toggle(); break;
         case RotateRect:	doRotation = !doRotation; repaint(); break;
         case BoardLocation:	// we hit an occupied part of the board 
 			switch(state)
@@ -761,12 +765,8 @@ public class LyngkViewer extends CCanvas<LyngkCell,LyngkBoard> implements LyngkC
     }
 
     private void drawAuxControls(Graphics gc,HitPoint highlight)
-    {	
-    	StockArt eye = showTargetsOn ? StockArt.NoEye : StockArt.Eye;
-    	String msg = showTargetsOn ? NoeyeExplanation : EyeExplanation;
-    	showTargets = showTargetsOn | (eye.drawChip(gc,this,eyeRect,highlight,LyngkId.EyeRect,
-    			s.get(msg)));
-    	
+    {	eyeRect.activateOnMouse = true;
+    	eyeRect.draw(gc,highlight);
     
     	LyngkChip swing = doRotation ?  LyngkChip.swing_cw : LyngkChip.swing_ccw;
     	swing.drawChip(gc, this,rotateRect, highlight, swing.id,LyngkSwingBoard );

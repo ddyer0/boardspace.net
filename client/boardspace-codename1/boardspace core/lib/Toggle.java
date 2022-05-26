@@ -19,7 +19,7 @@ public class Toggle extends Rectangle
 	boolean justTurnedOff = false;
 	boolean mouseOverNow = false;
 	boolean temporarilyOff = false;
-	boolean activateOnMouse = false;
+	public boolean activateOnMouse = false;
 	String onToolTip = null;
 	String offToolTip = null;
 	CellId onId;

@@ -91,6 +91,7 @@ public class MorrisViewer extends CCanvas<MorrisCell,MorrisBoard> implements Mor
        
         b = new MorrisBoard(info.getString(OnlineConstants.GAMETYPE, Variation.Morris_9.name),randomKey,players_in_game,repeatedPositions,
         		getStartingColorMap());
+        useDirectDrawing(true); // not tested yet
         doInit(false);
         offerDrawAction = myFrame.addAction(s.get(OFFERDRAW),deferredEvents);       
      }
@@ -267,7 +268,6 @@ public class MorrisViewer extends CCanvas<MorrisCell,MorrisBoard> implements Mor
     	ch.drawChip(g,this,SQUARESIZE,xp,yp,null);
 
      }
-
 
 
     /* draw the deep unchangeable objects, including those that might be rather expensive

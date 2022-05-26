@@ -119,7 +119,7 @@ public class CarnacViewer extends CCanvas<CarnacCell,CarnacBoard> implements Car
 
     int bcols = 18;
     int brows = 9;	// size of full sized board
-	int chatCols = 16;
+	int chatCols = 30;
 	double fullBoardRotation = 0;
 	public void setLocalBounds(int x,int y,int width,int height)
 	{	if(height>width*1.2)
@@ -135,20 +135,28 @@ public class CarnacViewer extends CCanvas<CarnacCell,CarnacBoard> implements Car
 		setLocalBoundsWT(x,y,width,height);
 		}
 	}
-	
+	public boolean rectangleIsVisible(Rectangle r)
+	{
+		if(fullBoardRotation!=0)  { return true; }
+		return super.rectangleIsVisible(r);
+	}
     public int setLocalBoundsSize(int width,int height,boolean wideMode,boolean tallMode)
     {	
+        if(tallMode) { return 0; }
         int chatHeight = selectChatHeight(height);
-      	int sncols = bcols*SUBCELL+(tallMode ? -20 : (wideMode ? chatCols+5 : 1)); // more cells wide to allow for the aux displays
-      	int snrows = brows*SUBCELL+(tallMode ? 14 : 6);  
-        int cellw = width / sncols;
-        int cellh = (height-(wideMode ? 0 : chatHeight)) / snrows;
-        CELLSIZE = Math.max(1,Math.min(cellw, cellh)); //cell size appropriate for the aspect ration of the canvas
-       	SQUARESIZE = CELLSIZE*SUBCELL;
+        boolean rotated = fullBoardRotation!=0;
+        boolean nochat = chatHeight==0;
+      	double sncols = bcols*SUBCELL+(tallMode ? -20 : (wideMode ? chatCols+5 : 10)); // more cells wide to allow for the aux displays
+      	double snrows = brows*SUBCELL+(tallMode ? 14 : 3)+((rotated&&!nochat)?25:0);  
+        double cellw = width / sncols;
+        double cellh = (height-(wideMode ? 0 : chatHeight)) / snrows;
+        double cs = Math.max(1,Math.min(cellw, cellh)); //cell size appropriate for the aspect ration of the canvas
+        CELLSIZE = (int)cs;
+       	SQUARESIZE = (int)(cs*SUBCELL);
       	return(SQUARESIZE);
     }
     public void setLocalBoundsWT(int x, int y, int width, int height,boolean wideMode,boolean tallMode)
-    {   
+    {   boolean rotated = fullBoardRotation!=0;
         int chatHeight = selectChatHeight(height);
      	boolean noChat = (chatHeight==0);
         int ideal_logwidth = CELLSIZE * 18;
@@ -160,19 +168,19 @@ public class CarnacViewer extends CCanvas<CarnacCell,CarnacBoard> implements Car
         // completely visible in all configurations.
         int boardW = SQUARESIZE * bcols;
         int boardH = SQUARESIZE * brows;
-        int boardX = x+ (tallMode ? (width-boardW)/2 : C2);
+        int boardX = x+ C2;
         G.SetRect(boardRect,boardX, y+(wideMode ? 0 : chatHeight)+SQUARESIZE-CS, boardW , boardH);      
         {
         int stateH = CELLSIZE*2;
         G.placeRow(x + CS,
         		y+(wideMode ? 0 : chatHeight) +CS/3,
-        		tallMode ? width-stateH*2 : width/2, 
+        		boardW-CELLSIZE*9, 
         		stateH,stateRect,noChatRect);
         
         }
         G.SetRect(firstPlayerChipRect,
-        			(tallMode ? x+C2 : G.centerX( boardRect)+CS),
-        			(tallMode ? G.Bottom(boardRect) : G.Top( boardRect)),
+        			G.centerX( boardRect)+CS,
+        			G.Top( boardRect),
         			SQUARESIZE,SQUARESIZE);
        	int buttonWidth = CS*6;
        	int buttonHeight = CS*3;
@@ -205,8 +213,8 @@ public class CarnacViewer extends CCanvas<CarnacCell,CarnacBoard> implements Car
      
             // player 2 portrait
             G.AlignXY(secondPlayerPicRect,
-            		tallMode ? G.centerX(boardRect) : G.Left(boardRect)+CELLSIZE,
-            		tallMode ? G.Bottom(boardRect) : G.Bottom(boardRect)-CELLSIZE*5-G.Height(firstPlayerPicRect),
+            		G.Left(boardRect)+CELLSIZE,
+            		G.Bottom(boardRect)-CELLSIZE*5-G.Height(firstPlayerPicRect),
             		firstPlayerPicRect);
     
             G.AlignXY(secondPlayerChipRect,G.Right(secondPlayerPicRect)+CELLSIZE,G.Bottom(secondPlayerPicRect)-G.Height(firstPlayerChipRect),
@@ -221,29 +229,25 @@ public class CarnacViewer extends CCanvas<CarnacCell,CarnacBoard> implements Car
             G.AlignLeft(p1alt,G.Bottom(p1time), p1time);
 
             G.AlignXY(p1anim,G.Right(p1time),G.Top( p1time), p0anim);
-            int poolH = SQUARESIZE*3;
-            int poolWidth = SQUARESIZE*2;
+            int poolH = SQUARESIZE*4;
+            int poolWidth = SQUARESIZE*3;
             G.SetRect(poolRect,
-            		(tallMode ? x+CS: G.Right(boardRect)-poolWidth),
-            		(tallMode ? G.Bottom(boardRect)-poolH : G.Top(boardRect) + brows*SQUARESIZE/2-SQUARESIZE),
+            		 G.Right(boardRect)-poolWidth,
+            		 G.Top(boardRect) + brows*SQUARESIZE/2-SQUARESIZE,
             		poolWidth,poolH);
 
-          int logWidth = tallMode ? G.Left(firstPlayerPicRect)-CS : ideal_logwidth;
-          int logx =
-            		((tallMode&noChat)
-            			? x+C2 :wideMode||noChat
-            		? x+width-logWidth-CELLSIZE
-            				: (tallMode ? x+width : G.Right(boardRect))-logWidth-CELLSIZE);
-           int logY = noChat ? tallMode ? G.Bottom(firstPlayerChipRect)+CELLSIZE : G.Bottom(poolRect)+CS :  y;
+          int logWidth = ideal_logwidth;
+          int logx = G.Right(boardRect)-CELLSIZE*9;
+          int logY =  y;
+          int logH =  CS*18;
             G.SetRect(logRect,
             		logx,
             		logY,
             		logWidth, 
-            		noChat ? height-logY-C2 : wideMode ? CS*20 : chatHeight);
-
+            		logH);
         
             G.SetRect( passButton, 
-            		tallMode ? CS*15 : G.Right(p1anim)+CELLSIZE*5, 
+            		G.Right(p1anim)+CELLSIZE*5, 
             		G.Bottom(boardRect)-9*CELLSIZE,
             		buttonWidth,buttonHeight);
 
@@ -252,21 +256,28 @@ public class CarnacViewer extends CCanvas<CarnacCell,CarnacBoard> implements Car
         G.SetRect(doneRect, G.Left(passButton), G.Bottom(passButton)+CS/2,buttonWidth,buttonHeight);
         G.SetRect(editRect, G.Right(doneRect)+CS/2,G.Top( doneRect),buttonWidth,buttonHeight);
         
-        int chatY = wideMode ? G.Bottom(poolRect)+CELLSIZE: 0;
-        int chatX = wideMode ? G.Right(boardRect)-6*CELLSIZE : 0;
+        int chatY =wideMode ? G.Bottom(logRect): y;
+        int chatX = wideMode ? G.Right(boardRect) : x;
         int chatW = wideMode ? width-chatX-CS/2 : logx-chatX-C2;
         int chatH = wideMode ? height-chatY-C2 : chatHeight;
-        G.SetRect(chatRect,
+        if(rotated)
+        {	// place across the top
+        	G.SetRect(chatRect,0,0,
+        			height,
+        			noChat
+        				? 0 
+        				: width-G.Width(boardRect)-CELLSIZE*10);
+        }
+        else { G.SetRect(chatRect,
         		chatX,
         		chatY,
         		chatW,
-        		chatH);
+        		chatH);}
 
         }
         //this sets up the "vcr cluster" of forward and back controls.
         int vcrW = CS*10;
-        SetupVcrRects(
-        		tallMode ? x+width-vcrW-C2 : x+CS,G.Top(boardRect),
+        SetupVcrRects(x+CS,G.Top(boardRect),
             vcrW,
             vcrW/2);
  
@@ -274,14 +285,14 @@ public class CarnacViewer extends CCanvas<CarnacCell,CarnacBoard> implements Car
         G.SetRect(sizeRect, G.Left( vcrRect), G.Bottom(vcrRect)+CELLSIZE, CELLSIZE*8, CS+C2);
        
         G.SetRect(reverseViewRect,
-        		tallMode ? x+CS : G.Left( sizeRect),
-        		tallMode ? G.Top(boardRect) : G.Bottom(sizeRect)+CELLSIZE,
+        		G.Left( sizeRect),
+        		G.Bottom(sizeRect)+CELLSIZE,
         		CELLSIZE*8, (CELLSIZE*8*G.Height(boardRect))/G.Width(boardRect));
 
         int CS4 = CELLSIZE*4;
         G.SetRect(chipSetRect,
-        		tallMode ? G.Right(poolRect) : G.Left( sizeRect),
-        		tallMode ? G.Bottom(poolRect)-CS4-C2 : G.Bottom(reverseViewRect)+CS, CS4, CS4);
+        		G.Left( sizeRect),
+        		G.Bottom(reverseViewRect)+CS, CS4, CS4);
 
         int gh = CELLSIZE*2;
         G.SetRect(goalRect, G.Right(chipSetRect),G.Bottom(boardRect)-2*CELLSIZE, CELLSIZE*35, gh);
@@ -875,7 +886,6 @@ public class CarnacViewer extends CCanvas<CarnacCell,CarnacBoard> implements Car
       HitPoint vcrSelect = (moving && !reviewMode()) ? null : highlight;	// hit if not dragging
        CarnacState vstate = gb.getState();
       redrawGameLog(gc,vcrSelect, logRect,  veryLtGreen,boardBackgroundColor,standardBoldFont(),standardBoldFont());
-    
       drawBoardElements(gc, gb, boardRect, ourTurnSelect);
       DrawCommonChipPool(gc, gb,poolRect,ourTurnSelect);
  

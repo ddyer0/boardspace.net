@@ -3704,7 +3704,7 @@ public class Game extends commonPanel implements PlayConstants,DeferredEventHand
             ? SPECTIMEOUT : PLAYTIMEOUT;
 
 
-        if ( ( v != null) && (currentT >= (lastTimeUpdate + 1000)))
+        if ( ( v != null) && (currentT >= (lastTimeUpdate + 50)))
         { /* try to update time display every second */
         	if(gameState.isActive()
         			&& started_playing

@@ -959,18 +959,21 @@ public class commonPlayer implements Opcodes,lib.CompareTo<commonPlayer>
     {
        	int C2 = unit/2;
        	int nameW = unit * 5;
+       	int ux3 = unit*3;
        	int nameH = unit+C2;
     	//first player name
     	G.SetRect(nameRect,x,y,	nameW-unit/8,nameH);
     	// first player portrait
-    	G.SetRect(picRect,x+nameW,y,unit * 3+C2,unit * 3+C2);
+    	G.SetRect(picRect,x+nameW,y,ux3+C2,ux3+C2);
 
        	// time display for first player
-    	G.SetRect(timeRect,x+unit, y+nameH, unit * 3,unit);
-    	G.AlignLeft(extraTimeRect, G.Bottom(timeRect),timeRect);
+    	int timey = y+nameH;
+    	int timex = x+unit;
+    	G.SetRect(timeRect,timex, timey, ux3,unit);
+    	G.AlignLeft(extraTimeRect, timey+unit,timeRect);
              
     	// first player "i'm alive" animation ball
-    	G.SetRect(animRect,G.Right(timeRect),G.Top(timeRect),unit,unit);
+    	G.SetRect(animRect,timex+ux3,timey,unit,unit);
     	G.SetRect(playerBox, x, y, G.Right(picRect)-x,G.Bottom(picRect)-y);
     	return(playerBox);
     }
@@ -996,15 +999,16 @@ public class commonPlayer implements Opcodes,lib.CompareTo<commonPlayer>
     	G.SetHeight(box, -1);
         int cx4 = CELLSIZE*5;
         int cx3 = CELLSIZE*3;
+        int cx2 = CELLSIZE*2;
         //player name
         G.SetRect(nameRect, x, y,		cx4, CELLSIZE);
         //display for first player
         G.SetRect(timeRect, x,y+CELLSIZE, cx3, CELLSIZE);
-        G.AlignLeft(extraTimeRect,y+CELLSIZE*2, timeRect);
+        G.AlignLeft(extraTimeRect,y+cx2, timeRect);
         // first player "i'm alive" animation ball
-        G.SetRect(animRect, x+cx3,y+CELLSIZE*2,CELLSIZE, CELLSIZE);       
+        G.SetRect(animRect, x+cx3,y+cx2,CELLSIZE, CELLSIZE);       
         //player portrait
-        G.SetRect(picRect, x,y+CELLSIZE*3, cx4,cx4);        
+        G.SetRect(picRect, x,y+cx3, cx4,cx4);        
         G.union(box, picRect,nameRect,timeRect);
        return(box);
     }

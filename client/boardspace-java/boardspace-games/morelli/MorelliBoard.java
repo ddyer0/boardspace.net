@@ -151,7 +151,7 @@ public class MorelliBoard extends rectBoard<MorelliCell> implements BoardProtoco
         // xor some subset of them.  Note that if you tweak this, all the existing
         // digests are invalidated.
         //
-	    System.out.println("");
+	    //System.out.println("");
         Random r = new Random(64 * 1000); // init the random number generator
         long v = super.Digest();
         //System.out.println("D1 "+v);
@@ -245,7 +245,7 @@ public class MorelliBoard extends rectBoard<MorelliCell> implements BoardProtoco
      	case morelli_11:
      	case morelli_9:	
      		boardRows = boardColumns = variation.size;
-     		initBoard(boardColumns,boardRows);
+     		reInitBoard(boardColumns,boardRows);
      		gametype = gtype;
      		setup = set;
      		// note that this bizarre construction for firstInt is crafted
@@ -261,7 +261,6 @@ public class MorelliBoard extends rectBoard<MorelliCell> implements BoardProtoco
      	}
      	else { throw G.Error("No variation named %s",gtype); }
      	}
-     	allCells.setDigestChain(r);
 	    setState(MorelliState.Puzzle);
 	    
 

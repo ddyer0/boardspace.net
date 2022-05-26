@@ -206,6 +206,8 @@ public interface ViticultureConstants
 	static String WhiteWineDescription = "White Wines";
 	static String RoseWineDescription = "Rose Wines";
 	static String ChampaignDescription = "Champagnes";
+	static String MakeChampagne = "Make Champagne";
+	static String MakeRoseWine = "Make Rose Wine";
 	static String WorkersDescription = "Available Workers";
 	static String UnplacedStarsDescription = "Unplaced Influence Stars";
 	static String StructuresDescription = "Private Structures";
@@ -240,6 +242,8 @@ public interface ViticultureConstants
 	static String ViticultureStrings[] = 
 	{  "Viticulture",
 		NoPlantMessage,
+		MakeChampagne,
+		MakeRoseWine,
 		ShowBuildingInfo,
 		NoSellMessage,
 		DontStealMessage,

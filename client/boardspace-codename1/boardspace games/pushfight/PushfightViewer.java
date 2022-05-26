@@ -145,6 +145,7 @@ public class PushfightViewer extends CCanvas<PushfightCell,PushfightBoard> imple
         // later, some variant is created, or the game code base is re purposed as the basis
         // for another game.
         bb = new PushfightBoard(type,players_in_game,randomKey,getStartingColorMap(),PushfightBoard.REVISION);
+        useDirectDrawing(true); 
         doInit(false);
         bb.setReverseY(preferredRotation());
         reverseOption = myFrame.addOption(s.get(ReverseView),bb.reverseY(),deferredEvents);
@@ -715,7 +716,7 @@ public class PushfightViewer extends CCanvas<PushfightCell,PushfightBoard> imple
         else {
         missedOneClick = false;
         PushfightId hitCode = (PushfightId)id;
-        PushfightCell hitObject = hitCell(hp);
+        PushfightCell hitObject = bb.getCell(hitCell(hp));
 		PushfightState state = bb.getState();
         switch (hitCode)
         {

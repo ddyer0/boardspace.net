@@ -809,6 +809,11 @@ synchronized(allGames) {
 			new double[]{1.0,0.01},
 			"colorito.ColoritoViewer","/colorito/english/COLORITO_EN.pdf",
 			null,false, BlueOverRed));
+	put(new GameInfo(59,ES.game,69,"CL",RacingGames,"Colorito","Colorito-6-10",
+			OneBotPlus,
+			new double[]{1.0,0.01},
+			"colorito.ColoritoViewer","/colorito/english/COLORITO_EN.pdf",
+			null,false, BlueOverRed));
 
 	put(new GameInfo(55,ES.game,69,"CL",AncientGames,"Colorito","Colorito-10",
 			OneBotPlus,new double[] {1.0,0.01},
@@ -826,6 +831,10 @@ synchronized(allGames) {
 			null,false, BlueOverRed));
 
 	put(new GameInfo(58,ES.game,69,"CL",AncientGames,"Colorito","Colorito-6",
+			OneBotPlus,new double[] {1.0,0.01},
+			"colorito.ColoritoViewer","/colorito/english/COLORITO_EN.pdf",
+			null,false, BlueOverRed));
+	put(new GameInfo(59,ES.game,69,"CL",AncientGames,"Colorito","Colorito-6-10",
 			OneBotPlus,new double[] {1.0,0.01},
 			"colorito.ColoritoViewer","/colorito/english/COLORITO_EN.pdf",
 			null,false, BlueOverRed));

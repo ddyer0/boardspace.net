@@ -25,6 +25,7 @@ import lib.GC;
 import lib.HitPoint;
 import lib.LFrameProtocol;
 import lib.StockArt;
+import lib.Toggle;
 
 /**
  * This code shows the overall structure appropriate for a game view window.
@@ -42,15 +43,16 @@ public class ChessViewer extends CCanvas<ChessCell,ChessBoard> implements ChessC
     // private state
     private ChessBoard b = null; 	// the board from which we are displaying
     private int SQUARESIZE;			// size of a board square
-    private boolean showMoves = false;
-    private boolean showMovesOn = false;
     // addRect is a service provided by commonCanvas, which supports a mode
     // to visualize the layout during development.  Look for "show rectangles"
     // in the options menu.
     private Rectangle chipRects[] = addRect("chip",2);
 
     private Rectangle reverseViewRect = addRect("reverse");
-    private Rectangle eyeRect = addRect("eye");
+    private Toggle eyeRect = new Toggle(this,"eye",
+    						StockArt.NoEye,ChessId.ToggleEye,NoeyeExplanation,
+    						StockArt.Eye,ChessId.ToggleEye,EyeExplanation
+    						);
     private JCheckBoxMenuItem reverseOption = null;
     private JMenuItem offerDrawAction = null;
     
@@ -287,13 +289,7 @@ public double setLocalBoundsA(int x, int y, int width, int height,double a)
     //	super.updatePlayerTime(inc,p);
     //}
     
-	private void DrawEyeMarker(Graphics gc, Rectangle r,HitPoint highlight)
-    {	StockArt icon = showMovesOn ? StockArt.NoEye : StockArt.Eye;
-    	String help = showMovesOn ? NoeyeExplanation : EyeExplanation;
-    	ChessId code = showMovesOn ? ChessId.NoeyeViewButton : ChessId.EyeViewButton;
-    	showMoves = showMovesOn | icon.drawChip(gc,this,r,highlight,code,s.get(help));
-     }  
- 
+
     //
 	// draw a box of spare chips. Notice if any are being pointed at.  Highlight those that are.
     // for checkers, this is just a single checker, which also displays the number of pieces 
@@ -342,6 +338,7 @@ public double setLocalBoundsA(int x, int y, int width, int height,double a)
         double rot = gb.rack[forPlayer].getChipRotation(this);
         thisCell.setCurrentRotation(thisCell.currentRotation()- rot); 
         prerotated = true;
+        boolean showMoves = eyeRect.isOnNow();
         
         if(showMoves && targets.get(thisCell)!=null)
         {
@@ -381,6 +378,7 @@ public double setLocalBoundsA(int x, int y, int width, int height,double a)
      	//
         // now draw the contents of the board and anything it is pointing at
         //
+     	boolean showMoves = eyeRect.isOnNow();
      	
         // conventionally light source is to the right and shadows to the 
         // left, so we want to draw in right-left top-bottom order so the
@@ -428,7 +426,8 @@ public double setLocalBoundsA(int x, int y, int width, int height,double a)
        banner.getImage(loader).centerImage(gc, bannerRect);
        GC.frameRect(gc,Color.red,bannerRect);
        DrawReverseMarker(gc,reverseViewRect,highlight,ChessId.ReverseViewButton);
-       DrawEyeMarker(gc,eyeRect,highlight);
+       eyeRect.activateOnMouse=true;
+       eyeRect.draw(gc,highlight);
     }
     //
     // draw the board and things on it.  If gc!=null then actually 
@@ -689,11 +688,8 @@ private void playSounds(commonMove m)
         default:
         	throw G.Error("Hit Unknown: %s", hitObject);
 
-        case NoeyeViewButton:
-        	showMovesOn = false;
-        	break;
-        case EyeViewButton:
-        	showMovesOn = true;
+        case ToggleEye:
+        	eyeRect.toggle();
         	break;
         case ReverseViewButton:
        	 { boolean v = !b.reverseY(); b.setReverseY(v); reverseOption.setState(v); }

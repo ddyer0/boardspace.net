@@ -260,8 +260,8 @@ public class Search_Driver extends CommonDriver implements Constants,Opcodes
      *    (d1)(d2)..    (e1)(e2)...
      *    </pre>
      *    the general idea is that e1, e2.. are similar to d1, d2.. so the best choices in the "d"
-     *    series are also the best choices in the "e" series.  Alha beta works better if the best
-     *    choices are tried first.  This depends on same_move_p recognising the e's as the same
+     *    series are also the best choices in the "e" series.  Alpha beta works better if the best
+     *    choices are tried first.  This depends on same_move_p recognizing the e's as the same
      *    moves as the d's
      */
     public boolean allow_killer;	// if true, use the killer heuristic
@@ -341,7 +341,7 @@ public class Search_Driver extends CommonDriver implements Constants,Opcodes
     public void Abort_Search_In_Progress(String why)
     {	if(why!=null) 
     	{ aborted_reason = why; 
-    	  if(verbose>0) { G.print("Search: "+why); }
+    	  if(verbose>0) { G.print("Search: ",why); }
     	}
         aborted = true;
         finished=true;
@@ -630,14 +630,14 @@ public class Search_Driver extends CommonDriver implements Constants,Opcodes
                 	done = Search_Result.Done;
                     finished = true;
                     if(verbose>0) 
-                    	{ System.out.println("Reached the end, deeper searches skipped"); }
+                    	{ G.print("Reached the end, deeper searches skipped"); }
                 	}
                 	else if((progressive_time_limit>0)
                 			&& (total_time>progressive_time_limit*45000))	// minutes to milliseconds * 3/4 (used 3/4 of the time?)
                 		{  done = Search_Result.Done;
                            finished = true;
                            if(verbose>0)
-                           	{ System.out.println("Used too much time, deeper searches skipped"); }
+                           	{ G.print("Used too much time, deeper searches skipped"); }
                 		}
                 		else
                 		{
@@ -686,13 +686,13 @@ public class Search_Driver extends CommonDriver implements Constants,Opcodes
             double best = ss.best_move.evaluation();
             Sort.sort(cm,0,nmoves-1,false);	// sort the evaluated moves, standard sort
 
-            if(verbose>0) { G.print("Best " + ss.best_move + " " +  best+" skip "+n+" dif "+dif); }
+            if(verbose>0) { G.print("Best " , ss.best_move , " ",  best," skip ",n," dif ",dif); }
 
             if(verbose>=1)
             {
             	for(int i=0;i<nmoves; i++)
             	{
-            	G.print(""+cm[i]+" " + cm[i].evaluation());	
+            	G.print(cm[i]," " , cm[i].evaluation());	
             	}
             }
             if(dif>0.0)
@@ -706,7 +706,7 @@ public class Search_Driver extends CommonDriver implements Constants,Opcodes
              	nmoves--;
             	skipped ++;
             }
-            if((verbose>0) && (skipped>0)) { G.print(""+skipped+" moves skipped as dif>"+dif); }
+            if((verbose>0) && (skipped>0)) { G.print(skipped," moves skipped as dif>",dif); }
             }
             n = n%nmoves;	// reduce n modulo the number of moves
             
@@ -718,10 +718,10 @@ public class Search_Driver extends CommonDriver implements Constants,Opcodes
             {	
                 commonMove c = cm[i];
                 if(!use_nullmove || (c.op!=MOVE_NULL)) {  result = c; }
-                if(verbose>0)  {G.print("E" + n + " " + c + " " + c.evaluation()); }
+                if(verbose>0)  {G.print("E", n , " " , c , " " , c.evaluation()); }
             }
 
-            if(verbose>0) { G.print("V" + n + " " + result + " " + result.evaluation());}
+            if(verbose>0) { G.print("V" , n , " " , result , " " , result.evaluation());}
 
             return (result);
         }
@@ -775,7 +775,7 @@ public class Search_Driver extends CommonDriver implements Constants,Opcodes
         {	// if we used 20% of our time, skip the second new level
             if((progressive_time_limit>0)
             		&& (total_time>progressive_time_limit*1200))	// minutes to milliseconds / 5
-            	{if(verbose>0) { System.out.println("Used 1/4 of our time, increment search single level"); }
+            	{if(verbose>0) { G.print("Used 1/4 of our time, increment search single level"); }
             	}
             else
             {
@@ -788,7 +788,7 @@ public class Search_Driver extends CommonDriver implements Constants,Opcodes
         if (old_root_node != null)
         {
             Search_Node sn = old_root_node;
-            if(verbose>0) { System.out.println("Incrementing progressive search level");}
+            if(verbose>0) { G.print("Incrementing progressive search level");}
             //
             // construct the principle variation from the previous search, and preorder
             // the nodes for the new search to match the previous findings.  This theoretically
@@ -799,14 +799,14 @@ public class Search_Driver extends CommonDriver implements Constants,Opcodes
                 current_node.Presort_Search_Nodes(sn);
                 commonMove cmoves[] = current_node.cmoves();
                 if(verbose>0)
-                {	System.out.print("Preorder: ");
+                {	G.print("Preorder: ");
                 	if(cmoves!=null)
                 		{
                 		for(int i=0;i<cmoves.length;i++)
-                			{System.out.print(" "+cmoves[i]);
+                			{G.print(" "+cmoves[i]);
                 			}
                 		}
-                	System.out.println();
+                	G.print();
                 }
                 sn = sn.principle_variation;	// step the previous search into the variation
                 Continue_Search();				// step the search into the first variation	
@@ -816,7 +816,7 @@ public class Search_Driver extends CommonDriver implements Constants,Opcodes
                        
        }
 
-        if(verbose>0) { System.out.println("New Search depth = "+max_depth); }
+        if(verbose>0) { G.print("New Search depth = ",max_depth); }
 			 
     }
 
@@ -943,6 +943,9 @@ public class Search_Driver extends CommonDriver implements Constants,Opcodes
                 	//if(killer.evaluation>=cutoff_limit)
                 	//mm.local_evaluation = killer.evaluation;
                 	mm.setEvaluation(killer.evaluation());
+                	// this results in NaN in moves in the PV, but it's OK,
+                	// it merely flags moves that were originally positioned 
+                	// by the killer heuristic
                 	mm.set_local_evaluation(NaN);
                 	mm.setGameover(false);
                 	mm.set_depth_limited(commonMove.EStatus.EVALUATED);
@@ -1047,7 +1050,7 @@ public class Search_Driver extends CommonDriver implements Constants,Opcodes
     {	double dbl = rand.nextDouble();
         int choice = (int) (dbl * n);
         commonMove best = Nth_Good_Move(choice,dif);
-        if(verbose>0) { G.print("Random " + choice + " " + best); }
+        if(verbose>0) { G.print("Random " , choice , " " , best); }
 
         return (best);
     }
@@ -1077,7 +1080,9 @@ public class Search_Driver extends CommonDriver implements Constants,Opcodes
     {
         try
         {	
-        	if(verbose>0) { System.out.println("Initial search depth: "+max_depth+" time "+progressive_time_limit*60); }
+        	if(verbose>0)
+        		{ G.print("Initial search depth: ",max_depth," time ",progressive_time_limit*60); 
+        		}
 
         	robot.setSearcher(this);
             Search_Result done = Search_Result.Active;

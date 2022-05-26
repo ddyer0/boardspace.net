@@ -15,6 +15,7 @@ import lib.GC;
 import lib.HitPoint;
 import lib.LFrameProtocol;
 import lib.StockArt;
+import lib.Toggle;
 import online.game.*;
 import online.game.sgf.sgf_node;
 import online.game.sgf.sgf_property;
@@ -62,12 +63,13 @@ public class BarcaViewer extends CCanvas<BarcaCell,BarcaBoard> implements BarcaC
     // in the options menu.
     private Rectangle chipRects[] = addZoneRect("chip",2);
     
-    private Rectangle eyeRect = addRect("eye");
+    private Toggle eyeRect = new Toggle(this,"eye",
+			StockArt.NoEye,BarcaId.ToggleEye,NoeyeExplanation,
+			StockArt.Eye,BarcaId.ToggleEye,EyeExplanation
+			);
     private Rectangle reverseRect = addRect("reverse");
     private Rectangle repRect = addRect("repRect");	
 
-    private boolean showMoves = false;
-    private boolean showMovesOn = false;
     
 /**
  * this is called during initialization to load all the images. Conventionally,
@@ -324,6 +326,7 @@ public class BarcaViewer extends CCanvas<BarcaCell,BarcaBoard> implements BarcaC
         Hashtable<BarcaCell,commonMove>targets = gb.getTargets();
         Enumeration<BarcaCell>cells = gb.getIterator(Itype.LRTB);
         boolean perspective = usePerspective();
+        boolean showMoves = eyeRect.isOnNow();
     	while(cells.hasMoreElements())
     	{
             BarcaCell cell = cells.nextElement();
@@ -595,8 +598,8 @@ public class BarcaViewer extends CCanvas<BarcaCell,BarcaBoard> implements BarcaC
             	throw G.Error("Hit Unknown %s", hitCode);
             }
         	break;
-        case ShowMoves:
-        	showMovesOn = !showMovesOn;
+        case ToggleEye:
+        	eyeRect.toggle();
         	break;
         case Reverse:
         	bb.setReverseY(!bb.reverseY());
@@ -753,11 +756,6 @@ public class BarcaViewer extends CCanvas<BarcaCell,BarcaBoard> implements BarcaC
     	gb.SetDisplayRectangle(r);
     }
   
-    private void DrawEyeMarker(Graphics gc, Rectangle r,HitPoint highlight)
-    {	StockArt icon = showMovesOn ? StockArt.NoEye : StockArt.Eye;
-    	String help = showMovesOn ? NoeyeExplanation : EyeExplanation;
-    	showMoves = showMovesOn | icon.drawChip(gc,this,r,highlight,BarcaId.ShowMoves,s.get(help));
-     }  
     //
 	// reverse view icon, made by combining the stones for two colors.
     //
@@ -774,8 +772,8 @@ public class BarcaViewer extends CCanvas<BarcaCell,BarcaBoard> implements BarcaC
     	
      }
    private void drawAuxControls(Graphics gc,HitPoint highlight)
-   {  
-    	DrawEyeMarker(gc,eyeRect,highlight);
+   {  	eyeRect.activateOnMouse=true;
+    	eyeRect.draw(gc,highlight);
     	DrawReverseMarker(gc,reverseRect,highlight);
    }
     

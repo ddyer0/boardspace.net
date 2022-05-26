@@ -48,5 +48,22 @@ public interface OctilesConstants
     static final String MoveRunnerMessage = "Move a runner";
     static final String MoveRunnerHomeMessage = "Move a runner from a home space";
     
-
+    public static void putStrings()
+    { /*
+    	String OctilesStrings[] = {
+    	"Octiles",
+    	GoalMessage,
+    	PlaceTileMessage,
+    	PlaceTileHomeMessage,
+    	MoveRunnerMessage,
+    	MoveRunnerHomeMessage,
+    };
+    	String OctilesStringPairs[][] = {
+    		{"Octiles_family","Octiles"},
+    		{"Octiles_variation","standard Octiles"},      
+    }	;
+    	InternationalStrings.put(OctilesStrings);
+    	InternationalStrings.put(OctilesStringPairs);
+	*/
+    }
 }

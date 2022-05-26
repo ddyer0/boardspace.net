@@ -22,6 +22,7 @@ import lib.HitPoint;
 import lib.LFrameProtocol;
 import lib.SimpleSprite;
 import lib.StockArt;
+import lib.Toggle;
 import lib.SimpleSprite.Movement;
 
 import static checkerboard.CheckerMovespec.*;
@@ -57,6 +58,10 @@ public class CheckerGameViewer extends CCanvas<CheckerCell,CheckerBoard> impleme
     private Rectangle declineDrawRect = addRect("declineDraw");
     private Rectangle acceptDrawRect = addRect("acceptDraw");	
     private Rectangle bannerRect = addRect("banner");			// the game type, positioned at the top
+    private Toggle eyeRect = new Toggle(this,"eye",
+			StockArt.NoEye,CheckerId.ToggleEye,NoeyeExplanation,
+			StockArt.Eye,CheckerId.ToggleEye,EyeExplanation
+			);
     /**
      * preload all the images associated with the game. This is delegated to the chip class.
      */
@@ -258,7 +263,7 @@ public class CheckerGameViewer extends CCanvas<CheckerCell,CheckerBoard> impleme
         int stateX = boardX;
         G.placeStateRow(	stateX,
         			stateY,
-        			boardW,stateH,iconRect,stateRect,noChatRect);
+        			boardW,stateH,iconRect,stateRect,eyeRect,noChatRect);
         
         G.placeRow(stateX, boardBottom-stateH, boardW, stateH, goalRect,liftRect,reverseViewRect);
         
@@ -356,7 +361,7 @@ public class CheckerGameViewer extends CCanvas<CheckerCell,CheckerBoard> impleme
     {
     	// this logic animates the expansion of stacks when the button is pushed.
     	boolean dolift = doLiftAnimation();
-    	
+    	boolean show = eyeRect.isOnNow();
      	// targets are the pieces we can hit right now.
      	Hashtable<CheckerCell,CheckerMovespec>targets = gb.getTargets();
      	CheckerCell dest = gb.getDest();		// also the current dest and source
@@ -381,10 +386,13 @@ public class CheckerGameViewer extends CCanvas<CheckerCell,CheckerBoard> impleme
                 highlight.awidth = SQUARESIZE/3;
             	highlight.spriteColor = Color.red;
             	}
+            if(show)
+            {
             if((cell==dest)||(cell==src)||(hitNow!=null))
+            
             {
             	StockArt.SmallO.drawChip(gc,this,SQUARESIZE,xpos,ypos,null);
-            }
+            }}
             if(cell==last)
             {
             	StockArt.Dot.drawChip(gc,this,SQUARESIZE,xpos,ypos,null);
@@ -398,6 +406,8 @@ public class CheckerGameViewer extends CCanvas<CheckerCell,CheckerBoard> impleme
     	
        drawLiftRect(gc,liftRect,highlight,CheckerChip.liftIcon.image);
        DrawReverseMarker(gc,reverseViewRect,highlight,CheckerId.ReverseViewButton);
+       eyeRect.activateOnMouse=true;
+       eyeRect.draw(gc,highlight);
     }
     //
     // draw the board and things on it.  If gc!=null then actually 
@@ -840,7 +850,9 @@ private void playSounds(commonMove m)
         {
         default:
         	throw G.Error("Hit Unknown: %s", hitObject);
-
+        case ToggleEye:
+        	eyeRect.toggle();
+        	break;
         case ReverseViewButton:
        	 { boolean v = !b.reverseY(); b.setReverseY(v); reverseOption.setState(v); }
        	 generalRefresh();

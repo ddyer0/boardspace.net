@@ -39,7 +39,7 @@ public class ColoritoChip extends chip<ColoritoChip>
 		colorIndex = color.ordinal()<2?0:1;
 		if(number)
 		{
-			numbered = new ColoritoChip[Variation.Colorito_10.size*2];
+			numbered = new ColoritoChip[Variation.Colorito_10.cols*2];
 			for(int i=1;i<=numbered.length;i++)
 			{	numbered[i-1] = new ColoritoChip(na,col,im,R.nextLong(),scl,i);
 			}
@@ -101,7 +101,7 @@ public class ColoritoChip extends chip<ColoritoChip>
  
    static final String[] ImageNames = 
        { "red-tile","yellow-tile","green-tile","blue-tile", "neutral-tile",
-	   	 "red-chip-np","yellow-chip-np","blue-chip-np","green-chip-np"};
+	   	 "red-chip-np","yellow-chip-np","green-chip-np","blue-chip-np",};
    static final ChipColor ChipColors[] =
 	   { ChipColor.red,ChipColor.yellow,ChipColor.blue,ChipColor.green,ChipColor.neutral,
 	     ChipColor.red,ChipColor.yellow,ChipColor.green,ChipColor.blue};

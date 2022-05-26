@@ -49,7 +49,22 @@ import lib.StockArt;
  * Change History
  */
 public class PalagoViewer extends CCanvas<PalagoCell,PalagoBoard> implements PalagoConstants, GameLayoutClient,ColorNames
-{	static final long serialVersionUID = 1000;
+{	   // file names for jpeg images and masks
+    static final String ImageDir = "/palago/images/";
+    static final String Palago_SGF = "Palago"; // sgf game number allocated for hex
+	static final String TileColorMessage = "select tile color";
+	static final double[][] TILESCALES=
+    {   {0.65,0.50,2.1},	// selection
+    	{0.50,0.55,2.1},	// hex tile and border artworks
+    	{0.50,0.50,1.9}};	// unrotated hex tile and border artwork
+
+    
+    static final int BACKGROUND_TILE_INDEX = 0;
+    static final int BACKGROUND_REVIEW_INDEX = 1;
+    static final int BACKGROUND_TABLE_INDEX = 2;
+    static final String TextureNames[] = { "background-tile" ,"background-review-tile", "green-felt-tile"};
+
+
      // colors
     private Color reviewModeBackground = new Color(220,165,200);
     private Color HighlightColor = new Color(0.2f, 0.95f, 0.75f);
@@ -135,7 +150,7 @@ public class PalagoViewer extends CCanvas<PalagoCell,PalagoBoard> implements Pal
         labelColor = Color.red;
         labelFont = largeBoldFont();
         bb = new PalagoBoard(info.getString(OnlineConstants.GAMETYPE, "Palago"),getStartingColorMap());
-        //useDirectDrawing(); // not tested yet
+        useDirectDrawing(true); // not tested yet
         doInit(false);
     }
 
@@ -368,7 +383,7 @@ public class PalagoViewer extends CCanvas<PalagoCell,PalagoBoard> implements Pal
        boolean draggingBoard = draggingBoard(); 
  	   boolean canHit = !draggingBoard && G.pointInRect(ourTurnSelect,tbRect);
  	  
-    	//
+ 	   //
         // now draw the contents of the board and anything it is pointing at
         //
         Hashtable<PalagoCell,PalagoCell> dests = gb.movingObjectDests();
@@ -666,7 +681,7 @@ public class PalagoViewer extends CCanvas<PalagoCell,PalagoBoard> implements Pal
     	else {
     	missedOneClick = false;
    		PalagoId hitCode = (PalagoId)hp.hitCode;
-        PalagoCell hitObject = hitCell(hp);
+        PalagoCell hitObject = bb.getCell(hitCell(hp));
         PalagoState state = bb.getState();
         switch (hitCode)
         {

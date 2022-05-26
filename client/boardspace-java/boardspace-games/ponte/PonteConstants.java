@@ -9,15 +9,22 @@ import online.game.BaseBoard.BoardState;
 
 public interface PonteConstants 
 {	static String VictoryCondition = "bridge islands of exactly 4 squares to score points";
-	static String PonteStrings[] =
-	{	"Ponte Del Diavolo",
-		VictoryCondition
-	};
-	static String PonteStringPairs[][] = 
-	{   {"Ponte_family","Ponte Del Diavolo"},
-		{"Ponte","Ponte Del Diavolo"},
-		{"Ponte_variation","10x10 board"},
-	};
+
+	static void putStrings()
+	{
+		String PonteStrings[] =
+			{	"Ponte Del Diavolo",
+					VictoryCondition
+			};
+		String PonteStringPairs[][] = 
+			{   {"Ponte_family","Ponte Del Diavolo"},
+				{"Ponte","Ponte Del Diavolo"},
+				{"Ponte_variation","10x10 board"},
+			};
+		InternationalStrings.put(PonteStrings);
+		InternationalStrings.put(PonteStringPairs);
+		PonteState.putStrings();
+	}
 	static final int DEFAULT_COLUMNS = 10;	// 10x10 board
 	static final int DEFAULT_ROWS = 10;
 	static final String Ponte_INIT = "ponte";	//init for standard game

@@ -20,6 +20,7 @@ import lib.GC;
 import lib.HitPoint;
 import lib.LFrameProtocol;
 import lib.StockArt;
+import lib.Toggle;
 
 import static colorito.ColoritoMovespec.*;
 
@@ -66,6 +67,10 @@ public class ColoritoViewer extends CCanvas<ColoritoCell,ColoritoBoard>	implemen
     private JCheckBoxMenuItem reverseOption = null;
    
     private Rectangle repRect = addRect("repRect");
+    private Toggle eyeRect = new Toggle(this,"eye",
+			StockArt.NoEye,ColoritoId.ToggleEye,NoeyeExplanation,
+			StockArt.Eye,ColoritoId.ToggleEye,EyeExplanation
+			);
     
 
     public void preloadImages()
@@ -209,7 +214,7 @@ public class ColoritoViewer extends CCanvas<ColoritoCell,ColoritoBoard>	implemen
         int stateX = boardX;
         int stateH = fh*3;
         
-        G.placeStateRow(stateX,stateY,boardW,stateH,iconRect,stateRect,reverseViewRect,noChatRect);
+        G.placeStateRow(stateX,stateY,boardW,stateH,iconRect,stateRect,reverseViewRect,eyeRect,noChatRect);
         
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	
@@ -295,6 +300,7 @@ public class ColoritoViewer extends CCanvas<ColoritoCell,ColoritoBoard>	implemen
     	Hashtable<ColoritoCell,ColoritoCell> dests = gb.getDests();
     	Hashtable<ColoritoCell,ColoritoCell> sources = gb.getSources();
     	ColoritoCell src = gb.getSource();
+    	boolean show = eyeRect.isOnNow();
      	//
         // now draw the contents of the board and anything it is pointing at
         //
@@ -320,7 +326,7 @@ public class ColoritoViewer extends CCanvas<ColoritoCell,ColoritoBoard>	implemen
             	highlight.awidth = SQUARESIZE/3;
             	highlight.spriteColor = Color.red;            	
              	}
-            if(cell==src)
+            if((canHit && show) || (cell==src))
             {
            		StockArt.Dot.drawChip(gc, this, SQUARESIZE, xpos,ypos,null);
             }
@@ -334,6 +340,8 @@ public class ColoritoViewer extends CCanvas<ColoritoCell,ColoritoBoard>	implemen
      public void drawAuxControls(Graphics gc,HitPoint highlight)
     {  
        DrawReverseMarker(gc,reverseViewRect,highlight);
+       eyeRect.activateOnMouse = true;
+       eyeRect.draw(gc,highlight);
     }
     public void setDisplayParameters(ColoritoBoard gb,Rectangle r)
     {
@@ -615,7 +623,9 @@ private void playSounds(commonMove m)
         {
         default:
         	throw G.Error("Hit Unknown: %s", hitObject);
-
+        case ToggleEye:
+        	eyeRect.toggle();
+        	break;
         case ReverseViewButton:
        	 { boolean v = !b.reverseY(); b.setReverseY(v); reverseOption.setState(v); }
        	 generalRefresh();

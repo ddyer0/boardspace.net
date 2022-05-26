@@ -765,7 +765,7 @@ class OctilesBoard extends rectBoard<OctilesCell>implements BoardProtocol,Octile
 
     /* initialize a board back to initial empty state */
     public void doInit() { doInit(gametype,randomKey,players_in_game); }
-    public void doInit(String type,long key) { doInit(type,randomKey,players_in_game); } 
+    public void doInit(String type,long key) { doInit(type,key,players_in_game); } 
     public void doInit(String gtype,long seed,int nplay)
     {
  

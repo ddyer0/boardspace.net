@@ -3,7 +3,13 @@ package lib;
 import java.awt.Rectangle;
 
 import online.common.exCanvas;
-
+/**
+ * a image-based button that has standard button behavior and appearance.
+ * This class extends Rectangle, so it can be positioned by the standard layout methods
+ * 
+ * @author ddyer
+ *
+ */
 @SuppressWarnings("serial")
 public class Toggle extends Rectangle
 {	String name = "";
@@ -13,7 +19,7 @@ public class Toggle extends Rectangle
 	boolean justTurnedOff = false;
 	boolean mouseOverNow = false;
 	boolean temporarilyOff = false;
-	boolean activateOnMouse = false;
+	public boolean activateOnMouse = false;
 	String onToolTip = null;
 	String offToolTip = null;
 	CellId onId;

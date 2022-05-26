@@ -39,6 +39,9 @@ import static octiles.OctilesMovespec.*;
 
 class OctilesBoard extends rectBoard<OctilesCell>implements BoardProtocol,OctilesConstants
 {
+    static final String[] OctilesGRIDSTYLE = { "1", null, "A" }; // left and bottom numbers
+	static final int DEFAULT_COLUMNS = 10;	// 8x6 board
+	static final int DEFAULT_ROWS = 10;
 	private OctilesState unresign;
 	private OctilesState board_state;
 	public CellStack animationStack = new CellStack(); 
@@ -763,7 +766,7 @@ class OctilesBoard extends rectBoard<OctilesCell>implements BoardProtocol,Octile
 
     /* initialize a board back to initial empty state */
     public void doInit() { doInit(gametype,randomKey,players_in_game); }
-    public void doInit(String type,long key) { doInit(type,randomKey,players_in_game); } 
+    public void doInit(String type,long key) { doInit(type,key,players_in_game); } 
     public void doInit(String gtype,long seed,int nplay)
     {
  

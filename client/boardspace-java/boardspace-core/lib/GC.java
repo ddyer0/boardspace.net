@@ -220,7 +220,7 @@ public class GC {
 	 * @param color foreground color (or null)
 	 * @param bg background color (or null)
 	 * @param str the string to draw
-	 * @return the text width
+	 * @return the text width (only if inG is not null)
 	 */
 	static public int Text(Graphics inG, boolean center, Rectangle R,
 	    Color color, Color bg, String str)
@@ -237,7 +237,7 @@ public class GC {
 	* @param color foreground color (or null)
 	* @param bg background color (or null)
 	* @param str the string to draw
-	* @return the text width
+	* @return the text width(only if inG is not null)
 	*/
 	static public int Text(Graphics inG, double rotation,boolean center, Rectangle R,
 	        Color color, Color bg, String str)
@@ -259,7 +259,7 @@ public class GC {
 	 * @param color
 	 * @param bg
 	 * @param str
-	 * @return the text width
+	 * @return the text width (only if inG is not null)
 	 */
 	static public int Text(Graphics inG, boolean center, Rectangle R,int voff,
 	        Color color, Color bg, String str)
@@ -277,7 +277,7 @@ public class GC {
 	 * @param color
 	 * @param bg
 	 * @param str
-	 * @return the text width
+	 * @return the text width (only if inG is not null)
 	 */
 	static public int Text(Graphics inG, boolean center, Rectangle R,int voff,
 	        Color color, Color bg, Text str)

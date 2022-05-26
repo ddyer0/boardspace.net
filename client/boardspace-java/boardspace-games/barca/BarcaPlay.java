@@ -139,16 +139,21 @@ public class BarcaPlay extends commonRobot<BarcaBoard> implements Runnable,
      */
     private double ScoreForPlayer(BarcaBoard evboard,int player,boolean print)
     {	
-    	
-    	switch(Strategy)
+    	boolean win = evboard.winForPlayerNow(player);
+    	double increment = 0;
+     	switch(Strategy)
     	{
     	case SMARTBOT_LEVEL: 
-    		return(evboard.scoreForPlayer(player));
+    		increment = evboard.scoreForPlayer(player);
+    		break;
     	case DUMBOT_LEVEL:
-    		return(evboard.scoreForPlayer_2(player));
+    		increment = evboard.scoreForPlayer_2(player);
+    		break;
     	default: 
     		throw G.Error("Not expecting strategy %s", Strategy);
     	}
+     	if(win) { return VALUE_OF_WIN+Math.max(0,increment); }
+     	else return increment;
     }
 
     /**

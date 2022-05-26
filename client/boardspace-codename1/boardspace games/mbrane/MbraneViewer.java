@@ -131,6 +131,7 @@ public class MbraneViewer extends CCanvas<MbraneCell,MbraneBoard> implements Mbr
         // later, some variant is created, or the game code base is re purposed as the basis
         // for another game.
         bb = new MbraneBoard(type,players_in_game,randomKey,getStartingColorMap(),MbraneBoard.REVISION);
+        useDirectDrawing(true);
         doInit(false);
     }
 

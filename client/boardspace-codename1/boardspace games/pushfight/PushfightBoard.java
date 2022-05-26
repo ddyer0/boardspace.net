@@ -241,7 +241,7 @@ class PushfightBoard extends squareBoard<PushfightCell> implements BoardProtocol
 		pushedDest = holdingCell = getCell('J',1);
 		holdingCell.reInit();
 		holdingCell.addChip(PushfightChip.Anchor);
-		
+		cachedTargets = null;
         animationStack.clear();
         moveNumber = 1;
 
@@ -283,6 +283,7 @@ class PushfightBoard extends squareBoard<PushfightCell> implements BoardProtocol
         AR.copy(playerColor,from_b.playerColor);
         AR.copy(playerChip,from_b.playerChip);
         getCell(pieces,from_b.pieces);
+        cachedTargets = null;
         sameboard(from_b); 
     }
 

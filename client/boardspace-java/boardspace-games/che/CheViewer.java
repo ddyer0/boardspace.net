@@ -356,7 +356,7 @@ public class CheViewer extends CCanvas<CheCell,CheBoard> implements CheConstants
                 if(canhit 
                 	&& !hitpoint
                 	&& (piece!=null) 
-                	&& G.pointInsideSquare(ourTurnSelect, xpos, ypos, cellSize/2)
+                	&& G.pointInsideSquare(ourTurnSelect, xpos, ypos, cellSize*2/3)
                 	)
                 {
                 	ourTurnSelect.hitCode = CheId.RotateTile;
@@ -621,7 +621,6 @@ public class CheViewer extends CCanvas<CheCell,CheBoard> implements CheConstants
 			default: throw G.Error("Not expecting drop on filled board in state %s",state);
 			case CONFIRM_STATE:
 			case PLAY_STATE:
-			case PLAY2_STATE:
 				if(!bb.isDest(hitObject))
 					{
 					// note that according to the general theory, this shouldn't
@@ -631,6 +630,7 @@ public class CheViewer extends CCanvas<CheCell,CheBoard> implements CheConstants
 					}
 				// fall through and pick up the previously dropped piece
 				/*$FALL-THROUGH$*/
+			case PLAY2_STATE:
 			case PUZZLE_STATE:
 				PerformAndTransmit("Pickb "+hitObject.col+" "+hitObject.row);
 				break;

@@ -35,10 +35,22 @@ import static octiles.OctilesMovespec.*;
 
 public class OctilesViewer extends CCanvas<OctilesCell,OctilesBoard> implements OctilesConstants, GameLayoutClient
 {
-     /**
-	 * 
-	 */
-	static final long serialVersionUID = 1L;
+	 
+    // file names for jpeg images and masks
+    static final String Octiles_SGF = "Octiles"; // sgf game number allocated for hex
+    static final String ImageDir = "/octiles/images/";
+	// sounds
+    static final int BACKGROUND_TILE_INDEX = 0;
+    static final int BACKGROUND_REVIEW_INDEX = 1;
+    static final int BOARD_INDEX = 0;
+    static final int BOARD_FLAT_INDEX = 1;
+    static final int POST_INDEX = 2;
+    static final String ImageNames[] = { "board","board-flat"};
+    static final String TextureNames[] = 
+    	{ "background-tile" ,
+    	  "background-review-tile",
+    	  "posts-mask"
+    	  };
 	// colors
     private Color reviewModeBackground = new Color(220,165,200);
     private Color HighlightColor = new Color(0.2f, 0.95f, 0.75f);
@@ -111,7 +123,7 @@ public class OctilesViewer extends CCanvas<OctilesCell,OctilesBoard> implements 
         int map[]=getStartingColorMap();
         b = new OctilesBoard(info.getString(OnlineConstants.GAMETYPE, Octiles_INIT),players_in_game,
         		randomKey,map);
-        //useDirectDrawing(); // not tested yet
+        useDirectDrawing(true); // not tested yet
         doInit(false);
 
          

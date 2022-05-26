@@ -91,7 +91,7 @@ public class MorrisViewer extends CCanvas<MorrisCell,MorrisBoard> implements Mor
        
         b = new MorrisBoard(info.getString(OnlineConstants.GAMETYPE, Variation.Morris_9.name),randomKey,players_in_game,repeatedPositions,
         		getStartingColorMap());
-        //useDirectDrawing(); // not tested yet
+        useDirectDrawing(true); // not tested yet
         doInit(false);
         offerDrawAction = myFrame.addAction(s.get(OFFERDRAW),deferredEvents);       
      }

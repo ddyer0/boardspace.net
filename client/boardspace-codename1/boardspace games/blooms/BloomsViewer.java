@@ -246,9 +246,11 @@ public class BloomsViewer extends CCanvas<BloomsCell,BloomsBoard> implements Blo
        	Rectangle done = doneRects[player];
        	Rectangle score = scoreBox[player];
     	int doneW = plannedSeating()? unitsize*4 : 0;
-    	G.SetRect(chip, x, y, unitsize, unitsize*3);
-    	G.SetRect(score, x+unitsize+unitsize/3, y, unitsize*3, unitsize*3);
-       	Rectangle box =  pl.createRectangularPictureGroup(x+4*unitsize+unitsize/3,y,unitsize);
+    	int chipw =unitsize*3/2;
+    	int u3 = unitsize*3;
+    	G.SetRect(chip, x, y, chipw, chipw*2);
+    	G.SetRect(score, x+chipw, y, u3, unitsize*3);
+       	Rectangle box =  pl.createRectangularPictureGroup(x+chipw+u3+unitsize/3,y,unitsize);
     	G.SetRect(done,x,G.Bottom(score)+unitsize/3,doneW,doneW/2);
     	G.union(box, done,chip,score);
     	pl.displayRotation = rotation;
@@ -262,13 +264,13 @@ public class BloomsViewer extends CCanvas<BloomsCell,BloomsBoard> implements Blo
     private void DrawChipPool(Graphics gc, Rectangle r, int player, HitPoint highlight,BloomsBoard gb)
     {
     	
-            int spacex = G.Width(r);
             int spacey = G.Height(r)/2;
-            int xp = G.Left(r)+spacex/2;
+            int xp = G.centerX(r);
             int yp = G.Top(r)+spacey/2;
+            int w = G.Width(r)*7/8;
             for(BloomsCell c : gb.playerCells[player])
             {	boolean canHit = gb.LegalToHitChips(c.topChip());
-            	if(c.drawChip(gc, this, canHit?highlight:null,CELLSIZE,xp,yp,null))
+            	if(c.drawChip(gc, this, canHit?highlight:null,w,xp,yp,null))
             	{
             		highlight.spriteColor = Color.RED;
             		highlight.awidth = CELLSIZE;

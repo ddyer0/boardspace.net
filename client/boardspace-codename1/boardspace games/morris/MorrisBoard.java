@@ -244,8 +244,9 @@ class MorrisBoard extends squareBoard<MorrisCell> implements BoardProtocol,Morri
      	case Morris_9:
      		boardColumns = variation.size;
      		boardRows = variation.size;
-     		initBoard(boardColumns,boardRows);
-
+     		gametype = gtype;
+     		if(reInitBoard(boardColumns,boardRows))
+     		{
      		// ad hoc deconstruction of a regular 7x7 board into
      		// a morris board
      		for(int []pairs : RemoveCells_9)
@@ -259,7 +260,7 @@ class MorrisBoard extends squareBoard<MorrisCell> implements BoardProtocol,Morri
      			from.addLink(findDirection(from,to),to);
      			to.addLink(findDirection(to,from),from);
      		}     		
-     		gametype = gtype;
+	     	}
      		break;
      	}}
      	else { G.Error(WrongInitError,gtype); }

@@ -29,7 +29,7 @@ public class JMenuItem implements ActionListener,AwtComponent,NativeMenuItemInte
 	static final int MenuTextSize = 30;
 	static final Style MenuTextStyle = Style.Bold;
 	private Color fgcolor = Color.black;
-	private Color bgcolor = Color.white;
+	private Color bgcolor = new Color(0xccccff);
 	public Color getBackground() { return(bgcolor); }
 	public Color getForeground() { return(fgcolor); }
 	public void setBackground(Color c) { bgcolor = c; }
@@ -62,7 +62,7 @@ public class JMenuItem implements ActionListener,AwtComponent,NativeMenuItemInte
 		 { cachedParent = parent;
 		   cachedImage = (icon!=null) 
 			? Image.getIconImage(icon,parent)
-			: getTextImage(text,parent.getFont(),parent.getForeground(),parent.getBackground());
+			: getTextImage(text,parent.getFont(),getForeground(),getBackground());
 		 }
 		return(cachedImage);
 	}

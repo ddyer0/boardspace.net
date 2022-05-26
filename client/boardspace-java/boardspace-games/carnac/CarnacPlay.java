@@ -170,7 +170,7 @@ public class CarnacPlay extends commonRobot<CarnacBoard> implements Runnable,
         monte_search_state.alpha = 0.5;
         monte_search_state.uct_tree_depth = 1;
         monte_search_state.stored_child_limit = 100000;
-        monte_search_state.random_moves_per_second = WEAKBOT ? 10000 : 1300000;
+        monte_search_state.random_moves_per_second = WEAKBOT ? 10000 : 1000000;
         monte_search_state.max_random_moves_per_second = 2000000;
         monte_search_state.sort_moves = false;
         monte_search_state.only_child_optimization = true;

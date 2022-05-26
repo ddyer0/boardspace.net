@@ -73,9 +73,9 @@ enum BarcaId implements CellId
 	Black_Mouse("BM"),
 	Black_Lion("BL"),
 	Black_Elephant("BE"),
-	ShowMoves(null),
 	Reverse(null),
-	BoardLocation(null);
+	BoardLocation(null), 
+	ToggleEye(null);
 	String shortName = name();
 	public String shortName() { return(shortName); }
 	BarcaId afraidOf;

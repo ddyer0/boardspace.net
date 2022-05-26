@@ -260,6 +260,7 @@ public class CookieViewer extends CCanvas<CookieCell,CookieBoard> implements Coo
         	boolean canhit = gb.LegalToHitChips(c);
         	CookieChip chip = c.topChip();
         	labelColor = Color.white;
+        	labelFont = G.getFont(largeBoldFont(),h/3);
         	if(c.drawStack(gc,canhit?highlight:null,
         			x,y,
         			this,0,tall?(int)(w*0.9):h,1.0,""+chip.value))
@@ -268,6 +269,7 @@ public class CookieViewer extends CCanvas<CookieCell,CookieBoard> implements Coo
         	highlight.awidth = w/3;
         	highlight.spriteColor = Color.red;
         	}
+        	HitPoint.setHelpText(highlight,h,x,y,s.get(chip.description));
         }
     }
     //

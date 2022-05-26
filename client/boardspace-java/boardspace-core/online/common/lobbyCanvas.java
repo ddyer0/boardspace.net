@@ -471,7 +471,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 		int l = G.Left(roomTypeRect);
 		int t = G.Bottom(gamePlayerRect);
 		int w = GAMEIMAGEWIDTH-(int)(25*scale);
-		int h = (int)(20*scale);
+		int h = (int)(25*scale);
 		G.SetRect(timeControlRect,	l,	t,	w,	h);
 		}
 		G.SetRect(inviteModeRect,G.Right(gamePlayerRect),G.Top(gamePlayerRect),

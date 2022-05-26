@@ -72,7 +72,8 @@ public interface LyngkConstants
     	LiftRect(null),		// spread the stacks
     	RotateRect(null),	// rotate the board
     	EyeRect(null),		// show targets
-    	BoardLocation(null);
+    	BoardLocation(null), 
+    	ShowMoves(null);
     	String shortName = name();
     	public String shortName() { return(shortName); }
     	LyngkId(String sn) { if(sn!=null) { shortName = sn; }}

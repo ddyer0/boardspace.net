@@ -150,6 +150,7 @@ public class PalagoViewer extends CCanvas<PalagoCell,PalagoBoard> implements Pal
         labelColor = Color.red;
         labelFont = largeBoldFont();
         bb = new PalagoBoard(info.getString(OnlineConstants.GAMETYPE, "Palago"),getStartingColorMap());
+        useDirectDrawing(true); // not tested yet
         doInit(false);
     }
 
@@ -680,7 +681,7 @@ public class PalagoViewer extends CCanvas<PalagoCell,PalagoBoard> implements Pal
     	else {
     	missedOneClick = false;
    		PalagoId hitCode = (PalagoId)hp.hitCode;
-        PalagoCell hitObject = hitCell(hp);
+        PalagoCell hitObject = bb.getCell(hitCell(hp));
         PalagoState state = bb.getState();
         switch (hitCode)
         {
