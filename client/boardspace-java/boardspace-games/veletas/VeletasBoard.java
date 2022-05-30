@@ -34,9 +34,10 @@ import static veletas.VeletasMovespec.*;
  */
 
 class VeletasBoard extends rectBoard<VeletasCell> implements BoardProtocol,VeletasConstants
-{	public static int REVISION = 103;		// revision 101 fixes the surround rule
+{	public static int REVISION = 104;		// revision 101 fixes the surround rule
 											// revision 102 changes the opening sequence
 											// revision 103 changes the opening sequence again
+											// revision 104 changes shooter placement and movement rules
 	public int getMaxRevisionLevel() { return(REVISION); }
     public int boardColumns;	// size of the board
     public int boardRows;
@@ -84,7 +85,6 @@ class VeletasBoard extends rectBoard<VeletasCell> implements BoardProtocol,Velet
     private CellStack robotStack = new CellStack();
     private IStack robotShooters = new IStack();
     private boolean robotBoard = false;
-    
 	// factory method
 	public VeletasCell newcell(char c,int r)
 	{	return(new VeletasCell(c,r));
@@ -673,13 +673,29 @@ class VeletasBoard extends rectBoard<VeletasCell> implements BoardProtocol,Velet
            	}
     	return(false);
     }
-    
+    boolean shooterCanMoveInDirection(VeletasCell from,int dir)
+    {
+    	while((from = from.exitTo(dir))!=null)
+    	{	VeletasChip top = from.topChip();
+    		if(top==null) { return(true); }
+    		if(top!=VeletasChip.shooter) { return false; }
+    	}
+    	return(false);
+    }
     boolean shooterCanMoveFrom(VeletasCell c)
     {	if(c==null) { return(false); }
+    	if(revision<104)
+    	{
     	for(int dir = c.geometry.n-1; dir>=0; dir--)
     	{
     		VeletasCell adj = c.exitTo(dir);
-    		if((adj!=null)&&adj.isEmpty()) { return(true); }
+    		if((adj!=null) && adj.isEmpty()) { return(true); }
+    	}}
+    	else
+    	{
+    	   	for(int dir = c.geometry.n-1; dir>=0; dir--)
+        	{	if(shooterCanMoveInDirection(c,dir)) { return(true); }
+        	}	
     	}
     	return(false);
     }
@@ -974,15 +990,15 @@ class VeletasBoard extends rectBoard<VeletasCell> implements BoardProtocol,Velet
         default:
         	throw G.Error("Not expecting state %s", board_state);
         case PlaceShooters:
-        case PlaceSingleStone:
+        case PlaceOrSwap:
         	return(c==shooters);
+        case PlaceSingleStone:
         case PlayStone:
         case PlayOrSwap:
-        case PlaceOrSwap:
         case Play:
         	return(c==rack[whoseTurn]);
         case Confirm:
- 		case Gameover:
+		case Gameover:
 		case Resign:
 		case ConfirmSwap:
 			return(false);
@@ -1220,6 +1236,8 @@ public boolean hasMoves()
 
  public boolean addPlaceShooterMoves(CommonMoveStack all,int who)
  {	boolean some = false;
+ 	if(revision<104)
+ 	{
 	 for(VeletasCell c = allCells; c!=null; c=c.next)
 	 {
 		 if(c.isEmpty() && c.allEmptyAdjacent())
@@ -1227,7 +1245,19 @@ public boolean hasMoves()
 			 if(all==null) { return(true); }
 			 all.push(new VeletasMovespec(MOVE_RACK_BOARD,shooters,c,who));
 		 }
-	 }
+	 }}
+ 	else
+ 	{	// revised rule, shooters can be adjacent to each other, but can't be on the periphery
+ 		 for(VeletasCell c = allCells; c!=null; c=c.next)
+ 		 {
+ 			 if(c.isEmpty() && !c.isEdgeCell())
+ 			 {
+ 				 if(all==null) { return(true); }
+ 				 all.push(new VeletasMovespec(MOVE_RACK_BOARD,shooters,c,who));
+ 			 }
+ 		 }	
+ 		
+ 	}
 	 return(some);
  }
  private boolean addShooterMoves(CommonMoveStack all,int who,VeletasCell c)
@@ -1235,11 +1265,26 @@ public boolean hasMoves()
 	 for(int dir = c.geometry.n-1; dir>=0; dir--)
 	 {
 		 VeletasCell adj = c;
+		 if(revision<104)
+		 {
 		 while((adj = adj.exitTo(dir))!=null && (adj.topChip()==null))
 		 {	
 			 if(all==null) { return(true); }
 			 some = true;
 			 all.push(new VeletasMovespec(MOVE_BOARD_BOARD,c,adj,who));
+		 }}
+		 else
+		 {	// shooters do not block each other
+			 VeletasChip top = null;
+			 while( ((adj = adj.exitTo(dir))!=null)
+					 && (((top=adj.topChip())==null)|| (top==VeletasChip.shooter)) )
+			 {	if(top==null)
+			 	{
+				 if(all==null) { return(true); }
+				 some = true;
+				 all.push(new VeletasMovespec(MOVE_BOARD_BOARD,c,adj,who));
+			 	}
+			 }  
 		 }
 	 }
 	 return(some);
@@ -1249,13 +1294,27 @@ public boolean hasMoves()
 	for(int dir = c.geometry.n-1; dir>=0; dir--)
 	 {
 		 VeletasCell adj = c;
+		 if(revision<104)
+		 {
 		 while(((adj = adj.exitTo(dir))!=null)
 				 && (adj.topChip()==null))
 		 {
 			 if(all==null) { return(true); }
 			 some = true;
 			 all.push(new VeletasMovespec(MOVE_RACK_BOARD,rack[who],adj,who));
-		 }
+		 }}
+		 else
+		 {	VeletasChip top = null;
+			 while(((adj = adj.exitTo(dir))!=null)
+					 && (((top=(adj.topChip()))==null) || (top==VeletasChip.shooter)))
+			 {	if(top==null)
+			 	{
+				 if(all==null) { return(true); }
+				 some = true;
+				 all.push(new VeletasMovespec(MOVE_RACK_BOARD,rack[who],adj,who));
+			 	}
+			 }
+		}
 	 }
 	 return(some);
  }
@@ -1318,8 +1377,17 @@ public boolean hasMoves()
 	 case White_Chip_Pool:
 	 case Black_Chip_Pool:
 	 	{
+		 if(board_state==VeletasState.PlaceSingleStone)
+		 {
+			 return addSinglePlacementMoves(all,who); 
+		 }
+		 else 
+		 {
 		 VeletasCell shooter =  placedShooter();
-		 return(shooter==null?addPlacementMoves(all,who) : addPlacementMoves(all,who,shooter));
+		 return((shooter==null)
+				 	? addPlacementMoves(all,who) 
+				 	: addPlacementMoves(all,who,shooter));
+		 }
 	 	}
 	 case Shooter_Chip_Pool:
 		 return(addPlaceShooterMoves(all,who));

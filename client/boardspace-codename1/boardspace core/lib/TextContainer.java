@@ -1,13 +1,12 @@
 package lib;
 
+
 import com.codename1.ui.Font;
 import com.codename1.ui.geom.Dimension;
 import com.codename1.ui.geom.Point;
 import com.codename1.ui.geom.Rectangle;
-import bridge.Color;
-import bridge.FontMetrics;
-import bridge.KeyEvent;
-import bridge.KeyListener;
+
+import bridge.*;
 import online.common.exCanvas;
 import static online.common.OnlineConstants.clickSound;
 
@@ -29,45 +28,56 @@ import java.util.Set;
  *   
  *   Vertical scrolling and flinging is handled by the scroll bar
  *    
+ *   These text windows display all text, extra-long lines are marked by a blot in the margins.
+ *   Single line displays can have blots in both left and right margins
+ *   
  * @author Ddyer
  *
  */
 public class TextContainer implements AppendInterface,KeyListener
-{	static private int MIN_SELECTION_DISTANCE = 10;
+{	
 	static private TextContainer focusInstance = null;
 	public boolean hasFocus() { return (focusInstance == this); }
 	StringBuilder data=new StringBuilder();
 	private int lastLineHeight = 10;		// this is used to scale the amound of movement needed to start scrolling
-	int caratPosition = 0;				// position in data of the blinking cursor
 	
+	// on single line displays, where the line is longer than the available space, we maintain
+	// a scrollable line with caratPosition as the point that is kept visible.  Normally this will
+	// be the end of the line, but it can move.
+	private int caratPosition = 0;					// position in data of the blinking cursor
+	// on single line displays, visibleCaratPosition is moved to follow the mouse selecting text.
+	// during the active selection, caratPosition is NOT changed, because doing so shifts the visible
+	// segment of the line out from under the mouse being dragged.
+	private int visibleCaratPosition = 0;
 	private boolean mouseActive = false;		// true while the mouse is down and potentially used for selecting or scrolling
-	private boolean mouseSelectingStart = false;
 	private boolean mouseSelectingExpand = false;
 	private int mouseExpandPos1 = -1;
-	private int mouseExpandPos2 = -1;
-	int MARGIN = 4;
+	private int MARGIN = 4;
 	private boolean mouseSelecting = false;		// true if the mouse is being used to select text, initiated by a horizontal movement
 	private boolean caratSelecting = false;		// one time flag to set the carat to the last mouse position	
 	private int mouseSelectingX = -1;	// x tracking the mouse while selecting text
 	private int mouseSelectingY = -1;	// y tracking the mouse while selecting text
-	int selectionStart = -1;			// start of selection 
-	int selectionEnd = -1;				// end of selection
-	private String EXTENSIONMARKER = "";
-    private long lastMouseActiveTime = 0;
+	// on multiline displays, if there are overflow lines (too wide for the display), the 
+	// visible and actual line positions begin to diverge.  We maintain both in parallel, 
+	// so the visible marker and the text copy/paste operations agree
+	private int visibleSelectionStart = -1;			// start of selection 
+	private int visibleSelectionEnd = -1;			// end of selection
+	private int actualSelectionStart = -1;
+	private int actualSelectionEnd = -1;
     private Set<String>extensionLines = new HashSet<String>();
-    
-	private boolean autoScroll = true;				// scroll to end to keep the end carat visible
+     
+	private boolean autoScroll = true;		// scroll to end to keep the end carat visible
 	private int selectingX = -1;			// internal start position when mouse dragging
 	private int selectingY = -1;			// internal start position when mouse dragging
     private int maxScroll = 0;
 	private boolean editable=false;
     private ScrollArea scrollBar = new ScrollArea();
-	
+
 	private boolean focusToggle = false;
 	long flipTime = 0;
 	public int flipInterval = 750;
 	
-	int endmargin = 15;
+	private int endmargin = 15;
 	public void setFocus(boolean v,int interval) 
 	{
 	  flipInterval = interval;
@@ -139,8 +149,8 @@ public class TextContainer implements AppendInterface,KeyListener
 	}
 	private SimpleObservable observer = new SimpleObservable();		// who to tell
 	public void addObserver(SimpleObserver o) {	
-			observer.addObserver(o);
-		}
+		observer.addObserver(o);
+	}
 	public void setChanged(Op op)
 	{	
 		observer.setChanged(op);
@@ -159,15 +169,14 @@ public class TextContainer implements AppendInterface,KeyListener
 	public void setText(String t) 
 	{	data = new StringBuilder(t==null ? "" : t);
 		mlCache = null;
-		selectionStart = -1;
-		selectionEnd = -1;
+		visibleSelectionStart = -1;
+		visibleSelectionEnd = -1;
 		clearBeforeAppend = false; 
 		setScrollY(0);
 		setCaratPosition(0);
 		if(canvas!=null) { canvas.repaint(0,"new text"); }
 
 	}
-
 	public boolean editable() 
 	{ return(editable); 
 	}
@@ -191,7 +200,7 @@ public class TextContainer implements AppendInterface,KeyListener
 	  	{ 
 		  can.removeKeyListener(this); 
 		}
-	  	}
+	  }
 	}
 	public void setBackground(Color background) {
 		backgroundColor = background;
@@ -213,8 +222,10 @@ public class TextContainer implements AppendInterface,KeyListener
 	{
 		data.setLength(0);
 		mlCache = null;
-		selectionStart = -1;
-		selectionEnd = -1;
+		visibleSelectionStart = -1;
+		visibleSelectionEnd = -1;
+		actualSelectionStart = -1;
+		actualSelectionEnd = -1;
 		setScrollY(0);
 		clearBeforeAppend = false;
 		autoScroll = true;
@@ -229,13 +240,15 @@ public class TextContainer implements AppendInterface,KeyListener
 	}
 	public synchronized void doDeleteSelection()
 	{
-		if(editable && selectionStart>=0) 
-		{ data.delete(selectionStart, selectionEnd);
+		if(editable && visibleSelectionStart>=0) 
+		{ data.delete(visibleSelectionStart, visibleSelectionEnd);
 		  mlCache = null;
-		  setCaratPosition(selectionStart);
-			  selectionStart = -1;
-		  selectionEnd = -1;
-			}
+		  setCaratPosition(visibleSelectionStart);
+		  visibleSelectionStart = -1;
+		  visibleSelectionEnd = -1;
+		  actualSelectionStart = -1;
+		  actualSelectionEnd = -1;
+		}
 
 	}
 	public void insert(char c)
@@ -252,7 +265,7 @@ public class TextContainer implements AppendInterface,KeyListener
 		if(caratPosition<data.length()) { data.insert(caratPosition,c); }
 		else { data.append(c); }
 		mlCache = null;
-		setCaratPosition(caratPosition+=c.length());
+		setCaratPosition(caratPosition+c.length());
 	}
 	public void append(String newstr) {
 		if(clearBeforeAppend) { clear(); }
@@ -268,9 +281,10 @@ public class TextContainer implements AppendInterface,KeyListener
 	public int messageSize() { return(data.length()); }
 	
 	public void setCaratPosition(int i) {
-		caratPosition = Math.min(data.length(),Math.max(0, i));
+		int cp = caratPosition;
+		visibleCaratPosition = caratPosition = Math.min(data.length(),Math.max(0, i));
 		autoScroll = true;
-		setChanged(Op.Repaint);
+		if(cp!=caratPosition) { setChanged(Op.Repaint); }
 	}
 	public Point getLocation()
 	{
@@ -320,9 +334,9 @@ public class TextContainer implements AppendInterface,KeyListener
 	private int findCaratY(StringStack lines,int fontH)
 	{	
 		int charpos = 0;
-			int linepos = 0;
+		int linepos = 0;
 		for(int i=0,lim=lines.size();i<lim;i++)
-			{  
+		{
 			int len = lines.elementAt(i).length()+1;
 			if(charpos<=caratPosition && charpos+len>caratPosition) { return(linepos);}	
 			charpos += len;
@@ -353,14 +367,14 @@ public class TextContainer implements AppendInterface,KeyListener
 	{	FontMetrics fm = G.getFontMetrics(font);
 		lastLineHeight = fm.getHeight();
 		if(GC.handleSquareButton(g, r, hp,line,backgroundColor,backgroundColor))
-		{
-				hp.hitCode = defaultId;
-				hp.spriteRect = r;
-				hp.spriteColor = Color.red;
+		{	
+			hp.hitCode = defaultId;
+			hp.spriteRect = r;
+			hp.spriteColor = Color.red;
 			return(true);
-			}
-		return(false);
 		}
+		return(false);
+	}
 	private void doFocus()
 	{
 		if(hasFocus())
@@ -373,23 +387,31 @@ public class TextContainer implements AppendInterface,KeyListener
 		//G.print("rep "+(int)(flipTime-now));
 		canvas.repaint((int)(flipTime-now+10));
 		}
-	
+
 	}
-	public boolean drawAsSingleLine(Graphics g,HitPoint hp,Rectangle r,String line)
-	{
+	//
+	// line might be a single line of a multiple line paste
+	// lineStart is the start of the line within the full line
+	//
+	public boolean drawAsSingleLine(Graphics g,HitPoint hp,Rectangle r,String originalLine,int lineStart)
+	{	String line = originalLine;
+		if(!mouseSelecting) { setCaratPosition(visibleCaratPosition); }
+		int lineLen = line.length();
 		boolean isIn = G.pointInRect(hp,x,y,width,height);
 		FontMetrics fm = G.getFontMetrics(font);
+		int carat = Math.min(lineLen,caratPosition-lineStart);				// carat position within the display line
+		int visCarat = Math.min(lineLen,visibleCaratPosition-lineStart);
 		int lineh = lastLineHeight = fm.getHeight();
 		int lineX = x+MARGIN;
 		int lineY = centerSingleLineY? y+lineh/2+height/2-lineh/8 : y+lineh+MARGIN;
-		int lineStart = data.length()-line.length();
-		int select = Math.max(0, selectionStart-lineStart);
-		int selectEnd = Math.max(0, selectionEnd-lineStart);
-		String fullLine = line;
-
+		int select = Math.max(0, visibleSelectionStart-lineStart);
+		int selectEnd = Math.max(0, visibleSelectionEnd-lineStart);	// visible part of selection
+		int charsDeletedAtLeft = 0;
+		int charsDeletedAtRight = 0;
+		if(select<0) { select = 0; }
 		doFocus();
 		GC.frameRect(g,Color.black,x,y,width,height);		
-			if(clearBeforeAppend)
+		if(clearBeforeAppend)
 			{
 			GC.Text(g,true,lineX, lineY-lineh,width-MARGIN*2,height-MARGIN*2,foregroundColor,backgroundColor,line);
 			}
@@ -397,25 +419,56 @@ public class TextContainer implements AppendInterface,KeyListener
 		{
 			Rectangle from = GC.getStringBounds(g,fm,line);
 			int maxx = (int)from.getWidth();
-			if(maxx>width-endmargin && line.length()>0)
-			{	// shorten the line at the left
-				int EXTSIZE = EXTENSIONMARKER.length();
-				line = EXTENSIONMARKER+line.substring(1);
-				if(select>=0) { select += EXTSIZE-1; }
-				select += EXTSIZE-1;
-				selectEnd += EXTSIZE-1;
-				from = GC.getStringBounds(g,fm, line);
-				maxx = (int)from.getWidth();
-				while(maxx>width-endmargin && (line.length()>EXTSIZE+1))
-				{   
-					line = EXTENSIONMARKER+line.substring(EXTSIZE+1);
-					if(select>0) { select--; }
-					if(selectEnd>0) { selectEnd--; }
-					from = GC.getStringBounds(g,fm, line);
-					maxx = (int)from.getWidth();
+			int availableWidth = width-endmargin;
+			if(maxx>availableWidth && lineLen>0)	// does not all fit
+			{	// if the carat is not at the end, shorten at the left until the carat is visible
+				int pos = carat;
+				String leftpart = line.substring(0,pos);
+				Rectangle left = GC.getStringBounds(g,fm,leftpart);
+				int caratX = (int)left.getWidth();
+				while(caratX>=availableWidth/2 && charsDeletedAtLeft<pos)
+				{	charsDeletedAtLeft++;
+					leftpart = line.substring(charsDeletedAtLeft,pos);
+					left = GC.getStringBounds(g,fm,leftpart);
+					caratX = (int)left.getWidth();
 				}
+				
+				if(caratX<availableWidth && pos<lineLen)
+				{
+					do {
+					pos++;
+					leftpart = line.substring(charsDeletedAtLeft,pos);
+					left =  GC.getStringBounds(g,fm,leftpart);
+					caratX= (int)left.getWidth();
+					} 
+					while((caratX<availableWidth) && (pos<lineLen));
+				}
+				
+				while((caratX<availableWidth) && (charsDeletedAtLeft>0))
+				{
+					charsDeletedAtLeft--;
+					leftpart = line.substring(charsDeletedAtLeft,pos);
+					left =  GC.getStringBounds(g,fm,leftpart);
+					caratX= (int)left.getWidth();
+				}
+				
+				charsDeletedAtRight = lineLen-pos;
+				line = line.substring(charsDeletedAtLeft,pos);
+				lineLen = line.length();
+				from = GC.getStringBounds(g,fm,line);
+				maxx = (int)from.getWidth();
+
+				
+				if(charsDeletedAtLeft>0)
+					{ 
+					select = Math.max(0,select-charsDeletedAtLeft);
+					selectEnd = Math.max(0,selectEnd-charsDeletedAtLeft);
+					}
+							
 			}
+			selectEnd = Math.min(selectEnd,lineLen);
 		
+		// draw a gray background around the selection
 		if(select>=0 && selectEnd>select)
 		{	
 		Rectangle sbounds = GC.getStringBounds(g,fm,line,select,selectEnd);
@@ -423,72 +476,76 @@ public class TextContainer implements AppendInterface,KeyListener
 		int xx = (int)leftBounds.getWidth();
 		GC.fillRect(g, Color.lightGray, lineX+xx, lineY-lineh/2,(int)sbounds.getWidth(),lineh/2);
 		GC.setColor(g,foregroundColor);
-		if(mouseSelecting)
-			{
-			GC.drawLine(g,lineX+xx,lineY-lineh,lineX+xx,lineY);
-			}
 		}
-			// draw the line of text
-			GC.Text(g,line,lineX, lineY);
-			
+		
+		// draw the line of text
+		GC.Text(g,line,lineX, lineY);
+		if((charsDeletedAtLeft>0)||(lineStart>0))
+			{ GC.fillRect(g, Color.black,G.Left(r),lineY-lineh,MARGIN,lineh);
+			}
+		if((charsDeletedAtRight>0)||(lineStart+lineLen+charsDeletedAtLeft<data.length()))
+			{ GC.fillRect(g, Color.black,G.Right(r)-MARGIN,lineY-lineh,MARGIN,lineh);
+			}	
+		
 		if(focusToggle||mouseSelecting)
 			{
-			drawFocusLine(g,fm,lineX,lineY,line,data.length()-(mouseSelecting ? selectionEnd : caratPosition));
+			drawFocusLine(g,fm,lineX,lineY,line,lineLen-(visCarat-charsDeletedAtLeft));
+				//	(shortenAtLeft ? data.length():line.length())
+				//	-(mouseSelecting ? visibleSelectionEnd : carat));
 			}
 		}
-			
-			if(mouseSelecting)
-		{   int mousePos1=-1;
-			int mousePos2=-1;
-				if(G.pointInRect(mouseSelectingX,mouseSelectingY,x,lineY-lineh,width,lineh)) 
-				{ mousePos1 =  findPositionInLine(fm,g,line,fullLine,mouseSelectingX-lineX);	
-					}
-			if(G.pointInRect(selectingX,selectingY,x,lineY-lineh,width,lineh)) 
-				{ mousePos2 =  findPositionInLine(fm,g,line,fullLine,selectingX-lineX); 
-					}
-			if(mousePos1>=0 && mousePos2>=0 && mousePos1>mousePos2) 
-				{ int x = mousePos1;
-				  mousePos1=mousePos2; 
-				  mousePos2 = x; 
-				}
-			if(mouseSelectingStart 
-					&& (mousePos1>=0)
-					&& (mousePos2>=mousePos1)
-					&& (selectionStart>=0)
-					&& ((mousePos1>=selectionStart && mousePos1<=selectionEnd)
-							|| (mousePos2>=selectionStart && mousePos2<=selectionEnd)))
-			{	mouseSelectingExpand = true;
-				mouseExpandPos2 = mousePos2;
-				mouseExpandPos1 = mousePos1;
-			}	
-			else if(mouseSelectingExpand && (mousePos1>=0) && (mousePos2>=mousePos1))
+		/**
+		 * 
+		 * Using the mouse to expand selection interacts badly with auto scrolling
+		 * the current solution is to not scroll during mouse drag
+		 * 
+		GC.frameRect(g,Color.blue,100,100,500,40);
+		GC.Text(g,false,100,100,500,40,Color.black,Color.white,
+				"sel "+visibleSelectionStart+"-"+visibleSelectionEnd
+				+" carat "+caratPosition
+				+" exp "+mouseSelectingExpand+" "+mouseExpandPos1
+				+" mouse "+(mouseExpandPos1+charsDeletedAtLeft)
+				+" left "+charsDeletedAtLeft);
+		 */
+		if(mouseSelecting)
+		{   
+			if(G.pointInRect(mouseSelectingX,mouseSelectingY,x,lineY-lineh,width,lineh)) 
+			{int mousePos1=	lineStart+charsDeletedAtLeft+findPositionInLine(fm,g,line,mouseSelectingX-lineX);	
+				  //print("pos1 ",mousePos1," from ",charsDeletedAtLeft);
+			if(mousePos1>=0)
 			{	
+				if(!mouseSelectingExpand)
+				{ mouseExpandPos1 = mousePos1; 
+				  mouseSelectingExpand = true; 
+				}
+				if(visibleSelectionStart<0)
+				{ actualSelectionStart = visibleSelectionStart  = mousePos1;
+				  actualSelectionEnd = visibleSelectionEnd = mousePos1+1;
+				  visibleCaratPosition = mousePos1;
+				}
+				else
 				if((mousePos1<mouseExpandPos1))
-				{	
-					selectionStart = Math.max(0, mousePos1-1);
+				{		
+					actualSelectionStart = visibleSelectionStart = Math.max(0, mousePos1);
+					//G.print("start = ",mousePos1);
+					visibleCaratPosition = mousePos1;
 				}
-				if((mousePos2>mouseExpandPos2))
-				{	
-					setCaratPosition(selectionEnd = mousePos2);
+				else if((mousePos1>mouseExpandPos1))
+				{	actualSelectionEnd = visibleSelectionEnd = mousePos1;
+					//G.print("end = ",mousePos1);
+					visibleCaratPosition = mousePos1;
 				}
-				selectionEnd = Math.max(selectionStart, selectionEnd);
-			}
-			else if((mousePos1>=0) && (mousePos2>=mousePos1))
-			{
-				selectionStart = Math.max(0, mousePos1-1);
-			selectionEnd = Math.max(selectionStart, selectionEnd);
-			setCaratPosition(selectionEnd = mousePos2);
-			}
-			mouseSelectingStart = false;
+				visibleSelectionEnd = Math.max(visibleSelectionStart, visibleSelectionEnd);
+			}}
 			
 		}
 		if(caratSelecting)
 		{	caratSelecting = false;
 			if(G.pointInRect(selectingX,selectingY,x,lineY-lineh,width,lineh))
-			{ int start = lineStart+findPositionInLine(fm,g,line,fullLine,selectingX-lineX);
-			  setCaratPosition ( Math.min(line.length()+lineStart,start)); 
+			{ int start = lineStart+charsDeletedAtLeft+findPositionInLine(fm,g,line,selectingX-lineX);
+			  setCaratPosition ( Math.min(originalLine.length(),start)); 
 			}
-			}
+		}
 		if(isIn) { hp.hitCode = defaultId;}
 		return(isIn);
 	}
@@ -505,45 +562,45 @@ public class TextContainer implements AppendInterface,KeyListener
 		}
 	}
 	private StringStack splitLongLine(StringStack newLines,FontMetrics fm,String line,int linew)
-				{ 
-				   // find a split space nearest the boundary, if it exists
+	{
+		// find a split space nearest the boundary, if it exists
 		int nnew = 0;
 		String curline = line;
-				  while(!"".equals(curline))
-				  {
-				  String sub = null;
-				  int thisw = 0;
+		while(!"".equals(curline))
+		  {
+		  String sub = null;
+		  int thisw = 0;
 		  int splitw = 0;
-				  do 
-				  { splitw = curline.indexOf(' ',splitw+1);
-				  	String nextSplit = null;
-				  	if(splitw<0) 
-				  		{ 
-				  		  nextSplit = curline;
-				  		}
-				  		else
-				  		{
-				  		  nextSplit = curline.substring(0,splitw);
-				  		}
-				  	thisw = fm.stringWidth(nextSplit);
-				  	
+		  do 
+		  { splitw = curline.indexOf(' ',splitw+1);
+		  	String nextSplit = null;
+		  	if(splitw<0) 
+		  		{ 
+		  		  nextSplit = curline;
+		  		}
+		  		else
+		  		{
+		  		  nextSplit = curline.substring(0,splitw);
+		  		}
+		  	thisw = fm.stringWidth(nextSplit);
+		  	
 		  	if(thisw<=linew)
-				  	{	sub = nextSplit;
-				  	}
-				  	else if((sub==null)||("".equals(sub.trim())))
-				  	{	// none but leading spaces found, and still doesn't fit
+		  	{	sub = nextSplit;
+		  	}
+		  	else if((sub==null)||("".equals(sub.trim())))
+		  	{	// none but leading spaces found, and still doesn't fit
 		  		if(nextSplit.length()>1)
 		  		{
 		  		do { nextSplit = nextSplit.substring(0,nextSplit.length()-1); } 
 		  		while(fm.stringWidth(nextSplit)>=linew && nextSplit.length()>1);
 		  		}
-				  		sub = nextSplit;
+		  		sub = nextSplit;
 		  		splitw = nextSplit.length();
-				  	}
+		  	}
 		  	
 		  } while(thisw<linew && splitw>0);
 
-				  newLines.push(sub);
+		  newLines.push(sub);
 		  if(nnew>0) { extensionLines.add(sub); }
 		  nnew++;
 		  int sublen = sub.length();
@@ -554,13 +611,11 @@ public class TextContainer implements AppendInterface,KeyListener
 			  sublen++;
 		  	}
 		  curline = curline.substring(sublen);
-				  sub = null;
-				  // indicate a continuation line
-		  if(!"".equals(curline)) { curline = EXTENSIONMARKER+curline; }
+		  sub = null;
 		}
 		return(newLines);
-				}
-				  
+	}
+	
 	StringStack mlCache = null;
 	// this is a test of the line splitter this is a test of the line splitter this is a test of the line splitter 
 	public synchronized StringStack resplit(StringBuilder lines,FontMetrics fm,int linew)
@@ -575,7 +630,7 @@ public class TextContainer implements AppendInterface,KeyListener
 				{ nextIndex = limit; }
 			String curline = G.substring(lines,lineIndex,nextIndex);
 			lineIndex = nextIndex+1;
-			
+
 			if(fm.stringWidth(curline)>=linew)
 				{ splitLongLine(newLines,fm,curline,linew);
 				}
@@ -585,7 +640,7 @@ public class TextContainer implements AppendInterface,KeyListener
 		return(newLines);
 	}
 	public boolean drawAsMultipleLines(Graphics g,HitPoint hp,Rectangle r,StringBuilder data)
-	{
+	{	
 		boolean isIn = G.pointInRect(hp,x,y,width,height);
 		FontMetrics fm = G.getFontMetrics(font);
 		int lineh = lastLineHeight = fm.getHeight();
@@ -597,13 +652,14 @@ public class TextContainer implements AppendInterface,KeyListener
 		scrollBar.setScrollHeight(maxScroll);
 		if(autoScroll && !mouseActive) { autoScroll(lineh,lines); }
 		GC.fillRect(g,backgroundColor,x,y,width,height);
-			GC.frameRect(g, isIn? Color.blue : Color.black, x,y,width,height);
+		GC.frameRect(g, isIn? Color.blue : Color.black, x,y,width,height);
 		Rectangle oldclip = GC.combinedClip(g,x+1,y+MARGIN,x+width-MARGIN-1,y+height-MARGIN);
 		
 		int availableH = height-lineh-MARGIN*2;
 		int mousePos1 = -1;
-		int mousePos2 = -1;
+		int actualMousePos1 = -1;
 		int charCount = 0;
+		int nExtensionLines = 0;
 		doFocus();
 		int xpos = x+MARGIN;
 		int lastY = y;
@@ -613,35 +669,25 @@ public class TextContainer implements AppendInterface,KeyListener
 			String line = lines.elementAt(linen);
 			int linelen = line.length();
 			boolean isExtensionLine = extensionLines.contains(line);
-			if(isExtensionLine) { charCount--; }	// previous line added one more
-			int trueLinelen = isExtensionLine ? linelen - EXTENSIONMARKER.length() : linelen;
+			if(isExtensionLine) { charCount--; nExtensionLines++; }	// previous line added one more
+			int trueLinelen = linelen;
 			
 			if((ypos+lineh>=scrollY) && ypos<=scrollY+availableH)
 			{
-			boolean containsAny = charCount>=selectionStart && charCount<=selectionEnd;
-			boolean containsStart = selectionStart>=0 && selectionStart>=charCount && selectionStart<=charCount+linelen;
-			boolean containsEnd = selectionEnd>=0 && selectionEnd>=charCount && selectionEnd<=charCount+linelen;
+			boolean containsAny = charCount>=visibleSelectionStart && charCount<=visibleSelectionEnd;
+			boolean containsStart = visibleSelectionStart>=0 && visibleSelectionStart>=charCount && visibleSelectionStart<=charCount+linelen;
+			boolean containsEnd = visibleSelectionEnd>=0 && visibleSelectionEnd>=charCount && visibleSelectionEnd<=charCount+linelen;
 			boolean containsCarat = (caratPosition>=charCount) && (caratPosition<=charCount+trueLinelen);
 			if(containsStart || containsEnd || containsAny)
 			{
-				int line0 = containsStart ? selectionStart-charCount : 0;
-				int line1 = containsEnd ? selectionEnd-charCount : linelen;
+				int line0 = containsStart ? visibleSelectionStart-charCount : 0;
+				int line1 = containsEnd ? visibleSelectionEnd-charCount : linelen;
 				Rectangle line0P = GC.getStringBounds(g,fm,line,0,line0);
 				Rectangle line1P = GC.getStringBounds(g,fm,line,0,line1);
 				GC.setColor(g,Color.lightGray);
 				int left = (int)(xpos+line0P.getWidth());
 				int right = (int)(xpos+line1P.getWidth());
 				GC.fillRect(g, left, realY-lineh/2,right-left,lineh/2);
-				if(mouseSelecting)
-				{
-				if(containsStart)
-				{
-				GC.drawLine(g, left, realY-lineh,left,realY);
-				}
-				if(containsEnd)
-				{
-				GC.drawLine(g, right, realY-lineh,right,realY);
-				}}
 			}
 			GC.setColor(g,foregroundColor); 
 			GC.Text(g,line,xpos, realY);
@@ -654,7 +700,7 @@ public class TextContainer implements AppendInterface,KeyListener
 			{
 			if(isExtensionLine) 
 			{
-				drawFocusLine(g,fm,xpos,realY,line,linelen-(caratPosition-charCount)-EXTENSIONMARKER.length());
+				drawFocusLine(g,fm,xpos,realY,line,linelen-(caratPosition-charCount));
 			}
 			else
 			{
@@ -662,16 +708,13 @@ public class TextContainer implements AppendInterface,KeyListener
 			}
 			caratY = realY;
 			}
-			
+
 			if(mouseSelecting)
 			{
 				if(G.pointInRect(mouseSelectingX,mouseSelectingY,x,realY-lineh,width,lineh)) 
 					{ mousePos1 = charCount +  findPositionInLine(fm,g,line,line,mouseSelectingX-xpos); 
+					  actualMousePos1 = mousePos1 + nExtensionLines;
 					}
-				if(G.pointInRect(selectingX,selectingY,x,realY-lineh,width,lineh)) 
-					{ mousePos2 = charCount +  findPositionInLine(fm,g,line,line,selectingX-xpos); 
-					}
-
 				
 			}
 			if(caratSelecting)
@@ -681,13 +724,13 @@ public class TextContainer implements AppendInterface,KeyListener
 				  int start = findPositionInLine(fm,g,line,line,selectingX-xpos);
 				  if(isExtensionLine)
 				  {
-					  start = Math.max(0, start-EXTENSIONMARKER.length());
+					  start = Math.max(0, start);
 				  }
 				  
 				  {
 				  setCaratPosition(charCount+Math.min(line.length(),start));
 				  }
-			}
+				}
 			}
 			}
 			charCount += isExtensionLine ? trueLinelen+1 : linelen+1;
@@ -696,37 +739,35 @@ public class TextContainer implements AppendInterface,KeyListener
 		{	
 			drawFocusLine(g,fm,xpos,lastY+lineh,"",0);
 		}
-		if(mouseSelecting && (mousePos1>=0) && (mousePos2>=0))
+		if(mousePos1>=0) 
 		{
-			if(mousePos1>mousePos2) { int x = mousePos1; mousePos1=mousePos2; mousePos2 = x; }
-			
-			if(mouseSelectingStart 
-					&& (selectionStart>=0)
-					&& ((mousePos1>=selectionStart && mousePos1<=selectionEnd)
-							|| (mousePos2>=selectionStart && mousePos2<=selectionEnd)))
-			{	mouseSelectingExpand = true;
-				mouseExpandPos2 = mousePos2;
-				mouseExpandPos1 = mousePos1;
-				mouseSelectingStart = false;
+			if(!mouseSelectingExpand)
+			{ mouseExpandPos1 = mousePos1; 
+			  mouseSelectingExpand = true; 
+			}
+			if(visibleSelectionStart<0)
+			{
+				visibleSelectionStart = mousePos1;
+				visibleSelectionEnd = mousePos1+1;
+				actualSelectionStart = actualMousePos1;
+				actualSelectionEnd = actualMousePos1+1;
+				setCaratPosition(mousePos1);
+			}
+			else if(mousePos1<mouseExpandPos1)
+			{	visibleSelectionStart = Math.max(0,mousePos1);
+				actualSelectionStart = Math.max(0,actualMousePos1);
+				setCaratPosition(mousePos1);
 			}				
-			else if (mouseSelectingExpand && (mousePos1>=0) && (mousePos2>=mousePos1))
+			else if (mousePos1>mouseExpandPos1)
 			{
-				if((mousePos1>=0) && (mousePos1<mouseExpandPos1))
-				{	
-					selectionStart = Math.max(0, mousePos1-1);
-				}
-				if((mousePos2>=0) && (mousePos2>mouseExpandPos2))
-				{	
-					selectionEnd = mousePos2;
-				}
+				visibleSelectionEnd = mousePos1;
+				actualSelectionEnd = actualMousePos1;
+				setCaratPosition(mousePos1);
 			}
-			else if((mousePos1>=0)&&(mousePos2>mousePos1))
-			{
-			selectionStart = Math.max(0, mousePos1-1);
-			selectionEnd = mousePos2;
-			}
-			selectionEnd = Math.max(selectionStart, selectionEnd);
 			
+			visibleSelectionEnd = Math.max(visibleSelectionStart, visibleSelectionEnd);
+			actualSelectionEnd = Math.max(actualSelectionStart,actualSelectionEnd);
+		
 		}
 		GC.frameRect(g,Color.black,x,y,width,height);
 		if(isIn) { hp.hitCode = defaultId; }
@@ -734,35 +775,59 @@ public class TextContainer implements AppendInterface,KeyListener
 		GC.setClip(g,oldclip);
 		return(isIn);
 	}
-	public int findPositionInLine(FontMetrics fm,Graphics g,String line,String fullLine,int x)
+	private int findPositionInLine(FontMetrics fm,Graphics g,String line,String fullLine,int x)
 	{	int linelen = line.length();
 		int fulllen = fullLine.length();
-		for(int i=0;i<linelen;i++)
-	{
-			Rectangle rect = GC.getStringBounds(g,fm, line,0,i);
-			if(rect.getWidth()>x)
+		for(int i=1;i<linelen;i++)
 		{
-					return(i+(fulllen-linelen)); 
+			Rectangle rect = GC.getStringBounds(g,fm, line,0,i);
+			int thisW = (int)rect.getWidth();
+			if(thisW>x)
+				{	
+					return(i+(fulllen-linelen)-1); 
 				}
 		}
 		return(fulllen);
+	}
+	private int findPositionInLine(FontMetrics fm,Graphics g,String line,int x)
+	{	int linelen = line.length();
+		int prevW = 0;
+		for(int i=0;i<linelen;i++)
+		{
+			Rectangle rect = GC.getStringBounds(g,fm, line,0,i);
+			int thisW = (int)rect.getWidth();
+			if(thisW>=x)
+				{ 	if((thisW-x)*2>(thisW-prevW)) { i--;}
+					return(i); 
+				}
+			prevW = thisW;
 		}
-	
+		return(linelen);
+	}
+
 	public boolean redrawBoard(Graphics g,HitPoint hp) 
 	{	Rectangle r = new Rectangle(x, y, width, height);
-		boolean hit = false;		
+		boolean hit = false;	
 		if(isVisible && width>0)
 		{
 		GC.setFont(g,font);
 		if(renderAsButton)
 		{	String dataString = data.toString();
-		String lines[] = G.split(dataString,'\n');
+			String lines[] = G.split(dataString,'\n');
 			hit = drawAsButton(g,hp,r,lines[0]);
-				}
+		}
 		else if(singleLine)
 		{	String dataString = data.toString();
 			String lines[] = G.split(dataString,'\n');
-			hit = drawAsSingleLine(g,hp,r,lines[lines.length-1]);
+			int cp = 0;
+			int idx = 0;
+			String line = lines[idx];
+			while((caratPosition<cp+line.length()) && idx+1<lines.length) 
+				{ cp += line.length()+1; 
+				  idx++; 
+				  line = lines[idx]; 
+				}
+			hit = drawAsSingleLine(g,hp,r,line,cp);
 		}
 		else
 		{ 	hit = drawAsMultipleLines(g,hp,r,data);
@@ -846,7 +911,7 @@ public class TextContainer implements AppendInterface,KeyListener
 	}
 	public boolean doSend()
 	{	if(multiLine)
-	{
+			{
 			insert('\n');
 			return(false);
 			}
@@ -860,7 +925,7 @@ public class TextContainer implements AppendInterface,KeyListener
 	{
 		if(data.length()>0)
 		{
-		if(selectionStart>=0)
+		if(visibleSelectionStart>=0)
 		{
 			doDeleteSelection();
 		}
@@ -915,14 +980,14 @@ public class TextContainer implements AppendInterface,KeyListener
 			else { setCaratPosition(data.length());}
 		}
 		else
-	{
+		{
 			setCaratPosition(data.length()-1);
 		}
 	}
 	public void selectAll()
 	{
-		selectionStart = 0;
-		selectionEnd = data.length();
+		visibleSelectionStart = 0;
+		visibleSelectionEnd = data.length();
 		G.writeTextToClipboard(data.toString());
 	}
 	public void keyPressed(KeyEvent e) {
@@ -937,6 +1002,8 @@ public class TextContainer implements AppendInterface,KeyListener
 		case 35:
 			doToEnd();
 			break;
+		case 36:		// home key
+			doToBeginning();
 		case 37:
 			doBack();
 			break;
@@ -956,15 +1023,15 @@ public class TextContainer implements AppendInterface,KeyListener
 		//G.print("Key released "+e);
 	}
 	public void doCopy()
-	{	if(selectionStart>=0)
+	{	if(actualSelectionStart>=0)
 		{
-		int end = Math.min(selectionEnd, data.length());
-		if(end>selectionStart)
+		int end = Math.min(actualSelectionEnd, data.length());
+		if(end>actualSelectionStart)
 		{
 		if(data.charAt(end-1)=='\n') { end--; } 
-		if((end>selectionStart))
-		{
-			String str = G.substring(data,selectionStart,end);
+		if((end>actualSelectionStart))
+		{	
+			String str = G.substring(data,actualSelectionStart,end);
 			G.writeTextToClipboard(str);
 			if(canvas!=null && canvas.doSound())
 			  {
@@ -982,19 +1049,24 @@ public class TextContainer implements AppendInterface,KeyListener
 	}
 	public void doToEnd()
 	{
-		selectionStart = -1;
-		selectionEnd = -1;
+		visibleSelectionStart = -1;
+		visibleSelectionEnd = -1;
 		setCaratPosition(data.length());
 	}
-	private void setScrollY(int to)
+	public void doToBeginning()
 	{
+		visibleSelectionStart = -1;
+		visibleSelectionEnd = -1;
+		setCaratPosition(0);
+	}
+	private void setScrollY(int to)
+	{	
 		scrollY = Math.min(maxScroll, Math.max(0,to));
 		if(scrollable()) { scrollBar.setScrollPosition(to); } 
 	}
-	
+
 	public boolean doMouseDrag(int ex,int ey)
 	{	if(!G.pointInRect(ex, ey,x,y,width,height)) { return(false); }
-		long now = G.Date();
 		if(!mouseActive)
 			{ mouseActive = true;
 			  selectingX = ex; 
@@ -1002,50 +1074,44 @@ public class TextContainer implements AppendInterface,KeyListener
 			  mouseSelectingX = ex;
 			  mouseSelectingY = ey;
 			  autoScroll = false;
-			  mouseSelecting = false;
-			  mouseSelectingStart = false;
+			  mouseSelecting = false;			
 			}
-		if(mouseSelecting)
-    	{
-			mouseSelectingX = ex;
-         	mouseSelectingY = ey;
-    	}
-		else if(Math.abs(ex-selectingX)>MIN_SELECTION_DISTANCE)
-		{
-			mouseSelectingStart = mouseSelecting = true;
-		}
-		lastMouseActiveTime = now;
-		return(mouseActive);
+		mouseSelectingX = ex;
+		mouseSelectingY = ey;
+		mouseSelecting = true;  		
+    	return(mouseActive);
 	}
 	
 	public boolean containsPoint(HitPoint p) { return(G.pointInRect(p, x,y,width,height)); }
 	
 	public boolean doMouseUp(int ex,int ey)
 	{	
+		if(mouseSelecting) 
+		{ doCopy();
+		}
+		
 		if(G.pointInRect(ex, ey,x,y,width,height))
 		{
-		if(mouseSelecting) 
-			{ doCopy();  			  
-			}
-		else if(!mouseSelecting) {
-		// if no selection or scrolling happened, just reposition 
-		// the blinking carat 
-			selectionStart = -1;
-			selectionEnd = -1;
+			if(!mouseSelecting)
+			{
+			// if no selection or scrolling happened, just reposition 
+			// the blinking carat 
+			visibleSelectionStart = -1;
+			visibleSelectionEnd = -1;
 			caratSelecting = true;
 			setFocus(true);
-		}
+			}
 
 		mouseActive = false;
-		mouseSelecting = mouseSelectingExpand = mouseSelectingStart = false;
+		mouseSelecting = mouseSelectingExpand = false;
 		}
 		return(false);
 	}
 	public void doMouseMove(int ex, int ey,MouseState upcode)
-	{
+	{	
 		// don't involve the scrollbar if we have started a selection gesture
 		if(!mouseSelecting && scrollable() && scrollBar.doMouseMotion(ex, ey, upcode))
-		{
+		{	
 			setScrollY(scrollBar.getScrollPosition());
 		}
 		else {
@@ -1058,24 +1124,24 @@ public class TextContainer implements AppendInterface,KeyListener
 			break;
 		case LAST_IS_UP:
 			doMouseUp(ex,ey);
-		default: 
+			default: 
 			break;
 		case LAST_IS_EXIT:
+			if(mouseSelecting)
+			{
+				doCopy();
+			}
 		case LAST_IS_MOVE:
 		case LAST_IS_IDLE:
+			mouseSelectingExpand = mouseSelecting = false;
+			mouseExpandPos1 = -1;
 			break;
 		}}
 	}
-	// this tests if the mouse is idle enough that we just want
-	// to select the current widget.
-	public boolean idle()
-	{	// 1.5 seconds since the drag stopped
-		return(G.Date()-lastMouseActiveTime>1500);
-	}
-		
+  
     // this is the repeat scroll while flinging hasn't wound down to 0 yet.
     public boolean doRepeat()
-	    {
+	    {	
 	    	if(scrollable() && scrollBar.doRepeat())
 	    	{
 	    		setScrollY(scrollBar.getScrollPosition());
@@ -1105,5 +1171,5 @@ public class TextContainer implements AppendInterface,KeyListener
 		int ind = first;
 		while(ind<len) { if(b.charAt(ind)==ch) { return(ind); }; ind++; }
 		return(-1);
-	} 
+	}
 }

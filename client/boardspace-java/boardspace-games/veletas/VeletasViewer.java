@@ -23,6 +23,7 @@ import lib.InternationalStrings;
 import lib.LFrameProtocol;
 import lib.StockArt;
 import lib.TextButton;
+import lib.Toggle;
 
 import static veletas.VeletasMovespec.*;
 
@@ -56,6 +57,11 @@ public class VeletasViewer extends CCanvas<VeletasCell,VeletasBoard> implements 
     private JMenuItem offerDrawAction = null;
 	private TextButton swapButton = addButton(SWAP,GameId.HitSwapButton,SwitchMessage,
 			HighlightColor, rackBackGroundColor);
+	
+	private Toggle eyeRect = new Toggle(this,"eye",
+				StockArt.NoEye,VeletasId.ToggleEye,NoeyeExplanation,
+				StockArt.Eye,VeletasId.ToggleEye,EyeExplanation
+				);
 
     
     /**
@@ -208,7 +214,7 @@ public class VeletasViewer extends CCanvas<VeletasCell,VeletasBoard> implements 
 	    int stateY = boardY;
 	    int stateX = boardX;
 	    int stateH = (int)(fh*2.5);
-	    G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect, stateRect,noChatRect);
+	    G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect, stateRect,eyeRect,noChatRect);
 		G.SetRect(boardRect,boardX,boardY,boardW,boardH);
 		
 		G.SetRect(shooterChipRect,boardRight,boardY+boardH/2-SQUARESIZE/2,SQUARESIZE,SQUARESIZE);
@@ -300,7 +306,7 @@ public class VeletasViewer extends CCanvas<VeletasCell,VeletasBoard> implements 
     {
     	// this logic animates the expansion of stacks when the button is pushed.
      	boolean moving = gb.movingObjectIndex()>=0;
-    	
+    	boolean show = eyeRect.isOnNow();
      	// targets are the pieces we can hit right now.
      	Hashtable<VeletasCell,VeletasMovespec>targets = gb.getTargets();
      	VeletasCell dest = gb.getDest();		// also the current dest and source
@@ -339,15 +345,15 @@ public class VeletasViewer extends CCanvas<VeletasCell,VeletasBoard> implements 
             {
             	StockArt.Dot.drawChip(gc,this,SQUARESIZE,xpos,ypos,null);
             }
-            if((targets.get(cell)!=null)&&moving)
+            if((hitNow!=null)&&show)
             	{
-            	StockArt.SmallO.drawChip(gc,this,SQUARESIZE/3,xpos,ypos,null);
+            	StockArt.SmallO.drawChip(gc,this,SQUARESIZE/2,xpos,ypos,null);
             	}
         	}
     }
      public void drawAuxControls(Graphics gc,HitPoint highlight)
-    {  
-    	
+    {  	eyeRect.activateOnMouse = true;
+    	eyeRect.draw(gc,highlight);
         DrawReverseMarker(gc,reverseViewRect,highlight);
     }
     //
@@ -646,7 +652,9 @@ private void playSounds(commonMove m)
         {
         default:
         	throw G.Error("Hit Unknown: %s", hitObject);
-
+        case ToggleEye:
+        	eyeRect.toggle();
+        	break;
         case ReverseViewButton:
        	 { boolean v = !b.reverseY(); b.setReverseY(v); reverseOption.setState(v); }
        	 generalRefresh();
@@ -691,10 +699,9 @@ private void playSounds(commonMove m)
             	{
             	default: throw G.Error("can't drop on rack in state %s",state);
                 case Play:
-            		PerformAndTransmit(RESET);
-            		break;
                 case PlayStone:
                 case PlaceShooters:
+                case PlaceSingleStone:
                	case Puzzle:
             		PerformAndTransmit("Drop "+col);
             		break;

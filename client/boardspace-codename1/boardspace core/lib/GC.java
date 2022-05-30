@@ -168,8 +168,8 @@ public class GC {
 	     	}
 	     }
 
-	 public static Rectangle getStringBounds(Graphics g, FontMetrics fm, String line, int i, int line0) {
-			Rectangle2D d = Graphics.getStringBounds(g, fm, line, i, line0);
+	public static Rectangle getStringBounds(Graphics g, FontMetrics fm, String line, int firstChar, int lastChar) {
+		Rectangle2D d = Graphics.getStringBounds(g, fm, line, firstChar, lastChar);
 			return(new Rectangle((int)d.getX(),(int)d.getY(),(int)d.getWidth(),(int)d.getHeight()));
 		}
 
@@ -220,7 +220,7 @@ public class GC {
 	 * @param color foreground color (or null)
 	 * @param bg background color (or null)
 	 * @param str the string to draw
-	 * @return the text width
+	 * @return the text width (only if inG is not null)
 	 */
 	static public int Text(Graphics inG, boolean center, Rectangle R,
 	    Color color, Color bg, String str)
@@ -237,7 +237,7 @@ public class GC {
 	* @param color foreground color (or null)
 	* @param bg background color (or null)
 	* @param str the string to draw
-	* @return the text width
+	* @return the text width(only if inG is not null)
 	*/
 	static public int Text(Graphics inG, double rotation,boolean center, Rectangle R,
 	        Color color, Color bg, String str)
@@ -259,7 +259,7 @@ public class GC {
 	 * @param color
 	 * @param bg
 	 * @param str
-	 * @return the text width
+	 * @return the text width (only if inG is not null)
 	 */
 	static public int Text(Graphics inG, boolean center, Rectangle R,int voff,
 	        Color color, Color bg, String str)
@@ -277,7 +277,7 @@ public class GC {
 	 * @param color
 	 * @param bg
 	 * @param str
-	 * @return the text width
+	 * @return the text width (only if inG is not null)
 	 */
 	static public int Text(Graphics inG, boolean center, Rectangle R,int voff,
 	        Color color, Color bg, Text str)

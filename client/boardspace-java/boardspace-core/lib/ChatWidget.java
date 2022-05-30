@@ -29,7 +29,6 @@ import online.common.exHashtable;
 
 // TODO: change the cursor when hovering over the chat window?
 // TODO: make it possible to copy/paste images
-// TODO: implement an optional persistent history (for chat rooms, so joiners see the history
 public class ChatWidget 
 	implements ChatInterface,OnlineConstants,
 	SimpleObserver,ActionListener,MenuParentInterface,FocusListener
@@ -688,7 +687,6 @@ public class ChatWidget
 		GC.frameRect(g,Color.black, x, y,w,h);
 		GC.setFont(g,basicFont);
 
-		{
 		HitPoint ap = p;
 		if(keyboard!=null && keyboard.containsPoint(ap)) { ap=null; }
 		{
@@ -716,7 +714,7 @@ public class ChatWidget
 		// this is something of a mess, redraw sometimes captures the pointer
 		// and chat hitcodes leak out to the general population
 		if(p.hitCode instanceof ChatId) { p.inStandard=true; }
-		}
+		
 	}
 
 	private void sendInput()
@@ -909,7 +907,7 @@ public class ChatWidget
 	    		key |= shortNameField.editable();
 	    		break;
 	    	case InputField: 
-	    		key |= inputField.editable() && inputField.idle(); 
+	    		key |= inputField.editable(); 
 	    		break;
 	    	case MessageLabel:
 	    		if(allowPM)

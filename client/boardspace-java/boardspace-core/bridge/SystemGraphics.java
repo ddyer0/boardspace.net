@@ -301,9 +301,18 @@ public abstract class SystemGraphics
 		        (int) (dest_x - (Math.cos(angle - (Math.PI / 6)) * ticksize)),
 		        (int) (dest_y - (Math.sin(angle - (Math.PI / 6)) * ticksize)));
 		}
-	public static Rectangle2D getStringBounds(Graphics g, FontMetrics fm, String line, int i, int line0)
+	/**
+	 * get the bounding rectangle for a drawing operation
+	 * @param g
+	 * @param fm
+	 * @param line
+	 * @param firstChar
+	 * @param lastChar
+	 * @return
+	 */
+	public static Rectangle2D getStringBounds(Graphics g, FontMetrics fm, String line, int firstChar, int lastChar)
 	{
-		return fm.getStringBounds(line,i,line0,g==null ? null : g.getGraphics());
+		return fm.getStringBounds(line,firstChar,lastChar,g==null ? null : g.getGraphics());
 	}
 	public static Rectangle2D getStringBounds(Graphics g, FontMetrics fm, String line)
 	{
