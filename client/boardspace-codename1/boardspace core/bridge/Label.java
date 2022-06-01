@@ -28,7 +28,7 @@ public class Label extends com.codename1.ui.Label implements AwtComponent
 		
 	}
 
-	public void setLabelFor(Choice langField) {
+	public void setLabelFor(Choice<String> langField) {
 		
 	}
 	public void setText(String n)

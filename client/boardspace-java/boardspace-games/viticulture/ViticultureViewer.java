@@ -3332,6 +3332,7 @@ private void drawPlayerBoard(Graphics gc,
      	boolean uncensored = false;
      	boolean oracleMode = false;
         boolean showWines = (state.activity==Activity.FillWine)||(state.activity==Activity.DiscardWines);
+        boolean selectWines = (state.activity==Activity.DiscardWines);
         boolean harvesting  = (state.activity==Activity.Harvesting);
         switch(gb.getState())
         {
@@ -3347,7 +3348,7 @@ private void drawPlayerBoard(Graphics gc,
      		break;
      	case Discard3CardsAnd1WineFor3VP:
      		cardAndWineMode = true;
-     		showWines = true;
+       		showWines = selectWines = true;
      		break;
      	case DestroyStructure:
      	case DestroyStructureOptional:
@@ -3518,7 +3519,7 @@ private void drawPlayerBoard(Graphics gc,
        	{	
        		int lleft = mleft+step+step/3;
        		Rectangle wr = new Rectangle(lleft,top-step/3,totalW-lleft,step/2+step/3);
-    		showOtherWines(gc,gb,pb,highlight,highlightAll,state,wr,targets,mark);
+    		showOtherWines(gc,gb,pb,selectWines ? highlight: null,highlightAll,state,wr,targets,mark);
 
        	}
 		

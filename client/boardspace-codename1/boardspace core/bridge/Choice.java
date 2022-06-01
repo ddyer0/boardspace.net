@@ -6,7 +6,7 @@ import lib.G;
 import com.codename1.ui.ComboBox;
 import com.codename1.ui.Font;
 
-public class Choice extends ComboBox<String> implements AwtComponent , ActionProvider
+public class Choice<TYPE> extends ComboBox<TYPE> implements AwtComponent , ActionProvider
 {
 	MouseAdapter mouse = new MouseAdapter(this);
 	public void addItemListener(ItemListener m) {mouse.addItemListener(m); }
@@ -26,7 +26,7 @@ public class Choice extends ComboBox<String> implements AwtComponent , ActionPro
 		}
 		
 	}
-	public void add(String string) {
+	public void add(TYPE string) {
 		addItem(string);		
 	}
 

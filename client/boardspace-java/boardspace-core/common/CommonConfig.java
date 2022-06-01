@@ -43,6 +43,9 @@ public interface CommonConfig {
 	static final String uploadPicture = defaultProtocol + "//boardspace.net/english/pictureupload.html";
 	static final String homepageUrl = "/english/links-page.shtml";
 	static final String recoverPasswordUrl = "/cgi-bin/lost_password.cgi";
+	static final String messagesUrl = "/cgi-bin/messageboard.cgi";
+	static final String forumsUrl = "/BB/";
+	static final String tournamentUrl = "/cgi-bin/tournament-signup.cgi";
 	static final String feedbackUrl = "mailto:gamemaster@boardspace.net";
 	static final String postRegisterUrl = "/cgi-bin/bs_register.cgi" ;	// where to send a registration form
 

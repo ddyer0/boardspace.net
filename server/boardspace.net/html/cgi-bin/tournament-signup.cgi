@@ -567,7 +567,7 @@ sub show_getadminpassword()
 	print "\n<input type=text value='' name=admin_user><br>";
 	print "</td></tr>";
 	print "<tr><td>";
-	print &trans("your password:");
+	print &trans("Your password:");
 	print "</td><td>";
 	print "\n<input type=password value='' name=admin_user_password SIZE=20 MAXLENGTH=25><br>";
 	print "</td><td>";

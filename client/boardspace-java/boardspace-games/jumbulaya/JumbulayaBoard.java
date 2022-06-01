@@ -294,6 +294,7 @@ class JumbulayaBoard extends squareBoard<JumbulayaCell> implements BoardProtocol
 	int maxLineTiles = 0;
 	int revertJumbulayaPlayer = -1;
 	JumbulayaState revertJumbulayaState;
+	boolean needShuffle = false;
 	
 	boolean skipTurn[] = new boolean[MAX_PLAYERS];
 	boolean resigned[] = new boolean[MAX_PLAYERS];
@@ -586,6 +587,7 @@ class JumbulayaBoard extends squareBoard<JumbulayaCell> implements BoardProtocol
     		drawPile.addChip(c);
     	}
     	drawPile.shuffle(r);
+    	needShuffle = false;
   	    reInit(claimed);
   	    nLinesClaimed = 0;
   	    maxLineTiles = 0;
@@ -699,6 +701,7 @@ class JumbulayaBoard extends squareBoard<JumbulayaCell> implements BoardProtocol
         copyFrom(playerCell,from_b.playerCell);
         AR.copy(score,from_b.score);
         robotVocabulary = from_b.robotVocabulary;
+        needShuffle = from_b.needShuffle;
         lastPicked = null;
         isPass = from_b.isPass;
         nPasses = from_b.nPasses;
@@ -740,6 +743,7 @@ class JumbulayaBoard extends squareBoard<JumbulayaCell> implements BoardProtocol
         G.Assert(AR.sameArrayContents(score,from_b.score),"score mismatch");
         G.Assert(nPasses==from_b.nPasses,"nPasses mismatch");
         G.Assert(isPass==from_b.isPass,"isPass mismatch");
+        G.Assert(needShuffle==from_b.needShuffle,"needshuffle mismatch");
         for(Option o : Option.values()) { G.Assert(getOptionValue(o)==from_b.getOptionValue(o),"Option %s mismatch",o); }
         // this is a good overall check that all the copy/check/digest methods
         // are in sync, although if this does fail you'll no doubt be at a loss
@@ -804,6 +808,7 @@ class JumbulayaBoard extends squareBoard<JumbulayaCell> implements BoardProtocol
 		v ^= Digest(r,resigned);
 		v ^= Digest(r,playerCell);
 		v ^= Digest(r,robotVocabulary);
+		v ^= Digest(r,needShuffle);
 		for(Option o : Option.values()) { v ^= Digest(r,getOptionValue(o)); }
 		v ^= r.nextLong()*(board_state.ordinal()*10+whoseTurn);
         return (v);
@@ -919,6 +924,11 @@ class JumbulayaBoard extends squareBoard<JumbulayaCell> implements BoardProtocol
     	JumbulayaChip po = SetBoard(rv,null); 	// SetBoard does ancillary bookkeeping
     	pickedObject = po;
     	pickedFromRack = rv.fromRack;
+    	if(rv.rackLocation()==JumbulayaId.Rack)
+    		{ int idx = c.col-'A';;
+    		  int map[]=rackMap[idx];
+    		  for(int i=0;i<map.length;i++) { if(map[i]==c.row) { map[i]=-1; break; }}   		
+    		}
     	}
     	return(rv);
     }
@@ -1460,6 +1470,11 @@ class JumbulayaBoard extends squareBoard<JumbulayaCell> implements BoardProtocol
     		setUnclaimed(activeRow);	// unclaim and revert the score
     	}
     	validate(true);
+    	JumbulayaCell dest = droppedDestStack.top();
+    	if((revision>=102) && (dest!=null) && (dest.rackLocation()==JumbulayaId.DrawPile))
+    	{
+    		needShuffle = true;
+    	}
     	if(activeRow>0)
 		{ 
     	
@@ -1483,10 +1498,12 @@ class JumbulayaBoard extends squareBoard<JumbulayaCell> implements BoardProtocol
     	for(JumbulayaCell c = allCells; c!=null; c=c.next) { c.fromRack = false; }
     	previousRow = activeRow;
         acceptPlacement();
-        if(board_state==JumbulayaState.DiscardTiles)
-        {	
+        
+        if(needShuffle)
+        {	needShuffle = false;
         	drawPile.shuffle(new Random(randomKey+moveNumber*100));
         }
+
         drawNewTiles(replay);
         
         if(isPass)
@@ -1838,6 +1855,8 @@ class JumbulayaBoard extends squareBoard<JumbulayaCell> implements BoardProtocol
         			}
         		}
         	}
+        	AR.setValue(rackMap[whoseTurn],-1);
+        	needShuffle = true;
         	setState((board_state==JumbulayaState.Confirm) ? resetState : JumbulayaState.Confirm);
         	isPass = (board_state==JumbulayaState.Confirm);
         	break;
@@ -1846,20 +1865,28 @@ class JumbulayaBoard extends squareBoard<JumbulayaCell> implements BoardProtocol
         	validateMap(whoseTurn,"before move");
         	JumbulayaCell src = getCell(m.source,m.from_col,m.from_row);
         	JumbulayaCell dest = getCell(m.dest,m.to_col,m.to_row);
-        	pickObject(src);
-        	JumbulayaChip po = m.chip = pickedObject;
-        	dropObject(dest);
-        	validateMap(whoseTurn,"after move");
-
-        	// no animation needed because this is really from 
-        	// a pick/drop pair sourced in the rack
-            if(replay==replayMode.Single)
-        	{ animationStack.push(src);
-        	  animationStack.push(dest); 
+        	if(isDest(src) && isSource(dest)) 
+        	{ validateMap(whoseTurn,"before unmove");
+        	  unDropObject(src);
+        	  validateMap(whoseTurn,"mid unmove");
+        	  unPickObject(dest); 
+        	  validateMap(whoseTurn,"after unmove");
         	}
- 
-        	setNextStateAfterDrop(dest,po,replay);
+        	else
+        		{pickObject(src); 
+        		JumbulayaChip po = m.chip = pickedObject;
+        		dropObject(dest);
+        		validateMap(whoseTurn,"after move");
 
+	        	// no animation needed because this is really from 
+	        	// a pick/drop pair sourced in the rack
+	            if(replay==replayMode.Single)
+	        	{ animationStack.push(src);
+	        	  animationStack.push(dest); 
+	        	}
+ 
+	            setNextStateAfterDrop(dest,po,replay);
+        		}
         	}
         	break;
         case MOVE_PICK:		// pick from the draw pile

@@ -560,8 +560,6 @@ public class IroViewer extends CCanvas<IroCell,IroBoard> implements IroConstants
           {
          	int ypos = G.Bottom(brect) - gb.cellToY(cell);
             int xpos = G.Left(brect) + gb.cellToX(cell);
-            int xpos0 = xpos;
-            int ypos0 = ypos;
             boolean canHit = gb.legalToHitBoard(cell,targets);
             boolean offset = false;
             // special offset for tile swapping
@@ -575,13 +573,14 @@ public class IroViewer extends CCanvas<IroCell,IroBoard> implements IroConstants
             }
             if(cell.drawStack(gc,this,canHit?highlight:null,CELLSIZE,xpos,ypos,0,0.1,0.1,null))
             		{
-            		highlight.spriteColor = Color.red;
+            		highlight.spriteColor = Color.yellow;
                 	highlight.awidth = CELLSIZE;
             		}
-            else if(offset && G.pointNearCenter(highlight,xpos0,ypos0,CELLSIZE,CELLSIZE))
+            else if(offset && G.pointNearCenter(highlight,xpos,ypos,CELLSIZE,CELLSIZE))
             {	Rectangle target =  new Rectangle(xpos-CELLSIZE,ypos-CELLSIZE,CELLSIZE*2,CELLSIZE*2);
-            	
             	highlight.hitObject = cell;
+            	highlight.hitCode = cell.rackLocation();
+            	//G.print("C "+cell);
             	if(G.Left(highlight)>xpos)
             	{	highlight.spriteRect = target;
             		highlight.spriteColor = Color.red;
@@ -592,6 +591,8 @@ public class IroViewer extends CCanvas<IroCell,IroBoard> implements IroConstants
             	else
             	{
                		highlight.hitCode = IroId.RotateCCW;
+               		highlight.spriteColor = Color.green;
+               		highlight.spriteRect = target;
             		highlight.arrow = StockArt.Rotate_CCW;
             		highlight.awidth = CELLSIZE/2;
            		

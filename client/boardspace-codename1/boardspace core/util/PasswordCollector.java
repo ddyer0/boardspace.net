@@ -26,6 +26,13 @@ import udp.PlaytableStack;
  //import java.util.prefs.BackingStoreException;
  //import java.util.prefs.Preferences;
 
+ class StringPair
+ {
+	 String name;
+	 String value;
+	 public String toString() { return name;}
+	 public StringPair(String n,String v) { name = n; value = v; }
+ }
  public class PasswordCollector extends JPanel
 						   implements ActionListener,ItemListener,WindowListener,OnlineConstants,
 						   Config
@@ -52,6 +59,13 @@ import udp.PlaytableStack;
 	 public static final String LoginAsGuest = "Log in as a guest";
 	 public static final String RegisterAccount = "Register a new user";
 	 public static final String VisitSite = "#1 Home Page";
+	 public static final String SiteLinks = "#1 Links";
+	 public static final String Announcements = "Announcements";
+	 public static final String Forums = "User Forums";
+	 public static final String Tournaments = "Tournaments";
+	 public static final String ForgotPassword = "Forgot Password";
+	 public static final String AccountManagement = "Account Management";
+	 
 	 public static final String Feedback = "Send feedback";
 	 public static final String Appstore = "App Store";
 	 // for registration
@@ -88,6 +102,12 @@ import udp.PlaytableStack;
 		 OK,
 		 PlaytableMessage,
 		 VisitSite,
+		 SiteLinks,
+		 Announcements,
+		 Forums,
+		 Tournaments,
+		 AccountManagement,
+		 ForgotPassword,
 		 ReviewMessage,
 		 Appstore,
 		 Feedback,
@@ -157,8 +177,9 @@ import udp.PlaytableStack;
 	 private JPasswordField passwordField2;	// second copy for registration
 	 private Checkbox savePasswordField;	// save the password (and the liver!)
 	 private Checkbox loginAsGuestField;	// log in as a guest instead of a registered user
-	 private Choice langField;				// preferred language
-	 private Choice countryField;			// home country
+	 private Choice<String> langField;				// preferred language
+	 private Choice<StringPair> linkField;
+	 private Choice<String> countryField;			// home country
 	 private JTextField nameField;			// user name
 	 private JTextField realNameField;		// real name, or whatever
 	 private JTextField emailField;			// email address
@@ -523,7 +544,7 @@ import udp.PlaytableStack;
 		 if(lang==null) { lang=prefs.get(langKey,"english"); }
 		 language = lang;
 		 JLabel llab = new JLabel(s.get(PREFERREDLANGUAGE));
-		 langField = new Choice();
+		 langField = new Choice<String>();
 		 panel.add(llab);
 		 llab.setLabelFor(langField);
 		 for(String ll : InternationalStrings.languages) 
@@ -541,7 +562,7 @@ import udp.PlaytableStack;
 		 JPanel panel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 
 		 JLabel llab = new JLabel(s.get(COUNTRY));
-		 countryField = new Choice();
+		 countryField = new Choice<String>();
 		 panel.add(llab);
 		 llab.setLabelFor(countryField);
 		 for(int i=1;i<countries.length; i++) 	// skip element 0
@@ -562,13 +583,39 @@ import udp.PlaytableStack;
 	 	appstoreButton.setActionCommand(message);
 	 	return(appstoreButton);
 	 }
-	 private Component createVisitButton()
-	 {	String message = s.get(VisitSite,APPNAME);
-	 	visitSiteButton = new JButton(message);
-	 	visitSiteButton.addActionListener(this);
-	 	visitSiteButton.setActionCommand(message);
-	 	return(visitSiteButton);
+	 
+	 private StringPair lastIndex = null;
+	 private void doLink()
+	 {
+		 StringPair selected = (StringPair)linkField.getSelectedItem();
+		 if((selected!=null) && selected!=lastIndex)
+		 {	String val = selected.value;
+		 	lastIndex = selected;
+			if(val!=null) 
+			 	{ G.showDocument(val); 
+			 	}
+		 }
 	 }
+	 private Component createVisitButton()
+	 {	
+		 JPanel panel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+		 String host = Http.httpProtocol+"//"+Http.getHostName();
+		 linkField = new Choice<StringPair>();
+		 linkField.addItem(new StringPair(s.get(SiteLinks,APPNAME),null));
+		 linkField.addItem(new StringPair(s.get(VisitSite,APPNAME),	 host+homepageUrl));
+		 linkField.addItem(new StringPair(s.get(Announcements),host+messagesUrl));
+		 linkField.addItem(new StringPair(s.get(Forums),host+forumsUrl));
+		 linkField.addItem(new StringPair(s.get(Tournaments),host+tournamentUrl));
+		 linkField.addItem(new StringPair(s.get(ForgotPassword),	 host+recoverPasswordUrl));
+		 linkField.addItem(new StringPair(s.get(AccountManagement),
+				 host+editURL+"?editable=true&pname="+nameField.getText().trim()));
+		 panel.add(linkField);
+		 
+		 linkField.addItemListener(this);
+			 //Lay out everything.
+		 return(panel);
+	 }
+
 	 private Component createFeedbackButton()
 	 {	String message = s.get(Feedback);
 	 	feedbackButton = new JButton(message);
@@ -583,8 +630,8 @@ import udp.PlaytableStack;
 	 	registerAccountButton.setActionCommand(rega);
 	 	registerAccountButton.addActionListener(this);
  		p.add(registerAccountButton);
- 		p.add(createVisitButton());
  		p.add(createFeedbackButton());
+ 		p.add(createVisitButton());
 	 	return(p);
 	 }
 	 public boolean isAcceptableVersion()
@@ -1065,6 +1112,10 @@ import udp.PlaytableStack;
 	        G.startInEdt(new Runnable() 
 	        	{ public void run() {initLanguage();reconfigure();}
 	        	});
+			}
+		if(source==linkField)
+		{
+			doLink();
 		}
 		repaint();
 	}

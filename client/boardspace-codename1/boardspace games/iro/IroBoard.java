@@ -981,9 +981,10 @@ class IroBoard
     {	if(c==null) { return(false); }
         switch (board_state)
         {
-        case Puzzle:
-        case InvalidBoard:
         case FirstPlay:
+        case InvalidBoard:
+        	return targets.get(c)!=null; 
+        case Puzzle:
 		case Play:
 		case ConfirmSetup:
 			return(targets.get(c)!=null || isDest(c) || isSource(c));
