@@ -208,7 +208,7 @@ public class QuinamidMovespec extends commonMove implements QuinamidConstants
     		}
     		
         default:
-            return (D.findUnique(op));
+            return (D.findUniqueTrans(op));
        }
     }
 

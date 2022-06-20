@@ -82,7 +82,7 @@ public interface Warp6Constants
     static final int MOVE_DROP = 212; 	// drop on rack
     static final int MOVE_ROLLDOWN = 213;	// roll one down
 	
-    static final String warp6_SGF = "warp6"; // sgf game number allocated for hex
+    static final String warp6_SGF = "warp6"; // sgf game name
     static final String[] KNOXKABOUTGRIDSTYLE = { null, "A1", "A1" }; // top and bottom numbers
     // file names for jpeg images and masks
     static final String ImageDir = "/warp6/images/";

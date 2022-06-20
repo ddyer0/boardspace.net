@@ -74,7 +74,7 @@ public class YViewer extends CCanvas<YCell,YBoard> implements YConstants, GameLa
     	// for games that require some random initialization, the random key should be
     	// captured at this point and passed to the the board init too.
         int randomKey = info.getInt(OnlineConstants.RANDOMSEED,-1);
-        
+        enableAutoDone = true;
         super.init(info,frame);
         // use_grid=reviewer;// use this to turn the grid letters off by default
  
@@ -93,7 +93,7 @@ public class YViewer extends CCanvas<YCell,YBoard> implements YConstants, GameLa
         // later, some variant is created, or the game code base is re purposed as the basis
         // for another game.
         bb = new YBoard(type,players_in_game,randomKey,getStartingColorMap(),YBoard.REVISION);
-        //useDirectDrawing(); // not tested yet
+        useDirectDrawing(true); // not tested yet
         doInit(false);
         adjustPlayers(players_in_game);
     }
@@ -457,7 +457,7 @@ public class YViewer extends CCanvas<YCell,YBoard> implements YConstants, GameLa
         {	// if in any normal "playing" state, there should be a done button
 			// we let the board be the ultimate arbiter of if the "done" button
 			// is currently active.
-			if(!planned)
+			if(!planned && !autoDoneActive())
 				{
 				doneButton.show(gc,messageRotation,gb.DoneState() ? buttonSelect : null);			
 				}

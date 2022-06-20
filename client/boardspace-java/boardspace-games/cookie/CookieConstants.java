@@ -7,7 +7,7 @@ import online.game.BaseBoard.BoardState;
 
 
 public interface CookieConstants 
-{   //	these next must be unique integers in the Hexmovespec dictionary
+{   //	these next must be unique integers in the dictionary
 	//  they represent places you can click to pick up or drop a stone
 
 	static final String GoalMessage = "Split the cookies and get most of them";

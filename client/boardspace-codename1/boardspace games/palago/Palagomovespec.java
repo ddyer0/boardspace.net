@@ -156,7 +156,7 @@ public class Palagomovespec extends commonMove implements PalagoConstants
             return ("");
 
         default:
-            return (D.findUnique(op));
+            return (D.findUniqueTrans(op));
 
         }
     }

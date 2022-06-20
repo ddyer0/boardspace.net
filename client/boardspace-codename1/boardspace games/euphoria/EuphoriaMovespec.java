@@ -550,7 +550,7 @@ public class EuphoriaMovespec extends commonMPMove implements EuphoriaConstants
         			TextChunk.create(" +1 "),
         			TextGlyph.create("xx",cardBack(chip),v,scale(chip))));
         default:
-            return (TextChunk.create(D.findUnique(op)));
+            return (TextChunk.create(D.findUniqueTrans(op)));
         case MOVE_PLACE_WORKER:
         	return(TextChunk.join(
         			TextGlyph.create("xx",chip,v,scale(chip)),

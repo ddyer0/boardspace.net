@@ -1,6 +1,6 @@
 package yspahan;
 
-public class YspahanPlayStratFactory 
+public class YspahanPlayStratFactory implements YspahanPlayStratConst
 {
 	public static IYspahanPlayStrat getStrategy(int level, int player, int numPlayer, long randomKey)
 	{

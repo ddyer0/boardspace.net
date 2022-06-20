@@ -23,8 +23,6 @@ import lib.*;
  *
  * May 2007 initial work in progress. 
  *
- * This code is derived from the "HexGameViewer" class.  Refer to the
- * documentation there for overall structure notes.
  * 
  */
 public class KhetViewer extends CCanvas<KhetCell,KhetBoard> implements KhetConstants, GameLayoutClient
@@ -32,7 +30,7 @@ public class KhetViewer extends CCanvas<KhetCell,KhetBoard> implements KhetConst
      /**
 	 * 
 	 */
-	static final String Khet_SGF = "Khet"; // sgf game number allocated for hex
+	static final String Khet_SGF = "Khet"; // sgf game name
     // file names for jpeg images and masks
     static final String ImageDir = "/khet/images/";
 	// sounds

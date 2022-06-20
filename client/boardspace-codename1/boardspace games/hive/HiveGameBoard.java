@@ -608,7 +608,7 @@ public variation gamevariation = variation.hive;
     	firstcol = HiveCols; 
     	ncol = HiveNInCol;
         Random r2 = new Random(69942354);
-        initBoard(firstcol, ncol, null); //this sets up the hex board
+        initBoard(firstcol, ncol, null); //this sets up a hexagonal board
         allCells.setDigestChain(r2);
         
         doInit(init); // do the initialization 

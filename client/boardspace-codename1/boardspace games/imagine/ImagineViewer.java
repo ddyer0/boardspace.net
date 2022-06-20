@@ -43,7 +43,7 @@ import online.search.SimpleRobotProtocol;
 public class ImagineViewer extends CCanvas<ImagineCell,ImagineBoard> implements ImagineConstants, GameLayoutClient
 {	static final long serialVersionUID = 1000;
 
-	static final String Imagine_SGF = "imagine"; // sgf game number allocated for hex
+	static final String Imagine_SGF = "imagine"; // sgf game name
 
 	// file names for jpeg images and masks
 	static final String ImageDir = "/imagine/images/";
@@ -397,8 +397,8 @@ static String SWOOSH = ImageDir + "swoosh"+ Config.SoundFormat;
 
 	      // draw the tile grid.  The positions are determined by the underlying board
 	      // object, and the tile itself if carefully crafted to tile the pushfight board
-	      // when drawn this way.  For the current Hex graphics, we could use the
-	      // simpler loop for(HexCell c = b.allCells; c!=null; c=c.next) {}
+	      // when drawn this way.  For games with simple graphics, we could use the
+	      // simpler loop for(Cell c = b.allCells; c!=null; c=c.next) {}
 	      // but for more complex graphics with overlapping shadows or stacked
 	      // objects, this double loop is useful if you need to control the
 	      // order the objects are drawn in.

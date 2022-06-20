@@ -27,8 +27,6 @@ import lib.StockArt;
  *
  * May 2007 initial work in progress. 
  *
- * This code is derived from the "HexGameViewer" class.  Refer to the
- * documentation there for overall structure notes.
 */
 public class KubaViewer extends CCanvas<KubaCell,KubaBoard> implements  KubaConstants, GameLayoutClient
 {
@@ -36,7 +34,7 @@ public class KubaViewer extends CCanvas<KubaCell,KubaBoard> implements  KubaCons
 	 * 
 	 */
 	 
-    static final String Kuba_SGF = "Kuba"; // sgf game number allocated for hex
+    static final String Kuba_SGF = "Kuba"; // sgf game name
 
     // file names for jpeg images and masks
     static final String ImageDir = "/kuba/images/";

@@ -75,7 +75,7 @@ class BloomsBoard extends hexBoard<BloomsCell> implements BoardProtocol
     public BloomsCell playerCells[][]=new BloomsCell[2][2];
     public BloomsCell firstPlayedLocation = null;
     
-// this is required even though it is meaningless for Hex, but possibly important
+// this is required even if it is meaningless for this game, but possibly important
 // in other games.  When a draw by repetition is detected, this function is called.
 // the game should have a "draw pending" state and enter it now, pending confirmation
 // by the user clicking on done.   If this mechanism is triggered unexpectedly, it
@@ -959,13 +959,8 @@ class BloomsBoard extends hexBoard<BloomsCell> implements BoardProtocol
 				m.target = pickedObject;
 				G.Assert((board_state==BloomsState.Puzzle)
 							|| (ownerIndex(pickedObject)==whoseTurn),"color mismatch");
-	            /**
-	             * if the user clicked on a board space without picking anything up,
-	             * animate a stone moving in from the pool.  For Hex, the "picks" are
-	             * removed from the game record, so there are never picked stones in
-	             * single step replays.
-	             */
-	            if(replay!=replayMode.Replay && ((po==null) || (replay==replayMode.Single)))
+
+				if(replay!=replayMode.Replay && ((po==null) || (replay==replayMode.Single)))
 	            	{ animationStack.push(src);
 	            	  animationStack.push(dest); 
 	            	}

@@ -241,7 +241,7 @@ public class TruMovespec extends commonMove implements TruConstants
             return ("");
 
         default:
-            return (D.findUnique(op));
+            return (D.findUniqueTrans(op));
 
         }
     }

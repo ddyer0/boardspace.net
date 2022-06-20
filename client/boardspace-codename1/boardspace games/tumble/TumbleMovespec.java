@@ -181,7 +181,7 @@ public class TumbleMovespec extends commonMove implements TumbleConstants
             return ("");
 
         default:
-            return (D.findUnique(op));
+            return (D.findUniqueTrans(op));
 
         }
     }

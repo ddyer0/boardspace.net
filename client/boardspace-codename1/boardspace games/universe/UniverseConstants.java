@@ -187,7 +187,7 @@ public interface UniverseConstants
 	static final int MOVE_PICKGIVEN = 217;
 	static final int MOVE_GAMEOVER = 218;
 	static final int MOVE_ALLDONE = 219;
-    static final String Universe_SGF = "Universe"; // sgf game number allocated for hex
+    static final String Universe_SGF = "Universe"; // sgf game name
     static final String[] UNIVERSEGRIDSTYLE = { "1", null, "A" }; // left and bottom numbers
 
  

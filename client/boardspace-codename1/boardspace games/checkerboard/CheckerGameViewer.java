@@ -32,7 +32,7 @@ import static checkerboard.CheckerMovespec.*;
 */
 public class CheckerGameViewer extends CCanvas<CheckerCell,CheckerBoard> implements CheckerConstants, GameLayoutClient
 {
-	static final String Checker_SGF = "Checker"; // sgf game number allocated for hex
+	static final String Checker_SGF = "Checker"; // sgf game name
 	static final String ImageDir = "/checkerboard/images/";
 	// colors
     private Color HighlightColor = new Color(0.2f, 0.95f, 0.75f);
@@ -82,6 +82,7 @@ public class CheckerGameViewer extends CCanvas<CheckerCell,CheckerBoard> impleme
     	// adjusted to the actual number, adjusted by the min and max
        	// int players_in_game = Math.max(3,info.getInt(exHashtable.PLAYERS_IN_GAME,4));
     	int players_in_game = Math.max(2,info.getInt(OnlineConstants.PLAYERS_IN_GAME,2));
+    	enableAutoDone = true;
     	super.init(info,frame);
        	// 
     	// for games that require some random initialization, the random key should be
@@ -470,7 +471,7 @@ public class CheckerGameViewer extends CCanvas<CheckerCell,CheckerBoard> impleme
         
 		if (vstate != CheckerState.Puzzle)
         {
-			if(!planned)
+			if(!planned && !autoDoneActive())
 				{handleDoneButton(gc,doneRect,(b.DoneState()? ourButtonSelect : null),HighlightColor, rackBackGroundColor);
 				}
         	handleEditButton(gc,messageRotation,editRect,ourButtonSelect,highlight,HighlightColor, rackBackGroundColor);

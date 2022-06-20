@@ -210,7 +210,7 @@ public class CrossfireMovespec extends commonMove implements CrossfireConstants
         case MOVE_ROBOT_RESIGN:
         	return(RESIGN);
         default:
-            return (D.findUnique(op));
+            return (D.findUniqueTrans(op));
 
         case MOVE_FROM_TO:
         	return(""+from_col+from_row+"-"+to_col+to_row);

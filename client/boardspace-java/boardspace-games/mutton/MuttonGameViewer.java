@@ -23,59 +23,7 @@ import online.game.sgf.sgf_node;
 import online.game.sgf.sgf_property;
 import online.search.SimpleRobotProtocol;
 
-/**
- * 
- * Change History
- *
- * This is intended to be maintained as the reference example how to interface to boardspace.
- *
- * The overall structure here is a collection of classes specific to Hex, which extend
- * or use supporting online.game.* classes shared with the rest of the site.  The top level 
- * class is a Canvas which implements ViewerProtocol, which is created by the game manager.  
- * The game manager has very limited communication with this viewer class, but manages
- * all the error handling, communication, scoring, and general chatter necessary to make
- * the game part of the site.
- * 
- * The main classes are:
- *  HexGameViewer - this class, a canvas for display and mouse handling
- *  HexGameBoard - board representation and implementation of the game logic
- *  Hexmovespec - representation, parsing and printing of move specifiers
- *  HexPlay - a robot to play the game
- *  HexConstants - static constants shared by all of the above.  
- *  
- *  The primary purpose of the HexGameViewer class is to do the actual
- *  drawing and to mediate the mouse gestures.  All the actual work is 
- *  done in an event loop, rather than in direct reposonse to mouse or
- *  window events, so there is only one process involved.  With a single 
- *  process, there are no worries about synchronization among processes
- *  of lack of synchronization - both major causes of flakey user interfaces.
- *  
- *  The actual mouse handling is done by the commonCanvas class, which simply 
- *  records the recent mouse activity, and triggers "MouseMotion" to be called
- *  while the main loop is executing.
- *  
- *  Similarly, the actual "update" and "paint" methods for the canvas are handled
- *  by commonCanvas, which merely notes that a paint is needed and returns immediately.
- *  paintCanvas is called in the event loop.
- *  
- *  The drawing methods here combine mouse handling and drawing in a slightly
- *  nonstandard way.  Most of the drawing routines also accept a "HitPoint" object
- *  which contains the coordinates of the mouse.   As objects are drawn, we notice
- *  if the current object contains the mouse point, and if so deposit a code for 
- *  the current object in the HitPoint.  the Graphics object for drawing can be null,
- *  in which case no drawing is actually done, but the mouse sensitivity is checked
- *  anyway.  This method of combining drawing with mouse sensitivity helps keep the
- *  mouse sensitivity accurate, because it is always in agreement with what is being
- *  drawn.
- *  
- *  Steps to clone this hierarchy to start the next game
- *  1) copy the hierarchy to a brother directory
- *  2) open eclipse, then select the root and "refresh".  This should result
- *     in just a few complaints about package mismatches for the clones.
- *  3) fix the package names in the clones
- *  4) rename each of the classes in the clones, using refactor/rename
- *  5) revert the original "Hex" hierarchy in case eclipse got carried away.
-*/
+
 /*
 TODO:
 * = fixed, not verified
@@ -620,10 +568,10 @@ public class MuttonGameViewer extends commonCanvas implements MuttonConstants
 	 * (col, row) on the board.
 	 */
 	private int calcScreenX (int col, int row) {
-		// Start in the center of the hex that is in the right column.
+		// Start in the center of the hexagon that is in the right column.
 		int x = (HEX_SCREEN_WIDTH / 2) + (col * HEX_SCREEN_WIDTH);
 
-		// Even rows are shifted over half a hex to the right.
+		// Even rows are shifted over half a hexagon to the right.
 		if ((row & 0x01) == 0) {
 			x += (HEX_SCREEN_WIDTH / 2);
 		}

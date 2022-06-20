@@ -303,7 +303,7 @@ public class OnedayMovespec extends commonMPMove implements OnedayConstants
         case NORMALSTART:
         	return("Start regular play");
         default:
-            return (D.findUnique(op));
+            return (D.findUniqueTrans(op));
 
         }
     }

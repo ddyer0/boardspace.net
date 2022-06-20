@@ -210,7 +210,7 @@ public class LehavreViewer extends exCanvas implements ViewerProtocol,NetworkInt
     //
     // instances of Message class are encoded as character strings.  Rather than risk
     // what might happen with arbitray bytes translated to strings, we use the simplest
-    // possible hex encoding, two characters per byte.
+    // possible encoding, two characters per byte.
     //
 	String makeEncString(byte[]bytes)			// make an encoded string from an array of bytes
 	{	StringBuffer st = new StringBuffer();
@@ -222,7 +222,7 @@ public class LehavreViewer extends exCanvas implements ViewerProtocol,NetworkInt
 		return(st.toString());
 	}
 	//
-	// incoming messages are decoded form hex strings to bytes, then deserialized using java serialization.
+	// incoming messages are decoded from strings to bytes, then deserialized using java serialization.
 	//
 	Object readString(String bytes)				// read an object from an encoded String
 	{	int lim = bytes.length();
@@ -240,7 +240,7 @@ public class LehavreViewer extends exCanvas implements ViewerProtocol,NetworkInt
 		catch(IOException err) {throw G.Error(err.toString());}
 	}
 	//
-	// outgoing messages are serialized to bytes arrays, then encoded as hex strings for transmission.
+	// outgoing messages are serialized to bytes arrays, then encoded as strings for transmission.
 	//
 	String makeString(Serializable ob)			// make an encoded string from a serializable object
 	{

@@ -70,7 +70,7 @@ class HexGameBoard extends hexBoard<hexCell> implements BoardProtocol,HexConstan
 	public hexCell getPlayerCell(int p) { return(playerCell[p]); }
 	public hexChip getCurrentPlayerChip() { return(playerChip[whoseTurn]); }
 
-// this is required even though it is meaningless for Hex, but possibly important
+// this is required even if it is meaningless for this game, but possibly important
 // in other games.  When a draw by repetition is detected, this function is called.
 // the game should have a "draw pending" state and enter it now, pending confirmation
 // by the user clicking on done.   If this mechanism is triggered unexpectedly, it
@@ -840,7 +840,7 @@ void doSwap(replayMode replay)
         	throw G.Error("Not expecting Legal Hit state %s", board_state);
         case PlayOrSwap:
         case Play:
-        	// for hex, you can pick up a stone in the storage area
+        	// you can pick up a stone in the storage area
         	// but it's really optional
         	return(player==whoseTurn);
         case Confirm:
@@ -1108,7 +1108,7 @@ void doSwap(replayMode replay)
  	UCTNode parent;
  	Random rand = ss.rand;
  	reclaimUCTtree(ss,n);
- 	// find the root of the UCT tree.  For Hex this will
+ 	// find the root of the UCT tree.  This will
  	// give us a pair of black and white nodes 
  	while( (parent = whiteNode.getParent())!=null)
  	{

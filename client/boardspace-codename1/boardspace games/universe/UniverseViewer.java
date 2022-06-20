@@ -798,9 +798,6 @@ public class UniverseViewer extends CCanvas<UniverseCell,UniverseBoard> implemen
         for (UniverseCell orow[] : gb.chipLocation)
         {	for(UniverseCell cell : orow)
         	{
-            // note that these accessors "lastRowInColumn" etc
-        	// are not really needed for simple boards, but they
-        	// also work for hex boards and boards with cut out corners
             if((cell!=null) && cell.onBoard)
             {
             some = true;

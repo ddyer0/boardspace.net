@@ -56,7 +56,7 @@ public abstract class squareBoard<CELLTYPE extends cell<CELLTYPE>> extends squar
 	}
 	/**
 	 * initialize a square geometry board with an irregular outline, similar to 
-	 * what is common with hex geometry boards, except this works by constructing
+	 * what is common with hexagonal geometry boards, except this works by constructing
 	 * a full board then removing the unwanted cells.
 	 * @param nc
 	 * @param fc

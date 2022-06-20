@@ -100,6 +100,7 @@ public class VoloViewer extends CCanvas<VoloCell,VoloBoard> implements VoloConst
     	// captured at this point and passed to the the board init too.
         // randomKey = info.getInt(exHashtable.RANDOMSEED,-1);
     	//
+    	enableAutoDone = true;
         super.init(info,frame);
         // use_grid=reviewer;// use this to turn the grid letters off by default
 
@@ -107,6 +108,7 @@ public class VoloViewer extends CCanvas<VoloCell,VoloBoard> implements VoloConst
         
         bb = new VoloBoard(info.getString(OnlineConstants.GAMETYPE, Volo_Init),
         		getStartingColorMap());
+        useDirectDrawing(true); 
         doInit(false);
 
     }
@@ -460,7 +462,7 @@ public class VoloViewer extends CCanvas<VoloCell,VoloBoard> implements VoloConst
         {	// if in any normal "playing" state, there should be a done button
 			// we let the board be the ultimate arbiter of if the "done" button
 			// is currently active.
-			if(!planned) 
+			if(!planned && !autoDoneActive()) 
 				{handleDoneButton(gc,messageRotation,doneRect,(gb.DoneState() ? buttonSelect : null), 
 					HighlightColor, rackBackGroundColor);
 				}
@@ -812,7 +814,7 @@ public class VoloViewer extends CCanvas<VoloCell,VoloBoard> implements VoloConst
 					throw G.Error("Not expecting hit in state %s",state);
 				case LAND_FLOCK_STATE:
 					{	Hashtable<VoloCell,VoloMovespec> slideDests = bb.getSlideDests();
-						VoloMovespec spec = slideDests.get(hitObject);
+						VoloMovespec spec = slideDests.get(bb.getCell(hitObject));
 						PerformAndTransmit(spec.moveString());
 					}
 					break;

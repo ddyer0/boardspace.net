@@ -12,9 +12,9 @@ class CellStack extends OStack<MicropulCell>
 	public MicropulCell[] newComponentArray(int n) { return(new MicropulCell[n]); }
 }
 //
-// specialized cell used for the game hex, not for all games using a hex board.
+// specialized cell used for the this game.
 //
-// the game hex needs only a char to indicate the contents of the board.  Other
+
 // games commonly add a more complex structue.   
 //
 public class MicropulCell extends stackCell<MicropulCell,MicropulChip>

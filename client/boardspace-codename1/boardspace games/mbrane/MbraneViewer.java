@@ -115,7 +115,7 @@ public class MbraneViewer extends CCanvas<MbraneCell,MbraneBoard> implements Mbr
     	// for games that require some random initialization, the random key should be
     	// captured at this point and passed to the the board init too.
         int randomKey = info.getInt(OnlineConstants.RANDOMSEED,-1);
-        
+        enableAutoDone = true;
         super.init(info,frame);
         // use_grid=reviewer;// use this to turn the grid letters off by default
 
@@ -304,7 +304,7 @@ public class MbraneViewer extends CCanvas<MbraneCell,MbraneBoard> implements Mbr
     }
     
     // this is drawn in the possibly rotated frame of reference of the board
-    private void drawReserve(Graphics gc,MbraneBoard gb,Rectangle r,HitPoint p,int validMask,int centerX,int centerY)
+    private void drawReserve(Graphics gc,MbraneBoard gb,Rectangle r,HitPoint p,int validMask)
     {	MbraneCell reserve[] = gb.reserve;
     	altChipset = gb.reserveColor();
     	double step = (double)G.Width(r)/reserve.length;
@@ -322,9 +322,6 @@ public class MbraneViewer extends CCanvas<MbraneCell,MbraneBoard> implements Mbr
     			{	p.awidth = (int)step;
     				p.spriteColor = Color.red;
     			}
-              if(twistBoard) 
-              	{ c.rotateCurrentCenter(-Math.PI/2,xpos,cy,centerX,centerY) ; 
-              	}
               
     		  if( !canhit )
     		  {
@@ -413,12 +410,9 @@ public class MbraneViewer extends CCanvas<MbraneCell,MbraneBoard> implements Mbr
 
         // using closestCell is sometimes preferable to G.PointInside(highlight, xpos, ypos, CELLRADIUS)
         // because there will be no gaps or overlaps between cells.
-    	int cx = G.centerX(boardRect);
-        int cy = G.centerY(boardRect);
         if(twistBoard)
         { drawingBoard = true;
-      	  GC.setRotation(gc,-Math.PI/2,cx,cy);
-      	  G.setRotation(highlight,-Math.PI/2,cx,cy);
+          GC.setRotatedContext(gc,brect,highlight,-Math.PI/2);
         }
 
         MbraneCell closestCell = gb.closestCell(highlight,brect);
@@ -466,17 +460,15 @@ public class MbraneViewer extends CCanvas<MbraneCell,MbraneBoard> implements Mbr
             	StockArt.SmallO.drawChip(gc,this,size/2,xpos,ypos,null);
             }}
             cell.drawStack(gc,this,highlight,size,xpos,ypos,xpos, 0,0, null);
-            
-            if(twistBoard) { cell.rotateCurrentCenter(-Math.PI/2,xpos,ypos,cx,cy) ; }
+            cell.setCurrentRotation(0);
             }
 
         }
-        drawReserve(gc,gb,reserveRect,highlight,validMask,cx,cy);
+        drawReserve(gc,gb,reserveRect,highlight,validMask);
         
         if(twistBoard)
         { drawingBoard = false;
-      	  GC.setRotation(gc,Math.PI/2,cx,cy);
-      	  G.setRotation(highlight,Math.PI/2,cx,cy);
+        	GC.unsetRotatedContext(gc,highlight);
         }
 
     }
@@ -582,7 +574,7 @@ public class MbraneViewer extends CCanvas<MbraneCell,MbraneBoard> implements Mbr
        		// if in any normal "playing" state, there should be a done button
 			// we let the board be the ultimate arbiter of if the "done" button
 			// is currently active.
-			if(!planned)
+			if(!planned && !autoDoneActive())
 				{handleDoneButton(gc,messageRotation,doneRect,(gb.DoneState() ? buttonSelect : null), 
 					HighlightColor, rackBackGroundColor);
 				}

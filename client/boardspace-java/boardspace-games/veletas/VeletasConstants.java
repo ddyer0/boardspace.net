@@ -120,7 +120,7 @@ public interface VeletasConstants
 
 
 	
-    static final String Veletas_SGF = "Veletas"; // sgf game number allocated for hex
+    static final String Veletas_SGF = "Veletas"; // sgf game name
     static final String[] GRIDSTYLE = { "1", null, "A" }; // left and bottom numbers
     static final String ImageDir = "/veletas/images/";
 

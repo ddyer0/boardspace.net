@@ -63,7 +63,7 @@ public interface TumbleConstants
     static final int MOVE_DROPB = 207; // drop on the board
     static final int MOVE_BOARD_BOARD = 210;	// move board to board
 	
-    static final String Tumble_SGF = "Tumblingdown"; // sgf game number allocated for hex
+    static final String Tumble_SGF = "Tumblingdown"; // sgf game name
     static final String[] TUMBLEGRIDSTYLE = { "1", null, "A" }; // left and bottom numbers
 
  

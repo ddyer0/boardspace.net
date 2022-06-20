@@ -89,7 +89,7 @@ public class GipfViewer extends CCanvas<GipfCell,GipfBoard> implements GipfConst
     }
     
     public void init(ExtendedHashtable info,LFrameProtocol frame)
-    {
+    {	enableAutoDone = true;
         super.init(info,frame);
         
         if (extraactions)
@@ -515,7 +515,7 @@ public class GipfViewer extends CCanvas<GipfCell,GipfBoard> implements GipfConst
 
 		if (vstate != GipfState.PUZZLE_STATE)
         {
-			if(!planned) { handleDoneButton(gc,messageRotation,doneRect,(gb.DoneState()? select : null),HighlightColor, rackBackGroundColor); }
+			if(!planned && !autoDoneActive()) { handleDoneButton(gc,messageRotation,doneRect,(gb.DoneState()? select : null),HighlightColor, rackBackGroundColor); }
         	handleEditButton(gc,messageRotation,editRect,select,highlight,HighlightColor, rackBackGroundColor);
         }
 

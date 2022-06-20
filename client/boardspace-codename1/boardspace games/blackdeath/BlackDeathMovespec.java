@@ -418,7 +418,7 @@ public class BlackDeathMovespec extends commonMPMove
         	
         case MOVE_ESCAPE:
         default:
-            return (D.findUnique(op));
+            return (D.findUniqueTrans(op));
 
         }
     }

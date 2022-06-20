@@ -262,7 +262,7 @@ public class BreakingAwayMovespec extends commonMPMove
         case MOVE_DONE:
             return ("");
         default:
-            return (D.findUnique(op));
+            return (D.findUniqueTrans(op));
        }
     }
     

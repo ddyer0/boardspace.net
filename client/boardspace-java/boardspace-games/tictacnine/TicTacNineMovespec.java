@@ -163,7 +163,7 @@ public class TicTacNineMovespec extends commonMove implements TicTacNineConstant
         	return ("");
 
         default:
-            return (D.findUnique(op));
+            return (D.findUniqueTrans(op));
 
         }
     }

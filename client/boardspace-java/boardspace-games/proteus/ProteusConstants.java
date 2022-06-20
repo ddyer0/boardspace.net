@@ -1,6 +1,7 @@
 package proteus;
 
 import lib.G;
+import lib.InternationalStrings;
 import lib.OStack;
 import lib.CellId;
 import online.game.BaseBoard.BoardState;
@@ -21,7 +22,10 @@ public interface ProteusConstants
 	static String NoMove = "No piece movement rule yet";
 	static String NoWin = "No goal has been set";
 	static String NoTrade = "No tile swap rule yet";
-	static String ProteusStrings[] =
+	
+	public static void putStrings()
+	{
+	String ProteusStrings[] =
 	{	"Proteus",
 		VictoryCondition,
 		NoWin,
@@ -38,7 +42,7 @@ public interface ProteusConstants
     	"piece movement",
 
 	};
-	static String ProteusStringPairs[][] = 
+	String ProteusStringPairs[][] = 
 	{   {"Proteus_family","Proteus"},
 		{"Proteus_variation","Standard Proteus"},
 		{LineGoal,"Win\nSame line"},
@@ -52,7 +56,9 @@ public interface ProteusConstants
 		{DifferentMove,"Move Pieces\nDifferent row/column"},
 		
 	};
-	
+		InternationalStrings.put(ProteusStrings);
+		InternationalStrings.put(ProteusStringPairs);
+	}
 	static enum Variation
 	{
 		Proteus;

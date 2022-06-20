@@ -49,7 +49,7 @@ class CrossfireBoard extends hexBoard<CrossfireCell> implements BoardProtocol,Cr
 			{ AR.setValue(win,false); 	// make sure "win" is cleared
 			}
 	}
-	// this is required even though it is meaningless for Hex, but possibly important
+	// this is required even if it is meaningless for this game, but possibly important
 // in other games.  When a draw by repetition is detected, this function is called.
 // the game should have a "draw pending" state and enter it now, pending confirmation
 // by the user clicking on done.   If this mechanism is triggered unexpectedly, it
@@ -127,7 +127,7 @@ class CrossfireBoard extends hexBoard<CrossfireCell> implements BoardProtocol,Cr
         gametype = game;
         setState(CrossfireState.PUZZLE_STATE);
         Random r = new Random(6326462);
-        reInitBoard(firstcol, ncol, null); //this sets up the hex board
+        reInitBoard(firstcol, ncol, null); //this sets up a hexagonal board
         animationStack.clear();
         int []map=getColorMap();
         for(int i=FIRST_PLAYER_INDEX; i<=SECOND_PLAYER_INDEX; i++)
@@ -705,7 +705,7 @@ class CrossfireBoard extends hexBoard<CrossfireCell> implements BoardProtocol,Cr
         case RESIGN_STATE:
         	return(false);
         case PLAY_STATE:
-        	// for hex, you can pick up a stone in the storage area
+        	// you can pick up a stone in the storage area
         	// but it's really optional
         	return((pickedObject==null)?(player==whoseTurn):false);
         case ILLEGAL_MOVE_STATE:

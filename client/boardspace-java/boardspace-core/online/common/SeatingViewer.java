@@ -5,6 +5,7 @@ import lib.Graphics;
 import java.awt.Rectangle;
 import java.net.URL;
 
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JOptionPane;
 
 import common.GameInfo;
@@ -43,6 +44,7 @@ public class SeatingViewer extends exCanvas implements LobbyConstants
 	Color buttonSelectedColor = new Color(0.6f,0.6f,0.8f);
 	Color chartEven = new Color(0.7f,0.7f,0.7f);
 	Color chartOdd = new Color(0.65f,0.65f,0.65f);
+	private JCheckBoxMenuItem autoDone=null;          		//if on, chat up a storm
 	boolean portraitLayout = false;
 	Rectangle seatingSelectRect = addRect("seating select");
 	Rectangle seatingChart = addRect("seatingChart");
@@ -112,8 +114,9 @@ public class SeatingViewer extends exCanvas implements LobbyConstants
         namefield.singleLine = true;
         namefield.setEditable(this,true);
         namefield.setVisible(true);
-        
-        // this starts the servers that listen for connections from side screens
+        autoDone = myFrame.addOption(s.get(AutoDoneEverywhere),Default.getBoolean(Default.autodone),deferredEvents);
+        autoDone.setForeground(Color.blue);
+       // this starts the servers that listen for connections from side screens
         if(G.isTable())
         {
         UDPService.start(true);	// listen for tables
@@ -986,6 +989,11 @@ public class SeatingViewer extends exCanvas implements LobbyConstants
 		if(userMenu.selectMenuTarget(target))
 		{	handleUserMenu();
 			return(true);
+		}
+		if(target==autoDone)
+		{
+	    	Default.setBoolean((Default.autodone),autoDone.getState());
+	    	return true;
 		}
 		if(gearMenu.selectMenuTarget(target))
 		{

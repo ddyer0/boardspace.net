@@ -149,7 +149,7 @@ public interface MogulConstants
     	public boolean GameOver() { return(this==Gameover); }
     };
 	
-    static final String Mogul_SGF = "Mogul"; // sgf game number allocated for hex
+    static final String Mogul_SGF = "Mogul"; // sgf game name
     static final String[] MOGULGRIDSTYLE = { "1", null, "A" }; // left and bottom numbers
 
  

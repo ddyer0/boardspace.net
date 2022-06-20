@@ -246,7 +246,7 @@ public void PrepareToMove(int playerIndex)
         monte_search_state.random_moves_per_second = WEAKBOT ? 15000 : MAXMOVES;		// 
         monte_search_state.max_random_moves_per_second = MAXMOVES;		// 
         monte_search_state.terminalNodeOptimization = terminalNodeOptimize;
-        // for Hex, the child pool is exhausted very quickly, but the results
+        // for some games, the child pool is exhausted very quickly, but the results
         // still get better the longer you search.  Other games may work better
         // the other way.
         monte_search_state.stored_child_limit_stop = STORED_CHILD_LIMIT_STOP;
@@ -265,8 +265,8 @@ public void PrepareToMove(int playerIndex)
  //{
  //}
  /**
-  * get a random move by selecting a random one from the full list.  For games like
-  * hex, which have trivial move generators, this is "only" a factor of 2 or so improvement
+ * get a random move by selecting a random one from the full list.
+  * for games which have trivial move generators, this is "only" a factor of 2 or so improvement
   * in the playout rate.  For games with more complex move generators, it can by much more.
   * Diagonal-Blocks sped up by 10x 
   * 

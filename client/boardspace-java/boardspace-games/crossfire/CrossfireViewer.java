@@ -30,7 +30,7 @@ import online.search.SimpleRobotProtocol;
 */
 public class CrossfireViewer extends CCanvas<CrossfireCell,CrossfireBoard> implements CrossfireConstants, GameLayoutClient
 {	
-	static final String Crossfire_SGF = "crossfire"; // sgf game number allocated for hex
+	static final String Crossfire_SGF = "crossfire"; // sgf game name
 	static final String ImageDir = "/crossfire/images/";
 	static final int HEXTILE_PBOARD_INDEX = 0;
 	static final int BOWL_BASE_INDEX = 1;
@@ -284,7 +284,7 @@ public class CrossfireViewer extends CCanvas<CrossfireCell,CrossfireBoard> imple
      }  
 
 
-	// draw a box of spare chips. For hex it's purely for effect, but if you
+	// draw a box of spare chips. It's mostly for visual effect, but if you
     // wish you can pick up and drop chips.
     private void DrawChipPool(Graphics gc, Rectangle r, int player, HitPoint highlight,CrossfireBoard gb)
     {
@@ -301,7 +301,7 @@ public class CrossfireViewer extends CCanvas<CrossfireCell,CrossfireBoard> imple
     }
     
 
-	// draw a box of spare chips. For hex it's purely for effect, but if you
+	// draw a box of spare chips. It's mostly for visual effect, but if you
     // wish you can pick up and drop chips.
     private void DrawReserve(Graphics gc, Rectangle r, int player, HitPoint highlight,CrossfireBoard gb)
     {

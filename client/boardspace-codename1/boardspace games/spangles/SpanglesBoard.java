@@ -116,7 +116,7 @@ class SpanglesBoard extends triBoard<SpanglesCell> implements BoardProtocol,Span
     	else { throw G.Error(WrongInitError,game); }
         gametype = game;
         setState(SpanglesState.PUZZLE_STATE);
-        initBoard(firstcol, ncol, null); //this sets up the hex board
+        initBoard(firstcol, ncol, null); //this sets up a hexagonal board
          
         whoseTurn = FIRST_PLAYER_INDEX;
         chips_on_board = 0;

@@ -148,7 +148,7 @@ public class Spanglesmovespec extends commonMove implements SpanglesConstants
             return ("");
 
         default:
-            return (D.findUnique(op));
+            return (D.findUniqueTrans(op));
 
         }
     }

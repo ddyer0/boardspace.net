@@ -38,9 +38,6 @@ import online.search.SimpleRobotProtocol;
  * Change History
  *
  * May 2007 Initial work in progress. 
- *
- * This code is derived from the "HexGameViewer" class.  Refer to the
- * documentation there for overall structure notes.
  * 
  * evaluator development notes
  * 
@@ -52,7 +49,7 @@ import online.search.SimpleRobotProtocol;
 @SuppressWarnings("serial")
 public class ArimaaViewer extends CCanvas<ArimaaCell,ArimaaBoard> implements ArimaaConstants, GameLayoutClient
 {
-    static final String Arimaa_SGF = "Arimaa"; // sgf game number allocated for hex
+    static final String Arimaa_SGF = "Arimaa"; // sgf game name
 
     
     // file names for jpeg images and masks

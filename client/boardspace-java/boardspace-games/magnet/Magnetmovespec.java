@@ -266,7 +266,7 @@ public class Magnetmovespec extends commonMove
             return ("");
 
         default:
-            return (D.findUnique(op));
+            return (D.findUniqueTrans(op));
 
         }
     }

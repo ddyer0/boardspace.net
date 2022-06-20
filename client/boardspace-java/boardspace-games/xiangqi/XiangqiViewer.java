@@ -112,14 +112,14 @@ public class XiangqiViewer extends CCanvas<XiangqiCell,XiangqiBoard> implements 
         // randomKey = info.getInt(exHashtable.RANDOMSEED,-1);
     	//
         int randomKey = info.getInt(OnlineConstants.RANDOMSEED,-1);
-
+        enableAutoDone = true;
     	super.init(info,frame);
     	MouseDotColors = XiangqiMouseDotColors;
     	MouseColors = XiangqiMouseColors;
     	
         b = new XiangqiBoard(info.getString(OnlineConstants.GAMETYPE, Xiangqi_INIT),randomKey,
         		repeatedPositions,getStartingColorMap());
-        //useDirectDrawing(); // not tested yet
+        useDirectDrawing(true);
         doInit(false);
         chipsetOption = myFrame.addOption(s.get("Traditional Pieces"),traditional_chips,deferredEvents);
         reverseOption = myFrame.addOption(s.get(ReverseView),b.reverseY(),deferredEvents);
@@ -457,7 +457,7 @@ public class XiangqiViewer extends CCanvas<XiangqiCell,XiangqiBoard> implements 
 					{ select.hitCode = GameId.HitOfferDrawButton;
 					}
 			}
-			if(!planned)
+			if(!planned && !autoDoneActive())
 			{
 			handleDoneButton(gc,messageRotation,doneRect,(gb.DoneState() ? select : null), 
 					HighlightColor, rackBackGroundColor);

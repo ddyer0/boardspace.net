@@ -37,7 +37,7 @@ public class JumbulayaViewer extends CCanvas<JumbulayaCell,JumbulayaBoard> imple
 {	static final long serialVersionUID = 1000;
 
 	
-	static final String Jumbulaya_SGF = "jumbulaya"; // sgf game number allocated for hex
+	static final String Jumbulaya_SGF = "jumbulaya"; // sgf game name
 
 	// file names for jpeg images and masks
 	static final String ImageDir = "/jumbulaya/images/";
@@ -52,8 +52,7 @@ public class JumbulayaViewer extends CCanvas<JumbulayaCell,JumbulayaBoard> imple
     private Color newLetterColor = new Color(0.25f,0.25f,1.0f);
     private Color tempLetterColor = new Color(0.1f,0.5f,0.1f);
     private Dictionary dictionary = Dictionary.getInstance();
-    private int rackSize = 2;
-    
+   
     // private state
     private JumbulayaBoard bb = null; //the board from which we are displaying
     private int CELLSIZE; 		//size of the layout cell
@@ -170,16 +169,9 @@ public class JumbulayaViewer extends CCanvas<JumbulayaCell,JumbulayaBoard> imple
      */
 
 
-    public double aspects[] = {0.7,1.0,1.4};
     public void setLocalBounds(int x,int y,int w,int h)
-    {	rackSize = plannedSeating()?5:2;
-    	do {
-    		setLocalBoundsV(x,y,w,h,aspects);
-    		int boardw = G.Width(boardRect);
-    		int dim = Math.min(w, h);
-    		if(boardw>dim*0.75) { break; }
-    		rackSize--;
-    	} while(rackSize>=3);
+    {	
+    	setLocalBoundsV(x,y,w,h,new double[] {0.7});
     }
 	/**
 	 * this is the main method to do layout of the board and other widgets.  I don't
@@ -220,7 +212,7 @@ public class JumbulayaViewer extends CCanvas<JumbulayaCell,JumbulayaBoard> imple
     			0.75,	// 60% of space allocated to the board
     			aspect,	// aspect ratio for the board
     			fh*2,	// min cell size
-    			fh*4,	// maximum cell size
+    			fh*2.5,	// maximum cell size
     			0.4		// preference for the designated layout, if any
     			);
        	boolean planned = plannedSeating();
@@ -228,13 +220,13 @@ public class JumbulayaViewer extends CCanvas<JumbulayaCell,JumbulayaBoard> imple
         // place the chat and log automatically, preferring to place
     	// them together and not encroaching on the main rectangle.
     	layout.placeTheChat(chatRect, minChatW, chatHeight,minChatW*2,3*chatHeight/2);
-    	layout.placeRectangle(logRect,minLogW, minLogW, minLogW*3/2, minLogW/2,BoxAlignment.Edge,true);
+    	layout.placeRectangle(logRect,minLogW, minLogW*2/3, minLogW*3/2, minLogW,BoxAlignment.Edge,true);
     	layout.alwaysPlaceDone = false;
        	layout.placeDoneEditRep(buttonW,buttonW*4/3,doneRect,editRect,planned?null:startJRect);
        	G.copy(endJRect,startJRect);
     	layout.placeTheVcr(this,vcrw,vcrw*3/2);
        	int doneW = G.Width(editRect);
-       	layout.placeRectangle(passButton, doneW,doneW/3,BoxAlignment.Center);
+       	layout.placeRectangle(passButton, doneW,doneW/2,BoxAlignment.Center);
     	layout.alwaysPlaceDone = false;
        	layout.placeDoneEditRep(doneW,doneW,checkWordsButton, checkJumbulayaButton,vocabularyRect);
        	commonPlayer pl = getPlayerOrTemp(0);
@@ -301,16 +293,16 @@ public class JumbulayaViewer extends CCanvas<JumbulayaCell,JumbulayaBoard> imple
     	int scoreW = unitsize*2;
     	int scoreH = unitsize*2;
     	G.SetRect(score,x,y,scoreW,scoreH);
-    	G.SetRect(eye, x, y+scoreH, unitsize*2, unitsize*2);
+    	G.SetRect(eye, x, y+scoreH, unitsize*3/2, unitsize*3/2);
     	Rectangle box =  pl.createRectangularPictureGroup(x+scoreW,y,unitsize);
     	Rectangle done = doneRects[player];
      	boolean planned = plannedSeating();
     	int doneW = planned ? unitsize*4 : 0;
-    	int donel = G.Right(box)+unitsize/2;
-    	G.SetRect(done,donel,G.Top(box)+unitsize/4,doneW,doneW/2);
+    	int donel = G.Right(box);
+    	G.SetRect(done,donel+unitsize/2,G.Top(box)+unitsize/4,doneW,doneW/2);
     	G.SetRect(jrect,donel,G.Bottom(done)+unitsize/4,doneW*3/2,doneW/3);
     	G.union(box, done,score,eye,jrect);
-       	G.SetRect(chip,	x,	G.Bottom(box),	G.Width(box),unitsize*2+(planned ? unitsize : 0));
+       	G.SetRect(chip,	x,	G.Bottom(box),	G.Width(box),unitsize*3/2+(planned ? unitsize*2 : 0));
         G.union(box, chip);
     	pl.displayRotation = rotation;
     	return(box);
@@ -424,8 +416,8 @@ public class JumbulayaViewer extends CCanvas<JumbulayaCell,JumbulayaBoard> imple
     	int w = G.Width(rack);
     	int cy = G.centerY(rack);
     	int nsteps = map.length;
-    	int xstep = Math.min(w/(nsteps+1),h*3/4); 
-    	int tileSize = (int)(xstep*1);
+    	int xstep = (int)Math.min(w/(nsteps+0.5),h*3/4); 
+    	int tileSize = (int)(xstep*1.1);
     	int cx = G.Left(rack)+(w-xstep*nsteps)/2+xstep/2;
        	GC.frameRect(gc, Color.black, rack);
 
@@ -455,7 +447,7 @@ public class JumbulayaViewer extends CCanvas<JumbulayaCell,JumbulayaBoard> imple
     	JumbulayaCell mc = mappedCells[idx];
     	JumbulayaChip top = c==null ? null : c.topChip();
     	mc.reInit();
-    	if(top!=null) { mc.addChip(top); }
+    	if(top!=null) { mc.addChip(top); mc.fromRack = c.fromRack; }
     	
        	boolean legalPick = gb.LegalToHitChips(mc);
     	if(picked==idx) { top = null; }
@@ -807,7 +799,7 @@ public void setLetterColor(Graphics gc,JumbulayaBoard gb,JumbulayaCell cell)
     {
     Color col = cell.getSelected() 
     			? Color.green 
-    			: cell.fromRack 
+    			: (cell.onBoard == cell.fromRack)  
     				?  tempLetterColor
     				: (cell.onBoard && cell.row == gb.previousRow)
     					? newLetterColor 
@@ -1161,7 +1153,11 @@ public void setLetterColor(Graphics gc,JumbulayaBoard gb,JumbulayaCell cell)
     	return super.allowUndo();
     }
     public boolean allowResetUndo() { return(false); }
-    
+    public boolean canSendAnyTime(commonMove m)
+    {
+    	return super.canSendAnyTime(m)
+    			|| (m.op==MOVE_SHOW);
+    }
     public boolean PerformAndTransmit(commonMove m, boolean transmit,replayMode mode)
     {
 	   	 if(m.op==MOVE_DROPONRACK)

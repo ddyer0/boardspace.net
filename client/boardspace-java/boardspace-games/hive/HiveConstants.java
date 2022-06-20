@@ -124,7 +124,7 @@ public interface HiveConstants
 	static final int MOVE_PMOVE_DONE = 214;
 	static final int MOVE_MOVE_DONE = 215;
 	static final int MOVE_PASS_DONE = 216;
-    static final String Hive_SGF = "27"; // sgf game number allocated for hex
+    static final String Hive_SGF = "27"; // sgf game name
 
  
     static enum PieceType

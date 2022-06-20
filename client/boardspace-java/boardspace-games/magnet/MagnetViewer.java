@@ -146,6 +146,9 @@ public class MagnetViewer extends CCanvas<MagnetCell,MagnetBoard> implements Mag
         int randomKey = info.getInt(OnlineConstants.RANDOMSEED,-1);
         MouseColors = new Color[]{Color.red,Color.blue};
         MouseDotColors = new Color[]{Color.white,Color.white};
+        // magnet is not suitable for autodone because the primary "done" state
+        // is an optional promote-or-done state.
+        enableAutoDone = false;
         super.init(info,frame);
         // use_grid=reviewer;// use this to turn the grid letters off by default
 
@@ -626,7 +629,7 @@ public class MagnetViewer extends CCanvas<MagnetCell,MagnetBoard> implements Mag
         {	// if in any normal "playing" state, there should be a done button
 			// we let the board be the ultimate arbiter of if the "done" button
 			// is currently active.
-			if(!planned && handleDoneButton(gc,doneRect,(gb.DoneState() ? buttonSelect : null), 
+			if(!planned && !autoDoneActive() && handleDoneButton(gc,doneRect,(gb.DoneState() ? buttonSelect : null), 
 					HighlightColor, rackBackGroundColor))
 			{
 				 buttonSelect.hitCode = simultaneous_turns_allowed()
@@ -827,7 +830,11 @@ public class MagnetViewer extends CCanvas<MagnetCell,MagnetBoard> implements Mag
         }
     }
     
-
+    public void sendDone()
+    {
+    	if(simultaneous_turns_allowed()) { PerformAndTransmit("edone"); }
+    	else { PerformAndTransmit("done"); }
+    }
 	/** 
 	 * this is called on "mouse up".  We may have been just clicking
 	 * on something, or we may have just finished a click-drag-release.

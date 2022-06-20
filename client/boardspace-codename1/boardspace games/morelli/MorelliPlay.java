@@ -73,6 +73,7 @@ public class MorelliPlay extends commonRobot<MorelliBoard> implements Runnable, 
         GameBoard = (MorelliBoard) gboard;
         board = (MorelliBoard)GameBoard.cloneBoard();
         MONTEBOT = true;
+        terminalNodeOptimize = true;
         switch(strategy)
         {
         case MONTEBOT_LEVEL:
@@ -111,8 +112,8 @@ public class MorelliPlay extends commonRobot<MorelliBoard> implements Runnable, 
 
 
  /**
-  * get a random move by selecting a random one from the full list.  For games like
-  * hex, which have trivial move generators, this is "only" a factor of 2 or so improvement
+ * get a random move by selecting a random one from the full list.
+  * for games which have trivial move generators, this is "only" a factor of 2 or so improvement
   * in the playout rate.  For games with more complex move generators, it can by much more.
   * Diagonal-Blocks sped up by 10x 
   * 
@@ -135,7 +136,7 @@ public class MorelliPlay extends commonRobot<MorelliBoard> implements Runnable, 
  	return(0);
  }
 
- // this is the monte carlo robot, which for hex is much better then the alpha-beta robot
+ // this is the monte carlo robot, which for some games is much better then the alpha-beta robot
  // for the monte carlo bot, blazing speed of playouts is all that matters, as there is no
  // evaluator other than winning a game.
  public commonMove DoMonteCarloFullMove()
@@ -166,7 +167,7 @@ public class MorelliPlay extends commonRobot<MorelliBoard> implements Runnable, 
         monte_search_state.save_digest=false;	// debugging only
         monte_search_state.win_randomization = randomn;		// a little bit of jitter because the values tend to be very close
         monte_search_state.timePerMove = (DUMBOT ? 5 : 30);		//  seconds per move
-        monte_search_state.verbose = 1;
+        monte_search_state.verbose = verbose;
         monte_search_state.alpha = 0.5;
         monte_search_state.sort_moves = false;
         monte_search_state.final_depth = 999;	// longest possible game
@@ -178,6 +179,7 @@ public class MorelliPlay extends commonRobot<MorelliBoard> implements Runnable, 
         monte_search_state.random_moves_per_second = WEAKBOT ? 1000 : 200000;
         monte_search_state.max_random_moves_per_second = 250000;
         monte_search_state.maxThreads = DEPLOY_THREADS;
+        monte_search_state.terminalNodeOptimization = terminalNodeOptimize;
         move = monte_search_state.getBestMonteMove();
         }
  		}

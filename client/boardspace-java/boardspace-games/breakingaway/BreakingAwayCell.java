@@ -13,7 +13,7 @@ class CellStack extends OStack<BreakingAwayCell>
 	public BreakingAwayCell[] newComponentArray(int sz) { return(new BreakingAwayCell[sz]); }
 }
 //
-// specialized cell used for the game hex, not for all games using a hex board.
+// specialized cell used for the this game.
 //
 public class BreakingAwayCell extends chipCell<BreakingAwayCell,BreakingAwayPiece>
 	implements CompareTo<BreakingAwayCell>

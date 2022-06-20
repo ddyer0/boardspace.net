@@ -227,7 +227,7 @@ public class TzaarMovespec extends commonMove implements TzaarConstants
         case MOVE_DONE:
             return (TextChunk.create(""));
         default:
-        		return(TextChunk.create(D.findUnique(op)));
+        		return(TextChunk.create(D.findUniqueTrans(op)));
        }
     }
 

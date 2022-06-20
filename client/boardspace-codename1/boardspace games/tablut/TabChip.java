@@ -41,8 +41,8 @@ public class TabChip extends chip<TabChip> {
     	,{0.54,0.65,2.46}	// gold flagship
     	,{0.50,0.55,2.44}	// main tile
     	,{0.50,0.52,1.2}	// selection
-    	,{0.50,0.55,2.44}	// hex gold tile
-    	,{0.50,0.55,2.44}	// hex gold2 tile
+    	,{0.50,0.55,2.44}	// gold tile
+    	,{0.50,0.55,2.44}	// gold2 tile
     };	
     static final String[] ImageNames = 
     {   "silver" 

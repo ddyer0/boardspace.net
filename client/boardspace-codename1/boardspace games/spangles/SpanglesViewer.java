@@ -185,7 +185,7 @@ public class SpanglesViewer extends CCanvas<SpanglesCell,SpanglesBoard> implemen
     }
 
 
-	// draw a box of spare chips. For hex it's purely for effect.
+	// draw a box of spare chips. It's purely for visual effect.
     private void DrawChipPool(Graphics gc, Rectangle r, HitPoint highlight,SpanglesBoard gb,int player)
     {	boolean canhit = G.pointInRect(highlight, r);
     	int h = G.Height(r);
@@ -250,9 +250,9 @@ public class SpanglesViewer extends CCanvas<SpanglesCell,SpanglesBoard> implemen
       //gb.DrawGrid(gc, brect, use_grid, boardBackgroundColor, GridColor, GridColor, GridColor);
 
       // draw the tile grid.  The positions are determined by the underlying board
-      // object, and the tile itself if carefully crafted to tile the hex board
-      // when drawn this way.  For the current Hex graphics, we could use the
-      // simpler loop for(HexCell c = b.allCells; c!=null; c=c.next) {}
+      // object, and the tile itself if carefully crafted to tile the board
+      // when drawn this way.  For games with simple graphics, we could use the
+      // simpler loop for(Cell c = b.allCells; c!=null; c=c.next) {}
       // but for more complex graphics with overlapping shadows or stacked
       // objects, this double loop is useful if you need to control the
       // order the objects are drawn in.
@@ -436,7 +436,7 @@ public class SpanglesViewer extends CCanvas<SpanglesCell,SpanglesBoard> implemen
         c.topChip().drawChip(gc, this, iconRect, null,0.5);
         
         goalAndProgressMessage(gc,nonDragSelect,s.get("form a larger triangle with your color at the tips"),progressRect, goalRect);
-            //DrawRepRect(gc,gb.Digest(),repRect);	// Not needed for hex
+            //DrawRepRect(gc,gb.Digest(),repRect);	// Not needed for games with no possible repetition
          // draw the vcr controls
         drawVcrGroup(nonDragSelect, gc);
 

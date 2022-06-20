@@ -64,16 +64,16 @@ public enum PrototypeState implements BoardState,PrototypeConstants
  static final int[] ZfirstInCol = { 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0 }; // these are indexes into the first ball in a column, ie B1 has index 2
  static final int[] ZnInCol = { 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11 }; // depth of columns, ie A has 4, B 5 etc.
  //
- // rhombix hex board 15 per side
+ // rhombix hexagonal board 15 per side
  static final int[] ZfirstInCol15 = { 14,13,12,11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0 }; // these are indexes into the first ball in a column, ie B1 has index 2
  static final int[] ZnInCol15 = { 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15 }; // depth of columns, ie A has 4, B 5 etc.
- // rhombix hex board, 19 per side
+ // rhombix hexagonal board, 19 per side
  static final int[] ZfirstInCol19 = { 18, 17, 16, 15, 14,13,12,11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0 }; // these are indexes into the first ball in a column, ie B1 has index 2
  static final int[] ZnInCol19 =     { 19,19,19,19,19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19 }; // depth of columns, ie A has 4, B 5 etc.
 
  enum PrototypeVariation
     {
-    	prototype("prototype",ZfirstInCol,ZnInCol);
+    	prototype("tamsk",ZfirstInCol,ZnInCol);
     	String name ;
     	int [] firstInCol;
     	int [] ZinCol;
@@ -114,7 +114,7 @@ public enum PrototypeState implements BoardState,PrototypeConstants
 //    static int[] ZnInCol =   { 5, 8, 9, 10, 11, 12, 11, 12, 11, 10, 9, 8, 5 }; // depth of columns, ie A has 4, B 5 etc.
 //    static int[] ZfirstCol = { 1, 0, 0,  0,  0,  0,  1,  0,  0,  0, 0, 0, 1 };
 
-//  "snowflake" hex board with crinkly edges, 5 per side. 
+//  "snowflake" hexagonal board with crinkly edges, 5 per side. 
 //  Used for "crossfire" and lyngk
 //    static int[] ZfirstInCol = { 6, 3, 0, 1, 0, 1, 0, 3, 6 };
 //    static int[] ZnInCol =     {1, 4, 7, 6, 7, 6, 7, 4, 1 }; // depth of columns, ie A has 4, B 5 etc.

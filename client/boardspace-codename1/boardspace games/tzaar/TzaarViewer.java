@@ -22,8 +22,6 @@ import tzaar.TzaarChip.ChipColor;
  *
  * Feb 2008 initial work. 
  *
- * This code is derived from the "HexGameViewer" and other viewer classes.  Refer to the
- * documentation there for overall structure notes.
  * 
  */
 public class TzaarViewer extends CCanvas<TzaarCell,TzaarBoard> implements TzaarConstants, GameLayoutClient
@@ -80,7 +78,7 @@ public class TzaarViewer extends CCanvas<TzaarCell,TzaarBoard> implements TzaarC
 	 * info contains all the goodies from the environment.
 	 * */
     public void init(ExtendedHashtable info,LFrameProtocol frame)
-    {
+    {	enableAutoDone = true;
         super.init(info,frame);
         int randomKey = sharedInfo.getInt(OnlineConstants.RANDOMSEED,-1);
         
@@ -93,7 +91,7 @@ public class TzaarViewer extends CCanvas<TzaarCell,TzaarBoard> implements TzaarC
   
         b = new TzaarBoard(randomKey,info.getString(OnlineConstants.GAMETYPE, Tzaar_Standard_Init),
         		getStartingColorMap());
-        useDirectDrawing(true); // not tested yet
+        useDirectDrawing(true);
         doInit(false);
         reverseOption = myFrame.addOption(s.get(ReverseView),b.reverseY(),deferredEvents);
         if(G.debug()) {
@@ -454,7 +452,9 @@ public class TzaarViewer extends CCanvas<TzaarCell,TzaarBoard> implements TzaarC
        
 
 		if (vstate != TzaarState.PUZZLE_STATE)
-        {	if(!planned) { handleDoneButton(gc,messageRotation,doneRect,(b.DoneState()? select : null),HighlightColor, rackBackGroundColor); }
+        {	if(!planned && !autoDoneActive())
+        		{ handleDoneButton(gc,messageRotation,doneRect,(b.DoneState()? select : null),HighlightColor, rackBackGroundColor); 
+        		}
         	handleEditButton(gc,messageRotation,editRect,select,highlight, HighlightColor, rackBackGroundColor);
         	
             boolean ispassed = ((vstate==TzaarState.CONFIRM_STATE)&&gb.isPassed());

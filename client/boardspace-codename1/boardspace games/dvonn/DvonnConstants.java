@@ -27,7 +27,7 @@ public interface DvonnConstants
     	LiftRect(null),
     	ZoomSlider(null),
     	ReverseViewButton(null),
-    	PickedStack(null);
+    	PickedStack(null), ToggleEye(null);
 	
 	String shortName = name();
 	public String shortName() { return(shortName); }

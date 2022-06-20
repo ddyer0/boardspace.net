@@ -210,7 +210,7 @@ public class Mbranemovespec extends commonMove
         case MOVE_SCORESTEP:
         	return("ScoreStep");
         default:
-            return (D.findUnique(op));
+            return (D.findUniqueTrans(op));
         }
     }
 

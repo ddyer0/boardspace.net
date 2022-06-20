@@ -82,7 +82,7 @@ public class IroViewer extends CCanvas<IroCell,IroBoard> implements IroConstants
 {		// move commands, actions encoded by movespecs.  Values chosen so these
     // integers won't look quite like all the other integers
  	
-    static final String Iro_SGF = "iro"; // sgf game number allocated for hex
+    static final String Iro_SGF = "iro"; // sgf game name
 
     // file names for jpeg images and masks
     static final String ImageDir = "/iro/images/";
@@ -157,7 +157,7 @@ public class IroViewer extends CCanvas<IroCell,IroBoard> implements IroConstants
     	// for games that require some random initialization, the random key should be
     	// captured at this point and passed to the the board init too.
         int randomKey = info.getInt(OnlineConstants.RANDOMSEED,-1);
-        
+        enableAutoDone = true;
         super.init(info,frame);
         // use_grid=reviewer;// use this to turn the grid letters off by default
         
@@ -472,8 +472,8 @@ public class IroViewer extends CCanvas<IroCell,IroBoard> implements IroConstants
 
 	      // draw the tile grid.  The positions are determined by the underlying board
 	      // object, and the tile itself if carefully crafted to tile the pushfight board
-	      // when drawn this way.  For the current Hex graphics, we could use the
-	      // simpler loop for(HexCell c = b.allCells; c!=null; c=c.next) {}
+	      // when drawn this way.  For games with simple graphics, we could use the
+	      // simpler loop for(Cell c = b.allCells; c!=null; c=c.next) {}
 	      // but for more complex graphics with overlapping shadows or stacked
 	      // objects, this double loop is useful if you need to control the
 	      // order the objects are drawn in.
@@ -692,7 +692,7 @@ public class IroViewer extends CCanvas<IroCell,IroBoard> implements IroConstants
         {	// if in any normal "playing" state, there should be a done button
 			// we let the board be the ultimate arbiter of if the "done" button
 			// is currently active.
-			if(!planned)
+			if(!planned && !autoDoneActive())
 				{
 				doneButton.show(gc,messageRotation,gb.DoneState() ? buttonSelect : null);
 				}

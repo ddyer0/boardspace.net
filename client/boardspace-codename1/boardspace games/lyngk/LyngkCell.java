@@ -1,7 +1,6 @@
 package lyngk;
 
 import lib.Random;
-import lyngk.LyngkConstants.LyngkId;
 import lib.OStack;
 import online.game.*;
 
@@ -19,7 +18,7 @@ class CellStack extends OStack<LyngkCell>
  * @author ddyer
  *
  */
-public class LyngkCell extends stackCell<LyngkCell,LyngkChip> 
+public class LyngkCell extends stackCell<LyngkCell,LyngkChip> implements LyngkConstants
 {	
 	int sweep_counter;		// the sweep counter for which blob is accurate
 

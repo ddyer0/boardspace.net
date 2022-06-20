@@ -22,13 +22,13 @@ public abstract class RBoard<CELLTYPE extends cell<CELLTYPE> >  extends BaseBoar
      * grid points.  Most modern boards use STYLE_NOTHING which draws nothing.
      * <li>STYLE LINES is a  go or yinsh style board, made of lines that connect cell centers
      * <li>STYLE_NO_EDGE_LINES is a gipf style board, make of lines that connect cell centers except for the edges.
-	 * <li>STYLE_CELL is a hex or checker style board where the cells are outlined
+	 * <li>STYLE_CELL is a hexagon or checker style board where the cells are outlined
 	 * <li>STYLE_NOTHING is a graphics-defined board where no lines are drawn.
      */
     public enum DrawingStyle
     {	STYLE_LINES,			// yinsh style
     	STYLE_NO_EDGE_LINES,	// gipf style
-    	STYLE_CELL,				// hex style
+    	STYLE_CELL,				// hexagon style
     	STYLE_NOTHING			// no line drawing, use graphics
     };
     

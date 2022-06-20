@@ -140,7 +140,7 @@ public interface OnedayConstants
     	}
     }
 	
-    static final String Oneday_SGF = "OnedayInLondon"; // sgf game number allocated for hex
+    static final String Oneday_SGF = "OnedayInLondon"; // sgf game name
 
     public enum OnedayVariation 
     {	

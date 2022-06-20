@@ -1070,6 +1070,26 @@ synchronized(allGames) {
 			null,false, WhiteOverBlack));
 	}
 	{
+	String havannahRules = "/havannah/english/Rules.html";
+	String havannahViewer = "havannah.HavannahViewer";  
+	put(new GameInfo(1590,ES.game,108,"HH",ConnectionGames,"Havannah","havannah-6",
+			OneBotPlus,
+			new double[]{1.0,0.01},
+			havannahViewer,havannahRules,
+			null,false, WhiteOverBlack));
+	put(new GameInfo(1591,ES.game,108,"HH",ConnectionGames,"Havannah","havannah-8",
+			OneBotPlus,
+			new double[]{1.0,0.01},
+			havannahViewer,havannahRules,
+			null,false, WhiteOverBlack));
+	put(new GameInfo(1592,ES.game,108,"HH",ConnectionGames,"Havannah","havannah-10",
+			OneBotPlus,
+			new double[]{1.0,0.01},
+			havannahViewer,havannahRules,
+			null,false, WhiteOverBlack));
+
+	}
+	{
 	String pRules = "/hex/english/Rules%20-%20HexWiki.htm";
 	String pViewer = "prototype.PrototypeViewer";  
 	put(new GameInfo(590,ES.test,999,"PP",ConnectionGames,"Prototype","Prototype",
@@ -1106,6 +1126,23 @@ synchronized(allGames) {
 	 mm.randomizeFirstPlayer = true;
 	 mm.longMessage = "CrosswordsInfoMessage";
 	}}
+
+	{
+	String pRules = "/sprint/english/rules.html";
+	String pViewer = "sprint.SprintViewer";  
+	
+	GameInfo mm = put(new GameInfo(2101,ES.test,107,"SC",WordGames,"Sprint","Sprint",
+			ThreeBotsPlus,
+			new double[]{0.1,1.0,1.0,0.01},
+			pViewer,pRules,
+			null,true, null));
+	 mm.maxPlayers = 6;
+	 mm.groupSortKey = "0091";
+	 mm.robotTimed = true;
+	 mm.randomizeFirstPlayer = true;
+	 mm.hasHiddenInformation = false;
+
+	}
 
 	{
 	String pRules = "/jumbulaya/english/rules.html";
@@ -1279,6 +1316,20 @@ synchronized(allGames) {
 			"punct.PunctGameViewer","/punct/english/PUNCT_english.pdf",
 			"https://boardgamegeek.com/video/23737/punct/fd-boardgames-unboxing-setup-and-gameplay-punct",
 			false, WhiteOverBlack));
+	
+	put(new GameInfo(211,ES.test,109,"TM",GipfGames,"Tamsk","Tamsk",
+			TwoBotsPlus,
+			new double[]{1.0,1.0,0.01},
+			"tamsk.TamskViewer","/tamsk/english/rules.pdf",
+			null,
+			false, WhiteOverBlack));
+	put(new GameInfo(212,ES.test,109,"TM",GipfGames,"Tamsk","Tamsk-U",
+			TwoBotsPlus,
+			new double[]{1.0,1.0,0.01},
+			"tamsk.TamskViewer","/tamsk/english/rules.pdf",
+			null,
+			false, WhiteOverBlack));
+	
 	{	String tzaarClass = "tzaar.TzaarViewer";
 		String tzaarRules = "/tzaar/english/rules.htm";
 		String tzaarVideo = "https://boardgamegeek.com/video/89958/tzaar/how-play-tzaar-dice-cup";

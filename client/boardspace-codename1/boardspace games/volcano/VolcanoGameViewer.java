@@ -31,7 +31,7 @@ import lib.StockArt;
  * Feb 2008 initial work. 
  *
  * This code is derived from the "HexGameViewer" and other viewer classes.  Refer to the
- * documentation there for overall structure notes.
+ 
  * 
 */
 public class VolcanoGameViewer extends CCanvas<VolcanoCell,VolcanoBoard> implements VolcanoConstants, GameLayoutClient

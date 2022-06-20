@@ -3,22 +3,34 @@ package bridge;
 import com.codename1.ui.Container;
 import com.codename1.ui.geom.Dimension;
 
+import lib.G;
+/**
+ * note here on Tablayout, which is used for the activities and actions bars at the top
+ * of boardspace screen.  Getting the dimensions of the icons right and consistent is
+ * a nightmare.  The final, for now, disposition is to based the height on the default
+ * font size, and the width proportionally scaled to the height, plus a fudge factor.
+ * 
+ * The containing panel takes its height from the size of this
+ * 
+ * @author ddyer
+ *
+ */
 public class TabLayout extends com.codename1.ui.layouts.Layout
-{	private int spacing = 2;
+{	private int spacing = (int)(4*G.getDisplayScale());
 	public void layoutContainer(Container parent) {
         int w = parent.getWidth();
+        int h = parent.getHeight()-spacing*2;
         int nc = parent.getComponentCount();
 		int sum = getFullWidth(parent);
-		int squeeze = (sum>w) ? (sum-w+nc)/nc : 0;
+		int squeeze = nc==0 ? 0 : (sum>w) ? (sum-w+nc)/nc : 0;
 		int deficit = 0;
-		for(int i=0,xpos=0;i<nc;i++) 
+		for(int i=0,xpos=spacing;i<nc;i++) 
 		{ com.codename1.ui.Component p = parent.getComponentAt(i);
-		  Dimension dim = p.getPreferredSize();
-		  int ww = dim.getWidth();
 		  p.setX(xpos);
-		  p.setY(0);
-		  p.setHeight(dim.getHeight());
-		  int desired = ww-squeeze+deficit;
+		  p.setY(spacing);
+		  p.setHeight(h);
+		  int ww2 = prefw(parent,i);
+		  int desired = ww2-squeeze+deficit;
 		  int actual = Math.max(20, desired);
 		  p.setWidth(actual);
 		  deficit = desired-actual;
@@ -28,18 +40,35 @@ public class TabLayout extends com.codename1.ui.layouts.Layout
 	
 	int getFullWidth(Container parent)
 	{	int nc = parent.getComponentCount();
-		int sum = -2;
-		for(int i=0;i<nc;i++) { sum += parent.getComponentAt(i).getPreferredSize().getWidth()+spacing; }
+		int h = parent.getHeight()-spacing*2;
+		int sum = h/2;
+		for(int i=0;i<nc;i++) 
+		{ 
+		  sum += prefw(parent,i)+spacing; 
+		}
 		return(sum);
+	}
+	// this is an ad-hoc calculation to find the preferred width for an icon
+	// assuming it will be scaled to the height of the parent.  The h/6 factor
+	// accounts for wider horizontal margins than vertical, not sure where they
+	// come from.
+	int prefw(Container parent, int i)
+	{	int h = parent.getHeight()-spacing*2;
+		Dimension dim = parent.getComponentAt(i).getPreferredSize();
+		int inc = (int)(h*((double)dim.getWidth()/dim.getHeight())+h/6);
+		return inc;
 	}
 	int getFullHeight(Container parent)
 	{	int nc = parent.getComponentCount();
-		int max = 0;
+		// use font height as the basic scale metric
+		int max = (int)(G.getFontSize(G.getGlobalDefaultFont())*2.2);
 		for(int i=0;i<nc;i++) { max = Math.max(parent.getComponentAt(i).getPreferredSize().getHeight(),max); }
 		return(max);
 	}
 	public Dimension getPreferredSize(Container parent) {
-		return(new Dimension(getFullWidth(parent),getFullHeight(parent)));
+		
+		Dimension dim =new Dimension(getFullWidth(parent),getFullHeight(parent));
+		return(dim);
 	}
 
 }

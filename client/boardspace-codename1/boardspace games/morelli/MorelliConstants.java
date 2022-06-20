@@ -112,7 +112,7 @@ public interface MorelliConstants
 
 
 	
-    static final String Morelli_SGF = "Morelli"; // sgf game number allocated for hex
+    static final String Morelli_SGF = "Morelli"; // sgf game name
     static final String[] GRIDSTYLE = { "1", null, "A" }; // left and bottom numbers
 
  

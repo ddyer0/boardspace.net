@@ -78,7 +78,7 @@ public interface TruConstants
 	static final int MOVE_AND_SPLIT = 214;
 	static final int MOVE_AND_MERGE = 215;
 	
-    static final String Truchet_SGF = "Truchet"; // sgf game number allocated for hex
+    static final String Truchet_SGF = "Truchet"; // sgf game name
     static final String[] TRUGRIDSTYLE = { "1", null, "A" }; // left and bottom numbers
 
  

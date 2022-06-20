@@ -458,7 +458,7 @@ public class ContainerMovespec extends commonMPMove implements ContainerConstant
         case MOVE_ACCEPT_LOAN:
         	return(TextChunk.create("Accept Loan"));
         default:
-            return (TextChunk.create(D.findUnique(op)));
+            return (TextChunk.create(D.findUniqueTrans(op)));
 
        }
     }

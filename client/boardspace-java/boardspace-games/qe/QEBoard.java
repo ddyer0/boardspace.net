@@ -364,7 +364,7 @@ import online.game.*;
 	 public QEChip getPlayerChip(int p)  { return(players[p].flag); };
 	 public QEChip getCurrentPlayerChip()  { return(players[whoseTurn].flag); };
  
- // this is required even though it is meaningless for Hex, but possibly important
+ // this is required even if it is meaningless for this game, but possibly important
  // in other games.  When a draw by repetition is detected, this function is called.
  // the game should have a "draw pending" state and enter it now, pending confirmation
  // by the user clicking on done.   If this mechanism is triggered unexpectedly, it

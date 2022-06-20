@@ -178,7 +178,7 @@ public interface SantoriniConstants
 	static final int MOVE_DROP_SWAP = 213;	// drop and swap
 	static final int MOVE_DROP_PUSH = 214; // drop and push
 		
-    static final String Santorini_SGF = "Santorini"; // sgf game number allocated for hex
+    static final String Santorini_SGF = "Santorini"; // sgf game name
     static final String[] SANTORINIGRIDSTYLE = { "1", null, "A" }; // left and bottom numbers
 
  

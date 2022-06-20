@@ -18,7 +18,7 @@ public class Choice<TYPE> extends ComboBox<TYPE> implements AwtComponent , Actio
 		  super.repaint();
 		} 
 	}
-	public void select(String string) {
+	public void select(TYPE string) {
 		int nitems = size();
 		for(int i=0;i<nitems;i++)
 		{

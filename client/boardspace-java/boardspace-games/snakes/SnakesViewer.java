@@ -26,8 +26,8 @@ import lib.StockArt;
  *
  * May 2007 initial work in progress. 
  *
- * This code is derived from the "HexGameViewer" class.  Refer to the
- * documentation there for overall structure notes.
+
+ 
 */
 public class SnakesViewer extends CCanvas<SnakesCell,SnakesBoard> implements SnakesConstants
 {
@@ -345,9 +345,6 @@ public class SnakesViewer extends CCanvas<SnakesCell,SnakesBoard> implements Sna
  			SnakesCell c = gb.location[idx];
  			if(c.onBoard)
  			{
-			// note that these accessors "lastRowInColumn" etc
-        	// are not really needed for simple boards, but they
-        	// also work for hex boards and boards with cut out corners
             int ypos = G.Bottom(brect) - gb.cellToY(c.col, c.row);
             int xpos = G.Left(brect) + gb.cellToX(c.col, c.row);
             SnakesChip top = c.topChip();

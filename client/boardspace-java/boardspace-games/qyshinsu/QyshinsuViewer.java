@@ -25,8 +25,8 @@ import online.search.SimpleRobotProtocol;
  *
  * Nov 2008 Initial version 
  *
- * This code is derived from the "HexGameViewer" class.  Refer to the
- * documentation there for overall structure notes.
+
+ 
 */
 public class QyshinsuViewer extends CCanvas<QyshinsuCell,QyshinsuBoard> implements QyshinsuConstants, GameLayoutClient
 {	
@@ -315,9 +315,6 @@ public class QyshinsuViewer extends CCanvas<QyshinsuCell,QyshinsuBoard> implemen
         // solid parts will fall on top of existing shadows
         for(Enumeration<QyshinsuCell> cells = gb.getIterator(Itype.TBRL); cells.hasMoreElements(); )
         {	 
-        	// note that these accessors "lastRowInColumn" etc
-        	// are not really needed for simple boards, but they
-        	// also work for hex boards and boards with cut out corners
             QyshinsuCell cell = cells.nextElement();
             char thiscol = cell.col;
             int row = cell.row;

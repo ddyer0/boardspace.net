@@ -619,10 +619,10 @@ public class MuttonGameViewer extends commonCanvas implements MuttonConstants
 	 * (col, row) on the board.
 	 */
 	private int calcScreenX (int col, int row) {
-		// Start in the center of the hex that is in the right column.
+		// Start in the center of the hexagon that is in the right column.
 		int x = (HEX_SCREEN_WIDTH / 2) + (col * HEX_SCREEN_WIDTH);
 
-		// Even rows are shifted over half a hex to the right.
+		// Even rows are shifted over half a hexagon to the right.
 		if ((row & 0x01) == 0) {
 			x += (HEX_SCREEN_WIDTH / 2);
 		}

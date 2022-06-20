@@ -395,7 +395,7 @@ public void PrepareToMove(int playerIndex)
         		//WEAKBOT ? 5000 : 2000000;		// with randomization optimization
         		//WEAKBOT ? 15000 : 300000;		// 300k non-blitz 160k blitz
         monte_search_state.max_random_moves_per_second = -1;//5000000;		// 
-        // for Hex, the child pool is exhausted very quickly, but the results
+        // for some games, the child pool is exhausted very quickly, but the results
         // still get better the longer you search.  Other games may work better
         // the other way.
         monte_search_state.stored_child_limit_stop = STORED_CHILD_LIMIT_STOP;

@@ -85,7 +85,7 @@ public interface ShogiConstants
     static final int MOVE_FLIP = 212;			// flip over
 
 
-    static final String Shogi_SGF = "Shogi"; // sgf game number allocated for hex
+    static final String Shogi_SGF = "Shogi"; // sgf game name
     static final String[] SHOGIGRIDSTYLE = { "1", null, "A" }; // left and bottom numbers
 
  

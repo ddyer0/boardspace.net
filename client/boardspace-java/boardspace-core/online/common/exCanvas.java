@@ -339,7 +339,8 @@ public abstract class exCanvas extends Canvas
     	int oldh = getHeight();
     	super.setBounds(l,t,w,h);
         if((w>0)&&(h>0) && ((oldw!=w)||(oldh!=h))) 
-        	{ 
+        	{ // changing orientation unzooms
+      	  	  if(oldw<oldh != w<h) { setGlobalZoom(0,0); }
         	  setSX(getSX());
         	  setSY(getSY());	// clip scrolling when the geometry changes
         	  imageCache.clearCachedImages();

@@ -167,7 +167,7 @@ public class SyzygyMovespec extends commonMove implements SyzygyConstants
             return TextChunk.create("");
 
         default:
-            return TextChunk.create(D.findUnique(op));
+            return TextChunk.create(D.findUniqueTrans(op));
             
         case MOVE_FROM_TO:
         	return icon(v,from_col,from_row,",",to_col,to_row);

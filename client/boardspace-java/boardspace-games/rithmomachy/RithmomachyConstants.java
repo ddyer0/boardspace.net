@@ -76,7 +76,7 @@ public interface RithmomachyConstants
     	Wintype(String p) { prettyName = p; }
     };
 	
-    static final String Rithmomachy_SGF = "Rithmomachy"; // sgf game number allocated for hex
+    static final String Rithmomachy_SGF = "Rithmomachy"; // sgf game name
     static final String[] GRIDSTYLE = { "1", null, "A" }; // left and bottom numbers
 
  

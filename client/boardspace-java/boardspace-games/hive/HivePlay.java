@@ -27,7 +27,7 @@ public class HivePlay extends commonRobot<HiveGameBoard> implements Runnable, Hi
     private int boardSearchLevel = 0;				// the current search depth
     private double TIMEPERMOVE = 45.0;				// 45 seconds as a limit
     private boolean COLLECT_TREE = true;	// special hack to collect the move tree
-    
+    private int MONTE_DEPTH_LIMIT = 30;
     /* constructor */
     public HivePlay()
     {
@@ -152,23 +152,17 @@ static String ref3 = "-1.4900855185584436 5.391213625565254 -9.731346119706972 -
         case WEAKBOT_LEVEL:
         	MAX_DEPTH = WEAKBOT_DEPTH;
         	MONTEBOT = false;
-        	evaluator = new StandardEvaluator();
+        	evaluator = new RevisedStandardEvaluator();
         	break;
         case DUMBOT_LEVEL:
         	MAX_DEPTH = DUMBOT_DEPTH;
         	MONTEBOT = false;
-        	evaluator = new StandardEvaluator();
+        	evaluator = new RevisedStandardEvaluator();
         	break;
         case SMARTBOT_LEVEL: 
  			MAX_DEPTH = DUMBOT_DEPTH;//SMARTBOT_DEPTH;
 			MONTEBOT = false;
-	       	evaluator = new RevisedStandardEvaluator();
-	               	// version 2.19b
-        	//"-2.5786549406209645 4.800823174160682 -9.48394627709441 -1.9099927861583068 4.781466938063065 0.7958562211974698 -0.20381335122965796 0.04538651894310872 0.06387665589419513 0.44442048230765707 0.25540749033684107 0.6612525195375272 -0.35564165719252794 0.5071881942155357 -0.36655825615123594 0.4564096711050024 -1.709126955140426 -15.251097492355413 -40.10250117851505 -65.13793067577012 -119.30719408953658 -119.96661677358534 -119.66248222490707 -119.96466996887226 0.41287956607205595 -0.04381823269309279 0.35204261176134993 0.12387363390710082 0.4376434743992227 0.09272641392964134 0.3761376782987065 0.7783975492909965 0.06846917495773097 0.141087966660209 1.8899387496795756 0.27153318680839944 1.3483572299058881 0.4838656571958469 1.0375147851480415 0.9122953863870906 1.3791361201518177 0.5335906519247893 1.621121557107937 0.9859719528371595 1.1022706981954276 1.3230898165311575 -0.04101100844937525 0.593718305244147 0.08849505508892525 -0.2008830015270762 -0.34166486539803076 -0.3169094306563969 0.02070988370647396 0.6572007916702362 0.2663708018187917 0.18634265215930815"
-        	// mutant 9
-        	//  "-2.5624088122609896 4.779774180313183 -9.612490092231857 -1.892352824659297 4.666100981959816 0.718083187322641 -0.18586996671760564 -0.020780218845105076 0.049193548641501966 0.3241872618114961 0.25540749033684107 0.6237280504743589 -0.36017415666207897 0.39923320312780153 -0.36655825615123594 0.38978170403444257 -1.6773162180211818 -15.357856121903328 -40.124866688753485 -65.05509982536118 -119.34225577806049 -120.02841507014365 -119.67503608761969 -119.91825314406482 0.4668963048227552 -0.06376666547989826 0.24168274571318088 0.1188587443705522 0.48421951544481795 0.1661096137366818 0.41630400204730544 0.7823603828436484 0.06846917495773097 0.10928587435550063 1.8899387496795756 0.2479657501689901 1.3609905941416012 0.5655431985745488 1.1013918849799613 0.8908088894043427 1.3791361201518177 0.6211379462431859 1.5697242410053927 0.9645971254413253 1.073918977876749 1.268101425950429 0.07843465378368084 0.564760129181633 0.12931683460779542 -0.2577486440137482 -0.35483335984301606 -0.07315395798773446 0.027006029622080974 0.6458307652426705 0.35745444288072226 0.10346521124757578"
-        	// mutant 87, after 15 hours of 2 ply search
-        	//		" -2.5726520620174327 4.817647963262021 -9.481984198605417 -1.9511098229342685 4.666056872229193 0.8051043841470136 -0.22997038710232792 0.02268155776705978 0.028011858352439734 0.2717385249097382 0.2552391750319432 0.5602864570258579 -0.41357203964311473 0.4747216865211541 -0.4349245127200305 0.4109477760849157 -1.6217331596375921 -15.336682660612823 -40.119192401000134 -65.06740238173875 -119.29730190889015 -119.99945502057406 -119.66419187281298 -120.1770867166336 0.47144344478855527 -0.04381823269309279 0.14615693682098913 0.11926554222476415 0.48421951544481795 0.4197836860481109 0.36588260107923465 0.8113506650188688 0.06846917495773097 0.11262232468633664 1.8912122135942835 0.31659231507481167 1.350353357010852 0.5256207884279871 1.160155530230105 0.8559084311713676 1.451849132481963 0.5596831683470269 1.6491202663945368 1.003188782087613 1.1709568432075697 1.2448111955040233 0.14169860951484953 0.4820800058145688 0.16929195472720174 -0.26605289968297047 -0.34166486539803076 -0.3046501724257093 0.023286902251115238 0.8359936432582699 0.33223182660166567 0.12791661132284102"
+	       	evaluator = new ThirdStandardEvaluator();
         	break;
         case BESTBOT_LEVEL: 
         	MONTEBOT = false;
@@ -179,7 +173,7 @@ static String ref3 = "-1.4900855185584436 5.391213625565254 -9.731346119706972 -
         case MONTEBOT_LEVEL:
         	MONTEBOT = true;
         	COLLECT_TREE = false;
-        	evaluator = new StandardEvaluator();
+        	evaluator = new MonteEvaluator();
         	break;
         case TESTBOT_LEVEL_1:
         	evaluator = new ThirdEvaluator();	// for selfplay mode
@@ -245,7 +239,7 @@ public void PrepareToMove(int playerIndex)
             //Setup_For_Search(5,false);
             search_state.save_all_variations = SAVE_TREE;
             //search_state.use_nullmove = NULLMOVE;
-            search_state.verbose= verbose;
+            search_state.verbose = verbose;
             search_state.allow_killer = KILLER_HEURISTIC;
             search_state.save_top_digest=true;	// always on background check on the robot
             search_state.save_digest=false;	// debugging only
@@ -289,7 +283,7 @@ public void PrepareToMove(int playerIndex)
         // abnormal exit
         return (null);
     }
-/*
+
 
  public commonMove DoMonteCarloFullMove()
  {	commonMove move = null;
@@ -307,8 +301,8 @@ public void PrepareToMove(int playerIndex)
         monte_search_state.timePerMove = 20;	// 20 seconds
         monte_search_state.alpha = 0.75;
         monte_search_state.verbose = 1;
-        monte_search_state.final_depth = MONTE_DEPTH_LIMIT;
-        monte_search_state.random_moves_per_second = 30000;
+        monte_search_state.final_depth = MONTE_DEPTH_LIMIT*3;
+        monte_search_state.random_moves_per_second = 10000;
         monte_search_state.max_random_moves_per_second = 40000;	
         monte_search_state.maxThreads = 0;// DEPLOY_THREADS; threads don't work yet
         // setup for saving the tree
@@ -331,20 +325,20 @@ public void PrepareToMove(int playerIndex)
       if(move==null) { continuous = false; }
      return(move);
  }
-*/
+ 
  /**
   * for UCT search, return the normalized value of the game, with a small penalty
   * for longer games so we try to be effecient.
   */
- /*
+ 
  public double NormalizedScore(commonMove lastMove)
  {	int player = lastMove.player;
- 	boolean win = board.WinForPlayerNow(player);
- 	if(win) { return(0.99+0.01/boardSearchLevel); }
- 	boolean win2 = board.WinForPlayerNow(nextPlayer[player]);
- 	if(win2) { return(- (0.99+0.01/boardSearchLevel)); }
- 	return(0);
+ 	double win = ScoreForPlayer(board,player,false);
+ 	double win2 = ScoreForPlayer(board,player,false);
+ 	if(win>=1) return(1);
+ 	if(win2>=1) return(-1);
+ 	return(win-win2);
  }
- */
+ 
 
  }

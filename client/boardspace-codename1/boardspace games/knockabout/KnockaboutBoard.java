@@ -9,7 +9,7 @@ import java.util.*;
 
 /**
  * KnockaboutBoard knows all about the game of Knockabout, which is played
- * on a 7-per-side hex board. It gets a lot of logistic support from hexboard,
+ * on a 7-per-side hexagonal board. It gets a lot of logistic support from hexboard,
  * which know about the coordinate system.  
  * 
  * This class doesn't do any graphics or know about anything graphical, 

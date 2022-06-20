@@ -1289,11 +1289,8 @@ public class RepaintManager implements VncScreenInterface,Config
 	  		paintedAFrame = true;
 			    
 	    	helper.showRectangles(offGC,100);
+	    	helper.paintSprites(offGC,pt);
 
-	    	if(repaintStrategy==RepaintStrategy.Deferred)
-	    	{	
-	    		helper.paintSprites(offGC,pt);
-	    	}
 	    	helper.ShowStats(offGC,pt,x,y);	// add some stats on top of everything
 
 	    	GC.setColor(offGC,Color.blue);

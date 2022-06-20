@@ -1008,7 +1008,7 @@ public class GameBoard extends hexBoard<zCell> implements BoardProtocol,GameCons
         }
         char oldboard = c.contents;
         m.movedAndCaptured = zChip.BallColorIndex(oldboard);
-        G.Assert(oldboard == Empty, "Destination hex not empty!");
+        G.Assert(oldboard == Empty, "Destination cell not empty!");
         G.Assert(oldcount > 0, "Source bin is empty");
 
         switch (board_state)
@@ -1525,7 +1525,7 @@ public class GameBoard extends hexBoard<zCell> implements BoardProtocol,GameCons
         int oldcount = balls[movingRack][movingRackIndex];
         zCell c = getCell(movingBoardCol, movingBoardRow);
         char oldboard = c.contents;
-        G.Assert(oldboard == Empty, "Destination hex not empty!");
+        G.Assert(oldboard == Empty, "Destination cell not empty!");
         G.Assert(!((oldcount <= 0) && (movingRackIndex < NCOLORS)),
             "Source bin is empty");
 

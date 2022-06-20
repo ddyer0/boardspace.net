@@ -1,6 +1,5 @@
 package online.game;
 import online.common.*;
-
 import lib.Graphics;
 
 import lib.Random;
@@ -205,4 +204,21 @@ public abstract class chipCell
 		throw G.Error("Index out of range %s",n);
 	}
 
+	/**
+	 * create a bitmap of 1<<direction of the directions for which exit in that direction is null
+	 * this is used in some connection games to determine wins, and in some boards to decorate the borders
+	 * 
+	 * @return
+	 */
+	public int borderDirectionMask()
+	{
+		int bd = 0;
+        for(int direction=0;direction<geometry.n;direction++)
+        {
+        	if((exitTo(direction)==null) && (exitTo(direction+1)==null))
+        	{	bd |= (1<<direction);
+        	}
+        }
+        return bd;
+	}
 }

@@ -33,14 +33,14 @@ import static octiles.OctilesMovespec.*;
  * May 2007 Initial work in progress. 
  *
  * This code is derived from the "HexGameViewer" class.  Refer to the
- * documentation there for overall structure notes.
+ 
 */
 
 public class OctilesViewer extends CCanvas<OctilesCell,OctilesBoard> implements OctilesConstants, GameLayoutClient
 {
 	 
     // file names for jpeg images and masks
-    static final String Octiles_SGF = "Octiles"; // sgf game number allocated for hex
+    static final String Octiles_SGF = "Octiles"; // sgf game name
     static final String ImageDir = "/octiles/images/";
 	// sounds
     static final int BACKGROUND_TILE_INDEX = 0;

@@ -96,7 +96,7 @@ class KingsColorBoard
 	public ColorId getPlayerColor(int p) { return(playerColor[p]); }
 	public KingsColorChip getCurrentPlayerChip() { return(getPlayerChip(whoseTurn)); }
 
-// this is required even though it is meaningless for Hex, but possibly important
+// this is required even if it is meaningless for this game, but possibly important
 // in other games.  When a draw by repetition is detected, this function is called.
 // the game should have a "draw pending" state and enter it now, pending confirmation
 // by the user clicking on done.   If this mechanism is triggered unexpectedly, it
@@ -168,7 +168,7 @@ class KingsColorBoard
      	GridColor colors[] = GridColor.values();
      	reInit(occupiedCells);
 		for(KingsColorCell c = allCells; c!=null; c=c.next)
-		{	// this is somewhat ad-hoc to accomplist a tri color hex board
+		{	// this is somewhat ad-hoc to accomplish a tri color hexagonal board
 			char col = c.col;
 			int row =  c.row;
 			

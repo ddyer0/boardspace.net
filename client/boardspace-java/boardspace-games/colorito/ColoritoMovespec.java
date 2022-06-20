@@ -172,7 +172,7 @@ public class ColoritoMovespec extends commonMove
         case MOVE_DONE:
             return TextChunk.create("");
         default:
-            return TextChunk.create(D.findUnique(op));
+            return TextChunk.create(D.findUniqueTrans(op));
 
         }
     }

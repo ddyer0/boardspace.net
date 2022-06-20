@@ -219,7 +219,7 @@ class TabGameBoard extends rectBoard<TabCell> implements BoardProtocol,TabConsta
         gametype = game;
         parseOptions(tok);
         setState(TablutState.PUZZLE_STATE);
-        initBoard(nCols,nRows); //this sets up the hex board
+        initBoard(nCols,nRows); //this sets up a hexagonal board
         whoseTurn = FIRST_PLAYER_INDEX;
         gold_ships = silver_ships = 0;
         flagShipLocation = goldFlagPool;

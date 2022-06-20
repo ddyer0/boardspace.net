@@ -92,7 +92,7 @@ public class XehMovespec extends commonMove implements XehConstants
     {
         XehMovespec yto = (to == null) ? new XehMovespec() : (XehMovespec) to;
 
-        // we need yto to be a Hexmovespec at compile time so it will trigger call to the 
+        // we need yto to be a HavannahMovespec at compile time so it will trigger call to the 
         // local version of Copy_Slots
         Copy_Slots(yto);
 
@@ -175,7 +175,7 @@ public class XehMovespec extends commonMove implements XehConstants
             return ("");
 
         default:
-            return (D.findUnique(op));
+            return (D.findUniqueTrans(op));
 
         }
     }

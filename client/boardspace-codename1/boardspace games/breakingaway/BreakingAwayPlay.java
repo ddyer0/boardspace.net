@@ -109,7 +109,7 @@ public void PrepareToMove(int playerIndex)
   	return((max-omax)/150.0);
  }
  
- // this is the monte carlo robot, which for hex is much better then the alpha-beta robot
+ // this is the monte carlo robot, which for some games is much better then the alpha-beta robot
  // for the monte carlo bot, blazing speed of playouts is all that matters, as there is no
  // evaluator other than winning a game.
  public commonMove DoMonteCarloFullMove()
@@ -142,7 +142,7 @@ public void PrepareToMove(int playerIndex)
         monte_search_state.only_child_optimization = true;
         monte_search_state.dead_child_optimization = true;
         monte_search_state.simulationsPerNode = 1;
-        monte_search_state.final_depth = 9999;		// note needed for hex which is always finite
+        monte_search_state.final_depth = 9999;		// probably not needed for games which are always finite
         monte_search_state.node_expansion_rate = 1.0;
         monte_search_state.randomize_uct_children = true;    
         monte_search_state.maxThreads = DEPLOY_THREADS;

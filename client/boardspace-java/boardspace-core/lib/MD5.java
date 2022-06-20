@@ -116,8 +116,8 @@ public class MD5
 
    public static byte[]computeMD5(String msg)
    {	byte[]val = computeMD5(msg.getBytes());
-   	  // String hex = toHexString(val);
-   	  // G.print("h "+hex);
+   	  // String hexa = toHexString(val);
+   	  // G.print("h "+hexa);
 	   return(val);
    }
    /*

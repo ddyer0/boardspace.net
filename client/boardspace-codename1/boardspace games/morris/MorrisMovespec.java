@@ -210,7 +210,7 @@ public class MorrisMovespec extends commonMove implements MorrisConstants
             return ("");
 
         default:
-        	return (D.findUnique(op));
+        	return (D.findUniqueTrans(op));
 
         }
     }

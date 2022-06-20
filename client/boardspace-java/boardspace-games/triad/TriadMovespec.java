@@ -96,7 +96,7 @@ public class TriadMovespec extends commonMPMove implements TriadConstants
     {
         TriadMovespec yto = (to == null) ? new TriadMovespec() : (TriadMovespec) to;
 
-        // we need yto to be a Hexmovespec at compile time so it will trigger call to the 
+        // we need yto to be a Movespec at compile time so it will trigger call to the 
         // local version of Copy_Slots
         Copy_Slots(yto);
 
@@ -184,7 +184,7 @@ public class TriadMovespec extends commonMPMove implements TriadConstants
             return ("");
 
         default:
-            return (D.findUnique(op));
+            return (D.findUniqueTrans(op));
 
         }
     }

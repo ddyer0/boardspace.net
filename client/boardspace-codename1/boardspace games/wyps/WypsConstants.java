@@ -141,7 +141,7 @@ static int[] ZnInTriangle7 = { 1,2,3,4,5,6,7}; // these are indexes into the fir
 static int[] ZTriangle7 = {6,5,4,3,2,1,0 }; // depth of columns, ie A has 4, B 5 etc.
 
 
-    static final String Wyps_SGF = "wyps"; // sgf game number allocated for hex
+    static final String Wyps_SGF = "wyps"; // sgf game name
     static final String[] WypsGRIDSTYLE = { "1", null, "A" }; // left and bottom numbers
 
     // file names for jpeg images and masks

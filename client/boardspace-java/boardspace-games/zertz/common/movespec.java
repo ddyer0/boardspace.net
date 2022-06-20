@@ -240,7 +240,7 @@ public class movespec extends commonMove implements GameConstants
             return TextChunk.create(" -" + from_col + from_row);
 
         default:
-        	return(TextChunk.create(D.findUnique(op)));
+        	return(TextChunk.create(D.findUniqueTrans(op)));
         }
     }
 

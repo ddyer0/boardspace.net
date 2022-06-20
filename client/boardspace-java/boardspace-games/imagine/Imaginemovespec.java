@@ -278,7 +278,7 @@ public class Imaginemovespec
         case MOVE_SKIP:
         case MOVE_SCORE:
         case MOVE_GETNEW:
-            return TextChunk.create(D.findUnique(op));
+            return TextChunk.create(D.findUniqueTrans(op));
 
         }
     }

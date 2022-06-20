@@ -32,7 +32,7 @@ public interface KnockaboutConstants
  
    
      /* the "external representation for the board is A1 B2 etc.  
-      * these magic numnbers define a simple hex board with 7 cells per side
+      * these magic numbers define a simple hexagonal board with 7 cells per side
       */
     static int[] ZfirstInCol = { 6, 5, 4, 3, 2, 1, 0, 1, 2, 3, 4, 5, 6 }; // these are indexes into the first ball in a column, ie B1 has index 2
     static int[] ZnInCol = {     7, 8, 9,10,11,12,13,12,11,10, 9, 8, 7 }; // depth of columns, ie A has 4, B 5 etc.
@@ -62,7 +62,7 @@ public interface KnockaboutConstants
     static final int MOVE_BOARD_BOARD = 209;	// move board to board
     static final int MOVE_ROLL = 210;	// capturing move
 	
-    static final String Knockabout_SGF = "Knockabout"; // sgf game number allocated for hex
+    static final String Knockabout_SGF = "Knockabout"; // sgf game name
     static final String[] KNOXKABOUTGRIDSTYLE = { null, "A1", "A1" }; // top and bottom numbers
     // file names for jpeg images and masks
     static final String ImageDir = "/knockabout/images/";

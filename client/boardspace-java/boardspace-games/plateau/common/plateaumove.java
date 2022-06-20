@@ -284,7 +284,7 @@ public class plateaumove extends commonMove implements PlateauConstants
             return ("-" + locus + levelString());
 
         default:
-             return(D.findUnique(op));
+             return(D.findUniqueTrans(op));
 
         case MOVE_DONE:
             return ("");

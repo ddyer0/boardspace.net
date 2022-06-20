@@ -59,6 +59,7 @@ public interface LobbyConstants extends OnlineConstants
     static final String LobbyMessages[] =
         {  	
          	RestartMessage,
+         	AutoDoneEverywhere,
         	DiscardGameMessage,
         	EmptyName,
         	AddAName,

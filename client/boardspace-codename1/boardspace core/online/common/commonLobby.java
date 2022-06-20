@@ -291,6 +291,7 @@ public class commonLobby extends commonPanel
 
   
   private JCheckBoxMenuItem announcePlayers=null;          //if on, chat up a storm
+  private JCheckBoxMenuItem autoDone=null;          		//if on, chat up a storm
   private JCheckBoxMenuItem noChat=null;                    //if on, chat is inibited
   //private JCheckBoxMenuItem menuHeavy = null;
   //private JCheckBoxMenuItem menuSwing = null;
@@ -415,6 +416,8 @@ public void init(ExtendedHashtable info,LFrameProtocol frame)
     addUser(-1,namePassedIn,sharedInfo.getString(ConnectionManager.UID),true); 
     announcePlayers=myFrame.addOption(s.get(AnnounceOption),Default.getBoolean(Default.announce),deferredEvents);	// no events
     announcePlayers.setForeground(Color.blue);
+    autoDone = myFrame.addOption(s.get(AutoDoneEverywhere),Default.getBoolean(Default.autodone),deferredEvents);
+    autoDone.setForeground(Color.blue);
     noChat = myFrame.addOption(s.get(NoChatMessage),false,null);	// no events
     noChallenge = myFrame.addOption(s.get(NoChallengeAllMessage),false,null);	// no events
     noSpeedLimits = myFrame.addOption(s.get(RobotSpeedMessage),false,deferredEvents);
@@ -2325,6 +2328,11 @@ public void ClearOtherInviteBox(Session sess)
 	myNetConn.setFlushOutput(flushOutput.getState()); 
 	return(true);
 	}
+    else if (target==autoDone)
+    {
+    	Default.setBoolean((Default.autodone),autoDone.getState());
+    	return true;
+    }
     else if (target==announcePlayers)
     {
     	Default.setBoolean(Default.announce,announcePlayers.getState());

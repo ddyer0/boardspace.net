@@ -11,7 +11,7 @@ class CellStack extends OStack<HiveCell>
 	public HiveCell[] newComponentArray(int n) { return(new HiveCell[n]); }
 }
 //
-// specialized cell used for the game hex, not for all games using a hex board.
+// specialized cell used for the this game.
 //
 public class HiveCell extends stackCell<HiveCell,HivePiece>
 {	public HivePiece[] newComponentArray(int n) { return(new HivePiece[n]); }
@@ -97,9 +97,10 @@ public class HiveCell extends stackCell<HiveCell,HivePiece>
 	// return the number of adjacent cells owned by a player
 	public int nOccupiedAdjacent()
 	{	int n=0;
-		for(int lim=geometry.n;lim>=0;lim--)
+		for(int lim=geometry.n-1;lim>=0;lim--)
 		{ HiveCell c = exitTo(lim);
-		  if(c.height()>0) { n++; }
+		  if(c.height()>0) 
+		  	{ n++; }
 		}
 		return(n);
 	}	

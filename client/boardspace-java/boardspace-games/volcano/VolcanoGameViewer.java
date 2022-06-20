@@ -28,8 +28,8 @@ import lib.StockArt;
  *
  * Feb 2008 initial work. 
  * 
- * This code is derived from the "HexGameViewer" and other viewer classes.  Refer to the
- * documentation there for overall structure notes.
+ * This code is derived from the "HavannahViewer" and other viewer classes.  Refer to the
+ 
  * 
 */
 public class VolcanoGameViewer extends CCanvas<VolcanoCell,VolcanoBoard> implements VolcanoConstants, GameLayoutClient
@@ -82,7 +82,7 @@ public class VolcanoGameViewer extends CCanvas<VolcanoCell,VolcanoBoard> impleme
 	 * info contains all the goodies from the environment.
 	 * */
     public void init(ExtendedHashtable info,LFrameProtocol frame)
-    {
+    {	enableAutoDone = true;
         super.init(info,frame);
         int randomKey = sharedInfo.getInt(OnlineConstants.RANDOMSEED,-1);
 
@@ -423,7 +423,7 @@ public class VolcanoGameViewer extends CCanvas<VolcanoCell,VolcanoBoard> impleme
 
 		if (vstate != VolcanoState.PUZZLE_STATE)
         {
-			if(!planned) {
+			if(!planned && !autoDoneActive()) {
 				handleDoneButton(gc,doneRect,(gb.DoneState() ? select : null), 
 					HighlightColor, rackBackGroundColor);
 			}

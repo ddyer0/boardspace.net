@@ -1,6 +1,3 @@
-/**
- * 
- */
 package yspahan;
 
 import java.util.ArrayList;

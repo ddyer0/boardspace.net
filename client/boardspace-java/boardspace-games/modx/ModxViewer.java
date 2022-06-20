@@ -77,6 +77,7 @@ public class ModxViewer extends CCanvas<ModxCell,ModxBoard> implements ModxConst
     	// adjusted to the actual number, adjusted by the min and max
        	// int players_in_game = Math.max(3,info.getInt(exHashtable.PLAYERS_IN_GAME,4));
     	int players_in_game = Math.max(2,info.getInt(OnlineConstants.PLAYERS_IN_GAME,2));
+    	enableAutoDone = true;
     	super.init(info,frame);
        	// 
     	// for games that require some random initialization, the random key should be
@@ -348,7 +349,7 @@ public class ModxViewer extends CCanvas<ModxCell,ModxBoard> implements ModxConst
 
 		if (vstate != ModxState.Puzzle)
         {
-			if(!planned) 
+			if(!planned && !autoDoneActive()) 
 				{handleDoneButton(gc,doneRect,(gb.DoneState() ? select : null), 
 					HighlightColor, rackBackGroundColor);
 				}

@@ -90,7 +90,7 @@ class FrogBoard extends hexBoard<FrogCell> implements BoardProtocol, FrogConstan
 									// STYLE_CELL to draw them
 		Grid_Style = FROGGRIDSTYLE;
 		isTorus = true;
-		initBoard(FrogCols, FrogNInCol, null); // this sets up the hex board
+		initBoard(FrogCols, FrogNInCol, null); // this sets up a hexagonal board
 		setColorMap(map);
 		doInit(init, randomv, npl); // do the initialization
 	}

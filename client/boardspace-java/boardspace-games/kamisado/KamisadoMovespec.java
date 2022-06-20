@@ -164,7 +164,7 @@ public class KamisadoMovespec extends commonMove implements KamisadoConstants
             return (TextChunk.create(""));
 
         default:
-            return (TextChunk.create(D.findUnique(op)));
+            return (TextChunk.create(D.findUniqueTrans(op)));
 
        }
     }

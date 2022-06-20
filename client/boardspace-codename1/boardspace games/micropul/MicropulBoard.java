@@ -896,7 +896,7 @@ class MicropulBoard extends squareBoard<MicropulCell> implements BoardProtocol,M
         case CONFIRM_STATE:
         	return(isDest(c));
         case PLAY_STATE:
-        	// for hex, you can pick up a stone in the storage area
+        	// you can pick up a stone in the storage area
         	// but it's really optional
         	if(player!=whoseTurn) { return(false); }
         	if(pickedObject!=null) { return(isSource(c)||(pickedSource.rackLocation==MicroId.Supply)); } 
@@ -920,7 +920,7 @@ class MicropulBoard extends squareBoard<MicropulCell> implements BoardProtocol,M
         	if(player!=whoseTurn) { return(false); }
         	return((pickedObject!=null) && (pickedSource.rackLocation==MicroId.Supply));
         case PLAY_STATE:
-        	// for hex, you can pick up a stone in the storage area
+        	// you can pick up a stone in the storage area
         	// but it's really optional
         	if(pickedObject!=null) { return((pickedSource.rackLocation==MicroId.Supply)&&(whoseTurn==player)); }
         	return((supply[whoseTurn].height()>0) && (player==whoseTurn));
@@ -943,7 +943,7 @@ class MicropulBoard extends squareBoard<MicropulCell> implements BoardProtocol,M
         	return((pickedObject!=null)&&pickedObject.isJewel());
         	
         case PLAY_STATE:
-        	// for hex, you can pick up a stone in the storage area
+        	// you can pick up a stone in the storage area
         	if((pickedObject!=null)&&!pickedObject.isJewel()) { return(false); }
         	// but it's really optional
         	return(player==whoseTurn);

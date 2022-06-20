@@ -168,7 +168,7 @@ public class Traxmovespec extends commonMove implements TraxConstants
  
         case MOVE_DROP:
         case MOVE_PICK:
-        	{	Text lead = TextChunk.create(D.findUnique(op));
+        	{	Text lead = TextChunk.create(D.findUniqueTrans(op));
         		Text post = sourceGlyph(v);
         		return TextChunk.join(lead,post);
         	}
@@ -177,7 +177,7 @@ public class Traxmovespec extends commonMove implements TraxConstants
             return (TextChunk.create(""));
 
         default:
-             return (TextChunk.create(D.findUnique(op)));
+             return (TextChunk.create(D.findUniqueTrans(op)));
         }
     }
        

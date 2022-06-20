@@ -136,8 +136,8 @@ public class MogulPlay extends commonRobot<MogulBoard> implements Runnable, Mogu
 
  int random_move_search_level = 0;
  /**
-  * get a random move by selecting a random one from the full list.  For games like
-  * hex, which have trivial move generators, this is "only" a factor of 2 or so improvement
+ * get a random move by selecting a random one from the full list.
+  * for games which have trivial move generators, this is "only" a factor of 2 or so improvement
   * in the playout rate.  For games with more complex move generators, it can by much more.
   * Diagonal-Blocks sped up by 10x 
   * 
@@ -173,7 +173,7 @@ public class MogulPlay extends commonRobot<MogulBoard> implements Runnable, Mogu
   	return(0.0);
  }
 
- // this is the monte carlo robot, which for hex is much better then the alpha-beta robot
+ // this is the monte carlo robot, which for some games is much better then the alpha-beta robot
  // for the monte carlo bot, blazing speed of playouts is all that matters, as there is no
  // evaluator other than winning a game.
  public commonMove DoMonteCarloFullMove()

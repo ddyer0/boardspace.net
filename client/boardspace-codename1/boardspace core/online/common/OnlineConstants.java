@@ -176,6 +176,7 @@ public interface OnlineConstants extends Config {
     static final String PICTURE = "picture";
     static final String HOSTUID = "hostuid";		// unique host id string, generated at launch
     static final String EnablePassAndPlay = "enablepassandplay";
+    static final String AutoDoneEverywhere = "Automatic \"Done\"";
 	
     static final String VIEWERCLASS = "viewerclass";
 	int MAX_OFFLINE_USERS = 20;

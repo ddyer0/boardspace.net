@@ -105,7 +105,7 @@ public interface SnakesConstants
     static final int MOVE_BOARD_BOARD = 210;	// move board to board
     static final int MOVE_ROTATE = 211;
 	
-    static final String Snakes_SGF = "Snakes"; // sgf game number allocated for hex
+    static final String Snakes_SGF = "Snakes"; // sgf game name
     static final String[] SNAKESGRIDSTYLE = { "1", null, "A" }; // left and bottom numbers
 
  

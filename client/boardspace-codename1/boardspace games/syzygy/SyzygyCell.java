@@ -11,11 +11,11 @@ class CellStack extends OStack<SyzygyCell>
 	public SyzygyCell[] newComponentArray(int n) { return(new SyzygyCell[n]); }
 }
 //
-// specialized cell used for the game hex, not for all games using a hex board.
+// specialized cell used for the this game.
 //
-// the game hex needs only a char to indicate the contents of the board.  Other
-// games commonly add a more complex structue.   Games with square geometry
-// instead of hex can use Geometry.Oct instead of Hex_Geometry
+
+
+
 //
 public class SyzygyCell extends chipCell<SyzygyCell,SyzygyChip> 
 {	public SyzygyChip[] newComponentArray(int n) { return(new SyzygyChip[n]); }

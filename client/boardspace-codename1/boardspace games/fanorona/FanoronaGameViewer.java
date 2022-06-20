@@ -20,6 +20,7 @@ import lib.GC;
 import lib.HitPoint;
 import lib.LFrameProtocol;
 import lib.StockArt;
+import lib.Toggle;
 
 
 /**
@@ -31,14 +32,14 @@ import lib.StockArt;
  * todo: add the ReverseView feature
  * 
  * This code is derived from the "HexGameViewer" class.  Refer to the
- * documentation there for overall structure notes.
+ 
 */
 public class FanoronaGameViewer extends CCanvas<FanoronaCell,FanoronaBoard> implements FanoronaConstants, GameLayoutClient
 {	/**
 	 * 
 	 */
 	static final long serialVersionUID = 1L;
-    static final String Fanoronar_SGF = "Fanorona"; // sgf game number allocated for hex
+    static final String Fanoronar_SGF = "Fanorona"; // sgf game name
 
     
     // file names for jpeg images and masks
@@ -78,6 +79,10 @@ public class FanoronaGameViewer extends CCanvas<FanoronaCell,FanoronaBoard> impl
     private Rectangle []chipRects = addRect("chip",2);
     private Rectangle declineDrawRect = addRect("declineDraw");
     private Rectangle acceptDrawRect = addRect("acceptDraw");	
+    private Toggle eyeRect = new Toggle(this,"eye",
+			StockArt.NoEye,FanId.ToggleEye,NoeyeExplanation,
+			StockArt.Eye,FanId.ToggleEye,EyeExplanation
+			);
    
     private Rectangle repRect = addRect("repRect");
     private Rectangle reverseRect = addRect("reverse");
@@ -219,7 +224,7 @@ public class FanoronaGameViewer extends CCanvas<FanoronaCell,FanoronaBoard> impl
     	//
         int stateY = boardY-stateH;
         int stateX = boardX;
-        G.placeStateRow(stateX,stateY,boardW,stateH,iconRect,stateRect,reverseRect,noChatRect);
+        G.placeStateRow(stateX,stateY,boardW,stateH,iconRect,stateRect,eyeRect,reverseRect,noChatRect);
         G.SetRect(boardRect,boardX,boardY,boardW,boardH);
         if(boardRotation!=0)
         {
@@ -321,11 +326,8 @@ public class FanoronaGameViewer extends CCanvas<FanoronaCell,FanoronaBoard> impl
    /* draw the board and the chips on it. */
     private void drawBoardElements(Graphics gc, FanoronaBoard gb, Rectangle brect, HitPoint highlight)
     {
-        int cx = G.centerX(boardRect);
-        int cy = G.centerY(boardRect);
         
-        GC.setRotation(gc, boardRotation, cx,cy);
-        G.setRotation(highlight, boardRotation, cx, cy);
+        GC.setRotatedContext(gc,boardRect,highlight,boardRotation);
      	//
         // now draw the contents of the board and anything it is pointing at
         //
@@ -336,6 +338,7 @@ public class FanoronaGameViewer extends CCanvas<FanoronaCell,FanoronaBoard> impl
         FanoronaCell hitCell = null;
         Hashtable<FanoronaCell,String> prevCells = gb.stackOrigins();
         Hashtable<FanoronaCell,FanoronaCell> prevCaps = gb.lastCapturedCells();
+        boolean show = eyeRect.isOnNow();
         for (int row = gb.boardRows; row>0; row--)	// back to front
         { //where we draw the grid
         	for (int col = gb.boardColumns-1; col>=0; col--)
@@ -360,9 +363,13 @@ public class FanoronaGameViewer extends CCanvas<FanoronaCell,FanoronaBoard> impl
                		int cov = cell.sweep_coverage;
                	 	GC.Text(gc,true,xpos-10,ypos-10,20,20,Color.red,null,""+mcs+" "+cov);
                	 }
- 
+              boolean canHit = gb.LegalToHitBoard(cell);
+              if(show && canHit)
+              {
+            	  StockArt.SmallO.drawChip(gc,this,SQUARESIZE,xpos,ypos,null);
+              }
               if((highlight!=null)
-            		  && gb.LegalToHitBoard(cell)
+            		  && canHit
               		  && cell.closestPointToCell(highlight, SQUARESIZE,xpos, ypos)
                     )
               { hitCell = cell; 
@@ -394,8 +401,7 @@ public class FanoronaGameViewer extends CCanvas<FanoronaCell,FanoronaBoard> impl
         		}
        	}
         }}
-        GC.setRotation(gc, -boardRotation, cx,cy);
-        G.setRotation(highlight, -boardRotation, cx,cy);
+        GC.unsetRotatedContext(gc,highlight);
 
     }
     //
@@ -478,6 +484,8 @@ public class FanoronaGameViewer extends CCanvas<FanoronaCell,FanoronaBoard> impl
          
         DrawRepRect(gc,messageRotation,Color.black,gb.Digest(),repRect);
         DrawReverseMarker(gc,reverseRect,ourSelect,FanId.Reverse);
+        eyeRect.activateOnMouse = true;
+        eyeRect.draw(gc,highlight);
         drawVcrGroup(ourSelect, gc);
 
     }
@@ -605,6 +613,9 @@ boolean startMotion(FanId hitObject,FanoronaCell cell,FanoronaChip chip)
         {
         default:
         	throw G.Error("Hit Unknown: %s", hitObject);
+        case ToggleEye:
+        	eyeRect.toggle();
+        	break;
         case BoardLocation:	// we hit the board 
 			if(movingObject && (cell!=null)) { PerformAndTransmit("Dropb "+cell.col+" "+cell.row); }
 			else { performReset(); }

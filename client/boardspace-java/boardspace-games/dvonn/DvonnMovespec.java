@@ -275,7 +275,7 @@ public class DvonnMovespec extends commonMove implements DvonnConstants
          	return(msg);
            	}
         default:
-            return (TextChunk.create(D.findUnique(op)));
+            return (TextChunk.create(D.findUniqueTrans(op)));
 
         }
     }

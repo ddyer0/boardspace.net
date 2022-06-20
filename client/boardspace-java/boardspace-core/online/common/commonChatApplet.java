@@ -299,8 +299,12 @@ public class commonChatApplet extends FullscreenPanel
     	return((u==null)?null:u.name());
     }
     public synchronized void removeUser(int inNum)
-    {	users.removeUser(inNum);
-    }
+    {	SimpleUser single = users.getToSingleUser();
+    	SimpleUser u = users.removeUser(inNum);
+    	if(u==single)
+			{ setSingleSend(null,false); 
+			} 
+   }
     public void setMyUser(int inNum,String name)
     {	users.setMyUser(inNum,name);
     }

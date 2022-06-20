@@ -10,7 +10,7 @@ import tzaar.TzaarChip.ChipColor;
 
 /**
  * TzaarBoard knows all about the game of Dvonn, which is played
- * on a rectangular hex board. It gets a lot of logistic 
+ * on a rectangular hexagonal board. It gets a lot of logistic 
  * support from hexboard, which know about the coordinate system.  
  * 
  * This class doesn't do any graphics or know about anything graphical, 
@@ -365,6 +365,7 @@ class TzaarBoard extends hexBoard<TzaarCell> implements BoardProtocol,TzaarConst
         		for(int idx = 0;idx<row.length;idx++)
         		{	TzaarCell c = row[idx];
         			String pos[]=standardPosition[idx];
+        			// don't mess with this - doing so will invalidate historical game records
         			while(c.chipIndex>=0)
         			{	
         				String position = pos[c.chipIndex];

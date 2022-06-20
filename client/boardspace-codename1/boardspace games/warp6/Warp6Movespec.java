@@ -257,7 +257,7 @@ public class Warp6Movespec extends commonMove implements Warp6Constants
         case MOVE_DONE:
              return (TextChunk.create(""));
     	default: 
-    		return(TextChunk.create(D.findUnique(op)));
+    		return(TextChunk.create(D.findUniqueTrans(op)));
     	}
     }
 
@@ -285,7 +285,7 @@ public class Warp6Movespec extends commonMove implements Warp6Constants
         case MOVE_DONE:
             return ("");
         default:
-            return (D.findUnique(op));
+            return (D.findUniqueTrans(op));
 
        }
     }

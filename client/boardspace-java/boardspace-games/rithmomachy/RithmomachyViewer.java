@@ -663,11 +663,8 @@ public class RithmomachyViewer extends CCanvas<RithmomachyCell,RithmomachyBoard>
    /* draw the board and the chips on it. */
     private void drawBoardElements(Graphics gc, RithmomachyBoard gb, Rectangle brect, HitPoint highlight,HitPoint anySelect)
     {	
-    	int cx = G.centerX(brect);
-    	int cy = G.centerY(brect);
-    	if(rotateBoard) 
-    	{ GC.setRotation(gc, Math.PI/2, cx, cy);
-    	  G.setRotation(anySelect, Math.PI/2, cx, cy);
+     	if(rotateBoard) 
+    	{ GC.setRotatedContext(gc,boardRect,highlight,Math.PI/2);
     	}
      	boolean dolift = doLiftAnimation();
      	
@@ -721,8 +718,7 @@ public class RithmomachyViewer extends CCanvas<RithmomachyCell,RithmomachyBoard>
 		showCaptureByDeceit(gc,gb,brect,nextPlayer[gb.whoseTurn]); 
         
     	if(rotateBoard) 
-    	{ GC.setRotation(gc, -Math.PI/2, cx, cy);
-    	  G.setRotation(anySelect,-Math.PI/2, cx, cy);
+    	{ GC.unsetRotatedContext(gc,highlight);
     	}
 
     }

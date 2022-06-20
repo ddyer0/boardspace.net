@@ -10,7 +10,7 @@ class CellStack extends OStack<FrogCell>
 	public FrogCell[] newComponentArray(int n) { return(new FrogCell[n]); }
 }
 //
-// specialized cell used for the game hex, not for all games using a hex board.
+// specialized cell used for the this game.
 //
 public class FrogCell extends stackCell<FrogCell,FrogPiece>
 {	

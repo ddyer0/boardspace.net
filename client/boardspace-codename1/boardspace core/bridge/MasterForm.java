@@ -19,10 +19,11 @@ import com.codename1.ui.plaf.UIManager;
 
 class FixedTopLayout extends BorderLayout
 {
-	int height;
-	FixedTopLayout(int h) { height=h;}
-	public Dimension getPreferredSize(Container parent) {
-		return(new Dimension(G.getFrameWidth(),(int)(height*G.getDisplayScale())));
+	FixedTopLayout() { }
+	public void layoutContainer(com.codename1.ui.Container parent)
+	{
+		//G.print("layout bar ",parent);
+		super.layoutContainer(parent);
 	}
 	
 }
@@ -33,6 +34,7 @@ public class MasterForm extends Form implements com.codename1.ui.events.ActionLi
 	private static MasterPanel masterPanel = null;
 	bridge.Container tabs = new bridge.Container();
 	bridge.Container menus = new bridge.Container();
+	bridge.Container centers = new bridge.Container();
 	String appname = "unnamed";
 	private com.codename1.ui.Container titleBar;
 	boolean recordEvents = true;
@@ -45,6 +47,7 @@ public class MasterForm extends Form implements com.codename1.ui.events.ActionLi
 	  man.setLookAndFeel(new BSLookAndFeel(man));
 	  tabs.setUIID("ContainerMasterForm");
 	  menus.setUIID("ContainerMasterForm");
+	  centers.setUIID("ContainerMasterForm");
 	  setAllowEnableLayoutOnPaint(true);	// 1/2020 added this incantation to avoid "blank screen" on startup
 	  //G.print("Display drag "+Display.getInstance().getDragStartPercentage());
 	  // note the codename1 default was 3 = 3% of the screen
@@ -54,7 +57,8 @@ public class MasterForm extends Form implements com.codename1.ui.events.ActionLi
 	  appname = app; 
 	  //new BoxLayout(this,BoxLayout.Y_AXIS);
 	  tabs.setLayout(new TabLayout());
-	  new BoxLayout(menus,BoxLayout.X_AXIS);
+	  menus.setLayout(new TabLayout());
+	  centers.setLayout(new TabLayout());
 	  Display.getInstance().addEdtErrorHandler(this);
 	  titleBar = getTitleArea();
 	  // there is some bug related to the status bar, present at the top of IOS devices.
@@ -69,14 +73,16 @@ public class MasterForm extends Form implements com.codename1.ui.events.ActionLi
 		s.setMargin(0,0,0,0);			// remove the margin except on ios
 		s.setPadding(0,0,0,0);
 	  }
-	  titleBar.setLayout(new FixedTopLayout(25));
+	  titleBar.setLayout(new FixedTopLayout());
 	  com.codename1.ui.Label l = getTitleComponent();
-	  l.setUIID("LabelMasterForm");
-	  l.getStyle().setOpacity(255);
-	  l.getStyle().setBgColor(Config.FrameBackgroundColor.getRGB());
+	  setTitle("");
 	  
-	  titleBar.add("Center",tabs);
+	  l.setUIID("LabelMasterForm");
+	  //l.getStyle().setOpacity(255);
+	  //l.getStyle().setBgColor(Config.FrameBackgroundColor.getRGB());
+	  titleBar.add("West",tabs);
 	  titleBar.add("East",menus);
+	  titleBar.add("Center",centers);
 	  
 	}
 	public void setFocused(com.codename1.ui.Component p)

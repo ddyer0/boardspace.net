@@ -45,7 +45,7 @@ public class YspahanViewer extends CCanvas<YspahanCell,YspahanBoard> implements 
 	 * 
 	 */
 	static final double INITIAL_ANIMATION_SPEED = 0.7;
-    static final String Yspahan_SGF = "Yspahan"; // sgf game number allocated for hex
+    static final String Yspahan_SGF = "Yspahan"; // sgf game name
 
     
     // file names for jpeg images and masks

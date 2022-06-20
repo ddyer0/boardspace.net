@@ -251,7 +251,7 @@ public class PunctGameViewer extends CCanvas<punctCell,PunctGameBoard> implement
     }
 
 
-	// draw a box of spare chips. For hex it's purely for effect.
+	// draw a box of spare chips. It's purely for visual effect.
     private void DrawChipPool(Graphics gc, commonPlayer pl,   HitPoint highlight)
     {	int player = pl.boardIndex;
     	Rectangle r = chipRects[player];

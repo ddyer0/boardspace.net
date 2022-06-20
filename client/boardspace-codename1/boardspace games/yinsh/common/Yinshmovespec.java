@@ -253,7 +253,7 @@ public class Yinshmovespec extends commonMove implements YinshConstants
             return ("");
 
         default:
-            return (D.findUnique(op));
+            return (D.findUniqueTrans(op));
         }
     }
 

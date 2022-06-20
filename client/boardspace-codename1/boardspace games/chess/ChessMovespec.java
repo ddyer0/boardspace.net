@@ -226,7 +226,7 @@ public class ChessMovespec extends commonMove implements ChessConstants
         case MOVE_CASTLE:
         	return icon(v,(from_col>to_col ? "O-O-O" : "O-O"));
         default:
-            return (icon(v,D.findUnique(op)));
+            return (icon(v,D.findUniqueTrans(op)));
         }
     }
 

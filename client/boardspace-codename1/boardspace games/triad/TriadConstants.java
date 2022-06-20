@@ -15,7 +15,7 @@ public interface TriadConstants
     	Green_Chip_Pool("G"),
     	Blue_Chip_Pool("B"),
     	BoardLocation(null),
-    	EmptyBoard(null),;
+    	EmptyBoard(null), ToggleEye(null),;
    	String shortName = name();
 	public String shortName() { return(shortName); }
 
@@ -65,7 +65,7 @@ public interface TriadConstants
     static final int MOVE_DROPB = 207; // drop on the board
 	static final int MOVE_MOVE = 208;	// robot move a piece
 	
-    static final String Triad_SGF = "triad"; // sgf game number allocated for hex
+    static final String Triad_SGF = "triad"; // sgf game name
     static final String[] TRIADGRIDSTYLE = { "1", null, "A" }; // left and bottom numbers
 
  

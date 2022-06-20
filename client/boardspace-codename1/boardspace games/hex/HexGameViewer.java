@@ -35,7 +35,7 @@ import online.game.*;
  * start there and be implemented completely from scratch, but in practice there is another huge pile
  * of things that every game has to do; dealing with graphics, mouse events, saving and restoring the
  * game state from static records, replaying and reviewing games and so on.   These are implemented in the 
- * class "commonCanvas" and by several board-like base classes for Hex and Square geometry boards.   
+ * class "commonCanvas" and by several board-like base classes for hexagonal and square geometry boards.   
  * All the existing games for boardspace use these classes to provide graphics and basic board representation.
  * 
  * For games with robot players, there is another huge pile of things that a robot has to do, generating
@@ -102,7 +102,7 @@ import static hex.Hexmovespec.*;
 */
 public class HexGameViewer extends CCanvas<hexCell,HexGameBoard> implements HexConstants, GameLayoutClient
 {	 	
-    static final String Hex_SGF = "11"; // sgf game number allocated for hex
+    static final String Hex_SGF = "11"; // sgf game name
 
     // file names for jpeg images and masks
     static final String ImageDir = "/hex/images/";
@@ -169,7 +169,7 @@ public class HexGameViewer extends CCanvas<hexCell,HexGameBoard> implements HexC
     	// for games that require some random initialization, the random key should be
     	// captured at this point and passed to the the board init too.
         int randomKey = info.getInt(OnlineConstants.RANDOMSEED,-1);
-        
+        enableAutoDone = true;
         super.init(info,frame);
         // use_grid=reviewer;// use this to turn the grid letters off by default
         rotation.setValue(true);
@@ -370,7 +370,7 @@ public class HexGameViewer extends CCanvas<hexCell,HexGameBoard> implements HexC
     	return(box);
     }
 
-	// draw a box of spare chips. For hex it's purely for effect, but if you
+	// draw a box of spare chips. It's mostly for visual effect, but if you
     // wish you can pick up and drop chips.
     private void DrawChipPool(Graphics gc, Rectangle r, int player, HitPoint highlight,HexGameBoard gb)
     {
@@ -657,7 +657,7 @@ public class HexGameViewer extends CCanvas<hexCell,HexGameBoard> implements HexC
         {	// if in any normal "playing" state, there should be a done button
 			// we let the board be the ultimate arbiter of if the "done" button
 			// is currently active.
-			if(!planned) { handleDoneButton(gc,messageRotation,doneRect,(gb.DoneState()? buttonSelect : null),HighlightColor, rackBackGroundColor); }
+			if(!planned && !autoDoneActive()) { handleDoneButton(gc,messageRotation,doneRect,(gb.DoneState()? buttonSelect : null),HighlightColor, rackBackGroundColor); }
         	handleEditButton(gc,messageRotation,editRect,buttonSelect,selectPos,HighlightColor, rackBackGroundColor);
         }
 
@@ -1018,7 +1018,7 @@ public class HexGameViewer extends CCanvas<hexCell,HexGameBoard> implements HexC
      * <p>
      * if complete is true, we definitely want to start from scratch, otherwise
      * only the known changed elements need to be painted.  Exactly what this means
-     * is game specific, but for hex the underlying empty board is cached as a deep
+     * is game specific, but for most games the underlying empty board is cached as a
      * background, but the chips are painted fresh every time.
      * <p>
      * this used to be very important to optimize, but with faster machines it's

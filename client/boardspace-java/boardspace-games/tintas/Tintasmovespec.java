@@ -211,7 +211,7 @@ public class Tintasmovespec extends commonMove implements TintasConstants
             return ("");
 
         default:
-            return (D.findUnique(op));
+            return (D.findUniqueTrans(op));
 
         }
     }

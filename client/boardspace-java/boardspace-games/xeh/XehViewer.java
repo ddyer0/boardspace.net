@@ -37,13 +37,13 @@ import online.search.SimpleRobotProtocol;
  * the game part of the site.
  * <p>
  * The main classes are:
- * <br>HexGameViewer - this class, a canvas for display and mouse handling
- * <br>HexGameBoard - board representation and implementation of the game logic
- * <br>Hexmovespec - representation, parsing and printing of move specifiers
- * <br>HexPlay - a robot to play the game
- * <br>HexConstants - static constants shared by all of the above.  
+ * <br>HavannahViewer - this class, a canvas for display and mouse handling
+ * <br>HavannahBoard - board representation and implementation of the game logic
+ * <br>HavannahMovespec - representation, parsing and printing of move specifiers
+ * <br>HavannahPlay - a robot to play the game
+ * <br>HavannahConstants - static constants shared by all of the above.  
  *  <p>
- *  The primary purpose of the HexGameViewer class is to do the actual
+ *  The primary purpose of the HavannahViewer class is to do the actual
  *  drawing and to mediate the mouse gestures.  All the actual work is 
  *  done in an event loop, rather than in direct response to mouse or
  *  window events, so there is only one process involved.  With a single 
@@ -383,7 +383,7 @@ public class XehViewer extends CCanvas<XehCell,XehBoard> implements XehConstants
 
 
 
-	// draw a box of spare chips. For hex it's purely for effect, but if you
+	// draw a box of spare chips. It's mostly for visual effect, but if you
     // wish you can pick up and drop chips.
     private void DrawChipPool(Graphics gc, Rectangle r, int player, HitPoint highlight,XehBoard gb)
     {
@@ -464,9 +464,9 @@ public class XehViewer extends CCanvas<XehCell,XehBoard> implements XehConstants
       // on the board to fine tune the exact positions of the text
       bb.DrawGrid(gc, boardRect, use_grid, boardBackgroundColor, GridColor, GridColor, GridColor);
 	  // draw the tile grid.  The positions are determined by the underlying board
-      // object, and the tile itself if carefully crafted to tile the hex board
-      // when drawn this way.  For the current Hex graphics, we could use the
-      // simpler loop for(HexCell c = b.allCells; c!=null; c=c.next) {}
+      // object, and the tile itself if carefully crafted to tile the board
+      // when drawn this way.  For games with simple graphics, we could use the
+      // simpler loop for(Cell c = b.allCells; c!=null; c=c.next) {}
       // but for more complex graphics with overlapping shadows or stacked
       // objects, this double loop is useful if you need to control the
       // order the objects are drawn in.
@@ -697,7 +697,7 @@ public class XehViewer extends CCanvas<XehCell,XehBoard> implements XehConstants
             				gb.whoseTurn,
             				stateRect);
         goalAndProgressMessage(gc,nonDragSelect,Color.black,s.get(XehVictoryCondition),progressRect, goalRect);
-            //DrawRepRect(gc,gb.Digest(),repRect);	// Not needed for hex
+            //DrawRepRect(gc,gb.Digest(),repRect);	// Not needed for games with no possible repetition
         
         // draw the vcr controls, last so the pop-up version will be above everything else
         drawVcrGroup(nonDragSelect, gc);
@@ -744,8 +744,8 @@ public class XehViewer extends CCanvas<XehCell,XehBoard> implements XehConstants
 //     		double full = G.distance(0,0,G.Width(boardRect),G.Height(boardRect));
 //        	while(bb.animationStack.size()>1)
 //     		{
-//     		hexCell dest = bb.animationStack.pop();
-//     		hexCell src = bb.animationStack.pop();
+//     		HavannahCell dest = bb.animationStack.pop();
+//     		HavannahCell src = bb.animationStack.pop();
 //    		double dist = G.distance(src.current_center_x, src.current_center_y, dest.current_center_x,  dest.current_center_y);
 //    		double endTime = masterAnimationSpeed*0.5*Math.sqrt(dist/full);
     		//
@@ -1029,7 +1029,7 @@ public class XehViewer extends CCanvas<XehCell,XehBoard> implements XehConstants
      * <p>
      * if complete is true, we definitely want to start from scratch, otherwise
      * only the known changed elements need to be painted.  Exactly what this means
-     * is game specific, but for hex the underlying empty board is cached as a deep
+     * is game specific, but for most games the underlying empty board is cached as a
      * background, but the chips are painted fresh every time.
      * <p>
      * this used to be very important to optimize, but with faster machines it's

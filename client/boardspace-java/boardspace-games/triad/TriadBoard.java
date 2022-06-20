@@ -10,7 +10,7 @@ import triad.TriadChip.ChipColor;
 
 
 /**
- * HexGameBoard knows all about the game of Hex, which is played
+ * TriadBoard knows all about the game of Hex, which is played
  * on a hexagonal board. It gets a lot of logistic support from 
  * common.hexBoard, which knows about the coordinate system.  
  * 
@@ -116,26 +116,16 @@ class TriadBoard extends hexBoard<TriadCell> implements BoardProtocol,TriadConst
     
 
     // precompute which border cell decorations needs to be drawn 
-    // this is peculiar to the way we draw the borders of the hex board
+    // this is peculiar to the way we draw the borders of the board
     // not a general game requirement.
     private void setBorderDirections()
     {	for(TriadCell c = allCells;
     		c!=null;
     		c = c.next)
-    	{
-    	int bd = 0;
-        for(int direction=0;direction<6;direction++)
-        {		TriadCell border0 = c.exitTo(direction);
-        		TriadCell border1 = c.exitTo(direction+1); 
-        		// this is a little complex because the corner cells
-        		// are part of two borders.
-        		if((border0==null) && (border1==null))
-        		{	bd |= (1<<direction);
-        		}
-        	}
-    	c.borders = bd;
+    	{	c.setBorderMask(c.borderDirectionMask());
     	}
     }
+
     // standared init for Hex.  Presumably there could be different
     // initializations for variation games.
     private void Init_Standard(String game)
@@ -145,7 +135,7 @@ class TriadBoard extends hexBoard<TriadCell> implements BoardProtocol,TriadConst
     	else { throw G.Error(WrongInitError,game); }
         gametype = game;
         setState(TriadState.PUZZLE_STATE);
-        reInitBoard(firstcol, ncol, ZInCol); //this sets up the hex board
+        reInitBoard(firstcol, ncol, ZInCol); //this sets up a hexagonal board
         
       	setBorderDirections();	// mark the border cells for use in painting
         
@@ -267,12 +257,11 @@ class TriadBoard extends hexBoard<TriadCell> implements BoardProtocol,TriadConst
         unresign = from_b.unresign;
         bunny_player = from_b.bunny_player;
         candidate_player = from_b.candidate_player;
-        droppedDest = null;
         bunnyDrop = null;
-        pickedSource = null;
-        pickedObject = null;
         lastPicked = null;
         pickedObject = from_b.pickedObject;
+        pickedSource = getCell(from_b.pickedSource);
+        droppedDest = (from_b.droppedDest);
         AR.copy(chips_on_board,from_b.chips_on_board);
         copyFrom(playerCell,from_board.playerCell);	// needed so screen location is propagated
 
@@ -795,7 +784,7 @@ class TriadBoard extends hexBoard<TriadCell> implements BoardProtocol,TriadConst
         case CONFIRM_END_STATE:
         case DRAW_STATE:
         case PLAY_STATE:
-        	// for hex, you can pick up a stone in the storage area
+        	// you can pick up a stone in the storage area
         	// but it's really optional
         	return(false);
 		case GAMEOVER_STATE:

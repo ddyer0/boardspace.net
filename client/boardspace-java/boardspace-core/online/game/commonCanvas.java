@@ -133,7 +133,7 @@ public abstract class commonCanvas extends exCanvas
 	public enum Itype
     {LRTB,	// left-right fast, top-bottom slow
      RLTB,	// right-left fast, top-bottom slow
-     TBRL,	// top-bottom fast, right-left slow (normal for hex grids)
+     TBRL,	// top-bottom fast, right-left slow (normal for hexagonal grids)
      TBLR,	// top-bottom fast, left-right slow
      LRBT,	// left-right fast, bottom-top slow
      BTLR,	// bottom-top fast, left-right slow
@@ -451,7 +451,6 @@ public abstract class commonCanvas extends exCanvas
 	private static final String TrackMice = "Track Mice";
 	private static final String SelectAGameMessage = "Select Game";
 	private static final String RecordOfGame = "Record of Game #1";
-
 	static public String[] CanvasStrings = {
 			TrackMice,
 	        TileSizeMessage,
@@ -3892,6 +3891,10 @@ public abstract class commonCanvas extends exCanvas
     		  truncateHistory();
     		}
     }
+    public boolean canSendAnyTime(commonMove m)
+    {
+    	return (m.op==MOVE_PLEASEUNDO);
+    }
     /**
      * perform and optionally transmit a move, return true if ok.  Note, it's tempting
      * to do any "auto move" that is needed in the continuation of this method, but don't.
@@ -3905,7 +3908,7 @@ public abstract class commonCanvas extends exCanvas
 
     public boolean PerformAndTransmit(commonMove m, boolean transmit,replayMode mode)
     {	//G.print("e "+my+" "+m);
-    	if(transmit && (m.op!=MOVE_PLEASEUNDO) && G.debug())
+    	if(transmit && !canSendAnyTime(m) && G.debug())
     	{ G.Assert(reviewOnly || mutable_game_record || !reviewMode(),
     			"can't send moves during in-game review: %s",m); 
     	}
@@ -4577,7 +4580,10 @@ public abstract class commonCanvas extends exCanvas
         l.tickTockOption = myFrame.addOption(s.get(TickTockAction),l.playTickTockSounds,deferredEvents);
         l.tickTockOption.setForeground(Color.blue);
         l.mouseCheckbox = myFrame.addOption(s.get(TrackMice),true,null);
-
+        if(enableAutoDone())
+        {	autoDone = Default.getBoolean(Default.autodone);
+        	autoDoneCheckbox = myFrame.addOption(s.get(AutoDoneEverywhere),autoDone,deferredEvents);
+        }
         boolean viewer = reviewOnly;
 
 
@@ -4786,6 +4792,10 @@ public abstract class commonCanvas extends exCanvas
     	{	chooseVcrVar((commonMove)(hidden.vcrVarPopup.rawValue));
     		handled = true;
         }
+    	else if (target == autoDoneCheckbox)
+    	{
+    		autoDone = autoDoneCheckbox.getState();
+    	}
         else if (target == l.tickTockOption)
         {
         	l.playTickTockSounds = l.tickTockOption.getState();
@@ -6537,7 +6547,12 @@ public abstract class commonCanvas extends exCanvas
     		 } 			    		 
     		}
     		else 
-    		{ animating = false; }
+    		{ animating = false; 
+    		}
+    	}
+        if(autoDoneActive() && mandatoryDoneState())
+		  {
+			  sendDone();
     	}
         
     	}
@@ -8405,5 +8420,11 @@ public void verifyGameRecord()
 	    	return(msg);
 	    }
 
-		
+	    public boolean autoDone = false;
+	    public boolean enableAutoDone = false;
+		public boolean enableAutoDone() { return (enableAutoDone); }
+		private JCheckBoxMenuItem autoDoneCheckbox = null;
+		public boolean mandatoryDoneState() { return OurMove() && getBoard().DoneState(); }
+		public void sendDone() { PerformAndTransmit("Done"); }
+		public boolean autoDoneActive() { return autoDone  && !reviewMode(); }
 }

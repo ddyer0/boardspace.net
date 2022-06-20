@@ -99,10 +99,10 @@ public abstract class gBoard<CELLTYPE extends cell<CELLTYPE>> extends RBoard<CEL
     		case LRBT:
     		case LRTB:
     		case RLTB:
-    			// hex boards are represented as fixed number of columns and a variable number
+    			// hexagonal boards are represented as fixed number of columns and a variable number
     			// of rows per column, so it's only convenient to iterate down the column
-    			G.Assert(board.geometry!=Geometry.Hex,"for Hex boards, use TBRL or TBLR, not %s",type);
-    			G.Assert((board.geometry!=Geometry.Hex) || !swapXY, "swapXY not supported for hex boards");
+    			G.Assert(board.geometry!=Geometry.Hex,"for Hexagonal boards, use TBRL or TBLR, not %s",type);
+    			G.Assert((board.geometry!=Geometry.Hex) || !swapXY, "swapXY not supported for hexagonal boards");
     		default: break;
     		}
     		
@@ -617,7 +617,7 @@ public abstract class gBoard<CELLTYPE extends cell<CELLTYPE>> extends RBoard<CEL
 /**
  * dxs and dys together define the relative offset to adjacent cells in each
  * direction.  The number of offsets must agree with the geometry of cells on
- * the board - ie; for Hex geometry there must be 6 offsets.
+ * the board - ie; for Hexagonal geometry there must be 6 offsets.
  * This is an internal function used a board setup time.
  * @param dxs an array of x offsets
  * @param dys an array of y offsets
@@ -631,7 +631,7 @@ public abstract class gBoard<CELLTYPE extends cell<CELLTYPE>> extends RBoard<CEL
      {	int xc = BCtoXindex(cc.col,cc.row);
  		int yc = BCtoYindex(cc.col,cc.row);
  		// do this in this convoluted way so we take into account
- 		// the various ways that hex grids can be numbered.  They all
+ 		// the various ways that hexagonal grids can be numbered.  They all
  		// use the same underlying 2x1 array architecture.  Square
  		// grids are easier.
  		for(int dir = 0;dir<mod; dir++)
@@ -751,7 +751,7 @@ public abstract class gBoard<CELLTYPE extends cell<CELLTYPE>> extends RBoard<CEL
 	 displayParameters.reverse_x = displayParameters.reverse_y = false;
      for(CELLTYPE c = allCells; c!=null; c=c.next)
      {	char col = c.col;
-     	// this is what makes calculating the box tricky for hex grids with reverse coordinates
+     	// this is what makes calculating the box tricky for hexagonal grids with reverse coordinates
      	int thisrow = (isHex&&(c.row==1)) ? 0 : c.row;
 
          br.addPoint(cellToX(col, thisrow, GRIDSIZE, 0),  cellToY(col, thisrow, GRIDSIZE, 0));
@@ -927,7 +927,7 @@ public abstract class gBoard<CELLTYPE extends cell<CELLTYPE>> extends RBoard<CEL
 	}
 	
 	// draw at the left or right.  This has not been tested for the combination
-	// of a hex board and right numbers
+	// of a hexagonal board and right numbers
 	private void drawVerticalGrid(Graphics gc,String left_style,boolean isLeft,
 			Color gridColor,int div,
 			int colNum,int lastcolNum,int stepCol)

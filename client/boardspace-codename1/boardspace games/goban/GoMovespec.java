@@ -281,7 +281,7 @@ public class GoMovespec extends commonMove implements GoConstants
         case MOVE_KOMI:
         	return("KM "+(to_row/2.0));
         default:
-            return (D.findUnique(op));
+            return (D.findUniqueTrans(op));
         }
     }
     public Text shortMoveText(commonCanvas c)

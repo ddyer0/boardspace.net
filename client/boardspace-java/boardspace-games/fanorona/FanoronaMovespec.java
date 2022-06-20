@@ -199,9 +199,8 @@ public class FanoronaMovespec extends commonMove implements FanoronaConstants
         	return(""+from_col + from_row+" "+to_col + to_row);
         case MOVE_DONE:
             return ("");
-
         default:
-            return (D.findUnique(op));
+            return (D.findUniqueTrans(op));
 
         }
     }

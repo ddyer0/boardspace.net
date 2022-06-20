@@ -26,9 +26,7 @@ import online.search.SimpleRobotProtocol;
  * Change History
  *
  * Feb 2008 initial work. 
- *
- * This code is derived from the "HexGameViewer" and other viewer classes.  Refer to the
- * documentation there for overall structure notes.
+ * 
  * 
 */
 public class Warp6Viewer extends CCanvas<Warp6Cell,Warp6Board> implements Warp6Constants, GameLayoutClient
@@ -81,7 +79,7 @@ public class Warp6Viewer extends CCanvas<Warp6Cell,Warp6Board> implements Warp6C
 	 * info contains all the goodies from the environment.
 	 * */
     public void init(ExtendedHashtable info,LFrameProtocol frame)
-    {
+    {	enableAutoDone = true;
         super.init(info,frame);
         MouseColors = Warp6MouseColors;
         MouseDotColors = Warp6MouseDotColors;
@@ -89,7 +87,7 @@ public class Warp6Viewer extends CCanvas<Warp6Cell,Warp6Board> implements Warp6C
 
         b = new Warp6Board(randomKey,info.getString(OnlineConstants.GAMETYPE, Warp6_Standard_Init),
         		getStartingColorMap());
-        //useDirectDrawing(); // not tested yet
+        useDirectDrawing(true); // not tested yet
         doInit(false);
 
         
@@ -505,7 +503,7 @@ public class Warp6Viewer extends CCanvas<Warp6Cell,Warp6Board> implements Warp6C
        double messageRotation = pl.messageRotation(); 
        if (vstate != Warp6State.PUZZLE_STATE)
         {
-			if(!planned)
+			if(!planned && !autoDoneActive())
 				{handleDoneButton(gc,doneRect,(gb.DoneState() ? select : null), 
 					HighlightColor, rackBackGroundColor);
 				}

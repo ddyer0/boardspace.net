@@ -23,7 +23,7 @@ import online.game.*;
  * start there and be implemented completely from scratch, but in practice there is another huge pile
  * of things that every game has to do; dealing with graphics, mouse events, saving and restoring the
  * game state from static records, replaying and reviewing games and so on.   These are implemented in the 
- * class "commonCanvas" and by several board-like base classes for Hex and Square geometry boards.   
+ * class "commonCanvas" and by several board-like base classes for hexagonal and square geometry boards.   
  * All the existing games for boardspace use these classes to provide graphics and basic board representation.
  * 
  * For games with robot players, there is another huge pile of things that a robot has to do, generating
@@ -45,12 +45,6 @@ public class SyzygyViewer extends CCanvas<SyzygyCell,SyzygyBoard> implements Syz
     // file names for jpeg images and masks
     static final String ImageDir = "/syzygy/images/";
 	
-    static final double[][] TILESCALES=
-    {   {0.65,0.50,2.1},	// selection
-    	{0.50,0.55,2.1},	// hex tile and border artworks
-    	{0.50,0.50,1.9}};	// unrotated hex tile and border artwork
-
-    
     static final int BACKGROUND_TILE_INDEX = 0;
     static final int BACKGROUND_REVIEW_INDEX = 1;
     static final int BACKGROUND_INDEX = 2;
@@ -78,7 +72,7 @@ public class SyzygyViewer extends CCanvas<SyzygyCell,SyzygyBoard> implements Syz
     // addRect is a service provided by commonCanvas, which supports a mode
     // to visualize the layout during development.  Look for "show rectangles"
     // in the options menu.
-    private Rectangle repRect = addRect("repRect");	// not needed for hex
+    private Rectangle repRect = addRect("repRect");	// Not needed for games with no possible repetition
     private Rectangle chipRect = addRect("samplechips");
 
     private Color ZoomColor = new Color(0.0f,0.0f,1.0f);
@@ -288,9 +282,9 @@ public class SyzygyViewer extends CCanvas<SyzygyCell,SyzygyBoard> implements Syz
       //gb.DrawGrid(gc, brect, use_grid, boardBackgroundColor, GridColor, GridColor, GridColor);
 
       // draw the tile grid.  The positions are determined by the underlying board
-      // object, and the tile itself if carefully crafted to tile the hex board
-      // when drawn this way.  For the current Hex graphics, we could use the
-      // simpler loop for(HexCell c = b.allCells; c!=null; c=c.next) {}
+      // object, and the tile itself if carefully crafted to tile the board
+      // when drawn this way.  For games with simple graphics, we could use the
+      // simpler loop for(Cell c = b.allCells; c!=null; c=c.next) {}
       // but for more complex graphics with overlapping shadows or stacked
       // objects, this double loop is useful if you need to control the
       // order the objects are drawn in.
@@ -388,7 +382,7 @@ public class SyzygyViewer extends CCanvas<SyzygyCell,SyzygyBoard> implements Syz
  		GC.setClip(gc,oldClip);
     }
 
-	// draw a box of spare chips. For hex it's purely for effect.
+	// draw a box of spare chips. It's purely for visual effect.
     private void DrawChipPool(Graphics gc, Rectangle r, int player, HitPoint highlight,SyzygyBoard gb)
     {
         
@@ -497,7 +491,7 @@ public class SyzygyViewer extends CCanvas<SyzygyCell,SyzygyBoard> implements Syz
             				gb.whoseTurn,
             				stateRect);
             goalAndProgressMessage(gc,nonDragSelect,Color.yellow,s.get(GoalString),progressRect, goalRect);
-            DrawRepRect(gc,messageRotation,veryLightGray,gb.Digest(),repRect);	// Not needed for hex
+            DrawRepRect(gc,messageRotation,veryLightGray,gb.Digest(),repRect);	// Not needed for games with no possible repetition
        
         // draw the vcr controls
         drawVcrGroup(nonDragSelect, gc);

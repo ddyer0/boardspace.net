@@ -9,16 +9,19 @@ class CellStack extends OStack<TriadCell>
 	public TriadCell[] newComponentArray(int n) { return(new TriadCell[n]); }
 }
 //
-// specialized cell used for the game hex, not for all games using a hex board.
+// specialized cell used for the this game.
 //
-// the game hex needs only a char to indicate the contents of the board.  Other
-// games commonly add a more complex structue.   Games with square geometry
-// instead of hex can use Geometry.Oct instead of Hex_Geometry
+
+
+
 //
 public class TriadCell extends chipCell<TriadCell,TriadChip> implements TriadConstants
 {	
 	int sweep_counter;		// the sweep counter for which blob is accurate
-	int borders = -1;		// bitmask of possible borders
+	private int borders = -1;		// bitmask of possible borders
+	public int borderMask() { return borders; }
+	public void setBorderMask(int n) { borders = n;}
+	
 	ChipColor color;		// owning color
 	public TriadCell(char c,int r) 		// construct a cell on the board
 	{	super(cell.Geometry.Hex,c,r);

@@ -279,7 +279,7 @@ public class ExxitGameBoard extends hexBoard<ExxitCell> implements BoardProtocol
     	ncol = ExxitNInCol;
         gametype = game;
         setState(ExxitState.PUZZLE_STATE);
-        initBoard(firstcol, ncol, null); //this sets up the hex board
+        initBoard(firstcol, ncol, null); //this sets up a hexagonal board
         whoseTurn = FIRST_PLAYER_INDEX;
         numberOfThings = everyThing.length;
         
@@ -1504,7 +1504,7 @@ public int CanDistributeToward(ExxitCell c,int dir,int who)
 			}	// fell off the board
 		if(cell.pieceAtIndex(0).typecode==CHIP_TYPE) { found=false; break; }	// found a chip off the board, no distribution
 		if(!foundsome && (p.typecode==CHIP_TYPE))
-		{	// first hex in this direction that contains a piece
+		{	// first cell in this direction that contains a piece
 			foundsome = true;
 			if((playerIndex(p)==nextPlayer[who])&&(cell.height()<=oheight)) { found=true; } else { break; }
 		}

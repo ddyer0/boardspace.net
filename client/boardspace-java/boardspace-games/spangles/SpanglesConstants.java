@@ -54,7 +54,7 @@ public interface SpanglesConstants
     static final int MOVE_PICKB = 206; // pick from the board
     static final int MOVE_DROPB = 207; // drop on the board
  		
-    static final String Spangles_SGF = "spangles"; // sgf game number allocated for hex
+    static final String Spangles_SGF = "spangles"; // sgf game name
     static final String[] SpanglesGRIDSTYLE = { "1", null, "A" }; // left and bottom numbers
 
  

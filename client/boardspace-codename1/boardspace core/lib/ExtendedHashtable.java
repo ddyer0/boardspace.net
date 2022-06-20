@@ -63,7 +63,7 @@ public class ExtendedHashtable extends TreeMap<String,Object>
      */
         public synchronized Object put(String key, Object val)
         {	
-        	super.put(noCase ? key.toLowerCase() : key, (val==null) ? NullObject : val);
+        	super.put( key, (val==null) ? NullObject : val);
         	return(val);
         }
     /**
@@ -205,7 +205,7 @@ public class ExtendedHashtable extends TreeMap<String,Object>
         {	
             if (val == null)
             {
-            	throw G.Error("no value for key: %s" , key);
+            	throw G.Error("no value for key: " + key);
             }
 
             put(key, val);
@@ -283,6 +283,11 @@ public class ExtendedHashtable extends TreeMap<String,Object>
             }
 
             return (possible);
+        }
+        public String findUniqueTrans(int op)
+        {
+        	String un = findUnique(op);
+        	return G.getTranslations().get(un);
         }
     /**
      * copy an array of values from another hash table.

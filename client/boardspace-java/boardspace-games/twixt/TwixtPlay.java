@@ -971,7 +971,7 @@ public commonMove Get_Random_Move(Random rand)
         monte_search_state.maxThreads = DEPLOY_THREADS;
         monte_search_state.random_moves_per_second = minMovesPerSecond;		// 
         monte_search_state.max_random_moves_per_second = maxMovesPerSecond;		// 
-        // for Hex, the child pool is exhausted very quickly, but the results
+        // for some games, the child pool is exhausted very quickly, but the results
         // still get better the longer you search.  Other games may work better
         // the other way.
         monte_search_state.stored_child_limit_stop = STORED_CHILD_LIMIT_STOP;

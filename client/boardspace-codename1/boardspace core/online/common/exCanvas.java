@@ -333,7 +333,8 @@ public abstract class exCanvas extends ProxyWindow
     	int oldh = getHeight();
     	super.setBounds(l,t,w,h);
         if((w>0)&&(h>0) && ((oldw!=w)||(oldh!=h))) 
-        	{ 
+        	{ // changing orientation unzooms
+        	  if(oldw<oldh != w<h) { setGlobalZoom(0,0); }
         	  setSX(getSX());
         	  setSY(getSY());	// clip scrolling when the geometry changes
         	  imageCache.clearCachedImages();
@@ -1411,7 +1412,6 @@ graphics when using a touch screen.
         }
         public void Pinch(int realx,int realy,double val,double twist)
         {	
-    		//Plog.log.addLog("global pinch ",realx,",",realy," ",val);
     		int cx = getSX();
     		int cy = getSY();
         	boolean startingPinch = val<0;
@@ -1426,7 +1426,7 @@ graphics when using a touch screen.
         		{	
         			//G.print("Twist "+startingPinch+" "+globalRotation+" "+twist);
             		if(startingPinch)	// start of a pinch 
-            			{ //Plog.log.addLog("Start pinch\n",G.getStackTrace());
+        			{ 
             			  globalZoomStartValue = globalZ;
             			  globalPanStartX = realx;
             			  globalPanStartY = realy;

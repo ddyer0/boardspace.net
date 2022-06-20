@@ -42,7 +42,7 @@ public interface TicTacNineConstants
     static final int MOVE_RACK_BOARD = 209;	// move from rack to board
     static final int MOVE_BOARD_BOARD = 210;	// move board to board
 	
-    static final String TicTacNine_SGF = "TicTacNine"; // sgf game number allocated for hex
+    static final String TicTacNine_SGF = "TicTacNine"; // sgf game name
     static final String[] TICTACNINESTYLE = { "1", null, "A" }; // left and bottom numbers
 
  

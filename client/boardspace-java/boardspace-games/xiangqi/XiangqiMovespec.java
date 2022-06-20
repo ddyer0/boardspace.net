@@ -218,7 +218,7 @@ public class XiangqiMovespec extends commonMove implements XiangqiConstants
         case MOVE_DECLINE_DRAW: return(TextChunk.create("Draw Declined"));
         
         default:
-            return (TextChunk.create(D.findUnique(op)));
+            return (TextChunk.create(D.findUniqueTrans(op)));
 
         }
     }

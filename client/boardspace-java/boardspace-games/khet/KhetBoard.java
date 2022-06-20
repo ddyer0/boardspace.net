@@ -94,6 +94,7 @@ class KhetBoard extends rectBoard<KhetCell> implements BoardProtocol,KhetConstan
         G.Assert(sameCells(droppedDestStack,from_b.droppedDestStack),"droppedDestStack mismatch");
         G.Assert(pickedObject==from_b.pickedObject,"pickedObject doesn't match");
         G.Assert(sameCells(rotatedCell,from_b.rotatedCell),"rotatedCell matches");
+        G.Assert(rotatedDirection==from_b.rotatedDirection,"rotatedDirection matches");
         // this is a good overall check that all the copy/check/digest methods
         // are in sync, although if this does fail you'll no doubt be at a loss
         // to explain why.
@@ -139,6 +140,7 @@ class KhetBoard extends rectBoard<KhetCell> implements BoardProtocol,KhetConstan
 
 		v ^= chip.Digest(r,pickedObject);
 		v ^= Digest(r,rotatedCell);
+		v ^= Digest(r,rotatedDirection);
 		v ^= Digest(r,pickedSourceStack);
 		v ^= Digest(r,droppedDestStack);
 		v ^= Digest(r,capturedCells);
@@ -164,6 +166,7 @@ class KhetBoard extends rectBoard<KhetCell> implements BoardProtocol,KhetConstan
         lastDest = getCell(from_b.lastDest);
         pickedObject = from_b.pickedObject;	
         rotatedCell = getCell(from_b.rotatedCell);
+        rotatedDirection = from_b.rotatedDirection;
         getCell(pickedSourceStack,from_b.pickedSourceStack);
         getCell(droppedDestStack,from_b.droppedDestStack);
         getCell(capturedCells,from_b.capturedCells);
@@ -229,6 +232,7 @@ class KhetBoard extends rectBoard<KhetCell> implements BoardProtocol,KhetConstan
 		tempCapturedCells.clear();
 		pickedObject = null;
 		rotatedCell = null;
+		rotatedDirection = 0;
 		lastDest = null;
 		rotatedDirection = 0;
         allCells.setDigestChain(r);

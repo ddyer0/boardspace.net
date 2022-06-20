@@ -242,7 +242,7 @@ public class SixmakingMovespec extends commonMove implements SixmakingConstants
 
         default:
   
-            return (TextChunk.create(D.findUnique(op)));
+            return (TextChunk.create(D.findUniqueTrans(op)));
 
         }
     } 

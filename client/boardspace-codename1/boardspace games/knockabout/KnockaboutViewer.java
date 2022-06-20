@@ -29,8 +29,6 @@ import lib.StockArt;
  * Feb 2008 initial work. 
  *
  * 
- * This code is derived from the "HexGameViewer" and other viewer classes.  Refer to the
- * documentation there for overall structure notes.
  * 
 */
 public class KnockaboutViewer extends CCanvas<KnockaboutCell,KnockaboutBoard> implements KnockaboutConstants, GameLayoutClient
@@ -77,7 +75,7 @@ public class KnockaboutViewer extends CCanvas<KnockaboutCell,KnockaboutBoard> im
 	 * info contains all the goodies from the environment.
 	 * */
     public void init(ExtendedHashtable info,LFrameProtocol frame)
-    {
+    {	enableAutoDone = true;
         super.init(info,frame);
         int randomKey = sharedInfo.getInt(OnlineConstants.RANDOMSEED,-1);
         b = new KnockaboutBoard(randomKey,info.getString(OnlineConstants.GAMETYPE, Knockabout_Standard_Init),
@@ -393,7 +391,7 @@ public class KnockaboutViewer extends CCanvas<KnockaboutCell,KnockaboutBoard> im
   	 
        if (vstate != KnockaboutState.PUZZLE_STATE)
         {
-			if(!planned)
+			if(!planned & !autoDoneActive())
 				{handleDoneButton(gc,doneRect,(gb.DoneState() ? select : null), 
 					HighlightColor, rackBackGroundColor);
 				}

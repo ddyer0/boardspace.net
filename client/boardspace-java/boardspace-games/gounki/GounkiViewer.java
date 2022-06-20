@@ -27,7 +27,7 @@ public class GounkiViewer extends CCanvas<GounkiCell,GounkiBoard> implements Gou
 	 * 
 	 */
 	 
-	static final String Gounki_SGF = "Gounki"; // sgf game number allocated for hex
+	static final String Gounki_SGF = "Gounki"; // sgf game name
 	static final String ImageDir = "/gounki/images/";
 	// sounds
     static final int BACKGROUND_TILE_INDEX = 0;

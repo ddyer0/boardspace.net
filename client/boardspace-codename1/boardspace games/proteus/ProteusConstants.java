@@ -22,6 +22,43 @@ public interface ProteusConstants
 	static String NoWin = "No goal has been set";
 	static String NoTrade = "No tile swap rule yet";
 	
+	public static void putStrings()
+	{/*
+	String ProteusStrings[] =
+	{	"Proteus",
+		VictoryCondition,
+		NoWin,
+		NoMove,
+		NoTrade,
+		"Move a piece or a swap two tiles",	
+		NoGoal,
+		"Place a tile or one of your pieces",
+	   	"Win:",
+       	"goal",
+      	"Swap Tiles:",
+      	"swap rule",
+    	"Move Pieces:",
+    	"piece movement",
+
+	};
+	String ProteusStringPairs[][] = 
+	{   {"Proteus_family","Proteus"},
+		{"Proteus_variation","Standard Proteus"},
+		{LineGoal,"Win\nSame line"},
+		{ColorGoal,"Win\nSame color"},
+		{ShapeGoal,"Win\nSame shape"},
+		{ColorTrade,"Swap Tiles\nsame color"},
+		{ShapeTrade,"Swap Tiles\nsame shape"},
+		{PlayerTrade,"Swap Tiles\nDifferent player"},
+		{AdjacentMove,"Move Pieces\nAdjacent square"},
+		{SameMove,"Move Pieces\nSame row/column"},
+		{DifferentMove,"Move Pieces\nDifferent row/column"},
+		
+	};
+		InternationalStrings.put(ProteusStrings);
+		InternationalStrings.put(ProteusStringPairs);
+	*/
+	}
 	static enum Variation
 	{
 		Proteus;

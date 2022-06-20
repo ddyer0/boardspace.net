@@ -406,7 +406,7 @@ public class Hivemovespec extends commonMove implements HiveConstants
         case MOVE_NULL:
         case MOVE_RESIGN:
         case MOVE_PASS:
-            return (D.findUnique(op));
+            return (D.findUniqueTrans(op));
 
         default:
         	return D.findUnique(op);
@@ -458,7 +458,7 @@ public class Hivemovespec extends commonMove implements HiveConstants
             return (TextChunk.create(""));
 
         default:
-            return (TextChunk.create(D.findUnique(op)));
+            return (TextChunk.create(D.findUniqueTrans(op)));
 
         }
     }

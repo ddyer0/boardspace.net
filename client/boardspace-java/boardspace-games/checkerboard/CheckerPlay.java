@@ -119,7 +119,7 @@ public class CheckerPlay extends commonRobot<CheckerBoard> implements Runnable,
         // this avoids the various problems such as the robot committing suicide
         // because it's going to lose anyway, and the position looks better than
         // if the opponent makes the last move.  Technically, this isn't needed
-        // for hex because there is no such thing as a suicide move, but the logic
+        // if there is no such thing as a suicide move, but the logic
         // is included here because this is supposed to be an example.
         if(val0>=VALUE_OF_WIN) { return(val0); }
         if(val1>=VALUE_OF_WIN) { return(-val1); }
@@ -232,7 +232,7 @@ public class CheckerPlay extends commonRobot<CheckerBoard> implements Runnable,
             // picking moves whose value is uncertain due to cutoffs.  This makes
             // the search MUCH slower so depth ought to be limited
             // if ((randomn>0)&&(dif>0.0)) { depth--; }
-            // for games such as hex, where there are no "fools mate" type situations
+            // for games where there are no "fools mate" type situations
             // the best solution is to use dif=0.0;  For games with fools mates,
             // set dif so the really bad choices will be avoided
             board.robotDepth = 0;
@@ -268,8 +268,8 @@ public class CheckerPlay extends commonRobot<CheckerBoard> implements Runnable,
     }
 
  /**
-  * get a random move by selecting a random one from the full list.  For games like
-  * hex, which have trivial move generators, this is "only" a factor of 2 or so improvement
+ * get a random move by selecting a random one from the full list.
+  * for games which have trivial move generators, this is "only" a factor of 2 or so improvement
   * in the playout rate.  For games with more complex move generators, it can by much more.
   * Diagonal-Blocks sped up by 10x 
   * 
@@ -305,7 +305,7 @@ public class CheckerPlay extends commonRobot<CheckerBoard> implements Runnable,
  	return(simpleScore(player));
  }
 
- // this is the monte carlo robot, which for hex is much better then the alpha-beta robot
+ // this is the monte carlo robot, which for some games is much better then the alpha-beta robot
  // for the monte carlo bot, blazing speed of playouts is all that matters, as there is no
  // evaluator other than winning a game.
  public commonMove DoMonteCarloFullMove()

@@ -27,15 +27,13 @@ import lib.StockArt;
  *
  * May 2007 initial work in progress. 
  *
- * This code is derived from the "HexGameViewer" class.  Refer to the
- * documentation there for overall structure notes.
 */
 public class DipoleGameViewer extends CCanvas<DipoleCell,DipoleBoard> implements DipoleConstants, GameLayoutClient
 {
      /**
 	 * 
 	 */
-	   static final String Dipole_SGF = "Dipole"; // sgf game number allocated for hex
+	   static final String Dipole_SGF = "Dipole"; // sgf game name
 	   
 	   
 	    // file names for jpeg images and masks
@@ -99,7 +97,7 @@ public class DipoleGameViewer extends CCanvas<DipoleCell,DipoleBoard> implements
 	 * info contains all the goodies from the environment.
 	 * */
     public void init(ExtendedHashtable info,LFrameProtocol frame)
-    {
+    {	enableAutoDone = true;
         super.init(info,frame);
         
         b = new DipoleBoard(info.getString(OnlineConstants.GAMETYPE, "Dipole"),
@@ -376,7 +374,7 @@ public class DipoleGameViewer extends CCanvas<DipoleCell,DipoleBoard> implements
 
 		if (vstate != DipoleState.PUZZLE_STATE)
         {
-			if(!planned)
+			if(!planned && !autoDoneActive())
 				{handleDoneButton(gc,doneRect,(gb.DoneState() ? select : null), 
 					HighlightColor, rackBackGroundColor);
 				}

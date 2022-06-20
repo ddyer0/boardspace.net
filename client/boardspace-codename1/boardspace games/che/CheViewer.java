@@ -39,7 +39,7 @@ import lib.StockArt;
  * start there and be implemented completely from scratch, but in practice there is another huge pile
  * of things that every game has to do; dealing with graphics, mouse events, saving and restoring the
  * game state from static records, replaying and reviewing games and so on.   These are implemented in the 
- * class "commonCanvas" and by several board-like base classes for Hex and Square geometry boards.   
+ * class "commonCanvas" and by several board-like base classes for hexagonal and square geometry boards.   
  * All the existing games for boardspace use these classes to provide graphics and basic board representation.
  * 
  * For games with robot players, there is another huge pile of things that a robot has to do, generating
@@ -52,7 +52,7 @@ import lib.StockArt;
  * Change History
  */
 public class CheViewer extends CCanvas<CheCell,CheBoard> implements CheConstants, GameLayoutClient
-{	static final String Che_SGF = "che"; // sgf game number allocated for hex
+{	static final String Che_SGF = "che"; // sgf game name
 		// file names for jpeg images and masks
 	static final String ImageDir = "/che/images/";
 
@@ -226,7 +226,7 @@ public class CheViewer extends CCanvas<CheCell,CheBoard> implements CheConstants
     }
 
 
-	// draw a box of spare chips. For hex it's purely for effect.
+	// draw a box of spare chips. It's purely for visual effect.
     private void DrawChipPool(Graphics gc, Rectangle r,HitPoint highlight,CheBoard gb)
     {	int w = G.Width(r);
     	int h = G.Height(r);
@@ -494,7 +494,7 @@ public class CheViewer extends CCanvas<CheCell,CheBoard> implements CheConstants
             		stateRect);
        textures[PlayerSamples[map[gb.whoseTurn]]].centerImage(gc,iconRect);
         goalAndProgressMessage(gc,nonDragSelect,s.get(GoalMessage),progressRect, goalRect);
-            //DrawRepRect(gc,gb.Digest(),repRect);	// Not needed for hex
+            //DrawRepRect(gc,gb.Digest(),repRect);	// Not needed for games with no possible repetition
         
         // draw the vcr controls
         drawVcrGroup(nonDragSelect, gc);
@@ -680,7 +680,7 @@ public class CheViewer extends CCanvas<CheCell,CheBoard> implements CheConstants
      * 
      * if complete is true, we definitely want to start from scratch, otherwise
      * only the known changed elements need to be painted.  Exactly what this means
-     * is game specific, but for hex the underlying empty board is cached as a deep
+     * is game specific, but for most games the underlying empty board is cached as a
      * background, but the chips are painted fresh every time.
      * 
      * this used to be very important to optimize, but with faster machines it's

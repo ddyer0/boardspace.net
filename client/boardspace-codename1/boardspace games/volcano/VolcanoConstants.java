@@ -12,8 +12,8 @@ public interface VolcanoConstants
 	static final double VALUE_OF_WIN = 1000.0;
 	static final String Volcano_INIT = "volcano";	//init for standard game
 	static final String Volcano_R_INIT = "volcano-r";	// randomized game
-	static final String Volcano_H_INIT = "volcano-h";	// hex grid game
-	static final String Volcano_HR_INIT = "volcano-hr"; // hex randomized game
+	static final String Volcano_H_INIT = "volcano-h";	// hexagonal grid game
+	static final String Volcano_HR_INIT = "volcano-hr"; // hexagonal randomized game
 	static final String CaptureBestMessage = "Capture the best combinations of colors and sizes";
 	static final String EndGameMessage = "Click on Done to end the game (you lose)";
 	static final String MoveCapMessage = "Move a volcano cap";
@@ -69,7 +69,7 @@ public interface VolcanoConstants
    		{1,2,4,4,4}};
     static int[] ZfirstInCol = { 3, 2, 1, 0, 1, 2, 3 }; // these are indexes into the first ball in a column, ie B1 has index 2
     static int[] ZnInCol = { 4, 5, 6, 7, 6, 5, 4 }; // depth of columns, ie A has 4, B 5 etc.
-    static final int starting_hex_colors[][] =	// initializations for hex board
+    static final int starting_hex_colors[][] =	// initializations for hexagonal board
     {	{0,0,0,1},
     	{2,0,0,1,1},
     	{2,2,0,1,1,1},
@@ -101,7 +101,7 @@ public interface VolcanoConstants
     static final int MOVE_DROPB = 207; // drop on the board
     static final int MOVE_BOARD_BOARD = 210;	// move board to board
 	
-    static final String Volcano_SGF = "Volcano"; // sgf game number allocated for hex
+    static final String Volcano_SGF = "Volcano"; // sgf game name
     static final String[] VOLCANOGRIDSTYLE = { "1", null, "A" }; // left and bottom numbers
  
     // file names for jpeg images and masks
@@ -125,9 +125,9 @@ public interface VolcanoConstants
 	 {0.5,0.5,0.5},		// downarrow
 	 {0.5,0.5,0.5},		// uparrow
 	 {0.5,0.5,0.3},		// "X"
-	 {0.5,0.5,0.98},	// hex board
+	 {0.5,0.5,0.98},	// hexagonal board
 	 {0.5,0.5,0.98},	// r np board
-	 {0.5,0.5,0.98},	// hex np board
+	 {0.5,0.5,0.98},	// hexagonal np board
 	};
     static final int BACKGROUND_TILE_INDEX = 0;
     static final int BACKGROUND_REVIEW_INDEX = 1;

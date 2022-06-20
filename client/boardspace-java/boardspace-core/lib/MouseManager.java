@@ -133,6 +133,8 @@ public class MouseManager
     private MouseState lastState = MouseState.LAST_IS_UP;
     private synchronized void setMouseInternal(MouseState ev,int button,int x,int y,double amount,double angle)
     {	
+    	if((ev==MouseState.LAST_IS_DRAG)&& (button==0)) { button = 1; }
+
         if(virtualMouseMode 
         		&& ((ev==MouseState.LAST_IS_MOVE)
         			|| (ev==MouseState.LAST_IS_IDLE))) 

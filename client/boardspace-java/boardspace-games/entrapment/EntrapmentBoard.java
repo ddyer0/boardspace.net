@@ -328,19 +328,7 @@ class EntrapmentBoard extends squareBoard<EntrapmentCell> implements BoardProtoc
         sameboard(from_b);
 	}
     public void doInit(String game, long rv) {
-    	// rev numbers are 0xxx to distinguish them from random keys
-    	// random keys are not used, but were always passed in
-    	// so there's still exactly 1 numeric token after the game type.
-    	StringTokenizer tok = new StringTokenizer(game);
-    	String typ = tok.nextToken();
-    	long k = 0;
-    	int rev = 100;
-    	if(tok.hasMoreTokens()) {
-    		String next = tok.nextToken();
-    		if(next.charAt(0)=='0') { rev = G.IntToken(next); }
-    		else { k = G.LongToken(next); }
-    	}
-    	doInit(typ,k,rev);
+     	doInit(game,randomKey,revision);
     }
  	/* initialize a board back to initial empty state */
     public void doInit(String gtype,long key,int rev)

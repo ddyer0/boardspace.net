@@ -518,7 +518,7 @@ public class Game extends commonPanel implements PlayConstants,Opcodes,DeferredE
         return("");
     }
     public boolean sendStatechangeMessage(String message)
-    { 	// send this as a multiple message so the change in the serverrecord string and the message
+    { 	// send this as a multiple message so the change in the server record string and the message
     	// this changed it are simultaneous.
         if(gameState.isConnected() && !G.offline())
         { 	String combined = NetConn.SEND_MULTIPLE+" "+(message.length()+2)+" "+message+" ";
@@ -4337,6 +4337,15 @@ public class Game extends commonPanel implements PlayConstants,Opcodes,DeferredE
     	String idString = ((restartableGame()&&(offset==0)) ? UIDstring : "*");
     	if((idString==null) || ("".equals(idString))) { idString = "*"; }
     	String appended = msg.substring(offset);
+    	//
+    	// TODO: plug holes in the append game protocol
+    	//
+    	// there's a known problem with this protocol.  If the append operation
+    	// fails,the rest of the clients receive the new commands, but don't
+    	// know that the game record hasn't been officially changed.  At this point,
+    	// if anyone is disconnected, they will get a non-updated version of the
+    	// game record, and will be out of sync with the others.
+    	//
     	String completeMsg = NetConn.SEND_APPEND_GAME 
     		+ idString
     		+ " "+offset+" "+sum1+" "+appended;
@@ -4436,7 +4445,9 @@ public class Game extends commonPanel implements PlayConstants,Opcodes,DeferredE
        		boolean parsed = v.ParseMessage(str, p.boardIndex);
        		if(parsed)
        		{
-
+       		// we send the new commands as an atomic operation, but if the 
+       		// "append" half fails, we can end up with permanantly out of
+       		// sync state.
        		msg = NetConn.SEND_MULTIPLE+(msg.length()+2)+" "+msg+" ";
        		String rec = serverRecordString(v.fixed_move_baseline());
        		msg += (rec.length()+1)+" "+rec;

@@ -95,7 +95,7 @@ public class KamisadoPlay extends commonRobot<KamisadoBoard> implements Runnable
         // this avoids the various problems such as the robot committing suicide
         // because it's going to lose anyway, and the position looks better than
         // if the opponent makes the last move.  Technically, this isn't needed
-        // for hex because there is no such thing as a suicide move, but the logic
+        // if there is no such thing as a suicide move, but the logic
         // is included here because this is supposed to be an example.
         if(val0>=VALUE_OF_WIN) { return(val0); }
         if(val1>=VALUE_OF_WIN) { return(-val1); }
@@ -187,7 +187,7 @@ public class KamisadoPlay extends commonRobot<KamisadoBoard> implements Runnable
             // picking moves whose value is uncertain due to cutoffs.  This makes
             // the search MUCH slower so depth ought to be limited
             // if ((randomn>0)&&(dif>0.0)) { depth--; }
-            // for games such as hex, where there are no "fools mate" type situations
+            // for games where there are no "fools mate" type situations
             // the best solution is to use dif=0.0;  For games with fools mates,
             // set dif so the really bad choices will be avoided
             boardSearchLevel = 0;
@@ -223,7 +223,7 @@ public class KamisadoPlay extends commonRobot<KamisadoBoard> implements Runnable
         return (null);
     }
 
- // this is the monte carlo robot, which for hex is much better then the alpha-beta robot
+ // this is the monte carlo robot, which for some games is much better then the alpha-beta robot
  // for the monte carlo bot, blazing speed of playouts is all that matters, as there is no
  // evaluator other than winning a game.
  public commonMove DoMonteCarloFullMove()

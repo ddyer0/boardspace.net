@@ -151,7 +151,7 @@ public class MogulMovespec extends commonMPMove implements MogulConstants
         case MOVE_START:
         case MOVE_RESIGN:
         case MOVE_SHUFFLE:
-            return (D.findUnique(op));
+            return (D.findUniqueTrans(op));
 
         }
     }

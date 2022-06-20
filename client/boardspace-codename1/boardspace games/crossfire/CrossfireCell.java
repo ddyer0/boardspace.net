@@ -11,9 +11,9 @@ class CellStack extends OStack<CrossfireCell>
 }    
 
 /**
- * specialized cell used for the game hex, not for all games using a hex board.
+ * specialized cell used for the this game.
  * <p>
- * the game hex needs only a single object on each cell, or empty.
+ \* the game needs only a single object on each cell, or empty.
  *  @see chipCell
  *  @see stackCell
  * 

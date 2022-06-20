@@ -69,7 +69,7 @@ public class YinshGameViewer extends CCanvas<YinshCell,YinshBoard> implements Yi
 	    gameIcon = backgrounds[ICON_INDEX];
     }
     public void init(ExtendedHashtable info,LFrameProtocol frame)
-    {
+    {	enableAutoDone = true;
         super.init(info,frame);
         
         b = new YinshBoard(info.getString(OnlineConstants.GAMETYPE, "Yinsh"),getStartingColorMap());
@@ -484,7 +484,7 @@ public class YinshGameViewer extends CCanvas<YinshCell,YinshBoard> implements Yi
         if (vstate != YinshState.PUZZLE_STATE)
         {
             GC.setFont(gc,standardBoldFont());
-			if(!planned)
+			if(!planned && !autoDoneActive())
 				{handleDoneButton(gc,doneRect,(gb.DoneState() ? buttonSelect : null), 
 					HighlightColor, rackBackGroundColor);
 				}

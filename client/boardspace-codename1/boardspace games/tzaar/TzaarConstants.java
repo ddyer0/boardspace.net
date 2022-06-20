@@ -100,7 +100,7 @@ public interface TzaarConstants
     static final int MOVE_DROPCAP = 211;		// drop and capture
     static final int MOVE_RACK_BOARD = 212;	// setup move
 	
-    static final String Tzaar_SGF = "Tzaar"; // sgf game number allocated for hex
+    static final String Tzaar_SGF = "Tzaar"; // sgf game name
     static final String[] TZAARGRIDSTYLE = { null,  "A1","A1" }; // left and bottom numbers
     // file names for jpeg images and masks
     static final String ImageDir = "/tzaar/images/";

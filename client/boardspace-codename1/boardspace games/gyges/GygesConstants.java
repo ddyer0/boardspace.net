@@ -26,7 +26,7 @@ public interface GygesConstants
     	Second_Player_Pool("S"),
     	BoardLocation(null),
     	First_Player_Goal("FG"),
-    	Second_Player_Goal("SG"),;
+    	Second_Player_Goal("SG"), ReverseViewButton(null), ToggleEye(null),;
 
     	String shortName = name();
     	public String shortName() { return(shortName); }
@@ -78,7 +78,7 @@ public interface GygesConstants
     static final int MOVE_RACK_BOARD = 209;	// move from rack to board
     static final int MOVE_BOARD_BOARD = 210;	// move board to board
 	static final int MOVE_DROPB_R = 211;	// dropb for robot
-    static final String Gyges_SGF = "Gyges"; // sgf game number allocated for hex
+    static final String Gyges_SGF = "Gyges"; // sgf game name
     static final String[] GYGESGRIDSTYLE = { "1", null, "A" }; // left and bottom numbers
 
  

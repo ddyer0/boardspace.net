@@ -36,7 +36,7 @@ public class JCheckBoxMenuItem extends JMenuItem implements Icon
 		int xoff = (int)((sc[0]-0.5)*sh);
 		int yoff = (int)((sc[1]-0.5)*sh);
 		im.getImage().drawImage(g,xoff,yoff,sh,sh);
-		GC.setColor(g,Color.black);
+		GC.setColor(g,getForeground());
 		Font f = c.getFont();
 		FontMetrics fm = FontMetrics.getFontMetrics(f);
 		GC.setFont(g,f);

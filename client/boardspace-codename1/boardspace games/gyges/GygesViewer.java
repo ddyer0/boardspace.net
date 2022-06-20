@@ -10,6 +10,7 @@ import online.search.CommonDriver;
 import online.search.SimpleRobotProtocol;
 
 import java.util.*;
+
 import lib.Graphics;
 import lib.Image;
 import lib.*;
@@ -21,8 +22,6 @@ import static java.lang.Math.*;
  *
  * Dec 2012 initial work in progress. 
  *
- * This code is derived from the "HexGameViewer" class.  Refer to the
- * documentation there for overall structure notes.
 */
 public class GygesViewer extends CCanvas<GygesCell,GygesBoard> implements GygesConstants, GameLayoutClient
 {
@@ -60,6 +59,11 @@ public class GygesViewer extends CCanvas<GygesCell,GygesBoard> implements GygesC
     private Rectangle chipRects[] = addRect("rack",2);
     
     private Rectangle repRect = addRect("repRect");
+    private Rectangle reverseViewRect = addRect("reverse");
+    private Toggle eyeRect = new Toggle(this,"eye",
+			StockArt.NoEye,GygesId.ToggleEye,NoeyeExplanation,
+			StockArt.Eye,GygesId.ToggleEye,EyeExplanation
+			);
     
     static final double ArrowScales[][] = {{0.6,0.5,1.0},{0.6,0.5,1.0},{0.6,0.5,1.0},{0.6,0.5,1.0}};
     static final String ArrowNames[] = { "arrow-left","arrow-up","arrow-right","arrow-down" };
@@ -93,6 +97,7 @@ public class GygesViewer extends CCanvas<GygesCell,GygesBoard> implements GygesC
     {	// for games with more than two players, the default players list should be 
     	// adjusted to the actual number, adjusted by the min and max
        	// int players_in_game = Math.max(3,info.getInt(exHashtable.PLAYERS_IN_GAME,4));
+    	enableAutoDone = true;
     	super.init(info,frame);
        	// 
     	// for games that require some random initialization, the random key should be
@@ -191,10 +196,7 @@ public class GygesViewer extends CCanvas<GygesCell,GygesBoard> implements GygesC
         int stateY = boardY;
         int stateX = boardX;
         int stateH = (int)(fh*2.5);
-        int noChatX = boardX+boardW-stateH;
-        G.SetRect(noChatRect, noChatX, stateY,stateH,stateH);
-        int reverseX = noChatX-stateH;
-        G.SetRect(stateRect, stateX,stateY,reverseX-stateX-stateH/2 ,stateH);
+        G.placeRow(stateX,stateY,boardW,stateH,stateRect,eyeRect,reverseViewRect,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	
     	if(rotated)
@@ -227,6 +229,7 @@ public class GygesViewer extends CCanvas<GygesCell,GygesBoard> implements GygesC
         int thisx = G.Left(r)+SQUARESIZE;
         int thisy = G.Top(r)+SQUARESIZE/2;
         boolean picked = (b.pickedObject!=null);
+        boolean show = eyeRect.isOnNow();
         for(GygesCell thisCell : chips)
         {
         GygesChip thisChip = thisCell.topChip();
@@ -238,6 +241,10 @@ public class GygesViewer extends CCanvas<GygesCell,GygesBoard> implements GygesC
         		highlight.awidth = G.Width(r)/4;
         		highlight.spriteColor = Color.red;
         	}
+        if(canHit && canPick && show) 
+        {
+        	StockArt.SmallO.drawChip(gc,this,SQUARESIZE/2,thisx,thisy,null);
+        }
         thisx += SQUARESIZE-SQUARESIZE/4;
         }
      }
@@ -302,8 +309,9 @@ public class GygesViewer extends CCanvas<GygesCell,GygesBoard> implements GygesC
         //StockArt.SmallO.drawChip(gc,this,adjustedSize,xpos,ypos,null);
         if(cell==src) { StockArt.SmallO.drawChip(gc,this,adjustedSize/2,xpos,ypos,null); }
         boolean hitCell = cell.drawStack(gc,this,hit,adjustedSize,xpos,ypos,0,0.1,null);
+    	boolean show = eyeRect.isOnNow();
 
-        if(sources.get(cell)!=null)
+        if(show && sources.get(cell)!=null)
         {
         	StockArt.SmallO.drawChip(gc,this,SQUARESIZE/2,xpos,ypos,null);
     	}
@@ -457,7 +465,6 @@ public class GygesViewer extends CCanvas<GygesCell,GygesBoard> implements GygesC
     	for(int i=0;i<2;i++)
     		{ DrawCommonChipPool(gc, i,chipRects[i], gb.whoseTurn,highlight);
     		}
-
      	//
         // now draw the contents of the board and anything it is pointing at
         //
@@ -492,7 +499,9 @@ public class GygesViewer extends CCanvas<GygesCell,GygesBoard> implements GygesC
     	decorateMovePath(gc,gb,brect);
     }
      public void drawAuxControls(Graphics gc,HitPoint highlight)
-    {  
+    {  	DrawReverseMarker(gc,reverseViewRect,highlight,GygesId.ReverseViewButton);
+    	eyeRect.activateOnMouse = true;
+    	eyeRect.draw(gc,highlight);
     }
     //
     // draw the board and things on it.  If gc!=null then actually 
@@ -531,7 +540,7 @@ public class GygesViewer extends CCanvas<GygesCell,GygesBoard> implements GygesC
  		GC.setFont(gc,standardBoldFont());
 		if (vstate != GygesState.Puzzle)
         {
-			if(!planned) 
+			if(!planned && !autoDoneActive()) 
 				{handleDoneButton(gc,doneRect,(gb.DoneState() ? select : null), 
 					HighlightColor, rackBackGroundColor);
 				}
@@ -818,7 +827,12 @@ private void playSounds(commonMove m)
         {
         default:
         	throw G.Error("Hit Unknown: %s", hitObject);
- 
+        case ToggleEye:
+        	eyeRect.toggle();
+        	break;
+        case ReverseViewButton:
+        	boolean v = !b.reverseY(); b.setReverseY(v);
+        	break;
          case BoardLocation:	// we hit the board 
 
 				if(b.movingObjectIndex()>=0)

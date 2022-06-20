@@ -75,7 +75,7 @@ public enum IroState implements BoardState,IroConstants
     	}
     }
 
-//  "snowflake" hex board with crinkly edges, 5 per side. 
+//  "snowflake" hexagonal board with crinkly edges, 5 per side. 
 //  Used for "crossfire" and lyngk
 //    static int[] ZfirstInCol = { 6, 3, 0, 1, 0, 1, 0, 3, 6 };
 //    static int[] ZnInCol =     {1, 4, 7, 6, 7, 6, 7, 4, 1 }; // depth of columns, ie A has 4, B 5 etc.

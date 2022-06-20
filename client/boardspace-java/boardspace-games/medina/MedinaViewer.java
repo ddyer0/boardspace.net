@@ -40,7 +40,7 @@ public class MedinaViewer extends CCanvas<MedinaCell,MedinaBoard> implements Med
 	 
     // file names for jpeg images and masks
     static final String ImageDir = "/medina/images/";
-    static final String Medina_SGF = "Medina"; // sgf game number allocated for hex
+    static final String Medina_SGF = "Medina"; // sgf game name
 
     private Color HighlightColor = new Color(0.2f, 0.95f, 0.75f);
     private Color rackBackGroundColor = new Color(194,175,148);

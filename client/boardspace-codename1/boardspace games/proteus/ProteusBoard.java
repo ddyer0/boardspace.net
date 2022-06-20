@@ -4,15 +4,6 @@ import bridge.Color;
 
 import java.util.*;
 import online.game.*;
-import proteus.ProteusConstants.Goal;
-import proteus.ProteusConstants.Move;
-import proteus.ProteusConstants.PieceColor;
-import proteus.ProteusConstants.ProteusId;
-import proteus.ProteusConstants.ProteusState;
-import proteus.ProteusConstants.Shape;
-import proteus.ProteusConstants.StateStack;
-import proteus.ProteusConstants.Trade;
-import proteus.ProteusConstants.Variation;
 import lib.*;
 import lib.Random;
 import static proteus.ProteusMovespec.*;
@@ -42,7 +33,7 @@ import static proteus.ProteusMovespec.*;
  *
  */
 
-class ProteusBoard extends rectBoard<ProteusCell> implements BoardProtocol
+class ProteusBoard extends rectBoard<ProteusCell> implements BoardProtocol,ProteusConstants
 {	public static int REVISION = 101;  	// revision 101 fixes the tile 
 	public int getMaxRevisionLevel() { return(REVISION); }
 	

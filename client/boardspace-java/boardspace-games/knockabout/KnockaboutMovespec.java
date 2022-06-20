@@ -197,7 +197,7 @@ public class KnockaboutMovespec extends commonMove implements KnockaboutConstant
         case MOVE_DONE:
         	return(msg(v,""));
         default:
-            return (TextChunk.create(D.findUnique(op)));
+            return (TextChunk.create(D.findUniqueTrans(op)));
 
        }
     }

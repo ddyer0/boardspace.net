@@ -32,7 +32,7 @@ import online.search.SimpleRobotProtocol;
  * start there and be implemented completely from scratch, but in practice there is another huge pile
  * of things that every game has to do; dealing with graphics, mouse events, saving and restoring the
  * game state from static records, replaying and reviewing games and so on.   These are implemented in the 
- * class "commonCanvas" and by several board-like base classes for Hex and Square geometry boards.   
+ * class "commonCanvas" and by several board-like base classes for hexagonal and square geometry boards.   
  * All the existing games for boardspace use these classes to provide graphics and basic board representation.
  * 
  * For games with robot players, there is another huge pile of things that a robot has to do, generating
@@ -48,10 +48,6 @@ public class CookieViewer extends CCanvas<CookieCell,CookieBoard> implements Coo
 	static final String ImageDir = "/cookie/images/";
     static final String Cookie_SGF = "Cookie-Disco"; // sgf game number allocated for Cookie Disco
 	   
-	static final double[][] TILESCALES=
-    {   {0.65,0.50,2.1},	// selection
-        	{0.50,0.55,2.1},	// hex tile and border artworks
-        	{0.50,0.50,1.9}};	// unrotated hex tile and border artwork
 
         
         static final int BACKGROUND_TILE_INDEX = 0;
@@ -245,7 +241,7 @@ public class CookieViewer extends CCanvas<CookieCell,CookieBoard> implements Coo
     	}
     }
 
-	// draw a box of spare chips. For hex it's purely for effect.
+	// draw a box of spare chips. It's purely for visual effect.
     private void DrawChipPool(Graphics gc, Rectangle r, HitPoint highlight,CookieBoard gb)
     {
     	int w = G.Width(r);

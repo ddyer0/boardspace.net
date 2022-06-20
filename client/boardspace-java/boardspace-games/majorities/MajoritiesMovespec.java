@@ -181,7 +181,7 @@ public class MajoritiesMovespec extends commonMove
             return ("");
 
         default:
-            return (D.findUnique(op));
+            return (D.findUniqueTrans(op));
         }
     }
 

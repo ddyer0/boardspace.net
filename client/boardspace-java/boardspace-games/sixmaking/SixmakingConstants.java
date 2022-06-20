@@ -99,7 +99,7 @@ public interface SixmakingConstants
 
 
 	
-    static final String Sixmaking_SGF = "Sixmaking"; // sgf game number allocated for hex
+    static final String Sixmaking_SGF = "Sixmaking"; // sgf game name
     static final String[] GRIDSTYLE = { "1", null, "A" }; // left and bottom numbers
     static final String ImageDir = "/sixmaking/images/";
 

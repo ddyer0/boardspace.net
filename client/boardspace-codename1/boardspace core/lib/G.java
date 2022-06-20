@@ -1811,6 +1811,10 @@ public static String expandClassName(String classname)
 			print("Debug Log stream");
 			f.setVisible(true);	
 		}
+		  int feat = G.minimumFeatureSize();
+		  int font = G.getFontSize(G.getGlobalDefaultFont())*2;
+		  int def = (int)(25*G.getDisplayScale());
+		  G.print("feat ",feat," font ",font," def ",def);
 
 	}
     /** this is the hash checksum used by the server */

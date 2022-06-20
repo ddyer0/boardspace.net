@@ -25,7 +25,7 @@ public interface ExxitConstants
     	BoardLocation(null),
     	ZoomSlider(null),
     	InvisibleDragBoard(null) ,
-    	Flip_Tiles(null);
+    	Flip_Tiles(null), ToggleEye(null);
 	String shortName = name();
 	public String shortName() { return(shortName); }
 	ExxitId(String sn) { if(sn!=null) { shortName = sn; }}
@@ -51,7 +51,7 @@ public interface ExxitConstants
     static final String Exxit_Beginner = "exxit-beginner";	// very short game
     static final String Exxit_PRO = "exxit-pro";		// pro game
 
-    /* exxit uses the same board as hive, which is a hex board with a torroidal global 
+    /* exxit uses the same board as hive, which is a hexagonal board with a torroidal global 
      * geometry, implemented by adjacentcy links, and a diameter of 26.  26 is large 
      * enough that with the normal constraints of play, you can't ever wrap around. 
      * */

@@ -11,7 +11,7 @@ import online.search.UCTMoveSearcher;
 import online.search.UCTNode;
 
 /**
- * HexGameBoard knows all about the game of Hex, which is played
+ * HavannahBoard knows all about the game of Hex, which is played
  * on a hexagonal board. It gets a lot of logistic support from 
  * common.hexBoard, which knows about the coordinate system.  
  * 
@@ -68,7 +68,7 @@ class XehBoard extends hexBoard<XehCell> implements BoardProtocol,XehConstants
 	public XehCell getPlayerCell(int p) { return(playerCell[p]); }
 	public XehChip getCurrentPlayerChip() { return(playerChip[whoseTurn]); }
 
-// this is required even though it is meaningless for Hex, but possibly important
+// this is required even if it is meaningless for this game, but possibly important
 // in other games.  When a draw by repetition is detected, this function is called.
 // the game should have a "draw pending" state and enter it now, pending confirmation
 // by the user clicking on done.   If this mechanism is triggered unexpectedly, it
@@ -463,7 +463,7 @@ class XehBoard extends hexBoard<XehCell> implements BoardProtocol,XehConstants
     
     // set the contents of a cell, and maintain the books
     // this logic uses ch==null to clear the cell, needs
-    // to be adjusted if hexCell is based on stackCell
+    // to be adjusted if HavannahCell is based on stackCell
     public XehChip SetBoard(XehCell c,XehChip ch)
     {	XehChip old = c.chip;
     	if(c.onBoard)
@@ -827,7 +827,7 @@ void doSwap(replayMode replay)
         	throw G.Error("Not expecting Legal Hit state %s", board_state);
         case PlayOrSwap:
         case Play:
-        	// for hex, you can pick up a stone in the storage area
+        	// you can pick up a stone in the storage area
         	// but it's really optional
         	return(player==whoseTurn);
         case Confirm:
@@ -1162,7 +1162,7 @@ void doSwap(replayMode replay)
  	UCTNode parent;
  	Random rand = ss.rand;
  	reclaimUCTtree(ss,n);
- 	// find the root of the UCT tree.  For Hex this will
+ 	// find the root of the UCT tree.  This will
  	// give us a pair of black and white nodes 
  	while( (parent = whiteNode.getParent())!=null)
  	{

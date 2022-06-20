@@ -211,7 +211,7 @@ public class CookieMovespec extends commonMove implements CookieConstants
             return ("");
 
         default:
-            return (D.findUnique(op));
+            return (D.findUniqueTrans(op));
             
         case MOVE_FROM_TO:
         case CRAWL_FROM_TO:

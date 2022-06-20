@@ -8,7 +8,7 @@ import lib.Random;
 
 /** filter layer, one set of weights applies to all neurons.  The normal mode
  * is to connect to a corresponding neuron and all adjacent neurons.  this version
- * allows adjacent to be defined locally, as perhaps hex or orthogonal.  we also
+ * allows adjacent to be defined locally, as perhaps hexagonal or orthogonal.  we also
  * allow single connections without neighbors to additional layers.
 */
 public class FilterLayer extends GenericLayer

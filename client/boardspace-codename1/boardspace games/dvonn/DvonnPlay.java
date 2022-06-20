@@ -100,7 +100,7 @@ public class DvonnPlay extends commonRobot<DvonnBoard> implements Runnable,  Rob
  }
 
  
- // this is the monte carlo robot, which for hex is much better then the alpha-beta robot
+ // this is the monte carlo robot, which for some games is much better then the alpha-beta robot
  // for the monte carlo bot, blazing speed of playouts is all that matters, as there is no
  // evaluator other than winning a game.
  public commonMove DoMonteCarloFullMove()

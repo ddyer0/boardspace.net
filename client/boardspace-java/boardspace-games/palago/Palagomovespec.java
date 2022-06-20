@@ -80,7 +80,7 @@ public class Palagomovespec extends commonMove implements PalagoConstants
     {
         Palagomovespec yto = (to == null) ? new Palagomovespec() : (Palagomovespec) to;
 
-        // we need yto to be a Hexmovespec at compile time so it will trigger call to the 
+        // we need to to be a Movespec at compile time so it will trigger call to the 
         // local version of Copy_Slots
         Copy_Slots(yto);
 
@@ -156,7 +156,7 @@ public class Palagomovespec extends commonMove implements PalagoConstants
             return ("");
 
         default:
-            return (D.findUnique(op));
+            return (D.findUniqueTrans(op));
 
         }
     }

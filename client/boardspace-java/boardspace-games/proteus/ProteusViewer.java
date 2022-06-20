@@ -16,7 +16,6 @@ import lib.ExtendedHashtable;
 import lib.G;
 import lib.GC;
 import lib.HitPoint;
-import lib.InternationalStrings;
 import lib.LFrameProtocol;
 import lib.StockArt;
 import lib.Text;
@@ -29,7 +28,7 @@ import static proteus.ProteusMovespec.*;
 */
 public class ProteusViewer extends CCanvas<ProteusCell,ProteusBoard> implements ProteusConstants, GameLayoutClient
 {
-    static final String Proteus_SGF = "Proteus"; // sgf game number allocated for hex
+    static final String Proteus_SGF = "Proteus"; // sgf game name
     static final String ImageDir = "/proteus/images/";
 	// colors
     private Color reviewModeBackground = new Color(220,165,200);
@@ -80,14 +79,14 @@ public class ProteusViewer extends CCanvas<ProteusCell,ProteusBoard> implements 
     	// adjusted to the actual number, adjusted by the min and max
        	// int players_in_game = Math.max(3,info.getInt(exHashtable.PLAYERS_IN_GAME,4));
     	int players_in_game = Math.max(2,info.getInt(OnlineConstants.PLAYERS_IN_GAME,2));
+    	enableAutoDone = true;
     	super.init(info,frame);
     	
         if(G.debug())
         {	// initialize the translations when debugging, so there
         	// will be console chatter about strings not in the list yet.
-        	InternationalStrings.put(ProteusStrings);
-        	InternationalStrings.put(ProteusStringPairs);
-        }
+        	ProteusConstants.putStrings();
+         }
         MouseColors = new Color[] { Color.black,Color.white };
         MouseDotColors = new Color[] { Color.white,Color.black };
        	// 
@@ -461,7 +460,7 @@ public class ProteusViewer extends CCanvas<ProteusCell,ProteusBoard> implements 
         GC.setFont(gc,standardBoldFont());
 		if (vstate != ProteusState.Puzzle)
         {
-			if(!planned)
+			if(!planned && !autoDoneActive())
 				{handleDoneButton(gc,doneRect,(gb.DoneState() ? select : null), 
 					HighlightColor, rackBackGroundColor);
 				}

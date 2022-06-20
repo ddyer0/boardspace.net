@@ -153,7 +153,7 @@ public class Chemovespec extends commonMove implements CheConstants
             return ("");
 
         default:
-            return (D.findUnique(op));
+            return (D.findUniqueTrans(op));
 
         }
     }

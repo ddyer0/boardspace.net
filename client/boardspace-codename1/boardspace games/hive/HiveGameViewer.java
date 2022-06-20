@@ -131,7 +131,7 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
 	 * info contains all the goodies from the environment.
 	 * */
     public void init(ExtendedHashtable info,LFrameProtocol frame)
-    {
+    {	enableAutoDone = true;
         super.init(info,frame);
         use_grid = false;
         gridOption.setState(false);
@@ -224,7 +224,7 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
     {	flatten = aspect0<0;
     	double aspect = Math.abs(aspect0);
     	G.SetRect(fullRect, x, y, width, height);
-		int fh = G.defaultFontSize;//standardFontSize();
+		int fh = standardFontSize();
     	double zoom = getGlobalZoom();
     
     	gameLogBoldFont = G.getFont(standardPlainFont(), G.Style.Bold, (int)(zoom*(fh)));
@@ -240,13 +240,11 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
        	// ground the size of chat and logs in the font, which is already selected
     	// to be appropriate to the window size
     	//int fh = standardFontSize();
-    	int minLogW = fh*12;	
+    	int minLogW = fh*15;	
        	int minChatW = fh*40;	
         int minLogH = fh*14;	
         int margin = fh/2;
         int buttonW = fh*8;
-        int nrows = 15;  // b.boardRows
-        int ncols = 24;	 // b.boardColumns
         layout.strictBoardsize = false;
         	// this does the layout of the player boxes, and leaves
     	// a central hole for the board.
@@ -256,8 +254,8 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
     			margin,	
     			0.8,	// 60% of space allocated to the board
     			aspect,	// aspect ratio for the board
-    			fh*tileScale*3/4,	// minimum cell size
-    			fh*tileScale,	// maximum cell size
+    			fh*tileScale,	// minimum cell size
+    			fh*tileScale*4/3,	// maximum cell size
     			0.4		// preference for the designated layout, if any
     			);
     	
@@ -273,11 +271,9 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
     	int mainX = G.Left(main);
     	int mainY = G.Top(main);
     	int mainW = G.Width(main);
-    	int mainH = G.Height(main);
     	
     	// calculate a suitable cell size for the board
-    	double cs = Math.min((double)mainW/ncols,(double)mainH/nrows);
-    	CELLSIZE = (int)cs;
+    	CELLSIZE = fh*3;;
         int zoomW = CELLSIZE*5;
         int C4 = CELLSIZE/4;
         RACKSCALE = CELLSIZE*4;
@@ -289,7 +285,7 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
     	//
         int stateY = mainY;
         int stateX = mainX;
-        int stateH = 2*CELLSIZE/3;
+        int stateH = CELLSIZE;
         int boardY = stateY+stateH+C4;
         int boardBottom = G.Bottom(main)-stateH-C4;
         int boardH = boardBottom-boardY;
@@ -430,7 +426,8 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
         int midr = G.centerY(r);
         int pieceSize = (int)(cellW*3.5);
 		int cellIndex = 0;
-       for(PieceType pt : PieceType.values())
+ 		int baseY = G.Bottom(r)-(int)(CELLSIZE*0.6);
+ 		for(PieceType pt : PieceType.values())
         {	if(gb.pieceTypeIncluded.test(pt))
         	{
          	int cellX = (G.Width(r)-(cellW*nCells))/2+cellW*cellIndex;
@@ -453,7 +450,6 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
         		highlight.spriteColor = Color.red;
         		highlight.spriteRect = new Rectangle(left-cellW/2,midr-cellH/2,cellW,cellH);
          		}
-         		int baseY = G.Bottom(r)-CELLSIZE/3;
         		for(int bug=height; bug>0;bug--)
         		{
         		HivePiece topCup = thisCell.chipAtIndex(height-bug);
@@ -701,7 +697,7 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
         GC.setFont(gc,standardBoldFont());
 		if (state != HiveState.PUZZLE_STATE)
         {	HitPoint ds = (gb.DoneState() ? buttonSelect : null);
-        	if(!plannedSeating())
+        	if(!autoDoneActive() && !plannedSeating())
         		{ handleDoneButton(gc,messageRotation,doneRect,ds,HighlightColor, 
         				ds==null ? rackBackGroundColor : rackActiveColor); //215,197,157
         		}

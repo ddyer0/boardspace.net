@@ -189,7 +189,7 @@ public class Bloomsmovespec extends commonMove
 
 
         default:
-        	return (D.findUnique(op));
+        	return (D.findUniqueTrans(op));
         }
     }
     
@@ -231,7 +231,7 @@ public class Bloomsmovespec extends commonMove
             return TextChunk.create("");
 
         default:
-        	return TextChunk.create(D.findUnique(op));
+        	return TextChunk.create(D.findUniqueTrans(op));
         }
     }
     

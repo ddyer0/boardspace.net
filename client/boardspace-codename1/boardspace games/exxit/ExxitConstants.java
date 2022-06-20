@@ -14,30 +14,7 @@ public interface ExxitConstants
     static final int TILE_TYPE = 1;
     static final String WoodenTilesMessage = "use Wooden tiles";
     static final String GoalMessage = "expand the board with your color tiles";
-    static final String[] ExxitStrings = {
     	
-       	WoodenTilesMessage,
-       	"Place a piece on the board",
-       	"Exchange an off-board piece for a new tile",
-       	"Click on Done to confirm the Exchange",
-       	"Place a piece on the board, or Exchange an off-board piece for a new tile",
-       	"Click on Done to end the game",
-       	"Make a Dance move",
-       	"Click on Done to confirm this Dance",
-       	"Drop a tile to enlarge the board",
-       	GoalMessage,
-    };
-    static final String[][] ExxitStringPairs = {
-    		{"Exxit_family","Exxit"},
-            {"Exxit","Exxit"},
-            {"Exxit-Beginner","Exxit-Beginner"},
-            {"Exxit-Blitz","Exxit-Blitz"},
-            {"Exxit-Pro","Exxit-Expert"},
-            {"Exxit_variation","39 tiles"},
-            {"Exxit-Blitz_variation","29 tiles"},
-            {"Exxit-Beginner_variation","19 tiles"},
-            {"Exxit-Pro_variation","expert Exxit"},
-    };
     enum ExxitId implements CellId
     {
     	Black_Chip_Pool("B"), // positive numbers are trackable
@@ -47,7 +24,7 @@ public interface ExxitConstants
     	BoardLocation(null),
     	ZoomSlider(null),
     	InvisibleDragBoard(null) ,
-    	Flip_Tiles(null);
+    	Flip_Tiles(null), ToggleEye(null);
 	String shortName = name();
 	public String shortName() { return(shortName); }
 	ExxitId(String sn) { if(sn!=null) { shortName = sn; }}
@@ -73,7 +50,7 @@ public interface ExxitConstants
     static final String Exxit_Beginner = "exxit-beginner";	// very short game
     static final String Exxit_PRO = "exxit-pro";		// pro game
 
-    /* exxit uses the same board as hive, which is a hex board with a torroidal global 
+    /* exxit uses the same board as hive, which is a hexagonal board with a torroidal global 
      * geometry, implemented by adjacentcy links, and a diameter of 26.  26 is large 
      * enough that with the normal constraints of play, you can't ever wrap around. 
      * */
@@ -169,6 +146,36 @@ public interface ExxitConstants
     static final int OLD_YELLOW_FELT_INDEX = 4;
 
 
+    static void putStrings()
+    {	/*
+        String[] ExxitStrings = {
   
+               	WoodenTilesMessage,
+               	"Place a piece on the board",
+               	"Exchange an off-board piece for a new tile",
+               	"Click on Done to confirm the Exchange",
+               	"Place a piece on the board, or Exchange an off-board piece for a new tile",
+               	"Click on Done to end the game",
+               	"Make a Dance move",
+               	"Click on Done to confirm this Dance",
+               	"Drop a tile to enlarge the board",
+               	GoalMessage,
+            };
+       String[][] ExxitStringPairs = {
+            		{"Exxit_family","Exxit"},
+                    {"Exxit","Exxit"},
+                    {"Exxit-Beginner","Exxit-Beginner"},
+                    {"Exxit-Blitz","Exxit-Blitz"},
+                    {"Exxit-Pro","Exxit-Expert"},
+                    {"Exxit_variation","39 tiles"},
+                    {"Exxit-Blitz_variation","29 tiles"},
+                    {"Exxit-Beginner_variation","19 tiles"},
+                    {"Exxit-Pro_variation","expert Exxit"},
+            };
+       
+       InternationalStrings.put(ExxitStrings);
+       InternationalStrings.put(ExxitStringPairs);
+*/
+    }
       
 }

@@ -181,9 +181,9 @@ public final class Util
 	}
 
 	/**
-	 *	Returns the hex color code for the given good.
+	 *	Returns the color code for the given good.
 	 *	@param good the good
-	 *	@return the hex color code
+	 *	@return the color code
 	 */
 	public static String getColor(Good good) {
 		switch(good) {

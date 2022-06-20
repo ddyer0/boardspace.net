@@ -28,6 +28,8 @@ import com.codename1.ui.URLImage.ImageAdapter;
 import com.codename1.ui.geom.Dimension;
 import com.codename1.ui.geom.Point;
 import com.codename1.ui.geom.Rectangle;
+
+import common.NamedClasses;
 import lib.AwtComponent;
 import lib.ChatInterface;
 import lib.ChatWidget;
@@ -922,7 +924,7 @@ public abstract class Platform implements Config{
 
 	@SuppressWarnings("unchecked")
 	public static NativeInterface MakeNative(Class<?>n)
-    {	G.print("Making native "+n);
+    {	
     	return(NativeLookup.create((Class<NativeInterface>)n));
     }
 	public static void writeTextToClipboard(String s) {
@@ -967,7 +969,8 @@ public abstract class Platform implements Config{
 	 public static long nanoTime()
 		{	
 			if(nanotimeSupported)
-			{	return(time.currentNanoTime());
+			{
+				return(time.currentNanoTime());
 			}
 			else if(asknanotime)
 			{	asknanotime = false;

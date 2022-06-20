@@ -87,7 +87,7 @@ public class TumbleGameViewer extends CCanvas<TumbleCell,TumbleBoard> implements
 	 * info contains all the goodies from the environment.
 	 * */
     public void init(ExtendedHashtable info,LFrameProtocol frame)
-    {
+    {	enableAutoDone = true;
         super.init(info,frame);
 
         zoomRect = addSlider(TileSizeMessage,s.get(StackHeightMessage),TumbleId.ZoomSlider);
@@ -99,7 +99,7 @@ public class TumbleGameViewer extends CCanvas<TumbleCell,TumbleBoard> implements
        
         b = new TumbleBoard(info.getString(OnlineConstants.GAMETYPE, "Tumblingdown"),
         		getStartingColorMap());
-        useDirectDrawing(true);
+        useDirectDrawing(true); // not tested yet
         doInit(false);
         reverseOption = myFrame.addOption(s.get(ReverseView),b.reverseY(),deferredEvents);
         
@@ -249,6 +249,7 @@ public class TumbleGameViewer extends CCanvas<TumbleCell,TumbleBoard> implements
     }
 
 
+
     /* draw the deep unchangable objects, including those that might be rather expensive
      * to draw.  This background layer is used as a backdrop to the rest of the activity.
      * in our cease, we draw the board and the chips on it. 
@@ -375,7 +376,7 @@ public class TumbleGameViewer extends CCanvas<TumbleCell,TumbleBoard> implements
 		double messageRotation = pl.messageRotation();
 		if (vstate != TumbleState.PUZZLE_STATE)
         {
-			if(!planned) 
+			if(!planned && !autoDoneActive()) 
 			{ handleDoneButton(gc,doneRect,(gb.DoneState() ? select : null), 
 					HighlightColor, rackBackGroundColor);
 			}

@@ -14,7 +14,7 @@ import lib.*;
 
 /**
  * VolcanoBoard knows all about the game of Volcano, which is played
- * on a 5x5 rectangular board or a 4x hex board. It gets a lot of logistic 
+ * on a 5x5 rectangular board or a 4x hexagonal board. It gets a lot of logistic 
  * support from common.rectBoard and hexboard, which know about the
  * coordinate system.  
  * 
@@ -78,7 +78,7 @@ class VolcanoBoard extends BaseBoard implements BoardProtocol,VolcanoConstants
      	// count the full nests, accumulate the leftover pieces
      	for(int size=0;size<count_size.length;size++) { count_size[size]=0; }
      	for(int color=0;color<colorsToWin;color++)
-     	{	// 5 colors for a square grid, 5 for a hex grid
+     	{	// 5 colors for a square grid, 5 for a hexagonal grid
      		int sizes[]=cc[color];
      		int mincount=sizes[0];
      		int tcount = mincount;

@@ -2,7 +2,7 @@ package online.search.nn;
 
 import lib.G;
 
-/* coordinate map for a rhombic hex board */
+/* coordinate map for a rhombic hexagonal board */
 public class HexCoordinateMap implements CoordinateMap 
 {	int span;
 	int neighborMap[][];

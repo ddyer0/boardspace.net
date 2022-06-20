@@ -10,7 +10,7 @@ import lib.Random;
 
 /**
  * DvonnBoard knows all about the game of Dvonn, which is played
- * on a rectangular hex board. It gets a lot of logistic 
+ * on a rectangular hexagonal board. It gets a lot of logistic 
  * support from hexboard, which know about the coordinate system.  
  * 
  * This class doesn't do any graphics or know about anything graphical, 

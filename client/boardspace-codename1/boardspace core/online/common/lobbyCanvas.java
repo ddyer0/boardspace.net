@@ -40,7 +40,6 @@ import lib.SoundManager;
 import lib.StockArt;
 import lib.TimeControl;
 
-// TODO: spectators not credited in lobby
 public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProtocol
 {	// TODO: fix ios direct drawing so pop up menus don't show white background instead of the lobby
 
@@ -141,55 +140,52 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	 * the new non-static versions are adjusted in setlocalbounds
 	 */
 	private static final int s_GAMEIMAGEWIDTH = 270;	// width of an individual game cell
-	int GAMEIMAGEWIDTH = s_GAMEIMAGEWIDTH;
+	private int GAMEIMAGEWIDTH = s_GAMEIMAGEWIDTH;
 	private static final int s_PLAYPOLYWIDTH = (s_GAMEIMAGEWIDTH-30)/2;    //size of the rectangle for player name and rank
-	int PLAYPOLYWIDTH = s_PLAYPOLYWIDTH;
+	private int PLAYPOLYWIDTH = s_PLAYPOLYWIDTH;
 	private static final int s_PLAYPOLYHEIGHT = 22;
-	int PLAYPOLYHEIGHT = s_PLAYPOLYHEIGHT;
+	private int PLAYPOLYHEIGHT = s_PLAYPOLYHEIGHT;
 	private static final int s_MINGAMEHEIGHT = 132;
-	int MINGAMEHEIGHT = s_MINGAMEHEIGHT;
+	private int MINGAMEHEIGHT = s_MINGAMEHEIGHT;
 	private static final int s_STANDARDGAMEHEIGHT = 225;		// height of an individual game cell
-	int STANDARDGAMEHEIGHT = s_STANDARDGAMEHEIGHT;		// height of an individual game cell
+	private int STANDARDGAMEHEIGHT = s_STANDARDGAMEHEIGHT;		// height of an individual game cell
 	private static final int s_GAMEHEIGHT = 325;		// height of an individual game cell
-	int GAMEHEIGHT = s_GAMEHEIGHT;
-	static final int s_PLAYERCELLSIZE = 28;
-	int PLAYERCELLSIZE = s_PLAYERCELLSIZE;
-	int SCROLLBARWIDTH = ScrollArea.DEFAULT_SCROLL_BAR_WIDTH;
+	private int GAMEHEIGHT = s_GAMEHEIGHT;
+	private static final int s_PLAYERCELLSIZE = 28;
+	private int PLAYERCELLSIZE = s_PLAYERCELLSIZE;
 	private static final int s_USERIMAGEWIDTH = 170;	// width of the user area
-	int USERIMAGEWIDTH = s_USERIMAGEWIDTH;
+	private int USERIMAGEWIDTH = s_USERIMAGEWIDTH;
 	
 	// the width of the "middle" column in the lobby
 	private static int s_PLAYINGIMAGEWIDTH = 80;
-	int PLAYINGIMAGEWIDTH = s_PLAYINGIMAGEWIDTH;
 	
 	private static final int s_USERHEIGHT = 23;		// height of an individual user cell
-	int USERHEIGHT = s_USERHEIGHT;
+	private int USERHEIGHT = s_USERHEIGHT;
 	private static final int s_MINIMUM_X_OFFSET = 10;	// left margin space
 	private static final int s_SECOND_X_OFFSET = s_PLAYPOLYWIDTH+s_MINIMUM_X_OFFSET*2;
 	private static final int s_PLAYERTITLEYOFFSET = 150;	// the line dividing the top and bottom half of game cells
-	int PLAYERTITLEYOFFSET = s_PLAYERTITLEYOFFSET;
+	private int PLAYERTITLEYOFFSET = s_PLAYERTITLEYOFFSET;
 	private static final int s_CHATTITLEYOFFSET = 100;
-	int CHATTITLEYOFFSET = s_CHATTITLEYOFFSET;
+	private int CHATTITLEYOFFSET = s_CHATTITLEYOFFSET;
 	private static final int s_SPECTATORTITLEXOFFSET = 150;
-	int SPECTATORTITLEXOFFSET = s_SPECTATORTITLEXOFFSET;
+	private int SPECTATORTITLEXOFFSET = s_SPECTATORTITLEXOFFSET;
 	private static final int s_SPECTATORCOLUMNWIDTH = s_GAMEIMAGEWIDTH-s_SPECTATORTITLEXOFFSET-30;
-	int SPECTATORCOLUMNWIDTH = s_SPECTATORCOLUMNWIDTH;
+	private int SPECTATORCOLUMNWIDTH = s_SPECTATORCOLUMNWIDTH;
 	private static final int s_STARTXOFFSET = 65;		// center of the start polygon
-	int STARTXOFFSET = s_STARTXOFFSET;
+	private int STARTXOFFSET = s_STARTXOFFSET;
 	private static final int s_STARTYOFFSET = 115;
-	int STARTYOFFSET = s_STARTYOFFSET;
+	private int STARTYOFFSET = s_STARTYOFFSET;
 	
 	private static final int s_SPECTATORWIDTH = 40;
-	int SPECTATORWIDTH = s_SPECTATORWIDTH;
 	private static final int s_POLYHALFHEIGHT = 11;
 	private static final int s_SPECTATORBUTTONYCENTER = s_PLAYERTITLEYOFFSET-35;
-	int SPECTATORBUTTONYCENTER = s_SPECTATORBUTTONYCENTER;
+	private int SPECTATORBUTTONYCENTER = s_SPECTATORBUTTONYCENTER;
 	private static final int s_CHATBUTTONYCENTER = s_CHATTITLEYOFFSET-35;
-	int CHATBUTTONYCENTER = s_CHATBUTTONYCENTER;
+	private int CHATBUTTONYCENTER = s_CHATBUTTONYCENTER;
 	private static final int s_SPECTATORBUTTONXCENTER = s_SPECTATORTITLEXOFFSET+s_SPECTATORWIDTH-8;
-	int SPECTATORBUTTONXCENTER = s_SPECTATORBUTTONXCENTER;
+	private int SPECTATORBUTTONXCENTER = s_SPECTATORBUTTONXCENTER;
 	private static final int s_CHECKBOXSIZE = 12;
-	int CHECKBOXSIZE = s_CHECKBOXSIZE;
+	private int CHECKBOXSIZE = s_CHECKBOXSIZE;
 	
 	// rectangles that are laid out dynamically
 	private Rectangle ownerRect = addRect("ownerRect");
@@ -410,9 +406,9 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 		PLAYERCELLSIZE = (int)(s_PLAYERCELLSIZE*scale);
 		GAMEHEIGHT = (int)(s_GAMEHEIGHT*scale);		
 		GAMEIMAGEWIDTH = (int)(s_GAMEIMAGEWIDTH*scale);
-		SCROLLBARWIDTH = (int)(ScrollArea.DEFAULT_SCROLL_BAR_WIDTH*scale);
+		int SCROLLBARWIDTH = (int)(ScrollArea.DEFAULT_SCROLL_BAR_WIDTH*scale);
 		USERIMAGEWIDTH = (int)(s_USERIMAGEWIDTH*scale);
-		PLAYINGIMAGEWIDTH = (int)(s_PLAYINGIMAGEWIDTH*scale);
+		int PLAYINGIMAGEWIDTH = (int)(s_PLAYINGIMAGEWIDTH*scale);
 		USERHEIGHT = (int)(s_USERHEIGHT*scale);
 		int MINIMUM_X_OFFSET = (int)(s_MINIMUM_X_OFFSET*scale);
 		PLAYERTITLEYOFFSET = (int)(s_PLAYERTITLEYOFFSET*scale);
@@ -421,7 +417,6 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 		SPECTATORCOLUMNWIDTH = (int)(s_SPECTATORCOLUMNWIDTH*scale);
 		STARTXOFFSET = (int)(s_STARTXOFFSET*scale);
 		STARTYOFFSET = (int)(s_STARTYOFFSET*scale);
-		SPECTATORWIDTH = (int)(s_SPECTATORWIDTH*scale);
 		SPECTATORBUTTONYCENTER = (int)(s_SPECTATORBUTTONYCENTER*scale);
 		CHATBUTTONYCENTER = (int)(s_CHATBUTTONYCENTER*scale);
 		SPECTATORBUTTONXCENTER = (int)(s_SPECTATORBUTTONXCENTER*scale);
@@ -526,7 +521,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	  }
 
 
-	void drawSessionBubble(HitPoint hp,Session sess)
+	private void drawSessionBubble(HitPoint hp,Session sess)
 	{	String msg = s.get(sess.mode.shortName);
 		if(sess.isAGameOrReviewRoom())
 		{
@@ -535,7 +530,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 		hp.setHelpText(msg);
 	}
 	
-	public void drawOtherUsers(Graphics inG,HitPoint hp) 
+	private void drawOtherUsers(Graphics inG,HitPoint hp) 
 	  {
 	  Shape sh = GC.getClip(inG);
 	  UserScrollArea.drawScrollBar(inG);
@@ -696,7 +691,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 		    GC.Text(inG,sstr,xpos,polyYoffset+h/3);
 	    }}
 		  GameInfo game = null;
-		  if(nameSession!=null && nameSession.isAGameRoom() )
+		  if(nameSession!=null && nameSession.isAGameOrReviewRoom() )
 		  {	  // not for a non-game room
 			  game = nameSession.currentGame;
 		  }
@@ -711,7 +706,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 				GC.frameRect(inG, high?AttColor:Color.blue,r);
 			  }
 	}
-	public void drawWantToPlay(Graphics g)
+	private void drawWantToPlay(Graphics g)
 	{
 		int left = G.Left(playingRect);
 		int top = G.Top(ownerRect);
@@ -732,7 +727,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 		StockArt.Pulldown.drawChip(g,this,selected?2*h/6:3*h/12,tleft+aw/2+tw/2+h/10,top+2*h/3,"");
 	    
 	  }
-	public void drawOwner(Graphics inG) 
+	private void drawOwner(Graphics inG) 
 	  {
 	    GC.setFont(inG,basicFont);
 	    FontMetrics myFM = GC.getFontMetrics(inG);
@@ -782,7 +777,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	  GC.draw_anim(inG,animRect,G.Width(animRect)/2-2,lobby.lastInputTime,lobby.progress);
 		}
 	
-	public void drawGames(Graphics inG,HitPoint hp) 
+	private void drawGames(Graphics inG,HitPoint hp) 
 	{	Shape sh = GC.getClip(inG);
 		GameScrollArea.drawScrollBar(inG);
 		GC.setClip(inG,gameRect);
@@ -853,7 +848,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	
 
 	LobbyMapViewer mapper = null;
-	public LobbyMapViewer NewMapViewer()
+	private LobbyMapViewer NewMapViewer()
 	{
 	  //System.out.println("language is " + sharedInfo.getString(info.LANGUAGENAME));
 	  LobbyMapViewer vr=(LobbyMapViewer)G.MakeInstance("online.common.LobbyMapViewer");
@@ -861,7 +856,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	  return(vr);
 	}
 
-	int DrawMapSession(Session session,Graphics inG,HitPoint hp)
+	private int DrawMapSession(Session session,Graphics inG,HitPoint hp)
 	{	int numberOfUsers = users.numberOfUsers();
 		User uarr[] = users.getUsers();
 	    int h = DrawChatSession(session,inG,hp,s.get(Session.Mode.Map_Mode.shortName));
@@ -888,7 +883,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	}	
  
 
-	void DrawSpectateButton(Graphics inG,Session session,String statemessage,boolean rejoin)
+	private void DrawSpectateButton(Graphics inG,Session session,String statemessage,boolean rejoin)
 	{ boolean tournament = session.getSubmode()==Session.JoinMode.Tournament_Mode;
 	  if (/* now ok any time (my.sessionLocation==0) && */
 	        (rejoin || !session.playingInSession)
@@ -1854,6 +1849,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	    int three = (int)(3*SCALE);
 	    int one = (int)SCALE;
 	    int POLYHALFHEIGHT = (int)(s_POLYHALFHEIGHT*SCALE);
+	    int SPECTATORWIDTH = (int)(s_SPECTATORWIDTH*SCALE);
 
 	    Polygon narrow = new Polygon();
 	    narrow.addPoint(-SPECTATORWIDTH,-POLYHALFHEIGHT+nine);

@@ -32,7 +32,7 @@ public class TriadPlay extends commonRobot<TriadBoard> implements Runnable, Tria
     private int MAX_DEPTH = 10;						// search depth.
     private static final boolean KILLER = false;	// if true, allow the killer heuristic in the search
     private static final double GOOD_ENOUGH_VALUE = VALUE_OF_WIN;	// good enough to stop looking
-				// this is appropriate for simple games like hex, but probably not too effective
+				// this is appropriate for simple games, but probably not too effective
 				// until there is a much better evaluator.
     
     private int boardSearchLevel = 0;				// the current search depth
@@ -207,7 +207,7 @@ public void PrepareToMove(int playerIndex)
             // picking moves whose value is uncertain due to cutoffs.  This makes
             // the search MUCH slower so depth ought to be limited
             // if ((randomn>0)&&(dif>0.0)) { depth--; }
-            // for games such as hex, where there are no "fools mate" type situations
+            // for games where there are no "fools mate" type situations
             // the best solution is to use dif=0.0;  For games with fools mates,
             // set dif so the really bad choices will be avoided
             Search_Driver search_state = Setup_For_Search(depth, TIME_LIMIT);
@@ -221,7 +221,7 @@ public void PrepareToMove(int playerIndex)
            if (move == null)
             {	// randomn takes the a random element among the first N
             	// to provide variability.  The second parameter is how
-            	// large a drop in the expectation to accept.  For hex this
+            	// large a drop in the expectation to accept.  For some games this
             	// doesn't really matter, but some games have disasterous
             	// opening moves that we wouldn't want to choose randomly
                 move = (TriadMovespec) search_state.Find_Static_Best_Move(randomn,dif);

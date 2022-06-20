@@ -40,7 +40,7 @@ import static mogul.MogulMovespec.*;
  * Feb 2013 initial work in progress. 
  *
  * This code is derived from the "HexGameViewer" class.  Refer to the
- * documentation there for overall structure notes.
+ 
 */
 public class MogulViewer extends CCanvas<MogulCell,MogulBoard> implements MogulConstants, GameLayoutClient
 {
@@ -525,10 +525,7 @@ public class MogulViewer extends CCanvas<MogulCell,MogulBoard> implements MogulC
     	}
     	for(MogulCell cell = gb.allCells; cell!=null; cell=cell.next)
        	{ 
-        	// note that these accessors "lastRowInColumn" etc
-        	// are not really needed for simple boards, but they
-        	// also work for hex boards and boards with cut out corners
-    		int ypos0 = gb.cellToY(cell.col, cell.row);
+     		int ypos0 = gb.cellToY(cell.col, cell.row);
     		int xpos0 = gb.cellToX(cell.col, cell.row);
             int ypos = t + ypos0;
             int xpos = l + xpos0;

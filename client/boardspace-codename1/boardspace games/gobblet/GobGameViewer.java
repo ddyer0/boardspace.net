@@ -33,15 +33,13 @@ import lib.StockArt;
  * Feb 2006 initial work in progress. 
  * May 2006 Complete version released
  *
- * This code is derived from the "HexGameViewer" class.  Refer to the
- * documentation there for overall structure notes.
 */
 public class GobGameViewer extends CCanvas<GobCell,GobGameBoard> implements GobConstants, GameLayoutClient
 {
      /**
 	 * 
 	 */
-    static final String Gobblet_SGF = "26"; // sgf game number allocated for hex
+    static final String Gobblet_SGF = "26"; // sgf game name
 
     
     // file names for jpeg images and masks
@@ -122,7 +120,7 @@ public class GobGameViewer extends CCanvas<GobCell,GobGameBoard> implements GobC
 	 * info contains all the goodies from the environment.
 	 * */
     public void init(ExtendedHashtable info,LFrameProtocol frame)
-    {
+    {	enableAutoDone = true;
         super.init(info,frame);
         b = new GobGameBoard(info.getString(OnlineConstants.GAMETYPE, "Gobblet"),getStartingColorMap());        
         useDirectDrawing(true);
@@ -412,7 +410,7 @@ public class GobGameViewer extends CCanvas<GobCell,GobGameBoard> implements GobC
 
 		if (vstate != GobbletState.PUZZLE_STATE)
         {	
-			if(!planned) 
+			if(!planned && !autoDoneActive()) 
 				{handleDoneButton(gc,doneRect,(gb.DoneState() ? select : null), 
 					HighlightColor, rackBackGroundColor);
 				}

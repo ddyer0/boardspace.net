@@ -113,7 +113,7 @@ public class FrogViewer extends CCanvas<FrogCell,FrogBoard> implements FrogConst
     {   
         int randomv = info.getInt(OnlineConstants.RANDOMSEED);
         int pl = info.getInt(OnlineConstants.PLAYERS_IN_GAME);
-     
+        enableAutoDone = true;
         super.init(info,frame);
         use_grid = false;
         gridOption.setState(false);
@@ -434,7 +434,7 @@ public class FrogViewer extends CCanvas<FrogCell,FrogBoard> implements FrogConst
         GC.setFont(gc,standardBoldFont());
 		if (state != FrogState.PUZZLE_STATE)
         {	HitPoint hit = b.DoneState() ? buttonSelect : null;
-        	if(!planned) { handleDoneButton(gc,doneRect,hit,HighlightColor, rackBackGroundColor); }
+        	if(!planned && !autoDoneActive()) { handleDoneButton(gc,doneRect,hit,HighlightColor, rackBackGroundColor); }
         	handleEditButton(gc,messageRotation,editRect,buttonSelect,selectPos,HighlightColor, rackBackGroundColor);
         }
 

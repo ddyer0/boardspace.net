@@ -173,7 +173,7 @@ public class Gipfmovespec extends commonMove implements GipfConstants
         case MOVE_DONE:
         	 return("");
         default:
-            return (D.findUnique(op));
+            return (D.findUniqueTrans(op));
        }
     }
 

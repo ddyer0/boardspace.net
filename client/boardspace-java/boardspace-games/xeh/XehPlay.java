@@ -409,7 +409,7 @@ public class XehPlay extends commonRobot<XehBoard> implements Runnable, XehConst
         // this avoids the various problems such as the robot comitting suicide
         // because it's going to lose anyway, and the position looks better than
         // if the oppoenent makes the last move.  Technically, this isn't needed
-        // for hex because there is no such thing as a suicide move, but the logic
+        // if there is no such thing as a suicide move, but the logic
         // is included here because this is supposed to be an example.
         if(val0>=VALUE_OF_WIN) { return(val0); }
         if(val1>=VALUE_OF_WIN) { return(-val1); }
@@ -1771,7 +1771,7 @@ private GenericNetwork createF4()
  /**
   * this is needed to complete initialization of cloned robots
   */
-// public void copyFrom(commonRobot<HexGameBoard> p)
+// public void copyFrom(commonRobot<HavannahBoard> p)
 // {	super.copyFrom(p);
 	// perform any additional copying not handled by the standard method
 // }
@@ -1822,7 +1822,7 @@ public void PrepareToMove(int playerIndex)
             // picking moves whose value is uncertain due to cutoffs.  This makes
             // the search MUCH slower so depth ought to be limited
             // if ((randomn>0)&&(dif>0.0)) { depth--; }
-            // for games such as hex, where there are no "fools mate" type situations
+            // for games where there are no "fools mate" type situations
             // the best solution is to use dif=0.0;  For games with fools mates,
             // set dif so the really bad choices will be avoided
             Search_Driver search_state = Setup_For_Search(depth, false);
@@ -1838,7 +1838,7 @@ public void PrepareToMove(int playerIndex)
            if (move == null)
             {	// randomn takes the a random element among the first N
             	// to provide variability.  The second parameter is how
-            	// large a drop in the expectation to accept.  For hex this
+            	// large a drop in the expectation to accept.  For some games this
             	// doesn't really matter, but some games have disastrous
             	// opening moves that we wouldn't want to choose randomly
                 move = (XehMovespec) search_state.Find_Static_Best_Move(randomn,dif);
@@ -1954,8 +1954,8 @@ public void PrepareToMove(int playerIndex)
 
 
  /**
-  * get a random move by selecting a random one from the full list.  For games like
-  * hex, which have trivial move generators, this is "only" a factor of 2 or so improvement
+ * get a random move by selecting a random one from the full list.
+  * for games which have trivial move generators, this is "only" a factor of 2 or so improvement
   * in the playout rate.  For games with more complex move generators, it can by much more.
   * Diagonal-Blocks sped up by 10x 
   * 
@@ -2030,7 +2030,7 @@ public void PrepareToMove(int playerIndex)
 		return getCurrent2PVariation();
 	}
  
- // this is the monte carlo robot, which for hex is much better then the alpha-beta robot
+ // this is the monte carlo robot, which for some games is much better then the alpha-beta robot
  // for the monte carlo bot, blazing speed of playouts is all that matters, as there is no
  // evaluator other than winning a game.
  public commonMove DoMonteCarloFullMove()
@@ -2074,14 +2074,14 @@ public void PrepareToMove(int playerIndex)
         monte_search_state.dead_child_optimization = deadChildOptimization;
         monte_search_state.simulationsPerNode = 1;
         monte_search_state.killHopelessChildrenShare = CHILD_SHARE;
-        monte_search_state.final_depth = 9999;		// note needed for hex which is always finite
+        monte_search_state.final_depth = 9999;		// probably not needed for games which are always finite
         monte_search_state.node_expansion_rate = NODE_EXPANSION_RATE;
         monte_search_state.stored_child_limit = storedChildLimit;
         monte_search_state.randomize_uct_children = true;     
         monte_search_state.maxThreads = DEPLOY_THREADS;
         monte_search_state.random_moves_per_second = minMovesPerSecond;		// 
         monte_search_state.max_random_moves_per_second = maxMovesPerSecond;		// 
-        // for Hex, the child pool is exhausted very quickly, but the results
+        // for some games, the child pool is exhausted very quickly, but the results
         // still get better the longer you search.  Other games may work better
         // the other way.
         monte_search_state.stored_child_limit_stop = STORED_CHILD_LIMIT_STOP;

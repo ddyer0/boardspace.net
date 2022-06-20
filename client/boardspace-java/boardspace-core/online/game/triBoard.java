@@ -74,7 +74,7 @@ public abstract class triBoard<CELLTYPE extends cell<CELLTYPE>> extends gBoard<C
 	  }
    
     /** there are two common styles of user-level coordinates for
-     *  hex boards.  Columns are pretty universally named A,B,C etc,
+     *  hexagonal boards.  Columns are pretty universally named A,B,C etc,
      *  but the rows can be either "1 Origin" where the cell above A is 1,
      *  or "Diagonal Origin" where each diagonal row is consistantly
      *  numbered.   "1 Original" is the defult.  Set diagonal_grid=true
@@ -105,7 +105,7 @@ public abstract class triBoard<CELLTYPE extends cell<CELLTYPE>> extends gBoard<C
      {	int xc = BCtoXindex(cc.col,cc.row);
  		int yc = BCtoYindex(cc.col,cc.row);
  		// do this in this convoluted way so we take into account
- 		// the various ways that hex grids can be numbered.  They all
+ 		// the various ways that hexagonal grids can be numbered.  They all
  		// use the same underlying 2x1 array architecture.  Square
  		// grids are easier.
  		for(int dir = 0;dir<cc.geometry.n; dir++)

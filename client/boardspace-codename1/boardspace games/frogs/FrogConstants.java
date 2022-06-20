@@ -58,7 +58,7 @@ public interface FrogConstants
     static final int MOVE_DROPB = 207; // drop on the board
 	static final int MOVE_MOVE = 209;  // robot move
 	static final int MOVE_ONBOARD = 210;	// onboard a chip
-    static final String Frogs_SGF = "ArmyOfFrogs"; // sgf game number allocated for hex
+    static final String Frogs_SGF = "ArmyOfFrogs"; // sgf game name
     static final String[] FROGGRIDSTYLE = { "1", null, "A" }; // left and bottom numbers
 
  

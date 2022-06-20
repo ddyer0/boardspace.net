@@ -10,11 +10,11 @@ class CellStack extends OStack<XehCell>
 	public XehCell[] newComponentArray(int n) { return(new XehCell[n]); }
 }
 /**
- * specialized cell used for the game hex, not for all games using a hex board.
+ * specialized cell used for the this game.
  * this uses chipCell which holds only a single chip, but can be switched to stackCell
  * if the chips are ever stackable.
  * <p>
- * the game hex needs only a single object on each cell, or empty.
+ \* the game needs only a single object on each cell, or empty.
  *  @see chipCell 
  *  @see stackCell
  * 
@@ -41,7 +41,7 @@ public class XehCell extends chipCell<XehCell,XehChip> implements XehConstants
 	 * @param other
 	 * @return true if this cell is in the same location as other (but presumably on a different board)
 	 */
-	//public boolean sameCell(hexCell other)
+	//public boolean sameCell(HavannahCell other)
 	//{	return(super.sameCell(other)
 				// check the values of any variables that define "sameness"
 				// && (moveClaimed==other.moveClaimed)
@@ -50,16 +50,16 @@ public class XehCell extends chipCell<XehCell,XehChip> implements XehConstants
 	/** copyFrom is called when cloning random new cells for use in the UI
 	 * 
 	 */
-	//public void copyAllFrom(hexCell ot)
-	//{	//hexCell other = (hexCell)ot;
+	//public void copyAllFrom(HavannahCell ot)
+	//{	//HavannahCell other = (HavannahCell)ot;
 		// copy any variables that need copying
 	//	super.copyAllFrom(ot);
 	//}
 	/** copyFrom is called when cloning boards
 	 * 
 	 */
-	//public void copyFrom(hexCell ot)
-	//{	//hexCell other = (hexCell)ot;
+	//public void copyFrom(HavannahCell ot)
+	//{	//HavannahCell other = (HavannahCell)ot;
 		// copy any variables that need copying
 	//	super.copyFrom(ot);
 	//}

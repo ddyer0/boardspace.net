@@ -125,7 +125,7 @@ public interface TabConstants
 	static final int MOVE_SETOPTION = 209;
 	static final int MOVE_MOVE = 210;
 	
-    static final String Tablut_SGF = "29"; // sgf game number allocated for hex
+    static final String Tablut_SGF = "29"; // sgf game name
     static final String[] TABGRIDSTYLE = { "1", null, "A" }; // left and bottom numbers
 
   

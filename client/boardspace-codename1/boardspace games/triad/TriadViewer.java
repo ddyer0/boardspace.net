@@ -16,64 +16,13 @@ import lib.GC;
 import lib.HitPoint;
 import lib.LFrameProtocol;
 import lib.StockArt;
+import lib.Toggle;
 import online.game.*;
 import online.game.sgf.sgf_node;
 import online.game.sgf.sgf_property;
 import online.search.SimpleRobotProtocol;
 
-/**
- * 
- * Change History
- *
- * This is intended to be maintained as the reference example how to interface to boardspace.
- *
- * The overall structure here is a collection of classes specific to Hex, which extend
- * or use supporting online.game.* classes shared with the rest of the site.  The top level 
- * class is a Canvas which implements ViewerProtocol, which is created by the game manager.  
- * The game manager has very limited communication with this viewer class, but manages
- * all the error handling, communication, scoring, and general chatter necessary to make
- * the game part of the site.
- * 
- * The main classes are:
- *  HexGameViewer - this class, a canvas for display and mouse handling
- *  HexGameBoard - board representation and implementation of the game logic
- *  Hexmovespec - representation, parsing and printing of move specifiers
- *  HexPlay - a robot to play the game
- *  HexConstants - static constants shared by all of the above.  
- *  
- *  The primary purpose of the HexGameViewer class is to do the actual
- *  drawing and to mediate the mouse gestures.  All the actual work is 
- *  done in an event loop, rather than in direct reposonse to mouse or
- *  window events, so there is only one process involved.  With a single 
- *  process, there are no worries about synchronization among processes
- *  of lack of synchronization - both major causes of flakey user interfaces.
- *  
- *  The actual mouse handling is done by the commonCanvas class, which simply 
- *  records the recent mouse activity, and triggers "MouseMotion" to be called
- *  while the main loop is executing.
- *  
- *  Similarly, the actual "update" and "paint" methods for the canvas are handled
- *  by commonCanvas, which merely notes that a paint is needed and returns immediately.
- *  paintCanvas is called in the event loop.
- *  
- *  The drawing methods here combine mouse handling and drawing in a slightly
- *  nonstandard way.  Most of the drawing routines also accept a "HitPoint" object
- *  which contains the coordinates of the mouse.   As objects are drawn, we notice
- *  if the current object contains the mouse point, and if so deposit a code for 
- *  the current object in the HitPoint.  the Graphics object for drawing can be null,
- *  in which case no drawing is actually done, but the mouse sensitivity is checked
- *  anyway.  This method of combining drawing with mouse sensitivity helps keep the
- *  mouse sensitivity accurate, because it is always in agreement with what is being
- *  drawn.
- *  
- *  Steps to clone this hierarchy to start the next game
- *  1) copy the hierarchy to a brother directory
- *  2) open eclipse, then select the root and "refresh".  This should result
- *     in just a few complaints about package mismatches for the clones.
- *  3) fix the package names in the clones
- *  4) rename each of the classes in the clones, using refactor/rename
- *  5) revert the original "Hex" hierarchy in case eclipse got carried away.
-*/
+
 public class TriadViewer extends CCanvas<TriadCell,TriadBoard> implements TriadConstants, GameLayoutClient
 {	static final long serialVersionUID = 1000;
      // colors
@@ -101,6 +50,10 @@ public class TriadViewer extends CCanvas<TriadCell,TriadBoard> implements TriadC
     private Rectangle chipRect[] = addRect("chip",3);
 
     private Rectangle repRect = addRect("repRect");
+    private Toggle eyeRect = new Toggle(this,"eye",
+			StockArt.NoEye,TriadId.ToggleEye,NoeyeExplanation,
+			StockArt.Eye,TriadId.ToggleEye,EyeExplanation
+			);
     
 
     public void preloadImages()
@@ -114,7 +67,7 @@ public class TriadViewer extends CCanvas<TriadCell,TriadBoard> implements TriadC
     		// tricks are used to make sure.
     	  tileImages = StockArt.preLoadArt(loader,ImageDir,TileFileNames,TILESCALES);
           textures = loader.load_images(ImageDir,TextureNames);
-          borders = StockArt.preLoadArt(loader,ImageDir,BorderFileNames,BORDERSCALES);
+          borders = StockArt.preLoadArt(loader,StonesDir,BorderFileNames,BORDERSCALES);
     	}
     	gameIcon = textures[ICON_INDEX];
     }
@@ -126,7 +79,7 @@ public class TriadViewer extends CCanvas<TriadCell,TriadBoard> implements TriadC
 	 * info contains all the goodies from the environment.
 	 * */
     public void init(ExtendedHashtable info,LFrameProtocol frame)
-    {
+    {	enableAutoDone = true;
         super.init(info,frame);
         MouseColors = TriadMouseColors;
         MouseDotColors = TriadMouseDotColors; 
@@ -206,7 +159,7 @@ public class TriadViewer extends CCanvas<TriadCell,TriadBoard> implements TriadC
     	int boardY = mainY+stateH+extraH;
     	int boardBottom = boardY+boardH;
     	int stateY = boardY-stateH;
-    	G.placeStateRow(boardX,stateY,boardW,stateH,iconRect,stateRect,noChatRect);
+    	G.placeStateRow(boardX,stateY,boardW,stateH,iconRect,stateRect,eyeRect,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	G.SetRect(goalRect, boardX, boardBottom-stateH, boardW, stateH);
     	setProgressRect(progressRect,goalRect);
@@ -234,7 +187,7 @@ public class TriadViewer extends CCanvas<TriadCell,TriadBoard> implements TriadC
     	return(box);
     }
 
-	// draw a box of spare chips. For hex it's purely for effect.
+	// draw a box of spare chips. It's purely for visual effect.
     private void DrawChipPool(Graphics gc, Rectangle r, int player, HitPoint highlight,TriadBoard gb)
     {
         boolean canhit = gb.LegalToHitChips(player) && G.pointInRect(highlight, r);
@@ -311,9 +264,9 @@ public class TriadViewer extends CCanvas<TriadCell,TriadBoard> implements TriadC
       bb.DrawGrid(gc, boardRect, use_grid, boardBackgroundColor, GridColor, GridColor, GridColor);
 
       // draw the tile grid.  The positions are determined by the underlying board
-      // object, and the tile itself if carefully crafted to tile the hex board
-      // when drawn this way.  For the current Hex graphics, we could use the
-      // simpler loop for(HexCell c = b.allCells; c!=null; c=c.next) {}
+      // object, and the tile itself if carefully crafted to tile the board
+      // when drawn this way.  For games with simple graphics, we could use the
+      // simpler loop for(Cell c = b.allCells; c!=null; c=c.next) {}
       // but for more complex graphics with overlapping shadows or stacked
       // objects, this double loop is useful if you need to control the
       // order the objects are drawn in.
@@ -332,15 +285,16 @@ public class TriadViewer extends CCanvas<TriadCell,TriadBoard> implements TriadC
               // decorate the borders with darker and lighter colors.  The border status
               // of cells is precomputed, so each cell has a mask of which borders it needs.
               // in order to make the artwork as simple as possible to maintain, the border
-              // pictures are derived directly from the hex cell masters, so they need the
+              // pictures are derived directly from the cell masters, so they need the
               // same scale and offset factors as the main cell.
-              if(c.borders!=0)
+    	  	  int border = c.borderMask();
+              if(border!=0)
               {
               for(int dir=0; dir<6;dir++)
               {	  //turn on rectangles and sliders to adjust
             	  lastDropped = borders[bindex+5];
             	  adjustScales(borders[bindex+5].getScale(),lastDropped);
-            	  if((c.borders&(1<<dir))!=0)
+            	  if((border&(1<<dir))!=0)
             	  {	borders[bindex+dir].drawChip(gc,this,cell,xpos,ypos,null);
             	  }
               }
@@ -364,7 +318,7 @@ public class TriadViewer extends CCanvas<TriadCell,TriadBoard> implements TriadC
         Hashtable<TriadCell,TriadCell> dests = gb.getDests();
         Hashtable<TriadCell,TriadCell> sources = gb.getSources();
         Hashtable<TriadCell,TriadCell> captures = gb.getCaptures();
-
+        boolean show = eyeRect.isOnNow();
         // this enumerates the cells in the board in an arbitrary order.  A more
         // conventional double xy loop might be needed if the graphics overlap and
         // depend on the shadows being cast correctly.
@@ -373,15 +327,6 @@ public class TriadViewer extends CCanvas<TriadCell,TriadBoard> implements TriadC
          	 int ypos = G.Bottom(brect) - gb.cellToY(cell);
              int xpos = G.Left(brect) + gb.cellToX(cell);
              boolean canHit = gb.LegalToHitBoard(cell);
-             if(sources.get(cell)!=null)
-             {StockArt.SmallO.drawChip(gc,this,cellSize*5,xpos,ypos,null);
-             }
-             if(dests.get(cell)!=null)
-             {	StockArt.SmallO.drawChip(gc,this,cellSize*3,xpos,ypos,null);
-             }
-             if(captures.get(cell)!=null)
-             	{StockArt.SmallX.drawChip(gc,this,cellSize*3,xpos,ypos,null);
-             	}
              if(cell.drawChip(gc, this,canHit?highlight:null, cellSize,xpos,ypos,null))
              {
                  boolean empty = (cell.chip == null);
@@ -391,6 +336,15 @@ public class TriadViewer extends CCanvas<TriadCell,TriadBoard> implements TriadC
                  highlight.awidth = CELLSIZE;              
             	 highlight.spriteColor = Color.red;
               }
+           if(show && sources.get(cell)!=null)
+           {StockArt.SmallO.drawChip(gc,this,cellSize,xpos,ypos,null);
+           }
+           if(show && dests.get(cell)!=null)
+             {	StockArt.SmallO.drawChip(gc,this,cellSize,xpos,ypos,null);
+             }
+           if(show && captures.get(cell)!=null)
+             	{StockArt.SmallX.drawChip(gc,this,cellSize,xpos,ypos,null);
+             	}
             
         }
     }
@@ -462,7 +416,7 @@ public class TriadViewer extends CCanvas<TriadCell,TriadBoard> implements TriadC
         {	// if in any normal "playing" state, there should be a done button
 			// we let the board be the ultimate arbiter of if the "done" button
 			// is currently active.
-			if(!planned)
+			if(!planned && !autoDoneActive())
 				{handleDoneButton(gc,doneRect,(gb.DoneState() ? buttonSelect : null), 
 					HighlightColor, rackBackGroundColor);
 				}
@@ -485,6 +439,8 @@ public class TriadViewer extends CCanvas<TriadCell,TriadBoard> implements TriadC
             goalAndProgressMessage(gc,nonDragSelect,s.get(GoalMessage),progressRect, goalRect);
             DrawRepRect(gc,0,Color.black, gb.Digest(),repRect);	
         }
+        eyeRect.activateOnMouse = true;
+        eyeRect.draw(gc,selectPos);
         // draw the vcr controls
         drawVcrGroup(nonDragSelect, gc);
 
@@ -599,6 +555,9 @@ public class TriadViewer extends CCanvas<TriadCell,TriadBoard> implements TriadC
         {
         default:
         	throw G.Error("Hit Unknown: %s", hitObject);
+        case ToggleEye:
+        	eyeRect.toggle();
+        	break;
         case BoardLocation:	// we hit an occupied part of the board 
 			switch(state)
 			{

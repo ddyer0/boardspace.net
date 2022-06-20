@@ -226,7 +226,7 @@ public class MuttonMoveSpec extends commonMove implements MuttonConstants
 				return ("");
 
 			default:
-				return (D.findUnique(op));
+				return (D.findUniqueTrans(op));
 
 		}
 	}

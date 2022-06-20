@@ -276,7 +276,7 @@ public class Rajmovespec extends commonMPMove implements RajConstants
         case MOVE_SELECT:
         	return ("Select "+from_row);
         default:
-            return (D.findUnique(op));
+            return (D.findUniqueTrans(op));
         }
     }
 

@@ -212,7 +212,7 @@ public class RithmomachyMovespec extends commonMove implements RithmomachyConsta
             return ((source==RithId.White_Chip_Pool)?"W":"B");
  
         default:
-            return (D.findUnique(op));
+            return (D.findUniqueTrans(op));
         }
     }
 

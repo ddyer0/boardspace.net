@@ -114,7 +114,7 @@ public interface StymieConstants
      	
     }
  	
-    static final String Stymie_SGF = "stymie"; // sgf game number allocated for hex
+    static final String Stymie_SGF = "stymie"; // sgf game name
     static final String[] GRIDSTYLE = { "1", null, "A" }; // left and bottom numbers
 
     // file names for jpeg images and masks

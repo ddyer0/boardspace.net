@@ -20,7 +20,7 @@ public interface FanoronaConstants
     	Black_Chip("B"), // positive numbers are trackable
     	White_Chip("W"),
     	Reverse(null),
-    	BoardLocation(null);
+    	BoardLocation(null), ToggleEye(null);
 	
    	String shortName = name();
 	public String shortName() { return(shortName); }

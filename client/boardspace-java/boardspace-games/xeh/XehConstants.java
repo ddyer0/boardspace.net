@@ -67,7 +67,7 @@ public interface XehConstants
 		public boolean Puzzle() { return(this==Puzzle); } public boolean simultaneousTurnsAllowed() { return(false); }
 	};
 	
-    //	these next must be unique integers in the Hexmovespec dictionary
+    //	these next must be unique integers in the HavannahMovespec dictionary
 	//  they represent places you can click to pick up or drop a stone
 	enum XehId implements CellId
 	{
@@ -162,7 +162,7 @@ public interface XehConstants
 //    static int[] ZnInCol =   { 5, 8, 9, 10, 11, 12, 11, 12, 11, 10, 9, 8, 5 }; // depth of columns, ie A has 4, B 5 etc.
 //    static int[] ZfirstCol = { 1, 0, 0,  0,  0,  0,  1,  0,  0,  0, 0, 0, 1 };
 
-//  "snowflake" hex board with crinkly edges, 5 per side. 
+//  "snowflake" hexagonal board with crinkly edges, 5 per side. 
 //  Used for "crossfire" and lyngk
 //    static int[] ZfirstInCol = { 6, 3, 0, 1, 0, 1, 0, 3, 6 };
 //    static int[] ZnInCol =     {1, 4, 7, 6, 7, 6, 7, 4, 1 }; // depth of columns, ie A has 4, B 5 etc.
@@ -176,7 +176,7 @@ public interface XehConstants
 	// move commands, actions encoded by movespecs.  Values chosen so these
     // integers won't look quite like all the other integers
  	
-    static final String Xeh_SGF = "11"; // sgf game number allocated for hex
+    static final String Xeh_SGF = "11"; // sgf game name
     static final String[] XEHGRIDSTYLE = { "1", null, "A" }; // left and bottom numbers
 
     // file names for jpeg images and masks

@@ -8,7 +8,7 @@ import online.game.BaseBoard.BoardState;
 
 public interface CheConstants 
 {	
-    //	these next must be unique integers in the Hexmovespec dictionary
+    //	these next must be unique integers in the dictionary
 	//  they represent places you can click to pick up or drop a stone
 	static final String GoalMessage = "Form a closed shape in your color";
 	static final String FirstMoveMessage = "Place a tile on any empty cell";
@@ -84,12 +84,7 @@ public interface CheConstants
     //reliable to save and have the result be replaced in the running applet, but
     //this is only a one time thing in development.
     //
-    //ad hoc scale factors to fit the stones to the board
-    static final double[][] TILESCALES=
-    {   {0.65,0.50,2.1},	// selection
-    	{0.50,0.55,2.1},	// hex tile and border artworks
-    	{0.50,0.50,1.9}};	// unrotated hex tile and border artwork
-
+ 
     
     static final int BACKGROUND_TILE_INDEX = 0;
     static final int BACKGROUND_REVIEW_INDEX = 1;

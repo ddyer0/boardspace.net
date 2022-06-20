@@ -77,7 +77,7 @@ public interface QyshinsuConstants
     static final int MOVE_RACK_BOARD = 209;	// move from rack to board
     static final int MOVE_REMOVE = 210;	// move board to board
 	
-    static final String Qyshinsu_SGF = "Qyshinsu"; // sgf game number allocated for hex
+    static final String Qyshinsu_SGF = "Qyshinsu"; // sgf game name
     static final String[] QYSHINDUGRIDSTYLE = {"1", null, null}; // left and bottom numbers
  
     // file names for jpeg images and masks

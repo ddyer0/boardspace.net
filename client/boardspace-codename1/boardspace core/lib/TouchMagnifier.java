@@ -7,7 +7,7 @@ import bridge.Color;
 
 public class TouchMagnifier {
 
-    boolean alwaysPredraw = false;		// if true, always draw a fresh image, never reuse the existing bitmap
+    boolean alwaysPredraw = !G.isCodename1();		// if true, always draw a fresh image, never reuse the existing bitmap
     Image magnifierDisplay = null;
     Image magnifierDraw = null;
 	MouseClient client;
@@ -112,6 +112,15 @@ public class TouchMagnifier {
 		int ps = (int)(scale*sz);				// pad size is 4x the minimum feature size
 		return(ps);
     }
+    //
+    // draw to a new image at the desirec scale and offset, so the resulting 
+    // image can be drawn 1:1   This is used if there is no backing image
+    // and not specifically requested to draw directly.  This assumes that
+    // drawing a giant image with a tiny clipping region is efficient.
+    // 
+    // also note that for tanrtix on ios, this doesn't work because of bugs in 
+    // codename1 implementation of drawPolygon
+    //
     private Image makePrescaledImage(HitPoint hp)
     {	
     	int dsize = getMagnifierViewSize();	// size of the magnified pad
@@ -120,11 +129,12 @@ public class TouchMagnifier {
     					? Image.createImage(dsize,dsize) 
     					: magnifierDisplay;
     	Graphics g2 = temp.getGraphics();
+    	g2.setFont(G.getGlobalDefaultFont());
+
     	MouseManager mouse = client.getMouse();
 		int ssize = getMagnifierSourceSize()/2;	// offset to the center of the unmagnified source
        	int ax = (int)((mouse.getX()-ssize) /* *scale */);	// on IOS, scale is not needed
     	int ay = (int)((mouse.getY()-ssize) /* *scale */);
- 
     	g2.scale(scale, scale);
     	g2.translate(-ax, -ay);
     	client.drawClientCanvas(g2,false,hp);
@@ -140,18 +150,27 @@ public class TouchMagnifier {
      }
     
     boolean disabled = false;
+    /**
+     * useDirect means draw directly on the gc using the actual scale and clip that's appropriate
+     * otherwise, if no backing is available create a temp bitmap at the correct scale
+     * last choice is to use the backing and scale it, which results in a simple stretched image
+     * @param gc
+     * @param pt
+     * @param useDirect
+     */
     public void drawMagnifiedPad(Graphics gc,HitPoint pt,boolean useDirect)
     {	MouseManager mouse = client.getMouse();
     	if(!mouse.isDown()) { magnifierPadAngle = 3*Math.PI/4;  }
     	else if( touchZoomInProgress())
-    	{	//
+    	{	
+     		//
     		// the default mode is the use the existing offscreen image.  This produces a larger
     		// image, but no new details.
     		//
     		Image fore = alwaysPredraw || useDirect ? null : client.getOffScreenImage();
     		// alwaysPredraw uses a freshly drawn image at the real
     		// magnification, so new details will be visible.
-    		Image shadow = (fore==null && useDirect) ? null : makePrescaledImage(pt);
+    		Image shadow = alwaysPredraw||(fore==null && !useDirect) ?  makePrescaledImage(pt) : null;
     		{
     		
     			//G.addLog("magnifier");
@@ -231,7 +250,6 @@ public class TouchMagnifier {
   			GC.setClip(gc, cl);
     		
     		}
-
     	}
     }
     /**

@@ -214,7 +214,7 @@ public class CheckerMovespec
             return ("");
 
         default:
-            return (D.findUnique(op));
+            return (D.findUniqueTrans(op));
         }
     }
 

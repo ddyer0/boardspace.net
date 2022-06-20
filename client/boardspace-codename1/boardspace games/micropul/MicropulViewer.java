@@ -38,7 +38,7 @@ import lib.StockArt;
  * start there and be implemented completely from scratch, but in practice there is another huge pile
  * of things that every game has to do; dealing with graphics, mouse events, saving and restoring the
  * game state from static records, replaying and reviewing games and so on.   These are implemented in the 
- * class "commonCanvas" and by several board-like base classes for Hex and Square geometry boards.   
+ * class "commonCanvas" and by several board-like base classes for hexagonal and square geometry boards.   
  * All the existing games for boardspace use these classes to provide graphics and basic board representation.
  * 
  * For games with robot players, there is another huge pile of things that a robot has to do, generating
@@ -57,7 +57,7 @@ public class MicropulViewer extends CCanvas<MicropulCell,MicropulBoard> implemen
 	 */
    	static MicroId JCodes[]  = { MicroId.Jewel0, MicroId.Jewel1, MicroId.Jewel2, MicroId.Jewel3};
 		
-    static final String Micropul_SGF = "micropul"; // sgf game number allocated for hex
+    static final String Micropul_SGF = "micropul"; // sgf game name
  
  
     // file names for jpeg images and masks
@@ -331,7 +331,7 @@ public class MicropulViewer extends CCanvas<MicropulCell,MicropulBoard> implemen
     	GC.setFont(gc,standardPlainFont());
     	GC.Text(gc,true,R,Color.blue,null, s.get(PlusTurnMessage,n));
     }
-	// draw a box of spare chips. For hex it's purely for effect.
+	// draw a box of spare chips. It's purely for visual effect.
     private void DrawJewels(Graphics gc, Rectangle r,  int pl,HitPoint highlight,MicropulBoard gb)
     {	
     	final double dxs[] = {-0.2,0,0.3};
@@ -371,7 +371,7 @@ public class MicropulViewer extends CCanvas<MicropulCell,MicropulBoard> implemen
         }
      }
     
-	// draw a box of spare chips. For hex it's purely for effect.
+	// draw a box of spare chips. It's purely for visual effect.
     private void DrawSupply(Graphics gc, Rectangle r,  int player,HitPoint highlight,MicropulBoard gb)
     {	commonPlayer pl = getPlayerOrTemp(player);
         boolean canhit = gb.LegalToHitSupply(player) && G.pointInRect(highlight,r);
@@ -437,9 +437,9 @@ public class MicropulViewer extends CCanvas<MicropulCell,MicropulBoard> implemen
       //gb.DrawGrid(gc, brect, use_grid, boardBackgroundColor, GridColor, GridColor, GridColor);
 
       // draw the tile grid.  The positions are determined by the underlying board
-      // object, and the tile itself if carefully crafted to tile the hex board
-      // when drawn this way.  For the current Hex graphics, we could use the
-      // simpler loop for(HexCell c = b.allCells; c!=null; c=c.next) {}
+      // object, and the tile itself if carefully crafted to tile the board
+      // when drawn this way.  For games with simple graphics, we could use the
+      // simpler loop for(Cell c = b.allCells; c!=null; c=c.next) {}
       // but for more complex graphics with overlapping shadows or stacked
       // objects, this double loop is useful if you need to control the
       // order the objects are drawn in.
@@ -684,7 +684,7 @@ public class MicropulViewer extends CCanvas<MicropulCell,MicropulBoard> implemen
         				stateRect);
         gb.playerChip[gb.whoseTurn].drawChip(gc,this,iconRect,null,2);
        goalAndProgressMessage(gc,nonDragSelect,s.get(GoalMessage),progressRect, goalRect);
-        //DrawRepRect(gc,gb.Digest(),repRect);	// Not needed for hex
+        //DrawRepRect(gc,gb.Digest(),repRect);	// Not needed for games with no possible repetition
     
         // draw the vcr controls
         drawVcrGroup(nonDragSelect, gc);

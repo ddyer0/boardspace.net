@@ -327,7 +327,7 @@ public interface YConstants
 	// move commands, actions encoded by movespecs.  Values chosen so these
     // integers won't look quite like all the other integers
  	
-    static final String Y_SGF = "Y"; // sgf game number allocated for hex
+    static final String Y_SGF = "Y"; // sgf game name
     static final String[] YGRIDSTYLE = { "1", null, "A" }; // left and bottom numbers
 
     // file names for jpeg images and masks

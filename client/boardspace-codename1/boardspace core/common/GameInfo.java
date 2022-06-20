@@ -1070,6 +1070,26 @@ synchronized(allGames) {
 			null,false, WhiteOverBlack));
 	}
 	{
+	String havannahRules = "/havannah/english/Rules.html";
+	String havannahViewer = "havannah.HavannahViewer";  
+	put(new GameInfo(1590,ES.game,108,"HH",ConnectionGames,"Havannah","havannah-6",
+			OneBotPlus,
+			new double[]{1.0,0.01},
+			havannahViewer,havannahRules,
+			null,false, WhiteOverBlack));
+	put(new GameInfo(1591,ES.game,108,"HH",ConnectionGames,"Havannah","havannah-8",
+			OneBotPlus,
+			new double[]{1.0,0.01},
+			havannahViewer,havannahRules,
+			null,false, WhiteOverBlack));
+	put(new GameInfo(1592,ES.game,108,"HH",ConnectionGames,"Havannah","havannah-10",
+			OneBotPlus,
+			new double[]{1.0,0.01},
+			havannahViewer,havannahRules,
+			null,false, WhiteOverBlack));
+
+	}
+	{
 	String pRules = "/hex/english/Rules%20-%20HexWiki.htm";
 	String pViewer = "prototype.PrototypeViewer";  
 	put(new GameInfo(590,ES.test,999,"PP",ConnectionGames,"Prototype","Prototype",
@@ -1107,6 +1127,23 @@ synchronized(allGames) {
 	 mm.longMessage = "CrosswordsInfoMessage";
 	}}
 	
+	{
+	String pRules = "/sprint/english/rules.html";
+	String pViewer = "sprint.SprintViewer";  
+	
+	GameInfo mm = put(new GameInfo(2101,ES.test,107,"SC",WordGames,"Sprint","Sprint",
+			ThreeBotsPlus,
+			new double[]{0.1,1.0,1.0,0.01},
+			pViewer,pRules,
+			null,true, null));
+	 mm.maxPlayers = 6;
+	 mm.groupSortKey = "0091";
+	 mm.robotTimed = true;
+	 mm.randomizeFirstPlayer = true;
+	 mm.hasHiddenInformation = false;
+
+	}
+
 	{
 	String pRules = "/jumbulaya/english/rules.html";
 	String pViewer = "jumbulaya.JumbulayaViewer";  

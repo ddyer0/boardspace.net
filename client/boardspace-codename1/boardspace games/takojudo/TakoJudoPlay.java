@@ -217,7 +217,7 @@ public TakojudoMovespec handleDraws(TakojudoMovespec move,double draw_threshold)
             // picking moves whose value is uncertain due to cutoffs.  This makes
             // the search MUCH slower so depth ought to be limited
             // if ((randomn>0)&&(dif>0.0)) { depth--; }
-            // for games such as hex, where there are no "fools mate" type situations
+            // for games where there are no "fools mate" type situations
             // the best solution is to use dif=0.0;  For games with fools mates,
             // set dif so the really bad choices will be avoided
             boardSearchLevel = 0;

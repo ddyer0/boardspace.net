@@ -167,7 +167,7 @@ public class TakojudoMovespec extends commonMove implements TakojudoConstants
             return ("");
 
         default:
-        	return (D.findUnique(op));
+        	return (D.findUniqueTrans(op));
 
         }
     }

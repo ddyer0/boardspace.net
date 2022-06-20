@@ -31,7 +31,7 @@ import lib.TextButton;
  * May 2007 initial work in progress. 
  *
  * This code is derived from the "HexGameViewer" class.  Refer to the
- * documentation there for overall structure notes.
+ 
 */
 public class QuinamidViewer extends CCanvas<QuinamidCell,QuinamidBoard> implements QuinamidConstants, GameLayoutClient
 {

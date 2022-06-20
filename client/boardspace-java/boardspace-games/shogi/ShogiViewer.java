@@ -747,7 +747,7 @@ private void playSounds(commonMove m)
     	{
     		if(OurMove()) 
     			{ if(allowUndo()) { PerformAndTransmit(RESET); }
-    			  PerformAndTransmit("OfferDraw"); 
+    			  PerformAndTransmit(OFFERDRAW); 
     			}
     		else {
                 theChat.postMessage(ChatInterface.GAMECHANNEL, KEYWORD_CHAT,

@@ -77,7 +77,7 @@ public interface XiangqiConstants
     static final int MOVE_BOARD_BOARD = 210;	// move board to board
 
 
-    static final String Xiangqi_SGF = "Xiangqi"; // sgf game number allocated for hex
+    static final String Xiangqi_SGF = "Xiangqi"; // sgf game name
     static final String[] XIANGQIGRIDSTYLE = { "1", null, "A" }; // left and bottom numbers
 
  

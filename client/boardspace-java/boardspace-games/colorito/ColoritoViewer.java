@@ -31,7 +31,7 @@ public class ColoritoViewer extends CCanvas<ColoritoCell,ColoritoBoard> implemen
      /**
 	 * 
 	 */
-	static final String Colorito_SGF = "Colorito"; // sgf game number allocated for hex
+	static final String Colorito_SGF = "Colorito"; // sgf game name
 	 
     // file names for jpeg images and masks
     static final String ImageDir = "/colorito/images/";
@@ -94,6 +94,7 @@ public class ColoritoViewer extends CCanvas<ColoritoCell,ColoritoBoard> implemen
     	// adjusted to the actual number, adjusted by the min and max
        	// int players_in_game = Math.max(3,info.getInt(exHashtable.PLAYERS_IN_GAME,4));
     	int players_in_game = Math.max(2,info.getInt(OnlineConstants.PLAYERS_IN_GAME,2));
+    	enableAutoDone = true;
     	super.init(info,frame);
        	// 
     	// for games that require some random initialization, the random key should be
@@ -384,7 +385,7 @@ public class ColoritoViewer extends CCanvas<ColoritoCell,ColoritoBoard> implemen
         GC.setFont(gc,standardBoldFont());
 		if (vstate != ColoritoState.Puzzle)
         {
-			if(!planned)
+			if(!planned && !autoDoneActive())
 				{handleDoneButton(gc,doneRect,(gb.DoneState() ? select : null), 
 					HighlightColor, rackBackGroundColor);
 				}

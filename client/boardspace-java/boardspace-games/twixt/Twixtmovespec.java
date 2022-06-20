@@ -241,7 +241,7 @@ public class Twixtmovespec extends commonMove implements TwixtConstants
         case MOVE_FROM_TO:
         	return(""+from_col+(b.nrows+1-from_row)+"-"+to_col+(b.nrows+1-to_row));
         default:
-            return (D.findUnique(op));
+            return (D.findUniqueTrans(op));
 
         }
     }

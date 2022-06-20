@@ -384,12 +384,12 @@ public class BlackDeathMovespec extends commonMPMove
             return G.concat( " " ,to_name);
 
 		case MOVE_PLAYCARD:
-            return G.concat(D.findUnique(op) , " ",color," ",source.shortName," ",to_row," ",from_name);
+            return G.concat(D.findUniqueTrans(op) , " ",color," ",source.shortName," ",to_row," ",from_name);
 			
 			
         case MOVE_DROP:
         case MOVE_PICK:
-            return G.concat(D.findUnique(op) ," ",color," ",source.shortName);
+            return G.concat(D.findUniqueTrans(op) ," ",color," ",source.shortName);
 
         case MOVE_DONE:
             return ("");
@@ -418,7 +418,7 @@ public class BlackDeathMovespec extends commonMPMove
         	
         case MOVE_ESCAPE:
         default:
-            return (D.findUnique(op));
+            return (D.findUniqueTrans(op));
 
         }
     }

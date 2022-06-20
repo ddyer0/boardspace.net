@@ -28,8 +28,8 @@ import lib.StockArt;
  *
  * May 2007 initial work in progress. 
  *
- * This code is derived from the "HexGameViewer" class.  Refer to the
- * documentation there for overall structure notes.
+
+ 
 */
 public class TruGameViewer extends CCanvas<TruCell,TruGameBoard> implements TruConstants, GameLayoutClient
 {

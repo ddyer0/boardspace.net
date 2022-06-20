@@ -74,6 +74,7 @@ public class MorrisViewer extends CCanvas<MorrisCell,MorrisBoard> implements Mor
     	// adjusted to the actual number, adjusted by the min and max
        	// int players_in_game = Math.max(3,info.getInt(exHashtable.PLAYERS_IN_GAME,4));
     	int players_in_game = Math.max(2,info.getInt(OnlineConstants.PLAYERS_IN_GAME,2));
+    	enableAutoDone = true;
     	super.init(info,frame);
        	// 
     	// for games that require some random initialization, the random key should be
@@ -320,9 +321,6 @@ public class MorrisViewer extends CCanvas<MorrisCell,MorrisBoard> implements Mor
     	for(MorrisCell cell = gb.allCells; cell!=null; cell = cell.next)
     	{
         	{ 
-        	// note that these accessors "lastRowInColumn" etc
-        	// are not really needed for simple boards, but they
-        	// also work for hex boards and boards with cut out corners
             int ypos = G.Bottom(brect) - gb.cellToY(cell);
             int xpos = G.Left(brect) + gb.cellToX(cell);
             HitPoint hitNow = gb.legalToHitBoard(cell,targets) ? highlight : null;
@@ -424,7 +422,7 @@ public class MorrisViewer extends CCanvas<MorrisCell,MorrisBoard> implements Mor
         
 		if (vstate != MorrisState.Puzzle)
         {
-			if(!planned)
+			if(!planned && !autoDoneActive())
 				{handleDoneButton(gc,doneRect,(gb.DoneState() ? select : null), 
 					HighlightColor, rackBackGroundColor);
 				}

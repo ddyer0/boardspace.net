@@ -45,7 +45,7 @@ public class BreakingAwayViewer extends CCanvas<BreakingAwayCell,BreakingAwayBoa
 	 * 
 	 */
 	static final long serialVersionUID = 1L;
-	static final String BreakingAway_SGF = "BreakingAway"; // sgf game number allocated for hex
+	static final String BreakingAway_SGF = "BreakingAway"; // sgf game name
 	   
 	    
 	    // file names for jpeg images and masks

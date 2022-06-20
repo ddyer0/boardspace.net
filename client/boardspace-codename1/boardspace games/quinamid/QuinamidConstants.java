@@ -115,7 +115,7 @@ public interface QuinamidConstants
 	static final int MOVE_SHIFT = 211;		// shift a board
 	static final int MOVE_ROTATE = 212;
  
-    static final String Quinamid_SGF = "Quinamid"; // sgf game number allocated for hex
+    static final String Quinamid_SGF = "Quinamid"; // sgf game name
     static final String[] QUINAMIDGRIDSTYLE = { "1", null, "A" }; // left and bottom numbers
 
  

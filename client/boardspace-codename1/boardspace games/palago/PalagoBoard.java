@@ -54,7 +54,7 @@ class PalagoBoard extends hexBoard<PalagoCell> implements BoardProtocol,PalagoCo
 	//
     // private variables
     //
-// this is required even though it is meaningless for Hex, but possibly important
+// this is required even if it is meaningless for this game, but possibly important
 // in other games.  When a draw by repetition is detected, this function is called.
 // the game should have a "draw pending" state and enter it now, pending confirmation
 // by the user clicking on done.   If this mechanism is triggered unexpectedly, it
@@ -153,7 +153,7 @@ class PalagoBoard extends hexBoard<PalagoCell> implements BoardProtocol,PalagoCo
     	else { throw G.Error(WrongInitError,game); }
         gametype = game;
         setState(PalagoState.PUZZLE_STATE);
-        reInitBoard(firstcol, ncol, null); //this sets up the hex board
+        reInitBoard(firstcol, ncol, null); //this sets up a hexagonal board
          
         whoseTurn = FIRST_PLAYER_INDEX;
         chips_on_board = 0;
@@ -658,7 +658,7 @@ class PalagoBoard extends hexBoard<PalagoCell> implements BoardProtocol,PalagoCo
 			//$FALL-THROUGH$
 		case PLAY2_STATE:
         case PLAY_STATE:
-        	// for hex, you can pick up a stone in the storage area
+        	// you can pick up a stone in the storage area
         	// but it's really optional
         	return(true);
         	

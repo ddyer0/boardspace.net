@@ -276,7 +276,7 @@ public class YspahanMovespec extends commonMPMove implements YspahanConstants
             return ("");
 
         default:
-            return (D.findUnique(op));
+            return (D.findUniqueTrans(op));
             
         case MOVE_BOARD_BOARD: //Ro
         	return(describeSource())+(describeDest());

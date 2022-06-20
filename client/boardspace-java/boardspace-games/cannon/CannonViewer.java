@@ -21,13 +21,11 @@ import lib.*;
  *
  * May 2007 initial work in progress. 
  *
- * This code is derived from the "HexGameViewer" class.  Refer to the
- * documentation there for overall structure notes.
 */
 public class CannonViewer extends CCanvas<CannonCell,CannonBoard> implements CannonConstants, GameLayoutClient
 {
     // file names for jpeg images and masks
-    static final String Cannon_SGF = "Cannon"; // sgf game number allocated for hex
+    static final String Cannon_SGF = "Cannon"; // sgf game name
     static final String ImageDir = "/cannon/images/";
 	// sounds
     static final int BACKGROUND_TILE_INDEX = 0;
@@ -82,7 +80,7 @@ public class CannonViewer extends CCanvas<CannonCell,CannonBoard> implements Can
 	 * info contains all the goodies from the environment.
 	 * */
     public void init(ExtendedHashtable info,LFrameProtocol frame)
-    {
+    {	enableAutoDone = true;
         super.init(info,frame);
         MouseColors = CannonMouseColors;
         MouseDotColors = CannonMouseDotColors;
@@ -384,7 +382,7 @@ public class CannonViewer extends CCanvas<CannonCell,CannonBoard> implements Can
       double messageRotation = pl.messageRotation();
       GC.setFont(gc,standardBoldFont());
 		if (vstate != CannonState.PUZZLE_STATE)
-        {	if(!planned)
+        {	if(!planned && !autoDoneActive())
         	{
 			handleDoneButton(gc,messageRotation,doneRect,(gb.DoneState() ? ourNonDragSelect : null), 
 					HighlightColor, rackBackGroundColor);

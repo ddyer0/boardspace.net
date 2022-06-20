@@ -28,8 +28,6 @@ import lib.StockArt;
  *
  * May 2007 initial work in progress. 
  *
- * This code is derived from the "HexGameViewer" class.  Refer to the
- * documentation there for overall structure notes.
 */
 public class KamisadoViewer extends CCanvas<KamisadoCell,KamisadoBoard> implements  KamisadoConstants
 {
@@ -37,7 +35,7 @@ public class KamisadoViewer extends CCanvas<KamisadoCell,KamisadoBoard> implemen
 	 * 
 	 */
     // file names for jpeg images and masks
-	static final String Kamisado_SGF = "Kamisado" ; // sgf game number allocated for hex
+	static final String Kamisado_SGF = "Kamisado" ; // sgf game name
 	static final String ImageDir = "/kamisado/images/";
 	// sounds
     static final int BACKGROUND_TILE_INDEX = 0;
@@ -102,6 +100,7 @@ public class KamisadoViewer extends CCanvas<KamisadoCell,KamisadoBoard> implemen
     {	// for games with more than two players, the default players list should be 
     	// adjusted to the actual number, adjusted by the min and max
        	// int players_in_game = Math.max(3,info.getInt(exHashtable.PLAYERS_IN_GAME,4));
+    	enableAutoDone = true;
     	super.init(info,frame);
        	// 
     	// for games that require some random initialization, the random key should be
@@ -444,9 +443,10 @@ public class KamisadoViewer extends CCanvas<KamisadoCell,KamisadoBoard> implemen
         GC.setFont(gc,standardBoldFont());
 		if (vstate != KamisadoState.PUZZLE_STATE)
         {
-			handleDoneButton(gc,doneRect,(gb.DoneState() ? select : null), 
+			if(!plannedSeating() && !autoDoneActive())
+				{handleDoneButton(gc,doneRect,(gb.DoneState() ? select : null), 
 					HighlightColor, rackBackGroundColor);
-			
+				}
 			handleEditButton(gc,messageRotation,editRect,select,highlight, HighlightColor, rackBackGroundColor);
         }
 

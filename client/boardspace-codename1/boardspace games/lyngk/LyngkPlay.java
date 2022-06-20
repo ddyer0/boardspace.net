@@ -217,7 +217,7 @@ public commonMove Get_Random_Move(Random rand)
 
 
  /**
-  * get a random move by selecting a random one from the full list.  For games like
+ * get a random move by selecting a random one from the full list.
   * lyngk, which have trivial move generators, this is "only" a factor of 2 or so improvement
   * in the playout rate.  For games with more complex move generators, it can by much more.
   * Diagonal-Blocks sped up by 10x 
@@ -277,7 +277,7 @@ public commonMove Get_Random_Move(Random rand)
         monte_search_state.maxThreads = DEPLOY_THREADS;
         monte_search_state.random_moves_per_second = WEAKBOT ? 1000 : 380000;		// 
         monte_search_state.max_random_moves_per_second = 2000000;		// 
-        // for Hex, the child pool is exhausted very quickly, but the results
+        // for some games, the child pool is exhausted very quickly, but the results
         // still get better the longer you search.  Other games may work better
         // the other way.
         monte_search_state.stored_child_limit_stop = STORED_CHILD_LIMIT_STOP;

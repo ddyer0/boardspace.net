@@ -22,6 +22,7 @@ import lib.HitPoint;
 import lib.LFrameProtocol;
 import lib.Random;
 import lib.StockArt;
+import lib.Toggle;
 
 
 /**
@@ -70,6 +71,10 @@ public class ExxitGameViewer extends CCanvas<ExxitCell,ExxitGameBoard> implement
     private Rectangle repRect = addRect("repRect");
     private Rectangle chipRects[] = addRect("chip",2);
     private Rectangle scoreRects [] = addRect("score",2);
+    private Toggle eyeRect = new Toggle(this,"eye",
+			StockArt.NoEye,ExxitId.ToggleEye,NoeyeExplanation,
+			StockArt.Eye,ExxitId.ToggleEye,EyeExplanation
+			);
     
     private Rectangle tilePoolRect = addRect("tilePoolRect");
     
@@ -110,7 +115,7 @@ public class ExxitGameViewer extends CCanvas<ExxitCell,ExxitGameBoard> implement
 	 * info contains all the goodies from the environment.
 	 * */
     public void init(ExtendedHashtable info,LFrameProtocol frame)
-    {
+    {	enableAutoDone = true;
         super.init(info,frame);
         use_grid = false;
         gridOption.setState(false);
@@ -225,7 +230,7 @@ public class ExxitGameViewer extends CCanvas<ExxitCell,ExxitGameBoard> implement
         int stateX = boardX;
         int stateH = CELLSIZE;
         int zoomW = CELLSIZE*5;
-        G.placeStateRow(stateX,stateY,boardW,stateH,iconRect,stateRect,liftRect,noChatRect);
+        G.placeStateRow(stateX,stateY,boardW,stateH,iconRect,stateRect,eyeRect,liftRect,noChatRect);
         G.placeRight(stateRect,zoomRect,zoomW);
         
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
@@ -239,7 +244,7 @@ public class ExxitGameViewer extends CCanvas<ExxitCell,ExxitGameBoard> implement
     }
 
     
-	// draw a box of spare chips. For hex it's purely for effect.
+	// draw a box of spare chips. It's purely for visual effect.
     private boolean fliptiles = false;
     private void DrawTilePool(Graphics gc, Rectangle r, HitPoint highlight)
     {
@@ -406,7 +411,7 @@ public class ExxitGameViewer extends CCanvas<ExxitCell,ExxitGameBoard> implement
      	int cellSize = chipSize();
      	boolean dolift = doLiftAnimation();
         Rectangle oldClip = GC.combinedClip(gc,tbRect);
-
+        boolean show = eyeRect.isOnNow();
       	boolean draggingBoard = draggingBoard();
  
      	//
@@ -433,8 +438,9 @@ public class ExxitGameViewer extends CCanvas<ExxitCell,ExxitGameBoard> implement
                  boolean isADest = dests.get(cell)!=null;
                  boolean isASource = (cell==sourceCell)||(cell==destCell);
                  ExxitPiece piece = cell.topPiece();
+             boolean canHit = gb.LegalToHitBoard(cell);
                  boolean hitpoint = !draggingBoard
-                		 && gb.LegalToHitBoard(cell)
+                		 && canHit
                 		 && cell.closestPointToCell(ourTurnSelect,cellSize, xpos, ypos);
                  if(hitpoint) 
                  { hitCell = cell;
@@ -474,7 +480,7 @@ public class ExxitGameViewer extends CCanvas<ExxitCell,ExxitGameBoard> implement
                      }
                  	}
                 }
-                 if(isASource)
+                 if((show && canHit) || isASource)
                  {GC.cacheAACircle(gc,xpos,ypos,2,Color.green,Color.yellow,true);
                  } else
                  if(isADest)
@@ -539,7 +545,7 @@ public class ExxitGameViewer extends CCanvas<ExxitCell,ExxitGameBoard> implement
         GC.setFont(gc,standardBoldFont());
 		if (state != ExxitState.PUZZLE_STATE)
         {
-			if(!planned)
+			if(!planned  && !autoDoneActive())
 				{handleDoneButton(gc,messageRotation,doneRect,(gb.DoneState() ? buttonSelect : null), 
 					HighlightColor, rackBackGroundColor);
 				}
@@ -558,7 +564,8 @@ public class ExxitGameViewer extends CCanvas<ExxitCell,ExxitGameBoard> implement
             int idx = chip.imageIndex(false);
             drawImage(gc, ExxitPiece.images[idx],SCALES[idx],G.centerX(iconRect),G.centerY(iconRect),G.Width(iconRect)*4);
             goalAndProgressMessage(gc,nonDraggingSelect,s.get(GoalMessage),progressRect, goalRect);
-
+        eyeRect.activateOnMouse = true;
+        eyeRect.draw(gc,selectPos);
         drawVcrGroup(nonDraggingSelect, gc);
 
     }
@@ -751,6 +758,9 @@ public class ExxitGameViewer extends CCanvas<ExxitCell,ExxitGameBoard> implement
         {
         default:
         	throw G.Error("Hit Unknown: %s", hitObject);
+        case ToggleEye:
+        	eyeRect.toggle();
+        	break;
         case ZoomSlider:
         case InvisibleDragBoard:
         	break;

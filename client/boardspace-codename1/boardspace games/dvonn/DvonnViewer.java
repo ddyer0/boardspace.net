@@ -21,6 +21,7 @@ import lib.LFrameProtocol;
 import lib.SimpleSprite;
 import lib.Slider;
 import lib.StockArt;
+import lib.Toggle;
 
 
 
@@ -32,8 +33,6 @@ import lib.StockArt;
  * Feb 2008 initial work. 
  * Jan 2013 Changed moving object to a stack.  Added animation to robot and replay
  *
- * This code is derived from the "HexGameViewer" and other viewer classes.  Refer to the
- * documentation there for overall structure notes.
  * 
  */
 public class DvonnViewer extends CCanvas<DvonnCell,DvonnBoard> implements DvonnConstants, GameLayoutClient
@@ -44,7 +43,7 @@ public class DvonnViewer extends CCanvas<DvonnCell,DvonnBoard> implements DvonnC
     static final double INITIAL_CHIP_SCALE = 0.125;
     static final double MAX_CHIP_SCALE = 0.2;
     static final double MIN_CHIP_SCALE = 0.05;
-    static final String Dvonn_SGF = "Dvonn"; // sgf game number allocated for hex
+    static final String Dvonn_SGF = "Dvonn"; // sgf game name
     // file names for jpeg images and masks
     static final String ImageDir = "/dvonn/images/";
 
@@ -85,6 +84,10 @@ public class DvonnViewer extends CCanvas<DvonnCell,DvonnBoard> implements DvonnC
     private Rectangle chipRects[] = addRect("chip",2);
     private Rectangle scoreRects[] = addRect("score",2);
     private Rectangle  rackRects[] = addRect(".rack",2);
+    private Toggle eyeRect = new Toggle(this,"eye",
+			StockArt.NoEye,DvonnId.ToggleEye,NoeyeExplanation,
+			StockArt.Eye,DvonnId.ToggleEye,EyeExplanation
+			);
 
     private Color ZoomColor = new Color(0.0f,0.0f,1.0f);
     private Color ZoomHighlightColor = new Color(150,195,166);
@@ -112,7 +115,7 @@ public class DvonnViewer extends CCanvas<DvonnCell,DvonnBoard> implements DvonnC
 	 * info contains all the goodies from the environment.
 	 * */
     public void init(ExtendedHashtable info,LFrameProtocol frame)
-    {
+    {	enableAutoDone = true;
         super.init(info,frame);
         int randomKey = sharedInfo.getInt(OnlineConstants.RANDOMSEED,-1);
         labelFont = largeBoldFont();
@@ -212,7 +215,7 @@ public void setLocalBounds(int x, int y, int width, int height)
 	//
     int stateY = boardY;
     int stateX = boardX;
-    G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,liftRect,reverseViewRect,viewsetRect,noChatRect);
+    G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,eyeRect,liftRect,reverseViewRect,viewsetRect,noChatRect);
 	G.SetRect(boardRect,boardX,boardY+(rotate?CELLSIZE/2:CELLSIZE),boardW,boardH);
 	if(rotate)
 	{	// this conspires to rotate the drawing of the board
@@ -353,7 +356,7 @@ public Rectangle createPlayerGroup(int player,int x,int y,double rotation,int un
      	
       	int dotsize = Math.max(2,CELLSIZE/15);
       	boolean canHit =  !dolift && (highlight!=null);
-      	
+      	boolean show = eyeRect.isOnNow();
       	boolean perspective = usePerspective();
      	//
         // now draw the contents of the board and anything it is pointing at
@@ -371,7 +374,7 @@ public Rectangle createPlayerGroup(int player,int x,int y,double rotation,int un
             if(rb.isSource(c))
             {	GC.cacheAACircle(gc,xpos+dotsize,ypos,dotsize,Color.blue,Color.gray,true);
             }
-            if(dests.get(c)!=null)
+            if((show && canHitCell) || (dests.get(c)!=null))
 	        {
 	        	GC.cacheAACircle(gc,xpos+dotsize,ypos,dotsize,Color.red,Color.gray,true);
 	        }
@@ -401,6 +404,8 @@ public Rectangle createPlayerGroup(int player,int x,int y,double rotation,int un
     
     public void drawAuxControls(Graphics gc,HitPoint highlight)
     {  	drawLiftRect(gc,liftRect,highlight,textures[LIFT_ICON_INDEX]); 
+    	eyeRect.activateOnMouse = true;
+    	eyeRect.draw(gc,highlight);
     	DrawReverseMarker(gc,reverseViewRect,highlight,DvonnId.ReverseViewButton);
     }
     //
@@ -418,8 +423,7 @@ public Rectangle createPlayerGroup(int player,int x,int y,double rotation,int un
       DvonnState vstate = gb.getState();
       
       GC.setRotatedContext(gc,boardRect,highlight,contextRotation);
-      HitPoint bot = G.pointInRect(ot, boardRect) ? ot : null;
-      drawBoardElements(gc, gb, boardRect, bot, highlight);
+      drawBoardElements(gc, gb, boardRect, ot, highlight);
       GC.unsetRotatedContext(gc,highlight);
        redrawGameLog(gc, ourSelect, logRect, boardBackgroundColor);
     
@@ -446,7 +450,7 @@ public Rectangle createPlayerGroup(int player,int x,int y,double rotation,int un
 		double messageRotation = pl.messageRotation();
        if (vstate != DvonnState.PUZZLE_STATE)
         {
-			if(!planned) 
+			if(!planned && !autoDoneActive()) 
 				{handleDoneButton(gc,doneRect,(gb.DoneState() ? select : null), 
 					HighlightColor, rackBackGroundColor);
 				}
@@ -626,6 +630,9 @@ private void playSounds(DvonnMovespec m)
         {
         default:
         	throw G.Error("Hit Unknown: %s", hitObject);
+        case ToggleEye:
+        	eyeRect.toggle();
+        	break;
         case ReverseViewButton:
           	 { boolean v = !b.reverseY(); b.setReverseY(v); reverseOption.setState(v); }
           	 generalRefresh();

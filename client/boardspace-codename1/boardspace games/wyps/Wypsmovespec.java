@@ -324,7 +324,7 @@ public class Wypsmovespec extends commonMPMove implements WypsConstants
          case MOVE_SETOPTION:
         	return TextChunk.create("Option "+Option.getOrd(to_row/2)+(((to_row&1)==0)?" false" : " true"));
         default:
-            return TextChunk.create(D.findUnique(op));
+            return TextChunk.create(D.findUniqueTrans(op));
 
         }
     }

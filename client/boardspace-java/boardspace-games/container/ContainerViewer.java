@@ -38,7 +38,7 @@ import lib.SimpleSprite.Movement;
 */
 public class ContainerViewer extends CCanvas<ContainerCell,ContainerBoard> implements ContainerConstants, PlayConstants
 {
-    static final String Container_SGF = "Container"; // sgf game number allocated for hex
+    static final String Container_SGF = "Container"; // sgf game name
     static final String ImageDir = "/container/images/";
   
     // version 2 is after a serious state machine bug is fixed.  Special logic

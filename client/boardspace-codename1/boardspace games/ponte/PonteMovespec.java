@@ -237,7 +237,7 @@ public class PonteMovespec extends commonMove
             return (TextChunk.create(""));
 
         default:
-            return (TextChunk.create(D.findUnique(op)));
+            return (TextChunk.create(D.findUniqueTrans(op)));
         }
     }
     /* construct a move string for this move.  These are the inverse of what are accepted

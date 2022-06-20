@@ -4,13 +4,12 @@ import lib.Random;
 import lib.HitPoint;
 import lib.OStack;
 import online.game.stackCell;
-import proteus.ProteusConstants.ProteusId;
 
 class CellStack extends OStack<ProteusCell>
 {
 	public ProteusCell[] newComponentArray(int n) { return(new ProteusCell[n]); }
 }
-public class ProteusCell extends stackCell<ProteusCell,ProteusChip> 
+public class ProteusCell extends stackCell<ProteusCell,ProteusChip> implements ProteusConstants
 {
 	public ProteusChip[] newComponentArray(int n) { return(new ProteusChip[n]); }
 	double cellWidth = 1.0;	// extra multiplier for the cell width in mouse sensitivity

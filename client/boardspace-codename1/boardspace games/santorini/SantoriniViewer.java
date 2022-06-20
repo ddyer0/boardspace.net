@@ -30,7 +30,7 @@ import online.common.*;
  * May 2007 initial work in progress. 
  *
  * This code is derived from the "HexGameViewer" class.  Refer to the
- * documentation there for overall structure notes.
+ 
  *
  * TODO: upgrade the game log with icons
 
@@ -470,9 +470,6 @@ public class SantoriniViewer extends CCanvas<SantoriniCell,SantoriniBoard> imple
        	while(cells.hasMoreElements())
        	{
        		SantoriniCell ccell = cells.nextElement();
-           	// note that these accessors "lastRowInColumn" etc
-        	// are not really needed for simple boards, but they
-        	// also work for hex boards and boards with cut out corners
             boolean isADest = candrop && (targets!=null) && (targets.get(ccell)!=null);
             boolean isASource = !candrop && ( (ccell==sourceCell)||(ccell==destCell));
             int ypos = G.Bottom(brect) - gb.cellToY(ccell);

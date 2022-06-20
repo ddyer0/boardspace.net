@@ -98,7 +98,7 @@ public class DipolePlay extends commonRobot<DipoleBoard> implements Runnable, Di
         // this avoids the various problems such as the robot committing suicide
         // because it's going to lose anyway, and the position looks better than
         // if the opponent makes the last move.  Technically, this isn't needed
-        // for hex because there is no such thing as a suicide move, but the logic
+        // if there is no such thing as a suicide move, but the logic
         // is included here because this is supposed to be an example.
         if(val0>=VALUE_OF_WIN) 
         	{ return(val0); 

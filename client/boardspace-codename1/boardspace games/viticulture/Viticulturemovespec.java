@@ -648,7 +648,7 @@ public class Viticulturemovespec extends commonMPMove implements ViticultureCons
         	return("wakeup "+(to_row+1));
         	
         default:
-            return (D.findUnique(op));
+            return (D.findUniqueTrans(op));
 
         }
     }

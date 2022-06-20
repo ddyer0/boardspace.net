@@ -181,7 +181,7 @@ public class Tabmovespec extends commonMove implements TabConstants
             return ("");
 
         default:
-            return (D.findUnique(op));
+            return (D.findUniqueTrans(op));
 
         }
     }

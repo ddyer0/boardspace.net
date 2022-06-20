@@ -157,7 +157,7 @@ public void PrepareToMove(int playerIndex)
 }
 
  /**
-  * get a random move by selecting a random one from the full list.  For games like
+ * get a random move by selecting a random one from the full list.
   * majorities, which have trivial move generators, this is "only" a factor of 2 or so improvement
   * in the playout rate.  For games with more complex move generators, it can by much more.
   * Diagonal-Blocks sped up by 10x 

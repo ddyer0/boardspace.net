@@ -2,7 +2,7 @@ package online.game;
 import lib.G;
 import lib.Random;
 import online.game.cell.Geometry;
-/** support for generic hex boards in various convex shapes, including
+/** support for generic hexagonal boards in various convex shapes, including
  * coordinate system transforms and drawing functions.
  *
  * @author ddyer
@@ -10,16 +10,16 @@ import online.game.cell.Geometry;
  */
 public abstract class hexBoard<CELLTYPE extends cell<CELLTYPE>> extends gBoard<CELLTYPE>
 {
-    /* the x,y offset to adjacent cell in any of the 6 directions of a hex board. 
+    /* the x,y offset to adjacent cell in any of the 6 directions of a hexagonal board. 
      * these are mostly superseded by using the exitToward method of the cells 
      */
     private static final int[] dys = { -1, +1, +2, +1, -1, -2 }; 	//x offsets for adjacent space
     private static final int[] dxs = { -1, -1, 0, 1, 1, 0 };		//y offsets for adjacent space
     public double yCellRatio() { return(1.165); }
     public double yGridRatio() { return(Math.sqrt(3.0)); }
-    /** for hex geometry, add this to rotate to the opposite direction */
+    /** for hexagonal geometry, add this to rotate to the opposite direction */
     public static final int CELL_HALF_TURN = 3;
-    /** for hex geometry, this is the modulus of the clock (ie; 6 steps) */
+    /** for hexagonal geometry, this is the modulus of the clock (ie; 6 steps) */
     public static final int CELL_FULL_TURN = 6;
     /** this is the direction for {@link cell#exitTo} to go visually down */
     public static final int CELL_DOWN = 0;
@@ -51,9 +51,9 @@ public abstract class hexBoard<CELLTYPE extends cell<CELLTYPE>> extends gBoard<C
 	  }
    
     /** there are two common styles of user-level coordinates for
-     *  hex boards.  Columns are pretty universally named A,B,C etc,
+     *  hexagonal boards.  Columns are pretty universally named A,B,C etc,
      *  but the rows can be either "1 Origin" where the cell above A is 1,
-     *  or "Diagonal Origin" where each diagonal row is consistantly
+     *  or "Diagonal Origin" where each diagonal row is consistently
      *  numbered.   "1 Original" is the defult.  Set diagonal_grid=true
      *  to use the alternate scheme.
      *
@@ -65,7 +65,7 @@ public abstract class hexBoard<CELLTYPE extends cell<CELLTYPE>> extends gBoard<C
      */
     public boolean diagonal_grid = false;
 
-    private int[] firstRowOffset = null; // number of the first hex in a column, zero origin.  This
+    private int[] firstRowOffset = null; // number of the first cell in a column, zero origin.  This
     			// determines the real shape of the board.
     private int[] nInRow = null;		// number of hexes in individual rows (derived)
     private char[] firstColInRow = null; 	// the column of the first row with this number (derived)
@@ -80,7 +80,7 @@ public abstract class hexBoard<CELLTYPE extends cell<CELLTYPE>> extends gBoard<C
 	private boolean rombus = false;
 
 	/**
-			return the index to 3-color a hex grid.  This is partially ad-hoc
+			return the index to 3-color a hexagonal grid.  This is partially ad-hoc
 			so it may not work for all cases.  It is believe to work for "hex" style
 			rombus boards and for perfect hex-hex boards			 
 			* @param col
@@ -96,9 +96,9 @@ public abstract class hexBoard<CELLTYPE extends cell<CELLTYPE>> extends gBoard<C
 	}
 
     /**
-     * initialize a hex board.  This is somewhat confusing and mysterious, so a few examples
+     * initialize a hexagonal board.  This is somewhat confusing and mysterious, so a few examples
      * are the best guide.
-     * <li>a 5 on a side hex shaped board
+     * <li>a 5 on a side hexagonal shaped board
      * <pre>
      *  initBoard(
      *  	new int[]{ 4, 3, 2, 1, 0, 1, 2, 3, 4 },

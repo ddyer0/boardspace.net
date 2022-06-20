@@ -1,4 +1,4 @@
-package bridge;
+package common;
 
 import java.util.Hashtable;
 
@@ -39,6 +39,7 @@ public class NamedClasses {
     
     	// game classes
     	classes.put("iro.IroViewer",iro.IroViewer.class);
+    	classes.put("havannah.HavannahViewer",havannah.HavannahViewer.class);
     	classes.put("dayandnight.DayAndNightViewer",dayandnight.DayAndNightViewer.class);
     	classes.put("jumbulaya.JumbulayaViewer",jumbulaya.JumbulayaViewer.class);
     	classes.put("mijnlieff.MijnlieffViewer",mijnlieff.MijnlieffViewer.class);

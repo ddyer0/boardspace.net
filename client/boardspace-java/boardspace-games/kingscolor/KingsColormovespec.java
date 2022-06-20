@@ -218,7 +218,7 @@ public class KingsColormovespec
 
         default:
         case MOVE_STALEMATE:
-            return TextChunk.create(D.findUnique(op));
+            return TextChunk.create(D.findUniqueTrans(op));
 
         }
     }

@@ -206,7 +206,7 @@ public class GobMovespec extends commonMove implements GobConstants
             return (TextChunk.create(""));
 
         default:
-            return (TextChunk.create(D.findUnique(op)));
+            return (TextChunk.create(D.findUniqueTrans(op)));
 
        }
     }

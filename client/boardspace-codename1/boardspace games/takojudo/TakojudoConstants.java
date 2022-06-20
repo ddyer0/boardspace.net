@@ -60,7 +60,7 @@ public interface TakojudoConstants
     	public boolean Puzzle() { return(this==PUZZLE_STATE); } public boolean simultaneousTurnsAllowed() { return(false); }
     }
 	
-    static final String Takojudo_SGF = "Tacojudo"; // sgf game number allocated for hex
+    static final String Takojudo_SGF = "Tacojudo"; // sgf game name
     static final String[] TACOJUDOGRIDSTYLE = { "1", null, "A" }; // left and bottom numbers
 
  

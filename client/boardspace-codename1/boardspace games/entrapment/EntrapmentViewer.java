@@ -23,8 +23,6 @@ import lib.*;
  *
  * May 2007 initial work in progress. 
  *
- * This code is derived from the "HexGameViewer" class.  Refer to the
- * documentation there for overall structure notes.
 */
 
 public class EntrapmentViewer extends CCanvas<EntrapmentCell,EntrapmentBoard> implements EntrapmentConstants, GameLayoutClient
@@ -32,7 +30,7 @@ public class EntrapmentViewer extends CCanvas<EntrapmentCell,EntrapmentBoard> im
      /**
 	 * 
 	 */
-    static final String Entrapment_SGF = "Entrapment"; // sgf game number allocated for hex
+    static final String Entrapment_SGF = "Entrapment"; // sgf game name
     
     
     // file names for jpeg images and masks
@@ -100,6 +98,7 @@ public class EntrapmentViewer extends CCanvas<EntrapmentCell,EntrapmentBoard> im
     {	// for games with more than two players, the default players list should be 
     	// adjusted to the actual number, adjusted by the min and max
        	// int players_in_game = Math.max(3,info.getInt(exHashtable.PLAYERS_IN_GAME,4));
+    	enableAutoDone = true;
     	super.init(info,frame);
        	// 
     	// for games that require some random initialization, the random key should be
@@ -135,14 +134,14 @@ public class EntrapmentViewer extends CCanvas<EntrapmentCell,EntrapmentBoard> im
     	Rectangle barrier = barrierRects[player];
     	Rectangle roamer = roamerRects[player];
     	int chipW = unitsize*3;
-    	int doneW = unitsize*4;
+    	int doneW = plannedSeating() ? unitsize*4 : 0;
     	Rectangle box = pl.createRectangularPictureGroup(x+chipW,y,unitsize);
     	Rectangle chip = chipRects[player];
     	Rectangle done = doneRects[player];
     	G.SetRect(chip, x,y,chipW,chipW);
-    	G.SetRect(done,x,y+chipW,plannedSeating()?doneW:0,doneW/2);
+    	G.SetRect(done,x,y+chipW,doneW,doneW/2);
     	
-    	G.SetRect(barrier,x+doneW+unitsize/3, G.Bottom(box),G.Width(box)-doneW-unitsize/3,unitsize*3);
+    	G.SetRect(barrier,x+doneW+unitsize/3, G.Bottom(box),G.Width(box)-doneW-unitsize/3,unitsize*5/2);
     	G.union(box, done,chip,barrier);
     	G.SetRect(roamer, G.Right(box), y, unitsize*2,G.Height(box));
     	G.union(box, roamer);
@@ -164,7 +163,7 @@ public class EntrapmentViewer extends CCanvas<EntrapmentCell,EntrapmentBoard> im
         int minLogH = fh*10;	
         int margin = fh/2;
         int ncols = 14;
-        int buttonW = fh*6;
+        int buttonW = fh*8;
         double minSize = fh*2;
         double maxSize = fh*3;
         
@@ -454,10 +453,7 @@ public class EntrapmentViewer extends CCanvas<EntrapmentCell,EntrapmentBoard> im
                     	{ //StockArt.SmallO.drawChip(gc,this,SQUARESIZE,xpos,ypos,null); 
                     	}
                 	}
-        	// note that these accessors "lastRowInColumn" etc
-        	// are not really needed for simple boards, but they
-        	// also work for hex boards and boards with cut out corners
-
+ 
         	{
            	EntrapmentCell vbar = gb.getVBarrier(cell);
             if(vbar!=null)
@@ -573,7 +569,7 @@ public class EntrapmentViewer extends CCanvas<EntrapmentCell,EntrapmentBoard> im
         double messageRotation = pl.messageRotation();
 		if (vstate != EntrapmentState.PUZZLE_STATE)
         {
-			if(!planned)
+			if(!planned && !autoDoneActive())
 				{handleDoneButton(gc,messageRotation,doneRect,(gb.DoneState() ? select : null), 
 					HighlightColor, rackBackGroundColor);
 				}
@@ -776,8 +772,9 @@ private void playSounds(commonMove m)
      * @return return what will be the init type for the game
      */
     public String gameType() 
-    { 
-    	return(""+b.gametype+" 0"+b.revision); 
+    { 	// this arrangement with a leading 0 is unique to entrapment
+    	// which doesn't need a randomkey
+    	return(G.concat(b.gametype," 0",b.revision)); 
    }
     public String sgfGameType() { return(Entrapment_SGF); }
 
@@ -791,7 +788,7 @@ private void playSounds(commonMove m)
     	String next = his.nextToken();
     	int rev = 100;
     	long rk = 0;
-    	if(next.charAt(0)=='0') { rev = G.IntToken(next); }
+    	if(next.charAt(0)=='0') { rev = Math.max(100,Math.min(EntrapmentBoard.REVISION+10,G.IntToken(next))); }
     	else { rk = G.LongToken(next); }
     	// make the random key part of the standard initialization,
     	// even though games like checkers probably don't use it.
@@ -852,8 +849,10 @@ private void playSounds(commonMove m)
             if (setup_property.equals(name))
             {	StringTokenizer st = new StringTokenizer(value);
             	String typ = st.nextToken();
-            	long ran = G.LongToken(st);
-                b.doInit(typ,ran);
+            	String n = st.nextToken();
+            	int rev = 100;
+            	if(n.charAt(0)=='0') { rev = Math.max(100,Math.min(EntrapmentBoard.REVISION+10,G.IntToken(n))); }
+            	b.doInit(typ,0,rev);
               }
             else if (name.equals(comment_property))
             {

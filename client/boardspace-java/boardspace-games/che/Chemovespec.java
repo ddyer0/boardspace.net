@@ -78,7 +78,7 @@ public class Chemovespec extends commonMove implements CheConstants
     {
         Chemovespec yto = (to == null) ? new Chemovespec() : (Chemovespec) to;
 
-        // we need yto to be a Hexmovespec at compile time so it will trigger call to the 
+        // we need to to be a Movespec at compile time so it will trigger call to the 
         // local version of Copy_Slots
         Copy_Slots(yto);
 
@@ -153,7 +153,7 @@ public class Chemovespec extends commonMove implements CheConstants
             return ("");
 
         default:
-            return (D.findUnique(op));
+            return (D.findUniqueTrans(op));
 
         }
     }

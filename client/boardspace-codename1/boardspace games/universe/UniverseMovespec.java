@@ -290,7 +290,7 @@ public class UniverseMovespec extends commonMPMove implements UniverseConstants
             	return (TextChunk.join(chipGlyph(v,"#"+from_col),TextChunk.create(""+from_row+msg)));
             	}
        default:
-            return (TextChunk.create(D.findUnique(op)));
+            return (TextChunk.create(D.findUniqueTrans(op)));
 
        }
     }

@@ -28,7 +28,7 @@ import static goban.GoMovespec.*;
 */
 public class GoViewer extends CCanvas<GoCell,GoBoard> implements GoConstants, GameLayoutClient
 {	
-    static final String Go_SGF = "Go"; // sgf game number allocated for hex
+    static final String Go_SGF = "Go"; // sgf game name
     static final String ImageDir = "/goban/images/";
     // gzip is a compressed lisp file.  Use this when doing the 
     // one-time conversion from lisp data to codename1 externalizable form

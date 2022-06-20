@@ -5,11 +5,11 @@ import lib.Random;
 import online.game.*;
 
 //
-// specialized cell used for the game hex, not for all games using a hex board.
+// specialized cell used for the this game.
 //
-// the game hex needs only a char to indicate the contents of the board.  Other
-// games commonly add a more complex structue.   Games with square geometry
-// instead of hex can use Geometry.Oct instead of Hex_Geometry
+
+
+
 //
 public class PalagoCell extends chipCell<PalagoCell,PalagoChip> implements PalagoConstants
 {	
