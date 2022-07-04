@@ -74,6 +74,7 @@ public class SixmakingViewer extends CCanvas<SixmakingCell,SixmakingBoard> imple
     	// adjusted to the actual number, adjusted by the min and max
        	// int players_in_game = Math.max(3,info.getInt(exHashtable.PLAYERS_IN_GAME,4));
      	int players_in_game = Math.max(2,info.getInt(OnlineConstants.PLAYERS_IN_GAME,2));
+     	enableAutoDone = true;
     	super.init(info,frame);
        	// 
     	// for games that require some random initialization, the random key should be
@@ -91,7 +92,7 @@ public class SixmakingViewer extends CCanvas<SixmakingCell,SixmakingBoard> imple
        
         b = new SixmakingBoard(info.getString(OnlineConstants.GAMETYPE, Variation.Sixmaking.name),
         		randomKey,players_in_game,repeatedPositions,getStartingColorMap());
-        useDirectDrawing(true); // not tested yet
+        useDirectDrawing(true);
         doInit(false);
         offerDrawAction = myFrame.addAction(s.get(OFFERDRAW),deferredEvents);       
      }
@@ -476,7 +477,7 @@ public class SixmakingViewer extends CCanvas<SixmakingCell,SixmakingBoard> imple
         
 		if (vstate != SixmakingState.Puzzle)
         {
-			if(!planned)
+			if(!planned && !autoDoneActive())
 				{handleDoneButton(gc,doneRect,(gb.DoneState() ? select : null), 
 					HighlightColor, rackBackGroundColor);
 				}

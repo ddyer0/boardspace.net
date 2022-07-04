@@ -44,6 +44,10 @@ public class TakojudoViewer extends CCanvas<TakojudoCell,TakojudoBoard> implemen
     private Rectangle chipRects[] = addRect("chip",2);
     private Rectangle reverseViewRect = addRect("reverse");
     private JCheckBoxMenuItem reverseOption = null;
+	private Toggle eyeRect = new Toggle(this,"eye",
+			StockArt.NoEye,TacoId.ToggleEye,NoeyeExplanation,
+			StockArt.Eye,TacoId.ToggleEye,EyeExplanation
+			);
    
     private Rectangle acceptDrawRect = addRect("acceptDraw");
     private Rectangle declineDrawRect = addRect("declineDraw");
@@ -74,6 +78,7 @@ public class TakojudoViewer extends CCanvas<TakojudoCell,TakojudoBoard> implemen
     {	// for games with more than two players, the default players list should be 
     	// adjusted to the actual number, adjusted by the min and max
        	// int players_in_game = Math.max(3,info.getInt(exHashtable.PLAYERS_IN_GAME,4));
+    	enableAutoDone = true;
     	super.init(info,frame);
        	// 
     	// for games that require some random initialization, the random key should be
@@ -85,7 +90,7 @@ public class TakojudoViewer extends CCanvas<TakojudoCell,TakojudoBoard> implemen
        
         b = new TakojudoBoard(info.getString(OnlineConstants.GAMETYPE, Tacojudo_INIT),
         		randomKey,repeatedPositions,getStartingColorMap());
-        useDirectDrawing(true); // not tested yet
+        useDirectDrawing(true); 
         doInit(false);
         reverseOption = myFrame.addOption(s.get(ReverseView),b.reverseY(),deferredEvents);
 
@@ -185,7 +190,7 @@ public class TakojudoViewer extends CCanvas<TakojudoCell,TakojudoBoard> implemen
     	//
         int stateY = boardY-stateH;
         int stateX = boardX;
-        G.placeStateRow(stateX,stateY,boardW ,stateH, iconRect,stateRect,viewsetRect,noChatRect);
+        G.placeStateRow(stateX,stateY,boardW ,stateH, iconRect,stateRect,eyeRect,viewsetRect,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	if(rotate)
     	{
@@ -310,6 +315,7 @@ public class TakojudoViewer extends CCanvas<TakojudoCell,TakojudoBoard> implemen
     	Enumeration<TakojudoCell> cells = gb.getIterator(Itype.LRTB);
     	int cx = G.centerX(brect);
     	int cy = G.centerY(brect);
+    	boolean show = eyeRect.isOnNow();
         while (cells.hasMoreElements())
         {
         	TakojudoCell cell = cells.nextElement();
@@ -326,7 +332,10 @@ public class TakojudoViewer extends CCanvas<TakojudoCell,TakojudoBoard> implemen
             // only the head needs to be compensated in reverse view.
             //StockArt.SmallO.drawChip(gc,this,SQUARESIZE,xpos,ypos,null);
             draw.drawStack(gc,null,xpos,ypos,this,0,SQUARESIZE,0.1,null);
-            	
+        	}
+            if(show && gb.LegalToHitBoard(cell))
+        	{
+        	StockArt.SmallO.drawChip(gc,this,SQUARESIZE,xpos,ypos,null);
         	}
     	}
     	TakojudoCell hitCell = gb.closestCell(highlight,brect);
@@ -356,6 +365,8 @@ public class TakojudoViewer extends CCanvas<TakojudoCell,TakojudoBoard> implemen
      public void drawAuxControls(Graphics gc,HitPoint highlight)
     {  DrawLogoMarker(gc,logoRect);
        DrawReverseMarker(gc,reverseViewRect,highlight);
+       eyeRect.activateOnMouse = true;
+       eyeRect.draw(gc,highlight);
     }
      
      public int currentRepetitionCount(int forPlayer)
@@ -414,7 +425,7 @@ public class TakojudoViewer extends CCanvas<TakojudoCell,TakojudoBoard> implemen
         GC.setFont(gc,standardBoldFont());
 		if (vstate != TakojudoState.PUZZLE_STATE)
         {
-			if(!planned)
+			if(!planned && !autoDoneActive())
 				{handleDoneButton(gc,doneRect,(gb.DoneState() ? select : null), 
 					HighlightColor, rackBackGroundColor);
 				}
@@ -669,6 +680,9 @@ private void playSounds(commonMove m)
         {
         default:
         	throw G.Error("Hit Unknown: %s", hitObject);
+        case ToggleEye:
+        	eyeRect.toggle();
+        	break;
         case OfferDraw:
         	PerformAndTransmit("Offer");
         	break;

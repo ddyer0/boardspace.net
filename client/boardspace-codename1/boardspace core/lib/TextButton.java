@@ -12,28 +12,33 @@ import bridge.Color;
  *
  */
 @SuppressWarnings("serial")
-public class TextButton extends Rectangle
+public class TextButton extends ToggleButton 
 {	double rotation=0;
 	Color highlightColor = Color.gray;
 	Color backgroundColor = Color.white;
 	Color inactiveColor = Color.white;
 	Color textColor = Color.black;
-	Color frameColor = Color.black;
-	CellId hitcode;
-	boolean square;
-	Text msg = TextChunk.create("button");
-	Text helpText=null;
+	public Color frameColor = Color.black;
+	public boolean square;
+	Text onText = TextChunk.create("button");
+	Text offText = TextChunk.create("off");
 	public void setRotation(double r) { rotation=r; }
 
 	/* constructor */
-	public TextButton(String label,CellId code,String help,Color highlight,Color background)
-	{
-		this(label,code,help,highlight,background,background);
-	}
 	public TextButton(String label,CellId code,String help,Color highlight,Color background,Color inactive)
-	{	msg = TextChunk.create(label);
-		if(help!=null) { helpText = TextChunk.create(help); }
-		hitcode = code;
+	{	this(label,code,help,label,code,help,highlight,background,inactive);
+	}
+
+	/* constructor */
+	public TextButton(String onLabel,CellId onCode,String onHelp,String offLabel,CellId offCode,String offHelp,
+			Color highlight,Color background,Color inactive)
+	{	onText = TextChunk.create(onLabel);
+		offText = TextChunk.create(offLabel);
+		if(onHelp!=null) { onToolTip = TextChunk.create(onHelp); }
+		if(offHelp!=null) { offToolTip = TextChunk.create(offHelp); }
+		
+		onId = onCode;
+		offId = offCode;
 		highlightColor = highlight;
 		backgroundColor = background;
 		inactiveColor = inactive;
@@ -73,8 +78,9 @@ public class TextButton extends Rectangle
 	public boolean show(Graphics gc,Rectangle r,double rot,HitPoint highlight)
 	{
 		boolean hit = false;
+		Text msg = isOn ? onText : offText;
 		if(square)
-		{
+		{  
 			hit = GC.handleSquareButton(gc,rot, r,highlight,msg, textColor, 
 						frameColor ,highlightColor,
 						highlight==null ? inactiveColor : backgroundColor);
@@ -88,11 +94,16 @@ public class TextButton extends Rectangle
 		}
 		if(hit)
 		{
-			highlight.hitCode = hitcode;
-			if(helpText!=null) { highlight.setHelpText(helpText); }
+			highlight.hitCode = isOn ? onId : offId;
+			Text tip = isOn ? onToolTip : offToolTip;
+			if(tip!=null) { highlight.setHelpText(tip); }
 			return(true);
 		}
 		return(false);
+	}
+
+	public boolean actualDraw(Graphics gc, HitPoint hp) {
+		return show(gc,this,0,hp);
 	}
 
 }

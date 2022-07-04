@@ -330,8 +330,23 @@ class TabGameBoard extends rectBoard<TabCell> implements BoardProtocol,TabConsta
         Flagship_Four_Sided_Capture = from_b.Flagship_Four_Sided_Capture;
         board_state = from_b.board_state;
         unresign = from_b.unresign;
-
+        pickedSource = getCell(from_b.pickedSource);
+        droppedDest= getCell(from_b.droppedDest);
         sameboard(from_b);
+    }
+    public TabCell getCell(TabCell c)
+    {	if(c==null) { return null; }
+		switch(c.rackLocation())
+		{
+		case GoldShipLocation:
+			return goldPool;
+		case SilverShipLocation:
+			return silverPool;
+		default:
+			if(c.onBoard) { return getCell(c.col,c.row); }
+			throw G.Error("getCell not handled %s",c);
+		}
+
     }
     public void doInit() { doInit(gameType(),randomKey,revision); }
     /* initialize a board back to initial empty state */

@@ -594,7 +594,7 @@ public class QuinamidViewer extends CCanvas<QuinamidCell,QuinamidBoard> implemen
      	return(MovementZone.Move_None);	// none
     }
     public void drawAuxControls(Graphics gc,HitPoint highlight)
-    { 	QuinamidChip.HelpPanel.drawChip(gc, this, showingHelp ? boardRect : helpRect,highlight,QIds.ShowHelp,null);
+    { 	QuinamidChip.HelpPanel.drawChip(gc, this, showingHelp ? boardRect : helpRect,highlight,QIds.ShowHelp);
     }
     //
     // draw the board and things on it.  If gc!=null then actually 

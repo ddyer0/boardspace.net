@@ -349,7 +349,7 @@ public class CrosswordsViewer extends CCanvas<CrosswordsCell,CrosswordsBoard> im
     {	
      	boolean value = bb.getOptionValue(op);
     	CrosswordsChip chip = value ? op.onIcon : op.offIcon;
-    	if(chip.drawChip(gc,this,r,!robotGame || op.allowedForRobot ? highlight : null,CrosswordsId.SetOption,null))
+    	if(chip.drawChip(gc,this,r,!robotGame || op.allowedForRobot ? highlight : null,CrosswordsId.SetOption))
     		{
     		highlight.hitObject = "SetOption "+op.name()+" "+!value;
     		}

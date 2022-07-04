@@ -257,7 +257,7 @@ public class SantoriniViewer extends CCanvas<SantoriniCell,SantoriniBoard> imple
 		  if(usePerspective())
 		  {
 		  SantoriniChip view = useLeftView ? SantoriniChip.RightView : SantoriniChip.LeftView;
-		  if(view.drawChip(gc, this, rightView, highlight, SantorId.RightView,null))
+		  if(view.drawChip(gc, this, rightView, highlight, SantorId.RightView))
 		  	{
 			  highlight.spriteRect = rightView;
 			  highlight.spriteColor = Color.red;

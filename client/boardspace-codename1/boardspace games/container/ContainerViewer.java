@@ -2330,7 +2330,7 @@ private void playSounds(commonMove m)
 		{
 		Rectangle eyeRect = interpolateBox(hiddenViewRect,hiddenEyeRect,bounds);
 		StockArt icon = hidden ? StockArt.Eye : StockArt.NoEye;
-		icon.drawChip(gc,this,eyeRect,hp,ContainerId.HideInfo,null);
+		icon.drawChip(gc,this,eyeRect,hp,ContainerId.HideInfo);
 		}
 		
 		{	// cash

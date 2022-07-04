@@ -4012,6 +4012,7 @@ public abstract class commonCanvas extends exCanvas
         else if(m.op==MOVE_ALLOWUNDO) 
         {	// unconditional undo, after approval of a request
         	do { doUndoStep(); } while(isRobotTurn()); 
+        	if(autoDoneActive() ) { performUndo();}
         }
         else if((m.op==MOVE_RESET)||(m.op==MOVE_UNDO))
         {	performUndo();
@@ -8304,10 +8305,9 @@ public void verifyGameRecord()
 	    	}
 	    	if(icon!=null)
 	    	{
-	    	if(icon.drawChip(gc,this,r,highlight,button,null))
+	    	if(icon.drawChip(gc,this,r,highlight,button,help))
 	    		{
 	    		highlight.spriteRect = r;
-	    		highlight.setHelpText(help);
 	    		}
 	    	}
 	    }

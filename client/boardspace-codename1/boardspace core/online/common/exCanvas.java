@@ -1101,6 +1101,47 @@ graphics when using a touch screen.
     	addRect(name,b);
     	return(b);
     }
+    /**
+     * add a text button that will have standard button behavior.
+     * 
+     * @param name 	the text for the button
+     * @param id	id when the button is clicked
+     * @param help	help text for mouse-over the button
+     * @param offname 	the text for the button
+     * @param offid	id when the button is clicked
+     * @param offhelp	help text for mouse-over the button
+     * @param high	highlighted color
+     * @param back	background color
+     * @return true if the button is hit
+     */
+    public TextButton addButton(String name,CellId id,String help,String offName,CellId offId,String offHelp,Color high,Color back)
+    {
+    	return addButton(name,id,help, offName,offId,offHelp,high,back,back);
+    }
+    /**
+     * add a text button that will have the standard button behavior
+     * 
+    * @param onname 	the text for the button
+     * @param onid	id when the button is clicked
+     * @param onhelp	help text for mouse-over the button
+     * @param offname 	the text for the button
+     * @param offid	id when the button is clicked
+     * @param offhelp	help text for mouse-over the button
+     * @param high	highlighted color
+     * @param back	background color
+     * @param idle	text color when inactive
+     * @return true of the button is hit
+     */
+    public TextButton addButton(String name,CellId id,String help,
+    		String offname,CellId offid,String offhelp,
+    		Color high,Color back,Color idle)
+    {
+    	TextButton b = new TextButton(s.get(name),id,s.get(help),
+    			s.get(offname),offid,s.get(offhelp),
+    			high,back,idle); 
+    	addRect(name,b);
+    	return(b);
+    }
     
     /**
      * @return return true if global zoom is being used

@@ -35,9 +35,13 @@ public interface SimpleRobotProtocol {
      */
     public void Pause();
     /**
-     * resumt from a pause
+     * resume from a pause
      */
     public void Resume();
+    /**
+     * Notify a (possibly running) robot of an event
+     */
+    public void Notify(commonMove m);
     
     /** this is the cue to make a move.  Get the current board state from the game
         and emit a move string */

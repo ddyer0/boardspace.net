@@ -340,7 +340,7 @@ public class SprintViewer extends CCanvas<SprintCell,SprintBoard> implements Spr
     {	
      	boolean value = bb.getOptionValue(op);
     	SprintChip chip = value ? op.onIcon : op.offIcon;
-    	if(chip.drawChip(gc,this,r,!robotGame || op.allowedForRobot ? highlight : null,SprintId.SetOption,null))
+    	if(chip.drawChip(gc,this,r,!robotGame || op.allowedForRobot ? highlight : null,SprintId.SetOption))
     		{
     		highlight.hitObject = "SetOption "+op.name()+" "+!value;
     		}
@@ -469,12 +469,12 @@ public class SprintViewer extends CCanvas<SprintCell,SprintBoard> implements Spr
        	int cx0 = cx;
      	for(int idx = 0;idx<cells.length;idx++)
    		{
-     	SprintCell d = cells[idx];
+     	CrosswordleCell d = cells[idx];
        	if(d!=null) 
        	{
       	setLetterColor(gc,gb,d);
       	//print("Draw "+idx+" "+c+" "+top+" @ "+cx);
-      	SprintChip dtop = d.topChip();
+      	CrosswordleChip dtop = d.topChip();
       	if(dtop!=null) { d.drawChip(gc, this, dtop, tileSize*2/3, cx0, cy+tileSize*2/3, null);}
       	cx0 += xstep;
        	}}}

@@ -301,7 +301,7 @@ public class WypsViewer extends CCanvas<WypsCell,WypsBoard> implements WypsConst
     {	
      	boolean value = bb.getOptionValue(op);
     	WypsChip chip = value ? op.onIcon : op.offIcon;
-    	if(chip.drawChip(gc,this,r,!robotGame || op.allowedForRobot ? highlight : null,WypsId.SetOption,null))
+    	if(chip.drawChip(gc,this,r,!robotGame || op.allowedForRobot ? highlight : null,WypsId.SetOption))
     		{
     		highlight.hitObject = "SetOption "+op.name()+" "+!value;
     		}

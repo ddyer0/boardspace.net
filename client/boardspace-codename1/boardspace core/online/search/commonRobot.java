@@ -31,6 +31,7 @@ public abstract class commonRobot<BOARDTYPE extends BoardProtocol> implements Ru
 	public void setName(String n) { name=n; }
 	public void Start_Simulation(UCTMoveSearcher s,UCTNode n) {};
 	public void Finish_Simulation(UCTMoveSearcher s,UCTNode n) {};
+	public void Notify(commonMove m) { throw G.Error("Not expected"); }
 	public void setSearcher(CommonDriver s) 
 		{ search_driver = s; 
 		}

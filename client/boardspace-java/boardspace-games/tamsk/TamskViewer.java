@@ -1,6 +1,5 @@
 package tamsk;
 
-import javax.swing.JCheckBoxMenuItem;
 
 import static tamsk.Tamskmovespec.*;
 
@@ -10,14 +9,18 @@ import java.util.*;
 
 import lib.Graphics;
 import lib.CellId;
+import lib.Drawable;
 import lib.ExtendedHashtable;
 import lib.G;
 import lib.GC;
 import lib.HitPoint;
-import lib.Random;
 import lib.StockArt;
+import lib.Text;
 import lib.TextButton;
+import lib.TextChunk;
+import lib.Toggle;
 import lib.LFrameProtocol;
+import lib.SimpleSprite;
 import online.game.*;
 import online.game.sgf.sgf_node;
 import online.game.sgf.sgf_property;
@@ -93,7 +96,6 @@ public class TamskViewer extends CCanvas<TamskCell,TamskBoard> implements TamskC
     private Color boardBackgroundColor = new Color(220,165,155);
     
 
-     
     // private state
     private TamskBoard bb = null; //the board from which we are displaying
     private int CELLSIZE; 	//size of the layout cell
@@ -115,17 +117,20 @@ public class TamskViewer extends CCanvas<TamskCell,TamskBoard> implements TamskC
     // zones ought to be mostly irrelevant if there is only one board layout.
     //
     private Rectangle chipRects[] = addZoneRect("chip",2);
- 
- 	private TextButton swapButton = addButton(SWAP,GameId.HitSwapButton,SwapDescription,
-			HighlightColor, rackBackGroundColor,rackIdleColor);
+    private Rectangle ringRects[] = addRect("ring",2);
+    private Rectangle timeRect = addRect("time");
+    private Rectangle shotRect = addRect("shot");
+    private Rectangle fastRect = addRect("fast");
 	private TextButton doneButton = addButton(DoneAction,GameId.HitDoneButton,ExplainDone,
 			HighlightColor, rackBackGroundColor,rackIdleColor);
-	
-	// private menu items
-    private JCheckBoxMenuItem rotationOption = null;		// rotate the board view
-    private boolean doRotation=true;					// current state
-    private boolean lastRotation=!doRotation;			// user to trigger background redraw
+    private Toggle eyeRect = new Toggle(this,"eye",
+			StockArt.NoEye,TamskId.ToggleEye,NoeyeExplanation,
+			StockArt.Eye,TamskId.ToggleEye,EyeExplanation
+			);
     
+    private TextButton stopRect = addButton(StopTime,TamskId.StopTime,StopTimeMessage,
+    		StartTime,TamskId.RestartTime,StartTimeMessage,
+    		rackBackGroundColor,boardBackgroundColor);
 /**
  * this is called during initialization to load all the images. Conventionally,
  * these are loading into a static variable so they can be shared by all.
@@ -169,8 +174,6 @@ public class TamskViewer extends CCanvas<TamskCell,TamskBoard> implements TamskC
         	TamskConstants.putStrings();
         }
          
-        rotationOption = myFrame.addOption("rotate board",true,deferredEvents);
-        
         String type = info.getString(OnlineConstants.GAMETYPE, TamskVariation.tamsk.name);
         // recommended procedure is to supply players and randomkey, even for games which
         // are current strictly 2 player and no-randomization.  It will make it easier when
@@ -197,12 +200,10 @@ public class TamskViewer extends CCanvas<TamskCell,TamskBoard> implements TamskC
         if(!preserve_history)
     	{ 
         	// the color determines the first player
-        	startFirstPlayer();
-        	//
-        	// alternative where the first player is just chosen
-        	//startFirstPlayer();
- 	 		//PerformAndTransmit(reviewOnly?"Edit":"Start P"+first, false,replayMode.Replay);
-
+        	PerformAndTransmit(EDIT,false,replayMode.Live);
+        	if(!reviewOnly && ourActiveMove()) 
+        		{ PerformAndTransmit("Start P0"); 
+        		}
     	}
     }
     /** this is called by the game controller when all players have connected
@@ -261,25 +262,10 @@ public class TamskViewer extends CCanvas<TamskCell,TamskBoard> implements TamskC
 	 *  When "extraactions" is available, a menu option "show rectangles" works
 	 *  with the "addRect" mechanism to help visualize the layout.
 	 */ 
- //   public void setLocalBounds(int x, int y, int width, int height)
- //   {   
- //   	int wide = setLocalBoundsSize(width,height,true,false);
- //   	int tall = setLocalBoundsSize(width,height,false,true);
- //   	int normal = setLocalBoundsSize(width,height,false,false);
- //   	boolean useWide = wide>normal && wide>tall;
- //   	boolean useTall = tall>normal && tall>=wide;
- //   	if(useWide|useTall) { setLocalBoundsSize(width,height,useWide,useTall); }
- //   	setLocalBoundsWT(x,y,width,height,useWide,useTall);
- //   }
 
-    boolean traditionalLayout = false;
     public void setLocalBounds(int x, int y, int width, int height)
     {
-    	if(traditionalLayout) { super.setLocalBounds(x, y, width, height); }
-    	else { modernLayout(x,y,width,height); }
-    }
-    private void modernLayout(int x, int y, int width, int height)
-    {	G.SetRect(fullRect, x, y, width, height);
+    	G.SetRect(fullRect, x, y, width, height);
     	GameLayoutManager layout = selectedLayout;
     	int nPlayers = nPlayers();
        	int chatHeight = selectChatHeight(height);
@@ -324,9 +310,8 @@ public class TamskViewer extends CCanvas<TamskCell,TamskBoard> implements TamskC
     	// "my side" orientation, such as chess, use seatingFaceToFaceRotated() as
     	// the test.  For boards that are noticably rectangular, such as Push Fight,
     	// use mainW<mainH
-    	boolean rotate = mainW<mainH;	
-        int nrows = rotate ? 24 : 15;  // b.boardRows
-        int ncols = rotate ? 15 : 24;	 // b.boardColumns
+        int nrows = 15;  // b.boardRows
+        int ncols = 20;	 // b.boardColumns
   	
     	// calculate a suitable cell size for the board
     	double cs = Math.min((double)mainW/ncols,(double)mainH/nrows);
@@ -347,16 +332,19 @@ public class TamskViewer extends CCanvas<TamskCell,TamskBoard> implements TamskC
         int stateY = boardY;
         int stateX = boardX;
         int stateH = fh*3;
-        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,noChatRect);
+        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,eyeRect,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
-    	if(rotate)
-    	{	// this conspires to rotate the drawing of the board
-    		// and contents if the players are sitting opposite
-    		// on the short side of the screen.
-    		G.setRotation(boardRect,-Math.PI/2);
-    		contextRotation = -Math.PI/2;
-    	}
     	
+    	int tx = boardX+CELLSIZE/3;
+    	int ty = boardY+CELLSIZE*2;
+    	int tw = CELLSIZE*2;
+    	int th = CELLSIZE/2;
+    	int txtra = CELLSIZE/4;
+    	G.SetRect(timeRect,tx,ty,tw,th);
+    	G.SetRect(shotRect,tx+tw+txtra,ty,tw-txtra,th);
+    	G.SetRect(stopRect,tx,ty+th+th/4,tw,th);
+    	
+    	G.SetRect(fastRect,boardX+boardW-CELLSIZE*4,boardY+boardH-CELLSIZE*5,CELLSIZE*2,CELLSIZE*2);
     	// goal and bottom ornaments, depending on the rendering can share
     	// the rectangle or can be offset downward.  Remember that the grid
     	// can intrude too.
@@ -368,172 +356,53 @@ public class TamskViewer extends CCanvas<TamskCell,TamskBoard> implements TamskC
     public Rectangle createPlayerGroup(int player,int x,int y,double rotation,int unitsize)
     {	commonPlayer pl = getPlayerOrTemp(player);
     	Rectangle chip = chipRects[player];
-    	G.SetRect(chip,	x,	y,	4*unitsize,	3*unitsize);
+    	Rectangle ring = ringRects[player];
+    	G.SetRect(chip,	x,	y,	2*unitsize,	2*unitsize);
     	Rectangle box =  pl.createRectangularPictureGroup(x+2*unitsize,y,2*unitsize/3);
     	Rectangle done = doneRects[player];
     	int doneW = plannedSeating()? unitsize*3 : 0;
     	G.SetRect(done,G.Right(box)+unitsize/2,G.Top(box)+unitsize/2,doneW,doneW/2);
-    	G.union(box, done,chip);
+    	G.union(box,done,chip);
+    	G.SetRect(ring,x,G.Bottom(box),G.Width(box),unitsize*2);
+    	G.union(box, ring);
     	pl.displayRotation = rotation;
     	return(box);
     }
     
-    private Rectangle createPlayerGroup(commonPlayer pl,int x,int y,Rectangle chipRect,int unitsize)
-    {
-		// a pool of chips for the first player at the top
-        G.SetRect(chipRect,	x,	y,	2*unitsize,	3*unitsize);
-        Rectangle box = pl.createRectangularPictureGroup(x+2*unitsize,y,2*unitsize/3);
-        G.union(box, chipRect);
-        return(box);
-    }
-    
-    /**
-     * calculate a metric for one of three layouts, "normal" "wide" or "tall",
-     * which should normally correspond to the area devoted to the actual board.
-     * these don't have to be different, but devices with very rectangular
-     * aspect ratios make "wide" and "tall" important.  
-     * @param width
-     * @param height
-     * @param wideMode
-     * @param tallMode
-     * @return a metric corresponding to board size
-     */
-    public int setLocalBoundsSize(int width,int height,boolean wideMode,boolean tallMode)
-    {	
-        int ncols = tallMode ? 29 : wideMode ? 42 : 37; // more cells wide to allow for the aux displays
-        int nrows = tallMode ? 27 : 20;  
-        int cellw = width / ncols;
-        int chatHeight = selectChatHeight(height);
-        int cellh = (height-(wideMode?0:chatHeight)) / nrows;
-        
-        CELLSIZE = ((chatHeight==0)&&wideMode) 
-        				? 0	// no chat, never select wide mode 
-        				: Math.max(2,Math.min(cellw, cellh)); //cell size appropriate for the aspect ratio of the canvas
-        return(CELLSIZE);
-    }
-    public void setLocalBoundsWT(int x, int y, int width, int height,boolean wideMode,boolean tallMode)
-    {   
-        int nrows = 20;  
-        int chatHeight = selectChatHeight(height);
-        boolean noChat = (chatHeight==0);
-        int logHeight = wideMode||noChat||tallMode ? CELLSIZE*5 : chatHeight;
-        int C2 = CELLSIZE/2;
-        G.SetRect(fullRect,0, 0,width, height);
-
-        G.SetRect(boardRect, 0, wideMode ? 0 : chatHeight+C2,
-        		CELLSIZE * (int)(nrows*1.5), CELLSIZE * (nrows ));
-        int stateY = G.Top( boardRect);
-        int stateX = C2;
-        int stateH = CELLSIZE;
-        int stateW = G.Width(boardRect);
-        G.placeRow(stateX+stateH,stateY,stateW-stateH,stateH,stateRect,noChatRect);
-        G.SetRect(iconRect, stateX, stateY, stateH, stateH);
-        
- 		G.SetRect(swapButton,G.Left( boardRect) + CELLSIZE, G.Top(boardRect)+(doRotation?2:12)*CELLSIZE,
- 				 CELLSIZE * 5, 3*CELLSIZE/2 );
-
-		// a pool of chips for the first player at the top
-        int px = tallMode ? G.Left(boardRect)+CELLSIZE : G.Right(boardRect) - (wideMode? 0 : 11*CELLSIZE);
-        int py = tallMode ? G.Bottom(boardRect)+CELLSIZE : wideMode? CELLSIZE: chatHeight+CELLSIZE;
-        int lowest = py;
-        for(int pn = 0;pn<bb.players_in_game;pn++)
-        {	commonPlayer pl = getPlayerOrTemp(pn);
-        	createPlayerGroup(pl,px,py,chipRects[pn],CELLSIZE);
-        	int pw = G.Width(pl.playerBox)+C2;
-        	int ph = G.Height(pl.playerBox);
-        	lowest = Math.max(lowest, py+ph);
-        	px += tallMode ? 0 : wideMode ? pw : pw;
-        	py += tallMode ? ph : wideMode ? 0 : 0;
-         }
-
-		//this sets up the "vcr cluster" of forward and back controls.
-        SetupVcrRects(C2,
-            G.Bottom(boardRect) - (5 * CELLSIZE),
-            CELLSIZE * 6,
-            CELLSIZE*3);
-        
-        G.SetRect(goalRect, CELLSIZE * 5, G.Bottom(boardRect)-CELLSIZE,G.Width(boardRect)-16*CELLSIZE , CELLSIZE);
-        
-        setProgressRect(progressRect,goalRect);
-  
-            // "edit" rectangle, available in reviewers to switch to puzzle mode
-            G.SetRect(editRect, 
-            		G.Right(boardRect)-CELLSIZE*5,G.Bottom(boardRect)-5*CELLSIZE/2,
-            		CELLSIZE*3,3*CELLSIZE/2);
-          
-            int chatX = wideMode ? G.Right(boardRect):G.Left(fullRect);
-            int chatY = wideMode ? lowest : G.Top(fullRect);
-            boolean logBottom = tallMode & (height-lowest>CELLSIZE*6);
-            int logW = CELLSIZE * (logBottom ? 8 : 6);
-            int logX = wideMode 
-            			? G.Right(boardRect)-logW-CELLSIZE*2 
-            			: noChat&&!tallMode ? G.Right(boardRect) : width-logW-C2;
-
-            G.SetRect(chatRect, 
-            		chatX,		// the chat area
-            		chatY,
-            		width-(tallMode ? C2 : (wideMode?chatX:logW)+CELLSIZE),
-            		wideMode?height-chatY-C2:chatHeight);
-            int logY = logBottom 
-            			? lowest+C2 
-            			: noChat
-            			  ? (tallMode ? 0 : lowest+CELLSIZE)
-            			  : tallMode ? G.Bottom(chatRect)+CELLSIZE : y ;
-            G.SetRect(logRect,logX,    		logY,logW,
-            		logBottom ? height-lowest-CELLSIZE : logHeight);
-
-          
-            // "done" rectangle, should always be visible, but only active when a move is complete.
-            G.AlignXY(doneButton, G.Left(editRect)-4*CELLSIZE,
-            		G.Top(editRect),
-            		editRect);
-
-        positionTheChat(chatRect,chatBackgroundColor,rackBackGroundColor);
-        generalRefresh();
-    }
-
 
 
 	// draw a box of spare chips. For pushfight it's purely for effect, but if you
     // wish you can pick up and drop chips.
     private void DrawChipPool(Graphics gc, Rectangle r, commonPlayer pl, HitPoint highlight,TamskBoard gb)
     {	int player = pl.boardIndex;
-        boolean canhit = gb.legalToHitChips(player) && G.pointInRect(highlight, r);
-        if (canhit)
+    	Rectangle rings = ringRects[player];
+        TamskCell cell = gb.getPlayerRing(player);
+        boolean canhitRing = gb.legalToHitChips(cell,player) && G.pointInRect(highlight, rings);
+        if (canhitRing)
         {
-            highlight.hitCode = gb.getPlayerColor(player);
+            highlight.hitCode = cell.rackLocation();
             highlight.arrow = (gb.pickedObject!=null)?StockArt.DownArrow:StockArt.UpArrow;
             highlight.awidth = CELLSIZE;
+        	// draw a highlight background if appropriate
+            GC.fillRect(gc, HighlightColor, rings);
         }
+        int h = G.Height(rings);
+        int xp = G.Left(rings)+h/3;
+        int yp = G.Top(rings)+h/2;
+        cell.drawStack(gc,this,null,CELLSIZE*7/8,xp,yp,0,0.18,0,""+cell.height());
+  
 
-        if (gc != null)
-        { // draw a random pile of chips.  It's just for effect
-
-            int spacex = G.Width(r) - CELLSIZE;
-            int spacey = G.Height(r) - CELLSIZE;
-            Random rand = new Random(4321 + player); // consistent randoms, different for black and white 
-
-            if (canhit)
-            {	// draw a highlight background if appropriate
-                GC.fillRect(gc, HighlightColor, r);
-            }
-
-            GC.frameRect(gc, Color.black, r);
-            TamskChip chip = gb.getPlayerChip(player);
-            TamskCell cell = gb.getPlayerCell(player);
-            int nc = 20;	
-            // draw 20 chips
-            if(spacex>0 && spacey>0)
-            {
-            while (nc-- > 0)
-            {	int rx = Random.nextInt(rand, spacex);
-                int ry = Random.nextInt(rand, spacey);
-                // using the cell to draw the chip has the side effect of setting
-                // the cell's location for animation.
-                cell.drawChip(gc,this,chip,gb.cellSize(),G.Left(r)+CELLSIZE/2+rx,G.Top(r)+CELLSIZE/2+ry,null);
-             }}
+        GC.frameRect(gc, Color.black, r);
+        TamskCell timer = gb.getPlayerTimer(player);
+        boolean canHit = gb.legalToHitChips(timer,player) && G.pointInRect(highlight,r);
+        if(timer.drawStack(gc,this,canHit?highlight:null,G.Width(r)/2,G.centerX(r),G.centerY(r),0,0,null))
+        {
+            highlight.hitCode = timer.rackLocation();
+            highlight.arrow = (gb.pickedObject!=null)?StockArt.DownArrow:StockArt.UpArrow;
+            highlight.awidth = CELLSIZE;
+     	
         }
-     }
+      }
     /**
      * return the dynamically adjusted size during an animation.  This allows
      * compensation for things like the zoom level of the board changing after
@@ -553,7 +422,7 @@ public class TamskViewer extends CCanvas<TamskCell,TamskBoard> implements TamskC
     {
     	// draw an object being dragged
     	// use the board cell size rather than the window cell size
-    	TamskChip.getChip(obj).drawChip(g,this,bb.cellSize(), xp, yp, null);
+    	TamskChip.getChip(obj).drawChip(g,this,CELLSIZE*7/8, xp, yp, null);
     }
     // also related to sprites,
     // default position to display static sprites, typically the "moving object" in replay mode
@@ -570,7 +439,7 @@ public class TamskViewer extends CCanvas<TamskCell,TamskBoard> implements TamskC
      * */
     public void drawFixedElements(Graphics gc)
     { 
-     TamskChip.backgroundTile.image.tileImage(gc, fullRect);   
+      TamskChip.backgroundTile.image.tileImage(gc, fullRect);   
       drawFixedBoard(gc);
      }
     
@@ -588,7 +457,7 @@ public class TamskViewer extends CCanvas<TamskCell,TamskBoard> implements TamskC
 	  	setDisplayParameters(gb,brect);
 	      // if the board is one large graphic, for which the visual target points
 	      // are carefully matched with the abstract grid
-	      //G.centerImage(gc,images[BOARD_INDEX], brect,this);
+	  	  TamskChip.board.getImage().centerImage(gc, brect);
 
 	      // draw a picture of the board. In this version we actually draw just the grid
 	      // to draw the cells, set gb.Drawing_Style in the board init method.  Create a
@@ -596,34 +465,7 @@ public class TamskViewer extends CCanvas<TamskCell,TamskBoard> implements TamskC
 	      // on the board to fine tune the exact positions of the text
 	      gb.DrawGrid(gc, brect, use_grid, boardBackgroundColor, GridColor, GridColor, GridColor);
 
-	      // draw the tile grid.  The positions are determined by the underlying board
-	      // object, and the tile itself if carefully crafted to tile the pushfight board
-	      // when drawn this way.  For games with simple graphics, we could use the
-	      // simpler loop for(Cell c = b.allCells; c!=null; c=c.next) {}
-	      // but for more complex graphics with overlapping shadows or stacked
-	      // objects, this double loop is useful if you need to control the
-	      // order the objects are drawn in.
-          TamskChip tile = lastRotation?TamskChip.hexTile:TamskChip.hexTileNR;
-          int left = G.Left(brect);
-          int top = G.Bottom(brect);
-          int xsize = gb.cellSize();//((lastRotation?0.80:0.8)*);
-          for(Enumeration<TamskCell>cells = gb.getIterator(Itype.TBRL); cells.hasMoreElements(); )
-          { //where we draw the grid
-        	  TamskCell cell = cells.nextElement();
-        	  int ypos = top - gb.cellToY(cell);
-        	  int xpos = left + gb.cellToX(cell);
-        	  int thiscol = cell.col;
-        	  int thisrow = cell.row;
-        	  // double scale[] = TILESCALES[hidx];
-        	  //adjustScales(scale,null);		// adjust the tile size/position.  This is used only in development
-        	  // to fine tune the board rendering.
-        	  //G.print("cell "+CELLSIZE+" "+xsize);
-        	  tile.getAltDisplayChip(thiscol*thisrow^thisrow).drawChip(gc,this,xsize,xpos,ypos,null);
-        	  //equivalent lower level draw image
-        	  // drawImage(gc,tileImages[hidx].image,tileImages[hidx].getScale(), xpos,ypos,gb.CELLSIZE,1.0);
-        	  //
-	               
-	       }       	
+   	
     }
     
     /**
@@ -655,21 +497,76 @@ public class TamskViewer extends CCanvas<TamskCell,TamskBoard> implements TamskC
         // now draw the contents of the board and highlights or ornaments.  We're also
     	// called when not actually drawing, to determine if the mouse is pointing at
     	// something which might allow an action.  
-    	Hashtable<TamskCell,Tamskmovespec> targets = gb.getTargets();
-
+    	long gameTime = reviewMode() ? gb.officialGameTime() : unofficialGameTime(gb);
+    	Hashtable<TamskCell,Tamskmovespec> targets = gb.getTargets(gameTime);
+    	double h = G.Height(boardRect);
+    	TamskChip po = gb.pickedObject;
+    	boolean show = eyeRect.isOnNow();
+    	boolean timers = gb.showTimers();
+    	//G.print("");
+    	gb.loadPositions();
     	for(TamskCell cell = gb.allCells; cell!=null; cell=cell.next)
-          {
-         	int ypos = G.Bottom(brect) - gb.cellToY(cell);
-            int xpos = G.Left(brect) + gb.cellToX(cell);
+          {	int xx = gb.cellToX(cell);
+      		int yy = gb.cellToY(cell);
+      		int ypos = G.Bottom(brect) - yy;
+      		int yscale = (int)((yy*0.85/2.7)*CELLSIZE/h);
+      		int hoffset = (int)(cell.maxRings*CELLSIZE*0.1);
+      		int hsize = CELLSIZE-yscale;
+            int xpos = G.Left(brect) + xx;
+            cell.setCurrentCenter(xpos,ypos);
+            cell.setLastSize(hsize/2);
             boolean canHit = gb.legalToHitBoard(cell,targets);
-            if(cell.drawStack(gc,this,canHit?highlight:null,CELLSIZE,xpos,ypos,0,0.1,0.1,null))
-            		{
-            		highlight.spriteColor = Color.red;
-                	highlight.awidth = CELLSIZE;
-            }
-        }
-    }
+            TamskChip overlay = TamskChip.getRingOverlay(cell);
+            Rectangle target = new Rectangle(xpos-hsize/2,ypos-hsize/2-hoffset,hsize,hsize+hoffset);
+            boolean hit = canHit && G.pointInRect(highlight,target);
+            if(hit)
+            {	TamskId code = po==null 
+            				? cell.timer==null ? TamskId.BoardRing : TamskId.BoardLocation
+            				: po==TamskChip.Ring ? TamskId.BoardRing : TamskId.BoardLocation;
+            	highlight.hitCode = code;
+            	highlight.hitObject = cell;
+            	highlight.spriteColor = Color.red;
+            	highlight.spriteRect = target;
 
+            }
+            if(overlay!=null) { 
+            	
+            	overlay.drawChip(gc,this,hsize,xpos,ypos,null);
+             }
+            TamskTimer timer = gb.findTimer(cell.timer);
+            if(timer!=null && (cell.activeAnimationHeight()<=1))
+            {	if(gb.isDest(cell)) 
+            		{
+            		timer = timer.getCopy();
+            		}
+            	drawTimer(gc,null,null,timers,gameTime,timer,null,CELLSIZE-yscale,xpos,ypos-hoffset);            	
+            }
+            if(show && canHit)
+            {	int button = cell.timer!=null ? CELLSIZE/5 : 0;
+            	StockArt.SmallO.drawChip(gc,this,CELLSIZE-yscale,xpos,ypos-hoffset+button,null);
+            }
+      //      StockArt.SmallO.drawChip(gc,this,CELLSIZE,xpos,ypos,null);
+      //      G.print("pos('",cell.col,"',",(char)('0'+cell.row),",",(int)(xx*100/w)/100.0,",",(int)(yy*100/h)/100.0,");");
+            		
+        }
+    	
+    }
+    private void drawTimer(Graphics gc,HitPoint highlight,TamskId code,boolean timers,long gameTime,TamskTimer timer,TamskChip chip,int size,int xpos,int ypos)
+    {
+    	String time = "";
+    	if(timers  && timer.startTime>0)
+    	{
+    		long remaining = timer.timeRemaining(gameTime);
+    		if(remaining<=0) { time = "--";}
+    		else {
+    			long seconds = remaining/1000;
+    			long minutes = seconds / 60;
+    			time = G.format("%d:%02d",minutes,seconds%60);
+    		}
+    	}
+    	TamskChip draw = chip==null ? timer.id.chip : chip;
+    	draw.drawChip(gc,this,highlight,code,size,xpos,ypos,time);
+    }
     /**
      * draw the main window and things on it.  
      * If gc!=null then actually draw, 
@@ -714,6 +611,7 @@ public class TamskViewer extends CCanvas<TamskCell,TamskBoard> implements TamskC
        // we accomplish this by supressing the highlight pointer.
        //
        HitPoint ourTurnSelect = OurMove() ? selectPos : null;
+       HitPoint notMeSelect = (G.offline()||(ourTurnSelect==null)) ? selectPos :null;
        //
        // even if we can normally select things, if we have already got a piece
        // moving, we don't want to hit some things, such as the vcr group
@@ -749,15 +647,7 @@ public class TamskViewer extends CCanvas<TamskCell,TamskBoard> implements TamskC
        
        GC.setFont(gc,standardBoldFont());
        
-       // draw the board control buttons 
-		if((state==TamskState.ConfirmSwap) 
-			|| (state==TamskState.PlayOrSwap) 
-			|| (state==TamskState.Puzzle))
-			{// make the "swap" button appear if we're in the correct state
-				swapButton.show(gc, buttonSelect);
-			}
-
-		if (state != TamskState.Puzzle)
+       if (state != TamskState.Puzzle)
         {	// if in any normal "playing" state, there should be a done button
 			// we let the board be the ultimate arbiter of if the "done" button
 			// is currently active.
@@ -782,13 +672,63 @@ public class TamskViewer extends CCanvas<TamskCell,TamskBoard> implements TamskC
         gb.getPlayerChip(gb.whoseTurn).drawChip(gc,this,iconRect,null);
         goalAndProgressMessage(gc,nonDragSelect,Color.black,s.get(VictoryCondition),progressRect, goalRect);
             //      DrawRepRect(gc,pl.displayRotation,Color.black,b.Digest(),repRect);
-        
-        
+        eyeRect.activateOnMouse = true;
+        eyeRect.draw(gc,selectPos);
+         
+    	boolean timers = gb.showTimers();
+    	
+    	if(timers)
+    		{stopRect.square = true;
+    		stopRect.frameColor = Color.white;
+    		stopRect.draw(gc,selectPos);
+        if(gb.showFastTimer())
+        	{
+	    	long gameTime = reviewMode() ? gb.officialGameTime() : unofficialGameTime(gb);
+	    	boolean canStart = gb.canStartFastTimer(gameTime);
+	    	HitPoint hit = canStart ? notMeSelect : null;
+	        if(canStart || gb.ignoreFastTimer(gameTime))
+	        	{ 
+	        	drawTimer(gc, hit,TamskId.StartFast,timers,gameTime,gb.fastTimer,null,CELLSIZE,G.centerX(fastRect),G.centerY(fastRect));
+	        	}
+	        else {
+	        	drawTimer(gc, null,null,timers,gameTime,gb.fastTimer,gb.getPlayerChip(gb.whoseTurn),CELLSIZE,G.centerX(fastRect),G.centerY(fastRect));	        	
+	        }
+    			
+        	}
+    	}
+    	drawGameTime(gc,gb,timeRect,shotRect);
         // draw the vcr controls, last so the pop-up version will be above everything else
         drawVcrGroup(nonDragSelect, gc);
+    }
+    public void drawGameTime(Graphics gc,TamskBoard gb,Rectangle full,Rectangle shot)
+    {	if(gb.showTimers())
+    	{
+    	long time = reviewMode() ? gb.officialGameTime() : unofficialGameTime(gb);
+    	long seconds = time/1000;
+    	long minutes = seconds/60;
+    	Text s = TextChunk.create(G.format("%02d:%02d",minutes,seconds%60));
+    	GC.setFont(gc,largeBoldFont());
+    	GC.handleSquareButton(gc,full,null,s,Color.black,Color.black,rackBackGroundColor,boardBackgroundColor);
 
+    	if(!reviewMode())
+	    	{
+	    	long shotTime = shotTime(gb);
+	    	long shotSeconds = shotTime/1000;
+	    	long shotMinutes = shotSeconds/60;
+	    	Text f = TextChunk.create(G.format("%d:%02D",shotMinutes,shotSeconds%60));
+	    	GC.handleSquareButton(gc,shot,null,f,Color.black,Color.black,rackBackGroundColor,boardBackgroundColor);
+	    	}
+    	}
+    }
+    public long unofficialGameTime(TamskBoard gb)
+    {
+    	return (gb.officialGameTime()+gb.extraTime(G.Date()));
     }
 
+	public long shotTime(TamskBoard gb)
+	{	return gb.extraTime(G.Date())+gb.shotTime();
+	}
+	
     /**
      * Execute a move by the other player, or as a result of local mouse activity,
      * or retrieved from the move history, or replayed form a stored game. 
@@ -809,12 +749,54 @@ public class TamskViewer extends CCanvas<TamskCell,TamskBoard> implements TamskC
          * are already in place, to disappear until the animation finishes.  The actual drawing
          * is done by drawSprites at the end of redrawBoard
          */
-        startBoardAnimations(replay,bb.animationStack,bb.cellSize(),MovementStyle.Simultaneous);
+        startBoardAnimations(replay,bb.animationStack,CELLSIZE*7/8,MovementStyle.Simultaneous);
         
 		lastDropped = bb.lastDroppedObject;	// this is for the image adjustment logic
 		if(replay!=replayMode.Replay) { playSounds(mm); }
        return (true);
     }
+     public void handleExecute(BoardProtocol b,commonMove m,replayMode mode)
+     {
+ 	 	TamskBoard bb = (TamskBoard)b;
+    	 if(mode==replayMode.Live )
+    	 {	Tamskmovespec mm = (Tamskmovespec)m;
+    	 	// note the actual start!
+    	 	if(mm.gameTime<0) 
+    	 		{ synchronizeGameTime(bb,mm); 
+    	 		} 	
+    	 }    
+    	 super.handleExecute(b,m,mode);
+    	 stopRect.setValue(bb.timeRunning());
+    	 if(mode==replayMode.Live) {
+    		 if(m.op==MOVE_FIFTEEN)
+    		 {
+    			 commonPlayer p = getPlayerOrTemp(m.player);
+    			 p.notifyRobot(m);  			 
+    		 }
+    	 }
+     }
+     
+ 	public void synchronizeGameTime(TamskBoard gb,Tamskmovespec m)
+ 	{	long now =G.Date();
+ 		m.gameTime = gb.officialGameTime()+gb.extraTime(now);
+ 	}
+ 
+ 	
+     public SimpleSprite startAnimation(cell<?> from0,cell<?> to0,Drawable top,int size0,double start,double duration,int depthm1)
+     {	 TamskCell from = (TamskCell)from0;
+         TamskCell to = (TamskCell)to0;
+         if(from.onBoard)
+         {	
+        	// board-to-board animations are timer moves, not ring moves 
+        	TamskId tt = to.timer;
+        	TamskTimer timer = bb.findTimer(tt);
+        	if(timer!=null)
+        	{
+        		top = tt.chip;
+        	}
+         }
+    	 return super.startAnimation(from,to,top,size0,start,duration,depthm1);
+     }
      /**
       * This is a simple animation which moves everything at the same time, at a speed proportional to the distance
       * for pushfight, this is normally just one chip moving.  Note that the interface to drawStack arranges to make the
@@ -893,7 +875,9 @@ public class TamskViewer extends CCanvas<TamskCell,TamskBoard> implements TamskC
  */
       public commonMove EditHistory(commonMove nmove)
       {	  // some damaged games ended up with naked "drop", this lets them pass 
-    	  boolean oknone = (nmove.op==MOVE_DROP);
+    	  Tamskmovespec m = (Tamskmovespec)nmove;
+    	  if(m.rejected) { return null; }
+    	  boolean oknone = ((nmove.op==MOVE_DELAY) || (nmove.op==MOVE_DONE));
     	  commonMove rval = EditHistory(nmove,oknone);
      	     
     	  return(rval);
@@ -974,44 +958,22 @@ public class TamskViewer extends CCanvas<TamskCell,TamskBoard> implements TamskC
 	    {
 	    default: break;
 	    
- 	    case Black:
- 	    case White:
-	    	PerformAndTransmit(G.concat("Pick " , hitObject.shortName()));
+ 	    case BlackRing:
+ 	    case WhiteRing:
+	    	PerformAndTransmit(G.concat("PickRing " , hitObject.shortName()));
 	    	break;
-	    case BoardLocation:
+	    case BoardRing:
 	        TamskCell hitCell = hitCell(hp);
 	        // this enables starting a move by dragging 
 	    	if((hitCell.topChip()!=null) && (bb.movingObjectIndex()<=0))
-	    		{ PerformAndTransmit("Pickb "+hitCell.col+" "+hitCell.row);
+	    		{ PerformAndTransmit("PickRingb "+hitCell.col+" "+hitCell.row);
 	    		
 	    		}
 	    	break;
         } 
         }
     }
-	private void doDropChip(char col,int row)
-	{	TamskState state = bb.getState();
-		switch(state)
-		{
-		default: throw G.Error("Not expecting state "+state);
-		case Puzzle:
-		{
-		TamskChip mo = bb.pickedObject;
-		if(mo==null) { mo=bb.lastPicked; }
-		if(mo==null) { mo=bb.getPlayerChip(bb.whoseTurn); }
-		PerformAndTransmit(G.concat("dropb ",mo.id.shortName()," ",col," ",row));
-		}
-		break;
-		case Confirm:
-		case Play:
-		case PlayOrSwap:
-			TamskChip mo=bb.getPlayerChip(bb.whoseTurn);	
-			PerformAndTransmit(G.concat("dropb ",mo.id.shortName()," ",col," ",row));
-			break;
-					                 
-		
-		}
-	}
+
 	/**
 	 * this is the key to limiting "runaway undo" in situations where the player
 	 * might have made a lot of moves, and undo should limit the damage.  One
@@ -1058,33 +1020,65 @@ public class TamskViewer extends CCanvas<TamskCell,TamskBoard> implements TamskC
         	else if (performVcrButton(hitCode, hp)) {}	// handle anything in the vcr group
             else
             {
-            	throw G.Error("Hit Unknown object " + hitObject);
+            	throw G.Error("Hit Unknown object " + hitCode);
             }
         	break;
-        case BoardLocation:	// we hit an occupied part of the board 
+        case RestartTime:
+        	PerformAndTransmit("Restart");
+        	break;
+        case StopTime:
+        	PerformAndTransmit("Stop");
+        	break;
+        case StartFast:
+        	PerformAndTransmit("Fifteen");
+        	break;
+        case ToggleEye:
+        	eyeRect.toggle();
+        	break;
+        case White:
+        case Black:
+        case BoardLocation:
+        case BoardRing:	// we hit an occupied part of the board 
 			switch(state)
 			{
 			default: throw G.Error("Not expecting drop on filled board in state "+state);
 			case Confirm:
 			case Play:
-			case PlayOrSwap:
-				// fall through and pick up the previously dropped piece
-				//$FALL-THROUGH$
 			case Puzzle:
-				PerformAndTransmit((bb.pickedObject==null ? "Pickb ":"Dropb ")+hitObject.col+" "+hitObject.row);
+				TamskChip po = bb.pickedObject;
+				if(po==TamskChip.Ring)
+				{
+					PerformAndTransmit("DropRingB "+hitObject.col+" "+hitObject.row);
+				}
+				else {
+			    switch(hitCode)
+			    {
+			    case White: 
+			    	PerformAndTransmit((po==null)? "Pick White" : "Drop White");
+			    	break;
+			    case Black:
+			    	PerformAndTransmit(po==null ? "Pick Black" : "Drop Black");
+			    	break;
+			    case BoardLocation:
+					PerformAndTransmit((po==null ? "Pickb ":"Dropb ")+hitObject.col+" "+hitObject.row); 	
+					break;
+			    case BoardRing:
+					PerformAndTransmit((po==null ? "PickRingb ":"DropRingb ")+hitObject.col+" "+hitObject.row); 	
+			    	break;
+				default: 
+					G.Error("Not expecting hit "+hitCode);
+			    }
+				}
 				break;
 			}
 			break;
 			
-        case EmptyBoard:
-			doDropChip(hitObject.col,hitObject.row);
-			break;
 			
-        case Black:
-        case White:
+        case BlackRing:
+        case WhiteRing:
            if(bb.pickedObject!=null) 
 			{//if we're dragging a black chip around, drop it.
-            	PerformAndTransmit(G.concat("Drop ",bb.pickedObject.id.shortName()));
+            	PerformAndTransmit(G.concat("DropRing ",id.name()));
 			}
            break;
  
@@ -1097,20 +1091,13 @@ public class TamskViewer extends CCanvas<TamskCell,TamskBoard> implements TamskC
     private boolean setDisplayParameters(TamskBoard gb,Rectangle r)
     {
       	boolean complete = false;
-      	if(doRotation!=lastRotation)		//if changing the whole orientation of the screen, unusual steps have to be taken
-      	{ complete=true;					// for sure, paint everything
-      	  lastRotation=doRotation;			// and only do this once
-      	  if(doRotation)
-      	  {
-      	  // 0.95 and 1.0 are more or less magic numbers to match the board to the artwork
-          gb.SetDisplayParameters(0.95, 1.0, 0,0,60); // shrink a little and rotate 60 degrees
-     	  }
-      	  else
-      	  {
-          // the numbers for the square-on display are slightly ad-hoc, but they look right
-          gb.SetDisplayParameters( 0.825, 0.94, 0,0,28.2); // shrink a little and rotate 30 degrees
-      	  }
-      	}
+      	// shrink a little and rotate 30 degrees
+      	// the actual cells are drawn with a more exact grid, but this is still
+      	// used as a basis for the grid
+        gb.SetDisplayParameters( 0.63, 0.95,
+        		1.2,-0.85,
+        		30.,
+        		0.25,0.2,0); 
       	gb.SetDisplayRectangle(r);
       	if(complete) { generalRefresh(); }
       	return(complete);
@@ -1203,13 +1190,6 @@ public class TamskViewer extends CCanvas<TamskCell,TamskBoard> implements TamskC
     {
         boolean handled = super.handleDeferredEvent(target, command);
 
-        if(target==rotationOption)
-        {	handled=true;
-        	doRotation = rotationOption.getState();
-        	resetBounds();
-        	repaint(20);
-        }
-
         return (handled);
     }
 /** handle the run loop, and any special actions we need to take.
@@ -1235,10 +1215,63 @@ public class TamskViewer extends CCanvas<TamskCell,TamskBoard> implements TamskC
  * Network I/O events, merely queue the data for delivery later.
  *  */
     
-    //   public void ViewerRun(int wait)
-    //   {
-    //       super.ViewerRun(wait);
-    //   }
+   public void ViewerRun(int wait)
+   {	
+	   if(!reviewMode() && !bb.GameOver() && bb.timeRunning() && bb.showTimers())
+	   { 
+		   /*
+		    * 
+		    * note on the behavior of timers in borderline situations where the 
+		    * human is making moves, but time marches on and a timer expires.\
+		    * 
+		    * If you have picked up a timer, it continues ticking.  If it expires before
+		    * you drop it, it will be dropped back on it's origin point, and thereafter
+		    * will be un-movable.  
+		    * When you drop it, it flips instantaneously and continues ticking until you
+		    * click on done or pick it back up.
+		    * 
+		    * Upon "done" the current timer is locked in.
+		    */
+		
+		   long now = unofficialGameTime(bb);
+		   if(bb.fastTimerExpired(now))
+		   	  {	
+		   		  PerformAndTransmit("TimeExpired");
+		   	  }
+
+		   if(OurMove())
+			  {
+		   	
+		   	  if(bb.pickedTimerIsExpired(now))
+		   	  {  // force them to put it back.
+		   		 TamskCell src = bb.getSource();
+		   		 PerformAndTransmit("dropb "+src.col+" "+src.row); 
+		   	  }
+		   	  else if(bb.allTimersExpired(now) || bb.currentTimerExpired(now))
+		   	  {
+		   		  PerformAndTransmit("Done");
+		   	  }
+		   	  commonPlayer p = getPlayerOrTemp(nextPlayer[bb.whoseTurn]);
+		   	  SimpleRobotProtocol robo= p.robotPlayer;
+		   	  if((now>stallTime)
+		   		  && (robo!=null)
+		   		  && bb.pickedObject==null 
+		   		  && bb.canStartFastTimer(now)) 
+		   	  {
+		   		if((bb.minimumTimer(bb.whoseTurn)<30*1000)|| (new Random().nextDouble()<0.1))
+		   			{ PerformAndTransmit("Fifteen"); 
+		   			}	
+		   			else { stallTime = now+1000;
+		   			}
+			  
+
+			  }
+		   }
+		   
+	   }
+        super.ViewerRun(Math.min(wait,200));
+   }
+   private long stallTime = 0;
     /**
      * returns true if the game is over "right now", but also maintains 
      * the gameOverSeen instance variable and turns on the reviewer variable

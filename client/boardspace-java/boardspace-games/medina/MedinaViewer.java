@@ -332,7 +332,7 @@ public class MedinaViewer extends CCanvas<MedinaCell,MedinaBoard> implements Med
     
     private void drawReverseView(Graphics gc,HitPoint highlight,Rectangle brect)
     {	
-    	StockArt.Rotate.drawChip(gc,this,brect,highlight, MedinaId.ReverseButton,null);
+    	StockArt.Rotate.drawChip(gc,this,brect,highlight, MedinaId.ReverseButton);
     }
     
 	// draw a box of spare gobblets. Notice if any are being pointed at.  Highlight those that are.
@@ -531,7 +531,7 @@ public class MedinaViewer extends CCanvas<MedinaCell,MedinaBoard> implements Med
         StockArt icon = visibleChips[player] ? StockArt.NoEye : StockArt.Eye;
         if(G.offline())
         {
-        if(icon.drawChip(gc, this, eyeRect[player],any, MedinaId.VisibleChip, null))
+        if(icon.drawChip(gc, this, eyeRect[player],any, MedinaId.VisibleChip))
         	{
         	any.hit_index = player;
         	}
@@ -1018,7 +1018,7 @@ private void playSounds(commonMove m)
     	
     	GC.Text(gc,true,infoRect,Color.black,null,s.get(ServiceName,name));
     	StockArt icon = visibleHiddenChips[index] ? StockArt.NoEye : StockArt.Eye;
-        if(icon.drawChip(gc, this, eyeRect,hp, MedinaId.VisibleHiddenChip, null))
+        if(icon.drawChip(gc, this, eyeRect,hp, MedinaId.VisibleHiddenChip))
         	{
         	hp.hit_index = index;
         	}

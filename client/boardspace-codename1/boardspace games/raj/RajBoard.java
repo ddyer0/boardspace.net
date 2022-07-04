@@ -517,7 +517,7 @@ class RajBoard extends squareBoard<RajCell> implements BoardProtocol,RajConstant
         // are in sync, although if this does fail you'll no doubt be at a loss
         // to explain why.
         G.Assert(Digest()==from_b.Digest(),"Digest matches");
-
+        G.Assert(myIndex==from_b.myIndex,"Myindex mismatch");
     }
 
     /** 
@@ -577,6 +577,7 @@ class RajBoard extends squareBoard<RajCell> implements BoardProtocol,RajConstant
 		// many games will want to digest pickedSource too
 		// v ^= cell.Digest(r,pickedSource);
 		v ^= r.nextLong()*(board_state.ordinal()*10+whoseTurn);
+		v ^= r.nextLong()*myIndex;
 	     // System.out.println("D5 "+v);
 
         return (v);
@@ -599,6 +600,7 @@ class RajBoard extends squareBoard<RajCell> implements BoardProtocol,RajConstant
         board_state = from_b.board_state;
         unresign = from_b.unresign;
         resetState = from_b.resetState;
+        myIndex = from_b.myIndex;
  
         sameboard(from_b);
     }
@@ -1178,8 +1180,8 @@ class RajBoard extends squareBoard<RajCell> implements BoardProtocol,RajConstant
 		case CONFIRM_CARD_STATE:
 		case PLAY_STATE:
 			if(pickedObject==null)
-			{
-				return(any ? (c.topChip()!=null) : currentPlayerBoard().isDestCell(c));
+			{	boolean v = any ? (c.topChip()!=null) : currentPlayerBoard().isDestCell(c);
+				return(v);
 			}
 			else 
 			{	// each cell has an invisible "color" which determines who owns the cell for

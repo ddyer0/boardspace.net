@@ -19,6 +19,7 @@ import lib.HitPoint;
 import lib.InternationalStrings;
 import lib.LFrameProtocol;
 import lib.StockArt;
+import lib.Toggle;
 
 import static morris.MorrisMovespec.*;
 
@@ -53,7 +54,11 @@ public class MorrisViewer extends CCanvas<MorrisCell,MorrisBoard> implements Mor
 
     private Rectangle chipRects[] = addRect("chip",2);
     private Rectangle poolRects[] = addRect("pool",2);
-    
+    private Toggle eyeRect = new Toggle(this,"eye",
+			StockArt.NoEye,MorrisId.ToggleEye,NoeyeExplanation,
+			StockArt.Eye,MorrisId.ToggleEye,EyeExplanation
+			);
+
     /**
      * preload all the images associated with the game. This is delegated to the chip class.
      */
@@ -192,7 +197,7 @@ public class MorrisViewer extends CCanvas<MorrisCell,MorrisBoard> implements Mor
     	//
         int stateY = boardY-stateH/4;
         int stateX = boardX;
-        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,noChatRect);
+        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,eyeRect,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	
     	// goal and bottom ornaments, depending on the rendering can share
@@ -216,7 +221,7 @@ public class MorrisViewer extends CCanvas<MorrisCell,MorrisBoard> implements Mor
         int sz = (int)(G.Height(r)*0.7);
         int xp = G.Left(r)+sz;
         int yp = G.Bottom(r)-2*sz/3;
-        drawChipStack(gc,false,gb,sz,xp,yp,thisCell,forPlayer,highlight,null);
+        drawChipStack(gc,false,gb,sz,xp,yp,thisCell,forPlayer,highlight,""+thisCell.height());
     }
     private void DrawSamplePool(Graphics gc, MorrisBoard gb, int forPlayer, Rectangle r, int player, HitPoint highlight)
     {	MorrisCell chips[]= gb.sample;
@@ -224,7 +229,7 @@ public class MorrisViewer extends CCanvas<MorrisCell,MorrisBoard> implements Mor
         int sz = (int)(G.Width(r)*0.7);
         int xp = G.centerX(r);
         int yp = G.Top(r)+G.Height(r);
-        thisCell.drawStack(gc,this,null,sz,xp,yp,0,0.14,0,""+gb.sample[player].height());
+        thisCell.drawStack(gc,this,null,sz,xp,yp,0,0.14,0,null);
     }
     private void DrawCapturedPool(Graphics gc, MorrisBoard gb, int forPlayer, Rectangle r, int player, HitPoint highlight)
     {	MorrisCell chips[]= gb.captured;
@@ -307,6 +312,7 @@ public class MorrisViewer extends CCanvas<MorrisCell,MorrisBoard> implements Mor
      	MorrisCell dest = gb.getDest();		// also the current dest and source
      	MorrisCell src = gb.getSource();
      	MorrisCell last = gb.getPrevDest();	// and the other player's last move
+     	boolean show = eyeRect.isOnNow();
      	//
         // now draw the contents of the board and anything it is pointing at
         //
@@ -323,12 +329,13 @@ public class MorrisViewer extends CCanvas<MorrisCell,MorrisBoard> implements Mor
         	{ 
         	int ypos = G.Bottom(brect) - gb.cellToY(cell);
             int xpos = G.Left(brect) + gb.cellToX(cell);
-            HitPoint hitNow = gb.legalToHitBoard(cell,targets) ? highlight : null;
+            boolean canHitNow = gb.legalToHitBoard(cell,targets);
+            HitPoint hitNow = canHitNow ? highlight : null;
             if( cell.drawStack(gc,this,hitNow,SQUARESIZE,xpos,ypos,0,0.1,null)) 
             	{ // draw a highlight rectangle here, but defer drawing an arrow until later, after the moving chip is drawn
             	hitCell = cell;
             	}
-            if((cell==dest)||(cell==src))
+            if((cell==dest)||(cell==src)||(show && canHitNow))
             {
             	StockArt.SmallO.drawChip(gc,this,SQUARESIZE,xpos,ypos,null);
             }
@@ -351,6 +358,8 @@ public class MorrisViewer extends CCanvas<MorrisCell,MorrisBoard> implements Mor
      public void drawAuxControls(Graphics gc,HitPoint highlight)
     {  String var = b.variation.rules;
        HitPoint.setHelpText(highlight,bannerRect,s.get(var));
+       eyeRect.activateOnMouse = true;
+       eyeRect.draw(gc,highlight);
     }
     //
     // draw the board and things on it.  If gc!=null then actually 
@@ -663,7 +672,9 @@ private void playSounds(commonMove m)
         default:
         	throw G.Error("Hit Unknown: %s", hitObject);
 
-
+        case ToggleEye:
+        	eyeRect.toggle();
+        	break;
          case BoardLocation:	// we hit the board 
 			switch(state)
 			{

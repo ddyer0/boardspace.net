@@ -9,6 +9,7 @@ import java.util.*;
 import lib.*;
 import lib.Random;
 import online.game.*;
+import tamsk.TamskConstants.TamskId;
 
 /**
  * StymieBoard knows all about the game of Prototype, which is played
@@ -34,7 +35,155 @@ import online.game.*;
  * @author ddyer
  *
  */
+class TamskTimer implements Digestable
+{
+	TamskId id;
+	boolean ghost = false;
+	long capacity = 3*1000*60;
+	long count = 0;
+	long startTime = 0;
+	boolean active = false;
+	TamskCell location = null;
+	TamskTimer ghostCopy = null;
+	// constructor
+	TamskTimer(TamskChip in,TamskId tid,long cap)
+	{	this(tid,cap);
+		tid.chip = in;
+	}
+	// constructor
+	TamskTimer(TamskId tid,long cap)
+	{
+		id = tid;
+		capacity = cap;
+		
+	}
+	public long timeRemaining(long gameTime)
+	{
+   		long timeUsed = gameTime - startTime;
+		long remaining = (count - timeUsed);
+		return remaining;
+	}
+	
+	public TamskTimer getCopy() 
+	{
+		if(ghostCopy==null) { ghostCopy=new TamskTimer(id,capacity); ghostCopy.ghost = true; }
+		return ghostCopy;
+	}
+	public void flip(long gameTime)
+	{
+		if(active)
+		{	long used = (gameTime - startTime);
+			long remaining = count-used;
+			count = Math.min(capacity,Math.max(0,capacity-remaining));
+			startTime = gameTime;
+		}
+		else { active = true;
+			   startTime = gameTime;
+			   count = capacity;
+		}
+	}
+	public void restart(long gameTime)
+	{
+		active = false;
+		flip(gameTime);
+	}
+	public boolean isExpired(long now)	// now is a game time
+	{	if(!active) { return false; }
+		long timeUsed = now - startTime;
+		long remaining = (count - timeUsed);
+		return remaining<0;
+	}
+	public void reInit()
+	{
+		active = false;
+		count = capacity;
+		startTime = 0;
+		location = null;
+	}
+	public boolean sameContents(TamskTimer o)
+	{
+		return (active==o.active) 
+				&& (startTime==o.startTime)
+				&& (count==o.count);
+	}
+	public void copyFrom(TamskTimer o)
+	{	ghostCopyFrom(o);
+		if(o.ghostCopy!=null)
+		{
+			getCopy().copyFrom(o.ghostCopy);
+		}
+	}
+	public void ghostCopyFrom(TamskTimer o)
+	{
+		capacity = o.capacity;
+		count = o.count;
+		active = o.active;
+		location = o.location;
+		startTime = o.startTime;
+	}
+	public String toString() { return "<timer "+id+">";}
+	
+	public long Digest() {
+		return id.chip.Digest()*id.ordinal() ^ (active ? 124753735 : 0);
+	}
+	public long Digest(Random r) {
+		return id.chip.Digest(r)*id.ordinal() ^ (r.nextLong()*(active ? 35235 : 352646));
+	}
+}
+class TimerStack extends OStack<TamskTimer> implements Digestable
+{	TamskTimer fullSet[]=null;
+	TimerStack(TamskTimer[] st) { fullSet = st; }
+	public void reInit()
+	{
+		clear();
+	    for(TamskTimer id : fullSet) {id.reInit(); push(id); }
+	}
+	public TamskTimer[] newComponentArray(int sz) {
+		return new TamskTimer[sz];
+	}
 
+	public long Digest() {
+		long v = 0;
+		for(int i=0;i<size();i++) { v ^= elementAt(i).Digest(); }
+		return v;
+	}
+
+	public long Digest(Random r) {
+		long v = 0;
+		for(int i=0;i<size();i++) { v ^= elementAt(i).Digest(r); }
+		return v;
+	}
+	public void copyFrom(TimerStack other)
+	{	clear();
+		for(int i=0,len = fullSet.length;i<len;i++) 
+			{ fullSet[i].copyFrom(other.fullSet[i]);
+			}
+		for(int i=0,len=other.size();i<len;i++)
+		{
+			push(findTimer(other.elementAt(i).id));
+		}
+	}
+	public TamskTimer findTimer(TamskTimer ot)
+	{	return findTimer(ot.id);
+	}
+	public TamskTimer findTimer(TamskId otherId)
+	{
+		for(TamskTimer t : fullSet)
+		{
+			if(t.id==otherId) { return(t);}
+		}
+		throw G.Error("No match for %s",otherId);
+	}
+	public boolean sameContents(TimerStack other)
+	{	boolean ok = size()==other.size();
+		if(ok)
+			{ for(int i=0;i<size();i++) 
+				{ ok &= elementAt(i).sameContents(other.elementAt(i)); 
+				}
+			}
+		return ok;
+	}
+}
 class TamskBoard 
 	extends hexBoard<TamskCell>	// for a square grid board, this could be rectBoard or squareBoard 
 	implements BoardProtocol,TamskConstants
@@ -44,9 +193,100 @@ class TamskBoard
 	TamskVariation variation = TamskVariation.tamsk;
 	private TamskState board_state = TamskState.Puzzle;	
 	private TamskState unresign = null;	// remembers the orignal state when "resign" is hit
-	private StateStack robotState = new StateStack();
+	private boolean robotBoard = false;
+	private long robotDoneTime = FAST_TIMER_TIME;
+	public long robotDelayTime = 10*1000;
+	public boolean robotRandomPhase = false;
+	
 	public TamskState getState() { return(board_state); }
-    /**
+	
+	/*
+	 * all events in Tamsk occur at a particular time, measured in milliseconds from the start
+	 * of the game.
+	 */
+	private boolean timeRunning = false;// if true, the clock is running
+	public boolean timeRunning() { return timeRunning; }
+	
+	public long masterGameTime = 0;		// the current game event time
+	public long masterClockTime = 0;	// the real time corresponding to masterGameTime
+	public long turnStartTime = 0;		// time when the most recent move started
+	public long turnExpiredTime = 0;	// future time at which a 15 second timer expires
+    public boolean passOnTimerExpired = false;	// true if the 15 second time is counting
+
+	// time since the current move started 
+	public long shotTime() { return (masterGameTime-turnStartTime); }
+	
+	// this is used by the robot to advance time and therefore make decisions based on a
+	// future state of the times
+	public void skipTime(long n)
+	{
+		masterGameTime += n;
+		
+	}
+	public void stopTime() 
+	{	long now = G.Date();
+		masterGameTime += extraTime(now);
+		masterClockTime = now;
+		timeRunning = false;
+	}
+	public void restartTime()
+	{	masterClockTime = G.Date();
+		timeRunning = true;
+	}
+
+	public long extraTime(long now)
+	{
+		if(timeRunning) { return now-masterClockTime; }
+		else { return 0; }
+	}
+	
+	public boolean fastTimerExpired(long now)
+	{	if(passOnTimerExpired)
+		{	// effectively, the fast timer is for display only,
+			// but turnExpiredTime ought to be the same  as testing
+			// fastTimer.isExpired(now);
+			return (now>turnExpiredTime);
+		}
+		return false;
+	}
+	public boolean allTimersExpired(long now)
+	{
+		for(TamskTimer t : playerTimers(whoseTurn))
+		{
+			if(!t.isExpired(now)) { return false; }
+		}
+		return true;
+	}
+	public boolean pickedTimerIsExpired(long now)
+	{
+		if(pickedTimer!=null)
+		{	TamskTimer t = findTimer(pickedTimer);
+			return (t.isExpired(now));
+		}
+		return false;
+	}
+	// if the player has placed an hourglass but not clicked on done,
+	// it continues ticking and can expire.  In that case, if he tried
+	// to take the move back the timer would be lost.
+	public boolean currentTimerExpired(long now)
+	{	if(board_state==TamskState.Confirm)
+		{
+		TamskCell d = getDest();
+		if(d!=null)
+			{
+			TamskTimer t = findTimer(d.timer);
+			return (t!=null && t.isExpired(now));
+			}
+		}
+		return false;
+	}
+
+    public long officialGameTime()
+    {
+    	return masterGameTime;
+    }
+
+   /**
      * this is the preferred method when using the modern "enum" style of game state
      * @param st
      */
@@ -60,12 +300,12 @@ class TamskBoard
 
     private TamskId playerColor[]={TamskId.White,TamskId.Black};    
     private TamskChip playerChip[]={TamskChip.White,TamskChip.Black};
-    private TamskCell playerCell[]=new TamskCell[2];
+    private TamskCell playerRing[]=new TamskCell[2];
     // get the chip pool and chip associated with a player.  these are not 
     // constants because of the swap rule.
 	public TamskChip getPlayerChip(int p) { return(playerChip[p]); }
 	public TamskId getPlayerColor(int p) { return(playerColor[p]); }
-	public TamskCell getPlayerCell(int p) { return(playerCell[p]); }
+	public TamskCell getPlayerRing(int p) { return(playerRing[p]); }
 	public TamskChip getCurrentPlayerChip() { return(playerChip[whoseTurn]); }
 
 // this is required even if it is meaningless for this game, but possibly important
@@ -78,20 +318,58 @@ class TamskBoard
 // DrawRepRect to warn the user that repetitions have been seen.
 	public void SetDrawState() {throw G.Error("not expected"); };	
 	CellStack animationStack = new CellStack();
-    private int chips_on_board = 0;			// number of chips currently on the board
-    private int fullBoard = 0;				// the number of cells in the board
-
-    private boolean swapped = false;
-    // intermediate states in the process of an unconfirmed move should
+ 
+	// intermediate states in the process of an unconfirmed move should
     // be represented explicitly, so unwinding is easy and reliable.
     public TamskChip pickedObject = null;
+    public TamskId pickedTimer = null;
+    
     public TamskChip lastPicked = null;
-    private TamskCell blackChipPool = null;	// dummy source for the chip pools
-    private TamskCell whiteChipPool = null;
+    private TamskCell blackRings = null;	// dummy source for the chip pools
+    private TamskCell whiteRings = null;
+    private TamskCell blackTimer = null;
+    private TamskCell whiteTimer = null;
+    private TamskCell playerTimer[] = new TamskCell[2];
+    public TamskCell getPlayerTimer(int n) { return(playerTimer[n]); }
+    
     private CellStack pickedSourceStack = new CellStack(); 
     private CellStack droppedDestStack = new CellStack();
     private StateStack stateStack = new StateStack();
+	public TimerStack blackTimerStack = new TimerStack(new TamskTimer[]{ new TamskTimer(TamskChip.Black,TamskId.Timer_0B,SLOW_TIMER_TIME),
+    		new TamskTimer(TamskChip.Black,TamskId.Timer_1B,SLOW_TIMER_TIME),
+    		new TamskTimer(TamskChip.Black,TamskId.Timer_2B,SLOW_TIMER_TIME),	
+    }); 
+	public TimerStack whiteTimerStack = new TimerStack(new TamskTimer[]{ new TamskTimer(TamskChip.White,TamskId.Timer_0W,SLOW_TIMER_TIME),
+		new TamskTimer(TamskChip.White,TamskId.Timer_1W,SLOW_TIMER_TIME),
+		new TamskTimer(TamskChip.White,TamskId.Timer_2W,SLOW_TIMER_TIME),	
+	}); 
+	
+	private TamskTimer[] playerTimers(int who)
+	 {
+		 return (who==0) ? whiteTimerStack.fullSet : blackTimerStack.fullSet;
+	 }
+	 
+
+    TamskTimer fastTimer = new TamskTimer(TamskChip.Neutral,TamskId.Timer_F,FAST_TIMER_TIME);
     
+    public int skipTurns[] = {0,0};
+    public TamskTimer findTimer(TamskId id)
+    {	if(id==null) { return null;}
+    	switch(id)
+    	{
+    	case Timer_0B:
+    	case Timer_1B:
+    	case Timer_2B:
+    		return blackTimerStack.findTimer(id);
+    	case Timer_0W:
+    	case Timer_1W:
+    	case Timer_2W:
+    		return whiteTimerStack.findTimer(id);
+    	case Timer_F:
+    		return fastTimer;
+    	default: throw G.Error("Timer %s not found",id);
+    	}
+    }
     // save strings to be shown in the game log
     StringStack gameEvents = new StringStack();
     InternationalStrings s = G.getTranslations();
@@ -103,13 +381,12 @@ class TamskBoard
  		}
  	}
 
-    private CellStack emptyCells=new CellStack();
     private TamskState resetState = TamskState.Puzzle; 
     public DrawableImage<?> lastDroppedObject = null;	// for image adjustment logic
 
 	// factory method to generate a board cell
 	public TamskCell newcell(char c,int r)
-	{	return(new TamskCell(TamskId.BoardLocation,c,r));
+	{	return(new TamskCell(TamskId.BoardRing,c,r));
 	}
 	
 	// constructor 
@@ -121,12 +398,14 @@ class TamskBoard
         
 		Random r = new Random(734687);
 		// do this once at construction
-	    blackChipPool = new TamskCell(r,TamskId.Black);
-	    blackChipPool.addChip(TamskChip.Black);
-	    whiteChipPool = new TamskCell(r,TamskId.White);
-	    whiteChipPool.addChip(TamskChip.White);
-
+	    blackRings = new TamskCell(r,TamskId.BlackRing);
+	    blackTimer = new TamskCell(r,TamskId.Black);
+	    blackTimer.addChip(TamskChip.Black);
+	    whiteRings = new TamskCell(r,TamskId.WhiteRing);
+	    whiteTimer = new TamskCell(r,TamskId.White);
+	    whiteTimer.addChip(TamskChip.White);
         doInit(init,key,players,rev); // do the initialization 
+	    loadPositions();
         autoReverseY();		// reverse_y based on the color map
     }
     
@@ -151,12 +430,13 @@ class TamskBoard
  		setState(TamskState.Puzzle);
 		variation = TamskVariation.findVariation(gtype);
 		G.Assert(variation!=null,WrongInitError,gtype);
-		robotState.clear();
 		gametype = gtype;
 		switch(variation)
 		{
 		default: throw G.Error("Not expecting variation %s",variation);
 		case tamsk:
+		case tamsk_u:
+		case tamsk_f:
 			// using reInitBoard avoids thrashing the creation of cells 
 			// when reviewing games.
 			reInitBoard(variation.firstInCol,variation.ZinCol,null);
@@ -165,17 +445,32 @@ class TamskBoard
 			// allCells.setDigestChain(r);		// set the randomv for all cells on the board
 		}
 
- 		
-	    playerCell[FIRST_PLAYER_INDEX] = whiteChipPool; 
-	    playerCell[SECOND_PLAYER_INDEX] = blackChipPool; 
-	    
+	    playerRing[FIRST_PLAYER_INDEX] = whiteRings; 
+	    playerRing[SECOND_PLAYER_INDEX] = blackRings; 
+	    playerTimer[FIRST_PLAYER_INDEX] = whiteTimer;
+	    playerTimer[SECOND_PLAYER_INDEX] = blackTimer;
+	    reInit(playerRing);
+	    for(int i=0;i<NRINGS;i++) 
+	    	{ whiteRings.addChip(TamskChip.Ring);
+	    	  blackRings.addChip(TamskChip.Ring);
+	    	}
+	    blackTimerStack.reInit();
+	    whiteTimerStack.reInit();
+	    fastTimer.reInit();
+	    masterGameTime = 0;
+	    turnStartTime = -1;
+	    turnExpiredTime = -1;
+	    animationStack.clear();
+        moveNumber = 1;
+	    passOnTimerExpired = false;
+	    AR.setValue(skipTurns,0);
 	    whoseTurn = FIRST_PLAYER_INDEX;
-	    chips_on_board = 0;
 	    droppedDestStack.clear();
 	    pickedSourceStack.clear();
 	    stateStack.clear();
 	    
 	    pickedObject = null;
+	    pickedTimer = null;
 	    resetState = null;
 	    lastDroppedObject = null;
 	    int map[]=getColorMap();
@@ -183,18 +478,23 @@ class TamskBoard
 		playerColor[map[1]]=TamskId.Black;
 		playerChip[map[0]]=TamskChip.White;
 		playerChip[map[1]]=TamskChip.Black;
-	    // set the initial contents of the board to all empty cells
-		emptyCells.clear();
-		for(TamskCell c = allCells; c!=null; c=c.next) { c.reInit(); emptyCells.push(c); }
-		fullBoard = emptyCells.size();
-	    
-        animationStack.clear();
-        swapped = false;
-        moveNumber = 1;
+        // place the initial timers
+        positionTimers( new int[][]{{'A',1},{'G',1},{'D',7}},whiteTimerStack);
+        positionTimers(new int[][]{{'D',1},{'G',4},{'A',4}},blackTimerStack);
+
 
         // note that firstPlayer is NOT initialized here
     }
-
+    private void positionTimers(int bloc[][],TimerStack timers)
+    {
+    	for(int loc[] : bloc)
+        {
+        	TamskCell c = getCell((char)loc[0],loc[1]);
+        	TamskTimer time = timers.pop();
+        	time.location = c;
+        	c.timer = time.id;
+        }
+    }
     /** create a copy of this board */
     public TamskBoard cloneBoard() 
 	{ TamskBoard dup = new TamskBoard(gametype,players_in_game,randomKey,getColorMap(),revision); 
@@ -210,25 +510,37 @@ class TamskBoard
     public void copyFrom(TamskBoard from_b)
     {
         super.copyFrom(from_b);
-        chips_on_board = from_b.chips_on_board;
-        fullBoard = from_b.fullBoard;
-        robotState.copyFrom(from_b.robotState);
-        getCell(emptyCells,from_b.emptyCells);
         unresign = from_b.unresign;
         board_state = from_b.board_state;
         getCell(droppedDestStack,from_b.droppedDestStack);
         getCell(pickedSourceStack,from_b.pickedSourceStack);
-        copyFrom(whiteChipPool,from_b.whiteChipPool);		// this will have the side effect of copying the location
-        copyFrom(blackChipPool,from_b.blackChipPool);		// from display copy boards to the main board
-        getCell(playerCell,from_b.playerCell);
+        copyFrom(whiteRings,from_b.whiteRings);		// this will have the side effect of copying the location
+        copyFrom(blackRings,from_b.blackRings);		// from display copy boards to the main board
+        getCell(playerRing,from_b.playerRing);
         stateStack.copyFrom(from_b.stateStack);
+        blackTimerStack.copyFrom(from_b.blackTimerStack);
+        whiteTimerStack.copyFrom(from_b.whiteTimerStack);
+        fastTimer.copyFrom(from_b.fastTimer);
+        passOnTimerExpired = from_b.passOnTimerExpired;
+        AR.copy(skipTurns,from_b.skipTurns);
         pickedObject = from_b.pickedObject;
         resetState = from_b.resetState;
         lastPicked = null;
-
+        masterClockTime = from_b.masterClockTime;
+        masterGameTime =from_b.masterGameTime;
+        turnStartTime = from_b.turnStartTime;
+        turnExpiredTime = from_b.turnExpiredTime;
+        
+        timeRunning = from_b.timeRunning;
+        
         AR.copy(playerColor,from_b.playerColor);
         AR.copy(playerChip,from_b.playerChip);
  
+        robotBoard = from_b.robotBoard;
+        robotDoneTime = from_b.robotDoneTime;
+        robotDelayTime = from_b.robotDelayTime;
+        robotRandomPhase = from_b.robotRandomPhase;
+        
         sameboard(from_b); 
     }
 
@@ -250,10 +562,19 @@ class TamskBoard
         G.Assert(AR.sameArrayContents(playerColor,from_b.playerColor),"playerColor mismatch");
         G.Assert(AR.sameArrayContents(playerChip,from_b.playerChip),"playerChip mismatch");
         G.Assert(pickedObject==from_b.pickedObject, "picked Object mismatch");
-        G.Assert(chips_on_board == from_b.chips_on_board,"chips_on_board mismatch");
         G.Assert(sameCells(pickedSourceStack,from_b.pickedSourceStack),"pickedsourceStack mismatch");
         G.Assert(sameCells(droppedDestStack,from_b.droppedDestStack),"droppedDestStack mismatch");
-        G.Assert(sameCells(playerCell,from_b.playerCell),"player cell mismatch");
+        G.Assert(sameCells(playerRing,from_b.playerRing),"player ring mismatch");
+        G.Assert(blackTimerStack.sameContents(from_b.blackTimerStack),"black timer matches");
+        G.Assert(whiteTimerStack.sameContents(from_b.whiteTimerStack),"white timer matches");
+        G.Assert(fastTimer.sameContents(from_b.fastTimer),"fastTimer mismatch");
+        G.Assert(passOnTimerExpired==from_b.passOnTimerExpired,"fastTimerPass mismatch");
+        G.Assert(AR.sameArrayContents(skipTurns,from_b.skipTurns),"skipturns mismatch");
+        G.Assert(masterGameTime==from_b.masterGameTime,"masterGameTime mismatch");
+        G.Assert(turnStartTime==from_b.turnStartTime,"turnStartTime mismatch");
+        G.Assert(turnExpiredTime==from_b.turnExpiredTime,"turnExpiredTime mismatch");
+        G.Assert(masterClockTime==from_b.masterClockTime,"masterClockTime mismatch");
+        G.Assert(timeRunning == from_b.timeRunning, "timeRunning mismatch");
         // this is a good overall check that all the copy/check/digest methods
         // are in sync, although if this does fail you'll no doubt be at a loss
         // to explain why.
@@ -303,7 +624,14 @@ class TamskBoard
 		v ^= Digest(r,pickedSourceStack);
 		v ^= Digest(r,droppedDestStack);
 		v ^= Digest(r,revision);
-		v ^= r.nextLong()*(board_state.ordinal()*10+whoseTurn);
+		v ^= Digest(r,blackTimerStack);
+		v ^= Digest(r,whiteTimerStack);
+		v ^= Digest(r,fastTimer);
+		v ^= Digest(r,skipTurns);
+		v ^= Digest(r,turnExpiredTime);
+		v ^= Digest(r,timeRunning);
+		v ^= Digest(r,passOnTimerExpired);
+		v ^= r.nextLong()*(board_state.ordinal()*10);
         return (v);
     }
 
@@ -321,15 +649,15 @@ class TamskBoard
         case Puzzle:
             break;
         case Play:
-        case PlayOrSwap:
-        	// some damaged games have 2 dones in a row
-        	if(replay==replayMode.Live) { throw G.Error("Move not complete, can't change the current player in state ",board_state); }
-			//$FALL-THROUGH$
-		case ConfirmSwap:
         case Confirm:
         case Resign:
-            moveNumber++; //the move is complete in these states
-            setWhoseTurn(nextPlayer[whoseTurn]);
+            do { moveNumber++; //the move is complete in these states
+                skipTurns[whoseTurn]--;
+            	setWhoseTurn(nextPlayer[whoseTurn]);
+            } while (skipTurns[whoseTurn]>0);
+            skipTurns[whoseTurn] = 0;
+            passOnTimerExpired = false;
+            turnExpiredTime = -1;
             return;
         }
     }
@@ -359,19 +687,6 @@ class TamskBoard
     	return(win);
     }
 
-
-    // set the contents of a cell, and maintain the books
-    public TamskChip SetBoard(TamskCell c,TamskChip ch)
-    {	TamskChip old = c.topChip();
-    	if(c.onBoard)
-    	{
-    	if(old!=null) { chips_on_board--;emptyCells.push(c);  }
-     	if(ch!=null) { chips_on_board++; emptyCells.remove(c,false);  }
-    	}
-       	if(old!=null) { c.removeTop();}
-       	if(ch!=null) { c.addChip(ch); }
-    	return(old);
-    }
     //
     // accept the current placements as permanent
     //
@@ -380,7 +695,10 @@ class TamskBoard
         droppedDestStack.clear();
         pickedSourceStack.clear();
         stateStack.clear();
+        passOnTimerExpired = false;
+        turnExpiredTime = -1;
         pickedObject = null;
+        pickedTimer = null;
      }
     //
     // undo the drop, restore the moving object to moving status.
@@ -388,7 +706,19 @@ class TamskBoard
     private TamskCell unDropObject()
     {	TamskCell rv = droppedDestStack.pop();
     	setState(stateStack.pop());
-    	pickedObject = SetBoard(rv,null); 	// SetBoard does ancillary bookkeeping
+    	pickedTimer = rv.timer;
+    	if(pickedTimer!=null) 
+    	{ findTimer(pickedTimer).location = rv; 
+    	  pickedObject = pickedTimer.chip;
+    	  rv.timer = null;
+          if(board_state==TamskState.Play)
+          {
+        	  getPlayerRing(whoseTurn).addChip(rv.removeTop());
+          }
+    	}
+    	else {
+        	pickedObject = rv.removeTop(); 	
+    	}
     	return(rv);
     }
     // 
@@ -397,14 +727,16 @@ class TamskBoard
     private void unPickObject()
     {	TamskCell rv = pickedSourceStack.pop();
     	setState(stateStack.pop());
-    	SetBoard(rv,pickedObject);
+    	rv.addChip(pickedObject);
+    	rv.timer = pickedTimer;
+    	if(pickedTimer!=null) { findTimer(pickedTimer).location = rv; pickedTimer = null; }
     	pickedObject = null;
     }
     
     // 
     // drop the floating object.
     //
-    private void dropObject(TamskCell c)
+    private void dropObject(TamskCell c,replayMode replay)
     {
        droppedDestStack.push(c);
        stateStack.push(board_state);
@@ -416,11 +748,41 @@ class TamskBoard
         case Black:
         case White:		// back in the pool, we don't really care where
         	pickedObject = null;
+        	pickedTimer = null;
             break;
-        case BoardLocation:	// already filled board slot, which can happen in edit mode
-        case EmptyBoard:
-           	SetBoard(c,pickedObject);
-            pickedObject = null;
+        case WhiteRing:
+        case BlackRing:
+        case BoardRing:	// already filled board slot, which can happen in edit mode
+        	switch(pickedObject.id) {
+        	case Ring:
+        		c.addChip(pickedObject);
+        		break;
+        	case White:
+        	case Black:
+        		c.timer = pickedTimer;
+        		if(pickedTimer!=null)
+        		{	TamskTimer timer = findTimer(pickedTimer);
+        			timer.location = c;
+        			TamskTimer ghost = timer.getCopy();
+        			ghost.ghostCopyFrom(timer);
+        			ghost.flip(masterGameTime);
+        			
+    	            if(board_state==TamskState.Play)
+    	            {	TamskCell ring = getPlayerRing(whoseTurn);
+    	            	c.addChip(ring.removeTop());
+    		            if(replay!=replayMode.Replay)
+    		            {
+    		            	animationStack.push(ring);
+    		            	animationStack.push(c);
+    		            }
+    	            }
+    			
+        		}
+        		pickedTimer = null;
+        		break;
+        	default: break;
+         	}
+        	pickedObject = null;
             break;
         }
      }
@@ -459,12 +821,17 @@ class TamskBoard
         {
         default:
         	throw G.Error("Not expecting source " + source);
+        case White:
+        	return whiteTimer;
+        case Black: 
+        	return blackTimer;
+        case BoardRing:
         case BoardLocation:
         	return(getCell(col,row));
-        case Black:
-        	return(blackChipPool);
-        case White:
-        	return(whiteChipPool);
+        case BlackRing:
+        	return(blackRings);
+        case WhiteRing:
+        	return(whiteRings);
         } 	
     }
     /**
@@ -478,24 +845,36 @@ class TamskBoard
 	// pick something up.  Note that when the something is the board,
     // the board location really becomes empty, and we depend on unPickObject
     // to replace the original contents if the pick is cancelled.
-    private void pickObject(TamskCell c)
+    private void pickObject(TamskCell c,TamskId where)
     {	pickedSourceStack.push(c);
     	stateStack.push(board_state);
-        switch (c.rackLocation())
+        switch (where)
         {
         default:
         	throw G.Error("Not expecting rackLocation " + c.rackLocation);
         case BoardLocation:
+        	pickedTimer = c.timer;
+        	pickedObject = pickedTimer.chip;
+        	c.timer = null;
+        	if(pickedTimer!=null) { findTimer(pickedTimer).location = null; }
+        	break;
+        case BoardRing:
         	{
-            lastPicked = pickedObject = c.topChip();
+            lastPicked = pickedObject = c.removeTop();
          	lastDroppedObject = null;
-			SetBoard(c,null);
         	}
             break;
-
         case Black:
-        case White:
         	lastPicked = pickedObject = c.topChip();
+        	pickedTimer = blackTimerStack.pop().id;
+        	break;
+       case White:
+        	lastPicked = pickedObject = c.topChip();
+        	pickedTimer = whiteTimerStack.pop().id;
+        	break;
+        case BlackRing:
+        case WhiteRing:
+        	lastPicked = pickedObject = c.removeTop();
         }
     }
     //	
@@ -523,7 +902,6 @@ class TamskBoard
         	setNextStateAfterDone(replay);
          	break;
         case Play:
-        case PlayOrSwap:
 			setState(TamskState.Confirm);
 			break;
         case Puzzle:
@@ -532,111 +910,174 @@ class TamskBoard
         }
     }
     private void setNextStateAfterDone(replayMode replay)
-    {	G.Assert(chips_on_board+emptyCells.size()==fullBoard,"cells missing");
+    {	
        	switch(board_state)
     	{
     	default: throw G.Error("Not expecting after Done state "+board_state);
-    	case Gameover: break;
-    	case ConfirmSwap: 
-    		setState(TamskState.Play); 
+    	case Gameover: 
     		break;
-    	case Confirm:
+     	case Confirm:
     	case Puzzle:
     	case Play:
-    	case PlayOrSwap:
-    		setState(((chips_on_board==1)&&(whoseTurn==SECOND_PLAYER_INDEX)&&!swapped) 
-    				? TamskState.PlayOrSwap
-    				: TamskState.Play);
-    		
-    		break;
+    		if(hasMoves(whoseTurn,masterGameTime)) { setState(TamskState.Play); }
+    		else { 	setNextPlayer(replay);
+    				int next = nextPlayer[whoseTurn];
+    				int myRings = getPlayerRing(whoseTurn).height();
+    				int hisRings = getPlayerRing(next).height();
+    				// keep moving if you're behind
+    				if(hasMoves(whoseTurn,masterGameTime) && (myRings>=hisRings)) { setState(TamskState.Play); }
+    				else {
+    				   setState(TamskState.Gameover);   
+    				   timeRunning = false;
+    				   win[whoseTurn] = myRings<hisRings;
+    				   win[next] = hisRings<myRings;
+    			   }
+    		}
+     		break;
     	}
        	resetState = board_state;
     }
-    private void doDone(replayMode replay)
+    public boolean showTimers()
     {
+    	return variation.showTimers;
+    	
+    }
+    public boolean showFastTimer()
+    {
+    	return variation==TamskVariation.tamsk_f;
+    }
+    private void doDone(replayMode replay)
+    {	
+    	if(showTimers())
+    	{
+    	TamskCell dest = droppedDestStack.top();
+    	if(dest!=null)
+    		{
+    			TamskTimer timer = findTimer(dest.timer);
+    			if(timer!=null) 
+    				{ timer.ghostCopyFrom(timer.getCopy());
+    				}
+    		}
+    	}
         acceptPlacement();
 
         if (board_state==TamskState.Resign)
         {
             win[nextPlayer[whoseTurn]] = true;
+            timeRunning = false;
     		setState(TamskState.Gameover);
         }
         else
-        {	if(winForPlayerNow(whoseTurn)) 
-        		{ win[whoseTurn]=true;
-        		  setState(TamskState.Gameover); 
-        		}
-        	else {setNextPlayer(replay);
-        		setNextStateAfterDone(replay);
-        	}
+        {	
+            turnStartTime = masterGameTime;
+        	setNextPlayer(replay);
+        	setNextStateAfterDone(replay);
         }
     }
-void doSwap(replayMode replay)
-{	TamskId c = playerColor[0];
-	TamskChip ch = playerChip[0];
-	playerColor[0]=playerColor[1];
-	playerChip[0]=playerChip[1];
-	playerColor[1]=c;
-	playerChip[1]=ch;
-	TamskCell cc = playerCell[0];
-	playerCell[0]=playerCell[1];
-	playerCell[1]=cc;
-	swapped = !swapped;
-	switch(board_state)
-	{	
-	default: 
-		throw G.Error("Not expecting swap state "+board_state);
-	case Play:
-		// some damaged game records have double swap
-		if(replay==replayMode.Live) { G.Error("Not expecting swap state "+board_state); }
-		//$FALL-THROUGH$
-	case PlayOrSwap:
-		  setState(TamskState.ConfirmSwap);
-		  break;
-	case ConfirmSwap:
-		  setState(TamskState.PlayOrSwap);
-		  break;
-	case Gameover:
-	case Puzzle: break;
-	}
-	}
-	
+    // do the things associated with the fifteen second timer.
+    // this is a separate function so it can be called directly
+    // from the robot
+    public void doFifteen()
+    {
+     	fastTimer.restart(masterGameTime);
+    	turnExpiredTime = FAST_TIMER_TIME+masterGameTime;
+    	passOnTimerExpired = true;
+    }
+    
+    public boolean canStartFastTimer(long gameTime)
+    {
+        if(showFastTimer())
+    	{
+    	TamskTimer ft = fastTimer;
+    	boolean cantStart = passOnTimerExpired || (ft.active && !ft.isExpired(gameTime));
+    	return !cantStart;
+		}
+        return false;
+    }
+    public boolean ignoreFastTimer(long gameTime)
+    {
+    	return !passOnTimerExpired && !fastTimer.isExpired(gameTime);
+    }
     public boolean Execute(commonMove mm,replayMode replay)
     {	Tamskmovespec m = (Tamskmovespec)mm;
+    
+    	masterGameTime = m.gameTime;
+    	if(replay==replayMode.Live) { masterClockTime = G.Date(); }
         if(replay!=replayMode.Replay) { animationStack.clear(); }
 
-        //G.print("E "+m+" for "+whoseTurn+" "+state);
+        //G.print("E "+m+" "+Digest());
         switch (m.op)
         {
-		case MOVE_SWAP:	// swap colors with the other player
-			doSwap(replay);
-			break;
         case MOVE_DONE:
-
+        	
          	doDone(replay);
 
             break;
+            
+        case MOVE_DELAY:
+        	masterGameTime += m.to_row;
+        	break;
+        	
+        case MOVE_TIMEEXPIRED:
+           	if(passOnTimerExpired)
+        	{	
+           	passOnTimerExpired = false;
+           	if(pickedObject!=null) { unPickObject();}  	// if he hasn't dropped the timer, un-pick it    	
+        	passOnTimerExpired = false;
+        	skipTurns[whoseTurn]= (board_state==TamskState.Confirm) ? 3 : 2;
+        	doDone(replay);
+        	}
+           	else { m.rejected = true;}
+        	break;
+        case MOVE_STOPTIME:
+        	timeRunning = false;
+         	break;
+        case MOVE_STARTTIME:
+        	timeRunning = true;
+        	break;
+        case MOVE_FIFTEEN:
+        	doFifteen();
+        	m.chip = TamskChip.Neutral;
+        	
+        	break;
+        case MOVE_FROM_TO:
+        	TamskCell srct = getCell(m.from_col,m.from_row);
+        	pickObject(srct,m.source);
+        	m.chip = pickedObject;
+	        if(pickedTimer!=null)
+	        {
+	        	TamskTimer timer = findTimer(pickedTimer);
+	        	m.flipTime = timer.timeRemaining(masterGameTime); 
+	        	if(timer.isExpired(masterGameTime))
+	        	{	// too late!
+	        		unPickObject();
+	        		m.rejected = true;
+	        		break;
+	        	}
+	        }
 
-        case MOVE_DROPB:
+			//$FALL-THROUGH$
+		case MOVE_DROPB:
+        case MOVE_DROPRINGB:
         	{
 			TamskChip po = pickedObject;
-			TamskCell dest =  getCell(TamskId.BoardLocation,m.to_col,m.to_row);
-			
+			TamskCell dest =  getCell(m.to_col,m.to_row);
 			if(isSource(dest)) 
 				{ unPickObject(); 
 				}
 				else 
 				{
-				m.chip = pickedObject;
-		           
-	            dropObject(dest);
+	            dropObject(dest,replay);
+	            lastDroppedObject = (dest.timer!=null)
+	            					? dest.timer.chip
+	            					: TamskChip.getRingOverlay(dest);
 	            /**
 	             * if the user clicked on a board space without picking anything up,
 	             * animate a stone moving in from the pool.  For Hex, the "picks" are
 	             * removed from the game record, so there are never picked stones in
 	             * single step replays.
 	             */
-	            if(replay!=replayMode.Replay && (po==null))
+	            if(replay==replayMode.Single || (replay!=replayMode.Replay && ((m.op==MOVE_FROM_TO)||(po==null))))
 	            	{ animationStack.push(getSource());
 	            	  animationStack.push(dest); 
 	            	}
@@ -646,6 +1087,8 @@ void doSwap(replayMode replay)
              break;
 
         case MOVE_PICK:
+        case MOVE_PICKRING:
+        case MOVE_PICKRINGB:
  		case MOVE_PICKB:
         	// come here only where there's something to pick, which must
  			{
@@ -654,19 +1097,25 @@ void doSwap(replayMode replay)
  			else
  			{
         	// be a temporary p
-        	pickObject(src);
+        	pickObject(src,m.source);
         	m.chip = pickedObject;
+        	if(pickedTimer!=null)
+        		{	TamskTimer timer = findTimer(pickedTimer);
+        			m.flipTime = timer.timeRemaining(masterGameTime); 
+        			m.chip = pickedObject;
+        		}
+
         	switch(board_state)
         	{
         	case Puzzle:
          		break;
         	case Confirm:
-        		setState(((chips_on_board==1) && !swapped) ? TamskState.PlayOrSwap : TamskState.Play);
+        		setState(TamskState.Play);
         		break;
         	default: ;
         	}}}
             break;
-
+ 		case MOVE_DROPRING:
         case MOVE_DROP: // drop on chip pool;
         	if(pickedObject!=null)
         	{
@@ -678,7 +1127,7 @@ void doSwap(replayMode replay)
 	        	{ lastDroppedObject = pickedObject.getAltDisplayChip(dest);
 	        	  //G.print("last ",lastDroppedObject); 
 	        	}      	
-            	dropObject(dest); 
+            	dropObject(dest,replay); 
             
             	}
         	}
@@ -687,13 +1136,16 @@ void doSwap(replayMode replay)
         case MOVE_START:
             setWhoseTurn(m.player);
             acceptPlacement();
+            timeRunning = true;
+            turnStartTime = masterGameTime;
             int nextp = nextPlayer[whoseTurn];
             // standardize the gameover state.  Particularly importing if the
             // sequence in a game is resign/start
             setState(TamskState.Puzzle);	// standardize the current state
             if((win[whoseTurn]=winForPlayerNow(whoseTurn))
                ||(win[nextp]=winForPlayerNow(nextp)))
-               	{ setState(TamskState.Gameover); 
+               	{ timeRunning = false;
+               	  setState(TamskState.Gameover); 
                	}
             else {  setNextStateAfterDone(replay); }
 
@@ -704,6 +1156,7 @@ void doSwap(replayMode replay)
             break;
        case MOVE_EDIT:
         	acceptPlacement();
+        	timeRunning = false;
             setWhoseTurn(FIRST_PLAYER_INDEX);
             setState(TamskState.Puzzle);
  
@@ -719,53 +1172,103 @@ void doSwap(replayMode replay)
         }
         if(gameEvents.size()>0) { m.gameEvents = gameEvents.toArray(); gameEvents.clear(); }
 
+        //G.print("X "+m+" "+Digest());
         //System.out.println("Ex "+m+" for "+whoseTurn+" "+state);
         return (true);
     }
 
     // legal to hit the chip storage area
-    public boolean legalToHitChips(int player)
+    public boolean legalToHitChips(TamskCell c,int player)
     {
         switch (board_state)
         {
         default:
         	throw G.Error("Not expecting Legal Hit state " + board_state);
-        case PlayOrSwap:
         case Play:
         	// for pushfight, you can pick up a stone in the storage area
         	// but it's really optional
         	return(player==whoseTurn);
         case Confirm:
-		case ConfirmSwap:
 		case Resign:
 		case Gameover:
 			return(false);
         case Puzzle:
-            return ((pickedObject!=null)?(pickedObject==playerChip[player]):true);
+        	if(pickedObject==null)
+        	{	TamskChip top = c.topChip();
+        		if(top!=null)
+        		{
+        			switch(top.id)
+        			{
+        				case Ring: return true;
+        				case Black: return blackTimerStack.size()>0;
+        				case White: return whiteTimerStack.size()>0;
+        				default: return false;
+        			}
+     
+        		}
+        		return false;
+        	}      	
+        	else
+        	{	return pickedObject==c.topChip();
+        	}
         }
-    }
+  }
 
     public boolean legalToHitBoard(TamskCell c,Hashtable<TamskCell,Tamskmovespec> targets )
     {	if(c==null) { return(false); }
         switch (board_state)
         {
 		case Play:
-		case PlayOrSwap:
 			return(targets.get(c)!=null || isDest(c) || isSource(c));
-		case ConfirmSwap:
 		case Gameover:
 		case Resign:
 			return(false);
 		case Confirm:
-			return(isDest(c) || c.isEmpty());
+			return(isDest(c));
         default:
         	throw G.Error("Not expecting Hit Board state " + board_state);
         case Puzzle:
-            return (true);
+        	if(pickedObject!=null)
+        	{
+        		if(pickedObject==TamskChip.Ring)
+        			{	return c.height()<c.maxRings; 
+        			}
+        		else { return c.timer == null; }
+        	}
+        	else
+        	{
+        		return c.height()>0 || c.timer!=null;
+        	}
         }
     }
     
-    
+    public long minimumTimer(int who)
+    {
+    	long min = passOnTimerExpired ? FAST_TIMER_TIME : SLOW_TIMER_TIME;
+    	TamskTimer timers[] = playerTimers(who);
+    	for(TamskTimer t : timers)
+    	{
+    		if(t.active)
+    		{	long ex = t.timeRemaining(masterGameTime);
+    			if(ex>0) { min = Math.min(ex,min); }
+    		}
+    	}
+    	return min;
+    }
+    public long maximumTimer(int who)
+    {
+    	long max = 0;
+    	TamskTimer timers[] = playerTimers(who);
+    	for(TamskTimer t : timers)
+    	{
+    		if(t.active)
+    		{
+    			max = Math.max(t.timeRemaining(masterGameTime),max);
+    		}
+    	}
+    	return max;
+    }
+ 
  /** assistance for the robot.  In addition to executing a move, the robot
     requires that you be able to undo the execution.  The simplest way
     to do this is to record whatever other information is needed before
@@ -775,61 +1278,108 @@ void doSwap(replayMode replay)
     */
     public void RobotExecute(Tamskmovespec m)
     {
-        robotState.push(board_state); //record the starting state. The most reliable
-        // to undo state transistions is to simple put the original state back.
+       // to undo state transistions is to simple put the original state back.
         
         //G.Assert(m.player == whoseTurn, "whoseturn doesn't agree");
-
+        m.gameTime = masterGameTime;
         Execute(m,replayMode.Replay);
+        // crudely advance the clock
+        if(DoneState()) 
+        	{ doDone(replayMode.Replay); 
+        	  skipTime(robotDoneTime); 
+        	  if(!robotRandomPhase) { skipTime(robotDoneTime); }
+        }
+        else if(!robotRandomPhase)
+        {
+        switch(m.op)
+        {
+        case MOVE_DELAY: 
+        		break;
+        case MOVE_DONE:	
+        		skipTime(robotDoneTime);
+        		break;
+        default: 
+        		skipTime(2000);
+        	break;
+        }}
         acceptPlacement();
        
     }
  
 
-   //
-    // un-execute a move.  The move should only be unexecuted
-    // in proper sequence.  This only needs to handle the moves
-    // that the robot might actually make.
-    //
-    public void UnExecute(Tamskmovespec m)
-    {
-        //System.out.println("U "+m+" for "+whoseTurn);
-    	TamskState state = robotState.pop();
-        switch (m.op)
-        {
-        default:
-   	    	throw G.Error("Can't un execute " + m);
-        case MOVE_DONE:
-            break;
-            
-        case MOVE_SWAP:
-        	setState(state);
-        	doSwap(replayMode.Replay);
-        	break;
-        case MOVE_DROPB:
-        	SetBoard(getCell(m.to_col,m.to_row),null);
-        	break;
-        case MOVE_RESIGN:
-            break;
-        }
-        setState(state);
-        if(whoseTurn!=m.player)
-        {	moveNumber--;
-        	setWhoseTurn(m.player);
-        }
+ private boolean addMovesFrom(CommonMoveStack all, TamskCell c, int who)
+ {	boolean some = false;
+	 for(int direction = 0,n=c.geometry.n; direction<n; direction++)
+	 {
+		 TamskCell d = c.exitTo(direction);
+		 if((d!=null) && (d.timer==null) && (d.height()<d.maxRings))
+		 {	if(all==null) { return true; }
+			 all.push(new Tamskmovespec(MOVE_FROM_TO,c,d,who));
+			 some |= true;
+		 }
+	 }
+	 return some;
  }
-  
-
- CommonMoveStack  GetListOfMoves()
- {	CommonMoveStack all = new CommonMoveStack();
- 	if(board_state==TamskState.PlayOrSwap)
+ 
+ private boolean addMoves(CommonMoveStack all,int who,long now)
+ {	boolean some = false;
+ 
+ 	boolean requireEmpty = false;
+ 	boolean requireLive = variation.showTimers;
+	TamskTimer[] timers = playerTimers(who);
+	long mintime = robotBoard ? SLOW_TIMER_TIME-maximumTimer(nextPlayer[whoseTurn]) : SLOW_TIMER_TIME;
+	long skipTimer = SLOW_TIMER_TIME*2;
+ 	if(robotBoard && showTimers())
  	{
- 		all.addElement(new Tamskmovespec(SWAP,whoseTurn));
+ 			// if any timer is on an empty spot, one of them has to be moved.
+ 			for(TamskTimer t : timers)
+ 			{	TamskCell loc = getCell(t.location);	// timers may point to cells on the master board
+ 				requireEmpty |= loc!=null && loc.height()==0;
+ 			}
+ 			long minTimer = minimumTimer(whoseTurn);
+ 			if(minTimer<30*1000) 
+ 				{ skipTimer = 30*1000; 
+ 			      //G.print("Considering only short timers");
+ 				}
  	}
+ 	TamskCell ring = getPlayerRing(who);
+ 	if(ring.height()>0)
+		{
+		for(TamskTimer timer : timers)
+			{
+				TamskCell c =getCell(timer.location); // timers may point to cells on the master board
+				if(robotBoard)
+				{	double remaining = timer.timeRemaining(now);
+					if(remaining>=skipTimer) 
+						{ c = null; 
+						}
+					else if(!requireEmpty 
+							&& showTimers() 
+							&& !showFastTimer()
+							&& (remaining>mintime))
+						{
+						c = null;	// skip
+						}
+				}
+				if(c!=null && (!requireEmpty || c.height()==0) && !(requireLive && timer.isExpired(now)))
+				{
+					some |= addMovesFrom(all,getCell(c.col,c.row),who);
+				}
+			}
+		}
+	return some;
+ }
+ 
+ private boolean hasMoves(int who,long now)
+ {
+	 return(addMoves(null,who,now));
+ }
+ CommonMoveStack  GetListOfMoves(long now)
+ {	CommonMoveStack all = new CommonMoveStack();
  	switch(board_state)
  	{
  	case Puzzle:
- 		{int op = pickedObject==null ? MOVE_DROPB : MOVE_PICKB; 	
+ 		{int op = pickedObject!=null ? MOVE_DROPB : MOVE_PICKB; 	
  			for(TamskCell c = allCells;
  			 	    c!=null;
  			 	    c = c.next)
@@ -839,65 +1389,97 @@ void doSwap(replayMode replay)
  			 	}
  		}
  		break;
+ 	case Gameover:
  	case Play:
- 	case PlayOrSwap:
+ 		{
+ 		if(pickedObject!=null)
+ 		{
+ 			addMovesFrom(all,getSource(),whoseTurn);
+ 		}
+ 		else
+ 		{	
+ 		addMoves(all,whoseTurn,now);
+ 		if(robotBoard)
+ 			{
+ 			long minTimer = minimumTimer(whoseTurn);
+ 			if(robotDelayTime>0)
+ 				{ if(minTimer-2000>robotDelayTime) 
+ 					{	all.push(new Tamskmovespec(MOVE_DELAY,'@',(int)robotDelayTime,whoseTurn)); 
+ 					}
+ 				}
+ 			//if(minTimer>20*1000) {  all.push(new Tamskmovespec(MOVE_DELAY,'@',20*1000,whoseTurn)); }
+ 			}
+ 		if(all.size()==0) { all.push(new Tamskmovespec(MOVE_DONE,whoseTurn)); }
+ 		  		
+ 		}
+ 		}
+ 		break;
  	case Confirm:
  		all.push(new Tamskmovespec(MOVE_DONE,whoseTurn));
  		break;
- 		
  	default:
  			G.Error("Not expecting state ",board_state);
  	}
  	return(all);
  }
  
- public void initRobotValues()
- {
-	 for(int lim = emptyCells.size()-1; lim>=0; lim--)
-	 {
-		 emptyCells.elementAt(lim).initRobotValues();
-	 }
+ public void initRobotValues(long doneTime,long delayTime)
+ {	robotBoard = true;
+ 	robotDoneTime = doneTime;
+ 	robotDelayTime = delayTime;
+ 	robotRandomPhase = false;
+
  }
 
  // small ad-hoc adjustment to the grid positions
  public void DrawGridCoord(Graphics gc, Color clt,int xpos, int ypos, int cellsize,String txt)
- {   if(Character.isDigit(txt.charAt(0)))
-	 	{ switch(variation)
-	 		{
-	 		case tamsk:
-	 			xpos -= cellsize/2;
-	 			break;
- 			default: G.Error("case "+variation+" not handled");
-	 		}
+ {   if(!Character.isDigit(txt.charAt(0)))
+	 	{ 
+	 	xpos -= cellsize/2;
 	 	}
- 		else
- 		{ 
- 		  ypos += cellsize/4;
- 		}
- 	GC.Text(gc, false, xpos, ypos, -1, 0,clt, null, txt);
+
+ 	GC.Text(gc, false, xpos, ypos, -1, 0,Color.yellow, null, txt);
  }
  /**
   *  get the board cells that are valid targets right now
   * @return
   */
- public Hashtable<TamskCell, Tamskmovespec> getTargets() 
+ public Hashtable<TamskCell, Tamskmovespec> getTargets(long now) 
  {
  	Hashtable<TamskCell,Tamskmovespec> targets = new Hashtable<TamskCell,Tamskmovespec>();
- 	CommonMoveStack all = GetListOfMoves();
+ 	CommonMoveStack all = GetListOfMoves(now);
  	for(int lim=all.size()-1; lim>=0; lim--)
  	{	Tamskmovespec m = (Tamskmovespec)all.elementAt(lim);
+ 		if(pickedObject!=null)
+ 		{
+ 	 		switch(m.op)
+ 	 		{
+ 	 		case MOVE_FROM_TO:
+ 	 		case MOVE_DROPB:
+ 	 			targets.put(getCell(m.to_col,m.to_row),m);
+ 	 			break;
+ 	 		case MOVE_DONE:
+ 	 		case MOVE_PASS:
+ 	 			break;
+ 	 		default: G.Error("Not expecting "+m);
+ 	 		
+ 	 		}
+ 			
+ 		}
+ 		else
+ 		{
  		switch(m.op)
  		{
  		case MOVE_PICKB:
- 		case MOVE_DROPB:
- 			targets.put(getCell(m.to_col,m.to_row),m);
+ 		case MOVE_FROM_TO:
+  			targets.put(getCell(m.from_col,m.from_row),m);
  			break;
- 		case MOVE_SWAP:
  		case MOVE_DONE:
+ 		case MOVE_PASS:
  			break;
 
  		default: G.Error("Not expecting "+m);
- 		
+ 		}
  		}
  	}
  	
@@ -906,4 +1488,73 @@ void doSwap(replayMode replay)
  // most multi player games can't handle individual players resigning
  // this provides an escape hatch to allow it.
  //public boolean canResign() { return(super.canResign()); }
+ 
+ void pos(int rings,char col,int row, double px, double py)
+ {
+	 TamskCell c = getCell(col,row);
+	 c.xpos = px;
+	 c.ypos = py;
+	 c.maxRings = rings;
+ }
+ void loadPositions()
+ {
+	 pos(1,'A',1,0.376,0.295);
+	 pos(1,'B',1,0.458,0.295);
+	 pos(1,'C',1,0.538,0.295);
+	 pos(1,'D',1,0.62,0.295);
+	 
+	 pos(1,'A',2,0.345,0.394);
+	 pos(2,'B',2,0.420,0.394);
+	 pos(2,'C',2,0.498,0.394);
+	 pos(2,'D',2,0.575,0.394);
+	 pos(1,'E',1,0.65,0.394);
+	 
+	 pos(1,'A',3,0.31,0.482);
+	 pos(2,'B',3,0.385,0.482);
+	 pos(3,'C',3,0.459,0.482);
+	 pos(3,'D',3,0.538,0.482);
+	 pos(2,'E',2,0.61,0.482);
+	 pos(1,'F',1,0.69,0.482);
+
+	 pos(1,'A',4,0.28,0.57);
+	 pos(2,'B',4,0.354,0.57);
+	 pos(3,'C',4,0.428,0.57);
+	 pos(4,'D',4,0.50,0.57);
+	 pos(3,'E',3,0.574,0.57);
+	 pos(2,'F',2,0.648,0.57);
+	 pos(1,'G',1,0.72,0.57);
+	 
+	 pos(1,'B',5,0.325,0.65);
+	 pos(2,'C',5,0.398,0.65);
+	 pos(3,'D',5,0.466,0.65);
+	 pos(3,'E',4,0.54,0.65);
+	 pos(2,'F',3,0.61,0.65);
+	 pos(1,'G',2,0.68,0.65);
+
+	 pos(1,'C',6,0.365,0.727);
+	 pos(2,'D',6,0.436,0.727);
+	 pos(2,'E',5,0.505,0.727);
+	 pos(2,'F',4,0.576,0.727);
+	 pos(1,'G',3,0.64,0.727);
+	 
+	 pos(1,'D',7,0.405,0.8);
+	 pos(1,'E',6,0.47,0.80);
+	 pos(1,'F',5,0.54,0.80);
+	 pos(1,'G',4,0.608,0.80);
+
+ }
+ public int cellToX(TamskCell c)
+ {		//return super.cellToX(c);
+	 int w = G.Width(boardRect);
+	 // 24/20 is a fudge factor from when we changed the 
+	 // aspect ratio of the board rectangle from 24/15 to 20/15.
+	 //
+	 return ((int)(w*((c.xpos*24/20)-(2.0/20))));
+ }
+ public int cellToY(TamskCell c)
+ {		//return super.cellToY(c);//
+	 return ((int)(c.ypos*G.Height(boardRect)));
+ }
+
+ 
 }

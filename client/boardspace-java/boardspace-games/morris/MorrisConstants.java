@@ -109,7 +109,7 @@ public interface MorrisConstants
     	Black_Captured("BC"),
     	White_Captured("WC"),
     	Display(null),
-        BoardLocation(null),
+        BoardLocation(null), ToggleEye(null),
    	;
     	String shortName = name();
     	public String shortName() { return(shortName); }

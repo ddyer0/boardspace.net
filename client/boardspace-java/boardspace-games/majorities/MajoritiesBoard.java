@@ -297,7 +297,6 @@ class MajoritiesBoard extends hexBoard<MajoritiesCell> implements BoardProtocol,
         lastPicked = null;
 		blackChipPool.copyCurrentCenter(from_b.blackChipPool);
 		whiteChipPool.copyCurrentCenter(from_b.whiteChipPool);
-		 
         AR.copy(playerColor,from_b.playerColor);
         AR.copy(playerChip,from_b.playerChip);
  

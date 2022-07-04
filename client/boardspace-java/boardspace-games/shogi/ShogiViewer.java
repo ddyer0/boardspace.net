@@ -100,13 +100,13 @@ public class ShogiViewer extends CCanvas<ShogiCell,ShogiBoard> implements ShogiC
         // randomKey = info.getInt(exHashtable.RANDOMSEED,-1);
     	//
         int randomKey = info.getInt(OnlineConstants.RANDOMSEED,-1);
-
+        enableAutoDone = true;
     	super.init(info,frame);
     	MouseDotColors = ShogiMouseDotColors;
     	MouseColors = ShogiMouseColors;
     	
         b = new ShogiBoard(info.getString(OnlineConstants.GAMETYPE, Shogi_INIT),randomKey,repeatedPositions);
-        useDirectDrawing(true); // not tested yet
+        useDirectDrawing(true);
         doInit(false);
         chipsetOption = myFrame.addOption(s.get("Traditional Pieces"),traditional_chips,deferredEvents);
         reverseOption = myFrame.addOption(s.get(ReverseView),b.reverseY(),deferredEvents);
@@ -487,7 +487,7 @@ public class ShogiViewer extends CCanvas<ShogiCell,ShogiBoard> implements ShogiC
 			{ select.hitCode = GameId.HitDeclineDrawButton;
 			}
 			}
-			if(!planned)
+			if(!planned && !autoDoneActive())
 				{handleDoneButton(gc,doneRect,(gb.DoneState() ? select : null), 
 					HighlightColor, rackBackGroundColor);
 				}

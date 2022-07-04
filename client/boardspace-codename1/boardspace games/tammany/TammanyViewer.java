@@ -686,7 +686,7 @@ public class TammanyViewer extends CCanvas<TammanyCell,TammanyBoard> implements 
     	
     	if(giantCard!=null)
     	{
-    		giantCard.drawChip(gc, this, brect ,any, TammanyId.RoleCard, null);
+    		giantCard.drawChip(gc, this, brect ,any, TammanyId.RoleCard);
     }
     
     }
@@ -843,7 +843,7 @@ public class TammanyViewer extends CCanvas<TammanyCell,TammanyBoard> implements 
 		if(eyeR!=null)
 		{
 			StockArt icon = eyeState ? StockArt.NoEye : StockArt.Eye;
-			if(icon.drawChip(gc, this,eyeR,hp, TammanyId.ShowVotes,null))
+			if(icon.drawChip(gc, this,eyeR,hp, TammanyId.ShowVotes))
 			{
 				hp.hit_index = p.myIndex;
 				}

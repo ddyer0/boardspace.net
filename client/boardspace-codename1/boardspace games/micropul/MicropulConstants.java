@@ -7,7 +7,7 @@ import online.game.BaseBoard.BoardState;
 
 
 public interface MicropulConstants 
-{	//	these next must be unique integers in the Hexmovespec dictionary
+{   //	these next must be unique integers in the dictionary
 	//  they represent places you can click to pick up or drop a stone
 
 	public static final String GoalMessage = "maximize the number of tiles in your reserve";

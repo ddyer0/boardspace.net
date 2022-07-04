@@ -35,7 +35,7 @@ public interface TakojudoConstants
     	ReverseViewButton,
     	DeclineDraw,
         OfferDraw,
-        AcceptDraw
+        AcceptDraw, ToggleEye
 
     	;
     	public String shortName() { return(name()); }

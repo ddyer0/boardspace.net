@@ -854,7 +854,7 @@ public class BreakingAwayViewer extends CCanvas<BreakingAwayCell,BreakingAwayBoa
 			if(!allowed_to_edit)
 			{
 	       	StockArt button = showMovements ? StockArt.NoEye : StockArt.Eye;
-	       	if(G.offline() && button.drawChip(gc,this,chipRect[i],selectPos,BreakId.HidePlayerInfoButton,null))
+	       	if(G.offline() && button.drawChip(gc,this,chipRect[i],selectPos,BreakId.HidePlayerInfoButton))
 	       		{
 	       		selectPos.hit_index = i;
 	       		}
@@ -943,10 +943,10 @@ public class BreakingAwayViewer extends CCanvas<BreakingAwayCell,BreakingAwayBoa
         GC.setFont(gc,standardBoldFont());
         
 
-        if(artwork[BACKWARDTIME_INDEX].drawChip(gc,this,backwardTimeRect,vcrSelect,BreakId.BackwardTime,null))
+        if(artwork[BACKWARDTIME_INDEX].drawChip(gc,this,backwardTimeRect,vcrSelect,BreakId.BackwardTime))
         {	vcrSelect.hitObject = null;
         }
-        if(artwork[FORWARDTIME_INDEX].drawChip(gc,this,forwardTimeRect,vcrSelect,BreakId.ForwardTime,null))
+        if(artwork[FORWARDTIME_INDEX].drawChip(gc,this,forwardTimeRect,vcrSelect,BreakId.ForwardTime))
         {	vcrSelect.hitObject = null;
         }
         StockArt.VCRTick.drawChip(gc,this,timeStepRect,""+gb.timeStep);
@@ -1416,7 +1416,7 @@ public class BreakingAwayViewer extends CCanvas<BreakingAwayCell,BreakingAwayBoa
     	GC.Text(gc, true,l,t,w,topPart,Color.black,null,msg);
 		boolean showMovements = b.showHiddenMovements[index];
        	StockArt button = showMovements ? StockArt.NoEye : StockArt.Eye;
-       	if(button.drawChip(gc,this,new Rectangle(l,t,w/10,w/10),hp,BreakId.HidePlayerInfoButton,null))
+       	if(button.drawChip(gc,this,new Rectangle(l,t,w/10,w/10),hp,BreakId.HidePlayerInfoButton))
        		{
        		hp.hit_index = index;
        		}

@@ -86,11 +86,12 @@ public class MasterForm extends Form implements com.codename1.ui.events.ActionLi
 	  
 	}
 	public void setFocused(com.codename1.ui.Component p)
-	{	
+	{	//G.print("set focused ",p);
 		super.setFocused(p);
 	}
 	public void requestFocus()
-	{	requestFocus(null);
+	{	//G.print("request focused ");
+		requestFocus(null);
 		super.requestFocus();
 	}
 	//public void setFocused(KeyListener p)
@@ -462,13 +463,15 @@ public void addToMenus(JButton m)
 			}}
 		}
 	}
+
 	public void keyPressed(int keycode)
-	{	
+	{	//G.print("kp ",keycode);
+		//G.print(G.getStackTrace());
 		fireKeyEvent(keycode,true);
 		super.keyPressed(keycode);;
 	}
 	public void keyReleased(int keycode)
-	{	
+	{	//G.print("kr ",keycode);
 		fireKeyEvent(keycode,false);
 		super.keyReleased(keycode);
 	}

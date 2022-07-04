@@ -34,11 +34,11 @@ public class RajCell extends stackCell<RajCell,RajChip> implements RajConstants
 	public RajCell(RajId rack,char c,int r) 		// construct a cell on the board
 	{	super(cell.Geometry.Square,c,r);
 		rackLocation = rack;
-		setCurrentCenter(1, 1);
+		setCurrentCenter( 1,1);
 	};
 	public void reInit() { color = null; super.reInit();sweep_counter = 0; }
 	public RajCell(RajId rack) { super(rack); setCurrentCenter(1,1); }
-	public RajCell(Random r,RajId rack,char co) { super(r,rack); col = co;setCurrentCenter(1 ,1); }
+	public RajCell(Random r,RajId rack,char co) { super(r,rack); col = co;setCurrentCenter( 1, 1); }
 	public RajId rackLocation() { return((RajId)rackLocation); }
 	public int totalPrizeValue()
 	{	// only valid for stacks of prizes

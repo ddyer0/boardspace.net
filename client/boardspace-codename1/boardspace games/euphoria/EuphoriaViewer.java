@@ -1104,7 +1104,7 @@ private Color playerBackground[] = {
     	if(ch!=null)
     	{
         	if(rotation!=0) { GC.setRotatedContext(gc,r,hp,rotation); }
-    		if(ch.drawChip(gc,this,r,hp,EuphoriaId.ShowChip,null)) { hp.hitObject = null;}
+    		if(ch.drawChip(gc,this,r,hp,EuphoriaId.ShowChip)) { hp.hitObject = null;}
         	if(rotation!=0) { GC.unsetRotatedContext(gc,hp); }
     	}
     }
@@ -2029,7 +2029,7 @@ private Color playerBackground[] = {
 		{
 		 Rectangle br = new Rectangle(x+w-smallBox-margin,y+margin,smallBox,smallBox);
 		 GC.fillRect(gc,rackBackGroundColor,br);
-		 StockArt.FancyCloseBox.drawChip(gc,this,br,anySelect,EuphoriaId.CloseBox,null);
+		 StockArt.FancyCloseBox.drawChip(gc,this,br,anySelect,EuphoriaId.CloseBox);
 		}
 		
 
@@ -2532,7 +2532,7 @@ private Color playerBackground[] = {
        if(currentZoom!=null)
        {	EuphoriaChip ch = magnifier ? EuphoriaChip.UnMagnifier : EuphoriaChip.Magnifier;
        		EuphoriaId rack = magnifier ? EuphoriaId.UnMagnifier : EuphoriaId.Magnifier;
-       		ch.drawChip(gc,this,magnifierRect,ourTurnSelect,rack,null);
+       		ch.drawChip(gc,this,magnifierRect,ourTurnSelect,rack);
        }
 	   int who = selectedRecruitPlayer();
       if(recruitGui)

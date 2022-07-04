@@ -75,6 +75,7 @@ public class StacViewer extends CCanvas<StacCell,StacBoard> implements StacConst
     	// adjusted to the actual number, adjusted by the min and max
        	// int players_in_game = Math.max(3,info.getInt(exHashtable.PLAYERS_IN_GAME,4));
     	int players_in_game = Math.max(2,info.getInt(OnlineConstants.PLAYERS_IN_GAME,2));
+    	enableAutoDone = true;
     	super.init(info,frame);
        	// 
     	// for games that require some random initialization, the random key should be
@@ -92,7 +93,7 @@ public class StacViewer extends CCanvas<StacCell,StacBoard> implements StacConst
        
         b = new StacBoard(info.getString(OnlineConstants.GAMETYPE, Variation.Stac.name),
         		randomKey,players_in_game,repeatedPositions,getStartingColorMap(),StacBoard.REVISION);
-        useDirectDrawing(true); // not tested yet
+        useDirectDrawing(true);
         doInit(false);
         reverseOption = myFrame.addOption(s.get(ReverseView),b.reverseY(),deferredEvents);
         offerDrawAction = myFrame.addAction(s.get(OFFERDRAW),deferredEvents);
@@ -400,7 +401,7 @@ public class StacViewer extends CCanvas<StacCell,StacBoard> implements StacConst
  		commonPlayer pl = getPlayerOrTemp(gb.whoseTurn);
  		double messageRotation = pl.messageRotation();
  
- 		if (vstate != StacState.Puzzle)
+ 		if (vstate != StacState.Puzzle && !autoDoneActive())
         {
 			handleDoneButton(gc,doneRect,(gb.DoneState() ? select : null), 
 					HighlightColor, rackBackGroundColor);

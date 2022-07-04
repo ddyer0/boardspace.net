@@ -1143,7 +1143,22 @@ synchronized(allGames) {
 	 mm.hasHiddenInformation = false;
 
 	}
+	{
+	String pRules = "/crosswordle/english/rules.html";
+	String pViewer = "crosswordle.CrosswordleViewer";  
 
+	GameInfo mm = put(new GameInfo(2101,ES.test,109,"CW",WordGames,"Crosswordle","Crosswordle",
+			ThreeBotsPlus,
+			new double[]{0.1,1.0,1.0,0.01},
+			pViewer,pRules,
+			null,true, null));
+	 mm.maxPlayers = 6;
+	 mm.groupSortKey = "0091";
+	 mm.robotTimed = true;
+	 mm.randomizeFirstPlayer = true;
+	 mm.hasHiddenInformation = false;
+
+	}
 	{
 	String pRules = "/jumbulaya/english/rules.html";
 	String pViewer = "jumbulaya.JumbulayaViewer";  
@@ -1316,6 +1331,26 @@ synchronized(allGames) {
 			"punct.PunctGameViewer","/punct/english/PUNCT_english.pdf",
 			"https://boardgamegeek.com/video/23737/punct/fd-boardgames-unboxing-setup-and-gameplay-punct",
 			false, WhiteOverBlack));
+	
+	put(new GameInfo(213,ES.game,109,"TM",GipfGames,"Tamsk","Tamsk-F",
+			TwoBotsPlus,
+			new double[]{1.0,1.0,0.01},
+			"tamsk.TamskViewer","/tamsk/english/rules.html",
+			null,
+			false, RedOverBlue));
+	put(new GameInfo(211,ES.game,109,"TM",GipfGames,"Tamsk","Tamsk",
+			TwoBotsPlus,
+			new double[]{1.0,1.0,0.01},
+			"tamsk.TamskViewer","/tamsk/english/rules.html",
+			null,
+			false, RedOverBlue));
+	put(new GameInfo(212,ES.game,109,"TM",GipfGames,"Tamsk","Tamsk-U",
+			TwoBotsPlus,
+			new double[]{1.0,1.0,0.01},
+			"tamsk.TamskViewer","/tamsk/english/rules.html",
+			null,
+			false, RedOverBlue));
+	
 	{	String tzaarClass = "tzaar.TzaarViewer";
 		String tzaarRules = "/tzaar/english/rules.htm";
 		String tzaarVideo = "https://boardgamegeek.com/video/89958/tzaar/how-play-tzaar-dice-cup";

@@ -80,8 +80,9 @@ public class ChatWidget
 	static private final String SENDPROMPT = "Send";
 	static private final String USERPROMPT = "User ";
     static private final String InitMessage = "Type your message here.";
+    static private final String EditMessage = "Edit the text";
 	public static String[] ChatStrings = 
-		{
+		{	EditMessage,
 			InitMessage,
 			MESSAGEPROMPT,
 			MESSAGEFROM,
@@ -697,7 +698,7 @@ public class ChatWidget
 		shortNameField.redrawBoard(g,ap);
 		nameField.redrawBoard(g,ap);
 		if(nameField.isVisible())
-			{ StockArt.Pencil.drawChip(g,canvas,pencilRect,ap,ChatId.Pencil,null);	
+			{ StockArt.Pencil.drawChip(g,canvas,pencilRect,ap,ChatId.Pencil,EditMessage);	
 			  if(!hideInputField) 
 			  	{ int w = G.Width(pencilRect)/2;
 			  	  StockArt.Exmark.drawChip(g, canvas, w,G.Left(pencilRect)+w/2,G.Top(pencilRect)+w/2,null); }

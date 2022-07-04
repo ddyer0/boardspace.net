@@ -2,6 +2,7 @@ package majorities;
 
 import lib.Random;
 import majorities.MajoritiesConstants.MajoritiesId;
+import lib.AR;
 import lib.OStack;
 import online.game.*;
 
@@ -31,6 +32,10 @@ public class MajoritiesCell extends chipCell<MajoritiesCell,MajoritiesChip>
 	/** upcast racklocation to our local type */
 	public MajoritiesId rackLocation() { return((MajoritiesId)rackLocation); }
 
+	public void copyFrom(MajoritiesCell c)
+	{	super.copyFrom(c);
+		AR.copy(lineOwner,c.lineOwner);
+	}
 
 	// constructor a cell not on the board, with a chip.  Used to construct the pool chips
 	public MajoritiesCell(MajoritiesChip cont)

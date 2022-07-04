@@ -249,7 +249,7 @@ public class SixmakingPlay extends commonRobot<SixmakingBoard> implements Runnab
         monte_search_state.save_digest=!USE_BLITZ && false;	// debugging only, not available in blitz mode
         monte_search_state.win_randomization = randomn;		// a little bit of jitter because the values tend to be very close
         monte_search_state.timePerMove = TIMEPERMOVE;		// seconds per move
-        monte_search_state.verbose = 1;
+        monte_search_state.verbose = verbose;
         monte_search_state.alpha = ALPHA;
         monte_search_state.sort_moves = false;
         monte_search_state.final_depth = 200;	// longest possible game

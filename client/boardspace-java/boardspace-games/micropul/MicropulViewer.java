@@ -563,10 +563,14 @@ public class MicropulViewer extends CCanvas<MicropulCell,MicropulBoard> implemen
 	            {	MicropulChip.BLANK.drawChip(gc,this,cellSize,xpos,ypos,null);
 	            }
             else if(isASource)
-	            {GC.cacheAACircle(gc,xpos,ypos,2,Color.green,Color.yellow,true);
+	            {
+            	StockArt.SmallO.drawChip(gc,this,cellSize*2/3,xpos,ypos,null);
+            	//GC.cacheAACircle(gc,xpos,ypos,cellSize/10,Color.green,Color.yellow,true);
 	            } else
             if(isADest)
-	            {GC.cacheAACircle(gc,xpos,ypos,2,Color.red,Color.yellow,true);
+	            {
+            	StockArt.SmallO.drawChip(gc,this,cellSize*2/3,xpos,ypos,null);
+            	//GC.cacheAACircle(gc,xpos,ypos,cellSize/10,Color.red,Color.yellow,true);
 	            }
         }
         if((po==null)

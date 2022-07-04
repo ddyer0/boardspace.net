@@ -73,7 +73,7 @@ public class Spanglesmovespec extends commonMove implements SpanglesConstants
     {
         Spanglesmovespec yto = (to == null) ? new Spanglesmovespec() : (Spanglesmovespec) to;
 
-        // we need yto to be a Hexmovespec at compile time so it will trigger call to the 
+        // we need yto to be Movespec at compile time so it will trigger call to the 
         // local version of Copy_Slots
         Copy_Slots(yto);
 

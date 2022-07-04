@@ -902,7 +902,7 @@ public class RajViewer extends CCanvas<RajCell,RajBoard> implements RajConstants
         	{	RajCell hitObject = hitCell(hp);
         		boolean sim = simultaneous_turns_allowed();
         		int ord = hitObject.col-'A';
-        		bb.setMyIndex(ord,true);
+         		bb.setMyIndex(ord,true);
         		if(sim)
         		{	
         			PerformAndTransmit("epick "+ord+" "+hitCode.shortName+" "+hitObject.col+" "+hp.hit_index); 

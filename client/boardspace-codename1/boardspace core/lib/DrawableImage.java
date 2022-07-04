@@ -375,6 +375,24 @@ public class DrawableImage<T> implements Drawable,StackIterator<T>
 	 * @return true if the highlight point was hit
 	 */
 	public boolean drawChip(Graphics gc,exCanvas canvas,Rectangle r,HitPoint highlight,CellId rackLocation,double sscale,String tooltip)
+	{	return drawChip(gc,canvas,r,highlight,rackLocation,sscale,TextChunk.create(tooltip));
+	}
+	
+
+	
+	/**
+	 * draw stock art to fill the specified rectangle, return true if it is hit
+	 * and set hitpoint with the specified id and tool tip
+	 * @param gc
+	 * @param canvas
+	 * @param r
+	 * @param highlight
+	 * @param rackLocation
+	 * @param sscale  sensitive area scale factor
+	 * @param tooltip
+	 * @return true if the highlight point was hit
+	 */
+	public boolean drawChip(Graphics gc,exCanvas canvas,Rectangle r,HitPoint highlight,CellId rackLocation,double sscale,Text tooltip)
 	{
 		boolean val = findChipHighlight(rackLocation,highlight,G.centerX(r),G.centerY(r),G.Width(r),G.Height(r),sscale);
 		drawChip(gc,canvas,r,null);
@@ -385,6 +403,21 @@ public class DrawableImage<T> implements Drawable,StackIterator<T>
     		highlight.hitObject = this;
 		}
 		return(val);
+	}
+	/**
+	 * draw stock art to fill the specified rectangle, return true if it is hit
+	 * and set hitpoint with the specified id and tool tip.  Uses the default
+	 * sensitive area scale factor of 1.3
+	 * @param gc
+	 * @param canvas
+	 * @param r
+	 * @param highlight
+	 * @param rackLocation
+	 * @param tooltip
+	 * @return true if the highlight point was hit
+	 */
+	public boolean drawChip(Graphics gc,exCanvas canvas,Rectangle r,HitPoint highlight,CellId rackLocation)
+	{	return drawChip(gc,canvas,r,highlight,rackLocation,1.3,(Text)null);
 	}
 	
 	/**
@@ -403,6 +436,22 @@ public class DrawableImage<T> implements Drawable,StackIterator<T>
 	{	return drawChip(gc,canvas,r,highlight,rackLocation,1.3,tooltip);
 	}
 	
+	/**
+	 * draw stock art to fill the specified rectangle, return true if it is hit
+	 * and set hitpoint with the specified id and tool tip.  Uses the default
+	 * sensitive area scale factor of 1.3
+	 * @param gc
+	 * @param canvas
+	 * @param r
+	 * @param highlight
+	 * @param rackLocation
+	 * @param tooltip
+	 * @return true if the highlight point was hit
+	 */
+	public boolean drawChip(Graphics gc,exCanvas canvas,Rectangle r,HitPoint highlight,CellId rackLocation,Text tooltip)
+	{	return drawChip(gc,canvas,r,highlight,rackLocation,1.3,tooltip);
+	}
+
 	/**
 	 * draw a chip and test for mouse sensitivity.  If the highlight is hit, the width is 
 	 * increased by 1/3 to give a visual "pop" to indicate the hit.

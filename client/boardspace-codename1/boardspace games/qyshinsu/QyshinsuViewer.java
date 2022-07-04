@@ -27,7 +27,7 @@ import online.search.SimpleRobotProtocol;
  *
  * Nov 2008 Initial version 
  *
- * This code is derived from the "HexGameViewer" class.  Refer to the
+
  
 */
 public class QyshinsuViewer extends CCanvas<QyshinsuCell,QyshinsuBoard> implements QyshinsuConstants, GameLayoutClient
@@ -80,7 +80,7 @@ public class QyshinsuViewer extends CCanvas<QyshinsuCell,QyshinsuBoard> implemen
 	 * info contains all the goodies from the environment.
 	 * */
     public void init(ExtendedHashtable info,LFrameProtocol frame)
-    {
+    {	enableAutoDone = true;
         super.init(info,frame);
         use_grid = false;
         gridOption.setState(false);
@@ -414,7 +414,7 @@ public class QyshinsuViewer extends CCanvas<QyshinsuCell,QyshinsuBoard> implemen
 		if (vstate != QyshinsuState.PUZZLE_STATE)
         {
 			GC.setFont(gc,standardBoldFont());
-			if(!planned)
+			if(!planned && !autoDoneActive())
 			{
 			handleDoneButton(gc,doneRect,(gb.DoneState() ? select : null), 
 					HighlightColor, rackBackGroundColor);

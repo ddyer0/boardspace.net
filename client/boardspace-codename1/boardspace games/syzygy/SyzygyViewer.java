@@ -45,6 +45,7 @@ public class SyzygyViewer extends CCanvas<SyzygyCell,SyzygyBoard> implements Syz
     // file names for jpeg images and masks
     static final String ImageDir = "/syzygy/images/";
 	
+    
     static final int BACKGROUND_TILE_INDEX = 0;
     static final int BACKGROUND_REVIEW_INDEX = 1;
     static final int BACKGROUND_INDEX = 2;
@@ -94,7 +95,7 @@ public class SyzygyViewer extends CCanvas<SyzygyCell,SyzygyBoard> implements Syz
 	 * info contains all the goodies from the environment.
 	 * */
     public void init(ExtendedHashtable info,LFrameProtocol frame)
-    {
+    {	enableAutoDone = true;
         super.init(info,frame);
         use_grid = false;
         gridOption.setState(false);
@@ -476,7 +477,8 @@ public class SyzygyViewer extends CCanvas<SyzygyCell,SyzygyBoard> implements Syz
         {	// if in any normal "playing" state, there should be a done button
 			// we let the board be the ultimate arbiter of if the "done" button
 			// is currently active.
-			if(!planned) { handleDoneButton(gc,doneRect,(gb.DoneState() ? buttonSelect : null), 
+			if(!planned && !autoDoneActive())
+				{ handleDoneButton(gc,doneRect,(gb.DoneState() ? buttonSelect : null), 
 					HighlightColor, rackBackGroundColor);
 			}
 			handleEditButton(gc,messageRotation,editRect,buttonSelect,selectPos, HighlightColor, rackBackGroundColor);

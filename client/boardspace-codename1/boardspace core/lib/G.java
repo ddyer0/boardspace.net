@@ -384,7 +384,7 @@ public class G extends Platform implements Timestamp
      	long ms = now%1000;
     	long seconds = now/1000;
     	long minutes = seconds/60;
-    	return(G.format("%02d.%02d %03d",minutes%60,seconds%60,ms));
+    	return(G.format("%02d:%02d %03d",minutes%60,seconds%60,ms));
     }
     // tests for format
     //   public static void main(String args[])
@@ -1811,10 +1811,10 @@ public static String expandClassName(String classname)
 			print("Debug Log stream");
 			f.setVisible(true);	
 		}
-		  int feat = G.minimumFeatureSize();
-		  int font = G.getFontSize(G.getGlobalDefaultFont())*2;
-		  int def = (int)(25*G.getDisplayScale());
-		  G.print("feat ",feat," font ",font," def ",def);
+		//  int feat = G.minimumFeatureSize();
+		//  int font = G.getFontSize(G.getGlobalDefaultFont())*2;
+		//  int def = (int)(25*G.getDisplayScale());
+		//  G.print("feat ",feat," font ",font," def ",def);
 
 	}
     /** this is the hash checksum used by the server */

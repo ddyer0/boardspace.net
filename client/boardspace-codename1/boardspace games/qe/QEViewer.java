@@ -1454,7 +1454,7 @@ public void ViewerRun(int wait)
     public void drawEye(Graphics gc,Rectangle eyeR,HitPoint hp,boolean censor,int index)
     {    	
       	StockArt icon = censor ? StockArt.Eye : StockArt.NoEye;
-       	if(icon.drawChip(gc, this, eyeR, hp, QEId.ShowHidden, null))
+       	if(icon.drawChip(gc, this, eyeR, hp, QEId.ShowHidden))
        	{
        		hp.hit_index = index;
        	}

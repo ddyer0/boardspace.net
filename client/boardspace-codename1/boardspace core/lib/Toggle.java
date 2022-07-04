@@ -1,7 +1,5 @@
 package lib;
 
-import com.codename1.ui.geom.Rectangle;
-
 import online.common.exCanvas;
 /**
  * a image-based button that has standard button behavior and appearance.
@@ -11,20 +9,10 @@ import online.common.exCanvas;
  *
  */
 @SuppressWarnings("serial")
-public class Toggle extends Rectangle
-{	String name = "";
+public class Toggle extends ToggleButton
+{
 	private DrawableImage<?> onIcon;
 	private DrawableImage<?> offIcon;
-	boolean isOn = false;
-	boolean justTurnedOff = false;
-	boolean mouseOverNow = false;
-	boolean temporarilyOff = false;
-	public boolean activateOnMouse = false;
-	String onToolTip = null;
-	String offToolTip = null;
-	CellId onId;
-	CellId offId;
-	exCanvas canvas;
 	/**
 	 * create a toggle represented by an icon that can be mouse active
 	 * @param can
@@ -39,7 +27,7 @@ public class Toggle extends Rectangle
 		offIcon = onIcon = ic;
 		onId = offId = idx;
 		activateOnMouse = active;
-		onToolTip = offToolTip = tip;
+		onToolTip = offToolTip = TextChunk.create(tip);
 	}
 	/**
 	 * create a toggle with "off" and "on" states
@@ -56,36 +44,21 @@ public class Toggle extends Rectangle
 		name = na;
 		onIcon = ic;
 		onId = idx;
-		onToolTip = tip;
+		onToolTip = TextChunk.create(tip);
 		
 		offIcon = offIc;
 		offId = idx2;
-		offToolTip = tip2;
+		offToolTip = TextChunk.create(tip2);
 	}
-	public boolean isOnNow() { return(!temporarilyOff && (isOn||mouseOverNow)); }
-	public void setTemporarilyOff(boolean v) { temporarilyOff = v;}
-   	public void draw(Graphics gc,HitPoint hp)
+
+   	public boolean actualDraw(Graphics gc,HitPoint hp)
    	{	// the behavior of the hints box is choreographed so mouse-over
    		// turns on the hints while the mouse is present, click toggles
    		// it on and off
-   		if(G.Height(this)>0)
-   		{
    		DrawableImage<?> ic = isOn ? onIcon : offIcon;
-   		String tip = isOn ? onToolTip : offToolTip;
+   		Text tip = isOn ? onToolTip : offToolTip;
    		CellId id = isOn ? onId : offId;
-   		if(ic.drawChip(gc,canvas,this,hp,id,tip))
-   		{
-   			if(!isOn && !justTurnedOff && activateOnMouse)
-   			{ mouseOverNow = true; 
-   			}
-   		}
-   		else { justTurnedOff=false; mouseOverNow = false; }
-   		}
-   	}
-   	public void setValue(boolean v) { isOn = v; }
-   	public void toggle()
-   	{
-    	isOn = !isOn;
-    	if(!isOn) { justTurnedOff = true; mouseOverNow = false; }
+   		return ic.drawChip(gc,canvas,this,hp,id,tip);
+   		
    	}
 }

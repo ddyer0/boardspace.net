@@ -191,9 +191,9 @@ public class TextContainer implements AppendInterface,KeyListener
 	  if(can!=null)
 	  {
 	  canvas = can;
-	  can.requestFocus(this);
 	  if(editable && !wasEditable) 
 	  	{ 
+		  can.requestFocus(this);
 	  	  can.addKeyListener(this);
 	  	}
 	  if(!editable && wasEditable) 

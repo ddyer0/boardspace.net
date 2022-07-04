@@ -159,8 +159,8 @@ public abstract class ProxyWindow implements SizeProvider,EventListener,AwtCompo
 	
 
 	public void requestFocus(KeyListener l)
-	{	theComponent.requestFocus();
-		//MasterForm.getMasterForm().setFocused(l);
+	{	//theComponent.requestFocus();
+		MasterForm.getMasterForm().setFocused(theComponent);
 	}
 	
 	public void show(MenuInterface menu, int x, int y) throws AccessControlException {

@@ -323,7 +323,7 @@ public class BlackDeathViewer extends CCanvas<BlackDeathCell,BlackDeathBoard> im
             pl.rotateCurrentCenter(pb.chipCell,left+hgt/2, top+hgt/2);
             chip.drawChip(gc,this,chipp,null); 
             BlackDeathChip.Track.drawChip(gc,this,track,null);
-            modChip.drawChip(gc, this, mod,highlightAll, BlackDeathId.Eye, null);
+            modChip.drawChip(gc, this, mod,highlightAll, BlackDeathId.Eye);
             
             // draw various ornaments on the player board
             int chipw = (int)(0.06*wid);

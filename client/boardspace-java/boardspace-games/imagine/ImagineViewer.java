@@ -537,7 +537,7 @@ static String SWOOSH = ImageDir + "swoosh"+ Config.SoundFormat;
     	G.insetRect(inset,step);
      StockArt.Scrim.getImage().stretchImage(gc, cards);
     	ImagineChip bigTop = bigChip.topChip();
-    	if(bigTop.drawChip(gc, this, inset,appreciate ? null : highlight, ImagineId.Card,1,null))
+    	if(bigTop.drawChip(gc, this, inset,appreciate ? null : highlight, ImagineId.Card,1,(String)null))
     	{
     		highlight.hitObject = bigChip; 
     	}

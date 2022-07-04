@@ -365,6 +365,18 @@ public class commonPlayer implements Opcodes,lib.CompareTo<commonPlayer>
 
         return (false);
     }
+    public boolean notifyRobot(commonMove m)
+    {
+        if (robotPlayer != null)
+        {
+            robotPlayer.Notify(m);
+
+            return (true);
+        }
+
+        return (false);
+
+    }
     public boolean stopRobot()
     {
         if (robotPlayer != null)

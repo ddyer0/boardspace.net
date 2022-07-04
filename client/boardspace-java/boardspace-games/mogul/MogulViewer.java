@@ -986,7 +986,7 @@ private void playSounds(commonMove m)
     	GC.Text(gc,true,l+w/2,t,w/2-fs,topPart,Color.black,null,s.get(ServiceName,name));
     	boolean show = !pl.hide;
     	StockArt eye = show ? StockArt.NoEye : StockArt.Eye;
-    	eye.drawChip(gc, this,eyeRect, hp, MogulId.PlayerEye,null);
+    	eye.drawChip(gc, this,eyeRect, hp, MogulId.PlayerEye);
     	drawPlayerBoard(gc,hp,hp,b,pl,new Rectangle(l,t+topPart+step,w,h-topPart-step),show);
     	if(b.LegalToHitBoard(pl.chips))
     	{

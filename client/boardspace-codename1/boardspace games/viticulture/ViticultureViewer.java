@@ -5756,7 +5756,7 @@ private void drawPlayerBoard(Graphics gc,
     public void drawEye(Graphics gc,Rectangle eyeR,HitPoint hp,boolean censor,int index)
     {    	
       	StockArt icon = censor ? StockArt.Eye : StockArt.NoEye;
-       	if(icon.drawChip(gc, this, eyeR, hp, ViticultureId.ShowHidden, null))
+       	if(icon.drawChip(gc, this, eyeR, hp, ViticultureId.ShowHidden))
        	{
        		hp.hit_index = index;
        	}

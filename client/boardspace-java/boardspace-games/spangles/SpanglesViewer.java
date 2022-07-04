@@ -65,7 +65,7 @@ public class SpanglesViewer extends CCanvas<SpanglesCell,SpanglesBoard> implemen
 	 * info contains all the goodies from the environment.
 	 * */
     public void init(ExtendedHashtable info,LFrameProtocol frame)
-    {
+    {	enableAutoDone = true;
         super.init(info,frame);
         use_grid = false;
         gridOption.setState(false);
@@ -81,7 +81,7 @@ public class SpanglesViewer extends CCanvas<SpanglesCell,SpanglesBoard> implemen
         zoomRect.highlightColor = HighlightColor;       
         bb = new SpanglesBoard(info.getString(OnlineConstants.GAMETYPE, Spangles_INIT),
         		getStartingColorMap());
-        //useDirectDrawing(); // not tested yet
+        useDirectDrawing(true); 
         doInit(false);
     }
 
@@ -414,7 +414,7 @@ public class SpanglesViewer extends CCanvas<SpanglesCell,SpanglesBoard> implemen
         {	// if in any normal "playing" state, there should be a done button
 			// we let the board be the ultimate arbiter of if the "done" button
 			// is currently active.
-			if(!planned)
+			if(!planned && !autoDoneActive())
 				{handleDoneButton(gc,doneRect,(gb.DoneState() ? buttonSelect : null), 
 					HighlightColor, rackBackGroundColor);
 				}

@@ -265,7 +265,6 @@ class MorrisBoard extends squareBoard<MorrisCell> implements BoardProtocol,Morri
      	}}
      	else { G.Error(WrongInitError,gtype); }
 
-        allCells.setDigestChain(r);
 	    setState(MorrisState.Puzzle);
 	    
 	    lastProgressMove = 0;
