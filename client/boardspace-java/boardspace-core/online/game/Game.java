@@ -328,33 +328,33 @@ public class Game extends commonPanel implements PlayConstants,DeferredEventHand
         return ((int) ((100.0 * focusChangedCoincidence) / Math.max(focusChangedCount,
             10)));
     }
-
+    private void discardGame()
+    {	if(!my.spectator)
+    	{
+    	String gameId = ("".equals(UIDstring) ? "*" : UIDstring);
+    	sendMessage(NetConn.SEND_REMOVE_GAME + gameId);
+    	if(G.offline())
+        {
+        	OfflineGames.removeOfflineGame(UIDstring);
+        }}
+    }
     private void ServerRemove()
     {
         if (!my.spectator)
-        {	String gameId = ("".equals(UIDstring) ? "*" : UIDstring);
-        	// UIDstring is blank in former spectators who have taken over as players
-        	// this was the source of the "zombie game" bug.
-            sendMessage(NetConn.SEND_REMOVE_GAME + gameId);
-            if(G.offline())
-            {
-            	OfflineGames.removeOfflineGame(UIDstring);
-            }
+        {	discardGame();
             
-            {
-                int cpc = focusPercent();
+            int cpc = focusPercent();
 
-                //this is a little hack to help detect cheaters.  Appears as "note from" in the logs
-                if (!unrankedMode)
-                {
-                    String tablestuff = "";
-                    sendMessage(NetConn.SEND_NOTE + "focus " + cpc + "% of " + my.focuschanged +
-                        " " + my.localIP +
-                        (my.sameIP(playerConnections) ? " same public ip" : "") +
-                        (my.sameHost(playerConnections) ? " same local ip" : "") +
-                        (my.sameClock(playerConnections) ? " same clock" : "") +
-                        " ping " + my.clock + "+" + my.ping + tablestuff);
-                }
+            //this is a little hack to help detect cheaters.  Appears as "note from" in the logs
+            if (!unrankedMode)
+            {
+                String tablestuff = "";
+                sendMessage(NetConn.SEND_NOTE + "focus " + cpc + "% of " + my.focuschanged +
+                    " " + my.localIP +
+                    (my.sameIP(playerConnections) ? " same public ip" : "") +
+                    (my.sameHost(playerConnections) ? " same local ip" : "") +
+                    (my.sameClock(playerConnections) ? " same clock" : "") +
+                    " ping " + my.clock + "+" + my.ping + tablestuff);
             }
         }
     }
@@ -4057,7 +4057,12 @@ public class Game extends commonPanel implements PlayConstants,DeferredEventHand
 
     public void shutDown()
     { 	//System.out.println("Game Shutdown");
-       if(v!=null) { v.stopRobots(); v.shutdownWindows(); }
+       if(v!=null) 
+       	{  boolean discard = v.discardable();
+    	   v.stopRobots(); 
+    	   v.shutdownWindows(); 
+    	   if(discard) { discardGame(); }
+       	}
        v = null;
        super.shutDown();
 

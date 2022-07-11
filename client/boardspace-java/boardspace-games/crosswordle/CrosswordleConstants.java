@@ -7,59 +7,34 @@ import online.game.BaseBoard.BoardState;
 
 
 public interface CrosswordleConstants
-{	static String InvalidExplanation = "The current letter placement is invalid because: #1";
-	static String CrosswordsVictoryCondition = "score the most points";
-	static String ResolveBlankState = "Assign a value to the blank tile";
-	static String DiscardTilesState = "Click on Done to discard your rack and draw a new one";
-	static String CrosswordsPlayState = "Place a word on the board";
-	static String FirstPlayState = "Position the starting tile and set word placement options";
-	static String DoubleWord = "Double Word Score";
-	static String DoubleLetter = "Double Letter Score";
-	static String TripleWord = "Triple Word Score";
-	static String TripleLetter = "Triple Letter Score";
-	static String TilesLeft = "#1{##no tiles, tile, tiles}";
+{	
+	static String CrosswordsVictoryCondition = "complete the puzzle";
+	static String ProbeMessage = "Guess";
+	static String CrosswordsPlayState = "Make a guess";
 	static String LastTurnMessage = "Last Turn!";
-	static String NotWords = "Some sprint are not words";
-	static String NotALine = "Some letters are not connected";
-	static String DuplicateWord = "There are duplicate words";
-	static String NotNewConnected = "Not all new words are connected";
-	static String NoDuplicateMessage = "duplicate words";
-	static String OpenRackMessage = "open racks";
-	static String RotateMessage = "rotate the board";
-	static String ShowTilesMessage = "Show everyone your tiles";
 	static String LockMessage = "Lock auto-rotation of the board";
 	static String UnlockMessage = "allow auto-rotation of the board";
-	static String HideTilesMessage = "Hide your tiles";
-	static String DumpRackMessage = "Drop a tile here to dump your rack and redraw";
-	static String ServiceName = "Crossword Rack for #1";
-	static String AddWordMessage = "\"#1\" #2{ points, point, points}";
-	static String GetDefinitionMessage = "click for defintion of #1";
-	static String SelectBlankMessage = "Select the blank letter";
-	static String JustWordsMessage = "Words";
-	static String JustWordsHelp = "Check for good words";
 	static String VocabularyMessage = "Vocabulary";
 	static String WordsMessage = "Best Words";
 
+	enum LetterColor { Blank, Yellow, Green };
 
-	class StateStack extends OStack<SprintState>
+	class StateStack extends OStack<CrosswordleState>
 	{
-		public SprintState[] newComponentArray(int n) { return(new SprintState[n]); }
+		public CrosswordleState[] newComponentArray(int n) { return(new CrosswordleState[n]); }
 	}
 	//
     // states of the game
     //
-	public enum SprintState implements BoardState
+	public enum CrosswordleState implements BoardState
 	{
 	Puzzle(PuzzleStateDescription,false,false),
 	Resign(ResignStateDescription,true,false),
 	Gameover(GameOverStateDescription,false,false),
 	Confirm(ConfirmStateDescription,true,true),
-	ConfirmFirstPlay(ConfirmStateDescription,true,true),
 	Play(CrosswordsPlayState,false,false),
-	ResolveBlank(ResolveBlankState,false,false),
-	DiscardTiles(DiscardTilesState,true,true),
-	FirstPlay(FirstPlayState,true,true);
-	SprintState(String des,boolean done,boolean digest)
+	;
+	CrosswordleState(String des,boolean done,boolean digest)
 	{
 		description = des;
 		digestState = digest;
@@ -80,12 +55,7 @@ public interface CrosswordleConstants
 	enum CrosswordleId implements CellId
 	{
     	BoardLocation,
-    	Rack,
-    	RackMap,
-    	LocalRack,
-    	RemoteRack,
-    	DrawPile,
-    	EmptyBoard,
+     	EmptyBoard,
     	SetOption,
     	EyeOption,
     	Rotate,
@@ -93,13 +63,13 @@ public interface CrosswordleConstants
     	CheckWords,
     	Vocabulary,
     	Definition,
-    	Blank;
+    	Blank, InputField, Playword;
     	public String shortName() { return(name()); }
 
 	}
  enum Option
  {
-	 NoDuplicate(NoDuplicateMessage,false);
+	 ;
 	 String message;
 	 boolean allowedForRobot = true;
 	 CrosswordleChip onIcon;
@@ -114,17 +84,21 @@ public interface CrosswordleConstants
 	 }
  }
  enum CrosswordleVariation
-    {	Crosswordle("Crosswordle",15);
+    {	Crosswordle_55("Crosswordle-55",5,5),
+	    Crosswordle_65("Crosswordle-65",6,5),
+	 	Crosswordle_66("Crosswordle-66",6,6);
     	String name ;
-    	int boardsize;
+    	int boardsizeX;
+    	int boardsizeY;
     	// constructor
-    	CrosswordleVariation(String n,int bs) 
+    	CrosswordleVariation(String n,int bx,int by) 
     	{ name = n; 
-    	  boardsize = bs;
+    	  boardsizeX = bx;
+    	  boardsizeY = by;
     	}
     	// match the variation from an input string
     	static CrosswordleVariation findVariation(String n)
-    	{
+    	{	if("Crosswordle".equalsIgnoreCase(n)) { return CrosswordleVariation.Crosswordle_55; }
     		for(CrosswordleVariation s : values()) { if(s.name.equalsIgnoreCase(n)) { return(s); }}
     		return(null);
     	}
@@ -137,42 +111,19 @@ public interface CrosswordleConstants
     	
     	String CrosswordsStrings[] = 
     		{  "Crosswords",
-    			SelectBlankMessage,
-    			GetDefinitionMessage,
     			WordsMessage,
     			VocabularyMessage,
-    			JustWordsMessage,
-    			JustWordsHelp,
-    			InvalidExplanation,
-    			AddWordMessage,
     			LockMessage,
-    			RotateMessage,
     			UnlockMessage,
-    			ServiceName,
-    			ShowTilesMessage,
-    			DumpRackMessage,
-    			HideTilesMessage,
-    			NoDuplicateMessage,
-     			DuplicateWord,
-    			NotNewConnected,
-    			NotALine,
-    			DiscardTilesState,
-    			ResolveBlankState,
-    			NotWords,
-    			FirstPlayState,
     			CrosswordsPlayState,
     	        CrosswordsVictoryCondition,
-    	       DoubleWord,
-    	       DoubleLetter,
-    	       TripleWord,
-    	       TripleLetter,
-    	       TilesLeft,
-
+ 
     		};
     		String CrosswordsStringPairs[][] = 
-    		{   {"Crosswords_family","Crosswords"},
-    				{"Crosswords_variation","Standard Crosswords"},
-    				{"Crosswords-17_variation","Big Crosswords"},
+    		{   {"Crosswordle_family","Crosswordle"},
+    				{"Crosswords-55_variation","Crosswordle 5x5"},
+    				{"Crosswords-65_variation","Crosswordle 6x5"},
+    				{"Crosswords-66_variation","Crosswordle 6x6"},
     		};
 
     		InternationalStrings.put(CrosswordsStringPairs);

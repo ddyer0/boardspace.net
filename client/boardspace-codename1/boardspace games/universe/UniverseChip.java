@@ -153,17 +153,6 @@ public class UniverseChip extends chip<UniverseChip> implements UniverseConstant
 		assignedSudokuValues = 0;
 	}
 
-	public long Digest()
-	{
-		long v = super.Digest();
-		if(sudokuValues!=null)
-		{	for(int i=0,lim = sudokuValues.length; i<lim; i++)
-			{
-			v ^= sudokuValues[i]*(i+100);
-			}
-		}
-		return(v);
-	}
 	// constructor for givens
 	private UniverseChip(int v,OminoStep[]pat,Image im,double[]sc,long rv)
 	{

@@ -541,9 +541,9 @@ class VolcanoBoard extends BaseBoard implements BoardProtocol,VolcanoConstants
         Random r = new Random(64 * 1000); // init the random number generator
         
 		for(VolcanoCell c = rboard.allCells; c!=null; c=c.next)
-		{	v ^= c.Digest();
+		{	v ^= c.Digest(r);
 		}
-		for(int i=0;i<captures.length;i++) { v ^= captures[i].Digest(); }
+		for(int i=0;i<captures.length;i++) { v ^= captures[i].Digest(r); }
 		v ^= chip.Digest(r,pickedObject);
 		v ^= cell.Digest(r,getSource());
 		v ^= r.nextLong()*(board_state.ordinal()*10+whoseTurn);

@@ -90,19 +90,11 @@ public class JumbulayaCell extends stackCell<JumbulayaCell,JumbulayaChip>
 	}
 	/**
 	 * wrap this method if the cell holds any additional state important to the game.
-	 * This method is called, without a random sequence, to digest the cell in it's usual role.
-	 * this method can be defined as G.Error("don't call") if you don't use it or don't
-	 * want to trouble to implement it separately.
-	 */
-	public long Digest() 
-	{ return(super.Digest()*(selected?1234:1)); 
-	}
-	/**
-	 * wrap this method if the cell holds any additional state important to the game.
 	 * This method is called, with a random sequence, to digest the cell in unusual
 	 * roles, or when the diest of contents is complex.
 	 */
-	public long Digest(Random r) { return(super.Digest(r)*(selected?35234:1)); }
+	public long Digest(Random r)
+		{ return(super.Digest(r)*(selected?r.nextLong():1)); }
 	
 	public JumbulayaChip[] newComponentArray(int size) {
 		return(new JumbulayaChip[size]);

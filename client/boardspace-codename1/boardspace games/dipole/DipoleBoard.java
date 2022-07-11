@@ -172,7 +172,7 @@ class DipoleBoard extends rectBoard<DipoleCell> implements BoardProtocol,DipoleC
     {
  
         Random r = new Random(64 * 1000); // init the random number generator
-       	long v = super.Digest();
+       	long v = super.Digest(r);
        
 		v ^= cell.Digest(r,pickedSource);
 		v ^= chip.Digest(r,pickedObject);

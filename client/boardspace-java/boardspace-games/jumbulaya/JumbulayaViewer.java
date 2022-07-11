@@ -20,6 +20,7 @@ import lib.LFrameProtocol;
 import lib.Slider;
 import lib.StockArt;
 import lib.TextButton;
+import lib.Random;
 import online.game.*;
 import online.game.sgf.sgf_node;
 import online.game.sgf.sgf_property;
@@ -730,6 +731,8 @@ public class JumbulayaViewer extends CCanvas<JumbulayaCell,JumbulayaBoard> imple
 	  	}
 	//      draw
     }
+    
+    static long FIXEDRANDOM = 25661463;
     //
     // in this game, most of the letters on the board and all of the drawpile
     // will change very slowly if at all.  We mark appropriate cells as "fixed"
@@ -737,23 +740,24 @@ public class JumbulayaViewer extends CCanvas<JumbulayaCell,JumbulayaBoard> imple
     // but on mobiles if makes a big difference.
     // This digest determines when the background has changed, and needs to be redrawn.
     public long digestFixedTiles()
-    {	
+    {	Random r = new Random(FIXEDRANDOM);
     	long v = 0;
     	for(JumbulayaCell cell = bb.allCells; cell!=null; cell=cell.next)
         {	if(cell.fromRack)
         	{
-        	v ^= cell.Digest();
+        	v ^= cell.Digest(r);
         	}
         }
     	int tilesLeft = bb.drawPile.height();
-    	v ^= (tilesLeft*263725265);
-    	v ^= G.rotationQuarterTurns(effectiveBoardRotation)*29526373;
+    	v ^= (tilesLeft*r.nextLong());
+    	v ^= G.rotationQuarterTurns(effectiveBoardRotation)*r.nextLong();
     	return(v);
     }
     long fixedTileDigest = 0;
     private boolean pendingFullRefresh = false;
     public void drawFixedTiles(Graphics gc,Rectangle brect,JumbulayaBoard gb)
-    {	long v = 0;
+    {	Random r = new Random(FIXEDRANDOM);
+    	long v = 0;
     	pendingFullRefresh = !spritesIdle();
     	Enumeration<JumbulayaCell>cells = gb.getIterator(Itype.RLTB);
     	while(cells.hasMoreElements())
@@ -762,14 +766,14 @@ public class JumbulayaViewer extends CCanvas<JumbulayaCell,JumbulayaBoard> imple
         	{
         	int ypos = G.Bottom(brect) - gb.cellToY(cell);
         	int xpos = G.Left(brect) + gb.cellToX(cell);
-        	v ^= cell.Digest();
+        	v ^= cell.Digest(r);
         	setLetterColor(gc,gb,cell);
         	cell.drawStack(gc,this,null,CELLSIZE,xpos,ypos,1,1,null);
         	}
         }
     	int tilesLeft = gb.drawPile.height();
-    	v ^= (tilesLeft*263725265);
-    	v ^= G.rotationQuarterTurns(effectiveBoardRotation)*29526373;
+    	v ^= (tilesLeft*r.nextLong());
+    	v ^= G.rotationQuarterTurns(effectiveBoardRotation)*r.nextLong();
         fixedTileDigest=v;
     }
     /**

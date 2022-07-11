@@ -354,11 +354,11 @@ class RajBoard extends squareBoard<RajCell> implements BoardProtocol,RajConstant
 			wonPrizes.reInit();
 		}
 		public long Digest(Random r)
-		{	long v = cards.Digest();
+		{	long v = cards.Digest(r);
 			//System.out.println("DP1 "+v);
-			v ^= playedCards.Digest();
+			v ^= playedCards.Digest(r);
 			//System.out.println("DP2 "+v);
-			v ^= wonPrizes.Digest();
+			v ^= wonPrizes.Digest(r);
 			//System.out.println("DP3 "+v);
 			v ^= chip.Digest(r,pickedObject);
 			//System.out.println("DP4 "+v);
@@ -579,7 +579,7 @@ class RajBoard extends squareBoard<RajCell> implements BoardProtocol,RajConstant
 		// note we can't change this without invalidating all the existing digests.
 		for(RajCell c=allCells; c!=null; c=c.next)
 		{	
-            v ^= c.Digest();
+            v ^= c.Digest(r);
 		}
 	      //System.out.println("D4 "+v);
 

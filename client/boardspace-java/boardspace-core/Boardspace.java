@@ -59,6 +59,9 @@ class CacheInfo {
 	static final int BUFFERSIZE = 100*1024;			// copy jar buffer size, 100K
 	static boolean verbose = false;
 	static boolean uncache = false;
+	public String toString() {
+		return "<cacheinfo "+name+" loaded "+loaded+">";
+	}
 	//constructor
 	CacheInfo(long d,String n,boolean l) 
 	{
@@ -185,21 +188,24 @@ public class Boardspace extends URLClassLoader implements Runnable,LoaderConfig
 			}}
 		if(info==null) 
 		{ if(verbose) { Boardspace.out.println("No info for "+name0); } 
+		  return(false);
 		}
-		if(info!=null && !info.loaded)
-		{	
-			try {
-				if(verbose) { Boardspace.out.println("cache "+name); }
-				info.cacheFile(webHost(),localCacheDir);
-				info.loaded = true;
+		else 
+		{if(!info.loaded)
+			{	
+				try {
+					if(verbose) { Boardspace.out.println("cache "+name); }
+					info.cacheFile(webHost(),localCacheDir);
+					if(!info.loaded) { Boardspace.out.println(""+info+" failed to load"); }
+				}
+				catch (Exception e)
+				{
+					showError("Error fetching "+name+" from "+webHost(),e);
+				}
 			}
-			catch (Exception e)
-			{
-				showError("Error fetching "+name+" from "+webHost(),e);
-			}
-			return(info.loaded);
+		return(info.loaded);
 		}
-		return(false);
+		
 	}
  
 	// this is the hook to the cacheloader.  The key to making this work
@@ -211,6 +217,7 @@ public class Boardspace extends URLClassLoader implements Runnable,LoaderConfig
 		{
 		return(super.findClass(name));
 		}
+		Boardspace.out.println("AssureCached "+name+" failed");
 		return null;
 	}
 
@@ -536,9 +543,15 @@ public class Boardspace extends URLClassLoader implements Runnable,LoaderConfig
 		if(e!=null) { e.printStackTrace(p); }
 		p.close();
 		String msg = w.toString();
+		out.flush();
+		if(log.size()>0)
+			{
+			msg += "\n"+log.toString();
+			}
 		showMessage(caption,msg);
 	    postError(caption+"\n"+msg);
 		}
+
 		catch (Throwable er) { Boardspace.out.println("Recursive error "+er); };
 	}
 	private static void showMessage(String caption,String msg)
@@ -620,15 +633,21 @@ public class Boardspace extends URLClassLoader implements Runnable,LoaderConfig
 
 		File cacheDir = createTempDir();
 		Boardspace m =getMiniloader(cacheDir);
-		Class<?> base = m.loadClass(runClass);	// get the class to run first
+		Class<?> base = m.loadClass(runClass,false);	// get the class to run first
 		Thread t = new Thread(m,"Background cache loader");
 		t.setPriority(Thread.MIN_PRIORITY);
 		t.start();		// load the rest of the classes in background
 		
+		if(base==null) { 
+			out.print("loadClass for base "+runClass+ " is null");
+		}
+		else
+		{
 		@SuppressWarnings("deprecation")
 		Runnable r = (Runnable)base.newInstance();
 		new Thread(r).start();
 		t.join();
+		}
 		out.flush();
 		if(log.size()>0)
 			{

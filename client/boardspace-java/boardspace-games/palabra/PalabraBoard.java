@@ -319,9 +319,9 @@ class PalabraBoard extends squareBoard<PalabraCell> implements BoardProtocol,Pal
 			wonPrizes.reInit();
 		}
 		public long Digest(Random r)
-		{	long v = cards.Digest();
-			v ^= playedCards.Digest();
-			v ^= wonPrizes.Digest();
+		{	long v = cards.Digest(r);
+			v ^= playedCards.Digest(r);
+			v ^= wonPrizes.Digest(r);
 			v ^= chip.Digest(r,pickedObject);
 			v ^= droppedHeight*+r.nextLong();
 			v ^= pickedHeight*+r.nextLong();
@@ -515,13 +515,13 @@ class PalabraBoard extends squareBoard<PalabraCell> implements BoardProtocol,Pal
         Random r = new Random(64 * 1000); // init the random number generator
         
         v ^= players_in_game*r.nextLong();
-        v ^= prizes.Digest();
+        v ^= prizes.Digest(r);
         for(PlayerBoard bb : playerBoards)  {	v ^= bb.Digest(r); }
         
 		// note we can't change this without invalidating all the existing digests.
 		for(PalabraCell c=allCells; c!=null; c=c.next)
 		{	
-            v ^= c.Digest();
+            v ^= c.Digest(r);
 		}
 		// many games will want to digest pickedSource too
 		// v ^= cell.Digest(r,pickedSource);

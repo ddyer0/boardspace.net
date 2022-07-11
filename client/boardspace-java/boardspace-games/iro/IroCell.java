@@ -86,17 +86,6 @@ public class IroCell
 		addChip(cont);
 		onBoard=false;
 	}
-	/**
-	 * wrap this method if the cell holds any additional state important to the game.
-	 * This method is called, without a random sequence, to digest the cell in it's usual role.
-	 * this method can be defined as G.Error("don't call") if you don't use it or don't
-	 * want to trouble to implement it separately.
-	 */
-	public long Digest()
-	{ return(super.Digest() 
-			+ (isTileAnchor 
-					? ( tile.Digest()*col*row ^ rotation*1232035 )
-					: 0)); }
 	
 	/**
 	 * wrap this method if the cell holds any additional state important to the game.

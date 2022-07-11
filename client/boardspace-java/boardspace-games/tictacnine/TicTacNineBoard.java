@@ -141,7 +141,7 @@ class TicTacNineBoard extends rectBoard<TicTacNineCell> implements BoardProtocol
         Random r = new Random(64 * 1000); // init the random number generator
         
 		for(TicTacNineCell c = allCells; c!=null; c=c.next)
-		{	v ^= c.Digest();
+		{	v ^= c.Digest(r);
 		}
 		v ^= chip.Digest(r,pickedObject);
 		v ^= Digest(r,pickedSourceStack);

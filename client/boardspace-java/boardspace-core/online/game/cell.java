@@ -348,7 +348,7 @@ public abstract class cell<FINALTYPE
 	 *  Digest the cell's identity
 	 *  @return an integer
 	 */
-	public long Digest() 
+	private long hiddenDigest() 
 	{ if(randomv==0) 
 		{ 
 		return(rackLocation.name().hashCode()+col*200+row+1); 
@@ -362,7 +362,7 @@ public abstract class cell<FINALTYPE
 	 * @param role the current random sequence
 	 * @return an integer
 	 */
-	public long Digest(Random role) { return(Digest()^role.nextLong()); }
+	public long Digest(Random role) { return(hiddenDigest()^role.nextLong()); }
 
 	/**
 	 * static method to Digest a cell with may be null,  a role.

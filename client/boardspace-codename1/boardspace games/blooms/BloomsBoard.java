@@ -308,7 +308,7 @@ class BloomsBoard extends hexBoard<BloomsCell> implements BoardProtocol
     	// different identity for the second use.
         //
         Random r = new Random(64 * 1000); // init the random number generator
-        long v = super.Digest();
+        long v = super.Digest(r);
 		// many games will want to digest pickedSource too
 		// v ^= cell.Digest(r,pickedSource);
 		v ^= chip.Digest(r,pickedObject);
@@ -957,12 +957,7 @@ class BloomsBoard extends hexBoard<BloomsCell> implements BoardProtocol
 				m.target = pickedObject;
 				G.Assert((board_state==BloomsState.Puzzle)
 							|| (ownerIndex(pickedObject)==whoseTurn),"color mismatch");
-	            /**
-	             * if the user clicked on a board space without picking anything up,
-	             * animate a stone moving in from the pool.  For Hex, the "picks" are
-	             * removed from the game record, so there are never picked stones in
-	             * single step replays.
-	             */
+
 	            if(replay!=replayMode.Replay && ((po==null) || (replay==replayMode.Single)))
 	            	{ animationStack.push(src);
 	            	  animationStack.push(dest); 

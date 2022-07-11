@@ -163,11 +163,6 @@ public class LStack implements Digestable {
 		for(int i=0,lim=size(); i<lim; i++) { v ^= elementAt(i)*r.nextLong(); }
 		return(v);
 	}
-	public long Digest() {
-		int v=0;
-		for(int i=0,lim=size(); i<lim; i++) { v ^= elementAt(i)*(i+8454213); }
-		return(v);
-	}
 	/** sort the contents
 	 * 
 	 */

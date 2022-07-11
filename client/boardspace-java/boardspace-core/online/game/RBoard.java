@@ -103,12 +103,12 @@ public abstract class RBoard<CELLTYPE extends cell<CELLTYPE> >  extends BaseBoar
     	cellArray = null;
     }
     
-    public long Digest()
+    public long Digest(Random r)
     {	long v=0;
  		// note we can't change this without invalidating all the existing digests.
  		for(CELLTYPE c=allCells; c!=null; c=c.next)
  		{	
-            v ^= c.Digest();
+            v ^= c.Digest(r);
  		}
  		return(v);
     }
@@ -425,7 +425,6 @@ public abstract class RBoard<CELLTYPE extends cell<CELLTYPE> >  extends BaseBoar
     {
  	   return(a==null ? b==null : a.sameCell(b));
     }
-    public long Digest(CELLTYPE c) { return((c==null)?0:c.Digest()); }
     public long Digest(Random r,CELLTYPE c) { return(c==null)?0:c.Digest(r); }
 
    /**

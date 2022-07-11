@@ -197,6 +197,29 @@ public class ViticultureCell extends stackCell<ViticultureCell,ViticultureChip>
 	{	Sort.sort(chipStack,0,height()-1,false);
 	}
 
+	public long CardDigest1() 
+	{ if(randomv==0) 
+		{ 
+		return(rackLocation.name().hashCode()+col*200+row+1); 
+		}
+		return(randomv); 
+	}
+	/**
+	 * generate a digest of the stack.  This version considers the order of the 
+	 * items to be significant.  This version without a specific random context
+	 * should be used only for the "default" digest of an item in it's usual context.
+	 * 
+	 * This is a copy of the old no-argument Digest(), preserved for backward compatibility
+	 */
+	public long CardDigest() 
+	{ long val0=CardDigest1();
+	  long val = val0;
+	  for(int i=0;i<=chipIndex;i++) 
+	  	{ 
+	  	  val += chipStack[i].Digest()*val0*(i+1);
+	  	}
+	  return(val);
+	}
 
 
 }

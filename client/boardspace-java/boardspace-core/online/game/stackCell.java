@@ -351,20 +351,7 @@ public abstract class stackCell
 		  	}
 		  return(val);
 		}
-	/**
-	 * generate a digest of the stack.  This version considers the order of the 
-	 * items to be significant.  This version without a specific random context
-	 * should be used only for the "default" digest of an item in it's usual context.
-	 */
-	public long Digest() 
-	{ long val0=super.Digest();
-	  long val = val0;
-	  for(int i=0;i<=chipIndex;i++) 
-	  	{ 
-	  	  val += chipStack[i].Digest()*val0*(i+1);
-	  	}
-	  return(val);
-	}	
+	
 	/**
 	 * generate a representation of the contents of the stack, by calling 
 	 * contentsString() of each element of the stack.  This is used 

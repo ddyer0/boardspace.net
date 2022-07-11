@@ -28,17 +28,6 @@ public class OnedayCell extends stackCell<OnedayCell,OnedayChip> implements Oned
 	public OnedayCell(Random r,char col,int row) { super(r,Geometry.Standalone,col,row); rackLocation=OneDayId.RackLocation; }
 	/**
 	 * wrap this method if the cell holds any additional state important to the game.
-	 * This method is called, without a random sequence, to digest the cell in it's usual role.
-	 * this method can be defined as G.Error("don't call") if you don't use it or don't
-	 * want to trouble to implement it separately.
-	 * 
-	 * including "exposed" in the digest is technically correct, but complicated
-	 * in the undoable user interface.  If not maintained correctly the robot will
-	 * have incorrect information about cards in play
-	 */
-	public long Digest() { return((hasPrize ? 123646 : 6345356) ^ super.Digest()); }
-	/**
-	 * wrap this method if the cell holds any additional state important to the game.
 	 * This method is called, with a random sequence, to digest the cell in unusual
 	 * roles, or when the diest of contents is complex.
 	 * *

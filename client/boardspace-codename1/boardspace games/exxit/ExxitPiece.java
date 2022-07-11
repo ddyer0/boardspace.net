@@ -36,7 +36,6 @@ public class ExxitPiece extends chip<ExxitPiece> implements ExxitConstants
 	  	imageIndex = typecode*2+cl;
 	  	prettyName = TILE_NAMES[colorIndex];
 	  }
-	  public long Digest() { return(randomv); }
 	  public static long Digest(Random r,ExxitPiece c)
 		{
 			return(r.nextLong()*((c==null)?0:c.Digest()));

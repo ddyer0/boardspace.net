@@ -196,10 +196,10 @@ class QuinamidBoard extends rectBoard<QuinamidCell> implements BoardProtocol,Qui
 			  	{ higherBoard.changeRotation(dif,true);
 			  	}
 			}
-		public long Digest()
-		{ long v = randomv+(col_offset*10+row_offset*100+rot);
+		public long Digest(Random r)
+		{ long v = r.nextLong()*(randomv+(col_offset*10+row_offset*100+rot));
 		  for(int lim=contents.length-1; lim>=0; lim--)
-		  	{ v ^= contents[lim].Digest();
+		  	{ v ^= contents[lim].Digest(r);
 		  	}
 		  
 		  return(v);
@@ -441,10 +441,10 @@ class QuinamidBoard extends rectBoard<QuinamidCell> implements BoardProtocol,Qui
         }
 	
 		for(QuinamidCell c = allCells; c!=null; c=c.next)
-		{	v ^= c.Digest();
+		{	v ^= c.Digest(r);
 		}
 		
-		for(int lvl = 0; lvl<stackedBoards.length; lvl++) { v ^= stackedBoards[lvl].Digest(); }
+		for(int lvl = 0; lvl<stackedBoards.length; lvl++) { v ^= stackedBoards[lvl].Digest(r); }
         // for most games, we should also digest whose turn it is
 		v ^= chip.Digest(r,pickedObject);
 		v ^= cell.Digest(r,pickedSource);

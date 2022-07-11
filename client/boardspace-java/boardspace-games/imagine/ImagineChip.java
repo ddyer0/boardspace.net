@@ -20,13 +20,6 @@ class ChipStack extends OStack<ImagineChip> implements Digestable
 {
 	public ImagineChip[] newComponentArray(int n) { return(new ImagineChip[n]); }
 
-	public long Digest() {
-		long v = 0;
-		for(int lim=size()-1; lim>=0; lim-- ) { v ^= elementAt(lim).Digest(); }
-		return(v);
-	}
-
-	@Override
 	public long Digest(Random r) {
 		long v = 0;
 		for(int lim=size()-1; lim>=0; lim-- ) { v ^= elementAt(lim).Digest(r); }

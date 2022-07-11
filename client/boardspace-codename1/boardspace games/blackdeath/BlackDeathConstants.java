@@ -225,9 +225,6 @@ static public BlackDeathId find(String s)
 enum BlackDeathColor implements Digestable
 { Red, Orange, Brown, Yellow, Green, Blue, Purple;
   BlackDeathChip chip = null;
-  public long Digest() {
-	return ((ordinal()+1)*10425265);
-  		}
   public long Digest(Random r) {
 	return ((ordinal()+1)*r.nextLong());
   	}  

@@ -1704,13 +1704,13 @@ public class EuphoriaBoard extends EuphoriaBoardConstructor implements EuphoriaC
     	// different identity for the second use.
         //
         Random r = new Random(64 * 1000); // init the random number generator
-        long v = super.Digest();		// this digests allcells
+        long v = super.Digest(r);		// this digests allcells
         if(board_state==EuphoriaState.Puzzle)
         {
-        v ^= usedRecruits.Digest();
-        v ^= unusedMarkets.Digest();
-        v ^= unusedDilemmas.Digest();       
-        v ^= unusedRecruits.Digest();
+        v ^= usedRecruits.Digest(r);
+        v ^= unusedMarkets.Digest(r);
+        v ^= unusedDilemmas.Digest(r);       
+        v ^= unusedRecruits.Digest(r);
 
         }
 

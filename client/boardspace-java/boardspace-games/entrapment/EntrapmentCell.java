@@ -59,7 +59,6 @@ public class EntrapmentCell extends stackCell<EntrapmentCell,EntrapmentChip>
 		deadChip = c.deadChip;
 		trapped = c.trapped;
 	}
-	public long Digest() { return(super.Digest()+((deadChip!=null) ? deadChip.Digest() : 0)); }
 	public long Digest(Random r)
 	{	return(super.Digest(r)+((deadChip!=null) ? deadChip.Digest() : 0));
 	}

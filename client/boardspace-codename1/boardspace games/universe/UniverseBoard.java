@@ -894,17 +894,17 @@ class UniverseBoard extends squareBoard<UniverseCell> implements BoardProtocol,U
    }
    public long Digest()
     {
-        long v = 0;
+       Random r = new Random(64 * 1000); // init the random number generator
+       long v = 0;
 
         // the basic digestion technique is to xor a bunch of random numbers. The key
         // trick is to always generate exactly the same sequence of random numbers, and
         // xor some subset of them.  Note that if you tweak this, all the existing
         // digests are invalidated.
         //
-        Random r = new Random(64 * 1000); // init the random number generator
         v += UniverseChip.DigestAll();
  		for(UniverseCell c = allCells; c!=null; c=c.next)
-		{	v ^= c.Digest();
+		{	v ^= c.Digest(r);
 		}
 
  		switch(rules)

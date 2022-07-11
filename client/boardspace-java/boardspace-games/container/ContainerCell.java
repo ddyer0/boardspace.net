@@ -41,8 +41,6 @@ public class ContainerCell extends stackCell<ContainerCell,ContainerChip>
 		return(super.findChipHighlight(highlight,piece,adj_width,adj_height,x,y));
 	}
 
-	public long Digest() { throw G.Error("Dont' call"); }
-
 	public long Digest(Random r)
 	{	long v = randomv;
 		// we want the special property that the order of the containers doesn't matter.

@@ -1060,7 +1060,9 @@ public abstract class commonCanvas extends exCanvas
 	            // entering review mode. Remember whose turn it really is
 	            // this is so the outside world can be kept in the dark and incoming
 	            // moves can be handled properly.
-	        	History.pre_review_state = getBoard().getState();
+	        	BoardProtocol bb = getBoard();
+	        	History.pre_review_state = bb.getState();
+	        	History.viewMoveNumber = bb.moveNumber();
 	            History.viewTurn = whoseTurn();
 	            History.viewStep = size;
 	            commentedMove = History.currentHistoryMove();
@@ -1358,6 +1360,11 @@ public abstract class commonCanvas extends exCanvas
 	 * game" fraud detection.
 	 */
 	public int midGamePoint() { return(20); }
+	
+	public boolean discardable()
+	{	int step = reviewMode()? History.viewMoveNumber : getBoard().moveNumber();
+		return (step<=2);
+	}
     /**
      * this is a standard rectangle of all viewers - the rectangle that 
      * contains the board.  Your {@link #setLocalBounds} method still has
@@ -2711,55 +2718,113 @@ public abstract class commonCanvas extends exCanvas
 	    }
 	  	return(armed);
   }
-  public boolean handleDoneButton(Graphics gc,Rectangle r,HitPoint p,Color highlightColor,Color backgroundColor)
-  {		return handleDoneButton(gc,0,r,p,highlightColor,backgroundColor);
+  /**
+   * draw a standard "done" button
+   * @param gc
+   * @param r
+   * @param hit
+   * @param highlightColor
+   * @param backgroundColor
+   * @return true if the button is hit
+   */
+  public boolean handleDoneButton(Graphics gc,Rectangle r,HitPoint hit,Color highlightColor,Color backgroundColor)
+  {		return handleDoneButton(gc,0,r,hit,highlightColor,backgroundColor);
   }
-  
-  public boolean handleDoneButton(Graphics gc,double rotation,Rectangle r,HitPoint p,Color highlightColor,Color backgroundColor)
+  /**
+   * draw a standard "done" button
+   * 
+   * @param gc
+   * @param rotation
+   * @param r
+   * @param hit
+   * @param highlightColor
+   * @param backgroundColor
+   * @return true if the button is hit
+   */
+  public boolean handleDoneButton(Graphics gc,double rotation,Rectangle r,HitPoint hit,Color highlightColor,Color backgroundColor)
   {
 	  //StockArt icon = p==null?StockArt.OffLight:StockArt.GreenLight;
 	  //return(icon.drawChip(gc,this,r,p,GameId.HitDoneButton,s.get(ExplainDone)));
-	  if(GC.handleRoundButton(gc, rotation,r,p,s.get(DoneAction),highlightColor, backgroundColor))
-	  {	  p.hitCode = GameId.HitDoneButton;
-		  HitPoint.setHelpText(p,r,s.get(ExplainDone));
+	  if(GC.handleRoundButton(gc, rotation,r,hit,s.get(DoneAction),highlightColor, backgroundColor))
+	  {	  hit.hitCode = GameId.HitDoneButton;
+		  HitPoint.setHelpText(hit,r,s.get(ExplainDone));
 		  return(true);
 	  }
 	  return(false);
   }
-  
-  public boolean handleUndoButton(Graphics gc,Rectangle r,HitPoint p,Color highlightColor,Color backgroundColor)
+  /**
+   * draw a standard "undo" button
+   * 
+   * @param gc
+   * @param r
+   * @param hit
+   * @param highlightColor
+   * @param backgroundColor
+   * @return true if the button is hit
+   */
+  public boolean handleUndoButton(Graphics gc,Rectangle r,HitPoint hit,Color highlightColor,Color backgroundColor)
   {		if(allowUndo())
-	  	{return handleUndoButton(gc,0,r,p,highlightColor,backgroundColor);
+	  	{return handleUndoButton(gc,0,r,hit,highlightColor,backgroundColor);
 	  	}
   		return(false);
   }
-  
-  public boolean handleUndoButton(Graphics gc,double rotation,Rectangle r,HitPoint p,Color highlightColor,Color backgroundColor)
+  /**
+   * draw a standard "undo" button
+   * 
+   * @param gc
+   * @param rotation
+   * @param r
+   * @param hit
+   * @param highlightColor
+   * @param backgroundColor
+   * @return true if the button is hit
+   */
+  public boolean handleUndoButton(Graphics gc,double rotation,Rectangle r,HitPoint hit,Color highlightColor,Color backgroundColor)
   {
 	  //StockArt icon = p==null?StockArt.OffLight:StockArt.GreenLight;
 	  //return(icon.drawChip(gc,this,r,p,GameId.HitDoneButton,s.get(ExplainDone)));
-	  if(GC.handleRoundButton(gc, rotation,r,p,s.get(UndoAction),highlightColor, backgroundColor))
-	  {	  p.hitCode = GameId.HitUndoButton;
-		  HitPoint.setHelpText(p,r,s.get(ExplainUndo));
+	  if(GC.handleRoundButton(gc, rotation,r,hit,s.get(UndoAction),highlightColor, backgroundColor))
+	  {	  hit.hitCode = GameId.HitUndoButton;
+		  HitPoint.setHelpText(hit,r,s.get(ExplainUndo));
 		  return(true);
 	  }
 	  return(false);
   }
-  public boolean handlePleaseUndoButton(Graphics gc,double rotation,Rectangle r,HitPoint p,Color highlightColor,Color backgroundColor)
+  /**
+   * draw a "please undo" button
+   * 
+   * @param gc
+   * @param rotation
+   * @param r
+   * @param hit
+   * @param highlightColor
+   * @param backgroundColor
+   * @return true if the button is hit
+   */
+  public boolean handlePleaseUndoButton(Graphics gc,double rotation,Rectangle r,HitPoint hit,Color highlightColor,Color backgroundColor)
   {
 	  //StockArt icon = p==null?StockArt.OffLight:StockArt.GreenLight;
 	  //return(icon.drawChip(gc,this,r,p,GameId.HitDoneButton,s.get(ExplainDone)));
-	  if(GC.handleRoundButton(gc, rotation,r,p,s.get(UndoAction),highlightColor, backgroundColor))
-	  {	  p.hitCode = GameId.HitPleaseUndoButton;
-		  HitPoint.setHelpText(p,r,s.get(ExplainPleaseUndo));
+	  if(GC.handleRoundButton(gc, rotation,r,hit,s.get(UndoAction),highlightColor, backgroundColor))
+	  {	  hit.hitCode = GameId.HitPleaseUndoButton;
+		  HitPoint.setHelpText(hit,r,s.get(ExplainPleaseUndo));
 		  return(true);
 	  }
 	  return(false);
   }
-
-  public boolean handleEditButton(Graphics gc,Rectangle r,HitPoint p,HitPoint any,Color highlightColor,Color backgroundColor)
+/**
+ * draw a standard "edit" button
+ * @param gc
+ * @param r
+ * @param hit
+ * @param hitAny
+ * @param highlightColor
+ * @param backgroundColor
+ * @return true if the button is hit
+ */
+  public boolean handleEditButton(Graphics gc,Rectangle r,HitPoint hit,HitPoint hitAny,Color highlightColor,Color backgroundColor)
   {
-	  return handleEditButton(gc,0,r,p,any,highlightColor,backgroundColor);
+	  return handleEditButton(gc,0,r,hit,hitAny,highlightColor,backgroundColor);
   }
   /**
    * @return true if it is ok to undo a current "pick" operation.
@@ -3919,7 +3984,6 @@ public abstract class commonCanvas extends exCanvas
     	   // which are immediately followed by real done moves which superceed them.
             rewindHistory((m.index()>0)? m.index() : History.viewStep);
        } 
-       	String str = m.moveString(); 
        		// collect the spec before executing or adding to history, so that
        		// edits made to m by execute or editHistory will not be transmitted
   //      if(m.op==HitGameOverOnTime(GAMEOVERONTIME,GameOverOnTime),
@@ -3931,7 +3995,7 @@ public abstract class commonCanvas extends exCanvas
        		// pass the request to the opponent.
        		commonPlayer p = whoseTurn();
        		if(p!=l.my)
-       			{ if(transmit) { addEvent(str); }}	// out of turn undo
+       			{ if(transmit) { addEvent(m.moveString()); }}	// out of turn undo
        		else if(allowOpponentUndoNow()) 
        			{ PerformAndTransmit(UNDO_ALLOW); 
        			}
@@ -3941,7 +4005,7 @@ public abstract class commonCanvas extends exCanvas
         {
         	repaint(20);					 // states will have changed.
             boolean added = AddToHistory(m);
-            
+            String str = m.moveString();	// note that "movestring" may be altered by the "execute"
             // this is the active part of the "Start Evaluator" feature
             if (extraactions && (getActivePlayer().robotPlayer != null))
             {	// get the robot to static eval this position
@@ -4696,6 +4760,7 @@ public abstract class commonCanvas extends exCanvas
     {
     	History.viewStep = -1;
     	History.viewTurn = null;
+    	History.viewMoveNumber = -1;
         History.clear();
         rawHistory.clear();
  

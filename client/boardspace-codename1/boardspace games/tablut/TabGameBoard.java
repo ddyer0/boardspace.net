@@ -291,8 +291,8 @@ class TabGameBoard extends rectBoard<TabCell> implements BoardProtocol,TabConsta
      */
     public long Digest()
     {
-    	long v = super.Digest();
-        Random r = new Random(64 * 1000); // init the random number generator
+    	Random r = new Random(64 * 1000); // init the random number generator
+    	long v = super.Digest(r);
         v ^= playerChip[0].Digest();
         v ^= r.nextLong()*((Flagship_Wins_In_Corner?1:0) 
         					| (Flagship_Owns_Center?2:0)

@@ -100,10 +100,6 @@ public class DrawableImage<T> implements Drawable,StackIterator<T>
 	}
 	/** the default constructor */
 	public DrawableImage() { };
-	/** this should be overridden for artwork that is Digestable. */
-	public long Digest() {
-		throw G.Error("shouldn't call digest");
-	}
 	/** default method for animations */
 	public int animationHeight() { return(1); }
 	public String toString() { return("#<stock "+file+">"); }

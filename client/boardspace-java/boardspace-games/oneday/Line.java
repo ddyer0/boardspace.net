@@ -47,8 +47,7 @@ class Line implements OnedayConstants
 	long randomv;
 	
 	public long Digest(Random r) { return(r.nextLong()*randomv); };
-	public long Digest() { return(randomv); }
-	public static long Digest(Line l) { return((l!=null)?l.Digest() : 0); }
+	public static long Digest(Random r,Line l) { return((l!=null)?l.Digest(r) : 0); }
 	
 	public int nStops() { return(stops.size()); }
 	public StopStack stops = new StopStack();

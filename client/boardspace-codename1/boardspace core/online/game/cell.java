@@ -191,7 +191,6 @@ public abstract class cell<FINALTYPE
 	public void assertCenterSet()
 	{
 		G.Assert(hasScreenData(),"From Cell %s has no screen data",this);
-		G.Assert(centerX()>10 && centerY()>10,"real");
 	}
 	/**
 	 * copy the current location (used for animations) from another cell.  Unusually
@@ -349,7 +348,7 @@ public abstract class cell<FINALTYPE
 	 *  Digest the cell's identity
 	 *  @return an integer
 	 */
-	public long Digest() 
+	private long hiddenDigest() 
 	{ if(randomv==0) 
 		{ 
 		return(rackLocation.name().hashCode()+col*200+row+1); 
@@ -363,7 +362,7 @@ public abstract class cell<FINALTYPE
 	 * @param role the current random sequence
 	 * @return an integer
 	 */
-	public long Digest(Random role) { return(Digest()^role.nextLong()); }
+	public long Digest(Random role) { return(hiddenDigest()^role.nextLong()); }
 
 	/**
 	 * static method to Digest a cell with may be null,  a role.

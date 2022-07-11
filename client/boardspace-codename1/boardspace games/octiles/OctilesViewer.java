@@ -32,8 +32,6 @@ import static octiles.OctilesMovespec.*;
  *
  * May 2007 Initial work in progress. 
  *
- * This code is derived from the "HexGameViewer" class.  Refer to the
- 
 */
 
 public class OctilesViewer extends CCanvas<OctilesCell,OctilesBoard> implements OctilesConstants, GameLayoutClient

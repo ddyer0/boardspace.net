@@ -414,7 +414,7 @@ class KulamiBoard extends squareBoard<KulamiCell> implements BoardProtocol,Kulam
     	// different identity for the second use.
         //
         Random r = new Random(64 * 1000); // init the random number generator
-        long v = super.Digest();
+        long v = super.Digest(r);
 		// many games will want to digest pickedSource too
 		// v ^= cell.Digest(r,pickedSource);
 		v ^= chip.Digest(r,playerChip[0]);	// this accounts for the "swap" button
@@ -1079,7 +1079,7 @@ void doSwap(replayMode replay)
      	long randomv = r.nextLong();
      	getNextSolution(randomv);
      	if(!solutionFail)
-     	{	long hash = solutionHash();
+     	{	long hash = solutionHash(r);
      		Boolean hv = solvedHash.get(hash);
      		if(hv==null)
      		{
@@ -1110,9 +1110,9 @@ void doSwap(replayMode replay)
  	System.out.println("};");
  	G.print("Fails "+fails+" Dups "+dups);
  }
- long solutionHash()
+ long solutionHash(Random r)
  {	long v=0;
- 	for(KulamiCell c = allCells; c!=null; c=c.next) { v^=c.Digest(); }
+ 	for(KulamiCell c = allCells; c!=null; c=c.next) { v^=c.Digest(r); }
  	return(v);
  }
 

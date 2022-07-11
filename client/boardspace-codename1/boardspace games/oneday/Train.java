@@ -67,23 +67,10 @@ public class Train implements Digestable,OnedayLocation
 		directionOfTravel = other.directionOfTravel;
 		sameTrain(other);
 	}
-	public long Digest()
-	{	long v = 0;
-		v ^= Line.Digest(line);
-		v ^= Stop.Digest(currentStop);
-		v ^= Stop.Digest(nextStop);
-		v ^= Stop.Digest(prevStop);
-		v ^= (long)(position*2345246);
-		v ^= (long)(timeAtPosition*3526725);
-		v ^= (long)(currentTime*672342);
-		v ^= (status.ordinal()+1)*123461;
-		v ^= (directionOfTravel+1)*673463578;
-		return(v);
-	}
 	public long Digest(Random r)
 	{
 		long v = 0;
-		v ^= Line.Digest(line);
+		v ^= Line.Digest(r,line);
 		v ^= Stop.Digest(r,currentStop);
 		v ^= Stop.Digest(r,nextStop);
 		v ^= Stop.Digest(r,nextStop);

@@ -318,7 +318,7 @@ class TwixtBoard extends rectBoard<TwixtCell> implements BoardProtocol,TwixtCons
     	// different identity for the second use.
         //
         Random r = new Random(64 * 1000); // init the random number generator
-        long v = super.Digest();
+        long v = super.Digest(r);
 		// many games will want to digest pickedSource too
 		v ^= chip.Digest(r,pickedObject);
 		v ^= Digest(r,pickedSourceStack);

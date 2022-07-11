@@ -367,7 +367,7 @@ public class piece implements PlateauConstants, Opcodes, ImageObserver
             if (top_images != null)
             {
                 Image im = (prevchip != null)
-                    ? (stack_images[owner][(prevchip.owner == FIRST_PLAYER_INDEX)
+                    ? (stack_images[owner][(prevchip.owner == 0)
                     ? 0 : 1]) : single_images[owner][0];
                 Image topIm = top_images[owner][vis_top_color -
                     FACE_COLOR_OFFSET];
@@ -388,9 +388,9 @@ public class piece implements PlateauConstants, Opcodes, ImageObserver
                     if ((g != null) && (mystack.b.isCaptured(this)))
                     {
                         GC.setColor(g,Color.red);
-                        GC.drawLine(g,left, top + ((2 * h) / 3), left + w, top +
+                        lib.GC.drawLine(g,left, top + ((2 * h) / 3), left + w, top +
                             h);
-                        GC.drawLine(g,left, top + h, left + w, top +
+                        lib.GC.drawLine(g,left, top + h, left + w, top +
                             ((2 * h) / 3));
                     }
 
@@ -447,7 +447,7 @@ public class piece implements PlateauConstants, Opcodes, ImageObserver
         switch (color)
         {
         default:
-        	throw G.Error("Illegal face color %s",color);
+        	throw G.Error("Illegal face color %s", color);
 
         case UNKNOWN_FACE:
             return (v1);

@@ -149,7 +149,8 @@ class PlayerBoard implements Digestable,CompareTo<PlayerBoard>
 		modChip = mod;
 		bodyCount = 0;
 		usedAutomaticWin = 0;
-		Random r = new Random(924535+color.Digest());
+		Random r0 = new Random(3455346);
+		Random r = new Random(924535+color.Digest(r0));
 		chipCell = new BlackDeathCell(r,BlackDeathId.PlayerChips,color);
 		cards = new BlackDeathCell(r,BlackDeathId.Cards,color);
 		temporaryCards = new BlackDeathCell(r,BlackDeathId.TemporaryCards,color);
@@ -178,10 +179,6 @@ class PlayerBoard implements Digestable,CompareTo<PlayerBoard>
 		virulenceSet = false;
 		initialPlacementDone = false;
 		
-	}
-	public long Digest() 
-	{ Random rv = new Random(120452+index);
-	  return(Digest(rv));
 	}
 
 	public PlayerBoard clone() 	{ 	return(copyTo(null));	}
@@ -252,8 +249,8 @@ class PlayerBoard implements Digestable,CompareTo<PlayerBoard>
 	}
 	
 	private long randomLong()
-	{
-		return(new Random(Digest()).nextLong());
+	{	Random r = new Random(253636098);
+		return(new Random(Digest(r)).nextLong());
 	}
 
 	public int compareTo(PlayerBoard o) {
@@ -287,12 +284,6 @@ class BlackDeathLink implements Digestable
 	static BlackDeathLink zeroCostLink = new BlackDeathLink(null,null,0);
 	{	
 	}
-	public long Digest() {
-		long v = 0;
-		if(from!=null) { v ^= from.Digest()*12677243; }
-		if(to!=null) { v ^= to.Digest()*152736457; }
-		return(v);
-	}
 	public long Digest(Random r) {
 		long v = 0;
 		if(from!=null) { v ^= from.Digest(r)*12677243; }
@@ -304,11 +295,6 @@ class LinkStack extends OStack<BlackDeathLink> implements Digestable
 {
 	public BlackDeathLink[] newComponentArray(int sz) {
 		return new BlackDeathLink[sz];
-	}
-	public long Digest() {
-		long v = 0;
-		for(int lim=size()-1; lim>=0; lim--) { v ^= elementAt(lim).Digest(); } 
-		return(v);
 	}
 	public long Digest(Random r) {
 		long v = 0;
@@ -985,7 +971,7 @@ public class BlackDeathBoard extends RBoard<BlackDeathCell> implements BoardProt
     	// different identity for the second use.
         //
         Random r = new Random(64 * 1000); // init the random number generator
-        long v = super.Digest();
+        long v = super.Digest(r);
 		// many games will want to digest pickedSource too
 		// v ^= cell.Digest(r,pickedSource);
 		v ^= chip.Digest(r,pickedObject);
@@ -994,7 +980,7 @@ public class BlackDeathBoard extends RBoard<BlackDeathCell> implements BoardProt
 		v ^= Digest(r,droppedDestStack);
 		v ^= Digest(r,revision);
 		v ^= r.nextLong()*(board_state.ordinal()*10+whoseTurn);
-		for(int i=0;i<pbs.length;i++) { v ^= pbs[i].Digest(); }
+		for(int i=0;i<pbs.length;i++) { v ^= pbs[i].Digest(r); }
 		v ^= Digest(r,turnOrder);
 		v ^= Digest(r,movementPoints);
 		v ^= Digest(r,infectionPoints);

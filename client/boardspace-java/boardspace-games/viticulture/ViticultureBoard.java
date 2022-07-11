@@ -241,10 +241,6 @@ public int getMaxRevisionLevel() { return(REVISION); }
 		// likewise for adding new states and new cards
 		
 		;		
-
-		public long Digest() {
-			return(0x63463*(ordinal()+1));
-		}
 		public long Digest(Random r) {
 			return(r.nextLong()*(ordinal()+1));
 		}
@@ -661,11 +657,6 @@ public int getMaxRevisionLevel() { return(REVISION); }
 	{
 		public Continuation[] newComponentArray(int sz) { return(new Continuation[sz]); }
 
-		public long Digest() 
-		{ 	long v=0;
-			for(int lim=size()-1; lim>=0; lim--) { v^=elementAt(lim).Digest();		}
-			return(v);
-		}
 		public long Digest(Random r) 
 		{
 			long v=0;
@@ -1423,7 +1414,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
     	// different identity for the second use.
         //
         Random r = new Random(64 * 1000); // init the random number generator
-        long v = super.Digest();
+        long v = super.Digest(r);
 		// many games will want to digest pickedSource too
 		// v ^= cell.Digest(r,pickedSource);
 		v ^= chip.Digest(r,pickedObject);
@@ -2195,7 +2186,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
     
     private void reshuffle(ViticultureCell from,ViticultureCell discards)
     {	
-		long seed = revision>=106 ? randomKey^discards.Digest() : randomKey^Digest();
+		long seed = revision>=106 ? randomKey^discards.CardDigest() : randomKey^Digest();
 		//G.print("Reshuffle "+discards.rackLocation()+" "+seed+" "+year+":"+season);
 		from.copyFrom(discards);
 		discards.reInit();
@@ -6705,7 +6696,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
     			PlayerBoard toplayer = pbs[mm2.from_col-'A'];
     			changeCash(toplayer,1,pb.cashDisplay,replay);
     			changeCash(pb,-1,pb.cashDisplay,replayMode.Replay);	// no animation
-     			long seed = revision>=120 ? toplayer.cards.Digest()^randomKey : Digest();
+     			long seed = revision>=120 ? toplayer.cards.CardDigest()^randomKey : Digest();
     			Random r = new Random(seed);
     			//p1("steal card "+moveNumber);
     			ViticultureChip card = toplayer.takeRandomVisitorCard(r,mm2.from_index);

@@ -140,13 +140,13 @@ import online.game.*;
 	 long Digest(Random r)
 	 {	long v = tilesWon.Digest(r);
 		 v ^= flag.Digest();
-		 v ^= industry.Digest();
+		 v ^= industry.Digest(r);
 		 v ^= moneySpent*r.nextLong();
 		 v ^= usedNoQE*r.nextLong();
 		 v ^= knownBids.Digest(r);
 		 v ^= winningBids.Digest(r);
 		 v ^= moneyScore*r.nextLong();
-		 v ^= noQE.Digest();
+		 v ^= noQE.Digest(r);
 		 v ^= (currentBid+17+(killed?1234556:534232))*r.nextLong();
 		 long rebid = r.nextLong();
 		 long norebid = r.nextLong();
@@ -621,7 +621,7 @@ import online.game.*;
 		 // different identity for the second use.
 		 //
 		 Random r = new Random(64 * 1000); // init the random number generator
-		 long v = super.Digest();
+		 long v = super.Digest(r);
 		 // many games will want to digest pickedSource too
 		 // v ^= cell.Digest(r,pickedSource);
 		 v ^= chip.Digest(r,pickedObject);

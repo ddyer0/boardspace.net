@@ -49,11 +49,6 @@ class Platform implements OnedayLocation
 	public int getScreenY() { return(y); }
 	
 
-	
-	public long Digest() 
-	{ 	return (thisStop.Digest()*42562
-				+ (prevStation==null ? 0 : prevStation.Digest()*6784832));
-	}
 	public long Digest(Random r) {
 		return (thisStop.Digest(r)*42562
 				+ (prevStation==null ? 0 : prevStation.Digest(r)*6784832));
@@ -83,9 +78,7 @@ class Stop implements Digestable,OnedayLocation
 	Platform leftPlatform = null;
 	Platform rightPlatform = null;
 	static StopStack stops = new StopStack();
-	public long Digest() { return(randomv); }
 	public long Digest(Random r) { return(randomv*r.nextLong()); }
-	public static long Digest(Stop s) { return((s==null) ? 0 : s.Digest()); }
 	public static long Digest(Random r,Stop s) { return((s==null) ? 0 : s.Digest(r)); }
 	
 	public void findPlatforms()

@@ -107,6 +107,7 @@ static int[] ZnInCol = { 4, 5, 6, 7, 6, 5, 4 }; // depth of columns, ie A has 4,
 	{
 		String TamskStrings[] = 
 		{  "Tamsk",
+			"Tamsk-U",
 			PlayState,
 			VictoryCondition,
 			StopTime,
@@ -117,6 +118,7 @@ static int[] ZnInCol = { 4, 5, 6, 7, 6, 5, 4 }; // depth of columns, ie A has 4,
 		};
 		String TamskStringPairs[][] = 
 		{   {"Tamsk_family","Tamsk"},
+			{"Tamsk-F","Tamsk-F"},
 			{"Tamsk_variation","Tamsk"},
 			{"Tamsk-U_variation","Tamsk (No Timers)"},
 			{"Tamsk-F_variation","Tamsk (+ Fast Timer)"},

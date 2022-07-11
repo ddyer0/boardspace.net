@@ -257,9 +257,9 @@ class EntrapmentBoard extends squareBoard<EntrapmentCell> implements BoardProtoc
         // digests are invalidated.
         //
         Random r = new Random(64 * 1000); // init the random number generator
-        long v = super.Digest();
+        long v = super.Digest(r);
         for(EntrapmentCell c = allBarriers; c!=null; c=c.next)
-		{	v ^= c.Digest();
+		{	v ^= c.Digest(r);
 		}
         if(robotDepth<=0) {
         	// don't include for the bot, it uses them slightly differently

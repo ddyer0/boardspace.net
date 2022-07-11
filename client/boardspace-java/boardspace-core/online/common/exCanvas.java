@@ -1847,7 +1847,7 @@ graphics when using a touch screen.
           int tax = ax + + (scalew2-scalew3)/2;
           int tx = artCenterText ? tax : (int)(x - (0.5*scalew_d2) + jx);
           int ty = artCenterText ? ay : (int)(y - (0.5*scaleh_d) + jy);
-          GC.drawOutlinedText(gc,true,tx,ty,scalew3,scaleh,Color.yellow,Color.black,text);
+          GC.drawOutlinedText(gc,true,tx,ty,scalew3,scaleh,labelColor,Color.black,text);
          }
           
         return(rr);

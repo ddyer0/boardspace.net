@@ -59,6 +59,9 @@ public interface ViewerProtocol extends ViewGameProtocol
      * midpoint could be used. 
      * */
     public int midGamePoint();
+    /** moves made in this game, used to determine if we should discard a game just launched */
+    public boolean discardable();
+    
     /** this is an entertainment string passed to the lobby.  The first element is the current
     move number, the rest are an ordered list of short summary strings, one for each player. 
     There are a couple of undocumented special formats that help the lobby display things

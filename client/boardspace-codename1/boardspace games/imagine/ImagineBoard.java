@@ -576,7 +576,7 @@ class ImagineBoard
     	// different identity for the second use.
         //
         Random r = new Random(64 * 1000); // init the random number generator
-        long v = super.Digest();
+        long v = super.Digest(r);
         for(int i=0;i<pbs.length;i++) { v ^= pbs[i].Digest(r); }
         v ^= deck.Digest(r);
         v ^= discards.Digest(r);

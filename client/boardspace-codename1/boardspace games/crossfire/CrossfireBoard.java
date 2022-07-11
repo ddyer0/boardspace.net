@@ -205,7 +205,7 @@ class CrossfireBoard extends hexBoard<CrossfireCell> implements BoardProtocol,Cr
         // digests are invalidated.
         //
         Random r = new Random(64 * 1000); // init the random number generator
-    	long v = super.Digest();
+    	long v = super.Digest(r);
 
 		for(int i=FIRST_PLAYER_INDEX; i<=SECOND_PLAYER_INDEX; i++) 
 		{ v ^= reserve[i].height()^r.nextLong(); 

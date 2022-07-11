@@ -128,11 +128,6 @@ public class TammanyCell extends stackCell<TammanyCell,TammanyChip> implements T
 		return(true);
 	}
 	
-	public static long Digest(TammanyCell f[])
-	{	long val = 0;
-		for(TammanyCell c : f) { val ^= c.Digest(); }
-		return(val);
-	}
 
 	public TammanyChip[] newComponentArray(int size) {
 		return new TammanyChip[size];

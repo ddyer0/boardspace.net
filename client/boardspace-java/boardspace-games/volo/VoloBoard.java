@@ -130,7 +130,8 @@ class VoloBoard extends hexBoard<VoloCell> implements BoardProtocol,VoloConstant
      */
     public long Digest()
     {
-    	long v = super.Digest();
+        Random r = new Random(64 * 1000); // init the random number generator
+    	long v = super.Digest(r);
  
         // the basic digestion technique is to xor a bunch of random numbers. 
     	// many object have an associated unique random number, including "chip" and "cell"
@@ -138,7 +139,6 @@ class VoloBoard extends hexBoard<VoloCell> implements BoardProtocol,VoloConstant
     	// in play, and once as the chip currently "picked up", then it must be given a
     	// different identity for the second use.
         //
-        Random r = new Random(64 * 1000); // init the random number generator
         
 		// many games will want to digest pickedSource too
 		if(board_state==VoloState.PUZZLE_STATE) { v ^= cell.Digest(r,pickedSource); }

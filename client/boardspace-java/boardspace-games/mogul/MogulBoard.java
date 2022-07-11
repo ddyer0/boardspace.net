@@ -100,11 +100,11 @@ class MogulBoard extends trackBoard<MogulCell> implements BoardProtocol,MogulCon
 		public void givePoints(int n)
 		{	vp += n;
 		}
-		public long Digest()
-		{
-			long v = (long)vp*0x62723467;
-			v ^= MogulBoard.this.Digest(cards);
-			v ^= MogulBoard.this.Digest(chips);
+		public long Digest(Random r)
+		{	
+			long v = (long)vp*r.nextLong();
+			v ^= MogulBoard.this.Digest(r,cards);
+			v ^= MogulBoard.this.Digest(r,chips);
 			v ^= (hasTakenLoan ? 0x056806023 : 0xf120045) | (hasTakenMoney ? 0x98932985 : 0x7063467e);
 			return(v);
 		}
@@ -274,18 +274,18 @@ class MogulBoard extends trackBoard<MogulCell> implements BoardProtocol,MogulCon
         // note that special logic in MogulCell.Digest makes board cells sensitive 
         // only to the height, This is needed to avoid something really complicated
         // in the robot unmakemove when undoing vp changes.
-        long v = super.Digest();
+        long v = super.Digest(r);
 
-    	v ^= Digest(bank);
-    	v ^= Digest(pot);
-    	v ^= Digest(deck);
-    	v ^= Digest(auction);
-    	v ^= Digest(auctionCopy);
-    	v ^= Digest(discards);
+    	v ^= Digest(r,bank);
+    	v ^= Digest(r,pot);
+    	v ^= Digest(r,deck);
+    	v ^= Digest(r,auction);
+    	v ^= Digest(r,auctionCopy);
+    	v ^= Digest(r,discards);
     	v ^= (secondPlayer+1)*r.nextLong();
     	v ^= (startPlayer+1)*r.nextLong();
     	v ^= cardSaleValue*r.nextLong();
-    	for(int i=0;i<players.length;i++) { v ^=players[i].Digest(); }
+    	for(int i=0;i<players.length;i++) { v ^=players[i].Digest(r); }
 		v ^= chip.Digest(r,pickedObject);
 		v ^= Digest(r,pickedSourceStack);
 		v ^= Digest(r,droppedDestStack);

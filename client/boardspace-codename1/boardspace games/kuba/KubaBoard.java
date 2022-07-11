@@ -280,9 +280,9 @@ class KubaBoard extends rectBoard<KubaCell> implements BoardProtocol,KubaConstan
         // digests are invalidated.
         //
         Random r = new Random(64 * 1000); // init the random number generator
-        long v = super.Digest();
-        v ^= Digest(gutters);
-        v ^= Digest(trays);        
+        long v = super.Digest(r);
+        v ^= Digest(r,gutters);
+        v ^= Digest(r,trays);        
 		v ^= chip.Digest(r,pickedObject);
 		v ^= cell.Digest(r,getSource());
 		v ^= r.nextLong() * (board_state.ordinal()*10+whoseTurn);

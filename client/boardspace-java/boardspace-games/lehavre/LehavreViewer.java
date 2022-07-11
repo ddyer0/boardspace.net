@@ -640,7 +640,7 @@ public class LehavreViewer extends exCanvas implements ViewerProtocol,NetworkInt
     	return("off");
     }
 
-
+    public boolean discardable() { return getBoard().moveNumber()<=2; }
 	public int midGamePoint() {
 		return 10;
 	}

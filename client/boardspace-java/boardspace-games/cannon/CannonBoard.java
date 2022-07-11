@@ -168,7 +168,7 @@ class CannonBoard extends rectBoard<CannonCell> implements BoardProtocol,CannonC
         // digests are invalidated.
         //
         Random r = new Random(64 * 1000); // init the random number generator
-        long v = super.Digest();
+        long v = super.Digest(r);
 
 		v ^= (r.nextLong()*(board_state.ordinal()*10+whoseTurn));
 		v ^= cell.Digest(r,pickedSource);

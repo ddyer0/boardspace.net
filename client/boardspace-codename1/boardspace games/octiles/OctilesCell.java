@@ -69,10 +69,6 @@ public class OctilesCell extends stackCell<OctilesCell,OctilesChip> implements O
 		val += r.nextLong()*(1+rotation);
 		return(val);
 	}
-	public long Digest()
-	{	long val = super.Digest()*(1 + rotation);
-		return(val);
-	}
 	public void reInit() 
 	{	super.reInit();
 		rotation = 0;

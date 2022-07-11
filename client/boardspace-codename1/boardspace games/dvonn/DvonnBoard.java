@@ -323,11 +323,11 @@ class DvonnBoard extends hexBoard<DvonnCell> implements BoardProtocol,DvonnConst
         // digests are invalidated.
         //
         Random r = new Random(64 * 1124); // init the random number generator
-        long v = super.Digest();
+        long v = super.Digest(r);
 
 		v ^= (board_state.ordinal()*10+whoseTurn)*r.nextLong();
-		v ^= Digest(captures);
-		v ^= Digest(rack);
+		v ^= Digest(r,captures);
+		v ^= Digest(r,rack);
 		v ^= cell.Digest(r,pickedStack);
 		v ^= cell.Digest(r,pickedSource);
 

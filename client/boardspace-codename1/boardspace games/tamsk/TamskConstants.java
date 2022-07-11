@@ -1,7 +1,6 @@
 package tamsk;
 
 import lib.CellId;
-import lib.InternationalStrings;
 import lib.OStack;
 import online.game.BaseBoard.BoardState;
 
@@ -104,9 +103,10 @@ static int[] ZnInCol = { 4, 5, 6, 7, 6, 5, 4 }; // depth of columns, ie A has 4,
 	static final String StartTime = "Restart Clock";
 	static final String StartTimeMessage = "Restart the clock running";
 	static void putStrings()
-	{
+	{ /*
 		String TamskStrings[] = 
 		{  "Tamsk",
+			"Tamsk-U",
 			PlayState,
 			VictoryCondition,
 			StopTime,
@@ -117,13 +117,14 @@ static int[] ZnInCol = { 4, 5, 6, 7, 6, 5, 4 }; // depth of columns, ie A has 4,
 		};
 		String TamskStringPairs[][] = 
 		{   {"Tamsk_family","Tamsk"},
+			{"Tamsk-F","Tamsk-F"},
 			{"Tamsk_variation","Tamsk"},
 			{"Tamsk-U_variation","Tamsk (No Timers)"},
 			{"Tamsk-F_variation","Tamsk (+ Fast Timer)"},
 		};
 		InternationalStrings.put(TamskStrings);
 		InternationalStrings.put(TamskStringPairs);
-		
+		*/
 	}
 
 

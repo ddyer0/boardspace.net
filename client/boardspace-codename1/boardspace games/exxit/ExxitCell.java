@@ -172,10 +172,6 @@ public class ExxitCell extends cell<ExxitCell> implements ExxitConstants
 	public long Digest(Random r) 
 		{ return(super.Digest(r)+DigestContents());
 		}
-	// generate a digest of the cell, 
-	public long Digest() 
-		{ return(super.Digest()+DigestContents());
-		}
 	public long DigestContents()
 	{	int val = 1;
 		for(int i=0;i<=pieceIndex;i++) 

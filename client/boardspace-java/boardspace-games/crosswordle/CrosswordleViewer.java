@@ -16,43 +16,46 @@ import lib.ExtendedHashtable;
 import lib.G;
 import lib.GC;
 import lib.HitPoint;
+import lib.Keyboard;
 import lib.LFrameProtocol;
 import lib.Slider;
 import lib.StockArt;
+import lib.StringStack;
 import lib.TextButton;
+import lib.TextContainer;
+import lib.Random;
 import online.game.*;
 import online.game.sgf.sgf_node;
 import online.game.sgf.sgf_property;
 import online.game.sgf.sgf_reader;
 import online.search.SimpleRobotProtocol;
-import rpc.RpcService;
-import vnc.VNCService;
 
 
 
 /**
- *  Initial work Sept 2020 
+ *  Initial work July 2020
+ *  
+ *   Crosswordle is an original idea based on the "Wordle" craze.  
+ *   The basic puzzle is to solve de densely packed crossword grid
 */
 public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard> implements CrosswordleConstants, GameLayoutClient
 {	static final long serialVersionUID = 1000;
 	static final String Crosswords_SGF = "sprint"; // sgf game name
-
+	boolean useKeyboard = G.isCodename1();
+	Keyboard keyboard = null;
 	// file names for jpeg images and masks
-	static final String ImageDir = "/sprint/images/";
-	boolean DRAWBACKGROUNDTILES = true;
+	static final String ImageDir = "/crosswordle/images/";
      // colors
     private Color HighlightColor = new Color(0.2f, 0.95f, 0.75f);
     private Color GridColor = Color.black;
     private Color chatBackgroundColor = new Color(235,235,235);
     private Color rackBackGroundColor = new Color(192,192,192);
     private Color boardBackgroundColor = new Color(220,165,155);
-    private Color newLetterColor = new Color(0.25f,0.25f,1.0f);
-    private Color tempLetterColor = new Color(0.1f,0.5f,0.1f);
-	private Color middleGray = new Color(0x64,0x64,0x64);
     private Dictionary dictionary = Dictionary.getInstance();
-    private boolean robotGame = false;
     private int rackSize = 2;
     
+	private TextContainer inputField = new TextContainer(CrosswordleId.InputField);
+
     // private state
     private CrosswordleBoard bb = null; //the board from which we are displaying
     private int CELLSIZE; 	//size of the layout cell
@@ -73,14 +76,14 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
     //
     // zones ought to be mostly irrelevant if there is only one board layout.
     //
-    private Rectangle chipRects[] = addZoneRect("chips",4);
+    private Rectangle guessRect = addRect("guess");
+    private Rectangle resultRect = addRect("result");
+    private Rectangle gridRect = addRect("grid");
+    
     private Rectangle scoreRects[] = addZoneRect("playerScore",4);
-    private Rectangle eyeRects[] = addZoneRect("PlayerEye",4);
     private Rectangle noticeRects[] = addRect("notice",4);
-    private Rectangle drawPileRect = addRect("drawPileRect");
     private TextButton passButton = addButton(PASS,GameId.HitPassButton,ExplainPass,
 			HighlightColor, rackBackGroundColor);
-    private Rectangle rotateRect = addRect("rotate");
     private boolean lockOption = false;
     private Rectangle lockRect = addRect("lock");
     private Rectangle largerBoardRect = addRect(".largerBoard");
@@ -88,15 +91,11 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
     //private Rectangle repRect = addRect("repRect");	// not needed for pushfight
     int boardRotation = 0;
     double effectiveBoardRotation = 0.0;
-    private Rectangle bigRack = addZoneRect("bigrack");
-    private Rectangle backwardsRect = addRect("backwards");
-    private Rectangle diagonalsRect = addRect("diagonals");
-    private Rectangle connectedRect = addRect("connected");
     private Rectangle dupsRect = addRect("duplicates");
     private Rectangle openRect = addRect("openrack");
     private Rectangle noticeRect = addRect("notice");
-    private TextButton checkWordsButton = addButton(JustWordsMessage,CrosswordleId.CheckWords,
-    		JustWordsHelp,
+    private TextButton checkWordsButton = addButton("test words",CrosswordleId.CheckWords,
+    		"run whatever",
 						HighlightColor, rackBackGroundColor);
     private Slider vocabularyRect = new Slider(VocabularyMessage,CrosswordleId.Vocabulary,0,1,
     		CrosswordlePlay.vocabularyPart(online.search.RobotProtocol.DUMBOT_LEVEL));
@@ -122,7 +121,7 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
     {	
     	// for games with more than two players, the default players list should be 
     	// adjusted to the actual number, adjusted by the min and max
-       	int players_in_game = info.getInt(OnlineConstants.PLAYERS_IN_GAME,chipRects.length);
+       	int players_in_game = info.getInt(OnlineConstants.PLAYERS_IN_GAME,scoreRects.length);
     	// 
     	// for games that require some random initialization, the random key should be
     	// captured at this point and passed to the the board init too.
@@ -135,18 +134,19 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
         	CrosswordleConstants.putStrings();
         }
         
-        String type = info.getString(OnlineConstants.GAMETYPE, CrosswordleVariation.Crosswordle.name);
+        String type = info.getString(OnlineConstants.GAMETYPE, CrosswordleVariation.Crosswordle_55.name);
         // recommended procedure is to supply players and randomkey, even for games which
         // are current strictly 2 player and no-randomization.  It will make it easier when
         // later, some variant is created, or the game code base is re purposed as the basis
         // for another game.
         bb = new CrosswordleBoard(type,players_in_game,randomKey,getStartingColorMap(),dictionary,CrosswordleBoard.REVISION);
-        robotGame = sharedInfo.get(exHashtable.ROBOTGAME)!=null;
+        //robotGame = sharedInfo.get(exHashtable.ROBOTGAME)!=null;
         // some problems with the animation
         // useDirectDrawing();
         doInit(false);
         adjustPlayers(players_in_game);
-        
+        inputField.singleLine = true;
+
         if(G.debug()) { saveScreen = myFrame.addAction("Save Board Image",deferredEvents); }
 
     }
@@ -241,16 +241,20 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
        	layout.alwaysPlaceDone = true;
        	layout.placeDoneEditRep(doneW,doneW,passButton,checkWordsButton,vocabularyRect);
       	 
+       	layout.placeRectangle(guessRect,stateH*12,stateH*2,BoxAlignment.Center);
+       	inputField.setBounds(guessRect);
+       	inputField.setFont(G.getFont(largeBoldFont(),stateH*9/5));
+       	
+       	layout.placeRectangle(resultRect,stateH*12,stateH*4,BoxAlignment.Center);
+       	layout.placeRectangle(gridRect,stateH*12,stateH*12,BoxAlignment.Center);
+       	
     	layout.placeTheVcr(this,vcrw,vcrw*3/2);
        	
-       	commonPlayer pl = getPlayerOrTemp(0);
-       	int spare = G.Height(pl.playerBox)/2;
-       	layout.placeRectangle(drawPileRect,spare,spare,BoxAlignment.Center);
        	       	
     	Rectangle main = layout.getMainRectangle();
     	int mainX = G.Left(main);
     	int mainY = G.Top(main);
-    	int mainW = G.Width(main)-stateH*2;
+    	int mainW = G.Width(main);
     	int mainH = G.Height(main)-stateH*2;
     	
     	// There are two classes of boards that should be rotated. For boards with a strong
@@ -258,8 +262,8 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
     	// the test.  For boards that are noticably rectangular, such as Push Fight,
     	// use mainW<mainH
     	boolean planned = plannedSeating();
-    	int nrows =  bb.nrows+(planned?0:2);
-        int ncols =  bb.ncols+(planned?0:2);
+    	int nrows =  bb.nrows;
+        int ncols =  bb.ncols;
   	
     	// calculate a suitable cell size for the board
     	double cs = Math.min((double)mainW/ncols,(double)mainH/nrows);
@@ -279,20 +283,13 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
         int stateY = boardY;
         int stateX = boardX;
     	int stripeW = CELLSIZE;
-    	G.placeRow(stateX,stateY,boardW ,stateH,stateRect,rotateRect,lockRect,altNoChatRect);
-    	G.SetRect(boardRect,boardX-(planned?CELLSIZE:0),boardY,boardW,boardH-(planned?0:2*CELLSIZE));
+    	G.placeRow(stateX,stateY,boardW ,stateH,stateRect,lockRect,altNoChatRect);
+    	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	G.SetRect(goalRect, boardX, G.Bottom(boardRect),boardW,stateH);   
-    	G.SetRect(bigRack, boardX+CELLSIZE/2, G.Bottom(goalRect), boardW-CELLSIZE-stripeW, planned?0:CELLSIZE*2);
     	G.SetRect(largerBoardRect,boardX-stateH,boardY-stateH,boardW+stateH*2,boardH+stateH*2);
 
     	int stripeLeft = G.Right(largerBoardRect)-stripeW-CELLSIZE/3;
     	int stripeTop = boardY+boardH-9*stripeW;
-    	G.SetRect(backwardsRect,stripeLeft,stripeTop,stripeW,stripeW);
-    	stripeTop += stripeW+stateH/2;
-    	G.SetRect(diagonalsRect,stripeLeft,stripeTop,stripeW,stripeW);
-    	stripeTop += stripeW+stateH/2;
-    	G.SetRect(connectedRect,stripeLeft,stripeTop,stripeW,stripeW);
-       	stripeTop += stripeW+stateH/2;
     	G.SetRect(dupsRect,stripeLeft,stripeTop,stripeW,stripeW);
        	stripeTop += stripeW+stateH/2;
     	G.SetRect(openRect,stripeLeft,stripeTop,stripeW,stripeW);
@@ -308,13 +305,10 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
     }
     public Rectangle createPlayerGroup(int player,int x,int y,double rotation,int unitsize)
     {	commonPlayer pl = getPlayerOrTemp(player);
-    	Rectangle chip = chipRects[player];
     	Rectangle score = scoreRects[player];
-    	Rectangle eye = eyeRects[player];
     	int scoreW = unitsize*3;
     	int scoreH = unitsize*2;
     	G.SetRect(score,x,y,scoreW,scoreH);
-    	G.SetRect(eye, x, y+scoreH, unitsize*2, unitsize*2);
     	Rectangle box =  pl.createRectangularPictureGroup(x+scoreW,y,unitsize);
     	Rectangle done = doneRects[player];
     	Rectangle notice = noticeRects[player];
@@ -323,248 +317,9 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
     	int donel = G.Right(box)+unitsize/2;
     	G.SetRect(done,donel,G.Top(box)+unitsize/2,doneW,doneW/2);
     	G.SetRect(notice, donel , G.Bottom(done),doneW*2,doneW/4);
-    	G.union(box, done,score,eye,notice);
-    	int unith = rackSize*unitsize;
-       	G.SetRect(chip,	x,	G.Bottom(box),	unith*20/4,unith*7/8);
-        G.union(box, chip);
+    	G.union(box, done,score,notice);
     	pl.displayRotation = rotation;
     	return(box);
-    }
-    private void drawOptions(Graphics gc,HitPoint highlight,HitPoint highlightAll,CrosswordleBoard gb)
-    {
-   	
-     	drawOptionIcon(gc,Option.NoDuplicate,dupsRect,highlight,highlightAll);
-  
-    }
-    private void drawOptionIcon(Graphics gc,Option op,Rectangle r,HitPoint highlight,HitPoint highlightAll)
-    {	
-     	boolean value = bb.getOptionValue(op);
-    	CrosswordleChip chip = value ? op.onIcon : op.offIcon;
-    	if(chip.drawChip(gc,this,r,!robotGame || op.allowedForRobot ? highlight : null,CrosswordleId.SetOption,s.get(op.message)))
-    		{
-    		highlight.hitObject = "SetOption "+op.name()+" "+!value;
-    		}
-    	GC.frameRect(gc,Color.black,r);
-     }
-    private void drawDrawPile(Graphics gc,HitPoint highlight,CrosswordleBoard gb)
-    {	Rectangle r = drawPileRect;
-    	int boxw = G.Width(r);
-    	int cs = Math.min(gb.cellSize(),boxw/4);
-    	int w = boxw-cs;
-    	int h = G.Height(r)-cs-cs/2;
-    	int l = G.Left(r)+cs/2;
-    	int t = G.Top(r)+cs/2;
-    	boolean inside = G.pointInRect(highlight, r);
-    	
-    	boolean canHit = inside && gb.LegalToHitPool(getOurMovingObject(highlight)>=0);
-		gb.drawPile.setLastSize(cs);
-    	GC.frameRect(gc,Color.black,r);
-      	if(canHit && highlight!=null)
-      		{
-      		highlight.hitObject = gb.drawPile;
-      		highlight.hitCode=CrosswordleId.DrawPile;
-      		highlight.spriteColor = Color.red;
-      		highlight.spriteRect = r;
-      		}
-      	if(inside)
-      	{
-      		HitPoint.setHelpText(highlight, r,s.get(DumpRackMessage));
-      	}
-    	if(w>0 && h>0)
-    	{
-    	Random rand = new Random(2324);
-    	int tilesLeft = gb.drawPile.height();
-    	CrosswordleCell last = gb.lastDropped();
-    	for(int i=0;i<tilesLeft;i++)
-    	{
-    		int dx = l+rand.nextInt(w);
-    		int dy = t+rand.nextInt(h);
-    		boolean hide = !((i==tilesLeft-1) && (last==gb.drawPile));
-    		if(gb.drawPile.chipAtIndex(i).drawChip(gc, this, canHit?highlight:null, CrosswordleId.DrawPile,cs,dx,dy,
-    				hide ? CrosswordleChip.BACK : null))
-    		{
-    			highlight.hitObject = gb.drawPile;
-    		}
-    		gb.drawPile.rotateCurrentCenter(gc,dx,dy);
-    	}
-    	GC.setFont(gc, largeBoldFont());
-    	GC.Text(gc, true, l,G.Bottom(r)-cs/2,w,cs/2,Color.black,null,s.get(TilesLeft,tilesLeft));
-    	}
-     }
-	// draw a box of spare chips. For pushfight it's purely for effect, but if you
-    // wish you can pick up and drop chips.
-    private void DrawChipPool(Graphics gc, Rectangle r,Rectangle er, commonPlayer pl, HitPoint highlight,HitPoint highlightAll,CrosswordleBoard gb)
-    {	int pidx = pl.boardIndex;
-    	Rectangle rack = chipRects[pidx];
-    	commonPlayer ap = getActivePlayer();
-       	 
-    	if(G.offline() || (pl==ap))
-    	{
-    		drawEye(gc,gb,er,gb.openRack[pidx],highlightAll,pl.boardIndex);
-    	}
-    	CrosswordleCell prack[] = gb.getPlayerRack(pidx);
-    	if(prack!=null)
-    	{
-       	if(allowed_to_edit || ap==pl) { for(CrosswordleCell c : prack) { c.seeFlyingTiles=true; }}
-       	boolean open = gb.openRack[pidx];
-      	boolean showTiles = open || allowed_to_edit; 
-       	boolean anyRack = G.offline() || allowed_to_edit || (ap==pl);
-       	drawRack(gc,gb,rack,prack,gb.getPlayerMappedRack(pidx),gb.getRackMap(pidx),gb.getMapPick(pidx),!showTiles ,anyRack ? highlightAll : null,!anyRack);  	
-    	}}
-    private void drawEye(Graphics gc,CrosswordleBoard gb,Rectangle er,boolean showing,HitPoint highlightAll,int who)
-    {
-   		StockArt chip = showing ? StockArt.NoEye : StockArt.Eye;
-   		String help = s.get(chip==StockArt.Eye ? ShowTilesMessage : HideTilesMessage);
-		if(chip.drawChip(gc, this, er, highlightAll, CrosswordleId.EyeOption,help))
-		{	
-	   		boolean newv = !showing;
-			highlightAll.hitObject = (char)('A'+who)+(newv ?" true":" false");
-		}
-    }
-    /**
-     * major pain taken to allow racks to be rearranged any time.  There is an intermediate
-     * map, used only by the user interface, which rearranges the location of the actual
-     * cells containing the player's letters.  When the user picks up one of their letters,
-     * nothing changes in the actual rack, and nothing is transmitted to the opponents.
-     * When the used drops the letter back onto the rack, the map is reordered but again,
-     * nothing changes from the public perspective.  If a tile is dropped on the board,
-     * which can only happen when it is the player's turn, an actual "move tile" is sent.
-     * 
-     * Additional complications take care of displaying the sprite with the correct
-     * orientation, both during this local rearrangement and global play on the board,
-     * which is being rotated to match the player's seat.
-     * @param gc
-     * @param gb
-     * @param rack
-     * @param rackmap
-     * @param cells
-     * @param map
-     * @param picked
-     * @param censor
-     * @param highlight
-     * @param rackOnly
-     * @param pl
-     */
-    private void drawRack(Graphics gc,CrosswordleBoard gb, Rectangle rack,
-    		CrosswordleCell[]cells,
-    		CrosswordleCell[]mappedCells,
-    		int map[],int picked,boolean censor,HitPoint highlight,boolean rackOnly)
-    {
-    	int h = G.Height(rack);
-    	int w = G.Width(rack);
-    	int cy = G.centerY(rack)-h/10;
-    	int nsteps = map.length;
-    	int xstep = Math.min(w/(nsteps+1),h*3/4); 
-    	int tileSize = (int)(xstep*1);
-    	int cx = G.Left(rack)+(w-xstep*nsteps)/2+xstep/2;
-       	GC.frameRect(gc, Color.black, rack);
-
-       	//.print("");
-       	// for remote viewers, always use this size
-       	if(remoteViewer>=0) { CELLSIZE = tileSize; }
-       	/* this was useful when debugging rack manipulation code 
-       	if(false)//G.debug())
-       	{
-       	int cx0 = cx;
-     	for(int idx = 0;idx<cells.length;idx++)
-   		{
-     	CrosswordleCell d = cells[idx];
-       	if(d!=null) 
-       	{
-      	setLetterColor(gc,gb,d);
-      	//print("Draw "+idx+" "+c+" "+top+" @ "+cx);
-      	CrosswordleChip dtop = d.topChip();
-      	if(dtop!=null) { d.drawChip(gc, this, dtop, tileSize*2/3, cx0, cy+tileSize*2/3, null);}
-      	cx0 += xstep;
-       	}}}
-       	 */
-    	for(int idx = 0;idx<nsteps;idx++)
-		{
-    	int mapValue = map[idx];
-    	CrosswordleCell c = mapValue>=0 ? cells[mapValue] : null;
-    	CrosswordleCell mc = mappedCells[idx];
-    	CrosswordleChip top = c==null ? null : c.topChip();
-    	mc.reInit();
-    	if(top!=null) { mc.addChip(top); }
-    	
-       	boolean legalPick = gb.LegalToHitChips(mc);
-    	if(picked==idx) { top = null; }
-     	boolean localDrop = picked>=0;
-     	boolean moving = gb.pickedObject!=null;
-    	boolean ourDrop = !rackOnly && moving;	// we can drop from the board, and something is moving
-    	boolean remoteDrop = ourDrop && gb.LegalToHitChips(mc);
-    	char myCol = cells[0].col;
-    	boolean canDrop = (localDrop | remoteDrop);
-    	boolean canPick = legalPick && 
-    				(!(localDrop || remoteDrop) 
-    						&& (top!=null)
-    						&& !canDrop 
-    						&& !ourDrop);
-
-    	{
-       	if(mc.activeAnimationHeight()>0) { top = null; }
-      	setLetterColor(gc,gb,mc);
-      	//print("Draw "+idx+" "+c+" "+top+" @ "+cx);
-    	mc.drawChip(gc, this, top, tileSize, cx, cy, censor ? CrosswordleChip.BACK : null);
-    	if(c!=null) { c.copyCurrentCenter(mc);	}// set the center so animations look right
-       	}
-
-    	if(canDrop && top==null)
-    	{
-    		StockArt.SmallO.drawChip(gc,this,CELLSIZE,cx,cy,null);
-    		
-    	}  
-     	if((canPick||canDrop) && G.pointInRect(highlight, cx-tileSize/2,cy-tileSize/2,tileSize,tileSize))
-    	{
-   			highlight.hit_x = cx;
-    		highlight.hit_y = cy;
-			highlight.spriteColor = Color.red;
-			highlight.awidth = tileSize;
-    		if(remoteDrop)
-    		{	c = null;
-    			// it's important that the actual destination cell in the rack
-    			// is chosen consistently and unrelated to the UI cell the 
-    			// user actually touches.  If remote screens are in use, the
-    			// tile can be dropped separately on both screens.
-    		    for(int i=0;c==null && i<cells.length;i++) 
-    				{ if(cells[i].topChip()==null) { c = cells[i]; }
-    				}
- 
-    		    if(c!=null)
-    		    {
-    		    highlight.hitObject = G.concat("droponrack Rack ",c.col," ",c.row," ", idx);	
-    			highlight.hitCode = CrosswordleId.Rack ;
-    		    }
-    		    else { highlight.spriteColor = null; }
-    		}
-    		else if(remoteViewer>=0)
-    		{	
-    			if(localDrop)
-    			{
-    				highlight.hitObject = G.concat("remotedrop Rack ",myCol," ",idx);
-    			}
-    			else
-    			{
-    				// pick by a remote viewer
-    				highlight.hitObject = G.concat("rlift Rack ",myCol," ",idx," ",map[idx]);
-    			}
-    			highlight.hitCode = CrosswordleId.RemoteRack ;
-    		}
-    		else if(localDrop )
-    		{	
-    			highlight.hitObject = G.concat("replace Rack ",myCol," ",idx);
-    			highlight.hitCode = CrosswordleId.LocalRack;
-    			
-    		}
-    		else
-    		{   highlight.hitObject = G.concat("lift Rack ",myCol," ",idx," ",map[idx]);
-    			highlight.hitCode = CrosswordleId.LocalRack;
-    		}
-			
-    	}
-		cx += xstep;
-		}
-
     }
 
 
@@ -574,48 +329,8 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
     	GC.frameRect(gc,Color.black,r);
     	GC.Text(gc, true,r,Color.black,null,""+val);
     }
-    /**
-     * return the dynamically adjusted size during an animation.  This allows
-     * compensation for things like the zoom level of the board changing after
-     * the animation is started.
-     */
-    //public int activeAnimationSize(Drawable chip,int thissize) { 	 return(thissize); 	} 
-    
-    private CrosswordleCell getMovingTile(int ap)
-    {
-    	int picked = bb.getMapTarget(ap);
-    	if(picked>=0) { 
-    		CrosswordleCell[] prack = bb.getPlayerRack(ap);
-    		if(prack==null) { return null;}
-    		if(picked>=0 && picked<prack.length)
-    		{
-    			return prack[picked];
-    		}
-    	}
-    	return(null);
-    }
-    private CrosswordleCell getPickedRackCell(HitPoint highlight)
-    {
-       	int rm = remoteWindowIndex(highlight);
-    	if(rm>=0)
-    	{	CrosswordleCell c = getMovingTile(rm);
-    		if(c!=null) { return(c); }
-    	}
-    	else {
-    	{int ap = allowed_to_edit||G.offline() ? bb.whoseTurn : getActivePlayer().boardIndex;
-    	 CrosswordleCell c = getMovingTile(ap);
-    	 if(c!=null) { return(c); }
-    	}
+
  
-     	if(allowed_to_edit || G.offline())
-    	{	commonPlayer pl = inPlayerBox(highlight);
-    		if(pl!=null)
-    			{CrosswordleCell c = getMovingTile(pl.boardIndex);
-    			return(c);
-    			}
-    	}}
-    	return(null);
-    }
     // return the player whose chip rect this HitPoint is in
     // considering the rotation of the player block
     
@@ -627,19 +342,6 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
     	if((pl!=null) && pl.inPlayerBox(hp)) { return(pl); }
     	}
     	return(null);
-    }
-    public int getOurMovingObject(HitPoint highlight)
-    {	CrosswordleCell picked = getPickedRackCell(highlight);
-    	if(picked!=null)
-    	{
-    		CrosswordleChip top = picked.topChip();
-    		if(top!=null) { return(top.chipNumber()); }
-    	}
-        if (OurMove())
-        {
-            return (getBoard().movingObjectIndex());
-        }
-        return (NothingMoving);
     }
 
     public int getMovingObject(HitPoint highlight)
@@ -716,17 +418,10 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
       GC.setRotatedContext(gc,largerBoardRect,null,effectiveBoardRotation);
       drawFixedBoard(gc,boardRect);
       GC.unsetRotatedContext(gc,null);  
-      if((remoteViewer<0) && DRAWBACKGROUNDTILES)
-      {		GC.setRotatedContext(gc,drawPileRect,null,effectiveBoardRotation);
-    		drawDrawPile(gc,null,bb);
-    		GC.unsetRotatedContext(gc,null);  
-      }
      }
     public void drawFixedElements(Graphics gc,boolean complete)
     {	commonPlayer pl = getPlayerOrTemp(bb.whoseTurn);
     	if(!lockOption) { effectiveBoardRotation = (boardRotation*Math.PI/2+pl.displayRotation); }
-    	complete |= (DRAWBACKGROUNDTILES && (digestFixedTiles()!=fixedTileDigest))
-    			     || pendingFullRefresh;
     	super.drawFixedElements(gc,complete);
     }
 
@@ -767,62 +462,11 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
 	    	  int xpos = G.Left(brect) + bb.cellToX(c.col, c.row);
 	    	  CrosswordleChip.Tile.drawChip(gc,this,xsize,xpos,ypos,null);              
 	      }     
-	      for(CrosswordleCell c = bb.allPostCells; c!=null; c=c.next)
-	      {
-	    	  int ypos = G.Bottom(brect) - bb.cellToY(c.col, c.row) - bb.cellSize()/2;
-	    	  int xpos = G.Left(brect) + bb.cellToX(c.col, c.row) + bb.cellSize()/2;
-	    	  CrosswordleChip tile = c.topChip();
-	    	  //tile.scale = new double[] { 0.42,0.32,0.78};
-	    	  if(tile!=null) { tile.drawChip(gc,this,xsize,xpos,ypos,null); }	               
-	       }       	
-	      if(DRAWBACKGROUNDTILES) 
-	    	  { drawFixedTiles(gc,brect,bb);
-	    	  }
 	  	}
 	//      draw
     }
-    //
-    // in this game, most of the letters on the board and all of the drawpile
-    // will change very slowly if at all.  We mark appropriate cells as "fixed"
-    // and draw those with the background.  On PCs this is hardly noticable, 
-    // but on mobiles if makes a big difference.
-    // This digest determines when the background has changed, and needs to be redrawn.
-    public long digestFixedTiles()
-    {	
-    	long v = 0;
-    	for(CrosswordleCell cell = bb.allCells; cell!=null; cell=cell.next)
-        {	if(cell.isFixed)
-        	{
-        	v ^= cell.Digest();
-        	}
-        }
-    	int tilesLeft = bb.drawPile.height();
-    	v ^= (tilesLeft*263725265);
-    	v ^= G.rotationQuarterTurns(effectiveBoardRotation)*29526373;
-    	return(v);
-    }
-    long fixedTileDigest = 0;
-    private boolean pendingFullRefresh = false;
-    public void drawFixedTiles(Graphics gc,Rectangle brect,CrosswordleBoard gb)
-    {	long v = 0;
-    	pendingFullRefresh = !spritesIdle();
-    	Enumeration<CrosswordleCell>cells = gb.getIterator(Itype.RLTB);
-    	while(cells.hasMoreElements())
-        {	CrosswordleCell cell = cells.nextElement();
-        if(cell.isFixed)
-        	{
-        	int ypos = G.Bottom(brect) - gb.cellToY(cell);
-        	int xpos = G.Left(brect) + gb.cellToX(cell);
-        	v ^= cell.Digest();
-        	setLetterColor(gc,gb,cell);
-        	cell.drawStack(gc,this,null,CELLSIZE,xpos,ypos,1,1,null);
-        	}
-        }
-    	int tilesLeft = gb.drawPile.height();
-    	v ^= (tilesLeft*263725265);
-    	v ^= G.rotationQuarterTurns(effectiveBoardRotation)*29526373;
-        fixedTileDigest=v;
-    }
+
+
     /**
      * translate the mouse coordinate x,y into a size-independent representation
      * presumably based on the cell grid.  This is used to transmit our mouse
@@ -834,34 +478,11 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
      */
     public String encodeScreenZone(int x, int y,Point p)
     {
-    	if (bigRack.contains(x, y)&&!mutable_game_record)
-    	{	G.SetLeft(p, -1);
-    		G.SetTop(p,-1);
-    		return("off");
-    	}
+ 
     	return(super.encodeScreenZone(x,y,p));
     }
     
-public void setLetterColor(Graphics gc,CrosswordleBoard gb,CrosswordleCell cell)
-{	if(gc!=null)
-	{
-    CrosswordleChip ch = cell.topChip();
-    if(ch!=null)
-    {
-    boolean blank = ch.isBlank();
-    boolean isDest = false;
-    Color col = blank
-    			? middleGray 
-    				: gb.lastLetters.contains(cell) 
-    					? newLetterColor 
-    					: (isDest = gb.isADest(cell)) ? tempLetterColor : Color.black
-    					;
-    cell.isFixed = isDest;
-	labelColor = col;
-	GC.setColor(gc,col);
-    }
-    }
-}
+
 	CrosswordleCell definitionCell = null;
     /**
 	 * draw the board and the chips on it.  This is also called when not actually drawing, to
@@ -882,10 +503,9 @@ public void setLetterColor(Graphics gc,CrosswordleBoard gb,CrosswordleCell cell)
         // using closestCell is sometimes preferable to G.PointInside(highlight, xpos, ypos, CELLRADIUS)
         // because there will be no gaps or overlaps between cells.
         CrosswordleCell closestCell = gb.closestCell(all,brect);
-        SprintState state = gb.getState();
-        boolean resolve = state==SprintState.ResolveBlank;
+        definitionCell = null;
         boolean moving = getOurMovingObject(highlight)>=0;
-        boolean hitCell = !resolve && (highlight!=null) && gb.LegalToHitBoard(closestCell,moving);
+        boolean hitCell = (highlight!=null) && gb.LegalToHitBoard(closestCell,moving);
         if(hitCell)
         { // note what we hit, row, col, and cell
           boolean empty = closestCell.isEmpty();
@@ -894,20 +514,9 @@ public void setLetterColor(Graphics gc,CrosswordleBoard gb,CrosswordleCell cell)
           highlight.hitObject = closestCell;
           highlight.arrow = (empty||picked) ? StockArt.DownArrow : StockArt.UpArrow;
           highlight.awidth = CELLSIZE;
+          if((closestCell.col=='A') || closestCell.row==bb.ncols) { definitionCell = closestCell; }
         }
-        definitionCell = null;
-        if(closestCell!=null && all!=null && !gb.isADest(closestCell))
-        {	for(int lim=gb.words.size()-1; lim>=0; lim--)
-        	{
-        	Word word = gb.words.elementAt(lim);
-        	if(!resolve && (word.seed==closestCell))
-        	{	all.hitCode = CrosswordleId.Definition;
-        		all.hitObject = closestCell;
-        		all.setHelpText(s.get(GetDefinitionMessage,word.name));
-        		definitionCell = closestCell;
-        	}
-        	}
-        }
+ 
         // this enumerates the cells in the board in an arbitrary order.  A more
         // conventional double xy loop might be needed if the graphics overlap and
         // depend on the shadows being cast correctly.
@@ -923,53 +532,51 @@ public void setLetterColor(Graphics gc,CrosswordleBoard gb,CrosswordleCell cell)
              { // checking for pointable position
             	 StockArt.SmallO.drawChip(gc,this,gb.cellSize()*5,xpos,ypos,null);                
              }
-            if(!cell.isFixed || !DRAWBACKGROUNDTILES)
+            String msg = null;
+            switch(cell.color)
             {
-            setLetterColor(gc,gb,cell);
-            cell.drawStack(gc,this,null,CELLSIZE,xpos,ypos,1,1,null);
+            case Blank: 
+            	msg = CrosswordleChip.BACK;
+            	break;
+            case Yellow: 
+            	msg = CrosswordleChip.YELLOW;
+            	break;
+            case Green: 
+            	msg = CrosswordleChip.GREEN;
+            	break;
+            default: break;
+            
             }
-            if(!resolve && G.pointInRect(all, xpos,ypos,CELLSIZE,CELLSIZE))
-            	{
-            	CrosswordleCell cc = gb.getPostCell(cell.col,cell.row-1);
-            	if(cc!=null) {
-            		CrosswordleChip top = cc.topChip();
-            		if(top!=null && top.tip!=null)
-            		{
-            			all.setHelpText(s.get(top.tip));
-            		}
-            	}
-            	}
+            cell.drawStack(gc,this,null,CELLSIZE,xpos,ypos,1,1,msg);
             //if(G.debug() && (gb.endCaps.contains(cell) || gb.startCaps.contains(cell)))
             //	{ StockArt.SmallO.drawChip(gc, this, CELLSIZE,xpos,ypos,null); 
             //	}
             }
-        }
-       if(resolve)
-        {
-        	drawResolveBlank(gc,gb,brect,highlight);
         }
         if(definitionCell!=null)
         {
         	drawDefinition(gc,gb,all);
         }
     }
-    public void drawDefinition(Graphics gc,CrosswordleBoard gb,HitPoint hp)
+     public void drawDefinition(Graphics gc,CrosswordleBoard gb,HitPoint hp)
     {	
     	CrosswordleCell target = definitionCell;
+    	StringStack words = new StringStack();
+    	if(target.col=='A') { words.push(bb.collectWord(target,CrosswordleBoard.CELL_RIGHT())); }
+    	if(target.row==bb.nrows) { words.push(bb.collectWord(target,CrosswordleBoard.CELL_DOWN())); } 
+    	
     	StringBuilder message = new StringBuilder();
-    	WordStack words = gb.words;
-    	FontMetrics fm = G.getFontMetrics(standardPlainFont());
+     	FontMetrics fm = G.getFontMetrics(standardPlainFont());
     	int targetWidth = G.Width(boardRect)/2;
     	if(target!=null && words!=null && hp!=null)
     	{	for(int lim=words.size()-1; lim>=0; lim--)
     		{
-    		Word word = words.elementAt(lim);
-    		if(word.seed==target)
+    		String word = words.elementAt(lim);
     			{
-    			Entry e = dictionary.get(word.name);
+    			Entry e = dictionary.get(word);
     			if(e!=null)
     				{
-    				message.append(word.name);
+    				message.append(word);
     				message.append(": ");
     				String def = e.getDefinition();
     				if(def!=null)
@@ -986,56 +593,7 @@ public void setLetterColor(Graphics gc,CrosswordleBoard gb,CrosswordleCell cell)
     	hp.setHelpText(m);
     	}
     }
-    public void drawResolveBlank(Graphics gc, CrosswordleBoard gb, Rectangle brect, HitPoint highlight)
-    {
-    	int w = CELLSIZE*7;
-    	int h = CELLSIZE*6;
-    	CrosswordleCell focus = gb.lastDropped();
-    	if(focus!=null)
-    	{	// focus has to be non-null, unless there's a bug somewhere else.
-    		// guess why this test was added. :)
-    	boolean horizontal = gb.dropIsHorizontal();
-    	int left = G.Left(brect);
-    	int top = G.Top(brect);
-    	int bottom = G.Bottom(brect);
-    	int right = G.Right(brect);
-    	int xp = left+gb.cellToX(focus);
-    	int yp = bottom-gb.cellToY(focus);
-    	int q = CELLSIZE/5;
-    	if(horizontal)
-    	{	// place above or below
-    		if(focus.row*2>gb.nrows) { yp += CELLSIZE; } 
-    		else { yp -= (h+CELLSIZE); }
-    		xp = Math.max(Math.min(right-w-q,xp-w/2),left+q);
-    		}
-    	else {
-    		// place left or right
-    		if((focus.col-'A')*2<gb.ncols) { xp += CELLSIZE; }
-    		else { xp -= (w+CELLSIZE); }
-    		yp = Math.max(top+q,Math.min(yp-h/2,bottom-h-q));
-    	}
-    	Rectangle r = new Rectangle(xp,yp,w,h);
-    StockArt.Scrim.image.stretchImage(gc,r);
-    	GC.frameRect(gc, Color.black, r);
-    	GC.Text(gc,true,xp,yp+CELLSIZE/5,w,CELLSIZE/2,Color.black,null,s.get(SelectBlankMessage));
-    	
-    	int cx = xp+CELLSIZE;
-    	int cy = yp+CELLSIZE+CELLSIZE/7;
-    	for(CrosswordleChip ch : CrosswordleChip.assignedBlanks)
-    	{
-    		ch.drawChip(gc,this, highlight, CrosswordleId.Blank, CELLSIZE, cx, cy,null,1.3,1.3);
-    		cx += CELLSIZE;
-    		if(cx>=xp+w) { cx = xp+CELLSIZE; cy += CELLSIZE; }
-    	}}
-    }
-    private void drawNotice(Graphics gc,Rectangle r,CrosswordleBoard gb)
-    {
-    	if(!gb.GameOver() && (gb.drawPile.height()==0))
-		{	
-		 	String msg = (gb.someRackIsEmpty()) ? LastTurnMessage : s.get(TilesLeft,0);
-			GC.Text(gc, true, r,Color.blue,null, msg);
-		}
-    }
+
     private String bigString = null;
     private int bigX = 0;
     private int bigY = 0;
@@ -1050,7 +608,7 @@ public void setLetterColor(Graphics gc,CrosswordleBoard gb,CrosswordleCell cell)
        }
        else
        {
-       SprintState state = gb.getState();
+       CrosswordleState state = gb.getState();
        boolean moving = hasMovingObject(selectPos);
        
    	   if(gc!=null)
@@ -1088,29 +646,22 @@ public void setLetterColor(Graphics gc,CrosswordleBoard gb,CrosswordleCell cell)
 	   GC.setRotatedContext(gc,largerBoardRect,selectPos,effectiveBoardRotation);
        standardGameMessage(gc,stateRect,state);
        drawBoardElements(gc, gb, boardRect, ourTurnSelect,selectPos);
-       drawOptions(gc,((state==SprintState.Puzzle)
-    		   			||(state==SprintState.ConfirmFirstPlay)
-    		   			||(state==SprintState.FirstPlay)
-    		   			||((state==SprintState.Play) && robotGame && bb.moveNumber<=2)
-    		   			) ? ourTurnSelect :null,selectPos,gb);
 
        String msg = bb.invalidReason==null ? s.get(CrosswordsVictoryCondition) : s.get(bb.invalidReason);
-       String goalmsg = bb.invalidReason==null ? GoalExplanation : InvalidExplanation;
+       String goalmsg = GoalExplanation;
        goalAndProgressMessage(gc,nonDragSelect,Color.black,msg,progressRect, goalRect,goalmsg);
        if(planned) 
-       	{ StockArt.Rotate180.drawChip(gc, this,rotateRect, selectPos, CrosswordleId.Rotate,s.get(RotateMessage)); 
+       	{ 
        	  CrosswordleChip chip = lockOption ? CrosswordleChip.UnlockRotation : CrosswordleChip.LockRotation;
        	  chip.drawChip(gc, this,lockRect, selectPos, CrosswordleId.Lock,s.get(chip.tip)); 
        	}
        drawNoChat(gc,altNoChatRect,selectPos);
        GC.unsetRotatedContext(gc,selectPos);
        }
-       drawDrawPile(DRAWBACKGROUNDTILES?null:gc,ourTurnSelect,gb);
        for(int player=0;player<bb.players_in_game;player++)
        	{ commonPlayer pl1 = getPlayerOrTemp(player);
        	  pl1.setRotatedContext(gc, selectPos,false);
        	   GC.setFont(gc,standardBoldFont());
-    	   DrawChipPool(gc, chipRects[player],eyeRects[player],pl1, ourTurnSelect,selectPos,gb);
     	   DrawScore(gc,scoreRects[player],pl1,ourTurnSelect,gb);
     	   if(planned && gb.whoseTurn==player)
     	   {
@@ -1118,37 +669,37 @@ public void setLetterColor(Graphics gc,CrosswordleBoard gb,CrosswordleCell cell)
    					HighlightColor, rackBackGroundColor);
     	   }
     	   GC.setFont(gc, largeBoldFont());
-    	   drawNotice(gc,noticeRects[player],gb);
        	   pl1.setRotatedContext(gc, selectPos,true);
        	}
        if(!planned)
       	{  
-    	   int ap = allowed_to_edit|G.offline() ? gb.whoseTurn : getActivePlayer().boardIndex;
+    	   //int ap = allowed_to_edit|G.offline() ? gb.whoseTurn : getActivePlayer().boardIndex;
     	   // generally prevent spectators seeing tiles, unless openracks or gameover
-    	   boolean censorSpectator =  !gb.openRack[ap] && getActivePlayer().spectator&&!allowed_to_edit;
-    	   drawRack(gc,gb,bigRack,gb.getPlayerRack(ap),gb.getPlayerMappedRack(ap),gb.getRackMap(ap),gb.getMapPick(ap),
-    			   	censorSpectator,
-    			   	censorSpectator ? null : selectPos,
-    			   	ourTurnSelect==null); 
+    	   //boolean censorSpectator =  !gb.openRack[ap] && getActivePlayer().spectator&&!allowed_to_edit;
       	}
      
        GC.setFont(gc,standardBoldFont());
        
 
-       if (state != SprintState.Puzzle)
+       if (state != CrosswordleState.Puzzle)
         {	// if in any normal "playing" state, there should be a done button
 			// we let the board be the ultimate arbiter of if the "done" button
 			// is currently active.
 			if(!planned)
 				{
-				boolean done = gb.DoneState();
-				handleDoneButton(gc,messageRotation,doneRect,(done ? buttonSelect : null),HighlightColor, rackBackGroundColor);		
+				String theWord = inputField.getText().trim().toLowerCase();
+				boolean done = gb.canBeGuessed(theWord);
+				if(GC.handleRoundButton(gc, messageRotation,doneRect,done ? buttonSelect : null,s.get(ProbeMessage),
+						HighlightColor, rackBackGroundColor))
+					{
+					buttonSelect.hitCode = CrosswordleId.Playword;
+					buttonSelect.hitObject = theWord;
+					}	
 				}
-			drawNotice(gc,noticeRect,gb);
 			
 			
 			handleEditButton(gc,messageRotation,editRect,buttonSelect,selectPos,HighlightColor, rackBackGroundColor);
-			if(state==SprintState.Play 
+			if(state==CrosswordleState.Play 
 					&& (buttonSelect!=null)
 					&& gb.notStarted())
 					{
@@ -1163,13 +714,14 @@ public void setLetterColor(Graphics gc,CrosswordleBoard gb,CrosswordleCell cell)
 
 		// if the state is Puzzle, present the player names as start buttons.
 		// in any case, pass the mouse location so tooltips will be attached.
-        drawPlayerStuff(gc,(state==SprintState.Puzzle),buttonSelect,HighlightColor,rackBackGroundColor);
+        drawPlayerStuff(gc,(state==CrosswordleState.Puzzle),buttonSelect,HighlightColor,rackBackGroundColor);
   
  
         
         
              //      DrawRepRect(gc,pl.displayRotation,Color.black,b.Digest(),repRect);
-        
+        inputField.setVisible(true);
+        inputField.redrawBoard(gc,selectPos);
         
         // draw the vcr controls, last so the pop-up version will be above everything else
         drawVcrGroup(nonDragSelect, gc);
@@ -1181,11 +733,11 @@ public void setLetterColor(Graphics gc,CrosswordleBoard gb,CrosswordleCell cell)
        }
        drawHiddenWindows(gc, selectPos);
     }
-    public void standardGameMessage(Graphics gc,Rectangle stateRect,SprintState state)
+    public void standardGameMessage(Graphics gc,Rectangle stateRect,CrosswordleState state)
     {
         standardGameMessage(gc,
-   				state==SprintState.Gameover?gameOverMessage():s.get(state.description()),
-   				state!=SprintState.Puzzle,
+   				state==CrosswordleState.Gameover?gameOverMessage():s.get(state.description()),
+   				state!=CrosswordleState.Puzzle,
    				bb.whoseTurn,
    				stateRect);
 
@@ -1194,17 +746,6 @@ public void setLetterColor(Graphics gc,CrosswordleBoard gb,CrosswordleCell cell)
     
     public boolean PerformAndTransmit(commonMove m, boolean transmit,replayMode mode)
     {
-	   	 if(m.op==MOVE_DROPONRACK)
-	   	 {
-	   		 // this is the point where a remote RPC screen thinks a tile
-	   		 // is being dropped from the main screen.  Unfortunately it
-	   		 // may have already been dropped by a bounce or other action
-	   		 // on the main screen.
-	   		 if((remoteViewer<0) && (bb.pickedObject!=null))
-	   		 {	transmit = true;
-	   		 	m.op=MOVE_DROP;
-	   		 }
-	   	 }
   	
     	return(super.PerformAndTransmit(m,transmit,mode));
     }
@@ -1217,7 +758,7 @@ public void setLetterColor(Graphics gc,CrosswordleBoard gb,CrosswordleCell cell)
      * seriously wrong.
      */
      public boolean Execute(commonMove mm,replayMode replay)
-    {	
+    {	if(mm.op==MOVE_PLAYWORD) { mm.setLineBreak(true); }
         handleExecute(bb,mm,replay);
         /**
          * animations are handled by a simple protocol between the board and viewer.
@@ -1268,7 +809,6 @@ public void setLetterColor(Graphics gc,CrosswordleBoard gb,CrosswordleCell cell)
 		 	{ playASoundClip(light_drop,150);
 		 	}
 		 break;		 
-	 case MOVE_MOVETILE:
 	 case MOVE_DROPB:
 	 case MOVE_PICKB:
 	 case MOVE_PICK:
@@ -1321,12 +861,6 @@ public void setLetterColor(Graphics gc,CrosswordleBoard gb,CrosswordleCell cell)
     	  {
     	  case MOVE_SHOW:
     	  case MOVE_SEE:
-    	  case MOVE_LIFT:
-    	  case MOVE_REPLACE:
-    	  case MOVE_REMOTELIFT:
-    	  case MOVE_DROPONRACK:
-    	  case MOVE_REMOTEDROP:
-    	  case MOVE_CANCELLED:
     		  return(null);
     	  default: break;
     	  }
@@ -1399,27 +933,7 @@ public void setLetterColor(Graphics gc,CrosswordleBoard gb,CrosswordleCell cell)
  	    switch(hitObject)
 	    {
 	    default: break;
-        case Rack:
-        case LocalRack:
-        case RemoteRack:
-    		{
-    		// drawing the rack prepares the move
-            String msg = (String)hp.hitObject;
-            // transmit only drop from the board, not shuffling of the rack
-            boolean transmit = (hitObject==CrosswordleId.Rack) 
-            						|| ((bb.whoseTurn==remoteViewer) && (hitObject==CrosswordleId.RemoteRack));
-            if(msg.startsWith("remotedrop "))
-        	{
-        		PerformAndTransmit(G.replace(msg,"remotedrop","replace"),false,replayMode.Live);
-        	}
-            PerformAndTransmit(msg,transmit,replayMode.Live);
-           
-            if(msg.startsWith("rlift "))
-            	{
-            		PerformAndTransmit(msg.substring(1),false,replayMode.Live);
-            	}
-        	}
-    		break;
+
         case BoardLocation:
 	        CrosswordleCell hitCell = hitCell(hp);
 	    	PerformAndTransmit("Pickb "+hitCell.col+" "+hitCell.row);
@@ -1427,20 +941,7 @@ public void setLetterColor(Graphics gc,CrosswordleBoard gb,CrosswordleCell cell)
         } 
         }
     }
-    private void showWords(WordStack ws,HitPoint hp,String msg)
-    {
-    	StringBuilder words = new StringBuilder();
-    	G.append(words,msg,"\n");
-    	for(int lim=ws.size(),i=0;i<lim;i++)
-    		{
-    		Word w = ws.elementAt(i);
-    		CrosswordleCell seed = w.seed;
-    		G.append(words, w.name," @",seed.col,seed.row," ",w.points," points\n");
-    		}
-    	bigX = G.Left(hp);
-    	bigY = G.Top(hp);
-    	bigString = words.toString();
-    }
+
 	/** 
 	 * this is called on "mouse up".  We may have been just clicking
 	 * on something, or we may have just finished a click-drag-release.
@@ -1469,13 +970,26 @@ public void setLetterColor(Graphics gc,CrosswordleBoard gb,CrosswordleCell cell)
         	else if (performVcrButton(hitCode, hp)) {}	// handle anything in the vcr group
             else
             {
-            	throw G.Error("Hit Unknown object " + hp);
+            	throw G.Error("Hit Unknown object " + hitCode);
             }
         	break;
-        case LocalRack:
-        case RemoteRack:
-        	// local rack never has a real moving object
+        case Playword:
+        	PerformAndTransmit("Play "+(String)(hp.hitObject));
+        	inputField.setText("");
         	break;
+        case InputField:
+			{
+			int flipInterval = 500;
+			inputField.setFocus(true,flipInterval);
+			inputField.setEditable(this,true);
+			if(useKeyboard) {
+				keyboard = new Keyboard(this,inputField);
+			}
+			else 
+			{	requestFocus(inputField); 
+				repaint(flipInterval);
+			}}
+			break;
         case Vocabulary:
         	bb.setVocabulary(vocabularyRect.value);
         	break;
@@ -1484,7 +998,7 @@ public void setLetterColor(Graphics gc,CrosswordleBoard gb,CrosswordleCell cell)
         	break;
         case CheckWords:
         	bb.setVocabulary(vocabularyRect.value);
-        	showWords(bb.checkLikelyWords(),hp,s.get(WordsMessage));
+        	Builder.getInstance().generateCrosswords(new Random().nextLong(),bb.ncols,bb.nrows);
         	break;
         case Lock:
         	lockOption = !lockOption;
@@ -1514,35 +1028,16 @@ public void setLetterColor(Graphics gc,CrosswordleBoard gb,CrosswordleCell cell)
         	PerformAndTransmit("SetBlank "+ch.letter);
         	}
         	break;
-        case Rack:
-    		{
-    		// drawing the rack prepares the move
-            String msg = (String)hp.hitObject;
-            // transmit only drop from the board, not shuffling of the rack
-            PerformAndTransmit(msg,hitCode==CrosswordleId.Rack,replayMode.Live);
-        	}
-        	
-        	break;
-        case DrawPile:
-        case EmptyBoard:
+ 
+         case EmptyBoard:
         	{
         		CrosswordleCell hitObject = hitCell(hp);
         		if(bb.pickedObject==null)
-            	{	CrosswordleCell c = getPickedRackCell(hp);
-            		if(c!=null)
-            		{
-            			PerformAndTransmit(G.concat("move Rack ",c.col," ",c.row," ",
-            					hitCode.name()," ",hitObject.col," ",hitObject.row));
-            		}
-            		else 
+            	{	
             		{
             			PerformAndTransmit(G.concat("Pick ",hitCode.name()," ",hitObject.col," ",hitObject.row));
             		}
             	}
-        		else if(hitCode==CrosswordleId.DrawPile)
-        		{
-        			PerformAndTransmit(G.concat("Drop ",hitCode.name()," ",hitObject.col," ",hitObject.row)); 
-        		}
         		else {
         			PerformAndTransmit(G.concat("Dropb ",hitObject.col," ",hitObject.row)); 
         		}
@@ -1748,68 +1243,5 @@ public void setLetterColor(Graphics gc,CrosswordleBoard gb,CrosswordleCell cell)
         }
     }
 
-    /*
-     * support for hidden windows in pass-n-play mode
-     * */
-    public String nameHiddenWindow()
-    {	
-    		return(ServiceName);
-    }
-    public void adjustPlayers(int n)
-    {
-        int HiddenViewWidth = 800;
-        int HiddenViewHeight = 300;
-
-        super.adjustPlayers(n);
-        if(RpcService.isRpcServer() || VNCService.isVNCServer() || G.debug())
-        {
-        createHiddenWindows(n,HiddenViewWidth,HiddenViewHeight);
-        }
-    }
-
-    public void drawHiddenWindow(Graphics gc,HitPoint hp,int index,Rectangle bounds)
-    {	
-    	int margin = G.minimumFeatureSize()/4;
-    	int w = G.Width(bounds)-margin*2;
-    	int h = G.Height(bounds)-margin*2;
-    	int l = G.Left(bounds)+margin;
-    	int t = G.Top(bounds)+margin;
-    	int step = h/8;
-    	CrosswordleCell rack [] = bb.getPlayerRack(index);
-    	if(rack!=null)
-    	{
-    	CrosswordleCell prack[] =bb.getPlayerMappedRack(index);
-    	int hiddenRack[] = bb.getRackMap(index);
-    	int hiddenMapPick = bb.getMapPick(index);
-    	Rectangle rackRect = new Rectangle(l,t+h/2,w,(int)(step*3.25));
-    	Rectangle eyeRect = new Rectangle(l,t+step*2,step,step);
-    	Rectangle whoRect = new Rectangle(l+step*2,t+step*2,w-step*4,step*2);
-    	Rectangle stateRect = new Rectangle(l,t,w,step);
-    	Rectangle turnnotice = new Rectangle(l,t+step,w,step);
-    	Rectangle notice = new Rectangle(l,t+step,w/4,step);
-    	if (remoteViewer<0)
-    		{ StockArt.Scrim.image.stretchImage(gc, bounds);
-    		}
-    	Font myfont = G.getFont(largeBoldFont(), step/2);
-    	GC.setFont(gc, myfont);
-    	GC.Text(gc, true, whoRect, Color.black, null, s.get(ServiceName,prettyName(index)));
-    	SprintState state = bb.getState();
-    	GC.setFont(gc, myfont);
-   	
-    	standardGameMessage(gc,stateRect,state);
-    	boolean hide = bb.hiddenVisible[index];
-    	drawRack(gc,bb,rackRect,rack,prack,hiddenRack,hiddenMapPick,hide,hp,bb.whoseTurn!=index);
-    	GC.setFont(gc, myfont);
-    	drawNotice(gc,notice,bb);
-    	drawEye(gc,bb,eyeRect,hide,hp,index);
-    	
-    	GC.setFont(gc, myfont);
-		if(bb.whoseTurn==index)
-			{
-			 GC.Text(gc, true, turnnotice,
-			Color.red,null,YourTurnMessage);
-			}
-    	}
-    }
 }
 

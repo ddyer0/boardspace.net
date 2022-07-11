@@ -405,18 +405,18 @@ class MedinaBoard extends rectBoard<MedinaCell> implements BoardProtocol,MedinaC
    public long Digest()
     {	buildClusters();
     	Random r = new Random(64 * 1000); // init the random number generator
-        long v = super.Digest();
-        v ^= Digest(domes);
-        v ^= Digest(stables);
-        v ^= Digest(meeples);
-        v ^= Digest(palaces);
+        long v = super.Digest(r);
+        v ^= Digest(r,domes);
+        v ^= Digest(r,stables);
+        v ^= Digest(r,meeples);
+        v ^= Digest(r,palaces);
        //v ^= Digest(cards);
-        v ^= Digest(teaCards);
-        v ^= Digest(teaPool);
-        v ^= Digest(teaDiscards);
-        v ^= Digest(neutralDomes);
-        v ^= Digest(towerMerchants);
-        v ^= Digest(walls);
+        v ^= Digest(r,teaCards);
+        v ^= Digest(r,teaPool);
+        v ^= Digest(r,teaDiscards);
+        v ^= Digest(r,neutralDomes);
+        v ^= Digest(r,towerMerchants);
+        v ^= Digest(r,walls);
         v ^= Digest(r,(variation.ordinal()+1));
 		MedinaChip po = pickedObject;
 		if(po==MedinaChip.V_WALL) { po = MedinaChip.H_WALL; }

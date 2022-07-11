@@ -234,7 +234,7 @@ class TriadBoard extends hexBoard<TriadCell> implements BoardProtocol,TriadConst
         // note we can't modernize this without invalidating all the existing
 		// digests.
 		for(TriadCell c=allCells; c!=null; c=c.next)
-		{	v ^= c.Digest();
+		{	v ^= c.Digest(r);
 		}
 		v ^= TriadChip.Digest(r,pickedObject);
 		v ^= r.nextLong()*(board_state.ordinal()*10+whoseTurn);

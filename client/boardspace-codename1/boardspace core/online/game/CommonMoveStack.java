@@ -13,7 +13,8 @@ import online.game.BaseBoard.BoardState;
 public class CommonMoveStack extends OStack<commonMove>  
 {	public commonMove[] newComponentArray(int sz) { return(new commonMove[sz]); }
 	public int viewStep=-1;					// scrollback position
-	public int sliderPosition = -1;
+	public int viewMoveNumber = -1;
+	public int sliderPosition=-1;
 	public commonPlayer viewTurn = null;	// player whose turn it was when we entered review mode
 	
 	/** this is the index into the game history at the point

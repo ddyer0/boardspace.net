@@ -36,23 +36,7 @@ public class HiveCell extends stackCell<HiveCell,HivePiece>
 		return(v);
 	}
 	
-	public long Digest()
-	{	long v = simpleDigest();
-		if(onBoard)
-			{
-			int na = 0;
-			for(int i=0;i<3;i++) 
-			{ HiveCell ad = exitTo(i);
-			  if(ad!=null)
-			  {	long av = ad.simpleDigest();
-			    if(av!=0) { v = v*(i+4)+av; na++; }
-			  }
-			  
-			}
-			if(na==0) { v^=randomv; }	// if it's an isolated cell, include the exact location
-			}
-		return(v);
-	}
+
 	public long Digest(Random r)
 	{	return(r.nextLong()*simpleDigest());
 	}

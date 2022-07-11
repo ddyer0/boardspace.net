@@ -268,7 +268,7 @@ public class MbraneViewer extends CCanvas<MbraneCell,MbraneBoard> implements Mbr
         MbraneId id = color.id;
         GC.setFont(gc,labelFont);
         boolean canHit = (gb.getState()==MbraneState.Puzzle) && (gb.reserveColor!=color);
-        gb.getPlayerChip(player).drawChip(gc,this,r,canHit ? hit : null,id);
+        gb.getPlayerChip(player).drawChip(gc,this,r,canHit ? hit : null,id,(String)null);
     }
     
     private void drawScore(Graphics gc,Rectangle r)

@@ -139,18 +139,10 @@ public abstract class chipCell
 	 */
 	public long Digest(Random r) 
 		{ long val= super.Digest(r);
-		  if(chip!=null) { val += chip.Digest(); }
+		  if(chip!=null) { val += chip.Digest(r); }
 		  return(val);
 		}
-	/**
-	 * generate a digest of the cell identity and contents.  The cell
-	 * identity is normally the next random number in sequence.
-	 */
-	public long Digest() 
-		{ long val=super.Digest();
-		  if(chip!=null) { val += chip.Digest(); }
-		  return(val);
-		}
+
 	/**
 	 * draw this chip and it's contents, note if the mouse falls inside.  This uses {@link #stackTopLevel()}
 	 * to determine if there is a chip to draw.

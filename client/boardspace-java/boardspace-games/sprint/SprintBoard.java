@@ -686,7 +686,7 @@ class SprintBoard extends rectBoard<SprintCell> implements BoardProtocol
     	// different identity for the second use.
         //
         Random r = new Random(64 * 1000); // init the random number generator
-        long v = super.Digest();
+        long v = super.Digest(r);
 		// many games will want to digest pickedSource too
 		// v ^= cell.Digest(r,pickedSource);
 		v ^= chip.Digest(r,pickedObject);
@@ -1417,20 +1417,7 @@ class SprintBoard extends rectBoard<SprintCell> implements BoardProtocol
     	return(entry);
     }
     
-    // backwards words allows palindromes to be entered twice, which we do not want
-    private boolean isUnique(Word newWord,WordStack existingWords)
-    {	String word = newWord.name;
-    	for(int lim = existingWords.size()-1; lim>=0; lim--)
-    	{
-    	Word e = existingWords.elementAt(lim);
-    	if(e.name.equals(word))
-    		{
-    		// same word is allowed, but it has to use different letters
-    		if(newWord.sameWord(e)) { return(false); }
-    		}
-    	}
-    	return(true);
-    }
+
     private void addWord(Word word)
     {
     	words.push(word); 

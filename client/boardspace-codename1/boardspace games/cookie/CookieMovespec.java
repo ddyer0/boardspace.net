@@ -106,7 +106,7 @@ public class CookieMovespec extends commonMove implements CookieConstants
     {
         CookieMovespec yto = (to == null) ? new CookieMovespec() : (CookieMovespec) to;
 
-        // we need yto to be a Hexmovespec at compile time so it will trigger call to the 
+        // we need yto to be a Movespec at compile time so it will trigger call to the 
         // local version of Copy_Slots
         Copy_Slots(yto);
 
@@ -218,7 +218,7 @@ public class CookieMovespec extends commonMove implements CookieConstants
         	return(""+from_col+from_row+" "+to_col+to_row);
         	
         case MOVE_RACK_BOARD:
-        	return(""+D.findUnique(from_row)+" "+to_col+to_row);
+        	return(""+D.findUniqueTrans(from_row)+" "+to_col+to_row);
        }
     }
 

@@ -80,9 +80,6 @@ public interface TwixtConstants
 		public TwixtChip getPeg() { return(peg); }
 		public TwixtChip getGhostPeg() { return(peg.getGhosted()); }
 		public TwixtChip[] getBridges() { return(bridges); }
-		public long Digest() {
-			return (peg.Digest());
-		}
 		public long Digest(Random r) {
 			return(peg.Digest(r));
 		}

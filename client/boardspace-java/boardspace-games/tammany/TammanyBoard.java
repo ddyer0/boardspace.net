@@ -240,11 +240,11 @@ import static tammany.TammanyMovespec.*;
 	    TammanyCell.copyFrom(influence,other.influence);
 	 }
 	 
-	 long Digest()
+	 long Digest(Random r)
 	 {	long val = randomV+(score*23)*randomV+(locksAvailable*824);
-	 	val ^= slander.Digest();
+	 	val ^= slander.Digest(r);
 	 	val ^= (1+actualVotes)*randomV*462342;
-	 	val ^= TammanyCell.Digest(influence);
+	 	val ^= TammanyCell.Digest(r,influence);
 	 	return(val);
 	 }
 	 void samePlayer(TammanyPlayer other)
@@ -259,7 +259,6 @@ import static tammany.TammanyMovespec.*;
 	 	G.Assert(hasUsedSlander == other.hasUsedSlander,"slander mismatch");
 	 	G.Assert(TammanyCell.sameCell(influence,other.influence),"influence mismatch");
 	 	
-	 	G.Assert(Digest()==other.Digest(),"player digest matches");
 	 }
 	 
 	 
@@ -657,8 +656,8 @@ import static tammany.TammanyMovespec.*;
 		 // different identity for the second use.
 		 //
 		 Random r = new Random(64 * 1000); // init the random number generator
-		 long v = super.Digest();
-		 for(TammanyPlayer p : players) { v ^= p.Digest(); }
+		 long v = super.Digest(r);
+		 for(TammanyPlayer p : players) { v ^= p.Digest(r); }
 		 v ^= chip.Digest(r,pickedObject);
 		 v ^= chip.Digest(r,castleChip);
 		 if(board_state!=TammanyState.Puzzle)

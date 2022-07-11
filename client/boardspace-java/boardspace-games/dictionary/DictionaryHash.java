@@ -4,6 +4,7 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 
 import lib.G;
+import lib.StringStack;
 
 @SuppressWarnings("serial")
 /**
@@ -35,5 +36,19 @@ public class DictionaryHash extends Hashtable<String,Entry>
 		}
 		G.print("fakes "+fakes+" nonfakes "+nonfakes);
 	}	
-
+	//
+	// get the contents as a string stack, filtered by the vocabulary size
+	//
+	public StringStack toStringStack(int vocabulary)
+	{	StringStack entries = new StringStack();
+		for(Enumeration<Entry> de = elements(); de.hasMoreElements();)
+		 {
+	 		Entry e = de.nextElement();
+	 		if(e.order<vocabulary)
+	 		{
+	 			entries.push(e.word);
+	 		}
+		 }
+		return entries;
+	}
 }

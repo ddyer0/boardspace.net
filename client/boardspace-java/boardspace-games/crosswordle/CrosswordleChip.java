@@ -33,24 +33,25 @@ public class CrosswordleChip extends chip<CrosswordleChip> implements Crosswordl
 {
 	private int index = 0;
 	public static String BACK = "_back_";
+	public static String YELLOW = "_yellow_";
+	public static String GREEN = "_green_";
+	
 	private static Random r = new Random(5312324);	// this gives each chip a unique random value for Digest()
 	private static DrawableImageStack allChips = new DrawableImageStack();
 	private static boolean imagesLoaded = false;
 
 	String letter;
 	char lcChar;
-	int value;
 	String tip;
 	CrosswordleChip back = null;
 	public String contentsString() { return(letter); }
 	
-	private CrosswordleChip(CrosswordleChip from,char l,int v)
+	private CrosswordleChip(CrosswordleChip from,char l)
 	{	scale = from.scale;
 		image = from.image;
 		back = from;
 		letter = ""+l;
 		lcChar = (l>='A' && l<='Z') ? (char)(l+'a'-'A') : l;
-		value = v;
 		randomv = r.nextLong();
 		index = allChips.size();
 		allChips.push(this);
@@ -61,11 +62,9 @@ public class CrosswordleChip extends chip<CrosswordleChip> implements Crosswordl
 	{	scale=sc;
 		tip = t;
 		file = na;
-		value = v;
 		index = allChips.size();
 		allChips.push(this);
 	}
-	public boolean isBlank() { return(value==0); }
 	public int chipNumber() { return(index); }
 	
 
@@ -91,7 +90,6 @@ public class CrosswordleChip extends chip<CrosswordleChip> implements Crosswordl
    	static private double letter0Scale[] = {0.51,0.365,1.45 };
    	static private double letter1Scale[] = {0.51,0.37,1.45 };
 
-    static private double postScale[] = { 0.42,0.32,0.78};
     
     static public CrosswordleChip Tile = new CrosswordleChip("tile",hexScale,null,0);
     static public CrosswordleChip Letter[] = {new CrosswordleChip("letter",letterScale,null,0),
@@ -99,42 +97,21 @@ public class CrosswordleChip extends chip<CrosswordleChip> implements Crosswordl
     		new CrosswordleChip("letter1",letter1Scale,null,0),
     		new CrosswordleChip("letter2",letter2Scale,null,0),
     	};
-    static public CrosswordleChip Post = new CrosswordleChip("post",postScale,null,0);
-    // greenpost double letter
-    static public CrosswordleChip DoubleLetterGreen = new CrosswordleChip("post-green",postScale,DoubleLetter,2);
-   
-    // yellowpost triple letter
-    static public CrosswordleChip TripleLetterYellow = new CrosswordleChip("post-yellow",postScale,TripleLetter,3);
-    
-    // bluepost double word
-    static public CrosswordleChip DoubleWordBlue = new CrosswordleChip("post-blue",postScale,DoubleWord,10);
-    
-    // redpost triple letter
-    static public CrosswordleChip TripleWordRed = new CrosswordleChip("post-red",postScale,TripleWord,15);
+
+    static CrosswordleChip yellowWash = new CrosswordleChip("yellowwash",new double[] {0.37,0.37,0.95},null,0);
+    static CrosswordleChip greenWash = new CrosswordleChip("greenwash",new double[] {0.37,0.37,0.95},null,0);
     
     private static double dscale[] = {0.5,0.5,1};
     
 	public static CrosswordleChip Icon = new CrosswordleChip("icon-nomask",dscale,null,0);
 
-	public static CrosswordleChip NoBackwards = new CrosswordleChip("nobackwards-nomask",dscale,null,0);
-	public static CrosswordleChip Backwards = new CrosswordleChip("backwards-nomask",dscale,null,0);
-	public static CrosswordleChip Diagonals = new CrosswordleChip("diagonals-nomask",dscale,null,0);
-	public static CrosswordleChip NoDiagonals = new CrosswordleChip("nodiagonals-nomask",dscale,null,0);
-	public static CrosswordleChip AllConnected = new CrosswordleChip("allconnected-nomask",dscale,null,0);
-	public static CrosswordleChip NotConnected = new CrosswordleChip("noconnected-nomask",dscale,null,0);
-	public static CrosswordleChip NoDuplicates = new CrosswordleChip("noduplicates-nomask",dscale,null,0);
-	public static CrosswordleChip Duplicates = new CrosswordleChip("dups-nomask",dscale,null,0);
-	public static CrosswordleChip OpenRacks = new CrosswordleChip("openracks-nomask",dscale,null,0);
-	public static CrosswordleChip ClosedRacks = new CrosswordleChip("closedracks-nomask",dscale,null,0);
 
 	public static CrosswordleChip LockRotation = new CrosswordleChip("lock-nomask",dscale,LockMessage,0);
 	public static CrosswordleChip UnlockRotation = new CrosswordleChip("unlock-nomask",dscale,UnlockMessage,0);
 	
-	static {
-		Option.NoDuplicate.onIcon = NoDuplicates;
-		Option.NoDuplicate.offIcon = Duplicates;
-	}
 	static public CrosswordleChip assignedBlanks[];
+	public boolean isBlank() { return (this==Blank); }
+	
     static private int letterSpecs[][] = {
     		{' ',2,0},
     		
@@ -189,8 +166,7 @@ public class CrosswordleChip extends chip<CrosswordleChip> implements Crosswordl
 		for(int []ls : letterSpecs)
 		{	char let = (char)ls[0];
 			int count = ls[1];
-			int value = ls[2];
-			CrosswordleChip ch = new CrosswordleChip(Letter[nletters%Letter.length],let,value);
+			CrosswordleChip ch = new CrosswordleChip(Letter[nletters%Letter.length],let);
 			nletters++;
 			for(int i=0;i<count;i++)
 			{ pool.push(ch);
@@ -205,7 +181,7 @@ public class CrosswordleChip extends chip<CrosswordleChip> implements Crosswordl
     	assignedBlanks = new CrosswordleChip[26];
 		for(char ch='A'; ch<='Z'; ch = (char)(ch+1))
 		{
-			assignedBlanks[ch-'A']=new CrosswordleChip(Blank,ch,0); 
+			assignedBlanks[ch-'A']=new CrosswordleChip(Blank,ch); 
 		}}
 	}   
 	Color ltblue = new Color(100,100,250);
@@ -217,15 +193,15 @@ public class CrosswordleChip extends chip<CrosswordleChip> implements Crosswordl
             int cx,
             int cy,
             java.lang.String label)
-    {	//if(lcChar=='o') { /* letter */scale = new double[] {0.51,0.365,1.45 };}
-    	//if(lcChar=='i') { /* letter2 */scale = new double[] {0.495,0.365,1.45 };}
-       	//if(lcChar=='a') { /* letter0 */scale = new double[] {0.51,0.365,1.45 };}
-       	//if(lcChar=='c') { /* letter1 */scale = new double[] {0.51,0.37,1.45 };}
+    {	
 		super.drawChip(gc, canvas, SQUARESIZE, xscale, cx, cy, null);
     	if(BACK.equals(label)) {}
+    	else if(YELLOW.equals(label)) 
+    		{yellowWash.drawChip(gc,canvas,SQUARESIZE,xscale,cx,cy,null); }
     	else if(letter!=null)
     	{	// draw all letters with the same size
-    		
+    		if(GREEN.equals(label)) 
+    			{greenWash.drawChip(gc,canvas,SQUARESIZE,xscale,cx,cy,null); }
     		Text ww = TextChunk.create("W");
     		int ss = (int)(SQUARESIZE*0.6);
     		if(ss>5)
@@ -233,13 +209,11 @@ public class CrosswordleChip extends chip<CrosswordleChip> implements Crosswordl
     		// display the letter if the tile is not tiny
     		Font f = G.getFont(canvas.labelFont,ss);
     		GC.setFont(gc, f);
+    		GC.setColor(gc,Color.black);
     		GC.setFont(gc, ww.selectFontSize(gc, ss,ss));
     		FontMetrics fm = G.getFontMetrics(f);
      		GC.Text(gc, letter, cx-fm.stringWidth(letter)/2,cy+(int)(SQUARESIZE*0.3));
-     		if(value!=0)
-     		{
-    		GC.Text(gc,true,cx+SQUARESIZE/5,cy+SQUARESIZE/5,SQUARESIZE/4,SQUARESIZE/4,ltblue,null,""+value);
-     		}
+ 
     		}
     	}
     }

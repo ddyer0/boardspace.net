@@ -123,9 +123,6 @@ class TamskTimer implements Digestable
 	}
 	public String toString() { return "<timer "+id+">";}
 	
-	public long Digest() {
-		return id.chip.Digest()*id.ordinal() ^ (active ? 124753735 : 0);
-	}
 	public long Digest(Random r) {
 		return id.chip.Digest(r)*id.ordinal() ^ (r.nextLong()*(active ? 35235 : 352646));
 	}
@@ -142,11 +139,6 @@ class TimerStack extends OStack<TamskTimer> implements Digestable
 		return new TamskTimer[sz];
 	}
 
-	public long Digest() {
-		long v = 0;
-		for(int i=0;i<size();i++) { v ^= elementAt(i).Digest(); }
-		return v;
-	}
 
 	public long Digest(Random r) {
 		long v = 0;
@@ -616,7 +608,7 @@ class TamskBoard
     	// different identity for the second use.
         //
         Random r = new Random(64 * 1000); // init the random number generator
-        long v = super.Digest();
+        long v = super.Digest(r);
 		// many games will want to digest pickedSource too
 		// v ^= cell.Digest(r,pickedSource);
 		v ^= chip.Digest(r,playerChip[0]);	// this accounts for the "swap" button
@@ -727,7 +719,7 @@ class TamskBoard
     private void unPickObject()
     {	TamskCell rv = pickedSourceStack.pop();
     	setState(stateStack.pop());
-    	rv.addChip(pickedObject);
+    	if(pickedObject==TamskChip.Ring) { rv.addChip(pickedObject); }
     	rv.timer = pickedTimer;
     	if(pickedTimer!=null) { findTimer(pickedTimer).location = rv; pickedTimer = null; }
     	pickedObject = null;
@@ -1329,13 +1321,16 @@ class TamskBoard
 	TamskTimer[] timers = playerTimers(who);
 	long mintime = robotBoard ? SLOW_TIMER_TIME-maximumTimer(nextPlayer[whoseTurn]) : SLOW_TIMER_TIME;
 	long skipTimer = SLOW_TIMER_TIME*2;
- 	if(robotBoard && showTimers())
+	boolean show = showTimers();
+	if(show)
+		{for(TamskTimer t : timers)
+		{	TamskCell loc = getCell(t.location);	// timers may point to cells on the master board
+			requireEmpty |= loc!=null && loc.height()==0;
+		}}
+
+	if(robotBoard && show)
  	{
  			// if any timer is on an empty spot, one of them has to be moved.
- 			for(TamskTimer t : timers)
- 			{	TamskCell loc = getCell(t.location);	// timers may point to cells on the master board
- 				requireEmpty |= loc!=null && loc.height()==0;
- 			}
  			long minTimer = minimumTimer(whoseTurn);
  			if(minTimer<30*1000) 
  				{ skipTimer = 30*1000; 

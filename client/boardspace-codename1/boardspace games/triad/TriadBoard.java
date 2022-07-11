@@ -212,6 +212,7 @@ class TriadBoard extends hexBoard<TriadCell> implements BoardProtocol,TriadConst
      */
     public long Digest()
     {
+        Random r = new Random(64 * 1000); // init the random number generator
     	long v = 0;
  
         // the basic digestion technique is to xor a bunch of random numbers. The key
@@ -219,7 +220,6 @@ class TriadBoard extends hexBoard<TriadCell> implements BoardProtocol,TriadConst
         // xor some subset of them.  Note that if you tweak this, all the existing
         // digests are invalidated.
         //
-        Random r = new Random(64 * 1000); // init the random number generator
         for(int i=0;i<3;i++)
         	{ long r1 = r.nextLong();
         	  long r2 = r.nextLong();
@@ -232,7 +232,7 @@ class TriadBoard extends hexBoard<TriadCell> implements BoardProtocol,TriadConst
         // note we can't modernize this without invalidating all the existing
 		// digests.
 		for(TriadCell c=allCells; c!=null; c=c.next)
-		{	v ^= c.Digest();
+		{	v ^= c.Digest(r);
 		}
 		v ^= TriadChip.Digest(r,pickedObject);
 		v ^= r.nextLong()*(board_state.ordinal()*10+whoseTurn);

@@ -275,9 +275,6 @@ public class MicropulCell extends stackCell<MicropulCell,MicropulChip>
 	  	}
 		return(val);
 	}
-	public long Digest()
-	{ return(super.Digest() + DigestRot());
-	}
 	public long Digest(Random r) 
 	{ return(super.Digest(r) + DigestRot());
 	}

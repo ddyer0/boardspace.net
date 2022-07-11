@@ -263,7 +263,7 @@ class MicropulBoard extends squareBoard<MicropulCell> implements BoardProtocol,M
         // digests are invalidated.
         //
         Random r = new Random(64 * 1000); // init the random number generator
-       	long v = super.Digest();
+       	long v = super.Digest(r);
                
         v ^= (r.nextLong()*extraTurns);
         v ^= Digest(r,rack);

@@ -71,6 +71,11 @@ public interface Text {
 	 * @return the color of the text
 	 */
 	public abstract Color getColor();
+	/**
+	 * set the color associated with this chunk, which may be null
+	 * @return the color of the text
+	 */
+	public abstract void setColor(Color c);
 
 	/**
 	 * get the text associated with this chunk.  For complex chunks that have been joined or colorized,

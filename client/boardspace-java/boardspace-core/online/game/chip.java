@@ -93,9 +93,10 @@ public abstract class chip<T extends chip<T>> extends DrawableImage<T> implement
 	 */
 	static public void check_digests(Digestable[] objs)
 	{	Hashtable<String,Digestable> h = new Hashtable<String,Digestable>();
+		Random r = new Random(12326375347L);
 		for(int i=0;i<objs.length;i++) 
 		{ Digestable thisc = objs[i];
-		  String digs = ""+thisc.Digest();
+		  String digs = ""+thisc.Digest(r);
 		  Digestable oldc = h.get(digs);
 		  G.Assert(oldc==null,"%s has the same digest as %s",oldc,thisc);
 		  h.put(digs,thisc);

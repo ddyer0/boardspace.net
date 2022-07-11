@@ -170,7 +170,7 @@ class CheBoard extends rectBoard<CheCell> implements BoardProtocol,CheConstants
         // digests are invalidated.
         //
         Random r = new Random(64 * 1000); // init the random number generator
-        long v = super.Digest();
+        long v = super.Digest(r);
       
         v^= (board_state.ordinal()*10+whoseTurn)*r.nextLong(); 
         v^= Digest(r,pickedObject);

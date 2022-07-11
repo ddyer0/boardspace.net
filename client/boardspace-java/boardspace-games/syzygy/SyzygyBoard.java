@@ -468,7 +468,7 @@ class SyzygyBoard extends hexBoard<SyzygyCell> implements BoardProtocol,SyzygyCo
         
 		for(SyzygyCell c=allCells; c!=null; c=c.next)
 		{	
-            v ^= c.Digest();
+            v ^= c.Digest(r);
 		}
 		v ^= randomKey;
 		v ^= (pickedObject==null)? 0 : pickedObject.Digest();

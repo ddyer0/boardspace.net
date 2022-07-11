@@ -16,18 +16,10 @@ public class CrosswordleMovespec extends commonMPMove implements CrosswordleCons
     static final int MOVE_PICKB = 206; // pick from the board
     static final int MOVE_DROPB = 207; // drop on the board
     static final int MOVE_SELECT = 208;	// select value for a blank
-    static final int MOVE_SETOPTION = 209;	// set option
     static final int MOVE_SHOW = 210;		// show tiles for a player
     static final int MOVE_PLAYWORD = 211;	// play a word from the rack
     static final int MOVE_SEE = 212;		// see tiles on the hidden rack
-    static final int MOVE_LIFT = 213; 		// lift a tile in the user interface rack
-    static final int MOVE_REPLACE = 214; 	// replace a tile in the user interface rack
-    static final int MOVE_MOVETILE = 215;		// move a tile from a rack to the board or back
-    static final int MOVE_REMOTELIFT = 222;			// lift of a remote tile
-    static final int MOVE_REMOTEDROP = 223;			// drop of a remote tile
-    static final int MOVE_CANCELLED = 224;		// was drop, but did nothing
-    static final int MOVE_DROPONRACK = 225;
-  
+   
     static
     {	// load the dictionary
         // these int values must be unique in the dictionary
@@ -37,17 +29,10 @@ public class CrosswordleMovespec extends commonMPMove implements CrosswordleCons
         	"Drop", MOVE_DROP,
         	"Dropb", MOVE_DROPB,
         	"SetBlank", MOVE_SELECT,
-        	"SetOption",MOVE_SETOPTION,
         	"Show", MOVE_SHOW,
         	"Play",MOVE_PLAYWORD,
-        	"See", MOVE_SEE,
-        	"Lift", MOVE_LIFT,
-        	"Replace",MOVE_REPLACE,
-        	"move",MOVE_MOVETILE,
-        	"Rlift", MOVE_REMOTELIFT,
-        	"cancelled",MOVE_CANCELLED,
-        	"droponrack",MOVE_DROPONRACK,
-        	"remotedrop", MOVE_REMOTEDROP);
+        	"See", MOVE_SEE
+        	);
   }
     //
     // adding these makes the move specs use Same_Move_P instead of == in hash tables
@@ -191,25 +176,13 @@ public class CrosswordleMovespec extends commonMPMove implements CrosswordleCons
         case MOVE_UNKNOWN:
         	throw G.Error("Cant parse " + cmd);
         case MOVE_PLAYWORD:
-           	to_col = G.CharToken(msg);
-        	to_row = G.IntToken(msg);
-        	direction = G.IntToken(msg);
-        	word = msg.nextToken();
+         	word = msg.nextToken();
         	break;
         case MOVE_DROPB:
         	dest = CrosswordleId.BoardLocation;
         	to_col = G.CharToken(msg);
         	to_row = G.IntToken(msg);
         	break;
-        case MOVE_MOVETILE:
-        	source = CrosswordleId.valueOf(msg.nextToken());
-        	from_col = G.CharToken(msg);
-        	from_row = G.IntToken(msg);
-        	dest = CrosswordleId.valueOf(msg.nextToken());
-        	to_col = G.CharToken(msg);
-        	to_row = G.IntToken(msg);
-        	break;
-        
       
 		case MOVE_PICKB:
             dest = CrosswordleId.BoardLocation;
@@ -222,8 +195,6 @@ public class CrosswordleMovespec extends commonMPMove implements CrosswordleCons
 			to_col = G.CharToken(msg);
 			break;
 			
-		case MOVE_LIFT:
-		case MOVE_REMOTELIFT:
         case MOVE_PICK:
             dest = CrosswordleId.valueOf(msg.nextToken());
             to_col = G.CharToken(msg);
@@ -231,10 +202,7 @@ public class CrosswordleMovespec extends commonMPMove implements CrosswordleCons
             mapped_row = (msg.hasMoreTokens()) ? G.IntToken(msg) : -1;
 			break;
 
-        case MOVE_DROPONRACK:
-		case MOVE_REPLACE:
-		case MOVE_REMOTEDROP:
-		case MOVE_DROP:
+ 		case MOVE_DROP:
             dest = CrosswordleId.valueOf(msg.nextToken());
             to_col = G.CharToken(msg);
             to_row = G.IntToken(msg);
@@ -254,16 +222,8 @@ public class CrosswordleMovespec extends commonMPMove implements CrosswordleCons
         	to_row = v ? 1 : 0;
         	}
         	break;
-        case MOVE_SETOPTION:
-        	{
-        	Option o = Option.valueOf(msg.nextToken());
-        	boolean v = G.BoolToken(msg);
-        	to_row = o.ordinal()*2|(v?1:0);
-        	}
-        	break;
         default:
-        case MOVE_CANCELLED:
-
+  
             break;
         }
     }
@@ -290,30 +250,21 @@ public class CrosswordleMovespec extends commonMPMove implements CrosswordleCons
         switch (op)
         {
         case MOVE_PLAYWORD:
-        	return TextChunk.create("Play "+to_col+to_row);
+        	return TextChunk.create("Play "+word);
         case MOVE_PICKB:
             return icon(v,to_col , to_row);
 
-        case MOVE_MOVETILE:
         case MOVE_DROPB:
             return icon(v,to_col ,to_row);
 
 		case MOVE_SELECT:
         	return TextChunk.create("= "+to_col);
-		case MOVE_LIFT:
-		case MOVE_REPLACE:
         case MOVE_DROP:
         case MOVE_SHOW:
         case MOVE_SEE:
         case MOVE_PICK:
         case MOVE_DONE:
-        case MOVE_CANCELLED:
-        case MOVE_REMOTELIFT:
-        case MOVE_DROPONRACK:
-        case MOVE_REMOTEDROP:
             return TextChunk.create("");
-         case MOVE_SETOPTION:
-        	return TextChunk.create("Option "+Option.getOrd(to_row/2)+(((to_row&1)==0)?" false" : " true"));
         default:
             return TextChunk.create(D.findUniqueTrans(op));
 
@@ -336,24 +287,14 @@ public class CrosswordleMovespec extends commonMPMove implements CrosswordleCons
         case MOVE_PICKB:
 		case MOVE_DROPB:
 	        return G.concat(opname, to_col," ",to_row);
-		case MOVE_MOVETILE:
-	        return (G.concat(opname,
-	        		source.name()," ", from_col," ", from_row,
-	        		" ",dest.name()," ", to_col," ", to_row));
 
-		case MOVE_DROPONRACK:
-		case MOVE_LIFT:
-		case MOVE_REMOTELIFT:
         case MOVE_DROP:
         case MOVE_PICK:
         	 return G.concat(opname,dest.name()," ",to_col," ",to_row," ",mapped_row);
         	 
 
-		case MOVE_REMOTEDROP:
-		case MOVE_REPLACE:
-             return G.concat(opname,dest.name()," ",to_col," ",to_row);
         case MOVE_PLAYWORD:
-        	return G.concat(opname,to_col," ",to_row," ",direction," ",word);
+        	return G.concat(opname,word);
         case MOVE_START:
             return G.concat(ind,"Start P",player);
         case MOVE_SELECT:
@@ -362,10 +303,7 @@ public class CrosswordleMovespec extends commonMPMove implements CrosswordleCons
         case MOVE_SHOW:
         	return G.concat(opname,to_col,((to_row==0)?" false" : " true"));
         	
-        case MOVE_SETOPTION:
-        	return G.concat(opname,Option.getOrd(to_row/2),(((to_row&1)==0)?" false" : " true"));
         default:
-        case MOVE_CANCELLED:
             return G.concat(opname);
         }
     }

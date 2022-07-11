@@ -40,9 +40,6 @@ import online.search.SimpleRobotProtocol;
  *
  * May 2007 Initial work in progress. 
  *
- * This code is derived from the "HexGameViewer" class.  Refer to the
- 
- * 
  * evaluator development notes
  * 
  * having fixed bonuses for rabbit advancement led to rabbits advancing for no good reason with no support.

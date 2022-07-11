@@ -121,9 +121,6 @@ public interface SantoriniConstants
 			G.Assert(v!=null,IdNotFoundError,s);
 			return(v);
 		}
-		public long Digest() {
-			return(ordinal()*245232);
-		}
 		public long Digest(Random r) {
 			return(ordinal()*r.nextLong());
 		}

@@ -508,7 +508,7 @@ class Station extends OnedayChip implements OnedayConstants,OnedayLocation
     /**
      * this is a fairly standard preloadImages method, called from the
      * game initialization.  It loads the images (all two of them) into
-     * a static array of hexChip which are used by all instances of the
+     * a static array of Chip which are used by all instances of the
      * game.
      * @param forcan the canvas for which we are loading the images.
      * @param Dir the directory to find the image files.

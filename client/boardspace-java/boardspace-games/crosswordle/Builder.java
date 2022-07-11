@@ -1,0 +1,419 @@
+package crosswordle;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.PrintStream;
+import java.util.Hashtable;
+
+import dictionary.Dictionary;
+import dictionary.DictionaryHash;
+import dictionary.Entry;
+import lib.G;
+import lib.Random;
+import lib.StringStack;
+/**
+ * this class builds "dense" crosswords - with no blanks - on a nxk grid.  It's
+ * mostly intended as a source for "crosswordle" puzzles.    It's fast enough
+ * that it can generate a unique puzzle from a random seed in realtime.
+ * 
+ * The algorithm fills the rows randomly with candidate words.  At each step, each of
+ * the columns is vetted that the vertical prefix exists in the candidate dictionary
+ * before continuing to the next row.  At the last row, the column must be a valid word.
+ * 
+ * The key to making this fast was using a sorted word list, and doing a binary search
+ * to determine if the column prefix exists.
+ * 
+ * Despite the speed of the algorithm, some random keys point to very sparse areas
+ * in the search space, so there is an arbitraty limit to the number of search steps,
+ * after which the search aborts and a new one is started.
+ * 
+ * @author ddyer
+ *
+ */
+public class Builder {
+	private static Builder instance = null;
+	public static Builder getInstance() 
+	{
+		if(instance==null) { instance = new Builder(); }
+		return instance;
+	}
+	 int inverses = 0;
+	 private boolean CollectAll = false;
+	 private long steps = 0;						// search steps building the current puzzle
+	 private int LIMIT = 200000000;				// limit of steps before abandoning a search.
+	 											// 200,000,000 is about 3 seconds on a fast machine. 
+	 private double partDone = 0;				// crude estimate of the % of the space searched so far
+	 											// most searches end at 0%, meaning that the first word
+	 											// in the row 1 list is used.
+	 private int iPartDone = 0;
+	 
+	 private String[][] acrossDictionary = null;// each row gets its own randomly shuffled copy of the dictionary
+	 											// this make sure the puzzles are independently random even though
+	 											// the words in the dictionary are tried in a fixed order.
+	 private Hashtable<String,String>dups = null;	// words used during the descent, no duplicates!
+	 												// unrestricted duplicates tends to result in "palindrome"
+	 												// puzzles that are the same across and down.
+	 private char grid[][] = null;					// working storage, the grid being built
+	 private String verticalWordList[] = null;		// the vertical word list, sorted
+	 private int verticalWordVocabulary = 0;
+	 private StringBuilder results = new StringBuilder();	// result puzzles, separated by spaces
+	 private Hashtable<String,Long>dupResults = new Hashtable<String,Long>();
+	 private int seq = 0;							// sequence number for output files
+	 
+	 int vocabulary = 25000;
+	 	// 25576;// 99999;//
+	 	// 25576;	corresponds to "robotVocabulary" yields about 4000 5 letter words
+	 									// and 1210 valid grids (excluding inverses, which doubles that)
+	 private int nrows = 5;
+	 private int ncols = 5;
+	 Dictionary dictionary =  Dictionary.getInstance();
+	 /*
+	  * for a 5x5 crossword, the default vocabulary 
+	  * 1167 has no results. robotVocabulary = 7721
+	  * 2490 has (estimated) robotVocabulary = 20576 hundreds to thousands of results, at least 10% duplicates
+	  * 2995 for robotVocabulary 25576, 
+	  * 3990 for 36008 too many to count
+	  * 
+	  * full vocabulary (about 8000 words) yields 47415 puzzles (excluding inverses)
+	  * medium vocabulary (about 4000 words) yields 1211 puzzles (excluding inverses)
+	  * small vocabulary (about 2000 words) yields no puzzles
+	  * 
+	  * 6x6 vocabulary full list yields 23,000 words, many solutions, 50% time expired, no duplicates, but many obscure words
+	  * 6x6 vertical list 3811 for 25000 few solutions 
+	  * 				5094 for 35000 few solutions
+	  * 				5526 for 45000 few solutions
+	  */
+	 
+	 /**
+	  * generate a puzzle based on the seed, nc and nr
+	  * 
+	  * @param seed
+	  * @param nc columns
+	  * @param nr rows
+	  */
+	 public String generateCrosswords(long seed,int nc,int nr)
+	 {	Random r = new Random(seed);
+	 	results = new StringBuilder();
+	 	int dups = 0;
+	 	int fails = 0;
+	 	int consecutiveDups = 0;
+	 	inverses = 0;
+	 	vocabulary = 45000;
+	 	CollectAll = true;
+		double totalTime = 0;
+		if(CollectAll) 
+			{ 
+		 	  long key = r.nextLong();
+		 	  generate1Crossword(key,nc,nr); 
+			}
+		else {
+		 // collect random puzzles, watch for duplicates
+		 for(int i=1;consecutiveDups<50 && i<= 10000; i++ ) 
+		 	{ long now =G.Date();
+		 	  long key = r.nextLong();
+		 	  String result = generate1Crossword(key,nc,nr); 
+		 	  long later = G.Date();
+		 	  totalTime += later-now;
+		 	   if(result==null) { i--; fails++; consecutiveDups++; }
+		 	   else if(dupResults.get(result)!=null) { i--; consecutiveDups++; dups++; G.print("Duplicate ",key,"\n",result); }
+		 	   else
+		 	   {  dupResults.put(result,key);
+		 	      consecutiveDups=0;
+		 	   	  results.append(getCompactResult()); 
+		 		  G.print("#",i," ",(later-now)/1000," seconds ",key,"\n",result);
+		 		  if(i%100==0)
+		 		  {	 seq++;
+		 			 File out = new File(G.concat("crossword ",ncols,"x",nrows,"-",seq,".txt"));
+		 			 G.print("dups ",dups," fails ",fails," average time ",totalTime/(i*1000));
+		 			 saveResultToFile(out,results.toString());
+		 		  }
+		 	   }
+		 	}}
+		 G.print("result: "+results.toString());
+		 seq++;
+		 File out = new File(G.concat("crossword ",ncols,"x",nrows,"-",seq,".txt"));
+		 G.print("File: ",out);
+
+		 String result = results.toString();
+		 saveResultToFile(out,result);
+		 
+		 return result;
+	 }
+
+	public void saveResultToFile(File out,String result)
+	{
+		 try {
+		     FileOutputStream fs = new FileOutputStream(out);
+			 PrintStream os = new PrintStream(fs);
+			 os.print(results.toString());
+			 os.print("\n");
+			 os.flush();
+			 fs.close();
+		 }
+		 catch (IOException err) { G.print("IOError "+err); }
+	}
+	private String getCompactResult()
+	{	StringBuilder str = new StringBuilder();
+		for(int row = 0;row<grid.length;row++)
+		 {	char g[] = grid[row];
+			for(int cha = 0; cha<g.length;cha++)
+			{	char ch = g[cha];
+				str.append(ch);
+			}
+		 }
+		 str.append(" ");
+		 return str.toString();
+	}
+	 public String generate1Crossword(long seed,int nc,int nr)
+	 {	Random r = new Random(seed);
+	 
+	 	int oldNrows = nrows;
+	 	ncols = nc;
+	 	nrows = nr;
+	// 	if(nc>=6 && nr>=6) { vocabulary = 9999999; }	//solution space is sparse
+	 	
+	 	if(oldNrows!=nrows) { verticalWordList = null; }
+	 	steps = 0;
+	 	acrossDictionary = new String[nrows][];
+	 	dups =new Hashtable<String,String>();
+	 	grid = new char[nrows][ncols];
+	 	boolean success = placeAcross(r,0);		// this does the actual building by recursive descent
+	 	
+	 	G.print("Steps = ",+steps," ",success," @ ",(int)(partDone),"%");
+	 	
+	 	if(success)
+		 {
+			 return getGrid();
+			 
+		 } else { 
+			 G.print("No result for ",seed);
+			 return(null);
+		 }
+		 
+
+	 }
+	 private String[] getRamdomizedSubdictionary(Random r,int size,int row)
+	 {	 
+		 String dicts[][] = acrossDictionary;
+
+	 	 if(dicts[row]==null)
+	 	 {
+		 DictionaryHash dict = dictionary.getSubdictionary(size);
+		 StringStack entries = dict.toStringStack(vocabulary);
+		 entries.shuffle(r);
+		 dicts[row] = entries.toArray();
+	 	 }
+		 return dicts[row];
+		 
+	 }
+	 
+	 // the vertical word list is sorted, so we can probe vertical words
+	 // as they are built, to see if the prefix exists
+	 private String[] getVerticalWordList()
+	 {
+		 if((verticalWordList==null)||(verticalWordVocabulary!=vocabulary))
+		 {	StringStack list = dictionary.getSubdictionary(nrows).toStringStack(vocabulary);		 
+		 	list.sort();
+		 	verticalWordList = list.toArray();
+		 	verticalWordVocabulary = vocabulary;
+		 	G.print("Vertical list ",verticalWordList.length," for ",vocabulary);
+		 }
+		 return verticalWordList;
+	 }
+	 
+	 // clear a horizontal row
+	 private void reEmpty(char row[])
+		{
+			for(int i=0,lim=row.length; i<lim; i++) { row[i] = (char)0; }
+		}
+	 
+	 // place a horizontal word
+	 private void placeWord(char row[],String word)
+		{	
+			for(int i=0,lim=word.length(); i<lim; i++)
+			{	row[i] = word.charAt(i);
+			}
+		}
+	 
+	 // get the current grid in a somewhat readable format
+	 public String getGrid()
+	 {
+		 StringBuilder b = new StringBuilder();
+		 char all[][] = grid; 
+		 for(int rown = 0; rown<all.length; rown++)
+		 {
+			 for(char ch : all[rown]) { b.append(' '); b.append(ch==0 ? ' ' : ch); }
+			 b.append('\n');
+		 }
+		 return b.toString();
+	 }
+	 
+	 // get the current grid, swapping rows and columns
+	 // for puzzles where rows=cols, the swapping rows and columns will also be a solution
+	 // but isn't really a different puzzle
+	 public String getReverseGrid()
+	 {
+		 StringBuilder b = new StringBuilder();
+		 char all[][] = grid; 
+		 for(int coln = 0;coln<ncols; coln++)
+		 {
+			 for(int rown=1; rown<=nrows; rown++)
+			 {
+				 char ch = all[rown-1][coln];
+				 b.append(' ');
+				 b.append(ch);
+				 
+			 }
+			 b.append('\n');
+		 }
+		 return b.toString();
+	 }
+	 
+	 // recursive descent, place a word across, check prefixes, and if
+	 // still a possible solution, continue down
+	 private boolean placeAcross(Random r,int rowN)
+	 {	 String wordlist[] = getRamdomizedSubdictionary(r,ncols,rowN);
+	 	 char all[][] = grid;
+	 	 steps++;
+	 	 //if(steps%1000000==0) { G.print("Step ",steps," ",partDone,"%\n",getGrid());}
+	  	 for(int i=0,lim=wordlist.length; i<lim; i++)
+	 	 {	String word = wordlist[i];
+	 	 	if(dups.get(word)==null)
+	 	 	{
+	 	 	placeWord(all[rowN],word);
+	 	 	 steps++;
+	 	 	 if(!CollectAll && steps>LIMIT) { return false; }
+	 	 	 //if(steps%1000000==0) { G.print("Step ",steps," ",partDone,"%\n",getGrid());}
+	 	 	dups.put(word,word);
+	 		boolean success = rowN+1==all.length 
+	 				? checkDownComplete() 
+	 				: checkDownPossible(getVerticalWordList()) && placeAcross(r,rowN+1);
+	 		if(success) { return true; }
+	 		dups.remove(word);
+	 		if(rowN==0) 
+	 			{ partDone = i*100.0/lim; 
+	 			  int ip = iPartDone;
+	 			  iPartDone = (int)partDone;
+	 			  if(ip!=iPartDone) { G.print(iPartDone,"%"); }
+	 			}
+	 		reEmpty(all[rowN]);
+	  	 	}}
+	 	 return(false);
+	 }
+	 // not a general purpose comparison
+	 // target is known to be shorter than probe
+	 private int compareStrings(String target,String probe)
+	 {
+		 int tlen = target.length();
+		 for(int i=0;i<tlen; i++)
+		 {
+			 char tchar = target.charAt(i);
+			 char pchar = probe.charAt(i);
+			 if(tchar<pchar) { return -1; }
+			 if(tchar>pchar) { return 1; }
+		 }
+		 return 0;
+	 }
+	 
+	 // binary search for a matching prefix
+	 private String findPrefixWord(String target,String []wordList)
+	 {
+		 int min = 0;
+		 int max = wordList.length-1;
+		 while (min<max)
+		 {	int probeIdx = (min+max)/2;
+		 	if(probeIdx==min)
+		 	{
+		 		return null;
+		 	}
+			 String probe = wordList[probeIdx];
+			 int direction = compareStrings(target,probe);
+			 if(direction==0) 
+			 	{ return probe; }
+			 if(direction<0) 
+			 	{ max = probeIdx; }
+			 else 
+			 	{ min = probeIdx; }
+		 }
+		 return null;
+	 }
+	 
+	 // check the vertical words, that each word is a prefix of some word
+	 // in the dictionary
+	 private boolean checkDownPossible(String wordlist[])
+	 {	char all[][] = grid;
+	 	for(int col=0,lim=all[0].length; col<lim;col++)
+	 	{	String word = getVerticalWord(all,col);
+	 		String target = findPrefixWord(word,getVerticalWordList());
+	 		boolean ok = target!=null;
+	 		/**
+	 		boolean ok = findClosest
+	 		for(int i=0;!ok && i<wordlist.length;i++)
+	 		{ 	String w = wordlist[i];
+	 			ok |= canPlaceWord(all,col,w) && (dups.get(w)==null);
+	 		} */
+	 		if(!ok) 
+	 			{ //G.print("Not ",col,"\n",getGrid());
+	 			  return false; 
+	 			}
+	 	}
+	 	//G.print("Yes\n",getGrid());
+		return true;
+	 }
+	 
+	 private StringStack localDups = new StringStack();
+	 // check that each of the vertical words is in the dictionary
+	 private boolean checkDownComplete()
+	 {	char all[][] = grid;
+	 	localDups.clear();
+	 	//G.print(getGrid());
+	 	for(int col=0,lim=all[0].length; col<lim;col++)
+	 	{
+	 		String w = getVerticalWord(all,col);
+	 		if(dups.get(w)!=null || localDups.contains(w)) { return false; }
+	 		localDups.push(w);
+	 		Entry e = dictionary.get(w);
+	 		if((e==null) || (e.order>=vocabulary))
+	 		{ 	
+	 			//G.print("Step ",steps," col ",col,"\n",getGrid());
+	 			return false; 
+	 		}
+	 	}
+	 	if(CollectAll)
+	 	{	String grid = getGrid();
+	 		if(dupResults.get(grid)!=null) { 
+	 			G.print("Unexpected duplicate: ",grid);
+	 		}
+	 	 	if(nrows==ncols)
+ 	 		{ String rev = getReverseGrid();
+ 	 		  if(dupResults.get(rev)!=null)
+ 	 		  	{ G.print("inverse\n",rev); inverses++; grid = null; }
+ 	 		  
+ 	 		}
+	 	 	if(grid!=null)
+	 	 	{
+	 		dupResults.put(grid,steps);
+	 		results.append(getCompactResult()); 
+	 		results.append(" ");
+	 		int sz = dupResults.size();
+	 		G.print("#",sz," inv ",inverses," ",(int)partDone,"%\n",grid);
+	 		if(sz%100==0)
+	 		{	 seq++;
+	 			 File out = new File(G.concat("crossword ",ncols,"x",nrows,"-",seq,".txt"));
+	 			 saveResultToFile(out,results.toString());
+	 		}}
+	 		return false;
+	 	}
+		return true;
+	 }
+	 // get a vertical word in some column
+	 private String getVerticalWord(char all[][],int col)
+	 {	StringBuilder b = new StringBuilder();
+	 	for(int i=0,lim=all.length; i<lim; i++)
+	 	{	char c = all[i][col];
+	 		if(c!=0) {  b.append(c); }
+	 	}
+		return b.toString();
+	 }
+}

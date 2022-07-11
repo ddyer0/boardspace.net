@@ -1,6 +1,7 @@
 package snakes;
 
 import lib.G;
+import lib.Random;
 
 class Coverage implements SnakesConstants
 {	CellType type = CellType.blank;
@@ -23,12 +24,13 @@ class Coverage implements SnakesConstants
 		exits[0]=exits[1]=exits[2]=exits[3]=false;
 	}
 
-	public long Digest()
-	{	return((type.ordinal()<<4)
+	public long Digest(Random r)
+	{	return(r.nextLong()*
+				((type.ordinal()<<4)
 				+(exits[0]?1:0)
 				+(exits[1]?2:0)
 				+(exits[2]?4:0)
-				+(exits[3]?8:0));
+				+(exits[3]?8:0)));
 	}
 	public void copyFrom(Coverage other)
 	{	type = other.type;

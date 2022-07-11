@@ -19,11 +19,6 @@ class PlayerBoardStack extends OStack<PlayerBoard> implements Digestable
 			push(pbs[from.elementAt(i).boardIndex]);
 		}
 	}
-	public long Digest() {
-		
-		Random r = new Random(637);
-		return Digest(r);
-	}
 	public long Digest(Random r) {
 		long v = 0;
 		for(int i=0;i<size();i++) 
@@ -196,9 +191,6 @@ class PlayerBoard implements ImagineConstants,Digestable
 	}
 
 	public void setScore(int sc) { score = sc; }
-	public long Digest() {
-		return Digest(new Random(847353));
-	}
 	public boolean isMyCard(ImagineChip ch)
 	{
 		for(ImagineCell c : cards)
@@ -576,7 +568,7 @@ class ImagineBoard
     	// different identity for the second use.
         //
         Random r = new Random(64 * 1000); // init the random number generator
-        long v = super.Digest();
+        long v = super.Digest(r);
         for(int i=0;i<pbs.length;i++) { v ^= pbs[i].Digest(r); }
         v ^= deck.Digest(r);
         v ^= discards.Digest(r);

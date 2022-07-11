@@ -25,6 +25,7 @@ import lib.LFrameProtocol;
 import lib.Slider;
 import lib.StockArt;
 import lib.TextButton;
+import lib.Random;
 import online.game.*;
 import online.game.sgf.sgf_node;
 import online.game.sgf.sgf_property;
@@ -349,7 +350,7 @@ public class CrosswordsViewer extends CCanvas<CrosswordsCell,CrosswordsBoard> im
     {	
      	boolean value = bb.getOptionValue(op);
     	CrosswordsChip chip = value ? op.onIcon : op.offIcon;
-    	if(chip.drawChip(gc,this,r,!robotGame || op.allowedForRobot ? highlight : null,CrosswordsId.SetOption))
+    	if(chip.drawChip(gc,this,r,!robotGame || op.allowedForRobot ? highlight : null,CrosswordsId.SetOption,(String)null))
     		{
     		highlight.hitObject = "SetOption "+op.name()+" "+!value;
     		}
@@ -791,6 +792,8 @@ public class CrosswordsViewer extends CCanvas<CrosswordsCell,CrosswordsBoard> im
 	  	}
 	//      draw
     }
+    
+    static long FIXEDRANDOM =6435724;
     //
     // in this game, most of the letters on the board and all of the drawpile
     // will change very slowly if at all.  We mark appropriate cells as "fixed"
@@ -798,23 +801,24 @@ public class CrosswordsViewer extends CCanvas<CrosswordsCell,CrosswordsBoard> im
     // but on mobiles if makes a big difference.
     // This digest determines when the background has changed, and needs to be redrawn.
     public long digestFixedTiles()
-    {	
+    {	Random r = new Random(FIXEDRANDOM);
     	long v = 0;
     	for(CrosswordsCell cell = bb.allCells; cell!=null; cell=cell.next)
         {	if(cell.isFixed)
         	{
-        	v ^= cell.Digest();
+        	v ^= cell.Digest(r);
         	}
         }
     	int tilesLeft = bb.drawPile.height();
-    	v ^= (tilesLeft*263725265);
-    	v ^= G.rotationQuarterTurns(effectiveBoardRotation)*29526373;
+    	v ^= (tilesLeft*r.nextLong());
+    	v ^= G.rotationQuarterTurns(effectiveBoardRotation)*r.nextLong();
     	return(v);
     }
     long fixedTileDigest = 0;
     private boolean pendingFullRefresh = false;
     public void drawFixedTiles(Graphics gc,Rectangle brect,CrosswordsBoard gb)
     {	long v = 0;
+    	Random r = new Random(FIXEDRANDOM);
     	pendingFullRefresh = !spritesIdle();
     	Enumeration<CrosswordsCell>cells = gb.getIterator(Itype.RLTB);
     	while(cells.hasMoreElements())
@@ -823,14 +827,14 @@ public class CrosswordsViewer extends CCanvas<CrosswordsCell,CrosswordsBoard> im
         	{
         	int ypos = G.Bottom(brect) - gb.cellToY(cell);
         	int xpos = G.Left(brect) + gb.cellToX(cell);
-        	v ^= cell.Digest();
+        	v ^= cell.Digest(r);
         	setLetterColor(gc,gb,cell);
         	cell.drawStack(gc,this,null,CELLSIZE,xpos,ypos,1,1,null);
         	}
         }
     	int tilesLeft = gb.drawPile.height();
-    	v ^= (tilesLeft*263725265);
-    	v ^= G.rotationQuarterTurns(effectiveBoardRotation)*29526373;
+    	v ^= (tilesLeft*r.nextLong());
+    	v ^= G.rotationQuarterTurns(effectiveBoardRotation)*r.nextLong();
         fixedTileDigest=v;
     }
     /**

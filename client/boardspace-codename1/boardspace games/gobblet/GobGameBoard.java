@@ -188,7 +188,7 @@ class GobGameBoard extends rectBoard<GobCell> implements BoardProtocol,GobConsta
         // digests are invalidated.
         //
         Random r = new Random(64 * 1000); // init the random number generator
-        long v = super.Digest();
+        long v = super.Digest(r);
        
         v ^= r.nextLong()*(board_state.ordinal()*10+whoseTurn);
         v ^= chip.Digest(r,pickedObject);

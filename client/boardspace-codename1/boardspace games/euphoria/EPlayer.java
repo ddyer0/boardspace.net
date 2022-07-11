@@ -680,13 +680,13 @@ void reloadNewRecruits(EuphoriaCell from)
 // called when the board is digested
 public long Digest(Random r)
 {	long v = color.ordinal();
-	for(EuphoriaCell c = allCells; c!=null; c=c.next) { v ^= c.Digest(); }
+	for(EuphoriaCell c = allCells; c!=null; c=c.next) { v ^= c.Digest(r); }
 	v ^= knowledge*r.nextLong();
 	v ^= morale*r.nextLong();
 	v ^= totalWorkers*r.nextLong();
 	v ^= r.nextLong()*pf.members();
 	v ^= r.nextLong()*(mandatoryEquality?2:1);
-	v ^= alternateArtifacts.Digest();
+	v ^= alternateArtifacts.Digest(r);
 	v ^= r.nextLong()*energyGainedThisTurn;
 	v ^= r.nextLong()*commodityKnowledge;
 	v ^= r.nextLong()*bearsGained;

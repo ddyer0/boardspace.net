@@ -126,13 +126,13 @@ public class YspahanBoard extends BaseBoard implements BoardProtocol,
 			super.setDisplayRectangle(r);
 		}
 
-		private long Digest() {
+		private long Digest(Random r) {
 			long v = 0;
 			for (YspahanCell c : dice) {
-				v += c.Digest();
+				v += c.Digest(r);
 			}
 			for (YspahanCell c : extraDice) {
-				v += c.Digest();
+				v += c.Digest(r);
 			}
 			return (v);
 		}
@@ -229,10 +229,10 @@ public class YspahanBoard extends BaseBoard implements BoardProtocol,
 			;
 		}
 
-		long Digest() {
+		long Digest(Random r) {
 			long v = 0;
 			for (YspahanCell c : caravan) {
-				v += c.Digest();
+				v += c.Digest(r);
 			}
 			return (v);
 		}
@@ -555,16 +555,16 @@ public class YspahanBoard extends BaseBoard implements BoardProtocol,
 			paidCamelsByCard = false;
 			paidGoldByCard = false;
 		}
-		long Digest() {
+		long Digest(Random r) {
 			long v = 0;
 			// don't digest the cubes, as the exact state of the pile is not
 			// part of the game site. This avoids problems with reset and undo
 			// when the stack has been topped up.
 			for (YspahanCell c : pmisc) {
-					v += c.Digest();
+					v += c.Digest(r);
 			}
 			for (YspahanCell c : buildings) {
-				v += c.Digest();
+				v += c.Digest(r);
 			}
 			v ^= (buildNoGold * 100 + buildNoCamels) * xrand;
 			v ^= viewCardCount*1343526;
@@ -611,9 +611,6 @@ public class YspahanBoard extends BaseBoard implements BoardProtocol,
 					"mismatch buildNoCamels");
 			G.Assert(buildNoGold == from.buildNoGold, "mismatch buildNoCamels");
 			G.Assert(viewCardCount==from.viewCardCount,"view card count wrong");
-			long d1 = Digest();
-			long d2 = from.Digest();
-			G.Assert(d1==d2,"digest mismatch");
 
 		}
 
@@ -1083,6 +1080,7 @@ public class YspahanBoard extends BaseBoard implements BoardProtocol,
 	 * the other.
 	 */
 	public long Digest() {
+		Random r = new Random(64 * 1000); // init the random number generator
 		long v = 0;
 
 		// the basic digestion technique is to xor a bunch of random numbers.
@@ -1093,18 +1091,17 @@ public class YspahanBoard extends BaseBoard implements BoardProtocol,
 		// existing
 		// digests are invalidated.
 		//
-		Random r = new Random(64 * 1000); // init the random number generator
 
 		for (YspahanCell c = allCells; c != null; c = c.next) {
-			v ^= c.Digest(); // this gets all the cells actually on the main
+			v ^= c.Digest(r); // this gets all the cells actually on the main
 								// board
 		}
 		for (PlayerBoard pl : playerBoards) {
-			v ^= pl.Digest();
+			v ^= pl.Digest(r);
 		}
-		v ^= caravan.Digest();
-		v ^= diceTable.Digest();
-		v ^= cards.Digest();
+		v ^= caravan.Digest(r);
+		v ^= diceTable.Digest(r);
+		v ^= cards.Digest(r);
 		// do not digest camels or gold, as the exact state of the pile is not
 		// part of the game state
 		// this avoids problems with "undo" happening after the pile
@@ -1121,8 +1118,8 @@ public class YspahanBoard extends BaseBoard implements BoardProtocol,
 		v ^= cell.Digest(r, protectedCube2);
 		v ^= cell.Digest(r, supervisor);
 		v ^= cell.Digest(r, nextSupervisor);
-		v ^= discards.Digest();
-		v ^= discardStack.Digest();
+		v ^= discards.Digest(r);
+		v ^= discardStack.Digest(r);
 		v ^= ((cardTradeCount * 1000) + (startPlayer * 100) + (gameDay + 1))
 				* r.nextLong();
 		v ^= chip.Digest(r, pickedObject);

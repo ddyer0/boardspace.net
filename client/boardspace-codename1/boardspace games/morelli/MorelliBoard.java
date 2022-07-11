@@ -153,7 +153,7 @@ public class MorelliBoard extends rectBoard<MorelliCell> implements BoardProtoco
         //
 	    //System.out.println("");
         Random r = new Random(64 * 1000); // init the random number generator
-        long v = super.Digest();
+        long v = super.Digest(r);
         //System.out.println("D1 "+v);
 
 		v ^= chip.Digest(r,pickedObject);

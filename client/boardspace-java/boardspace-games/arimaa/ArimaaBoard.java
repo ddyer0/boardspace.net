@@ -293,12 +293,12 @@ class ArimaaBoard extends squareBoard<ArimaaCell> implements BoardProtocol,Arima
 	        	v += chipsOnBoard[i]*r.nextLong();
 	        	ArimaaCell row[]=rack[i];
 	        	for(int lim=row.length-1; lim>=0; lim--)
-				   {	v ^= row[lim].Digest();
+				   {	v ^= row[lim].Digest(r);
 				   }
 	        }
 		
 		for(ArimaaCell c = allCells; c!=null; c=c.next)
-		{	v ^= c.Digest();
+		{	v ^= c.Digest(r);
 		}
 
         // for most games, we should also digest whose turn it is

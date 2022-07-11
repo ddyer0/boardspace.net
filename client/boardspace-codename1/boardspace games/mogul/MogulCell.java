@@ -61,23 +61,5 @@ public class MogulCell extends stackCell<MogulCell,MogulChip> implements MogulCo
 		return(false);
 	}
 	public int drawStackTickSize(int sz) { return(0); }
-	/**
-	 * wrap this method if the cell holds any additional state important to the game.
-	 * This method is called, without a random sequence, to digest the cell in it's usual role.
-	 * this method can be defined as G.Error("don't call") if you don't use it or don't
-	 * want to trouble to implement it separately.
-	 */
-	public long Digest() 
-	{ 	if(onBoard)
-		{
-		// make digest depend only on the height, avoid trouble due to 
-		// robot rearranged player chips
-		return(randomv*(chipIndex+2));
-		}
-		else
-		{
-		return(super.Digest()); 
-		}
-	}
 
 }

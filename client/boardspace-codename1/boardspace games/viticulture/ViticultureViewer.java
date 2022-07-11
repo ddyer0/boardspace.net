@@ -34,6 +34,7 @@ import lib.TextGlyph;
 import lib.TextStack;
 import lib.Base64;
 import lib.Toggle;
+import lib.Random;
 import online.game.*;
 import online.game.sgf.sgf_game;
 import online.game.sgf.sgf_node;
@@ -1236,35 +1237,36 @@ private void drawPlayerBoard(Graphics gc,
 	ViticultureCell deckCells[];
 	
 	private long backgroundDigest = 0;
+	static long FIXEDRANDOM = 22684745;
     public long backgroundDigest()
-    {
+    {	Random r = new Random(FIXEDRANDOM);
     	long v = 0;
     	// include the animation height in the digest so the digest will change when an animation
     	// starts or finishes.
-    	for(ViticultureCell c : backgroundCells) { v ^= DigestA(c); }
-    	for(ViticultureCell c : deckCells) { v ^= DigestA(c);  }
+    	for(ViticultureCell c : backgroundCells) { v ^= DigestA(r,c); }
+    	for(ViticultureCell c : deckCells) { v ^= DigestA(r,c);  }
     	
     	for(int i=0;i<mainBoard.nPlayers();i++)
     	{
     		PlayerBoard pb = mainBoard.pbs[i];
-    		v ^= DigestA(pb.vines);
+    		v ^= DigestA(r,pb.vines);
     		
-            v ^= DigestA(pb.redGrape);
-            v ^= DigestA(pb.whiteGrape);
-            v ^= DigestA(pb.redWine);
-            v ^= DigestA(pb.whiteWine);
-            v ^= DigestA(pb.roseWine);
-            v ^= DigestA(pb.champagne);
-            v ^= DigestA(pb.buildable);
-            v ^= DigestA(pb.stars);
+            v ^= DigestA(r,pb.redGrape);
+            v ^= DigestA(r,pb.whiteGrape);
+            v ^= DigestA(r,pb.redWine);
+            v ^= DigestA(r,pb.whiteWine);
+            v ^= DigestA(r,pb.roseWine);
+            v ^= DigestA(r,pb.champagne);
+            v ^= DigestA(r,pb.buildable);
+            v ^= DigestA(r,pb.stars);
 
     	}
     	return(v);
     }
-    private long DigestA(ViticultureCell ...c)
+    private long DigestA(Random r,ViticultureCell ...c)
     {	long val = 0;
     	for(ViticultureCell c1 : c)
-    	{	val ^= c1.Digest()+123*c1.activeAnimationHeight();
+    	{	val ^= c1.Digest(r)+123*c1.activeAnimationHeight();
     	}
     	return(val);
     }
@@ -1876,19 +1878,40 @@ private void drawPlayerBoard(Graphics gc,
     {
     	PlayerBoard pb = gb.getCurrentPlayerBoard();
     	int nMeeples = 0;
+    	ViticultureState state = gb.resetState;
     	int w = G.Width(br);
-    	int step = Math.min((int)(G.Height(br)*0.3),w/4);
+    	int step = Math.min((int)(G.Height(br)*0.3),w*3/10);
     	w = step*4;
     	int totalW = step*3;
-    	int left = G.centerX(br)-totalW/2;
+    	int discount = 0;
+    	int left = G.centerX(br)-step;
     	int top = G.centerY(br)-step;
     	int totalH = step*2+step/3;
+    	
+    	switch(state)
+    	{
+    	case TrainWorkerDiscount1AndUse:
+    	case TrainWorkerDiscount1:
+    		discount = 1;
+    		break;
+    	case TrainWorkerDiscount2:
+    		discount = 2;
+    		break;
+     	case TrainWorkerDiscount3: 
+    		discount = 3;
+    		break;
+     	case TrainWorkerAndUseFree:
+       	case TrainWorkerDiscount4:
+    		discount = 4;
+    		break;
+    	default: break;
+    	}
     	for(Enumeration<Viticulturemovespec> e = targets.elements(); e.hasMoreElements();)
     	{	
     		Viticulturemovespec m = e.nextElement();
     		while(m!=null) { nMeeples++; m=(Viticulturemovespec)m.next; }
     	}
-    	int mstep = w/Math.max(7,nMeeples+6);
+    	int mstep = w/Math.max(6,nMeeples+5);
   	
     	Rectangle tradeRect = new Rectangle(left,top,totalW,totalH);
    
@@ -1921,16 +1944,30 @@ private void drawPlayerBoard(Graphics gc,
     			{
     				highlight.hitObject = m;
     			}
+    			int cost = Math.max(0,4-discount);
+    			if(chip.type!=ChipType.Worker) { cost++; }
     			if(gb.movestackContains(m,gb.pendingMoves))
     			{
     				StockArt.Checkmark.drawChip(gc, this, step/5,xleft+step/5,ytop,null);
         			if(chip.type!=ChipType.Worker)
         				{
+        				
         				ViticultureChip card = ViticultureChip.getChip(ChipType.WorkerCard,chip.type.name());
         				card.drawChip(gc, this,step*2,G.centerX(tradeRect),ytop+step+step/10,null);
         				}
          			}
     			GC.Text(gc, true, xleft-mstep/2, ytop+step/8, mstep, step/4,Color.black,null,chip.type.name());
+    			
+    			loadCoins(pb.cashDisplay,cost);
+    			if(cost>0)
+				{
+    				drawStack(gc,state,null, pb.cashDisplay,null,highlightAll, step*4/10,xleft,ytop+step/2, 0,0.3,0.00,null);
+				}
+    			else { 
+ 				GC.Text(gc,true,xleft-step/2,ytop+step*3/8,step,step/4,Color.black,null,s.get(FreeMessage));
+				}
+
+    			
   			xleft += mstep;
       			m = (Viticulturemovespec)m.next;
        		}
@@ -3808,12 +3845,25 @@ private void drawPlayerBoard(Graphics gc,
     	int cy = G.centerY(br);
     	int nBuilds = 0;
     	int tourBuilds = 0;
+    	int discount = 0;
     	HitPoint mainHighlight = showBuildings ? null : highlight;
        	ViticultureState state = gb.resetState;
        	boolean censor = !reviewOnly && censor(pb,highlightAll);
        	switch(state)
     	{
+       	case BuildStructureDiscount3:
+       		discount = 3;
+       		break;
+       	case BuildStructureBonus:
+       		discount = 1;
+       		break;
+       	case BuildAtDiscount2:
+       	case BuildAtDiscount2forVP:
+       		discount = 2;
+       		break;
     	case BuildTourBonus:
+    		discount = 1;
+			//$FALL-THROUGH$
   		case BuildTour:
   			tourBuilds = 2;
   			break;
@@ -3899,28 +3949,46 @@ private void drawPlayerBoard(Graphics gc,
     				}
     			GC.setFont(gc, standardBoldFont());
     			GC.Text(gc, true,(int)(xp-step*0.4),yp+step*2/3,(int)(step*0.8),step/4,Color.black,null,chip.type.prettyName());
-    			loadCoins(pb.cashDisplay,pb.buildable[lim].cost);
+    			int netCost = Math.max(0,pb.buildable[lim].cost-discount);
+    			loadCoins(pb.cashDisplay,netCost);
     			pb.cashDisplay.selected = false;
-    			drawStack(gc,state,null, pb.cashDisplay,null,highlightAll, step/2,xp-step/6,yp+step*6/5, 0,0.5,0.00,null);
+    			if(netCost>0)
+    				{drawStack(gc,state,null, pb.cashDisplay,null,highlightAll, step/2,xp,yp+step*6/5, 0,0.5,0.00,null);
+    				}
+    			else { 
+     				GC.Text(gc,true,xp-step/2,yp+step,step,step/4,Color.black,null,s.get(FreeMessage));
+    				}
     			xp += (int)(0.9*step);
     		}
     	}
     	if(cardDisplay.height()>0)
     	{
-    		if(drawStack(gc,state,null,cardDisplay,mainHighlight,highlightAll,step,xp+step/4,yp+step*2/3,0,1,0,censor ? ViticultureChip.BACK : null))
+    		if(drawStack(gc,state,null,cardDisplay,mainHighlight,highlightAll,step,xp+step/4,yp+step*1/3,0,1,0,censor ? ViticultureChip.BACK : null))
     		{
     			highlight.hitObject = cardDisplay.chipAtIndex(highlight.hit_index);
     		}
         	ViticultureCell discards = pb.selectedCards;
     		// mark the currently selected cards
     		for(int i=0;i<cardDisplay.height();i++)
-    		{
+    		{	int xpos = xp+step*i;
+    			int ypos = yp-step+step*3/2;
     			ViticultureChip ch = cardDisplay.chipAtIndex(i);
     			if(discards.containsChip(ch)) {
     				boolean isDiscard = state.discardCards();
-    	     		(isDiscard?StockArt.Exmark:StockArt.Checkmark).drawChip(gc,this,step/2,xp+step*i,yp-step+step*3/2,null);
+    	     		(isDiscard?StockArt.Exmark:StockArt.Checkmark).drawChip(gc,this,step/2,xpos,ypos,null);
+    			}
+    			int netCost = Math.max(0,ch.costToBuild()-discount);
+    			loadCoins(pb.cashDisplay,netCost);
+    			if(netCost>0)
+    			{
+    				drawStack(gc,state,null, pb.cashDisplay,null,highlightAll, step/2,xpos+step/6,ypos+step*7/8, 0,0.5,0.00,null);
+    		}
+    			else 
+    			{
+    				GC.Text(gc,true,xpos-step/4,ypos+step*2/3,step,step/4,Color.black,null,s.get(FreeMessage));
     			}
     		}
+    		
     	}
     	
     	//

@@ -273,7 +273,7 @@ class TintasBoard extends hexBoard<TintasCell> implements BoardProtocol,TintasCo
     	// different identity for the second use.
         //
         Random r = new Random(64 * 1000); // init the random number generator
-        long v = super.Digest();
+        long v = super.Digest(r);
 		v ^= chip.Digest(r,pickedObject);
 		v ^= Digest(r,revision);
 		v ^= Digest(r,swapped);

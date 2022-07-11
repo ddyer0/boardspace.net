@@ -143,7 +143,7 @@ class KamisadoBoard extends rectBoard<KamisadoCell> implements BoardProtocol,Kam
         // digests are invalidated.
         //
         Random r = new Random(64 * 1000); // init the random number generator
-        long v = super.Digest();
+        long v = super.Digest(r);
 
 		v ^= chip.Digest(r,pickedObject);
 		v ^= Digest(r,pickedSourceStack);

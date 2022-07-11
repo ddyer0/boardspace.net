@@ -152,7 +152,7 @@ class SnakesBoard extends squareBoard<SnakesCell> implements BoardProtocol,Snake
         Random r = new Random(64 * 1000); // init the random number generator
         
 		for(SnakesCell c = allCells; c!=null; c=c.next)
-		{	v ^= c.Digest();
+		{	v ^= c.Digest(r);
 		}
 		v ^= r.nextLong()*target.ordinal();
 		v ^= chip.Digest(r,pickedObject);

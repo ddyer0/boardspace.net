@@ -33,6 +33,7 @@ public interface ViticultureConstants
 			VitiWinter,
 			SpringMessage,
 	};
+	static String FreeMessage = "(Free)";
 	static String YouMayBuildMinus2 = "You may build a structure with a $2 discount";
 	static String YouMayPlantOne = "You may plant 1 vine";
 	static String InnkeeperSteal = "Innkeeper steal #1";
@@ -241,6 +242,7 @@ public interface ViticultureConstants
     static String ShowBuildingInfo = "Show info about Buildings";
 	static String ViticultureStrings[] = 
 	{  "Viticulture",
+		FreeMessage,
 		NoPlantMessage,
 		MakeChampagne,
 		MakeRoseWine,
@@ -1083,7 +1085,6 @@ public interface ViticultureConstants
     		G.Assert(v!=null,IdNotFoundError,s);
     		return(v);
     	}
-		public long Digest() { return((ordinal()+1)*463472); }
 		public long Digest(Random r) { return(r.nextLong()*(ordinal()+1)); }
 		
 		public boolean isWine()

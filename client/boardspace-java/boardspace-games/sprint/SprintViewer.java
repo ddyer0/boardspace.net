@@ -20,6 +20,7 @@ import lib.LFrameProtocol;
 import lib.Slider;
 import lib.StockArt;
 import lib.TextButton;
+import lib.Random;
 import online.game.*;
 import online.game.sgf.sgf_node;
 import online.game.sgf.sgf_property;
@@ -789,12 +790,12 @@ public class SprintViewer extends CCanvas<SprintCell,SprintBoard> implements Spr
     // but on mobiles if makes a big difference.
     // This digest determines when the background has changed, and needs to be redrawn.
     public long digestFixedTiles()
-    {	
+    {	Random r = new Random(376357);
     	long v = 0;
     	for(SprintCell cell = bb.allCells; cell!=null; cell=cell.next)
         {	if(cell.isFixed)
         	{
-        	v ^= cell.Digest();
+        	v ^= cell.Digest(r);
         	}
         }
     	int tilesLeft = bb.drawPile.height();
@@ -802,10 +803,12 @@ public class SprintViewer extends CCanvas<SprintCell,SprintBoard> implements Spr
     	v ^= G.rotationQuarterTurns(effectiveBoardRotation)*29526373;
     	return(v);
     }
+    static long FIXEDRANDOM = 346572435;
     long fixedTileDigest = 0;
     private boolean pendingFullRefresh = false;
     public void drawFixedTiles(Graphics gc,Rectangle brect,SprintBoard gb)
-    {	long v = 0;
+    {	Random r = new Random(FIXEDRANDOM);
+    	long v = 0;
     	pendingFullRefresh = !spritesIdle();
     	Enumeration<SprintCell>cells = gb.getIterator(Itype.RLTB);
     	while(cells.hasMoreElements())
@@ -814,14 +817,14 @@ public class SprintViewer extends CCanvas<SprintCell,SprintBoard> implements Spr
         	{
         	int ypos = G.Bottom(brect) - gb.cellToY(cell);
         	int xpos = G.Left(brect) + gb.cellToX(cell);
-        	v ^= cell.Digest();
+        	v ^= cell.Digest(r);
         	setLetterColor(gc,gb,cell);
         	cell.drawStack(gc,this,null,CELLSIZE,xpos,ypos,1,1,null);
         	}
         }
     	int tilesLeft = gb.drawPile.height();
-    	v ^= (tilesLeft*263725265);
-    	v ^= G.rotationQuarterTurns(effectiveBoardRotation)*29526373;
+    	v ^= (tilesLeft*r.nextLong());
+    	v ^= G.rotationQuarterTurns(effectiveBoardRotation)*r.nextLong();
         fixedTileDigest=v;
     }
     /**

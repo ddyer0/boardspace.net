@@ -31,8 +31,6 @@ import lib.Toggle;
  *
  * todo: add the ReverseView feature
  * 
- * This code is derived from the "HexGameViewer" class.  Refer to the
- 
 */
 public class FanoronaGameViewer extends CCanvas<FanoronaCell,FanoronaBoard> implements FanoronaConstants, GameLayoutClient
 {	/**

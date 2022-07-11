@@ -829,7 +829,7 @@ class WypsBoard extends hexBoard<WypsCell> implements BoardProtocol,WypsConstant
     	// different identity for the second use.
         //
         Random r = new Random(64 * 1000); // init the random number generator
-        long v = super.Digest();
+        long v = super.Digest(r);
 		// many games will want to digest pickedSource too
 		// v ^= cell.Digest(r,pickedSource);
 		v ^= chip.Digest(r,pickedObject);
@@ -2090,7 +2090,7 @@ class WypsBoard extends hexBoard<WypsCell> implements BoardProtocol,WypsConstant
 int nWordsTried = 0;
 int nWordsPlaced = 0;
 // find words that can be placed in a different direction across an existing word.  This is used
-// both to place ordinary sprint and to place "cap words" where a letter is being added to 
+// both to place ordinary crosswords and to place "cap words" where a letter is being added to 
 // the beginning or end of an existing word.
 public int checkDictionaryWords(DictionaryHash subDictionary,WypsCell rack[],long rackMask,Template template,boolean findAll)
 {	WypsCell toCells[] = template.cells;

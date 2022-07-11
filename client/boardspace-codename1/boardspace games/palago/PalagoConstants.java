@@ -6,7 +6,7 @@ import online.game.BaseBoard.BoardState;
 
 
 public interface PalagoConstants 
-{   //	these next must be unique integers in the Hexmovespec dictionary
+{   //	these next must be unique integers in the dictionary
 	//  they represent places you can click to pick up or drop a stone
 	
 	static final String TileColorMessage = "select tile color";
@@ -56,7 +56,7 @@ public interface PalagoConstants
     static void putStrings()
     {/*	String palagoStrings[] = 
 			{"Palago",
-			 "select tile color",
+			 TileColorMessage,
 			 "Place a second tile adjacent to the first",
 			 "Form a closed shape in your color"};
     	String palagoStringPairs[][] = {

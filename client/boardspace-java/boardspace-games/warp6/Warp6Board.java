@@ -382,14 +382,14 @@ class Warp6Board extends squareBoard<Warp6Cell> implements BoardProtocol,Warp6Co
      */
     public long Digest()
     {
-    	long v = super.Digest();
+        Random r = new Random(64 * 1000); // init the random number generator
+    	long v = super.Digest(r);
 
         // the basic digestion technique is to xor a bunch of random numbers. The key
         // trick is to always generate exactly the same sequence of random numbers, and
         // xor some subset of them.  Note that if you tweak this, all the existing
         // digests are invalidated.
         //
-        Random r = new Random(64 * 1000); // init the random number generator
         v ^= Digest(r,rack);
         v ^= Digest(r,warp);
 		v ^= chip.Digest(r,pickedObject);

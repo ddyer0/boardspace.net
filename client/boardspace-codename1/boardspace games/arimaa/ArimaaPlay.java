@@ -274,7 +274,7 @@ public class ArimaaPlay extends commonRobot<ArimaaBoard> implements Runnable, Ar
         // this avoids the various problems such as the robot committing suicide
         // because it's going to lose anyway, and the position looks better than
         // if the opponent makes the last move.  Technically, this isn't needed
-        // if there is no such thing as a suicide move, but the logic
+        // if is no such thing as a suicide move, but the logic
         // is included here because this is supposed to be an example.
         if(val0>=VALUE_OF_WIN) { return(val0); }
         if(val1>=VALUE_OF_WIN) { return(-val1); }

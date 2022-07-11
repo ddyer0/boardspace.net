@@ -12,13 +12,6 @@ class ChipStack extends OStack<ModxChip> implements Digestable
 {
 	public ModxChip[] newComponentArray(int n) { return(new ModxChip[n]); }
 
-	public long Digest() {
-		long v = 0;
-		for(int i=0;i<size();i++) { v ^= elementAt(i).Digest()*(i+12456); }
-		return(v);
-	}
-
-	@Override
 	public long Digest(Random r) {
 		long v = 0;
 		for(int i=0;i<size();i++) { v ^= elementAt(i).Digest(r)*(i+12456); }

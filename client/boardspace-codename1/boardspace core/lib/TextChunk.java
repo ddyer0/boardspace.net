@@ -264,6 +264,7 @@ public void colorize(InternationalStrings s,Text... coloredChunks)
     public static Text split(String text,Color c) { return(new TextChunk(text,c,true)); }
     
     public Color getColor() { return(dataColor); }
+    public void setColor(Color c) { dataColor = c; }
 	public String getString() { return(data); }
 	public int length() { return(data.length()); }
 	public boolean equals (String str) { return(data.equals(str)); }

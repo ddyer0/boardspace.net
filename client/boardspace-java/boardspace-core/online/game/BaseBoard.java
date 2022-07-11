@@ -271,8 +271,6 @@ public abstract class BaseBoard implements Opcodes,Digestable
 	public int cellSize() { return(20); }
 	
 	public void setPermissiveReplay(boolean tf) { permissiveReplay = tf; }
-	
-    public long Digest(Digestable c) { return((c==null)?0:c.Digest()); }
     public long Digest(Random r,Digestable c) { return(c==null)?0:c.Digest(r); }
     public long Digest(Random r,int n) { return(r.nextLong()^n); }
     public long Digest(Random r,long n) { return(r.nextLong()^n); }
@@ -284,31 +282,7 @@ public abstract class BaseBoard implements Opcodes,Digestable
     {
  	   return(a==null ? b==null : a.sameContents(b));
     }
-    /**
-    * Digest an array of cells in their standard use
-    * @param c
-    * @return a long representing the state of the cell
-    */
-   public long Digest(Digestable c[]) 
-   {	long val = 0;
-   		for(int i=0,lim=c.length;  i<lim; i++)
-   		{
-   			val ^= Digest(c[i]);
-   		}
-	   return(val);
-   }
 
-   /**
-    * Digest a 2d array of cells in their standard use
-    * @param c
-    * @return a long representing the state of the array of cells
-    */
-   public long Digest(Digestable c[][])
-   {	long v=0;
-   		for(Digestable d[] : c) 
-   			{ v ^= Digest(d); }
-   		return(v);
-   }
    /**
     * Digest an array of cells in an alternate use
     * @param r

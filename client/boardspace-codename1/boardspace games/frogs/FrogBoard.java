@@ -201,14 +201,14 @@ class FrogBoard extends hexBoard<FrogCell> implements BoardProtocol, FrogConstan
 	 * @return
 	 */
 	public long Digest() {
-		long v = super.Digest();
 		Random r = new Random(122058943);
+		long v = super.Digest(r);
 
-		v ^= bag.Digest();
+		v ^= bag.Digest(r);
 
 		for (int i = 0; i < players_in_game; i++) {
 			for (int j = 0; j < 2; j++) {
-				v ^= hand[i][j].Digest();
+				v ^= hand[i][j].Digest(r);
 			}
 		}
 		v ^= cell.Digest(r,pickedMoveSource);

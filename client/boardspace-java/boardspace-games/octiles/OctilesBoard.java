@@ -713,10 +713,10 @@ class OctilesBoard extends rectBoard<OctilesCell>implements BoardProtocol,Octile
         // digests are invalidated.
         //
         Random r = new Random(64 * 1000); // init the random number generator
-        long v = super.Digest();
+        long v = super.Digest(r);
       
 		for(OctilesCell c = allTileCells;c!=null; c=c.next)
-		{	v ^= c.Digest();
+		{	v ^= c.Digest(r);
 		}
 		v ^= tilePool.Digest(r);
         // for most games, we should also digest whose turn it is

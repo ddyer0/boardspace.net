@@ -694,7 +694,7 @@ public variation gamevariation = variation.hive;
         for(int i=0,lim=occupiedCells.size();i<lim; i++)
 		{	
 			HiveCell c = occupiedCells.elementAt(i);
-				{	v ^= c.Digest();
+				{	v ^= c.Digest(r);
 				}
 			
 		}

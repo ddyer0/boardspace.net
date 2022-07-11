@@ -49,7 +49,6 @@ public class CookieViewer extends CCanvas<CookieCell,CookieBoard> implements Coo
     static final String Cookie_SGF = "Cookie-Disco"; // sgf game number allocated for Cookie Disco
 	   
 
-        
         static final int BACKGROUND_TILE_INDEX = 0;
         static final int BACKGROUND_REVIEW_INDEX = 1;
         static final int BACKGROUND_TABLE_INDEX = 2;

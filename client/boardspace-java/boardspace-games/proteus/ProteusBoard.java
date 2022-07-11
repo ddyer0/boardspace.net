@@ -149,14 +149,14 @@ class ProteusBoard extends rectBoard<ProteusCell> implements BoardProtocol,Prote
         // digests are invalidated.
         //
         Random r = new Random(64 * 1000); // init the random number generator
-        long v = super.Digest();
+        long v = super.Digest(r);
 
 		v ^= chip.Digest(r,pickedObject);
 		v ^= Digest(r,pickedSourceStack);
 		v ^= Digest(r,droppedDestStack);
-		v ^= Digest(whiteChips);
-		v ^= Digest(blackChips);
-		v ^= Digest(originalTiles);
+		v ^= Digest(r,whiteChips);
+		v ^= Digest(r,blackChips);
+		v ^= Digest(r,originalTiles);
 		v ^= Digest(r,goal.ordinal());
 		v ^= Digest(r,move.ordinal());
 		v ^= Digest(r,trade.ordinal());

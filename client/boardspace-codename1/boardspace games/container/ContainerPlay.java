@@ -115,7 +115,7 @@ public class ContainerPlay extends commonRobot<ContainerBoard> implements Runnab
 
     public ContainerBoard.ContainerGoalSet robotGoalSet()
     {
-    		ContainerBoard.playerBoard bd = board.playerBoard[evalForPlayer];
+    	ContainerBoard.playerBoard bd = board.getPlayer(evalForPlayer);
     		return(bd.possibleGoalSets[0]);
     }
     
@@ -296,8 +296,8 @@ void showFairBids(ContainerBoard evboard)
     	int auctioneer = evboard.playerRequestingBid();
     	ContainerBoard.ContainerGoalSet set = robotGoalSet();
     	double stage = game_stage();
-    	for(int i=0;i<evboard.playerBoard.length;i++)
-    		{	ContainerBoard.playerBoard bd = evboard.playerBoard[i];
+    	for(int i=0;i<evboard.players_in_game;i++)
+    		{	ContainerBoard.playerBoard bd = evboard.getPlayer(i);
     			int max = bd.cash;
     			evboard.fairBid_v5(auctioneer,i,max,true,set,stage);
     		}
@@ -433,9 +433,9 @@ void showFairBids(ContainerBoard evboard)
             // the best solution is to use dif=0.0;  For games with fools mates,
             // set dif so the really bad choices will be avoided
             
-            for(int i=board.playerBoard.length-1; i>=0; i--) 
+            for(int i=board.players_in_game-1; i>=0; i--) 
             	{ //revalue the ship goods before the search
-            	board.playerBoard[i].current_ship_island_value = -100; 
+            	board.getPlayer(i).current_ship_island_value = -100; 
             	}
             boardSearchLevel = 0;
             evalForPlayer = board.whoseTurn;

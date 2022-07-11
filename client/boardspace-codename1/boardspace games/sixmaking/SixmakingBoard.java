@@ -151,7 +151,7 @@ class SixmakingBoard extends rectBoard<SixmakingCell> implements BoardProtocol,S
         // digests are invalidated.
         //
         Random r = new Random(64 * 1000); // init the random number generator
-        long v = super.Digest();
+        long v = super.Digest(r);
 
 		v ^= Digest(r,pickedStack);
 		v ^= Digest(r,pickedSourceStack);

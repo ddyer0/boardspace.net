@@ -12,7 +12,7 @@ import online.search.UCTMoveSearcher;
 import online.search.UCTNode;
 
 /**
- * HavannahBoard knows all about the game of Hex, which is played
+ * HavannahBoard knows all about the game of Havannah, which is played
  * on a hexagonal board. It gets a lot of logistic support from 
  * common.hexBoard, which knows about the coordinate system.  
  * 
@@ -283,7 +283,7 @@ class HavannahBoard extends hexBoard<HavannahCell> implements BoardProtocol,Hava
     	// different identity for the second use.
         //
         Random r = new Random(64 * 1000); // init the random number generator
-        long v = super.Digest();
+        long v = super.Digest(r);
 		// many games will want to digest pickedSource too
 		// v ^= cell.Digest(r,pickedSource);
 		v ^= chip.Digest(r,playerChip[0]);	// this accounts for the "swap" button
