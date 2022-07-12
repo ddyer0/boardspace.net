@@ -9,7 +9,6 @@ import online.common.exCanvas;
 import static online.common.OnlineConstants.clickSound;
 
 
-
 /** pop up keyboard */
 public class Keyboard implements Config
 {
@@ -143,6 +142,7 @@ public class Keyboard implements Config
 	
 	exCanvas showOn=null;
 	Rectangle crect = null;
+	boolean fixedSize =  false;
 	boolean upperCase = false;
 	CalculatorButton buttonsUp[]=null;
 	CalculatorButton buttonsDown[] = null;
@@ -165,7 +165,10 @@ public class Keyboard implements Config
 						+ n.substring(len-3));
 	}
 	public void resizeAndReposition()
-	{	TextContainer dis = targetDisplay;
+	{	
+		if(fixedSize) { return; }
+		
+		TextContainer dis = targetDisplay;
 		includeDisplay = false;
 		Rectangle parentBounds = showOn.getBounds();
 		FontMetrics fm = G.getFontMetrics(showOn.largeBoldFont());
@@ -217,13 +220,18 @@ public class Keyboard implements Config
 	}
 	// constructor
 	public Keyboard(exCanvas see,TextContainer dis)
+	{
+		this(see,dis,null);
+	}
+	public Keyboard(exCanvas see,TextContainer dis,Rectangle r)
 	{	showOn = see;
 		buttonsUp = produceLayout(true);
 		buttonsDown = produceLayout(false);
 		targetDisplay = dis;
-		resizeAndReposition();
+		if(r!=null) { crect = r; fixedSize = true; narrow=true; }
+		else {	resizeAndReposition(); }
 	}
-
+	
 	public void StartDragging(HitPoint hp)
 	{	
 		if(includeDisplay)

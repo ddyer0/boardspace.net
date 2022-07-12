@@ -53,8 +53,9 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
     private Color boardBackgroundColor = new Color(220,165,155);
     private Dictionary dictionary = Dictionary.getInstance();
     private int rackSize = 2;
-    
 	private TextContainer inputField = new TextContainer(CrosswordleId.InputField);
+	private Rectangle keyboardRect = addRect("keyboard");
+    private Keyboard keys = new Keyboard(this,inputField,keyboardRect);
 
     // private state
     private CrosswordleBoard bb = null; //the board from which we are displaying
@@ -240,7 +241,7 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
        	int doneW = G.Width(editRect);
        	layout.alwaysPlaceDone = true;
        	layout.placeDoneEditRep(doneW,doneW,passButton,checkWordsButton,vocabularyRect);
-      	 
+      	layout.placeRectangle(keyboardRect,minChatW,minChatW/2,BoxAlignment.Bottom);
        	layout.placeRectangle(guessRect,stateH*12,stateH*2,BoxAlignment.Center);
        	inputField.setBounds(guessRect);
        	inputField.setFont(G.getFont(largeBoldFont(),stateH*9/5));
@@ -722,7 +723,8 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
              //      DrawRepRect(gc,pl.displayRotation,Color.black,b.Digest(),repRect);
         inputField.setVisible(true);
         inputField.redrawBoard(gc,selectPos);
-        
+        keys.narrow = true;
+        keys.draw(gc,selectPos);
         // draw the vcr controls, last so the pop-up version will be above everything else
         drawVcrGroup(nonDragSelect, gc);
         
