@@ -14,11 +14,11 @@ public class CalculatorButton {
 	private boolean center = true;
 	private double w;
 	private double h;
-	id value;
+	public id value;
 	private StockArt button;
 	private StockArt buttonLeft;
 	private StockArt buttonRight;
-	Color textColor = Color.black;
+	public Color textColor = Color.black;
 	boolean visible = true;
 	boolean enabled = true;
 	
@@ -91,7 +91,6 @@ public class CalculatorButton {
 	Ntilde("~",'~'),
 	Nlbrack("[",'['),
 	Nrbrack("]",']'),
-	Ntab("\u21e8",'\t'),
 	Ndel("\u232B",0xff),
 	Nbackslash("\\",'\\'),
 	Ndquote("\"",'"'),
@@ -127,7 +126,7 @@ public class CalculatorButton {
 	Nup("\u2191",0x2191),
 	Nleft("\u2190",0x2190,0.6,0.3,1),
 	Nright("\u2192",0x2192),
-	NarrowCloseKeyboard("\u25bd",0x25bd,0.5,0.2,1),
+	NarrowCloseKeyboard("\u25bd",0x25bd,0.25,0.2,1),
 	CloseKeyboard("\u25bd",0x25bd,1.13,0.4,1),
 	Ncaps("Caps",1000,0,0,2),
 	Nenter("Enter",1001,0,0,2),
@@ -135,6 +134,7 @@ public class CalculatorButton {
 	Ncontrol("Ctrl",1003,0,0,2),
 	NSymbol("#*%",1004,0,0,2),
 	NAlpha("abc",1005,0,0,2),
+	Guess("Guess",1006,0,0,2),
 	Nspacebar(" ",' ',0.2,0,8.85),
 	NNspacebar(" ",' ',0,0,4),
 	Clear("clr",-2,0,0,2),
@@ -144,11 +144,17 @@ public class CalculatorButton {
 	Display("message",-6,0,0,2),
 	Ok("bid",-7,0,0,2),
 	Text2("message",-8,0,0,2),
+	Ntab("\u21e8",'\t',0,0,1.2),
+	Halfspace("halfspace",-1,0,0,0.5),
+	Fullspace("fullspace",-1,0,0,1.0),
+	Minus14("Minus-1/4",-1,-0.25,0,0),
+	Minus316("Minus-3/16",-1,-3.0/16,0,0),
+	Minus18("Minus-1/8",-1,-0.125,0,0),
 	Nunk("???",-9,0,0,2);
 
 	String shortName=name();
 	public String shortName() { return(shortName); }
-	int ival = 0;
+	public int ival = 0;
 	double dx = 0;
 	double dy = 0;
 	double dw = 1;

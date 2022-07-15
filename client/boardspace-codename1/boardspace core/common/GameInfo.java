@@ -1147,36 +1147,36 @@ synchronized(allGames) {
 	String pRules = "/crosswordle/english/rules.html";
 	String pViewer = "crosswordle.CrosswordleViewer";  
 
-	GameInfo mm = put(new GameInfo(2101,ES.test,109,"CW",WordGames,"Crosswordle","Crosswordle-55",
-			ThreeBotsPlus,
+	GameInfo mm = put(new GameInfo(2201,ES.game,110,"CW",WordGames,"Crosswordle","Crosswordle-55",
+			NoBots,
 			new double[]{0.1,1.0,1.0,0.01},
 			pViewer,pRules,
 			null,true, null));
-	 mm.maxPlayers = 6;
+	 mm.maxPlayers = 1;
 	 mm.minPlayers = 1;
 	 mm.groupSortKey = "0091";
 	 mm.robotTimed = true;
 	 mm.randomizeFirstPlayer = true;
 	 mm.hasHiddenInformation = false;
 
-	  mm = put(new GameInfo(2102,ES.test,109,"CW",WordGames,"Crosswordle","Crosswordle-66",
-				ThreeBotsPlus,
+	 mm = put(new GameInfo(222,ES.test,110,"CW",WordGames,"Crosswordle","Crosswordle-66",
+				NoBots,
 				new double[]{0.1,1.0,1.0,0.01},
 				pViewer,pRules,
 				null,true, null));
-		 mm.maxPlayers = 6;
+		 mm.maxPlayers = 1;
 		 mm.minPlayers = 1;
 	 mm.groupSortKey = "0091";
 	 mm.robotTimed = true;
 	 mm.randomizeFirstPlayer = true;
 	 mm.hasHiddenInformation = false;
 
-		  mm = put(new GameInfo(2103,ES.test,109,"CW",WordGames,"Crosswordle","Crosswordle-65",
-					ThreeBotsPlus,
+		  mm = put(new GameInfo(2203,ES.test,110,"CW",WordGames,"Crosswordle","Crosswordle-65",
+					NoBots,
 					new double[]{0.1,1.0,1.0,0.01},
 					pViewer,pRules,
 					null,true, null));
-			 mm.maxPlayers = 6;
+			 mm.maxPlayers = 1;
 			 mm.minPlayers = 1;
 			 mm.groupSortKey = "0091";
 			 mm.robotTimed = true;

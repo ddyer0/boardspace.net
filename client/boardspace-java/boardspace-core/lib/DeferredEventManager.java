@@ -64,34 +64,32 @@ public class DeferredEventManager implements ActionListener,ItemListener,ListSel
 	public void handleDeferredEvent(DeferredEventHandler cp)
 	{	handler = cp;
 		if(!deferredEvents.isEmpty())
-		{ boolean val = false;
+		{
 		  Object e = deferredEvents.elementAt(0);
 		  deferredEvents.removeElementAt(0);
 		  if(e instanceof PinchEvent)
 		  {
-			  val = cp.handleDeferredEvent(e, null);
+			  cp.handleDeferredEvent(e, null);
 		  }
 		  else if(e instanceof ActionEvent)
 		  	{  ActionEvent ee = (ActionEvent)e;
-		  	   val = cp.handleDeferredEvent(ee.getSource(), ee.getActionCommand());
+		  	   cp.handleDeferredEvent(ee.getSource(), ee.getActionCommand());
 		  	}
 		  else if(e instanceof ListSelectionEvent)
 		  {
 			  ListSelectionEvent ee = (ListSelectionEvent)e;
-			  val = cp.handleDeferredEvent(ee.getSource(), null);
+			  cp.handleDeferredEvent(ee.getSource(), null);
 		  }
 		  else if(e instanceof ItemEvent)
 		  {	ItemEvent ee = (ItemEvent)e;
-		  	val = cp.handleDeferredEvent(ee.getSource(), null);
+		  	cp.handleDeferredEvent(ee.getSource(), null);
 		  }
 		  else if(e instanceof MouseWheelEvent)
 		  {
-			  val = cp.handleDeferredEvent(e,"mousewheel");
+			   cp.handleDeferredEvent(e,"mousewheel");
 		  }
-		  else if(G.debug() && !val)
-		  {
-			 G.print("Unexpected event deferred: "+e); 
-		  }	
+		  else { cp.handleDeferredEvent(e,"unknown"); }
+
 		}
 	}
 

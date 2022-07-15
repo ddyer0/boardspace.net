@@ -26,7 +26,7 @@ public interface TamskConstants
 		Timer_0W,Timer_1W,Timer_2W,
 		Timer_0B,Timer_1B,Timer_2B,
 		Timer_F, ToggleEye,StartFast,
-		StopTime,RestartTime,
+		StopTime,RestartTime, ToggleSand,
 		;
 		TamskChip chip;
 		public String shortName() { return(name()); }
@@ -102,11 +102,15 @@ static int[] ZnInCol = { 4, 5, 6, 7, 6, 5, 4 }; // depth of columns, ie A has 4,
 	static final String StopTimeMessage = "Stop the clock from running";
 	static final String StartTime = "Restart Clock";
 	static final String StartTimeMessage = "Restart the clock running";
+	static final String SandExplanation = "use analog timers";
+	static final String NoSandExplanation = "use Digital timers";
 	static void putStrings()
-	{ /*
+	{	/*
 		String TamskStrings[] = 
 		{  "Tamsk",
 			"Tamsk-U",
+			SandExplanation,
+			NoSandExplanation,
 			PlayState,
 			VictoryCondition,
 			StopTime,
@@ -125,6 +129,7 @@ static int[] ZnInCol = { 4, 5, 6, 7, 6, 5, 4 }; // depth of columns, ie A has 4,
 		InternationalStrings.put(TamskStrings);
 		InternationalStrings.put(TamskStringPairs);
 		*/
+		
 	}
 
 

@@ -311,8 +311,22 @@ public abstract class SystemGraphics
 	 * @return
 	 */
 	public static Rectangle2D getStringBounds(Graphics g, FontMetrics fm, String line, int firstChar, int lastChar)
-	{
-		return fm.getStringBounds(line,firstChar,lastChar,g==null ? null : g.getGraphics());
+	{	Graphics2D gg = g==null ? null : g.getGraphics();
+		Rectangle2D r1 = fm.getStringBounds(line,firstChar,lastChar,gg);
+		/** x0 and y0 adjust the bounds returned so they agree with
+		 * codename1, which produces a more rational result.  The bounds
+		 * returned are aligned so left,top correspond to the top
+		 * of the box offset toward the firstChar.
+		 */
+		double x0 = 0;
+		double y0 = fm.getAscent();
+		if(firstChar!=0)
+		{	Rectangle2D r2 = fm.getStringBounds(line,0,firstChar,gg);
+			x0 = (r2.getWidth());
+			
+		}
+		return new Rectangle2D.Double(r1.getX()+x0, r1.getY()+y0, r1.getWidth(), r1.getHeight());
+
 	}
 	public static Rectangle2D getStringBounds(Graphics g, FontMetrics fm, String line)
 	{

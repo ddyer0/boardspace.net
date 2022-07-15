@@ -79,6 +79,8 @@ public class TamskChip extends chip<TamskChip> implements CommonConfig
 	static final TamskChip Ring = new TamskChip("ring",new double[] {0.5,0.5,2.3},TamskId.Ring);
 
 	static public final TamskChip maxRings[][] = {max0,max1, max2, max3, max4 };
+	public static final TamskChip NoSand = new TamskChip("nosand-nomask",new double[] {0.50,0.50,1});
+	public static final TamskChip Sand = new TamskChip("sand-nomask",new double[] {0.50,0.50,1});
 	public static TamskChip getRingOverlay(TamskCell c)
 	{ TamskChip rings[] = maxRings[c.maxRings];
 	  return rings [Math.min(rings.length-1,Math.max(0,c.stackTopLevel()))]; 

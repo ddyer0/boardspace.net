@@ -1,6 +1,5 @@
 package lib;
 
-import com.codename1.ui.geom.Rectangle;
 
 import bridge.Color;
 import bridge.Config;
@@ -8,6 +7,7 @@ import bridge.FontMetrics;
 import online.common.exCanvas;
 import static online.common.OnlineConstants.clickSound;
 
+import com.codename1.ui.geom.Rectangle;
 
 
 /** pop up keyboard */
@@ -39,69 +39,47 @@ public class Keyboard implements Config
 	{
 		public CalculatorButton[] newComponentArray(int sz) { return(new CalculatorButton[sz]);		}
 	}
-	CalculatorButton[] produceLayout(boolean up)
-	{	CalculatorButtonStack buttons = new CalculatorButtonStack();
-		double rowStart[] = {0.08,0.08,0.09,0.10,0.11};
-		double row1Y = narrow 
-						? includeDisplay ?0.25 :  0.18
-						: includeDisplay ?0.33 :  0.18 ;
-		double buttonw = narrow ? 0.082 : 0.062;
-		double scale = narrow ? (includeDisplay ? 1.77 : 1.9)
-							: (includeDisplay ? 2.0: 2.5);
-		double buttonh = buttonw*scale;
-		double rowSpace = 0.00;
+	public void setKeyboardLayout(KeyboardLayout l)
+	{	if(l!=activeLayout)
+			{
+			activeLayout = l;
+			buttonList = null;
+			}
+	}
+	public void selectLayout()
+	{	if(fixedLayout && activeLayout!=null) { return; }	
+		KeyboardLayout active = activeLayout;
 		
-	    String keytopsDown[][] = 
-	    	{{"`","1","2","3","4","5","6","7","8","9","0","-","+","Ndel"},
-	    	 {"Ntab","q","w","e","r","t","y","u","i","o","p","[","]","\\"},
-	    	 {"Caps","a","s","d","f","g","h","j","k","l",";","'","Enter"},
-	    	 {"Shift","z","x","c","v","b","n","m",",",".","/","\u2190","\u2192"  },
-	    	 {"Ctrl",CalculatorButton.id.Nspacebar.name(),CalculatorButton.id.CloseKeyboard.name()  }};
-	    String keytopsUp[][] = 
-	    	{{"~","!","@","#","$","%","^","&","*","(",")","_","+","Ndel"},
-	    	 {"Ntab","Q","W","E","R","T","Y","U","I","O","P","{","}","|"},
-	    	 {"Caps","A","S","D","F","G","H","J","K","L",":","\"","Enter"},
-	    	 {"Shift","Z","X","C","V","B","N","M","<",">","?","\u2190","\u2192" },
-	    	 {"Ctrl",CalculatorButton.id.Nspacebar.name(),CalculatorButton.id.CloseKeyboard.name()}};
-	    
-	    String keytopsDown_Narrow[][] = 
-	    	{{"1","2","3","4","5","6","7","8","9","0","Ndel"},		
-	    	 {"Ntab","q","w","e","r","t","y","u","i","o","p"},
-	    	 {"Caps","a","s","d","f","g","h","j","k","l"}, // 
-	    	 {"Shift","z","x","c","v","b","n","m",",","."},	
-	    	 {"Ctrl",CalculatorButton.id.NSymbol.name(),CalculatorButton.id.NNspacebar.name(),"Enter",CalculatorButton.id.NarrowCloseKeyboard.name()  }};
+		KeyboardLayout newlayout = 
+				narrow ? symbol ? KeyboardLayout.Narrow_Symbol 
+						: shift ? KeyboardLayout.Narrow_Upper : KeyboardLayout.Narrow_Lower
+						: shift ? KeyboardLayout.Normal_Upper : KeyboardLayout.Normal_Lower;
+		if(newlayout!=active)
+		{
+			setKeyboardLayout(newlayout);
+		}
+	}
+	public KeyboardLayout activeLayout()
+	{
+		if(activeLayout==null)
+		{	selectLayout();
+		}
+		return activeLayout;
+	}
+	public void redoLayout()
+	{	KeyboardLayout layout = activeLayout();
+		String keytops[][] = layout.getKeyMap();
+		double buttonw = layout.getButtonW();
+		double buttonh = layout.getButtonH();
+		CalculatorButtonStack buttons = new CalculatorButtonStack();
+		
+		double rowSpace = 0.00;
 
-	    String keytopsUp_Narrow[][] = 
-	    	{{"1","2","3","4","5","6","7","8","9","0","Ndel"},				
-	    	 {"Ntab","Q","W","E","R","T","Y","U","I","O","P"},
-	    	 {"Caps","A","S","D","F","G","H","J","K","L"}, 
-	    	 {"Shift","Z","X","C","V","B","N","M", ",",".",},	
-	    	 {"Ctrl",CalculatorButton.id.NSymbol.name(),CalculatorButton.id.NNspacebar.name(),"Enter",CalculatorButton.id.NarrowCloseKeyboard.name()  }};
-	    
-	    String keytopsSymbol_Narrow[][] =
-	    	{{"~","|",  "+",  "*",   "#",  "$", "{",  "}","Ndel"},
-	    	 { "`",  "=",  "/",  "\\", "<",  ">",  "[",  "]" },
-	    	 {"!",  "@",  "%",  "^",  "&",  "*",  "(",  ")", "Nleft","Nright"},
-	    	 {"-",  "_",  "'",  "`",  ":",  ";",  ",",  "?",  },	    		
-	    	 {CalculatorButton.id.NAlpha.name(),
-	          CalculatorButton.id.NNspacebar.name(),
-	          "Enter",
-	          CalculatorButton.id.NarrowCloseKeyboard.name()},		
-	    	}
-	    		
-	    		;
-/*
-	    	{{"~","!","@","#","$","%","^","&","*","(",")","_","+","del"},
-	    	 {"Tab","Q","W","E","R","T","Y","U","I","O","P","{","}","|"},
-	    	 {"Caps","A","S","D","F","G","H","J","K","L",":","\"","Enter"},
-	    	 {"Shift","Z","X","C","V","B","N","M","<",">","?","\u2190","\u2192" },
-	    	 {"Ctrl","Bar","\u25bd"}};
-*/
-	    String keytops[][] = narrow 
-	    						? (symbol ? keytopsSymbol_Narrow : (up ? keytopsUp_Narrow : keytopsDown_Narrow))
-	    						: up ? keytopsUp : keytopsDown;
+		double row1Y = buttonh ;
+		double row1X = buttonw*5/4;
+		
 	    for(int row=0;row<keytops.length;row++)
-	    {	double rowx = rowStart[row];
+	    {	double rowx =row1X;
 	    	String rowChars[] = keytops[row];
 	    	double rowy = row1Y + row*(buttonh+rowSpace);
 	    	for(int col=0;col<rowChars.length;col++)
@@ -124,14 +102,19 @@ public class Keyboard implements Config
 	    			buttons.push(new CalculatorButton(id,Keytop,rowx,rowy,buttonw));
 	    		}
 	    		else 
-	    		{ buttons.push(new CalculatorButton(id,KeytopW,rowx+buttonw/2,rowy,buttonw)); 
-	    		  rowx -= buttonw/4;
+	    		{ buttons.push(new CalculatorButton(id,KeytopW,rowx+(dw-1)*buttonw/2,rowy,buttonw)); 
 	    		}
 	    		rowx += buttonw*dw + (dy==0 ? buttonw*dx : 0);
 	    	}
 	    }
-	    return(buttons.toArray());
+	    buttonList = buttons.toArray();
 	}
+	public CalculatorButton[] buttonList() 
+	{
+		if(buttonList==null) { redoLayout(); }
+		return buttonList;
+	}
+	
 	public boolean containsPoint(HitPoint p)
 	{
 		return(G.pointInRect(p, crect));
@@ -143,9 +126,16 @@ public class Keyboard implements Config
 	
 	exCanvas showOn=null;
 	Rectangle crect = null;
-	boolean upperCase = false;
-	CalculatorButton buttonsUp[]=null;
-	CalculatorButton buttonsDown[] = null;
+	public void setBounds(Rectangle r)
+	{
+		crect = r;
+		buttonList = null;
+	}
+	boolean fixedLayout =  false;
+	boolean fixedBounds = false;
+	private KeyboardLayout activeLayout = null;
+	private CalculatorButton buttonList[] = null;
+	
 	TextContainer display = null;
 	TextContainer targetDisplay = null;		// the originally specified display
 	boolean includeDisplay = false;
@@ -165,7 +155,10 @@ public class Keyboard implements Config
 						+ n.substring(len-3));
 	}
 	public void resizeAndReposition()
-	{	TextContainer dis = targetDisplay;
+	{	
+		if(fixedBounds) { return; }
+		
+		TextContainer dis = targetDisplay;
 		includeDisplay = false;
 		Rectangle parentBounds = showOn.getBounds();
 		FontMetrics fm = G.getFontMetrics(showOn.largeBoldFont());
@@ -174,12 +167,13 @@ public class Keyboard implements Config
 		int newW = G.Width(parentBounds);
 		int newH = Math.min(20*lineH, Math.min(G.Height(parentBounds),Math.max(lineH*15,newW/2)));
 		narrow = newW<feature*20;
+		selectLayout();
 		int newY;
 		int newX = G.Left(parentBounds);
 		newW = Math.min((int)(newH*2.5), newW);
 		if(dis!=null)
 		{
-			newH = (int)(newW*(narrow?0.55:0.4));
+			newH = (int)(newW*(narrow?0.55:0.45));
 			Rectangle dr = dis.getBounds();
 			newY = G.Bottom(dr);
 			if(newY>G.centerY(parentBounds) && newY+newH>G.Bottom(parentBounds))
@@ -194,7 +188,7 @@ public class Keyboard implements Config
 			{	// if we end up overlapping the display, incorporate it
 				dis = null;
 			}	
-			else { crect = new Rectangle(newX,newY,newW,newH); }
+			setBounds(new Rectangle(newX,newY,newW,newH)); 
 		}		
 		if(dis==null)
 		{ includeDisplay = true;
@@ -209,21 +203,25 @@ public class Keyboard implements Config
 		  	  dis.setCaratPosition(msg.length());
 		  	}
 	  	  dis.setFocus(true);
-		  crect = new Rectangle(newX,newY,newW,newH);
-		}
+		  setBounds(new Rectangle(newX,newY,newW,newH));
+		}			
 
 		display = dis;
 
 	}
 	// constructor
 	public Keyboard(exCanvas see,TextContainer dis)
-	{	showOn = see;
-		buttonsUp = produceLayout(true);
-		buttonsDown = produceLayout(false);
-		targetDisplay = dis;
-		resizeAndReposition();
+	{
+		this(see,dis,null,null);
 	}
-
+	public Keyboard(exCanvas see,TextContainer dis,Rectangle r,KeyboardLayout lay)
+	{	showOn = see;
+		targetDisplay = display = dis;
+		if(lay!=null) { fixedLayout = true; activeLayout = lay; }
+		if(r!=null) { fixedBounds = true; setBounds(r); }
+		else {	resizeAndReposition(); }
+	}
+	
 	public void StartDragging(HitPoint hp)
 	{	
 		if(includeDisplay)
@@ -238,12 +236,12 @@ public class Keyboard implements Config
 	private boolean sawDown = false;
 	public void doMouseMove(int ex, int ey,MouseState upcode)
 	{	if(containsPoint(ex,ey))
-	{
+		{
 		if(includeDisplay) 
 			{ display.doMouseMove(ex,ey,upcode); 
 			}
 		if(upcode==MouseState.LAST_IS_DOWN) { sawDown = true; }
-	}
+		}
 	}
 	public void setClosed()
 	{ 	if(targetDisplay!=null) { targetDisplay.setText(display.getText()); } 
@@ -290,8 +288,12 @@ public class Keyboard implements Config
 				else
 				{
 				  display.insert(ch); 
-				  control = false;
-				  shift = false;
+				  if(control||shift)
+				  {
+					  control = false;
+					  shift = false;
+					  selectLayout();
+				  }
 				}}
 			else {
 				switch(bcode)
@@ -316,19 +318,24 @@ public class Keyboard implements Config
 				case NAlpha:
 					symbol = false;
 					shift = false;
+					selectLayout();
 					break;
 				case NSymbol:
 					symbol = !symbol;
+					selectLayout();
 					break;
 				case Nshift:
 					shift = !shift;
+					selectLayout();
 					break;
 				case Ncontrol:
 					control = !control;
+					selectLayout();
 					break;
 				case Ncaps:
 					shiftLock = !shiftLock;
-					shift = false;
+					shift = shiftLock;
+					selectLayout();
 					break;
 				case Ndel:
 					display.doDel(false);
@@ -357,22 +364,56 @@ public class Keyboard implements Config
 		}
 		return(false);
 	}
-
+	
+	public void drawButton(Graphics gc,CalculatorButton button,HitPoint highlight,Rectangle cr)
+	{
+		switch(button.value)
+		{
+		case NSymbol:
+			button.textColor = symbol ? Color.blue : Color.black;
+			break;
+		case Ncontrol:
+			button.textColor = control ? Color.blue : Color.black;
+			break;
+		case Nshift:
+			button.textColor = shift ? Color.blue : Color.black;
+			break;
+		case Ncaps:
+			button.textColor = shiftLock ? Color.blue : Color.black;
+			break;
+		default: break;
+		}
+		
+		if(button.value.ival>0) { button.draw(gc,showOn,highlight,cr); }
+	}
+	
 	public void draw(Graphics gc,HitPoint highlight)
 	{	loadImages(showOn.loader);
 	
 		if(G.pointInRect(highlight, crect)) 
-		{ // this makes sure that everything under the keyboard is inactive.
+			{ // this makes sure that everything under the keyboard is inactive.
 			highlight.neutralize();
-		}
-
-		int left = G.Left(crect);
-		int top = G.Top(crect);
+			}
 		int w = G.Width(crect);
 		int h = G.Height(crect);
+		int left = G.Left(crect);
+		int top = G.Top(crect);
+		Rectangle drect = crect;
 		
-		buttonsUp = produceLayout(true);
-		buttonsDown = produceLayout(false);
+		if(includeDisplay)
+		{				
+	    	FontMetrics fm = G.getFontMetrics(display.font);
+	    	int fontH = fm.getHeight();
+	    	int dtop = top+(int)(0.08*h);
+			int dhgt = fontH*2;
+					
+	    	display.setBounds(left+(int)(0.1*w),
+	    					  dtop,
+	    					  (int)(0.8*w),
+	    					  dhgt);
+			
+			drect = new Rectangle(left,dtop+dhgt-(int)(0.04*h),w,h-dhgt);
+		}
 		int lmargin = (int)(w*0.026);
 		int tmargin = (int)(w*0.017);
 		int bwidth = (int)(w*0.048);
@@ -382,36 +423,14 @@ public class Keyboard implements Config
 		Keyboard.getImage(showOn.loader).drawImage(gc,left,top,w,h);
 	  	GC.setClip(gc,cr);
     	GC.setFont(gc, showOn.largeBoldFont());
-    	for(CalculatorButton button : (shiftLock != shift) ? buttonsUp : buttonsDown)
+    	for(CalculatorButton button : buttonList())
     	{	
-    		switch(button.value)
-    		{
-    		case NSymbol:
-    			button.textColor = symbol ? Color.blue : Color.black;
-    			break;
-    		case Ncontrol:
-    			button.textColor = control ? Color.blue : Color.black;
-    			break;
-    		case Nshift:
-    			button.textColor = shift ? Color.blue : Color.black;
-    			break;
-    		case Ncaps:
-    			button.textColor = shiftLock ? Color.blue : Color.black;
-    			break;
-    		default: break;
-    		}
-    		button.draw(gc,showOn,highlight,crect);
+    		drawButton(gc,button,highlight,drect);
     	}
     	if(includeDisplay)
     	{
-    	FontMetrics fm = G.getFontMetrics(display.font);
-    	int fontH = fm.getHeight();
-    	display.setBounds(left+(int)(0.1*w),
-    					  top+(int)(0.1*h),
-    					  (int)(0.8*w),
-    					  Math.min((int)((narrow?0.1:0.15)*h),Math.max(fontH*2, (int)((narrow?0.07:0.1)*h))));
-    	display.setVisible(true);
-    	display.redrawBoard(gc,highlight);
+	    	display.setVisible(true);
+	    	display.redrawBoard(gc,highlight);
     	}
 	}
 }

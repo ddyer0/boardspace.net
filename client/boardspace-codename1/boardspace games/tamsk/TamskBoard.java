@@ -126,6 +126,9 @@ class TamskTimer implements Digestable
 	public long Digest(Random r) {
 		return id.chip.Digest(r)*id.ordinal() ^ (r.nextLong()*(active ? 35235 : 352646));
 	}
+	public double duration() {
+		return capacity;
+	}
 }
 class TimerStack extends OStack<TamskTimer> implements Digestable
 {	TamskTimer fullSet[]=null;

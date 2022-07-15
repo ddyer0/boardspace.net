@@ -23,6 +23,7 @@ import lib.TextChunk;
 import lib.Toggle;
 import lib.LFrameProtocol;
 import lib.SimpleSprite;
+import lib.Slider;
 import online.game.*;
 import online.game.sgf.sgf_node;
 import online.game.sgf.sgf_property;
@@ -129,6 +130,11 @@ public class TamskViewer extends CCanvas<TamskCell,TamskBoard> implements TamskC
 			StockArt.NoEye,TamskId.ToggleEye,NoeyeExplanation,
 			StockArt.Eye,TamskId.ToggleEye,EyeExplanation
 			);
+    private Toggle sandRect = new Toggle(this,"sand",
+ 			TamskChip.NoSand,TamskId.ToggleSand,NoSandExplanation,
+ 			TamskChip.Sand,TamskId.ToggleSand,SandExplanation
+ 			);
+    private Slider sandTimer = new Slider(null,null);
     
     private TextButton stopRect = addButton(StopTime,TamskId.StopTime,StopTimeMessage,
     		StartTime,TamskId.RestartTime,StartTimeMessage,
@@ -334,7 +340,7 @@ public class TamskViewer extends CCanvas<TamskCell,TamskBoard> implements TamskC
         int stateY = boardY;
         int stateX = boardX;
         int stateH = fh*3;
-        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,eyeRect,noChatRect);
+        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,sandRect,eyeRect,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	
     	int tx = boardX+CELLSIZE/3;
@@ -555,21 +561,37 @@ public class TamskViewer extends CCanvas<TamskCell,TamskBoard> implements TamskC
     }
     private void drawTimer(Graphics gc,HitPoint highlight,TamskId code,boolean timers,long gameTime,TamskTimer timer,TamskChip chip,int size,int xpos,int ypos)
     {
-    	String time = "";
+    	String time = null;
+       	boolean sand = sandRect.isOnNow();
     	if(timers  && timer.startTime>0)
     	{
     		long remaining = timer.timeRemaining(gameTime);
     		if(remaining<=0) { time = "--";}
     		else {
     			long seconds = remaining/1000;
+       			if(sand)
+       			{
+       			sandTimer.max = timer.duration();
+      			sandTimer.setValue(remaining);
+       			sandTimer.setBounds(xpos-size/1/3,ypos-size/10,size*2/3,size/5);
+       			}
+       			else
+       			{
     			long minutes = seconds / 60;
     			time = G.format("%d:%02d",minutes,seconds%60);
     		}
+    	}
     	}
     	TamskChip draw = chip==null ? timer.id.chip : chip;
     	labelColor = Color.white;
     	draw.drawChip(gc,this,highlight,code,size,xpos,ypos,time);
     	labelColor = Color.yellow;
+    	if(sand && time==null)
+    	{	sandTimer.barColor = Color.yellow;
+    		sandTimer.barHeight = 1;
+    		sandTimer.thickFrame = true;
+    		sandTimer.draw(gc,null);
+    	}
     }
     /**
      * draw the main window and things on it.  
@@ -678,6 +700,9 @@ public class TamskViewer extends CCanvas<TamskCell,TamskBoard> implements TamskC
             //      DrawRepRect(gc,pl.displayRotation,Color.black,b.Digest(),repRect);
         eyeRect.activateOnMouse = true;
         eyeRect.draw(gc,selectPos);
+        sandRect.activateOnMouse = true;
+        sandRect.deactivateOnMouse = true;
+        sandRect.draw(gc,selectPos);
          
     	boolean timers = gb.showTimers();
     	
@@ -1026,6 +1051,9 @@ public class TamskViewer extends CCanvas<TamskCell,TamskBoard> implements TamskC
             {
             	throw G.Error("Hit Unknown object " + hitCode);
             }
+        	break;
+        case ToggleSand:
+        	sandRect.toggle();
         	break;
         case RestartTime:
         	PerformAndTransmit("Restart");

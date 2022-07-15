@@ -24,6 +24,8 @@ public class Slider extends Rectangle
 	public double max=1.0;
 	/** the hit code if this item is under the mouse */
 	public CellId hitcode;
+	public double barHeight = 0.33;
+	public boolean thickFrame = false;
 	/** the color for text */
 	public Color textColor = Color.black;
 	/** the color for the bar */
@@ -81,15 +83,18 @@ public class Slider extends Rectangle
       if(gc!=null)
     	{String l = label;
     	 if(s!=null) { l = s.get(l); }
+    	 if(l!=null && l.length()>0)
+    	 {
     	 if(l.charAt(l.length()-1)=='=')  
     	 	{ l = l+G.format(" %4d",value);
     	 	}
     	GC.Text(gc,true,x,y,width,height/2,
     		textColor,null,l);
+    	 }
     	GC.setColor(gc,barColor);
-    	int limit = (int)((value-min)*width/(max-min));
-    	int yoff = (2*height)/3;
-    	int ysize = height/3;
+    	int limit = (int)((double)(value-min)*width/(max-min));
+    	int ysize =(int)(barHeight*height);
+    	int yoff = height-ysize;
     	gc.fillRect(x,y+yoff,limit,ysize);
     	if(hit)
     	{
@@ -98,6 +103,8 @@ public class Slider extends Rectangle
        	GC.fillRect(gc,x,y+yoff+1,barlimit,ysize-3);
     	}
     	GC.frameRect(gc,Color.black,this);
+    	if(thickFrame) { 
+    		GC.frameRect(gc,Color.black,x+1,y+1,width-1,height-1); }
     	}
     }
     /** adjust the min and max values to center the current value */

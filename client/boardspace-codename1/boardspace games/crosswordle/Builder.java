@@ -1,16 +1,17 @@
 package crosswordle;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.Hashtable;
-import java.util.zip.GZIPInputStream;
 
+import com.codename1.io.BufferedInputStream;
+import com.codename1.io.gzip.GZIPInputStream;
+
+import bridge.File;
+import bridge.FileOutputStream;
 import dictionary.Dictionary;
 import dictionary.DictionaryHash;
 import dictionary.Entry;

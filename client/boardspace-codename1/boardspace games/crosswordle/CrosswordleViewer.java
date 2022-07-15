@@ -2,11 +2,17 @@ package crosswordle;
 
 import static crosswordle.CrosswordleMovespec.*;
 
-import java.awt.*;
 
 import online.common.*;
 import java.util.*;
 
+import com.codename1.ui.Font;
+import com.codename1.ui.geom.Point;
+import com.codename1.ui.geom.Rectangle;
+
+import bridge.Color;
+import bridge.FileDialog;
+import bridge.FontMetrics;
 import bridge.JMenuItem;
 import bridge.Platform.Style;
 import dictionary.Dictionary;
@@ -239,7 +245,7 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
     	// them together and not encroaching on the main rectangle.
     	layout.placeTheChat(chatRect, minChatW, chatHeight,minChatW*2,3*chatHeight/2);
       	layout.placeRectangle(keytextRect,minChatW,minChatW/3+stateH*3,BoxAlignment.Bottom);
-      	layout.placeRectangle(logoRect,logow,logow/4,BoxAlignment.Top);
+    	layout.placeRectangle(logoRect,logow,logow/4,BoxAlignment.Top);
        	int ll = G.Left(logoRect);
     	int lt = G.Top(logoRect);
     	int lw = G.Width(logoRect);	

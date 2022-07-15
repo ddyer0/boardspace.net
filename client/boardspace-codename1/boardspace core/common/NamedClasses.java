@@ -38,6 +38,7 @@ public class NamedClasses {
 
     
     	// game classes
+    	classes.put("crosswordle.CrosswordleViewer",crosswordle.CrosswordleViewer.class);
     	classes.put("tamsk.TamskViewer",tamsk.TamskViewer.class);
     	classes.put("iro.IroViewer",iro.IroViewer.class);
     	classes.put("havannah.HavannahViewer",havannah.HavannahViewer.class);

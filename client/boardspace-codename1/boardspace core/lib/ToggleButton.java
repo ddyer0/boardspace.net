@@ -15,9 +15,14 @@ abstract public class ToggleButton extends Rectangle
 {	String name = "";
 	boolean isOn = false;
 	boolean justTurnedOff = false;
+	boolean justTurnedOn = false;
 	boolean mouseOverNow = false;
 	boolean temporarilyOff = false;
+	boolean temporarilyOn = false;
+	
 	public boolean activateOnMouse = false;
+	public boolean deactivateOnMouse = false;
+	
 	Text onToolTip = null;
 	Text offToolTip = null;
 	CellId onId;
@@ -26,7 +31,11 @@ abstract public class ToggleButton extends Rectangle
 
 	public abstract boolean actualDraw(Graphics gc,HitPoint hp);
 	
-	public boolean isOnNow() { return(!temporarilyOff && (isOn||mouseOverNow)); }
+	public boolean isOnNow() 
+		{ return(!temporarilyOff 
+				&& !temporarilyOn 
+				&& (mouseOverNow ? !isOn : isOn)); }
+	
 	public void setTemporarilyOff(boolean v) { temporarilyOff = v;}
    	public void draw(Graphics gc,HitPoint hp)
    	{	// the behavior of the hints box is choreographed so mouse-over
@@ -39,8 +48,12 @@ abstract public class ToggleButton extends Rectangle
    			if(!isOn && !justTurnedOff && activateOnMouse)
    			{ mouseOverNow = true; 
    			}
+   			if(isOn && !justTurnedOn && deactivateOnMouse)
+   			{
+   				mouseOverNow = true; 
+   			}
    		}
-   		else { justTurnedOff=false; mouseOverNow = false; }
+   		else { justTurnedOn = justTurnedOff=false; mouseOverNow = false; }
    		}
    	}
    	public boolean isOn() { return isOn; }
@@ -49,5 +62,6 @@ abstract public class ToggleButton extends Rectangle
    	{
     	isOn = !isOn;
     	if(!isOn) { justTurnedOff = true; mouseOverNow = false; }
+    	else { justTurnedOn = true; mouseOverNow = false; }
    	}
 }
