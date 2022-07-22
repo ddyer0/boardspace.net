@@ -102,7 +102,7 @@ public class SantoriniViewer extends CCanvas<SantoriniCell,SantoriniBoard> imple
   	    int first = info.getInt(exHashtable.FIRSTPLAYER,0);
         int map[]=AR.intArray(2);
         if(first==1) { map[0] = 1; map[1]=0; }
-        b = new SantoriniBoard(info.getString(OnlineConstants.GAMETYPE, Santorini_INIT),map);
+        b = new SantoriniBoard(info.getString(GAMETYPE, Santorini_INIT),map);
         useDirectDrawing(true);
         doInit(false);
         if(G.debug())

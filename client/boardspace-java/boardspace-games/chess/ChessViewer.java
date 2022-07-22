@@ -104,7 +104,7 @@ public class ChessViewer extends CCanvas<ChessCell,ChessBoard> implements ChessC
 
         int randomKey = info.getInt(OnlineConstants.RANDOMSEED,-1);
         int map[] = getStartingColorMap();
-        b = new ChessBoard(info.getString(OnlineConstants.GAMETYPE, Variation.Chess.name),randomKey,players_in_game,
+        b = new ChessBoard(info.getString(GAMETYPE, Variation.Chess.name),randomKey,players_in_game,
         		repeatedPositions,map,ChessBoard.REVISION);
         useDirectDrawing(true);
         doInit(false);

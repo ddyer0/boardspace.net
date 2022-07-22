@@ -279,4 +279,5 @@ public class BSDate extends SystemDate
 		BSDate df = new BSDate(date);
 		return(df);
 	}
+
 }

@@ -33,19 +33,6 @@ public interface exHashtable
     public static final String GAMEINFO = "gameinfo";
     public static final String TIMECONTROL = "timecontrol";
     
-    /**
-     * the scoring mode for this game.  Normal is {@link #SCORE_2} for 2 player games
-     * the alternate is {@link #SCORE_MULTI} for multiplayer games
-     */
-    public static final String SCORING_MODE = "scoringmode";
-    /**
-     * normal 2 player scoring
-     */
-    public static final int SCORE_2 = 0;
-    /**
-     * multiplayer scoring
-     */
-    public static final int SCORE_MULTI = 1;
     
     public static final String SPECTATOR = "spectator";
     //public static final String POSITION = "position";

@@ -105,7 +105,7 @@ public class ShogiViewer extends CCanvas<ShogiCell,ShogiBoard> implements ShogiC
     	MouseDotColors = ShogiMouseDotColors;
     	MouseColors = ShogiMouseColors;
     	
-        b = new ShogiBoard(info.getString(OnlineConstants.GAMETYPE, Shogi_INIT),randomKey,repeatedPositions);
+        b = new ShogiBoard(info.getString(GAMETYPE, Shogi_INIT),randomKey,repeatedPositions);
         useDirectDrawing(true);
         doInit(false);
         chipsetOption = myFrame.addOption(s.get("Traditional Pieces"),traditional_chips,deferredEvents);

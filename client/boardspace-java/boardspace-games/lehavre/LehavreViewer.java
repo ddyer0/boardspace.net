@@ -360,7 +360,7 @@ public class LehavreViewer extends exCanvas implements ViewerProtocol,NetworkInt
 		else { language = "en"; }
 		try { 
 			controller = new LeHavre(this,language,false);
-			String gametype = h.getString(OnlineConstants.GAMETYPE);
+			String gametype = h.getString(GAMETYPE);
 			if(gametype.equals("LeHavreTest"))
 			{	// this branch is for non-networked testing.
 				standaloneGame = true;
@@ -619,7 +619,7 @@ public class LehavreViewer extends exCanvas implements ViewerProtocol,NetworkInt
 	
 	public boolean UsingAutoma() { return(false); }
 	public int ScoreForAutoma() { return(-1); }
-
+	public String getUrlNotes() { return ""; }
 	public boolean WinForPlayer(commonPlayer p) {
 		throw G.Error("should not be called for LeHavre");
 	}
@@ -774,6 +774,16 @@ public class LehavreViewer extends exCanvas implements ViewerProtocol,NetworkInt
 	}
 	public String fixedServerRecordMessage(String fixedHist) {
 		return null;
+	}
+	@Override
+	public void setScored(boolean v) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public boolean isScored() {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 

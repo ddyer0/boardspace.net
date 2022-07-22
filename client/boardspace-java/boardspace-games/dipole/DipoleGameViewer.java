@@ -1,8 +1,6 @@
 package dipole;
 
 import java.awt.*;
-
-import online.common.*;
 import online.game.*;
 import online.game.sgf.*;
 import online.search.SimpleRobotProtocol;
@@ -99,7 +97,7 @@ public class DipoleGameViewer extends CCanvas<DipoleCell,DipoleBoard> implements
     {	enableAutoDone = true;
         super.init(info,frame);
         
-        b = new DipoleBoard(info.getString(OnlineConstants.GAMETYPE, "Dipole"),
+        b = new DipoleBoard(info.getString(GAMETYPE, "Dipole"),
         		getStartingColorMap());
         useDirectDrawing(true);
         doInit(false);

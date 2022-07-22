@@ -2,7 +2,6 @@ package che;
 
 import java.awt.*;
 
-import online.common.*;
 import online.game.*;
 import online.game.sgf.*;
 import online.search.SimpleRobotProtocol;
@@ -107,7 +106,7 @@ public class CheViewer extends CCanvas<CheCell,CheBoard> implements CheConstants
         zoomRect.value=INITIAL_TILE_SCALE;
         zoomRect.barColor=ZoomColor;
         zoomRect.highlightColor = HighlightColor;       
-        bb = new CheBoard(info.getString(OnlineConstants.GAMETYPE, Che_INIT),
+        bb = new CheBoard(info.getString(GAMETYPE, Che_INIT),
         		getStartingColorMap());
         useDirectDrawing(true);
         doInit(false);

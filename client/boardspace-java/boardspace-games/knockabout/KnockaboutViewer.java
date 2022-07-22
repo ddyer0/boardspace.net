@@ -78,7 +78,7 @@ public class KnockaboutViewer extends CCanvas<KnockaboutCell,KnockaboutBoard> im
     {	enableAutoDone = true;
         super.init(info,frame);
         int randomKey = sharedInfo.getInt(OnlineConstants.RANDOMSEED,-1);
-        b = new KnockaboutBoard(randomKey,info.getString(OnlineConstants.GAMETYPE, Knockabout_Standard_Init),
+        b = new KnockaboutBoard(randomKey,info.getString(GAMETYPE, Knockabout_Standard_Init),
         		getStartingColorMap());
         useDirectDrawing(true); // not tested yet
         doInit(false);

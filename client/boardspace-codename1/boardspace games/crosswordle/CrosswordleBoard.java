@@ -186,8 +186,8 @@ package crosswordle;
  }
  
  class CrosswordleBoard extends squareBoard<CrosswordleCell> implements BoardProtocol
- {	static int REVISION = 100;			// 100 represents the initial version of the game
- 
+ {	static int REVISION = 101;			// 100 represents the initial version of the game
+ 										// 101 adds the interpretation of the low bit of randomkey as "hard"
  	CrosswordleVariation variation = CrosswordleVariation.Crosswordle_55;
  	static final String[] CrosswordsGRIDSTYLE = { "1", null, "A" }; // left and bottom numbers
  	public int getMaxRevisionLevel() { return(REVISION); }
@@ -223,24 +223,7 @@ package crosswordle;
 			 { AR.setValue(win,false); 	// make sure "win" is cleared
 			 }
 	 }
-	 public void setGameOver()
-	 {
-		 setState(CrosswordleState.Gameover);
-		 int maxv = -1;
-		 int maxp = -1;
-		 int np = 0;
-		 for(int i=0;i<players_in_game;i++)
-		 {
-			 if(score[i]>=maxv)
-			 {	if(score[i]==maxv) { np ++; }
-				 else { np = 1;
-					 maxv = score[i];
-				 }
-			 maxp = i;
-			 }
-		 }
-		 if(np==1) { win[maxp] = true; }
-	 }
+
 	 public boolean hiddenVisible[] = null;
 	 int score[] = null;
 	 int chipsOnBoard = 0;
@@ -283,7 +266,10 @@ package crosswordle;
 		 setColorMap(map);
 		 hiddenVisible = new boolean[MAX_PLAYERS];
 		 openRack = new boolean[MAX_PLAYERS];		// part of the user interface
- 
+		 if(rev>=101)
+		 {
+			key &= ~1;	// start with easy puzzles
+		 }
 		 doInit(init,key,players,rev); // do the initialization 
  
  
@@ -294,8 +280,9 @@ package crosswordle;
 	
 	 public String gameType() { return(gametype+" "+players_in_game+" "+randomKey+" "+revision); }
 	 
-	 public void setRandomKey(long v) 
+	 public void setRandomKey(long v,boolean hard) 
 	 { randomKey = v;
+	   if(hard) { randomKey = randomKey|1; } else { randomKey = randomKey & ~1; }
 	   solutionKey = v;
 	   solution = null;
 	 }
@@ -309,7 +296,6 @@ package crosswordle;
 	 {
 		 StringTokenizer tok = new StringTokenizer(gtype);
 		 String typ = tok.nextToken();
-		 
 		 int np = tok.hasMoreTokens() ? G.IntToken(tok) : players_in_game;
 		 long ran = tok.hasMoreTokens() ? G.LongToken(tok) : key;
 		 int rev = tok.hasMoreTokens() ? G.IntToken(tok) : revision;
@@ -319,12 +305,12 @@ package crosswordle;
 	 private String solution = null;
 	 private long solutionKey = 0;
 	 
-	 private String getSolition(long key)
+	 String getSolution(long key)
 	 {	
 		 if((solution==null)||(solutionKey!=key))
 		 {	Builder b = Builder.getInstance();
 		 	Random r = new Random(key);
-		 	solution = b.getDaysPuzzle(key,ncols,nrows,false);
+		 	solution = b.getDaysPuzzle(key,ncols,nrows,revision>=101? (randomKey&1)!=0 :false);
 		 	while(solution == null)
 			 {	
 		 		if(ncols>=6 && nrows>=6) { b.vocabulary = 9999999; }	//solution space is sparse
@@ -751,9 +737,12 @@ package crosswordle;
 			 switch(c.color) {
 			 case Green:
 			 case NewGreen: break;
-			 default: return false;
+			 default: 
+				 score[0]=0;
+				 return false;
 			 }
 		 }
+		 score[0] = guesses.size();
 		 return true;
 	 }
 	 private void setNextStateAfterDrop(CrosswordleCell c,CrosswordleChip ch,replayMode replay)
@@ -907,16 +896,6 @@ package crosswordle;
         case MOVE_PASS:
         	setState(CrosswordleState.Play);
         	break;
-        case MOVE_SEE:
-        	{	// see tiles in the hidden rack on hand held device
-        		hiddenVisible[m.to_col-'A'] = (m.to_row==0?false:true);
-        	}
-        	break;
-        case MOVE_SHOW:
-            {	
-            	openRack[m.to_col-'A'] = (m.to_row==0?false:true);
-            }
-        	break;
         case MOVE_SELECT:
         	{
         	CrosswordleCell last = lastDropped();
@@ -1009,7 +988,7 @@ package crosswordle;
             // standardize the gameover state.  Particularly importing if the
             // sequence in a game is resign/start
             setState(CrosswordleState.Puzzle);	// standardize the current state
-       	 	getSolition(randomKey);
+       	 	getSolution(randomKey);
        	 	loadSolution();
 
             setNextStateAfterDone(replay);

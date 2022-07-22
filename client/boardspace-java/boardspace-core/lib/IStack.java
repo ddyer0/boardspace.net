@@ -187,7 +187,7 @@ public class IStack implements Digestable
 	public int removeAtIndex(int i,boolean shuffle)
 	{	if((i<index) && (i>=0)) 
 		{	
-		if(i<index) 
+		if(i+1<index) 
 			{ int v = data[i];
 			  if(shuffle)
 			  {

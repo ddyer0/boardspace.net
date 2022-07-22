@@ -151,7 +151,7 @@ public class GoViewer extends CCanvas<GoCell,GoBoard> implements GoConstants, Ga
 
         int randomKey = info.getInt(OnlineConstants.RANDOMSEED,-1);
        
-        b = new GoBoard(info.getString(OnlineConstants.GAMETYPE, Variation.Go_19.name),
+        b = new GoBoard(info.getString(GAMETYPE, Variation.Go_19.name),
         		randomKey,players_in_game,getStartingColorMap());
         useDirectDrawing(true);
         doInit(false);

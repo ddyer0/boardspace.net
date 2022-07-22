@@ -5,7 +5,6 @@ import java.awt.*;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.StringTokenizer;
-import online.common.*;
 import lib.Graphics;
 import lib.Image;
 import lib.CellId;
@@ -91,7 +90,7 @@ public class QyshinsuViewer extends CCanvas<QyshinsuCell,QyshinsuBoard> implemen
         MouseDotColors[1]= Color.white;
         MouseDotColors[0]= Color.white;
 
-        b = new QyshinsuBoard(info.getString(OnlineConstants.GAMETYPE, "Qyshinsu"),getStartingColorMap());
+        b = new QyshinsuBoard(info.getString(GAMETYPE, "Qyshinsu"),getStartingColorMap());
         useDirectDrawing(true); // not tested yet
         doInit(false);
        

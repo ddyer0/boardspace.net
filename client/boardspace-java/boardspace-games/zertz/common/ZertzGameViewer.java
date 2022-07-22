@@ -111,7 +111,7 @@ public class ZertzGameViewer extends CCanvas<zCell,GameBoard> implements GameCon
         MouseColors = zMouseColors;
         MouseDotColors = zMouseDotColors;
      
-        b = new GameBoard(info.getString(OnlineConstants.GAMETYPE, "Zertz"));
+        b = new GameBoard(info.getString(GAMETYPE, "Zertz"));
         useDirectDrawing(true);
         doInit(false);
    }

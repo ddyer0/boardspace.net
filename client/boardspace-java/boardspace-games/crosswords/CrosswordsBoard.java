@@ -1544,9 +1544,10 @@ class CrosswordsBoard extends rectBoard<CrosswordsCell> implements BoardProtocol
         	for(CrosswordsCell c : rack[whoseTurn])
         	{	CrosswordsChip top = c.topChip();
         		if(top!=null)
-        			{ drawPile.addChip(top);
-        			  c.removeTop(); 
-        			  if(replay!=replayMode.Replay)
+        			{// do this the slow way to keep the bookkeeping straight
+        			 pickObject(c);
+        			 dropObject(drawPile);
+        			 if(replay!=replayMode.Replay)
         			  {
         				  animationStack.push(c);
         				  animationStack.push(drawPile);

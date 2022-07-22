@@ -40,15 +40,15 @@ New defects found              : 108 Total
     the played state.   This lag is unimportant given that the server never crashes and is rarely shut down deliberately.
 
     The server does not interact with the mysql database in any way.  There are some vestiges of a plan to bundle
-    this interactions into the server, but they've never been completed.
+    this interactions into the server, but they have never been completed.
 
     Completed games are written to a directory specific to the game, but of course the location of those directories
     is not a parameter supplied from the clients.
 
 Access Control
 
-     An external perl script validates the user's login, and creates a time-limited token that will allow a client
-     to connect.  Communications that don't start by presenting a token are closed and banned.  One of the irritants in the
+     An external perl script validates the users login, and creates a time-limited token that will allow a client
+     to connect.  Communications that do not start by presenting a token are closed and banned.  One of the irritants in the
      network environment is random clients connecting, looking for proxy ports.
 				    
 #endif
@@ -868,10 +868,10 @@ bancode isBanned
 		bannedIndex++;
 		totalBanned++;
 		if(bannedIndex>=MAXBANNED) { bannedIndex=0; }
-		logEntry(&securityLog,"[%s] new banned user %s uid %d identity %s) %s\n",timestamp(),
+		logEntry(&securityLog,"[%s] new banned user %s uid %d identity (%s) %s\n",timestamp(),
 			username,uid,cookie,
 			banInfo(bc_same_name));
-		logEntry(&mainLog,"[%s] new banned user %s uid %d identity %s) %s\n",timestamp(),
+		logEntry(&mainLog,"[%s] new banned user %s uid %d identity (%s) %s\n",timestamp(),
 			username,uid,cookie,
 			banInfo(bc_same_name));
 
@@ -5385,6 +5385,7 @@ void process_check_score(char *data,User *u,char *seq)
 		   int okon4=(nc<9) || okon1;
 		   int okon5=(nc<10) || okon1;
 		   int okon6=(nc<11) || okon1;
+		   int nplayers = 0;
 		   {
 		   User *u=S->first_user;
 		   int pop = S->population;
@@ -5394,6 +5395,7 @@ void process_check_score(char *data,User *u,char *seq)
 		   assert(u->session==S);
 		   if(u->isAPlayer)
 				{ 
+			    nplayers++;
 				// if uid1 == uid2, get them both
 				if(!okon1 && (uid1==u->clientUid))
 				{ okon1=1;
@@ -5421,7 +5423,10 @@ void process_check_score(char *data,User *u,char *seq)
 			}
 		   assert(nfound==pop);
 		   }
-		   
+		   if (nplayers == 1) {
+			   // special case for single player games
+			   okon2 = 1;
+		   }
 		   if(okon1 && okon2 && okon3 && okon4 && okon5 && okon6)
 			{ 
 
@@ -6788,7 +6793,7 @@ static void acceptNewConnections(SOCKET serversd)
 		}
 	  MyStrncpy(tempString," " ECHO_I_QUIT "refused\r\n",sizeof(tempString));	// include the leading space
 	  send(newsocket,tempString,(int)strlen(tempString),0);
-	  errClose(__LINE__,newsocket,ECHO_I_QUIT "refused, connection failed\n");
+	  errClose(__LINE__,newsocket,ECHO_I_QUIT "refused, connection failed");
 	 }}
 }
 static void clearOrphanedSessions()

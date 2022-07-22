@@ -4,7 +4,6 @@ import java.awt.*;
 
 import lib.Graphics;
 import lib.Image;
-import online.common.*;
 import lib.CellId;
 import lib.ExtendedHashtable;
 import lib.G;
@@ -79,7 +78,7 @@ public class SpanglesViewer extends CCanvas<SpanglesCell,SpanglesBoard> implemen
         zoomRect.value=INITIAL_TILE_SCALE;
         zoomRect.barColor=ZoomColor;
         zoomRect.highlightColor = HighlightColor;       
-        bb = new SpanglesBoard(info.getString(OnlineConstants.GAMETYPE, Spangles_INIT),
+        bb = new SpanglesBoard(info.getString(GAMETYPE, Spangles_INIT),
         		getStartingColorMap());
         useDirectDrawing(true); 
         doInit(false);

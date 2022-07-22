@@ -23,6 +23,7 @@ import lib.CalculatorButton;
 import lib.CellId;
 import lib.DateSelector;
 import lib.ExtendedHashtable;
+import lib.Base64;
 import lib.G;
 import lib.GC;
 import lib.HitPoint;
@@ -31,6 +32,7 @@ import lib.KeyboardLayout;
 import lib.LFrameProtocol;
 import lib.MouseState;
 import lib.StringStack;
+import lib.TextButton;
 import lib.TextContainer;
 import lib.SimpleObservable;
 import online.game.*;
@@ -49,7 +51,7 @@ import online.search.SimpleRobotProtocol;
 */
 public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard> implements CrosswordleConstants, GameLayoutClient
 {	static final long serialVersionUID = 1000;
-	static final String Crosswords_SGF = "sprint"; // sgf game name
+	static final String Crosswords_SGF = "Crosswordle"; // sgf game name
 	boolean useKeyboard = G.isCodename1();
 	KeyboardLayout Minimal =new KeyboardLayout(0.085,0.085*3,new String[][]
 			{				
@@ -66,11 +68,16 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
     private Color chatBackgroundColor = new Color(235,235,235);
     private Color rackBackGroundColor = new Color(192,192,192);
     private Color boardBackgroundColor = new Color(220,165,155);
+    private static long MILLIS_PER_DAY = (1000*24*60);
     private Dictionary dictionary = Dictionary.getInstance();
 	private TextContainer inputField = new TextContainer(CrosswordleId.InputField);
 	private Rectangle keyboardRect = addRect("keyboard");
 	private Rectangle keytextRect = addRect("keytext");
 	private Rectangle logoRect = addRect("logo");
+	private TextButton hardButton = addButton(
+			"hard puzzles",CrosswordleId.ToggleEasy,"use hard puzzles",
+    		"easy puzzles",CrosswordleId.ToggleEasy,"use easy puzzles",
+    		HighlightColor, rackBackGroundColor,boardBackgroundColor);
 	private DateSelector dateRect = 
 			(DateSelector)addRect("date",
 							new DateSelector(this,s.get(PuzzleFor),new BSDate()));
@@ -129,6 +136,7 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
     {
     	return(bb.score[p.boardIndex]);
     }
+    
 	/**
 	 * 
 	 * this is the real instance intialization, performed only once.
@@ -151,7 +159,7 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
         	CrosswordleConstants.putStrings();
         }
         
-        String type = info.getString(OnlineConstants.GAMETYPE, CrosswordleVariation.Crosswordle_55.name);
+        String type = info.getString(GAMETYPE, CrosswordleVariation.Crosswordle_55.name);
         // recommended procedure is to supply players and randomkey, even for games which
         // are current strictly 2 player and no-randomization.  It will make it easier when
         // later, some variant is created, or the game code base is re purposed as the basis
@@ -223,7 +231,7 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
        	// ground the size of chat and logs in the font, which is already selected
     	// to be appropriate to the window size
     	int fh = standardFontSize();
-    	int minLogW = fh*15;	
+    	int minLogW = fh*12;	
     	int logow = fh*30;
        	int minChatW = Math.min(fh*55,width-fh*2);
        	int vcrw = fh*16;
@@ -238,7 +246,7 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
     			0.75,	// 60% of space allocated to the board
     			aspect,	// aspect ratio for the board
     			fh*2,	// min cell size
-    			fh*4,	// maximum cell size
+    			fh*2,	// maximum cell size
     			0.4		// preference for the designated layout, if any
     			);
         // place the chat and log automatically, preferring to place
@@ -262,7 +270,7 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
     	
     	
        	layout.alwaysPlaceDone = false;
-       	layout.placeDoneEditRep(buttonW,buttonW*4/3,doneRect,editRect,restartRect);
+       	layout.placeDoneEditRep(buttonW,buttonW*4/3,doneRect,editRect,hardButton,restartRect);
        	layout.alwaysPlaceDone = true;
        	
       	int tl = G.Left(keytextRect);
@@ -688,7 +696,12 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
 				{
 				String theWord = inputField.getText().trim().toLowerCase();
 				boolean done = gb.canBeGuessed(theWord);
-				if(GC.handleRoundButton(gc, messageRotation,doneRect,done ? buttonSelect : null,s.get(ProbeMessage),
+				if(gb.DoneState())
+				{
+					handleDoneButton(gc,doneRect,(gb.DoneState() ? buttonSelect : null), 
+							HighlightColor, rackBackGroundColor); 
+				}
+				else if(GC.handleRoundButton(gc, messageRotation,doneRect,done ? buttonSelect : null,s.get(ProbeMessage),
 						HighlightColor, rackBackGroundColor))
 					{
 					buttonSelect.hitCode = CrosswordleId.Playword;
@@ -711,6 +724,7 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
              //      DrawRepRect(gc,pl.displayRotation,Color.black,b.Digest(),repRect);
         GC.setFont(gc,largeBoldFont());
         dateRect.draw(gc,selectPos);
+        hardButton.draw(gc,selectPos);
         inputField.setVisible(true);
         inputField.redrawBoard(gc,selectPos);
         keys.draw(gc,selectPos);
@@ -724,6 +738,11 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
         }
        }
        drawHiddenWindows(gc, selectPos);
+    }
+    public String gameOverMessage()
+    {	commonPlayer pl =getPlayerOrTemp(0);
+    	long time = pl.elapsedTime;
+    	return s.get(SolvedMessage,""+bb.guesses.size(),G.briefTimeString(time));
     }
     public void standardGameMessage(Graphics gc,Rectangle stateRect,CrosswordleState state)
     {
@@ -751,6 +770,24 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
   	
     	return(super.PerformAndTransmit(m,transmit,mode));
     }
+    private void doRestart(CrosswordleMovespec m)
+    {
+       	// set the randomkey to the new date
+    	bb.setRandomKey(m.to_row*MILLIS_PER_DAY,m.from_row!=0);
+    	dateRect.setTime(bb.randomKey);
+    	//
+    	// reset a grab bag of state variables so we can do a new puzzle and score it.
+    	//
+    	commonPlayer ap = getActivePlayer();
+       	ap.setElapsedTime(0);
+       	ap.spectator = false;
+       	setScored(false);
+       	gameOver = false;
+       	allowed_to_edit = false;
+       	mutable_game_record = false;
+       	doWayBack(replayMode.Live);
+    	doTruncate();	
+    }
     /**
      * Execute a move by the other player, or as a result of local mouse activity,
      * or retrieved from the move history, or replayed form a stored game. 
@@ -761,6 +798,16 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
      */
      public boolean Execute(commonMove mm,replayMode replay)
     {	if(mm.op==MOVE_PLAYWORD) { mm.setLineBreak(true); }
+    	if(mm.op==MOVE_RESTART) 
+    		{ doRestart((CrosswordleMovespec)mm);
+    		  return true;
+    		}
+    	if(mm.op==MOVE_SETWORD)
+    		{CrosswordleMovespec m = (CrosswordleMovespec)mm;
+    		 String w = Base64.decodeString(m.word);
+    		 if(!w.equals(inputField.getText())) { inputField.setText(w); }
+    		 return true;
+    		}
         handleExecute(bb,mm,replay);
         /**
          * animations are handled by a simple protocol between the board and viewer.
@@ -861,8 +908,8 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
       {	  // some damaged games ended up with naked "drop", this lets them pass 
     	  switch(nmove.op)
     	  {
-    	  case MOVE_SHOW:
-    	  case MOVE_SEE:
+    	  case MOVE_SETWORD:
+     	  case MOVE_RESTART:
     		  return(null);
     	  default: break;
     	  }
@@ -966,9 +1013,20 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
 		String theWord = inputField.getText().trim().toLowerCase();
 		boolean done = bb.canBeGuessed(theWord);
 		if(done) 
-			{ PerformAndTransmit("Play "+theWord); 
+			{ 
+			commonPlayer ap = getActivePlayer();
+			if(allowed_to_edit || !ap.spectator) { PerformAndTransmit("Play "+theWord); } 
 			inputField.setText("");
 			}
+	}
+	private String lastText = "";
+	public void updateInput()
+	{	String newText = inputField.getText();
+		if(!newText.equals(lastText))
+		{
+			lastText = newText;
+	    	PerformAndTransmit(G.concat("SetWord ",Base64.encodeSimple(newText)));
+		}
 	}
 	/** 
 	 * this is called on "mouse up".  We may have been just clicking
@@ -1011,10 +1069,11 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
             	throw G.Error("Hit Unknown object " + hitCode);
             }
         	break;
+        case ToggleEasy:
+        	hardButton.toggle();
+        	break;
         case Restart:
-        	bb.setRandomKey(dateRect.getTime());
-        	doWayBack(replayMode.Live);
-        	doTruncate();	
+        	PerformAndTransmit(G.concat("Restart ",dateRect.getTime()/MILLIS_PER_DAY," ",hardButton.isOn()));
         	break;
         case Playword:
         	PerformAndTransmit("Play "+(String)(hp.hitObject));
@@ -1207,10 +1266,11 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
  * Network I/O events, merely queue the data for delivery later.
  *  */
     
-    //   public void ViewerRun(int wait)
-    //   {
-    //       super.ViewerRun(wait);
-    //   }
+ public void ViewerRun(int wait)
+   {	
+        super.ViewerRun(wait);
+        if(ourActiveMove()) { updateInput(); }
+   }
     /**
      * returns true if the game is over "right now", but also maintains 
      * the gameOverSeen instance variable and turns on the reviewer variable
@@ -1260,6 +1320,7 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
             if (setup_property.equals(name))
             {
                 bb.doInit(value);
+                dateRect.setTime(bb.randomKey);
                 adjustPlayers(bb.nPlayers());
               }
             else if (name.equals(comment_property))
@@ -1268,6 +1329,9 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
             }
            else if (parseVersionCommand(name,value,2)) {}
            else if (parsePlayerCommand(name,value)) {}
+           else if (name.equalsIgnoreCase(game_property) && value.equalsIgnoreCase("sprint"))
+           {	// grandfather an editing error
+           }
             else
             {	// handle standard game properties, and also publish any
             	// unexpected names in the chat area
@@ -1282,6 +1346,22 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
             setComment(comments);
         }
     }
-
+    // first=true causes the bs_uni script to check with the server
+    // and record the result. This is a temporary solution so the
+    // user can solve multiple puzzles in one session.
+    //
+    private String firstPuzzle = "true";
+    public String getUrlNotes()
+    {	long key = bb.randomKey;
+    	String v = G.concat(
+    			"&puzzleid=",bb.getSolution(key),
+    			"&variation=",bb.variation.name(),
+    			"&hard=",((key&1)==0?"false":"true"),
+    			"&puzzledate=",dateRect.dateString(),
+    			"&first=",firstPuzzle
+    			);
+    	firstPuzzle = "false";
+    	return v;
+    }
 }
 

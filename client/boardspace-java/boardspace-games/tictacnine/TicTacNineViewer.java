@@ -93,7 +93,7 @@ public class TicTacNineViewer extends CCanvas<TicTacNineCell,TicTacNineBoard> im
 
         int randomKey = info.getInt(OnlineConstants.RANDOMSEED,-1);
        
-        b = new TicTacNineBoard(info.getString(OnlineConstants.GAMETYPE, TicTacNine_INIT),randomKey);
+        b = new TicTacNineBoard(info.getString(GAMETYPE, TicTacNine_INIT),randomKey);
         doInit(false);
  
         

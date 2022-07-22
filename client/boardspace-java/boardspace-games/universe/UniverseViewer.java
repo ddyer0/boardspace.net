@@ -282,7 +282,7 @@ public class UniverseViewer extends CCanvas<UniverseCell,UniverseBoard> implemen
     	//
         int randomKey = info.getInt(OnlineConstants.RANDOMSEED,-1);
         int np = Math.max(1,info.getInt(OnlineConstants.PLAYERS_IN_GAME));
-        String gameType = info.getString(OnlineConstants.GAMETYPE, variation.Universe.name);
+        String gameType = info.getString(GAMETYPE, variation.Universe.name);
         b = new UniverseBoard(gameType,randomKey,np,getStartingColorMap(),UniverseBoard.REVISION);
         adjustPlayers(b.nPlayers());	// players can be adjusted in init
         if(b.rules.isNudoku())

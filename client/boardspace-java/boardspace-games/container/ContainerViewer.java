@@ -220,7 +220,7 @@ public class ContainerViewer extends CCanvas<ContainerCell,ContainerBoard> imple
         speedRect.barColor=ZoomColor;
         speedRect.highlightColor = HighlightColor;
  
-        b = new ContainerBoard(info.getString(OnlineConstants.GAMETYPE, Container_INIT),
+        b = new ContainerBoard(info.getString(GAMETYPE, Container_INIT),
         		players_in_game,ran,getStartingColorMap());
         if(G.debug()) {
         	ContainerConstants.putStrings();

@@ -267,8 +267,9 @@ class Word implements StackIterator<Word>,CompareTo<Word>
 }
 
 class JumbulayaBoard extends squareBoard<JumbulayaCell> implements BoardProtocol,JumbulayaConstants
-{	static int REVISION = 101;			// 100 represents the initial version of the game
+{	static int REVISION = 102;			// 100 represents the initial version of the game
 										// revision 101 fixes the inconsistent rack refill problem
+										// revision 102 fixes the reshuffle bug
 	static final String[] JumbulayaGRIDSTYLE = { null, null, "A","1" }; // left and bottom numbers
 	public static final int WordScores[] = {0,0,0,3,4,5,6,10,12,15,20};				// horizontal word scores for 3+
 	public static final int JumbulayaScores[] = { 0, 0, 0, 0, 0, 0, 0, 10, 12, 15};	// vertical word scores for 7+
@@ -919,11 +920,13 @@ class JumbulayaBoard extends squareBoard<JumbulayaCell> implements BoardProtocol
     	if(rv==drawPile) 
     	{ pickedObject = drawPile.removeTop(); 
     	  pickedFromRack = true;
+    	  needShuffle = board_state==(JumbulayaState.DiscardTiles);
     	}
     	else {
     	JumbulayaChip po = SetBoard(rv,null); 	// SetBoard does ancillary bookkeeping
     	pickedObject = po;
     	pickedFromRack = rv.fromRack;
+    	rv.fromRack = false;
     	if(rv.rackLocation()==JumbulayaId.Rack)
     		{ int idx = c.col-'A';;
     		  int map[]=rackMap[idx];
@@ -944,6 +947,7 @@ class JumbulayaBoard extends squareBoard<JumbulayaCell> implements BoardProtocol
     		break;
     	default: 
         	SetBoard(rv,pickedObject);
+        	pickedFromRack = false;
     	}
     	pickedObject = null;
     }
@@ -1139,13 +1143,18 @@ class JumbulayaBoard extends squareBoard<JumbulayaCell> implements BoardProtocol
         	
         case DiscardTiles:
         	if(droppedDestStack.size()==0) 
-        		{ setState(resetState);        		
+        		{
+        		 if(revision>=102) { needShuffle =false; }
+        		 setState(resetState);        		
         		}
         	break;
         case Confirm:
         case CanJumbulaya:
         case Play:
-        	if(c==drawPile) { setState(JumbulayaState.DiscardTiles); }
+        	if(c==drawPile) 
+        		{ setState(JumbulayaState.DiscardTiles); 
+        		  if(revision>=102) { needShuffle =true; }
+        		}
         	else if(validate(false))
         		{ 	if(canCallJumbulaya(true)) 
         				{
@@ -1639,7 +1648,7 @@ class JumbulayaBoard extends squareBoard<JumbulayaCell> implements BoardProtocol
     {	Jumbulayamovespec m = (Jumbulayamovespec)mm;
         if(replay!=replayMode.Replay) { animationStack.clear(); }
 
-        //G.print("E "+m+" for "+whoseTurn+" "+board_state);
+//        G.print("E "+m+" for "+whoseTurn+" "+board_state+" "+Digest());
         switch (m.op)
         {
         case MOVE_DONE:
@@ -1794,8 +1803,16 @@ class JumbulayaBoard extends squareBoard<JumbulayaCell> implements BoardProtocol
 	    	JumbulayaCell dcell = getCell(JumbulayaId.Rack,m.to_col,slot);
 	    	int dest = m.from_row; 
 	    	JumbulayaChip ch = pickedObject;
+	    	JumbulayaCell from =  pickedSourceStack.top();
+	    	if(isSource(dcell))
+	    	{
+	    		unPickObject(dcell);
+	    	}
+	    	else
+	    	{
 	    	dropObject(dcell);
-	    	dropAndSlide(who, pickedSourceStack.top(),slot,-1,dest,replay);
+	    	}
+	    	dropAndSlide(who,from,slot,-1,dest,replay);
 	    	setNextStateAfterDrop(dcell,ch,replay);
         	validateMap(who,"after dropfromboard");
         	}
@@ -1972,6 +1989,7 @@ class JumbulayaBoard extends squareBoard<JumbulayaCell> implements BoardProtocol
 
         if(gameEvents.size()>0) { m.gameEvents = gameEvents.toArray(); gameEvents.clear(); }
         //System.out.println("Ex "+m+" for "+whoseTurn+" "+state);
+        //G.print("X "+m+" for "+whoseTurn+" "+board_state+" "+Digest());
         return (true);
     }
     public boolean LegalToHitPool(boolean picked)

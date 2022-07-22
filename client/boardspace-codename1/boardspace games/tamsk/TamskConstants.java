@@ -122,7 +122,7 @@ static int[] ZnInCol = { 4, 5, 6, 7, 6, 5, 4 }; // depth of columns, ie A has 4,
 		String TamskStringPairs[][] = 
 		{   {"Tamsk_family","Tamsk"},
 			{"Tamsk-F","Tamsk-F"},
-			{"Tamsk_variation","Tamsk"},
+			{"Tamsk_variation","Tamsk (Timers, no Fast Timer)"},
 			{"Tamsk-U_variation","Tamsk (No Timers)"},
 			{"Tamsk-F_variation","Tamsk (+ Fast Timer)"},
 		};

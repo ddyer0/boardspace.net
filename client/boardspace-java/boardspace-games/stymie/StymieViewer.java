@@ -88,7 +88,7 @@ public class StymieViewer extends CCanvas<StymieCell,StymieBoard> implements Sty
         }
          
         
-        String type = info.getString(OnlineConstants.GAMETYPE, StymieVariation.stymie.name);
+        String type = info.getString(GAMETYPE, StymieVariation.stymie.name);
         // recommended procedure is to supply players and randomkey, even for games which
         // are current strictly 2 player and no-randomization.  It will make it easier when
         // later, some variant is created, or the game code base is re purposed as the basis

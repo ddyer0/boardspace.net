@@ -5,20 +5,29 @@ import java.awt.FontMetrics;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
+/**
+ * this is a simple date presenter/selector. 
+ * 
+ * @author ddyer
+ *
+ */
 @SuppressWarnings("serial")
 public class DateSelector extends Rectangle implements ActionListener
 {	public enum DateCode implements CellId { Year,Month,Day;
 		public String shortName() { return name(); }
 	}
-	int minYear = 0;
-	int maxYear = 0;
+	int minYear = 0;		// defaults to whatever the initial year is
+	int maxYear = 0;		// defaults to minYear+1
 	public boolean changed = false;
 	@SuppressWarnings("deprecation")
 	// day of the month
 	public int getDate() { return date.getDate(); }
 	// universal date/time 
 	public long getTime() { return date.getTime(); }
+	public void setTime(long v)
+	{
+		date.setTime(v);
+	}
 	@SuppressWarnings("deprecation")
 	public int minYear() 
 	{	if(minYear==0) 
@@ -35,11 +44,12 @@ public class DateSelector extends Rectangle implements ActionListener
 	PopupManager menu = new PopupManager();
 	DateCode selection = null;
 	
-	String prefix = "";
-	BSDate date = new BSDate();
-	Rectangle yearRect = new Rectangle();
-	Rectangle monthRect = new Rectangle();;
-	Rectangle dayRect = new Rectangle();;
+	String prefix = "";			// what occurs before the date 
+	BSDate date = new BSDate();	// this will be today, in gmt, by default
+	
+	private Rectangle yearRect = new Rectangle();
+	private Rectangle monthRect = new Rectangle();;
+	private Rectangle dayRect = new Rectangle();;
 	MenuParentInterface parent;
 	public DateSelector(MenuParentInterface p,String pre,BSDate d)
 	{
@@ -48,9 +58,13 @@ public class DateSelector extends Rectangle implements ActionListener
 		date = d;
 		prefix = pre;
 	}
+	public String dateString()
+	{
+		return date.DateString().substring(0,10);
+	}
 	public void draw(Graphics gc,HitPoint hit)
 	{
-		String form = date.DateString().substring(0,10);
+		String form = dateString();
 		String leader = prefix+" ";
 		String message = leader+form;
 		GC.Text(gc,true,this,Color.black,null,message);
@@ -110,7 +124,7 @@ public class DateSelector extends Rectangle implements ActionListener
 		case Day:
 			for(int i=1;i<=31;i++)
 			{
-				menu.addMenuItem(" "+i+" ",i-1);
+				menu.addMenuItem(" "+i+" ",i);
 			}
 			break;
 		default: G.Error("Not expecting ",hit);

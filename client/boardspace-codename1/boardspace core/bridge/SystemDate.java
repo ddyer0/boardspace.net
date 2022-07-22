@@ -4,8 +4,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
 
-import lib.G;
-
 public class SystemDate extends Date
 {	static final String GMT = "GMT";
 	Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone(GMT));
@@ -38,7 +36,7 @@ public class SystemDate extends Date
 	}
 	public void setDate(int d)
 	{	
-		calendar.set(java.util.Calendar.DAY_OF_MONTH,d+1);
+		calendar.set(java.util.Calendar.DAY_OF_MONTH,d);
 		setTime(calendar.getTime().getTime());
 	}
 	public void setMonth(int t)

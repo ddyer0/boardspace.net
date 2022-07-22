@@ -93,7 +93,8 @@ public class JumbulayaCell extends stackCell<JumbulayaCell,JumbulayaChip>
 	 * This method is called, with a random sequence, to digest the cell in unusual
 	 * roles, or when the diest of contents is complex.
 	 */
-	public long Digest(Random r) { return(super.Digest(r)*(selected?35234:1)); }
+	public long Digest(Random r)
+		{ return(super.Digest(r)*(selected?r.nextLong():1)); }
 	
 	public JumbulayaChip[] newComponentArray(int size) {
 		return(new JumbulayaChip[size]);

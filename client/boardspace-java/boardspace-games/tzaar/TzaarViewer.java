@@ -89,7 +89,7 @@ public class TzaarViewer extends CCanvas<TzaarCell,TzaarBoard> implements TzaarC
         zoomRect.barColor=ZoomColor;
         zoomRect.highlightColor = ZoomHighlightColor;
   
-        b = new TzaarBoard(randomKey,info.getString(OnlineConstants.GAMETYPE, Tzaar_Standard_Init),
+        b = new TzaarBoard(randomKey,info.getString(GAMETYPE, Tzaar_Standard_Init),
         		getStartingColorMap());
         useDirectDrawing(true);
         doInit(false);

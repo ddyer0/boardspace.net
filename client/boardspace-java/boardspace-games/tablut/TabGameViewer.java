@@ -17,7 +17,6 @@ import lib.HitPoint;
 import lib.LFrameProtocol;
 import lib.StockArt;
 import lib.TextButton;
-import online.common.*;
 import online.game.*;
 import online.game.sgf.sgf_node;
 import online.game.sgf.sgf_property;
@@ -125,7 +124,7 @@ public class TabGameViewer extends CCanvas<TabCell,TabGameBoard> implements TabC
     {
         super.init(info,frame);
        
-        b = new TabGameBoard(info.getString(OnlineConstants.GAMETYPE, Default_Tablut_Game),getStartingColorMap());
+        b = new TabGameBoard(info.getString(GAMETYPE, Default_Tablut_Game),getStartingColorMap());
         useDirectDrawing(true); // not tested yet
         doInit(false);
    }

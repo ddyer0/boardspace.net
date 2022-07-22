@@ -172,7 +172,7 @@ public class BreakingAwayViewer extends CCanvas<BreakingAwayCell,BreakingAwayBoa
         sizeRect.value=INITIAL_TILE_SCALE;
         sizeRect.barColor=ZoomColor;
         sizeRect.highlightColor = HighlightColor;
-        b = new BreakingAwayBoard(info.getString(OnlineConstants.GAMETYPE, Variation.Standard.name),
+        b = new BreakingAwayBoard(info.getString(GAMETYPE, Variation.Standard.name),
         			randomv,
         			pl,getStartingColorMap()
         			);

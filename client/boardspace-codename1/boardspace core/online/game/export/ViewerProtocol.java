@@ -190,5 +190,9 @@ public interface ViewerProtocol extends ViewGameProtocol
 	public boolean allowRobotsToRun();
 	public String fixedServerRecordString(String string, boolean includePlayerNames);
 	public String fixedServerRecordMessage(String fixedHist);
+	public Object getUrlNotes();
+	public void setScored(boolean v);
+	public boolean isScored();
+	
 
 }

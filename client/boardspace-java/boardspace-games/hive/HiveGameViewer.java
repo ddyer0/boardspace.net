@@ -5,7 +5,6 @@ import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenuItem;
 
 /* below here should be the same for codename1 and standard java */
-import online.common.*;
 import online.game.*;
 import online.game.sgf.*;
 import online.search.SimpleRobotProtocol;
@@ -147,7 +146,7 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
         zoomRect.highlightColor = HighlightColor;
 
  
-        b = new HiveGameBoard(info.getString(OnlineConstants.GAMETYPE, "Hive"),getStartingColorMap());
+        b = new HiveGameBoard(info.getString(GAMETYPE, "Hive"),getStartingColorMap());
         useDirectDrawing(true);
         textNotation = myFrame.addOption(TextLogMessage,false,deferredEvents);
         offerDrawAction = myFrame.addAction(s.get(OFFERDRAW),deferredEvents);    

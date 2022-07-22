@@ -6,6 +6,7 @@ import bridge.FileOutputStream;
 import bridge.ThreadDeath;
 import common.Crypto;
 import common.GameInfo;
+import common.GameInfo.ScoringMode;
 import online.common.*;
 import online.game.export.ViewerProtocol;
 import online.game.sgf.export.sgf_names;
@@ -172,7 +173,7 @@ public class Game extends commonPanel implements PlayConstants,Opcodes,DeferredE
     private JCheckBoxMenuItem flushOutput = null; //for testing, disable the transmitter
     private JMenuItem inspectGame = null; //for testing,
     private JMenuItem inspectViewer = null; //for testing, 
-
+    private GameInfo gameInfo = null;
     private boolean deferActionsSwitch = false;
     private StringStack deferredActions = new StringStack();
     
@@ -205,7 +206,6 @@ public class Game extends commonPanel implements PlayConstants,Opcodes,DeferredE
     private int robotMasterOrder = -1;	// play order for the robot master
     
     
-    public boolean multiPlayer = false;
     public boolean usePNP = false;		// in pass-n-play mode
     public LaunchUser[] launchUsers = null;
    
@@ -237,7 +237,7 @@ public class Game extends commonPanel implements PlayConstants,Opcodes,DeferredE
     private boolean startRecorded = false;
 
     private void mplog(String str)
-    {	if(multiPlayer) 
+    {	if(gameInfo.scoringMode()==ScoringMode.SM_Multi) 
     	{ sendMessage(NetConn.SEND_NOTE + str); 
     	}
     }
@@ -248,7 +248,7 @@ public class Game extends commonPanel implements PlayConstants,Opcodes,DeferredE
     private String fileNameString()
     {
         String str = unrankedMode ? "U!" : masterMode ? "M!" : "";
-
+        String gameTypeString = gameInfo.id;
         if (tournamentMode)
         {
             str = "T" + ("".equals(str) ? "!" : str);
@@ -656,16 +656,16 @@ public class Game extends commonPanel implements PlayConstants,Opcodes,DeferredE
     {  	sharedInfo = info;
     	info.put(exHashtable.MYGAME, this);
     	info.put(exHashtable.MYXM,pendingEchos);
+    	gameInfo = info.getGameInfo();
+
     	int playersInGame = info.getInt(OnlineConstants.PLAYERS_IN_GAME,2);
         numberOfPlayerConnections = info.getInt(exHashtable.NUMBER_OF_PLAYER_CONNECTIONS,0);	// number of real players
         numberOfProxyConnections = info.getInt(exHashtable.NUMBER_OF_PROXY_CONNECTIONS,0);	// number of other local players
-        int scoreMode = info.getInt(exHashtable.SCORING_MODE,exHashtable.SCORE_2);
     	playerConnections = new commonPlayer[playersInGame];
-    	multiPlayer = scoreMode==exHashtable.SCORE_MULTI;
- 
     	my = new commonPlayer(0); 
     	my.primary = true; //mark it as "us"
     	my.launchUser = (LaunchUser)info.get(ConnectionManager.LAUNCHUSER);
+        my.spectator = info.getBoolean(exHashtable.SPECTATOR,false);
     	info.put(exHashtable.MYPLAYER,my);			// required by the viewer
         usePNP = G.offline() || info.getBoolean(ConnectionManager.LAUNCHPASSNPLAY,false);
         launchUsers = (LaunchUser[])info.get(ConnectionManager.LAUNCHUSERS);
@@ -691,13 +691,7 @@ public class Game extends commonPanel implements PlayConstants,Opcodes,DeferredE
     	else if(!chatOnly)
     	{
     	// initialize a game that doesn't share the window substrate
-        String classname = info.getString(OnlineConstants.VIEWERCLASS,"") ;
-        if("".equals(classname))
-        {
-        	GameInfo gameinfo = GameInfo.findByName(exHashtable.GAME);
-        	if(gameinfo==null) { GameInfo.findByDirectory(info.getInt(exHashtable.SAVE_GAME_INDEX,-1)); }
-        	if(gameinfo!=null) { classname = gameinfo.viewerClass; }
-        }
+        String classname = info.getString(OnlineConstants.VIEWERCLASS,gameInfo.viewerClass) ;
         ViewerProtocol can = (ViewerProtocol) G.MakeInstance(classname);
         can.init(info,frame);
         
@@ -736,7 +730,6 @@ public class Game extends commonPanel implements PlayConstants,Opcodes,DeferredE
 	        info.put(exHashtable.NETCONN,myNetConn);
 	        myNetConn.LogMessage("random seed is " ,seedValue);
 	        }
-        my.spectator = info.getBoolean(exHashtable.SPECTATOR,false);
         LaunchUser lu = (LaunchUser)info.get(ConnectionManager.LAUNCHUSER);
         {my.launchUser = lu;
         if(lu!=null)
@@ -1916,7 +1909,7 @@ public class Game extends commonPanel implements PlayConstants,Opcodes,DeferredE
         else
         {
 
-            if (!gameOverSeen 
+            if (!v.isScored()
             		&& !GameOver() 
             		&& (nva != 0) 
             		&& (v!=null)
@@ -3043,6 +3036,34 @@ public class Game extends commonPanel implements PlayConstants,Opcodes,DeferredE
         */
         return (str);
     }
+    
+    // get the scoring string for a 1 player game
+    private String getUrlStr1()
+    {
+        String mode = modeString();
+        StringBuilder urlStr = new StringBuilder();
+        commonPlayer p = commonPlayer.firstPlayer(playerConnections);
+        String urank = unrankedMode ? "&nr1=true" : "";
+        G.append(urlStr,
+        		"&key=" , myNetConn.sessionKey ,
+        		"&session=",sessionNum ,
+        		"&sock=" , sharedInfo.getInt(OnlineConstants.LOBBYPORT) , 
+        		"&game=" , gameInfo.id ,
+        		"&mode=" ,mode , 
+        		"&u1=",p.uid,
+        		"&s1=", v.ScoreForPlayer(p),
+        		"&t1=", ((int) (p.elapsedTime / 1000)),
+        		urank,
+        		v.getUrlNotes()
+        		) ;
+ 
+        appendNotes(urlStr);
+        
+        String str = urlStr.toString();
+
+        return (str);
+    }
+
     /*
     // get the scoring string for a 2 player game
     private String getUrlStrOld()
@@ -3346,13 +3367,36 @@ public class Game extends commonPanel implements PlayConstants,Opcodes,DeferredE
           }
     	}
     	if(myNetConn!=null && sendit)
+    	{	ScoringMode sm = gameInfo.scoringMode();
+    		switch(sm)
     	{
-            String baseUrl = multiPlayer ? recordKeeper4URL : recordKeeperURL;
-            String urlStr = multiPlayer ? getUrlStr4() : getUrlStr();
+    		case SM_Multi:
+	    		{
+	            String baseUrl =recordKeeper4URL;
+	            String urlStr = getUrlStr4();
+	            urlStr = "params=" + XXTEA.combineParams(urlStr, TEA_KEY);
+	            sendTheResult(serverName,web_server_sockets,baseUrl+"?"+urlStr);
+	    		}
+	    		break;
+    		case SM_Single:
+		    	{
+		            String baseUrl = recordKeeper1URL;
+		            String urlStr = getUrlStr1();      
+		            urlStr = "params=" + XXTEA.combineParams(urlStr, TEA_KEY);
+		            sendTheResult(serverName,web_server_sockets,baseUrl+"?"+urlStr);
             
+		    	}
+		    	break;
+    		case SM_Normal:
+		    	{
+		            String baseUrl = recordKeeperURL;
+		            String urlStr = getUrlStr();      
             urlStr = "params=" + XXTEA.combineParams(urlStr, TEA_KEY);			
-
             sendTheResult(serverName,web_server_sockets,baseUrl+"?"+urlStr);
+    	}
+		    	break;
+	    	default: G.Error("Scoring mode %s not expected",sm);
+    		}
     	}
     	
     }
@@ -3395,23 +3439,26 @@ public class Game extends commonPanel implements PlayConstants,Opcodes,DeferredE
     	}
     	return(false);
     }
-    private boolean gameOverSeen=false;
     private void FinishUp(boolean forme)
     { //myNetConn.LogMessage("finish " + forme + " " + my.id);
     	v.stopRobots();
+    	boolean gameOverSeen = v.isScored();
         if (!gameOverSeen && !reviewOnly)
-        {
+        {	v.setScored(true);
             resultForMe = forme;
 
             if (forme)
             {
                 myFrame.setDontKill(true); //keep people from quitting while the score is being reported
                 sendTheResult = sendTheGame = !doNotRecord;
+                sentTheResult = sentTheGame = false;
            }
 
             ServerRemove();
-             
-            if(multiPlayer)
+            ScoringMode sm = gameInfo.scoringMode();
+            switch(sm)
+            {
+            case SM_Multi:
             {
             String msg = s.get("Final Scores:");
             for(int i=0;i<playerConnections.length;i++)
@@ -3428,7 +3475,8 @@ public class Game extends commonPanel implements PlayConstants,Opcodes,DeferredE
             }
             theChat.postMessage(ChatInterface.GAMECHANNEL,KEYWORD_CHAT,msg);
             }
-            else
+            	break;
+            case SM_Normal:
             {
             // say who won
             boolean somewin=false;
@@ -3443,9 +3491,15 @@ public class Game extends commonPanel implements PlayConstants,Opcodes,DeferredE
             }
             if(!somewin) { theChat.postMessage(ChatInterface.GAMECHANNEL,KEYWORD_CHAT,s.get("The game is a draw")); }
             }
+	            break;
+            case SM_Single:
+            	{
 
         }
-        gameOverSeen = true;
+            	break;
+            default: G.Error("Not expecting scoring mode %s",sm);
+	            }
+        }
     }
 
     private void doNOTMYTURN(String cmd,StringTokenizer localST,String fullMsg)
@@ -3584,7 +3638,7 @@ public class Game extends commonPanel implements PlayConstants,Opcodes,DeferredE
 
         if(myNetConn!=null)
         {
-        myNetConn.Connect((my.spectator ? "Spectator " : "Game ")+" "+gameNameString,
+        myNetConn.Connect((my.spectator ? "Spectator " : "Game ")+" "+gameInfo.gameName,
         					sharedInfo.getString(SERVERNAME),
         					sharedInfo.getInt(LOBBYPORT));
         setGameState(ConnectionState.UNCONNECTED);

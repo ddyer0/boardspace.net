@@ -129,7 +129,7 @@ public abstract class OStack<T> implements StackIterator<T>
 		public T remove(int i,boolean shuffle)
 		{	if((i<index) && (i>=0)) 
 			{	
-			if(i<index) 
+			if(i+1<index) 
 				{ 
 				  T old = data[i];
 				  if(shuffle)

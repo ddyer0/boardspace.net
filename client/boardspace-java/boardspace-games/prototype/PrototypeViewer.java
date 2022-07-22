@@ -171,7 +171,7 @@ public class PrototypeViewer extends CCanvas<PrototypeCell,PrototypeBoard> imple
          
         rotationOption = myFrame.addOption("rotate board",true,deferredEvents);
         
-        String type = info.getString(OnlineConstants.GAMETYPE, PrototypeVariation.prototype.name);
+        String type = info.getString(GAMETYPE, PrototypeVariation.prototype.name);
         // recommended procedure is to supply players and randomkey, even for games which
         // are current strictly 2 player and no-randomization.  It will make it easier when
         // later, some variant is created, or the game code base is re purposed as the basis
@@ -775,6 +775,7 @@ public class PrototypeViewer extends CCanvas<PrototypeCell,PrototypeBoard> imple
  
         // draw the avatars
         standardGameMessage(gc,messageRotation,
+        					// note that gameOverMessage() is also put into the game record
             				state==PrototypeState.Gameover?gameOverMessage():s.get(state.description()),
             				state!=PrototypeState.Puzzle,
             				gb.whoseTurn,
@@ -1289,6 +1290,13 @@ public class PrototypeViewer extends CCanvas<PrototypeCell,PrototypeBoard> imple
     	// rr.InitRobot(sharedInfo, getBoard(), null, level);
     	// p.startRobot(rr);
     //	return(super.startRobot(p,runner,bot));
+    //}
+    // this is conventionally used as the game state message above the board,
+    // but it is also inserted into the game record as the RE property
+    //
+    //public String gameOverMessage()
+    //{
+    //	return super.gameOverMessage();
     //}
     /** factory method to create a robot */
     public SimpleRobotProtocol newRobotPlayer() 

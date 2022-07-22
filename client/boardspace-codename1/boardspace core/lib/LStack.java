@@ -186,7 +186,7 @@ public class LStack implements Digestable {
 	public long removeAtIndex(int i,boolean shuffle)
 	{	if((i<index) && (i>=0)) 
 		{	
-		if(i<index) 
+		if(i+1<index) 
 			{ long v = data[i];
 			  if(shuffle)
 			  {

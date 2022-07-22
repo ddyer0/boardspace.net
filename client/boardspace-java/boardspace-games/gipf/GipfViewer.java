@@ -4,7 +4,6 @@ package gipf;
 import java.awt.*;
 import javax.swing.JCheckBoxMenuItem;
 
-import online.common.*;
 import online.game.*;
 import online.game.sgf.sgf_node;
 import online.game.sgf.sgf_property;
@@ -97,7 +96,7 @@ public class GipfViewer extends CCanvas<GipfCell,GipfBoard> implements GipfConst
             startEvaluator = myFrame.addOption("Start Evaluator", false,deferredEvents);
         }
 
-        b = new GipfBoard(info.getString(OnlineConstants.GAMETYPE, "Gipf"),getStartingColorMap(),GipfBoard.REVISION);
+        b = new GipfBoard(info.getString(GAMETYPE, "Gipf"),getStartingColorMap(),GipfBoard.REVISION);
         useDirectDrawing(true);
         doInit(false);
     }

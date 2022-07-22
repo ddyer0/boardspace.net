@@ -113,7 +113,7 @@ public class SyzygyViewer extends CCanvas<SyzygyCell,SyzygyBoard> implements Syz
         labelColor = Color.red;
         labelFont = largeBoldFont();
         
-        bb = new SyzygyBoard(info.getString(OnlineConstants.GAMETYPE, "syzygy"));
+        bb = new SyzygyBoard(info.getString(GAMETYPE, "syzygy"));
         useDirectDrawing(true);
         doInit(false,randomKey);
     }

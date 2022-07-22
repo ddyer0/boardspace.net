@@ -637,7 +637,7 @@ public class Session implements LobbyConstants
 		  String gametype = GI.variationName;
 		  String gamename = GI.gameName;
 		  String gametypeid = GI.id;
-		  String rules = GI.rules;
+		 String rules = GI.rules;
 		 ExtendedHashtable myInfo = new ExtendedHashtable();
 		 myInfo.putInt(exHashtable.SAVE_GAME_INDEX,GI.dirNum);
 		 if(rules!=null) { myInfo.putString(exHashtable.RULES,rules); }
@@ -645,7 +645,7 @@ public class Session implements LobbyConstants
 				 seatingChart==null
 				 	?SeatingChart.defaultSeatingChart(startingNplayers)
 				 	:seatingChart);
-		 myInfo.put(exHashtable.GAMEINFO,GI);
+		 myInfo.setGameInfo(GI);
 
 		 // build a color map if none was specified.  This may seems unnecessarily
 		 // complex but it's not.  each user has a specified order and a specified position
@@ -690,7 +690,6 @@ public class Session implements LobbyConstants
 				 			Math.max(spectator
 				 				?numActivePlayers
 				 				:numOpps+((robotGame!=null)?1:0),GI.minPlayers));
-		 myInfo.putInt(exHashtable.SCORING_MODE,(GI.maxPlayers>2)?exHashtable.SCORE_MULTI:exHashtable.SCORE_2);
 		 myInfo.putBoolean(exHashtable.SPECTATOR,spectator);
 		 myInfo.putInt(ConnectionManager.ROOMNUMBER,gameIndex);
 		 myInfo.putString(ConnectionManager.SESSIONPASSWORD,password);

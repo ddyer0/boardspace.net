@@ -100,7 +100,7 @@ public class VeletasViewer extends CCanvas<VeletasCell,VeletasBoard> implements 
 
         int randomKey = info.getInt(OnlineConstants.RANDOMSEED,-1);
        
-        b = new VeletasBoard(info.getString(OnlineConstants.GAMETYPE, Variation.Veletas_10.name),
+        b = new VeletasBoard(info.getString(GAMETYPE, Variation.Veletas_10.name),
         		randomKey,players_in_game,getStartingColorMap(),VeletasBoard.REVISION);
         doInit(false);
     	useDirectDrawing(true);

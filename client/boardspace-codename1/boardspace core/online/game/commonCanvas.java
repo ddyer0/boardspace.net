@@ -114,6 +114,7 @@ public abstract class commonCanvas extends exCanvas
     public static final String swish = SOUNDPATH + "swish" + Config.SoundFormat;
     public static final String clockSound = SOUNDPATH + "ticktock" + Config.SoundFormat;
     public static final String beepBeepSoundName = SOUNDPATH + "meepmeep"  + SoundFormat;
+    public static final String doorBell = SOUNDPATH + "Doorbl" + SoundFormat;
 
 	/**
 	 * board cell iterator types. 
@@ -160,8 +161,6 @@ public abstract class commonCanvas extends exCanvas
 	    // play rapidly through the entire collection as a test
 		private int fileVisits = 0;
 		private int fileProblems = 0;
-
-	    private GameInfo gameInfo = null;
 
 	    private JCheckBoxMenuItem tickTockOption = null;	// play ticktok and hurry sounds
 	    private boolean playTickTockSounds = true;
@@ -405,6 +404,7 @@ public abstract class commonCanvas extends exCanvas
 	    private double boardZoomStartValue = 0.0;
 
 	}
+    public GameInfo gameInfo = null;
 	public Layout l = new Layout();
 	// scrolling directives
 	private static final int FORWARD_TO_END = 99999;
@@ -639,6 +639,9 @@ public abstract class commonCanvas extends exCanvas
     	if(st!=null)
     	{
         m = ParseNewMove(st, player);
+        // clear the move index so moves don't become variations if they would otherwise
+        // just supersede the previous move
+        m.setIndex(-1);
         l.lastParsed = "Replay "+m;
         // note, capturing the value here is crucial.  If this is a game ending move
         // the the value of "mutable" will be changed by perform and transmit.
@@ -1314,7 +1317,10 @@ public abstract class commonCanvas extends exCanvas
 	    		}
 	    		prevPlayer = m.player;
 	    	}
-	    	if((prevPlayer==targetPlayer) && (getBoard().whoseTurn()!=targetPlayer)) { count++; }
+	    	if(prevPlayer==targetPlayer)
+				{ BoardProtocol b = getBoard();
+				  if(b!=null && (b.whoseTurn()!=targetPlayer)) { count++; }
+				}
 	    	return(count);
 	    }
 	    // this is overridable but do not call it directly, call doScrollTo(FORWARD_ONE);
@@ -2103,6 +2109,9 @@ public abstract class commonCanvas extends exCanvas
     	gameOver |= now;
     	return(now);	// game over right now?
     }
+    private boolean isScored = false;
+    public void setScored(boolean v) { isScored = v; }
+    public boolean isScored() { return isScored; }
     /**
      * return true if the player is a winner of this game.  This is used in scoring,
      * there should be at most one winner in a 2 player game.
@@ -2134,6 +2143,7 @@ public abstract class commonCanvas extends exCanvas
     
     public boolean UsingAutoma() { return(false); }
     public int ScoreForAutoma() { return(-1); }
+    public String getUrlNotes() { return ""; }
     /** 
      * override this method to create an appropriate class of robot that implements RobotProtocol
      * @return a class instance of a new robot player for this game.
@@ -4537,11 +4547,11 @@ public abstract class commonCanvas extends exCanvas
     public void startFirstPlayer()
     {
     	int first = -1;
-    	if(l.gameInfo!=null)
+    	if(gameInfo!=null)
     	{
-    	if(l.gameInfo.variableColorMap)
+    	if(gameInfo.variableColorMap)
     		{ first = sharedInfo.getInt(exHashtable.FIRSTPLAYER,0); }
-       	if(first<0 && (l.gameInfo.colorMap!=null)) 
+       	if(first<0 && (gameInfo.colorMap!=null)) 
 		{ // if the first player is not specified explicitly, find the player playing color 0
        	  BoardProtocol b = getBoard();
 		  int map[] = b.getColorMap();
@@ -4611,21 +4621,14 @@ public abstract class commonCanvas extends exCanvas
         l.tournamentMode = info.getBoolean(exHashtable.TOURNAMENTMODE,false);
 
         Random.setNextIntCompatibility(false);
-        l.gameInfo = (GameInfo)info.get(exHashtable.GAMEINFO);
-        if(l.gameInfo==null)
-        {
-        	l.gameInfo = GameInfo.findByName(info.getString(GAMETYPE ,null));
-        	if(l.gameInfo==null)
-        	{	l.gameInfo = GameInfo.findByNumber(info.getInt(GAMEINDEX,-1));
-        	}
-         }
+        gameInfo = info.getGameInfo();
         isPassAndPlay = isPassAndPlay();
         if(G.isSimulator() || !G.isTouchInterface()) 
     	{ 
         	l.zoomButton = myFrame.addAction("Zoom Up",deferredEvents);
         	l.unzoomButton = myFrame.addAction("Un Zoom",deferredEvents);
     	}
-        if(l.gameInfo!=null) {  myFrame.setTitle(l.gameInfo.gameName);}
+        if(gameInfo!=null) {  myFrame.setTitle(gameInfo.gameName);}
         myFrame.setIconAsImage(gameIcon);
         
         hidden.controlToken = use_grid = mutable_game_record = allowed_to_edit = reviewOnly = sharedInfo.getBoolean(Config.REVIEWONLY);

@@ -129,7 +129,7 @@ public class JumbulayaViewer extends CCanvas<JumbulayaCell,JumbulayaBoard> imple
         MouseColors = new Color[]{Color.red,Color.green,Color.blue,Color.yellow};
         MouseDotColors = new Color[]{ Color.white,Color.white,Color.white,Color.black};
         
-        String type = info.getString(OnlineConstants.GAMETYPE, JumbulayaVariation.Jumbulaya.name);
+        String type = info.getString(GAMETYPE, JumbulayaVariation.Jumbulaya.name);
         // recommended procedure is to supply players and randomkey, even for games which
         // are current strictly 2 player and no-randomization.  It will make it easier when
         // later, some variant is created, or the game code base is re purposed as the basis
@@ -496,6 +496,14 @@ public class JumbulayaViewer extends CCanvas<JumbulayaCell,JumbulayaBoard> imple
     				}
     		    if(c!=null)
     		    {
+    		    if(gb.pickedFromRack)
+    		    {
+    		    	JumbulayaCell d = gb.pickedSourceStack.top();
+    		    	if(d!=null && !d.onBoard && d.topChip()==null)
+    		    	{
+    		    		c = d;
+    		    	}
+    		    }
     			highlight.hitObject = G.concat("droponrack ",c.col," ",c.row," ", idx);	
     			highlight.hitCode = JumbulayaId.Rack ;
     		    }
@@ -1320,10 +1328,10 @@ public void setLetterColor(Graphics gc,JumbulayaBoard gb,JumbulayaCell cell)
      * be warned if you do this because it is throwing an error, there are other problems
      * that need to be fixed eventually.
      */
-      //public void verifyGameRecord()
-      //{	//DISABLE_VERIFY = true;
-      //	super.verifyGameRecord();
-      //}
+public void verifyGameRecord()
+{	//DISABLE_VERIFY = true;
+	super.verifyGameRecord();
+   }
    
 /**
  * the preferred mouse gesture style is to let the user "pick up" objects

@@ -1,7 +1,6 @@
 package gobblet;
 
 import java.awt.*;
-import online.common.*;
 import online.game.*;
 import online.game.sgf.*;
 import online.search.SimpleRobotProtocol;
@@ -118,7 +117,7 @@ public class GobGameViewer extends CCanvas<GobCell,GobGameBoard> implements GobC
     public void init(ExtendedHashtable info,LFrameProtocol frame)
     {	enableAutoDone = true;
         super.init(info,frame);
-        b = new GobGameBoard(info.getString(OnlineConstants.GAMETYPE, "Gobblet"),getStartingColorMap());   
+        b = new GobGameBoard(info.getString(GAMETYPE, "Gobblet"),getStartingColorMap());   
         useDirectDrawing(true);
         doInit(false);
         

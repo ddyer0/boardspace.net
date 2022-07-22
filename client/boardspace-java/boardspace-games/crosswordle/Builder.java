@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.zip.GZIPInputStream;
 
@@ -470,21 +471,33 @@ public class Builder {
 	 static boolean loaded = false;
 	 static String crosswords_5x5_medium[] = null;
 	 static String crosswords_5x5_hard[] = null;
+	 static String crosswords_5x5_hard_only[] = null;
 	 static String CrosswordleDefinitionsDir = "/crosswordle/images/";
-	 
 
+	 private String[] difference(String main[],String remove[])
+	 {
+		 StringStack mainSet = new StringStack();
+		 HashSet<String>removeSet =new HashSet<String>();
+		 for(String str : remove) { removeSet.add(str);}
+		 for(String str :main) { if(!removeSet.contains(str)) { mainSet.addElement(str); }}
+		 String []val = mainSet.toArray();
+		 G.print("main ",main.length," remove ",remove.length," result ",val.length);
+		 return val;
+	 }
 		public void loadDefinitions()
 		{	
 			if(!loaded)
 			{
 			crosswords_5x5_medium = load("crossword-5x5-medium-complete.txt");
+			crosswords_5x5_hard = load("crossword-5x5-difficult-only.txt");
 			//wordStats(crosswords_5x5_medium,5,5);
-			crosswords_5x5_hard = load("crossword-5x5-difficult-complete.txt");
+			//crosswords_5x5_hard = load("crossword-5x5-difficult-complete.txt");
 			//wordStats(crosswords_5x5_hard,5,5);
-			
+			//crosswords_5x5_hard_only = difference(crosswords_5x5_hard,crosswords_5x5_medium);
 			//randomize and save the word list
 			//save("new-crossword-5x5-medium-complete.txt",crosswords_5x5_medium);
 			//save("new-crossword-5x5-difficult-complete.txt",crosswords_5x5_hard);
+			//save("new-crossword-5x5-difficult-only.txt",crosswords_5x5_hard_only);
 			loaded = true;
 			}
 		}

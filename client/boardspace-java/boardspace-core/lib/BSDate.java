@@ -278,4 +278,5 @@ public class BSDate extends java.util.Date
 		BSDate df = new BSDate(date);
 		return(df);
 	}
+
 }

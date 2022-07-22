@@ -4,7 +4,6 @@ import bridge.JMenu;
 import bridge.JMenuItem;
 import java.awt.*;
 
-import online.common.*;
 import java.util.*;
 import online.game.*;
 import online.game.sgf.*;
@@ -144,7 +143,7 @@ public class PalagoViewer extends CCanvas<PalagoCell,PalagoBoard> implements Pal
         zoomRect.highlightColor = HighlightColor;   
         labelColor = Color.red;
         labelFont = largeBoldFont();
-        bb = new PalagoBoard(info.getString(OnlineConstants.GAMETYPE, "Palago"),getStartingColorMap());
+        bb = new PalagoBoard(info.getString(GAMETYPE, "Palago"),getStartingColorMap());
         useDirectDrawing(true); // not tested yet
         doInit(false);
     }

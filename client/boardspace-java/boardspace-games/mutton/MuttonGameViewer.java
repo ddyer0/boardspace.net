@@ -157,7 +157,7 @@ public class MuttonGameViewer extends commonCanvas implements MuttonConstants
 		historyDisplayOption = myFrame.addOption("Display chart", true, deferredEvents);
 
 		// Create the board
-		myBoard = new MuttonGameBoard (info.getString(OnlineConstants.GAMETYPE, Mutton_INIT),
+		myBoard = new MuttonGameBoard (info.getString(GAMETYPE, Mutton_INIT),
 		                               sharedInfo.getInt(OnlineConstants. RANDOMSEED , -1));
         //useDirectDrawing(); // not tested yet
 		doInit(false);

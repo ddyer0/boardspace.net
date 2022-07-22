@@ -180,7 +180,7 @@ public class TamskViewer extends CCanvas<TamskCell,TamskBoard> implements TamskC
         	TamskConstants.putStrings();
         }
          
-        String type = info.getString(OnlineConstants.GAMETYPE, TamskVariation.tamsk.name);
+        String type = info.getString(GAMETYPE, TamskVariation.tamsk.name);
         // recommended procedure is to supply players and randomkey, even for games which
         // are current strictly 2 player and no-randomization.  It will make it easier when
         // later, some variant is created, or the game code base is re purposed as the basis
@@ -854,6 +854,9 @@ public class TamskViewer extends CCanvas<TamskCell,TamskBoard> implements TamskC
  {
 	 switch(mm.op)
 	 {
+	 case MOVE_FIFTEEN:
+		 playASoundClip(doorBell,100);
+		 break;
 	 case MOVE_DROPB:
 	 case MOVE_PICKB:
 	 case MOVE_PICK:

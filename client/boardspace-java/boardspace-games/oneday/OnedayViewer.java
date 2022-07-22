@@ -149,7 +149,7 @@ public class OnedayViewer extends CCanvas<OnedayCell,OnedayBoard> implements One
 
         int randomKey = info.getInt(OnlineConstants.RANDOMSEED,-1);
        
-        b = new OnedayBoard(info.getString(OnlineConstants.GAMETYPE, OnedayVariation.Standard.name),randomKey,players_in_game);
+        b = new OnedayBoard(info.getString(GAMETYPE, OnedayVariation.Standard.name),randomKey,players_in_game);
         //useDirectDrawing(); // not tested yet
         doInit(false);
 

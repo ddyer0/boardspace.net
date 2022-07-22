@@ -89,7 +89,7 @@ public class MorelliViewer extends CCanvas<MorelliCell,MorelliBoard> implements 
 
         int randomKey = info.getInt(OnlineConstants.RANDOMSEED,-1);
        
-        b = new MorelliBoard(info.getString(OnlineConstants.GAMETYPE, Variations.morelli_13.name),
+        b = new MorelliBoard(info.getString(GAMETYPE, Variations.morelli_13.name),
         		randomKey,players_in_game,getStartingColorMap(),MorelliBoard.REVISION);
         useDirectDrawing(true); // not tested yet
         doInit(false);

@@ -18,6 +18,7 @@ public interface CrosswordleConstants
 	static String WordsMessage = "Best Words";
 	static String PuzzleFor = "Puzzle for";
 	static String RestartMessage = "Restart";
+	static String SolvedMessage = "Solved with #1 guesses in #2";
 	enum LetterColor 
 	{ 
 	  Blank, Yellow, Green, NewYellow, NewGreen ;
@@ -66,9 +67,10 @@ public interface CrosswordleConstants
     	EyeOption,
     	Rotate,
     	Lock,
+    	SolvedMessage,
     	Definition,
     	Restart,
-    	Blank, InputField, Playword;
+    	Blank, InputField, Playword, ToggleEasy;
     	public String shortName() { return(name()); }
 
 	}

@@ -72,7 +72,7 @@ public class YinshGameViewer extends CCanvas<YinshCell,YinshBoard> implements Yi
     {	enableAutoDone = true;
         super.init(info,frame);
         
-        b = new YinshBoard(info.getString(OnlineConstants.GAMETYPE, "Yinsh"),getStartingColorMap());
+        b = new YinshBoard(info.getString(GAMETYPE, "Yinsh"),getStartingColorMap());
         useDirectDrawing(true); 
         doInit(false);
    }

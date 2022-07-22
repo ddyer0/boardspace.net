@@ -94,7 +94,7 @@ public class CarnacViewer extends CCanvas<CarnacCell,CarnacBoard> implements Car
 
         int randomKey = info.getInt(OnlineConstants.RANDOMSEED,-1);
        
-        b = new CarnacBoard(info.getString(OnlineConstants.GAMETYPE, variation.getDefault()),
+        b = new CarnacBoard(info.getString(GAMETYPE, variation.getDefault()),
         		randomKey,getStartingColorMap());
         useDirectDrawing(true);
         doInit(false);

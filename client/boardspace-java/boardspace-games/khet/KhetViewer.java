@@ -106,7 +106,7 @@ public class KhetViewer extends CCanvas<KhetCell,KhetBoard> implements  KhetCons
 
         int randomKey = info.getInt(OnlineConstants.RANDOMSEED,-1);
         int map[] = getStartingColorMap();
-        b = new KhetBoard(info.getString(OnlineConstants.GAMETYPE, Khet_Classic_Init),randomKey,map);
+        b = new KhetBoard(info.getString(GAMETYPE, Khet_Classic_Init),randomKey,map);
         if(seatingFaceToFace()) { b.autoReverseYNormal(); }
         useDirectDrawing(true);
         doInit(false);

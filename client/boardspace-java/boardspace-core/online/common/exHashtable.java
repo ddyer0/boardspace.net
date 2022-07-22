@@ -22,7 +22,7 @@ public interface exHashtable
     public static final String GAME = "game";					// the associated game object
     
 	public static final String RULES = "rules";
-	public static final String SAVE_GAME_INDEX = "gameindex";	// server index for the game, which determines the directory it is saved to
+    public static final String SAVE_GAME_INDEX = "gameindex";	// server index for the game, which determines the directory it is saved to
     /**
      * the number of real players who will connect
      */
@@ -32,20 +32,7 @@ public interface exHashtable
     public static final String COLORMAP = "colormap";
     public static final String GAMEINFO = "gameinfo";
     public static final String TIMECONTROL = "timecontrol";
-    
-    /**
-     * the scoring mode for this game.  Normal is {@link #SCORE_2} for 2 player games
-     * the alternate is {@link #SCORE_MULTI} for multiplayer games
-     */
-    public static final String SCORING_MODE = "scoringmode";
-    /**
-     * normal 2 player scoring
-     */
-    public static final int SCORE_2 = 0;
-    /**
-     * multiplayer scoring
-     */
-    public static final int SCORE_MULTI = 1;
+
     
     public static final String SPECTATOR = "spectator";
     //public static final String POSITION = "position";

@@ -2,7 +2,6 @@ package fanorona;
 
 import java.awt.*;
 
-import online.common.*;
 import online.game.*;
 import online.game.sgf.*;
 import online.search.SimpleRobotProtocol;
@@ -109,7 +108,7 @@ public class FanoronaGameViewer extends CCanvas<FanoronaCell,FanoronaBoard> impl
         super.init(info,frame);
 
          
-        b = new FanoronaBoard(info.getString(OnlineConstants.GAMETYPE, "Fanorona"),getStartingColorMap());
+        b = new FanoronaBoard(info.getString(GAMETYPE, "Fanorona"),getStartingColorMap());
         offerDrawAction = myFrame.addAction(s.get(OFFERDRAW),deferredEvents);     
         useDirectDrawing(true);
         doInit(false);

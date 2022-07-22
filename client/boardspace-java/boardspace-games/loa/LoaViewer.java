@@ -17,7 +17,6 @@ import lib.GC;
 import lib.HitPoint;
 import lib.LFrameProtocol;
 import lib.CellId;
-import online.common.OnlineConstants;
 import online.game.BoardProtocol;
 import online.game.GameLayoutClient;
 import online.game.GameLayoutManager;
@@ -363,7 +362,7 @@ public class LoaViewer extends commonCanvas implements UIC,GameLayoutClient
         super.init(stuff,frame);
         MouseDotColors = LoaMouseDotColors;
         MouseColors = LoaMouseColors;
-        b = new Loa_Board(sharedInfo.getString(OnlineConstants.GAMETYPE,"LOA"),getStartingColorMap());
+        b = new Loa_Board(sharedInfo.getString(GAMETYPE,"LOA"),getStartingColorMap());
         //useDirectDrawing(); // not tested yet
         doInit(false);
    }

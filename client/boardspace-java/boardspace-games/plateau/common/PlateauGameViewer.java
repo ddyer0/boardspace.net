@@ -7,7 +7,6 @@ import javax.swing.JCheckBoxMenuItem;
 import lib.CellId;
 import lib.ChatInterface;
 import lib.DefaultId;
-import online.common.OnlineConstants;
 
 import java.util.*;
 
@@ -160,7 +159,7 @@ public class PlateauGameViewer extends commonCanvas implements PlateauConstants
             showBoth = myFrame.addOption("Show Both Racks", false,deferredEvents);
         }
 
-        b = new PlateauBoard(info.getString(OnlineConstants.GAMETYPE, "Plateau"));
+        b = new PlateauBoard(info.getString(GAMETYPE, "Plateau"));
         // believed to be difficult 5/2022
         //useDirectDrawing(); // not tested yet
         doInit(false);

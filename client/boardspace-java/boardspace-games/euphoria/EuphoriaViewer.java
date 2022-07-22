@@ -455,7 +455,7 @@ private Color playerBackground[] = {
 
        	int players_in_game = Math.max(2,info.getInt(OnlineConstants.PLAYERS_IN_GAME,3));
        	int randomKey = info.getInt(OnlineConstants.RANDOMSEED,-1);
-        bb = new EuphoriaBoard(info.getString(OnlineConstants.GAMETYPE, Variation.Euphoria.name()),randomKey,players_in_game,getStartingColorMap(),EuphoriaBoard.REVISION);
+        bb = new EuphoriaBoard(info.getString(GAMETYPE, Variation.Euphoria.name()),randomKey,players_in_game,getStartingColorMap(),EuphoriaBoard.REVISION);
         //useDirectDrawing();
         doInit(false);      	 
     }

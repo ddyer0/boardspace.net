@@ -111,7 +111,7 @@ public class CookieViewer extends CCanvas<CookieCell,CookieBoard> implements Coo
         labelColor = Color.red;
         labelFont = largeBoldFont();
         
-        bb = new CookieBoard(info.getString(OnlineConstants.GAMETYPE, "cookie-disco"),
+        bb = new CookieBoard(info.getString(GAMETYPE, "cookie-disco"),
         		getStartingColorMap());
         useDirectDrawing(true);
         Random r = new Random(randomKey);

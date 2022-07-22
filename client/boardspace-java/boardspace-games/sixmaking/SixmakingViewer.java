@@ -93,7 +93,7 @@ public class SixmakingViewer extends CCanvas<SixmakingCell,SixmakingBoard> imple
 
         int randomKey = info.getInt(OnlineConstants.RANDOMSEED,-1);
        
-        b = new SixmakingBoard(info.getString(OnlineConstants.GAMETYPE, Variation.Sixmaking.name),
+        b = new SixmakingBoard(info.getString(GAMETYPE, Variation.Sixmaking.name),
         		randomKey,players_in_game,repeatedPositions,getStartingColorMap());
         useDirectDrawing(true);
         doInit(false);

@@ -856,6 +856,9 @@ public class TamskViewer extends CCanvas<TamskCell,TamskBoard> implements TamskC
  {
 	 switch(mm.op)
 	 {
+	 case MOVE_FIFTEEN:
+		 playASoundClip(doorBell,100);
+		 break;
 	 case MOVE_DROPB:
 	 case MOVE_PICKB:
 	 case MOVE_PICK:

@@ -16,7 +16,6 @@ import lib.HitPoint;
 import lib.LFrameProtocol;
 import lib.StockArt;
 import lib.CellId;
-import online.common.OnlineConstants;
 import online.game.BoardProtocol;
 import online.game.GameLayoutClient;
 import online.game.GameLayoutManager;
@@ -125,7 +124,7 @@ public class TraxGameViewer extends commonCanvas implements TraxConstants, GameL
         
         useClassicItem = myFrame.addOption(ClassicTileOption,false,deferredEvents);
         
-        b = new TraxGameBoard(info.getString(OnlineConstants.GAMETYPE, "Trax"),
+        b = new TraxGameBoard(info.getString(GAMETYPE, "Trax"),
         		getStartingColorMap());
         //useDirectDrawing(); // not tested yet
         doInit(false);

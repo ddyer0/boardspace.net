@@ -93,7 +93,7 @@ public class ModxViewer extends CCanvas<ModxCell,ModxBoard> implements ModxConst
 
         int randomKey = info.getInt(OnlineConstants.RANDOMSEED,-1);
        
-        b = new ModxBoard(info.getString(OnlineConstants.GAMETYPE, Variation.Modx.name),
+        b = new ModxBoard(info.getString(GAMETYPE, Variation.Modx.name),
         		randomKey,players_in_game,repeatedPositions,getStartingColorMap(),ModxBoard.REVISION);
         useDirectDrawing(true);
         doInit(false);

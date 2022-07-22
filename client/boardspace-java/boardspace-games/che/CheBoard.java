@@ -200,7 +200,7 @@ class CheBoard extends rectBoard<CheCell> implements BoardProtocol,CheConstants
         getCell(droppedDestStack,from_b.droppedDestStack);
         getCell(pickedSourceStack,from_b.pickedSourceStack);
         stackIndex = from_b.stackIndex;
-        pickedObject = null;
+        pickedObject = from_b.pickedObject;
         lastPicked = null;
         robotDepth = from_b.robotDepth;
         board_state = from_b.board_state;

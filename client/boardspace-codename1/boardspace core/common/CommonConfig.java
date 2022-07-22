@@ -52,13 +52,15 @@ public interface CommonConfig {
 	static final String[] BlacklistedDataFiles = {"euphoria-recruits.res"};
 	
     public static final String guestName = "guest";
-    // bs_uni1 had just the basic scoring
     // bs_uni2 adds master scoring
     // bs_uni3 adds ladder scoring
     static final String recordKeeperURL = "/cgi-bin/bs_uni3.cgi";
     // bs_uni4 is used for 3-6 player scoring
     // bs_uni5 adds ladder scoring
     static final String recordKeeper4URL = "/cgi-bin/bs_uni5.cgi";
+    // bs_uni1 is a new script used for crosswordle, and probably other 1 player games
+    static final String recordKeeper1URL = "/cgi-bin/bs_uni1.cgi";
+    
     static final String LANGUAGECLASS = "online.language.";
 	static final String DefaultLanguageName = "english";
 	static final String DefaultLanguageClass = LANGUAGECLASS + DefaultLanguageName + "Strings";

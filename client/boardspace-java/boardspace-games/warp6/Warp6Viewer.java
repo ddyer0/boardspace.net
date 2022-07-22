@@ -85,7 +85,7 @@ public class Warp6Viewer extends CCanvas<Warp6Cell,Warp6Board> implements Warp6C
         MouseDotColors = Warp6MouseDotColors;
         int randomKey = sharedInfo.getInt(OnlineConstants.RANDOMSEED,-1);
 
-        b = new Warp6Board(randomKey,info.getString(OnlineConstants.GAMETYPE, Warp6_Standard_Init),
+        b = new Warp6Board(randomKey,info.getString(GAMETYPE, Warp6_Standard_Init),
         		getStartingColorMap());
         useDirectDrawing(true); // not tested yet
         doInit(false);

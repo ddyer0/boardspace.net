@@ -120,7 +120,7 @@ static String SWOOSH = ImageDir + "swoosh"+ Config.SoundFormat;
         MouseColors  = ViticultureMouseColors;
         MouseDotColors = ViticultureMouseDotColors;
          
-        String type = info.getString(OnlineConstants.GAMETYPE, ImagineVariation.Imagine.name);
+        String type = info.getString(GAMETYPE, ImagineVariation.Imagine.name);
         // recommended procedure is to supply players and randomkey, even for games which
         // are current strictly 2 player and no-randomization.  It will make it easier when
         // later, some variant is created, or the game code base is re purposed as the basis

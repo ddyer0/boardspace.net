@@ -117,7 +117,7 @@ public class QuinamidViewer extends CCanvas<QuinamidCell,QuinamidBoard> implemen
         	row += r.nextInt()&1;
         	key += col+""+row;
         }
-        b = new QuinamidBoard(info.getString(OnlineConstants.GAMETYPE, Quinamid_INIT),
+        b = new QuinamidBoard(info.getString(GAMETYPE, Quinamid_INIT),
         		key,getStartingColorMap());
         useDirectDrawing(true); // not tested yet
         doInit(false);

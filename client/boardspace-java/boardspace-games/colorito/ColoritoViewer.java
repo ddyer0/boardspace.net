@@ -104,7 +104,7 @@ public class ColoritoViewer extends CCanvas<ColoritoCell,ColoritoBoard> implemen
 
         int randomKey = info.getInt(OnlineConstants.RANDOMSEED,-1);
        
-        b = new ColoritoBoard(info.getString(OnlineConstants.GAMETYPE, Variation.Colorito_10.name),randomKey,
+        b = new ColoritoBoard(info.getString(GAMETYPE, Variation.Colorito_10.name),randomKey,
         		players_in_game,repeatedPositions,getStartingColorMap());
         useDirectDrawing(true);
         doInit(false);

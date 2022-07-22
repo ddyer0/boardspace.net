@@ -5,7 +5,6 @@ import java.awt.Color;
 import lib.Graphics;
 import lib.Image;
 
-import online.common.*;
 
 import online.game.*;
 import online.game.sgf.*;
@@ -101,7 +100,7 @@ public class KubaViewer extends CCanvas<KubaCell,KubaBoard> implements  KubaCons
     {
         super.init(info,frame);
         
-        b = new KubaBoard(info.getString(OnlineConstants.GAMETYPE, "Traboulet"),
+        b = new KubaBoard(info.getString(GAMETYPE, "Traboulet"),
         		getStartingColorMap());
         useDirectDrawing(true); 	// not tested yet
         doInit(false);

@@ -109,7 +109,7 @@ public class MedinaViewer extends CCanvas<MedinaCell,MedinaBoard> implements Med
         MouseColors = MedinaMouseColors;
         MouseDotColors = MedinaMouseDotColors;
         int randomKey = info.getInt(OnlineConstants.RANDOMSEED,-1);
-        String game = info.getString(OnlineConstants.GAMETYPE, Variation.Medina_V1.shortName);
+        String game = info.getString(GAMETYPE, Variation.Medina_V1.shortName);
         b = new MedinaBoard(game,randomKey,players_in_game,getStartingColorMap(),MedinaBoard.REVISION);
         //useDirectDrawing(); // not tested yet
         doInit(false);

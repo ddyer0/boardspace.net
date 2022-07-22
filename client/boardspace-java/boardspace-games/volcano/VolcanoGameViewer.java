@@ -86,7 +86,7 @@ public class VolcanoGameViewer extends CCanvas<VolcanoCell,VolcanoBoard> impleme
         super.init(info,frame);
         int randomKey = sharedInfo.getInt(OnlineConstants.RANDOMSEED,-1);
 
-        b = new VolcanoBoard(randomKey,info.getString(OnlineConstants.GAMETYPE, "volcano"));
+        b = new VolcanoBoard(randomKey,info.getString(GAMETYPE, "volcano"));
         useDirectDrawing(true); 
         doInit(false);
         

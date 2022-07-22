@@ -97,7 +97,7 @@ public class ProteusViewer extends CCanvas<ProteusCell,ProteusBoard> implements 
 
         int randomKey = info.getInt(OnlineConstants.RANDOMSEED,-1);
        
-        b = new ProteusBoard(info.getString(OnlineConstants.GAMETYPE, Variation.Proteus.name()),
+        b = new ProteusBoard(info.getString(GAMETYPE, Variation.Proteus.name()),
         		randomKey,players_in_game,getStartingColorMap(),ProteusBoard.REVISION);
         useDirectDrawing(true); 
         doInit(false);

@@ -117,7 +117,7 @@ public class XiangqiViewer extends CCanvas<XiangqiCell,XiangqiBoard> implements 
     	MouseDotColors = XiangqiMouseDotColors;
     	MouseColors = XiangqiMouseColors;
     	
-        b = new XiangqiBoard(info.getString(OnlineConstants.GAMETYPE, Xiangqi_INIT),randomKey,
+        b = new XiangqiBoard(info.getString(GAMETYPE, Xiangqi_INIT),randomKey,
         		repeatedPositions,getStartingColorMap());
         useDirectDrawing(true);
         doInit(false);

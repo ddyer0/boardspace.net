@@ -3,11 +3,15 @@ package lib;
 import java.util.Map;
 import java.util.TreeMap;
 
+import common.GameInfo;
+import online.common.OnlineConstants;
+import online.common.exHashtable;
+
 /*
  * an optionally case insensitive hashmap 
  */
 
-public class ExtendedHashtable extends TreeMap<String,Object>
+public class ExtendedHashtable extends TreeMap<String,Object> implements OnlineConstants
 {
 	/**
 	 * reworked 6/2020 to use TreeMap instead of Hashtable, so the .toLowerCase() in get(x) could be 
@@ -196,6 +200,22 @@ public class ExtendedHashtable extends TreeMap<String,Object>
             if(s instanceof String) { return((String)s); }
             throw G.Error("No string value for %s for key %s",s,key);
         }
+      
+      // put this the one place so we always get the same answer
+      public GameInfo getGameInfo()
+      {
+    	  GameInfo info = (GameInfo)get(exHashtable.GAMEINFO);
+          if(info==null)
+          {
+          	info = GameInfo.findByName(getString(GAMETYPE ,getString(GAMENAME,null)));
+          	setGameInfo(info);
+          }
+          return info;
+      }
+      public void setGameInfo(GameInfo gi)
+      {
+    	  put(exHashtable.GAMEINFO,gi);
+      }
     /**
      * put a string value, error if already present or if value is null
      * @param key

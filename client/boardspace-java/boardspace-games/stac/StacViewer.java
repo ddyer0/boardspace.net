@@ -91,7 +91,7 @@ public class StacViewer extends CCanvas<StacCell,StacBoard> implements StacConst
 
         int randomKey = info.getInt(OnlineConstants.RANDOMSEED,-1);
        
-        b = new StacBoard(info.getString(OnlineConstants.GAMETYPE, Variation.Stac.name),
+        b = new StacBoard(info.getString(GAMETYPE, Variation.Stac.name),
         		randomKey,players_in_game,repeatedPositions,getStartingColorMap(),StacBoard.REVISION);
         useDirectDrawing(true);
         doInit(false);

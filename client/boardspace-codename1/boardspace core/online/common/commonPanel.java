@@ -394,12 +394,8 @@ public class commonPanel extends FullscreenPanel
 
         if ((can == null) && !chatOnly )
         {
-        String name = extendedHashtable.getString(GAMENAME,null);
-        //G.print("Name is "+name);
-        GameInfo gameinfo = null;
-        if(name!=null) {gameinfo = GameInfo.findByName(name); }
-        if(gameinfo==null) { gameinfo = GameInfo.findByDirectory(sharedInfo.getInt(exHashtable.SAVE_GAME_INDEX,-1)); }
-        String defaultclass = (gameinfo==null) ? "" : gameinfo.viewerClass;
+        GameInfo gameinfo = sharedInfo.getGameInfo();
+        String defaultclass = gameinfo==null ? "" : gameinfo.viewerClass;
         String classname = extendedHashtable.getString(OnlineConstants.VIEWERCLASS,defaultclass);
         if(gameinfo!=null )
         {	// this is to assure that games started directly, without going through

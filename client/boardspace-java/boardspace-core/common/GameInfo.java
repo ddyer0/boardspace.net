@@ -85,6 +85,8 @@ public class GameInfo implements lib.CompareTo<GameInfo>,LobbyConstants
 		Hive,
 	};
 	
+	public enum ScoringMode { SM_Normal, SM_Multi, SM_Single }
+	
 	public enum ES 
 		{
 		disabled, 	// only presented in debug environments
@@ -123,8 +125,21 @@ public class GameInfo implements lib.CompareTo<GameInfo>,LobbyConstants
 	public String howToVideo = null;
 	public String rules = null;
 	public String longMessage = null;
-	
-	
+
+	private ScoringMode scoringMode = null;
+	public ScoringMode scoringMode()
+	{
+		if(scoringMode==null)
+		{
+			switch(maxPlayers)
+			{
+			case 1: scoringMode = ScoringMode.SM_Single; break;
+			case 2: scoringMode = ScoringMode.SM_Normal; break;
+			default: scoringMode = ScoringMode.SM_Multi; break;
+			}
+		}
+		return scoringMode;
+	}
 	public boolean fixedColorMap()
 	{
 		return((maxPlayers==2) && colorMap!=null && !variableColorMap);

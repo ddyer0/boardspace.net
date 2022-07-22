@@ -206,7 +206,7 @@ public void ViewerRun(int wait)
         censorship = !mutable_game_record;
         censorshipOption = myFrame.addOption("censorship",censorship,deferredEvents);
         
-        String type = info.getString(OnlineConstants.GAMETYPE, QEVariation.qe.name);
+        String type = info.getString(GAMETYPE, QEVariation.qe.name);
         // recommended procedure is to supply players and randomkey, even for games which
         // are current strictly 2 player and no-randomization.  It will make it easier when
         // later, some variant is created, or the game code base is re purposed as the basis

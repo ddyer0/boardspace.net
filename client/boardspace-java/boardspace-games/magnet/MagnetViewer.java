@@ -159,7 +159,7 @@ public class MagnetViewer extends CCanvas<MagnetCell,MagnetBoard> implements Mag
         }
          
 
-        String type = info.getString(OnlineConstants.GAMETYPE, MagnetVariation.magnet.name);
+        String type = info.getString(GAMETYPE, MagnetVariation.magnet.name);
         // recommended procedure is to supply players and randomkey, even for games which
         // are current strictly 2 player and no-randomization.  It will make it easier when
         // later, some variant is created, or the game code base is re purposed as the basis

@@ -168,7 +168,8 @@ public class GC {
 	     	}
 	     }
 
-	public static Rectangle getStringBounds(Graphics g, FontMetrics fm, String line, int firstChar, int lastChar) {
+	public static Rectangle getStringBounds(Graphics g, FontMetrics fm, String line, int firstChar, int lastChar)
+	{
 		Rectangle2D d = Graphics.getStringBounds(g, fm, line, firstChar, lastChar);
 			return(new Rectangle((int)d.getX(),(int)d.getY(),(int)d.getWidth(),(int)d.getHeight()));
 		}

@@ -98,7 +98,7 @@ public class CheckerGameViewer extends CCanvas<CheckerCell,CheckerBoard> impleme
 
         int randomKey = info.getInt(OnlineConstants.RANDOMSEED,-1);
        
-        b = new CheckerBoard(info.getString(OnlineConstants.GAMETYPE, Variation.Checkers_10.name),randomKey,players_in_game,
+        b = new CheckerBoard(info.getString(GAMETYPE, Variation.Checkers_10.name),randomKey,players_in_game,
         			repeatedPositions,getStartingColorMap(),CheckerBoard.REVISION);
         useDirectDrawing(true);
         doInit(false);

@@ -16,10 +16,10 @@ public class CrosswordleMovespec extends commonMPMove implements CrosswordleCons
     static final int MOVE_PICKB = 206; // pick from the board
     static final int MOVE_DROPB = 207; // drop on the board
     static final int MOVE_SELECT = 208;	// select value for a blank
-    static final int MOVE_SHOW = 210;		// show tiles for a player
     static final int MOVE_PLAYWORD = 211;	// play a word from the rack
-    static final int MOVE_SEE = 212;		// see tiles on the hidden rack
-   
+    static final int MOVE_RESTART = 213;	// restart a game
+    static final int MOVE_SETWORD = 214;	// set the word being typed
+       
     static
     {	// load the dictionary
         // these int values must be unique in the dictionary
@@ -29,9 +29,9 @@ public class CrosswordleMovespec extends commonMPMove implements CrosswordleCons
         	"Drop", MOVE_DROP,
         	"Dropb", MOVE_DROPB,
         	"SetBlank", MOVE_SELECT,
-        	"Show", MOVE_SHOW,
         	"Play",MOVE_PLAYWORD,
-        	"See", MOVE_SEE
+        	"Restart",MOVE_RESTART,
+        	"Setword",MOVE_SETWORD
         	);
   }
     //
@@ -177,8 +177,14 @@ public class CrosswordleMovespec extends commonMPMove implements CrosswordleCons
         case MOVE_UNKNOWN:
         	throw G.Error("Cant parse " + cmd);
         case MOVE_PLAYWORD:
-         	word = msg.nextToken();
+        case MOVE_SETWORD:
+         	word = msg.hasMoreTokens() ? msg.nextToken() : "";
         	break;
+        case MOVE_RESTART:
+        	to_row = G.IntToken(msg);
+        	from_row = G.BoolToken(msg)?1:0;
+        	break;
+        	
         case MOVE_DROPB:
         	dest = CrosswordleId.BoardLocation;
         	to_col = G.CharToken(msg);
@@ -212,15 +218,6 @@ public class CrosswordleMovespec extends commonMPMove implements CrosswordleCons
             player = D.getInt(msg.nextToken());
 
             break;
-        case MOVE_SHOW:
-        case MOVE_SEE:
-        	{
-        	char pl = G.CharToken(msg);
-        	boolean v = G.BoolToken(msg);
-        	to_col = pl;
-        	to_row = v ? 1 : 0;
-        	}
-        	break;
         default:
   
             break;
@@ -259,12 +256,12 @@ public class CrosswordleMovespec extends commonMPMove implements CrosswordleCons
 		case MOVE_SELECT:
         	return TextChunk.create("= "+to_col);
         case MOVE_DROP:
-        case MOVE_SHOW:
-        case MOVE_SEE:
         case MOVE_PICK:
         case MOVE_DONE:
             return TextChunk.create("");
         default:
+        case MOVE_SETWORD:
+        case MOVE_RESTART:
             return TextChunk.create(D.findUniqueTrans(op));
 
         }
@@ -291,16 +288,16 @@ public class CrosswordleMovespec extends commonMPMove implements CrosswordleCons
         case MOVE_PICK:
         	 return G.concat(opname,dest.name()," ",to_col," ",to_row);
         	 
-
+        case MOVE_RESTART:
+        	return G.concat(opname," ",to_row,(from_row==0 ? " false":" true"));
+        	
+        case MOVE_SETWORD:
         case MOVE_PLAYWORD:
         	return G.concat(opname,word);
         case MOVE_START:
             return G.concat(ind,"Start P",player);
         case MOVE_SELECT:
         	return G.concat(opname,to_col);
-        case MOVE_SEE:
-        case MOVE_SHOW:
-        	return G.concat(opname,to_col,((to_row==0)?" false" : " true"));
         	
         default:
             return G.concat(opname);
