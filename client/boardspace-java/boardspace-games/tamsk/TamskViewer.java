@@ -205,12 +205,8 @@ public class TamskViewer extends CCanvas<TamskCell,TamskBoard> implements TamskC
         bb.doInit(bb.gametype);						// initialize the board
         if(!preserve_history)
     	{ 
-        	// the color determines the first player
-        	PerformAndTransmit(EDIT,false,replayMode.Live);
-        	if(!reviewOnly && ourActiveMove()) 
-        		{ PerformAndTransmit("Start P0"); 
-        		}
-    	}
+        	startFirstPlayer();
+        }
     }
     /** this is called by the game controller when all players have connected
      * and the first player is about to be allowed to make his first move. This

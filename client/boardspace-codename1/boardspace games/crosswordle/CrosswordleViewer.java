@@ -1363,5 +1363,9 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
     	firstPuzzle = "false";
     	return v;
     }
+    public void doGameTest()
+    {	Builder.getInstance().generateCrosswords(G.Date(),bb.ncols,bb.nrows);
+    }
+   
 }
 

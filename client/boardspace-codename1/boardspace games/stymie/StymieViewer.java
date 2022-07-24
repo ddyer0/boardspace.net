@@ -712,7 +712,7 @@ public class StymieViewer extends CCanvas<StymieCell,StymieBoard> implements Sty
 			else {
 				if(bb.isASource(dest))
 				{
-					while(bb.isASource(dest)) { PerformAndTransmit("AllowUndo"); }
+					while(bb.isASource(dest)) { PerformAndTransmit(UNDO_ALLOW); }
 				}
 
 				

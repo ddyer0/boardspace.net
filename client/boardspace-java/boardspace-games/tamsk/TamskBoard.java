@@ -230,7 +230,7 @@ class TamskBoard
 	}
 
 	public long extraTime(long now)
-	{
+	{	if(masterClockTime==0) { masterClockTime = now; }
 		if(timeRunning) { return now-masterClockTime; }
 		else { return 0; }
 	}

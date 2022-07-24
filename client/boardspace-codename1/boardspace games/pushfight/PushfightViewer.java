@@ -672,7 +672,7 @@ public class PushfightViewer extends CCanvas<PushfightCell,PushfightBoard> imple
 	        if(bb.getState()==PushfightState.Confirm)
 	        {
 	        	hitCell = bb.getSource();
-	        	PerformAndTransmit("AllowUndo");	// use undo to do the complicated un-push
+	        	PerformAndTransmit(UNDO_ALLOW);	// use undo to do the complicated un-push
 	        }
 	    	PerformAndTransmit("Pickb "+(char)(hitCell.col-1)+" "+hitCell.row);
 	    	break;

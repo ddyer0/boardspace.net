@@ -125,7 +125,7 @@ public class GameInfo implements lib.CompareTo<GameInfo>,LobbyConstants
 	public String howToVideo = null;
 	public String rules = null;
 	public String longMessage = null;
-
+	public boolean distinctVariations = false;		// if true, expand the variations list for this game in review rooms
 	private ScoringMode scoringMode = null;
 	public ScoringMode scoringMode()
 	{
@@ -283,7 +283,7 @@ public class GameInfo implements lib.CompareTo<GameInfo>,LobbyConstants
 				)
 				{ included.addElement(info);
 				  if(reviewdir==-1) { reviewdir = info.dirNum; }
-				  sameReviewDir &= (reviewdir==info.dirNum);
+				  sameReviewDir &= (reviewdir==info.dirNum) && !info.distinctVariations;
 				}
 		}
 		if((playercount==0) && sameReviewDir) { return(null); }	// no variations menu needed
@@ -1173,7 +1173,7 @@ synchronized(allGames) {
 	 mm.robotTimed = true;
 	 mm.randomizeFirstPlayer = true;
 	 mm.hasHiddenInformation = false;
-
+	 mm.distinctVariations = true;
 	 mm = put(new GameInfo(222,ES.test,110,"CW",WordGames,"Crosswordle","Crosswordle-66",
 				NoBots,
 				new double[]{0.1,1.0,1.0,0.01},
@@ -1186,7 +1186,7 @@ synchronized(allGames) {
 		 mm.randomizeFirstPlayer = true;
 		 mm.hasHiddenInformation = false;
 
-		  mm = put(new GameInfo(2203,ES.test,110,"CW",WordGames,"Crosswordle","Crosswordle-65",
+		  mm = put(new GameInfo(2203,ES.game,110,"CW",WordGames,"Crosswordle","Crosswordle-65",
 					NoBots,
 					new double[]{0.1,1.0,1.0,0.01},
 					pViewer,pRules,
@@ -1764,7 +1764,7 @@ synchronized(allGames) {
 		hiveVideo,false, WhiteOverBlack));
 		g.robotTimed = true;
 		g.groupSortKey = "00097";
-		
+		g.distinctVariations = true;
 		g = put(new GameInfo(HIVE_REVISION+630,ES.game,8,"HV",Hive,"Hive","Hive-M",
 			TwoBotsPlus,
 			hiveBots,

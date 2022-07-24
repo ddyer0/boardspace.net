@@ -96,6 +96,13 @@ public class Builder {
 	  * 				5094 for 35000 few solutions
 	  * 				5526 for 45000 few solutions
 	  */
+	 /*
+	  * for 6x5 , vocab 45000, horizontal word list is 5526, vertical word list is 4216
+	  * and about 1000 puzzles are available (random search) 1615 complete
+	  * 
+	  * vocab 35000, horizontal word list is 5094, vertical word list is 3889
+	  * exactly 708 puzzles available
+	  */
 	 
 	 /**
 	  * generate a puzzle based on the seed, nc and nr
@@ -194,15 +201,13 @@ public class Builder {
 	
 	public String[] getPuzzleList(int cols,int rows,boolean hard)
 	{
-		switch(cols)
-		{
-		default: break;
-		case 5:
-			switch(rows)
+		switch(cols*rows)
 			{
 			default: break;
-			case 5:	return hard ? crosswords_5x5_hard : crosswords_5x5_medium;
-			}
+		case 25:
+			return hard ? crosswords_5x5_hard : crosswords_5x5_medium;
+		case 30: 
+			return hard ? crosswords_6x5_hard : crosswords_6x5_medium;
 		}
 		return null;
 	}
@@ -473,9 +478,12 @@ public class Builder {
 	 static String crosswords_5x5_medium[] = null;
 	 static String crosswords_5x5_hard[] = null;
 	 static String crosswords_5x5_hard_only[] = null;
+	 static String crosswords_6x5_medium[] = null;
+	 static String crosswords_6x5_hard[] = null;
+	 
 	 static String CrosswordleDefinitionsDir = "/crosswordle/images/";
 	 
-	 @SuppressWarnings("unused")
+	@SuppressWarnings("unused")
 	private String[] difference(String main[],String remove[])
 	 {
 		 StringStack mainSet = new StringStack();
@@ -490,8 +498,16 @@ public class Builder {
 		{	
 			if(!loaded)
 			{
-			crosswords_5x5_medium = load("crossword-5x5-medium-complete.txt");
-			crosswords_5x5_hard = load("crossword-5x5-difficult-only.txt");
+			crosswords_5x5_medium = load("crossword-5x5-medium-complete.txt.gz");
+			crosswords_5x5_hard = load("crossword-5x5-difficult-only.txt.gz");
+			crosswords_6x5_medium = load("crossword-6x5-medium.txt.gz");
+			
+			crosswords_6x5_hard = load("crossword-6x5-hard.txt.gz");
+			
+			//save("new-crossword-6x5-medium-complete.txt",crosswords_6x5_medium);
+			//String hard_only[] = difference(crosswords_6x5_hard,crosswords_6x5_medium);
+			//save("new-crossword-6x5-hard-only.txt",hard_only);
+			
 			//wordStats(crosswords_5x5_medium,5,5);
 			//crosswords_5x5_hard = load("crossword-5x5-difficult-complete.txt");
 			//wordStats(crosswords_5x5_hard,5,5);

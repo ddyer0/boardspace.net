@@ -717,6 +717,7 @@ public abstract class commonCanvas extends exCanvas
 	    private JMenuItem saveCollection = null;
 	    private JMenuItem replayCollection = null;
 	    private JMenuItem replayFolder = null;
+	    private JMenuItem gameTest = null;
 	    private boolean loadGameNeeded = false;
 	    private boolean saveGameNeeded = false;
 	    private boolean saveCollectionNeeded = false;
@@ -947,6 +948,10 @@ public abstract class commonCanvas extends exCanvas
 	        else if (target== replayFolder)
 	        {
 	        	replayFolderNeeded = true;
+	        }
+	        else if (target== gameTest)
+	        {
+	        	doGameTest();
 	        }
 	        else if (target==treeViewerMenu)
 	        {
@@ -3016,7 +3021,8 @@ public abstract class commonCanvas extends exCanvas
     				}
     		}
     		return(true);
-    	case HitPleaseUndoButton:
+       	case HitPleaseUndoButton:
+      	case HitUndoButton:
        	case HitResignButton:
     	case HitEditButton:
      	case HitStartP1Button:
@@ -3028,7 +3034,6 @@ public abstract class commonCanvas extends exCanvas
      	case HitPassButton:
      	case HitSwapButton:
        	case HitDoneButton:
-       	case HitUndoButton:
        	case HitOfferDrawButton:
        	case HitDeclineDrawButton:
        	case HitAcceptDrawButton:
@@ -3036,7 +3041,8 @@ public abstract class commonCanvas extends exCanvas
     		break;
 
     	}}
-    	if(msg!=null) { PerformAndTransmit(msg); return(true); }
+    	if(msg!=null) 
+    	{ PerformAndTransmit(msg); return(true); }
     	return(false);
     }
     
@@ -3455,7 +3461,7 @@ public abstract class commonCanvas extends exCanvas
     /**
      * Undo 1 game step.
      * don't call this directly from game code - your game history will get out of sync.
-     * instead use PerformAndTransmit("AllowUndo");  You may supersede or wrap it to 
+     * instead use PerformAndTransmit(UNDO_ALLOW);  You may supersede or wrap it to 
      * change behavior.
      */
     public void doUndoStep()
@@ -4669,6 +4675,7 @@ public abstract class commonCanvas extends exCanvas
         	l.debugSwitch = myFrame.addOption("debug",G.debug(),deferredEvents);
         	l.copyBoardSwitch = myFrame.addOption("allow drawing to board copy",l.enableCopyBoard,deferredEvents);
         	l.debugOnceSwitch = myFrame.addOption("debug once", false,deferredEvents);
+    		hidden.gameTest = myFrame.addAction("In game test",deferredEvents);
         	l.layoutAction = myFrame.addAction("check layouts",deferredEvents);
            	hidden.saveGame = myFrame.addAction("Save Single Game",deferredEvents); 
            	if(viewer) 
@@ -8495,4 +8502,5 @@ public void verifyGameRecord()
 		public boolean mandatoryDoneState() { return OurMove() && getBoard().DoneState(); }
 		public void sendDone() { PerformAndTransmit("Done"); }
 		public boolean autoDoneActive() { return autoDone  && !reviewMode(); }
+		public void doGameTest() { }
 }
