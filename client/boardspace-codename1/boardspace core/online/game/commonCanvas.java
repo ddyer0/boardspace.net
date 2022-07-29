@@ -24,6 +24,7 @@ import online.common.LaunchUserStack;
 import online.common.OnlineConstants;
 import online.common.SeatingChart;
 import online.common.SeatingChart.DefinedSeating;
+import online.common.Session;
 import online.common.commonPanel;
 import online.common.exCanvas;
 import online.common.exHashtable;
@@ -234,8 +235,6 @@ public abstract class commonCanvas extends exCanvas
 	
 		private boolean drawingGameOverlay = false;
 	    private boolean deferWarningSent = false;
-	    private boolean unrankedMode = false;
-	    private boolean masterMode = false;
 	    private boolean tournamentMode = false;
 	    
 	    private long lastMouseTime = 0;
@@ -2896,7 +2895,7 @@ public abstract class commonCanvas extends exCanvas
    * @return
    */
   public boolean allowRobotUndo()
-  {	if(l.unrankedMode && !l.tournamentMode) { return(true); }
+  {	if((gameMode==Session.Mode.Unranked_Mode) && !l.tournamentMode) { return(true); }
 	BoardProtocol b = getBoard();
   	int nplayers = b!=null ? b.nPlayers() : 0;
   	return(nplayers>2);
@@ -2906,7 +2905,7 @@ public abstract class commonCanvas extends exCanvas
    * @return true if it is ok
    */
   public boolean allowOpponentUndoNow() 
-  { return( !(l.masterMode|l.tournamentMode));
+  { return( !((gameMode==Session.Mode.Master_Mode)|l.tournamentMode));
   }
   
   /**
@@ -4502,10 +4501,25 @@ public abstract class commonCanvas extends exCanvas
              	{
                 History.viewStep = hs;
              	}}
-            if(newmove!=originalnewmove) { newmove.setElapsedTime(originalnewmove.elapsedTime()); }
+             // be careful to preserve the elapsedtime that might have
+             // originally been recorded on a variaiton we are re-entering
+             if(newmove!=originalnewmove && newmove.elapsedTime()<=0)
+            	{ newmove.setElapsedTime(originalnewmove.elapsedTime()); }
         }
         return(newmove!=null);
     }
+    /* hack to verify that the entire tree has times associated
+    private void verify(commonMove m,String w)
+    {
+    	G.Assert(m.op==MOVE_START || m.elapsedTime()>0,"no "+w);
+    	if(m.next!=null) { verify(m.next,w); }
+    	int n = m.nVariations();
+    	for(int i=0;i<n;i++)
+    	{
+    		verify(m.getVariation(i),w);
+    	}
+    }
+    */
     public boolean singlePlayer() 
     {	int nPlayers = sharedInfo.getInt(OnlineConstants.PLAYERS_IN_GAME,0);
     	return ( (nPlayers<2) || 
@@ -4613,6 +4627,7 @@ public abstract class commonCanvas extends exCanvas
     private TimeControl futureTimeControl = new TimeControl(TimeControl.Kind.None);
     public TimeControl timeControl() { return(timeControl); }
     public String datePlayed = "";
+    Session.Mode gameMode = Session.Mode.Game_Mode;
     // general initialization
     public void init(ExtendedHashtable info,LFrameProtocol frame)
     {
@@ -4622,8 +4637,7 @@ public abstract class commonCanvas extends exCanvas
         timeControl = tc;
         futureTimeControl = tc.copy();
         datePlayed = "";
-        l.unrankedMode = info.getBoolean(exHashtable.UNRANKEDMODE,false);
-        l.masterMode = info.getBoolean(exHashtable.MASTERMODE,false);
+        gameMode = Session.Mode.findMode(info.getString(exHashtable.MODE,gameMode.modeName));
         l.tournamentMode = info.getBoolean(exHashtable.TOURNAMENTMODE,false);
 
         Random.setNextIntCompatibility(false);
@@ -4637,7 +4651,7 @@ public abstract class commonCanvas extends exCanvas
         if(gameInfo!=null) {  myFrame.setTitle(gameInfo.gameName);}
         myFrame.setIconAsImage(gameIcon);
         
-        hidden.controlToken = use_grid = mutable_game_record = allowed_to_edit = reviewOnly = sharedInfo.getBoolean(Config.REVIEWONLY);
+        hidden.controlToken = use_grid = mutable_game_record = allowed_to_edit = reviewOnly = (gameMode==Session.Mode.Review_Mode);
         mutated_game_record = false;
         l.playTickTockSounds = Config.Default.getBoolean(Config.Default.ticktock);
         gridOption = myFrame.addOption(s.get(ShowGridAction), use_grid,deferredEvents);

@@ -43,4 +43,9 @@ public class SystemDate extends Date
 	{	calendar.set(java.util.Calendar.MONTH,t);
 		setTime(calendar.getTime().getTime());
 	}
+	
+	public void setHours(int n)
+	{
+		calendar.set(java.util.Calendar.HOUR,n);
+	}
 }

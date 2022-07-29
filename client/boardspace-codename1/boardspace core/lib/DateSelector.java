@@ -142,6 +142,8 @@ public class DateSelector extends Rectangle implements ActionListener
 		if(menu.selectMenuTarget(target))
 		{	changed = true;
 			int m = menu.value;
+			date.setHours(0);	// changing the date. set hours to 0 to avoid
+								// timezone problems.
 			switch(selection)
 			{ case Year: date.setYear(m-1900); break; 
 			case Month: date.setMonth(m); break;

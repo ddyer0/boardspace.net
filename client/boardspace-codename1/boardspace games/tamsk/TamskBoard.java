@@ -1180,9 +1180,6 @@ class TamskBoard
         default:
         	throw G.Error("Not expecting Legal Hit state " + board_state);
         case Play:
-        	// for pushfight, you can pick up a stone in the storage area
-        	// but it's really optional
-        	return(player==whoseTurn);
         case Confirm:
 		case Resign:
 		case Gameover:
@@ -1359,7 +1356,10 @@ class TamskBoard
 						c = null;	// skip
 						}
 				}
-				if(c!=null && (!requireEmpty || c.height()==0) && !(requireLive && timer.isExpired(now)))
+				if(c!=null
+						&& c.onBoard
+						&& (!requireEmpty || c.height()==0) 
+						&& !(requireLive && timer.isExpired(now)))
 				{
 					some |= addMovesFrom(all,getCell(c.col,c.row),who);
 				}

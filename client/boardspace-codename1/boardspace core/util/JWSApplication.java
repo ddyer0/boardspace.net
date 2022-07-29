@@ -9,6 +9,7 @@ import lib.Http;
 import lib.OfflineGames;
 import lib.RootAppletProtocol;
 import lib.SoundManager;
+import online.common.OnlineConstants;
 import udp.UDPService;
 import vnc.VNCService;
 
@@ -122,7 +123,6 @@ public class JWSApplication implements Config
 					}
 			}
 			String serverName = G.getString(SERVERNAME,DEFAULT_SERVERNAME);
-			boolean review = G.getBoolean(REVIEWONLY,false);
 			//System.out.println("Servername "+serverName);
 			G.print("Screen: ",G.screenSize()," = ",G.screenDiagonal());
 			G.print("w ",G.getScreenWidth()," h ",G.getScreenHeight()," dpi ",G.getRealScreenDPI()," ppi ",G.getPPI()," scale ",G.getDisplayScale());
@@ -136,7 +136,7 @@ public class JWSApplication implements Config
 			if(lang!=null) { G.putGlobal(G.LANGUAGE,lang); }
 	    	Http.setHostName(serverName);
 	    	DataCache.construct();
-	        if(!review)
+	        if(G.getString(OnlineConstants.VIEWERCLASS,null)==null)
 	        {	boolean isTable = G.isTable();
 			  	G.setOffline(isTable);
 

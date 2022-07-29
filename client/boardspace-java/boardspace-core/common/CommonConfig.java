@@ -60,7 +60,7 @@ public interface CommonConfig {
     // bs_uni5 adds ladder scoring
     static final String recordKeeper4URL = "/cgi-bin/bs_uni5.cgi";
     // bs_uni1 is a new script used for crosswordle, and probably other 1 player games
-    static final String recordKeeper1URL = "/cgi-bin/bs_uni1.cgi";
+    static final String recordKeeper1URL = "/cgi-bin/bs_uni1_score.cgi";
     
     static final String LANGUAGECLASS = "online.language.";
 	static final String DefaultLanguageName = "english";
@@ -101,7 +101,6 @@ public interface CommonConfig {
 	String RELEASEHOST = "releasehost";
 	String SERVERNAME = "serverName";
 	String TESTSERVER = "testserver";
-	String REVIEWONLY = "reviewonly";
 	String SERVERKEY = "serverkey";
 	String PROTOCOL = "protocol";
 	String WebStarted = "webstarted";	// true if we are started by java web start

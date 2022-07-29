@@ -155,9 +155,8 @@ sub savechanges()
 				. " where language=$qtlan and keystring=$qkey and collection=$qcol ";
 	#print "Q: $getold<p>";
 	my $sth = &query($dbh,$getold);
-	my $num = &numRows($sth);
 	my ($oldtrans,$oldcoll,$oldcomm) = &nextArrayRow($sth);
-
+	&finishQuery($sth);
 	if($ttype eq 'matchmiss')
 	{
 	if(!($tran eq $oldtrans))

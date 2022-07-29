@@ -45,10 +45,9 @@ public interface exHashtable
      */
     public static final String GAMETYPEID = "GameTypeID";		// short id
     public static final String GAMEUID = "gameUID";			// unique name constructed for this game
-    public static final String CHATONLY = "chatOnly";			// true if no game, just chat
-    public static final String MASTERMODE = "masterMode";		// true if a master game
+    public static final String MODE = "mode";
     public static final String TOURNAMENTMODE = "tournamentMode";	// true if a tournament game
-    public static final String UNRANKEDMODE = "unrankedMode";		// true if an unranked game
+     
     public static final String SOUND = "sound";					// true if sound is initially on
     public static final String ROBOTGAME = "robotgame";		// true if this game includes a robot
     public static final String WEAKROBOT = "weakrobot";		// the weakest robot for this game

@@ -51,8 +51,7 @@ public class BSDate extends SystemDate
 	 */
 	public static String weekdays[] = {"mon","tue","wed","thu","fri","sat","sun"};
 	public static String months[] = {"jan","feb","mar","apr","may","jun","jul","aug","sep","oct","nov","dec"};
-	
-	
+
 	private static boolean isDayOfWeek(String d)
 	{
 			if(d!=null && d.length()>=3)

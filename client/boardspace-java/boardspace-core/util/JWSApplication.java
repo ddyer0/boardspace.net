@@ -11,6 +11,7 @@ import lib.Plog;
 import lib.RootAppletProtocol;
 import lib.SoundManager;
 import lib.StringStack;
+import online.common.OnlineConstants;
 import udp.UDPService;
 
 /**
@@ -119,7 +120,6 @@ public class JWSApplication implements Config,Runnable
 					}
 			}
 			String serverName = G.getString(SERVERNAME,DEFAULT_SERVERNAME);
-			boolean review = G.getBoolean(REVIEWONLY,false);
 			//System.out.println("Servername "+serverName);
 			G.print("Screen "+G.screenSize()+" = "+G.screenDiagonal());
 	    	G.putGlobal(RELEASEHOST,serverName);
@@ -127,7 +127,7 @@ public class JWSApplication implements Config,Runnable
 	    	String lang=prefs.get(langKey,"english"); 
 			if(lang!=null) { G.putGlobal(G.LANGUAGE,lang); }
 	    	Http.setHostName(serverName);
-	    	if(!review)
+	    	if(G.getString(OnlineConstants.VIEWERCLASS,null)==null)
 	        {	boolean isTable = G.isTable();
 	    		G.setOffline(isTable);
 	    		boolean startoff = isTable;

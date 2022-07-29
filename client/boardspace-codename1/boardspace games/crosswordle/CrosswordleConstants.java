@@ -1,6 +1,5 @@
 package crosswordle;
 
-import lib.InternationalStrings;
 import lib.OStack;
 import lib.CellId;
 import online.game.BaseBoard.BoardState;
@@ -8,6 +7,8 @@ import online.game.BaseBoard.BoardState;
 
 public interface CrosswordleConstants
 {	
+    static final String statsURL = "/cgi-bin/bs_uni1_stats.cgi";
+
 	static String CrosswordsVictoryCondition = "complete the puzzle";
 	static String ProbeMessage = "Guess";
 	static String CrosswordsPlayState = "Make a guess";
@@ -19,6 +20,17 @@ public interface CrosswordleConstants
 	static String PuzzleFor = "Puzzle for";
 	static String RestartMessage = "Restart";
 	static String SolvedMessage = "Solved with #1 guesses in #2";
+	static String UseHard = "use hard puzzles";
+	static String UseEasy = "use easy puzzles";
+	static String HardPuzzles = "hard puzzles";
+	static String EasyPuzzles = "easy puzzles";
+	static String PuzzleN = "Puzzle #";
+	static String StatsHelp = "Show stats for this puzzle";
+	static String NoSolutions = "No solutions yet for this puzzle";
+	static String YouSolved = "you solved this puzzle on #1 in #2";
+	static String Sofar = "#1 solutions so far for this puzzle, average time #2";
+	static String SolvedType = "You have solved #1 puzzles of this type, average time #2";
+	static String SolutionsFor = "Solutions for #1 for #2";
 	enum LetterColor 
 	{ 
 	  Blank, Yellow, Green, NewYellow, NewGreen ;
@@ -65,12 +77,12 @@ public interface CrosswordleConstants
      	EmptyBoard,
     	SetOption,
     	EyeOption,
+    	ShowStats,
     	Rotate,
     	Lock,
-    	SolvedMessage,
-    	Definition,
+       	Definition,
     	Restart,
-    	Blank, InputField, Playword, ToggleEasy;
+    	Blank, InputField, Playword, ToggleEasy, CloseStats;
     	public String shortName() { return(name()); }
 
 	}
@@ -115,7 +127,7 @@ public interface CrosswordleConstants
 
     static void putStrings()
     {
-    	
+    	/*
     	String CrosswordsStrings[] = 
     		{  "Crosswords",
     			WordsMessage,
@@ -125,7 +137,16 @@ public interface CrosswordleConstants
     			CrosswordsPlayState,
     	        CrosswordsVictoryCondition,
     	        PuzzleFor,
+    	        SolvedType,
+    			SolutionsFor,
+    			SolvedMessage,
+    	    	YouSolved,
+    	    	Sofar,
     	        RestartMessage,
+    	    	UseHard,UseEasy,HardPuzzles,EasyPuzzles,
+    	        PuzzleN,
+    	        StatsHelp,
+    	        NoSolutions,
  
     		};
     		String CrosswordsStringPairs[][] = 
@@ -137,5 +158,6 @@ public interface CrosswordleConstants
 
     		InternationalStrings.put(CrosswordsStringPairs);
     		InternationalStrings.put(CrosswordsStrings);
-    }
+    */
+	}
 }

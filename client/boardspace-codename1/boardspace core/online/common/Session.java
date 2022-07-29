@@ -159,6 +159,11 @@ public class Session implements LobbyConstants
 			roomMenu.addMenuItem(s.get(el.modeName),el.ordinal());
 			}
 	 	}
+		public static Mode findMode(String n)
+		{
+			for(Mode el:values()) { if(el.modeName.equalsIgnoreCase(n)) { return(el); }}
+			return null;
+		}
 		public static Mode findMode(int n)
 		{
 			for(Mode el:values()) { if(el.ordinal()==n) { return(el); }}
@@ -608,8 +613,6 @@ public class Session implements LobbyConstants
 		int numProxyOpps = nProxyPlayers;
 		Bot robotGame = ((startingRobot!=null) && (startingRobot.idx>=0 ))? startingRobot : null;
 		boolean chatmode = mode==Mode.Chat_Mode;
-		boolean masterMode = mode==Mode.Master_Mode;
-		boolean unrankedMode = mode==Mode.Unranked_Mode;
 		boolean tournamentMode = submode==Session.JoinMode.Tournament_Mode;
 		String roomType = s.get(mode.modeName);
 		if(spectator) { numOpps=0;  }
@@ -620,7 +623,7 @@ public class Session implements LobbyConstants
 		
 		String framename = 
 				G.isCodename1()
-					? (s.get(roomType) + " #" + gameIndex)	
+					? (roomType + " #" + gameIndex)	
 					: primaryUser.name +" - "+ roomType + " "
 		                       + gameIndex 
 		                       + ((spectator&&!chatmode) ? (" - "+s.get(SpectatorMessage)) : "");
@@ -698,11 +701,9 @@ public class Session implements LobbyConstants
 		 myInfo.putBoolean(exHashtable.NEWBIE,primaryUser.isNewbie||primaryUser.isGuest);
 		 myInfo.putString(exHashtable.GAMEUID,startingName);
 		 myInfo.putObj(exHashtable.MYINFO,primaryUser.info);
-		 myInfo.putBoolean(exHashtable.CHATONLY,chatmode);
-		 myInfo.putBoolean(exHashtable.MASTERMODE,masterMode);
+		 
+		 myInfo.putObj(exHashtable.MODE,mode.modeName);
 		 myInfo.putBoolean(exHashtable.TOURNAMENTMODE,tournamentMode);
-		 myInfo.putBoolean(exHashtable.UNRANKEDMODE,unrankedMode);
-		 myInfo.putBoolean(commonLobby.REVIEWONLY,mode==Mode.Review_Mode);
 		 myInfo.putBoolean(exHashtable.SOUND,sound);
 		 myInfo.copyFrom(sharedInfo,sharedValues);
 		 

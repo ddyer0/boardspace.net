@@ -21,7 +21,7 @@ $pubname =$image_dir;
 $basename = $ENV{'DOCUMENT_ROOT'}.$pubname;
 $cgi_lib::writefiles = $basename."upload/";
 # Limit upload size to avoid using too much memory
-$cgi_lib::maxdata = 50000;
+$cgi_lib::maxdata = 150000;
 
 
 sub init {

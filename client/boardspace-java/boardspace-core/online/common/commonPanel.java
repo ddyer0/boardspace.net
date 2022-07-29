@@ -383,12 +383,16 @@ public class commonPanel extends FullscreenPanel
     {
     	setLayout(new NullLayout(this));
     }
+    public Session.Mode gameMode = Session.Mode.Game_Mode;
+    
     public void init(ExtendedHashtable extendedHashtable,LFrameProtocol frame)
     { //System.out.println("common init");
         sharedInfo = extendedHashtable;
         s = G.getTranslations();
         myFrame = frame;
-        chatOnly = extendedHashtable.getBoolean(exHashtable.CHATONLY, false);
+        gameMode = Session.Mode.findMode(sharedInfo.getString(exHashtable.MODE,gameMode.modeName));
+        chatOnly = gameMode==Session.Mode.Chat_Mode;
+        
         extraactions = G.getBoolean(OnlineConstants.EXTRAACTIONS, extraactions);
         boolean chatFramed = extendedHashtable.getBoolean(exHashtable.LOBBYCHATFRAMED,false);
         CreateChat(chatFramed);

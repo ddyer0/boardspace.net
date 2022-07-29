@@ -89,7 +89,7 @@ public class CrosswordleChip extends chip<CrosswordleChip> implements Crosswordl
     /* plain images with no mask can be noted by naming them -nomask */
     static public CrosswordleChip backgroundTile = new CrosswordleChip("background-tile-nomask",null,null,null);
     static public CrosswordleChip backgroundReviewTile = new CrosswordleChip("background-review-tile-nomask",null,null,null);
-   
+    static public CrosswordleChip stats = new CrosswordleChip("stats-nomask",new double[] {0.5,0.5,1.0},null,null);
     // + x moves to the left
     // + y moves up
     static private double letterScale[]  = {0.490,0.45,1.30 };	// 

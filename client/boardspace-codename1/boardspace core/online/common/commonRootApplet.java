@@ -46,7 +46,6 @@ public class commonRootApplet implements  RootAppletProtocol, Runnable,  LobbyCo
 	        {G.LANGUAGE,DefaultLanguageName},
 	        {LOBBYPORT,"-1"},
 	        {TESTSERVER, "false"},
-	        {REVIEWONLY, "false"},
 	        {EnablePassAndPlay,"false"},	// pass n play mode for playtable
 	        {PICTURE, "false"},
 	        {WebStarted,"false"},

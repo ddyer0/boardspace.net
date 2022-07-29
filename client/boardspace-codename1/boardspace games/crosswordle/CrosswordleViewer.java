@@ -15,6 +15,7 @@ import bridge.FileDialog;
 import bridge.FontMetrics;
 import bridge.JMenuItem;
 import bridge.Platform.Style;
+import common.Crypto;
 import dictionary.Dictionary;
 import dictionary.Entry;
 import lib.Graphics;
@@ -34,7 +35,13 @@ import lib.MouseState;
 import lib.StringStack;
 import lib.TextButton;
 import lib.TextContainer;
+import lib.Toggle;
+import lib.UrlResult;
+import lib.XXTEA;
+import lib.Http;
+import lib.IStack;
 import lib.SimpleObservable;
+import lib.StockArt;
 import online.game.*;
 import online.game.sgf.sgf_node;
 import online.game.sgf.sgf_property;
@@ -49,15 +56,16 @@ import online.search.SimpleRobotProtocol;
  *   Crosswordle is an original idea based on the "Wordle" craze.  
  *   The basic puzzle is to solve de densely packed crossword grid
 */
-public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard> implements CrosswordleConstants, GameLayoutClient
+public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard> 
+	implements CrosswordleConstants, GameLayoutClient,Crypto
 {	static final long serialVersionUID = 1000;
 	static final String Crosswords_SGF = "Crosswordle"; // sgf game name
 	boolean useKeyboard = G.isCodename1();
 	KeyboardLayout Minimal =new KeyboardLayout(0.085,0.085*3,new String[][]
 			{				
 		 {"Q","W","E","R","T","Y","U","I","O","P"},
-		 {"Halfspace","A","S","D","F","G","H","J","K","L","Ndel"}, 
-		 {"Fullspace","Z","X","C","V","B","N","M", "Guess"}});
+		 {"Halfspace","A","S","D","F","G","H","J","K","L"}, 
+		 {"Minus-3/16","Ndel","Plus14","Z","X","C","V","B","N","M", "Guess"}});
 	
 	Keyboard keyboard = null;
 	// file names for jpeg images and masks
@@ -74,9 +82,11 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
 	private Rectangle keyboardRect = addRect("keyboard");
 	private Rectangle keytextRect = addRect("keytext");
 	private Rectangle logoRect = addRect("logo");
+	private Toggle statsRect = new Toggle(this,"stats",CrosswordleChip.stats,CrosswordleId.ShowStats,false,StatsHelp);
+
 	private TextButton hardButton = addButton(
-			"hard puzzles",CrosswordleId.ToggleEasy,"use hard puzzles",
-    		"easy puzzles",CrosswordleId.ToggleEasy,"use easy puzzles",
+			HardPuzzles,CrosswordleId.ToggleEasy,UseHard,
+    		UseEasy,CrosswordleId.ToggleEasy,UseEasy,
     		HighlightColor, rackBackGroundColor,boardBackgroundColor);
 	private DateSelector dateRect = 
 			(DateSelector)addRect("date",
@@ -237,7 +247,7 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
        	int vcrw = fh*16;
         int margin = fh/2;
         int buttonW = (G.isCodename1()?8:6)*fh;
-        int stateH = fh*2;
+        int stateH = fh*3;
         // this does the layout of the player boxes, and leaves
     	// a central hole for the board.
     	//double bestPercent = 
@@ -319,7 +329,7 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
         int stateY = boardY;
         int stateX = boardX;
     	int stripeW = CELLSIZE;
-    	G.placeRow(stateX,stateY,boardW ,stateH,stateRect,lockRect,altNoChatRect);
+    	G.placeRow(stateX,stateY,boardW ,stateH,stateRect,statsRect,lockRect,altNoChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	G.SetRect(goalRect, boardX, G.Bottom(boardRect),boardW,stateH);   
     	G.SetRect(largerBoardRect,boardX-stateH,boardY-stateH,boardW+stateH*2,boardH+stateH*2);
@@ -724,6 +734,7 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
              //      DrawRepRect(gc,pl.displayRotation,Color.black,b.Digest(),repRect);
         GC.setFont(gc,largeBoldFont());
         dateRect.draw(gc,selectPos);
+        statsRect.draw(gc,selectPos);
         hardButton.draw(gc,selectPos);
         inputField.setVisible(true);
         inputField.redrawBoard(gc,selectPos);
@@ -738,6 +749,126 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
         }
        }
        drawHiddenWindows(gc, selectPos);
+       
+       if(statStr!=null)
+       {
+    	   drawStats(gc,selectPos,boardRect);
+       }
+    }
+    public void drawStats(Graphics gc,HitPoint hit,Rectangle r)
+    {
+    	String stats = statStr;
+    	IStack personal = new IStack();
+    	IStack everyone = new IStack();
+    	StringStack personalCap = new StringStack();
+    	StringStack everyoneCap = new StringStack();
+    	IStack activeStack = null;
+    	StringStack activeCap = null;
+    	String solvedD = null;
+    	String solvedT = "";
+    	int extraLineCount = 6;
+    	String personalTime ="";
+    	int personalCount = 0;
+     	String everyoneTime = "";
+    	int everyoneCount = 0;
+    	int hmax = 0;
+    	StringTokenizer tok = new StringTokenizer(stats);
+    	while(tok.hasMoreTokens())
+    	{
+    	String key = tok.nextToken();
+    	if("version".equals(key)) {	if(G.IntToken(tok)!=1) { return; }}
+    	else if("solveddate".equals(key)) { solvedD = tok.nextToken(); extraLineCount++; }
+    	else if("solvedtime".equals(key)) { solvedT = tok.nextToken(); }
+    	else if("everyonesolved".equals(key)) { activeStack = everyone; activeCap = everyoneCap; everyoneCount = G.IntToken(tok); extraLineCount++; }
+    	else if("personalsolved".equals(key)) { activeStack = personal; activeCap = personalCap; personalCount = G.IntToken(tok); extraLineCount++; }
+    	else if("everyonetime".equals(key)) { everyoneTime = tok.nextToken(); }
+    	else if("personaltime".equals(key)) { personalTime = tok.nextToken(); }
+    	else if("end".equals(key)) { activeStack = null; activeCap = null; tok.nextToken(); }
+    	else if(key.startsWith("count")) { 
+    		String cap = key.substring(5);
+    		int va = G.IntToken(tok);
+    		activeCap.push(cap);
+    		activeStack.push(va);
+    		hmax = Math.max(hmax,va);
+    		}
+    	else { G.print("Unexpected key ",key," ",tok.nextToken()); }
+    	}
+    	// parsed, now present
+    	int stateh = G.Height(stateRect);
+    	int h = G.Height(r)-stateh;
+    	int w = G.Width(r);
+    	int x = G.Left(r);
+    	int y = G.Top(r)+stateh;
+    	GC.setColor(gc,Color.gray);
+    	GC.fillRect(gc,x,y,w,h);
+    	GC.frameRect(gc,Color.black,x,y,w,h);
+    	int vspace = h/(personalCap.size()+everyoneCap.size()+extraLineCount);
+    	GC.Text(gc,true,x,y,w,vspace,Color.white,null,statCaption);
+    	StockArt.FancyCloseBox.drawChip(gc, this, hit,
+				 CrosswordleId.CloseStats,stateh,x+w-stateh/2,y+stateh/2,null);
+    	if(G.pointInRect(hit,x,y,w,h))
+    	{
+    		hit.hitCode = CrosswordleId.CloseStats;
+    	}
+    	y+= vspace*2;
+    	int gx = x + w/20;
+    	int hscale = (w-w/20)/(hmax+3);
+    	int totalCount = 0;
+    	boolean drawn = false;
+    	if(everyoneCount==0) 
+    		{ GC.Text(gc,true,x,y,w,vspace,Color.white,null,s.get(NoSolutions));
+    		  y += vspace;
+    		}
+    	else {
+    		if(solvedD!=null) { 
+    			GC.Text(gc,true,x,y,w,vspace,Color.white,null,s.get(YouSolved,solvedD,solvedT));
+    			y += vspace;
+    		}
+    		GC.Text(gc,true,x,y,w,vspace,Color.white,null,s.get(Sofar,""+everyoneCount,everyoneTime));
+    		y += vspace*3/2;
+    		for(int i=0; i<everyoneCap.size(); i++)
+		{	int count = everyone.elementAt(i);
+			totalCount += count;
+			int barW = Math.max(2,(int)(count*hscale));
+			GC.Text(gc,true,x,y,w/20,vspace,Color.white,null,everyoneCap.elementAt(i));
+			GC.fillRect(gc,Color.blue,gx,y+vspace/4,barW,vspace*3/4);
+			GC.Text(gc,false,gx+barW,y,w/10,vspace,Color.white,null," "+(int)(count*100/everyoneCount)+"%");
+			y += vspace;
+			if(!drawn && totalCount*2>=everyoneCount)
+			{	GC.setColor(gc,Color.green);
+				GC.fillRect(gc,Color.green,gx,y,barW+w/10,2);
+				GC.Text(gc,false,gx+barW+w/10,y-vspace,w/10,vspace,Color.green,null,"median");
+				drawn = true;
+			}
+			}
+    	}
+   		y += vspace;
+    	
+   		totalCount = 0;
+   		drawn = false;
+    	
+    	if(personalCount>0)
+    	{
+    	GC.Text(gc,true,x,y,w,vspace,Color.white,null,s.get(SolvedType,""+personalCount,personalTime));
+    	y += vspace*3/2;
+   		for(int i=0; i<personalCap.size(); i++)
+		{	int count = personal.elementAt(i);
+			totalCount += count;
+			int barW = Math.max(2,(int)(count*hscale));
+			GC.Text(gc,true,x,y,w/20,vspace,Color.white,null,personalCap.elementAt(i));
+			GC.fillRect(gc,Color.blue,gx,y+vspace/4,barW,vspace*3/4);
+			GC.Text(gc,false,gx+barW,y,w/10,vspace,Color.white,null," "+(int)(count*100/personalCount)+"%");
+			y += vspace;
+			if(!drawn && totalCount*2>=personalCount)
+			{	GC.setColor(gc,Color.green);
+				GC.fillRect(gc,Color.green,gx,y,barW+w/10,2);
+				GC.Text(gc,false,gx+barW+w/10,y-vspace,w/10,vspace,Color.green,null,"median");
+				drawn = true;
+			}
+		}
+   		y += vspace;
+   	}
+
     }
     public String gameOverMessage()
     {	commonPlayer pl =getPlayerOrTemp(0);
@@ -1028,6 +1159,33 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
 	    	PerformAndTransmit(G.concat("SetWord ",Base64.encodeSimple(newText)));
 		}
 	}
+	private UrlResult urlResult = null;
+	private String statStr = null;
+	private String statCaption = "Caption";
+	
+	public void doShowStats()
+	{
+        String baseUrl = statsURL;
+        commonPlayer pl = getPlayerOrTemp(0);
+        String serverName = sharedInfo.getString(SERVERNAME);
+        long key = dateRect.getTime();
+        String dateString = dateRect.dateString();
+        String hards = (hardButton.isOn()?"true":"false");
+        String vname = bb.variation.name();
+        String urlStr = 
+        G.concat(
+        		"&p1=",pl.trueName(),
+         		"&u1=",pl.uid,
+    			"&puzzleid=",bb.getSolution(key),
+    			"&variation=",vname,
+    			"&hard=",hards);
+        statCaption = s.get(SolutionsFor,vname,dateString);
+        urlStr = "params=" + XXTEA.combineParams(urlStr, TEA_KEY);
+       
+        statStr = null;
+        urlResult = Http.postAsyncUrl(serverName,baseUrl,urlStr,null);
+
+	}
 	/** 
 	 * this is called on "mouse up".  We may have been just clicking
 	 * on something, or we may have just finished a click-drag-release.
@@ -1068,6 +1226,12 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
             {
             	throw G.Error("Hit Unknown object " + hitCode);
             }
+        	break;
+        case CloseStats:
+        	statStr = null;
+        	break;
+        case ShowStats:
+        	doShowStats();
         	break;
         case ToggleEasy:
         	hardButton.toggle();
@@ -1270,6 +1434,17 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
    {	
         super.ViewerRun(wait);
         if(ourActiveMove()) { updateInput(); }
+        if(urlResult!=null && urlResult.text!=null)
+        {
+        	statStr = urlResult.text;
+        	G.print("Stat ",statStr);
+        	urlResult = null;
+        }
+        if(triggerEndStats!=0 && triggerEndStats<G.Date())
+        {	triggerEndStats = 0;
+        	doShowStats();
+        
+        }
    }
     /**
      * returns true if the game is over "right now", but also maintains 
@@ -1351,6 +1526,7 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
     // user can solve multiple puzzles in one session.
     //
     private String firstPuzzle = "true";
+    private long triggerEndStats = 0;
     public String getUrlNotes()
     {	long key = bb.randomKey;
     	String v = G.concat(
@@ -1361,6 +1537,7 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
     			"&first=",firstPuzzle
     			);
     	firstPuzzle = "false";
+    	triggerEndStats = G.Date()+2*1000;
     	return v;
     }
     public void doGameTest()

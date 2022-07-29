@@ -37,7 +37,8 @@ import lib.StringStack;
  * @author ddyer
  *
  */
-public class Builder {
+public class Builder implements CrosswordleConstants
+{
 	private static Builder instance = null;
 	public static Builder getInstance() 
 	{
@@ -191,7 +192,7 @@ public class Builder {
 		if(base!=null)
 		{
 			int index = (int)(date%base.length);
-			G.print("Puzzle #",index," ",base[index]);
+			G.print(PuzzleN,index," ",base[index]);
 			return base[index];
 		
 		}
@@ -482,6 +483,7 @@ public class Builder {
 	 
 	 static String CrosswordleDefinitionsDir = "/crosswordle/images/";
 
+	@SuppressWarnings("unused")
 	 private String[] difference(String main[],String remove[])
 	 {
 		 StringStack mainSet = new StringStack();

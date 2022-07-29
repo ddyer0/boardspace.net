@@ -715,7 +715,7 @@ public class Game extends commonPanel implements PlayConstants,Opcodes,DeferredE
         sessionNum = info.getInt(exHashtable.SESSION);
         
         // reviewOnly means we're not playing, but we might or might not be connected
-        reviewOnly = info.getBoolean(REVIEWONLY, false);
+        reviewOnly = gameMode==Session.Mode.Review_Mode;
         serverFile = G.getString(FileSelector.SERVERFILE, "");
         selectedGame = G.getString(FileSelector.SELECTEDGAME, "");
          
@@ -741,8 +741,8 @@ public class Game extends commonPanel implements PlayConstants,Opcodes,DeferredE
         }
         }
         // G.print("init "+my);
-        unrankedMode = info.getBoolean(exHashtable.UNRANKEDMODE);
-        masterMode = info.getBoolean(exHashtable.MASTERMODE);
+        unrankedMode = gameMode==Session.Mode.Unranked_Mode;
+        masterMode = gameMode==Session.Mode.Master_Mode;
         tournamentMode = info.getBoolean(exHashtable.TOURNAMENTMODE);
         seedValue = info.getInt(OnlineConstants.RANDOMSEED);
         isGuest = info.getBoolean(exHashtable.GUEST);

@@ -149,6 +149,7 @@ public class CalculatorButton {
 	Minus14("Minus-1/4",-1,-0.25,0,0),
 	Minus316("Minus-3/16",-1,-3.0/16,0,0),
 	Minus18("Minus-1/8",-1,-0.125,0,0),
+	Plus14("PLus-1/4",-1,0.25,0,0),
 	Nunk("???",-9,0,0,2);
 
 	String shortName=name();
