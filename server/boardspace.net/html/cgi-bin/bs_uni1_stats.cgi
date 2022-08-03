@@ -63,8 +63,8 @@ sub personalSummary()
     my $nr = &numRows($sth);
     my $last = 3;
     my $restcount = 0;
-    my $totalCount = 0;
-    my $half = $count/2;
+
+
     while($nr-- > 0)
     {
     my ($lcount,$score) = &nextArrayRow($sth);
@@ -80,7 +80,6 @@ sub personalSummary()
     }
     else { $restcount += $lcount; } 
     $last = $score+1;
-    $totalCount += $lcount;
     }
     &finishQuery($sth);
     if($restcount>0)
@@ -99,8 +98,6 @@ sub puzzleSummary()
     my $ts = $count==0 ? 0 : &timestr($sumtime/$count);
     my $last = 3;
     my $restcount = 0;
-    my $totalCount = 0;
-    my $half = $count/2;
 
     my $q = "select count(score1),score1 from sp_record where puzzleid=$puzzleid and score1>0 group by score1 order by score1 asc";
     my $sth = &query($dbh,$q);
@@ -120,7 +117,6 @@ sub puzzleSummary()
     }
     else { $restcount += $lcount; } 
     $last = $score+1;
-    $totalCount += $lcount;
     }
     &finishQuery($sth);
     if($restcount>0)
@@ -160,16 +156,16 @@ sub doit()
   }
   $u1 = $dbh->quote($u1);
 
-  my $q = "select uid,gmtdate,time1 from sp_record where player1=$u1 and puzzleid=$puzzleid and mode=$mode";
+  my $q = "select uid,gmtdate,time1,score1 from sp_record where player1=$u1 and puzzleid=$puzzleid and mode=$mode";
   my $sth = &query($dbh,$q);
   my $nr = &numRows($sth);
   print "version 1\n";
   if($nr>0)
   {
-      my ($uid,$gmtdate,$time) = &nextArrayRow($sth);
+      my ($uid,$gmtdate,$time,$score) = &nextArrayRow($sth);
       my $date = substr($gmtdate,0,10);
       my $ts = &timestr($time);
-      print "solveddate $date solvedtime $ts\n";
+      print "solveddate $date solvedtime $ts solvedscore $score\n";
   }
   &finishQuery($sth);
 

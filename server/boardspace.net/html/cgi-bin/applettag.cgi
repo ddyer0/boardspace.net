@@ -25,12 +25,13 @@ sub print_offline_jnlp()
 	if($height) { $size .= "<argument>frameheight</argument> <argument>$height</argument>\n"; }
 	my $host = $ENV{'HTTP_HOST'};
 	my $vname = "$cgame viewer.jnlp";
+	my $proto = $ENV{'REQUEST_SCHEME'};
 print <<ENDTAG;
 Content-type: application/x-java-jnlp-file
 Content-Disposition: inline; filename=${cgame} viewer.jnlp
 
 <?xml version="1.0" encoding="UTF-8"?>
-<jnlp spec="1.0+" codebase="http://$host/java" >
+<jnlp spec="1.0+" codebase="${proto}://$host/java" >
     <information>
         <title>$title</title>
         <vendor>Boardspace.net</vendor>
@@ -66,12 +67,6 @@ ENDTAG2
 }
 
 
-sub print_version_tag()
-{
-    print "<applet codebase='/java/online/' archive='version.jar' code='online.version.class' height='53' width='205'>\n";
-    print "<param name='permissions' value='sandbox'>\n";
-    print "</applet>\n";
-}
 sub print_applet_tag()
 {
 	print " codebase=\"/$'java_dir/$'class_dir/\" ";
@@ -118,7 +113,6 @@ sub print_gameparams_tag()
 	print "<param name='framewidth' value='700'>\n";
 	print "<param name='reviewOnly' value='true'>\n";
 	print "<param name='rootreviewer' value='true'>\n";
-	print "<param name='spectator' value='true'>\n";
 
 	&finishQuery($sth);
 }
@@ -129,14 +123,11 @@ sub print_jnlp_gameparams_tag()
 	my $q = "select directory_index,directory from variation where name=$qgame";
 	my $sth = &query($dbh,$q);
 	my ($num,$dir) = &nextArrayRow($sth);
-	my $proto = $ENV{'SERVER_PROTOCOL'};
-	my $ind = index($proto,'/');
-	if($ind>0) { $proto = substr($proto,0,$ind); } else { $proto='http'; }
+	my $proto = $ENV{'REQUEST_SCHEME'};
 	print "<argument>gameindex</argument><argument>$num</argument>\n";
 	print "<argument>reviewerdir$num</argument><argument>$dir</argument>\n";
 	print "<argument>gamename</argument><argument>$game</argument>\n";
 	print "<argument>reviewonly</argument><argument>true</argument>\n";
-	print "<argument>spectator</argument><argument>true</argument>\n";
 	print "<argument>protocol</argument><argument>$proto</argument>\n";
 	&finishQuery($sth);
 }
@@ -253,12 +244,6 @@ sub print_standard_reviewer()
 	print "<h2>$title</h2><p>";
 	print &trans("With this review applet, you can view the same games as in online Review rooms, but without connecting to the lobby.");
 
-	print "\n<applet " ;
-	&print_applet_tag();
-	print " width=$width height=$height>\n";
-	&print_gameparams_tag($dbh,$game);
-	print "<param name=final value=true>\n";
-	print "</applet>\n";
 	print "<form method=post action='/cgi-bin/applettag.cgi'>\n";
 	print "<input type=hidden name=tagname value=offlinejwsviewer>";
 	print "<input type=hidden name=game value=$game>\n";
@@ -390,7 +375,6 @@ sub print_tag()
 	if($tagname eq '')
 	{	&print_applet_tag();
 	}
-	elsif ($tagname eq 'version') { &print_version_tag(); }
 	else
 	{
 	my $dbh = &connect();

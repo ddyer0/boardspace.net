@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jnlp spec="1.0+" codebase="http://boardspace.net/java" href="boardspacemap.jnlp">
+<jnlp spec="1.0+" codebase="https://boardspace.net/java" href="boardspacemap.jnlp">
     <information>
         <title>Boardpace Player Map</title>
         <vendor>Boardspace.net</vendor>
@@ -27,12 +27,10 @@
     <argument>framewidth</argument><argument>720</argument>
     <argument>frameheight</argument><argument>400</argument>
     <argument>rootname</argument><argument>the Players World Map</argument>
-    <argument>viewerclass</argument><argument>G:GameReviewer</argument>
-    <argument>game</argument><argument>zertz</argument>
     <argument>zertz.classname</argument><argument>online.common.MapViewer</argument>
     <argument>mapcenter_x</argument><argument>0.747</argument>
     <argument>mapcenter_y</argument><argument>0.0</argument>
-    <argument>imagelocation</argument><argument>http://boardspace.net/images/earthshadelow.jpg</argument>
+    <argument>imagelocation</argument><argument>https://boardspace.net/images/earthshadelow.jpg</argument>
     <argument>datalocation</argument><argument>/cgi-bin/tlib/gs_locations.cgi</argument>
     <argument>reviewonly</argument><argument>true</argument>
     <argument>rootreviewer</argument><argument>true</argument>
