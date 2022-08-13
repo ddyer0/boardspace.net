@@ -46,11 +46,13 @@ public interface UIC extends Opcodes
 	static String LoaStringPairs[][] = 
 		{
 			{   "LOA_family","Lines of Action"},
+			{ 	"LOARANDOM","Loa Random"},
 			{	"LOA", "Lines of Action"},
 			{	"LOA-12","Loa 12x12"},
 			{	"LOA_variation","8x8 board"},
 			{	"LOAP_variation","contest variation"},
-			{	"LOA-12_variation","12x12 board"}
+			{	"LOA-12_variation","12x12 board"},
+			{	"LOARANDOM_variation","Random symmetric start"}
 		};
 	
     public static String viewer_class = "loa.viewer.Game";
@@ -152,6 +154,7 @@ public interface UIC extends Opcodes
     	Standard("Standard",8),
     	Parachute("Parachute",8),
     	Scrambled("Scrambled-Eggs",8),
+    	Random("LoaRandom",8),
     	Gemma("Gemma",8),
     	Custom("Custom",8),
     	Reversed("Reversed",8),

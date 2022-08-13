@@ -17,6 +17,7 @@ import lib.GC;
 import lib.HitPoint;
 import lib.LFrameProtocol;
 import lib.CellId;
+import online.common.OnlineConstants;
 import online.game.BoardProtocol;
 import online.game.GameLayoutClient;
 import online.game.GameLayoutManager;
@@ -31,7 +32,10 @@ import online.game.sgf.sgf_property;
 import online.search.SimpleRobotProtocol;
 
 public class LoaViewer extends commonCanvas implements UIC,GameLayoutClient
-{	 /**
+{	
+	static int REVISION = 100;			// revision numbers start at 100
+										// revision 100 adds revision numbers and randomkeys
+	/**
 	 * 
 	 */
 	static final long serialVersionUID = 1L;
@@ -244,7 +248,11 @@ public class LoaViewer extends commonCanvas implements UIC,GameLayoutClient
     public void performHistoryInitialization(StringTokenizer his)
     {   //the initialization sequence
     	String token = his.nextToken();
-        b.doInit(token);
+    	if(token.equalsIgnoreCase("loarandom"))
+    	{
+    		b.doInit(token,G.LongToken(his),G.IntToken(his));
+    	}
+    	else { b.doInit(token); }
     }
 
     public synchronized void ReplayGame(sgf_game ga)
@@ -254,7 +262,7 @@ public class LoaViewer extends commonCanvas implements UIC,GameLayoutClient
     	super.ReplayGame(ga);
     }
     
-    public String gameType() { return(b.gametype); }
+    public String gameType() { return(b.gameTypeString()); }
     public String sgfGameType() { return(LOA_SGF); }
     
 
@@ -362,7 +370,8 @@ public class LoaViewer extends commonCanvas implements UIC,GameLayoutClient
         super.init(stuff,frame);
         MouseDotColors = LoaMouseDotColors;
         MouseColors = LoaMouseColors;
-        b = new Loa_Board(sharedInfo.getString(GAMETYPE,"LOA"),getStartingColorMap());
+        long randomKey = stuff.getInt(OnlineConstants.RANDOMSEED,-1);
+        b = new Loa_Board(sharedInfo.getString(GAMETYPE,"LOA"),getStartingColorMap(),randomKey);
         //useDirectDrawing(); // not tested yet
         doInit(false);
    }

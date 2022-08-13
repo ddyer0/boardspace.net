@@ -27,9 +27,9 @@ public interface CrosswordleConstants
 	static String PuzzleN = "Puzzle #";
 	static String StatsHelp = "Show stats for this puzzle";
 	static String NoSolutions = "No solutions yet for this puzzle";
-	static String YouSolved = "you solved this puzzle on #1 in #2";
+	static String YouSolved = "#1 solved this puzzle on #2 with #3 guesses in #4";
 	static String Sofar = "#1 solutions so far for this puzzle, average time #2";
-	static String SolvedType = "You have solved #1 puzzles of this type, average time #2";
+	static String SolvedType = "#1 solved #2 puzzles of this type, average time #3";
 	static String SolutionsFor = "Solutions for #1 for #2";
 	enum LetterColor 
 	{ 

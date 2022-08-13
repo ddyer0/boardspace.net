@@ -17,6 +17,7 @@ import lib.HitPoint;
 import lib.Random;
 import lib.StockArt;
 import lib.TextButton;
+import lib.Toggle;
 import lib.LFrameProtocol;
 import online.game.*;
 import online.game.sgf.sgf_node;
@@ -36,11 +37,11 @@ import online.search.SimpleRobotProtocol;
  * the game part of the site.
  * <p>
  * The main classes are:
- * <br>PushfightViewer - this class, a canvas for display and mouse handling
- * <br>PushfightBoard - board representation and implementation of the game logic
- * <br>Pushfightmovespec - representation, parsing and printing of move specifiers
- * <br>PushfightPlay - a robot to play the game
- * <br>PushfightConstants - static constants shared by all of the above.  
+ * <br>GameViewer - this class, a canvas for display and mouse handling
+ * <br>GameBoard - board representation and implementation of the game logic
+ * <br>GameMovespec - representation, parsing and printing of move specifiers
+ * <br>GamePlay - a robot to play the game
+ * <br>GameConstants - static constants shared by all of the above.  
  *  <p>
  *  The primary purpose of the PushfightViewer class is to do the actual
  *  drawing and to mediate the mouse gestures.  All the actual work is 
@@ -79,10 +80,10 @@ public class PrototypeViewer extends CCanvas<PrototypeCell,PrototypeBoard> imple
 {		// move commands, actions encoded by movespecs.  Values chosen so these
     // integers won't look quite like all the other integers
  	
-    static final String Prototype_SGF = "tamsk"; // sgf game name
+    static final String Prototype_SGF = "prototype"; // sgf game name
 
     // file names for jpeg images and masks
-    static final String ImageDir = "/tamsk/images/";
+    static final String ImageDir = "/prototype/images/";
 
      // colors
     private Color HighlightColor = new Color(0.2f, 0.95f, 0.75f);
@@ -114,8 +115,11 @@ public class PrototypeViewer extends CCanvas<PrototypeCell,PrototypeBoard> imple
     //
     // zones ought to be mostly irrelevant if there is only one board layout.
     //
+    private Toggle eyeRect = new Toggle(this,"eye",
+ 			StockArt.NoEye,PrototypeId.ToggleEye,NoeyeExplanation,
+ 			StockArt.Eye,PrototypeId.ToggleEye,EyeExplanation
+ 			);
     private Rectangle chipRects[] = addZoneRect("chip",2);
- 
  	private TextButton swapButton = addButton(SWAP,GameId.HitSwapButton,SwapDescription,
 			HighlightColor, rackBackGroundColor,rackIdleColor);
 	private TextButton doneButton = addButton(DoneAction,GameId.HitDoneButton,ExplainDone,
@@ -347,7 +351,7 @@ public class PrototypeViewer extends CCanvas<PrototypeCell,PrototypeBoard> imple
         int stateY = boardY;
         int stateX = boardX;
         int stateH = fh*3;
-        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,noChatRect);
+        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,eyeRect,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	if(rotate)
     	{	// this conspires to rotate the drawing of the board
@@ -783,7 +787,8 @@ public class PrototypeViewer extends CCanvas<PrototypeCell,PrototypeBoard> imple
         gb.getPlayerChip(gb.whoseTurn).drawChip(gc,this,iconRect,null);
         goalAndProgressMessage(gc,nonDragSelect,Color.black,s.get(VictoryCondition),progressRect, goalRect);
             //      DrawRepRect(gc,pl.displayRotation,Color.black,b.Digest(),repRect);
-        
+        eyeRect.activateOnMouse = true;
+        eyeRect.draw(gc,selectPos);
         
         // draw the vcr controls, last so the pop-up version will be above everything else
         drawVcrGroup(nonDragSelect, gc);
@@ -1061,6 +1066,9 @@ public class PrototypeViewer extends CCanvas<PrototypeCell,PrototypeBoard> imple
             {
             	throw G.Error("Hit Unknown object " + hitObject);
             }
+        	break;
+        case ToggleEye:
+        	eyeRect.toggle();
         	break;
         case BoardLocation:	// we hit an occupied part of the board 
 			switch(state)

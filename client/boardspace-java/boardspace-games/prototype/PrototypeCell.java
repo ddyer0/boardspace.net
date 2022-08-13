@@ -76,6 +76,8 @@ public class PrototypeCell
 		return(new PrototypeChip[size]);
 	}
 	public boolean labelAllChips() { return(false); }
+	//public int drawStackTickSize(int sz) { return(0); }
+	//public int drawStackTickLocation() { return(0); }
 
 	
 }

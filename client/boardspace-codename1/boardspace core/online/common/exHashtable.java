@@ -27,7 +27,6 @@ public interface exHashtable
      * the number of real players who will connect
      */
     public static final String NUMBER_OF_PLAYER_CONNECTIONS = "numberOfPlayerConnections";
-    public static final String NUMBER_OF_PROXY_CONNECTIONS = "numberOfProxyConnections";
     public static final String SEATINGCHART = "seatingchart";
     public static final String COLORMAP = "colormap";
     public static final String GAMEINFO = "gameinfo";
@@ -35,9 +34,6 @@ public interface exHashtable
     
     
     public static final String SPECTATOR = "spectator";
-    //public static final String POSITION = "position";
-    //public static final String ORDER = "order";
-    public static final String SEEDSET = "seedset";
     /**
      * a short (usually 2 letter) id for this game.  This is used in scoring to 
      * identify the game to be scored, and <i>must</i> agree with the name found
@@ -60,7 +56,7 @@ public interface exHashtable
 	public static final String RANKING = "ranking";
 	public static final String TIME = "time";
 	public static final String LOBBYCHATFRAMED = "lobbychatframed";	// put the lobby chat in a separate frame
-	public static final String CHALLENGE = "challenge";
+	public static final String CHALLENGE = "challenge";		// remember if this user accepts challenges
 	public static final String SESSION = "session";
 	public static final String IDENT_INFO = "ident";
 	

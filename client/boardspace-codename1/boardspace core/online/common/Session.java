@@ -351,8 +351,6 @@ public class Session implements LobbyConstants
     public int startingRobotPosition = -1;
     public int startingGameId = -1;
     public TimeControl startingTimeControl = null;
-    public boolean launchPassNPlay = false;
-    public int nProxyPlayers = 0;
     
     public LaunchUser launchUser= null;
     public LaunchUser[] launchUsers = null;
@@ -610,7 +608,6 @@ public class Session implements LobbyConstants
 		{
 		spectator = "".equals(password);
 		int numOpps = startingNplayers;  
-		int numProxyOpps = nProxyPlayers;
 		Bot robotGame = ((startingRobot!=null) && (startingRobot.idx>=0 ))? startingRobot : null;
 		boolean chatmode = mode==Mode.Chat_Mode;
 		boolean tournamentMode = submode==Session.JoinMode.Tournament_Mode;
@@ -687,7 +684,6 @@ public class Session implements LobbyConstants
 		 myInfo.put(exHashtable.TIMECONTROL,startingTimeControl);
 		 myInfo.put(exHashtable.COLORMAP,activeColorMap);
 		 myInfo.putInt(exHashtable.NUMBER_OF_PLAYER_CONNECTIONS,spectator?numActivePlayers:numOpps);
-		 myInfo.putInt(exHashtable.NUMBER_OF_PROXY_CONNECTIONS,numProxyOpps);
 		 myInfo.putInt(OnlineConstants.PLAYERS_IN_GAME,
 				 			Math.max(spectator
 				 				?numActivePlayers
@@ -738,7 +734,6 @@ public class Session implements LobbyConstants
 		 // the game itself will treat the slave clients similar to robots.
 		 myInfo.put(ConnectionManager.LAUNCHUSERS,launchUsers);
 		 myInfo.put(ConnectionManager.LAUNCHUSER,launchUser);
-		 myInfo.put(ConnectionManager.LAUNCHPASSNPLAY,launchPassNPlay);
 		 myInfo.putInt(exHashtable.FIRSTPLAYER, selectedFirstPlayerIndex);
 		 if(G.isCodename1())
 			 {double scale = G.getDisplayScale();

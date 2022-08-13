@@ -2371,9 +2371,6 @@ void LaunchGameNow(StringTokenizer localST)
 	Session.Mode sessMode = Session.Mode.findMode(G.IntToken(localST));
 	if(sessMode == sess.mode)
 	{
-	boolean enablePNP = 
-						  (G.getBoolean(OnlineConstants.EnablePassAndPlay, false)
-							&& sess.okForPassAndPlay());
 	String sm = sess.getGameNameID();
 
 	boolean usePNP = false;
@@ -2382,7 +2379,6 @@ void LaunchGameNow(StringTokenizer localST)
 	boolean inhibitLaunch = false;
 	int seedvalue = randomseed.nextInt();
 	String myHost = users.primaryUser().getHostUID();
-	int nProxyPlayers = 0;
 	// one for each player, always up to the max players for this game
 	for(int i=0;i<Session.MAXPLAYERSPERGAME;i++)
 	{
@@ -2408,23 +2404,13 @@ void LaunchGameNow(StringTokenizer localST)
 	    { itsme=lu; 
 	      lu.primaryUser = true;
 	    }
-	  else if (enablePNP)
-	  	{
-		  if(thisHost.equalsIgnoreCase(myHost)) 
-		  { usePNP = true;	// some other client on the same host 
-		    lu.otherUser = true;
-		    nProxyPlayers++;
-		    inhibitLaunch = true;
-	    }
-	  }
+
 	}
 	  else { failed = true; }
 	  
 	}}
 	sess.startingName=localST.nextToken();
 	seedvalue = G.IntToken(localST);				// random seed for the game
-	sess.launchPassNPlay = usePNP;
-	sess.nProxyPlayers = nProxyPlayers;				// number of fake players
 	int starter =  G.IntToken(localST);	// boss player
 	
 	

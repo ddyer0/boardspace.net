@@ -4647,6 +4647,7 @@ public abstract class commonCanvas extends exCanvas
         timeControl = tc;
         futureTimeControl = tc.copy();
         datePlayed = "";
+        if(info.getBoolean(REVIEWONLY,false)) { gameMode = Session.Mode.Review_Mode; }
         gameMode = Session.Mode.findMode(info.getString(exHashtable.MODE,gameMode.modeName));
         l.tournamentMode = info.getBoolean(exHashtable.TOURNAMENTMODE,false);
 

@@ -3847,6 +3847,11 @@ private void drawPlayerBoard(Graphics gc,
        	boolean censor = !reviewOnly && censor(pb,highlightAll);
        	switch(state)
     	{
+       	case BuildStructure23Free:
+       	case BuildStructureFree:
+       	case Build2StructureFree:
+       		discount = 8;
+       		break;
        	case BuildStructureDiscount3:
        		discount = 3;
        		break;

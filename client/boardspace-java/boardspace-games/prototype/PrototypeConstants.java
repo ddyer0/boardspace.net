@@ -21,7 +21,7 @@ public interface PrototypeConstants
 		Black, // positive numbers are trackable
 		White,
 		BoardLocation,
-		EmptyBoard,;
+		EmptyBoard, ToggleEye,;
 		PrototypeChip chip;
 		public String shortName() { return(name()); }
 	
@@ -63,13 +63,6 @@ public enum PrototypeState implements BoardState,PrototypeConstants
     calculating adjacency and connectivity. */
  static final int[] ZfirstInCol = { 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0 }; // these are indexes into the first ball in a column, ie B1 has index 2
  static final int[] ZnInCol = { 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11 }; // depth of columns, ie A has 4, B 5 etc.
- //
- // rhombix hexagonal board 15 per side
- static final int[] ZfirstInCol15 = { 14,13,12,11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0 }; // these are indexes into the first ball in a column, ie B1 has index 2
- static final int[] ZnInCol15 = { 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15 }; // depth of columns, ie A has 4, B 5 etc.
- // rhombix hexagonal board, 19 per side
- static final int[] ZfirstInCol19 = { 18, 17, 16, 15, 14,13,12,11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0 }; // these are indexes into the first ball in a column, ie B1 has index 2
- static final int[] ZnInCol19 =     { 19,19,19,19,19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19 }; // depth of columns, ie A has 4, B 5 etc.
 
  enum PrototypeVariation
     {
@@ -124,19 +117,19 @@ public enum PrototypeState implements BoardState,PrototypeConstants
 	
 	static void putStrings()
 	{
-		String PrototypeStrings[] = 
-		{  "Prototype",
+		String GameStrings[] = 
+		{  "Game",
 			PlayState,
 	    PlayOrSwapState,
 	    VictoryCondition
 			
 		};
-		String PrototypeStringPairs[][] = 
-		{   {"Prototype_family","Prototype"},
-			{"Prototype_variation","Prototype"},
+		String GameStringPairs[][] = 
+		{   {"Game_family","Game"},
+			{"Game_variation","Game"},
 		};
-		InternationalStrings.put(PrototypeStrings);
-		InternationalStrings.put(PrototypeStringPairs);
+		InternationalStrings.put(GameStrings);
+		InternationalStrings.put(GameStringPairs);
 		
 	}
 

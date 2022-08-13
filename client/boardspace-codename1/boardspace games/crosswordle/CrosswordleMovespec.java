@@ -72,14 +72,7 @@ public class CrosswordleMovespec extends commonMPMove implements CrosswordleCons
     {
         parse(new StringTokenizer(str), p);
     }
-    public CrosswordleMovespec(Word w,int who)
-    {
-    	op = MOVE_PLAYWORD;
-    	to_col = w.seed.col;
-    	to_row = w.seed.row;
-    	word = w.name;
-    	player = who;
-    }
+
     /** constructor for simple robot moves - pass and done 
      */
     public CrosswordleMovespec(int opc,int who)

@@ -1,18 +1,16 @@
 package tumble;
 
 
-import bridge.Color;
-import bridge.JCheckBoxMenuItem;
-
-import com.codename1.ui.geom.Rectangle;
-
-import online.common.*;
 import online.game.*;
 import online.game.sgf.*;
 import online.search.SimpleRobotProtocol;
 
 import java.util.*;
 
+import com.codename1.ui.geom.Rectangle;
+
+import bridge.Color;
+import bridge.JCheckBoxMenuItem;
 import lib.Graphics;
 import lib.Image;
 import lib.CellId;
@@ -97,7 +95,7 @@ public class TumbleGameViewer extends CCanvas<TumbleCell,TumbleBoard> implements
         zoomRect.barColor=ZoomColor;
         zoomRect.highlightColor = ZoomHighlightColor;
        
-        b = new TumbleBoard(info.getString(OnlineConstants.GAMETYPE, "Tumblingdown"),
+        b = new TumbleBoard(info.getString(GAMETYPE, "Tumblingdown"),
         		getStartingColorMap());
         useDirectDrawing(true); // not tested yet
         doInit(false);
@@ -135,7 +133,7 @@ public class TumbleGameViewer extends CCanvas<TumbleCell,TumbleBoard> implements
     {	G.SetRect(fullRect, x, y, width, height);
     	GameLayoutManager layout = selectedLayout;
     	int nPlayers = nPlayers();
-        int chatHeight = selectChatHeight(height);
+       	int chatHeight = selectChatHeight(height);
        	// ground the size of chat and logs in the font, which is already selected
     	// to be appropriate to the window size
     	int fh = standardFontSize();
@@ -144,7 +142,7 @@ public class TumbleGameViewer extends CCanvas<TumbleCell,TumbleBoard> implements
         int minLogH = fh*10;	
         int margin = fh/2;
         int buttonW = fh*8;
-        int nrows = b.boardSize;  
+        int nrows = b.boardSize;
          	// this does the layout of the player boxes, and leaves
     	// a central hole for the board.
     	//double bestPercent = 
@@ -156,7 +154,7 @@ public class TumbleGameViewer extends CCanvas<TumbleCell,TumbleBoard> implements
     			0.4		// preference for the designated layout, if any
     			);
         boolean rotate = seatingFaceToFaceRotated();
-  	
+    	
         // place the chat and log automatically, preferring to place
     	// them together and not encroaching on the main rectangle.
     	layout.placeTheChatAndLog(chatRect, minChatW, chatHeight,minChatW*2,3*chatHeight/2,logRect,
@@ -205,9 +203,9 @@ public class TumbleGameViewer extends CCanvas<TumbleCell,TumbleBoard> implements
     	G.placeRight(goalRect,zoomRect,CELLSIZE*2);
         setProgressRect(progressRect,goalRect);
         positionTheChat(chatRect,Color.white,Color.white);
-            
+ 	
     }
-    
+
     private void DrawLiftRect(Graphics gc,HitPoint highlight)
     {  	
     	drawLiftRect(gc,liftRect,highlight,textures[LIFT_ICON_INDEX]); 
@@ -292,7 +290,7 @@ public class TumbleGameViewer extends CCanvas<TumbleCell,TumbleBoard> implements
      	int top =  G.Bottom(brect);
      	int left = G.Left(brect);
      	while(cells.hasMoreElements())
-        	{
+       	{	
      		TumbleCell cell = cells.nextElement();
             boolean isADest = dests.get(cell)!=null;
             int ypos = top - gb.cellToY(cell);
@@ -305,15 +303,15 @@ public class TumbleGameViewer extends CCanvas<TumbleCell,TumbleBoard> implements
             		ftf ? yscale : 0,
             		ftf ? 0 : yscale,
             		kk))
-        		{ 
-        		highlight.arrow = hasMovingObject(highlight) ? StockArt.DownArrow : StockArt.UpArrow;
-        		highlight.awidth = SQUARESIZE/2;
-        		highlight.spriteColor = Color.red;
-        		}
+            		{
+            		highlight.arrow = hasMovingObject(highlight) ? StockArt.DownArrow : StockArt.UpArrow;
+            		highlight.awidth = SQUARESIZE/2;
+            		highlight.spriteColor = Color.red;
+            		}
 	            if(isADest) 
 	            {GC.cacheAACircle(gc,xpos+dotsize,ypos,dotsize,Color.red,Color.gray,true);
 	            }
-        }
+        	}
 
     }
     
@@ -409,7 +407,7 @@ public class TumbleGameViewer extends CCanvas<TumbleCell,TumbleBoard> implements
  
         handleExecute(b,mm,replay);
         startBoardAnimations(replay,b.animationStack,SQUARESIZE,MovementStyle.Stack);
-        
+
         if(replay!=replayMode.Replay) { playSounds((TumbleMovespec)mm); }
  
         return (true);
@@ -510,7 +508,7 @@ private void playSounds(TumbleMovespec m)
        	 generalRefresh();
        	 break;
 
-        case ZoomSlider:
+       case ZoomSlider:
         	break;
          case BoardLocation:	// we hit the board 
 			switch(state)
@@ -540,7 +538,7 @@ private void playSounds(TumbleMovespec m)
             	switch(state)
             	{
             	default: throw G.Error("can't drop on rack in state %s",state);
-                	case PLAY_STATE:
+            	case PLAY_STATE:
             		performReset();
             		break;
 

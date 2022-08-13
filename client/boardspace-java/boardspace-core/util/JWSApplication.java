@@ -127,7 +127,7 @@ public class JWSApplication implements Config,Runnable
 	    	String lang=prefs.get(langKey,"english"); 
 			if(lang!=null) { G.putGlobal(G.LANGUAGE,lang); }
 	    	Http.setHostName(serverName);
-	    	if(G.getString(OnlineConstants.VIEWERCLASS,null)==null)
+	    	if(!G.getBoolean(OnlineConstants.REVIEWONLY,false) &&  G.getString(OnlineConstants.VIEWERCLASS,null)==null)
 	        {	boolean isTable = G.isTable();
 	    		G.setOffline(isTable);
 	    		boolean startoff = isTable;

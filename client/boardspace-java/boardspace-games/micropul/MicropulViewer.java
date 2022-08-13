@@ -859,7 +859,7 @@ public class MicropulViewer extends CCanvas<MicropulCell,MicropulBoard> implemen
 			case CONFIRM_STATE:
 			case PLAY_STATE:
 				
-				if((bb.pickedObject==null) &&!bb.isDest(hitObject))
+				if((bb.pickedObject==null) &&!bb.isDest(bb.getCell(hitObject)))
 					{
 					// note that according to the general theory, this shouldn't
 					// ever occur because inappropriate spaces won't be mouse sensitve.

@@ -337,7 +337,6 @@ public class ConnectionManager
 	public static final String SESSIONPASSWORD = "sessionPassword";
 	public static final String LAUNCHUSERS = "launchusers";
 	public static final String LAUNCHUSER = "launchuser"; 
-	public static final String LAUNCHPASSNPLAY = "launchpassnplay";
 	
     public void Connect(String id, String server, int port)
     {  	clientId = id;

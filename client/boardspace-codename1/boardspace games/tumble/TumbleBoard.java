@@ -70,7 +70,7 @@ class TumbleBoard extends rectBoard<TumbleCell> implements BoardProtocol,TumbleC
     {   drawing_style = DrawingStyle.STYLE_NOTHING; // STYLE_CELL or STYLE_LINES
     	Grid_Style = TUMBLEGRIDSTYLE; //coordinates left and bottom
     	setColorMap(map);
-        doInit(init); // do the initialization 
+        doInit(init); // do the initialization
         autoReverseY();		// reverse_y based on the color map
      }
     public TumbleBoard cloneBoard() 
@@ -156,7 +156,7 @@ class TumbleBoard extends rectBoard<TumbleCell> implements BoardProtocol,TumbleC
         // xor some subset of them.  Note that if you tweak this, all the existing
         // digests are invalidated.
         //
-         
+        
 		v ^= cell.Digest(r,pickedSource);
 		v ^= chip.Digest(r,pickedObject);
 		v ^= (board_state.ordinal()*10+whoseTurn)*r.nextLong();
@@ -379,7 +379,7 @@ class TumbleBoard extends rectBoard<TumbleCell> implements BoardProtocol,TumbleC
         		break;
         	}
         	break;
-        }
+         }
     }
     //
     // true if col,row is the place where something was dropped and not yet confirmed.
@@ -442,7 +442,7 @@ class TumbleBoard extends rectBoard<TumbleCell> implements BoardProtocol,TumbleC
         	pickedSource = whiteChip;
         	pickedObject = whiteChip.topChip();
         	break;
-        }
+         }
    }
 
     //
@@ -569,7 +569,7 @@ class TumbleBoard extends rectBoard<TumbleCell> implements BoardProtocol,TumbleC
     	{	c.isAKing = false;
     		TumbleChip topChip = (c==pickedSource) ? pickedObject : c.topChip();
     		boolean isKing = topChip.isChip();
-    		int topIndex = c.chipIndex - ((c==pickedSource)?0:1); 
+    		int topIndex = c.chipIndex - ((c==pickedSource)?0:1);
     		int owner = (topChip==myChip)
            					?whoseTurn
            					:nextPlayer[whoseTurn];
@@ -583,7 +583,7 @@ class TumbleBoard extends rectBoard<TumbleCell> implements BoardProtocol,TumbleC
     		if(isKing)
     		{	topIndex++;
     			if(topChip==myChip)
-    			{
+    				{
     				potentialKings[owner]++;	// count a pure stack
     				if(topIndex>=kingHb)
     				{
@@ -629,7 +629,7 @@ class TumbleBoard extends rectBoard<TumbleCell> implements BoardProtocol,TumbleC
            			m.originalHeight = pickedSource.chipIndex+1;	// save original height for unexecute
            				// also used by the sound generator
            		 	dropObject(TumbleId.BoardLocation,m.to_col,m.to_row,replay); 
- 				    setNextStateAfterDrop();
+				    setNextStateAfterDrop();
         			break;
         	}
         	break;

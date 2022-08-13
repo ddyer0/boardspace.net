@@ -1191,7 +1191,8 @@ class CrosswordsBoard extends rectBoard<CrosswordsCell> implements BoardProtocol
     	boolean newconnected = isNewConnected();
     	boolean hasnew = newWords.size()>0;
     	Word duplicate = noduplicates ? findDuplicateWord() : null;
-    	if(!dropline || !connected) { invalidReason = NotALine; }
+    	if(!dropline || !connected) 
+    		{ invalidReason = NotALine; }
     	else if(!allwords) { invalidReason = NotWords; }
     	else if(!newconnected) { invalidReason = NotNewConnected; }
     	else if(duplicate!=null) { invalidReason = DuplicateWord; }
@@ -1553,6 +1554,7 @@ class CrosswordsBoard extends rectBoard<CrosswordsCell> implements BoardProtocol
         				  animationStack.push(drawPile);
         			  }
         			}
+        		acceptPlacement();
         	}
         	drawPile.shuffle(new Random(randomKey+moveNumber*100));
         	if(revision>=108)

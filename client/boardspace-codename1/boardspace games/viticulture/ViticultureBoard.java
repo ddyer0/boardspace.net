@@ -79,7 +79,7 @@ action will be taken in the spring.
   
  */
 class ViticultureBoard extends RBoard<ViticultureCell> implements BoardProtocol,ViticultureConstants
-{	static int REVISION = 151;			// 100 represents the initial version of the game
+{	static int REVISION = 152;			// 100 represents the initial version of the game
 										// games with no revision information will be 100
 										// revision 101, correct the sale price of champagne to 4
 										// revision 102, fix the cash distribution for the cafe
@@ -147,6 +147,7 @@ class ViticultureBoard extends RBoard<ViticultureCell> implements BoardProtocol,
 										//   and fixes soldato cost of max 3 if soldatos are on the overflow space
 										// revision 150 fixed scholar "both" option with oracle drawing cards
 										// revision 151 makes the "sell wines" overlay behave as radio buttons
+										// revision 152 tightens up the conditions for showing the "fill wine order" choice
 public int getMaxRevisionLevel() { return(REVISION); }
 	PlayerBoard pbs[] = null;		// player boards
 	public PlayerBoard getPlayerBoard(int n) 
@@ -5032,7 +5033,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
     			break;
     		case Choice_B:
     			//p1("marketer b");
-    			// avoiding information leakage, we're allowed to select this even if it's impossible
+    			// avoiding information leakage, we're sometimes allowed to select this even if it's impossible
     			// but if it is impossible, tell the fool something
     			nextState = canFillWineOrder(pb) ? ViticultureState.FillWineBonus : ViticultureState.FillWineOptional;
     			break;
@@ -9106,7 +9107,7 @@ public void placeWorkerInAction(PlayerBoard pb,int action,int lastSlot,
 			case 1: // merchant
 				if(pb.cash>=3) { addChoice(all,ViticultureId.Choice_A,generator); }
 				// avoid information leakage, offer the choice even if not possible 
-				addChoice(all,ViticultureId.Choice_B,generator); 
+				if(revision<152 || pb.canPossiblyFillWineOrder()) { addChoice(all,ViticultureId.Choice_B,generator); } 
 				break;
 			case 3: // judge
 				addChoice(all,ViticultureId.Choice_A,generator);
@@ -9120,7 +9121,7 @@ public void placeWorkerInAction(PlayerBoard pb,int action,int lastSlot,
 			case 5: //marketer
 				addChoice(all,ViticultureId.Choice_A,generator);
 				// avoid information leakage, offer the choice even if not possible 
-				addChoice(all,ViticultureId.Choice_B,generator); 
+				if(revision<152 || pb.canPossiblyFillWineOrder()) { addChoice(all,ViticultureId.Choice_B,generator); } 
 				break;
 			case 6: //crush expert
 				addChoice(all,ViticultureId.Choice_A,generator);
@@ -9166,13 +9167,13 @@ public void placeWorkerInAction(PlayerBoard pb,int action,int lastSlot,
 				addChoice(all,ViticultureId.Choice_A,generator);
 				if(pb.cash>=1) { addChoice(all,ViticultureId.Choice_B,generator); }
 				break;
-			case 20:
+			case 20:	// jack of all trades
 				{
 				boolean canHarvest = canHarvest(pb,generator);
 				if(canHarvest) { addChoice(all,ViticultureId.Choice_A,generator); }
 				if(canHarvest || canMakeWine(pb)) { addChoice(all,ViticultureId.Choice_B,generator); }
 				// avoid information leakage
-				addChoice(all,ViticultureId.Choice_C,generator);
+				if(revision<152 || pb.canPossiblyFillWineOrder()) { addChoice(all,ViticultureId.Choice_C,generator); }
 				}
 				break;
 			case 26:

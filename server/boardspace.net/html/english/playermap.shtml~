@@ -57,9 +57,13 @@ height=360>
  name="game" value="zertz"><param name="zertz.classname"
  value="online.common.MapViewer"><param name="mapcenter_x" value="0.747"><param
  name="mapcenter_y" value="0.0"><param name="imagelocation"
- value="/images/earthshadelow.jpg"><param name="datalocation"
+ value="http://boardspace.net/images/earthshadelow.jpg"><param name="datalocation"
  value="/cgi-bin/tlib/gs_locations.cgi"><param name="rootreviewer"
- value="true"><param name="final" value="true"></applet><br>
+ value="true"><param name="final" value="true">
+<form action="/java/boardspacemap.jnlp" method=post>
+<input type=submit value="Launch player location map">
+</form>
+</applet><br>
 <br>
 <br>
 See the <a href="/cgi-bin/gs_rankings5.cgi"><b>World Popularity Table</b></a>

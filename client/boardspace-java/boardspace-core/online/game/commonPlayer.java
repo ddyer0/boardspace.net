@@ -101,8 +101,6 @@ public class commonPlayer implements Opcodes,lib.CompareTo<commonPlayer>
     }
     
     public long reviewTime = 0;					// most recent time update in review mode
-    // this can be assumed to be true when version 5.44 is extinct
-    public boolean zeroOrigin = false;			// if true, player will use zero as the first move number for game record strings
     public boolean updated = false;
     public int mouseX = -1;
     public int mouseY = -1;

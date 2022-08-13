@@ -61,6 +61,10 @@ public class ShogiViewer extends CCanvas<ShogiCell,ShogiBoard> implements ShogiC
     private Rectangle rackRects[] =  addRect("rack",2);
     private Rectangle acceptDrawRect = addRect("acceptDraw");
     private Rectangle declineDrawRect = addRect("declineDraw");
+    private Toggle eyeRect = new Toggle(this,"eye",
+			StockArt.NoEye,ShogiId.ToggleEye,NoeyeExplanation,
+			StockArt.Eye,ShogiId.ToggleEye,EyeExplanation
+			);
     
     private Rectangle repRect = addRect("repRect");
     private Rectangle altchipRect = addRect("altChip");
@@ -108,7 +112,7 @@ public class ShogiViewer extends CCanvas<ShogiCell,ShogiBoard> implements ShogiC
     	MouseDotColors = ShogiMouseDotColors;
     	MouseColors = ShogiMouseColors;
     	
-        b = new ShogiBoard(info.getString(OnlineConstants.GAMETYPE, Shogi_INIT),randomKey,repeatedPositions);
+        b = new ShogiBoard(info.getString(GAMETYPE, Shogi_INIT),randomKey,repeatedPositions);
         useDirectDrawing(true);
         doInit(false);
         chipsetOption = myFrame.addOption(s.get("Traditional Pieces"),traditional_chips,deferredEvents);
@@ -198,7 +202,7 @@ public class ShogiViewer extends CCanvas<ShogiCell,ShogiBoard> implements ShogiC
         int stateY = boardY-stateH/2;
         int stateX = boardX;
 
-        G.placeRow(stateX,stateY,boardW ,stateH,stateRect,reverseViewRect,noChatRect);
+        G.placeRow(stateX,stateY,boardW ,stateH,stateRect,eyeRect,reverseViewRect,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	G.placeRow(boardX, boardBottom-stateH,boardW,stateH,goalRect,altchipRect);       
     	if(rotate)
@@ -358,6 +362,7 @@ public class ShogiViewer extends CCanvas<ShogiCell,ShogiBoard> implements ShogiC
         //
     	ShogiState state = gb.getState();
      	boolean moving = hasMovingObject(highlight);
+     	boolean show = eyeRect.isOnNow();
      	Hashtable<ShogiCell,ShogiCell> dests = gb.getDests();
        	drawArrow(gc,gb,YELLOWDOT,gb.pickedSource,gb.droppedDest,brect);
        	drawArrow(gc,gb,YELLOWDOT,gb.prevPickedSource,gb.prevDroppedDest,brect);
@@ -390,6 +395,12 @@ public class ShogiViewer extends CCanvas<ShogiCell,ShogiBoard> implements ShogiC
             	  GC.cacheAACircle(gc,xpos,ypos-scale/2,scale,YELLOWDOT,GRAYDOT,true);
             	}
             }
+            else
+                if(show && canhit)
+                {
+                	StockArt.SmallO.drawChip(gc,this,SQUARESIZE,xpos,ypos,null);
+                }
+
             
             if(!(gb.originalDroppedObject!=null)
             	&& (cell.topChip()!=null)
@@ -495,10 +506,12 @@ public class ShogiViewer extends CCanvas<ShogiCell,ShogiBoard> implements ShogiC
 					HighlightColor, rackBackGroundColor);
 				}
 			handleEditButton(gc,standardRotation,editRect,select, highlight, HighlightColor, rackBackGroundColor);
+			
                 }
 
  		drawPlayerStuff(gc,(vstate==ShogiState.Puzzle),ourSelect,HighlightColor,rackBackGroundColor);
-
+ 		eyeRect.activateOnMouse = true;
+ 		eyeRect.draw(gc,select);
   		standardGameMessage(gc,standardRotation,
         		vstate==ShogiState.Gameover?gameOverMessage():s.get(vstate.getDescription()),
         				vstate!=ShogiState.Puzzle,
@@ -638,7 +651,9 @@ private void playSounds(commonMove m)
           case FlipButton:
         	  PerformAndTransmit("Flip "+cell.col+" "+cell.row);
         	  break;
-       	
+          case ToggleEye:
+        	  eyeRect.toggle();
+        	  break;
          case BoardLocation:	// we hit the board 
 			switch(state)
 			{

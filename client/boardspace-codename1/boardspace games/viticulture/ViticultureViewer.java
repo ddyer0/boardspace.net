@@ -341,7 +341,7 @@ public class ViticultureViewer extends CCanvas<ViticultureCell,ViticultureBoard>
         MouseColors  = ViticultureMouseColors;
         MouseDotColors = ViticultureMouseDotColors;
  
-        String type = info.getString(OnlineConstants.GAMETYPE, ViticultureVariation.viticulture.name);
+        String type = info.getString(GAMETYPE, ViticultureVariation.viticulture.name);
         // recommended procedure is to supply players and randomkey, even for games which
         // are current strictly 2 player and no-randomization.  It will make it easier when
         // later, some variant is created, or the game code base is re purposed as the basis
@@ -3851,6 +3851,11 @@ private void drawPlayerBoard(Graphics gc,
        	boolean censor = !reviewOnly && censor(pb,highlightAll);
        	switch(state)
     	{
+       	case BuildStructure23Free:
+       	case BuildStructureFree:
+       	case Build2StructureFree:
+       		discount = 8;
+       		break;
        	case BuildStructureDiscount3:
        		discount = 3;
        		break;

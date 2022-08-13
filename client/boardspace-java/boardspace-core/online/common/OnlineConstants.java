@@ -175,10 +175,11 @@ public interface OnlineConstants extends Config {
     static final String CHATWIDGET = "chatwidget";
     static final String PICTURE = "picture";
     static final String HOSTUID = "hostuid";		// unique host id string, generated at launch
-    static final String EnablePassAndPlay = "enablepassandplay";
     static final String AutoDoneEverywhere = "Automatic \"Done\"";
 
     static final String VIEWERCLASS = "viewerclass";
+    static final String REVIEWONLY = "reviewonly";
+    
 	int MAX_OFFLINE_USERS = 20;
 	int OFFLINE_USERID = 999990-MAX_OFFLINE_USERS;
 	

@@ -7,8 +7,13 @@ import java.util.*;
 import lib.G;
 
 
-public class Loa_Board extends BaseBoard implements BoardProtocol,UIC
-{	private LoaState board_state = LoaState.Play;
+public class Loa_Board extends BaseBoard implements BoardProtocol,UIC,Play2Constants
+{	
+	public int REVISION = 100;		// revision 100 adds rev numbers and the random setup
+	
+	public int getMaxRevisionLevel() { return(REVISION); }
+
+	private LoaState board_state = LoaState.Play;
 	public BoardState getState() { return board_state;}
     static Integer one = Integer.valueOf(1);
     Object getTheOne() { return(one); }
@@ -59,14 +64,25 @@ public class Loa_Board extends BaseBoard implements BoardProtocol,UIC
     Hashtable<Integer,Integer> hashed_positions;
 
     // constructor 
-    public Loa_Board(String init_option,int map[])
+    public Loa_Board(String init_option,int map[],long random)
     {	setColorMap(map);
+    	randomKey = random;
+    	revision = REVISION;
         doInit(init_option);
     }
     public void doInit() { doInit(setup.name); }
     
+    
+    public void doInit(String typ,long key)
+	{ 	StringTokenizer tok = new StringTokenizer(typ);
+		String name = tok.nextToken();
+		long key1 = tok.hasMoreElements() ? G.LongToken(tok) : key;
+		int rev = tok.hasMoreElements() ? G.IntToken(tok) : revision;
+		doInit(name,key1,rev); 
+	}
+
     public Loa_Board cloneBoard() 
-	{ Loa_Board dup = new Loa_Board(gametype,getColorMap()); 
+	{ Loa_Board dup = new Loa_Board(gametype,getColorMap(),randomKey); 
 	  dup.copyFrom(this);
 	  return(dup); 
    	}
@@ -101,8 +117,9 @@ public class Loa_Board extends BaseBoard implements BoardProtocol,UIC
         return (x + (size * y));
     }
 
-    public void doInit(String type,long key)
+    public void doInit(String type,long key,int rev)
     {	randomKey =key;
+		adjustRevision(rev);
     	board_state = LoaState.Puzzle;
     	setCurrentSetup(type);
     	setBoardSize(setup.boardSize);
@@ -849,6 +866,26 @@ public class Loa_Board extends BaseBoard implements BoardProtocol,UIC
                 (((i & 1) != key) ? Stone_Type.Black : Stone_Type.White),false);
         }
     }
+    /**prepare the board for a parachute game */
+    void prepare_random_setup(Random r)
+    {
+        Initialize();
+
+        for (int i = 1, sz = size - 1; i < sz; i++)
+        {	Stone_Type s1 = r.nextInt(100)>=50 ? Stone_Type.Black : Stone_Type.White;
+        	Stone_Type s2 = r.nextInt(100)>=50 ? Stone_Type.Black : Stone_Type.White;
+        	Stone_Type s1a = s1==Stone_Type.Black ? Stone_Type.White : Stone_Type.Black;
+        	Stone_Type s2a = s2==Stone_Type.Black ? Stone_Type.White : Stone_Type.Black;
+       	
+            Add_Stone(0, i, s1,false);
+            Add_Stone(sz, sz-i,s1a,false);
+            
+            Add_Stone(i, 0,s2,false);
+            Add_Stone( sz-i, sz,s2a,false);
+           
+            
+        }
+    }
 
     /**prepare the board an arbitrary set of stones, as for a problem rather than a game */
     void prepare_custom_setup()
@@ -892,6 +929,9 @@ public class Loa_Board extends BaseBoard implements BoardProtocol,UIC
         case Custom:
             prepare_custom_setup();
             break;
+        case Random:
+        	prepare_random_setup(new Random(randomKey));
+        	break;
         default:
             G.Assert(false,
                 "Missing initialization information for setup " + setup);
@@ -1402,4 +1442,9 @@ public class Loa_Board extends BaseBoard implements BoardProtocol,UIC
         setWhoseTurn(from.whoseTurnStone());
         Check_Board();
     }
+	public String gameTypeString() {
+		if(revision<100) { return gametype; }
+		return gametype+" "+randomKey+" "+revision;
+	}
+
 }

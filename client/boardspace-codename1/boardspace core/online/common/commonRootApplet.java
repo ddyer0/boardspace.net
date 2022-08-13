@@ -2,10 +2,10 @@ package online.common;
 
 import bridge.ThreadDeath;
 import bridge.URL;
-import common.GameInfo;
 
 import java.util.StringTokenizer;
 
+import common.GameInfo;
 import lib.CanvasProtocol;
 import lib.ConnectionManager;
 import lib.ExtendedHashtable;
@@ -46,7 +46,6 @@ public class commonRootApplet implements  RootAppletProtocol, Runnable,  LobbyCo
 	        {G.LANGUAGE,DefaultLanguageName},
 	        {LOBBYPORT,"-1"},
 	        {TESTSERVER, "false"},
-	        {EnablePassAndPlay,"false"},	// pass n play mode for playtable
 	        {PICTURE, "false"},
 	        {WebStarted,"false"},
 	        {ConnectionManager.UID, "0"},

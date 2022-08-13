@@ -754,6 +754,12 @@ public class PlayerBoard
 			}
 		return(n);
 	}
+	
+	public boolean canPossiblyFillWineOrder()
+	{
+		return (hasWine() && hasCard(ChipType.PurpleCard));
+	}
+	
 	public boolean hasWine()
 	{	for(ViticultureCell wine[] : wineTypes) 
 		{	if(hasWine(wine)) { return(true); }

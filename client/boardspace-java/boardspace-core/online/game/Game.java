@@ -145,7 +145,6 @@ public class Game extends commonPanel implements PlayConstants,DeferredEventHand
     private boolean isPoisonedGuest = false;	// is a guest who joined as a spectator
     private int errors = 0;
     private int numberOfPlayerConnections = 0;
-    private int numberOfProxyConnections = 0;
     private BSDate startingTime = new BSDate();
     private boolean showMice = true;
     private boolean doSound = true;
@@ -239,7 +238,7 @@ public class Game extends commonPanel implements PlayConstants,DeferredEventHand
     private boolean startRecorded = false;
 
     private void mplog(String str)
-    {	if(gameInfo.scoringMode()==ScoringMode.SM_Multi) 
+    {	if(gameInfo==null || gameInfo.scoringMode()==ScoringMode.SM_Multi) 
     	{ sendMessage(NetConn.SEND_NOTE + str); 
     	}
     }
@@ -662,17 +661,22 @@ public class Game extends commonPanel implements PlayConstants,DeferredEventHand
 
     	int playersInGame = info.getInt(OnlineConstants.PLAYERS_IN_GAME,2);
         numberOfPlayerConnections = info.getInt(exHashtable.NUMBER_OF_PLAYER_CONNECTIONS,0);	// number of real players
-        numberOfProxyConnections = info.getInt(exHashtable.NUMBER_OF_PROXY_CONNECTIONS,0);	// number of other local players
     	playerConnections = new commonPlayer[playersInGame];
+
     	my = new commonPlayer(0); 
     	my.primary = true; //mark it as "us"
     	my.launchUser = (LaunchUser)info.get(ConnectionManager.LAUNCHUSER);
-        my.spectator = info.getBoolean(exHashtable.SPECTATOR,false);
+        my.spectator =  info.getBoolean(exHashtable.SPECTATOR,false);
     	info.put(exHashtable.MYPLAYER,my);			// required by the viewer
-        usePNP = G.offline() || info.getBoolean(ConnectionManager.LAUNCHPASSNPLAY,false);
+        usePNP = G.offline();
         launchUsers = (LaunchUser[])info.get(ConnectionManager.LAUNCHUSERS);
        
         super.init(info,frame);		// viewer is created here
+
+        // reviewOnly means we're not playing, but we might or might not be connected
+        reviewOnly = gameMode==Session.Mode.Review_Mode || info.getBoolean(REVIEWONLY,false);
+       
+        
         skipGetStory = false;
         recordedHistory = "";
     	seedValue = info.getInt(OnlineConstants.RANDOMSEED);
@@ -716,8 +720,7 @@ public class Game extends commonPanel implements PlayConstants,DeferredEventHand
         if(info.get(ConnectionManager.ROOMNUMBER)==null) { info.putInt(exHashtable.SESSION,-1); }
         sessionNum = info.getInt(exHashtable.SESSION);
         
-        // reviewOnly means we're not playing, but we might or might not be connected
-        reviewOnly = gameMode==Session.Mode.Review_Mode;
+        
         serverFile = G.getString(FileSelector.SERVERFILE, "");
         selectedGame = G.getString(FileSelector.SELECTEDGAME, "");
          
@@ -793,7 +796,7 @@ public class Game extends commonPanel implements PlayConstants,DeferredEventHand
             startDirectory(dir); 
         }
         if(v!=null) { v.addObserver(this); }
-        if(G.offline() && !my.spectator) { setGameState(ConnectionState.NOTMYCHOICE); }
+        if(G.offline()) { setGameState(ConnectionState.NOTMYCHOICE); }
     }
     // game directory on the web site, generally /gameame/gamenamegames/
     public String webGameDirectory()
@@ -982,7 +985,7 @@ public class Game extends commonPanel implements PlayConstants,DeferredEventHand
     // stay in state "connected": until all the players have arrived.
     public void doCONNECTED(String cmd,StringTokenizer localST,String fullMsg)
     { // state 2, wait for all the players to show up
-        if ((commonPlayer.numberOfPlayers(playerConnections) == (numberOfPlayerConnections-numberOfProxyConnections))
+        if ((commonPlayer.numberOfPlayers(playerConnections) == numberOfPlayerConnections)
         	&& allPlayersRegistered())
         {
             sendMessage(NetConn.SEND_GROUP+KEYWORD_SPARE+" "+KEYWORD_TIMECONTROLS);
@@ -1067,7 +1070,7 @@ public class Game extends commonPanel implements PlayConstants,DeferredEventHand
           	String name = G.decodeAlphaNumeric(myST.nextToken());
          	if(!isAutoma)
          	{
-        	commonPlayer p = createPlayer(nextChan,name,order%100,uid,true,true);
+        	commonPlayer p = createPlayer(nextChan,name,order%100,uid);
         	boolean hasQuit = "Q".equals(quit);
         	boolean hasRobot = "R".equals(quit);
            // p.index = idx;
@@ -1820,15 +1823,21 @@ public class Game extends commonPanel implements PlayConstants,DeferredEventHand
     private void sendRegister(int order,int seat,String name,String uid,int channel,int rev)
     {	G.Assert(order>=0&&order<=6,"bad order %s",order);
 	    G.Assert(seat>=-1&&seat<=6,"bad seat %s",seat);
-	    // magic here!  transmit order as order+1000 to indicate a client
+	    //
+	    // potential magic here!  At various times "order" has been used to pass 
+	    // information about the capabilities of the client.  As of 8/2022 these
+	    // workarounds are obsolete, but we still keep the capability warm.
+	    //
+	    // transmit order as order+1000 to indicate a client
 	    // that understands per-move times as +T nnn.  There was an older overloading
 	    // of "order" that is obsolete and extinct
 	    //
 	    // order+2000 indicates zero origin for history strings is supported
-    	String msg = NetConn.SEND_REGISTER_PLAYER + (order+2000) + " " + seat + " " + name + " " + uid+" "+channel+" "+rev;
+	    //
+    	String msg = NetConn.SEND_REGISTER_PLAYER + order + " " + seat + " " + name + " " + uid+" "+channel+" "+rev;
     	//G.print("reg:" + msg);
     	if(G.offline()) 
-    		{ createPlayer(channel,name,order,uid,true,true);
+    		{ createPlayer(channel,name,order,uid);
      		}
     	else { sendMessage(msg); 
   		}
@@ -2775,7 +2784,7 @@ public class Game extends commonPanel implements PlayConstants,DeferredEventHand
         commonPlayer.reorderPlayers(playerConnections);			// make sure the players are properly ordered before 
 
     }
-    public commonPlayer createPlayer(int channel,String name,int order,String uid,boolean time,boolean zeroOrigin)
+    public commonPlayer createPlayer(int channel,String name,int order,String uid)
     {	// the time paramter is "understands time" and is obsolete, all active client versions understand
         commonPlayer p = getPlayer(channel);
         if (p != null)
@@ -2784,7 +2793,6 @@ public class Game extends commonPanel implements PlayConstants,DeferredEventHand
            setPlayerName(p,name,true);
            p.setOrder(order);
            p.uid = uid;
-           p.zeroOrigin = zeroOrigin;
            v.changePlayerList(p,null);		// should replace no player
            return (p); /* already exists */
         }
@@ -2793,7 +2801,6 @@ public class Game extends commonPanel implements PlayConstants,DeferredEventHand
         p.channel = channel;
         p.setOrder(order);
         p.uid = uid;
-        p.zeroOrigin = zeroOrigin;
         setPlayerName(p,name,true);
         addPlayerConnection(p,null);
      
@@ -2816,13 +2823,16 @@ public class Game extends commonPanel implements PlayConstants,DeferredEventHand
 		String uid = myST.nextToken();
 		String name = G.decodeAlphaNumeric(myST.nextToken());
 		int order = G.IntToken(myST);
+		//
+		// from time to time, the "order" argument was overloaded to pass new information about the 
+		// capabilities of the client.  As of 8/2022 all these temporary workarounds are moot, and
+		// "order" is just order.  However, it's a useful dodge so we continue to ignore anything
+		// encoded into the higher values of "order".
+		//
 		// retask "order" at rev 4.44, 1000+ indicates a "modern" client that understands per-move time.
 		// at this time, the obsolecense is 3.90, so the older use (before 2.71) is officially extinct.
 		// order from someone who has connected but not yet registered is -1, so give the benefit of the
 		// doubt not that everyone actually does understand.
-		int globalGameCap = order/1000;
-		boolean understandsTime = true;			// always true now, old clients are extinct
-		boolean zeroOrigin = globalGameCap>=2;
 		if(order>=1000) { order = order%1000; /* compatibility with old mobiles 2.71 and before */ }
 		int rev = 0;
 		boolean revKnown = false;
@@ -2849,7 +2859,7 @@ public class Game extends commonPanel implements PlayConstants,DeferredEventHand
     	G.Assert((position>=-1)&&(position<=6),"bad seat %s",position);
     	if(!uid.equals(Bot.Automa.uid))
     	{
-    	commonPlayer p = createPlayer(chan,name,order,uid,understandsTime,zeroOrigin);
+    	commonPlayer p = createPlayer(chan,name,order,uid);
 		theChat.setUser(chan,name);		// and tell the chat his name too
 		p.readyToPlayTime = G.Date();
 		p.readyToPlay |= revKnown;		// we're only ready to play once the revision level is known
@@ -3968,14 +3978,7 @@ public class Game extends commonPanel implements PlayConstants,DeferredEventHand
                     {
                         doTouch();
                     }
-
-                    if (my.spectator &&
-                            ((gameState == ConnectionState.NOTMYCHOICE) ||
-                            (gameState == ConnectionState.MYCHOICE) || (gameState == ConnectionState.MYTURN)))
-                    	{
-                    	throw G.Error("WHOOPS! Spectator is in a bad game state!");
-                    	}
-                    
+                   
                     sendMouseMessage(); //if any
                     if(sendFocusMessage)
                     	{ sendMessage(NetConn.SEND_GROUP+KEYWORD_FOCUS+" " + hasGameFocus + " " + focuschanged);

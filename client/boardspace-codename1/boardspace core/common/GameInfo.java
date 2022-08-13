@@ -1021,6 +1021,12 @@ synchronized(allGames) {
 			new double[]{0.06,1,1,0.01},
 			loaClass,loaRules,
 			loaVideo,false, BlackOverWhite));
+	put(new GameInfo(122,ES.game,1,"L",ConnectionGames,"LOA","LOARANDOM",
+			ThreeBotsPlus,
+			new double[]{0.06,1,1,0.01},
+			loaClass,loaRules,
+			loaVideo,false, BlackOverWhite));
+	
 	put(new GameInfo(130,ES.game,1,"LP",ConnectionGames,"LOA","LOAP",
 			ThreeBotsPlus,
 			new double[]{0.06,1,1,0.01},
@@ -1102,6 +1108,31 @@ synchronized(allGames) {
 			new double[]{1.0,0.01},
 			havannahViewer,havannahRules,
 			null,false, WhiteOverBlack));
+
+	}
+	{
+	String tumbleweedRules = "/tumbleweed/english/Rules.html";
+	String tumbleweedViewer = "tweed.TweedViewer";  
+	put(new GameInfo(1690,ES.game,111,"TU",TerritoryGames,"Tumbleweed","tumbleweed-6",
+			OneBotPlus,
+			new double[]{1.0,0.01},
+			tumbleweedViewer,tumbleweedRules,
+			null,false, WhiteOverRed));
+	put(new GameInfo(1691,ES.game,111,"TU",TerritoryGames,"Tumbleweed","tumbleweed-8",
+			OneBotPlus,
+			new double[]{1.0,0.01},
+			tumbleweedViewer,tumbleweedRules,
+			null,false, WhiteOverRed));
+	put(new GameInfo(1692,ES.game,111,"TU",TerritoryGames,"Tumbleweed","tumbleweed-10",
+			OneBotPlus,
+			new double[]{1.0,0.01},
+			tumbleweedViewer,tumbleweedRules,
+			null,false, WhiteOverRed));
+	put(new GameInfo(1693,ES.game,111,"TU",TerritoryGames,"Tumbleweed","tumbleweed-11",
+			OneBotPlus,
+			new double[]{1.0,0.01},
+			tumbleweedViewer,tumbleweedRules,
+			null,false, WhiteOverRed));
 
 	}
 	{

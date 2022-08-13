@@ -18,7 +18,7 @@ public interface ShogiConstants
     	BoardLocation(null),
     	ChangeChipsetButton(null),
     	ReverseViewButton(null),
-    	FlipButton(null),;
+    	FlipButton(null), ToggleEye(null),;
 	
    	String shortName = name();
 	public String shortName() { return(shortName); }
