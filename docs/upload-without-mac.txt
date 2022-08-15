@@ -1,0 +1,15 @@
+
+There's an incantation to allow uploading apps to the apple store without using a mac
+
+https://github.com/codenameone/CodenameOne/issues/3597
+
+This is embodied in the "upload.cmd" script
+
+general process;  
+
+install the "iTMSTransporterToolInstaller_2.3.0.36.exe" tool
+create a per-app password on the apple portal, edit all the
+fixed paths and names into the upload.cmd script
+
+to actually do an upload, move the .ipa and appstoreinfo.plist into the usual place,
+open a shell and run the upload command
