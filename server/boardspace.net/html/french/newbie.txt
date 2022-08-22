@@ -1,4 +1,0 @@
-
-Bienvenue, nouveau joueur. N'hésitez pas à jouer, regarder ou simplement discuter.
-Pour jouer contre Robot, cliquez une case "libre" dans une salle de jeu vide, puis
-"Contre Robot". Vous pouvez aussi attendre qu'un autre joueur se joigne à la partie.

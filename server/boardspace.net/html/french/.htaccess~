@@ -1,3 +1,0 @@
-RewriteEngine on
-RewriteCond  %{REQUEST_FILENAME} !-f
-RewriteRule  ^(/)([a-zA-Z]+)(/)(.*)   /english/$4
