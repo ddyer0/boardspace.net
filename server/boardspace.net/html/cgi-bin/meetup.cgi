@@ -131,6 +131,7 @@ sub getPlayerInfo()
 	my $q = "select uid,timezone_offset from players where player_name = $qp1";
 	my $sth = &query($dbh,$q);
 	my ($uid,$zone) = &nextArrayRow($sth);
+	&finishQuery($sth);
 	if(!$uid) { print &trans("Player #1 doesn't exist",$player1) . "<br>\n"; }
 	return($uid,$zone);
 }

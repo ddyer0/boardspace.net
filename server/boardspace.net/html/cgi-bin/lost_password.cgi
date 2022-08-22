@@ -214,6 +214,7 @@ sub doreset()
 				print "</form>";
 			}
 		}
+		&finishQuery($sth);
 	}
 	if($problem) { print "Problem: $problem<br>"; }
 }

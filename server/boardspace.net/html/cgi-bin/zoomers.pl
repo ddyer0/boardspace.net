@@ -49,7 +49,6 @@ require "tlib/common.pl";
     $sumtrans += $n;
     $sumtransstr .=" $n $lang";
   }
-  &finishQuery($sth4);
   
   my $trans = ($sumtrans>0) ? " $sumtrans translations" : "";
   my $master = ($num3>0)?"$num3 new potential masters":"";
@@ -114,6 +113,7 @@ require "tlib/common.pl";
   close SENDMAIL;
   
   }
+  &finishQuery($sth4);
   &finishQuery($sth3);
   &finishQuery($sth2);
   &finishQuery($sth);
