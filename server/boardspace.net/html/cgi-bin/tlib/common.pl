@@ -795,17 +795,19 @@ sub readconfigfile()
 
 sub addNewTrans()
 {	my ($newk,$cxt) = @_;
-	if($lib'translations_loaded)
+	if($lib'translations_loaded && ($'lib'language eq 'english'))
         {
 	my $dbh = &connect();
 	if($dbh)
 	{
 	my $qnew = $dbh->quote($newk);
 	my $qc = $dbh->quote($cxt);
-	&commandQuery($dbh,"replace into translation set keystring=$qnew,translation=$qnew,context=$qc,language='english',collection='web'");
+	my $q = "replace into translation set keystring=$qnew,translation=$qnew,context=$qc,language='english',collection='web'";
+	&commandQuery($dbh,$q);
 	}
 	&disconnect($dbh);
-}}
+	}
+}
 sub trans()
 {	# this magic call to encode entities will encode nonstandard ascii (ie; chinese)
 	# but leave regular ascii untouched.  This allows simple html tags to be embedded
