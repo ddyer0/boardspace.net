@@ -78,8 +78,8 @@ public class SyzygyChip extends chip<SyzygyChip>
         for(int i=0;i<nImages;i++) 
         	{CC[i]=new SyzygyChip(i,IM[i],ImageNames[i],SCALES[i],rv.nextLong(),names[i],values[i]); 
         	}
-        CANONICAL_PIECE = CC;
         Asteroid = CC[ASTEROID_INDEX];
+        CANONICAL_PIECE = CC;
         check_digests(CC);
 		}
 	}   

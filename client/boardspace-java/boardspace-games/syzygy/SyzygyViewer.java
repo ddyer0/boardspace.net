@@ -83,7 +83,7 @@ public class SyzygyViewer extends CCanvas<SyzygyCell,SyzygyBoard> implements Syz
 
 	private Image textures[] = null;
 
-    public void preloadImages()
+    public synchronized void preloadImages()
     {	SyzygyChip.preloadImages(loader,ImageDir);
     	if(textures==null)
     	{

@@ -1,0 +1,131 @@
+package ordo;
+
+import lib.CellId;
+import lib.InternationalStrings;
+import lib.OStack;
+
+import online.game.BaseBoard.BoardState;
+
+public interface OrdoConstants 
+{	static String VictoryCondition = "Capture all, Disconnect your opponent, or reach the opposite side";
+	static String CheckerMoveDescription = "Move a checker";
+	static String CheckerCaptureDescription = "Make a capturing move";
+	static String CheckerCaptureMoreDescription = "Continue with additional captures";
+	static String AmericanCheckersRules = "american checkers rules";
+	static String TurkishCheckersRules = "turkish checkers rules";
+	static String InternationalCheckersRules = "international checkers rules";
+	static String SecondPlayDescription = "Make a second move, forward only";
+	static String FirstPlayDescription= "Make a move, forward or sideways";
+	static String ReconnectDescription = "Reconnect your pieces";
+	
+	static enum Variation
+	{	
+		Ordo(null,null,"ordo",10,8),
+		OrdoX(null,null,"ordox",10,8);
+		int cols;
+		int rows;
+		String name;
+		OrdoChip banner;
+		String rules;
+		Variation(OrdoChip b,String r,String n,int szx,int szy) 
+			{banner = b;
+			 rules = r;
+			 name = n; 
+			 cols = szx;
+			 rows = szy;
+			}
+		static Variation findVariation(String n)
+    	{
+			for(Variation s : values()) { if(s.name.equalsIgnoreCase(n)) { return(s); }}
+    		return(null);
+    	}
+	};
+	
+    
+    class StateStack extends OStack<CheckerState>
+	{
+		public CheckerState[] newComponentArray(int n) { return(new CheckerState[n]); }
+	} 
+
+public enum CheckerState implements BoardState
+{	Puzzle(PuzzleStateDescription),
+	Draw(DrawStateDescription),				// involuntary draw by repetition
+	Resign( ResignStateDescription),
+	Gameover(GameOverStateDescription),
+	Confirm(ConfirmStateDescription),
+	OrdoPlay(OrdoConstants.FirstPlayDescription),
+	OrdoPlay2(OrdoConstants.SecondPlayDescription),	// for ordox, second move
+	Reconnect(OrdoConstants.ReconnectDescription),
+	DrawPending(DrawOfferDescription),		// offered a draw
+	AcceptOrDecline(DrawDescription),		// must accept or decline a draw
+	AcceptPending(AcceptDrawPending),		// accept a draw is pending
+   	DeclinePending(DeclineDrawPending),		// decline a draw is pending
+	;
+	String description;
+	CheckerState(String des)
+	{	description = des;
+	}
+	public String getDescription() { return(description); }
+	public boolean GameOver() { return(this==Gameover); }
+		public boolean Puzzle() { return(this==Puzzle); } public boolean simultaneousTurnsAllowed() { return(false); }
+}
+public enum CheckerId implements CellId
+{
+//	these next must be unique integers in the dictionary
+	Black_Chip_Pool("B"), // positive numbers are trackable
+	White_Chip_Pool("W"),
+    BoardLocation(null),
+    ReverseViewButton(null),
+    ToggleEye(null),
+;
+	String shortName = name();
+	public String shortName() { return(shortName); }
+	CheckerId(String sn) { if(sn!=null) { shortName = sn; }}
+	static public CheckerId find(String s)
+	{	
+		for(CheckerId v : values()) { if(s.equalsIgnoreCase(v.shortName)) { return(v); }}
+		return(null);
+	}
+
+ 	
+}
+
+static void putStrings()
+{
+	// there should be a line in masterstrings.java which causes
+	// these to be included in the upload/download process for 
+	// translation.  Also a line in the viewer init process to
+	// add them for debugging purposes.
+		String CheckerStrings[] =
+			{	"Checkers",
+			CheckerMoveDescription,
+			CheckerCaptureDescription,
+			CheckerCaptureMoreDescription,
+			VictoryCondition,
+			SecondPlayDescription,
+			FirstPlayDescription,
+			ReconnectDescription,
+		};
+	// there should be a line in masterstrings.java which causes
+	// these to be included in the upload/download process for 
+	// translation.  Also a line in the viewer init process to
+	// add them for debugging purposes.
+		String CheckerStringPairs[][] = 
+		{   {"Checkers_family","Checkers"},
+			{"Checkers_variation","Standard Checkers"},
+			
+			{"Checkers-international","International Checkers"},
+			{"Checkers-international_variation","International Checkers"},
+			{"Checkers-turkish","Turkish Checkers"},
+			{"Checkers-turkish_variation","Turkish Checkers"},
+			{"Checkers-american","American Checkers"},
+			{"Checkers-american_variation","American Checkers"},
+			{AmericanCheckersRules,"move forward 1 space diagonally\nmandatory capture forward diagonally\nkings move and capture forward and backward"},
+			{TurkishCheckersRules,"move forward or sideways orthogonally\nmandatory captures forward or sideways\nflying kings move and capture orthoginally\nmaximal captures are required"},
+			{InternationalCheckersRules,"move forward diagonally\nmandatory captures forward or backwards diagonally\nflying kings move and capture diagonally\nmaximal captures are required"},
+		};
+		InternationalStrings.put(CheckerStrings);
+		InternationalStrings.put(CheckerStringPairs);
+
+}
+}

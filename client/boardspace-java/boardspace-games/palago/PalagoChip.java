@@ -195,13 +195,13 @@ public class PalagoChip extends chip<PalagoChip>
         for(int i=0;i<nImages;i++) 
         	{CC[i]=new PalagoChip(i,IM[i],ImageNames[i],SCALES[i],rv.nextLong(),names[i]); 
         	}
-        CANONICAL_PIECE = CC;
         Left = CC[0];
         Right = CC[1];
         Down = CC[2];
         blank = CC[blank_index];
         logo = CC[nImages-1];	// last is the logo
         check_digests(CC);
+        CANONICAL_PIECE = CC;
 		}
 	}   
 	

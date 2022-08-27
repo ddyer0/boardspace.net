@@ -315,7 +315,6 @@ public class OctilesChip extends chip<OctilesChip>
         	CC[i]=chip;
         	
         	}
-        CANONICAL_PIECE = CC;
         CANONICAL_RUNNER = new OctilesChip[NRUNNERS];
         double dummyScale[] = {0.4,0.54,2.1};
         for(int i=0;i<NRUNNERS;i++)
@@ -331,12 +330,13 @@ public class OctilesChip extends chip<OctilesChip>
         	CANONICAL_RUNNER[i] = runner; 
         }
         check_digests(CC);
-		}
 		// line overlays for the blank tile
 		lines30 = compositeImages(forcan,ImageDir,line30names);				
 		lines90 = compositeImages(forcan,ImageDir,line90names);		
 		lines120 = compositeImages(forcan,ImageDir,line120names);
 		lines180 = compositeImages(forcan,ImageDir,line180names);
+        CANONICAL_PIECE = CC;
+		}
 
 
 	}

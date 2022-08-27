@@ -62,7 +62,7 @@ public class CarnacViewer extends CCanvas<CarnacCell,CarnacBoard> implements Car
     private boolean chipSetLock = false;
     public int getAltChipset() { return(showChipSet); }
     
-    public void preloadImages()
+    public synchronized void preloadImages()
     {	
        	CarnacChip.preloadImages(loader,ImageDir);
        	gameIcon = CarnacChip.findChip(FaceOrientation.Up,

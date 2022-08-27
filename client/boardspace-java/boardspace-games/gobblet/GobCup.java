@@ -71,10 +71,10 @@ public class GobCup extends chip<GobCup> implements GobConstants
     };
     public static GobCup white;
     public static GobCup black;
-    
+    static private boolean imagesLoaded = false;
 		// call from the viewer's preloadImages
 	public static void preloadImages(ImageLoader forcan,String ImageDir)
-	{	if(CANONICAL_PIECE==null)
+	{	if(!imagesLoaded)
 			{
 			int nColors = ImageFileNames.length;
 	        Image [] icemasks = forcan.load_images(ImageDir,ImageFileNames,"-mask");
@@ -89,8 +89,8 @@ public class GobCup extends chip<GobCup> implements GobConstants
 	        CANONICAL_PIECE = CC;
 	        white = getCup(0,3);
 	        black = getCup(1,3);
+	        imagesLoaded = true;
 	        check_digests(CC);
 			}
 		}
-
 }

@@ -129,7 +129,7 @@ public class BreakingAwayViewer extends CCanvas<BreakingAwayCell,BreakingAwayBoa
     {	return(b.pointsPerPlayer[p.boardIndex]);
     }
     
-    public void preloadImages()
+    public synchronized void preloadImages()
     {	BreakingAwayPiece.preloadImages(loader,ImageDir);
 	    if (artwork == null)
 	        { // note that dfor this to work correctly, the images and masks must be the same size.  

@@ -389,6 +389,8 @@ import udp.PlaytableStack;
 		 panel.setLayout(new BoxLayout(panel,BoxLayout.Y_AXIS));
 		 JLabel nameLabel = new JLabel(s.get(SuccessMessage));
 		 JLabel nameLabel2 = new JLabel(s.get(SuccessMessage2));
+		 nameLabel.setUIID("LoginLabel");
+		 nameLabel2.setUIID("LoginLabel");
 		 panel.add(nameLabel);
 		 panel.add(nameLabel2);
 		 return(panel);
@@ -444,13 +446,16 @@ import udp.PlaytableStack;
 		 JPanel pane = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 		 
 		 JLabel label = new JLabel(s.get(txt));
+		 label.setUIID("LoginLabel");
 		 label.setLabelFor(passwordField);
 		 pane.add(label);
 
 		 
-		 passwordField = new JPasswordField(13);
+		 passwordField = new JPasswordField(10);
 		 passwordField.setActionCommand(OK);
 		 passwordField.addActionListener(this);
+		 passwordField.setUIID("LoginTextField");
+
 		 pane.add(passwordField);
 		 
 		 if(includeSave)
@@ -474,7 +479,9 @@ import udp.PlaytableStack;
 	 {
 		 JPanel panel =  new JPanel(new FlowLayout(FlowLayout.RIGHT));
 		 JLabel nameLabel = new JLabel(s.get(YourRealName));
-		 realNameField = new JTextField(25);
+		 nameLabel.setUIID("LoginLabel");
+		 realNameField = new JTextField(10);
+		 realNameField.setUIID("LoginTextField");
 		 realNameField.setText(realName);
 		 panel.add(nameLabel);
 		 panel.add(realNameField);
@@ -484,6 +491,7 @@ import udp.PlaytableStack;
 	 private JPanel createErrorPanel()
 	 {	JPanel panel =  new JPanel(new FlowLayout(FlowLayout.CENTER));
 	 	errorText = new JLabel(" ");
+	 	errorText.setUIID("LoginLabel");
 	 	errorText.setForeground(Color.red);
 	 	//errorText.setWidth(80);
 	 	panel.add(errorText);
@@ -494,11 +502,16 @@ import udp.PlaytableStack;
 	 {
 		 JPanel panel =  new JPanel(new FlowLayout(FlowLayout.RIGHT));
 		 JLabel nameLabel = new JLabel(s.get(YourEmail));
-		 emailField = new JTextField(25);
+		 nameLabel.setUIID("LoginLabel");
+		 emailField = new JTextField(10);
+		 emailField.setUIID("LoginTextField");
+
 		 emailField.setText(email);
 		 panel.add(nameLabel);
 		 panel.add(emailField);
-		 panel.add(new JLabel(s.get(YourEmailPromise)));
+		 JLabel promise = new JLabel(s.get(YourEmailPromise));
+		 promise.setUIID("LoginLabel");
+		 panel.add(promise);
 		 
 		 return(panel);
 		 
@@ -517,7 +530,10 @@ import udp.PlaytableStack;
 	 {
 		 JPanel panel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 		 JLabel nameLabel = new JLabel(s.get(YourName));
-		 nameField = new JTextField(13);
+		 nameLabel.setUIID("LoginLabel");
+		 nameField = new JTextField(10);
+		 nameField.setUIID("LoginTextField");
+
 		 nameField.setActionCommand(OK);
 		 panel.add(nameLabel);
 		 panel.add(nameField);
@@ -544,7 +560,10 @@ import udp.PlaytableStack;
 		 if(lang==null) { lang=prefs.get(langKey,"english"); }
 		 language = lang;
 		 JLabel llab = new JLabel(s.get(PREFERREDLANGUAGE));
+		 llab.setUIID("LoginLabel");
+
 		 langField = new Choice<String>();
+		 langField.setUIID("LoginChoice");
 		 panel.add(llab);
 		 llab.setLabelFor(langField);
 		 for(String ll : InternationalStrings.languages) 
@@ -562,7 +581,9 @@ import udp.PlaytableStack;
 		 JPanel panel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 
 		 JLabel llab = new JLabel(s.get(COUNTRY));
+		 llab.setUIID("LoginLabel");
 		 countryField = new Choice<String>();
+		 countryField.setUIID("LoginChoice");
 		 panel.add(llab);
 		 llab.setLabelFor(countryField);
 		 for(int i=1;i<countries.length; i++) 	// skip element 0
@@ -572,8 +593,9 @@ import udp.PlaytableStack;
 		 if(!"".equals(country)) { countryField.select(country); }
 		 if(countryField.getSelectedItem()==null) { countryField.select(0); }
 		 countryField.addItemListener(this);
-		 
-		 panel.add(new JLabel(s.get(CountryString)));
+		 JLabel country = new JLabel(s.get(CountryString));
+		 country.setUIID("LoginLabel");
+		 panel.add(country);
 		 return(panel);
 	 }
 	 private Component createAppstoreButton()
@@ -1009,7 +1031,7 @@ import udp.PlaytableStack;
         Image icon = Image.getImage(IMAGEPATH+CommonConfig.icon_image_name);
         frame.setIconAsImage(icon);
         final PasswordCollector newContentPane = new PasswordCollector(frame,parent);
-        
+        newContentPane.getInsets();
         newContentPane.setOpaque(true); //content panes must be opaque
         frame.setContentPane(newContentPane);
         frame.addWindowListener(newContentPane);

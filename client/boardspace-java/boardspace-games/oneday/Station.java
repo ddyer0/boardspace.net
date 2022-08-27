@@ -517,7 +517,6 @@ class Station extends OnedayChip implements OnedayConstants,OnedayLocation
 	{	if(dot==null)
 		{
 		StockArt[] stockImages = StockArt.preLoadArt(forcan,Dir,cardImageNames, scale);
-		dot = stockImages[0];
 		blank = new Station(stockImages[1].image,"blank");
 		back = new Station(stockImages[2].image,"back");
 		frame = stockImages[3];
@@ -534,6 +533,7 @@ class Station extends OnedayChip implements OnedayConstants,OnedayLocation
 		findAllStops();
         check_digests(stations.toArray());	// verify that the chips have different digests
         check_digests(cards.toArray());
+		dot = stockImages[0];
 		}
 	}
 	

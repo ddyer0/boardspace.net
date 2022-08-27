@@ -58,7 +58,7 @@ public class CannonViewer extends CCanvas<CannonCell,CannonBoard> implements Can
     private JCheckBoxMenuItem reverseOption = null;
    
 
-    public void preloadImages()
+    public synchronized void preloadImages()
     {	
        	CannonChip.preloadImages(loader,ImageDir);
         if (textures == null)

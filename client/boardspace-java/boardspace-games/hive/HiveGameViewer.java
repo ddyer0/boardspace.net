@@ -116,7 +116,7 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
 
         return (handled);
     } 
-    public void preloadImages()
+    public synchronized void preloadImages()
     {	HivePiece.preloadImages(loader,ImageDir);
 	    if (textures == null)
 	        { // note that dfor this to work correctly, the images and masks must be the same size.  

@@ -64,7 +64,7 @@ public class TruGameViewer extends CCanvas<TruCell,TruGameBoard> implements TruC
     private Rectangle captureRects[] = addRect("Captures",2);
     
 
-    public void preloadImages()
+    public synchronized void preloadImages()
     {	TruChip.preloadImages(loader,ImageDir);
     	if (textures == null)
     	{ 

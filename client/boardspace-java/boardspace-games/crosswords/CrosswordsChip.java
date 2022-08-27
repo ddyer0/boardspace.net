@@ -191,7 +191,7 @@ public class CrosswordsChip extends chip<CrosswordsChip> implements CrosswordsCo
 	public static void preloadImages(ImageLoader forcan,String Dir)
 	{	if(!imagesLoaded)
 		{	
-		imagesLoaded = forcan.load_masked_images(Dir,allChips);
+		forcan.load_masked_images(Dir,allChips);
     	ChipStack pool = new ChipStack();
     	int nletters = 0;
 		for(int []ls : letterSpecs)
@@ -214,7 +214,9 @@ public class CrosswordsChip extends chip<CrosswordsChip> implements CrosswordsCo
 		for(char ch='A'; ch<='Z'; ch = (char)(ch+1))
 		{
 			assignedBlanks[ch-'A']=new CrosswordsChip(Blank,ch,0); 
-		}}
+		}
+		imagesLoaded = true;
+		}
 	}   
 	Color ltblue = new Color(100,100,250);
 		

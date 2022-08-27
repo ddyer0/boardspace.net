@@ -75,6 +75,11 @@ public class TweedViewer extends CCanvas<TweedCell,TweedBoard> implements TweedC
  			StockArt.NoEye,TweedId.ToggleEye,NoeyeExplanation,
  			StockArt.Eye,TweedId.ToggleEye,EyeExplanation
  			);
+    private Toggle captureRect = new Toggle(this,"captures",
+ 			TweedChip.Captures,TweedId.Captures,YesCaptures,
+ 			TweedChip.NoCaptures,TweedId.Captures,NoCaptures
+ 			);
+
     private Toggle numberRect = new Toggle(this,"numbers",
  			TweedChip.Numbers,TweedId.Numbers,YesNumbers,
  			TweedChip.NoNumbers,TweedId.Numbers,NoNumbers
@@ -97,7 +102,7 @@ public class TweedViewer extends CCanvas<TweedCell,TweedBoard> implements TweedC
  * this is called during initialization to load all the images. Conventionally,
  * these are loading into a static variable so they can be shared by all.
  */
-    public void preloadImages()
+    public synchronized void preloadImages()
     {	TweedChip.preloadImages(loader,ImageDir);	// load the images used by stones
 		gameIcon = TweedChip.Icon.image;
     }
@@ -136,6 +141,7 @@ public class TweedViewer extends CCanvas<TweedCell,TweedBoard> implements TweedC
         	TweedConstants.putStrings();
         }
         numberRect.setValue(true);
+        captureRect.setValue(true);
          
         rotationOption = myFrame.addOption("rotate board",true,deferredEvents);
         
@@ -298,7 +304,7 @@ public class TweedViewer extends CCanvas<TweedCell,TweedBoard> implements TweedC
         int stateY = boardY;
         int stateX = boardX;
         int stateH = fh*3;
-        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,eyeRect,numberRect,noChatRect);
+        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,eyeRect,captureRect,numberRect,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	G.SetRect(swapButton,boardX+buttonW/2,boardY+buttonW/2,buttonW,buttonW/2);
     	G.SetRect(passButton,boardX+boardW-buttonW*2,boardBottom-buttonW,buttonW,buttonW/2);
@@ -506,6 +512,7 @@ public class TweedViewer extends CCanvas<TweedCell,TweedBoard> implements TweedC
     	boolean numbers = numberRect.isOnNow();
     	Font labels = G.getFont(largeBoldFont(),CELLSIZE/3);
     	double xscale = 0.1;
+    	boolean showCaptures = captureRect.isOnNow();
     	double yscale = 0.08;
     	Enumeration<TweedCell> it = gb.getIterator(Itype.TBRL);
     	while(it.hasMoreElements())
@@ -530,12 +537,19 @@ public class TweedViewer extends CCanvas<TweedCell,TweedBoard> implements TweedC
             Color foreColor = cell.topChip()==TweedChip.White ? Color.black : whiteTextColor;
             GC.Text(gc,true,ax,ay,CELLSIZE,CELLSIZE,foreColor,null,msg);
             }
-            if(gb.isDest(cell))
+
+            if(gb.isDest(cell) || cell==gb.lastPlaced)
             {
             	StockArt.SmallO.drawChip(gc,this,CELLSIZE*3/2,ax+CELLSIZE/2,ay+CELLSIZE/2,null);
+            	
+            }
+        	if(showCaptures && gb.productiveCapture(cell))
+        	{
+        		StockArt.SmallX.drawChip(gc,this,CELLSIZE,ax+CELLSIZE/2,ay+CELLSIZE/2,null);
             }
             if(show && targets.get(cell)!=null)
-            {	StockArt.SmallO.drawChip(gc,this,CELLSIZE,xpos,ypos,null);
+            {	int sz = gb.productivePlacement(cell) ? CELLSIZE : CELLSIZE/2;
+            	StockArt.SmallO.drawChip(gc,this,sz,xpos,ypos,null);
             }
         }
     }
@@ -662,6 +676,8 @@ public class TweedViewer extends CCanvas<TweedCell,TweedBoard> implements TweedC
         eyeRect.draw(gc,selectPos);
         numberRect.activateOnMouse = true;
         numberRect.draw(gc,selectPos);
+        captureRect.activateOnMouse = true;
+        captureRect.draw(gc,selectPos);
      
         // draw the vcr controls, last so the pop-up version will be above everything else
         drawVcrGroup(nonDragSelect, gc);
@@ -933,6 +949,9 @@ public class TweedViewer extends CCanvas<TweedCell,TweedBoard> implements TweedC
             {
             	throw G.Error("Hit Unknown object " + hitCode);
             }
+        	break;
+        case Captures:
+        	captureRect.toggle();
         	break;
         case Numbers:
         	numberRect.toggle();

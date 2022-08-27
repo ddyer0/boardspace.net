@@ -66,7 +66,7 @@ public class GounkiViewer extends CCanvas<GounkiCell,GounkiBoard> implements Gou
     
     boolean twist = false;
     
-    public void preloadImages()
+    public synchronized void preloadImages()
     {	
        	GounkiChip.preloadImages(loader,ImageDir);
         if (images == null)

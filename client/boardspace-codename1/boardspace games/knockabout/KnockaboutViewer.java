@@ -56,7 +56,7 @@ public class KnockaboutViewer extends CCanvas<KnockaboutCell,KnockaboutBoard> im
     private KnockaboutCell roll_anim_cell = null;
     private long roll_anim_stop = 0;
 
-    public void preloadImages()
+    public synchronized void preloadImages()
     {	
     	if (textures == null)
     	{ // note that for this to work correctly, the images and masks must be the same size.  

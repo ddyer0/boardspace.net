@@ -59,7 +59,7 @@ public class SnakesViewer extends CCanvas<SnakesCell,SnakesBoard> implements Sna
     private Rectangle patternRect = addRect("patternRect");
     private Rectangle saveGivensRect = addRect("saveGivensRect");
 
-    public void preloadImages()
+    public synchronized void preloadImages()
     {	
        	SnakesChip.preloadImages(loader,ImageDir);
         if (textures == null)

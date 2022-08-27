@@ -60,7 +60,7 @@ public class QyshinsuViewer extends CCanvas<QyshinsuCell,QyshinsuBoard> implemen
     private Rectangle repRect = addRect("repRect");
     
     private double lineStrokeWidth = 1;
-    public void preloadImages()
+    public synchronized void preloadImages()
     {	
     	if (textures == null)
     	{ // note that for this to work correctly, the images and masks must be the same size.  

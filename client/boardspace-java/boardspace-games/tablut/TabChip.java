@@ -66,7 +66,6 @@ public class TabChip extends chip<TabChip> {
        	{
        	CC[i]=new TabChip(i,ImageNames[i],IM[i],rv.nextLong(),SCALES[i]); 
        	}
-       tCHIPS = CC;
        SilverShip = CC[0];
        SilverShip.colorType = SilverColor;
        SilverShip.chipName = Silver;
@@ -81,6 +80,7 @@ public class TabChip extends chip<TabChip> {
        Selection = CC[4];
        HexTile_Gold = CC[5];
        HexTile_Gold2 = CC[6];
+       tCHIPS = CC;
        check_digests(CC);
 	 }
 	}

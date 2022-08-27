@@ -174,10 +174,6 @@ public abstract class exCanvas extends ProxyWindow
 
 	public double SCALE = 1.0;
 	/**
-	 * this is used during lockAndLoadImages to make sure the image loading process is unique
-	 */
-	public static SimpleLock lock=new SimpleLock("exCanvas");	
-	/**
 	 * asynchronous events such as menu selections and input from the network
 	 * should be synchronized with the game even loop using the deferredEvents queue
 	 */
@@ -353,7 +349,7 @@ public abstract class exCanvas extends ProxyWindow
      * this method should be superseded by the canvas to load images at
      * initialization time.  It's expected to call {@link #lockAndLoadImages}
      */
-    public void preloadImages() {};	// to be superseded
+    public synchronized void preloadImages() {};	// to be superseded
     
     /**
      * 
@@ -369,18 +365,13 @@ public abstract class exCanvas extends ProxyWindow
     	// as well as the instantiate canvas code.
      	try
     	{
-    	lock.getLock();
         StockArt.preloadImages(loader,IMAGEPATH);
       	preloadImages();
        	}
     	catch(Throwable err)
     	{	throw G.Error("error in lockAndLoadImages:"+err+"\n"+G.getStackTrace(err));
     	}
-    	finally
-    	{
-    		lock.Unlock();
-    	}
-     }
+      }
  
     public void adjustStandardFonts(double height)
     {	double zoom = getGlobalZoom();

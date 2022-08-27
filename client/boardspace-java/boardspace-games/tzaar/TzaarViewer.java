@@ -59,7 +59,7 @@ public class TzaarViewer extends CCanvas<TzaarCell,TzaarBoard> implements TzaarC
 
     
 
-    public void preloadImages()
+    public synchronized void preloadImages()
     {	
     	if (textures == null)
     	{ // note that for this to work correctly, the images and masks must be the same size.  

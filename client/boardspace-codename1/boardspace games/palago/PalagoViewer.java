@@ -102,7 +102,7 @@ public class PalagoViewer extends CCanvas<PalagoCell,PalagoBoard> implements Pal
 
 	private Image textures[] = null;
 
-    public void preloadImages()
+    public synchronized void preloadImages()
     {	PalagoChip.preloadImages(loader,ImageDir);
     	if(textures==null)
     	{

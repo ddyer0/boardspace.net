@@ -73,7 +73,7 @@ public class MogulViewer extends CCanvas<MogulCell,MogulBoard> implements MogulC
     {
     	return(mutable_game_record ? "Review" : ""+(MogulChip.nCards-b.deck.height()));
     }
-    public void preloadImages()
+    public synchronized void preloadImages()
     {	
        	MogulChip.preloadImages(loader,ImageDir);
         if (images == null)

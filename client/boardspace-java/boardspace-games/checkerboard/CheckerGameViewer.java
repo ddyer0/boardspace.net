@@ -66,7 +66,7 @@ public class CheckerGameViewer extends CCanvas<CheckerCell,CheckerBoard> impleme
   /**
      * preload all the images associated with the game. This is delegated to the chip class.
      */
-    public void preloadImages()
+    public synchronized void preloadImages()
     {	
        	CheckerChip.preloadImages(loader,ImageDir);
        	gameIcon = CheckerChip.CheckerIcon.image;

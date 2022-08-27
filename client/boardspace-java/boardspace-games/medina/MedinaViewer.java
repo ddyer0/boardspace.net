@@ -83,7 +83,7 @@ public class MedinaViewer extends CCanvas<MedinaCell,MedinaBoard> implements Med
          		? false 
         		: true);
     }
-    public void preloadImages()
+    public synchronized void preloadImages()
     {	
        	MedinaChip.preloadImages(loader,ImageDir);
         if (images == null)

@@ -60,7 +60,7 @@ public class StacViewer extends CCanvas<StacCell,StacBoard>	implements StacConst
     private Rectangle chipRects[] = addRect("chip",2);
     
 
-    public void preloadImages()
+    public synchronized void preloadImages()
     {	
        	StacChip.preloadImages(loader,ImageDir);
        	gameIcon = StacChip.board.image;

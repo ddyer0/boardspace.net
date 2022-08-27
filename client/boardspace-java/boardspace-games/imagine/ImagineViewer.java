@@ -90,7 +90,7 @@ static String SWOOSH = ImageDir + "swoosh"+ Config.SoundFormat;
  * this is called during initialization to load all the images. Conventionally,
  * these are loading into a static variable so they can be shared by all.
  */
-    public void preloadImages()
+    public synchronized void preloadImages()
     {	ImagineChip.preloadImages(loader,ImageDir,Deck1Dir);	// load the images used by stones
 		gameIcon = ImagineChip.Icon.image;
     }

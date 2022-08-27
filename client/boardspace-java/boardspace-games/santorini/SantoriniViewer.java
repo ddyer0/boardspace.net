@@ -73,7 +73,7 @@ public class SantoriniViewer extends CCanvas<SantoriniCell,SantoriniBoard> imple
    
     private SantorId bigGod = null;
     private Rectangle bigGodRect = null;
-    public void preloadImages()
+    public synchronized void preloadImages()
     {	
        	SantoriniChip.preloadImages(loader,ImageDir);
         if (textures == null)

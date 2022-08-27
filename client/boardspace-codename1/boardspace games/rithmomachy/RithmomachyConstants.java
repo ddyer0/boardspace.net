@@ -1,6 +1,7 @@
 package rithmomachy;
 
 import lib.CellId;
+import lib.OStack;
 import online.game.BaseBoard.BoardState;
 
 
@@ -47,6 +48,11 @@ public interface RithmomachyConstants
     static final int Black_Chip_Index = 1;
     static final RithId RackLocation[] = { RithId.White_Chip_Pool,RithId.Black_Chip_Pool};
    
+    class StateStack extends OStack<RithmomachyState>
+    {
+    	public RithmomachyState[] newComponentArray(int n) { return(new RithmomachyState[n]); }
+    }
+    
     public enum RithmomachyState implements BoardState
     {	Puzzle(PuzzleStateDescription),
     	Draw(DrawStateDescription),

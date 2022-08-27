@@ -74,7 +74,7 @@ public class GygesViewer extends CCanvas<GygesCell,GygesBoard> implements GygesC
     	ArrowOffsets[GygesBoard.CELL_RIGHT()] = 2;
     	ArrowOffsets[GygesBoard.CELL_DOWN()] = 3;
     }
-    public void preloadImages()
+    public synchronized void preloadImages()
     {	
        	GygesChip.preloadImages(loader,ImageDir);
         if (stockArt == null)

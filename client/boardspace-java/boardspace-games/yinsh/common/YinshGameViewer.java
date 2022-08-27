@@ -60,7 +60,7 @@ public class YinshGameViewer extends CCanvas<YinshCell,YinshBoard> implements Yi
 
    
 
-    public void preloadImages()
+    public synchronized void preloadImages()
     {	YinshChip.preloadImages(loader,ImageDir);
 	    if (backgrounds == null)
 	    {

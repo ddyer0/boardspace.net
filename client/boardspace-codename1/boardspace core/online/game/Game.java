@@ -1918,10 +1918,10 @@ public class Game extends commonPanel implements PlayConstants,Opcodes,DeferredE
         else
         {
 
-            if (!v.isScored()
+            if ( (v!=null)
+            		&& !v.isScored()
             		&& !GameOver() 
             		&& (nva != 0) 
-            		&& (v!=null)
             		&& (v.salvageRobot()!=null)
             		&& (v.MoveStep() >= 3))
             {

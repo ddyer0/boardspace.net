@@ -55,7 +55,7 @@ public class TakojudoViewer extends CCanvas<TakojudoCell,TakojudoBoard> implemen
     private Rectangle repRect = addRect("repRect");
      
 
-    public void preloadImages()
+    public synchronized void preloadImages()
     {	
        	TakojudoChip.preloadImages(loader,ImageDir);
         if (images == null)

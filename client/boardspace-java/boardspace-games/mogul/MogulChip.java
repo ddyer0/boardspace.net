@@ -144,7 +144,7 @@ public class MogulChip extends chip<MogulChip>
    
 	// call from the viewer's preloadImages
 	public static void preloadImages(ImageLoader forcan,String ImageDir)
-	{	if(CANONICAL_PIECE==null)
+	{	if(pokerChip==null)
 		{
 		misc = StockArt.preLoadArt(forcan,ImageDir,misc_names,scales);
 		
@@ -177,11 +177,11 @@ public class MogulChip extends chip<MogulChip>
         }
         
         for(StockArt m : misc) { ind++; CANONICAL_PIECE[ind] = new MogulChip(ind,m,r.nextLong(),scales[0]); }
-        pokerChip = CANONICAL_PIECE[ind];
         playerChipOffset = ind+1;
         for(StockArt c : chips) { ind++; CANONICAL_PIECE[ind] = new MogulChip(ind,c,r.nextLong(),scales[0]); }
         check_digests(CANONICAL_PIECE);
         for(int i : startingCards) { getCard(i).starting = true; }
+        pokerChip = CANONICAL_PIECE[ind];
 		}
 	}
 

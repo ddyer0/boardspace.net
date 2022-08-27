@@ -78,7 +78,7 @@ public class ShogiViewer extends CCanvas<ShogiCell,ShogiBoard> implements ShogiC
     private JCheckBoxMenuItem reverseOption = null;
     
     private JMenuItem drawAction = null;
-    public void preloadImages()
+    public synchronized void preloadImages()
     {	
        	ShogiChip.preloadImages(loader,ImageDir);
         if (ornaments == null)

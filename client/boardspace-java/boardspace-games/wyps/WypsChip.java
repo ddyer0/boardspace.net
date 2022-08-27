@@ -178,8 +178,8 @@ public class WypsChip extends chip<WypsChip> implements WypsConstants,CommonConf
 	public static void preloadImages(ImageLoader forcan,String Dir)
 	{	if(!imagesLoaded)
 		{	
-		imagesLoaded = forcan.load_masked_images(StonesDir, stoneChips)
-						& forcan.load_masked_images(Dir,otherChips);
+		forcan.load_masked_images(StonesDir, stoneChips);
+		forcan.load_masked_images(Dir,otherChips);
     	ChipStack pool = new ChipStack();
     	int nletters = 0;
 		for(int []ls : letterSpecs)
@@ -199,6 +199,7 @@ public class WypsChip extends chip<WypsChip> implements WypsConstants,CommonConf
 		letters = pool.toArray();  	
 		alphaLetters = new WypsChip[26];
 		for(WypsChip c : letters) { if(c.lcChar>='a') { alphaLetters[c.lcChar-'a'] = c; }}
+		imagesLoaded = true;
 		}
     	
 	}   

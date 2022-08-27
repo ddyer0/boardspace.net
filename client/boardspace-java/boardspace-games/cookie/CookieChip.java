@@ -96,11 +96,11 @@ public class CookieChip extends chip<CookieChip> implements CookieConstants
         	{CC[i]=new CookieChip(i,IM[i],ImageNames[i],SCALES[i],
         			rv.nextLong(),names[i],values[i],descriptions[i]) ;
         	}
-        CANONICAL_PIECE = CC;
         playerChip[0] = CC[ORANGE_CHIP_INDEX];
         playerChip[1] = CC[BLUE_CHIP_INDEX];
         Cherry = CC[CHERRY_INDEX];
         Crawl = CC[CRAWL_INDEX];
+        CANONICAL_PIECE = CC;
         check_digests(CC);
 		}
 	}   

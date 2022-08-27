@@ -58,7 +58,7 @@ class TweedBoard
 			}
 	}
 	TweedCell neutralStack = null;
-	
+	public TweedCell lastPlaced = null;
     private TweedId playerColor[]={TweedId.Red,TweedId.White};    
     private TweedChip playerChip[]={TweedChip.White,TweedChip.White};
     private TweedCell playerCell[]=new TweedCell[2];
@@ -246,6 +246,7 @@ class TweedBoard
         resetState = from_b.resetState;
         lastPicked = null;
         robotBoard = from_b.robotBoard;
+        lastPlaced = getCell(from_b.lastPlaced);
         AR.copy(playerColor,from_b.playerColor);
         AR.copy(playerChip,from_b.playerChip);
     }
@@ -648,7 +649,7 @@ class TweedBoard
        	resetState = board_state;
     }
     private void doDone(replayMode replay)
-    {
+    {	lastPlaced = getDest();
         acceptPlacement();
 
         if (board_state==TweedState.Resign)
@@ -915,6 +916,7 @@ public boolean Execute(commonMove mm,replayMode replay)
 
         Execute(m,replayMode.Replay);
         acceptPlacement();
+        if(DoneState()) { doDone(replayMode.Replay); }
        
     }
  
@@ -1123,6 +1125,28 @@ private boolean addPlaceControlLineMovesA(CommonMoveStack all,CellStack fromAll,
 	}
 	return useFul;
 }
+ public boolean productivePlacement(TweedCell c)
+ {
+	 if(c.height()==0)
+	 {
+		 int mySee = c.getSeen(whoseTurn);
+		 int youSee = c.getSeen(nextPlayer[whoseTurn]);
+		 return mySee >= youSee;
+	 }
+	 return productiveCapture(c);
+ }
+ public boolean productiveCapture(TweedCell c)
+ {	int h = c.height();
+ 	if(h>0)
+ 	{
+	 TweedChip top = c.topChip();
+	 int who = top==TweedChip.Gray ? nextPlayer[whoseTurn] : getPlayerIndex(top);
+	 int mySee = c.getSeen(who);
+	 int youSee = c.getSeen(nextPlayer[who]);
+	 return youSee>h && mySee<=youSee;
+ 	}
+	 return false;
+ }
  CommonMoveStack  GetListOfMoves(boolean greedy)
  {	CommonMoveStack all = new CommonMoveStack();
  	if(board_state==TweedState.PlayOrSwap)
@@ -1164,7 +1188,7 @@ private boolean addPlaceControlLineMovesA(CommonMoveStack all,CellStack fromAll,
  		if(simpleScore(whoseTurn)>simpleScore(nextPlayer[whoseTurn])) 
  		{
  			all.push(new TweedMovespec(MOVE_PASS,whoseTurn)); 
- 			break;
+ 			if(robotBoard) { break; }
  		}
 		//$FALL-THROUGH$
 	case Play:
@@ -1187,6 +1211,7 @@ private boolean addPlaceControlLineMovesA(CommonMoveStack all,CellStack fromAll,
  		}
  		break;
  	case Confirm:
+ 	case Resign:
  	case ConfirmSwap:
  		all.push(new TweedMovespec(MOVE_DONE,whoseTurn));
  		break;

@@ -50,10 +50,10 @@ public class DipoleChip extends chip<DipoleChip> implements DipoleConstants ,Con
         DipoleChip CC[] = new DipoleChip[nchips];
         for(int i=0;i<nchips;i++) 
         	{CC[i]=new DipoleChip(i%2,i,ImageFileNames[i],IM[i],SCALES[i],r.nextLong()); }
-        CANONICAL_PIECE = CC;
         Image im[] = forcan.load_masked_images(Dir,new String[]{"waste"});
         Waste = new DipoleChip(0,0,"waste",im[0],new double[]{0.5,0.5,1.0},0); 
         white = CC[FIRST_CHIP_INDEX];
+        CANONICAL_PIECE = CC;
         check_digests(CC);
 		}
 	}

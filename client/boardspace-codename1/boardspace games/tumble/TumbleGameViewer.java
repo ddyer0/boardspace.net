@@ -67,7 +67,7 @@ public class TumbleGameViewer extends CCanvas<TumbleCell,TumbleBoard> implements
 
     
 
-    public void preloadImages()
+    public synchronized void preloadImages()
     {	TumbleChip.preloadImages(loader,ImageDir);
     	if (textures == null)
     	{ // note that for this to work correctly, the images and masks must be the same size.  

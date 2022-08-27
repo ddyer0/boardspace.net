@@ -84,7 +84,7 @@ public class BreakingAwayPiece extends chip<BreakingAwayPiece>
 	}
 	public static Image Icon = null;
 	public static void preloadImages(ImageLoader forcan,String Dir)
-		{	if(CANONICAL_PIECE==null)
+		{	if(Icon==null)
 			{
 			Random rv = new Random(6723324);
 			int nChips = ImageFileNames.length;
@@ -101,7 +101,7 @@ public class BreakingAwayPiece extends chip<BreakingAwayPiece>
 			}
 	        CANONICAL_PIECE = CYCLES[0];
 	        check_digests(CANONICAL_PIECE);	// verify that the chips have different digests
-			}
 			Icon = CANONICAL_PIECE[0].image;
+			}
 		}  
 }

@@ -68,7 +68,7 @@ public class PunctGameViewer extends CCanvas<punctCell,PunctGameBoard> implement
     
     public BoardProtocol getBoard()   {    return (b);   }
 
-    public void preloadImages()
+    public synchronized void preloadImages()
     {	
 	    if (textures == null)
 	    { // note that for this to work correctly, the images and masks must be the same size.  

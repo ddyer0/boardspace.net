@@ -63,7 +63,7 @@ public class TicTacNineViewer extends CCanvas<TicTacNineCell,TicTacNineBoard> im
     private Rectangle repRect = addRect("repRect");
     
 
-    public void preloadImages()
+    public synchronized void preloadImages()
     {	
        	TicTacNineChip.preloadImages(loader,ImageDir);
         if (images == null)

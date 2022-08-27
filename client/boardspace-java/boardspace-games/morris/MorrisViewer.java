@@ -62,7 +62,7 @@ public class MorrisViewer extends CCanvas<MorrisCell,MorrisBoard> implements Mor
     /**
      * preload all the images associated with the game. This is delegated to the chip class.
      */
-    public void preloadImages()
+    public synchronized void preloadImages()
     {	
        	MorrisChip.preloadImages(loader,ImageDir);
        	gameIcon = MorrisChip.board_9.image;

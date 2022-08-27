@@ -78,7 +78,7 @@ public class KamisadoViewer extends CCanvas<KamisadoCell,KamisadoBoard> implemen
    
     private double lineStrokeWidth = 1;
 
-    public void preloadImages()
+    public synchronized void preloadImages()
     {	
        	KamisadoChip.preloadImages(loader,ImageDir);
         if (images == null)

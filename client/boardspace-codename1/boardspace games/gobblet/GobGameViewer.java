@@ -92,7 +92,7 @@ public class GobGameViewer extends CCanvas<GobCell,GobGameBoard> implements GobC
     private boolean use_perspective() { return(getAltChipset()==0); };
     
 
-    public void preloadImages()
+    public synchronized void preloadImages()
     {	GobCup.preloadImages(loader,GobImageDir);
     	if (textures == null)
     	{ // note that for this to work correctly, the images and masks must be the same size.  

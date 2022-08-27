@@ -726,7 +726,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 		User my = users.primaryUser();
 		GameInfo preferred = my.preferredGame;
 		boolean selected = highlightedItem == LobbyId.highlight_setpreferred;
-		String name = preferred!=null ? preferred.variationName : SelectGameMessage;
+		String name = preferred!=null ? preferred.familyName : SelectGameMessage;
 		Color color = preferred!=null ? Color.white : Color.lightGray;
 		int tleft =  left+h/20;
 		int tw = GC.Text(g, true,tleft, top+h/3,aw,h*2/3,color,null,s.get(name));

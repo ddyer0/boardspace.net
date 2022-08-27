@@ -72,7 +72,7 @@ public class ColoritoViewer extends CCanvas<ColoritoCell,ColoritoBoard> implemen
 			);
 
 
-    public void preloadImages()
+    public synchronized void preloadImages()
     {	
        	ColoritoChip.preloadImages(loader,ImageDir);
         if (textures == null)

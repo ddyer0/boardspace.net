@@ -48,7 +48,7 @@ public class SpanglesViewer extends CCanvas<SpanglesCell,SpanglesBoard> implemen
 		boolean oksame = nmove.op==MOVE_DROP;	// some damaged games have naked drops
 		return EditHistory(nmove,oksame);
 	}
-    public void preloadImages()
+    public synchronized void preloadImages()
     {	SpanglesChip.preloadImages(loader,ImageDir);
     	if(textures==null)
     	{

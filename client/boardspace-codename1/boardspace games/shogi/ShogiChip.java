@@ -212,12 +212,12 @@ public class ShogiChip extends chip<ShogiChip>
         	im2.isAlt = true;
       	
         	}
-        CANONICAL_PIECE = CC;
         check_digests(CC);
         
         // add the check sign
         Image extra[] = forcan.load_masked_images(ImageDir,extraNames);
         check = new ShogiChip(extraNames[0],-1,extra[0],rv.nextLong(),new double[]{0.5,0.5,1.0});
+        CANONICAL_PIECE = CC;
 		}
 	}
 

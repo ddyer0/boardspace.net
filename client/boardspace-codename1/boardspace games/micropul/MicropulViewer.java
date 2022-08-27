@@ -100,7 +100,7 @@ public class MicropulViewer extends CCanvas<MicropulCell,MicropulBoard> implemen
 
 	private Image textures[] = null;
 
-    public void preloadImages()
+    public synchronized void preloadImages()
     {	MicropulChip.preloadImages(loader,ImageDir);
     	if(textures==null)
     	{

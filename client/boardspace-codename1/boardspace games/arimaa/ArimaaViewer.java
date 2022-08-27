@@ -110,7 +110,7 @@ public class ArimaaViewer extends CCanvas<ArimaaCell,ArimaaBoard> implements Ari
     	return(n);
     }
   
-    public void preloadImages()
+    public synchronized void preloadImages()
     {	
        	ArimaaChip.preloadImages(loader,ImageDir);
         if (textures == null)

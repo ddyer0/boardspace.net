@@ -53,7 +53,7 @@ public class PonteViewer extends CCanvas<PonteCell,PonteBoard> implements PonteC
     private Rectangle bigBridgeRect = addRect(".bigBridge");
     private Rectangle playerChip[] = addRect(",chip",2);
 
-    public void preloadImages()
+    public synchronized void preloadImages()
     {	
        	PonteChip.preloadImages(loader,ImageDir);
         if (images == null)

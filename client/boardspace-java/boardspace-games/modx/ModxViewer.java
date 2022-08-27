@@ -60,7 +60,7 @@ public class ModxViewer extends CCanvas<ModxCell,ModxBoard> implements ModxConst
     /**
      * preload all the images associated with the game. This is delegated to the chip class.
      */
-    public void preloadImages()
+    public synchronized void preloadImages()
     {	
        	ModxChip.preloadImages(loader,ImageDir);
        	gameIcon = ModxChip.Icon.image;

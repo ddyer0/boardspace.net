@@ -116,7 +116,7 @@ public class OnedayViewer extends CCanvas<OnedayCell,OnedayBoard> implements One
     private Rectangle platformViewRect = addRect("platformViewRect");
     private Rectangle playerStateRect = addRect("playerState");
     private Rectangle trainActionRect = addRect("trainAction");
-    public void preloadImages()
+    public synchronized void preloadImages()
     {	
        	Station.preloadImages(loader,ImageDir);
         if (images == null)

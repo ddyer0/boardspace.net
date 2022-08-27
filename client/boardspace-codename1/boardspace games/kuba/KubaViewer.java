@@ -80,7 +80,7 @@ public class KubaViewer extends CCanvas<KubaCell,KubaBoard> implements KubaConst
     private Rectangle repRect = addRect("repRect");
     
 
-    public void preloadImages()
+    public synchronized void preloadImages()
     {	
     	if (textures == null)
     	{ // note that for this to work correctly, the images and masks must be the same size.  

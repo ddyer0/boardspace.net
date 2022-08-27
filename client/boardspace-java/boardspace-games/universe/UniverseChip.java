@@ -563,9 +563,11 @@ public class UniverseChip extends chip<UniverseChip> implements UniverseConstant
    static final String[] BorderNames = 
    		{"yellow-border","red-border","green-border","blue-border"};
    private static String[] GivensImageNames = {"light-chip"};
+   private static boolean imagesLoaded = false;
+   
 	// call from the viewer's preloadImages
 	public synchronized static void preloadImages(ImageLoader forcan,String ImageDir)
-	{	if(CANONICAL_PIECE==null)
+	{	if(!imagesLoaded)
 		{
         Image IM[]=forcan.load_masked_images(ImageDir,ImageNames);
         Image IG[]=forcan.load_masked_images(ImageDir,GivensImageNames);
@@ -607,9 +609,9 @@ public class UniverseChip extends chip<UniverseChip> implements UniverseConstant
  
         assignColors(PHLIP_PIECES);		// change the color of the flipped pieces
         
-
+        imagesLoaded = true;
 		}
 	}
-	
+
 
 }

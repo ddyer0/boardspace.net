@@ -142,7 +142,7 @@ public class YspahanViewer extends CCanvas<YspahanCell,YspahanBoard> implements 
     			: getActivePlayer().boardIndex ); 
     }
     
-    public void preloadImages()
+    public synchronized void preloadImages()
     {	
        	YspahanChip.preloadImages(loader,ImageDir);
         if (images == null)

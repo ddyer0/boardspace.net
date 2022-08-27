@@ -60,7 +60,7 @@ public class SixmakingViewer extends CCanvas<SixmakingCell,SixmakingBoard> imple
     /**
      * preload all the images associated with the game. This is delegated to the chip class.
      */
-    public void preloadImages()
+    public synchronized void preloadImages()
     {	
        	SixmakingChip.preloadImages(loader,ImageDir);
        	gameIcon = SixmakingChip.chessIconOn.image;

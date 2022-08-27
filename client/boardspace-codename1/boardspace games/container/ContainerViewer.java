@@ -145,7 +145,7 @@ public class ContainerViewer extends CCanvas<ContainerCell,ContainerBoard> imple
     	return(lastMouseZone);
     }
    
-    public void preloadImages()
+    public synchronized void preloadImages()
     {	
        	ContainerChip.preloadImages(loader,ImageDir);
         if (images == null)

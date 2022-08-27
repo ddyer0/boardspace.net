@@ -89,7 +89,7 @@ public class CheChip extends chip<CheChip>
     static final CheChip getChip(int n) { return(CANONICAL_PIECE[n]); }
     static final int nChips = ImageNames.length;
 	public static void preloadImages(ImageLoader forcan,String Dir)
-	{	if(CANONICAL_PIECE==null)
+	{	if(OBLIQUE_CHIPS==null)
 		{
 		Random rv = new Random(5324324);
         Image IM[]=forcan.load_masked_images(Dir,ImageNames);

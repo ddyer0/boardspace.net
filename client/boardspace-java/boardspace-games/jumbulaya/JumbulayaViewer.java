@@ -96,7 +96,7 @@ public class JumbulayaViewer extends CCanvas<JumbulayaCell,JumbulayaBoard> imple
  * this is called during initialization to load all the images. Conventionally,
  * these are loading into a static variable so they can be shared by all.
  */
-    public void preloadImages()
+    public synchronized void preloadImages()
     {	JumbulayaChip.preloadImages(loader,ImageDir);	// load the images used by stones
 		gameIcon = JumbulayaChip.Icon.image;
     }

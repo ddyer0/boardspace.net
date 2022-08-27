@@ -21,7 +21,7 @@ public interface TweedConstants
 		Red,
 		Neutral,
 		BoardLocation,
-		EmptyBoard, ToggleEye, Numbers,;
+		EmptyBoard, ToggleEye, Numbers, Captures,;
 		TweedChip chip;
 		public String shortName() { return(name()); }
 	
@@ -108,6 +108,9 @@ static final String TweedPlayOrSwapState = "Make your first move, or swap colors
 static final String TweedPlayOrEnd = "place a chip, or Pass to end the game";
 static final String YesNumbers = "show numbers on stacks";
 static final String NoNumbers = "no numbers on stacks";
+static final String YesCaptures = "show capturable stacks";
+static final String NoCaptures = "do not show capturable stacks";
+
 static void putStrings()
 	{
 		String TumbleweedStrings[] = 
@@ -119,6 +122,8 @@ static void putStrings()
 	    TweedPlayOrEnd,
 	    YesNumbers,
 	    NoNumbers,
+	    YesCaptures,
+	    NoCaptures,
 	    VictoryCondition	
 	    
 		};

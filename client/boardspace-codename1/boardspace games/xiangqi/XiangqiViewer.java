@@ -80,7 +80,7 @@ public class XiangqiViewer extends CCanvas<XiangqiCell,XiangqiBoard> implements 
     private JCheckBoxMenuItem reverseOption = null;
     
     private JMenuItem drawAction = null;
-    public void preloadImages()
+    public synchronized void preloadImages()
     {	
        	XiangqiChip.preloadImages(loader,ImageDir);
         if (ornaments == null)

@@ -76,7 +76,7 @@ public class EntrapmentViewer extends CCanvas<EntrapmentCell,EntrapmentBoard> im
     private Rectangle chipRects[]= addRect(",chip",2);
     private Rectangle repRect = addRect("repRect");
 
-    public void preloadImages()
+    public synchronized void preloadImages()
     {	
        	EntrapmentChip.preloadImages(loader,ImageDir);
         if (images == null)

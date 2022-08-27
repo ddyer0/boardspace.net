@@ -76,7 +76,7 @@ public class QuinamidViewer extends CCanvas<QuinamidCell,QuinamidBoard> implemen
     private Rectangle helpRect = addRect("helpRect");
     private boolean showingHelp = false;
     
-    public void preloadImages()
+    public synchronized void preloadImages()
     {	
        	QuinamidChip.preloadImages(loader,ImageDir);
         if (textures == null)

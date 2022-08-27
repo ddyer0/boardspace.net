@@ -39,7 +39,7 @@ class HavannahBoard extends hexBoard<HavannahCell> implements BoardProtocol,Hava
 {	static int REVISION = 100;			// 100 represents the initial version of the game
 	public int getMaxRevisionLevel() { return(REVISION); }
 
-    static final String[] HEXGRIDSTYLE = { "1", null, "A" }; // left and bottom numbers
+	static final String[] HEXGRIDSTYLE = { null, "A1", "A1" }; // left and bottom numbers
 
 	HavannahVariation variation = HavannahVariation.havannah_8;
 	private HavannahState board_state = HavannahState.Puzzle;	
@@ -1041,16 +1041,12 @@ void doSwap(replayMode replay)
  }
  // small ad-hoc adjustment to the grid positions
  public void DrawGridCoord(Graphics gc, Color clt,int xpos, int ypos, int cellsize,String txt)
- {   if(Character.isDigit(txt.charAt(0)))
-	 	{ switch(variation)
-	 		{
-	 		case havannah_6:
-	 		case havannah_8:
-	 		case havannah_10:
-	 			xpos -= cellsize/2;
-	 			break;
- 			default: G.Error("case %s not handled",variation);
-	 		}
+ {   int n = G.IntToken(txt.substring(1));
+ 	 if(n>1)
+	 	{ //int n = G.intToken(txt);
+ 		  int ch = txt.charAt(0)-'A';
+ 		  if(ch>ncols/2) { ypos -= cellsize/4; }
+ 		  xpos -= cellsize/2;
 	 	}
  		else
  		{ 

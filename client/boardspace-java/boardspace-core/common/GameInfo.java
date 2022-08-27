@@ -110,6 +110,7 @@ public class GameInfo implements lib.CompareTo<GameInfo>,LobbyConstants
 	public String id;				// this is the game's 1 or 2 letter designator for score keeping
 	public String groupName;		// the main menu this item appears under
 	public String gameName;			// game itself
+	public String familyName;		// game family, for "I want to play"
 	public String variationName;	// the exact name this item appears under
 	public Bot[] robots = null;		// how many levels of robot for this game
 	public double robotSpeed[];		// relative speed of each robot, 1.0 is standard
@@ -336,6 +337,7 @@ public class GameInfo implements lib.CompareTo<GameInfo>,LobbyConstants
 		dirNum = directory;
 		groupName=group;
 		gameName = gamen;
+		familyName = gamen;
 		groupSortKey = null;
 		variationName=variation;
 		robots = bots;
@@ -423,10 +425,10 @@ synchronized(allGames) {
 			null,false, WhiteOverBlack));
 	  put(new GameInfo(781,ES.game,83,"UL",AncientGames,"Chess","Ultima",OneBotPlus,
 				chessBot,"chess.ChessViewer","/chess/english/ultima-rules.html",
-				null,false, WhiteOverBlack));
+				null,false, WhiteOverBlack)).familyName="Ultima";
 	  put(new GameInfo(782,ES.game,105,"C9",AncientGames,"Chess","Chess960",OneBotPlus,
 				chessBot,"chess.ChessViewer","/chess/english/chess960-rules.html",
-				null,false, WhiteOverBlack));
+				null,false, WhiteOverBlack)).familyName="Chess960";
 	  put(new GameInfo(783,ES.game,83,"UL",OtherGames,"Ultima","Ultima",OneBotPlus,
 				new double[]{0.5,0.05},
 				"chess.ChessViewer","/chess/english/ultima-rules.html",
@@ -439,11 +441,13 @@ synchronized(allGames) {
 				"kingscolor.KingsColorViewer","/kingscolor/english/kingscolor-rules.html",
 				null,false, WhiteOverBlack));	
 	 m.robotTimed = true;
+	 m.familyName="Kings Color";
 	 m = put(new GameInfo(781,ES.game,104,"KC",OtherGames,"KingsColor","KingsColor",TwoBotsPlus,
 				new double[]{0.5,1.0,0.05},
 				"kingscolor.KingsColorViewer","/kingscolor/english/kingscolor-rules.html",
 				null,false, WhiteOverBlack));	  
 	 m.robotTimed = true;
+	 m.familyName="Kings Color";
 	}
 	{
 	put(new GameInfo(753,ES.game,74,"GO",AncientGames,"Go","Go-9",NoBots,null,
@@ -524,6 +528,18 @@ synchronized(allGames) {
 			new double[]{1.0,0.01},
 			"checkerboard.CheckerGameViewer","/checkers/english/rules_of_checkers_english.pdf",
 			 null,false, WhiteOverBlack));
+	}
+	{
+	 put(new GameInfo(763,ES.test,112,"OR",RacingGames,"Ordo","Ordo",
+				OneBotPlus,
+				new double[]{1.0,0.01},
+				"ordo.OrdoViewer","/ordo/english/ordo-rules.html",
+				 null,false, WhiteOverBlack));
+	 put(new GameInfo(764,ES.test,112,"OR",RacingGames,"Ordo","Ordo-X",
+				OneBotPlus,
+				new double[]{1.0,0.01},
+				"ordo.OrdoViewer","/ordo/english/ordox-rules.html",
+				 null,false, WhiteOverBlack));
 	}
 	
 	{
@@ -1113,26 +1129,27 @@ synchronized(allGames) {
 	{
 	String tumbleweedRules = "/tumbleweed/english/Rules.html";
 	String tumbleweedViewer = "tweed.TweedViewer";  
+	String tumbleVideo = "https://www.youtube.com/watch?v=mjA_g3nwYW4";
 	put(new GameInfo(1690,ES.game,111,"TU",TerritoryGames,"Tumbleweed","tumbleweed-6",
 			OneBotPlus,
 			new double[]{1.0,0.01},
 			tumbleweedViewer,tumbleweedRules,
-			null,false, WhiteOverRed));
+			tumbleVideo,false, WhiteOverRed));
 	put(new GameInfo(1691,ES.game,111,"TU",TerritoryGames,"Tumbleweed","tumbleweed-8",
 			OneBotPlus,
 			new double[]{1.0,0.01},
 			tumbleweedViewer,tumbleweedRules,
-			null,false, WhiteOverRed));
+			tumbleVideo,false, WhiteOverRed));
 	put(new GameInfo(1692,ES.game,111,"TU",TerritoryGames,"Tumbleweed","tumbleweed-10",
 			OneBotPlus,
 			new double[]{1.0,0.01},
 			tumbleweedViewer,tumbleweedRules,
-			null,false, WhiteOverRed));
+			tumbleVideo,false, WhiteOverRed));
 	put(new GameInfo(1693,ES.game,111,"TU",TerritoryGames,"Tumbleweed","tumbleweed-11",
 			OneBotPlus,
 			new double[]{1.0,0.01},
 			tumbleweedViewer,tumbleweedRules,
-			null,false, WhiteOverRed));
+			tumbleVideo,false, WhiteOverRed));
 
 	}
 	{

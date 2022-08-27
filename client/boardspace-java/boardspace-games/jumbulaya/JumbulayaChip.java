@@ -202,7 +202,7 @@ public class JumbulayaChip extends chip<JumbulayaChip> implements JumbulayaConst
 	public static void preloadImages(ImageLoader forcan,String Dir)
 	{	if(!imagesLoaded)
 		{	
-		imagesLoaded = forcan.load_masked_images(Dir,allChips);
+		forcan.load_masked_images(Dir,allChips);
     	ChipStack pool = new ChipStack();
     	int nletters = 0;
 		for(int []ls : letterSpecs)
@@ -221,6 +221,8 @@ public class JumbulayaChip extends chip<JumbulayaChip> implements JumbulayaConst
 			{ int cc = c.extendedCharCode();
 			  if((cc>='a') && cc<='z')
 				{ alphaLetters[cc-'a'] = c; }}
+		
+		imagesLoaded = true;
    	
 		}
 	}   

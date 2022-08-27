@@ -419,7 +419,7 @@ public class HivePiece extends chip<HivePiece>
 	static HivePiece WhiteQueen = null;
 	static HivePiece BlackQueen = null;
 	public static void preloadImages(ImageLoader forcan,String Dir)
-		{	if(hivePieces==null	)
+		{	if(gameIcon==null	)
 			{
 	        hivePieces = loadImageSet(Dir,forcan,0,ImageFileNames,SCALES,TopImageFileNames,TopImageScales);
 	        carbonPieces = loadImageSet(Dir,forcan,1,CarbonImageFileNames,CARBON_SCALES,TopCarbonFileNames,TopCarbonScales);
@@ -428,9 +428,9 @@ public class HivePiece extends chip<HivePiece>
 	        for(int i=0;i<=1;i++)
 	        	{ matchPairs(hivePieces[i],carbonPieces[i]);
 	        	}
-	        }
 			Image im[] = forcan.load_masked_images(Dir,new String[] {"hive-icon"});
 			gameIcon = im[0];
+	        }
 
 		}   
   

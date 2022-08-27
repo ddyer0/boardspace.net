@@ -57,7 +57,7 @@ public class MorelliViewer extends CCanvas<MorelliCell,MorelliBoard> implements 
    
      private Rectangle altSetupRect = addRect("altSetup");
     
-    public void preloadImages()
+    public synchronized void preloadImages()
     {	
        	MorelliChip.preloadImages(loader,ImageDir);
         if (textures == null)

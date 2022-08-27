@@ -2,8 +2,7 @@ package universe;
 
 // universe games use MCTS
 //
-// TODO: mcts values all seem to be negative according to the tree viewer
-// TODO: diagonal blocks duo had a mystery crash, needs more exersize
+// TODO: diagonal blocks duo had a mystery crash, needs more exercise
 import java.util.Hashtable;
 
 import lib.*;

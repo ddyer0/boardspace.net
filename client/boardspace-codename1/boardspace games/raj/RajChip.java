@@ -10,6 +10,7 @@ import lib.GC;
 import lib.OStack;
 import lib.Random;
 import online.game.chip;
+import raj.RajConstants.RajColor;
 import online.common.exCanvas;
 
 class ChipStack extends OStack<RajChip>
@@ -145,7 +146,8 @@ public class RajChip extends chip<RajChip> implements RajConstants,CompareTo<Raj
     	"red-front","green-front","blue-front","brown-front","purple-front",
     	"red-back","green-back","blue-back","brown-back","purple-back"
     };
-    /**
+    private static boolean imagesLoaded = false;
+   /**
      * this is a fairly standard preloadImages method, called from the
      * game initialization.  It loads the images (all two of them) into
      * a static array of RajChip which are used by all instances of the
@@ -154,10 +156,9 @@ public class RajChip extends chip<RajChip> implements RajConstants,CompareTo<Raj
      * @param Dir the directory to find the image files.
      */
 	public static void preloadImages(ImageLoader forcan,String Dir)
-	{	if(CANONICAL_PIECE==null)
+	{	if(!imagesLoaded)
 		{
 		Random rv = new Random(5312324);
-		{
 		int nColors = chipNames.length;
 		// load the main images, their masks, and composite the mains with the masks
 		// to make transparent images that are actually used.
@@ -166,14 +167,12 @@ public class RajChip extends chip<RajChip> implements RajConstants,CompareTo<Raj
         for(int i=0;i<nColors;i++) 
         	{CC[i]=new RajChip(i,IM[i],chipNames[i],scales[i],rv.nextLong()); 
         	}
-        CANONICAL_PIECE = CC;
         check_digests(CC);	// verify that the chips have different digests
-		}
+		CANONICAL_PIECE = CC;
 		
 		{
 		// construct one set of cards for each color
-		int nColors = RajColor.values().length;
-        CARDS = new RajChip[nColors*NUMBER_OF_PRIZES];
+        CARDS = new RajChip[RajColor.values().length*NUMBER_OF_PRIZES];
         
         for(RajColor color : RajColor.values())
         {	for(int i=0;i<NUMBER_OF_PRIZES;i++)
@@ -183,6 +182,9 @@ public class RajChip extends chip<RajChip> implements RajConstants,CompareTo<Raj
         		 
         	}
         }}
+
+		imagesLoaded = true;
+		
 		}
 	}
 	// draw the number info only

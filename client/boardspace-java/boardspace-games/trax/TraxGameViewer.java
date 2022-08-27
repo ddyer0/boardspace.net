@@ -87,7 +87,7 @@ public class TraxGameViewer extends commonCanvas implements TraxConstants, GameL
 
     public BoardProtocol getBoard()   {    return (b);   }
     
-    public void preloadImages()
+    public synchronized void preloadImages()
     {
         if (textures == null)
         { // note that dfor this to work correctly, the images and masks must be the same size.  

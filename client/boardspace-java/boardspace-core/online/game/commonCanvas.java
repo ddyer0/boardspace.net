@@ -1325,7 +1325,7 @@ public abstract class commonCanvas extends exCanvas
 	    	for(int num = 1; num<=last; num++)
 	    	{
 	    		commonMove m = History.elementAt(num);
-	    		if(m.player!=targetPlayer && prevPlayer==targetPlayer)
+	    		if(m!=null && m.player!=targetPlayer && prevPlayer==targetPlayer)
 	    		{
 	    			count++;
 	    		}
@@ -4101,7 +4101,7 @@ public abstract class commonCanvas extends exCanvas
         else if(m.op==MOVE_ALLOWUNDO) 
         {	// unconditional undo, after approval of a request
         	do { doUndoStep(); } while(isRobotTurn()); 
-        	if(autoDoneActive() ) { performUndo();}
+        	if(autoDoneActive() ) { skipAutoDone = true; }
         }
         else if((m.op==MOVE_RESET)||(m.op==MOVE_UNDO))
         {	performUndo();
@@ -6641,10 +6641,16 @@ public abstract class commonCanvas extends exCanvas
     		{ animating = false; 
     		}
     	}
-        if(autoDoneActive() && mandatoryDoneState())
+        boolean ds = mandatoryDoneState();
+        if(autoDoneActive() && ds)
 		  {
 			  sendDone();
-    	}
+		  }
+        if(!ds) 
+        	{ // no longer in an "autodone" state, so turn off the skip
+        	  // flag to resume normal behavior.
+        	  skipAutoDone = false; 
+        	}
         
     	}
 		if(saveDisplayBoardNeeded)
@@ -8512,10 +8518,15 @@ public void verifyGameRecord()
 
 	    public boolean autoDone = false;
 	    public boolean enableAutoDone = false;
+	    // this flag tweaks the interaction of "undo" and "autodone".  When undoing,
+	    // if autodone would immediately redo, done do it.  This makes undo with autodone
+	    // work the same as regular undo, and avoids problems where the clients can disagree
+	    // about the state of the board.
+	    public boolean skipAutoDone = false;
 		public boolean enableAutoDone() { return (enableAutoDone); }
 		private JCheckBoxMenuItem autoDoneCheckbox = null;
 		public boolean mandatoryDoneState() { return OurMove() && getBoard().DoneState(); }
 		public void sendDone() { PerformAndTransmit("Done"); }
-		public boolean autoDoneActive() { return autoDone  && !reviewMode(); }
+		public boolean autoDoneActive() { return autoDone && !skipAutoDone && !reviewMode(); }
 		public void doGameTest() { }
 }

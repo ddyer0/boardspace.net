@@ -78,7 +78,7 @@ public class DipoleGameViewer extends CCanvas<DipoleCell,DipoleBoard> implements
     private Rectangle logoRect = addRect("logoRect");
     
 
-    public void preloadImages()
+    public synchronized void preloadImages()
     {	
     	DipoleChip.preloadImages(loader,ImageDir);
     	if (textures == null)

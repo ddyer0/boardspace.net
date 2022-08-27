@@ -126,13 +126,13 @@ public class PushfightChip extends chip<PushfightChip> implements PushfightConst
 	public static void preloadImages(ImageLoader forcan,String Dir)
 	{	if(!imagesLoaded)
 		{	
-		imagesLoaded = forcan.load_masked_images(Dir,allChips);
+		forcan.load_masked_images(Dir,allChips);
 		black_square.altChip = black_squareO;
 		white_square.altChip = white_squareO;
 		black_round.altChip = black_roundO;
 		white_round.altChip = white_roundO;
 		red_oblique.altChip = red_obliqueO;
-		
+		imagesLoaded = true;
 		}
 	}   
 }

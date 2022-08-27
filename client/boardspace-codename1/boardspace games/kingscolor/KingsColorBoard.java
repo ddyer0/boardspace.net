@@ -23,7 +23,7 @@ class KingsColorBoard
 {	static int REVISION = 100;			// 100 represents the initial version of the game
 	public int getMaxRevisionLevel() { return(REVISION); }
 	boolean PREFILTER = true;
-    static final String[] GRIDSTYLE = { "1", null, "A" }; // left and bottom numbers
+    static final String[] GRIDSTYLE =  { null, "A1", "A1" }; // left and bottom numbers
 
 	KingsColorVariation variation = KingsColorVariation.kingscolor;
 	private KingsColorState board_state = KingsColorState.Puzzle;	
@@ -1344,8 +1344,9 @@ class KingsColorBoard
 	 {
 	 case Puzzle:
 	 case Gameover:
-		 case Confirm: 
-			 break;
+	 case Resign:
+	 case Confirm: 
+		 break;
 	 default:
 	 
 			boolean picked = pickedObject!=null;
@@ -1468,14 +1469,18 @@ KingsColorBoard targetBoard = null;
 
 	 // small ad-hoc adjustment to the grid positions
 	 public void DrawGridCoord(Graphics gc, Color clt,int xpos, int ypos, int cellsize,String txt)
-	 {   if(Character.isDigit(txt.charAt(0)))
+	 {   int tlen = txt.length();
+	 	 boolean digits = (tlen>2 || txt.charAt(tlen-1)>'1');
+	 	 if(reverseY())
+	 	 {	
+	 		if(!digits)
+	 		{ 	xpos -= cellsize/3;
+	 		}
+	 	 }
+	 	 else if(digits)
 		 	{ 
 		 		xpos -= cellsize/2;	 		
 		 	}
-	 		else
-	 		{ 
-	 		  ypos += cellsize/4;
-	 		}
 	 	GC.Text(gc, false, xpos, ypos, -1, 0,clt, null, txt);
 	 }
 	 public void buildOccupied()

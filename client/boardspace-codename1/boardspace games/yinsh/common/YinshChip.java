@@ -59,7 +59,7 @@ public class YinshChip extends chip<YinshChip> implements YinshConstants
     
 	// call from the viewer's preloadImages
 	public static void preloadImages(ImageLoader forcan,String ImageDir)
-	{ if(CANONICAL_PIECE==null)
+	{ if(WhiteChip==null)
 	  {
 	   int nColors = ImageNames.length;
        Image IM[]=forcan.load_masked_images(ImageDir,ImageNames);

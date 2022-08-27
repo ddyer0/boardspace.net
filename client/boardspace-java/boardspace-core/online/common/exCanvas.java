@@ -359,7 +359,7 @@ public abstract class exCanvas extends Canvas
      * this method should be superseded by the canvas to load images at
      * initialization time.  It's expected to call {@link #lockAndLoadImages}
      */
-    public void preloadImages() {};	// to be superseded
+    public synchronized void preloadImages() {};	// to be superseded
     
     /**
      * 

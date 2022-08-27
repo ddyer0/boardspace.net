@@ -33,9 +33,7 @@ public class RithmomachyMovespec extends commonMove implements RithmomachyConsta
     char also_from_col;	// for capture by deciet
     int also_from_row;	// for capture by deceit
     int captureIndex;	// for displaced capture moves, the piece to be captured
-    RithmomachyState state;	// the state of the move before state, for UNDO
-    int undoinfo = 0;
-    
+    RithmomachyChip chip;
     public RithmomachyMovespec() // default constructor
     {
     }
@@ -102,7 +100,6 @@ public class RithmomachyMovespec extends commonMove implements RithmomachyConsta
     public void Copy_Slots(RithmomachyMovespec to)
     {	super.Copy_Slots(to);
         to.player = player;
-		to.undoinfo = undoinfo;
         to.to_col = to_col;
         to.to_row = to_row;
         to.from_col = from_col;
@@ -110,7 +107,7 @@ public class RithmomachyMovespec extends commonMove implements RithmomachyConsta
         to.also_from_col = also_from_col;
         to.also_from_row = also_from_row;
         to.captureIndex = captureIndex;
-        to.state = state;
+        to.chip = chip;
         to.source = source;
     }
 
@@ -190,29 +187,38 @@ public class RithmomachyMovespec extends commonMove implements RithmomachyConsta
             break;
         }
     }
-
+    private Text icon(commonCanvas v,Object... msg)
+    {	double chipScale[] = {1.7,1.1,-0.2,0};
+    	Text m = TextChunk.create(G.concat(msg));
+    	if(chip!=null)
+    	{
+    		m = TextChunk.join(TextGlyph.create("xxxxx", chip, v,chipScale),
+    					m);
+    	}
+    	return(m);
+    }
     /* construct a move string for this move.  These are the inverse of what are accepted
     by the constructors, and are also human readable */
-    public String shortMoveString()
+    public Text shortMoveText(commonCanvas v)
     {
         switch (op)
         {
         case MOVE_PICKB:
-            return (""+from_col + from_row);
+            return icon(v,from_col,from_row," ");
 
 		case MOVE_DROPB:
-            return (""+to_col + to_row);
+            return icon(v,to_col ,to_row);
         case MOVE_BOARD_BOARD:
-        	return(""+from_col + from_row+" "+to_col + to_row);
+        	return icon(v,from_col, from_row," ",to_col , to_row);
 
         case MOVE_DONE:
-            return ("");
+            return TextChunk.create("");
         case MOVE_DROP:
         case MOVE_PICK:
-            return ((source==RithId.White_Chip_Pool)?"W":"B");
+            return TextChunk.create((source==RithId.White_Chip_Pool)?"W":"B");
  
         default:
-            return (D.findUniqueTrans(op));
+            return TextChunk.create(D.findUniqueTrans(op));
         }
     }
 

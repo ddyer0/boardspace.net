@@ -123,12 +123,12 @@ public class HavannahChip extends chip<HavannahChip> implements CommonConfig
 	public static void preloadImages(ImageLoader forcan,String Dir)
 	{	if(!imagesLoaded)
 		{	
-		imagesLoaded =
-				forcan.load_masked_images(StonesDir,stoneChips)
-				& forcan.load_masked_images(Dir,otherChips);
+		forcan.load_masked_images(StonesDir,stoneChips);
+		forcan.load_masked_images(Dir,otherChips);
         borders = StockArt.preLoadArt(forcan,StonesDir,BorderFileNames,BORDERSCALES);
+		imagesLoaded = true;
 
 		check_digests(stoneChips);
 		}
-	}   
+	}    
 }

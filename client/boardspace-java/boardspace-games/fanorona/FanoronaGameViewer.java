@@ -85,7 +85,7 @@ public class FanoronaGameViewer extends CCanvas<FanoronaCell,FanoronaBoard> impl
     private Rectangle reverseRect = addRect("reverse");
     private JMenuItem offerDrawAction = null;
 
-    public void preloadImages()
+    public synchronized void preloadImages()
     {	FanoronaChip.preloadImages(loader,ImageDir);
     	if (textures == null)
     	{ // note that for this to work correctly, the images and masks must be the same size.  

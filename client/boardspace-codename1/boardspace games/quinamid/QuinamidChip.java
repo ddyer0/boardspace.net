@@ -91,7 +91,7 @@ public class QuinamidChip extends chip<QuinamidChip> implements QuinamidConstant
     public static QuinamidChip HelpPanel;
 	// call from the viewer's preloadImages
 	public synchronized static void preloadImages(ImageLoader forcan,String ImageDir)
-	{	if(CANONICAL_PIECE==null)
+	{	if(HelpPanel==null)
 		{
 		int nColors = ImageNames.length;
         Image IM[]=forcan.load_masked_images(ImageDir,ImageNames);

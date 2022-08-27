@@ -100,7 +100,7 @@ public class ZertzGameViewer extends CCanvas<zCell,GameBoard> implements GameCon
        		      : 0)); // this is transmitted to players
     }
     
-    public void preloadImages()
+    public synchronized void preloadImages()
     {	zChip.preloadImages(loader,ImageDir);
     	gameIcon = zChip.Icon.image;
     }

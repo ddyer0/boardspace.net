@@ -79,7 +79,7 @@ public class GipfViewer extends CCanvas<GipfCell,GipfBoard> implements GipfConst
     }
 
 
-    public void preloadImages()
+    public synchronized void preloadImages()
     {	GipfChip.preloadImages(loader,ImageDir);
     	if(images==null)
     	{

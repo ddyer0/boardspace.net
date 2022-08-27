@@ -103,9 +103,10 @@ public class TintasChip extends chip<TintasChip> implements TintasConstants
 	public static void preloadImages(ImageLoader forcan,String Dir)
 	{	if(!imagesLoaded)
 		{	
-		imagesLoaded = forcan.load_masked_images(Dir,allChips);
+		forcan.load_masked_images(Dir,allChips);
 		for(int i=0;i<Chips.length;i++) { Chips[i].altChip = AltChips[i]; }
 		Pawn.altChip = Pawn_np; 
+		imagesLoaded = true;
 		}
 	}   
 }

@@ -61,10 +61,10 @@ public class TriadChip extends chip<TriadChip>
         for(int i=0;i<nColors;i++) 
         	{CC[i]=new TriadChip(i,IM[i],ImageNames[i],SCALES[i],chipColor[i],rv.nextLong()); 
         	}
-        CANONICAL_PIECE = CC;
         BlueStone = CC[2];
         GreenStone = CC[1];
         RedStone = CC[0];
+        CANONICAL_PIECE = CC;
         check_digests(CC);
 		}
 	}   

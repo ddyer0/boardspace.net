@@ -132,7 +132,7 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
  * this is called during initialization to load all the images. Conventionally,
  * these are loading into a static variable so they can be shared by all.
  */
-    public void preloadImages()
+    public synchronized void preloadImages()
     {	CrosswordleChip.preloadImages(loader,ImageDir);	// load the images used by stones
 		gameIcon = CrosswordleChip.Icon.image;
     }
@@ -533,7 +533,7 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
         CrosswordleCell closestCell = gb.closestCell(all,brect);
         definitionCell = null;
         if(closestCell!=null && 
-        		((closestCell.col=='A') || closestCell.row==bb.ncols))
+        		((closestCell.col=='A') || closestCell.row==bb.nrows))
         	{ definitionCell = closestCell; 
         	}
 

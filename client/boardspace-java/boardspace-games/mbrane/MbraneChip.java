@@ -155,7 +155,7 @@ public class MbraneChip extends chip<MbraneChip>
 	public static void preloadImages(ImageLoader forcan,String Dir)
 	{	if(!imagesLoaded)
 		{	
-		imagesLoaded = forcan.load_masked_images(Dir,allChips);
+		forcan.load_masked_images(Dir,allChips);
 		MbraneChip red[] = MbraneColor.Red.instances = new MbraneChip[81];
 		MbraneChip black[] = MbraneColor.Black.instances = new MbraneChip[81];
 		int idx=0;
@@ -173,6 +173,7 @@ public class MbraneChip extends chip<MbraneChip>
 			red[i].altChip  = black[i];
 			black[i].altChip = red[i];
 			}
+		imagesLoaded = true;
 		}
 	}
 }

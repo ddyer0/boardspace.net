@@ -81,7 +81,7 @@ public class CookieViewer extends CCanvas<CookieCell,CookieBoard> implements Coo
 
 	private Image textures[] = null;
 
-    public void preloadImages()
+    public synchronized void preloadImages()
     {	CookieChip.preloadImages(loader,ImageDir);
     	if(textures==null)
     	{

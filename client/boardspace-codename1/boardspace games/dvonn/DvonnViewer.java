@@ -95,7 +95,7 @@ public class DvonnViewer extends CCanvas<DvonnCell,DvonnBoard> implements DvonnC
     private JCheckBoxMenuItem reverseOption = null;
 
     boolean usePerspective() { return(getAltChipset()==0); }
-    public void preloadImages()
+    public synchronized void preloadImages()
     {	
     	if (textures == null)
     	{ // note that for this to work correctly, the images and masks must be the same size.  

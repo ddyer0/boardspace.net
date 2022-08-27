@@ -62,7 +62,7 @@ public class ProteusViewer extends CCanvas<ProteusCell,ProteusBoard> implements 
     private Rectangle tradeRect = addRect("trade");
     private Rectangle repRect = addRect("repRect");
 
-    public void preloadImages()
+    public synchronized void preloadImages()
     {	
        	ProteusChip.preloadImages(loader,ImageDir);
        	gameIcon = ProteusChip.Icon.image;

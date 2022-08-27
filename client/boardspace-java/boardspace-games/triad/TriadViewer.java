@@ -55,7 +55,7 @@ public class TriadViewer extends CCanvas<TriadCell,TriadBoard> implements TriadC
 			);
 
 
-    public void preloadImages()
+    public synchronized void preloadImages()
     {	TriadChip.preloadImages(loader,ImageDir);
     	if (borders == null)
     	{ 	// note that for this to work correctly, the images and masks must be the same size.  

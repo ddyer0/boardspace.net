@@ -902,6 +902,7 @@ class RithmomachyBoard extends rectBoard<RithmomachyCell> implements BoardProtoc
         			RithmomachyCell src = getCell(RithId.BoardLocation, m.from_col, m.from_row);
         			RithmomachyCell dest = getCell(RithId.BoardLocation,m.to_col,m.to_row);
         			pickObject(src,m.from_row);
+        			m.chip = pickedStack.topChip();
         			dropObject(dest); 
         			if(replay!=replayMode.Replay)
         			{
@@ -943,16 +944,7 @@ class RithmomachyBoard extends rectBoard<RithmomachyCell> implements BoardProtoc
         		}
         	else 
         		{ pickObject(getCell(RithId.BoardLocation, m.from_col, m.from_row),m.from_row);
-        			// if you pick up a gobblet and expose a row of 4, you lose immediately
-        		  switch(board_state)
-        		  {	default: throw G.Error("Not expecting pickb in state %s",board_state);
-        		  	case Play:
-        		  		// if we pick a piece off the board, we might expose a win for the other player
-        		  		// and otherwise, we are comitted to moving the piece
-         		  		break;
-        		  	case Puzzle:
-        		  		break;
-        		  }
+        		  m.chip = pickedStack.topChip();
          		}
  
             break;
@@ -1063,6 +1055,8 @@ class RithmomachyBoard extends rectBoard<RithmomachyCell> implements BoardProtoc
         }
     }
 
+ StateStack robotState = new StateStack();
+ IStack robotCaptures = new IStack();
  
  /** assistance for the robot.  In addition to executing a move, the robot
     requires that you be able to undo the execution.  The simplest way
@@ -1073,8 +1067,8 @@ class RithmomachyBoard extends rectBoard<RithmomachyCell> implements BoardProtoc
     */
     public void RobotExecute(RithmomachyMovespec m)
     {
-        m.state = board_state; //record the starting state. The most reliable
-        m.undoinfo = captureStack.size();
+    	robotState.push(board_state); //record the starting state. The most reliable
+        robotCaptures.push(captureStack.size());
         
         // to undo state transistions is to simple put the original state back.
         
@@ -1111,7 +1105,7 @@ class RithmomachyBoard extends rectBoard<RithmomachyCell> implements BoardProtoc
         {  	moveNumber--;
         	setWhoseTurn(m.player);
         }
-        undoCaptures(m.undoinfo);
+        undoCaptures(robotCaptures.pop());
         switch (m.op)
         {
    	    default:
@@ -1136,7 +1130,7 @@ class RithmomachyBoard extends rectBoard<RithmomachyCell> implements BoardProtoc
             break;
         }
         unresign = null;
-        setState(m.state);
+        setState(robotState.pop());
 
  }
  public Hashtable<RithmomachyCell,RithmomachyMovespec>getDests()

@@ -67,7 +67,18 @@ class PrototypeBoard
 	public PrototypeId getPlayerColor(int p) { return(playerColor[p]); }
 	public PrototypeCell getPlayerCell(int p) { return(playerCell[p]); }
 	public PrototypeChip getCurrentPlayerChip() { return(playerChip[whoseTurn]); }
-
+	public PrototypePlay robot = null;
+	
+	 public boolean p1(String msg)
+		{
+			if(G.p1(msg) && robot!=null)
+			{	String dir = "g:/share/projects/boardspace-html/htdocs/prototype/prototypegames/robot/";
+				robot.saveCurrentVariation(dir+msg+".sgf");
+				return(true);
+			}
+			return(false);
+		}
+	
 // this is required even if it is meaningless for this game, but possibly important
 // in other games.  When a draw by repetition is detected, this function is called.
 // the game should have a "draw pending" state and enter it now, pending confirmation
@@ -877,7 +888,13 @@ void doSwap(replayMode replay)
  	GC.Text(gc, false, xpos, ypos, -1, 0,clt, null, txt);
  }
  /**
-  *  get the board cells that are valid targets right now
+  *  get the board cells that are valid targets right now, intended to be used
+  *  by the user interface to determine where it's legal to play.  The standard
+  *  method is to call the move generator, and filter the results to generate
+  *  the cells of interest.  It's usually more complicated than just that,
+  *  but using the move generator to drive the selection of cells to point 
+  *  at avoids duplicating a lot of tricky logic.
+  *  
   * @return
   */
  public Hashtable<PrototypeCell, Prototypemovespec> getTargets() 
@@ -903,6 +920,9 @@ void doSwap(replayMode replay)
  	
  	return(targets);
  }
+ 
+
+
  // most multi player games can't handle individual players resigning
  // this provides an escape hatch to allow it.
  //public boolean canResign() { return(super.canResign()); }

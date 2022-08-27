@@ -122,7 +122,7 @@ public class PlateauGameViewer extends commonCanvas implements PlateauConstants
     }
     public static boolean imagesLoaded = false;
     public static Image Icon = null;
-    public void preloadImages()
+    public synchronized void preloadImages()
     {	
 	    if(!imagesLoaded)
 	        	{ Image mask_images[] = loader.load_images(ImageDir, MaskFileNames);

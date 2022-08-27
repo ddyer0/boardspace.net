@@ -607,7 +607,7 @@ public class MicropulChip extends chip<MicropulChip>
     	}
     static final int nChips = pieces.length;
 	public static void preloadImages(ImageLoader forcan,String Dir)
-	{	if(CANONICAL_PIECE==null)
+	{	if(blue==null)
 		{
 		Random rv = new Random(5129624);
         Elements = StockArt.preLoadArt(forcan,Dir,ImageNames,SCALES);

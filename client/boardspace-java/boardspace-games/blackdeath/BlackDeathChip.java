@@ -191,7 +191,7 @@ public class BlackDeathChip extends chip<BlackDeathChip> implements OnlineConsta
 		Image cardMask = forcan.load_image(Dir,"card-mask");
 		cardBack.image = forcan.load_image(Dir, "cards",cardMask);
 		forcan.load_images(Dir,Cards,cardMask);
-		imagesLoaded = forcan.load_masked_images(Dir,allChips);
+		forcan.load_masked_images(Dir,allChips);
 		Image chips[] = forcan.load_images(Dir, PlayerChipNames,forcan.load_image(Dir,"disease-mask"));		
 		PlayerChips = new BlackDeathChip[chips.length];
 		
@@ -208,6 +208,8 @@ public class BlackDeathChip extends chip<BlackDeathChip> implements OnlineConsta
 		for(int i=0;i<dv.length; i++)
 			{
 			BDice[i] = dv[i].chip = new BlackDeathChip(dv[i],dice[i]);		
-		}}
+		}
+		imagesLoaded = true;
+		}
 	}
 }

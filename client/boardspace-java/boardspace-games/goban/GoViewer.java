@@ -86,7 +86,7 @@ public class GoViewer extends CCanvas<GoCell,GoBoard> implements GoConstants, Ga
     private Rectangle classifyRect = addRect("classifyRect");
     private Rectangle classifyAllRect = addRect("classifyAllRect");
 
-    public void preloadImages()
+    public synchronized void preloadImages()
     {	
        	GoChip.preloadImages(loader,ImageDir);
        	gameIcon = GoChip.GoIcon.image;

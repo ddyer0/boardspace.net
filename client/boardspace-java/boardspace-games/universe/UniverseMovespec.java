@@ -223,10 +223,10 @@ public class UniverseMovespec extends commonMPMove implements UniverseConstants
     	Rectangle r = chip.boundingSquare(100,00,00);
     	double w = -G.Right(r)/(G.Width(r)*2.0);
     	double h = -G.Bottom(r)/(G.Height(r)*2.0);
-    	double scl = 0.3;
+    	double scl = 0.38;
     	int ma = Math.max(G.Width(r),G.Height(r));
-    	if(ma>=300) { scl = 0.25; } 
-    	if(ma>=500) { scl = 0.2; }
+    	if(ma>=400) { scl = 0.35; } 
+    	if(ma>=500) { scl = 0.3; }
     	//G.print("R "+r.x+ " "+r.y + " "+r.width+" " +r.height+" "+h);
     	return(TextGlyph.create("xxxxx",chip,v,new double[]{2.0,scl,w,h}));
     }
@@ -274,7 +274,7 @@ public class UniverseMovespec extends commonMPMove implements UniverseConstants
         	return (chipGlyph(v,"R-CCW "));
         case MOVE_LINK:
         case MOVE_RACK_BOARD:
-        	return(TextChunk.join(chipGlyph(v,"#"+from_row),TextChunk.create("-"+to_col+to_row)));
+        	return(TextChunk.join(chipGlyph(v,"#"+from_row),TextChunk.create(" "+to_col+to_row)));
         case MOVE_DONE:
             return (TextChunk.create(""));
         case MOVE_ASSIGN:

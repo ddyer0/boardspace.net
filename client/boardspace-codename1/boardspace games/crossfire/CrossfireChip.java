@@ -78,11 +78,11 @@ public class CrossfireChip extends chip<CrossfireChip>
         for(int i=0;i<nColors;i++) 
         	{CC[i]=new CrossfireChip(i,IM[i],ImageNames[i],SCALES[i],chipColor[i],rv.nextLong()); 
         	}
-        CANONICAL_PIECE = CC;
         Black = CC[1];
         White = CC[0];
         Black.altChip = CC[3];
         White.altChip = CC[2];
+        CANONICAL_PIECE = CC;
         check_digests(CC);	// verify that the chips have different digests
 		}
 	}   

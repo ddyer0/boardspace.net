@@ -103,7 +103,7 @@ public class TabGameViewer extends CCanvas<TabCell,TabGameBoard> implements TabC
     public Rectangle flagFoursideRect = addRect(".flagFoursideRect");// flagship captured on 4 sides only
 
 
-    public void preloadImages()
+    public synchronized void preloadImages()
     {	TabChip.preloadImages(loader,ImageDir);
     	if (textures == null)
     	{ 	// note that for this to work correctly, the images and masks must be the same size.  

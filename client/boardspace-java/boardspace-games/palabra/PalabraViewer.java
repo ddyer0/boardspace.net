@@ -88,7 +88,7 @@ public class PalabraViewer extends CCanvas<PalabraCell,PalabraBoard> implements 
  * this is called during initialization to load all the images. Conventionally,
  * these are loading into a static variable so they can be shared by all.
  */
-    public void preloadImages()
+    public synchronized void preloadImages()
     {	PalabraChip.preloadImages(loader,ImageDir);	// load the images used by stones
     	if (textures == null)
     	{ 	// note that for this to work correctly, the images and masks must be the same size.  

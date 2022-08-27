@@ -205,7 +205,7 @@ public class VoloMovespec extends commonMove implements VoloConstants
     {
 		String indx = indexString();
 		String opname = indx+D.findUnique(op)+" ";
-        // adding the move index as a prefix provides numnbers
+        // adding the move index as a prefix provides numbers
         // for the game record and also helps navigate in joint
         // review mode
         switch (op)
@@ -227,7 +227,7 @@ public class VoloMovespec extends commonMove implements VoloConstants
         case MOVE_SLIDE:
         	return(opname+from_col+" "+from_row+" "+direction.shortName+" "+nchips+" "+to_col+" "+to_row);
         default:
-            return (D.findUniqueTrans(op));
+            return (D.findUnique(op));
         }
     }
 

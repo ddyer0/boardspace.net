@@ -227,7 +227,7 @@ public class VoloMovespec extends commonMove implements VoloConstants
         case MOVE_SLIDE:
         	return(opname+from_col+" "+from_row+" "+direction.shortName+" "+nchips+" "+to_col+" "+to_row);
         default:
-            return (D.findUniqueTrans(op));
+            return (D.findUnique(op));
         }
     }
 

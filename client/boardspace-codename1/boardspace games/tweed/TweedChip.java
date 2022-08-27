@@ -57,6 +57,8 @@ public class TweedChip extends chip<TweedChip> implements CommonConfig
 
 	static public TweedChip Numbers = new TweedChip("numbers-nomask",new double[]{0.5,0.45,1});
 	static public TweedChip NoNumbers = new TweedChip("nonumbers-nomask",new double[]{0.5,0.45,1});
+	static public TweedChip Captures = new TweedChip("captures-nomask",new double[]{0.5,0.45,1});
+	static public TweedChip NoCaptures = new TweedChip("nocaptures-nomask",new double[]{0.5,0.45,1});
 
     // indexes into the balls array, usually called the rack
     static final TweedChip getChip(int n) { return(TweedId.values()[n].chip); }

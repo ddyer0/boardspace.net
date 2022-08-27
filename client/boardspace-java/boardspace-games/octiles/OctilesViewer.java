@@ -87,7 +87,7 @@ public class OctilesViewer extends CCanvas<OctilesCell,OctilesBoard> implements 
     {	return(b.numberHome(p.boardIndex));
     }
     private static boolean imagesLoaded=false;
-    public void preloadImages()
+    public synchronized void preloadImages()
     {	
        	OctilesChip.preloadImages(loader,ImageDir);
         if (!imagesLoaded )

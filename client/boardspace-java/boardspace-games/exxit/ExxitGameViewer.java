@@ -79,7 +79,7 @@ public class ExxitGameViewer extends CCanvas<ExxitCell,ExxitGameBoard> implement
 	// whem moving, these remember the object we're dragging around
     //private HitPoint movingObject = null; // 
 
-    public void preloadImages()
+    public synchronized void preloadImages()
     {	
 	    if (textures == null)
 	    { // note that dfor this to work correctly, the images and masks must be the same size.  

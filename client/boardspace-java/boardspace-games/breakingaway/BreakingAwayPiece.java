@@ -84,24 +84,24 @@ public class BreakingAwayPiece extends chip<BreakingAwayPiece>
 	}
 	public static Image Icon = null;
 	public static void preloadImages(ImageLoader forcan,String Dir)
-		{	if(CANONICAL_PIECE==null)
-			{
-			Random rv = new Random(6723324);
-			int nChips = ImageFileNames.length;
-			// load the main images, their masks, and composite the mains with the masks
-			// to make transparent images that are actually used.
-			for(int i=0,lim=PrefixNames.length; i<lim; i++)
-			{
-				//DISCS[i] = loadDotGroup(forcan,Dir,i);
-				Image cycleImages[] = loadCycleGroup(forcan,Dir,i);
-				for(int j=0;j<nChips;j++)
-		        {
-		        CYCLES[i][j] = new BreakingAwayPiece(j,cycleImages[j],SCALES[i],ImageFileNames[j],rv.nextLong());
-		        }
-			}
-	        CANONICAL_PIECE = CYCLES[0];
-	        check_digests(CANONICAL_PIECE);	// verify that the chips have different digests
-			}
-			Icon = CANONICAL_PIECE[0].image;
-		}  
+	{	if(Icon==null)
+		{
+		Random rv = new Random(6723324);
+		int nChips = ImageFileNames.length;
+		// load the main images, their masks, and composite the mains with the masks
+		// to make transparent images that are actually used.
+		for(int i=0,lim=PrefixNames.length; i<lim; i++)
+		{
+			//DISCS[i] = loadDotGroup(forcan,Dir,i);
+			Image cycleImages[] = loadCycleGroup(forcan,Dir,i);
+			for(int j=0;j<nChips;j++)
+	        {
+	        CYCLES[i][j] = new BreakingAwayPiece(j,cycleImages[j],SCALES[i],ImageFileNames[j],rv.nextLong());
+	        }
+		}
+        CANONICAL_PIECE = CYCLES[0];
+        check_digests(CANONICAL_PIECE);	// verify that the chips have different digests
+		Icon = CANONICAL_PIECE[0].image;
+		}
+	}  
 }

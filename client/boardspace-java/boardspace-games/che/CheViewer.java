@@ -76,7 +76,7 @@ public class CheViewer extends CCanvas<CheCell,CheBoard> implements CheConstants
 
 	private Image textures[] = null;
 
-    public void preloadImages()
+    public synchronized void preloadImages()
     {	CheChip.preloadImages(loader,ImageDir);
     	if(textures==null)
     	{

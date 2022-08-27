@@ -237,7 +237,7 @@ public class ContainerChip extends chip<ContainerChip> implements ContainerConst
 
 	// call from the viewer's preloadImages
 	public static void preloadImages(ImageLoader forcan,String dir)
-	{	if(CANONICAL_PIECE==null)
+	{	if(BLANK_CARD==null)
 		{
 		int nColors = ImageNames.length;
         Image IMF[]=forcan.load_masked_images(dir,ImageFlatNames);

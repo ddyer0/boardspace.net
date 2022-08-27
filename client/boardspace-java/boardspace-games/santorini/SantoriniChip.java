@@ -173,11 +173,12 @@ public class SantoriniChip extends chip<SantoriniChip> implements SantoriniConst
 	{	if(!imagesLoaded)
 		{
 		forcan.load_images(ImageDir,Gods,forcan.load_image(ImageDir,"gods-mask"));
-		imagesLoaded = forcan.load_masked_images(ImageDir,allChips);
+		forcan.load_masked_images(ImageDir,allChips);
 		MainTile.npChip = AltTile.npChip = Tile_NP;
 		Dome.npChip = Dome_NP;
 		Cylinder_A.npChip = Cylinder_B.npChip = Cylinder_NP;
 		Cube_A.npChip = Cube_B.npChip = Cube_NP; 
+		imagesLoaded = true;
 		}
 	}
 }

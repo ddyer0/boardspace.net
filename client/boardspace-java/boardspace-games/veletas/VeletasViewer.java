@@ -67,7 +67,7 @@ public class VeletasViewer extends CCanvas<VeletasCell,VeletasBoard> implements 
     /**
      * preload all the images associated with the game. This is delegated to the chip class.
      */
-    public void preloadImages()
+    public synchronized void preloadImages()
     {	
        	VeletasChip.preloadImages(loader,ImageDir);
        	gameIcon = VeletasChip.Icon.image;

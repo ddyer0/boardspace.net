@@ -61,11 +61,11 @@ public class TraxChip extends chip<TraxChip> {
     public static TraxChip classicBlackChipLines[] = null;
     public static TraxChip modernRedChipLines[] = null;
     public static TraxChip modernWhiteChipLines[] = null;
-    
+    private static boolean imagesLoaded = false;
     // note that this image loading code is not fully modern because we do some very 
     // nonstandard things with the masks.
 	public static void preloadImages(ImageLoader forcan,String ImageDir)
-	{	if(classicChips==null)
+	{	if(!imagesLoaded)
 		{	
         Image classicmasks[] = forcan.load_images(ImageDir, ClassicImageFileNames,"-mask"); // load the mask images
         Image classicImages[] = forcan.load_images(ImageDir, ClassicImageFileNames, classicmasks); // load the main images
@@ -93,6 +93,7 @@ public class TraxChip extends chip<TraxChip> {
         	modernRedChipLines[lim] = new TraxChip(ModernImageFileNames[lim],MODERN_SCALE[lim],modernRedLines[lim]);
         	modernWhiteChipLines[lim] = new TraxChip(ModernImageFileNames[lim],MODERN_SCALE[lim],modernWhiteLines[lim]);
         }
+       imagesLoaded = true;
 		}
-	}   
+	}    
 }

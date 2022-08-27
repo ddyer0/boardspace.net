@@ -95,7 +95,7 @@ public class FrogViewer extends CCanvas<FrogCell,FrogBoard> implements FrogConst
     {	return(WinForPlayer(p)?11:10-b.numberOfGroups(p.boardIndex));
     }
     
-    public void preloadImages()
+    public synchronized void preloadImages()
     {	FrogPiece.preloadImages(loader,ImageDir);
 	    if (textures == null)
 	        { // note that dfor this to work correctly, the images and masks must be the same size.  

@@ -30,6 +30,7 @@ import online.game.*;
 
 /*
  * 
+ * 
 Interesting special cases, choices and resolutions.  A lot of odd things arise from
 the combination of "Mentor", a blue card which lets you take an action from a previous
 season, and using that action to play a yellow card. Yellow cards generally assume the
@@ -79,7 +80,7 @@ action will be taken in the spring.
   
  */
 class ViticultureBoard extends RBoard<ViticultureCell> implements BoardProtocol,ViticultureConstants
-{	static int REVISION = 152;			// 100 represents the initial version of the game
+{	static int REVISION = 153;			// 100 represents the initial version of the game
 										// games with no revision information will be 100
 										// revision 101, correct the sale price of champagne to 4
 										// revision 102, fix the cash distribution for the cafe
@@ -148,6 +149,8 @@ class ViticultureBoard extends RBoard<ViticultureCell> implements BoardProtocol,
 										// revision 150 fixed scholar "both" option with oracle drawing cards
 										// revision 151 makes the "sell wines" overlay behave as radio buttons
 										// revision 152 tightens up the conditions for showing the "fill wine order" choice
+										// revision 153 fixes an omission, considering the workshop discount for craftsman
+										// 		also fixes "producer" to only forbid retrieving itself
 public int getMaxRevisionLevel() { return(REVISION); }
 	PlayerBoard pbs[] = null;		// player boards
 	public PlayerBoard getPlayerBoard(int n) 
@@ -921,6 +924,8 @@ public int getMaxRevisionLevel() { return(REVISION); }
     private IStack pickedSourceIndex = new IStack();
     private CellStack droppedDestStack = new CellStack();
     public ViticultureChip lastDroppedObject = null;	// for image adjustment logic
+    private ViticultureCell lastDroppedWorker = null;
+    private int lastDroppedWorkerIndex = 0;
 
     private StateStack stateStack = new StateStack();
 	private ViticultureCell newcell(ViticultureId loc,ChipType type,String tip)
@@ -1230,6 +1235,8 @@ public int getMaxRevisionLevel() { return(REVISION); }
 	    pickedObject = null;
 	    resetState = ViticultureState.Puzzle;
 	    lastDroppedObject = null;
+	    lastDroppedWorker = null;
+	    lastDroppedWorkerIndex = 0;
 		unselect();
         animationStack.clear();
         moveNumber = 1;
@@ -1339,6 +1346,8 @@ public int getMaxRevisionLevel() { return(REVISION); }
 	    yokeCash.copyCurrentCenter(from_b.yokeCash);
 	    grapeDisplayCount = from_b.grapeDisplayCount;
 	    wineDisplayCount = from_b.wineDisplayCount;
+	    lastDroppedWorker = getCell(from_b.lastDroppedWorker);
+	    lastDroppedWorkerIndex = from_b.lastDroppedWorkerIndex;
 	    
 	    sameboard(from_b); 
     }
@@ -5179,7 +5188,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
     		{	
     		case Choice_A:
        			//p1("master vintner a");
-       			int cost = upgradeCellar(pb,true,replay);	// includes the workshop discount if applicable
+       			int cost = upgradeCellar(pb,true,replay);	// does not include workshop discount if applicable
     			if(cost>0) { changeCash(pb,-(cost - 2 - (pb.hasWorkshop()?1:0)),yokeCash,replay); }
     			break;
     		case Choice_B:
@@ -5413,7 +5422,8 @@ public int getMaxRevisionLevel() { return(REVISION); }
 	   			//p1("craftsman b");
 				{
 	   			int cost = upgradeCellar(pb,true,replay);
-	   			changeCash(pb,-cost,yokeCash,replay);
+	   			int discount = revision>=153 && pb.hasWorkshop() ? 1 : 0;
+	   			changeCash(pb,-(cost-discount),yokeCash,replay);
 				}
        			break;
        		case Choice_AandC:
@@ -5428,7 +5438,8 @@ public int getMaxRevisionLevel() { return(REVISION); }
        			//p1("craftsman bandc");
        			{
        			int cost = upgradeCellar(pb,true,replay);
-       			changeCash(pb,-cost,yokeCash,replay);
+	   			int discount = revision>=153 && pb.hasWorkshop() ? 1 : 0;
+       			changeCash(pb,-(cost-discount),yokeCash,replay);
        			}
 				//$FALL-THROUGH$
 			case Choice_C:
@@ -6970,6 +6981,14 @@ public int getMaxRevisionLevel() { return(REVISION); }
         	}
         	else { 	G.Error("Not expecting state %s", board_state); }
         }
+    	}
+    	{	ViticultureCell d = droppedDestStack.top();
+    		ViticultureChip dtop = d!=null ? d.topChip() : null;
+    		if(dtop!=null && dtop.type.isWorker())
+    		{
+    			lastDroppedWorker = d;
+    			lastDroppedWorkerIndex = d.height()-1;
+    		}
     	}
         acceptPlacement();
         {
@@ -9195,7 +9214,8 @@ public void placeWorkerInAction(PlayerBoard pb,int action,int lastSlot,
 				if(!pb.hasBothCellars())
 				{	// check the cash reserves
 					ViticultureCell c = pb.hasMediumCellar() ? pb.largeCellar : pb.mediumCellar;
-					if(pb.cash>=c.cost)
+		   			int discount = revision>=153 && pb.hasWorkshop() ? 1 : 0;
+					if(pb.cash>=c.cost-discount)
 					{
 					addChoice(all,ViticultureId.Choice_B,generator);
 					addChoice(all,ViticultureId.Choice_AandB,generator);
@@ -9918,19 +9938,25 @@ public void placeWorkerInAction(PlayerBoard pb,int action,int lastSlot,
 	 }
 	 return(some);
  }
+ //
+ // the official ruling for the producer is that it can retrieve anything
+ // except the worker used to play the card.  Usually that's something on
+ // a play yellow, but with "manager" blue card the trigger worker can be
+ // a blue card, and no worker at all is on "play yellow"
  private boolean addRetrieveProducerMoves(PlayerBoard pb,CommonMoveStack all)
  {	boolean some = false;
  	for(int lim = mainBoardWorkerPlacements.length-1; lim>=0; lim--)
  	{
  		ViticultureCell place[] = mainBoardWorkerPlacements[lim];
- 		if(place[0].rackLocation()!=ViticultureId.PlayYellowWorker)
+ 		if(revision>=153 || place[0].rackLocation()!=ViticultureId.PlayYellowWorker)
  		{
  		for(ViticultureCell from : place)
  			{
  			for(int h = from.height()-1; h>=0; h--)
  			{
  				ViticultureChip worker = from.chipAtIndex(h);
- 				if(pb.isMyWorker(worker))
+ 				if(pb.isMyWorker(worker)
+ 						&& (revision<153 || from!=lastDroppedWorker || h!=lastDroppedWorkerIndex))
  				{	Viticulturemovespec m = new Viticulturemovespec(MOVE_RETRIEVE,from,h,pb.workers,whoseTurn);
  					if(!movestackContains(m, pendingMoves))
  					{

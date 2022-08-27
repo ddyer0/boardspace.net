@@ -63,7 +63,7 @@ public class ChessViewer extends CCanvas<ChessCell,ChessBoard> implements ChessC
     /**
      * preload all the images associated with the game. This is delegated to the chip class.
      */
-    public void preloadImages()
+    public synchronized void preloadImages()
     {	
        	ChessChip.preloadImages(loader,ImageDir);
        	gameIcon = ChessChip.whiteKing.image;

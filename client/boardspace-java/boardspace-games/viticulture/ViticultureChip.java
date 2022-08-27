@@ -886,7 +886,7 @@ public class ViticultureChip extends chip<ViticultureChip>
 		autoloadGroup(Dir,optionalImages);
 		
 		
-		imagesLoaded = forcan.load_masked_images(Dir,loadChips);
+		forcan.load_masked_images(Dir,loadChips);
 		
 		// do this after the main load so the images are available
 		RedGrapes = grapeArray(RedGrape,1,9);
@@ -907,6 +907,7 @@ public class ViticultureChip extends chip<ViticultureChip>
 	 	PoliticoPlantExtra = ChoiceDeck2[4];
 	 	autoloadMaskGroup(Dir,ChoiceDeck2,"choice/choice-mask");
 	
+	 	imagesLoaded = true;
 		check_digests(allChips);
 		}
 

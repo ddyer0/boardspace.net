@@ -70,11 +70,12 @@ public class VoloChip extends chip<VoloChip>
         for(int i=0;i<nColors;i++) 
         	{CC[i]=new VoloChip(i,IM[i],ImageNames[i],SCALES[i],rv.nextLong()); 
         	}
-        CANONICAL_PIECE = CC;
         Blue = CC[1];
         Orange = CC[0];
         BlueO = CC[2];
         OrangeO = CC[3];
+        CANONICAL_PIECE = CC;
+        
         check_digests(CC);	// verify that the chips have different digests
 		}
 	}   

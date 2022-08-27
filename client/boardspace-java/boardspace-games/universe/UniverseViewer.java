@@ -250,7 +250,7 @@ public class UniverseViewer extends CCanvas<UniverseCell,UniverseBoard> implemen
     {	if(m.op!=MOVE_ASSIGN) { m = super.EditHistory(m); }
     	return(m);
     }
-    public void preloadImages()
+    public synchronized void preloadImages()
     {	
        	UniverseChip.preloadImages(loader,ImageDir);
        	
@@ -395,13 +395,13 @@ public class UniverseViewer extends CCanvas<UniverseCell,UniverseBoard> implemen
     			0.1		// preference for the designated layout, if any
     			);
     	
+        layout.placeDoneEditRep(buttonW, buttonW*2, doneRect,editRect,resignRect);
     	// place the chat and log automatically, preferring to place
     	// them together and not encroaching on the main rectangle.
     	// however, if that doesn't work out the main rectangle will shrink.
     	layout.placeTheChatAndLog(chatRect, minChatW, chatHeight,minChatW*2,3*chatHeight/2,logRect,
-    			minLogW, minLogH, minLogW*3/2, minLogH*3/2);
+    			minLogW, minLogH, minLogW*3/2, minLogH*2);
      	
-        layout.placeDoneEditRep(buttonW, buttonW*2, doneRect,editRect,resignRect);
         layout.placeTheVcr(this,minLogW,minLogW*3/2);
        
         if(isNudoku)

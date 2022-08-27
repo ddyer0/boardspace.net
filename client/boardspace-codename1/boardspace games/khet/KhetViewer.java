@@ -77,7 +77,7 @@ public class KhetViewer extends CCanvas<KhetCell,KhetBoard> implements KhetConst
     	return( (n<<1) | ((b.reverseXneqReverseY()) ? 1 : 0 )); 
     }
     
-    public void preloadImages()
+    public synchronized void preloadImages()
     {	
        	KhetChip.preloadImages(loader,ImageDir);
         if (images == null)

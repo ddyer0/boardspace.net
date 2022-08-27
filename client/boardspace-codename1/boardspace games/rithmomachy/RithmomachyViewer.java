@@ -18,7 +18,6 @@ import static rithmomachy.RithmomachyMovespec.*;
 /**
  * This code shows the overall structure appropriate for a game view window.
  * TODO: when rotated, also rotate the tiles so they appear upright
- * TODO: upgrade the game log with icons
 */
 public class RithmomachyViewer extends CCanvas<RithmomachyCell,RithmomachyBoard> implements RithmomachyConstants, GameLayoutClient
 {
@@ -60,7 +59,7 @@ public class RithmomachyViewer extends CCanvas<RithmomachyCell,RithmomachyBoard>
     private Rectangle capturedRects[] = addRect("captured",2);
     
 
-    public void preloadImages()
+    public synchronized void preloadImages()
     {	
        	RithmomachyChip.preloadImages(loader,ImageDir);
         if (images == null)
@@ -92,7 +91,7 @@ public class RithmomachyViewer extends CCanvas<RithmomachyCell,RithmomachyBoard>
 
         int randomKey = info.getInt(OnlineConstants.RANDOMSEED,-1);
        
-        b = new RithmomachyBoard(info.getString(OnlineConstants.GAMETYPE, Rithmomachy_INIT),
+        b = new RithmomachyBoard(info.getString(GAMETYPE, Rithmomachy_INIT),
         		randomKey,players_in_game,getStartingColorMap());
         //useDirectDrawing(); // not tested yet
         doInit(false);
@@ -587,7 +586,7 @@ public class RithmomachyViewer extends CCanvas<RithmomachyCell,RithmomachyBoard>
       // if the board is one large graphic, for which the visual target points
       // are carefully matched with the abstract grid
      images[BOARD_INDEX].centerImage(gc, boardRect);
-	    b.SetDisplayParameters(0.85,1.0,  0.18,0.05,  0);
+      b.SetDisplayParameters(rotateBoard?0.85:0.878,1.0,  0.18,0.05,  0);
 	    b.SetDisplayRectangle(boardRect);
 
       b.DrawGrid(gc,boardRect,use_grid,Color.white,Color.black,Color.blue,Color.black);
