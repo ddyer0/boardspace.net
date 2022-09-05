@@ -915,6 +915,7 @@ class SantoriniBoard extends rectBoard<SantoriniCell> implements BoardProtocol,S
         				animationStack.push(to);
         			}
         			pickBoardCell(from);
+        			m.chip = pickedObject;
         			if(swap)
         			{	SantoriniCell destination = from;
         				if(push) 
@@ -972,7 +973,8 @@ class SantoriniBoard extends rectBoard<SantoriniCell> implements BoardProtocol,S
         		default: throw G.Error("not expecting dropb in state %s",board_state);
         		}
     		    pickedSourceStack.push(src);
-    		    pickedObject = src.topChip();    		
+    		    pickedObject = src.topChip();    
+    		    m.chip=pickedObject;
         	}
 
 			SantoriniCell src = sourceCell();
@@ -1002,7 +1004,7 @@ class SantoriniBoard extends rectBoard<SantoriniCell> implements BoardProtocol,S
 				animationStack.push(newloc);
 				}
 			}
-			
+			m.chip = pickedObject;
             dropBoardCell(dst);
 			if((replay!=replayMode.Replay)
 					&& (suppliedSource || (replay==replayMode.Single)))

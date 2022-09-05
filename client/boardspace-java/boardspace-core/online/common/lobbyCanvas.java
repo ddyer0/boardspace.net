@@ -47,8 +47,7 @@ import lib.StockArt;
 import lib.TimeControl;
 
 public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProtocol
-{	// TODO: fix ios direct drawing so pop up menus don't show white background instead of the lobby
-
+{	
     private static final String AcceptChatMessage =  "Accept chat from #1";
     private static final String IgnoreChatMessage = "Ignore chat from #1";
     private static final String NoChallengeMessage = "No challenges from #1";

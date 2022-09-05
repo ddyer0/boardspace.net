@@ -77,7 +77,7 @@ import online.search.SimpleRobotProtocol;
  *  5) revert the original "Hex" hierarchy in case eclipse got carried away.
 */
 /*
-TODO:
+TO DO:
 * = fixed, not verified
 - = fix not working
 + = fix is verified.

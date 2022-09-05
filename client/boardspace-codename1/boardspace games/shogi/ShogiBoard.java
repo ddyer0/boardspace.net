@@ -791,6 +791,7 @@ class ShogiBoard extends rectBoard<ShogiCell> implements BoardProtocol,ShogiCons
         	ShogiState bs = board_state;
         	if(bs==ShogiState.OfferDraw)
         	{
+        	setState(unresign);
         	}else
         	{
         	unresign = bs;

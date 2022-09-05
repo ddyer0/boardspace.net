@@ -95,7 +95,7 @@ public class MorrisViewer extends CCanvas<MorrisCell,MorrisBoard> implements Mor
 
         int randomKey = info.getInt(OnlineConstants.RANDOMSEED,-1);
        
-        b = new MorrisBoard(info.getString(OnlineConstants.GAMETYPE, Variation.Morris_9.name),randomKey,players_in_game,repeatedPositions,
+        b = new MorrisBoard(info.getString(GAMETYPE, Variation.Morris_9.name),randomKey,players_in_game,repeatedPositions,
         		getStartingColorMap());
         useDirectDrawing(true); // not tested yet
         doInit(false);
@@ -406,7 +406,9 @@ public class MorrisViewer extends CCanvas<MorrisCell,MorrisBoard> implements Mor
         default:
         	if(gb.drawIsLikely())
         	{	// if not making progress, put the draw option on the UI
-            	if(GC.handleSquareButton(gc,messageRotation,acceptDrawRect,select,s.get(OFFERDRAW),HighlightColor,rackBackGroundColor))
+            	if(GC.handleSquareButton(gc,messageRotation,acceptDrawRect,select,s.get(OFFERDRAW),
+            			HighlightColor,
+            			vstate==MorrisState.DrawPending?HighlightColor:rackBackGroundColor))
             	{
             		select.hitCode = GameId.HitOfferDrawButton;
             	}
@@ -773,7 +775,7 @@ private void playSounds(commonMove m)
     	if(target==offerDrawAction)
     	{	if(OurMove() 
     			&& (b.movingObjectIndex()<=0)
-    			&& (b.getState()==MorrisState.Play))
+    			&& ((b.getState()==MorrisState.Play)||(b.getState()==MorrisState.DrawPending)))
     		{
     		PerformAndTransmit(OFFERDRAW);
     		}

@@ -31,7 +31,7 @@ import lib.Toggle;
 */
 public class OrdoViewer extends CCanvas<OrdoCell,OrdoBoard> implements OrdoConstants, GameLayoutClient
 {
-	static final String Checker_SGF = "Checker"; // sgf game name
+	static final String Ordo_SGF = "Ordo"; // sgf game name
 	static final String ImageDir = "/ordo/images/";
 	// colors
     private Color HighlightColor = new Color(0.2f, 0.95f, 0.75f);
@@ -42,6 +42,7 @@ public class OrdoViewer extends CCanvas<OrdoCell,OrdoBoard> implements OrdoConst
     // private state
     private OrdoBoard b = null; 	// the board from which we are displaying
     private int SQUARESIZE;			// size of a board square
+    private int CHIPSIZE;
     
     // addRect is a service provided by commonCanvas, which supports a mode
     // to visualize the layout during development.  Look for "show rectangles"
@@ -56,10 +57,9 @@ public class OrdoViewer extends CCanvas<OrdoCell,OrdoBoard> implements OrdoConst
     private Rectangle repRect = addRect("repRect");
     private Rectangle declineDrawRect = addRect("declineDraw");
     private Rectangle acceptDrawRect = addRect("acceptDraw");	
-    private Rectangle bannerRect = addRect("banner");			// the game type, positioned at the top
     private Toggle eyeRect = new Toggle(this,"eye",
-			StockArt.NoEye,CheckerId.ToggleEye,NoeyeExplanation,
-			StockArt.Eye,CheckerId.ToggleEye,EyeExplanation
+			StockArt.NoEye,OrdoId.ToggleEye,NoeyeExplanation,
+			StockArt.Eye,OrdoId.ToggleEye,EyeExplanation
 			);
   /**
      * preload all the images associated with the game. This is delegated to the chip class.
@@ -67,7 +67,7 @@ public class OrdoViewer extends CCanvas<OrdoCell,OrdoBoard> implements OrdoConst
     public synchronized void preloadImages()
     {	
        	OrdoChip.preloadImages(loader,ImageDir);
-       	gameIcon = OrdoChip.CheckerIcon.image;
+       	gameIcon = OrdoChip.OrdoIcon.image;
     }
 
 
@@ -211,19 +211,16 @@ public class OrdoViewer extends CCanvas<OrdoCell,OrdoBoard> implements OrdoConst
        			margin,	// size of margins for boxes	
        			0.7, 	// at least 70% for the board
        			aspect,	// preferred aspect ratio for the board 
-       			fh*4, 	//maximum cell size, based on font size for the window
+       			fh*3, 	//maximum cell size, based on font size for the window
        			0.5);	// preference for sticking with the designated layout
 
     	int chatHeight = selectChatHeight(height);
         int logH = chatHeight==0 ? fh*15 : chatHeight;
         int vcrW = fh*16;
         int vcrMW = fh*20;
-    	int bannerW = fh*20;
-    	int bannerH = fh*4;
-        int stateH = fh*2;
+        int stateH = fh*3;
         int buttonW = fh*8;
-      	layout.placeTheVcr(this,vcrW,vcrMW);
-      	layout.placeRectangle(bannerRect,bannerW,bannerH,bannerW*2,bannerH*2,BoxAlignment.Top,true);
+        layout.placeTheVcr(this,vcrW,vcrMW);
        	layout.placeTheChatAndLog(chatRect, minChatW, chatHeight, minChatW*2, 3*chatHeight/2, logRect,
     			ideal_logwidth,logH,ideal_logwidth*2,logH*2);
  
@@ -235,7 +232,7 @@ public class OrdoViewer extends CCanvas<OrdoCell,OrdoBoard> implements OrdoConst
         
     	{
     	int w = G.Width(main);
-    	int h = G.Height(main);
+    	int h = G.Height(main)-stateH*2;
     	SQUARESIZE = Math.min(w/b.ncols,h/b.nrows);		// one extra square for top and bottom ornaments
     	}
 
@@ -246,26 +243,31 @@ public class OrdoViewer extends CCanvas<OrdoCell,OrdoBoard> implements OrdoConst
     	int boardW = SQUARESIZE * (rotate ? b.nrows : b.ncols);
         int boardH = SQUARESIZE * (rotate ? b.ncols : b.nrows);
         int extraW = (w-boardW)/2;
-        int extraH = (h-boardH)/2;
+        int extraH = (h-boardH-stateH*2)/2;
         int boardX = G.Left(main)+extraW;
-        int boardY = G.Top(main)+extraH;
+        int boardY = G.Top(main)+extraH+stateH;
         G.SetRect(boardRect,boardX,boardY,boardW,boardH);
+       
         if(rotate)
         {	// this will trigger rotation of the board and it's coordinate system
         	// when it's drawn.
         	G.setRotation(boardRect, -Math.PI/2);
         	contextRotation = -Math.PI/2;
+        	CHIPSIZE = SQUARESIZE*9/10;
+        }
+        else {
+        	CHIPSIZE=SQUARESIZE;
         }
         int boardBottom = boardY+boardH;
 
          {
-        int stateY = boardY;
+        int stateY = boardY-stateH/2;
         int stateX = boardX;
         G.placeStateRow(	stateX,
         			stateY,
         			boardW,stateH,iconRect,stateRect,eyeRect,noChatRect);
         
-        G.placeRow(stateX, boardBottom-stateH, boardW, stateH, goalRect,liftRect,reverseViewRect);
+        G.placeRow(stateX, boardBottom-stateH/2, boardW, stateH, goalRect,reverseViewRect);
         
  
         setProgressRect(progressRect,goalRect);
@@ -334,7 +336,7 @@ public class OrdoViewer extends CCanvas<OrdoCell,OrdoBoard> implements OrdoConst
     	int obj1 = obj%100;
     	OrdoChip ch = OrdoChip.getChipNumber(obj1);// Tiles have zero offset
     	Drawable chd = obj2!=0 ? ch.getKing() : ch;
-    	chd.drawChip(g,this,SQUARESIZE,xp,yp,null);
+    	chd.drawChip(g,this,CHIPSIZE,xp,yp,null);
 
      }
 
@@ -378,12 +380,12 @@ public class OrdoViewer extends CCanvas<OrdoCell,OrdoBoard> implements OrdoConst
             int ypos = G.Bottom(brect) - gb.cellToY(cell);
             int xpos = G.Left(brect) + gb.cellToX(cell);
             HitPoint hitNow = gb.legalToHitBoard(cell,targets) ? highlight : null;
-            if( cell.drawStack(gc,this,hitNow,SQUARESIZE,xpos,ypos,liftSteps,0.1,null)) 
+            if( cell.drawStack(gc,this,hitNow,CHIPSIZE,xpos,ypos,liftSteps,0.1,null)) 
             	{ // draw a highlight rectangle here, but defer drawing an arrow until later, after the moving chip is drawn
             	highlight.arrow =hasMovingObject(highlight) 
           				? StockArt.DownArrow 
           				: cell.topChip()!=null?StockArt.UpArrow:null;
-                highlight.awidth = SQUARESIZE/3;
+                highlight.awidth = CHIPSIZE/3;
             	highlight.spriteColor = Color.red;
             	}
             if(show)
@@ -391,29 +393,26 @@ public class OrdoViewer extends CCanvas<OrdoCell,OrdoBoard> implements OrdoConst
             if((cell==dest)||(cell==selectedStart)||(hitNow!=null))
             
             {
-            	StockArt.SmallO.drawChip(gc,this,SQUARESIZE,xpos,ypos,null);
+            	StockArt.SmallO.drawChip(gc,this,CHIPSIZE,xpos,ypos,null);
             }}
             if(cell==last)
             {
-            	StockArt.Dot.drawChip(gc,this,SQUARESIZE,xpos,ypos,null);
+            	StockArt.Dot.drawChip(gc,this,CHIPSIZE,xpos,ypos,null);
             }
             if(cell==selectedStart)
             {
-            	StockArt.Dot.drawChip(gc,this,SQUARESIZE*3/2,xpos,ypos,null);
+            	StockArt.Dot.drawChip(gc,this,CHIPSIZE*3/2,xpos,ypos,null);
             }
             if(cell==selectedEnd)
             {
-            	StockArt.Dot.drawChip(gc,this,SQUARESIZE*3/2,xpos,ypos,null);
+            	StockArt.Dot.drawChip(gc,this,CHIPSIZE*3/2,xpos,ypos,null);
             }
     	}
 
     }
      public void drawAuxControls(Graphics gc,HitPoint highlight)
-    {  String var = b.variation.rules;
-       HitPoint.setHelpText(highlight,bannerRect,s.get(var));
-    	
-       drawLiftRect(gc,liftRect,highlight,OrdoChip.liftIcon.image);
-       DrawReverseMarker(gc,reverseViewRect,highlight,CheckerId.ReverseViewButton);
+    {      	
+       DrawReverseMarker(gc,reverseViewRect,highlight,OrdoId.ReverseViewButton);
        eyeRect.activateOnMouse=true;
        eyeRect.draw(gc,highlight);
     }
@@ -429,7 +428,7 @@ public class OrdoViewer extends CCanvas<OrdoCell,OrdoBoard> implements OrdoConst
       HitPoint ourTurnSelect = ourTurn ? highlight : null;	// hit if our turn
       HitPoint ourButtonSelect = moving?null:ourTurnSelect;	// hit if our turn and not dragging
       HitPoint vcrSelect = (moving && !reviewMode()) ? null : highlight;	// hit if not dragging
-      CheckerState vstate = gb.getState();
+      OrdoState vstate = gb.getState();
       redrawGameLog(gc, vcrSelect, logRect, boardBackgroundColor);
       GC.setRotatedContext(gc,boardRect,highlight,contextRotation);
       drawBoardElements(gc, gb, boardRect, ourTurnSelect);
@@ -455,7 +454,9 @@ public class OrdoViewer extends CCanvas<OrdoCell,OrdoBoard> implements OrdoConst
         default:
         	if(gb.drawIsLikely())
         	{	// if not making progress, put the draw option on the UI
-            	if(GC.handleSquareButton(gc,messageRotation,acceptDrawRect,ourButtonSelect,s.get(OFFERDRAW),HighlightColor,rackBackGroundColor))
+            	if(GC.handleSquareButton(gc,messageRotation,acceptDrawRect,ourButtonSelect,s.get(OFFERDRAW),
+            			HighlightColor,
+            			vstate==OrdoState.DrawPending ? HighlightColor : rackBackGroundColor))
             	{
             		ourButtonSelect.hitCode = GameId.HitOfferDrawButton;
             	}
@@ -476,7 +477,7 @@ public class OrdoViewer extends CCanvas<OrdoCell,OrdoBoard> implements OrdoConst
        	break;
         }
         
-		if (vstate != CheckerState.Puzzle)
+		if (vstate != OrdoState.Puzzle)
         {
 			if(!planned && !autoDoneActive())
 				{handleDoneButton(gc,doneRect,(b.DoneState()? ourButtonSelect : null),HighlightColor, rackBackGroundColor);
@@ -484,20 +485,21 @@ public class OrdoViewer extends CCanvas<OrdoCell,OrdoBoard> implements OrdoConst
         	handleEditButton(gc,messageRotation,editRect,ourButtonSelect,highlight,HighlightColor, rackBackGroundColor);
         }
 
- 		drawPlayerStuff(gc,(vstate==CheckerState.Puzzle),ourButtonSelect,HighlightColor,rackBackGroundColor);
+ 		drawPlayerStuff(gc,(vstate==OrdoState.Puzzle),ourButtonSelect,HighlightColor,rackBackGroundColor);
 
         if (gc != null)
         {	
             standardGameMessage(gc,messageRotation,
-            		vstate==CheckerState.Gameover
+            		vstate==OrdoState.Gameover
             			?gameOverMessage()
             			:s.get(vstate.getDescription()),
-            				vstate!=CheckerState.Puzzle,
+            				vstate!=OrdoState.Puzzle,
             				whoseTurn,
             				stateRect);
             gb.playerChip(whoseTurn).drawChip(gc, this, iconRect,null);
         }
-        goalAndProgressMessage(gc,vcrSelect,Color.black,s.get(VictoryCondition),progressRect, goalRect);
+        goalAndProgressMessage(gc,vcrSelect,Color.black,
+        			s.get(gb.variation==Variation.OrdoX?VictoryConditionX:VictoryCondition),progressRect, goalRect);
    
         DrawRepRect(gc,messageRotation,Color.black,gb.Digest(),repRect);
         drawAuxControls(gc,vcrSelect);
@@ -518,7 +520,7 @@ public class OrdoViewer extends CCanvas<OrdoCell,OrdoBoard> implements OrdoConst
         handleExecute(b,mm,replay);
         lastDropped = b.lastDropped;
         
-        startBoardAnimations(replay,b.animationStack,SQUARESIZE,MovementStyle.Simultaneous);        	
+        startBoardAnimations(replay,b.animationStack,CHIPSIZE,MovementStyle.Simultaneous);        	
         if(replay!=replayMode.Replay) { playSounds(mm); }
  
         return (true);
@@ -711,20 +713,22 @@ private void playSounds(commonMove m)
     switch(m.op)
     {
     case MOVE_BOARD_BOARD:
+    case MOVE_CAPTURE:
     case MOVE_ORDO:
       	 playASoundClip(light_drop,100);
        	 playASoundClip(heavy_drop,100);
        	 break;
-     case MOVE_PICK:
+    case MOVE_PICK:
     	 playASoundClip(light_drop,100);
     	 break;
+    case MOVE_SELECT:
+    case MOVE_RETAIN:
     case MOVE_PICKB:
     	playASoundClip(light_drop,100);
     	break;
     case MOVE_DROP:
     	break;
     case MOVE_DROPB:
-    case MOVE_DROPC:
       	 playASoundClip(heavy_drop,100);
       	break;
     default: break;
@@ -740,9 +744,9 @@ private void playSounds(commonMove m)
  */
     public void StartDragging(HitPoint hp)
     {
-    	if (hp.hitCode instanceof CheckerId) // not dragging anything yet, so maybe start
+    	if (hp.hitCode instanceof OrdoId) // not dragging anything yet, so maybe start
         {
-        CheckerId hitObject = (CheckerId)hp.hitCode;
+        OrdoId hitObject = (OrdoId)hp.hitCode;
 		OrdoCell cell = hitCell(hp);
 		OrdoChip chip = (cell==null) ? null : cell.topChip();
 		if(chip!=null)
@@ -770,14 +774,14 @@ private void playSounds(commonMove m)
 	 */
     public void StopDragging( HitPoint hp)
     {	CellId id = hp.hitCode;
-    	if(!(id instanceof CheckerId)) 
+    	if(!(id instanceof OrdoId)) 
     		{ // handle all the actions that aren't ours
     			missedOneClick = performStandardActions(hp,missedOneClick); 
     		}
     	else {
     	missedOneClick = false;
-        CheckerId hitObject = (CheckerId)id;
-		CheckerState state = b.getState();
+        OrdoId hitObject = (OrdoId)id;
+		OrdoState state = b.getState();
 		OrdoCell cell = hitCell(hp);
 		OrdoChip chip = (cell==null) ? null : cell.topChip();
         switch (hitObject)
@@ -807,8 +811,12 @@ private void playSounds(commonMove m)
 					PerformAndTransmit("pickb "+cell.col+" "+cell.row+" "+chip.id.shortName);
 				}
         		break;
+			case OrdoRetain:
+				PerformAndTransmit("Retain "+cell.col+" "+cell.row+" "+chip.id.shortName);
+				break;
         	case OrdoPlay:
 			case Reconnect:
+			case OrdoPlay2:
         	case Confirm:
         		if(chip==b.playerChip(b.whoseTurn))
         		{
@@ -876,15 +884,13 @@ private void playSounds(commonMove m)
       // in this implementation, the checker squares of the board are actually
       // items in the cells, so they are drawn in the drawBoardElements method
       //
-      Variation v = b.variation;
-      if(v.banner!=null) {v.banner.image.centerImage(gc,bannerRect); }
       
       b.DrawGrid(gc,rect,use_grid,Color.white,Color.black,Color.blue,Color.black);
     } 
     
     private void setBoardRect(OrdoBoard gb)
     {
-	    gb.SetDisplayParameters(0.94,1.0,  0.12,0.1,  0);
+	    gb.SetDisplayParameters(contextRotation==0 ? 1 : 0.9,1.0,  0.12,0.1,  0);
 	    gb.SetDisplayRectangle(boardRect);
        
     }
@@ -925,7 +931,7 @@ private void playSounds(commonMove m)
     { 
     	return(""+b.gametype+" "+b.randomKey+" "+b.nPlayers()+" "+b.revision); 
    }
-    public String sgfGameType() { return(Checker_SGF); }
+    public String sgfGameType() { return(Ordo_SGF); }
 
     // the format is just what is produced by FormHistoryString
     //
@@ -1000,7 +1006,7 @@ private void playSounds(commonMove m)
     	if(target==offerDrawAction)
     	{	if(OurMove() 
     			&& (b.movingObjectIndex()<=0)
-    			&& (b.getState()==CheckerState.OrdoPlay))
+    			&& ((b.getState()==OrdoState.OrdoPlay)||(b.getState()==OrdoState.DrawPending)))
     		{
     		PerformAndTransmit(OFFERDRAW);
     		}
@@ -1069,7 +1075,7 @@ private void playSounds(commonMove m)
             {
                 comments += value;
             }
-            else if (name.equals(game_property) && value.equalsIgnoreCase("checkers"))
+            else if (name.equals(game_property) && value.equalsIgnoreCase("checker"))
             {	// the equals sgfGameType() case is handled in replayStandardProps
             }
             else if (parseVersionCommand(name,value,2)) {}

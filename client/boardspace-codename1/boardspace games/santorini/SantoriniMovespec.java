@@ -3,6 +3,9 @@ package santorini;
 import java.util.*;
 
 import lib.G;
+import lib.Text;
+import lib.TextChunk;
+import lib.TextGlyph;
 import online.game.*;
 import lib.ExtendedHashtable;
 
@@ -28,7 +31,7 @@ public class SantoriniMovespec extends commonMove implements SantoriniConstants
    }
 
     SantorId source; // where from/to
-	int object;	// object being picked/dropped
+	SantoriniChip chip;	// object being picked/dropped
 	char from_col; //for from-to moves, the source column
 	int from_row; // for from-to moves, the source row
     char to_col; // for from-to moves, the destination column
@@ -87,7 +90,6 @@ public class SantoriniMovespec extends commonMove implements SantoriniConstants
 
         return ((op == other.op) 
 				&& (source == other.source)
-				&& (object == other.object)
 				&& (to_row == other.to_row) 
 				&& (to_col == other.to_col)
 				&& (from_row == other.from_row)
@@ -98,11 +100,11 @@ public class SantoriniMovespec extends commonMove implements SantoriniConstants
     public void Copy_Slots(SantoriniMovespec to)
     {	super.Copy_Slots(to);
         to.player = player;
-		to.object = object;
         to.to_col = to_col;
         to.to_row = to_row;
         to.from_col = from_col;
         to.from_row = from_row;
+        to.chip = chip;
         to.source = source;
     }
 
@@ -147,7 +149,8 @@ public class SantoriniMovespec extends commonMove implements SantoriniConstants
             source = SantorId.BoardLocation;		
             from_col = G.CharToken(msg);	//from col,row
             from_row = G.IntToken(msg);
-            object = G.IntToken(msg);       //cupsize
+            // legacy, keep this
+            G.IntToken(msg);       //cupsize
  	        to_col = G.CharToken(msg);		//to col row
 	        to_row = G.IntToken(msg);
 	        break;
@@ -164,7 +167,8 @@ public class SantoriniMovespec extends commonMove implements SantoriniConstants
             source = SantorId.BoardLocation;
             from_col = G.CharToken(msg);
             from_row = G.IntToken(msg);
-            object = G.IntToken(msg);
+            // legacy, keep this
+            G.IntToken(msg);
 
             break;
 
@@ -190,39 +194,50 @@ public class SantoriniMovespec extends commonMove implements SantoriniConstants
             break;
         }
     }
+    private Text icon(commonCanvas v,Object... msg)
+    {	double chipScale[] = {1,1.5,-0.2,-0.5};
+    	Text m = TextChunk.create(G.concat(msg));
+    	if(chip!=null)
+    	{
+    		m = TextChunk.join(TextGlyph.create("xx", chip, v,chipScale),
+    					m);
+    	}
+    	return(m);
+    }
+
 
     /* construct a move string for this move.  These are the inverse of what are accepted
     by the constructors, and are also human readable */
-    public String shortMoveString()
+    public Text shortMoveText(commonCanvas v)
     {
         switch (op)
         {
         case MOVE_SELECT:
-        	return("select "+SantoriniChip.findGodName(from_row));
+        	return(TextChunk.create("select "+SantoriniChip.findGodName(from_row)));
         	
         case MOVE_PICKB:
-            return (""+from_col + from_row+"-");
+            return (TextChunk.create(""+from_col + from_row+"-"));
         case MOVE_DOME:
 		case MOVE_DROPB:
-            return (""+to_col + to_row);
+            return (icon(v,to_col,to_row));
 		case MOVE_DROP_PUSH:
-			return ("push "+source.shortName+object);			
+			return TextChunk.create("push "+source.shortName);			
 		case MOVE_DROP_SWAP:
-			return ("swap "+source.shortName+object);
+			return TextChunk.create("swap "+source.shortName);
         case MOVE_DROP:
         case MOVE_PICK:
-            return (source.shortName+object);
+            return TextChunk.create(source.shortName);
         case MOVE_PUSH:
-        	return("swap "+from_col + from_row+"-"+to_col + to_row);
+        	return TextChunk.create("swap "+from_col + from_row+"-"+to_col + to_row);
         case MOVE_SWAPWITH:
-        	return("swap "+from_col + from_row+"-"+to_col + to_row);
+        	return TextChunk.create("swap "+from_col + from_row+"-"+to_col + to_row);
         case MOVE_BOARD_BOARD:
-        	return(""+from_col + from_row+"-"+to_col + to_row);
+        	return TextChunk.create(""+from_col + from_row+"-"+to_col + to_row);
         case MOVE_DONE:
-            return ("");
+            return TextChunk.create("");
 
         default:
-            return (D.findUniqueTrans(op));
+            return TextChunk.create(D.findUniqueTrans(op));
 
         }
     }
@@ -243,18 +258,17 @@ public class SantoriniMovespec extends commonMove implements SantoriniConstants
         	return(opname+ SantoriniChip.findGodName(from_row));
 
         case MOVE_PICKB:
-	        return (opname+ from_col + " " + from_row+" "+object);
+	        return (opname+ from_col + " " + from_row+" 1");
         case MOVE_DOME:
 		case MOVE_DROPB:
 		case MOVE_DROP_SWAP:
 		case MOVE_DROP_PUSH:
-	        return (opname + to_col + " " + to_row+" "+object);
+	        return (opname + to_col + " " + to_row+" 1");
 
 		case MOVE_SWAPWITH:
 		case MOVE_PUSH:
 		case MOVE_BOARD_BOARD:
-			return(opname+ from_col + " " + from_row+" "+object
-					+ " " + to_col + " " + to_row);
+			return(opname+ from_col + " " + from_row+" 1 " + to_col + " " + to_row);
         case MOVE_PICK:
             return (opname+source.shortName+ " "+from_row);
 

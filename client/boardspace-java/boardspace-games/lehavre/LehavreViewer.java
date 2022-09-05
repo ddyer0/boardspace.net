@@ -1,6 +1,6 @@
 package lehavre;
 /**
- * TODO: save about 85% on image size by switching to jpegs and generating small images on the fly.
+ * TO DO: save about 85% on image size by switching to jpegs and generating small images on the fly.
  */
 import java.awt.Color;
 import java.awt.Component;
@@ -775,14 +775,10 @@ public class LehavreViewer extends exCanvas implements ViewerProtocol,NetworkInt
 	public String fixedServerRecordMessage(String fixedHist) {
 		return null;
 	}
-	@Override
 	public void setScored(boolean v) {
-		// TODO Auto-generated method stub
 		
 	}
-	@Override
 	public boolean isScored() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 

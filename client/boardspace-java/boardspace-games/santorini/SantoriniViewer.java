@@ -31,8 +31,6 @@ import online.common.*;
 
  
  *
- * TODO: upgrade the game log with icons
-
 */
 public class SantoriniViewer extends CCanvas<SantoriniCell,SantoriniBoard> implements SantoriniConstants, GameLayoutClient
 {
@@ -93,7 +91,6 @@ public class SantoriniViewer extends CCanvas<SantoriniCell,SantoriniBoard> imple
     public void init(ExtendedHashtable info,LFrameProtocol frame)
     {
         super.init(info,frame);
-  	  	labelColor = Color.black;
   	  	labelFont = largeBoldFont();
   	    MouseColors[0] = Color.red;
   	    MouseColors[1] = new Color(0.1f,0.9f,0.1f);
@@ -547,7 +544,6 @@ public class SantoriniViewer extends CCanvas<SantoriniCell,SantoriniBoard> imple
         				stateRect);
 		gb.playerChip[gb.whoseTurn].drawChip(gc,this,iconRect,null);
         goalAndProgressMessage(gc,ourSelect,s.get(GoalString),progressRect, goalRect);
-
         drawVcrGroup(ourSelect, gc);
         drawViewsetMarker(gc,viewsetRect,ourSelect);
 

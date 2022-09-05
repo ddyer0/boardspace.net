@@ -102,6 +102,7 @@ public class ChatWidget
     private long knockTimer=0;
     public LFrameProtocol theFrame = null;
     private Font basicFont;
+    private Font boldFont;
     static private final String Spaces = "     ";
     private int MAXLENGTH = 10000;
     private int MINTEXTHEIGHT = 30;
@@ -536,18 +537,20 @@ public class ChatWidget
     public void setLocalBounds(int l,int t,int inWidth,int inHeight)
     {	
         //System.out.println("layout " + inWidth+"x"+inHeight);	
-    	int fs = G.standardizeFontSize(G.defaultFontSize);
+    	int fs = G.standardizeFontSize((int)(G.defaultFontSize*1.2));
         basicFont = G.getFont(s.get("fontfamily"), G.Style.Plain, fs);
+        boldFont = G.getFont(basicFont,G.Style.Bold,fs);
 
-        sendButton.setFont(basicFont);
+        //G.print("font "+fs+" "+G.defaultFontSize);
+        sendButton.setFont(boldFont);
         inputField.setFont(basicFont);
-        messageLabel.setFont(basicFont);
+        messageLabel.setFont(boldFont);
         messages.setFont(basicFont);
         comments.setFont(basicFont);
         
         FontMetrics myFM = G.getFontMetrics(basicFont);
         int messageTop = t;
-        int textHeight = (int)(myFM.getHeight()*1.6);
+        int textHeight = (int)(myFM.getHeight()*1.8);
         if (textHeight < MINTEXTHEIGHT)
         {
             textHeight = MINTEXTHEIGHT;

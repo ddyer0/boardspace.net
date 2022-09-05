@@ -602,6 +602,7 @@ class ChessBoard extends rectBoard<ChessCell> implements BoardProtocol,ChessCons
     public boolean drawIsLikely()
     {	switch(board_state)
     	{
+    	case DrawPending: return true;
     	case Play:
     		return((moveNumber - lastProgressMove)>10);
     	default: return(false);

@@ -479,6 +479,8 @@ public class TimeControl implements Config
 	  {	secondsMenu = new PopupManager();
 	  	secondsMenu.newPopupMenu(parent,deferredEvents);
 	  	InternationalStrings s = G.getTranslations();
+	  	secondsMenu.addMenuItem(s.get(TimeControl.SecondsMessage,2),2);
+	  	secondsMenu.addMenuItem(s.get(TimeControl.SecondsMessage,5),5);
 	  	for(int i=10;i<=120;i+=10)
 	  	{	
 	  		secondsMenu.addMenuItem(s.get(TimeControl.SecondsMessage,i),i);

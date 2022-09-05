@@ -119,7 +119,7 @@ public class FanoronaGameViewer extends CCanvas<FanoronaCell,FanoronaBoard> impl
     	if(target==offerDrawAction)
 			{	if(OurMove() 
 					&& (b.movingObjectIndex()<=0)
-					&& (b.getState()==FanoronaState.PLAY_STATE))
+					&& ((b.getState()==FanoronaState.PLAY_STATE) || (b.getState()==FanoronaState.DrawPending)))
 				{
 				PerformAndTransmit(OFFERDRAW);
 				}
@@ -439,7 +439,9 @@ public class FanoronaGameViewer extends CCanvas<FanoronaCell,FanoronaBoard> impl
         case PLAY_STATE:
         	if(gb.drawIsLikely())
         	{	// if not making progress, put the draw option on the UI
-            	if(GC.handleSquareButton(gc,acceptDrawRect,select,s.get(OFFERDRAW),HighlightColor,rackBackGroundColor))
+            	if(GC.handleSquareButton(gc,acceptDrawRect,select,s.get(OFFERDRAW),
+            			HighlightColor,
+            			vstate==FanoronaState.DrawPending ? HighlightColor : rackBackGroundColor))
             	{
             		select.hitCode = GameId.HitOfferDrawButton;
             	}

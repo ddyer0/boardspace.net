@@ -475,7 +475,9 @@ public double setLocalBoundsA(int x, int y, int width, int height,double a)
         default:
         	if(gb.drawIsLikely())
         	{	// if not making progress, put the draw option on the UI
-            	if(GC.handleSquareButton(gc,acceptDrawRect,select,s.get(OFFERDRAW),HighlightColor,rackBackGroundColor))
+            	if(GC.handleSquareButton(gc,acceptDrawRect,select,s.get(OFFERDRAW),
+            			HighlightColor,
+            			vstate==ChessState.DrawPending ? HighlightColor : rackBackGroundColor))
             	{
             		select.hitCode = GameId.HitOfferDrawButton;
             	}
@@ -881,11 +883,12 @@ private void playSounds(commonMove m)
      * 
      */
     public boolean handleDeferredEvent(Object target,String cmd)
-    {
+    {	
     	if(target==offerDrawAction)
     	{	if(OurMove() 
     			&& (b.movingObjectIndex()<=0)
-    			&& (b.getState()==ChessState.Play))
+    			&& ((b.getState()==ChessState.Play) || (b.getState()==ChessState.DrawPending))) 					
+    					
     		{
     		PerformAndTransmit(OFFERDRAW);
     		}

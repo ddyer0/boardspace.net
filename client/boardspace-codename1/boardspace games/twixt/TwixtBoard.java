@@ -213,6 +213,7 @@ class TwixtBoard extends rectBoard<TwixtCell> implements BoardProtocol,TwixtCons
     	switch(board_state)
     	{
     	default: break;
+    	case QueryDraw: return true;
     	case Play:
     	if(moveNumber>20)
     	{

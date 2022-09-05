@@ -25,7 +25,7 @@ import online.search.SimpleRobotProtocol;
 
 
 /*
-TODO:
+TO DO:
 * = fixed, not verified
 - = fix not working
 + = fix is verified.

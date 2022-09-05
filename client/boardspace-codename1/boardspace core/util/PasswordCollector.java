@@ -33,7 +33,15 @@ import udp.PlaytableStack;
 	 public String toString() { return name;}
 	 public StringPair(String n,String v) { name = n; value = v; }
  }
- public class PasswordCollector extends JPanel
+ class KPanel extends JPanel
+ {
+		public Dimension getPreferredSize()
+		{
+			return new Dimension(G.getScreenWidth(),G.getScreenHeight());
+		}
+
+ }
+ public class PasswordCollector extends KPanel
 						   implements ActionListener,ItemListener,WindowListener,OnlineConstants,
 						   Config
 {
@@ -163,6 +171,7 @@ import udp.PlaytableStack;
 		 case Confirmation: configureForConfirmation(); break;	// confirm after register
 		 }
 		 if(!G.isCodename1()) { autoSize(); }
+		 
 		 repaint();
 	 }
 
@@ -200,12 +209,13 @@ import udp.PlaytableStack;
 	 private JLabel errorText = null;
 	 private JButton[] serverButtons = null; 
 	 // constructor
+
 	public PasswordCollector(JFrame f,SimpleObserver o) 
 	 {	 //PlatformLogger l = PlatformLogger.getLogger("java.util.prefs");
 	 	 //l.setLevel(Level.SEVERE);	// quench a warning message
 		 controllingFrame = f;
-
 		 observer = o;
+		 setUIID("Password");
 		 if(isAcceptableVersion())
 		 	{
 			 reconfigure(Screen.Login);
@@ -398,7 +408,7 @@ import udp.PlaytableStack;
 	 private void configureForConfirmation()
 	 { 	
 	 	disposeMainPanel();	// get rid of any previous
-		JPanel vpanel = mainPanel = new JPanel();
+		JPanel vpanel = mainPanel = new KPanel();
 		vpanel.add(createSuccessPanel());
 		vpanel.add(createConfirmedPanel());
 		add(vpanel);
@@ -443,7 +453,7 @@ import udp.PlaytableStack;
 	 
 	 public JPanel createPasswordPanel(String txt, boolean includeSave)
 	 {
-		 JPanel pane = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+		 JPanel pane = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		 
 		 JLabel label = new JLabel(s.get(txt));
 		 label.setUIID("LoginLabel");
@@ -477,7 +487,7 @@ import udp.PlaytableStack;
 
 	 private JPanel createRealNamePanel()
 	 {
-		 JPanel panel =  new JPanel(new FlowLayout(FlowLayout.RIGHT));
+		 JPanel panel =  new JPanel(new FlowLayout(FlowLayout.CENTER));
 		 JLabel nameLabel = new JLabel(s.get(YourRealName));
 		 nameLabel.setUIID("LoginLabel");
 		 realNameField = new JTextField(10);
@@ -500,7 +510,7 @@ import udp.PlaytableStack;
 
 	 private JPanel createEmailPanel()
 	 {
-		 JPanel panel =  new JPanel(new FlowLayout(FlowLayout.RIGHT));
+		 JPanel panel =  new JPanel(new FlowLayout(FlowLayout.CENTER));
 		 JLabel nameLabel = new JLabel(s.get(YourEmail));
 		 nameLabel.setUIID("LoginLabel");
 		 emailField = new JTextField(10);
@@ -528,7 +538,7 @@ import udp.PlaytableStack;
 
 	 private JPanel createUsernamePanel(boolean includeGuest)
 	 {
-		 JPanel panel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+		 JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		 JLabel nameLabel = new JLabel(s.get(YourName));
 		 nameLabel.setUIID("LoginLabel");
 		 nameField = new JTextField(10);
@@ -555,7 +565,7 @@ import udp.PlaytableStack;
 	 }
 	 public JPanel createLanguagePanel()
 	 {
-		 JPanel panel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+		 JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		 String lang = language;
 		 if(lang==null) { lang=prefs.get(langKey,"english"); }
 		 language = lang;
@@ -578,7 +588,7 @@ import udp.PlaytableStack;
 	 
 	 public JPanel createCountryPanel()
 	 {
-		 JPanel panel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+		 JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 
 		 JLabel llab = new JLabel(s.get(COUNTRY));
 		 llab.setUIID("LoginLabel");
@@ -620,7 +630,7 @@ import udp.PlaytableStack;
 	 }
 	 private Component createVisitButton()
 	 {	
-		 JPanel panel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+		 JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		 String host = Http.httpProtocol+"//"+Http.getHostName();
 		 linkField = new Choice<StringPair>();
 		 linkField.addItem(new StringPair(s.get(SiteLinks,APPNAME),null));
@@ -648,6 +658,7 @@ import udp.PlaytableStack;
 	 public Component createRegisterPanel()
 	 {	JPanel p = new JPanel(); 
 	 	String rega = s.get(RegisterAccount);
+	 	p.setLayout(new FlowLayout(FlowLayout.CENTER));
 	 	registerAccountButton = new JButton(rega);
 	 	registerAccountButton.setActionCommand(rega);
 	 	registerAccountButton.addActionListener(this);
@@ -684,7 +695,7 @@ import udp.PlaytableStack;
 	 	String platform = G.getPlatformName().toLowerCase();
 	 	String prefVersion = G.getString(platform+"_version",null);
 		String va = s.get(VersionMessage,appversion);
-		JPanel p = new JPanel(new FlowLayout(FlowLayout.LEFT));
+		JPanel p = new JPanel(new FlowLayout(FlowLayout.CENTER));
 
 		if((prefVersion!=null)
 	 		&&	G.isCodename1())
@@ -754,9 +765,14 @@ import udp.PlaytableStack;
 	 	JPanel userPanel = createUsernamePanel(true);	// do first, side effect is to get user name
 	 	passPane = createPasswordPanel(YourPassword,true);	// password pane pops up and down depending on "guest"
 
-	 	JPanel vpanel = mainPanel = new JPanel();
+	 	JPanel vpanel = mainPanel = new KPanel();
+	 	BoxLayout bl = new BoxLayout(mainPanel,BoxLayout.Y_AXIS);
+	 	bl.setAlign(Component.CENTER);
+	 	mainPanel.setLayout(bl);
 	 	vpanel.setOpaque(false);
-		vpanel.setLayout(new BoxLayout(vpanel,BoxLayout.Y_AXIS));
+	 	BoxLayout bv = new BoxLayout(vpanel,BoxLayout.Y_AXIS);
+	 	bv.setAlign(Component.CENTER);
+		vpanel.setLayout(bv);
 		if(development)
 		{
 			vpanel.add(createHostPanel(G.getString(DEVELOPHOST,null)));
@@ -771,6 +787,8 @@ import udp.PlaytableStack;
 		adjustGuestPassword(isGuest || guestName.equalsIgnoreCase(name),false);
 
 		add(vpanel);
+
+
 	 }
 
 	 //
@@ -1055,6 +1073,7 @@ import udp.PlaytableStack;
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
         frame.repaint();
+
         result[0]=newContentPane;
     }
 

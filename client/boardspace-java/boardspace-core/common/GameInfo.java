@@ -530,12 +530,12 @@ synchronized(allGames) {
 			 null,false, WhiteOverBlack));
 	}
 	{
-	 put(new GameInfo(763,ES.test,112,"OR",RacingGames,"Ordo","Ordo",
+	 put(new GameInfo(763,ES.game,112,"OR",RacingGames,"Ordo","Ordo",
 				OneBotPlus,
 				new double[]{1.0,0.01},
 				"ordo.OrdoViewer","/ordo/english/ordo-rules.html",
 				 null,false, WhiteOverBlack));
-	 put(new GameInfo(764,ES.test,112,"OR",RacingGames,"Ordo","Ordo-X",
+	 put(new GameInfo(764,ES.game,112,"OR",RacingGames,"Ordo","OrdoX",
 				OneBotPlus,
 				new double[]{1.0,0.01},
 				"ordo.OrdoViewer","/ordo/english/ordox-rules.html",

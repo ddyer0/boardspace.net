@@ -529,6 +529,18 @@ synchronized(allGames) {
 			"checkerboard.CheckerGameViewer","/checkers/english/rules_of_checkers_english.pdf",
 			 null,false, WhiteOverBlack));
 	}
+	{
+	 put(new GameInfo(763,ES.game,112,"OR",RacingGames,"Ordo","Ordo",
+				OneBotPlus,
+				new double[]{1.0,0.01},
+				"ordo.OrdoViewer","/ordo/english/ordo-rules.html",
+				 null,false, WhiteOverBlack));
+	 put(new GameInfo(764,ES.game,112,"OR",RacingGames,"Ordo","OrdoX",
+				OneBotPlus,
+				new double[]{1.0,0.01},
+				"ordo.OrdoViewer","/ordo/english/ordox-rules.html",
+				 null,false, WhiteOverBlack));
+	}
 	
 	{
 	put(new GameInfo(770,ES.game,77,"MM",AncientGames,"Morris","Morris-9",

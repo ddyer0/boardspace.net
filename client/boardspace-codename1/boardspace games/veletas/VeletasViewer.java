@@ -4,8 +4,6 @@ import com.codename1.ui.geom.Rectangle;
 
 import bridge.Color;
 import bridge.JCheckBoxMenuItem;
-import bridge.JMenuItem;
-
 /* below here should be the same for codename1 and standard java */
 import online.common.*;
 import online.game.*;
@@ -55,8 +53,7 @@ public class VeletasViewer extends CCanvas<VeletasCell,VeletasBoard> implements 
     private Rectangle shooterChipRect = addRect("shooters");
     private Rectangle reverseViewRect = addRect("reverse");
     private JCheckBoxMenuItem reverseOption = null;
-    private JMenuItem offerDrawAction = null;
-	private TextButton swapButton = addButton(SWAP,GameId.HitSwapButton,SwitchMessage,
+ 	private TextButton swapButton = addButton(SWAP,GameId.HitSwapButton,SwitchMessage,
 			HighlightColor, rackBackGroundColor);
 
 	private Toggle eyeRect = new Toggle(this,"eye",
@@ -106,7 +103,6 @@ public class VeletasViewer extends CCanvas<VeletasCell,VeletasBoard> implements 
         doInit(false);
     	useDirectDrawing(true);
         reverseOption = myFrame.addOption(s.get(ReverseView),b.reverseY(),deferredEvents);
-        offerDrawAction = myFrame.addAction(s.get(OFFERDRAW),deferredEvents);     
         
     }
 
@@ -799,16 +795,7 @@ private void playSounds(commonMove m)
      */
     public boolean handleDeferredEvent(Object target, String command)
     {
-    	if(target==offerDrawAction)
-    	{	if(OurMove() 
-    			&& (b.movingObjectIndex()<=0)
-    			&& (b.getState()==VeletasState.Play))
-    		{
-    		PerformAndTransmit(OFFERDRAW);
-    		}
-    		return(true);
-    	}
-    	else if(target==reverseOption)
+    	if(target==reverseOption)
     	{
     	b.setReverseY(reverseOption.getState());
     	generalRefresh();

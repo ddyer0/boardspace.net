@@ -216,6 +216,16 @@ public interface RobotProtocol extends SimpleRobotProtocol
 	 * this is called as the robot begins the random playout phase
 	 */
 	public void startRandomDescent();
+	/**
+	 * return true if there should be a "done" between the "current" move and the "next".
+	 * This is used by the default version of getCurrentVariation as an additional test.
+	 * The general scheme is to support saving MCTS playouts which omit "done" for
+	 * effeciency
+	 * @param next
+	 * @param current
+	 * @return
+	 */
+	public boolean needDoneBetween(commonMove next, commonMove current);
 
 	
 	// *** TEMPORARILY RESTORED ***

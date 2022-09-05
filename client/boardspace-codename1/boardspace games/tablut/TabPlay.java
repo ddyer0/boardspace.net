@@ -9,10 +9,6 @@ import online.search.*;
 /** 
  * Tablut uses Alpha-beta
  * 
- * TODO: make robot run a test eval and swap when playing silver.  Specifically against open ranks.
- * the Robot player only has to implement the basic methods to generate and evaluate moves.
- * the actual search is handled by the search driver framework.
- * 
  * in general, the Robot has it's own thread and operates on a copy of the board, so the
  * main UI can continue unaffected by the processing of the robot.
  * @author ddyer

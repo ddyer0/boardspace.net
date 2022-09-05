@@ -377,7 +377,9 @@ public class StacViewer extends CCanvas<StacCell,StacBoard> implements StacConst
         default:
         	if((b.moveNumber-b.lastStackMove)>(5*b.nSingleChips))
         	{	// if not making progress, put the draw option on the UI
-            	if(GC.handleSquareButton(gc,acceptDrawRect,select,s.get(OFFERDRAW),HighlightColor,rackBackGroundColor))
+            	if(GC.handleSquareButton(gc,acceptDrawRect,select,s.get(OFFERDRAW),
+            			HighlightColor,
+            			vstate==StacState.DrawPending?HighlightColor : rackBackGroundColor))
             	{
             		select.hitCode = GameId.HitOfferDrawButton;
             	}
@@ -643,7 +645,7 @@ private void playSounds(commonMove m)
     	{
     		if(OurMove() 
     			&& (b.movingObjectIndex()<=0)
-    			&& ((b.getState()==StacState.Play)||(b.getState()==StacState.Carry)))
+    			&& ((b.getState()==StacState.Play)||(b.getState()==StacState.Carry)||(b.getState()==StacState.DrawPending)))
     		{
     			PerformAndTransmit(OFFERDRAW);
     		}

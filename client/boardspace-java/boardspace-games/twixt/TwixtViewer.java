@@ -979,7 +979,7 @@ public class TwixtViewer extends CCanvas<TwixtCell,TwixtBoard> implements TwixtC
 			{ buttonSelect.hitCode = GameId.HitDeclineDrawButton;
 			}
 			}
-			else if(gb.drawIsLikely() || (state == TwixtState.OfferDraw)) 
+			else if(gb.drawIsLikely())
 			{	if(GC.handleRoundButton(gc,messageRotation,acceptDrawRect,buttonSelect,s.get(OFFERDRAW),
 					HighlightColor,(TwixtState.OfferDraw==state)?HighlightColor:rackBackGroundColor))
 					{ buttonSelect.hitCode = GameId.HitOfferDrawButton;

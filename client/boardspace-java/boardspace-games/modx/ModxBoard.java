@@ -1,7 +1,4 @@
 package modx;
-/**
- * TODO: needs to be more willing to accept draws
- */
 import online.game.*;
 
 import static modx.ModxMovespec.*;

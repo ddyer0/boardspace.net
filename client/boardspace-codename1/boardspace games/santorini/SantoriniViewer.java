@@ -29,10 +29,9 @@ import online.common.*;
  *
  * May 2007 initial work in progress. 
  *
- * This code is derived from the "HexGameViewer" class.  Refer to the
+
  
  *
- * TODO: upgrade the game log with icons
 
 */
 public class SantoriniViewer extends CCanvas<SantoriniCell,SantoriniBoard> implements SantoriniConstants, GameLayoutClient
@@ -94,7 +93,6 @@ public class SantoriniViewer extends CCanvas<SantoriniCell,SantoriniBoard> imple
     public void init(ExtendedHashtable info,LFrameProtocol frame)
     {
         super.init(info,frame);
-  	  	labelColor = Color.black;
   	  	labelFont = largeBoldFont();
   	    MouseColors[0] = Color.red;
   	    MouseColors[1] = new Color(0.1f,0.9f,0.1f);
@@ -103,7 +101,7 @@ public class SantoriniViewer extends CCanvas<SantoriniCell,SantoriniBoard> imple
   	    int first = info.getInt(exHashtable.FIRSTPLAYER,0);
   	    int map[]=AR.intArray(2);
         if(first==1) { map[0] = 1; map[1]=0; }
-        b = new SantoriniBoard(info.getString(OnlineConstants.GAMETYPE, Santorini_INIT),map);
+        b = new SantoriniBoard(info.getString(GAMETYPE, Santorini_INIT),map);
         useDirectDrawing(true);
         doInit(false);
         if(G.debug())

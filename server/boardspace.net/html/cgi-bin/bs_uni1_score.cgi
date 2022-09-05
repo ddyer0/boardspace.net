@@ -115,7 +115,7 @@ sub doit()
 
   if(($nr==0) && !$unranked)
   {
-    my $q = "insert into sp_record set player1=$u1,time1=$t1,score1=$s1,gamename=$fname,puzzleid=$puzzleid,puzzledate=$puzzledate,variation=$variation,"
+    my $q = "insert into sp_record set player1=$u1,time1=$t1,score1=$s1,gamename=$fname,puzzleid=$puzzleid,puzzledate=$puzzledate,variation=$variation,mode=$mode,"
        	  . "gmtdate=$now"
 	  ;
     #print "Q: $q\n";

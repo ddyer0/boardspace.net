@@ -5,7 +5,7 @@ import online.game.export.ViewerProtocol;
 import online.search.*;
 
 /** 
- * Santorini uses alpha-beta
+ * Santorini uses alpha-beta except for god selection
  * 
  * the Robot player only has to implement the basic methods to generate and evaluate moves.
  * the actual search is handled by the search driver framework.
@@ -210,7 +210,48 @@ public class SantoriniPlay extends commonRobot<SantoriniBoard> implements Runnab
         // abnormal exit
         return (null);
     }
+ // this is the monte carlo robot, which for hex is much better then the alpha-beta robot
+ // for the monte carlo bot, blazing speed of playouts is all that matters, as there is no
+ // evaluator other than winning a game.
+ public commonMove DoMonteCarloFullMove()
+ {	commonMove move = null;
+ 	try {
+        // it's important that the robot randomize the first few moves a little bit.
+        double randomn = (RANDOMIZE && (board.moveNumber <= 6)) ? 0.1/board.moveNumber : 0.0;
+        UCTMoveSearcher monte_search_state = new UCTMoveSearcher(this);
+        monte_search_state.save_top_digest = true;	// always on as a background check
+        monte_search_state.save_digest=false;	// debugging only
+        monte_search_state.win_randomization = randomn;		// a little bit of jitter because the values tend to be very close
+        monte_search_state.timePerMove = TIMEPERMOVE;		// 20 seconds per move
+        monte_search_state.verbose = verbose;
+        monte_search_state.dead_child_optimization = true;
+        monte_search_state.only_child_optimization = true;
+        monte_search_state.sort_moves = false;
+        monte_search_state.alpha = 0.5;
+        monte_search_state.maxThreads = DEPLOY_THREADS;
+        monte_search_state.randomize_uct_children = true;     
+       monte_search_state.random_moves_per_second = WEAKBOT ? 7000:740000;
 
+        monte_search_state.simulationsPerNode = 1;
+        move = monte_search_state.getBestMonteMove();
+ 		}
+      finally { ; }
+      if(move==null) { continuous = false; }
+     return(move);
+ }
+ /**
+  * for UCT search, return the normalized value of the game, with a penalty
+  * for longer games so we try to win in as few moves as possible.  Values
+  * must be normalized to -1.0 to 1.0
+  */
+ public double NormalizedScore(commonMove lastMove)
+ {	int player = lastMove.player;
+ 	boolean win = board.WinForPlayer(player);
+ 	if(win) { return(0.8+0.2/boardSearchLevel); }
+ 	boolean win2 = board.WinForPlayer(nextPlayer[player]);
+ 	if(win2) { return(- (0.8+0.2/boardSearchLevel)); }
+ 	return(0);
+ }
 
  /** search for a move on behalf of player p and report the result
   * to the game.  This is called in the robot process, so the normal

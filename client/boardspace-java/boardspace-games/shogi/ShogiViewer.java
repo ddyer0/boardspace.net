@@ -499,6 +499,12 @@ public class ShogiViewer extends CCanvas<ShogiCell,ShogiBoard> implements ShogiC
 			{ select.hitCode = GameId.HitDeclineDrawButton;
 			}
 			}
+			else if(vstate==ShogiState.OfferDraw)
+			{	if(GC.handleRoundButton(gc,acceptDrawRect,select,s.get(OFFERDRAW),
+					HighlightColor,(ShogiState.OfferDraw==vstate)?HighlightColor:rackBackGroundColor))
+					{ select.hitCode = GameId.HitOfferDrawButton;
+					}
+			}
 			if(!planned && !autoDoneActive())
 				{handleDoneButton(gc,doneRect,(gb.DoneState() ? select : null), 
 					HighlightColor, rackBackGroundColor);
@@ -762,7 +768,7 @@ private void playSounds(commonMove m)
     	else if (target==drawAction)
     	{
     		if(OurMove()) 
-    			{ if(allowUndo()) { PerformAndTransmit(RESET); }
+    			{ 
     			  PerformAndTransmit(OFFERDRAW); 
     			}
     		else {

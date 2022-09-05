@@ -810,10 +810,11 @@ public class XiangqiBoard extends rectBoard<XiangqiCell> implements BoardProtoco
             break;
 
         case MOVE_OFFER_DRAW:
-        {
+        	{
         	XiangqiState bs = board_state;
          	if(bs==XiangqiState.OFFER_DRAW_STATE)
         	{	
+         		setState(unresign);
         	}else
         	{
         	unresign = bs;

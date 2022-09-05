@@ -366,6 +366,17 @@ public void PrepareToMove(int playerIndex)
 	{	
 		return getCurrent2PVariation();
 	}
+	/**
+	 * return true if there should be a "done" between the "current" move and the "next".
+	 * This is used by the default version of getCurrentVariation as an additional test.
+	 * The general scheme is to support saving MCTS playouts which omit "done" for
+	 * effeciency
+	 * @param next
+	 * @param current
+	 * @return
+	 */
+	//public boolean needDoneBetween(commonMove next, commonMove current);
+
  
  // this is the monte carlo robot, which for pushfight is much better then the alpha-beta robot
  // for the monte carlo bot, blazing speed of playouts is all that matters, as there is no

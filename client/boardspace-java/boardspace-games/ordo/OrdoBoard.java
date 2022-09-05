@@ -1,10 +1,8 @@
 package ordo;
-/**
- * TODO: needs to be more willing to accept draws
- */
+
 import online.game.*;
-import ordo.OrdoConstants.CheckerId;
-import ordo.OrdoConstants.CheckerState;
+import ordo.OrdoConstants.OrdoId;
+import ordo.OrdoConstants.OrdoState;
 import ordo.OrdoConstants.StateStack;
 import ordo.OrdoConstants.Variation;
 
@@ -52,10 +50,10 @@ class OrdoBoard extends rectBoard<OrdoCell> implements BoardProtocol
     static final int White_Chip_Index = 0;
     static final int Black_Chip_Index = 1;
     static final String[] GRIDSTYLE = { "1", null, "A" }; // left and bottom numbers
-    static final CheckerId RackLocation[] = { CheckerId.White_Chip_Pool,CheckerId.Black_Chip_Pool};
+    static final OrdoId RackLocation[] = { OrdoId.White_Chip_Pool,OrdoId.Black_Chip_Pool};
 	public int getMaxRevisionLevel() { return(REVISION); }
 	
-    public void SetDrawState() { setState(CheckerState.Draw); }
+    public void SetDrawState() { setState(OrdoState.Draw); }
     private int sweep_counter = 0;
     public OrdoCell rack[] = null;	// the pool of chips for each player.  
     public int kingRow[] = {0,0};		// will be the row checkers get promoted to king
@@ -64,11 +62,15 @@ class OrdoBoard extends rectBoard<OrdoCell> implements BoardProtocol
     // private variables
     //
     private RepeatedPositions repeatedPositions = null;		// shared with the viewer
-    private CheckerState board_state = CheckerState.OrdoPlay;	// the current board state
-    private CheckerState unresign = null;					// remembers the previous state when "resign"
-    private CheckerState resetState = null;
+    private OrdoState board_state = OrdoState.OrdoPlay;	// the current board state
+    private OrdoState unresign = null;					// remembers the previous state when "resign"
+    private OrdoState resetState = null;
     Variation variation = Variation.Ordo;
-
+    private boolean sidewaysMove = false;		// last ordo move was sideways
+    private boolean equalOrdo = false;			// last ordo move left equal ordo groups
+    private CellStack captureStack = new CellStack();
+    private IStack captureSize = new IStack();
+    
     public OrdoPlay robot = null;
     
     public boolean p1(String msg)
@@ -81,16 +83,16 @@ class OrdoBoard extends rectBoard<OrdoCell> implements BoardProtocol
    		return(false);
    	}
     
-    public CheckerState getState() { return(board_state); } 
-	public void setState(CheckerState st) 
-	{ 	unresign = (st==CheckerState.Resign)?board_state:null;
+    public OrdoState getState() { return(board_state); } 
+	public void setState(OrdoState st) 
+	{ 	unresign = (st==OrdoState.Resign)?board_state:null;
 		board_state = st;
 		if(!board_state.GameOver()) 
 			{ AR.setValue(win,false); 	// make sure "win" is cleared
 			}
 	}
-    private CheckerId playerColor[]={CheckerId.White_Chip_Pool,CheckerId.Black_Chip_Pool};
- 	public CheckerId getPlayerColor(int p) { return(playerColor[p]); }
+    private OrdoId playerColor[]={OrdoId.White_Chip_Pool,OrdoId.Black_Chip_Pool};
+ 	public OrdoId getPlayerColor(int p) { return(playerColor[p]); }
     
     // intermediate states in the process of an unconfirmed move should
     // be represented explicitly, so unwinding is easy and reliable.
@@ -98,36 +100,27 @@ class OrdoBoard extends rectBoard<OrdoCell> implements BoardProtocol
     public OrdoChip lastDropped = null;
     private CellStack pickedSourceStack = new CellStack();
     private CellStack droppedDestStack = new CellStack();
-    private StateStack dropState = new StateStack();
     
     OrdoCell selectedStart = null;
     OrdoCell selectedEnd = null;
     OrdoCell selectedDest = null;
-    
-    private boolean madeKing = false;
     public OrdoCell lastDest[] = {null,null};				// last spot the opponent dropped, for the UI
-    public OrdoCell currentDest = null;
-    private int initialStacks[] = {0,0};			// remembers the number of starting pieces
     int lastProgressMove = 0;		// last move where a pawn was advanced
     int lastDrawMove = 0;			// last move where a draw was offered
     int robotDepth = 0;		// current depth of robot search.  This is used to make faster wins look better
     						// than slower wins.  It's part of the board so multiple threads have independent values.
   	private StateStack robotState = new StateStack();
-  	private CellStack robotLast = new CellStack();
-  	private IStack robotCapture = new IStack();
-  	private IStack robotKing = new IStack();
+  	private IStack robotData = new IStack();
   	
      CellStack occupiedCells[] = new CellStack[2];	// cells occupied, per color
     
     
     private int ForwardOrdo[][] = {{CELL_UP_RIGHT,CELL_UP,CELL_UP_LEFT},
-    		{CELL_DOWN_LEFT,CELL_DOWN,CELL_DOWN_LEFT}};
+    		{CELL_DOWN_LEFT,CELL_DOWN,CELL_DOWN_RIGHT}};
     private int ForwardOrSidewaysOrdo[][] =
     		{{CELL_LEFT,CELL_UP_RIGHT,CELL_UP,CELL_UP_LEFT,CELL_RIGHT},
     		{CELL_LEFT,CELL_DOWN_LEFT,CELL_DOWN,CELL_DOWN_RIGHT,CELL_RIGHT}};
-    private int AllOrdo[][] = {{CELL_LEFT,CELL_UP_RIGHT,CELL_UP,CELL_UP_LEFT,CELL_RIGHT,CELL_DOWN_LEFT,CELL_DOWN,CELL_DOWN_LEFT},
-    		{CELL_LEFT,CELL_DOWN_LEFT,CELL_DOWN,CELL_DOWN_LEFT,CELL_RIGHT,CELL_UP_RIGHT,CELL_UP,CELL_UP_LEFT}};
-  
+    private int AllOrdo[] = {CELL_LEFT,CELL_UP_RIGHT,CELL_UP,CELL_UP_LEFT,CELL_RIGHT,CELL_DOWN_LEFT,CELL_DOWN,CELL_DOWN_RIGHT};
 	// factory method to create a new cell as part of the board
 	public OrdoCell newcell(char c,int r)
 	{	return(new OrdoCell(c,r));
@@ -154,15 +147,18 @@ class OrdoBoard extends rectBoard<OrdoCell> implements BoardProtocol
     	super.sameboard(from_b);	// calls sameCell for each cell, also for inherited class variables.
      	G.Assert(unresign==from_b.unresign,"unresign mismatch");
      	G.Assert(resetState==from_b.resetState,"resetState mismatch");
+     	G.Assert(sidewaysMove==from_b.sidewaysMove,"sidewaysMove mismatch");
+     	G.Assert(equalOrdo==from_b.equalOrdo,"equalOrdo mismatch");
        	G.Assert(AR.sameArrayContents(win,from_b.win),"win array contents match");
        	G.Assert(AR.sameArrayContents(playerColor,from_b.playerColor),"playerColor contents match");
        	G.Assert(sameCells(pickedSourceStack,from_b.pickedSourceStack),"pickedSourceStack mismatch");
         G.Assert(sameCells(droppedDestStack,from_b.droppedDestStack),"droppedDestStack mismatch");
-        G.Assert(dropState.sameContents(from_b.dropState),"dropState mismatch");
+        G.Assert(sameCells(captureStack,from_b.captureStack),"captureStack mismatch");
+        G.Assert(sameContents(captureSize,from_b.captureSize),"captureSize mismatch");
+        
         G.Assert(pickedObject==from_b.pickedObject,"pickedObject doesn't match");
         G.Assert(occupiedCells[FIRST_PLAYER_INDEX].size()==from_b.occupiedCells[FIRST_PLAYER_INDEX].size(),"occupiedCells mismatch");
         G.Assert(occupiedCells[SECOND_PLAYER_INDEX].size()==from_b.occupiedCells[SECOND_PLAYER_INDEX].size(),"occupiedCells mismatch");
-        G.Assert(sameCells(currentDest,from_b.currentDest),"currentDest mismatch");
         G.Assert(sameCells(selectedStart,from_b.selectedStart),"selectedStart mismatch");
         G.Assert(sameCells(selectedEnd,from_b.selectedEnd),"selectedEnd mismatch");
         G.Assert(sameCells(selectedDest,from_b.selectedDest),"selectedDest mismatch");
@@ -215,10 +211,13 @@ class OrdoBoard extends rectBoard<OrdoCell> implements BoardProtocol
 		v ^= Digest(r,droppedDestStack);
 		v ^= Digest(r,occupiedCells[SECOND_PLAYER_INDEX].size());	// not completely specific because the stack can be shuffled
 		v ^= Digest(r,occupiedCells[FIRST_PLAYER_INDEX].size());
-		v ^= Digest(r,currentDest);
 		v ^= Digest(r,selectedStart);
 		v ^= Digest(r,selectedEnd);
 		v ^= Digest(r,selectedDest);
+		v ^= Digest(r,sidewaysMove);
+		v ^= Digest(r,equalOrdo);
+		v ^= Digest(r,captureStack);
+		v ^= Digest(r,captureSize);
 		v ^= (board_state.ordinal()*10+whoseTurn)*r.nextLong();
         return (v);
     }
@@ -240,20 +239,21 @@ class OrdoBoard extends rectBoard<OrdoCell> implements BoardProtocol
         pickedObject = from_b.pickedObject;	
         getCell(pickedSourceStack,from_b.pickedSourceStack);
         getCell(droppedDestStack,from_b.droppedDestStack);
-        dropState.copyFrom(from_b.dropState);
-        getCell(occupiedCells,from_b.occupiedCells);
+       	getCell(occupiedCells,from_b.occupiedCells);
         AR.copy(playerColor,from_b.playerColor);
         board_state = from_b.board_state;
         lastProgressMove = from_b.lastProgressMove;
         lastDrawMove = from_b.lastDrawMove;
-        getCell(lastDest,from_b.lastDest);
-        currentDest = getCell(from_b.currentDest);
         selectedStart = getCell(from_b.selectedStart);
         selectedEnd = getCell(from_b.selectedEnd);
         selectedDest = getCell(from_b.selectedDest);
         unresign = from_b.unresign;
         resetState = from_b.resetState;
+        sidewaysMove = from_b.sidewaysMove;
+        equalOrdo = from_b.equalOrdo;
         repeatedPositions = from_b.repeatedPositions;
+        getCell(captureStack,from_b.captureStack);
+        captureSize.copyFrom(from_b.captureSize);
         copyFrom(rack,from_b.rack);
         robot = from_b.robot;
         sameboard(from_b);
@@ -279,7 +279,6 @@ class OrdoBoard extends rectBoard<OrdoCell> implements BoardProtocol
     	Grid_Style = GRIDSTYLE; //coordinates left and bottom
     	randomKey = rv;
     	players_in_game = np;
-    	currentDest = null;
 		rack = new OrdoCell[2];
     	Random r = new Random(67246765);
     	int map[]=getColorMap();
@@ -305,7 +304,7 @@ class OrdoBoard extends rectBoard<OrdoCell> implements BoardProtocol
      		break;
      	}
 
-	    setState(CheckerState.Puzzle);
+	    setState(OrdoState.Puzzle);
 	    //
 	    // fill the board with the background tiles. This checkers implementation
 	    // is unusual, in that the squares of the board are actually chips on it.
@@ -339,17 +338,17 @@ class OrdoBoard extends rectBoard<OrdoCell> implements BoardProtocol
 	    }
 	    lastProgressMove = 0;
 	    lastDrawMove = 0;
+	    sidewaysMove = false;
+	    equalOrdo = false;
 	    robotDepth = 0;
 	    robotState.clear();
-	    robotLast.clear();
-	    robotCapture.clear();
-	    robotKing.clear();
+	    robotData.clear();
 	    whoseTurn = FIRST_PLAYER_INDEX;
-		playerColor[map[FIRST_PLAYER_INDEX]]=CheckerId.White_Chip_Pool;
-		playerColor[map[SECOND_PLAYER_INDEX]]=CheckerId.Black_Chip_Pool;
-		initialStacks[FIRST_PLAYER_INDEX] = occupiedCells[FIRST_PLAYER_INDEX].size();
-		initialStacks[SECOND_PLAYER_INDEX] = occupiedCells[SECOND_PLAYER_INDEX].size();
+		playerColor[map[FIRST_PLAYER_INDEX]]=OrdoId.White_Chip_Pool;
+		playerColor[map[SECOND_PLAYER_INDEX]]=OrdoId.Black_Chip_Pool;
 		acceptPlacement();
+		captureStack.clear();
+		captureSize.clear();
         AR.setValue(win,false);
         moveNumber = 1;
 
@@ -358,7 +357,7 @@ class OrdoBoard extends rectBoard<OrdoCell> implements BoardProtocol
 
     public double simpleScore(int who)
     {	// range is 0.0 to 0.8
-    	return((0.8*occupiedCells[who].size())/initialStacks[who]);
+    	return((0.8*occupiedCells[who].size()-occupiedCells[nextPlayer[who]].size())/20.0);
     }
     //
     // change whose turn it is, increment the current move number
@@ -413,11 +412,12 @@ class OrdoBoard extends rectBoard<OrdoCell> implements BoardProtocol
     public boolean drawIsLikely()
     {	switch(board_state)
     	{
-    	case OrdoPlay:
+       	case DrawPending: return true;
+       	 
+       	case OrdoPlay:
     		return((moveNumber - lastProgressMove)>10);
        	default: return(false);
     	}
-    	
     }
     //
     // declare the game over, and the winner and loser
@@ -426,7 +426,7 @@ class OrdoBoard extends rectBoard<OrdoCell> implements BoardProtocol
     {	if(winCurrent && winNext) { winCurrent=false; } // simultaneous win is a win for player2
     	win[whoseTurn]=winCurrent;
     	win[whoseTurn^1]=winNext;
-    	setState(CheckerState.Gameover);
+    	setState(OrdoState.Gameover);
     }
     public boolean gameOverNow() { return(board_state.GameOver()); }
     public boolean winForPlayerNow(int player)
@@ -450,9 +450,7 @@ class OrdoBoard extends rectBoard<OrdoCell> implements BoardProtocol
     {	
         pickedObject = null;
         selectedStart = selectedEnd = selectedDest = null;	// ordo moves
-        madeKing = false;
         droppedDestStack.clear();
-        dropState.clear();
         pickedSourceStack.clear();
      }
     //
@@ -464,8 +462,6 @@ class OrdoBoard extends rectBoard<OrdoCell> implements BoardProtocol
     if(droppedDestStack.size()>0)
     	{
     	OrdoCell dr = droppedDestStack.pop();
-    	setState(dropState.pop());
-    	currentDest=null;
     	switch(dr.rackLocation())
 	    	{
 	   		default: throw G.Error("Not expecting rackLocation %s",dr.rackLocation);
@@ -518,9 +514,7 @@ class OrdoBoard extends rectBoard<OrdoCell> implements BoardProtocol
 		case White_Chip_Pool:
 		case Black_Chip_Pool:	break;	// don't add back to the pool
 		}
-    	dropState.push(board_state);
        	droppedDestStack.push(c);
-       	currentDest=c;
        	pickedObject = null;
     }
     
@@ -553,6 +547,10 @@ class OrdoBoard extends rectBoard<OrdoCell> implements BoardProtocol
     public boolean isDest(OrdoCell cell)
     {	return(droppedDestStack.top()==cell);
     }
+    public boolean isADest(OrdoCell cell)
+    {
+    	return droppedDestStack.contains(cell);
+    }
     //
     // get the last dropped dest cell
     //
@@ -577,7 +575,7 @@ class OrdoBoard extends rectBoard<OrdoCell> implements BoardProtocol
         return (NothingMoving);
     }
     // get a cell from a partucular source
-    public OrdoCell getCell(CheckerId source,char col,int row)
+    public OrdoCell getCell(OrdoId source,char col,int row)
     {
         switch (source)
         {
@@ -619,8 +617,9 @@ class OrdoBoard extends rectBoard<OrdoCell> implements BoardProtocol
         	setNextStateAfterDone(); 
         	break;
         case OrdoPlay:
+        case OrdoPlay2:
         case Reconnect:
- 			setState(CheckerState.Confirm);
+ 			setState(OrdoState.Confirm);
 			break;
 
         case Puzzle:
@@ -662,7 +661,7 @@ class OrdoBoard extends rectBoard<OrdoCell> implements BoardProtocol
     		break;
         case DrawPending:
         	lastDrawMove = moveNumber;
-        	setState(CheckerState.AcceptOrDecline);
+        	setState(OrdoState.AcceptOrDecline);
         	break;
     	case AcceptPending:
         case Draw:
@@ -676,15 +675,24 @@ class OrdoBoard extends rectBoard<OrdoCell> implements BoardProtocol
     		case Ordo:
     			if(occupiedCells[whoseTurn].size()==0) { setGameOver(false,true); }
     			else if(raceGoalOccupied(whoseTurn)) { setGameOver(false,true); }
-    			else if(isOrdoConnected(whoseTurn,null,null)) { setState(CheckerState.OrdoPlay); }
+    			else if(isOrdoConnected(whoseTurn,null,null)) 
+    				{ // in ordoX, we get connected by removing groups
+    				setState(OrdoState.OrdoPlay); 
+    				}
     			else if(hasReconnectionMoves(whoseTurn)) 
-    					{ setState(CheckerState.Reconnect); 
+    					{ setState(OrdoState.Reconnect); 
     					}
     			else { setGameOver(false,true); }
     			break;
     			
     		case OrdoX:
-    			throw G.Error("Not implemented");
+       			if(occupiedCells[whoseTurn].size()==0) { setGameOver(false,true); }
+    			else if(raceGoalOccupied(whoseTurn)) { setGameOver(false,true); }
+    			else if(sidewaysMove) { setState(OrdoState.OrdoPlay2); }
+       			else if(equalOrdo) { setState(OrdoState.OrdoRetain); equalOrdo = false; }
+       			else { setState(OrdoState.OrdoPlay); }
+       			sidewaysMove = false;
+    			break;
     		default:
     			throw G.Error("Not implemented");
     			   		
@@ -695,20 +703,42 @@ class OrdoBoard extends rectBoard<OrdoCell> implements BoardProtocol
     }
 
     private void doDone(replayMode replay)
-    {	OrdoCell dest = currentDest;
-    	lastDest[whoseTurn] = dest;
-    	currentDest = null;
-   	
+    {	
+    	lastDest[whoseTurn] = droppedDestStack.top();   	
      	acceptPlacement();
  
-        if (board_state==CheckerState.Resign)
+        if (board_state==OrdoState.Resign)
         {	setGameOver(false,true);
         }
         else
-        {	setNextPlayer(replay); 
-        	setNextStateAfterDone(); 
+        {	if(!sidewaysMove && resetState!=OrdoState.OrdoRetain)
+        		{ setNextPlayer(replay); 
+        		} 
+        setNextStateAfterDone(); 
 
         }
+    }
+    
+    private void doRetain(OrdoCell from,int who,replayMode replay)
+    {
+    	sweep_counter++;
+    	captureSize.push(captureStack.size());
+    	// this has the effect of marking all the cells in the group with sweep_counter;
+    	groupSize(from,from.topChip());
+    	CellStack cells = occupiedCells[who];
+    	for(int lim=cells.size()-1; lim>=0; lim--)
+    	{
+    		OrdoCell c = cells.elementAt(lim);
+    		if(c.sweep_counter!=sweep_counter) 
+    		{ doCapture(c); 
+    		if(replay!=replayMode.Replay)
+    		{
+    			animationStack.push(c);
+    			animationStack.push(rack[who]);
+    		}}
+    	}
+    	
+    	
     }
 
     private void doCapture(OrdoCell mid)
@@ -716,39 +746,37 @@ class OrdoBoard extends rectBoard<OrdoCell> implements BoardProtocol
     	OrdoChip ch = mid.removeTop();
     	int capee = playerIndex(ch);
 		occupiedCells[capee].remove(mid,false);
+		captureStack.push(mid);
     }
-    private void undoCapture(OrdoCell cap,int capHeight)
-    {	//checkOccupied();
-    	int player = whoseTurn^1;
-		OrdoChip chip = rack[player].topChip();
-		if(capHeight==2) { cap.addChip(chip); }
-		cap.addChip(chip);
-		occupiedCells[player].push(cap);
-		//checkOccupied();
-    }
-    
-    private void undoOrdoMove()
+    private void undoCapture(OrdoChip chip)
     {
-    	int direction = findDirection(selectedStart,selectedEnd);
-		OrdoCell from = selectedDest;
-		OrdoCell sel = selectedStart;
+    	OrdoCell c = captureStack.pop();
+    	int capee = playerIndex(chip);
+    	c.addChip(chip);
+    	occupiedCells[capee].push(c);
+    }
+    private void undoOrdoMove(OrdoCell toStart,OrdoCell toEnd,OrdoCell from)
+    {
+    	int direction = findDirection(toStart,toEnd);
+		OrdoCell sel = toStart;
 		boolean exit = false;
 		OrdoChip chip = null;
 		do { pickObject(from);
 			 chip = pickedObject;
 			 pickedObject = null;
-			 exit = sel==selectedEnd;
+			 exit = sel==toEnd;
 			 sel = sel.exitTo(direction);
 			 from = from.exitTo(direction);      				 
 		} while(!exit);
-		OrdoCell to = selectedStart;
 		exit = false;
 		do {
 			pickedObject = chip;
-			dropObject(to);
-			exit = to==selectedEnd;
-			to = to.exitTo(direction);
+			dropObject(toStart);
+			exit = toStart==toEnd;
+			toStart = toStart.exitTo(direction);
 		} while(!exit);
+		droppedDestStack.clear();
+		pickedSourceStack.clear();
     }
     
     public boolean Execute(commonMove mm,replayMode replay)
@@ -758,6 +786,10 @@ class OrdoBoard extends rectBoard<OrdoCell> implements BoardProtocol
         //System.out.println("E "+m+" for "+whoseTurn);
         switch (m.op)
         {
+        case MOVE_RETAIN:
+        	doRetain(getCell(m.from_col,m.from_row),whoseTurn,replay);
+        	setState(OrdoState.Confirm);
+        	break;
         case MOVE_DONE:
 
          	doDone(replay);
@@ -770,28 +802,34 @@ class OrdoBoard extends rectBoard<OrdoCell> implements BoardProtocol
         	else if(selectedStart==null) { selectedStart = c; }
         	else if(c==selectedEnd) { selectedEnd = null; }
         	else if(selectedEnd==null)
-        		{ if(isDest(c)) 
+        		{ if(isADest(c)) 
         			{
         			unDropObject();
         			unPickObject();
+        			setState(resetState);
         			}
         		else 
         			{selectedEnd = c; 
         			}
         		}
+        	else if(selectedDest==null) { selectedEnd = c; }
         	else { // this is the undo for an ordo move
-        			undoOrdoMove();
+        			undoOrdoMove(selectedStart,selectedEnd,selectedDest);
+        			selectedDest = null;
         			setState(resetState);
         		}
         	}
         	break;
         case MOVE_CAPTURE:	// ordo capturing move
-        	{
-        		OrdoCell src = getCell(CheckerId.BoardLocation, m.from_col, m.from_row);
-    			OrdoCell dest = getCell(CheckerId.BoardLocation,m.to_col,m.to_row);
+        	{	captureSize.push(captureStack.size());
+        		OrdoCell src = getCell(OrdoId.BoardLocation, m.from_col, m.from_row);
+    			OrdoCell dest = getCell(OrdoId.BoardLocation,m.to_col,m.to_row);
+    			
+    			
     			pickObject(src);
     			doCapture(dest);
     			dropObject(dest);
+    			lastProgressMove = moveNumber;
     			if(replay!=replayMode.Replay)
     			{
     				animationStack.push(dest);
@@ -799,8 +837,48 @@ class OrdoBoard extends rectBoard<OrdoCell> implements BoardProtocol
     				animationStack.push(src);
     				animationStack.push(dest);
     			}
+    			sidewaysMove = (variation==Variation.OrdoX) && m.from_row==m.to_row;
+    			
+
+    			if((variation==Variation.OrdoX) 
+    					&& !isOrdoConnected(nextPlayer[whoseTurn],null,null))
+    			{
+    				int bigsize = 0;
+    				int nbig = 0;
+    				int nextp = nextPlayer[whoseTurn];
+    				OrdoChip chip = playerChip(nextp);
+    				CellStack cells = occupiedCells[nextp];
+    				sweep_counter++;
+    				// in the case of a second move, we may have already
+    				// disconnected and the big group may not be adjacent to the move
+    				// so we have to look at all cells.
+    				for(int lim=cells.size()-1; lim>=0; lim--)
+    				{
+    					OrdoCell d = cells.elementAt(lim);
+    					if(d!=null && (d.topChip()==chip))
+    					{	
+    						int sz = groupSize(d,chip);
+    						if(sz>bigsize) { bigsize=sz; nbig=1; }
+    						else if(sz==bigsize) { nbig++; }
+    					}
+    				}
+    				equalOrdo = nbig>1;
+    				//if(robot!=null && equalOrdo && nbig>2) 	{ p1("equal3 "+moveNumber); }
+    				sweep_counter++;
+    				for(int direction=0;direction<dest.geometry.n;direction++)
+    				{
+    					OrdoCell d = dest.exitTo(direction);
+    					if(d!=null && (d.sweep_counter!=sweep_counter) && (d.topChip()==chip))
+    					{
+    						int sz = groupSize(d,chip);
+    						if(sz<bigsize) { removeGroup(d,chip,replay); }
+    					}
+    				}
+    				
+  				
+    			}
         	}
-        	setState(CheckerState.Confirm);
+        	setState(OrdoState.Confirm);
         	break;
         case MOVE_ORDO:	// ordo block move
         	{
@@ -808,8 +886,11 @@ class OrdoBoard extends rectBoard<OrdoCell> implements BoardProtocol
         		OrdoCell to0 = getCell(m.to_col,m.to_row);
         		OrdoCell target0 = getCell(m.target_col,m.target_row);
         		OrdoChip top =from0.topChip();
+        		if(target0.row!=from0.row) { lastProgressMove = moveNumber; }
         		int dir = findDirection(from0,target0);
-        		{
+        		sidewaysMove = (variation==Variation.OrdoX) && m.from_row==m.to_row;
+
+            	{
         		boolean exit = false;
         		OrdoCell from = from0;
         		OrdoCell to = to0;
@@ -827,6 +908,7 @@ class OrdoBoard extends rectBoard<OrdoCell> implements BoardProtocol
         			to = to.exitTo(dir);
         		} while(!exit);
         		}
+            	
         		{
         		boolean exit = false;
         		OrdoCell from = from0;
@@ -840,19 +922,22 @@ class OrdoBoard extends rectBoard<OrdoCell> implements BoardProtocol
         		} while(!exit);
         		}
 
-        		setState(CheckerState.Confirm);
+        		setState(OrdoState.Confirm);
         	}
         	break;
         case MOVE_BOARD_BOARD:
         	switch(board_state)
-        	{	default: throw G.Error("Not expecting robot in state %s",board_state);
+        	{	default: throw G.Error("Not expecting state %s",board_state);
         		case OrdoPlay:
+        		case OrdoPlay2:
         		case Reconnect:
         			G.Assert(pickedObject==null,"something is moving");
-        			OrdoCell src = getCell(CheckerId.BoardLocation, m.from_col, m.from_row);
-        			OrdoCell dest = getCell(CheckerId.BoardLocation,m.to_col,m.to_row);
-        			pickObject(src);
+        			OrdoCell src = getCell(OrdoId.BoardLocation, m.from_col, m.from_row);
+        			OrdoCell dest = getCell(OrdoId.BoardLocation,m.to_col,m.to_row);
+            		if(src.row!=dest.row) { lastProgressMove = moveNumber; }
+            		pickObject(src);
         			dropObject(dest); 
+        			sidewaysMove = (variation==Variation.OrdoX) && m.from_row==m.to_row;
         			if(replay!=replayMode.Replay)
         			{
         				animationStack.push(src);
@@ -862,39 +947,11 @@ class OrdoBoard extends rectBoard<OrdoCell> implements BoardProtocol
         			break;
         	}
         	break;
-        case MOVE_DROPCAP:	// for ordo ui captures
-			{
-			lastDropped = pickedObject;
-			OrdoCell c = getCell(CheckerId.BoardLocation, m.to_col, m.to_row);
-	    	G.Assert(pickedObject!=null,"something is moving");
-	    	if(isSource(c)) 
-	        	{ 
-	        	  unPickObject(); 
-	        	} 
-	        	else
-	        		{
-	        		doCapture(c);
-	        		dropObject(c);
-	        		setNextStateAfterDrop(replay);
-	        		if(replay!=replayMode.Replay)
-	        		{
-	        			animationStack.push(c);	// captured stones first
-        				animationStack.push(rack[whoseTurn^1]);
-
-	        		}
-	        		if(replay==replayMode.Single)
-	        			{
-	        			animationStack.push(getSource());
-	        			animationStack.push(c);
-	        			}
-	        		}
-			}
-	        break;
     	
         case MOVE_DROPB:
 			{
 			lastDropped = pickedObject;
-			OrdoCell c = getCell(CheckerId.BoardLocation, m.to_col, m.to_row);
+			OrdoCell c = getCell(OrdoId.BoardLocation, m.to_col, m.to_row);
         	G.Assert(pickedObject!=null,"something is moving");
 			if(isSource(c)) 
             	{ 
@@ -915,7 +972,7 @@ class OrdoBoard extends rectBoard<OrdoCell> implements BoardProtocol
             break;
 
         case MOVE_PICKB:
-        		{ pickObject(getCell(CheckerId.BoardLocation, m.from_col, m.from_row));
+        		{ pickObject(getCell(OrdoId.BoardLocation, m.from_col, m.from_row));
         		  switch(board_state)
         		  {	case Gameover:
         			  	// needed by some damaged games
@@ -943,26 +1000,6 @@ class OrdoBoard extends rectBoard<OrdoCell> implements BoardProtocol
 			}}
             break;
 
-        case MOVE_DROPC: // drop and capture something
-        	{
-        	OrdoCell c = getCell(m.source, m.to_col, m.to_row);
-        	OrdoCell cap = getCell(m.target_col,m.target_row); 
-            dropObject(c);
-            doCapture(cap);
-            setNextStateAfterDrop(replay);
-            if(replay!=replayMode.Replay)
-            {
-            	animationStack.push(cap);
-            	animationStack.push(rack[whoseTurn^1]);
-            }
-            if(replay==replayMode.Single)
-			{
-			animationStack.push(getSource());
-			animationStack.push(c);
-			}
-        	}
-            break;
-
         case MOVE_PICK:
         	{
         	OrdoCell c = getCell(m.source, m.from_col, m.from_row);
@@ -977,7 +1014,7 @@ class OrdoBoard extends rectBoard<OrdoCell> implements BoardProtocol
             unPickObject();
             // standardize the gameover state.  Particularly importing if the
             // sequence in a game is resign/start
-            setState(CheckerState.Puzzle);
+            setState(OrdoState.Puzzle);
             {	boolean win1 = winForPlayerNow(whoseTurn);
             	boolean win2 = winForPlayerNow(whoseTurn^1);
             	if(win1 || win2) { setGameOver(win1,win2); }
@@ -987,47 +1024,42 @@ class OrdoBoard extends rectBoard<OrdoCell> implements BoardProtocol
             }
             break;
         case MOVE_OFFER_DRAW:
-        	currentDest=null;
-        	if(board_state==CheckerState.DrawPending) { setState(dropState.pop()); }
-        	else { dropState.push(board_state);
-        			setState(CheckerState.DrawPending);
+        	if(board_state==OrdoState.DrawPending) { setState(resetState); }
+        	else { 	setState(OrdoState.DrawPending);
         		}
         	break;
         case MOVE_ACCEPT_DRAW:
-           	currentDest=null;
            	switch(board_state)
         	{	
         	case AcceptPending: 	// cancel accept and revert to neutral
-        		setState(CheckerState.AcceptOrDecline); 
+        		setState(OrdoState.AcceptOrDecline); 
         		break;
            	case AcceptOrDecline:
            	case DeclinePending:	// accept pending
-           		setState(CheckerState.AcceptPending); 
+           		setState(OrdoState.AcceptPending); 
            		break;
         	default: throw G.Error("Not expecting %s",board_state);
         	}
            	break;
         case MOVE_DECLINE_DRAW:
-           	currentDest=null;
         	switch(board_state)
         	{	
         	case DeclinePending:	// cancel decline and revert to neutral
-        		setState(CheckerState.AcceptOrDecline); 
+        		setState(OrdoState.AcceptOrDecline); 
         		break;
         	case AcceptOrDecline:
-        	case AcceptPending: setState(CheckerState.DeclinePending); break;
+        	case AcceptPending: setState(OrdoState.DeclinePending); break;
         	default: throw G.Error("Not expecting %s",board_state);
         	}
         	break;
         case MOVE_RESIGN:
-           	currentDest=null;
-        	setState(unresign==null?CheckerState.Resign:unresign);
+        	setState(unresign==null?OrdoState.Resign:unresign);
             break;
         case MOVE_EDIT:
     		acceptPlacement();
             setWhoseTurn(FIRST_PLAYER_INDEX);
             // standardize "gameover" is not true
-            setState(CheckerState.Puzzle);
+            setState(OrdoState.Puzzle);
  
             break;
             
@@ -1059,6 +1091,8 @@ class OrdoBoard extends rectBoard<OrdoCell> implements BoardProtocol
 		case DrawPending:
 		case AcceptPending:
 		case Reconnect:
+		case OrdoPlay2:
+		case OrdoRetain:
 		case OrdoPlay:
 			return(false);
         case Puzzle:
@@ -1073,6 +1107,8 @@ class OrdoBoard extends rectBoard<OrdoCell> implements BoardProtocol
         {
  		case OrdoPlay:
  		case Reconnect:
+ 		case OrdoRetain:
+ 		case OrdoPlay2:
  			return(cell==selectedStart||cell==selectedEnd||targets.get(cell)!=null);
  		case Resign:
 		case Gameover:
@@ -1083,7 +1119,7 @@ class OrdoBoard extends rectBoard<OrdoCell> implements BoardProtocol
 			return(false);
 		case Confirm:
 		case Draw:
-			return(isDest(cell));
+			return(isADest(cell));
         default:
         	throw G.Error("Not expecting state %s", board_state);
         case Puzzle:
@@ -1104,7 +1140,8 @@ class OrdoBoard extends rectBoard<OrdoCell> implements BoardProtocol
         //G.print("R "+m);
         G.Assert(m.player == whoseTurn, "whoseturn doesn't agree");
         robotState.push(board_state);
-        robotLast.push(currentDest);
+        robotState.push(resetState);
+        robotData.push( equalOrdo ? 1 : 0);
         robotDepth++;
         if (Execute(m,replayMode.Replay))
         {	
@@ -1117,11 +1154,9 @@ class OrdoBoard extends rectBoard<OrdoCell> implements BoardProtocol
             		// this check makes game end by repetition explicitly visible to the robot
             		setGameOver(false,false);
             		}
-            else { doDone(replayMode.Replay); }
+            	else { doDone(replayMode.Replay); }
             }
         }
-        robotKing.push(madeKing?1:0);
-        madeKing = false;
     }
  
 
@@ -1134,8 +1169,10 @@ class OrdoBoard extends rectBoard<OrdoCell> implements BoardProtocol
     {	//checkOccupied();
         //G.print("U "+m+" for "+whoseTurn);
     	robotDepth--;
+        resetState = robotState.pop();
         setState(robotState.pop());
-        boolean unKing = robotKing.pop()==1;
+        int data = robotData.pop();
+        equalOrdo = (data&1)!=0;
         if(whoseTurn!=m.player)
         {  	moveNumber--;
         	setWhoseTurn(m.player);
@@ -1147,21 +1184,41 @@ class OrdoBoard extends rectBoard<OrdoCell> implements BoardProtocol
         	break;
        case MOVE_DONE:
             break;
-        case MOVE_BOARD_BOARD:
-        	switch(board_state)
-        	{	default: throw G.Error("Not expecting robot in state %s",board_state);
-         		case OrdoPlay:
-         			{
-        			G.Assert(pickedObject==null,"something is moving");
-        			pickObject(getCell(CheckerId.BoardLocation, m.to_col, m.to_row));
-        			OrdoCell from = getCell(CheckerId.BoardLocation, m.from_col,m.from_row);
-       			    dropObject(from); 
-       			    if(unKing) { from.removeTop(); }
-       			    acceptPlacement();
-         			}
-        			break;
-        	}
-        	break;
+       case MOVE_ORDO:
+       		{	OrdoCell from = getCell(m.from_col,m.from_row);
+       			OrdoCell fromEnd = getCell(m.target_col,m.target_row);
+       			OrdoCell to = getCell(m.to_col,m.to_row);
+       			undoOrdoMove(from,fromEnd,to);
+       			acceptPlacement();
+       		}
+       		break;
+       case MOVE_RETAIN:
+       		{
+       			int sz = captureSize.pop();
+       			OrdoChip chip = playerChip(whoseTurn);
+       			while(captureStack.size()>sz) { undoCapture(chip); }
+       		}
+       		break;
+       case MOVE_CAPTURE:
+			{	int sz = captureSize.pop();
+				OrdoCell to = getCell(OrdoId.BoardLocation, m.to_col, m.to_row);
+				pickObject(to);
+				OrdoCell from = getCell(OrdoId.BoardLocation, m.from_col,m.from_row);
+				dropObject(from); 
+				int np = nextPlayer[whoseTurn];
+				OrdoChip chip = playerChip(np);
+				while(captureStack.size()>sz) { undoCapture(chip); }
+				acceptPlacement();
+			}
+			break;
+       case MOVE_BOARD_BOARD:
+			{
+    			pickObject(getCell(OrdoId.BoardLocation, m.to_col, m.to_row));
+    			OrdoCell from = getCell(OrdoId.BoardLocation, m.from_col,m.from_row);
+   			    dropObject(from); 
+   			    acceptPlacement();
+			}
+			break;
  
         case MOVE_RESIGN:
         case MOVE_ACCEPT_DRAW:
@@ -1169,9 +1226,7 @@ class OrdoBoard extends rectBoard<OrdoCell> implements BoardProtocol
         case MOVE_OFFER_DRAW:
             break;
         }
-        currentDest = robotLast.pop();
-        //checkOccupied();
-  }
+    }
 
 private void loadHash(CommonMoveStack all,Hashtable<OrdoCell,OrdoMovespec>hash,boolean fetch)
 {
@@ -1194,7 +1249,27 @@ private void loadHash(CommonMoveStack all,Hashtable<OrdoCell,OrdoMovespec>hash,b
 				boolean exit = false;
 				OrdoCell to = getCell(m.to_col,m.to_row);
 				do {
+					OrdoMovespec prev = hash.get(to);
+					boolean doit = true;
+					if(prev!=null)
+					{
+					boolean currentParallel = (m.from_col==m.to_col) || (m.from_row==m.to_row);
+					boolean prevParallel = (prev.from_col==prev.to_col || prev.from_row==prev.to_row);
+					// the existing move is a parallel move.  prefer parallel moves
+					// so the default will orthogonal rather than diagonal
+					// if both are parallel, prefer the smaller move.
+					if(!currentParallel && prevParallel) { doit=false; }
+					if(currentParallel 
+							&& prevParallel
+							&& (G.distanceSQ(m.from_col,prev.from_row,m.to_col,m.to_row)
+									>= G.distanceSQ(prev.from_col,prev.from_row,prev.to_col,prev.to_row)))
+					{ doit = false; }
+					}
+					if(doit)
+					{					
 					hash.put(to,m);
+					}
+					
 					exit = from==target;
 					from = from.exitTo(direction);
 					to = to.exitTo(direction);
@@ -1202,6 +1277,7 @@ private void loadHash(CommonMoveStack all,Hashtable<OrdoCell,OrdoMovespec>hash,b
 			}}
 			break;
 		case MOVE_CAPTURE:
+		case MOVE_RETAIN:
 		case MOVE_BOARD_BOARD:
 			if(fetch) { hash.put(getCell(m.from_col,m.from_row),m); }
 			else { hash.put(getCell(m.to_col,m.to_row),m); }
@@ -1231,6 +1307,8 @@ public Hashtable<OrdoCell,OrdoMovespec>getTargets()
 		{
 		default: break;
 		case OrdoPlay:
+		case OrdoPlay2:
+		case OrdoRetain:
 		case Reconnect:
 			{	addMoves(all,whoseTurn);
 				loadHash(all,hash,selectedStart==null);
@@ -1246,7 +1324,7 @@ public Hashtable<OrdoCell,OrdoMovespec>getTargets()
 	 	{
 	 	case Ordo:
 	 	case OrdoX:
-	 		return allowBackwards ? AllOrdo[who] : allowSideways ? ForwardOrSidewaysOrdo[who] : ForwardOrdo[who] ; 
+	 		return allowBackwards ? AllOrdo : allowSideways ? ForwardOrSidewaysOrdo[who] : ForwardOrdo[who] ; 
 	 	default: throw G.Error("Not expecting %s",variation);
 	 	}
  }
@@ -1302,7 +1380,14 @@ public Hashtable<OrdoCell,OrdoMovespec>getTargets()
 	 }}}
 	 return some;
  }
- 
+ private void addRetainMoves(CommonMoveStack all,int who)
+ {	CellStack cells = occupiedCells[who];
+ 	for(int lim=cells.size()-1; lim>=0; lim--)
+ 	{
+ 		OrdoCell c = cells.elementAt(lim);
+ 		all.push(new OrdoMovespec(MOVE_RETAIN,c,c,who));
+ 	}
+ }
  // place an ordo, return true if successfully placed.
  // if not successfully placed, place nothing.
  private boolean placeOrdo(OrdoCell from,OrdoChip top,int placeDirection,int size)
@@ -1392,9 +1477,12 @@ public Hashtable<OrdoCell,OrdoMovespec>getTargets()
 	 // from is the start of the ordo chain to move. we extend the chain in up and right directions
 	 for(int extendDirection : reverse ? OrthogonalDirections : UpAndRightDirection)
 	 {	boolean extendHorizontal = (extendDirection==CELL_LEFT) || (extendDirection==CELL_RIGHT);
-	 	int movementDirections[] = extendHorizontal 
-	 								? (reverse ? VerticalDirections : UpDirection) 
-	 								: HorizontalDirections; 
+	 	int movementDirections[] = 
+	 			 (variation==Variation.OrdoX) 
+	 					? ((board_state==OrdoState.OrdoPlay2) ?  ForwardOrdo[who] : ForwardOrSidewaysOrdo[who]) 
+	 					: extendHorizontal 
+	 						? (reverse ? VerticalDirections : UpDirection) 
+	 						: HorizontalDirections; 
 		some |= addOrdoMoves(all,from,extendDirection,movementDirections,who);
 		if(some && all==null) { return some; }
 	 }
@@ -1402,13 +1490,14 @@ public Hashtable<OrdoCell,OrdoMovespec>getTargets()
  }
  private boolean addOrdoMoves(CommonMoveStack all,int who,boolean allowSideways,boolean reconnect)
  {	boolean some = false;
-	 if(selectedEnd!=null)
+ 	 if(selectedEnd!=null)
 	 {	// both ends specified
 		int direction = findDirection(selectedStart,selectedEnd);
 		int distance = Math.max(Math.abs(selectedStart.col-selectedEnd.col)+1,
 								Math.abs(selectedEnd.row-selectedStart.row)+1);
-		boolean isHorizontal = selectedStart.row==selectedEnd.row;
-		int moveDirections[] = isHorizontal 
+		int moveDirections[] = (variation==Variation.OrdoX) 
+								? ((board_state==OrdoState.OrdoPlay2) ? ForwardOrdo[who] : ForwardOrSidewaysOrdo[who])
+								: (selectedStart.row==selectedEnd.row)		// horizontal ordo 
 									? (reconnect ? VerticalDirections : UpDirection)
 									: HorizontalDirections;
 		some |= addOrdoMoves(all,selectedStart,direction,distance,moveDirections,who); 
@@ -1463,9 +1552,33 @@ public Hashtable<OrdoCell,OrdoMovespec>getTargets()
  {	sweep_counter++;
  	CellStack stack = occupiedCells[who];
  	int h = stack.size();
+ 	if(h==0) { return true; }	// will be gameover for other reasons
  	OrdoCell seed = full!=null ? full : someOrdoCell(stack,empty);
  	int sz = connectedSize(seed,playerChip(who),empty,full);
  	return sz>=h;
+ }
+ // sweep counter has been incremented, count those who have a different sweep
+ // and match the top
+ private int groupSize(OrdoCell from,OrdoChip chip)
+ {
+	 return connectedSize(from,chip,null,null);
+ }
+ private void removeGroup(OrdoCell from,OrdoChip chip,replayMode replay)
+ {	int who = playerIndex(chip);
+	 if(from!=null && from.topChip()==chip) 
+	 	{ doCapture(from);
+	 	  if(replay!=replayMode.Replay)
+	 	  {
+	 		  animationStack.push(from);
+	 		  animationStack.push(rack[who]);
+	 	  }
+	 	  for(int direction = 0; direction<from.geometry.n; direction++)
+	 	  {
+	 		  removeGroup(from.exitTo(direction),chip,replay);
+	 	  }
+	 	}
+	 
+	 
  }
  private boolean hasReconnectionMoves(int who)
  {
@@ -1475,9 +1588,10 @@ public Hashtable<OrdoCell,OrdoMovespec>getTargets()
 
  private boolean addOrdoSingleReconnectMoves(CommonMoveStack all,int who)
  {	boolean some = false;
-	 if(pickedObject!=null)
-	 {
-		 some = addSimpleOrdoMoves(all,pickedSourceStack.top(),pickedObject,true,true,who); 
+ 
+ 	if(selectedStart!=null)
+ 	{
+		 some = addSimpleOrdoMoves(all,selectedStart,selectedStart.topChip(),true,true,who); 
 	 }
 	 else
 	 {
@@ -1500,10 +1614,27 @@ public Hashtable<OrdoCell,OrdoMovespec>getTargets()
 	 case OrdoX:
 		 switch(board_state)
 		 {
-		 default: throw G.Error("State %s not expected",board_state);
+		 default: 
+			 p1("state "+board_state+" unexpected");
+			 throw G.Error("State %s not expected",board_state);
+ 		 case AcceptOrDecline:
+ 			 all.push(new OrdoMovespec(MOVE_ACCEPT_DRAW,whoseTurn));
+ 			 all.push(new OrdoMovespec(MOVE_DECLINE_DRAW,whoseTurn));
+ 			 break;
+		 case Confirm:
+			 all.push(new OrdoMovespec(MOVE_DONE,who));
+			 break;
+		 case OrdoRetain:
+			 addRetainMoves(all,who);
+			 break;
 		 case OrdoPlay:
 			 addOrdoSingletonMoves(all,who,true,false);
 			 addOrdoMoves(all,who,true,false);
+			 if( ((moveNumber-lastProgressMove)>8)
+ 					 && ((moveNumber-lastDrawMove)>4))
+			 {
+				 all.push(new OrdoMovespec(MOVE_OFFER_DRAW,who));
+			 }
 			 break;
 		 case Reconnect:
 			 addOrdoSingleReconnectMoves(all,who);
@@ -1522,7 +1653,7 @@ public Hashtable<OrdoCell,OrdoMovespec>getTargets()
  {	CommonMoveStack all = new CommonMoveStack();
  	addMoves(all,whoseTurn);
  	if(all.size()==0) 
- 		{ p1("no moves"); 
+ 		{ p1("no moves "+moveNumber); 
  		}
  	return(all);
  }
@@ -1530,5 +1661,42 @@ public Hashtable<OrdoCell,OrdoMovespec>getTargets()
  {
 	 robot = bot;
  }
+
+public commonMove Get_Random_Move(Random rand,double ordoProbability) 
+{	CellStack sources = occupiedCells[whoseTurn];
+	int sz = sources.size();
+	int startIndex = rand.nextInt(sz);
+	boolean ordo = rand.nextDouble()<ordoProbability;
+	CommonMoveStack all = new CommonMoveStack();
+	boolean allowSideways = board_state!=OrdoState.OrdoPlay2;
+	boolean allowBackwards = false;
+	boolean secondOrdo = false;
+	switch(board_state)
+	{	case Reconnect:	
+			allowBackwards = true;
+			secondOrdo = !ordo;
+			break;
+		case OrdoPlay2:
+		case OrdoPlay:
+			break;
+		default: return null;
+	}
+	for(int i=startIndex,n=0; n<sz; i++,n++)
+	{	if(i==sz) { i=0; }
+		OrdoCell from = sources.elementAt(i);
+		boolean some = ordo && addSimpleOrdoMoves(all,from,from.topChip(),allowSideways,allowBackwards,whoseTurn);
+		if(!some) {
+				some = addSimpleOrdoMoves(all,from,from.topChip(),allowSideways,allowBackwards,whoseTurn); 
+				}
+		if(!some && secondOrdo) {
+			some = addSimpleOrdoMoves(all,from,from.topChip(),allowSideways,allowBackwards,whoseTurn);
+			}
+	if(some) { 
+		return all.elementAt(rand.nextInt(all.size()));
+	}
+	}
+
+	return null;
+}
 
 }

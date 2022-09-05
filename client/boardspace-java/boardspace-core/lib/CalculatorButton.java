@@ -1,6 +1,7 @@
 package lib;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Rectangle;
 
 import online.common.exCanvas;
@@ -209,6 +210,9 @@ public class CalculatorButton {
 				hit.spriteRect = button.getChipRectangle(showOn,ww,xp,yp);
 			}
 		}
+		Font f = showOn.largeBoldFont();
+		Font keyFont = G.getFont(f,(int)(G.getFontSize(f)*1.5));
+		GC.setFont(gc,keyFont);
 		if(rightJustify)
 			{
 			message.drawRight(gc, xp-ww/2, yp-hh/2,ww,hh,textColor,null);

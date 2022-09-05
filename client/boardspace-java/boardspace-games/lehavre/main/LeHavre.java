@@ -1466,7 +1466,7 @@ public class LeHavre implements LeHavreConstants
 					player.lose(fee, Good.Franc);
 				}
 				showMessage(String.format(get("logDiveBar"), player.getName(), Util.getColored(dictionary, new GoodsPair(fee, Good.Franc))));
-				// TODO: let player sell stuff first
+				// TO DO: let player sell stuff first
 				takeLoansIfNecessary(player);
 			}
 		}

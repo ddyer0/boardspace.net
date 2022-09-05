@@ -1315,11 +1315,13 @@ public abstract class commonCanvas extends exCanvas
 	    	for(int num = 1; num<=last; num++)
 	    	{
 	    		commonMove m = History.elementAt(num);
-	    		if(m!=null && m.player!=targetPlayer && prevPlayer==targetPlayer)
+	    		if(m!=null)
+	    		{ if(m.player!=targetPlayer && prevPlayer==targetPlayer)
 	    		{
 	    			count++;
 	    		}
 	    		prevPlayer = m.player;
+	    	}
 	    	}
 	    	if(prevPlayer==targetPlayer)
 				{ BoardProtocol b = getBoard();
@@ -5517,7 +5519,6 @@ public abstract class commonCanvas extends exCanvas
      * Common problems when enabling this feature involve animations where the 
      * animation origin or destination is not set, usually on cells used only in the UI
      * This generally means the cell copyFrom operation wasn't called as part of board copyFrom.  
-     * @param unbuffered TODO
      */
     public void useDirectDrawing(boolean unbuffered)
     {	if(l.enableCopyBoard)

@@ -90,7 +90,7 @@ public class SixmakingViewer extends CCanvas<SixmakingCell,SixmakingBoard> imple
 
         int randomKey = info.getInt(OnlineConstants.RANDOMSEED,-1);
        
-        b = new SixmakingBoard(info.getString(OnlineConstants.GAMETYPE, Variation.Sixmaking.name),
+        b = new SixmakingBoard(info.getString(GAMETYPE, Variation.Sixmaking.name),
         		randomKey,players_in_game,repeatedPositions,getStartingColorMap());
         useDirectDrawing(true);
         doInit(false);
@@ -454,7 +454,9 @@ public class SixmakingViewer extends CCanvas<SixmakingCell,SixmakingBoard> imple
         default:
         	if(gb.drawIsLikely())
         	{	// if not making progress, put the draw option on the UI
-            	if(GC.handleSquareButton(gc,acceptDrawRect,select,s.get(OFFERDRAW),HighlightColor,rackBackGroundColor))
+            	if(GC.handleSquareButton(gc,acceptDrawRect,select,s.get(OFFERDRAW),
+            			HighlightColor,
+            			vstate==SixmakingState.DrawPending ? HighlightColor : rackBackGroundColor))
             	{
             		select.hitCode = GameId.HitOfferDrawButton;
             	}
@@ -751,7 +753,7 @@ private void playSounds(commonMove m)
     	if(target==offerDrawAction)
     	{	if(OurMove() 
     			&& (b.movingObjectIndex()<=0)
-    			&& (b.getState()==SixmakingState.Play))
+    			&& ((b.getState()==SixmakingState.Play))||(b.getState()==SixmakingState.DrawPending))
     		{
     		PerformAndTransmit(OFFERDRAW);
     		}

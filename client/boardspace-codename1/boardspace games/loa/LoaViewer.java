@@ -1,7 +1,5 @@
 package loa;
-/**
- * TODO: doesn't detect draws by repetition
- */
+
 import bridge.Color;
 import com.codename1.ui.geom.Rectangle;
 

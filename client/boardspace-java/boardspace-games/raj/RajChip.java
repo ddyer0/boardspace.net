@@ -11,7 +11,6 @@ import lib.GC;
 import lib.OStack;
 import lib.Random;
 import online.game.chip;
-import raj.RajConstants.RajColor;
 import online.common.exCanvas;
 
 class ChipStack extends OStack<RajChip>

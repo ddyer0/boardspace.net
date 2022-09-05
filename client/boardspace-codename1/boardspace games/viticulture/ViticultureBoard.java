@@ -4274,7 +4274,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
     		break;
 
     	case 23: // importer, combine to offer 3 visitor cards
-    		//TODO: importer needs a UI to decide (importer is removed for now)
+    		//TO DO: importer needs a UI to decide (importer is removed for now)
     		nextState = drawCards(3,blueCards,pb,replay,m);
     		break;
     	case 24:	// sharecropper

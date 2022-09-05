@@ -306,6 +306,7 @@ class SixmakingBoard extends rectBoard<SixmakingCell> implements BoardProtocol,S
     public boolean drawIsLikely()
     {	switch(board_state)
     	{
+    	case DrawPending: return true;
     	case Play:
     		return((moveNumber - lastProgressMove)>15);
        	default: return(false);

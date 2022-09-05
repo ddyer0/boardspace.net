@@ -96,7 +96,7 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
     	if(target==offerDrawAction)
     	{	if(OurMove() 
     			&& (b.movingObjectIndex()<=0)
-    			&& (b.getState()==HiveState.PLAY_STATE))
+    			&& ((b.getState()==HiveState.PLAY_STATE)||(b.getState()==HiveState.DrawPending)))
     		{
     		if(b.canOfferDraw())
     			{

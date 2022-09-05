@@ -338,6 +338,8 @@ class MorrisBoard extends squareBoard<MorrisCell> implements BoardProtocol,Morri
     public boolean drawIsLikely()
     {	switch(board_state)
     	{
+    	case DrawPending: return true;
+    	
     	case Play:
     		return((moveNumber - lastProgressMove)>10);
     	case Capture:

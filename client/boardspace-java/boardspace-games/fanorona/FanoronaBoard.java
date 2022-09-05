@@ -1014,8 +1014,9 @@ class FanoronaBoard extends rectBoard<FanoronaCell> implements BoardProtocol,Fan
     }
     public boolean drawIsLikely()
     {
-    	return(((moveNumber-lastDrawMove)>4)
-    			&& ((moveNumber-lastProgressMove)>10));
+    	return((board_state==FanoronaState.DrawPending)
+    			|| ((moveNumber-lastDrawMove)>4)
+    				&& ((moveNumber-lastProgressMove)>10));
     }
     
     public boolean Execute(commonMove mm,replayMode replay)

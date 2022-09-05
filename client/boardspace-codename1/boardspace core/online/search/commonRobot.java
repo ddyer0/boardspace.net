@@ -954,6 +954,13 @@ public abstract class commonRobot<BOARDTYPE extends BoardProtocol> implements Ru
 	   {
 		   
 	   }
+	   /** for use by getCurrentVariation, return true of the current move
+	    * should have a "done" inserted between previous and current
+	    */
+	   public boolean needDoneBetween(commonMove previous,commonMove current)
+	   {
+		   return (previous.player!=current.player);
+	   }
 	    
 	    // ** TEMPORARILY RESTORED ***
 	   // public boolean WinForPlayer(commonMove p)

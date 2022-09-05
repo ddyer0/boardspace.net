@@ -114,7 +114,7 @@ public class XiangqiViewer extends CCanvas<XiangqiCell,XiangqiBoard> implements 
     	MouseDotColors = XiangqiMouseDotColors;
     	MouseColors = XiangqiMouseColors;
     	
-        b = new XiangqiBoard(info.getString(OnlineConstants.GAMETYPE, Xiangqi_INIT),randomKey,
+        b = new XiangqiBoard(info.getString(GAMETYPE, Xiangqi_INIT),randomKey,
         		repeatedPositions,getStartingColorMap());
         useDirectDrawing(true);
         doInit(false);
@@ -448,7 +448,7 @@ public class XiangqiViewer extends CCanvas<XiangqiCell,XiangqiBoard> implements 
 			{ select.hitCode = GameId.HitDeclineDrawButton;
 			}
 			}
-			else if(gb.movesSinceProgress()>30) 
+			else if((vstate==XiangqiState.OFFER_DRAW_STATE) || ( gb.movesSinceProgress()>30)) 
 			{	if(GC.handleRoundButton(gc,acceptDrawRect,select,s.get(OFFERDRAW),
 					HighlightColor,(XiangqiState.OFFER_DRAW_STATE==vstate)?HighlightColor:rackBackGroundColor))
 					{ select.hitCode = GameId.HitOfferDrawButton;
@@ -714,7 +714,7 @@ private void playSounds(commonMove m)
     	else if (target==drawAction)
     	{
     		if(OurMove()) 
-    			{ if(allowUndo()) { PerformAndTransmit(RESET); }
+    			{ 
     			  PerformAndTransmit(OFFERDRAW); }
     		else {
                 theChat.postMessage(ChatInterface.GAMECHANNEL, KEYWORD_CHAT,

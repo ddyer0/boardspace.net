@@ -2,7 +2,6 @@ package modx;
 
 import com.codename1.ui.geom.Rectangle;
 import bridge.Color;
-import bridge.JMenuItem;
 
 /* below here should be the same for codename1 and standard java */
 
@@ -54,9 +53,7 @@ public class ModxViewer extends CCanvas<ModxCell,ModxBoard> implements ModxConst
     private Rectangle[] playerFlatRect = addRect("flat",4);
     private Rectangle[] playerScoreRect = addRect("score",4);
     private Rectangle jokerRect = addRect("jokerRect");
-    		 
-    private JMenuItem offerDrawAction = null;
-    
+     
     /**
      * preload all the images associated with the game. This is delegated to the chip class.
      */
@@ -97,7 +94,6 @@ public class ModxViewer extends CCanvas<ModxCell,ModxBoard> implements ModxConst
         		randomKey,players_in_game,repeatedPositions,getStartingColorMap(),ModxBoard.REVISION);
         useDirectDrawing(true);
         doInit(false);
-        offerDrawAction = myFrame.addAction(s.get(OFFERDRAW),deferredEvents);     
         
     }
 
@@ -735,16 +731,7 @@ private void playSounds(commonMove m)
      */
     public boolean handleDeferredEvent(Object target, String command)
     {
-    	if(target==offerDrawAction)
-    	{	if(OurMove() 
-    			&& (b.movingObjectIndex()<=0)
-    			&& (b.getState()==ModxState.Play))
-    		{
-    		PerformAndTransmit(OFFERDRAW);
-    		}
-    		return(true);
-    	}
-    	else 
+
     	return(super.handleDeferredEvent(target,command));
      }
 

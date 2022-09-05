@@ -380,7 +380,7 @@ class UCTThread extends Thread implements Opcodes
 	{
 	commonMove cur = backTrack.elementAt(lim);
 	commonMove cop = cur.Copy(null);
-	if((result!=null) && (cop.player!=result.player) && (cop.op!=MOVE_DONE))
+	if((result!=null) &&  (cop.op!=MOVE_DONE) && (robot.needDoneBetween(result,cop) ))
 		{
 		commonMove m = cur.Copy(null);
 		m.op = MOVE_DONE;
