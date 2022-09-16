@@ -1,11 +1,11 @@
 package ordo;
 
+import java.awt.*;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenuItem;
 
 import static ordo.OrdoMovespec.*;
 
-import java.awt.*;
 
 /* below here should be the same for codename1 and standard java */
 import online.common.*;

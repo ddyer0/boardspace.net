@@ -165,7 +165,7 @@ public class CannonViewer extends CCanvas<CannonCell,CannonBoard> implements Can
 		layout.placeTheChatAndLog(chatRect, minChatW, chatHeight,minChatW*2,3*chatHeight/2,logRect,
 				minLogW, minLogH, minLogW*3/2, minLogH*3/2);
 	   	layout.placeDoneEditRep(buttonW,buttonW*4/3,doneRect,editRect);
-		layout.placeTheVcr(this,minLogW,minLogW*3/2);
+		layout.placeTheVcr(this,minLogW/2,minLogW*3/2);
 	
 	
 		Rectangle main = layout.getMainRectangle();

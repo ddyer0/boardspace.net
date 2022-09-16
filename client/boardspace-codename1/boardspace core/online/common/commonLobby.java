@@ -1768,8 +1768,7 @@ private boolean processEchoRoomtype(String messType,StringTokenizer localST)
       {
           while (!event.isEmpty())
           {
-              String ss = event.elementAt(0);
-              event.removeElementAt(0);
+              String ss = event.remove(0);
               sendMessage(ss);
           }
       }

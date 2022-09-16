@@ -819,7 +819,9 @@ public class TammanyViewer extends CCanvas<TammanyCell,TammanyBoard> implements 
     	return(bb.scoreForPlayer(p.boardIndex));
     }
     public void showVoteButton(Graphics gc,TammanyPlayer p,HitPoint hp,Rectangle r,Rectangle eyeR,boolean eyeState,boolean onlyifactive)
-    {	HitPoint select = ((p.allVotesSet&&(preparedVote[p.myIndex]==null)) ? hp : null);
+    {	HitPoint select = ((p.allVotesSet
+    						&& bb.playerCanVote(p.myIndex)
+    						&&(preparedVote[p.myIndex]==null)) ? hp : null);
 		if ((select!=null) || !onlyifactive)
 			{
 			if(GC.handleRoundButton(gc, r, 
@@ -1347,7 +1349,20 @@ public class TammanyViewer extends CCanvas<TammanyCell,TammanyBoard> implements 
  * not acted upon.
  * Network I/O events, merely queue the data for delivery later.
  *  */
-    
+    public boolean canAutoElect()
+    {	
+    	return ( (bb.getState()==TammanyState.Election)
+    			&& !reviewMode()
+    			&& (players[bb.whoseTurn]!=null)
+    			&& (players[bb.whoseTurn].robotPlayer==null)
+    			
+    			);
+    }
+    public boolean allowBackwardStep()
+    {
+    	return (super.allowBackwardStep()
+    			|| canAutoElect());
+    }
     public void ViewerRun(int wait)
     {
         super.ViewerRun(wait);
@@ -1360,12 +1375,7 @@ public class TammanyViewer extends CCanvas<TammanyCell,TammanyBoard> implements 
         // the usual "OurMove" logic is not correct because
         // it explicitly considers simultunous moves as ok
         //
-        if(     (bb.getState()==TammanyState.Election)
-        		&& !reviewMode()
-        		&& (players[bb.whoseTurn]!=null)
-        		&& (players[bb.whoseTurn].robotPlayer==null)
-        		&& OurMove()
-        		)
+        if(canAutoElect() && OurMove())
         { 	
         	PerformAndTransmit("Elect "+bb.nextElectionWard());
         }
@@ -1537,5 +1547,57 @@ public class TammanyViewer extends CCanvas<TammanyCell,TammanyBoard> implements 
     				Color.red,null,YourTurnMessage);
     	}
     }}
+    
+    public void performUndo()
+    {	super.performUndo();
+    //	if(allowBackwardStep()) { doUndoStep(); }
+    //	else if(allowUndo()) { doUndo(); }
+    	TammanyState state = bb.getState();
+    	if(state.isElection()) 
+    		{ 
+    		AR.setValue(preparedVote,null); 
+    		AR.setValue(preparedVoteSent,false); 
+    		}
+    }
+    public boolean allowUndo()
+    {		return super.allowUndo();
+    }
+	/**
+	 * this is the key to limiting "runaway undo" in situations where the player
+	 * might have made a lot of moves, and undo should limit the damage.  One
+	 * example of this is in perliminary setup such as arimaa or iro
+	 */
+	public boolean allowPartialUndo()
+	{
+		return super.allowPartialUndo() || canAutoElect() ;
+	}
+    public void doUndoStep()
+    {
+    	super.doUndoStep();
+    	TammanyState state = bb.getState();
+    	if(state.isElection()) 
+    		{ 
+    		AR.setValue(preparedVote,null); 
+    		AR.setValue(preparedVoteSent,false); 
+    		}
+    }
+    public void doUndo()
+    {
+    	super.doUndo();
+    }
+	  public boolean allowOpponentUndoNow() 
+	  {
+		  return super.allowOpponentUndoNow();
+	  }
+	  public boolean allowOpponentUndo() 
+	  {
+		  return super.allowOpponentUndo();
+	  }
+
+
+    //public boolean allowBackwardStep()
+    //{	BoardProtocol b = getBoard();
+  	//return(b==null?false:b.movingObjectIndex()>=0);
+    //}
 }
 

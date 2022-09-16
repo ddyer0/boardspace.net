@@ -1788,6 +1788,7 @@ public abstract class commonCanvas extends exCanvas
     	commonPlayer who = whoseTurn();
     	return(!reviewMode()
     			&& !ap.spectator 
+    			&& (who!=null)
     			&& (simultaneous_turns_allowed()
     					|| isALocalPlayer(who)
     					|| (who==ap)
@@ -2572,7 +2573,7 @@ public abstract class commonCanvas extends exCanvas
     {	setupVcrRects(x,y,w,h,false);
     }
     private void setupVcrRects(int x,int y,int w,int h,boolean expanded)
-    {
+    {	//if(hidden.vcrExpanded!=expanded) { G.print("\nChange expand "+expanded); G.print(G.getStackTrace()); }
     	hidden.vcrExpanded = expanded;
     	int border = w/10;
     	int b2 = border/2;
@@ -2659,7 +2660,8 @@ public abstract class commonCanvas extends exCanvas
             int h = G.Height(r);
             int xp = G.Left(r) + sliderVal+w/2;
             int yp = G.Top(r) + h/2;
-            StockArt.VCRTick.drawChip(inG,this,w+(inSlider?w/3:0),xp,yp,str);
+            StockArt.VCRTick.drawChip(inG,this,w+(inSlider?w/3:0),xp,yp,null);
+            GC.drawOutlinedText(inG,true,xp-w/2,yp-w/2,w,w,Color.white,Color.black,str);
             }
          }
         if (inSlider)
@@ -2670,17 +2672,17 @@ public abstract class commonCanvas extends exCanvas
             	{ History.sliderPosition = nextSliderPosition(p); 
             	}
         }
-        if(G.isCodename1()
+         if(G.isCodename1()
         		&& !hidden.vcrExpanded
         		&& (buttonWidth<G.minimumFeatureSize())
         		&& G.pointInRect(p,vcrZone))
-        {
+        {	
         	retval = VcrId.expandButton;
         }
         else if(hidden.vcrExpanded
         		&& !G.pointInRect(p,vcrZone)
         		&& G.pointInRect(p,hidden.outsideVcrRect))
-        {
+        {	
         	retval = VcrId.shrinkButton;
         }
         else {
@@ -3055,9 +3057,12 @@ public abstract class commonCanvas extends exCanvas
     	}
     	else {
         boolean rval = (hitObject instanceof VcrId);
-        if(rval && hasControlToken())	// only actually do the scrolling if we have control
+        boolean con = hasControlToken();
+ 
+        if(rval && con)	// only actually do the scrolling if we have control
         {
         VcrId ho = (VcrId)hitObject;
+               
         switch(ho)
         {
         case sliderAnimSpeedButton:
@@ -3148,10 +3153,12 @@ public abstract class commonCanvas extends exCanvas
   		  	int rt = Math.min(fb-rh,Math.max(0, G.Top(old)-oldW/2));     	
         	setupVcrRects(rl,rt,rw,rh,true);   
   		  	G.SetRect(hidden.outsideVcrRect,rl-oldW/2,rt-oldH/2, rw+oldW, rh+oldH);
+  		  	G.print("Expanded "+rw+" "+rh);
         	break;
         case shrinkButton:
         	SetupVcrRects(G.Left(hidden.normalVcrRect),G.Top(hidden.normalVcrRect),
         			G.Width(hidden.normalVcrRect),G.Height(hidden.normalVcrRect));
+        	G.print("Contracted "+G.Width(hidden.normalVcrRect)+" "+G.Height(hidden.normalVcrRect));
         	break;
         case noVcrButton:
         	break;
@@ -3270,7 +3277,8 @@ public abstract class commonCanvas extends exCanvas
             int xp = G.Left(hidden.vcrVarRect) + w/2;
             int yp = G.Top(hidden.vcrVarRect) + h/2;
             GC.setColor(inG,isin?Color.white:Color.black);
-            StockArt.VCRButton.drawChip(inG,this,w,xp,yp,txt);
+            StockArt.VCRButton.drawChip(inG,this,w,xp,yp,null);
+            GC.drawOutlinedText(inG,true,xp-w/2,yp-h/2,w,h,Color.white,Color.black,txt);
             if(isin)
             {
                 rval = VcrId.VarButton;

@@ -128,7 +128,10 @@ public class JWSApplication implements Config
 			G.print("w ",G.getScreenWidth()," h ",G.getScreenHeight()," dpi ",G.getRealScreenDPI()," ppi ",G.getPPI()," scale ",G.getDisplayScale());
 	    	G.getOSInfo();
 			G.print("Ask fontsize "+G.defaultFontSize+" get "+G.getFontSize(G.getGlobalDefaultFont()));
-
+			G.print(Component.getHierarchy(MasterForm.getMasterPanel()));
+			G.print("\n");
+			G.print(Component.getHierarchy(MasterForm.getMasterForm().getTitleBar()));
+			G.print("\n");
 	    	//G.print(G.getPackages());
 	    	G.putGlobal(RELEASEHOST,serverName);
 	    	G.putGlobal(SERVERNAME,serverName);

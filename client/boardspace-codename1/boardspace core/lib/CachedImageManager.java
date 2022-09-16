@@ -79,6 +79,8 @@ public class CachedImageManager
     			if(doscaling && loaded && v.im==null)
     			{	// consider caching
     				if((v.useCount>CACHE_USE_THRESHOLD)
+    					&& v.ScaledW>0
+    					&& v.ScaledH>0
     					&& (v.useTime>shortExpDate))		// recently used
     				{    
      					if(!exit)
@@ -162,8 +164,11 @@ public class CachedImageManager
      */ 
      public Image getCachedImage(Image im,int w, int h,boolean zoom)
     {	int srcW = im.getWidth();
+    	int srcH = im.getHeight();
     	if (!cache_images 
     			|| (w>=srcW)	// don't cache images that are increasing in size 
+    			|| (srcW==0)
+    			|| (srcH==0)
     			|| (w==0) 
     			|| (h==0) /* || (w>=500)*/) 
     		{ 	if(im.isUnloadable()) 
@@ -171,7 +176,7 @@ public class CachedImageManager
     				CachedImage cim = cachedImages.get(im);
     				long now = G.Date();
     				if(cim==null) 
-    					{ cim = new CachedImage(im,im.getWidth(),im.getHeight());
+    					{ cim = new CachedImage(im,srcW,srcH);
     					  cim.im = im;
     					  if(LOG_CACHE) { Plog.log.addLog("Cache unloadable stub ",im); }
     					  cachedImages.put(im,cim);

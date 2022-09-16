@@ -55,7 +55,6 @@ public class ChessViewer extends CCanvas<ChessCell,ChessBoard> implements ChessC
     private JCheckBoxMenuItem reverseOption = null;
     private JMenuItem offerDrawAction = null;
     
-    private Rectangle repRect = addRect("repRect");
     private Rectangle declineDrawRect = addRect("declineDraw");
     private Rectangle acceptDrawRect = addRect("acceptDraw");	
     private Rectangle bannerRect = addRect("banner");			// the game type, positioned at the top
@@ -520,7 +519,7 @@ public double setLocalBoundsA(int x, int y, int width, int height,double a)
         }
         goalAndProgressMessage(gc,highlight,Color.black,s.get(VictoryCondition),progressRect, goalRect);
    
-        DrawRepRect(gc,messageRotation,Color.black, gb.Digest(),repRect);	// Not needed for barca
+        DrawRepRect(gc,messageRotation,Color.black, gb.Digest(),acceptDrawRect);	// Not needed for barca
         drawVcrGroup(ourSelect, gc);
         drawAuxControls(gc,ourSelect);
     }

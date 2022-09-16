@@ -212,11 +212,12 @@ public class CheckerGameViewer extends CCanvas<CheckerCell,CheckerBoard> impleme
        			margin,	// size of margins for boxes	
        			0.7, 	// at least 70% for the board
        			aspect,	// preferred aspect ratio for the board 
-       			fh*4, 	//maximum cell size, based on font size for the window
+       			fh*2, 	//maximum cell size, based on font size for the window
+       			fh*2.5, 	//maximum cell size, based on font size for the window
        			0.5);	// preference for sticking with the designated layout
 
     	int chatHeight = selectChatHeight(height);
-        int logH = chatHeight==0 ? fh*15 : chatHeight;
+        int logH = chatHeight==0 ? fh*10 : chatHeight;
         int vcrW = fh*16;
         int vcrMW = fh*20;
     	int bannerW = fh*20;

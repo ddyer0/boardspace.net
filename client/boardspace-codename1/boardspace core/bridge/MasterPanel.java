@@ -483,8 +483,14 @@ public class MasterPanel extends JPanel implements NullLayoutProtocol,ActionList
 	{
 		setLocalBounds(0,0,getWidth(),getHeight());
 	}
-	public void setLocalBounds(int l,int t,int w, int h)
-	{	
+	public void setLocalBounds(int l,int t,int w0, int h)
+	{	Rectangle safe = MasterForm.getMasterForm().getSafeArea();
+		int sx = safe.getX();
+		//int sy = safe.getY();
+		//int sw = safe.getWidth();
+		//int sh = safe.getHeight();
+		int x = (int)(sx*0.66);
+		int w = w0-sx;
 		for(int nc = getComponentCount()-1 ; nc>=0; nc--)
 		{
 			Component c = getComponentAt(nc);
@@ -495,7 +501,7 @@ public class MasterPanel extends JPanel implements NullLayoutProtocol,ActionList
 			{	Dimension minSz = ((FullScreen)c).getMinimumSize();
 				int aw = Math.max(minSz.getWidth(),w);
 				int ah = Math.max(minSz.getHeight(),h);
-				c.setX(0);
+				c.setX(x);
 				c.setY(0);
 				c.setWidth(aw);
 				c.setHeight(ah);

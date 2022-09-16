@@ -74,7 +74,7 @@ public class XFrame extends JFrame implements WindowListener
 	
 	}
 	public boolean hasCommand(String cmd)
-	{	if(("rotate".equals(cmd) || "twist".equals(cmd))) { return(true); }
+	{	if(("rotate".equals(cmd) || "twist".equals(cmd))) { return(!G.isIOS()); }
 		if("close".equals(cmd)) { return(true); }
 		if("actionmenu".equals(cmd)) 
 			{ return(popupMenuBar!=null); 

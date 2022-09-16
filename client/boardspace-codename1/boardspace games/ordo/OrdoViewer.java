@@ -1,5 +1,12 @@
 package ordo;
 
+
+import com.codename1.ui.geom.Rectangle;
+
+import bridge.Color;
+import bridge.JCheckBoxMenuItem;
+import bridge.JMenuItem;
+
 import static ordo.OrdoMovespec.*;
 
 
@@ -11,11 +18,6 @@ import online.search.SimpleRobotProtocol;
 
 import java.util.*;
 
-import com.codename1.ui.geom.Rectangle;
-
-import bridge.Color;
-import bridge.JCheckBoxMenuItem;
-import bridge.JMenuItem;
 import lib.Graphics;
 import lib.CellId;
 import lib.Drawable;

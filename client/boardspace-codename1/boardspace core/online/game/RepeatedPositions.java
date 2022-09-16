@@ -11,6 +11,8 @@ public class RepeatedPositions extends Hashtable<Object,Object>
 	 * 
 	 */
 	static final long serialVersionUID = 1L;
+	long afterDrawState = 0;
+	int NREPS_ENDS = 3;
 	/**
      * add the move to the repeated positions table
      * 
@@ -74,6 +76,7 @@ public class RepeatedPositions extends Hashtable<Object,Object>
      */
     public int numberOfRepeatedPositions(long digest)
     {	
+		if(digest==afterDrawState) { return NREPS_ENDS; }
 		Object oldval = get(digest);
 		if(oldval==null) { return(0); }
 		if(! (oldval instanceof OStack)) { return(1); }
@@ -82,6 +85,8 @@ public class RepeatedPositions extends Hashtable<Object,Object>
    	}
     public RepeatedPositions copy()
     {	RepeatedPositions copy = new RepeatedPositions();
+    	copy.NREPS_ENDS = NREPS_ENDS;
+    	copy.afterDrawState = afterDrawState;
     	for(Enumeration<Object> keys = keys(); keys.hasMoreElements();)
     	{
     		Object k = keys.nextElement();
@@ -102,11 +107,14 @@ public class RepeatedPositions extends Hashtable<Object,Object>
         boolean done = b.DigestState();
         if(done) 
     	{ long dig = b.Digest();
+    	  if(dig==afterDrawState) { return true; }
     	  int size = addToRepeatedPositions(dig,m);
-    	  if(size==3) 
+    	  if(size==NREPS_ENDS)
     	  { b.SetDrawState();
+    	    afterDrawState = b.Digest();
     	    return(true);
      	  }
+    	  else { afterDrawState = 0; }
     	}	
         return(false);
     }

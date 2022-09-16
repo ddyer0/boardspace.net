@@ -1018,6 +1018,18 @@ public class PrototypeViewer extends CCanvas<PrototypeCell,PrototypeBoard> imple
 		
 		}
 	}
+	  public boolean allowOpponentUndoNow() 
+	  {
+		  return super.allowOpponentUndoNow();
+	  }
+	  public boolean allowOpponentUndo() 
+	  {
+		  return super.allowOpponentUndo();
+	  }
+	  
+	  public boolean allowUndo()
+	  {		return super.allowUndo();
+	  }
 	/**
 	 * this is the key to limiting "runaway undo" in situations where the player
 	 * might have made a lot of moves, and undo should limit the damage.  One
@@ -1242,6 +1254,11 @@ public class PrototypeViewer extends CCanvas<PrototypeCell,PrototypeBoard> imple
  * events are noted for later.  Requests to repaint the canvas are recorded but
  * not acted upon.
  * Network I/O events, merely queue the data for delivery later.
+ * 
+ * Another thing ViewerRun typically does is provide "auto-move" for when
+ * conditions are right - typically at the end of a simultaneous movement
+ * phase.  Be careful, this interacts with "undo".  Typically solved by
+ * extending allowBackwardStep() and allowPartialUndo() to go back a step further
  *  */
     
     //   public void ViewerRun(int wait)

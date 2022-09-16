@@ -4441,9 +4441,7 @@ public class Game extends commonPanel implements PlayConstants,Opcodes,DeferredE
         	String combined = NetConn.SEND_MULTIPLE;	// includes a trailing space
 	            while (!event.isEmpty())
 	            {
-	                String ss0 = event.elementAt(0);
-	                String ss = ss0;
-	                event.removeElementAt(0);
+	                String ss = event.remove(0);
 	                // be careful about the padding.  Each subcommand should end with a space, so "combined" always ends with a space
 	                String msg = 
 	                		" "+NetConn.SEND_GROUP

@@ -289,7 +289,7 @@ public final class Evaluation
          x1 = graphstX[stackcnt];
          y1 = graphstY[stackcnt];
          /*
-          * TODO ermitteln der kleinsten Zeile if (dir == Board.XPLAYER) { if
+          * TO DO ermitteln der kleinsten Zeile if (dir == Board.XPLAYER) { if
           * (x1 < smin) smin = x1; } else { if (y1 < smin) smin = y1; }
           */
          data[x1][y1].setValue(val);
@@ -361,7 +361,7 @@ public final class Evaluation
             stackcnt++;
          }
       }
-      return 0; // TODO: smin; //return smallest x or y found because re-check
+      return 0; // TO DO: smin; //return smallest x or y found because re-check
       // may be necessary
    }
 
@@ -459,7 +459,7 @@ public final class Evaluation
             stackcnt++;
          }
       }
-      return new PinPosition(-1, -1); // TODO: richtig?
+      return new PinPosition(-1, -1); // TO DO: richtig?
    
    }
 
@@ -540,7 +540,7 @@ public final class Evaluation
          }
          data[xi][yi].setFather(faX, faY);
       }
-      return pinFound; // TODO ist das optimal?
+      return pinFound; // TO DO ist das optimal?
    }
 
    /**

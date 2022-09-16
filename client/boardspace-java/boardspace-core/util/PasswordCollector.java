@@ -62,7 +62,7 @@ import udp.PlaytableStack;
 	 public static final String Forums = "User Forums";
 	 public static final String Tournaments = "Tournaments";
 	 public static final String ForgotPassword = "Forgot Password";
-	 public static final String AccountManagement = "Account Management";
+	 public static final String AccountManagement = "Edit or Delete Account";
 	 
 	 public static final String Feedback = "Send feedback";
 	 public static final String Appstore = "App Store";

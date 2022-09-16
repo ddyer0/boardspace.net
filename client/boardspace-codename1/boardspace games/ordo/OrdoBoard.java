@@ -1,4 +1,5 @@
 package ordo;
+
 import online.game.*;
 import ordo.OrdoConstants.OrdoId;
 import ordo.OrdoConstants.OrdoState;
@@ -55,7 +56,7 @@ class OrdoBoard extends rectBoard<OrdoCell> implements BoardProtocol
     public void SetDrawState() { setState(OrdoState.Draw); }
     private int sweep_counter = 0;
     public OrdoCell rack[] = null;	// the pool of chips for each player.  
-    public int kingRow[] = {0,0};		// will be the row checkers get promoted to king
+    public int goalRow[] = {0,0};		// will be the row checkers get promoted to king
     public CellStack animationStack = new CellStack();
     //
     // private variables
@@ -297,8 +298,8 @@ class OrdoBoard extends rectBoard<OrdoCell> implements BoardProtocol
      	case Ordo:
      	case OrdoX:
        		reInitBoard(variation.cols,variation.rows);
-     		kingRow[map[FIRST_PLAYER_INDEX]] = 1;
-     		kingRow[map[SECOND_PLAYER_INDEX]] = nrows;
+     		goalRow[map[FIRST_PLAYER_INDEX]] = nrows;
+     		goalRow[map[SECOND_PLAYER_INDEX]] = 1;
      		gametype = gtype;
      		break;
      	}
@@ -355,8 +356,30 @@ class OrdoBoard extends rectBoard<OrdoCell> implements BoardProtocol
     }
 
     public double simpleScore(int who)
-    {	// range is 0.0 to 0.8
-    	return((0.8*occupiedCells[who].size()-occupiedCells[nextPlayer[who]].size())/20.0);
+    {	// consider 3 factors, compactness, number of chips, and advancement toward the goal
+    	CellStack cells = occupiedCells[who];
+    	int nCells = cells.size();
+    	int goal = goalRow[who];
+    	int minRow = goal;
+    	int maxRow = 1;
+    	int minCol = ncols;
+    	int maxCol = 1;
+    	for(int lim = nCells-1; lim>=0; lim--)
+    	{
+    		OrdoCell c = cells.elementAt(lim);
+    		int row = Math.abs(c.row-goal);		// distance from goal
+    		int col = c.col-'A';
+    		minRow = Math.min(minRow,row);
+    		maxRow = Math.max(maxRow,row);
+    		minCol = Math.min(minCol,col);
+    		maxCol = Math.max(maxCol,col);   		
+    	}
+    	double dim = Math.max(maxCol-minCol,maxRow-minRow);
+    	double cluster = 1-((dim*dim)/(double)(ncols*nrows));
+    	double goalish = (double)(nrows-maxRow)/nrows;
+    	double sizeish = (20-nCells)/20.0;
+    	
+    	return sizeish*0.1 + goalish *0.5 + cluster*0.4;
     }
     //
     // change whose turn it is, increment the current move number
@@ -641,8 +664,8 @@ class OrdoBoard extends rectBoard<OrdoCell> implements BoardProtocol
   
     private boolean raceGoalOccupied(int who)
     {
-    	OrdoCell home = getCell('A',kingRow[who]);
-    	OrdoChip target = playerChip(nextPlayer[who]);
+    	OrdoCell home = getCell('A',goalRow[who]);
+    	OrdoChip target = playerChip(who);
     	while(home!=null)
     	{
     		OrdoChip top = home.topChip();
@@ -673,7 +696,7 @@ class OrdoBoard extends rectBoard<OrdoCell> implements BoardProtocol
     		{
     		case Ordo:
     			if(occupiedCells[whoseTurn].size()==0) { setGameOver(false,true); }
-    			else if(raceGoalOccupied(whoseTurn)) { setGameOver(false,true); }
+    			else if(raceGoalOccupied(nextPlayer[whoseTurn])) { setGameOver(false,true); }
     			else if(isOrdoConnected(whoseTurn,null,null)) 
     				{ // in ordoX, we get connected by removing groups
     				setState(OrdoState.OrdoPlay); 
@@ -686,8 +709,8 @@ class OrdoBoard extends rectBoard<OrdoCell> implements BoardProtocol
     			
     		case OrdoX:
        			if(occupiedCells[whoseTurn].size()==0) { setGameOver(false,true); }
-    			else if(raceGoalOccupied(whoseTurn)) { setGameOver(false,true); }
     			else if(sidewaysMove) { setState(OrdoState.OrdoPlay2); }
+    			else if(raceGoalOccupied(nextPlayer[whoseTurn])) { setGameOver(false,true); }
        			else if(equalOrdo) { setState(OrdoState.OrdoRetain); equalOrdo = false; }
     			else { setState(OrdoState.OrdoPlay); }
        			sidewaysMove = false;
@@ -1464,23 +1487,23 @@ public Hashtable<OrdoCell,OrdoMovespec>getTargets()
 	 return some;
  }
  
- static int UpAndRightDirection[] = { CELL_UP, CELL_RIGHT };
- static int OrthogonalDirections[] = { CELL_UP, CELL_DOWN, CELL_LEFT, CELL_RIGHT };
+ static int ExtendUpAndRightDirection[] = { CELL_UP, CELL_RIGHT };
+ static int ExtendOrthogonalDirections[] = { CELL_UP, CELL_DOWN, CELL_LEFT, CELL_RIGHT };
  static int HorizontalDirections[] = { CELL_LEFT, CELL_RIGHT};
  static int VerticalDirections[] = { CELL_UP, CELL_DOWN };
- static int UpDirection[] = { CELL_UP };
+ static int UpDirection[][] = {{ CELL_UP },{CELL_DOWN}};
 
- private boolean addOrdoMoves(CommonMoveStack all,OrdoCell from,
+ private boolean ExtendUpRight(CommonMoveStack all,OrdoCell from,
 		 	boolean allowSideways,boolean reconnect,boolean reverse,int who)
  {	boolean some = false;
 	 // from is the start of the ordo chain to move. we extend the chain in up and right directions
-	 for(int extendDirection : reverse ? OrthogonalDirections : UpAndRightDirection)
+	 for(int extendDirection : reverse ? ExtendOrthogonalDirections : ExtendUpAndRightDirection)
 	 {	boolean extendHorizontal = (extendDirection==CELL_LEFT) || (extendDirection==CELL_RIGHT);
 	 	int movementDirections[] = 
 	 			 (variation==Variation.OrdoX) 
 	 					? ((board_state==OrdoState.OrdoPlay2) ?  ForwardOrdo[who] : ForwardOrSidewaysOrdo[who]) 
 	 					: extendHorizontal 
-	 						? (reverse ? VerticalDirections : UpDirection) 
+	 						? (reverse ? VerticalDirections : UpDirection[who]) 
 	 						: HorizontalDirections; 
 		some |= addOrdoMoves(all,from,extendDirection,movementDirections,who);
 		if(some && all==null) { return some; }
@@ -1497,14 +1520,14 @@ public Hashtable<OrdoCell,OrdoMovespec>getTargets()
 		int moveDirections[] = (variation==Variation.OrdoX) 
 								? ((board_state==OrdoState.OrdoPlay2) ? ForwardOrdo[who] : ForwardOrSidewaysOrdo[who])
 								: (selectedStart.row==selectedEnd.row)		// horizontal ordo 
-									? (reconnect ? VerticalDirections : UpDirection)
+									? (reconnect ? VerticalDirections : UpDirection[who])
 									: HorizontalDirections;
 		some |= addOrdoMoves(all,selectedStart,direction,distance,moveDirections,who); 
 	 }
 	 else if(selectedStart!=null)
 	 {	
 		// one end specified
-		some |= addOrdoMoves(all,selectedStart,allowSideways,reconnect,true,who); 
+		some |= ExtendUpRight(all,selectedStart,allowSideways,reconnect,true,who); 
 	 }
 	 else
 	 {
@@ -1512,7 +1535,7 @@ public Hashtable<OrdoCell,OrdoMovespec>getTargets()
 	 for(int lim=sources.size()-1; lim>=0; lim--)
 	 {
 		OrdoCell from = sources.elementAt(lim);
-		some |= addOrdoMoves(all,from,allowSideways,reconnect,false,who);
+		some |= ExtendUpRight(all,from,allowSideways,reconnect,false,who);
 		if(some && all==null) { return some; }
 	 }}
 	return some; 

@@ -537,7 +537,7 @@ public class ChatWidget
     public void setLocalBounds(int l,int t,int inWidth,int inHeight)
     {	
         //System.out.println("layout " + inWidth+"x"+inHeight);	
-    	int fs = G.standardizeFontSize((int)(G.defaultFontSize*1.2));
+    	int fs = G.standardizeFontSize((int)(G.defaultFontSize*(G.isCodename1()?1.2:1)));
         basicFont = G.getFont(s.get("fontfamily"), G.Style.Plain, fs);
         boldFont = G.getFont(basicFont,G.Style.Bold,fs);
 

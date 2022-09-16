@@ -13,19 +13,18 @@ import lib.Graphics;
 import com.codename1.ui.events.ActionEvent;
 import com.codename1.ui.geom.Dimension;
 import com.codename1.ui.geom.Point;
+import com.codename1.ui.geom.Rectangle;
 import com.codename1.ui.layouts.BorderLayout;
 import com.codename1.ui.plaf.Style;
 import com.codename1.ui.plaf.UIManager;
 
 class FixedTopLayout extends BorderLayout
 {
-	FixedTopLayout() { }
+	FixedTopLayout() {  }
 	public void layoutContainer(com.codename1.ui.Container parent)
-	{
-		//G.print("layout bar ",parent);
-		super.layoutContainer(parent);
+	{	
+	super.layoutContainer(parent);
 	}
-	
 }
 @SuppressWarnings("rawtypes")
 public class MasterForm extends Form implements com.codename1.ui.events.ActionListener
@@ -35,6 +34,7 @@ public class MasterForm extends Form implements com.codename1.ui.events.ActionLi
 	bridge.Container tabs = new bridge.Container();
 	bridge.Container menus = new bridge.Container();
 	bridge.Container centers = new bridge.Container();
+	Spacer spacer = new Spacer();
 	String appname = "unnamed";
 	private com.codename1.ui.Container titleBar;
 	boolean recordEvents = true;
@@ -45,6 +45,7 @@ public class MasterForm extends Form implements com.codename1.ui.events.ActionLi
 	  new BoxLayout(this,BoxLayout.Y_AXIS);
 	  UIManager man = UIManager.getInstance();
 	  man.setLookAndFeel(new BSLookAndFeel(man));
+	  spacer.setUIID("ContainerMasterForm");
 	  tabs.setUIID("ContainerMasterForm");
 	  menus.setUIID("ContainerMasterForm");
 	  centers.setUIID("ContainerMasterForm");
@@ -80,10 +81,10 @@ public class MasterForm extends Form implements com.codename1.ui.events.ActionLi
 	  l.setUIID("LabelMasterForm");
 	  //l.getStyle().setOpacity(255);
 	  //l.getStyle().setBgColor(Config.FrameBackgroundColor.getRGB());
+	  titleBar.add("North",spacer);
 	  titleBar.add("West",tabs);
 	  titleBar.add("East",menus);
-	  titleBar.add("Center",centers);
-	  
+	  titleBar.add("Center",centers);  
 	}
 	public void setFocused(com.codename1.ui.Component p)
 	{	//G.print("set focused ",p);
@@ -148,19 +149,21 @@ public class MasterForm extends Form implements com.codename1.ui.events.ActionLi
 	  title.setText(name);
 	}
 	public void setWidth(int n)
-	{
+	{	adjustSpacer();
 		super.setWidth(n);
 	}
 	public void setHeight(int n)
 	{	//G.print("master set height "+n);
+		adjustSpacer();
 		super.setHeight(n);
 	}
 	public void setSize(Dimension d)
 	{	//G.print("master set size "+d);
+		adjustSpacer();
 		super.setSize(d);
 	}
 	public void layoutContainer()
-	{	
+	{	adjustSpacer();
 		super.layoutContainer();
 		//Rectangle bb = getBounds();
 		//Http.postError(this,"Layout "+bb,null);
@@ -200,7 +203,7 @@ public void addToMenus(JButton m)
 	}
 	public static MasterForm getMasterForm()
 	{
-		if(masterForm==null) { masterForm=new MasterForm(Config.APPNAME); }
+		if(masterForm==null) { masterForm=new MasterForm(Config.APPNAME); 	  masterForm.adjustSpacer(); }
 		return(masterForm);
 	}
 	private void addMasterPanel()
@@ -481,4 +484,32 @@ public void addToMenus(JButton m)
 	    public void paintComponentBackground(Graphics g)
 	    { //G.print("master paintComponentBackground" );
 	    }
+	public com.codename1.ui.Container getTitleBar() { return titleBar; }
+	
+	// the spacer is an invisible window on the top of iphone-X screens, meant to occupy
+	// the divot which contains the status bar.  When switching to landscape mode, the 
+	// divot moves to the left instead of top, and it's accounted for by the way the 
+	// masterpanel does it's layout.
+	public void adjustSpacer()
+	{	if(spacer!=null)
+		{
+		Rectangle safe = MasterForm.getMasterForm().getSafeArea();
+		//int sx = safe.getX();
+		int sy = (int)(safe.getY()*0.66);
+		int sw = safe.getWidth();
+		int spw = spacer.getWidth();
+		int sph = spacer.getHeight();
+		if(spw!=sw || sph!=sy)
+			{
+			//int sh = safe.getHeight();
+			//G.print("layout title safe "+sx+" "+sy+" "+sw+"x"+sh);
+			spacer.setWidth(sw);
+			spacer.setHeight(sy); 
+			titleBar.setShouldCalcPreferredSize(true);
+			Container mp = masterPanel;
+			if(mp!=null) { mp.setShouldCalcPreferredSize(true); }
+			setShouldCalcPreferredSize(true);
+			}
+		}
+	}
 }

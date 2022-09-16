@@ -139,7 +139,7 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
         gameLogBoldFont = G.getFont(standardPlainFont(), G.Style.Bold, FontHeight+4);
         gameLogFont = G.getFont(standardPlainFont(),G.Style.Plain,FontHeight+2);
         zoomRect = addSlider(TileSizeMessage,s.get(TileSizeMessage),HiveId.ZoomSlider);
-        zoomRect.min=2.0;
+        zoomRect.min=1.5;
         zoomRect.max=5.0;
         zoomRect.value=INITIAL_TILE_SCALE;
         zoomRect.barColor=ZoomColor;

@@ -1798,6 +1798,7 @@ public abstract class commonCanvas extends exCanvas
     	commonPlayer who = whoseTurn();
     	return(!reviewMode()
     			&& !ap.spectator 
+    			&& (who!=null)
     			&& (simultaneous_turns_allowed()
     					|| isALocalPlayer(who)
     					|| (who==ap)
@@ -2669,7 +2670,8 @@ public abstract class commonCanvas extends exCanvas
             int h = G.Height(r);
             int xp = G.Left(r) + sliderVal+w/2;
             int yp = G.Top(r) + h/2;
-            StockArt.VCRTick.drawChip(inG,this,w+(inSlider?w/3:0),xp,yp,str);
+            StockArt.VCRTick.drawChip(inG,this,w+(inSlider?w/3:0),xp,yp,null);
+            GC.drawOutlinedText(inG,true,xp-w/2,yp-w/2,w,w,Color.white,Color.black,str);
             }
          }
         if (inSlider)
@@ -3280,7 +3282,8 @@ public abstract class commonCanvas extends exCanvas
             int xp = G.Left(hidden.vcrVarRect) + w/2;
             int yp = G.Top(hidden.vcrVarRect) + h/2;
             GC.setColor(inG,isin?Color.white:Color.black);
-            StockArt.VCRButton.drawChip(inG,this,w,xp,yp,txt);
+            StockArt.VCRButton.drawChip(inG,this,w,xp,yp,null);
+            GC.drawOutlinedText(inG,true,xp-w/2,yp-h/2,w,h,Color.white,Color.black,txt);
             if(isin)
             {
                 rval = VcrId.VarButton;

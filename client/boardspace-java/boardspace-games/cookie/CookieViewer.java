@@ -247,6 +247,7 @@ public class CookieViewer extends CCanvas<CookieCell,CookieBoard> implements Coo
     	boolean tall = w<h;
         int ystep = tall ? h/3 : 0;
         int xstep = tall ? 0 : w/3;
+        int sz = tall ? w : h;
         for(int i=0,y=G.Top(r)+ (tall ? ystep/2 : h/2 ),
         			x=G.Left(r)+(tall ? w/2 : xstep/2 );
         	i<CookieChip.nChips;
@@ -255,16 +256,16 @@ public class CookieViewer extends CCanvas<CookieCell,CookieBoard> implements Coo
         	boolean canhit = gb.LegalToHitChips(c);
         	CookieChip chip = c.topChip();
         	labelColor = Color.white;
-        	labelFont = G.getFont(largeBoldFont(),h/3);
+        	labelFont = G.getFont(largeBoldFont(),sz/3);
         	if(c.drawStack(gc,canhit?highlight:null,
         			x,y,
         			this,0,tall?(int)(w*0.9):h,1.0,""+chip.value))
         	{
         	highlight.arrow = (gb.pickedObject==null)?StockArt.UpArrow:StockArt.DownArrow;
-        	highlight.awidth = w/3;
+        	highlight.awidth = sz/3;
         	highlight.spriteColor = Color.red;
-        	}
-        	HitPoint.setHelpText(highlight,h,x,y,s.get(chip.description));
+         	}
+        	HitPoint.setHelpText(highlight,sz,x,y,s.get(chip.description)); 
         }
     }
     //
@@ -385,7 +386,6 @@ public class CookieViewer extends CCanvas<CookieCell,CookieBoard> implements Coo
             			this,0,cellSize,1.0,use_grid?(""+ccell.col+ccell.row):null ))
                 {	 //if(gc!=null) { gc.drawOval(xpos-cellSize/2,ypos-cellSize/2,cellSize,cellSize); }
                    	ourTurnSelect.hitCode = CookieId.BoardLocation;
-                    ourTurnSelect.arrow = (gb.movingObjectIndex()>0)?StockArt.DownArrow:StockArt.UpArrow;
                     ourTurnSelect.awidth = cellSize/2;
                     ourTurnSelect.spriteColor = Color.red;
                     someHit = true;
@@ -523,7 +523,7 @@ public class CookieViewer extends CCanvas<CookieCell,CookieBoard> implements Coo
 	   			HighlightColor, rackBackGroundColor);
 
        commonPlayer pl = getPlayerOrTemp(gb.whoseTurn);
-   		double messageRotation = pl.messageRotation();
+   	   double messageRotation = pl.messageRotation();
    		if (state != CookieState.PUZZLE_STATE)
         {	// if in any normal "playing" state, there should be a done button
 			// we let the board be the ultimate arbiter of if the "done" button

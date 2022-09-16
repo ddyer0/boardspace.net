@@ -205,7 +205,7 @@ public class CookieMovespec extends commonMove implements CookieConstants
 		case MOVE_DROPB:
             return (" "+to_col + to_row);
         case MOVE_PICK:
-            return (""+D.findUnique(from_row));
+            return ("");
 
         case MOVE_DONE:
             return ("");
@@ -215,10 +215,10 @@ public class CookieMovespec extends commonMove implements CookieConstants
             
         case MOVE_FROM_TO:
         case CRAWL_FROM_TO:
-        	return(""+from_col+from_row+" "+to_col+to_row);
+        	return(" "+from_col+from_row+" "+to_col+to_row);
         	
         case MOVE_RACK_BOARD:
-        	return(""+D.findUniqueTrans(from_row)+" "+to_col+to_row);
+        	return(" "+to_col+to_row);
        }
     }
 

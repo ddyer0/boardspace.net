@@ -72,7 +72,7 @@ import udp.PlaytableStack;
 	 public static final String Forums = "User Forums";
 	 public static final String Tournaments = "Tournaments";
 	 public static final String ForgotPassword = "Forgot Password";
-	 public static final String AccountManagement = "Account Management";
+	 public static final String AccountManagement = "Edit or Delete Account";
 	 
 	 public static final String Feedback = "Send feedback";
 	 public static final String Appstore = "App Store";
@@ -216,6 +216,11 @@ import udp.PlaytableStack;
 		 controllingFrame = f;
 		 observer = o;
 		 setUIID("Password");
+		 
+		 BoxLayout bl = new BoxLayout(this,BoxLayout.Y_AXIS);
+		 bl.setAlign(Component.CENTER);
+		 setLayout(bl);
+		 
 		 if(isAcceptableVersion())
 		 	{
 			 reconfigure(Screen.Login);
@@ -394,9 +399,12 @@ import udp.PlaytableStack;
 		 return(false);
 	 }
 	 public JPanel createSuccessPanel()
-	 {
-		 JPanel panel =  new JPanel();
-		 panel.setLayout(new BoxLayout(panel,BoxLayout.Y_AXIS));
+	 {	
+	 	JPanel panel = mainPanel = new JPanel();
+	 	BoxLayout bl = new BoxLayout(panel,BoxLayout.Y_AXIS);
+	 	panel.setLayout(bl);
+	 	bl.setAlign(Component.CENTER);
+		 
 		 JLabel nameLabel = new JLabel(s.get(SuccessMessage));
 		 JLabel nameLabel2 = new JLabel(s.get(SuccessMessage2));
 		 nameLabel.setUIID("LoginLabel");
@@ -409,6 +417,10 @@ import udp.PlaytableStack;
 	 { 	
 	 	disposeMainPanel();	// get rid of any previous
 		JPanel vpanel = mainPanel = new KPanel();
+	 	BoxLayout bl = new BoxLayout(vpanel,BoxLayout.Y_AXIS);
+	 	bl.setAlign(Component.CENTER);
+	 	vpanel.setLayout(bl);
+		
 		vpanel.add(createSuccessPanel());
 		vpanel.add(createConfirmedPanel());
 		add(vpanel);
@@ -422,6 +434,10 @@ import udp.PlaytableStack;
 	 	boolean ok = getPreregInfo();	// get timestamp and country list
 		 
 	 	JPanel vpanel = mainPanel = new JPanel();
+	 	BoxLayout bl = new BoxLayout(vpanel,BoxLayout.Y_AXIS);
+		bl.setAlign(Component.CENTER);
+		vpanel.setLayout(bl);
+
 		if(ok)
 		{
 	 	Component passPane2 = createPasswordPanel(YourPassword2,false);
@@ -431,8 +447,7 @@ import udp.PlaytableStack;
 	 	passPane = createPasswordPanel(YourPassword,false);
 	 	passwordField.setText(password);
 	 	
-		vpanel.setLayout(new BoxLayout(vpanel,BoxLayout.Y_AXIS));
-		
+
 		vpanel.add(createUsernamePanel(false));
 		vpanel.add(passPane);
 		vpanel.add(passPane2);

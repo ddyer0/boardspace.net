@@ -6,7 +6,7 @@ import online.game.export.ViewerProtocol;
 import online.search.*;
 
 /** 
- * Checkers uses MCTS in deployed robots, but still has an alpha-beta branch for experimentation
+ * Ordo uses MCTS in deployed robots, but still has an alpha-beta branch for experimentation
  * 
  * the Robot player only has to implement the basic methods to generate and evaluate moves.
  * the actual search is handled by the search driver framework.
@@ -23,6 +23,7 @@ public class OrdoPlay extends commonRobot<OrdoBoard> implements Runnable,
     boolean USE_BLITZ = true;
     boolean KILLER = false;					// probably ok for all games with a 1-part move
     static final int DUMBOT_DEPTH = 4;
+    static final int SMARTBOT_DEPTH = 6;
     static final int GOODBOT_DEPTH = 6;
     static final int BESTBOT_DEPTH = 8;
 	static final double VALUE_OF_WIN = 1000000.0;
@@ -177,6 +178,10 @@ public class OrdoPlay extends commonRobot<OrdoBoard> implements Runnable,
          	USE_BLITZ = false;
          	ordoMoveProbability = 0.5;
         	break;
+        case SMARTBOT_LEVEL:
+        	MAX_DEPTH = SMARTBOT_DEPTH;
+        	MONTEBOT = false;
+        	break;
         case TESTBOT_LEVEL_1:
         	// implements a blitz mode monte bot
         	// slower than unwind mode
@@ -255,7 +260,7 @@ public class OrdoPlay extends commonRobot<OrdoBoard> implements Runnable,
             // the best solution is to use dif=0.0;  For games with fools mates,
             // set dif so the really bad choices will be avoided
             board.robotDepth = 0;
-            Search_Driver search_state = Setup_For_Search(depth, false);
+            Search_Driver search_state = Setup_For_Search(depth, true);
             search_state.save_all_variations = SAVE_TREE;
             search_state.allow_killer = KILLER;
             search_state.verbose=verbose;			// debugging
@@ -302,7 +307,7 @@ public class OrdoPlay extends commonRobot<OrdoBoard> implements Runnable,
  
  public double simpleScore(int who)
  {
-	 return(board.simpleScore(who));
+	 return(board.simpleScore(who)-board.simpleScore(nextPlayer[who]));
 	 
  }
  

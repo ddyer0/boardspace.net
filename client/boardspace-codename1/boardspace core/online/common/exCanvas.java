@@ -2053,6 +2053,8 @@ graphics when using a touch screen.
    
 	public void doNullLayout(Container parent)
 	{	l.needLocalBounds = true;
+		//G.print("\nTrigger layout");
+		//G.print(G.getStackTrace());
 	}
 	public void realNullLayout()
 	{

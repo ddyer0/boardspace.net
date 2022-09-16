@@ -197,13 +197,13 @@ public class Component extends Container implements EventListener,AwtComponent,S
     public void paintComponentBackground(Graphics g)
     { //G.print("Component paintComponentBackground" );
     }
-    public String getHierarchy()
+    @SuppressWarnings("deprecation")
+	public static String getHierarchy(Container c)
     {
-    	Container c = this;
-    	StringBuilder b = new StringBuilder();
+     	StringBuilder b = new StringBuilder();
     	while(c!=null)
-    	{	b.append(c.toString());
-    		b.append(" "+c.getWidth()+","+c.getHeight()+"\n");
+    	{	b.append(c.getClass().getName()+" : ");
+    		b.append(c.getX()+","+c.getY()+" "+c.getWidth()+"x"+c.getHeight()+"\n");
     		c = c.getParent();
     	}
     	return b.toString();
