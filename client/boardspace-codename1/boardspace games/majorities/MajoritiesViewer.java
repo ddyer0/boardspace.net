@@ -212,7 +212,8 @@ public class MajoritiesViewer extends CCanvas<MajoritiesCell,MajoritiesBoard> im
     			margin,	
     			0.75,	// 60% of space allocated to the board
     			1.0,	// 1:1 aspect ratio for the board
-    			fh*2.5,	// maximum cell size
+    			fh*1.5,	// minximum cell size
+    			fh*2,
     			0.7		// preference for the designated layout, if any
     			);
         // place the chat and log automatically, preferring to place
@@ -505,7 +506,7 @@ public class MajoritiesViewer extends CCanvas<MajoritiesCell,MajoritiesBoard> im
        HitPoint buttonSelect = moving ? null : ourTurnSelect;
        // hit anytime nothing is being moved, even if not our turn or we are a spectator
        HitPoint nonDragSelect = (moving && !reviewMode()) ? null : selectPos;
-       redrawGameLog(gc, nonDragSelect, logRect, Color.black,boardBackgroundColor,null,standardBoldFont());
+       gameLog.redrawGameLog(gc, nonDragSelect, logRect, Color.black,boardBackgroundColor,null,standardBoldFont());
        drawBoardElements(gc, gb, boardRect, ourTurnSelect);
        
        boolean planned = plannedSeating();

@@ -560,7 +560,7 @@ public class ZertzGameViewer extends CCanvas<zCell,GameBoard> implements GameCon
         HitPoint buttonSelect = moving?null:ourTurnSelect;
         HitPoint nonDragSelect = (moving && !reviewMode()) ? null : selectPos;
  
-        redrawGameLog(gc, nonDragSelect, logRect, rackBackGroundColor);
+        gameLog.redrawGameLog(gc, nonDragSelect, logRect, rackBackGroundColor);
         DrawBoardElements(gc, bd, boardRect, ourTurnSelect);
         //DrawRings(gc, bd, boardRect, ourTurnSelect);
         DrawBalls(gc, bd, reserveRect, RESERVE_INDEX, ourTurnSelect);

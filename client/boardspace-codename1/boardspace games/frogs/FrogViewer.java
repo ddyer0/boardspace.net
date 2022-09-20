@@ -409,7 +409,7 @@ public class FrogViewer extends CCanvas<FrogCell,FrogBoard> implements FrogConst
        HitPoint nonDraggingSelect = (moving && !reviewMode()) ? null : selectPos;
        FrogState state = gb.getState();
 
-        redrawGameLog2(gc, nonDraggingSelect, logRect, Color.black,logrectHighlightColor,gameLogBoldFont,gameLogFont);
+       gameLog.redrawGameLog2(gc, nonDraggingSelect, logRect, Color.black,logrectHighlightColor,gameLogBoldFont,gameLogFont);
         drawBoardElements(gc, gb, boardRect, ourTurnSelect,nonDraggingSelect);
         boolean planned = plannedSeating();
         for(int i=0;i<nPlayers;i++)

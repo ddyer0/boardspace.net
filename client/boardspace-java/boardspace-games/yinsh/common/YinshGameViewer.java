@@ -445,7 +445,7 @@ public class YinshGameViewer extends CCanvas<YinshCell,YinshBoard> implements Yi
         boolean moving = hasMovingObject(selectPos);
         HitPoint buttonSelect = moving ? null : ourTurnSelect;
         HitPoint nonDragSelect = (moving && !reviewMode()) ? null : selectPos;
-        redrawGameLog(gc, nonDragSelect, logRect, boardBackgroundColor);
+        gameLog.redrawGameLog(gc, nonDragSelect, logRect, boardBackgroundColor);
         
         DrawBoardElements(gc, gb, boardRect, ourTurnSelect);
         

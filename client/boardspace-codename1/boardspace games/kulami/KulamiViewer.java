@@ -251,8 +251,8 @@ public class KulamiViewer extends CCanvas<KulamiCell,KulamiBoard> implements Kul
     			margin,	
     			0.75,	// 60% of space allocated to the board
     			1.0,	// aspect ratio for the board
-    			fh*3,
-    			fh*6,	// maximum cell size
+    			fh*2,
+    			fh*3,	// maximum cell size
     			0.4		// preference for the designated layout, if any
     			);
     	
@@ -547,7 +547,7 @@ public class KulamiViewer extends CCanvas<KulamiCell,KulamiBoard> implements Kul
        // hit anytime nothing is being moved, even if not our turn or we are a spectator
        HitPoint nonDragSelect = (moving && !reviewMode()) ? null : selectPos;
        
-       redrawGameLog(gc, nonDragSelect, logRect, boardBackgroundColor);
+       gameLog.redrawGameLog(gc, nonDragSelect, logRect, boardBackgroundColor);
        drawBoardElements(gc, gb, boardRect, ourTurnSelect);
        
        boolean planned = plannedSeating();

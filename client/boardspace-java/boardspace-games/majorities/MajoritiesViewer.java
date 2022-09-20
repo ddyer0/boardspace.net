@@ -504,7 +504,7 @@ public class MajoritiesViewer extends CCanvas<MajoritiesCell,MajoritiesBoard> im
        HitPoint buttonSelect = moving ? null : ourTurnSelect;
        // hit anytime nothing is being moved, even if not our turn or we are a spectator
        HitPoint nonDragSelect = (moving && !reviewMode()) ? null : selectPos;
-       redrawGameLog(gc, nonDragSelect, logRect, Color.black,boardBackgroundColor,null,standardBoldFont());
+       gameLog.redrawGameLog(gc, nonDragSelect, logRect, Color.black,boardBackgroundColor,null,standardBoldFont());
        drawBoardElements(gc, gb, boardRect, ourTurnSelect);
        
        boolean planned = plannedSeating();

@@ -461,7 +461,7 @@ public class TintasViewer extends CCanvas<TintasCell,TintasBoard> implements Tin
        // hit anytime nothing is being moved, even if not our turn or we are a spectator
        HitPoint nonDragSelect = (moving && !reviewMode()) ? null : selectPos;
        
-       redrawGameLog(gc, nonDragSelect, logRect, rackEmphasisColor);
+       gameLog.redrawGameLog(gc, nonDragSelect, logRect, rackEmphasisColor);
        drawBoardElements(gc, gb, boardRect, ourTurnSelect);
        
  

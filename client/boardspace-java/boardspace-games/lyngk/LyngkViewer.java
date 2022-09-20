@@ -544,7 +544,7 @@ public class LyngkViewer extends CCanvas<LyngkCell,LyngkBoard> implements LyngkC
        // hit anytime nothing is being moved, even if not our turn or we are a spectator
        HitPoint nonDragSelect = (moving && !reviewMode()) ? null : selectPos;
        
-       redrawGameLog(gc, nonDragSelect, logRect, boardBackgroundColor);
+       gameLog.redrawGameLog(gc, nonDragSelect, logRect, boardBackgroundColor);
        Hashtable<LyngkCell,LyngkMovespec> targets = gb.getTargets();
        drawBoardElements(gc, gb, boardRect, ourTurnSelect,targets);
        boolean planned = plannedSeating();

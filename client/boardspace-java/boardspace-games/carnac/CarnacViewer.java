@@ -884,7 +884,7 @@ public class CarnacViewer extends CCanvas<CarnacCell,CarnacBoard> implements Car
       HitPoint ourButtonSelect = moving?null:ourTurnSelect;	// hit if our turn and not dragging
       HitPoint vcrSelect = (moving && !reviewMode()) ? null : highlight;	// hit if not dragging
       CarnacState vstate = gb.getState();
-      redrawGameLog(gc,vcrSelect, logRect,  veryLtGreen,boardBackgroundColor,standardBoldFont(),standardBoldFont());
+      gameLog.redrawGameLog(gc,vcrSelect, logRect,  veryLtGreen,boardBackgroundColor,standardBoldFont(),standardBoldFont());
       drawBoardElements(gc, gb, boardRect, ourTurnSelect);
       DrawCommonChipPool(gc, gb,poolRect,ourTurnSelect);
  

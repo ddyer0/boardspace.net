@@ -45,7 +45,7 @@ public class GobGameViewer extends CCanvas<GobCell,GobGameBoard> implements GobC
     // file names for jpeg images and masks
     static final String GobImageDir = "/gobblet/images/";
 	// sounds
-	static final String NESTED_PICK_SOUND = "/gobblet/bfms/pick-3" + Config.SoundFormat;
+	static final String NESTED_PICK_SOUND = SOUNDPATH + "xspick-3" + Config.SoundFormat;
 	
     static final int BOARD_INDEX = 0;
     static final String[] ImageFileNames = 
@@ -385,7 +385,7 @@ public class GobGameViewer extends CCanvas<GobCell,GobGameBoard> implements GobC
       HitPoint ourSelect = (moving && !review) ? null : highlight;	// hit if not dragging
       GobbletState vstate = gb.getState();
        if(peeking())
-        	{ redrawGameLog(gc, ourSelect, logRect, boardBackgroundColor);
+        	{ gameLog.redrawGameLog(gc, ourSelect, logRect, boardBackgroundColor);
         	}
     
         boolean planned = plannedSeating();

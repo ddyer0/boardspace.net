@@ -433,5 +433,4 @@ public class HivePiece extends chip<HivePiece>
 	        }
 
 		}   
-  
 }

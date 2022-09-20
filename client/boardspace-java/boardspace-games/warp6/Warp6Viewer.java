@@ -474,7 +474,7 @@ public class Warp6Viewer extends CCanvas<Warp6Cell,Warp6Board> implements Warp6C
       HitPoint select = moving?null:ot;	// hit if our turn and not dragging
       HitPoint ourSelect = (moving && !reviewMode()) ? null : highlight;	// hit if not dragging
       Warp6State vstate = gb.getState();
-       redrawGameLog(gc, ourSelect, logRect, boardBackgroundColor);
+      gameLog.redrawGameLog(gc, ourSelect, logRect, boardBackgroundColor);
 
        drawBoardElements(gc, gb, boardRect, ot);
        

@@ -32,7 +32,7 @@ import lib.Sort;
 import lib.StockArt;
 import lib.Text;
 // TODO: riders don't rotate with the rotate button
-
+// TODO: rotate board on portrait format screens
 /**
  * 
  * Change History
@@ -820,7 +820,7 @@ public class BreakingAwayViewer extends CCanvas<BreakingAwayCell,BreakingAwayBoa
        boolean planned = plannedSeating();
        BreakState state = gb.getState();
        HitPoint activeDone = activeDoneButton(buttonSelect,selectPos,state);
-       redrawGameLog2(gc, vcrSelect, logRect, Color.black,logrectHighlightColor,gameLogBoldFont,gameLogFont);
+       gameLog.redrawGameLog2(gc, vcrSelect, logRect, Color.black,logrectHighlightColor,gameLogBoldFont,gameLogFont);
         
       	HitPoint adjusting = state==BreakState.ADJUST_MOVEMENT_STATE?selectPos:null;
 

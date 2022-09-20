@@ -82,8 +82,7 @@ public class MbraneViewer extends CCanvas<MbraneCell,MbraneBoard> implements Mbr
     //
     // zones ought to be mostly irrelevant if there is only one board layout.
     //
-     private Rectangle chipRects[] = addZoneRect("chip",2);
-    private Rectangle scoreRects[] = addZoneRect("score",2);
+    private Rectangle chipRects[] = addZoneRect("chip",2);
 	private TextButton swapButton = addButton(SWAP,GameId.HitSwapButton,SwapDescription,
 			HighlightColor, rackBackGroundColor);
 	private Rectangle reserveRect = addRect(".reserve");
@@ -191,10 +190,11 @@ public class MbraneViewer extends CCanvas<MbraneCell,MbraneBoard> implements Mbr
     	// them together and not encroaching on the main rectangle.
     	layout.placeTheChatAndLog(chatRect, minChatW, chatHeight,minChatW*2,3*chatHeight/2,logRect,
     			minLogW, minLogH, minLogW*3/2, minLogH*3/2);
-       	layout.placeDoneEditRep(buttonW,buttonW*4/3,doneRect,editRect,swapButton);
+       	layout.placeDoneEdit(buttonW,buttonW*4/3,doneRect,editRect);
     	layout.placeTheVcr(this,minLogW,minLogW*3/2);
        	layout.placeRectangle(scoreRect, scoreW, scoreW, scoreW*3/2,scoreW*3/2,BoxAlignment.Edge,true);
        	layout.placeRectangle(okendgame, resSize,fh*5,BoxAlignment.Center);
+       	G.copy(swapButton,okendgame);
        	G.splitBottom(okendgame,noendgame,fh*5/2);
 
     	Rectangle main = layout.getMainRectangle();
@@ -243,20 +243,17 @@ public class MbraneViewer extends CCanvas<MbraneCell,MbraneBoard> implements Mbr
     public Rectangle createPlayerGroup(int player,int x,int y,double rotation,int unitsize)
     {	commonPlayer pl = getPlayerOrTemp(player);
     	Rectangle chip = chipRects[player];
-    	Rectangle score = scoreRects[player];
        	Rectangle done = doneRects[player];
-    	int chipW = unitsize*3;
-    	int chipH = unitsize*3;
+    	int chipW = unitsize*2;
+    	int chipH = unitsize*2;
     	int doneW = unitsize*4;
-    	int scoreW = unitsize*2;
-    	Rectangle box = pl.createRectangularPictureGroup(x+chipW*2+scoreW+unitsize/2,y,unitsize);
+    	Rectangle box = pl.createRectangularPictureGroup(x+chipW+unitsize/2,y,unitsize);
     	G.SetRect(chip, x, y, chipW, chipH);
-    	G.SetRect(score, x+chipW*2+unitsize/2, y,scoreW,scoreW);
     	G.SetRect(done, x+unitsize/2,y+chipH+unitsize/2,doneW,plannedSeating()?doneW/2:0);
     	
     	pl.displayRotation = rotation;
     	
-    	G.union(box, chip,done,score);
+    	G.union(box, chip,done);
     	return(box);
     }
 	// draw a box of spare chips. For Mbrane it's purely for effect, but if you
@@ -521,7 +518,7 @@ public class MbraneViewer extends CCanvas<MbraneCell,MbraneBoard> implements Mbr
        // hit anytime nothing is being moved, even if not our turn or we are a spectator
        HitPoint nonDragSelect = (moving && !reviewMode()) ? null : selectPos;
        
-       redrawGameLog(gc, nonDragSelect, logRect, boardBackgroundColor);
+       gameLog.redrawGameLog(gc, nonDragSelect, logRect, boardBackgroundColor);
        drawBoardElements(gc, gb, activeBoardRect, ourTurnSelect);
        drawScore(gc,scoreRect);
        boolean planned = plannedSeating();

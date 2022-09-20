@@ -282,7 +282,7 @@ public class HavannahViewer extends CCanvas<HavannahCell,HavannahBoard> implemen
     			0.6,	// 80% of space allocated to the board
     			aspect,	// aspect ratio for the board
     			fh*3,
-    			fh*5,	// maximum cell size
+    			fh*4,	// maximum cell size
     			0.4		// preference for the designated layout, if any
     			);
     	
@@ -615,7 +615,7 @@ public class HavannahViewer extends CCanvas<HavannahCell,HavannahBoard> implemen
        // hit anytime nothing is being moved, even if not our turn or we are a spectator
        HitPoint nonDragSelect = (moving && !reviewMode()) ? null : selectPos;
        
-       redrawGameLog(gc, nonDragSelect, logRect, boardBackgroundColor);
+       gameLog.redrawGameLog(gc, nonDragSelect, logRect, boardBackgroundColor);
        
        // this does most of the work, but other functions also use contextRotation to rotate
        // animations and sprites.

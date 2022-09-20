@@ -605,7 +605,7 @@ public class MagnetViewer extends CCanvas<MagnetCell,MagnetBoard> implements Mag
        // hit anytime nothing is being moved, even if not our turn or we are a spectator
        HitPoint nonDragSelect = (moving && !reviewMode()) ? null : selectPos;
        
-       redrawGameLog(gc, nonDragSelect, logRect, boardBackgroundColor);
+       gameLog.redrawGameLog(gc, nonDragSelect, logRect, boardBackgroundColor);
        GC.setRotatedContext(gc,boardRect,selectPos,contextRotation);
        drawBoardElements(gc, gb, boardRect, ourTurnSelect);
        GC.unsetRotatedContext(gc,selectPos);

@@ -429,7 +429,7 @@ public class TzaarViewer extends CCanvas<TzaarCell,TzaarBoard> implements TzaarC
       HitPoint ourSelect = (moving && !reviewMode()) ? null : highlight;	// hit if not dragging
       TzaarState vstate = gb.getState();
 
-      redrawGameLog(gc, ourSelect, logRect,Color.black, boardBackgroundColor,largeBoldFont(),largeBoldFont());
+      gameLog.redrawGameLog(gc, ourSelect, logRect,Color.black, boardBackgroundColor,largeBoldFont(),largeBoldFont());
     
   
        drawBoardElements(gc, gb, boardRect, ot);

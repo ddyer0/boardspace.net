@@ -566,7 +566,7 @@ public class MedinaViewer extends CCanvas<MedinaCell,MedinaBoard> implements Med
       
       gb.buildClusters();
       MedinaState vstate = gb.getState();
-      redrawGameLog2(gc, ourSelect, logRect, Color.black, boardBackgroundColor, standardBoldFont(), standardPlainFont());
+      gameLog.redrawGameLog2(gc, ourSelect, logRect, Color.black, boardBackgroundColor, standardBoldFont(), standardPlainFont());
 
       GC.setRotatedContext(gc,boardRect,highlight,contextRotation);
       drawBoardElements(gc, gb, boardRect, ot);

@@ -467,7 +467,7 @@ public class PlateauGameViewer extends commonCanvas implements PlateauConstants
         goalAndProgressMessage(gc,nonDragSelect,
 				s.get(GoalMessage),progressRect, progressRect);
 
-        redrawGameLog(gc, nonDragSelect, logRect, boardBackgroundColor);
+        gameLog.redrawGameLog(gc, nonDragSelect, logRect, boardBackgroundColor);
         
         drawVcrGroup(nonDragSelect, gc);
 

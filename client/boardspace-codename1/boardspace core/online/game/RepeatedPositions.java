@@ -76,7 +76,7 @@ public class RepeatedPositions extends Hashtable<Object,Object>
      */
     public int numberOfRepeatedPositions(long digest)
     {	
-		if(digest==afterDrawState) { return NREPS_ENDS; }
+		if(digest!=0 && digest==afterDrawState) { return NREPS_ENDS; }
 		Object oldval = get(digest);
 		if(oldval==null) { return(0); }
 		if(! (oldval instanceof OStack)) { return(1); }

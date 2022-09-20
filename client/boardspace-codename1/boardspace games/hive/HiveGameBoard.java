@@ -238,7 +238,8 @@ public variation gamevariation = variation.hive;
     // for the player whose turn it is.
     private boolean legalDropDest(HiveCell cell,HivePiece obj)
     {	// dropping in a new piece
-    	if((obj!=null) && (obj.type==PieceType.BLANK)) { return(true); }
+    	if(obj==null) { return false; }
+    	if(obj.type==PieceType.BLANK) { return(true); }
 		if(cell.height()>0) { return(false); }
 		if(cell.nOtherColorAdjacent(obj.color)>0) { return(occupiedCells.size()==1); }
 		if(cell.nOwnColorAdjacent(obj.color)>0) { return(true); }
@@ -1562,10 +1563,14 @@ public variation gamevariation = variation.hive;
         case MOVE_DROP: // drop on chip pool;
         	{
        		HiveCell dest = getCell(m.source, m.to_col, m.to_row);
+            if(dest==pickedSource) {
+            	unPickObject();
+            }
+            else {
             dropObject(dest);      
             stunned = null;
             setNextStateAfterDrop(replay);
-        	}
+        	}}
             break;
 
         case MOVE_PICK:

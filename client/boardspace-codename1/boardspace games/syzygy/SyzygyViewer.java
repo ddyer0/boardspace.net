@@ -146,7 +146,11 @@ public class SyzygyViewer extends CCanvas<SyzygyCell,SyzygyBoard> implements Syz
     }
     	
     public void setLocalBounds(int x, int y, int width, int height)
-    {	G.SetRect(fullRect, x, y, width, height);
+    {	double vs[] = { -1, 1};
+    	setLocalBoundsV(x,y,width,height,vs);
+    }
+    public double setLocalBoundsA(int x, int y, int width, int height,double v)
+    {   G.SetRect(fullRect, x, y, width, height);
     	GameLayoutManager layout = selectedLayout;
     	int nPlayers = nPlayers();
     	int chatHeight = selectChatHeight(height);
@@ -159,6 +163,7 @@ public class SyzygyViewer extends CCanvas<SyzygyCell,SyzygyBoard> implements Syz
         int CELLSIZE=(int)(fh*2.5);
     	int C2 = CELLSIZE/2;
         int margin = fh/2;
+        boolean vertical = v>0;
  
        	// this does the layout of the player boxes, and leaves
     	// a central hole for the board.
@@ -177,7 +182,9 @@ public class SyzygyViewer extends CCanvas<SyzygyCell,SyzygyBoard> implements Syz
     			minLogW, minLogH, minLogW*3/2, minLogH*3/2);
    	
       	
-       	layout.placeRectangle(chipRect, CELLSIZE*3, CELLSIZE*12,BoxAlignment.Center);
+       	layout.placeRectangle(chipRect,
+       							vertical ? CELLSIZE*3 : CELLSIZE*12,
+       							vertical ? CELLSIZE*12 : CELLSIZE*3,BoxAlignment.Center);
     	layout.placeDoneEditRep(CELLSIZE*3, CELLSIZE*3, doneRect, editRect, repRect);
   	
          //  SetupVcrRects(0,0,10,5);        	
@@ -208,6 +215,7 @@ public class SyzygyViewer extends CCanvas<SyzygyCell,SyzygyBoard> implements Syz
         setProgressRect(progressRect,goalRect);
         positionTheChat(chatRect,Color.white,Color.white);
 
+        return boardW*boardH;
     }
 
 
@@ -344,7 +352,7 @@ public class SyzygyViewer extends CCanvas<SyzygyCell,SyzygyBoard> implements Syz
             			this,0,cellSize,1.0,use_grid?(""+ccell.col+ccell.row):null ))
                 {	 //if(gc!=null) { gc.drawOval(xpos-cellSize/2,ypos-cellSize/2,cellSize,cellSize); }
                     ourTurnSelect.hitCode = SyzId.BoardLocation;
-                    ourTurnSelect.arrow = ((gb.pickedObject!=null)||isADest)?StockArt.DownArrow:StockArt.UpArrow;
+                    ourTurnSelect.awidth = cellSize/2;
                     ourTurnSelect.spriteColor = Color.red;
                      
                 //	for(int i=0;i<6;i++) 
@@ -385,15 +393,21 @@ public class SyzygyViewer extends CCanvas<SyzygyCell,SyzygyBoard> implements Syz
 
 	// draw a box of spare chips. It's purely for visual effect.
     private void DrawChipPool(Graphics gc, Rectangle r, int player, HitPoint highlight,SyzygyBoard gb)
-    {
-        
-        for(int i=0,ystep=G.Height(r)/4,y=G.Top(r)+ystep/2,x=G.centerX(r);
+    {	int w = G.Width(r);
+    	int h = G.Height(r);    	
+        boolean vertical = h>w;
+        int ystep = vertical ? h/4 : 0;
+        int xstep = vertical ? 0 : w/4 ;
+        int xp = vertical ? G.centerX(r) : G.Left(r)+xstep/2;
+        int yp = vertical ? G.Top(r)+ystep/2 : G.centerY(r);
+        int sz = (vertical?w:h)*8/10;
+        for(int i=0,y=yp,x=xp;
         	i<SyzygyChip.nChips;
-        	i++,y+=ystep)
+        	i++,y+=ystep,x+=xstep)
         {	SyzygyChip chip = SyzygyChip.getChip(i);
          	labelColor = Color.white;
          	GC.setFont(gc,largeBoldFont());
-        	chip.drawChip(gc,this,G.Width(r),x,y,""+chip.value);
+        	chip.drawChip(gc,this,sz,x,y,""+chip.value);
         }
     }
     /*
@@ -444,7 +458,7 @@ public class SyzygyViewer extends CCanvas<SyzygyCell,SyzygyBoard> implements Syz
        // hit anytime nothing is being moved, even if not our turn or we are a spectator
        HitPoint nonDragSelect = (moving && !reviewMode()) ? null : selectPos;
        
-       redrawGameLog(gc, nonDragSelect, logRect, veryLightGray,boardBackgroundColor,standardBoldFont(),standardPlainFont());
+       gameLog.redrawGameLog(gc, nonDragSelect, logRect, veryLightGray,boardBackgroundColor,standardBoldFont(),standardPlainFont());
        drawBoardElements(gc, gb, boardRect, ourTurnSelect,nonDragSelect);
        
        

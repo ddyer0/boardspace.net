@@ -457,6 +457,7 @@ class SyzygyBoard extends hexBoard<SyzygyCell> implements BoardProtocol,SyzygyCo
      */
     public long Digest()
     {
+        Random r = new Random(64 * 1000); // init the random number generator
     	long v = 0;
  
         // the basic digestion technique is to xor a bunch of random numbers. The key
@@ -464,7 +465,6 @@ class SyzygyBoard extends hexBoard<SyzygyCell> implements BoardProtocol,SyzygyCo
         // xor some subset of them.  Note that if you tweak this, all the existing
         // digests are invalidated.
         //
-        Random r = new Random(64 * 1000); // init the random number generator
         
 		for(SyzygyCell c=allCells; c!=null; c=c.next)
 		{	

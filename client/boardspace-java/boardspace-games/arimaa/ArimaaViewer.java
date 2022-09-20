@@ -489,7 +489,7 @@ public class ArimaaViewer extends CCanvas<ArimaaCell,ArimaaBoard> implements Ari
       HitPoint ourNonDragSelect = moving?null:ourTurnSelect;	// hit if our turn and not dragging
       HitPoint vcrSelect = (moving && !reviewMode()) ? null : highlight;	// hit if not dragging
       ArimaaState vstate = gb.getState();
-      redrawGameLog2(gc, vcrSelect, logRect, Color.black, boardBackgroundColor,
+      gameLog.redrawGameLog2(gc, vcrSelect, logRect, Color.black, boardBackgroundColor,
     		  standardBoldFont(),standardPlainFont());
 
       GC.setRotatedContext(gc,boardRect,highlight,contextRotation);

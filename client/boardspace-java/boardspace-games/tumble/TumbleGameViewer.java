@@ -342,7 +342,7 @@ public class TumbleGameViewer extends CCanvas<TumbleCell,TumbleBoard> implements
       HitPoint select = moving?null:ot;	// hit if our turn and not dragging
       HitPoint ourSelect = (moving && !reviewMode()) ? null : highlight;	// hit if not dragging
       TumbleState vstate = gb.getState();
-       redrawGameLog(gc, ourSelect, logRect, boardBackgroundColor);
+      gameLog.redrawGameLog(gc, ourSelect, logRect, boardBackgroundColor);
     
        GC.setRotatedContext(gc,boardRect,highlight,contextRotation);
        drawBoardElements(gc, gb, boardRect, ot);

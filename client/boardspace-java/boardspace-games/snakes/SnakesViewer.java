@@ -475,7 +475,7 @@ public class SnakesViewer extends CCanvas<SnakesCell,SnakesBoard> implements Sna
       HitPoint select = moving?null:ot;	// hit if our turn and not dragging
       HitPoint ourSelect = (moving && !reviewMode()) ? null : highlight;	// hit if not dragging
        SnakeState vstate = gb.getState();
-       redrawGameLog(gc, ourSelect, logRect, boardBackgroundColor);
+       gameLog.redrawGameLog(gc, ourSelect, logRect, boardBackgroundColor);
     
         drawBoardElements(gc, gb, boardRect, ot);
 

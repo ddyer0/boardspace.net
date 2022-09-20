@@ -183,8 +183,8 @@ public class OctilesViewer extends CCanvas<OctilesCell,OctilesBoard> implements 
     			margin,	
     			0.75,	// % of space allocated to the board
     			1.0,	// aspect ratio for the board
-    			fh*3.0,	// minimum cell size based on font size
-    			fh*4.0,	// maximum cell size based on font size
+    			fh*2.0,	// minimum cell size based on font size
+    			fh*3.0,	// maximum cell size based on font size
     			0.3		// preference for the designated layout, if any
     			);
     	
@@ -462,7 +462,7 @@ public class OctilesViewer extends CCanvas<OctilesCell,OctilesBoard> implements 
       HitPoint select = moving?null:ot;	// hit if our turn and not dragging
       HitPoint ourSelect = (moving && !reviewMode()) ? null : highlight;	// hit if not dragging
       OctilesState vstate = gb.getState();
-      redrawGameLog2(gc, ourSelect, logRect, Color.black,Color.black,standardBoldFont(),standardPlainFont());
+      gameLog.redrawGameLog2(gc, ourSelect, logRect, Color.black,Color.black,standardBoldFont(),standardPlainFont());
       drawBoardElements(gc, gb, boardRect, ot);
 //        DrawTilePool(gc, FIRST_PLAYER_INDEX,firstPlayerChipRect, gb.whoseTurn,ot);
       boolean planned = plannedSeating();

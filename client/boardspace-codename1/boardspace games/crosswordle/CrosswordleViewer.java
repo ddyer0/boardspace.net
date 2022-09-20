@@ -646,7 +646,7 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
        
        GC.setRotatedContext(gc,logRect,selectPos,effectiveBoardRotation);
        Font f = G.getFont("monospaced",Style.Bold,G.getFontSize(standardBoldFont()));
-       redrawGameLog(gc, nonDragSelect, logRect,Color.black, boardBackgroundColor,standardBoldFont(),f);
+       gameLog.redrawGameLog(gc, nonDragSelect, logRect,Color.black, boardBackgroundColor,standardBoldFont(),f);
        GC.unsetRotatedContext(gc,selectPos);
        
        GC.frameRect(gc, Color.black, logRect);

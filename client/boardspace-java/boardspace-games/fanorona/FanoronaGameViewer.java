@@ -416,7 +416,7 @@ public class FanoronaGameViewer extends CCanvas<FanoronaCell,FanoronaBoard> impl
       HitPoint select = moving?null:ot;	// hit if our turn and not dragging
       HitPoint ourSelect = (moving && !reviewMode()) ? null : highlight;	// hit if not dragging
       FanoronaState vstate = gb.getState();
-       redrawGameLog(gc, ourSelect, logRect, boardBackgroundColor);
+      gameLog.redrawGameLog(gc, ourSelect, logRect, boardBackgroundColor);
     
         drawBoardElements(gc, gb, boardRect, ot);
         for(int i=FIRST_PLAYER_INDEX;i<=SECOND_PLAYER_INDEX;i++)

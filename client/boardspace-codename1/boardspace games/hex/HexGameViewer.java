@@ -619,7 +619,7 @@ public class HexGameViewer extends CCanvas<hexCell,HexGameBoard> implements HexC
        // hit anytime nothing is being moved, even if not our turn or we are a spectator
        HitPoint nonDragSelect = (moving && !reviewMode()) ? null : selectPos;
        
-       redrawGameLog(gc, nonDragSelect, logRect, boardBackgroundColor);
+       gameLog.redrawGameLog(gc, nonDragSelect, logRect, boardBackgroundColor);
        
        // this does most of the work, but other functions also use contextRotation to rotate
        // animations and sprites.

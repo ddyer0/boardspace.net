@@ -2508,7 +2508,7 @@ private Color playerBackground[] = {
        // hit anytime nothing is being moved, even if not our turn or we are a spectator
        HitPoint nonDragSelect = (moving && !reviewMode()) ? null : selectPos;
        
-       redrawGameLog2(gc, selectPos, logRect,
+       gameLog.redrawGameLog2(gc, selectPos, logRect,
     		   Color.black,boardBackgroundColor,
     		   standardBoldFont(),standardBoldFont());
 

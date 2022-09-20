@@ -156,7 +156,7 @@ public class CannonViewer extends CCanvas<CannonCell,CannonBoard> implements Can
 				0.65,	// 60% of space allocated to the board
 				1.0,	// aspect ratio for the board
 				fh*2,	// maximum cell size
-				fh*3,
+				fh*2.5,
 				0.3		// preference for the designated layout, if any
 				);
 		
@@ -358,7 +358,7 @@ public class CannonViewer extends CCanvas<CannonCell,CannonBoard> implements Can
       HitPoint vcrSelect = (moving && !reviewMode()) ? null : highlight;	// hit if not dragging
        
        CannonState vstate = gb.getState();
-      redrawGameLog(gc, vcrSelect, logRect, boardBackgroundColor);
+       gameLog.redrawGameLog(gc, vcrSelect, logRect, boardBackgroundColor);
     
       GC.setRotatedContext(gc,boardRect,highlight,contextRotation);
       drawBoardElements(gc, gb, boardRect, ourTurnSelect);

@@ -899,7 +899,7 @@ public class TammanyViewer extends CCanvas<TammanyCell,TammanyBoard> implements 
        // hit anytime nothing is being moved, even if not our turn or we are a spectator
        HitPoint nonDragSelect = (moving && !reviewMode()) ? null : selectPos;
        
-       redrawGameLog2(gc, nonDragSelect, logRect,
+       gameLog.redrawGameLog2(gc, nonDragSelect, logRect,
     		   Color.black,boardBackgroundColor,
     		   standardBoldFont(),standardBoldFont());
        Hashtable<TammanyCell,TammanyMovespec> targets = gb.getTargets();

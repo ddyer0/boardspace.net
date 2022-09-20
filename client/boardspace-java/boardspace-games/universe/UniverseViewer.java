@@ -1012,7 +1012,7 @@ public class UniverseViewer extends CCanvas<UniverseCell,UniverseBoard> implemen
       HitPoint select = moving?null:ot;	// hit if our turn and not dragging
       HitPoint ourSelect = (moving && !reviewMode()) ? null : highlight;	// hit if not dragging
       UniverseState vstate = gb.getState();
-      redrawGameLog2(gc, ourSelect, logRect, Color.black,boardBackgroundColor,standardBoldFont(),standardPlainFont());
+      gameLog.redrawGameLog2(gc, ourSelect, logRect, Color.black,boardBackgroundColor,standardBoldFont(),standardPlainFont());
     
         drawBoardElements(gc, gb, boardRect, ot);
     	boolean localDone = G.offline()&&!reviewOnly&&(G.Height(doneRects[0])>0);

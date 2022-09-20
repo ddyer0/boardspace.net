@@ -151,7 +151,7 @@ public class PonteViewer extends CCanvas<PonteCell,PonteBoard> implements PonteC
     			0.75,	// 60% of space allocated to the board
     			1.1,	// 1:1 aspect ratio for the board
     			fh*2.5,	// maximum cell size
-    			fh*4.0,	// maximum cell size
+    			fh*3.0,	// maximum cell size
     			0.7		// preference for the designated layout, if any
     			);
     	
@@ -384,7 +384,7 @@ public class PonteViewer extends CCanvas<PonteCell,PonteBoard> implements PonteC
       HitPoint select = moving?null:ot;	// hit if our turn and not dragging
       HitPoint ourSelect = (moving && !reviewMode()) ? null : highlight;	// hit if not dragging
       PonteState vstate = gb.getState();
-       redrawGameLog(gc, ourSelect, logRect, boardBackgroundColor);
+      gameLog.redrawGameLog(gc, ourSelect, logRect, boardBackgroundColor);
     
         drawBoardElements(gc, gb, boardRect, ot);
         boolean planned = plannedSeating();

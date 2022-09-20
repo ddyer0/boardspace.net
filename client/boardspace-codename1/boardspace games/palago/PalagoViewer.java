@@ -207,7 +207,8 @@ public class PalagoViewer extends CCanvas<PalagoCell,PalagoBoard> implements Pal
     			margin,	
     			0.7,	// 80% of space allocated to the board
     			1,		// aspect ratio for the board
-    			fh*3,	// maximum cell size
+    			fh*1.5,	//
+    			fh*2,	// maximum cell size
     			0.5		// preference for the designated layout, if any
     			);
     	
@@ -480,7 +481,7 @@ public class PalagoViewer extends CCanvas<PalagoCell,PalagoBoard> implements Pal
        // hit anytime nothing is being moved, even if not our turn or we are a spectator
        HitPoint nonDragSelect = (moving && !reviewMode()) ? null : selectPos;
        
-       redrawGameLog(gc, nonDragSelect, logRect, boardBackgroundColor);
+       gameLog.redrawGameLog(gc, nonDragSelect, logRect, boardBackgroundColor);
        drawBoardElements(gc, gb, boardRect, ourTurnSelect,nonDragSelect);
        DrawChipPool(gc, chipRect, FIRST_PLAYER_INDEX, ourTurnSelect,gb);
        boolean planned = plannedSeating();

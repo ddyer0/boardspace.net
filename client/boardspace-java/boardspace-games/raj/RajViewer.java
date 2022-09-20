@@ -589,7 +589,7 @@ public class RajViewer extends CCanvas<RajCell,RajBoard> implements RajConstants
        
        drawHiddenWindows(gc, selectPos);		// draw before the main screen draw, so the animations will see the main
 
-       redrawGameLog2(gc, nonDragSelect, logRect, Color.black,boardBackgroundColor,standardBoldFont(),standardPlainFont());
+       gameLog.redrawGameLog2(gc, nonDragSelect, logRect, Color.black,boardBackgroundColor,standardBoldFont(),standardPlainFont());
        drawBoardElements(gc, gb, boardRect, ((state==RajState.PLAY_STATE)||(state==RajState.CONFIRM_CARD_STATE))?selectPos:ourTurnSelect);
        drawPrizePool(gc, prizeRect, selectPos,gb,gb.prizes,false,CELLSIZE);
        int nPlayers = gb.nPlayers();

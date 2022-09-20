@@ -85,7 +85,7 @@ public class NamedClasses {
     	classes.put("gounki.GounkiViewer",gounki.GounkiViewer.class);
     	classes.put("gyges.GygesViewer",gyges.GygesViewer.class);
     	classes.put("dipole.DipoleGameViewer",dipole.DipoleGameViewer.class);
-    	classes.put("exxit.ExxitViewer",exxit.ExxitGameViewer.class);
+    	classes.put("exxit.ExxitGameViewer",exxit.ExxitGameViewer.class);
      	classes.put("kulami.KulamiViewer",kulami.KulamiViewer.class);    	
      	classes.put("kingscolor.KingsColorViewer",kingscolor.KingsColorViewer.class);    	
      	classes.put("lyngk.LyngkViewer",lyngk.LyngkViewer.class);
@@ -122,7 +122,7 @@ public class NamedClasses {
      	classes.put("stymie.StymieViewer", stymie.StymieViewer.class);
      	classes.put("syzygy.SyzygyViewer",syzygy.SyzygyViewer.class);
      	classes.put("takojudo.TakojudoViewer",takojudo.TakojudoViewer.class);
-     	classes.put("tablut.TabViewer",tablut.TabGameViewer.class);
+     	classes.put("tablut.TabGameViewer",tablut.TabGameViewer.class);
      	classes.put("tammany.TammanyViewer",tammany.TammanyViewer.class);
      	classes.put("tintas.TintasViewer",tintas.TintasViewer.class);
      	classes.put("trax.TraxGameViewer",trax.TraxGameViewer.class); 

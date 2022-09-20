@@ -809,7 +809,7 @@ public class BlackDeathViewer extends CCanvas<BlackDeathCell,BlackDeathBoard> im
        HitPoint nonDragSelect = (moving && !reviewMode()) ? null : selectPos;
    		Hashtable<BlackDeathCell,BlackDeathMovespec> targets = gb.getTargets();
 
-       redrawGameLog2(gc, nonDragSelect, logRect, Color.blue,boardBackgroundColor,standardBoldFont(),standardPlainFont());
+   		gameLog.redrawGameLog2(gc, nonDragSelect, logRect, Color.blue,boardBackgroundColor,standardBoldFont(),standardPlainFont());
 
        GC.setRotatedContext(gc,boardRect,selectPos,contextRotation);
        drawBoardElements(gc, gb, boardRect, ourTurnSelect,selectPos,targets);

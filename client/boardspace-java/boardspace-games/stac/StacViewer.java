@@ -352,7 +352,7 @@ public class StacViewer extends CCanvas<StacCell,StacBoard> implements StacConst
       HitPoint select = moving?null:ot;	// hit if our turn and not dragging
       HitPoint ourSelect = (moving && !reviewMode()) ? null : highlight;	// hit if not dragging
       StacState vstate = gb.getState();
-       redrawGameLog(gc, ourSelect, logRect, boardBackgroundColor);
+      gameLog.redrawGameLog(gc, ourSelect, logRect, boardBackgroundColor);
     
         drawBoardElements(gc, gb, boardRect, ot);
         

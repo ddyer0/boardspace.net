@@ -1083,7 +1083,7 @@ public void setLetterColor(Graphics gc,CrosswordsBoard gb,CrosswordsCell cell)
        HitPoint nonDragSelect = (moving && !reviewMode()) ? null : selectPos;
        
        GC.setRotatedContext(gc,logRect,selectPos,effectiveBoardRotation);
-       redrawGameLog2(gc, nonDragSelect, logRect,Color.black, boardBackgroundColor,standardBoldFont(),standardBoldFont());
+       gameLog.redrawGameLog2(gc, nonDragSelect, logRect,Color.black, boardBackgroundColor,standardBoldFont(),standardBoldFont());
        GC.unsetRotatedContext(gc,selectPos);
        
        GC.frameRect(gc, Color.black, logRect);

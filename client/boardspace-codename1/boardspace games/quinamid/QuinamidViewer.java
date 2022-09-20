@@ -157,7 +157,7 @@ public class QuinamidViewer extends CCanvas<QuinamidCell,QuinamidBoard> implemen
      
     public Rectangle createPlayerGroup(int player,int x,int y,double rotation,int unitsize)
     {	commonPlayer pl = getPlayerOrTemp(player);
-    	int chipW = unitsize*6;
+    	int chipW = unitsize*4;
     	Rectangle box = pl.createRectangularPictureGroup(x+chipW,y,2*unitsize/3);
     	Rectangle chip = chipRects[player];
     	Rectangle done = doneRects[player];
@@ -610,7 +610,7 @@ public class QuinamidViewer extends CCanvas<QuinamidCell,QuinamidBoard> implemen
       HitPoint select = moving?null:ot;	// hit if our turn and not dragging
       HitPoint ourSelect = (moving && !reviewMode()) ? null : highlight;	// hit if not dragging
       QuinamidState vstate = gb.getState();
-       redrawGameLog(gc, ourSelect, logRect, boardBackgroundColor);
+      gameLog.redrawGameLog(gc, ourSelect, logRect, boardBackgroundColor);
     
         drawBoardElements(gc, gb, boardRect, ot);
         boolean planned = plannedSeating();

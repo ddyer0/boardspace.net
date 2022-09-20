@@ -31,7 +31,7 @@ public class GameLog implements Opcodes
 	// these are set by positionTheChat so the color scheme is uniform by default
 	Color backgroundColor = Color.lightGray;
 	Color foregroundColor = Color.darkGray;
-	
+	Color branchColor = new Color(0.9f,1.0f,0.9f);
 	public GameLog(commonCanvas can)
 	{
 		canvas = can;
@@ -119,6 +119,19 @@ public class GameLog implements Opcodes
     private int totalHeight = -1;
     
     /**
+     * draw the standard game log
+     * 
+     * @param gc
+     * @param highlight
+     * @param r
+     * @param highlightColor
+     */
+    public void redrawGameLog(Graphics gc, HitPoint highlight, Rectangle r, Color highlightColor)
+    {	redrawGameLog(gc,highlight,r,Color.black,highlightColor,
+    		canvas.standardBoldFont(),canvas.standardPlainFont());
+    }
+
+    /**
      * draw the standard game log.  This method uses {@link #censoredMoveText}, which uses
      * {@link commonMove#shortMoveText}
      * @param gc
@@ -197,6 +210,8 @@ public class GameLog implements Opcodes
             int boxH = G.Height(r);
             boolean linebreak = false;
             boolean needLineNumber = false;
+            boolean variation = false;
+            boolean variationNext = false;
             Text columns[] = new Text[numPlayers];
             Color bgColors[] = new Color[numPlayers];
             int indexes[] = new int[numPlayers];
@@ -218,6 +233,8 @@ public class GameLog implements Opcodes
                 	}
                 String newnum = (sp == null) ? "" : ("".equals(smsString) ? moven : sp.getSliderNumString());
                 int newplayer = (sp==null)? (column+1) : sp.player;
+                variation |= (sp!=null) && (sp.nVariations()>0);
+ 
                 if (moven == null)
                 {
                     moven = newnum;
@@ -225,7 +242,9 @@ public class GameLog implements Opcodes
                 else if (linebreak || !moven.equals(newnum))
                 { // changing moves
 
-                    Color bgcolor = null;
+                    Color bgcolor = variationNext ?  bgcolor = branchColor : null;
+                    variationNext = variation;
+                    variation = false;
                     if ((first <= historyStep) && (historyStep < idx))
                     {
                         bgcolor = highlightColor;
@@ -446,6 +465,8 @@ public class GameLog implements Opcodes
            int smsidx = idx;
            int smsypos = ypos;
            int smsheight = maxLineHeight;
+           boolean variation = false;
+           boolean nextVariation = false;
        	   boolean first = !scrolled;
        	   boolean earlyExit = false;
        	   //G.print("scr "+scrollY+ " "+idx);
@@ -454,7 +475,7 @@ public class GameLog implements Opcodes
 
         	commonMove sp = history.elementAt(idx);
            	Text sms = canvas.censoredMoveText(sp,idx);
-           
+           	variation |= (sp!=null) && (sp.nVariations()>1);
            	String newnum = sp.getSliderNumString();
         	int nextIdx = idx;
              // look for reasons to break rather than add this line to the current display line
@@ -525,7 +546,9 @@ public class GameLog implements Opcodes
                    	startingMaxLineheight = smsheight;
                    	first = false;
                 }
-          		Color bgColor = breakYpos==highlightYPos ? highlightColor : null;
+          		Color bgColor = breakYpos==highlightYPos ? highlightColor : nextVariation? branchColor : null;
+          		nextVariation = variation;
+          		variation = false;
 				String mn = moven +" "+canvas.prettyName(player);
                    if(!mn.equals(prevMoven))
                       	{int l = G.Left(r);

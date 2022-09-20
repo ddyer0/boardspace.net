@@ -2122,7 +2122,7 @@ public class GameLayoutManager  implements Opcodes
 		}
     	//G.print("best "+best+" "+bestPercent+" "+bestScore);
 
-		if(best==DefinedSeating.Undefined)
+		if(best==null || best==DefinedSeating.Undefined)
 		{	// the screen has no acceptable layouts (he's making his window tiny?)
 			// but give him something...
 			if(G.debug()) { G.print("No seating! ",width,"x",height," min ",minSize," players "+nPlayers);}

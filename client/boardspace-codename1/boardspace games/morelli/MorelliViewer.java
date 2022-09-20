@@ -148,8 +148,8 @@ public class MorelliViewer extends CCanvas<MorelliCell,MorelliBoard> implements 
     			margin,	//
     			0.75,	// % of space allocated to the board
     			1.0,	// 1:1 aspect ratio for the board
-    			fh*3,	// minimum cell size
-    			fh*4,	// maximum cell size
+    			fh*2,	// minimum cell size
+    			fh*3,	// maximum cell size
     			0.7		// preference for the designated layout, if any
     			);
     	
@@ -335,7 +335,7 @@ public class MorelliViewer extends CCanvas<MorelliCell,MorelliBoard> implements 
       HitPoint ourSelect = (moving && !reviewMode()) ? null : highlight;	// hit if not dragging
       MorelliState vstate = gb.getState();
       int FontHeight = standardFontSize();
-      redrawGameLog(gc, ourSelect, logRect, Color.black,Color.white,standardPlainFont(),
+      gameLog.redrawGameLog(gc, ourSelect, logRect, Color.black,Color.white,standardPlainFont(),
     		  	G.getFont("monospaced",G.Style.Bold,FontHeight+5));
     
         drawBoardElements(gc, gb, boardRect, ot,SQUARESIZE);

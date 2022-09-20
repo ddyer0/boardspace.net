@@ -641,7 +641,7 @@ public class TamskViewer extends CCanvas<TamskCell,TamskBoard> implements TamskC
        HitPoint nonDragSelect = (moving && !reviewMode()) ? null : selectPos;
 
        // for a multiplayer game, this would likely be redrawGameLog2
-       redrawGameLog(gc, nonDragSelect, logRect,Color.black, boardBackgroundColor,standardBoldFont(),standardBoldFont());
+       gameLog.redrawGameLog(gc, nonDragSelect, logRect,Color.black, boardBackgroundColor,standardBoldFont(),standardBoldFont());
 
        // this does most of the work, but other functions also use contextRotation to rotate
        // animations and sprites.

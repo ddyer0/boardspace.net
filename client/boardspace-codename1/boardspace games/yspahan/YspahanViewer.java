@@ -1176,7 +1176,7 @@ public class YspahanViewer extends CCanvas<YspahanCell,YspahanBoard> implements 
       HitPoint ourSelect = (moving && !reviewMode()) ? null : highlight;	// hit if not dragging
       ystate myState = gb.getState();
       boolean ds = gb.DoneState();
-      redrawGameLog2(gc,ourSelect, logRect,
+      gameLog.redrawGameLog2(gc,ourSelect, logRect,
     		  Color.black,rackBackGroundColor,
     		  standardBoldFont(),standardBoldFont());
     

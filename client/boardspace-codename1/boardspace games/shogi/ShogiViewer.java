@@ -458,7 +458,7 @@ public class ShogiViewer extends CCanvas<ShogiCell,ShogiBoard> implements ShogiC
       HitPoint select = moving?null:ot;	// hit if our turn and not dragging
       HitPoint ourSelect = (moving && !reviewMode()) ? null : highlight;	// hit if not dragging
        ShogiState vstate = gb.getState();
-       redrawGameLog(gc, ourSelect, logRect, boardBackgroundColor);
+       gameLog.redrawGameLog(gc, ourSelect, logRect, boardBackgroundColor);
     
         GC.setRotatedContext(gc,boardRect,highlight,contextRotation);
         drawBoardElements(gc, gb, boardRect, ot);

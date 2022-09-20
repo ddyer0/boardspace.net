@@ -165,7 +165,7 @@ public class EntrapmentViewer extends CCanvas<EntrapmentCell,EntrapmentBoard> im
         int ncols = 14;
         int buttonW = fh*8;
         double minSize = fh*2;
-        double maxSize = fh*3;
+        double maxSize = fh*2;
         
         // this does the layout of the player boxes, and leaves
     	// a central hole for the board.
@@ -544,7 +544,7 @@ public class EntrapmentViewer extends CCanvas<EntrapmentCell,EntrapmentBoard> im
       HitPoint select = moving?null:ot;	// hit if our turn and not dragging
       HitPoint ourSelect = (moving && !reviewMode()) ? null : highlight;	// hit if not dragging
       EntrapmentState vstate = gb.getState();
-       redrawGameLog(gc, ourSelect, logRect, boardBackgroundColor);
+      gameLog.redrawGameLog(gc, ourSelect, logRect, boardBackgroundColor);
     
         drawBoardElements(gc, gb, boardRect, ot);
         GC.setFont(gc,standardBoldFont());

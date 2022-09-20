@@ -4,7 +4,6 @@ import com.codename1.ui.Font;
 import com.codename1.ui.geom.Rectangle;
 import bridge.*;
 /* below here should be the same for codename1 and standard java */
-import online.common.*;
 import online.game.*;
 import online.game.sgf.*;
 import online.search.SimpleRobotProtocol;
@@ -96,7 +95,7 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
     	if(target==offerDrawAction)
     	{	if(OurMove() 
     			&& (b.movingObjectIndex()<=0)
-    			&& (b.getState()==HiveState.PLAY_STATE))
+    			&& ((b.getState()==HiveState.PLAY_STATE)||(b.getState()==HiveState.DrawPending)))
     		{
     		if(b.canOfferDraw())
     			{
@@ -146,7 +145,7 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
         zoomRect.highlightColor = HighlightColor;
 
  
-        b = new HiveGameBoard(info.getString(OnlineConstants.GAMETYPE, "Hive"),getStartingColorMap());
+        b = new HiveGameBoard(info.getString(GAMETYPE, "Hive"),getStartingColorMap());
         useDirectDrawing(true);
         textNotation = myFrame.addOption(TextLogMessage,false,deferredEvents);
         offerDrawAction = myFrame.addAction(s.get(OFFERDRAW),deferredEvents);     
@@ -230,7 +229,7 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
     	gameLogBoldFont = G.getFont(standardPlainFont(), G.Style.Bold, (int)(zoom*(fh)));
     	gameLogFont = G.getFont(standardPlainFont(),G.Style.Plain,(int)(zoom*(fh)));
     	GameLayoutManager layout = selectedLayout;
-    	int maxDim = (int)(Math.min(width, height)/zoom);
+    	int maxDim = (int)(Math.min(height,width)/(zoom*G.getDisplayScale()));
     	// the intended effect of this is to allow the tiles in the tile rack
     	// to shrink as the board gets small
     	double position = Math.min(1,Math.max(0, maxDim-600)/(double)(1024-600));
@@ -636,7 +635,7 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
        HitPoint buttonSelect = moving?null:ourTurnSelect;
        HitPoint nonDraggingSelect = (moving && !reviewMode()) ? null : selectPos;
        HiveState state = gb.getState();
-       redrawGameLog(gc, nonDraggingSelect, logRect, Color.black,logrectHighlightColor,gameLogBoldFont,gameLogFont);
+       gameLog.redrawGameLog(gc, nonDraggingSelect, logRect, Color.black,logrectHighlightColor,gameLogBoldFont,gameLogFont);
        commonPlayer pl = getPlayerOrTemp(whoseTurn);
        double messageRotation = pl.messageRotation(); 		// this is correct because we currently only do face to face layout
         drawBoardElements(gc, gb, boardRect, ourTurnSelect,nonDraggingSelect);
@@ -937,25 +936,13 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
     	{
         	HivePiece mov = b.pickedObject;
             if(mov!=null) 
-			{//if we're dragging a black chip around, drop it.
-            	switch(state)
-            	{
-            	default: throw G.Error("can't drop on rack in state %s",state);
+			{//if we're dragging a chip around, drop it.
 
-               	case FIRST_PLAY_STATE:
-               	case PLAY_STATE:
-               	case QUEEN_PLAY_STATE:
-               		performReset();
-            		break;
-               	case Setup:
-               	case PUZZLE_STATE:
             		if(cell!=null)
             			{
             			String col = hitObject.shortName;
             			PerformAndTransmit("Drop "+col+" "+cell.row+" "+mov.exactBugName()+" Rack");
             			}
-            		break;
-            	}
 			}
         	}
             break;

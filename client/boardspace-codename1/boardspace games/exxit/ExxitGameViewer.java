@@ -516,7 +516,7 @@ public class ExxitGameViewer extends CCanvas<ExxitCell,ExxitGameBoard> implement
   
    
        ExxitState state = gb.getState();
-        redrawGameLog(gc, nonDraggingSelect, logRect, Color.black, logrectHighlightColor,gameLogBoldFont,gameLogFont);
+       gameLog.redrawGameLog(gc, nonDraggingSelect, logRect, Color.black, logrectHighlightColor,gameLogBoldFont,gameLogFont);
         drawBoardElements(gc, gb, boardRect, ourTurnSelect,nonDraggingSelect);
         boolean planned = plannedSeating();
         

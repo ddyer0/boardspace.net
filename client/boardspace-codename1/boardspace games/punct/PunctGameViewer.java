@@ -676,7 +676,7 @@ public class PunctGameViewer extends CCanvas<punctCell,PunctGameBoard> implement
         DrawRepRect(gc,messageRotation,Color.black, gb.Digest(),repRect);	// Not needed for barca
 
         drawLiftRect(gc,liftRect,nonDragSelect,textures[LIFT_ICON_INDEX]);
-        redrawGameLog(gc, nonDragSelect, logRect, boardBackgroundColor);
+        gameLog.redrawGameLog(gc, nonDragSelect, logRect, boardBackgroundColor);
         drawVcrGroup(nonDragSelect, gc);
     }
 

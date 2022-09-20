@@ -715,7 +715,7 @@ public class PalabraViewer extends CCanvas<PalabraCell,PalabraBoard> implements 
        // hit anytime nothing is being moved, even if not our turn or we are a spectator
        HitPoint nonDragSelect = (moving && !reviewMode()) ? null : selectPos;
        
-       redrawGameLog(gc, nonDragSelect, logRect, boardBackgroundColor);
+       gameLog.redrawGameLog(gc, nonDragSelect, logRect, boardBackgroundColor);
        drawBoardElements(gc, gb, boardRect, (gb.getState()==PalabraState.PLAY_STATE)?selectPos:ourTurnSelect);
        int nPlayers = gb.nPlayers();
        for(int i=0;i<nPlayers;i++)

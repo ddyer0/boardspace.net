@@ -412,7 +412,7 @@ public class BarcaViewer extends CCanvas<BarcaCell,BarcaBoard> implements BarcaC
        HitPoint nonDragSelect = (moving && !reviewMode()) ? null : selectPos;
        
        commonPlayer pl = getPlayerOrTemp(gb.whoseTurn);
-       redrawGameLog(gc, nonDragSelect, logRect, boardBackgroundColor);
+       gameLog.redrawGameLog(gc, nonDragSelect, logRect, boardBackgroundColor);
        
        GC.setRotatedContext(gc,boardRect,selectPos,contextRotation);
        drawBoardElements(gc, gb, boardRect, ourTurnSelect);

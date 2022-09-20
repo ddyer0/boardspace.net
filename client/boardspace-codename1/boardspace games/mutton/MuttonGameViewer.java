@@ -1063,7 +1063,7 @@ public class MuttonGameViewer extends commonCanvas implements MuttonConstants
 		// Hit anytime nothing is being moved, even if not our turn or we are a spectator
 		HitPoint nonDragSelect = (moving && !reviewMode()) ? null : selectPos;
 
-		redrawGameLog(gc, nonDragSelect, logRect, boardBackgroundColor);
+		gameLog.redrawGameLog(gc, nonDragSelect, logRect, boardBackgroundColor);
 		drawMuttonElements(gc, gb, ourTurnSelect);
 
 		GC.setFont(gc,standardBoldFont());

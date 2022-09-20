@@ -536,7 +536,7 @@ public class MijnlieffViewer extends CCanvas<MijnlieffCell,MijnlieffBoard> imple
        HitPoint nonDragSelect = (moving && !reviewMode()) ? null : selectPos;
 
        // for a multiplayer game, this would likely be redrawGameLog2
-       redrawGameLog(gc, nonDragSelect, logRect,Color.black, boardBackgroundColor,standardBoldFont(),standardBoldFont());
+       gameLog.redrawGameLog(gc, nonDragSelect, logRect,Color.black, boardBackgroundColor,standardBoldFont(),standardBoldFont());
 
        drawBoardElements(gc, gb, boardRect, ourTurnSelect);
        

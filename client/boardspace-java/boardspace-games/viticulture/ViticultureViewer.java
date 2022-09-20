@@ -4647,7 +4647,7 @@ private void drawPlayerBoard(Graphics gc,
        // hit anytime nothing is being moved, even if not our turn or we are a spectator
        HitPoint nonDragSelect = (moving && !reviewMode()) ? null : selectPos;
        
-       redrawGameLog2(gc, nonDragSelect, logRect, Color.black,
+       gameLog.redrawGameLog2(gc, nonDragSelect, logRect, Color.black,
     		   boardBackgroundColor, standardBoldFont(),standardBoldFont());
        drawZoomedBoardElements(gc, gb, boardRect, ourTurnSelect,selectPos,targets,currentZoomZone);
        boolean planned = plannedSeating();

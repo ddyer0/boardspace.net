@@ -32,10 +32,13 @@ public class AudioClip {
 		try {
 			s = url.openStream();
 			o = new FileOutputStream(clipFile);
+			if(s!=null)
+			{
 			do {
 				len = s.read(buf,0,1024);
 				if(len>0) { o.write(buf,0,len); }
 			} while(len>0);
+			}
 		}
 		catch (IOException e) { G.print("IO exception "+e); }
 		try { 

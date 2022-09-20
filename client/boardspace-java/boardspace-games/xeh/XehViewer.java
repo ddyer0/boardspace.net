@@ -656,7 +656,7 @@ public class XehViewer extends CCanvas<XehCell,XehBoard> implements XehConstants
        // hit anytime nothing is being moved, even if not our turn or we are a spectator
        HitPoint nonDragSelect = (moving && !reviewMode()) ? null : selectPos;
        
-       redrawGameLog(gc, nonDragSelect, logRect, boardBackgroundColor);
+       gameLog.redrawGameLog(gc, nonDragSelect, logRect, boardBackgroundColor);
        drawBoardElements(gc, gb, boardRect, ourTurnSelect);
        DrawChipPool(gc, secondPlayerChipRect, SECOND_PLAYER_INDEX, ourTurnSelect,gb);
        DrawChipPool(gc, firstPlayerChipRect, FIRST_PLAYER_INDEX, ourTurnSelect,gb);

@@ -157,8 +157,8 @@ public class MorrisViewer extends CCanvas<MorrisCell,MorrisBoard> implements Mor
     			margin,	
     			0.75,	// 60% of space allocated to the board
     			1.0,	// 1:1 aspect ratio for the board
-    			fh*2.5,	// minimum cell size
-    			fh*3.5,	// maximum cell size
+    			fh*1.5,	// minimum cell size
+    			fh*2.0,	// maximum cell size
     			0.7		// preference for the designated layout, if any
     			);
     	
@@ -374,7 +374,7 @@ public class MorrisViewer extends CCanvas<MorrisCell,MorrisBoard> implements Mor
       HitPoint select = moving?null:ot;	// hit if our turn and not dragging
       HitPoint ourSelect = (moving && !reviewMode()) ? null : highlight;	// hit if not dragging
       MorrisState vstate = gb.getState();
-       redrawGameLog(gc, ourSelect, logRect, boardBackgroundColor);
+      gameLog.redrawGameLog(gc, ourSelect, logRect, boardBackgroundColor);
     
         drawBoardElements(gc, gb, boardRect, ot);
         

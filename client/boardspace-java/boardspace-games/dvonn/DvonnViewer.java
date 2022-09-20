@@ -425,7 +425,7 @@ public Rectangle createPlayerGroup(int player,int x,int y,double rotation,int un
       GC.setRotatedContext(gc,boardRect,highlight,contextRotation);
       drawBoardElements(gc, gb, boardRect, ot, highlight);
       GC.unsetRotatedContext(gc,highlight);
-      redrawGameLog(gc, ourSelect, logRect, boardBackgroundColor);
+      gameLog.redrawGameLog(gc, ourSelect, logRect, boardBackgroundColor);
  
       boolean planned = plannedSeating();
       for(int player = FIRST_PLAYER_INDEX; player<=SECOND_PLAYER_INDEX; player++)

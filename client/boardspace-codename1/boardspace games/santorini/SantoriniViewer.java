@@ -510,7 +510,7 @@ public class SantoriniViewer extends CCanvas<SantoriniCell,SantoriniBoard> imple
       boolean planned = plannedSeating();
        SantoriniState vstate = gb.getState();
         GC.fillRect(gc,rackBackGroundColor,logRect);
-        redrawGameLog(gc, ourSelect, logRect, boardBackgroundColor);
+        gameLog.redrawGameLog(gc, ourSelect, logRect, boardBackgroundColor);
         drawLiftRect(gc,gb,ourSelect);
    
         drawBoardElements(gc, gb, boardRect, ot,ourSelect,useLeftView);

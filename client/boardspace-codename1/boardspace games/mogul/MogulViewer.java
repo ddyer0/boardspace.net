@@ -590,7 +590,7 @@ public class MogulViewer extends CCanvas<MogulCell,MogulBoard> implements MogulC
       HitPoint select = moving?null:ot;	// hit if our turn and not dragging
       HitPoint ourSelect = (moving && !reviewMode()) ? null : highlight;	// hit if not dragging
       MogulState vstate = gb.getState();
-      redrawGameLog2(gc, ourSelect, logRect, Color.black,boardBackgroundColor,standardBoldFont(),standardPlainFont());
+      gameLog.redrawGameLog2(gc, ourSelect, logRect, Color.black,boardBackgroundColor,standardBoldFont(),standardPlainFont());
     
         drawBoardElements(gc, gb, boardRect, ot, highlight);
 

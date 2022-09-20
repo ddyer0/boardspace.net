@@ -1525,7 +1525,7 @@ static String SWOOSH = ImageDir + "swoosh"+ Config.SoundFormat;
     		  startOfCensorship--;
     		  mn = mnum;
     		}
-    	redrawGameLog2(gc, highlight, r, textColor, highlightColor, bold, normal);
+    	gameLog.redrawGameLog2(gc, highlight, r, textColor, highlightColor, bold, normal);
     }
      
     public void ViewerRun(int delay)

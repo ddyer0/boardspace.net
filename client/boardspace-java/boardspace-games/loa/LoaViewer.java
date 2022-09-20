@@ -606,7 +606,7 @@ public class LoaViewer extends commonCanvas implements UIC,GameLayoutClient
         // draw clocks, sprites, and other ephemera
         {
             drawMice(g);
-            redrawGameLog(g, p, logRect, table_color);
+            gameLog.redrawGameLog(g, p, logRect, table_color);
 
             
             ShowStats(g,p, G.centerX(boardRect), G.Bottom(boardRect) + 10);

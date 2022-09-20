@@ -233,7 +233,7 @@ public class CookieViewer extends CCanvas<CookieCell,CookieBoard> implements Coo
     			this,0,(int)(G.Width(r)*0.8),1.0,""))
     	{
             if(highlight.hitObject!=null)
-            {	highlight.arrow = (bb.pickedObject==null)?StockArt.UpArrow:StockArt.DownArrow;
+            {	
             	highlight.awidth =width/3;
             	highlight.spriteColor = Color.red;
             }
@@ -499,7 +499,7 @@ public class CookieViewer extends CCanvas<CookieCell,CookieBoard> implements Coo
        // hit anytime nothing is being moved, even if not our turn or we are a spectator
        HitPoint nonDragSelect = (moving && !reviewMode()) ? null : selectPos;
        
-       redrawGameLog(gc, nonDragSelect, logRect, rackBackGroundColor);
+       gameLog.redrawGameLog(gc, nonDragSelect, logRect, rackBackGroundColor);
        drawBoardElements(gc, gb, boardRect, ourTurnSelect,nonDragSelect);
        DrawChipPool(gc, chipRect, ourTurnSelect,gb);
        boolean ds = gb.DoneState();

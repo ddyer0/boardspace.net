@@ -16,7 +16,6 @@ public class ExxitPiece extends chip<ExxitPiece> implements ExxitConstants
 	  private int imageIndex = 0;		// unique id for this piece
 	  int typecode; 			// index into ImageFileNames etc.
 	  int seq=0;				// sequenceNumber for this bug
-	  long randomv = 0;
 	  ExxitCell location=null;	// where this piece currently resides
 	  ExxitCell home_location=null;
 	  public String prettyName = "";	// short bug name
@@ -28,6 +27,7 @@ public class ExxitPiece extends chip<ExxitPiece> implements ExxitConstants
 	  	colorIndex = pl;
 	  	seq = seqn;
 	  	randomv = dig;
+	  	G.Assert(dig!=0,"not zero");
 	  	prettyName = (type==TILE_TYPE) ? TILE_NAMES[pl] : CHIP_NAMES[pl];
 	  }
 	  public void setColor(int cl)

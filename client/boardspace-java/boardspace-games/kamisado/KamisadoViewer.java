@@ -432,7 +432,7 @@ public class KamisadoViewer extends CCanvas<KamisadoCell,KamisadoBoard> implemen
       HitPoint select = moving?null:ot;	// hit if our turn and not dragging
       HitPoint ourSelect = (moving && !reviewMode()) ? null : highlight;	// hit if not dragging
        KamisadoState vstate = gb.getState();
-       redrawGameLog(gc, ourSelect, logRect, boardBackgroundColor);
+       gameLog.redrawGameLog(gc, ourSelect, logRect, boardBackgroundColor);
     
        commonPlayer pl = getPlayerOrTemp(gb.whoseTurn);
 		double messageRotation = pl.messageRotation();

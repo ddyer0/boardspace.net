@@ -1037,7 +1037,7 @@ public class OnedayViewer extends CCanvas<OnedayCell,OnedayBoard> implements One
       HitPoint select = moving?null:ot;	// hit if our turn and not dragging
       HitPoint ourSelect = (moving && !reviewMode()) ? null : highlight;	// hit if not dragging
       OnedayState vstate = gb.getState();
-      redrawGameLog2(gc, ourSelect, logRect, Color.black,boardBackgroundColor,standardBoldFont(),standardPlainFont());
+      gameLog.redrawGameLog2(gc, ourSelect, logRect, Color.black,boardBackgroundColor,standardBoldFont(),standardPlainFont());
     
         drawBoardElements(gc, gb, boardRect, highlight);
         GC.setFont(gc,standardBoldFont());

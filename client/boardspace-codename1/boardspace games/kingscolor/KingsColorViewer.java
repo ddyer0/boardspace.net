@@ -522,7 +522,7 @@ public class KingsColorViewer extends CCanvas<KingsColorCell,KingsColorBoard> im
        HitPoint nonDragSelect = (moving && !reviewMode()) ? null : selectPos;
 
        // for a multiplayer game, this would likely be redrawGameLog2
-       redrawGameLog(gc, nonDragSelect, logRect,Color.black, rackBackGroundColor,standardBoldFont(),standardBoldFont());
+       gameLog.redrawGameLog(gc, nonDragSelect, logRect,Color.black, rackBackGroundColor,standardBoldFont(),standardBoldFont());
 
        GC.setRotatedContext(gc,boardRect,ourTurnSelect,contextRotation);
        drawBoardElements(gc, gb, boardRect, ourTurnSelect);

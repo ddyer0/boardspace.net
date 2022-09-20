@@ -228,7 +228,7 @@ public class CheckerGameViewer extends CCanvas<CheckerCell,CheckerBoard> impleme
       	layout.placeTheVcr(this,vcrW,vcrMW);
       	layout.placeRectangle(bannerRect,bannerW,bannerH,bannerW*2,bannerH*2,BoxAlignment.Top,true);
        	layout.placeTheChatAndLog(chatRect, minChatW, chatHeight, minChatW*2, 3*chatHeight/2, logRect,
-    			ideal_logwidth,logH,ideal_logwidth*2,logH*2);
+    			ideal_logwidth,logH,ideal_logwidth*2,logH*3/2);
  
       	layout.placeDoneEditRep(buttonW, buttonW*3/2, doneRect, editRect, repRect);
     	layout.placeDrawGroup(G.getFontMetrics(standardPlainFont()),acceptDrawRect,declineDrawRect);
@@ -425,7 +425,7 @@ public class CheckerGameViewer extends CCanvas<CheckerCell,CheckerBoard> impleme
       HitPoint ourButtonSelect = moving?null:ourTurnSelect;	// hit if our turn and not dragging
       HitPoint vcrSelect = (moving && !reviewMode()) ? null : highlight;	// hit if not dragging
       CheckerState vstate = gb.getState();
-      redrawGameLog(gc, vcrSelect, logRect, boardBackgroundColor);
+      gameLog.redrawGameLog(gc, vcrSelect, logRect, boardBackgroundColor);
       GC.setRotatedContext(gc,boardRect,highlight,contextRotation);
       drawBoardElements(gc, gb, boardRect, ourTurnSelect);
       GC.unsetRotatedContext(gc,highlight);

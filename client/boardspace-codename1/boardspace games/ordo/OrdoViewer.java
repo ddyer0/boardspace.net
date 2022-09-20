@@ -432,7 +432,7 @@ public class OrdoViewer extends CCanvas<OrdoCell,OrdoBoard> implements OrdoConst
       HitPoint ourButtonSelect = moving?null:ourTurnSelect;	// hit if our turn and not dragging
       HitPoint vcrSelect = (moving && !reviewMode()) ? null : highlight;	// hit if not dragging
       OrdoState vstate = gb.getState();
-      redrawGameLog(gc, vcrSelect, logRect, boardBackgroundColor);
+      gameLog.redrawGameLog(gc, vcrSelect, logRect, boardBackgroundColor);
       GC.setRotatedContext(gc,boardRect,highlight,contextRotation);
       drawBoardElements(gc, gb, boardRect, ourTurnSelect);
       GC.unsetRotatedContext(gc,highlight);

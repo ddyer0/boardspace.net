@@ -494,7 +494,7 @@ public class TraxGameViewer extends commonCanvas implements TraxConstants, GameL
        HitPoint nonDraggingSelect = (moving && !reviewMode()) ? null : selectPos;
 
        TraxState state = gb.getState();
-        redrawGameLog(gc, nonDraggingSelect, logRect, highlightColor);
+       gameLog.redrawGameLog(gc, nonDraggingSelect, logRect, highlightColor);
         drawBoardElements(gc, gb, boardRect, ourTurnSelect,nonDraggingSelect);
         zoomRect.draw(gc,nonDraggingSelect);
         DrawChipPool(gc, chipPool, ourTurnSelect);

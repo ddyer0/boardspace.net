@@ -410,7 +410,7 @@ public class TicTacNineViewer extends CCanvas<TicTacNineCell,TicTacNineBoard> im
       HitPoint select = moving?null:ot;	// hit if our turn and not dragging
       HitPoint ourSelect = (moving && !reviewMode()) ? null : highlight;	// hit if not dragging
       TictacnineState vstate = gb.getState();
-       redrawGameLog(gc, ourSelect, logRect, boardBackgroundColor);
+      gameLog.redrawGameLog(gc, ourSelect, logRect, boardBackgroundColor);
     
         drawBoardElements(gc, gb, boardRect, ot);
         DrawCommonChipPool(gc, FIRST_PLAYER_INDEX,firstPlayerChipRect, ot);

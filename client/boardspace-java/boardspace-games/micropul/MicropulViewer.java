@@ -634,7 +634,7 @@ public class MicropulViewer extends CCanvas<MicropulCell,MicropulBoard> implemen
        // hit anytime nothing is being moved, even if not our turn or we are a spectator
        HitPoint nonDragSelect = (moving && !reviewMode()) ? null : selectPos;
        
-       redrawGameLog(gc, nonDragSelect, logRect, boardBackgroundColor);
+       gameLog.redrawGameLog(gc, nonDragSelect, logRect, boardBackgroundColor);
        drawBoardElements(gc, gb, boardRect, ourTurnSelect,nonDragSelect);
        DrawCore(gc, chipRect, ourTurnSelect,gb);
        commonPlayer pl = getPlayerOrTemp(gb.whoseTurn);

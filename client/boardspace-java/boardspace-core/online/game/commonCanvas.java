@@ -2346,7 +2346,7 @@ public abstract class commonCanvas extends exCanvas
      */
     public CommonMoveStack  History = new CommonMoveStack();	 
     
-    private GameLog gameLog = new GameLog(this);
+    public GameLog gameLog = new GameLog(this);
     
     /** this is the unedited, annotated history, which is kept to
      * help debug errors in the editing process.
@@ -5325,17 +5325,6 @@ public abstract class commonCanvas extends exCanvas
     {
     	return(true);
     }
-    /**
-     * draw the standard game log
-     * 
-     * @param gc
-     * @param highlight
-     * @param r
-     * @param highlightColor
-     */
-    public void redrawGameLog(Graphics gc, HitPoint highlight, Rectangle r, Color highlightColor)
-    {	gameLog.redrawGameLog(gc,highlight,r,Color.black,highlightColor,standardBoldFont(),standardPlainFont());
-    }
 
     /**
      * return a censored version of shortMoveText.
@@ -5379,44 +5368,9 @@ public abstract class commonCanvas extends exCanvas
     	return(true);
     		
     }
-    /**
-     * draw the standard game log.  This method uses {@link #censoredMoveText}, which uses
-     * {@link commonMove#shortMoveText}
-     * @param gc
-     * @param highlight
-     * @param r
-     * @param textColor
-     * @param highlightColor
-     * @param playerFont the font to use to draw player names
-     * @param lineFont the font to use for log lines
-     */
-    public void redrawGameLog(Graphics gc, HitPoint highlight, Rectangle r, 
-    		Color textColor, Color highlightColor,
-    		Font playerFont,Font lineFont)
-    {	gameLog.redrawGameLog(gc, highlight, r, textColor, highlightColor, playerFont, lineFont);
-	}	
- 
+
   
- /**
-  * draw a game log in 2 column format, where the left column is the player/move number
-  * and the right column is the move activity.  This is more suitable for multiplayer games
-  * or games where the turn order is variable.  This method uses several helper functions
-  * that can be defined in the viewer class to customize the behavior see {@link #censoredMoveText}
-  * {@link #colorize} {@link online.common.commonMove#gameEvents } {@link #combineLines }
-  * 
-  * @param gc
-  * @param highlight
-  * @param r
-  * @param textColor	color for the main text
-  * @param highlightColor color for highlighted text (at the current move point)
-  * @param bold bold font
-  * @param normal non-bold font
-  */
-    public void redrawGameLog2(Graphics gc, HitPoint highlight, Rectangle r,
-        Color textColor,Color highlightColor,Font bold,Font normal)
-    {	gameLog.redrawGameLog2(gc, highlight, r, textColor, highlightColor, bold, normal);
-    }
-    
+
     public void shutDown()
     {	super.shutDown();
     	stopped = true;

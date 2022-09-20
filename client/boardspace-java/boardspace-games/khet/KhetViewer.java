@@ -442,7 +442,7 @@ public class KhetViewer extends CCanvas<KhetCell,KhetBoard> implements  KhetCons
       HitPoint select = moving?null:ot;	// hit if our turn and not dragging
       HitPoint ourSelect = (moving && !reviewMode()) ? null : highlight;	// hit if not dragging
       KhetState vstate = gb.getState();
-       redrawGameLog(gc, ourSelect, logRect, boardBackgroundColor);
+      gameLog. redrawGameLog(gc, ourSelect, logRect, boardBackgroundColor);
            
         boolean planned = plannedSeating();
     

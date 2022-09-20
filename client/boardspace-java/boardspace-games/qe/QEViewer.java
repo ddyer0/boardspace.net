@@ -927,7 +927,7 @@ public void ViewerRun(int wait)
        // hit anytime nothing is being moved, even if not our turn or we are a spectator
        HitPoint nonDragSelect = (moving && !reviewMode()) ? null : selectPos;
        boolean offline = G.offline();
-       redrawGameLog(gc, nonDragSelect, logRect, boardBackgroundColor);
+       gameLog.redrawGameLog(gc, nonDragSelect, logRect, boardBackgroundColor);
        drawBoardElements(gc, gb, boardRect, hasCalculator?null:ourTurnSelect);
        for(int i=0;i<bb.players_in_game;i++)
        {   QEPlayer pl = gb.getPlayer(i);

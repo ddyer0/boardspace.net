@@ -157,8 +157,8 @@ public class GygesViewer extends CCanvas<GygesCell,GygesBoard> implements GygesC
     			margin,	
     			0.75,	// % of space allocated to the board
     			0.9,	// aspect ratio for the board
-    			fh*2.5,
-    			fh*3,	// maximum cell size
+    			fh*2,
+    			fh*2.5,	// maximum cell size
     			0.7		// preference for the designated layout, if any
     			);
         boolean rotated = seatingFaceToFaceRotated();
@@ -515,7 +515,7 @@ public class GygesViewer extends CCanvas<GygesCell,GygesBoard> implements GygesC
       HitPoint select = moving?null:ot;	// hit if our turn and not dragging
       HitPoint ourSelect = (moving && !reviewMode()) ? null : highlight;	// hit if not dragging
       GygesState vstate = gb.getState();
-      redrawGameLog2(gc, ourSelect, logRect, Color.black,boardBackgroundColor,
+      gameLog.redrawGameLog2(gc, ourSelect, logRect, Color.black,boardBackgroundColor,
     		   standardBoldFont(),standardPlainFont());
     
       GC.setRotatedContext(gc,boardRect,highlight,contextRotation);

@@ -188,7 +188,7 @@ public class TabGameViewer extends CCanvas<TabCell,TabGameBoard> implements TabC
     			0.75,	// 60% of space allocated to the board
     			1.0,	// 1:1 aspect ratio for the board
     			fh*2.5,	// minimum cell size
-    			fh*4.0,	// maximum cell size
+    			fh*3.0,	// maximum cell size
     			0.4		// preference for the designated layout, if any
     			);
     	
@@ -462,7 +462,7 @@ public class TabGameViewer extends CCanvas<TabCell,TabGameBoard> implements TabC
        // hit anytime nothing is being moved, even if not our turn or we are a spectator
        HitPoint nonDragSelect = (moving && !reviewMode()) ? null : selectPos;
        
-       redrawGameLog(gc, nonDragSelect, logRect, boardBackgroundColor);
+       gameLog.redrawGameLog(gc, nonDragSelect, logRect, boardBackgroundColor);
        
        drawBoardElements(gc, gb, boardRect, ourTurnSelect);
        
