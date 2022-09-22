@@ -255,7 +255,7 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
     			aspect,	// aspect ratio for the board
     			fh*tileScale,	// minimum cell size
     			fh*tileScale*4/3,	// maximum cell size
-    			0.4		// preference for the designated layout, if any
+    			0.2		// preference for the designated layout, if any
     			);
     	
         // place the chat and log automatically, preferring to place

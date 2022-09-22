@@ -129,7 +129,7 @@ public class JumbulayaViewer extends CCanvas<JumbulayaCell,JumbulayaBoard> imple
         MouseColors = new Color[]{Color.red,Color.green,Color.blue,Color.yellow};
         MouseDotColors = new Color[]{ Color.white,Color.white,Color.white,Color.black};
         
-        String type = info.getString(GAMETYPE, JumbulayaVariation.Jumbulaya.name);
+        String type = info.getString(OnlineConstants.GAMETYPE, JumbulayaVariation.Jumbulaya.name);
         // recommended procedure is to supply players and randomkey, even for games which
         // are current strictly 2 player and no-randomization.  It will make it easier when
         // later, some variant is created, or the game code base is re purposed as the basis
@@ -172,7 +172,7 @@ public class JumbulayaViewer extends CCanvas<JumbulayaCell,JumbulayaBoard> imple
 
     public void setLocalBounds(int x,int y,int w,int h)
     {	
-    	setLocalBoundsV(x,y,w,h,new double[] {0.7});
+    	setLocalBoundsV(x,y,w,h,new double[] {0.7,-0.7});
     }
 	/**
 	 * this is the main method to do layout of the board and other widgets.  I don't
@@ -191,9 +191,11 @@ public class JumbulayaViewer extends CCanvas<JumbulayaCell,JumbulayaBoard> imple
 	 *  with the "addRect" mechanism to help visualize the layout.
 	 */ 
 
-    public double setLocalBoundsA(int x, int y, int width, int height,double aspect)
+    public double setLocalBoundsA(int x, int y, int width, int height,double aspect0)
     {	G.SetRect(fullRect, x, y, width, height);
     	GameLayoutManager layout = selectedLayout;
+    	double aspect = Math.abs(aspect0);
+    	vertical = aspect0>0;
     	int nPlayers = nPlayers();
        	int chatHeight = selectChatHeight(height);
        	// ground the size of chat and logs in the font, which is already selected
@@ -285,6 +287,7 @@ public class JumbulayaViewer extends CCanvas<JumbulayaCell,JumbulayaBoard> imple
         labelFont = largeBoldFont();
         return(boardW*boardH);
     }
+    boolean vertical = false;
     public Rectangle createPlayerGroup(int player,int x,int y,double rotation,int unitsize)
     {	commonPlayer pl = getPlayerOrTemp(player);
     	Rectangle chip = chipRects[player];
@@ -303,7 +306,12 @@ public class JumbulayaViewer extends CCanvas<JumbulayaCell,JumbulayaBoard> imple
     	G.SetRect(done,donel+unitsize/2,G.Top(box)+unitsize/4,doneW,doneW/2);
     	G.SetRect(jrect,donel,G.Bottom(done)+unitsize/4,doneW*3/2,doneW/3);
     	G.union(box, done,score,eye,jrect);
-       	G.SetRect(chip,	x,	G.Bottom(box),	G.Width(box),unitsize*3/2+(planned ? unitsize*2 : 0));
+    	int boxW = G.Width(box);
+    	int chipH = unitsize*3/2+(planned ? unitsize*2 : 0);
+       	if(vertical) { G.SetRect(chip,	x,	G.Bottom(box),	boxW,chipH); }
+       	else { 
+       		G.SetRect(chip,G.Right(box)+doneW/4,y+unitsize/2,boxW,chipH);
+       	}
         G.union(box, chip);
     	pl.displayRotation = rotation;
     	return(box);

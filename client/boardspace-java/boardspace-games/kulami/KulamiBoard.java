@@ -93,6 +93,9 @@ class SubBoard implements Digestable
 	{	setRotation(0);
 		location = null;
 	}
+	public long Digest() {
+		return randomV;
+	}
 	public long Digest(Random r) {
 		return randomV^r.nextLong();
 	}

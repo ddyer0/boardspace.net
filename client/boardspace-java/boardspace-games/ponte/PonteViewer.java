@@ -151,7 +151,7 @@ public class PonteViewer extends CCanvas<PonteCell,PonteBoard> implements PonteC
     			1.1,	// 1:1 aspect ratio for the board
     			fh*2.5,	// maximum cell size
     			fh*3.0,	// maximum cell size
-    			0.7		// preference for the designated layout, if any
+    			0.3		// preference for the designated layout, if any
     			);
     	
         // place the chat and log automatically, preferring to place

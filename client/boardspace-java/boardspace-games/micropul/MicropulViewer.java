@@ -191,10 +191,10 @@ public class MicropulViewer extends CCanvas<MicropulCell,MicropulBoard> implemen
     	int extX = G.Right(box);
     	int doneW = scoreW*5;
     	int doneH = doneW/2;
-    	G.SetRect(done, extX, y,doneW,plannedSeating()?doneH:0);
+    	G.SetRect(done, extX+unit/2, y,doneW,plannedSeating()?doneH:0);
     	G.SetRect(ext, extX, y+doneH,doneW,scoreW);
     	G.SetRect(rack, x,extY,rackW,rackH);
-       	G.SetRect(jewl, x+rackW, extY, chipW,chipW);
+       	G.SetRect(jewl, extX+doneW+unit, y+unit/2, chipW,chipW);
           	
     	pl.displayRotation = rot;
     	G.union(box, chip,score,rack,ext,jewl);
@@ -224,7 +224,7 @@ public class MicropulViewer extends CCanvas<MicropulCell,MicropulBoard> implemen
     	int minLogW = fh*20;	
     	int minChatW = fh*40;
     	int minLogH = fh*10;	
-        int vcrW = fh*14;
+        int vcrW = fh*18;
         int buttonW = fh*8;
      	CELLSIZE = fh*2;
 

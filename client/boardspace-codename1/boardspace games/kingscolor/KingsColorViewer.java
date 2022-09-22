@@ -204,7 +204,7 @@ public class KingsColorViewer extends CCanvas<KingsColorCell,KingsColorBoard> im
     			1.0,	// aspect ratio for the board
     			fh*3,	// minimum cell size
     			fh*4,	// maximum cell size
-    			0.7		// preference for the designated layout, if any
+    			0.2		// preference for the designated layout, if any
     			);
     	boolean rotate = seatingFaceToFaceRotated();
     	

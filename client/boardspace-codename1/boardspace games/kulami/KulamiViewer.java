@@ -304,13 +304,13 @@ public class KulamiViewer extends CCanvas<KulamiCell,KulamiBoard> implements Kul
     {	commonPlayer pl = getPlayerOrTemp(player);
     	Rectangle chip = chipRect[player];
     	int chipW = 2*unitsize;
-    	int doneW = plannedSeating()?unitsize*7/4:0;
+    	int doneW = plannedSeating()?unitsize*5:0;
     	Rectangle scoreRect = scoreRects[player];
     	Rectangle done = doneRects[player];
     	G.SetRect(chip,	x,	y,	chipW, chipW);
     	Rectangle box = pl.createRectangularPictureGroup(x+chipW,y,2*unitsize/3);
     	G.SetRect(scoreRect,x+unitsize*4,y+unitsize*5/2,unitsize*3/2,unitsize/2);
-    	G.SetRect(done, x, G.Bottom(box), doneW, doneW/2);
+    	G.SetRect(done, G.Right(box)+unitsize/4,y+unitsize/4, doneW, doneW/2);
     	G.union(box, chip,scoreRect,done);
    
     	pl.displayRotation = rotation;

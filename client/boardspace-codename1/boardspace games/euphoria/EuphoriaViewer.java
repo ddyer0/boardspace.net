@@ -282,11 +282,17 @@ public class EuphoriaViewer extends CCanvas<EuphoriaCell,EuphoriaBoard> implemen
      				case EPHEMERAL_CONFIRM_ONE_RECRUIT:
     				case EPHEMERAL_CONFIRM_RECRUITS:
     						m.op = CONFIRM_RECRUITS;
+    						if(prev!=null && prev.op==m.op) {	// remove duplicate
+    							G.print("Remove duplicate ",prev,m);
+    						}
+    						else
+    						{
         					m.setIndex(h.size());
         					m.next = null;
         					if(prev!=null) { prev.next = m; }
         					prev = m;
         					h.push(m);
+    						}
         					break;
     				case EPHEMERAL_CHOOSE_RECRUIT:
     					m.op = MOVE_CHOOSE_RECRUIT;	// convert to a non-ephemeral move
@@ -456,7 +462,7 @@ private Color playerBackground[] = {
 
        	int players_in_game = Math.max(2,info.getInt(OnlineConstants.PLAYERS_IN_GAME,3));
        	int randomKey = info.getInt(OnlineConstants.RANDOMSEED,-1);
-        bb = new EuphoriaBoard(info.getString(OnlineConstants.GAMETYPE, Variation.Euphoria.name()),randomKey,players_in_game,getStartingColorMap(),EuphoriaBoard.REVISION);
+        bb = new EuphoriaBoard(info.getString(GAMETYPE, Variation.Euphoria.name()),randomKey,players_in_game,getStartingColorMap(),EuphoriaBoard.REVISION);
         //useDirectDrawing();
         doInit(false);      	 
     }
@@ -1104,7 +1110,7 @@ private Color playerBackground[] = {
     	if(ch!=null)
     	{
         	if(rotation!=0) { GC.setRotatedContext(gc,r,hp,rotation); }
-    		if(ch.drawChip(gc,this,r,hp,EuphoriaId.ShowChip)) { hp.hitObject = null;}
+        	if(ch.drawChip(gc,this,r,hp,EuphoriaId.ShowChip,(String)null)) { hp.hitObject = null;}
         	if(rotation!=0) { GC.unsetRotatedContext(gc,hp); }
     	}
     }
@@ -2532,7 +2538,7 @@ private Color playerBackground[] = {
        if(currentZoom!=null)
        {	EuphoriaChip ch = magnifier ? EuphoriaChip.UnMagnifier : EuphoriaChip.Magnifier;
        		EuphoriaId rack = magnifier ? EuphoriaId.UnMagnifier : EuphoriaId.Magnifier;
-       		ch.drawChip(gc,this,magnifierRect,ourTurnSelect,rack);
+       		ch.drawChip(gc,this,magnifierRect,ourTurnSelect,rack,(String)null);
        }
 	   int who = selectedRecruitPlayer();
       if(recruitGui)

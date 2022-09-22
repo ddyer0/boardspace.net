@@ -100,7 +100,7 @@ public class GounkiViewer extends CCanvas<GounkiCell,GounkiBoard> implements Gou
     	super.init(info,frame);
         int randomKey = sharedInfo.getInt(OnlineConstants.RANDOMSEED,-1);
         int map[] = getStartingColorMap();
-        b = new GounkiBoard(info.getString(OnlineConstants.GAMETYPE, Gounki_INIT),
+        b = new GounkiBoard(info.getString(GAMETYPE, Gounki_INIT),
         		randomKey,map);
         if(seatingFaceToFace()) { b.autoReverseYNormal(); }
         useDirectDrawing(true);
@@ -119,20 +119,26 @@ public class GounkiViewer extends CCanvas<GounkiCell,GounkiBoard> implements Gou
     	{ startFirstPlayer();
     	}
     }
-
+    boolean vertical = false;
     public Rectangle createPlayerGroup(int player,int x,int y,double rotation,int unitsize)
     {	commonPlayer pl = getPlayerOrTemp(player);
     	Rectangle chip = chipRects[player];
     	int chipW = unitsize*2;
     	int chipH = unitsize*2;
-    	int doneW = unitsize*4;
+    	int doneW = plannedSeating() ? unitsize*4 : 0;
     	Rectangle box = pl.createRectangularPictureGroup(x+chipW,y,unitsize);
     	Rectangle done = doneRects[player];
     	Rectangle rack = rackRects[player];
     	
     	G.SetRect(chip, x, y, chipW, chipH);
-    	G.SetRect(done, x+chipW,G.Bottom(box),doneW,plannedSeating()?doneW/2:0);
     	G.SetRect(rack,G.Right(box),y,unitsize*4,unitsize*4);
+    	
+    	if(vertical)
+    		{ G.SetRect(done, x+chipW,G.Bottom(box),doneW,doneW/2);
+    		}
+    	else {
+    		G.SetRect(done, G.Right(box)+unitsize/2,y+unitsize/2,doneW,doneW/2);
+    	}
     	
     	pl.displayRotation = rotation;
     	
@@ -140,8 +146,13 @@ public class GounkiViewer extends CCanvas<GounkiCell,GounkiBoard> implements Gou
     	return(box);
     }
     public void setLocalBounds(int x, int y, int width, int height)
+    {
+    	setLocalBoundsV(x,y,width,height,new double[] {-1,1});
+    }
+    public double setLocalBoundsA(int x, int y, int width, int height,double a)
     {	G.SetRect(fullRect, x, y, width, height);
     	GameLayoutManager layout = selectedLayout;
+    	vertical = a>0;
     	int nPlayers = nPlayers();
         int chatHeight = selectChatHeight(height);
        	// ground the size of chat and logs in the font, which is already selected
@@ -216,7 +227,7 @@ public class GounkiViewer extends CCanvas<GounkiCell,GounkiBoard> implements Gou
     	G.SetRect(goalRect, boardX, boardBottom-stateH,boardW,stateH);       
         setProgressRect(progressRect,goalRect);
         positionTheChat(chatRect,chatBackGroundColor,chatBackGroundColor);
-
+        return boardW*boardH;
     }
  	
     private void DrawAltViewRect(Graphics gc, Rectangle r,HitPoint highlight)

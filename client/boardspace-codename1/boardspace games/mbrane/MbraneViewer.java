@@ -246,10 +246,10 @@ public class MbraneViewer extends CCanvas<MbraneCell,MbraneBoard> implements Mbr
        	Rectangle done = doneRects[player];
     	int chipW = unitsize*2;
     	int chipH = unitsize*2;
-    	int doneW = unitsize*4;
+    	int doneW = plannedSeating()?unitsize*3 : 0;
     	Rectangle box = pl.createRectangularPictureGroup(x+chipW+unitsize/2,y,unitsize);
     	G.SetRect(chip, x, y, chipW, chipH);
-    	G.SetRect(done, x+unitsize/2,y+chipH+unitsize/2,doneW,plannedSeating()?doneW/2:0);
+    	G.SetRect(done, x,y+chipH+unitsize/2,doneW,doneW/2);
     	
     	pl.displayRotation = rotation;
     	

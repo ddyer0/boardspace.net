@@ -181,7 +181,7 @@ public double setLocalBoundsA(int x, int y, int width, int height,double a)
 			0.70,	// % of space allocated to the board
 			1,	// 1:1 aspect ratio for the board
 			fh*2,	// maximum cell size
-			0.4		// preference for the designated layout, if any
+			0.2		// preference for the designated layout, if any
 			);
 	
     // place the chat and log automatically, preferring to place

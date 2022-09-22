@@ -1,6 +1,7 @@
 package viticulture;
 
 //TODO: side screens need to display the context sensitive cards for planting and building
+// TODO: rotate board in ftf landscape
 //TODO: add bar chart for "points from source" to the final status graph
 import static viticulture.Viticulturemovespec.*;
 
@@ -423,7 +424,7 @@ public class ViticultureViewer extends CCanvas<ViticultureCell,ViticultureBoard>
     			// the player box is a lot bigger than the text size, so allow it
     			// to be relatively smaller.
     			fh0*1.4,fh0*2.0,		// maximum cell size
-    			0.25	// preference for the designated layout, if any
+    			0.2	// preference for the designated layout, if any
     			);
     	int fh = (int)selectedLayout.selectedCellSize();
     	FontMetrics fm = getFontMetrics(standardPlainFont());

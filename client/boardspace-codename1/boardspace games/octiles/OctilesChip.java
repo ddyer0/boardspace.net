@@ -329,14 +329,13 @@ public class OctilesChip extends chip<OctilesChip>
         	runner.altChip = altRunner;
         	CANONICAL_RUNNER[i] = runner; 
         }
+        check_digests(CC);
 		// line overlays for the blank tile
 		lines30 = compositeImages(forcan,ImageDir,line30names);				
 		lines90 = compositeImages(forcan,ImageDir,line90names);		
 		lines120 = compositeImages(forcan,ImageDir,line120names);
 		lines180 = compositeImages(forcan,ImageDir,line180names);
 		CANONICAL_PIECE = CC;
-        check_digests(CC);
-	       
 		}
 
 

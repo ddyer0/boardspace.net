@@ -122,13 +122,13 @@ public class MorrisViewer extends CCanvas<MorrisCell,MorrisBoard> implements Mor
     	Rectangle chip = chipRects[player];
     	int chipW = unitsize*3;
     	int chipH = unitsize*2;
-    	int doneW = unitsize*4;
+    	int doneW = plannedSeating() ? unitsize*5 : 0;
     	Rectangle box = pl.createRectangularPictureGroup(x+chipW,y,unitsize);
     	Rectangle done = doneRects[player];
     	Rectangle rack = poolRects[player];
     	
     	G.SetRect(chip, x, y, chipW, chipH);
-    	G.SetRect(done, G.Right(box)+unitsize/2,y+unitsize/2,doneW,plannedSeating()?doneW/2:0);
+    	G.SetRect(done, G.Right(box)+unitsize/2,y+unitsize/2,doneW,doneW/2);
     	G.SetRect(rack,x,G.Bottom(box),unitsize*8,unitsize*3);
     	
     	pl.displayRotation = rotation;

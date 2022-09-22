@@ -61,7 +61,6 @@ import vnc.VNCService;
  * moves, evaluating and choosing the best, and implementing a lookahead several moves deep.   There's a
  * standard framework for this using the "RobotProtocol" class and the "SearchDriver" class. 
  */
-// TODO: display moving recruit card when choosing recruits
 /**
  * 
  * This is intended to be maintained as the reference example how to interface to boardspace.
@@ -281,11 +280,17 @@ public class EuphoriaViewer extends CCanvas<EuphoriaCell,EuphoriaBoard> implemen
      				case EPHEMERAL_CONFIRM_ONE_RECRUIT:
     				case EPHEMERAL_CONFIRM_RECRUITS:
     						m.op = CONFIRM_RECRUITS;
+    						if(prev!=null && prev.op==m.op) {	// remove duplicate
+    							G.print("Remove duplicate ",prev,m);
+    						}
+    						else
+    						{
         					m.setIndex(h.size());
         					m.next = null;
         					if(prev!=null) { prev.next = m; }
         					prev = m;
         					h.push(m);
+    						}
         					break;
     				case EPHEMERAL_CHOOSE_RECRUIT:
     					m.op = MOVE_CHOOSE_RECRUIT;	// convert to a non-ephemeral move

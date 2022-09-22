@@ -177,11 +177,13 @@ public class MogulChip extends chip<MogulChip>
         }
         
         for(StockArt m : misc) { ind++; CANONICAL_PIECE[ind] = new MogulChip(ind,m,r.nextLong(),scales[0]); }
+        MogulChip pchip = CANONICAL_PIECE[ind];
         playerChipOffset = ind+1;
         for(StockArt c : chips) { ind++; CANONICAL_PIECE[ind] = new MogulChip(ind,c,r.nextLong(),scales[0]); }
+
         check_digests(CANONICAL_PIECE);
         for(int i : startingCards) { getCard(i).starting = true; }
-        pokerChip = CANONICAL_PIECE[ind];
+        pokerChip = pchip;
 		}
 	}
 

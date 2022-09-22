@@ -136,7 +136,7 @@ public class CrosswordsViewer extends CCanvas<CrosswordsCell,CrosswordsBoard> im
         	CrosswordsConstants.putStrings();
         }
         
-        String type = info.getString(GAMETYPE, CrosswordsVariation.Crosswords.name);
+        String type = info.getString(OnlineConstants.GAMETYPE, CrosswordsVariation.Crosswords.name);
         // recommended procedure is to supply players and randomkey, even for games which
         // are current strictly 2 player and no-randomization.  It will make it easier when
         // later, some variant is created, or the game code base is re purposed as the basis
@@ -178,7 +178,7 @@ public class CrosswordsViewer extends CCanvas<CrosswordsCell,CrosswordsBoard> im
      */
 
 
-    public double aspects[] = {0.7,1.0,1.4};
+    public double aspects[] = {0.7,1.0,1.4,-0.7,-1,-1.4};
     public void setLocalBounds(int x,int y,int w,int h)
     {	rackSize = plannedSeating()?5:2;
     	do {
@@ -206,9 +206,11 @@ public class CrosswordsViewer extends CCanvas<CrosswordsCell,CrosswordsBoard> im
 	 *  with the "addRect" mechanism to help visualize the layout.
 	 */ 
 
-    public double setLocalBoundsA(int x, int y, int width, int height,double aspect)
+    public double setLocalBoundsA(int x, int y, int width, int height,double aspect0)
     {	G.SetRect(fullRect, x, y, width, height);
     	GameLayoutManager layout = selectedLayout;
+    	double aspect = Math.abs(aspect0);
+    	vertical = aspect0>0;
     	int nPlayers = nPlayers();
        	int chatHeight = selectChatHeight(height);
        	// ground the size of chat and logs in the font, which is already selected
@@ -307,6 +309,7 @@ public class CrosswordsViewer extends CCanvas<CrosswordsCell,CrosswordsBoard> im
         labelFont = largeBoldFont();
         return(boardW*boardH);
     }
+    boolean vertical = false;
     public Rectangle createPlayerGroup(int player,int x,int y,double rotation,int unitsize)
     {	commonPlayer pl = getPlayerOrTemp(player);
     	Rectangle chip = chipRects[player];
@@ -322,12 +325,23 @@ public class CrosswordsViewer extends CCanvas<CrosswordsCell,CrosswordsBoard> im
     	
     	int doneW = plannedSeating()? unitsize*4 : 0;
     	int donel = G.Right(box)+unitsize/2;
+    	int noticeH = unitsize;
     	G.SetRect(done,donel,G.Top(box)+unitsize/2,doneW,doneW/2);
-    	G.SetRect(notice, donel , G.Bottom(done),doneW*2,doneW/4);
-    	G.union(box, done,score,eye,notice);
+    	G.union(box, done,score,eye);
     	int unith = rackSize*unitsize;
-       	G.SetRect(chip,	x,	G.Bottom(box),	unith*20/4,unith*7/8);
-        G.union(box, chip);
+       	if(vertical)
+       		{ 
+       		G.SetRect(chip,	x,	G.Bottom(box),	unith*20/4,unith*7/8); 
+       		G.SetRect(notice, donel , G.Bottom(done),doneW*2,noticeH);
+       		}
+       	else
+       		{ 
+       		int boxH = G.Height(box);
+       		int boxR = G.Right(box)+unitsize/4;
+       		G.SetRect(chip,boxR,y,unith*20/4,boxH-noticeH); 
+        	G.SetRect(notice, boxR ,y+boxH-noticeH,doneW*2,noticeH);
+       		}
+        G.union(box, chip,notice);
     	pl.displayRotation = rotation;
     	return(box);
     }

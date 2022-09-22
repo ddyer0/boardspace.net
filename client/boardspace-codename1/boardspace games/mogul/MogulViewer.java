@@ -39,9 +39,7 @@ import static mogul.MogulMovespec.*;
  *
  * Feb 2013 initial work in progress. 
  *
- * This code is derived from the "HexGameViewer" class.  Refer to the
- 
-*/
+ */
 public class MogulViewer extends CCanvas<MogulCell,MogulBoard> implements MogulConstants, GameLayoutClient
 {
      /**
@@ -110,12 +108,13 @@ public class MogulViewer extends CCanvas<MogulCell,MogulBoard> implements MogulC
         int randomKey = info.getInt(OnlineConstants.RANDOMSEED,-1);
         int np = Math.max(2,info.getInt(OnlineConstants.PLAYERS_IN_GAME));
         adjustPlayers(np);
-        b = new MogulBoard(this,info.getString(OnlineConstants.GAMETYPE, Mogul_INIT),
+        b = new MogulBoard(this,info.getString(GAMETYPE, Mogul_INIT),
         		randomKey,np,getStartingColorMap());
         if(G.debug()) 
         	{ InternationalStrings.put(MogulStrings);
         	  InternationalStrings.put(MogulStringPairs);
         	}
+        //useDirectDrawing(); // not tested yet
         doInit(false);
         
      }

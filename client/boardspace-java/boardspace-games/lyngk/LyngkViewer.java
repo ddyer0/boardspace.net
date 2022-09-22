@@ -245,7 +245,7 @@ public class LyngkViewer extends CCanvas<LyngkCell,LyngkBoard> implements LyngkC
     			0.75,	// 70% of space allocated to the board
     			1.2,	// aspect ratio for the board
     			(int)(fh*2.0),	// maximum cell size
-    			0.7		// preference for the designated layout, if any
+    			0.4		// preference for the designated layout, if any
     			);
     	
         // place the chat and log automatically, preferring to place

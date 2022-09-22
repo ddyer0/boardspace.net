@@ -171,7 +171,7 @@ public class IroViewer extends CCanvas<IroCell,IroBoard> implements IroConstants
         colorBlindOption.setForeground(Color.blue);
         setColorBlind(cb);
         
-        String type = info.getString(GAMETYPE, IroVariation.iro.name);
+        String type = info.getString(OnlineConstants.GAMETYPE, IroVariation.iro.name);
         // recommended procedure is to supply players and randomkey, even for games which
         // are current strictly 2 player and no-randomization.  It will make it easier when
         // later, some variant is created, or the game code base is re purposed as the basis
@@ -273,11 +273,15 @@ public class IroViewer extends CCanvas<IroCell,IroBoard> implements IroConstants
  //   	if(useWide|useTall) { setLocalBoundsSize(width,height,useWide,useTall); }
  //   	setLocalBoundsWT(x,y,width,height,useWide,useTall);
  //   }
-
     public void setLocalBounds(int x, int y, int width, int height)
+    {
+    	setLocalBoundsV(x,y,width,height,new double[] {-1,1});
+    }
+    public double setLocalBoundsA(int x, int y, int width, int height,double v)
     {
     	G.SetRect(fullRect, x, y, width, height);
     	GameLayoutManager layout = selectedLayout;
+    	vertical = v>0;
     	int nPlayers = nPlayers();
        	int chatHeight = selectChatHeight(height);
        	// ground the size of chat and logs in the font, which is already selected
@@ -297,7 +301,7 @@ public class IroViewer extends CCanvas<IroCell,IroBoard> implements IroConstants
     			1.0,	// aspect ratio for the board
     			fh*3,	// minimum cell size
     			fh*4,	// maximum cell size
-    			0.7		// preference for the designated layout, if any
+    			0.2		// preference for the designated layout, if any
     			);
     	
         // place the chat and log automatically, preferring to place
@@ -360,18 +364,23 @@ public class IroViewer extends CCanvas<IroCell,IroBoard> implements IroConstants
     	G.SetRect(goalRect, boardX, boardBottom-stateH/2,boardW,stateH);       
         setProgressRect(progressRect,goalRect);
         positionTheChat(chatRect,chatBackgroundColor,rackBackGroundColor);
- 	
+        return boardW*boardH;
     }
+    boolean vertical = false;
     public Rectangle createPlayerGroup(int player,int x,int y,double rotation,int unitsize)
     {	commonPlayer pl = getPlayerOrTemp(player);
     	Rectangle chip = chipRects[player];
     	Rectangle box =  pl.createRectangularPictureGroup(x,y,2*unitsize/3);
-    	
-       	G.SetRect(chip,	x,	y+G.Height(box),	12*unitsize,	2*unitsize);
-        
     	Rectangle done = doneRects[player];
     	int doneW = plannedSeating()? unitsize*3 : 0;
-    	G.SetRect(done,G.Right(box)+unitsize/2,G.Top(box)+unitsize/2,doneW,doneW/2);
+    	int boxR = G.Right(box);
+    	G.SetRect(done,boxR+unitsize/2,y+unitsize/2,doneW,doneW/2);
+   	
+       	if(vertical) { G.SetRect(chip,	x,	y+G.Height(box),	12*unitsize,	2*unitsize); }
+       	else 
+       		{ G.SetRect(chip,boxR+doneW+doneW/2,y+unitsize/2,12*unitsize,	2*unitsize); 
+       		}
+        
     	G.union(box, done,chip);
     	pl.displayRotation = rotation;
     	return(box);

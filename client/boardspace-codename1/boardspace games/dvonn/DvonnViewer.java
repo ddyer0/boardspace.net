@@ -172,7 +172,7 @@ public void setLocalBounds(int x, int y, int width, int height)
 			1.75,	// aspect ratio for the board
 			fh*2,	// maximum cell size
 			fh*2.5,
-			0.4		// preference for the designated layout, if any
+			0.2		// preference for the designated layout, if any
 			);
     // place the chat and log automatically, preferring to place
 	// them together and not encroaching on the main rectangle.

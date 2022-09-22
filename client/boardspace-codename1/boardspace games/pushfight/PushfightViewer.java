@@ -242,7 +242,7 @@ public class PushfightViewer extends CCanvas<PushfightCell,PushfightBoard> imple
     			aspect,	// aspect ratio for the board
     			fh*3,	// min cell size
     			fh*4,	// maximum cell size
-    			0.4		// preference for the designated layout, if any
+    			0.2		// preference for the designated layout, if any
     			);
         // place the chat and log automatically, preferring to place
     	// them together and not encroaching on the main rectangle.

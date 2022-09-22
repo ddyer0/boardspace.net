@@ -119,7 +119,8 @@ public class MorelliViewer extends CCanvas<MorelliCell,MorelliBoard> implements 
     	int chipW = unitsize*3;
     	Rectangle done = doneRects[player];
     	G.SetRect(chip, x, y, chipW, chipW);
-    	G.SetRect(done, x, y+chipW, chipW, plannedSeating()?chipW/2:0);
+    	int doneW = plannedSeating() ? unitsize*4 : 0;
+    	G.SetRect(done, x, y+chipW, doneW, doneW/2);
     	Rectangle box = pl.createRectangularPictureGroup(x+chipW,y,unitsize);
     	pl.displayRotation = rotation;
     	G.union(box, chip,done);

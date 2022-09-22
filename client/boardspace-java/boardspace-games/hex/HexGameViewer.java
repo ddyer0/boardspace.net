@@ -292,7 +292,7 @@ public class HexGameViewer extends CCanvas<hexCell,HexGameBoard> implements HexC
     			aspect,	// aspect ratio for the board
     			fh*3,
     			fh*5,	// maximum cell size
-    			0.4		// preference for the designated layout, if any
+    			0.2		// preference for the designated layout, if any
     			);
     	
         // place the chat and log automatically, preferring to place

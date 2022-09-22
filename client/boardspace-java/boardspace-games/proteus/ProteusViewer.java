@@ -25,6 +25,7 @@ import static proteus.ProteusMovespec.*;
 
 /**
  * This code shows the overall structure appropriate for a game view window.
+ * todo: rotate board for ftf portrait mode
 */
 public class ProteusViewer extends CCanvas<ProteusCell,ProteusBoard> implements ProteusConstants, GameLayoutClient
 {
@@ -97,7 +98,7 @@ public class ProteusViewer extends CCanvas<ProteusCell,ProteusBoard> implements 
 
         int randomKey = info.getInt(OnlineConstants.RANDOMSEED,-1);
        
-        b = new ProteusBoard(info.getString(GAMETYPE, Variation.Proteus.name()),
+        b = new ProteusBoard(info.getString(OnlineConstants.GAMETYPE, Variation.Proteus.name()),
         		randomKey,players_in_game,getStartingColorMap(),ProteusBoard.REVISION);
         useDirectDrawing(true); 
         doInit(false);
@@ -157,7 +158,7 @@ public class ProteusViewer extends CCanvas<ProteusCell,ProteusBoard> implements 
     			0.75,	// 60% of space allocated to the board
     			1.5,	// aspect ratio for the board
     			fh*2.5,	// maximum cell size
-    			0.4		// preference for the designated layout, if any
+    			0.2		// preference for the designated layout, if any
     			);
     	
         // place the chat and log automatically, preferring to place

@@ -268,8 +268,12 @@ public class TamskViewer extends CCanvas<TamskCell,TamskBoard> implements TamskC
 	 */ 
 
     public void setLocalBounds(int x, int y, int width, int height)
+    {	setLocalBoundsV(x,y,width,height,new double[] {1,-1});
+    }
+    public double setLocalBoundsA(int x, int y, int width, int height,double a)
     {
     	G.SetRect(fullRect, x, y, width, height);
+    	vertical = a>0;
     	GameLayoutManager layout = selectedLayout;
     	int nPlayers = nPlayers();
        	int chatHeight = selectChatHeight(height);
@@ -286,11 +290,11 @@ public class TamskViewer extends CCanvas<TamskCell,TamskBoard> implements TamskC
     	//double bestPercent = 
     	layout.selectLayout(this, nPlayers, width, height,
     			margin,	
-    			0.75,	// 60% of space allocated to the board
+    			0.5,	// 60% of space allocated to the board
     			1.0,	// aspect ratio for the board
     			fh*3,	// minimum cell size
     			fh*4,	// maximum cell size
-    			0.7		// preference for the designated layout, if any
+    			0.1		// preference for the designated layout, if any
     			);
     	
         // place the chat and log automatically, preferring to place
@@ -355,8 +359,9 @@ public class TamskViewer extends CCanvas<TamskCell,TamskBoard> implements TamskC
     	G.SetRect(goalRect, boardX, boardBottom-stateH,boardW,stateH);       
         setProgressRect(progressRect,goalRect);
         positionTheChat(chatRect,chatBackgroundColor,rackBackGroundColor);
- 	
+        return boardW*boardH;
     }
+    boolean vertical = false;
     public Rectangle createPlayerGroup(int player,int x,int y,double rotation,int unitsize)
     {	commonPlayer pl = getPlayerOrTemp(player);
     	Rectangle chip = chipRects[player];
@@ -367,7 +372,10 @@ public class TamskViewer extends CCanvas<TamskCell,TamskBoard> implements TamskC
     	int doneW = plannedSeating()? unitsize*3 : 0;
     	G.SetRect(done,G.Right(box)+unitsize/2,G.Top(box)+unitsize/2,doneW,doneW/2);
     	G.union(box,done,chip);
-    	G.SetRect(ring,x,G.Bottom(box),G.Width(box),unitsize*2);
+    	if(vertical) { G.SetRect(ring,x,G.Bottom(box),G.Width(box),unitsize*2); }
+    	else {
+    		G.SetRect(ring,G.Right(box)+doneW/4,y,G.Width(box),unitsize*2); 
+    	}
     	G.union(box, ring);
     	pl.displayRotation = rotation;
     	return(box);

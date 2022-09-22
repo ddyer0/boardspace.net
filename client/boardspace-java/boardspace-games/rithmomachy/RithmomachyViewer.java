@@ -186,7 +186,7 @@ public class RithmomachyViewer extends CCanvas<RithmomachyCell,RithmomachyBoard>
     			0.75,	// 60% of space allocated to the board
     			width>height?2.0:0.5,	// aspect ratio for the board
     			fh*2.5,	// maximum cell size
-    			0.5		// preference for the designated layout, if any
+    			0.2		// preference for the designated layout, if any
     			);
     	
         // place the chat and log automatically, preferring to place

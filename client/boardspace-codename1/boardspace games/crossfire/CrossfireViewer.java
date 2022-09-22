@@ -165,29 +165,48 @@ public class CrossfireViewer extends CCanvas<CrossfireCell,CrossfireBoard> imple
     	}
     }
 
+    boolean vertical = false;
     public Rectangle createPlayerGroup(int player,int x,int y,double rotation,int unitsize)
     {   boolean planned = plannedSeating() ;
 		int buttonH = unitsize*3/2;
 
     	commonPlayer pl = getPlayerOrTemp(player);
-    	Rectangle box = pl.createRectangularPictureGroup(x+(planned?0:buttonH),y,2*unitsize/3);
     	Rectangle chip = chipRects[player];
     	Rectangle done = doneRects[player];
     	Rectangle prisoner = prisonerRects[player];
-    	int boxH = G.Height(box);
     	int doneW = planned ? buttonH*2 : 0;
-    	G.SetRect(chip, x, y+(planned ? boxH:0), buttonH,buttonH);
-    	G.SetRect(done, x+buttonH+buttonH/4, y+boxH, doneW,doneW/2);
-      	G.SetRect(prisoner,G.Right(box),y,unitsize*2,unitsize*3);
-    	pl.displayRotation = rotation;
-    	G.union(box, done,chip,prisoner);
+    	int pwidth = unitsize*2;
+    	Rectangle box;
+    	if(vertical)
+    	{
+    		box = pl.createRectangularPictureGroup(x+(planned?0:buttonH),y,2*unitsize/3);
+        	int boxH = G.Height(box);
+    	   	G.SetRect(chip, x, y+(planned ? boxH:0), buttonH,buttonH);
+        	G.SetRect(done, x+buttonH+buttonH/4, y+boxH, doneW,doneW/2);
+          	G.SetRect(prisoner,G.Right(box),y,pwidth,unitsize*3);
+    	}
+    	else
+    	{
+       		box = pl.createRectangularPictureGroup(x+buttonH,y,2*unitsize/3);
+        	int boxH = G.Height(box);
+        	int boxR = G.Right(box);
+    	   	G.SetRect(chip, x, y, buttonH,buttonH);
+           	G.SetRect(prisoner,boxR,y,pwidth,boxH);
+           	G.SetRect(done, boxR+pwidth+unitsize/2, y+unitsize/2, doneW,doneW/2);
+    	}
+       	pl.displayRotation = rotation;
+       	G.union(box, done,chip,prisoner);
     	return(box);
     }
 
     private int nrows = 20;
     public void setLocalBounds(int x, int y, int width, int height)
+    {	setLocalBoundsV(x,y,width,height,new double[] {-1,1});	
+    }
+    public double setLocalBoundsA(int x, int y, int width, int height,double a)
     {	G.SetRect(fullRect, x, y, width, height);
     	GameLayoutManager layout = selectedLayout;
+    	vertical = a>0;
     	int nPlayers = nPlayers();
         int chatHeight = selectChatHeight(height);
        	// ground the size of chat and logs in the font, which is already selected
@@ -268,7 +287,7 @@ public class CrossfireViewer extends CCanvas<CrossfireCell,CrossfireBoard> imple
         G.placeRight(goalRect, zoomRect, zoomW);
         setProgressRect(progressRect,goalRect);
         positionTheChat(chatRect,Color.white,rackBackGroundColor);
-
+        return boardW*boardH;
     }
 
 	

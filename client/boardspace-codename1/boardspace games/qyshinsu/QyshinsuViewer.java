@@ -158,11 +158,11 @@ public class QyshinsuViewer extends CCanvas<QyshinsuCell,QyshinsuBoard> implemen
     	//double bestPercent = 
     	layout.selectLayout(this, nPlayers, width, height,
     			margin,	
-    			0.6,	// 60% of space allocated to the board
+    			0.5,	// % of space allocated to the board
     			1,	// aspect ratio for the board
     			fh*2,
     			fh*3,	// maximum cell size
-    			0.4		// preference for the designated layout, if any
+    			0.1		// preference for the designated layout, if any
     			);
         // place the chat and log automatically, preferring to place
     	// them together and not encroaching on the main rectangle.

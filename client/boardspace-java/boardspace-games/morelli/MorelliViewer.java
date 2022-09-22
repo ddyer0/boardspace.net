@@ -89,7 +89,7 @@ public class MorelliViewer extends CCanvas<MorelliCell,MorelliBoard> implements 
 
         int randomKey = info.getInt(OnlineConstants.RANDOMSEED,-1);
        
-        b = new MorelliBoard(info.getString(GAMETYPE, Variations.morelli_13.name),
+        b = new MorelliBoard(info.getString(OnlineConstants.GAMETYPE, Variations.morelli_13.name),
         		randomKey,players_in_game,getStartingColorMap(),MorelliBoard.REVISION);
         useDirectDrawing(true); // not tested yet
         doInit(false);
@@ -119,7 +119,8 @@ public class MorelliViewer extends CCanvas<MorelliCell,MorelliBoard> implements 
     	int chipW = unitsize*3;
     	Rectangle done = doneRects[player];
     	G.SetRect(chip, x, y, chipW, chipW);
-    	G.SetRect(done, x, y+chipW, chipW, plannedSeating()?chipW/2:0);
+    	int doneW = plannedSeating() ? unitsize*4 : 0;
+    	G.SetRect(done, x, y+chipW, doneW, doneW/2);
     	Rectangle box = pl.createRectangularPictureGroup(x+chipW,y,unitsize);
     	pl.displayRotation = rotation;
     	G.union(box, chip,done);

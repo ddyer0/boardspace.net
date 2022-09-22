@@ -196,6 +196,7 @@ public class ArimaaViewer extends CCanvas<ArimaaCell,ArimaaBoard> implements Ari
     public void setLocalBounds(int x, int y, int width, int height)
     {
     	G.SetRect(fullRect, x, y, width, height);
+    	G.print("w ",width," ",height);
     	GameLayoutManager layout = selectedLayout;
     	int nPlayers = nPlayers();
         int chatHeight = selectChatHeight(height);

@@ -3647,6 +3647,7 @@ void dontDarrenTheRepeater(EPlayer p,replayMode replay)
         	}
         	break;
         case RePlace:	// dumbkoff move by the robot
+        case Place:
         	break;
         default:
         	throw Error("Not expecting state %s",board_state);

@@ -215,7 +215,7 @@ public class OrdoViewer extends CCanvas<OrdoCell,OrdoBoard> implements OrdoConst
        			0.7, 	// at least 70% for the board
        			aspect,	// preferred aspect ratio for the board 
        			fh*3, 	//maximum cell size, based on font size for the window
-       			0.5);	// preference for sticking with the designated layout
+       			0.3);	// preference for sticking with the designated layout
 
     	int chatHeight = selectChatHeight(height);
         int logH = chatHeight==0 ? fh*15 : chatHeight;

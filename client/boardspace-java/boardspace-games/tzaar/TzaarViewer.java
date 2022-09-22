@@ -89,7 +89,7 @@ public class TzaarViewer extends CCanvas<TzaarCell,TzaarBoard> implements TzaarC
         zoomRect.barColor=ZoomColor;
         zoomRect.highlightColor = ZoomHighlightColor;
   
-        b = new TzaarBoard(randomKey,info.getString(GAMETYPE, Tzaar_Standard_Init),
+        b = new TzaarBoard(randomKey,info.getString(OnlineConstants.GAMETYPE, Tzaar_Standard_Init),
         		getStartingColorMap());
         useDirectDrawing(true);
         doInit(false);
@@ -129,10 +129,10 @@ public class TzaarViewer extends CCanvas<TzaarCell,TzaarBoard> implements TzaarC
     	G.SetRect(rack, x,y,rackW,rackH);
     	G.SetRect(chip, x+rackW,y,chipW,chipW);
     	Rectangle box = pl.createRectangularPictureGroup(x+chipW+rackW,y,unitsize);
-    	int boxBottom = G.Bottom(box);
-    	G.SetRect(done,horizontal ? G.Right(box)+unitsize/4:x+rackW+C2,
-    				horizontal ? y+unitsize/2 : boxBottom+C2,doneW,doneW/2);
     	G.SetRect(score, G.Right(box), y, scoreW,scoreW);
+    	int boxBottom = G.Bottom(box);
+    	G.SetRect(done,horizontal ? G.Right(box)+scoreW+unitsize/4:x+rackW+C2,
+    				horizontal ? y+unitsize/2 : boxBottom+C2,doneW,doneW/2);
     	G.union(box, done,score,rack, chip);
     	pl.displayRotation = rotation;
     	return(box);

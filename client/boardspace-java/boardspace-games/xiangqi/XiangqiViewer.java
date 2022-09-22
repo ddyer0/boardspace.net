@@ -140,13 +140,15 @@ public class XiangqiViewer extends CCanvas<XiangqiCell,XiangqiBoard> implements 
    }
 
     	
-    private double aspect[] = { 0.7,1.0,1.4};
+    private double aspect[] = { 0.7,1.0,1.4,-0.7,-1.0,-1.4};
     public void setLocalBounds(int x, int y, int width, int height)
     {
     	setLocalBoundsV(x,y,width,height,aspect);
     }
-    public double setLocalBoundsA(int x, int y, int width, int height,double aspect)
+    public double setLocalBoundsA(int x, int y, int width, int height,double aspect0)
     {	G.SetRect(fullRect, x, y, width, height);
+    	double aspect = Math.abs(aspect0);
+    	vertical = aspect0>0;
     	GameLayoutManager layout = selectedLayout;
     	int nPlayers = nPlayers();
         int chatHeight = selectChatHeight(height);
@@ -167,7 +169,7 @@ public class XiangqiViewer extends CCanvas<XiangqiCell,XiangqiBoard> implements 
     			0.70,	// % of space allocated to the board
     			1,	// 1:1 aspect ratio for the board
     			fh*2,	// maximum cell size
-    			0.4		// preference for the designated layout, if any
+    			0.2		// preference for the designated layout, if any
     			);
     	
         boolean rotate = seatingFaceToFaceRotated();
@@ -217,7 +219,7 @@ public class XiangqiViewer extends CCanvas<XiangqiCell,XiangqiBoard> implements 
         positionTheChat(chatRect,Color.white,Color.white);
         return(boardW*boardH);
     }
-       	
+    boolean vertical = false;
     public Rectangle createPlayerGroup(int player,int x,int y,double rotation,int unit)
     {	commonPlayer pl0 = getPlayerOrTemp(player);
     	int chipW = unit*3;
@@ -227,10 +229,19 @@ public class XiangqiViewer extends CCanvas<XiangqiCell,XiangqiBoard> implements 
     	Rectangle rack = rackRects[player];
     	Rectangle done = doneRects[player];
     	Rectangle box = pl0.createRectangularPictureGroup(x+chipW, y, unit);
+    	int doneW = plannedSeating()?unit*6:0;
     	G.SetRect(chip, x, y, chipW,chipW);
     	int bb = G.Bottom(box);
+    	if(vertical)
+    	{
     	G.SetRect(rack, x, bb, rackW,rackH);
-    	G.SetRect(done, x+rackW+unit/2, bb+unit/2, plannedSeating()?unit*6:0, unit*3);
+    	G.SetRect(done, x+rackW+unit/2, bb+unit/2, doneW , doneW/2);
+    	}
+    	else
+    	{	int boxR = G.Right(box);
+        	G.SetRect(done, boxR+unit/2, y+unit/2, doneW, doneW/2); 		
+        	G.SetRect(rack, boxR+doneW+doneW/4, y, rackW,rackH);
+    	}
     	G.union(box, chip,done,rack);
     	pl0.displayRotation = rotation;
         return(box);

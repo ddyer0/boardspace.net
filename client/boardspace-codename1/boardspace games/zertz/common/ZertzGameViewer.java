@@ -162,7 +162,7 @@ public class ZertzGameViewer extends CCanvas<zCell,GameBoard> implements GameCon
     			aspect,	// aspect ratio for the board
     			fh*2.75,	// minimum cell size
     			fh*4,
-    			0.4		// preference for the designated layout, if any
+    			0.2		// preference for the designated layout, if any
     			);
     	
 //        layout.placeRectangle(reserveRect, 

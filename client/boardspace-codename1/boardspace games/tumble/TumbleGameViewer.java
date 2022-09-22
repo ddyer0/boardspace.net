@@ -150,6 +150,7 @@ public class TumbleGameViewer extends CCanvas<TumbleCell,TumbleBoard> implements
     			margin,	//
     			0.75,	// 50% of space allocated to the board
     			1.0,	// 1:1 aspect ratio for the board
+    			fh*2.0, // maximum cell size
     			fh*2.5,	// maximum cell size
     			0.4		// preference for the designated layout, if any
     			);

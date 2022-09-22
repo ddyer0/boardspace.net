@@ -119,7 +119,7 @@ public class OctilesViewer extends CCanvas<OctilesCell,OctilesBoard> implements 
         MouseColors = OctilesMouseColors;
         MouseDotColors = OctilesMouseDotColors;
         int map[]=getStartingColorMap();
-        b = new OctilesBoard(info.getString(GAMETYPE, Octiles_INIT),players_in_game,
+        b = new OctilesBoard(info.getString(OnlineConstants.GAMETYPE, Octiles_INIT),players_in_game,
         		randomKey,map);
         useDirectDrawing(true); // not tested yet
         doInit(false);
@@ -243,25 +243,25 @@ public class OctilesViewer extends CCanvas<OctilesCell,OctilesBoard> implements 
      }
 
 
-    private void setDisplayRectangle(Rectangle r)
+    private void setDisplayRectangle(Rectangle r,OctilesBoard gb)
     {
 		if(usePerspective())
 		{
-		b.adjustPadCoordinates_perspective();
-		b.SetDisplayParameters(0.85,0.85,  0.05,0.45, 
+		gb.adjustPadCoordinates_perspective();
+		gb.SetDisplayParameters(0.85,0.85,  0.05,0.45, 
 				-0.4,	// rotation
 				.09, 0.1,0.0);
-		b.SetDisplayRectangle(r);
+		gb.SetDisplayRectangle(r);
 		
 		}
 		  else 
-		  {	b.adjustPadCoordinates_normal();
-		  	b.SetDisplayRectangle(r);
+		  {	gb.adjustPadCoordinates_normal();
+		  	gb.SetDisplayRectangle(r);
 		  	double[] ll = new double[] {0.19,0.175} ;// {0.24,0.23};
 		  	double[] lr = new double[] {0.985,0.185};
 		  	double[] ul = new double[] {0.185,0.98}; //{0.24,0.90};
 		  	double[] ur = new double[] {0.98,0.98};
-		  	b.SetDisplayParameters(ll, lr, ul, ur);
+		  	gb.SetDisplayParameters(ll, lr, ul, ur);
 			
 		  }
 
@@ -284,6 +284,7 @@ public class OctilesViewer extends CCanvas<OctilesCell,OctilesBoard> implements 
      * */
     public void drawFixedElements(Graphics gc)
     { boolean review = reviewMode() && !mutable_game_record;
+      OctilesBoard gb = b;
       // erase
       GC.setColor(gc,review ? reviewModeBackground : boardBackgroundColor);
       //G.fillRect(gc, fullRect);
@@ -298,7 +299,7 @@ public class OctilesViewer extends CCanvas<OctilesCell,OctilesBoard> implements 
       boolean perspective = usePerspective();
       
      images[perspective?BOARD_INDEX:BOARD_FLAT_INDEX].centerImage(gc, boardRect);
-      setDisplayRectangle(boardRect);
+      setDisplayRectangle(boardRect,gb);
       int left = G.Left(boardRect);
       int top = G.Top(boardRect);
       int h = G.Height(boardRect);
@@ -306,11 +307,11 @@ public class OctilesViewer extends CCanvas<OctilesCell,OctilesBoard> implements 
       int high = (int)(0.5*CELLSIZE);
       int xoff = (int)(CELLSIZE*0.1);
       int yoff = (int)(CELLSIZE*0.06);
-      for(OctilesCell rack[] : b.goalPads)
+      for(OctilesCell rack[] : gb.goalPads)
       {	  for(OctilesCell c : rack)
     	  {
-    	  int cx = left+b.cellToX(c);
-    	  int cy0 = b.cellToY(c);
+    	  int cx = left+gb.cellToX(c);
+    	  int cy0 = gb.cellToY(c);
     	  int cy = top+h-cy0;
     	  OctilesChip dest = c.goalForColor;
     	  OctilesChip disk = dest.disk;
@@ -325,7 +326,7 @@ public class OctilesViewer extends CCanvas<OctilesCell,OctilesBoard> implements 
     	  }
     	  }
       }
-      b.DrawGrid(gc,boardRect,use_grid,Color.white,Color.black,Color.blue,Color.black);
+      gb.DrawGrid(gc,boardRect,use_grid,Color.white,Color.black,Color.blue,Color.black);
     }
     
  // draw the runner cells, (not the tile cells)
@@ -452,6 +453,7 @@ public class OctilesViewer extends CCanvas<OctilesCell,OctilesBoard> implements 
     //
     public void redrawBoard(Graphics gc, HitPoint highlight)
     {  OctilesBoard gb = disB(gc);
+    setDisplayRectangle(boardRect,gb);
 
       boolean ourTurn = OurMove();
       boolean moving = hasMovingObject(highlight);

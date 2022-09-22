@@ -127,29 +127,39 @@ public class KhetViewer extends CCanvas<KhetCell,KhetBoard> implements KhetConst
     	}
 
     }
-
+    boolean vertical = false;
     public Rectangle createPlayerGroup(int player,int x,int y,double rotation,int unitsize)
     {	commonPlayer pl = getPlayerOrTemp(player);
     	Rectangle chip = chipRects[player];
     	int chipW = unitsize*3;
     	int chipH = unitsize*3;
-    	int doneW = unitsize*4;
+    	int doneW = plannedSeating() ? unitsize*4 : 0;
     	Rectangle box = pl.createRectangularPictureGroup(x+chipW,y,unitsize);
     	Rectangle done = doneRects[player];
     	Rectangle rack = rackRects[player];
     	
     	G.SetRect(chip, x, y+unitsize/2, chipW, chipH);
-    	G.SetRect(done, G.Right(box)+unitsize/2,y+unitsize/2,doneW,plannedSeating()?doneW/2:0);
+    	int boxR = G.Right(box);
+    	G.SetRect(done, boxR+unitsize/2,y+unitsize/2,doneW,doneW/2);
+    	if(vertical)
+    	{
     	G.SetRect(rack,x,G.Bottom(box),unitsize*20,unitsize*3);
-    	
+    	}else
+    	{
+    	   	G.SetRect(rack,boxR+doneW+doneW/4,y,unitsize*20,unitsize*3);
+    	}
     	pl.displayRotation = rotation;
     	
     	G.union(box, chip,done,rack);
     	return(box);
     }
-    
     public void setLocalBounds(int x, int y, int width, int height)
+    {
+    	setLocalBoundsV(x,y,width,height,new double[] {1,-1});
+    }
+    public double setLocalBoundsA(int x, int y, int width, int height,double a)
     {	G.SetRect(fullRect, x, y, width, height);
+    	vertical = a>0;
     	GameLayoutManager layout = selectedLayout;
     	int nPlayers = nPlayers();
         int chatHeight = selectChatHeight(height);
@@ -166,11 +176,11 @@ public class KhetViewer extends CCanvas<KhetCell,KhetBoard> implements KhetConst
     	//double bestPercent = 
     	layout.selectLayout(this, nPlayers, width, height,
     			margin,	
-    			0.75,	// % of space allocated to the board
+    			0.55,	// % of space allocated to the board
     			1.2,	// 1.2:1 aspect ratio for the board
     			fh*2.0,	//  cell size
     			fh*2.5,
-    			0.4		// preference for the designated layout, if any
+    			0.2		// preference for the designated layout, if any
     			);
     	
         // place the chat and log automatically, preferring to place
@@ -223,7 +233,7 @@ public class KhetViewer extends CCanvas<KhetCell,KhetBoard> implements KhetConst
         setProgressRect(progressRect,goalRect);
         positionTheChat(chatRect,chatBackgroundColor,chatBackgroundColor);
  
- 
+        return boardW*boardH;
     }
     
 	

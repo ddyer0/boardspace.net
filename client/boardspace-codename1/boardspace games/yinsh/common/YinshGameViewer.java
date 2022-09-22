@@ -115,7 +115,7 @@ public class YinshGameViewer extends CCanvas<YinshCell,YinshBoard> implements Yi
     			0.75,	// 60% of space allocated to the board
     			1.0,	// aspect ratio for the board
     			fh*3,	// maximum cell size
-    			0.7		// preference for the designated layout, if any
+    			0.2		// preference for the designated layout, if any
     			);
     	
         // place the chat and log automatically, preferring to place
