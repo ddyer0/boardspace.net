@@ -4,7 +4,6 @@ import bridge.*;
 
 import com.codename1.ui.geom.Rectangle;
 
-import online.common.*;
 import online.game.*;
 import online.game.sgf.*;
 import online.search.SimpleRobotProtocol;
@@ -109,7 +108,7 @@ public class CheViewer extends CCanvas<CheCell,CheBoard> implements CheConstants
         zoomRect.value=INITIAL_TILE_SCALE;
         zoomRect.barColor=ZoomColor;
         zoomRect.highlightColor = HighlightColor;       
-        bb = new CheBoard(info.getString(OnlineConstants.GAMETYPE, Che_INIT),
+        bb = new CheBoard(info.getString(GAMETYPE, Che_INIT),
         		getStartingColorMap());
         useDirectDrawing(true);
         doInit(false);
@@ -609,7 +608,6 @@ public class CheViewer extends CCanvas<CheCell,CheBoard> implements CheConstants
     	missedOneClick = false;
         CheId hitCode = (CheId)id;
         CheCell hitObject = hitCell(hp);
-        CheState state = bb.getState();
         switch (hitCode)
         {
         default:
@@ -617,27 +615,7 @@ public class CheViewer extends CCanvas<CheCell,CheBoard> implements CheConstants
         case InvisibleDragBoard:
         case ZoomSlider:
         	break;
-        case BoardLocation:	// we hit an occupied part of the board 
-			switch(state)
-			{
-			default: throw G.Error("Not expecting drop on filled board in state %s",state);
-			case CONFIRM_STATE:
-			case PLAY_STATE:
-				if(!bb.isDest(hitObject))
-					{
-					// note that according to the general theory, this shouldn't
-					// ever occur because inappropriate spaces won't be mouse sensitve.
-					// this is just defense in depth.
-					throw G.Error("shouldn't hit a chip in state %s",state);
-					}
-				// fall through and pick up the previously dropped piece
-				/*$FALL-THROUGH$*/
-			case PLAY2_STATE:
-			case PUZZLE_STATE:
-				PerformAndTransmit("Pickb "+hitObject.col+" "+hitObject.row);
-				break;
-			}
-			break;
+
         case RotateTile:
         	if(bb.pickedObject==null)
         	{
@@ -645,20 +623,10 @@ public class CheViewer extends CCanvas<CheCell,CheBoard> implements CheConstants
         		PerformAndTransmit("rotate "+hitObject.col+" "+hitObject.row+" " + (index^2));
         	}
         	break;
+        case BoardLocation:	// we hit an occupied part of the board 
         case EmptyBoard:
-			switch(state)
-			{
-				default:
-					throw G.Error("Not expecting hit in state %s",state);
-				case CONFIRM_STATE:
-				case PLAY_STATE:
-				case PLAY2_STATE:
-				case FIRST_PLAY_STATE:
-				case PUZZLE_STATE:
 					doDropChip(hitObject.col,hitObject.row);
 					break;
-			}
-			break;
 			
         case ChipPool0:
         case ChipPool1:

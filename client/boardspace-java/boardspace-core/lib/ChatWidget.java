@@ -29,7 +29,7 @@ import online.common.exHashtable;
 
 // TODO: change the cursor when hovering over the chat window?
 // TODO: make it possible to copy/paste images
-public class ChatWidget 
+public class ChatWidget
 	implements ChatInterface,OnlineConstants,
 	SimpleObserver,ActionListener,MenuParentInterface,FocusListener
 {
@@ -47,6 +47,7 @@ public class ChatWidget
 	public String shortName() {
 		return(name());
 	}};
+	
 	Keyboard keyboard = null;
 	boolean useKeyboard = G.isCodename1();
 	boolean hasFocus = false;
@@ -209,7 +210,7 @@ public class ChatWidget
 
     public void addAMessage(String inStr,boolean see)
     {
-    	int mw = activePane().getWidth();
+    	int mw = G.Width(activePane());
         int useWidth = mw - 15;
 
         if (useWidth < 400)
@@ -1026,4 +1027,5 @@ public class ChatWidget
 		activePane().setText(Base64.decodeString(contents.nextToken()));
 		}
 	}
+
 }

@@ -8,6 +8,7 @@ import com.codename1.ui.Font;
 import lib.Image;
 
 import com.codename1.ui.geom.Point;
+import com.codename1.ui.geom.Rectangle;
 
 public class Button extends com.codename1.ui.Button implements ActionProvider,AwtComponent
 {	private final MouseAdapter mouse = new MouseAdapter(this);
@@ -70,4 +71,5 @@ public class Button extends com.codename1.ui.Button implements ActionProvider,Aw
 	{	if(contains(x,y)) { x = getX()+1; y=getY()+1; }
 		super.pointerReleased(x,y);
 	}
-}
+	public Rectangle getRotatedBounds() { return getBounds(); }
+}	

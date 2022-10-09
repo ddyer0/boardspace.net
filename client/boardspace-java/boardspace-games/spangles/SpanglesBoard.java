@@ -198,10 +198,10 @@ class SpanglesBoard extends triBoard<SpanglesCell> implements BoardProtocol,Span
 
         chips_on_board = from_b.chips_on_board;
         occupiedCells = getCell(from_b.occupiedCells);
-        droppedDest = null;
-        pickedSource = null;
-        pickedObject = null;
-        lastPicked = null;
+        droppedDest = getCell(from_b.droppedDest);
+        pickedSource = getCell(from_b.pickedSource);
+        pickedObject = from_b.pickedObject;
+        lastPicked = from_b.lastPicked;
         AR.copy(oneleg,from_b.oneleg);
         board_state = from_b.board_state;
         unresign = from_b.unresign;
@@ -538,7 +538,7 @@ class SpanglesBoard extends triBoard<SpanglesCell> implements BoardProtocol,Span
 				break;
 			}
 			setBoardCell(m.to_col,m.to_row,m.object);
-
+			
             setNextStateAfterDrop();
 
             break;
@@ -714,7 +714,7 @@ class SpanglesBoard extends triBoard<SpanglesCell> implements BoardProtocol,Span
  CommonMoveStack  GetListOfMoves()
  {	CommonMoveStack  all = new CommonMoveStack();
  	if(chips_on_board==0)
- 	{	all.addElement(new Spanglesmovespec(MOVE_DROPB,(char)('A'+ncols/2),nrows/4,whoseTurn));
+ 	{	all.addElement(new Spanglesmovespec(MOVE_DROPB,(char)('A'+ncols/2),nrows/2,whoseTurn));
  	}
  	else
  	{

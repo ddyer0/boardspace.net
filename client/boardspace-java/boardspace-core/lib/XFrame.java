@@ -85,7 +85,7 @@ public class XFrame extends JFrame implements WindowListener,SizeProvider
 	
 	}
 	public boolean hasCommand(String cmd)
-	{	if(("rotate".equals(cmd) || "twist".equals(cmd))) { return(true); }
+	{	if(("rotate".equals(cmd) || "twist".equals(cmd))) { return(rotater!=null); }
 		if("close".equals(cmd)) { return(true); }
 		if("actionmenu".equals(cmd)) 
 			{ return(popupMenuBar!=null); 
@@ -94,20 +94,24 @@ public class XFrame extends JFrame implements WindowListener,SizeProvider
 		if("restorepanzoom".equals(cmd)) { return(hasSavePanZoom); }
 		return(false);
 	}
+	CanvasRotaterProtocol rotater = null;
+	public CanvasRotaterProtocol getCanvasRotater() { return rotater; }
+	public void setCanvasRotater(CanvasRotaterProtocol r)  
+	{	rotater=r; 
+		MasterForm.getMasterPanel().adjustTabStyles();
+	}
 	public void buttonMenuBar(ActionEvent evt,int x,int y)
 	{	String cmd = evt.getActionCommand().toString();
 		if("twist".equals(cmd))
 		{
-			MasterForm.setGlobalRotation(MasterForm.getGlobalRotation()+1);
-			repaint();			
+			if(rotater!=null) { rotater.setCanvasRotation(rotater.getCanvasRotation()-1); }
 		}
 		else if("rotate".equals(cmd))
 		{
-			MasterForm.setGlobalRotation(MasterForm.getGlobalRotation()+2);
-			repaint();
+			if(rotater!=null) { rotater.setCanvasRotation(rotater.getCanvasRotation()+2); }
 		}
 		else if("actionmenu".equals(cmd))
-	{	if(popupMenuBar!=null)
+			{if(popupMenuBar!=null)
 		{
 			try 
 			{ 

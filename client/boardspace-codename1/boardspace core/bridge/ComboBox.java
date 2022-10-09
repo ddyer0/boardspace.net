@@ -11,6 +11,7 @@ import com.codename1.ui.Font;
 import com.codename1.ui.List;
 import com.codename1.ui.animations.CommonTransitions;
 import com.codename1.ui.geom.Dimension;
+import com.codename1.ui.geom.Rectangle;
 import com.codename1.ui.layouts.BorderLayout;
 
 //
@@ -42,6 +43,7 @@ class ComboDialog extends Dialog implements SizeProvider
 	{	
 		super.pointerReleased(MasterForm.translateX(this,x), MasterForm.translateY(this,y));;
 	}
+	public Rectangle getRotatedBounds() { return getBounds(); }
 
 }
 
@@ -97,5 +99,5 @@ public class ComboBox<T> extends com.codename1.ui.ComboBox<T> implements AwtComp
 		super.paint(g0);
 		if(rotated) { MasterForm.unrotateNativeCanvas(this, g0); }
 	}
-	
+	public Rectangle getRotatedBounds() { return getBounds(); }
 }

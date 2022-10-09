@@ -206,6 +206,10 @@ public abstract class SystemGraphics {
 	{	if(logging) { Log.addLog("setRotation ");Log.appendLog(r); }
 		graphics.rotateRadians((float)r,cx,cy); 
 	}
+	public void setRotation(double r)
+	{	if(logging) { Log.addLog("setRotation ");Log.appendLog(r); }
+		graphics.rotateRadians((float)r); 
+	}
 
     public void resetAffine()
     {	if(logging) { Log.addLog("resetaffine"); }

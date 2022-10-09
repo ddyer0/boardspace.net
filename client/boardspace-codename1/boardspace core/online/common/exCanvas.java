@@ -37,6 +37,12 @@ public abstract class exCanvas extends ProxyWindow
     static final String FontSize = "Set Font Size";
     static final String ZoomMessage = "Zoom=";
 
+	public  void setCanvasRotation(int n) {
+		super.setCanvasRotation(n);
+       	resetBounds();
+       	repaint();
+
+    }
 
     public static final String CanvasMessages[] = {
     		VirtualMouse,
@@ -315,7 +321,8 @@ public abstract class exCanvas extends ProxyWindow
     public abstract void setLocalBounds(int l, int t, int w, int h);
     public synchronized void setLocalBoundsSync(int x,int y,int w,int h)
     {	contextRotation = 0;
-    	setLocalBounds(x,y,w,h);
+	    boolean q = quarterTurn();
+    	setLocalBounds(x,y,q?h:w,q?w:h);
     }
     /**
      * call this function when the layout may need to be adjusted, for
@@ -577,12 +584,12 @@ public abstract class exCanvas extends ProxyWindow
        }
        else if(target==l.rotate180Menu)
        {
-       	MasterForm.setGlobalRotation(MasterForm.getGlobalRotation()+2); 
+       	setCanvasRotation(getCanvasRotation()+2); 
        	return true;
        }
        else if(target==l.rotate90Menu)
        {
-       	MasterForm.setGlobalRotation(MasterForm.getGlobalRotation()-1); 
+       	setCanvasRotation(getCanvasRotation()-1); 
        	return true;
        }
 	   else if (target == l.showRects)
@@ -1259,9 +1266,9 @@ graphics when using a touch screen.
         
         
         public void fillUnseenBackground(Graphics gc)
-        {
-        	int h = getHeight();
-        	int w = getWidth();
+        {	boolean qt = quarterTurn();	// compensate for rotation, where the w and h are reversed
+        	int h = qt ? getWidth() : getHeight();
+        	int w = qt ? getHeight() : getWidth();
         	int x = getSX();
         	int y = getSY();
         	double zoom = getGlobalZoom();
@@ -1291,8 +1298,11 @@ graphics when using a touch screen.
         public void fillUnseenBackground(Graphics gc,Image center,int x,int y,double zoom,double zoomStart)
         {
         	// supply gray values
-        	int h = getHeight();
-        	int w = getWidth();
+        	boolean qt = quarterTurn();
+        	int aw = getWidth();	// actual width and height
+        	int ah = getHeight();
+        	int h = qt ? aw : ah;	// bitmap width and height
+        	int w = qt ? ah : aw;
         	Color fill = painter.fill;
         	
         	// show the center from the pan/zoom buffer
@@ -2053,8 +2063,6 @@ graphics when using a touch screen.
    
 	public void doNullLayout(Container parent)
 	{	l.needLocalBounds = true;
-		//G.print("\nTrigger layout");
-		//G.print(G.getStackTrace());
 	}
 	public void realNullLayout()
 	{
@@ -2220,7 +2228,9 @@ graphics when using a touch screen.
 	// simple menus are still rather ugly.
 	boolean useSimpleMenu = false;
 	public void show(MenuInterface popup,int x,int y) throws AccessControlException
-	{	if(useSimpleMenu) { menu = new SimpleMenu(this,popup,x,y); }
+	{	if(useSimpleMenu || (getCanvasRotation()!=0)) 
+			{ menu = new SimpleMenu(this,popup,x,y); 
+			}
 		 else { 
 			 painter.showMenu(popup,myFrame.getMenuParent(),x,y);
 			 }
@@ -2307,13 +2317,19 @@ graphics when using a touch screen.
         	int cx = sx+w/2;
         	int cy = sy+h/2;
         	double rot = getPreferredRotation();       
+        	int qt = G.rotationQuarterTurns(rot);
     		GC.setRotation(offGC, rot,cx,cy);
     		G.setRotation(hp, rot, cx, cy);
-     		switch(G.rotationQuarterTurns(rot))
+    		int ax0 = w-size;
+    		int ay0 = h-size;
+    		boolean can = quarterTurn(); // swap width and height
+    		int ax = can ? ay0 : ax0;
+    		int ay = can ? ax0 : ay0;
+     		switch(qt)
         	{
         	default:
         	case 0:
-        		StockArt.UnMagnifier.drawChip(offGC,this,hp,OnlineId.HitMagnifier,size,getSX()+w-size,getSY()+h-size,null);
+        		StockArt.UnMagnifier.drawChip(offGC,this,hp,OnlineId.HitMagnifier,size,getSX()+ax,getSY()+ay,null);
         		break;
         	case 1:
         		StockArt.UnMagnifier.drawChip(offGC,this,hp,OnlineId.HitMagnifier,size,cx+h/2-size,cy+w/2-size,null);

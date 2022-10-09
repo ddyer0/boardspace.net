@@ -159,7 +159,7 @@ public class Keyboard implements Config
 		
 		TextContainer dis = targetDisplay;
 		includeDisplay = false;
-		Rectangle parentBounds = showOn.getBounds();
+		Rectangle parentBounds = showOn.getRotatedBounds();
 		FontMetrics fm = G.getFontMetrics(showOn.largeBoldFont());
 		int lineH = fm.getHeight();
 		int feature = G.minimumFeatureSize();

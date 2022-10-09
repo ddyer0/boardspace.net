@@ -18,6 +18,11 @@ package lib;
  * deferred, where no actual drawing is done in response to paint requests, but the drawing is
  *  scheduled and performed in the user loop.  This is the standard display mode for traditional java.
  *   
+ *  9/30/2022 new stuff to deal with the windows having 4 valid rotations.
+ *  the general approach is that the buffers reflect the rotated width,height of window,
+ *  and they are always drawn without modification.  The layouts were made with the rotated
+ *  coordinates.  When drawing a final bitmap to the real window, or when drawing directly
+ *  without a buffer, rotate the coordinate system in the graphics.
  */
 
 import java.awt.Color;
@@ -30,7 +35,6 @@ import javax.swing.JCheckBoxMenuItem;
 
 import bridge.Config;
 import bridge.JMenu;
-import bridge.MasterForm;
 import vnc.VNCTransmitter;
 import vnc.VncScreenInterface;
 
@@ -133,15 +137,31 @@ public class RepaintManager implements VncScreenInterface,Config
 		  delayBeforeReading = rt;
 		  menuString = menu;
 		}
+	     // true if this strategy normally uses a single or double buffer
+	     private boolean useViewBuffer()
+	     {
+	    	 switch(this)
+	    	 {
+	    	 case Deferred_Unbuffered:
+	    	 case Direct_Unbuffered: 
+	    		 return false;
+	    	 default: return true;
+	    	 }
+	     }
 		public static void addUIMenu(JMenu parent,DeferredEventManager deferredEvents,RepaintStrategy current)
 		{
 			for(RepaintStrategy v : RepaintStrategy.values())
 	    	{
+			if(G.isCodename1() 
+					&& (v==RepaintStrategy.Deferred || v==RepaintStrategy.Deferred_Unbuffered)) 
+			{}
+			else
+			{
 			v.menu = new JCheckBoxMenuItem(v.menuString);
            	v.menu.addActionListener(deferredEvents);
            	v.menu.setState(v==current);
            	parent.add(v.menu);
-	    	}
+	    	}}
 		}
 		public static void setMenuChoice(RepaintStrategy current)
 		{
@@ -272,7 +292,7 @@ public class RepaintManager implements VncScreenInterface,Config
     	// the white frame.
     	//
     	releaseDirectDrawingLock();
-    	parent.show(m,x,y); 
+    	parent.show(m,helper.unrotateCanvasX(x,y),helper.unrotateCanvasY(x,y)); 
     	getDirectDrawingLock();
     }
 
@@ -304,6 +324,12 @@ public class RepaintManager implements VncScreenInterface,Config
 		public Component getComponent();
 		public void drawBackground(Graphics gc);
 		public void resetLocalBoundsNow();
+		public boolean rotateCanvas(Graphics g);
+		public void unrotateCanvas(Graphics g);
+		public int unrotateCanvasX(int x,int y);
+		public int unrotateCanvasY(int x,int y);
+		public int getCanvasRotation();
+		public boolean quarterTurn();
 	}
 	Component client;
 	RepaintHelper helper;
@@ -493,7 +519,7 @@ public class RepaintManager implements VncScreenInterface,Config
 	  stopService("window shutdown");
 	  ProgressMonitor.stopProgress();
 	  setAllFixed(null);
-	  setPaintBuffer(null);
+	  setViewBuffer(null);
 	  
 	}	 
 	    // some help mapping the java refresh actions into our canvas.  It's desirable 
@@ -548,6 +574,8 @@ public class RepaintManager implements VncScreenInterface,Config
 		int h = client.getHeight();
 		int w1 = w/6;
 		int h1 = h/6;
+		boolean qt = helper.quarterTurn();
+		int w2 = qt ? (int)(h1*h1/w1) : w1;
 		int xx = -GC.getTranslateX(g)+w1/2;
 		// draw in the same visual location, regardless of pan/zoom
 		int x = xx;
@@ -560,23 +588,26 @@ public class RepaintManager implements VncScreenInterface,Config
 		x+= w1/4;
 		XImage im = allFixed;
 		if(im!=null) 
-		{im.getImage().drawImage(g,x,y,w1,h1); 
+		{ 
+		  im.getImage().drawImage(g,x,y,w2,h1); 
 		  GC.Text(g,false,x,y+h1,w1,20,Color.white,Color.black,""+allFixed+((msg==null)?"":" "+msg));
 		}
-		else { GC.setColor(g,Color.blue); GC.drawLine(g,x,y,x+w1/2,y+h1/2); }
-		GC.frameRect(g,Color.blue,x,y,w1,h1);
+		else { GC.setColor(g,Color.blue); GC.drawLine(g,x,y,x+w2/2,y+h1/2); }
+		GC.frameRect(g,Color.blue,x,y,w2,h1);
+		
+		
 		x += w1+w1/8;
 		if(drawBuffer!=null)
 			{ 
 			  Image im0 = drawBuffer.theImage;
 			  Graphics gr = im0.getGraphics();
 			  GC.fillRect(gr, Color.red, 10,10,20,20);
-
-			 drawBuffer.theImage.drawImage(g,x,y,w1,h1); 
-			  GC.Text(g,false,x,y+h1,w1,20,Color.white,Color.black,""+drawBuffer.theImage);
+			  drawBuffer.theImage.drawImage(g,x,y,w2,h1);
+			  GC.Text(g,false,x,y+h1,w1,20,Color.white,Color.black,""+drawBuffer);
 			}
-		else { GC.setColor(g,Color.blue); GC.drawLine(g,x,y,x+w1/2,y+h1/2); }
-		GC.frameRect(g,Color.blue,x,y,w1,h1);
+		else { GC.setColor(g,Color.blue); GC.drawLine(g,x,y,x+w2/2,y+h1/2); }
+		GC.frameRect(g,Color.blue,x,y,w2,h1);
+		
 		x += w1+w1/8;
 		if(pinchBuffer!=null)
 		{
@@ -584,22 +615,23 @@ public class RepaintManager implements VncScreenInterface,Config
 			  Graphics gr = im0.getGraphics();
 			  gr.setColor(Color.blue);
 			  GC.fillRect(gr, 10,10,20,20);
-			  pinchBuffer.theImage.drawImage(g,x,y,w1,h1);
-			  GC.Text(g,false,x,y+h1,w1,20,Color.white,Color.black,""+im0);
+			  pinchBuffer.theImage.drawImage(g,x,y,w2,h1);
+			  GC.Text(g,false,x,y+h1,w1,20,Color.white,Color.black,""+pinchBuffer);
 			
-		} else
-		if(viewBuffer!=null)
+		}
+		else if(viewBuffer!=null)
 			{ 
 			  Image im0 = viewBuffer.theImage;
 			  Graphics gr = im0.getGraphics();
 			  gr.setColor(Color.blue);
 			  GC.fillRect(gr, 10,10,20,20);
-			 viewBuffer.theImage.drawImage(g,x,y,w1,h1);
-			  GC.Text(g,false,x,y+h1,w1,20,Color.white,Color.black,""+im0);
+			  viewBuffer.theImage.drawImage(g,x,y,w2,h1);
+			  GC.Text(g,false,x,y+h1,w1,20,Color.white,Color.black,""+viewBuffer);
 			  
 			}
-		else { GC.setColor(g,Color.blue); GC.drawLine(g,x,y,x+w1/2,y+h1/2); }
-		GC.frameRect(g,Color.blue,x,y,w1,h1);
+			else { GC.setColor(g,Color.blue); GC.drawLine(g,x,y,x+w1/2,y+h1/2); }
+		GC.frameRect(g,Color.blue,x,y,w2,h1);
+		
 		if(message!=null)
 		{	GC.Text(g,false,xx+w1/8,y+h1,w1*5, h1/2,Color.white, null,""+step+":"+message+" rr "+repaintReadyCount+" rs "+repaintSpritesCount);
 			message = "";
@@ -626,17 +658,23 @@ public class RepaintManager implements VncScreenInterface,Config
 	private void pinchRedisplay(Graphics g,boolean pinch)
 	{
 		viewBuffer=null; 
-		  drawBuffer = null;
+		drawBuffer = null;
 		double r = helper.getRotation();
 		int w = helper.getWidth()/2;
 		int h = helper.getHeight()/2;	
 		GC.setRotation(g, r,w,h);
-			pinchBuffer.usedForPinch = true;
+		pinchBuffer.usedForPinch = true;
 		G.Assert(pinchBuffer.written(),"not written");
-			helper.drawActivePinch(g,pinchBuffer.getImage(),!pinch);
+		boolean rotated = helper.rotateCanvas(g);
+		helper.drawActivePinch(g,pinchBuffer.getImage(),!pinch);
+		if(rotated) { helper.unrotateCanvas(g); }
+		if(showBitmaps)
+		{
+			showBitmaps(g,"pinch redisplay");
+		}
 		GC.setRotation(g, -r, w, h);
 	}
-	private boolean paintDirect(Graphics gc)
+	private boolean paintDirect(Graphics gc,boolean prerotated)
 	{	boolean got = false;
 		int tries = 0;
 		while (!got)
@@ -654,7 +692,7 @@ public class RepaintManager implements VncScreenInterface,Config
 				}
 			try {
   			setPaintNeeded(false);
-  			redrawCanvas(gc);
+  			redrawCanvas(gc,prerotated);
 			}
 			finally { releaseDirectDrawingLock(); }	
 		}
@@ -674,9 +712,11 @@ public class RepaintManager implements VncScreenInterface,Config
 		if(delay<=0)
 		  {
 			step++;		
+	   		boolean rotated = helper.rotateCanvas(g);
 			drawToRealScreen(g,back);
 	   		HitPoint hp = (highlightPoint == null) ?  new HitPoint(-1,-1) : highlightPoint;
     		helper.actualPaint(g,hp);		// this does the rest of painting, ie; painting components
+    		if(rotated) { helper.unrotateCanvas(g); }
     		return(true);
 		  }
 		  else 
@@ -695,31 +735,40 @@ public class RepaintManager implements VncScreenInterface,Config
    		if(pinch && ZOOM_IS_SLOW)
    		{	// to make pan/zoom responsive, work from a saved bitmap of some kind
    			if(pinchBuffer==null)
-   			{
+   			{	
    				XImage pbuffer = getOrCreateViewBuffer();
-   				if((pbuffer!=null)&&!pbuffer.written())
-   				{	// if we got a buffer, but it's not written, write it.
+   				if(pbuffer!=null)
+   				{
+   				if(repaintStrategy.useViewBuffer())
+   					{
+   					// make sure some data is forthcoming
+   					if(!pbuffer.written()) {paintDirect(null,true); }	// trigger a write
+   					}
+   				else {
+   					// we don't normally use a view buffer, so this one was created for us
+   					// we need to write it
    					Graphics off = pbuffer.getImage().getGraphics();
-   					if(paintDirect(off))
+   					// this will fall through the stages without drawing on a backing bitmap,
+   					// then draw to the new one we just created.
+   					if(paintDirect(off,true))
    						{
    						long fintime = G.Date();
    						long when = fintime+repaintStrategy.delayBeforeReading;
    						pbuffer.setWritten(when);
    						}
-   						else { pbuffer = null; }
-   					}
-    				pinchBuffer = pbuffer;
+   					else { pbuffer = null; }
+    				}
+   				}
+   				pinchBuffer = pbuffer;
    			}
    			if(pinchBuffer!=null)
    			{
    				pinchRedisplay(g,pinch);
-   	       		if(showBitmaps)
-   	    		{
-   	    			showBitmaps(g,"z "+helper.getGlobalZoom()+" x "+helper.getSX()+" y "+helper.getSY());
-   	    		}
    	   			return;
    			}
    		}
+   		
+
    		if(pinchBuffer!=null)
    		{
    		pinchBuffer = null;
@@ -763,7 +812,7 @@ public class RepaintManager implements VncScreenInterface,Config
        		helper.resetLocalBoundsNow();
        		{
       		String msg = null;
-       		if(!paintDirect(g))
+       		if(!paintDirect(g,false))
        		{	msg = "skip paint";
        			addTimer(G.Date(),10,RefreshReason.Paint,"can't paint now");
 
@@ -798,7 +847,7 @@ public class RepaintManager implements VncScreenInterface,Config
   			long now = G.Date();
   			int delay = back.timeUntilReadyToWrite(now);
   			Graphics off = back.getImage().getGraphics();
-   			if(delay<=0 && paintDirect(off))
+   			if(delay<=0 && paintDirect(off,false))
        			{
     	    	long fintime = G.Date();
   	   	    	long when = fintime+repaintStrategy.delayBeforeReading;
@@ -828,7 +877,7 @@ public class RepaintManager implements VncScreenInterface,Config
        		else  
        		{	// no buffer available
        			msg = "no buffer available";
-  				if(!paintDirect(g)) {
+  				if(!paintDirect(g,false)) {
   	      			addTimer(G.Date(),10,RefreshReason.Paint,"can't paint direct now");
   				};	// show what we've got
        		}
@@ -936,14 +985,15 @@ public class RepaintManager implements VncScreenInterface,Config
 	    	{
 	    	case Direct_Unbuffered:
 	    	case Deferred_Unbuffered:
-	    		if(viewBuffer!=null) { setPaintBuffer(null); } 
+	    		if(viewBuffer!=null) { setViewBuffer(null); } 
 	    		return(null); 
 	    	default:
 	        	if(viewBuffer!=null)
 	        		{int w = client.getWidth();
 	        	     int h = client.getHeight();
-	        	     if(needNewImage(viewBuffer,w,h)) 
-	        	     	{ setPaintBuffer(null); 
+	        	     boolean qt = helper.quarterTurn();
+	        	     if(needNewImage(viewBuffer,qt?h:w,qt?w:h)) 
+	        	     	{ setViewBuffer(null); 
 	        	     	}
 	        		}
 	        	  return(viewBuffer); 
@@ -1002,12 +1052,13 @@ public class RepaintManager implements VncScreenInterface,Config
 	    	{
 	    	case Deferred_Unbuffered:
 	    	case Direct_Unbuffered:
-	    		setPaintBuffer(null);
+	    		setViewBuffer(null);
 	    		return(null);
 	    	case DoubleBuffer: 
 	    		{int w = client.getWidth();
 	    		 int h = client.getHeight();
-	    		 if(needNewImage(drawBuffer,w,h)) 
+	    		 boolean qt = helper.quarterTurn();
+	    		 if(needNewImage(drawBuffer,qt?h:w,qt?w:h)) 
 	    		 	{ drawBuffer = null; 
 	    		 	}
 	    		}
@@ -1048,7 +1099,7 @@ public class RepaintManager implements VncScreenInterface,Config
 	    }
 	    
 	    	    
-	    private void setPaintBuffer(XImage newv)
+	    private void setViewBuffer(XImage newv)
 	    {
 	        XImage im = viewBuffer;
 	        viewBuffer = newv;
@@ -1059,7 +1110,7 @@ public class RepaintManager implements VncScreenInterface,Config
 	        if(newv==null && (drawBuffer!=null))
 	        {	// always flush both
 	        	swapOffScreenNow();
-	        	setPaintBuffer(null); 
+	        	setViewBuffer(null); 
 	        }
 	    }
 	  
@@ -1067,11 +1118,17 @@ public class RepaintManager implements VncScreenInterface,Config
 	    {	return((im==null) || needNewImage(im.theImage,w,h));
 	    }
 	    private final boolean needNewImage(Image im,int w,int h)
-	    {	return((im==null)
-	    		 || !Image.getImageValid(client,im)
-	    		 || (im.getWidth()!=w)
-	    		 || (im.getHeight()!=h));
+	    {	if((im==null)
+	    		|| !Image.getImageValid(client,im)) { return true; }
+
+	    	if( (im.getWidth()!=w
+	    			|| (im.getHeight()!=h)))
+	    	{
+	    		return true;
+	    	}
+	    	return false;
 	    }
+	    
 	    public void setRepaintStrategy(RepaintStrategy strat)
 	    {
 	    	repaintStrategy = strat;
@@ -1081,12 +1138,12 @@ public class RepaintManager implements VncScreenInterface,Config
 	    	{
 	    	case Deferred_Unbuffered:
 	    	case Direct_Unbuffered:
-	    		setPaintBuffer(null); 
+	    		setViewBuffer(null); 
 	    		/** fall through */
 	    	case SingleBuffer:
 	    	case Direct_SingleBuffer:
 	    	case Deferred:
-				if(drawBuffer!=null) { swapOffScreenNow(); setPaintBuffer(null); }
+				if(drawBuffer!=null) { swapOffScreenNow(); setViewBuffer(null); }
 				break;
 	    	default:
 	    		break;
@@ -1128,15 +1185,12 @@ public class RepaintManager implements VncScreenInterface,Config
 	     	case Deferred:
 		    	 {
 		    	 Graphics g = Graphics.create(client.getGraphics());
-		    	 boolean rotated = MasterForm.rotateCanvas(client, g);
-		       	 redrawCanvas(g);
-		       	 if(rotated) { MasterForm.unrotateCanvas(client, g); }
+		       	 redrawCanvas(g,false);
 		    	 }
 		    	 break;
 	     	default:
-	     		{boolean rotated = MasterForm.rotateCanvas(client,null);
-		       	 redrawCanvas(null);
-		       	 if(rotated) { MasterForm.unrotateCanvas(client,null); }
+	     		{
+		       	 redrawCanvas(null,false);
 	     		}
 	     		break;
 	     	} 	 
@@ -1147,7 +1201,7 @@ public class RepaintManager implements VncScreenInterface,Config
 	    	repaintSpritesCount++;
 	    	addTimer(G.Date(),timer,RefreshReason.Sprites,caller);
 	     }
-	     public void redrawCanvas(Graphics g)
+	     public void redrawCanvas(Graphics g,boolean prerotated)
 	     {	 
 	    	 boolean complete = setComplete(false);
 	 //        setVisible(shouldBeVisible);
@@ -1170,14 +1224,14 @@ public class RepaintManager implements VncScreenInterface,Config
 	     					{ 
 	     			          if(hcomplete) { setBuffersComplete(); clearStats(); }
 	     					  ErrorReporter old = G.setErrorReporter(helper);
-	     					  drawCanvas(hg,hcomplete,hp);
+	     					  drawCanvas(hg,hcomplete,hp,prerotated);
 	     					  G.setErrorReporter(old);
 	     					}
 	     				}); 
 	         }
 	         else {
 		     if(complete) { setBuffersComplete(); clearStats(); }
-	         drawCanvas(hg, hcomplete,hp);
+	         drawCanvas(hg, hcomplete,hp,prerotated);
 	         }
 	     }
 	     
@@ -1186,19 +1240,21 @@ public class RepaintManager implements VncScreenInterface,Config
 	     {
 	    	 int width = client.getWidth();
 	    	 int height = client.getHeight();
-	    	 XImage pb = createOffScreen(width,height);
-	    	 setPaintBuffer(pb);
+	    	 boolean qt = helper.quarterTurn();
+	    	 XImage pb = createOffScreen(qt?height:width,qt?width:height);
+	    	 setViewBuffer(pb);
 	    	 return(pb);
 	     }
 	     private XImage createDrawBuffer()
 	     {
 	    	 int width = client.getWidth();
 	    	 int height = client.getHeight();
-	    	 XImage pb = createOffScreen(width,height);
+	    	 boolean qt = helper.quarterTurn();
+	    	 XImage pb = createOffScreen(qt?height:width,qt?width:height);
 	    	 drawBuffer =pb;
 	    	 return(pb);
 	     }
-	     
+
 	     /**
 	      * this is the method that actually draws the window, which will
 	      * can be superseded by the final window class.  This default method
@@ -1212,16 +1268,19 @@ public class RepaintManager implements VncScreenInterface,Config
 	      * 
 	      * @see HitPoint
 	      */
-	    public void drawCanvas(Graphics gc, boolean completePaint,HitPoint pt)
+	    public void drawCanvas(Graphics gc, boolean completePaint,HitPoint pt,boolean prerotated)
 	 	{	
 	 		long now = G.Date();
 	 		boolean drawn = false;
+	 		boolean direct = false;
 	    	try {
 	    	switch(repaintStrategy)
 	    	{
-	    	case Direct_Unbuffered:
-	    	case Direct_SingleBuffer:
 	    	case Deferred_Unbuffered:
+	    	case Direct_Unbuffered:
+	    			direct = true;
+	    			break;
+	    	case Direct_SingleBuffer:
 	    		break;
 	    	default:
 		    	{
@@ -1244,9 +1303,12 @@ public class RepaintManager implements VncScreenInterface,Config
 				    	}
 			       	   default: break;
 		 	    	}
+		        	boolean rotated = helper.rotateCanvas(gc);
 		    	    redrawCanvas(localOffScreen,gc,complete,pt);
+		 			if(rotated) { helper.unrotateCanvas(gc); }
 		       		drawn = true;
 		 	    }
+		 		else { direct = true; }
 
 		        		}
 		 		}
@@ -1255,10 +1317,16 @@ public class RepaintManager implements VncScreenInterface,Config
 		 	    	{
 		           	int x = helper.getSX();
 		        	int y = helper.getSY();
+		        	boolean rotated = !prerotated && direct && helper.rotateCanvas(gc); 
 		        	GC.translate(gc,-x,-y);
 		 	    	helper.drawClientCanvas(gc,completePaint,pt);
 		 	    	helper.paintSprites(gc,pt);
 		 	    	GC.translate(gc,x,y);
+		 	    	if(rotated) { helper.unrotateCanvas(gc); }
+		 	    	if(showBitmaps && !helper.globalPinchInProgress())
+		 	    	{
+		 	    		showBitmaps(gc,"no buffer available");
+		 	    	}
 		 	    	paintedAFrame = true;
 		      		GC.setColor(gc,Color.blue);
 		        	helper.showRectangles(gc,100);
@@ -1289,8 +1357,11 @@ public class RepaintManager implements VncScreenInterface,Config
 	  		paintedAFrame = true;
 			    
 	    	helper.showRectangles(offGC,100);
-	    	helper.paintSprites(offGC,pt);
 
+	    	if(repaintStrategy==RepaintStrategy.Deferred)
+	    	{	
+	    		helper.paintSprites(offGC,pt);
+	    	}
 	    	helper.ShowStats(offGC,pt,x,y);	// add some stats on top of everything
 
 	    	GC.setColor(offGC,Color.blue);
@@ -1329,13 +1400,15 @@ public class RepaintManager implements VncScreenInterface,Config
 	 		int h = client.getHeight()/2;
     		GC.setRotation(gc, rot,w,h);
     		drawImageNow(gc,im);
+	    	GC.setRotation(gc, -rot, w,h);
 	    	
-    		if(showBitmaps && (gc!=null))
-    		{
+    		if(showBitmaps && (gc!=null)  && !helper.globalPinchInProgress())
+    		{	boolean rotated = gc._rotated_;
+				if(rotated) { helper.unrotateCanvas(gc); }
     			showBitmaps(gc,null);
+    			if(rotated) { helper.rotateCanvas(gc); }
     		}
 
-	    	GC.setRotation(gc, -rot, w,h);
 	    	Image dup = duplicateImage;
 	    	if(dup!=null)
 	    	{
@@ -1674,8 +1747,10 @@ public class RepaintManager implements VncScreenInterface,Config
         public void drawFixedElements(Graphics gc,boolean complete)
         {
 			GC.setFont(gc,helper.getDefaultFont());
-			
-			complete |= createAllFixed(helper.getWidth(),helper.getHeight());				// true if this is a new bitmap that needs to be painted
+			int w = helper.getWidth();
+			int h = helper.getHeight();
+			boolean qt = helper.quarterTurn();
+			complete |= createAllFixed(qt?h:w,qt?w:h);				// true if this is a new bitmap that needs to be painted
           	XImage fixed = allFixed();		 // create backing bitmaps;
           	boolean drawn = false;
         	if(fixed!=null)

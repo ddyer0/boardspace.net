@@ -50,6 +50,7 @@ public class ChatWidget
 	public String shortName() {
 		return(name());
 	}};
+	
 	Keyboard keyboard = null;
 	boolean useKeyboard = G.isCodename1();
 	boolean hasFocus = false;
@@ -1029,4 +1030,5 @@ public class ChatWidget
 		activePane().setText(Base64.decodeString(contents.nextToken()));
 		}
 	}
+
 }

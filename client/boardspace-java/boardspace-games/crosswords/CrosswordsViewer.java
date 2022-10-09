@@ -221,7 +221,7 @@ public class CrosswordsViewer extends CCanvas<CrosswordsCell,CrosswordsBoard> im
        	int vcrw = fh*16;
         int margin = fh/2;
         int buttonW = (G.isCodename1()?8:6)*fh;
-        int stateH = fh*2;
+        int stateH = fh*5/2;
         // this does the layout of the player boxes, and leaves
     	// a central hole for the board.
     	//double bestPercent = 

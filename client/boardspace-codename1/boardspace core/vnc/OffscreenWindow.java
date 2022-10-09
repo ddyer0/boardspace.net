@@ -386,5 +386,7 @@ public boolean DrawTileSprite(Graphics gc,HitPoint hp)
 			if(!m.drawMenu(gc, hp)) { menu = null; }
 	}
 		}
-	
+	public int rotateCanvasX(int x,int y) { return x; }
+	public int rotateCanvasY(int x,int y) { return y; }
+	public Rectangle getRotatedBounds() { return getBounds(); }
 }

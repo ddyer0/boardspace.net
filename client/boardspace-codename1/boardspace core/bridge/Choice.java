@@ -5,6 +5,7 @@ import lib.G;
 
 import com.codename1.ui.ComboBox;
 import com.codename1.ui.Font;
+import com.codename1.ui.geom.Rectangle;
 
 public class Choice<TYPE> extends ComboBox<TYPE> implements AwtComponent , ActionProvider
 {
@@ -39,5 +40,5 @@ public class Choice<TYPE> extends ComboBox<TYPE> implements AwtComponent , Actio
 	public FontMetrics getFontMetrics(Font f) {
 		return G.getFontMetrics(f);
 	}
-
+	public Rectangle getRotatedBounds() { return getBounds(); }
 }

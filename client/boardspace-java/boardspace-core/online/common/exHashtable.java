@@ -43,7 +43,7 @@ public interface exHashtable
     public static final String GAMEUID = "gameUID";			// unique name constructed for this game
     public static final String MODE = "mode";
     public static final String TOURNAMENTMODE = "tournamentMode";	// true if a tournament game
-     
+    public static final String ROTATION = "rotation";
     public static final String SOUND = "sound";					// true if sound is initially on
     public static final String ROBOTGAME = "robotgame";		// true if this game includes a robot
     public static final String WEAKROBOT = "weakrobot";		// the weakest robot for this game

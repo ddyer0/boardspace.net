@@ -11,6 +11,7 @@ import bridge.Icon;
 // this presents a JPopupMenu without being a window in the window hierarchy
 // it's used to present menus on offscreen windows, but it could be used in
 // other places.
+// TODO: make SimpleMenu fancier, allow for scrolling and avoid placement at the bottom of the screen
 //
 public class SimpleMenu {
 	public int margin = 2;
@@ -24,11 +25,11 @@ public class SimpleMenu {
 	private Rectangle menuRectangle = null;
 	
 	public SimpleMenu(SizeProvider parent,MenuInterface fromMenu,int x,int y)
-	{
-		parentX = parent.getX();
-		parentY = parent.getY();
-		parentW = parent.getWidth();
-		parentH = parent.getHeight();
+	{	Rectangle bounds = parent.getRotatedBounds();
+		parentX = G.Left(bounds);
+		parentY = G.Top(bounds);
+		parentW = G.Width(bounds);
+		parentH = G.Height(bounds);
 		menuRectangle = prepareMenu(fromMenu.getNativeMenu(),x,y);
 	}
 	private Rectangle prepareMenu(NativeMenuInterface nativemenu,int x,int y)

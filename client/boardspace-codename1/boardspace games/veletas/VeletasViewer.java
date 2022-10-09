@@ -211,7 +211,7 @@ public class VeletasViewer extends CCanvas<VeletasCell,VeletasBoard> implements 
 		//
 	    int stateY = boardY;
 	    int stateX = boardX;
-	    int stateH = (int)(fh*2.5);
+	    int stateH = fh*5/2;
 	    G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect, stateRect,eyeRect,noChatRect);
         G.SetRect(boardRect,boardX,boardY,boardW,boardH);
         

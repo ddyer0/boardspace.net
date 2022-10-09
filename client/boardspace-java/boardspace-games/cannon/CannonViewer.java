@@ -194,7 +194,7 @@ public class CannonViewer extends CCanvas<CannonCell,CannonBoard> implements Can
 		//
 	    int stateY = boardY;
 	    int stateX = boardX;
-	    int stateH = fh*2;
+	    int stateH = fh*5/2;
 	    G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,reverseViewRect,noChatRect);
 		G.SetRect(boardRect,boardX,boardY,boardW,boardH);
 		

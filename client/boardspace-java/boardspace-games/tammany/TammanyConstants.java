@@ -163,36 +163,36 @@ public interface TammanyConstants
     //
 	public enum TammanyState implements BoardState
 	{
-	Puzzle(PuzzleStateDescription,false,false),
-	Resign(ResignStateDescription,true,false),
-	Gameover(GameOverStateDescription,false,false),
-	ConfirmNewRoles(ConfirmNewRolesDescription,true,false),		// confirm assignment of roles
+	Puzzle(PuzzleStateDescription,false,false,false),
+	Resign(ResignStateDescription,true,false,false),
+	Gameover(GameOverStateDescription,true,false,false),
+	ConfirmNewRoles(ConfirmNewRolesDescription,true,true,false),		// confirm assignment of roles
 	
-	Disc(TammanyDiscState,true,false),				// optionally take a disc as a perq
-	Move(TammanyMoveState,true,false),				// optionally move a cube as a perq
-	Arrest(TammanyArrestState,true,false),			// optionally remove a cube as a perq
-	Lock(TammanyLockState,true,false),				// optionally lock a ward as a perq
-	ConfirmUseRole(TammanyUseRoleMessage,true,false),		// confirm role-based actions after placement
+	Disc(TammanyDiscState,true,true,false),				// optionally take a disc as a perq
+	Move(TammanyMoveState,true,true,false),				// optionally move a cube as a perq
+	Arrest(TammanyArrestState,true,true,false),			// optionally remove a cube as a perq
+	Lock(TammanyLockState,true,true,false),				// optionally lock a ward as a perq
+	ConfirmUseRole(TammanyUseRoleMessage,true,true,false),		// confirm role-based actions after placement
 	
-	Play(TammanyPlayState,false,false),				// play a boss
-	Play2(TammanyPlay2State,false,false),			// play a second boss
-	PlayOption(TammanyPlayOptionState,false,false),	// play a cube or another boss
-	ConfirmPlacementOrSlander(ConfirmPlacementOrSlanderDescription,true,true),	// confirm standard placement moves
-	ConfirmPlacement(ConfirmPlacementDescription,true,false),
+	Play(TammanyPlayState,true,false,false),				// play a boss
+	Play2(TammanyPlay2State,true,false,false),			// play a second boss
+	PlayOption(TammanyPlayOptionState,true,false,false),	// play a cube or another boss
+	ConfirmPlacementOrSlander(ConfirmPlacementOrSlanderDescription,true,true,true),	// confirm standard placement moves
+	ConfirmPlacement(ConfirmPlacementDescription,true,true,false),
 	
-	SlanderPayment(TammanySlanderPaymentState,false,false),	// slander with return to perq states
-	SlanderPayment2(TammanySlanderPayment2State,false,false),
-	ConfirmSlander(TammanyConfirmSlanderState,true,false),
-	DoubleSlander(TammanyDoubleSlanderState,true,false),
-	PlaceCube(TammanyCubeMessage,false,false),		// place a cube after winning an election
-	TakeDisc(TammanyDiscMessage,false,false),		// take a disc after winning an election
-	SerialElection(TammanyElectionState,true,false),// election in review mode
-	Election(TammanyElectionState,false,false),
-	DistributeRoles(TammanyDistributeState,false,false),	// distribute roles
-	SimultaneousElection(TammanyElectionState,true,false);
+	SlanderPayment(TammanySlanderPaymentState,true,false,false),	// slander with return to perq states
+	SlanderPayment2(TammanySlanderPayment2State,true,false,false),
+	ConfirmSlander(TammanyConfirmSlanderState,true,true,false),
+	DoubleSlander(TammanyDoubleSlanderState,true,true,false),
+	PlaceCube(TammanyCubeMessage,false,false,false),		// place a cube after winning an election
+	TakeDisc(TammanyDiscMessage,false,false,false),		// take a disc after winning an election
+	SerialElection(TammanyElectionState,false,true,false),// election in review mode
+	Election(TammanyElectionState,false,false,false),
+	DistributeRoles(TammanyDistributeState,false,false,false),	// distribute roles
+	SimultaneousElection(TammanyElectionState,false,true,false);
 
-	TammanyState(String des,boolean done,boolean digest)
-	{
+	TammanyState(String des,boolean undo,boolean done,boolean digest)
+	{	allowUndo = undo;
 		description = des;
 		digestState = digest;
 		doneState = done;
@@ -200,6 +200,7 @@ public interface TammanyConstants
 	boolean doneState;
 	boolean digestState;
 	String description;
+	boolean allowUndo;
 	public boolean GameOver() { return(this==Gameover); }
 	public String description() { return(description); }
 	public boolean doneState() { return(doneState); }

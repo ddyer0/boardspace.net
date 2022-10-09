@@ -35,7 +35,8 @@ import java.util.Set;
  * @author Ddyer
  *
  */
-public class TextContainer implements AppendInterface,KeyListener
+@SuppressWarnings("serial")
+public class TextContainer extends Rectangle implements AppendInterface,KeyListener
 {	
 	static private TextContainer focusInstance = null;
 	public boolean hasFocus() { return (focusInstance == this); }
@@ -132,10 +133,6 @@ public class TextContainer implements AppendInterface,KeyListener
 	Color foregroundColor = Color.black;
 	Color buttonColor = Color.gray;
 	Font font = G.getGlobalDefaultFont();
-	int x;
-	int y;
-	int width;
-	int height;
 	int scrollX=0;
 	int scrollY=0;
 	private boolean isVisible = false;
@@ -192,9 +189,9 @@ public class TextContainer implements AppendInterface,KeyListener
 	  if(can!=null)
 	  {
 	  canvas = can;
-	  can.requestFocus(this);
 	  if(editable && !wasEditable) 
 	  	{ 
+		  can.requestFocus(this);
 	  	  can.addKeyListener(this);
 	  	}
 	  if(!editable && wasEditable) 
@@ -214,6 +211,7 @@ public class TextContainer implements AppendInterface,KeyListener
 		foregroundColor = foreground;
 		setChanged(Op.Repaint);
 	}
+	public Font getFont() { return font; }
 	public void setFont(Font basicFont) {
 		font = basicFont;
 		setChanged(Op.Repaint);
@@ -289,19 +287,16 @@ public class TextContainer implements AppendInterface,KeyListener
 	}
 	public Point getLocation()
 	{
-		return(new Point(x,y));
+		return(new Point(G.Left(this),G.Top(this)));
 	}
-	public Rectangle getBounds() { return(new Rectangle(x,y,width,height)); }
+	public Rectangle getBounds() { return(new Rectangle(G.Left(this),G.Top(this),G.Width(this),G.Height(this))); }
 	
 	public void setBounds(Rectangle r)
 	{
 		setBounds(G.Left(r),G.Top(r),G.Width(r),G.Height(r));
 	}
 	public void setBounds(int left, int top, int inWidth, int inHeight) {
-		x = left;
-		y = top;
-		width = inWidth;
-		height = inHeight;
+		G.SetRect(this,left,top,inWidth,inHeight);
 		mlCache = null;
     	int barWidth = (int)(ScrollArea.DEFAULT_SCROLL_BAR_WIDTH*G.getDisplayScale());
     	// the negative width keeps the scroll bar from doing any scroll actions in the main text area
@@ -320,18 +315,7 @@ public class TextContainer implements AppendInterface,KeyListener
     	scrollBar.foregroundColor = buttonColor;
 		setChanged(Op.Repaint);
 	}
-	public int getWidth() {
-		return(width);
-	}
-	public int getHeight() {
-		return(height);
-	}
-	public int getX() {
-		return(x);
-	}
-	public int getY() {
-		return(y);
-	}
+
 	private int findCaratY(StringStack lines,int fontH)
 	{	
 		int charpos = 0;
@@ -351,7 +335,7 @@ public class TextContainer implements AppendInterface,KeyListener
 		int pos = caratPosition;
 		boolean eol = data.length()>0 && (data.charAt(data.length()-1)=='\n');
 		int nLines = lines.size()+(eol?1:0);
-		int availableHeight = height-MARGIN*2;
+		int availableHeight = G.Height(this)-MARGIN*2;
 		int textSize = fontH*nLines;
 		if(textSize<availableHeight) { setScrollY(0); }
 		else if(pos>=0)
@@ -386,7 +370,7 @@ public class TextContainer implements AppendInterface,KeyListener
 			  flipTime = now+flipInterval; 
 			}
 		//G.print("rep "+(int)(flipTime-now));
-		canvas.repaint((int)(flipTime-now+10));
+		if(canvas!=null) { canvas.repaint((int)(flipTime-now+10)); }
 		}
 
 	}
@@ -398,8 +382,12 @@ public class TextContainer implements AppendInterface,KeyListener
 	{	String line = originalLine;
 		if(!mouseSelecting) { setCaratPosition(visibleCaratPosition); }
 		int lineLen = line.length();
-		boolean isIn = G.pointInRect(hp,x,y,width,height);
+		boolean isIn = G.pointInRect(hp,this);
 		FontMetrics fm = G.getFontMetrics(font);
+		int width = G.Width(this);
+		int height = G.Height(this);
+		int x = G.Left(this);
+		int y = G.Top(this);
 		int carat = Math.min(lineLen,caratPosition-lineStart);				// carat position within the display line
 		int visCarat = Math.min(lineLen,visibleCaratPosition-lineStart);
 		int lineh = lastLineHeight = fm.getHeight();
@@ -411,13 +399,14 @@ public class TextContainer implements AppendInterface,KeyListener
 		int charsDeletedAtRight = 0;
 		if(select<0) { select = 0; }
 		doFocus();
-		GC.frameRect(g,Color.black,x,y,width,height);		
 		if(clearBeforeAppend)
 			{
-			GC.Text(g,true,lineX, lineY-lineh,width-MARGIN*2,height-MARGIN*2,foregroundColor,backgroundColor,line);
+			GC.Text(g,true,this,foregroundColor,backgroundColor,line);
+			GC.frameRect(g,Color.black,this);
 			}
 			else
 		{
+			GC.frameRect(g,Color.black,x,y,width,height);		
 			Rectangle from = GC.getStringBounds(g,fm,line);
 			int maxx = (int)from.getWidth();
 			int availableWidth = width-endmargin;
@@ -642,18 +631,22 @@ public class TextContainer implements AppendInterface,KeyListener
 	}
 	public boolean drawAsMultipleLines(Graphics g,HitPoint hp,Rectangle r,StringBuilder data)
 	{	
-		boolean isIn = G.pointInRect(hp,x,y,width,height);
+		boolean isIn = G.pointInRect(hp,this);
 		FontMetrics fm = G.getFontMetrics(font);
 		int lineh = lastLineHeight = fm.getHeight();
 		int linew = G.Width(r)-MARGIN*2;
 		// do not segment lines by length
 		StringStack lines = resplit(data,fm,linew);
 		int nLines = lines.size();
+		int x = G.Left(this);
+		int y = G.Top(this);
+		int height = G.Height(this);
+		int width = G.Width(this);
 		maxScroll = Math.max(0, lineh*nLines-height/2+lineh);
 		scrollBar.setScrollHeight(maxScroll);
 		if(autoScroll && !mouseActive) { autoScroll(lineh,lines); }
-		GC.fillRect(g,backgroundColor,x,y,width,height);
-		GC.frameRect(g, isIn? Color.blue : Color.black, x,y,width,height);
+		GC.fillRect(g,backgroundColor,this);
+		GC.frameRect(g, isIn? Color.blue : Color.black, this);
 		Rectangle oldclip = GC.combinedClip(g,x+1,y+MARGIN,x+width-MARGIN-1,y+height-MARGIN);
 		
 		int availableH = height-lineh-MARGIN*2;
@@ -807,7 +800,7 @@ public class TextContainer implements AppendInterface,KeyListener
 	}
 
 	public boolean redrawBoard(Graphics g,HitPoint hp) 
-	{	Rectangle r = new Rectangle(x, y, width, height);
+	{	int width = G.Width(this);
 		boolean hit = false;	
 		if(isVisible && width>0)
 		{
@@ -815,7 +808,7 @@ public class TextContainer implements AppendInterface,KeyListener
 		if(renderAsButton)
 		{	String dataString = data.toString();
 			String lines[] = G.split(dataString,'\n');
-			hit = drawAsButton(g,hp,r,lines[0]);
+			hit = drawAsButton(g,hp,this,lines[0]);
 		}
 		else if(singleLine)
 		{	String dataString = data.toString();
@@ -828,10 +821,10 @@ public class TextContainer implements AppendInterface,KeyListener
 				  idx++; 
 				  line = lines[idx]; 
 				}
-			hit = drawAsSingleLine(g,hp,r,line,cp);
+			hit = drawAsSingleLine(g,hp,this,line,cp);
 		}
 		else
-		{ 	hit = drawAsMultipleLines(g,hp,r,data);
+		{ 	hit = drawAsMultipleLines(g,hp,this,data);
 			if(scrollable) { scrollBar.drawScrollBar(g); }
 		}}
 		//G.addLog("painted");
@@ -1067,7 +1060,7 @@ public class TextContainer implements AppendInterface,KeyListener
 	}
 
 	public boolean doMouseDrag(int ex,int ey)
-	{	if(!G.pointInRect(ex, ey,x,y,width,height)) { return(false); }
+	{	if(!G.pointInRect(ex, ey,this)) { return(false); }
 		if(!mouseActive)
 			{ mouseActive = true;
 			  selectingX = ex; 
@@ -1083,7 +1076,7 @@ public class TextContainer implements AppendInterface,KeyListener
     	return(mouseActive);
 	}
 	
-	public boolean containsPoint(HitPoint p) { return(G.pointInRect(p, x,y,width,height)); }
+	public boolean containsPoint(HitPoint p) { return(G.pointInRect(p, this)); }
 	
 	public boolean doMouseUp(int ex,int ey)
 	{	
@@ -1091,7 +1084,7 @@ public class TextContainer implements AppendInterface,KeyListener
 		{ doCopy();
 		}
 		
-		if(G.pointInRect(ex, ey,x,y,width,height))
+		if(G.pointInRect(ex, ey,this))
 		{
 			if(!mouseSelecting)
 			{
@@ -1160,7 +1153,7 @@ public class TextContainer implements AppendInterface,KeyListener
 		return(true);
 	} 
 	public boolean doMouseWheel(int xx,int yy,int amount)
-	{	if(G.pointInRect(xx,yy,x,y,width,height))
+	{	if(G.pointInRect(xx,yy,this))
 		{
 		return doMouseWheel(amount);
 		}

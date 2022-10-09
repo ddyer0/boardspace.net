@@ -42,7 +42,6 @@ import lib.TimeControl;
 
 public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProtocol
 {	
-
     private static final String AcceptChatMessage =  "Accept chat from #1";
     private static final String IgnoreChatMessage = "Ignore chat from #1";
     private static final String NoChallengeMessage = "No challenges from #1";
@@ -2322,7 +2321,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 		 case highlight_spec:
 	      {	// launch a spectator or a review room
 	    	  if(!lobby.doNotReconnect)
-	    		  { sess.launchSpectator(users.primaryUser(),myFrame.doSound()); 
+	    		  { sess.launchSpectator(users.primaryUser(),myFrame.doSound(),getCanvasRotation()); 
 	   	       		lobby.startingSession = null;
 	   	       		lobby.clearedForLaunch = false; 	
 	   	       		lobby.startingSession = null;

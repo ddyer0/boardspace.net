@@ -801,7 +801,6 @@ public class MbraneViewer extends CCanvas<MbraneCell,MbraneBoard> implements Mbr
         missedOneClick = false;
         MbraneId hitCode = (MbraneId)id;
         MbraneCell hitObject = hitCell(hp);
-		MbraneState state = bb.getState();
         switch (hitCode)
         {
         default:
@@ -818,28 +817,6 @@ public class MbraneViewer extends CCanvas<MbraneCell,MbraneBoard> implements Mbr
         	PerformAndTransmit("PlaceBlack");
         	break;
         case BoardLocation:	// we hit an occupied part of the board 
-			switch(state)
-			{
-			default: throw G.Error("Not expecting drop on filled board in state %s",state);
-			case Confirm:
-			case Play:
-			case PlayNoResolve:
-			case PlayOrSwap:
-				if(!bb.isDest(hitObject))
-					{
-					// note that according to the general theory, this shouldn't
-					// ever occur because inappropriate spaces won't be mouse sensitve.
-					// this is just defense in depth.
-					throw G.Error("shouldn't hit a chip in state %s",state);
-					}
-				// fall through and pick up the previously dropped piece
-				//$FALL-THROUGH$
-			case Puzzle:
-				PerformAndTransmit("Pickb "+hitObject.col+" "+hitObject.row);
-				break;
-			}
-			break;
-			
         case EmptyBoard:
 			doDropChip(hitObject.col,hitObject.row);
 			break;

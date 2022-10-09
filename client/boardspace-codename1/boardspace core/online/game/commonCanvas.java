@@ -2838,8 +2838,7 @@ public abstract class commonCanvas extends exCanvas
    * @return true if it is ok to undo a current "pick" operation.
    */
   public boolean allowBackwardStep()
-  {	BoardProtocol b = getBoard();
-	return(b==null?false:b.movingObjectIndex()>=0);
+  {	return somethingIsMoving();
   }
   /**
    * return true of it is ok to undo the most recent moves, and stop
@@ -2847,7 +2846,10 @@ public abstract class commonCanvas extends exCanvas
    * @return true if ok
    */
   public boolean allowPartialUndo()
-  {		if(allowUndo())
+  {		
+	  	if(isPuzzleState() ) { return somethingIsMoving(); }
+
+	    if(allowUndo())
   		{
 	  	int op = getCurrentMoveOp();
 	  	return((op!=MOVE_DONE) && (op!=MOVE_START) && (op!=MOVE_EDIT));
@@ -2888,7 +2890,7 @@ public abstract class commonCanvas extends exCanvas
   		BoardProtocol b = getBoard();
   		return ((m!=null) 
   				&& (b!=null)
-  				&& (m.op!=MOVE_START)
+  				&& ((m.op!=MOVE_START) && (m.op!=MOVE_EDIT))
   				&& (G.offline() || (m.player==b.whoseTurn())));
   	}
   	return(false);
@@ -4000,6 +4002,7 @@ public abstract class commonCanvas extends exCanvas
 //	HitIgnoreTime(GAMEIGNORETIME,GameIgnoreTime),
 //		HitAddTime(GAMEADDTIME,GameAddTime),
 //		ResolveTimeOver(RESOLVETIMEOVER,TimeOverResolution),)
+        
       	if(m.op==MOVE_PLEASEUNDO)
        	{	// this when we hit the undo button, and we need to 
        		// pass the request to the opponent.
@@ -4014,8 +4017,9 @@ public abstract class commonCanvas extends exCanvas
        	else if (Execute(m,mode))
         {
         	repaint(20);					 // states will have changed.
+        	// str may be altered by AddToHistory, too, so get the string that must be transmitted first.
+        	String str = m.moveString();	// note that "movestring" may be altered by the "execute"
             boolean added = AddToHistory(m);
-            String str = m.moveString();	// note that "movestring" may be altered by the "execute"
             // this is the active part of the "Start Evaluator" feature
             if (extraactions && (getActivePlayer().robotPlayer != null))
             {	// get the robot to static eval this position
@@ -4140,9 +4144,15 @@ public abstract class commonCanvas extends exCanvas
      *  but if no picked piece, undo all the way back to the done.
      */
     public void performUndo()
+    {	BoardProtocol b = getBoard();
+    	if(b!=null) 
     {
-    	if(allowBackwardStep()) { doUndoStep(); }
+    		if(isPuzzleState()) 
+    			{ doUndoStep(); 
+    			}
+    		else if(allowResetUndo()) { doUndoStep(); }
     	else if(allowUndo()) { doUndo(); }
+  		}
 
     }
 
@@ -4642,6 +4652,7 @@ public abstract class commonCanvas extends exCanvas
         timeControl = tc;
         futureTimeControl = tc.copy();
         datePlayed = "";
+        setCanvasRotation(info.getInt(exHashtable.ROTATION,0));
         if(info.getBoolean(REVIEWONLY,false)) { gameMode = Session.Mode.Review_Mode; }
         gameMode = Session.Mode.findMode(info.getString(exHashtable.MODE,gameMode.modeName));
         l.tournamentMode = info.getBoolean(exHashtable.TOURNAMENTMODE,false);
@@ -4668,6 +4679,9 @@ public abstract class commonCanvas extends exCanvas
         {	autoDone = Default.getBoolean(Default.autodone);
         	autoDoneCheckbox = myFrame.addOption(s.get(AutoDoneEverywhere),autoDone,deferredEvents);
         }
+        
+        myFrame.setCanvasRotater(this);
+ 		 
         boolean viewer = reviewOnly;
 
 
@@ -4677,7 +4691,7 @@ public abstract class commonCanvas extends exCanvas
         	hidden.showText = myFrame.addAction(s.get("Show Raw Text"),deferredEvents);
         	if(G.isCodename1())
         		{ myFrame.setCanSavePanZoom(deferredEvents); 
-        	}
+        		}
         }
 
        if (extraactions)
@@ -7299,6 +7313,15 @@ public void performHistoryTokens(StringTokenizer his)
  * @return
  */
 public boolean allowResetUndo() { return(allowPartialUndo()); }
+public boolean isPuzzleState() 
+{ 	BoardProtocol b = getBoard();
+	return b!=null && b.getState().Puzzle();
+}
+public boolean somethingIsMoving()
+{
+	BoardProtocol b = getBoard();
+	return b!=null && b.movingObjectIndex()>=0;
+}
 /**
  * reset the state of the game back to the previous "done" state, if that is allowed,
  * or back to the previous "pick" operation, if that is allowed.  This is done by truncating
@@ -7312,7 +7335,7 @@ public boolean allowResetUndo() { return(allowPartialUndo()); }
 public void performReset()
 {	if(remoteViewer>=0) { return; }
 	if(!allowed_to_edit && reviewMode()) { scrollFarForward(); }
-    else if(ourActiveMove() && (allowResetUndo() || allowBackwardStep())) 
+    else if(ourActiveMove() && (allowResetUndo() || allowBackwardStep() || isPuzzleState())) 
     	{ PerformAndTransmit(RESET); 
     	}
 	else  { leaveLockedReviewMode(); }

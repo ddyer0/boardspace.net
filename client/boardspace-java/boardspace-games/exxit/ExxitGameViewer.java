@@ -749,7 +749,7 @@ public class ExxitGameViewer extends CCanvas<ExxitCell,ExxitGameBoard> implement
     	missedOneClick = false;
     	ExxitId hitObject = (ExxitId)hp.hitCode;
         ExxitState state = b.getState();
-		ExxitCell cell = hitCell(hp);
+		ExxitCell cell = b.getCell(hitCell(hp));
 		ExxitPiece bug = (cell==null) ? null : cell.topPiece();
        	
 		switch (hitObject)

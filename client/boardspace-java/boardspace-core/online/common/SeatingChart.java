@@ -45,7 +45,8 @@ public class SeatingChart {
 	static Seating[] rightCorner = { Seating.Bottom_Center, Seating.Right_End};
 	static Seating[] leftL = { Seating.Bottom_Pair_Right,Seating.Bottom_Pair_Left,Seating.Left_End};
 	static Seating[] rightL = { Seating.Bottom_Pair_Right, Seating.Bottom_Pair_Left,Seating.Right_End};
-	static Seating[] threeAround = { Seating.Bottom_Center,Seating.Left_End,Seating.Top_Center};
+	static Seating[] threeAroundL = { Seating.Bottom_Center,Seating.Left_End,Seating.Top_Center};
+	static Seating[] threeAroundR = { Seating.Bottom_Center,Seating.Right_End,Seating.Top_Center};
 	static Seating[] threeAcross = { Seating.Bottom_Pair_Right,Seating.Bottom_Pair_Left,Seating.Top_Center };
 	static Seating[] threeWide = {  Seating.Bottom_Center,Seating.Left_End, Seating.Right_End };
 	static Seating[] fourAround = { Seating.Bottom_Center,Seating.Left_End,Seating.Top_Center,Seating.Right_End };
@@ -110,6 +111,7 @@ public class SeatingChart {
 	
 	public static SeatingChart faceLandscape = new SeatingChart(DefinedSeating.FaceToFaceLandscapeSide,faceToFaceLandscape,TwoPlayerExplanation);
 	
+	private static SeatingChart portrait = new SeatingChart(DefinedSeating.RightEnd,soloPortrait,OnePlayerExplanation);
 
 	private static SeatingChart default3POffline = new SeatingChart(DefinedSeating.Undefined,threeBelow,ThreePlayerExplanation);
 	private static SeatingChart default4POffline = new SeatingChart(DefinedSeating.Undefined,fourBelow,FourPlayerExplanation);
@@ -147,7 +149,7 @@ public class SeatingChart {
 		};
 	public static SeatingChart ServerCharts[] = 
 		{ defaultReview,
-		  defaultPortrait,
+		  portrait,
 		  defaultLandscape,
 		  defaultPassAndPlay,
 		  faceLandscape,
@@ -156,8 +158,9 @@ public class SeatingChart {
 		  rightCorner2P,
 		  leftCorner3P,
 		  rightCorner3P,
-		  new SeatingChart(DefinedSeating.ThreeAround,threeAround),
+		  new SeatingChart(DefinedSeating.ThreeAroundL,threeAroundL),
 		  new SeatingChart(DefinedSeating.ThreeWide,threeWide),
+		  new SeatingChart(DefinedSeating.ThreeAroundR,threeAroundR),
 		  default3P,
 		  new SeatingChart(DefinedSeating.FourAround,fourAround),
 		  new SeatingChart(DefinedSeating.FourAroundU,fourAroundU),
@@ -179,12 +182,15 @@ public class SeatingChart {
 		LeftCorner(false,true,true,LeftCornerWide),
 		RightCorner(false,true,true,RightCornerWide),
 		FaceToFacePortrait(true,false,true,null),
+		RightEnd(true,true,false,null),
 		ThreeLeftLW(false,true,true,null),
 		ThreeLeftL(false,true,true,ThreeLeftLW),
 		ThreeRightLW(false,true,true,null),
 		ThreeRightL(false,true,true,ThreeRightLW),
 		ThreeAroundLeft(false,true,true,null),
-		ThreeAround(false,true,true,ThreeAroundLeft),
+		ThreeAroundRight(false,true,true,null),
+		ThreeAroundL(false,true,true,ThreeAroundLeft),
+		ThreeAroundR(false,true,true,ThreeAroundRight),
 		ThreeWideLeft(false,true,true,null),
 		ThreeWide(false,true,true,ThreeWideLeft),
 		ThreeAcrossLeftCenter(false,false,true,null),

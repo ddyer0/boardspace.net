@@ -599,7 +599,7 @@ public class Session implements LobbyConstants
 	    						&& (mode != Mode.Master_Mode);
 	    return(canAddRobot);
     }
-  	public void launchGame(User primaryUser,boolean sound,int []activeColorMap) 
+  	public void launchGame(User primaryUser,boolean sound,int []activeColorMap,int rotation) 
 		{
 		InternationalStrings s = G.getTranslations();
 		ExtendedHashtable sharedInfo = G.getGlobals();
@@ -645,7 +645,6 @@ public class Session implements LobbyConstants
 				 	?SeatingChart.defaultSeatingChart(startingNplayers)
 				 	:seatingChart);
 		 myInfo.setGameInfo(GI);
-
 		 // build a color map if none was specified.  This may seems unnecessarily
 		 // complex but it's not.  each user has a specified order and a specified position
 		 // where the position corresponds to the color.
@@ -701,6 +700,7 @@ public class Session implements LobbyConstants
 		 myInfo.putObj(exHashtable.MODE,mode.modeName);
 		 myInfo.putBoolean(exHashtable.TOURNAMENTMODE,tournamentMode);
 		 myInfo.putBoolean(exHashtable.SOUND,sound);
+		 myInfo.putInt(exHashtable.ROTATION,rotation);
 		 myInfo.copyFrom(sharedInfo,sharedValues);
 		 
 		 if(robotGame!=null)
@@ -815,7 +815,7 @@ public class Session implements LobbyConstants
 	      }
 	  }
 
-	public void launchSpectator(User primaryUser,boolean sound)
+	public void launchSpectator(User primaryUser,boolean sound,int rotation)
 	{
 	       password="";
 	       startingNplayers=0;
@@ -826,7 +826,7 @@ public class Session implements LobbyConstants
 	       startingName="";
 	       LaunchUser lu = launchUser = new LaunchUser();
 	       lu.user = primaryUser;
-	       launchGame(primaryUser,sound,null);
+	       launchGame(primaryUser,sound,null,rotation);
 	     
 	}
 	public boolean canChangeGameInfo()

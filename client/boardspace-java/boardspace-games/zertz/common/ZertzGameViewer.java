@@ -310,6 +310,8 @@ public class ZertzGameViewer extends CCanvas<zCell,GameBoard> implements GameCon
     		// allow moving balls in puzzle mode
     		GC.frameRect(gc, Color.red, R);
             highlightRackIndex = ZertzId.find(rackindex);
+            highlightBoardCol = (char)0;
+            highlightBoardRow = 0;
             highlight.hitCode = ZertzId.find(rackindex);
     		}
         zCell[] ballCells = bd.rack[rackindex];
@@ -359,6 +361,8 @@ public class ZertzGameViewer extends CCanvas<zCell,GameBoard> implements GameCon
             else if (drawhighlight)
             {
                 highlightRackIndex = ZertzId.find(rackindex);
+                highlightBoardCol = (char)0;
+                highlightBoardRow = 0;
                 highlight.hitCode = ZertzId.find(index);
             }
         	}
@@ -835,10 +839,10 @@ public class ZertzGameViewer extends CCanvas<zCell,GameBoard> implements GameCon
         	ZertzId hitObject = (ZertzId)id;
         	if(hitObject.isBall)
         	{
-            movingFromRackIndex = highlightRackIndex;
+        	movingFromRackIndex = highlightRackIndex;
             movingFromBoardRow = highlightBoardRow;
             movingFromBoardCol = highlightBoardCol;
-            movingObject = hitObject.ordinal();
+            movingObject = hitObject.ordinal();            
             hp.dragging = true;
         	}
         	else if(hitObject==ZertzId.HitChangeBoard)

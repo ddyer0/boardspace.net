@@ -179,7 +179,7 @@ public class SantoriniViewer extends CCanvas<SantoriniCell,SantoriniBoard> imple
     			0.75,	// 60% of space allocated to the board
     			1.2,	// 1.2:1 aspect ratio for the board
     			fh*3,	// maximum cell size
-    			0.4		// preference for the designated layout, if any
+    			0.2		// preference for the designated layout, if any
     			);
     	
         // place the chat and log automatically, preferring to place
@@ -635,7 +635,7 @@ private void playSounds(commonMove m)
         {
 
         SantorId hitObject = (SantorId)hp.hitCode;
-		SantoriniCell cell = hitCell(hp);
+		SantoriniCell cell = b.getCell(hitCell(hp));
 		SantoriniChip chip = (cell==null) ? null : cell.topChip();
 		if(chip!=null)
 		{
@@ -655,8 +655,9 @@ private void playSounds(commonMove m)
 	    		{
 	    		SantoriniState state = b.getState();
 	    		SantoriniChip top = cell.topChip();
-	    		if((state!=SantoriniState.BuildAgain_State)
-	    				&& (b.isDest(cell) || top.isMan()))
+	    		if((state==SantoriniState.PUZZLE_STATE) 
+	    				|| ((state!=SantoriniState.BuildAgain_State)
+	    						&& (b.isDest(cell) || top.isMan())))
 	    		{
 	    		PerformAndTransmit("Pickb "+cell.col+" "+cell.row+" "+chip.chipNumber());
 	    		}}

@@ -90,7 +90,7 @@ public class ModxViewer extends CCanvas<ModxCell,ModxBoard> implements ModxConst
 
         int randomKey = info.getInt(OnlineConstants.RANDOMSEED,-1);
        
-        b = new ModxBoard(info.getString(OnlineConstants.GAMETYPE, Variation.Modx.name),
+        b = new ModxBoard(info.getString(GAMETYPE, Variation.Modx.name),
         		randomKey,players_in_game,repeatedPositions,getStartingColorMap(),ModxBoard.REVISION);
         useDirectDrawing(true);
         doInit(false);
@@ -516,7 +516,7 @@ private void playSounds(commonMove m)
     	if (hp.hitCode instanceof ModxId) // not dragging anything yet, so maybe start
         {
         ModxId hitObject = (ModxId)hp.hitCode;
-		ModxCell cell = hitCell(hp);
+		ModxCell cell = b.getCell(hitCell(hp));
 		ModxChip chip = (cell==null) ? null : cell.topChip();
 		if(chip!=null)
 		{

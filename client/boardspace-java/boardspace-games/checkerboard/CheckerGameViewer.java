@@ -223,7 +223,7 @@ public class CheckerGameViewer extends CCanvas<CheckerCell,CheckerBoard> impleme
         int vcrMW = fh*20;
     	int bannerW = fh*20;
     	int bannerH = fh*4;
-        int stateH = fh*2;
+        int stateH = fh*5/2;
         int buttonW = fh*8;
       	layout.placeTheVcr(this,vcrW,vcrMW);
       	layout.placeRectangle(bannerRect,bannerW,bannerH,bannerW*2,bannerH*2,BoxAlignment.Top,true);

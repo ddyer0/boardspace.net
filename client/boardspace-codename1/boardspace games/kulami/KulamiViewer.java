@@ -490,7 +490,7 @@ public class KulamiViewer extends CCanvas<KulamiCell,KulamiBoard> implements Kul
             if(cell.drawChip(gc,this,drawhighlight ? highlight : null,
             		(cell==prev1 || cell==prev2) ? largeBallsize : ballsize,xpos,ypos,null))
             {
-            	highlight.hitCode = KulamiId.EmptyBoard;
+            	highlight.hitCode = cell.topChip()==null ? KulamiId.EmptyBoard : KulamiId.BoardLocation;
             	highlight.spriteColor = Color.red;
             	highlight.awidth = CELLSIZE/2;
             }
@@ -800,8 +800,7 @@ public class KulamiViewer extends CCanvas<KulamiCell,KulamiBoard> implements Kul
         else {
         missedOneClick = false;
         KulamiId hitCode = (KulamiId)id;
-        KulamiCell hitObject = hitCell(hp);
-		KulamiState state = bb.getState();
+        KulamiCell hitObject = bb.getCell(hitCell(hp));
         switch (hitCode)
         {
         default:
@@ -813,27 +812,6 @@ public class KulamiViewer extends CCanvas<KulamiCell,KulamiBoard> implements Kul
             }
         	break;
         case BoardLocation:	// we hit an occupied part of the board 
-			switch(state)
-			{
-			default: throw G.Error("Not expecting drop on filled board in state "+state);
-			case Confirm:
-			case Play:
-			case PlayOrSwap:
-				if(!bb.isDest(hitObject))
-					{
-					// note that according to the general theory, this shouldn't
-					// ever occur because inappropriate spaces won't be mouse sensitve.
-					// this is just defense in depth.
-					throw G.Error("shouldn't hit a chip in state "+state);
-					}
-				// fall through and pick up the previously dropped piece
-				//$FALL-THROUGH$
-			case Puzzle:
-				PerformAndTransmit("Pickb "+hitObject.col+" "+hitObject.row);
-				break;
-			}
-			break;
-			
         case EmptyBoard:
         	if(hitObject.topChip()==null)
         	{

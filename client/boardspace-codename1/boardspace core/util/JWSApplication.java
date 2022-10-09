@@ -114,6 +114,8 @@ public class JWSApplication implements Config
 			RootAppletProtocol realRoot = new online.common.commonRootApplet();
 			G.setGlobalDefaultFont();	// set a reasonable global default
 			// copy the web start parameters
+			
+			
 			for(int i=0; i<args.length; i+=2)
 			{	String par = args[i].toLowerCase();
 				String arg = args[i+1];
@@ -126,8 +128,20 @@ public class JWSApplication implements Config
 			//System.out.println("Servername "+serverName);
 			G.print("Screen: ",G.screenSize()," = ",G.screenDiagonal());
 			G.print("w ",G.getScreenWidth()," h ",G.getScreenHeight()," dpi ",G.getRealScreenDPI()," ppi ",G.getPPI()," scale ",G.getDisplayScale());
-	    	G.getOSInfo();
-			G.print("Ask fontsize "+G.defaultFontSize+" get "+G.getFontSize(G.getGlobalDefaultFont()));
+			G.print(G.screendpiDetails);
+			if(G.debug()) 
+    		{ 
+    			G.print("\nOS: ",G.getOSInfo(),"\nPlaytable ",G.isTable(),
+					 "\nreal playtable: ",G.isRealPlaytable(),
+					 "\nreal InfinityTable: ",G.isRealInfinityTable(),
+					 "\nreal LastGameBoard:",G.isRealLastGameBoard(),
+					 "\n");
+
+    		}
+			G.print("Drawers: "+G.drawersOff());	// for lastgameboard
+
+			G.getOSInfo();
+			G.print("Ask fontsize "+G.defaultFontSize," get ",G.getFontSize(G.getGlobalDefaultFont()));
 			G.print(Component.getHierarchy(MasterForm.getMasterPanel()));
 			G.print("\n");
 			G.print(Component.getHierarchy(MasterForm.getMasterForm().getTitleBar()));

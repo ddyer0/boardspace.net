@@ -105,7 +105,12 @@ public abstract class SystemGraphics
     	AffineTransform xform = graphics.getTransform();
     	return((int)xform.getTranslateY());
     }
-    
+	public void setRotation(double ang)
+	 {	if(logging) { Log.appendNewLog("rotate ");Log.appendLog(ang);  }
+		 graphics.rotate(ang);
+		 if(logging) { Log.finishEvent(); }
+	 }
+   
 	public void setRotation(double ang,int cx,int cy)
 	 {	if(logging) { Log.appendNewLog("rotate ");Log.appendLog(ang);  }
 		 graphics.rotate(ang,cx,cy);

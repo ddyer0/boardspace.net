@@ -195,7 +195,7 @@ public double setLocalBoundsA(int x, int y, int width, int height,double a)
 	int mainX = G.Left(main);
 	int mainY = G.Top(main);
 	int mainW = G.Width(main);
-    int stateH = fh*2;
+    int stateH = fh*5/2;
 	int mainH = G.Height(main);
 	boolean rotate = seatingFaceToFaceRotated();
     int nrows = rotate ? b.boardColumns : b.boardRows;  

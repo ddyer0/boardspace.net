@@ -680,32 +680,11 @@ public class MajoritiesViewer extends CCanvas<MajoritiesCell,MajoritiesBoard> im
         missedOneClick = false;
         MajoritiesId hitCode = (MajoritiesId)id;
         MajoritiesCell hitObject = hitCell(hp);
-		MajoritiesState state = bb.getState();
         switch (hitCode)
         {
         default:
         	throw G.Error("Hit Unknown: %s", hitObject);
         case BoardLocation:	// we hit an occupied part of the board 
-			switch(state)
-			{
-			default: throw G.Error("Not expecting drop on filled board in state %s",state);
-			case Confirm:
-			case Play:
-				if(!bb.isDest(hitObject))
-					{
-					// note that according to the general theory, this shouldn't
-					// ever occur because inappropriate spaces won't be mouse sensitve.
-					// this is just defense in depth.
-					throw G.Error("shouldn't hit a chip in state %s",state);
-					}
-				// fall through and pick up the previously dropped piece
-				//$FALL-THROUGH$
-			case Puzzle:
-				PerformAndTransmit("Pickb "+hitObject.col+" "+hitObject.row);
-				break;
-			}
-			break;
-			
         case EmptyBoard:
 			doDropChip(hitObject.col,hitObject.row);
 			break;

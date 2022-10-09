@@ -208,7 +208,7 @@ public class PunctGameViewer extends CCanvas<punctCell,PunctGameBoard> implement
     	//
         int stateY = boardY;
         int stateX = boardX;
-        int stateH = fh*2;
+        int stateH = fh*5/2;
         G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,liftRect,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	

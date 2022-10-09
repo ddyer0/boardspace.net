@@ -216,7 +216,7 @@ public class FrogViewer extends CCanvas<FrogCell,FrogBoard> implements FrogConst
     	double cs = Math.min((double)mainW/ncols,(double)mainH/ncols);
     	CELLSIZE = (int)cs;
      	// center the board in the remaining space
-        int stateH = fh*2;
+        int stateH = fh*3;
     	int boardW = mainW;    	
     	int boardX = mainX;
     	int boardY = mainY+stateH;

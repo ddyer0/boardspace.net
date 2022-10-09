@@ -3,6 +3,7 @@ package bridge;
 import java.awt.Component;
 import java.awt.Font;
 import java.awt.FontMetrics;
+import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
 
 import lib.G;
@@ -84,6 +85,7 @@ public class JMenu extends javax.swing.JMenu implements NativeMenuInterface,Nati
 			{ Plog.log.addLog("error in java menu ",err);
 			}
         }
-	
+	public Rectangle getRotatedBounds() { return getBounds(); }
+
 	
 }

@@ -38,8 +38,7 @@ public class JOptionPane extends Component {
 	}
 	return(-1);
 	}
-	
-	public static String showInputDialog(String message) 
+	public static String showInputDialog(String message)
 	{
 	TextArea text = new TextArea(message);
 	text.setSingleLineTextArea(true);		// used as a flag to cause the textarea to activate on newline

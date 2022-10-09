@@ -6,6 +6,7 @@ import com.codename1.ui.geom.Dimension;
 import com.codename1.ui.geom.Rectangle;
 import com.codename1.ui.layouts.Insets;
 
+import lib.CanvasRotaterProtocol;
 import lib.DeferredEventManager;
 import lib.G;
 import lib.NullLayout;
@@ -49,6 +50,8 @@ public class LPanel extends FullscreenPanel implements LFrameProtocol, WindowLis
 
     };
     
+    public void setCanvasRotater(CanvasRotaterProtocol r) { if(theFrame!=null) { theFrame.setCanvasRotater(r); }}
+    public CanvasRotaterProtocol getCanvasRotater() { return ((theFrame!=null) ? null : theFrame.getCanvasRotater()); }
     public void setIconAsImage(Image m)
     {
     	if(theFrame!=null) { theFrame.setIconAsImage(m); }
@@ -407,4 +410,5 @@ public class LPanel extends FullscreenPanel implements LFrameProtocol, WindowLis
 	public void setHasSavePanZoom(boolean v) {
 		theFrame.setHasSavePanZoom(v);;
 	}
+
 }

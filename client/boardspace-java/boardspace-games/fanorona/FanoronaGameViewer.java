@@ -580,7 +580,7 @@ boolean startMotion(FanId hitObject,FanoronaCell cell,FanoronaChip chip)
         if (hp.hitCode instanceof FanId) // not dragging anything yet, so maybe start
         {
         FanId hitObject = (FanId)hp.hitCode;
-		FanoronaCell cell = hitCell(hp);
+		FanoronaCell cell = b.getCell(hitCell(hp));
 		FanoronaChip chip = (cell==null) ? null : cell.topChip();
 		hp.dragging = startMotion(hitObject,cell,chip);
         }

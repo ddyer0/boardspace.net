@@ -32,7 +32,6 @@ import online.common.*;
 
  
  *
-
 */
 public class SantoriniViewer extends CCanvas<SantoriniCell,SantoriniBoard> implements SantoriniConstants, GameLayoutClient
 {
@@ -546,7 +545,6 @@ public class SantoriniViewer extends CCanvas<SantoriniCell,SantoriniBoard> imple
         				stateRect);
 		gb.playerChip[gb.whoseTurn].drawChip(gc,this,iconRect,null);
         goalAndProgressMessage(gc,ourSelect,s.get(GoalString),progressRect, goalRect);
-
         drawVcrGroup(ourSelect, gc);
         drawViewsetMarker(gc,viewsetRect,ourSelect);
 
@@ -638,7 +636,7 @@ private void playSounds(commonMove m)
         {
 
         SantorId hitObject = (SantorId)hp.hitCode;
-		SantoriniCell cell = hitCell(hp);
+		SantoriniCell cell = b.getCell(hitCell(hp));
 		SantoriniChip chip = (cell==null) ? null : cell.topChip();
 		if(chip!=null)
 		{
@@ -658,8 +656,9 @@ private void playSounds(commonMove m)
 	    		{
 	    		SantoriniState state = b.getState();
 	    		SantoriniChip top = cell.topChip();
-	    		if((state!=SantoriniState.BuildAgain_State)
-	    				&& (b.isDest(cell) || top.isMan()))
+	    		if((state==SantoriniState.PUZZLE_STATE) 
+	    				|| ((state!=SantoriniState.BuildAgain_State)
+	    						&& (b.isDest(cell) || top.isMan())))
 	    		{
 	    		PerformAndTransmit("Pickb "+cell.col+" "+cell.row+" "+chip.chipNumber());
 	    		}}

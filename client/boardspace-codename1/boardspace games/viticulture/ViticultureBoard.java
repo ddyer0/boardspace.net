@@ -80,7 +80,7 @@ action will be taken in the spring.
   
  */
 class ViticultureBoard extends RBoard<ViticultureCell> implements BoardProtocol,ViticultureConstants
-{	static int REVISION = 153;			// 100 represents the initial version of the game
+{	static int REVISION = 154;			// 100 represents the initial version of the game
 										// games with no revision information will be 100
 										// revision 101, correct the sale price of champagne to 4
 										// revision 102, fix the cash distribution for the cafe
@@ -151,6 +151,7 @@ class ViticultureBoard extends RBoard<ViticultureCell> implements BoardProtocol,
 										// revision 152 tightens up the conditions for showing the "fill wine order" choice
 										// revision 153 fixes an omission, considering the workshop discount for craftsman
 										// 		also fixes "producer" to only forbid retrieving itself
+										// revision 154 adds "fill" to jack of all trades if makewine is a choice
 public int getMaxRevisionLevel() { return(REVISION); }
 	PlayerBoard pbs[] = null;		// player boards
 	public PlayerBoard getPlayerBoard(int n) 
@@ -9189,10 +9190,12 @@ public void placeWorkerInAction(PlayerBoard pb,int action,int lastSlot,
 			case 20:	// jack of all trades
 				{
 				boolean canHarvest = canHarvest(pb,generator);
+				boolean canMakeWine = canHarvest || canMakeWine(pb);
+				boolean canFill = (revision>=154 ? canMakeWine : false) || pb.canPossiblyFillWineOrder();
 				if(canHarvest) { addChoice(all,ViticultureId.Choice_A,generator); }
-				if(canHarvest || canMakeWine(pb)) { addChoice(all,ViticultureId.Choice_B,generator); }
+				if(canHarvest || canMakeWine) { addChoice(all,ViticultureId.Choice_B,generator); }
 				// avoid information leakage
-				if(revision<152 || pb.canPossiblyFillWineOrder()) { addChoice(all,ViticultureId.Choice_C,generator); }
+				if(revision<152 || canFill) { addChoice(all,ViticultureId.Choice_C,generator); }
 				}
 				break;
 			case 26:

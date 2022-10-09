@@ -139,6 +139,12 @@ public class GC {
 		}
 	}
 
+	public static void setRotation(Graphics g,double ang)
+	{	if((g!=null) && (ang!=0))
+		{
+			g.setRotation(ang);
+		}
+	}
 	public static void setRotation(Graphics g,double ang,int cx,int cy)
 	{	if((g!=null) && (ang!=0))
 		{

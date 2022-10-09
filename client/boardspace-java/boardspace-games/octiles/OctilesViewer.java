@@ -20,6 +20,7 @@ import lib.LFrameProtocol;
 import lib.StockArt;
 import lib.Text;
 import lib.TextButton;
+import lib.Toggle;
 
 import static octiles.OctilesMovespec.*;
 
@@ -68,7 +69,10 @@ public class OctilesViewer extends CCanvas<OctilesCell,OctilesBoard> implements 
     // to visualize the layout during development.  Look for "show rectangles"
     // in the options menu.
      private Rectangle chipRects[] = addRect("chip",4);
-   
+     private Toggle eyeRect = new Toggle(this,"eye",
+ 			StockArt.NoEye,OctilesId.ToggleEye,NoeyeExplanation,
+ 			StockArt.Eye,OctilesId.ToggleEye,EyeExplanation
+ 			);
     private Rectangle repRect = addRect("repRect");
     private TextButton passButton = addButton(PASS,GameId.HitPassButton,ExplainPass,
 			HighlightColor, rackBackGroundColor);
@@ -215,7 +219,7 @@ public class OctilesViewer extends CCanvas<OctilesCell,OctilesBoard> implements 
     	int boardY = mainY+extraH;
     	int boardBottom = boardY+boardH;
     	int stateY = boardY;
-    	G.placeStateRow( boardX+CELLSIZE,stateY,boardW-CELLSIZE,stateH,iconRect,stateRect,viewsetRect,noChatRect);
+    	G.placeStateRow( boardX+CELLSIZE,stateY,boardW-CELLSIZE,stateH,iconRect,stateRect,eyeRect,viewsetRect,noChatRect);
      	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
         
     	G.SetRect(goalRect, boardX, boardBottom-stateH*2, boardW, stateH);
@@ -332,6 +336,7 @@ public class OctilesViewer extends CCanvas<OctilesCell,OctilesBoard> implements 
  // draw the runner cells, (not the tile cells)
  private OctilesCell drawRunnerCells(Graphics gc,OctilesBoard gb,Rectangle brect,HitPoint highlight,int row)
  {	OctilesCell hitCell = null;
+ 	boolean show = eyeRect.isOnNow();
     for (char thiscol = (char)('A'+gb.ncols-1),firstcol='A';
 		 thiscol>=firstcol;
 		 thiscol--)
@@ -349,6 +354,7 @@ public class OctilesViewer extends CCanvas<OctilesCell,OctilesBoard> implements 
 		highlight.awidth=SQUARESIZE/2;
 		highlight.spriteColor = Color.red;
         }
+       if(canhit && show) { StockArt.SmallO.drawChip(gc,this,SQUARESIZE,xpos,ypos,null); }
        cell.rotateCurrentCenter(gc,xpos,ypos);
 	}
  	return(hitCell);
@@ -361,6 +367,7 @@ public class OctilesViewer extends CCanvas<OctilesCell,OctilesBoard> implements 
         // now draw the contents of the board and anything it is pointing at
         //
     	OctilesState board_state = gb.getState();
+    	boolean show = eyeRect.isOnNow();
         boolean mov = (gb.pickedObject!=null);
         boolean perspective = usePerspective();
         Hashtable<OctilesCell,OctilesMovespec> dests = gb.getDests(false);
@@ -412,7 +419,8 @@ public class OctilesViewer extends CCanvas<OctilesCell,OctilesBoard> implements 
     		highlight.hitCode = left?OctilesId.RotateLeft:OctilesId.RotateRight;
     		highlight.arrow = left?StockArt.Rotate_CCW:StockArt.Rotate_CW;
         }
-        if(c.drawStack(gc,this,(canhit&&!rotateZone)?highlight:null,SQUARESIZE,xpos,ypos,
+        HitPoint hitStack = (canhit&&!rotateZone)?highlight:null;
+        if(c.drawStack(gc,this,hitStack,SQUARESIZE,xpos,ypos,
         		0,(perspective?0:step*.2),(perspective?step:0), null))
         	{ 	
         		// inner part or just dropping in
@@ -420,9 +428,12 @@ public class OctilesViewer extends CCanvas<OctilesCell,OctilesBoard> implements 
 	        		highlight.spriteColor = Color.red;
 	         		highlight.arrow =mov ? StockArt.DownArrow : StockArt.UpArrow;
 	         		highlight.spriteColor = Color.red;
-	     
         	}
-        if(dests.get(c)!=null) { StockArt.SmallO.drawChip(gc,this,SQUARESIZE,xpos,ypos,null); }
+        if(show ?  hitStack!=null : (dests.get(c)!=null))
+        	{ StockArt.SmallO.drawChip(gc,this,SQUARESIZE,
+        			xpos-(int)(perspective?0:step*0.2*c.height()*SQUARESIZE),
+        			ypos-(int)(perspective?step*c.height()*SQUARESIZE:0),null); 
+        	}
                  
         }
         if(perspective)
@@ -496,7 +507,8 @@ public class OctilesViewer extends CCanvas<OctilesCell,OctilesBoard> implements 
         chip.drawChip(gc, this, iconRect,null);
         goalAndProgressMessage(gc,ourSelect,
         		s.get(GoalMessage),progressRect, goalRect);
-     
+        eyeRect.activateOnMouse=true;
+        eyeRect.draw(gc,highlight);
         DrawRepRect(gc,showRotation,Color.black, gb.Digest(),repRect);	// Not needed for barca
         drawVcrGroup(ourSelect, gc);
         drawViewsetMarker(gc,viewsetRect,ourSelect); 
@@ -608,12 +620,15 @@ private void playSounds(commonMove m)
     	{
     	missedOneClick = false;
         OctilesId hitObject = (OctilesId)hp.hitCode;
-		OctilesCell cell = hitCell(hp);
+		OctilesCell cell = b.getCell(hitCell(hp));
 		OctilesChip chip = (cell==null) ? null : cell.topChip();
         switch (hitObject)
         {
         default:
         	throw G.Error("Hit Unknown: %s" , hitObject);
+        case ToggleEye:
+        	eyeRect.toggle();
+        	break;
         case RotateRight:
         	{
         	int rot = b.nextValidRotation(cell,1);

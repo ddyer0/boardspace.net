@@ -146,6 +146,9 @@ public class MagnetViewer extends CCanvas<MagnetCell,MagnetBoard> implements Mag
         int randomKey = info.getInt(OnlineConstants.RANDOMSEED,-1);
         MouseColors = new Color[]{Color.red,Color.blue};
         MouseDotColors = new Color[]{Color.white,Color.white};
+        // magnet is not suitable for autodone because the primary "done" state
+        // is an optional promote-or-done state.
+        enableAutoDone = false;
         super.init(info,frame);
         // use_grid=reviewer;// use this to turn the grid letters off by default
 
@@ -156,7 +159,7 @@ public class MagnetViewer extends CCanvas<MagnetCell,MagnetBoard> implements Mag
         }
          
 
-        String type = info.getString(OnlineConstants.GAMETYPE, MagnetVariation.magnet.name);
+        String type = info.getString(GAMETYPE, MagnetVariation.magnet.name);
         // recommended procedure is to supply players and randomkey, even for games which
         // are current strictly 2 player and no-randomization.  It will make it easier when
         // later, some variant is created, or the game code base is re purposed as the basis
@@ -245,9 +248,10 @@ public class MagnetViewer extends CCanvas<MagnetCell,MagnetBoard> implements Mag
 		boolean rotate = seatingFaceToFaceRotated();
 	    int nrows = rotate ? 24 : 15;  // b.boardRows
 	    int ncols = rotate ? 15 : 24;	 // b.boardColumns
+	    int stateH = fh*5/2;
 		
 		// calculate a suitable cell size for the board
-		double cs = Math.min((double)mainW/ncols,(double)mainH/nrows);
+		double cs = Math.min((double)mainW/ncols,(double)(mainH-stateH*2)/nrows);
 		CELLSIZE = (int)cs;
 		//G.print("cell "+cs0+" "+cs+" "+bestPercent);
 		// center the board in the remaining space
@@ -262,9 +266,8 @@ public class MagnetViewer extends CCanvas<MagnetCell,MagnetBoard> implements Mag
 		// state and top ornaments snug to the top of the board.  Depending
 		// on the rendering, it can occupy the same area or must be offset upwards
 		//
-	    int stateY = boardY;
+	    int stateY = boardY-stateH;
 	    int stateX = boardX;
-	    int stateH = fh*2;
 	    G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,reverseRect,noChatRect);
 		G.SetRect(boardRect,boardX,boardY,boardW,boardH);
 		
@@ -276,7 +279,7 @@ public class MagnetViewer extends CCanvas<MagnetCell,MagnetBoard> implements Mag
 		// goal and bottom ornaments, depending on the rendering can share
 		// the rectangle or can be offset downward.  Remember that the grid
 		// can intrude too.
-		G.SetRect(goalRect, boardX, boardBottom-stateH,boardW,stateH);       
+		G.SetRect(goalRect, boardX, boardBottom,boardW,stateH);       
         setProgressRect(progressRect,goalRect);
 	    positionTheChat(chatRect,chatBackgroundColor,rackBackGroundColor);
 
@@ -626,7 +629,7 @@ public class MagnetViewer extends CCanvas<MagnetCell,MagnetBoard> implements Mag
         {	// if in any normal "playing" state, there should be a done button
 			// we let the board be the ultimate arbiter of if the "done" button
 			// is currently active.
-			if(!planned && handleDoneButton(gc,doneRect,(gb.DoneState() ? buttonSelect : null), 
+			if(!planned && !autoDoneActive() && handleDoneButton(gc,doneRect,(gb.DoneState() ? buttonSelect : null), 
 					HighlightColor, rackBackGroundColor))
 			{
 				 buttonSelect.hitCode = simultaneous_turns_allowed()
@@ -801,7 +804,7 @@ public class MagnetViewer extends CCanvas<MagnetCell,MagnetBoard> implements Mag
         if (hp.hitCode instanceof MagnetId)// not dragging anything yet, so maybe start
         {
         MagnetId hitObject =  (MagnetId)hp.hitCode;
-        MagnetCell hitCell = hitCell(hp);
+        MagnetCell hitCell = bb.getCell(hitCell(hp));
         MagnetState state = bb.getState();
  	    switch(hitObject)
 	    {
@@ -827,7 +830,11 @@ public class MagnetViewer extends CCanvas<MagnetCell,MagnetBoard> implements Mag
         }
     }
     
-
+    public void sendDone()
+    {
+    	if(simultaneous_turns_allowed()) { PerformAndTransmit("edone"); }
+    	else { PerformAndTransmit("done"); }
+    }
 	/** 
 	 * this is called on "mouse up".  We may have been just clicking
 	 * on something, or we may have just finished a click-drag-release.
@@ -844,7 +851,7 @@ public class MagnetViewer extends CCanvas<MagnetCell,MagnetBoard> implements Mag
         else {
         missedOneClick = false;
         MagnetId hitCode = (MagnetId)id;
-        MagnetCell hitObject = hitCell(hp);
+        MagnetCell hitObject = bb.getCell(hitCell(hp));
         switch (hitCode)
         {
         case UnSelect:

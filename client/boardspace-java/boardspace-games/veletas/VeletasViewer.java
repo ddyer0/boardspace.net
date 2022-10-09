@@ -158,7 +158,7 @@ public class VeletasViewer extends CCanvas<VeletasCell,VeletasBoard> implements 
 	   	int chatHeight = selectChatHeight(height);
 	   	// ground the size of chat and logs in the font, which is already selected
 		// to be appropriate to the window size
-		int fh = G.defaultFontSize; //standardFontSize() if using the old zoom logic
+		int fh = standardFontSize();
 		int minLogW = fh*15;	
 	   	int minChatW = fh*40;	
 	    int minLogH = fh*10;	
@@ -210,7 +210,7 @@ public class VeletasViewer extends CCanvas<VeletasCell,VeletasBoard> implements 
 		//
 	    int stateY = boardY;
 	    int stateX = boardX;
-	    int stateH = (int)(fh*2.5);
+	    int stateH = fh*5/2;
 	    G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect, stateRect,eyeRect,noChatRect);
 		G.SetRect(boardRect,boardX,boardY,boardW,boardH);
 		

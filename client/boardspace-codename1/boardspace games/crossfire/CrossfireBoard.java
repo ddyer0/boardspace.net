@@ -249,6 +249,7 @@ class CrossfireBoard extends hexBoard<CrossfireCell> implements BoardProtocol,Cr
        robotStack.clear();
        robotDepth = 0;
         moveNumber = 1;
+       pickedObject = null;
         prevPickedSource = pickedSource = null;
         prevDroppedDest = droppedDest = null;
 
@@ -608,7 +609,7 @@ class CrossfireBoard extends hexBoard<CrossfireCell> implements BoardProtocol,Cr
 
         case MOVE_DROPB:
         	{
-            dropObject(m,replay);
+            if(pickedObject!=null) { dropObject(m,replay); }
         	}
             break;
 

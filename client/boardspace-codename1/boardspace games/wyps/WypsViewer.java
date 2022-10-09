@@ -197,7 +197,7 @@ public class WypsViewer extends CCanvas<WypsCell,WypsBoard> implements WypsConst
         int minLogH = fh*10;	
         int margin = fh/2;
         int buttonW = (G.isCodename1()?8:6)*fh;
-        int stateH = fh*2;
+        int stateH = fh*3;
         // this does the layout of the player boxes, and leaves
     	// a central hole for the board.
     	//double bestPercent = 

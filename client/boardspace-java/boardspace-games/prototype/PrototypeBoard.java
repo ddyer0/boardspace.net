@@ -429,8 +429,7 @@ class PrototypeBoard
         	pickedObject = null;
             break;
         case BoardLocation:	// already filled board slot, which can happen in edit mode
-        case EmptyBoard:
-           	SetBoard(c,pickedObject);
+        	SetBoard(c,pickedObject);
             pickedObject = null;
             break;
         }

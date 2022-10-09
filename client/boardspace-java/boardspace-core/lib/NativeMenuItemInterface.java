@@ -4,7 +4,8 @@ import java.awt.Font;
 import java.awt.event.ActionListener;
 import bridge.Icon;
 
-public interface NativeMenuItemInterface {
+public interface NativeMenuItemInterface 
+{
 	public Icon getNativeIcon();
 	public String getText();
 	public NativeMenuInterface getSubmenu();
@@ -14,4 +15,5 @@ public interface NativeMenuItemInterface {
 	public ActionListener[]getActionListeners();
 	public void addActionListener(ActionListener d);
 	public String getActionCommand();
+	
 }

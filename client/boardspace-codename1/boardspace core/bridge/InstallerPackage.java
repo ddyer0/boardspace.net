@@ -2,7 +2,7 @@ package bridge;
 
 
 public interface InstallerPackage extends com.codename1.system.NativeInterface 
-{
+{	public String eval(String command);
     public String getInstaller(String name);
     public String getPackages();
     public int getOrientation();

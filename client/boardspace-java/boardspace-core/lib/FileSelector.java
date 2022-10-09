@@ -1000,7 +1000,6 @@ public class FileSelector extends FullscreenPanel
 
 	public boolean handleDeferredEvent(Object e, String command) 
 	{
-		G.print("Deferred "+e+command);
 		DoActionEvent(e,command);
 		itemStateChanged(e);
 		return(true);

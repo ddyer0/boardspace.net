@@ -666,7 +666,7 @@ void doSwap()
     public boolean Execute(commonMove mm,replayMode replay)
     {	Tabmovespec m = (Tabmovespec)mm;
 
-        //G.print("E "+m+" for "+whoseTurn+" "+board_state);
+        //G.print("E "+m+" for "+whoseTurn+" "+Digest());
         switch (m.op)
         {
         case MOVE_SETOPTION:
@@ -697,7 +697,7 @@ void doSwap()
 				 unPickObject(); 
 				 break;
 			  case PLAY_STATE:
-			  case PLAY_OR_SWAP_STATE: acceptPlacement(); break;
+			  case PLAY_OR_SWAP_STATE:  break;
 			default:
 				break;
 			}
@@ -707,7 +707,7 @@ void doSwap()
           		animationStack.push(pickedSource);
           		animationStack.push(c);
           	}
-          	if((revision>101) && (c==pickedSource)) { unPickObject(); } 
+          	if((revision>=101) && (c==pickedSource)) { unPickObject(); } 
           	else 
           	{ 
            	SetBoard(c,pickedObject);
@@ -786,8 +786,7 @@ void doSwap()
         	cantExecute(m);
         }
 
-        //System.out.println("Ex "+m+" for "+whoseTurn+" "+board_state);
-
+        //G.print("X "+m+" for "+whoseTurn+" "+Digest());
         return (true);
     }
 

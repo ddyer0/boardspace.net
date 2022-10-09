@@ -15,7 +15,13 @@ import bridge.WindowEvent;
 import bridge.WindowListener;
 import lib.RepaintManager.RepaintHelper;
 import lib.RepaintManager.RepaintStrategy;
-
+/**
+ * A window that displays text.  This is used as a console window
+ * by textdisplayframe
+ * 
+ * @author ddyer
+ *
+ */
 @SuppressWarnings("serial")
 public class TextWindow extends Canvas implements MouseListener,MouseMotionListener,MouseWheelListener,RepaintHelper,WindowListener 
 {
@@ -190,27 +196,10 @@ public class TextWindow extends Canvas implements MouseListener,MouseMotionListe
 		return TextPrintStream.getPrinter(new Utf8OutputStream(),area);
 
 	}
+	
 	/* for window listener */
-	public void windowOpened(WindowEvent e) {
-		
-	}
 	public void windowClosing(WindowEvent e) {
 		painter.shutdown();
-	}
-	public void windowClosed(WindowEvent e) {
-		
-	}
-	public void windowIconified(WindowEvent e) {
-		
-	}
-	public void windowDeiconified(WindowEvent e) {
-		
-	}
-	public void windowActivated(WindowEvent e) {
-		
-	}
-	public void windowDeactivated(WindowEvent e) {
-		
 	}
 
 

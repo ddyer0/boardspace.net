@@ -597,7 +597,10 @@ public class TammanyViewer extends CCanvas<TammanyCell,TammanyBoard> implements 
             		{	TammanyPlayer diskPlayer = bb.getPlayerOrNull(cell.boss);
             			if(diskPlayer!=null)
             			{
-            			boolean show = G.offline() ? diskPlayer.normalShow : (cell.boss==myPlayer.myBoss);
+            			boolean show = reviewOnly 
+            					|| (G.offline() 
+            							? diskPlayer.normalShow 
+            							: (cell.boss==myPlayer.myBoss));
             			boolean hasVoted = (bb.players[diskPlayer.myIndex].pendingVote!=null);
             			boolean canvote = !hasVoted && (G.offline() ? show : true);
             			drawElectionDisc(gc, show,canvote,highlight, diskPlayer,CELLSIZE, cell, xpos, ypos);
@@ -607,7 +610,10 @@ public class TammanyViewer extends CCanvas<TammanyCell,TammanyBoard> implements 
             case ElectionBox:
             	// bosses in the election grid display
             	if(state.isElection())
-            	{	boolean show = G.offline() ? bb.getPlayerNormalShow(cell.boss) : (cell.boss==myPlayer.myBoss);
+            	{	boolean show = reviewOnly 
+            				|| (G.offline()
+            						? bb.getPlayerNormalShow(cell.boss) 
+            						: (cell.boss==myPlayer.myBoss));
             	    some = drawElectionStack(gc,show,CELLSIZE, cell,xpos,ypos);
             	}
             	break;
@@ -1563,7 +1569,11 @@ public class TammanyViewer extends CCanvas<TammanyCell,TammanyBoard> implements 
     		}
     }
     public boolean allowUndo()
-    {		return super.allowUndo();
+    {		
+    	if(bb.movingObjectIndex()>0) { return true; }
+    	TammanyState state = bb.getState();   	
+    	return (state.allowUndo 
+    			&& super.allowUndo());
     }
 	/**
 	 * this is the key to limiting "runaway undo" in situations where the player

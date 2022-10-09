@@ -509,7 +509,7 @@ public class CrossfireViewer extends CCanvas<CrossfireCell,CrossfireBoard> imple
                 highlight.awidth = CELLSIZE;
                 highlight.spriteColor = Color.red;
             }
-            if (drawhighlight && picked && gb.pickedSource.onBoard)
+            if (drawhighlight && picked && gb.pickedSource!=null && gb.pickedSource.onBoard)
              { // checking for pointable position
             	 StockArt.SmallO.drawChip(gc,this,CELLSIZE*3,xpos,ypos,null);                
              }

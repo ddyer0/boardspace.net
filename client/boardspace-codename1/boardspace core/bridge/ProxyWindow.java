@@ -11,18 +11,24 @@ import com.codename1.ui.layouts.Layout;
 import com.codename1.ui.plaf.Style;
 
 import lib.AwtComponent;
+import lib.CanvasRotater;
+import lib.CanvasRotaterProtocol;
 import lib.G;
 import lib.MenuInterface;
 import lib.NullLayoutProtocol;
 import lib.SizeProvider;
 
 // our component is a codename1 container, so it can have popup menus as children
-public abstract class ProxyWindow implements SizeProvider,EventListener,AwtComponent,NullLayoutProtocol
+public abstract class ProxyWindow implements SizeProvider,EventListener,AwtComponent,NullLayoutProtocol,CanvasRotaterProtocol
 {	public Graphics getGraphics() { throw G.Error("Not implented, not implementedable"); }
 	protected ComponentProxy theComponent = new ComponentProxy(this);
 	public ComponentProxy getComponent() { return(theComponent); }
 	public Component getMediaComponent() { return theComponent; }
 	public Font getFont() { return(theComponent.getFont()); }
+	public Dimension getPreferredSize()
+	{
+		return getComponent().getPreferredSize();
+	}
 	public void addMouseMotionListener(MouseMotionListener who) 
 		{ theComponent.addMouseMotionListener(who); }
 	public void addMouseListener(MouseListener who) 
@@ -173,4 +179,18 @@ public abstract class ProxyWindow implements SizeProvider,EventListener,AwtCompo
 	{ 	com.codename1.ui.Container par = theComponent.getParent();
 		if(par!=null) { par.removeComponent(getComponent()); }
 	}
+	
+	// support for rotater buttons
+	CanvasRotaterProtocol rotater = new CanvasRotater(this);
+	public int getCanvasRotation() { return rotater.getCanvasRotation(); }
+	public boolean quarterTurn() { return rotater.quarterTurn(); }
+	public void setCanvasRotation(int n) { rotater.setCanvasRotation(n); }
+	public boolean rotateCanvas(lib.Graphics g) { return rotater.rotateCanvas(g); }
+	public void unrotateCanvas(lib.Graphics g) {  rotater.unrotateCanvas(g); }
+	public int rotateCanvasX(int x,int y) { return rotater.rotateCanvasX(x,y); }
+	public int rotateCanvasY(int x,int y) { return rotater.rotateCanvasY(x,y); }
+	public int unrotateCanvasX(int x,int y) { return rotater.unrotateCanvasX(x,y); }
+	public int unrotateCanvasY(int x,int y) { return rotater.unrotateCanvasY(x,y); }
+	public Rectangle getRotatedBounds() { return rotater.getRotatedBounds(); }
+	
 }

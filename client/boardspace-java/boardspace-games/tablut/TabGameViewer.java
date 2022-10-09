@@ -639,6 +639,7 @@ public class TabGameViewer extends CCanvas<TabCell,TabGameBoard> implements TabC
 		
 		}
 	}
+
 	/** 
 	 * this is called on "mouse up".  We may have been just clicking
 	 * on something, or we may have just finished a click-drag-release.
@@ -658,27 +659,6 @@ public class TabGameViewer extends CCanvas<TabCell,TabGameBoard> implements TabC
         default:
         	throw G.Error("Hit Unknown: %s", hitObject);
         case BoardLocation:	// we hit an occupied part of the board 
-			switch(state)
-			{
-			default: throw G.Error("Not expecting drop on filled board in state %s",state);
-			case CONFIRM_STATE:
-			case PLAY_STATE:
-			case PLAY_OR_SWAP_STATE:
-				if(!b.isDest(hitObject))
-					{
-					// note that according to the general theory, this shouldn't
-					// ever occur because inappropriate spaces won't be mouse sensitve.
-					// this is just defense in depth.
-					throw G.Error("shouldn't hit a chip in state %s",state);
-					}
-				// fall through and pick up the previously dropped piece
-				//$FALL-THROUGH$
-			case PUZZLE_STATE:
-				PerformAndTransmit("Pickb "+hitObject.col+" "+hitObject.row);
-				break;
-			}
-			break;
-			
         case EmptyBoardLocation:
 			switch(state)
 			{

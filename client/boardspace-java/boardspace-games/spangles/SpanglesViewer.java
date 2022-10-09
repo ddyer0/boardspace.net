@@ -539,7 +539,7 @@ public class SpanglesViewer extends CCanvas<SpanglesCell,SpanglesBoard> implemen
     	else {
     		missedOneClick = false;
     	SpanglesId hitCode = (SpanglesId)hp.hitCode;
-        SpanglesCell hitObject = hitCell(hp);
+        SpanglesCell hitObject = bb.getCell(hitCell(hp));
 		SpanglesState state = bb.getState();
         switch (hitCode)
         {

@@ -19,6 +19,7 @@ import bridge.JPopupMenu;
 import bridge.Config;
 import bridge.FullscreenPanel;
 import bridge.XJMenu;
+import lib.CanvasRotaterProtocol;
 import lib.DeferredEventManager;
 import lib.G;
 import lib.NullLayout;
@@ -62,6 +63,8 @@ public class LPanel extends FullscreenPanel implements LFrameProtocol, WindowLis
 
     };
     
+    public void setCanvasRotater(CanvasRotaterProtocol r) { if(theFrame!=null) { theFrame.setCanvasRotater(r); }}
+    public CanvasRotaterProtocol getCanvasRotater() { return ((theFrame!=null) ? null : theFrame.getCanvasRotater()); }
     public void setIconAsImage(Image m)
     {
     	if(theFrame!=null) { theFrame.setIconAsImage(m); }

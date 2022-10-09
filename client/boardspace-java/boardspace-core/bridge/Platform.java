@@ -81,7 +81,7 @@ public abstract class Platform implements Config
 
  	protected static InstallerPackage installerPackage =  (InstallerPackage)MakeNative(InstallerPackage.class);
   
-
+public static boolean isRealLastGameBoard() { return false; }
 /**
  * synchronized because two processes (lobby and loadthread for example) may try
  * to create the first instance of a class at the same time, leading to conflicts

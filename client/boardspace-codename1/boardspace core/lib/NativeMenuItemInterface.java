@@ -5,7 +5,8 @@ import com.codename1.ui.Font;
 import bridge.ActionListener;
 import bridge.Icon;
 
-public interface NativeMenuItemInterface {
+public interface NativeMenuItemInterface 
+{
 	public Icon getNativeIcon();
 	public String getText();
 	public NativeMenuInterface getSubmenu();
@@ -15,4 +16,5 @@ public interface NativeMenuItemInterface {
 	public ActionListener[]getActionListeners();
 	public void addActionListener(ActionListener d);
 	public String getActionCommand();
+	
 }

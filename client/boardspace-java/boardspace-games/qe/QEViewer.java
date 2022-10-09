@@ -1180,7 +1180,7 @@ public void ViewerRun(int wait)
         else {
         missedOneClick = false;
         QEId hitCode = (QEId)id;
-        QECell hitObject = hitCell(hp);
+        QECell hitObject = bb.getCell(hitCell(hp));
 		QEState state = getUIState();
         switch (hitCode)
         {

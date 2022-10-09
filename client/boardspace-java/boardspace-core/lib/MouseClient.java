@@ -32,5 +32,7 @@ public interface MouseClient extends SizeProvider
 	public double getGlobalZoom();
 	public Component getComponent();
 	public Image getOffScreenImage();
+	public int rotateCanvasX(int xx, int yy);
+	public int rotateCanvasY(int xx, int yy);
 	
 }

@@ -53,4 +53,6 @@ public interface LFrameProtocol extends MenuParentInterface
 	public int getX();
 	public int getY();
 	public void initMenus();
+	public void setCanvasRotater(CanvasRotaterProtocol commonCanvas);
+	public CanvasRotaterProtocol getCanvasRotater();
 }

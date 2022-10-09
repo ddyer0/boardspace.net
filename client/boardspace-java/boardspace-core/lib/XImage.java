@@ -62,7 +62,6 @@ public class XImage
 		  invalid = false; 
 		  endWriteTime = n;
 		  usedForPinch = false;
-		  endWriteTime = n;
 		  endReadTime = 0;
 		  seenCount = 0;
 		  written=true; 
@@ -88,7 +87,7 @@ public class XImage
      }
 	// constructor
 	XImage(Image im) { theImage = im; sequence=screenCount++; }
-	public String toString() { return("<offscreen "+sequence+">"); }
+	public String toString() { return(""+theImage+"#"+sequence); }
 	public Image getImage() { return(theImage); }
 	
  }

@@ -423,7 +423,7 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
         int cellW = G.Width(r)/nCells;
         int cellH = G.Height(r);
         int midr = G.centerY(r);
-        int pieceSize = (int)(cellW*3.5);
+        int pieceSize = RACKSCALE = (int)(cellW*3.5);
 		int cellIndex = 0;
  		int baseY = G.Bottom(r)-(int)(CELLSIZE*0.6);
  		for(PieceType pt : PieceType.values())

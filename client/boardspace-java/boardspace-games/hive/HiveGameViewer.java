@@ -256,7 +256,7 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
     			aspect,	// aspect ratio for the board
     			fh*tileScale,	// minimum cell size
     			fh*tileScale*4/3,	// maximum cell size
-    			0.4		// preference for the designated layout, if any
+    			0.2		// preference for the designated layout, if any
     			);
     	
         // place the chat and log automatically, preferring to place
@@ -424,7 +424,7 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
         int cellW = G.Width(r)/nCells;
         int cellH = G.Height(r);
         int midr = G.centerY(r);
-        int pieceSize = (int)(cellW*3.5);
+        int pieceSize = RACKSCALE = (int)(cellW*3.5);
         int cellIndex = 0;
 		int baseY = G.Bottom(r)-(int)(CELLSIZE*0.6);
 		for(PieceType pt : PieceType.values())

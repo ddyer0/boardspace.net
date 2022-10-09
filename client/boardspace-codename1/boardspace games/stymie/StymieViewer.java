@@ -743,7 +743,7 @@ public class StymieViewer extends CCanvas<StymieCell,StymieBoard> implements Sty
         else {
         missedOneClick = false;
         StymieId hitCode = (StymieId)id;
-        StymieCell hitObject = hitCell(hp);
+        StymieCell hitObject = bb.getCell(hitCell(hp));
 		StymieState state = bb.getState();
         switch (hitCode)
         {

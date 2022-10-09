@@ -220,7 +220,7 @@ public class RajViewer extends CCanvas<RajCell,RajBoard> implements RajConstants
     	//
         int stateY = boardY;
         int stateX = boardX;
-        int stateH = fh*2;
+        int stateH = fh*3;
         G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,noChatRect);
 
     	G.SetRect(boardRect,boardX,boardY+stateH,boardW,boardH-stateH);

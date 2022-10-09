@@ -143,8 +143,10 @@ public class MouseManager
         	  return;
         	}
 
-        x = MasterForm.translateX(canvas,x);
-        y = MasterForm.translateY(canvas,y);
+        int xx = MasterForm.translateX(canvas,x);
+        int yy = MasterForm.translateY(canvas,y);
+        x = canvas.rotateCanvasX(xx,yy);
+        y = canvas.rotateCanvasY(xx,yy);
         long now = G.Date();
         lastState = ev;
         lastMouseState = ev;

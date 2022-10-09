@@ -120,7 +120,7 @@ public class Warp6Viewer extends CCanvas<Warp6Cell,Warp6Board> implements Warp6C
         int minLogH = fh*10;	
         int margin = fh/2;
         int buttonW = fh*8;
-        int stateH = fh*2;
+        int stateH = fh*5/2;
        // this does the layout of the player boxes, and leaves
     	// a central hole for the board.
     	//double bestPercent = 

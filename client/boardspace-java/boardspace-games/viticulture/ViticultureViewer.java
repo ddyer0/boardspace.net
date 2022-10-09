@@ -421,16 +421,14 @@ public class ViticultureViewer extends CCanvas<ViticultureCell,ViticultureBoard>
     			fh0*1.4,fh0*2.0,		// maximum cell size
     			0.2	// preference for the designated layout, if any
     			);
-    	int fh = (int)selectedLayout.selectedCellSize();
+    	int fh = standardFontSize();
     	FontMetrics fm = getFontMetrics(standardPlainFont());
     	int minLogW = fh*15;	
     	int vcrW = fh*16;
        	int minChatW = fh*30;	
          int buttonW = fh*8;
         int buttonH = buttonW*2/3;
-        int stateH = fh*2;
-        int nrows = 15;  // b.boardRows
-        int ncols = BX_CELLS;	 // b.boardColumns
+        int stateH = fh*5/2;
         Rectangle main1 = selectedLayout.peekMainRectangle();
         int minLogH = Math.min(fh*15,G.Height(main1)-margin*2);	
         
@@ -463,13 +461,17 @@ public class ViticultureViewer extends CCanvas<ViticultureCell,ViticultureBoard>
     	int mainW = G.Width(main);
     	int mainH = G.Height(main);
     	boolean around = seatingAround();
-   	
+    	boolean rotateBoard = mainW<mainH;
+    	int nrows = rotateBoard ? BX_CELLS :  15;  	// b.boardRows
+        int ncols = rotateBoard ? 15 : BX_CELLS;	//b.boardColumns
+
     	// calculate a suitable cell size for the board. If "around" seating is in effect,
     	// we need a second "state" rectangle down the left side of the board.
     	double cs = Math.min((double)(mainW-(around?stateH:0))/ncols,(double)(mainH-stateH)/nrows);
     	STANDARD_CELLSIZE = CELLSIZE = (int)cs;
     	//G.print("cell "+cs0+" "+cs+" "+bestPercent);
     	// center the board in the remaining space
+    	{
     	int boardW = (int)(ncols*CELLSIZE);
     	int boardH = (int)(nrows*CELLSIZE);
     	int extraW = Math.max(0, (mainW-boardW)/2);
@@ -477,11 +479,7 @@ public class ViticultureViewer extends CCanvas<ViticultureCell,ViticultureBoard>
     	int boardX = mainX+extraW+(around ? stateH : 0);
     	int boardY = mainY+stateH+extraH;
     	int boardBottom = boardY+boardH;
-    	int third = (int)(boardW*0.2);
-    	int mid = boardX+(int)(boardW*0.12);
-    	G.SetRect(wakeupRect, mid-third,boardY+(int)(boardH*0.22),third*2,(int)(boardH*0.45));
-    	G.SetRect(starRect, mid-third,boardY+(int)(boardH*0.6),third*2,(int)(boardH*0.45));
-   	 
+
     	//
     	// state and top ornaments snug to the top of the board.  Depending
     	// on the rendering, it can occupy the same area or must be offset upwards
@@ -490,8 +488,28 @@ public class ViticultureViewer extends CCanvas<ViticultureCell,ViticultureBoard>
         int stateX = boardX+stateH*2;
         G.placeRow(stateX,stateY,boardW-stateH*2 ,stateH,stateRect,scoreRect,hintRect,noChatRect);
         G.SetRect(rotatedStateRect,stateX-boardH/2-stateH,stateY+boardH/2,boardH-stateH*2,stateH);
+    	// goal and bottom ornaments, depending on the rendering can share
+    	// the rectangle or can be offset downward.  Remember that the grid
+    	// can intrude too.
+    	G.SetRect(goalRect, boardX, boardBottom-stateH,boardW-stateH/3,stateH);       
+        setProgressRect(progressRect,goalRect);
+
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
-    	
+    	if(rotateBoard)
+    	{
+    		G.setRotation(boardRect,-Math.PI/2);
+    		contextRotation = -Math.PI/2;
+    	}}
+    	int boardX = G.Left(boardRect);
+    	int boardY = G.Top(boardRect);
+    	int boardH = G.Height(boardRect);
+    	int boardW = G.Width(boardRect);
+       	int third = (int)(boardW*0.2);
+    	int mid = boardX+(int)(boardW*0.12);
+  	
+    	G.SetRect(wakeupRect, mid-third,boardY+(int)(boardH*0.22),third*2,(int)(boardH*0.45));
+    	G.SetRect(starRect, mid-third,boardY+(int)(boardH*0.6),third*2,(int)(boardH*0.45));
+ 
 		// set a default position so replay animations will be quasi reasonable
     	{int cx = G.centerX(boardRect);
 		int cy = G.centerY(boardRect);
@@ -501,15 +519,10 @@ public class ViticultureViewer extends CCanvas<ViticultureCell,ViticultureBoard>
 
     	int passX = (int)(boardX+0.2*boardW);
     	int passY = (int)(boardY+0.25*boardH);
-    	G.SetRect(passRect, passX,passY,passw*3/2,fh*2);
+    	G.SetRect(passRect, passX,passY,passw*3/2,fh*3);
     	G.SetRect(passWarnRect, passX,passY+fh*3,passw*2,fh*3);
-    	G.SetRect(editRect,boardX+boardW-buttonW-fh*2,G.Top(passRect),buttonW,fh*2);
+    	G.SetRect(editRect,boardX+boardW-buttonW-fh*3,G.Top(passRect),buttonW,fh*3);
     	
-    	// goal and bottom ornaments, depending on the rendering can share
-    	// the rectangle or can be offset downward.  Remember that the grid
-    	// can intrude too.
-    	G.SetRect(goalRect, boardX, boardBottom-stateH,boardW-stateH/3,stateH);       
-        setProgressRect(progressRect,goalRect);
         centerOnBox();
         positionTheChat(chatRect, chatBackgroundColor,rackBackGroundColor);
         //return the board size as a score
@@ -815,9 +828,9 @@ public class ViticultureViewer extends CCanvas<ViticultureCell,ViticultureBoard>
     	setGlobalMagnifiers(null,gb,null,0);
     }
     public double getPreferredRotation()
-    {
+    {	double sup = super.getPreferredRotation();
     	commonPlayer pl = getPlayerOrTemp(mainBoard.whoseTurn);
-    	return(pl.displayRotation);
+    	return(sup+pl.displayRotation);
     }
     private void setGlobalMagnifiers(ViticultureCell on,ViticultureBoard gb,Rectangle box,double rotation)
     {	if(box!=null)
@@ -839,8 +852,10 @@ public class ViticultureViewer extends CCanvas<ViticultureCell,ViticultureBoard>
     	}
     	setMagnifiersOn(on,gb);
     }
-    private void setBoardMagnifiers(ViticultureCell on,ViticultureBoard gb,Rectangle box)
-    {	currentZoomZone = box;
+    private void setBoardMagnifiers(ViticultureCell on,ViticultureBoard gb,Rectangle box0)
+    {	Rectangle box = box0;
+    	
+    	currentZoomZone = box;
     	autoZoom = false;
     	setMagnifiersOn(on,gb);
     }
@@ -1189,8 +1204,7 @@ private void drawPlayerBoard(Graphics gc,
     //{	BoardProtocol b = getBoard();
     //	int celloff = b.cellSize();
     //	return(new Point(G.Right(boardRect)-celloff,G.Bottom(boardRect)-celloff));
-    //}  
-
+    //}    
 
     /** draw the deep unchangable objects, including those that might be rather expensive
      * to draw.  This background layer is used as a backdrop to the rest of the activity.
@@ -1198,12 +1212,16 @@ private void drawPlayerBoard(Graphics gc,
      * */
     public void drawFixedElements(Graphics gc,ViticultureBoard gb,Rectangle brect)
     { // erase
+   
+      
       boolean reviewBackground = reviewMode()&&!mutable_game_record;
       GC.setColor(gc,reviewBackground ? reviewModeBackground : boardBackgroundColor);
       //G.fillRect(gc, fullRect);
      // G.tileImage(gc,ViticultureChip.backgroundTile.image, fullRect, this);   
      ViticultureChip.backgroundTile.getImage().stretchImage(gc, fullRect);  
-      if(reviewBackground)
+     GC.setRotatedContext(gc,boardRect,null,contextRotation);
+
+     if(reviewBackground)
       {	 
        ViticultureChip.backgroundReviewTile.image.tileImage(gc,brect);   
       }
@@ -1226,7 +1244,8 @@ private void drawPlayerBoard(Graphics gc,
       { drawBackgroundElements(gc,null,mainBoard,brect,null,null,dummyTargets); 
       backgroundDigest = backgroundDigest();
     }}
-    
+      GC.unsetRotatedContext(gc,null);
+      
     }
     private Hashtable<ViticultureCell,Viticulturemovespec> dummyTargets = new Hashtable<ViticultureCell,Viticulturemovespec>();
 	ViticultureCell backgroundCells[];
@@ -1276,7 +1295,7 @@ private void drawPlayerBoard(Graphics gc,
     	// or else the background will be permanantly frozen with missing elements.
     	pendingFullRepaint = !spritesIdle();
     	drawBoardBackgroundElements(gc,pl,gb,brect,hitBoard,highlightAll,targets);
-    	
+    	GC.unsetRotatedContext(gc,hitBoard);
         for(int i=0;i<gb.nPlayers();i++)
        	{  commonPlayer pl0 = getPlayerOrTemp(i);
        	   pl0.setRotatedContext(gc, null,false);
@@ -1284,6 +1303,7 @@ private void drawPlayerBoard(Graphics gc,
            
        	   pl0.setRotatedContext(gc, null,true);
         }
+        GC.setRotatedContext(gc,boardRect,hitBoard,-Math.PI/2);
     	
     }
     public void drawBoardBackgroundElements(Graphics gc,commonPlayer pl,ViticultureBoard gb,Rectangle brect,
@@ -4442,11 +4462,13 @@ private void drawPlayerBoard(Graphics gc,
     	Rectangle newBR = new Rectangle(boardX-(int)(left*neww),boardY-(int)(top*newh),(int)neww,(int)newh);
      	if(gc!=null)
     	{	Rectangle oldClip = GC.combinedClip(gc,brect);
+    		GC.unsetRotatedContext(gc,highlightAll);
     		int xdis = G.Left(dispR)-boardX;
     		int ydis = G.Top(dispR)-boardY;
      		GC.translate(gc,xdis,ydis);
     		drawFixedElements(gc,gb,newBR);
     		GC.translate(gc,-xdis,-ydis);
+    		GC.setRotatedContext(gc,boardRect,highlightAll,contextRotation);
     		GC.setClip(gc,oldClip);
     	}
     	int hx = G.Left(highlightAll);
@@ -4623,7 +4645,7 @@ private void drawPlayerBoard(Graphics gc,
 */
     public void redrawBoard(Graphics gc, HitPoint selectPos)
     {  
-    	ViticultureBoard gb = disB(gc);
+       ViticultureBoard gb = disB(gc);
        ViticultureState state = gb.getState();
        boolean moving = hasMovingObject(selectPos);
        Hashtable <ViticultureCell,Viticulturemovespec>targets = gb.getTargets();
@@ -4649,20 +4671,30 @@ private void drawPlayerBoard(Graphics gc,
        
        gameLog.redrawGameLog2(gc, nonDragSelect, logRect, Color.black,
     		   boardBackgroundColor, standardBoldFont(),standardBoldFont());
+       
+       GC.setRotatedContext(gc,boardRect,selectPos,contextRotation);
+
        drawZoomedBoardElements(gc, gb, boardRect, ourTurnSelect,selectPos,targets,currentZoomZone);
+       commonPlayer pl = getPlayerOrTemp(gb.whoseTurn);
+       double messageRotation = pl.messageRotation();
+       if((state != ViticultureState.Puzzle) && !showBigStack && (state!=ViticultureState.Gameover))
+		{
+		handleEditButton(gc,messageRotation,editRect, buttonSelect,selectPos,HighlightColor, rackBackGroundColor);
+		}
+  
+       GC.unsetRotatedContext(gc,selectPos);
+
        boolean planned = plannedSeating();
        for(int i=0;i<gb.nPlayers();i++)
-       	{  commonPlayer pl = getPlayerOrTemp(i);
-       	   pl.setRotatedContext(gc, selectPos,false);
+       	{  commonPlayer pla = getPlayerOrTemp(i);
+       	   pla.setRotatedContext(gc, selectPos,false);
     	   drawPlayerBoard(gc, playerBoardRects[i],gb,playerSideRects[i],chipRects[i],i, ourTurnSelect,selectPos,targets);
     	   if(planned && gb.whoseTurn==i)
     	   {
     		   doneButton(gc,doneRects[i],(gb.DoneState() ? buttonSelect : null));
     	   }
-       	   pl.setRotatedContext(gc, selectPos,true);
+       	   pla.setRotatedContext(gc, selectPos,true);
        	}
-       commonPlayer pl = getPlayerOrTemp(gb.whoseTurn);
-       double messageRotation = pl.messageRotation();
 
        // draw the board control buttons 
 
@@ -4674,10 +4706,6 @@ private void drawPlayerBoard(Graphics gc,
 			if(!planned)
 				{doneButton(gc,doneRect,(emergency || (gb.DoneState()) ? buttonSelect : null));		
 				}
-			if(!showBigStack && (state!=ViticultureState.Gameover))
-			{
-			handleEditButton(gc,messageRotation,editRect, buttonSelect,selectPos,HighlightColor, rackBackGroundColor);
-			}
         }
 
 		// if the state is Puzzle, present the player names as start buttons.

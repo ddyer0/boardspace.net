@@ -1,5 +1,7 @@
 package bridge;
 
+import java.awt.Rectangle;
+
 import lib.Graphics;
 import lib.Image;
 
@@ -28,5 +30,6 @@ public class JFrame extends javax.swing.JFrame
 	{ super.update(g); 
 	}
 	*/
+	public Rectangle getRotatedBounds() { return getBounds(); }
 	
 }

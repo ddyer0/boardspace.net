@@ -219,7 +219,7 @@ public class SprintViewer extends CCanvas<SprintCell,SprintBoard> implements Spr
        	int vcrw = fh*16;
         int margin = fh/2;
         int buttonW = (G.isCodename1()?8:6)*fh;
-        int stateH = fh*2;
+        int stateH = fh*3;
         // this does the layout of the player boxes, and leaves
     	// a central hole for the board.
     	//double bestPercent = 

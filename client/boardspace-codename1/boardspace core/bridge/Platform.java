@@ -16,6 +16,7 @@ import com.codename1.io.FileSystemStorage;
 import com.codename1.io.Log;
 import com.codename1.system.NativeInterface;
 import com.codename1.system.NativeLookup;
+import com.codename1.ui.CN1Constants;
 import com.codename1.ui.Component;
 import com.codename1.ui.Display;
 import com.codename1.ui.EncodedImage;
@@ -459,6 +460,16 @@ public abstract class Platform implements Config{
     {
     	if((installerPackage!=null) && installerPackage.isSupported()) { installerPackage.hardExit(); }
     }
+    static public String drawersOff()
+    {	
+    	if((installerPackage!=null)
+    			&& installerPackage.isSupported()
+    			&& isRealLastGameBoard())
+    	{	String off = "am broadcast -n com.lastgameboard.gameboardservicetest/com.lastgameboard.gameboardservice.drawer.DrawerVisibilityBroadcastReceiver -a com.lastgameboard.gameboardservice.drawer.action_CHANGE_DRAWER_VISIBLITY --ei com.lastgameboard.gameboardservice.drawer.key.CHANGE_DRAWER_VISIBLITY_STATE 0\r\n";
+    		return installerPackage.eval(off);
+    	}
+    	return "not LastgameBoard";
+    }
     static public double screenDiagonal()
     {
     	double den = G.isAndroid() 
@@ -476,15 +487,13 @@ public abstract class Platform implements Config{
        	int dens = Display.getInstance().getDeviceDensity();
     	switch(dens)
     	{
-    	/*
-    	case CN1Constants.DENSITY_LOW: 	return 120;
+     	case CN1Constants.DENSITY_LOW: 	return 120;
     	case CN1Constants.DENSITY_MEDIUM: return 160;
     	case CN1Constants.DENSITY_HIGH: return 220;
     	case CN1Constants.DENSITY_VERY_HIGH: return 320;
     	case CN1Constants.DENSITY_HD: return 400;
     	case CN1Constants.DENSITY_2HD: return 560;
     	case CN1Constants.DENSITY_4K: return 640;
-    	*/
     	default:
     		int d = dens*96/30;
     		return d;
@@ -500,24 +509,34 @@ public abstract class Platform implements Config{
     // came up in "scrollable" mode rather than perfect fit mode.
     //
     static boolean SAMSUNG_REDUCED_RESOLUTION = false;
+    private static int screendpi = 0;
+    public static String screendpiDetails = null;
     
     static public int getScreenDPI()
-    {	
-    	int d =  getDisplayDPI();
+    {	if(screendpi>0) { return screendpi; }
+    	int codename1 =  getDisplayDPI();
     	if(installerPackage!=null && installerPackage.isSupported())
     	{
-    	//G.print(installerPackage.getOSInfo());
     	int raw = (int)installerPackage.getScreenDPI();
     	int stable = raw>>22;
     	int x = raw>>11 & 0x7ff;
-    	int z = raw & 0x7ff;
-    	SAMSUNG_REDUCED_RESOLUTION = (z<stable*0.8);
+    	int standard = raw & 0x7ff;
+    	SAMSUNG_REDUCED_RESOLUTION = (standard<stable*0.8);
     	//if(SAMSUNG_REDUCED_RESOLUTION) { G.print("Samsung game hack detected"); }
-    	//G.print("xdpi ",x," stable dpi ",stable, " s ",z ," dis ",d);
+    	screendpiDetails = G.concat("xdpi ",x," stable dpi ",stable, " standard ",standard ," cn1 ",codename1);
     	//return fd;
-    	return(Math.max(Math.max(x,d),z));
+    	int v = (stable>80) 
+    			? stable
+    			: standard>80 
+    				? standard
+    				: Math.max(x,codename1);
+    			
+    	screendpi = v;
+    	return v;
     	}
-    	return d;
+    	screendpi = codename1;
+    	if(G.isIOS()) { screendpi = Math.min(200,screendpi); }
+    	return codename1;
     }
     
     static public int getRealScreenDPI()
@@ -756,7 +775,10 @@ public abstract class Platform implements Config{
     {	
     	return(G.getBoolean(G.PLAYTABLE,false)
     			|| (G.isAndroid()
-    					&& ((screenDiagonal()>13) || isRealPlaytable() || isRealInfinityTable())));
+    					&& ((screenDiagonal()>13) 
+    							|| isRealPlaytable() 
+    							|| isRealInfinityTable()
+    							|| isRealLastGameBoard())));
     }
     public static boolean isGameboard() 
 	{  return( false ); 
@@ -769,15 +791,21 @@ public abstract class Platform implements Config{
     	return(G.getInt(G.TABLEHEIGHT, 984));
     }
     static String playtablekeys[] = {  " com.blok."};
-    static boolean isRealPlaytable = false;
-    static boolean isRealInfinityTable = false;
+    
     public static String playtableId = null;
     static String packs = null;
     static String osinfo = null;
+    
+    public static boolean isRealLastGameBoard()
+    {
+       	String info = getOSInfo();
+       	return (info.indexOf("display=w400")>=0);
+         	
+    }
     public static boolean isRealInfinityTable()
     {
     	String info = getOSInfo();
-    	return(isRealInfinityTable = info.indexOf("display=Game Table-V")>=0);
+    	return(info.indexOf("display=Game Table-V")>=0);
     }
     public static boolean isRealPlaytable() 
     { 	String info = getOSInfo();
@@ -785,9 +813,7 @@ public abstract class Platform implements Config{
     	boolean alps = info.indexOf("manufacturer=alps")>=0;
     	boolean doppler = info.indexOf("display=Doppler.")>=0;
     	boolean original = info.indexOf("display=PlayTableV")>=0;
-    	isRealPlaytable =  original || (doppler && alps);
-   // 	G.print("Real ",isRealPlaytable," ",original);
-    	return(isRealPlaytable);
+    	return  original || (doppler && alps);
     	/*
     	synchronized (playtablekeys) 
     	{
@@ -825,14 +851,10 @@ public abstract class Platform implements Config{
         		&& installerPackage.isSupported())
     			{osinfo = "getting";
     			 osinfo = installerPackage.getOSInfo();
-    			 if(G.debug()) { G.print("OS: ",osinfo,"\nPlaytable ",isTable(),
-    					 "\nreal playtable: ",isRealPlaytable,
-    					 "\nreal InfinityTable: ",isRealInfinityTable(),
-    					 "\n");}
     			}
     	}
     	catch (Throwable e) { osinfo = e.toString(); }
-    	if(osinfo==null) { osinfo="none"; }
+    	if(osinfo==null) { return "none"; }
     	return(osinfo);
     }
 	public static String getAppVersion()

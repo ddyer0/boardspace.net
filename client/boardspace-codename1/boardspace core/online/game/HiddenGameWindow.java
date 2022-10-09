@@ -125,5 +125,5 @@ public class HiddenGameWindow extends OffscreenWindow implements NameProvider
 	public void notifyFinished()
 	{	parent.notifyFinished(getIndex());
 	}
-	
+
 }

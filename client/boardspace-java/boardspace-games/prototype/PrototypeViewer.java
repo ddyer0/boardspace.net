@@ -670,7 +670,7 @@ public class PrototypeViewer extends CCanvas<PrototypeCell,PrototypeBoard> imple
             		{
             		highlight.spriteColor = Color.red;
                 	highlight.awidth = CELLSIZE;
-            }
+            		}
         }
     }
 
@@ -995,29 +995,6 @@ public class PrototypeViewer extends CCanvas<PrototypeCell,PrototypeBoard> imple
         } 
         }
     }
-	private void doDropChip(char col,int row)
-	{	PrototypeState state = bb.getState();
-		switch(state)
-		{
-		default: throw G.Error("Not expecting state "+state);
-		case Puzzle:
-		{
-		PrototypeChip mo = bb.pickedObject;
-		if(mo==null) { mo=bb.lastPicked; }
-		if(mo==null) { mo=bb.getPlayerChip(bb.whoseTurn); }
-		PerformAndTransmit(G.concat("dropb ",mo.id.shortName()," ",col," ",row));
-		}
-		break;
-		case Confirm:
-		case Play:
-		case PlayOrSwap:
-			PrototypeChip mo=bb.getPlayerChip(bb.whoseTurn);	
-			PerformAndTransmit(G.concat("dropb ",mo.id.shortName()," ",col," ",row));
-			break;
-					                 
-		
-		}
-	}
 	  public boolean allowOpponentUndoNow() 
 	  {
 		  return super.allowOpponentUndoNow();
@@ -1095,10 +1072,6 @@ public class PrototypeViewer extends CCanvas<PrototypeCell,PrototypeBoard> imple
 				PerformAndTransmit((bb.pickedObject==null ? "Pickb ":"Dropb ")+hitObject.col+" "+hitObject.row);
 				break;
 			}
-			break;
-			
-        case EmptyBoard:
-			doDropChip(hitObject.col,hitObject.row);
 			break;
 			
         case Black:

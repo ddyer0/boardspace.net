@@ -161,7 +161,7 @@ public void setLocalBounds(int x, int y, int width, int height)
     int minLogH = fh*10;	
     int margin = fh/2;
     int buttonW = fh*8;
-    int stateH = fh*3;
+    int stateH = fh*5/2;
     // this does the layout of the player boxes, and leaves
 	// a central hole for the board.
 	// in this mode, with zoom, width/zoom and height/zoom are

@@ -21,7 +21,7 @@ public interface PrototypeConstants
 		Black, // positive numbers are trackable
 		White,
 		BoardLocation,
-		EmptyBoard, ToggleEye,;
+		ToggleEye,;
 		PrototypeChip chip;
 		public String shortName() { return(name()); }
 	
@@ -66,7 +66,7 @@ public enum PrototypeState implements BoardState,PrototypeConstants
 
  enum PrototypeVariation
     {
-    	prototype("tamsk",ZfirstInCol,ZnInCol);
+    	prototype("prototype",ZfirstInCol,ZnInCol);
     	String name ;
     	int [] firstInCol;
     	int [] ZinCol;

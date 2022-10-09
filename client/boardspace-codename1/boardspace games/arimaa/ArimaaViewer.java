@@ -144,7 +144,7 @@ public class ArimaaViewer extends CCanvas<ArimaaCell,ArimaaBoard> implements Ari
         int randomKey = sharedInfo.getInt(OnlineConstants.RANDOMSEED,-1);
         
         
-        b = new ArimaaBoard(info.getString(OnlineConstants.GAMETYPE, Arimaa_Init),randomKey,
+        b = new ArimaaBoard(info.getString(GAMETYPE, Arimaa_Init),randomKey,
         		repeatedPositions, getStartingColorMap());
     	useDirectDrawing(true);
         doInit(false);
@@ -196,13 +196,12 @@ public class ArimaaViewer extends CCanvas<ArimaaCell,ArimaaBoard> implements Ari
     public void setLocalBounds(int x, int y, int width, int height)
     {
     	G.SetRect(fullRect, x, y, width, height);
-    	G.print("w ",width," ",height);
     	GameLayoutManager layout = selectedLayout;
     	int nPlayers = nPlayers();
         int chatHeight = selectChatHeight(height);
        	// ground the size of chat and logs in the font, which is already selected
     	// to be appropriate to the window size
-    	int fh = G.defaultFontSize;//standardFontSize();
+    	int fh = standardFontSize();
     	int minLogW = fh*25;	
        	int minChatW = fh*40;	
         int minLogH = fh*10;	
@@ -236,9 +235,10 @@ public class ArimaaViewer extends CCanvas<ArimaaCell,ArimaaBoard> implements Ari
     	int mainY = G.Top(main);
     	int mainW = G.Width(main);
     	int mainH = G.Height(main);
+        int stateH = fh*5/2;
     	
     	// calculate a suitable cell size for the board
-    	double cs = Math.min((double)mainW/nRows,(double)mainH/nRows);
+    	double cs = Math.min((double)mainW/nRows,(double)(mainH)/nRows);
     	CELLSIZE = (int)cs;
     	//G.print("cell "+cs0+" "+cs+" "+bestPercent);
     	// center the board in the remaining space
@@ -254,7 +254,6 @@ public class ArimaaViewer extends CCanvas<ArimaaCell,ArimaaBoard> implements Ari
     	//
         int stateY = boardY;
         int stateX = boardX;
-        int stateH = fh*3;
         G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,viewsetRect,reverseViewRect,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardW);
     	if(rotate)
@@ -631,7 +630,17 @@ private void playSounds(commonMove mm)
 
 }
 
- 
+public boolean allowResetUndo()
+{
+	 return super.allowResetUndo() || !b.started;
+}
+ public boolean allowUndo()
+ {	if(!b.started)
+ 		{
+	 		return somethingIsMoving();
+ 		}
+ 	else return super.allowUndo();
+ }
 /**
  * the preferred mouse gesture style is to let the user "pick up" objects
  * by simply clicking on them, but we also allow him to click and drag. 

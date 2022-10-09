@@ -16,7 +16,7 @@ public interface OctilesConstants
     	PostLocation,
     	EmptyPostLocation,
     	RotateRight,
-    	RotateLeft,
+    	RotateLeft, ToggleEye,
     	;
     	public String shortName() { return(name()); }
 

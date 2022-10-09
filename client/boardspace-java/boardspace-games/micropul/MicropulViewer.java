@@ -838,7 +838,7 @@ public class MicropulViewer extends CCanvas<MicropulCell,MicropulBoard> implemen
     	else {
     	missedOneClick = false;
     	MicroId hitCode = (MicroId)hp.hitCode;
-        MicropulCell hitObject = hitCell(hp);
+        MicropulCell hitObject = bb.getCell(hitCell(hp));
 		MicropulState state = bb.getState();
         switch (hitCode)
         {

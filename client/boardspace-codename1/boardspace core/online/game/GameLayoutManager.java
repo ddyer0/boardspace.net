@@ -832,21 +832,29 @@ public class GameLayoutManager  implements Opcodes
 	private void addSkinnyLeft(boolean addSkinnyRight,boolean fromtop,boolean tobottom)
 	{
 		int spareY = ycenter-playerWM/2;
-		addSkinnyLeftFrom(spareY,addSkinnyRight,fromtop,tobottom);
+		addSkinnyLeftFrom(true,spareY,addSkinnyRight,fromtop,tobottom);
 	}
 	
+	private void addSkinnyRightOnly(boolean fromtop,boolean tobottom)
+	{	
+		int spareY = ycenter-playerWM/2;
+		addSkinnyLeftFrom(false,spareY,true,fromtop,tobottom);
+	}
 
-	public void addSkinnyLeftFrom(int spareY,boolean addSkinnyRight,boolean fromtop,boolean tobottom)
+	public void addSkinnyLeftFrom(boolean addSkinnyLeft,int spareY,boolean addSkinnyRight,boolean fromtop,boolean tobottom)
 	{
 		int spareYT = fromtop ? top : top+playerHM;
 		int spareYH = spareY-spareYT;
-		if(spareYH>0)	// might have been eaten by overlap
-		{
-		addToSpare(new Rectangle(left,spareYT,playerHM,spareYH));
 		int spareYB = spareY+playerWM;	// bottom of the sideways rectangle
 		int spareYBot = tobottom ? bottom : ybot-margin;
 		int spareYBH = spareYBot-spareYB;
+		if(spareYH>0)	// might have been eaten by overlap
+		{
+		if(addSkinnyLeft)
+			{
+		addToSpare(new Rectangle(left,spareYT,playerHM,spareYH));
 		addToSpare(new Rectangle(left,spareYB,playerHM,spareYBH));
+			}
 		if(addSkinnyRight)
 			{	int spareX = right-playerHM;
 				addToSpare(new Rectangle(spareX,spareYT,playerHM,spareYH));
@@ -879,16 +887,19 @@ public class GameLayoutManager  implements Opcodes
 	}
 	// add spare rectangles for fat margins at left or left and right, with the side box centered
 	// this is used only by FiveAroundEdge and SixAroundEdge
-	private void addFatLeftCentered(boolean right,boolean six)
+	private void addFatLeftCentered(boolean addLeft,boolean addRight,boolean six)
 	{	int spareY0 = ytop+playerHX+1;
 		int spareY = top+ycenter-playerWM/2;
 		int spareY2 = spareY+playerWM;
+		if(addLeft)
+		{
 		addToSpare(new Rectangle(left,spareY0,playerWM,spareY-spareY0));
 		addToSpare(new Rectangle(left,spareY2,playerWM,ybot-spareY2));
 		int spareX = playerHM;
 		addToSpare(new Rectangle(spareX,spareY,playerWM-playerHM,spareY2-spareY));
+		}
 		// rectangles ok 2/26
-		if(right)
+		if(addRight)
 		{
 		if(six)
 		{	// the right-top rectangle starts at the true top.
@@ -1047,6 +1058,7 @@ public class GameLayoutManager  implements Opcodes
 	//G.print("Seating "+seating);
 	switch(seating)
 	{
+	default: G.Error("Not expecting %s", seating);
 	case Undefined:
 		throw G.Error("seating chart %s not expected",seating);
 	case ThreeAroundLeft: // ok 2/4/2020
@@ -1065,10 +1077,31 @@ public class GameLayoutManager  implements Opcodes
 	positions = new int[][] { {xleft,ybot}, { xsideLeft,ymid}, { xleft,ytop}};
 	// there's a skinny rectangle left between the side rectangle and the main board,
 	// ok 2/26
-	addFatLeftCentered(false,false);
+	addFatLeftCentered(true,false,false);
 	left += playerWM;
 	}
 	break;
+	case ThreeAroundRight: // ok 2/4/2020
+	{
+	/* top and bottom are flush to the left, leaving a bigger right hand rectangle
+	   this is currently used by triad
+	
+   		 .........__
+		 ...........
+		 .........|
+		 ...........
+		 .........__
+		 
+	 */
+		rotations = new double[] {0,-Math.PI/2,Math.PI};
+		positions = new int[][] { {xright,ybot}, { xsideRight,ymid}, { xright,ytop}};
+		// there's a skinny rectangle left between the side rectangle and the main board,
+		// ok 10/5/2022
+		addFatLeftCentered(false,true,false);
+		right -= playerWM;
+	}
+	break;
+
 	case FaceToFaceLandscapeTop:
 		rotations = new double[]{Math.PI,0};
 		positions = new int[][]{{xright,ytop},{xright,ybot}};
@@ -1155,6 +1188,14 @@ public class GameLayoutManager  implements Opcodes
 		bottom -= playerHM;
 		left += playerHM;
 		break;
+		
+	case RightEnd:
+		rotations = new double[] {-Math.PI/2};
+		positions = new int[][] {{xsideRight,ymid}};
+		addSkinnyOffset(right-playerHM);		
+		right -= playerHM;
+		break;
+		
 	case RightCorner:
 		// right corner, with the chip at right and bottom, leaving
 		// the maximum possible width
@@ -1477,7 +1518,8 @@ public class GameLayoutManager  implements Opcodes
 		......_.....
 		
 	 	*/
-	case ThreeAround:	// ok 2/4/2020
+		
+	case ThreeAroundL:	// ok 2/4/2020
 		/* three around in a U shape, leaving the right unoccupied
 		
 		......_.....
@@ -1511,6 +1553,40 @@ public class GameLayoutManager  implements Opcodes
 			right -= playerHM;
 		}
 		left += playerHM;
+		top += playerHM;
+		bottom -= playerHM;
+		}
+		break;
+		
+	case ThreeAroundR:	// ok 10/5/2022
+		/* three around in a U shape, leaving the left unoccupied
+		
+		......_.....
+		|...........
+		......_.....
+		
+	 	*/
+		{
+		rotations = new double[] {0,Math.PI/2,Math.PI};
+		positions = new int[][] { {xmid,ybot},		// bottom ..X..
+								  {xsideRight,ymid},
+								  {xmid,ytop}};		// top ..X..};	// right
+								
+		int spareY = ycenter-playerWM/2;
+		int spareX = xmid+playerWX;
+		int spareH = Math.min(playerHM,spareY-ytop);
+		
+		// this is like addx1across, but takes into account that the 
+		// sideways recangles at the left and right might eat into it.
+		addToSpare(new Rectangle(spareX,top,right-spareX,spareH));	
+		addToSpare(new Rectangle(left,top,xmid-left,spareH));
+		int yb = bottom-spareH;
+		addToSpare(new Rectangle(spareX,yb,right-spareX,spareH));	
+		addToSpare(new Rectangle(left,yb,xmid-left,spareH));
+
+		// rectangles ok 8/2/2021
+		addSkinnyRightOnly(false,false);				
+		right -= playerHM;
 		top += playerHM;
 		bottom -= playerHM;
 		}
@@ -1608,10 +1684,10 @@ public class GameLayoutManager  implements Opcodes
 		// add 3 part rectangles on the left and right edges
 		if(seating==DefinedSeating.SixAroundEdge)
 		{
-		addFatLeftCentered(true,true);
+		addFatLeftCentered(true,true,true);
 		}
 		else {
-			addFatLeftCentered(false,true);
+			addFatLeftCentered(true,false,true);
 			addTopToBottom(xright,false);
 		}
 		right -= playerWM;
@@ -1668,7 +1744,7 @@ public class GameLayoutManager  implements Opcodes
 						{ xsideLeft,ypos},						// left side
 						{xsideRight,ypos}};						// right side
 			// ok 8/2/2021
-			addSkinnyLeftFrom(ytop,true,true,false);				
+			addSkinnyLeftFrom(true,ytop,true,true,false);				
 			add2XAcross(ybot);
 			left += playerHM;
 			bottom -= playerHM;
@@ -1738,7 +1814,7 @@ public class GameLayoutManager  implements Opcodes
 									  {xsideLeft,ymid},				// left side
 									  {xleft,ytop}, 				// top     X....
 									  {xsideRight,ymid}};			// right side
-			addFatLeftCentered(true,false);
+			addFatLeftCentered(true,true,false);
 			left += playerWM;
 			right -= playerWM;
 	
@@ -1809,7 +1885,6 @@ public class GameLayoutManager  implements Opcodes
 		right -= playerWM;
 		break;
 		}
-	default: G.Error("Not expecting %s", seating);
 	}
 	rects.setMainRectangle(new Rectangle(left,top,right-left,bottom-top));
 }
@@ -2194,6 +2269,18 @@ public class GameLayoutManager  implements Opcodes
     	{  	
      	case Undefined:
     		throw G.Error("Not expecting %s as seating",seating);
+   	case ThreeAroundRight:
+    		
+    		/* top and bottom are flush to the left, leaving a bigger right hand rectangle
+ 		   this is currently used by triad
+ 		
+ 	   		 .........__
+     		 ...........
+     		 ..........|
+     		 ...........
+ 	   		 .........__
+    		 
+    		 */
     	case ThreeAroundLeft:
     		
     		/* top and bottom are flush to the left, leaving a bigger right hand rectangle
@@ -2278,7 +2365,15 @@ public class GameLayoutManager  implements Opcodes
     		edgeUnitsX = playerH;
     		edgeUnitsY = playerH*2;
     		break;
-		case ThreeAround:
+		case ThreeAroundR:
+			/* three around in a U shape, leaving the left unoccupied
+			
+				......_.....
+				...........|
+				......_.....
+			
+		 	*/
+		case ThreeAroundL:
 			/* three around in a U shape, leaving the right unoccupied
 			
 				......_.....
@@ -2591,6 +2686,14 @@ public class GameLayoutManager  implements Opcodes
 
 
       	case FaceToFaceLandscapeTop:
+      	case RightEnd:	// rotated and placed at the right
+      		unitsX = playerH;
+      		unitsY = playerW;
+      		fixedH = marginSize*2;
+      		fixedW = marginSize*2;
+      		edgeUnitsX = unitsX;
+      		edgeUnitsY = 0;
+      		break;
       	case Portrait:
     		unitsX = playerW;
     		unitsY = playerH*nPlayers;

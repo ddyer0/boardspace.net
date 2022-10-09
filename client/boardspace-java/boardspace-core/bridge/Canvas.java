@@ -3,14 +3,21 @@ package bridge;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.LayoutManager;
+import java.awt.Rectangle;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 
+import lib.CanvasRotater;
+import lib.CanvasRotaterProtocol;
 import lib.G;
 import lib.Graphics;
 import lib.SizeProvider;
 import lib.TextContainer;
 
 @SuppressWarnings("serial")
-public abstract class Canvas extends java.awt.Canvas implements SizeProvider 
+public abstract class Canvas extends java.awt.Canvas implements SizeProvider , CanvasRotaterProtocol, WindowListener, MouseListener
 {
 	public void paint(java.awt.Graphics g)
 	{	//if(!isDoubleBuffered()) { setDoubleBuffered(true); }
@@ -47,4 +54,32 @@ public abstract class Canvas extends java.awt.Canvas implements SizeProvider
 	public void setLayout(LayoutManager m) {};
 	public Component getMediaComponent() { return(this); }
 	public void requestFocus(TextContainer p) { requestFocus(); }
+	
+	// support for rotater buttons
+	CanvasRotaterProtocol rotater = new CanvasRotater(this);
+	public int getCanvasRotation() { return rotater.getCanvasRotation(); }
+	public boolean quarterTurn() { return rotater.quarterTurn(); }
+	public void setCanvasRotation(int n) { rotater.setCanvasRotation(n); }
+	public boolean rotateCanvas(Graphics g) { return rotater.rotateCanvas(g); }
+	public void unrotateCanvas(Graphics g) {  rotater.unrotateCanvas(g); }
+	public int rotateCanvasX(int x,int y) { return rotater.rotateCanvasX(x,y); }
+	public int rotateCanvasY(int x,int y) { return rotater.rotateCanvasY(x,y); }
+	public int unrotateCanvasX(int x,int y) { return rotater.unrotateCanvasX(x,y); }
+	public int unrotateCanvasY(int x,int y) { return rotater.unrotateCanvasY(x,y); }
+	public Rectangle getRotatedBounds() { return rotater.getRotatedBounds(); }
+	
+	/* for window listener */
+	public void windowOpened(WindowEvent e) { }
+	public void windowClosing(WindowEvent e) {	}
+	public void windowClosed(WindowEvent e) { }
+	public void windowIconified(WindowEvent e) { }
+	public void windowDeiconified(WindowEvent e) {	}
+	public void windowActivated(WindowEvent e) { }
+	public void windowDeactivated(WindowEvent e) {	}
+	
+	public void mouseClicked(MouseEvent e) { }
+	public void mousePressed(MouseEvent e) { }
+	public void mouseReleased(MouseEvent e) { }
+	public void mouseEntered(MouseEvent e) { }
+	public void mouseExited(MouseEvent e) { }
 }

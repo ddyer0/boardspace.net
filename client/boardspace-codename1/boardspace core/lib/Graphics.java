@@ -25,7 +25,7 @@ public class Graphics extends SystemGraphics
 	public void setFillColor(Color newColor) { fllColor=newColor; }
 	public void setTextColor(Color newColor) { txtColor=newColor; }
 	public void setNeutralFrameColor(Color newColor) { ntrColor=newColor; }
-
+	public boolean _rotated_ = false;
 	
 	public void fillRoundRect(int left, int top, int width, int height, int rx, int ry) 
 	{	if(logging) { Log.appendNewLog("fillRoundRect "); Log.appendLog(width); Log.appendLog("x");Log.appendLog(height); }

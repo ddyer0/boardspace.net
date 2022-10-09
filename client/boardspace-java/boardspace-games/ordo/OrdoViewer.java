@@ -760,7 +760,6 @@ private void playSounds(commonMove m)
 	    	PerformAndTransmit("Pick W "+cell.row+" "+chip.id.shortName);
 	    	break;
 	    case BoardLocation:
-	    	break;
 		default:
 			break;
         }

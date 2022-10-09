@@ -70,7 +70,7 @@ public class YinshGameViewer extends CCanvas<YinshCell,YinshBoard> implements Yi
     {	enableAutoDone = true;
         super.init(info,frame);
         
-        b = new YinshBoard(info.getString(OnlineConstants.GAMETYPE, "Yinsh"),getStartingColorMap());
+        b = new YinshBoard(info.getString(GAMETYPE, "Yinsh"),getStartingColorMap());
         useDirectDrawing(true); 
         doInit(false);
    }
@@ -136,9 +136,10 @@ public class YinshGameViewer extends CCanvas<YinshCell,YinshBoard> implements Yi
     	// so it's appropriate to rotate so the board uses the space available better.
     	int ncols = b.ncols+2;
         int nrows = b.nrows+2;
+        int stateH = fh*5/2;
  	
     	// calculate a suitable cell size for the board
-    	double cs = Math.min((double)mainW/ncols,(double)mainH/nrows);
+    	double cs = Math.min((double)mainW/ncols,(double)(mainH-stateH*2)/nrows);
     	CELLSIZE = (int)cs;
     	//G.print("cell "+cs0+" "+cs+" "+bestPercent);
     	// center the board in the remaining space
@@ -153,9 +154,8 @@ public class YinshGameViewer extends CCanvas<YinshCell,YinshBoard> implements Yi
     	// state and top ornaments snug to the top of the board.  Depending
     	// on the rendering, it can occupy the same area or must be offset upwards
     	//
-        int stateY = boardY;
+        int stateY = boardY-stateH;
         int stateX = boardX;
-        int stateH = fh*2;
         
         RINGRADIUS = CELLSIZE/2; //ball radius to work with
         G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,viewsetRect,noChatRect);
@@ -165,7 +165,7 @@ public class YinshGameViewer extends CCanvas<YinshCell,YinshBoard> implements Yi
     	// goal and bottom ornaments, depending on the rendering can share
     	// the rectangle or can be offset downward.  Remember that the grid
     	// can intrude too.
-    	G.SetRect(goalRect, boardX, boardBottom-stateH,boardW,stateH);       
+    	G.SetRect(goalRect, boardX, boardBottom,boardW,stateH);       
         setProgressRect(progressRect,goalRect);
         positionTheChat(chatRect,chatBackgroundColor,rackBackGroundColor);
         return(boardW*boardH);
