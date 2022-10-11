@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+<array name="my_screenshots">
+  <item>@drawable/Screenshot_1</item>
+  <item>@drawable/Screenshot_2</item>
+  <item>@drawable/Screenshot_3</item>
+  <item>@drawable/Screenshot_4</item>
+</array>
+<string-array name="my_genres">
+  <item>abstract strategy</item>
+  <item>euro</item>
+  <item>word games</item> 
+  <item>traditional board games</item>
+</string-array>
+<string-array name="my_features">
+  <item>companion</item>
+</string-array>
+<string name="my_game_summary">100+ games bundled in one app. On the table or online</string>
+</resources>
+

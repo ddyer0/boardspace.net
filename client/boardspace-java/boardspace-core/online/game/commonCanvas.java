@@ -1797,6 +1797,7 @@ public abstract class commonCanvas extends exCanvas
     {	commonPlayer ap = getActivePlayer();
     	commonPlayer who = whoseTurn();
     	return(!reviewMode()
+    			&& ap!=null
     			&& !ap.spectator 
     			&& (who!=null)
     			&& (simultaneous_turns_allowed()

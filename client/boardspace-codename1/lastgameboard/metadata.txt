@@ -1,0 +1,28 @@
+<meta-data android:name="com.lastgameboard.thumbnail" android:resource="@drawable/boardspace_icon_512x512" />
+<meta-data android:name="com.lastgameboard.is_development" android:value="true" />  
+<meta-data android:name="com.lastgameboard.banner" android:resource="@drawable/banner"/>
+<meta-data android:name="com.lastgameboard.banner-ad" android:resource="@drawable/banner"/>
+<meta-data android:name="com.lastgameboard.screenshots" android:resource="@array/my_screenshots"/>
+<meta-data android:name="com.lastgameboard.max_player_count" android:value="6"/>
+<meta-data android:name="com.lastgameboard.average_play_time" android:value="30"/>
+<meta-data android:name="com.lastgameboard.genres" android:resource="@array/my_genres"/>
+<meta-data android:name="com.lastgameboard.features" android:resource="@array/my_features"/>
+<meta-data android:name="com.lastgameboard.publisher" android:value="Dave Dyer"/>
+<meta-data android:name="com.lastgameboard.development_stage" android:value="Production"/>
+<meta-data android:name="com.lastgameboard.game_summary" android:resource="@string/my_game_summary"/>
+ 
+
+<meta-data android:name="com.lastgameboard.thumbnail" android:resource="@drawable/boardspace_dev_icon_256x256" />
+<meta-data android:name="com.lastgameboard.is_development" android:value="true" />  
+<meta-data android:name="com.lastgameboard.banner" android:resource="@drawable/banner"/>
+<meta-data android:name="com.lastgameboard.banner-ad" android:resource="@drawable/banner"/>
+<meta-data android:name="com.lastgameboard.screenshots" android:resource="@array/my_screenshots"/>
+<meta-data android:name="com.lastgameboard.max_player_count" android:value="6"/>
+<meta-data android:name="com.lastgameboard.average_play_time" android:value="30"/>
+<meta-data android:name="com.lastgameboard.genres" android:resource="@array/my_genres"/>
+<meta-data android:name="com.lastgameboard.features" android:resource="@array/my_features"/>
+<meta-data android:name="com.lastgameboard.publisher" android:value="Dave Dyer"/>
+<meta-data android:name="com.lastgameboard.development_stage" android:value="Alpha"/>
+<meta-data android:name="com.lastgameboard.game_summary" android:resource="@string/my_game_summary"/>
+ 
+need publisher summary tags players time
