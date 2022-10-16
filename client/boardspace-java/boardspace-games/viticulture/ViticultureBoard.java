@@ -80,7 +80,7 @@ action will be taken in the spring.
   
  */
 class ViticultureBoard extends RBoard<ViticultureCell> implements BoardProtocol,ViticultureConstants
-{	static int REVISION = 154;			// 100 represents the initial version of the game
+{	static int REVISION = 155;			// 100 represents the initial version of the game
 										// games with no revision information will be 100
 										// revision 101, correct the sale price of champagne to 4
 										// revision 102, fix the cash distribution for the cafe
@@ -152,6 +152,7 @@ class ViticultureBoard extends RBoard<ViticultureCell> implements BoardProtocol,
 										// revision 153 fixes an omission, considering the workshop discount for craftsman
 										// 		also fixes "producer" to only forbid retrieving itself
 										// revision 154 adds "fill" to jack of all trades if makewine is a choice
+										// revision 155 makes politico not offer to harvest 3 if there are less
 public int getMaxRevisionLevel() { return(REVISION); }
 	PlayerBoard pbs[] = null;		// player boards
 	public PlayerBoard getPlayerBoard(int n) 
@@ -2974,7 +2975,9 @@ public int getMaxRevisionLevel() { return(REVISION); }
     		else
     		if((currentWorker!=null)
     				&& (dest.row==Harvest2BonusRow)
-    				&& (currentWorker.type==ChipType.Politico))
+    				&& (currentWorker.type==ChipType.Politico)
+    				&& ((revision<155) || (harvestCount(pb)>=3))
+    				)
     		{
     		// offer to harvest 3
     		nextState = ViticultureState.ResolveCard;
@@ -3622,6 +3625,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
     		animationStack.push(dest);
     	}
     }
+
     private int doHarvest(PlayerBoard pb,replayMode replay)
     {	CellStack fields = pb.selectedCells;
     	int n = 0;

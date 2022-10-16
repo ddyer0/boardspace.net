@@ -824,7 +824,7 @@ void doSwap(replayMode replay)
 		case Resign:
 			return(false);
 		case Confirm:
-			return(isDest(c) || c.isEmpty());
+			return(isDest(c));
         default:
         	throw G.Error("Not expecting Hit Board state " + board_state);
         case Puzzle:

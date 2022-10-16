@@ -9,7 +9,6 @@ import java.net.URL;
 
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JOptionPane;
-
 import common.GameInfo;
 import common.GameInfoStack;
 import common.GameInfo.ES;
@@ -97,6 +96,9 @@ public class SeatingViewer extends exCanvas implements LobbyConstants
 		DiscardButton,
 		GearMenu,
 		Exit,
+		Feedback,
+		DrawersOff,
+		DrawersOn,
 		PlayOnline,
 		TableName,
 		NewName;
@@ -153,11 +155,12 @@ public class SeatingViewer extends exCanvas implements LobbyConstants
 	public void setLocalBounds(int l, int t, int w, int h) 
 	{
 		G.SetRect(fullRect,l,t,w,h); 
-		boolean portrait = w<h;
+		// to benefit lastgameboard, don't switch to portrait if the board is nearly square
+		boolean portrait = w<(h*0.9);		
 		portraitLayout = portrait;
 		int stripHeight ;
 		int fh = G.getFontSize(standardPlainFont());
-		G.SetRect(versionRect,l+fh,t+h-fh*2,w/8,fh*2);
+		G.SetRect(versionRect,l+fh,t+h-fh*2,w/3,fh*2);
 		if(portrait)
 		{
 			stripHeight = w/7;
@@ -944,6 +947,12 @@ public class SeatingViewer extends exCanvas implements LobbyConstants
 	{
 		gearMenu.newPopupMenu(this,deferredEvents);
 		gearMenu.addMenuItem("Exit",SeatId.Exit);
+		gearMenu.addMenuItem(SendFeedbackMessage,SeatId.Feedback);
+		if(G.isRealLastGameBoard())
+		{
+			gearMenu.addMenuItem(DrawerOffMessage,SeatId.DrawersOff);
+			gearMenu.addMenuItem(DrawersOnMessage,SeatId.DrawersOn);
+		}
 		gearMenu.show(x,y);
 	}
 	private boolean serviceRunning()
@@ -962,7 +971,28 @@ public class SeatingViewer extends exCanvas implements LobbyConstants
 		
 		GC.fillRect(gc, Color.lightGray,fullRect);
 		
-		String va = s.get(VersionMessage, G.getAppVersion());
+		String appversion = G.getAppVersion();
+	 	String platform = G.getPlatformName().toLowerCase();
+	 	String prefVersion = G.getString(platform+"_version",null);
+		String va = s.get(VersionMessage,appversion);
+
+		if((prefVersion!=null)
+	 		&&	G.isCodename1())
+	 	{
+	 	Double prefVersionD = G.DoubleToken(prefVersion);
+	 	double appversionD = G.DoubleToken(appversion);
+		// 
+		// 8/2017 apple is now in a snit about prompting for updates
+		//
+		if(prefVersion!=null && !appversion.equals(prefVersion) 
+				&& (!G.isIOS() || (appversionD<prefVersionD)))
+			{
+			va += " ("+s.get(util.PasswordCollector.VersionPreferredMessage,prefVersion)+")";
+			}
+	 	}
+		va += " "+G.build;
+
+
 		GC.Text(gc,false,versionRect,Color.black,null,va);
 
 		drawSeatingCharts(gc,seatingSelectRect,pt);
@@ -1105,6 +1135,19 @@ public class SeatingViewer extends exCanvas implements LobbyConstants
 				{
 				default: G.Error("Hit unexpected gear item %s",me);
 					break;
+				case Feedback:
+				  	G.showDocument(feedbackUrl+"?subject=feedback%20for%20"
+		        			+ G.getPlatformName()
+		        			+ "%20"
+		        			+ G.getAppVersion(),"Feedback");
+				  	break;
+				case DrawersOff:
+					G.setDrawers(false);
+					break;
+				case DrawersOn:
+					G.setDrawers(true);
+					break;
+				
 				case Exit:	
 						G.hardExit();
 						break;
@@ -1133,11 +1176,18 @@ public class SeatingViewer extends exCanvas implements LobbyConstants
 	static String PlayOnlineMessage = "Play Online";
 	static String TableNameMessage = "Table Name: ";
 	static String SeatPositionMessage = "SeatPositionMessage";
-	static String ExitOptions = "Exit options";
+	static String ExitOptions = "Options";
 	static String TypeinMessage = "type the name here";
+	static String SendFeedbackMessage = "Send Feedback";
+	static String DrawerOffMessage = "Player Drawers OFF";
+	static String DrawersOnMessage = "Player Drawers ON";
+	
 	public static String[]SeatingStrings =
 		{	SelectChartMessage,
 			TableNameMessage,
+			SendFeedbackMessage,
+			DrawerOffMessage,
+			DrawersOnMessage,
 			TypeinMessage,
 			ExitOptions,
 			PlayOnlineMessage,

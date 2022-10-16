@@ -138,7 +138,7 @@ public class JWSApplication implements Config
 					 "\n");
 
     		}
-			G.print("Drawers: "+G.drawersOff());	// for lastgameboard
+			G.setDrawers(false);	// for lastgameboard
 
 			G.getOSInfo();
 			G.print("Ask fontsize "+G.defaultFontSize," get ",G.getFontSize(G.getGlobalDefaultFont()));

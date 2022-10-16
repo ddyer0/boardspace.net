@@ -2974,7 +2974,9 @@ public int getMaxRevisionLevel() { return(REVISION); }
     		else
     		if((currentWorker!=null)
     				&& (dest.row==Harvest2BonusRow)
-    				&& (currentWorker.type==ChipType.Politico))
+    				&& (currentWorker.type==ChipType.Politico)
+    				&& ((revision<155) || (harvestCount(pb)>=3))
+    				)
     		{
     		// offer to harvest 3
     		nextState = ViticultureState.ResolveCard;
@@ -3622,6 +3624,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
     		animationStack.push(dest);
     	}
     }
+
     private int doHarvest(PlayerBoard pb,replayMode replay)
     {	CellStack fields = pb.selectedCells;
     	int n = 0;

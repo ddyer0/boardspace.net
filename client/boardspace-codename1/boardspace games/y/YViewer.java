@@ -201,7 +201,7 @@ public class YViewer extends CCanvas<YCell,YBoard> implements YConstants, GameLa
     	//
         int stateY = boardY;
         int stateX = boardX;
-        int stateH = CELLSIZE;
+        int stateH = fh*3;
         G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	G.SetRect(swapButton, boardX+CELLSIZE, boardY+CELLSIZE*2,CELLSIZE*2,CELLSIZE);

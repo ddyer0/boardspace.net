@@ -907,6 +907,7 @@ public class ViticultureChip extends chip<ViticultureChip>
 	 	PoliticoTradeExtra = ChoiceDeck2[3];
 	 	PoliticoPlantExtra = ChoiceDeck2[4];
 	 	autoloadMaskGroup(Dir,ChoiceDeck2,"choice/choice-mask");
+	
 	 	imagesLoaded = true;
 		check_digests(allChips);
 		}

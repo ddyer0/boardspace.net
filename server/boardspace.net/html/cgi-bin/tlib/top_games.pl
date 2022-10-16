@@ -49,8 +49,8 @@ sub top_games_table
 	{ print "</tr><tr>"; 
 	}
   print "<td valign=top>";
-  print "<b><center><a target=_new href='$vlink'>$vtr</a></center></b>";
-  print "<a target=_new href='$vlink'><img width=120 src='$imdir'></a>";
+  print "<b><center><a href='$vlink'>$vtr</a></center></b>";
+  print "<a href='$vlink'><img width=120 src='$imdir'></a>";
   print "</td>\n";
   $idx++;
   }

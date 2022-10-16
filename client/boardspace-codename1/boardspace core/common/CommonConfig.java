@@ -45,7 +45,6 @@ public interface CommonConfig {
 	static final String messagesUrl = "/cgi-bin/messageboard.cgi";
 	static final String forumsUrl = "/BB/";
 	static final String tournamentUrl = "/cgi-bin/tournament-signup.cgi";
-	static final String feedbackUrl = "mailto:gamemaster@boardspace.net";
 	static final String postRegisterUrl = "/cgi-bin/bs_register.cgi" ;	// where to send a registration form
 	
 	static final String DataCacheUrl = "/cgi-bin/applettag.cgi?tagname=appdata";

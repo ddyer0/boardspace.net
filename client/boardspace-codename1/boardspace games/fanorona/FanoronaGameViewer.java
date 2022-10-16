@@ -170,7 +170,7 @@ public class FanoronaGameViewer extends CCanvas<FanoronaCell,FanoronaBoard> impl
     			0.75,	// 60% of space allocated to the board
     			aspect,		// aspect ratio for the board
     			(int)(fh*1.5),// maximum cell size
-    			0.5		// preference for the designated layout, if any
+    			0.25		// preference for the designated layout, if any
     			);
     	
         // place the chat and log automatically, preferring to place

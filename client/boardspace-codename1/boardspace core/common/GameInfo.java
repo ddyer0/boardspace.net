@@ -1,6 +1,5 @@
 package common;
 import bridge.Color;
-
 import java.util.*;
 
 import lib.*;
@@ -547,7 +546,7 @@ synchronized(allGames) {
 			OneBotPlus,
 			new double[]{0.45,0.01},
 			"morris.MorrisViewer","/english/about_morris.html",
-			"https://boardgamegeek.com/video/34662/nine-mens-morris/how-play-nine-mens-morris",
+			"/morris/english/morris-video.html",
 			true, WhiteOverRed));
 	}
 	// capturing games
@@ -576,7 +575,7 @@ synchronized(allGames) {
 			new double[]{0.2,1.0,0.01},
 			"tintas.TintasViewer",
 			"/tintas/english/tintas-rules.html",
-			"https://boardgamegeek.com/video/120010/tintas/tintas-overview-rules-explanation-playthrough",
+			"/tintas/english/tintas-video.html",
 			true, null));
 		g.groupSortKey = "00021";	// capturing games after ancient games, cannon first in capturing games
 	}
@@ -648,7 +647,7 @@ synchronized(allGames) {
 		Color pfColors[] = { Color.white,bsBrown  };
 		String pfRules = "/pushfight/english/pushfightgame_com.pdf";
 		String pfViewer = "pushfight.PushfightViewer";
-		String pfVideo = "https://boardgamegeek.com/video/86184/push-fight/pushfight-rules-playthrough";
+		String pfVideo = "/pushfight/english/pushfight-video.html";
 		put(new GameInfo(144,ES.game,94,"PF",OtherGames,"Push Fight","PushFight",
 				ThreeBotsPlus,
 				new double[]{1.0,1.0,1.0,0.01},
@@ -663,7 +662,7 @@ synchronized(allGames) {
 		String euphoriaRulesIIB =  "/euphoria/english/EuphExpRulebook_r14.pdf";
 				
 		String euphoriaViewer =  "euphoria.EuphoriaViewer";
-		String euphoriaVideo = "https://boardgamegeek.com/video/90203/euphoria-build-better-dystopia/euphoria-how-play-watch-it-played";
+		String euphoriaVideo = "/euphoria/english/euphoria-video.html";
 		{GameInfo mm = put(new GameInfo(144,ES.game,70,"EU",EuroGames,"Euphoria","Euphoria",
 				OneBotPlus,
 				new double[]{1.0,0.01},
@@ -763,7 +762,7 @@ synchronized(allGames) {
 	
 	{ 	String gobbletClass = "gobblet.GobGameViewer";
 		String gobbletRules = "/gobblet/english/gobblet_rules.pdf";
-		String gobbletVideo = "https://boardgamegeek.com/video/22687/gobblet/gobblet-video-blue-orange-games";
+		String gobbletVideo = "/gobblet/english/gobblet-video.html";
 		GameInfo m = put(new GameInfo(560,ES.game,7,"GB",NInARowGames,"Gobblet","Gobblet",
 			ThreeBotsPlus,
 			new double[]{0.33,1,1,0.01},
@@ -783,7 +782,7 @@ synchronized(allGames) {
 			ThreeBotsPlus,
 			new double[]{0.4,1.0,1.0,0.01},
 			"modx.ModxViewer","/modx/english/MODX_Rule_Book_Final.pdf",
-			"https://boardgamegeek.com/video/105982/mod-x/board-death-tutorial-review-video-3-min",
+			"/modx/english/modx-video.html",
 			true, new Color[]{Color.red,Color.black}));
 		m.groupSortKey = "00052";	// n-in-a-row games after euro games, first in n-in-a-row-games
 
@@ -804,7 +803,7 @@ synchronized(allGames) {
 			OneBotPlus,
 			new double[]{0.41,0.01},
 			"arimaa.ArimaaViewer","/arimaa/english/Arimaa%20Game%20Rules.htm",
-			"https://boardgamegeek.com/video/1565/arimaa/learn-play-arimaa",
+			"/arimaa/english/arimaa-video.html",
 			false, GoldOverSilver));
 	  mm.groupSortKey = "00070";
 	}
@@ -908,7 +907,7 @@ synchronized(allGames) {
 			TwoBotsPlus,
 			new double[]{1.0,1.0,0.01},
 			"sixmaking.SixmakingViewer","/sixmaking/english/Six-MaKING-rules-Eng-Ger-Fra-Ro-Hu.pdf",
-			"https://boardgamegeek.com/video/55124/six-making/overview-rules-explanation-six-making",
+			"/sixmaking/english/sixmaking-video.html",
 			true, WhiteOverBlack));
 
 	}
@@ -1031,7 +1030,7 @@ synchronized(allGames) {
 	{
 	String loaClass = "loa.LoaViewer"; 
 	String loaRules = "/loa/english/index.html";
-	String loaVideo = "https://boardgamegeek.com/video/56491/lines-action/how-play-lines-action";
+	String loaVideo = "/loa/english/loa-video.html";
 	put(new GameInfo(120,ES.game,1,"L",ConnectionGames,"LOA","LOA",
 			ThreeBotsPlus,
 			new double[]{0.06,1,1,0.01},
@@ -1059,7 +1058,7 @@ synchronized(allGames) {
 			OneBotPlus,
 			new double[]{1,0.01},
 			"twixt.TwixtViewer","/twixt/english/rules.html",
-			"https://boardgamegeek.com/video/144841/twixt/twixt-1964",
+			"/twixt/english/twixt-video.html",
 			false, RedOverBlack));
 
 	{
@@ -1129,7 +1128,7 @@ synchronized(allGames) {
 	{
 	String tumbleweedRules = "/tumbleweed/english/Rules.html";
 	String tumbleweedViewer = "tweed.TweedViewer";  
-	String tumbleVideo = "https://www.youtube.com/watch?v=mjA_g3nwYW4";
+	String tumbleVideo = "/tumbleweed/english/tumbleweed-video.html";
 	put(new GameInfo(1690,ES.game,111,"TU",TerritoryGames,"Tumbleweed","tumbleweed-6",
 			OneBotPlus,
 			new double[]{1.0,0.01},
@@ -1336,7 +1335,7 @@ synchronized(allGames) {
 				OneBotPlus,
 				new double[]{1.0,0.01},
 				"tammany.TammanyViewer","/tammany/english/Tammany_Hall_English_Rules.pdf",
-				"https://boardgamegeek.com/video/60386/tammany-hall/tammany-hall-how-play",
+				"/tammany/english/tammany-video.html",
 				true, tamcolors));	// first player is specified to be random
 		mm.minPlayers = 2;
 		mm.maxRobotPlayers = 2;
@@ -1353,20 +1352,20 @@ synchronized(allGames) {
 			ThreeBotsPlus,
 			new double[]{0.4,1.0,1.0,0.01},
 			"dvonn.DvonnViewer","/dvonn/english/rules.htm",
-			"https://boardgamegeek.com/video/89225/dvonn/how-play-dice-cup",
+			"/dvonn/english/dvonn-video.html",
 			false, WhiteOverBlack));
 		g.groupSortKey = "000905";
 		put(new GameInfo(170,ES.game,17,"DV",StackingGames,"Dvonn","Dvonn",
 				ThreeBotsPlus,
 				new double[]{0.4,1.0,1.0,0.01},
 				"dvonn.DvonnViewer","/dvonn/english/rules.htm",
-				"https://boardgamegeek.com/video/89225/dvonn/how-play-dice-cup",
+				"/dvonn/english/dvonn-video.html",
 				false, WhiteOverBlack));
 
 	}
 	{	String lyngkClass = "lyngk.LyngkViewer";
 		String lyngkRules = "/lyngk/english/lyngk-rules.pdf";
-		String lyngkVideo = "https://boardgamegeek.com/video/141303/lyngk/lyngk-game-preview-origins-game-fair-2017";
+		String lyngkVideo = "/lyngk/english/lyngk-video.html";
 		put(new GameInfo(175,ES.game,81,"LY",StackingGames,"Lyngk","Lyngk",
 				ThreeBotsPlus,
 				new double[]{0.4,1.0,1.0,0.01},
@@ -1395,7 +1394,7 @@ synchronized(allGames) {
 	{
 	String gipfClass = "gipf.GipfViewer";
 	String gipfRules = "/gipf/english/rules.htm";
-	String gipfVideo = "https://boardgamegeek.com/video/91715/gipf/how-play-dice-cup";
+	String gipfVideo = "/gipf/english/gipf-video.html";
 	put(new GameInfo(180,ES.game,21,"G",GipfGames,"Gipf","Gipf",
 			TwoBotsPlus,
 			new double[]{0.3,1.0,0.01},gipfClass,gipfRules,
@@ -1418,7 +1417,7 @@ synchronized(allGames) {
 			TwoBotsPlus,
 			new double[]{1.0,1.0,0.01},
 			"punct.PunctGameViewer","/punct/english/PUNCT_english.pdf",
-			"https://boardgamegeek.com/video/23737/punct/fd-boardgames-unboxing-setup-and-gameplay-punct",
+			"/punct/english/punct-video.html",
 			false, WhiteOverBlack));
 	
 	put(new GameInfo(213,ES.game,109,"TM",GipfGames,"Tamsk","Tamsk-F",
@@ -1442,7 +1441,7 @@ synchronized(allGames) {
 	
 	{	String tzaarClass = "tzaar.TzaarViewer";
 		String tzaarRules = "/tzaar/english/rules.htm";
-		String tzaarVideo = "https://boardgamegeek.com/video/89958/tzaar/how-play-tzaar-dice-cup";
+		String tzaarVideo = "tzaar/english/tzaar-video.html";
 	put(new GameInfo(220,ES.game,18,"TZ",GipfGames,"Tzaar","Tzaar-random",
 			  ThreeBotsPlus,
 			  new double[]{1.0,1.0,1.0,0.01},
@@ -1461,7 +1460,7 @@ synchronized(allGames) {
 	}
 	{	String yinshClass  = "yinsh.common.YinshGameViewer";
 		String yinshRules = "/yinsh/english/rules.htm";
-		String yinshVideo = "https://boardgamegeek.com/video/88942/yinsh/how-play-yinsh-dice-cup";
+		String yinshVideo = "/yinsh/english/yinsh-video.html";
 		
 	put(new GameInfo(250,ES.game,3,"Y",GipfGames,"Yinsh","Yinsh",
 			TwoBotsPlus,
@@ -1556,7 +1555,7 @@ synchronized(allGames) {
 	{
 	String gygesClass = "gyges.GygesViewer"; 
 	String gygesRules = "/gyges/english/rules.htm";
-	String gygesVideo = "https://boardgamegeek.com/video/72936/gyges/beth-heile-talks-about-gyges-2011-dice-tower-video";
+	String gygesVideo = "/gyges/english/gyges-video.html";
 	put(new GameInfo(335,ES.game,60,"GY",RacingGames,"Gyges","Gyges-beginner",
 			OneBotPlus,
 			new double[]{0.2,0.01},
@@ -1711,7 +1710,7 @@ synchronized(allGames) {
 			OneBotPlus,
 			new double[]{0.07,0.01},
 			"micropul.MicropulViewer","/micropul/english/micropul-Rules-English-1.2.1.pdf",
-			"https://boardgamegeek.com/video/882/micropul/video-rules-kevin-j",true, RedOverBlue));
+			"/micropul/english/micropul-video.html",true, RedOverBlue));
 
 	}
 	
@@ -1803,7 +1802,7 @@ synchronized(allGames) {
 	final String hiveClass = "hive.HiveGameViewer";
 	final double[] hiveBots = new double[] {1.0,1.0,0.01};
 
-	final String hiveVideo = "https://boardgamegeek.com/video/5645/hive/hive-how-play-5-minutes";
+	final String hiveVideo = "/hive/english/hive-video.html";
 	{
 		GameInfo g = put(new GameInfo(HIVE_REVISION+620,ES.game,8,"HV",Hive,"Hive","Hive",
 		TwoBotsPlus,
@@ -1871,7 +1870,7 @@ synchronized(allGames) {
 	{
 	String crules = "/carnac/english/Carnac_-_English_Rules_1.0.pdf";
 	String cview = "carnac.CarnacViewer"; 
-	String cvideo = "https://boardgamegeek.com/video/58200/carnac/overview-carnac-spiel-2014";
+	String cvideo = "/carnac/english/carnac-video.html";
 	double ctimes[] = { 1.0,1.0,0.01};
 	String cc = "CN";
 	String cn = "Carnac";
@@ -1893,7 +1892,7 @@ synchronized(allGames) {
 		double ctimes[] = {0.05, 1.0,0.01};
 		String crules = "/kulami/english/Kulami-EN.pdf";
 		String cview = "kulami.KulamiViewer"; 
-		String cvideo = "https://boardgamegeek.com/video/38462/kulami/kulami-marbles-brain-store";
+		String cvideo = "/kulami/english/kulami-video.html";
 		put(new GameInfo(8011,ES.game,92,"KL",TerritoryGames,"Kulami","Kulami",
 				TwoBotsPlus,ctimes,
 				cview,crules,
@@ -1905,17 +1904,18 @@ synchronized(allGames) {
 				cvideo,true, RedOverBlack));
 	}
 	{
+	String svideo = "/santorini/english/santorini-video.html";
 	put(new GameInfo(700,ES.game,23,"SA",StackingGames,"Santorini","Santorini",
 			ThreeBotsPlus,
 			new double[]{0.4,1,1,0.01},
 			"santorini.SantoriniViewer","/santorini/english/santorini-rules.html",
-			null,true, null));
+			svideo,true, null));
 
 	put(new GameInfo(701,ES.game,23,"SA",StackingGames,"Santorini","Santorini-gods",
 			ThreeBotsPlus,
 			new double[]{0.4,1,1,0.01},
 			"santorini.SantoriniViewer","/santorini/english/santorini-rules.html",
-			"https://boardgamegeek.com/video/197379/santorini/santorini-about-3-minutes",true, null));
+			svideo,true, null));
 
 	}
 
@@ -2042,7 +2042,7 @@ synchronized(allGames) {
 				OneBotPlus,
 				new double[]{0.8,0.01},
 				"raj.RajViewer","/english/about_raj.html",
-				"https://boardgamegeek.com/video/81558/beat-buzzard/overly-critical-gamers-raj-instructionalgameplayre",
+				"/raj/english/raj-video.html",
 				false, new Color[] {Color.red,Color.green,Color.blue,bsBrown,bsPurple}));
 		 mm.minPlayers = 2;
 		 mm.maxPlayers = 5;
@@ -2122,7 +2122,7 @@ synchronized(allGames) {
 	{ GameInfo mm = put(new GameInfo(680,ES.game,2,"P",OtherGames,"Plateau","Plateau",
 			NoBots,null,
 			"plateau.common.PlateauGameViewer","/plateau/english/rules.html",
-			"https://boardgamegeek.com/video/5781/plateau/plateau-video-rule-set",false, BlackOverWhite));
+			"/plateau/english/plateau-video.html",false, BlackOverWhite));
 	 mm.hasHiddenInformation = true;
 	 // needs a compantion app for your played pieces and pool of available pieces
 	 mm.okForPassAndPlay = false;

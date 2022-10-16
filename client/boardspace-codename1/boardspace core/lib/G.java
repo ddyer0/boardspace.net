@@ -1817,6 +1817,7 @@ public static String expandClassName(String classname)
 		//  G.print("feat ",feat," font ",font," def ",def);
 
 	}
+
     /** this is the hash checksum used by the server */
     public static int hashChecksum(String str,int n)
     {   int hash = 5381;

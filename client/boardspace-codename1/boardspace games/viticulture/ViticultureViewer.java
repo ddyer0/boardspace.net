@@ -833,9 +833,9 @@ public class ViticultureViewer extends CCanvas<ViticultureCell,ViticultureBoard>
     	setGlobalMagnifiers(null,gb,null,0);
     }
     public double getPreferredRotation()
-    {
+    {	double sup = super.getPreferredRotation();
     	commonPlayer pl = getPlayerOrTemp(mainBoard.whoseTurn);
-    	return(pl.displayRotation);
+    	return(sup+pl.displayRotation);
     }
     private void setGlobalMagnifiers(ViticultureCell on,ViticultureBoard gb,Rectangle box,double rotation)
     {	if(box!=null)

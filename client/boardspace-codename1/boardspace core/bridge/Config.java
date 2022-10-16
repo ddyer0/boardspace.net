@@ -22,7 +22,8 @@ public interface Config extends CommonConfig{
     static final boolean USE_NATIVE_SOCKETS = true; 
    public static final int standardDisplayDensity = 96;
    public static final String DICEPATH = "/dice/";
-   
+   static final String feedbackUrl = "https://boardspace.net/cgi-bin/feedback.cgi";
+
    public static final String FONT_FAMILIES[] =  { "Serif","SansSerif","Monospaced"};
 
 }

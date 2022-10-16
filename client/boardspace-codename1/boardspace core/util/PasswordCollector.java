@@ -946,14 +946,16 @@ import udp.PlaytableStack;
         					: G.isAmazon() 
         						? amazonAppStoreUrl
         						: androidAppStoreUrl;
-         	G.showDocument(url);
+         	G.showDocument(url,"App Store");
         }
         if(source==feedbackButton)
-        {	
+        {	  	
         	G.showDocument(feedbackUrl+"?subject=feedback%20for%20"
         			+ G.getPlatformName()
         			+ "%20"
-        			+ G.getAppVersion());
+        			+ G.getAppVersion(),"Feedback");
+        	exitValue = null;
+        	return;
         }
         if(source==visitSiteButton)
         {

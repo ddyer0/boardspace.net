@@ -429,8 +429,12 @@ public static synchronized Object MakeInstance(String classname)
 		    } 
 		    return null;
 		}
-
-    static public void showDocument(String u)
+	public static void setDrawers(boolean v) 
+	{
+		G.print("Not LastGameBoard");
+	}
+	static public void showDocument(String u) { showDocument(u,"Browser"); }
+    static public void showDocument(String u,String title)
     {	
     	try {
 		showDocument(new URI(u));

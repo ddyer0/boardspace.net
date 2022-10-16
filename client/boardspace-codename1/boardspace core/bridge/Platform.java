@@ -270,6 +270,19 @@ public abstract class Platform implements Config{
 		LogCapture.setLevel(level);
 		return cap.dispose();	
 	}
+	
+	public static String withLogs(Runnable r)
+	{
+		int level = LogCapture.getLevel();
+		LogCapture cap = new LogCapture();
+		LogCapture.setLevel(0);
+		r.run();
+		LogCapture.setLevel(level);
+		String v = cap.dispose();	
+		if(v!=null && v!="") 
+			{ G.print("Log capture: ",v); }
+		return v;
+	}
 	//
 	// temporary adjustments to the buildable vm
 	//
@@ -460,16 +473,22 @@ public abstract class Platform implements Config{
     {
     	if((installerPackage!=null) && installerPackage.isSupported()) { installerPackage.hardExit(); }
     }
-    static public String drawersOff()
+    static public String setDrawers(boolean vis)
     {	
     	if((installerPackage!=null)
     			&& installerPackage.isSupported()
     			&& isRealLastGameBoard())
-    	{	String off = "am broadcast -n com.lastgameboard.gameboardservicetest/com.lastgameboard.gameboardservice.drawer.DrawerVisibilityBroadcastReceiver -a com.lastgameboard.gameboardservice.drawer.action_CHANGE_DRAWER_VISIBLITY --ei com.lastgameboard.gameboardservice.drawer.key.CHANGE_DRAWER_VISIBLITY_STATE 0\r\n";
-    		return installerPackage.eval(off);
+    	{	
+    			installerPackage.setDrawers(vis);
+    			return "ok";
+    			//String off = "am broadcast -n com.lastgameboard.gameboardservicetest/com.lastgameboard.gameboardservice.drawer.DrawerVisibilityBroadcastReceiver -a com.lastgameboard.gameboardservice.drawer.action_CHANGE_DRAWER_VISIBLITY --ei com.lastgameboard.gameboardservice.drawer.key.CHANGE_DRAWER_VISIBLITY_STATE "
+    			//	+ vis ? "1" : "0" 
+    			//   + "\r\n";
+    			//return installerPackage.eval(off);
     	}
     	return "not LastgameBoard";
     }
+
     static public double screenDiagonal()
     {
     	double den = G.isAndroid() 
@@ -593,8 +612,31 @@ public abstract class Platform implements Config{
         			"The URL is "+u);
     	}
     }
-    static public void showDocument(String u)
-    {	
+    public static boolean useBrowser=true;
+    
+    private static boolean isBrowserUrl(String u)
+    {	String ul = u.toLowerCase();
+    	return (ul.startsWith("http:") || ul.startsWith("https:"));
+    }
+    /**
+     * create a simple console window that will be the target of {@link #print}
+     */
+	static public void createBrowser(String title,String url)
+	{	
+			Browser f = new Browser(title,url);
+			f.setVisible(true);	
+	}
+	static public void showDocument(String u)
+	{
+		showDocument(u,"Browser");
+	}
+    static public void showDocument(String u,String title)
+    {	if(useBrowser && isBrowserUrl(u)) 
+    	{
+    	G.createBrowser(title,u);
+    	}
+    else
+    {
     	try { Display.getInstance().execute(u);
     	}
     	catch (Throwable e)
@@ -602,7 +644,7 @@ public abstract class Platform implements Config{
     		G.infoEditBox("Sorry, invoking a browser is not supported here",
     				"The URL is "+u);
     	}
-
+    }
     }
 	
 	public static void infoEditBox(String caption,String infoMessage)

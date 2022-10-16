@@ -102,7 +102,7 @@ public class Login implements SimpleObserver,Config,Crypto
     	{
     		G.infoBox("message from the management", 
 			"There's a message for you.  Click OK to view it, or log in to the site through the regular web page");
-    		G.showDocument(msg);
+    		G.showDocument(msg,"Message");
     	}
     }
     public static String platformString()
@@ -180,7 +180,7 @@ public class Login implements SimpleObserver,Config,Crypto
 							"Try again","Recover lost password");
 					if("Recover lost password".equals(v))
 					{
-						G.showDocument(Http.httpProtocol+"//"+Http.getHostName()+recoverPasswordUrl);
+						G.showDocument(Http.httpProtocol+"//"+Http.getHostName()+recoverPasswordUrl,"Change Password");
 					}
 				 }
 				 else if(result.text.startsWith("unavailable")) 
