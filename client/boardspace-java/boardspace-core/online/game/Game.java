@@ -1722,6 +1722,12 @@ public class Game extends commonPanel implements PlayConstants,DeferredEventHand
     {	int eldest = findEldest(spectatorConnections,not,findEldest(playerConnections,not,my.channel));
     	return eldest==my.channel;
     }
+    
+    //
+    // this supplies the chat history to new viewers.  Only one client
+    // should answer. "Eldest" is misleading, its actually the client
+    // with the highest connection number that answers.
+    //
     private void doAsk(int to)
     {
     	if((theChat!=null) && imTheOldest(to))

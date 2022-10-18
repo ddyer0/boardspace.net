@@ -545,11 +545,6 @@ public class G extends Platform implements Timestamp
        double dy = y - y1;
        return(Math.sqrt((dx * dx) + (dy * dy)));
     }
-    static double intensity(int x, int y, double radius)
-    {
-        return (Math.sqrt(Math.min(1.0,
-                0.6 * (radius - (Math.sqrt((x * x) + (y * y)))))));
-    }
     
     /**
  * @param x

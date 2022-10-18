@@ -41,6 +41,7 @@ public class SeatingChart {
 	static Seating[] sideBySide = { Seating.Bottom_Pair_Right,Seating.Bottom_Pair_Left};
 	static Seating[] faceToFaceLandscape = { Seating.Top_Center,Seating.Bottom_Center};
 	static Seating[] faceToFacePortrait = { Seating.Left_End,Seating.Right_End };
+	static Seating[] faceToFacePortraitSide = { Seating.Bottom_Left,Seating.Bottom_Right };
 	static Seating[] leftCorner = {Seating.Bottom_Center,  Seating.Left_End};
 	static Seating[] rightCorner = { Seating.Bottom_Center, Seating.Right_End};
 	static Seating[] leftL = { Seating.Bottom_Pair_Right,Seating.Bottom_Pair_Left,Seating.Left_End};
@@ -181,7 +182,8 @@ public class SeatingChart {
 		RightCornerWide(false,true,true,null),
 		LeftCorner(false,true,true,LeftCornerWide),
 		RightCorner(false,true,true,RightCornerWide),
-		FaceToFacePortrait(true,false,true,null),
+		FaceToFacePortraitSide(true,false,true,null),
+		FaceToFacePortrait(true,false,true,FaceToFacePortraitSide),
 		RightEnd(true,true,false,null),
 		ThreeLeftLW(false,true,true,null),
 		ThreeLeftL(false,true,true,ThreeLeftLW),

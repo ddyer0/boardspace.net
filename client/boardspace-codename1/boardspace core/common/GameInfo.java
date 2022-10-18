@@ -889,10 +889,11 @@ synchronized(allGames) {
 	{ GameInfo mm = put(new GameInfo(445,ES.game,106,"IR",RacingGames,"Iro","Iro",
 			TwoBotsPlus,
 			new double[]{0.4,1,0.01},
-			"iro.IroViewer","/iro/english/IroRules.htm",
+			"iro.IroViewer","/iro/english/iroprules.html",
 			null,
 			false, WhiteOverBlack));
 	  mm.groupSortKey = "00070";
+	  
 	}
 
 	{
@@ -1577,11 +1578,6 @@ synchronized(allGames) {
 			"kamisado.KamisadoViewer","/kamisado/english/RULES%20ENG.pdf",
 			null,false, BlackOverGold));
 	
-	put(new GameInfo(445,ES.game,106,"IR",RacingGames,"Iro","Iro",
-			OneBotPlus,
-			new double[]{0.4,0.01},
-			"iro.IroViewer","/iro/english/iroprules.html",
-				null,false, WhiteOverBlack));
 
 	{
 	String truclass = "truchet.TruGameViewer";

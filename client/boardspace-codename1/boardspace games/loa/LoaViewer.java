@@ -126,7 +126,7 @@ public class LoaViewer extends commonCanvas implements UIC,GameLayoutClient
    			1.0,	// 1.5:1 aspect ratio for the board
    			fh*3,
    			fh*4,	// maximum cell size
-   			0.7		// preference for the designated layout, if any
+   			0.3		// preference for the designated layout, if any
    			);
        // place the chat and log automatically, preferring to place
    	// them together and not encroaching on the main rectangle.

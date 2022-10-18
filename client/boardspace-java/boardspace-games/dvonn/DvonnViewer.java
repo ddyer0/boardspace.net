@@ -148,6 +148,10 @@ public class DvonnViewer extends CCanvas<DvonnCell,DvonnBoard> implements DvonnC
     }
     
 public void setLocalBounds(int x, int y, int width, int height)
+{	
+	setLocalBoundsV(x,y,width,height,new double[] {1,-1});
+}
+public double setLocalBoundsA(int x,int y,int width,int height,double v)
 {	G.SetRect(fullRect, x, y, width, height);
 	GameLayoutManager layout = selectedLayout;
 	int nPlayers = nPlayers();
@@ -162,6 +166,7 @@ public void setLocalBounds(int x, int y, int width, int height)
     int margin = fh/2;
     int buttonW = fh*8;
     int stateH = fh*5/2;
+    boolean rotate = v>0;
     // this does the layout of the player boxes, and leaves
 	// a central hole for the board.
 	// in this mode, with zoom, width/zoom and height/zoom are
@@ -191,8 +196,7 @@ public void setLocalBounds(int x, int y, int width, int height)
 	// "my side" orientation, such as chess, use seatingFaceToFaceRotated() as
 	// the test.  For boards that are noticeably rectangular, such as Push Fight,
 	// use mainW<mainH
-	boolean rotate = mainW<(mainH*3/4);	
-  	int lastcol = b.ncols;
+ 	int lastcol = b.ncols;
    	int lastrow = 6;
     int ncols = rotate ? lastrow : lastcol;
     int nrows = rotate ? lastcol : lastrow;
@@ -244,7 +248,8 @@ public void setLocalBounds(int x, int y, int width, int height)
 
     setProgressRect(progressRect,goalRect);
     positionTheChat(chatRect,chatBackgroundColor,rackBackGroundColor);
-        }
+    return boardW*boardH;
+}
 public Rectangle createPlayerGroup(int player,int x,int y,double rotation,int unitsize)
 {	commonPlayer pl = getPlayerOrTemp(player);
 	Rectangle chip = chipRects[player];

@@ -1797,7 +1797,7 @@ public abstract class commonCanvas extends exCanvas
     {	commonPlayer ap = getActivePlayer();
     	commonPlayer who = whoseTurn();
     	return(!reviewMode()
-    			&& ap!=null
+    			&& (ap!=null)
     			&& !ap.spectator 
     			&& (who!=null)
     			&& (simultaneous_turns_allowed()
@@ -1886,7 +1886,7 @@ public abstract class commonCanvas extends exCanvas
     	// when it calls disB.  This prevents the new board
     	// from being swapped in until usingCopyBoard is null
     	G.Assert(l.displayThread==null, "recurse! %s and now %s",l.displayThread,Thread.currentThread());
-    	G.Assert(G.isEdt(), "not edt!");
+    	G.Assert(!G.debug() || G.isEdt(), "not edt!");
     	try {
     		l.displayThread = Thread.currentThread();
     		

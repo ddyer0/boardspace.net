@@ -1058,7 +1058,7 @@ public class GameLayoutManager  implements Opcodes
 	//G.print("Seating "+seating);
 	switch(seating)
 	{
-	default: G.Error("Not expecting %s", seating);
+	default:
 	case Undefined:
 		throw G.Error("seating chart %s not expected",seating);
 	case ThreeAroundLeft: // ok 2/4/2020
@@ -1125,19 +1125,27 @@ public class GameLayoutManager  implements Opcodes
 		right -= playerWM;
 		}
 		break;
-	case FaceToFacePortrait: // ok 2/4/2020
+	case FaceToFacePortraitSide:
 		{
-		// player box above and below the board, trimming from top and bottom
-		if(w<h)
-		{
-		rotations = new double[]{Math.PI,0};
-		positions = new int[][]{{xright,ytop},{xright,ybot}};
-		addToSpare(new Rectangle(left,top,xright-left,playerHM));
-		addToSpare(new Rectangle(left,ybot,xright-left,playerHM));
-		top += playerHM;
-		bottom -= playerHM;
+		/*
+		 * face to face players with the board below them
+		 * 
+		 * |....|
+		 * ......
+		 * ......
+		 * ......
+		 */
+			rotations = new double[]{Math.PI/2,-Math.PI/2};
+			int yt = top+playerWM/2-playerHM/2;
+			positions = new int[][]{{xsideLeft,yt},	// left 
+				{xsideRight,yt},		// right
+				};
+
+		addToSpare(new Rectangle(left+playerHM,top,w-playerHM*2,playerWM));
+		top += playerWM;
 		}
-		else
+		break;
+	case FaceToFacePortrait: // ok 2/4/2020
 		{	// player box left and right, rotated sideways
 			rotations = new double[]{Math.PI/2,-Math.PI/2};
 			positions = new int[][]{{xsideLeft,ymid},	// left 
@@ -1147,8 +1155,6 @@ public class GameLayoutManager  implements Opcodes
 			addSkinnyLeft(true,true,true);
 			left += playerHM;
 			right -= playerHM;
-		}
-			
 		}
 		break;
 	case LeftCornerWide: // ok 2/4/2020
@@ -2267,6 +2273,7 @@ public class GameLayoutManager  implements Opcodes
     	// shrink the unit size until the box left is big enough to meet the minBoardShare criteria
     	switch(seating)
     	{  	
+       	default:
      	case Undefined:
     		throw G.Error("Not expecting %s as seating",seating);
    	case ThreeAroundRight:
@@ -2714,16 +2721,27 @@ public class GameLayoutManager  implements Opcodes
     		if(nPlayers%3==1) { edgeUnitsY+=playerH/2; } 	// lie, make this look unattractive if we should be using portrait2X; } 
       		break;
       		
+      	case FaceToFacePortraitSide:
+	   		{
+	   		// means players on the short side, whichever that is,
+			unitsX = 0;
+			unitsY = playerH;
+			fixedW = marginSize*2;
+			fixedH = 2*marginSize;
+			edgeUnitsX = 0;
+			edgeUnitsY = unitsY;
+			}
+	   		break;
+	     		
        	case FaceToFacePortrait:
        		{
        		// means players on the short side, whichever that is,
-       		boolean xmajor = width<height;
-    		unitsX = xmajor? playerW : playerH*2;
-    		unitsY = xmajor? playerH*2 : playerW;
+    		unitsX = playerH*2;
+    		unitsY = playerW;
     		fixedW = marginSize*2;
     		fixedH = 2*marginSize;
-    		edgeUnitsX = xmajor ? 0 : unitsY;
-    		edgeUnitsY = xmajor ? unitsY : 0;
+    		edgeUnitsX = unitsY;
+    		edgeUnitsY = 0;
     		}
        		break;
     	case Portrait2X:	// two column portrait
@@ -2760,7 +2778,6 @@ public class GameLayoutManager  implements Opcodes
     		edgeUnitsY = 0;
     		}
     		break;
-    	default: G.Error("Not expecting %s", seating);
     	};
     	
 		double boardPercent = 0;

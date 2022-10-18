@@ -442,6 +442,12 @@ public class GC {
 	   	if(g!=null) { g.drawRoundRect(left,top,width,height,rx,ry); }
 	   }
 
+	    private static double intensity(int x, int y, double radius)
+	    {
+	        return (Math.sqrt(Math.min(1.0,
+	                0.6 * (radius - (Math.sqrt((x * x) + (y * y)))))));
+	    }
+
 	/**
 	 * fill a rectangle with a rectangle
 	 * @param g a graphics object or null
@@ -470,7 +476,7 @@ public class GC {
 	
 	    while (x <= 0)
 	    {
-	        double density = 1.0 - G.intensity(x, y, radius);
+	        double density = 1.0 - intensity(x, y, radius);
 	        int newr = Math.min(255, (int) (fr - (density * dr)));
 	        int newg = Math.min(255, (int) (fg - (density * dg)));
 	        int newb = Math.min(255, (int) (fb - (density * db)));

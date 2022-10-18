@@ -180,7 +180,7 @@ public class KhetViewer extends CCanvas<KhetCell,KhetBoard> implements KhetConst
     			1.2,	// 1.2:1 aspect ratio for the board
     			fh*2.0,	//  cell size
     			fh*2.5,
-    			0.2		// preference for the designated layout, if any
+    			0.1		// preference for the designated layout, if any
     			);
     	
         // place the chat and log automatically, preferring to place
