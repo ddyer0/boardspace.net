@@ -215,6 +215,7 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
     public double aspects[] = {0.7,1.0,1.4};
     public void setLocalBounds(int x,int y,int w,int h)
     {	setLocalBoundsV(x,y,w,h,aspects);
+
     }
 	/**
 	 * this is the main method to do layout of the board and other widgets.  I don't

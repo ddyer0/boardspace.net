@@ -256,14 +256,14 @@ public class G extends Platform implements Timestamp
      *   @return true,false, or throws an error. 
      */
     public static boolean Advise(boolean condition, String message,Object... args)
-    {	if (!condition)
+    {	/*if (!condition)
         {	if(args.length>0) { message = format(message,args); }
         	Plog.log.appendNewLog("Advisory: ");
         	Plog.log.appendLog(message);
         	Plog.log.finishEvent();
         	if(G.debug()) { G.print(Plog.log.finishLog()); }
         	return(false);
-        }
+        }*/
         return (true);
     }
     /**

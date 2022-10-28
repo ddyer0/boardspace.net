@@ -37,7 +37,8 @@ public class StockArt extends DrawableImage<StockArt> {
 	
 	static public StockArt Rotate180 = new StockArt("rotate180.png",new double[]{0.5,0.5,1});
 	static public StockArt Rotate90 = new StockArt("rotateq-nomask.png",new double[]{0.5,0.5,1});
-	
+	static public StockArt Rotate270 = new StockArt("rotateqc-nomask.png",new double[]{0.5,0.5,1});
+
 	/** a semi-transparent clockwise rotation  symbol */
 	static public StockArt Rotate_CW=new StockArt( "recycle" ,defaultAdjust);
 	/** a semi-transparent counter clockwise rotation  symbol */

@@ -118,7 +118,7 @@ public class QEPlay extends commonRobot<QEBoard> implements Runnable, QEConstant
     	{ return(evboard.winForPlayerNow(player)?1.0:0);
     	}
     	else {
-    		return(Math.min(1.0,evboard.players[player].effectiveScore()/100.0));
+    		return(Math.min(1.0,evboard.getPlayer(player).effectiveScore()/100.0));
     	}
     }
 

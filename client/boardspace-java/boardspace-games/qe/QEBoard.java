@@ -789,6 +789,8 @@ import online.game.*;
 		 {
 		 default:
 			 throw G.Error("not expecting source %s", source);
+		 case HitWhiteBoard: 
+			 return players[(int)(row)].whiteBoard;
 		 case HitWaste:
 			 return(wasteBasket);
 		 case HitNoQE:

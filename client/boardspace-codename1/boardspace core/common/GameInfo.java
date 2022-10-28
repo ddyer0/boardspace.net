@@ -893,7 +893,6 @@ synchronized(allGames) {
 			null,
 			false, WhiteOverBlack));
 	  mm.groupSortKey = "00070";
-	  
 	}
 
 	{
@@ -1126,6 +1125,29 @@ synchronized(allGames) {
 			null,false, WhiteOverBlack));
 
 	}
+	
+	{
+	String meridiansRules = "/meridians/english/Meridians rules.html";
+	String meridiansViewer = "meridians.MeridiansViewer";  
+	String meridiansVideo = null;
+	put(new GameInfo(11690,ES.test,113,"TU",TerritoryGames,"Meridians","meridians-5",
+			OneBotPlus,
+			new double[]{1.0,0.01},
+			meridiansViewer,meridiansRules,
+			meridiansVideo,false, WhiteOverBlack));
+	put(new GameInfo(11691,ES.test,113,"TU",TerritoryGames,"Meridians","meridians-6",
+			OneBotPlus,
+			new double[]{1.0,0.01},
+			meridiansViewer,meridiansRules,
+			meridiansVideo,false, WhiteOverBlack));
+	put(new GameInfo(11692,ES.test,113,"TU",TerritoryGames,"Meridians","meridians-7",
+			OneBotPlus,
+			new double[]{1.0,0.01},
+			meridiansViewer,meridiansRules,
+			meridiansVideo,false, WhiteOverBlack));
+
+	}
+	
 	{
 	String tumbleweedRules = "/tumbleweed/english/Rules.html";
 	String tumbleweedViewer = "tweed.TweedViewer";  

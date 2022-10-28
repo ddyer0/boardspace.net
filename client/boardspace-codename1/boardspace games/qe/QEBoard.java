@@ -250,7 +250,7 @@ import online.game.*;
 	 public QECell wasteBasket = new QECell(QEId.HitWaste);
 	 public LStack openBids = new LStack();
 	 
-	 public QEPlayer players[] = null;
+	 QEPlayer players[] = null;
 	 public int firstPlayerThisRound = -1;
 	 final int TRACKLENGTH = 40;
  
@@ -789,6 +789,8 @@ import online.game.*;
 		 {
 		 default:
 			 throw G.Error("not expecting source %s", source);
+		 case HitWhiteBoard: 
+			 return players[(int)(row)].whiteBoard;
 		 case HitWaste:
 			 return(wasteBasket);
 		 case HitNoQE:

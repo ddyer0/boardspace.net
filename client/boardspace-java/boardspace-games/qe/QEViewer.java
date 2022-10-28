@@ -271,7 +271,7 @@ public void ViewerRun(int wait)
     	int u2 = unit/2;
     	int chipW = 3*unit;
     	int chipH = 2*unit+u2;
-    			
+    	int donew = G.offline()? unit*8:0;
     	Rectangle box = pl.createRectangularPictureGroup(x+chipW,y,unit+u2);
     	int boxh = G.Height(box);
         G.SetRect(chip,	x,	y, chipW	,chipH	);
@@ -279,7 +279,7 @@ public void ViewerRun(int wait)
         G.SetRect(noQErect, noQEx,y,boxh, boxh);
         G.SetRect(eyeRect,x,y+chipH,chipH,chipH);
         int donex = noQEx+boxh+u2;
-        G.SetRect(done, donex, y,plannedSeating()? unit*8:0,unit*4);
+        G.SetRect(done, donex, y,donew,donew/2);
         G.SetRect(wonRect, x, y+boxh, unit*30,unit*10);
         G.union(box, chip,noQErect,wonRect);
         pl.displayRotation = rotation;

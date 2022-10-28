@@ -110,7 +110,26 @@ public enum PrototypeState implements BoardState,PrototypeConstants
 //  "snowflake" hexagonal board with crinkly edges, 5 per side. 
 //  Used for "crossfire" and lyngk
 //    static int[] ZfirstInCol = { 6, 3, 0, 1, 0, 1, 0, 3, 6 };
-//    static int[] ZnInCol =     {1, 4, 7, 6, 7, 6, 7, 4, 1 }; // depth of columns, ie A has 4, B 5 etc.
+//    static int[] ZnInCol =     {1, 4, 7, 6, 7, 6, 7, 4, 1 }; // depth of columns, ie A has 4, B 5 etc.''
+ 
+ //
+//asymmetric hex board (for meridians) with 5 vertices on opposite sides, 6 vertices on the other four sides
+//
+//static int[] M5FirstInCol = {  5, 4, 3,  2,  1,   0,  1,  2, 3, 4, 5,};
+//static int[] M5NInCol =     {  5, 6, 7,  8,  9,  10,  9,  8, 7, 6, 5,}; // depth of columns, ie A has 4, B 5 etc.
+
+//
+//asymmetric hex board (for meridians) with 6 vertices on opposite sides, 7 vertices on the other four sides
+//
+//static int[] M6FirstInCol = { 6, 5, 4, 3,  2,  1,  0,  1,  2, 3, 4, 5, 6};
+//static int[] M6NInCol =     { 6, 7, 8, 9, 10, 11, 12, 11, 10, 9, 8, 7, 6}; // depth of columns, ie A has 4, B 5 etc.
+
+//
+//asymmetric hex board (for meridians) with 7 vertices on opposite sides, 8 vertices on the other four sides
+//
+//static int[] M7FirstInCol = { 7, 6, 5, 4, 3,  2,  1,  0,  1,  2, 3, 4, 5, 6, 7};
+//static int[] M7NInCol =     { 7, 8, 9, 10, 11, 12, 13, 14, 13, 12, 11, 10, 9, 8, 7, 6, 7}; // depth of columns, ie A has 4, B 5 etc.
+
 	static final String VictoryCondition = "connect opposite sides with a chain of markers";
 	static final String PlayState = "Place a marker on any empty cell";
 	static final String PlayOrSwapState = "Place a marker on any empty cell, or Swap Colors";

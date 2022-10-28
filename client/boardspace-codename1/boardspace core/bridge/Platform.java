@@ -667,7 +667,16 @@ public abstract class Platform implements Config{
     	  return(name); 
     	}
     
-     
+     static final public String getPlatformSubtype()
+     {
+    	 return isRealLastGameBoard()
+    	 	? " lastgameboard"
+    	 	: isRealPlaytable()
+    	 		? " playtable"
+    	 		: isRealInfinityTable()
+    	 			? " infinitytable"
+    	 			: isTable() ? " sometable" : "";
+     }
 
     // guess (pretty reliably) if we are from the amazon app store
     static public boolean isAmazon()
@@ -822,10 +831,7 @@ public abstract class Platform implements Config{
     							|| isRealInfinityTable()
     							|| isRealLastGameBoard())));
     }
-    public static boolean isGameboard() 
-	{  return( false ); 
-	}
-     
+      
     public static int tableWidth() {
     	return(G.getInt(G.TABLEWIDTH, 1920));
     }

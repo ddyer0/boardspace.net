@@ -29,8 +29,14 @@ import online.search.SimpleRobotProtocol;
 import rpc.RpcService;
 import vnc.VNCService;
 
-
-
+//
+// TODO: add a button to show the game log on side screens
+// TODO: make word definitions pop on companion apps also
+// TODO: pop grand total for the current play
+// TODO: position letters selected by the side screen off-center if on the board
+// TODO: rethink on-board rotation, maybe use only the main rotater
+// TODO: maybe rotate the game log to face the player
+//
 /**
  *  Initial work Sept 2020 
 */
@@ -180,14 +186,27 @@ public class CrosswordsViewer extends CCanvas<CrosswordsCell,CrosswordsBoard> im
 
     public double aspects[] = {0.7,1.0,1.4,-0.7,-1,-1.4};
     public void setLocalBounds(int x,int y,int w,int h)
-    {	rackSize = plannedSeating()?5:2;
+    {	if(plannedSeating())
+    	{
+    	int dim = Math.min(w, h);
+    	rackSize = 4;
     	do {
-    		setLocalBoundsV(x,y,w,h,aspects);
-    		int boardw = G.Width(boardRect);
-    		int dim = Math.min(w, h);
-    		if(boardw>dim*0.75) { break; }
-    		rackSize--;
-    	} while(rackSize>=3);
+	    	setLocalBoundsV(x,y,w,h,aspects);
+	    	int boardw = G.Width(boardRect);
+			if(boardw>dim*0.65) { break; }
+			rackSize-=0.25;
+    		}
+    		while ((G.Width(boardRect)<(dim*0.75)) && (rackSize>3.0));
+    	}
+    else {
+    	rackSize =2;
+    	setLocalBoundsV(x,y,w,h,aspects);
+    }
+
+    	int sz = standardFontSize();
+   		G.print("Racksize "+rackSize+" "+selectedLayout);
+   		G.print("cell size ",(int)(selectedLayout.selectedCellSize()/sz)," ",sz);
+
     }
 	/**
 	 * this is the main method to do layout of the board and other widgets.  I don't
@@ -216,24 +235,23 @@ public class CrosswordsViewer extends CCanvas<CrosswordsCell,CrosswordsBoard> im
        	// ground the size of chat and logs in the font, which is already selected
     	// to be appropriate to the window size
     	int fh = standardFontSize();
-    	int minLogW = fh*22;	
+    	int minLogW = fh*18;	
        	int minChatW = fh*35;	
        	int vcrw = fh*16;
         int margin = fh/2;
         int buttonW = (G.isCodename1()?8:6)*fh;
-        int stateH = fh*5/2;
+        int stateH = fh*3;
         // this does the layout of the player boxes, and leaves
     	// a central hole for the board.
     	//double bestPercent = 
     	layout.selectLayout(this, nPlayers, width, height,
     			margin,	
-    			0.75,	// 60% of space allocated to the board
+    			0.6,	// 60% of space allocated to the board
     			aspect,	// aspect ratio for the board
-    			fh*2,	// min cell size
+    			fh*(plannedSeating()?3:2),	// min cell size
     			fh*4,	// maximum cell size
-    			0.4		// preference for the designated layout, if any
+    			0.2		// preference for the designated layout, if any
     			);
-    	
         // place the chat and log automatically, preferring to place
     	// them together and not encroaching on the main rectangle.
     	layout.placeTheChat(chatRect, minChatW, chatHeight,minChatW*2,3*chatHeight/2);
@@ -245,9 +263,8 @@ public class CrosswordsViewer extends CCanvas<CrosswordsCell,CrosswordsBoard> im
        	layout.placeDoneEditRep(doneW,doneW,passButton,checkWordsButton,vocabularyRect);
       	 
     	layout.placeTheVcr(this,vcrw,vcrw*3/2);
-       	
        	commonPlayer pl = getPlayerOrTemp(0);
-       	int spare = G.Height(pl.playerBox)/2;
+       	int spare = G.Height(pl.playerBox);
        	layout.placeRectangle(drawPileRect,spare,spare,BoxAlignment.Center);
        	       	
     	Rectangle main = layout.getMainRectangle();
@@ -279,7 +296,7 @@ public class CrosswordsViewer extends CCanvas<CrosswordsCell,CrosswordsBoard> im
     	// state and top ornaments snug to the top of the board.  Depending
     	// on the rendering, it can occupy the same area or must be offset upwards
     	//
-        int stateY = boardY;
+        int stateY = boardY-stateH/2;
         int stateX = boardX;
     	int stripeW = CELLSIZE;
     	G.placeRow(stateX,stateY,boardW ,stateH,stateRect,rotateRect,lockRect,altNoChatRect);
@@ -307,7 +324,7 @@ public class CrosswordsViewer extends CCanvas<CrosswordsCell,CrosswordsBoard> im
         setProgressRect(progressRect,goalRect);
         positionTheChat(chatRect,chatBackgroundColor,rackBackGroundColor);
         labelFont = largeBoldFont();
-        return(boardW*boardH);
+        return(boardW*boardH+rackSize*layout.selectedCellSize()*boardW);
     }
     boolean vertical = false;
     public Rectangle createPlayerGroup(int player,int x,int y,double rotation,int unitsize)
@@ -328,18 +345,19 @@ public class CrosswordsViewer extends CCanvas<CrosswordsCell,CrosswordsBoard> im
     	int noticeH = unitsize;
     	G.SetRect(done,donel,G.Top(box)+unitsize/2,doneW,doneW/2);
     	G.union(box, done,score,eye);
-    	int unith = rackSize*unitsize;
+    	double unith = rackSize*unitsize;
        	if(vertical)
        		{ 
-       		G.SetRect(chip,	x,	G.Bottom(box),	unith*20/4,unith*7/8); 
+       		G.SetRect(chip,	x,	G.Bottom(box),	(int)(unith*5),(int)(unith*7/8)); 
        		G.SetRect(notice, donel , G.Bottom(done),doneW*2,noticeH);
        		}
        	else
        		{ 
        		int boxH = G.Height(box);
        		int boxR = G.Right(box)+unitsize/4;
-       		G.SetRect(chip,boxR,y,unith*20/4,boxH-noticeH); 
-        	G.SetRect(notice, boxR ,y+boxH-noticeH,doneW*2,noticeH);
+       		int mbox = (int)Math.max(unith*7/8,boxH-noticeH);
+       		G.SetRect(chip,boxR,y,(int)(unith*5),mbox); 
+        	G.SetRect(notice, boxR ,y+mbox,doneW*2,noticeH);
        		}
         G.union(box, chip,notice);
     	pl.displayRotation = rotation;
@@ -592,7 +610,8 @@ public class CrosswordsViewer extends CCanvas<CrosswordsCell,CrosswordsBoard> im
     {	int pidx = pl.boardIndex;
     	int val = gb.score[pidx];
     	GC.frameRect(gc,Color.black,r);
-    	GC.Text(gc, true,r,Color.black,null,""+val);
+    	GC.setFont(gc,G.getFont(largeBoldFont(),G.Height(r)*3/4));
+    	GC.Text(gc, true,r,Color.blue,null,""+val);
     }
     /**
      * return the dynamically adjusted size during an animation.  This allows

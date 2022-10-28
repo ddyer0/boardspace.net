@@ -74,7 +74,7 @@ public class XFrame extends JFrame implements WindowListener
 	
 	}
 	public boolean hasCommand(String cmd)
-	{	if(("rotate".equals(cmd) || "twist".equals(cmd))) { return(rotater!=null); }
+	{	if(("rotate".equals(cmd) || "twist3".equals(cmd) || "twist".equals(cmd))) { return(rotater!=null); }
 		if("close".equals(cmd)) { return(true); }
 		if("actionmenu".equals(cmd)) 
 			{ return(popupMenuBar!=null); 
@@ -91,7 +91,11 @@ public class XFrame extends JFrame implements WindowListener
 	}
 	public void buttonMenuBar(ActionEvent evt,int x,int y)
 	{	String cmd = evt.getActionCommand().toString();
-		if("twist".equals(cmd))
+		if("twist3".equals(cmd))
+		{
+			if(rotater!=null) { rotater.setCanvasRotation(rotater.getCanvasRotation()+1); }			
+		}
+		else if("twist".equals(cmd))
 		{
 			if(rotater!=null) { rotater.setCanvasRotation(rotater.getCanvasRotation()-1); }
 		}
@@ -121,7 +125,7 @@ public class XFrame extends JFrame implements WindowListener
 			{	canSavePanZoom.deferActionEvent(evt);
 			}
 		}
-		else {
+		else if(G.debug()) {
 			Http.postError(this,"unexpected action event: "+cmd,null);
 		}
 	}

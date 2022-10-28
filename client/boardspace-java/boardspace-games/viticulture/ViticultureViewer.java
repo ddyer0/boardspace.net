@@ -1195,8 +1195,14 @@ private void drawPlayerBoard(Graphics gc,
     	// draw an object being dragged
     	// use the board cell size rather than the window cell size
     	GC.setFont(g,largeBoldFont());
-    	ViticultureChip.getChip(obj).drawChip(g,this,CELLSIZE*2, xp, yp,
-    			(getActiveBoard().getState()!=ViticultureState.Puzzle)?ViticultureChip.BACK:null);
+    	ViticultureChip chip = ViticultureChip.getChip(obj);
+    	if(chip!=null)
+    		{ ViticultureBoard bb = getActiveBoard();
+    		  if(bb!=null)
+    			  {chip.drawChip(g,this,CELLSIZE*2, xp, yp,
+    					  (bb.getState()!=ViticultureState.Puzzle)?ViticultureChip.BACK:null);
+    			  }
+    		}
     }
     // also related to sprites,
     // default position to display static sprites, typically the "moving object" in replay mode

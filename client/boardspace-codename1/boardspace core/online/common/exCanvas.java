@@ -54,6 +54,7 @@ public abstract class exCanvas extends ProxyWindow
 	class Layout {
 	    private IconMenu rotate180Menu = null;
 	    private IconMenu rotate90Menu = null;
+	    private IconMenu rotate270Menu = null;
 		VNCTransmitter transmitter;
 	    private int runSteps = 0;
 	    private int inputSteps = 0;
@@ -480,9 +481,10 @@ public abstract class exCanvas extends ProxyWindow
             
         if(G.debug() && G.offline())
         	{ l.rotate180Menu = new IconMenu(StockArt.Rotate.image); 
+         	  l.rotate90Menu = new IconMenu(StockArt.Rotate90.image);
+         	  l.rotate270Menu = new IconMenu(StockArt.Rotate270.image);
+         	  myFrame.addToMenuBar(l.rotate270Menu,deferredEvents);
         	  myFrame.addToMenuBar(l.rotate180Menu,deferredEvents);
-        	  l.rotate180Menu.setVisible(true);
-        	  l.rotate90Menu = new IconMenu(StockArt.Rotate90.image);
         	  myFrame.addToMenuBar(l.rotate90Menu,deferredEvents);
         	}
         }
@@ -581,6 +583,10 @@ public abstract class exCanvas extends ProxyWindow
        	changeZoomAndRecenter(getGlobalZoom());
        	generalRefresh();
        	return  true;
+       }
+       else if(target==l.rotate270Menu) 
+       {
+    	   setCanvasRotation(getCanvasRotation()+1);
        }
        else if(target==l.rotate180Menu)
        {

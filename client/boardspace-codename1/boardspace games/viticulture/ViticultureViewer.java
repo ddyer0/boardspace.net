@@ -44,6 +44,7 @@ import online.search.SimpleRobotProtocol;
 import rpc.RpcService;
 import viticulture.PlayerBoard.ScoreEvent;
 import viticulture.PlayerBoard.ScoreStack;
+import viticulture.ViticultureConstants.ViticultureState;
 import vnc.VNCService;
 
 
@@ -1195,14 +1196,20 @@ private void drawPlayerBoard(Graphics gc,
     * a game piece, it is really whatever is associated with b.movingObject()
     
       */
-    public void drawSprite(Graphics g,int obj,int xp,int yp)
-    {
-    	// draw an object being dragged
-    	// use the board cell size rather than the window cell size
-    	GC.setFont(g,largeBoldFont());
-    	ViticultureChip.getChip(obj).drawChip(g,this,CELLSIZE*2, xp, yp,
-    			(getActiveBoard().getState()!=ViticultureState.Puzzle)?ViticultureChip.BACK:null);
-    }
+public void drawSprite(Graphics g,int obj,int xp,int yp)
+{
+	// draw an object being dragged
+	// use the board cell size rather than the window cell size
+	GC.setFont(g,largeBoldFont());
+	ViticultureChip chip = ViticultureChip.getChip(obj);
+	if(chip!=null)
+		{ ViticultureBoard bb = getActiveBoard();
+		  if(bb!=null)
+			  {chip.drawChip(g,this,CELLSIZE*2, xp, yp,
+					  (bb.getState()!=ViticultureState.Puzzle)?ViticultureChip.BACK:null);
+			  }
+		}
+}
     // also related to sprites,
     // default position to display static sprites, typically the "moving object" in replay mode
     //public Point spriteDisplayPoint()

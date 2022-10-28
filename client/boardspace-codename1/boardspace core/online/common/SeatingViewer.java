@@ -74,7 +74,7 @@ public class SeatingViewer extends exCanvas implements LobbyConstants
 	GameInfo selectedVariant = null;
 	int pickedSource = -1;
 	int colorW = -1;
-	boolean lastGameBoard = G.isRealLastGameBoard();
+	boolean square = G.isRealLastGameBoard();
 	PopupManager userMenu = new PopupManager();
 	
 	enum SeatId implements CellId
@@ -156,6 +156,8 @@ public class SeatingViewer extends exCanvas implements LobbyConstants
 		G.SetRect(fullRect,l,t,w,h); 
 		// to benefit lastgameboard, don't switch to portrait if the board is nearly square
 		boolean portrait = w<(h*0.9);		
+		double ratio = Math.abs((double)w/h);
+		square = !portrait && ratio>0.9 && ratio<1.1;
 		portraitLayout = portrait;
 		int stripHeight ;
 		int fh = G.getFontSize(standardPlainFont());
@@ -224,7 +226,10 @@ public class SeatingViewer extends exCanvas implements LobbyConstants
 			 {
 			 default: break;
 			 case SelectColor:
-				 if(pickedSource<0) {	pickedSource = hp.row; }
+				 if(pickedSource<0)
+				 	{	pickedSource = hp.row; 
+				 		hp.dragging = true;
+				 	}
 
 			 }
 		
@@ -419,7 +424,7 @@ public class SeatingViewer extends exCanvas implements LobbyConstants
 	{	Image im = StockArt.Playtable_h.getImage();
 		double bas = 0.75;
 		double imr = bas*im.getWidth()/im.getHeight();
-		double hscale = imr*(lastGameBoard ? 0.7 : 1);
+		double hscale = imr*(square ? 0.7 : 1);
 		double vscale = bas;
 		int xo = (int)(tableSize*hscale/2);
 		int yo = (int)(tableSize*vscale/2);
@@ -437,26 +442,26 @@ public class SeatingViewer extends exCanvas implements LobbyConstants
 	private void drawSeatingSchematic(Graphics gc,SeatingChart chart,HitPoint mainSelect,int tableSize,int centerX,int centerY,HitPoint bubbleSelect)
 	{	Seating seats[] = chart.getSeats();
 		int nPlayers = seats.length;
-		double rotation = portraitLayout ? Math.PI/2 : 0;
-		G.setRotation(bubbleSelect, rotation,centerX,centerY);
-		GC.setRotation(gc,rotation,centerX,centerY);
+		boolean selectingColor = pickedSource>=0;
+		HitPoint tableSelect = selectingColor ? null : mainSelect;
 		
-		if(drawTable(gc,mainSelect,tableSize,centerX,centerY))
-		{	mainSelect.hitCode = SeatId.ChartSelected;
-			mainSelect.hitObject = chart;
+		if(drawTable(gc,tableSelect,tableSize,centerX,centerY))
+		{	tableSelect.hitCode = SeatId.ChartSelected;
+			tableSelect	.hitObject = chart;
 		}
 		int colorStep = tableSize/30;
 		Color []map = selectedGame!=null ? selectedGame.colorMap : null;
 		for(int i=0,nplayers=seats.length;i<nplayers;i++)
 		{	Seating position = seats[i];
-			double xpos = portraitLayout ? 1-position.y_position : position.x_position;
-			double ypos = portraitLayout ? position.x_position : position.y_position;
+			double xpos = position.x_position;
+			double ypos = position.y_position;
 			int xb = (int)(tableSize*xpos-tableSize/2);
 			int bubbleY = (int)(tableSize*ypos-tableSize/2);
 			int yb = (int)(0.68*bubbleY);
-			int xc = (int)(centerX+xb*(lastGameBoard?0.8:1));
+			int xc = (int)(centerX+xb*(square?0.8:1));
 			int yc = centerY-yb;
 			int playerNumber = 1+((i+nplayers-firstPlayerIndex)%nplayers);
+			Color color = Color.yellow;
 			if((nplayers==2) 
 					&& map!=null 
 					&& !selectedGame.variableColorMap)
@@ -464,8 +469,8 @@ public class SeatingViewer extends exCanvas implements LobbyConstants
 				playerNumber = 1+colorIndex[i];
 			}
 			String name = (bubbleSelect==null) ? null : User.prettyName(sess.players[i]);
-			if(name==null) { name = s.get(PlayerNumber,playerNumber); } 
-			
+			if(name==null) { name = s.get(PlayerNumber,playerNumber); color = Color.red; } 
+			labelColor = color;
 			boolean bubbleOffset = (i==0) 
 					&& (bubbleSelect!=null) 
 					&& (chart==SeatingChart.faceLandscape);
@@ -473,37 +478,29 @@ public class SeatingViewer extends exCanvas implements LobbyConstants
 			{	// special hack for 2 player landscape face to face
 				yc += tableSize/8;
 			}
-			
-			GC.setRotation(gc, -rotation, xc,yc);
-			if(StockArt.SmallO.drawChip(gc,this,bubbleSelect,SeatId.NameSelected,
+
+			if(StockArt.SmallO.drawChip(gc,this,selectingColor ? null : bubbleSelect,SeatId.NameSelected,
 					(int)(tableSize*0.8),xc,yc,
 					bubbleSelect==null ? null : name,0.3,1.2)
 					)
 			{
 				bubbleSelect.row = i;
 			}
-			GC.setRotation(gc, rotation, xc,yc);
 			if(selectedGame!=null && bubbleSelect!=null)
 			{
-				boolean center = yb==0;
-				int xo = centerX+xb-colorStep+(center ? -G.signum(xb)*tableSize/8: tableSize/30 );
-				int yo = centerY-yb-(int)(colorStep*2.6);
-			if(selectedGame.variableColorMap)
+			int xo = xc - (int)(colorStep*1.5);
+			int yo = (int)( yc+ ((yc>centerY)? -colorStep*2.6 : colorStep*2.6));
+			if(selectedGame.variableColorMap && !selectedGame.randomizeFirstPlayer)
 				{
-				GC.setRotation(gc, -rotation,xo,yo);
 				if(StockArt.SmallO.drawChip(gc,this,bubbleSelect,SeatId.SelectFirst,tableSize/4,xo,yo,s.get(OrdinalSelector,playerNumber),0.3,1.2))
 				{
 				bubbleSelect.row = i;
 				}
-				GC.setRotation(gc, rotation,xo,yo);
 				}
 			if(colorIndex!=null && i<colorIndex.length)
 				{
-				int xo1 = xo + (center ? (lastGameBoard?tableSize/12:0) : tableSize/15);
-				int yo1 = yo + (center ? Math.abs(xb/(lastGameBoard?4:9)) : 0);
-				if(bubbleOffset) 
-					{ yo1+=tableSize/8; 
-					}
+				int xo1 = xc + (int)(colorStep*0.4);
+				int yo1 = yo-(int)(colorStep*0.75);
 				Rectangle r = new Rectangle(xo1,yo1,colorStep*2,colorStep*2);
 				drawColorBox(gc,i,bubbleSelect,map[colorIndex[i]],r);
 
@@ -524,7 +521,7 @@ public class SeatingViewer extends exCanvas implements LobbyConstants
 			for(int i=seats.length,idx=0; i<map.length;i++,idx++)
 			{
 				double ps[] = pos[idx];
-				int xo = centerX+(int)(ps[0]*tableSize*(lastGameBoard?0.8:1));
+				int xo = centerX+(int)(ps[0]*tableSize*(square?0.8:1));
 				int yo = centerY+(int)(ps[1]*tableSize);
 				Rectangle r = new Rectangle(xo,yo,colorStep*2,colorStep*2);
 				drawColorBox(gc,i,bubbleSelect,map[colorIndex[i]],r);
@@ -595,10 +592,8 @@ public class SeatingViewer extends exCanvas implements LobbyConstants
 			int h = tableSize;
 			GC.frameRect(gc, Color.red,centerX-w/2,centerY-h/2,w,h);
 		}
-		G.setRotation(bubbleSelect, -rotation,centerX,centerY);
-		GC.setRotation(gc,-rotation,centerX,centerY);
 	}
-	boolean allPlayersNamed()
+	private boolean allPlayersNamed()
 	{
 		if((selectedChart.getNSeats()<=1)) { return(true); }
 		User players[] = sess.players;
@@ -931,7 +926,7 @@ public class SeatingViewer extends exCanvas implements LobbyConstants
 				G.centerY(mainr) - (serviceRunning() ? 0 : G.Height(mainr)/6),
 				hp);
 		
-		drawGameSelector(gc,gamer,hp);
+		drawGameSelector(gc,gamer,pickedSource>=0 ? null : hp);
 		}
 	}
 	
@@ -965,6 +960,7 @@ public class SeatingViewer extends exCanvas implements LobbyConstants
 		if(kb!=null )
 	        {  pt = null;
 	        }
+		HitPoint unPt = pickedSource>=0 ? null : pt;
 
 		if(complete) { fillUnseenBackground(gc); }
 		
@@ -993,24 +989,23 @@ public class SeatingViewer extends exCanvas implements LobbyConstants
 
 
 		GC.Text(gc,false,versionRect,Color.black,null,va);
-
-		drawSeatingCharts(gc,seatingSelectRect,pt);
+		drawSeatingCharts(gc,seatingSelectRect,unPt);
 		drawMainSelector(gc,seatingChart,gameSelectionRect,pt);
 		if(G.debug()||G.isTable()) 
-			{ StockArt.Gear.drawChip(gc, this, gearRect, pt,SeatId.GearMenu,s.get(ExitOptions)); 
+			{ StockArt.Gear.drawChip(gc, this, gearRect, unPt,SeatId.GearMenu,s.get(ExitOptions)); 
 			}
 		if(!G.isIOS() 
-				&& GC.handleRoundButton(gc,startStopRect,pt,
+				&& GC.handleRoundButton(gc,startStopRect,unPt,
 						s.get(serviceRunning() ? StopTableServerMessage : StartTableServerMessage),
 				buttonHighlightColor, buttonBackgroundColor))
 			{
-				pt.hitCode = SeatId.ToggleServer;
+			unPt.hitCode = SeatId.ToggleServer;
 			}
 		
-		if(GC.handleRoundButton(gc,onlineRect,pt,s.get(PlayOnlineMessage),
+		if(GC.handleRoundButton(gc,onlineRect,unPt,s.get(PlayOnlineMessage),
 				buttonHighlightColor, buttonBackgroundColor))
 			{
-				pt.hitCode = SeatId.PlayOnline;
+				unPt.hitCode = SeatId.PlayOnline;
 			}
 		if(!G.isIOS())
 		{
@@ -1021,7 +1016,7 @@ public class SeatingViewer extends exCanvas implements LobbyConstants
 		}
 		if(useKeyboard && (selectedInputField==newNameField))
 		{
-			newNameField.redrawBoard(gc,pt);
+			newNameField.redrawBoard(gc,unPt);
 		}
 		if(kb!=null)
 		{
@@ -1040,6 +1035,10 @@ public class SeatingViewer extends exCanvas implements LobbyConstants
 			GC.frameRect(gc, Color.black, r);
 		}
 	}
+	//
+	// oldway pops up a dialog, new way edits the name in the window
+	// this avoids the bug lastgameboard has with the vkb
+	//
 	boolean oldway = G.isCodename1() ? false : true;
 	private void showAddName(int x,int y)
 	{

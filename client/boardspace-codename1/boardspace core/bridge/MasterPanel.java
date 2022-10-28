@@ -35,16 +35,17 @@ public class MasterPanel extends JPanel implements NullLayoutProtocol,ActionList
 	Image paperClipSideImage = Image.getImage(IMAGEPATH+"paperclipside-nomask.png");
 	Image rotateImage = Image.getImage(IMAGEPATH+"rotate-nomask.png");
 	Image rotateQImage = Image.getImage(IMAGEPATH+"rotateq-nomask.png");
+	Image rotate3QImage = Image.getImage(IMAGEPATH+"rotateqc-nomask.png");
 	JButton menuButton = new JButton("actionmenu",menuImage);
 	JButton closeButton = new JButton("close",closeImage);
 	JButton paperclipButton = new JButton("savepanzoom",paperClipImage);
 	JButton paperclipSideButton = new JButton("restorepanzoom",paperClipSideImage);
 	JButton rotateButton = new JButton("rotate",rotateImage);
 	JButton twistButton = new JButton("twist",rotateQImage);
-
+	JButton twist3Button = new JButton("twist3",rotate3QImage);
 	// the order here defines the order from left to right
 	// clipsidebutton is leftmost so it can appear and disappear and look natural
-	JButton playtableButtons[] = { paperclipSideButton,paperclipButton,rotateButton,twistButton,menuButton,closeButton };
+	JButton playtableButtons[] = { paperclipSideButton,paperclipButton,twist3Button,rotateButton,twistButton,menuButton,closeButton };
 
 	public MasterPanel(MasterForm m)
 	{	masterForm = m;

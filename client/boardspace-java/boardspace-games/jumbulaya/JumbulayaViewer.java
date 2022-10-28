@@ -171,8 +171,22 @@ public class JumbulayaViewer extends CCanvas<JumbulayaCell,JumbulayaBoard> imple
 
 
     public void setLocalBounds(int x,int y,int w,int h)
-    {	
+    {	rackSize = plannedSeating()?3:1;
+    	int fh = standardFontSize();
+    	do {
     	setLocalBoundsV(x,y,w,h,new double[] {0.7,-0.7});
+    	
+    	G.print("Racksize "+rackSize+" scale "+selectedLayout.selectedCellSize()/fh," ",fh+" "+selectedLayout.selectedSeating());
+               	int width = G.Width(boardRect);
+            if(selectedLayout.selectedCellSize()>=fh*2)
+            {
+    		int height = G.Height(boardRect);
+    		int dim = Math.min(width,height);
+    		int adim = Math.min(w,h);
+    		if(dim>adim*0.75) { break; }
+            }
+    		rackSize -= 0.25;
+    	} while(rackSize>=1.2);
     }
 	/**
 	 * this is the main method to do layout of the board and other widgets.  I don't
@@ -215,32 +229,31 @@ public class JumbulayaViewer extends CCanvas<JumbulayaCell,JumbulayaBoard> imple
     			0.75,	// 60% of space allocated to the board
     			aspect,	// aspect ratio for the board
     			fh*2,	// min cell size
-    			fh*2.5,	// maximum cell size
-    			0.4		// preference for the designated layout, if any
+    			fh*3,	// maximum cell size
+    			0.2		// preference for the designated layout, if any
     			);
        	boolean planned = plannedSeating();
-   	
         // place the chat and log automatically, preferring to place
     	// them together and not encroaching on the main rectangle.
     	layout.placeTheChat(chatRect, minChatW, chatHeight,minChatW*2,3*chatHeight/2);
-    	layout.placeRectangle(logRect,minLogW, minLogW*2/3, minLogW*3/2, minLogW,BoxAlignment.Edge,true);
+    	layout.placeRectangle(logRect,minLogW, minLogW, minLogW*3/2, minLogW*3/2,BoxAlignment.Edge,true);
     	layout.alwaysPlaceDone = false;
        	layout.placeDoneEditRep(buttonW,buttonW*4/3,doneRect,editRect,planned?null:startJRect);
        	G.copy(endJRect,startJRect);
     	layout.placeTheVcr(this,vcrw,vcrw*3/2);
        	int doneW = G.Width(editRect);
        	layout.placeRectangle(passButton, doneW,doneW/2,BoxAlignment.Center);
-    	layout.alwaysPlaceDone = false;
+    	layout.alwaysPlaceDone = G.debug();
        	layout.placeDoneEditRep(doneW,doneW,checkWordsButton, checkJumbulayaButton,vocabularyRect);
        	commonPlayer pl = getPlayerOrTemp(0);
-       	int spare = G.Height(pl.playerBox)/3;
+       	int spare = G.Height(pl.playerBox)/2;
        	layout.placeRectangle(drawPileRect,spare,spare,BoxAlignment.Center);
        	       	
     	Rectangle main = layout.getMainRectangle();
     	int mainX = G.Left(main);
     	int mainY = G.Top(main);
     	int mainW = G.Width(main);
-    	int mainH = G.Height(main)-stateH;
+    	int mainH = G.Height(main);
     	
     	// There are two classes of boards that should be rotated. For boards with a strong
     	// "my side" orientation, such as chess, use seatingFaceToFaceRotated() as
@@ -249,22 +262,21 @@ public class JumbulayaViewer extends CCanvas<JumbulayaCell,JumbulayaBoard> imple
     	int brows = bb.nrows;
     	int bcols = bb.ncols;
         int ncols =  bcols;
-    	int nrows =  planned ? brows+1 : brows+2;
-  	
+    	int nrows =  planned ? brows : brows+2;
     	// calculate a suitable cell size for the board
-    	double cs = Math.min((double)mainW/ncols,(double)(mainH-stateH)/nrows);
+    	double cs = Math.min((double)mainW/ncols,(double)(mainH-stateH*2)/nrows);
     	CELLSIZE = (int)cs;
     	//G.print("cell "+cs0+" "+cs+" "+bestPercent);
     	// center the board in the remaining space
     	int largeW = CELLSIZE*ncols;
-    	int largeH = CELLSIZE*nrows;
+    	int largeH = CELLSIZE*nrows+stateH;
     	int boardW = (int)(bcols*CELLSIZE);
     	int boardH = (int)(brows*CELLSIZE+stateH);
     	int extraW = Math.max(0, (mainW-largeW)/2);
     	int extraH = Math.max(0, (mainH-largeH)/2);
     	int boardX = mainX+extraW;
     	int boardY = mainY+extraH;
-    	//
+   		//
     	// state and top ornaments snug to the top of the board.  Depending
     	// on the rendering, it can occupy the same area or must be offset upwards
     	//
@@ -277,17 +289,16 @@ public class JumbulayaViewer extends CCanvas<JumbulayaCell,JumbulayaBoard> imple
     	G.SetRect(bigRack, boardX+CELLSIZE/2, G.Bottom(timeRect), boardW-CELLSIZE, planned?0:CELLSIZE*3/2);
     	G.SetRect(largerBoardRect,mainX+extraW,mainY+extraH,largeW,largeH);
 
-  
-
     	// goal and bottom ornaments, depending on the rendering can share
     	// the rectangle or can be offset downward.  Remember that the grid
     	// can intrude too.
         setProgressRect(progressRect,goalRect);
         positionTheChat(chatRect,chatBackgroundColor,rackBackGroundColor);
         labelFont = largeBoldFont();
-        return(boardW*boardH);
+        return(boardW*boardH+rackSize*layout.selectedCellSize()*boardW);
     }
     boolean vertical = false;
+    double rackSize = 1;
     public Rectangle createPlayerGroup(int player,int x,int y,double rotation,int unitsize)
     {	commonPlayer pl = getPlayerOrTemp(player);
     	Rectangle chip = chipRects[player];
@@ -308,9 +319,10 @@ public class JumbulayaViewer extends CCanvas<JumbulayaCell,JumbulayaBoard> imple
     	G.union(box, done,score,eye,jrect);
     	int boxW = G.Width(box);
     	int chipH = unitsize*3/2+(planned ? unitsize*2 : 0);
-       	if(vertical) { G.SetRect(chip,	x,	G.Bottom(box),	boxW,chipH); }
+    	
+       	if(vertical) { G.SetRect(chip,	x,	G.Bottom(box),	(int)(boxW*rackSize),(int)(chipH*rackSize)); }
        	else { 
-       		G.SetRect(chip,G.Right(box)+doneW/4,y+unitsize/2,boxW,chipH);
+       		G.SetRect(chip,G.Right(box)+doneW/4,y+unitsize/2,(int)(boxW*rackSize),(int)(chipH*rackSize));
        	}
         G.union(box, chip);
     	pl.displayRotation = rotation;

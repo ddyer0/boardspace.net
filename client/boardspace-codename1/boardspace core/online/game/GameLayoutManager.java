@@ -5,6 +5,7 @@ import com.codename1.ui.geom.Rectangle;
 import bridge.FontMetrics;
 import lib.G;
 import lib.InternationalStrings;
+import lib.Plog;
 import lib.RectangleStack;
 import online.common.SeatingChart.DefinedSeating;
 import online.game.PlayConstants.BoxAlignment;
@@ -29,6 +30,7 @@ class RectangleManager
 {	static boolean allowChips = true;
 	static int MinCoord = 0;
 	static int MaxCoord = 999999;
+	int failedPlacements = 0;
 	double zoom = 1.0;
 	public RectangleManager(double zoomto) { zoom = zoomto; }
 	
@@ -37,7 +39,9 @@ class RectangleManager
 	RectangleStack spareRects = new RectangleStack();
 	RectangleStack allocatedRects = new RectangleStack();
 	Rectangle mainRectangle = null;
+	Rectangle fullRect = null;
 	public int marginSize = 0;
+	Plog messages = new Plog(20);
 	public void setMainRectangle(Rectangle r) 
 	{ mainRectangle = r;
 	  if(r!=null) { checkRectangles(r); }
@@ -80,15 +84,21 @@ class RectangleManager
 		Rectangle rel = spareRects.elementAt(lim);
 		if(rel!=r && G.debug() && r.intersects(rel))
 		{
-		G.print(G.format("spare rectangles overlap\n%s\n%s\n%s",rel,r,r.intersection(rel)));
+		failedPlacements++;
+		messages.addLog(G.format("spare rectangles overlap\n%s\n%s\n%s",rel,r,r.intersection(rel)));
 		}
 		}
 	}
 	public void checkRectangles()
 	{
 		for(int i=spareRects.size()-1; i>=0; i--)
-		{
-			checkRectangles(spareRects.elementAt(i));
+		{	Rectangle r = spareRects.elementAt(i);
+			checkRectangles(r);
+			if(!fullRect.contains(r)) 
+				{ 
+				failedPlacements++;
+				messages.addLog(G.format("spare rectangle overlaps main\n%s\n%s\n%s",r,r.intersection(fullRect)));
+				}
 		}
 	}
 
@@ -111,7 +121,7 @@ class RectangleManager
 			int tr = G.Top(r);
 			int br = G.Bottom(r);
 			boolean done = false;
-			//G.print("Add "+r);
+			messages.addLog("Add "+r);
 			// try to coalesce the new rectangle with an existing rectangle
 			for(int lim = spareRects.size()-1; lim>=0 && !done; lim--)
 			{
@@ -437,7 +447,10 @@ class RectangleManager
 		return(true);
     	}
     	// failed to find a placement
-    	if(G.debug()) { G.print("failed to place ",minWX0,"x",minHX0); }
+    	failedPlacements++;
+    	if(G.debug()) 
+    		{ messages.addLog("failed to place ",minWX0,"x",minHX0); 
+    		}
     	
     	return(false);
     }
@@ -742,6 +755,12 @@ class RectangleManager
 	placeInRectangle(targetRect,actualW,actualH,fromRect,align1,align);
 
     }
+	public void init(int i, int j, int w, int h) {
+		spareRects.clear();
+		fullRect = new Rectangle(0,0,w,h);
+		allocatedRects.clear();
+		failedPlacements = 0;
+	}
 
 }
 
@@ -798,7 +817,6 @@ public class GameLayoutManager  implements Opcodes
 	private int top;					// these reflect the exact unused area, inside the margins
 	private int right;
 	private int bottom;
-	
 	
 	private int ycenter;
 	private int xcenter;
@@ -913,24 +931,7 @@ public class GameLayoutManager  implements Opcodes
 		}
 	}
 	
-	// add spare rectangles for fat margins at left or left and right, with the side box top aligned
-	private void addFatLeftTop(boolean right)
-	{
 		
-		int spareY = top+playerWM;
-		int spareX = left+playerHM;
-		int spareXW = playerWM-spareX;
-		
-		addToSpare(new Rectangle(spareX,top,spareXW,spareY-top));
-		addToSpare(new Rectangle(left,spareY,playerWM,ybot-spareY));
-		if(right)
-		{	// ok 2/26
-			spareY = top+playerHM;
-			int spareY2 = bottom - playerWM;
-			addToSpare(new Rectangle(xright,spareY,playerWM,spareY2-spareY));
-			addToSpare(new Rectangle(xright,spareY2,spareXW,bottom-spareY2));
-		}	
-	}
 	// add spare rectangles for .X.X. spacing 
 	private void add2XAcross(int ycoord)
 	{	
@@ -1019,8 +1020,7 @@ public class GameLayoutManager  implements Opcodes
 			int l,int t,int w,int h,Rectangle player,int marginSize)
 	{
 	//G.print("Make ",seating," ",l," ",t," ",w,"x",h);
-	rects.spareRects.clear();
-	rects.allocatedRects.clear();
+	rects.init(0,0,w,h);
 	nPlayers = nP;		
 	left = l;
 	right = l+w;
@@ -1047,14 +1047,14 @@ public class GameLayoutManager  implements Opcodes
 	ymid = ycenter-playerHX/2;
 	ymidUp = ycenter-playerHX;
 	xsideLeft = left+playerHM/2-playerWX/2;		// so when rotated will center on left
-	xsideRight = right-playerHM/2-playerWX/2;	// so when rotated will center on right
+	xsideRight = right-(playerHM+playerWM)/2;	// so when rotated will center on right
 	
 	// points for the seated layouts with two per side
 	int extra = right-left-playerWM*2;		// extra space with 2 boxes across
 	int space = extra/4;					// allocate 1/4 left, 1/2 between the boxes, 1/4 right
 	
 	xthirdLeft = left + space;			// in the tightest fit, space will be zero
-	xthirdRight = right -space - playerWX;
+	xthirdRight = right -space - playerWM;
 	//G.print("Seating "+seating);
 	switch(seating)
 	{
@@ -1097,7 +1097,7 @@ public class GameLayoutManager  implements Opcodes
 		positions = new int[][] { {xright,ybot}, { xsideRight,ymid}, { xright,ytop}};
 		// there's a skinny rectangle left between the side rectangle and the main board,
 		// ok 10/5/2022
-		addFatLeftCentered(false,true,false);
+		addFatLeftCentered(false,true,true);
 		right -= playerWM;
 	}
 	break;
@@ -1135,14 +1135,16 @@ public class GameLayoutManager  implements Opcodes
 		 * ......
 		 * ......
 		 */
+			int yt = margin+(playerWM-playerHM)/2;
 			rotations = new double[]{Math.PI/2,-Math.PI/2};
-			int yt = top+playerWM/2-playerHM/2;
 			positions = new int[][]{{xsideLeft,yt},	// left 
 				{xsideRight,yt},		// right
 				};
 
-		addToSpare(new Rectangle(left+playerHM,top,w-playerHM*2,playerWM));
-		top += playerWM;
+		addToSpare(new Rectangle(left,playerWM,playerHM,bottom-playerWM));
+		addToSpare(new Rectangle(right-playerHM,playerWM,playerHM,bottom-playerWM));
+		left += playerHM;
+		right -= playerHM;
 		}
 		break;
 	case FaceToFacePortrait: // ok 2/4/2020
@@ -1546,12 +1548,14 @@ public class GameLayoutManager  implements Opcodes
 		
 		// this is like addx1across, but takes into account that the 
 		// sideways recangles at the left and right might eat into it.
+		if(spareH>0)
+			{
 		addToSpare(new Rectangle(spareX,top,right-spareX,spareH));	
 		addToSpare(new Rectangle(left,top,xmid-left,spareH));
 		int yb = bottom-spareH;
 		addToSpare(new Rectangle(spareX,yb,right-spareX,spareH));	
 		addToSpare(new Rectangle(left,yb,xmid-left,spareH));
-
+			}
 		// rectangles ok 8/2/2021
 		addSkinnyLeft(seating==DefinedSeating.FourAround,false,false);				
 		if(seating==DefinedSeating.FourAround)
@@ -1613,10 +1617,20 @@ public class GameLayoutManager  implements Opcodes
 			// in this layout we clip left and right margins only
 			// and the spare rectangles are in the new left and right spaces
 			// ok 2/26
-			addFatLeftTop(false);
+			{				
+			int spareY = top+playerWM;
+			int spareX = left+playerHM;
+			int spareXW = playerWM-spareX;		
+			addToSpare(new Rectangle(spareX,top,spareXW,spareY-top));
+			addToSpare(new Rectangle(left,spareY,playerWM,ybot-spareY));
+			}	
+			
+			// space between the top right horizontal player and the top-left vertical player
 			Rectangle re = new Rectangle(playerWM,top,xright-(xleft+playerWX),playerHM);
 			addToSpare(re);
 			int y2 = ytop+playerHX;
+			
+			// space between the right vertical player and the right horizontal player
 			Rectangle ri = new Rectangle(right-playerHM,y2,playerHM,bottom-playerWM-y2);
 			addToSpare(ri);
 			left += playerWM;
@@ -1633,7 +1647,7 @@ public class GameLayoutManager  implements Opcodes
 		
 		 	*/
 			rotations = fourAroundRotation;
-			int boxY2 = ybot-(playerWM-playerHM)/2;
+			int boxY2 = ybot-(playerWM-playerHM+2)/2;
 			positions = new int[][] { {xleft,ybot}, 	// bottom X....
 									{ xsideLeft,ytop+(playerWM-playerHM)/2}, 	// left, aligned to box top
 									{ xright,ytop},		// top ....X 
@@ -1641,9 +1655,25 @@ public class GameLayoutManager  implements Opcodes
 			// in this layout we clip left and right margins only
 			// and the spare rectangles are in the new left and right spaces
 			// ok 2/26
-			addFatLeftTop(true);
-			left += playerWM;
-			right -= playerWM;
+
+			int spareY = top+playerWM;
+									
+			// between horizontal bottom and vertical right
+			addToSpare(new Rectangle(playerWM+margin,bottom-playerHM,right-playerHM-playerWM-margin*2,playerHM));
+			
+			// between vertical left and horizontal bottom
+			addToSpare(new Rectangle(left,spareY,playerHM,ybot-spareY));
+			spareY = top+playerHM;
+			int spareY2 = bottom - playerWM;
+			// between horizontal top and vertical right
+			addToSpare(new Rectangle(right-playerHM,spareY,playerHM,spareY2-spareY));
+			// between left vertical and top horizontal
+			addToSpare(new Rectangle(playerHM,top,right-playerWM-playerHM-margin,playerHM));
+
+			left += playerHM;
+			right -= playerHM;
+			top += playerHM;
+			bottom -= playerHM;
 		}
 		break;
 
@@ -1896,7 +1926,7 @@ public class GameLayoutManager  implements Opcodes
 }
 	
 
-
+	Rectangle fullRect;
 
 	/**
 	 * perform the layout just calculated.
@@ -1907,6 +1937,7 @@ public class GameLayoutManager  implements Opcodes
 	public void doLayout(GameLayoutClient window,double zoom,int unitsize,Rectangle full)
 	{	
 	// place all the players	
+		fullRect = full;
 		for(int i=0;i<nPlayers;i++)
 		{
 		int []position = positions[i];
@@ -1920,7 +1951,7 @@ public class GameLayoutManager  implements Opcodes
 			Rectangle playerRectc = G.copy(null, playerRect);
 			G.setRotation(playerRectc, -(window.getPlayerOrTemp(i).displayRotation));
 			if(!full.contains(playerRectc)) 
-			{G.print("player rectangle runs off screen\n",playerRect,"\n",full);
+				{G.print("player rectangle runs off screen\n",playerRectc,"\n",full);
 			}
 		}
 	}
@@ -1966,99 +1997,16 @@ public class GameLayoutManager  implements Opcodes
 					double aspectRatio,double maxCellSize, double targetLayoutHysterisis)
 	{
 		int minSize = client.standardFontSize();
-		return selectLayout(client,nPlayers,width,height,
+		double v = selectLayout(client,nPlayers,width,height,
 				margin,minBoardShare,
 				aspectRatio,Math.min(maxCellSize,minSize*1.8),maxCellSize,
 				targetLayoutHysterisis);
-	}
-	public double selectLayout0(GameLayoutClient client,int nPlayers,int fullwidth,int fullheight,
-			int margin,double minBoardShare,
-			double aspectRatio,double minSize,double maxCellSize, double targetLayoutHysterisis)
-	{	// playtable has a deep bezil that makes the extreme edge hard to get to
-		int extramargin = G.isRealPlaytable()?G.minimumFeatureSize()/2 : 0;
-		int width = fullwidth-extramargin;
-		int height = fullheight-extramargin;
-		if(nPlayers!=selectedNPlayers || !client.isZoomed())
+		if(rects.failedPlacements>0)
 		{
-		double bestPercent = 0;
-		double bestScore = 0;
-		double desiredAspectRatio = aspectRatio;
-		double targetPreference = targetLayoutHysterisis;
-		DefinedSeating best = null;
-		DefinedSeating currentSeating = client.seatingChart();
-		DefinedSeating originalSeating = currentSeating;
-    	rects.marginSize = margin;
-    	preferredAspectRatio = desiredAspectRatio;
-	    if(currentSeating!=DefinedSeating.Undefined)
-	    {	while(currentSeating!=null)
-	    	{
-	    	double currentPercent = sizeLayout(client,nPlayers,currentSeating,minBoardShare,desiredAspectRatio,maxCellSize,minSize,width,height,margin);
-	    	double currentCellSize = selectedCellSize;
-	    	double currentScore = currentPercent*currentCellSize;
-	    	//G.print("S "+currentSeating+" "+currentPercent+" "+currentScore);
-	    	if(currentCellSize>1 && (best==null || currentScore>bestScore))
-	    	{
-	    		bestPercent = currentPercent;
-	    		bestScore = currentScore;
-	    		best = currentSeating;
-	    		//sizeLayout(client,nPlayers,currentSeating,minBoardShare,desiredAspectRatio,maxCellSize,minSize,width,height);
-		    	}
-	    	currentSeating = currentSeating.alternate;
-	    	if(currentSeating==originalSeating) { currentSeating=null; }
-	    	}
-	    }
-	    else // if there is no target, there's no preference either.
-	    { targetPreference = 1.0; 	// no target to prefer
-	      best = currentSeating;
-	    }
-	    
-		for(DefinedSeating s : tryThese)	// also try the generic layouts 
-		{
-			double v = sizeLayout(client,nPlayers,s,minBoardShare,desiredAspectRatio,maxCellSize,minSize,width,height,margin);
-			double score = v*selectedCellSize;
-			//G.print(""+s+" board "+v+" cell "+selectedCellSize+" = "+score);
-	    	//G.print("S "+s+" "+v+" "+score);
-	    	if(selectedCellSize>1 && 
-					((best==DefinedSeating.Undefined)
-					|| (score*targetPreference>bestScore)))
-				{ // select the biggest cell whose board percentage
-				  // is in the acceptable range
-				  bestPercent = v; 
-				  best=s; 
-				  bestScore = score;
-				  //sizeLayout(client,nPlayers,s,minBoardShare,desiredAspectRatio,maxCellSize,minSize,width,height);
-				}
+			G.print(rects.messages.getLog());
 		}
-    	//G.print("best "+best+" "+bestPercent+" "+bestScore);
-
-		if(best==DefinedSeating.Undefined)
-		{	// the screen has no acceptable layouts (he's making his window tiny?)
-			// but give him something...
-			if(G.debug()) { G.print("No seating! ",width,"x",height," min ",minSize," players "+nPlayers);}
-			best = DefinedSeating.Across;
-		}
-		//G.print("target "+selectedSeating+" "+selectedCellSize+" best "+bestPercent);
-		//setLocalBoundsSize(client,best,boardShare,width,height);
-	    selectedSeating = best;
-		selectedNPlayers = nPlayers;
-		selectedPercent = bestPercent;
-	    // this sets selectedCellSize again, but with no minimum.  This covers the 
-	    // unusual case where the best layout was one with a substandard cell size
-	    sizeLayout(client,nPlayers,selectedSeating,minBoardShare,aspectRatio,maxCellSize,minSize,width,height,margin);
-		}
-		else
-		{
-		    // this sets selectedCellSize again, but with no minimum.  This covers the 
-		    // unusual case where the best layout was one with a substandard cell size
-		    sizeLayout(client,nPlayers,selectedSeating,minBoardShare,aspectRatio,maxCellSize,minSize/2,width,height,margin);
-
-		}
-		
-
-		int halfMargin = extramargin/2;
-    	makeLayout(selectedSeating,nPlayers,halfMargin,halfMargin,width,height,client.createPlayerGroup(0,0,0,0,(int)selectedCellSize),margin);
-        doLayout(client,1.0,(int)selectedCellSize,new Rectangle(halfMargin,halfMargin,width,height));
-	    return(selectedPercent);	    
+		//G.print("Select ",width,"x",height,"=",selectedSeating()," ",selectedCellSize());
+		return v;
 	}
 
 	/**
@@ -2090,15 +2038,17 @@ public class GameLayoutManager  implements Opcodes
 			int margin,double minBoardShare,
 			double aspectRatio,double minSize,double maxCellSize, double targetLayoutHysterisis)
 	{	
-		boolean oldversion = false;
-		if(oldversion) 
-			{ return selectLayout0(client,nPlayers,fullwidth,fullheight,margin,minBoardShare,aspectRatio,
-					minSize,maxCellSize,
-					targetLayoutHysterisis);	
-			}
-		return(selectLayout(client,nPlayers,fullwidth,fullheight,
+		double v = selectLayout(client,nPlayers,fullwidth,fullheight,
 				1.0,margin,minBoardShare,
-				aspectRatio,minSize,maxCellSize,targetLayoutHysterisis));
+				aspectRatio,minSize,maxCellSize,targetLayoutHysterisis);
+
+		if(rects.failedPlacements>0)
+		{
+			G.print(rects.messages.getLog());
+			}
+		//G.print("Select ",fullwidth,"x",fullheight,"=",selectedSeating()," ",selectedCellSize());
+
+		return v;
 	}
 
 	/**
@@ -2141,6 +2091,8 @@ public class GameLayoutManager  implements Opcodes
 			double zoom,int margin,double minBoardShare,
 			double aspectRatio,double minSize,double maxCellSize, double targetLayoutHysterisis)
 	{	// playtable has a deep bezil that makes the extreme edge hard to get to
+		//G.print("\nselect ",minSize,maxCellSize);
+		fullRect = new Rectangle(0,0,fullwidth,fullheight);
 		int extramargin = G.isRealPlaytable()?G.minimumFeatureSize()/2 : 0;
 		int width = (int)(fullwidth/zoom)-extramargin;
 		int height = (int)(fullheight/zoom)-extramargin;
@@ -2163,17 +2115,19 @@ public class GameLayoutManager  implements Opcodes
 	    	DefinedSeating originalSeating = currentSeating;
 	    	while(currentSeating!=null)
 	    	{
+	    	//if(currentSeating==DefinedSeating.ThreeLeftL)	// coerce to one config
+	    	{
 	    	double currentPercent = sizeLayout(client,nPlayers,currentSeating,minBoardShare,desiredAspectRatio,maxCellSize,minSize,width,height,margin);
 	    	double currentCellSize = selectedCellSize;
 	    	double currentScore = currentPercent*currentCellSize;
 	    	//G.print("S "+currentSeating+" "+currentPercent+" "+currentScore+" "+currentPercent+" "+currentCellSize);
 	    	if(currentCellSize>1 && (best==null || currentScore>bestScore))
-	    	{
+	    	{	//G.print("Better "+currentPercent+" score ",currentScore," ",currentSeating);
 	    		bestPercent = currentPercent;
 	    		bestScore = currentScore;
 	    		best = currentSeating;
 	    		//sizeLayout(client,nPlayers,currentSeating,minBoardShare,desiredAspectRatio,maxCellSize,minSize,width,height);
-		    	}
+		    	}}
 	    	currentSeating = currentSeating.alternate;
 	    	if(currentSeating==originalSeating) { currentSeating=null; }
 	    	}
@@ -2215,18 +2169,19 @@ public class GameLayoutManager  implements Opcodes
 		selectedNPlayers = nPlayers;
 		selectedPercent = bestPercent;
 		}
-		
+		//G.print("Resize ");
 	    sizeLayout(client,nPlayers,selectedSeating,minBoardShare,aspectRatio,maxCellSize,minSize,width,height,margin);
 
 	    if(selectedCellSize<=0)
 		{
 	    	// in the rare case that the best layout still didn't produce a valid cell size,
-	    	// try once more with a smaller minimum
-		    sizeLayout(client,nPlayers,selectedSeating,minBoardShare,aspectRatio,maxCellSize,minSize/2,width,height,margin);
+	    	// try once more with no minimum
+	    	if(G.debug()) { G.print("Emergency resize"); }
+		    sizeLayout(client,nPlayers,selectedSeating,0.2,aspectRatio,maxCellSize,1,width,height,margin);
 		}
 		
 		int halfMargin = extramargin/2;
-
+		//G.print("Make ",selectedSeating);
     	makeLayout(selectedSeating,nPlayers,halfMargin,halfMargin,width,height,client.createPlayerGroup(0,0,0,0,(int)selectedCellSize),margin);
         doLayout(client,zoom,(int)selectedCellSize,new Rectangle(halfMargin,halfMargin,fullwidth-margin,fullheight-margin));
 	    return(selectedPercent);	    
@@ -2317,7 +2272,7 @@ public class GameLayoutManager  implements Opcodes
 				 ........
 				 _.......
 			*/
-			unitsX = playerW;			
+			unitsX = playerW*2;			
 	   		unitsY = playerH;			
 	   		fixedW = marginSize*2;
 	   		fixedH = marginSize*2;
@@ -2409,8 +2364,8 @@ public class GameLayoutManager  implements Opcodes
     		unitsY = playerH+playerW;
 	   		fixedW = marginSize*2;
 	   		fixedH = marginSize*3;
-    		edgeUnitsX = playerW+playerH;
-    		edgeUnitsY = playerH;
+    		edgeUnitsX = playerH*2;
+    		edgeUnitsY = playerH*2;
     		break;
 	
 		case FourAroundEdge:
@@ -2421,12 +2376,12 @@ public class GameLayoutManager  implements Opcodes
 			..........._  
 			 
 			 */
-       		unitsX = playerW*2;
-    		unitsY = playerH+playerW;
+       		unitsX = playerW+playerH;
+    		unitsY = playerW+playerH;
 	   		fixedW = marginSize*2;
 	   		fixedH = marginSize*3;
-    		edgeUnitsX = unitsX;
-    		edgeUnitsY = 0;
+    		edgeUnitsX = playerH*2;
+    		edgeUnitsY = playerH*2;
     		break;
 		case FourAcrossEdge:
 			/*
@@ -2468,7 +2423,7 @@ public class GameLayoutManager  implements Opcodes
     		
     	case ThreeWideLeft:
     		unitsX = playerW+playerH;
-    		unitsY = playerW+playerH;
+    		unitsY = playerH+playerW;
 	   		fixedW = marginSize*2;
 	   		fixedH = marginSize;
 
@@ -2483,8 +2438,8 @@ public class GameLayoutManager  implements Opcodes
     		  _....._ 
     		  
     		 */
-    		unitsX = playerH*2;
-    		unitsY = playerH;
+    		unitsX = playerW*2+playerH;
+    		unitsY = playerW;
 	   		fixedW = marginSize*2;
 	   		fixedH = marginSize*2;
 
@@ -2500,7 +2455,7 @@ public class GameLayoutManager  implements Opcodes
     		
     	 	*/
     		unitsX = playerW+playerH*2;
-    		unitsY = playerH*2;
+    		unitsY = playerW*2;
 	   		fixedW = marginSize*2;
 	   		fixedH = marginSize*2;
     		edgeUnitsX = playerH*2;
@@ -2693,6 +2648,14 @@ public class GameLayoutManager  implements Opcodes
 
 
       	case FaceToFaceLandscapeTop:
+    		unitsX = playerW;
+      		unitsY = playerH*2;
+      		fixedH = marginSize*2;
+      		fixedW = marginSize*2;
+      		edgeUnitsX = 0;
+      		edgeUnitsY = playerH*2;
+      		break;
+      	
       	case RightEnd:	// rotated and placed at the right
       		unitsX = playerH;
       		unitsY = playerW;
@@ -2724,12 +2687,12 @@ public class GameLayoutManager  implements Opcodes
       	case FaceToFacePortraitSide:
 	   		{
 	   		// means players on the short side, whichever that is,
-			unitsX = 0;
-			unitsY = playerH;
+			unitsX = playerH*2;
+			unitsY = playerW;
 			fixedW = marginSize*2;
 			fixedH = 2*marginSize;
-			edgeUnitsX = 0;
-			edgeUnitsY = unitsY;
+			edgeUnitsX = playerH*2;
+			edgeUnitsY = 0;
 			}
 	   		break;
 	     		
@@ -2839,6 +2802,8 @@ public class GameLayoutManager  implements Opcodes
 		} while((!sizeok && (cell>minSize/2))
 				|| ((cell>minSize) &&  (boardPercent<minBoardShare)));
 		boolean downsize = false;
+		//G.print("accepted size "+seating+" "+cellSize+" "+minSize+" = "+acceptedSize);
+		 
 		if(acceptedSize>0)
 		{
 		do { 
@@ -2852,10 +2817,12 @@ public class GameLayoutManager  implements Opcodes
 				// down by 1 if it happens
 				//G.print(G.format("Final box larger than expected, expected %sx%s got %sx%s cell %s min %s",acceptedW,acceptedH,finalW,finalH,acceptedSize,minSize));
 				acceptedSize--;
+				//G.print("downsize "+acceptedSize);
 				downsize = true;
 			}} while(downsize);
 		}
 		selectedCellSize = acceptedSize;
+		//G.print("final size "+seating+cellSize+" "+minSize+" = "+selectedCellSize);
     	return(boardPercent);
     }
     
@@ -2869,9 +2836,14 @@ public class GameLayoutManager  implements Opcodes
     }
     
     public void addToSpare(Rectangle r)
-    {	if(G.debug()&& ((G.Width(r)<0 || G.Height(r)<0)))
+    {	if(G.debug())
     		{
-    		G.print("Adding negative size rectangle to spare ",r);
+    		if ((G.Width(r)<0 || G.Height(r)<0))
+    			{ G.print("Adding negative size rectangle to spare ",r);    			
+    			}
+    		if(!fullRect.contains(r)) 
+				{G.print("spare rectangle runs off screen\n",r,"\n",fullRect);
+				}
     		}
     		rects.addToSpare(r);
     }

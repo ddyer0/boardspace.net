@@ -441,7 +441,6 @@ public class GC {
 	   {
 	   	if(g!=null) { g.drawRoundRect(left,top,width,height,rx,ry); }
 	   }
-
 	    private static double intensity(int x, int y, double radius)
 	    {
 	        return (Math.sqrt(Math.min(1.0,
