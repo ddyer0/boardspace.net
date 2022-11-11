@@ -14,8 +14,17 @@ import lib.XFrame;
  * @author ddyer
  *
  */
-class BC extends BrowserComponent
+@SuppressWarnings("rawtypes")
+class BC extends BrowserComponent implements ActionListener,com.codename1.ui.events.ScrollListener
 {	
+	public BC()
+	{
+		super();
+		addPointerPressedListener(this);
+		addPointerReleasedListener(this);
+		addPointerDraggedListener(this);
+		addScrollListener(this);
+	}
 	public void paint(com.codename1.ui.Graphics g)
 	{	
 		try {
@@ -36,6 +45,14 @@ class BC extends BrowserComponent
 	public void onError(String msg,int code)
 	{
 		G.print("error ",code,"\n",msg);
+	}
+
+	public void actionPerformed(ActionEvent evt) {
+		G.print("Action ",evt.getEventType()," ",evt);
+		
+	}
+	public void scrollChanged(int scrollX, int scrollY, int oldscrollX, int oldscrollY) {
+		G.print("Scrollchanged ",scrollX," ",scrollY," from ",oldscrollX," ",oldscrollY);
 	}
 }
 @SuppressWarnings("rawtypes")
@@ -61,8 +78,7 @@ public class Browser extends XFrame implements BrowserNavigationCallback,ActionL
 		url.addActionListener(this);
 		back.setActionCommand(BACK);
 		back.addActionListener(this);
-		
-
+				
 		add(BorderLayout.NORTH,top);
 		if(G.debug()) { b.setDebugMode(true); }
 		url.setText(initialUrl);

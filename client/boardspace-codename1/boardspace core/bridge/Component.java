@@ -33,7 +33,11 @@ public class Component extends Container implements EventListener,AwtComponent,S
 	public void pointerReleased(int x,int y)
     {	if(mouse.pointerReleased(x,y)) {   	super.pointerReleased(x,y); } 
     }
-    public void pointerDragged(int[] x, int[] y) { 	mouse.pointerDragged(x,y);   }
+    public void pointerDragged(int[] x, int[] y) 
+    { 	if(mouse.pointerDragged(x,y))
+    		{ super.pointerDragged(x,y);
+    		}
+    }
     public void pointerDragged(int x,int y)
     {	if(mouse.pointerDragged(x,y)) {   	super.pointerDragged(x,y); } 
     }

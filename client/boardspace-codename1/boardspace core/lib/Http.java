@@ -177,16 +177,14 @@ public class Http implements Config,Crypto {
     			&& (hostName!=null)
             		&& e instanceof IOException)
             	{
-        	if( (hostName.startsWith("local.") || G.debug()) || (G.isSimulator()||!G.isCodename1()))
-            		{ setDefaultProtocol("http:");
-            	G.print("Downgrade to http because of "+e);
+        		setDefaultProtocol("http:");
+        		Plog.log.addLog("Downgrade https to http because of ",urlStr,e);
             	retry = true;           	
-            	}
             	}
 	            else
 	            {
 	            	String msg = "error getting " + urlStr+" "+ e;
-	                G.print(msg);
+            	Plog.log.addLog(msg);
 	                if(result!=null) { result.error = msg; }
        }
     	return(retry);
@@ -455,7 +453,7 @@ public class Http implements Config,Crypto {
     	            					? (String)caller 
     	            					: (caller.getClass().getName());
     	            Plog.log.addLog("Log request from " ,cname);
-    	            if(G.isCheerpj()) { Plog.log.addLog(msg);}
+    	            if(G.isCheerpj()||G.debug()) { Plog.log.addLog(msg);}
     	            
     	            String finalmsg = "&tagname=posterror&name="+Http.escape(cname)
     	            	+ "&data=" + Http.escape(msg);

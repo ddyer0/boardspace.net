@@ -36,14 +36,29 @@ public class Log {
 		   	}
 	   }
 	public static void addLog(String msg)
-		   	{
-		   	if(startTimeNanos>0)
-		    {synchronized(eventLog)
+	{
+	   	if(startTimeNanos>0)
+	    {synchronized(eventLog)
 		   	{
 		    Log.appendNewLog(msg);
 		   	}
-		   	}
-	   }
+	   	}
+	}
+	
+	 public static void addLog(Object... messages)
+	 {	if(messages!=null)
+	 	{
+		 int n = messages.length;
+		 if(messages.length>=1)
+		 {
+			Log.appendNewLog(""+messages[0]);
+			for(int i=1;i<n;i++)
+			{
+				Log.appendLog(""+messages[i]);
+			}
+		 }
+	 	}
+	 }
 	public static Thread logThread = null;
 	public static boolean isLogThread() { return(Thread.currentThread()==logThread); }
 	static void setLogThread()

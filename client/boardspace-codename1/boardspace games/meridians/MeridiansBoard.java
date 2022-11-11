@@ -3,9 +3,10 @@ package meridians;
 
 import static meridians.MeridiansMovespec.*;
 
-import java.awt.Color;
+
 import java.util.*;
 
+import bridge.Color;
 import lib.*;
 import lib.Random;
 import online.game.*;

@@ -322,7 +322,7 @@ public class TouchMagnifier {
     						;
     	if(active)
     	{	long fromNow = (mouse.lastMouseDownTime+400)-now;
-    		touchZoomActive = active = fromNow<0;
+     		touchZoomActive = active = fromNow<0;
     		if(!active) { client.repaintForMouse((int)fromNow,"touch zoom"); }	// trigger another paint when it will be active
     	}
     	return(active);

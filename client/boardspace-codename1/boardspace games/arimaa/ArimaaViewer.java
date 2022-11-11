@@ -215,7 +215,7 @@ public class ArimaaViewer extends CCanvas<ArimaaCell,ArimaaBoard> implements Ari
     	layout.selectLayout(this, nPlayers, width, height,
     			getGlobalZoom(),margin,	
     			0.6,	// 60% of space allocated to the board
-    			1,	// aspect ratio for the board
+    			2,	// aspect ratio for the board
     			fh*1,fh*2.5,	// maximum cell size
     			0.3		// preference for the designated layout, if any
     			);

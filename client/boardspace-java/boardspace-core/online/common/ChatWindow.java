@@ -74,7 +74,7 @@ public class ChatWindow extends exCanvas
 
 	public void mouseWheelMoved(MouseWheelEvent e)
 	{	
-		if(theChat.doMouseWheel(e.getX(),e.getY(),e.getWheelRotation()))
+		if((e.getModifiersEx()==0) && theChat.doMouseWheel(e.getX(),e.getY(),e.getWheelRotation()))
 		{
 			repaint(10,"mouse wheel");
 		}

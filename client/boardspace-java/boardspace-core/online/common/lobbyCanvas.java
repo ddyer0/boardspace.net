@@ -2494,7 +2494,11 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	else return(LobbyId.highlight_none);
 	}
 	public void mouseWheelMoved(MouseWheelEvent e)
-	{	int x = e.getX();
+	{	
+		int mod = e.getModifiersEx();
+		if(mod==0)
+		{
+		int x = e.getX();
 		int y = e.getY();
 		int amount = e.getWheelRotation();
 
@@ -2502,6 +2506,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 						|| UserScrollArea.doMouseWheel(x,y,amount)
 						|| theChat.doMouseWheel(x,y,amount);
 		if(val) { repaint(10,"mouse wheel");}
+		}
 	}
 
 	public HitPoint performStandardMouseMotion(int x,int y,MouseState p)

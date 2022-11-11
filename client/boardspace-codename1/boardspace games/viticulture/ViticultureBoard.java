@@ -5826,7 +5826,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
 		{	// old and incorrect, just discard the green card
 			dest = greenDiscards;	
 		}
-
+		logVine(UprootSomething,removed);
 		dest.addChip(removed);
 		if(replay!=replayMode.Replay)
 		{	animationStack.push(victim);
@@ -5842,6 +5842,17 @@ public int getMaxRevisionLevel() { return(REVISION); }
         		&& (currentWorker.color==pb.color));
   
     }
+    private void logVine(String call,ViticultureChip chip)
+    {
+		String msg = chip.description;
+		int ind2 = msg.indexOf(')');
+		int ind1 = msg.indexOf('(');
+		if(ind1>=0 && ind2>=ind2) 
+			{ msg = msg.substring(ind1+1,ind2);
+			logGameEvent(call,"GreenCard",msg);		
+			}
+    }
+    
     private void reshuffleIfNeeded(ViticultureCell stacks[])
     {
     	for(ViticultureCell from : stacks)
@@ -6157,6 +6168,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
 			ViticultureChip vineCard = pb.cards.removeChip(card);
 			flashChip = vineCard;
 			vine.addChip(vineCard);
+			logVine(PlantSomething,vineCard);
 			if(replay!=replayMode.Replay)
 				{
 				animationStack.push(pb.cards);

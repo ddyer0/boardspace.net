@@ -4946,11 +4946,7 @@ public abstract class commonCanvas extends exCanvas
         	useAuxSliders = l.auxSliders.getState();
         	handled = true;
         }
-        else if ("mousewheel".equals(command))
-        {
-        	handleMouseWheel((MouseWheelEvent)target);
-        	handled = true;
-        }
+ 
         }
         return (handled);
     }
@@ -8309,7 +8305,8 @@ public void verifyGameRecord()
 			{
 				if(amount<0) { l.boardZoomStartValue = zoomRect.value; }
 				else { zoomRect.setValue(l.boardZoomStartValue*amount); }
-		   		MouseMotion(x, y, MouseState.LAST_IS_DRAG);	
+		   		MouseMotion(x, y, MouseState.LAST_IS_DRAG);
+		   		repaint();
 				return(true);
 			}
 			return(false);
@@ -8320,27 +8317,27 @@ public void verifyGameRecord()
 			{
 				l.boardZoomStartValue = zoomRect.value;
 		   		zoomRect.setValue(l.boardZoomStartValue*amount);
-		   		MouseMotion(x, y, MouseState.LAST_IS_DRAG);	
+		   		repaint();
+		   		//this call to MouseMotion violates recursion 
+		   		//MouseMotion(x, y, MouseState.LAST_IS_DRAG);	
 		   		return(true);
 			}
 			return(false);
 		}
+		
 		public void handleMouseWheel(MouseWheelEvent e)
 		{
 			int x = e.getX();
 			int y = e.getY();
 			int amount = e.getWheelRotation();
-			boolean moved = theChat.doMouseWheel(x, y, amount)
-					|| gameLog.doMouseWheel(x,y,amount)
-					|| doBoardZoom(x,y,(amount>0 ? 1.1 : 0.91));
+			int mod = e.getModifiersEx();
+			boolean moved = (mod==0) 
+						&& (gameLog.doMouseWheel(x,y,amount)
+								|| doBoardZoom(x,y,(amount>0 ? 1.1 : 0.91)));
 			if(!moved)
 			{
-				changeZoomAndRecenter(getGlobalZoom()*(amount>0 ? 1.1 : 0.91),getRotation(),x,y);
-				sliderMenu.repaint();
-				repaint();
+				super.handleMouseWheel(e);
 			}
-			else { repaint(10,"mouse wheel"); }
-
 		}
 		/**
 		 * position the chat window, and also as a side effect set the colors

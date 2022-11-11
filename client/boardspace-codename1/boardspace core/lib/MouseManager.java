@@ -251,6 +251,7 @@ public class MouseManager
         default:
         case LAST_IS_UP: // avoid losing a mouse up event
         	mouse_move_events = 0;
+        	lastMouseDownTime = 0;
         	hasPinched = false;
         	break;
         }

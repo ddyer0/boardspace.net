@@ -38,6 +38,7 @@ public class NamedClasses {
 
     
     	// game classes
+    	classes.put("meridians.MeridiansViewer",meridians.MeridiansViewer.class);
     	classes.put("ordo.OrdoViewer",ordo.OrdoViewer.class);
     	classes.put("tweed.TweedViewer",tweed.TweedViewer.class);
     	classes.put("crosswordle.CrosswordleViewer",crosswordle.CrosswordleViewer.class);

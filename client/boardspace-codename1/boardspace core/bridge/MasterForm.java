@@ -3,6 +3,7 @@ package bridge;
 import lib.ErrorX;
 import lib.G;
 import lib.Http;
+import lib.Plog;
 import lib.SizeProvider;
 
 import java.util.Vector;
@@ -201,7 +202,7 @@ public void addToMenus(JButton m)
 		{ 	G.runInEdt(new Runnable () {	public void run() { showInEdt(); } });
 		}
 	}
-	public static MasterForm getMasterForm()
+	public static synchronized MasterForm getMasterForm()
 	{
 		if(masterForm==null) { masterForm=new MasterForm(Config.APPNAME); 	  masterForm.adjustSpacer(); }
 		return(masterForm);
@@ -337,6 +338,32 @@ public void addToMenus(JButton m)
 		else { super.pointerPressed(xa,ya); }
 		}
 	}
+	public void pointerPressed(int x,int y)
+	{
+		//G.print("\npressed ",x," ",y);
+		//G.print(G.getStackTrace());
+		super.pointerPressed(x,y); 
+	}
+	public void pointerReleased(int x,int y)
+	{
+		//G.print("\nreleased ",x," ",y);
+		//G.print(G.getStackTrace());
+		super.pointerReleased(x,y); 
+	}
+	public void pointerDragged(int x,int y)
+	{
+		//G.print("\ndragged ",x," ",y);
+		//G.print(G.getStackTrace());
+		super.pointerDragged(x,y); 
+	}
+	public void pointerDragged(int xa[],int ya[])
+	{	if(xa!=null && xa.length>0)
+		{
+			//G.print("\ndraggs ",xa.length," ",xa[0]," ",ya[0]);
+			//G.print(G.getStackTrace());
+			super.pointerDragged(xa,ya);
+		}
+	}
 	public void pointerReleased(int xa[],int ya[])
 	{	if(xa!=null && xa.length>0)
 		{
@@ -432,19 +459,19 @@ public void addToMenus(JButton m)
 	Vector<KeyListener> keylisteners = null;
 	KeyListener focusedListener = null;
 	public void addKeyListener(KeyListener myrunner)
-	{	
+	{	Plog.log.addLog("add key listener ",myrunner);
 		if(keylisteners==null) { keylisteners = new Vector<KeyListener>(); }
 		if(!keylisteners.contains(myrunner)) { keylisteners.addElement(myrunner); }
 	}
 	public void removeKeyListener(KeyListener myrunner)
-	{
+	{	Plog.log.addLog("remove key listener ",myrunner);
 		if(keylisteners!=null) { keylisteners.remove(myrunner); }
 	}
 	public void fireKeyEvent(int keycode,boolean pressed)
-	{	//G.print("KeyEvent "+keycode+" "+focusedListener+" "+pressed);
+	{	Plog.log.addLog("KeyEvent ",keycode,"(0x",Integer.toHexString((keycode&0xff)),")",
+				focusedListener," ",pressed);
 		if(keylisteners!=null)
 		{	int code = keycode;
-			//System.out.println("key "+Integer.toHexString((keycode&0xff))+" "+keycode);
 			switch(keycode)
 			{
 			case -90: code = '\r'; break;
@@ -457,24 +484,26 @@ public void addToMenus(JButton m)
 				if(pressed)
 				{
 				k.keyPressed(event);
+				k.keyReleased(event);
+				k.keyTyped(event);
 				}
 				else 
 				{
-				k.keyReleased(event);
-				k.keyTyped(event);
+				// codename1 has a bug, some "up" events never arrive, so put them all in "down"
+				// issue #3660
+				//	k.keyReleased(event);
+				//	k.keyTyped(event);
 				}
 			}}
 		}
 	}
 
 	public void keyPressed(int keycode)
-	{	//G.print("kp ",keycode);
-		//G.print(G.getStackTrace());
-		fireKeyEvent(keycode,true);
+	{	fireKeyEvent(keycode,true);
 		super.keyPressed(keycode);;
 	}
 	public void keyReleased(int keycode)
-	{	//G.print("kr ",keycode);
+	{	
 		fireKeyEvent(keycode,false);
 		super.keyReleased(keycode);
 	}

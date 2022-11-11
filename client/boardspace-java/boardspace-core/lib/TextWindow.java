@@ -186,9 +186,13 @@ public class TextWindow extends Canvas implements MouseListener,MouseMotionListe
 	}
 	/** for mouseWheelListener */
 	public void mouseWheelMoved(MouseWheelEvent e) {
+		int mod = e.getModifiersEx();
+		if(mod==0)
+		{
 		int up = e.getWheelRotation();
 		area.doMouseWheel(up);
 		repaint(100);
+		}
 	}
 	public TextPrintStream getPrinter()
 	{

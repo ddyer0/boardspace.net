@@ -110,6 +110,12 @@ public class G extends Platform implements Timestamp
 		}
 		return(false);
 	}
+	// boolean so print can be used as a breakpoint test 
+    public static boolean print(String msg) 
+    	{ 	if(printer!=null && !isSimulator()) { printer.println(msg); }
+    		else { System.out.println(msg); } 
+    		return(false);
+    	} 
 
     /**
      * utility to print test messages, use "find callers" to find messages still in place.
@@ -148,12 +154,6 @@ public class G extends Platform implements Timestamp
     	p.append("}");
     	return(p.toString());
     }
-	// boolean so print can be used as a breakpoint test 
-    public static boolean print(String msg) 
-    	{ 	if(printer!=null) { printer.println(msg); }
-    		else { System.out.println(msg); } 
-    		return(false);
-    	} 
  
     /** print the stack trace associated with an error */
     public static void printStackTrace(Throwable e)
@@ -256,14 +256,14 @@ public class G extends Platform implements Timestamp
      *   @return true,false, or throws an error. 
      */
     public static boolean Advise(boolean condition, String message,Object... args)
-    {	/*if (!condition)
+    {	if (!condition)
         {	if(args.length>0) { message = format(message,args); }
         	Plog.log.appendNewLog("Advisory: ");
         	Plog.log.appendLog(message);
         	Plog.log.finishEvent();
         	if(G.debug()) { G.print(Plog.log.finishLog()); }
         	return(false);
-        }*/
+        }
         return (true);
     }
     /**
@@ -972,6 +972,20 @@ public class G extends Platform implements Timestamp
     {	// accept decimal point after a number
     	return (Integer.parseInt(msg.endsWith(".") ? msg.substring(0, msg.length()-1) : msg,10));
     }
+    /**
+     * parse an integer token, return a default value if there's a problem.
+     * This is intended to be used for parsing untrusted input.
+     * @param msg
+     * @param def
+     * @return
+     */
+    static public int guardedIntToken(String msg,int def)
+    {
+    	try {
+    		return IntToken(msg);
+    	}
+    	catch (NumberFormatException e) { return def; }
+    }
 /** 
  * convert the next token into an integer
  * @param msg
@@ -1304,9 +1318,9 @@ public class G extends Platform implements Timestamp
     	{synchronized(client) {
 	        try
 	        {	
-	        //Plog.log.addLog("wait "+client+" "+millis);
+	        //Plog.log.addLog("wait ",client," ",millis);
 	        client.wait(millis);
-	        //Plog.log.addLog("proceed");
+	        //Plog.log.addLog("proceed ",client);
 	        }
 	        catch (InterruptedException e)  { // pro forma catch
 	        		}

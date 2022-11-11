@@ -1127,20 +1127,20 @@ synchronized(allGames) {
 	}
 	
 	{
-	String meridiansRules = "/meridians/english/Meridians rules.html";
+	String meridiansRules = "/meridians/english/Meridians_rules.pdf";
 	String meridiansViewer = "meridians.MeridiansViewer";  
 	String meridiansVideo = null;
-	put(new GameInfo(11690,ES.test,113,"TU",TerritoryGames,"Meridians","meridians-5",
+	put(new GameInfo(11690,ES.game,113,"MR",CapturingGames,"Meridians","meridians-5",
 			OneBotPlus,
 			new double[]{1.0,0.01},
 			meridiansViewer,meridiansRules,
 			meridiansVideo,false, WhiteOverBlack));
-	put(new GameInfo(11691,ES.test,113,"TU",TerritoryGames,"Meridians","meridians-6",
+	put(new GameInfo(11691,ES.game,113,"MR",CapturingGames,"Meridians","meridians-6",
 			OneBotPlus,
 			new double[]{1.0,0.01},
 			meridiansViewer,meridiansRules,
 			meridiansVideo,false, WhiteOverBlack));
-	put(new GameInfo(11692,ES.test,113,"TU",TerritoryGames,"Meridians","meridians-7",
+	put(new GameInfo(11692,ES.game,113,"MR",CapturingGames,"Meridians","meridians-7",
 			OneBotPlus,
 			new double[]{1.0,0.01},
 			meridiansViewer,meridiansRules,

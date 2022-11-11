@@ -34,12 +34,9 @@ public class DeferredEventManager implements ActionListener,ItemListener,ListSel
 	public void deferActionEvent(Object e)
 	{	
 		deferredEvents.addElement(e);
-		wake();
+		handler.wake();
 	}
-	private void wake()
-	{
-		G.wake(handler);
-	}
+
 	/**
 	 * handle an actionPerformed method by saving it for later.
 	 */

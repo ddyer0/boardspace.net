@@ -186,8 +186,12 @@ public class UDPService implements Runnable,Config
 				String port=parts[2];
 				String status = parts.length>=4 ? parts[3] : "unknown";
 				String name = parts.length>=5?parts[4] : "";
-				int pn = G.IntToken(port);
-				if(Role.server.name().equals(kind))
+				int pn = G.guardedIntToken(port,-1);
+				if(pn<=0)
+				{
+					log("Unexpected port: "+port);
+				}
+				else if(Role.server.name().equals(kind))
 					{ PlaytableStack.addPlaytableServer(ip,pn,status,name); 
 					}
 				else if(Role.client.name().equals(kind))

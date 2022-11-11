@@ -2,10 +2,11 @@ package bridge;
 
 public class MouseWheelEvent  extends MouseEvent {
 
-	public MouseWheelEvent(Object s, int xp, int yp, int b) {
+	public MouseWheelEvent(Object s, int xp, int yp, int b,int a) {
 		super(s, xp, yp, b);
+		amount = a;
 	}
-
-	public int getWheelRotation() { return(0); }
+	int amount = 0;
+	public int getWheelRotation() { return(amount); }
 
 }

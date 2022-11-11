@@ -669,7 +669,10 @@ public abstract class Platform implements Config{
     
      static final public String getPlatformSubtype()
      {
-    	 return isRealLastGameBoard()
+    	 return 
+    	 isRealWindroid()
+    	  ? " WinDroid"
+    	  : isRealLastGameBoard()
     	 	? " lastgameboard"
     	 	: isRealPlaytable()
     	 		? " playtable"
@@ -855,6 +858,10 @@ public abstract class Platform implements Config{
     	String info = getOSInfo();
     	return(info.indexOf("display=Game Table-V")>=0);
     }
+    public static boolean isRealWindroid()
+    {	String info = getOSInfo();
+    	return (info.indexOf("model=Subsystem for Android")>=0);
+    }
     public static boolean isRealPlaytable() 
     { 	String info = getOSInfo();
     //G.print(info);
@@ -891,7 +898,7 @@ public abstract class Platform implements Config{
     	if(packs==null) { packs = ""; }
     	return(packs);
     }
-    public static boolean logErrorsWithHttp() { return(true /* isRealPlaytable() || !G.debug() */); };
+    public static boolean logErrorsWithHttp() { return( isRealPlaytable() || !G.debug() ); };
     public static String getOSInfo()
     {	try {
     	if((osinfo==null)

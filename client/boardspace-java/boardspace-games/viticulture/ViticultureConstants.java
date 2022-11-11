@@ -110,6 +110,8 @@ public interface ViticultureConstants
 	static String DiscardSomething = "Discard #1 #2";
 	static String PlayCardMessage = "#1 #2";
 	static String DrawSomething = "Draw #1";
+	static String PlantSomething = "Plant #1 #2";
+	static String UprootSomething = "Uproot #1 #2";
 	static String VerandaBonus = "Veranda";
 	static String ViticultureInfoMessage = "Side Screens are needed to view cards privately";
 	static String CafeBonus = "Cafe";
@@ -244,6 +246,8 @@ public interface ViticultureConstants
 	{  "Viticulture",
 		FreeMessage,
 		NoPlantMessage,
+		PlantSomething,
+		UprootSomething,
 		MakeChampagne,
 		MakeRoseWine,
 		ShowBuildingInfo,

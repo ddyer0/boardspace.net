@@ -42,7 +42,7 @@ public class FileSelector extends FullscreenPanel
 	public static final String SERVERSAVE = "serversave";
 	public static final String SERVERFILE = "serverfile";
 	public static final String SELECTEDGAME = "selectedgame";
-
+	public void wake() { G.wake(this); }
 	public class FileSelectorResult
 	{
 		public String opcode;	// load or save

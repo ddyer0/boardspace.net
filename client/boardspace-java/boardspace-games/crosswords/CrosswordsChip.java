@@ -85,13 +85,13 @@ public class CrosswordsChip extends chip<CrosswordsChip> implements CrosswordsCo
     static public CrosswordsChip backgroundTile = new CrosswordsChip("background-tile-nomask",null,null,0);
     static public CrosswordsChip backgroundReviewTile = new CrosswordsChip("background-review-tile-nomask",null,null,0);
    
-    static private double hexScale[] = {0.45,0.38,1.36};
-    static private double letterScale[]  = {0.51,0.365,1.45 };
-	static private double letter2Scale[] = {0.495,0.365,1.45 };
-   	static private double letter0Scale[] = {0.51,0.365,1.45 };
-   	static private double letter1Scale[] = {0.51,0.37,1.45 };
+    static private double hexScale[] = {0.45,0.5,1.36};
+    static private double letterScale[]  = {0.51,0.5,1.45 };
+	static private double letter2Scale[] = {0.495,0.5,1.45 };
+   	static private double letter0Scale[] = {0.51,0.5,1.45 };
+   	static private double letter1Scale[] = {0.51,0.5,1.45 };
 
-    static private double postScale[] = { 0.42,0.32,0.78};
+    static private double postScale[] = { 0.42,0.5,0.78};
     
     static public CrosswordsChip Tile = new CrosswordsChip("tile",hexScale,null,0);
     static public CrosswordsChip Letter[] = {new CrosswordsChip("letter",letterScale,null,0),
@@ -237,7 +237,7 @@ public class CrosswordsChip extends chip<CrosswordsChip> implements CrosswordsCo
     	{	// draw all letters with the same size
     		
     		Text ww = TextChunk.create("W");
-    		int ss = (int)(SQUARESIZE*0.6);
+    		int ss = (int)(SQUARESIZE*0.5);
     		if(ss>5)
     		{
     		// display the letter if the tile is not tiny
@@ -245,10 +245,10 @@ public class CrosswordsChip extends chip<CrosswordsChip> implements CrosswordsCo
     		GC.setFont(gc, f);
     		GC.setFont(gc, ww.selectFontSize(gc, ss,ss));
     		FontMetrics fm = G.getFontMetrics(f);
-     		GC.Text(gc, letter, cx-fm.stringWidth(letter)/2,cy+(int)(SQUARESIZE*0.3));
+     		GC.Text(gc, letter, cx-fm.stringWidth(letter)/2,cy+(int)(SQUARESIZE*0.15));
      		if(value!=0)
      		{
-    		GC.Text(gc,true,cx+SQUARESIZE/5,cy+SQUARESIZE/5,SQUARESIZE/4,SQUARESIZE/4,ltblue,null,""+value);
+    		GC.Text(gc,true,cx+SQUARESIZE/5,cy,SQUARESIZE/4,SQUARESIZE/4,ltblue,null,""+value);
      		}
     		}
     	}

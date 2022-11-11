@@ -495,7 +495,7 @@ public class CrosswordsViewer extends CCanvas<CrosswordsCell,CrosswordsBoard> im
     {
     	int h = G.Height(rack);
     	int w = G.Width(rack);
-    	int cy = G.centerY(rack)-h/10;
+    	int cy = G.centerY(rack);
     	int nsteps = map.length;
     	int xstep = Math.min(w/(nsteps+1),h*3/4); 
     	int tileSize = (int)(xstep*1);
@@ -602,6 +602,7 @@ public class CrosswordsViewer extends CCanvas<CrosswordsCell,CrosswordsBoard> im
     		else
     		{   highlight.hitObject = G.concat("lift Rack ",myCol," ",idx," ",map[idx]);
     			highlight.hitCode = CrosswordsId.LocalRack;
+    			highlight.spriteColor=Color.blue;
     		}
 			
     	}

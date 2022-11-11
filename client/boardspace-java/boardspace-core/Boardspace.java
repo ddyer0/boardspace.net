@@ -279,10 +279,19 @@ public class Boardspace extends URLClassLoader implements Runnable,LoaderConfig
 		{	if("https".equals(activeProtocol))
 			{
 			// some old versions of java don't like Boardspace certificate
+			if(verbose) { Boardspace.out.println("https failed: "+e); }
 			activeProtocol = "http";
-			return(getCacheSource(dir));
+			String all = getCacheSource(dir);
+			if((all!=null) && all.startsWith("version,")) 
+				{ 
+				if(verbose) { Boardspace.out.println("Downgrade to http succeeded"); }
+				return all; 
+				}
+			String msg = "downgrade https to http failed\n"+all;
+			throw new IOException(msg);
 			}
 			else {
+				if(verbose) { Boardspace.out.println("url failed: "+e); }
 				throw e;
 			}
 		}
@@ -464,6 +473,7 @@ public class Boardspace extends URLClassLoader implements Runnable,LoaderConfig
 		}
 		}
 		else {
+			if(verbose) { Boardspace.out.println("bad cache key in:\n"+dir+"\n"); }
 			throw new Error("bad cache key:\n"+firstLine);
 		}
 	}
@@ -530,7 +540,11 @@ public class Boardspace extends URLClassLoader implements Runnable,LoaderConfig
     	out.close();
     	InputStream ins = c.getInputStream();
 		String all = new String(readAll(ins));
-		if(verbose) { Boardspace.out.println("web logging: "+all); }
+		if(verbose)
+			{
+			Boardspace.out.println("web logging message: "+m);
+			Boardspace.out.println("web logging result: "+all); 
+			}
    }
 	/** print an error message with a stack trace, show a visible pop up, and log to a web url
 	 * @param caption
@@ -584,7 +598,18 @@ public class Boardspace extends URLClassLoader implements Runnable,LoaderConfig
 		}
 		if(verbose) { out.println("Background finished"); }
 	}
-
+	private static void showOut()
+	{
+		out.flush();
+		if(log.size()>0)
+			{
+			String msg = log.toString();
+			JTextArea text = new JTextArea(msg,40,80);
+			text.setEditable(false);
+			JScrollPane scroll = new JScrollPane(text);
+			JOptionPane.showMessageDialog(null, scroll,"Loader log",JOptionPane.INFORMATION_MESSAGE);
+			}
+	}
 	public static void main(String[]args)
 	{	boolean fastExit = false;
 		String runtimeServer = null;
@@ -648,18 +673,11 @@ public class Boardspace extends URLClassLoader implements Runnable,LoaderConfig
 		new Thread(r).start();
 		t.join();
 		}
-		out.flush();
-		if(log.size()>0)
-			{
-			String msg = log.toString();
-			JTextArea text = new JTextArea(msg,40,80);
-			text.setEditable(false);
-			JScrollPane scroll = new JScrollPane(text);
-			JOptionPane.showMessageDialog(null, scroll,"Loader log",JOptionPane.INFORMATION_MESSAGE);
-			}
+		showOut();
 		}}
 		catch (Throwable e) {
 			showError("Error setting up "+hostName,e);
+			showOut();
 		} 		
 	}
 }

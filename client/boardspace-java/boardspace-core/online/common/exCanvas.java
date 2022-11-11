@@ -475,16 +475,17 @@ public abstract class exCanvas extends Canvas
         addMouseWheelListener(this);
         lockAndLoadImages();
         
-        if(!G.isCodename1())
+        if(!G.isCodename1() || G.isRealWindroid())
         {
-            zoomMenu = new IconMenu(StockArt.Magnifier.image);
-            myFrame.addToMenuBar(zoomMenu,deferredEvents);
-            zoomMenu.setVisible(true);
             
             sliderMenu = new SliderMenu(globalZoomRect);
             myFrame.addToMenuBar(sliderMenu,deferredEvents);
             sliderMenu.setVisible(false);
             
+            zoomMenu = new IconMenu(StockArt.Magnifier.image);
+            myFrame.addToMenuBar(zoomMenu,deferredEvents);
+            zoomMenu.setVisible(true);
+  
         if(G.debug() && G.offline())
         	{ l.rotate180Menu = new IconMenu(StockArt.Rotate.image); 
          	  l.rotate90Menu = new IconMenu(StockArt.Rotate90.image);
@@ -569,8 +570,13 @@ public abstract class exCanvas extends Canvas
      * @return true if the event was handled.
      */
 	public boolean handleDeferredEvent(Object target, String command)
-	{ 	//System.out.println("Handle "+command);
+	{  //Plog.log.addLog("Handle ",command);
 	   if (target instanceof PinchEvent) { G.print("ignored pinch"); return(true); }
+       else if ("mousewheel".equals(command))
+       {
+       	handleMouseWheel((MouseWheelEvent)target);
+       	return true;
+       }
        else if(target == zoomMenu)
        {	   
        	if(getGlobalZoom()<MINIMUM_ZOOM)
@@ -1226,6 +1232,7 @@ graphics when using a touch screen.
 
         public void drawClientCanvas(Graphics offGC,boolean complete,HitPoint pt)
         {	resetLocalBoundsNow();
+        	//Plog.log.addLog("Draw");
         	boolean logging = (l.logGraphicsStart>0 && l.logGraphicsStart<G.Date());
         	if(logging)
         	{
@@ -1411,6 +1418,7 @@ graphics when using a touch screen.
     		 {
     		 zoomMenu.changeIcon(StockArt.UnMagnifier.image,true);
     		 sliderMenu.setVisible(true);
+    		 sliderMenu.repaint();
     		 }
     		 // force reconsideration of layouts etc afer all the other bookkeeping.
     		 resetBounds();
@@ -1434,7 +1442,7 @@ graphics when using a touch screen.
         	double startingZoom = getGlobalZoom();
         	int sx = getSX();
         	int sy = getSY();
-        	//Log.addLog("Change Zoom "+startingZoom+" - "+z+"@"+realX+","+realY);
+        	//Plog.log.addLog("Change Zoom ",startingZoom," - ",z,"@",realX,",",realY);
         	
          	boolean change = changeZoom(z,r);
         	if(change)
@@ -1446,12 +1454,26 @@ graphics when using a touch screen.
         	int newcy = (int)(cy*finalZoom)-realY;
             	setSX(newcx);
             	setSY(newcy);
-        		Log.addLog("Z "+startingZoom+" "+sx+","+sy+"  - "+finalZoom+" "+newcx+","+newcy+" @"+realX+","+realY);
+        		//Plog.log.addLog("Z ",startingZoom," ",sx,",",sy,"  - ",finalZoom," ",newcx,",",newcy," @",realX,",",realY);
             	repaint();
         	}
         	return(change);
         }
-      
+		public void handleMouseWheel(MouseWheelEvent e)
+		{
+			int x = e.getX();
+			int y = e.getY();
+			int amount = e.getWheelRotation();
+			int mod = e.getModifiersEx();
+			boolean moved = (mod==0) 
+						&& (theChat.doMouseWheel(x, y, amount));
+			if(!moved)
+			{			
+				changeZoomAndRecenter(getGlobalZoom()*(amount>0 ? 1.1 : 0.91),getRotation(),x,y);
+			}
+			else { repaint(10,"mouse wheel"); }
+
+		}
         /**
          * this is a standard rectangle of all viewers - the rectangle that 
          * contains the board.  Your {@link #setLocalBounds} method still has

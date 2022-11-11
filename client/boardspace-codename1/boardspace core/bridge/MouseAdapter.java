@@ -17,6 +17,7 @@ import lib.PinchEvent;
 
 import com.codename1.ui.Command;
 import com.codename1.ui.Component;
+import com.codename1.ui.Display;
 import com.codename1.ui.Button;
 import com.codename1.ui.events.ActionEvent.Type;
 import static com.codename1.util.MathUtil.atan2;
@@ -35,13 +36,25 @@ public class MouseAdapter
 	
 	// codename1 calls actionPerformed with identical events for all three types.
 	class PressedListener implements com.codename1.ui.events.ActionListener
-		{ public void actionPerformed(com.codename1.ui.events.ActionEvent e) { pressedAction(e); }
+		{ public void actionPerformed(com.codename1.ui.events.ActionEvent e) 
+			{ 
+			  startWheeling(e);
+			}
 		}
 	class ReleasedListener implements com.codename1.ui.events.ActionListener
-		{ public void actionPerformed(com.codename1.ui.events.ActionEvent e) { releasedAction(e); }
+		{ public void actionPerformed(com.codename1.ui.events.ActionEvent e) 
+			{ 
+			  if(isWheeling(e,true))
+			  {	
+				wheelAction(e); 
+			  }
+			  else { releasedAction(e); } 
+			}
 		}
 	class DragListener implements com.codename1.ui.events.ActionListener
-	{ public void actionPerformed(com.codename1.ui.events.ActionEvent e) { dragAction(e); }
+	{ public void actionPerformed(com.codename1.ui.events.ActionEvent e) 
+		{ if(!isWheeling(e,false)) { dragAction(e); } 
+		}
 	}
 	
 	class SFocusListener implements com.codename1.ui.events.FocusListener
@@ -110,11 +123,65 @@ public class MouseAdapter
 	public int lastMouseY = 0;
 	public bType lastMouseButton = null;
 	public long lastMouseTime = 0;
+	private long wheelStartTime = 0;
+	private int wheelStartX = 0;
+	private int wheelStartY = 0;
 	
+	// DETECT_WHEEL is an ad-hoc means to detect scroll wheel usage where they
+	// masquerade as fast up/down sequences, which is the way Codename1 presents
+	// them.   When a "down" event occurs, nothing happens immediately.  This might
+	// have the undesirable effect of making it impossible to have an active-on-down
+	// action.  When subsequent "drag" or "up" events arrive, and the current coordinates
+	// and elapsed time are not compatible with a fast scroll even, the delayed "down"
+	// event is issued and the detection is terminated.  Scroll wheel events are
+	// always very fast, with the "up" following the "down" by a few millisecons.
+	// the X coordinate doesn't change, and the Y coordinate changes by a lot.
+	//
+	private boolean USE_WHEEL = !G.isSimulator();	// so it behaves like real android
+	private boolean DETECT_WHEEL = !USE_WHEEL || G.isRealWindroid();
+
 	private Stack<PressedListener> systemPressedListeners = new Stack<PressedListener>();
 	private Stack<ReleasedListener> systemReleasedListeners = new Stack<ReleasedListener>();
 	private Stack<DragListener> systemDragListeners = new Stack<DragListener>();
 	private Stack<SFocusListener>systemFocusListeners = new Stack<SFocusListener>();
+	
+	private void startWheeling(com.codename1.ui.events.ActionEvent e)
+	{	
+		if(DETECT_WHEEL)
+		{
+		boolean isForSure = USE_WHEEL && Display.getInstance().isScrollWheeling();
+		if(isForSure) { DETECT_WHEEL = false; }
+		else {
+		wheelStartTime = G.Date();
+		wheelStartX = e.getX();
+		wheelStartY = e.getY();
+		//Plog.log.addLog("\nStart ",wheelStartTime," ",wheelStartX," ",wheelStartY);
+		}}
+		if(!DETECT_WHEEL) { pressedAction(e); }
+	}
+	
+	public boolean isWheeling(com.codename1.ui.events.ActionEvent e,boolean release)
+	{	boolean isForSure = USE_WHEEL && Display.getInstance().isScrollWheeling();
+		if(isForSure) { DETECT_WHEEL=false; return true; }
+		if(DETECT_WHEEL && wheelStartTime>0 )
+		{
+		//Plog.log.addLog("is ",release);
+	    long now = G.Date();
+		boolean more = (wheelStartTime>0)
+						&& (e.getX()==wheelStartX)
+						//&& (drag || ( wheelDragEvents>0))
+						&& (!release || (Math.abs(e.getY()-wheelStartY)>10))
+						&& ((now-wheelStartTime)<200);
+		if(!more)
+			{	// we owe a press action
+				//Plog.log.addLog("S t=",now-wheelStartTime," ",e.getX()-wheelStartX,",",e.getY()-wheelStartY);
+				wheelStartTime = 0;
+				pressedAction(e);
+			}
+		return more;
+		}
+		return false;
+	}
 	
 	// unlink this from the various windows and listeners to help the GC
 	public void removeListeners()
@@ -154,7 +221,7 @@ public class MouseAdapter
 		  cn1Component.addPointerReleasedListener(getReleasedListener());
 		  cn1Component.addPointerDraggedListener(getDragListener()); 
 		  cn1Component.addFocusListener(getFocusListener());
-		  // no specific support for mouse wheel listeners
+		  // no specific support for mouse wheel listeners, rolled into pressed and released
 		}
 	}
 	
@@ -272,11 +339,7 @@ public class MouseAdapter
 	}
 	public void handleMouseEvent(int x,int y,bType down)
 	{
-		//if(down) { G.startLog("down "+x+" "+y); }
-		//else { G.addLog("up "+x+" "+y); }
-		//G.print("Raw "+x+" "+y+" "+down);
-		//boolean drag = e.isLongEvent();
-		//G.print("mouseevent "+e+" "+x+" "+y+" "+e.getEventType().toString()+" "+down);
+		//Plog.log.addLog("mouseevent ",x," ",y," ",down);
 		if(mouseListeners!=null)
 		{
 		for(int idx = 0;idx<mouseListeners.size();idx++)
@@ -326,7 +389,7 @@ public class MouseAdapter
 		int thisY= cn1Component.getAbsoluteY();
 		int x = rawX-thisX;
 		int y = rawY-thisY;
-		
+		//Plog.log.addLog("Move ",rawX," ",rawY," ",down);
 		if(recordHistory)
 		{	Log.restartLog();
 			Log.appendNewLog("D");
@@ -409,6 +472,19 @@ public class MouseAdapter
 		//System.out.println("actionevent "+e.getEventType().toString());
 		handleActionEvent(e.getX(),e.getY(),e.getEventType());
 	}
+	public void handleWheelEvent(int x,int y,int direction)
+	{
+		if(mouseWheelListeners!=null)
+		{
+			for(int idx = 0;idx<mouseWheelListeners.size();idx++)
+			{
+				bridge.MouseWheelListener listener = mouseWheelListeners.elementAt(idx); 
+				//Plog.log.addLog("dispatch action to ",listener);
+				MouseWheelEvent e = new MouseWheelEvent(awtComponent,x,y,0,direction);
+				listener.mouseWheelMoved(e);
+			}		
+		}
+	}
 	public void handleActionEvent(int x,int y,Type type)
 	{
 		if(actionListeners!=null)
@@ -465,7 +541,12 @@ public class MouseAdapter
 	public void dragAction(com.codename1.ui.events.ActionEvent evt)
 	{	handleMouseMotionEvent(evt,bType.Down);
 	}
-
+	public void wheelAction(com.codename1.ui.events.ActionEvent evt)
+	{	
+		int endY = evt.getY();
+		//Plog.log.addLog("Wheel ",wheelStartX," ",wheelStartY," ",wheelStartY-endY);
+		handleWheelEvent(wheelStartX,wheelStartY,wheelStartY-endY);
+	}
 	// this is the codename1 actionperformed
 	public void actionPerformed(com.codename1.ui.events.ActionEvent evt) {
 		//G.print("Mouse adapter event "+evt);
@@ -488,17 +569,7 @@ public class MouseAdapter
 		  //{{150,150},{300,340}}
 
 		};
-	public void testDrag()
-	{	int last[][] = null;
-		for(int i=0;i<dragTestData.length;i++)
-		{
-			int dat[][] = last = dragTestData[i];
-			pointerDragged(dat[0],dat[1]);
-		}
-		int x = (last[0][0]+last[0][1])/2;
-		int y = (last[1][0]+last[1][1])/2;
-    	handleMouseEvent(new com.codename1.ui.events.ActionEvent(cn1Component,x,y,false),bType.Up);
-	}
+
 	/**
 	 * handling of 2 finger mouse pinch
 	 */
@@ -509,8 +580,9 @@ public class MouseAdapter
 	private int lastPinchY1;
 	private int lastPinchX0;
 	private int lastPinchY0;
-    public void pointerDragged(int[]x,int[]y)
-    {	if((mouseState==bType.Down) && drag_is_pinch && (x.length==1))
+    public boolean pointerDragged(int[]x,int[]y)
+    {	
+    	if((mouseState==bType.Down) && drag_is_pinch && (x.length==1))
     	{	// this sets the initial point as a pair of points in a diagonal
     		int nx[]=new int[2];
     		int ny[]=new int[2];
@@ -521,7 +593,9 @@ public class MouseAdapter
     		x=nx;
     		y=ny;
     	}
- 
+    	
+    	if(x.length==1 && mouseState!=bType.Pinch) { return true; }
+    	
     	if(recordHistory)
     	{
     	Log.restartLog();
@@ -603,14 +677,9 @@ public class MouseAdapter
        			handleMouseMotionEvent(cx,cy,bType.Pinch,lastPinchScale,currentAngle-startingPinchAngle);
        			}
        		}
-       		else {
-    		if(mouseState==bType.Down)
-    		{
-    		//cn1Component.pointerDragged(x[0], y[0]);
-     		handleMouseMotionEvent(x[0],y[0],bType.Down,0.0,0.0);
-    		}}
     		break;
     	}
+        return false;
     }
     public boolean pointerDragged(int x,int y)
     {	

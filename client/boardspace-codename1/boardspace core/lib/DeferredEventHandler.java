@@ -11,4 +11,5 @@ public interface DeferredEventHandler extends SimpleObserver
 	@return true if the event was handled
 	*/
 	public boolean handleDeferredEvent(Object e, String command);
+	public void wake();
 }
