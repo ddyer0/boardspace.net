@@ -1,0 +1,437 @@
+Rule Encountered: HKEY_LOCAL_MACHINE\base_sw\Microsoft\IdentityCRL\*
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\IdentityCRL
+By Rule: Recursively removed
+Rule Encountered: HKEY_LOCAL_MACHINE\base_sw\Microsoft\IdentityStore\*
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\IdentityStore\Cache\S-1-5-93-2-1
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\IdentityStore\Cache
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\IdentityStore
+By Rule: Recursively removed
+Rule Encountered: HKEY_LOCAL_MACHINE\base_sw\Microsoft\SQMClient\*
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\SQMClient\Windows\CommonDatapoints
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\SQMClient\Windows
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\SQMClient
+By Rule: Recursively removed
+Rule Encountered: HKEY_LOCAL_MACHINE\base_sw\Microsoft\SystemCertificates\*
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\SystemCertificates\AuthRoot\AutoUpdate
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\SystemCertificates\AuthRoot\Certificates\D4DE20D05E66FC53FE1A50882C78DB2852CAE474
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\SystemCertificates\AuthRoot\Certificates
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\SystemCertificates\AuthRoot
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\SystemCertificates\MY\Certificates
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\SystemCertificates\MY\CRLs
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\SystemCertificates\MY\CTLs
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\SystemCertificates\MY
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\SystemCertificates\Windows Live ID Token Issuer\Certificates\0217922CA1B6F0BD0F1D7FF6E7BDC29B2FAAA060
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\SystemCertificates\Windows Live ID Token Issuer\Certificates\2C85006A1A028BCC349DF23C474724C055FDE8B6
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\SystemCertificates\Windows Live ID Token Issuer\Certificates
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\SystemCertificates\Windows Live ID Token Issuer
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\SystemCertificates
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Wbem\CIMOM\ProcessID
+By Rule: Exact path match
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Wbem\CIMOM\ThrottleDrege
+By Rule: Exact path match
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Wbem\CIMOM\LastServiceStart
+By Rule: Exact path match
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Wbem\CIMOM
+By Rule: No more chidren under node
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Wbem\Transports
+By Rule: No more chidren under node
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Wbem
+By Rule: No more chidren under node
+Rule Encountered: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\AppModel\*
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\AppModel\StateRepositoryStatus
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\AppModel
+By Rule: Recursively removed
+Rule Encountered: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\Diagnostics\*
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\Diagnostics\DiagTrack\AsimovUploader\CostDeferredBandwidthMonitor
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\Diagnostics\DiagTrack\AsimovUploader
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\Diagnostics\DiagTrack\ETWEncryptionKey
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\Diagnostics\DiagTrack\EventMonitors\Microsoft.Windows.Sentinels.CostDeferred_0
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\Diagnostics\DiagTrack\EventMonitors\Microsoft.Windows.Sentinels.CriticalPersistence_0
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\Diagnostics\DiagTrack\EventMonitors\Microsoft.Windows.Sentinels.Normal_0
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\Diagnostics\DiagTrack\EventMonitors\Microsoft.Windows.Sentinels.Realtime_0
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\Diagnostics\DiagTrack\EventMonitors
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\Diagnostics\DiagTrack\HeartBeats\Aria
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\Diagnostics\DiagTrack\HeartBeats\Default
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\Diagnostics\DiagTrack\HeartBeats\EndpointErrors\0
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\Diagnostics\DiagTrack\HeartBeats\EndpointErrors\1
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\Diagnostics\DiagTrack\HeartBeats\EndpointErrors\2
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\Diagnostics\DiagTrack\HeartBeats\EndpointErrors\3
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\Diagnostics\DiagTrack\HeartBeats\EndpointErrors\4
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\Diagnostics\DiagTrack\HeartBeats\EndpointErrors\5
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\Diagnostics\DiagTrack\HeartBeats\EndpointErrors\6
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\Diagnostics\DiagTrack\HeartBeats\EndpointErrors\7
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\Diagnostics\DiagTrack\HeartBeats\EndpointErrors\8
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\Diagnostics\DiagTrack\HeartBeats\EndpointErrors\9
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\Diagnostics\DiagTrack\HeartBeats\EndpointErrors
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\Diagnostics\DiagTrack\HeartBeats\Seville
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\Diagnostics\DiagTrack\HeartBeats
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\Diagnostics\DiagTrack\SettingsRequests\telemetry.ASM-WindowsDefault
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\Diagnostics\DiagTrack\SettingsRequests\TELEMETRY.ASM-WINDOWSSQ
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\Diagnostics\DiagTrack\SettingsRequests\utc.app
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\Diagnostics\DiagTrack\SettingsRequests\utc.cert
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\Diagnostics\DiagTrack\SettingsRequests\utc.privacy
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\Diagnostics\DiagTrack\SettingsRequests\utc.tracing
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\Diagnostics\DiagTrack\SettingsRequests\WINDOWS.DIAGNOSTICS
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\Diagnostics\DiagTrack\SettingsRequests\WINDOWS.PERFTRACKESCALATIONS
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\Diagnostics\DiagTrack\SettingsRequests\WINDOWS.PERFTRACKPOINTDATA
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\Diagnostics\DiagTrack\SettingsRequests\WINDOWS.SIUF
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\Diagnostics\DiagTrack\SettingsRequests
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\Diagnostics\DiagTrack\SevilleEventlogManager
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\Diagnostics\DiagTrack\TestHooks
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\Diagnostics\DiagTrack\TraceManager
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\Diagnostics\DiagTrack
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\Diagnostics
+By Rule: Recursively removed
+Rule Encountered: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\Group Policy\Cache\*
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\Group Policy\Cache
+By Rule: Recursively removed
+Rule Encountered: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\NetworkServiceTriggers\Triggers\*
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\NetworkServiceTriggers\Triggers\1f81d131-3fac-4537-9e0c-7e7b0c2f4b55\ProtectedPrefixAdministratorsSensorDataService
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\NetworkServiceTriggers\Triggers\1f81d131-3fac-4537-9e0c-7e7b0c2f4b55\ProtectedPrefixLocalServiceMSAJPipe
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\NetworkServiceTriggers\Triggers\1f81d131-3fac-4537-9e0c-7e7b0c2f4b55\srvsvc
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\NetworkServiceTriggers\Triggers\1f81d131-3fac-4537-9e0c-7e7b0c2f4b55
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\NetworkServiceTriggers\Triggers\bc90d167-9470-4139-a9ba-be0bbbf5b74d\0497B57D-2E66-424F-A0C6-157CD5D41700
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\NetworkServiceTriggers\Triggers\bc90d167-9470-4139-a9ba-be0bbbf5b74d\04EEB297-CBF4-466b-8A2A-BFD6A2F10BBA
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\NetworkServiceTriggers\Triggers\bc90d167-9470-4139-a9ba-be0bbbf5b74d\06D5552C-82C1-4C18-BA68-ECFFEBDB1466
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\NetworkServiceTriggers\Triggers\bc90d167-9470-4139-a9ba-be0bbbf5b74d\0e3ae095-8a23-48f4-9782-03c1594a890e
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\NetworkServiceTriggers\Triggers\bc90d167-9470-4139-a9ba-be0bbbf5b74d\169C453B-5955-4672-BE44-21F61E9EF18F
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\NetworkServiceTriggers\Triggers\bc90d167-9470-4139-a9ba-be0bbbf5b74d\201ef99a-7fa0-444c-9399-19ba84f12a1a
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\NetworkServiceTriggers\Triggers\bc90d167-9470-4139-a9ba-be0bbbf5b74d\2ACB9D68-B434-4B3E-B966-E06B4B3A84CB
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\NetworkServiceTriggers\Triggers\bc90d167-9470-4139-a9ba-be0bbbf5b74d\2b70bed6-1757-4d22-9f39-448589fbebf5
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\NetworkServiceTriggers\Triggers\bc90d167-9470-4139-a9ba-be0bbbf5b74d\2d24ff0b-1bab-404c-a0fd-42c85577bf68
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\NetworkServiceTriggers\Triggers\bc90d167-9470-4139-a9ba-be0bbbf5b74d\2e7d4935-59d2-4312-a2c8-41900aa5495f
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\NetworkServiceTriggers\Triggers\bc90d167-9470-4139-a9ba-be0bbbf5b74d\2EB08E3E-639F-4fba-97B1-14F878961076
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\NetworkServiceTriggers\Triggers\bc90d167-9470-4139-a9ba-be0bbbf5b74d\30034843-029d-46ec-8fff-5d12987f85c4
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\NetworkServiceTriggers\Triggers\bc90d167-9470-4139-a9ba-be0bbbf5b74d\4B324FC8-1670-01D3-1278-5A47BF6EE188
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\NetworkServiceTriggers\Triggers\bc90d167-9470-4139-a9ba-be0bbbf5b74d\4BE96A0F-9F52-4729-A51D-C70610F118B0
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\NetworkServiceTriggers\Triggers\bc90d167-9470-4139-a9ba-be0bbbf5b74d\4E25F4A2-21E8-40CE-B401-32050413143A
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\NetworkServiceTriggers\Triggers\bc90d167-9470-4139-a9ba-be0bbbf5b74d\4f4fa786-2f8f-49e8-8aae-6669febd5d1d
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\NetworkServiceTriggers\Triggers\bc90d167-9470-4139-a9ba-be0bbbf5b74d\5222821f-d5e2-4885-84f1-5f6185a0ec41
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\NetworkServiceTriggers\Triggers\bc90d167-9470-4139-a9ba-be0bbbf5b74d\54B4C689-969A-476f-8DC2-990885E9F562
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\NetworkServiceTriggers\Triggers\bc90d167-9470-4139-a9ba-be0bbbf5b74d\56244243-3ED3-4013-B3E7-0FC809E35FBA
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\NetworkServiceTriggers\Triggers\bc90d167-9470-4139-a9ba-be0bbbf5b74d\58e604e8-9adb-4d2e-a464-3b0683fb1480
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\NetworkServiceTriggers\Triggers\bc90d167-9470-4139-a9ba-be0bbbf5b74d\5A0CE74D-F9CF-4DEA-A4C1-2D5FE4C89D51
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\NetworkServiceTriggers\Triggers\bc90d167-9470-4139-a9ba-be0bbbf5b74d\5f54ce7d-5b79-4175-8584-cb65313a0e98
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\NetworkServiceTriggers\Triggers\bc90d167-9470-4139-a9ba-be0bbbf5b74d\64D1D045-F675-460B-8A94-570246B36DAB
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\NetworkServiceTriggers\Triggers\bc90d167-9470-4139-a9ba-be0bbbf5b74d\6770612B-B256-4B6E-891B-2FF9936755A1:D185F1D6-A4AF-44c2-8F87-F664BE534C77
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\NetworkServiceTriggers\Triggers\bc90d167-9470-4139-a9ba-be0bbbf5b74d\6DDFC7D1-7FCA-44EB-A279-E9988F4DB32B
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\NetworkServiceTriggers\Triggers\bc90d167-9470-4139-a9ba-be0bbbf5b74d\7642249B-84C2-4404-B6EB-1E0A2458839A
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\NetworkServiceTriggers\Triggers\bc90d167-9470-4139-a9ba-be0bbbf5b74d\795B6BF9-97B6-4F89-BD8D-2F42BBBE996E
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\NetworkServiceTriggers\Triggers\bc90d167-9470-4139-a9ba-be0bbbf5b74d\8337AEBC-5564-46FD-BC41-7798F18D2E4B
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\NetworkServiceTriggers\Triggers\bc90d167-9470-4139-a9ba-be0bbbf5b74d\850cee52-3038-4277-b9b4-e05db8b2c35c
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\NetworkServiceTriggers\Triggers\bc90d167-9470-4139-a9ba-be0bbbf5b74d\880fd55e-43b9-11e0-b1a8-cf4edfd72085
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\NetworkServiceTriggers\Triggers\bc90d167-9470-4139-a9ba-be0bbbf5b74d\8FB74744-B2FF-4C00-BE0D-9EF9A191FE1B
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\NetworkServiceTriggers\Triggers\bc90d167-9470-4139-a9ba-be0bbbf5b74d\9435cc56-1d9c-4924-ac7d-b60a2c3520e1
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\NetworkServiceTriggers\Triggers\bc90d167-9470-4139-a9ba-be0bbbf5b74d\945693c4-3648-4966-b2aa-37d66e24495f
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\NetworkServiceTriggers\Triggers\bc90d167-9470-4139-a9ba-be0bbbf5b74d\97BE9507-17DA-4999-87D7-66C0B2D83CC7
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\NetworkServiceTriggers\Triggers\bc90d167-9470-4139-a9ba-be0bbbf5b74d\9B008953-F195-4BF9-BDE0-4471971E58ED
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\NetworkServiceTriggers\Triggers\bc90d167-9470-4139-a9ba-be0bbbf5b74d\9cbc9d3a-7586-4814-8d70-18737dcbe523
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\NetworkServiceTriggers\Triggers\bc90d167-9470-4139-a9ba-be0bbbf5b74d\9FA6AFF6-E0AD-48DF-A6B4-E64BE66A17A1
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\NetworkServiceTriggers\Triggers\bc90d167-9470-4139-a9ba-be0bbbf5b74d\a1d4eae7-39f8-4bca-8e72-832767f5082a
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\NetworkServiceTriggers\Triggers\bc90d167-9470-4139-a9ba-be0bbbf5b74d\A36F6C1D-ED97-46B4-9762-3F13A0F6DEA9
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\NetworkServiceTriggers\Triggers\bc90d167-9470-4139-a9ba-be0bbbf5b74d\a3bae3f7-bf97-49fb-b48d-2a5e8657b436
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\NetworkServiceTriggers\Triggers\bc90d167-9470-4139-a9ba-be0bbbf5b74d\A4B8D482-80CE-40D6-934D-B22A01A44FE7
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\NetworkServiceTriggers\Triggers\bc90d167-9470-4139-a9ba-be0bbbf5b74d\a500d4c6-0dd1-4543-bc0c-d5f93486eaf8
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\NetworkServiceTriggers\Triggers\bc90d167-9470-4139-a9ba-be0bbbf5b74d\ACD792E4-5239-48B6-8BAF-7D0A79A64AC0
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\NetworkServiceTriggers\Triggers\bc90d167-9470-4139-a9ba-be0bbbf5b74d\B18FBAB6-56F8-4702-84E0-41053293A869
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\NetworkServiceTriggers\Triggers\bc90d167-9470-4139-a9ba-be0bbbf5b74d\b25a52bf-e5dd-4f4a-aea6-8ca7272a0e86
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\NetworkServiceTriggers\Triggers\bc90d167-9470-4139-a9ba-be0bbbf5b74d\B54E9AA3-CF29-4F21-A8EA-98C5850CE296
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\NetworkServiceTriggers\Triggers\bc90d167-9470-4139-a9ba-be0bbbf5b74d\bd84cd86-9825-4376-813d-334c543f89b1
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\NetworkServiceTriggers\Triggers\bc90d167-9470-4139-a9ba-be0bbbf5b74d\BE7F785E-0E3A-4AB7-91DE-7E46E443BE29
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\NetworkServiceTriggers\Triggers\bc90d167-9470-4139-a9ba-be0bbbf5b74d\BF4DC912-E52F-4904-8EBE-9317C1BDD497
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\NetworkServiceTriggers\Triggers\bc90d167-9470-4139-a9ba-be0bbbf5b74d\C0E9671E-33C6-4438-9464-56B2E1B1C7B4
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\NetworkServiceTriggers\Triggers\bc90d167-9470-4139-a9ba-be0bbbf5b74d\c225e799-29de-42af-bc05-1e2127cc056e
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\NetworkServiceTriggers\Triggers\bc90d167-9470-4139-a9ba-be0bbbf5b74d\c6b5235a-e413-481d-9ac8-31681b1faaf5
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\NetworkServiceTriggers\Triggers\bc90d167-9470-4139-a9ba-be0bbbf5b74d\CC105610-DA03-467E-BC73-5B9E2937458D
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\NetworkServiceTriggers\Triggers\bc90d167-9470-4139-a9ba-be0bbbf5b74d\cc4b408c-4c4e-422f-9849-47bb47bd4d2e
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\NetworkServiceTriggers\Triggers\bc90d167-9470-4139-a9ba-be0bbbf5b74d\D09BDEB5-6171-4A34-BFE2-06FA82652568:045AD40C-5920-4757-90A5-AE0E7E6F6838
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\NetworkServiceTriggers\Triggers\bc90d167-9470-4139-a9ba-be0bbbf5b74d\D09BDEB5-6171-4A34-BFE2-06FA82652568:0CC82857-1E0E-4633-A673-257BA24EB9AC
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\NetworkServiceTriggers\Triggers\bc90d167-9470-4139-a9ba-be0bbbf5b74d\D09BDEB5-6171-4A34-BFE2-06FA82652568:314c8427-4ad7-4233-995a-bbd062ed11e9
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\NetworkServiceTriggers\Triggers\bc90d167-9470-4139-a9ba-be0bbbf5b74d\D09BDEB5-6171-4A34-BFE2-06FA82652568:582A47B2-BCD8-4D3C-8ACB-FE09D5BD6EEC
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\NetworkServiceTriggers\Triggers\bc90d167-9470-4139-a9ba-be0bbbf5b74d\D09BDEB5-6171-4A34-BFE2-06FA82652568:8489BE1C-80A4-48BC-901A-AA91BD827A7C
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\NetworkServiceTriggers\Triggers\bc90d167-9470-4139-a9ba-be0bbbf5b74d\d09bdeb5-6171-4a34-bfe2-06fa82652568:b5ccd5ef-4238-440b-bba0-999f828f1cfe
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\NetworkServiceTriggers\Triggers\bc90d167-9470-4139-a9ba-be0bbbf5b74d\D09BDEB5-6171-4A34-BFE2-06FA82652568:CCB8AA07-7225-4EA0-8501-4B3C1B1ACD43
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\NetworkServiceTriggers\Triggers\bc90d167-9470-4139-a9ba-be0bbbf5b74d\D09BDEB5-6171-4A34-BFE2-06FA82652568:F2ADD560-EB85-4170-82A2-A48E789690CD
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\NetworkServiceTriggers\Triggers\bc90d167-9470-4139-a9ba-be0bbbf5b74d\D09BDEB5-6171-4A34-BFE2-06FA82652568:FCCAE962-4722-40C7-A46D-FE5153280723
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\NetworkServiceTriggers\Triggers\bc90d167-9470-4139-a9ba-be0bbbf5b74d\D09BDEB5-6171-4A34-BFE2-06FA82652568:fdd099c6-df06-4904-83b4-a87a27903c70
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\NetworkServiceTriggers\Triggers\bc90d167-9470-4139-a9ba-be0bbbf5b74d\D3C1B64B-CD05-4FB2-BB2C-BB61D80C123E
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\NetworkServiceTriggers\Triggers\bc90d167-9470-4139-a9ba-be0bbbf5b74d\D424F01C-1055-43B1-B519-0482344CE002
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\NetworkServiceTriggers\Triggers\bc90d167-9470-4139-a9ba-be0bbbf5b74d\d9844ed9-f72a-4745-a4a1-ee71f950781d
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\NetworkServiceTriggers\Triggers\bc90d167-9470-4139-a9ba-be0bbbf5b74d\DB2CE634-191D-42AF-A28C-16BE97924CA7
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\NetworkServiceTriggers\Triggers\bc90d167-9470-4139-a9ba-be0bbbf5b74d\df1941c5-fe89-4e79-bf10-463657acf44d
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\NetworkServiceTriggers\Triggers\bc90d167-9470-4139-a9ba-be0bbbf5b74d\E00C29A5-0F62-4D84-B7F0-D2387E41ED18
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\NetworkServiceTriggers\Triggers\bc90d167-9470-4139-a9ba-be0bbbf5b74d\E01F1AD2-B2C1-4306-9962-5442CF1FD50D
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\NetworkServiceTriggers\Triggers\bc90d167-9470-4139-a9ba-be0bbbf5b74d\e40f7b57-7a25-4cd3-a135-7f7d3df9d16b
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\NetworkServiceTriggers\Triggers\bc90d167-9470-4139-a9ba-be0bbbf5b74d\E5B92378-0C65-442C-A66B-F9714D2D7B00
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\NetworkServiceTriggers\Triggers\bc90d167-9470-4139-a9ba-be0bbbf5b74d\E64B9AEE-F372-4312-9A14-8F1502B5C8E3
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\NetworkServiceTriggers\Triggers\bc90d167-9470-4139-a9ba-be0bbbf5b74d\e6f89680-fc98-11e3-80d4-10604b681cfa
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\NetworkServiceTriggers\Triggers\bc90d167-9470-4139-a9ba-be0bbbf5b74d\f26e2372-d601-44f0-84b8-2591d2af2f82
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\NetworkServiceTriggers\Triggers\bc90d167-9470-4139-a9ba-be0bbbf5b74d\F6C98708-C7B8-4919-887C-2CE66E78B9A0
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\NetworkServiceTriggers\Triggers\bc90d167-9470-4139-a9ba-be0bbbf5b74d\FAF2447B-B348-4FEB-8DBE-BEEE5B7F7778
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\NetworkServiceTriggers\Triggers\bc90d167-9470-4139-a9ba-be0bbbf5b74d\fd7a0523-dc70-43dd-9b2e-9c5ed48225b1
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\NetworkServiceTriggers\Triggers\bc90d167-9470-4139-a9ba-be0bbbf5b74d\FDD45924-784A-499C-AEE9-0813850CE182
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\NetworkServiceTriggers\Triggers\bc90d167-9470-4139-a9ba-be0bbbf5b74d\FF00653F-064A-49CA-9783-0E33730D7D71
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\NetworkServiceTriggers\Triggers\bc90d167-9470-4139-a9ba-be0bbbf5b74d
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\NetworkServiceTriggers\Triggers
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\NetworkServiceTriggers
+By Rule: No more chidren under node
+Rule Encountered: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\Reliability\*
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\Reliability\shutdown
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\Reliability
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\Setup\BootDir
+By Rule: Exact path match
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\Setup
+By Rule: No more chidren under node
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\ThemeManager\ServerChangeNumber
+By Rule: Exact path match
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\ThemeManager
+By Rule: No more chidren under node
+Rule Encountered: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\UFH\ARP\*
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\CurrentVersion\UFH\ARP
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\Tablet PC\IsTabletPC
+By Rule: Exact path match
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\Tablet PC\DeviceKind
+By Rule: Exact path match
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows\Tablet PC
+By Rule: No more chidren under node
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows NT\CurrentVersion\GRE_Initialize\DisableRemoteFontBootCache
+By Rule: Exact path match
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows NT\CurrentVersion\GRE_Initialize\ServicingStackModifiedFonts
+By Rule: Exact path match
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows NT\CurrentVersion\GRE_Initialize
+By Rule: No more chidren under node
+Rule Encountered: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows NT\CurrentVersion\Notifications\*
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows NT\CurrentVersion\Notifications\Data
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows NT\CurrentVersion\Notifications
+By Rule: Recursively removed
+Rule Encountered: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows NT\CurrentVersion\ProfileList\*
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows NT\CurrentVersion\ProfileList\S-1-5-93-2-1
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows NT\CurrentVersion\ProfileList
+By Rule: Recursively removed
+Rule Encountered: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows NT\CurrentVersion\Schedule\TaskCache\Tasks\*
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows NT\CurrentVersion\Schedule\TaskCache\Tasks\{04A11EBA-63C0-4DCA-BB6A-8FF04B7A8B95}
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows NT\CurrentVersion\Schedule\TaskCache\Tasks\{18694421-7C0E-464B-A9C4-DC55791EB1EB}
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows NT\CurrentVersion\Schedule\TaskCache\Tasks\{226C52BC-0F62-4E67-A70D-74C22932AC02}
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows NT\CurrentVersion\Schedule\TaskCache\Tasks\{33DD25E2-6C53-482B-8124-EB0C9DA48E66}
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows NT\CurrentVersion\Schedule\TaskCache\Tasks\{46DDFBEA-7B80-499F-8D16-8FB7836BEBDC}
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows NT\CurrentVersion\Schedule\TaskCache\Tasks\{51D31EBF-545E-411D-A21A-CB34004CC384}
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows NT\CurrentVersion\Schedule\TaskCache\Tasks\{63010DD6-0324-4F00-88A6-586364C44DAF}
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows NT\CurrentVersion\Schedule\TaskCache\Tasks\{7A22EFE4-FCC0-438F-BE6E-DE13062484C3}
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows NT\CurrentVersion\Schedule\TaskCache\Tasks\{83795B87-BDC9-4F80-A96D-48ED113712D9}
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows NT\CurrentVersion\Schedule\TaskCache\Tasks\{9C4F4ACB-5122-40E1-9D7E-99555BC2F2C1}
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows NT\CurrentVersion\Schedule\TaskCache\Tasks\{A167F6E0-ED47-419C-807E-2A11ECBA98D4}
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows NT\CurrentVersion\Schedule\TaskCache\Tasks\{C4143BD1-BDD8-4AA6-83E1-57F4C83800BA}
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows NT\CurrentVersion\Schedule\TaskCache\Tasks
+By Rule: Recursively removed
+Rule Encountered: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows NT\CurrentVersion\Superfetch\*
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows NT\CurrentVersion\Superfetch
+By Rule: Recursively removed
+Rule Encountered: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows NT\CurrentVersion\Tracing\*
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows NT\CurrentVersion\Tracing\SCM\Regular
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows NT\CurrentVersion\Tracing\SCM
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows NT\CurrentVersion\Tracing
+By Rule: Recursively removed
+Rule Encountered: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows NT\CurrentVersion\Windows\Win32kWPP\*
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows NT\CurrentVersion\Windows\Win32kWPP\Parameters
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows NT\CurrentVersion\Windows\Win32kWPP
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows NT\CurrentVersion\Winlogon\WinStationsDisabled
+By Rule: Exact path match
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows NT\CurrentVersion\Winlogon\ShutdownFlags
+By Rule: Exact path match
+Removed: HKEY_LOCAL_MACHINE\base_sw\Microsoft\Windows NT\CurrentVersion\Winlogon
+By Rule: No more chidren under node
+Rule Encountered: HKEY_LOCAL_MACHINE\base_sw\WOW6432Node\Microsoft\Cryptography\*
+Removed: HKEY_LOCAL_MACHINE\base_sw\WOW6432Node\Microsoft\Cryptography\Calais
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\WOW6432Node\Microsoft\Cryptography
+By Rule: Recursively removed
+Removed: HKEY_LOCAL_MACHINE\base_sw\WOW6432Node\Microsoft\CTF
+By Rule: No more chidren under node
+Removed: HKEY_LOCAL_MACHINE\base_sw\WOW6432Node\Microsoft\Notepad
+By Rule: No more chidren under node
+Removed: HKEY_LOCAL_MACHINE\base_sw\WOW6432Node\Microsoft\Software\Microsoft\Shared Tools
+By Rule: No more chidren under node
+Removed: HKEY_LOCAL_MACHINE\base_sw\WOW6432Node\Microsoft\Software\Microsoft
+By Rule: No more chidren under node
+Removed: HKEY_LOCAL_MACHINE\base_sw\WOW6432Node\Microsoft\Software
+By Rule: No more chidren under node
+Removed: HKEY_LOCAL_MACHINE\base_sw\WOW6432Node\Microsoft\Windows\CurrentVersion\Control Panel\Cursors
+By Rule: No more chidren under node
+Removed: HKEY_LOCAL_MACHINE\base_sw\WOW6432Node\Microsoft\Windows\CurrentVersion\Control Panel
+By Rule: No more chidren under node
+Removed: HKEY_LOCAL_MACHINE\base_sw\WOW6432Node\Microsoft\Windows\CurrentVersion\Explorer
+By Rule: No more chidren under node
+Removed: HKEY_LOCAL_MACHINE\base_sw\WOW6432Node\Microsoft\Windows\CurrentVersion\Telephony
+By Rule: No more chidren under node
+Removed: HKEY_LOCAL_MACHINE\base_sw\WOW6432Node\Microsoft\Windows\Tablet PC\IsTabletPC
+By Rule: Exact path match
+Removed: HKEY_LOCAL_MACHINE\base_sw\WOW6432Node\Microsoft\Windows\Tablet PC
+By Rule: No more chidren under node
+Removed: HKEY_LOCAL_MACHINE\base_sw\WOW6432Node\Microsoft\Windows NT\CurrentVersion
+By Rule: No more chidren under node
+Removed: HKEY_LOCAL_MACHINE\base_sw\WOW6432Node\Microsoft\Windows NT
+By Rule: No more chidren under node

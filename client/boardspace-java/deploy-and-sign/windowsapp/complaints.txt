@@ -1,0 +1,25 @@
+Supported API test
+
+FAILED
+    Supported APIs
+
+    Error Found: The supported APIs test detected the following errors:
+        API LoadLibraryExA in kernel32.dll is not supported for this application type. jaas_nt.dll calls this API.
+        API UnhandledExceptionFilter in kernel32.dll is not supported for this application type. jaas_nt.dll calls this API.
+        API lstrlenA in kernel32.dll is not supported for this application type. jaas_nt.dll calls this API.
+        API wsprintfA in user32.dll is not supported for this application type. jaas_nt.dll calls this API.
+        API CreateFileMappingA in kernel32.dll is not supported for this application type. WindowsAccessBridge-32.dll calls this API.
+        API CreateFileW in kernel32.dll is not supported for this application type. WindowsAccessBridge-32.dll calls this API.
+
+FAILED
+    Binary analyzer
+
+    Error Found: The binary analyzer test detected the following errors:
+        File Boardspace.net\boardspace.net.exe has failed the AppContainerCheck check.
+        File Boardspace.net\boardspace.net.exe has failed the DBCheck check.
+        File Boardspace.net\boardspace.net.exe has failed the NXCheck check.
+        File Boardspace.net\boardspace.net.exe has failed the SafeSEHCheck check.
+        File Boardspace.net\Java\bin\api-ms-win-core-console-l1-1-0.dll has failed the AppContainerCheck check.
+        File Boardspace.net\Java\bin\api-ms-win-core-datetime-l1-1-0.dll has failed the AppContainerCheck check.
+        File Boardspace.net\Java\bin\api-ms-win-core-debug-l1-1-0.dll has failed the AppContainerCheck check.
+        File Boardspace.net\Java\bin\api-ms-win-core-errorhandling-l1-1-0.dll has failed the AppContainerCheck
