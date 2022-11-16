@@ -14,7 +14,6 @@ import lib.AwtComponent;
 import lib.G;
 import lib.Log;
 import lib.PinchEvent;
-
 import com.codename1.ui.Command;
 import com.codename1.ui.Component;
 import com.codename1.ui.Display;
@@ -107,6 +106,7 @@ public class MouseAdapter
 	public MouseAdapter(Component c) 
 	{ cn1Component = c; 
 	  awtComponent = (AwtComponent)c;
+
 	}
 	public void setAwtComponent(AwtComponent w) { awtComponent = w; }
 	public MouseAdapter(Component cn1,AwtComponent awt) { awtComponent = awt; cn1Component = cn1; }
@@ -138,7 +138,7 @@ public class MouseAdapter
 	// the X coordinate doesn't change, and the Y coordinate changes by a lot.
 	//
 	private boolean USE_WHEEL = !G.isSimulator();	// so it behaves like real android
-	private boolean DETECT_WHEEL = !USE_WHEEL || G.isRealWindroid();
+	private boolean DETECT_WHEEL = G.isRealWindroid();
 
 	private Stack<PressedListener> systemPressedListeners = new Stack<PressedListener>();
 	private Stack<ReleasedListener> systemReleasedListeners = new Stack<ReleasedListener>();
@@ -146,7 +146,7 @@ public class MouseAdapter
 	private Stack<SFocusListener>systemFocusListeners = new Stack<SFocusListener>();
 	
 	private void startWheeling(com.codename1.ui.events.ActionEvent e)
-	{	
+	{	//Plog.log.addLog("Start ",DETECT_WHEEL);
 		if(DETECT_WHEEL)
 		{
 		boolean isForSure = USE_WHEEL && Display.getInstance().isScrollWheeling();
@@ -161,7 +161,8 @@ public class MouseAdapter
 	}
 	
 	public boolean isWheeling(com.codename1.ui.events.ActionEvent e,boolean release)
-	{	boolean isForSure = USE_WHEEL && Display.getInstance().isScrollWheeling();
+	{	//Plog.log.addLog("Test ",DETECT_WHEEL);
+		boolean isForSure = USE_WHEEL && Display.getInstance().isScrollWheeling();
 		if(isForSure) { DETECT_WHEEL=false; return true; }
 		if(DETECT_WHEEL && wheelStartTime>0 )
 		{

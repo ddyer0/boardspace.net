@@ -803,7 +803,7 @@ public class ViticultureViewer extends CCanvas<ViticultureCell,ViticultureBoard>
     private void loadCoins(ViticultureCell c,int cash)
     {
     	c.reInit();
-    	while(cash>=5) { c.addChip(ViticultureChip.Coin_5); cash-=5; }
+     	while(cash>=5) { c.addChip(ViticultureChip.Coin_5); cash-=5; }
         while(cash>=2) { c.addChip(ViticultureChip.Coin_2); cash-=2; }
         while(cash>=1) { c.addChip(ViticultureChip.Coin_1); cash-=1; }
     }
@@ -3977,10 +3977,10 @@ private void drawPlayerBoard(Graphics gc,
     			GC.setFont(gc, standardBoldFont());
     			GC.Text(gc, true,(int)(xp-step*0.4),yp+step*2/3,(int)(step*0.8),step/4,Color.black,null,chip.type.prettyName());
     			int netCost = Math.max(0,pb.buildable[lim].cost-discount);
-    			loadCoins(pb.cashDisplay,netCost);
-    			pb.cashDisplay.selected = false;
+    			loadCoins(pb.coinDisplay,netCost);
+    			pb.coinDisplay.selected = false;
     			if(netCost>0)
-    				{drawStack(gc,state,null, pb.cashDisplay,null,highlightAll, step/2,xp,yp+step*6/5, 0,0.5,0.00,null);
+    				{drawStack(gc,state,null, pb.coinDisplay,null,highlightAll, step/2,xp,yp+step*6/5, 0,0.5,0.00,null);
     				}
     			else { 
      				GC.Text(gc,true,xp-step/2,yp+step,step,step/4,Color.black,null,s.get(FreeMessage));
@@ -4005,10 +4005,10 @@ private void drawPlayerBoard(Graphics gc,
     	     		(isDiscard?StockArt.Exmark:StockArt.Checkmark).drawChip(gc,this,step/2,xpos,ypos,null);
     			}
     			int netCost = Math.max(0,ch.costToBuild()-discount);
-    			loadCoins(pb.cashDisplay,netCost);
+    			loadCoins(pb.coinDisplay,netCost);
     			if(netCost>0)
     			{
-    				drawStack(gc,state,null, pb.cashDisplay,null,highlightAll, step/2,xpos+step/6,ypos+step*7/8, 0,0.5,0.00,null);
+    				drawStack(gc,state,null, pb.coinDisplay,null,highlightAll, step/2,xpos+step/6,ypos+step*7/8, 0,0.5,0.00,null);
     			}
     			else 
     			{

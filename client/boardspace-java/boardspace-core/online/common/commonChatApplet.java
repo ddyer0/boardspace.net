@@ -797,4 +797,7 @@ public class commonChatApplet extends FullscreenPanel
 		messages.setText(Base64.decodeString(contents.nextToken()));
 		}
 	}
+	public void MouseDown(HitPoint hp) {
+		
+	}
 }

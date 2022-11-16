@@ -48,6 +48,10 @@ public class ChatWindow extends exCanvas
 	public boolean touchZoomEnabled() { return(true); }
 	public boolean runTheChat() { return(true); }
 		
+	public void MouseDown(HitPoint hp)
+	{
+		theChat.MouseDown(hp);
+	}
 	public void StartDragging(HitPoint hp) {
 		theChat.StartDragging(hp);	
 	}

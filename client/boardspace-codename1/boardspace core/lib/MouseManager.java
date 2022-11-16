@@ -82,7 +82,10 @@ public class MouseManager
     		{ firstMouseEvent = event.next;
     		  if(firstMouseEvent==null) { lastMouseEvent=null;}
     		}
-     	if(event!=null) { mouseHistory.push(event); }
+     	if(event!=null) 
+     		{ mouseHistory.push(event);
+     		  //Plog.log.addLog("getMouse "+event); 
+     		}
     	return(event);
     }
     //
@@ -134,7 +137,7 @@ public class MouseManager
     private synchronized void setMouseInternal(MouseState ev,int button,int x,int y,double amount,double angle)
     {	
     	if((ev==MouseState.LAST_IS_DRAG)&& (button==0)) { button = 1; }
-
+    	//Plog.log.addLog("Se ",ev," ",button);
         if(virtualMouseMode 
         		&& ((ev==MouseState.LAST_IS_MOVE)
         			|| (ev==MouseState.LAST_IS_IDLE))) 
@@ -320,16 +323,18 @@ public class MouseManager
 			// this ends up calling redrawBoard(..,..) which ought to be called
 			// in the edt in codename1. If it's not, redrawboard can be called recursuvely
 			// which is not expected by the code that traverses the display structures.
-			G.runInEdt(new Runnable() {
-			public String toString() { return("mouse motion"); }
-			public void run() {
-        	mouseMotion++;
-        	HitPoint pt = canvas.performStandardMouseMotion(x,y,st);
-        	if(pt==null) { pt = canvas.MouseMotion(x, y, st); }
-        	else { pt.inStandard = true; }
-        	mouseMotionResult = pt;
-			}}
-			);
+			//G.runInEdt(new Runnable() {
+			//	public String toString() { return("mouse motion"); }
+			//	public void run() {
+	        	mouseMotion++;
+	        	//Plog.log.addLog("in Mouse Motion ",st);
+	        	HitPoint pt = canvas.performStandardMouseMotion(x,y,st);
+	        	if(pt==null) { pt = canvas.MouseMotion(x, y, st); }
+	        	else { pt.inStandard = true; }
+	        	mouseMotionResult = pt;
+			//	}
+			//	//}
+			//);
         	return(mouseMotionResult);
 		}
 		
@@ -341,20 +346,23 @@ public class MouseManager
 		}
 		
 		private void mouseDown(HitPoint pt)
-		{
-			if(!pt.inStandard) { canvas.MouseDown(pt); }
+		{	//Plog.log.addLog("MouseDownX ",pt.inStandard," ",canvas);
+			//if(!pt.inStandard)
+			{ canvas.MouseDown(pt); }
 		}
 		
 		public void performMouse()
 	    {	
 	    	CanvasMouseEvent ev = getMouse();
 	        if(ev!=null)
-	        {	performMouse(ev);
+	        {	//Plog.log.addLog("PM ",ev);
+	        	performMouse(ev);
 	        }
 	    }
 		private void performMouse(CanvasMouseEvent ev)
         {
 	        MouseState st = ev.event;
+	        //Plog.log.addLog("Ev ",st);
 	        int sx = scrollX;
 	        int sy = scrollY;
 	        int realx = ev.x;
@@ -392,6 +400,7 @@ public class MouseManager
 	         	mouseDrag = 0;
 	         	if(virtualMouseMode) { break; }
 	         	HitPoint pt = mouseMotion(x,y,st);
+	         	//Plog.log.addLog("Mouse motion ",st," ",pt);
 	         	if(pt!=null) 
 	         		{	
 	         		    mouseDown(pt);				// give the mouse down call
@@ -524,6 +533,7 @@ public class MouseManager
 	        // that without lockups is to do it from within the game thread
 	        // in codenameone we do this immediately, so it will be in the edt thread
 	        //if(G.isCodename1()) { performMouse(); }
+	        //Plog.log.addLog("Wake ",canvas);
 	        canvas.wake();	// canvas.wake() is correct, it knows how to wake itself
     	}
     }

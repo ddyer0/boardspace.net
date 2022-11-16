@@ -801,9 +801,27 @@ public class ChatWidget
 			if(!useKeyboard) { canvas.addFocusListener(this); }
 			}
 	}
+	
+	// keyboard activates on mouse down 
+	public void MouseDown(HitPoint hp)
+    {	CellId hc = hp.hitCode;
+    	if(hc instanceof CalculatorButton.id)
+		{	Keyboard k = getKeyboard();
+			if(k!=null)
+			{	k.MouseDown(hp);
+			}
+		}
+	}
     public void StartDragging(HitPoint hp)
     {	
-    	// drag logic is all handled by the mouseMove function
+    	CellId hc = hp.hitCode;
+    	if(hc instanceof CalculatorButton.id)
+		{	Keyboard k = getKeyboard();
+			if(k!=null)
+			{
+				k.StartDragging(hp); 
+			}
+		} 
     }
     private void sendToFields(int ex,int ey,MouseState upcode)
     {
@@ -827,7 +845,6 @@ public class ChatWidget
     private boolean draggingOutside = false;
     public HitPoint MouseMotion(int ex, int ey,MouseState upcode)
     {	HitPoint p =  new HitPoint(ex, ey,upcode);
-    	p.inStandard = true;
 		if(keyboardUpOrContainsPoint(p) && !draggingOutside)
 		{	
 			if(keyboard!=null && keyboard.containsPoint(p))

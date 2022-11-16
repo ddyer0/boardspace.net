@@ -28,6 +28,7 @@ import lib.OfflineGames;
 import lib.PopupManager;
 import lib.Random;
 import lib.RootAppletProtocol;
+import lib.SoundManager;
 import lib.StockArt;
 import lib.TextContainer;
 import online.common.SeatingChart.Seating;
@@ -127,6 +128,7 @@ public class SeatingViewer extends exCanvas implements LobbyConstants
         {
         	frame.setCanvasRotater(this);
         }
+        SoundManager.getInstance();		// get it warmed up
         if(G.isTable())
         {
         UDPService.start(true);	// listen for tables
@@ -200,10 +202,16 @@ public class SeatingViewer extends exCanvas implements LobbyConstants
         if(keyboard!=null) { keyboard.resizeAndReposition(); }
 
 	}
-
+	public void MouseDown(HitPoint p)
+	{	
+		if(keyboard!=null) 
+			{ keyboard.MouseDown(p);
+			  //Plog.log.addLog("Down "+p+" and repaint");
+			  repaint();
+			}			
+	}
 	public HitPoint MouseMotion(int eventX, int eventY,MouseState upcode)
 	{
-		
 		if(keyboard!=null && keyboard.containsPoint(eventX,eventY))
 		{	
 		keyboard.doMouseMove(eventX,eventY,upcode);
@@ -212,6 +220,7 @@ public class SeatingViewer extends exCanvas implements LobbyConstants
 		
 		
 		HitPoint p = super.MouseMotion(eventX, eventY, upcode);
+		//if(upcode==MouseState.LAST_IS_DOWN && p!=null) { StartDragging(p); }
 		repaint(10,"mouse motion");
 		return(p);
 	}	
@@ -219,7 +228,7 @@ public class SeatingViewer extends exCanvas implements LobbyConstants
 	@Override
 	public void StartDragging(HitPoint hp) {
 		CellId hitCode = hp.hitCode;
-		 if(hitCode instanceof SeatId)
+		if(hitCode instanceof SeatId)
 		 {
 			 SeatId hitId = (SeatId)hitCode;
 			 switch(hitId)
@@ -260,7 +269,6 @@ public class SeatingViewer extends exCanvas implements LobbyConstants
 		sess.setCurrentGame(selectedVariant, false,isPassAndPlay());
 		sess.startingName = sess.launchName(null,true);
 	}
-	
 	@Override
 	public void StopDragging(HitPoint hp) {
 		CellId hitCode = hp.hitCode;
@@ -954,7 +962,7 @@ public class SeatingViewer extends exCanvas implements LobbyConstants
 		return (VNCService.isVNCServer()||RpcService.isRpcServer());
 	}
 	public void drawCanvas(Graphics gc, boolean complete, HitPoint pt0) 
-	{
+	{	//Plog.log.addLog("drawcanvas ",gc," ",pt0," ",pt0.down);
 		Keyboard kb = getKeyboard();
 		HitPoint pt = pt0;
 		if(kb!=null )
@@ -1034,6 +1042,9 @@ public class SeatingViewer extends exCanvas implements LobbyConstants
 			GC.fillRect(gc, selectedGame.colorMap[colorIndex[pickedSource]],r);
 			GC.frameRect(gc, Color.black, r);
 		}
+		if(mouseTrackingAvailable(pt) || pt.down) 
+			{ magnifier.DrawTileSprite(gc,pt); 
+			}
 	}
 	//
 	// oldway pops up a dialog, new way edits the name in the window

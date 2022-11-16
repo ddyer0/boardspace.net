@@ -423,4 +423,5 @@ public class LPanel extends FullscreenPanel implements LFrameProtocol, WindowLis
 	public void setHasSavePanZoom(boolean v) {
 		theFrame.setHasSavePanZoom(v);;
 	}
+
 }

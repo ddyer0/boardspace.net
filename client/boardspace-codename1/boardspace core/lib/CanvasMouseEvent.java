@@ -11,6 +11,7 @@ public class CanvasMouseEvent
 	public double amount;					// amount of pinch
 	public double twist;					// angle of twist
 	public boolean first;
+	public String toString() { return("<CanvasMouseEvent "+event+">"); }
 		// constructor
 	public CanvasMouseEvent(MouseState e,int ax,int ay,int ab,long d,double am,double tw,MouseState prev)
 		{

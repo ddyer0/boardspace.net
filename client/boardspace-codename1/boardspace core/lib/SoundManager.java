@@ -125,8 +125,9 @@ public class SoundManager implements Runnable
 	    {	if(theInstance==null)
 	    	{
 	    	theInstance = new SoundManager();
-            RAThread = new Thread(theInstance,"RA thread");
-            RAThread.start();
+            Thread rr = new Thread(theInstance,"RA thread");
+            rr.start();
+            RAThread = rr;
 	    	}
 	    }
 	    public static SoundManager getInstance()

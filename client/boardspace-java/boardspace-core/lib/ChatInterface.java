@@ -125,6 +125,7 @@ public interface ChatInterface extends Config {
 	boolean isVisible();
 	public boolean isWindow();	// return false if this window should be painted directly
 	public void redrawBoard(Graphics g,HitPoint p);
+	public void MouseDown(HitPoint hp);
 	public boolean StopDragging(HitPoint p);
 	public void StartDragging(HitPoint hp);
 	public void setCanvas(exCanvas can);

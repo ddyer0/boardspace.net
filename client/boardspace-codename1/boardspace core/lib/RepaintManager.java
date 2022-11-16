@@ -552,8 +552,9 @@ public class RepaintManager implements VncScreenInterface,Config
 		}
     HitPoint highlightPoint = null;
     public void setHighlightPoint(HitPoint p)
-    { highlightPoint = p; 
-    }
+    { 
+      highlightPoint = p; 
+     }
     
 	    
     public void generalRefresh(String w)
@@ -1509,7 +1510,7 @@ public class RepaintManager implements VncScreenInterface,Config
 	     *
 	     */
 	    public void wake()
-	    {	
+	    {	//Plog.log.addLog("RepaintManager Wake ",client);
 	        G.wake(client); 
 	    }
 	    //

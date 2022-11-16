@@ -165,6 +165,7 @@ public class PlayerBoard
 	boolean showPlayerBoard = false;
 	// user interface only
 	ViticultureCell cashDisplay = null;
+	ViticultureCell coinDisplay = null;
 	ViticultureCell magnifier = null;
 	ViticultureCell vpDisplay = null;
 	ViticultureCell redGrapeDisplay = null;
@@ -310,6 +311,7 @@ public class PlayerBoard
 		destroyStructureWorker = newcell(ViticultureId.DestroyStructureWorker,colCode,0,ChipType.Worker,DestroyStructureDescription);
 
 		cashDisplay = newUIcell(ViticultureId.Cash,colCode,0,ChipType.Coin);
+		coinDisplay = newUIcell(ViticultureId.Cash,colCode,0,ChipType.Coin);
 		vpDisplay = newUIcell(ViticultureId.VP,colCode,0,ChipType.VP);
 		
 		redGrapeDisplay = newUIcell(ViticultureId.RedGrapeDisplay,colCode,0,ChipType.RedGrape);

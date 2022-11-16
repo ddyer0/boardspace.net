@@ -30,8 +30,8 @@ public class Keyboard implements Config
 	static void loadImages(ImageLoader showOn) 
 	{	if(!imagesLoaded)
 		{
-		imagesLoaded = true;
 		StockArt.load_masked_images(showOn, IMAGEPATH,artwork);
+		imagesLoaded = true;
 		}
 	}
 	class CalculatorButtonStack extends OStack<CalculatorButton>
@@ -124,7 +124,7 @@ public class Keyboard implements Config
 	}
 	
 	exCanvas showOn=null;
-	Rectangle crect = null;
+	Rectangle crect = new Rectangle();
 	public void setBounds(Rectangle r)
 	{
 		crect = r;
@@ -188,9 +188,10 @@ public class Keyboard implements Config
 				dis = null;
 			}	
 			setBounds(new Rectangle(newX,newY,newW,newH)); 
+			
 		}		
 		if(dis==null)
-		{ includeDisplay = true;
+		{ 
 		  dis = new TextContainer(CalculatorButton.id.Display);
 		  dis.singleLine = true;
 		  dis.setEditable(showOn,true);
@@ -203,9 +204,11 @@ public class Keyboard implements Config
 		  	}
 	  	  dis.setFocus(true);
 		  setBounds(new Rectangle(newX,newY,newW,newH));
+		  display = dis;		// make sure display is set before includeDisplay
+		  includeDisplay = true;
 		}			
-
 		display = dis;
+
 
 	}
 	// constructor
@@ -220,13 +223,20 @@ public class Keyboard implements Config
 		if(r!=null) { fixedBounds = true; setBounds(r); }
 		else {	resizeAndReposition(); }
 	}
-	
-	public void StartDragging(HitPoint hp)
+	public void MouseDown(HitPoint hp)
 	{	
+		if(!hp.dragging)
+		{
+			handleKey(hp);	
+		}
+	}
+	public void StartDragging(HitPoint hp)
+	{	// when we embed the display line, pass mouse drag events to it.
 		if(includeDisplay)
 			{  boolean drag = display.doMouseDrag(G.Left(hp),G.Top(hp));
 			   hp.dragging = drag;
 			}
+
 	}
 	// sawDown is a semi-kludge to ignore the apparent keystroke that occurs
 	// when the keyboard has just appeared, and the mouse is somewhere inside
@@ -236,10 +246,11 @@ public class Keyboard implements Config
 	public void doMouseMove(int ex, int ey,MouseState upcode)
 	{	if(containsPoint(ex,ey))
 		{
+		if(upcode==MouseState.LAST_IS_DOWN) 
+			{ sawDown = true; }
 		if(includeDisplay) 
 			{ display.doMouseMove(ex,ey,upcode); 
 			}
-		if(upcode==MouseState.LAST_IS_DOWN) { sawDown = true; }
 		}
 	}
 	public void setClosed()
@@ -247,13 +258,14 @@ public class Keyboard implements Config
 		closed = true; 
 	}
 	
-	public boolean StopDragging(HitPoint hp)
+	public boolean handleKey(HitPoint hp)
 	{
 		if(sawDown && (hp.hitCode instanceof CalculatorButton.id))
 		{	//display.doMouseUp();
+			//Plog.log.addLog("Key ",hp);
+			CalculatorButton.id bcode = (CalculatorButton.id)hp.hitCode;
 			sawDown = false;
 			if(showOn!=null && showOn.doSound()) { SoundManager.playASoundClip(clickSound,100); }
-			CalculatorButton.id bcode = (CalculatorButton.id)hp.hitCode;
 			display.setFocus(true);
 			if((bcode.ival>=' ') && (bcode.ival<0xff)) 
 				{
@@ -361,6 +373,10 @@ public class Keyboard implements Config
 			}
 			return(true);
 		}
+		return false;
+	}
+	public boolean StopDragging(HitPoint hp)
+	{	// keyboard activates on key down
 		return(false);
 	}
 	
@@ -383,7 +399,9 @@ public class Keyboard implements Config
 		default: break;
 		}
 		
-		if(button.value.ival>0) { button.draw(gc,showOn,highlight,cr); }
+		if(button.value.ival>0) 
+			{ button.draw(gc,showOn,highlight,cr); 
+			}
 	}
 	
 	public void draw(Graphics gc,HitPoint highlight)
@@ -398,7 +416,6 @@ public class Keyboard implements Config
 		int left = G.Left(crect);
 		int top = G.Top(crect);
 		Rectangle drect = crect;
-		
 		if(includeDisplay)
 		{				
 	    	FontMetrics fm = G.getFontMetrics(display.font);
@@ -419,7 +436,8 @@ public class Keyboard implements Config
 		int bheight = (int)(w*0.037);
 		Rectangle cr = GC.setClip(gc,left+lmargin,top+tmargin,w-bwidth,h-bheight);
 		GC.fillRect(gc,Color.lightGray,left+lmargin, top+tmargin,w-bwidth,h-bheight);
-		Keyboard.getImage(showOn.loader).drawImage(gc,left,top,w,h);
+		Image im = Keyboard.getImage();
+		if(im!=null) { im.drawImage(gc,left,top,w,h); }
 	  	GC.setClip(gc,cr);
     	GC.setFont(gc, showOn.largeBoldFont());
     	for(CalculatorButton button : buttonList())
@@ -431,5 +449,6 @@ public class Keyboard implements Config
 	    	display.setVisible(true);
 	    	display.redrawBoard(gc,highlight);
     	}
+
 	}
 }

@@ -3,7 +3,6 @@ package bridge;
 import lib.ErrorX;
 import lib.G;
 import lib.Http;
-import lib.Plog;
 import lib.SizeProvider;
 
 import java.util.Vector;
@@ -39,7 +38,11 @@ public class MasterForm extends Form implements com.codename1.ui.events.ActionLi
 	String appname = "unnamed";
 	private com.codename1.ui.Container titleBar;
 	boolean recordEvents = true;
-	
+	//
+	// this is for an experiment in progress, to catch keys by pulling
+	// them into an invisible text window.
+	//
+	TextArea keys = new TextArea();
 	@SuppressWarnings("deprecation")
 	private MasterForm(String app) 
 	{ super(app);
@@ -56,6 +59,8 @@ public class MasterForm extends Form implements com.codename1.ui.events.ActionLi
 	  // this also requires the individual components to implement getDragRegionStatus()
 	  //
 	  Display.getInstance().setDragStartPercentage(1);
+	  Display.getInstance().setMultiKeyMode(true);
+
 	  appname = app; 
 	  //new BoxLayout(this,BoxLayout.Y_AXIS);
 	  tabs.setLayout(new TabLayout());
@@ -459,17 +464,25 @@ public void addToMenus(JButton m)
 	Vector<KeyListener> keylisteners = null;
 	KeyListener focusedListener = null;
 	public void addKeyListener(KeyListener myrunner)
-	{	Plog.log.addLog("add key listener ",myrunner);
+	{	//Plog.log.addLog("add key listener ",myrunner);
 		if(keylisteners==null) { keylisteners = new Vector<KeyListener>(); }
 		if(!keylisteners.contains(myrunner)) { keylisteners.addElement(myrunner); }
 	}
 	public void removeKeyListener(KeyListener myrunner)
-	{	Plog.log.addLog("remove key listener ",myrunner);
+	{	//Plog.log.addLog("remove key listener ",myrunner);
 		if(keylisteners!=null) { keylisteners.remove(myrunner); }
 	}
+	// 
+	// this is for an experiment in progress, to use cn1 keylistener facility to catch
+	// every key separately
+	//
+	public void addKeyListener(int keyCode, com.codename1.ui.events.ActionListener listener)
+	{
+		super.addKeyListener(keyCode,listener);
+	}
 	public void fireKeyEvent(int keycode,boolean pressed)
-	{	Plog.log.addLog("KeyEvent ",keycode,"(0x",Integer.toHexString((keycode&0xff)),")",
-				focusedListener," ",pressed);
+	{	//Plog.log.addLog("KeyEvent ",keycode,"(0x",Integer.toHexString((keycode&0xff)),")",
+		//		focusedListener," ",pressed);
 		if(keylisteners!=null)
 		{	int code = keycode;
 			switch(keycode)

@@ -4693,6 +4693,15 @@ public abstract class commonCanvas extends exCanvas
         	if(G.isCodename1())
         		{ myFrame.setCanSavePanZoom(deferredEvents); 
         		}
+           	hidden.saveGame = myFrame.addAction("Save Single Game",deferredEvents); 
+           	hidden.saveCollection = myFrame.addAction("Save Game Collection",deferredEvents);
+        	hidden.loadGame = myFrame.addAction("Load Game File",deferredEvents);
+        	hidden.gamesMenu = new XJMenu(SelectAGameMessage,true);
+            myFrame.addToMenuBar(hidden.gamesMenu);
+            hidden.gamesMenu.addItemListener(deferredEvents);
+
+            hidden.replayCollection = myFrame.addAction("Replay Game Collection",deferredEvents); 
+            hidden.replayFolder = myFrame.addAction("Replay games in folder",deferredEvents);
         }
 
        if (extraactions)
@@ -4702,18 +4711,6 @@ public abstract class commonCanvas extends exCanvas
         	l.debugOnceSwitch = myFrame.addOption("debug once", false,deferredEvents);
     		hidden.gameTest = myFrame.addAction("In game test",deferredEvents);
         	l.layoutAction = myFrame.addAction("check layouts",deferredEvents);
-           	hidden.saveGame = myFrame.addAction("Save Single Game",deferredEvents); 
-           	if(viewer) 
-        {	
-        	hidden.saveCollection = myFrame.addAction("Save Game Collection",deferredEvents);
-        	hidden.loadGame = myFrame.addAction("Load Game File",deferredEvents);
-        	hidden.gamesMenu = new XJMenu(SelectAGameMessage,true);
-            myFrame.addToMenuBar(hidden.gamesMenu);
-            hidden.gamesMenu.addItemListener(deferredEvents);
-
-        		hidden.replayCollection = myFrame.addAction("Replay Game Collection",deferredEvents); 
-        	  hidden.replayFolder = myFrame.addAction("Replay games in folder",deferredEvents);
-        	}
         	{
         	JMenu robotMenu = new XJMenu("Robot Actions",true);
         	myFrame.addToMenuBar(robotMenu);

@@ -199,14 +199,16 @@ public class CalculatorButton {
 				for(int off=hh/2; off<ww-hh; off+=hh/2)
 					{ if(button.drawChip(gc,showOn,hit,value,hh,xp+off,yp,null,1.0,1.0))
 						{
-						hit.spriteColor = Color.red;
+						// flash blue when the key is activated, red for ordinary rollover
+						hit.spriteColor = hit.down ? Color.blue : Color.red;
 						hit.spriteRect = new Rectangle(xp-hh/2,yp-hh/2,ww,hh);
 						}
 					}
 			}
 			else if(button.drawChip(gc,showOn,hit,value,ww,xp,yp,null,1.0,1.0))
 			{	
-				hit.spriteColor = Color.red;
+				// flash blue when the key is activated, red for ordinary rollover
+				hit.spriteColor = hit.down ? Color.blue : Color.red;
 				hit.spriteRect = button.getChipRectangle(showOn,ww,xp,yp);
 			}
 		}
