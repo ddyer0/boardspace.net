@@ -15,6 +15,7 @@ import kuba.KubaConstants;
 import kulami.KulamiConstants;
 import hive.HiveConstants;
 import imagine.ImagineConstants;
+import iro.IroConstants;
 import jumbulaya.JumbulayaConstants;
 import lib.RootAppletProtocol;
 import lib.TimeControl;
@@ -24,7 +25,7 @@ import lib.FileSelector;
 import lib.FileSource;
 import lib.InternationalStrings;
 import crossfire.CrossfireConstants;
-import crosswords.CrosswordsConstants;
+import crosswordle.CrosswordleConstants;
 import dayandnight.DayAndNightConstants;
 import dipole.DipoleConstants;
 import dvonn.DvonnConstants;
@@ -39,10 +40,12 @@ import goban.GoConstants;
 import gobblet.GobConstants;
 import gounki.GounkiConstants;
 import gyges.GygesConstants;
+import havannah.HavannahConstants;
 import hex.HexConstants;
 import majorities.MajoritiesConstants;
 import mbrane.MbraneConstants;
 import medina.MedinaConstants;
+import meridians.MeridiansConstants;
 import micropul.MicropulConstants;
 import mijnlieff.MijnlieffConstants;
 import modx.ModxConstants;
@@ -50,11 +53,15 @@ import mogul.MogulConstants;
 import morelli.MorelliConstants;
 import morris.MorrisConstants;
 import mutton.MuttonConstants;
-import nuphoria.EuphoriaConstants;
+import euphoria.EuphoriaConstants;
 import octiles.OctilesConstants;
 import online.common.LobbyConstants;
+import online.common.SeatingChart;
 import online.common.SeatingViewer;
 import online.common.Session;
+import online.game.Opcodes;
+import ordo.OrdoConstants;
+import palago.PalagoConstants;
 import plateau.common.PlateauConstants;
 import oneday.OnedayConstants;
 import rithmomachy.RithmomachyConstants;
@@ -62,9 +69,11 @@ import santorini.SantoriniConstants;
 import tablut.TabConstants;
 import takojudo.TakojudoConstants;
 import tammany.TammanyConstants;
+import tamsk.TamskConstants;
 import tintas.TintasConstants;
 import trax.TraxConstants;
 import triad.TriadConstants;
+import tweed.TweedConstants;
 import twixt.TwixtConstants;
 import tzaar.TzaarConstants;
 import universe.UniverseConstants;
@@ -77,6 +86,7 @@ import xiangqi.XiangqiConstants;
 import y.YConstants;
 import shogi.ShogiConstants;
 import sixmaking.SixmakingConstants;
+import crosswords.CrosswordsConstants;
 import stac.StacConstants;
 import stymie.StymieConstants;
 import syzygy.SyzygyConstants;
@@ -128,12 +138,30 @@ public class masterStrings extends InternationalStrings
         put(LobbyConstants.LobbyMessages);
         put(LobbyConstants.LobbyMessagePairs);
         put(GameInfo.GameInfoStringPairs);
+        SeatingChart.putStrings();
         put(Session.SessionStrings);
         put(SeatingViewer.SeatingStrings);
         put(SeatingViewer.SeatingStringPairs);
         put(LoginStrings);
         put(InternationalStrings.languages)
         ;
+        setContext("Meridians");
+        MeridiansConstants.putStrings();
+        
+        setContext("Ordo");
+        OrdoConstants.putStrings();
+        
+        setContext("Tumbleweed");
+        TweedConstants.putStrings();
+        
+        setContext("Tamsk");
+        TamskConstants.putStrings();
+        
+        setContext("Havannah");
+        HavannahConstants.putStrings();
+        
+        setContext("Iro");
+        IroConstants.putStrings();
         
         setContext("KingsColor");
         KingsColorConstants.putStrings();
@@ -174,6 +202,9 @@ public class masterStrings extends InternationalStrings
         setContext("Crosswords");
         CrosswordsConstants.putStrings();
  
+        setContext("Crosswordle");
+        CrosswordleConstants.putStrings();
+
         setContext("Imagine");
         ImagineConstants.putStrings();
  
@@ -205,8 +236,7 @@ public class masterStrings extends InternationalStrings
         put(StacConstants.StacStringPairs);
         
         setContext("Proteus");
-        put(ProteusConstants.ProteusStrings);
-        put(ProteusConstants.ProteusStringPairs);
+        ProteusConstants.putStrings();
          
         setContext("Tammany Hall");
         put(TammanyConstants.TammanyStrings);
@@ -219,10 +249,9 @@ public class masterStrings extends InternationalStrings
         setContext("Majorities");
         MajoritiesConstants.putStrings();
         
-        setContext("Ponte");       
-        put(PonteConstants.PonteStrings);
-        put(PonteConstants.PonteStringPairs);
-        PonteConstants.PonteState.putStrings();
+        setContext("Ponte");    
+        PonteConstants.putStrings();
+      
         
         setContext("Shogi");    
         put(ShogiConstants.ShogiStrings);
@@ -307,13 +336,9 @@ public class masterStrings extends InternationalStrings
         put("TBA3_variation","game to be announced");
         put("unsupported game_variation","a game not available on this platform");
         
-        put("Palago_variation","standard Palago");
-        put("Palago","Palago");
-
  
      	put("Punct_family","Pünct");
-        put("Palago_family","Palago");
-        put("Spangles_family","Spangles");
+         put("Spangles_family","Spangles");
         put("Truchet_family","Truchet");
         put("TumblingDown_family","Tumbling Down");
         put("TumblingDown","Tumbling Down");
@@ -344,6 +369,7 @@ public class masterStrings extends InternationalStrings
         // common game strings
         // system error
         setContext("CommonGames");
+        Opcodes.putStrings();
         put(online.game.commonCanvas.CanvasStrings);
         put(online.game.commonCanvas.commonStringPairs);
         put(online.game.BaseBoard.BoardState.StateStrings);
@@ -481,10 +507,7 @@ public class masterStrings extends InternationalStrings
         
         // palago
         setContext("palago");
-        put("select tile color","select tile color");
-        put("Place a second tile adjacent to the first",
-        		"Place a second tile adjacent to the first");
-        put("Form a closed shape in your color","Form a closed shape in your color");
+        PalagoConstants.putStrings();
         
         // santorini
         setContext("santorini");
@@ -533,8 +556,7 @@ public class masterStrings extends InternationalStrings
         
         // octiles
         setContext("octiles");
-        put(OctilesConstants.OctilesStrings);
-        put(OctilesConstants.OctilesStringPairs);
+        OctilesConstants.putStrings();
         
         // army of frogs
         setContext("frogs");

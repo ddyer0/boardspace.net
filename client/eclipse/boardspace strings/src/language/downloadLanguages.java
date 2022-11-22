@@ -139,7 +139,7 @@ public class downloadLanguages {
 	  static private String[] split(String msg,char ch,int depth)
 	    {
 	    	int idx = msg.indexOf(ch);
-	    	if((idx <= 0) || (idx==msg.length()-1))
+	    	if((idx < 0) || (idx==msg.length()-1))
 	    		{ String res[] = new String[depth+1];
 	    		  res[depth] = (idx<=0) ? msg : msg.substring(0,idx);
 	    		  return(res);
@@ -163,9 +163,11 @@ public class downloadLanguages {
 	  	{
 	  		  out.write("K "+uKey);
 			  out.write("\n");
-			  for(String str : split(val,'\n'))
-			  {
-				  out.write("V "+utfEncode(str));
+			  String spl[] = split(val,'\n');
+			  for(String str : spl)
+			  {	  String enc = utfEncode(str);
+				  out.write("V ");
+				  out.write(enc);
 				  out.write("\n");
 			  }
 			 
@@ -285,7 +287,8 @@ public class downloadLanguages {
 		  return((String[])languages.toArray(new String[languages.size()]));
 	  }
 	  public static void downloadData(String host,String database,String user,String password,String datadirs)
-	  {	String dirs[] = G.split(datadirs,',');
+	  {	
+		String dirs[] = G.split(datadirs,',');
 	    // output can be a comma separated list of directories, strings are saved to each
 	  	try {
 		  Connection conn = connect(host,database,user,password);
