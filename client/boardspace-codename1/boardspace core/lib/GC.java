@@ -1043,6 +1043,10 @@ public class GC {
 	{	if(gc!=null) { gc.unsetRotatedContext(); }
 		else if(select!=null) { select.unsetRotatedContext(); }
 	}
-
+	public static void drawButton(Graphics inG, int xoffset, int vcrSliderTop, int vcrWidth, int barHeight,
+			Color vcrbuttoncolor) {
+		if(inG!=null) { inG.drawButton(xoffset,vcrSliderTop,vcrWidth,barHeight,vcrbuttoncolor,Color.white); }
+		
+	}
 
 }

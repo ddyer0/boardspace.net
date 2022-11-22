@@ -1,7 +1,7 @@
 package lib;
 
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import bridge.ObjectInputStream;
+import bridge.ObjectOutputStream;
 import bridge.Utf8OutputStream;
 
 import java.io.ByteArrayInputStream;

@@ -153,7 +153,7 @@ public class DrawableImage<T> implements Drawable,StackIterator<T>
 	 */
 	public double getAspectRatio(exCanvas can)
 	{	DrawableImage<?> alt = getAltChip(can.getAltChipset());
-		Image im = alt.getImage(can.loader);
+		Image im = alt.getImage(can.loader());
 		double v = ((im==null)?1.0 : Math.max(1.0,im.getWidth())/Math.max(1.0,im.getHeight()));
 		return(v);
 	}
@@ -306,7 +306,7 @@ public class DrawableImage<T> implements Drawable,StackIterator<T>
 	public void drawChip(Graphics gc,exCanvas canvas,Rectangle r,String label)
 	{	
 		int sz = G.Width(r);
-		Image im = getImage(canvas.loader);
+		Image im = getImage(canvas.loader());
 		if(im!=null)
 			{
 			double aspect = (double)im.getWidth()/im.getHeight();
@@ -326,7 +326,7 @@ public class DrawableImage<T> implements Drawable,StackIterator<T>
 	 * @return
 	 */
 	public Rectangle getSnugRectangle(exCanvas canvas,Rectangle r)
-	{	Image im = getImage(canvas.loader);
+	{	Image im = getImage(canvas.loader());
 		if(im!=null) { return(im.getSnugRectangle(r));}
 		return(r);
 	}
@@ -340,7 +340,7 @@ public class DrawableImage<T> implements Drawable,StackIterator<T>
 	 * @return
 	 */
 	public Rectangle getSnugRectangle(exCanvas canvas,int left,int top,int w,int h)
-	{	Image im = getImage(canvas.loader);
+	{	Image im = getImage(canvas.loader());
 		if(im!=null) { return(im.getSnugRectangle(left,top,w,h));}
 		return(new Rectangle(left,top,w,h));
 	}

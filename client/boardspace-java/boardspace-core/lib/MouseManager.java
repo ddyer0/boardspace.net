@@ -323,18 +323,18 @@ public class MouseManager
 			// this ends up calling redrawBoard(..,..) which ought to be called
 			// in the edt in codename1. If it's not, redrawboard can be called recursuvely
 			// which is not expected by the code that traverses the display structures.
-			//G.runInEdt(new Runnable() {
-			//	public String toString() { return("mouse motion"); }
-			//	public void run() {
+			G.runInEdt(new Runnable() {
+				public String toString() { return("mouse motion"); }
+				public void run() {
         	mouseMotion++;
 	        	//Plog.log.addLog("in Mouse Motion ",st);
         	HitPoint pt = canvas.performStandardMouseMotion(x,y,st);
         	if(pt==null) { pt = canvas.MouseMotion(x, y, st); }
         	else { pt.inStandard = true; }
         	mouseMotionResult = pt;
-			//	}
-			//	//}
-			//);
+				}
+			}
+			);
         	return(mouseMotionResult);
 		}
 		

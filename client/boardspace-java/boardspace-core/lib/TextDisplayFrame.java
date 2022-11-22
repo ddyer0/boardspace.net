@@ -19,7 +19,7 @@ public class TextDisplayFrame extends XFrame implements ActionListener,ItemListe
 	 */
 	static final long serialVersionUID = 1L;
 	public static int default_bufferchars = 10000;
-    public TextWindow area;		// not jtextarea, keep scrolling functionality
+    public TextWindow  area = new TextWindow(this);	// not jtextarea, keep scrolling functionality
     public JCheckBoxMenuItem[] fontItems;
     public JCheckBoxMenuItem[] styleItems;
     public JCheckBoxMenuItem[] sizeItems;
@@ -41,8 +41,7 @@ public class TextDisplayFrame extends XFrame implements ActionListener,ItemListe
 
     public TextDisplayFrame(String title) 
     {	super(title);
-    	area = new TextWindow(this);	// not jtextarea, keep scrolling functionality
-    	setLayout(new NullLayout(this));
+     	setLayout(new NullLayout(this));
     	setOpaque(false);
         // Initialize
         //if(!"Console".equalsIgnoreCase(title)) { area.setReport(true); }
@@ -247,7 +246,7 @@ public class TextDisplayFrame extends XFrame implements ActionListener,ItemListe
 		int y = main.getY();
 		Container content = getContentPane();
 		if(content!=null) { content.setBounds(x,y,w-x,h-y); }
-		area.setBounds(0,0,w-x,h-y);;
+		area.setBounds(0,0,w-x,h-y); 
 	}
 
 

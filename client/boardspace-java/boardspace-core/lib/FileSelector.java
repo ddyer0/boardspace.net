@@ -56,7 +56,7 @@ public class FileSelector extends FullscreenPanel
 	public static final String SERVERSAVE = "serversave";
 	public static final String SERVERFILE = "serverfile";
 	public static final String SELECTEDGAME = "selectedgame";
-
+	public void wake() { G.wake(this); }
 	public class FileSelectorResult
 	{
 		public String opcode;	// load or save
@@ -435,7 +435,7 @@ public class FileSelector extends FullscreenPanel
     }
     // read a directory, well actually read a html file
     // and take interesting stuff from it
-    private void initDir(URL dir)
+    public void initDir(URL dir)
     {
         Vector<String> match = new Vector<String>();
         { //get the list of match words
@@ -735,6 +735,34 @@ public class FileSelector extends FullscreenPanel
     }
 
 
+    public URL[] getURLs(ScrollableList<ProxyString> l)
+    {
+        int nitems = l.getItemCount();
+        URL[] results = new URL[nitems];
+
+        for (int i = 0; i < nitems; i++)
+        {
+            try
+            {	String item = (l.getItem(i).value);
+                results[i] = makeURL(currentSource.filePaneDir, item);
+            }
+            catch (MalformedURLException e)
+            { // pro forma catch
+            }
+        }
+
+        return (results);
+    }
+
+    public URL[] getDirectories()
+    {
+        return (getURLs(dirList));
+    }
+
+    public URL[] getFiles()
+    {
+        return (getURLs(gameList));
+    }
 
     // select a game from a list
     private void selectGame(ScrollableList<ProxyString> listbox)

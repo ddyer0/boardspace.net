@@ -213,7 +213,7 @@ public class ChatWidget
 
     public void addAMessage(String inStr,boolean see)
     {
-    	int mw = activePane().getWidth();
+    	int mw = G.Width(activePane());
         int useWidth = mw - 15;
 
         if (useWidth < 400)

@@ -68,12 +68,9 @@ public class SeatingChart {
 	public DefinedSeating id;
 	Seating seats[] = null;
 	String explanation = null;
-	public SeatingChart(DefinedSeating idd,Seating[]specs)
+	public SeatingChart(DefinedSeating idd,Seating[]specs,String expl)
 	{	id=idd;
 		seats = specs==null ? new Seating[0] : specs;
-	}
-	public SeatingChart(DefinedSeating idd,Seating[]specs,String expl)
-	{	this(idd,specs);
 		explanation = expl;
 	}
 
@@ -107,8 +104,8 @@ public class SeatingChart {
 	private static SeatingChart facePortrait = new SeatingChart(DefinedSeating.FaceToFacePortrait,faceToFacePortrait,TwoPlayerExplanation);
 	private static SeatingChart leftCorner2P = new SeatingChart(DefinedSeating.LeftCorner,leftCorner,TwoPlayerExplanation);
 	private static SeatingChart rightCorner2P = new SeatingChart(DefinedSeating.RightCorner,rightCorner,TwoPlayerExplanation);
-	private static SeatingChart leftCorner3P = new SeatingChart(DefinedSeating.ThreeLeftL,leftL,TwoPlayerExplanation);
-	private static SeatingChart rightCorner3P = new SeatingChart(DefinedSeating.ThreeRightL,rightL,TwoPlayerExplanation);
+	private static SeatingChart leftCorner3P = new SeatingChart(DefinedSeating.ThreeLeftL,leftL,ThreePlayerExplanation);
+	private static SeatingChart rightCorner3P = new SeatingChart(DefinedSeating.ThreeRightL,rightL,ThreePlayerExplanation);
 	
 	public static SeatingChart faceLandscape = new SeatingChart(DefinedSeating.FaceToFaceLandscapeSide,faceToFaceLandscape,TwoPlayerExplanation);
 	
@@ -159,17 +156,17 @@ public class SeatingChart {
 		  rightCorner2P,
 		  leftCorner3P,
 		  rightCorner3P,
-		  new SeatingChart(DefinedSeating.ThreeAroundL,threeAroundL),
-		  new SeatingChart(DefinedSeating.ThreeWide,threeWide),
-		  new SeatingChart(DefinedSeating.ThreeAroundR,threeAroundR),
+		  new SeatingChart(DefinedSeating.ThreeAroundL,threeAroundL,ThreePlayerExplanation),
+		  new SeatingChart(DefinedSeating.ThreeWide,threeWide,ThreePlayerExplanation),
+		  new SeatingChart(DefinedSeating.ThreeAroundR,threeAroundR,ThreePlayerExplanation),
 		  default3P,
-		  new SeatingChart(DefinedSeating.FourAround,fourAround),
-		  new SeatingChart(DefinedSeating.FourAroundU,fourAroundU),
+		  new SeatingChart(DefinedSeating.FourAround,fourAround,FourPlayerExplanation),
+		  new SeatingChart(DefinedSeating.FourAroundU,fourAroundU,FourPlayerExplanation),
 		  default4P,
-		  new SeatingChart(DefinedSeating.FiveAround,fiveAround),
-		  new SeatingChart(DefinedSeating.FiveAround1Edge,fiveAround1Edge),
+		  new SeatingChart(DefinedSeating.FiveAround,fiveAround,FivePlayerExplanation),
+		  new SeatingChart(DefinedSeating.FiveAround1Edge,fiveAround1Edge,FivePlayerExplanation),
 		  default5P,
-		  new SeatingChart(DefinedSeating.SixAround,sixAround),
+		  new SeatingChart(DefinedSeating.SixAround,sixAround,SixPlayerExplanation),
 		  default6P,
 		};
 	public static enum DefinedSeating 

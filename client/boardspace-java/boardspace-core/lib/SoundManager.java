@@ -136,7 +136,13 @@ public class SoundManager implements Runnable
 	    		}
 	    	return(theInstance);
 	    }
-
+	    //
+	    // earlier versions of sound manager had a tendency to die unexpectedly,
+	    // so we have a check to see if it's running ok.  The "isAlive()" test
+	    // is itself a bit flakey, it can fail when the thread is just starting.
+	    // consequently, the recommended procedure is to call getInstance() well
+	    // before any actual sound clips are loaded.
+	    //
 	    public void fixRAThread()
 	    {
 	        if (!exit)

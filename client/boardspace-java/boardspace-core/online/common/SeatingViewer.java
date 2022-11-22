@@ -9,6 +9,7 @@ import java.net.URL;
 
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JOptionPane;
+
 import common.GameInfo;
 import common.GameInfoStack;
 import common.GameInfo.ES;
@@ -29,7 +30,6 @@ import lib.OfflineGames;
 import lib.PopupManager;
 import lib.Random;
 import lib.RootAppletProtocol;
-import lib.SoundManager;
 import lib.StockArt;
 import lib.TextContainer;
 import online.common.SeatingChart.Seating;
@@ -61,6 +61,8 @@ public class SeatingViewer extends exCanvas implements LobbyConstants
 	private int respawnNewName = 0;
 	TextContainer namefield = (TextContainer)addRect("namefield",new TextContainer(SeatId.TableName));
 	TextContainer newNameField = (TextContainer)addRect("newname",new TextContainer(SeatId.NewName));
+	TextContainer messageArea = new TextContainer("");
+
 	SeatingChart selectedChart = SeatingChart.defaultPassAndPlay;
 	UserManager users = new UserManager();
 	int numberOfUsers = 0;
@@ -116,6 +118,8 @@ public class SeatingViewer extends exCanvas implements LobbyConstants
         if(G.debug()) {
         	InternationalStrings.put(GameInfo.GameInfoStringPairs);
         	SeatingChart.putStrings();
+        	InternationalStrings.put(SeatingViewer.SeatingStrings);
+        	InternationalStrings.put(SeatingViewer.SeatingStringPairs);
         }
         String name = UDPService.getPlaytableName();
         namefield.setText(name);
@@ -129,7 +133,6 @@ public class SeatingViewer extends exCanvas implements LobbyConstants
         {
         	frame.setCanvasRotater(this);
         }
-        SoundManager.getInstance();		// get it warmed up
         if(G.isTable())
         {
         UDPService.start(true);	// listen for tables
@@ -706,7 +709,7 @@ public class SeatingViewer extends exCanvas implements LobbyConstants
 		int margin = half/10;
 		int lessThanHalf = half-margin;
 		int vspace = half+half/4;
-		
+		boolean gameListSeen = false;
 		sess.setMode(nplayers==0?Session.Mode.Review_Mode:Session.Mode.Unranked_Mode,isPassAndPlay());
 		
 		String msg = (nplayers==0) 
@@ -778,6 +781,7 @@ public class SeatingViewer extends exCanvas implements LobbyConstants
 				icon.centerImage(gc,iconRect);
 				GC.frameRect(gc, Color.black, iconRect);
 				}
+				gameListSeen = true;
 			}
 		}
 		else
@@ -847,6 +851,7 @@ public class SeatingViewer extends exCanvas implements LobbyConstants
 					icon.centerImage(gc,iconRect);
 					GC.frameRect(gc, Color.black, iconRect);
 					}
+					gameListSeen = true;
 					row++;
 					lastGame = g;
 					ngames++;
@@ -854,7 +859,26 @@ public class SeatingViewer extends exCanvas implements LobbyConstants
 			}
 			if(ngames==1) { selectGame(lastGame); }
 
+
 		}
+		  if(!gameListSeen)
+		  {	int gameW = w-gameX-l-w/10;
+		    int gameH = h-gameY;
+			  Rectangle ur = new Rectangle(gameX,gameY,gameW,gameH);
+			  GC.frameRect(gc,Color.blue,ur);
+			  GC.setFont(gc,largeBoldFont());
+			  FontMetrics fm = G.getFontMetrics(this);
+			  int fh = fm.getHeight();
+			  GC.Text(gc,true,gameX,gameY,gameW,fh*2,Color.black,null,"Play Offline");
+			  GC.setFont(gc,standardPlainFont());
+			  messageArea.setBounds(gameX,gameY+fh*2,gameW,gameH-fh*2);
+			  messageArea.setVisible(true);
+			  messageArea.flagExtensionLines = false;
+			  messageArea.setBackground(Color.lightGray);
+			  messageArea.setText(s.get(MessageAreaMessage));
+			  messageArea.redrawBoard(gc, null);
+			  
+		  }
 
 		// if the selections have moved under the selected game, make it unselected.
 		if(!selectedGameSeen) { selectGame(null); }
@@ -1191,7 +1215,7 @@ public class SeatingViewer extends exCanvas implements LobbyConstants
 	static String SendFeedbackMessage = "Send Feedback";
 	static String DrawerOffMessage = "Player Drawers OFF";
 	static String DrawersOnMessage = "Player Drawers ON";
-	
+	static String MessageAreaMessage = "MessageAreaMessage";
 	public static String[]SeatingStrings =
 		{	SelectChartMessage,
 			TableNameMessage,
@@ -1216,9 +1240,16 @@ public class SeatingViewer extends exCanvas implements LobbyConstants
 			CategoriesMode,
 			A_ZMode,
 		};
+	
 	 public static String[][] SeatingStringPairs =
 		 {
-			{SeatPositionMessage,"Where Are\nYou Sitting?"}	 
+			{SeatPositionMessage,"Where Are\nYou Sitting?"}	 ,
+			{MessageAreaMessage,
+				"This panel launches games played with other people sharing this device.\n\n"
+				+ "If you want to play robots, or people who are not in the same room, use the 'Play Online' button and log into the server.\n\n"
+				+ "If you and friends are playing on this device, start by selecting the seating chart that best approximates were you will be sitting, then browse the Categories or A-Z list of games and select the game to play.\n\n"
+			
+			},
 		 };
 	 public void shutDown()
 	 {

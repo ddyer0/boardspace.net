@@ -71,7 +71,7 @@ public class Calculator implements Config
 	}
 	
 	public Calculator(exCanvas see,CalculatorButton b[])
-	{	loadImages(see.loader);
+	{	loadImages(see.loader());
 		showOn = see;
 		buttons = b;
 		display = new CalculatorButton(CalculatorButton.id.Display,"",0.5,0.18,0.6,0.135);
@@ -130,7 +130,7 @@ public class Calculator implements Config
 		for(CalculatorButton b : buttons) { if(b.value==button) { b.message = TextChunk.split(ms); }}	
 	}
 	public void draw(Graphics gc,Rectangle crect,HitPoint highlight)
-	{	loadImages(showOn.loader);
+	{	loadImages(showOn.loader());
 	  	Calculator.drawChipH(gc, showOn, crect, null);
     	GC.setFont(gc, showOn.largeBoldFont());
     	for(CalculatorButton button : buttons)

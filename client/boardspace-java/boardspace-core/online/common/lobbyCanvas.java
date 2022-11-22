@@ -2384,10 +2384,6 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	
 	private boolean hasDragged = false;
 	
-	public void MouseDown(HitPoint hp)
-	{
-		theChat.MouseDown(hp);
-	}
 	public void StartDragging(HitPoint hp) 
 	{	if(menu!=null) { return; }
 		if(hp!=null)

@@ -502,6 +502,7 @@ public abstract class InternationalStrings implements Config
     	while(!eof)
     		{
     		String line = breader.readLine();
+    		if(line.length()==1) { line = line+" "; }	// guard against trailing blanks
     		linen++;
     		if(line==null) { eof = true; }
     		else if("".equals(line)) { savedKey = null; }
@@ -527,7 +528,7 @@ public abstract class InternationalStrings implements Config
     					{ stored++; 
     					}
     				strs.put(savedKey,val);
-    				prevVal = val;
+     				prevVal = val;
     			}
     			else if(key.equals("N "))
     			{	int expected = G.IntToken(val);

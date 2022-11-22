@@ -39,7 +39,15 @@ public class Image extends SystemImage implements Drawable,CompareTo<Image>
 	public static CachedImageManager cache = new CachedImageManager();
 	public static Image getCachedImage(String name) { return(cache.getCachedImage(name)); }
 	public static CachedImageManager getImageCache() { return(cache); }
-	
+	public static boolean manageCachedImages(int n)
+	{
+		if(cache.needsManagement())
+		{
+			cache.manageCachedImages(n);
+			return true;
+		}
+		return false;
+	}
 	public String getShortName()
 	{
 		int idx = url.lastIndexOf('/');
@@ -259,7 +267,10 @@ public class Image extends SystemImage implements Drawable,CompareTo<Image>
 	    	int yoff = (height-dh)/2;
 	    	int margin = (int)(scale+1);
 	  	  	Rectangle rr = GC.combinedClip(gc,x+xoff+margin,y+yoff+margin,dw-2*margin,dh-2*margin);
-	  	  	drawImage(gc,x+xoff,y+yoff,dw,dh);
+	  	  	//Plog.log.addLog("caching ",this," ",dw,"x",dh);
+	  	  	Image cached = cache.getCachedImage(this,dw,dh,false);
+	  	  	//Plog.log.addLog("cached ",cached);
+	  	  	cached.drawImage(gc,x+xoff,y+yoff,dw,dh);
 	  	  	GC.setClip(gc,rr);
 	    	}
 	    }

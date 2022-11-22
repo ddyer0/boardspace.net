@@ -947,6 +947,7 @@ import udp.PlaytableStack;
         						? amazonAppStoreUrl
         						: androidAppStoreUrl;
          	G.showDocument(url,"App Store");
+         	return;
         }
         if(source==feedbackButton)
         {	  	

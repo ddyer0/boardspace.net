@@ -163,7 +163,8 @@ public abstract class exCanvas extends ProxyWindow
 	// imageloader abstracts the different ways of loading images
 	// split off to combat code bloat for codename1
 	public final ImageLoader loader = new ImageLoader(this);
- 	
+	public ImageLoader loader() {	return loader; }
+	
 	final CachedImageManager imageCache = new CachedImageManager();
 
 	// dummy method to be overridden
@@ -905,7 +906,10 @@ graphics when using a touch screen.
 	   return(null);
    }
    
-   public void MouseDown(HitPoint p) {};		// some might override this method
+	public void MouseDown(HitPoint hp)
+	{
+		if(theChat!=null) { theChat.MouseDown(hp); }
+	}
    /**
  
   
@@ -1789,18 +1793,7 @@ graphics when using a touch screen.
       }
 
   }
-  /** Cheap pseudo random, intended to jitter the position
-   * of stones a little.  Returned as -m/2 to m/2
-   * @param x
-   * @param y
-   * @param m
-   * @return the value
-   */
-  private static int CPR(int x,int y,int m)
-  {	//x*prime1+y*prime2 mod prime3
-  	return(((x*9803+y*10211)%9679)%Math.max(1,m)-m/2);
-  }
-  
+
     /**
      * this is the primary method to draw an images with transparent
      * backgrounds on a canvas.  The images are clipped to a slightly smaller box to avoid the "edge garbage"
@@ -1838,8 +1831,8 @@ graphics when using a touch screen.
         int scalew2 = (int) (scalew_d2+0.5);
         int scalew3 = (int)(scalew*0.8);
         int scaleh = (int) (scaleh_d+0.5);
-        int jx = CPR(x,y,(int)(scalew_d*jitter));
-        int jy = CPR(x,y,(int)(scaleh_d*jitter));
+        int jx = G.CPR(x,y,(int)(scalew_d*jitter));
+        int jy = G.CPR(x,y,(int)(scaleh_d*jitter));
         int posx = (int) (scale==null ? 0.5 : scale[0] * scalew_d2) + jx;
         int posy = (int) (scale==null ? 0.5 : scale[1] * scaleh_d) + jy;
         int ax = x - posx;
@@ -2383,5 +2376,6 @@ graphics when using a touch screen.
 	public int activeAnimationSize(Drawable chip,int thissize) { return(thissize); }
 	public void printDebugInfo(PrintStream s) {}
 	public void testSwitch() {}
+
 	
 }

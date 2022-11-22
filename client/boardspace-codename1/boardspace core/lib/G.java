@@ -2057,5 +2057,17 @@ public static String expandClassName(String classname)
 	    			    ? val+range*2
 	    			    : val);
 	     }
+	    /** Cheap pseudo random, intended to jitter the position
+	     * of stones a little.  Returned as -m/2 to m/2
+	     * @param x
+	     * @param y
+	     * @param m
+	     * @return the value
+	     */
+	    public static int CPR(int x,int y,int m)
+	    {	//x*prime1+y*prime2 mod prime3
+	    	return(((x*9803+y*10211)%9679)%Math.max(1,m)-m/2);
+	    }
+	    
 }
  	

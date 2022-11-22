@@ -26,5 +26,6 @@ public interface Config extends CommonConfig
    public static final String DICEPATH = "/dice/images/";
    static final String IconsDir = "/icons/";
    public static final String FONT_FAMILIES[] = { "Serif","SansSerif","Monospaced","TimesRoman" ,"Helvetica" , "Courier" ,"Dialog", "DialogInput"};
+   static final String feedbackUrl = "https://boardspace.net/cgi-bin/feedback.cgi";
 
 }

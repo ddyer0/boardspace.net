@@ -17,7 +17,9 @@ import java.util.Set;
 
 /**
  * This is a window-free replacement for TextArea, coded to be used with
- * other boardspace UI items.
+ * other boardspace UI items.  It's used as a body for chats, also as
+ * the display for text input lines, and as a simple method to display
+ * paragraph-style messages.
  * 
  * Mouse activity: 
  *   If the item is editable and the mouse is recently idle, select it and bring up the keyboard.
@@ -55,6 +57,7 @@ public class TextContainer extends Rectangle implements AppendInterface,KeyListe
 	private boolean mouseSelectingExpand = false;
 	private int mouseExpandPos1 = -1;
 	private int MARGIN = 4;
+	public boolean flagExtensionLines = true;	// if true, flag extension lines
 	private boolean mouseSelecting = false;		// true if the mouse is being used to select text, initiated by a horizontal movement
 	private boolean caratSelecting = false;		// one time flag to set the carat to the last mouse position	
 	private int mouseSelectingX = -1;	// x tracking the mouse while selecting text
@@ -685,7 +688,7 @@ public class TextContainer extends Rectangle implements AppendInterface,KeyListe
 			}
 			GC.setColor(g,foregroundColor); 
 			GC.Text(g,line,xpos, realY);
-			if(isExtensionLine)
+			if(isExtensionLine && flagExtensionLines)
 			{
 				GC.fillRect(g, Color.black,x+1,realY-lineh,MARGIN-1,lineh);
 			}

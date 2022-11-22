@@ -45,7 +45,9 @@ import vnc.VNCService;
 
 public class JWSApplication implements Config 
 {
-	
+		public JWSApplication() { 
+	        SoundManager.getInstance();		// get it warmed up
+		}
 		public boolean runnable = true;
 		public void runLogin(String serverName,RootAppletProtocol realRoot)
 		{	
