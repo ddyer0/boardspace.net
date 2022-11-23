@@ -5,6 +5,7 @@ import java.awt.FontMetrics;
 
 import lib.Graphics;
 import java.awt.Rectangle;
+import java.awt.event.MouseWheelEvent;
 import java.net.URL;
 
 import javax.swing.JCheckBoxMenuItem;
@@ -61,7 +62,7 @@ public class SeatingViewer extends exCanvas implements LobbyConstants
 	private int respawnNewName = 0;
 	TextContainer namefield = (TextContainer)addRect("namefield",new TextContainer(SeatId.TableName));
 	TextContainer newNameField = (TextContainer)addRect("newname",new TextContainer(SeatId.NewName));
-	TextContainer messageArea = new TextContainer("");
+	TextContainer messageArea = new TextContainer(SeatId.MessageArea);
 
 	SeatingChart selectedChart = SeatingChart.defaultPassAndPlay;
 	UserManager users = new UserManager();
@@ -104,7 +105,7 @@ public class SeatingViewer extends exCanvas implements LobbyConstants
 		DrawersOn,
 		PlayOnline,
 		TableName,
-		NewName;
+		NewName, MessageArea;
 		public String shortName() {
 			return(name());
 		}
@@ -184,7 +185,7 @@ public class SeatingViewer extends exCanvas implements LobbyConstants
 		stripHeight = h/7;
 		G.SetRect(seatingSelectRect, l, t, w,stripHeight);
 		G.SetRect(gameSelectionRect, l,t+stripHeight,w/2,h-stripHeight);
-		int left = l+w/2;
+		int left = l+w/2+w/40;
 		int margin = stripHeight/2;
 		G.SetRect(seatingChart, left, t+stripHeight+margin, w-left-margin, h-stripHeight-stripHeight/2-margin);
 		G.SetRect(gearRect,w-margin*2,t+stripHeight,margin,margin);
@@ -219,6 +220,10 @@ public class SeatingViewer extends exCanvas implements LobbyConstants
 		if(keyboard!=null && keyboard.containsPoint(eventX,eventY))
 		{	
 		keyboard.doMouseMove(eventX,eventY,upcode);
+		}
+		else if(messageArea.isVisible())
+		{
+			messageArea.doMouseMove(eventX,eventY,upcode);
 		}
 		else if(selectedInputField!=null) { selectedInputField.doMouseMove(eventX, eventY, upcode); } 
 		
@@ -861,22 +866,28 @@ public class SeatingViewer extends exCanvas implements LobbyConstants
 
 
 		}
-		  if(!gameListSeen)
-		  {	int gameW = w-gameX-l-w/10;
-		    int gameH = h-gameY;
-			  Rectangle ur = new Rectangle(gameX,gameY,gameW,gameH);
-			  GC.frameRect(gc,Color.blue,ur);
+		  if(gameListSeen)
+		  { messageArea.setVisible(false);
+		  }
+		  else 
+		  {	int gameW = w-(gameX-l)-w/20;
+		    int gameH = h-(gameY-t)-h/20;
 			  GC.setFont(gc,largeBoldFont());
 			  FontMetrics fm = G.getFontMetrics(this);
 			  int fh = fm.getHeight();
+			  Rectangle ur = new Rectangle(gameX,gameY,gameW,fh*2);
+			  GC.frameRect(gc,Color.blue,ur);
 			  GC.Text(gc,true,gameX,gameY,gameW,fh*2,Color.black,null,"Play Offline");
 			  GC.setFont(gc,standardPlainFont());
-			  messageArea.setBounds(gameX,gameY+fh*2,gameW,gameH-fh*2);
+			  messageArea.setBounds(gameX,gameY+fh*2+1,gameW,gameH-fh*2);
+			  if(!messageArea.isVisible())
+			  {
 			  messageArea.setVisible(true);
 			  messageArea.flagExtensionLines = false;
 			  messageArea.setBackground(Color.lightGray);
 			  messageArea.setText(s.get(MessageAreaMessage));
-			  messageArea.redrawBoard(gc, null);
+			  }
+			  messageArea.redrawBoard(gc, hp);
 			  
 		  }
 
@@ -1327,7 +1338,16 @@ public class SeatingViewer extends exCanvas implements LobbyConstants
       	}
       return(k); 
     }
-
-
+	public void handleMouseWheel(MouseWheelEvent e)
+	{
+		int amount = e.getWheelRotation();
+		
+		boolean done = messageArea.isVisible()
+					&& G.pointInRect(e.getX(),e.getY(),messageArea);
+    	if(done) { messageArea.doMouseWheel(amount);}
+    	else
+    		{ super.handleMouseWheel(e);
+    		}
+    }
 
 }

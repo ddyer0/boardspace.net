@@ -502,12 +502,12 @@ public abstract class InternationalStrings implements Config
     	while(!eof)
     		{
     		String line = breader.readLine();
-    		if(line.length()==1) { line = line+" "; }	// guard against trailing blanks
     		linen++;
     		if(line==null) { eof = true; }
     		else if("".equals(line)) { savedKey = null; }
     		else {
     			line = G.utfDecode(line);
+        		if(line.length()==1) { line = line+" "; }	// guard against trailing blanks
     			String key = line.substring(0,2);
     			String val = line.substring(2);
     			if(key.equals("S "))

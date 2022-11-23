@@ -10,16 +10,17 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.net.URL;
+import java.security.AccessControlException;
+import bridge.Config;
+import bridge.Utf8OutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
-import java.security.AccessControlException;
 import java.util.Hashtable;
 import java.util.StringTokenizer;
 
-import bridge.Config;
-import bridge.Utf8OutputStream;
+
 import lib.TextContainer.Op;
 import online.common.OnlineConstants;
 import online.common.exCanvas;

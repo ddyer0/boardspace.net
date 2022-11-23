@@ -1,12 +1,5 @@
 package lib;
 
-
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Hashtable;
-import java.util.StringTokenizer;
-
 import com.codename1.ui.Font;
 import com.codename1.ui.geom.Point;
 import com.codename1.ui.geom.Rectangle;
@@ -15,14 +8,21 @@ import bridge.AccessControlException;
 import bridge.ActionEvent;
 import bridge.ActionListener;
 import bridge.Color;
-import bridge.Config;
 import bridge.Container;
 import bridge.FocusEvent;
 import bridge.FocusListener;
 import bridge.FontMetrics;
 import bridge.ThreadDeath;
 import bridge.URL;
+import bridge.Config;
 import bridge.Utf8OutputStream;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Hashtable;
+import java.util.StringTokenizer;
+
+
 import lib.TextContainer.Op;
 import online.common.OnlineConstants;
 import online.common.exCanvas;
