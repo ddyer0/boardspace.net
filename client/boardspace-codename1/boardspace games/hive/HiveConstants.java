@@ -11,7 +11,7 @@ public interface HiveConstants
 {	static final boolean NO_Q1 = true;	// if true, outlaw the queen opening
 	static final String SetupDescription = "Add or remove pieces, and set up starting board position";    
 	static final String SwapDescription = "Choose to play the black or white pieces";
-	static final String HiveGoal = "surround your opponents queen bee";
+	static final String HiveGoal = "surround your opponent's queen bee";
 	static final String QueenStateDescription = "Place your queen on the board";
 	static final String FirstPlayStateDescription =  "Place a tile on the board";
 	static final String PlayStateDescription = "Place a tile on the board, or move a tile";

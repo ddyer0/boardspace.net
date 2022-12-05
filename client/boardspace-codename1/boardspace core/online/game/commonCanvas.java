@@ -276,7 +276,7 @@ public abstract class commonCanvas extends exCanvas
 		}
 	    void adjustScales2(double pscale[],DrawableImage<?> last)
 	    {
-	    if(useAuxSliders && (lastDropped.getAltChip(getAltChipset())==last))
+	    if(useAuxSliders && (lastDropped!=null) && (lastDropped.getAltChip(getAltChipset())==last))
 		    {	// use this to tune piece position
 	    		if(last!=hidden.lastLastDropped2)
 	    			{
@@ -4179,7 +4179,6 @@ public abstract class commonCanvas extends exCanvas
     	switch(m.op) {
     	case MOVE_RESET:
     	case MOVE_UNDO:
-    	case MOVE_PEEK:
     	case MOVE_PLEASEUNDO:
     	case MOVE_DONTUNDO:
     	case MOVE_ALLOWUNDO:
@@ -4204,14 +4203,6 @@ public abstract class commonCanvas extends exCanvas
     					}
     				m = null;
     				size = -1;
-    				}
-    				else if(m.op==MOVE_PEEK)
-    				{
-    					size = -1;
-    					if((hmove.op==MOVE_PEEK) && (hmove.player==m.player))
-    					{	// remove duplicate peeks
-    						m = null;
-    					}
     				}
     				else if(m.op==MOVE_PASS) 
     				{	// special treatment for pass moves. passes may or may not change the state
@@ -6455,39 +6446,11 @@ public abstract class commonCanvas extends exCanvas
      * @param hist
      * @return
      */
-    public CommonMoveStack censoredHistory(CommonMoveStack hist) 
-    { 	
-    	CommonMoveStack newHist = hist;
-     	boolean some = false;
-    	int sz = hist.size()-1;
-    	while(sz>=0)
-    	{
-    		commonMove m = newHist.elementAt(sz);
-    		if(m.op==MOVE_PEEK)
-    		{	if(!some) 
-    				{ some = true;
-    				  // implements copy on write.  This ought to be unnecessary
-    				  // since it's the very last thing we do, but we're being conservative here.
-    				  newHist = new CommonMoveStack();
-    				  newHist.copyFrom(hist);
-    				}
-    			newHist.remove(sz,true);
-    		}
-    		sz--;
-    	}
-    	if(some)
-    	{	// renumber
-    		for(int i=newHist.size()-1; i>=0; i--)
-    		{
-    			commonMove old = newHist.elementAt(i);
-    			commonMove n = old.Copy(null);
-    			n.setIndex(i);
-    			newHist.setElementAt(n,i);
-    		}
-    	}
-    	return(newHist);
-    }
     
+    public CommonMoveStack censoredHistory(CommonMoveStack s)
+    		{
+    	return s;
+    		}
     public void printGameRecord(PrintStream ps, String startingTime,String filename)
     {
         printGameRecord(ps, startingTime, censoredHistory(History), filename);

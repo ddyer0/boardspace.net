@@ -29,7 +29,7 @@ public class FileDialog implements SimpleObserver
 	}
 	
 	public void setFile(String filter) {
-		G.print("setFile "+filter);
+		G.print("setFile ",filter);
 	}
 	public void setVisible(boolean val)
 	{

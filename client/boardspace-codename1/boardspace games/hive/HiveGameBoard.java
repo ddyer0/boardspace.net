@@ -58,6 +58,7 @@ class HiveGameBoard extends hexBoard<HiveCell> implements BoardProtocol,HiveCons
 	private HiveState board_state;
 	private HiveState undrawState;
 	private int lastRealMoveNumber = 0;
+	public HivePiece lastDroppedObject = null;
 	public boolean robotCanOfferDraw = true;
 	public boolean canOfferDraw()
 	{ return((moveNumber-lastRealMoveNumber)<=1); 
@@ -995,6 +996,7 @@ public variation gamevariation = variation.hive;
        G.Assert((po!=null)&&(droppedDest==null),"ready to drop");
        droppedDest = dest;
        pickedObject = null;
+       lastDroppedObject = po;
        addChip(dest,po);
        
     }   
@@ -1048,13 +1050,13 @@ public variation gamevariation = variation.hive;
     return(dd);
     }
     
-
+    private commonMove currentMove = null;
     private final void pickObject(HiveCell c)
     {  	G.Assert((pickedObject==null)&&(pickedSource==null),"not ready to pick");
     	G.Assert((board_state==HiveState.PUZZLE_STATE) 
     				|| permissiveReplay	// special flag that we're in a replayed game
     				|| (board_state==HiveState.Setup) 
-    				|| (c!=stunned),"picking stunned piece");
+    				|| (c!=stunned),"picking stunned piece %s move %s",c,currentMove);
     	pickedSource = c;
     	switch(c.rackLocation())
     	{
@@ -1397,6 +1399,7 @@ public variation gamevariation = variation.hive;
         boolean fall = false;
         boolean animate = false;
         //G.print("M "+mm+" "+board_state);
+        currentMove = m;	// for debugging
         switch (m.op)
         {
         case MOVE_PLAYWHITE:

@@ -311,7 +311,7 @@ public class PlayerBoard
 		destroyStructureWorker = newcell(ViticultureId.DestroyStructureWorker,colCode,0,ChipType.Worker,DestroyStructureDescription);
 
 		cashDisplay = newUIcell(ViticultureId.Cash,colCode,0,ChipType.Coin);
-		coinDisplay = newUIcell(ViticultureId.Cash,colCode,0,ChipType.Coin);
+		coinDisplay = newUIcell(ViticultureId.Coins,colCode,0,ChipType.Coin);
 		vpDisplay = newUIcell(ViticultureId.VP,colCode,0,ChipType.VP);
 		
 		redGrapeDisplay = newUIcell(ViticultureId.RedGrapeDisplay,colCode,0,ChipType.RedGrape);

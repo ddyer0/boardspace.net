@@ -53,6 +53,7 @@ public interface EuphoriaConstants
 	static String ConfirmRetrieveState = "Click on DONE to complete retrieval";
 	static String ActiveRecruit = "Active Recruit";
 	static String HiddenRecruit = "Hidden Recruit";
+	static String FactionlessWarning = "Factionless recruits can't be hidden";
 	static String CollectBenefitState = "Collect #1 as your benefit";
 	static String ExtendedBenefitState = "Collecting more benefits";
 	static String CollectOptionalBenefitState = "Collect #1 as your benefit, or click on Done to #2";
@@ -1620,6 +1621,7 @@ public interface EuphoriaConstants
     			ExtraWaterOrStone,
     			NoExtraFood,
     			NoExtraEnergy,
+    			FactionlessWarning,
     			NoExtraBliss,
     			NoExtraWater,
     			NoExtraCard,

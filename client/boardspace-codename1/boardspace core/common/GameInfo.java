@@ -2158,7 +2158,7 @@ synchronized(allGames) {
 			new double[]{0.03,1,0.01},
 			"qe.QEViewer","/qe/english/rules.pdf",
 			null,true, null));
-	 p.maxPlayers = 4;
+	 p.maxPlayers = 5;
 	 p.minPlayers = 3;
 	 p.randomizeFirstPlayer = true;
 	 p.hasHiddenInformation = true;

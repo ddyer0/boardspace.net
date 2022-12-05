@@ -120,16 +120,16 @@ public class HivePiece extends chip<HivePiece>
 	    static final double SCALES[][] = 
 	    { { 0.5130,0.46086,0.45217},	// white queen
 	       	{ 0.5,0.47692,0.4235},	// white ant1
-	       	{ 0.5,0.5,0.423076},	// white grasshopper1
-	    	{ 0.5,0.5,0.421},	// white beetle1
-	    	{0.5307,0.5153, 0.4},	// white spider1
+	       	{ 0.5,0.5,0.40},	// white grasshopper1
+	    	{ 0.5,0.5,0.40},	// white beetle1
+	    	{0.50,0.48, 0.43},	// white spider1
 	    	{0.5,0.5,0.428},	// white mosquito
 	    	{ 0.481,0.5,0.521739},	// white ladybug
 	       	{0.5,0.5,0.4608},	// white pillbug
 	       	{0.5,0.5,0.4608},	// white blank
 	    	
 	    	{0.532,0.503, 0.437037},	// black queen
-	       	{ 0.5,0.5,0.41739},	// black ant1
+	       	{ 0.53,0.47,0.41739},	// black ant1
 	    	{ 0.5,0.5,0.40869},	// black grasshopper1
 	       	{ 0.5,0.5,0.4},	// black beetle1
 	       	{0.5,0.5,0.4},	// black spider1

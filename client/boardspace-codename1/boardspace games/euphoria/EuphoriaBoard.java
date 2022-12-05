@@ -1033,6 +1033,8 @@ public class EuphoriaBoard extends EuphoriaBoardConstructor implements EuphoriaC
 		MASTER_SIMULTANEOUS_PLAY = REINIT_SIMULTANEOUS_PLAY = SIMULTANEOUS_PLAY = val; 
 	}
 	public int activePlayer = -1;
+    public int recruitPlayer = -1;		// the player operating the main board to choose recruits
+
 	EPlayer players[] = new EPlayer[MAX_PLAYERS];
 	public EPlayer getCurrentPlayer() { return(players[whoseTurn]); }
 	public EPlayer getPlayer(int in) { return(in<players.length ? players[in] : null); }
@@ -1575,6 +1577,7 @@ public class EuphoriaBoard extends EuphoriaBoardConstructor implements EuphoriaC
 	    lastDroppedObject = null;
 	    hasReducedRecruits = false;
 	    normalStartSeen = false;
+	    recruitPlayer = -1;
 		bumpedWorker = null;
 		bumpingWorker = null;
 		selectedDieRoll = null;
@@ -1660,6 +1663,7 @@ public class EuphoriaBoard extends EuphoriaBoardConstructor implements EuphoriaC
         Assert(activeRecruit==from_b.activeRecruit,"activeRecruit mismatch");
         Assert(stepNumber == from_b.stepNumber,"stepnumber matches");
         Assert(nOpenMarkets == from_b.nOpenMarkets,"nOpenMarkets mismatch");
+        Assert(recruitPlayer==from_b.recruitPlayer,"recruitPlayer mismatch");
         // this is a good overall check that all the copy/check/digest methods
         // are in sync, although if this does fail you'll no doubt be at a loss
         // to explain why.
@@ -1739,6 +1743,7 @@ public class EuphoriaBoard extends EuphoriaBoardConstructor implements EuphoriaC
 		v ^= Digest(r,stepNumber);
 		v ^= Digest(r,rollNumber);
 		v ^= Digest(r,nOpenMarkets);
+		v ^= Digest(r,recruitPlayer);
 		
 		for(int lim=pickedStateStack.size()-1; lim>=0; lim--)
 		{
@@ -1820,6 +1825,7 @@ public class EuphoriaBoard extends EuphoriaBoardConstructor implements EuphoriaC
        // G.print("T "+from_b.robot+" "+from_b+" > "+this+" "+this.robot);
         robot = from_b.robot;
         lastPicked = null;
+        recruitPlayer = from_b.recruitPlayer;
         CELLSIZE = from_b.CELLSIZE;
         sameboard(from_b); 
     }
@@ -6875,6 +6881,7 @@ private void doAmandaTheBroker(EuphoriaCell dest,replayMode replay,RecruitChip a
    				{ unusedRecruits.removeChipAtIndex(lim);
    				}
    		}}
+   		for(EPlayer p : players) { p.setupAlternateArtifacts(); }
        	normalStartSeen = true;
     	}
     }
@@ -6891,6 +6898,12 @@ private void doAmandaTheBroker(EuphoriaCell dest,replayMode replay,RecruitChip a
         //G.print("E "+m+" for "+whoseTurn+" "+board_state+" "+Digest()); 
         switch (m.op)
         {
+        case EPHEMERAL_CHOOSE_RECRUITS:
+
+			recruitPlayer = getPlayer(m.from_color).boardIndex;
+			setRecruitDialogState(players[recruitPlayer]);
+			break;
+			
         case MOVE_RECRUIT:
         	{	// for testing purposes, just add a recruit
         		EPlayer p = getPlayer(m.player);
@@ -6959,7 +6972,7 @@ private void doAmandaTheBroker(EuphoriaCell dest,replayMode replay,RecruitChip a
         	m.player = p.boardIndex;
   			p.discardNewRecruits(true);
   			moveNumber++; 
-   			SIMULTANEOUS_PLAY = true;	// replay of the final NormalStart turns this off
+   			SIMULTANEOUS_PLAY = REINIT_SIMULTANEOUS_PLAY;	// replay of the final NormalStart turns this off
    			setRecruitDialogState(getPlayer(activePlayer));  
        		}
        		break;
@@ -7617,6 +7630,11 @@ private void doAmandaTheBroker(EuphoriaCell dest,replayMode replay,RecruitChip a
     		else {    		
     		return((getSource()==c) || ((dests!=null) && (dests.get(c)!=null)));
     		}
+    }
+    public EuphoriaChip movingObject(EPlayer p)
+    {
+    	if(p.ephemeralPickedObject!=null) { return p.ephemeralPickedObject; }
+    	return pickedObject;
     }
 
     public boolean legalToDropOnBoard(EuphoriaCell c,Hashtable<EuphoriaCell,EuphoriaMovespec>dests)

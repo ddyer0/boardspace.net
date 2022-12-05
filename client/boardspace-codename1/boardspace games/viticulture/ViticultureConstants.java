@@ -782,7 +782,7 @@ public interface ViticultureConstants
 	DiscardWineFor2VP(Activity.DiscardWines,"You may discard a wine, get 2VP",true,true, UI.ShowWinesSale),	// serve the governess
 	DiscardWineFor3VP(Activity.DiscardWines,"You may discard a wine valued 4 or more, gain 3VP",true,true, UI.ShowWinesSale),
 	DiscardWineForCashAndVP(Activity.DiscardWines,"You may discard a wine for $4 and if it was the most valuable, gain 2VP",true,true, UI.ShowWinesSale),	
-	DiscardGrapeOrWine(Activity.DiscardGrapesAndWines,"You may discard 1 grape or 1 wine for 1VP and $1 each year",true,true, UI.ShowWinesSale),
+	DiscardGrapeOrWine(Activity.DiscardGrapesAndWines,"You may discard 1 grape or 1 wine for 1VP and + $1 residual",true,true, UI.ShowWinesSale),
 	DiscardGrapeFor2VP(Activity.DiscardGrapes,"Discard 1 grape for + 2VP",true,true, UI.ShowWinesSale),
 	Discard2GrapesFor3VP(Activity.DiscardGrapes,"Discard 2 grapes for + 3VP",true,true, UI.ShowWinesSale),
 	DiscardGrapeFor3And1VP(Activity.DiscardGrapes,"Discard 1 grape for + $2 $1 and + 1VP",true,true, UI.ShowWinesSale),
@@ -982,6 +982,7 @@ public interface ViticultureConstants
     	Cards("Cards"),
     	SelectedCards("SelectedCards"),
     	Cash("Cash"),
+    	Coins("Coins"),
     	CardDisplay("CardDisplay"),
     	VP("VP"),
     	UnBuilt(null),

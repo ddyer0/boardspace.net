@@ -109,7 +109,7 @@ static int[] M7FirstInCol = { 7, 6, 5, 4, 3,  2,  1,  0,  1,  2, 3, 4, 5, 6, 7};
 static int[] M7NInCol =     { 7, 8, 9, 10, 11, 12, 13, 14, 13, 12, 11, 10, 9, 8, 7, 6, 7}; // depth of columns, ie A has 4, B 5 etc.
 
 
-	static final String VictoryCondition = "capture all your opponents stones";
+	static final String VictoryCondition = "capture all your opponent's stones";
 	static final String PlayState = "Place a marker somewhere seen from a friendly group";
 	
 	static void putStrings()

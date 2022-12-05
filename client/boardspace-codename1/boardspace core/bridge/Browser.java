@@ -109,7 +109,8 @@ public class Browser extends XFrame implements BrowserNavigationCallback,ActionL
 				&& !G.isSimulator() 
 				&& initialUrl.endsWith(".pdf") 
 				&& !initialUrl.startsWith(GoogleRewrite))
-		{
+		{	// the native android browser doesn't support .pdf files.  This works pretty well,
+			// at least for relatively small pdf files found in rules.
 			initialUrl =  GoogleRewrite+initialUrl;
 		}
 		return initialUrl;			
@@ -139,7 +140,7 @@ public class Browser extends XFrame implements BrowserNavigationCallback,ActionL
 			url.setText(b.getURL());
 		}
 		else 
-			{ G.print("unexpected action: "+source+" "+evt);
+			{ G.print("unexpected browser action: "+source+" "+evt);
 			}
 	}
 

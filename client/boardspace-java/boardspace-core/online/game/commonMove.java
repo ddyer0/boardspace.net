@@ -657,7 +657,6 @@ public abstract class commonMove implements lib.CompareTo<commonMove> , Opcodes,
 			UNDO_REQUEST, MOVE_PLEASEUNDO,
 			UNDO_DECLINE, MOVE_DONTUNDO,
 			UNDO_ALLOW, MOVE_ALLOWUNDO,
-			PEEK, MOVE_PEEK,
 			GAMEOVERONTIME, MOVE_GAMEOVERONTIME);
     	D.addStringPairs(more);
     }

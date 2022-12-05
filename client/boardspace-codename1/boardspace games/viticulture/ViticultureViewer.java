@@ -3927,14 +3927,29 @@ private void drawPlayerBoard(Graphics gc,
     	}
     	else
     	{
-    	if(gb.legalToHit(pb.cards,targets))
+    	if(gb.legalToHit(pb.cards,targets) || censor)
+    	{	
+    		if(censor)
+    		{	// add all the cards for the other players, so they can't tell which ones
+    			// you might be able to build
+    			ViticultureCell cards = pb.cards;
+    			for(int i=0;i<cards.height();i++)
+    			{
+    				ViticultureChip chip = cards.chipAtIndex(i);
+    				if(chip.type==ChipType.StructureCard)
+    				{	nBuilds++;
+    					cardDisplay.addChip(chip);
+    				}
+    			}
+    		}
+    		else
     	{	
     		Viticulturemovespec m = targets.get(pb.cards);
     		while(m!=null) 
     			{ nBuilds++;
     			cardDisplay.addChip(pb.cards.chipAtIndex(m.from_index));
     			m=(Viticulturemovespec)m.next; 
-    			}
+    			}}
     	}}
 
     	int step = (int)(w/Math.max(6,(nBuilds+tourBuilds+2)));
@@ -4011,6 +4026,8 @@ private void drawPlayerBoard(Graphics gc,
     			}
     			int netCost = Math.max(0,ch.costToBuild()-discount);
     			loadCoins(pb.coinDisplay,netCost);
+    			if(!censor)
+    			{
     			if(netCost>0)
     			{
     				drawStack(gc,state,null, pb.coinDisplay,null,highlightAll, step/2,xpos+step/6,ypos+step*7/8, 0,0.5,0.00,null);
@@ -4018,7 +4035,7 @@ private void drawPlayerBoard(Graphics gc,
     			else 
     			{
     				GC.Text(gc,true,xpos-step/4,ypos+step*2/3,step,step/4,Color.black,null,s.get(FreeMessage));
-    			}
+    			}}
     		}
     		
     	}

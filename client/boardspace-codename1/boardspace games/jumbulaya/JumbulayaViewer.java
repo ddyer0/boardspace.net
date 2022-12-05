@@ -249,7 +249,7 @@ public class JumbulayaViewer extends CCanvas<JumbulayaCell,JumbulayaBoard> imple
        	int doneW = G.Width(editRect);
        	layout.placeRectangle(passButton, doneW,doneW/2,BoxAlignment.Center);
     	layout.alwaysPlaceDone = G.debug();
-    	layout.placeDoneEditRep(doneW,doneW,checkWordsButton, checkJumbulayaButton,vocabularyRect);
+       	layout.placeDoneEditRep(doneW*3/2,doneW*3/2,checkWordsButton, checkJumbulayaButton,vocabularyRect);
        	commonPlayer pl = getPlayerOrTemp(0);
        	int spare = G.Height(pl.playerBox)/2;
        	layout.placeRectangle(drawPileRect,spare,spare,BoxAlignment.Center);
@@ -310,24 +310,28 @@ public class JumbulayaViewer extends CCanvas<JumbulayaCell,JumbulayaBoard> imple
     	Rectangle score = scoreRects[player];
     	Rectangle eye = eyeRects[player];
     	Rectangle jrect = startJrects[player];
-    	int scoreW = unitsize*2;
-    	int scoreH = unitsize*2;
-    	G.SetRect(score,x,y,scoreW,scoreH);
-    	G.SetRect(eye, x, y+scoreH, unitsize*3/2, unitsize*3/2);
-    	Rectangle box =  pl.createRectangularPictureGroup(x+scoreW,y,unitsize);
+    	int scoreW = unitsize*3;
+    	int scoreH = unitsize*3;
+    	G.SetRect(score,x,y+unitsize*2,scoreW,scoreH);
+    	Rectangle box =  pl.createRectangularPictureGroup(x+scoreW-unitsize,y,unitsize);
     	Rectangle done = doneRects[player];
      	boolean planned = plannedSeating();
     	int doneW = planned ? unitsize*4 : 0;
     	int donel = G.Right(box);
-    	G.SetRect(done,donel+unitsize/2,G.Top(box)+unitsize/4,doneW,doneW/2);
-    	G.SetRect(jrect,donel,G.Bottom(done)+unitsize/4,doneW*3/2,doneW/3);
+    	int top =  G.Top(box);
+    	int dtop = top+unitsize/4;
+    	int donex = donel+unitsize/2;
+    	G.SetRect(done,donex,dtop,doneW,doneW/2);
+    	G.SetRect(jrect,donex,dtop+doneW*2/3,doneW*2,doneW*2/3);
+    	int dright = donex+doneW*2;
+    	G.SetRect(eye, dright-doneW/2,dtop,doneW/2,doneW/2);
     	G.union(box, done,score,eye,jrect);
     	int boxW = G.Width(box);
     	int chipH = unitsize*3/2+(planned ? unitsize*2 : 0);
     	
        	if(vertical) { G.SetRect(chip,	x,	G.Bottom(box),	(int)(boxW*rackSize),(int)(chipH*rackSize)); }
        	else { 
-       		G.SetRect(chip,G.Right(box)+doneW/4,y+unitsize/2,(int)(boxW*rackSize),(int)(chipH*rackSize));
+       		G.SetRect(chip,G.Right(box)+doneW/4,y+unitsize/2,(int)(chipH*rackSize*5),(int)(chipH*rackSize));
        	}
         G.union(box, chip);
     	pl.displayRotation = rotation;

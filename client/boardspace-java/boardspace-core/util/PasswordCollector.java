@@ -64,7 +64,7 @@ import udp.PlaytableStack;
 	 public static final String ForgotPassword = "Forgot Password";
 	 public static final String AccountManagement = "Edit or Delete Account";
 	 
-	 public static final String Feedback = "Send feedback";
+	 public static final String Feedback = "Send Feedback";
 	 public static final String Appstore = "App Store";
 	 // for registration
 	 public static final String YourRealName = "Your real name";

@@ -7,6 +7,7 @@ import online.common.*;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.Rectangle;
 import java.util.*;
 
@@ -154,18 +155,21 @@ public void ViewerRun(int wait)
     // to visualize the layout during development.  Look for "show rectangles"
     // in the options menu.
     private Rectangle calculatorRect = addRect(".calculator");
-    private Rectangle chipRect[] = addRect("chip",4);
-    private Rectangle wonCards[] = addRect("won",4);
-    private Rectangle noqeCards[] = addRect(".NoqeRect",4);
-    private Rectangle eyeCards[] = addRect(".eye",4);
+    private Rectangle chipRect[] = addRect("chip",MAX_PLAYERS);
+    private Rectangle wonCards[] = addRect("won",MAX_PLAYERS);
+    private Rectangle noqeCards[] = addRect(".NoqeRect",MAX_PLAYERS);
+    private Rectangle viewBidCards[] = addRect(".ViewBid",MAX_PLAYERS);
+    private Rectangle eyeCards[] = addRect(".eye",MAX_PLAYERS);
 
     private Rectangle openBid = addRect("open bid");
     private Rectangle secretBid = addRect("secret bid");
     private Rectangle pendingCards = addRect("pending cards");
     private Rectangle currentCard = addRect("current card");
     private Rectangle reserveCards = addRect("reserve cards");
-  
-
+    private Toggle scoreCard = new Toggle(this,"scorecard",QEChip.ScoreCard,QEId.ShowScore,true,ScoreSummary);
+    private QEChip bigChip = null;
+    private commonPlayer viewBid = null;
+    
 	// private menu items
     private JCheckBoxMenuItem censorshipOption = null;		// rotate the board view
     
@@ -228,6 +232,8 @@ public void ViewerRun(int wait)
         //System.out.println(myplayer.trueName + " doinit");
         super.doInit(preserve_history);				// let commonViewer do it's things
         bb.doInit(bb.gametype);						// initialize the board
+        bigChip = null;								// take down any overlay
+        viewBid = null;
         if(reviewOnly) { SIMULTANEOUS_PLAY = false; }
         if(!preserve_history)
     	{ 
@@ -238,7 +244,7 @@ public void ViewerRun(int wait)
 
     /**
      * update the players clocks.  The normal thing is to tick the clocks
-     * only for the player whose turn it is.  Games with a simtaneous action
+     * only for the player whose turn it is.  Games with a simultaneous action
      * phase need to do something more complicated.
      * @param inc the increment (in milliseconds) to add
      * @param p the current player, normally the player to update.
@@ -268,6 +274,7 @@ public void ViewerRun(int wait)
     	Rectangle eyeRect = eyeCards[player];
     	Rectangle wonRect = wonCards[player];
     	Rectangle done = doneRects[player];
+    	Rectangle viewBid = viewBidCards[player];
     	int u2 = unit/2;
     	int chipW = 3*unit;
     	int chipH = 2*unit+u2;
@@ -275,13 +282,20 @@ public void ViewerRun(int wait)
     	Rectangle box = pl.createRectangularPictureGroup(x+chipW,y,unit+u2);
     	int boxh = G.Height(box);
         G.SetRect(chip,	x,	y, chipW	,chipH	);
+        G.SetRect(eyeRect,x,y+chipH,chipH,chipH);
+        G.union(box,chip,eyeRect);
+        if(bb.players_in_game==5)
+        {
+        	int bx = G.Right(box);
+        	G.SetRect(viewBid,bx,y,boxh,boxh);
+        	G.union(box,viewBid);
+        }
         int noQEx = G.Right(box);
         G.SetRect(noQErect, noQEx,y,boxh, boxh);
-        G.SetRect(eyeRect,x,y+chipH,chipH,chipH);
         int donex = noQEx+boxh+u2;
         G.SetRect(done, donex, y,donew,donew/2);
-        G.SetRect(wonRect, x, y+boxh, unit*30,unit*10);
-        G.union(box, chip,noQErect,wonRect);
+        G.SetRect(wonRect, x, y+boxh, Math.max(unit*30,G.Right(done)-G.Left(box)),unit*10);
+        G.union(box, noQErect,wonRect, done);
         pl.displayRotation = rotation;
         return(box);
    }
@@ -347,7 +361,9 @@ public void ViewerRun(int wait)
     	int stateY = boardY-stateH+C2;
     	G.placeRow(boardX,stateY,boardW,stateH,stateRect,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
-    	G.SetRect(goalRect, boardX, boardBottom-stateH+C2, boardW, stateH);
+    	int goaly =  boardBottom-stateH+C2;
+    	G.SetRect(scoreCard,boardX,goaly-stateH,stateH*2,stateH*2);
+    	G.SetRect(goalRect, boardX+stateH*2,goaly, boardW-stateH*2, stateH);
     	setProgressRect(progressRect,goalRect);
     		
         {
@@ -368,7 +384,7 @@ public void ViewerRun(int wait)
 
 
     private void DrawChipPool(Graphics gc, Rectangle r, int player, HitPoint highlight,QEBoard gb,
-    		Rectangle noQE,Rectangle won,Rectangle done,boolean censoring)
+    		Rectangle viewbid,Rectangle noQE,Rectangle won,Rectangle done,boolean censoring)
     {	QEPlayer pl = gb.getPlayer(player);
     	commonPlayer cp = getPlayerOrTemp(player);
     	int nplayers = gb.nPlayers();
@@ -386,7 +402,18 @@ public void ViewerRun(int wait)
     		highlight.spriteColor = Color.red;
     		highlight.spriteRect = noQE;
     	}
-    	
+    	if(bb.players_in_game==5)
+    	{	boolean canHit = gb.legalToHitChips(pl.viewBid);
+    		if(pl.viewBid.drawStack(gc, this, canHit?highlight:null,
+        			G.Width(viewbid),G.centerX(viewbid),G.centerY(viewbid),0,0,0,null))
+        	{
+        		highlight.spriteColor = Color.red;
+        		highlight.spriteRect = viewbid;
+        		highlight.hit_index = pl.index;
+        		// if we've looked already, it's view again please
+        		if(pl.peekedWinningBid!=null) { highlight.hitCode = QEId.ViewAgain; }
+        	}
+    	}
     	GC.frameRect(gc,Color.black,won);
     	if(censoring)
     	{	
@@ -409,6 +436,7 @@ public void ViewerRun(int wait)
     	GC.setFont(gc,largeBoldFont());
     	GC.Text(gc, false, l, t, ww*2, hh,Color.black,null, "$"+Calculator.formatDisplay(""+pl.moneySpent));
     	long known[] = pl.knownSpending;
+    	long lastKnown[] =pl.lastKnownSpending;
     	l += ww*2+ww/2;
     	int xstep = (2*unit)/Math.max(4,nplayers-1);
     	GC.setFont(gc, standardPlainFont());
@@ -419,7 +447,10 @@ public void ViewerRun(int wait)
                 GC.setFont(gc,largeBoldFont());
                 other.flag.drawChip(gc, this, ww/2,l+xstep/2,t,null);
     			GC.Text(gc, false, l, t+hh/4, xstep*2,hh,Color.black,null,
-    					"$ "+Calculator.formatDisplay(""+known[other.index]));
+    					"$ "+Calculator.formatDisplay(""+known[other.index])
+    					+ " ($" + Calculator.formatDisplay(""+lastKnown[other.index])
+    					+ ")"
+    					);
     			l += xstep*2;
     		}
     	}}
@@ -788,13 +819,15 @@ public void ViewerRun(int wait)
         	int x0 = x;
         	int y = G.Top(secretBid);
         	int stepx = w/2;
-        	int stepy = h/2;
+        	int stepy = h/((gb.nPlayers()==5)? 3 : 2);
+        	int sizey = (gb.nPlayers()==5) ? (int)(stepy*0.8) : stepy;
         	boolean witnessing = (state==QEState.Witness);
+        	y -= (stepy-sizey);
         	for(int i=0;i<gb.nPlayers();i++)
         	{
         	QEPlayer pl = gb.getPlayer(i);
         	if(ob!=null && ob!=pl)
-        		{	Rectangle r = new Rectangle(x,y,stepx,stepy);
+        		{	Rectangle r = new Rectangle(x,y,stepx,sizey);
         			commonPlayer ap = getActivePlayer();
         			QEState uis = getUIState(i);
         			HitPoint select = (canHitCard(uis,i) && (G.offline() || (i==(ap.boardIndex))))?highlight:null;
@@ -928,7 +961,7 @@ public void ViewerRun(int wait)
        HitPoint nonDragSelect = (moving && !reviewMode()) ? null : selectPos;
        boolean offline = G.offline();
        gameLog.redrawGameLog(gc, nonDragSelect, logRect, boardBackgroundColor);
-       drawBoardElements(gc, gb, boardRect, hasCalculator?null:ourTurnSelect);
+       drawBoardElements(gc, gb, boardRect, (hasCalculator||bigChip!=null)?null:ourTurnSelect);
        for(int i=0;i<bb.players_in_game;i++)
        {   QEPlayer pl = gb.getPlayer(i);
        	   commonPlayer p0 = getPlayerOrTemp(i);
@@ -936,7 +969,7 @@ public void ViewerRun(int wait)
        	   Rectangle box = p0.playerBox;       	   
        	   GC.fillRect(gc, playerBackgroundColor,box);
        	   GC.frameRect(gc, Color.black, box);
-    	   DrawChipPool(gc, chipRect[i], i, hasCalculator?null:ourTurnSelect,gb,noqeCards[i],wonCards[i],
+    	   DrawChipPool(gc, chipRect[i], i, hasCalculator?null:ourTurnSelect,gb,viewBidCards[i],noqeCards[i],wonCards[i],
     			   offline ? doneRects[i] : null,censoring(pl));
     	   if(G.offline()) { drawEye(gc,eyeCards[i],selectPos,pl.publicCensoring,i); }
        	   p0.setRotatedContext(gc, selectPos, true);
@@ -972,8 +1005,10 @@ public void ViewerRun(int wait)
         // the main screen location which is drawn next.
         drawHiddenWindows(gc, selectPos);	
 
- 
+        scoreCard.draw(gc,selectPos);
 
+        if(bigChip!=null) { drawBigChip(gc); }
+        
         standardGameMessage(gc,messageRotation,
             		state==QEState.Gameover?gameOverMessage():s.get(state.description()),
             				(state!=QEState.Puzzle)&&!simultaneous_turns_allowed(),
@@ -987,7 +1022,49 @@ public void ViewerRun(int wait)
         drawCalculator(gc,gb,calculatorRect,ourTurnSelect,calculator);
 
     }
-
+    private Text icon(String msg,QEChip target,String msg2)
+    {
+    	Text icon = TextGlyph.create("xxxxx", target, this,new double[] {2.50, 1,0,-0.25});
+    	return TextChunk.join(TextChunk.create(msg),
+    				icon,
+    				TextChunk.create(msg2));
+    }
+    private void drawBigChip(Graphics gc)
+    {	if(bigChip==QEChip.ViewAgain)
+    		{
+    		if(viewBid!=null)
+    			{
+    			if(gc!=null)
+    				{
+    				int bw = G.Width(boardRect)/2;
+    				int bh = G.Height(boardRect)/2;
+    				int bx = G.Left(boardRect)+bw/2;
+    				int by = G.Top(boardRect)+bh/2;
+    				WinningBid bid = bb.getPlayer(viewBid.boardIndex).peekedWinningBid;
+    				drawPeek(gc,bid,bx,by,bw,bh);
+		
+    				}
+    			}
+    		}
+    	else 
+    		{ bigChip.drawChip(gc,this,boardRect,null); 
+    		} 
+    }
+    private void drawPeek(Graphics gc,WinningBid bid,int bx,int by,int bw,int bh)
+    {
+		if(bid!=null && gc!=null)
+		{
+    	QEChip.Back.drawChip(gc,this,new Rectangle(bx,by,bw,bh),null);
+		GC.setFont(gc,largeBoldFont());
+		QEPlayer winningPlayer = bb.getPlayer(bid.player); 
+		Text msg1= icon(WinningBidMessage,bid.tileWon,"");
+		FontMetrics gm = GC.getFontMetrics(gc);
+		int offset = msg1.height(gm);
+		Text msg2 = icon(ByPlayerMessage,winningPlayer.flag,s.get(IsBidMessage,""+bid.bid));
+			GC.Text(gc,true,bx,by-offset/2,bw,bh,Color.black,null,msg1);
+			GC.Text(gc,true,bx,by+offset/2,bw,bh,Color.black,null,msg2);
+		}
+    }
     /**
      * Execute a move by the other player, or as a result of local mouse activity,
      * or retrieved from the move history, or replayed form a stored game. 
@@ -1165,9 +1242,18 @@ public void ViewerRun(int wait)
  * not setting the values when the gc is null.
 	 */
     public void StopDragging(HitPoint hp)
-    {
-        CellId id = hp.hitCode;
+    {	
+		CellId id = hp.hitCode;
         HiddenGameWindow hidden = findHiddenWindow(hp);
+        if(remoteViewer>=0)
+        {
+        	QEPlayer pl = bb.getPlayer(remoteViewer);
+        	pl.showPeeked = false;      	
+        }
+        else
+        {
+        	bigChip = null;
+        }
         Calculator calc = hidden==null ? calculator : hidden.bidCalculator;
         if(calc!=null && calc.processButton(hp)) 
         	{ repaint(); 
@@ -1186,6 +1272,9 @@ public void ViewerRun(int wait)
         {
         default:
             	throw G.Error("Hit Unknown: %s", hitCode);
+        case ShowScore:
+        	bigChip = (bb.players_in_game==5) ? QEChip.Score5 : QEChip.Score4;
+        	break;
         case ShowHidden:
          	{int index = hp.hit_index;
          	 QEPlayer pl = bb.getPlayer(index);
@@ -1202,6 +1291,21 @@ public void ViewerRun(int wait)
         	break;
         case HitWhiteBoard:
         	showCalculator(hidden,hitObject.row,G.Left(hp),Math.min(G.Top(hp),G.Height(fullRect)-G.Height(calculatorRect)/2));
+        	break;
+        case HitViewBid:
+        	PerformAndTransmit("peek "+hp.hit_index);
+			//$FALL-THROUGH$
+		case ViewAgain:
+			if(hidden==null && remoteViewer<0)
+			{
+        	bigChip = QEChip.ViewAgain;
+        	viewBid = getPlayerOrTemp(hp.hit_index);
+			}	
+			else {
+				QEPlayer pl = bb.getPlayer(hp.hit_index);
+				pl.showPeeked = true;
+				
+			}
         	break;
         case NoQE:
         case HitPending:
@@ -1485,11 +1589,12 @@ public void ViewerRun(int wait)
     /*
        * @see online.game.commonCanvas#drawHiddenWindow(Graphics, lib.HitPoint, online.game.HiddenGameWindow)
      */
-    public void drawHiddenWindow(Graphics gc,HitPoint hp,int index,Rectangle bounds,Calculator cal)
+    public void drawHiddenWindow(Graphics gc,HitPoint hp0,int index,Rectangle bounds,Calculator cal)
     {	
     	QEPlayer pl = bb.getPlayer(index);
     	if(pl!=null)
     	{
+        HitPoint hp = pl.showPeeked ? null : hp0;
         int margin = G.minimumFeatureSize()/2;
        	int left = G.Left(bounds)+margin;
     	int top = G.Top(bounds)+margin;
@@ -1507,7 +1612,7 @@ public void ViewerRun(int wait)
        	int calcW = width/5;
        	int calcX = left+width-calcW;
         int doneW = width/5;
-        int doneH = width/12;
+        int doneH = width/15;
         int doneX = left+width-doneW;
         int doneY = top+height-doneH;
         int calcw = width/3;
@@ -1519,8 +1624,9 @@ public void ViewerRun(int wait)
        	Rectangle playerIdRect = new Rectangle(left,top+fh/2,stateH,stateH);
        	Rectangle stateR =new Rectangle(stateX,top,calcX-stateX,lineH); 				// game state   
        	Rectangle promptR =new Rectangle(stateX,top+lineH,calcX-stateX,lineH); 				// game state   
-       	Rectangle calcR = new Rectangle(calcX,top,calcW,calcW*2/3);							// our bid card
-       	Rectangle noQER = new Rectangle(calcX-lineH,top+lineH,lineH,lineH); 
+       	Rectangle calcR = new Rectangle(calcX+calcW/5,top,calcW*4/5,calcW*2/3);							// our bid card
+       	Rectangle viewBidR = new Rectangle(calcX-lineH,top,lineH*3/2,lineH*3/2); 			// view bid card
+       	Rectangle noQER = new Rectangle(calcX-lineH,top+lineH*5/4,lineH,lineH); 
        	Rectangle eyeR = new Rectangle(calcX-stateH,top+lineH,lineH,lineH);	// see hidden
        	Rectangle witnessRect = new Rectangle(left+width/4,top+stateH,width/2,height/3);// overlay for showing all bids
        	Rectangle noQERect = new Rectangle(left,top+stateH,width,height-stateH-lineH);
@@ -1539,7 +1645,7 @@ public void ViewerRun(int wait)
             				(uistate!=QEState.Puzzle)&&!simultaneous_turns_allowed(),
             				bb.whoseTurn,
             				stateR);
- 	    DrawChipPool(gc, playerIdRect, index, hp,bb,noQER,
+ 	    DrawChipPool(gc, playerIdRect, index, hp,bb,viewBidR,noQER,
   	    		noQERect,
   	    		pDoneRect,
   	    		censor);
@@ -1570,6 +1676,10 @@ public void ViewerRun(int wait)
 				GC.Text(gc, true, promptR, Color.red, null,s.get(YourTurnMessage));
 				}
 		}}
+		if(pl.showPeeked)
+		{
+			drawPeek(gc,pl.peekedWinningBid,left+width/10,top+height/10,width-width/5,height-height/5);
+		}
     }}
 
 }

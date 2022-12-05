@@ -47,7 +47,6 @@ public interface Opcodes {
 	static final int MOVE_PLEASEUNDO = -116;
 	static final int MOVE_DONTUNDO = -117;
 	static final int MOVE_ALLOWUNDO = -118;
-	static final int MOVE_PEEK = -119;
 	static final int ScrollGameRecord = -120;
 	static final int MOVE_GAMEOVERONTIME = -121;
 	static int nextPlayer[] = {SECOND_PLAYER_INDEX,FIRST_PLAYER_INDEX};

@@ -279,14 +279,18 @@ int countRecruits(Allegiance a)
 	n += countRecruits(activeRecruits,a);
 	n += countRecruits(hiddenRecruits,a);
 	n += countRecruits(discardedRecruits,a);
+	n += countRecruits(ephemeralPickedObject,a);
 	return(n);
 }
-
+private int countRecruits(EuphoriaChip recruit,Allegiance a)
+{	return (recruit!=null && recruit instanceof RecruitChip && ((RecruitChip)recruit).allegiance==a)
+			?1: 0;
+}
 int countRecruits(EuphoriaCell activeRecruits,Allegiance a)
 {	int n=0;
 	for(int lim=activeRecruits.height()-1; lim>=0; lim--)
-	{	RecruitChip recruit = (RecruitChip)(activeRecruits.chipAtIndex(lim));
-		if (recruit.allegiance == a) { n++; }
+	{	EuphoriaChip recruit = (activeRecruits.chipAtIndex(lim));
+		n += countRecruits(recruit,a);
 	}
 	return(n);
 }
@@ -658,7 +662,7 @@ void doInit(EuphoriaCell rec,EuphoriaCell dil)
 	commodityKnowledge = 0;
 	retrievals = 0;
 	marketStars = 0;
-	
+	alternateArtifacts.reInit();
 	tf.clear();
 	
 	AR.setValue(placedWorkers,null);
@@ -1252,7 +1256,7 @@ Cost alternateCostForKadanTheInfiltrator(Cost cost)
 
 
 // set up alternate artifact wildcards
-private void setupAlternateArtifacts()
+void setupAlternateArtifacts()
 {
 	alternateArtifacts.reInit();
 
@@ -2450,7 +2454,7 @@ private Cost artifactChipBuggy(ArtifactChip which,Cost cost,replayMode replay)
 	}
 	else
 	{
-	b.Assert(alternateArtifacts.height()==0,"no alternats artifacts allowed");
+	b.Assert(alternateArtifacts.height()==0,"no alternet artifacts allowed");
 	artifacts.removeChip(which);	
 	// do not recycle the artifact, that's the bug
 	if(replay!=replayMode.Replay) { b.animateReturnArtifact(artifacts); }

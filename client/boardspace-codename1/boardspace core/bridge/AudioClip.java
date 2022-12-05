@@ -40,7 +40,7 @@ public class AudioClip {
 			} while(len>0);
 			}
 		}
-		catch (IOException e) { G.print("IO exception "+e); }
+		catch (IOException e) { G.print("IO exception ",url," ",e); }
 		try { 
 			if(o!=null) { o.close(); }
 			if(s!=null) { s.close(); }
@@ -77,8 +77,8 @@ public class AudioClip {
 	Runnable complete = new Runnable() 
 	{ public void run() 
 		{ completed = true; media = null; 
-		  long later = G.Date();
-		  G.print("clip "+clip+" took "+(later-starttime));
+		  //long later = G.Date();
+		  //G.print("clip "+clip+" took "+(later-starttime));
 		  try { InputStream s = stream;
 		  	    if(s!=null) { s.close(); }
 		  	    }
@@ -102,7 +102,7 @@ public class AudioClip {
                 }
 			catch (Throwable ex) 
 				{ 
-			G.print("Trouble playing "+clip+" : "+ex);
+					G.print("Trouble playing "+clip+" : "+ex);
 				}
 		}};
 		

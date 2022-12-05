@@ -516,6 +516,7 @@ public void PrepareToMove(int playerIndex)
   			G.Assert(c.height()==lim,"lost something");
   		}
   }
+
   public void prepareForDescent(UCTMoveSearcher search)
   {	
 	  Random rand = search.rand;
@@ -527,7 +528,7 @@ public void PrepareToMove(int playerIndex)
 	  ChipStack industries = new ChipStack();
 	  QEPlayer myPlayer = board.players[movingForPlayer];
 	  QEChip myIndustry = myPlayer.industry.topChip();
-	  for(QEChip in : QEChip.IndustryChips) { if (in!=myIndustry) { industries.push(in); }}
+	  for(QEChip in :  (board.players_in_game==5) ? QEChip.IndustryChips5:QEChip.IndustryChips4) { if (in!=myIndustry) { industries.push(in); }}
 	  industries.shuffle(rand);
 	  switch(Strategy)
 	  {

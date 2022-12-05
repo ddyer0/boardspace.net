@@ -39,14 +39,20 @@ import online.game.*;
 	 QECell tilesWon = null;
 	 QECell whiteBoard = null;
 	 QECell noQE = null;
+	 QECell viewBid = null;
 	 public boolean publicCensoring = true;
 	 public boolean hiddenCensoring = false;
 	 public long knownSpending[] = null;		// what each player knows about the spending of other players
+	 public long lastKnownSpending[] = null;	// the most recent known spending increment
+	 
 	 LStack knownBids = new LStack();	// any bids (including winning) we know
 	 LStack winningBids = new LStack();	// winning bids we know
 	 long moneySpent = 0;
 	 int usedNoQE = 0;
+	 int players_in_game = 0;
 	 String scoreDescription="";
+	 boolean showPeeked = false;			// side screen should show peeked winning bid
+	 WinningBid peekedWinningBid = null;	// the bid we peeked
 	 public void addToScoreDescription(String message)
 	 {
 		 scoreDescription += message+"\n";
@@ -67,11 +73,18 @@ import online.game.*;
 	 boolean hasOfferedBid() { return(!currentBidMade && currentBidReady); }
 	 boolean currentBidReady = false;
 	 boolean hasMadeBid() { return(currentBidMade); }
-	 
+	 int divPoints[] = null;
+	 int nationPoints[] = null;
+	 int monopolyPoints[] = null;
 	 public QEChip getFLag() { return(flag); }
 	 QEPlayer(QEChip fl,QEChip in,int ind,int np)
 	 {	flag = fl;
 	 	knownSpending = new long[np];
+	 	lastKnownSpending = new long[np];
+	 	divPoints = np==5 ? diversityTable5 : diversityTable4;
+	 	nationPoints = np==5 ? nationTable5 : nationTable4;
+	 	monopolyPoints = np==5 ? monopolyTable5 : monopolyTable4;
+	 	players_in_game = np;
 	 	index = ind;
 	 	industry = new QECell(index,QEId.HitIndustry);
 	 	industry.addChip(in);
@@ -79,6 +92,7 @@ import online.game.*;
 	 	whiteBoard = new QECell(index,QEId.HitWhiteBoard);
 	 	whiteBoard.addChip(QEChip.WhiteBoard);
 	 	noQE = new QECell(index,QEId.HitNoQE);
+	 	viewBid = new QECell(index,QEId.HitViewBid);
 	 }
 	 void startRound()
 		 { noQE.reInit(); 
@@ -125,6 +139,7 @@ import online.game.*;
 		 flag = from.flag;
 		 knownBids.copyFrom(from.knownBids);
 		 AR.copy(knownSpending,from.knownSpending);
+		 AR.copy(lastKnownSpending,from.lastKnownSpending);
 		 winningBids.copyFrom(from.winningBids);
 		 moneySpent = from.moneySpent;
 		 moneyScore = from.moneyScore;
@@ -136,6 +151,9 @@ import online.game.*;
 		 elgibleToBid = from.elgibleToBid;
 		 currentBidMade = from.currentBidMade;
 		 currentBidReady = from.currentBidReady;
+		 viewBid.copyFrom(from.viewBid);
+		 peekedWinningBid = from.peekedWinningBid;
+		 showPeeked = from.showPeeked;
 	 }
 	 long Digest(Random r)
 	 {	long v = tilesWon.Digest(r);
@@ -157,6 +175,7 @@ import online.game.*;
 		 long bidReady = r.nextLong();
 		 long nobidReady = r.nextLong();
 		 v ^= currentBidReady ? bidReady : nobidReady;
+		 v ^= viewBid.Digest(r);
 		 return(v);
 	 }
 	 void sameAs(QEPlayer from)
@@ -164,6 +183,7 @@ import online.game.*;
 		 G.Assert(industry.sameContents(from.industry),"industry mismatch");
 		 G.Assert(knownBids.sameContents(from.knownBids),"known bids mismatch");
 		 G.Assert(AR.sameArrayContents(knownSpending,from.knownSpending),"known spending mismatch");
+		 G.Assert(AR.sameArrayContents(lastKnownSpending,from.lastKnownSpending),"lastknown spending mismatch");
 		 G.Assert(winningBids.sameContents(from.winningBids),"winning bids mismatch");
 		 G.Assert(flag==from.flag,"flag mismatch");
 		 G.Assert(moneySpent==from.moneySpent,"money mismatch");
@@ -175,6 +195,7 @@ import online.game.*;
 		 G.Assert(currentBidReady==from.currentBidReady,"currentBidReady mismatch");
 		 G.Assert(currentBidMade==from.currentBidMade,"currentBidMade mismatch");
 		 G.Assert(elgibleToBid==from.elgibleToBid,"currentBidMade mismatch");
+		 G.Assert(viewBid.sameContents(from.viewBid),"viewBid mismatch");
 	 }
 	 int QEScore(boolean annotate)
 	 {	int qescore = usedNoQE*QEChip.NoQE.victoryPoints;
@@ -205,7 +226,7 @@ import online.game.*;
 	 public int nationScore(boolean record)
 	 {
 		 int n = nTilesMatchingNation();
-		 int v = nationTable[n];
+		 int v = nationPoints[n];
 		 if(record && v>0)
 			{
 			 addToScoreDescription(""+v+" "+s.get(NationalMessage,""+n,s.get(flag.id.shortName)));
@@ -215,18 +236,20 @@ import online.game.*;
 	 public int industryScore(boolean record,boolean pub)
 	 {	int v = 0;
 	 	int diversity = 0;
-	    for(QEChip industry : QEChip.IndustryChips)
+	    for(QEChip industry : QEChip.IndustryChips5)
 	    {
 	    	int inds = nTilesMatchingIndustry(industry.id,pub);
-	    	int monop = monopolyTable[inds];
+	    	int monop = monopolyPoints[inds];
 	    	v += monop;
 	    	if(record && (monop>0))
 			{
 			 addToScoreDescription(""+monop+" "+s.get(MonopolyValueMessage,""+inds,s.get(industry.id.shortName)));
 			}
-	    	if(hasIndustry(industry.id)) { diversity++; }
+	    	if(hasIndustry(industry.id)) 
+	    		{ if((players_in_game != 5) || industry.id!=industry.id)  { diversity++; } 
+	    		}
 		}
-	    int divscore = diversityTable[diversity];
+	    int divscore = divPoints[diversity];
 	    v += divscore;
 	    if(record && (divscore>0))
 		   { 
@@ -234,7 +257,34 @@ import online.game.*;
 		   }
 	    return(v);
 	 }
+	public void doInit(Random rv,int initial) {
+		knownBids.push(Random.nextInt(rv,20)+initial);	// seed the known bids value
+		winningBids.push(Random.nextInt(rv,20)+initial);	// seed the winning bids value
+		viewBid.reInit();
+		peekedWinningBid = null;
+		if(players_in_game==5) { viewBid.addChip(QEChip.ViewBid); }		
+	}
  }
+ class WinningBid
+ {
+	 int player;
+	 QEChip tileWon;
+	 long bid;
+	 public WinningBid(int pl,QEChip ch,long b)
+	 {
+		 player = pl;
+		 tileWon = ch;
+		 bid = b;
+	 }
+ }
+ class WinningBidStack extends OStack<WinningBid>
+ {
+	public WinningBid[] newComponentArray(int sz) {
+		return new WinningBid[sz];
+	}
+	 
+ }
+ 
  class QEBoard extends RBoard<QECell> implements BoardProtocol,QEConstants
  {	static int REVISION = 100;			// 100 represents the initial version of the game
 	public int getMaxRevisionLevel() { return(REVISION); }
@@ -249,6 +299,7 @@ import online.game.*;
 	 public QECell currentAuction = new QECell(QEId.HitCurrent);
 	 public QECell wasteBasket = new QECell(QEId.HitWaste);
 	 public LStack openBids = new LStack();
+	 public WinningBidStack winningBids = new WinningBidStack();
 	 
 	 QEPlayer players[] = null;
 	 public int firstPlayerThisRound = -1;
@@ -277,17 +328,38 @@ import online.game.*;
 	 
 	 // each player gets a flag and an industry
 	 private void initPlayers(Random r)
-	 {
+	 {	
 		 ChipStack flags = new ChipStack();
 		 ChipStack indus = new ChipStack();
-		 loadStack(flags,QEChip.FlagChips,r);
-		 loadStack(indus,QEChip.IndustryChips,r);
+
+		 loadStack(flags,players_in_game==5 ? QEChip.FlagChips5 : QEChip.FlagChips4,r);
+		 loadStack(indus,players_in_game==5 ? QEChip.IndustryChips5 : QEChip.IndustryChips4,r);
+		 Hashtable <QEChip,QEChip> pairs = new Hashtable<QEChip,QEChip>();
+
+		 if(players_in_game==5)
+		 {
+			 // the rules are stated in a complicated way,but there are only
+			 // 2 valid combinations.  No country gets an industry that is 
+			 // featured on the same card as it's flag.
+		 QEChip key[] = { QEChip.GR, QEChip.JP, QEChip.FR, QEChip.UK, QEChip.US, };
+	     QEChip order1[] = new QEChip[]{QEChip.Planes,QEChip.Trains,QEChip.Cars,QEChip.Ships,QEChip.Build };
+		 QEChip order2[] = new QEChip[]{QEChip.Trains,QEChip.Build,QEChip.Planes,QEChip.Cars,QEChip.Ships };
+		 QEChip order[] = (r.nextInt(10)<5) ? order1 : order2;
+		 for(int i=0;i<5;i++)
+		 {
+			 pairs.put(key[i],order[i]);
+		 }}
 		 players = new QEPlayer[players_in_game];
+
+		 
 		 for(int i=0;i<players_in_game;i++)
-		 {	QEPlayer newp = players[i] = new QEPlayer(flags.pop(),indus.pop(),i,players_in_game);
+		 {	 QEChip nextFlag = flags.pop();
+		 	 QEChip nextIndustry = players_in_game==5 ? pairs.get(nextFlag) : indus.pop();
+			 QEPlayer newp = players[i] = new QEPlayer(nextFlag,nextIndustry,i,players_in_game);
 			 getCell(newp.currentScore(false)).addChip(newp.flag);
 		 }
 	 }
+	 
 	 void moveScoreMarker(QEChip flag,int from,int to,replayMode replay)
 	 {	QECell old = getCell(from%TRACKLENGTH);
 	 	QEChip fl = old.removeChip(flag);
@@ -300,10 +372,11 @@ import online.game.*;
 			animationStack.push(newc);
 		}
 	 }
-	 private void addTileWon(QEPlayer pl,QEChip ch,replayMode replay)
+	 private void addTileWon(QEPlayer pl,QEChip ch,long winningBid,replayMode replay)
 	 {	int oldscore = pl.currentScore(false);
 		pl.tilesWon.addChip(ch);
 		moveScoreMarker(pl.flag,oldscore,pl.currentScore(false),replay);
+		winningBids.push(new WinningBid(pl.index,ch,winningBid));
 	 }
 	 private void addToScore(QEPlayer pl,int n,replayMode replay)
 	 {	int oldscore = pl.currentScore(false);
@@ -319,11 +392,27 @@ import online.game.*;
 
 	 // ultimately 4 randomized quarters each containing 1 randomized tile of each type
 	 private void initAuction(Random r)
-	 {	ChipStack[]temp = new ChipStack[]{ new ChipStack(),new ChipStack(),new ChipStack(),new ChipStack()};
+	 {	ChipStack[]temp = new ChipStack[]
+			 	{ new ChipStack(),new ChipStack(),new ChipStack(),new ChipStack(),
+			 			new ChipStack()};
 		 loadStack(temp[0],QEChip.CarChips,r);
 		 loadStack(temp[1],QEChip.TrainChips,r);
 		 loadStack(temp[2],QEChip.GovChips,r);
 		 loadStack(temp[3],QEChip.PlaneChips,r);
+		 if(players_in_game==5)
+		 {	// remove the 1 value chips
+			 temp[0].remove(QEChip.Cars_1_UK,true);
+			 temp[1].remove(QEChip.Trains_1_GR,true);
+			 temp[2].remove(QEChip.Gov_1_US,true);
+			 temp[3].remove(QEChip.Planes_1_FR,true);
+			 temp[0].remove(QEChip.Cars_2_FR,true);
+			 temp[3].remove(QEChip.Planes_3_GR,true);
+
+			 temp[0].push(QEChip.Cars_2_JP);
+			 temp[3].push(QEChip.Planes_3_JP);
+			 
+			 loadStack(temp[4],QEChip.ShipChips,r);
+		 }
 		 futureAuctions.reInit();
 		 thisRoundAuction.reInit();
 		 currentAuction.reInit();
@@ -332,8 +421,10 @@ import online.game.*;
 		 while(temp[0].size()>0)
 		 {	ChipStack sh = new ChipStack();
 			 for(ChipStack ch : temp)
-			 {
+			 {	if(ch.size()>0)
+			 	{
 				 sh.push(ch.pop());
+			 	}
 			 }
 			 sh.shuffle(r);	// shuffle a stack which contains 1 of each industry
 			 if(players_in_game==3) { p3.push(sh.pop()); }	// sequester one tile
@@ -341,6 +432,8 @@ import online.game.*;
 		 }
 		 while(p3.size()>0) { futureAuctions.insertChipAtIndex(0,p3.pop()); };
 	 }
+	 
+
 	 public void initBoard()
 	 {	super.initBoard();
 		 for(int lim = TRACKLENGTH-1; lim>=0; lim--)
@@ -404,10 +497,10 @@ import online.game.*;
 		 {	QEPlayer pl = players[firstPlayerThisRound];
 			if(pl.hasMadeBid()) {  return(pl.currentBid); }
 			return(0);
-	 }
-		 return(-1);
 		 }
- 
+		 return(-1);
+	 }
+	 
 	 
 	 public int cellToY(QECell c)
 	 {
@@ -467,7 +560,7 @@ import online.game.*;
 	 /* initialize a board back to initial empty state */
 	 public void doInit(String gtype,long key,int nPlayers,int rev)
 	 {	randomKey = key;
- 		adjustRevision(rev);
+	   	adjustRevision(rev);
 		 players_in_game = nPlayers;
 		 win = new boolean[nPlayers];
 		 Random r = new Random(734687);	// this random is used to assign hash values to cells, common to all games of this type.
@@ -477,6 +570,7 @@ import online.game.*;
 		 robotState.clear();
 		 moveStack.clear();
 		 wasteBasket.reInit();
+		 winningBids.clear();
 		 gametype = gtype;
 		 switch(variation)
 		 {
@@ -485,7 +579,7 @@ import online.game.*;
 			 initBoard();
 			 Random initr = new Random(key);
 			 initAuction(initr);
-			 initPlayers(initr);
+			 initPlayers(initr); 
 			 // hack to make a short game
 			 //while(futureAuctions.height()>2) { futureAuctions.removeTop(); }
 		 }
@@ -503,9 +597,8 @@ import online.game.*;
 		 openBids.clear();
 		 openBids.push(initial);						// seed the open bids value
 		 for(QEPlayer p : players)
-		 {
-			 p.knownBids.push(Random.nextInt(rv,20)+initial);	// seed the known bids value
-			 p.winningBids.push(Random.nextInt(rv,20)+initial);	// seed the winning bids value
+		 {	p.doInit(rv,initial);
+			 
 		 }
 		 animationStack.clear();
 		 moveNumber = 1;
@@ -552,6 +645,7 @@ import online.game.*;
 		 thisRoundAuction.copyFrom(from_b.thisRoundAuction);
 		 currentAuction.copyFrom(from_b.currentAuction);
 		 openBids.copyFrom(from_b.openBids);
+		 winningBids.copyFrom(from_b.winningBids);
 		 for(int i=0;i<players_in_game;i++) { getPlayer(i).copy(from_b.getPlayer(i));}
   
 		 sameboard(from_b); 
@@ -583,7 +677,7 @@ import online.game.*;
 		 G.Assert(firstPlayerThisRound==from_b.firstPlayerThisRound,"firstPlayer mismatch");
 		 G.Assert(auctionRound==from_b.auctionRound,"auctionRound mismatch");
 		 for(int i=0;i<players.length;i++) { getPlayer(i).sameAs(from_b.getPlayer(i)); }
- 
+		 G.Assert(winningBids.size()==from_b.winningBids.size(),"winning Bids mismatch");
 		 G.Assert(Digest()==from_b.Digest(),"Digest matches");
  }
  
@@ -684,8 +778,9 @@ import online.game.*;
 		 for(QEPlayer p : players)
 		 {
 			 if(p.moneySpent==lowMoney) // 6 points for thrift
-				 { addToScore(p,6,replay);
-				   p.addToScoreDescription("6 "+s.get(ThriftMessage));
+				 { int pts = players_in_game==5 ? 7 : 6;
+				   addToScore(p,pts,replay);
+				   p.addToScoreDescription(pts+" "+s.get(ThriftMessage));
 				 }	
 			 if(p.moneySpent==highMoney) // zero out the big spenders
 				 { p.killed = true;
@@ -729,9 +824,9 @@ import online.game.*;
 	 //
 	 private QECell unDropObject()
 	 {	QECell rv = droppedDestStack.pop();
-		 setState(stateStack.pop());
-		 pickedObject = rv.removeTop(); 	// SetBoard does ancillary bookkeeping
-		 return(rv);
+	 	setState(stateStack.pop());
+	 	pickedObject = rv.removeTop(); 	// SetBoard does ancillary bookkeeping
+	 	return(rv);
 	 }
 	 // 
 	 // undo the pick, getting back to base state for the move
@@ -795,6 +890,8 @@ import online.game.*;
 			 return(wasteBasket);
 		 case HitNoQE:
 			 	return(players[(int)row].noQE);
+		 case HitViewBid:
+			 	return players[(int)row].viewBid;
 		 case HitPending:
 				 return(thisRoundAuction);
 		 case HitCurrent:
@@ -830,7 +927,7 @@ import online.game.*;
 	 public boolean isSource(QECell c)
 	 {	return(c==pickedSourceStack.top());
 	 }
- 
+	 
 	 public boolean usingNoQE(QEPlayer pl)
 	 {	 
 		 return((board_state==QEState.Witness) && (pl.currentBid==0) && !pl.hasUsedNoQE());
@@ -912,9 +1009,11 @@ import online.game.*;
 
 			for(QEPlayer pl : players)
 		 	{
-			pl.knownSpending[winner.index] += (pl==master) 
+			long amount = (pl==master) 
 					? winningBid 
-					: Math.max(openBid,pl.currentBid);	// maximum of the open bid or his own bid 
+					: Math.max(openBid,pl.currentBid);
+			pl.lastKnownSpending[winner.index] = amount;
+			pl.knownSpending[winner.index] += amount;	// maximum of the open bid or his own bid 
 		 	}
 			if(master!=null)
 				 {
@@ -922,7 +1021,7 @@ import online.game.*;
 				 }
 				 winner.moneySpent += winningBid;
 			 QEChip won = currentAuction.removeTop();
-			 addTileWon(winner,won,replay);
+			 addTileWon(winner,won,winningBid,replay);
 			 m.winner = winner.flag;
 			 if(replay!=replayMode.Replay)
 			 {
@@ -1087,6 +1186,20 @@ import online.game.*;
         //G.print("E "+m+" for "+board_state);
         switch (m.op)
         {
+        case MOVE_EPEEK:
+        case MOVE_PEEK:
+        	{
+        	QEPlayer pl = players[m.player];
+        	G.Assert(pl.peekedWinningBid==null,"not viewed");
+        	pl.viewBid.reInit();
+        	pl.viewBid.addChip(QEChip.ViewAgain);
+        	WinningBid bid = pl.peekedWinningBid = winningBids.top();
+        	int winningPlayer =bid.player;
+        	long amount = bid.bid - pl.lastKnownSpending[winningPlayer];
+        	pl.knownSpending[winningPlayer] += amount;
+        	pl.lastKnownSpending[winningPlayer] = bid.bid;
+        	}
+        	break;
         case MOVE_EBID:
         	{
         	G.Assert(board_state!=QEState.OpenBid,"can't be openbid");
@@ -1118,8 +1231,8 @@ import online.game.*;
 		case MOVE_DONE:
         	
 	   		m.target = currentAuction.topChip();
-         	doDone(m,replay);
-
+        	doDone(m,replay);
+ 
             break;
 
         case MOVE_PICK:
@@ -1183,6 +1296,10 @@ import online.game.*;
         switch (board_state)
         {
         default:
+        	switch(c.rackLocation()) {
+        	case HitViewBid: return winningBids.size()>0;
+        	default: break;
+        	}
 			return(false);
         case Puzzle:
             return (pickedObject==null ? !c.isEmpty() : true);

@@ -1150,11 +1150,25 @@ public class TextContainer extends Rectangle implements AppendInterface,KeyListe
 	public boolean activelyScrolling() {
 		return(scrollable() && scrollBar.activelyScrolling());
 	}
+	/**
+	 * call this to scroll one line up or down, nominally in response
+	 * to the user using the mouse scroll wheel
+	 * 
+	 * @param up
+	 * @return
+	 */
 	public boolean doMouseWheel(int up) {
 		scrollBar.smallJump(up<0);
 		setScrollY(scrollBar.getScrollPosition());
 		return(true);
 	} 
+	/**
+	 * scroll up or down by 1 line if x,y is inside this control
+	 * @param xx
+	 * @param yy
+	 * @param amount
+	 * @return
+	 */
 	public boolean doMouseWheel(int xx,int yy,int amount)
 	{	if(G.pointInRect(xx,yy,this))
 		{

@@ -1,6 +1,5 @@
 package qe;
 
-import lib.DrawableImage;
 import lib.DrawableImageStack;
 import lib.ImageLoader;
 import lib.OStack;
@@ -59,6 +58,15 @@ public class QEChip extends chip<QEChip> implements QEConstants
 			QEId.Back,null,null,0);
 	public static QEChip NoQE = new QEChip("noqe",new double[] {0.5,0.6,0.8},
 			QEId.NoQE,null,null,2);
+	public static QEChip Score4 = new QEChip("4p-score",whiteScale);
+	// 5 player, view bid card
+	public static QEChip ViewBid = new QEChip("viewbid",new double[] {0.5,0.5,0.9},
+			QEId.ViewBid,null,null,0);
+	public static QEChip ViewAgain = new QEChip("viewagain",new double[] {0.5,0.5,0.9},
+			QEId.ViewAgain,null,null,0);
+	public static QEChip Score5 = new QEChip("5p-score",whiteScale);
+	public static QEChip ScoreCard = new QEChip("scorecard",whiteScale);
+
 	// country cards
 	public static QEChip GR = new QEChip("flag-gr",whiteScale,
 			QEId.GR,QEId.GR,null,0);
@@ -68,7 +76,10 @@ public class QEChip extends chip<QEChip> implements QEConstants
 			QEId.FR,QEId.FR,null,0);
 	public static QEChip US = new QEChip("flag-us",whiteScale,
 			QEId.US,QEId.US,null,0);
-	public static QEChip FlagChips[] = { GR,UK,FR,US};
+	public static QEChip JP = new QEChip("flag-jp",whiteScale,QEId.JP,QEId.JP,null,0);
+	
+	public static QEChip FlagChips4[] = { GR,UK,FR,US};
+	public static QEChip FlagChips5[] = { GR,UK,FR,US, JP};
 	// industry cards
 	public static QEChip Build = new QEChip("build",whiteScale,
 			QEId.Build,null,QEId.Build,0);
@@ -78,7 +89,10 @@ public class QEChip extends chip<QEChip> implements QEConstants
 			QEId.Planes,null,QEId.Planes,0);
 	public static QEChip Trains = new QEChip("trains",whiteScale,
 			QEId.Trains,null,QEId.Trains,0);
-	public static QEChip IndustryChips[] = { Build,Cars,Planes,Trains};
+	public static QEChip Ships = new QEChip("ship",whiteScale,QEId.Ships,null,QEId.Ships,0);
+	
+	public static QEChip IndustryChips4[] = { Build,Cars,Planes,Trains};
+	public static QEChip IndustryChips5[] = { Build,Cars,Planes,Trains, Ships};
 	// bid cards
 	public static QEChip Gov_1_US = new QEChip("build-1-us",whiteScale,
 			QEId.Gov_1_US,QEId.US,QEId.Build,1);
@@ -121,6 +135,7 @@ public class QEChip extends chip<QEChip> implements QEConstants
     public static QEChip TrainChips[] = { Trains_1_GR,Trains_2_US,Trains_3_UK,Trains_4_FR};
     public static QEChip BidCard = new QEChip("bid",whiteScale);
 	public static QEChip Board = new QEChip("board",whiteScale);
+	/*
 	public static DrawableImage<?> Cards[] = {
 			Back,
 			Gov_1_US,Gov_2_GR,Gov_3_FR,Gov_4_UK,
@@ -128,9 +143,38 @@ public class QEChip extends chip<QEChip> implements QEConstants
 			Planes_1_FR,Planes_2_UK,Planes_3_GR,Planes_4_US,
 			Trains_1_GR,Trains_2_US,Trains_3_UK,Trains_4_FR,	
 	};
-	
+	*/
+	// 5 player expansion tiles
+	public static QEChip Ship_2_FR = new QEChip("ship-2-fr",whiteScale,
+			QEId.Ship_2_FR,QEId.FR,QEId.Ships,2);
+	public static QEChip Ship_4_JP = new QEChip("ship-2-fr",whiteScale,
+			QEId.Ship_4_JP,QEId.JP,QEId.Ships,4);
+	public static QEChip Ship_3_GR = new QEChip("ship-2-fr",whiteScale,
+			QEId.Ship_3_GR,QEId.GR,QEId.Ships,3);
+	public static QEChip Planes_3_JP = new QEChip("planes-3-jp",whiteScale,
+			QEId.Planes_3_JP,QEId.JP,QEId.Planes,3);
+	public static QEChip Cars_2_JP = new QEChip("cars-2-jp",whiteScale,
+			QEId.Cars_2_JP,QEId.JP,QEId.Autos,2);
+	public static QEChip ShipChips[] = { Ship_2_FR, Ship_3_GR, Ship_4_JP};
+	/*
+	public static DrawableImage<?> Cards5P[] = {
+			Back,
+			// remove all 1's
+			Gov_2_GR,Gov_3_FR,Gov_4_UK,
+			Cars_3_US,Cars_4_GR,		// removed cars-2
+			Planes_2_UK,Planes_4_US,	// removed planes-3
+			Trains_2_US,Trains_3_UK,Trains_4_FR,	
+			
+	    	Ship_2_FR,	// 5 new tiles
+	    	Ship_4_JP,    	
+	    	Ship_3_GR,
+	    	Planes_3_JP,
+	    	Cars_2_JP,
+
+	};
+	 */
 	public static QEChip WhiteBoard = new QEChip("whiteboard",new double[] {0.5,0.5,0.9});
-	
+
 	public static QEChip CANONICAL_PIECE[] = {  };
 
     // indexes into the balls array, usually called the rack

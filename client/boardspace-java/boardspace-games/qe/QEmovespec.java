@@ -18,6 +18,9 @@ public class QEmovespec extends commonMPMove implements QEConstants
     static final int MOVE_OPENBID = 209;
     static final int MOVE_EBID = 308;	// ephemeral bid
     static final int MOVE_ECOMMIT = 309;
+    static final int MOVE_PEEK = 310;	// peek at winning bid
+    static final int MOVE_EPEEK = 311;
+    
     static
     {	// load the dictionary
         // these int values must be unique in the dictionary
@@ -27,6 +30,8 @@ public class QEmovespec extends commonMPMove implements QEConstants
         	"SBid", MOVE_SECRETBID,
         	"EBid",MOVE_EBID,
         	"Ecommit",MOVE_ECOMMIT,
+        	"Epeek",MOVE_EPEEK,
+        	"Peek",MOVE_PEEK,
         	"OBid", MOVE_OPENBID);
   }
     /* this is used by the move filter to select ephemeral moves */
@@ -36,6 +41,7 @@ public class QEmovespec extends commonMPMove implements QEConstants
 		{
 		case MOVE_EBID:
 		case MOVE_ECOMMIT:
+		case MOVE_EPEEK:
 			return(true);
 		default: return(false);
 		}
@@ -150,6 +156,10 @@ public class QEmovespec extends commonMPMove implements QEConstants
         case MOVE_ECOMMIT:
         	player = G.IntToken(msg);
         	break;
+        case MOVE_EPEEK:
+        case MOVE_PEEK:
+        	 player = G.IntToken(msg);
+        	 break;
         case MOVE_EBID:
         	 player = G.IntToken(msg);
 			//$FALL-THROUGH$
@@ -167,9 +177,7 @@ public class QEmovespec extends commonMPMove implements QEConstants
 
         case MOVE_START:
             player = D.getInt(msg.nextToken());
-
             break;
-
         default:
             break;
         }
@@ -194,6 +202,10 @@ public class QEmovespec extends commonMPMove implements QEConstants
         	return TextChunk.join(
         				TextGlyph.create("xxx", target, v,new double[] {2.5, 1.5,0,-0.25}),
 						TextChunk.create("bid "+Calculator.formatDisplay(""+amount)));
+        case MOVE_EPEEK:
+        case MOVE_PEEK:
+        	return TextChunk.create("Peek "+player);
+        	
         case MOVE_SECRETBID:
         case MOVE_EBID:
         	{
@@ -215,6 +227,7 @@ public class QEmovespec extends commonMPMove implements QEConstants
         		}
         		
 			//$FALL-THROUGH$
+        
 		case MOVE_ECOMMIT:
             return (TextChunk.create(""));
 
@@ -242,6 +255,8 @@ public class QEmovespec extends commonMPMove implements QEConstants
         case MOVE_EBID:
         	return(opname+player+" "+amount);
         case MOVE_ECOMMIT:
+        case MOVE_EPEEK:
+        case MOVE_PEEK:
         	return(opname+player);
         case MOVE_DROP:
         case MOVE_PICK:
@@ -249,7 +264,6 @@ public class QEmovespec extends commonMPMove implements QEConstants
 
         case MOVE_START:
             return (indx+"Start P" + player);
-
         default:
             return (opname);
         }

@@ -23,7 +23,7 @@ public interface TammanyConstants
 	static String TammanyUseRoleMessage = "Click on Done to confirm using your role";
 	static String TammanyDiscMessage = "Take a disc of your choice";
 	static String VacantMessage = "Ward #1 is vacant";
-	static String TammanyDistributeState = "Distribute you opponents to their new roles";
+	static String TammanyDistributeState = "Distribute your opponents to their new roles";
 	static String TammanyDistribute = "Distribute roles";
 	static String ChipsNone = "no chips";
 	static String ChipsOne = "1 chip";

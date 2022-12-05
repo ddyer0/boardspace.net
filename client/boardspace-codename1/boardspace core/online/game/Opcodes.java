@@ -1,6 +1,7 @@
 package online.game;
 
 import lib.CellId;
+import lib.InternationalStrings;
 
 public interface Opcodes {
 	   static final String WrongInitError = "game type %s is not this game";	// not a translated string
@@ -46,7 +47,6 @@ public interface Opcodes {
 	static final int MOVE_PLEASEUNDO = -116;
 	static final int MOVE_DONTUNDO = -117;
 	static final int MOVE_ALLOWUNDO = -118;
-	static final int MOVE_PEEK = -119;
 	static final int ScrollGameRecord = -120;
 	static final int MOVE_GAMEOVERONTIME = -121;
 	static int nextPlayer[] = {SECOND_PLAYER_INDEX,FIRST_PLAYER_INDEX};
@@ -94,6 +94,17 @@ public interface Opcodes {
 			opcode = op; 
 		}
 		public static GameId HitStartP[] = { HitStartP1Button, HitStartP2Button,HitStartP3Button,HitStartP4Button,HitStartP5Button,HitStartP6Button};
+		
+	}
+	public static void putStrings()
+	{	String strings[] = {
+			PASS,RESIGN,UNDO,EDIT,SWAP,
+		};
+		String pairs[][] = {
+				{GAMEOVERONTIME.toLowerCase(),"Win On Time"},
+		};
+		InternationalStrings.put(strings);
+		InternationalStrings.put(pairs);
 	}
 
 

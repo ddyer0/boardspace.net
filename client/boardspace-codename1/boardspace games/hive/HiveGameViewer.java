@@ -750,6 +750,7 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
      public boolean Execute(commonMove m,replayMode replay)
     {
         handleExecute(b,m,replay);
+        lastDropped = b.lastDroppedObject;
         int cellSize =  (int)((b.cellSize()*1.15)*BOARD_TILE_SCALE);
         startBoardAnimations(replay,b.animationStack,cellSize,MovementStyle.Chained);
         

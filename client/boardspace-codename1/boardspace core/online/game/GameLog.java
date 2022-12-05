@@ -475,7 +475,7 @@ public class GameLog implements Opcodes
                {	
 
                	commonMove sp = history.elementAt(idx);
-               	Text sms = canvas.censoredMoveText(sp,idx);
+        	Text sms = (sp==null) ? TextChunk.create("") : canvas.censoredMoveText(sp,idx); 
            	variation |= (sp!=null) && (sp.nVariations()>1);
                	String newnum = sp.getSliderNumString();
             	int nextIdx = idx;

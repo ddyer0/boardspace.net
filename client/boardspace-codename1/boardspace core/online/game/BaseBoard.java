@@ -316,12 +316,7 @@ public abstract class BaseBoard implements Opcodes,Digestable
 	public long Digest(Random r) { throw G.Error("should be overridden"); }
 	
 	public void cantExecute(commonMove m)
-	{	switch(m.op)
-		{
-		case MOVE_PEEK: 	// allow PEEK to be ignored, avoid complaints from mismatched versions
-			if(!G.debug()) { return; }
-		default: throw G.Error("Can't execute %s", m);
-		}
+	{	throw G.Error("Can't execute %s", m);
 	}
  
 	public void cantUnExecute(commonMove m)

@@ -26,16 +26,29 @@ public interface QEConstants
 	static String AutosName = "Autos";
 	static String PlanesName = "Planes";
 	static String TrainsName = "Trains";
+	static String ShipsName = "Ships";
+	
    	static String GRName = "Germany";
    	static String UKName = "United Kingdom";
    	static String FRName = "France";
-   	static String USName = "United States"; 	   	
+   	static String USName = "United States"; 	
+   	static String JPName = "Japan";
+   	
    	static String ForbiddenAmount = "Not #1";
 	static String ServiceName = "Q.E. Player info for #1";
 	static String HighBidMessage = "High Bid";
+	static String ScoreSummary = "Show a summary of the game scoring";
+	static String IsBidMessage = " is #1";
+	static String ByPlayerMessage = "By player ";
+	static String WinningBidMessage = "Winning bid for ";
 	static String QEStrings[] = 
 	{  	ServiceName,
+		WinningBidMessage,
+		IsBidMessage,
+		ByPlayerMessage,
 		HighBidMessage,
+		JPName,
+		ShipsName,
 		ForbiddenAmount,
 		EphemeralWaitDescription,
 		WitnessStateDescription,
@@ -54,6 +67,7 @@ public interface QEConstants
 		RebidStateDescription,
 		OpenBidStateDescription,
 		QEVictoryCondition,
+		ScoreSummary,
 	};
 	static String QEStringPairs[][] = 
 	{   {"QE","Q.E."},
@@ -119,14 +133,19 @@ public interface QEConstants
     	// cards
     	Back(null),
     	NoQE("NoQE"),
+    	ViewBid("ViewBid"),
+    	ViewAgain("ViewAgain"),
     	GR(GRName),
     	UK(UKName),
     	FR(FRName),
-    	US(USName), 	   	
+    	US(USName), 	
+    	JP(JPName),		// 5 player expansion
+    	
     	Build(BuildingName),
     	Autos(AutosName),
     	Planes(PlanesName),
     	Trains(TrainsName),
+    	Ships(ShipsName),	// 5 player expansion
     	    	
     	Gov_1_US("Build-1-US"),
     	Gov_2_GR("Build-2-GR"),
@@ -148,17 +167,26 @@ public interface QEConstants
     	Trains_3_UK("Trains-3-UK"),
     	Trains_4_FR("Trains-4-FR"),
     	
+    	// 5 player expansion tiles
+    	Ship_2_FR("ship-2-fr"),
+    	Ship_4_JP("ship-4-jp"),    	
+    	Ship_3_GR("ship-3-gr"),
+    	Planes_3_JP("planes-3-jp"),
+    	Cars_2_JP("cars-2-jp"),
+    	
     	HitTilesWon(null),		// player tiles won
     	HitIndustry(null),		// player industry card
     	HitWhiteBoard(null),	// player whiteboard card
     	HitNoQE(null),			// player noQE chip
+    	HitViewBid(null),		// player view winning bid chip (5p only)
     	HitAuction(null),
     	HitPending(null),
     	HitCurrent(null),
     	HitWaste(null),
     	HitEcommitButton(null),
     	BoardLocation(null),
-    	ShowHidden(null),
+    	ShowHidden(null), 
+    	ShowScore(null),
     	;
     	String shortName = name();
     	public String shortName() { return(shortName); }
@@ -194,10 +222,14 @@ public interface QEConstants
     }
  
  	// victory point values for multiple elements of the same type
- 	int nationTable[] = {0,1,3,6,10};
- 	int monopolyTable[] = {0,0,3,6,10,10};
- 	int diversityTable[] =  {0,0,0,6,10};
+ 	int nationTable4[] = {0,1,3,6,10};
+ 	int nationTable5[] = {0,3,6,10 };
+ 	int monopolyTable4[] = {0,0,3,6,10,10};
+ 	int monopolyTable5[] = {0,0,6,10,16};
+ 	int diversityTable4[] =  {0,0,0,6,10};
+ 	int diversityTable5[] =  {0,0,0,10,15};
 
+ 	static int MAX_PLAYERS = 5;
 	// move commands, actions encoded by movespecs.  Values chosen so these
     // integers won't look quite like all the other integers
  	

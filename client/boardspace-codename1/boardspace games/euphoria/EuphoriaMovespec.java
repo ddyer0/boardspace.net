@@ -42,6 +42,8 @@ public class EuphoriaMovespec extends commonMPMove implements EuphoriaConstants
     static final int MOVE_RECRUIT = 233;	// add a random new recruit (for testing)
     static final int MOVE_LOSEMORALE = 234;	// lose 1 morale to allow placing a second worker
     static final int MOVE_MARKET = 235;
+    static final int MOVE_PEEK = 236;
+    static final int EPHEMERAL_CHOOSE_RECRUITS = 237;
     
     /* this is used by the move filter to select ephemeral moves */
     public boolean isEphemeral()
@@ -54,6 +56,7 @@ public class EuphoriaMovespec extends commonMPMove implements EuphoriaConstants
 		case EPHEMERAL_CONFIRM_RECRUITS:
 		case EPHEMERAL_CONFIRM_ONE_RECRUIT:
 		case EPHEMERAL_CONFIRM_DISCARD:
+		case EPHEMERAL_CHOOSE_RECRUITS:
 			return(true);
 		default: return(false);
 		}
@@ -64,6 +67,7 @@ public class EuphoriaMovespec extends commonMPMove implements EuphoriaConstants
 		switch(op)
 		{
 		case EPHEMERAL_PICK:
+		case EPHEMERAL_CHOOSE_RECRUITS:
 		case EPHEMERAL_DROP: return(false);
 		default: return(true);
 		}
@@ -77,7 +81,7 @@ public class EuphoriaMovespec extends commonMPMove implements EuphoriaConstants
         	"EPick",EPHEMERAL_PICK,
         	"EDrop",EPHEMERAL_DROP,
         	"EChoose",EPHEMERAL_CHOOSE_RECRUIT,
-        
+        	"Peek", MOVE_PEEK,
         	"Drop", MOVE_DROP,
         	"Dropb", MOVE_DROPB,
         	"Place",MOVE_PLACE_WORKER,
@@ -94,6 +98,7 @@ public class EuphoriaMovespec extends commonMPMove implements EuphoriaConstants
         	"newrecruit",MOVE_RECRUIT,
         	"newmarket",MOVE_MARKET,
         	"losemorale",MOVE_LOSEMORALE,
+        	"echooseRecruits",EPHEMERAL_CHOOSE_RECRUITS,
            	EuphoriaId.ConfirmDiscard.name(),CONFIRM_DISCARD,
            	EuphoriaId.EConfirmDiscard.name(),EPHEMERAL_CONFIRM_DISCARD,
         	EuphoriaId.RecruitOption.name(),USE_RECRUIT_OPTION,
@@ -436,6 +441,7 @@ public class EuphoriaMovespec extends commonMPMove implements EuphoriaConstants
 
             break;
         case CONFIRM_RECRUITS:
+        case EPHEMERAL_CHOOSE_RECRUITS:
         case EPHEMERAL_CONFIRM_RECRUITS:
         case EPHEMERAL_CONFIRM_ONE_RECRUIT:
         	from_color = Colors.get(msg.nextToken());
@@ -584,6 +590,7 @@ public class EuphoriaMovespec extends commonMPMove implements EuphoriaConstants
         case NORMALSTART:
         case CONFIRM_RECRUITS:
         case EPHEMERAL_CONFIRM_RECRUITS:
+        case EPHEMERAL_CHOOSE_RECRUITS:
         case EPHEMERAL_CONFIRM_ONE_RECRUIT:
         case DONT_USE_DIE_ROLL:	return(TextChunk.create(""));
 
@@ -659,6 +666,7 @@ public class EuphoriaMovespec extends commonMPMove implements EuphoriaConstants
         	return(opname+source.name());
         case CONFIRM_RECRUITS:
         case EPHEMERAL_CONFIRM_RECRUITS:
+        case EPHEMERAL_CHOOSE_RECRUITS:
         case EPHEMERAL_CONFIRM_ONE_RECRUIT:
            	return(opname+from_color.name());
         case MOVE_RECRUIT:
