@@ -46,9 +46,6 @@ import udp.UDPService;
 
 public class JWSApplication implements Config,Runnable
 {
-		public JWSApplication() { 
-	        SoundManager.getInstance();		// get it warmed up
-		}
 		public boolean runnable = true;
 		public void runLogin(String serverName,RootAppletProtocol realRoot)
 		{
@@ -151,6 +148,7 @@ public class JWSApplication implements Config,Runnable
 			UDPService.stop(); 
 			VNCService.stopVNCServer();
 			JWSApplication app = new JWSApplication();
+			SoundManager.getInstance();		// get it warmed up
 			try {
 				app.runMain(args);
 			}
@@ -214,8 +212,11 @@ public class JWSApplication implements Config,Runnable
 	     	}
 	
 		public void run()
-		{	StringStack args = new StringStack();
-			G.setPlatformName(G.getOS()+" Executable Jar");
+		{	
+			try {
+			StringStack args = new StringStack();
+			String os =G.getOS()+ " Executable Jar";
+			G.setPlatformName(os);
 			int idx = 0;
 			do {
 				String aa = System.getProperty("mainargs-"+idx);
@@ -224,6 +225,10 @@ public class JWSApplication implements Config,Runnable
 				idx++;
 			} while(true);
 			runLobby(args.toArray());
+			} catch (Throwable e)
+			{
+				System.out.println("error in launch "+e+" "+e.getStackTrace());
+			}
 			//System.exit(0);
 		}
 }

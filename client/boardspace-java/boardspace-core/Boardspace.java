@@ -671,7 +671,7 @@ public class Boardspace extends URLClassLoader implements Runnable,LoaderConfig
 		@SuppressWarnings("deprecation")
 		Runnable r = (Runnable)base.newInstance();
 		new Thread(r).start();
-		t.join();
+		t.join();		
 		}
 		showOut();
 		}}
