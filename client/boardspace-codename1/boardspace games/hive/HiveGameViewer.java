@@ -28,7 +28,7 @@ import lib.Toggle;
  * June 2006  initial work in progress.  
 
 */
-public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements HiveConstants, GameLayoutClient
+public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements HiveConstants, GameLayoutClient,PlacementProvider
 {       
     // file names for jpeg images and masks
     static final String ImageDir = "/hive/images/";
@@ -39,7 +39,6 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
     static final int BROWN_FELT_INDEX = 2;
     static final int LIFT_ICON_INDEX = 3;
     static final String TextureNames[] = { "background-tile" ,"yellow-felt-tile","brown-felt-tile","lifticon"};
-
 
 	// colors
     private Color reviewModeBackground = new Color(220,165,200);
@@ -68,7 +67,8 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
     //public Rectangle stateRect = addRect("stateRect");
     //public Rectangle noChatRect = addRect("nochat");
     private Rectangle repRect = addRect("repRect");
-
+    private NumberMenu numberMenu = new NumberMenu(this,HivePiece.BugIcon,HiveId.ShowNumbers);
+    ;
     private Rectangle idRects[] = addRect("id",2);
     private Rectangle[]chipRects = addRect("chip",2);
     private Rectangle[]setupRects = addRect("setup",2);
@@ -105,6 +105,7 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
     		}
     	return(true);
     	}
+    	if(numberMenu.selectMenu(target,this)) { return(true); }
     	else if(target==textNotation)
         {
         	handled = true;
@@ -124,6 +125,7 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
 	        }
 	            gameIcon = HivePiece.gameIcon;
 	        }
+    private Font pieceLabelFont = largeBoldFont();
 	/**
 	 * 
 	 * this is the real instance intialization, performed only once.
@@ -137,6 +139,7 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
         int FontHeight = standardFontSize();
         gameLogBoldFont = G.getFont(standardPlainFont(), G.Style.Bold, FontHeight+4);
         gameLogFont = G.getFont(standardPlainFont(),G.Style.Plain,FontHeight+2);
+        pieceLabelFont = G.getFont(largeBoldFont(),FontHeight*2);
         zoomRect = addSlider(TileSizeMessage,s.get(TileSizeMessage),HiveId.ZoomSlider);
         zoomRect.min=1.5;
         zoomRect.max=5.0;
@@ -144,7 +147,6 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
         zoomRect.barColor=ZoomColor;
         zoomRect.highlightColor = HighlightColor;
 
- 
         b = new HiveGameBoard(info.getString(GAMETYPE, "Hive"),getStartingColorMap());
         useDirectDrawing(true);
         textNotation = myFrame.addOption(TextLogMessage,false,deferredEvents);
@@ -289,7 +291,7 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
         int boardBottom = G.Bottom(main)-stateH-C4;
         int boardH = boardBottom-boardY;
         G.placeRow(stateX+stateH,stateY,mainW-stateH,stateH,stateRect,reverseRect,liftRect,seeMobile,noChatRect);
-        G.placeRow(stateX,boardBottom+C4,mainW,stateH,goalRect,tilesetRect);
+        G.placeRow(stateX,boardBottom+C4,mainW,stateH,goalRect,numberMenu,tilesetRect);
        
         G.placeRight(stateRect, zoomRect, zoomW);
         
@@ -511,7 +513,6 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
         int csize = gb.cellSize();
      	boolean dolift = doLiftAnimation();
      	boolean see = seeMobile.isOnNow();
-     	
      	//
          // now draw the contents of the board and anything it is pointing at
          //
@@ -525,9 +526,11 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
          double actCellSize = cellSize * BOARD_TILE_SCALE;
          int liftYval =  cellSize/5+(dolift?(liftSteps*cellSize)/20 : 0);
          int liftXval = dolift?(liftSteps*cellSize)/(2*20) : 0;
-
+         int xo = (int)(cellSize*-0.03);
+         int yo = (int)(cellSize*0.15);
          int left = G.Left(tbRect);
          int top = G.Bottom(tbRect);
+         numberMenu.clearSequenceNumbers();
          for(Enumeration<HiveCell>cells = gb.getIterator(Itype.TBRL);  cells.hasMoreElements();)
          {
         	 HiveCell cell = cells.nextElement();
@@ -544,6 +547,9 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
                 	&& canHit
                  	&& inside ;
                  cell.rotateCurrentCenter(gc,xpos,ypos);
+        	 
+        	 numberMenu.saveSequenceNumber(cell,xpos-xo,ypos-yo);
+ 
                  //G.DrawAACircle(gc,xpos,ypos,1,tiled?Color.green:Color.blue,Color.yellow,true);
                  if(piece!=null)
                  {	
@@ -569,7 +575,10 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
                  		ourTurnSelect.spriteColor = Color.red;
                  		}
                  				
-                  	drawpiece.drawChip(gc,this,(int)actCellSize, xp, yp,null);
+               	drawpiece.drawChip(gc,this,(int)actCellSize, xp, yp,null);
+               	if(lvl==cheight-1)
+               	{	numberMenu.saveSequenceNumber(cell,xp-xo,yp-yo);
+             	}
                  	if(id!=null)
                  	{
                    	GC.setFont(gc,actCellSize>240?largeBoldFont():standardBoldFont());
@@ -590,7 +599,18 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
              		ourTurnSelect.arrow = moving?StockArt.DownArrow:StockArt.UpArrow;
              		ourTurnSelect.awidth = cellSize/2;
              		ourTurnSelect.spriteColor = Color.red;
+         		
              		}
+              	/*
+              	{
+            	String label = numberMenu.getSequenceString(cell,true);		
+             	if(label!=null && cell.lastContents!=null)
+             		{
+                 	GC.setFont(gc,pieceLabelFont);
+             		cell.lastContents.drawChip(gc,this,(int)actCellSize/2, xpos, ypos,label);
+             		}
+              	}*/
+ 
                  }
              if(isASource || (see && canHit))
                  {GC.cacheAACircle(gc,xpos,ypos,2,Color.green,Color.yellow,true);
@@ -599,12 +619,16 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
                  {GC.cacheAACircle(gc,xpos,ypos,2,Color.red,Color.yellow,true);
                  }
          }
+         numberMenu.drawSequenceNumbers(gc,cellSize,pieceLabelFont,labelColor);
          
+         
+        
        	doBoardDrag(tbRect,anySelect,csize,HiveId.InvisibleDragBoard);
 
         GC.setClip(gc,oldClip);
         
     }
+    		   		
     public boolean canOfferDraw(HiveGameBoard gb)
     {
         int hsize = History.size();
@@ -658,6 +682,7 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
  
         DrawRepRect(gc,messageRotation,Color.black,gb.Digest(),repRect);
         DrawReverseMarker(gc,reverseRect,nonDraggingSelect,HiveId.ReverseRect);
+        numberMenu.draw(gc,nonDraggingSelect);
         seeMobile.draw(gc,nonDraggingSelect);
         switch(state)
         {     
@@ -885,6 +910,9 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
         {
         default:
         	throw G.Error("Hit Unknown: %s", hitObject);
+        case ShowNumbers:
+        	numberMenu.showMenu();
+        	break;
         case SeeMovable:
         	seeMobile.toggle();
         	break;
@@ -1026,6 +1054,10 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
         	m.setEvaluation(trueval);
         }
     }
+
+	public int getLastPlacement(boolean empty) {
+		return b.lastPlacement;
+	}
 
 
 }

@@ -7,6 +7,7 @@ import java.awt.Color;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
+import java.awt.RenderingHints;
 import java.awt.Shape;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
@@ -289,11 +290,20 @@ public abstract class SystemGraphics
 	{
 		graphics.scale(x, y);
 	}
+	public void setOpactity(double op)
+	{
+		Color cc = getColor();
+		setColor(new Color(cc.getRed(),cc.getGreen(),cc.getBlue(),(int)(op*255)));
+	}
 	public void drawArrow(int ox, int oy, int dest_x,  int dest_y, int ticksize,double thickness)
 		{	
 			Graphics g = create();
 			BasicStroke stroke = new BasicStroke((float)thickness);
 			g.setStroke(stroke);
+			if(g.graphics instanceof Graphics2D)
+			{	Graphics2D g2 = (Graphics2D)g.graphics;
+		        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+			}
 		    double angle = atan2((dest_y - oy), (dest_x - ox));
 		
 		    //log.println("A " + ox + " " + oy + " " + dest_x + " " + dest_y + " " + ticksize

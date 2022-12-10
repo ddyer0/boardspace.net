@@ -35,6 +35,10 @@ import java.util.Set;
  *   
  * @author Ddyer
  *
+ * This works pretty well for unformatted text, or for display of paragraph style messages,
+ * as is used by the SeatingViewer class, but it doesn't allow for variable fonts, colors, 
+ * or mixed text and graphics.
+ * 
  */
 @SuppressWarnings("serial")
 public class TextContainer extends Rectangle implements AppendInterface,KeyListener

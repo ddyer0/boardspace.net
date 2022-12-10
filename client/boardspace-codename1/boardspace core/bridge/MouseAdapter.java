@@ -781,5 +781,15 @@ public class MouseAdapter
 			}
 		}
 	}
+
+	public boolean pointerHover(int[] x, int[] y) {
+		if(x!=null && y!=null && x.length==1 && y.length==1)
+			{ int xp = x[0];
+			  int yp = y[0];
+			  if(mouseState!=bType.Up) { pointerReleased(xp,yp); }
+			  handleMouseMotionEvent(xp,yp,bType.Up,0,0);
+			}
+		return true;
+	}
 	
 }

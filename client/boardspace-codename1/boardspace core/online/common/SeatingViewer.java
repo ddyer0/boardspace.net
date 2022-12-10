@@ -463,6 +463,10 @@ public class SeatingViewer extends exCanvas implements LobbyConstants
 		if(drawTable(gc,tableSelect,tableSize,centerX,centerY))
 		{	tableSelect.hitCode = SeatId.ChartSelected;
 			tableSelect	.hitObject = chart;
+			tableSelect.spriteColor = Color.red;
+			tableSelect.awidth = tableSize;
+			tableSelect.hit_x = centerX;
+			tableSelect.hit_y = centerY;
 		}
 		int colorStep = tableSize/30;
 		Color []map = selectedGame!=null ? selectedGame.colorMap : null;

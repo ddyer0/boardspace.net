@@ -46,6 +46,14 @@ public class Component extends Container implements EventListener,AwtComponent,S
     {
     	if(mouse.pointerPressed(x,y)) {   	super.pointerPressed(x,y); }
     }
+    
+	
+	public void pointerHover(int x[],int y[])
+	{	// as of 12/2022, this is called on the simulator but not on real devices
+		//G.print("Component Hover ",x[0]," ",y[0]);
+		if(mouse.pointerHover(x,y)) { super.pointerHover(x,y); }
+	}
+	
 	Vector<WindowListener> listeners = null;
 	public Dimension getMinimumSize() { return(new Dimension(100,100)); }
 	

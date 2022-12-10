@@ -4,6 +4,7 @@ import lib.Random;
 import hive.HiveConstants.HiveId;
 import hive.HiveConstants.PieceType;
 import lib.OStack;
+import online.game.PlacementProvider;
 import online.game.stackCell;
 
 class CellStack extends OStack<HiveCell>
@@ -13,18 +14,36 @@ class CellStack extends OStack<HiveCell>
 //
 // specialized cell used for the this game.
 //
-public class HiveCell extends stackCell<HiveCell,HivePiece>
+public class HiveCell extends stackCell<HiveCell,HivePiece> implements PlacementProvider
 {	public HivePiece[] newComponentArray(int n) { return(new HivePiece[n]); }
 	public int sweep_counter=0;		// used checking for valid hives
 	public int overland_gradient = 0;		// used in evaluation
 	public int slither_gradient = 0;		// used in evaluation
 	public boolean pillbug_dest = false;	// used in move generator
+	
+	// these three are to support displaying placement order
+	public HivePiece lastContents;
+	public int lastEmptied = 0;
+	public int lastFilled = 0;
+	
 	// constructor for board cells
 	public HiveCell(char c,int r)
 	{	super(Geometry.Hex,c,r);
 		rackLocation = HiveId.BoardLocation;
 	}
-	  
+	public void reInit()
+	{
+		super.reInit();
+		initPlacement();
+	}
+
+	public void copyFrom(HiveCell other)
+	{	super.copyFrom(other);
+		lastContents = other.lastContents;
+		lastFilled = other.lastFilled;
+		lastEmptied = other.lastEmptied;
+		
+	}
 	public HiveId rackLocation() { return((HiveId)rackLocation); }
 	
 	public long simpleDigest()
@@ -52,6 +71,7 @@ public class HiveCell extends stackCell<HiveCell,HivePiece>
 			}
 			if(na==0) { v^=randomv; }	// if it's an isolated cell, include the exact location
 			}
+		else { v = v*randomv;}
 		return(v);
 	}
 	
@@ -198,5 +218,17 @@ public class HiveCell extends stackCell<HiveCell,HivePiece>
 		}
 		return(false);
     }
+
+    // support for placement order display
+	public void initPlacement()
+	{
+		lastContents = null;
+		lastEmptied = 0;
+		lastFilled = 0;
+	}
+
+    public int getLastPlacement(boolean empty) {
+		return empty ? lastEmptied : lastFilled;
+	}
 
 }

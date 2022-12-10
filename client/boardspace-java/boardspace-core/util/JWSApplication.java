@@ -209,6 +209,7 @@ public class JWSApplication implements Config,Runnable
 	     	{	
 			G.setPlatformName(G.getOS());
 			runLobby(args);
+			System.exit(0);
 	     	}
 	
 		public void run()
@@ -229,6 +230,6 @@ public class JWSApplication implements Config,Runnable
 			{
 				System.out.println("error in launch "+e+" "+e.getStackTrace());
 			}
-			//System.exit(0);
+			System.exit(0);
 		}
 }

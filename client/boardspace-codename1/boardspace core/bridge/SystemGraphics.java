@@ -307,5 +307,7 @@ public abstract class SystemGraphics {
 	{
 		return fm.getStringBounds(line, g);
 	}
-
+	public void setOpactity(double op) {
+		graphics.setAlpha(Math.max(0,Math.min(255,(int)(255*op))));
+	}
 }

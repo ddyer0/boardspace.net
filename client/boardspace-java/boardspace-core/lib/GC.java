@@ -131,7 +131,17 @@ public class GC {
 			g1.drawFatLine(fx,fy,tx,ty,strokeWidth);
 			}
 	}
-
+	/**
+	 * draw an arrow from ox,oy to dest_x,dest_y, with an arrowhead at the destination with length "ticksize"
+	 * using line thickness specified (rounded up to 1).
+	 * @param g1
+	 * @param ox
+	 * @param oy
+	 * @param dest_x
+	 * @param dest_y
+	 * @param ticksize
+	 * @param thickness
+	 */
 	static public void drawArrow(Graphics g1, int ox, int oy, int dest_x,  int dest_y, int ticksize,double thickness)
 	{	if(g1!=null)
 		{
@@ -1047,6 +1057,10 @@ public class GC {
 			Color vcrbuttoncolor) {
 		if(inG!=null) { inG.drawButton(xoffset,vcrSliderTop,vcrWidth,barHeight,vcrbuttoncolor,Color.white); }
 
+	}
+
+	public static void setOpacity(Graphics gc,double op)
+	{	if(gc!=null) { gc.setOpactity(op); }
 	}
 
 }

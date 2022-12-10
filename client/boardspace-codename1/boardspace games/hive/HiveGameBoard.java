@@ -54,6 +54,9 @@ class HiveGameBoard extends hexBoard<HiveCell> implements BoardProtocol,HiveCons
 
     static final String[] HIVEGRIDSTYLE = { "1", null, "A" }; // left and bottom numbers
 
+    // support for placement displays
+    public int lastPlacement = 1;
+    
 	private HiveState unresign;
 	private HiveState board_state;
 	private HiveState undrawState;
@@ -656,6 +659,7 @@ public variation gamevariation = variation.hive;
         droppedDest = null;
         pickedSource = null;
         pickedObject = null;
+        lastPlacement = 1;
     }
 
     public void sameboard(BoardProtocol f) { sameboard((HiveGameBoard)f); }
@@ -674,6 +678,7 @@ public variation gamevariation = variation.hive;
         G.Assert(setupAccepted==from_b.setupAccepted,"setupAccepted mismatch");
         //G.Assert(sameCells(stunned,from_b.stunned),"stunned piece mismatch");
         G.Assert(pickedObject==from_b.pickedObject, "pickedObject matches");
+        G.Assert(lastPlacement==from_b.lastPlacement,"lastPlacement mismatch");
 
     }
 
@@ -705,12 +710,14 @@ public variation gamevariation = variation.hive;
         long d1 = r.nextLong();
         long d2 = r.nextLong();
         long d3 = r.nextLong();
+
         if(swappedRacks) { v ^=d3; }
         // note for hive cells, all the Digest is the same, but for pick/unpick we want the exact identity.
         v ^= (pickedSource!=null) ? d1+pickedSource.randomv :  d2; 
         }
 		v ^= chip.Digest(r,pickedObject);
 		//v ^= Digest(r,stunned);
+		v ^= Digest(r,lastPlacement);
 		v ^= r.nextLong()*(board_state.ordinal()*10+whoseTurn);
       return (v);
     }
@@ -769,6 +776,7 @@ public variation gamevariation = variation.hive;
         unresign = from_b.unresign;
         undrawState = from_b.undrawState;
         pickedObject = from_b.pickedObject;
+        lastPlacement = from_b.lastPlacement;
         sameboard(from_b); 
     }
 
@@ -965,8 +973,15 @@ public variation gamevariation = variation.hive;
     	}
      }
     void addChip(HiveCell c,HivePiece p)
+    {	if(c.onBoard)
     {	
-    	if(c.onBoard && (c.topChip()==null)) { occupiedCells.push(c); }
+    		if(c.topChip()==null) { occupiedCells.push(c);  }
+    		c.lastContents = p;
+     		c.lastFilled = lastPlacement;
+       		lastPlacement++;
+    	}
+    	if(c.onBoard && (c.topChip()==null))
+    		{ }
         switch(c.rackLocation())
         {
         case Black_Setup_Pool:
@@ -984,7 +999,11 @@ public variation gamevariation = variation.hive;
     }
     HivePiece removeChip(HiveCell c)
     {	HivePiece p = c.removeTop();
-    	if(c.onBoard && (c.topChip()==null)) { occupiedCells.remove(c, false); }
+    	if(c.onBoard)
+    	{
+    	if(c.topChip()==null) { occupiedCells.remove(c, false); }
+    	c.lastEmptied = lastPlacement;
+    	}
     	pieceLocation.remove(p);
     	return(p);
     }

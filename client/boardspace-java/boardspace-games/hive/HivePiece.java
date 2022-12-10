@@ -82,9 +82,15 @@ public class HivePiece extends chip<HivePiece>
 			1.0,yscale,label,center);
 		}
 	}
-	public int pieceDigestClass() { return((((type.ordinal()+1)*6)+seq)*2
-			+((color==HiveId.White_Bug_Pool)?0:1)); }
-
+	public int pieceDigestClass() 
+		{ return((((type.ordinal()+1)*6)+seq)*2
+			+((color==HiveId.White_Bug_Pool)?0:1)); 
+		}
+	public HivePiece(Image im,double []sc)
+	{
+		image = im;
+		scale = sc;
+	}
 	public HivePiece(int set,PieceType ptype,HiveId pl,int seqn,double []scal,Image im)
 	  {	
 	  	scale = scal;
@@ -99,7 +105,7 @@ public class HivePiece extends chip<HivePiece>
 	  
 	  // get the tile from the other set that matches this one
 	  public HivePiece getAltChip(int chipset)
-		{	return((chipset==0)?this:altChip);
+		{	return((chipset==0)||(altChip==null)?this:altChip);
 		}
 
 	  public String toString() 
@@ -418,6 +424,8 @@ public class HivePiece extends chip<HivePiece>
 	static Image gameIcon = null;
 	static HivePiece WhiteQueen = null;
 	static HivePiece BlackQueen = null;
+	static HivePiece BugIcon = new HivePiece(null,new double[] {0.5,0.4,1.5});
+	
 	public static void preloadImages(ImageLoader forcan,String Dir)
 		{	if(gameIcon==null	)
 			{
@@ -425,6 +433,8 @@ public class HivePiece extends chip<HivePiece>
 	        carbonPieces = loadImageSet(Dir,forcan,1,CarbonImageFileNames,CARBON_SCALES,TopCarbonFileNames,TopCarbonScales);
 	        WhiteQueen = getCanonicalChip(HiveId.White_Bug_Pool,PieceType.QUEEN);
 	        BlackQueen = getCanonicalChip(HiveId.Black_Bug_Pool,PieceType.QUEEN);
+	        BugIcon.image = getCanonicalChip(HiveId.White_Bug_Pool,PieceType.ANT).getImage();
+	        
 	        for(int i=0;i<=1;i++)
 	        	{ matchPairs(hivePieces[i],carbonPieces[i]);
 	        	}
