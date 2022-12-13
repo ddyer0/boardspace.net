@@ -55,7 +55,8 @@ public interface HexConstants
     	White_Chip_Pool("W"),
     	BoardLocation(null),
     	ChangeRotation(null),
-    	EmptyBoard(null),;
+    	EmptyBoard(null), 
+    	ShowNumbers(null),;
     	String shortName = name();
     	hexChip chip;
     	public String shortName() { return(shortName); }

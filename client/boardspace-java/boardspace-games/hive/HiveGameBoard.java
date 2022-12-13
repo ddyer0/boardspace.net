@@ -717,7 +717,6 @@ public variation gamevariation = variation.hive;
         }
 		v ^= chip.Digest(r,pickedObject);
 		//v ^= Digest(r,stunned);
-		v ^= Digest(r,lastPlacement);
 		v ^= r.nextLong()*(board_state.ordinal()*10+whoseTurn);
       return (v);
     }
@@ -950,7 +949,7 @@ public variation gamevariation = variation.hive;
         	{
         	droppedDest = null;
         	prestun = null;
-         	pickedObject = removeChip(dr);
+         	pickedObject = unaddChip(dr);
          	if(pickedSource!=null)
         	{	HiveCell ps = pickedSource;
         		unPickObject();
@@ -969,20 +968,31 @@ public variation gamevariation = variation.hive;
     	HiveCell ps = pickedSource;
     	pickedSource=null;
     	pickedObject = null;
-    	addChip(ps,po);
+    	unremoveChip(ps,po);
     	}
      }
+    
+    private int previousLastFilled = 0;
+    private int previousLastEmptied = 0;
+    private int previousLastMover = 0;
     void addChip(HiveCell c,HivePiece p)
     {	if(c.onBoard)
     	{
     		if(c.topChip()==null) { occupiedCells.push(c);  }
     		c.lastContents = p;
+    		previousLastFilled = c.lastFilled;
      		c.lastFilled = lastPlacement;
+     		c.lastMover = whoseTurn;
        		lastPlacement++;
     	}
-    	if(c.onBoard && (c.topChip()==null))
-    		{ }
-        switch(c.rackLocation())
+    	else { addChipOffboard(c); }
+    	
+        c.addChip(p);
+    	pieceLocation.put(p, c);
+    }
+    void addChipOffboard(HiveCell c)
+    {
+    	switch(c.rackLocation())
         {
         case Black_Setup_Pool:
         case White_Setup_Pool:
@@ -994,6 +1004,17 @@ public variation gamevariation = variation.hive;
         default:
      	  break;
         }  
+    }
+    void unremoveChip(HiveCell c,HivePiece p)
+    {	if(c.onBoard)
+    	{	G.Assert(p!=null,"something placed");
+    		if(c.topChip()==null) { occupiedCells.push(c);  }
+    		c.lastContents = p;
+    		c.lastEmptied = previousLastEmptied;
+    		lastPlacement++;
+    	}
+    	else { addChipOffboard(c); }
+    
         c.addChip(p);
     	pieceLocation.put(p, c);
     }
@@ -1002,7 +1023,21 @@ public variation gamevariation = variation.hive;
     	if(c.onBoard)
     	{
     	if(c.topChip()==null) { occupiedCells.remove(c, false); }
+    	previousLastEmptied = c.lastEmptied;
     	c.lastEmptied = lastPlacement;
+    	}
+    	pieceLocation.remove(p);
+    	return(p);
+    }
+    HivePiece unaddChip(HiveCell c)
+    {	HivePiece p = c.removeTop();
+    	if(c.onBoard)
+    	{
+    	G.Assert(p!=null,"something removed");
+    	if(c.topChip()==null) { occupiedCells.remove(c, false); }
+    	c.lastFilled = previousLastFilled;
+    	c.lastMover = previousLastMover;
+    	lastPlacement--; 
     	}
     	pieceLocation.remove(p);
     	return(p);

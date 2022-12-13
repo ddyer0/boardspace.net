@@ -68,7 +68,6 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
     //public Rectangle noChatRect = addRect("nochat");
     private Rectangle repRect = addRect("repRect");
     private NumberMenu numberMenu = new NumberMenu(this,HivePiece.BugIcon,HiveId.ShowNumbers);
-    ;
     private Rectangle idRects[] = addRect("id",2);
     private Rectangle[]chipRects = addRect("chip",2);
     private Rectangle[]setupRects = addRect("setup",2);

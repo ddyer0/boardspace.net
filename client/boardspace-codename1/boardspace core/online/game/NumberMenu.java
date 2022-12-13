@@ -16,6 +16,8 @@ import lib.GC;
 import lib.Graphics;
 import lib.HitPoint;
 import lib.InternationalStrings;
+import lib.Location;
+import lib.LocationProvider;
 import lib.NameProvider;
 import lib.PopupManager;
 /**
@@ -161,9 +163,14 @@ public class NumberMenu extends Rectangle {
 		return -1;
 	}
 
-	private Hashtable <Integer,Point> sources = new Hashtable<Integer,Point>();
-	private Hashtable <Integer,Point> dests = new Hashtable<Integer,Point>();
+	private Hashtable <Integer,LocationProvider> sources = new Hashtable<Integer,LocationProvider>();
+	private Hashtable <Integer,LocationProvider> dests = new Hashtable<Integer,LocationProvider>();
+	private Hashtable <LocationProvider,PlacementProvider>reverse = new Hashtable<LocationProvider,PlacementProvider>();
 	
+	public PlacementProvider getPlacement(LocationProvider from)
+	{
+		return reverse.get(from);
+	}
 	/**
 	 * call at the beginning of a redisplay pass
 	 */
@@ -179,10 +186,22 @@ public class NumberMenu extends Rectangle {
 	 * @param x
 	 * @param y
 	 */
-	public void saveSequenceNumber(int seq,boolean empty,int x,int y)
+	public LocationProvider saveSequenceNumber(int seq,boolean empty,int x,int y)
 	{
-		Hashtable<Integer,Point> tbl = empty ? sources :dests;
-		tbl.put(seq,new Point(x,y));
+		Hashtable<Integer,LocationProvider> tbl = empty ? sources :dests;
+		LocationProvider loc = makeLocation(x,y);
+		tbl.put(seq,loc);
+		return loc;
+	}
+	/**
+	 * make a new location object, can be overridden.
+	 * @param x
+	 * @param y
+	 * @return
+	 */
+	public LocationProvider makeLocation(int x,int y)
+	{
+		return (LocationProvider)new Location(x,y);
 	}
 	/**
 	 * call with a cell and its center position, to save it for drawing arrows and sequence numbers
@@ -191,18 +210,23 @@ public class NumberMenu extends Rectangle {
 	 * @param xpos
 	 * @param ypos
 	 */
-	public void saveSequenceNumber(PlacementProvider cell,int xpos,int ypos)
+	public LocationProvider saveSequenceNumber(PlacementProvider cell,int xpos,int ypos)
 	{
 		int slabel = getSequenceNumber(cell,true);	
+		LocationProvider sloc = null;
 		if(slabel>0) 
 			{ 
-			saveSequenceNumber(slabel,true,xpos,ypos); 
+			sloc = saveSequenceNumber(slabel,true,xpos,ypos); 
+			reverse.put(sloc,cell);
     		}
 		int dlabel = getSequenceNumber(cell,false);		
 		if(dlabel>0) 
 	 	{
-	 	  saveSequenceNumber(dlabel,false,xpos,ypos);
+	 	  LocationProvider dloc = saveSequenceNumber(dlabel,false,xpos,ypos);
+	 	  reverse.put(dloc,cell);
+	 	  return dloc;
 	 	}
+		return sloc;
 	}
 	/**
 	 * call this to draw the sequence numbers that have been saved in the process of drawing
@@ -214,32 +238,59 @@ public class NumberMenu extends Rectangle {
 	 */
     public void drawSequenceNumbers(Graphics gc,int cellSize,Font pieceLabelFont,Color labelColor)
 	{
+
     	for(Enumeration<Integer>destindex = dests.keys(); destindex.hasMoreElements();)
     	{	int idx = destindex.nextElement();
-    		Point src = sources.get(idx);
-    		Point dest = dests.get(idx);
+    		LocationProvider src = sources.get(idx);
+    		LocationProvider dest = dests.get(idx);
+       		if(dest!=null)
+    		{
+           	drawNumber(gc,cellSize,dest,pieceLabelFont,labelColor,idx);
   
     		if(src!=null)
     		{
-    		int sxpos = G.Left(src);
-    		int sypos = G.Top(src);
-    		if(dest!=null)
+        	drawArrow(gc,src,dest,labelColor,cellSize);   		
+    		}}
+     	}  		
+    }
+    
+    /**
+     */
+    public void drawNumber(Graphics gc,int cellSize,LocationProvider dest,Font pieceLabelFont,Color labelColor,int idx)
+    {
+   		GC.setFont(gc,pieceLabelFont);
+     	GC.drawOutlinedText(gc,true,dest.getX()-cellSize/2,dest.getY()-cellSize/2,cellSize,cellSize,labelColor,Color.black,""+idx);
+    }
+    /**
+     *  draw the arrow from src to dest 
+     * @param gc
+     * @param sxpos
+     * @param sypos
+     * @param dxp
+     * @param dyp
+     * @param labelColor
+     * @param cellSize
+     */
+    public void drawArrow(Graphics gc,LocationProvider src,LocationProvider dest,Color labelColor,int cellSize)
     		{
-    		int dxp = G.Left(dest);
-        	int dyp = G.Top(dest);
     		GC.setColor(gc,labelColor);
     		GC.setOpacity(gc,arrowOpacity);
-         	GC.drawArrow(gc,sxpos,sypos,dxp,dyp,cellSize/4,cellSize/20.0);
+		int x1 = src.getX();
+		int y1 = src.getY();
+		int x2 = dest.getX();
+		int y2 = dest.getY();
+		// a little basic trignometry.  We want to shorten the 
+		// arrow by a fraction of the cell size, both at the beginning
+		// and the end, so the arrows don't overlap with the numbers.
+		double dx = x1-x2;
+		double dy = y1-y2;
+		double len = G.distanceSQ(x1,y1,x2,y2);
+		double sin = Math.sqrt((dx*dx)/len);
+		double cos = Math.sqrt((dy*dy)/len);
+		int cx = (int)(sin*cellSize/5)*G.signum(dx);
+		int cy = (int)(cos*cellSize/5)*G.signum(dy);
+		
+	 	GC.drawArrow(gc,x1-cx,y1-cy,x2+cx,y2+cy,cellSize/4,cellSize/20.0);
          	GC.setOpacity(gc,1);
-    		}}
-    		if(dest!=null)
-    		{
-    		int dxp = G.Left(dest);
-           	int dyp = G.Top(dest);
-    		GC.setFont(gc,pieceLabelFont);
-         	GC.drawOutlinedText(gc,true,dxp-cellSize/2,dyp-cellSize/2,cellSize,cellSize,labelColor,Color.black,""+idx);
-    		} 
     	}  		
-	}
-
 }

@@ -469,8 +469,8 @@ class HexGameBoard extends hexBoard<hexCell> implements BoardProtocol,HexConstan
     {	hexChip old = c.chip;
     	if(c.onBoard)
     	{
-    	if(old!=null) { chips_on_board--;emptyCells.push(c); moveStack.pop(); }
-     	if(ch!=null) { chips_on_board++; emptyCells.remove(c,false); moveStack.push(c); }
+    	if(old!=null) { chips_on_board--;emptyCells.push(c); moveStack.pop(); c.lastPlaced = 0; }
+     	if(ch!=null) { chips_on_board++; emptyCells.remove(c,false); moveStack.push(c); c.lastPlaced = moveNumber; }
     	}
        	c.chip = ch;
     	return(old);

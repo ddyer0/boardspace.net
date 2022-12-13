@@ -30,7 +30,7 @@ import online.search.SimpleRobotProtocol;
  * Tumbleweed implementation for Boardspace
  *  
 */
-public class TweedViewer extends CCanvas<TweedCell,TweedBoard> implements TweedConstants, GameLayoutClient
+public class TweedViewer extends CCanvas<TweedCell,TweedBoard> implements TweedConstants, GameLayoutClient, PlacementProvider
 {		// move commands, actions encoded by movespecs.  Values chosen so these
     // integers won't look quite like all the other integers
  	
@@ -82,6 +82,9 @@ public class TweedViewer extends CCanvas<TweedCell,TweedBoard> implements TweedC
  			TweedChip.Numbers,TweedId.Numbers,YesNumbers,
  			TweedChip.NoNumbers,TweedId.Numbers,NoNumbers
  			);
+
+   private NumberMenu numberMenu = new NumberMenu(this,TweedChip.Gray,TweedId.ShowNumbers);
+
    private Rectangle chipRects[] = addZoneRect("chip",2);
    private Rectangle scoreRects[] = addRect("score",2);
    private TextButton swapButton = addButton(SWAP,GameId.HitSwapButton,SwapDescription,
@@ -302,7 +305,7 @@ public class TweedViewer extends CCanvas<TweedCell,TweedBoard> implements TweedC
         int stateY = boardY;
         int stateX = boardX;
         int stateH = fh*3;
-        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,eyeRect,captureRect,numberRect,noChatRect);
+        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,numberMenu,eyeRect,captureRect,numberRect,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	G.SetRect(swapButton,boardX+buttonW/2,boardY+buttonW/2,buttonW,buttonW/2);
     	G.SetRect(passButton,boardX+boardW-buttonW*2,boardBottom-buttonW,buttonW,buttonW/2);
@@ -512,11 +515,13 @@ public class TweedViewer extends CCanvas<TweedCell,TweedBoard> implements TweedC
     	double xscale = 0.1;
     	boolean showCaptures = captureRect.isOnNow();
     	double yscale = 0.08;
+    	numberMenu.clearSequenceNumbers();
     	Enumeration<TweedCell> it = gb.getIterator(Itype.TBRL);
     	while(it.hasMoreElements())
           {	TweedCell cell = it.nextElement();
          	int ypos = G.Bottom(brect) - gb.cellToY(cell);
             int xpos = G.Left(brect) + gb.cellToX(cell);
+            numberMenu.saveSequenceNumber(cell,xpos,ypos);
             boolean canHit = gb.legalToHitBoard(cell,targets);
             int h = cell.height();
             if(cell.drawStack(gc,this,canHit?highlight:null,CELLSIZE,xpos,ypos,0,xscale,yscale,null))
@@ -550,6 +555,7 @@ public class TweedViewer extends CCanvas<TweedCell,TweedBoard> implements TweedC
             	StockArt.SmallO.drawChip(gc,this,sz,xpos,ypos,null);
             }
         }
+    	numberMenu.drawSequenceNumbers(gc,CELLSIZE,labelFont,labelColor);
     }
 
     /**
@@ -676,6 +682,7 @@ public class TweedViewer extends CCanvas<TweedCell,TweedBoard> implements TweedC
         numberRect.draw(gc,selectPos);
         captureRect.activateOnMouse = true;
         captureRect.draw(gc,selectPos);
+        numberMenu.draw(gc,selectPos);
      
         // draw the vcr controls, last so the pop-up version will be above everything else
         drawVcrGroup(nonDragSelect, gc);
@@ -948,6 +955,9 @@ public class TweedViewer extends CCanvas<TweedCell,TweedBoard> implements TweedC
             	throw G.Error("Hit Unknown object " + hitCode);
             }
         	break;
+        case ShowNumbers:
+        	numberMenu.showMenu();
+        	break;
         case Captures:
         	captureRect.toggle();
         	break;
@@ -1108,8 +1118,8 @@ public class TweedViewer extends CCanvas<TweedCell,TweedBoard> implements TweedC
     public boolean handleDeferredEvent(Object target, String command)
     {
         boolean handled = super.handleDeferredEvent(target, command);
-
-        if(target==rotationOption)
+        if(numberMenu.selectMenu(target,this)) {}
+        else if(target==rotationOption)
         {	handled=true;
         	doRotation = rotationOption.getState();
         	resetBounds();
@@ -1332,5 +1342,9 @@ public class TweedViewer extends CCanvas<TweedCell,TweedBoard> implements TweedC
     public boolean allowRobotsToRun() {
     	return super.allowRobotsToRun();
     }
+
+	public int getLastPlacement(boolean empty) {
+		return bb.lastPlacedMove;
+	}
 }
 

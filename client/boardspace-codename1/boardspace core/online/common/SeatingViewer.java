@@ -1,6 +1,8 @@
 package online.common;
 
 import lib.Graphics;
+
+import com.codename1.ui.Font;
 import com.codename1.ui.geom.Rectangle;
 
 import bridge.Color;
@@ -462,7 +464,7 @@ public class SeatingViewer extends exCanvas implements LobbyConstants
 		
 		if(drawTable(gc,tableSelect,tableSize,centerX,centerY))
 		{	tableSelect.hitCode = SeatId.ChartSelected;
-			tableSelect	.hitObject = chart;
+			tableSelect.hitObject = chart;
 			tableSelect.spriteColor = Color.red;
 			tableSelect.awidth = tableSize;
 			tableSelect.hit_x = centerX;
@@ -874,14 +876,17 @@ public class SeatingViewer extends exCanvas implements LobbyConstants
 		  else 
 		  {	int gameW = w-(gameX-l)-w/20;
 		    int gameH = h-(gameY-t)-h/20;
-			  GC.setFont(gc,largeBoldFont());
-			  FontMetrics fm = G.getFontMetrics(this);
-			  int fh = fm.getHeight();
-			  Rectangle ur = new Rectangle(gameX,gameY,gameW,fh*2);
+		    Font lb = largeBoldFont();
+		    // have to be very careful because GC may be null, and in rare
+		    // circumstances, this.getFont() may also be null.
+		    GC.setFont(gc,lb);
+		    FontMetrics fm = G.getFontMetrics(lb);
+		    int topPart = fm.getHeight()*3/2;
+		    Rectangle ur = new Rectangle(gameX,gameY,gameW,topPart);
 			  GC.frameRect(gc,Color.blue,ur);
-			  GC.Text(gc,true,gameX,gameY,gameW,fh*2,Color.black,null,"Play Offline");
+		    GC.Text(gc,true,gameX,gameY,gameW,topPart,Color.black,null,"Play Offline");
 			  GC.setFont(gc,standardPlainFont());
-			  messageArea.setBounds(gameX,gameY+fh*2+1,gameW,gameH-fh*2);
+		    messageArea.setBounds(gameX,gameY+topPart+1,gameW,gameH-topPart);
 			  if(!messageArea.isVisible())
 			  {
 			  messageArea.setVisible(true);

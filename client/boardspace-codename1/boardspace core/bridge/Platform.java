@@ -102,29 +102,29 @@ public abstract class Platform implements Config{
 		}
     static public FontMetrics getFontMetrics(AwtComponent c)
 	   {
-		   return(FontMetrics.getFontMetrics(c.getFont()));
+		   return(getFontMetrics(c.getFont()));
 	   }
-	   static public FontMetrics getFontMetrics(Font f)
+    static public FontMetrics getFontMetrics(Font f)
 	   {
-		   return(FontMetrics.getFontMetrics(f));
+		   return(f==null ? null : FontMetrics.getFontMetrics(f));
 	   }
-	   static public FontMetrics getFontMetrics(bridge.Component c) 
+    static public FontMetrics getFontMetrics(bridge.Component c) 
 	   {
-		   return(FontMetrics.getFontMetrics(G.getFont(c.getStyle())));
+		   return(getFontMetrics(G.getFont(c.getStyle())));
 	   }
-	   static public FontMetrics getFontMetrics(ProxyWindow c) 
+    static public FontMetrics getFontMetrics(ProxyWindow c) 
 	   {
-		   return(FontMetrics.getFontMetrics(G.getFont(c.getStyle())));
+		   return(getFontMetrics(G.getFont(c.getStyle())));
 	   }
-	   static public void moveToFront(Component c)
+    static public void moveToFront(Component c)
 	   {
 		   MasterForm.moveToFront(c);
 	   }
-	   static public FontMetrics getFontMetrics(bridge.Component c,Font f) 
+    static public FontMetrics getFontMetrics(bridge.Component c,Font f) 
 	   {
-		   return(FontMetrics.getFontMetrics(f));
+		   return(getFontMetrics(f));
 	   }
-	   public enum Style
+    public enum Style
 	   {   Plain(Font.STYLE_PLAIN),
 		   Italic(Font.STYLE_ITALIC),
 		   Bold(Font.STYLE_BOLD);
@@ -293,7 +293,7 @@ public abstract class Platform implements Config{
 	
 	public static double GetPixelSize(Font f)
 	{	
-			return(f.isTTFNativeFont() ? getTTFsize(f) : -1);
+			return(f!=null && f.isTTFNativeFont() ? getTTFsize(f) : -1);
 	}
 	private static double getTTFsize(Font f)
 	{	double siz = f.getPixelSize();

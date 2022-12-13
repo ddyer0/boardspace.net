@@ -1593,6 +1593,7 @@ public class RepaintManager implements VncScreenInterface,Config
 	    public JCheckBoxMenuItem showBitmapsChoice = null;
 	    public JCheckBoxMenuItem slowZoomChoice = null;
 	    public JCheckBoxMenuItem fixedBackgroundChoice = null;
+	    public JCheckBoxMenuItem useVolatileChoice = null;
 
 
 	    public boolean handleDeferredEvent(Object target)
@@ -1602,6 +1603,12 @@ public class RepaintManager implements VncScreenInterface,Config
     		{
     			setRepaintStrategy(v);
         	}
+    		else if(target==useVolatileChoice)
+    		{
+    			USE_VOLATILE_IMAGE = useVolatileChoice.getState();
+     			setViewBuffer(null);
+     			setAllFixed(null);
+    		}
     		else if(target==fixedBackgroundChoice)
 	    	{
 	    		useFixedBackground = fixedBackgroundChoice.getState();
@@ -1623,11 +1630,16 @@ public class RepaintManager implements VncScreenInterface,Config
 	    {	if(myFrame!=null)
 	    	{
 	    	JMenu setBuffer = myFrame.addChoiceMenu("Set Buffering",null);
-
+	    	useVolatileChoice = new JCheckBoxMenuItem("use volatile images");
+	    	useVolatileChoice.setState(USE_VOLATILE_IMAGE);
+	    	useVolatileChoice.addItemListener(deferredEvents);
+	    	setBuffer.add(useVolatileChoice);
+	    	
 	    	fixedBackgroundChoice = new JCheckBoxMenuItem("use background bitmap");
 	    	fixedBackgroundChoice.setState(useFixedBackground);
 	    	fixedBackgroundChoice.addItemListener(deferredEvents);
 	    	setBuffer.add(fixedBackgroundChoice);
+	    	
 	    	if(SHOW_TIMERS)
 	    	{
 	    	setBuffer.add(RepaintStrategy.frameTimersOn = new JCheckBoxMenuItem("Show Frame Timers"));

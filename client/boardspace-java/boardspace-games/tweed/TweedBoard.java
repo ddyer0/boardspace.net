@@ -46,6 +46,7 @@ class TweedBoard
 	private TweedState unresign = null;	// remembers the orignal state when "resign" is hit
 	public TweedState getState() { return(board_state); }
 	public boolean robotBoard = false;
+	int lastPlacedMove = 0;
     /**
      * this is the preferred method when using the modern "enum" style of game state
      * @param st
@@ -205,10 +206,10 @@ class TweedBoard
 		playerChip[map[1]]=TweedChip.Red;
 	    // set the initial contents of the board to all empty cells
 		reInit(occupiedCells);
-	    
         animationStack.clear();
         swapped = false;
         moveNumber = 1;
+	    lastPlacedMove = 1;
 
         // note that firstPlayer is NOT initialized here
     }
@@ -246,6 +247,7 @@ class TweedBoard
         resetState = from_b.resetState;
         lastPicked = null;
         robotBoard = from_b.robotBoard;
+        lastPlacedMove = from_b.lastPlacedMove;
         lastPlaced = getCell(from_b.lastPlaced);
         AR.copy(playerColor,from_b.playerColor);
         AR.copy(playerChip,from_b.playerChip);
@@ -412,9 +414,10 @@ class TweedBoard
     			 chips_on_board--; 
     			 occupiedCells[index].remove(c,false);  
     			 }
+    		c.lastPlaced = 0;
      	}
     	else 
-    	{
+    	{	
     		if(old!=ch)
     		{
     			// changing color
@@ -495,7 +498,8 @@ class TweedBoard
            	do { SetBoard(c,po);
            		 ton++;
            	} while (ton<n);
-           	
+           	c.lastPlaced = lastPlacedMove;
+    		lastPlacedMove++;
             pickedObject = null;
             break;
         }

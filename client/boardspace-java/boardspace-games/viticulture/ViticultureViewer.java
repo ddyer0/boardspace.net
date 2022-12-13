@@ -39,7 +39,6 @@ import online.search.SimpleRobotProtocol;
 import rpc.RpcService;
 import viticulture.PlayerBoard.ScoreEvent;
 import viticulture.PlayerBoard.ScoreStack;
-import viticulture.ViticultureConstants.ChipType;
 import vnc.VNCService;
 
 
@@ -3398,6 +3397,8 @@ private void drawPlayerBoard(Graphics gc,
         boolean showWines = (state.activity==Activity.FillWine)||(state.activity==Activity.DiscardWines);
         boolean selectWines = (state.activity==Activity.DiscardWines);
         boolean harvesting  = (state.activity==Activity.Harvesting);
+        if(!apCards)
+        {
         switch(gb.getState())
         {
         case Plant1AndGive2:
@@ -3423,7 +3424,7 @@ private void drawPlayerBoard(Graphics gc,
      		uncensored = true;
      		break;
      	default: break;
-     	}
+     	}}
         int wineIndex = 0;
     	ViticultureCell fields[] = pb.fields;
     	ViticultureCell vines[] = pb.vines;

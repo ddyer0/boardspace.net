@@ -21,9 +21,10 @@ class CellStack extends OStack<TweedCell>
  */
 public class TweedCell
 	//this would be stackCell for the case that the cell contains a stack of chips 
-	extends stackCell<TweedCell,TweedChip>	
+	extends stackCell<TweedCell,TweedChip>	implements PlacementProvider
 {	
 	int seen[] = new int[2];
+	int lastPlaced = 0;
 	public void initRobotValues() 
 	{
 	}
@@ -54,6 +55,7 @@ public class TweedCell
 		super.copyFrom(ot);
 		seen[0]=ot.seen[0];
 		seen[1]=ot.seen[1];
+		lastPlaced = ot.lastPlaced;
 	}
 	/**
 	 * reset back to the same state as when newly created.  This is used
@@ -62,6 +64,7 @@ public class TweedCell
 	public void reInit()
 	{	super.reInit();
 		seen[0]=seen[1]=0;
+		lastPlaced = 0;
 	}
 	// constructor a cell not on the board, with a chip.  Used to construct the pool chips
 	public TweedCell(TweedChip cont)
@@ -85,5 +88,10 @@ public class TweedCell
 	}
 	public void incrementSeen(int n) { seen[n]++; }
 	public int getSeen(int n) { return(seen[n]);}
+	
+	// support for PlacementProvider
+	public int getLastPlacement(boolean empty) {
+		return empty?0:lastPlaced;
+	}
 	
 }

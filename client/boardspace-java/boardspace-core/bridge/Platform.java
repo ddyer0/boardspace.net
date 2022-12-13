@@ -108,11 +108,11 @@ public static synchronized Object MakeInstance(String classname)
 
     static public FontMetrics getFontMetrics(Component c,Font f) 
 	   {
-		   return(c.getFontMetrics(f));
+		   return(f==null ? null : c.getFontMetrics(f));
 	   }
 	   static public FontMetrics getFontMetrics(Component c)
 	   {
-		   return(c.getFontMetrics(c.getFont()));
+		   return(getFontMetrics(c,c.getFont()));
 	   }
 
 	   @SuppressWarnings("deprecation")

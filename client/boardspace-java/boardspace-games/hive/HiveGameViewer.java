@@ -19,6 +19,7 @@ import lib.G;
 import lib.GC;
 import lib.HitPoint;
 import lib.LFrameProtocol;
+import lib.LocationProvider;
 import lib.StockArt;
 import lib.Toggle;
 
@@ -48,6 +49,7 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
     private Color ZoomColor = new Color(0.0f,0.0f,1.0f);
     private Color rackBackGroundColor = new Color(215,197,157);
     private Color rackActiveColor = new Color(225,207,127);		// done button when active
+    private Color BlackArrowColor = new Color(230,200,255);;
      
     private Color chatBackgroundColor = new Color(240,230,210);
     private Font gameLogBoldFont=null;
@@ -67,9 +69,19 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
     //private Rectangle boardRect = addRect("boardRect"); //the actual board, normally at the left edge
     //public Rectangle stateRect = addRect("stateRect");
     //public Rectangle noChatRect = addRect("nochat");
-     private Rectangle repRect = addRect("repRect");
-    private NumberMenu numberMenu = new NumberMenu(this,HivePiece.BugIcon,HiveId.ShowNumbers);
-    ;
+    private Rectangle repRect = addRect("repRect");
+    private NumberMenu numberMenu = new NumberMenu(this,HivePiece.BugIcon,HiveId.ShowNumbers){
+        public void drawArrow(Graphics gc,LocationProvider src,LocationProvider dest,Color labelColor,int cellSize)
+        {	PlacementProvider from = getPlacement(dest);
+        	if(from instanceof HiveCell) {
+        		HiveCell c = (HiveCell)from;
+        		if(c!=null)
+        		{
+        			if(b.playerColor(c.lastMover)==HiveId.Black_Bug_Pool) { labelColor = BlackArrowColor; }
+        		}
+        	}
+        	super.drawArrow(gc,src,dest,labelColor,cellSize);
+        }};
     private Rectangle idRects[] = addRect("id",2);
     private Rectangle[]chipRects = addRect("chip",2);
     private Rectangle[]setupRects = addRect("setup",2);

@@ -21,12 +21,13 @@ class CellStack extends OStack<hexCell>
  * @author ddyer
  *
  */
-public class hexCell extends chipCell<hexCell,hexChip>
+public class hexCell extends chipCell<hexCell,hexChip> implements PlacementProvider
 {	
 	hexblob blob;			// the blob which contains this cell
 	hexCell nextInBlob;		// a link to the next cell in this blob
 	int sweep_counter;		// the sweep counter for which blob is accurate
 	int borders = -1;		// bitmask of possible borders
+	int lastPlaced = 0;
 	public void initRobotValues() 
 	{
 	}
@@ -58,18 +59,20 @@ public class hexCell extends chipCell<hexCell,hexChip>
 	/** copyFrom is called when cloning boards
 	 * 
 	 */
-	//public void copyFrom(hexCell ot)
-	//{	//hexCell other = (hexCell)ot;
+	public void copyFrom(hexCell ot)
+	{	//hexCell other = (hexCell)ot;
 		// copy any variables that need copying
-	//	super.copyFrom(ot);
-	//}
+		super.copyFrom(ot);
+		lastPlaced = ot.lastPlaced;
+	}
 	/**
 	 * reset back to the same state as when newly created.  This is used
 	 * when reinitializing a board.
 	 */
-	//public void reInit()
-	//{	super.reInit();
-	//}
+	public void reInit()
+	{	super.reInit();
+		lastPlaced = 0;
+	}
 	// constructor a cell not on the board, with a chip.  Used to construct the pool chips
 	public hexCell(hexChip cont)
 	{	super();
@@ -113,6 +116,12 @@ public class hexCell extends chipCell<hexCell,hexChip>
 	}
 	public hexChip[] newComponentArray(int size) {
 		return(new hexChip[size]);
+	}
+
+	public int getLastPlacement(boolean empty) {
+		// hex stones never move
+		if(!empty) { return lastPlaced; }
+		return 0;
 	}
 
 }

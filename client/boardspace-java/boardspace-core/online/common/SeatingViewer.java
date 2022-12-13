@@ -1,6 +1,7 @@
 package online.common;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.FontMetrics;
 
 import lib.Graphics;
@@ -876,15 +877,18 @@ public class SeatingViewer extends exCanvas implements LobbyConstants
 		  else 
 		  {	int gameW = w-(gameX-l)-w/20;
 		    int gameH = h-(gameY-t)-h/20;
-			  GC.setFont(gc,largeBoldFont());
-			  FontMetrics fm = G.getFontMetrics(this);
-			  int fh = fm.getHeight();
-			  Rectangle ur = new Rectangle(gameX,gameY,gameW,fh*2);
-			  GC.frameRect(gc,Color.blue,ur);
-			  GC.Text(gc,true,gameX,gameY,gameW,fh*2,Color.black,null,"Play Offline");
-			  GC.setFont(gc,standardPlainFont());
-			  messageArea.setBounds(gameX,gameY+fh*2+1,gameW,gameH-fh*2);
-			  if(!messageArea.isVisible())
+		    Font lb = largeBoldFont();
+		    // have to be very careful because GC may be null, and in rare
+		    // circumstances, this.getFont() may also be null.
+		    GC.setFont(gc,lb);
+		    FontMetrics fm = G.getFontMetrics(lb);
+		    int topPart = fm.getHeight()*3/2;
+		    Rectangle ur = new Rectangle(gameX,gameY,gameW,topPart);
+		    GC.frameRect(gc,Color.blue,ur);
+		    GC.Text(gc,true,gameX,gameY,gameW,topPart,Color.black,null,"Play Offline");
+		    GC.setFont(gc,standardPlainFont());
+		    messageArea.setBounds(gameX,gameY+topPart+1,gameW,gameH-topPart);
+		    if(!messageArea.isVisible())
 			  {
 			  messageArea.setVisible(true);
 			  messageArea.flagExtensionLines = false;
