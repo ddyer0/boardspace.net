@@ -3,14 +3,20 @@ package checkerboard;
 import lib.Random;
 import checkerboard.CheckerConstants.CheckerId;
 import lib.OStack;
+import online.game.PlacementProvider;
 import online.game.stackCell;
 
 class CellStack extends OStack<CheckerCell>
 {
 	public CheckerCell[] newComponentArray(int n) { return(new CheckerCell[n]); }
 }
-public class CheckerCell extends stackCell<CheckerCell,CheckerChip>
+public class CheckerCell extends stackCell<CheckerCell,CheckerChip> implements PlacementProvider
 {	
+	int lastPlaced = 0;
+	int lastEmptied = 0;
+	int lastCaptured = 0;
+	CheckerChip lastContents;
+	
 	public CheckerChip[] newComponentArray(int n) { return(new CheckerChip[n]); }
 	// constructor
 	public CheckerCell(char c,int r) 
@@ -42,30 +48,45 @@ public class CheckerCell extends stackCell<CheckerCell,CheckerChip>
 	
 	public boolean isKing() { return((height()-stackBaseLevel())==2); }
 	public CheckerCell(Random r) { super(r); }
+
+	public int getLastPlacement(boolean empty) {
+		return empty ? lastEmptied : lastPlaced;
+	}
 	
 	
 	/**
 	 * wrap this method if the cell holds any additional state important to the game.
 	 * This method is called, with a random sequence, to digest the cell in unusual
-	 * roles, or when the diest of contents is complex.
+	 * roles, or when the digest of contents is complex.
 	 */
 	//public long Digest(Random r) { return(super.Digest(r)); }
 	
-	/** copyFrom is called when copyying new cells for use in the UI
+	/** copyFrom is called when copying new cells for use in the UI
 	 * 
 	 */
-	//public void copyAllFrom(CheckerCell ot)
-	//{	//CheckerCell other = (CheckerCell)ot;
-		// copy any variables that need copying
-	//	super.copyAllFrom(ot);
-	//}
+//	public void copyAllFrom(CheckerCell ot)
+//	{	
+//		super.copyAllFrom(ot);
+//	}
 
+	public void copyFrom(CheckerCell ot)
+	{	super.copyFrom(ot);
+		lastPlaced = ot.lastPlaced;
+		lastEmptied = ot.lastEmptied;
+		lastCaptured = ot.lastCaptured;
+		lastContents = ot.lastContents;
+
+	}
 	/**
 	 * reset back to the same state as when newly created.  This is used
 	 * when reinitializing a board.
 	 */
-	//public void reInit()
-	//{	super.reInit();
-	//}
+	public void reInit()
+	{	super.reInit();
+		lastPlaced = 0;
+		lastEmptied = 0;
+		lastCaptured = 0;
+		lastContents = null;
+	}
 
 }

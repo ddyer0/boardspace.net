@@ -101,6 +101,11 @@ class CheckerBoard extends rectBoard<CheckerCell> implements BoardProtocol
   	private IStack robotCapture = new IStack();
   	private IStack robotKing = new IStack();
   	
+  	int previousLastPlaced = 0;
+  	int previousLastEmptied = 0;
+  	CheckerChip previousLastContents = null;
+  	int lastPlacedIndex = 0;
+  	
      CellStack occupiedCells[] = new CellStack[2];	// cells occupied, per color
     
     private int ForwardDiagonals[][] = { { CELL_DOWN_LEFT,CELL_DOWN_RIGHT}, { CELL_UP_LEFT,CELL_UP_RIGHT}};
@@ -235,6 +240,10 @@ class CheckerBoard extends rectBoard<CheckerCell> implements BoardProtocol
         unresign = from_b.unresign;
         repeatedPositions = from_b.repeatedPositions;
         copyFrom(rack,from_b.rack);
+        lastPlacedIndex = from_b.lastPlacedIndex;
+        previousLastPlaced = from_b.previousLastPlaced;
+        previousLastEmptied = from_b.previousLastEmptied;
+        previousLastContents = from_b.previousLastContents;
         sameboard(from_b);
     }
     public void doInit(String gtype,long rv)
@@ -340,6 +349,7 @@ class CheckerBoard extends rectBoard<CheckerCell> implements BoardProtocol
 	    lastProgressMove = 0;
 	    lastDrawMove = 0;
 	    robotDepth = 0;
+	    lastPlacedIndex = 1;
 	    robotState.clear();
 	    robotLast.clear();
 	    robotCapture.clear();
@@ -496,6 +506,9 @@ class CheckerBoard extends rectBoard<CheckerCell> implements BoardProtocol
 					currentDest = droppedDestStack.top();
 				}
 				else { captureHeight.pop(); }
+				dr.lastPlaced = previousLastEmptied;
+				lastPlacedIndex--;
+				
 				break;
 			case White_Chip_Pool:	// treat the pools as infinite sources and sinks
 			case Black_Chip_Pool:	
@@ -521,6 +534,8 @@ class CheckerBoard extends rectBoard<CheckerCell> implements BoardProtocol
     				ps.addChip(po);
     				if(h==2) { ps.addChip(po); }
     				occupiedCells[playerIndex(po)].push(ps);
+    				ps.lastEmptied = previousLastEmptied;
+    				
     				break;
     		case White_Chip_Pool:
     		case Black_Chip_Pool:	break;	// don't add back to the pool
@@ -541,6 +556,9 @@ class CheckerBoard extends rectBoard<CheckerCell> implements BoardProtocol
 			c.addChip(pickedObject);
 			if(pickedHeight.top()==2) { c.addChip(pickedObject); }
 			occupiedCells[playerIndex(pickedObject)].push(c);
+			previousLastPlaced = c.lastPlaced;
+			c.lastPlaced = lastPlacedIndex;
+			lastPlacedIndex++;
 			break;
 		case White_Chip_Pool:
 		case Black_Chip_Pool:	break;	// don't add back to the pool
@@ -566,6 +584,10 @@ class CheckerBoard extends rectBoard<CheckerCell> implements BoardProtocol
 			if(isKing) { c.removeTop(); }
 			pickedHeight.push(isKing?2:1);
 			occupiedCells[playerIndex(ch)].remove(c,false);
+			previousLastContents = c.topChip();
+			previousLastEmptied = c.lastEmptied;
+			c.lastEmptied = lastPlacedIndex;
+			
 			break;
 		case White_Chip_Pool:
 		case Black_Chip_Pool:	
@@ -768,6 +790,8 @@ class CheckerBoard extends rectBoard<CheckerCell> implements BoardProtocol
     	int capee = playerIndex(ch);
 		occupiedCells[capee].remove(mid,false);
 		captureStack.push(mid);
+		mid.lastContents = ch;
+		mid.lastCaptured = lastPlacedIndex;
 		captureHeight.push(isKing?2:1);
     }
     private void undoCapture(CheckerCell cap,int capHeight)

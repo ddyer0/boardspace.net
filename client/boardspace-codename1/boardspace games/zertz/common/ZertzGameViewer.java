@@ -15,14 +15,13 @@ import lib.GC;
 import lib.HitPoint;
 import lib.LFrameProtocol;
 import lib.PopupManager;
+import lib.StockArt;
 import lib.TextButton;
 import online.common.*;
 import online.game.*;
 import online.game.sgf.sgf_node;
 import online.game.sgf.sgf_property;
 import online.search.SimpleRobotProtocol;
-
-
 
 
 /*
@@ -32,7 +31,7 @@ Feb 29 2004  Iniital work in progress, support for Zertz
 Oct 2004 Added simple variations branching and scrolling
   Split some sharable elements into commonCanvas
 */
-public class ZertzGameViewer extends CCanvas<zCell,GameBoard> implements GameConstants, GameLayoutClient
+public class ZertzGameViewer extends CCanvas<zCell,GameBoard> implements GameConstants, GameLayoutClient,PlacementProvider
 {
     /**
 	 * 
@@ -70,6 +69,9 @@ public class ZertzGameViewer extends CCanvas<zCell,GameBoard> implements GameCon
     private Rectangle reserveRect = addRect("reserveRect");
     private Rectangle variationRect = addRect("variationRect");
     public Rectangle rackRects[] = addRect("rack",2);
+    
+    private NumberMenu numberMenu = null;
+
     private TextButton swapButton = addButton(SwapFirst,GameId.HitSwapButton,SwapFirst,
 			HighlightColor, rackBackGroundColor);
     private Rectangle repRect = addRect("repRect");
@@ -109,11 +111,11 @@ public class ZertzGameViewer extends CCanvas<zCell,GameBoard> implements GameCon
     public void init(ExtendedHashtable info,LFrameProtocol frame)
     {
         super.init(info,frame);
-
         MouseColors = zMouseColors;
         MouseDotColors = zMouseDotColors;
+        numberMenu = new NumberMenu(this,zChip.White,ZertzId.ShowNumbers);
      
-        b = new GameBoard(info.getString(OnlineConstants.GAMETYPE, "Zertz"));
+        b = new GameBoard(info.getString(GAMETYPE, "Zertz"));
         useDirectDrawing(true);
         doInit(false);
    }
@@ -216,7 +218,7 @@ public class ZertzGameViewer extends CCanvas<zCell,GameBoard> implements GameCon
     	//
         int stateY = boardY;
         int stateX = boardX;
-        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,noChatRect);
+        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,numberMenu,noChatRect);
     	G.SetRect(boardRect,boardX,boardY+CELLSIZE/2,boardW,boardH);
     	
     	G.SetRect(reserveRect,boardX+boardW,boardY+CELLSIZE,3*CELLSIZE,boardH-2*CELLSIZE);
@@ -312,6 +314,8 @@ public class ZertzGameViewer extends CCanvas<zCell,GameBoard> implements GameCon
     		// allow moving balls in puzzle mode
     		GC.frameRect(gc, Color.red, R);
             highlightRackIndex = ZertzId.find(rackindex);
+            highlightBoardCol = (char)0;
+            highlightBoardRow = 0;
             highlight.hitCode = ZertzId.find(rackindex);
     		}
         zCell[] ballCells = bd.rack[rackindex];
@@ -361,6 +365,8 @@ public class ZertzGameViewer extends CCanvas<zCell,GameBoard> implements GameCon
             else if (drawhighlight)
             {
                 highlightRackIndex = ZertzId.find(rackindex);
+                highlightBoardCol = (char)0;
+                highlightBoardRow = 0;
                 highlight.hitCode = ZertzId.find(index);
             }
         	}
@@ -382,6 +388,7 @@ public class ZertzGameViewer extends CCanvas<zCell,GameBoard> implements GameCon
         int fromCol = movingFromBoardCol;
         int moving = movingObject;
         boolean review = reviewMode() && !allowed_to_edit;
+        numberMenu.clearSequenceNumbers();
         Color background = review ? reviewModeBackground : boardBackgroundColor;
         if(movingObject < 0)
         {
@@ -417,6 +424,8 @@ public class ZertzGameViewer extends CCanvas<zCell,GameBoard> implements GameCon
                             : canChange)); // & not dragging a ball
            boolean drawhighlight = allowSelect && hitpoint;
 
+           numberMenu.saveSequenceNumber(cel,xpos,ypos);
+           
            if ((piece != NoSpace))
                 {
                     if (gc != null)
@@ -444,17 +453,15 @@ public class ZertzGameViewer extends CCanvas<zCell,GameBoard> implements GameCon
                         		  zChip.getChip(color).drawChip(gc,this,CELLSIZE,xpos,ypos,null);
                         	  }
                         	 }
-                         
                             if (bd.CapturedColorIndex(piece) >= 0)
                             {
-                                GC.setColor(gc,Color.red);
-                                GC.drawLine(gc,xpos + BALLRADIUS,
-                                    ypos + BALLRADIUS, xpos - BALLRADIUS,
-                                    ypos - BALLRADIUS);
-                                GC.drawLine(gc,xpos + BALLRADIUS,
-                                    ypos - BALLRADIUS, xpos - BALLRADIUS,
-                                    ypos + BALLRADIUS);
+                                StockArt.SmallX.drawChip(gc,this,CELLSIZE,xpos,ypos,null);
                             }
+                            }
+                       else {
+
+                    	   showCaptured(gc,cel,xpos,ypos);
+                    	   
                         }
                     }
                     else if (drawhighlight)
@@ -481,6 +488,7 @@ public class ZertzGameViewer extends CCanvas<zCell,GameBoard> implements GameCon
                                               : RingOutlineColor,
                                 RingTextColor);
                         }
+                       showCaptured(gc,cel,xpos,ypos);
                     }
                     else if (drawhighlight)
                     {
@@ -491,8 +499,20 @@ public class ZertzGameViewer extends CCanvas<zCell,GameBoard> implements GameCon
                     }
                 }
         }
+       	numberMenu.drawSequenceNumbers(gc,CELLSIZE,labelFont,labelColor);
     }
-
+    private void showCaptured(Graphics gc,zCell cel,int xpos,int ypos)
+    {
+    	int nn = numberMenu.getVisibleNumber(cel.lastCaptured);
+ 	   	if(nn>0)
+ 	   	{   int cc = zChip.BallColorIndex(cel.lastContents);
+ 	   	   if(cc>=0)
+ 	   	   {
+ 	   	   zChip.getChip(cc).drawChip(gc,this,CELLSIZE,xpos,ypos,null);
+ 		   StockArt.SmallX.drawChip(gc,this,CELLSIZE,xpos,ypos,null);
+ 	   	   }
+ 	   }
+    }
     public boolean DrawTileSprite(Graphics gc,HitPoint hp)
     { //draw the ball being dragged
     	int obj = movingObject;
@@ -529,6 +549,7 @@ public class ZertzGameViewer extends CCanvas<zCell,GameBoard> implements GameCon
     				PerformAndTransmit("SetBoard "+v.shortName);
      				return(true);
     			}
+    	else if(numberMenu.selectMenu(target,this)) { return true;}
     	else return(super.handleDeferredEvent(target,command));
     }
     
@@ -612,6 +633,7 @@ public class ZertzGameViewer extends CCanvas<zCell,GameBoard> implements GameCon
 				s.get(GoalMessage),progressRect, goalRect);
 
         DrawRepRect(gc,messageRotation,Color.black, bd.Digest(),repRect);	// Not needed for barca
+        numberMenu.draw(gc,selectPos);
         drawVcrGroup(nonDragSelect, gc);
         drawVariation(gc,ourTurnSelect);
     }
@@ -625,6 +647,9 @@ public class ZertzGameViewer extends CCanvas<zCell,GameBoard> implements GameCon
     	  // animations anyway.
     	  replay = replayMode.Single; 
     	}
+    	
+    // record where the boundaries in move numbers lie
+    numberMenu.recordSequenceNumber(b.moveNumber());
    	handleExecute(b,m,replay);
    	if(m.op==MOVE_SETBOARD) { resetBounds(); }
    	// in capture moves, SequentialFromStart shows the captured ball in its original place
@@ -903,6 +928,7 @@ public class ZertzGameViewer extends CCanvas<zCell,GameBoard> implements GameCon
             }
 
         }
+        else if (hitObject == ZertzId.ShowNumbers) { numberMenu.showMenu(); }
         else if (hitObject == ZertzId.EmptyBoard)
         {	
             PerformAndTransmit("R- " + highlightBoardCol + " " +
@@ -1059,6 +1085,11 @@ public class ZertzGameViewer extends CCanvas<zCell,GameBoard> implements GameCon
             setComment(comments);
         }
     }
+
+
+	public int getLastPlacement(boolean empty) {
+			return b.placementIndex;
+	}
 
 
 

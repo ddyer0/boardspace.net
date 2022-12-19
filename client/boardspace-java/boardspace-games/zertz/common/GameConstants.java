@@ -15,7 +15,8 @@ public interface GameConstants
     	White("0",true),Gray("1",true),Black("2",true),
         EmptyBoard("E",false), // highlight points to empty board
         RemovedRing("x",false),
-        HitChangeBoard("C",false),
+        HitChangeBoard("C",false), 
+        ShowNumbers("",false);
         ; // a piece of the board that is removed
     	String shortName;
     	public String shortName() { return(shortName); }

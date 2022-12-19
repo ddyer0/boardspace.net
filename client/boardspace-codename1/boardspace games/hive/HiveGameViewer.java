@@ -47,6 +47,7 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
     private Color ZoomColor = new Color(0.0f,0.0f,1.0f);
     private Color rackBackGroundColor = new Color(215,197,157);
     private Color rackActiveColor = new Color(225,207,127);		// done button when active
+    private Color BlackArrowColor = new Color(230,200,255);;
     
     private Color chatBackgroundColor = new Color(240,230,210);
     private Font gameLogBoldFont=null;
@@ -547,7 +548,8 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
                  	&& inside ;
                  cell.rotateCurrentCenter(gc,xpos,ypos);
         	 
-        	 numberMenu.saveSequenceNumber(cell,xpos-xo,ypos-yo);
+        	 Color arrow = (b.playerColor(cell.lastMover)==HiveId.Black_Bug_Pool) ? BlackArrowColor : labelColor;
+        	 numberMenu.saveSequenceNumber(cell,xpos-xo,ypos-yo,arrow);
  
                  //G.DrawAACircle(gc,xpos,ypos,1,tiled?Color.green:Color.blue,Color.yellow,true);
                  if(piece!=null)

@@ -127,6 +127,7 @@ public interface CommonConfig {
 		   ticktock("true"),
 		   colorblind("false"),
 		   autodone("false"),
+		   showgrid("false"),
 		   ;
 		   String value;
 		   Default(String v) { value = v; }

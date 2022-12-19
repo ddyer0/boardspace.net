@@ -4670,10 +4670,16 @@ public abstract class commonCanvas extends exCanvas
         if(gameInfo!=null) {  myFrame.setTitle(gameInfo.gameName);}
         myFrame.setIconAsImage(gameIcon);
         
-        hidden.controlToken = use_grid = mutable_game_record = allowed_to_edit = reviewOnly = (gameMode==Session.Mode.Review_Mode);
+        hidden.controlToken = mutable_game_record = allowed_to_edit = reviewOnly = 
+        		
+        		(gameMode==Session.Mode.Review_Mode);
+        		
+        use_grid = reviewOnly || Config.Default.getBoolean(Config.Default.showgrid);
+        
         mutated_game_record = false;
         l.playTickTockSounds = Config.Default.getBoolean(Config.Default.ticktock);
         gridOption = myFrame.addOption(s.get(ShowGridAction), use_grid,deferredEvents);
+        gridOption.setForeground(Color.blue);
         l.tickTockOption = myFrame.addOption(s.get(TickTockAction),l.playTickTockSounds,deferredEvents);
         l.tickTockOption.setForeground(Color.blue);
         l.mouseCheckbox = myFrame.addOption(s.get(TrackMice),true,null);
@@ -4935,6 +4941,7 @@ public abstract class commonCanvas extends exCanvas
         }
         else if (target == gridOption)
         {	use_grid = gridOption.getState();
+            Config.Default.setBoolean(Config.Default.showgrid,use_grid);
            generalRefresh();
            handled = true;
         }

@@ -351,7 +351,7 @@ public class SeatingViewer extends exCanvas implements LobbyConstants
 				User user = sess.players[0];
 				User players[] = new User[sess.players.length];
 				AR.copy(players,sess.players);
-				sess.launchGame(user,true,colorIndex,getCanvasRotation());
+				sess.launchGame(user,true,colorIndex,getCanvasRotation(),sess.currentGame);
 				for(int i=0;i<players.length;i++) { sess.putInSess(players[i],i); }
 				break;
 			case DiscardButton:

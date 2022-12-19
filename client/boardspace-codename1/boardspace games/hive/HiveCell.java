@@ -23,6 +23,7 @@ public class HiveCell extends stackCell<HiveCell,HivePiece> implements Placement
 	
 	// these three are to support displaying placement order
 	public HivePiece lastContents;
+	public int lastMover;
 	public int lastEmptied = 0;
 	public int lastFilled = 0;
 	
@@ -34,7 +35,10 @@ public class HiveCell extends stackCell<HiveCell,HivePiece> implements Placement
 	public void reInit()
 	{
 		super.reInit();
-		initPlacement();
+		lastContents = null;
+		lastEmptied = 0;
+		lastFilled = 0;
+		lastMover = 0;
 	}
 
 	public void copyFrom(HiveCell other)
@@ -42,6 +46,7 @@ public class HiveCell extends stackCell<HiveCell,HivePiece> implements Placement
 		lastContents = other.lastContents;
 		lastFilled = other.lastFilled;
 		lastEmptied = other.lastEmptied;
+		lastMover = other.lastMover;
 	  
 	}
 	public HiveId rackLocation() { return((HiveId)rackLocation); }
@@ -219,13 +224,6 @@ public class HiveCell extends stackCell<HiveCell,HivePiece> implements Placement
 		return(false);
     }
 
-    // support for placement order display
-	public void initPlacement()
-	{
-		lastContents = null;
-		lastEmptied = 0;
-		lastFilled = 0;
-	}
 
     public int getLastPlacement(boolean empty) {
 		return empty ? lastEmptied : lastFilled;

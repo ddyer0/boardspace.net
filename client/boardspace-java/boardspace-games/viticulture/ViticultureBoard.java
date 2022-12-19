@@ -1015,24 +1015,24 @@ public int getMaxRevisionLevel() { return(REVISION); }
         	grapeDisplay[i] = newcell(ViticultureId.StartPlayer,'@',i);
         }
         
-		tradeCards.addChip(ViticultureChip.GreyCard);
-		tradeCards.addChip(ViticultureChip.GreyCard);
+		tradeCards.addFixedChip(ViticultureChip.GreyCard);
+		tradeCards.addFixedChip(ViticultureChip.GreyCard);
 
 		tradeCoins.addChip(ViticultureChip.Coin_2);
 		tradeCoins.addChip(ViticultureChip.Coin_1);
 		tradeVP.addChip(ViticultureChip.VictoryPoint_1);
 		tradeWhiteGrape.addChip(ViticultureChip.WhiteGrape);
-		tradeRedGrape.addChip(ViticultureChip.RedGrape);
+		tradeRedGrape.addFixedChip(ViticultureChip.RedGrape);
 		
-		yokeCash.addChip(ViticultureChip.Coin_5);
-		yokeCash.addChip(ViticultureChip.Coin_2);
-		yokeCash.addChip(ViticultureChip.Coin_1);
-		yokeRedGrape.addChip(ViticultureChip.RedGrape);
-		yokeRedWine.addChip(ViticultureChip.RedWine);
-		yokeWhiteGrape.addChip(ViticultureChip.WhiteGrape);
-		yokeWhiteWine.addChip(ViticultureChip.WhiteWine);
-		yokeRoseWine.addChip(ViticultureChip.RoseWine);
-		yokeChampaign.addChip(ViticultureChip.Champagne);
+		yokeCash.addFixedChip(ViticultureChip.Coin_5);
+		yokeCash.addFixedChip(ViticultureChip.Coin_2);
+		yokeCash.addFixedChip(ViticultureChip.Coin_1);
+		yokeRedGrape.addFixedChip(ViticultureChip.RedGrape);
+		yokeRedWine.addFixedChip(ViticultureChip.RedWine);
+		yokeWhiteGrape.addFixedChip(ViticultureChip.WhiteGrape);
+		yokeWhiteWine.addFixedChip(ViticultureChip.WhiteWine);
+		yokeRoseWine.addFixedChip(ViticultureChip.RoseWine);
+		yokeChampaign.addFixedChip(ViticultureChip.Champagne);
 	  	
         doInit(init,key,players,rev); // do the initialization 
     }

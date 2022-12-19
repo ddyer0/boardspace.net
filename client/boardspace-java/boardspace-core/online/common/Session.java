@@ -263,6 +263,7 @@ public class Session implements LobbyConstants
     }
 
     public GameInfo currentGame = null;
+    public GameInfo launchingGame = null;
     public boolean drewRules = false;
     public boolean drewVideo = false;
     
@@ -600,8 +601,17 @@ public class Session implements LobbyConstants
 	    						&& (mode != Mode.Master_Mode);
 	    return(canAddRobot);
     }
-  	public void launchGame(User primaryUser,boolean sound,int []activeColorMap,int rotation) 
+    /**
+     * phase 3 of the launch process
+     * 
+     * @param primaryUser
+     * @param sound
+     * @param activeColorMap
+     * @param rotation
+     */
+  	public void launchGame(User primaryUser,boolean sound,int []activeColorMap,int rotation,GameInfo game) 
 		{
+  		currentGame = game;
 		InternationalStrings s = G.getTranslations();
 		ExtendedHashtable sharedInfo = G.getGlobals();
 		boolean enabled = gameIsAvailable();
@@ -816,7 +826,7 @@ public class Session implements LobbyConstants
 	      }
 	  }
 
-	public void launchSpectator(User primaryUser,boolean sound,int rotation)
+	public void launchSpectator(User primaryUser,boolean sound,int rotation,GameInfo game)
 	{
 	       password="";
 	       startingNplayers=0;
@@ -827,7 +837,7 @@ public class Session implements LobbyConstants
 	       startingName="";
 	       LaunchUser lu = launchUser = new LaunchUser();
 	       lu.user = primaryUser;
-	       launchGame(primaryUser,sound,null,rotation);
+	       launchGame(primaryUser,sound,null,rotation,game);
 	     
 	}
 	public boolean canChangeGameInfo()

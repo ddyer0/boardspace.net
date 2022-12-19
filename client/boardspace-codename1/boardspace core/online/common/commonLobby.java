@@ -2050,7 +2050,7 @@ private boolean processEchoRoomtype(String messType,StringTokenizer localST)
      	startingSession= null;
      	clearedForLaunch=false;
      	User me = users.primaryUser();
-     	sess.launchGame(me,myFrame.doSound(),null,v!=null ? v.getCanvasRotation():0);
+     	sess.launchGame(me,myFrame.doSound(),null,v!=null ? v.getCanvasRotation():0,sess.launchingGame);
          movingToSess = -1;
     	sendMessage(NetConn.SEND_LOBBY_INFO+" 0 0 0");
     	sendMessage(NetConn.SEND_GROUP+KEYWORD_UIMIN+" 0 0 0");
@@ -2454,7 +2454,7 @@ void LaunchGameNow(StringTokenizer localST)
 			if(found!=null) { sess.currentGame = found; }
 		}
 	}
-	
+	sess.launchingGame = sess.currentGame;
 	if(localST.hasMoreTokens())
 	{
 		String cmd = localST.nextToken();
@@ -2567,7 +2567,7 @@ public void DoLaunch(Session sess,Bot robot)
   //occupy in the game
   int np = curp + ((robotGame!=null)?1:0);
   int order[] = AR.intArray(np);
-
+  G.Assert(np<=sess.currentGame.maxPlayers,"too many player");
   if( (robot==Bot.NoRobotRandom)
 		  // this was explicitly removed, so you can choose the color
 		  // you play against robots

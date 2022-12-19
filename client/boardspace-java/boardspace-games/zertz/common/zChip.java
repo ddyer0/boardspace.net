@@ -70,7 +70,8 @@ public class zChip extends chip<zChip> implements GameConstants
     static final int NOSHADOW_OFFSET = 4;
     static final int ICON_OFFSET = 7;
     static zChip Icon = null;
-	// call from the viewer's preloadImages
+    static zChip White = null;
+ 	// call from the viewer's preloadImages
 	public static void preloadImages(ImageLoader forcan,String ImageDir)
 	{	if(CANONICAL_PIECE==null)
 		{
@@ -83,6 +84,7 @@ public class zChip extends chip<zChip> implements GameConstants
         	CC[i]=new zChip(i,ImageNames[i],IM[i],rv.nextLong(),SCALES[i]); 
         	}
         Icon = CC[ICON_OFFSET];
+        White = CC[WHITE_INDEX];
         CANONICAL_PIECE = CC;
         check_digests(CC);
 		}

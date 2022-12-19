@@ -681,7 +681,7 @@ public class TintasViewer extends CCanvas<TintasCell,TintasBoard> implements Tin
 			case ConfirmSwap:
 			case Puzzle:
 			{
-		        TintasCell hitObject = hitCell(hp);
+		        TintasCell hitObject = bb.getCell(hitCell(hp));
 
 				if((bb.pickedObject==null) && (hitObject.topChip()!=null))
 				{

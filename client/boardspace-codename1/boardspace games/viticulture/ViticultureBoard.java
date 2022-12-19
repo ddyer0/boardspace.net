@@ -152,6 +152,7 @@ class ViticultureBoard extends RBoard<ViticultureCell> implements BoardProtocol,
 										// revision 153 fixes an omission, considering the workshop discount for craftsman
 										// 		also fixes "producer" to only forbid retrieving itself
 										// revision 154 adds "fill" to jack of all trades if makewine is a choice
+										// revision 155 makes politico not offer to harvest 3 if there are less
 public int getMaxRevisionLevel() { return(REVISION); }
 	PlayerBoard pbs[] = null;		// player boards
 	public PlayerBoard getPlayerBoard(int n) 
@@ -1014,24 +1015,24 @@ public int getMaxRevisionLevel() { return(REVISION); }
         	grapeDisplay[i] = newcell(ViticultureId.StartPlayer,'@',i);
         }
         
-		tradeCards.addChip(ViticultureChip.GreyCard);
-		tradeCards.addChip(ViticultureChip.GreyCard);
+		tradeCards.addFixedChip(ViticultureChip.GreyCard);
+		tradeCards.addFixedChip(ViticultureChip.GreyCard);
 
 		tradeCoins.addChip(ViticultureChip.Coin_2);
 		tradeCoins.addChip(ViticultureChip.Coin_1);
 		tradeVP.addChip(ViticultureChip.VictoryPoint_1);
 		tradeWhiteGrape.addChip(ViticultureChip.WhiteGrape);
-		tradeRedGrape.addChip(ViticultureChip.RedGrape);
+		tradeRedGrape.addFixedChip(ViticultureChip.RedGrape);
 		
-		yokeCash.addChip(ViticultureChip.Coin_5);
-		yokeCash.addChip(ViticultureChip.Coin_2);
-		yokeCash.addChip(ViticultureChip.Coin_1);
-		yokeRedGrape.addChip(ViticultureChip.RedGrape);
-		yokeRedWine.addChip(ViticultureChip.RedWine);
-		yokeWhiteGrape.addChip(ViticultureChip.WhiteGrape);
-		yokeWhiteWine.addChip(ViticultureChip.WhiteWine);
-		yokeRoseWine.addChip(ViticultureChip.RoseWine);
-		yokeChampaign.addChip(ViticultureChip.Champagne);
+		yokeCash.addFixedChip(ViticultureChip.Coin_5);
+		yokeCash.addFixedChip(ViticultureChip.Coin_2);
+		yokeCash.addFixedChip(ViticultureChip.Coin_1);
+		yokeRedGrape.addFixedChip(ViticultureChip.RedGrape);
+		yokeRedWine.addFixedChip(ViticultureChip.RedWine);
+		yokeWhiteGrape.addFixedChip(ViticultureChip.WhiteGrape);
+		yokeWhiteWine.addFixedChip(ViticultureChip.WhiteWine);
+		yokeRoseWine.addFixedChip(ViticultureChip.RoseWine);
+		yokeChampaign.addFixedChip(ViticultureChip.Champagne);
 	  	
         doInit(init,key,players,rev); // do the initialization 
     }

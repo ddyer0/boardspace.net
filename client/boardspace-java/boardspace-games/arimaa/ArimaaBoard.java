@@ -104,6 +104,10 @@ class ArimaaBoard extends squareBoard<ArimaaCell> implements BoardProtocol,Arima
     private boolean trapMapValid = false;
     private int trap_sweep = 0;
     
+    IStack previousPlaced = new IStack();
+    IStack previousEmptied = new IStack();
+    IStack previousPlayer = new IStack();
+    int placementIndex = 0;
 
     CellStack robotOStack = new CellStack();
     ChipStack robotPStack = new ChipStack();
@@ -363,7 +367,8 @@ public long Digest()
 		getCell(droppedDestStack,from_b.droppedDestStack);
         pickedObject = from_b.pickedObject;
         stackIndex = from_b.stackIndex;
-            
+        placementIndex = from_b.placementIndex;
+        
         sameboard(from_b);
     }
 
@@ -394,7 +399,8 @@ public long Digest()
      	}    
         Init_Standard(gtype);
         moveNumber = 1;
-
+        placementIndex = 1;
+        acceptPlacement();
         // note that firstPlayer is NOT initialized here
     }
 
@@ -1421,6 +1427,9 @@ public long Digest()
         stackIndex--;
     	}
     	stackIndex=0;
+    	previousEmptied.clear();
+    	previousPlayer.clear();
+    	previousPlaced.clear();
     	return(captures);
      }
     //
@@ -1434,6 +1443,13 @@ public long Digest()
     destStack.pop();
     ArimaaCell dr = droppedDestStack[stackIndex];
     ArimaaChip cap = captureStack[stackIndex];
+    if(dr.onBoard) {
+    	ArimaaCell target = dr;
+    	if(dr.auxDisplay.lastPlaceMoveNumber==moveNumber) { target = dr.auxDisplay; }
+    	target.lastPlaced = previousPlaced.pop();
+    	target.lastPlaceMoveNumber = -1;
+    	placementIndex--;
+    }
     if(cap!=null)
     {	ArimaaChip cap2 = captureStack2[stackIndex];
     	if(cap2!=null)
@@ -1502,6 +1518,12 @@ public long Digest()
     	if(po!=null)
     	{
     	ArimaaCell ps = pickedSourceStack[stackIndex];
+    	if(ps.onBoard) {
+    		ArimaaCell target = ps.auxDisplay.lastEmptyMoveNumber==moveNumber ? ps.auxDisplay : ps;
+    		target.lastEmptied = previousEmptied.pop();
+    		target.lastEmptiedPlayer = previousPlayer.pop();
+    		target.lastEmptyMoveNumber = -1;
+    	}
     	pickedSourceStack[stackIndex]=null;
     	pickedObject = null;
     	addChip(ps,po);
@@ -1510,6 +1532,7 @@ public long Digest()
     // 
     // drop the floating object.
     //
+    
     private ArimaaCell dropObject(ArimaaCell to)
     {
     	droppedDestStack[stackIndex] = to;
@@ -1519,6 +1542,14 @@ public long Digest()
     	destStack.push(to);
     	addChip(to,pickedObject);
     	pickedObject = null;
+    	ArimaaCell target = to;
+    	if(to.lastPlaceMoveNumber==moveNumber) { target = to.auxDisplay; }
+    	else { to.auxDisplay.lastPlaceMoveNumber=-1; }
+     	
+    	previousPlaced.push(target.lastPlaced);
+     	target.lastPlaced = placementIndex;
+    	target.lastPlaceMoveNumber = moveNumber;
+    	placementIndex++;
     	return(to);
     }
     private ArimaaCell dropObject(ArimaaId dest, char col, int row)
@@ -1560,6 +1591,17 @@ public long Digest()
     {   G.Assert((pickedObject==null)&&(pickedSourceStack[stackIndex]==null),"ready to pick");
     	pickedSourceStack[stackIndex] = from;
     	pickedObject = removeChip(from);
+    	if(from.onBoard) {
+    		ArimaaCell target = from;
+    		if(from.lastEmptyMoveNumber==moveNumber) { target = from.auxDisplay; }
+    		else { from.auxDisplay.lastEmptyMoveNumber = -1; }
+    		previousEmptied.push(target.lastEmptied);
+    		previousPlayer.push(target.lastEmptiedPlayer);
+    		target.lastEmptiedPlayer = whoseTurn;
+    		target.lastEmptied = placementIndex;
+    		target.lastContents = pickedObject;
+    		target.lastEmptyMoveNumber = moveNumber;
+    	}
     	return(from);
     }
     private ArimaaCell getCell(ArimaaId source,char col,int row)

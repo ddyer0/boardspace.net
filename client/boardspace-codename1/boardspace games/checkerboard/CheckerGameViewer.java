@@ -30,7 +30,7 @@ import static checkerboard.CheckerMovespec.*;
 /**
  * This code shows the overall structure appropriate for a game view window.
 */
-public class CheckerGameViewer extends CCanvas<CheckerCell,CheckerBoard> implements CheckerConstants, GameLayoutClient
+public class CheckerGameViewer extends CCanvas<CheckerCell,CheckerBoard> implements CheckerConstants, GameLayoutClient, PlacementProvider
 {
 	static final String Checker_SGF = "Checker"; // sgf game name
 	static final String ImageDir = "/checkerboard/images/";
@@ -48,6 +48,7 @@ public class CheckerGameViewer extends CCanvas<CheckerCell,CheckerBoard> impleme
     // to visualize the layout during development.  Look for "show rectangles"
     // in the options menu.
     private Rectangle playerChipRect[] = addRect("chip",2);
+    private NumberMenu numberMenu = new NumberMenu(this,CheckerChip.white,CheckerId.ShowNumbers);
  
 
     private Rectangle reverseViewRect = addRect("reverse");
@@ -265,7 +266,7 @@ public class CheckerGameViewer extends CCanvas<CheckerCell,CheckerBoard> impleme
         int stateX = boardX;
         G.placeStateRow(	stateX,
         			stateY,
-        			boardW,stateH,iconRect,stateRect,eyeRect,noChatRect);
+        			boardW,stateH,iconRect,stateRect,numberMenu,eyeRect,noChatRect);
         
         G.placeRow(stateX, boardBottom-stateH, boardW, stateH, goalRect,liftRect,reverseViewRect);
         
@@ -372,6 +373,7 @@ public class CheckerGameViewer extends CCanvas<CheckerCell,CheckerBoard> impleme
      	//
         // now draw the contents of the board and anything it is pointing at
         //
+     	numberMenu.clearSequenceNumbers();
      	
      	Enumeration<CheckerCell>cells = gb.getIterator(Itype.LRTB);
      	while(cells.hasMoreElements())
@@ -379,6 +381,7 @@ public class CheckerGameViewer extends CCanvas<CheckerCell,CheckerBoard> impleme
             CheckerCell cell = cells.nextElement();
             int ypos = G.Bottom(brect) - gb.cellToY(cell);
             int xpos = G.Left(brect) + gb.cellToX(cell);
+            numberMenu.saveSequenceNumber(cell,xpos,ypos);
             HitPoint hitNow = (!dolift && gb.legalToHitBoard(cell,targets)) ? highlight : null;
             if( cell.drawStack(gc,this,hitNow,SQUARESIZE,xpos,ypos,liftSteps,0.1,null)) 
             	{ // draw a highlight rectangle here, but defer drawing an arrow until later, after the moving chip is drawn
@@ -391,15 +394,25 @@ public class CheckerGameViewer extends CCanvas<CheckerCell,CheckerBoard> impleme
             if(show)
             {
             if((cell==dest)||(cell==src)||(hitNow!=null))
-            
             {
             	StockArt.SmallO.drawChip(gc,this,SQUARESIZE,xpos,ypos,null);
-            }}
+	            }
+            }
+            if((cell.topChip()==null)
+            			&& cell.lastContents!=null 
+            			&& cell.lastCaptured>0
+            			&& numberMenu.getVisibleNumber(cell.lastCaptured)>0)
+                    	{
+                    		cell.lastContents.drawChip(gc,this,SQUARESIZE*2/3,xpos,ypos,null);
+                    		StockArt.SmallX.drawChip(gc,this,SQUARESIZE,xpos,ypos,null);
+                    	}
+ 
             if(cell==last)
             {
             	StockArt.Dot.drawChip(gc,this,SQUARESIZE,xpos,ypos,null);
-            }
-        	}
+            }}
+ 
+     	numberMenu.drawSequenceNumbers(gc,SQUARESIZE*2/3,labelFont,labelColor);
 
     }
      public void drawAuxControls(Graphics gc,HitPoint highlight)
@@ -410,6 +423,7 @@ public class CheckerGameViewer extends CCanvas<CheckerCell,CheckerBoard> impleme
        DrawReverseMarker(gc,reverseViewRect,highlight,CheckerId.ReverseViewButton);
        eyeRect.activateOnMouse=true;
        eyeRect.draw(gc,highlight);
+       numberMenu.draw(gc,highlight);
     }
     //
     // draw the board and things on it.  If gc!=null then actually 
@@ -510,7 +524,8 @@ public class CheckerGameViewer extends CCanvas<CheckerCell,CheckerBoard> impleme
      * seriously wrong.
      */
      public boolean Execute(commonMove mm,replayMode replay)
-    {	
+    {	// record where the boundaries in move numbers lie
+        numberMenu.recordSequenceNumber(b.moveNumber());
         handleExecute(b,mm,replay);
         lastDropped = b.lastDropped;
  
@@ -854,6 +869,9 @@ private void playSounds(commonMove m)
         {
         default:
         	throw G.Error("Hit Unknown: %s", hitObject);
+        case ShowNumbers:
+        	numberMenu.showMenu();
+        	break;
         case ToggleEye:
         	eyeRect.toggle();
         	break;
@@ -1070,6 +1088,7 @@ private void playSounds(commonMove m)
     		}
     		return(true);
     	}
+    	else if(numberMenu.selectMenu(target,this)) { return(true); }
     	else if(target==reverseOption)
     	{
     	b.setReverseY(reverseOption.getState());
@@ -1151,6 +1170,10 @@ private void playSounds(commonMove m)
             setComment(comments);
         }
     }
+
+	public int getLastPlacement(boolean empty) {
+		return b.lastPlacedIndex;
+	}
 
 }
 

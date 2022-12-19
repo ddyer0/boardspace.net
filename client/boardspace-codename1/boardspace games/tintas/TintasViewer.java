@@ -106,7 +106,7 @@ public class TintasViewer extends CCanvas<TintasCell,TintasBoard> implements Tin
         }
          
         
-        String type = info.getString(OnlineConstants.GAMETYPE, TintasVariation.tintas.name);
+        String type = info.getString(GAMETYPE, TintasVariation.tintas.name);
         // recommended procedure is to supply players and randomkey, even for games which
         // are current strictly 2 player and no-randomization.  It will make it easier when
         // later, some variant is created, or the game code base is re purposed as the basis
@@ -682,7 +682,7 @@ public class TintasViewer extends CCanvas<TintasCell,TintasBoard> implements Tin
 			case ConfirmSwap:
 			case Puzzle:
 			{
-		        TintasCell hitObject = hitCell(hp);
+		        TintasCell hitObject = bb.getCell(hitCell(hp));
 
 				if((bb.pickedObject==null) && (hitObject.topChip()!=null))
 				{

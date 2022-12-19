@@ -2327,7 +2327,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 		 case highlight_spec:
 	      {	// launch a spectator or a review room
 	    	  if(!lobby.doNotReconnect)
-	    		  { sess.launchSpectator(users.primaryUser(),myFrame.doSound(),getCanvasRotation()); 
+	    		  { sess.launchSpectator(users.primaryUser(),myFrame.doSound(),getCanvasRotation(),sess.currentGame); 
 	   	       		lobby.startingSession = null;
 	   	       		lobby.clearedForLaunch = false; 	
 		   	       lobby.startingSession = null;

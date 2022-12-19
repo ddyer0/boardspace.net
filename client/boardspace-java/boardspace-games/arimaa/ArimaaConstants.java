@@ -72,7 +72,8 @@ public enum ArimaaId implements CellId
 	W,
 	BoardLocation,
 	ReverseViewButton,
-	HitPlaceRabbitsButton,
+	HitPlaceRabbitsButton, ShowNumbers,
+	AuxDisplay
 	;
 	public static ArimaaId find(String wp)
 	{

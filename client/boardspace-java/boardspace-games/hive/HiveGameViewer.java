@@ -19,7 +19,6 @@ import lib.G;
 import lib.GC;
 import lib.HitPoint;
 import lib.LFrameProtocol;
-import lib.LocationProvider;
 import lib.StockArt;
 import lib.Toggle;
 
@@ -70,18 +69,7 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
     //public Rectangle stateRect = addRect("stateRect");
     //public Rectangle noChatRect = addRect("nochat");
     private Rectangle repRect = addRect("repRect");
-    private NumberMenu numberMenu = new NumberMenu(this,HivePiece.BugIcon,HiveId.ShowNumbers){
-        public void drawArrow(Graphics gc,LocationProvider src,LocationProvider dest,Color labelColor,int cellSize)
-        {	PlacementProvider from = getPlacement(dest);
-        	if(from instanceof HiveCell) {
-        		HiveCell c = (HiveCell)from;
-        		if(c!=null)
-        		{
-        			if(b.playerColor(c.lastMover)==HiveId.Black_Bug_Pool) { labelColor = BlackArrowColor; }
-        		}
-        	}
-        	super.drawArrow(gc,src,dest,labelColor,cellSize);
-        }};
+    private NumberMenu numberMenu = new NumberMenu(this,HivePiece.BugIcon,HiveId.ShowNumbers);
     private Rectangle idRects[] = addRect("id",2);
     private Rectangle[]chipRects = addRect("chip",2);
     private Rectangle[]setupRects = addRect("setup",2);
@@ -561,7 +549,8 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
                  	&& inside ;
         	 cell.rotateCurrentCenter(gc,xpos,ypos);
         	 
-        	 numberMenu.saveSequenceNumber(cell,xpos-xo,ypos-yo);
+        	 Color arrow = (b.playerColor(cell.lastMover)==HiveId.Black_Bug_Pool) ? BlackArrowColor : labelColor;
+        	 numberMenu.saveSequenceNumber(cell,xpos-xo,ypos-yo,arrow);
  
         	 //G.DrawAACircle(gc,xpos,ypos,1,tiled?Color.green:Color.blue,Color.yellow,true);
              if(piece!=null)

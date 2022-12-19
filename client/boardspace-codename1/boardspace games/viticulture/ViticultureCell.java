@@ -28,6 +28,7 @@ public class ViticultureCell extends stackCell<ViticultureCell,ViticultureChip>
 	implements ViticultureConstants
 {	
 	boolean selected;		// the sweep counter for which blob is accurate
+	boolean fixedDisplay = false;
 	ChipType contentType = ChipType.Any;
 	int cost;
 	ViticultureCell [] parentRow = null;
@@ -35,6 +36,10 @@ public class ViticultureCell extends stackCell<ViticultureCell,ViticultureChip>
 	public String toolTip = null;
 	int tipOffset = 0;
 
+	public int activeAnimationHeight()
+	{
+		return (fixedDisplay ? 0 : super.activeAnimationHeight()); 
+	}
 	public String toString()
 	{
 		return("<Cell "+rackLocation+" "+col+row+" "+contentsString()+">");
@@ -219,6 +224,10 @@ public class ViticultureCell extends stackCell<ViticultureCell,ViticultureChip>
 	  	  val += chipStack[i].Digest()*val0*(i+1);
 	  	}
 	  return(val);
+	}
+	public void addFixedChip(ViticultureChip victoryPoint_1) {
+		fixedDisplay = true;
+		addChip(victoryPoint_1);
 	}
 
 
