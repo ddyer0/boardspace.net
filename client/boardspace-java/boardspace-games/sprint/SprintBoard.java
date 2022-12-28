@@ -228,21 +228,13 @@ class Word implements StackIterator<Word>,CompareTo<Word>
 	}
 }
 
-class SprintBoard extends rectBoard<SprintCell> implements BoardProtocol
-{	static int REVISION = 108;			// 100 represents the initial version of the game
-										// revision 101 reduces the size of the rack to actual size and adds rack maps
-										// revision 102 does nothing
-										// revision 103 fixed "no duplicate words" bug
-										// revision 104 makes hand size same as rack size
-										// revision 105 fixes rack throw back broken by 104
-										// revision 106 changes the default for "backwards"
-										// revision 107 fixes the split word direction bug
-										// revision 108 changes the replacement of tiles when the draw pile is empty
+class SprintBoard extends squareBoard<SprintCell> implements BoardProtocol
+{	static int REVISION = 100;			// 100 represents the initial version of the game
 
 	static final String[] CrosswordsGRIDSTYLE = { "1", null, "A" }; // left and bottom numbers
 	public int getMaxRevisionLevel() { return(REVISION); }
-	static final int MAX_PLAYERS = 4;
-	static final int rackSize = 7;		// the number of filled slots in the rack.  Actual rack has some empty slots
+	static final int MAX_PLAYERS = 6;
+	static final int rackSize = 5;		// the number of filled slots in the rack.  Actual rack has some empty slots
 	int sweep_counter = 0;
 	SprintVariation variation = SprintVariation.Sprint;
 	private SprintState board_state = SprintState.Puzzle;	
@@ -255,6 +247,8 @@ class SprintBoard extends rectBoard<SprintCell> implements BoardProtocol
     StringStack gameEvents = new StringStack();
     InternationalStrings s = G.getTranslations();
     
+    int StartingTiles = 20;
+    int MaxTiles = 40;
  	void logGameEvent(String str,String... args)
  	{	//if(!robotBoard)
  		{String trans = s.get(str,args);
@@ -368,7 +362,7 @@ class SprintBoard extends rectBoard<SprintCell> implements BoardProtocol
 
 	// factory method to generate a board cell
 	public SprintCell newcell(char c,int r)
-	{	return(new SprintCell(SprintId.BoardLocation,c,r,Geometry.Oct));
+	{	return(new SprintCell(SprintId.BoardLocation,c,r,Geometry.Square));
 	}
 	
 	// constructor 
@@ -376,6 +370,7 @@ class SprintBoard extends rectBoard<SprintCell> implements BoardProtocol
     {
         drawing_style = DrawingStyle.STYLE_NOTHING; // don't draw the cells.  STYLE_CELL to draw them
         Grid_Style = CrosswordsGRIDSTYLE;
+        isTorus=true;
         setColorMap(map);
     	// allocate the rack map once and for all, it's not used in the board
     	// only as part of the UI.
@@ -398,7 +393,7 @@ class SprintBoard extends rectBoard<SprintCell> implements BoardProtocol
     }
     private void initRackMap(int [][]map)
     {	int full = map[0].length;
-    	int max = revision<104 ? full : rackSize;
+    	int max = rackSize;
     	int off = (full-max)/2;
     	for(int []row : map)
     	{	for(int i=0; i<row.length;i++) { row[i] = (i>=off && i<max+off) ? i-off : -1; }
@@ -407,35 +402,12 @@ class SprintBoard extends rectBoard<SprintCell> implements BoardProtocol
     
     public String gameType() { return(gametype+" "+players_in_game+" "+randomKey+" "+revision); }
     
-    public SprintCell allPostCells = null;
-    private SprintCell bonusCells[] = null;
-    
-    public cell<?> postBoard[][] = null;
-    @SuppressWarnings("unchecked")
-	public SprintCell getPostCell(char col,int row)
-    {	int coln = col-'A';
-    	if(coln>=0 && coln<postBoard.length)
-    	{
-    		cell<SprintCell>[] crow =(cell<SprintCell>[])postBoard[coln];
-    		if(row>=1 && row<=crow.length) {
-    			return((SprintCell)crow[row-1]);
-    		}
-    	}
-    	return(null);
-    }
     private void construct(int n,int k)
     {	Random r = new Random(6278843);
-    	// create a grid for the post cells
-        initBoard(n-1,k-1);		 //this sets up the primary board and cross links
-        allCells.setDigestChain(r);
-        postBoard = getBoardArray();
-        for(SprintCell c = allCells; c!=null; c=c.next) { c.isPostCell = true; }
-        allPostCells = allCells;
         // create a grid for the tile cells
         allCells = null;
         initBoard(n,k);		 //this sets up the primary board and cross links
         allCells.setDigestChain(r);
-        for(SprintCell c = allCells; c!=null; c=c.next) { c.isTileCell = true; }
 
     }
     public void doInit(String gtype,long key)
@@ -447,44 +419,6 @@ class SprintBoard extends rectBoard<SprintCell> implements BoardProtocol
     	long ran = tok.hasMoreTokens() ? G.IntToken(tok) : key;
     	int rev = tok.hasMoreTokens() ? G.IntToken(tok) : revision;
     	doInit(typ,ran,np,rev);
-    }
-    
-    private void positionBonusSpaces()
-    {	int numberOfBonuses = variation.boardsize;
- 		Random r = new Random(randomKey);
-		CellStack st = new CellStack();
-		bonusCells = new SprintCell[numberOfBonuses];
- 		// position the bonus squares randomly
- 		for(SprintCell c = allPostCells; c!=null; c=c.next) { st.push(c); c.addChip(SprintChip.Post); }
- 		st.shuffle(r);
- 		for(int i=0;i<numberOfBonuses;i++)
-			{	SprintCell c = st.pop();
-				int v = r.nextInt(10);
-				c.removeTop();
-				bonusCells[i]=c;
-				switch(v)
-				{
-				default:
-				case 0:
-				case 1:
-				case 2: c.addChip(SprintChip.DoubleLetterGreen);
-						break;
-				case 3:
-				case 4:
-						c.addChip(SprintChip.TripleLetterYellow);
-						break;
-				case 5:
-				case 6:
-				case 7:
-						c.addChip(SprintChip.DoubleWordBlue);
-						break;
-				case 8:
-				case 9: c.addChip(SprintChip.TripleWordRed);
-						break;
-						
-					
-				}		
-			}
     }
 
     /* initialize a board back to initial empty state */
@@ -512,11 +446,8 @@ class SprintBoard extends rectBoard<SprintCell> implements BoardProtocol
  		
  		construct(variation.boardsize,variation.boardsize);
 			
- 		positionBonusSpaces();
-			
  		//position the starting blank
  		seedLocation = getCell((char)('A'+variation.boardsize/2),1+variation.boardsize/2);
- 		seedLocation.addChip(SprintChip.A);
  		occupiedCells.push(seedLocation);
  		
  		chipsOnBoard = 1;    
@@ -527,9 +458,9 @@ class SprintBoard extends rectBoard<SprintCell> implements BoardProtocol
     	{
     		drawPile.addChip(c);
     	}
-    	drawPile.shuffle(r);
-  	    	
- 		int racks = revision<104 ? rackSize+2 : rackSize;
+    	
+    	// create the player racks
+ 		int racks = rackSize;
  		if(rack==null || rack.length!=players || racks!=rack[0].length)
  		{
     	rack = new SprintCell[players][racks];
@@ -554,18 +485,29 @@ class SprintBoard extends rectBoard<SprintCell> implements BoardProtocol
     		  reInit(mappedRack);
     		}
  		
-    	for(int i=0;i<players;i++)
-    	{	SprintCell prack[] = rack[i];
-    		for(int j = 0,least = (revision<=103)?0:-1;j<prack.length;j++)
-    			{ SprintCell c = rack[i][j];
-    			  if(j>least && j<=rackSize) { c.addChip(drawPile.removeTop()); }
-    			}
+ 		// load the racks with vowels
+    	int idx = 0;
+    	for(char l : new char[]{ 'a','e','i','o','u'})
+    	{
+    		SprintChip letter = SprintChip.getLetter(l);
+    		drawPile.removeChip(letter);
+    		for(int i=0;i<players;i++)
+        	{
+        		SprintCell prack[] = rack[i];
+        		prack[idx].addChip(letter);
+        	}
+    		
+    		idx++;
+    		
     	}
- 
+    	drawPile.shuffle(r);
+    	while(drawPile.height()>MaxTiles){ drawPile.removeTop(); }
+    	
     	AR.setValue(mapPick,-1);
        	AR.setValue(mapTarget, -1);
         
-    	
+
+    	for(int i=0;i<StartingTiles;i++) { placeNewTile(); }
 
  		setState(SprintState.Puzzle);
 		robotState.clear();		
@@ -582,7 +524,16 @@ class SprintBoard extends rectBoard<SprintCell> implements BoardProtocol
 
         // note that firstPlayer is NOT initialized here
     }
-
+    private void placeNewTile()
+    {	int nc = ncols/6;
+    	SprintChip chip = drawPile.removeTop();
+    	for(int row = nrows; row>1; row--)
+    	{
+    	for(int col=nc+(row&1); col<nc*6; col+=2)
+    	{	SprintCell c = getCell((char)('A'+col),row);
+    		if(c.topChip()==null) { c.addChip(chip);  return; }
+    	}}
+    }
     /** create a copy of this board */
     public SprintBoard cloneBoard() 
 	{ SprintBoard dup = new SprintBoard(gametype,players_in_game,randomKey,getColorMap(),dictionary,revision); 
@@ -719,8 +670,6 @@ class SprintBoard extends rectBoard<SprintCell> implements BoardProtocol
             break;
         case Play:
         case Confirm:
-        case ConfirmFirstPlay:
-        case FirstPlay:
         case DiscardTiles:
         case Resign:
             moveNumber++; //the move is complete in these states
@@ -738,7 +687,7 @@ class SprintBoard extends rectBoard<SprintCell> implements BoardProtocol
     }
     // this is the default, so we don't need it explicitly here.
     // but games with complex "rearrange" states might want to be
-    // more selecteive.  This determines if the current board digest is added
+    // more selective.  This determines if the current board digest is added
     // to the repetition detection machinery.
     public boolean DigestState()
     {	
@@ -1023,9 +972,6 @@ class SprintBoard extends rectBoard<SprintCell> implements BoardProtocol
         {
         default:
         	throw G.Error("Not expecting drop in state " + board_state);
-        case FirstPlay:
-        	setState(SprintState.ConfirmFirstPlay);
-        	break;
         case Confirm:
         case Play:
         case ResolveBlank:
@@ -1061,12 +1007,9 @@ class SprintBoard extends rectBoard<SprintCell> implements BoardProtocol
     	default: throw G.Error("Not expecting after Done state "+board_state);
     	case Gameover: break;
     	case Puzzle:
-     		if(chipsOnBoard==1) { setState(SprintState.FirstPlay); break; }
 			//$FALL-THROUGH$
 		case Confirm:
-		case ConfirmFirstPlay:
-    	case DiscardTiles:
-       	case FirstPlay:
+		case DiscardTiles:
     	case Play:
     		if(rackIsEmpty(whoseTurn)||allPassed()) 
     			{ setGameOver();
@@ -1120,7 +1063,6 @@ class SprintBoard extends rectBoard<SprintCell> implements BoardProtocol
 
     			  }
     		}
-    	if(revision>=108)
     	{
        	int ma[] = rackMap[whoseTurn];
     	for(int i=0;i<ma.length;i++)
@@ -1172,8 +1114,9 @@ class SprintBoard extends rectBoard<SprintCell> implements BoardProtocol
     	if(andScore) { findWordCaps(); }
     	return( connected 
     			&& allwords 
-    			&& (revision<107 || (invalidReason==null)) // can't make valid words in 2 directions
-    			&& ((revision<103) || (duplicate==null)) && hasnew);
+    			&& (invalidReason==null) // can't make valid words in 2 directions
+    			&& (duplicate==null)
+    			&& hasnew);
     }
 
    	CellStack endCaps = new CellStack();	// cells at the end of words
@@ -1258,21 +1201,7 @@ class SprintBoard extends rectBoard<SprintCell> implements BoardProtocol
     	// leave builder primed with the letters, so it can be reversed
     	return(n>1 ? builder.toString() : null);
     }
-    
-    // keep track of the word level bonus cells that
-    // have been encountered, so each one counts 
-    // just once.
-    private boolean addWordBonus(SprintCell c)
-    {
-    	boolean is = G.arrayContains(wordBonus,c);
-    	if(is) { return(false); }
-    	wordBonus[0]=wordBonus[1];
-    	wordBonus[1]=wordBonus[2];
-    	wordBonus[2]=wordBonus[3];
-    	wordBonus[3]=c;
-    	return(true);
-    }
-    
+ 
     int wordMultiplier = 1;
     SprintCell wordBonus[] = new SprintCell[4];
     // score a word on the board.  wordMultiplier and wordBonus are
@@ -1384,31 +1313,6 @@ class SprintBoard extends rectBoard<SprintCell> implements BoardProtocol
     // wordBonus and wordMultiplier are used as scratch
     private int scoreLetter(SprintCell c,SprintChip top)
     {	int letterScore = top.value;
-		for(int dx = -1; dx<=0; dx++)
-		{ for(int dy = -1; dy<=0; dy++)
-		{	SprintCell post = getPostCell((char)(c.col+dx),c.row+dy);
-			if(post!=null)
-			{
-				SprintChip bonus = post.topChip();
-				if(bonus!=null)
-				{
-					if(bonus==SprintChip.DoubleLetterGreen) { letterScore *=2; }
-					else if(bonus==SprintChip.TripleLetterYellow) { letterScore *=3; }
-					else if(bonus==SprintChip.DoubleWordBlue) 
-						{ if(addWordBonus(post))
-							{wordMultiplier *=2; 
-							}
-						}
-					else if(bonus==SprintChip.TripleWordRed) 
-						{ if(addWordBonus(post))
-							{wordMultiplier *=3; 
-							}
-						}
-					else if(bonus==SprintChip.Post) {} 
-					else { G.Error("Not expecting bonus",bonus); }
-				}
-			}
-		}}
 		return(letterScore);
     }
     private Entry lookupRobotWord(String word)
@@ -1507,27 +1411,9 @@ class SprintBoard extends rectBoard<SprintCell> implements BoardProtocol
         			}
         	}
         	drawPile.shuffle(new Random(randomKey+moveNumber*100));
-        	if(revision>=108)
-        		{ drawNewTiles(replay);
-        		}
-        	else
-        	{
-            	SprintCell ra[] = rack[whoseTurn];
-            	for(int i=revision<105?1:0,max=revision<105?rackSize+1:rackSize;i<max;i++)
-            	{  
-            	   if(drawPile.height()>0)
-            		{
-            		SprintCell c = ra[i];        		   
-            		c.addChip(drawPile.removeTop());
-            		if(replay!=replayMode.Replay && (c!=null))
-            		{
-            			animationStack.push(drawPile);
-            			animationStack.push(c);
-            		}
-            		}
-            	}
-            	
-        	}
+ 
+        	drawNewTiles(replay);
+        	
         	setNextPlayer(replay);
     		setNextStateAfterDone(replay);
         }
@@ -1680,14 +1566,9 @@ class SprintBoard extends rectBoard<SprintCell> implements BoardProtocol
         case MOVE_DROPB:
         	{
 			SprintCell src = pickedSourceStack.top();
-			if(src==null && board_state==SprintState.FirstPlay)
-			{
-				src = seedLocation;
-				pickObject(src);
-			}
 			SprintChip po = pickedObject;
 			SprintCell dest =  getCell(SprintId.BoardLocation,m.to_col,m.to_row);
-			if((board_state==SprintState.FirstPlay)||(chipsOnBoard==0)) { seedLocation = dest; }
+			if(chipsOnBoard==0) { seedLocation = dest; }
 			
 			if(isASource(dest)) 
 				{ unPickObject(dest); 
@@ -1897,10 +1778,7 @@ class SprintBoard extends rectBoard<SprintCell> implements BoardProtocol
         {
         default:
         	throw G.Error("Not expecting Legal Hit state " + board_state);
-        case FirstPlay: 
-        	return(false); 
         case Confirm:
-        case ConfirmFirstPlay:
         case Play:
         	// for pushfight, you can pick up a stone in the storage area
         	// but it's really optional
@@ -1921,12 +1799,7 @@ class SprintBoard extends rectBoard<SprintCell> implements BoardProtocol
     {	if(c==null) { return(false); }
         switch (board_state)
         {
-        case ConfirmFirstPlay:
-        case FirstPlay:
-        	return(pickedObject!=null
-        			? pickedObject!=null && (pickedSourceStack.top().onBoard && c.topChip()==null)
-        			: c.topChip()!=null);
-		case Confirm:
+ 		case Confirm:
 		case Play:
 			return(picked ? c.isEmpty() : isADest(c));
 
@@ -2481,36 +2354,8 @@ class SprintBoard extends rectBoard<SprintCell> implements BoardProtocol
  	}
  	G.print("accepted ",candidateWords.accepted," declined ",candidateWords.declined);
  }
- private double distanceFromBonuses(SprintCell c)
- {	double score = 0;
- 	for(SprintCell b : bonusCells)
- 	{	double distance = Math.abs(c.col-b.col)+(Math.abs(c.row-b.row));
- 		score += distance* b.topChip().value;
- 	}
- 	return(score);
- }
-/**
- * find the most distant cell from bonuses, weighted for their likely power,
- * but don't put the first tile on the edge.
- * @return
- */
- private SprintCell mostDistantFromBonuses()
- {
-	 double bestv=0;
-	 SprintCell best = null;
-	 int size = variation.boardsize;
-	 for(SprintCell c =allCells; c!=null; c=c.next)
-	 {	if((c.row>2) 
-			 && (c.row<size-2) 
-			 && (c.col>'A'+2)
-			 && (c.col<('A'+size-2)))
-	 	{
-		 double score = distanceFromBonuses(c);
-		 if(score>bestv) { bestv = score; best=c; }
-	 	}
-	 }
-	 return(best);
- }
+
+
  CommonMoveStack  GetListOfMoves()
  {	CommonMoveStack all = new CommonMoveStack();
     recordProgress(0);
@@ -2519,15 +2364,7 @@ class SprintBoard extends rectBoard<SprintCell> implements BoardProtocol
     {
     default: throw G.Error("Not expecting ", board_state);
     case Confirm:
-    case ConfirmFirstPlay:
     	all.push(new Sprintmovespec(MOVE_DONE,whoseTurn));
-    	break;
-    case FirstPlay:
-    	{
-    	// look for a good place for someone else to place the first word.
-    	SprintCell best = mostDistantFromBonuses();
-    	all.push(new Sprintmovespec(MOVE_DROPB,best.col,best.row,SprintId.BoardLocation,whoseTurn));
-    	}
     	break;
     case Play:
     	checkWords();

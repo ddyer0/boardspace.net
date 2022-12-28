@@ -52,7 +52,7 @@ public interface HavannahConstants
     	Black_Chip_Pool("B"), // positive numbers are trackable
     	White_Chip_Pool("W"),
     	BoardLocation(null),
-    	EmptyBoard(null),;
+    	EmptyBoard(null), ShowNumbers(null),;
     	String shortName = name();
     	HavannahChip chip;
     	public String shortName() { return(shortName); }

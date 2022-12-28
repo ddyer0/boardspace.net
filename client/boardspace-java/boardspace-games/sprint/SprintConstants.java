@@ -13,10 +13,6 @@ public interface SprintConstants
 	static String DiscardTilesState = "Click on Done to discard your rack and draw a new one";
 	static String CrosswordsPlayState = "Place a word on the board";
 	static String FirstPlayState = "Position the starting tile and set word placement options";
-	static String DoubleWord = "Double Word Score";
-	static String DoubleLetter = "Double Letter Score";
-	static String TripleWord = "Triple Word Score";
-	static String TripleLetter = "Triple Letter Score";
 	static String TilesLeft = "#1{##no tiles, tile, tiles}";
 	static String LastTurnMessage = "Last Turn!";
 	static String NotWords = "Some sprint are not words";
@@ -54,11 +50,10 @@ public interface SprintConstants
 	Resign(ResignStateDescription,true,false),
 	Gameover(GameOverStateDescription,false,false),
 	Confirm(ConfirmStateDescription,true,true),
-	ConfirmFirstPlay(ConfirmStateDescription,true,true),
 	Play(CrosswordsPlayState,false,false),
 	ResolveBlank(ResolveBlankState,false,false),
 	DiscardTiles(DiscardTilesState,true,true),
-	FirstPlay(FirstPlayState,true,true);
+	;
 	SprintState(String des,boolean done,boolean digest)
 	{
 		description = des;
@@ -162,11 +157,7 @@ public interface SprintConstants
     			FirstPlayState,
     			CrosswordsPlayState,
     	        CrosswordsVictoryCondition,
-    	       DoubleWord,
-    	       DoubleLetter,
-    	       TripleWord,
-    	       TripleLetter,
-    	       TilesLeft,
+    	        TilesLeft,
 
     		};
     		String CrosswordsStringPairs[][] = 

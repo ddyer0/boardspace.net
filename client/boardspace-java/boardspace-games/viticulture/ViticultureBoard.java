@@ -7329,49 +7329,48 @@ public int getMaxRevisionLevel() { return(REVISION); }
    	   		   break;
    	   	   }
    		   switch(m.source)
-	    		   {
-	    		   case Choice_AandB:
-	    			   choiceB.selected = true;
-	    			   //$FALL-THROUGH$
-	    		   case Choice_A:
-	    			   if(singleChoice) { choiceD.selected = false; choiceB.selected = false; choiceC.selected = false; }  
-	    			   choiceA.selected = !choiceA.selected;
-	    		   	break;
-	    		   default: ;
-	    		   }
-   		   switch(m.source)
-	    		   {
-	    		   case Choice_AandC:
-	    			   choiceA.selected = true;
-	    			   //$FALL-THROUGH$
-	    		   case Choice_C:	
-	    			   if(singleChoice) { choiceD.selected = false; choiceB.selected = false; choiceA.selected = false; }  
-	    			   choiceC.selected = !choiceC.selected;
-	    		   	break;
-	    		   	default: ;
-	    		   }
-   		   switch(m.source)
-	    		   {
-	    		   case Choice_BandC:
-	    			   choiceC.selected = true;
-	    			   //$FALL-THROUGH$
-	    		   case Choice_B:	
-	    			   if(singleChoice) { choiceD.selected = false; choiceA.selected = false; choiceC.selected = false; }  
-	    			   choiceB.selected = !choiceB.selected;
-	    		   	break;
-	    		   default: ;
-	    		   }
-   		   switch(m.source)
-	    		   {
-	    		   case Choice_D:	
-	    			   if(singleChoice) { choiceB.selected = false; choiceA.selected = false; choiceC.selected = false; }  
-	    			   choiceD.selected = !choiceD.selected;
-	    		   	break;
-	    		   default: ;
-	    		   }
+   		   {
+    		   case Choice_AandB:
+    			   choiceB.selected = true;
+    			   //$FALL-THROUGH$
+    		   case Choice_A:
+    			   if(singleChoice) { choiceD.selected = false; choiceB.selected = false; choiceC.selected = false; }  
+    			   choiceA.selected = !choiceA.selected;
+    			   break;
+    			   
+    		   case Choice_AandC:
+    			   choiceA.selected = true;
+    			   //$FALL-THROUGH$
+    		   case Choice_C:	
+    			   if(singleChoice) { choiceD.selected = false; choiceB.selected = false; choiceA.selected = false; }  
+    			   choiceC.selected = !choiceC.selected;
+    			   break;
+  
+    		   case Choice_BandC:
+    			   choiceC.selected = true;
+    			   //$FALL-THROUGH$
+    		   case Choice_B:	
+    			   if(singleChoice) { choiceD.selected = false; choiceA.selected = false; choiceC.selected = false; }  
+    			   choiceB.selected = !choiceB.selected;
+    			   break;
+    		   	
+    		   case Choice_D:	
+    			   if(singleChoice) { choiceB.selected = false; choiceA.selected = false; choiceC.selected = false; }  
+    			   choiceD.selected = !choiceD.selected;
+    			   break;
+    		   default: ;
+   		   }
    		   setActionOrder(m.source);
-   		   cardResolution = null;
- 			   if(choiceA.selected) { cardResolution = ViticultureId.Choice_A; }
+   		   
+   		   if(m.source==ViticultureId.Choice_0)
+  		   	{ choice0.selected =  !choice0.selected;
+  		   	  cardResolution = choice0.selected ? ViticultureId.Choice_0 : null;
+  		   	}
+   		   else { choice0.selected = false; }
+   		   if(!choice0.selected)
+   		   {
+   			   cardResolution = null;
+   			   if(choiceA.selected) { cardResolution = ViticultureId.Choice_A; }
  			   if(choiceB.selected) { cardResolution = ViticultureId.Choice_B; }
  			   if(choiceC.selected) { cardResolution = ViticultureId.Choice_C; } 
  			   if(choiceD.selected) { cardResolution = ViticultureId.Choice_D; } 
@@ -7401,9 +7400,8 @@ public int getMaxRevisionLevel() { return(REVISION); }
       			   break;
    		   default: G.Error("Not expecting state %s", resetState);
     		   }
+   		   }
    		   if(choiceA.selected && choiceB.selected && choiceC.selected) { cardResolution = null; }
-   		   if(m.source==ViticultureId.Choice_0) { cardResolution = ViticultureId.Choice_0; }
-   		   choice0.selected = cardResolution==ViticultureId.Choice_0;
    		   
    		   if(singleChoice)
    			   { setState(cardResolution==null ? resetState : ViticultureState.Confirm);

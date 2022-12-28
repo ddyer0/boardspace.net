@@ -22,7 +22,7 @@ import online.game.sgf.sgf_node;
 import online.game.sgf.sgf_property;
 import online.search.SimpleRobotProtocol;
 // TODO think about "consistent" and "3 player" variants
-public class BarcaViewer extends CCanvas<BarcaCell,BarcaBoard> implements BarcaConstants, GameLayoutClient
+public class BarcaViewer extends CCanvas<BarcaCell,BarcaBoard> implements BarcaConstants, GameLayoutClient,PlacementProvider
 {	 	
     static final String Barca_SGF = "Barca"; // sgf game number allocated for barca
 
@@ -35,6 +35,7 @@ public class BarcaViewer extends CCanvas<BarcaCell,BarcaBoard> implements BarcaC
     private Color chatBackgroundColor = new Color(235,245,255);
     private Color rackBackGroundColor = new Color(235,245,255);
     private Color boardBackgroundColor = new Color(220,220,255);
+    private Color BlackArrowColor = new Color(230,200,255);;
     
 
     public boolean usePerspective() { return(super.getAltChipset()==0);}
@@ -63,6 +64,7 @@ public class BarcaViewer extends CCanvas<BarcaCell,BarcaBoard> implements BarcaC
     // to visualize the layout during development.  Look for "show rectangles"
     // in the options menu.
     private Rectangle chipRects[] = addZoneRect("chip",2);
+    private NumberMenu numberMenu = new NumberMenu(this,BarcaChip.White_Mouse,BarcaId.ShowNumbers) ;
     
     private Toggle eyeRect = new Toggle(this,"eye",
 			StockArt.NoEye,BarcaId.ToggleEye,NoeyeExplanation,
@@ -105,7 +107,7 @@ public class BarcaViewer extends CCanvas<BarcaCell,BarcaBoard> implements BarcaC
         	BarcaConstants.putStrings();
         }    
         
-        String type = info.getString(OnlineConstants.GAMETYPE, BarcaVariation.barca.name);
+        String type = info.getString(GAMETYPE, BarcaVariation.barca.name);
         // recommended procedure is to supply players and randomkey, even for games which
         // are current strictly 2 player and no-randomization.  It will make it easier when
         // later, some variant is created, or the game code base is re purposed as the basis
@@ -190,7 +192,7 @@ public class BarcaViewer extends CCanvas<BarcaCell,BarcaBoard> implements BarcaC
         int stateY = boardY-stateH/2;
         int stateX = boardX;
         
-        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,reverseRect,viewsetRect,eyeRect,noChatRect);
+        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,reverseRect,numberMenu,viewsetRect,eyeRect,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
        	
     	if(perspective)
@@ -328,6 +330,7 @@ public class BarcaViewer extends CCanvas<BarcaCell,BarcaBoard> implements BarcaC
         Enumeration<BarcaCell>cells = gb.getIterator(Itype.LRTB);
         boolean perspective = usePerspective();
         boolean showMoves = eyeRect.isOnNow();
+        numberMenu.clearSequenceNumbers();
     	while(cells.hasMoreElements())
     	{
             BarcaCell cell = cells.nextElement();
@@ -346,6 +349,7 @@ public class BarcaViewer extends CCanvas<BarcaCell,BarcaBoard> implements BarcaC
          	int ypos = G.Bottom(brect) - cy;
             int xpos = G.Left(brect) + cx;
             double scale = sizeScale(xpos,ypos,brect);
+            numberMenu.saveSequenceNumber(cell,xpos,ypos,cell.lastEmptiedPlayer==0 ? labelColor : BlackArrowColor);
             int sz = (int)(SQUARESIZE*scale);
             //StockArt.SmallO.drawChip(gc,this,gb.cellSize(),xpos,ypos,null);                
             if(cell.drawChip(gc,this,canHit ? highlight : null,sz,xpos,ypos,null))
@@ -362,6 +366,8 @@ public class BarcaViewer extends CCanvas<BarcaCell,BarcaBoard> implements BarcaC
             }
             //if(cell.isOdd()){ StockArt.SmallO.drawChip(gc,this,(int)(gb.cellSize()*1),xpos,ypos,null); }                
             }
+        numberMenu.drawSequenceNumbers(gc,SQUARESIZE,labelFont,labelColor);
+
      }
 
     /**
@@ -599,6 +605,9 @@ public class BarcaViewer extends CCanvas<BarcaCell,BarcaBoard> implements BarcaC
         	throw G.Error("Hit Unknown %s", hitCode);
             }
         	break;
+        case ShowNumbers:
+        	numberMenu.showMenu();
+        	break;
         case ToggleEye:
         	eyeRect.toggle();
         	break;
@@ -776,6 +785,7 @@ public class BarcaViewer extends CCanvas<BarcaCell,BarcaBoard> implements BarcaC
    {  	eyeRect.activateOnMouse=true;
     	eyeRect.draw(gc,highlight);
     	DrawReverseMarker(gc,reverseRect,highlight);
+    	numberMenu.draw(gc,highlight);
    }
     
     /** this is the place where the canvas is actually repainted.  We get here
@@ -952,5 +962,23 @@ public class BarcaViewer extends CCanvas<BarcaCell,BarcaBoard> implements BarcaC
             setComment(comments);
         }
     }
+
+    /** handle action events from menus.  Don't do any real work, just note
+     * state changes and if necessary set flags for the run loop to pick up.
+     * 
+     */
+    public boolean handleDeferredEvent(Object target, String command)
+    {
+        boolean handled = super.handleDeferredEvent(target, command);
+        if(!handled)
+        {
+        	if(numberMenu.selectMenu(target,this)) {  handled = true;}
+        }
+        return (handled);
+    }
+
+	public int getLastPlacement(boolean empty) {
+		return bb.moveNumber+(bb.DoneState()?1:0);
+	}
 }
 

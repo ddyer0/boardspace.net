@@ -415,7 +415,7 @@ class BarcaBoard extends rectBoard<BarcaCell> implements BoardProtocol,BarcaCons
     }
     // this is the default, so we don't need it explicitly here.
     // but games with complex "rearrange" states might want to be
-    // more selecteive.  This determines if the current board digest is added
+    // more selective.  This determines if the current board digest is added
     // to the repetition detection machinery.
     public boolean DigestState()
     {	
@@ -447,6 +447,7 @@ class BarcaBoard extends rectBoard<BarcaCell> implements BoardProtocol,BarcaCons
     	setState(stateStack.pop());
     	pickedObject = rv.removeTop(); 	// SetBoard does ancillary bookkeeping
     	filledCells[playerIndex(pickedObject)].remove(rv,false);
+    	rv.lastPlaced = previousLastPlaced;    	
     	return(rv);
     }
     // 
@@ -457,6 +458,8 @@ class BarcaBoard extends rectBoard<BarcaCell> implements BoardProtocol,BarcaCons
     	setState(stateStack.pop());
     	filledCells[playerIndex(pickedObject)].push(rv);
     	rv.addChip(pickedObject);
+    	rv.lastEmptied = previousLastEmptied;
+    	rv.lastEmptiedPlayer = previousLastPlayer;
     	pickedObject = null;
     }
     
@@ -476,10 +479,15 @@ class BarcaBoard extends rectBoard<BarcaCell> implements BoardProtocol,BarcaCons
            	filledCells[playerIndex(pickedObject)].push(c);
            	c.addChip(pickedObject);
             lastDroppedObject = pickedObject;
+            previousLastPlaced = c.lastPlaced;
+            c.lastPlaced = moveNumber;
             pickedObject = null;
             break;
         }
      }
+    private int previousLastPlaced = 0;
+    private int previousLastEmptied = 0;
+    private int previousLastPlayer = 0;
     //
     // true if c is the place where something was dropped and not yet confirmed.
     // this is used to mark the one square where you can pick up a marker.
@@ -535,6 +543,10 @@ class BarcaBoard extends rectBoard<BarcaCell> implements BoardProtocol,BarcaCons
             lastPicked = pickedObject = c.removeTop();
          	lastDroppedObject = null;
 			filledCells[playerIndex(pickedObject)].remove(c, false);
+			previousLastEmptied = c.lastEmptied;
+			previousLastPlayer = c.lastEmptiedPlayer;
+			c.lastEmptied = moveNumber;
+			c.lastEmptiedPlayer = whoseTurn;
         	}
             break;
 

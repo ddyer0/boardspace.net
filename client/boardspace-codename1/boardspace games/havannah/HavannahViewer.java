@@ -50,8 +50,6 @@ import online.search.SimpleRobotProtocol;
 
 /**
  * 
- * This is intended to be maintained as the reference example how to interface to boardspace.
- * <p>
  * The overall structure here is a collection of classes specific to Hex, which extend
  * or use supporting online.game.* classes shared with the rest of the site.  The top level 
  * class is a Canvas which implements ViewerProtocol, which is created by the game manager.  
@@ -99,9 +97,9 @@ import online.search.SimpleRobotProtocol;
  *  <li> do a cvs update on the original havannah hierarchy to get back the original code.
  *  
 */
-public class HavannahViewer extends CCanvas<HavannahCell,HavannahBoard> implements HavannahConstants, GameLayoutClient
+public class HavannahViewer extends CCanvas<HavannahCell,HavannahBoard> implements HavannahConstants, GameLayoutClient, PlacementProvider
 {	 	
-    static final String Hex_SGF = "11"; // sgf game name
+    static final String Havannah_SGF = "Havannah"; // sgf game name
 
     // file names for jpeg images and masks
     static final String ImageDir = "/havannah/images/";
@@ -127,6 +125,7 @@ public class HavannahViewer extends CCanvas<HavannahCell,HavannahBoard> implemen
     //public Rectangle chatRect = addRect("chatRect");
     //public Rectangle stateRect = addRect("stateRect");
     //public Rectangle noChatRect = addRect("nochat");
+    private NumberMenu numberMenu = new NumberMenu(this,HavannahChip.White,HavannahId.ShowNumbers) ;
     
     //
     // addZoneRect also sets the rectangle as specifically known to the 
@@ -329,7 +328,7 @@ public class HavannahViewer extends CCanvas<HavannahCell,HavannahBoard> implemen
         int stateY = boardY;
         int stateX = boardX;
         int stateH = fh*3;
-        G.placeStateRow(stateX,stateY,boardW,stateH,iconRect,stateRect,noChatRect);
+        G.placeStateRow(stateX,stateY,boardW,stateH,iconRect,stateRect,numberMenu,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	
     	if(rotate)
@@ -534,6 +533,7 @@ public class HavannahViewer extends CCanvas<HavannahCell,HavannahBoard> implemen
 
         // using closestCell is sometimes preferable to G.PointInside(highlight, xpos, ypos, CELLRADIUS)
         // because there will be no gaps or overlaps between cells.
+    	numberMenu.clearSequenceNumbers();
         HavannahCell closestCell = gb.closestCell(highlight,brect);
         boolean hitCell = gb.LegalToHitBoard(closestCell);
         if(hitCell)
@@ -550,21 +550,25 @@ public class HavannahViewer extends CCanvas<HavannahCell,HavannahBoard> implemen
         // depend on the shadows being cast correctly.
         if (gc != null)
         {
+          int sz = gb.cellSize();
+          int left = G.Bottom(brect);
+          int top = G.Left(brect);
+            
         for(HavannahCell cell = gb.allCells; cell!=null; cell=cell.next)
           {
             boolean drawhighlight = (hitCell && (cell==closestCell)) 
    				|| gb.isDest(cell) 		// is legal for a "drop" operation
    				|| gb.isSource(cell);	// is legal for a "pick" operation+
-         	int ypos = G.Bottom(brect) - gb.cellToY(cell);
-            int xpos = G.Left(brect) + gb.cellToX(cell);
-  
+         	int ypos = left - gb.cellToY(cell);
+            int xpos = top + gb.cellToX(cell);
+            numberMenu.saveSequenceNumber(cell,xpos,ypos);
             if (drawhighlight)
              { // checking for pointable position
             	 StockArt.SmallO.drawChip(gc,this,gb.cellSize()*5,xpos,ypos,null);                
              }
-            int sz = gb.cellSize();
             cell.drawChip(gc,this,highlight,sz,xpos,ypos,null);
             }
+        numberMenu.drawSequenceNumbers(gc,sz,labelFont,labelColor);
         }
     }
 
@@ -671,7 +675,7 @@ public class HavannahViewer extends CCanvas<HavannahCell,HavannahBoard> implemen
             				stateRect);
         HavannahChip chip = gb.getPlayerChip(gb.whoseTurn);
         chip.drawChip(gc, this, iconRect,null);
-        
+        numberMenu.draw(gc,selectPos);
         goalAndProgressMessage(gc,nonDragSelect,Color.black,s.get(HavannahVictoryCondition),progressRect, goalRect);
         //DrawRepRect(gc,pl.displayRotation,Color.black, gb.Digest(),repRect);	// Not needed for barca
         
@@ -938,6 +942,9 @@ public class HavannahViewer extends CCanvas<HavannahCell,HavannahBoard> implemen
         {
         default:
             	throw G.Error("Hit Unknown: %s", hitCode);
+        case ShowNumbers:
+        	numberMenu.showMenu();
+        	break;
         case BoardLocation:	// we hit an occupied part of the board 
         case EmptyBoard:
         	{
@@ -1027,7 +1034,7 @@ public class HavannahViewer extends CCanvas<HavannahCell,HavannahBoard> implemen
     	}	
      
     // this is the subgame "setup" within the master type.
-    public String sgfGameType() { return(Hex_SGF); }	// this is the official SGF number assigned to the game
+    public String sgfGameType() { return(Havannah_SGF); }	// this is the official SGF number assigned to the game
 
     // the format is just what is produced by FormHistoryString
     //
@@ -1086,12 +1093,15 @@ public class HavannahViewer extends CCanvas<HavannahCell,HavannahBoard> implemen
      * state changes and if necessary set flags for the run loop to pick up.
      * 
      */
- //   public boolean handleDeferredEvent(Object target, String command)
- //   {
- //       boolean handled = super.handleDeferredEvent(target, command);
-//
- //       return (handled);
- //   }
+    public boolean handleDeferredEvent(Object target, String command)
+    {
+        boolean handled = super.handleDeferredEvent(target, command);
+        if(!handled)
+        {
+        	if(numberMenu.selectMenu(target,this)) {  handled = true;}
+        }
+        return (handled);
+    }
 /** handle the run loop, and any special actions we need to take.
  * The mouse handling and canvas painting will be called automatically.
  * <p>
@@ -1195,7 +1205,7 @@ public class HavannahViewer extends CCanvas<HavannahCell,HavannahBoard> implemen
             {
                 comments += value;
             }
-            else if (name.equals(game_property) && value.equalsIgnoreCase("havannah") )
+            else if (name.equals(game_property) && (value.equals("11") || value.equalsIgnoreCase("havannah") ))
             {
             	// the equals sgf_game_type case is handled in replayStandardProps
             }
@@ -1215,5 +1225,9 @@ public class HavannahViewer extends CCanvas<HavannahCell,HavannahBoard> implemen
             setComment(comments);
         }
     }
+
+	public int getLastPlacement(boolean empty) {
+		return bb.moveNumber;
+	}
 }
 

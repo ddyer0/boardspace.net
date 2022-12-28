@@ -19,11 +19,15 @@ class CellStack extends OStack<BarcaCell>
  * @author ddyer
  *
  */
-public class BarcaCell extends chipCell<BarcaCell,BarcaChip>
+public class BarcaCell extends chipCell<BarcaCell,BarcaChip> implements PlacementProvider
 {	
 	int sweep_counter;		// the sweep counter for which blob is accurate
 	double xloc;
 	double yloc;
+	public int lastPlaced = 0;
+	public int lastEmptiedPlayer = 0;
+	public int lastEmptied = 0;
+	
 	// odd or even on the checkerboard.  Lions are restricted to one color.
 	public boolean isOdd() { return(((col+row)&1)!=0); }
 
@@ -41,6 +45,22 @@ public class BarcaCell extends chipCell<BarcaCell,BarcaChip>
 		onBoard=false;
 	}
 	
+	public void reInit()
+	{
+		super.reInit();
+		lastPlaced = lastEmptied = lastEmptiedPlayer = 0;
+	}
+	public void copyFrom(BarcaCell other)
+	{
+		super.copyFrom(other);
+		lastPlaced = other.lastPlaced;
+		lastEmptiedPlayer = other.lastEmptiedPlayer;
+		lastEmptied = other.lastEmptied;
+	}
+	public int getLastPlacement(boolean empty) {
+		return empty ? lastEmptied : lastPlaced;
+	}
+
 
 	
 }

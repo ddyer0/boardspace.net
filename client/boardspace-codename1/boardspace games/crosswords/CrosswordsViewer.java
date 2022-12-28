@@ -337,11 +337,11 @@ public class CrosswordsViewer extends CCanvas<CrosswordsCell,CrosswordsBoard> im
     	Rectangle chip = chipRects[player];
     	Rectangle score = scoreRects[player];
     	Rectangle eye = eyeRects[player];
-    	int scoreW = unitsize*3;
-    	int scoreH = unitsize*2;
-    	G.SetRect(score,x,y,scoreW,scoreH);
+    	int scoreW = unitsize*5/2;
+    	int scoreH = unitsize*3/2;
+    	G.SetRect(score,x,y,scoreW-2,scoreH);
     	G.SetRect(eye, x, y+scoreH, unitsize*2, unitsize*2);
-    	Rectangle box =  pl.createRectangularPictureGroup(x+scoreW,y,unitsize);
+     	Rectangle box =  pl.createRectangularPictureGroup(x+scoreW,y,unitsize);
     	Rectangle done = doneRects[player];
     	Rectangle notice = noticeRects[player];
     	

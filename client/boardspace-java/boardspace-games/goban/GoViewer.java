@@ -657,11 +657,11 @@ public class GoViewer extends CCanvas<GoCell,GoBoard> implements GoConstants, Ga
     	GC.frameRect(gc,Color.black,r);
     	chip.drawChip(gc,this,r,""+stack.size());
     }
-     public void drawAuxControls(Graphics gc,GoBoard gb,HitPoint highlight)
+     public void drawAuxControls(Graphics gc,GoBoard gb,HitPoint highlight,HitPoint ourHighlight)
     {  
        DrawReverseMarker(gc,reverseViewRect,highlight,GoId.ReverseViewButton);
        DrawNumberMarker(gc,numberRect,highlight);
-       DrawAnnotationMarker(gc,annotationRect,highlight);
+       DrawAnnotationMarker(gc,annotationRect,ourHighlight);
     }
     //
     // draw the board and things on it.  If gc!=null then actually 
@@ -830,7 +830,7 @@ public class GoViewer extends CCanvas<GoCell,GoBoard> implements GoConstants, Ga
             goalAndProgressMessage(gc,ourSelect,Color.black,s.get(VictoryCondition),progressRect, goalRect);
             }
         DrawRepRect(gc,b.Digest(),pleaseUndoRect);
-        drawAuxControls(gc,gb,ourSelect);
+        drawAuxControls(gc,gb,ourSelect,ot);
         redrawChat(gc,highlight);
         drawVcrGroup(ourSelect, gc);
     }

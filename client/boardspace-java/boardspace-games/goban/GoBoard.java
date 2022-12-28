@@ -545,7 +545,7 @@ public class GoBoard extends squareBoard<GoCell> implements BoardProtocol,GoCons
     // the board location really becomes empty, and we depend on unPickObject
     // to replace the original contents if the pick is cancelled.
     private void pickObject(GoCell c)
-    {	G.Assert(pickedObject==null,"pickedObject should be null");
+    {	
     	switch(c.rackLocation())
     	{
 		default: throw G.Error("Not expecting rackLocation %s",c.rackLocation);

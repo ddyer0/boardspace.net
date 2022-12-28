@@ -331,7 +331,7 @@ class HavannahBoard extends hexBoard<HavannahCell> implements BoardProtocol,Hava
     }
     // this is the default, so we don't need it explicitly here.
     // but games with complex "rearrange" states might want to be
-    // more selecteive.  This determines if the current board digest is added
+    // more selective.  This determines if the current board digest is added
     // to the repetition detection machinery.
     public boolean DigestState()
     {	
@@ -455,6 +455,7 @@ class HavannahBoard extends hexBoard<HavannahCell> implements BoardProtocol,Hava
     }
 
 
+    private int previousPlaced = 0;
     
     // set the contents of a cell, and maintain the books
     // this logic uses ch==null to clear the cell, needs
@@ -463,8 +464,8 @@ class HavannahBoard extends hexBoard<HavannahCell> implements BoardProtocol,Hava
     {	HavannahChip old = c.chip;
     	if(c.onBoard)
     	{
-    	if(old!=null) { chips_on_board--;emptyCells.push(c); moveStack.pop(); }
-     	if(ch!=null) { chips_on_board++; emptyCells.remove(c,false); moveStack.push(c); }
+    	if(old!=null) { chips_on_board--;emptyCells.push(c); moveStack.pop(); c.lastPlaced = previousPlaced; }
+     	if(ch!=null) { chips_on_board++; emptyCells.remove(c,false); moveStack.push(c); previousPlaced = c.lastPlaced; c.lastPlaced = moveNumber; }
     	}
        	c.chip = ch;
     	return(old);

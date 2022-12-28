@@ -85,32 +85,18 @@ public class SprintChip extends chip<SprintChip> implements SprintConstants
     static public SprintChip backgroundTile = new SprintChip("background-tile-nomask",null,null,0);
     static public SprintChip backgroundReviewTile = new SprintChip("background-review-tile-nomask",null,null,0);
    
-    static private double hexScale[] = {0.45,0.38,1.36};
-    static private double letterScale[]  = {0.51,0.365,1.45 };
-	static private double letter2Scale[] = {0.495,0.365,1.45 };
-   	static private double letter0Scale[] = {0.51,0.365,1.45 };
-   	static private double letter1Scale[] = {0.51,0.37,1.45 };
-
-    static private double postScale[] = { 0.42,0.32,0.78};
-    
+    static private double hexScale[] = {0.62,0.48,1.24};
+    static private double letterScale[]  = {0.58,0.45,1.24 };
+	static private double letter2Scale[] = {0.62,0.48,1.24 };
+   	static private double letter0Scale[] = {0.62,0.48,1.24 };
+   	static private double letter1Scale[] = {0.62,0.48,1.24 };
+ 
     static public SprintChip Tile = new SprintChip("tile",hexScale,null,0);
     static public SprintChip Letter[] = {new SprintChip("letter",letterScale,null,0),
     		new SprintChip("letter0",letter0Scale,null,0),
     		new SprintChip("letter1",letter1Scale,null,0),
     		new SprintChip("letter2",letter2Scale,null,0),
     	};
-    static public SprintChip Post = new SprintChip("post",postScale,null,0);
-    // greenpost double letter
-    static public SprintChip DoubleLetterGreen = new SprintChip("post-green",postScale,DoubleLetter,2);
-   
-    // yellowpost triple letter
-    static public SprintChip TripleLetterYellow = new SprintChip("post-yellow",postScale,TripleLetter,3);
-    
-    // bluepost double word
-    static public SprintChip DoubleWordBlue = new SprintChip("post-blue",postScale,DoubleWord,10);
-    
-    // redpost triple letter
-    static public SprintChip TripleWordRed = new SprintChip("post-red",postScale,TripleWord,15);
     
     private static double dscale[] = {0.5,0.5,1};
     
@@ -221,7 +207,7 @@ public class SprintChip extends chip<SprintChip> implements SprintConstants
     	//if(lcChar=='i') { /* letter2 */scale = new double[] {0.495,0.365,1.45 };}
        	//if(lcChar=='a') { /* letter0 */scale = new double[] {0.51,0.365,1.45 };}
        	//if(lcChar=='c') { /* letter1 */scale = new double[] {0.51,0.37,1.45 };}
-		super.drawChip(gc, canvas, SQUARESIZE, xscale, cx, cy, null);
+		super.drawChip(gc, canvas, SQUARESIZE*6/5, xscale, cx, cy, null);
     	if(BACK.equals(label)) {}
     	else if(letter!=null)
     	{	// draw all letters with the same size
@@ -235,10 +221,10 @@ public class SprintChip extends chip<SprintChip> implements SprintConstants
     		GC.setFont(gc, f);
     		GC.setFont(gc, ww.selectFontSize(gc, ss,ss));
     		FontMetrics fm = G.getFontMetrics(f);
-     		GC.Text(gc, letter, cx-fm.stringWidth(letter)/2,cy+(int)(SQUARESIZE*0.3));
+     		GC.Text(gc, letter, (int)(cx-fm.stringWidth(letter)*0.75),cy+(int)(SQUARESIZE*0.2));
      		if(value!=0)
      		{
-    		GC.Text(gc,true,cx+SQUARESIZE/5,cy+SQUARESIZE/5,SQUARESIZE/4,SQUARESIZE/4,ltblue,null,""+value);
+    		GC.Text(gc,true,cx+SQUARESIZE/10,cy+SQUARESIZE/6,SQUARESIZE/5,SQUARESIZE/5,ltblue,null,""+value);
      		}
     		}
     	}

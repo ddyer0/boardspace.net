@@ -41,7 +41,7 @@ public interface GoConstants
 		Left(GoChip.left),Right(GoChip.right),
 		Up(GoChip.up),Down(GoChip.down);
 		GoChip chip;
-		Annotation(GoChip c) { chip = c; }
+		Annotation(GoChip c) { chip = c; chip.annotation = this; }
 		public String getName() { return(this.toString()); }
 		static PopupManager menu = null;
 		static GoViewer viewer = null;

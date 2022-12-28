@@ -7337,10 +7337,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
 	    			   if(singleChoice) { choiceD.selected = false; choiceB.selected = false; choiceC.selected = false; }  
 	    			   choiceA.selected = !choiceA.selected;
 	    		   	break;
-	    		   default: ;
-	    		   }
-   		   switch(m.source)
-	    		   {
+    			   
 	    		   case Choice_AandC:
 	    			   choiceA.selected = true;
 	    			   //$FALL-THROUGH$
@@ -7348,10 +7345,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
 	    			   if(singleChoice) { choiceD.selected = false; choiceB.selected = false; choiceA.selected = false; }  
 	    			   choiceC.selected = !choiceC.selected;
 	    		   	break;
-	    		   	default: ;
-	    		   }
-   		   switch(m.source)
-	    		   {
+  
 	    		   case Choice_BandC:
 	    			   choiceC.selected = true;
 	    			   //$FALL-THROUGH$
@@ -7359,10 +7353,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
 	    			   if(singleChoice) { choiceD.selected = false; choiceA.selected = false; choiceC.selected = false; }  
 	    			   choiceB.selected = !choiceB.selected;
 	    		   	break;
-	    		   default: ;
-	    		   }
-   		   switch(m.source)
-	    		   {
+    		   	
 	    		   case Choice_D:	
 	    			   if(singleChoice) { choiceB.selected = false; choiceA.selected = false; choiceC.selected = false; }  
 	    			   choiceD.selected = !choiceD.selected;
@@ -7370,6 +7361,14 @@ public int getMaxRevisionLevel() { return(REVISION); }
 	    		   default: ;
 	    		   }
    		   setActionOrder(m.source);
+   		   
+   		   if(m.source==ViticultureId.Choice_0)
+  		   	{ choice0.selected =  !choice0.selected;
+  		   	  cardResolution = choice0.selected ? ViticultureId.Choice_0 : null;
+  		   	}
+   		   else { choice0.selected = false; }
+   		   if(!choice0.selected)
+   		   {
    		   cardResolution = null;
  			   if(choiceA.selected) { cardResolution = ViticultureId.Choice_A; }
  			   if(choiceB.selected) { cardResolution = ViticultureId.Choice_B; }
@@ -7401,9 +7400,8 @@ public int getMaxRevisionLevel() { return(REVISION); }
       			   break;
    		   default: G.Error("Not expecting state %s", resetState);
     		   }
+   		   }
    		   if(choiceA.selected && choiceB.selected && choiceC.selected) { cardResolution = null; }
-   		   if(m.source==ViticultureId.Choice_0) { cardResolution = ViticultureId.Choice_0; }
-   		   choice0.selected = cardResolution==ViticultureId.Choice_0;
    		   
    		   if(singleChoice)
    			   { setState(cardResolution==null ? resetState : ViticultureState.Confirm);

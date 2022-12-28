@@ -23,10 +23,7 @@ class CellStack extends OStack<SprintCell>
 public class SprintCell extends stackCell<SprintCell,SprintChip>
 {	
 	int sweep_counter;		// the sweep counter for which blob is accurate
-	boolean isPostCell = false;			// is a "post" cell
-	boolean isTileCell = false;			// is a "tile" cell
 	int wordDirections = 0;				// mask of directions where words exist
-	boolean isFixed = false;
 	boolean isBlank = false;
 	public boolean seeFlyingTiles = false;
 	StackIterator<Word> wordHead;
@@ -59,7 +56,6 @@ public class SprintCell extends stackCell<SprintCell,SprintChip>
 	 */
 	public void reInit()
 	{	super.reInit();
-		isFixed = false;
 	}
 	// constructor a cell not on the board, with a chip.  Used to construct the pool chips
 	public SprintCell(SprintChip cont)

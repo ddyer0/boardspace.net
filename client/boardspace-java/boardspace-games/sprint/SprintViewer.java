@@ -40,7 +40,6 @@ public class SprintViewer extends CCanvas<SprintCell,SprintBoard> implements Spr
 
 	// file names for jpeg images and masks
 	static final String ImageDir = "/sprint/images/";
-	boolean DRAWBACKGROUNDTILES = true;
      // colors
     private Color HighlightColor = new Color(0.2f, 0.95f, 0.75f);
     private Color GridColor = Color.black;
@@ -718,17 +717,12 @@ public class SprintViewer extends CCanvas<SprintCell,SprintBoard> implements Spr
       GC.setRotatedContext(gc,largerBoardRect,null,effectiveBoardRotation);
       drawFixedBoard(gc,boardRect);
       GC.unsetRotatedContext(gc,null);  
-      if((remoteViewer<0) && DRAWBACKGROUNDTILES)
-      {		GC.setRotatedContext(gc,drawPileRect,null,effectiveBoardRotation);
-    		drawDrawPile(gc,null,bb);
-    		GC.unsetRotatedContext(gc,null);  
-      }
+
      }
     public void drawFixedElements(Graphics gc,boolean complete)
     {	commonPlayer pl = getPlayerOrTemp(bb.whoseTurn);
     	if(!lockOption) { effectiveBoardRotation = (boardRotation*Math.PI/2+pl.displayRotation); }
-    	complete |= (DRAWBACKGROUNDTILES && (digestFixedTiles()!=fixedTileDigest))
-    			     || pendingFullRefresh;
+    	complete |= pendingFullRefresh;
     	super.drawFixedElements(gc,complete);
     }
 
@@ -755,54 +749,10 @@ public class SprintViewer extends CCanvas<SprintCell,SprintBoard> implements Spr
 	      // on the board to fine tune the exact positions of the text
 	      bb.DrawGrid(gc, brect, use_grid, boardBackgroundColor, GridColor, GridColor, GridColor);
 
-	      // draw the tile grid.  The positions are determined by the underlying board
-	      // object, and the tile itself if carefully crafted to tile the pushfight board
-	      // when drawn this way.  For games with simple graphics, we could use the
-	      // simpler loop for(Cell c = b.allCells; c!=null; c=c.next) {}
-	      // but for more complex graphics with overlapping shadows or stacked
-	      // objects, this double loop is useful if you need to control the
-	      // order the objects are drawn in.
-    	  int xsize = bb.cellSize();
-	      for(SprintCell c = bb.allCells; c!=null; c=c.next)
-	      {
-	    	  int ypos = G.Bottom(brect) - bb.cellToY(c.col, c.row);
-	    	  int xpos = G.Left(brect) + bb.cellToX(c.col, c.row);
-	    	  SprintChip.Tile.drawChip(gc,this,xsize,xpos,ypos,null);              
-	      }     
-	      for(SprintCell c = bb.allPostCells; c!=null; c=c.next)
-	      {
-	    	  int ypos = G.Bottom(brect) - bb.cellToY(c.col, c.row) - bb.cellSize()/2;
-	    	  int xpos = G.Left(brect) + bb.cellToX(c.col, c.row) + bb.cellSize()/2;
-	    	  SprintChip tile = c.topChip();
-	    	  //tile.scale = new double[] { 0.42,0.32,0.78};
-	    	  if(tile!=null) { tile.drawChip(gc,this,xsize,xpos,ypos,null); }	               
-	       }       	
-	      if(DRAWBACKGROUNDTILES) 
-	    	  { drawFixedTiles(gc,brect,bb);
-	    	  }
 	  	}
 	//      draw
     }
-    //
-    // in this game, most of the letters on the board and all of the drawpile
-    // will change very slowly if at all.  We mark appropriate cells as "fixed"
-    // and draw those with the background.  On PCs this is hardly noticable, 
-    // but on mobiles if makes a big difference.
-    // This digest determines when the background has changed, and needs to be redrawn.
-    public long digestFixedTiles()
-    {	Random r = new Random(376357);
-    	long v = 0;
-    	for(SprintCell cell = bb.allCells; cell!=null; cell=cell.next)
-        {	if(cell.isFixed)
-        	{
-        	v ^= cell.Digest(r);
-        	}
-        }
-    	int tilesLeft = bb.drawPile.height();
-    	v ^= (tilesLeft*263725265);
-    	v ^= G.rotationQuarterTurns(effectiveBoardRotation)*29526373;
-    	return(v);
-    }
+
     static long FIXEDRANDOM = 346572435;
     long fixedTileDigest = 0;
     private boolean pendingFullRefresh = false;
@@ -810,18 +760,7 @@ public class SprintViewer extends CCanvas<SprintCell,SprintBoard> implements Spr
     {	Random r = new Random(FIXEDRANDOM);
     	long v = 0;
     	pendingFullRefresh = !spritesIdle();
-    	Enumeration<SprintCell>cells = gb.getIterator(Itype.RLTB);
-    	while(cells.hasMoreElements())
-        {	SprintCell cell = cells.nextElement();
-        if(cell.isFixed)
-        	{
-        	int ypos = G.Bottom(brect) - gb.cellToY(cell);
-        	int xpos = G.Left(brect) + gb.cellToX(cell);
-        	v ^= cell.Digest(r);
-        	setLetterColor(gc,gb,cell);
-        	cell.drawStack(gc,this,null,CELLSIZE,xpos,ypos,1,1,null);
-        	}
-        }
+
     	int tilesLeft = gb.drawPile.height();
     	v ^= (tilesLeft*r.nextLong());
     	v ^= G.rotationQuarterTurns(effectiveBoardRotation)*r.nextLong();
@@ -853,15 +792,13 @@ public void setLetterColor(Graphics gc,SprintBoard gb,SprintCell cell)
     if(ch!=null)
     {
     boolean blank = ch.isBlank();
-    boolean isDest = false;
     Color col = blank
     			? middleGray 
     				: gb.lastLetters.contains(cell) 
     					? newLetterColor 
-    					: (isDest = gb.isADest(cell)) ? tempLetterColor : Color.black
+    					: (gb.isADest(cell) ? tempLetterColor : Color.black)
     					;
-    cell.isFixed = isDest;
-	labelColor = col;
+ 	labelColor = col;
 	GC.setColor(gc,col);
     }
     }
@@ -927,26 +864,10 @@ public void setLetterColor(Graphics gc,SprintBoard gb,SprintCell cell)
              { // checking for pointable position
             	 StockArt.SmallO.drawChip(gc,this,gb.cellSize()*5,xpos,ypos,null);                
              }
-            if(!cell.isFixed || !DRAWBACKGROUNDTILES)
-            {
+ 
             setLetterColor(gc,gb,cell);
             cell.drawStack(gc,this,null,CELLSIZE,xpos,ypos,1,1,null);
-            }
-            if(!resolve && G.pointInRect(all, xpos,ypos,CELLSIZE,CELLSIZE))
-            	{
-            	SprintCell cc = gb.getPostCell(cell.col,cell.row-1);
-            	if(cc!=null) {
-            		SprintChip top = cc.topChip();
-            		if(top!=null && top.tip!=null)
-            		{
-            			all.setHelpText(s.get(top.tip));
-            		}
-            	}
-            	}
-            //if(G.debug() && (gb.endCaps.contains(cell) || gb.startCaps.contains(cell)))
-            //	{ StockArt.SmallO.drawChip(gc, this, CELLSIZE,xpos,ypos,null); 
-            //	}
-            }
+          }
         }
        if(resolve)
         {
@@ -1093,8 +1014,6 @@ public void setLetterColor(Graphics gc,SprintBoard gb,SprintCell cell)
        standardGameMessage(gc,stateRect,state);
        drawBoardElements(gc, gb, boardRect, ourTurnSelect,selectPos);
        drawOptions(gc,((state==SprintState.Puzzle)
-    		   			||(state==SprintState.ConfirmFirstPlay)
-    		   			||(state==SprintState.FirstPlay)
     		   			||((state==SprintState.Play) && robotGame && bb.moveNumber<=2)
     		   			) ? ourTurnSelect :null,selectPos,gb);
 
@@ -1109,7 +1028,7 @@ public void setLetterColor(Graphics gc,SprintBoard gb,SprintCell cell)
        drawNoChat(gc,altNoChatRect,selectPos);
        GC.unsetRotatedContext(gc,selectPos);
        }
-       drawDrawPile(DRAWBACKGROUNDTILES?null:gc,ourTurnSelect,gb);
+       drawDrawPile(gc,ourTurnSelect,gb);
        for(int player=0;player<bb.players_in_game;player++)
        	{ commonPlayer pl1 = getPlayerOrTemp(player);
        	  pl1.setRotatedContext(gc, selectPos,false);

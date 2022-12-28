@@ -371,7 +371,7 @@ class TwixtBoard extends rectBoard<TwixtCell> implements BoardProtocol,TwixtCons
     }
     // this is the default, so we don't need it explicitly here.
     // but games with complex "rearrange" states might want to be
-    // more selecteive.  This determines if the current board digest is added
+    // more selective.  This determines if the current board digest is added
     // to the repetition detection machinery.
     public boolean DigestState()
     {	

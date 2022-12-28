@@ -252,7 +252,6 @@ public class GoMovespec extends commonMove implements GoConstants
 		case MOVE_DROPB:
             return (to_col + " " + to_row);
             
-		case MOVE_ANNOTATE:
         case MOVE_DROP:
         case MOVE_PICK:
            	switch(source)
@@ -266,6 +265,7 @@ public class GoMovespec extends commonMove implements GoConstants
         case MOVE_ADD_BLACK:
         case MOVE_DROP_BLACK:
         	return(""+to_col+" "+(b.boardRows+to_row+1));
+		case MOVE_ANNOTATE:
         case MOVE_DROP_WHITE:
         case MOVE_ADD_WHITE:
         	return(""+to_col+" "+(b.boardRows+to_row+1));

@@ -22,7 +22,7 @@ class CellStack extends OStack<HavannahCell>
  * @author ddyer
  *
  */
-public class HavannahCell extends chipCell<HavannahCell,HavannahChip>
+public class HavannahCell extends chipCell<HavannahCell,HavannahChip> implements PlacementProvider
 {	
 	HavannahBlob blob;			// the blob which contains this cell
 	HavannahCell nextInBlob;		// a link to the next cell in this blob
@@ -32,6 +32,8 @@ public class HavannahCell extends chipCell<HavannahCell,HavannahChip>
 	private int sideMask = 0;
 	private int cornerMask = 0;
 	public int depth = 0;
+	public int lastPlaced = 0;
+	
 	public void setBorderMask(int n)
 	{
 		borders = n;
@@ -50,6 +52,7 @@ public class HavannahCell extends chipCell<HavannahCell,HavannahChip>
 		sideMask = other.sideMask;
 		cornerMask = other.cornerMask;
 		depth = other.depth;
+		lastPlaced = other.lastPlaced;
 	}
 	public void initRobotValues() 
 	{
@@ -79,21 +82,14 @@ public class HavannahCell extends chipCell<HavannahCell,HavannahChip>
 		// copy any variables that need copying
 	//	super.copyAllFrom(ot);
 	//}
-	/** copyFrom is called when cloning boards
-	 * 
-	 */
-	//public void copyFrom(HavannahCell ot)
-	//{	//HavannahCell other = (HavannahCell)ot;
-		// copy any variables that need copying
-	//	super.copyFrom(ot);
-	//}
 	/**
 	 * reset back to the same state as when newly created.  This is used
 	 * when reinitializing a board.
 	 */
-	//public void reInit()
-	//{	super.reInit();
-	//}
+	public void reInit()
+	{	super.reInit();
+		lastPlaced = 0;
+	}
 	// constructor a cell not on the board, with a chip.  Used to construct the pool chips
 	public HavannahCell(HavannahChip cont)
 	{	super();
@@ -137,6 +133,10 @@ public class HavannahCell extends chipCell<HavannahCell,HavannahChip>
 	}
 	public HavannahChip[] newComponentArray(int size) {
 		return(new HavannahChip[size]);
+	}
+
+	public int getLastPlacement(boolean empty) {
+		return empty ? 0 : lastPlaced;
 	}
 
 }

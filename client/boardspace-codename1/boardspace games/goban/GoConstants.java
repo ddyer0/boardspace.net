@@ -41,7 +41,7 @@ public interface GoConstants
 		Left(GoChip.left),Right(GoChip.right),
 		Up(GoChip.up),Down(GoChip.down);
 		GoChip chip;
-		Annotation(GoChip c) { chip = c; }
+		Annotation(GoChip c) { chip = c; chip.annotation = this; }
 		public String getName() { return(this.toString()); }
 		static PopupManager menu = null;
 		static GoViewer viewer = null;
@@ -591,15 +591,6 @@ public interface GoConstants
 
 
 	
-    // gzip is a compressed lisp file.  Use this when doing the 
-    // one-time conversion from lisp data to codename1 externalizable form
-	//static final String ShapeLocation = "/goban/data/shape-data.gzip";
-	// zip is a serialized (for codename1) processed file
-    // 
-    // if loading the shape data fails, change this name temporarily to shape-data.gzip
-    // start go, find /eclipse/boardspace/shape-data.out and rename to .zip
-    // then add to the goban.res and change this back to .zip
-	static final String ShapeLocation = "/goban/data/shape-data.zip";
    
 
 	static void putStrings()
