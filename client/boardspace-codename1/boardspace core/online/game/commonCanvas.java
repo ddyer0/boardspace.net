@@ -6268,7 +6268,7 @@ public abstract class commonCanvas extends exCanvas
                     }
                 }
                 // properties are being built backwards, so do the name last, which will be first.
-                root.set_property(p.playerString(), " "+KEYWORD_ID+" " + p.prettyName("p"+i));
+                root.set_property(p.playerString(), " "+KEYWORD_ID+" \"" + p.prettyName("p"+i)+"\"");
 
             }
         }
@@ -6411,6 +6411,7 @@ public abstract class commonCanvas extends exCanvas
         	   ps.print("[");
         	   ps.print(sgf_property.bracketedString(str));
         	   ps.print("]");
+        	   MoveAnnotation.printAnnotations(ps,m);
         	   int tm = m.elapsedTime();
         	   if(tm>=0)
         	   { ps.print(time_property);

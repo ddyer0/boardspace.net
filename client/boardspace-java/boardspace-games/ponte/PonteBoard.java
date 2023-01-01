@@ -231,6 +231,10 @@ public class PonteBoard extends rectBoard<PonteCell> implements BoardProtocol,Po
          robotDepth = from_b.robotDepth;
          board_state = from_b.board_state;
          unresign = from_b.unresign;
+         if(from_b.alternateBridgeMoves!=null)
+        	 { alternateBridgeMoves = new CommonMoveStack();
+        	   alternateBridgeMoves.copyFrom(from_b.alternateBridgeMoves);
+        	 }
          blobsValid = false;	// force rebuilding of blobs
          sameboard(from_b);
      }

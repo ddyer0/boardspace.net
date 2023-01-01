@@ -36,12 +36,6 @@ public class GoChip extends chip<GoChip> implements CommonConfig
 		otherChips.push(this);
 		randomv = r.nextLong();
 	}
-	// constructor for chips using an image from elsewhere
-	private GoChip(String na,Image im,double scl[])
-	{
-		this(na,scl);
-		image = im;
-	}
 	
 	// constructor for chips in the stones/images/ directory,
 	// may be expected to be part of the UI
@@ -55,6 +49,11 @@ public class GoChip extends chip<GoChip> implements CommonConfig
 		if(uid!=null) { uid.chip = this; }
 	}
 		
+	public GoChip(StockArt im) {
+		image = im.getImage();
+		scale = im.getScale();
+		randomv = r.nextLong();
+	}
 	public String toString()
 	{	return("<"+ file+">");
 	}
@@ -132,12 +131,12 @@ public class GoChip extends chip<GoChip> implements CommonConfig
 	public static GoChip backgroundReviewTile = new GoChip( "background-review-tile-nomask",null);
 	public static GoChip hoshi = new GoChip( "hoshi",new double[]{0.612,0.475,1.725},null);
 	
-	public static GoChip triangle = new GoChip("triangle",new double[]{0.5,0.5,0.8});
-	public static GoChip square = new GoChip("square",new double[]{0.5,0.5,0.8});
-	public static GoChip left = new GoChip("left",StockArt.SolidLeftArrow.image,new double[]{0.5,0.5,1.0});
-	public static GoChip right = new GoChip("right",StockArt.SolidRightArrow.image,new double[]{0.5,0.5,1.0});
-	public static GoChip down = new GoChip("right",StockArt.SolidDownArrow.image,new double[]{0.5,0.5,1.0});
-	public static GoChip up = new GoChip("right",StockArt.SolidUpArrow.image,new double[]{0.5,0.5,1.0});
+	public static GoChip triangle = new GoChip(StockArt.Triangle);
+	public static GoChip square = new GoChip(StockArt.Square);
+	public static GoChip left = new GoChip(StockArt.SolidLeftArrow);
+	public static GoChip right = new GoChip(StockArt.SolidRightArrow);
+	public static GoChip down = new GoChip(StockArt.SolidDownArrow);
+	public static GoChip up = new GoChip(StockArt.SolidUpArrow);
 	public static GoChip GoIcon = new GoChip("go-icon-nomask",new double[]{0.5,0.5,1.0});
 
    

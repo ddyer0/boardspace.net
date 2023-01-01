@@ -301,6 +301,54 @@ public class NetConn extends CommonNetConn<String> implements Runnable,Config
         return (sum & 0xffff);
     }
      
+	/** this is the hash checksum used by the server, very similar to G.hashChecksum, but it 
+	 * must deal with out of range characters in exactly the same way as the message encoder
+	 * does.  In particular, embedded unicode characters are encoded and expanded, causing
+	 * excess characters in the virtual stream
+	 * 
+	 *  */
+    public int serverHashChecksum(String str,int n)
+    {   int hash = 5381;
+    	int c;
+     	for (int i=0; i<n;i++)
+    	{
+    		c = str.charAt(i);
+    		if(c<=0 ||c>=128)
+    		{	// this is not expected to be used, because the server string
+    			// ought to already be pure ascii
+    			return slowServerHashChecksum(str,n);
+    		}
+    		hash = ((hash << 5) + hash) + c; /* hash * 33 + c */
+    	}
+      	serverHashChecksumOffset = n;
+    	return hash;
+    }
+    public int  serverHashChecksumOffset = 0;
+    //
+    // the server stores UTF8 versions of the game record
+    // if we encounter UTF8-likely characters, we have to convert 
+    // just to be sure.
+    public int slowServerHashChecksum(String str,int n)
+    {
+        try
+        {
+        byte[] theBuff = str.substring(0,n).getBytes("UTF-8");
+    	int hash = 5381;
+    	int len = theBuff.length;
+    	serverHashChecksumOffset = len;
+    	for(int idx=0;idx<len;idx++)
+    	{
+    		int ch = 0xff & theBuff[idx];
+    		hash = ((hash << 5) + hash) + ch; /* hash * 33 + c */
+    	}
+    	return hash;
+        }
+        catch (UnsupportedEncodingException e) 
+        	{
+        	throw G.Error("Unexpected error ",e);
+        	}
+        
+    }
 
     private int writeErr=0;
     boolean realSendMessage(OutputStream os,String theBuffStr)

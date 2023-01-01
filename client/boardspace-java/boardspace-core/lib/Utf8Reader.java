@@ -6,7 +6,7 @@ import java.io.InputStream;
 import java.io.Reader;
 /**
  * This version of a utf8reader converts an incoming stream which "ought to" be encoded
- * using utf8 to a uniode string.  Some streams are not really utf8, because they contain
+ * using utf8 to a unicode string.  Some streams are not really utf8, because they contain
  * raw values from 0x80 to 0xff which are not encodings of utf8 characters.  Most commonly
  * they are 0xe9 (accent acute) or something like that.  Rather than throw a runtime exception
  * as IOS does, make the best of it and produce a unicode string "as though" the original
@@ -27,13 +27,35 @@ public class Utf8Reader extends Reader
 	int errs = 0;
 	int peekByte = -1;
 	int startOfLineOffset = -1;
+	boolean BomDetected = false;
 	boolean readline = true;
 	
+	// create from a stream, detect and discard Byte Order Marker 
+	// at the head of the stream.
 	public Utf8Reader(InputStream in)
 	{
 		stream = in;
+		detectBOM();
 	}
-
+	//
+	// some UTF8 files start with an explicit marker of #0xef 0xbb 0xbf
+	// in this case, discard the marker so it doesn't appear in the 
+	// input stream
+	//
+	private void detectBOM()
+	{	try {
+			if((getByte() == 0xEF)
+				&& (getByte() == 0xBB)
+				&& (getByte() == 0xBF))
+				{	BomDetected = true;
+					return;
+				}
+			offset = 0; 
+			}
+		catch (IOException e)
+		{	// immediate EOF or something.  Errors will persist	
+		}	
+	}
 	public void close() throws IOException {
 		stream.close();
 	}

@@ -4396,8 +4396,8 @@ public class Game extends commonPanel implements PlayConstants,Opcodes,DeferredE
         int newlen = fixedHist.length();
         int len = Math.min(newlen,recordedLen);
         while((offset<len) && (fixedHist.charAt(offset) == recordedHistory.charAt(offset))) { offset++; }
-    	int sum1 = G.hashChecksum(recordedHistory,offset);
-    	
+    	int sum1 = myNetConn.serverHashChecksum(recordedHistory,offset);
+    	int offset2 = myNetConn.serverHashChecksumOffset();
     	// this is the crucial point where the UIDString is registered
     	// with the server.  After the initial registration, "*" is used
     	// to refer to the game, so spectators and former spectators don't
@@ -4416,7 +4416,7 @@ public class Game extends commonPanel implements PlayConstants,Opcodes,DeferredE
     	//
     	String completeMsg = NetConn.SEND_APPEND_GAME 
     		+ idString
-    		+ " "+offset+" "+sum1+" "+appended;
+    		+ " "+offset2+" "+sum1+" "+appended;
     //G.print("Msg: "+msg);
     //G.print("Append @"+offset+": "+appended);
    	//G.print(completeMsg);

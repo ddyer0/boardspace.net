@@ -1,5 +1,6 @@
 package lib;
 
+
 public class StockArt extends DrawableImage<StockArt> {
 	private static StockArtStack all = new StockArtStack();
 	private StockArt(String n,double[]s)
@@ -99,6 +100,11 @@ public class StockArt extends DrawableImage<StockArt> {
 	static public StockArt SolidUpArrow = new StockArt("solid-arrow-up",defaultAdjust);
 	/** a simple arrow pointing down */
 	static public StockArt SolidDownArrow = new StockArt("solid-arrow-down",defaultAdjust);
+	/** a hollow triangle */
+	public static StockArt Triangle = new StockArt("triangle",defaultAdjust);
+	/** a hollow square */
+	public static StockArt Square = new StockArt("square",defaultAdjust);
+
 	static public StockArt[]vcrButtons = { VCRWayBack,VCRBackPlayer,VCRBackStep,VCRForwardStep,VCRForwardPlayer,VCRFarForward };
 	static public StockArt FilledCheckbox = new StockArt("filled-checkbox",new double[]{0.3,0.4,1.2});
 	static public StockArt EmptyCheckbox = new StockArt("empty-checkbox",new double[]{0.3,0.4,1.2});

@@ -27,6 +27,7 @@ public interface sgf_names
     public static final String colormap_property = "CM";	// game colormap
     public static final String time_property = "TM";	// player elapsed time
     public static final String timecontrol_property = "TC";	// time control parameters
+    public static final String annotation_property = "AN";	// annotations
     /** where to add a new node
      * <li>asOnly</li>
      * <li>atEnd</li>

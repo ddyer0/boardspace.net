@@ -73,6 +73,24 @@ public class ConnectionManager
     public String reconnectInfo = null;		// pass to the next generation
 
     private NetConn myNetConn = null;
+    private int serverHashChecksumOffset = 0;
+    public int serverHashChecksum(String str,int off)
+    {	NetConn mn = myNetConn;
+    	if(mn==null)
+    	{
+    		serverHashChecksumOffset = off;
+    		return G.hashChecksum(str,off);
+    	}
+    	else {
+    		int v = mn.serverHashChecksum(str,off);
+    		serverHashChecksumOffset = mn.serverHashChecksumOffset;
+    		return v;
+    	}
+    }
+    public int serverHashChecksumOffset()
+    {	return serverHashChecksumOffset;
+    }
+
     public int readQueueLength() { return(myNetConn.inQueue.queueLength()); }
     private boolean silent = false;				// for debugging hacks
     private long starttime = -1;				// ping stats

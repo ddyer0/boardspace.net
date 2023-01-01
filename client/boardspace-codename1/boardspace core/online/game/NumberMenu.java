@@ -100,7 +100,7 @@ public class NumberMenu extends Rectangle {
 	 */
 	public void draw(Graphics gc,HitPoint highlight)
 	    {	int width = G.Width(this);
-	    	if(base.drawChip(gc,drawOn,highlight,id,width,G.centerX(this),G.centerY(this),"#"))
+	    	if(base.drawChip(gc,drawOn,highlight,id,width,G.centerX(this),G.centerY(this),text))
 	    	{	highlight.spriteRect = this;
 	    		highlight.spriteColor = Color.red;
 				highlight.setHelpText(G.getTranslations().get(helpText));
@@ -126,7 +126,6 @@ public class NumberMenu extends Rectangle {
 	 * @param p
 	 * @return
 	 */
-	// handle the user clicking on one of the choices
 	public boolean selectMenu(Object target,PlacementProvider p)
 		{
 		if(menu!=null)
@@ -290,8 +289,7 @@ public class NumberMenu extends Rectangle {
 	{	return saveSequenceNumber(seq,empty,x,y,null);
 	}
 	/**
-	 * lower level save of a source or destination, and an associated color which will be used to 
-	 * draw arrows, instead of the default color 
+	 * lower level save of a source or destination, and an associated color
 	 * @param seq
 	 * @param empty
 	 * @param x
@@ -307,8 +305,17 @@ public class NumberMenu extends Rectangle {
 		return loc;
 	}
 	/**
-	 * make a new location object, can be overridden.  x and y are mandatory but color can be null
-	 * if color is not null, it will be used when drawing arrows
+	 * make a new location object, can be overridden.
+	 * @param x
+	 * @param y
+	 * @return
+	 */
+	public LocationProvider makeLocation(int x,int y)
+	{
+		return makeLocation(x,y,null);
+	}
+	/**
+	 * make a new location object, can be overridden.
 	 * @param x
 	 * @param y
 	 * @param color
@@ -430,8 +437,8 @@ public class NumberMenu extends Rectangle {
     	}
     	else { return ""+number; }	// no sequence number mapping
     }
-/**
- * draw a number at the specified location, using the specified font and color
+  /**
+   * draw a number (nominally, a move number) associated with a location
  *     
  * @param gc
  * @param cellSize
@@ -466,7 +473,7 @@ public class NumberMenu extends Rectangle {
 		int y2 = dest.getY();
 		double linew = cellSize/20.0;
 		double shorten = cellSize/5.0;
-		// a little basic trignometry.  We want to shorten the 
+		// a little basic trigonometry.  We want to shorten the 
 		// arrow by a fraction of the cell size, both at the beginning
 		// and the end, so the arrows don't overlap with the numbers.
 		double dx = x1-x2;

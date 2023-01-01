@@ -58,6 +58,7 @@ class HistoryProperties
     int elapsedTime = -1;
     StackIterator<commonMove> variations;
     Hashtable<String,Object>properties;
+    StackIterator<MoveAnnotation> annotations;
     void Copy_Slots(HistoryProperties to)
     {
     	to.index = index;
@@ -67,6 +68,7 @@ class HistoryProperties
     	to.variations = variations;
     	to.properties = properties;
     	to.elapsedTime = elapsedTime;
+    	to.annotations = annotations;
     }
 }
 
@@ -127,7 +129,10 @@ public abstract class commonMove implements lib.CompareTo<commonMove> , Opcodes,
 		return(RProps);
 	}
 	
-	// functions that access the extension
+	// functions that access the extensions
+	public StackIterator<MoveAnnotation> getAnnotations() { return HProps==null ? null : HProps.annotations; }
+	public void setAnnotations(StackIterator<MoveAnnotation> an) {   if(an!=null || HProps!=null) { H().annotations = an; }}
+	
 	public int elapsedTime() { return(H().elapsedTime); }
 	public void setElapsedTime(int v)
     { HistoryProperties h = H();

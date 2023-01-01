@@ -1166,8 +1166,12 @@ public class G extends Platform implements Timestamp
  * @return true if this char is a letter or a digit
  */
 	public static boolean isLetterOrDigit(char ch)
-	{
-		return(Character.isUpperCase(ch) || Character.isLowerCase(ch) || Character.isDigit(ch));
+	{	// the previous version of this let some characters slip through
+		// which caused problems down the line, particularly deprecated 
+		// ascii characters such as umlaut and accent grave
+		return( ((ch&0xff)<=127) 
+				&& (ch>0x32)	// not a nonprinting char
+				&& ((Character.isUpperCase(ch) || Character.isLowerCase(ch) || Character.isDigit(ch))));
 	}
 
 	static public void Rotate(int[]ipix,int []opix,int w,int h,double angle,int fillColor)
@@ -1763,6 +1767,7 @@ public static String expandClassName(String classname)
     /**
      * a simple http-safe encoding for strings that may contain unexpected characters
      * decode with {@link #decodeAlphaNumeric}
+     *
      * @param s
      * @return the encoded string
      */
