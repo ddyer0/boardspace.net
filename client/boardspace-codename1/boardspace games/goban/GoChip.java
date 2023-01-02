@@ -1,6 +1,5 @@
 package goban;
 
-import lib.Image;
 import lib.ImageLoader;
 import lib.Random;
 import lib.StockArt;

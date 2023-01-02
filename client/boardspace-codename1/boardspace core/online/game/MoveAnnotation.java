@@ -1,6 +1,7 @@
 package online.game;
 
 import java.io.PrintStream;
+import java.util.StringTokenizer;
 
 import lib.G;
 import lib.OStack;
@@ -69,5 +70,22 @@ public class MoveAnnotation implements StackIterator<MoveAnnotation> , sgf_names
 		}
 		public String toReadableString()
 		{	return(G.concat("(A1 ",annotation.name()," ",G.format("%6D",xPos)," ",G.format("%6D",yPos)," )"));
+		}
+		public StackIterator<MoveAnnotation> fromReadableString(String str)
+		{	StackIterator<MoveAnnotation>val = null;
+			StringTokenizer s = new StringTokenizer(str);
+			while(s.hasMoreTokens() && "(".equals(s.nextToken()))
+			{	
+				String key = s.nextToken();
+				if("A1".equals(key))
+				{	Annotation ann = Annotation.valueOf(s.nextToken());
+					double xpos = G.DoubleToken(s);
+					double ypos = G.DoubleToken(s);
+					MoveAnnotation aa = new MoveAnnotation(ann,xpos,ypos);
+					if(val==null) { val= aa; } else { val = val.push(aa);}
+					}
+				else { G.Error("Unexpected token ",key); }				}
+				G.Assert(")".equals(s.nextToken()),"no end )");
+			return val;
 		}
 }

@@ -1444,9 +1444,9 @@ public long Digest()
     ArimaaCell dr = droppedDestStack[stackIndex];
     ArimaaChip cap = captureStack[stackIndex];
     if(dr.onBoard) {
-    	ArimaaCell target = dr.auxDisplay.lastPlaceMoveNumber==moveNumber ? dr.auxDisplay : dr;
+    	ArimaaCell target = dr;
+    	if(dr.auxDisplay!=null && dr.auxDisplay.lastPlaceMoveNumber==moveNumber) { target = dr.auxDisplay; }
     	target.lastPlaced = previousPlaced.pop();
-    	target.lastPlayer = previousPlayer.pop();
     	target.lastPlaceMoveNumber = -1;
     	placementIndex--;
     }
@@ -1521,7 +1521,7 @@ public long Digest()
     	if(ps.onBoard) {
     		ArimaaCell target = ps.auxDisplay.lastEmptyMoveNumber==moveNumber ? ps.auxDisplay : ps;
     		target.lastEmptied = previousEmptied.pop();
-    		target.lastPlayer = previousPlayer.pop();
+    		target.lastEmptiedPlayer = previousPlayer.pop();
     		target.lastEmptyMoveNumber = -1;
     	}
     	pickedSourceStack[stackIndex]=null;
@@ -1542,10 +1542,11 @@ public long Digest()
     	destStack.push(to);
     	addChip(to,pickedObject);
     	pickedObject = null;
-    	ArimaaCell target = to.lastPlaceMoveNumber==moveNumber ? to.auxDisplay : to;
+    	ArimaaCell target = to;
+    	if(to.lastPlaceMoveNumber==moveNumber) { target = to.auxDisplay; }
+    	else if(to.auxDisplay!=null) { to.auxDisplay.lastPlaceMoveNumber=-1; }
+     	
     	previousPlaced.push(target.lastPlaced);
-    	previousPlayer.push(target.lastPlayer);
-    	target.lastPlayer = whoseTurn;
     	target.lastPlaced = placementIndex;
     	target.lastPlaceMoveNumber = moveNumber;
     	placementIndex++;
@@ -1591,10 +1592,12 @@ public long Digest()
     	pickedSourceStack[stackIndex] = from;
     	pickedObject = removeChip(from);
     	if(from.onBoard) {
-    		ArimaaCell target = from.lastEmptyMoveNumber==moveNumber ? from.auxDisplay : from;
+    		ArimaaCell target = from;
+    		if(from.lastEmptyMoveNumber==moveNumber) { target = from.auxDisplay; }
+    		else { from.auxDisplay.lastEmptyMoveNumber = -1; }
     		previousEmptied.push(target.lastEmptied);
-    		previousPlayer.push(target.lastPlayer);
-    		target.lastPlayer = whoseTurn;
+    		previousPlayer.push(target.lastEmptiedPlayer);
+    		target.lastEmptiedPlayer = whoseTurn;
     		target.lastEmptied = placementIndex;
     		target.lastContents = pickedObject;
     		target.lastEmptyMoveNumber = moveNumber;

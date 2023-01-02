@@ -418,7 +418,7 @@ public class ArimaaViewer extends CCanvas<ArimaaCell,ArimaaBoard> implements Ari
        		ArimaaCell cell = cells.nextElement();
        		int ypos = G.Bottom(brect) - gb.cellToY(cell);
             int xpos = G.Left(brect) + gb.cellToX(cell);
-            Color co = cell.lastPlayer==0 ? labelColor : blackArrow;
+            Color co = cell.lastEmptiedPlayer==0 ? labelColor : blackArrow;
             numberMenu.saveSequenceNumber(cell,xpos,ypos,co);
             if(cell.auxDisplay.lastEmptyMoveNumber==cell.lastEmptyMoveNumber)
             {

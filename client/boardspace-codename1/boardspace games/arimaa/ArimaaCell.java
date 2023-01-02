@@ -14,9 +14,15 @@ public class ArimaaCell extends stackCell<ArimaaCell,ArimaaChip> implements Plac
 	int runwayScore = 0;		// easy distance to the goal row
 	int sweep_counter = 0;
 	int sweep_step = 0;
+	//
+	// Arimaa has a pretty complicated move structure, and even a single 4-step move can result
+	// in overlaps that lose movement arrows and make the structure impossible to parse.  The
+	// solution I've adopted is to add a second cell for each board cell, which records overloaded
+	// move components. With this strategy, no changes are needed to NumberMenu
+	//
 	int lastPlaced = 0;
-	int lastPlayer = 0;
 	int lastEmptied = 0;
+	int lastEmptiedPlayer = 0;
 	int lastEmptyMoveNumber = 0;
 	int lastPlaceMoveNumber = 0;
 	ArimaaCell auxDisplay = null;
@@ -59,7 +65,7 @@ public class ArimaaCell extends stackCell<ArimaaCell,ArimaaChip> implements Plac
 		super.reInit();
 		lastPlaced = 0;
 		lastEmptied = 0;
-		lastPlayer = 0;
+		lastEmptiedPlayer = 0;
 		lastEmptyMoveNumber = 0;
 		lastPlaceMoveNumber = 0;
 		lastContents = null;
@@ -71,7 +77,7 @@ public class ArimaaCell extends stackCell<ArimaaCell,ArimaaChip> implements Plac
 		lastPlaced = other.lastPlaced;
 		lastEmptied = other.lastEmptied;
 		lastContents = other.lastContents;
-		lastPlayer= other.lastPlayer;
+		lastEmptiedPlayer = other.lastEmptiedPlayer;
 		lastEmptyMoveNumber = other.lastEmptyMoveNumber;
 		lastPlaceMoveNumber = other.lastPlaceMoveNumber;
 		if(auxDisplay!=null) { auxDisplay.copyFrom(other.auxDisplay); }

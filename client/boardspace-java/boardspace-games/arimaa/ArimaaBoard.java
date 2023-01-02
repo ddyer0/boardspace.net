@@ -1445,7 +1445,7 @@ public long Digest()
     ArimaaChip cap = captureStack[stackIndex];
     if(dr.onBoard) {
     	ArimaaCell target = dr;
-    	if(dr.auxDisplay.lastPlaceMoveNumber==moveNumber) { target = dr.auxDisplay; }
+    	if(dr.auxDisplay!=null && dr.auxDisplay.lastPlaceMoveNumber==moveNumber) { target = dr.auxDisplay; }
     	target.lastPlaced = previousPlaced.pop();
     	target.lastPlaceMoveNumber = -1;
     	placementIndex--;
@@ -1544,7 +1544,7 @@ public long Digest()
     	pickedObject = null;
     	ArimaaCell target = to;
     	if(to.lastPlaceMoveNumber==moveNumber) { target = to.auxDisplay; }
-    	else { to.auxDisplay.lastPlaceMoveNumber=-1; }
+    	else if(to.auxDisplay!=null) { to.auxDisplay.lastPlaceMoveNumber=-1; }
      	
     	previousPlaced.push(target.lastPlaced);
      	target.lastPlaced = placementIndex;
