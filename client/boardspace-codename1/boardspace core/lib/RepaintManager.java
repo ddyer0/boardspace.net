@@ -517,7 +517,7 @@ public class RepaintManager implements VncScreenInterface,Config
 	public void shutdown()
 	{ shutdown = true;
 	  stopService("window shutdown");
-	  ProgressMonitor.stopProgress();
+	  //ProgressMonitor.stopProgress();
 	  setAllFixed(null);
 	  setViewBuffer(null);
 	  

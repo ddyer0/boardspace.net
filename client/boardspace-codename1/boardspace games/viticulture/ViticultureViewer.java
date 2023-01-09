@@ -5,7 +5,6 @@ package viticulture;
 //TODO: add bar chart for "points from source" to the final status graph
 import static viticulture.Viticulturemovespec.*;
 
-import com.codename1.ui.geom.Point;
 import com.codename1.ui.geom.Rectangle;
 import bridge.Color;
 import bridge.FontMetrics;
@@ -1359,20 +1358,7 @@ private void drawPlayerBoard(Graphics gc,
     {
     	drawFixedElements(gc,mainBoard,boardRect);
     }
-    
-    /**
-     * translate the mouse coordinate x,y into a size-independent representation
-     * presumably based on the cell grid.  This is used to transmit our mouse
-     * position to the other players and spectators, so it will be displayed
-     * at approximately the same visual spot on their screen.  
-     * 
-     * Some trickier logic may be needed if the board has several orientations,
-     * or if some mouse activity should be censored.
-     */
-    public String encodeScreenZone(int x, int y,Point p)
-    {
-    	return(super.encodeScreenZone(x,y,p));
-    }
+
     private double workerLoc[][] = {
     		{0,0,0},	
     		{0,0,0},	

@@ -59,7 +59,7 @@ import online.search.SimpleRobotProtocol;
 public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard> 
 	implements CrosswordleConstants, GameLayoutClient,Crypto
 {	static final long serialVersionUID = 1000;
-	static final String Crosswords_SGF = "Crosswordle"; // sgf game name
+	static final String Crosswordle_SGF = "Crosswordle"; // sgf game name
 	boolean useKeyboard = G.isCodename1();
 	KeyboardLayout Minimal =new KeyboardLayout(0.085,0.085*3,new String[][]
 			{				
@@ -85,8 +85,8 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
 	private Toggle statsRect = new Toggle(this,"stats",CrosswordleChip.stats,CrosswordleId.ShowStats,false,StatsHelp);
 
 	private TextButton hardButton = addButton(
-			HardPuzzles,CrosswordleId.ToggleEasy,UseHard,
-    		UseEasy,CrosswordleId.ToggleEasy,UseEasy,
+			HardPuzzles,CrosswordleId.ToggleEasy,HardPuzzles,
+    		EasyPuzzles,CrosswordleId.ToggleEasy,EasyPuzzles,
     		HighlightColor, rackBackGroundColor,boardBackgroundColor);
 	private DateSelector dateRect = 
 			(DateSelector)addRect("date",
@@ -215,7 +215,6 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
     public double aspects[] = {0.7,1.0,1.4};
     public void setLocalBounds(int x,int y,int w,int h)
     {	setLocalBoundsV(x,y,w,h,aspects);
-
     }
 	/**
 	 * this is the main method to do layout of the board and other widgets.  I don't
@@ -502,22 +501,6 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
     }
 
 
-    /**
-     * translate the mouse coordinate x,y into a size-independent representation
-     * presumably based on the cell grid.  This is used to transmit our mouse
-     * position to the other players and spectators, so it will be displayed
-     * at approximately the same visual spot on their screen.  
-     * 
-     * Some trickier logic may be needed if the board has several orientations,
-     * or if some mouse activity should be censored.
-     */
-    public String encodeScreenZone(int x, int y,Point p)
-    {
- 
-    	return(super.encodeScreenZone(x,y,p));
-    }
-    
-
 	CrosswordleCell definitionCell = null;
     /**
 	 * draw the board and the chips on it.  This is also called when not actually drawing, to
@@ -736,6 +719,8 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
         GC.setFont(gc,largeBoldFont());
         dateRect.draw(gc,selectPos);
         statsRect.draw(gc,selectPos);
+        hardButton.square = true;
+        hardButton.frameColor = Color.white;
         hardButton.draw(gc,selectPos);
         inputField.setVisible(true);
         inputField.redrawBoard(gc,selectPos);
@@ -1192,6 +1177,16 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
         urlResult = Http.postAsyncUrl(serverName,baseUrl,urlStr,null);
 
 	}
+	
+	public void MouseDown(HitPoint p)
+	{	
+		if(keys!=null) 
+			{ keys.MouseDown(p);
+			  //Plog.log.addLog("Down "+p+" and repaint");
+			  repaint();
+			}			
+	}
+
 	/** 
 	 * this is called on "mouse up".  We may have been just clicking
 	 * on something, or we may have just finished a click-drag-release.
@@ -1210,10 +1205,6 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
 			{
 			maybeSendGuess();
 			}
-        	if(keys!=null)
-			{
-				keys.StopDragging(hp); 
-			}
 		}
         else if(id instanceof DateSelector.DateCode) { dateRect.StopDragging(hp); }
         else if(!(id instanceof CrosswordleId))  
@@ -1226,7 +1217,7 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
         switch (hitCode)
         {
         default:
-        	if (performStandardButtons(hitCode)) {}
+        	if (performStandardButtons(hitCode, hp)) {}
         	else if (performVcrButton(hitCode, hp)) {}	// handle anything in the vcr group
             else
             {
@@ -1359,7 +1350,7 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
     	}	
      
     // this is the subgame "setup" within the master type.
-    public String sgfGameType() { return(Crosswords_SGF); }	// this is the official SGF number assigned to the game
+    public String sgfGameType() { return(Crosswordle_SGF); }	// this is the official SGF number assigned to the game
 
    
     /**

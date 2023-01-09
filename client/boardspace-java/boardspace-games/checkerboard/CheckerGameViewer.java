@@ -50,7 +50,6 @@ public class CheckerGameViewer extends CCanvas<CheckerCell,CheckerBoard> impleme
     // in the options menu.
     private Rectangle playerChipRect[] = addRect("chip",2);
     private NumberMenu numberMenu = new NumberMenu(this,CheckerChip.white,CheckerId.ShowNumbers);
-    private AnnotationMenu annotationMenu = new AnnotationMenu(this,CheckerId.ShowAnnotations);
 
     private Rectangle reverseViewRect = addRect("reverse");
     private JCheckBoxMenuItem reverseOption = null;
@@ -341,23 +340,6 @@ public class CheckerGameViewer extends CCanvas<CheckerCell,CheckerBoard> impleme
     	chd.drawChip(g,this,SQUARESIZE,xp,yp,null);
 
      }
-    
-    public boolean DrawTileSprite(Graphics gc,HitPoint hp)
-    {
-    	boolean seen = super.DrawTileSprite(gc,hp);
-    	AnnotationMenu.Annotation selected = annotationMenu.getSelected();
-    	if(selected!=null)
-    	{
-    	if(seen) { annotationMenu.setSelected(null); }
-    		else {
-    		 annotationMenu.drawAnnotation(gc,selected,SQUARESIZE,G.Left(hp),G.Top(hp));
-     		}
-    	}
-    	commonMove m = getCurrentMove();
-    	if(m!=null) { annotationMenu.drawSavedAnimations(gc,m,boardRect,SQUARESIZE); }
-    	annotationMenu.drawSavedAnimations(gc,getCurrentMove(),boardRect,SQUARESIZE);
-    	return seen;
-    }
 
     // also related to sprites,
     // default position to display static sprites, typically the "moving object" in replay mode
@@ -442,7 +424,6 @@ public class CheckerGameViewer extends CCanvas<CheckerCell,CheckerBoard> impleme
        eyeRect.activateOnMouse=true;
        eyeRect.draw(gc,highlight);
        numberMenu.draw(gc,highlight);
-       annotationMenu.draw(gc,highlight);
     }
     //
     // draw the board and things on it.  If gc!=null then actually 
@@ -874,8 +855,7 @@ private void playSounds(commonMove m)
 	 */
     public void StopDragging( HitPoint hp)
     {	CellId id = hp.hitCode;
-    	if(annotationMenu.StopDragging(hp,getCurrentMove(),boardRect)) {}
-    	else if(!(id instanceof CheckerId)) 
+    	if(!(id instanceof CheckerId)) 
     		{ // handle all the actions that aren't ours
     			missedOneClick = performStandardActions(hp,missedOneClick); 
     			
@@ -890,9 +870,6 @@ private void playSounds(commonMove m)
         {
         default:
         	throw G.Error("Hit Unknown: %s", hitObject);
-        case ShowAnnotations:
-        	annotationMenu.showMenu();
-        	break;
         case ShowNumbers:
         	numberMenu.showMenu();
         	break;
@@ -1112,7 +1089,6 @@ private void playSounds(commonMove m)
     		}
     		return(true);
     	}
-    	else if(annotationMenu.selectMenu(target)) { return true; }
     	else if(numberMenu.selectMenu(target,this)) { return(true); }
     	else if(target==reverseOption)
     	{

@@ -2023,6 +2023,7 @@ class CrosswordsBoard extends rectBoard<CrosswordsCell> implements BoardProtocol
     			}
     		}
     		G.Assert(nmapped==used,"map not complete");
+    		
     		}
 
 

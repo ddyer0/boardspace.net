@@ -583,15 +583,16 @@ public abstract class gBoard<CELLTYPE extends cell<CELLTYPE>> extends RBoard<CEL
    	if(mincell!=null)
    	{	int cellx = cellToX(mincell.col,mincell.row);
    		int celly = cellToY(mincell.col,mincell.row);
-   		
+   		int reverse =  displayParameters.reverse_y ? -1 : 1;
    		//System.out.println("Close to "+mincell);
-   		int xoff = 1000+(int)(10*((x-cellx)/cellsize));
-   		int yoff = 1000+(int)(10*((y-celly)/cellsize));
+   		int xoff = 1000+(int)(10*(reverse*(x-cellx)/cellsize));
+   		int yoff = 1000+(int)(10*(reverse*(y-celly)/cellsize));
    		// encode the subcell position in tenths of a cell, chinese remainder
    		// the cell number with the subcell position.  This isn't quite correct
    		// because it should also consider differences in rotation, but we don't
    		// use vastly different rotations, so it's pretty much ok
    		//
+   		//mincell = getCell('A',4);
    		//G.print("encode "+mincell.col+mincell.row);
 		return(new Point(10000*(mincell.col-'A')+xoff,10000*mincell.row+yoff));
    	}

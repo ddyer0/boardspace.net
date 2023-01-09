@@ -82,7 +82,9 @@ public interface Opcodes {
 		HitLiftButton("LiftView",MOVE_UNKNOWN),
 		NormalView("NormalView",MOVE_UNKNOWN),
 		FacingView("FacingView",MOVE_UNKNOWN),
-		TwistedView("TwistedView",MOVE_UNKNOWN),
+		TwistedView("TwistedView",MOVE_UNKNOWN), 
+		ShowAnnotations("Annotations",MOVE_UNKNOWN),
+		PlaceAnnotation("PlaceAnnotation",MOVE_UNKNOWN),
 
 		;
 		public String shortName = name();

@@ -1019,7 +1019,8 @@ public class ZertzGameViewer extends CCanvas<zCell,GameBoard> implements GameCon
 				case 1: break;
             	}
             }
-            else if ((pn = playerNumberToken(name))>=0)
+            else if (((pn = commonMove.playerNumberToken(name))>=0)
+            		&& (pn<players.length))
             {
                 commonPlayer p = players[pn];
 

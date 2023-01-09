@@ -132,7 +132,7 @@ public class sgf_property
             if (Character.isUpperCase(ch))
             {	if (char3 != 0)
             	{
-            	throw G.Error("Too Many upper case chars in %s" + newname);
+            	throw G.Error("Too Many upper case chars in " + newname);
             	}
             else if (char2 != 0)
                 {
@@ -156,7 +156,7 @@ public class sgf_property
         }
         else
         {
-        	throw G.Error("No upper case characters in %s" + newname);
+        	throw G.Error("No upper case characters in " + newname);
         }
 
         name = newname; /* only get here if no errors */

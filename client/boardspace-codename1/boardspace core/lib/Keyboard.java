@@ -377,8 +377,8 @@ public class Keyboard implements Config
 		return false;
 	}
 	public boolean StopDragging(HitPoint hp)
-	{	// keyboard activates on key down
-		return(false);
+	{	// keyboard activates on key down, we just need to ignore them
+		return (hp.hitCode instanceof CalculatorButton.id);
 	}
 	
 	public void drawButton(Graphics gc,CalculatorButton button,HitPoint highlight,Rectangle cr)

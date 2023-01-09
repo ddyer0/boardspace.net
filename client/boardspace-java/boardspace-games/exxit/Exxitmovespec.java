@@ -1,9 +1,8 @@
 package exxit;
 
 import online.game.*;
-import java.util.*;
-
 import lib.G;
+import lib.Tokenizer;
 import lib.ExtendedHashtable;
 
 public class Exxitmovespec extends commonMove implements ExxitConstants
@@ -40,7 +39,7 @@ public class Exxitmovespec extends commonMove implements ExxitConstants
     /* constructor */
     public Exxitmovespec(String str, int p)
     {
-        parse(new StringTokenizer(str), p);
+        parse(new Tokenizer(str), p);
     }
     
     // constructor for distribution moves, for use by the robot
@@ -63,7 +62,7 @@ public class Exxitmovespec extends commonMove implements ExxitConstants
     	player = who;
     }
     /* constructor */
-    public Exxitmovespec(StringTokenizer ss, int p)
+    public Exxitmovespec(Tokenizer ss, int p)
     {
         parse(ss, p);
     }
@@ -117,15 +116,15 @@ public class Exxitmovespec extends commonMove implements ExxitConstants
     /* parse a string into the state of this move.  Remember that we're just parsing, we can't
      * refer to the state of the board or the game.
      * */
-    private void parse(StringTokenizer msg, int p)
+    private void parse(Tokenizer msg, int p)
     {
-        String cmd = msg.nextToken();
+        String cmd = msg.nextElement();
         player = p;
 
         if (Character.isDigit(cmd.charAt(0)))
         { // if the move starts with a digit, assume it is a sequence number
             setIndex(G.IntToken(cmd));
-            cmd = msg.nextToken();
+            cmd = msg.nextElement();
         }
 
         op = D.getInt(cmd, MOVE_UNKNOWN);
@@ -137,40 +136,40 @@ public class Exxitmovespec extends commonMove implements ExxitConstants
 
         case MOVE_MOVE:
         		{
-        		object = ExxitId.get(msg.nextToken());
-        		from_col = G.CharToken(msg);
-        		from_row = G.IntToken(msg);
-        		direction = G.IntToken(msg);
+        		object = ExxitId.get(msg.nextElement());
+        		from_col = msg.charToken();
+        		from_row = msg.intToken();
+        		direction = msg.intToken();
          		}
         		break;
         case MOVE_DROPB:
 	            source = ExxitId.BoardLocation;
-				object = ExxitId.get(msg.nextToken());	// object to object number
-	            from_col = G.CharToken(msg);
-	            from_row = G.IntToken(msg);
+				object = ExxitId.get(msg.nextElement());	// object to object number
+	            from_col = msg.charToken();
+	            from_row = msg.intToken();
 	            break;
 
         case MOVE_EXCHANGE:
 		case MOVE_PICKB:
             source = ExxitId.BoardLocation;
-            from_col = G.CharToken(msg);
-            from_row = G.IntToken(msg);
-            object = ExxitId.get(msg.nextToken());
+            from_col = msg.charToken();
+            from_row = msg.intToken();
+            object = ExxitId.get(msg.nextElement());
 
             break;
 
         case MOVE_DROP:
-            source = ExxitId.get(msg.nextToken());
+            source = ExxitId.get(msg.nextElement());
             break;
             
         case MOVE_PICK:		// "pick { B W } 
-            source = ExxitId.get(msg.nextToken());
+            source = ExxitId.get(msg.nextElement());
             from_col = '@';
             from_row = 0;
             break;
 
         case MOVE_START:
-            player = D.getInt(msg.nextToken());
+            player = D.getInt(msg.nextElement());
 
             break;
 

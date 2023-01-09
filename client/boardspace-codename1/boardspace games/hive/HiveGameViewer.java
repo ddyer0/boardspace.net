@@ -291,7 +291,7 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
         int boardBottom = G.Bottom(main)-stateH-C4;
         int boardH = boardBottom-boardY;
         G.placeRow(stateX+stateH,stateY,mainW-stateH,stateH,stateRect,reverseRect,liftRect,seeMobile,noChatRect);
-        G.placeRow(stateX,boardBottom+C4,mainW,stateH,goalRect,numberMenu,tilesetRect);
+        G.placeRow(stateX,boardBottom+C4,mainW,stateH,goalRect,annotationMenu,numberMenu,tilesetRect);
        
         G.placeRight(stateRect, zoomRect, zoomW);
         
@@ -743,7 +743,6 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
     	int h = G.Height(stateRect);
     	idbug.drawChip(gc, this, h*3, G.Left(stateRect)-h/2, G.centerY(stateRect),null);
         goalAndProgressMessage(gc,nonDraggingSelect,s.get(HiveGoal),progressRect, goalRect);
-        
         drawVcrGroup(nonDraggingSelect, gc);
 
     }

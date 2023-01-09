@@ -307,7 +307,7 @@ public class EuphoriaMovespec extends commonMPMove implements EuphoriaConstants
     {
    		if(msg.hasMoreElements())
 		{
-			String card = msg.nextToken();	
+			String card = msg.nextElement();	
 			chipIn = chip = ArtifactChip.find(card);
 		}
     }
@@ -321,13 +321,13 @@ public class EuphoriaMovespec extends commonMPMove implements EuphoriaConstants
      * */
     private void parse(String omsg, int p)
     {	Tokenizer msg = new Tokenizer(omsg);
-        String cmd = msg.nextToken();
+        String cmd = msg.nextElement();
         player = p;
 
         if (Character.isDigit(cmd.charAt(0)))
         { // if the move starts with a digit, assume it is a sequence number
             setIndex(G.IntToken(cmd));
-            cmd = msg.nextToken();
+            cmd = msg.nextElement();
         }
         // look for card annotations
         {
@@ -342,109 +342,109 @@ public class EuphoriaMovespec extends commonMPMove implements EuphoriaConstants
         switch (op)
         {
         case MOVE_MARKET:
-        	dest = EuphoriaId.get(msg.nextToken());
+        	dest = EuphoriaId.get(msg.nextElement());
         	to_row = msg.intToken();
         	parseExtra(msg);
         	break;
         case MOVE_UNKNOWN:
         	throw G.Error("Can't parse %s", cmd);
         case USE_DIE_ROLL:
-        	source = EuphoriaId.get(msg.nextToken());
+        	source = EuphoriaId.get(msg.nextElement());
         	break;
         case DONT_USE_DIE_ROLL:
         	break;
         
         case MOVE_SACRIFICE:
-       		from_color = Colors.get(msg.nextToken());
-    		source = EuphoriaId.get(msg.nextToken());
+       		from_color = Colors.get(msg.nextElement());
+    		source = EuphoriaId.get(msg.nextElement());
     		from_row = msg.intToken();
            	break;
            	
         case MOVE_ITEM:
         case MOVE_MOVE_WORKER:
-           	source = EuphoriaId.get(msg.nextToken());
+           	source = EuphoriaId.get(msg.nextElement());
            	from_row = msg.intToken();
-           	dest = EuphoriaId.get(msg.nextToken());
+           	dest = EuphoriaId.get(msg.nextElement());
            	to_row = msg.intToken();
            	break;
            	
         case MOVE_RETRIEVE_WORKER:
-        	source = EuphoriaId.get(msg.nextToken());
+        	source = EuphoriaId.get(msg.nextElement());
     		from_row = msg.intToken();
-    		to_color = Colors.get(msg.nextToken());
-    		dest = EuphoriaId.get(msg.nextToken());
+    		to_color = Colors.get(msg.nextElement());
+    		dest = EuphoriaId.get(msg.nextElement());
          	break;
         case USE_RECRUIT_OPTION:
         case USE_SECOND_RECRUIT_OPTION:
         	break;
         case MOVE_ITEM_TO_BOARD:
-       		to_color = from_color = Colors.get(msg.nextToken());
-    		source = EuphoriaId.get(msg.nextToken());
+       		to_color = from_color = Colors.get(msg.nextElement());
+    		source = EuphoriaId.get(msg.nextElement());
     		from_row = msg.intToken();
-    		dest = EuphoriaId.get(msg.nextToken());
+    		dest = EuphoriaId.get(msg.nextElement());
     		to_row = msg.intToken();
     		break;
     		
         case MOVE_ITEM_TO_PLAYER:
-    		source = EuphoriaId.get(msg.nextToken());
+    		source = EuphoriaId.get(msg.nextElement());
     		from_row = msg.intToken();
-    		to_color = Colors.get(msg.nextToken());
-    		dest = EuphoriaId.get(msg.nextToken());
+    		to_color = Colors.get(msg.nextElement());
+    		dest = EuphoriaId.get(msg.nextElement());
     		parseExtra(msg);
  
     		break;
 
         case EPHEMERAL_CHOOSE_RECRUIT:
         case MOVE_CHOOSE_RECRUIT:
-        		to_color = from_color = Colors.get(msg.nextToken());
-        		source = EuphoriaId.get(msg.nextToken());
-        		dest = EuphoriaId.get(msg.nextToken());
+        		to_color = from_color = Colors.get(msg.nextElement());
+        		source = EuphoriaId.get(msg.nextElement());
+        		dest = EuphoriaId.get(msg.nextElement());
         		player = p;
         		parseExtra(msg);
         		break;
         case MOVE_PLACE_WORKER:
-        		from_color = Colors.get(msg.nextToken());
-        		source = EuphoriaId.get(msg.nextToken());
+        		from_color = Colors.get(msg.nextElement());
+        		source = EuphoriaId.get(msg.nextElement());
         		from_row = msg.intToken();
-        		dest = EuphoriaId.get(msg.nextToken());
+        		dest = EuphoriaId.get(msg.nextElement());
         		to_row = msg.intToken();
         		break;
         case MOVE_DROPB:
-				dest = EuphoriaId.get(msg.nextToken());	// B or W
+				dest = EuphoriaId.get(msg.nextElement());	// B or W
 	            to_row = msg.intToken();
 	            break;
 
 		case MOVE_PICKB:
-			source = EuphoriaId.get(msg.nextToken());
+			source = EuphoriaId.get(msg.nextElement());
             from_row = msg.intToken();
 
             break;
 		case CONFIRM_DISCARD:
 		case EPHEMERAL_CONFIRM_DISCARD:
-          	from_color = Colors.get(msg.nextToken());		
+          	from_color = Colors.get(msg.nextElement());		
 			break;
 		case EPHEMERAL_DROP:
         case MOVE_DROP:
-          	to_color = Colors.get(msg.nextToken());
-            dest = EuphoriaId.get(msg.nextToken());
+          	to_color = Colors.get(msg.nextElement());
+            dest = EuphoriaId.get(msg.nextElement());
             break;
             
         case EPHEMERAL_PICK:
         case MOVE_PICK:
-        	from_color  = Colors.get(msg.nextToken());
-            source  = EuphoriaId.get(msg.nextToken());
+        	from_color  = Colors.get(msg.nextElement());
+            source  = EuphoriaId.get(msg.nextElement());
             from_row = msg.intToken();
             break;
 
         case MOVE_START:
-            player = D.getInt(msg.nextToken());
+            player = D.getInt(msg.nextElement());
 
             break;
         case CONFIRM_RECRUITS:
         case EPHEMERAL_CHOOSE_RECRUITS:
         case EPHEMERAL_CONFIRM_RECRUITS:
         case EPHEMERAL_CONFIRM_ONE_RECRUIT:
-        	from_color = Colors.get(msg.nextToken());
+        	from_color = Colors.get(msg.nextElement());
         	player = p;
         	break;
         case MOVE_DONE:

@@ -409,6 +409,7 @@ public abstract class commonCanvas extends exCanvas
 	    private String loadUrlGame = null;
 	    private boolean urlLoaded = false;
 	    private int parsedTime = -1;
+	    private StackIterator<MoveAnnotation>parsedAnnotation = null;
 		private commonMove changeMove = null;
 	    private double boardZoomStartValue = 0.0;
 
@@ -569,6 +570,10 @@ public abstract class commonCanvas extends exCanvas
     		l.gameOverlayEnabled = fullMessage.indexOf(KEYWORD_TIMECONTROLS)>0;
     		return(true);
     	}
+    	if(annotationMenu.processSpareMessage(cmdStr,fullMessage))
+		{
+		 return true;
+		}
     	return(false);
     }
     /**
@@ -696,6 +701,7 @@ public abstract class commonCanvas extends exCanvas
 	    	{ VcrId.WayBackButton, VcrId.BackPlayerButton, VcrId.BackStepButton,
 	    	VcrId.ForeStepButton, VcrId.ForePlayerButton, VcrId.ForeMostButton};
 	    
+
 	    private Rectangle vcrFrontRect = addRect(".vcrFrontRect");
 	    private Rectangle vcrButtonRect = addRect(".vcrButtonRect");
 	    private Rectangle vcrVarRect = addRect(".vcrVarRect");
@@ -1407,6 +1413,8 @@ public abstract class commonCanvas extends exCanvas
     /** standard rectangle of all viewers used to display the log of game's moves */
     public Rectangle logRect = addZoneRect("logRect"); //the game log, normally off the the right
 
+    public AnnotationMenu annotationMenu = new AnnotationMenu(this,GameId.ShowAnnotations);
+
    
     /**
      * this is a standard rectangle shared by all viewers which displays the progress
@@ -1523,6 +1531,20 @@ public abstract class commonCanvas extends exCanvas
      */
     public abstract void drawSprite(Graphics g,int idx, int x,int y);
     /**
+     * draw the annotation sprite if it is active
+     * @param g
+     * @param obj
+     * @param xp
+     * @param yp
+     * @param mode
+     */
+    public void drawAnnotationSprite(Graphics g,int obj,int xp,int yp,String mode)
+    {
+    	annotationMenu.drawAnimationSprite(g,obj,xp,yp,mode,cellSize());
+    }
+
+    
+    /**
      * draw a representation of someone else's mouse position.  The default is a circle with
      * a center dot in a contrasting color.   The colors are determined by {@link #MouseColors MouseColors[]} and
      * {@link #MouseDotColors MouseDotColors[]} which can be replaced. Player can be -1 to indicate a spectator.
@@ -1614,7 +1636,6 @@ public abstract class commonCanvas extends exCanvas
     { ConnectionManager myNetConn = (ConnectionManager)sharedInfo.get(exHashtable.NETCONN);
       if(myNetConn!=null) { myNetConn.LogMessage(ev,od); }
     }
-    
     /** draw a mouse sprite for a particular player, and if there is a moving
      * object, draw a representation of the object for the player in control.
      * @param g
@@ -1636,20 +1657,24 @@ public abstract class commonCanvas extends exCanvas
         {
             int col = p.boardIndex; //assign colors to players
             int obj = p.mouseObj;
-               
-            if ((obj >= 0) && !reviewMode())
+            String mode = p.mouseType; 
+            if(mode!=null)
+            {
+            	drawAnnotationSprite(g,obj,xp,yp,mode);
+            }
+            else if ((obj >= 0) && !reviewMode())
                 { // draw an object being dragged
                   drawSprite(g,obj,xp,yp);
                 }
             
-      	  // only draw the mouse sprite if it has moved or for 1 second after
+      	  // only draw the mouse sprite if it has moved or for 1/2 second after
           // this prevents one user accidentally (or deliberately) blocking
           // the view by hovering his mouse over something.
       	  if((mx>=0) 
       		&& (my>=0)
       		&& ((mx!=p.drawnMouseX)
       			||(my!=p.drawnMouseY)
-      			|| ((now-p.drawnMouseTime)<1000)))
+      			|| ((now-p.drawnMouseTime)<500)))
       	  {
               p.drawnMouseX = mx;		// remember when and where
               p.drawnMouseY = my;
@@ -1705,6 +1730,12 @@ public abstract class commonCanvas extends exCanvas
     	}
     }
     /**
+     * return a reference size, nominally the size of a cell on the board
+     * 
+     * @return
+     */
+    public int cellSize() { return getBoard().cellSize(); }
+    /**
      * draw any object being dragged by the mouse.  In review mode, where the mouse
      * is actually moving the arrow controls, display "moving" objects at "spriteDisplayPoint"
      * 
@@ -1712,8 +1743,10 @@ public abstract class commonCanvas extends exCanvas
      * @param hp
      */
     public boolean DrawTileSprite(Graphics gc,HitPoint hp)
-    { //draw the ball being dragged
+    { 	//draw the ball being dragged
     	// draw a moving tile
+    	boolean seen = false;
+    	
      	if(mouseTrackingAvailable(hp)) { magnifier.DrawTileSprite(gc,hp); }
     	int chip = getOurMovingObject(hp);
         if(reviewMode()) // in review mode we normally display moving pieces beside the vcr controls
@@ -1722,7 +1755,7 @@ public abstract class commonCanvas extends exCanvas
           	{
           	Point pt = spriteDisplayPoint();
           	drawRotatedSprite(gc,chip,hp,pt);
-          	return(true);
+          	seen = true;
             }
           }
           else if( (hp!=null) && hasControlToken())
@@ -1731,12 +1764,29 @@ public abstract class commonCanvas extends exCanvas
             if (chip >= 0)
             {	
                 drawRotatedSprite(gc,chip,hp,hp);
-                return(true);
+                seen = true;
             }
         }
-         return(false);	// didn't draw any
+        
+        // handle annotation menu
+    	commonMove m = getCurrentMove();   	
+        if(m!=null) { annotationMenu.drawSavedAnimations(gc,m,cellSize()); }
+
+        AnnotationMenu.Annotation selected = annotationMenu.getSelected();
+    	if(selected!=null)
+    	{
+
+        if(seen) { annotationMenu.setSelected(null); }
+    		else {
+    		 annotationMenu.drawAnnotation(gc,selected,cellSize(),G.Left(hp),G.Top(hp));
+    		 hp.hitCode = GameId.PlaceAnnotation;
+    		 seen = true;
+     		}
+    	}
+      
+    	return(seen);	// didn't draw any
     }
-    
+
     /**
      * return the current real move number.  This is used by the
      * game controller to tell when to ask for the mid game digest (at 20 moves)
@@ -2426,14 +2476,14 @@ public abstract class commonCanvas extends exCanvas
     	wake();
     }
 
-    private void doMouseTrackingInternal(commonPlayer player,commonPlayer[] plist,String zone,int inx,int iny,int ino)
+    private void doMouseTrackingInternal(commonPlayer player,commonPlayer[] plist,String zone,int inx,int iny,int ino,String intype)
     {   for(int pl = 0;pl<plist.length;pl++)
         {
         // make only one player the tracking player
         commonPlayer p = plist[pl];
         if(p==player) 
         { if(player!=getActivePlayer())
-        	{ player.mouseTracking(zone,inx, iny, ino);
+        	{ player.mouseTracking(zone,inx, iny, ino,intype);
         	}
         }
         else if((p!=null)&&(ino!=NothingMoving)) 
@@ -2442,10 +2492,20 @@ public abstract class commonCanvas extends exCanvas
         }
     }
     
-    public void doMouseTracking(commonPlayer player,String zone,int inx,int iny,int ino)
+    public void doMouseTracking(StringTokenizer myST,commonPlayer player)
+    {	
+        String zone = myST.nextToken();
+        int inx = G.IntToken(myST);
+        int iny = G.IntToken(myST);
+        int ino = G.IntToken(myST);
+        String typ = myST.hasMoreTokens() ? myST.nextToken() : null;
+        doMouseTracking(player,zone,inx,iny,ino,typ);
+     }
+
+    private void doMouseTracking(commonPlayer player,String zone,int inx,int iny,int ino,String intype)
     {
-    	doMouseTrackingInternal(player,players,zone,inx,iny,ino);
-    	doMouseTrackingInternal(player,spectators,zone,inx,iny,ino);
+    	doMouseTrackingInternal(player,players,zone,inx,iny,ino,intype);
+    	doMouseTrackingInternal(player,spectators,zone,inx,iny,ino,intype);
      }
     /**
      * draw the players time clocks, using the standard black for the main clock
@@ -2725,7 +2785,7 @@ public abstract class commonCanvas extends exCanvas
   	boolean miss)	// @parm if true, reset is enabled.
   {		CellId id = hp.hitCode;
   		boolean armed = false;
-	  	if(performStandardButtons(id))  { }
+	  	if(performStandardButtons(id, hp))  { }
 	  	else if(id == DefaultId.HitNoWhere) { if(miss) { performReset(); } else { armed = true;  }} 
 	  	else if(performVcrButton(id, hp)) {  }
 	  	else if(id ==GameId.HitNothing) { }
@@ -2983,21 +3043,29 @@ public abstract class commonCanvas extends exCanvas
 		 }
 	  return(false);
   }
+
  /**
   * call this from your {@link #StopDragging} method to interpret
   * the standard buttons, such as "done" "edit" "start" "swap"
-  * @param hitObject
+ * @param hitObject
   * @return true if the hitCode was handled
   */
-    public boolean performStandardButtons(CellId hitObject)
+    public boolean performStandardButtons(CellId hitObject, HitPoint hitPoint)
     {  	String msg = null;
-    	if(super.performStandardButtons(hitObject)) { return(true); }
+    	if(super.performStandardButtons(hitObject, hitPoint)) { return(true); }
 		if(hitObject instanceof GameId)
     	{
     	GameId ho = (GameId)hitObject;
     	switch(ho)
     	{
     	default: break;
+    	case PlaceAnnotation:
+    		annotationMenu.saveCurrentAnnotation(hitPoint,boardRect,getCurrentMove());
+        	return true;
+        	
+        case ShowAnnotations:
+        	annotationMenu.showMenu();
+        	return true;
     	case HitLiftButton: return(true); 	// maintained "lifted" variable
     	case FacingView: 
     		{ currentViewset = ViewSet.Reverse; resetBounds(); generalRefresh(); return(true); 
@@ -3200,6 +3268,7 @@ public abstract class commonCanvas extends exCanvas
     public CellId drawVcrGroup(HitPoint p, Graphics inG)
     {  	
     	if(G.Height(noChatRect)>0) { drawNoChat(inG,noChatRect,p); }	// magically draw the chat/nochat button
+    	if(G.Height(annotationMenu)>0) {  annotationMenu.draw(inG,p); }
     	int artHeight = G.Height(vcrZone);
     	int artX = G.Left(vcrZone);
     	int artWidth = G.Width(vcrZone);
@@ -4604,19 +4673,35 @@ public abstract class commonCanvas extends exCanvas
     }
     
     
-    private boolean canTrackMouse()
+    public boolean canTrackMouse()
     {	return( reviewOnly 
     			|| ( started
     				&& ( l.my.spectator 
-    					? mutable_game_record
+    					? mutable_game_record		// inhibit spectator tracking during live games
     					: true
     					)));
     }
-    public String mouseMessage() { String mm = l.mouseMessage; l.mouseMessage = null; return(mm); }
     
+	public String mouseMessage() 
+    { 	String mm = annotationMenu.mouseMessage();
+    	if(mm==null) 
+    		{ mm=l.mouseMessage; 
+    		  l.mouseMessage = null; 
+    		  return(mm);
+    		}
+    	return mm;
+    }
+    
+    /**
+     * this is called from mouse activity to register the current whereabouts of the mouse.
+     * it is responsible for rate-limiting the tracking of opponents' mice
+     */
     public void trackMouse(int x, int y)
     {	
-        long now = G.Date();
+    	if(annotationMenu.trackMouse(x,y)) { }
+    	else
+    	{
+    	long now = G.Date();
         int mouseObj = getMovingObject(null);
         boolean newState = mouseObj!=l.mouseObject;
         l.mouseObject = mouseObj;
@@ -4633,11 +4718,11 @@ public abstract class commonCanvas extends exCanvas
                 if ((closestX != l.my.mouseX) || (closestY != l.my.mouseY) || !oldzone.equals(zone))
                 {
                 	l.lastMouseTime = now;
-                	l.mouseMessage = NetConn.SEND_GROUP+KEYWORD_TRACKMOUSE+" "+zone+" " +
-                    		+ closestX + " " + closestY + " " + mouseObj;
+                	l.mouseMessage = G.concat(NetConn.SEND_GROUP+KEYWORD_TRACKMOUSE," ",zone," "
+                    		, closestX , " " ,closestY, " " , mouseObj);
                 }
             }
-        }
+        }}
     }
 
     private TimeControl timeControl = new TimeControl(TimeControl.Kind.None);
@@ -4893,6 +4978,7 @@ public abstract class commonCanvas extends exCanvas
         	performClientMessage("+" + TimeId.ChangeFutureTimeControl.shortName()+" "+futureTimeControl.print(),false,true);
         	handled = true;
         }
+    	else if(annotationMenu.selectMenu(target)) { return true; }
         else if(hidden.vcrVarPopup.selectMenuTarget(target))
     	{	chooseVcrVar((commonMove)(hidden.vcrVarPopup.rawValue));
     		handled = true;
@@ -5969,22 +6055,12 @@ public abstract class commonCanvas extends exCanvas
 		f.setText(msg);
     }
 
-    public int playerNumberToken(String st)
-    	{
-    	if(st.equalsIgnoreCase("p-1")) { return(0); }
-    	if(st.length()==2)
-    	{
-    	int ch = st.charAt(0);
-    	int nn = st.charAt(1)-'0';
-    	if(((ch=='p')||(ch=='P')) && (nn>=0) && (nn<=players.length)) { return(nn); }
-    	}
-    	return(-1);
-     }
+
     public abstract void ReplayMove(sgf_node no);
     
     public boolean parsePlayerCommand(String name,String value)
-    {	int player = playerNumberToken(name);
-    	 if ((player>=0)&&(player<players.length))
+    {	int player = commonMove.playerNumberToken(name);
+    	if ((player>=0)&&(player<players.length))
          {	commonPlayer p = players[player];
              if (p == null)
              {
@@ -6053,6 +6129,7 @@ public abstract class commonCanvas extends exCanvas
    		{	l.parsedTime = -1;
   			ReplayMove(root);
   			if(l.parsedTime>=0) { History.top().setElapsedTime(l.parsedTime); }
+  			if(l.parsedAnnotation!=null) { History.top().setAnnotations(l.parsedAnnotation); }
    			int nSuccessors = root.nElements();
    			if(nSuccessors <= 1) { root = root.firstElement(); }	// iterate for simple nodes
    			else { 	
@@ -6214,6 +6291,9 @@ public abstract class commonCanvas extends exCanvas
             {
                 curr.set_property(comment_property, comm);
             }
+            
+            curr.set_property(annotation_property,MoveAnnotation.toReadableString(m.getAnnotations()));
+             
             int tm = m.elapsedTime();
             if(tm>=0) 
             {
@@ -6759,6 +6839,11 @@ public boolean replayStandardProps(String name,String value)
     	timeControl = TimeControl.parse(value);
     	futureTimeControl.copyFrom(timeControl);
     }
+    else if(name.equalsIgnoreCase(annotation_property))
+    {
+    	StackIterator<MoveAnnotation> m = MoveAnnotation.fromReadableString(value);
+    	l.parsedAnnotation = m;
+    }
     else if(name.equalsIgnoreCase(time_property))
     {
     	l.parsedTime = G.IntToken(value);
@@ -6806,7 +6891,10 @@ public HitPoint MouseMotion(int eventX, int eventY, MouseState upcode)
     	//
      	int hx = G.Left(p);
      	int hy = G.Top(p);
-        if(startedOnce) { redrawBoard(p); }
+        if(startedOnce) 
+        	{ redrawBoard(p); 
+        	  DrawTileSprite(null,p);
+        	}
         G.SetLeft(p, hx);
         G.SetTop(p,hy);
 
@@ -7136,7 +7224,7 @@ public String encodeScreenZone(int x, int y,Point p)
 		// this inited test is to combat an occasional nullpointerexception
 		// when the mouse gets ahead of the game setup
 		Point pp = (b!=null 
-					 ? b.encodeCellPosition(x-G.Left(boardRect),y-G.Top(boardRect),screenXQuant)
+					 ? b.encodeCellPosition(x-G.Left(boardRect),G.Bottom(boardRect)-y,screenXQuant)
 					 : null);
 
 		if(pp!=null)
@@ -7191,7 +7279,7 @@ public Point decodeScreenZone(String zone,int x,int y)
 		  if(G.Advise(mp!=null,"%s %s,%s failed to decode",zone,x,y))
 		  {
 		  G.SetLeft(mp,G.Left(mp) + G.Left(boardRect));
-		  G.SetTop(mp, G.Top(mp) + G.Top(boardRect));
+		  G.SetTop(mp, G.Bottom(boardRect)-G.Top(mp));
 		  //G.print("Decode board as "+mp.x+" "+mp.y);
 		  return(mp);
 		  }}
@@ -7704,7 +7792,8 @@ public void verifyGameRecord()
 	   		&& G.pointInRect(anySelect,tbRect)			// in the board rectangle
 	   		&& !G.pointInRect(anySelect,vcrRect) 		// not in the vcr rectangle
 	   		&& !touchZoomInProgress()					// not already doing a touch zoom
-	   		&& (getDragPoint()==null))						// not already dragging
+	   		&& (annotationMenu.getSelected()==null)		// not dragging an annotation
+	   		&& (getDragPoint()==null))					// not already dragging
 	   	{ //let him drag anywhere, just don't annoy with the hand icon.
  		anySelect.dragging = mouse.isDragging();		// mouse is actually moving
  		return(true);

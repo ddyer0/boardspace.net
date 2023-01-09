@@ -2517,7 +2517,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	   		  if(p==MouseState.LAST_IS_UP)
 	   		  {
 	   		  drawUnmagnifier(null,hp) ;
-	   		  performStandardButtons(hp.hitCode);
+	   		  performStandardButtons(hp.hitCode, hp);
 	   		  }
 	   		  return(hp);
 	   	   }
@@ -2644,7 +2644,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	    case LAST_IS_UP:
 	    	// this captures the unmagnifier
 			drawUnmagnifier(null,p);
-			if(performStandardButtons(p.hitCode)) { return(p); }
+			if(performStandardButtons(p.hitCode, p)) { return(p); }
 
 	    	boolean fling = GameScrollArea.doMouseUp(ex,ey);
 			fling |= UserScrollArea.doMouseUp(ex,ey);

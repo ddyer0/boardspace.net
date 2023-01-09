@@ -66,7 +66,7 @@ public class HiddenGameWindow extends OffscreenWindow implements NameProvider
 	{	redrawBoard(gc,getHighlightPoint());
 	}
 	public void redrawBoard(Graphics gc,HitPoint hp)
-	{	G.Assert(!G.debug() || G.isEdt(),"must be edt");
+	{	G.Assert(G.isEdt(),"must be edt");
 		synchronized (captureSemaphore)
 		{
 		if(menu==null)

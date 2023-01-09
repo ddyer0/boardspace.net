@@ -3,9 +3,13 @@ package lib;
 import java.util.Enumeration;
 
 /**
- * this is a replacement for StringTokenizer.  If double quote is included
- * in the delimiters list (it is by default) then substrings within double
- * quotes are included as a single token.
+ * this is a replacement for StringTokenizer which is more
+ * customizable, and starts with a few customizations.
+ * 
+ * If double quote is included in the delimiters string (it is by default) 
+ * then substrings within double quotes are included as a single token. 
+ * 
+ * Characters in the singletons string are always returned as single character tokens.
  * 
  * @author ddyer
  *
@@ -16,31 +20,42 @@ public class Tokenizer implements Enumeration<String>
 	int maxIndex = 0;
 	int index = 0;
 	int restIndex = 0;
-	String delimiters = " \n\t\r\"";
+	public static String StandardDelimiters = " \n\t\r\"";
+	public static String StandardSingletons = "()[]{}";
+	String delimiters = StandardDelimiters;
+	String singletons = StandardSingletons;
 	StringBuilder builder = new StringBuilder();
 	
-	public Tokenizer(String str)
+	public Tokenizer(String str,String del)
 	{
 		basis = str;
+		delimiters = del;
 		if(str!=null)
 		{
 			maxIndex = str.length();
-			next = nextElement();
 		}
 	}
+	public Tokenizer(String str)
+	{	this(str,StandardDelimiters);
+	}
 	public boolean hasMoreElements() {
+		if(next==null) { next=parseNextElement(); }
 		return next!=null;
 	}
-	public String nextToken()
-	{	String n = next;
-		next = nextElement();
-		return(n);
+
+	public String nextElement()
+	{	String n = (next==null) ? parseNextElement() : next;
+		next = null;
+		return n;
 	}
-	public int intToken() { return G.IntToken(nextToken()); }
 	
+	public int intToken() { return G.IntToken(nextElement()); }
+	public char charToken() { return nextElement().charAt(0); }
+	public boolean boolToken() { return Boolean.parseBoolean(nextElement());	}
+	public double doubleToken() { return G.DoubleToken(nextElement()); }
 	public String getRest() { return(basis.substring(restIndex)); }
 
-	public String nextElement() {
+	private String parseNextElement() {
 		restIndex = index;
 		boolean inquote = false;
 		boolean literal = false;
@@ -58,6 +73,12 @@ public class Tokenizer implements Enumeration<String>
 					}
 				else if(ch=='\\') { literal = true; }
 				else { builder.append(ch); }
+			}
+			else if(singletons.indexOf(ch)>=0) 
+			{
+				if(charsin>0) { index--; }
+				else { builder.append(ch); charsin++; }
+				break;
 			}
 			else if(delimiters.indexOf(ch)>=0) 
 				{ 	if(charsin>0) { index--; break; }
@@ -80,6 +101,5 @@ public class Tokenizer implements Enumeration<String>
 		}
 	}
 	*/
-
 
 }

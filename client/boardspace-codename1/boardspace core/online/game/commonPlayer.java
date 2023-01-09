@@ -104,6 +104,7 @@ public class commonPlayer implements Opcodes,lib.CompareTo<commonPlayer>
     public int mouseX = -1;
     public int mouseY = -1;
     public int mouseObj = NothingMoving;
+    public String mouseType = null;
     public int drawnMouseX = -1;
     public int drawnMouseY = -1;
     public long drawnMouseTime = 0;
@@ -672,7 +673,7 @@ public class commonPlayer implements Opcodes,lib.CompareTo<commonPlayer>
     }
 
     private synchronized final boolean mouseTrackingInternal(String zone,int inx, int iny,
-        int obj)
+        int obj,String intype)
     {
         if ((mouseX != inx) || (mouseY != iny) || (!mouseZone.equals(zone)) ||
                 (mouseObj != obj))
@@ -681,15 +682,16 @@ public class commonPlayer implements Opcodes,lib.CompareTo<commonPlayer>
             mouseY = iny;
             mouseZone = zone;
             mouseObj = obj;
+            mouseType = intype;
             return (true);
         }
 
         return (false);
     }
 
-    public void mouseTracking(String zone,int inx, int iny,int obj)
+    public void mouseTracking(String zone,int inx, int iny,int obj,String intype)
     {
-        if (mouseTrackingInternal(zone,inx, iny,obj))
+        if (mouseTrackingInternal(zone,inx, iny,obj,intype))
         {
             setChanged();
         }

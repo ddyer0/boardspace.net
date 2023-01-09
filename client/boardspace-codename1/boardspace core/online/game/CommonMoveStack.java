@@ -37,4 +37,11 @@ public class CommonMoveStack extends OStack<commonMove>
         return (null);
     }
 
+	public commonMove find(commonMove targetMove) {
+		commonMove cm = currentHistoryMove();
+		if(cm.Same_Move_P(targetMove)) { return cm; }
+		return null;
+		
+	}
+
 }

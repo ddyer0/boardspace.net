@@ -8,11 +8,11 @@ import java.io.*;
 
 
 /*
- $Id: sgf_game.java,v 1.1.1.1.2.12.2.14 2022/01/02 23:22:51 ddyer Exp $
+ $Id: sgf_game.java,v 1.1.1.1.2.12.2.15 2023/01/09 02:01:40 ddyer Exp $
 
  $Log: sgf_game.java,v $
- Revision 1.1.1.1.2.12.2.14  2022/01/02 23:22:51  ddyer
- cleanup of remote screen and logging code
+ Revision 1.1.1.1.2.12.2.15  2023/01/09 02:01:40  ddyer
+ add support for annotations
 
  Revision 1.1.1.1.2.18  2021/05/26 19:06:06  ddyer
  *** empty log message ***

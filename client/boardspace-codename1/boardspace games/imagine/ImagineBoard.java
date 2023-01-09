@@ -196,9 +196,6 @@ class PlayerBoard implements ImagineConstants,Digestable
 	}
 
 	public void setScore(int sc) { score = sc; }
-	public long Digest() {
-		return Digest(new Random(847353));
-	}
 	public boolean isMyCard(ImagineChip ch)
 	{
 		for(ImagineCell c : cards)

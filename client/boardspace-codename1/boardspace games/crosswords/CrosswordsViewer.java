@@ -1513,7 +1513,7 @@ public void setLetterColor(Graphics gc,CrosswordsBoard gb,CrosswordsCell cell)
         switch (hitCode)
         {
         default:
-        	if (performStandardButtons(hitCode)) {}
+        	if (performStandardButtons(hitCode, hp)) {}
         	else if (performVcrButton(hitCode, hp)) {}	// handle anything in the vcr group
             else
             {

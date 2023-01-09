@@ -114,7 +114,7 @@ public class TextGlyph extends TextChunk implements Text
     public int drawTextChunk(Graphics inG,FontMetrics myFM,Color baseColor,int drawX,int drawY)
     {	if(down!=null) { return(down.drawTextLine(inG,myFM,baseColor,drawX,drawY)); }
     	if(art==null) { return( super.drawTextChunk(inG,myFM,baseColor,drawX,drawY)); }
-    	int width = myFM.stringWidth(getString());
+    	int width = myFM.stringWidth(replacementData);
     	if(inG!=null) { art.drawChip(inG,canvas,
     			(int)(width*localScale),
     			(int)(drawX+width*(0.5+xoff)),

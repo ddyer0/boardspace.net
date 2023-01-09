@@ -283,7 +283,7 @@ public class SeatingViewer extends exCanvas implements LobbyConstants
 	public void StopDragging(HitPoint hp) {
 		CellId hitCode = hp.hitCode;
 		if(hitCode==DefaultId.HitNoWhere) { pickedSource = -1; }
-		if(performStandardButtons(hitCode)) {}
+		if(performStandardButtons(hitCode, hp)) {}
 		else if(keyboard!=null && keyboard.StopDragging(hp)) {  } 
 		else if(hitCode instanceof SeatId)
 		{

@@ -499,7 +499,7 @@ public class LehavreViewer extends exCanvas implements ViewerProtocol,NetworkInt
 		
 	}
 
-	public void doMouseTracking(commonPlayer player, String zone,int inx, int iny,int ino) {
+	public void doMouseTracking(StringTokenizer mySt,commonPlayer player) {
 		
 	}
 

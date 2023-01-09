@@ -13,6 +13,7 @@ import online.common.*;
 import java.util.*;
 
 import lib.Base64;
+import lib.CalculatorButton;
 import lib.Graphics;
 import lib.CellId;
 import lib.DrawableImage;
@@ -124,7 +125,7 @@ static String SWOOSH = ImageDir + "swoosh"+ Config.SoundFormat;
         MouseColors  = ViticultureMouseColors;
         MouseDotColors = ViticultureMouseDotColors;
          
-        String type = info.getString(OnlineConstants.GAMETYPE, ImagineVariation.Imagine.name);
+        String type = info.getString(GAMETYPE, ImagineVariation.Imagine.name);
         // recommended procedure is to supply players and randomkey, even for games which
         // are current strictly 2 player and no-randomization.  It will make it easier when
         // later, some variant is created, or the game code base is re purposed as the basis
@@ -1146,7 +1147,15 @@ static String SWOOSH = ImageDir + "swoosh"+ Config.SoundFormat;
 				 : getActivePlayer();
 	}
 
-
+	
+	public void MouseDown(HitPoint p)
+	{	
+		if(keyboard!=null) 
+			{ keyboard.MouseDown(p);
+			  //Plog.log.addLog("Down "+p+" and repaint");
+			  repaint();
+			}			
+	}
 	/** 
 	 * this is called on "mouse up".  We may have been just clicking
 	 * on something, or we may have just finished a click-drag-release.
@@ -1159,7 +1168,7 @@ static String SWOOSH = ImageDir + "swoosh"+ Config.SoundFormat;
     public void StopDragging(HitPoint hp)
     {
         CellId id = hp.hitCode;
-        if(keyboard!=null && keyboard.StopDragging(hp)) {  } 
+        if(id instanceof CalculatorButton.id) { }
         else if(!(id instanceof ImagineId))  {   missedOneClick = performStandardActions(hp,missedOneClick);   }
         else {
         missedOneClick = false;
@@ -1175,7 +1184,7 @@ static String SWOOSH = ImageDir + "swoosh"+ Config.SoundFormat;
         switch (hitCode)
         {
         default:
-        	if (performStandardButtons(hitCode)) {}
+        	if (performStandardButtons(hitCode, hp)) {}
         	else if (performVcrButton(hitCode, hp)) {}	// handle anything in the vcr group
             else
             {

@@ -54,13 +54,10 @@ public interface ViewGameProtocol
  * an object begin moved by the player, and all the other players should be set to
  * not be moving.  By convention, there is at most one moving object in the game
  * at any time.
+ * @param myST the rest of the tracking information
  * @param player  the player, or spectator.
- * @param zone default "on" "board" or "off", or whatever means something to your viewer
- * @param inx encoded x coordinate
- * @param iny encoded y coordinate
- * @param ino if >=0 represents an object being moved.
  */
-    public void doMouseTracking(commonPlayer player,String zone,int inx,int iny,int ino);
+    public void doMouseTracking(StringTokenizer myst,commonPlayer player);
 	/** viewers are created in a not-yet-visible state, this method tells them
 	 * to become visible.  This allows messy startup phases to be invisible.
 	 */

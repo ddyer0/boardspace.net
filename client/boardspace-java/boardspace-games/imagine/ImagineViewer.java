@@ -10,6 +10,7 @@ import java.util.*;
 import bridge.Config;
 import lib.Base64;
 import lib.Graphics;
+import lib.CalculatorButton;
 import lib.CellId;
 import lib.DrawableImage;
 import lib.ExtendedHashtable;
@@ -1143,6 +1144,14 @@ static String SWOOSH = ImageDir + "swoosh"+ Config.SoundFormat;
 	}
 
 
+	public void MouseDown(HitPoint p)
+	{	
+		if(keyboard!=null) 
+			{ keyboard.MouseDown(p);
+			  //Plog.log.addLog("Down "+p+" and repaint");
+			  repaint();
+			}			
+	}
 	/** 
 	 * this is called on "mouse up".  We may have been just clicking
 	 * on something, or we may have just finished a click-drag-release.
@@ -1155,7 +1164,7 @@ static String SWOOSH = ImageDir + "swoosh"+ Config.SoundFormat;
     public void StopDragging(HitPoint hp)
     {
         CellId id = hp.hitCode;
-        if(keyboard!=null && keyboard.StopDragging(hp)) {  } 
+        if(id instanceof CalculatorButton.id) { }
         else if(!(id instanceof ImagineId))  {   missedOneClick = performStandardActions(hp,missedOneClick);   }
         else {
         missedOneClick = false;
@@ -1171,7 +1180,7 @@ static String SWOOSH = ImageDir + "swoosh"+ Config.SoundFormat;
         switch (hitCode)
         {
         default:
-        	if (performStandardButtons(hitCode)) {}
+        	if (performStandardButtons(hitCode, hp)) {}
         	else if (performVcrButton(hitCode, hp)) {}	// handle anything in the vcr group
             else
             {

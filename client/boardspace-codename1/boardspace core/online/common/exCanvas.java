@@ -2053,7 +2053,7 @@ graphics when using a touch screen.
 	{	sprites.push(ss);
 		repaint(10,"new sprite");
 	}
-	public boolean performStandardButtons(CellId id)
+	public boolean performStandardButtons(CellId id, HitPoint hitPoint)
 	{	if(painter.performStandardButtons(id)) { return(true); }
 		if(id==OnlineId.HitMagnifier)
 		{

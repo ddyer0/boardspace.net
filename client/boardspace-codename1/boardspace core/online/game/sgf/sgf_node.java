@@ -13,14 +13,14 @@ class NodeStack extends OStack<sgf_node> implements StackIterator<sgf_node>
 
 }
 /*
- $Id: sgf_node.java,v 1.1.1.1.2.11.2.14 2022/01/08 02:32:40 ddyer Exp $
+ $Id: sgf_node.java,v 1.1.1.1.2.11.2.15 2023/01/09 02:01:41 ddyer Exp $
 
  $Log: sgf_node.java,v $
- Revision 1.1.1.1.2.11.2.14  2022/01/08 02:32:40  ddyer
- clean up some error messages
+ Revision 1.1.1.1.2.11.2.15  2023/01/09 02:01:41  ddyer
+ add support for annotations
 
- Revision 1.1.1.1.2.11.2.13  2022/01/02 23:22:51  ddyer
- cleanup of remote screen and logging code
+ Revision 1.1.1.1.2.17  2022/01/08 02:32:04  ddyer
+ clean up some error messages
 
  Revision 1.1.1.1.2.16  2021/05/26 19:06:07  ddyer
  *** empty log message ***

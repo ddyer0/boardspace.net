@@ -163,7 +163,7 @@ public int height(FontMetrics myFM)
 }
 
 public int chunkWidth(FontMetrics myFM) {
-	return(myFM.stringWidth(data));
+	return(myFM.stringWidth(replacementData));
 }
 
 /** this method is overridden by  TextGlyph */
@@ -273,7 +273,7 @@ public void colorize(InternationalStrings s,Text... coloredChunks)
 	public void append(String str) 
 		{	append(new TextChunk(str,dataColor,false));
 		}
-	public TextChunk cloneSimple() { return(new TextChunk(replacementData,dataColor,false)); }
+	public TextChunk cloneSimple() { return(new TextChunk(data,dataColor,false)); }
 	public void append(Text str)
 	{	if(isLine && (down!=null)) { lastLine().append(str); }
 		else 

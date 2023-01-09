@@ -3,14 +3,13 @@ package euphoria;
 import static euphoria.EuphoriaMovespec.*;
 
 import bridge.*;
+import com.codename1.ui.Font;
+import com.codename1.ui.geom.Rectangle;
 
 /* below here should be the same for codename1 and standard java */
 import online.common.*;
 
 import java.util.*;
-
-import com.codename1.ui.Font;
-import com.codename1.ui.geom.Rectangle;
 
 import bridge.Config;
 import euphoria.EPlayer.PFlag;

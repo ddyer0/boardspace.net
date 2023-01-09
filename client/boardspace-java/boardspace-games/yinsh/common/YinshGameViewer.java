@@ -860,7 +860,8 @@ public class YinshGameViewer extends CCanvas<YinshCell,YinshBoard> implements Yi
 	        	}
 
             }
-            else if ((player = playerNumberToken(name))>=0)
+            else if ( ((player = commonMove.playerNumberToken(name))>=0) 
+            			&& (player<players.length))
             {
                  commonPlayer p = players[player];
 

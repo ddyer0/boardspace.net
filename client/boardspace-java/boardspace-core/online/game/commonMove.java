@@ -132,7 +132,12 @@ public abstract class commonMove implements lib.CompareTo<commonMove> , Opcodes,
 	// functions that access the extensions
 	public StackIterator<MoveAnnotation> getAnnotations() { return HProps==null ? null : HProps.annotations; }
 	public void setAnnotations(StackIterator<MoveAnnotation> an) {   if(an!=null || HProps!=null) { H().annotations = an; }}
-	
+	public void addAnnotation(MoveAnnotation an)
+	{
+		StackIterator<MoveAnnotation> old = getAnnotations();
+		if(old==null) { old = an;} else { old = old.push(an); }
+		setAnnotations(old);
+	}
 	public int elapsedTime() { return(H().elapsedTime); }
 	public void setElapsedTime(int v)
     { HistoryProperties h = H();
@@ -270,6 +275,25 @@ public abstract class commonMove implements lib.CompareTo<commonMove> , Opcodes,
 
     /** used to tack a player id onto a move for game records */
     public String playerString() { return("P"+player); }
+    /**
+     * the inverse of playerString, with allowances for string case
+     * @param st
+     * @return a small integer
+     */
+    public static int playerNumberToken(String st)
+	{
+		if(st.equalsIgnoreCase("p-1")) { return(0); }
+		if(st.length()==2)
+		{
+		int ch = st.charAt(0);
+		int nn = st.charAt(1)-'0';
+		if(((ch=='p')||(ch=='P')) && (nn>=0)) { return(nn); }
+		}
+	return(-1);
+	}
+    
+
+    
     /** longMoveString is used for sgf format records and can contain other information
      * intended to be ignored in the normal course of play, for example human-readable
      * information

@@ -1127,7 +1127,7 @@ public class BreakingAwayViewer extends CCanvas<BreakingAwayCell,BreakingAwayBoa
     {
     	if(performVcrButton(hp.hitCode, hp)) { return(true); }
     	else { 
-    		return(performStandardButtons(hp.hitCode));
+    		return(performStandardButtons(hp.hitCode,hp));
     	}
     }
     /** 

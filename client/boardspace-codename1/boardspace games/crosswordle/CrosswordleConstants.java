@@ -20,8 +20,6 @@ public interface CrosswordleConstants
 	static String PuzzleFor = "Puzzle for";
 	static String RestartMessage = "Restart";
 	static String SolvedMessage = "Solved with #1 guesses in #2";
-	static String UseHard = "use hard puzzles";
-	static String UseEasy = "use easy puzzles";
 	static String HardPuzzles = "hard puzzles";
 	static String EasyPuzzles = "easy puzzles";
 	static String PuzzleN = "Puzzle #";
@@ -143,7 +141,7 @@ public interface CrosswordleConstants
     	    	YouSolved,
     	    	Sofar,
     	        RestartMessage,
-    	    	UseHard,UseEasy,HardPuzzles,EasyPuzzles,
+    	    	HardPuzzles,EasyPuzzles,
     	        PuzzleN,
     	        StatsHelp,
     	        NoSolutions,

@@ -1313,12 +1313,9 @@ public class Game extends commonPanel implements PlayConstants,Opcodes,DeferredE
     
     private void doMouseTrack(StringTokenizer myST,commonPlayer player)
     {	
-        String zone = myST.nextToken();
-        int inx = G.IntToken(myST);
-        int iny = G.IntToken(myST);
-        int ino = G.IntToken(myST);
+
         if(v!=null && startplaying_called)
-        {	v.doMouseTracking(player,zone,inx,iny,ino);
+        {	v.doMouseTracking(myST,player);
         }
     }
     /**
@@ -4291,12 +4288,23 @@ public class Game extends commonPanel implements PlayConstants,Opcodes,DeferredE
     }
 
    public void sendMouseMessage()
-    {	String mm = v!=null ? v.mouseMessage() : null;
-    	boolean down = v!=null ? v.mouseDownEvent(false) : false;
-    	if(mm!=null) { sendMessage(mm); }
-    	if(mm!=null || down) { doTouch(); }	// touch has the side effect of requesting control
-
+    {	
+    	if(v!=null)
+    	{	boolean some = false;
+    		String mm = null;
+    		// send as many messages as the client chooses to provide
+	    	while ((mm=v.mouseMessage())!=null)
+	    		{
+	    		sendMessage(mm);
+	    		some = true;
+	    		}
+	    	some |= v.mouseDownEvent(false);
+	    	if(some)
+	    	{
+	    		 doTouch();
+	    	}
         sendRobotProgress();
+    }
     }
 
    private long lastRequestTime = 0;

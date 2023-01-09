@@ -469,21 +469,6 @@ public class RajViewer extends CCanvas<RajCell,RajBoard> implements RajConstants
     	}
     	return(super.encodeScreenZone(x,y,p));
     }
-    
-	/**
-	 * Overriding this method so that we can "animate" a wolf while the
-	 * wolf player is hiding & choosing a meal.
-	 */
-	public Point decodeScreenZone(String z,int x, int y) {
-		if (HIDDEN.equals(z)) {
-			// This is indication that the wolf player is moving within
-			// the area with a hidden wolf, so use the Y coordinate as
-			// the animation updated value.
-			return new Point (0, 0);
-		}
-
-		return super.decodeScreenZone(z,x, y);
-	}
 
    /** draw the board and the chips on it. the gc will normally draw on a background
     * array which contains the slowly changing part of the board. 

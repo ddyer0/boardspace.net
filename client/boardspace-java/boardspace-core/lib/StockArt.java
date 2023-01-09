@@ -124,7 +124,7 @@ public class StockArt extends DrawableImage<StockArt> {
 	public static StockArt CloseBox = new StockArt("closebox-framed-nomask.png",defaultAdjust);
 	public static StockArt FancyCloseBox = new StockArt("fancy-closebox-nomask.png",defaultAdjust);
 	public static StockArt Checkmark = new StockArt("checkmark",defaultAdjust);
-	public static StockArt Exmark = new StockArt("exmark",defaultAdjust);
+	public static StockArt Exmark = new StockArt("exmark",new double[] {0.5,0.5,0.75});
 	public static StockArt Tooltips = new StockArt("tooltips",defaultAdjust);
 	public static StockArt Scrim =  new StockArt("scrim-nomask",defaultAdjust);
 	public static StockArt Gear = new StockArt("gear-nomask.png",defaultAdjust);

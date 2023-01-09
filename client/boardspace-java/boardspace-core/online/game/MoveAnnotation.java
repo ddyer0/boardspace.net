@@ -4,6 +4,7 @@ import java.io.PrintStream;
 import lib.G;
 import lib.OStack;
 import lib.StackIterator;
+import lib.Tokenizer;
 import online.game.AnnotationMenu.Annotation;
 import online.game.sgf.export.sgf_names;
 
@@ -16,14 +17,16 @@ class MoveAnnotationStack  extends OStack<MoveAnnotation>
 public class MoveAnnotation implements StackIterator<MoveAnnotation> , sgf_names
 {
 		Annotation annotation;
-		double xPos;
-		double yPos;
-		
-		public MoveAnnotation(Annotation an, double dx, double dy) {
+		int xPos;
+		int yPos;
+		String zone;
+		public MoveAnnotation(Annotation an, String z, int dx, int dy) {
 			annotation = an;
+			zone = z;
 			xPos = dx;
 			yPos = dy;
 		}
+		public String toString() { return "<MoveAnnotation "+annotation+" "+zone+" "+xPos + " "+yPos +">"; }
 		// hooks for StackIterator
 		public int size() {
 			return 1;
@@ -67,6 +70,37 @@ public class MoveAnnotation implements StackIterator<MoveAnnotation> , sgf_names
 			}
 		}
 		public String toReadableString()
-		{	return(G.concat("(A1 ",annotation.name()," ",G.format("%6D",xPos)," ",G.format("%6D",yPos)," )"));
+		{	return(G.concat("(",AnnotationMenu.ANNOTATION_TAG," ",annotation.name()," ",zone," ",xPos," ",yPos,")"));
+		}
+		public static String toReadableString(StackIterator<MoveAnnotation>an)
+		{
+			if(an!=null)
+			{	StringBuilder b = new StringBuilder();
+				for(int i=0,len=an.size(); i<len; i++)
+				{	b.append(an.elementAt(i).toReadableString());
+				}
+				return b.toString();
+			}
+			return null;
+		}
+		public static StackIterator<MoveAnnotation> fromReadableString(String str)
+		{	StackIterator<MoveAnnotation>val = null;
+			Tokenizer s = new lib.Tokenizer(str);
+			while(s.hasMoreElements() && "(".equals(s.nextElement()))
+			{	
+				String key = s.nextElement();
+				if("A1".equals(key))
+				{	Annotation ann = Annotation.valueOf(s.nextElement());
+					String zone = s.nextElement();
+					int xpos = s.intToken();
+					int ypos = s.intToken();
+					
+					MoveAnnotation aa = new MoveAnnotation(ann,zone,xpos,ypos);
+					G.Assert(")".equals(s.nextElement()),"no end )");
+					if(val==null) { val= aa; } else { val = val.push(aa);}				
+					}
+				else { G.Error("Unexpected token ",key); }				}
+				
+			return val;
 		}
 }
