@@ -406,10 +406,18 @@ class TweedBoard
     	{
     	TweedChip old = c.topChip();
 		
-    	if(ch==null)	// setting to empty
+    	if(ch==null)	// remove 1 chip
     	{	c.removeTop();
-    		if(droppedOnColor!=null) { changeStackColor(c,droppedOnColor); }
-    		if(old!=null && (old!=TweedChip.Gray) && (c.topChip()==null)) 
+    		if(droppedOnColor!=old) 
+    			{ changeStackColor(c,droppedOnColor);
+    			  if(droppedOnColor!=TweedChip.Gray)
+    			  {
+    				  int index = getPlayerIndex(droppedOnColor); 
+    				  occupiedCells[index].push(c);
+    				  occupiedCells[index^1].remove(c,false);
+    			  }
+    			}
+    		else if(old!=null && (old!=TweedChip.Gray) && (c.topChip()==null)) 
     			{int index = getPlayerIndex(old); 
     			 chips_on_board--; 
     			 occupiedCells[index].remove(c,false);  

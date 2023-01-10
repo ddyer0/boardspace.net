@@ -614,7 +614,7 @@ public class RepaintManager implements VncScreenInterface,Config
 		{
 			  Image im0 = pinchBuffer.theImage;
 			  Graphics gr = im0.getGraphics();
-			  gr.setColor(Color.blue);
+			  GC.setColor(gr,Color.blue);
 			  GC.fillRect(gr, 10,10,20,20);
 			  pinchBuffer.theImage.drawImage(g,x,y,w2,h1);
 			  GC.Text(g,false,x,y+h1,w1,20,Color.white,Color.black,""+pinchBuffer);
@@ -624,7 +624,7 @@ public class RepaintManager implements VncScreenInterface,Config
 			{ 
 			  Image im0 = viewBuffer.theImage;
 			  Graphics gr = im0.getGraphics();
-			  gr.setColor(Color.blue);
+			  GC.setColor(gr,Color.blue);
 			  GC.fillRect(gr, 10,10,20,20);
 			  viewBuffer.theImage.drawImage(g,x,y,w2,h1);
 			  GC.Text(g,false,x,y+h1,w1,20,Color.white,Color.black,""+viewBuffer);
@@ -827,7 +827,7 @@ public class RepaintManager implements VncScreenInterface,Config
     	
        	/* fall into the direct draw case if there's no backing store or a pinch is in progress*/
        	case Direct_SingleBuffer:
-    		//G.fillRect(g,fill,0,0,10,client.getHeight());
+    		//GC.fillRect(g,fill,0,0,10,client.getHeight());
        		helper.resetLocalBoundsNow();
        		triggerEvent = null;
        		{

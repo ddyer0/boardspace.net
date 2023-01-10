@@ -202,4 +202,9 @@ public interface BoardProtocol extends Digestable
 	public void setName(String s);
 	public BoardState getState();
 	public boolean canResign();
+	
+	/**
+	 * true if the board has a reverse view
+	 */
+	public boolean reverseView();
 	}

@@ -236,7 +236,7 @@ public class MorelliViewer extends CCanvas<MorelliCell,MorelliBoard> implements 
     {	boolean reviewBackground = reviewMode()&&!mutable_game_record;
       // erase
       GC.setColor(gc,reviewBackground ? reviewModeBackground : boardBackgroundColor);
-      //G.fillRect(gc, fullRect);
+      //GC.fillRect(gc, fullRect);
      textures[BACKGROUND_TILE_INDEX].tileImage(gc, fullRect);   
       if(reviewBackground)
       {	 

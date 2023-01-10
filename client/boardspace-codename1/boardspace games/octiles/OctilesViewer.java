@@ -294,7 +294,7 @@ public class OctilesViewer extends CCanvas<OctilesCell,OctilesBoard> implements 
       OctilesBoard gb = b;
       // erase
       GC.setColor(gc,review ? reviewModeBackground : boardBackgroundColor);
-      //G.fillRect(gc, fullRect);
+      //GC.fillRect(gc, fullRect);
      textures[BACKGROUND_TILE_INDEX].tileImage(gc,fullRect);   
       if(review)
       {	 

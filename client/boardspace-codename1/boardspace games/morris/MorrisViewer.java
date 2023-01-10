@@ -286,7 +286,7 @@ public class MorrisViewer extends CCanvas<MorrisCell,MorrisBoard> implements Mor
       // erase
      MorrisChip.backgroundTile.image.tileImage(gc, fullRect);   
       //gc.setColor(Color.black);
-      //G.fillRect(gc, boardRect);
+      //GC.fillRect(gc, boardRect);
       if(reviewBackground)
       {	 
        MorrisChip.backgroundReviewTile.image.tileImage(gc,boardRect);   

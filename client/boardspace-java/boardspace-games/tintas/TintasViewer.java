@@ -311,7 +311,7 @@ public class TintasViewer extends CCanvas<TintasCell,TintasBoard> implements Tin
     { // erase
       boolean reviewBackground = reviewMode()&&!mutable_game_record;
       GC.setColor(gc,reviewBackground ? reviewModeBackground : boardBackgroundColor);
-      //G.fillRect(gc, fullRect);
+      //GC.fillRect(gc, fullRect);
       
      TintasChip.backgroundTile.image.tileImage(gc, fullRect);   
       if(reviewBackground)

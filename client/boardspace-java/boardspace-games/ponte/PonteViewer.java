@@ -266,7 +266,7 @@ public class PonteViewer extends CCanvas<PonteCell,PonteBoard> implements PonteC
     {
       // erase
       GC.setColor(gc,!animating && reviewMode() ? reviewModeBackground : boardBackgroundColor);
-      //G.fillRect(gc, fullRect);
+      //GC.fillRect(gc, fullRect);
      textures[BACKGROUND_TILE_INDEX].tileImage(gc, fullRect);   
       if(!animating && reviewMode())
       {	 

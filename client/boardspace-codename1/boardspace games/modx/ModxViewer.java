@@ -647,7 +647,7 @@ private void playSounds(commonMove m)
       // erase
      ModxChip.backgroundTile.image.tileImage(gc, fullRect);   
       //gc.setColor(Color.black);
-      //G.fillRect(gc, boardRect);
+      //GC.fillRect(gc, boardRect);
       if(reviewBackground)
       {	 
        ModxChip.backgroundReviewTile.image.tileImage(gc,boardRect);   

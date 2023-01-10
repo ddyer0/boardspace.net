@@ -407,7 +407,7 @@ public class CrossfireViewer extends CCanvas<CrossfireCell,CrossfireBoard> imple
     { // erase
       boolean backgroundReview = reviewMode() && !mutable_game_record;
       GC.setColor(gc,backgroundReview ? reviewModeBackground : boardBackgroundColor);
-      //G.fillRect(gc, fullRect);
+      //GC.fillRect(gc, fullRect);
      textures[BACKGROUND_TILE_INDEX].tileImage(gc, fullRect);   
       if(backgroundReview)
       {	 

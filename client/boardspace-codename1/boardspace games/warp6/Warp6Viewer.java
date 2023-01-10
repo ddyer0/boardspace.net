@@ -233,7 +233,7 @@ public class Warp6Viewer extends CCanvas<Warp6Cell,Warp6Board> implements Warp6C
     { boolean review = reviewMode() && !mutable_game_record;
       // erase
       GC.setColor(gc,review ? reviewModeBackground : boardBackgroundColor);
-      //G.fillRect(gc, fullRect);
+      //GC.fillRect(gc, fullRect);
      textures[BACKGROUND_TILE_INDEX].tileImage(gc,fullRect);   
       if(review)
       {	 

@@ -319,7 +319,7 @@ public class BloomsViewer extends CCanvas<BloomsCell,BloomsBoard> implements Blo
       setDisplayParameters(bb,boardRect);
       boolean reviewBackground = reviewMode()&&!mutable_game_record;
       GC.setColor(gc,reviewBackground ? reviewModeBackground : boardBackgroundColor);
-      //G.fillRect(gc, fullRect);
+      //GC.fillRect(gc, fullRect);
      BloomsChip.backgroundTile.image.tileImage(gc, fullRect);   
       if(reviewBackground)
       {	 

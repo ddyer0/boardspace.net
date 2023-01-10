@@ -566,7 +566,7 @@ public class CarnacViewer extends CCanvas<CarnacCell,CarnacBoard> implements Car
       // erase
     	GC.setRotatedContext(gc,fullRect,null,fullBoardRotation);
       GC.setColor(gc,backgroundReview ? reviewModeBackground : boardBackgroundColor);
-      //G.fillRect(gc, fullRect);
+      //GC.fillRect(gc, fullRect);
      CarnacChip.backgroundTile.image.tileImage(gc, fullRect);   
       if(backgroundReview)
       {	 

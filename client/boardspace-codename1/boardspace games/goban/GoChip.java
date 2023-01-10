@@ -4,7 +4,6 @@ import lib.ImageLoader;
 import lib.Random;
 import lib.StockArt;
 import common.CommonConfig;
-import goban.GoConstants.Annotation;
 import goban.GoConstants.GoId;
 import goban.GoConstants.Kind;
 import lib.DrawableImageStack;
@@ -17,16 +16,15 @@ import online.game.chip;
  * 
  */
 public class GoChip extends chip<GoChip> implements CommonConfig
-{	static final int ANNOTATION = 100;	// offset for annotation chips
+{	
 	private static Random r = new Random(343535);	// this gives each chip a unique random value for Digest()
 	private static DrawableImageStack stoneChips = new DrawableImageStack();
 	private static DrawableImageStack otherChips = new DrawableImageStack();
 	private static boolean imagesLoaded = false;
 	public int chipNumber() { return(id==null 
-										? annotation==null ? -1 : annotation.ordinal()+ANNOTATION 
+										? -1  
 										: id.ordinal()); }
 	public GoId id = null;
-	public Annotation annotation = null;
 	// constructor for chips in the go/images directory, not expected
 	// to be part of the UI either
 	private GoChip(String na,double scl[])
@@ -116,14 +114,7 @@ public class GoChip extends chip<GoChip> implements CommonConfig
             
 	public static GoChip getChip(int color)
 	{
-			if(color>=ANNOTATION)
-			{
-				Annotation a = Annotation.values()[color-ANNOTATION];
-				return a.chip;
-			}
-			else {
-				return(GoId.values()[color].chip);
-			}
+		return(GoId.values()[color].chip);
 	}
 
 	public static GoChip backgroundTile = new GoChip( "background-tile-nomask",null);

@@ -22,6 +22,7 @@ import online.game.sgf.sgf_node;
 import online.game.sgf.sgf_property;
 import online.search.SimpleRobotProtocol;
 // TODO think about "consistent" and "3 player" variants
+// TODO annotations with perspective are placed a little oddly
 public class BarcaViewer extends CCanvas<BarcaCell,BarcaBoard> implements BarcaConstants, GameLayoutClient,PlacementProvider
 {	 	
     static final String Barca_SGF = "Barca"; // sgf game number allocated for barca
@@ -37,6 +38,8 @@ public class BarcaViewer extends CCanvas<BarcaCell,BarcaBoard> implements BarcaC
     private Color boardBackgroundColor = new Color(220,220,255);
     private Color BlackArrowColor = new Color(230,200,255);;
     
+    // adjust the cell size for annotations.
+    public int cellSize() { return (bb.cellSize()/(usePerspective() ? 2 : 1)); }
 
     public boolean usePerspective() { return(super.getAltChipset()==0);}
      
@@ -192,7 +195,7 @@ public class BarcaViewer extends CCanvas<BarcaCell,BarcaBoard> implements BarcaC
         int stateY = boardY-stateH/2;
         int stateX = boardX;
         
-        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,reverseRect,numberMenu,viewsetRect,eyeRect,noChatRect);
+        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,reverseRect,annotationMenu,numberMenu,viewsetRect,eyeRect,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
        	
     	if(perspective)

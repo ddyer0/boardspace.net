@@ -72,7 +72,6 @@ public class GoViewer extends CCanvas<GoCell,GoBoard> implements GoConstants, Ga
     
     private Rectangle reverseViewRect = addRect("reverse");
     private Rectangle numberRect = addRect("number");
-    private Rectangle annotationRect = addRect("annotation");
     
     private JCheckBoxMenuItem reverseOption = null;
     private Rectangle captiveRect[] = addRect("Captives",2);
@@ -328,7 +327,7 @@ public class GoViewer extends CCanvas<GoCell,GoBoard> implements GoConstants, Ga
     	//
         int stateY = boardY-stateH;
         int stateX = boardX;
-        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationRect,numberRect,reverseViewRect,noChatRect);
+        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,numberRect,reverseViewRect,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	
     	// goal and bottom ornaments, depending on the rendering can share
@@ -351,11 +350,6 @@ public class GoViewer extends CCanvas<GoCell,GoBoard> implements GoConstants, Ga
      }  
     
 	
-    private void DrawAnnotationMarker(Graphics gc, Rectangle r,HitPoint highlight)
-    {	
-    	GoChip.triangle.drawChip(gc,this,r,highlight,GoId.AnnotationViewButton,s.get(AnnotationViewExplanation));
-    	
-     }
     
 	// draw a box of spare chips. Notice if any are being pointed at.  Highlight those that are.
     private void DrawCommonChipPool(Graphics gc, GoBoard gb, int forPlayer, Rectangle r, int player, HitPoint highlight)
@@ -424,7 +418,7 @@ public class GoViewer extends CCanvas<GoCell,GoBoard> implements GoConstants, Ga
       // erase
       setupBoardRect(b,boardRect);
       GC.setColor(gc,reviewBackground ? reviewModeBackground : boardBackgroundColor);
-      //G.fillRect(gc, fullRect);
+      //GC.fillRect(gc, fullRect);
      GoChip.backgroundTile.image.tileImage(gc, fullRect);   
       if(reviewBackground)
       {	 
@@ -570,10 +564,6 @@ public class GoViewer extends CCanvas<GoCell,GoBoard> implements GoConstants, Ga
 
            
             boolean hit = cell.drawStack(gc,this,hitNow,finalSize,xpos,ypos,0,0.1,num);
-            if((cell.annotation!=null) && (cell.annotationStep==gb.moveNumber))
-            {
-            	hit |= cell.annotation.drawChip(gc,this,hitNow,GoId.AnnotationViewButton,CELLSIZE,xpos,ypos,null);
-            }
             if( hit) 
             	{ // draw a highlight rectangle here, but defer drawing an arrow until later, after the moving chip is drawn
             	hitCell = cell;
@@ -661,7 +651,6 @@ public class GoViewer extends CCanvas<GoCell,GoBoard> implements GoConstants, Ga
     {  
        DrawReverseMarker(gc,reverseViewRect,highlight,GoId.ReverseViewButton);
        DrawNumberMarker(gc,numberRect,highlight);
-       DrawAnnotationMarker(gc,annotationRect,ourHighlight);
     }
     //
     // draw the board and things on it.  If gc!=null then actually 
@@ -1140,10 +1129,6 @@ private void playSounds(commonMove m)
     	}
     	return(-1);
     }
-    public void selectAnnotation(Annotation ann)
-    {
-    	if(ann!=null) { PerformAndTransmit("Pick "+"A" + " "+ann); }
-    }
     public void compareCS(String oldCS,String newCS)
     {
     	System.out.println(b.compareCS(oldCS,newCS));
@@ -1482,9 +1467,6 @@ private void playSounds(commonMove m)
         case HitSetHandicapButton:
         	showHandicapMenu(G.Left(hp),G.Top(hp));
         	break;
-        case AnnotationViewButton:
-        	Annotation.showMenu(this,G.Left(hp)-getSX(),G.Top(hp)-getSY());
-        	break;
         case NumberViewButton:
 	    	NumberingMode.showMenu(this,G.Left(hp)-getSX(),G.Top(hp)-getSY());
 	    	break;
@@ -1663,7 +1645,6 @@ private void playSounds(commonMove m)
     		return(true);
     	}
     	if(NumberingMode.selectMenu(target)) { return(true); }
-    	if(Annotation.selectMenu(target)) { return(true); }
     	else if(target==reverseOption)
     	{
     	b.setReverseY(reverseOption.getState());

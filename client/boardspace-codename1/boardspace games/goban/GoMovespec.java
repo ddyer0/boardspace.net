@@ -197,19 +197,7 @@ public class GoMovespec extends commonMove implements GoConstants
         case MOVE_PICK:
             source = GoId.get(msg.nextToken());
             from_col = '@';
-            switch(source)
-            {
-            case AnnotationViewButton:
-            	{
-            	String tok = msg.nextToken();
-            	from_row = Annotation.find(tok).ordinal();
-            	}
-            	break;
-           	default:
-           		from_row = G.IntToken(msg);
-           		break;
-            }
-            
+            from_row = G.IntToken(msg);           
             break;
         case MOVE_KOMI:
         	double km = G.DoubleToken(msg);
@@ -253,14 +241,8 @@ public class GoMovespec extends commonMove implements GoConstants
             return (to_col + " " + to_row);
             
         case MOVE_DROP:
-        case MOVE_PICK:
-           	switch(source)
-        	{
-        	case AnnotationViewButton:
-        		return (Annotation.values()[from_row].name());
-        	default:
+        case MOVE_PICK:         	
         		return (source.shortName);
-        	}
             
         case MOVE_ADD_BLACK:
         case MOVE_DROP_BLACK:
@@ -321,14 +303,8 @@ public class GoMovespec extends commonMove implements GoConstants
 			return(opname+source.shortName+ " "+from_row
 					+ " " + to_col + " " + to_row);
         case MOVE_PICK:
-        	switch(source)
-        	{
-        	case AnnotationViewButton:
-        		return (opname+source.shortName+ " "+Annotation.values()[from_row].name());
-        	default:
-        		return (opname+source.shortName+ " "+from_row);
-        	}
-
+          		return (opname+source.shortName+ " "+from_row);
+ 
         case MOVE_DROP:
              return (opname+source.shortName+ " "+to_row);
 

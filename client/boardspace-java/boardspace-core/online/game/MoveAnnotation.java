@@ -7,7 +7,12 @@ import lib.StackIterator;
 import lib.Tokenizer;
 import online.game.AnnotationMenu.Annotation;
 import online.game.sgf.export.sgf_names;
-
+/**
+ * this is the object type stored on commonMove 
+ * 
+ * @author ddyer
+ *
+ */
 class MoveAnnotationStack  extends OStack<MoveAnnotation>
 {
 	public MoveAnnotation[] newComponentArray(int sz) {

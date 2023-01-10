@@ -578,7 +578,7 @@ public class PalabraViewer extends CCanvas<PalabraCell,PalabraBoard> implements 
     { boolean review = reviewMode() && !mutable_game_record;
       // erase
       GC.setColor(gc,review ? reviewModeBackground : boardBackgroundColor);
-      //G.fillRect(gc, fullRect);
+      //GC.fillRect(gc, fullRect);
      textures[review?BACKGROUND_REVIEW_INDEX:BACKGROUND_INDEX].tileImage(gc, fullRect);  
      textures[BACKGROUND_TILE_INDEX].tileImage(gc,boardRect);   
       GC.frameRect(gc,Color.black,boardRect);

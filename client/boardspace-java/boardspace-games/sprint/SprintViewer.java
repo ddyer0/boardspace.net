@@ -679,7 +679,7 @@ public class SprintViewer extends CCanvas<SprintCell,SprintBoard> implements Spr
        		{
        		// hidden windows have x coordinates that are negative, we don't want to rotate tiles
        		// being displayed on hidden windows
-       		g.setColor(Color.black);
+       		GC.setColor(g,Color.black);
        		ch.drawChip(g,this,CELLSIZE, xp, yp, null);  
        		}
    }

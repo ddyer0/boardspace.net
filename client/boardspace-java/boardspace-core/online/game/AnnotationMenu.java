@@ -7,14 +7,11 @@ import java.awt.Rectangle;
 /**
  * this provides a menu of annotations such as squares, arrows, and triangles which can be added to the current move of a game.
  * 
- * As additions to the commonMove structure, they will be saved to the game record.
- * Eventually, they will be shared in real time among the viewers of the game.
+ * they will be saved to the game record as additions to the commonMove structure, and printed to sgf files
+ * as AN properties.
  * 
- * they should be asynchronous, some special considerations are needed for the incremental game record maintenance.
- * another special consideration is how they will appear to players in tournament games.  Probably should be censored out.
- * 
- * the annotations are expected to be associated with the board portion of the display,
- * and their location will be recorded as fractions of the board width and height.
+ * this is fully integrated as of version 6.99.  These annotations, if seen by earlier versions of the client,
+ * will be ignored.
  * 
  */
 
@@ -24,6 +21,7 @@ import lib.DrawableImage;
 import lib.G;
 import lib.Graphics;
 import lib.HitPoint;
+import lib.InternationalStrings;
 import lib.NetConn;
 import lib.PopupManager;
 import lib.StackIterator;
@@ -34,42 +32,56 @@ import lib.Tokenizer;
 import online.common.OnlineConstants;
 
 @SuppressWarnings("serial")
+/**
+ * the main annotation icon extends rectangle so it can be placed and manipulated
+ * uniformly with other boxes on the game canvas
+ * 
+ * @author ddyer
+ *
+ */
 public class AnnotationMenu extends Rectangle implements PlayConstants,OnlineConstants
 {
 	static final int ANNOTATION_TRACKING_OFFSET = 100;
 	static final String ANNOTATION_TAG = "A1";
 	public enum Annotation
 	{	// later. include freehand drawing and ad-hoc arrows
-		Triangle(StockArt.Triangle,0),
-		Square(StockArt.Square,1),
-		Ex(StockArt.Exmark,6),
-		Left(StockArt.SolidLeftArrow,2),
-		Right(StockArt.SolidRightArrow,3),
-		Up(StockArt.SolidUpArrow,4),
-		Down(StockArt.SolidDownArrow,5),
-		Clear(null,7);
+		Triangle(StockArt.Triangle,StockArt.Triangle,0),
+		Square(StockArt.Square,StockArt.Square,1),
+		Ex(StockArt.Exmark,StockArt.Exmark,6),
+		Left(StockArt.SolidLeftArrow,StockArt.SolidRightArrow,2),
+		Right(StockArt.SolidRightArrow,StockArt.SolidLeftArrow,3),
+		Up(StockArt.SolidUpArrow,StockArt.SolidDownArrow,4),
+		Down(StockArt.SolidDownArrow,StockArt.SolidUpArrow,5),
+		Clear(null,null,7);
 		int index;
-		public StockArt chip;
-		Annotation(StockArt c,int ind) { chip = c; index = ind; }
+		private StockArt chip;
+		private StockArt reverseChip = null;
+		Annotation(StockArt c,StockArt rev,int ind) { chip = c; reverseChip=rev; index = ind; }
 		public int index() { return index; }
+		public StockArt getChip(boolean rev) { return rev ? reverseChip : chip; }
 		static public Annotation find(int n)
 		{	for(Annotation a : values()) { if(a.index==n) { return a; }}
 			return null;
 		}
 	}
-	private DrawableImage<?> base = null;
-	private PopupManager menu = null;
-	private commonCanvas drawOn=null;
-	private CellId id = null;
-	private String text = null;
-	private Annotation selected = null;
+	private DrawableImage<?> base = null;		// this is the image drawn as the icon on the tool bar
+	private PopupManager menu = null;			// the menu used during the selection process
+	private commonCanvas drawOn=null;			// the associated game viewer
+	private CellId id = null;					// the hit code when the annotation icon is clicked
+	private Annotation selected = null;			// the annotation actively selected for placement, if any
 	public Annotation getSelected() { return selected; }
-	private StringStack annotationActions = new StringStack();
-	private StringStack annotationActionsHistory = new StringStack();
-	
 	public void setSelected(Annotation sel) { selected = sel; }
-	String helpText = "Add an Annotation";
+	private StringStack annotationActions = new StringStack();			// annotations queued for transmission to the other players
+	private StringStack annotationActionsHistory = new StringStack();	// history of all transmitted annotations
+	
+	static String helpText = "Add an Annotation";
+	static public void putStrings()
+	{
+		InternationalStrings.put(helpText);
+	}
 	/**
+	 * create an annotation menu.  Generally, each canvas creates one so it's always there.
+	 * everything becomes active when the annotation menu rectangle is placed on the game window.
 	 * 
 	 * @param on
 	 * @param ic
@@ -90,7 +102,7 @@ public class AnnotationMenu extends Rectangle implements PlayConstants,OnlineCon
 	 */
 	public void draw(Graphics gc,HitPoint highlight)
 	    {	int width = G.Width(this);
-	    	if( base.drawChip(gc,drawOn,highlight,id,width,G.centerX(this),G.centerY(this),text))
+	    	if( base.drawChip(gc,drawOn,highlight,id,width,G.centerX(this),G.centerY(this),null))
 	    	{	highlight.spriteRect = this;
 	    		highlight.spriteColor = Color.red;
 				highlight.setHelpText(G.getTranslations().get(helpText));
@@ -107,7 +119,7 @@ public class AnnotationMenu extends Rectangle implements PlayConstants,OnlineCon
 		menu.newPopupMenu(drawOn,drawOn.deferredEvents);
 		for(Annotation a : Annotation.values())
 			{ menu.addMenuItem(
-					TextGlyph.create(a.name(),"xxxxx",a.chip,drawOn,2.0,1.0,0,-0.25),
+					TextGlyph.create(a.name(),"xxxxx",a.getChip(drawOn.reverseView()),drawOn,2.0,1.0,0,-0.25),
 					a);
 			}
 		menu.show(G.Left(this),G.Top(this));
@@ -127,14 +139,15 @@ public class AnnotationMenu extends Rectangle implements PlayConstants,OnlineCon
 		{	if(menu.selectMenuTarget(target))
 			{	selected = (Annotation)menu.rawValue;
 				if(selected==Annotation.Clear)
-				{	commonMove cm = drawOn.getCurrentMove();
+				{	// clear is special, we don't drag it around we just do it.
+					commonMove cm = drawOn.getCurrentMove();
 					cm.setAnnotations(null);
 					saveAnnotation(cm ,selected,0,0);
 					selected = null;
 				}
 				else
 				{
-				base = selected.chip;
+				base = selected.getChip(drawOn.reverseView());
 				menu = null;
 				}
 				return(true);	// we handled it
@@ -143,7 +156,10 @@ public class AnnotationMenu extends Rectangle implements PlayConstants,OnlineCon
 			return(false);
 		}
 	/**
-	 * draw an annotation at a particular size and location
+	 * draw an annotation at a particular size and location.  The location
+	 * is derived from the standard mouse position encoding, and the size
+	 * is expected to be associated with the cell size of the board.
+	 * 
 	 * @param gc
 	 * @param an
 	 * @param size
@@ -152,11 +168,15 @@ public class AnnotationMenu extends Rectangle implements PlayConstants,OnlineCon
 	 */
 	public void drawAnnotation(Graphics gc,Annotation an,int size,int x,int y)
 	{
-		if(an.chip!=null) { an.chip.drawChip(gc,drawOn,size,x,y,null); }
+		if(an.chip!=null) { an.getChip(drawOn.reverseView()).drawChip(gc,drawOn,size,x,y,null); }
 	}
 	/**
 	 * save an annotation on a move. The supplied x,y are absolute, but
-	 * they'll be recorded as relative to the reference rectangle.
+	 * they'll be recorded as encoded mouse positions.  This uses the 
+	 * same encoding scheme used to transmit the mouse positions during
+	 * the game, so for example board positions are presented correctly
+	 * given each players choice of viewing mode (ie; upside down, with
+	 * perspective, or whatever)
 	 * 
 	 * @param m		the move in the game history to add the annotation
 	 * @param an	the annotation
@@ -165,12 +185,17 @@ public class AnnotationMenu extends Rectangle implements PlayConstants,OnlineCon
 	 * @param y		the absolute x of the annotation
 	 */
 	public void saveAnnotation(commonMove m,Annotation an,int x,int y)
-	{	Point pt = new Point();
+	{	Point pt = new Point(0,0);
 		String zone = drawOn.encodeScreenZone(x, y,pt); 
 		MoveAnnotation n = new MoveAnnotation(an,zone,G.Left(pt),G.Top(pt));
-		m.addAnnotation(n);
+		m.addAnnotation(n);	
+		if(drawOn.canTrackMouse())
+		{
+		// this queues the annotation to be sent to the other players and spectators
+		// spectators can't place public annotations during a game
 		annotationActions.push(G.concat(ANNOTATION_TAG," ",m.playerString()," \"",m.longMoveString(),"\" ",
 				"\"",n.toReadableString(),"\""));
+		}
 	}
 	/**
 	 * clear the annotations for a move
@@ -213,7 +238,7 @@ public class AnnotationMenu extends Rectangle implements PlayConstants,OnlineCon
 	 * @param ref
 	 * @return
 	 */
-	public boolean saveCurrentAnnotation(HitPoint hp,Rectangle ref,commonMove cm) 
+	public boolean saveCurrentAnnotation(HitPoint hp,commonMove cm) 
 	{
 		boolean used = false;
 		if(selected!=null)
@@ -234,6 +259,9 @@ public class AnnotationMenu extends Rectangle implements PlayConstants,OnlineCon
 	 * messages are used to track annotations being dragged around by some
 	 * players' mouse and for just the mouse or the mouse dragging a piece.
 	 * 
+	 * this is piggybacked onto the same mechanism that transmits the mouse
+	 * position among the players.
+	 * 
 	 * @return
 	 */
 	public String mouseMessage() 
@@ -253,7 +281,6 @@ public class AnnotationMenu extends Rectangle implements PlayConstants,OnlineCon
 	 * record a new tracking message if appropriate. To differentiate our tracking from regular
 	 * "picked object" tracking, we encode the annotation icon as a negative, and add ANNOTATION_TAG
 	 * to the arguments.   
-	 * TRANSITION_PLAN these annotation tracking messages ought to be ignored by out of date clients.
 	 * 
 	 * @param x
 	 * @param y
@@ -275,7 +302,11 @@ public class AnnotationMenu extends Rectangle implements PlayConstants,OnlineCon
             if (zone != null)
             	{  
                int closestX = G.Left(pt);
-               int closestY = G.Top(pt);       
+               int closestY = G.Top(pt);
+               //
+               // this is constructed so the tracking messages for annotations will
+               // be ignored by old clients that don't understand the annotations
+               //
                sharedAnnotationString = G.concat(NetConn.SEND_GROUP,KEYWORD_TRACKMOUSE," ",
             		   zone," ",
             		   closestX , " " ,
@@ -286,6 +317,8 @@ public class AnnotationMenu extends Rectangle implements PlayConstants,OnlineCon
 			}
 		return true;
 	}
+	// if no annotation is being shared, return null so the 
+	// default action of just tracking the mouse will occur
 	return false;
 	}
 	/**

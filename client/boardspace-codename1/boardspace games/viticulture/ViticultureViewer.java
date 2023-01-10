@@ -1226,7 +1226,7 @@ private void drawPlayerBoard(Graphics gc,
       
       boolean reviewBackground = reviewMode()&&!mutable_game_record;
       GC.setColor(gc,reviewBackground ? reviewModeBackground : boardBackgroundColor);
-      //G.fillRect(gc, fullRect);
+      //GC.fillRect(gc, fullRect);
      // G.tileImage(gc,ViticultureChip.backgroundTile.image, fullRect, this);   
      ViticultureChip.backgroundTile.getImage().stretchImage(gc, fullRect);  
      GC.setRotatedContext(gc,boardRect,null,contextRotation);

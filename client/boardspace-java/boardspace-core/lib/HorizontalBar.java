@@ -30,7 +30,7 @@ public class HorizontalBar implements Drawable
 			int ah = (int)(h);
 			int fillW = (int)(percent*size*scale);
 			//G.setColor(gc, Color.lightGray);
-			//G.fillRect(gc, posx,posy-ah,size,ah);
+			//GC.fillRect(gc, posx,posy-ah,size,ah);
 			GC.setColor(gc, color);
 			GC.fillRect(gc, posx,posy+2-ah,fillW,ah-4);
 			GC.setColor(gc, Color.black);

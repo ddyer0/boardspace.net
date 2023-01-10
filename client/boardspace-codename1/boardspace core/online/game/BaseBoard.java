@@ -32,6 +32,11 @@ public abstract class BaseBoard implements Opcodes,Digestable
 	private String name = "main";
 	public String getName() { return(name); }
 	public void setName(String s) { name = s; }
+    /**
+     * return true if we're an upside down view
+     * @return
+     */
+	public boolean reverseView() { return false; }
 	
 	@SuppressWarnings("deprecation")
 	public String toString() { return("<"+getClass().getName()+" "+name+">"); }

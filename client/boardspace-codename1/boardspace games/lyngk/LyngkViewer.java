@@ -433,7 +433,7 @@ public class LyngkViewer extends CCanvas<LyngkCell,LyngkBoard> implements LyngkC
     { // erase
       boolean reviewBackground = reviewMode()&&!mutable_game_record;
       GC.setColor(gc,reviewBackground ? reviewModeBackground : boardBackgroundColor);
-      //G.fillRect(gc, fullRect);
+      //GC.fillRect(gc, fullRect);
      LyngkChip.backgroundTile.image.tileImage(gc, fullRect);   
       if(reviewBackground)
       {	 

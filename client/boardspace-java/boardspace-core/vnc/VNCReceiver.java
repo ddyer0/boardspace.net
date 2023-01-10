@@ -223,7 +223,7 @@ public class VNCReceiver implements VNCConstants,Config,Runnable,MouseListener,M
 						theTileWidth = tilew;
 						theTileHeight = tileh;
 						theImage = Image.createTransparentImage(w,h);
-						//G.fillRect(theImage.getGraphics(),Color.gray,0,0,w,h);
+						//GC.fillRect(theImage.getGraphics(),Color.gray,0,0,w,h);
 					}
 					setState(State.WaitForTileData);
 					}
@@ -327,7 +327,7 @@ public class VNCReceiver implements VNCConstants,Config,Runnable,MouseListener,M
 			case Stopped:
 				//
 				//
-				//G.fillRect(offGC, Color.black,0,0,w,h);
+				//GC.fillRect(offGC, Color.black,0,0,w,h);
 				//G.Text(offGC,false,10,10,200,40,Color.white,null,"State: "+state);
 				if(errorMessage!=null)
 				{int w=client.getWidth();

@@ -626,7 +626,7 @@ public class YspahanViewer extends CCanvas<YspahanCell,YspahanBoard> implements 
       // erase
       YspahanBoard gb = disB(gc);
       GC.setColor(gc,review ? reviewModeBackground : rackBackGroundColor);
-      //G.fillRect(gc, fullRect);
+      //GC.fillRect(gc, fullRect);
      textures[BACKGROUND_TILE_INDEX].tileImage(gc, fullRect);   
       if(review)
       {	 

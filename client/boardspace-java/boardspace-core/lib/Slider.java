@@ -95,7 +95,7 @@ public class Slider extends Rectangle
     	int limit = (int)((double)(value-min)*width/(max-min));
     	int ysize =(int)(barHeight*height);
     	int yoff = height-ysize;
-    	gc.fillRect(x,y+yoff,limit,ysize);
+    	GC.fillRect(gc,x,y+yoff,limit,ysize);
     	if(hit)
     	{
        	int barlimit = G.Left(pt) - x;

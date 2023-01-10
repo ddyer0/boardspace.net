@@ -611,7 +611,8 @@ public abstract class gBoard<CELLTYPE extends cell<CELLTYPE>> extends RBoard<CEL
  		int subx = x%10000-1000;
  		int suby = y%10000-1000;
  		//G.print("decode "+col+row);
- 		val = new Point(cx+(int)(cellsize/10*subx),cy+(int)(cellsize/10*suby));
+ 		int reverse =  displayParameters.reverse_y ? -1 : 1;
+ 		val = new Point(cx+(int)(reverse*cellsize/10*subx),cy+(int)(reverse*cellsize/10*suby));
  	}
  	return(val);
  }  

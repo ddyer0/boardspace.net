@@ -56,7 +56,7 @@ public class YinshGameViewer extends CCanvas<YinshCell,YinshBoard> implements Yi
     
     public BoardProtocol getBoard()   {    return (b);   }
 
-   
+    public int cellSize() { return (b.cellSize()*2 / (use_perspective() ? 3 : 2)); }
 
     public synchronized void preloadImages()
     {	YinshChip.preloadImages(loader,ImageDir);
@@ -158,7 +158,7 @@ public class YinshGameViewer extends CCanvas<YinshCell,YinshBoard> implements Yi
         int stateX = boardX;
         
         RINGRADIUS = CELLSIZE/2; //ball radius to work with
-        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,viewsetRect,noChatRect);
+        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,viewsetRect,noChatRect);
     	G.SetRect(boardRect,boardX,boardY+stateH,boardW,boardH);
     	G.SetRect(chipPool,boardX+boardW-CELLSIZE*2,boardY+boardH-CELLSIZE*2-stateH*2,CELLSIZE*2,CELLSIZE*2);
      	
@@ -858,7 +858,8 @@ public class YinshGameViewer extends CCanvas<YinshCell,YinshBoard> implements Yi
 	        	}
 
             }
-            else if ((player = commonMove.playerNumberToken(name))>=0)
+            else if ( ((player = commonMove.playerNumberToken(name))>=0) 
+            			&& (player<players.length))
             {
                  commonPlayer p = players[player];
 

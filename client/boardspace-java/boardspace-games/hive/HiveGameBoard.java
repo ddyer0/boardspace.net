@@ -906,7 +906,7 @@ public variation gamevariation = variation.hive;
     public boolean WinForPlayerNow(int player)
     {	if(board_state==HiveState.GAMEOVER_STATE) { return(win[player]); }
     	HiveCell location = pieceLocation.get(playerQueen(nextPlayer[player]));
-    	if(location.onBoard)
+    	if(location!=null && location.onBoard)
     	{	return(location.isSurrounded());
     	}
     	return(false);

@@ -257,7 +257,7 @@ public class ArimaaViewer extends CCanvas<ArimaaCell,ArimaaBoard> implements Ari
     	//
         int stateY = boardY;
         int stateX = boardX;
-        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,viewsetRect,numberMenu,reverseViewRect,noChatRect);
+        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,viewsetRect,annotationMenu,numberMenu,reverseViewRect,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardW);
     	if(rotate)
     	{
@@ -365,7 +365,7 @@ public class ArimaaViewer extends CCanvas<ArimaaCell,ArimaaBoard> implements Ari
       ArimaaBoard gb = disB(gc);
       setDisplayParameters(gb,boardRect);
       GC.setColor(gc,backgroundReview ? reviewModeBackground : boardBackgroundColor);
-      //G.fillRect(gc, fullRect);
+      //GC.fillRect(gc, fullRect);
      textures[BACKGROUND_TILE_INDEX].tileImage(gc, fullRect);   
       if(backgroundReview)
       {	 

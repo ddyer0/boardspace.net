@@ -67,7 +67,6 @@ public class GoBoard extends squareBoard<GoCell> implements BoardProtocol,GoCons
     public CellStack emptyCells = new CellStack(); 
     public GoCell rack[] = new GoCell[2];
     public GoCell rawRack[] = new GoCell[2];
-    public GoCell annotations[] = new GoCell[Annotation.values().length];
     public CellStack animationStack = new CellStack();
     public int changeClock = 0;
     public Hashtable<String,String>properties = new Hashtable<String,String>();
@@ -268,16 +267,6 @@ public class GoBoard extends squareBoard<GoCell> implements BoardProtocol,GoCons
            	GoCell cell = new GoCell(r,RackLocation[i]);
            	cell.addChip(GoChip.chips[i]);
         	rack[i]=rawRack[i]=cell;
-         	}   
-         	
-         	{ int i=0;
-         	  for(Annotation var : Annotation.values())
-         	  {
-         		  GoCell c = annotations[i] = new GoCell(r,GoId.AnnotationViewButton);
-         		  c.row = i;
-         		  c.addChip(var.chip);
-         		  i++;
-         	  }
          	}
          	
          	switch(variation)
@@ -425,7 +414,6 @@ public class GoBoard extends squareBoard<GoCell> implements BoardProtocol,GoCons
 				pickedObject = removeChip(dr); 
 				break;
 			case White_Chip_Pool:	// treat the pools as infinite sources and sinks
-			case AnnotationViewButton:
 			case Black_Chip_Pool:	
 				pickedObject = dr.topChip();
 				break;	// don't add back to the pool
@@ -460,7 +448,6 @@ public class GoBoard extends squareBoard<GoCell> implements BoardProtocol,GoCons
     		default: throw G.Error("Not expecting rackLocation %s",ps.rackLocation);
     		case BoardLocation: addChip(ps,po); break;
     		case White_Chip_Pool:
-    		case AnnotationViewButton:
     		case Black_Chip_Pool:	break;	// don't add back to the pool
     		}
     		pickedObject = null;
@@ -487,7 +474,6 @@ public class GoBoard extends squareBoard<GoCell> implements BoardProtocol,GoCons
 		default: throw G.Error("Not expecting rackLocation %s",c.rackLocation);
 		case BoardLocation: addChip(c,pickedObject); break;
 		case White_Chip_Pool:
-		case AnnotationViewButton:
 		case Black_Chip_Pool:	break;	// don't add back to the pool
 		}
        	droppedDestStack.push(c);
@@ -520,10 +506,6 @@ public class GoBoard extends squareBoard<GoCell> implements BoardProtocol,GoCons
         {
         default:
         	throw G.Error("Not expecting source %s", source);
-        case AnnotationViewButton:
-        	{
-        	return(annotations[row]);
-        	}
         case BoardLocation:
         	return(getCell(col,row));
         case White_Chip_Pool:
@@ -553,7 +535,6 @@ public class GoBoard extends squareBoard<GoCell> implements BoardProtocol,GoCons
 			pickedObject = removeChip(c); 
 			break;
 		case White_Chip_Pool:
-		case AnnotationViewButton:
 		case Black_Chip_Pool:	
 			pickedObject = c.topChip();
 			break;	// don't add back to the pool

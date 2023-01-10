@@ -5,7 +5,6 @@ import lib.InternationalStrings;
 import lib.NameProvider;
 import lib.OStack;
 import lib.PopupManager;
-import lib.TextGlyph;
 import lib.CellId;
 import online.game.BaseBoard.BoardState;
 
@@ -29,56 +28,8 @@ public interface GoConstants
 	static String DenyUndoMessage = "Don't Undo";
 	static String NumberView = "Show move numbers";
 	static String NumberViewExplanation = "Show move numbers on top of stones";
-	static String AnnotationViewExplanation = "Add an annotation to the current board position";
 	static String KomiPoints = "#1 points";
 	static String ScoringFailedMessage = "Automatic scoring failed, click for details";
-	/**
-	 * annotations
-	 */
-	enum Annotation implements NameProvider
-	{
-		Triangle(GoChip.triangle),Square(GoChip.square),
-		Left(GoChip.left),Right(GoChip.right),
-		Up(GoChip.up),Down(GoChip.down);
-		GoChip chip;
-		Annotation(GoChip c) { chip = c; chip.annotation = this; }
-		public String getName() { return(this.toString()); }
-		static PopupManager menu = null;
-		static GoViewer viewer = null;
-		// generate a pop-up menu of the choices
-		static void showMenu(GoViewer v,int x,int y)
-		{
-			if(menu==null) { menu=new PopupManager(); }
-			viewer = v;
-			menu.newPopupMenu(v,v.deferredEvents);
-			for(Annotation a : values())
-				{ menu.addMenuItem(
-						TextGlyph.create("xxxxx",a.name(),a.chip,viewer,2.0,1.0,0,-0.25),
-						a);
-				}
-			menu.show(x,y);
-		}
-		// handle the user clicking on one of the choices
-		static boolean selectMenu(Object target)
-		{
-			if(menu!=null)
-			{	if(menu.selectMenuTarget(target))
-				{
-				viewer.selectAnnotation((Annotation)menu.rawValue);
-				menu = null;
-				return(true);	// we handled it
-				}
-			}
-			return(false);
-		}
-	  	static public Annotation find(String s)
-    	{	
-    		for(Annotation v : values()) { if(s.equalsIgnoreCase(v.name())) { return(v); }}
-    		return(null);
-    	}
- 
-
-	}
 	/**
 	 * NumberingMode encapsulates most of the behavior associated
 	 * with choosing how move numbers are displayed on stones.  This
@@ -527,7 +478,6 @@ public interface GoConstants
         DoneScoring(null,-1),
         ReverseViewButton(null,-1),
         NumberViewButton(null,-1),
-        AnnotationViewButton("A",-1),
         HitUndoButton(null,-1),
         HitDenyUndoButton(null,-1),
         HitUndoActionButton(null,-1),
@@ -615,7 +565,6 @@ public interface GoConstants
 				ResumePlayMessage,
 				NumberViewExplanation,
 				ConfirmHandicapStateDescription,
-				AnnotationViewExplanation,
 				NumberView,
 
 			};

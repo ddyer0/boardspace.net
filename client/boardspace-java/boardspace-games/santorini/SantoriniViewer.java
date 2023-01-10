@@ -330,7 +330,7 @@ public class SantoriniViewer extends CCanvas<SantoriniCell,SantoriniBoard> imple
     {boolean review = reviewMode() && !mutable_game_record;
       // erase
       //gc.setColor(reviewMode() ? reviewModeBackground : boardBackgroundColor);
-      //G.fillRect(gc, fullRect);
+      //GC.fillRect(gc, fullRect);
      textures[BACKGROUND_TILE_INDEX].tileImage(gc, fullRect);   
       if(review)
       {	 

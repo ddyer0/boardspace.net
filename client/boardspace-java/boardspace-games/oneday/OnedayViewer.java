@@ -591,7 +591,7 @@ public class OnedayViewer extends CCanvas<OnedayCell,OnedayBoard> implements One
     {	boolean reviewBackground = reviewMode()&&!mutable_game_record;
       // erase
       GC.setColor(gc,reviewBackground ? reviewModeBackground : boardBackgroundColor);
-      //G.fillRect(gc, fullRect);
+      //GC.fillRect(gc, fullRect);
      textures[BACKGROUND_TILE_INDEX].tileImage(gc, fullRect);   
       if(reviewBackground)
       {	 

@@ -266,7 +266,7 @@ public class MajoritiesViewer extends CCanvas<MajoritiesCell,MajoritiesBoard> im
         int stateH = CELLSIZE;
         int stateY = boardY;
         int stateX = boardX;
-        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,noChatRect);
+        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	
     	// goal and bottom ornaments, depending on the rendering can share
@@ -371,7 +371,7 @@ public class MajoritiesViewer extends CCanvas<MajoritiesCell,MajoritiesBoard> im
     { // erase
     	boolean reviewBackground = reviewMode()&&!mutable_game_record;
       GC.setColor(gc,reviewBackground ? reviewModeBackground : boardBackgroundColor);
-      //G.fillRect(gc, fullRect);
+      //GC.fillRect(gc, fullRect);
      MajoritiesChip.backgroundTile.image.tileImage(gc, fullRect);   
       if(reviewBackground)
       {	 

@@ -66,6 +66,11 @@ public abstract class RBoard<CELLTYPE extends cell<CELLTYPE> >  extends BaseBoar
     //
     
     public DisplayParameters displayParameters = new DisplayParameters();
+    /**
+     * return true if we're an upside down view
+     * @return
+     */
+	public boolean reverseView() { return displayParameters.reverse_y; }
 
     public void initBoard()
     {

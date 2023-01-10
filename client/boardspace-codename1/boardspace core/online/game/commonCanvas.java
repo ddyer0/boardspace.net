@@ -3050,7 +3050,7 @@ public abstract class commonCanvas extends exCanvas
     	{
     	default: break;
     	case PlaceAnnotation:
-    		annotationMenu.saveCurrentAnnotation(hitPoint,boardRect,getCurrentMove());
+    		annotationMenu.saveCurrentAnnotation(hitPoint,getCurrentMove());
         	return true;
         	
         case ShowAnnotations:
@@ -8555,4 +8555,5 @@ public void verifyGameRecord()
 		public void sendDone() { PerformAndTransmit("Done"); }
 		public boolean autoDoneActive() { return autoDone && !skipAutoDone && !reviewMode(); }
 		public void doGameTest() { }
+		public boolean reverseView() { BoardProtocol b = getBoard(); return (b==null ? false : b.reverseView()); }
 }

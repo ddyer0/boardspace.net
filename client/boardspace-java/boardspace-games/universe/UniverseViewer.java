@@ -714,7 +714,7 @@ public class UniverseViewer extends CCanvas<UniverseCell,UniverseBoard> implemen
     {boolean review = reviewMode() && !mutable_game_record;
       // erase
       GC.setColor(gc,review ? reviewModeBackground : boardBackgroundColor);
-      //G.fillRect(gc, fullRect);
+      //GC.fillRect(gc, fullRect);
      textures[BACKGROUND_TILE_INDEX].tileImage(gc, fullRect);   
       if(review)
       {	 

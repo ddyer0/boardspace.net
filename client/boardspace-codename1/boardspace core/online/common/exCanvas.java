@@ -1337,7 +1337,7 @@ graphics when using a touch screen.
         		int dx1 = dx0+zoomedW;
         		int dy1 = dy0+zoomedH;
         		//painter.message = " x "+x+" y "+ y+" z "+zoomChange+" d "+dx0+","+dy0+"-"+dx1+","+dy1+" s "+imx0+","+imy0+"-"+imx1+" "+imy1;
-        		//G.fillRect(gc,Color.blue,dx0,dy0,dx1-dx0,dy1-dy0);
+        		//GC.fillRect(gc,Color.blue,dx0,dy0,dx1-dx0,dy1-dy0);
         		center.drawImage(gc,
         				x+dx0,y+dy0,x+dx1,y+dy1,
         				imx0,imy0,imx1,imy1);

@@ -577,7 +577,7 @@ public class RithmomachyViewer extends CCanvas<RithmomachyCell,RithmomachyBoard>
     	
     	// erase
     	GC.setColor(gc,reviewBackground ? reviewModeBackground : boardBackgroundColor);
-    	//G.fillRect(gc, fullRect);
+    	//GC.fillRect(gc, fullRect);
     textures[BACKGROUND_TILE_INDEX].tileImage(gc, fullRect);   
       
     	if(rotateBoard) { GC.setRotation(gc, Math.PI/2,cx,cy); }

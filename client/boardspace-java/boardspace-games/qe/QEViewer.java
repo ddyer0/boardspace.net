@@ -524,7 +524,7 @@ public void ViewerRun(int wait)
     { // erase
       boolean reviewBackground = reviewMode()&&!mutable_game_record;
       GC.setColor(gc,reviewBackground ? reviewModeBackground : boardBackgroundColor);
-      //G.fillRect(gc, fullRect);
+      //GC.fillRect(gc, fullRect);
      QEChip.backgroundTile.image.tileImage(gc, fullRect);   
       if(reviewBackground)
       {	 

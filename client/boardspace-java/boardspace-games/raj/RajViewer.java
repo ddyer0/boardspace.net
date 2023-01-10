@@ -423,7 +423,7 @@ public class RajViewer extends CCanvas<RajCell,RajBoard> implements RajConstants
     { boolean review = reviewMode() && !mutable_game_record;
       // erase
       GC.setColor(gc,review ? reviewModeBackground : boardBackgroundColor);
-      //G.fillRect(gc, fullRect);
+      //GC.fillRect(gc, fullRect);
      textures[review?BACKGROUND_REVIEW_INDEX:BACKGROUND_INDEX].tileImage(gc, fullRect);  
      
       if(remoteViewer<0)

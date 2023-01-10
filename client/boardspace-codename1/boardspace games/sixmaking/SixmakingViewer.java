@@ -291,7 +291,7 @@ public class SixmakingViewer extends CCanvas<SixmakingCell,SixmakingBoard> imple
       // erase
      SixmakingChip.backgroundTile.image.tileImage(gc, fullRect);   
       //gc.setColor(Color.black);
-      //G.fillRect(gc, boardRect);
+      //GC.fillRect(gc, boardRect);
       if(reviewBackground)
       {	 
        SixmakingChip.backgroundReviewTile.image.tileImage(gc,boardRect);   

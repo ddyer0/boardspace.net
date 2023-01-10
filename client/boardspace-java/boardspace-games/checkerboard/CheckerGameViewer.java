@@ -942,7 +942,7 @@ private void playSounds(commonMove m)
       // erase
      CheckerChip.backgroundTile.image.tileImage(gc, fullRect);   
       //gc.setColor(Color.black);
-      //G.fillRect(gc, boardRect);
+      //GC.fillRect(gc, boardRect);
       drawFixedBoard(gc);
     }
     public void drawFixedBoard(Graphics gc,Rectangle rect)

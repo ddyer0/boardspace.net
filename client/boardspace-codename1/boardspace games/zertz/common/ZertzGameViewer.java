@@ -218,7 +218,7 @@ public class ZertzGameViewer extends CCanvas<zCell,GameBoard> implements GameCon
     	//
         int stateY = boardY;
         int stateX = boardX;
-        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,numberMenu,noChatRect);
+        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,numberMenu,noChatRect);
     	G.SetRect(boardRect,boardX,boardY+CELLSIZE/2,boardW,boardH);
     	
     	G.SetRect(reserveRect,boardX+boardW,boardY+CELLSIZE,3*CELLSIZE,boardH-2*CELLSIZE);
@@ -521,7 +521,7 @@ public class ZertzGameViewer extends CCanvas<zCell,GameBoard> implements GameCon
              zChip.getChip(obj).drawChip(gc,this,CELLSIZE,G.Left(hp),G.Top( hp),null);
              return(true);
         }
-        return(false);
+        else return super.DrawTileSprite(gc,hp);
     }
 
     private Color tableColor()
@@ -1021,7 +1021,8 @@ public class ZertzGameViewer extends CCanvas<zCell,GameBoard> implements GameCon
 				case 1: break;
             	}
             }
-            else if ((pn = commonMove.playerNumberToken(name))>=0)
+            else if (((pn = commonMove.playerNumberToken(name))>=0)
+            		&& (pn<players.length))
             {
                 commonPlayer p = players[pn];
 

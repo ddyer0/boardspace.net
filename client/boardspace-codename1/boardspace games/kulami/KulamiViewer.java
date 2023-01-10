@@ -400,7 +400,7 @@ public class KulamiViewer extends CCanvas<KulamiCell,KulamiBoard> implements Kul
     { // erase
       boolean reviewBackground = reviewMode()&&!mutable_game_record;
       GC.setColor(gc,reviewBackground ? reviewModeBackground : boardBackgroundColor);
-      //G.fillRect(gc, fullRect);
+      //GC.fillRect(gc, fullRect);
      KulamiChip.backgroundTile.image.tileImage(gc, fullRect);   
       if(reviewBackground)
       {	 

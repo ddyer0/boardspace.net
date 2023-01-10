@@ -448,7 +448,7 @@ public class XehViewer extends CCanvas<XehCell,XehBoard> implements XehConstants
     { // erase
       setDisplayParameters(bb,boardRect);
       boolean reviewBackground = reviewMode()&&!mutable_game_record;
-       //G.fillRect(gc, fullRect);
+       //GC.fillRect(gc, fullRect);
      XehChip.backgroundTile.image.tileImage(gc, fullRect);   
       if(reviewBackground)
       {	 

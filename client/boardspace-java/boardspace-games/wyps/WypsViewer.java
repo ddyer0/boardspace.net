@@ -589,7 +589,7 @@ public class WypsViewer extends CCanvas<WypsCell,WypsBoard> implements WypsConst
        		{
        		// hidden windows have x coordinates that are negative, we don't want to rotate tiles
        		// being displayed on hidden windows
-       		g.setColor(Color.black);
+       		GC.setColor(g,Color.black);
        		ch.drawChip(g,this,CELLSIZE, xp, yp, null);  
        		}
    }

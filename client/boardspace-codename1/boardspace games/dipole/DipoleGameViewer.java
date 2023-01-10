@@ -271,7 +271,7 @@ public class DipoleGameViewer extends CCanvas<DipoleCell,DipoleBoard> implements
     }
     public void drawFixedBoard(Graphics gc,Rectangle brect)
     { boolean reviewBackground = reviewMode() && !mutable_game_record;
-      //G.fillRect(gc, fullRect);
+      //GC.fillRect(gc, fullRect);
       if(reviewBackground)
       {	 
        textures[BACKGROUND_REVIEW_INDEX].tileImage(gc,brect);   

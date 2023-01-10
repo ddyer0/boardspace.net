@@ -685,7 +685,7 @@ public class JumbulayaViewer extends CCanvas<JumbulayaCell,JumbulayaBoard> imple
        		{
        		// hidden windows have x coordinates that are negative, we don't want to rotate tiles
        		// being displayed on hidden windows
-       		g.setColor(Color.black);
+       		GC.setColor(g,Color.black);
        		ch.drawChip(g,this,CELLSIZE, xp, yp, null);  
        		}
    }
