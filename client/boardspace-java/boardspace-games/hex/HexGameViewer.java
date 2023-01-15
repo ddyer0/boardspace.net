@@ -697,7 +697,12 @@ public class HexGameViewer extends CCanvas<hexCell,HexGameBoard> implements HexC
      * seriously wrong.
      */
      public boolean Execute(commonMove mm,replayMode replay)
-    {	
+    {	//
+    	// games where there is only 1 move per turn, this is unnecessary
+    	// games like majorities where there are two moves per turn, this records the boundaries
+    	//
+    	// numberMenu.recordSequenceNumber(bb.moveNumber());    
+
         handleExecute(bb,mm,replay);
         
         /**
@@ -1242,6 +1247,11 @@ public class HexGameViewer extends CCanvas<hexCell,HexGameBoard> implements HexC
     }
 
 	public int getLastPlacement(boolean empty) {
+		//
+		// the check on DoneState() causes the numbers to advance
+		// when the temporary piece is placed.  Without it, the "last"
+		// sequence shows the temporary move as well as the next complete move.
+		//
 		return (bb.moveNumber+(bb.DoneState()?1:0));
 	}
 }

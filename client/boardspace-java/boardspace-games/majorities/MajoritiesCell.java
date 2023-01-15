@@ -20,11 +20,12 @@ class CellStack extends OStack<MajoritiesCell>
  * @author ddyer
  *
  */
-public class MajoritiesCell extends chipCell<MajoritiesCell,MajoritiesChip> 
+public class MajoritiesCell extends chipCell<MajoritiesCell,MajoritiesChip> implements PlacementProvider
 {	
 	boolean removed = false;		// logically removed from the board
 	int[] lineOwner = null;			// for the line seeds on the board
-	
+	int lastPlaced = -1;
+
 	public MajoritiesCell(Random r,MajoritiesId rack) { super(r,rack); }		// construct a cell not on the board
 	public MajoritiesCell(MajoritiesId rack,char c,int r) 		// construct a cell on the board
 	{	super(cell.Geometry.Hex,rack,c,r);
@@ -35,8 +36,13 @@ public class MajoritiesCell extends chipCell<MajoritiesCell,MajoritiesChip>
 	public void copyFrom(MajoritiesCell c)
 	{	super.copyFrom(c);
 		AR.copy(lineOwner,c.lineOwner);
+		lastPlaced = c.lastPlaced;
 	}
-
+	public void reInit()
+	{
+		super.reInit();
+		lastPlaced = -1;
+	}
 	// constructor a cell not on the board, with a chip.  Used to construct the pool chips
 	public MajoritiesCell(MajoritiesChip cont)
 	{	super();
@@ -50,6 +56,10 @@ public class MajoritiesCell extends chipCell<MajoritiesCell,MajoritiesChip>
 			next = next.exitTo(dir);
 		} while(next!=null);
 		return(curr);
+	}
+
+	public int getLastPlacement(boolean empty) {
+		return empty ? -1 : lastPlaced;
 	}
 	
 }

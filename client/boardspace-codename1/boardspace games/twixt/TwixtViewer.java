@@ -303,7 +303,7 @@ public class TwixtViewer extends CCanvas<TwixtCell,TwixtBoard> implements TwixtC
     	//
         int stateY = boardY-stateH/2;
         int stateX = boardX;
-        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,rotateRect,flatRect,viewsetRect,guidelinesRect,noChatRect);
+        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,rotateRect,flatRect,viewsetRect,guidelinesRect,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	lineStrokeWidth = boardW/600.0;
     	// goal and bottom ornaments, depending on the rendering can share

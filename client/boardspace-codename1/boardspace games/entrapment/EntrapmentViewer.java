@@ -108,7 +108,7 @@ public class EntrapmentViewer extends CCanvas<EntrapmentCell,EntrapmentBoard> im
 
         int randomKey = info.getInt(OnlineConstants.RANDOMSEED,-1);
        
-        b = new EntrapmentBoard(info.getString(OnlineConstants.GAMETYPE, Entrapment_INIT),
+        b = new EntrapmentBoard(info.getString(GAMETYPE, Entrapment_INIT),
         		randomKey,getStartingColorMap(),EntrapmentBoard.REVISION);
         useDirectDrawing(true);
         doInit(false);
@@ -165,7 +165,7 @@ public class EntrapmentViewer extends CCanvas<EntrapmentCell,EntrapmentBoard> im
         int ncols = 14;
         int buttonW = fh*8;
         double minSize = fh*2;
-        double maxSize = fh*2;
+        double maxSize = fh*3;
         
         // this does the layout of the player boxes, and leaves
     	// a central hole for the board.
@@ -214,7 +214,7 @@ public class EntrapmentViewer extends CCanvas<EntrapmentCell,EntrapmentBoard> im
         int stateX = boardX;
         int stateH = CELLSIZE/2;
 
-        G.placeStateRow(stateX,stateY,boardW,stateH,iconRect,stateRect,reverseViewRect,viewsetRect,noChatRect);
+        G.placeStateRow(stateX,stateY,boardW,stateH,iconRect,stateRect,annotationMenu,reverseViewRect,viewsetRect,noChatRect);
         
         
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
@@ -227,7 +227,7 @@ public class EntrapmentViewer extends CCanvas<EntrapmentCell,EntrapmentBoard> im
         positionTheChat(chatRect,chatBackGroundColor,chatBackGroundColor);
 
     }
-    
+    public int cellSize() { return b.cellSize()/2; }
 	
     private void DrawReverseMarker(Graphics gc, Rectangle r,HitPoint highlight)
     {	EntrapmentChip king = EntrapmentChip.getChip(b.reverseY()?1:0);

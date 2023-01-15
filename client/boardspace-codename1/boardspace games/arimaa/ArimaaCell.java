@@ -20,11 +20,11 @@ public class ArimaaCell extends stackCell<ArimaaCell,ArimaaChip> implements Plac
 	// solution I've adopted is to add a second cell for each board cell, which records overloaded
 	// move components. With this strategy, no changes are needed to NumberMenu
 	//
-	int lastPlaced = 0;
-	int lastEmptied = 0;
-	int lastEmptiedPlayer = 0;
-	int lastEmptyMoveNumber = 0;
-	int lastPlaceMoveNumber = 0;
+	int lastPlaced = -1;
+	int lastEmptied = -1;
+	int lastEmptiedPlayer = -1;
+	int lastEmptyMoveNumber = -1;
+	int lastPlaceMoveNumber = -1;
 	ArimaaCell auxDisplay = null;
 	ArimaaChip lastContents;
 	
@@ -63,11 +63,11 @@ public class ArimaaCell extends stackCell<ArimaaCell,ArimaaChip> implements Plac
 	public void reInit()
 	{
 		super.reInit();
-		lastPlaced = 0;
-		lastEmptied = 0;
-		lastEmptiedPlayer = 0;
-		lastEmptyMoveNumber = 0;
-		lastPlaceMoveNumber = 0;
+		lastPlaced = -1;
+		lastEmptied = -1;
+		lastEmptiedPlayer = -1;
+		lastEmptyMoveNumber = -1;
+		lastPlaceMoveNumber = -1;
 		lastContents = null;
 		if(auxDisplay!=null) { auxDisplay.reInit(); }
 	}

@@ -27,7 +27,7 @@ public class hexCell extends chipCell<hexCell,hexChip> implements PlacementProvi
 	hexCell nextInBlob;		// a link to the next cell in this blob
 	int sweep_counter;		// the sweep counter for which blob is accurate
 	int borders = -1;		// bitmask of possible borders
-	int lastPlaced = 0;
+	int lastPlaced = -1;
 	public void initRobotValues() 
 	{
 	}
@@ -71,7 +71,7 @@ public class hexCell extends chipCell<hexCell,hexChip> implements PlacementProvi
 	 */
 	public void reInit()
 	{	super.reInit();
-		lastPlaced = 0;
+		lastPlaced = -1;
 	}
 	// constructor a cell not on the board, with a chip.  Used to construct the pool chips
 	public hexCell(hexChip cont)
@@ -121,7 +121,7 @@ public class hexCell extends chipCell<hexCell,hexChip> implements PlacementProvi
 	public int getLastPlacement(boolean empty) {
 		// hex stones never move
 		if(!empty) { return lastPlaced; }
-		return 0;
+		return -1;
 	}
 
 }

@@ -12,9 +12,9 @@ class CellStack extends OStack<CheckerCell>
 }
 public class CheckerCell extends stackCell<CheckerCell,CheckerChip> implements PlacementProvider
 {	
-	int lastPlaced = 0;
-	int lastEmptied = 0;
-	int lastCaptured = 0;
+	int lastPlaced = -1;
+	int lastEmptied = -1;
+	int lastCaptured = -1;
 	CheckerChip lastContents;
 	
 	public CheckerChip[] newComponentArray(int n) { return(new CheckerChip[n]); }
@@ -83,9 +83,9 @@ public class CheckerCell extends stackCell<CheckerCell,CheckerChip> implements P
 	 */
 	public void reInit()
 	{	super.reInit();
-		lastPlaced = 0;
-		lastEmptied = 0;
-		lastCaptured = 0;
+		lastPlaced = -1;
+		lastEmptied = -1;
+		lastCaptured = -1;
 		lastContents = null;
 	}
 

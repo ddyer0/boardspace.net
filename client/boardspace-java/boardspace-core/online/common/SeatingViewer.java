@@ -1189,10 +1189,7 @@ public class SeatingViewer extends exCanvas implements LobbyConstants
 				default: G.Error("Hit unexpected gear item %s",me);
 					break;
 				case Feedback:
-				  	G.showDocument(feedbackUrl+"?subject=feedback%20for%20"
-		        			+ G.getPlatformName()
-		        			+ "%20"
-		        			+ G.getAppVersion(),"Feedback");
+				  	G.getFeedback();
 				  	break;
 				case DrawersOff:
 					G.setDrawers(false);

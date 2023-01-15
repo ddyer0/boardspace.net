@@ -1779,6 +1779,7 @@ public class RepaintManager implements VncScreenInterface,Config
         	    		allFixedGC.translate(tx,ty);
    						long fintime = G.Date();
    						long when = fintime+repaintStrategy.delayBeforeReading;
+        	    		allFixedGC.sync();
    						fixed.setWritten(when);
          	    	 }
             	// draw the deep background on the immediate background

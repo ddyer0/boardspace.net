@@ -26,13 +26,13 @@ public class ShellBridge implements ShellProtocol
      * this allows the client to print into the bean shell console window.
      */
     public void print(Object... o) 
-    { for(int i=0;i<o.length;i++) { shell.print(o[i]); }
+    { if(o!=null) { for(int i=0;i<o.length;i++) { shell.print(o[i]); } }
     }
     /**
      * this allows the client to print into the bean shell console window.
      */
     public void println(Object... o)
-    { for(int i=0;i<o.length;i++) { shell.print(o[i]); }
+    { if(o!=null) { for(int i=0;i<o.length;i++) { shell.print(o[i]); } }
       shell.println("");
     }
     /**
@@ -58,6 +58,8 @@ public class ShellBridge implements ShellProtocol
 	String name = "root";
 	int seq = 0;
 	shell.setShowResults(true);
+	if(roots!=null)
+	{
 	for(int idx = 0;idx<roots.length;idx++)
 		{ 
 		Object root = roots[idx];
@@ -73,7 +75,7 @@ public class ShellBridge implements ShellProtocol
 		shell.print(xname+"=");
 		shell.println(root);
 		seq++;
-		}}
+		}}}
 	shell.eval("setAccessibility(true)");
 
 	}

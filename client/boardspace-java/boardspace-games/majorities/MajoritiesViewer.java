@@ -17,7 +17,6 @@ import online.game.*;
 import online.game.sgf.sgf_node;
 import online.game.sgf.sgf_property;
 import online.search.SimpleRobotProtocol;
-
 import static majorities.MajoritiesMovespec.*;
 
 
@@ -72,7 +71,7 @@ import static majorities.MajoritiesMovespec.*;
  *  <li> do a cvs update on the original majorities hierarchy to get back the original code.
  *  
 */
-public class MajoritiesViewer extends CCanvas<MajoritiesCell,MajoritiesBoard> implements MajoritiesConstants, GameLayoutClient
+public class MajoritiesViewer extends CCanvas<MajoritiesCell,MajoritiesBoard> implements MajoritiesConstants, GameLayoutClient, PlacementProvider
 {	
     static final String Majorities_SGF = "Majorities"; 				// sgf game type allocated for majorities
 
@@ -113,7 +112,7 @@ public class MajoritiesViewer extends CCanvas<MajoritiesCell,MajoritiesBoard> im
     private Rectangle tinyBoard0 = addRect("tinyBoard0");
     private Rectangle tinyBoard1 = addRect("tinyBoard1");
     private Rectangle tinyBoard2 = addRect("tinyBoard2");
-    
+    private NumberMenu numberMenu = new NumberMenu(this,MajoritiesChip.White,MajoritiesId.ShowNumbers);
 /**
  * this is called during initialization to load all the images. Conventionally,
  * these are loading into a static variable so they can be shared by all.
@@ -266,7 +265,7 @@ public class MajoritiesViewer extends CCanvas<MajoritiesCell,MajoritiesBoard> im
         int stateH = CELLSIZE;
         int stateY = boardY;
         int stateX = boardX;
-        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,noChatRect);
+        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,numberMenu,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	
     	// goal and bottom ornaments, depending on the rendering can share
@@ -418,6 +417,7 @@ public class MajoritiesViewer extends CCanvas<MajoritiesCell,MajoritiesBoard> im
     	// something which might allow an action.  Either gc or highlight might be
     	// null, but not both.
         //
+        numberMenu.clearSequenceNumbers();
 
         // using closestCell is preferable to G.PointInside(highlight, xpos, ypos, CELLRADIUS)
         // because there will be no gaps or overlaps between cells.
@@ -435,8 +435,6 @@ public class MajoritiesViewer extends CCanvas<MajoritiesCell,MajoritiesBoard> im
         // this enumerates the cells in the board in an arbitrary order.  A more
         // conventional double xy loop might be needed if the graphics overlap and
         // depend on the shadows being cast correctly.
-        if (gc != null)
-        {
         for(MajoritiesCell cell = gb.allCells; cell!=null; cell=cell.next)
           {
             boolean drawhighlight = (hitCell && (cell==closestCell)) 
@@ -444,6 +442,7 @@ public class MajoritiesViewer extends CCanvas<MajoritiesCell,MajoritiesBoard> im
    				|| gb.isSource(cell);	// is legal for a "pick" operation+
          	int ypos = G.Bottom(brect) - gb.cellToY(cell);
             int xpos = G.Left(brect) + gb.cellToX(cell);
+            numberMenu.saveSequenceNumber(cell,xpos,ypos);
   
             if (drawhighlight)
              { // checking for pointable position
@@ -452,7 +451,8 @@ public class MajoritiesViewer extends CCanvas<MajoritiesCell,MajoritiesBoard> im
             cell.drawChip(gc,this,highlight,gb.cellSize(),xpos,ypos,null);
             
             }
-        }
+        
+        numberMenu.drawSequenceNumbers(gc,CELLSIZE*2,labelFont,labelColor);
     }
 
     /**
@@ -552,6 +552,7 @@ public class MajoritiesViewer extends CCanvas<MajoritiesCell,MajoritiesBoard> im
             //DrawRepRect(gc,gb.Digest(),repRect);	// Not needed for majorities
         
         // draw the vcr controls
+        numberMenu.draw(gc,selectPos);
         drawVcrGroup(nonDragSelect, gc);
 
     }
@@ -567,8 +568,8 @@ public class MajoritiesViewer extends CCanvas<MajoritiesCell,MajoritiesBoard> im
      public boolean Execute(commonMove mm,replayMode replay)
     {	
         
-        handleExecute(bb,mm,replay);
-        
+         numberMenu.recordSequenceNumber(bb.moveNumber());    
+    	 handleExecute(bb,mm,replay);
         /**
          * animations are handled by a simple protocol between the board and viewer.
          * when stones are moved around on the board, it pushes the source and destination
@@ -684,6 +685,9 @@ public class MajoritiesViewer extends CCanvas<MajoritiesCell,MajoritiesBoard> im
         {
         default:
         	throw G.Error("Hit Unknown: %s", hitObject);
+        case ShowNumbers:
+        	numberMenu.showMenu();
+        	break;
         case BoardLocation:	// we hit an occupied part of the board 
         case EmptyBoard:
 			doDropChip(hitObject.col,hitObject.row);
@@ -867,5 +871,14 @@ public class MajoritiesViewer extends CCanvas<MajoritiesCell,MajoritiesBoard> im
             setComment(comments);
         }
     }
+    public boolean handleDeferredEvent(Object target,String command)
+    {
+    	if(numberMenu.selectMenu(target,this)) { return true;}
+    	else return(super.handleDeferredEvent(target,command));
+    }
+ 
+	public int getLastPlacement(boolean empty) {
+		return bb.chips_on_board;
+	}
 }
 

@@ -3,7 +3,6 @@ import goban.shape.beans.*;
 
 import java.awt.*;
 
-
 // ------------------
 // Define main class.
 // ------------------

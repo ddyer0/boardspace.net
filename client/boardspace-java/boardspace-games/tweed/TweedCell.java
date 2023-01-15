@@ -24,7 +24,7 @@ public class TweedCell
 	extends stackCell<TweedCell,TweedChip>	implements PlacementProvider
 {	
 	int seen[] = new int[2];
-	int lastPlaced = 0;
+	int lastPlaced = -1;
 	public void initRobotValues() 
 	{
 	}
@@ -64,7 +64,7 @@ public class TweedCell
 	public void reInit()
 	{	super.reInit();
 		seen[0]=seen[1]=0;
-		lastPlaced = 0;
+		lastPlaced = -1;
 	}
 	// constructor a cell not on the board, with a chip.  Used to construct the pool chips
 	public TweedCell(TweedChip cont)
@@ -91,7 +91,7 @@ public class TweedCell
 	
 	// support for PlacementProvider
 	public int getLastPlacement(boolean empty) {
-		return empty?0:lastPlaced;
+		return empty?-1:lastPlaced;
 	}
 	
 }

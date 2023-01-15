@@ -1,11 +1,10 @@
 package crosswords;
 
-import java.util.*;
-
 import lib.G;
 import lib.Text;
 import lib.TextChunk;
 import lib.TextGlyph;
+import lib.Tokenizer;
 import online.game.*;
 import lib.ExtendedHashtable;
 public class Crosswordsmovespec extends commonMPMove implements CrosswordsConstants
@@ -83,7 +82,7 @@ public class Crosswordsmovespec extends commonMPMove implements CrosswordsConsta
     /* constructor */
     public Crosswordsmovespec(String str, int p)
     {
-        parse(new StringTokenizer(str), p);
+        parse(new Tokenizer(str), p);
     }
     public Crosswordsmovespec(Word w,int who)
     {
@@ -114,11 +113,6 @@ public class Crosswordsmovespec extends commonMPMove implements CrosswordsConsta
     	to_col = col;
     	to_row = row;
     	player = who;
-    }
-    /* constructor */
-    public Crosswordsmovespec(StringTokenizer ss, int p)
-    {
-        parse(ss, p);
     }
 
     /**
@@ -174,15 +168,15 @@ public class Crosswordsmovespec extends commonMPMove implements CrosswordsConsta
      * @param msg a string tokenizer containing the move spec
      * @param the player index for whom the move will be.
      * */
-    private void parse(StringTokenizer msg, int p)
+    private void parse(Tokenizer msg, int p)
     {
-        String cmd = msg.nextToken();
+        String cmd = msg.nextElement();
         player = p;
 
         if (Character.isDigit(cmd.charAt(0)))
         { // if the move starts with a digit, assume it is a sequence number
             setIndex(G.IntToken(cmd));
-            cmd = msg.nextToken();
+            cmd = msg.nextElement();
         }
 
         op = D.getInt(cmd, MOVE_UNKNOWN);
@@ -191,73 +185,73 @@ public class Crosswordsmovespec extends commonMPMove implements CrosswordsConsta
         case MOVE_UNKNOWN:
         	throw G.Error("Cant parse " + cmd);
         case MOVE_PLAYWORD:
-           	to_col = G.CharToken(msg);
-        	to_row = G.IntToken(msg);
-        	direction = G.IntToken(msg);
-        	word = msg.nextToken();
+           	to_col = msg.charToken();
+        	to_row = msg.intToken();
+        	direction = msg.intToken();
+        	word = msg.nextElement();
         	break;
         case MOVE_DROPB:
         	dest = CrosswordsId.BoardLocation;
-        	to_col = G.CharToken(msg);
-        	to_row = G.IntToken(msg);
+        	to_col = msg.charToken();
+        	to_row = msg.intToken();
         	break;
         case MOVE_MOVETILE:
-        	source = CrosswordsId.valueOf(msg.nextToken());
-        	from_col = G.CharToken(msg);
-        	from_row = G.IntToken(msg);
-        	dest = CrosswordsId.valueOf(msg.nextToken());
-        	to_col = G.CharToken(msg);
-        	to_row = G.IntToken(msg);
+        	source = CrosswordsId.valueOf(msg.nextElement());
+        	from_col = msg.charToken();
+        	from_row = msg.intToken();
+        	dest = CrosswordsId.valueOf(msg.nextElement());
+        	to_col = msg.charToken();
+        	to_row = msg.intToken();
         	break;
         
       
 		case MOVE_PICKB:
             dest = CrosswordsId.BoardLocation;
-            to_col = G.CharToken(msg);
-            to_row = G.IntToken(msg);
+            to_col = msg.charToken();
+            to_row = msg.intToken();
 
             break;
 		case MOVE_SELECT:
 			dest = CrosswordsId.BoardLocation;
-			to_col = G.CharToken(msg);
+			to_col = msg.charToken();
 			break;
 			
 		case MOVE_LIFT:
 		case MOVE_REMOTELIFT:
         case MOVE_PICK:
-            dest = CrosswordsId.valueOf(msg.nextToken());
-            to_col = G.CharToken(msg);
-            to_row = G.IntToken(msg);        
-            mapped_row = (msg.hasMoreTokens()) ? G.IntToken(msg) : -1;
+            dest = CrosswordsId.valueOf(msg.nextElement());
+            to_col = msg.charToken();
+            to_row = msg.intToken();     
+            mapped_row = (msg.hasMoreElements()) ? msg.intToken() : -1;
 			break;
 
         case MOVE_DROPONRACK:
 		case MOVE_REPLACE:
 		case MOVE_REMOTEDROP:
 		case MOVE_DROP:
-            dest = CrosswordsId.valueOf(msg.nextToken());
-            to_col = G.CharToken(msg);
-            to_row = G.IntToken(msg);
-            mapped_row = msg.hasMoreTokens() ? G.IntToken(msg) : -1;
+            dest = CrosswordsId.valueOf(msg.nextElement());
+            to_col = msg.charToken();
+            to_row = msg.intToken();
+            mapped_row = msg.hasMoreElements() ? msg.intToken() : -1;
             break;
 
         case MOVE_START:
-            player = D.getInt(msg.nextToken());
+            player = D.getInt(msg.nextElement());
 
             break;
         case MOVE_SHOW:
         case MOVE_SEE:
         	{
-        	char pl = G.CharToken(msg);
-        	boolean v = G.BoolToken(msg);
+        	char pl = msg.charToken();
+        	boolean v =  msg.boolToken();
         	to_col = pl;
         	to_row = v ? 1 : 0;
         	}
         	break;
         case MOVE_SETOPTION:
         	{
-        	Option o = Option.valueOf(msg.nextToken());
-        	boolean v = G.BoolToken(msg);
+        	Option o = Option.valueOf(msg.nextElement());
+        	boolean v = msg.boolToken();
         	to_row = o.ordinal()*2|(v?1:0);
         	}
         	break;

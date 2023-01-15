@@ -131,7 +131,9 @@ public class G extends Platform implements Timestamp
 			printer.println(msg);
 		}
 		else
-		{ for(int i=0;i<msg.length;i++) { Object m = msg[i]; System.out.print( m==null?"null":m.toString()); }
+		{ if(msg!=null) 
+			{ for(int i=0;i<msg.length;i++) { Object m = msg[i]; System.out.print( m==null?"null":m.toString()); }
+			}
 		  System.out.println();
 		}
 		return(false);
@@ -223,7 +225,7 @@ public class G extends Platform implements Timestamp
      */
     public static boolean Assert(boolean condition, String message,Object... args)
     {	if (!condition)
-        {	if(args.length>0) { message = format(message,args); }
+        {	if(args!=null && args.length>0) { message = format(message,args); }
         	throw new ErrorX(message);
         }
         return (true);
@@ -240,7 +242,9 @@ public class G extends Platform implements Timestamp
     public static boolean Advise(boolean condition,String message)
     {	if(!condition)
     	{
-    	if(debug()) { throw new ErrorX(message); }
+    	if(debug())
+    		{ throw new ErrorX(message); 
+    		}
     	return(false);
     	}
     	return(true);
@@ -257,7 +261,7 @@ public class G extends Platform implements Timestamp
      */
     public static boolean Advise(boolean condition, String message,Object... args)
     {	if (!condition)
-        {	if(args.length>0) { message = format(message,args); }
+        {	if(args!=null && args.length>0) { message = format(message,args); }
         	Plog.log.appendNewLog("Advisory: ");
         	Plog.log.appendLog(message);
         	Plog.log.finishEvent();
@@ -278,6 +282,8 @@ public class G extends Platform implements Timestamp
     {	StringBuilder out = new StringBuilder();
     	int strIdx=0;
     	int lastStrIdx=message.length();
+    	if(args!=null)
+    	{
     	for(int lim=args.length,idx=0;
     				idx<lim;
     				)
@@ -368,7 +374,7 @@ public class G extends Platform implements Timestamp
     			out.append(" + "+arg.toString());
     			idx++;
     		}
-    	}
+    	}}
 		if(strIdx<lastStrIdx) 
 		{ 
 			out.append(message.substring(strIdx));
@@ -424,7 +430,7 @@ public class G extends Platform implements Timestamp
      */
     public static ErrorX Error(String msg,Object...args) 
     {	String message = msg;
-    	if(args.length>0) { message = format(message,args); }
+    	if(args!=null && args.length>0) { message = format(message,args); }
     	throw new ErrorX(message);
     }
     
@@ -1614,9 +1620,10 @@ static public String getSystemProperties()
     		" ppi=",G.getPPI(),
     		" deviceDPI=",G.getRealScreenDPI(),
     		" scale =",G.getDisplayScale(),
+    		" platform =",G.platformId(),
     		" ",
     		(G.isCodename1() 
-				? G.concat("Codename1 " , (G.isSimulator()?"sim " : " "), getAppVersion())
+				? "Codename1 "
 				: G.idString));
     for (int i = 0; i < G.publicSystemProperties.length; i++)
     {	String propname = G.publicSystemProperties[i];
@@ -2047,7 +2054,7 @@ public static String expandClassName(String classname)
 	     * @param strings
 	     */
 		public static void append(StringBuilder val, Object...strings)
-		{	for(Object s : strings) { val.append(s==null ? "null" : s.toString()); }
+		{	if(strings!=null) { for(Object s : strings) { val.append(s==null ? "null" : s.toString()); }}
 		}
 		/** concatenate the strings 
 		 * 
@@ -2076,6 +2083,27 @@ public static String expandClassName(String classname)
 	    {	//x*prime1+y*prime2 mod prime3
 	    	return(((x*9803+y*10211)%9679)%Math.max(1,m)-m/2);
 	    }
-	    
+	    public static String platformId()
+	    {
+	    	return G.concat(getPlatformName(),getPlatformSubtype(),getAppVersion());
+	    }
+	    public static String platformString()
+	    {
+	    	return("&"
+	    			+ PlatformParameterName 
+	    			+ "="+Http.escape(getPlatformName()
+	    			+ getPlatformSubtype()
+					+"-"+getAppVersion()));
+	    }
+		public static void getFeedback() {
+			String msg = G.concat("feedback for ",G.getPlatformName()," ",G.getPlatformSubtype()," ",G.getAppVersion()); 	
+    		
+        	G.showDocument(
+        			G.concat(feedbackUrl,
+        						"?subject=",
+        						Http.escape(msg)),
+        			"Feedback");
+			
+		}
 }
  	

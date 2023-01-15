@@ -24,9 +24,9 @@ public class BarcaCell extends chipCell<BarcaCell,BarcaChip> implements Placemen
 	int sweep_counter;		// the sweep counter for which blob is accurate
 	double xloc;
 	double yloc;
-	public int lastPlaced = 0;
-	public int lastEmptiedPlayer = 0;
-	public int lastEmptied = 0;
+	public int lastPlaced = -1;
+	public int lastEmptiedPlayer = -1;
+	public int lastEmptied = -1;
 	
 	// odd or even on the checkerboard.  Lions are restricted to one color.
 	public boolean isOdd() { return(((col+row)&1)!=0); }
@@ -48,7 +48,7 @@ public class BarcaCell extends chipCell<BarcaCell,BarcaChip> implements Placemen
 	public void reInit()
 	{
 		super.reInit();
-		lastPlaced = lastEmptied = lastEmptiedPlayer = 0;
+		lastPlaced = lastEmptied = lastEmptiedPlayer = -1;
 	}
 	public void copyFrom(BarcaCell other)
 	{

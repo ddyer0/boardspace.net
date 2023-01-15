@@ -214,7 +214,7 @@ public class EntrapmentViewer extends CCanvas<EntrapmentCell,EntrapmentBoard> im
         int stateX = boardX;
         int stateH = CELLSIZE/2;
 
-        G.placeStateRow(stateX,stateY,boardW,stateH,iconRect,stateRect,reverseViewRect,viewsetRect,noChatRect);
+        G.placeStateRow(stateX,stateY,boardW,stateH,iconRect,stateRect,annotationMenu,reverseViewRect,viewsetRect,noChatRect);
         
         
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
@@ -227,7 +227,7 @@ public class EntrapmentViewer extends CCanvas<EntrapmentCell,EntrapmentBoard> im
         positionTheChat(chatRect,chatBackGroundColor,chatBackGroundColor);
  	
     }    
-    
+    public int cellSize() { return b.cellSize()/2; }
 	
     private void DrawReverseMarker(Graphics gc, Rectangle r,HitPoint highlight)
     {	EntrapmentChip king = EntrapmentChip.getChip(b.reverseY()?1:0);

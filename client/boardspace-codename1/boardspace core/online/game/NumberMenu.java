@@ -173,7 +173,8 @@ public class NumberMenu extends Rectangle {
 	public int getSequenceNumber(PlacementProvider c,boolean empty)
 	{	
 		int number = c.getLastPlacement(empty);	// sequence number associated with c
-		return getVisibleNumber(number);		// a number which will either be number or -1
+		int v = getVisibleNumber(number);		// a number which will either be number or -1
+		return v;
 	}
 	/** return the displayed number for this sequence number. Negative or zero probably
 	 * is not intended to be displayed.
@@ -182,14 +183,14 @@ public class NumberMenu extends Rectangle {
 	 */
 	public int getVisibleNumber(int number)
 	{
-		if(number>0)
+		if(number>=0)
 		{
 			switch(selected)
 			{
 			case None: return -1;
 			case From_Here:
 			case All:
-				return number>startingNumber ? (number-startingNumber) : -1;
+				return number>=startingNumber ? (number-startingNumber) : -1;
 			case Last:
 				startingNumber = startingSequenceNumber(-1);
 				return number>=startingNumber ? number : -1;
@@ -349,13 +350,13 @@ public class NumberMenu extends Rectangle {
 	{
 		int slabel = getSequenceNumber(cell,true);	
 		LocationProvider sloc = null;
-		if(slabel>0) 
+		if(slabel>=0) 
 			{ 
 			sloc = saveSequenceNumber(slabel,true,xpos,ypos,c); 
 			reverse.put(sloc,cell);
     		}
 		int dlabel = getSequenceNumber(cell,false);		
-		if(dlabel>0) 
+		if(dlabel>=0) 
 	 	{
 	 	  LocationProvider dloc = saveSequenceNumber(dlabel,false,xpos,ypos,null);
 	 	  reverse.put(dloc,cell);

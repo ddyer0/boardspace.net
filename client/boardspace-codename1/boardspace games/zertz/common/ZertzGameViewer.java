@@ -162,8 +162,8 @@ public class ZertzGameViewer extends CCanvas<zCell,GameBoard> implements GameCon
     			margin,	
     			0.75,	// % of space allocated to the board
     			aspect,	// aspect ratio for the board
-    			fh*2.75,	// minimum cell size
-    			fh*4,
+    			fh*2.5,	// minimum cell size
+    			fh*3.5,
     			0.2		// preference for the designated layout, if any
     			);
     	
@@ -242,7 +242,7 @@ public class ZertzGameViewer extends CCanvas<zCell,GameBoard> implements GameCon
     	if(doneW>0)
     		{  chipw = Math.max(chipw,G.Right(done)-x); 
     		}
-    	G.SetRect(chip,x,G.Bottom(box),chipw,unitsize*2);
+    	G.SetRect(chip,x,G.Bottom(box),chipw,unitsize*3/2);
     	G.union(box, done,chip);
     	pl.displayRotation = rotation;
     	return(box);

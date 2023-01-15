@@ -29,9 +29,7 @@ import lib.StockArt;
  * Change History
  *
  * Feb 2008 initial work. 
- *
- * This code is derived from the "HexGameViewer" and other viewer classes.  Refer to the
- 
+ * 
  * 
 */
 public class VolcanoGameViewer extends CCanvas<VolcanoCell,VolcanoBoard> implements VolcanoConstants, GameLayoutClient
@@ -84,11 +82,11 @@ public class VolcanoGameViewer extends CCanvas<VolcanoCell,VolcanoBoard> impleme
 	 * info contains all the goodies from the environment.
 	 * */
     public void init(ExtendedHashtable info,LFrameProtocol frame)
-    {
+    {	enableAutoDone = true;
         super.init(info,frame);
         int randomKey = sharedInfo.getInt(OnlineConstants.RANDOMSEED,-1);
 
-        b = new VolcanoBoard(randomKey,info.getString(OnlineConstants.GAMETYPE, "volcano"));
+        b = new VolcanoBoard(randomKey,info.getString(GAMETYPE, "volcano"));
         useDirectDrawing(true); 
         doInit(false);
         
@@ -218,7 +216,7 @@ public class VolcanoGameViewer extends CCanvas<VolcanoCell,VolcanoBoard> impleme
         {
         	contextRotation = -Math.PI/2;
         }
-        G.placeRow(stateX,stateY,boardW,stateH,stateRect,liftRect,viewsetRect,noChatRect);
+        G.placeRow(stateX,stateY,boardW,stateH,stateRect,annotationMenu,liftRect,viewsetRect,noChatRect);
         
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	
@@ -230,7 +228,7 @@ public class VolcanoGameViewer extends CCanvas<VolcanoCell,VolcanoBoard> impleme
         positionTheChat(chatRect,Color.white,rackBackGroundColor);
         return(boardW*boardH);
     }
-
+    public int cellSize() { return b.cellSize()*2; }
 	// draw a box of spare pyramids. Notice if any are being pointed at.  Highlight those that are.
     private void DrawCommonChipPool(Graphics gc, VolcanoBoard bd,int forPlayer, Rectangle r, Rectangle sr,int player,  HitPoint highlight)
     {	VolcanoCell captures = bd.captures[forPlayer];
@@ -425,7 +423,7 @@ public class VolcanoGameViewer extends CCanvas<VolcanoCell,VolcanoBoard> impleme
 
 		if (vstate != VolcanoState.PUZZLE_STATE)
         {
-			if(!planned) {
+			if(!planned && !autoDoneActive()) {
 			handleDoneButton(gc,doneRect,(gb.DoneState() ? select : null), 
 					HighlightColor, rackBackGroundColor);
 			}

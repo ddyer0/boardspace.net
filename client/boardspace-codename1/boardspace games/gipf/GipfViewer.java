@@ -5,7 +5,6 @@ import bridge.*;
 
 import com.codename1.ui.geom.Rectangle;
 
-import online.common.*;
 import online.game.*;
 import online.game.sgf.sgf_node;
 import online.game.sgf.sgf_property;
@@ -98,7 +97,7 @@ public class GipfViewer extends CCanvas<GipfCell,GipfBoard> implements GipfConst
             startEvaluator = myFrame.addOption("Start Evaluator", false,deferredEvents);
         }
 
-        b = new GipfBoard(info.getString(OnlineConstants.GAMETYPE, "Gipf"),getStartingColorMap(),GipfBoard.REVISION);
+        b = new GipfBoard(info.getString(GAMETYPE, "Gipf"),getStartingColorMap(),GipfBoard.REVISION);
         useDirectDrawing(true);
         doInit(false);
     }
@@ -212,7 +211,7 @@ public class GipfViewer extends CCanvas<GipfCell,GipfBoard> implements GipfConst
         int stateY = boardY;
         int stateX = boardX;
         int stateH = fh*3;
-        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,viewsetRect,noChatRect);
+        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,viewsetRect,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	
     	// goal and bottom ornaments, depending on the rendering can share
@@ -223,6 +222,8 @@ public class GipfViewer extends CCanvas<GipfCell,GipfBoard> implements GipfConst
         positionTheChat(chatRect,chatBackGroundColor,rackBackGroundColor);
         return boardW*boardH;
     }
+    public int cellSize() { return b.cellSize()*2/3; }
+    
     public Rectangle createPlayerGroup(int player,int x,int y,double rotation,int unitsize)
     {	commonPlayer pl = getPlayerOrTemp(player);
     	int chipw = unitsize*2;

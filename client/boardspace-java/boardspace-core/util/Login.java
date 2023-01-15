@@ -102,15 +102,10 @@ public class Login implements SimpleObserver,Config,Crypto
     	{
     		G.infoBox("message from the management", 
 			"There's a message for you.  Click OK to view it, or log in to the site through the regular web page");
-    		G.showDocument(msg);
+    		G.showDocument(msg,"Message");
     	}
     }
-    public static String platformString()
-    {
-    	return("&" + PlatformParameterName + "="+Http.escape(G.getPlatformName()
-				+(G.isCheerpj() ? "cheerpj" : G.isTable()?" playtable": (G.isGameboard()?"gameboard" : ""))
-				+"-"+G.getAppVersion()));
-    }
+
     @SuppressWarnings("deprecation")
 	public boolean initFromWebStart(String host)
     {	boolean captured = false;
@@ -158,7 +153,7 @@ public class Login implements SimpleObserver,Config,Crypto
 			// the name of the password parameter is a minor difference between boardspace and tantrix
 			int socks[] = {80};
 			params = "&" + PasswordParameterName + "="+Http.escape(pass)+ params;
-			params = platformString() + params;
+			params = G.platformString() + params;
 			params = "&" + TimezoneParameterName + "="+Http.escape("x"+G.getLocalTimeOffset())+params;
 			params = "&" + IdentityParameterName + "="+Http.escape("x"+G.getIdentity())+params;
 			
@@ -180,7 +175,7 @@ public class Login implements SimpleObserver,Config,Crypto
 							"Try again","Recover lost password");
 					if("Recover lost password".equals(v))
 					{
-						G.showDocument(Http.httpProtocol+"//"+Http.getHostName()+recoverPasswordUrl);
+						G.showDocument(Http.httpProtocol+"//"+Http.getHostName()+recoverPasswordUrl,"Change Password");
 					}
 				 }
 				 else if(result.text.startsWith("unavailable")) 

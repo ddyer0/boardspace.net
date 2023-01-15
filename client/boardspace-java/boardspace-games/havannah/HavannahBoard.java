@@ -80,7 +80,7 @@ class HavannahBoard extends hexBoard<HavannahCell> implements BoardProtocol,Hava
 // DrawRepRect to warn the user that repetitions have been seen.
 	public void SetDrawState() {throw G.Error("not expected"); };	
 	CellStack animationStack = new CellStack();
-    private int chips_on_board = 0;			// number of chips currently on the board
+    int chips_on_board = 0;			// number of chips currently on the board
     private int fullBoard = 0;				// the number of cells in the board
     private int sweep_counter=0;			// used when scanning for blobs
     private int startingPlayer = 0;

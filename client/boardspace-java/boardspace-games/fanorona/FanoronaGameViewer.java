@@ -221,7 +221,7 @@ public class FanoronaGameViewer extends CCanvas<FanoronaCell,FanoronaBoard> impl
     	//
         int stateY = boardY-stateH;
         int stateX = boardX;
-        G.placeStateRow(stateX,stateY,boardW,stateH,iconRect,stateRect,eyeRect,reverseRect,noChatRect);
+        G.placeStateRow(stateX,stateY,boardW,stateH,iconRect,stateRect,annotationMenu,eyeRect,reverseRect,noChatRect);
         G.SetRect(boardRect,boardX,boardY,boardW,boardH);
         if(boardRotation!=0)
         {
@@ -236,6 +236,7 @@ public class FanoronaGameViewer extends CCanvas<FanoronaCell,FanoronaBoard> impl
         positionTheChat(chatRect,Color.white,Color.white);
         return(boardW*boardH);
     }
+    public int cellSize() { return b.cellSize()/2; }
     public Rectangle createPlayerGroup(int player,int x,int y,double rotation,int unitsize)
     {	commonPlayer pl = getPlayerOrTemp(player);
     	Rectangle sq = chipRects[player];

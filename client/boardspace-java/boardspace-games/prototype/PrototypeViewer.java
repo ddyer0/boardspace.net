@@ -76,7 +76,7 @@ import online.search.SimpleRobotProtocol;
  *  <li> do a cvs update on the original pushfight hierarchy to get back the original code.
  *  
 */
-public class PrototypeViewer extends CCanvas<PrototypeCell,PrototypeBoard> implements PrototypeConstants, GameLayoutClient
+public class PrototypeViewer extends CCanvas<PrototypeCell,PrototypeBoard> implements PrototypeConstants, GameLayoutClient, PlacementProvider
 {		// move commands, actions encoded by movespecs.  Values chosen so these
     // integers won't look quite like all the other integers
  	
@@ -124,7 +124,12 @@ public class PrototypeViewer extends CCanvas<PrototypeCell,PrototypeBoard> imple
 			HighlightColor, rackBackGroundColor,rackIdleColor);
 	private TextButton doneButton = addButton(DoneAction,GameId.HitDoneButton,ExplainDone,
 			HighlightColor, rackBackGroundColor,rackIdleColor);
-	
+	/**
+	 * numbermenu offers several options for showing move numbers superimposed on the moves
+	 * -- requires some coordination with board and cell classes
+	 */
+    private NumberMenu numberMenu = new NumberMenu(this,PrototypeChip.White,PrototypeId.ShowNumbers);
+
 	// private menu items
     private JCheckBoxMenuItem rotationOption = null;		// rotate the board view
     private boolean doRotation=true;					// current state
@@ -161,6 +166,10 @@ public class PrototypeViewer extends CCanvas<PrototypeCell,PrototypeBoard> imple
     	// for games that require some random initialization, the random key should be
     	// captured at this point and passed to the the board init too.
         int randomKey = info.getInt(OnlineConstants.RANDOMSEED,-1);
+        //
+        // not suitable for games with any optional "done" states.  If true, autodone
+        // is controlled by an option menu option.  Also conditionalize showing the
+        // "done" button with autoDoneActive()
         enableAutoDone = true;
         super.init(info,frame);
         // use_grid=reviewer;// use this to turn the grid letters off by default
@@ -351,7 +360,7 @@ public class PrototypeViewer extends CCanvas<PrototypeCell,PrototypeBoard> imple
         int stateY = boardY;
         int stateX = boardX;
         int stateH = fh*3;
-        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,eyeRect,noChatRect);
+        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,numberMenu,eyeRect,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	if(rotate)
     	{	// this conspires to rotate the drawing of the board
@@ -660,11 +669,13 @@ public class PrototypeViewer extends CCanvas<PrototypeCell,PrototypeBoard> imple
     	// called when not actually drawing, to determine if the mouse is pointing at
     	// something which might allow an action.  
     	Hashtable<PrototypeCell,Prototypemovespec> targets = gb.getTargets();
+     	numberMenu.clearSequenceNumbers();
 
     	for(PrototypeCell cell = gb.allCells; cell!=null; cell=cell.next)
           {
          	int ypos = G.Bottom(brect) - gb.cellToY(cell);
             int xpos = G.Left(brect) + gb.cellToX(cell);
+            numberMenu.saveSequenceNumber(cell,xpos,ypos);
             boolean canHit = gb.legalToHitBoard(cell,targets);
             if(cell.drawStack(gc,this,canHit?highlight:null,CELLSIZE,xpos,ypos,0,0.1,0.1,null))
             		{
@@ -672,6 +683,7 @@ public class PrototypeViewer extends CCanvas<PrototypeCell,PrototypeBoard> imple
                 	highlight.awidth = CELLSIZE;
             		}
         }
+    	numberMenu.drawSequenceNumbers(gc,CELLSIZE*2/3,labelFont,labelColor);
     }
 
     /**
@@ -789,7 +801,7 @@ public class PrototypeViewer extends CCanvas<PrototypeCell,PrototypeBoard> imple
             //      DrawRepRect(gc,pl.displayRotation,Color.black,b.Digest(),repRect);
         eyeRect.activateOnMouse = true;
         eyeRect.draw(gc,selectPos);
-        
+        numberMenu.draw(gc,selectPos);
         // draw the vcr controls, last so the pop-up version will be above everything else
         drawVcrGroup(nonDragSelect, gc);
 
@@ -805,6 +817,8 @@ public class PrototypeViewer extends CCanvas<PrototypeCell,PrototypeBoard> imple
      */
      public boolean Execute(commonMove mm,replayMode replay)
     {	
+    	//this is unnecessary for games with simple move structures (1 action per move)
+    	//numberMenu.recordSequenceNumber(bb.moveNumber());
         handleExecute(bb,mm,replay);
         
         /**
@@ -1056,6 +1070,9 @@ public class PrototypeViewer extends CCanvas<PrototypeCell,PrototypeBoard> imple
             	throw G.Error("Hit Unknown object " + hitObject);
             }
         	break;
+        case ShowNumbers:
+        	numberMenu.showMenu();
+        	break;
         case ToggleEye:
         	eyeRect.toggle();
         	break;
@@ -1196,8 +1213,8 @@ public class PrototypeViewer extends CCanvas<PrototypeCell,PrototypeBoard> imple
     public boolean handleDeferredEvent(Object target, String command)
     {
         boolean handled = super.handleDeferredEvent(target, command);
-
-        if(target==rotationOption)
+        if(numberMenu.selectMenu(target,this)) { return(true); }
+        else if(target==rotationOption)
         {	handled=true;
         	doRotation = rotationOption.getState();
         	resetBounds();
@@ -1425,5 +1442,9 @@ public class PrototypeViewer extends CCanvas<PrototypeCell,PrototypeBoard> imple
     public boolean allowRobotsToRun() {
     	return super.allowRobotsToRun();
     }
+
+	public int getLastPlacement(boolean empty) {
+		return (bb.moveNumber + (bb.DoneState()?1:0));
+	}
 }
 

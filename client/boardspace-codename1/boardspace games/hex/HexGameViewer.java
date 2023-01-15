@@ -100,7 +100,7 @@ import static hex.Hexmovespec.*;
  *  <li> do a cvs update on the original hex hierarchy to get back the original code.
  *  
 */
-public class HexGameViewer extends CCanvas<hexCell,HexGameBoard> implements HexConstants, GameLayoutClient
+public class HexGameViewer extends CCanvas<hexCell,HexGameBoard> implements HexConstants, GameLayoutClient,PlacementProvider
 {	 	
     static final String Hex_SGF = "11"; // sgf game name
 
@@ -145,6 +145,7 @@ public class HexGameViewer extends CCanvas<hexCell,HexGameBoard> implements HexC
 					hexChip.HexIconR,hexChip.HexIconR.id,DiamondView);
 	// private menu items
     private boolean lastRotation=!rotation.isOnNow();			// user to trigger background redraw
+    private NumberMenu numberMenu = new NumberMenu(this,hexChip.White,HexId.ShowNumbers) ;
     
 /**
  * this is called during initialization to load all the images. Conventionally,
@@ -181,7 +182,7 @@ public class HexGameViewer extends CCanvas<hexCell,HexGameBoard> implements HexC
         }
          
         
-        String type = info.getString(OnlineConstants.GAMETYPE, HexVariation.hex.name);
+        String type = info.getString(GAMETYPE, HexVariation.hex.name);
         // recommended procedure is to supply players and randomkey, even for games which
         // are current strictly 2 player and no-randomization.  It will make it easier when
         // later, some variant is created, or the game code base is re purposed as the basis
@@ -338,7 +339,7 @@ public class HexGameViewer extends CCanvas<hexCell,HexGameBoard> implements HexC
         int stateY = boardY;
         int stateX = boardX;
         int stateH = fh*3;
-        G.placeStateRow(stateX,stateY,boardW,stateH,iconRect,stateRect,rotation,noChatRect);
+        G.placeStateRow(stateX,stateY,boardW,stateH,iconRect,stateRect,numberMenu,rotation,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	
     	if(rotate)
@@ -548,11 +549,14 @@ public class HexGameViewer extends CCanvas<hexCell,HexGameBoard> implements HexC
           highlight.arrow = (empty||picked) ? StockArt.DownArrow : StockArt.UpArrow;
           highlight.awidth = CELLSIZE;
         }
+        numberMenu.clearSequenceNumbers();
+        
         // this enumerates the cells in the board in an arbitrary order.  A more
         // conventional double xy loop might be needed if the graphics overlap and
         // depend on the shadows being cast correctly.
         if (gc != null)
         {
+        int size = gb.cellSize();
         for(hexCell cell = gb.allCells; cell!=null; cell=cell.next)
           {
             boolean drawhighlight = (hitCell && (cell==closestCell)) 
@@ -560,14 +564,15 @@ public class HexGameViewer extends CCanvas<hexCell,HexGameBoard> implements HexC
    				|| gb.isSource(cell);	// is legal for a "pick" operation+
          	int ypos = G.Bottom(brect) - gb.cellToY(cell);
             int xpos = G.Left(brect) + gb.cellToX(cell);
-  
+            numberMenu.saveSequenceNumber(cell,xpos,ypos);
             if (drawhighlight)
              { // checking for pointable position
             	 StockArt.SmallO.drawChip(gc,this,gb.cellSize()*5,xpos,ypos,null);                
              }
-            cell.drawChip(gc,this,highlight,gb.cellSize(),xpos,ypos,null);
+            cell.drawChip(gc,this,highlight,size,xpos,ypos,null);
             
             }
+        numberMenu.drawSequenceNumbers(gc,size,labelFont,labelColor);
         }
     }
 
@@ -675,7 +680,7 @@ public class HexGameViewer extends CCanvas<hexCell,HexGameBoard> implements HexC
             				stateRect);
         hexChip chip = gb.getPlayerChip(gb.whoseTurn);
         chip.drawChip(gc, this, iconRect,null);
-        
+        numberMenu.draw(gc,selectPos);
             goalAndProgressMessage(gc,nonDragSelect,Color.black,s.get(HexVictoryCondition),progressRect, goalRect);
         //DrawRepRect(gc,pl.displayRotation,Color.black, gb.Digest(),repRect);	// Not needed for barca
         
@@ -693,7 +698,12 @@ public class HexGameViewer extends CCanvas<hexCell,HexGameBoard> implements HexC
      * seriously wrong.
      */
      public boolean Execute(commonMove mm,replayMode replay)
-    {	
+    {	//
+    	// games where there is only 1 move per turn, this is unnecessary
+    	// games like majorities where there are two moves per turn, this records the boundaries
+    	//
+    	// numberMenu.recordSequenceNumber(bb.moveNumber());    
+
         handleExecute(bb,mm,replay);
         
         /**
@@ -942,6 +952,9 @@ public class HexGameViewer extends CCanvas<hexCell,HexGameBoard> implements HexC
         {
         default:
             	throw G.Error("Hit Unknown: %s", hitCode);
+        case ShowNumbers:
+        	numberMenu.showMenu();
+        	break;
          case ChangeRotation:
         	rotation.toggle();
         	break;
@@ -1104,12 +1117,12 @@ public class HexGameViewer extends CCanvas<hexCell,HexGameBoard> implements HexC
      * state changes and if necessary set flags for the run loop to pick up.
      * 
      */
- //   public boolean handleDeferredEvent(Object target, String command)
- //   {
- //       boolean handled = super.handleDeferredEvent(target, command);
-//
- //       return (handled);
- //   }
+    public boolean handleDeferredEvent(Object target, String command)
+    {
+       boolean handled = super.handleDeferredEvent(target, command);
+       if(!handled) { handled = numberMenu.selectMenu(target,this); }
+       return (handled);
+    }
 /** handle the run loop, and any special actions we need to take.
  * The mouse handling and canvas painting will be called automatically.
  * <p>
@@ -1233,5 +1246,14 @@ public class HexGameViewer extends CCanvas<hexCell,HexGameBoard> implements HexC
             setComment(comments);
         }
     }
+
+	public int getLastPlacement(boolean empty) {
+		//
+		// the check on DoneState() causes the numbers to advance
+		// when the temporary piece is placed.  Without it, the "last"
+		// sequence shows the temporary move as well as the next complete move.
+		//
+		return (bb.moveNumber+(bb.DoneState()?1:0));
+	}
 }
 

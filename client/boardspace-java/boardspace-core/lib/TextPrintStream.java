@@ -51,13 +51,14 @@ public class TextPrintStream extends Utf8Printer implements ShellProtocol
 		public void startShell(Object... args) {		}
 
 		public void print(Object... msg) {
-			for(int i=0;i<msg.length;i++) 
+			if(msg!=null)
+			{for(int i=0;i<msg.length;i++) 
 			{ Object str = msg[i];
 			  if(str==null) 
 				{ str = "null"; 
 				}
 			super.print(str.toString()); 
-			}
+			}}
 		}
 		public void println(Object... msg) {
 			print(msg);

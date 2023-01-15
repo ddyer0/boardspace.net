@@ -13,9 +13,9 @@ class CellStack extends OStack<zCell>
 }
 public class zCell extends ccell<zCell> implements GameConstants,PlacementProvider
 {	//default constructor 
-	int lastPlaced = 0;
-	int lastEmptied = 0;
-	int lastCaptured = 0;
+	int lastPlaced = -1;
+	int lastEmptied = -1;
+	int lastCaptured = -1;
 	char lastContents= NoSpace;
 
 	public zCell(ZertzId d,int col) 
@@ -50,9 +50,9 @@ public class zCell extends ccell<zCell> implements GameConstants,PlacementProvid
 	public void reInit()
 	{	super.reInit();
 		contents=NoSpace;
-		lastPlaced = 0;
-		lastEmptied = 0;
-		lastCaptured = 0;
+		lastPlaced = -1;
+		lastEmptied = -1;
+		lastCaptured = -1;
 		lastContents = NoSpace;
 	}
 }

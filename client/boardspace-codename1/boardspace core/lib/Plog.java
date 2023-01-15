@@ -83,10 +83,13 @@ public class Plog {
 	public synchronized void addLog(String msg,Object ...args)
 	{
 		appendNewLog(msg);
+		if(args!=null)
+		{
 		for(int i=0; i<args.length;i++) 
 			{ Object ai = args[i];
 			  appendLog(ai==null ? "null" : ai.toString());
 			}
+		}
 		finishEvent();
 	}
 	/** 
@@ -121,21 +124,6 @@ public class Plog {
 	   {	StringBuilder ev = eventLog;
 	   		if(ev!=null) { ev.append(msg); }
 	   }
-	
-	public synchronized void addLog(Object... messages)
-	 {	if(messages!=null)
-	 	{
-		 int n = messages.length;
-		 if(messages.length>=1)
-		 {
-			appendNewLog(""+messages[0]);
-			for(int i=1;i<n;i++)
-			{
-				appendLog(""+messages[i]);
-			}
-		 }
-	 	}
-	 }
 	/**
 	 * append to the current event
 	 * @param msg

@@ -27,9 +27,7 @@ import lib.StockArt;
  * Change History
  *
  * Feb 2008 initial work. 
- * 
- * This code is derived from the "HavannahViewer" and other viewer classes.  Refer to the
- 
+ *  
  * 
 */
 public class VolcanoGameViewer extends CCanvas<VolcanoCell,VolcanoBoard> implements VolcanoConstants, GameLayoutClient
@@ -216,7 +214,7 @@ public class VolcanoGameViewer extends CCanvas<VolcanoCell,VolcanoBoard> impleme
         {
         	contextRotation = -Math.PI/2;
         }
-        G.placeRow(stateX,stateY,boardW,stateH,stateRect,liftRect,viewsetRect,noChatRect);
+        G.placeRow(stateX,stateY,boardW,stateH,stateRect,annotationMenu,liftRect,viewsetRect,noChatRect);
         
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	
@@ -228,7 +226,7 @@ public class VolcanoGameViewer extends CCanvas<VolcanoCell,VolcanoBoard> impleme
         positionTheChat(chatRect,Color.white,rackBackGroundColor);
         return(boardW*boardH);
     }
-
+    public int cellSize() { return b.cellSize()*2; }
 	// draw a box of spare pyramids. Notice if any are being pointed at.  Highlight those that are.
     private void DrawCommonChipPool(Graphics gc, VolcanoBoard bd,int forPlayer, Rectangle r, Rectangle sr,int player,  HitPoint highlight)
     {	VolcanoCell captures = bd.captures[forPlayer];

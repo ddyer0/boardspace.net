@@ -950,11 +950,7 @@ import udp.PlaytableStack;
          	return;
         }
         if(source==feedbackButton)
-        {	  	
-        	G.showDocument(feedbackUrl+"?subject=feedback%20for%20"
-        			+ G.getPlatformName()
-        			+ "%20"
-        			+ G.getAppVersion(),"Feedback");
+        {	G.getFeedback();
         	exitValue = null;
         	return;
         }
@@ -1129,7 +1125,7 @@ import udp.PlaytableStack;
 	static public void reloadAppletParameters()
 	{	
 		String host = Http.getHostName();
-		String params = "&tagname=mobileinfo"+Login.platformString();
+		String params = "&tagname=mobileinfo"+G.platformString();
 		UrlResult result = Http.postEncryptedURL(host,getEncryptedURL,params,null);
 		if((result!=null) && (result.error==null) && (result.text!=null))
 		{

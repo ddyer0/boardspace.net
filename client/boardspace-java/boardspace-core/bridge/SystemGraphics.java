@@ -347,4 +347,9 @@ public abstract class SystemGraphics
 	{
 		return fm.getStringBounds(line, g==null ? null : g.getGraphics());
 	}
+    public void sync()
+    {
+    	java.awt.Toolkit.getDefaultToolkit().sync();
+    }
+
 }

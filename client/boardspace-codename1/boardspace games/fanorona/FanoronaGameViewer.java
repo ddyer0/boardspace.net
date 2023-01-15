@@ -4,7 +4,6 @@ import bridge.*;
 
 import com.codename1.ui.geom.Rectangle;
 
-import online.common.*;
 import online.game.*;
 import online.game.sgf.*;
 import online.search.SimpleRobotProtocol;
@@ -109,7 +108,7 @@ public class FanoronaGameViewer extends CCanvas<FanoronaCell,FanoronaBoard> impl
         super.init(info,frame);
 
          
-        b = new FanoronaBoard(info.getString(OnlineConstants.GAMETYPE, "Fanorona"),getStartingColorMap());
+        b = new FanoronaBoard(info.getString(GAMETYPE, "Fanorona"),getStartingColorMap());
         offerDrawAction = myFrame.addAction(s.get(OFFERDRAW),deferredEvents);     
         useDirectDrawing(true);
         doInit(false);
@@ -120,7 +119,7 @@ public class FanoronaGameViewer extends CCanvas<FanoronaCell,FanoronaBoard> impl
     	if(target==offerDrawAction)
 			{	if(OurMove() 
 					&& (b.movingObjectIndex()<=0)
-					&& (b.getState()==FanoronaState.PLAY_STATE))
+					&& ((b.getState()==FanoronaState.PLAY_STATE) || (b.getState()==FanoronaState.DrawPending)))
 				{
 				PerformAndTransmit(OFFERDRAW);
 				}
@@ -222,7 +221,7 @@ public class FanoronaGameViewer extends CCanvas<FanoronaCell,FanoronaBoard> impl
     	//
         int stateY = boardY-stateH;
         int stateX = boardX;
-        G.placeStateRow(stateX,stateY,boardW,stateH,iconRect,stateRect,eyeRect,reverseRect,noChatRect);
+        G.placeStateRow(stateX,stateY,boardW,stateH,iconRect,stateRect,annotationMenu,eyeRect,reverseRect,noChatRect);
         G.SetRect(boardRect,boardX,boardY,boardW,boardH);
         if(boardRotation!=0)
         {
@@ -237,6 +236,7 @@ public class FanoronaGameViewer extends CCanvas<FanoronaCell,FanoronaBoard> impl
         positionTheChat(chatRect,Color.white,Color.white);
         return(boardW*boardH);
     }
+    public int cellSize() { return b.cellSize()/2; }
     public Rectangle createPlayerGroup(int player,int x,int y,double rotation,int unitsize)
     {	commonPlayer pl = getPlayerOrTemp(player);
     	Rectangle sq = chipRects[player];
@@ -440,7 +440,9 @@ public class FanoronaGameViewer extends CCanvas<FanoronaCell,FanoronaBoard> impl
         case PLAY_STATE:
         	if(gb.drawIsLikely())
         	{	// if not making progress, put the draw option on the UI
-            	if(GC.handleSquareButton(gc,acceptDrawRect,select,s.get(OFFERDRAW),HighlightColor,rackBackGroundColor))
+            	if(GC.handleSquareButton(gc,acceptDrawRect,select,s.get(OFFERDRAW),
+            			HighlightColor,
+            			vstate==FanoronaState.DrawPending ? HighlightColor : rackBackGroundColor))
             	{
             		select.hitCode = GameId.HitOfferDrawButton;
             	}

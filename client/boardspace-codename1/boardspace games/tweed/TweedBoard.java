@@ -3,9 +3,9 @@ package tweed;
 
 import static tweed.TweedMovespec.*;
 
+import bridge.Color;
 import java.util.*;
 
-import bridge.Color;
 import lib.*;
 import lib.Random;
 import online.game.*;

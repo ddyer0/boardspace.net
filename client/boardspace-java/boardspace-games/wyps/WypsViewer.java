@@ -202,7 +202,7 @@ public class WypsViewer extends CCanvas<WypsCell,WypsBoard> implements WypsConst
     			0.75,	// 60% of space allocated to the board
     			aspect,	// aspect ratio for the board
     			fh*2,	// min cell size
-    			fh*4,	// maximum cell size
+    			fh*3,	// maximum cell size
     			0.4		// preference for the designated layout, if any
     			);
     	
@@ -224,7 +224,7 @@ public class WypsViewer extends CCanvas<WypsCell,WypsBoard> implements WypsConst
     	Rectangle main = layout.getMainRectangle();
     	int mainX = G.Left(main);
     	int mainY = G.Top(main);
-    	int mainW = G.Width(main)-stateH*2;
+    	int mainW = G.Width(main);
     	int mainH = G.Height(main)-stateH*2;
     	
     	// There are two classes of boards that should be rotated. For boards with a strong

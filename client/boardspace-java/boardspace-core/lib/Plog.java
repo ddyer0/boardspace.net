@@ -83,10 +83,13 @@ public class Plog {
 	public synchronized void addLog(String msg,Object ...args)
 	{
 		appendNewLog(msg);
+		if(args!=null)
+		{
 		for(int i=0; i<args.length;i++) 
 			{ Object ai = args[i];
 			  appendLog(ai==null ? "null" : ai.toString());
 			}
+		}
 		finishEvent();
 	}
 	/** 

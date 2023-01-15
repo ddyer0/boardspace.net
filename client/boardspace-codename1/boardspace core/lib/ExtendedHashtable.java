@@ -33,13 +33,14 @@ public class ExtendedHashtable extends TreeMap<String,Object> implements OnlineC
     }
     
     public void addStringPairs(Object...pairs)
+    {	if(pairs!=null)
     {
 		for(int i=0;i<pairs.length;i+=2)
     	{
     		String s = (String)pairs[i];
     		int v = (int)pairs[i+1];
     		putInt(s, v);
-    	}
+    	}}
     }
    
     /**

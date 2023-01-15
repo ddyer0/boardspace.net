@@ -83,7 +83,7 @@ class MajoritiesBoard extends hexBoard<MajoritiesCell> implements BoardProtocol,
 // DrawRepRect to warn the user that repetitions have been seen.
 	public void SetDrawState() {throw G.Error("not expected"); };	
 	CellStack animationStack = new CellStack();
-    private int chips_on_board = 0;			// number of chips currently on the board
+    int chips_on_board = 0;			// number of chips currently on the board
     private int fullBoard = 0;				// the number of cells in the board
     // intermediate states in the process of an unconfirmed move should
     // be represented explicitly, so unwinding is easy and reliable.
@@ -420,14 +420,21 @@ class MajoritiesBoard extends hexBoard<MajoritiesCell> implements BoardProtocol,
     }
 
 
- 
+    private int lastPlaced = 0;
     // set the contents of a cell, and maintain the books
     public MajoritiesChip SetBoard(MajoritiesCell c,MajoritiesChip ch)
     {	MajoritiesChip old = c.chip;
     	if(c.onBoard)
     	{
     	if(old!=null) { chips_on_board--;emptyCells.push(c); }
-     	if(ch!=null) { chips_on_board++; emptyCells.remove(c,false); }
+     	if(ch!=null) 
+     		{ 
+      		lastPlaced = c.lastPlaced; 
+     		c.lastPlaced = chips_on_board;
+    		chips_on_board++; 
+     		emptyCells.remove(c,false);
+     		}
+     	else { c.lastPlaced = lastPlaced; }
     	}
        	c.chip = ch;
     	return(old);
@@ -646,13 +653,7 @@ class MajoritiesBoard extends hexBoard<MajoritiesCell> implements BoardProtocol,
 			MajoritiesChip po = pickedObject;
 			MajoritiesCell src = getCell(m.source,m.to_col,m.to_row); 
 			MajoritiesCell dest =  getCell(MajoritiesId.BoardLocation,m.to_col,m.to_row);
-			if(po==null) { po=pickObject(src); 
-				if(replay!=replayMode.Replay)
-				{
-					animationStack.push(src);
-					animationStack.push(dest);
-				}
-			}
+			if(po==null) { po=pickObject(src);	}
             if(replay==replayMode.Live)
             	{lastDroppedObject = pickedObject.getAltDisplayChip(dest);
             	//G.print("Drop ",lastDroppedObject);

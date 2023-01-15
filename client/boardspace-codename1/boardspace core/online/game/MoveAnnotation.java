@@ -101,10 +101,10 @@ public class MoveAnnotation implements StackIterator<MoveAnnotation> , sgf_names
 					int ypos = s.intToken();
 					
 					MoveAnnotation aa = new MoveAnnotation(ann,zone,xpos,ypos);
-					G.Assert(")".equals(s.nextElement()),"no end )");
+					G.Assert(")".equals(s.nextElement()),"no end ) after %s in %s",aa,str);
 					if(val==null) { val= aa; } else { val = val.push(aa);}				
 					}
-				else { G.Error("Unexpected token ",key); }				}
+				else { G.Error("Unexpected token %s in %s",key,str); }				}
 
 			return val;
 		}

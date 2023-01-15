@@ -63,7 +63,6 @@ public class Graphics extends SystemGraphics
 		if(logging) { Log.finishEvent(); }
 	}
      
-    
 	public void clipRect(int left, int top, int max, int max2) {
 		if(logging)
 		{ Log.appendNewLog("clipRect "); Log.appendLog(left); Log.appendLog(",");Log.appendLog(top); Log.appendLog(" ");

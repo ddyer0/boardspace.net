@@ -21,7 +21,8 @@ public interface PrototypeConstants
 		Black, // positive numbers are trackable
 		White,
 		BoardLocation,
-		ToggleEye,;
+		ToggleEye, 
+		ShowNumbers,;
 		PrototypeChip chip;
 		public String shortName() { return(name()); }
 	

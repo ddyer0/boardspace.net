@@ -83,6 +83,12 @@ public abstract class Platform implements Config
   
 public static boolean isRealLastGameBoard() { return false; }
 public static boolean isRealWindroid() { return false; }
+
+
+static final public String getPlatformSubtype()
+{
+	 return isTable() ? " sometable" : "";
+}
 /**
  * synchronized because two processes (lobby and loadthread for example) may try
  * to create the first instance of a class at the same time, leading to conflicts

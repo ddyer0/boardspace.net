@@ -372,15 +372,17 @@ class PrototypeBoard
 
 
     // set the contents of a cell, and maintain the books
+    private int lastPlaced = -1;
     public PrototypeChip SetBoard(PrototypeCell c,PrototypeChip ch)
     {	PrototypeChip old = c.topChip();
     	if(c.onBoard)
     	{
     	if(old!=null) { chips_on_board--;emptyCells.push(c);  }
-     	if(ch!=null) { chips_on_board++; emptyCells.remove(c,false);  }
+     	if(ch!=null) { chips_on_board++; emptyCells.remove(c,false);  lastPlaced = c.lastPlaced; c.lastPlaced = moveNumber; }
+     		else { c.lastPlaced = lastPlaced; }
     	}
        	if(old!=null) { c.removeTop();}
-       	if(ch!=null) { c.addChip(ch); }
+       	if(ch!=null) { c.addChip(ch);  }
     	return(old);
     }
     //

@@ -1227,7 +1227,7 @@ public class HavannahViewer extends CCanvas<HavannahCell,HavannahBoard> implemen
     }
 
 	public int getLastPlacement(boolean empty) {
-		return bb.moveNumber;
+		return (bb.moveNumber+(bb.DoneState()?1:0));
 	}
 }
 

@@ -32,6 +32,7 @@ var $'result = '';
 sub print_gamedir()
 {
 	my ($dbh,$game) = @_;
+	&print_contact_log("offline");
 	my $qgame = $dbh->quote($game);
 	my $q = "select directory_index,name,directory from variation where included>0 order by directory_index";
 	my $sth = &query($dbh,$q);
@@ -71,6 +72,15 @@ sub make_contact_log()
  close F_OUT;
 }
 
+sub print_contact_log()
+{	my ($msg) = @_;
+	my $platform = &param("platform");
+	if(!($platform eq ''))
+	{
+	&make_contact_log("$msg platform $platform ip $ENV{'REMOTE_ADDR'}");
+	}
+
+}
 
 #
 # before login, supply a login message and the list of acceptable
@@ -78,10 +88,9 @@ sub make_contact_log()
 #
 sub print_mobileinfo()
 {	my $val = "languages ";
-	my $platform = &param("platform");
-	&make_contact_log("platform $platform ip $ENV{'REMOTE_ADDR'}");
 	# no particular order is required, but start with languages
 	my @ll;
+	&print_contact_log("online");
 	foreach my $key (keys(%'language_codes)) 
 	{	my $val = $'language_codes{$key};
 		if(!("" eq $val)) { push(@ll,$val); }

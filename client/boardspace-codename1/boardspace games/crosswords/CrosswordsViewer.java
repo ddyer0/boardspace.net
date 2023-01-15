@@ -275,7 +275,7 @@ public class CrosswordsViewer extends CCanvas<CrosswordsCell,CrosswordsBoard> im
     	Rectangle main = layout.getMainRectangle();
     	int mainX = G.Left(main);
     	int mainY = G.Top(main);
-    	int mainW = G.Width(main)-stateH*2;
+    	int mainW = G.Width(main)-stateH;
     	int mainH = G.Height(main)-stateH*2;
     	
     	// There are two classes of boards that should be rotated. For boards with a strong
@@ -304,7 +304,7 @@ public class CrosswordsViewer extends CCanvas<CrosswordsCell,CrosswordsBoard> im
         int stateY = boardY-stateH/2;
         int stateX = boardX;
     	int stripeW = CELLSIZE;
-    	G.placeRow(stateX,stateY,boardW ,stateH,stateRect,rotateRect,lockRect,altNoChatRect);
+    	G.placeRow(stateX,stateY,boardW ,stateH,stateRect,rotateRect,lockRect,annotationMenu,altNoChatRect);
     	G.SetRect(boardRect,boardX-(planned?CELLSIZE:0),boardY,boardW,boardH-(planned?0:2*CELLSIZE));
     	G.SetRect(goalRect, boardX, G.Bottom(boardRect),boardW,stateH);   
     	G.SetRect(bigRack, boardX+CELLSIZE/2, G.Bottom(goalRect), boardW-CELLSIZE-stripeW, planned?0:CELLSIZE*2);

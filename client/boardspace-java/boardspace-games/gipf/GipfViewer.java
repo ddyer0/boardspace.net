@@ -210,7 +210,7 @@ public class GipfViewer extends CCanvas<GipfCell,GipfBoard> implements GipfConst
         int stateY = boardY;
         int stateX = boardX;
         int stateH = fh*3;
-        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,viewsetRect,noChatRect);
+        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,viewsetRect,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	
     	// goal and bottom ornaments, depending on the rendering can share
@@ -221,6 +221,8 @@ public class GipfViewer extends CCanvas<GipfCell,GipfBoard> implements GipfConst
         positionTheChat(chatRect,chatBackGroundColor,rackBackGroundColor);
         return boardW*boardH;
     }
+    public int cellSize() { return b.cellSize()*2/3; }
+    
     public Rectangle createPlayerGroup(int player,int x,int y,double rotation,int unitsize)
     {	commonPlayer pl = getPlayerOrTemp(player);
     	int chipw = unitsize*2;

@@ -532,7 +532,6 @@ class VolcanoBoard extends BaseBoard implements BoardProtocol,VolcanoConstants
      */
     public long Digest()
     {
-        Random r = new Random(64 * 1000); // init the random number generator
     	long v = 0;
 
         // the basic digestion technique is to xor a bunch of random numbers. The key
@@ -540,6 +539,7 @@ class VolcanoBoard extends BaseBoard implements BoardProtocol,VolcanoConstants
         // xor some subset of them.  Note that if you tweak this, all the existing
         // digests are invalidated.
         //
+        Random r = new Random(64 * 1000); // init the random number generator
         
 		for(VolcanoCell c = rboard.allCells; c!=null; c=c.next)
 		{	v ^= c.Digest(r);

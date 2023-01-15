@@ -2279,14 +2279,14 @@ graphics when using a touch screen.
 		int y = e.getY();
 		mouseDownEvent(true);
 		mouse.setMouse(MouseState.LAST_IS_DRAG,e.getButton(),x,y);
-		trackMouse(x,y);
+		trackMouse(x+mouse.getSX(),y+mouse.getSY());
 	}
 	public void mouseMoved(MouseEvent e) {
 		int x = e.getX();
 		int y = e.getY();
 		setTouched(true);
 		mouse.setMouse(MouseState.LAST_IS_MOVE,e.getButton(),x,y);
-		trackMouse(x,y);
+		trackMouse(x+mouse.getSX(),y+mouse.getSY());
 	}
 	public void mouseClicked(MouseEvent e) {
 	}
@@ -2295,14 +2295,14 @@ graphics when using a touch screen.
 		int y = e.getY();
 		mouseDownEvent(true);
 		mouse.setMouse(MouseState.LAST_IS_DOWN,e.getButton(),x,y);	
-		trackMouse(x,y);
+		trackMouse(x+mouse.getSX(),y+mouse.getSY());
 	}
 	public void mouseReleased(MouseEvent e) {
 		int x = e.getX();
 		int y = e.getY();
 		setTouched(true);
 		mouse.setMouse(MouseState.LAST_IS_UP,e.getButton(),x,y);
-		trackMouse(x,y);
+		trackMouse(x+mouse.getSX(),y+mouse.getSY());
 	}
 	public void mouseEntered(MouseEvent e) {
 	}

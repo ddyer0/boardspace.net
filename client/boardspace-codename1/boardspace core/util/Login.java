@@ -105,14 +105,7 @@ public class Login implements SimpleObserver,Config,Crypto
     		G.showDocument(msg,"Message");
     	}
     }
-    public static String platformString()
-    {
-    	return("&"
-    			+ PlatformParameterName 
-    			+ "="+Http.escape(G.getPlatformName()
-    			+ G.getPlatformSubtype()
-				+"-"+G.getAppVersion()));
-    }
+
     @SuppressWarnings("deprecation")
 	public boolean initFromWebStart(String host)
     {	boolean captured = false;
@@ -160,7 +153,7 @@ public class Login implements SimpleObserver,Config,Crypto
 			// the name of the password parameter is a minor difference between boardspace and tantrix
 			int socks[] = {80};
 			params = "&" + PasswordParameterName + "="+Http.escape(pass)+ params;
-			params = platformString() + params;
+			params = G.platformString() + params;
 			params = "&" + TimezoneParameterName + "="+Http.escape("x"+G.getLocalTimeOffset())+params;
 			params = "&" + IdentityParameterName + "="+Http.escape("x"+G.getIdentity())+params;
 			

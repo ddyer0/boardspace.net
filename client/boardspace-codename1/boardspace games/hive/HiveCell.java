@@ -23,9 +23,9 @@ public class HiveCell extends stackCell<HiveCell,HivePiece> implements Placement
 	
 	// these three are to support displaying placement order
 	public HivePiece lastContents;
-	public int lastMover;
-	public int lastEmptied = 0;
-	public int lastFilled = 0;
+	public int lastMover=-1;
+	public int lastEmptied = -1;
+	public int lastFilled = -1;
 	
 	// constructor for board cells
 	public HiveCell(char c,int r)
@@ -36,9 +36,9 @@ public class HiveCell extends stackCell<HiveCell,HivePiece> implements Placement
 	{
 		super.reInit();
 		lastContents = null;
-		lastEmptied = 0;
-		lastFilled = 0;
-		lastMover = 0;
+		lastEmptied = -1;
+		lastFilled = -1;
+		lastMover = -1;
 	}
 
 	public void copyFrom(HiveCell other)

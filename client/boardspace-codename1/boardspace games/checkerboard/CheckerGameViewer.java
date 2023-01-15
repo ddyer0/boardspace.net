@@ -50,7 +50,6 @@ public class CheckerGameViewer extends CCanvas<CheckerCell,CheckerBoard> impleme
     private Rectangle playerChipRect[] = addRect("chip",2);
     private NumberMenu numberMenu = new NumberMenu(this,CheckerChip.white,CheckerId.ShowNumbers);
  
-
     private Rectangle reverseViewRect = addRect("reverse");
     private JCheckBoxMenuItem reverseOption = null;
     private JMenuItem offerDrawAction = null;
@@ -266,7 +265,7 @@ public class CheckerGameViewer extends CCanvas<CheckerCell,CheckerBoard> impleme
         int stateX = boardX;
         G.placeStateRow(	stateX,
         			stateY,
-        			boardW,stateH,iconRect,stateRect,numberMenu,eyeRect,noChatRect);
+        			boardW,stateH,iconRect,stateRect ,annotationMenu,numberMenu,eyeRect,noChatRect);
         
         G.placeRow(stateX, boardBottom-stateH, boardW, stateH, goalRect,liftRect,reverseViewRect);
         
@@ -858,6 +857,7 @@ private void playSounds(commonMove m)
     	if(!(id instanceof CheckerId)) 
     		{ // handle all the actions that aren't ours
     			missedOneClick = performStandardActions(hp,missedOneClick); 
+    			
     		}
     	else {
     	missedOneClick = false;

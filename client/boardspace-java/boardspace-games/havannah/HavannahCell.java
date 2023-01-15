@@ -32,7 +32,7 @@ public class HavannahCell extends chipCell<HavannahCell,HavannahChip> implements
 	private int sideMask = 0;
 	private int cornerMask = 0;
 	public int depth = 0;
-	public int lastPlaced = 0;
+	public int lastPlaced = -1;
 	
 	public void setBorderMask(int n)
 	{
@@ -88,7 +88,7 @@ public class HavannahCell extends chipCell<HavannahCell,HavannahChip> implements
 	 */
 	public void reInit()
 	{	super.reInit();
-		lastPlaced = 0;
+		lastPlaced = -1;
 	}
 	// constructor a cell not on the board, with a chip.  Used to construct the pool chips
 	public HavannahCell(HavannahChip cont)
@@ -136,7 +136,7 @@ public class HavannahCell extends chipCell<HavannahCell,HavannahChip> implements
 	}
 
 	public int getLastPlacement(boolean empty) {
-		return empty ? 0 : lastPlaced;
+		return empty ? -1 : lastPlaced;
 	}
 
 }
