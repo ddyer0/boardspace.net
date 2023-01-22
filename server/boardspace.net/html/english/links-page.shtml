@@ -2,11 +2,8 @@
 <html><head>
 <meta http-equiv="content-type" content="text/html;
 charset=windows-1252">
-<script src="/js/site.js"></script><title>Site Links</title>
-
-</head>
-
-  <body style="background-image: url(/images/background-image.jpg);">
+<script src="/js/site.js"></script><title>Site Links</title></head>
+<body style="background-image: url(/images/background-image.jpg);">
 <center>
 
 <table style="text-align: left; width: 100%;" border="1" cellpadding="2" cellspacing="2">
@@ -40,7 +37,7 @@ page" alt="" style="border: 0px solid ; width: 100px; height: 50px;"></a><br>
 <a href="https://www.facebook.com/pages/Boardspacenet/147924481942900" target="_new">Spread the word<br>
 </a></td>
 <td><a target="_new" href="lobby-help.html">Lobby
-Help</a></td>
+Help</a> &nbsp;<a href="offline-launcher-help.html">Offline Games Help</a></td>
 <td style="vertical-align: top;"><a target="_new" href="/cgi-bin/edit.cgi">Edit User Info</a> &amp;
 <a href="/cgi-bin/lost_password.cgi">Password Reset</a></td>
 <td style="vertical-align: top;"><a target="_new" href="/cgi-bin/messageboard.cgi">Message Board / </a><a target="_new" href="/BB/">User Forums</a></td>
