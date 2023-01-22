@@ -160,14 +160,19 @@ public class JWSApplication implements Config
 			  	G.setOffline(isTable);
 
 			  	do { 
-			  		if(G.offline())
-			  		{
+			  		boolean wasOff = G.offline();
+			  		if(wasOff)
+			  		{	
 			  			runOffline(serverName,realRoot);
 			  		}
 			  		else 
-			  		{ 
-			  			runLogin(serverName,realRoot); } 
+			  		{	
+			  			runLogin(serverName,realRoot); 
 			  		}
+			  	if(G.offline()==wasOff) { 
+			  		// didn't change modes, revert to the default
+			  		G.setOffline(isTable);
+			  	}}
 			  	while(G.isCodename1());
 	        }
 	        else 

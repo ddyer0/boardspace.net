@@ -309,9 +309,19 @@ public void addToMenus(JButton m)
 	{	if(masterPanel!=null) { return(masterPanel.getHeight()); }
 		return(G.getScreenHeight());
 	}
+	//
+	// this is used to fatten up the top menu bar and exit boxes, without
+	// changing the visual space.  In effect, the top few pixels of the
+	// screen are not usable for boxes, only for display.
+	//
 	private Point moveNearerMenu(int x,int y)
-	{	try {
-		Container menus = getMenus();
+	{	Point p = moveNearerBar(getMenus(),x,y);
+		if(p==null) { p = moveNearerBar(getTabs(),x,y); }
+		return p;
+	}
+	private Point moveNearerBar(Component menus,int x,int y)
+	{
+		try {
 		if(menus!=null)
 		{	
 			for(int lim = menus.getComponentCount()-1; lim>=0; lim--)
@@ -323,7 +333,7 @@ public void addToMenus(JButton m)
 				int ay = m.getAbsoluteY();
 				int aw = m.getWidth();
 				int ah = m.getHeight();
-				if(G.pointInRect(x, y,ax-2,ay-2,aw+4,ah+4))
+				if(G.pointInRect(x, y,ax-2,0,aw+4,ah+ay+ah/2))
 				{	//if(!G.pointInRect(x,y,ax,ay,aw,ah)) { G.print("moved to "+m); }
 					return(new Point(ax+aw/2,ay+ah/2));
 				}}
@@ -341,12 +351,31 @@ public void addToMenus(JButton m)
 		//G.print("Form Hover ",x[0]," ",y[0]);
 		super.pointerHover(x,y);
 	}
+	/*
+	private String toString(int ar[])
+	{
+		StringBuilder b = new StringBuilder();
+		b.append("len "+ar.length);
+		b.append("[");
+		for(int i=0;i<ar.length;i++) { b.append(" "); b.append(ar[i]); }
+		b.append("]");
+		return b.toString();
+	}*/
 	public void pointerPressed(int xa[],int ya[])
 	{	if(xa!=null && xa.length>0)
 		{
+		//if(ya[0]<=20)
+		//{
+		//	G.print("Low Y ",toString(xa),toString(ya));
+		//}
+
 		Point p = moveNearerMenu(xa[0],ya[0]);
-		if(p!=null) { pointerPressed(p.getX(),p.getY()); }
-		else { super.pointerPressed(xa,ya); }
+		//G.print("mpress ",xa[0]," ",ya[0]);
+		if(p!=null) 
+			{  xa[0]=p.getX(); ya[0]=p.getY(); 
+			   // G.print("press moved ",xa[0]," ",ya[0]);
+			}
+		super.pointerPressed(xa,ya); 
 		}
 	}
 	public void pointerPressed(int x,int y)
@@ -379,9 +408,13 @@ public void addToMenus(JButton m)
 	{	if(xa!=null && xa.length>0)
 		{
 		//G.startLog("pointer released");
+		//G.print("mrelease ",xa[0]," ",ya[0]);
 		Point p = moveNearerMenu(xa[0],ya[0]);
-		if(p!=null) { pointerReleased(p.getX(),p.getY()); }
-		else { super.pointerReleased(xa,ya); }
+		if(p!=null) 
+			{ xa[0]=p.getX(); ya[0]=p.getY(); 
+			  //G.print("release moved ",xa[0]," ",ya[0]);
+			}
+		super.pointerReleased(xa,ya);
 		}
 	}
 	private int globalRotation=(useNative() && G.getScreenWidth()<G.getScreenHeight()) ? 1 : 0;

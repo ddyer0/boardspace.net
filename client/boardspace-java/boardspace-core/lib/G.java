@@ -113,7 +113,7 @@ public class G extends Platform implements Timestamp
 	// boolean so print can be used as a breakpoint test 
     public static boolean print(String msg) 
     	{ 	if(printer!=null && !isSimulator()) { printer.println(msg); }
-    		else { System.out.println(msg); } 
+    		else { Plog.messages.addLog(msg); System.out.println(msg); } 
     		return(false);
     	} 
 
@@ -132,7 +132,9 @@ public class G extends Platform implements Timestamp
 		}
 		else
 		{ if(msg!=null) 
-			{ for(int i=0;i<msg.length;i++) { Object m = msg[i]; System.out.print( m==null?"null":m.toString()); }
+			{ 
+			Plog.messages.addLog("",msg);
+			for(int i=0;i<msg.length;i++) { Object m = msg[i]; System.out.print( m==null?"null":m.toString()); }
 			}
 		  System.out.println();
 		}
@@ -1262,6 +1264,8 @@ public class G extends Platform implements Timestamp
 
 	public static final String Ios = "Ios";
 	public static final String Android = "Android";
+	public static final String Igt = "IGT";	// infinity game table
+	
 	static public String getOS() { 
 	String prop = System.getProperty(G.OS_NAME);
 	if(prop==null || isCodename1()) { prop=getPlatformName(); }
@@ -1816,7 +1820,7 @@ public static String expandClassName(String classname)
      * create a simple console window that will be the target of {@link #print}
      */
 	static public void createConsole()
-	{	
+	{	runInEdt(new Runnable() { public void run() {
 		if(LEGACY_CONSOLE)
 		{
 			XFrame f = new XFrame("Console");
@@ -1834,12 +1838,18 @@ public static String expandClassName(String classname)
 		setPrinter(f.getPrinter());
 		print("Debug Log stream");
 		f.setVisible(true);	
-	}
+		}
+		String u1 = Plog.messages.getUnseen();
+		if(u1!=null) { print(u1); }
+		String u2 = Plog.log.getUnseen();
+		if(u2!=null) { print(u2); }
+
 		//  int feat = G.minimumFeatureSize();
 		//  int font = G.getFontSize(G.getGlobalDefaultFont())*2;
 		//  int def = (int)(25*G.getDisplayScale());
 		//  G.print("feat ",feat," font ",font," def ",def);
 
+	}});
 	}
 
 	/** this is the hash checksum used by the server */

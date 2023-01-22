@@ -420,36 +420,34 @@ public class MajoritiesViewer extends CCanvas<MajoritiesCell,MajoritiesBoard> im
         //
         numberMenu.clearSequenceNumbers();
 
-        // using closestCell is preferable to G.PointInside(highlight, xpos, ypos, CELLRADIUS)
-        // because there will be no gaps or overlaps between cells.
-        MajoritiesCell closestCell = gb.closestCell(highlight,brect);
-        boolean hitCell = gb.LegalToHitBoard(closestCell);
-        if(hitCell)
-        { // note what we hit, row, col, and cell
-          boolean empty = (closestCell.chip == null);
-          boolean picked = (gb.pickedObject!=null);
-          highlight.hitCode = (empty||picked) ? MajoritiesId.EmptyBoard : MajoritiesId.BoardLocation;
-          highlight.hitObject = closestCell;
-          highlight.arrow = (empty||picked) ? StockArt.DownArrow : StockArt.UpArrow;
-          highlight.awidth = CELLSIZE;
-        }
         // this enumerates the cells in the board in an arbitrary order.  A more
         // conventional double xy loop might be needed if the graphics overlap and
         // depend on the shadows being cast correctly.
         for(MajoritiesCell cell = gb.allCells; cell!=null; cell=cell.next)
           {
-            boolean drawhighlight = (hitCell && (cell==closestCell)) 
-   				|| gb.isDest(cell) 		// is legal for a "drop" operation
-   				|| gb.isSource(cell);	// is legal for a "pick" operation+
          	int ypos = G.Bottom(brect) - gb.cellToY(cell);
             int xpos = G.Left(brect) + gb.cellToX(cell);
             numberMenu.saveSequenceNumber(cell,xpos,ypos);
   
-            if (drawhighlight)
+           boolean drawHightlight = 
+        		   	gb.isDest(cell) 		// is legal for a "drop" operation
+        		   	|| gb.isSource(cell)
+        		   	|| gb.LegalToHitBoard(cell);
+        		   	;
+            if(cell.drawChip(gc,this,drawHightlight ? highlight : null,gb.cellSize(),xpos,ypos,null))
+            {
+            	boolean empty = (cell.chip == null);
+                if (empty)
              { // checking for pointable position
             	 StockArt.SmallO.drawChip(gc,this,gb.cellSize()*5,xpos,ypos,null);                
              }
-            cell.drawChip(gc,this,highlight,gb.cellSize(),xpos,ypos,null);
+
+                boolean picked = (gb.pickedObject!=null);
+                highlight.hitCode = (empty||picked) ? MajoritiesId.EmptyBoard : MajoritiesId.BoardLocation;
+                highlight.hitObject = cell;
+                highlight.arrow = (empty||picked) ? StockArt.DownArrow : StockArt.UpArrow;
+                highlight.awidth = CELLSIZE;        
+            }
             
             }
         

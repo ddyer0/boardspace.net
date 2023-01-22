@@ -1149,7 +1149,8 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
 	private String statCaption = "Caption";
 	
 	public void doShowStats()
-	{
+	{	if(!G.offline())
+	{	
         String baseUrl = statsURL;
         commonPlayer pl = getPlayerOrTemp(0);
         String serverName = sharedInfo.getString(SERVERNAME);
@@ -1169,9 +1170,8 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
        
         statStr = null;
         urlResult = Http.postAsyncUrl(serverName,baseUrl,urlStr,null);
-
 	}
-	
+	}
 	public void MouseDown(HitPoint p)
 	{	
 		if(keys!=null) 
@@ -1222,7 +1222,14 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
         	statStr = null;
         	break;
         case ShowStats:
+        	if(G.offline()) 
+        		{
+        		G.infoBox(s.get(OfflineCaption),s.get(OfflineExplanation));
+        		}
+        	else
+        		{
         	doShowStats();
+        		}
         	break;
         case ToggleEasy:
         	hardButton.toggle();

@@ -685,7 +685,7 @@ import udp.PlaytableStack;
 	 public boolean isAcceptableVersion()
 	 {	 if(!G.isCodename1()) { return(true); }
 		 String appversion = G.getAppVersion();
-		 String platform = G.getPlatformName().toLowerCase();
+		 String platform = G.getPlatformPrefix();
 		 String rejectVersion = G.getString(platform+"_reject_versions",null);
 		 Double thisVersion = G.DoubleToken(appversion);
 		 if(rejectVersion!=null)
@@ -707,7 +707,7 @@ import udp.PlaytableStack;
 	 }
 	 public Component createVersionPanel()
 	 {	String appversion = G.getAppVersion();
-	 	String platform = G.getPlatformName().toLowerCase();
+	 	String platform = G.getPlatformPrefix();
 	 	String prefVersion = G.getString(platform+"_version",null);
 		String va = s.get(VersionMessage,appversion);
 		JPanel p = new JPanel(new FlowLayout(FlowLayout.CENTER));
@@ -727,7 +727,9 @@ import udp.PlaytableStack;
 			}
 		va += " "+G.build;
 		p.add(new Label(va));
-		if(G.isCodename1() && (!G.isIOS() || (appversionD<=prefVersionD)))
+		if(G.isCodename1()
+				&& 	!G.isRealInfinityTable()
+				&& (!G.isIOS() || (appversionD<=prefVersionD)))
 			{ p.add(createAppstoreButton()); 
 	 		}
 		}
@@ -818,7 +820,7 @@ import udp.PlaytableStack;
 	 	TextArea text = new TextArea();
 	 	text.setText(s.get(VersionRejectedMessage));
 		vpanel.add(text);
-		vpanel.add(createAppstoreButton()); 
+		if(!G.isRealInfinityTable()) { vpanel.add(createAppstoreButton()); } 
 		add(vpanel);
 	 }
 

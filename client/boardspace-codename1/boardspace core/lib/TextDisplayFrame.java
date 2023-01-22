@@ -33,7 +33,6 @@ public class TextDisplayFrame extends XFrame implements ActionListener,ItemListe
 
     public TextDisplayFrame(String title) 
     {	super(title);
-    		// not jtextarea, keep scrolling functionality
     	setLayout(new NullLayout(this));
     	setOpaque(false);
         // Initialize
@@ -135,9 +134,10 @@ public class TextDisplayFrame extends XFrame implements ActionListener,ItemListe
         {
             sizeItems[i].addItemListener(this);
         }
-        setVisible(true);
         // this makes the popup menu on the toolbar appear immediately
 		MasterForm.getMasterPanel().adjustTabStyles(); 
+		doNullLayout(this);
+        setVisible(true);
 
     }
 
@@ -232,7 +232,10 @@ public class TextDisplayFrame extends XFrame implements ActionListener,ItemListe
     }
 
 	public void doNullLayout(Container parent)
-	{	Container main = parent==null ? this : parent;
+	{	
+		if(area!=null)
+		{
+		Container main = parent==null ? this : parent;
 		int w = main.getWidth();
 		int h = main.getHeight();
 		int x = main.getX();
@@ -240,6 +243,7 @@ public class TextDisplayFrame extends XFrame implements ActionListener,ItemListe
 		Container content = getContentPane();
 		if(content!=null) { content.setBounds(x,y,w-x,h-y); }
 		area.setBounds(0,0,w-x,h-y);
+		}
 	}
 
 

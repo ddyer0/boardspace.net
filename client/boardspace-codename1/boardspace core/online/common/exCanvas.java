@@ -425,9 +425,9 @@ public abstract class exCanvas extends ProxyWindow
         if (extramouse)
         {
         }
+        l.setConsole = myFrame.addAction("Start Console",deferredEvents);
         if(extraactions)
         {
-        l.setConsole = myFrame.addAction("Start Console",deferredEvents);
         l.setNetConsole = myFrame.addAction("Set Net Logger",deferredEvents);
         painter.addUIChoices(myFrame,deferredEvents);
         l.showRects = myFrame.addOption("Show Rectangles", false,deferredEvents);	

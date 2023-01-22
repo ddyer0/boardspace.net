@@ -41,7 +41,7 @@ import online.search.SimpleRobotProtocol;
  * <br>GamePlay - a robot to play the game
  * <br>GameConstants - static constants shared by all of the above.  
  *  <p>
- *  The primary purpose of the PushfightViewer class is to do the actual
+ *  The primary purpose of the MeridiansViewer class is to do the actual
  *  drawing and to mediate the mouse gestures.  All the actual work is 
  *  done in an event loop, rather than in direct response to mouse or
  *  window events, so there is only one process involved.  With a single 
@@ -69,12 +69,12 @@ import online.search.SimpleRobotProtocol;
  *  Steps to clone this hierarchy to start the next game
  *  <li> use eclipse refactor to rename the package and individual files
  *  <li> duplicate the game start configuration, making a new one for the new game
- *  <li> launch the new game and get it to start, still identical to the old pushfight in all but name.
+ *  <li> launch the new game and get it to start, still identical to the old meridians in all but name.
  *  	this will probably require a few edits to the init code.
  *  <li> do a cvs update on the original pushfight hierarchy to get back the original code.
  *  
 */
-public class MeridiansViewer extends CCanvas<MeridiansCell,MeridiansBoard> implements MeridiansConstants, GameLayoutClient
+public class MeridiansViewer extends CCanvas<MeridiansCell,MeridiansBoard> implements MeridiansConstants, GameLayoutClient, PlacementProvider
 {		// move commands, actions encoded by movespecs.  Values chosen so these
     // integers won't look quite like all the other integers
  	
@@ -113,6 +113,11 @@ public class MeridiansViewer extends CCanvas<MeridiansCell,MeridiansBoard> imple
     //
     // zones ought to be mostly irrelevant if there is only one board layout.
     //
+    private NumberMenu numberMenu = new NumberMenu(this,MeridiansChip.White,MeridiansId.ShowNumbers);
+
+    private TextButton swapButton = addButton(SWAP,GameId.HitSwapButton,SwapDescription,
+ 			HighlightColor, rackBackGroundColor,rackIdleColor);
+
     private Toggle eyeRect = new Toggle(this,"eye",
  			StockArt.NoEye,MeridiansId.ToggleEye,NoeyeExplanation,
  			StockArt.Eye,MeridiansId.ToggleEye,EyeExplanation
@@ -168,7 +173,7 @@ public class MeridiansViewer extends CCanvas<MeridiansCell,MeridiansBoard> imple
         	MeridiansConstants.putStrings();
         }
          
-        String type = info.getString(GAMETYPE, MeridiansVariation.meridians_5.name);
+        String type = info.getString(GAMETYPE, MeridiansVariation.meridians_5p.name);
         // recommended procedure is to supply players and randomkey, even for games which
         // are current strictly 2 player and no-randomization.  It will make it easier when
         // later, some variant is created, or the game code base is re purposed as the basis
@@ -334,9 +339,11 @@ public class MeridiansViewer extends CCanvas<MeridiansCell,MeridiansBoard> imple
         int stateY = boardY;
         int stateX = boardX;
         int stateH = fh*3;
-        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,eyeRect,noChatRect);
+        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,numberMenu,eyeRect,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
      	
+    	G.SetRect(swapButton,boardX+buttonW/2,boardY+buttonW/2,buttonW,buttonW/2);
+    	
     	// goal and bottom ornaments, depending on the rendering can share
     	// the rectangle or can be offset downward.  Remember that the grid
     	// can intrude too.
@@ -510,10 +517,12 @@ public class MeridiansViewer extends CCanvas<MeridiansCell,MeridiansBoard> imple
     	Hashtable<MeridiansCell,MeridiansMovespec> targets = gb.getTargets();
     	gb.findGroups();
     	boolean show = eyeRect.isOnNow();
+    	numberMenu.clearSequenceNumbers();
     	for(MeridiansCell cell = gb.allCells; cell!=null; cell=cell.next)
           {
          	int ypos = G.Bottom(brect) - gb.cellToY(cell);
             int xpos = G.Left(brect) + gb.cellToX(cell);
+            numberMenu.saveSequenceNumber(cell,xpos,ypos);
             boolean canHit = gb.legalToHitBoard(cell,targets);
             if(cell.drawStack(gc,this,canHit?highlight:null,STONESIZE,xpos,ypos,0,0.1,0.1,null))
             		{
@@ -523,11 +532,13 @@ public class MeridiansViewer extends CCanvas<MeridiansCell,MeridiansBoard> imple
             MGroup group = cell.group;
             if((group!=null)
             	&& (cell.topChip()!=null)
-            	&& group.isolated)
+            	&& group.isolated
+            	)
             	{ StockArt.SmallX.drawChip(gc,this,STONESIZE,xpos,ypos,null); 
             	}
             if(show && targets.get(cell)!=null) { StockArt.SmallO.drawChip(gc,this,STONESIZE,xpos,ypos,null); }
         }
+    	numberMenu.drawSequenceNumbers(gc,CELLSIZE,labelFont,labelColor);
     }
 
     /**
@@ -604,7 +615,13 @@ public class MeridiansViewer extends CCanvas<MeridiansCell,MeridiansBoard> imple
        
        GC.setFont(gc,standardBoldFont());
        
- 
+		if((state==MeridiansState.ConfirmSwap) 
+				|| (state==MeridiansState.PlayOrSwap) 
+				|| (state==MeridiansState.Puzzle))
+				{// make the "swap" button appear if we're in the correct state
+					swapButton.show(gc, buttonSelect);
+				}
+
        if (state != MeridiansState.Puzzle)
         {	// if in any normal "playing" state, there should be a done button
 			// we let the board be the ultimate arbiter of if the "done" button
@@ -633,7 +650,7 @@ public class MeridiansViewer extends CCanvas<MeridiansCell,MeridiansBoard> imple
             //      DrawRepRect(gc,pl.displayRotation,Color.black,b.Digest(),repRect);
         eyeRect.activateOnMouse = true;
         eyeRect.draw(gc,selectPos);
-        
+        numberMenu.draw(gc,selectPos);
         // draw the vcr controls, last so the pop-up version will be above everything else
         drawVcrGroup(nonDragSelect, gc);
 
@@ -648,7 +665,7 @@ public class MeridiansViewer extends CCanvas<MeridiansCell,MeridiansBoard> imple
      * seriously wrong.
      */
      public boolean Execute(commonMove mm,replayMode replay)
-    {	
+    {	numberMenu.recordSequenceNumber(bb.moveNumber());
         handleExecute(bb,mm,replay);
         
         /**
@@ -900,6 +917,9 @@ public class MeridiansViewer extends CCanvas<MeridiansCell,MeridiansBoard> imple
             	throw G.Error("Hit Unknown object " + hitObject);
             }
         	break;
+        case ShowNumbers:
+        	numberMenu.showMenu();
+        	break;
         case ToggleEye:
         	eyeRect.toggle();
         	break;
@@ -908,7 +928,10 @@ public class MeridiansViewer extends CCanvas<MeridiansCell,MeridiansBoard> imple
 			{
 			default: throw G.Error("Not expecting drop on filled board in state "+state);
 			case Confirm:
+			case PlayOrSwap:
 			case Play:
+			case PlacePie:
+			case PlayFirst:
 			case Puzzle:
 				PerformAndTransmit(((bb.pickedObject==null&&hitObject.topChip()!=null) ? "Pickb ":"Dropb ")+hitObject.col+" "+hitObject.row);
 				break;
@@ -1031,8 +1054,12 @@ public class MeridiansViewer extends CCanvas<MeridiansCell,MeridiansBoard> imple
     public boolean handleDeferredEvent(Object target, String command)
     {
         boolean handled = super.handleDeferredEvent(target, command);
-
-
+        
+        if(!handled)
+        {
+        	handled = numberMenu.selectMenu(target,this);
+        }
+        
         return (handled);
     }
 /** handle the run loop, and any special actions we need to take.
@@ -1254,5 +1281,10 @@ public class MeridiansViewer extends CCanvas<MeridiansCell,MeridiansBoard> imple
     public boolean allowRobotsToRun() {
     	return super.allowRobotsToRun();
     }
+    
+
+	public int getLastPlacement(boolean empty) {
+		return bb.placementNumber;
+	}
 }
 

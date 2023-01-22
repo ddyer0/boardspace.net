@@ -32,7 +32,9 @@ public class ServerSocket implements ServerSocketProxy
     	if(sockImpl==null) { G.Error("NativeServerSocket class not found"); }
     	else if(sockImpl.isSupported())
     		{ int bval = sockImpl.bindSocket(port);
-    		  if(bval<0) { throw new IOException(sockImpl.getIOExceptionMessage(bval)); }
+    		  if(bval<0) 
+    		  	{ throw new IOException(sockImpl.getIOExceptionMessage(bval)); 
+    		  	}
     		  bound = true;
     		}
 	}

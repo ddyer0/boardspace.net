@@ -99,7 +99,6 @@ public class JumbulayaChip extends chip<JumbulayaChip> implements JumbulayaConst
     static public JumbulayaChip backgroundTile = new JumbulayaChip("background-tile-nomask",null,null);
     static public JumbulayaChip backgroundReviewTile = new JumbulayaChip("background-review-tile-nomask",null,null);
    
-    static private double hexScale[] = {0.62,0.48,1.24};
     static private double letterScale[]  = {0.58,0.45,1.24 };
 	static private double letter2Scale[] = {0.62,0.48,1.24 };
    	static private double letter0Scale[] = {0.62,0.48,1.24 };
@@ -107,7 +106,6 @@ public class JumbulayaChip extends chip<JumbulayaChip> implements JumbulayaConst
 
     static private double postScale[] = { 0.62,0.44,1.28};
     
-    static public JumbulayaChip Tile = new JumbulayaChip("tile",hexScale,null);
     static public JumbulayaChip Letter[] = 
     	{	new JumbulayaChip("letter",letterScale,null),
     		new JumbulayaChip("letter0",letter0Scale,null),

@@ -38,12 +38,12 @@ public class Frame extends Window implements NullLayoutProtocol,
 	public void setTabName(String g) { tabName = g; }
 	public void init()
 	{
-		MasterForm.getMasterPanel().add(this);
 		setOpaque(true);
 		glassPane.setLayout(new NullLayout((NullLayoutProtocol)glassPane));
 		setLayout(new NullLayout(this));
 		glassPane.setSize(getWidth(),getHeight());
 		super.add(glassPane);
+		MasterForm.getMasterPanel().add(this);
 	}
 	public Frame() 
 	{ 	super();

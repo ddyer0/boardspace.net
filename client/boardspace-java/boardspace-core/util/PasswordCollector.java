@@ -633,7 +633,7 @@ import udp.PlaytableStack;
 	 public boolean isAcceptableVersion()
 	 {	 if(!G.isCodename1()) { return(true); }
 		 String appversion = G.getAppVersion();
-		 String platform = G.getPlatformName().toLowerCase();
+		 String platform = G.getPlatformPrefix();
 		 String rejectVersion = G.getString(platform+"_reject_versions",null);
 		 Double thisVersion = G.DoubleToken(appversion);
 		 if(rejectVersion!=null)
@@ -655,7 +655,7 @@ import udp.PlaytableStack;
 	 }
 	 public Component createVersionPanel()
 	 {	String appversion = G.getAppVersion();
-	 	String platform = G.getPlatformName().toLowerCase();
+	 	String platform = G.getPlatformPrefix();
 	 	String prefVersion = G.getString(platform+"_version",null);
 		String va = s.get(VersionMessage,appversion);
 		JPanel p = new JPanel(new FlowLayout(FlowLayout.LEFT));

@@ -773,7 +773,7 @@ public class Game extends commonPanel implements PlayConstants,DeferredEventHand
         {
             ExtendOptions();
         }
-        if(reviewOnly || (!my.spectator && !tournamentMode) || chatOnly)
+        if(!G.offline() && (reviewOnly || (!my.spectator && !tournamentMode) || chatOnly))
     	{ privateMode = myFrame.addOption(s.get(PrivateRoomMessage), false,deferredEvents);
     	}
 

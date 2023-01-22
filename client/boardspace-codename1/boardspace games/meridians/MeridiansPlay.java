@@ -433,6 +433,12 @@ public void PrepareToMove(int playerIndex)
         monte_search_state.terminalNodeOptimization = terminalNodeOptimize;
 
         move = monte_search_state.getBestMonteMove();
+        if(move!=null)
+        {
+        	double ev = move.evaluation();
+        	//G.print("m ",move," ",move.evaluation());
+        	if(ev<-0.3) { move = new MeridiansMovespec(MOVE_RESIGN,move.player); }
+        }
 
  		}
       finally { ; }

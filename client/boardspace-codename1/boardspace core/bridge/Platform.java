@@ -666,7 +666,16 @@ public abstract class Platform implements Config{
     	  if("and".equals(name)) { return(G.Android); }
     	  return(name); 
     	}
-    
+    /**
+     * this is the version of "platform" that's used to test version applicability.
+     * normally, ios or android, but igt is a special case
+     * @return
+     */
+     static final public String getPlatformPrefix()
+     {
+    	 if(G.isRealInfinityTable()) return G.Igt.toLowerCase();
+    	 return getPlatformName().toLowerCase();
+     }
      static final public String getPlatformSubtype()
      {
     	 return 

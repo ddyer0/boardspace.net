@@ -21,9 +21,10 @@ class CellStack extends OStack<MeridiansCell>
  */
 public class MeridiansCell
 	//this would be stackCell for the case that the cell contains a stack of chips 
-	extends stackCell<MeridiansCell,MeridiansChip>	
+	extends stackCell<MeridiansCell,MeridiansChip>	implements PlacementProvider
 {	
 	int sweep_counter;		// the sweep counter for which blob is accurate
+	int lastPlaced = -1;
 	MGroup group; 
 	public void initRobotValues() 
 	{
@@ -52,6 +53,7 @@ public class MeridiansCell
 	{	//PushfightCell other = (PushfightCell)ot;
 		// copy any variables that need copying
 		super.copyFrom(ot);
+		lastPlaced = ot.lastPlaced;
 	}
 	/**
 	 * reset back to the same state as when newly created.  This is used
@@ -60,6 +62,7 @@ public class MeridiansCell
 	public void reInit()
 	{	super.reInit();
 		group = null;
+		lastPlaced = -1;
 	}
 	// constructor a cell not on the board, with a chip.  Used to construct the pool chips
 	public MeridiansCell(MeridiansChip cont)
@@ -93,6 +96,9 @@ public class MeridiansCell
 			}
 		}
 		return false;
+	}
+	public int getLastPlacement(boolean empty) {
+		return empty?-1:lastPlaced;
 	}
 
 	

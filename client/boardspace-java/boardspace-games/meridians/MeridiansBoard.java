@@ -10,6 +10,7 @@ import lib.*;
 import lib.Random;
 import online.game.*;
 
+
 /**
  * Meridians knows all about the game of Meridians, which is played
  * on a hexagonal board. It gets a lot of logistic support from 
@@ -77,12 +78,12 @@ class MeridiansBoard
 {	static int REVISION = 100;			// 100 represents the initial version of the game
 	public int getMaxRevisionLevel() { return(REVISION); }
 	static final String[] GRIDSTYLE = { "1", null, "A" }; // left and bottom numbers
-	MeridiansVariation variation = MeridiansVariation.meridians_5;
+	MeridiansVariation variation = MeridiansVariation.meridians_5p;
 	private MeridiansState board_state = MeridiansState.Puzzle;	
 	private MeridiansState unresign = null;	// remembers the orignal state when "resign" is hit
 	private StateStack robotState = new StateStack();
 	private IStack robotCaptures = new IStack();
-	
+	private boolean swapped = false;
 	public MeridiansState getState() { return(board_state); }
     /**
      * this is the preferred method when using the modern "enum" style of game state
@@ -128,7 +129,7 @@ class MeridiansBoard
 // DrawRepRect to warn the user that repetitions have been seen.
 	public void SetDrawState() {throw G.Error("not expected"); };	
 	CellStack animationStack = new CellStack();
-    private int chips_on_board = 0;			// number of chips currently on the board
+    int chips_on_board = 0;			// number of chips currently on the board
     private int fullBoard = 0;				// the number of cells in the board
 
     // intermediate states in the process of an unconfirmed move should
@@ -211,6 +212,10 @@ class MeridiansBoard
 		case meridians_5:
 		case meridians_6:
 		case meridians_7:
+ 		case meridians_7p:
+ 		case meridians_6p:
+ 		case meridians_5p:
+
 			// using reInitBoard avoids thrashing the creation of cells 
 			// when reviewing games.
 			reInitBoard(variation.firstInCol,variation.ZinCol,null);
@@ -225,6 +230,7 @@ class MeridiansBoard
 	    
 	    whoseTurn = FIRST_PLAYER_INDEX;
 	    chips_on_board = 0;
+	    placementNumber = 0;
 	    droppedDestStack.clear();
 	    captureStack.clear();
 	    pickedSourceStack.clear();
@@ -247,6 +253,8 @@ class MeridiansBoard
 		fullBoard = emptyCells.size();
 	    
         animationStack.clear();
+        if(variation.pie) { doSwap(replayMode.Replay); }	// the second player will play white or swap
+        swapped = false;
         moveNumber = 1;
 
         // note that firstPlayer is NOT initialized here
@@ -268,6 +276,7 @@ class MeridiansBoard
     {
         super.copyFrom(from_b);
         chips_on_board = from_b.chips_on_board;
+        placementNumber = from_b.placementNumber;
         fullBoard = from_b.fullBoard;
         robotState.copyFrom(from_b.robotState);
         getCell(emptyCells,from_b.emptyCells);
@@ -283,6 +292,7 @@ class MeridiansBoard
         stateStack.copyFrom(from_b.stateStack);
         pickedObject = from_b.pickedObject;
         resetState = from_b.resetState;
+        swapped = from_b.swapped;
         lastPicked = null;
 
         AR.copy(playerColor,from_b.playerColor);
@@ -310,10 +320,12 @@ class MeridiansBoard
         G.Assert(AR.sameArrayContents(playerChip,from_b.playerChip),"playerChip mismatch");
         G.Assert(pickedObject==from_b.pickedObject, "picked Object mismatch");
         G.Assert(chips_on_board == from_b.chips_on_board,"chips_on_board mismatch");
+        G.Assert(placementNumber == from_b.placementNumber,"placementNumber mismatch");
         G.Assert(sameCells(pickedSourceStack,from_b.pickedSourceStack),"pickedsourceStack mismatch");
         G.Assert(sameCells(droppedDestStack,from_b.droppedDestStack),"droppedDestStack mismatch");
         G.Assert(sameCells(captureStack,from_b.captureStack),"captureStack mismatch");
         G.Assert(sameCells(playerCell,from_b.playerCell),"player cell mismatch");
+        G.Assert(swapped==from_b.swapped,"swapped mismatch");
         // this is a good overall check that all the copy/check/digest methods
         // are in sync, although if this does fail you'll no doubt be at a loss
         // to explain why.
@@ -364,6 +376,7 @@ class MeridiansBoard
 		v ^= Digest(r,droppedDestStack);
 		v ^= Digest(r,revision);
 		v ^= Digest(r,captureStack);
+		v ^= Digest(r,swapped);
 		v ^= r.nextLong()*(board_state.ordinal()*10+whoseTurn);
         return (v);
     }
@@ -386,6 +399,7 @@ class MeridiansBoard
         	if(replay==replayMode.Live) { throw G.Error("Move not complete, can't change the current player in state ",board_state); }
 			//$FALL-THROUGH$
         case Confirm:
+        case ConfirmSwap:
         case Resign:
             moveNumber++; //the move is complete in these states
             setWhoseTurn(nextPlayer[whoseTurn]);
@@ -420,6 +434,8 @@ class MeridiansBoard
 
 
     // set the contents of a cell, and maintain the books
+    int lastPlaced = -1;
+    int placementNumber = -1;
     public MeridiansChip SetBoard(MeridiansCell c,MeridiansChip ch)
     {	MeridiansChip old = c.topChip();
     	if(c.onBoard)
@@ -427,12 +443,13 @@ class MeridiansBoard
     	if(old!=null) 
     		{ chips_on_board--;
     		  emptyCells.push(c);   
+    		  c.lastPlaced = lastPlaced;
     		  occupiedCells[playerIndex(old)].remove(c,false); 
     		}
-     	if(ch!=null) { chips_on_board++; emptyCells.remove(c,false);  }
-    	}
+     	if(ch!=null) { c.lastPlaced = placementNumber++; chips_on_board++; emptyCells.remove(c,false);  }
        	if(old!=null) { c.removeTop();}
        	if(ch!=null) { c.addChip(ch); occupiedCells[playerIndex(ch)].push(c); }
+    	}
     	return(old);
     }
     //
@@ -452,6 +469,7 @@ class MeridiansBoard
     {	MeridiansCell rv = droppedDestStack.pop();
     	setState(stateStack.pop());
     	pickedObject = SetBoard(rv,null); 	// SetBoard does ancillary bookkeeping
+    	placementNumber--;
     	return(rv);
     }
     // 
@@ -584,6 +602,11 @@ class MeridiansBoard
         case Confirm:
         	setNextStateAfterDone(replay);
          	break;
+        case PlacePie:
+        	if(! ((occupiedCells[0].size()==1) && (occupiedCells[1].size()==1))) { break;}
+			//$FALL-THROUGH$
+		case PlayFirst:
+		case PlayOrSwap:
         case Play:
 			setState(MeridiansState.Confirm);
 			break;
@@ -592,6 +615,7 @@ class MeridiansBoard
             break;
         }
     }
+    
     private void undoCaptures(int size)
     {	
     	for(int cs = captureStack.size(); cs>size; cs--)
@@ -601,18 +625,32 @@ class MeridiansBoard
     	}
     }
     private void setNextStateAfterDone(replayMode replay)
-    {	
+    {	int nchips = occupiedCells[whoseTurn].size();
+    	int nother = occupiedCells[nextPlayer[whoseTurn]].size();
     	switch(board_state)
     	{
     	default: throw G.Error("Not expecting after Done state "+board_state);
     	case Gameover: break;
-     	case Confirm:
     	case Puzzle:
+    	case PlacePie:
+    	case PlayOrSwap:  		
+    		if(variation.pie)
+    		{
+    			if((nchips==1) && (nother==1)) { setState(MeridiansState.PlayOrSwap); break; }
+    			else if(nchips+nother<=1) { setState(MeridiansState.PlacePie); break; }
+    		}
+			//$FALL-THROUGH$
+		case Confirm:
+		case ConfirmSwap:
     	case Play:
-    		setState(MeridiansState.Play); 
+    		
+    		setState( (variation.pie && nchips==1 && nother==1 && !swapped)
+    					? MeridiansState.PlayOrSwap
+    					: (nchips==0 ? MeridiansState.PlayFirst : MeridiansState.Play)); 
         	removeIsolatedGroups(nextPlayer[whoseTurn],replay);
-        	if(occupiedCells[whoseTurn].size()>1 && (occupiedCells[nextPlayer[whoseTurn]].size()==0)) 
-        		{ win[whoseTurn]=true; setState(MeridiansState.Gameover); 
+        	if(occupiedCells[nextPlayer[whoseTurn]].size()==0 && occupiedCells[whoseTurn].size()>0) 
+        		{ win[whoseTurn]=true;
+        		  setState(MeridiansState.Gameover); 
         		}
     		break;
     	}
@@ -664,7 +702,40 @@ class MeridiansBoard
         	}
         }
     }
+    
+    void doSwap(replayMode replay)
+    {	MeridiansId c = playerColor[0];
+    	MeridiansChip ch = playerChip[0];
+    	playerColor[0]=playerColor[1];
+    	playerChip[0]=playerChip[1];
+    	playerColor[1]=c;
+    	playerChip[1]=ch;
+    	MeridiansCell cc = playerCell[0];
+    	playerCell[0]=playerCell[1];
+    	playerCell[1]=cc;
+    	CellStack cs = occupiedCells[0];
+    	occupiedCells[0] = occupiedCells[1];
+    	occupiedCells[1] = cs;
+    	swapped = !swapped;
 
+    	switch(board_state)
+    	{	
+    	default: 
+    		throw G.Error("Not expecting swap state "+board_state);
+    	case Play:
+    		// some damaged game records have double swap
+    		if(replay==replayMode.Live) { G.Error("Not expecting swap state "+board_state); }
+    		//$FALL-THROUGH$
+    	case PlayOrSwap:
+    		  setState(MeridiansState.ConfirmSwap);
+    		  break;
+    	case ConfirmSwap:
+    		  setState(MeridiansState.PlayOrSwap);
+    		  break;
+    	case Gameover:
+    	case Puzzle: break;
+    	}
+    	}
     public boolean Execute(commonMove mm,replayMode replay)
     {	MeridiansMovespec m = (MeridiansMovespec)mm;
         if(replay!=replayMode.Replay) { animationStack.clear(); }
@@ -672,6 +743,9 @@ class MeridiansBoard
         //G.print("E "+m+" for "+whoseTurn+" "+state);
         switch (m.op)
         {
+        case MOVE_SWAP:
+        	doSwap(replay);
+        	break;
         case MOVE_DONE:
 
          	doDone(replay);
@@ -682,8 +756,12 @@ class MeridiansBoard
         	{
 			MeridiansChip po = pickedObject;
 			if(po==null) 
-				{ pickedObject = playerChip[whoseTurn]; 
-				  pickedSourceStack.push(getPlayerCell(whoseTurn));
+				{ 
+				  int pl = (board_state==MeridiansState.PlacePie) 
+						  	? (occupiedCells[0].size()==0 ? 0 : 1)
+						  	: whoseTurn;
+				  pickedObject = playerChip[pl]; 
+				  pickedSourceStack.push(getPlayerCell(pl));
 				}
 			MeridiansCell dest =  getCell(MeridiansId.BoardLocation,m.to_col,m.to_row);
 			
@@ -795,11 +873,16 @@ class MeridiansBoard
         {
         default:
         	throw G.Error("Not expecting Legal Hit state " + board_state);
+        case PlacePie:
+        	return (occupiedCells[player].size()==0);
         case Play:
+        case PlayOrSwap:
+        case PlayFirst:
         	// for pushfight, you can pick up a stone in the storage area
         	// but it's really optional
         	return(player==whoseTurn);
         case Confirm:
+        case ConfirmSwap:
 		case Resign:
 		case Gameover:
 			return(false);
@@ -812,13 +895,17 @@ class MeridiansBoard
     {	if(c==null) { return(false); }
         switch (board_state)
         {
+        case PlacePie:
 		case Play:
+		case PlayOrSwap:
+		case PlayFirst:
 			return(targets.get(c)!=null || isDest(c) || isSource(c));
 		case Gameover:
 		case Resign:
 			return(false);
 		case Confirm:
-			return(isDest(c) || c.isEmpty());
+		case ConfirmSwap:
+			return(isDest(c));
         default:
         	throw G.Error("Not expecting Hit Board state " + board_state);
         case Puzzle:
@@ -860,6 +947,9 @@ class MeridiansBoard
         {
         default:
    	    	throw G.Error("Can't un execute " + m);
+        case MOVE_SWAP:
+        	doSwap(replayMode.Replay);
+        	break;
         case MOVE_DONE:
             break;
             
@@ -925,11 +1015,24 @@ class MeridiansBoard
  			 	}
  		}
  		break;
- 	case Play:
+ 	case PlacePie:
+ 		{
+ 		int pl = occupiedCells[0].size()==0 ? 0 : 1;
+ 		addPlacementMoves(all,pl);
+ 		break;
+ 		}
+ 	case PlayOrSwap:
+ 		all.push(new MeridiansMovespec(MOVE_SWAP,whoseTurn));
+		//$FALL-THROUGH$
+	case Play:
+ 	case PlayFirst:
  		addPlacementMoves(all,whoseTurn);
  		if(all.size()==0) { all.push(new MeridiansMovespec(MOVE_RESIGN,whoseTurn)); }
  		break;
- 	case Resign:
+ 	case ConfirmSwap:
+ 		all.push(new MeridiansMovespec(MOVE_SWAP,whoseTurn));
+		//$FALL-THROUGH$
+	case Resign:
  	case Confirm:
  		all.push(new MeridiansMovespec(MOVE_DONE,whoseTurn));
  		break;
@@ -956,6 +1059,9 @@ class MeridiansBoard
 	 		case meridians_7:
 	 		case meridians_6:
 	 		case meridians_5:
+	 		case meridians_7p:
+	 		case meridians_6p:
+	 		case meridians_5p:
 	 			xpos -= cellsize/2;
 	 			break;
  			default: G.Error("case "+variation+" not handled");
@@ -1017,6 +1123,7 @@ class MeridiansBoard
  			targets.put(getCell(m.to_col,m.to_row),m);
  			break;
  		case MOVE_SWAP:
+ 		case MOVE_RESIGN:
  		case MOVE_DONE:
  			break;
 

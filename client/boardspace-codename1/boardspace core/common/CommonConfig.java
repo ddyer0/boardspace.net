@@ -31,6 +31,8 @@ public interface CommonConfig {
 	static final String standingsURL = "/cgi-bin/boardspace_rankings.cgi";
 	static final String mapDataURL = "/cgi-bin/tlib/gs_locations.cgi";
 	static final String rankingURL = "/cgi-bin/uni_rank.cgi";
+	static final String seatingHelpUrl = "/english/offline-launcher-help.html";
+	
 	// for deep tessting only
 	// static final String showURL = "/cgi-bin/util/show-form.pl";
 	static final String loginURL = "/cgi-bin/login.cgi";

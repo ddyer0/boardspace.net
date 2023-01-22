@@ -201,6 +201,17 @@ public class GameInfo implements lib.CompareTo<GameInfo>,LobbyConstants
 		// null for not found, rather than futureGame
 		return(null);
 	}
+	// find a game based on it's variation name.
+	// this is used for launching standalone apps, not by the lobby
+	public static GameInfo findByVariation(String n)
+	{	for(int lim = allGames.size()-1; lim>=0; lim--)
+		{	GameInfo gi = allGames.elementAt(lim);
+			if(gi.variationName.equalsIgnoreCase(n)) { return(gi); }
+			}
+		// null for not found, rather than futureGame
+		return(null);
+	}
+
 	public boolean allowedBySet(Bitset<ES> includedTypes)
 	{	if(this==futureGame)  { return(true); }
 		return(includedTypes.test(enabled)
@@ -1136,12 +1147,29 @@ synchronized(allGames) {
 			new double[]{1.0,0.01},
 			meridiansViewer,meridiansRules,
 			meridiansVideo,false, WhiteOverBlack));
-	put(new GameInfo(11691,ES.game,113,"MR",CapturingGames,"Meridians","meridians-6",
+	put(new GameInfo(1695,ES.game,113,"MR",CapturingGames,"Meridians","meridians-5p",
 			OneBotPlus,
 			new double[]{1.0,0.01},
 			meridiansViewer,meridiansRules,
 			meridiansVideo,false, WhiteOverBlack));
-	put(new GameInfo(11692,ES.game,113,"MR",CapturingGames,"Meridians","meridians-7",
+	
+	put(new GameInfo(1691,ES.game,113,"MR",CapturingGames,"Meridians","meridians-6",
+			OneBotPlus,
+			new double[]{1.0,0.01},
+			meridiansViewer,meridiansRules,
+			meridiansVideo,false, WhiteOverBlack));
+	put(new GameInfo(1696,ES.game,113,"MR",CapturingGames,"Meridians","meridians-6p",
+			OneBotPlus,
+			new double[]{1.0,0.01},
+			meridiansViewer,meridiansRules,
+			meridiansVideo,false, WhiteOverBlack));
+	
+	put(new GameInfo(1692,ES.game,113,"MR",CapturingGames,"Meridians","meridians-7",
+			OneBotPlus,
+			new double[]{1.0,0.01},
+			meridiansViewer,meridiansRules,
+			meridiansVideo,false, WhiteOverBlack));
+	put(new GameInfo(1697,ES.game,113,"MR",CapturingGames,"Meridians","meridians-7p",
 			OneBotPlus,
 			new double[]{1.0,0.01},
 			meridiansViewer,meridiansRules,

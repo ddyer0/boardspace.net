@@ -234,7 +234,7 @@ public class JumbulayaViewer extends CCanvas<JumbulayaCell,JumbulayaBoard> imple
     			0.75,	// 60% of space allocated to the board
     			aspect,	// aspect ratio for the board
     			fh*2,	// min cell size
-    			fh*3,	// maximum cell size
+    			fh*2.5,	// maximum cell size
     			0.2		// preference for the designated layout, if any
     			);
        	boolean planned = plannedSeating();
@@ -245,11 +245,11 @@ public class JumbulayaViewer extends CCanvas<JumbulayaCell,JumbulayaBoard> imple
     	layout.alwaysPlaceDone = false;
        	layout.placeDoneEditRep(buttonW,buttonW*4/3,doneRect,editRect,planned?null:startJRect);
        	G.copy(endJRect,startJRect);
-    	layout.placeTheVcr(this,vcrw,vcrw*3/2);
+    	layout.placeTheVcr(this,vcrw,vcrw/2);
        	int doneW = G.Width(editRect);
        	layout.placeRectangle(passButton, doneW,doneW/2,BoxAlignment.Center);
     	layout.alwaysPlaceDone = G.debug();
-       	layout.placeDoneEditRep(doneW*3/2,doneW*3/2,checkWordsButton, checkJumbulayaButton,vocabularyRect);
+       	layout.placeDoneEditRep(doneW,doneW,checkWordsButton, checkJumbulayaButton,vocabularyRect);
        	commonPlayer pl = getPlayerOrTemp(0);
        	int spare = G.Height(pl.playerBox)/2;
        	layout.placeRectangle(drawPileRect,spare,spare,BoxAlignment.Center);
@@ -312,11 +312,12 @@ public class JumbulayaViewer extends CCanvas<JumbulayaCell,JumbulayaBoard> imple
     	Rectangle jrect = startJrects[player];
     	int scoreW = unitsize*3;
     	int scoreH = unitsize*3;
-    	G.SetRect(score,x,y+unitsize*2,scoreW,scoreH);
+    	G.SetRect(score,x,y+unitsize*3/2,scoreW,scoreH);
     	Rectangle box =  pl.createRectangularPictureGroup(x+scoreW-unitsize,y,unitsize);
     	Rectangle done = doneRects[player];
      	boolean planned = plannedSeating();
     	int doneW = planned ? unitsize*4 : 0;
+    	int eyeSize = unitsize*3/2;
     	int donel = G.Right(box);
     	int top =  G.Top(box);
     	int dtop = top+unitsize/4;
@@ -324,7 +325,7 @@ public class JumbulayaViewer extends CCanvas<JumbulayaCell,JumbulayaBoard> imple
     	G.SetRect(done,donex,dtop,doneW,doneW/2);
     	G.SetRect(jrect,donex,dtop+doneW*2/3,doneW*2,doneW*2/3);
     	int dright = donex+doneW*2;
-    	G.SetRect(eye, dright-doneW/2,dtop,doneW/2,doneW/2);
+    	G.SetRect(eye, dright-doneW/2,dtop,eyeSize,eyeSize);
     	G.union(box, done,score,eye,jrect);
     	int boxW = G.Width(box);
     	int chipH = unitsize*3/2+(planned ? unitsize*2 : 0);

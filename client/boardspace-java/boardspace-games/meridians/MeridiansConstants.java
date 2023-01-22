@@ -20,7 +20,7 @@ public interface MeridiansConstants
 		Black, // positive numbers are trackable
 		White,
 		BoardLocation,
-		ToggleEye,;
+		ToggleEye, ShowNumbers,;
 		MeridiansChip chip;
 		public String shortName() { return(name()); }
 	
@@ -39,6 +39,11 @@ public enum MeridiansState implements BoardState,MeridiansConstants
 	Resign(ResignStateDescription,true,false),
 	Gameover(GameOverStateDescription,false,false),
 	Confirm(ConfirmStateDescription,true,true),
+	
+	ConfirmSwap(ConfirmSwapDescription,true,false),
+	PlayOrSwap(MeridiansPlayOrSwapState,false,false),
+	PlacePie(PlacePieState,false,false),
+	PlayFirst(PlayFirstState,false,false),
 	Play(PlayState,false,false);
 	MeridiansState(String des,boolean done,boolean digest)
 	{
@@ -61,15 +66,20 @@ public enum MeridiansState implements BoardState,MeridiansConstants
  
  enum MeridiansVariation
     {
-	   	meridians_5("meridians-5",M5FirstInCol,M5NInCol),
-	   	meridians_6("meridians-6",M6FirstInCol,M6NInCol),
-	   	meridians_7("meridians-7",M7FirstInCol,M7NInCol);
+	   	meridians_5p("meridians-5p",true,M5FirstInCol,M5NInCol),
+	   	meridians_6p("meridians-6p",true,M6FirstInCol,M6NInCol),
+	   	meridians_7p("meridians-7p",true,M7FirstInCol,M7NInCol),
+	 	meridians_5("meridians-5",false,M5FirstInCol,M5NInCol),
+	   	meridians_6("meridians-6",false,M6FirstInCol,M6NInCol),
+	   	meridians_7("meridians-7",false,M7FirstInCol,M7NInCol);
 	    String name ;
     	int [] firstInCol;
     	int [] ZinCol;
+    	boolean pie = false;
      	// constructor
-    	MeridiansVariation(String n,int []fin,int []zin) 
+    	MeridiansVariation(String n,boolean p,int []fin,int []zin) 
     	{ name = n; 
+    	  pie = p;
     	  firstInCol = fin;
     	  ZinCol = zin;
     	}
@@ -111,12 +121,18 @@ static int[] M7NInCol =     { 7, 8, 9, 10, 11, 12, 13, 14, 13, 12, 11, 10, 9, 8,
 
 	static final String VictoryCondition = "capture all your opponent's stones";
 	static final String PlayState = "Place a marker somewhere seen from a friendly group";
+	static final String MeridiansPlayOrSwapState = "Make your first move, or swap colors";
+	static final String PlacePieState = "Place one black and one white chip";
+	static final String PlayFirstState = "Place your first chip";
 	
 	static void putStrings()
 	{
 		String GameStrings[] = 
 		{  "Meridians",
 			PlayState,
+			PlacePieState,
+			MeridiansPlayOrSwapState,
+			PlayFirstState,
 			VictoryCondition
 			
 		};
@@ -125,9 +141,15 @@ static int[] M7NInCol =     { 7, 8, 9, 10, 11, 12, 13, 14, 13, 12, 11, 10, 9, 8,
 				{"meridians-5","Meridians 5"},
 				{"meridians-6","Meridians 6"},
 				{"meridians-7","Meridians 7"},
-			{"meridians-5_variation","Meridians 5x6 board"},
-			{"meridians-6_variation","Meridians 6x7 board"},
-			{"meridians-7_variation","Meridians 7x8 board"},
+				{"meridians-5p","Meridians 5 + pie"},
+				{"meridians-6p","Meridians 6 + pie"},
+				{"meridians-7p","Meridians 7 + pie"},
+			{"meridians-5_variation","Meridians 5x6"},
+			{"meridians-6_variation","Meridians 6x7"},
+			{"meridians-7_variation","Meridians 7x8"},
+			{"meridians-5p_variation","Meridians 5x6 + pie"},
+			{"meridians-6p_variation","Meridians 6x7 + pie"},
+			{"meridians-7p_variation","Meridians 7x8 + pie"},
 		};
 		InternationalStrings.put(GameStrings);
 		InternationalStrings.put(GameStringPairs);

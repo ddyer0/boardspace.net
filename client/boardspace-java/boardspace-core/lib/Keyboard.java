@@ -299,12 +299,13 @@ public class Keyboard implements Config
 				else
 				{
 				  display.insert(ch); 
-				  if(control||shift)
+				  if(control||(shift!=shiftLock))
 				  {
 					  control = false;
-					  shift = false;
+					  shift = shiftLock;
 					  selectLayout();
 				  }
+				  
 				}}
 			else {
 				switch(bcode)
@@ -366,6 +367,8 @@ public class Keyboard implements Config
 					break;
 				case Nright:
 					display.doForward();
+					break;
+				case Guess:
 					break;
 				default: G.print("hit unknown button ",bcode);
 				

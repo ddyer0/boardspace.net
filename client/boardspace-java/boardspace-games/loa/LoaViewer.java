@@ -248,11 +248,7 @@ public class LoaViewer extends commonCanvas implements UIC,GameLayoutClient
     public void performHistoryInitialization(StringTokenizer his)
     {   //the initialization sequence
     	String token = his.nextToken();
-    	if(token.equalsIgnoreCase("loarandom"))
-    	{
-    		b.doInit(token,G.LongToken(his),G.IntToken(his));
-    	}
-    	else { b.doInit(token); }
+    	b.doInit(token,G.LongToken(his),G.IntToken(his));
     }
 
     public synchronized void ReplayGame(sgf_game ga)

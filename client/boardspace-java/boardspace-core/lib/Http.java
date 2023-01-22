@@ -422,8 +422,8 @@ public class Http implements Config,Crypto {
          {	os.println("[history:\n"+errorContext+"]");
          }
          os.flush();
-
-         return (b.toString());
+         String msg = b.toString();
+         return (msg);
      }
 
      /**
@@ -451,8 +451,7 @@ public class Http implements Config,Crypto {
     	            					? (String)caller 
     	            					: (caller.getClass().getName());
     	            Plog.log.addLog("Log request from " ,cname);
-    	            if(G.isCheerpj()||G.debug()) { Plog.log.addLog(msg);}
-    	            
+    	            Plog.log.addLog(msg);
     	            String finalmsg = "&tagname=posterror&name="+Http.escape(cname)
     	            	+ "&data=" + Http.escape(msg);
     	            if((hostName!=null) 
@@ -462,9 +461,9 @@ public class Http implements Config,Crypto {
     	            G.setPostedError(message+":"+err);
     	            return(res.error==null);
     	            }
+    	            
     	        }
-    	        G.setPostedError(message+":"+err);
-    	        return (false);
+     	        return (false);
     	    }
         	catch (ThreadDeath err2) { throw err2;}
     		catch (Throwable err2)

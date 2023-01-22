@@ -210,5 +210,6 @@ public class Plog {
 	 * by http.getErrorMessage()
 	 */
 	public static Plog log = new Plog(100);
+	public static Plog messages = new Plog(500);
 
 }

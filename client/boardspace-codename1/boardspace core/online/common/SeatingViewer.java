@@ -10,6 +10,7 @@ import bridge.FontMetrics;
 import bridge.JCheckBoxMenuItem;
 import bridge.JOptionPane;
 import bridge.MouseWheelEvent;
+import bridge.Preferences;
 import bridge.URL;
 import common.GameInfo;
 import common.GameInfoStack;
@@ -32,6 +33,7 @@ import lib.PopupManager;
 import lib.Random;
 import lib.RootAppletProtocol;
 import lib.StockArt;
+import lib.TextButton;
 import lib.TextContainer;
 import online.common.SeatingChart.Seating;
 import rpc.RpcService;
@@ -41,7 +43,11 @@ import static util.PasswordCollector.VersionMessage;
 
 @SuppressWarnings("serial")
 public class SeatingViewer extends exCanvas implements LobbyConstants
-{	Color buttonBackgroundColor = new Color(0.7f,0.7f,0.7f);
+{	
+	static final String FAVORITES = "SeatingFavorites";
+	static final String RECENTS = "SeatingRecents";
+	
+	Color buttonBackgroundColor = new Color(0.7f,0.7f,0.7f);
 	Color buttonEmptyColor = new Color(0.5f,0.5f,0.5f);
 	Color buttonHighlightColor = new Color(1.0f,0.5f,0.5f);
 	Color buttonSelectedColor = new Color(0.6f,0.6f,0.8f);
@@ -54,6 +60,8 @@ public class SeatingViewer extends exCanvas implements LobbyConstants
 	Rectangle gameSelectionRect = addRect("gameSelection");
 	Rectangle startStopRect = addRect("StartStop");
 	Rectangle onlineRect = addRect("Online");
+	TextButton helpRect = addButton(HelpMessage,SeatId.HelpButton,ExplainHelpMessage,
+			buttonHighlightColor, buttonBackgroundColor);
 	Rectangle tableNameRect = addRect("TableName");
 	Rectangle addNameTextRect = addRect("AddName");
 	Rectangle versionRect = addRect("version");
@@ -63,6 +71,8 @@ public class SeatingViewer extends exCanvas implements LobbyConstants
 	TextContainer namefield = (TextContainer)addRect("namefield",new TextContainer(SeatId.TableName));
 	TextContainer newNameField = (TextContainer)addRect("newname",new TextContainer(SeatId.NewName));
 	TextContainer messageArea = new TextContainer(SeatId.MessageArea);
+	GameInfoStack recentGames = new GameInfoStack();
+	GameInfoStack favoriteGames = new GameInfoStack();
 
 	SeatingChart selectedChart = SeatingChart.defaultPassAndPlay;
 	UserManager users = new UserManager();
@@ -72,7 +82,18 @@ public class SeatingViewer extends exCanvas implements LobbyConstants
 	int firstPlayerIndex = 0;
 	int colorIndex[] = null;
 	boolean changeRecurse = false;
-	boolean categoryMode = true;
+	enum MainMode { Category(CategoriesMode,SeatId.CategoriesSelected),
+					AZ(A_ZMode,SeatId.A_Zselected),
+					Recent(RecentMode,SeatId.RecentSelected);
+		String title = "";
+		SeatId id;
+		MainMode(String m,SeatId i)
+		{ title = m;
+		  id = i;
+		}
+	};
+	MainMode mainMode = MainMode.Category;
+	
 	String selectedCategory = "";
 	String selectedLetter = "*";
 	GameInfo selectedGame = null;
@@ -104,8 +125,9 @@ public class SeatingViewer extends exCanvas implements LobbyConstants
 		DrawersOff,
 		DrawersOn,
 		PlayOnline,
+		HelpButton,
 		TableName,
-		NewName, MessageArea;
+		NewName, MessageArea, RecentSelected;
 		public String shortName() {
 			return(name());
 		}
@@ -130,6 +152,10 @@ public class SeatingViewer extends exCanvas implements LobbyConstants
         autoDone = myFrame.addOption(s.get(AutoDoneEverywhere),Default.getBoolean(Default.autodone),deferredEvents);
         autoDone.setForeground(Color.blue);
         // this starts the servers that listen for connections from side screens
+        
+        reloadGameList(favoriteGames,FAVORITES);
+        reloadGameList(recentGames,RECENTS);
+        
         if(G.isCodename1())
         {
         	frame.setCanvasRotater(this);
@@ -175,16 +201,18 @@ public class SeatingViewer extends exCanvas implements LobbyConstants
 			G.SetRect(seatingSelectRect, l, t,stripHeight, h-fh*2);
 			int gameH = 3*h/5;
 			int left = l+stripHeight;
-			G.SetRect(gameSelectionRect, l+stripHeight,t,w-stripHeight,gameH);
 			int margin = stripHeight/4;
-			G.SetRect(seatingChart, left, t+gameH, w-margin, h/3);
+			G.SetRect(gameSelectionRect, l+stripHeight,t,w-l-stripHeight-margin,gameH);
+			G.SetRect(seatingChart, left, t+gameH, w-left-margin, h/3);
 			G.SetRect(gearRect,w-margin*3,t+margin,margin*2,margin*2);
+			G.SetRect(helpRect,G.Left(gearRect)-w/4+w/30,t+stripHeight/4,w/5,stripHeight/2);
 		}
 		else 
 		{
 		stripHeight = h/7;
 		G.SetRect(seatingSelectRect, l, t, w,stripHeight);
 		G.SetRect(gameSelectionRect, l,t+stripHeight,w/2,h-stripHeight);
+		G.SetRect(helpRect,G.Right(gameSelectionRect)-w/6,t+stripHeight+stripHeight/4,w/7,stripHeight/2);
 		int left = l+w/2+w/40;
 		int margin = stripHeight/2;
 		G.SetRect(seatingChart, left, t+stripHeight+margin, w-left-margin, h-stripHeight-stripHeight/2-margin);
@@ -278,6 +306,48 @@ public class SeatingViewer extends exCanvas implements LobbyConstants
 		sess.setCurrentGame(selectedVariant, false,isPassAndPlay());
 		sess.startingName = sess.launchName(null,true);
 	}
+	//reload a game list from preferences
+	private void reloadGameList(GameInfoStack stack,String key)
+	{	stack.clear();
+		Preferences prefs = Preferences.userRoot();
+		String games = prefs.get(key,null);
+		if(games!=null)
+		{
+			String all[] = G.split(games,',');
+			if(all!=null)
+			{
+			for(String name : all)
+				{
+				GameInfo g = GameInfo.findByVariation(name);
+				if(g!=null) { stack.push(g); }
+				}
+			}
+		}
+		
+	}
+	//modify the "recent" list
+	private void recordRecentGame(GameInfoStack stack,GameInfo in,String key)
+	{	// remove any games with the same name - variations are considered to be the same
+		for(int lim = stack.size()-1; lim>=0; lim--)
+			{
+			GameInfo g = stack.elementAt(lim);
+			if(g.gameName.equalsIgnoreCase(in.gameName)) { stack.remove(lim,true); }
+			}
+		// reduce size to 10
+		while(stack.size()>10) { stack.remove(0,false); }
+		// insert at the beginning
+		stack.insertElementAt(in,0);		// move to the most recent position
+		// save as a property
+		StringBuilder b = new StringBuilder();
+		for(int i=0,lim=stack.size(); i<lim; i++)
+		{	GameInfo g = stack.elementAt(i);
+			b.append(g.variationName);
+			b.append(",");
+		}
+		Preferences prefs = Preferences.userRoot();
+		prefs.put(key,b.toString());
+	}
+	
 	@Override
 	public void StopDragging(HitPoint hp) {
 		CellId hitCode = hp.hitCode;
@@ -287,9 +357,17 @@ public class SeatingViewer extends exCanvas implements LobbyConstants
 		else if(hitCode instanceof SeatId)
 		{	
 			SeatId id = (SeatId)hitCode;
-			if((id!=SeatId.TableName) && (id!=SeatId.NewName)) { loseFocus(); } 
+			if((id!=SeatId.TableName) && (id!=SeatId.NewName)) 
+				{ loseFocus(); 
+				} 
 			switch(id)
 			{
+			case HelpButton:
+				{
+				URL u = G.getUrl(seatingHelpUrl,true);
+				G.showDocument(u);
+				}
+				break;
 			case TableName:
 				{
 				namefield.setFocus(true);
@@ -351,6 +429,12 @@ public class SeatingViewer extends exCanvas implements LobbyConstants
 				User user = sess.players[0];
 				User players[] = new User[sess.players.length];
 				AR.copy(players,sess.players);
+				
+				recordRecentGame(recentGames,sess.currentGame,RECENTS);
+				if(mainMode==MainMode.Recent)
+				{	// if you select something from the recent tab, it becomes a favorite
+					recordRecentGame(favoriteGames,sess.currentGame,FAVORITES);
+				}
 				sess.launchGame(user,true,colorIndex,getCanvasRotation(),sess.currentGame);
 				for(int i=0;i<players.length;i++) { sess.putInSess(players[i],i); }
 				break;
@@ -393,10 +477,13 @@ public class SeatingViewer extends exCanvas implements LobbyConstants
 				selectGame(null);
 				break;
 			case CategoriesSelected:
-				categoryMode = true;
+				mainMode = MainMode.Category;
 				break;
 			case A_Zselected:
-				categoryMode = false;
+				mainMode = MainMode.AZ;
+				break;
+			case RecentSelected:
+				mainMode = MainMode.Recent;
 				break;
 			case ChartSelected:
 				selectedChart = (SeatingChart)hp.hitObject;
@@ -437,7 +524,7 @@ public class SeatingViewer extends exCanvas implements LobbyConstants
 			}
 	
 	}
-	private boolean drawTable(Graphics gc,HitPoint pt,int tableSize,int centerX,int centerY)
+	private boolean drawTable(Graphics gc,HitPoint pt,int tableSize,int centerX,int centerY,String text)
 	{	Image im = StockArt.Playtable_h.getImage();
 		double bas = 0.75;
 		double imr = bas*im.getWidth()/im.getHeight();
@@ -453,6 +540,12 @@ public class SeatingViewer extends exCanvas implements LobbyConstants
 		im.drawImage(gc,
 						left,top,right,bottom,
 						0,0,im.getWidth(),im.getHeight());
+		if(text!=null)
+			{ 	Font f = GC.getFont(gc);
+				GC.setFont(gc,getDefaultFont());
+				GC.Text(gc,true,left,top,right-left,bottom-top,Color.lightGray,null,text); 
+				GC.setFont(gc,f);
+			}
 		GC.setClip(gc,clip);
 		return G.pointInRect(pt,left,top,right-left,bottom-top);
 	}
@@ -461,8 +554,10 @@ public class SeatingViewer extends exCanvas implements LobbyConstants
 		int nPlayers = seats.length;
 		boolean selectingColor = pickedSource>=0;
 		HitPoint tableSelect = selectingColor ? null : mainSelect;
-		
-		if(drawTable(gc,tableSelect,tableSize,centerX,centerY))
+		String msg = (bubbleSelect==null)
+						? (nPlayers==0) ? "Review" : ""+nPlayers 
+						: null;
+		if(drawTable(gc,tableSelect,tableSize,centerX,centerY,msg))
 		{	tableSelect.hitCode = SeatId.ChartSelected;
 			tableSelect.hitObject = chart;
 			tableSelect.spriteColor = Color.red;
@@ -472,7 +567,7 @@ public class SeatingViewer extends exCanvas implements LobbyConstants
 		}
 		int colorStep = tableSize/30;
 		Color []map = selectedGame!=null ? selectedGame.colorMap : null;
-		for(int i=0,nplayers=seats.length;i<nplayers;i++)
+		for(int i=0;i<nPlayers;i++)
 		{	Seating position = seats[i];
 			double xpos = position.x_position;
 			double ypos = position.y_position;
@@ -481,9 +576,9 @@ public class SeatingViewer extends exCanvas implements LobbyConstants
 			int yb = (int)(0.68*bubbleY);
 			int xc = (int)(centerX+xb*(square?0.8:1));
 			int yc = centerY-yb;
-			int playerNumber = 1+((i+nplayers-firstPlayerIndex)%nplayers);
+			int playerNumber = 1+((i+nPlayers-firstPlayerIndex)%nPlayers);
 			Color color = Color.yellow;
-			if((nplayers==2) 
+			if((nPlayers==2) 
 					&& map!=null 
 					&& !selectedGame.variableColorMap)
 			{	// two player games where a particular color starts
@@ -576,14 +671,14 @@ public class SeatingViewer extends exCanvas implements LobbyConstants
 			boolean restartable = OfflineGames.restoreOfflineGame(lname)!=null; 
 			String finalMessage = nPlayers==0 ? Session.ReviewRoom : restartable ? RestartMessage : mainMessage;
 			if(GC.handleRoundButton(gc,r,bubbleSelect,s.get(finalMessage),
-					buttonHighlightColor, categoryMode ? buttonSelectedColor : buttonBackgroundColor))
+					buttonHighlightColor, buttonBackgroundColor))
 				{
 					bubbleSelect.hitCode = SeatId.StartButton;
 				}
 			if(restartable)
 			{
 				if(GC.handleRoundButton(gc,dr,bubbleSelect,s.get(DiscardGameMessage),
-					buttonHighlightColor, categoryMode ? buttonSelectedColor : buttonBackgroundColor))
+					buttonHighlightColor, buttonBackgroundColor))
 				{
 					bubbleSelect.hitCode = SeatId.DiscardButton;
 					}
@@ -695,11 +790,59 @@ public class SeatingViewer extends exCanvas implements LobbyConstants
 		}
 		return(gi.toArray());
 	}
+	private boolean drawCatButton(Graphics gc,HitPoint hp,MainMode m,int left,int top,int w,int h)
+	{	
+		Color fgColor = mainMode==m ? buttonSelectedColor : buttonBackgroundColor;
+		return (GC.handleRoundButton(gc, new Rectangle(left, top, w, h), 
+        		hp, s.get(m.title),
+                lastButton==m.id ? fgColor : buttonHighlightColor, fgColor));
+	}
+	
+	private boolean selectedGameSeen=false;
+	
+	// draw a column of game names
+	private boolean drawGameColumn(Graphics gc,HitPoint hp,boolean autoSelect,int margin,GameInfo gameNames[],int gameX,int gameY,int gameColumnWidth,int h)
+	{	
+		boolean hit = false;
+		if(gameNames!=null)
+		{
+		int vspace = h/Math.max(13,gameNames.length+3);
+		int half = vspace*5/6;
+		int lessThanHalf = half-half/10;
+		// display games within a category
+		if(autoSelect && gameNames.length==1) { selectGame(gameNames[0]); }
+		for(int i=0;i<gameNames.length;i++)
+		{
+			GameInfo g = gameNames[i];
+			String name = s.get(g.gameName);
+			selectedGameSeen |= g==selectedGame;
+			Color fgColor = g==selectedGame ? buttonSelectedColor : buttonBackgroundColor;
+			int gtop = gameY+i*vspace;
+			Rectangle gameRect = new Rectangle(gameX+half,gtop,gameColumnWidth-half,half);
+			Rectangle iconRect = new Rectangle(gameX,gtop+margin/2,lessThanHalf,lessThanHalf);
+			if(GC.handleRoundButton(gc, gameRect,hp,
+					name,
+					buttonHighlightColor, fgColor
+					))
+				{
+					hp.hitCode = SeatId.SelectGame;
+					hp.hitObject = g;
+					hit = true;
+				}
+			Image icon = g.getIcon();
+			if(icon!=null)
+			{
+			icon.centerImage(gc,iconRect);
+			GC.frameRect(gc, Color.black, iconRect);
+			}
+		}}
+		return hit;
+	}
 	
 	private CellId lastButton = null;
 	private void drawGameSelector(Graphics gc,Rectangle r,HitPoint hp)
 	{	GC.setFont(gc,largeBoldFont());
-		boolean selectedGameSeen = false;
+		selectedGameSeen = false;
 		SeatId someButton = null;
 		GameInfo game = sess.currentGame;
 		if(game!=null)
@@ -712,11 +855,10 @@ public class SeatingViewer extends exCanvas implements LobbyConstants
 		int h = G.Height(r);
 		GameInfo categoryNames[] = game.groupMenu(typeClass,nplayers);
 		int az_cols = 3;
-		int rows = 1+ (categoryMode ? categoryNames.length : (26+az_cols-1)/az_cols);
+		int rows = 1+ (mainMode==MainMode.Category ? categoryNames.length : (26+az_cols-1)/az_cols);
 		int step = Math.max(4, Math.min(G.getFontSize(largeBoldFont())*3,(h+rows-1)/rows));
 		int half = 2*step/3;
 		int margin = half/10;
-		int lessThanHalf = half-margin;
 		int vspace = half+half/4;
 		boolean gameListSeen = false;
 		sess.setMode(nplayers==0?Session.Mode.Review_Mode:Session.Mode.Unranked_Mode,isPassAndPlay());
@@ -731,26 +873,57 @@ public class SeatingViewer extends exCanvas implements LobbyConstants
 		int gameX = catColumnLeft+catColumnWidth+w/8;
 		int gameColumnWidth = w/4;
 		int variantX = gameX+gameColumnWidth+w/25;
-		{Color fgColor = categoryMode ? buttonSelectedColor : buttonBackgroundColor;
-		if(GC.handleRoundButton(gc, new Rectangle(catColumnLeft, t+half, catColumnWidth, step), 
-        		hp, s.get(CategoriesMode),
-                lastButton==SeatId.CategoriesSelected ? fgColor : buttonHighlightColor, fgColor))
-		{	someButton = SeatId.CategoriesSelected;
-		}
-		}
+		int catButtonW = (gameColumnWidth+catColumnWidth)/3;
+		int third = half*2/3;
+		
+		if(drawCatButton(gc,hp,MainMode.Category,catColumnLeft, t+half, catButtonW, step))
 		{
-		Color fgColor = !categoryMode ? buttonSelectedColor : buttonBackgroundColor;
-		if(GC.handleRoundButton(gc, new Rectangle(gameX, t+half, gameColumnWidth, step), 
-        		hp, s.get(A_ZMode),
-                lastButton==SeatId.A_Zselected ? fgColor : buttonHighlightColor, fgColor))
-		{	someButton = SeatId.A_Zselected;
-		}}
+			someButton = MainMode.Category.id;
+		}
+		if(drawCatButton(gc,hp,MainMode.AZ,catColumnLeft+catButtonW+third, t+half, catButtonW, step))
+		{
+			someButton = MainMode.AZ.id;
+		}
+		if(drawCatButton(gc,hp,MainMode.Recent,catColumnLeft+catButtonW*2+third*2, t+half, catButtonW, step))
+		{
+			someButton = MainMode.Recent.id;
+		}
+
+		
 		int gameY = t+half*2+step;
 		int variantY = gameY;
 		int spaces = (h-step*6)/half;
-		if(categoryMode)
+		switch(mainMode)
+		{
+		default: throw G.Error("Main mode %s not handled",mainMode);
+		case Recent:
+			{
+			GameInfo games[] = recentGames.toArray();
+			GameInfo favs[] = favoriteGames.toArray();
+			if(favs!=null)
+			{	// don't autoselect if there's a single game, it gets stuck!
+				if(drawGameColumn(gc,hp,games==null||games.length==1,margin,favs,catColumnLeft,gameY,gameColumnWidth,h))
+					{
+					someButton = SeatId.SelectGame;
+					}			
+				gameListSeen = true;
+			}
+			
+			if(games!=null)
+			{
+			if(drawGameColumn(gc,hp,(favs==null||favs.length==1),margin,games,gameX,gameY,gameColumnWidth,h))
+				{
+				someButton = SeatId.SelectGame;
+				}
+				gameListSeen = true;
+			}
+			
+			}
+			break;
+		case Category:
 		{	// game categories
 			int ncats = categoryNames.length;
+			{
 			int avspace = Math.min(vspace,h/ncats);
 			for(int i=0;i<ncats;i++)
 			{	String catName = categoryNames[i].groupName;
@@ -763,45 +936,30 @@ public class SeatingViewer extends exCanvas implements LobbyConstants
 					someButton = SeatId.SelectCategory;
 					hp.hitObject = catName;
 				}
-			}
-			// display games within a category
-			GameInfo gameNames[] = game.gameMenu(selectedCategory,typeClass,nplayers);
-			if(gameNames.length==1) { selectGame(gameNames[0]); }
-			for(int i=0;i<gameNames.length;i++)
+			}}
 			{
-				GameInfo g = gameNames[i];
-				String name = s.get(g.gameName);
-				selectedGameSeen |= g==selectedGame;
-				Color fgColor = g==selectedGame ? buttonSelectedColor : buttonBackgroundColor;
-				int gtop = gameY+i*avspace;
-				Rectangle gameRect = new Rectangle(gameX+half,gtop,gameColumnWidth-half,half);
-				Rectangle iconRect = new Rectangle(gameX,gtop+margin/2,lessThanHalf,lessThanHalf);
-				if(GC.handleRoundButton(gc, gameRect,hp,
-						name,
-						lastButton==SeatId.SelectGame ? fgColor : buttonHighlightColor, fgColor
-						))
+			GameInfo gameNames[] = game.gameMenu(selectedCategory,typeClass,nplayers);
+			gameListSeen = gameNames!=null && gameNames.length>0;
+			if(drawGameColumn(gc,hp,true,margin,gameNames,gameX,gameY,gameColumnWidth,h))
 					{
 						someButton = SeatId.SelectGame;
-						hp.hitObject = g;
-					}
-				Image icon = g.getIcon();
-				if(icon!=null)
-				{
-				icon.centerImage(gc,iconRect);
-				GC.frameRect(gc, Color.black, iconRect);
 				}
-				gameListSeen = true;
 			}
 		}
-		else
+		break;
+		
+		case AZ:
 		{	// a-z selection
 			GameInfo gameNames[] = game.gameMenu(null, typeClass,nplayers);
+			char selection = selectedLetter.charAt(0);			
 			GameInfo sub[][] = new GameInfo['Z'-'A'+1][];
 			for(char ch = 'A'; ch<='Z'; ch++) { sub[ch-'A'] = subgames(gameNames,ch); }
-			
 			int row = 0;
 			int col = 0;
-			char selection = selectedLetter.charAt(0);
+			catColumnLeft += vspace/2;
+			vspace = h/Math.max(13,(26+2)/3);
+			int hspace = vspace*5/6;
+
 			if(gameNames.length>spaces)
 			{
 				for(int i=0;i<26;i++)
@@ -815,7 +973,7 @@ public class SeatingViewer extends exCanvas implements LobbyConstants
 									: buttonBackgroundColor;
 					int xp = catColumnLeft+col*vspace;
 					int yp = gameY+row*vspace;
-					Rectangle re = new Rectangle(xp,yp,half,half);
+					Rectangle re = new Rectangle(xp,yp,hspace,hspace);
 					if(GC.handleRoundButton(gc, re ,hp,
 							letter,
 							lastButton==SeatId.SelectLetter ? fgColor : buttonHighlightColor, fgColor
@@ -830,51 +988,29 @@ public class SeatingViewer extends exCanvas implements LobbyConstants
 			}
 			else { selection = '?'; }
 			// games with the selected letter, or none
-			row = 0;
-			GameInfo lastGame = null;
-			int ngames = 0;
-			GameInfo matches[] = (selection>='A' && selection<='Z') ? sub[selection-'A'] : gameNames;
-			int avspace = Math.min(vspace, h/(matches.length+3));
+			GameInfo matches[] = selection=='*'
+						? null 
+						: (selection>='A' && selection<='Z') 
+							? sub[selection-'A'] 
+							: gameNames;
 			
-			for(GameInfo g : matches)
-			{	
-				String name = g.gameName;
-				char match = (""+(name.charAt(0))).toUpperCase().charAt(0);
-				if(selection=='?' || (selection==match))
-				{	selectedGameSeen |= g==selectedGame;
-					Color fgColor = g==selectedGame ? buttonSelectedColor : buttonBackgroundColor;
-					int gtop = gameY+row*avspace;
-					Rectangle gameRect = new Rectangle(gameX+half,gtop,gameColumnWidth-half,half);
-					Rectangle iconRect = new Rectangle(gameX,gtop+margin/2,lessThanHalf,lessThanHalf);
-					if(GC.handleRoundButton(gc, gameRect,hp,
-							s.get(name),
-							lastButton==SeatId.SelectGame ? fgColor : buttonHighlightColor, fgColor
-							))
+		
+			gameListSeen = matches!=null;
+			if(drawGameColumn(gc,hp,true,margin,matches,gameX,gameY,gameColumnWidth,h))
 					{
 						someButton = SeatId.SelectGame;
-						hp.hitObject = g;
 					}
-					Image icon = g.getIcon();
-					if(icon!=null)
-					{
-					icon.centerImage(gc,iconRect);
-					GC.frameRect(gc, Color.black, iconRect);
-					}
-					gameListSeen = true;
-					row++;
-					lastGame = g;
-					ngames++;
 				}
 			}
-			if(ngames==1) { selectGame(lastGame); }
 
-
-		}
 		  if(gameListSeen)
 		  { messageArea.setVisible(false);
 		  }
 		  else 
-		  {	int gameW = w-(gameX-l)-w/20;
+		  {	
+			helpRect.draw(gc,hp);
+  
+			int gameW = w-(gameX-l)-w/20;
 		    int gameH = h-(gameY-t)-h/20;
 		    Font lb = largeBoldFont();
 		    // have to be very careful because GC may be null, and in rare
@@ -903,9 +1039,9 @@ public class SeatingViewer extends exCanvas implements LobbyConstants
 		
 		if(selectedGame!=null)
 		{	
-			variantY = gameY;
 			int hw = half*4-margin;
 			Rectangle iconRect = new Rectangle(variantX+(gameColumnWidth-hw)/2,t-margin,hw,hw);
+			variantY = G.Bottom(iconRect);
 			Image icon = selectedGame.getIcon2();
 			if(icon!=null)
 			{
@@ -915,8 +1051,8 @@ public class SeatingViewer extends exCanvas implements LobbyConstants
 			GameInfo variations[] = selectedGame.variationMenu(selectedGame.gameName,typeClass,nplayers);
 			if((variations!=null) && (variations.length>1) 
 					&& (selectedChart!=null))					
-			{	int avspace = Math.min(vspace, (h-vspace*4)/(variations.length+2));
-				if(variantY + (avspace*(variations.length+4))>h) { variantY = t+avspace; }
+			{	int avspace = Math.min(vspace, (h-vspace*4)/(variations.length+4));
+
 				GC.Text(gc,false,variantX,variantY,gameColumnWidth,avspace,Color.black,null,
 							s.get(VariantMsg,s.get(selectedGame.gameName),""+variations.length));
 				variantY += avspace;
@@ -1018,7 +1154,7 @@ public class SeatingViewer extends exCanvas implements LobbyConstants
 		GC.fillRect(gc, Color.lightGray,fullRect);
 		
 		String appversion = G.getAppVersion();
-	 	String platform = G.getPlatformName().toLowerCase();
+	 	String platform = G.getPlatformPrefix();
 	 	String prefVersion = G.getString(platform+"_version",null);
 		String va = s.get(VersionMessage,appversion);
 
@@ -1211,6 +1347,7 @@ public class SeatingViewer extends exCanvas implements LobbyConstants
 	static String SoloMode = "Solo review of games";
 	static String NPlayerMode = "Games for #1 Players";
 	static String CategoriesMode = "Categories";
+	static String RecentMode = "Recent";
 	static String A_ZMode = "Games A-Z";
 	static String VariantMsg = "#1 has #2 variations";
 	static String RulesMessage = "read the rules";
@@ -1231,8 +1368,13 @@ public class SeatingViewer extends exCanvas implements LobbyConstants
 	static String DrawerOffMessage = "Player Drawers OFF";
 	static String DrawersOnMessage = "Player Drawers ON";
 	static String MessageAreaMessage = "MessageAreaMessage";
+	static String HelpMessage = "Get More Help";
+	static String ExplainHelpMessage = "show the documentation for this screen";
+	
 	public static String[]SeatingStrings =
 		{	SelectChartMessage,
+			HelpMessage,
+			ExplainHelpMessage,
 			TableNameMessage,
 			SendFeedbackMessage,
 			DrawerOffMessage,
@@ -1254,6 +1396,7 @@ public class SeatingViewer extends exCanvas implements LobbyConstants
 			VariantMsg,
 			CategoriesMode,
 			A_ZMode,
+			RecentMode,
 		};
 	
 	 public static String[][] SeatingStringPairs =
@@ -1318,7 +1461,7 @@ public class SeatingViewer extends exCanvas implements LobbyConstants
     }
     private void loseFocus()
     {
-    	if(useKeyboard && (selectedInputField!=null))
+    	if(selectedInputField!=null)
     	{	TextContainer sel = selectedInputField;
     		selectedInputField = null;
     		keyboard = null;

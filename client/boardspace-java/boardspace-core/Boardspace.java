@@ -28,6 +28,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
+//TODO: add special handling for error is : java.io.IOException: write failed: ENOSPC (No space left on device)
+
 /**
  * Load a java application defined by an executable jar loaded from a web site
  * Maintain a lazy cache of all the jar files in the application

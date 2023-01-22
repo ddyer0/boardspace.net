@@ -394,6 +394,16 @@ public static synchronized Object MakeInstance(String classname)
     static final public String getPlatformName() { return(platformName); }
     static final public void setPlatformName(String n) { platformName = n; }
     
+    /**
+     * this is the version of "platform" that's used to test version applicability.
+     * normally, ios or android, but igt is a special case
+     * @return
+     */
+     static final public String getPlatformPrefix()
+     {
+    	 return getPlatformName().toLowerCase();
+     }
+     
     static final public boolean isSimulator() 
     {
     	return(false);
