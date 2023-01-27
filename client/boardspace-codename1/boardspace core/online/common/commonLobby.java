@@ -805,6 +805,7 @@ private void PreloadClass(String classname)
 	LoadThread loader = new LoadThread();
 	loader.setLoadParameters(classname,this);
 	loader.start();
+	
 	//G.print("Prepared "+classname+" "+(G.Date()-now));
  }
  

@@ -1,4 +1,6 @@
 
+import java.awt.FileDialog;
+import java.awt.Frame;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -21,6 +23,7 @@ import java.net.URLClassLoader;
 import java.net.URLConnection;
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.Stack;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
@@ -71,6 +74,50 @@ class CacheInfo {
 		name = n;
 		loaded = l;
 	}
+	private static Stack<CacheInfo> copyInProgress =new Stack<CacheInfo>();
+	private static Stack<Thread>waiting = new Stack<Thread>();
+	private String nameList()
+	{	String n = "(";
+		for(int lim=copyInProgress.size()-1; lim>=0; lim--)
+		{
+			n+=copyInProgress.elementAt(lim).name+" ";
+		}
+		return n+")";
+	}
+	private void copyUrl(String host,String from,File to,long totime) throws MalformedURLException, IOException
+	{	boolean delay = false;
+		Thread current = Thread.currentThread();
+		
+		synchronized (copyInProgress)
+		{	delay = !copyInProgress.empty();
+		    Boardspace.log("Copy "+name+" waiting "+nameList());
+			copyInProgress.push(this);
+			waiting.push(current);
+		}
+		
+		if(delay) 
+		{	
+			try { synchronized(current) { current.wait(); } } catch (InterruptedException e) {};
+			Boardspace.log("Copy "+name+" resumed");
+		}
+
+		copyUrlSync(host,from,to,totime);
+		
+		synchronized(copyInProgress)
+		{
+			copyInProgress.removeElement(this);
+			waiting.removeElement(current);
+			if(!copyInProgress.empty())
+			{
+				Thread w = waiting.peek();
+				CacheInfo c = copyInProgress.peek();
+				Boardspace.log("Wake "+c.name+" "+w+" "+nameList());
+				
+				synchronized (w) { w.interrupt(); }
+			}
+		}
+		
+	}
 	/**
 	 * copy a file from the web host to the cache
 	 * @param from
@@ -79,10 +126,10 @@ class CacheInfo {
 	 * @throws MalformedURLException
 	 * @throws IOException
 	 */
-	private void copyUrl(String host,String from,File to,long totime) throws MalformedURLException, IOException
-	{
+	private synchronized void copyUrlSync(String host,String from,File to,long totime) throws MalformedURLException, IOException
+	{	// this is synchronized so only one copy operation can ever be in progress for a given file
 		InputStream input = new URL(host+from).openConnection().getInputStream();
-		if(verbose) { Boardspace.out.println("Copying "+from+" > "+to); }
+		if(verbose) { Boardspace.log("Copying "+from+" > "+to); }
 
 		String name = from.substring(from.lastIndexOf('/')+1);
 		File toFile = new File(to,name);
@@ -90,7 +137,8 @@ class CacheInfo {
 		byte buffer[] = new byte[BUFFERSIZE];
 		int nbytes = 0;
 		while( (nbytes = input.read(buffer))>0) 
-		{
+		{	// this is a hack to induce overlap in file transfers
+			// try { Thread.sleep(10); } catch (InterruptedException e) {};
 			output.write(buffer,0,nbytes);
 		}
 		if(output!=null) { output.close(); }
@@ -98,17 +146,25 @@ class CacheInfo {
 			{ toFile.setLastModified(totime*1000); 
 			}
 		if(input!=null) { input.close(); }
-		
+		if(verbose) { Boardspace.log("copy "+from+" finished"); }
 	}
 	
-	// synchronize minimally here, so we don't block the broader cache loader
-	synchronized void cacheFile(String host,File localDir) throws IOException
+	void cacheFile(String host,File localDir) throws IOException
 	{
-		if(verbose) { Boardspace.out.println("cache "+name); }
+		if(verbose) { Boardspace.log("cache "+name); }
 		if(!loaded)	// if multiple threads get caught, only load once
-		{	copyUrl(host,name,localDir,date);
+		{	
+			if(Boardspace.fastMode)
+				{
+				copyUrlSync(host,name,localDir,date);
+				}
+				else 
+				{ 
+				copyUrl(host,name,localDir,date); 
+				}
 			loaded = true;
 		}
+		if(verbose) { Boardspace.log("cache "+name+" "+loaded); }
 	}
 }
 
@@ -126,7 +182,8 @@ class CacheInfo {
  *
  */
 public class Boardspace extends URLClassLoader implements Runnable,LoaderConfig
-{	static String hostName = serverName;
+{	public static boolean fastMode = true;
+	static String hostName = serverName;
 	static boolean test = false;
 	static String activeProtocol = protocol;
 	static String webHost() { return(activeProtocol+"://"+hostName); }   
@@ -143,7 +200,22 @@ public class Boardspace extends URLClassLoader implements Runnable,LoaderConfig
 	// map from package names to cacheinfo, same cacheinfo object as in the jar cache
 	private Hashtable<String,CacheInfo> packageCache = new Hashtable<String,CacheInfo>();
 	
+	private static long startTime = 0;
+	private static Thread startThread = null;
 
+	// this curious construction is so early messages (before the instance is created) and later ones
+	// can both use the same interface
+	static void log(String message)
+	{	long now = System.currentTimeMillis(); 
+		Thread thread = Thread.currentThread();
+		if(startTime==0) { startTime = now; startThread = thread; }
+		Boardspace.out.print("+");
+		Boardspace.out.print(now-startTime);
+		Boardspace.out.print(" ");
+		if(thread!=startThread) { Boardspace.out.print(thread); Boardspace.out.print(" "); }
+		Boardspace.out.println(message);
+	}
+	
 	public static final String OS_VERSION = "os.version";
 	public static final String OS_ARCH = "os.arch";
 	public static final String OS_NAME = "os.name";
@@ -179,7 +251,8 @@ public class Boardspace extends URLClassLoader implements Runnable,LoaderConfig
 	// name0 identifies a jar, a class, or a resource.
 	// return true if we got a valid file
 	public boolean assureCached(String name0)
-	{	String name = name0;
+	{	if(verbose) { log("assureCached "+name0); }
+		String name = name0;
 		CacheInfo info = null;
 		if(name.endsWith(".jar")) { info = jarCache.get(name); }
 		else 
@@ -189,48 +262,81 @@ public class Boardspace extends URLClassLoader implements Runnable,LoaderConfig
 			  info = packageCache.get(name);
 			}}
 		if(info==null) 
-		{ if(verbose) { Boardspace.out.println("No info for "+name0); } 
+		{ if(verbose) { log("No info for "+name0); } 
 		  return(false);
 		}
 		else 
 		{if(!info.loaded)
 			{	
 				try {
-					if(verbose) { Boardspace.out.println("cache "+name); }
-					info.cacheFile(webHost(),localCacheDir);
-					if(!info.loaded) { Boardspace.out.println(""+info+" failed to load"); }
+					if(verbose) { log("cache "+name); }
+					// synchronized so only one copy can be in progress at a time
+					info.cacheFile(webHost(),localCacheDir); 
+					if(!info.loaded) { log(""+info+" failed to load"); }
 				}
 				catch (Exception e)
 				{
 					showError("Error fetching "+name+" from "+webHost(),e);
 				}
 			}
+		if(verbose) { log("assureCached exit "+name0+" "+info.loaded); }
 		return(info.loaded);
 		}
 		
 	}
- 
+	@SuppressWarnings("unused")
+	private void printStackTrace()
+	{
+		try { throw new Error("Stack trace");
+        } catch (Error e)
+        {
+        	e.printStackTrace(out);
+        }
+	}
 	// this is the hook to the cacheloader.  The key to making this work
 	// is parsing the main jar index to get the package names.
     public Class<?> findClass(String name) throws ClassNotFoundException
-	{	
-		if(verbose) { Boardspace.out.println("Find class "+name); }
+	{	//try {
+		if(verbose) { log("findClass "+name); }
 		if(assureCached(name))
 		{
-		return(super.findClass(name));
+		Class<?>v  = (super.findClass(name));
+		if(verbose) { log("findClass found "+v); }
+		return v;
 		}
-		Boardspace.out.println("AssureCached "+name+" failed");
+	//} catch (NoClassDefFoundError err)
+	//{
+	//	
+	//}
+		log("AssureCached "+name+" failed");
 		return null;
 	}
-
+    /*
+    // better not to do this - let the system do the standard things
+    // to find a class if they succeed.
+    public final Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException
+    {
+		if(verbose) { log("loadClass "+name); }
+		if(assureCached(name))
+			{
+			return super.loadClass(name,resolve);
+            }
+		Class<?>v = super.loadClass(name,resolve);
+		if(v==null) { log("loadClass "+name+" failed"); }
+		return v;
+    }
+     */
     public URL findResource(String name)
-	{	if(verbose) { Boardspace.out.println("Find "+name); }
-    	// resource names have paths with /, and typically filename.type
+	{	if(verbose) { log("findResource "+name); }
+     	// resource names have paths with /, and typically filename.type
     	// so we need to strip off the actual name leaving the path
 		if(assureCached(name.substring(0,name.lastIndexOf('/')+1)))
 			{
-			return(super.findResource(name));
+			URL v  = super.findResource(name);
+			if(verbose) { log("findResource found "+v); }
+			return v;
 			}
+		if(verbose) { log("findResource found null"); }
 		return null;
 	}
 
@@ -272,7 +378,7 @@ public class Boardspace extends URLClassLoader implements Runnable,LoaderConfig
 	*/
 	private String getCacheSource(String dir) throws MalformedURLException, IOException
 	{	String url = webHost()+dir+(test?"&test=1":"");
-		if(verbose) { Boardspace.out.println("Url : "+url); }
+		if(verbose) { log("Url : "+url); }
 		try { 
 		InputStream content = new URL(url).openConnection().getInputStream();
 		String all = new String(readAll(content));
@@ -281,19 +387,19 @@ public class Boardspace extends URLClassLoader implements Runnable,LoaderConfig
 		{	if("https".equals(activeProtocol))
 			{
 			// some old versions of java don't like Boardspace certificate
-			if(verbose) { Boardspace.out.println("https failed: "+e); }
+			if(verbose) { log("https failed: "+e); }
 			activeProtocol = "http";
 			String all = getCacheSource(dir);
 			if((all!=null) && all.startsWith("version,")) 
 				{ 
-				if(verbose) { Boardspace.out.println("Downgrade to http succeeded"); }
+				if(verbose) { log("Downgrade to http succeeded"); }
 				return all; 
 				}
 			String msg = "downgrade https to http failed\n"+all;
 			throw new IOException(msg);
 			}
 			else {
-				if(verbose) { Boardspace.out.println("url failed: "+e); }
+				if(verbose) { log("url failed: "+e); }
 				throw e;
 			}
 		}
@@ -320,7 +426,7 @@ public class Boardspace extends URLClassLoader implements Runnable,LoaderConfig
 		// followed by a list of packages contained in the jar
 		while( (line=re.readLine())!=null)
 			{
-				if(verbose) { Boardspace.out.println("jarinfo:"+line); }
+				if(verbose) { log("jarinfo:"+line); }
 				if(line.length()<=1) {}
 				else if(line.endsWith(".jar"))
 					{ info = jarCache.get(line); 
@@ -349,7 +455,7 @@ public class Boardspace extends URLClassLoader implements Runnable,LoaderConfig
 		if(uncache) 
 		{ for(File f : cacheDir.listFiles()) 
 			{
-			if(verbose) { Boardspace.out.println("Deleting "+f); }
+			if(verbose) { log("Deleting "+f); }
 			f.delete();
 			}
 		}
@@ -427,7 +533,7 @@ public class Boardspace extends URLClassLoader implements Runnable,LoaderConfig
 		// the rest of the result is a list of dates (unix format, seconds since the epoch),files to be cached,
 		//
 		String firstLine = reader.readLine().toLowerCase();
-		if(verbose) { Boardspace.out.println("webinfo:"+firstLine); }
+		if(verbose) { log("webinfo:"+firstLine); }
 		String specs[] = firstLine==null ? null : firstLine.split(",");
 		if(specs!=null
 			&& specs.length==3
@@ -441,7 +547,7 @@ public class Boardspace extends URLClassLoader implements Runnable,LoaderConfig
 		while( (line=reader.readLine())!=null)
 			{
 			nlines++;
-			if(verbose) { Boardspace.out.println("webinfo:"+line); }
+			if(verbose) { log("webinfo:"+line); }
 			if(!line.startsWith("#"))
 			{
 			String parts[] = line.split(",");
@@ -475,7 +581,7 @@ public class Boardspace extends URLClassLoader implements Runnable,LoaderConfig
 		}
 		}
 		else {
-			if(verbose) { Boardspace.out.println("bad cache key in:\n"+dir+"\n"); }
+			if(verbose) { log("bad cache key in:\n"+dir+"\n"); }
 			throw new Error("bad cache key:\n"+firstLine);
 		}
 	}
@@ -544,8 +650,8 @@ public class Boardspace extends URLClassLoader implements Runnable,LoaderConfig
 		String all = new String(readAll(ins));
 		if(verbose)
 			{
-			Boardspace.out.println("web logging message: "+m);
-			Boardspace.out.println("web logging result: "+all); 
+			log("web logging message: "+m);
+			log("web logging result: "+all); 
 			}
    }
 	/** print an error message with a stack trace, show a visible pop up, and log to a web url
@@ -568,12 +674,12 @@ public class Boardspace extends URLClassLoader implements Runnable,LoaderConfig
 	    postError(caption+"\n"+msg);
 		}
 
-		catch (Throwable er) { Boardspace.out.println("Recursive error "+er); };
+		catch (Throwable er) { log("Recursive error "+er); };
 	}
 	private static void showMessage(String caption,String msg)
 	{
-		Boardspace.out.println(caption);
-		Boardspace.out.println(msg);
+		log(caption);
+		log(msg);
 	    JOptionPane.showMessageDialog(null, msg, caption, JOptionPane.INFORMATION_MESSAGE);
 	}
 	private void delay(int millis)
@@ -609,7 +715,28 @@ public class Boardspace extends URLClassLoader implements Runnable,LoaderConfig
 			JTextArea text = new JTextArea(msg,40,80);
 			text.setEditable(false);
 			JScrollPane scroll = new JScrollPane(text);
-			JOptionPane.showMessageDialog(null, scroll,"Loader log",JOptionPane.INFORMATION_MESSAGE);
+			int v = JOptionPane.showOptionDialog(null, scroll,"Loader log",JOptionPane.INFORMATION_MESSAGE,
+					0, null,new String[] { "Ok","Save" },"Ok");
+			if(v==1)
+				{
+				FileDialog fd = new FileDialog((Frame)null,"Save to file",FileDialog.SAVE);
+				fd.setFile("boardspace-startup-log.txt");
+				fd.setVisible(true);
+				// get the selected filename, if any
+				try {
+				String directory = fd.getDirectory();
+				String file = fd.getFile();
+				String name =  directory+System.getProperty("file.separator")+file;
+				FileOutputStream out = new FileOutputStream(name);
+				out.write(msg.getBytes());
+				out.close();
+				}
+				catch (IOException err)
+				{
+					System.out.println("Save failed "+err);
+				}
+
+				}
 			}
 	}
 	public static void main(String[]args)
@@ -617,15 +744,17 @@ public class Boardspace extends URLClassLoader implements Runnable,LoaderConfig
 		String runtimeServer = null;
 		try {
 		for(int i=0;i<args.length;i++)
-		{	//Boardspace.out.println("arg "+i+" "+args[i]);
+		{	//log("arg "+i+" "+args[i]);
 			if("-v".equals(args[i])) { CacheInfo.verbose = verbose = true; }
+			else if("-vt".equals(args[i])) { CacheInfo.verbose = verbose = true; out = System.out; }
 			else if("-testserver".equals(args[i])) { CacheInfo.test = test = true; }
 			else if("-uncache".equals(args[i])) { CacheInfo.uncache = uncache = true; }
+			else if("-slow".equals(args[i])) { fastMode = false; }
 			else if("-server".equals(args[i])) { hostName = runtimeServer = args[i+1];  i++; }
 			else if("-debug".equals(args[i])) { debug="swat".equals(args[i+1]); i++; }
 			else 
 			{
-			String msg = "Options are -v -testserver -uncache -server <servername> -debug <password>";
+			String msg = "Options are -v -vt -slow -testserver -uncache -server <servername> -debug <password>";
 			out.println(msg);
 			showMessage("Loader Message",msg);
 			fastExit=true; 
@@ -641,7 +770,7 @@ public class Boardspace extends URLClassLoader implements Runnable,LoaderConfig
 					&& (runtimeServer!=null)
 					&&("servername".equals(runArgs[argnum-1])))
 				{ val = runtimeServer;
-				  Boardspace.out.println("Runtime server is "+runtimeServer);
+				  out.println("Runtime server is "+runtimeServer);
 				}
 				System.setProperty("mainargs-"+argnum,val);
 			}

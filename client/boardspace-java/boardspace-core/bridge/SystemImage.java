@@ -32,6 +32,7 @@ import javax.imageio.stream.ImageOutputStream;
 
 import lib.G;
 import lib.Image;
+import lib.Plog;
 
 /**
  * these are the system dependent functions used by the common lib.Image class
@@ -314,7 +315,7 @@ public abstract class SystemImage implements ImageObserver
 
        return (true);
    }
-   G.print("Composite failed");
+   Plog.log.addLog("Composite failed");
    return(false);
 }
    
@@ -418,7 +419,7 @@ public Image getScaledInstance(int w,int h,int scal)
 		Image v = Image.createImage(scl,"{scaled}"+getName());
 		long last = G.Date();
 		if(G.debug() && (last-now > 1000))
-			{ G.print("Scale ",this," to ",+w,"x",h," took ",(int)(later-now),"+",(int)(last-later));
+			{ Plog.log.addLog("Scale ",this," to ",+w,"x",h," took ",(int)(later-now),"+",(int)(last-later));
 			}
 		return(v);
 	}

@@ -796,7 +796,7 @@ public void update(SimpleObservable ob, Object eventType, Object arg)
 	else { super.update(ob, eventType, arg); }
 }
 private void PreloadClass(String classname)
-{	if( (classname==null)
+{	 if( (classname==null)
 		|| (PreloadedClasses.get(classname)!=null)) 
 		{ return; 
 		}
@@ -806,6 +806,7 @@ private void PreloadClass(String classname)
 	LoadThread loader = new LoadThread();
 	loader.setLoadParameters(classname,this);
 	loader.start();
+	
 	//G.print("Prepared "+classname+" "+(G.Date()-now));
  }
  

@@ -71,7 +71,8 @@ public class MouseManager
     class MouseStack extends OStack<CanvasMouseEvent> {
     	public CanvasMouseEvent[] newComponentArray(int n) { return new CanvasMouseEvent[n]; }
     }
-    public MouseStack mouseHistory = new MouseStack();
+    private boolean recordHistory = false;
+    public Plog mouseHistory = new Plog(200);
     //
     // get the current mouse.  We're called in the run thread and
     // synchronized so we are protected from the UI thread
@@ -82,11 +83,15 @@ public class MouseManager
     		{ firstMouseEvent = event.next;
     		  if(firstMouseEvent==null) { lastMouseEvent=null;}
     		}
-     	if(event!=null) 
-     		{ mouseHistory.push(event);
-     		  //Plog.log.addLog("getMouse "+event); 
+     	if(recordHistory && event!=null) 
+     		{ 
+     		mouseHistory.addLog("getMouse "+event); 
      		}
     	return(event);
+    }
+    public String getHistory()
+    {	recordHistory = true;
+    	return mouseHistory.getUnseen();
     }
     //
     // change the highlighted point, and cause refresh if it changes.
@@ -133,11 +138,12 @@ public class MouseManager
     	setMouseInternal(ev,button,x,y,0.0,0.0);
     }
     private long startPinchTime = 0;
-    private MouseState lastState = MouseState.LAST_IS_UP;
+    private MouseState lastStateIn = MouseState.LAST_IS_UP;
+    
     private synchronized void setMouseInternal(MouseState ev,int button,int x,int y,double amount,double angle)
     {	
     	if((ev==MouseState.LAST_IS_DRAG)&& (button==0)) { button = 1; }
-    	//Plog.log.addLog("Se ",ev," ",button);
+    	if(recordHistory) { mouseHistory.addLog("Se ",ev," ",button);}
         if(virtualMouseMode 
         		&& ((ev==MouseState.LAST_IS_MOVE)
         			|| (ev==MouseState.LAST_IS_IDLE))) 
@@ -151,7 +157,7 @@ public class MouseManager
         x = canvas.rotateCanvasX(xx,yy);
         y = canvas.rotateCanvasY(xx,yy);
         long now = G.Date();
-        lastState = ev;
+        lastStateIn = ev;
         lastMouseState = ev;
         if(virtualMouseMode)
     	{	switch(ev)
@@ -289,13 +295,13 @@ public class MouseManager
 		
 		public boolean isDragging()
 		{
-			return((lastState==MouseState.LAST_IS_PINCH)
-					|| (lastState==MouseState.LAST_IS_DRAG));
+			return((lastStateIn==MouseState.LAST_IS_PINCH)
+					|| (lastStateIn==MouseState.LAST_IS_DRAG));
 		}
 		public boolean isDown()
-		{	return((lastState==MouseState.LAST_IS_DOWN)
-					|| (lastState==MouseState.LAST_IS_PINCH)
-					|| (lastState==MouseState.LAST_IS_DRAG)); 
+		{	return((lastStateIn==MouseState.LAST_IS_DOWN)
+					|| (lastStateIn==MouseState.LAST_IS_PINCH)
+					|| (lastStateIn==MouseState.LAST_IS_DRAG)); 
 		}
 		
 		private void stopDragging(HitPoint pt)
@@ -382,12 +388,12 @@ public class MouseManager
 	        {
 	        case LAST_IS_IDLE:
 	        case LAST_IS_MOVE:
-	        {	
-	        	mouseDrag = 0;
-	        	noPinch();
-	            mouseMotion(x, y,st);
-	        }
-	        break;
+		        {	
+		        	mouseDrag = 0;
+		        	noPinch();
+		            mouseMotion(x, y,st);
+		        }
+		        break;
 
 	        case LAST_IS_DOWN:
 	        	{
@@ -457,17 +463,20 @@ public class MouseManager
 	        	{	// give a fake "up" address indicating no more movement
 	        		mouseMotion(mouse_pinch_x,mouse_pinch_y,st); 
 	        	}
-	        	else 
+	        	else
 	        	{
 	            HitPoint hp = highlightPoint;
 	            // the wasdragging/amdragging logic implements the behavior
 	            // to "pick up" objects by clicking on them, so they don't have
 	            // to be dragged.  We don't want that behavior for the slider thumb
-	            boolean wasdragging = ((hp != null) && hp.dragging );
+	            boolean wasdragging = 
+	            		((hp != null) && hp.dragging );
 
 	            if (!wasdragging)
-	            {
-	                HitPoint pt = mouseMotion(x, y, MouseState.LAST_IS_MOVE); // get current information about what's under the mouse
+	            {	// the mouse is down and hasn't moved.  Make sure a minimal motion is asserted
+	            	// this was LAST_IS_MOVE before 1/25/2023, which is inconsistent because the mouse
+	            	// is down and is being released.  
+	                HitPoint pt = mouseMotion(x, y, MouseState.LAST_IS_DRAG); // get current information about what's under the mouse
 	                if(pt!=null)
 	                	{ pt.setButton(button);
 	                	  startDragging(pt);

@@ -21,6 +21,10 @@ public class ScrollableList<E> extends List<E> implements MouseListener
 	// is pressed.
 	boolean nothingSelected = true;
 
+	public void pointerReleased(int x,int y)
+	{
+		super.pointerReleased(x,y);
+	}
 	public void removeAll()
 	{
 		super.removeAll();

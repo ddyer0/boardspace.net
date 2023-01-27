@@ -1049,7 +1049,7 @@ private void playSounds(commonMove m)
  * StartDragging is called when he has done this.
  */
     public void StartDragging(HitPoint hp)
-    {
+    {	G.print("Start "+hp);
         if (hp.hitCode instanceof GoId) // not dragging anything yet, so maybe start
         {
         GoId hitObject = (GoId)hp.hitCode;
@@ -1438,6 +1438,7 @@ private void playSounds(commonMove m)
 	 */
     public void StopDragging( HitPoint hp)
     {	CellId id = hp.hitCode;
+    	G.print("Stop "+hp);
     	if(!(id instanceof GoId)) 
     		{ // handle all the actions that aren't ours
     			missedOneClick = performStandardActions(hp,missedOneClick); 

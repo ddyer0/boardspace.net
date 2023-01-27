@@ -30,7 +30,7 @@ public abstract class exCanvas extends ProxyWindow
 	implements SimpleObserver,DeferredEventHandler, 
 		CanvasProtocol,Config,OnlineConstants,
 		ImageConsumer,RepaintHelper,MenuParentInterface,
-		VncEventInterface,MouseClient,MouseMotionListener,MouseListener,MouseWheelListener
+		VncEventInterface,MouseClient,MouseMotionListener,MouseListener,MouseWheelListener,TouchMagnifierClient
 {	// two specials just for standard java
     static final String VirtualMouse = "Virtual Mouse";
     static final String SpeedTestMessage = "Cpu speed test";
@@ -396,7 +396,10 @@ public abstract class exCanvas extends ProxyWindow
         l.largeBoldFont = G.getFont(standardPlainFont(), G.Style.Bold, FontHeight+5);
         labelFont = standardBoldFont();
     }
-
+    public exCanvas()
+    {
+        lockAndLoadImages();
+    }
     /** this init method should be wrapped by individual games
      * to do once-only initialization.
      * @param info
@@ -468,7 +471,6 @@ public abstract class exCanvas extends ProxyWindow
         addMouseMotionListener(this);
         addMouseListener(this);
         addMouseWheelListener(this);
-        lockAndLoadImages();
         
         if(!G.isCodename1() || G.isRealWindroid())
         {

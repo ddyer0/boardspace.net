@@ -1,5 +1,6 @@
 package bridge;
 
+import java.awt.Component;
 import java.awt.Panel;
 import java.awt.Rectangle;
 import java.awt.event.WindowEvent;
@@ -75,7 +76,12 @@ public class FullscreenPanel extends Panel implements MenuParentInterface, Canva
 	public void windowDeactivated(WindowEvent e) {
 		
 	}
-	
+	public void setFocused(Component p)
+	{
+		// this is a dummy method, the codename1 version does something.
+		// this fixes a problem where the fileselector came up "dead" after
+		// a selection, which appears to be a focus problem.
+	}
 	// support for rotater buttons
 	CanvasRotaterProtocol rotater = new CanvasRotater(this);
 	public int getCanvasRotation() { return rotater.getCanvasRotation(); }

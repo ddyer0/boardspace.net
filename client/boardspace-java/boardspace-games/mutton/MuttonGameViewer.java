@@ -151,8 +151,6 @@ public class MuttonGameViewer extends commonCanvas implements MuttonConstants
 		// Load the graphics helper module.
 		mg = MuttonGraphicsHelper.getInstance(this);
 
-		lockAndLoadImages();    // this ends up calling preloadImages
-
 		// Initialize the custom menu options
 		historyDisplayOption = myFrame.addOption("Display chart", true, deferredEvents);
 

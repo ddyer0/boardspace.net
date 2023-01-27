@@ -2095,18 +2095,16 @@ public static String expandClassName(String classname)
 	    }
 	    public static String platformId()
 	    {
-	    	return G.concat(getPlatformName(),getPlatformSubtype(),getAppVersion());
+	    	return G.concat(getPlatformName(),getPlatformSubtype()," ",getAppVersion());
 	    }
 	    public static String platformString()
 	    {
 	    	return("&"
 	    			+ PlatformParameterName 
-	    			+ "="+Http.escape(getPlatformName()
-	    			+ getPlatformSubtype()
-					+"-"+getAppVersion()));
+	    			+ "="+Http.escape(platformId()));
 	    }
 		public static void getFeedback() {
-			String msg = G.concat("feedback for ",G.getPlatformName()," ",G.getPlatformSubtype()," ",G.getAppVersion()); 	
+			String msg = G.concat("feedback for ",platformId()); 	
     		
         	G.showDocument(
         			G.concat(feedbackUrl,

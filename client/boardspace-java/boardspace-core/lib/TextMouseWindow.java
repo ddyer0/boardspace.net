@@ -1,16 +1,10 @@
 package lib;
 
 import java.awt.Font;
-import java.awt.Frame;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
-import java.awt.event.MouseWheelListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
-import bridge.Canvas;
 import bridge.Utf8OutputStream;
 import lib.RepaintManager.RepaintHelper;
 import lib.RepaintManager.RepaintStrategy;
@@ -22,7 +16,7 @@ import lib.RepaintManager.RepaintStrategy;
  *
  */
 @SuppressWarnings("serial")
-public class TextWindow extends Canvas implements MouseListener,MouseMotionListener,MouseWheelListener,RepaintHelper,WindowListener 
+public class TextMouseWindow extends MouseCanvas implements  RepaintHelper,WindowListener , Runnable
 {
 	TextContainer area = new TextContainer("");
 	RepaintManager painter = new RepaintManager(this,
@@ -37,13 +31,11 @@ public class TextWindow extends Canvas implements MouseListener,MouseMotionListe
 	{
 		
 	}
-	public TextWindow(Frame f)
-	{	
+	public TextMouseWindow(LFrameProtocol f)
+	{	super(f);
 		painter.hasRunLoop = painter.drawLockRequired = false;
-		addMouseMotionListener(this);
-		addMouseListener(this);
-		addMouseWheelListener(this);
 		f.addWindowListener(this);
+		area.addObserver(this);
 		if(G.debug()) { G.print(painter.repaintStrategy); }
 	}
 	public void setReport(boolean v) { painter.setRecord(v); }
@@ -78,40 +70,17 @@ public class TextWindow extends Canvas implements MouseListener,MouseMotionListe
 		area.setText(s);
 	}
 	
-	// for MouseListener
-	public void mouseClicked(MouseEvent e) {
-		//area.doMouseMove(e.getX(),e.getY(),MouseState.LAST_IS_DOWN);		
-	}
-	public void mousePressed(MouseEvent e) {
-		area.doMouseMove(e.getX(),e.getY(),MouseState.LAST_IS_DOWN);	
-		repaint(100);
-	}
-	public void mouseReleased(MouseEvent e) {
-		area.doMouseMove(e.getX(),e.getY(),MouseState.LAST_IS_UP);
-		repaint(100);
-	}
-	public void mouseEntered(MouseEvent e) {
-		area.doMouseMove(e.getX(),e.getY(),MouseState.LAST_IS_ENTER);
-	}
-	public void mouseExited(MouseEvent e) {
-		area.doMouseMove(e.getX(),e.getY(),MouseState.LAST_IS_EXIT);
-		repaint(100);
-	}
-	//
-	// for MouseMotionListener
-	//
-	public void mouseDragged(MouseEvent e) {
-		area.doMouseMove(e.getX(),e.getY(),MouseState.LAST_IS_DRAG);
-		repaint(100);
-	}
-	public void mouseMoved(MouseEvent e) {
-		area.doMouseMove(e.getX(),e.getY(),MouseState.LAST_IS_MOVE);
-		repaint(100);
-	}
-	public void mousePinched(PinchEvent e)
+	public void MouseDown(HitPoint p)
 	{
-	
 	}
+
+	public HitPoint MouseMotion(int ex, int ey,MouseState upcode)
+	{	
+		area.doMouseMove(ex,ey,upcode);
+		repaint(100);
+		return null;
+	}
+	
 	//
 	// for repaintHelper
 	//
@@ -203,11 +172,29 @@ public class TextWindow extends Canvas implements MouseListener,MouseMotionListe
 	/* for window listener */
 	public void windowClosing(WindowEvent e) {
 		painter.shutdown();
+		shutdown();
 	}
-	
-	public void startProcess() {
-		// this is a dummy, we have no process.  TextMouseWindow has a process
-	}
-	
 
+	public void ViewerRun(int waitTime)
+	{
+		mouse.performMouse();
+  	  	//if(mouse.isDown()) { repaintSprites(); }	// keep the painter active if the mouse is down
+  	  	painter.repaintAndOrSleep(waitTime); 
+        mouse.performMouse();
+        //repaint(100);
+	}
+	boolean exitRequest = false;
+	public void run()
+	{
+		while(!exitRequest)
+		{
+			ViewerRun(100);
+		}
+	}
+	public void shutdown()
+	{	exitRequest = true;
+	}
+	public void startProcess()
+	{	new Thread(this).start();
+	}
 }

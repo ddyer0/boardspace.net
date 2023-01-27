@@ -10,7 +10,6 @@ import bridge.FontMetrics;
 import bridge.JCheckBoxMenuItem;
 import bridge.JOptionPane;
 import bridge.MouseWheelEvent;
-import bridge.Preferences;
 import bridge.URL;
 import common.GameInfo;
 import common.GameInfoStack;
@@ -46,7 +45,7 @@ public class SeatingViewer extends exCanvas implements LobbyConstants
 {	
 	static final String FAVORITES = "SeatingFavorites";
 	static final String RECENTS = "SeatingRecents";
-	
+	static final int RECENT_LIST_SIZE = 12;
 	Color buttonBackgroundColor = new Color(0.7f,0.7f,0.7f);
 	Color buttonEmptyColor = new Color(0.5f,0.5f,0.5f);
 	Color buttonHighlightColor = new Color(1.0f,0.5f,0.5f);
@@ -59,7 +58,7 @@ public class SeatingViewer extends exCanvas implements LobbyConstants
 	Rectangle seatingChart = addRect("seatingChart");
 	Rectangle gameSelectionRect = addRect("gameSelection");
 	Rectangle startStopRect = addRect("StartStop");
-	Rectangle onlineRect = addRect("Online");
+	TextButton onlineButton = addButton(PlayOnlineMessage,SeatId.PlayOnline,PlayOnlineExplanation,buttonHighlightColor, buttonBackgroundColor);
 	TextButton helpRect = addButton(HelpMessage,SeatId.HelpButton,ExplainHelpMessage,
 			buttonHighlightColor, buttonBackgroundColor);
 	Rectangle tableNameRect = addRect("TableName");
@@ -153,8 +152,8 @@ public class SeatingViewer extends exCanvas implements LobbyConstants
         autoDone.setForeground(Color.blue);
         // this starts the servers that listen for connections from side screens
         
-        reloadGameList(favoriteGames,FAVORITES);
-        reloadGameList(recentGames,RECENTS);
+        favoriteGames.reloadGameList(FAVORITES);
+        recentGames.reloadGameList(RECENTS);
         
         if(G.isCodename1())
         {
@@ -223,7 +222,7 @@ public class SeatingViewer extends exCanvas implements LobbyConstants
 		int buttonspace = buttonw/5;
 		int btop = h-buttonh;
 		int buttonX = G.Left(seatingChart);
-		G.SetRect(onlineRect, buttonX, btop, buttonw, buttonh);
+		G.SetRect(onlineButton, buttonX, btop, buttonw, buttonh);
 		buttonX += buttonw+buttonspace;
 		G.SetRect(startStopRect, buttonX, btop, buttonw, buttonh);
 		buttonX += buttonw+buttonspace;
@@ -306,47 +305,7 @@ public class SeatingViewer extends exCanvas implements LobbyConstants
 		sess.setCurrentGame(selectedVariant, false,isPassAndPlay());
 		sess.startingName = sess.launchName(null,true);
 	}
-	//reload a game list from preferences
-	private void reloadGameList(GameInfoStack stack,String key)
-	{	stack.clear();
-		Preferences prefs = Preferences.userRoot();
-		String games = prefs.get(key,null);
-		if(games!=null)
-		{
-			String all[] = G.split(games,',');
-			if(all!=null)
-			{
-			for(String name : all)
-				{
-				GameInfo g = GameInfo.findByVariation(name);
-				if(g!=null) { stack.push(g); }
-				}
-			}
-		}
 		
-	}
-	//modify the "recent" list
-	private void recordRecentGame(GameInfoStack stack,GameInfo in,String key)
-	{	// remove any games with the same name - variations are considered to be the same
-		for(int lim = stack.size()-1; lim>=0; lim--)
-			{
-			GameInfo g = stack.elementAt(lim);
-			if(g.gameName.equalsIgnoreCase(in.gameName)) { stack.remove(lim,true); }
-			}
-		// reduce size to 10
-		while(stack.size()>10) { stack.remove(0,false); }
-		// insert at the beginning
-		stack.insertElementAt(in,0);		// move to the most recent position
-		// save as a property
-		StringBuilder b = new StringBuilder();
-		for(int i=0,lim=stack.size(); i<lim; i++)
-		{	GameInfo g = stack.elementAt(i);
-			b.append(g.variationName);
-			b.append(",");
-		}
-		Preferences prefs = Preferences.userRoot();
-		prefs.put(key,b.toString());
-	}
 	
 	@Override
 	public void StopDragging(HitPoint hp) {
@@ -430,10 +389,10 @@ public class SeatingViewer extends exCanvas implements LobbyConstants
 				User players[] = new User[sess.players.length];
 				AR.copy(players,sess.players);
 				
-				recordRecentGame(recentGames,sess.currentGame,RECENTS);
+				recentGames.recordRecentGame(sess.currentGame,RECENTS,RECENT_LIST_SIZE);
 				if(mainMode==MainMode.Recent)
 				{	// if you select something from the recent tab, it becomes a favorite
-					recordRecentGame(favoriteGames,sess.currentGame,FAVORITES);
+					favoriteGames.recordRecentGame(sess.currentGame,FAVORITES,RECENT_LIST_SIZE);
 				}
 				sess.launchGame(user,true,colorIndex,getCanvasRotation(),sess.currentGame);
 				for(int i=0;i<players.length;i++) { sess.putInSess(players[i],i); }
@@ -898,8 +857,8 @@ public class SeatingViewer extends exCanvas implements LobbyConstants
 		default: throw G.Error("Main mode %s not handled",mainMode);
 		case Recent:
 			{
-			GameInfo games[] = recentGames.toArray();
-			GameInfo favs[] = favoriteGames.toArray();
+			GameInfo games[] = recentGames.filterGames(nplayers);
+			GameInfo favs[] = favoriteGames.filterGames(nplayers);
 			if(favs!=null)
 			{	// don't autoselect if there's a single game, it gets stuck!
 				if(drawGameColumn(gc,hp,games==null||games.length==1,margin,favs,catColumnLeft,gameY,gameColumnWidth,h))
@@ -1189,11 +1148,8 @@ public class SeatingViewer extends exCanvas implements LobbyConstants
 			unPt.hitCode = SeatId.ToggleServer;
 			}
 		
-		if(GC.handleRoundButton(gc,onlineRect,unPt,s.get(PlayOnlineMessage),
-				buttonHighlightColor, buttonBackgroundColor))
-			{
-				unPt.hitCode = SeatId.PlayOnline;
-			}
+		onlineButton.draw(gc,unPt);
+
 		if(!G.isIOS())
 		{
 		GC.TextRight(gc,tableNameRect,Color.black,null,s.get(TableNameMessage));
@@ -1360,6 +1316,7 @@ public class SeatingViewer extends exCanvas implements LobbyConstants
 	static String StartTableServerMessage = "Start table server";
 	static String StopTableServerMessage = "Stop table server";
 	static String PlayOnlineMessage = "Play Online";
+	static String PlayOnlineExplanation = "Log in to play online at Boardspace";
 	static String TableNameMessage = "Table Name: ";
 	static String SeatPositionMessage = "SeatPositionMessage";
 	static String ExitOptions = "Options";
@@ -1374,6 +1331,7 @@ public class SeatingViewer extends exCanvas implements LobbyConstants
 	public static String[]SeatingStrings =
 		{	SelectChartMessage,
 			HelpMessage,
+			PlayOnlineExplanation,
 			ExplainHelpMessage,
 			TableNameMessage,
 			SendFeedbackMessage,

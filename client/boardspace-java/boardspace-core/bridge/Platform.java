@@ -95,19 +95,38 @@ static final public String getPlatformSubtype()
  * creating required classes
  */
 public static synchronized Object MakeInstance(String classname)
+{
+	return MakeInstance(classname,true);
+}
+private static synchronized Object MakeInstance(String classname,boolean retry)
 {	String expname = "";
     try
     {	expname = G.expandClassName(classname);
+    	Plog.log.addLog("classforname ",expname," ",retry);
     	Class<?>cl = G.classForName(expname,false);
-    	if(cl==null) { throw new ClassNotFoundException(); }
+    	if(cl==null) 
+    		{ 
+    		// this really shouldn't happen, but it does occasionally. My leading theory
+    		// is that the class .jar file in the cache is "busy" due to activity by
+    		// antivirus activity
+    		Plog.log.addLog("classForName failed with null for ",expname);
+    		if(retry) {
+    			G.doDelay(250);		// wait a little
+    			return MakeInstance(classname,false);
+    		}
+    		else { throw new ClassNotFoundException(); } 
+    		}
+    	if(!retry) { Plog.log.addLog("classForName "+expname+" succeeded after retry");}
         return (cl.getDeclaredConstructor().newInstance()); //was cl.newInstance()
     }
     catch (Exception e)
-    {
-    	throw G.Error(expname+":"+e.toString());
+    {	if(retry)
+    		{
+    		G.doDelay(250);		// wait a little
+    		return MakeInstance(classname,false); 
+    		}
+    	else {  throw G.Error(expname+":"+e.toString()); }
     }
-
-
 }
 	static int color = 0;
 

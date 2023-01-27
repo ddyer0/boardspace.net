@@ -6,6 +6,9 @@ import java.awt.LayoutManager;
 import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
@@ -13,12 +16,18 @@ import lib.CanvasRotater;
 import lib.CanvasRotaterProtocol;
 import lib.G;
 import lib.Graphics;
+import lib.LFrameProtocol;
 import lib.SizeProvider;
 import lib.TextContainer;
 
 @SuppressWarnings("serial")
-public abstract class Canvas extends java.awt.Canvas implements SizeProvider , CanvasRotaterProtocol, WindowListener, MouseListener
-{
+public abstract class Canvas extends java.awt.Canvas 
+	implements SizeProvider , CanvasRotaterProtocol, WindowListener, MouseListener,MouseMotionListener,MouseWheelListener
+{	public Canvas() { super(); }
+	public Canvas(LFrameProtocol frame)
+	{	super();
+		frame.setCanvasRotater(this);
+	}
 	public void paint(java.awt.Graphics g)
 	{	//if(!isDoubleBuffered()) { setDoubleBuffered(true); }
 		paint(Graphics.create(g));
@@ -82,4 +91,5 @@ public abstract class Canvas extends java.awt.Canvas implements SizeProvider , C
 	public void mouseReleased(MouseEvent e) { }
 	public void mouseEntered(MouseEvent e) { }
 	public void mouseExited(MouseEvent e) { }
+	public void mouseWheelMoved(MouseWheelEvent e) {}
 }

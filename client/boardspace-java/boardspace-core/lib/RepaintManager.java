@@ -104,7 +104,7 @@ public class RepaintManager implements VncScreenInterface,Config
 	boolean USE_BUFFERED_IMAGE = true;
 	boolean ZOOM_IS_SLOW = G.isCodename1();
 	int MINIMUM_FRAME_TIME = 1000/60;		// frames per second
-	boolean SHOW_TIMERS = G.debug();
+	boolean SHOW_TIMERS = true;
 	boolean SIMULATE_LOW_MEMORY = false;
 	public boolean deferSprites = true;
 	public boolean hasRunLoop = true;			// client has its own run loop
@@ -117,8 +117,8 @@ public class RepaintManager implements VncScreenInterface,Config
 	public enum RepaintStrategy {
 		Direct_SingleBuffer(0,30,"Direct Single Buffer"),
 		Direct_Unbuffered(0,0,"Direct Unbuffered"),		// used by android textwindow and ios
-		Deferred(0,10,"Deferred Single Buffer"),
-		Deferred_Unbuffered(0,10,"Deferred Unbuffered"),
+		Deferred(0,30,"Deferred Single Buffer"),
+		Deferred_Unbuffered(0,30,"Deferred Unbuffered"),
 		// single buffer strategy, if the viewing buffer is not ready to reuse, repaint anyway, schedule another repaint after it is ready
 		// draw to the buffer, and wait (inline) until it is ready to be seen
 		SingleBuffer(0,0,"Single Buffer"),
@@ -240,7 +240,7 @@ public class RepaintManager implements VncScreenInterface,Config
           			if(G.pointInRect(highlight, releaseTimeSlider) && highlight.down)
            			{	int val = (int)(releaseTimeSlider.value);
            				if(val!=repaintStrategy.delayBeforeReading)
-           					{G.print("change "+repaintStrategy+" "+val);
+           					{//G.print("change "+repaintStrategy+" "+val);
            					 repaintStrategy.delayBeforeReading = val;
            					}
            			}
@@ -650,8 +650,8 @@ public class RepaintManager implements VncScreenInterface,Config
 		if(waitingToPaintStart==0) { waitingToPaintStart = now; }
 		setPaintNeeded(true);
 		if(now-waitingToPaintStart>500)
-		{	String msg = directDrawingLock.lockThreadStack();
-			G.print("Waiting to paint ",msg);
+		{	//String msg = directDrawingLock.lockThreadStack();
+			//G.print("Waiting to paint ",msg);
 			waitingToPaintStart = now;
 		}
 	}

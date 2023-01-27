@@ -5,13 +5,14 @@ import com.codename1.ui.Container;
 import com.codename1.ui.geom.Dimension;
 import com.codename1.ui.geom.Rectangle;
 
-public class XFrame extends JFrame implements WindowListener
+public class XFrame extends JFrame implements WindowListener,SizeProvider,LFrameProtocol
 {
 	/**
 	 * 
 	 */
 	@SuppressWarnings("unused")
 	private static final long serialVersionUID = 01L;
+    static final String FRAMEBOUNDS = "framebounds";
 	private boolean useMenuBar = !G.isCodename1();		// if true, use the local menu bar
 	private boolean closeable = true;
 	public void setCloseable(boolean v) { closeable = v; }
@@ -20,6 +21,24 @@ public class XFrame extends JFrame implements WindowListener
 	JPopupMenu popupMenuBar = null;
 	public DeferredEventManager canSavePanZoom = null;
 	public boolean hasSavePanZoom = false;
+	
+    public JCheckBoxMenuItem soundCheckBox = null;
+    public JMenu options = null;
+    public JMenu actions = null;
+    boolean needActions = false;
+
+    private InternationalStrings s = null;
+    static final String SoundMessage = "Sound";
+    static final String OptionsMessage = "Options";
+    static final String ActionsMessage = "Actions";
+
+    public static String LPanelMessages[] = {
+            OptionsMessage,
+            ActionsMessage,
+           SoundMessage,
+
+    };
+
 	public void setCanSavePanZoom(DeferredEventManager m) 
 	{ 	canSavePanZoom = m;
 		MasterForm.getMasterPanel().adjustTabStyles(); 
@@ -33,11 +52,30 @@ public class XFrame extends JFrame implements WindowListener
 	/** constructor */
 	public XFrame(String string) 
 	{ super(string);
-	  name=string;
+		initStuff(string);
+	}
+	/** constructor */
+	public XFrame()
+	{	super();
+		initStuff("");
+
+
+	}
+	private void initStuff(String n)
+	{ name = n;
+	  s = G.getTranslations();
+	  //setResizable(true);
+   	  // this is a workaround to force all JPopupMenu to be "heavyweight"
+   	  // which somehow avoids the menu clipping problem.
+	  JPopupMenu.setDefaultLightWeightPopupEnabled(false);
+      options = new XJMenu(s.get(OptionsMessage),true);
+      actions = new XJMenu(s.get(ActionsMessage),true);
+
 	  addWindowListener(this);
 	  setOpaque(false);
 	  initTitleBar();
 	}
+	
 	public void setVisible(boolean v)
 	{	
 		if(v && (getWidth()<100 || getHeight()<100))
@@ -49,13 +87,7 @@ public class XFrame extends JFrame implements WindowListener
 		}
 		super.setVisible(v);
 	}
-	/** constructor */
-	public XFrame() 
-	{ super(); 
-	  name = "";
-	  addWindowListener(this);
-	  initTitleBar();
-	}
+
 	public void setTitle(String n) 
 	{ name = n;
 	  if(title==null) { title = new Label(name); }
@@ -233,5 +265,228 @@ public class XFrame extends JFrame implements WindowListener
 	public void windowDeactivated(WindowEvent e) {		
 	}
 
+	// for lframeprotocol
+	public void show(MenuInterface menu, int x, int y) throws AccessControlException {
+		G.show(this, menu, x, y);		
+	}
+	
+	public void setInitialBounds(int inx,int iny,int inw,int inh)
+	{
+		if(G.isCodename1()) 
+			{ expand(inw,inh);
+			} 
+			else 
+			{ 	int fx = inx;
+				int fy = iny;
+				int fw = inw;
+				int fh = inh;
+	            Preferences prefs = Preferences.userRoot();
+	            String suffix ="-"+getTitle();
+	            String bounds = prefs.get(FRAMEBOUNDS+suffix,null);
+	            if(bounds!=null) { 
+	            	String split[] = G.split(bounds,',');
+	            	if(split!=null && split.length==4)
+	            	{
+	            		fx = G.IntToken(split[0]);
+	            		fy = G.IntToken(split[1]);
+	            		fw = G.IntToken(split[2]);
+	            		fh = G.IntToken(split[3]);
+	            	}
+	            	
+	            }
+	            //
+	            // make sure the bounds are minimally acceptable
+	            int screenW = G.getScreenWidth();
+	            int screenH = G.getScreenHeight();
+	            fw = Math.max(screenW/5,Math.min(fw,screenW));
+	            fh = Math.max(screenH/5,Math.min(fh,screenH));
+	            fx = Math.max(0,Math.min(screenW-fw,fx));
+	            fy = Math.max(0,Math.min(screenH-fh,fy));
+				setBounds(fx,fy,fw,fh);   			
+			} 	
+	}
+
+	public boolean doSound() {
+	    return (soundCheckBox.isSelected());
+	}
+	public void setDoSound(boolean enable) {
+		soundCheckBox.setSelected(enable); 
+	}
+
+ 
+	public JCheckBoxMenuItem addOption(String text, boolean initial, JMenu m,DeferredEventManager e)
+    {	JCheckBoxMenuItem b = new JCheckBoxMenuItem(text);
+        b.setState(initial);
+        m.add(b);
+        if(e!=null) { b.addItemListener(e); }
+        return (b);
+    }
+
+    public JCheckBoxMenuItem addOption(String text, boolean initial,DeferredEventManager e)
+    {
+        return (addOption(text, initial, options,e));
+    }
+    public JMenu addChoiceMenu(String text, DeferredEventManager e)
+    {	JMenu item = new XJMenu(text,false);
+    	options.add(item);
+        if(e!=null) { item.addActionListener(e); }
+        return(item);
+    }
+
+    public void addAction(JMenu m,JMenuItem mi,DeferredEventManager e)
+    {	
+    	m.add(mi);
+    	mi.addActionListener(e);
+    }
+    public JMenuItem addAction(JMenu m,String mname,DeferredEventManager e)
+    {	JMenuItem mi = new JMenuItem(mname);
+    	addAction(m,mi,e);
+    	return(mi);
+    }
+  
+
+    public JMenuItem addAction(JMenuItem b,DeferredEventManager e)
+    {	actions.add(b);
+    	addActionInternal(b,e);
+    	return(b);
+    }
+    public JMenu addAction(JMenu b,DeferredEventManager e)
+    {	actions.add(b);
+    	addActionInternal(b,e);
+    	return(b);
+    }
+    private void addActionInternal(NativeMenuItemInterface b,DeferredEventManager e)
+    {
+    	try{
+    	if(e!=null) { b.addActionListener(e); }
+    	if (!needActions)
+    	{
+    		addToMenuBar(actions); 
+    		needActions = true;
+        }}
+    	catch (Throwable err)
+        {
+            G.print("AddAction got an error: " + err);
+        }
+    }
+
+    public  JMenuItem addAction(String text,DeferredEventManager e)
+    {
+    	JMenuItem b = new JMenuItem(text);
+        addAction(b,e);
+        return(b);
+    }
+
+    public void removeAction(JMenu m)
+    {
+        if (m != null)
+        {
+        	try
+            { //error trap for ms explorer bug
+            	actions.remove(m); 
+ 
+                if (actions.getItemCount() == 0)
+                {
+                	removeFromMenuBar(actions);
+                    needActions = false;
+                }
+            }
+           	catch (Throwable err)
+            {
+                G.print("RemoveAction got an error: " + err);
+            }
+
+        }
+    }
+
+    public void removeAction(JMenuItem m)
+    {
+        if (m != null)
+        {
+        	try
+            { //error trap for ms explorer bug
+            	actions.remove(m); 
+ 
+                if (actions.getItemCount() == 0)
+                {
+                	removeFromMenuBar(actions);
+                    needActions = false;
+                }
+            }
+           	catch (Throwable err)
+            {
+                G.print("RemoveAction got an error: " + err);
+            }
+
+        }
+    }
+		  
+
+    // the please kill/don't kill logic is so that during critical
+    // phases (ie; scoring a game) the frame will resist closing
+    // and that under whatever circumstances, it only closes once.
+	private boolean pleaseKill = false;
+	private boolean dontKill = false;
+
+	public void killFrame()
+    { 
+        pleaseKill = true;			// remember some tried to do it
+        //
+        // record the default position and size
+        if(!G.isCodename1())
+        {
+            String suffix = "-"+ getTitle();
+	       	Preferences prefs = Preferences.userRoot();
+        	Rectangle dim = getBounds();
+        	prefs.put(FRAMEBOUNDS+suffix,
+        			""+G.Left(dim)+","+G.Top(dim)+","+G.Width(dim)+","+G.Height(dim));
+        	
+        }
+        //G.print("Killframe");
+        if ((dontKill == false)		// temporarily inhibited?
+        		&&(killed==false))	// already killed
+        {	RootAppletProtocol p = G.getRoot();
+        	if (p != null)
+	            {
+	            p.killFrame(this);
+	            }
+            //dispose();
+            setVisible(false);
+            dispose();
+            }
+    }
+    public boolean DontKill()
+    {
+        return (dontKill);
+    }
+ 
+    public void setDontKill(boolean v)
+    {
+        dontKill = v;
+        if (pleaseKill && (dontKill == false))
+        {
+            killFrame();
+        }
+    }
+
+	public MenuParentInterface getMenuParent() {
+		return this;
+	}
+	
+    public void initMenus()
+    {	initMenu(actions);
+    	initMenu(options);
+        boolean defaultSound = Config.Default.getBoolean(Config.Default.sound);
+        soundCheckBox = addOption(s.get(SoundMessage), defaultSound,null);
+    }
+    public void initMenu(JMenu m)
+    {	if(m!=null)
+    	{
+    	while(m.getItemCount()>0)
+    		{
+    		m.remove(m.getItem(0));
+    		}
+    	}
+     }
 
 }

@@ -13,7 +13,7 @@ import static online.common.OnlineConstants.clickSound;
 
 import java.util.HashSet;
 import java.util.Set;
-
+// TODO: selecting text, the bounds of the clipboard aren't quite right
 /**
  * This is a window-free replacement for TextArea, coded to be used with
  * other boardspace UI items.  It's used as a body for chats, also as
@@ -35,10 +35,6 @@ import java.util.Set;
  *   
  * @author Ddyer
  *
- * This works pretty well for unformatted text, or for display of paragraph style messages,
- * as is used by the SeatingViewer class, but it doesn't allow for variable fonts, colors, 
- * or mixed text and graphics.
- * 
  */
 @SuppressWarnings("serial")
 public class TextContainer extends Rectangle implements AppendInterface,KeyListener
@@ -61,7 +57,7 @@ public class TextContainer extends Rectangle implements AppendInterface,KeyListe
 	private int mouseExpandPos1 = -1;
 	private int MARGIN = 4;
 	public boolean flagExtensionLines = true;	// if true, flag extension lines
-	private boolean mouseSelecting = false;		// true if the mouse is being used to select text, initiated by a horizontal movement
+	boolean mouseSelecting = false;		// true if the mouse is being used to select text, initiated by a horizontal movement
 	private boolean caratSelecting = false;		// one time flag to set the carat to the last mouse position	
 	private int mouseSelectingX = -1;	// x tracking the mouse while selecting text
 	private int mouseSelectingY = -1;	// y tracking the mouse while selecting text
@@ -1066,7 +1062,9 @@ public class TextContainer extends Rectangle implements AppendInterface,KeyListe
 	}
 
 	public boolean doMouseDrag(int ex,int ey)
-	{	if(!G.pointInRect(ex, ey,this)) { return(false); }
+	{	if(!G.pointInRect(ex, ey,this)) 
+			{ return(false); 
+			}
 		if(!mouseActive)
 			{ mouseActive = true;
 			  selectingX = ex; 
@@ -1074,7 +1072,6 @@ public class TextContainer extends Rectangle implements AppendInterface,KeyListe
 			  mouseSelectingX = ex;
 			  mouseSelectingY = ey;
 			  autoScroll = false;
-			  mouseSelecting = false;			
 			}
 		mouseSelectingX = ex;
 		mouseSelectingY = ey;
@@ -1109,6 +1106,7 @@ public class TextContainer extends Rectangle implements AppendInterface,KeyListe
 	}
 	public void doMouseMove(int ex, int ey,MouseState upcode)
 	{	
+		//if(mouseSelecting && upcode==MouseState.LAST_IS_MOVE) { upcode = MouseState.LAST_IS_DRAG; }
 		// don't involve the scrollbar if we have started a selection gesture
 		if(!mouseSelecting && scrollable() && scrollBar.doMouseMotion(ex, ey, upcode))
 		{	

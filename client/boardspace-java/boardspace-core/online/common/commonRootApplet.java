@@ -91,7 +91,7 @@ public class commonRootApplet implements  RootAppletProtocol, Runnable,  LobbyCo
         G.setRoot(this);
 	}
  
-    LFrameProtocol myLF = null;
+    LPanel myLF = null;
     commonPanel myL;
  
   
@@ -147,8 +147,8 @@ public class commonRootApplet implements  RootAppletProtocol, Runnable,  LobbyCo
         Http.setDefaultProtocol(G.getString(PROTOCOL,null));
         InternationalStrings.initLanguage();
     }
-    public LFrameProtocol NewLPanel(String name, commonPanel a,XFrame fr)
-    {	LFrameProtocol lf = new LPanel(name, fr, a);
+    public LPanel NewLPanel(String name, commonPanel a,XFrame fr)
+    {	LPanel lf = new LPanel(name, fr, a);
     	return(lf);
     }
     public void StartLframe()
@@ -181,13 +181,13 @@ public class commonRootApplet implements  RootAppletProtocol, Runnable,  LobbyCo
             myLF = NewLPanel(rootname, myL,fr);
              
             ExtendedHashtable sharedInfo = G.getGlobals();
-            myL.init(sharedInfo,myLF);
+            myL.init(sharedInfo,fr);
             
             if(isVNC|isTable|offlineLauncher)
             	{ 
             	  if(isVNC && server.isRpc())
             	  {	// starting a rpc style viewer, the window will change but we want to establish a connection
-            		RpcReceiver.start(server,sharedInfo,myL,myLF);
+            		RpcReceiver.start(server,sharedInfo,myL,fr);
             	  }
             	  else 
             	  {
@@ -195,7 +195,7 @@ public class commonRootApplet implements  RootAppletProtocol, Runnable,  LobbyCo
             			  					? (CanvasProtocol)G.MakeInstance("vnc.AuxViewer")
             			  					: (CanvasProtocol)G.MakeInstance("online.common.SeatingViewer");
             	  // init first, then add to the frame, to avoid races in lockAndLoadImages
-            	  viewer.init(sharedInfo,myLF);
+            	  viewer.init(sharedInfo,fr);
             	  myL.setCanvas(viewer);
             	  }
             	}
@@ -215,7 +215,7 @@ public class commonRootApplet implements  RootAppletProtocol, Runnable,  LobbyCo
             fw = (int)(sc*G.getInt(OnlineConstants.FRAMEWIDTH,offlineLauncher?1000 : DEFAULTWIDTH));
             fh = (int)(sc*G.getInt(OnlineConstants.FRAMEHEIGHT,offlineLauncher ? 700 : DEFAULTHEIGHT));
             }
-            myLF.setInitialBounds(fx,fy,fw,fh );
+            fr.setInitialBounds(fx,fy,fw,fh );
                       
       	 	if(fr!=null) { fr.setVisible(true); } 
 
@@ -258,8 +258,8 @@ public class commonRootApplet implements  RootAppletProtocol, Runnable,  LobbyCo
     public LFrameProtocol NewLFrame(String name, commonPanel a)
     {	
     	XFrame fr = new XFrame();
-    	LFrameProtocol lf = new LPanel(name, fr, a);
-    	return(lf);
+    	new LPanel(name, fr, a);
+    	return(fr);
     }
 
 

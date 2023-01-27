@@ -12,6 +12,7 @@ import lib.NetPacketConn;
 import lib.Plog;
 import lib.SimpleObservable;
 import lib.SimpleObserver;
+import lib.XFrame;
 import lib.Base64;
 import online.common.commonPanel;
 import udp.PlaytableServer;
@@ -338,7 +339,7 @@ public class RpcReceiver implements RpcConstants,Config,Runnable,SimpleObserver
 		if(instance==null) { instance = new RpcReceiver(); }
 		return(instance);
 	}
-	public static void start(PlaytableServer server, ExtendedHashtable sharedInfo, commonPanel myL,	LFrameProtocol myLF)
+	public static void start(PlaytableServer server, ExtendedHashtable sharedInfo, commonPanel myL,	XFrame myLF)
 	{	RpcReceiver me = getInstance();
 		me.host = server.hostIP;
 		me.port = server.hostPort;

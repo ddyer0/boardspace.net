@@ -2,8 +2,6 @@ package lib;
 
 import java.util.*;
 
-import online.common.exCanvas;
-
 
 /* this is a utility thread class that does two simple functions:
  (1) causing a list of classes to preload,
@@ -53,30 +51,25 @@ public class LoadThread extends Thread  {
 					if(newclass!=null)
 					{
 						long later = G.Date();
-						G.print("Preloaded " + classname + " "
-								+ newclass + " : " + (later - now));
+						G.print("Preloaded ", classname , " "
+								, newclass , " : ", (later - now));
 
-						// make a throwaway instance of the new class, and if
-						// it is one of our canvas classes, get it to pre-load
-						// the static images. This greatly reduces the apparent lag
-						// when launching a new game for the first time.
-						Object obj = G.MakeInstance(classname);
-						if (obj instanceof exCanvas) {
-							exCanvas item = (exCanvas) obj;
-							int pix = Image.pixelCount;
-							item.lockAndLoadImages();
-							long even_later = G.Date();
-							pix = (Image.pixelCount-pix)/(1024*1024/10);
-							G.print("Images " + classname + " "
-									+ (even_later - later)
-									+ " "+(pix/10)+"."+(pix%10)+" mpixels"
-								);
-						}
-							result = newclass;
+						// make a throwaway instance of the new class.  This also has the 
+						// side effect of loading the static images for the class if this
+						// is a game class.
+						int pix = Image.pixelCount;						
+						G.MakeInstance(classname);
+						long even_later = G.Date();
+						pix = (Image.pixelCount-pix)/(1024*1024/10);
+						G.print("Images " , classname , " "
+								, (even_later - later)
+								, " ",(pix/10),".",(pix%10)," mpixels");
+
+					
+						result = newclass;
 					}
 					}
 				} 
-		    	catch (ThreadDeath err) { throw err;}
 				catch (Throwable e) 
 				{	// use throwable instead of exception so everything is included
 					error = e;
@@ -87,7 +80,6 @@ public class LoadThread extends Thread  {
 			observer.setChanged(this);
 		}
 		}
-    	catch (ThreadDeath err) { throw err;}
 		catch(Throwable err)
 		{	error = err;
 		}

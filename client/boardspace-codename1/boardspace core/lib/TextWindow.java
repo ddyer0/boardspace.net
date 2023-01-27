@@ -206,5 +206,9 @@ public class TextWindow extends Canvas implements MouseListener,MouseMotionListe
 		painter.shutdown();
 	}
 
+	public void startProcess() {
+		// this is a dummy, we have no process.  TextMouseWindow has a process
+	}
+	
 
 }

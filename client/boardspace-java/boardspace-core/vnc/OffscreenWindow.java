@@ -25,6 +25,7 @@ import lib.SizeProvider;
 import lib.StockArt;
 import lib.Text;
 import lib.TouchMagnifier;
+import lib.TouchMagnifierClient;
 import lib.UniversalConstants;
 import online.game.Opcodes;
 import vnc.VNCConstants.Operation;
@@ -39,7 +40,7 @@ import vnc.VNCConstants.Operation;
  */
 public abstract class OffscreenWindow implements 
 	VncEventInterface,VncScreenInterface,MouseClient,ImageConsumer,VncServiceProvider,SizeProvider,UniversalConstants,
-	Config, MenuParentInterface,Opcodes
+	Config, MenuParentInterface,Opcodes,TouchMagnifierClient
 {	public void performStandardStartDragging(HitPoint p) {}
 	public void performStandardStopDragging(HitPoint p) {}
 	public HitPoint performStandardMouseMotion(int x,int y,MouseState pt) { return(null); }

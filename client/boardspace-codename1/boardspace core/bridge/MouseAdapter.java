@@ -14,6 +14,8 @@ import lib.AwtComponent;
 import lib.G;
 import lib.Log;
 import lib.PinchEvent;
+import lib.Plog;
+
 import com.codename1.ui.Command;
 import com.codename1.ui.Component;
 import com.codename1.ui.Display;
@@ -501,7 +503,7 @@ public class MouseAdapter
 	}
 	
 	public void handleItemEvent(com.codename1.ui.events.ActionEvent e)
-	{	
+	{	Plog.log.addLog("Item event "+e+" "+itemListeners);
 		if(itemListeners!=null)
 		{
 		int thisX = cn1Component.getAbsoluteX();

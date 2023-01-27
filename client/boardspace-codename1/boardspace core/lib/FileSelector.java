@@ -963,6 +963,7 @@ public class FileSelector extends FullscreenPanel
         	f.mkdir();
         	getDir();
         }
+        setFocused(this);
         return (true);
     }
 

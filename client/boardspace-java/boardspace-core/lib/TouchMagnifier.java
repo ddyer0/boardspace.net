@@ -5,13 +5,14 @@ import static java.lang.Math.atan2;
 import java.awt.Rectangle;
 import java.awt.Color;
 
+
 public class TouchMagnifier {
 
     boolean alwaysPredraw = !G.isCodename1();		// if true, always draw a fresh image, never reuse the existing bitmap
     Image magnifierDisplay = null;
     Image magnifierDraw = null;
-	MouseClient client;
-	public TouchMagnifier(MouseClient cl) { client = cl; }
+    TouchMagnifierClient client;
+	public TouchMagnifier(TouchMagnifierClient cl) { client = cl; }
     double magnifierPadAngle;					// angle from mouse to the pad
     int magnifierPadX;
     int magnifierPadY;

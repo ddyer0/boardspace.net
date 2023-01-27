@@ -118,6 +118,11 @@ public class FullscreenPanel extends JPanel implements FullScreen,NullLayoutProt
 		
 	}
 	
+	public void setFocused(Component p)
+	{
+		MasterForm.getMasterForm().setFocused(p);
+	}
+	
 	// support for rotater buttons
 	CanvasRotaterProtocol rotater = new CanvasRotater(this);
 	public int getCanvasRotation() { return rotater.getCanvasRotation(); }

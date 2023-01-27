@@ -138,7 +138,7 @@ public class TextDisplayFrame extends XFrame implements ActionListener,ItemListe
 		MasterForm.getMasterPanel().adjustTabStyles(); 
 		doNullLayout(this);
         setVisible(true);
-
+        area.startProcess();
     }
 
     // Handle component events

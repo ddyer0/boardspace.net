@@ -363,13 +363,23 @@ public class Session implements LobbyConstants
     public boolean restartable_pending = false;
     public boolean inviteBox = false;
     public boolean iOwnTheRoom = false;
-    private TimeControl timeControl = new TimeControl(Kind.None);
-    public TimeControl timeControl() { return(timeControl); }
+    
+    /**
+     * this used to be = new TimeControl(Kind.None), but that introduced a hidden
+     * dependency on online.game.commonCanvas that sometimes triggered
+     * a problem with the class loader.
+     */
+    private TimeControl timeControlVar = null;
+  
+    public TimeControl timeControl() 
+    { 	if(timeControlVar==null) { timeControlVar =   new TimeControl(Kind.None); }
+    	return(timeControlVar); 
+    }
     public void setTimeControl(TimeControl newval)
     {
     	if(newval!=null) 
     	{ 	
-    		timeControl = newval; 
+    		timeControlVar = newval; 
     	}
     }
      /* constructor */
@@ -559,7 +569,7 @@ public class Session implements LobbyConstants
         numberOfSpectators = 0;
         readySoundPlayed = false;
         submode = mode==Mode.Tournament_Mode ? JoinMode.Tournament_Mode : JoinMode.Open_Mode;
-        timeControl = new TimeControl(Kind.None);
+        timeControlVar = null;
         restartable_pending = false;
         restartable = false;
         refreshGamePending = false;
