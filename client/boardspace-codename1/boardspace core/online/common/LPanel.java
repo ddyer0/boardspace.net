@@ -10,7 +10,6 @@ import lib.DeferredEventManager;
 import lib.G;
 import lib.NullLayout;
 import lib.NullLayoutProtocol;
-import lib.InternationalStrings;
 import lib.MenuParentInterface;
 import lib.XFrame;
 
@@ -25,24 +24,10 @@ public class LPanel extends FullscreenPanel implements WindowListener,NullLayout
     public commonPanel theLobby;
     public MenuParentInterface getMenuParent() { return(theLobby); }
     public void dispose() { if(theFrame!=null) { theFrame.dispose(); }}
-    //	boolean didshow=false;
-    public JMenu options = null;
-    public JMenu actions = null;
     boolean needActions = false;
     public JCheckBoxMenuItem soundCheckBox = null;
-    private InternationalStrings s = null;
     private boolean killed = false;
  
-    static final String SoundMessage = "Sound";
-    static final String OptionsMessage = "Options";
-    static final String ActionsMessage = "Actions";
-
-    public static String LPanelMessages[] = {
-            OptionsMessage,
-            ActionsMessage,
-           SoundMessage,
-
-    };
     
     public void setCanvasRotater(CanvasRotaterProtocol r) { if(theFrame!=null) { theFrame.setCanvasRotater(r); }}
     public CanvasRotaterProtocol getCanvasRotater() { return ((theFrame!=null) ? null : theFrame.getCanvasRotater()); }
@@ -68,17 +53,14 @@ public class LPanel extends FullscreenPanel implements WindowListener,NullLayout
         new BoxLayout(this,BoxLayout.Y_AXIS);
         theFrame = frame;
         theLobby = inLobby;
-        s = G.getTranslations();
         setLayout(new NullLayout(this));
         //setResizable(true);
      	// this is a workaround to force all JPopupMenu to be "heavyweight"
      	// which somehow avoids the menu clipping problem.
      	JPopupMenu.setDefaultLightWeightPopupEnabled(false);
-        options = new XJMenu(s.get(OptionsMessage),true);
-        actions = new XJMenu(s.get(ActionsMessage),true);
         
         if(frame!=null)
-        {	frame.addToMenuBar(options);
+        {	
         	frame.setContentPane(this);//frame.add(this);
         	frame.addWindowListener(this);
         }

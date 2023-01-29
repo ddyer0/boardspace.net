@@ -404,7 +404,7 @@ public abstract class exCanvas extends Canvas
     }
     public exCanvas()
     {
-        lockAndLoadImages();
+       lockAndLoadImages(); 
     }
     /** this init method should be wrapped by individual games
      * to do once-only initialization.
@@ -422,18 +422,14 @@ public abstract class exCanvas extends Canvas
         extraactions = G.getBoolean(EXTRAACTIONS, extraactions);
          
         adjustStandardFonts(G.defaultFontSize);
-        boolean extramouse = G.getBoolean(EXTRAMOUSE, false);
-
         
         globalZoomRect = addSlider(".globalZoom",s.get(ZoomMessage),OnlineId.HitZoomSlider);
         globalZoomRect.min=1.0;
         globalZoomRect.max=MAXIMUM_ZOOM;
         globalZoomRect.value=1.0;
 
+        l.virtualMouseCheckbox = myFrame.addOption(s.get(VirtualMouse),false,deferredEvents);
 
-        if (extramouse)
-        {
-        }
         l.setConsole = myFrame.addAction("Start Console",deferredEvents);
         if(extraactions)
         {
@@ -448,7 +444,7 @@ public abstract class exCanvas extends Canvas
         l.startseatviewer = myFrame.addAction("start seat selector",deferredEvents);
         l.startserver = myFrame.addAction((VNCService.isVNCServer()||RpcService.isRpcServer()) ? "stop server" : "start server",deferredEvents);
         }
-        l.virtualMouseCheckbox = myFrame.addOption(s.get(VirtualMouse),false,deferredEvents);
+        
         l.fontSizeMenu = myFrame.addChoiceMenu(s.get(FontSize),deferredEvents);
         l.fontSizeMenu.setForeground(Color.blue);
         int[] sizes = { 8, 9, 10, 12, 14, 16 };
@@ -477,7 +473,6 @@ public abstract class exCanvas extends Canvas
         addMouseMotionListener(this);
         addMouseListener(this);
         addMouseWheelListener(this);
-        
         if(!G.isCodename1() || G.isRealWindroid())
         {
             

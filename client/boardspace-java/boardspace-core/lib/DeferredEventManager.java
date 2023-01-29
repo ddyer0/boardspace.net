@@ -6,6 +6,8 @@ import java.util.Vector;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+// TODO: invent a scheme to allow recording crosswordle stats from offline play
+
 /**
  * one of the rules for a well behaved application is that the actions resulting
  * from buttons and menus should be handled by the main process thread rather than

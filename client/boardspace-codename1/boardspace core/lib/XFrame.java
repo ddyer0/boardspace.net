@@ -25,14 +25,13 @@ public class XFrame extends JFrame implements WindowListener,SizeProvider,LFrame
     public JCheckBoxMenuItem soundCheckBox = null;
     public JMenu options = null;
     public JMenu actions = null;
-    boolean needActions = false;
 
     private InternationalStrings s = null;
     static final String SoundMessage = "Sound";
     static final String OptionsMessage = "Options";
     static final String ActionsMessage = "Actions";
 
-    public static String LPanelMessages[] = {
+    public static String XFrameMessages[] = {
             OptionsMessage,
             ActionsMessage,
            SoundMessage,
@@ -172,11 +171,17 @@ public class XFrame extends JFrame implements WindowListener,SizeProvider,LFrame
 		if(useMenuBar)
 		{	if(jMenuBar==null) {  setJMenuBar(new JMenuBar()); }
 			m.setVisible(true);
+			if(jMenuBar.getComponentIndex(m)<0)
+				{
 			jMenuBar.add(m);
+		}
 		}
 		else {
 			if(popupMenuBar==null) { popupMenuBar=new JPopupMenu();}
+			if(popupMenuBar.getComponentIndex(m)<0)
+				{
 			popupMenuBar.add(m);
+		}
 		}
 		if(l!=null) { m.addItemListener(l); }
 	}
@@ -319,6 +324,7 @@ public class XFrame extends JFrame implements WindowListener,SizeProvider,LFrame
         b.setState(initial);
         m.add(b);
         if(e!=null) { b.addItemListener(e); }
+        addToMenuBar(options); 
         return (b);
     }
 
@@ -330,6 +336,7 @@ public class XFrame extends JFrame implements WindowListener,SizeProvider,LFrame
     {	JMenu item = new XJMenu(text,false);
     	options.add(item);
         if(e!=null) { item.addActionListener(e); }
+        addToMenuBar(options);
         return(item);
     }
 
@@ -359,11 +366,8 @@ public class XFrame extends JFrame implements WindowListener,SizeProvider,LFrame
     {
     	try{
     	if(e!=null) { b.addActionListener(e); }
-    	if (!needActions)
-    	{
     		addToMenuBar(actions); 
-    		needActions = true;
-        }}
+    	}
     	catch (Throwable err)
         {
             G.print("AddAction got an error: " + err);
@@ -388,7 +392,6 @@ public class XFrame extends JFrame implements WindowListener,SizeProvider,LFrame
                 if (actions.getItemCount() == 0)
                 {
                 	removeFromMenuBar(actions);
-                    needActions = false;
                 }
             }
            	catch (Throwable err)
@@ -410,7 +413,6 @@ public class XFrame extends JFrame implements WindowListener,SizeProvider,LFrame
                 if (actions.getItemCount() == 0)
                 {
                 	removeFromMenuBar(actions);
-                    needActions = false;
                 }
             }
            	catch (Throwable err)
@@ -478,6 +480,7 @@ public class XFrame extends JFrame implements WindowListener,SizeProvider,LFrame
     	initMenu(options);
         boolean defaultSound = Config.Default.getBoolean(Config.Default.sound);
         soundCheckBox = addOption(s.get(SoundMessage), defaultSound,null);
+ 
     }
     public void initMenu(JMenu m)
     {	if(m!=null)

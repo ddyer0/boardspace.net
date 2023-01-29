@@ -7266,7 +7266,7 @@ public Point decodeScreenZone(String zone,int x,int y)
 		  if(b!=null)
 		  {
 		  Point mp = b.decodeCellPosition(x,y,screenXQuant);
-		  if(G.Advise(mp!=null,"%s %s %s failed to decode",zone,x,y))
+		  if(G.Advise(mp!=null,"%s %s,%s failed to decode",zone,x,y))
 		  {
 		  G.SetLeft(mp,G.Left(mp) + G.Left(boardRect));
 		  G.SetTop(mp, G.Bottom(boardRect)-G.Top(mp));

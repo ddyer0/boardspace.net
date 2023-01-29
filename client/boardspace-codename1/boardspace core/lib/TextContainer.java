@@ -61,13 +61,8 @@ public class TextContainer extends Rectangle implements AppendInterface,KeyListe
 	private boolean caratSelecting = false;		// one time flag to set the carat to the last mouse position	
 	private int mouseSelectingX = -1;	// x tracking the mouse while selecting text
 	private int mouseSelectingY = -1;	// y tracking the mouse while selecting text
-	// on multiline displays, if there are overflow lines (too wide for the display), the 
-	// visible and actual line positions begin to diverge.  We maintain both in parallel, 
-	// so the visible marker and the text copy/paste operations agree
-	private int visibleSelectionStart = -1;			// start of selection 
-	private int visibleSelectionEnd = -1;			// end of selection
-	private int actualSelectionStart = -1;
-	private int actualSelectionEnd = -1;
+	private int selectionStart = -1;
+	private int selectionEnd = -1;
     private Set<String>extensionLines = new HashSet<String>();
      
 	private boolean autoScroll = true;		// scroll to end to keep the end carat visible
@@ -169,8 +164,7 @@ public class TextContainer extends Rectangle implements AppendInterface,KeyListe
 	public void setText(String t) 
 	{	data = new StringBuilder(t==null ? "" : t);
 		mlCache = null;
-		visibleSelectionStart = -1;
-		visibleSelectionEnd = -1;
+		selectionStart = selectionEnd = -1;
 		clearBeforeAppend = false; 
 		setScrollY(0);
 		setCaratPosition(0);
@@ -223,10 +217,8 @@ public class TextContainer extends Rectangle implements AppendInterface,KeyListe
 	{
 		data.setLength(0);
 		mlCache = null;
-		visibleSelectionStart = -1;
-		visibleSelectionEnd = -1;
-		actualSelectionStart = -1;
-		actualSelectionEnd = -1;
+		selectionStart = -1;
+		selectionEnd = -1;
 		setScrollY(0);
 		clearBeforeAppend = false;
 		autoScroll = true;
@@ -241,14 +233,12 @@ public class TextContainer extends Rectangle implements AppendInterface,KeyListe
 	}
 	public synchronized void doDeleteSelection()
 	{
-		if(editable && visibleSelectionStart>=0) 
-		{ data.delete(visibleSelectionStart, visibleSelectionEnd);
+		if(editable && selectionStart>=0) 
+		{ data.delete(selectionStart, selectionEnd);
 		  mlCache = null;
-		  setCaratPosition(visibleSelectionStart);
-		  visibleSelectionStart = -1;
-		  visibleSelectionEnd = -1;
-		  actualSelectionStart = -1;
-		  actualSelectionEnd = -1;
+		  setCaratPosition(selectionStart);
+		  selectionStart = -1;
+		  selectionEnd = -1;
 		}
 
 	}
@@ -395,8 +385,8 @@ public class TextContainer extends Rectangle implements AppendInterface,KeyListe
 		int lineh = lastLineHeight = fm.getHeight();
 		int lineX = x+MARGIN;
 		int lineY = centerSingleLineY? y+lineh/2+height/2-lineh/8 : y+lineh+MARGIN;
-		int select = Math.max(0, visibleSelectionStart-lineStart);
-		int selectEnd = Math.max(0, visibleSelectionEnd-lineStart);	// visible part of selection
+		int select = Math.max(0, selectionStart-lineStart);
+		int selectEnd = Math.max(0, selectionEnd-lineStart);	// visible part of selection
 		int charsDeletedAtLeft = 0;
 		int charsDeletedAtRight = 0;
 		if(select<0) { select = 0; }
@@ -482,8 +472,6 @@ public class TextContainer extends Rectangle implements AppendInterface,KeyListe
 		if(focusToggle||mouseSelecting)
 			{
 			drawFocusLine(g,fm,lineX,lineY,line,lineLen-(visCarat-charsDeletedAtLeft));
-				//	(shortenAtLeft ? data.length():line.length())
-				//	-(mouseSelecting ? visibleSelectionEnd : carat));
 			}
 		}
 		/**
@@ -510,24 +498,24 @@ public class TextContainer extends Rectangle implements AppendInterface,KeyListe
 				{ mouseExpandPos1 = mousePos1; 
 				  mouseSelectingExpand = true; 
 				}
-				if(visibleSelectionStart<0)
-				{ actualSelectionStart = visibleSelectionStart  = mousePos1;
-				  actualSelectionEnd = visibleSelectionEnd = mousePos1+1;
+				if(selectionStart<0)
+				{ selectionStart = mousePos1;
+				  selectionEnd = mousePos1+1;
 				  visibleCaratPosition = mousePos1;
 				}
 				else
 				if((mousePos1<mouseExpandPos1))
 				{		
-					actualSelectionStart = visibleSelectionStart = Math.max(0, mousePos1);
+					selectionStart = Math.max(0, mousePos1);
 					//G.print("start = ",mousePos1);
 					visibleCaratPosition = mousePos1;
 				}
 				else if((mousePos1>mouseExpandPos1))
-				{	actualSelectionEnd = visibleSelectionEnd = mousePos1;
+				{	selectionEnd = mousePos1;
 					//G.print("end = ",mousePos1);
 					visibleCaratPosition = mousePos1;
 				}
-				visibleSelectionEnd = Math.max(visibleSelectionStart, visibleSelectionEnd);
+				selectionEnd = Math.max(selectionStart, selectionEnd);
 			}}
 			
 		}
@@ -595,14 +583,11 @@ public class TextContainer extends Rectangle implements AppendInterface,KeyListe
 		  newLines.push(sub);
 		  if(nnew>0) { extensionLines.add(sub); }
 		  nnew++;
-		  int sublen = sub.length();
-		  int curlen = curline.length();
-		  // trim leading spaces from the
-		  while(curlen>sublen && (curline.charAt(sublen)==' '))
-		  	{
-			  sublen++;
-		  	}
-		  curline = curline.substring(sublen);
+		  // originally these lines were trimmed of trailing spaces here, but
+		  // that had the unfortunate effect of changing the character counts,
+		  // such that selections would move around depending on how the line
+		  // was split.
+		  curline = curline.substring(sub.length());
 		  sub = null;
 		}
 		return(newLines);
@@ -653,9 +638,7 @@ public class TextContainer extends Rectangle implements AppendInterface,KeyListe
 		
 		int availableH = height-lineh-MARGIN*2;
 		int mousePos1 = -1;
-		int actualMousePos1 = -1;
-		int charCount = 0;
-		int nExtensionLines = 0;
+		int charCount = -1;
 		doFocus();
 		int xpos = x+MARGIN;
 		int lastY = y;
@@ -665,19 +648,18 @@ public class TextContainer extends Rectangle implements AppendInterface,KeyListe
 			String line = lines.elementAt(linen);
 			int linelen = line.length();
 			boolean isExtensionLine = extensionLines.contains(line);
-			if(isExtensionLine) { charCount--; nExtensionLines++; }	// previous line added one more
-			int trueLinelen = linelen;
-			
+			if(!isExtensionLine) { charCount++; }
 			if((ypos+lineh>=scrollY) && ypos<=scrollY+availableH)
 			{
-			boolean containsAny = charCount>=visibleSelectionStart && charCount<=visibleSelectionEnd;
-			boolean containsStart = visibleSelectionStart>=0 && visibleSelectionStart>=charCount && visibleSelectionStart<=charCount+linelen;
-			boolean containsEnd = visibleSelectionEnd>=0 && visibleSelectionEnd>=charCount && visibleSelectionEnd<=charCount+linelen;
-			boolean containsCarat = (caratPosition>=charCount) && (caratPosition<=charCount+trueLinelen);
+			int localCharCount = charCount + (isExtensionLine ? -1 : 0);
+			boolean containsAny = localCharCount>=selectionStart && localCharCount<=selectionEnd;
+			boolean containsStart = selectionStart>=0 && selectionStart>=localCharCount && selectionStart<=charCount+linelen;
+			boolean containsEnd = selectionEnd>=0 && selectionEnd>=localCharCount && selectionEnd<=localCharCount+linelen;
+			boolean containsCarat = (caratPosition>=localCharCount) && (caratPosition<=localCharCount+linelen);
 			if(containsStart || containsEnd || containsAny)
 			{
-				int line0 = containsStart ? visibleSelectionStart-charCount : 0;
-				int line1 = containsEnd ? visibleSelectionEnd-charCount : linelen;
+				int line0 = containsStart ? Math.max(0,selectionStart-localCharCount+(isExtensionLine?-1:0)): 0;
+				int line1 = containsEnd ? Math.max(0,Math.min(linelen,selectionEnd-localCharCount+(isExtensionLine?-1:0))) : linelen;
 				Rectangle line0P = GC.getStringBounds(g,fm,line,0,line0);
 				Rectangle line1P = GC.getStringBounds(g,fm,line,0,line1);
 				GC.setColor(g,Color.lightGray);
@@ -685,6 +667,7 @@ public class TextContainer extends Rectangle implements AppendInterface,KeyListe
 				int right = (int)(xpos+line1P.getWidth());
 				GC.fillRect(g, left, realY-lineh/2,right-left,lineh/2);
 			}
+			
 			GC.setColor(g,foregroundColor); 
 			GC.Text(g,line,xpos, realY);
 			if(isExtensionLine && flagExtensionLines)
@@ -709,7 +692,6 @@ public class TextContainer extends Rectangle implements AppendInterface,KeyListe
 			{
 				if(G.pointInRect(mouseSelectingX,mouseSelectingY,x,realY-lineh,width,lineh)) 
 					{ mousePos1 = charCount +  findPositionInLine(fm,g,line,line,mouseSelectingX-xpos); 
-					  actualMousePos1 = mousePos1 + nExtensionLines;
 					}
 				
 			}
@@ -729,7 +711,8 @@ public class TextContainer extends Rectangle implements AppendInterface,KeyListe
 				}
 			}
 			}
-			charCount += isExtensionLine ? trueLinelen+1 : linelen+1;
+			
+			charCount += linelen;
 		}
 		if(caratY<0 && focusToggle)
 		{	
@@ -741,28 +724,27 @@ public class TextContainer extends Rectangle implements AppendInterface,KeyListe
 			{ mouseExpandPos1 = mousePos1; 
 			  mouseSelectingExpand = true; 
 			}
-			if(visibleSelectionStart<0)
+			if(selectionStart<0)
 			{
-				visibleSelectionStart = mousePos1;
-				visibleSelectionEnd = mousePos1+1;
-				actualSelectionStart = actualMousePos1;
-				actualSelectionEnd = actualMousePos1+1;
+				
+				selectionStart = mousePos1;
+				selectionEnd = mousePos1+1;
 				setCaratPosition(mousePos1);
 			}
 			else if(mousePos1<mouseExpandPos1)
-			{	visibleSelectionStart = Math.max(0,mousePos1);
-				actualSelectionStart = Math.max(0,actualMousePos1);
+			{	
+				selectionStart = Math.max(0,mousePos1);
 				setCaratPosition(mousePos1);
 			}				
 			else if (mousePos1>mouseExpandPos1)
 			{
-				visibleSelectionEnd = mousePos1;
-				actualSelectionEnd = actualMousePos1;
+				
+				selectionEnd = mousePos1;
 				setCaratPosition(mousePos1);
 			}
 			
-			visibleSelectionEnd = Math.max(visibleSelectionStart, visibleSelectionEnd);
-			actualSelectionEnd = Math.max(actualSelectionStart,actualSelectionEnd);
+			
+			selectionEnd = Math.max(selectionStart,selectionEnd);
 		
 		}
 		GC.frameRect(g,Color.black,x,y,width,height);
@@ -921,7 +903,7 @@ public class TextContainer extends Rectangle implements AppendInterface,KeyListe
 	{
 		if(data.length()>0)
 		{
-		if(visibleSelectionStart>=0)
+		if(selectionStart>=0)
 		{
 			doDeleteSelection();
 		}
@@ -982,8 +964,8 @@ public class TextContainer extends Rectangle implements AppendInterface,KeyListe
 	}
 	public void selectAll()
 	{
-		visibleSelectionStart = 0;
-		visibleSelectionEnd = data.length();
+		selectionStart = 0;
+		selectionEnd = data.length();
 		G.writeTextToClipboard(data.toString());
 	}
 	public void keyPressed(KeyEvent e) {
@@ -1019,15 +1001,15 @@ public class TextContainer extends Rectangle implements AppendInterface,KeyListe
 		//G.print("Key released "+e);
 	}
 	public void doCopy()
-	{	if(actualSelectionStart>=0)
+	{	if(selectionStart>=0)
 		{
-		int end = Math.min(actualSelectionEnd, data.length());
-		if(end>actualSelectionStart)
+		int end = Math.min(selectionEnd, data.length());
+		if(end>selectionStart)
 		{
 		if(data.charAt(end-1)=='\n') { end--; } 
-		if((end>actualSelectionStart))
+		if((end>selectionStart))
 		{	
-			String str = G.substring(data,actualSelectionStart,end);
+			String str = G.substring(data,selectionStart,end);
 			G.writeTextToClipboard(str);
 			if(canvas!=null && canvas.doSound())
 			  {
@@ -1045,14 +1027,14 @@ public class TextContainer extends Rectangle implements AppendInterface,KeyListe
 	}
 	public void doToEnd()
 	{
-		visibleSelectionStart = -1;
-		visibleSelectionEnd = -1;
+		selectionStart = -1;
+		selectionEnd = -1;
 		setCaratPosition(data.length());
 	}
 	public void doToBeginning()
 	{
-		visibleSelectionStart = -1;
-		visibleSelectionEnd = -1;
+		selectionStart = -1;
+		selectionEnd = -1;
 		setCaratPosition(0);
 	}
 	private void setScrollY(int to)
@@ -1093,8 +1075,8 @@ public class TextContainer extends Rectangle implements AppendInterface,KeyListe
 			{
 			// if no selection or scrolling happened, just reposition 
 			// the blinking carat 
-			visibleSelectionStart = -1;
-			visibleSelectionEnd = -1;
+			selectionStart = -1;
+			selectionEnd = -1;
 			caratSelecting = true;
 			setFocus(true);
 			}

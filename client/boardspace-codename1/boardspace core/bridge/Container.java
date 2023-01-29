@@ -85,6 +85,15 @@ public class Container extends Component
 	
 	public Component getComponent(int i) { return((Component)getComponentAt(i)); }
 	
+	public int getComponentIndex(JMenu m)
+	{
+		return m.getComponentIndex(m);
+	}
+	public int getComponentIndex(Component m)
+	{
+		return m.getComponentIndex(m.getComponent());
+	}
+
 	public void add(ProxyWindow c) { add(c.getComponent()); }
 
 	 public void paintComponentBackground(Graphics g)

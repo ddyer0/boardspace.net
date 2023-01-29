@@ -825,7 +825,7 @@ public class ChatWidget
 		} 
     }
     private void sendToFields(int ex,int ey,MouseState upcode)
-    {
+    {	
     	activePane().doMouseMove(ex,ey,upcode);
 		nameField.doMouseMove(ex, ey, upcode);
 		shortNameField.doMouseMove(ex, ey, upcode);

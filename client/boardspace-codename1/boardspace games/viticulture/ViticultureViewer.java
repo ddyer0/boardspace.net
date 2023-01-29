@@ -58,7 +58,7 @@ public class ViticultureViewer extends CCanvas<ViticultureCell,ViticultureBoard>
     private Color dullBackgroundColor =  new Color(130,170,130);
     private Color boardBackgroundColor = new Color(140,165,140);
     LateDrawingStack lateTips = new LateDrawingStack();
-    static boolean BACKGROUND_OPTIMIZATION = true;
+    static boolean BACKGROUND_OPTIMIZATION = G.isCodename1();
     boolean showBuildings = false;
     
     public void testSwitch()

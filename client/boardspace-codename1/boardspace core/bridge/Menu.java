@@ -101,7 +101,11 @@ public class Menu extends JMenuItem implements ActionListener,SizeProvider,Nativ
 	{ 	super(msg);
 		finishInit();
 	}
-
+	public int getComponentIndex(JMenu m) 
+	{
+		Vector<JMenuItem> v = getItems();
+		return v.indexOf(m);
+	}
 	private com.codename1.ui.Container  showingOn = null;
 	private int showingX;
 	private int showingY;

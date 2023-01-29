@@ -475,8 +475,9 @@ public class MouseManager
 	            if (!wasdragging)
 	            {	// the mouse is down and hasn't moved.  Make sure a minimal motion is asserted
 	            	// this was LAST_IS_MOVE before 1/25/2023, which is inconsistent because the mouse
-	            	// is down and is being released.  
-	                HitPoint pt = mouseMotion(x, y, MouseState.LAST_IS_DRAG); // get current information about what's under the mouse
+	            	// is down and is being released.  Changed to LAST_IS_IDLE so it won't trigger
+	            	// any actions, but will scan and return the point for startDragging
+	                HitPoint pt = mouseMotion(x, y, MouseState.LAST_IS_IDLE); // get current information about what's under the mouse
 	                if(pt!=null)
 	                	{ pt.setButton(button);
 	                	  startDragging(pt);

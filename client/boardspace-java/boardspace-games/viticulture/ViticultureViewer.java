@@ -22,6 +22,7 @@ import lib.LFrameProtocol;
 import lib.LateDrawing;
 import lib.LateDrawingStack;
 import lib.MouseState;
+import lib.Plog;
 import lib.StockArt;
 import lib.Text;
 import lib.TextChunk;
@@ -54,7 +55,13 @@ public class ViticultureViewer extends CCanvas<ViticultureCell,ViticultureBoard>
     private Color dullBackgroundColor =  new Color(130,170,130);
     private Color boardBackgroundColor = new Color(140,165,140);
     LateDrawingStack lateTips = new LateDrawingStack();
-    static boolean BACKGROUND_OPTIMIZATION = true;
+    // this optimization pushes more elements into the background bitmap, which
+    // has to be reconstructed frequently.  Sometime around Dec 2022 I started
+    // noticing "flash" frames on desktops, which turned out to be frames missing the board part
+    // of the background.  Attempts to fix the problem by not using the regenerated
+    // backgrounds for a delay failed, so instead I've turned it off.  It's still on
+    // for mobiles, where it doesn't seem to cause a problem.
+    static boolean BACKGROUND_OPTIMIZATION = G.isCodename1();
     boolean showBuildings = false;
     
     public void testSwitch()
@@ -277,7 +284,9 @@ public class ViticultureViewer extends CCanvas<ViticultureCell,ViticultureBoard>
  * these are loading into a static variable so they can be shared by all.
  */
     public synchronized void preloadImages()
-    {	ViticultureChip.preloadImages(loader,ImageDir);	// load the images used by stones
+    {	Plog.log.addLog("preload");
+    	ViticultureChip.preloadImages(loader,ImageDir);	// load the images used by stones
+    	Plog.log.addLog("preload finished");
 		gameIcon = ViticultureChip.Icon.image;
 		
     }
@@ -317,7 +326,7 @@ public class ViticultureViewer extends CCanvas<ViticultureCell,ViticultureBoard>
 	 * info contains all the goodies from the environment.
 	 * */
     public void init(ExtendedHashtable info,LFrameProtocol frame)
-    {	
+    {	Plog.log.addLog("init started");
     	// for games with more than two players, the default players list should be 
     	// adjusted to the actual number, adjusted by the min and max
        	int players_in_game = info.getInt(OnlineConstants.PLAYERS_IN_GAME,chipRects.length);
@@ -354,7 +363,10 @@ public class ViticultureViewer extends CCanvas<ViticultureCell,ViticultureBoard>
         //useDirectDrawing(); 
         doInit(false);
         adjustPlayers(players_in_game);
+        ready = true;
+        Plog.log.addLog("init finished");
     }
+    private boolean ready = false;
 
     /** 
      *  used when starting up or replaying and also when loading a new game 
@@ -4657,7 +4669,7 @@ private void drawPlayerBoard(Graphics gc,
 <li>stray buttons and pick/drop are inactive when not on turn
 */
     public void redrawBoard(Graphics gc, HitPoint selectPos)
-    {  
+    {  if(!ready) { return; }
        ViticultureBoard gb = disB(gc);
        ViticultureState state = gb.getState();
        boolean moving = hasMovingObject(selectPos);
