@@ -4613,7 +4613,6 @@ public abstract class commonCanvas extends exCanvas
     					&& nPlayers==2);	
     }
     
-    public Image gameIcon = StockArt.GameIcon.image;
     private VncServiceProvider regService = null;
     private RpcInterface rpcService = null;
     
@@ -4753,6 +4752,8 @@ public abstract class commonCanvas extends exCanvas
         	l.unzoomButton = myFrame.addAction("Un Zoom",deferredEvents);
     	}
         if(gameInfo!=null) {  myFrame.setTitle(gameInfo.gameName);}
+        // gameicon is initialized as part of the contract of preloadImages(), even
+        // if the images were already loaded.
         myFrame.setIconAsImage(gameIcon);
         
         hidden.controlToken = mutable_game_record = allowed_to_edit = reviewOnly = 

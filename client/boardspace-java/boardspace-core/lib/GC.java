@@ -208,7 +208,7 @@ public class GC {
 	 * @param rot	the rotation angle to display the box
 	 */
 	static public void drawBubble(Graphics inG, int x, int y, String msg, Rectangle r,double rotation)
-	{ GC.drawBubble(inG,x,y,TextChunk.split(msg),r,rotation);
+	{ drawBubble(inG,x,y,TextChunk.split(msg),r,rotation);
 	}
 
 	/** draw a tooltip bubble with the pointer pointing to x,y, constrained
@@ -415,7 +415,7 @@ public class GC {
 	    int inW = G.Width(dest);
 	    int inH = G.Height(dest);
 	
-	    Font old = GC.getFont(gc);
+	    Font old = getFont(gc);
 	    setFont(gc,standardBoldFont);
 	    Text(gc, false, inXOffset + 3, inYOffset, inW, inH, foreground_color,
 	        table_color, timeString);
@@ -490,10 +490,10 @@ public class GC {
 	        int newg = Math.min(255, (int) (fg - (density * dg)));
 	        int newb = Math.min(255, (int) (fb - (density * db)));
 	        setColor(inG,new Color(newr, newg, newb));
-	        GC.frameRect(inG,centerX + x, centerY - fromY, 1, 1);
-	        GC.frameRect(inG,centerX - x, centerY - fromY, 1, 1);
-	        GC.frameRect(inG,centerX + x, centerY + fromY, 1, 1);
-	        GC.frameRect(inG,centerX - x, centerY + fromY, 1, 1);
+	        frameRect(inG,centerX + x, centerY - fromY, 1, 1);
+	        frameRect(inG,centerX - x, centerY - fromY, 1, 1);
+	        frameRect(inG,centerX + x, centerY + fromY, 1, 1);
+	        frameRect(inG,centerX - x, centerY + fromY, 1, 1);
 	
 	        if (density < 0.1)
 	        {
@@ -613,7 +613,7 @@ public class GC {
 	        int h)
 	    {	
 	        setColor(g,c);
-	        GC.frameRect(g,left, top, w-1 , h-1 );
+	        frameRect(g,left, top, w-1 , h-1 );
 	    }
 
 	/**
@@ -657,7 +657,7 @@ public class GC {
 	    static public boolean handleRoundButton(Graphics gc, Rectangle r,
 	        HitPoint highlight, String msg, Color HighlightColor,
 	        Color rackBackGroundColor)
-	    {	return GC.handleRoundButton(gc,0,r,highlight,
+	    {	return handleRoundButton(gc,0,r,highlight,
 	    		TextChunk.create(msg),Color.black,
 	    		Color.black,HighlightColor,rackBackGroundColor);
 	    }
@@ -679,7 +679,7 @@ public class GC {
 	 static public boolean handleSquareButton(Graphics inG, Rectangle r,
 	    HitPoint highlight, String text, Color HighlightColor,  Color BackgroundColor)
 	{
-		return(GC.handleSquareButton(inG,0,r,highlight,TextChunk.create(text),Color.black,Color.white,HighlightColor,BackgroundColor));
+		return(handleSquareButton(inG,0,r,highlight,TextChunk.create(text),Color.black,Color.white,HighlightColor,BackgroundColor));
 	}
 
 	/**
@@ -722,7 +722,7 @@ public class GC {
 	     static public boolean handleRoundButton(Graphics inG,double rotation,Rectangle r,
 	    		 HitPoint highlight, String text, Color HighlightColor, Color BackgroundColor)
 	     {
-	    	 return(GC.handleRoundButton(inG,rotation,r,highlight,
+	    	 return(handleRoundButton(inG,rotation,r,highlight,
 	    			 TextChunk.create(text),Color.black,
 	    			 Color.black,HighlightColor,BackgroundColor));
 	     }
@@ -742,7 +742,7 @@ public class GC {
 	  static public boolean handleSquareButton(Graphics inG,double rotation,Rectangle r,
 	    		 HitPoint highlight, String text, Color HighlightColor, Color BackgroundColor)
 	     {
-	    	 return(GC.handleSquareButton(inG,rotation,r,highlight,TextChunk.create(text),
+	    	 return(handleSquareButton(inG,rotation,r,highlight,TextChunk.create(text),
 	    			 Color.black,Color.white,HighlightColor,BackgroundColor));
 	     }
 
@@ -804,7 +804,7 @@ public class GC {
 	 		G.setRotation(cr,rotation2,cx,cy);
 	 		setRotation(inG,rotation2, cx, cy);
 	 	}
-	 	boolean v = GC.handleRoundButton(inG,cr,-1,highlight,text,textColor,frameColor,
+	 	boolean v = handleRoundButton(inG,cr,-1,highlight,text,textColor,frameColor,
 	 					HighlightColor,BackgroundColor);
 	 	if(rotation2!=0) 
 	 		{ setRotation(inG, -rotation2, cx, cy);   
@@ -875,7 +875,7 @@ public class GC {
 	            frameOval(gc,anim_x - sz2, anim_y -sz2, size,size);
 	            int dx = (int)Math.round((sz2+2) * angx);
 	            int dy = (int)Math.round((sz2+2) * angy);
-	            GC.drawLine(gc,anim_x-dx,anim_y-dy,
+	            drawLine(gc,anim_x-dx,anim_y-dy,
 	                anim_x + dx, 
 	                anim_y + dy);
 	       }
@@ -895,7 +895,7 @@ public class GC {
 	*/
 	public static void myDrawPolygon(Graphics inG, int inX, int inY, Polygon inPoly, Color fillColour, Color trimColour, String inText, Color textColour) 
 	{
-	    GC.translate(inG,inX,inY);
+	    translate(inG,inX,inY);
 	    setColor(inG,fillColour);
 	    inPoly.fillPolygon(inG);
 	    setColor(inG,trimColour);
@@ -905,7 +905,7 @@ public class GC {
 	       int w = G.Width(b) - 4;
 	       Text(inG,true,-w/2,-G.Height(b)/2,w,G.Height(b),textColour,null,inText);
 	    }
-	    GC.translate(inG,-inX,-inY);
+	    translate(inG,-inX,-inY);
 	  }
 
 	/** combine the current clipping rectangle with a new left-top-w-h.  This

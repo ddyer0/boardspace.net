@@ -76,6 +76,7 @@ public class FullscreenPanel extends Panel implements MenuParentInterface, Canva
 	public void windowDeactivated(WindowEvent e) {
 		
 	}
+	
 	public void setFocused(Component p)
 	{
 		// this is a dummy method, the codename1 version does something.

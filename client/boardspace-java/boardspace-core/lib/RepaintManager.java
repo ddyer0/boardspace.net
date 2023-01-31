@@ -743,7 +743,9 @@ public class RepaintManager implements VncScreenInterface,Config
    				if(repaintStrategy.useViewBuffer())
    					{
    					// make sure some data is forthcoming
+   					// this path is used by pinch zoom the lobby and seatingViewer 
    					if(!pbuffer.written()) {paintDirect(null,true); }	// trigger a write
+  					if(!pbuffer.written()) { pbuffer = null; }
    					}
    				else {
    					// we don't normally use a view buffer, so this one was created for us

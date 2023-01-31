@@ -117,8 +117,8 @@ public class RepaintManager implements VncScreenInterface,Config
 	public enum RepaintStrategy {
 		Direct_SingleBuffer(0,30,"Direct Single Buffer"),
 		Direct_Unbuffered(0,0,"Direct Unbuffered"),		// used by android textwindow and ios
-		Deferred(0,30,"Deferred Single Buffer"),
-		Deferred_Unbuffered(0,30,"Deferred Unbuffered"),
+		Deferred(0,0,"Deferred Single Buffer"),
+		Deferred_Unbuffered(0,0,"Deferred Unbuffered"),
 		// single buffer strategy, if the viewing buffer is not ready to reuse, repaint anyway, schedule another repaint after it is ready
 		// draw to the buffer, and wait (inline) until it is ready to be seen
 		SingleBuffer(0,0,"Single Buffer"),
@@ -743,7 +743,9 @@ public class RepaintManager implements VncScreenInterface,Config
    				if(repaintStrategy.useViewBuffer())
    					{
    					// make sure some data is forthcoming
+   					// this path is used by pinch zoom the lobby and seatingViewer 
    					if(!pbuffer.written()) {paintDirect(null,true); }	// trigger a write
+  					if(!pbuffer.written()) { pbuffer = null; }
    					}
    				else {
    					// we don't normally use a view buffer, so this one was created for us

@@ -1,5 +1,6 @@
 package lib;
 
+import java.awt.Color;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Label;
@@ -497,7 +498,7 @@ public class XFrame extends JFrame implements WindowListener,SizeProvider,LFrame
     	initMenu(options);
         boolean defaultSound = Config.Default.getBoolean(Config.Default.sound);
         soundCheckBox = addOption(s.get(SoundMessage), defaultSound,null);
- 
+        soundCheckBox.setForeground(Color.blue);
     }
     public void initMenu(JMenu m)
     {	if(m!=null)

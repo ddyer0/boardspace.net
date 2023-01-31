@@ -29,8 +29,6 @@ import online.search.SimpleRobotProtocol;
 import rpc.RpcService;
 import vnc.VNCService;
 
-
-
 /**
  *  Initial work Sept 2020 
 */

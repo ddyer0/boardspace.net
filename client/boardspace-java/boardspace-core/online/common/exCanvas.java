@@ -43,6 +43,11 @@ public abstract class exCanvas extends Canvas
     static final String FontSize = "Set Font Size";
     static final String ZoomMessage = "Zoom=";
 
+    // this is initialized as part of the contract of preloadImages(), 
+    // it's here instead of in commonCanvas because of the order of
+    // evaluation of the constructor here and static evaluators in commonCanvas
+    public Image gameIcon = null;
+
 	public  void setCanvasRotation(int n) {
 		super.setCanvasRotation(n);
        	resetBounds();

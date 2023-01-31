@@ -1,7 +1,8 @@
 package common;
-import bridge.Color;
+
 import java.util.*;
 
+import bridge.Color;
 import lib.*;
 import online.common.LobbyConstants;
 
@@ -35,10 +36,12 @@ public class GameInfo implements lib.CompareTo<GameInfo>,LobbyConstants
 	public Image icon = null;
 	public Image icon2 = null;
 	public String iconPath = null;
+	public String website = null;
+	
 	public String iconPath()
 	{
 		if(iconPath==null)
-		{	String [] path = G.split(viewerClass,'.');
+		{	String [] path =  G.split(viewerClass,'.');
 			return(path[0]);
 		}
 		else return(iconPath);
@@ -119,7 +122,7 @@ public class GameInfo implements lib.CompareTo<GameInfo>,LobbyConstants
 	public int minPlayers=2;
 	public int maxRobotPlayers = 1;
 	public boolean variableColorMap = false;				// if true, player order is linked to color map
-	public boolean randomizeFirstPlayer = false;		// if true, mandatory randomization of the first player
+	public boolean randomizeFirstPlayer = false;			// if true, mandatory randomization of the first player
 	public boolean unrankedOnly = false;					// only available in unranked games
 	public Color[] colorMap = null;
 	public String howToVideo = null;
@@ -303,7 +306,8 @@ public class GameInfo implements lib.CompareTo<GameInfo>,LobbyConstants
 		return(g);
 	}
 	static IntObjHashtable<GameInfo> allids = new IntObjHashtable<GameInfo>();
-	
+		
+
 	/**
 	 * constructor
 	 * @param uid
@@ -333,10 +337,13 @@ public class GameInfo implements lib.CompareTo<GameInfo>,LobbyConstants
 			double speed[],			// relative robot speeds
 			String viewer,			// the class name for the viewer class
 			String rul,				// rules link
+			String web,				// web site link
 			String howto,			// first player is selectable
-			boolean fir, Color[]map)				// color map
+			boolean fir, Color[]map				// color map
+			)			// web site link
 	{	enabled = enab;
 		howToVideo = howto;
+		website = web;
 		id = ID;
 		variableColorMap = fir;
 		colorMap = map;
@@ -418,107 +425,113 @@ synchronized(allGames) {
 	{ GameInfo g = put(new GameInfo(60,ES.game,14,"FA",AncientGames,"Fanorona","Fanorona",
 			ThreeBots,
 			new double[]{0.025,1,1},
-			"fanorona.FanoronaGameViewer","/fanorona/english/rules.html",
+			"fanorona.FanoronaGameViewer","/fanorona/english/rules.html","about_fanorona.html",
 			null,false, WhiteOverBlack));
 		g.groupSortKey = "00010";	// force ancient games before anything, Fanorona first in ancient games.
 		GameInfo g1 = put(new GameInfo(60,ES.game,14,"FA",CapturingGames,"Fanorona","Fanorona",
 				ThreeBots,
 				new double[]{0.025,1,1},
-				"fanorona.FanoronaGameViewer","/fanorona/english/rules.html",
+				"fanorona.FanoronaGameViewer","/fanorona/english/rules.html","about_fanorona.html",
 				null,false, WhiteOverBlack));
 		g1.groupSortKey = "00014";	// force capturing games after ancient games
 	}
 	
 	{ double chessBot[] = {0.5,0.05};
 	  put(new GameInfo(780,ES.game,82,"CS",AncientGames,"Chess","Chess",OneBotPlus,
-			chessBot,"chess.ChessViewer","/chess/english/BasicChessRules.pdf",
+			chessBot,"chess.ChessViewer","/chess/english/BasicChessRules.pdf","about_chess.html",
 			null,false, WhiteOverBlack));
 	  put(new GameInfo(781,ES.game,83,"UL",AncientGames,"Chess","Ultima",OneBotPlus,
-				chessBot,"chess.ChessViewer","/chess/english/ultima-rules.html",
+				chessBot,"chess.ChessViewer","/chess/english/ultima-rules.html","about_chess.html",
 				null,false, WhiteOverBlack)).familyName="Ultima";
 	  put(new GameInfo(782,ES.game,105,"C9",AncientGames,"Chess","Chess960",OneBotPlus,
-				chessBot,"chess.ChessViewer","/chess/english/chess960-rules.html",
+				chessBot,"chess.ChessViewer","/chess/english/chess960-rules.html","about_chess.html",
 				null,false, WhiteOverBlack)).familyName="Chess960";
 	  put(new GameInfo(783,ES.game,83,"UL",OtherGames,"Ultima","Ultima",OneBotPlus,
 				new double[]{0.5,0.05},
-				"chess.ChessViewer","/chess/english/ultima-rules.html",
+				"chess.ChessViewer","/chess/english/ultima-rules.html","about_chess.html",
 				null,false, WhiteOverBlack));	  
 	}
-	{
+	{ 
 
 	 GameInfo m =  put(new GameInfo(781,ES.game,104,"KC",AncientGames,"Chess","KingsColor",TwoBotsPlus,
 				new double[]{0.5,1.0,0.05},
-				"kingscolor.KingsColorViewer","/kingscolor/english/kingscolor-rules.html",
-				null,false, WhiteOverBlack));	  
+				"kingscolor.KingsColorViewer","/kingscolor/english/kingscolor-rules.html","about_kingscolor.html",
+				null,false, WhiteOverBlack));	
 	 m.robotTimed = true;
 	 m.familyName="Kings Color";
 	 m = put(new GameInfo(781,ES.game,104,"KC",OtherGames,"KingsColor","KingsColor",TwoBotsPlus,
 				new double[]{0.5,1.0,0.05},
-				"kingscolor.KingsColorViewer","/kingscolor/english/kingscolor-rules.html",
+				"kingscolor.KingsColorViewer","/kingscolor/english/kingscolor-rules.html","about_kingscolor.html",
 				null,false, WhiteOverBlack));	  
 	 m.robotTimed = true;
 	 m.familyName="Kings Color";
 	}
 	{
 	put(new GameInfo(753,ES.game,74,"GO",AncientGames,"Go","Go-9",NoBots,null,
-			"goban.GoViewer","/english/about_go.html",null,false, BlackOverWhite));
+			"goban.GoViewer","/english/about_go.html","about_go.html",null,false, BlackOverWhite));
 	
 	put(new GameInfo(752,ES.game,74,"GO",AncientGames,"Go","Go-11",NoBots,null,
-			"goban.GoViewer","/english/about_go.html",null,false, BlackOverWhite));
+			"goban.GoViewer","/english/about_go.html","about_go.html",null,false, BlackOverWhite));
 	
 	put(new GameInfo(751,ES.game,74,"GO",AncientGames,"Go","Go-13",
 			NoBots,null,
-			"goban.GoViewer","/english/about_go.html",
+			"goban.GoViewer","/english/about_go.html","about_go.html",
 			null,false, BlackOverWhite));
 	
 	put(new GameInfo(750,ES.game,74,"GO",AncientGames,"Go","Go-19",NoBots,null,
-			"goban.GoViewer","/english/about_go.html",null,false, BlackOverWhite));
+			"goban.GoViewer","/english/about_go.html","about_go.html",null,false, BlackOverWhite));
 	
 	put(new GameInfo(753,ES.game,74,"GO",TerritoryGames,"Go","Go-9",NoBots,null,
-			"goban.GoViewer","/english/about_go.html",
+			"goban.GoViewer","/english/about_go.html","about_go.html",
 			null,false, BlackOverWhite));
 	put(new GameInfo(752,ES.game,74,"GO",TerritoryGames,"Go","Go-11",
 			NoBots,null,
-			"goban.GoViewer","/english/about_go.html",
+			"goban.GoViewer","/english/about_go.html","about_go.html",
 			null,false, BlackOverWhite));
 	put(new GameInfo(751,ES.game,74,"GO",TerritoryGames,"Go","Go-13",
 			NoBots,null,
-			"goban.GoViewer","/english/about_go.html",
+			"goban.GoViewer","/english/about_go.html","about_go.html",
 			null,false, BlackOverWhite));
 	put(new GameInfo(750,ES.game,74,"GO",TerritoryGames,"Go","Go-19",
 			NoBots,null,
-			"goban.GoViewer","/english/about_go.html",
+			"goban.GoViewer","/english/about_go.html","about_go.html",
 			null,false, BlackOverWhite));
 	}
 	{
 	put(new GameInfo(760,ES.game,89,"bl",TerritoryGames,"Blooms","Blooms-4",
 			OneBotPlus,
 			new double[]{1.0,0.01},
-			"blooms.BloomsViewer","/blooms/english/rules.html",null,true, RedOverBlue));
+			"blooms.BloomsViewer","/blooms/english/rules.html","about_blooms.html",
+			null,true, RedOverBlue));
 	put(new GameInfo(761,ES.game,89,"bl",TerritoryGames,"Blooms","Blooms-5",
 			OneBotPlus,
 			new double[]{1.0,0.01},
-			"blooms.BloomsViewer","/blooms/english/rules.html",null,true, RedOverBlue));
+			"blooms.BloomsViewer","/blooms/english/rules.html","about_blooms.html",
+			null,true, RedOverBlue));
 	put(new GameInfo(762,ES.game,89,"bl",TerritoryGames,"Blooms","Blooms-6",
 			OneBotPlus,
 			new double[]{1.0,0.01},
-			"blooms.BloomsViewer","/blooms/english/rules.html",null,true, RedOverBlue));
+			"blooms.BloomsViewer","/blooms/english/rules.html","about_blooms.html",
+			null,true, RedOverBlue));
 	put(new GameInfo(763,ES.game,89,"bl",TerritoryGames,"Blooms","Blooms-7",
 			OneBotPlus,
 			new double[]{1.0,0.01},
-			"blooms.BloomsViewer","/blooms/english/rules.html",null,true, RedOverBlue));
+			"blooms.BloomsViewer","/blooms/english/rules.html","about_blooms.html",
+			null,true, RedOverBlue));
 	}
 	
 	{
 	put(new GameInfo(880,ES.game,90,"mb",TerritoryGames,"Mbrane","Mbrane",
 			OneBotPlus,
 			new double[]{1.0,0.01},
-			"mbrane.MbraneViewer","/mbrane/english/rules.html",null,true, RedOverBlack));
+			"mbrane.MbraneViewer","/mbrane/english/rules.html","about_mbrane.html",
+			null,true, RedOverBlack));
 
 	put(new GameInfo(881,ES.game,90,"mb",TerritoryGames,"Mbrane","Mbrane-Simple",
 			OneBotPlus,
 			new double[]{1.0,0.01},
-			"mbrane.MbraneViewer","/mbrane/english/rules.html",null,true, RedOverBlack));
+			"mbrane.MbraneViewer","/mbrane/english/rules.html","about_mbrane.html",
+			null,true, RedOverBlack));
 
 	}
 	
@@ -526,29 +539,29 @@ synchronized(allGames) {
 	put(new GameInfo(760,ES.game,76,"CK",AncientGames,"Checkers","Checkers-international",
 			OneBotPlus,
 			new double[]{1.0,0.01},
-			"checkerboard.CheckerGameViewer","/checkers/english/International%20Checkers%20Rules.html",
+			"checkerboard.CheckerGameViewer","/checkers/english/International%20Checkers%20Rules.html","about_checkers.html",
 			null,false, WhiteOverBlack));
 	 put(new GameInfo(761,ES.game,76,"CK",AncientGames,"Checkers","Checkers-turkish",
 			OneBotPlus,
 			new double[]{1.0,0.01},
-			"checkerboard.CheckerGameViewer","/checkers/english/Turkish_Checkers_Rules.pdf",
+			"checkerboard.CheckerGameViewer","/checkers/english/Turkish_Checkers_Rules.pdf","about_checkers.html",
 			null,false, WhiteOverBlack));
 	 put(new GameInfo(762,ES.game,76,"CK",AncientGames,"Checkers","Checkers-american",
 			OneBotPlus,
 			new double[]{1.0,0.01},
-			"checkerboard.CheckerGameViewer","/checkers/english/rules_of_checkers_english.pdf",
+			"checkerboard.CheckerGameViewer","/checkers/english/rules_of_checkers_english.pdf","about_checkers.html",
 			 null,false, WhiteOverBlack));
 	}
 	{
 	 put(new GameInfo(763,ES.game,112,"OR",RacingGames,"Ordo","Ordo",
 				OneBotPlus,
 				new double[]{1.0,0.01},
-				"ordo.OrdoViewer","/ordo/english/ordo-rules.html",
+				"ordo.OrdoViewer","/ordo/english/ordo-rules.html","about_ordo.html",
 				 null,false, WhiteOverBlack));
 	 put(new GameInfo(764,ES.game,112,"OR",RacingGames,"Ordo","OrdoX",
 				OneBotPlus,
 				new double[]{1.0,0.01},
-				"ordo.OrdoViewer","/ordo/english/ordox-rules.html",
+				"ordo.OrdoViewer","/ordo/english/ordox-rules.html","about_ordo.html",
 				 null,false, WhiteOverBlack));
 	}
 	
@@ -556,7 +569,7 @@ synchronized(allGames) {
 	put(new GameInfo(770,ES.game,77,"MM",AncientGames,"Morris","Morris-9",
 			OneBotPlus,
 			new double[]{0.45,0.01},
-			"morris.MorrisViewer","/english/about_morris.html",
+			"morris.MorrisViewer","/english/about_morris.html","about_morris.html",
 			"/morris/english/morris-video.html",
 			true, WhiteOverRed));
 	}
@@ -564,14 +577,16 @@ synchronized(allGames) {
 	{ GameInfo g = put(new GameInfo(10,ES.game,30,"CA",CapturingGames,"Cannon","Cannon",
 			TwoBotsPlus,
 			new double[]{1.0,1.0,0.01},
-			"cannon.CannonViewer","/cannon/english/Cannon.htm",null,true, WhiteOverBlue));
+			"cannon.CannonViewer","/cannon/english/Cannon.htm","about_cannon.html",
+			null,true, WhiteOverBlue));
 		g.groupSortKey = "00020";	// capturing games after ancient games, cannon first in capturing games
 	}
 	// capturing games
 	{ GameInfo g = put(new GameInfo(10,ES.game,84,"MT",CapturingGames,"Magnet","Magnet",
 			TwoBotsPlus,
 			new double[]{1.0,1.0,0.01},
-			"magnet.MagnetViewer","/magnet/english/magnet-rules.pdf",null,false, RedOverBlue));
+			"magnet.MagnetViewer","/magnet/english/magnet-rules.pdf","about_magnet.html",
+			null,false, RedOverBlue));
 		g.groupSortKey = "00020";	// capturing games after ancient games, cannon first in capturing games
 		g.hasHiddenInformation = true;
 		// not a good candidate for playtable, the piece powers are 
@@ -585,7 +600,7 @@ synchronized(allGames) {
 			TwoBotsPlus,
 			new double[]{0.2,1.0,0.01},
 			"tintas.TintasViewer",
-			"/tintas/english/tintas-rules.html",
+			"/tintas/english/tintas-rules.html","about_tintas.html",
 			"/tintas/english/tintas-video.html",
 			true, null));
 		g.groupSortKey = "00021";	// capturing games after ancient games, cannon first in capturing games
@@ -593,7 +608,7 @@ synchronized(allGames) {
 	{ GameInfo mm = put(new GameInfo(110,ES.game,35,"AF",ConnectionGames,"ArmyOfFrogs","ArmyOfFrogs",
 			OneBotPlus,
 			new double[]{0.066,0.01},
-			"frogs.FrogViewer","/frogs/english/Army_Of_Frogs_Rules.pdf",
+			"frogs.FrogViewer","/frogs/english/Army_Of_Frogs_Rules.pdf","about_frogs.html",
 			null,true, new Color[]{ Color.green,Color.blue,Color.white,Color.red }));
 	  mm.minPlayers = 2;
 	  mm.maxPlayers = 4;
@@ -613,7 +628,7 @@ synchronized(allGames) {
 				new Color(0x8c,0x91,0xa8)};
 		GameInfo mm = put(new GameInfo(140,ES.game,38,"CO",EuroGames,"Container","Container",
 				OneBotPlus,cspeed,
-				cview,crules,
+				cview,crules,"about_container.html",
 				null,true, ccolors));
 		 mm.minPlayers = 3;
 		 mm.maxPlayers = 5;
@@ -623,7 +638,7 @@ synchronized(allGames) {
 		 mm.longMessage = "ContainerGameInfoMessage";
 		 GameInfo m1 = put(new GameInfo(150,ES.game,38,"CO",EuroGames,"Container","Container-First",
 				OneBotPlus,cspeed,
-				cview,crules,
+				cview,crules,"about_container.html",
 				null,true, ccolors));
 		 m1.minPlayers = 3;
 		 m1.maxPlayers = 5;
@@ -639,7 +654,7 @@ synchronized(allGames) {
 		GameInfo mm = put(new GameInfo(144,ES.game,93,"BD",EuroGames,"BlackDeath","BlackDeath",
 				OneBotPlus,
 				new double[]{1.0,0.01},
-				bdViewer,bdRules,
+				bdViewer,bdRules,"about_blackdeath.html",
 				bdVideo,false, bdColors));		// first player is determined by the initial die roll
 		 mm.minPlayers = 2;
 		 mm.maxPlayers = 6;
@@ -647,7 +662,7 @@ synchronized(allGames) {
 		 mm = put(new GameInfo(145,ES.test,93,"BD",EuroGames,"BlackDeath","BlackDeath-low",
 					OneBotPlus,
 					new double[]{1.0,0.01},
-					bdViewer,bdRules,
+					bdViewer,bdRules,"about_blackdeath.html",
 					bdVideo,false, bdColors));		// first player is determined by the initial die roll
 		 mm.minPlayers = 2;
 		 mm.maxPlayers = 6;
@@ -662,7 +677,7 @@ synchronized(allGames) {
 		put(new GameInfo(144,ES.game,94,"PF",OtherGames,"Push Fight","PushFight",
 				ThreeBotsPlus,
 				new double[]{1.0,1.0,1.0,0.01},
-				pfViewer,pfRules,
+				pfViewer,pfRules,"about_pushfight.html",
 				pfVideo,false, pfColors));		
 		
 	}
@@ -677,7 +692,7 @@ synchronized(allGames) {
 		{GameInfo mm = put(new GameInfo(144,ES.game,70,"EU",EuroGames,"Euphoria","Euphoria",
 				OneBotPlus,
 				new double[]{1.0,0.01},
-				euphoriaViewer,euphoriaRules,
+				euphoriaViewer,euphoriaRules,"about_euphoria.html",
 				euphoriaVideo,false, ecolors));		// euphoria first player is determined by the initial die roll
 		 mm.minPlayers = 2;
 		 mm.maxPlayers = 6;
@@ -690,7 +705,7 @@ synchronized(allGames) {
 		 GameInfo m2 = put(new GameInfo(143,ES.game,70,"EU",EuroGames,"Euphoria","Euphoria2",
 				OneBotPlus,
 				new double[]{1.0,0.01},
-				euphoriaViewer,euphoriaRules,
+				euphoriaViewer,euphoriaRules,"about_euphoria.html",
 				euphoriaVideo,false, ecolors));
 		 m2.minPlayers = 2;
 		 m2.maxPlayers = 6;
@@ -699,40 +714,40 @@ synchronized(allGames) {
 		 m2.randomizeFirstPlayer = true;
 		 // only requires card concealment for the player cards and hidden recruits
 		 m2.longMessage = mmside;
-		}
+		 }
 		
 		 {
 		   GameInfo m3 = put(new GameInfo(142,ES.game,70,"EU",EuroGames,"Euphoria","Euphoria3",
-						OneBotPlus,
-						new double[]{1.0,0.01},
-					euphoriaViewer,euphoriaRulesIIB,
-						euphoriaVideo,false, ecolors));
+					OneBotPlus,
+					new double[]{1.0,0.01},
+					euphoriaViewer,euphoriaRulesIIB,"about_euphoria.html",
+					euphoriaVideo,false, ecolors));
 		   	m3.minPlayers = 2;
 		   	m3.maxPlayers = 6;
 		   	m3.groupSortKey = "00042";
 		   	m3.hasHiddenInformation = true;
 		   	m3.randomizeFirstPlayer = true;
-				 // only requires card concealment for the player cards and hidden recruits
-		   	m3.longMessage = mmside;
-			 }
-			 {
-			 GameInfo m3 = put(new GameInfo(140,ES.test,70,"EU",EuroGames,"Euphoria","Euphoria3T",
-					OneBotPlus,
-					new double[]{1.0,0.01},
-					euphoriaViewer,euphoriaRulesIIB,
-					euphoriaVideo,false, ecolors));
-		   	m3.minPlayers = 2;
-		   	m3.maxPlayers = 6;
-			m3.groupSortKey = "00043";
-		   	m3.hasHiddenInformation = true;
-		   	m3.randomizeFirstPlayer = true;
 			 // only requires card concealment for the player cards and hidden recruits
 		   	m3.longMessage = mmside;
 			 }
-		
+		 {
+			 GameInfo m3 = put(new GameInfo(140,ES.test,70,"EU",EuroGames,"Euphoria","Euphoria3T",
+					OneBotPlus,
+					new double[]{1.0,0.01},
+					euphoriaViewer,euphoriaRulesIIB,"about_euphoria.html",
+					euphoriaVideo,false, ecolors));
+			m3.minPlayers = 2;
+			m3.maxPlayers = 6;
+			m3.groupSortKey = "00043";
+			m3.hasHiddenInformation = true;
+			m3.randomizeFirstPlayer = true;
+			 // only requires card concealment for the player cards and hidden recruits
+			m3.longMessage = mmside;
+			 }
 
-		}
-	
+
+	}
+
 
 	{	
 	Color []ecolors = {  Color.blue, Color.green, bsOrange, bsPurple, Color.red, Color.yellow };
@@ -742,7 +757,7 @@ synchronized(allGames) {
 	GameInfo mm = put(new GameInfo(144,ES.game,100,"IM",EuroGames,"Imagine","Imagine",
 			NoBots,
 			new double[]{1.0,0.01},
-			imagineViewer,imagineRules,
+			imagineViewer,imagineRules,"about_imagine.html",
 			null,false, ecolors));		
 	 mm.minPlayers = 3;
 	 mm.maxPlayers = 6;
@@ -759,7 +774,7 @@ synchronized(allGames) {
 	String viticultureViewer =  "viticulture.ViticultureViewer";
 	GameInfo mm = put(new GameInfo(144,ES.game,91,"VI",EuroGames,"Viticulture","Viticulture",
 			NoBots,null,
-			viticultureViewer,viticultureRules,
+			viticultureViewer,viticultureRules,"about_viticulture.html",
 			null,true, ecolors));		
 	 mm.minPlayers = 1;
 	 mm.maxPlayers = 6;
@@ -777,14 +792,14 @@ synchronized(allGames) {
 		GameInfo m = put(new GameInfo(560,ES.game,7,"GB",NInARowGames,"Gobblet","Gobblet",
 			ThreeBotsPlus,
 			new double[]{0.33,1,1,0.01},
-			gobbletClass,gobbletRules,
+			gobbletClass,gobbletRules,"about_gobblet.html",
 			gobbletVideo,false, BlackOverWhite));
 	  m.groupSortKey = "00050";	// n-in-a-row games after euro games, gobblet first in n-in-a-row-games
 
 	  m = put(new GameInfo(570,ES.game, 7,"GM",NInARowGames,"Gobblet"   ,"Gobbletm",
 					ThreeBotsPlus,
 					new double[]{0.33,1,1,0.01},
-					gobbletClass,gobbletRules,
+					gobbletClass,gobbletRules,"about_gobblet.html",
 					gobbletVideo,false, BlackOverWhite));
 	}
 	}	
@@ -793,7 +808,7 @@ synchronized(allGames) {
 			ThreeBotsPlus,
 			new double[]{0.4,1.0,1.0,0.01},
 			"modx.ModxViewer","/modx/english/MODX_Rule_Book_Final.pdf",
-			"/modx/english/modx-video.html",
+			"/modx/english/modx-video.html","about.modx.html",
 			true, new Color[]{Color.red,Color.black}));
 		m.groupSortKey = "00052";	// n-in-a-row games after euro games, first in n-in-a-row-games
 
@@ -803,7 +818,8 @@ synchronized(allGames) {
 		GameInfo mm = put(new GameInfo(852,ES.game,53,"DB",PolyominoGames,"Diagonal Blocks","Diagonal-Blocks",
 				OneBotPlus,
 				new double[]{1.0,0.01},
-				"universe.UniverseViewer","/english/about_diagonal-blocks.html",null,true, UniverseColor));
+				"universe.UniverseViewer","/english/about_diagonal-blocks.html","about_universe.html",
+				null,true, UniverseColor));
 		 mm.minPlayers = 3;
 		 mm.maxPlayers = 4;
 		 mm.randomizeFirstPlayer = true;
@@ -813,7 +829,7 @@ synchronized(allGames) {
 	{ GameInfo mm = put(new GameInfo(310,ES.game,39,"AA",RacingGames,"Arimaa","Arimaa",
 			OneBotPlus,
 			new double[]{0.41,0.01},
-			"arimaa.ArimaaViewer","/arimaa/english/Arimaa%20Game%20Rules.htm",
+			"arimaa.ArimaaViewer","/arimaa/english/Arimaa%20Game%20Rules.htm","about_arimaa.html",
 			"/arimaa/english/arimaa-video.html",
 			false, GoldOverSilver));
 	  mm.groupSortKey = "00070";
@@ -823,7 +839,7 @@ synchronized(allGames) {
 	put(new GameInfo(54,ES.game,86,"BC",RacingGames,"Barca","Barca",
 			OneBotPlus,
 			new double[]{1.0,0.01},
-			"barca.BarcaViewer","/barca/english/rules.html",
+			"barca.BarcaViewer","/barca/english/rules.html","about_barca.html",
 			null,false, WhiteOverBlack));
 	}
 	
@@ -831,53 +847,53 @@ synchronized(allGames) {
 	put(new GameInfo(55,ES.game,69,"CL",RacingGames,"Colorito","Colorito-10",
 			OneBotPlus,
 			new double[]{1.0,0.01},
-			"colorito.ColoritoViewer","/colorito/english/COLORITO_EN.pdf",
+			"colorito.ColoritoViewer","/colorito/english/COLORITO_EN.pdf","about_colorito.html",
 			null,false, BlueOverRed));
 	put(new GameInfo(56,ES.game,69,"CL",RacingGames,"Colorito","Colorito-8",
 			OneBotPlus,
 			new double[]{1.0,0.01},
-			"colorito.ColoritoViewer","/colorito/english/COLORITO_EN.pdf",
+			"colorito.ColoritoViewer","/colorito/english/COLORITO_EN.pdf","about_colorito.html",
 			null,false, BlueOverRed));
 
 	put(new GameInfo(57,ES.game,69,"CL",RacingGames,"Colorito","Colorito-7",
 			OneBotPlus,
 			new double[]{1.0,0.01},
-			"colorito.ColoritoViewer","/colorito/english/COLORITO_EN.pdf",
+			"colorito.ColoritoViewer","/colorito/english/COLORITO_EN.pdf","about_colorito.html",
 			null,false, BlueOverRed));
 
 	put(new GameInfo(58,ES.game,69,"CL",RacingGames,"Colorito","Colorito-6",
 			OneBotPlus,
 			new double[]{1.0,0.01},
-			"colorito.ColoritoViewer","/colorito/english/COLORITO_EN.pdf",
+			"colorito.ColoritoViewer","/colorito/english/COLORITO_EN.pdf","about_colorito.html",
 			null,false, BlueOverRed));
 	put(new GameInfo(59,ES.game,69,"CL",RacingGames,"Colorito","Colorito-6-10",
 			OneBotPlus,
 			new double[]{1.0,0.01},
-			"colorito.ColoritoViewer","/colorito/english/COLORITO_EN.pdf",
+			"colorito.ColoritoViewer","/colorito/english/COLORITO_EN.pdf","about_colorito.html",
 			null,false, BlueOverRed));
 
 	put(new GameInfo(55,ES.game,69,"CL",AncientGames,"Colorito","Colorito-10",
 			OneBotPlus,new double[] {1.0,0.01},
-			"colorito.ColoritoViewer","/colorito/english/COLORITO_EN.pdf",
+			"colorito.ColoritoViewer","/colorito/english/COLORITO_EN.pdf","about_colorito.html",
 			null,false, BlueOverRed));
 
 	put(new GameInfo(56,ES.game,69,"CL",AncientGames,"Colorito","Colorito-8",
 			OneBotPlus,new double[] {1.0,0.08},
-			"colorito.ColoritoViewer","/colorito/english/COLORITO_EN.pdf",
+			"colorito.ColoritoViewer","/colorito/english/COLORITO_EN.pdf","about_colorito.html",
 			null,false, BlueOverRed));
 
 	put(new GameInfo(57,ES.game,69,"CL",AncientGames,"Colorito","Colorito-7",
 			OneBotPlus,new double[] {1.0,0.01},
-			"colorito.ColoritoViewer","/colorito/english/COLORITO_EN.pdf",
+			"colorito.ColoritoViewer","/colorito/english/COLORITO_EN.pdf","about_colorito.html",
 			null,false, BlueOverRed));
 
 	put(new GameInfo(58,ES.game,69,"CL",AncientGames,"Colorito","Colorito-6",
 			OneBotPlus,new double[] {1.0,0.01},
-			"colorito.ColoritoViewer","/colorito/english/COLORITO_EN.pdf",
+			"colorito.ColoritoViewer","/colorito/english/COLORITO_EN.pdf","about_colorito.html",
 			null,false, BlueOverRed));
 	put(new GameInfo(59,ES.game,69,"CL",AncientGames,"Colorito","Colorito-6-10",
 			OneBotPlus,new double[] {1.0,0.01},
-			"colorito.ColoritoViewer","/colorito/english/COLORITO_EN.pdf",
+			"colorito.ColoritoViewer","/colorito/english/COLORITO_EN.pdf","about_colorito.html",
 			null,false, BlueOverRed));
 
 	}
@@ -885,14 +901,14 @@ synchronized(allGames) {
 	{ GameInfo mm = put(new GameInfo(370,ES.game,40,"CF",StackingGames,"Crossfire","Crossfire",
 			ThreeBotsPlus,
 			new double[]{0.15,1.0,1.0,0.01},
-			"crossfire.CrossfireViewer","/english/about_crossfire.html",
+			"crossfire.CrossfireViewer","/english/about_crossfire.html","about_crossfire.html",
 			null,false, WhiteOverBlack));
 		mm.groupSortKey = "00080";
 	}
 	{ GameInfo mm = 	put(new GameInfo(510,ES.game,25,"CH",TilePatternGames,"Che","Che",
 			OneBotPlus,
 			new double[]{1.0,0.01},
-			"che.CheViewer","/english/about_che.html",
+			"che.CheViewer","/english/about_che.html","about_che.html",
 			null,true, new Color[] {Color.lightGray,Color.blue}));
 	    mm.groupSortKey = "00090";
 	}
@@ -900,7 +916,7 @@ synchronized(allGames) {
 	{ GameInfo mm = put(new GameInfo(445,ES.game,106,"IR",RacingGames,"Iro","Iro",
 			TwoBotsPlus,
 			new double[]{0.4,1,0.01},
-			"iro.IroViewer","/iro/english/iroprules.html",
+			"iro.IroViewer","/iro/english/iroprules.html","about_iro.html",
 			null,
 			false, WhiteOverBlack));
 	  mm.groupSortKey = "00070";
@@ -910,14 +926,14 @@ synchronized(allGames) {
 	put(new GameInfo(7500,ES.game,75,"ST",StackingGames,"Stac","Stac",
 			TwoBotsPlus,
 			new double[]{0.15,1,0.01},
-			"stac.StacViewer","/stac/english/Stac_Rules.pdf",
+			"stac.StacViewer","/stac/english/Stac_Rules.pdf","about_stac.html",
 			null,true, RedOverBlue));
 	}
 	{
 	put(new GameInfo(7620,ES.game,78,"SM",StackingGames,"Sixmaking","Sixmaking",
 			TwoBotsPlus,
 			new double[]{1.0,1.0,0.01},
-			"sixmaking.SixmakingViewer","/sixmaking/english/Six-MaKING-rules-Eng-Ger-Fra-Ro-Hu.pdf",
+			"sixmaking.SixmakingViewer","/sixmaking/english/Six-MaKING-rules-Eng-Ger-Fra-Ro-Hu.pdf","about_sixmaking.html",
 			"/sixmaking/english/sixmaking-video.html",
 			true, WhiteOverBlack));
 
@@ -931,16 +947,16 @@ synchronized(allGames) {
 		double vtime[] = new double[]{1.0,0.01};
 		GameInfo g = put(new GameInfo(633,ES.game,79,"VE",TerritoryGames,"Veletas","Veletas-10",
 			OneBotPlus,vtime,
-			vview,vrules,
+			vview,vrules,"about_veletas.html",
 			null,false, BlackOverWhite));
 		g.groupSortKey = "00089";
 		put(new GameInfo(634,ES.game,79,"VE",TerritoryGames,"Veletas","Veletas-9",
 				OneBotPlus,vtime,
-				vview,vrules,
+				vview,vrules,"about_veletas.html",
 				null,false, BlackOverWhite));
 		put(new GameInfo(635,ES.game,79,"VE",TerritoryGames,"Veletas","Veletas-7",
 				OneBotPlus,vtime,
-				vview,vrules,
+				vview,vrules,"about_veletas.html",
 				null,false, BlackOverWhite));
 	}
 
@@ -948,17 +964,17 @@ synchronized(allGames) {
 	put(new GameInfo(20,ES.game,41,"ET",CapturingGames,"Entrapment","Entrapment-7x7",
 			ThreeBotsPlus,
 			new double[]{1.0,1.0,1.0,0.01},
-			"entrapment.EntrapmentViewer","/entrapment/english/rules.html",
+			"entrapment.EntrapmentViewer","/entrapment/english/rules.html","about_entrapment.html",
 			null,false, WhiteOverBlack));
 	put(new GameInfo(30,ES.game,41,"ET",CapturingGames,"Entrapment","Entrapment-6x7",
 			ThreeBotsPlus,
 			new double[]{1.0,1.0,1.0,0.01},
-			"entrapment.EntrapmentViewer","/entrapment/english/rules.html",
+			"entrapment.EntrapmentViewer","/entrapment/english/rules.html","about_entrapment.html",
 			null,false, WhiteOverBlack));
 	put(new GameInfo(50,ES.game,41,"ET",CapturingGames,"Entrapment","Entrapment-7x7x4",
 			ThreeBotsPlus,
 			new double[]{1.0,1.0,1.0,0.01},
-			"entrapment.EntrapmentViewer","/entrapment/english/rules.html",
+			"entrapment.EntrapmentViewer","/entrapment/english/rules.html","about_entrapment.html",
 			null,false, WhiteOverBlack));
 	}
 //	put(new GameInfo(40,ES.game,41,"ET",CapturingGames,"Entrapment","Entrapment-6x7x4",
@@ -968,33 +984,33 @@ synchronized(allGames) {
 		put(new GameInfo(70,ES.game,20,"KA",CapturingGames,"Knockabout","Knockabout",
     		OneBotPlus,
     		new double[]{0.4,0.01},
-    		"knockabout.KnockaboutViewer","/knockabout/english/knock_rules.pdf",
+    		"knockabout.KnockaboutViewer","/knockabout/english/knock_rules.pdf","about_knockabout.html",
     		null,true, WhiteOverBlack));
 	}
 	{
 	put(new GameInfo(80,ES.game,16,"KU",CapturingGames,"Traboulet","Traboulet",
 			ThreeBotsPlus,
 			new double[]{0.09,1,1,0.01},
-			"kuba.KubaViewer","/kuba/english/rules.html",
+			"kuba.KubaViewer","/kuba/english/rules.html","about_kuba.html",
 			null,false, WhiteOverBlack));
 	}
 	{
 	put(new GameInfo(660,ES.game,68,"MO",CapturingGames,"Morelli","morelli-9",
 			TwoBotsPlus,
 			new double[]{0.25,1,0.01},
-			"morelli.MorelliViewer","/morelli/english/OFFICIAL_RULES_OF_MORELLI_(ABRIDGED_VERSION)_-_12_MAY_2015.pdf",
+			"morelli.MorelliViewer","/morelli/english/OFFICIAL_RULES_OF_MORELLI_(ABRIDGED_VERSION)_-_12_MAY_2015.pdf","about_morelli.html",
 			null,false, BlackOverWhite));
 	
 	put(new GameInfo(661,ES.game,68,"MO",CapturingGames,"Morelli","morelli-11",
 			TwoBotsPlus,
 			new double[]{0.25,1,0.01},
-			"morelli.MorelliViewer","/morelli/english/OFFICIAL_RULES_OF_MORELLI_(ABRIDGED_VERSION)_-_12_MAY_2015.pdf",
+			"morelli.MorelliViewer","/morelli/english/OFFICIAL_RULES_OF_MORELLI_(ABRIDGED_VERSION)_-_12_MAY_2015.pdf","about_morelli.html",
 			null,false, BlackOverWhite));
 	
 	put(new GameInfo(662,ES.game,68,"MO",CapturingGames,"Morelli","morelli-13",
 			TwoBotsPlus,
 			new double[]{0.25,1,0.01},
-			"morelli.MorelliViewer","/morelli/english/OFFICIAL_RULES_OF_MORELLI_(ABRIDGED_VERSION)_-_12_MAY_2015.pdf",
+			"morelli.MorelliViewer","/morelli/english/OFFICIAL_RULES_OF_MORELLI_(ABRIDGED_VERSION)_-_12_MAY_2015.pdf","about_morelli.html",
 			null,false, BlackOverWhite));
 	}
 	
@@ -1002,14 +1018,14 @@ synchronized(allGames) {
 		put(new GameInfo(85,ES.game,64,"RM",AncientGames,"Rithmomachy","Rithmomachy",
 			OneBotPlus,
 			new double[]{1.0,0.01},
-			"rithmomachy.RithmomachyViewer","/rithmomachy/english/rules.html",
+			"rithmomachy.RithmomachyViewer","/rithmomachy/english/rules.html","about_rithmomachy.html",
 			null,false, BlackOverWhite));
 	}
 	
 	{ GameInfo mm = put(new GameInfo(900,ES.game,33,"TA",CapturingGames,"Triad","Triad",
 			OneBotPlus,
 			new double[]{0.07,0.01},
-			"triad.TriadViewer","/triad/english/rules.html",
+			"triad.TriadViewer","/triad/english/rules.html","about_triad.html",
 			null,true, new Color[] {Color.red,Color.green,Color.blue}));
 	  mm.minPlayers = 3;
 	  mm.maxPlayers = 3;
@@ -1021,19 +1037,19 @@ synchronized(allGames) {
 		put(new GameInfo(92,ES.game,56,"KH",CapturingGames,"Khet","Khet-classic",
 			OneBotPlus,
 			new double[]{0.4,0.01},
-			"khet.KhetViewer","/khet/rules_english.pdf",
+			"khet.KhetViewer","/khet/rules_english.pdf","about_khet.html",
 			null,false, SilverOverRed));
 		put(new GameInfo(93,ES.game,56,"KH",CapturingGames,"Khet","Khet-ihmotep",
 			OneBotPlus,
 			new double[]{0.4,0.01},
-			"khet.KhetViewer","/khet/rules_english.pdf",
+			"khet.KhetViewer","/khet/rules_english.pdf","about_khet.html",
 			null,false, SilverOverRed));
 	}
 	{
 	put(new GameInfo(100,ES.game,37,"XI",AncientGames,"Xiangqi","Xiangqi",
 			OneBotPlus,
 			new double[]{0.24,0.01},
-			"xiangqi.XiangqiViewer","/xiangqi/english/xiangqirules.pdf",
+			"xiangqi.XiangqiViewer","/xiangqi/english/xiangqirules.pdf","about_xiangqi.html",
 			null,false, RedOverBlack));
 	}
 
@@ -1045,30 +1061,30 @@ synchronized(allGames) {
 	put(new GameInfo(120,ES.game,1,"L",ConnectionGames,"LOA","LOA",
 			ThreeBotsPlus,
 			new double[]{0.06,1,1,0.01},
-			loaClass,loaRules,
+			loaClass,loaRules,"about_loa.html",
 			loaVideo,false, BlackOverWhite));
 	put(new GameInfo(122,ES.game,1,"L",ConnectionGames,"LOA","LOARANDOM",
 			ThreeBotsPlus,
 			new double[]{0.06,1,1,0.01},
-			loaClass,loaRules,
+			loaClass,loaRules,"about_loa.html",
 			loaVideo,false, BlackOverWhite));
 	
 	put(new GameInfo(130,ES.game,1,"LP",ConnectionGames,"LOA","LOAP",
 			ThreeBotsPlus,
 			new double[]{0.06,1,1,0.01},
-			loaClass,loaRules,
+			loaClass,loaRules,"about_loa.html",
 			loaVideo,false, BlackOverWhite));
 	put(new GameInfo(121,ES.game,1,"L",ConnectionGames,"LOA","LOA-12",
 			ThreeBotsPlus,
 			new double[]{0.06,1,1,0.01},
-			loaClass,loaRules,
+			loaClass,loaRules,"about_loa.html",
 			loaVideo,false, BlackOverWhite));
 	}
 
 	put(new GameInfo(125,ES.game,45,"TW",ConnectionGames,"Twixt","Twixt",
 			OneBotPlus,
 			new double[]{1,0.01},
-			"twixt.TwixtViewer","/twixt/english/rules.html",
+			"twixt.TwixtViewer","/twixt/english/rules.html","about_twixt.html",
 			"/twixt/english/twixt-video.html",
 			false, RedOverBlack));
 
@@ -1079,11 +1095,11 @@ synchronized(allGames) {
 	double vspeed[] = {0.08};
 	put(new GameInfo(131,ES.game,47,"VL",ConnectionGames,"Volo","Volo",
 			OneBot,vspeed,
-			vview,vrules,
+			vview,vrules,"about_volo.html",
 			null,false, OrangeOverBlue));
 	put(new GameInfo(132,ES.game,47,"VL",ConnectionGames,"Volo","Volo-84",
 			OneBot,vspeed,
-			vview,vrules,
+			vview,vrules,"about_volo.html",
 			null,false, OrangeOverBlue));
 	}
 	{
@@ -1092,7 +1108,7 @@ synchronized(allGames) {
 	put(new GameInfo(131,ES.game,97,"YY",ConnectionGames,"Y","Y",
 			ThreeBotsPlus,
 			new double[]{0.08,1,1,0.01},
-			vview,vrules,
+			vview,vrules,"about_y.html",
 			null,false, BlackOverWhite));
 	}
 	{
@@ -1101,19 +1117,19 @@ synchronized(allGames) {
 	put(new GameInfo(590,ES.game,4,"H",ConnectionGames,"Hex","Hex",
 			OneBotPlus,
 			new double[]{1.0,0.01},
-			hexViewer,hexRules,
+			hexViewer,hexRules,"about_hex.html",
 			null,false, WhiteOverBlack));
 	put(new GameInfo(599,ES.game,4,"H14",ConnectionGames,"Hex","Hex-14",
 			NoBots,null,
-			hexViewer,hexRules,
+			hexViewer,hexRules,"about_hex.html",
 			null,false, WhiteOverBlack));
 	put(new GameInfo(600,ES.game,4,"H15",ConnectionGames,"Hex","Hex-15",
 			NoBots,null,
-			hexViewer,hexRules,
+			hexViewer,hexRules,"about_hex.html",
 			null,false, WhiteOverBlack));
 	put(new GameInfo(610,ES.game,4,"H19",ConnectionGames,"Hex","Hex-19",
 			NoBots,null,
-			hexViewer,hexRules,
+			hexViewer,hexRules,"about_hex.html",
 			null,false, WhiteOverBlack));
 	}
 	{
@@ -1122,17 +1138,17 @@ synchronized(allGames) {
 	put(new GameInfo(1590,ES.game,108,"HH",ConnectionGames,"Havannah","havannah-6",
 			OneBotPlus,
 			new double[]{1.0,0.01},
-			havannahViewer,havannahRules,
+			havannahViewer,havannahRules,"about_havannah.html",
 			null,false, WhiteOverBlack));
 	put(new GameInfo(1591,ES.game,108,"HH",ConnectionGames,"Havannah","havannah-8",
 			OneBotPlus,
 			new double[]{1.0,0.01},
-			havannahViewer,havannahRules,
+			havannahViewer,havannahRules,"about_havannah.html",
 			null,false, WhiteOverBlack));
 	put(new GameInfo(1592,ES.game,108,"HH",ConnectionGames,"Havannah","havannah-10",
 			OneBotPlus,
 			new double[]{1.0,0.01},
-			havannahViewer,havannahRules,
+			havannahViewer,havannahRules,"about_havannah.html",
 			null,false, WhiteOverBlack));
 
 	}
@@ -1144,34 +1160,34 @@ synchronized(allGames) {
 	put(new GameInfo(11690,ES.game,113,"MR",CapturingGames,"Meridians","meridians-5",
 			OneBotPlus,
 			new double[]{1.0,0.01},
-			meridiansViewer,meridiansRules,
+			meridiansViewer,meridiansRules,"about_meridians.html",
 			meridiansVideo,false, WhiteOverBlack));
 	put(new GameInfo(1695,ES.game,113,"MR",CapturingGames,"Meridians","meridians-5p",
 			OneBotPlus,
 			new double[]{1.0,0.01},
-			meridiansViewer,meridiansRules,
+			meridiansViewer,meridiansRules,"about_meridians.html",
 			meridiansVideo,false, WhiteOverBlack));
 	
 	put(new GameInfo(1691,ES.game,113,"MR",CapturingGames,"Meridians","meridians-6",
 			OneBotPlus,
 			new double[]{1.0,0.01},
-			meridiansViewer,meridiansRules,
+			meridiansViewer,meridiansRules,"about_meridians.html",
 			meridiansVideo,false, WhiteOverBlack));
 	put(new GameInfo(1696,ES.game,113,"MR",CapturingGames,"Meridians","meridians-6p",
 			OneBotPlus,
 			new double[]{1.0,0.01},
-			meridiansViewer,meridiansRules,
+			meridiansViewer,meridiansRules,"about_meridians.html",
 			meridiansVideo,false, WhiteOverBlack));
 	
 	put(new GameInfo(1692,ES.game,113,"MR",CapturingGames,"Meridians","meridians-7",
 			OneBotPlus,
 			new double[]{1.0,0.01},
-			meridiansViewer,meridiansRules,
+			meridiansViewer,meridiansRules,"about_meridians.html",
 			meridiansVideo,false, WhiteOverBlack));
 	put(new GameInfo(1697,ES.game,113,"MR",CapturingGames,"Meridians","meridians-7p",
 			OneBotPlus,
 			new double[]{1.0,0.01},
-			meridiansViewer,meridiansRules,
+			meridiansViewer,meridiansRules,"about_meridians.html",
 			meridiansVideo,false, WhiteOverBlack));
 
 	}
@@ -1183,22 +1199,22 @@ synchronized(allGames) {
 	put(new GameInfo(1690,ES.game,111,"TU",TerritoryGames,"Tumbleweed","tumbleweed-6",
 			OneBotPlus,
 			new double[]{1.0,0.01},
-			tumbleweedViewer,tumbleweedRules,
+			tumbleweedViewer,tumbleweedRules,"about_tumbleweed.html",
 			tumbleVideo,false, WhiteOverRed));
 	put(new GameInfo(1691,ES.game,111,"TU",TerritoryGames,"Tumbleweed","tumbleweed-8",
 			OneBotPlus,
 			new double[]{1.0,0.01},
-			tumbleweedViewer,tumbleweedRules,
+			tumbleweedViewer,tumbleweedRules,"about_tumbleweed.html",
 			tumbleVideo,false, WhiteOverRed));
 	put(new GameInfo(1692,ES.game,111,"TU",TerritoryGames,"Tumbleweed","tumbleweed-10",
 			OneBotPlus,
 			new double[]{1.0,0.01},
-			tumbleweedViewer,tumbleweedRules,
+			tumbleweedViewer,tumbleweedRules,"about_tumbleweed.html",
 			tumbleVideo,false, WhiteOverRed));
 	put(new GameInfo(1693,ES.game,111,"TU",TerritoryGames,"Tumbleweed","tumbleweed-11",
 			OneBotPlus,
 			new double[]{1.0,0.01},
-			tumbleweedViewer,tumbleweedRules,
+			tumbleweedViewer,tumbleweedRules,"about_tumbleweed.html",
 			tumbleVideo,false, WhiteOverRed));
 
 	}
@@ -1208,7 +1224,7 @@ synchronized(allGames) {
 	put(new GameInfo(590,ES.test,999,"PP",ConnectionGames,"Prototype","Prototype",
 			OneBotPlus,
 			new double[]{1.0,0.01},
-			pViewer,pRules,
+			pViewer,pRules,"about_prototype.html",
 			null,false, WhiteOverBlack));
 	}
 	{
@@ -1217,7 +1233,7 @@ synchronized(allGames) {
 	{GameInfo mm = put(new GameInfo(1490,ES.game,95,"CW",WordGames,"Crosswords","Crosswords",
 			ThreeBotsPlus,
 			new double[]{0.1,1.0,1.0,0.01},
-			pViewer,pRules,
+			pViewer,pRules,"about_crosswords.html",
 			null,true, null));
 	 mm.maxPlayers = 4;
 	 mm.groupSortKey = "0091";
@@ -1231,7 +1247,7 @@ synchronized(allGames) {
 	{	GameInfo mm = put(new GameInfo(1491,ES.game,95,"CW",WordGames,"Crosswords","Crosswords-17",
 			ThreeBotsPlus,
 			new double[]{0.1,1.0,1.0,0.01},
-			pViewer,pRules,
+			pViewer,pRules,"about_crosswords.html",
 			null,true, null));
 	 mm.maxPlayers = 4;
 	 mm.robotTimed = true;
@@ -1239,7 +1255,7 @@ synchronized(allGames) {
 	 mm.randomizeFirstPlayer = true;
 	 mm.longMessage = "CrosswordsInfoMessage";
 	}}
-	
+
 	{
 	String pRules = "/sprint/english/rules.html";
 	String pViewer = "sprint.SprintViewer";  
@@ -1247,7 +1263,7 @@ synchronized(allGames) {
 	GameInfo mm = put(new GameInfo(2101,ES.test,107,"SC",WordGames,"Sprint","Sprint",
 			ThreeBotsPlus,
 			new double[]{0.1,1.0,1.0,0.01},
-			pViewer,pRules,
+			pViewer,pRules,"about_sprint.html",
 			null,true, null));
 	 mm.maxPlayers = 6;
 	 mm.groupSortKey = "0091";
@@ -1259,11 +1275,11 @@ synchronized(allGames) {
 	{
 	String pRules = "/crosswordle/english/rules.html";
 	String pViewer = "crosswordle.CrosswordleViewer";  
-
+	
 	GameInfo mm = put(new GameInfo(2201,ES.game,110,"CW",WordGames,"Crosswordle","Crosswordle-55",
 			NoBots,
 			new double[]{0.1,1.0,1.0,0.01},
-			pViewer,pRules,
+			pViewer,pRules,"about_crosswordle.html",
 			null,true, null));
 	 mm.maxPlayers = 1;
 	 mm.minPlayers = 1;
@@ -1275,19 +1291,19 @@ synchronized(allGames) {
 	 mm = put(new GameInfo(222,ES.test,110,"CW",WordGames,"Crosswordle","Crosswordle-66",
 				NoBots,
 				new double[]{0.1,1.0,1.0,0.01},
-				pViewer,pRules,
+				pViewer,pRules,"about_crosswordle.html",
 				null,true, null));
 		 mm.maxPlayers = 1;
 		 mm.minPlayers = 1;
-	 mm.groupSortKey = "0091";
-	 mm.robotTimed = true;
-	 mm.randomizeFirstPlayer = true;
-	 mm.hasHiddenInformation = false;
+		 mm.groupSortKey = "0091";
+		 mm.robotTimed = true;
+		 mm.randomizeFirstPlayer = true;
+		 mm.hasHiddenInformation = false;
 
 		  mm = put(new GameInfo(2203,ES.game,110,"CW",WordGames,"Crosswordle","Crosswordle-65",
 					NoBots,
 					new double[]{0.1,1.0,1.0,0.01},
-					pViewer,pRules,
+					pViewer,pRules,"about_crosswordle.html",
 					null,true, null));
 			 mm.maxPlayers = 1;
 			 mm.minPlayers = 1;
@@ -1304,7 +1320,7 @@ synchronized(allGames) {
 	GameInfo mm = put(new GameInfo(1490,ES.game,102,"JU",WordGames,"Jumbulaya","Jumbulaya",
 			ThreeBotsPlus,
 			new double[]{0.1,1.0,1.0,0.01},
-			pViewer,pRules,
+			pViewer,pRules,"about_jumbulaya.html",
 			null,true, new Color[] {Color.red,Color.green,Color.blue,Color.yellow}));
 	 mm.maxPlayers = 4;
 	 mm.groupSortKey = "0091";
@@ -1322,19 +1338,19 @@ synchronized(allGames) {
 	{put(new GameInfo(1490,ES.game,96,"WP",WordGames,"Wyps","Wyps",
 			ThreeBotsPlus,
 			new double[]{0.1,1.0,1.0,0.01},
-			pViewer,pRules,
+			pViewer,pRules,"about_wyps.html",
 			null,true, null));
 	}
 	{put(new GameInfo(1491,ES.game,96,"WP",WordGames,"Wyps","Wyps-10",
 			ThreeBotsPlus,
 			new double[]{0.1,1.0,1.0,0.01},
-			pViewer,pRules,
+			pViewer,pRules,"about_wyps.html",
 			null,true, null));
 	}
 	{put(new GameInfo(1492,ES.game,96,"WP",WordGames,"Wyps","Wyps-7",
 			ThreeBotsPlus,
 			new double[]{0.1,1.0,1.0,0.01},
-			pViewer,pRules,
+			pViewer,pRules,"about_wyps.html",
 			null,true, null));
 	}
 	
@@ -1344,7 +1360,7 @@ synchronized(allGames) {
 	put(new GameInfo(612,ES.game,65,"PD",ConnectionGames,"Ponte","Ponte",
 			OneBotPlus,
 			new double[]{1.0,0.01},
-			"ponte.PonteViewer","/ponte/english/Ponte_del_Diavolo.pdf",
+			"ponte.PonteViewer","/ponte/english/Ponte_del_Diavolo.pdf","about_ponte.html",
 			null,false, WhiteOverRed));
 	}
 
@@ -1360,7 +1376,7 @@ synchronized(allGames) {
 	GameInfo mm = put(new GameInfo(160,ES.disabled,29,"ME",EuroGames,"Medina","Medina-v2",
 			OneBotPlus,
 			new double[]{1.0,0.01},
-			medinaViewer,medinaRules1,
+			medinaViewer,medinaRules1,"about_medina.html",
 			null,true, mcolos));
 	 mm.minPlayers = 2;
 	 mm.maxPlayers = 4;
@@ -1370,7 +1386,7 @@ synchronized(allGames) {
 	GameInfo m2 = put(new GameInfo(161,ES.disabled,29,"ME",EuroGames,"Medina","Medina",
 			OneBotPlus,
 			new double[]{1.0,0.01},
-			medinaViewer,medinaRules2,
+			medinaViewer,medinaRules2,"about_medina.html",
 			null,true, mcolos));
 	 m2.minPlayers = 3;
 	 m2.maxPlayers = 4;
@@ -1386,7 +1402,7 @@ synchronized(allGames) {
 				OneBotPlus,
 				new double[]{1.0,0.01},
 				"tammany.TammanyViewer","/tammany/english/Tammany_Hall_English_Rules.pdf",
-				"/tammany/english/tammany-video.html",
+				"/tammany/english/tammany-video.html","about_tammany.html",
 				true, tamcolors));	// first player is specified to be random
 		mm.minPlayers = 2;
 		mm.maxRobotPlayers = 2;
@@ -1402,14 +1418,14 @@ synchronized(allGames) {
 		GameInfo g = put(new GameInfo(170,ES.game,17,"DV",GipfGames,"Dvonn","Dvonn",
 			ThreeBotsPlus,
 			new double[]{0.4,1.0,1.0,0.01},
-			"dvonn.DvonnViewer","/dvonn/english/rules.htm",
+			"dvonn.DvonnViewer","/dvonn/english/rules.htm","about_dvonn.html",
 			"/dvonn/english/dvonn-video.html",
 			false, WhiteOverBlack));
 		g.groupSortKey = "000905";
 		put(new GameInfo(170,ES.game,17,"DV",StackingGames,"Dvonn","Dvonn",
 				ThreeBotsPlus,
 				new double[]{0.4,1.0,1.0,0.01},
-				"dvonn.DvonnViewer","/dvonn/english/rules.htm",
+				"dvonn.DvonnViewer","/dvonn/english/rules.htm","about_dvonn.html",
 				"/dvonn/english/dvonn-video.html",
 				false, WhiteOverBlack));
 
@@ -1420,25 +1436,25 @@ synchronized(allGames) {
 		put(new GameInfo(175,ES.game,81,"LY",StackingGames,"Lyngk","Lyngk",
 				ThreeBotsPlus,
 				new double[]{0.4,1.0,1.0,0.01},
-				lyngkClass,lyngkRules,
+				lyngkClass,lyngkRules,"about_lyngk.html",
 				lyngkVideo,true, null));
 
 		put(new GameInfo(176,ES.game,81,"LY",StackingGames,"Lyngk","Lyngk-6",
 				ThreeBotsPlus,
 				new double[]{0.4,1.0,1.0,0.01},
-				lyngkClass,lyngkRules,
+				lyngkClass,lyngkRules,"about_lyngk.html",
 				lyngkVideo,true, null));
 
 		put(new GameInfo(175,ES.game,81,"LY",GipfGames,"Lyngk","Lyngk",
 				ThreeBotsPlus,
 				new double[]{0.4,1.0,1.0,0.01},
-				lyngkClass,lyngkRules,
+				lyngkClass,lyngkRules,"about_lyngk.html",
 				lyngkVideo,true, null));
 
 		put(new GameInfo(176,ES.game,81,"LY",GipfGames,"Lyngk","Lyngk-6",
 				ThreeBotsPlus,
 				new double[]{0.4,1.0,1.0,0.01},
-				lyngkClass,lyngkRules,
+				lyngkClass,lyngkRules,"about_lyngk.html",
 				lyngkVideo,true, null));
 
 	}
@@ -1448,19 +1464,19 @@ synchronized(allGames) {
 	String gipfVideo = "/gipf/english/gipf-video.html";
 	put(new GameInfo(180,ES.game,21,"G",GipfGames,"Gipf","Gipf",
 			TwoBotsPlus,
-			new double[]{0.3,1.0,0.01},gipfClass,gipfRules,
+			new double[]{0.3,1.0,0.01},gipfClass,gipfRules,"about_gipf.html",
 			gipfVideo,false, WhiteOverBlack));
 
 	put(new GameInfo(190,ES.game,21,"G",GipfGames,"Gipf","Gipf-standard",
 			TwoBotsPlus,
 			new double[]{0.12,1.0,0.01},
-			gipfClass,gipfRules,
+			gipfClass,gipfRules,"about_gipf.html",
 			gipfVideo,false, WhiteOverBlack));
 
 	put(new GameInfo(200,ES.game,21,"G",GipfGames,"Gipf","Gipf-tournament",
 			TwoBotsPlus,
 			new double[]{0.22,1.0,0.01},
-			gipfClass,gipfRules,
+			gipfClass,gipfRules,"about_gipf.html",
 			gipfVideo,false, WhiteOverBlack));
 
 	}
@@ -1468,25 +1484,25 @@ synchronized(allGames) {
 			TwoBotsPlus,
 			new double[]{1.0,1.0,0.01},
 			"punct.PunctGameViewer","/punct/english/PUNCT_english.pdf",
-			"/punct/english/punct-video.html",
+			"/punct/english/punct-video.html","about_punct.html",
 			false, WhiteOverBlack));
 	
 	put(new GameInfo(213,ES.game,109,"TM",GipfGames,"Tamsk","Tamsk-F",
 			TwoBotsPlus,
 			new double[]{1.0,1.0,0.01},
-			"tamsk.TamskViewer","/tamsk/english/rules.html",
+			"tamsk.TamskViewer","/tamsk/english/rules.html","about_tamsk.html",
 			null,
 			false, RedOverBlue));
 	put(new GameInfo(211,ES.game,109,"TM",GipfGames,"Tamsk","Tamsk",
 			TwoBotsPlus,
 			new double[]{1.0,1.0,0.01},
-			"tamsk.TamskViewer","/tamsk/english/rules.html",
+			"tamsk.TamskViewer","/tamsk/english/rules.html","about_tamsk.html",
 			null,
 			false, RedOverBlue));
 	put(new GameInfo(212,ES.game,109,"TM",GipfGames,"Tamsk","Tamsk-U",
 			TwoBotsPlus,
 			new double[]{1.0,1.0,0.01},
-			"tamsk.TamskViewer","/tamsk/english/rules.html",
+			"tamsk.TamskViewer","/tamsk/english/rules.html","about_tamsk.html",
 			null,
 			false, RedOverBlue));
 	
@@ -1496,17 +1512,17 @@ synchronized(allGames) {
 	put(new GameInfo(220,ES.game,18,"TZ",GipfGames,"Tzaar","Tzaar-random",
 			  ThreeBotsPlus,
 			  new double[]{1.0,1.0,1.0,0.01},
-			  tzaarClass,tzaarRules,
+			  tzaarClass,tzaarRules,"about_tzaar.html",
 			  tzaarVideo,false, WhiteOverBlack));
 	put(new GameInfo(230,ES.game,18,"TZ",GipfGames,"Tzaar","Tzaar-standard",
 			  ThreeBotsPlus,
 			  new double[]{1.0,1.0,1.0,0.01},
-			  tzaarClass,tzaarRules,
+			  tzaarClass,tzaarRules,"about_tzaar.html",
 			  tzaarVideo,false, WhiteOverBlack));
 	put(new GameInfo(240,ES.game,18,"TZ",GipfGames,"Tzaar","Tzaar-custom",
 			  ThreeBotsPlus,
 			  new double[]{0.15,1,1,0.01},
-			  tzaarClass,tzaarRules,
+			  tzaarClass,tzaarRules,"about_tzaar.html",
 			  tzaarVideo,false, WhiteOverBlack));
 	}
 	{	String yinshClass  = "yinsh.common.YinshGameViewer";
@@ -1516,12 +1532,12 @@ synchronized(allGames) {
 	put(new GameInfo(250,ES.game,3,"Y",GipfGames,"Yinsh","Yinsh",
 			TwoBotsPlus,
 			new double[]{0.26,1,0.01},
-			yinshClass,yinshRules,
+			yinshClass,yinshRules,"about_yinsh.html",
 			yinshVideo,false, WhiteOverBlack));
 	put(new GameInfo(260,ES.game,3,"YB",GipfGames,"Yinsh","Yinsh-Blitz",
 			TwoBotsPlus,
 			new double[]{0.26,1,0.01},
-			yinshClass,yinshRules,
+			yinshClass,yinshRules,"about_yinsh.html",
 			yinshVideo,false, WhiteOverBlack));
 	}
 	{
@@ -1530,30 +1546,30 @@ synchronized(allGames) {
 	GameInfo m = put(new GameInfo(270,ES.game,0,"Z",GipfGames,"Zertz","Zertz",
 			TwoBotsPlus,
 			new double[]{0.133,1,0.01},
-			zclass,zrules,
+			zclass,zrules,"about_zertz.html",
 			null,true, null));
 	m.robotTimed = true;
 	m = put(new GameInfo(280,ES.game,0,"Z11",GipfGames,"Zertz","Zertz+11",
 			TwoBotsPlus,
 			new double[]{1,1,0.01},
-			zclass,zrules,
+			zclass,zrules,"about_zertz.html",
 			null,true, null));
 	m.robotTimed = true;
 	put(new GameInfo(290,ES.game,0,"Z24",GipfGames,"Zertz","Zertz+24",
 			TwoBotsPlus,
 			new double[]{1,1,0.01},
-			zclass,zrules,
+			zclass,zrules,"about_zertz.html",
 			null,true, null));
 	m = put(new GameInfo(300,ES.game,0,"ZXX",GipfGames,"Zertz","Zertz+xx",
 			NoBots,
 			null,
-			zclass,zrules,
+			zclass,zrules,"about_zertz.html",
 			null,true, null));
 	m.robotTimed = true;
 	GameInfo hc = put(new GameInfo(301,ES.game,0,"ZXX",GipfGames,"Zertz","Zertz+H",
 			TwoBotsPlus,
 			null,
-			zclass,zrules,
+			zclass,zrules,"about_zertz.html",
 			null,true, null));
 	hc.robotTimed = true;
 	hc.unrankedOnly = true;
@@ -1567,7 +1583,7 @@ synchronized(allGames) {
 	  double bspeed[] = {0.4,0.04};
 	  GameInfo mm = put(new GameInfo(320,ES.game,36,"BA",RacingGames,"BreakingAway","BreakingAway",
 			OneBotPlus,bspeed,
-			bview,brules,
+			bview,brules,"about_breakingaway.html",
 			null,true, bcolors));
 	  mm.minPlayers = 3;
 	  mm.maxPlayers = 6;
@@ -1577,7 +1593,7 @@ synchronized(allGames) {
 	
 	  GameInfo m1 = put(new GameInfo(321,ES.game,36,"BA",RacingGames,"BreakingAway","BreakingAway-ss",
 			OneBotPlus,bspeed,
-			bview,brules,
+			bview,brules,"about_breakingaway.html",
 			null,true, bcolors));
 	  m1.minPlayers = 3;
 	  m1.maxPlayers = 6;
@@ -1589,14 +1605,14 @@ synchronized(allGames) {
 	put(new GameInfo(330,ES.game,43,"GK",RacingGames,"Gounki","Gounki",
 			ThreeBotsPlus,
 			new double[]{0.08,1,1,0.01},
-			"gounki.GounkiViewer","/gounki/english/Gounki-en-v1.0.pdf",
+			"gounki.GounkiViewer","/gounki/english/Gounki-en-v1.0.pdf","about_gounki.html",
 			null,false, WhiteOverBlack));
 	}
 
 	{ GameInfo mm = put(new GameInfo(340,ES.game,34,"OT",RacingGames,"Octiles","Octiles",
 			OneBot,
 			new double[]{0.01},
-			"octiles.OctilesViewer","/octiles/english/rules.html",
+			"octiles.OctilesViewer","/octiles/english/rules.html","about_octiles.html",
 			null,true, new Color[] {Color.blue,Color.red,Color.yellow,Color.green}));
 	  mm.minPlayers = 2;
 	  mm.maxPlayers = 4;
@@ -1610,13 +1626,13 @@ synchronized(allGames) {
 	put(new GameInfo(335,ES.game,60,"GY",RacingGames,"Gyges","Gyges-beginner",
 			OneBotPlus,
 			new double[]{0.2,0.01},
-			gygesClass,gygesRules,
+			gygesClass,gygesRules,"about_gyges.html",
 			gygesVideo,true, null));
 
 	put(new GameInfo(336,ES.game,60,"GY",RacingGames,"Gyges","Gyges-advanced",
 			OneBotPlus,
 			new double[]{0.2,0.01},
-			gygesClass,gygesRules,
+			gygesClass,gygesRules,"about_gyges.html",
 			gygesVideo,true, null));
 
 	}
@@ -1625,7 +1641,7 @@ synchronized(allGames) {
 	put(new GameInfo(345,ES.disabled,57,"KS",RacingGames,"Kamisado","Kamisado",
 			OneBotPlus,
 			new double[]{0.08,0.01},
-			"kamisado.KamisadoViewer","/kamisado/english/RULES%20ENG.pdf",
+			"kamisado.KamisadoViewer","/kamisado/english/RULES%20ENG.pdf","about_kamisado.html",
 			null,false, BlackOverGold));
 	
 
@@ -1635,20 +1651,20 @@ synchronized(allGames) {
 	put(new GameInfo(350,ES.game,11,"TC",RacingGames,"Truchet","Truchet",
 			ThreeBotsPlus,
 			new double[]{0.33,1,1,0.01},
-			truclass,trurules,
+			truclass,trurules,"about_truchet.html",
 			null,true, WhiteOverBlack));
 
 	put(new GameInfo(350,ES.game,11,"TC",StackingGames,"Truchet","Truchet",
 			ThreeBotsPlus,
 			new double[]{0.33,1,1,0.01},
-			truclass,trurules,
+			truclass,trurules,"about_truchet.html",
 			null,true, WhiteOverBlack));
 	}
 	{
 	put(new GameInfo(360,ES.game,31,"W6",RacingGames,"Warp6","Warp6",
 			TwoBots,
 			new double[]{0.05,1},
-			"warp6.Warp6Viewer","/english/about_warp6.html",
+			"warp6.Warp6Viewer","/english/about_warp6.html","about_warp6.html",
 			null,false, new Color[] {Color.white,Color.yellow}));
 	}
 	// stacking games 
@@ -1656,12 +1672,12 @@ synchronized(allGames) {
 	put(new GameInfo(380,ES.game,13,"DP",StackingGames,"Dipole","Dipole-s",
 			ThreeBotsPlus,
 			new double[]{0.07,1.0,1.0,0.01},
-			"dipole.DipoleGameViewer","/dipole/english/Dipole_rules.pdf",
+			"dipole.DipoleGameViewer","/dipole/english/Dipole_rules.pdf","about_dipole.html",
 			null,true, WhiteOverBlack));
 	put(new GameInfo(390,ES.game,13,"DP",StackingGames,"Dipole","Dipole",
 			ThreeBotsPlus,
 			new double[]{0.07,1.0,1.0,0.01},
-			"dipole.DipoleGameViewer","/dipole/english/Dipole_rules.pdf",
+			"dipole.DipoleGameViewer","/dipole/english/Dipole_rules.pdf","about_dipole.html",
 			null,true, WhiteOverBlack));
 	}
 	
@@ -1671,29 +1687,30 @@ synchronized(allGames) {
 	put(new GameInfo(410,ES.game,9,"EX",StackingGames,"Exxit","Exxit",
 			ThreeBotsPlus,
 			new double[]{0.02,1,1,0.01},
-			exclass,exrules,
+			exclass,exrules,"about_exxit.html",
 			null,false, RedOverBlack));
 	put(new GameInfo(420,ES.game,9,"EX",StackingGames,"Exxit","Exxit-Blitz",
 			ThreeBotsPlus,
 			new double[]{0.02,1,1,0.01},
-			exclass,exrules,
+			exclass,exrules,"about_exxit.html",
 			null,false, RedOverBlack));
 	put(new GameInfo(430,ES.game,9,"EX",StackingGames,"Exxit","Exxit-Beginner",
 			ThreeBotsPlus,
 			new double[]{0.02,1,1,0.01},
-			exclass,exrules,
+			exclass,exrules,"about_exxit.html",
 			null,false, RedOverBlack));
 	put(new GameInfo(440,ES.game,9,"EX",StackingGames,"Exxit","Exxit-Pro",
 			ThreeBotsPlus,
 			new double[]{0.02,1,1,0.01},
-			exclass,exrules,
+			exclass,exrules,"about_exxit.html",
 			null,false, RedOverBlack));
 	}
 	{
 	put(new GameInfo(460,ES.game,12,"TD",StackingGames,"TumblingDown","TumblingDown",
 			ThreeBotsPlus,
 			new double[]{0.045,1,1,0.01},
-			"tumble.TumbleGameViewer","/tumble/english/rules.html",
+			"tumble.TumbleGameViewer",
+			"/tumble/english/rules.html","about_tumblingdown.html",
 			null,true, WhiteOverBlack));
 	}
 	{
@@ -1702,25 +1719,25 @@ synchronized(allGames) {
 	put(new GameInfo(470,ES.game,15,"VO",StackingGames,"Volcano","Volcano",
 			ThreeBotsPlus,
 			new double[]{0.14,1,1,0.01},
-			vclass,vrules,
+			vclass,vrules,"about_volcano.html",
 			null,true, null));
 
 	put(new GameInfo(480,ES.game,15,"VO",StackingGames,"Volcano","Volcano-r",
 			ThreeBotsPlus,
 			new double[]{0.14,1,1,0.01},
-			vclass,vrules,
+			vclass,vrules,"about_volcano.html",
 			null,true, null));
 
 	put(new GameInfo(490,ES.game,15,"VO",StackingGames,"Volcano","Volcano-h",
 			ThreeBotsPlus,
 			new double[]{0.14,1,1,0.01},
-			vclass,vrules,
+			vclass,vrules,"about_volcano.html",
 			null,true, null));
 
 	put(new GameInfo(500,ES.game,15,"VO",StackingGames,"Volcano","Volcano-hr",
 			ThreeBotsPlus,
 			new double[]{0.14,1,1,0.01},
-			vclass,vrules,
+			vclass,vrules,"about_volcano.html",
 			null,true, null));
 
 	}
@@ -1729,24 +1746,24 @@ synchronized(allGames) {
 	put(new GameInfo(513,ES.game,48,"CD",TilePatternGames,"CookieDisco","Cookie-Disco",
 			TwoBotsPlus,
 			new double[]{0.2,1.0,0.01},
-				"cookie.CookieViewer","/cookie/english/COOKIE%20DISCO.pdf",
+				"cookie.CookieViewer","/cookie/english/COOKIE%20DISCO.pdf","about_cookie-disco.html",
 				null,true, RedOverGreen));
 
 	put(new GameInfo(514,ES.game,48,"CD",TilePatternGames,"CookieDisco","Cookie-Disco-crawl",
 			TwoBotsPlus,
 			new double[]{0.2,1.0,0.01},
-				"cookie.CookieViewer","/cookie/english/COOKIE DISCO - THE CRAWL COOKIE.pdf",
+				"cookie.CookieViewer","/cookie/english/COOKIE DISCO - THE CRAWL COOKIE.pdf","about_cookie-disco.html",
 				null,true, RedOverGreen));
 	put(new GameInfo(515,ES.game,58,"SY",TilePatternGames,"CookieDisco","Syzygy",
 			TwoBotsPlus,
 			new double[]{0.37,1.0,0.01},
-			"syzygy.SyzygyViewer","/syzygy/english/SYZYGY%20(engels%20online)1.pdf",
+			"syzygy.SyzygyViewer","/syzygy/english/SYZYGY%20(engels%20online)1.pdf","about_syzygy.html",
 			null,true, null));
 
 	put(new GameInfo(515,ES.game,58,"SY",NInARowGames,"Syzygy","Syzygy",
 			TwoBotsPlus,
 			new double[]{0.37,1.0,0.01},
-			"syzygy.SyzygyViewer","/syzygy/english/SYZYGY%20(engels%20online)1.pdf",
+			"syzygy.SyzygyViewer","/syzygy/english/SYZYGY%20(engels%20online)1.pdf","about_syzygy.html",
 			null,true, null));
 
 	}
@@ -1755,7 +1772,7 @@ synchronized(allGames) {
 	 put(new GameInfo(520,ES.game,26,"MP",TilePatternGames,"Micropul","Micropul",
 			OneBotPlus,
 			new double[]{0.07,0.01},
-			"micropul.MicropulViewer","/micropul/english/micropul-Rules-English-1.2.1.pdf",
+			"micropul.MicropulViewer","/micropul/english/micropul-Rules-English-1.2.1.pdf","about_micropul.html",
 			"/micropul/english/micropul-video.html",true, RedOverBlue));
 
 	}
@@ -1764,28 +1781,28 @@ synchronized(allGames) {
 	put(new GameInfo(530,ES.game,22,"PA",TilePatternGames,"Palago","Palago",
 			new Bot[]{Bot.Dumbot,Bot.Smartbot,Bot.Bestbot,Bot.Palabot,Bot.Weakbot},
 			new double[]{0.22,1,1,0.02,0.01},
-			"palago.PalagoViewer","/palago/english/Rules.htm",
+			"palago.PalagoViewer","/palago/english/Rules.htm","about_palago.html",
 			null,true, new Color[] {Color.yellow,Color.blue}));
 	}
 	{
 	put(new GameInfo(540,ES.game,24,"SP",TilePatternGames,"Spangles","Spangles",
 			TwoBotsPlus,
 			new double[]{0.25,1,0.01},
-			"spangles.SpanglesViewer","/english/about_spangles.html",
+			"spangles.SpanglesViewer","/english/about_spangles.html","about_spangles.html",
 			null,true, new Color[] {Color.blue,Color.yellow}));
 	}
 	{
 	put(new GameInfo(550,ES.game,5,"TR",TilePatternGames,"Trax","Trax",
 			ThreeBotsPlus,
 			new double[]{0.53,1,1,0.01},
-			"trax.TraxGameViewer","/trax/english/rules.htm",
+			"trax.TraxGameViewer","/trax/english/rules.htm","about_trax.html",
 			null,false, WhiteOverRed));
 	}
 	{
 		put(new GameInfo(574,ES.game,101,"ML",NInARowGames,"Mijnlieff","Mijnlieff",
 				TwoBotsPlus,
 				new double[]{1.0,1.0,0.01},
-				"mijnlieff.MijnlieffViewer","/mijnlieff/english/Mijnlieff_Rules.pdf",
+				"mijnlieff.MijnlieffViewer","/mijnlieff/english/Mijnlieff_Rules.pdf","about_mijnlieff.html",
 				"https://youtu.be/2tMmrD1xdV8",false, WhiteOverBlack));
 	}
 	{	String rules = "/dayandnight/english/rules.html";
@@ -1793,17 +1810,17 @@ synchronized(allGames) {
 		put(new GameInfo(574,ES.game,103,"DN",NInARowGames,"DayAndNight","DayAndNight",
 				TwoBotsPlus,
 				new double[]{1.0,1.0,0.01},
-				viewer,rules,
+				viewer,rules,"about_dayandnight.html",
 				null,false, BlackOverWhite));
 		put(new GameInfo(575,ES.game,103,"DN",NInARowGames,"DayAndNight","DayAndNight-15",
 				TwoBotsPlus,
 				new double[]{1.0,1.0,0.01},
-				viewer,rules,
+				viewer,rules,"about_dayandnight.html",
 				null,false, BlackOverWhite));
 		put(new GameInfo(576,ES.game,103,"DN",NInARowGames,"DayAndNight","DayAndNight-19",
 				TwoBotsPlus,
 				new double[]{1.0,1.0,0.01},
-				viewer,rules,
+				viewer,rules,"about_dayandnight.html",
 				null,false, BlackOverWhite));
 
 	}
@@ -1812,32 +1829,32 @@ synchronized(allGames) {
 	put(new GameInfo(574,ES.game,72,"MA",NInARowGames,"Majorities","Majorities-5",
 			ThreeBotsPlus,
 			new double[]{1.0,1.0,1.0,0.01},
-			"majorities.MajoritiesViewer","/english/about_majorities.html",
+			"majorities.MajoritiesViewer","/english/about_majorities.html","about_majorities.html",
 			null,false, WhiteOverBlack));
 	put(new GameInfo(575,ES.game,72,"MA",NInARowGames,"Majorities","Majorities-3",
 			ThreeBotsPlus,
 			new double[]{1.0,1.0,1.0,0.01},
-			"majorities.MajoritiesViewer","/english/about_majorities.html",
+			"majorities.MajoritiesViewer","/english/about_majorities.html","about_majorities.html",
 			null,false, WhiteOverBlack));
 	
 	put(new GameInfo(576,ES.game,72,"MA",NInARowGames,"Majorities","Majorities-7",
 			ThreeBotsPlus,
 			new double[]{1.0,1.0,1.0,0.01},
-			"majorities.MajoritiesViewer","/english/about_majorities.html",
+			"majorities.MajoritiesViewer","/english/about_majorities.html","about_majorities.html",
 			null,false, WhiteOverBlack));
 	}
 	
 	put(new GameInfo(577,ES.game,73,"PR",NInARowGames,"Proteus","Proteus",
 			TwoBotsPlus,
 			new double[]{0.2,1.0,0.01},
-			"proteus.ProteusViewer","/proteus/english/rules.html",
+			"proteus.ProteusViewer","/proteus/english/rules.html","about_proteus.html",
 			null,false, BlackOverWhite));
 	
 	{ 
 	put(new GameInfo(580,ES.game,44,"QM",NInARowGames,"Quinamid","Quinamid",
 			TwoBotsPlus,
 			new double[]{1.0,1.0,0.01},
-			"quinamid.QuinamidViewer","/english/about_quinamid.html",
+			"quinamid.QuinamidViewer","/english/about_quinamid.html","about_quinamid.html",
 			null,true, RedOverBlue));
 	}
 	// variable revisions used to paper over incompatible changes, have to be <1000
@@ -1853,7 +1870,7 @@ synchronized(allGames) {
 		GameInfo g = put(new GameInfo(HIVE_REVISION+620,ES.game,8,"HV",Hive,"Hive","Hive",
 		TwoBotsPlus,
 		hiveBots,
-		hiveClass,hiveRules,
+		hiveClass,hiveRules,"about_hive.html",
 		hiveVideo,false, WhiteOverBlack));
 		g.robotTimed = true;
 		g.groupSortKey = "00097";
@@ -1861,55 +1878,55 @@ synchronized(allGames) {
 		g = put(new GameInfo(HIVE_REVISION+630,ES.game,8,"HV",Hive,"Hive","Hive-M",
 			TwoBotsPlus,
 			hiveBots,
-			hiveClass,hiveRules,
+			hiveClass,hiveRules,"about_hive.html",
 			hiveVideo,false, WhiteOverBlack));
 		g.robotTimed = true;
 		
 		g = put(new GameInfo(HIVE_REVISION+640,ES.game,8,"HV",Hive,"Hive","Hive-L",
 			TwoBotsPlus,
 			hiveBots,
-			hiveClass,hiveRules,
+			hiveClass,hiveRules,"about_hive.html",
 			hiveVideo,false, WhiteOverBlack));
 		g.robotTimed = true;
 		
 		g = put(new GameInfo(HIVE_REVISION+650,ES.game,8,"HV",Hive,"Hive","Hive-LM",
 			TwoBotsPlus,
 			hiveBots,
-			hiveClass,hiveRules,
+			hiveClass,hiveRules,"about_hive.html",
 			hiveVideo,false, WhiteOverBlack));
 		g.robotTimed = true;
 		
 		g = put(new GameInfo(HIVE_REVISION+645,ES.game,8,"HV",Hive,"Hive","Hive-P",
 			TwoBotsPlus,
 			hiveBots,
-			hiveClass,hiveRules,
+			hiveClass,hiveRules,"about_hive.html",
 			hiveVideo,false, WhiteOverBlack));
 		g.robotTimed = true;
 		
 		g = put(new GameInfo(HIVE_REVISION+651,ES.game,8,"HV",Hive,"Hive","Hive-PM",
 			TwoBotsPlus,
 			hiveBots,
-			hiveClass,hiveRules,			
+			hiveClass,hiveRules,"about_hive.html",			
 			hiveVideo,false, WhiteOverBlack));
 		g.robotTimed = true;
 		
 		g = put(new GameInfo(HIVE_REVISION+652,ES.game,8,"HV",Hive,"Hive","Hive-PL",
 			TwoBotsPlus,
 			hiveBots,
-			hiveClass,hiveRules,
+			hiveClass,hiveRules,"about_hive.html",
 			hiveVideo,false, WhiteOverBlack));
 		g.robotTimed = true;
 		
 		g = put(new GameInfo(HIVE_REVISION+653,ES.game,8,"HV",Hive,"Hive","Hive-PLM",
 			TwoBotsPlus,
 			hiveBots,
-			hiveClass,hiveRules,
+			hiveClass,hiveRules,"about_hive.html",
 			hiveVideo,false, WhiteOverBlack));
 		g.robotTimed = true;
 		
 		g = put(new GameInfo(HIVE_REVISION+654,ES.game,8,"HV",Hive,"Hive","Hive-Ultimate",
 			OneBot,new double[] {1.0},
-			hiveClass,hiveRules,
+			hiveClass,hiveRules,"about_hive.html",
 			hiveVideo,false, WhiteOverBlack));
 		g.robotTimed = true;
 	}}
@@ -1922,16 +1939,16 @@ synchronized(allGames) {
 	String cn = "Carnac";
 	put(new GameInfo(655,ES.game,59,cc,TerritoryGames,cn,"carnac_14x9",
 			TwoBotsPlus,ctimes,
-			cview,crules,
+			cview,crules,"about_carnac.html",
 			cvideo,true, RedOverWhite));
 	put(new GameInfo(656,ES.game,59,cc,TerritoryGames,cn,"carnac_10x7",
 			TwoBotsPlus,ctimes,
-			cview,crules,
+			cview,crules,"about_carnac.html",
 			cvideo,true, RedOverWhite));
 
 	put(new GameInfo(657,ES.game,59,cc,TerritoryGames,cn,"carnac_8x5",
 			TwoBotsPlus,ctimes,
-			cview,crules,
+			cview,crules,"about_carnac.html",
 			cvideo,true, RedOverWhite));
 	}
 	{	
@@ -1941,12 +1958,12 @@ synchronized(allGames) {
 		String cvideo = "/kulami/english/kulami-video.html";
 		put(new GameInfo(8011,ES.game,92,"KL",TerritoryGames,"Kulami","Kulami",
 				TwoBotsPlus,ctimes,
-				cview,crules,
+				cview,crules,"about_kulami.html",
 				cvideo,true, RedOverBlack));
 
 		put(new GameInfo(8021,ES.game,92,"KL",TerritoryGames,"Kulami","Kulami-R",
 				TwoBotsPlus,ctimes,
-				cview,crules,
+				cview,crules,"about_kulami.html",
 				cvideo,true, RedOverBlack));
 	}
 	{
@@ -1954,13 +1971,13 @@ synchronized(allGames) {
 	put(new GameInfo(700,ES.game,23,"SA",StackingGames,"Santorini","Santorini",
 			ThreeBotsPlus,
 			new double[]{0.4,1,1,0.01},
-			"santorini.SantoriniViewer","/santorini/english/santorini-rules.html",
+			"santorini.SantoriniViewer","/santorini/english/santorini-rules.html","about_santorini.html",
 			svideo,true, null));
 
 	put(new GameInfo(701,ES.game,23,"SA",StackingGames,"Santorini","Santorini-gods",
 			ThreeBotsPlus,
 			new double[]{0.4,1,1,0.01},
-			"santorini.SantoriniViewer","/santorini/english/santorini-rules.html",
+			"santorini.SantoriniViewer","/santorini/english/santorini-rules.html","about_santorini.html",
 			svideo,true, null));
 
 	}
@@ -1968,13 +1985,13 @@ synchronized(allGames) {
 	put(new GameInfo(711,ES.game,98,"SE",CapturingGames,"Stymie","Stymie-revised",
 			TwoBotsPlus,
 			new double[]{0.1,1.0,0.01},
-			"stymie.StymieViewer","/stymie/english/stymie-revised-rules.pdf",
+			"stymie.StymieViewer","/stymie/english/stymie-revised-rules.pdf","about_stymie.html",
 			null,false, GoldOverSilver));
 
 	put(new GameInfo(713,ES.game,98,"SE",CapturingGames,"Stymie","Stymie",
 			TwoBotsPlus,
 			new double[]{0.1,1.0,0.01},
-			"stymie.StymieViewer","/stymie/english/stymie-rules.pdf",
+			"stymie.StymieViewer","/stymie/english/stymie-rules.pdf","about_stymie.html",
 			null,false, GoldOverSilver));
 	
 
@@ -1983,18 +2000,18 @@ synchronized(allGames) {
 		put(new GameInfo(710,ES.game,10,"TB",AncientGames,"Tablut","Tablut-9",
 				OneBotPlus,
 				new double[]{0.1,0.01},
-				tclass,trules,
+				tclass,trules,"about_tablut.html",
 				null,false, GoldOverSilver));
 		put(new GameInfo(720,ES.game,10,"TB",AncientGames,"Tablut","Tablut-7",
 				OneBotPlus,
 				new double[]{0.1,0.01},
-				tclass,trules,
+				tclass,trules,"about_tablut.html",
 				null,false, GoldOverSilver));
 		
 		put(new GameInfo(730,ES.game,10,"TB",AncientGames,"Tablut","Tablut-11",
 				OneBotPlus,
 				new double[]{0.1,0.01},
-				tclass,trules,
+				tclass,trules,"about_tablut.html",
 				null,false, GoldOverSilver));
 	}	
 
@@ -2005,7 +2022,7 @@ synchronized(allGames) {
 	// experimental
 	{
 		GameInfo mm = put(new GameInfo(750,ES.test,42,"LH",EuroGames,"LeHavre","LeHavre",
-				NoBots,null,"lehavre.LehavreViewer",null,null,false, null));
+				NoBots,null,"lehavre.LehavreViewer",null,null,null,false, null));
 		 mm.minPlayers = 1;
 		 mm.maxPlayers = 5;
 		 mm.randomizeFirstPlayer = true;
@@ -2017,7 +2034,7 @@ synchronized(allGames) {
 	GameInfo mm = put(new GameInfo(750,ES.game,46,"YS",EuroGames,"Yspahan","Yspahan",
 			ThreeBots,
 			new double[]{0.1,0.1,0.1},
-			"yspahan.YspahanViewer","/yspahan/english/YspUSc.pdf",
+			"yspahan.YspahanViewer","/yspahan/english/YspUSc.pdf","about_yspahan.html",
 			null,true, new Color[]{ Color.green,Color.yellow,Color.red,Color.blue }));
 	 mm.minPlayers = 3;
 	 mm.maxPlayers = 4;
@@ -2030,7 +2047,7 @@ synchronized(allGames) {
 		GameInfo mm = put(new GameInfo(850,ES.game,51,"UV",PolyominoGames,"Universe","Universe",
 				OneBotPlus,
 				new double[]{1.0,0.01},
-				"universe.UniverseViewer","/universe/Universe.pdf",
+				"universe.UniverseViewer","/universe/Universe.pdf","about_universe.html",
 				null,true, UniverseColor));
 		 mm.minPlayers = 3;
 		 mm.randomizeFirstPlayer = true;
@@ -2040,7 +2057,7 @@ synchronized(allGames) {
 		GameInfo mm = put(new GameInfo(851,ES.game,52,"PK",PolyominoGames,"Pan-Kai","Pan-Kai",
 				OneBotPlus,
 				new double[]{0.44,0.01},
-				"universe.UniverseViewer","/english/about_universe.html",
+				"universe.UniverseViewer","/english/about_universe.html","about_universe.html",
 				null,true, UniverseColor));
 		 mm.minPlayers = 2;
 		 mm.maxPlayers = 2;
@@ -2052,7 +2069,7 @@ synchronized(allGames) {
 				"Diagonal Blocks Duo","Diagonal-Blocks-Duo",
 				OneBotPlus,
 				new double[]{1.0,0.01},
-				"universe.UniverseViewer","/english/about_diagonal-blocks.html",
+				"universe.UniverseViewer","/english/about_diagonal-blocks.html","about_diagonal-blocks.html",
 				null,true, UniverseColor));
 		 mm.minPlayers = 2;
 		 mm.maxPlayers = 2;
@@ -2062,7 +2079,7 @@ synchronized(allGames) {
 				"Phlip",
 				"Phlip",
 				OneBotPlus,
-				new double[]{0.13,0.01},"universe.UniverseViewer","/english/about_phlip.html",
+				new double[]{0.13,0.01},"universe.UniverseViewer","/english/about_phlip.html","about_philip.html",
 				null,// phlip internally has to know which two colors to use, so we can't
 				// allow an arbitrary choice.
 				true, new Color[] {Color.yellow,Color.red}));
@@ -2075,7 +2092,7 @@ synchronized(allGames) {
 		GameInfo mm = put(new GameInfo(758,ES.game,62,"MG",EuroGames,"Mogul","Mogul",
 				OneBotPlus,
 				new double[]{1.0,0.01},
-				"mogul.MogulViewer","/mogul/english/Mogul.html",
+				"mogul.MogulViewer","/mogul/english/Mogul.html","about_mogul.html",
 				null,true, mcolors));
 		 mm.minPlayers = 3;
 		 mm.maxPlayers = 6;
@@ -2087,7 +2104,7 @@ synchronized(allGames) {
 		GameInfo mm = put(new GameInfo(760,ES.game,49,"RJ",EuroGames,"Raj","Raj",
 				OneBotPlus,
 				new double[]{0.8,0.01},
-				"raj.RajViewer","/english/about_raj.html",
+				"raj.RajViewer","/english/about_raj.html","about_raj.html",
 				"/raj/english/raj-video.html",
 				false, new Color[] {Color.red,Color.green,Color.blue,bsBrown,bsPurple}));
 		 mm.minPlayers = 2;
@@ -2100,14 +2117,14 @@ synchronized(allGames) {
 		}
 	// experimental
 	put(new GameInfo(770,ES.test,50,"TT","TicTacNine Games","TicTacNine","TicTacNine",
-			NoBots,null,"tictacnine.TicTacNineViewer",null,
+			NoBots,null,"tictacnine.TicTacNineViewer","about_tictacnine.html",null,
 			null,false, null));
 	
 	{
 	put(new GameInfo(860,ES.game,66,"SH",AncientGames,"Shogi","Shogi",
 			OneBotPlus,
 			new double[]{1.0,0.01},
-			"shogi.ShogiViewer","/shogi/english/shogi_e.pdf",
+			"shogi.ShogiViewer","/shogi/english/shogi_e.pdf","about_shogi.html",
 			null,true, null));
 	}
 	{ GameInfo mm = put(new GameInfo(960,ES.game,67,"OD",EuroGames,
@@ -2115,7 +2132,7 @@ synchronized(allGames) {
 			"Onedayinlondon",
 			OneBotPlus,
 			new double[]{0.3,0.01},
-			"oneday.OnedayViewer","/oneday/english/oneday-rules.html",
+			"oneday.OnedayViewer","/oneday/english/oneday-rules.html","about_oneday.html",
 			null,false, null));
 	  mm.maxPlayers = 4;
 	  mm.randomizeFirstPlayer = true;
@@ -2129,7 +2146,7 @@ synchronized(allGames) {
 			"LondonSafari",
 			OneBotPlus,
 			new double[]{0.3,0.01},
-			"oneday.OnedayViewer","/oneday/english/oneday-safari-rules.html",
+			"oneday.OnedayViewer","/oneday/english/oneday-safari-rules.html","about_oneday.html",
 			null,false, null));
 	  mm.maxPlayers = 6;
 	  mm.hasHiddenInformation = true;
@@ -2141,13 +2158,13 @@ synchronized(allGames) {
 	put(new GameInfo(790,ES.game,61,"TJ",OtherGames,"TakoJudo","TakoJudo",
 			OneBotPlus,
 			new double[]{0.36,0.01},
-			"takojudo.TakojudoViewer","/english/about_takojudo.html",
+			"takojudo.TakojudoViewer","/english/about_takojudo.html","about_takojudo.html",
 			null,true, BlueOverRed));
 	}
 	{ GameInfo g = put(new GameInfo(666,ES.game,28,"MU",OtherGames,"Mutton","Mutton",
 			OneBot,
 			new double[]{0.14},
-				"mutton.MuttonGameViewer","/mutton/english/rules.htm",
+				"mutton.MuttonGameViewer","/mutton/english/rules.htm","about_mutton.html",
 				null,true, null));
 	  g.groupSortKey = "01010";	// mutton is first in "other games" menu. This forces other games to be last
 	  g.hasHiddenInformation = true;
@@ -2157,7 +2174,7 @@ synchronized(allGames) {
 	GameInfo m1 = put(new GameInfo(670,ES.game,28,"MU",OtherGames,"Mutton","Mutton-shotgun",
 			OneBot,
 			new double[]{0.14},
-				"mutton.MuttonGameViewer","/mutton/english/rules.htm",
+				"mutton.MuttonGameViewer","/mutton/english/rules.htm","about_mutton.html",
 				null,true, null));
 	m1.hasHiddenInformation = true;
 	m1.okForPlaytable = false;
@@ -2167,7 +2184,7 @@ synchronized(allGames) {
 	
 	{ GameInfo mm = put(new GameInfo(680,ES.game,2,"P",OtherGames,"Plateau","Plateau",
 			NoBots,null,
-			"plateau.common.PlateauGameViewer","/plateau/english/rules.html",
+			"plateau.common.PlateauGameViewer","/plateau/english/rules.html","about_plateau.html",
 			"/plateau/english/plateau-video.html",false, BlackOverWhite));
 	 mm.hasHiddenInformation = true;
 	 // needs a compantion app for your played pieces and pool of available pieces
@@ -2178,13 +2195,13 @@ synchronized(allGames) {
 	put(new GameInfo(691,ES.test,88,"MC",AncientGames,"Mancala","Mancala",
 			ThreeBotsPlus,
 			new double[]{0.03,1,1,0.01},
-			"mancala.MancalaViewer","/mancala/english/rules.html",
+			"mancala.MancalaViewer","/mancala/english/rules.html","about_mancala.html",
 			null,false, null));
 
 	{ GameInfo p = put(new GameInfo(692,ES.game,87,"QE",EuroGames,"QE","QE",
 			TwoBotsPlus,
 			new double[]{0.03,1,0.01},
-			"qe.QEViewer","/qe/english/rules.pdf",
+			"qe.QEViewer","/qe/english/rules.pdf","about_qe.html",
 			null,true, null));
 	 p.maxPlayers = 5;
 	 p.minPlayers = 3;
@@ -2197,14 +2214,14 @@ synchronized(allGames) {
 	put(new GameInfo(690,ES.game,19,"QY",OtherGames,"Qyshinsu","Qyshinsu",
 			ThreeBotsPlus,
 			new double[]{0.03,1,1,0.01},
-			"qyshinsu.QyshinsuViewer","/qyshinsu/english/rules.html",
+			"qyshinsu.QyshinsuViewer","/qyshinsu/english/rules.html","about_qyshinsu.html",
 			null,false, BlackOverRed));
 
 }
 	// this is used as a placeholder when the identity of the game is unknown to the app
 	public static GameInfo futureGame = new GameInfo(160,ES.disabled,66,"??",UnsupportedGameMessage,
 			UnsupportedGameMessage,UnsupportedGameMessage,
-			null,null,null,null,null,false, null);
+			null,null,null,null,null,null,false, null);
 	public String toString() { return("<gameinfo "+variationName+">"); }
 	
 	public static boolean SortByGroup = false;
@@ -2263,7 +2280,7 @@ synchronized(allGames) {
 		String name = tok.nextToken();	// game name
 		String cl = tok.nextToken();	// class name
 		put(new GameInfo(OFFLINE_USERID,ES.game,OFFLINE_USERID,name,OtherGames,name,name,
-				ThreeBotsPlus,null,cl,null,null,false, null));
+				ThreeBotsPlus,null,cl,null,null,null,false, null));
 		}
 	}
 	public static String GameInfoStringPairs[][] =

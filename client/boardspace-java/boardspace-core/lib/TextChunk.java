@@ -126,7 +126,7 @@ public class TextChunk implements Text
 			  message += chunk.getString(); 
 			  chunk.lastChunk().setNext( (i<lim) ? chunks[i+1].firstChunk() : null);
 			}
-			data = message;
+			replacementData = data = message;
 			down = chunks[0].firstChunk();
 			}
 		return(this);

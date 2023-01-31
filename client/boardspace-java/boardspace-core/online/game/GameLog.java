@@ -489,7 +489,7 @@ public class GameLog implements Opcodes
                 if((player!=-100) && (player!=sp.player)) 
                		{ linebreak = true; 
                		}
- 
+                
                 if(!linebreak) 
                 { 	// process this line
             	if(!"".equals(newnum)) { moven = newnum; }

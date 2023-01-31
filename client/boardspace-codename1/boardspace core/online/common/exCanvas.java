@@ -36,7 +36,12 @@ public abstract class exCanvas extends ProxyWindow
     static final String SpeedTestMessage = "Cpu speed test";
     static final String FontSize = "Set Font Size";
     static final String ZoomMessage = "Zoom=";
-    public static final boolean TEST_LOCK_AND_LOAD = true;			// for destructive testing
+
+    // this is initialized as part of the contract of preloadImages(), 
+    // it's here instead of in commonCanvas because of the order of
+    // evaluation of the constructor here and static evaluators in commonCanvas
+    public Image gameIcon = null;
+
 	public  void setCanvasRotation(int n) {
 		super.setCanvasRotation(n);
        	resetBounds();
