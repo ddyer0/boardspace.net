@@ -1,6 +1,7 @@
 package online.search;
 
 import lib.Graphics;
+
 import javax.swing.JMenuItem;
 
 import bridge.JMenu;

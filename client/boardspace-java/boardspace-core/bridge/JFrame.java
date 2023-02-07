@@ -12,7 +12,7 @@ public class JFrame extends javax.swing.JFrame
 	  super(name); 
 	}
 	public JFrame() 
-	{ super(); 
+	{ super();
 	}
 	public Image getIconAsImage() 
 	{	java.awt.Image im = super.getIconImage();
@@ -25,6 +25,7 @@ public class JFrame extends javax.swing.JFrame
 	public void setOpaque(boolean v)
 	{	// don't do anything
 	}
+	
 	/*
 	public void update(Graphics g)
 	{ super.update(g); 

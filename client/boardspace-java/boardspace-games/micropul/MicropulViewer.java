@@ -96,12 +96,12 @@ public class MicropulViewer extends CCanvas<MicropulCell,MicropulBoard> implemen
     
     private Color ZoomColor = new Color(0.0f,0.0f,1.0f);
 
-	private Image textures[] = null;
+	private static Image textures[] = null;
 
     public synchronized void preloadImages()
-    {	MicropulChip.preloadImages(loader,ImageDir);
+    {	
     	if(textures==null)
-    	{
+    	{	MicropulChip.preloadImages(loader,ImageDir);
             textures = loader.load_images(ImageDir,TextureNames);
     	}
     	gameIcon = textures[ICON_INDEX];

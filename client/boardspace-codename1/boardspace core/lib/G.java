@@ -1640,21 +1640,17 @@ static public String getSystemProperties()
 
     return( ss + "]");
 }
-
+public static int javaMajorVersion()
+{	
+	String v = System.getProperty(JAVA_VERSION);
+	int ind = v.indexOf('.');
+	if(ind>=0) { return G.IntToken(v.substring(0,ind)); }
+	return 0;	
+}
 private static String speedString = null;
 public static void setIdString(String str) { G.idString = str; }
 
 private static String idString = "";
-private static final String[] publicSystemProperties = 
-{
-    G.JAVA_VERSION, //    Java version number
-    G.JAVA_VENDOR, //    Java vendor-specific string
-    G.JAVA_VENDOR_URL, //    Java vendor URL
-    G.JAVA_CLASS_VERSION, //    Java class version number
-    G.OS_NAME, //    Operating system name
-    G.OS_ARCH, //    Operating system architecture
-    G.OS_VERSION
-};
 
 private static final String OS_VERSION = "os.version";
 private static final String OS_ARCH = "os.arch";
@@ -1663,6 +1659,17 @@ private static final String JAVA_CLASS_VERSION = "java.class.version";
 private static final String JAVA_VENDOR_URL = "java.vendor.url";
 private static final String JAVA_VENDOR = "java.vendor";
 private static final String JAVA_VERSION = "java.version";
+
+private static final String[] publicSystemProperties = 
+{
+    JAVA_VERSION, //    Java version number
+    JAVA_VENDOR, //    Java vendor-specific string
+    JAVA_VENDOR_URL, //    Java vendor URL
+    JAVA_CLASS_VERSION, //    Java class version number
+    OS_NAME, //    Operating system name
+    OS_ARCH, //    Operating system architecture
+    OS_VERSION
+};
 
 private static ExtendedHashtable globals = new ExtendedHashtable(true);
 // constants expected to be used with globals
@@ -2033,7 +2040,7 @@ public static String expandClassName(String classname)
 		nativeMenu.show(window,x,y);	
 		} catch(Throwable err)
 		{	// these occur, rarely, due to some java screwup
-			G.print("Show failed for ",nativeMenu," ",err);
+			Plog.log.addLog("Show failed for ",nativeMenu," ",err);
 			nativeMenu.hide(window);
 		}
 	}

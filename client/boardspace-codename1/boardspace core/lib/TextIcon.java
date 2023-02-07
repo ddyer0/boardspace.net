@@ -9,8 +9,8 @@ import bridge.*;
  * @author Ddyer
  *
  */
-public class TextIcon implements Icon {
-	
+public class TextIcon implements Icon 
+{	
 	Text originalText;
 	int width;
 	int height;

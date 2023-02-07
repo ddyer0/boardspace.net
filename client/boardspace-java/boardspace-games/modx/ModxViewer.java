@@ -726,14 +726,6 @@ private void playSounds(commonMove m)
 //        }
 //    }
 
-    /** handle action events
-     * 
-     */
-    public boolean handleDeferredEvent(Object target, String command)
-    {
-    	
-    	return(super.handleDeferredEvent(target,command));
-     }
 
     public BoardProtocol getBoard()   {    return (b);   }
     public SimpleRobotProtocol newRobotPlayer() { return(new ModxPlay()); }

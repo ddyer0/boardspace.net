@@ -339,8 +339,15 @@ public class Session implements LobbyConstants
     	}
     }
     int numberOfSpectators; //number of slots active in above
+    // when we have launched a window to play or spectate, this is a link to the frame
+    // and playingInSession() will be true
+    // when the frame dies, playingInSession() will become false
     public LFrameProtocol playFrame = null;
-    public boolean playingInSession = false;	// true if we are playing in this session
+    public boolean playingInSession()
+    {	LFrameProtocol fr = playFrame;
+    	if(fr!=null && fr.killed()) {  playFrame = null; }
+    	return playFrame!=null;
+    }
     public boolean refreshGamePending = false;
     public boolean refreshGameInProgress = false;
     public String password = null;
@@ -565,7 +572,7 @@ public class Session implements LobbyConstants
         activeGameColor = null;
         activeGameInfo=null;
         iOwnTheRoom = false;
-        playingInSession = false;
+        playFrame = null;
         numberOfSpectators = 0;
         readySoundPlayed = false;
         submode = mode==Mode.Tournament_Mode ? JoinMode.Tournament_Mode : JoinMode.Open_Mode;
@@ -649,7 +656,6 @@ public class Session implements LobbyConstants
 		 commonPanel theGame = (commonPanel)G.MakeInstance("G:game.Game");
 		 String frameName = G.isCodename1()?framename : s.get(WebsiteMessage,framename);
 		 LFrameProtocol frame = playFrame = theRoot.NewLFrame(frameName,theGame);
-		 playingInSession = true;
 		 //System.out.println("Sess " + sess.seedSet+" order " + sess.myOrder);
 		  GameInfo GI = currentGame;
 		  

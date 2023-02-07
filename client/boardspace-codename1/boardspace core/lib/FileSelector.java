@@ -1024,11 +1024,6 @@ public class FileSelector extends FullscreenPanel
 		
 	}
 
-	public void windowClosed(WindowEvent e) {
-		selectedUrl = null;
-		exit = true;
-	}
-
     private static final String DirectoryMessage = "Current Directory:";
     private static final String CurrentFileMessage = "Selected File: ";
     private static final String LoadGame = "Load Game";

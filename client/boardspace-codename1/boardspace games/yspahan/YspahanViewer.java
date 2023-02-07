@@ -144,10 +144,10 @@ public class YspahanViewer extends CCanvas<YspahanCell,YspahanBoard> implements 
 
     public synchronized void preloadImages()
     {	
-       	YspahanChip.preloadImages(loader,ImageDir);
         if (images == null)
     	{ // note that for this to work correctly, the images and masks must be the same size.  
           // Refer to http://www.andromeda.com/people/ddyer/java/imagedemo/transparent.html
+       	YspahanChip.preloadImages(loader,ImageDir);
         SoundManager.preloadSounds(Sounds);    
         textures = loader.load_images(ImageDir,TextureNames);
         images = loader.load_masked_images(ImageDir,ImageNames);

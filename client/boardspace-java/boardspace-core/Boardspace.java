@@ -53,6 +53,14 @@ import javax.swing.JTextArea;
  * For actual deployment, boardspace.jar is packaged as a windows executable,
  * as a windows installer, and as a mac .dmg.  See deploy-and-sign\README.txt
  * 
+ * Jan/Feb 2023 notes.  There has always been a background of mysterious (and supposedly impossible) "class not found" errors.
+ * which came to a head with openjdk 18, which turned an occasional mystery into a certainty. After a lot of investigation,
+ * calling addURL turned out to be the cure, but along the way some loopholes and synchronization issues were fixed.
+ * 
+ * Note about major updates.  The originally deployed version of this launcher expects "version 1" from the applet tag, to for
+ * a hard reset, change applettag.cgi to change the version number.   To facilitate softer resets, a "miniloader" tag is 
+ * passed to the main class, and the main class can decide what to do based on the totality of circumstances.
+ * 
  * @author Ddyer
  *
  */
@@ -84,12 +92,14 @@ class CacheInfo {
 		}
 		return n+")";
 	}
-	private void copyUrl(String host,String from,File to,long totime) throws MalformedURLException, IOException
+	
+	// slow mode, call copyUrlSync one at a time.
+	private void copyUrl(Boardspace parent,String host,String from,File to,long totime) throws MalformedURLException, IOException
 	{	boolean delay = false;
 		Thread current = Thread.currentThread();
-		
 		synchronized (copyInProgress)
-		{	delay = !copyInProgress.empty();
+		{	if(loaded) { Boardspace.log("avoid double copy "+name);  }
+			delay = !copyInProgress.empty();
 		    Boardspace.log("Copy "+name+" waiting "+nameList());
 			copyInProgress.push(this);
 			waiting.push(current);
@@ -101,7 +111,7 @@ class CacheInfo {
 			Boardspace.log("Copy "+name+" resumed");
 		}
 
-		copyUrlSync(host,from,to,totime);
+		copyUrlSync(parent,host,from,to,totime);
 		
 		synchronized(copyInProgress)
 		{
@@ -116,19 +126,27 @@ class CacheInfo {
 				synchronized (w) { w.interrupt(); }
 			}
 		}
-		
 	}
 	/**
 	 * copy a file from the web host to the cache
+	 * @param parent
 	 * @param from
 	 * @param to
 	 * @param totime
 	 * @throws MalformedURLException
 	 * @throws IOException
 	 */
-	private synchronized void copyUrlSync(String host,String from,File to,long totime) throws MalformedURLException, IOException
-	{	// this is synchronized so only one copy operation can ever be in progress for a given file
+	private synchronized void copyUrlSync(Boardspace parent,String host,String from,File to,long totime) throws MalformedURLException, IOException
+	{	// this is synchronized so only one copy operation can ever be in progress for a given file.  The "loaded" flag is set
+		// here so there's no race contition.   "parent" is passed in so the addURL method of the classloader can be called, which
+		// is important for java 18 and above
 		InputStream input = new URL(host+from).openConnection().getInputStream();
+		if(loaded)
+		{
+			if(verbose) { Boardspace.log("avoid double copy "+from+" > "+to); }
+		}
+		else
+		{
 		if(verbose) { Boardspace.log("Copying "+from+" > "+to); }
 
 		String name = from.substring(from.lastIndexOf('/')+1);
@@ -147,22 +165,30 @@ class CacheInfo {
 			}
 		if(input!=null) { input.close(); }
 		if(verbose) { Boardspace.log("copy "+from+" finished"); }
+		loaded = true;
+		// register the new jar
+		parent.addURL(toFile.toURI().toURL());
+		}
 	}
 	
-	void cacheFile(String host,File localDir) throws IOException
-	{
+	// copy and cache a file, using the appropriate copy method
+	void cacheFile(Boardspace parent,String host,File localDir) throws IOException
+	{	
 		if(verbose) { Boardspace.log("cache "+name); }
 		if(!loaded)	// if multiple threads get caught, only load once
 		{	
 			if(Boardspace.fastMode)
 				{
-				copyUrlSync(host,name,localDir,date);
+				// in fastmode (the default) copy the file directly, so potentially several threads
+				// might be copying files at the same time.
+				copyUrlSync(parent,host,name,localDir,date);
 				}
 				else 
 				{ 
-				copyUrl(host,name,localDir,date); 
+				// in slow mode, a stack of pending copies is maintained
+				// and each process takes a turn to copy their jar file
+				copyUrl(parent,host,name,localDir,date); 
 				}
-			loaded = true;
 		}
 		if(verbose) { Boardspace.log("cache "+name+" "+loaded); }
 	}
@@ -182,14 +208,17 @@ class CacheInfo {
  *
  */
 public class Boardspace extends URLClassLoader implements Runnable,LoaderConfig
-{	public static boolean fastMode = true;
-	static String hostName = serverName;
+{	
+	static boolean fastMode = true;			// if true, allow copy operations to overlap in different threads
+	static boolean foregroundMode = false;	// if true, do all copying before starting the main application (no background copying)
+	static boolean allowPreload = false;	// passed to the main application.  If true, gives the main application permission to use multiple threads
+	static String hostName = serverName;	// the server to contact, normally boardspace, might be local development host
+	static boolean uncache = false;			// if true, discard the cache
 	static boolean test = false;
 	static String activeProtocol = protocol;
 	static String webHost() { return(activeProtocol+"://"+hostName); }   
 	static final String CACHENAME = "cachename.txt";// file in the temp dir to contain the cache ID
 	static boolean verbose = false;
-	static boolean uncache = false;
 	static boolean debug = false;
 	static ByteArrayOutputStream log = new ByteArrayOutputStream();
 	static PrintStream out = new PrintStream(log);
@@ -271,7 +300,7 @@ public class Boardspace extends URLClassLoader implements Runnable,LoaderConfig
 				try {
 					if(verbose) { log("cache "+name); }
 					// synchronized so only one copy can be in progress at a time
-					info.cacheFile(webHost(),localCacheDir); 
+					info.cacheFile(this,webHost(),localCacheDir);
 					if(!info.loaded) { log(""+info+" failed to load"); }
 				}
 				catch (Exception e)
@@ -293,8 +322,38 @@ public class Boardspace extends URLClassLoader implements Runnable,LoaderConfig
         	e.printStackTrace(out);
         }
 	}
-	// this is the hook to the cacheloader.  The key to making this work
-	// is parsing the main jar index to get the package names.
+	/**
+	 * get the current list of urls
+	 */
+	public URL[] getURLs() {
+        if(verbose) { log("geturls"); }
+		URL[] uu = super.getURLs();
+		if(verbose)
+		{
+			if(uu!=null)
+			{
+				for(URL u : uu)
+				{
+				log("Url "+u);	
+				}
+			}
+		}
+		return uu;
+    }
+	/**
+	 * this isn't documented.  But starting with jdk19 unless this is called, 
+	 * the jars added by findClass won't be used by the class loader.
+	 * 
+	 */
+    public synchronized void addURL(URL url) {
+    	if(verbose) { log("addurl "+url); }
+        super.addURL(url);
+    }
+
+	/**
+	 *  this is the main hook to the classloader.  The key to making this work
+	 *  is parsing the main jar index to get the package names.
+	 */
     public Class<?> findClass(String name) throws ClassNotFoundException
 	{	//try {
 		if(verbose) { log("findClass "+name); }
@@ -304,17 +363,13 @@ public class Boardspace extends URLClassLoader implements Runnable,LoaderConfig
 		if(verbose) { log("findClass found "+v); }
 		return v;
 		}
-	//} catch (NoClassDefFoundError err)
-	//{
-	//	
-	//}
 		log("AssureCached "+name+" failed");
 		return null;
 	}
     /*
     // better not to do this - let the system do the standard things
     // to find a class if they succeed.
-    public final Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException
+    public synchronized final Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException
     {
 		if(verbose) { log("loadClass "+name); }
 		if(assureCached(name))
@@ -468,7 +523,6 @@ public class Boardspace extends URLClassLoader implements Runnable,LoaderConfig
 			}
 		cl.assureCached(cacheRoot);
 		cl.parseIndex(url);
-		
 		return(cl);
 	}
 	/**
@@ -539,7 +593,7 @@ public class Boardspace extends URLClassLoader implements Runnable,LoaderConfig
 			&& specs.length==3
 			&& "version".equals(specs[0]))
 		{
-		if("1".equals(specs[1]))		// require an exact match on version we expect
+		if("2".equals(specs[1]) || "1".equals(specs[1]))		// require an exact match on version we expect
 		{
 		boolean mismatch = !(firstLine.equals(getCacheName(cacheDir)));
 		String line = null;
@@ -577,7 +631,7 @@ public class Boardspace extends URLClassLoader implements Runnable,LoaderConfig
 			// this is the big hammer to force reinstallation if (for example) and new jvm has to be installed
 			// this should allow offline users to continue
 			showMessage("Obsolete, Please Reinstall it",
-					"this launcher, version 1, is obsolete\nplease reinstall it from the web site");
+					"this launcher, version 2, is obsolete\nplease reinstall it from the web site");
 		}
 		}
 		else {
@@ -693,9 +747,14 @@ public class Boardspace extends URLClassLoader implements Runnable,LoaderConfig
     	}
 	}
 	public void run() {
-		String toload[] = new String[jarCache.size()];
+		
+		if(verbose) { out.println("Background start"); getURLs(); }
+		loadAll();
+		if(verbose) { getURLs(); out.println("Background finished"); }
+	}
+	public void loadAll()
+	{	String toload[] = new String[jarCache.size()];
 		int idx = 0;
-		if(verbose) { out.println("Background start"); }
 		for(Enumeration<String> e = jarCache.keys(); e.hasMoreElements();)
 		{
 			toload[idx++]=e.nextElement();
@@ -703,9 +762,11 @@ public class Boardspace extends URLClassLoader implements Runnable,LoaderConfig
 		delay(1000);		// delay a while to let the startup happen
 		for(String info : toload)
 		{	assureCached(info);
+			if(foregroundMode) { System.out.print("."); System.out.flush(); }
 		}
-		if(verbose) { out.println("Background finished"); }
+		if(foregroundMode) { System.out.println(); }
 	}
+	
 	private static void showOut()
 	{
 		out.flush();
@@ -745,16 +806,27 @@ public class Boardspace extends URLClassLoader implements Runnable,LoaderConfig
 		try {
 		for(int i=0;i<args.length;i++)
 		{	//log("arg "+i+" "+args[i]);
-			if("-v".equals(args[i])) { CacheInfo.verbose = verbose = true; }
-			else if("-vt".equals(args[i])) { CacheInfo.verbose = verbose = true; out = System.out; }
-			else if("-testserver".equals(args[i])) { CacheInfo.test = test = true; }
-			else if("-uncache".equals(args[i])) { CacheInfo.uncache = uncache = true; }
-			else if("-slow".equals(args[i])) { fastMode = false; }
-			else if("-server".equals(args[i])) { hostName = runtimeServer = args[i+1];  i++; }
-			else if("-debug".equals(args[i])) { debug="swat".equals(args[i+1]); i++; }
+			if("-v".equals(args[i])) 		// verbose output as a pop-up
+				{ CacheInfo.verbose = verbose = true; }
+			else if("-vt".equals(args[i])) 	// verbose output to terminal 
+				{ CacheInfo.verbose = verbose = true; out = System.out; }
+			else if("-testserver".equals(args[i]))	// connect to the test server instead of the main server
+				{ CacheInfo.test = test = true; }
+			else if("-foreground".equals(args[i])) 	// force all downloading to happen before we begin
+				{ foregroundMode = true; }
+			else if("-uncache".equals(args[i])) 	// flush the cache before beginning
+				{ CacheInfo.uncache = uncache = true; }
+			else if("-slow".equals(args[i])) 		// copy no more than 1 file at a time
+				{ fastMode = false; }
+			else if("-server".equals(args[i])) 		// server to connect to
+				{ hostName = runtimeServer = args[i+1];  i++; }
+			else if("-preload".equals(args[i]))		// allow classes in a separate thread.  overrides the default
+				{ allowPreload = "true".equalsIgnoreCase(args[i+1]); i++; }
+			else if("-debug".equals(args[i])) 		// more debugging
+				{ debug="swat".equalsIgnoreCase(args[i+1]); i++; }
 			else 
 			{
-			String msg = "Options are -v -vt -slow -testserver -uncache -server <servername> -debug <password>";
+			String msg = "Options are -v -vt -slow -testserver -foreground -uncache\n-server <servername> -allowpreload <true|false> -debug <password> -hostname <host>";
 			out.println(msg);
 			showMessage("Loader Message",msg);
 			fastExit=true; 
@@ -786,23 +858,28 @@ public class Boardspace extends URLClassLoader implements Runnable,LoaderConfig
 			System.setProperty("mainargs-"+argnum++,"testserver");
 			System.setProperty("mainargs-"+argnum++,"true");			
 		}
-
+		System.setProperty("mainargs-"+argnum++,"preload");
+		System.setProperty("mainargs-"+argnum++,allowPreload ? "true" : "false");
+		
 		File cacheDir = createTempDir();
 		Boardspace m =getMiniloader(cacheDir);
 		Class<?> base = m.loadClass(runClass,false);	// get the class to run first
 		Thread t = new Thread(m,"Background cache loader");
 		t.setPriority(Thread.MIN_PRIORITY);
 		t.start();		// load the rest of the classes in background
-		
+			
 		if(base==null) { 
 			out.print("loadClass for base "+runClass+ " is null");
 		}
 		else
 		{
+		// foregroundmode forces all the loading to happen before we start
+		if(foregroundMode) { t.join(); }
+		
 		@SuppressWarnings("deprecation")
 		Runnable r = (Runnable)base.newInstance();
 		new Thread(r).start();
-		t.join();		
+		if(!foregroundMode) { t.join(); }		
 		}
 		showOut();
 		}}

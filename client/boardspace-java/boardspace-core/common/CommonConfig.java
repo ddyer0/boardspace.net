@@ -9,6 +9,9 @@ public interface CommonConfig {
 	static final String DEFAULT_SERVERNAME = "Boardspace.net";
 	static boolean TIMEDROBOTS = false;
 	
+	static String PRELOAD = "preload";		// key for a "preload" option passed from the miniloader
+	static boolean PRELOAD_DEFAULT = true;	// still true
+
 	// set TRUE oct 2018.  for 2.82
 	// This should be completely safe by now
 	// since approximately version 2.12 was the last version that

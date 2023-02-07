@@ -408,7 +408,7 @@ public class Keyboard implements Config
 	}
 	
 	public void draw(Graphics gc,HitPoint highlight)
-	{	loadImages(showOn.loader);
+	{	loadImages(showOn.loader());
 	
 		if(G.pointInRect(highlight, crect)) 
 			{ // this makes sure that everything under the keyboard is inactive.

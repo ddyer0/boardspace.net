@@ -12,7 +12,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
-public class TextDisplayFrame extends XFrame implements ActionListener,ItemListener,NullLayoutProtocol,Config
+public class TextDisplayFrame extends XFrame implements ActionListener,ItemListener,NullLayoutProtocol,Config,LFrameProtocol
 {
     /**
 	 * 

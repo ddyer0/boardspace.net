@@ -27,8 +27,8 @@ import lib.Text;
 import lib.TouchMagnifier;
 import lib.TouchMagnifierClient;
 import lib.UniversalConstants;
-import online.game.Opcodes;
 import vnc.VNCConstants.Operation;
+import static online.game.Opcodes.NothingMoving;
 
 /**
  * this implements a window backed by a bitmap, but which doesn't touch the regular
@@ -40,7 +40,7 @@ import vnc.VNCConstants.Operation;
  */
 public abstract class OffscreenWindow implements 
 	VncEventInterface,VncScreenInterface,MouseClient,ImageConsumer,VncServiceProvider,SizeProvider,UniversalConstants,
-	Config, MenuParentInterface,Opcodes,TouchMagnifierClient
+	Config, MenuParentInterface,TouchMagnifierClient
 {	public void performStandardStartDragging(HitPoint p) {}
 	public void performStandardStopDragging(HitPoint p) {}
 	public HitPoint performStandardMouseMotion(int x,int y,MouseState pt) { return(null); }

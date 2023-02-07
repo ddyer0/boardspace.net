@@ -59,10 +59,10 @@ public class YinshGameViewer extends CCanvas<YinshCell,YinshBoard> implements Yi
     public int cellSize() { return (b.cellSize()*2 / (use_perspective() ? 3 : 2)); }
 
     public synchronized void preloadImages()
-    {	YinshChip.preloadImages(loader,ImageDir);
+    {	
 	    if (backgrounds == null)
-	    {
-	         backgrounds = loader.load_images(ImageDir,backgroundNames);
+	    {	YinshChip.preloadImages(loader,ImageDir);
+	    	backgrounds = loader.load_images(ImageDir,backgroundNames);
 	    }
 	    gameIcon = backgrounds[ICON_INDEX];
     }

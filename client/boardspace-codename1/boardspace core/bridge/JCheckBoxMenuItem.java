@@ -13,6 +13,10 @@ public class JCheckBoxMenuItem extends JMenuItem implements Icon
 	public JCheckBoxMenuItem(String text) {
 		super(text);
 	}	
+	public JCheckBoxMenuItem(String text,boolean value)
+	{	super(text);
+		isSelected = value;
+	}
 	public String toString() { return(text);}
 	public boolean isSelected() { return(isSelected); }
 	public boolean getState() { return(isSelected); }

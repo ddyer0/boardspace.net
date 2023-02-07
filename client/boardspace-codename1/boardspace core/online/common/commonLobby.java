@@ -497,7 +497,6 @@ private void setGameTime()
       if(inTF==sess.playFrame)
       {  //System.out.println("Kill "+frameNum+" "+Thread.currentThread());
         sess.playFrame= null;
-        sess.playingInSession = false;
         requestRefreshGame(sess,true);
         needRank=true;
       }
@@ -795,7 +794,12 @@ public void update(SimpleObservable ob, Object eventType, Object arg)
 	else { super.update(ob, eventType, arg); }
 }
 private void PreloadClass(String classname)
-{	if( (classname==null)
+{	if(!G.getBoolean(PRELOAD,PRELOAD_DEFAULT))	// preload is passed from the miniloader
+			{
+			Plog.log.addLog("Preloading classes not enabled");
+			return;
+			}
+	if( (classname==null)
 		|| (PreloadedClasses.get(classname)!=null)) 
 		{ return; 
 		}
@@ -1170,9 +1174,8 @@ private boolean processEchoGroup(String messType,StringTokenizer localST,String 
           if(sess==myUser.playingLocation) { myUser.playingLocation = null; }
           if(sess==myUser.spectatingLocation) { myUser.spectatingLocation = null; }
 
-           if(sess.playFrame!=null || sess.playingInSession)
+          if(sess.playingInSession())
            { sess.playFrame=null;            //forget the frame if we knew about it
-           	 sess.playingInSession = false;
              needRank=true;   //request a rank check
           }
           if(sess.state!=Session.SessionState.Idle)
@@ -2484,7 +2487,7 @@ void LaunchGameNow(StringTokenizer localST)
 
 	sess.SetGameState(Session.SessionState.Launching);
 	if(itsme!=null)
-	{ sess.playingInSession = true; 
+	{
 	if( !inhibitLaunch && !failed) 
 	{
 	sess.launchUser = itsme;

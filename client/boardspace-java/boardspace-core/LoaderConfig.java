@@ -15,15 +15,6 @@ public interface LoaderConfig {
 	 * this is the runnable class that is actually run from the cache
 	 */
 	static final String runClass = "util.JWSApplication";		// class to run
-	/**
-	 * these args are passed to the runnable class as system properties.
-	 */
-	static final String[] runArgs = 
-		{ "servername",serverName,
-		 // "reviewonly","true",
-		 // "gamename","tintas",
-		 // "reviewerdir0","/tintas/tintasgames/",
-		  };	// args to set as properties for the run
 	 	
 	/**
 	 * this url will fetch the list of jars to be cached.  For a simple enough application, 
@@ -37,7 +28,18 @@ public interface LoaderConfig {
 	 */
     static final String errorURL = "/cgi-bin/error.cgi";	
     
-    static final String MiniloaderId = "miniloader=version-1.2";
+	static final String MiniloaderVersion = "1.3";
+    static final String MiniloaderId = "miniloader=version-"+MiniloaderVersion;
 
+	/**
+	 * these args are passed to the runnable class as system properties.
+	 */
+	static final String[] runArgs = 
+		{ "servername",serverName,
+		  "miniloader",MiniloaderVersion,
+		 // "reviewonly","true",
+		 // "gamename","tintas",
+		 // "reviewerdir0","/tintas/tintasgames/",
+		  };	// args to set as properties for the run
 
 }

@@ -80,12 +80,12 @@ public class CookieViewer extends CCanvas<CookieCell,CookieBoard> implements Coo
     private Rectangle chipRect = addRect("firstPlayerChipRect");
     private Color ZoomColor = new Color(0.0f,0.0f,1.0f);
 
-	private Image textures[] = null;
+	private static Image textures[] = null;
 
     public synchronized void preloadImages()
-    {	CookieChip.preloadImages(loader,ImageDir);
+    {	
     	if(textures==null)
-    	{
+    	{	CookieChip.preloadImages(loader,ImageDir);
             textures =loader.load_images(ImageDir,TextureNames);
     	}
     	gameIcon = CookieChip.getChip(0).image;

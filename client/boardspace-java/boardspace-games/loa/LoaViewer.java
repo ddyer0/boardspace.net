@@ -342,6 +342,7 @@ public class LoaViewer extends commonCanvas implements UIC,GameLayoutClient
 
     static Image textures[]=null;
     static Image images[]=null;
+    static Image icons[] = null;
     public synchronized void preloadImages()
     {	
     	if (textures == null)
@@ -354,9 +355,9 @@ public class LoaViewer extends commonCanvas implements UIC,GameLayoutClient
           images = loader.load_images(StonesDir, ImageNames, 
         		  loader.load_images(StonesDir, ImageNames,"-mask")); // load the main images
           textures = loader.load_images(StonesDir,TextureNames);
-    	Image icons[] = loader.load_images(ImageDir,IconNames);
-    	gameIcon = icons[ICON_INDEX];
+    	icons = loader.load_images(ImageDir,IconNames);
     	}
+    	gameIcon = icons[ICON_INDEX];
     }
     Color LoaMouseColors[] = { Color.black,Color.white};
     Color LoaMouseDotColors[] = { Color.white,Color.black};

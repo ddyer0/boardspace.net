@@ -38,3 +38,12 @@ launcher that uses the jvm the user has installed.  If there is no jvm to be
 found, it will prompt the user to install java
 
 
+ICONS:  create .ico files using https://www.aconvert.com
+
+Subsequent deployment steps:
+
+The delivery files are in htdocs/java/launcher/
+copy the new boardspace.jar and boardspace.exe there
+create a new .zip containing boardspace.exe
+
+

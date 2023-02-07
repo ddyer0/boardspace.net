@@ -5,6 +5,9 @@ public class ItemEvent  extends Event {
 	//public ItemSelectable getItemSelectable() 
 	//{ return((ItemSelectable)source); 
 	//}
+	public static int DESELECTED = 1;
+	public static int SELECTED = 2;
+	public int getStateChange() { return SELECTED; }
 	public Object getItem() { return(source);	}
 
 }

@@ -3,7 +3,6 @@ package palago;
 import bridge.*;
 import com.codename1.ui.geom.Rectangle;
 
-import online.common.*;
 import java.util.*;
 import online.game.*;
 import online.game.sgf.sgf_node;
@@ -100,12 +99,12 @@ public class PalagoViewer extends CCanvas<PalagoCell,PalagoBoard> implements Pal
     private Rectangle chipRect = addRect("firstPlayerChipRect");
     private Color ZoomColor = new Color(0.0f,0.0f,1.0f);
 
-	private Image textures[] = null;
+	private static Image textures[] = null;
 
     public synchronized void preloadImages()
-    {	PalagoChip.preloadImages(loader,ImageDir);
+    {	
     	if(textures==null)
-    	{
+    	{	PalagoChip.preloadImages(loader,ImageDir);
             textures = loader.load_images(ImageDir,TextureNames);
     	}
     	gameIcon = PalagoChip.getChip(6).image;
@@ -144,7 +143,7 @@ public class PalagoViewer extends CCanvas<PalagoCell,PalagoBoard> implements Pal
         zoomRect.highlightColor = HighlightColor;   
         labelColor = Color.red;
         labelFont = largeBoldFont();
-        bb = new PalagoBoard(info.getString(OnlineConstants.GAMETYPE, "Palago"),getStartingColorMap());
+        bb = new PalagoBoard(info.getString(GAMETYPE, "Palago"),getStartingColorMap());
         useDirectDrawing(true); // not tested yet
         doInit(false);
     }
@@ -207,7 +206,7 @@ public class PalagoViewer extends CCanvas<PalagoCell,PalagoBoard> implements Pal
     			margin,	
     			0.7,	// 80% of space allocated to the board
     			1,		// aspect ratio for the board
-    			fh*1.5,	//
+    			fh*1.5,
     			fh*2,	// maximum cell size
     			0.5		// preference for the designated layout, if any
     			);

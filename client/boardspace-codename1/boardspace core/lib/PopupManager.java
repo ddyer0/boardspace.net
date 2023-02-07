@@ -30,15 +30,22 @@ public class PopupManager extends SimpleObservable implements ActionListener
 {
     // menu support.  
     //
+	public boolean useSimpleMenu = false;
+	// constructor
+	private static boolean lightweightMenus = true;
+	
 	public class bsSwingMenu implements MenuInterface
 	{
+	public boolean useSimpleMenu() { return useSimpleMenu; }
 	private JPopupMenu swingPopupMenu = null;
 		   
 	public NativeMenuInterface getNativeMenu() { return(swingPopupMenu); }
-	// constructor
 	public bsSwingMenu(String msg)
 	{
 		swingPopupMenu = new JPopupMenu(msg); 
+		// just expetimentally, lightweight menus have fewer mystery 
+		// crashes [ddyer 1/2023]
+		swingPopupMenu.setLightWeightPopupEnabled(lightweightMenus);
 	}
 	public String toString() { return("<Box "+swingPopupMenu.toString()+">"); }
 	   
@@ -76,7 +83,6 @@ public class PopupManager extends SimpleObservable implements ActionListener
 	{	
 		int failed = 0;
 		boolean succeeded = false;
-		
     	while(!succeeded && (failed<=1))
     	{
     	try {
@@ -84,22 +90,24 @@ public class PopupManager extends SimpleObservable implements ActionListener
 		succeeded = true;
 		}
 		catch (AccessControlException err)
-		{ if(failed++ == 0)
+		{ if(useSwing)
+		  {if(failed++ == 0)
 			{
-			System.out.println("trying lightweight for "+this);
-			setLightWeightPopupEnabled(true);
+			lightweightMenus = !lightweightMenus;
+			Plog.log.addLog("trying lightweight ",lightweightMenus," after ",err);
+			swingPopupMenu.setLightWeightPopupEnabled(lightweightMenus);
 			}
-			else { useSwing = false; }
-		}}
+			else 
+			{ Plog.log.addLog("use AWT menus after ",err);
+			  useSwing = false; 
+			}
+		}}}
 	}
 	public void setVisible(boolean b) 
 	{
 		swingPopupMenu.setVisible(b);
 	}
-	public void setLightWeightPopupEnabled(boolean b) 
-	{
-		swingPopupMenu.setLightWeightPopupEnabled(b);
-	} 
+
 	public MenuInterface newSubMenu(String msg)
 	{	return(new bsSwingSubMenu(msg));
 	}
@@ -109,6 +117,7 @@ public class PopupManager extends SimpleObservable implements ActionListener
 	public class bsSwingSubMenu implements MenuInterface
 	{
 		   private JMenu jsubmenu = null;
+		   public boolean useSimpleMenu() { return useSimpleMenu; }
 		   public NativeMenuInterface getNativeMenu() { return(jsubmenu); }
 		   // constructor for submenus
 		   public bsSwingSubMenu(String msg)
@@ -164,6 +173,7 @@ public class PopupManager extends SimpleObservable implements ActionListener
    public class bsAwtMenu implements MenuInterface
    {
 	   private PopupMenu awtPopupMenu = null;	
+	   public boolean useSimpleMenu() { return useSimpleMenu; }
 	   public NativeMenuInterface getNativeMenu() { return(awtPopupMenu); }
 	   // constructor for submenus
 	   public bsAwtMenu(String msg)
@@ -228,7 +238,11 @@ public class PopupManager extends SimpleObservable implements ActionListener
    private SimpleObserver observer = null;
    private MenuParentInterface parent = null;
    private MenuInterface menu = null;					// the actual menu if swing components
-   public static boolean useSwing = !G.isUnix();	// default to using swing except in linux
+   
+   // on Windows, awt menus have problems with chinese and japanese
+   // on Windows, swing menus have reliability problems due to multi threading
+   // pick your poison. [ddyer 1/2023]
+   public static boolean useSwing = !G.isUnix();	// default to using swing menus
    private static Object nullValue=new Object();	// make it an object rather than a string
    public int showAtX = 0;
    public int showAtY = 0;

@@ -43,16 +43,16 @@ public class SpanglesViewer extends CCanvas<SpanglesCell,SpanglesBoard> implemen
 
     private Color ZoomColor = new Color(0.0f,0.0f,1.0f);
 
-	private Image textures[] = null;
+	private static Image textures[] = null;
 	public commonMove EditHistory(commonMove nmove)
 	{
 		boolean oksame = nmove.op==MOVE_DROP;	// some damaged games have naked drops
 		return EditHistory(nmove,oksame);
 	}
     public synchronized void preloadImages()
-    {	SpanglesChip.preloadImages(loader,ImageDir);
+    {	
     	if(textures==null)
-    	{
+    	{	SpanglesChip.preloadImages(loader,ImageDir);
             textures = loader.load_images(ImageDir,TextureNames);
     	}
     	gameIcon = textures[ICON_INDEX];

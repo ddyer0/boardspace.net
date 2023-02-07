@@ -1,6 +1,7 @@
 package online.common;
 
 import bridge.Polygon;
+
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -891,7 +892,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	private void DrawSpectateButton(Graphics inG,Session session,String statemessage,boolean rejoin)
 	{ boolean tournament = session.getSubmode()==Session.JoinMode.Tournament_Mode;
 	  if (/* now ok any time (my.sessionLocation==0) && */
-	        (rejoin || !session.playingInSession)
+	        (rejoin || !session.playingInSession())
 	          && (lobby.startingSession != session))
 	      {  //elgible to launch spectator 
 	        Color trimColor = ( (highlightedSession==session) && (highlightedItem==LobbyId.highlight_spec))
@@ -1999,7 +2000,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	            && !users.primaryUser().automute    //we're not a bad guy
 	            && !ImMuted(sess)
 	            && (sess.state!=Session.SessionState.Private)
-	            && (rejoin || !sess.playingInSession))
+	            && (rejoin || !sess.playingInSession()))
 	    {
 	    int ycenter = (sess.mode==Session.Mode.Chat_Mode)
 	    				? CHATBUTTONYCENTER

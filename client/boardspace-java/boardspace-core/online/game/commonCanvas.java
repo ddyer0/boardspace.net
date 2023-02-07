@@ -5121,7 +5121,8 @@ public abstract class commonCanvas extends exCanvas
     	{	String e = l.panAndZoom.elementAt(i);
     		pop.addMenuItem((i+1)+": "+summarize(e),e);
     	}
-    	pop.show(x,y);
+    	pop.useSimpleMenu = false;
+    	pop.show(x+30,y+10);
     }
     /** 
      * this becomes sequence of tokens that is used to identify

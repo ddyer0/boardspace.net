@@ -11,4 +11,5 @@ public interface MenuInterface {
 	public void show(MenuParentInterface parent, int x, int y);
 	public void setVisible(boolean b);
 	public MenuInterface newSubMenu(String msg);
+	public boolean useSimpleMenu();
 }

@@ -24,8 +24,6 @@ public interface RootAppletProtocol
 	public void init();
 
 
-    public void killFrame(LFrameProtocol inLF);
-
 /** create a new LFrame window - this is used to create game windows.
  * 
  * @param name

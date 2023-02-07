@@ -420,7 +420,6 @@ public abstract class exCanvas extends Canvas
         sharedInfo = info;
         myFrame = frame;
         
-        myFrame.initMenus();
         
         SCALE = G.getDisplayScale();
         chatPercent = info.getInt(BOARDCHATPERCENT,chatPercent);
@@ -2257,7 +2256,7 @@ graphics when using a touch screen.
 	// simple menus are still rather ugly.
 	boolean useSimpleMenu = false;
 	public void show(MenuInterface popup,int x,int y) throws AccessControlException
-	{	if(useSimpleMenu || (getCanvasRotation()!=0)) 
+	{	if(useSimpleMenu || (getCanvasRotation()!=0) || popup.useSimpleMenu()) 
 			{ menu = new SimpleMenu(this,popup,x,y); 
 			}
 		 else { 

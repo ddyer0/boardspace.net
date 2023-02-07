@@ -78,15 +78,15 @@ public class SyzygyViewer extends CCanvas<SyzygyCell,SyzygyBoard> implements Syz
 
     private Color ZoomColor = new Color(0.0f,0.0f,1.0f);
 
-	private Image textures[] = null;
+	private static Image textures[] = null;
 
     public synchronized void preloadImages()
-    {	SyzygyChip.preloadImages(loader,ImageDir);
+    {	
     	if(textures==null)
-    	{
+    	{	SyzygyChip.preloadImages(loader,ImageDir);
             textures = loader.load_images(ImageDir,TextureNames);
     	}
-    	gameIcon = textures[ICON_INDEX];
+       	gameIcon = textures[ICON_INDEX];
     }
 
 	/**

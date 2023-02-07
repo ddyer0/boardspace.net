@@ -145,6 +145,7 @@ public class JWSApplication implements Config,Runnable
 		// main methods cause IOS builds to fail by failing to launch
 		public static void runLobby(String [] args)
 	     	{	
+			G.classForName("online.game.Game",false);
 			UDPService.stop(); 
 			VNCService.stopVNCServer();
 			JWSApplication app = new JWSApplication();
@@ -207,24 +208,37 @@ public class JWSApplication implements Config,Runnable
 		// main methods cause IOS builds to fail by failing to launch
 		public static void main(String [] args)
 	     	{	
+			// this is the entry point for ordinary testing
 			G.setPlatformName(G.getOS());
 			runLobby(args);
 			System.exit(0);
 	     	}
 	
 		public void run()
-		{	
+		{	// this is the entry point from the miniloader
 			try {
 			StringStack args = new StringStack();
 			String os =G.getOS()+ " Executable Jar";
 			G.setPlatformName(os);
 			int idx = 0;
+			String mini = null;
 			do {
 				String aa = System.getProperty("mainargs-"+idx);
 				if(aa==null) { break; }
 				args.push(aa);
 				idx++;
 			} while(true);
+			// this is where it might be appropriate to do something about obsolete 
+			for(int i=0;i<args.size();i+=2)
+			{
+				if("miniloader".equals(args.elementAt(i))) { mini = args.elementAt(i+1); }
+			}
+			int jv = G.javaMajorVersion();
+			if((jv>=18) && (mini==null)) // the first miniloader that reports here is 1.3
+			{
+				G.infoBox("boardspace launcher","your version of the boardspace launcher is old.\nPlease install a new one from Boardspace.net");
+			}
+			
 			runLobby(args.toArray());
 			} catch (Throwable e)
 			{

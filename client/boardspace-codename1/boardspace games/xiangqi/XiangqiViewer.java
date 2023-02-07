@@ -82,10 +82,10 @@ public class XiangqiViewer extends CCanvas<XiangqiCell,XiangqiBoard> implements 
     private JMenuItem drawAction = null;
     public synchronized void preloadImages()
     {	
-       	XiangqiChip.preloadImages(loader,ImageDir);
         if (ornaments == null)
     	{ // note that for this to work correctly, the images and masks must be the same size.  
           // Refer to http://www.andromeda.com/people/ddyer/java/imagedemo/transparent.html
+        XiangqiChip.preloadImages(loader,ImageDir);
         textures = loader.load_images(ImageDir,TextureNames);
         images = loader.load_masked_images(ImageDir,ImageNames);
         ornaments = StockArt.preLoadArt(loader,ImageDir,ExtraImageNames,ExtraImageScale);

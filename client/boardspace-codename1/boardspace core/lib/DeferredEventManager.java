@@ -34,9 +34,12 @@ public class DeferredEventManager implements ActionListener,ItemListener,ListSel
 	public void deferActionEvent(Object e)
 	{	
 		deferredEvents.addElement(e);
-		handler.wake();
+		wake();
 	}
-
+	private void wake()
+	{
+		G.wake(handler);
+	}
 	/**
 	 * handle an actionPerformed method by saving it for later.
 	 */
@@ -47,7 +50,8 @@ public class DeferredEventManager implements ActionListener,ItemListener,ListSel
      * handle an itemStateChanged event by saving it for later.
      */
     public void itemStateChanged(ItemEvent e)
-    {  	deferActionEvent(e);
+    {  	
+    	deferActionEvent(e);
     }
 
     /**
@@ -76,7 +80,8 @@ public class DeferredEventManager implements ActionListener,ItemListener,ListSel
 		  }
 		  else if(e instanceof ItemEvent)
 		  {	ItemEvent ee = (ItemEvent)e;
-		  	cp.handleDeferredEvent(ee.getSource(), null);
+		  	int change = ee.getStateChange();
+		  	cp.handleDeferredEvent(ee.getSource(), change==ItemEvent.DESELECTED?"Deselected":"Selected");
 		  }
 		  else if(e instanceof MouseWheelEvent)
 		  {

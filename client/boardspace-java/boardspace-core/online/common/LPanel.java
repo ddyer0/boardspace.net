@@ -2,21 +2,15 @@ package online.common;
 
 import java.awt.Container;
 import java.awt.Dimension;
-import lib.Image;
 import java.awt.Insets;
-import java.awt.event.KeyListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import javax.swing.BoxLayout;
-import javax.swing.JCheckBoxMenuItem;
 import bridge.JPopupMenu;
 import bridge.FullscreenPanel;
-import lib.CanvasRotaterProtocol;
-import lib.DeferredEventManager;
 import lib.G;
 import lib.NullLayout;
 import lib.NullLayoutProtocol;
-import lib.MenuParentInterface;
 import lib.XFrame;
 
 
@@ -28,29 +22,14 @@ public class LPanel extends FullscreenPanel implements WindowListener,NullLayout
 	static final long serialVersionUID = 1L;
 	public XFrame theFrame=null;
 	public commonPanel theLobby;
-    public MenuParentInterface getMenuParent() { return(theLobby); }
-    public void dispose() { if(theFrame!=null) { theFrame.dispose(); }}
-    boolean needActions = false;
-    public JCheckBoxMenuItem soundCheckBox = null;
-    private boolean killed = false;
-    
-     
-    public void setCanvasRotater(CanvasRotaterProtocol r) { if(theFrame!=null) { theFrame.setCanvasRotater(r); }}
-    public CanvasRotaterProtocol getCanvasRotater() { return ((theFrame!=null) ? null : theFrame.getCanvasRotater()); }
-    public void setIconAsImage(Image m)
-    {
-    	if(theFrame!=null) { theFrame.setIconAsImage(m); }
-    }
+         
     public Dimension getPreferredSize()
     {	int w = 9999;
     	int h = 9999;
     	if(theFrame!=null) { w = getParent().getWidth(); h=getParent().getHeight(); }
     	return(new Dimension(w,h));
     }
-    public boolean killed()
-    	{ return(killed || ((theFrame!=null)?theFrame.killed():false)); 
-    	}
- 
+
     /* constructor */
     public LPanel(String inStr,XFrame frame, commonPanel inLobby)
     {
@@ -64,13 +43,13 @@ public class LPanel extends FullscreenPanel implements WindowListener,NullLayout
      	// this is a workaround to force all JPopupMenu to be "heavyweight"
      	// which somehow avoids the menu clipping problem.
      	JPopupMenu.setDefaultLightWeightPopupEnabled(false);
-         
         if(frame!=null)
         {	
-        	frame.setContentPane(this);//frame.add(this);
+        	frame.setContentPane(this);//frame.add(this);     
         	frame.addWindowListener(this);
+         	frame.setTitle(inStr);	// defer this until after the menus are added
         }
-        setTitle(inStr);	// defer this until after the menus are added
+        
         add(theLobby);
     }
 
@@ -106,51 +85,8 @@ public class LPanel extends FullscreenPanel implements WindowListener,NullLayout
         			w-in.left-in.right, h-in.top-in.bottom-barheight);
         }
     }
-
-    public void requestFocus()
+    public void windowClosing(WindowEvent e) 
     {
-    	theFrame.requestFocus();
+    	if(theLobby!=null) { theLobby.requestShutdown(); }
     }
-    public void addKeyListener(KeyListener who)
-    {
-    	if(theFrame!=null) { theFrame.addKeyListener(who); }
-    }
-    public void removeKeyListener(KeyListener who)
-    {
-    	if(theFrame!=null) { theFrame.removeKeyListener(who); }
-    }
-    public void addWindowListener(WindowListener who)
-    {	
-    	if(theFrame!=null) { theFrame.addWindowListener(who); }
-    }
-	public void setTitle(String str) {
-		if(theFrame!=null) { theFrame.setTitle(str); }
-	}
-	public String getTitle()
-	{
-		return(theFrame!=null? theFrame.getTitle() : "");
-	}
-  
-
-    public void windowClosing(WindowEvent e)
-    {
-       theFrame.killFrame();
-       if(theLobby!=null) { theLobby.requestShutdown(); }
-    }
-
-    public void windowClosed(WindowEvent e)
-    {
-       theFrame.killFrame();
-       if(theLobby!=null) { theLobby.requestShutdown(); }
-    }
-
-  
- 
-	public void setCanSavePanZoom(DeferredEventManager m) {
-		theFrame.setCanSavePanZoom(m);
-	}
-	public void setHasSavePanZoom(boolean v) {
-		theFrame.setHasSavePanZoom(v);;
-	}
-
 }

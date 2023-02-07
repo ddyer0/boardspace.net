@@ -170,8 +170,8 @@ public abstract class InternationalStrings implements Config
         {
             String nextElement = myST.nextToken();
             if("<br>".equals(nextElement)) 
-            {  AddedString += currentStr + "\n";
-               currentStr = null;
+            { if(currentStr!=null) { AddedString += currentStr;  currentStr = null; }
+        	  AddedString += "\n";
             }
             else 
             {
@@ -183,7 +183,8 @@ public abstract class InternationalStrings implements Config
             }
             else
             {
-                AddedString += (currentStr + "\n");
+            	if(currentStr!=null) { AddedString += currentStr; }
+                AddedString += "\n" ;
                 currentStr = new String(Spaces + nextElement);
             }}
 

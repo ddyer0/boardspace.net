@@ -12,7 +12,6 @@ import bridge.JMenuItem;
  */
 public interface LFrameProtocol extends MenuParentInterface
 {   public void setInitialBounds(int theX, int theY, int theW, int theH);
-	public boolean killed();
 	/**
 	 * query if sound is on.  You should call this before playing any sound.
 	 * 
@@ -37,22 +36,18 @@ public interface LFrameProtocol extends MenuParentInterface
 
     public void addAction(JMenu m,JMenuItem mi,DeferredEventManager l);
     public JMenuItem addAction(JMenu m,String mname,DeferredEventManager e);
-    public void removeFromMenuBar(JMenu m);
     public JCheckBoxMenuItem addOption(String text, boolean initial, JMenu m,DeferredEventManager l);
     public void killFrame();
+    public boolean killed();
     public void setTitle(String str);
     public String getTitle();
     public void setDontKill(boolean v);
-    public boolean DontKill();
     public MenuParentInterface getMenuParent();
     public void setVisible(boolean v);
     public void setCanSavePanZoom(DeferredEventManager v);
     public void setHasSavePanZoom(boolean v);
     public void revalidate();
 	public void setIconAsImage(Image icon);
-	public int getX();
-	public int getY();
-	public void initMenus();
 	public void setCanvasRotater(CanvasRotaterProtocol commonCanvas);
 	public CanvasRotaterProtocol getCanvasRotater();
 }

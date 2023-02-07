@@ -1,7 +1,6 @@
 package lib;
 
 import java.awt.Font;
-import java.awt.Frame;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -37,8 +36,8 @@ public class TextWindow extends Canvas implements MouseListener,MouseMotionListe
 	{
 		
 	}
-	public TextWindow(Frame f)
-	{	
+	public TextWindow(LFrameProtocol f)
+	{	super(f);
 		painter.hasRunLoop = painter.drawLockRequired = false;
 		addMouseMotionListener(this);
 		addMouseListener(this);

@@ -76,12 +76,12 @@ public class CheViewer extends CCanvas<CheCell,CheBoard> implements CheConstants
     private Rectangle poolRect = addRect("poolRect");
     private Color ZoomColor = new Color(0.0f,0.0f,1.0f);
 
-	private Image textures[] = null;
+	private static Image textures[] = null;
 
     public synchronized void preloadImages()
-    {	CheChip.preloadImages(loader,ImageDir);
+    {	
     	if(textures==null)
-    	{
+    	{	CheChip.preloadImages(loader,ImageDir);
             textures = loader.load_images(ImageDir,TextureNames);
     	}
     	gameIcon = CheChip.getChip(0).image;

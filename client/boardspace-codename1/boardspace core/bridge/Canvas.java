@@ -6,10 +6,17 @@ import lib.CanvasRotater;
 import lib.CanvasRotaterProtocol;
 import lib.G;
 import lib.Graphics;
+import lib.LFrameProtocol;
+import lib.PinchEvent;
 
-public class Canvas extends Component implements CanvasRotaterProtocol,WindowListener,MouseListener
+public class Canvas extends Component implements CanvasRotaterProtocol,WindowListener,MouseListener,MouseWheelListener,MouseMotionListener
 {	
-
+	public Canvas(LFrameProtocol frame)
+	{
+		super();
+	}
+	public Canvas() { super(); }
+	
 	public void paint(Graphics g) { G.Error("Should be overridden");}
 	
 	public void paint(com.codename1.ui.Graphics g)
@@ -42,4 +49,10 @@ public class Canvas extends Component implements CanvasRotaterProtocol,WindowLis
 	public void mouseReleased(MouseEvent e) { }
 	public void mouseEntered(MouseEvent e) { }
 	public void mouseExited(MouseEvent e) { }
+
+	public void mouseWheelMoved(MouseWheelEvent e) { }
+
+	public void mouseDragged(MouseEvent e) { }
+	public void mouseMoved(MouseEvent e) { }
+	public void mousePinched(PinchEvent e) { }
 }

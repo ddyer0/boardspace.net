@@ -228,16 +228,6 @@ public class commonRootApplet implements  RootAppletProtocol, Runnable,  LobbyCo
     	}	
     }
 
- 
-    /** come here from closing the lobby or any of the games that it supervises */
-    public void killFrame(LFrameProtocol inLF)
-    {	commonPanel l = myL;
-        if ((l != null) && (inLF != myLF))
-    {
-            l.killFrame(inLF); //killing some frame that the child created
-        }
-
-    }
     public void run()
     {	init();
     	StartLframe();

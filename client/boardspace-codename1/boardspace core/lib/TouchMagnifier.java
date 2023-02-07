@@ -5,6 +5,7 @@ import com.codename1.ui.geom.Rectangle;
 
 import bridge.Color;
 
+// TODO: touch magnifier doesn't clear properly when moved up to the top of the screen
 public class TouchMagnifier {
 
     boolean alwaysPredraw = !G.isCodename1();		// if true, always draw a fresh image, never reuse the existing bitmap

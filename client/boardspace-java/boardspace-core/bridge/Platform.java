@@ -96,38 +96,30 @@ static final public String getPlatformSubtype()
  */
 public static synchronized Object MakeInstance(String classname)
 {
-	return MakeInstance(classname,true);
-}
-private static synchronized Object MakeInstance(String classname,boolean retry)
-{	String expname = "";
-    try
-    {	expname = G.expandClassName(classname);
-    	Plog.log.addLog("classforname ",expname," ",retry);
-    	Class<?>cl = G.classForName(expname,false);
-    	if(cl==null) 
+	String expname = "";
+    expname = G.expandClassName(classname);
+    Plog.log.addLog("MakeInstance ",expname);
+   
+    Class<?>cl = G.classForName(expname,false);
+    if(cl==null) 
     		{ 
     		// this really shouldn't happen, but it does occasionally. My leading theory
     		// is that the class .jar file in the cache is "busy" due to activity by
     		// antivirus activity
+    		System.out.println("classForName failed with null for "+expname);
     		Plog.log.addLog("classForName failed with null for ",expname);
-    		if(retry) {
-    			G.doDelay(250);		// wait a little
-    			return MakeInstance(classname,false);
+    		throw G.Error("classForName "+expname+" returned null");  
     		}
-    		else { throw new ClassNotFoundException(); } 
-    		}
-    	if(!retry) { Plog.log.addLog("classForName "+expname+" succeeded after retry");}
-        return (cl.getDeclaredConstructor().newInstance()); //was cl.newInstance()
+    else
+    {
+    try {
+    	return cl.newInstance();
     }
     catch (Exception e)
-    {	if(retry)
-    		{
-    		G.doDelay(250);		// wait a little
-    		return MakeInstance(classname,false); 
-    		}
-    	else {  throw G.Error(expname+":"+e.toString()); }
-    }
+    {	throw G.Error("Makeinstance "+expname+":"+e.toString()); 
+    }}
 }
+
 	static int color = 0;
 
 
@@ -288,7 +280,11 @@ private static synchronized Object MakeInstance(String classname,boolean retry)
     	//Plog.log.addLog("classForName ",name);
 		return(Class.forName(name));
 			} catch (ClassNotFoundException e) {
-				if(!testOnly) { throw new ErrorX(e); }
+				if(!testOnly)
+					{ System.out.println("classForName failed for "+name+" "+e);
+					  Plog.log.addLog("classForName failed for ",name," ",e);
+					  throw new ErrorX(e);
+					}
 			}
     	return(null);
     }

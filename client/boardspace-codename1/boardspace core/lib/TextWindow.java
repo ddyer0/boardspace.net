@@ -1,10 +1,8 @@
 package lib;
 
-
 import com.codename1.ui.Font;
 
 import bridge.Canvas;
-import bridge.Frame;
 import bridge.MouseEvent;
 import bridge.MouseListener;
 import bridge.MouseMotionListener;
@@ -38,8 +36,8 @@ public class TextWindow extends Canvas implements MouseListener,MouseMotionListe
 	{
 		
 	}
-	public TextWindow(Frame f)
-	{	
+	public TextWindow(LFrameProtocol f)
+	{	super(f);
 		painter.hasRunLoop = painter.drawLockRequired = false;
 		addMouseMotionListener(this);
 		addMouseListener(this);

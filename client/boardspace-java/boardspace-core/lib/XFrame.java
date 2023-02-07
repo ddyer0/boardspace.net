@@ -1,6 +1,5 @@
 package lib;
 
-import java.awt.Color;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Label;
@@ -40,9 +39,6 @@ public class XFrame extends JFrame implements WindowListener,SizeProvider,LFrame
 	public DeferredEventManager canSavePanZoom = null;
 	public boolean hasSavePanZoom = false;
 	
-    public JCheckBoxMenuItem soundCheckBox = null;
-    public JMenu options = null;
-    public JMenu actions = null;
     
     private InternationalStrings s = null;
     static final String SoundMessage = "Sound";
@@ -55,6 +51,9 @@ public class XFrame extends JFrame implements WindowListener,SizeProvider,LFrame
            SoundMessage,
 
     };
+    private JCheckBoxMenuItem soundCheckBox = null;
+    private JMenu options = null;
+    private JMenu actions = null;
 
 	public void setCanSavePanZoom(DeferredEventManager m) 
 	{ 	canSavePanZoom = m;
@@ -87,11 +86,11 @@ public class XFrame extends JFrame implements WindowListener,SizeProvider,LFrame
 	  JPopupMenu.setDefaultLightWeightPopupEnabled(false);
       options = new XJMenu(s.get(OptionsMessage),true);
       actions = new XJMenu(s.get(ActionsMessage),true);
-
+      soundCheckBox = new JCheckBoxMenuItem(s.get(SoundMessage),Config.Default.getBoolean(Config.Default.sound));
 	  addWindowListener(this);
+	  title = new Label(name);
 	  setOpaque(false);
-	  initTitleBar();
-	}
+ 	}
 	
 	public void setVisible(boolean v)
 	{	
@@ -117,11 +116,6 @@ public class XFrame extends JFrame implements WindowListener,SizeProvider,LFrame
 	}
 
 	
-	public void initTitleBar()
-	{
-		title = new Label(name);
-	
-	}
 	public boolean hasCommand(String cmd)
 	{	if(("rotate".equals(cmd) || "twist3".equals(cmd) || "twist".equals(cmd))) { return(rotater!=null); }
 		if("close".equals(cmd)) { return(true); }
@@ -205,7 +199,7 @@ public class XFrame extends JFrame implements WindowListener,SizeProvider,LFrame
 	}
 
 	
-	public void removeFromMenuBar(JMenu m)
+	private void removeFromMenuBar(JMenu m)
 	{	
 		if(useMenuBar)
 		{
@@ -338,7 +332,11 @@ public class XFrame extends JFrame implements WindowListener,SizeProvider,LFrame
 
  
 	public JCheckBoxMenuItem addOption(String text, boolean initial, JMenu m,DeferredEventManager e)
-    {	JCheckBoxMenuItem b = new JCheckBoxMenuItem(text);
+    {	
+		if(options.getItemCount()==0) 
+		{	options.add(soundCheckBox);		// always first
+		}
+		JCheckBoxMenuItem b = new JCheckBoxMenuItem(text);
         b.setState(initial);
         m.add(b);
         if(e!=null) { b.addItemListener(e); }
@@ -462,22 +460,6 @@ public class XFrame extends JFrame implements WindowListener,SizeProvider,LFrame
         			""+G.Left(dim)+","+G.Top(dim)+","+G.Width(dim)+","+G.Height(dim));
         	
         }
-        //G.print("Killframe");
-        if ((dontKill == false)		// temporarily inhibited?
-        		&&(killed==false))	// already killed
-        {	RootAppletProtocol p = G.getRoot();
-        	if (p != null)
-	            {
-	            p.killFrame(this);
-	            }
-            //dispose();
-            setVisible(false);
-            dispose();
-            }
-    }
-    public boolean DontKill()
-    {
-        return (dontKill);
     }
  
     public void setDontKill(boolean v)
@@ -493,21 +475,5 @@ public class XFrame extends JFrame implements WindowListener,SizeProvider,LFrame
 		return this;
 	}
 	
-    public void initMenus()
-    {	initMenu(actions);
-    	initMenu(options);
-        boolean defaultSound = Config.Default.getBoolean(Config.Default.sound);
-        soundCheckBox = addOption(s.get(SoundMessage), defaultSound,null);
-        soundCheckBox.setForeground(Color.blue);
-    }
-    public void initMenu(JMenu m)
-    {	if(m!=null)
-    	{
-    	while(m.getItemCount()>0)
-    		{
-    		m.remove(m.getItem(0));
-    		}
-    	}
-     }
 
 }

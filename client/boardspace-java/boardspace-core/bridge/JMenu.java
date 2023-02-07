@@ -78,7 +78,8 @@ public class JMenu extends javax.swing.JMenu implements NativeMenuInterface,Nati
             	// inhibit mouse entered to avoid auto-selection moving
             	// between items on the jmenubar
             	if(getItemCount()==0) { break; }
-            default: super.processMouseEvent(e);
+            default: 
+            	super.processMouseEvent(e);
             }
 		}
 		catch (ArrayIndexOutOfBoundsException err) 
