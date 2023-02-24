@@ -1925,10 +1925,12 @@ public abstract class commonCanvas extends exCanvas
     {	// redrawboard may as a side effect set usingCopyBoard
     	// when it calls disB.  This prevents the new board
     	// from being swapped in until usingCopyBoard is null
-    	G.Assert(l.displayThread==null, "recurse! %s and now %s",l.displayThread,Thread.currentThread());
+    	Thread current = Thread.currentThread();
+    	//recursion is normal if in touch magnifier
+    	G.Assert(l.displayThread==null || l.displayThread==current, "multi threaded! %s and now %s",l.displayThread,current);
     	G.Assert(!G.debug() || G.isEdt(), "not edt!");
     	try {
-    		l.displayThread = Thread.currentThread();
+    		l.displayThread = current;
     		
     		if(remoteViewer>=0)
     			{ 
@@ -4764,7 +4766,6 @@ public abstract class commonCanvas extends exCanvas
         	autoDoneCheckbox = myFrame.addOption(s.get(AutoDoneEverywhere),autoDone,deferredEvents);
         }
         
-        myFrame.setCanvasRotater(this);
  		 
         boolean viewer = reviewOnly;
 
@@ -5083,7 +5084,7 @@ public abstract class commonCanvas extends exCanvas
     	sliderMenu.setVisible(zoomed);
     	}
   	  	resetBounds();
-  	  	resetLocalBoundsNow();
+  	  	resetLocalBoundsIfNeeded();
     	generalRefresh();
     }
     private String summarize(String e)
@@ -5111,7 +5112,8 @@ public abstract class commonCanvas extends exCanvas
     	{	String e = l.panAndZoom.elementAt(i);
     		pop.addMenuItem((i+1)+": "+summarize(e),e);
     	}
-    	pop.show(x,y);
+    	pop.useSimpleMenu = false;
+    	pop.show(x+30,y+10);
     }
     /** 
      * this becomes sequence of tokens that is used to identify
@@ -6899,24 +6901,16 @@ public HitPoint MouseMotion(int eventX, int eventY, MouseState upcode)
     	//		  p.dragging=true; 
     	//		}
     	//	}
-    	}
-	   	if((G.isSimulator() || !G.isTouchInterface()) && mouse.drag_is_pinch)
-		{	
-	   		globalZoomRect.draw(null,p);
-	   		if(globalZoomRect.hitcode==OnlineId.HitZoomSlider)
-	   		{ changeZoom(getGlobalZoom(),getRotation());	// unconditionally
-	   		}
 		}
 	HitPoint sp = setHighlightPoint(p);
 	switch(upcode)
 	{
 	case LAST_IS_DOWN:
 		setHasGameFocus(true);
-		break;
 	case LAST_IS_IDLE: 
 	case LAST_IS_DRAG:
 	case LAST_IS_PINCH:
-		repaint(20,"mouse motion"); 
+		repaintSprites(20,"mouse motion");
 		break;
 	default: break;
 	}
@@ -7728,6 +7722,7 @@ public void verifyGameRecord()
     { 	
     	super.paintSprites(g, hp);
     	drawUnseenChat(g);
+    	
     }
 
     public boolean globalPinchInProgress()
@@ -7748,7 +7743,8 @@ public void verifyGameRecord()
  * return true if it is possible to start a touch zoom "right now"
  */
     public boolean touchZoomEnabled() 
-    { 	if(panInProgress()) { return(false); }	// if already panning, don't touch zoom
+    {
+    	if(panInProgress()) { return(false); }	// if already panning, don't touch zoom
     	if(draggingBoard) { return(false); }
     	int x = mouse.getX();
 		int y = mouse.getY();
@@ -8190,7 +8186,6 @@ public void verifyGameRecord()
 		}
        
         drawUnmagnifier(offGC,hp);
-        //G.addLog("finish canvas");
     }
     }
     
@@ -8198,11 +8193,10 @@ public void verifyGameRecord()
     might seem to flash on and off.
     */
     public void drawCanvasSprites(Graphics offGC, HitPoint hp)
-    {	//G.startLog("draw sprites");
+    {	
         DrawTileSprite(offGC,hp); //draw the floating tile, if present
         drawSprites(offGC);
-        //G.addLog("finish sprites");
-    }
+     }
     public void setTheChat(ChatInterface chat,boolean framed)
     {
     	super.setTheChat(chat,framed);
@@ -8383,18 +8377,14 @@ public void verifyGameRecord()
 			return(false);
 		}
 		
-		public void handleMouseWheel(MouseWheelEvent e)
+		public void Wheel(int x,int y,int mod,double amount)
 		{
-			int x = e.getX();
-			int y = e.getY();
-			int amount = e.getWheelRotation();
-			int mod = e.getModifiersEx();
 			boolean moved = (mod==0) 
 						&& (gameLog.doMouseWheel(x,y,amount)
 								|| doBoardZoom(x,y,(amount>0 ? 1.1 : 0.91)));
 			if(!moved)
 			{
-				super.handleMouseWheel(e);
+				super.Wheel(x,y,mod,amount);
 			}
 		}
 		/**

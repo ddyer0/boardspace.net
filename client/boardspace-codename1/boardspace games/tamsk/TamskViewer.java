@@ -1,12 +1,11 @@
 package tamsk;
 
+import com.codename1.ui.geom.Rectangle;
+import bridge.*;
 
 import static tamsk.Tamskmovespec.*;
-import bridge.*;
 import online.common.*;
 import java.util.*;
-
-import com.codename1.ui.geom.Rectangle;
 
 import lib.Graphics;
 import lib.CellId;
@@ -479,7 +478,6 @@ public class TamskViewer extends CCanvas<TamskCell,TamskBoard> implements TamskC
    	
     }
  
-
     /**
 	 * draw the board and the chips on it.  This is also called when not actually drawing, to
 	 * track the mouse.

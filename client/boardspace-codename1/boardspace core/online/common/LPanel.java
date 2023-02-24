@@ -6,11 +6,10 @@ import com.codename1.ui.layouts.Insets;
 
 import lib.G;
 import lib.NullLayout;
-import lib.NullLayoutProtocol;
 import lib.XFrame;
 
 
-public class LPanel extends FullscreenPanel implements WindowListener,NullLayoutProtocol,LobbyConstants
+public class LPanel extends FullscreenPanel implements WindowListener,LobbyConstants
 {
     /**
 	 * 
@@ -61,10 +60,6 @@ public class LPanel extends FullscreenPanel implements WindowListener,NullLayout
     	if(theFrame!=null) { theFrame.setSize(w,h); }
     }
 
-	public void doNullLayout(Container parent)
-    {
-		setLocalBounds(0,0,getWidth(),getHeight());
-    }
 
     Dimension oldsize = new Dimension(0,0);
     public void setLocalBounds(int l,int t,int w,int h)

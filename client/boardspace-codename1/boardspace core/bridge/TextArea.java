@@ -13,7 +13,6 @@ import com.codename1.ui.Font;
 import com.codename1.ui.Form;
 import com.codename1.ui.Graphics;
 import com.codename1.ui.geom.Dimension;
-import com.codename1.ui.geom.Rectangle;
 
 
 // this is unused as long as we don't reinstate the window based chat
@@ -246,5 +245,4 @@ public class TextArea extends com.codename1.ui.TextArea
 		    upd.dispatchCommand(okCommand,new com.codename1.ui.events.ActionEvent(okCommand));
 		}}
 	}
-	public Rectangle getRotatedBounds() { return getBounds(); }
 }

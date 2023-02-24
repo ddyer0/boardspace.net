@@ -48,6 +48,5 @@ public interface LFrameProtocol extends MenuParentInterface
     public void setHasSavePanZoom(boolean v);
     public void revalidate();
 	public void setIconAsImage(Image icon);
-	public void setCanvasRotater(CanvasRotaterProtocol commonCanvas);
-	public CanvasRotaterProtocol getCanvasRotater();
+	public CanvasRotater getCanvasRotater();
 }

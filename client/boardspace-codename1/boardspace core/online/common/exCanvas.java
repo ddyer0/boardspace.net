@@ -37,6 +37,10 @@ public abstract class exCanvas extends ProxyWindow
     static final String FontSize = "Set Font Size";
     static final String ZoomMessage = "Zoom=";
 
+    // the codename1 simulator supplies mouse move events, which is not
+    // typical of real hardware, so normally we don't want the simulator
+    boolean SIMULATE_MOUSE_MOVE = !G.isSimulator();
+    
     // this is initialized as part of the contract of preloadImages(), 
     // it's here instead of in commonCanvas because of the order of
     // evaluation of the constructor here and static evaluators in commonCanvas
@@ -328,8 +332,7 @@ public abstract class exCanvas extends ProxyWindow
     public abstract void setLocalBounds(int l, int t, int w, int h);
     public synchronized void setLocalBoundsSync(int x,int y,int w,int h)
     {	contextRotation = 0;
-	    boolean q = quarterTurn();
-    	setLocalBounds(x,y,q?h:w,q?w:h);
+    	setLocalBounds(x,y,w,h);
     }
     /**
      * call this function when the layout may need to be adjusted, for
@@ -410,7 +413,7 @@ public abstract class exCanvas extends ProxyWindow
      * @param info
      */
     public void init(ExtendedHashtable info,LFrameProtocol frame)
-    {	
+    {	super.init(info,frame);
      	sharedInfo = info;
         myFrame = frame;
         
@@ -482,7 +485,7 @@ public abstract class exCanvas extends ProxyWindow
             myFrame.addToMenuBar(zoomMenu,deferredEvents);
             zoomMenu.setVisible(true);
   
-        if(G.debug() && G.offline())
+        if(G.debug())
         	{ l.rotate180Menu = new IconMenu(StockArt.Rotate.image); 
          	  l.rotate90Menu = new IconMenu(StockArt.Rotate90.image);
          	  l.rotate270Menu = new IconMenu(StockArt.Rotate270.image);
@@ -568,11 +571,6 @@ public abstract class exCanvas extends ProxyWindow
 	public boolean handleDeferredEvent(Object target, String command)
 	{  //Plog.log.addLog("Handle ",command);
 	   if (target instanceof PinchEvent) { G.print("ignored pinch"); return(true); }
-       else if ("mousewheel".equals(command))
-       {
-       	handleMouseWheel((MouseWheelEvent)target);
-       	return true;
-       }
        else if(target == zoomMenu)
        {	   
        	if(getGlobalZoom()<MINIMUM_ZOOM)
@@ -900,8 +898,8 @@ graphics when using a touch screen.
 	   
    }
    public HitPoint performStandardMouseMotion(int x,int y,MouseState p)
-   {
-	   if(theChat!=null && runTheChat())
+   {   // simplemenu takes precedence over chat
+	   if(menu==null && theChat!=null && runTheChat())
 	   {	return(theChat.MouseMotion(x,y,p));
 	   }
 	   return(null);
@@ -1221,8 +1219,10 @@ graphics when using a touch screen.
         abstract public void drawCanvasSprites(Graphics gc,HitPoint pt);
 
         public boolean touchZoomInProgress()
-        {	boolean start = magnifier.touchZoomInProgress();
-        	return(start);
+        {
+        	boolean v = magnifier.touchZoomInProgress();
+        	mouse.drag_is_pinch = !v && getGlobalZoom()>1;
+        	return v;
         }
         
         public boolean globalPinchInProgress() 
@@ -1230,7 +1230,7 @@ graphics when using a touch screen.
         	}
 
         public void drawClientCanvas(Graphics offGC,boolean complete,HitPoint pt)
-        {	resetLocalBoundsNow();
+        {	resetLocalBoundsIfNeeded();
         	//Plog.log.addLog("Draw");
         	boolean logging = (l.logGraphicsStart>0 && l.logGraphicsStart<G.Date());
         	if(logging)
@@ -1284,9 +1284,9 @@ graphics when using a touch screen.
         
         
         public void fillUnseenBackground(Graphics gc)
-        {	boolean qt = quarterTurn();	// compensate for rotation, where the w and h are reversed
-        	int h = qt ? getWidth() : getHeight();
-        	int w = qt ? getHeight() : getWidth();
+        {	
+        	int h = getRotatedHeight();
+        	int w = getRotatedWidth();
         	int x = getSX();
         	int y = getSY();
         	double zoom = getGlobalZoom();
@@ -1316,11 +1316,8 @@ graphics when using a touch screen.
         public void fillUnseenBackground(Graphics gc,Image center,int x,int y,double zoom,double zoomStart)
         {
         	// supply gray values
-        	boolean qt = quarterTurn();
-        	int aw = getWidth();	// actual width and height
-        	int ah = getHeight();
-        	int h = qt ? aw : ah;	// bitmap width and height
-        	int w = qt ? ah : aw;
+         	int h = getRotatedHeight();	// bitmap width and height
+        	int w = getRotatedWidth();
         	Color fill = painter.fill;
         	
         	// show the center from the pan/zoom buffer
@@ -1410,7 +1407,7 @@ graphics when using a touch screen.
     		 if(z!=l.previousZoomValue)
     		 {
     		 l.previousZoomValue = z;
-    		 mouse.drag_is_pinch = true; 	// also pan
+    		 mouse.drag_is_pinch = true; 	// this diverts mouse drag to pan/zoom
     		 globalZoomRect.setValue(z);
     		 globalRotation = rot;
     		 if(zoomMenu!=null)
@@ -1438,19 +1435,21 @@ graphics when using a touch screen.
          */
         public boolean changeZoomAndRecenter(double z,double r,int realX,int realY)
         {	
-        	double startingZoom = getGlobalZoom();
         	int sx = getSX();
         	int sy = getSY();
+        	double startingZoom = getGlobalZoom();
         	//Plog.log.addLog("Change Zoom ",startingZoom," - ",z,"@",realX,",",realY);
         	
          	boolean change = changeZoom(z,r);
         	if(change)
         	{   
-         	double cx = ((sx+realX)/startingZoom);
-        	double cy = ((sy+realY)/startingZoom);
+         	double cx = (realX-sx);
+        	double cy = (realY-sy);	// visible point
         	double finalZoom = getGlobalZoom();
-        	int newcx = (int)(cx*finalZoom)-realX;
-        	int newcy = (int)(cy*finalZoom)-realY;
+        	int newX = (int)(realX/startingZoom*finalZoom);
+        	int newY = (int)(realY/startingZoom*finalZoom);
+        	int newcx = (int)(newX-cx);
+        	int newcy = (int)(newY-cy);
             	setSX(newcx);
             	setSY(newcy);
         		//Plog.log.addLog("Z ",startingZoom," ",sx,",",sy,"  - ",finalZoom," ",newcx,",",newcy," @",realX,",",realY);
@@ -1458,20 +1457,15 @@ graphics when using a touch screen.
         	}
         	return(change);
         }
-		public void handleMouseWheel(MouseWheelEvent e)
-		{
-			int x = e.getX();
-			int y = e.getY();
-			int amount = e.getWheelRotation();
-			int mod = e.getModifiersEx();
-			boolean moved = (mod==0) 
-						&& (theChat.doMouseWheel(x, y, amount));
+
+        public void Wheel(int x, int y, int mod,double amount) 
+        {	boolean moved = (mod==0) 
+						&& (theChat.doMouseWheel(x, y,amount));
 			if(!moved)
-			{			
-				changeZoomAndRecenter(getGlobalZoom()*(amount>0 ? 1.1 : 0.91),getRotation(),x,y);
+			{	double step = G.isCodename1() ? 1.05 : 1.1;	
+				changeZoomAndRecenter(getGlobalZoom()*(amount>0 ? step : 1/step),getRotation(),x,y);
 			}
-			else { repaint(10,"mouse wheel"); }
-      
+
 		}
         /**
          * this is a standard rectangle of all viewers - the rectangle that 
@@ -1554,16 +1548,19 @@ graphics when using a touch screen.
         
         public boolean touchZoomEnabled() { return(false); }
         private void drawVirtualMouse(Graphics gc,HitPoint hp)
-        {
+        {	
            	if(mouse.virtualMouseMode())
         	{	int x = G.Left(hp);
         		int y = G.Top(hp);
         		int ms = G.minimumFeatureSize();
          		StockArt.SolidUpArrow.drawChip(gc,this,ms,x,y+ms/2,null);
         	}
-           	else if(touchZoomEnabled())
+           	else if(touchZoomInProgress() || touchZoomEnabled())
            	{	
-           		magnifier.drawMagnifiedPad(gc,hp,painter.repaintStrategy==RepaintStrategy.Direct_Unbuffered);
+           		magnifier.drawMagnifiedPad(gc,hp,
+           							// the math gets too complicated if there is rotation involved
+           							getCanvasRotation()==0 
+           								&& painter.repaintStrategy==RepaintStrategy.Direct_Unbuffered);
            	}
 			drawHelpText(gc,hp);	// draw the tooltip last of all
         }
@@ -1753,7 +1750,7 @@ graphics when using a touch screen.
             	{ 
             	  painter.justSleep(waitTime); 
             	}
-            deferredEvents.handleDeferredEvent(this);
+            while(deferredEvents.handleDeferredEvent(this)) {};
         }
         @SuppressWarnings("unused")
 		private boolean shutdown = false;
@@ -2075,7 +2072,7 @@ graphics when using a touch screen.
 	public boolean performVcrButton(CellId hc,HitPoint hp) { return(false); }
 
 	
-	public void resetLocalBoundsNow()
+	public void resetLocalBoundsIfNeeded()
 	{
 		if(l.needLocalBounds) 
 		{ 	l.needLocalBounds = false;
@@ -2088,8 +2085,8 @@ graphics when using a touch screen.
 	}
 	public void realNullLayout()
 	{
-		int w = getWidth();
-		int h = getHeight();
+		int w = getRotatedWidth();
+		int h = getRotatedHeight();
 		if(G.Advise(w>0 && h>0,"not zero size %s",this))
 		{
 		double zoom = getGlobalZoom();
@@ -2182,16 +2179,7 @@ graphics when using a touch screen.
     //	public void actualPaint(Graphics g) 
     public void actualPaint(Graphics g,HitPoint hp)
 	{ 	
-    	int x = getSX();
-    	int y = getSY();
-    	//G.setColor(g,Color.red);
-    	//G.drawLine(g, 0, 0, getWidth(), getHeight());
 		super.actualPaint(g); 
-    	//G.setColor(g,Color.blue);
-    	//G.drawLine(g, 2, 0, getWidth()+2, getHeight());
-    	GC.translate(g,-x,-y);
-    	paintSprites(g,hp);
-    	GC.translate(g,x,y);
 	}
     
     public void paintSprites(Graphics g,HitPoint hp)
@@ -2250,11 +2238,18 @@ graphics when using a touch screen.
 	// simple menus are still rather ugly.
 	boolean useSimpleMenu = false;
 	public void show(MenuInterface popup,int x,int y) throws AccessControlException
-	{	if(useSimpleMenu || (getCanvasRotation()!=0) || popup.useSimpleMenu()) 
-			{ menu = new SimpleMenu(this,popup,x,y); 
+	{	// x y are rotate/pan/zoomed coordinates
+		int ux = x-getSX();
+		int uy = y-getSY();
+		int sx = unrotateCanvasX(ux,uy);
+		int sy = unrotateCanvasY(ux,uy);
+		// sx, sy are real screen coordinates.
+		// zoom is not a factor to consider
+		if(useSimpleMenu || (getCanvasRotation()!=0) || popup.useSimpleMenu()) 
+			{ menu = new SimpleMenu(this,popup,sx,sy); 
 			}
 		 else { 
-			 painter.showMenu(popup,myFrame.getMenuParent(),x,y);
+			 painter.showMenu(popup,myFrame.getMenuParent(),sx,sy);
 			 }
 	}
 	SimpleMenu menu = null;
@@ -2263,7 +2258,7 @@ graphics when using a touch screen.
 		if(m!=null) 
 		{ // returns false when the menu should go down.
 		  // at present, that's anytime an even is generated.
-		if(!m.drawMenu(gc, hp)) 
+		if(!m.drawMenu(gc, hp,getSX(),getSY())) 
 			{ menu = null; }
 		}
 	}
@@ -2283,11 +2278,14 @@ graphics when using a touch screen.
 		trackMouse(x+mouse.getSX(),y+mouse.getSY());
 	}
 	public void mouseMoved(MouseEvent e) {
+		if(SIMULATE_MOUSE_MOVE)
+		{
 		int x = e.getX();
 		int y = e.getY();
 		setTouched(true);
 		mouse.setMouse(MouseState.LAST_IS_MOVE,e.getButton(),x,y);
 		trackMouse(x+mouse.getSX(),y+mouse.getSY());
+		}
 	}
 	public void mouseClicked(MouseEvent e) {
 	}
@@ -2315,8 +2313,7 @@ graphics when using a touch screen.
 	}
 	
 	public void mouseWheelMoved(MouseWheelEvent e)
-	{
-		deferredEvents.deferActionEvent(e);
+	{	mouse.setMouseWheel(MouseState.LAST_IS_WHEEL,e.getButton(),e.getX(),e.getY(),e.getWheelRotation());
 	}
 
 	public boolean setTouched(boolean v)
@@ -2331,8 +2328,8 @@ graphics when using a touch screen.
         double z = getGlobalZoom(); 
         if(z>1.0)
         {
-        	int w =getWidth();
-        	int h = getHeight();
+        	int w = getRotatedWidth();
+        	int h = getRotatedHeight();
         	int size = Math.max(w, h)/20;
         	int sx = getSX();
         	int sy = getSY();
@@ -2342,12 +2339,9 @@ graphics when using a touch screen.
         	int qt = G.rotationQuarterTurns(rot);
     		GC.setRotation(offGC, rot,cx,cy);
     		G.setRotation(hp, rot, cx, cy);
-    		int ax0 = w-size;
-    		int ay0 = h-size;
-    		boolean can = quarterTurn(); // swap width and height
-    		int ax = can ? ay0 : ax0;
-    		int ay = can ? ax0 : ay0;
-     		switch(qt)
+    		int ax = w-size;
+    		int ay = h-size;
+      		switch(qt)
         	{
         	default:
         	case 0:

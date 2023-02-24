@@ -370,15 +370,18 @@ public class MasterPanel extends JPanel implements NullLayoutProtocol,ActionList
 	
 	// add a new frame to the tab list
 	public void addTab(Frame f,String title,Image icon)
-	{	if (useTabs && ((icon!=null) || (title!=null) && !"".equals(title)))
+	{	if (useTabs)
+		{
+		Container tabs = masterForm.getTabs();
+		if ((icon!=null) || (title!=null) && !"".equals(title))
 		{
 		Button l = icon==null?new Button(title):new Button(icon);
 		l.setUIID("ButtonMasterForm");
 		//l.setFont(menuFont);
 		tabFrames.put(f,l);
 		l.addActionListener(this);
-		Container tabs = masterForm.getTabs();
 		tabs.add(l);
+		}
 		adjustTabStyles();
 		tabs.revalidate();
 		}
@@ -472,6 +475,9 @@ public class MasterPanel extends JPanel implements NullLayoutProtocol,ActionList
 				boolean v = f.hasCommand(com.toString());
 				b.setVisible(v);
 			}
+		}
+		else {
+			for(JButton b :  playtableButtons ) { b.setVisible(false); }
 		}
 	}
 

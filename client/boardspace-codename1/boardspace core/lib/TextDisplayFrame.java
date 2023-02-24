@@ -137,8 +137,9 @@ public class TextDisplayFrame extends XFrame implements ActionListener,ItemListe
         // this makes the popup menu on the toolbar appear immediately
 		MasterForm.getMasterPanel().adjustTabStyles(); 
 		doNullLayout(this);
-        setVisible(true);
+        area.setVisible(true);
         area.startProcess();
+        setVisible(true);
     }
 
     // Handle component events

@@ -5,8 +5,9 @@ import lib.NativeMenuItemInterface;
 
 @SuppressWarnings("serial")
 public class JMenuItem extends javax.swing.JMenuItem implements NativeMenuItemInterface
-{	public Icon getNativeIcon() { return(null); }
-	public JMenuItem(Icon m) { super(m);}
+{	Icon ic = null;
+	public Icon getNativeIcon() { return(ic); }
+	public JMenuItem(Icon m) { super(m); ic = m; }
 	public JMenuItem(String s) { super(s); value=s; }
 	public NativeMenuInterface getSubmenu() { return(null);	}
 	public int getNativeWidth() { return(JMenu.Width(this)); }

@@ -50,7 +50,7 @@ class VeletasBoard extends rectBoard<VeletasCell> implements BoardProtocol,Velet
     public VeletasChip playerChip[] = new VeletasChip[2];
     public DrawableImage<?>lastDroppedObject = null;
     public boolean firstMove = true;
-    
+    public int placementCount = 0;
     //
     // private variables
     //
@@ -131,6 +131,7 @@ class VeletasBoard extends rectBoard<VeletasCell> implements BoardProtocol,Velet
         G.Assert(AR.sameArrayContents(playerChip, from_b.playerChip), "playerchips mismatch");
         G.Assert(AR.sameArrayContents(playerColor, from_b.playerColor), "playerColor mismatch");
         G.Assert(sameCells(rack,from_b.rack), "rack mismatch");
+        G.Assert(placementCount==from_b.placementCount,"placementCount mismatch");
         // this is a good overall check that all the copy/check/digest methods
         // are in sync, although if this does fail you'll no doubt be at a loss
         // to explain why.
@@ -182,6 +183,7 @@ class VeletasBoard extends rectBoard<VeletasCell> implements BoardProtocol,Velet
 		v ^= Digest(r,ownedShooters);
 		v ^= Digest(r,claimedShooters.size());
 		v ^= Digest(r,firstMove);
+		v ^= Digest(r,placementCount);
 		v ^= (board_state.ordinal()*10+whoseTurn)*r.nextLong();
 		v ^= Digest(r,shooterLocations.size());	// digest only the size because the order gets scrambled
         return (v);
@@ -219,6 +221,7 @@ class VeletasBoard extends rectBoard<VeletasCell> implements BoardProtocol,Velet
         AR.copy(ownedShooters,from_b.ownedShooters);
         getCell(shooterLocations,from_b.shooterLocations);
         getCell(claimedShooters,from_b.claimedShooters);
+        placementCount = from_b.placementCount;
         robotStack.clear();
         sameboard(from_b);
     }
@@ -289,6 +292,7 @@ class VeletasBoard extends rectBoard<VeletasCell> implements BoardProtocol,Velet
         AR.setValue(win,false);
         firstMove = true;
         moveNumber = 1;
+        placementCount = 0;
 
         // note that firstPlayer is NOT initialized here
     }
@@ -390,6 +394,7 @@ class VeletasBoard extends rectBoard<VeletasCell> implements BoardProtocol,Velet
     //
     // undo the drop, restore the moving object to moving status.
     //
+    private int lastPlacementCount = -1;
     private void unDropObject()
     {
     G.Assert(pickedObject==null, "nothing should be moving");
@@ -402,6 +407,8 @@ class VeletasBoard extends rectBoard<VeletasCell> implements BoardProtocol,Velet
 	   		default: throw G.Error("Not expecting rackLocation %s",dr.rackLocation);
 			case BoardLocation: 
 				VeletasChip ch = pickedObject = dr.removeTop();
+				placementCount--;
+				dr.lastPlaced = lastPlacementCount;
 				if(ch.isShooter()) 
 					{ shooterLocations.remove(dr,false); 
 					  if(board_state==VeletasState.PlayStone) { setState(VeletasState.Play); }
@@ -455,6 +462,8 @@ class VeletasBoard extends rectBoard<VeletasCell> implements BoardProtocol,Velet
 		default: throw G.Error("Not expecting rackLocation %s",c.rackLocation);
 		case BoardLocation:
 			c.addChip(pickedObject);
+			lastPlacementCount = c.lastPlaced;
+			c.lastPlaced = placementCount++;
 			if(pickedObject.isShooter()) 
 				{	shooterLocations.push(c);
 				}
@@ -1027,7 +1036,7 @@ class VeletasBoard extends rectBoard<VeletasCell> implements BoardProtocol,Velet
 			return(isDest(cell));
 		case PlaceShooters:
 		case PlaceSingleStone:
-			return((targets.get(cell)!=null) || isDest(cell));
+			return((targets.get(cell)!=null) || (pickedObject==null && isDest(cell)) );
         default:
         	throw G.Error("Not expecting state %s", board_state);
         case Puzzle:

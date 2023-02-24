@@ -1,9 +1,17 @@
 package lib;
 
 import bridge.MasterForm;
+import bridge.WheelDetector;
 
 /*
  * logically part of exCanvas, split off to combat code bloat for codename1
+ * This is where raw mouse information is captured and retransmitted to the
+ * games in the appropriate process instead of the system event process.
+ * 
+ * The incoming coordinates are real screen coordinates, the outgoing 
+ * coordinates are window coordinates transformed appropriately by the
+ * window's pan/zoom/rotation.
+ * 
  */
 public class MouseManager
 {	MouseClient canvas;
@@ -78,7 +86,8 @@ public class MouseManager
     // synchronized so we are protected from the UI thread
     //
     private synchronized CanvasMouseEvent getMouse()
-    {	CanvasMouseEvent event = firstMouseEvent;
+    {	
+    	CanvasMouseEvent event = firstMouseEvent;
      	if(event!=null) 
     		{ firstMouseEvent = event.next;
     		  if(firstMouseEvent==null) { lastMouseEvent=null;}
@@ -194,6 +203,8 @@ public class MouseManager
     			startPinchTime = now;
     			hasPinched = true;
      			break;
+    		case LAST_IS_WHEEL:
+    			break;
     		}
     	}
         // G.addLog("Add mouse event");
@@ -335,7 +346,9 @@ public class MouseManager
 	        	mouseMotion++;
 	        	//Plog.log.addLog("in Mouse Motion ",st);
 	        	HitPoint pt = canvas.performStandardMouseMotion(x,y,st);
-	        	if(pt==null) { pt = canvas.MouseMotion(x, y, st); }
+        	if(pt==null) 
+        		{ pt = canvas.MouseMotion(x, y, st); 
+        		}
 	        	else { pt.inStandard = true; }
 	        	mouseMotionResult = pt;
 				}
@@ -351,6 +364,12 @@ public class MouseManager
 		    	canvas.Pinch(x,y,amount,twist); }});
 		}
 		
+		private void wheel(int x,int y,int button,double amount)
+		{
+			G.runInEdt(new Runnable() { public void run() {
+		    	//Log.addLog("Pinch in mm run "+x+" "+y+" "+amount);
+		    	canvas.Wheel(x,y,button,amount); }});
+		}
 		private void mouseDown(HitPoint pt)
 		{	//Plog.log.addLog("MouseDownX ",pt.inStandard," ",canvas);
 			//if(!pt.inStandard)
@@ -358,13 +377,21 @@ public class MouseManager
 		}
 		
 		public void performMouse()
-	    {	
-	    	CanvasMouseEvent ev = getMouse();
-	        if(ev!=null)
-	        {	//Plog.log.addLog("PM ",ev);
+	    {	CanvasMouseEvent ev;
+	    	// only needed in codename1
+	    	WheelDetector.releaseLatentPress();		// release a latent mouse down, if any and appropriate
+	    	@SuppressWarnings("unused")
+			int loops = 0;
+	    	while((ev = getMouse())!=null)
+	    	{	
+	    		//Plog.log.addLog("PM ",ev);
 	        	performMouse(ev);
+		        if(recordHistory && (ev.event==MouseState.LAST_IS_UP)) { G.print(getHistory()); }
+	        	loops++;
 	        }
+	    	//if(loops>0) { G.print("mouse ",loops);}
 	    }
+		
 		private void performMouse(CanvasMouseEvent ev)
         {
 	        MouseState st = ev.event;
@@ -406,7 +433,6 @@ public class MouseManager
 	         	mouseDrag = 0;
 	         	if(virtualMouseMode) { break; }
 	         	HitPoint pt = mouseMotion(x,y,st);
-	         	//Plog.log.addLog("Mouse motion ",st," ",pt);
 	         	if(pt!=null) 
 	         		{	
 	         		    mouseDown(pt);				// give the mouse down call
@@ -519,6 +545,9 @@ public class MouseManager
 	        		}
 	        	pinch(realx,realy,ev.amount,ev.twist);	// continue the pinch
 	        	break;
+	        case LAST_IS_WHEEL:
+	        	wheel(x,y,ev.button,ev.amount);
+	        	break;
 	        default:
 	        	throw G.Error("Unknown mouse state %s", st);
     
@@ -534,6 +563,10 @@ public class MouseManager
 	        // in codenameone we do this immediately, so it will be in the edt thread
 	        //if(G.isCodename1()) { performMouse(); }
 	    	canvas.wake();
+	    }
+	    public void setMouseWheel(MouseState ev,int button,int x,int y,double amount)
+	    {
+	    	setMouseInternal(ev,button,x,y,amount,0);
 	    }
 	    public void setMouse(MouseState ev, int button, int x, int y)
         {	//G.startLog("set mouse "+button);

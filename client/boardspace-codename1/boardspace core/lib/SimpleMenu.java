@@ -1,8 +1,8 @@
 package lib;
 
 import com.codename1.ui.geom.Rectangle;
-
 import bridge.*;
+
 //
 // this presents a JPopupMenu without being a window in the window hierarchy
 // it's used to present menus on offscreen windows, but it could be used in
@@ -12,26 +12,34 @@ import bridge.*;
 public class SimpleMenu {
 	public int margin = 2;
 	public NativeMenuInterface menu=null;
-	private int menuX=0;
-	private int menuY=0;
 	private int parentX;
 	private int parentY;
 	private int parentW;
 	private int parentH;
 	private Rectangle menuRectangle = null;
-	
-	public SimpleMenu(SizeProvider parent,MenuInterface fromMenu,int x,int y)
-	{	Rectangle bounds = parent.getRotatedBounds();
-		parentX = G.Left(bounds);
-		parentY = G.Top(bounds);
-		parentW = G.Width(bounds);
-		parentH = G.Height(bounds);
+	CanvasRotaterProtocol showOn = null;
+	public boolean downSeen = false;
+	/**
+	 * x,y are real screen coordinates.
+	 * @param parent
+	 * @param fromMenu
+	 * @param x
+	 * @param y
+	 */
+	public SimpleMenu(CanvasRotaterProtocol parent,MenuInterface fromMenu,int x,int y)
+	{	showOn = parent;
+		parentX = parent.getRotatedLeft();
+		parentY = parent.getRotatedTop();
+		parentW = parent.getRotatedWidth();
+		parentH = parent.getRotatedHeight();
 		menuRectangle = prepareMenu(fromMenu.getNativeMenu(),x,y);
 	}
 	private Rectangle prepareMenu(NativeMenuInterface nativemenu,int x,int y)
 	{	menu = nativemenu;
-		menuX = x;
-		menuY = y;
+		downSeen = false;
+		int menuX = showOn.rotateCanvasX(x,y) ;
+		int menuY = showOn.rotateCanvasY(x,y) ;
+
 		Rectangle r = sizeMenu(nativemenu);
 		int menuH = G.Height(r);
 		int menuW = G.Width(r);
@@ -41,6 +49,11 @@ public class SimpleMenu {
 			// need to move it up
 			menuY -= (bottom-parentH);
 			}
+		if(menuY<parentY)
+		{
+			menuY = parentY;
+		}
+
 		int right = (menuX-parentX)+menuW; 
 		if(right>=parentW)
 			{
@@ -59,17 +72,21 @@ public class SimpleMenu {
 	// on the HP. If any are found, it triggers action events and returns false
 	// as a signal that the menu should come down.
 	//
-	public boolean drawMenu(Graphics gc,HitPoint hp)
-	{	boolean rv = !hp.isUp;
+	public boolean drawMenu(Graphics gc,HitPoint hp,int sx,int sy)
+	{	
+		downSeen |= hp.down;
+		boolean rv = downSeen ? !hp.isUp : true;
 		if(menu!=null)
 		{
 		NativeMenuInterface nextMenu=null;
-		Rectangle r =  menuRectangle;
+		Rectangle r = (Rectangle)G.copy(null,menuRectangle);
+		G.SetLeft(r,G.Left(r)+sx);
+		G.SetTop(r,G.Top(r)+sy);
 		GC.fillRect(gc, Color.white,r);
 		GC.frameRect(gc,Color.black, r);
 		int nitems = menu.getItemCount();
-		int xpos = menuX;
-		int ypos = menuY;
+		int xpos = G.Left(r);
+		int ypos = G.Top(r);
 		int w = G.Width(r);
 		xpos += margin;
 		ypos += margin;
@@ -90,19 +107,26 @@ public class SimpleMenu {
 					  GC.Text(gc,str,xpos,ypos+h); 
 					}
 			}
-			if(G.pointInRect(hp, xpos,ypos,w,h) && hp.isUp)
+			if(G.pointInRect(hp, xpos,ypos,w,h))
+			{ GC.frameRect(gc,Color.blue,xpos,ypos,w-2,h+2);
+			  if(hp.isUp)
 			{	
 			ActionListener listen[] = mi.getActionListeners();
+				
 			for(ActionListener l : listen) 
 				{ l.actionPerformed(new ActionEvent(mi,ActionEvent.ACTION_PERFORMED,mi.getActionCommand()));
 				}
 			nextMenu = mi.getSubmenu();
-			}
+				rv = false;
+				}}
 			ypos += h;
 			}
 		if(nextMenu!=null)
 			{
-			menuRectangle = prepareMenu(nextMenu,G.Left(hp),G.Top(hp));
+			int hx = G.Left(hp);
+			int hy = G.Top(hp);
+			
+			menuRectangle = prepareMenu(nextMenu,showOn.unrotateCanvasX(hx,hy),showOn.unrotateCanvasY(hx,hy));
 			rv = true;
 			}
 		}

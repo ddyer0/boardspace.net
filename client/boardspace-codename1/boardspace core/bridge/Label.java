@@ -6,7 +6,6 @@ import com.codename1.ui.Font;
 import lib.Image;
 import com.codename1.ui.geom.Dimension;
 import com.codename1.ui.geom.Point;
-import com.codename1.ui.geom.Rectangle;
 
 public class Label extends com.codename1.ui.Label implements AwtComponent
 {	
@@ -99,5 +98,4 @@ public class Label extends com.codename1.ui.Label implements AwtComponent
 	public FontMetrics getFontMetrics(Font f) {
 		return G.getFontMetrics(f);
 	}
-	public Rectangle getRotatedBounds() { return getBounds(); }
 }

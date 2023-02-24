@@ -410,7 +410,8 @@ public class Image extends SystemImage implements Drawable,CompareTo<Image>
 	      public boolean drawImage(Graphics gc,int x,int y,int w,int h)
 	      {
 	      	if(gc!=null) 
-	      	{ return gc.drawImage(this, x, y, w, h);
+	      	{ 
+	      		return gc.drawImage(this, x, y, w, h);
 	      	}
 	      	return(false);
 	      }

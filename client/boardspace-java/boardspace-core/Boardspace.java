@@ -68,7 +68,6 @@ class CacheInfo {
 	long date;			// unix date, seconds since the epoch
 	String name;		// the name of the remote jar file
 	boolean loaded;		// true if this jar has been copied and is up to date
-	static boolean test = false; // true when using the test server
 	static final int BUFFERSIZE = 100*1024;			// copy jar buffer size, 100K
 	static boolean verbose = false;
 	static boolean uncache = false;
@@ -214,7 +213,8 @@ public class Boardspace extends URLClassLoader implements Runnable,LoaderConfig
 	static boolean allowPreload = false;	// passed to the main application.  If true, gives the main application permission to use multiple threads
 	static String hostName = serverName;	// the server to contact, normally boardspace, might be local development host
 	static boolean uncache = false;			// if true, discard the cache
-	static boolean test = false;
+	static boolean testserver = false;		// use the private test server
+	static boolean testversion = false;		// use the test version of classes
 	static String activeProtocol = protocol;
 	static String webHost() { return(activeProtocol+"://"+hostName); }   
 	static final String CACHENAME = "cachename.txt";// file in the temp dir to contain the cache ID
@@ -289,6 +289,7 @@ public class Boardspace extends URLClassLoader implements Runnable,LoaderConfig
 			{ int ind = name.lastIndexOf(".");
 			  if(ind>=0) { name = name.substring(0,ind); }
 			  info = packageCache.get(name);
+			  if(verbose) { log("packagecache "+name+" = "+info); }
 			}}
 		if(info==null) 
 		{ if(verbose) { log("No info for "+name0); } 
@@ -404,9 +405,9 @@ public class Boardspace extends URLClassLoader implements Runnable,LoaderConfig
 	private static File createTempDir() throws IOException
 	{
 		File temp=null;
-			temp = File.createTempFile(hostName,test ? "test-jarcache" : "jarcache");	// let java decide where the temp files go
+			temp = File.createTempFile(hostName,testversion ? "test-jarcache" : "jarcache");	// let java decide where the temp files go
 			temp.delete();
-			temp = new File(temp.getParent()+"/"+hostName+(test?".test-jarcache" : ".jarcache"));	// create a cache directory where
+			temp = new File(temp.getParent()+"/"+hostName+(testversion?".test-jarcache" : ".jarcache"));	// create a cache directory where
 			// the cache will be named xx.com.jarcache, one cache that is updated and reused.
 			if(!temp.isDirectory())
 			{ 
@@ -432,7 +433,7 @@ public class Boardspace extends URLClassLoader implements Runnable,LoaderConfig
 	the rest are date stamp,jar path
 	*/
 	private String getCacheSource(String dir) throws MalformedURLException, IOException
-	{	String url = webHost()+dir+(test?"&test=1":"");
+	{	String url = webHost()+dir+(testversion?"&test=1":"");
 		if(verbose) { log("Url : "+url); }
 		try { 
 		InputStream content = new URL(url).openConnection().getInputStream();
@@ -482,12 +483,14 @@ public class Boardspace extends URLClassLoader implements Runnable,LoaderConfig
 		while( (line=re.readLine())!=null)
 			{
 				if(verbose) { log("jarinfo:"+line); }
-				if(line.length()<=1) {}
+				if(line.length()<1) {}
 				else if(line.endsWith(".jar"))
 					{ info = jarCache.get(line); 
 					}
 				else if(info!=null) 
-					{ packageCache.put(line.replaceAll("/", "."), info); 
+					{ String lr = line.replaceAll("/", ".");
+					  packageCache.put(lr, info); 
+					  if(verbose) { log("packagecache "+lr+" = "+info); }
 					}
 			}
 			jf.close(); 
@@ -811,7 +814,13 @@ public class Boardspace extends URLClassLoader implements Runnable,LoaderConfig
 			else if("-vt".equals(args[i])) 	// verbose output to terminal 
 				{ CacheInfo.verbose = verbose = true; out = System.out; }
 			else if("-testserver".equals(args[i]))	// connect to the test server instead of the main server
-				{ CacheInfo.test = test = true; }
+				{ testserver = testversion = true; 
+				}
+			else if("-testversion".equals(args[i]))
+				{	// only the class version is test, the connection will be to 
+					// the regular server
+					testversion = true;	
+				}
 			else if("-foreground".equals(args[i])) 	// force all downloading to happen before we begin
 				{ foregroundMode = true; }
 			else if("-uncache".equals(args[i])) 	// flush the cache before beginning
@@ -826,7 +835,7 @@ public class Boardspace extends URLClassLoader implements Runnable,LoaderConfig
 				{ debug="swat".equalsIgnoreCase(args[i+1]); i++; }
 			else 
 			{
-			String msg = "Options are -v -vt -slow -testserver -foreground -uncache\n-server <servername> -allowpreload <true|false> -debug <password> -hostname <host>";
+			String msg = "Options are -v -vt -slow -testserver -testversion -foreground -uncache\n-server <servername> -allowpreload <true|false> -debug <password> -hostname <host>";
 			out.println(msg);
 			showMessage("Loader Message",msg);
 			fastExit=true; 
@@ -853,11 +862,17 @@ public class Boardspace extends URLClassLoader implements Runnable,LoaderConfig
 			System.setProperty("mainargs-"+argnum++,"extraactions");
 			System.setProperty("mainargs-"+argnum++,"true");
 		}
-		if(test)
+		if(testserver)
 		{
 			System.setProperty("mainargs-"+argnum++,"testserver");
 			System.setProperty("mainargs-"+argnum++,"true");			
 		}
+		if(testversion)
+		{	// the main program doesn't really need to know this, but in testing, who knows
+			System.setProperty("mainargs-"+argnum++,"testversion");
+			System.setProperty("mainargs-"+argnum++,"true");			
+		}
+
 		System.setProperty("mainargs-"+argnum++,"preload");
 		System.setProperty("mainargs-"+argnum++,allowPreload ? "true" : "false");
 		

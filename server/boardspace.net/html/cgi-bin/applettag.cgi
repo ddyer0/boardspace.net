@@ -311,7 +311,7 @@ sub print_appjarinfo()
 	#my $par = &param('environment');
 	#print "Env = $par\n";
 	my (@jars) = &list_dir($dir);
-	print "version,1,$host\n";
+	print "version,$'appjar_version,$host\n";
 	foreach my $jar (@jars)
 	{ if( (index(lc($jar),'launcher.jar')<0)
 			&& (index(lc($jar),".jar")>0))

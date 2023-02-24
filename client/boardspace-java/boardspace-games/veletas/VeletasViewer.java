@@ -28,7 +28,7 @@ import static veletas.VeletasMovespec.*;
 /**
  * This code shows the overall structure appropriate for a game view window.
 */
-public class VeletasViewer extends CCanvas<VeletasCell,VeletasBoard> implements VeletasConstants, GameLayoutClient
+public class VeletasViewer extends CCanvas<VeletasCell,VeletasBoard> implements VeletasConstants, GameLayoutClient, PlacementProvider
 {
      /**
 	 * 
@@ -60,7 +60,8 @@ public class VeletasViewer extends CCanvas<VeletasCell,VeletasBoard> implements 
 				StockArt.Eye,VeletasId.ToggleEye,EyeExplanation
 				);
 
-    
+    private NumberMenu numberMenu = new NumberMenu(this,VeletasChip.shooter,VeletasId.ShowNumbers);
+
     /**
      * preload all the images associated with the game. This is delegated to the chip class.
      */
@@ -210,8 +211,8 @@ public class VeletasViewer extends CCanvas<VeletasCell,VeletasBoard> implements 
 		//
 	    int stateY = boardY;
 	    int stateX = boardX;
-	    int stateH = fh*5/2;
-	    G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect, stateRect,eyeRect,noChatRect);
+	    int stateH = fh*3;
+	    G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect, stateRect,annotationMenu,numberMenu,eyeRect,noChatRect);
 		G.SetRect(boardRect,boardX,boardY,boardW,boardH);
 		
 		G.SetRect(shooterChipRect,boardRight,boardY+boardH/2-SQUARESIZE/2,SQUARESIZE,SQUARESIZE);
@@ -309,6 +310,8 @@ public class VeletasViewer extends CCanvas<VeletasCell,VeletasBoard> implements 
      	VeletasCell dest = gb.getDest();		// also the current dest and source
      	VeletasCell src = gb.getSource();
      	VeletasCell last = gb.getPrevDest();	// and the other player's last move
+     	numberMenu.clearSequenceNumbers();
+
      	//
         // now draw the contents of the board and anything it is pointing at
         //
@@ -325,6 +328,7 @@ public class VeletasViewer extends CCanvas<VeletasCell,VeletasBoard> implements 
      		VeletasCell cell = cells.nextElement();
             int ypos = G.Bottom(brect) - gb.cellToY(cell);
             int xpos = G.Left(brect) + gb.cellToX(cell);
+            numberMenu.saveSequenceNumber(cell,xpos,ypos);
             HitPoint hitNow = gb.legalToHitBoard(cell,targets) ? highlight : null;
             if( cell.drawStack(gc,this,hitNow,SQUARESIZE,xpos,ypos,liftSteps,0.1,null)) 
             	{ // draw a highlight rectangle here, but defer drawing an arrow until later, after the moving chip is drawn
@@ -347,6 +351,7 @@ public class VeletasViewer extends CCanvas<VeletasCell,VeletasBoard> implements 
             	StockArt.SmallO.drawChip(gc,this,SQUARESIZE/2,xpos,ypos,null);
             	}
         	}
+     	numberMenu.drawSequenceNumbers(gc,SQUARESIZE*2/3,labelFont,labelColor);
     }
      public void drawAuxControls(Graphics gc,HitPoint highlight)
     {  	eyeRect.activateOnMouse = true;
@@ -424,6 +429,7 @@ public class VeletasViewer extends CCanvas<VeletasCell,VeletasBoard> implements 
         goalAndProgressMessage(gc,ourSelect,Color.black,s.get(VictoryCondition),progressRect, goalRect);
    
         drawAuxControls(gc,ourSelect);
+        numberMenu.draw(gc,highlight);
         drawVcrGroup(ourSelect, gc);
    }
 
@@ -437,7 +443,7 @@ public class VeletasViewer extends CCanvas<VeletasCell,VeletasBoard> implements 
      */
      public boolean Execute(commonMove mm,replayMode replay)
     {	
- 
+    	numberMenu.recordSequenceNumber(b.moveNumber);
         handleExecute(b,mm,replay);
         startBoardAnimations(replay,b.animationStack,SQUARESIZE,MovementStyle.Simultaneous);
 		lastDropped = b.lastDroppedObject;	// this is for the image adjustment logic
@@ -649,6 +655,9 @@ private void playSounds(commonMove m)
         {
         default:
         	throw G.Error("Hit Unknown: %s", hitObject);
+        case ShowNumbers:
+        	numberMenu.showMenu();
+        	break;
         case ToggleEye:
         	eyeRect.toggle();
         	break;
@@ -794,7 +803,8 @@ private void playSounds(commonMove m)
      */
     public boolean handleDeferredEvent(Object target, String command)
     {
-    	if(target==reverseOption)
+    	if(numberMenu.selectMenu(target,this)) { return(true); }
+    	else if(target==reverseOption)
     	{
     	b.setReverseY(reverseOption.getState());
     	generalRefresh();
@@ -859,5 +869,9 @@ private void playSounds(commonMove m)
             setComment(comments);
         }
     }
+
+	public int getLastPlacement(boolean empty) {
+		return b.placementCount+(b.DoneState()?1:0);
+	}
 }
 

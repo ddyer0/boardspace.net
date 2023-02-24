@@ -107,7 +107,7 @@ public class Login implements SimpleObserver,Config,Crypto
     }
 
     @SuppressWarnings("deprecation")
-	public boolean initFromWebStart(String host)
+	public boolean initFromWebStart()
     {	boolean captured = false;
     	boolean exit = false;
 

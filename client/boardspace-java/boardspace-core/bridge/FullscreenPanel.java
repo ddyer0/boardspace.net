@@ -1,18 +1,17 @@
 package bridge;
 
 import java.awt.Component;
+import java.awt.Container;
+import java.awt.Dimension;
 import java.awt.Panel;
-import java.awt.Rectangle;
 import java.awt.event.WindowEvent;
 import java.security.AccessControlException;
 
-import lib.CanvasRotater;
-import lib.CanvasRotaterProtocol;
 import lib.G;
 import lib.Graphics;
 import lib.MenuInterface;
 import lib.MenuParentInterface;
-import lib.SizeProvider;
+import lib.NullLayout;
 // dummy class for standard java, does not change the frame size
 //
 //dummy class for standard java, does not change the frame size
@@ -21,7 +20,8 @@ import lib.SizeProvider;
 //flashing refreshes due to interactions with our repaint manager,
 //if it ever has to skip a frame refresh due to process interlocks.
 //
-public class FullscreenPanel extends Panel implements MenuParentInterface, CanvasRotaterProtocol,SizeProvider
+import lib.NullLayoutProtocol;
+public class FullscreenPanel extends Panel implements FullScreen,MenuParentInterface,NullLayoutProtocol
 {
 	/**
 	 * 
@@ -30,7 +30,28 @@ public class FullscreenPanel extends Panel implements MenuParentInterface, Canva
 	public FullscreenPanel()
 	{
 		super();
+		setLayout(new NullLayout(this)); 
 		//setOpaque(false);
+	}
+	public void doNullLayout(Container parent)
+	{
+		setLocalBounds(0,0,getWidth(),getHeight());
+	}
+	public void setLocalBounds(int l,int t,int w, int h)
+	{	
+		for(int nc = getComponentCount()-1 ; nc>=0; nc--)
+		{
+			Component c = getComponent(nc);
+			int cw = c.getWidth();
+			int ch = c.getHeight();
+			if((c instanceof FullScreen)
+					&& ((cw!=w)||(ch!=h)))
+			{	Dimension minSz = ((FullScreen)c).getMinimumSize();
+				int aw = Math.max((int)minSz.getWidth(),w);
+				int ah = Math.max((int)minSz.getHeight(),h);
+				((FullScreen)c).setBounds(0, 0, aw, ah);
+			}
+		}
 	}
 	public void show(MenuInterface menu, int x, int y) throws AccessControlException 
 	{
@@ -83,19 +104,7 @@ public class FullscreenPanel extends Panel implements MenuParentInterface, Canva
 		// this fixes a problem where the fileselector came up "dead" after
 		// a selection, which appears to be a focus problem.
 	}
-	// support for rotater buttons
-	CanvasRotaterProtocol rotater = new CanvasRotater(this);
-	public int getCanvasRotation() { return rotater.getCanvasRotation(); }
-	public boolean quarterTurn() { return rotater.quarterTurn(); }
-	public void setCanvasRotation(int n) { rotater.setCanvasRotation(n); }
-	public boolean rotateCanvas(Graphics g) { return rotater.rotateCanvas(g); }
-	public void unrotateCanvas(Graphics g) {  rotater.unrotateCanvas(g); }
-	public int rotateCanvasX(int x,int y) { return rotater.rotateCanvasX(x,y); }
-	public int rotateCanvasY(int x,int y) { return rotater.rotateCanvasY(x,y); }
-	public int unrotateCanvasX(int x,int y) { return rotater.unrotateCanvasX(x,y); }
-	public int unrotateCanvasY(int x,int y) { return rotater.unrotateCanvasY(x,y); }
-	public Rectangle getRotatedBounds() { return rotater.getRotatedBounds(); }
-/*
+	/*
 	public void update(java.awt.Graphics g)
 	{	System.out.println("Update "+this);
 	

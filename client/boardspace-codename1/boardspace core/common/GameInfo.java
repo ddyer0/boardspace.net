@@ -1104,7 +1104,7 @@ synchronized(allGames) {
 	}
 	{
 	String vrules = "/y/english/rules.html";
-	String vview = "y.YViewer";
+	String vview = "ygame.YViewer";
 	put(new GameInfo(131,ES.game,97,"YY",ConnectionGames,"Y","Y",
 			ThreeBotsPlus,
 			new double[]{0.08,1,1,0.01},

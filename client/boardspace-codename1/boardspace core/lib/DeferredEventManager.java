@@ -59,7 +59,7 @@ public class DeferredEventManager implements ActionListener,ItemListener,ListSel
      * This will call G.Error if the event is not handled.
      * @param cp some thing that implements #deferredEventHandler
      */
-	public void handleDeferredEvent(DeferredEventHandler cp)
+	public boolean handleDeferredEvent(DeferredEventHandler cp)
 	{	handler = cp;
 		if(!deferredEvents.isEmpty())
 		{ 
@@ -83,13 +83,10 @@ public class DeferredEventManager implements ActionListener,ItemListener,ListSel
 		  	int change = ee.getStateChange();
 		  	cp.handleDeferredEvent(ee.getSource(), change==ItemEvent.DESELECTED?"Deselected":"Selected");
 		  }
-		  else if(e instanceof MouseWheelEvent)
-		  {
-			 cp.handleDeferredEvent(e,"mousewheel");
-		  }
 		  else { cp.handleDeferredEvent(e,"unknown"); }
-
+		  return true;
 		}
+		return false;
 	}
 
 	public void valueChanged(ListSelectionEvent e) {

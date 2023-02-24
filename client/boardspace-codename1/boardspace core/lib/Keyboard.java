@@ -159,28 +159,32 @@ public class Keyboard implements Config
 		
 		TextContainer dis = targetDisplay;
 		includeDisplay = false;
-		Rectangle parentBounds = showOn.getRotatedBounds();
+		int rw = showOn.getRotatedWidth();
+		int rh = showOn.getRotatedHeight();
+		int rx = showOn.getX();
+		int ry = showOn.getY();
+		int rcy = (ry+rh)/2;
 		FontMetrics fm = G.getFontMetrics(showOn.largeBoldFont());
 		int lineH = fm.getHeight();
 		int feature = G.minimumFeatureSize();
-		int newW = G.Width(parentBounds);
-		int newH = Math.min(20*lineH, Math.min(G.Height(parentBounds),Math.max(lineH*15,newW/2)));
+		int newW = rw;
+		int newH = Math.min(20*lineH, Math.min(rh,Math.max(lineH*15,newW/2)));
 		narrow = newW<feature*20;
 		selectLayout();
 		int newY;
-		int newX = G.Left(parentBounds);
+		int newX = showOn.getX();//G.Left(parentBounds);
 		newW = Math.min((int)(newH*2.5), newW);
 		if(dis!=null)
 		{
 			newH = (int)(newW*(narrow?0.55:0.45));
 			Rectangle dr = dis.getBounds();
 			newY = G.Bottom(dr);
-			if(newY>G.centerY(parentBounds) && newY+newH>G.Bottom(parentBounds))
+			if(newY>rcy && newY+newH>rh)
 			{
-				newY = Math.max(G.Top(parentBounds),G.Top(dr)-newH);
+				newY = Math.max(rx,G.Top(dr)-newH);
 			}
-			newY = Math.min(newY, G.Bottom(parentBounds)-newH);
-			newX = Math.max(G.Left(parentBounds),Math.min(G.centerX(dr)-newW/2,G.Right(parentBounds)-newW));
+			newY = Math.min(newY, rh-newH);
+			newX = Math.max(rx,Math.min(G.centerX(dr)-newW/2,rw-newW));
 			Rectangle pos = new Rectangle(newX,newY,newW,newH);
 			dis.setEditable(showOn,true);
 			if(pos.intersects(dr))
@@ -196,7 +200,7 @@ public class Keyboard implements Config
 		  dis.singleLine = true;
 		  dis.setEditable(showOn,true);
 		  newH = (int)(newW*(narrow?0.55:0.5));
-		  newY = G.centerY(parentBounds)-newH/2;
+		  newY = rcy-newH/2;
 		  if(targetDisplay!=null) 
 		  	{ String msg = targetDisplay.getText();
 		  	  dis.setText(msg);

@@ -22,6 +22,8 @@ public interface MouseClient extends SizeProvider
 	
 	public void MouseDown(HitPoint pt);
 	public void Pinch(int x,int y,double amount,double twist);
+	public void Wheel(int x,int y,int buttonm,double amount);
+	
 	public void wake();
 	public MouseManager getMouse();
 	public int rotateCanvasX(int xx, int yy);

@@ -139,7 +139,7 @@ public interface ChatInterface extends Config {
 	public Keyboard getKeyboard();
 	public void setAllowPM(boolean v);
 	public boolean activelyScrolling();
-	public boolean doMouseWheel(int x,int y,int amount);
+	public boolean doMouseWheel(int x,int y,double amount);
 	public void postHostMessages(String host);
 	public void getEncodedContents(StringBuilder b);
 	public void setEncodedContents(StringTokenizer contents);

@@ -15,11 +15,12 @@ public class JButton extends Button
 	{	if(command!=null) { return(command); } 
 		return super.getCommand(); 
 	}
-	
+	public String toString() { return("<button "+getCommand()+" "+isVisible()+">"); }
 	public void setVisible(boolean v)
 	{
 		boolean change = v!=isVisible();
 		super.setVisible(v);
-		if(change) { repaint(); }
+		if(change) 
+			{ repaint(); }
 	}
 }

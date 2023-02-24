@@ -23,7 +23,6 @@ import lib.MenuParentInterface;
 import lib.NetConn;
 import lib.NewsReader;
 import lib.NullLayout;
-import lib.NullLayoutProtocol;
 import lib.Plog;
 import lib.SimpleObservable;
 import lib.SoundManager;
@@ -46,7 +45,7 @@ import lib.XFrame;
  */
 public class commonPanel extends FullscreenPanel 
 	implements Runnable, WindowListener, OnlineConstants,
-		NullLayoutProtocol,DeferredEventHandler,MenuParentInterface
+		DeferredEventHandler,MenuParentInterface
 {	/**
 	 * 
 	 */
@@ -275,10 +274,6 @@ public class commonPanel extends FullscreenPanel
         		}
         	echoErr = "unusual extra echoes : "+nn+" "+str;
         	}
-        if((myFrame!=null) && myFrame.killed())
-        {
-        	requestShutdown();
-        }
 
         }
         finally
@@ -288,6 +283,12 @@ public class commonPanel extends FullscreenPanel
 	        // log the errors outside the lock
 	        if(echoErr!=null) { nc.logError(echoErr,null);}
         }
+
+        if((myFrame!=null) && myFrame.killed())
+        {
+        	requestShutdown();
+        }
+
 
 	      {  // print a news file
 		      String sn = showNews;
@@ -541,16 +542,7 @@ public class commonPanel extends FullscreenPanel
 		if(myCanvas!=null) { myCanvas.shutDown(); } 
 	}
 
-	// this can be invoked from both the EDT thread and the game thread
-	// synchronization avoids some nastiness, but it seems dangerous
-	// the sequence that triggered this synchronization was switching
-	// breakingaway from chat to nochat on an ipad 
-	// 4/2019
 
-	public void doNullLayout(Container parent)
-	{
-		setLocalBounds(0,0,getWidth(),getHeight());
-	}
 	public void show(MenuInterface menu, int x, int y) throws AccessControlException {
 		G.show(this, menu, x, y);
 	}

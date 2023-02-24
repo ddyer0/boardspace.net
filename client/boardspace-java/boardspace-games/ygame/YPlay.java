@@ -1,4 +1,4 @@
-package y;
+package ygame;
 
 import lib.*;
 import online.game.*;
@@ -179,7 +179,7 @@ public class YPlay extends commonRobot<YBoard> implements Runnable, YConstants,
         	timePerMove = 20;
         	CHILD_SHARE = 0.85;
         	break;
-       	
+        	
         case MONTEBOT_LEVEL: ALPHA = .25;  EXP_MONTEBOT = true; break;
         }
     }

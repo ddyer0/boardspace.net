@@ -864,7 +864,7 @@ private Color playerBackground[] = {
        					ch.drawChip(gc,this,CELLSIZE*2,xpos,ypos-CELLSIZE,null);
        				}}
        				else {
-       					highlight.hitCode = EuphoriaId.ShowPlayerView;
+       					highlight.hitCode = EuphoriaId.ShowPlayerPeek;
        				}
        			}}
         			break;
@@ -1268,7 +1268,7 @@ private Color playerBackground[] = {
          					?tip
          					:highlight,
          			xp-unitSize/2,ypm-unitSize,unitSize,unitSize*2) && (tip.hitCode==DefaultId.HitNoWhere))
-         	{	tip.hitCode = EuphoriaId.ShowPlayerView;
+         	{	tip.hitCode = EuphoriaId.ShowPlayerPeek;
          		tip.hitObject = p.artifacts;
          		p.pendingView =  EPlayer.PlayerView.Artifacts;
          		tip.awidth =unitSize;
@@ -1286,6 +1286,9 @@ private Color playerBackground[] = {
          	if( (p.activeRecruits.height()>0)
          			&& G.pointInRect(tip,xp-unitSize/2,yp-unitSize,unitSize,unitSize*2) 
          			&& p.hasReducedRecruits()
+         			// added 10/2/2023, don't allow peeking at other players recruits when they
+         			// have decided but we're still in the selection phase
+         			&& ((p.boardIndex==getActivePlayer().boardIndex) || !simultaneous_turns_allowed())
          			&& (tip.hitCode==DefaultId.HitNoWhere))
          	{	tip.hitCode = EuphoriaId.ShowPlayerView;
          		tip.hitObject = p.activeRecruits;
@@ -3126,6 +3129,7 @@ private Color playerBackground[] = {
 					showHiddenUI = !showHiddenUI;
 					break;
 				case ShowPlayerView:
+				case ShowPlayerPeek:
 					{
 					// show or hide the player's artifact cards, separately for the
 					// on-screen view and the hidden screen view
@@ -3136,8 +3140,17 @@ private Color playerBackground[] = {
 					else { p.view = p.pendingView; }
 					autoCardMode = false;
 					bigChip = null;
-					if(!reviewMode()) 
-						{ PerformAndTransmit(new EuphoriaMovespec(MOVE_PEEK,getActivePlayer().boardIndex),true,replayMode.Live); 
+					if((rack==EuphoriaId.ShowPlayerPeek)
+							&& !reviewMode()
+							&& !simultaneous_turns_allowed()
+							&& ourActiveMove()
+							) 
+						{
+						// 2/10/2023 added additional conditions, so now peeks are only sent when on
+						// the active player's turn.  Peeks are intended to disallow undo, as when you
+						// peek at the cards you've been dealt. Anything you're allowed to do NOT on
+						// your turn can't be revealing hidden information.
+						PerformAndTransmit(new EuphoriaMovespec(MOVE_PEEK,getActivePlayer().boardIndex),true,replayMode.Live); 
 						}
 					}
 					break;

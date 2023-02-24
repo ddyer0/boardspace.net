@@ -1,10 +1,14 @@
-package y;
+package ygame;
 
-import static y.Ymovespec.*;
+import static ygame.Ymovespec.*;
 
-import java.awt.Color;
-import java.awt.FontMetrics;
-import java.awt.Rectangle;
+
+
+import com.codename1.ui.geom.Rectangle;
+
+import bridge.Color;
+import bridge.FontMetrics;
+
 import java.util.*;
 import lib.*;
 import lib.Random;
@@ -224,7 +228,7 @@ class YBoard extends RBoard<YCell> implements BoardProtocol,YConstants
 		occupiedCells.clear();
 		for(YCell c = allCells; c!=null; c=c.next) { c.reInit(); emptyCells.push(c); }
 		fullBoard = emptyCells.size();
-		    
+		
         animationStack.clear();
         swapped = false;
         moveNumber = 1;

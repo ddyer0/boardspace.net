@@ -26,6 +26,7 @@ public class MouseCanvas extends Canvas implements MouseClient,DeferredEventHand
 	public DeferredEventManager deferredEvents = new DeferredEventManager(this);
 	public MouseCanvas(LFrameProtocol frame)
 	{	super(frame);
+		
 		addMouseListener(this);
 		addMouseMotionListener(this);
 		addMouseWheelListener(this);
@@ -51,6 +52,8 @@ public class MouseCanvas extends Canvas implements MouseClient,DeferredEventHand
 	
 	
 	public void Pinch(int x, int y, double amount, double twist) {	}
+	public void Wheel(int x, int y, int button,double amount) { }
+	
 	public void stopPinch() { }
 
 	public void wake() { G.wake(this); }
@@ -95,7 +98,7 @@ public class MouseCanvas extends Canvas implements MouseClient,DeferredEventHand
 	}
 	public void mouseWheelMoved(MouseWheelEvent e)
 	{
-		deferredEvents.deferActionEvent(e);
+		mouse.setMouseWheel(MouseState.LAST_IS_WHEEL,e.getButton(),e.getX(),e.getY(),e.getWheelRotation());
 	}
 	
     public void update(SimpleObservable obj, Object eventType, Object som)
@@ -103,22 +106,6 @@ public class MouseCanvas extends Canvas implements MouseClient,DeferredEventHand
         repaint(500);
     }
 
-	public boolean handleDeferredEvent(Object target, String command)
-	{
-		if ("mousewheel".equals(command))
-	       {
-	       	handleMouseWheel((MouseWheelEvent)target);
-	       	return true;
-	       }
-		return false;
-	}
-	public void handleMouseWheel(MouseWheelEvent e)
-	{
-		int x = e.getX();
-		int y = e.getY();
-		int amount = e.getWheelRotation();
-		changeZoomAndRecenter(getGlobalZoom()*(amount>0 ? 1.1 : 0.91),getRotation(),x,y);
-	}
 	private double globalRotation = 0.0;
 	private double previousZoomValue = 0.0;
 	private Slider globalZoomRect = new Slider(G.getTranslations().get(ZoomMessage),OnlineId.HitZoomSlider);
@@ -240,4 +227,10 @@ public class MouseCanvas extends Canvas implements MouseClient,DeferredEventHand
 	{
 		repaint();
 	}
+
+	public boolean handleDeferredEvent(Object e, String command) {
+		return false;
+	}
+	
+
 }

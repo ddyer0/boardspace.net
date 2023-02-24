@@ -398,5 +398,43 @@ public double assignMonteCarloWeights(CommonMoveStack all)
 	}
 	return(mm.reScorePosition(playerindex,1.0));	
  }
+/*
+ * This is a set of notes charting the development of a MCTS AI for Tammany Hall. The MCTS framework I use provides a few hooks to plug in the specifics for a particular game. The most important hooks are to generate a list of candidate moves, to generate a random candidate move, and to execute a chosen move. At the point this blog starts, the game engine is complete, able to generate and execute moves, and needs an AI.
 
+
+Tammany Hall is an area control game for 3-5 players, where players alternate between placing "bosses", collecting "influence" tokens, and conducting "elections" where the combination of bosses and influences feed into the score. Every move involves explicit interaction with the other players choices.
+
+The miracle or MCTS is that sometimes a move generator is all that's needed to play a somewhat plausible game. Not in this case.
+
+Phase 0: eliminate obviously bad moves. Some moves which are legal are so obviously bad that they can be eliminated from consideration. For example, expending votes in an election where you have no chance to win, or expending more influence (votes) than are needed to guarantee a win. Also in this category are generating moves that are functionally duplicates. AIs with this improvement always defeat those with only the baseline implementation, if only because they effectively get more playouts in a fixed allocation of time.
+
+Phase 1: Change from win/loss scoring to proportional scoring. The intent of this is to encourage the bot to always improve its score, even when it is far enough behind that it never wins. This makes the UCT feedback more sensitive to the actual outcome. This is particularly appropriate for games such as Tammany where the winning condition is a score rather than a situation such as checkmate. Tammany AIs with this improvement always win over win/loss bots.
+
+Phase 2: Add preliminary minimal evaluation weights to balance the dilution caused by similar moves. The basic concept is to seed "tree" moves with fake results from some number of imaginary playouts, and to seed "random" moves so that the probability of a move is proportional to its likelyhood in actual play. This is where simple heuristics such as "occupy empty wards" can be implemented. AIs with this method, and any plausible set of weights, defeat AIs without them.
+
+-- at this point in development, we leave the zone where each change is a miracle that immediately superceeds the previous version. The general mode I use is to play robot-vs-robot games, where all robots play using the same algorithm. Note the stupidist thing the losing bot does, imagine a new factor or change of weights that would change the stupid thing. One has to run multiple randomized trials to validate incremental improvements in the algorithm. Many supposed improvements don't generalize, or have unanticipated consequences.
+
+Phase 3: Add more specific weighting. Favor placing bosses in wards that influence more ethnic cubes. Discourage playing multiple bosses in the same ward.
+
+Phase 4: Consider if additional boss/cube placement swings the weight of influence in a ward in your favor, essentually "if the election happened now, could we win".
+
+Phase 5: Give the player in the lead less credit for his voting position, to encourage attacking him even if not strictly well founded.
+
+Phase 6: Adjust influence placement emphasis so that placing an outvoted boss, and then "slander" to immediately eliminate the opponent is more likely. Give bonuses for using this tactic against the players when they cannot retaliate due to turn order. Add weights to discourage slander that doesn't directly benefit us.
+
+Phase 7: Reduce the overall weight of the move biases, now that they are much more specific. This was based on the observation that UCT moves were not moving far from their a-priori positions as determined by the weights.
+
+Phase 8: Add move weighting for votes. The basic algorithm for generating "vote" moves is to generate all possible legal votes that otherwise pass the filter for pointless votes. This suffers from the same "dilution" effect that cube placement moves do; There might be a dozen ways to generate a vote of 4 chips, so without adjustment, a vote of 7 will be under-considered compared to a vote of 1.
+
+At this point in the development, many new ideas do not pan out, and the process or trying them out is very time consuming. My standard method for this game is to play a 4 player game all the way to the end, with 2 robots playing the "improved" algorithm and 2 robots playing the current standard algorithm.
+Score +2 if the two experimental AIs finish first and second.
++1 if they finish first and third,
+- 1 if they finish second and fourth
+-2 if they finish third and fourth
+0 otherwise.
+At about 40 minutes per game, it takes a long time to validate a genuine improvement, and shortcuts (running only a few games) risk approving a non-improvement, or rejecting a genuine improvement. For example, using this methodology to compare the current "best" algorithm to one
+a few steps back on the improvement chart, achieved a score of +7 out of a possible +34 on 17 games.
+
+It appears that the scope for further improvements by tinkering with move weighting (to encourage or discourage certain types of moves) is pretty small.
+ */
  }

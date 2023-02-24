@@ -1,9 +1,9 @@
 package tamsk;
 
+import java.awt.Color;
 
 import static tamsk.Tamskmovespec.*;
 
-import java.awt.Color;
 import java.util.*;
 
 import lib.*;
@@ -1397,7 +1397,7 @@ class TamskBoard
  		else
  		{	
  		addMoves(all,whoseTurn,now);
- 		if(robotBoard)
+ 		if(robotBoard && (variation!=TamskVariation.tamsk_u))
  			{
  			long minTimer = minimumTimer(whoseTurn);
  			if(robotDelayTime>0)
@@ -1412,6 +1412,7 @@ class TamskBoard
  		}
  		}
  		break;
+ 	case Resign:
  	case Confirm:
  		all.push(new Tamskmovespec(MOVE_DONE,whoseTurn));
  		break;

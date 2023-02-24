@@ -9,6 +9,7 @@ import bridge.Component;
 import lib.Graphics;
 import lib.Image;
 import bridge.Config;
+import lib.CanvasRotaterProtocol;
 import lib.DefaultId;
 import lib.G;
 import lib.GC;
@@ -40,7 +41,7 @@ import vnc.VNCConstants.Operation;
  */
 public abstract class OffscreenWindow implements 
 	VncEventInterface,VncScreenInterface,MouseClient,ImageConsumer,VncServiceProvider,SizeProvider,UniversalConstants,
-	Config, MenuParentInterface,Opcodes,TouchMagnifierClient
+	Config, MenuParentInterface,TouchMagnifierClient,CanvasRotaterProtocol,Opcodes
 {	public void performStandardStartDragging(HitPoint p) {}
 	public void performStandardStopDragging(HitPoint p) {}
 	public HitPoint performStandardMouseMotion(int x,int y,MouseState pt) { return(null); }
@@ -263,6 +264,10 @@ public void StopDragging(HitPoint pt) {
 public void Pinch(int x, int y, double amount,double twist) {
 	G.print("vnc window Start pinch "+x+" "+y+" "+amount+" "+twist);
 }
+public void Wheel(int x, int y, int button,double amount) {
+	
+}
+
 
 //callback from the mouse manager
 public void generalRefresh() {
@@ -384,10 +389,18 @@ public boolean DrawTileSprite(Graphics gc,HitPoint hp)
 		if(m!=null) 
 			{ // returns false when the menu should go down.
 			  // at present, that's anytime an even is generated.
-			if(!m.drawMenu(gc, hp)) { menu = null; }
+			if(!m.drawMenu(gc, hp,getSX(),getSY())) { menu = null; }
 	}
 		}
 	public int rotateCanvasX(int x,int y) { return x; }
 	public int rotateCanvasY(int x,int y) { return y; }
-	public Rectangle getRotatedBounds() { return getBounds(); }
+	public int unrotateCanvasX(int x,int y) { return x; }
+	public int unrotateCanvasY(int x,int y) { return y; }
+	public int getRotatedWidth() { return getWidth();}
+	public int getRotatedHeight() { return getHeight(); }
+	public int getCanvasRotation() { return 0;	}
+	public void setCanvasRotation(int quarter_turns) {	}
+	public int getRotatedLeft() { return getX();	}
+	public int getRotatedTop() { return getY();	}
+
 }

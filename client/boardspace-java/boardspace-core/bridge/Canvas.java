@@ -3,7 +3,6 @@ package bridge;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.LayoutManager;
-import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -14,6 +13,7 @@ import java.awt.event.WindowListener;
 
 import lib.CanvasRotater;
 import lib.CanvasRotaterProtocol;
+import lib.ExtendedHashtable;
 import lib.G;
 import lib.Graphics;
 import lib.LFrameProtocol;
@@ -23,10 +23,29 @@ import lib.TextContainer;
 @SuppressWarnings("serial")
 public abstract class Canvas extends java.awt.Canvas 
 	implements SizeProvider , CanvasRotaterProtocol, WindowListener, MouseListener,MouseMotionListener,MouseWheelListener
-{	public Canvas() { super(); }
+{	public Canvas() 
+		{ super(); 
+		}
+	@SuppressWarnings("unused")
+	public LFrameProtocol myFrame = null;
 	public Canvas(LFrameProtocol frame)
 	{	super();
-		frame.setCanvasRotater(this);
+		myFrame = frame;
+		rotater = frame.getCanvasRotater();
+	}
+
+	public void shutDown()
+	 {	
+		 LFrameProtocol f = myFrame;
+		 if(f!=null) { f.killFrame(); }
+	 }
+
+	public boolean doSound() { return(myFrame.doSound()); }
+
+	public void init(ExtendedHashtable h,LFrameProtocol f)
+	{	myFrame = f;
+		rotater = f.getCanvasRotater();
+		
 	}
 	public void paint(java.awt.Graphics g)
 	{	//if(!isDoubleBuffered()) { setDoubleBuffered(true); }
@@ -65,17 +84,22 @@ public abstract class Canvas extends java.awt.Canvas
 	public void requestFocus(TextContainer p) { requestFocus(); }
 	
 	// support for rotater buttons
-	CanvasRotaterProtocol rotater = new CanvasRotater(this);
+	CanvasRotater rotater = null;
+	public CanvasRotater getCanvasRotater() { return rotater; }
+
 	public int getCanvasRotation() { return rotater.getCanvasRotation(); }
-	public boolean quarterTurn() { return rotater.quarterTurn(); }
-	public void setCanvasRotation(int n) { rotater.setCanvasRotation(n); }
-	public boolean rotateCanvas(Graphics g) { return rotater.rotateCanvas(g); }
-	public void unrotateCanvas(Graphics g) {  rotater.unrotateCanvas(g); }
-	public int rotateCanvasX(int x,int y) { return rotater.rotateCanvasX(x,y); }
-	public int rotateCanvasY(int x,int y) { return rotater.rotateCanvasY(x,y); }
-	public int unrotateCanvasX(int x,int y) { return rotater.unrotateCanvasX(x,y); }
-	public int unrotateCanvasY(int x,int y) { return rotater.unrotateCanvasY(x,y); }
-	public Rectangle getRotatedBounds() { return rotater.getRotatedBounds(); }
+	public void setCanvasRotation(int n) 
+		{ rotater.setCanvasRotation(n); }
+	public boolean rotateCanvas(Graphics g) { return rotater.rotateCanvas(g,this); }
+	public void unrotateCanvas(Graphics g) {  rotater.unrotateCanvas(g,this); }
+	public int rotateCanvasX(int x,int y) { return rotater.rotateCanvasX(x,y,this); }
+	public int rotateCanvasY(int x,int y) { return rotater.rotateCanvasY(x,y,this); }
+	public int unrotateCanvasX(int x,int y) { return rotater.unrotateCanvasX(x,y,this); }
+	public int unrotateCanvasY(int x,int y) { return rotater.unrotateCanvasY(x,y,this); }
+	public int getRotatedWidth() { return rotater.getRotatedWidth(this); }
+	public int getRotatedHeight() { return rotater.getRotatedHeight(this); }
+	public int getRotatedLeft() { return rotater.getRotatedLeft(this); }
+	public int getRotatedTop() { return rotater.getRotatedTop(this); }
 	
 	/* for window listener */
 	public void windowOpened(WindowEvent e) { }

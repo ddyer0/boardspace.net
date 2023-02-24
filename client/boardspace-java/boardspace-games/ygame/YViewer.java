@@ -1,11 +1,11 @@
-package y;
+package ygame;
 
 
 import java.awt.*;
 import online.common.*;
 import java.util.*;
 
-import static y.Ymovespec.*;
+import static ygame.Ymovespec.*;
 import lib.Graphics;
 import lib.CellId;
 import lib.ExtendedHashtable;

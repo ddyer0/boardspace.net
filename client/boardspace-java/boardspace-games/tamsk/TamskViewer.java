@@ -1,9 +1,9 @@
 package tamsk;
 
 
-import static tamsk.Tamskmovespec.*;
-
 import java.awt.*;
+
+import static tamsk.Tamskmovespec.*;
 import online.common.*;
 import java.util.*;
 

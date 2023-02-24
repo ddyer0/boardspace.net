@@ -761,7 +761,7 @@ public class GameLog implements Opcodes
         * @param amount
         * @return
         */
-       public boolean doMouseWheel(int ex,int ey,int amount)
+       public boolean doMouseWheel(int ex,int ey,double amount)
        {	return scrollbar.doMouseWheel(ex,ey,amount);
        }
        

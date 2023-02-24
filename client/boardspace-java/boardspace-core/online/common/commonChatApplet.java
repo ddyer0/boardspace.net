@@ -770,7 +770,7 @@ public class commonChatApplet extends FullscreenPanel
 		//System.out.println("chat layout");
 		setLocalBounds(0,0,getWidth(),getHeight());
 	}
-	public boolean doMouseWheel(int ex,int ey,int amount)
+	public boolean doMouseWheel(int ex,int ey,double amount)
 	{
 		// needs to scroll
 		return(false);

@@ -1141,7 +1141,7 @@ public class TextContainer extends Rectangle implements AppendInterface,KeyListe
 	 * @param up
 	 * @return
 	 */
-	public boolean doMouseWheel(int up) {
+	public boolean doMouseWheel(double up) {
 		scrollBar.smallJump(up<0);
 		setScrollY(scrollBar.getScrollPosition());
 		return(true);
@@ -1153,7 +1153,7 @@ public class TextContainer extends Rectangle implements AppendInterface,KeyListe
 	 * @param amount
 	 * @return
 	 */
-	public boolean doMouseWheel(int xx,int yy,int amount)
+	public boolean doMouseWheel(int xx,int yy,double amount)
 	{	if(G.pointInRect(xx,yy,this))
 		{
 		return doMouseWheel(amount);

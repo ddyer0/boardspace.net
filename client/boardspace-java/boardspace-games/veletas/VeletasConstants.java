@@ -72,7 +72,8 @@ public interface VeletasConstants
     	Shooter_Chip_Pool("S"),
         BoardLocation(null),
         ReverseViewButton(null), 
-        ToggleEye(null),
+        ToggleEye(null), 
+        ShowNumbers(null),
   	;
     	String shortName = name();
     	VeletasChip chip;

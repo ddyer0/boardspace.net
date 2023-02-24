@@ -1,28 +1,36 @@
 package lib;
 
-import java.awt.Rectangle;
-
-public class CanvasRotater implements CanvasRotaterProtocol
+public class CanvasRotater 
 {
-	SizeProvider canvas;
+	
 	private int canvasRotation=0;
 	public  int getCanvasRotation() { return(canvasRotation); }
 	public  void setCanvasRotation(int n) {
 		canvasRotation = n&3;
     }
-	public CanvasRotater(SizeProvider c) { canvas = c; }
-	public boolean quarterTurn()
+	public CanvasRotater() { }
+	private boolean quarterTurn()
 	{
 		return (getCanvasRotation()&1)!=0;
 	}
-	public Rectangle getRotatedBounds() 
-	{ int w = canvas.getWidth();
-	  int h = canvas.getHeight();
-	  boolean qt = quarterTurn();
-	  return new Rectangle(canvas.getX(),canvas.getY(),qt ? h : w,qt ? w : h);
+	public int getRotatedWidth(SizeProvider canvas)
+	{
+		return (quarterTurn() ? canvas.getHeight() : canvas.getWidth());
+	}
+	public int getRotatedHeight(SizeProvider canvas)
+	{
+		return quarterTurn() ? canvas.getWidth() : canvas.getHeight();
 	}
 	
-	public boolean rotateCanvas(Graphics g)
+	// this is only correct if windows are full screen.  If windows are less than full screen
+	// it should reflect where the window falls within the screen
+	public int getRotatedLeft(SizeProvider c) { return c.getX(); }
+	
+	// this is only correct if windows are full screen.  If windows are less than full screen
+	// it should reflect where the window falls within the screen
+	public int getRotatedTop(SizeProvider c) { return c.getY(); }
+
+	public boolean rotateCanvas(Graphics g,SizeProvider canvas)
 	{	
 		if(g==null) { return false; }
 		G.Assert(!g._rotated_,"already rotated");
@@ -65,7 +73,7 @@ public class CanvasRotater implements CanvasRotaterProtocol
 		return true;
 	}
 
-	public void unrotateCanvas(Graphics g)
+	public void unrotateCanvas(Graphics g,SizeProvider canvas)
 	{	//System.out.println("un "+client+" "+g);
 		if(g==null) { return; }
 		G.Assert(g._rotated_,"not the rotated");
@@ -105,7 +113,7 @@ public class CanvasRotater implements CanvasRotaterProtocol
 		}
 	}
 
-	public int rotateCanvasX(int x, int y)
+	public int rotateCanvasX(int x, int y,SizeProvider canvas)
 	{
 		switch(getCanvasRotation())
 		{
@@ -117,7 +125,7 @@ public class CanvasRotater implements CanvasRotaterProtocol
 		}
 	}
 
-	public int rotateCanvasY(int x, int y) 
+	public int rotateCanvasY(int x, int y,SizeProvider canvas) 
 	{
 		switch(getCanvasRotation())
 		{
@@ -129,7 +137,7 @@ public class CanvasRotater implements CanvasRotaterProtocol
 		}
 	}
 
-	public int unrotateCanvasX(int x, int y)
+	public int unrotateCanvasX(int x, int y,SizeProvider canvas)
 	{
 		switch(getCanvasRotation())
 		{
@@ -140,7 +148,7 @@ public class CanvasRotater implements CanvasRotaterProtocol
 		case 3: return y;
 		}
 	}
-	public int unrotateCanvasY(int x, int y) 
+	public int unrotateCanvasY(int x, int y,SizeProvider canvas) 
 	{
 		switch(getCanvasRotation())
 		{

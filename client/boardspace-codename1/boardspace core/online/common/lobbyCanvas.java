@@ -2488,14 +2488,10 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	else if(inSpectate(sess,localX,localY) && !lobby.doNotReconnect) {  return(LobbyId.highlight_spec); }
 	else return(LobbyId.highlight_none);
 	}
-	public void mouseWheelMoved(MouseWheelEvent e)
+	public void Wheel(int x,int y,int mod,double amount)
 	{	
-		int mod = e.getModifiersEx();
 		if(mod==0)
 		{
-		int x = e.getX();
-		int y = e.getY();
-		int amount = e.getWheelRotation();
 
 		boolean val = GameScrollArea.doMouseWheel(x,y,amount)
 						|| UserScrollArea.doMouseWheel(x,y,amount)
@@ -2522,7 +2518,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	{	
 		int ex = ex0+getScrollXPos();
 		int ey = ey0+getScrollYPos();
-		if(runTheChat())
+		if((menu==null) && runTheChat())
 		{	HitPoint pch = theChat.MouseMotion(ex0,ey0,upcode);
 			if(pch!=null) { return(pch); }
 		}
@@ -2541,6 +2537,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 
 	    switch(upcode)
 	    {
+	    case LAST_IS_WHEEL:
 	    case LAST_IS_PINCH: break;
 	    case LAST_IS_DOWN:
 	    	{

@@ -49,7 +49,7 @@ public class EuphoriaCell extends stackCell<EuphoriaCell,EuphoriaChip>
 	public EuphoriaChip[] newComponentArray(int n) { return(new EuphoriaChip[n]); }
 	public String toString() { return("<Ecell " 
 							+ rackLocation 
-							+ (rackLocation().isArray?("["+row+"]"):"")
+							+ (rackLocation!=null && (rackLocation().isArray)?("["+row+"]"):"")
 							+ "("+height()+")"
 							+ ((height()>0) ?  topChip() : "")
 							+">"); }
@@ -95,6 +95,7 @@ public class EuphoriaCell extends stackCell<EuphoriaCell,EuphoriaChip>
 		center_y = ot.center_y;
 		placementBenefit = ot.placementBenefit;
 		placementCost = ot.placementCost;
+		defaultScale = ot.defaultScale;
 	}
 
 	// constructor a cell not on the board, with a chip.  Used to construct the pool chips

@@ -1,7 +1,6 @@
 package bridge;
 
 import com.codename1.ui.Font;
-import com.codename1.ui.geom.Rectangle;
 import com.codename1.ui.list.DefaultListCellRenderer;
 import com.codename1.ui.list.ListModel;
 import lib.AwtComponent;
@@ -133,5 +132,4 @@ public class List<T> extends com.codename1.ui.List<T> implements ActionProvider,
 	public FontMetrics getFontMetrics(Font f) {
 		return G.getFontMetrics(f);
 	}
-	public Rectangle getRotatedBounds() { return getBounds(); }
 }

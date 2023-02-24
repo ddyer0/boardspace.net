@@ -1842,9 +1842,9 @@ public static String expandClassName(String classname)
 		else
 		{
 			TextDisplayFrame f = new TextDisplayFrame("Console");
-		setPrinter(f.getPrinter());
-		print("Debug Log stream");
-		f.setVisible(true);	
+			TextPrintStream p = f.getPrinter();
+			setPrinter(p);
+			p.println("Debug Log stream");
 		}
 		String u1 = Plog.messages.getUnseen();
 		if(u1!=null) { print(u1); }

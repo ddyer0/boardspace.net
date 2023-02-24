@@ -2,14 +2,17 @@ package veletas;
 
 import lib.Random;
 import lib.OStack;
+import online.game.PlacementProvider;
 import online.game.stackCell;
 
 class CellStack extends OStack<VeletasCell>
 {
 	public VeletasCell[] newComponentArray(int n) { return(new VeletasCell[n]); }
 }
-public class VeletasCell extends stackCell<VeletasCell,VeletasChip> implements VeletasConstants
+public class VeletasCell extends stackCell<VeletasCell,VeletasChip> implements VeletasConstants,PlacementProvider
 {	public int sweep_counter = 0;
+	int lastPlaced = -1;
+
 	public VeletasChip[] newComponentArray(int n) { return(new VeletasChip[n]); }
 	// constructor
 	public VeletasCell(char c,int r) 
@@ -24,6 +27,15 @@ public class VeletasCell extends stackCell<VeletasCell,VeletasChip> implements V
 	{
 		super();
 		copyAllFrom(from);
+	}
+	public void reInit()
+	{
+		super.reInit();
+		lastPlaced = -1;
+	}
+	public void copyFrom(VeletasCell other)
+	{	super.copyFrom(other);
+		lastPlaced = other.lastPlaced;
 	}
 	/** upcast the cell id to our local type */
 	public VeletasId rackLocation() { return((VeletasId)rackLocation); }
@@ -66,5 +78,9 @@ public class VeletasCell extends stackCell<VeletasCell,VeletasChip> implements V
 		if((adj!=null) && adj.isEmpty()) { return(true); }
 		}
 		return(false);
+	}
+	
+	public int getLastPlacement(boolean empty) {
+		return empty ? -1 : lastPlaced;
 	}
 }

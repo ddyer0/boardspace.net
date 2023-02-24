@@ -1,7 +1,5 @@
 package lib;
 
-import com.codename1.ui.geom.Rectangle;
-
 /**
  * the general scheme for rotating individual windows is to keep the physical window
  * unchanged, but arrange for the contents to be drawn in a rotated way, and the mouse
@@ -24,33 +22,11 @@ public interface CanvasRotaterProtocol {
 	 */
 	public int getCanvasRotation();
 	/**
-	 * 
-	 * @return true if the current rotation is a quater turn rotation
-	 */
-	public boolean quarterTurn();
-	/**
 	 * set the canvas rotatation in quarter turn units
 	 * @param quarter_turns
 	 */
 	public void setCanvasRotation(int quarter_turns);
-	/**
-	 * transform the coordinate system corresponding to the quarter turn rotation.  Note
-	 * that for odd numbers, this effectively swaps the width and height
-	 * @param g
-	 * @return
-	 */
-	public boolean rotateCanvas(Graphics g);
-	/**
-	 * undo the rotation of the graphics space which was done by rotateCanvas
-	 * @param g
-	 */
-	public void unrotateCanvas(Graphics g);
-	/**
-	 * translate a coordinate from a physical window into the rotated space
-	 * @param x
-	 * @param y
-	 * @return
-	 */
+
 	public int rotateCanvasX(int x,int y);
 	/**
 	 * translate a coordinate from a physical window into the rotated space
@@ -74,8 +50,24 @@ public interface CanvasRotaterProtocol {
 	 */
 	public int unrotateCanvasY(int x,int y);
 	/**
-	 * return the window boundary, adjusted for the rotation (if any)
+	 * get the effective width of the canvas adjusted for rotation (if any)
 	 * @return
 	 */
-	public Rectangle getRotatedBounds();
+	public int getRotatedWidth();
+	/**
+	 * get the effective height of the canvas adjusted for rotation (if any)
+	 * @return
+	 */
+	public int getRotatedHeight();
+	/**
+	 * get the effective left coordinate of the window
+	 * @return
+	 */
+	public int getRotatedLeft();
+	/** get the effective top coordinate of the window
+	 * 
+	 * @return
+	 */
+	public int getRotatedTop();
+	
 }

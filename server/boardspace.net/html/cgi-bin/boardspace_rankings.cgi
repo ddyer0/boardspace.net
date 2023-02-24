@@ -166,6 +166,7 @@ sub update_rankings
    &bless_parameter_length($retired,10);
 	my $country = param('country');
    &bless_parameter_length($country,30);
+   $country = &validate_country($country);
 	my $country_clause="";
   my $months=param('months');
     &bless_parameter_length($months,5);

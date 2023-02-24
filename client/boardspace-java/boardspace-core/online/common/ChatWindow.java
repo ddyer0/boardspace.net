@@ -2,8 +2,6 @@ package online.common;
 
 import lib.Graphics;
 
-import java.awt.event.MouseWheelEvent;
-
 import lib.CanvasProtocol;
 import lib.ChatInterface;
 import lib.ExtendedHashtable;
@@ -75,10 +73,10 @@ public class ChatWindow extends exCanvas
 	public void drawCanvasSprites(Graphics gc, HitPoint pt) {
 	   	if(mouseTrackingAvailable(pt)) { magnifier.DrawTileSprite(gc,pt); }
  	}
+	
+	public void Wheel(int x, int y, int button,double amount) {
 
-	public void mouseWheelMoved(MouseWheelEvent e)
-	{	
-		if((e.getModifiersEx()==0) && theChat.doMouseWheel(e.getX(),e.getY(),e.getWheelRotation()))
+		if((button==0) && theChat.doMouseWheel(x,y,amount))
 		{
 			repaint(10,"mouse wheel");
 		}

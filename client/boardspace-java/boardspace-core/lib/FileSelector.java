@@ -11,7 +11,6 @@ import bridge.FullscreenPanel;
 import bridge.ScrollableList;
 
 import java.awt.Color;
-import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Label;
 import java.awt.event.WindowEvent;
@@ -49,7 +48,7 @@ class ProxyString {
  *
  */
 public class FileSelector extends FullscreenPanel 
-	implements NullLayoutProtocol,Runnable,DeferredEventHandler,WindowListener,Config
+	implements Runnable,DeferredEventHandler,WindowListener,Config
 {	static final long serialVersionUID = 1L;
 
 	// result codes passed to the observer, normally a game viewer
@@ -102,10 +101,6 @@ public class FileSelector extends FullscreenPanel
     public SimpleObservable observer = new SimpleObservable(); 	//list of observers
     private boolean inited = false;		//this is used to prevent game updates from firing during initialization
    
-	public void doNullLayout(Container parent)
-	{
-		setLocalBounds(0,0,getWidth(),getHeight());
-	}
  
     //
     // layout with a mostly vertical orientation, with main

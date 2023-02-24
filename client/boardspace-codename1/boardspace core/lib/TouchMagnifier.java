@@ -6,9 +6,9 @@ import com.codename1.ui.geom.Rectangle;
 import bridge.Color;
 
 // TODO: touch magnifier doesn't clear properly when moved up to the top of the screen
+// TODO: magnifier shows some "flashy" behavior in some rotated modes
 public class TouchMagnifier {
 
-    boolean alwaysPredraw = !G.isCodename1();		// if true, always draw a fresh image, never reuse the existing bitmap
     Image magnifierDisplay = null;
     Image magnifierDraw = null;
     TouchMagnifierClient client;
@@ -33,8 +33,8 @@ public class TouchMagnifier {
 		int sz = 5*getMagnifierSourceSize()/4;
 		double scale = getMagnifierScale();
 		int po = (int)(scale*sz);			// distance from pax x,y to pad center
-		int w = client.getWidth();
-		int h = client.getHeight();
+		int w = client.getRotatedWidth();
+		int h = client.getRotatedHeight();
 		int feat = sz;
  		int w3 = Math.max(po/2,feat);			// border of the avoidance zone
 		int h3 = Math.max(po/2,feat);
@@ -163,7 +163,7 @@ public class TouchMagnifier {
     {	MouseManager mouse = client.getMouse();
     	if(!mouse.isDown()) { magnifierPadAngle = 3*Math.PI/4;  }
     	else if( touchZoomInProgress())
-    	{	
+    	{	boolean alwaysPredraw = !G.isCodename1();
      		//
     		// the default mode is the use the existing offscreen image.  This produces a larger
     		// image, but no new details.
@@ -189,7 +189,6 @@ public class TouchMagnifier {
 
      		int sz = getMagnifierSourceSize();
      		int dsize = getMagnifierViewSize();
-     		
     		int ds2 = dsize/2;				// distance from pad center..
     		int dleft = padx-ds2;
     		int dtop = pady-ds2;
@@ -221,27 +220,29 @@ public class TouchMagnifier {
       			// using a scaled and repositioned copy of the main window.  The math for
       			// this is complex because the gc has already been transformed and clipped.
       			// it doesn't work well in standard java, and android is iffy.  Seems to
-      			// work great for ios.
-         		int sz2 = sz/2;
+      			// work great for ios.  If rotation is involved, the match is too complex for me.
+           		int sz2 = sz/2;
           	   	double scale = getMagnifierScale();	// scale from source to pad
-          	   	int dx = (int)(dleft/scale);
-          	   	int dy = (int)(dtop/scale);
-          	   	int ax = x-sz2-dx+(int)(left/scale);
-          	   	int fudge = G.isSimulator() 
+          	   	int dx = (int)(padx/scale);
+          	   	int dy = (int)(pady/scale);
+          	   	int fudge =G.isSimulator() 
           	   				? (int)(G.getAbsoluteY(client.getComponent())/2)
           	   				: G.isAndroid() 
           	   						? (int)(G.getAbsoluteY(client.getComponent())/2)
-          	   						:  sz2;	// ios
-          	   	int ay = y-sz2-dy+(int)(top/scale)
-          	   			+ fudge	;
-          	   	{
-      	    	gc.translate(-ax,-ay);
-      	    	gc.scale(scale, scale);
-      	    	client.drawClientCanvas(gc,false,pt);
-      	    	gc.scale(1/scale, 1/scale);	
-      	    	gc.translate(ax, ay);
+          	   						:  G.isIOS()? sz2 : 0;;
+          	   	int ax =  x-dx+(int)(left/scale);
+         	   	int ay =  y-dy+(int)(top/scale)	+ fudge	;
+         	   	{
+         	   	gc.scale(scale, scale);	
+      	    	gc.translate(-ax,-ay);  
+       	    	client.drawClientCanvas(gc,false,pt);
+               	gc.translate(ax, ay);
+      	    	gc.scale(1/scale, 1/scale);
+  
        	    	if(debug) { frameColor = Color.red;}       	    	
-          		}}
+          		}
+   	
+      		}
       		
        		// add a copy of the sprite rectangle to the magnifier
      		drawMagnifiedTileSprite(gc,pt,dsize/sz,x,y,padx,pady);
@@ -251,6 +252,7 @@ public class TouchMagnifier {
   			GC.setClip(gc, cl);
     		
     		}
+ 
     	}
     }
     /**
@@ -317,16 +319,18 @@ public class TouchMagnifier {
     public boolean touchZoomInProgress()
     {	long now = G.Date();
     	MouseManager mouse = client.getMouse();
-    	boolean active = mouse.isDown()
-    						&& (touchZoomActive 
-    								|| (!mouse.isDragging() && (mouse.lastMouseMoveTime+1500<now)))	
-    						;
-    	if(active)
-    	{	long fromNow = (mouse.lastMouseDownTime+400)-now;
-     		touchZoomActive = active = fromNow<0;
-    		if(!active) { client.repaintForMouse((int)fromNow,"touch zoom"); }	// trigger another paint when it will be active
+    	boolean down = mouse.isDown();
+    	if(!down) 
+    		{ touchZoomActive = false; }
+    	if(touchZoomActive) {}
+    	else if(down)
+    	{
+    		touchZoomActive = !mouse.isDragging() && (mouse.lastMouseMoveTime+1500<now)	;
     	}
-    	return(active);
+      	return(touchZoomActive);
     }
+	public boolean touchZoomActive() {
+		return touchZoomActive;
+	}
 
 }

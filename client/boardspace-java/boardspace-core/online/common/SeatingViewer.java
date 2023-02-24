@@ -6,7 +6,6 @@ import java.awt.FontMetrics;
 
 import lib.Graphics;
 import java.awt.Rectangle;
-import java.awt.event.MouseWheelEvent;
 import java.net.URL;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JOptionPane;
@@ -32,6 +31,7 @@ import lib.PopupManager;
 import lib.Random;
 import lib.RootAppletProtocol;
 import lib.StockArt;
+import lib.Text;
 import lib.TextButton;
 import lib.TextContainer;
 import online.common.SeatingChart.Seating;
@@ -155,10 +155,6 @@ public class SeatingViewer extends exCanvas implements LobbyConstants
         favoriteGames.reloadGameList(FAVORITES);
         recentGames.reloadGameList(RECENTS);
         
-        if(G.isCodename1())
-        {
-        	frame.setCanvasRotater(this);
-        }
         if(G.isTable())
         {
         UDPService.start(true);	// listen for tables
@@ -807,6 +803,13 @@ public class SeatingViewer extends exCanvas implements LobbyConstants
 			{
 			icon.centerImage(gc,iconRect);
 			GC.frameRect(gc, Color.black, iconRect);
+			if(G.pointInRect(hp,iconRect))
+			{
+				hp.hitCode = SeatId.SelectGame;
+				hp.hitObject = g;
+				hp.spriteRect = iconRect;
+				hp.spriteColor = Color.red;
+			}
 			}
 		}}
 		return hit;
@@ -851,7 +854,7 @@ public class SeatingViewer extends exCanvas implements LobbyConstants
 		String msg = (nplayers==0) 
 						? s.get(SoloMode) 
 						: s.get(NPlayerMode,nplayers);
-		GC.Text(gc, true, l, t, w, step/2,Color.black,null,msg);
+		GC.Text(gc, true, l, t, w*2/3, step/2,Color.black,null,msg);
 		
 		int catColumnLeft = l+w/25;
 		int catColumnWidth = w/4;
@@ -864,8 +867,7 @@ public class SeatingViewer extends exCanvas implements LobbyConstants
 		drawCatButton(gc,hp,MainMode.Category,catColumnLeft, t+half, catButtonW, step);
 		drawCatButton(gc,hp,MainMode.AZ,catColumnLeft+catButtonW+third, t+half, catButtonW, step);
 		drawCatButton(gc,hp,MainMode.Recent,catColumnLeft+catButtonW*2+third*2, t+half, catButtonW, step);
-
-		
+		int mainX = catColumnLeft+catButtonW*3+catButtonW*2/3;
 		int gameY = t+half*2+step;
 		int variantY = gameY;
 		int spaces = (h-step*6)/half;
@@ -926,7 +928,6 @@ public class SeatingViewer extends exCanvas implements LobbyConstants
 			catColumnLeft += vspace/2;
 			vspace = h/Math.max(13,(26+2)/3);
 			int hspace = vspace*5/6;
-
 			if(gameNames.length>spaces)
 			{   
 				for(int i=0;i<26;i++)
@@ -965,8 +966,10 @@ public class SeatingViewer extends exCanvas implements LobbyConstants
 			
 		
 			gameListSeen = matches!=null;
+			gameX = catColumnLeft+vspace*3+vspace/4;
+			variantX = gameX+gameColumnWidth+vspace/4;
 			drawGameColumn(gc,hp,true,margin,matches,gameX,gameY,gameColumnWidth,h);
-
+			
 		}
 		}
 		
@@ -985,11 +988,12 @@ public class SeatingViewer extends exCanvas implements LobbyConstants
 		    GC.setFont(gc,lb);
 		    FontMetrics fm = G.getFontMetrics(lb);
 		    int topPart = fm.getHeight()*3/2;
-		    Rectangle ur = new Rectangle(gameX,gameY,gameW,topPart);
+		    int messageY = G.Bottom(helpRect)+topPart/3;
+		    Rectangle ur = new Rectangle(gameX,messageY,gameW,topPart);
 		    GC.frameRect(gc,Color.blue,ur);
-		    GC.Text(gc,true,gameX,gameY,gameW,topPart,Color.black,null,"Play Offline");
+		    GC.Text(gc,true,gameX,messageY,gameW,topPart,Color.black,null,"Play Offline");
 		    GC.setFont(gc,standardPlainFont());
-		    messageArea.setBounds(gameX,gameY+topPart+1,gameW,gameH-topPart);
+		    messageArea.setBounds(gameX,messageY+topPart+1,gameW,gameH-topPart);
 		    if(!messageArea.isVisible())
 			  {
 			  messageArea.setVisible(true);
@@ -1006,12 +1010,12 @@ public class SeatingViewer extends exCanvas implements LobbyConstants
 		
 		if(selectedGame!=null)
 		{	
-			int hw = half*4-margin;
-			Rectangle iconRect = new Rectangle(variantX+(gameColumnWidth-hw)/2,t-margin,hw,hw);
+			int hw = half*4;
+			Rectangle iconRect = new Rectangle(Math.max(variantX,mainX),t,hw,hw);
 			variantY = G.Bottom(iconRect);
 			Image icon = selectedGame.getIcon2();
 			if(icon!=null)
-			{
+			{	
 				icon.centerImage(gc, iconRect);
 			}
 			GC.frameRect(gc,Color.black,iconRect);
@@ -1057,7 +1061,7 @@ public class SeatingViewer extends exCanvas implements LobbyConstants
 			
 		}
 	  }
-	  lastButton = hp.hitCode;
+	  if(hp!=null) { lastButton = hp.hitCode; }
 	}
 	private void drawMainSelector(Graphics gc,Rectangle mainr,Rectangle gamer,HitPoint hp)
 	{	if(selectedChart!=null)
@@ -1450,15 +1454,17 @@ public class SeatingViewer extends exCanvas implements LobbyConstants
       	}
       return(k); 
     }
-	public void handleMouseWheel(MouseWheelEvent e)
+	public void Wheel(int x,int y,int button,double amount)
 	{
-		int amount = e.getWheelRotation();
-		
+			
 		boolean done = messageArea.isVisible()
-					&& G.pointInRect(e.getX(),e.getY(),messageArea);
-    	if(done) { messageArea.doMouseWheel(amount);}
+					&& G.pointInRect(x,y,messageArea);
+    	if(done)
+    		{
+    		messageArea.doMouseWheel(x,y,amount);
+    		}
     	else
-    		{ super.handleMouseWheel(e);
+    		{ super.Wheel(x,y,button,amount);
     		}
     }
 

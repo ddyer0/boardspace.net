@@ -1504,7 +1504,37 @@ public void setLetterColor(Graphics gc,WypsBoard gb,WypsCell cell)
             setComment(comments);
         }
     }
+/*
+ * Its a word game, whose winning conditions are like the Game of Y - that is, connecting
+three sides of a triangular board. The interesting thing about this is that the winning
+condition has basically no relationship to the tactical game play, which requires forming
+words.
 
+Human players seem to concentrate on the word play aspect; it's relatively easy to make
+threats to win by playing long words, but It seems likely to me that more attention to
+the "Y" strategy is appropriate. I'm just beginning to work on an AI to play, so we'll see.
+
+
+
+I've completed a fairly successful computer player, and will sketch the algorithm here.
+
+The overall algorithm is a simple static evaluation maximizer, without search. The evaluation
+has only a few components: the number of edges currently contacted (0-3) and the number
+of own-color tiles currently on the board. The algorithm spends all its time looking for the
+best scoring word to put on the board.
+
+The word search algorithm starts with a "template" which is a set of cells from the board
+that could be used to form a word, some of the cells might be already occupied. The dictionary
+is searched for words that are compatible with the template.
+
+The key, unusual choice is that the templates are grown randomly, starting with a random
+empty cell, grown up to a suitable random size. As constructed above, the evaluation
+is only dependent on the template, not on the word that might be found to fill it.
+
+This could obviously be extended to try to build better (than random) templates, or to find better
+(than anything that works) words to fill the templates, or to consider the opposition responses,
+but it proved not to be necessary to get a credible player.
+ */
 
 }
 

@@ -4658,7 +4658,7 @@ public class Game extends commonPanel implements PlayConstants,Opcodes,DeferredE
 
     	// starting a game from the lobby, with a connection etc.
     	selector = new FileSelector(webSource,localSource);
-    	selector.setCanvasRotation(sharedInfo.getInt(exHashtable.ROTATION,0));
+    	//selector.setCanvasRotation(sharedInfo.getInt(exHashtable.ROTATION,0));
     	myFrame.addWindowListener(selector);
   		selector.addObserver(this);
     	}

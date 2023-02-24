@@ -2,10 +2,8 @@ package bridge;
 
 import lib.AwtComponent;
 import lib.G;
-
 import com.codename1.ui.Font;
 import com.codename1.ui.TextField;
-import com.codename1.ui.geom.Rectangle;
 
 public class JPasswordField extends TextField implements AwtComponent
 {	MouseAdapter mouse = new MouseAdapter(this);
@@ -37,5 +35,4 @@ public class JPasswordField extends TextField implements AwtComponent
 	public FontMetrics getFontMetrics(Font f) {
 		return G.getFontMetrics(f);
 	}
-	public Rectangle getRotatedBounds() { return getBounds(); }
 }

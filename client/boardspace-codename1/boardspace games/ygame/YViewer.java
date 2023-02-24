@@ -1,4 +1,4 @@
-package y;
+package ygame;
 
 
 import com.codename1.ui.geom.Rectangle;
@@ -7,7 +7,7 @@ import bridge.Color;
 import online.common.*;
 import java.util.*;
 
-import static y.Ymovespec.*;
+import static ygame.Ymovespec.*;
 import lib.Graphics;
 import lib.CellId;
 import lib.ExtendedHashtable;
@@ -89,7 +89,7 @@ public class YViewer extends CCanvas<YCell,YBoard> implements YConstants, GameLa
         	InternationalStrings.put(YStringPairs);
         }
          
-        String type = info.getString(OnlineConstants.GAMETYPE, YVariation.Y.name);
+        String type = info.getString(GAMETYPE, YVariation.Y.name);
         // recommended procedure is to supply players and randomkey, even for games which
         // are current strictly 2 player and no-randomization.  It will make it easier when
         // later, some variant is created, or the game code base is re purposed as the basis
@@ -202,7 +202,7 @@ public class YViewer extends CCanvas<YCell,YBoard> implements YConstants, GameLa
         int stateY = boardY;
         int stateX = boardX;
         int stateH = fh*3;
-        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,noChatRect);
+        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	G.SetRect(swapButton, boardX+CELLSIZE, boardY+CELLSIZE*2,CELLSIZE*2,CELLSIZE);
     	// goal and bottom ornaments, depending on the rendering can share

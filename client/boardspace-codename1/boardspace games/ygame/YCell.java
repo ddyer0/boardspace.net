@@ -1,4 +1,4 @@
-package y;
+package ygame;
 
 import lib.Random;
 import lib.OStack;
@@ -56,7 +56,17 @@ public class YCell extends chipCell<YCell,YChip> implements YConstants
 	};
 	/** upcast racklocation to our local type */
 	public YId rackLocation() { return((YId)rackLocation); }
-
+	/** sameCell is called at various times as a consistency check
+	 * 
+	 * @param other
+	 * @return true if this cell is in the same location as other (but presumably on a different board)
+	 */
+	public boolean sameCell(YCell other)
+	{	return(super.sameCell(other)
+				// check the values of any variables that define "sameness"
+				// && (moveClaimed==other.moveClaimed)
+			); 
+	}
 
 	// constructor a cell not on the board, with a chip.  Used to construct the pool chips
 	public YCell(YChip cont)

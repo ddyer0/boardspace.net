@@ -7,7 +7,8 @@ import lib.*;
 //
 // Feb 14, 2006: major dogwash to switch to "cell" oriented coordinates
 //
-
+// TODO: ring removal with more than 7 chips doesn't work right.  See "eleven" in the test games area.
+//
 public class YinshBoard extends hexBoard<YinshCell> implements BoardProtocol,YinshConstants
 {
 	private YinshState unresign;

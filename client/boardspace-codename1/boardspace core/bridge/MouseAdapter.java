@@ -14,12 +14,10 @@ import lib.AwtComponent;
 import lib.G;
 import lib.Log;
 import lib.PinchEvent;
-import lib.Plog;
 
-import com.codename1.ui.Command;
 import com.codename1.ui.Component;
-import com.codename1.ui.Display;
 import com.codename1.ui.Button;
+import com.codename1.ui.Command;
 import com.codename1.ui.events.ActionEvent.Type;
 import static com.codename1.util.MathUtil.atan2;
 
@@ -31,7 +29,6 @@ public class MouseAdapter
 	public int id = instanceNumber++;
 	public boolean twoFinger = false;		// currently in two fingered gesture
 	public boolean recordHistory = false;	// debugging only, record low level mouse gestures and print them in batches
-	public boolean drag_is_pinch = false;	// debugging only, true to turn all drags into pinches, for testing in the simulator
 	enum bType { Up, Down, Pinch, Multi};
 	public bType mouseState = bType.Up;
 	
@@ -39,22 +36,24 @@ public class MouseAdapter
 	class PressedListener implements com.codename1.ui.events.ActionListener
 		{ public void actionPerformed(com.codename1.ui.events.ActionEvent e) 
 			{ 
-			  startWheeling(e);
+			 //Plog.log.addLog("raw press "+e.getX()+",",e.getY());
+			 startWheeling(e); 
 			}
 		}
 	class ReleasedListener implements com.codename1.ui.events.ActionListener
 		{ public void actionPerformed(com.codename1.ui.events.ActionEvent e) 
 			{ 
-			  if(isWheeling(e,true))
-			  {	
-				wheelAction(e); 
-			  }
+			 //Plog.log.addLog("raw release "+e.getX()+",",e.getY());
+			  if(isWheeling(e,true)) {}
 			  else { releasedAction(e); } 
 			}
 		}
 	class DragListener implements com.codename1.ui.events.ActionListener
 	{ public void actionPerformed(com.codename1.ui.events.ActionEvent e) 
-		{ if(!isWheeling(e,false)) { dragAction(e); } 
+		{ 
+		 //Plog.log.addLog("raw drag "+e.getX()+",",e.getY());
+		 if(isWheeling(e,false)) { }
+		 else { dragAction(e); } 
 		}
 	}
 	
@@ -125,9 +124,6 @@ public class MouseAdapter
 	public int lastMouseY = 0;
 	public bType lastMouseButton = null;
 	public long lastMouseTime = 0;
-	private long wheelStartTime = 0;
-	private int wheelStartX = 0;
-	private int wheelStartY = 0;
 	
 	// DETECT_WHEEL is an ad-hoc means to detect scroll wheel usage where they
 	// masquerade as fast up/down sequences, which is the way Codename1 presents
@@ -139,8 +135,6 @@ public class MouseAdapter
 	// always very fast, with the "up" following the "down" by a few millisecons.
 	// the X coordinate doesn't change, and the Y coordinate changes by a lot.
 	//
-	private boolean USE_WHEEL = !G.isSimulator();	// so it behaves like real android
-	private boolean DETECT_WHEEL = G.isRealWindroid();
 
 	private Stack<PressedListener> systemPressedListeners = new Stack<PressedListener>();
 	private Stack<ReleasedListener> systemReleasedListeners = new Stack<ReleasedListener>();
@@ -148,40 +142,25 @@ public class MouseAdapter
 	private Stack<SFocusListener>systemFocusListeners = new Stack<SFocusListener>();
 	
 	private void startWheeling(com.codename1.ui.events.ActionEvent e)
-	{	//Plog.log.addLog("Start ",DETECT_WHEEL);
-		if(DETECT_WHEEL)
-		{
-		boolean isForSure = USE_WHEEL && Display.getInstance().isScrollWheeling();
-		if(isForSure) { DETECT_WHEEL = false; }
-		else {
-		wheelStartTime = G.Date();
-		wheelStartX = e.getX();
-		wheelStartY = e.getY();
-		//Plog.log.addLog("\nStart ",wheelStartTime," ",wheelStartX," ",wheelStartY);
-		}}
-		if(!DETECT_WHEEL) { pressedAction(e); }
+	{	
+		if(WheelDetector.start(this,e)) {}
+		else
+			{
+			  pressedAction(e); 
+			}
 	}
-	
+
+
 	public boolean isWheeling(com.codename1.ui.events.ActionEvent e,boolean release)
 	{	//Plog.log.addLog("Test ",DETECT_WHEEL);
-		boolean isForSure = USE_WHEEL && Display.getInstance().isScrollWheeling();
-		if(isForSure) { DETECT_WHEEL=false; return true; }
-		if(DETECT_WHEEL && wheelStartTime>0 )
-		{
-		//Plog.log.addLog("is ",release);
-	    long now = G.Date();
-		boolean more = (wheelStartTime>0)
-						&& (e.getX()==wheelStartX)
-						//&& (drag || ( wheelDragEvents>0))
-						&& (!release || (Math.abs(e.getY()-wheelStartY)>10))
-						&& ((now-wheelStartTime)<200);
-		if(!more)
-			{	// we owe a press action
-				//Plog.log.addLog("S t=",now-wheelStartTime," ",e.getX()-wheelStartX,",",e.getY()-wheelStartY);
-				wheelStartTime = 0;
-				pressedAction(e);
-			}
-		return more;
+		com.codename1.ui.events.ActionEvent trigger = WheelDetector.releaseLatentPress(e,release);		// release based on time only
+		if(trigger!=null)
+		{	int sx = trigger.getX();
+			int sy = trigger.getY();
+			int ey = e.getY();
+			//Plog.log.addLog("Wheel ",sx," ",sy," ",sx-ey);
+			handleWheelEvent(sx,sy,G.signum(sy-ey));
+			return true;
 		}
 		return false;
 	}
@@ -341,8 +320,7 @@ public class MouseAdapter
 		handleMouseEvent(x,y,down);
 	}
 	public void handleMouseEvent(int x,int y,bType down)
-	{
-		//Plog.log.addLog("mouseevent ",x," ",y," ",down);
+	{	
 		if(mouseListeners!=null)
 		{
 		for(int idx = 0;idx<mouseListeners.size();idx++)
@@ -503,7 +481,7 @@ public class MouseAdapter
 	}
 	
 	public void handleItemEvent(com.codename1.ui.events.ActionEvent e)
-	{	Plog.log.addLog("Item event "+e+" "+itemListeners);
+	{	//Plog.log.addLog("Item event "+e+" "+itemListeners);
 		if(itemListeners!=null)
 		{
 		int thisX = cn1Component.getAbsoluteX();
@@ -544,12 +522,6 @@ public class MouseAdapter
 	public void dragAction(com.codename1.ui.events.ActionEvent evt)
 	{	handleMouseMotionEvent(evt,bType.Down);
 	}
-	public void wheelAction(com.codename1.ui.events.ActionEvent evt)
-	{	
-		int endY = evt.getY();
-		//Plog.log.addLog("Wheel ",wheelStartX," ",wheelStartY," ",wheelStartY-endY);
-		handleWheelEvent(wheelStartX,wheelStartY,wheelStartY-endY);
-	}
 	// this is the codename1 actionperformed
 	public void actionPerformed(com.codename1.ui.events.ActionEvent evt) {
 		//G.print("Mouse adapter event "+evt);
@@ -584,19 +556,7 @@ public class MouseAdapter
 	private int lastPinchX0;
 	private int lastPinchY0;
     public boolean pointerDragged(int[]x,int[]y)
-    {	
-    	if((mouseState==bType.Down) && drag_is_pinch && (x.length==1))
-    	{	// this sets the initial point as a pair of points in a diagonal
-    		int nx[]=new int[2];
-    		int ny[]=new int[2];
-    		nx[0]=x[0];
-    		ny[0]=y[0];
-    		nx[1]=x[0]-10;
-    		ny[1]=y[0]-10;
-    		x=nx;
-    		y=ny;
-    	}
-    	
+    {	    	
     	if(x.length==1 && mouseState!=bType.Pinch) { return true; }
     	
     	if(recordHistory)
@@ -648,23 +608,6 @@ public class MouseAdapter
        		{	// started to pinch and lifted one finger, continue pinch/drag mode
        			int nx0 = x[0];
        			int ny0 = y[0];
-       			if(drag_is_pinch)
-       			{ // hack for debugging without touch screens; continue the pinch
-       			  // using 1 finger around the current center
-       			int cx = (lastPinchX1+lastPinchX0)/2;
-       			int cy = (lastPinchY1+lastPinchY0)/2;
-       			int dx = nx0-cx;
-       			int dy = ny0-cy;
-       			lastPinchX1 = cx+dx;
-       			lastPinchX0 = cx-dx;
-       			lastPinchY1 = cy+dy;
-       			lastPinchY0 = cy-dy;
-          				double currentDis = G.distance(lastPinchX0,lastPinchY0,lastPinchX1,lastPinchY1);
-           				lastPinchScale = currentDis / startingPinchDistance;
-           				handleMouseMotionEvent(cx,cy,bType.Pinch,lastPinchScale,currentAngle-startingPinchAngle);
-       			}
-       			else
-       			{
        			// started to pinch and lifted one finger, continue pinch/drag mode
        			int d0 = G.distanceSQ(lastPinchX0,lastPinchY0,nx0,ny0);
        			int d1 = G.distanceSQ(lastPinchX1,lastPinchY1,nx0,ny0);
@@ -678,7 +621,6 @@ public class MouseAdapter
        			int cx = (lastPinchX0+lastPinchX1)/2;
        			int cy = (lastPinchY0+lastPinchY1)/2;
        			handleMouseMotionEvent(cx,cy,bType.Pinch,lastPinchScale,currentAngle-startingPinchAngle);
-       			}
        		}
     		break;
     	}

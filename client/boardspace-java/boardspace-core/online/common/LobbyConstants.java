@@ -46,7 +46,9 @@ public interface LobbyConstants extends OnlineConstants
     static final String WebsiteMessage = "website";
     static final String RestartMessage = "Restart";
     static final String DiscardGameMessage = "Discard This Game";
-
+    static final String LobbyName = "Lobby";
+    static final String LauncherName = "Launcher";
+    
     static final String LobbyMessagePairs[][] = 
         {        //hints
         	{UnsupportedGameMessage+"_variation","most likely, it will be available soon"},
@@ -57,7 +59,8 @@ public interface LobbyConstants extends OnlineConstants
     
 
     static final String LobbyMessages[] =
-        {  	
+        {  	LobbyName,
+        	LauncherName,
          	RestartMessage,
          	AutoDoneEverywhere,
         	DiscardGameMessage,

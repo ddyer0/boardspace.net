@@ -100,7 +100,7 @@ public class XFrame extends JFrame implements WindowListener,SizeProvider,LFrame
 
 
 	public boolean hasCommand(String cmd)
-	{	if(("rotate".equals(cmd) || "twist3".equals(cmd) || "twist".equals(cmd))) { return(rotater!=null); }
+	{	if(("rotate".equals(cmd) || "twist3".equals(cmd) || "twist".equals(cmd))) { return(enableRotater); }
 		if("close".equals(cmd)) { return(true); }
 		if("actionmenu".equals(cmd)) 
 			{ return(popupMenuBar!=null); 
@@ -109,25 +109,19 @@ public class XFrame extends JFrame implements WindowListener,SizeProvider,LFrame
 		if("restorepanzoom".equals(cmd)) { return(hasSavePanZoom); }
 		return(false);
 	}
-	CanvasRotaterProtocol rotater = null;
-	public CanvasRotaterProtocol getCanvasRotater() { return rotater; }
-	public void setCanvasRotater(CanvasRotaterProtocol r)  
-	{	rotater=r; 
-		MasterForm.getMasterPanel().adjustTabStyles();
-	}
 	public void buttonMenuBar(ActionEvent evt,int x,int y)
 	{	String cmd = evt.getActionCommand().toString();
 		if("twist3".equals(cmd))
 		{
-			if(rotater!=null) { rotater.setCanvasRotation(rotater.getCanvasRotation()+1); }			
+			if(rotater!=null) { rotater.setCanvasRotation(rotater.getCanvasRotation()+1);revalidate();  }			
 		}
 		else if("twist".equals(cmd))
 		{
-			if(rotater!=null) { rotater.setCanvasRotation(rotater.getCanvasRotation()-1); }
+			if(rotater!=null) { rotater.setCanvasRotation(rotater.getCanvasRotation()-1); revalidate(); }
 		}
 		else if("rotate".equals(cmd))
 		{
-			if(rotater!=null) { rotater.setCanvasRotation(rotater.getCanvasRotation()+2); }
+			if(rotater!=null) { rotater.setCanvasRotation(rotater.getCanvasRotation()+2); revalidate(); }
 		}
 		else if("actionmenu".equals(cmd))
 			{if(popupMenuBar!=null)
@@ -172,11 +166,16 @@ public class XFrame extends JFrame implements WindowListener,SizeProvider,LFrame
 		}
 		}
 		else {
-			if(popupMenuBar==null) { popupMenuBar=new JPopupMenu();}
+			boolean isNew = popupMenuBar==null;
+			if(isNew) 
+				{ popupMenuBar=new JPopupMenu();
+				 
+				}
 			if(popupMenuBar.getComponentIndex(m)<0)
 				{
-			popupMenuBar.add(m);
-		}
+				popupMenuBar.add(m);
+				}
+			if(isNew) {  MasterForm.getMasterPanel().adjustTabStyles(); }
 		}
 		if(l!=null) { m.addItemListener(l); }
 	}
@@ -246,11 +245,12 @@ public class XFrame extends JFrame implements WindowListener,SizeProvider,LFrame
 	}
 
 	public void windowClosing(WindowEvent e) {
-		killed = true;
+		killFrame();
 	}
 
 	public void windowClosed(WindowEvent e) {
 		killed=true;
+		
 	}
 
 	public void windowIconified(WindowEvent e) {
@@ -332,7 +332,10 @@ public class XFrame extends JFrame implements WindowListener,SizeProvider,LFrame
         return (addOption(text, initial, options,e));
     }
     public JMenu addChoiceMenu(String text, DeferredEventManager e)
-    {	JMenu item = new XJMenu(text,false);
+    {	if(options.getItemCount()==0) 
+    	{	options.add(soundCheckBox);		// always first
+    	}
+    	JMenu item = new XJMenu(text,false);
     	options.add(item);
         if(e!=null) { item.addActionListener(e); }
         addToMenuBar(options);
@@ -432,6 +435,7 @@ public class XFrame extends JFrame implements WindowListener,SizeProvider,LFrame
 	public void killFrame()
     { 
         pleaseKill = true;			// remember some tried to do it
+        if(!dontKill) { killed = true; }
         //
         // record the default position and size
         if(!G.isCodename1())
@@ -458,5 +462,10 @@ public class XFrame extends JFrame implements WindowListener,SizeProvider,LFrame
 		return this;
 	}
 	
+	// support for rotater buttons
+	private CanvasRotater rotater = new CanvasRotater();
+	public boolean enableRotater = true;
+	public CanvasRotater getCanvasRotater() { return rotater; }
+
 
 }

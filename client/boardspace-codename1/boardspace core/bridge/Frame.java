@@ -124,7 +124,8 @@ public class Frame extends Window implements NullLayoutProtocol,
 			MasterForm.getMasterForm().show(); 
 			if(!isVisible())
 			{	G.runInEdt(
-					new Runnable () {	public void run() { showInEdt(); } });
+					new Runnable () 
+						{	public void run() { showInEdt(); } });
 				
 			}
 			MasterForm.getMasterPanel().repaint();}

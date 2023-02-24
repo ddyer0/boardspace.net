@@ -220,5 +220,4 @@ public class Component extends Container implements EventListener,AwtComponent,S
     	}
     	return b.toString();
     }
-    public Rectangle getRotatedBounds() { return getBounds(); }
 }

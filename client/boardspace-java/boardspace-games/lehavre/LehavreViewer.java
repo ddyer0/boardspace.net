@@ -693,6 +693,9 @@ public class LehavreViewer extends exCanvas implements ViewerProtocol,NetworkInt
 	public void Pinch(int x, int y, double amount,double twist) {
 		
 	}
+	public void Wheel(int x, int y, int button,double amount) {
+		
+	}
 	public void redrawBoard(Graphics offGC,HitPoint hp)
 	{
 		int w = getWidth();

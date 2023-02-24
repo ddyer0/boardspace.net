@@ -479,6 +479,9 @@ public class Cardmaker extends exCanvas implements Runnable
 	public void Pinch(int x, int y, double amount,double twist) {
 		
 	}
+	public void Wheel(int x, int y, int button,double amount) {
+		
+	}
 	@Override
 	public void drawCanvasSprites(Graphics gc, HitPoint pt) {
 		

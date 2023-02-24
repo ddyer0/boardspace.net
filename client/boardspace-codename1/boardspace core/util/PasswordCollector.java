@@ -33,15 +33,8 @@ import udp.PlaytableStack;
 	 public String toString() { return name;}
 	 public StringPair(String n,String v) { name = n; value = v; }
  }
- class KPanel extends JPanel
- {
-		public Dimension getPreferredSize()
-		{
-			return new Dimension(G.getScreenWidth(),G.getScreenHeight());
-		}
 
- }
- public class PasswordCollector extends KPanel
+ public class PasswordCollector extends JPanel
 						   implements ActionListener,ItemListener,WindowListener,OnlineConstants,
 						   Config
 {
@@ -160,6 +153,12 @@ import udp.PlaytableStack;
 		 currentScreen = m;
 		 reconfigure();
 	 }
+
+	 public Dimension getPreferredSize()
+		{
+			return new Dimension(G.getScreenWidth(),G.getScreenHeight());
+		}
+
 	 public void reconfigure()
 	 {
 		 switch(currentScreen)
@@ -416,7 +415,7 @@ import udp.PlaytableStack;
 	 private void configureForConfirmation()
 	 { 	
 	 	disposeMainPanel();	// get rid of any previous
-		JPanel vpanel = mainPanel = new KPanel();
+		JPanel vpanel = mainPanel = new JPanel();
 	 	BoxLayout bl = new BoxLayout(vpanel,BoxLayout.Y_AXIS);
 	 	bl.setAlign(Component.CENTER);
 	 	vpanel.setLayout(bl);
@@ -782,7 +781,7 @@ import udp.PlaytableStack;
 	 	JPanel userPanel = createUsernamePanel(true);	// do first, side effect is to get user name
 	 	passPane = createPasswordPanel(YourPassword,true);	// password pane pops up and down depending on "guest"
 
-	 	JPanel vpanel = mainPanel = new KPanel();
+	 	JPanel vpanel = mainPanel = new JPanel();
 	 	BoxLayout bl = new BoxLayout(mainPanel,BoxLayout.Y_AXIS);
 	 	bl.setAlign(Component.CENTER);
 	 	mainPanel.setLayout(bl);
@@ -1059,8 +1058,9 @@ import udp.PlaytableStack;
        	isGuest = false;
     	if(language==null) { initLanguage(); }
     	//Create and set up the window.
-        JFrame frame = new XFrame(s.get(LogInTo,(isTest ? "test for " : "")
+        XFrame frame = new XFrame(s.get(LogInTo,(isTest ? "test for " : "")
         		+(host.startsWith("www")?host:G.Capitalize(host))));
+        frame.enableRotater = false;
         //Create and set up the content pane.
         Image icon = Image.getImage(IMAGEPATH+CommonConfig.icon_image_name);
         frame.setIconAsImage(icon);

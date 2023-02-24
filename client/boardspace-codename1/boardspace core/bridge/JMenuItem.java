@@ -8,12 +8,9 @@ import lib.GC;
 import lib.Graphics;
 import lib.NativeMenuInterface;
 import lib.NativeMenuItemInterface;
-
 import com.codename1.ui.Font;
 import lib.Image;
 import com.codename1.ui.geom.Dimension;
-import com.codename1.ui.geom.Rectangle;
-
 import bridge.Platform.Style;
 
 
@@ -185,5 +182,4 @@ public class JMenuItem implements ActionListener,AwtComponent,NativeMenuItemInte
 	public int getHeight() {
 		return icon.getIconHeight();
 	}
-	public Rectangle getRotatedBounds() { return new Rectangle(0,0,getWidth(),getHeight()); }
 }

@@ -1961,6 +1961,11 @@ extends exCanvas
 	public void Pinch(int x, int y, double amount,double twist) {
 		
 	}
+	@Override
+	public void Wheel(int x, int y, int button,double amount) {
+		
+	}
+ 
     /** this is the place where the canvas is actually repainted.  We get here
      * from the event loop, not from the normal canvas repaint request.
      */

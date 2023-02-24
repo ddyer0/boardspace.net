@@ -529,6 +529,19 @@ Footer
 	 "Zimbabwe"
 );
 
+
+sub validate_country()
+{
+	my ($target) = @_;
+        my $c;
+	$target = lc($target);
+	foreach $c (@'countries)
+	       {
+	       if(lc($c) eq $target) { return $c; }
+	       }
+	return "";
+}
+
 sub print_country_selector
 {  my ($current) = @_;
    my $selectedindex = 0;
@@ -1065,6 +1078,9 @@ sub send_mail_to()
 {	my ($touser,$from,$to,$sub,$body) = @_;
 	my $auth = &userAuthenticator($touser,1);
 	my $msg = 	"$auth\nSender: $from\nFrom: $from\nTo: \"$touser\" <$to>\nSubject: $sub\n\n$body\n";
+
+print "<br>send -f $from $to\n$msg\n";
+
 	open( SENDMAIL, "| $'sendmail -f $from $to" );
 	print SENDMAIL $msg;
     close SENDMAIL;

@@ -1,4 +1,4 @@
-package y;
+package ygame;
 
 import lib.G;
 import lib.OStack;
@@ -331,6 +331,6 @@ public interface YConstants
     static final String[] YGRIDSTYLE = { "1", null, "A" }; // left and bottom numbers
 
     // file names for jpeg images and masks
-    static final String ImageDir = "/y/images/";
+    static final String ImageDir = "/ygame/images/";
 
 }

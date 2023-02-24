@@ -549,7 +549,7 @@ public class ScrollArea
      * @param amount
      * @return
      */
-    public boolean doMouseWheel(int ex,int ey,int amount)
+    public boolean doMouseWheel(int ex,int ey,double amount)
     {
     	if(inScrollBarRect(ex,ey) || inMainRect(ex,ey))
     		{	return(doMouseWheel(amount));
@@ -561,7 +561,7 @@ public class ScrollArea
      * @param amount
      * @return
      */
-    public boolean doMouseWheel(int amount)
+    public boolean doMouseWheel(double amount)
     {
     	if(amount<0) { doSmallUp(); } else { doSmallDown(); }
     	return(true);

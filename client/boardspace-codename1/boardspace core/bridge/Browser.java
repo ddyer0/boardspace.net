@@ -68,6 +68,7 @@ public class Browser extends XFrame implements BrowserNavigationCallback,ActionL
 	public Browser(String name,String initialUrl)
 	{
 		super(name);
+		enableRotater = false;
     	setLayout(new BorderLayout());
 		add(BorderLayout.CENTER,b);
 		BoxLayout bl = new BoxLayout(top,BoxLayout.X_AXIS);

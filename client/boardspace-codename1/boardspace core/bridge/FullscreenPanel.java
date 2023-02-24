@@ -1,21 +1,16 @@
 package bridge;
 
 import com.codename1.ui.geom.Dimension;
-import com.codename1.ui.geom.Rectangle;
-
-import lib.CanvasRotater;
-import lib.CanvasRotaterProtocol;
 import lib.G;
 import lib.Graphics;
 import lib.MenuInterface;
 import lib.MenuParentInterface;
 import lib.NullLayout;
 import lib.NullLayoutProtocol;
-import lib.SizeProvider;
 
 import com.codename1.ui.Component;
 
-public class FullscreenPanel extends JPanel implements FullScreen,NullLayoutProtocol,MenuParentInterface, CanvasRotaterProtocol,SizeProvider
+public class FullscreenPanel extends JPanel implements FullScreen,NullLayoutProtocol,MenuParentInterface
 {
 	public FullscreenPanel() 
 	{ setOpaque(false);
@@ -123,19 +118,7 @@ public class FullscreenPanel extends JPanel implements FullScreen,NullLayoutProt
 		MasterForm.getMasterForm().setFocused(p);
 	}
 	
-	// support for rotater buttons
-	CanvasRotaterProtocol rotater = new CanvasRotater(this);
-	public int getCanvasRotation() { return rotater.getCanvasRotation(); }
-	public boolean quarterTurn() { return rotater.quarterTurn(); }
-	public void setCanvasRotation(int n) { rotater.setCanvasRotation(n); }
-	public boolean rotateCanvas(Graphics g) { return rotater.rotateCanvas(g); }
-	public void unrotateCanvas(Graphics g) {  rotater.unrotateCanvas(g); }
-	public int rotateCanvasX(int x,int y) { return rotater.rotateCanvasX(x,y); }
-	public int rotateCanvasY(int x,int y) { return rotater.rotateCanvasY(x,y); }
-	public int unrotateCanvasX(int x,int y) { return rotater.unrotateCanvasX(x,y); }
-	public int unrotateCanvasY(int x,int y) { return rotater.unrotateCanvasY(x,y); }
-	public Rectangle getRotatedBounds() { return rotater.getRotatedBounds(); }
-/*
+	/*
 	public void update(java.awt.Graphics g)
 	{	System.out.println("Update "+this);
 	

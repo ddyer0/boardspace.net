@@ -2,7 +2,6 @@ package lib;
 
 import com.codename1.ui.Font;
 
-import bridge.MouseWheelEvent;
 import bridge.Utf8OutputStream;
 import bridge.WindowEvent;
 import bridge.WindowListener;
@@ -27,7 +26,7 @@ public class TextMouseWindow extends MouseCanvas implements  RepaintHelper,Windo
 	{
 		
 	}
-	public void resetLocalBoundsNow()
+	public void resetLocalBoundsIfNeeded()
 	{
 		
 	}
@@ -153,16 +152,7 @@ public class TextMouseWindow extends MouseCanvas implements  RepaintHelper,Windo
 	public double getGlobalZoom() {
 		return 1;
 	}
-	/** for mouseWheelListener */
-	public void mouseWheelMoved(MouseWheelEvent e) {
-		int mod = e.getModifiersEx();
-		if(mod==0)
-		{
-		int up = e.getWheelRotation();
-		area.doMouseWheel(up);
-		repaint(100);
-		}
-	}
+
 	public TextPrintStream getPrinter()
 	{
 		return TextPrintStream.getPrinter(new Utf8OutputStream(),area);

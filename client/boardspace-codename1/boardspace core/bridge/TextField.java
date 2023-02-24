@@ -2,10 +2,8 @@ package bridge;
 
 import lib.AwtComponent;
 import lib.G;
-
 import com.codename1.ui.Font;
 import com.codename1.ui.Graphics;
-import com.codename1.ui.geom.Rectangle;
 
 public class TextField extends com.codename1.ui.TextField implements AwtComponent
 {
@@ -94,5 +92,4 @@ public class TextField extends com.codename1.ui.TextField implements AwtComponen
 	public FontMetrics getFontMetrics(Font f) {
 		return G.getFontMetrics(f);
 	}
-	public Rectangle getRotatedBounds() { return getBounds(); }
 }

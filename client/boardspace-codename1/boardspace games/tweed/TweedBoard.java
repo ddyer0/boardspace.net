@@ -408,7 +408,7 @@ class TweedBoard
 		
     	if(ch==null)	// remove 1 chip
     	{	c.removeTop();
-    		if(droppedOnColor!=old) 
+    		if(droppedOnColor!=null && droppedOnColor!=old) 
     			{ changeStackColor(c,droppedOnColor);
     			  if(droppedOnColor!=TweedChip.Gray)
     			  {

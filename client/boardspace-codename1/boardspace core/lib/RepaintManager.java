@@ -163,37 +163,26 @@ public class RepaintManager implements VncScreenInterface,Config
            	parent.add(v.menu);
 	    	}}
 		}
-		public static void setMenuChoice(RepaintStrategy current)
+		
+		private static void setStrategyMenuChoice(RepaintStrategy current)
 		{
 			for(RepaintStrategy v : values()) 
 			{	if(v.menu!=null)
-				{
-				if(v==current) 
-				{
-					v.menu.setState(true);
+				{	v.menu.setState(v==current);
 				}
-				else 
-				{
-					v.menu.setState(false);
-				}}
 			}
 		}
-		public static RepaintStrategy isMenu(Object target,RepaintStrategy current)
-		{	RepaintStrategy value = null;
+		
+		private static RepaintStrategy isStrategyMenu(Object target,RepaintStrategy current)
+		{	
 			for(RepaintStrategy v : values()) 
-			{	if(v.menu!=null)
 				{
 				if(v.menu==target) 
 				{
-					value = v;
-					v.menu.setState(true);
+					return v;
 				}
-				else 
-				{
-					v.menu.setState(false);
-				}}
 			}
-			return(value);
+			return(null);
 		}
 		
 	    static public boolean showFrameTimers = false;
@@ -299,7 +288,7 @@ public class RepaintManager implements VncScreenInterface,Config
 	//
 	// this is what the companion has to supply, in addition to being a standard window component
 	//
-	public interface RepaintHelper extends ErrorReporter
+	public interface RepaintHelper extends ErrorReporter,SizeProvider
 	{
 		public void actualPaint(Graphics g,HitPoint hp);	// paint on the real window
 		public void actualRepaint();						// request paint on the real screen
@@ -317,19 +306,18 @@ public class RepaintManager implements VncScreenInterface,Config
 		public void drawActivePinch(Graphics g,Image im,boolean useLast);
 		public int getSX();
 		public int getSY();
-		public int getWidth();
-		public int getHeight();
 		public double getRotation();
 		public double getGlobalZoom();
 		public Component getComponent();
 		public void drawBackground(Graphics gc);
-		public void resetLocalBoundsNow();
+		public void resetLocalBoundsIfNeeded();
 		public boolean rotateCanvas(Graphics g);
 		public void unrotateCanvas(Graphics g);
 		public int unrotateCanvasX(int x,int y);
 		public int unrotateCanvasY(int x,int y);
-		public int getCanvasRotation();
-		public boolean quarterTurn();
+		public int getRotatedWidth();
+		public int getRotatedHeight();
+		
 	}
 	Component client;
 	RepaintHelper helper;
@@ -568,6 +556,7 @@ public class RepaintManager implements VncScreenInterface,Config
     // this is a debugging utility to inset a postage stamps of the backing bitmaps
     // that are used to construct the main image.
     //
+    // TODO: show bitmaps doesnt work if rotation is 180
     static int step = 0;
     public void showBitmaps(Graphics g,String msg)
     {
@@ -575,12 +564,13 @@ public class RepaintManager implements VncScreenInterface,Config
 		int h = client.getHeight();
 		int w1 = w/6;
 		int h1 = h/6;
-		boolean qt = helper.quarterTurn();
-		int w2 = qt ? (int)(h1*h1/w1) : w1;
-		int xx = -GC.getTranslateX(g)+w1/2;
+		int w2 = h1*helper.getRotatedWidth()/helper.getRotatedHeight();
+		int tx = -GC.getTranslateX(g);
+		int ty = -GC.getTranslateY(g);
+		int xx = tx+w1/2;
 		// draw in the same visual location, regardless of pan/zoom
 		int x = xx;
-		int y = -GC.getTranslateY(g)+h1*3; 
+		int y = ty+h1*3; 
 		int hs = h1+h1/2;
 		int ws = w1*4;
 		GC.fillRect(g,Color.black,x,y,ws,hs);
@@ -812,7 +802,7 @@ public class RepaintManager implements VncScreenInterface,Config
     	// can fall through if unable to create a buffer
        	case Direct_Unbuffered:
        		triggerEvent = null;
-       		helper.resetLocalBoundsNow();
+       		helper.resetLocalBoundsIfNeeded();
        		{
       		String msg = null;
        		if(!paintDirect(g,false))
@@ -830,7 +820,7 @@ public class RepaintManager implements VncScreenInterface,Config
        	/* fall into the direct draw case if there's no backing store or a pinch is in progress*/
        	case Direct_SingleBuffer:
     		//GC.fillRect(g,fill,0,0,10,client.getHeight());
-       		helper.resetLocalBoundsNow();
+       		helper.resetLocalBoundsIfNeeded();
        		triggerEvent = null;
        		{
        		String msg = null;
@@ -992,10 +982,9 @@ public class RepaintManager implements VncScreenInterface,Config
 	    		return(null); 
 	    	default:
 	        	if(viewBuffer!=null)
-	        		{int w = client.getWidth();
-	        	     int h = client.getHeight();
-	        	     boolean qt = helper.quarterTurn();
-	        	     if(needNewImage(viewBuffer,qt?h:w,qt?w:h)) 
+	        		{int w = helper.getRotatedWidth();
+	        	     int h = helper.getRotatedHeight();
+	        	     if(needNewImage(viewBuffer,w,h)) 
 	        	     	{ setViewBuffer(null); 
 	        	     	}
 	        		}
@@ -1058,10 +1047,9 @@ public class RepaintManager implements VncScreenInterface,Config
 	    		setViewBuffer(null);
 	    		return(null);
 	    	case DoubleBuffer: 
-	    		{int w = client.getWidth();
-	    		 int h = client.getHeight();
-	    		 boolean qt = helper.quarterTurn();
-	    		 if(needNewImage(drawBuffer,qt?h:w,qt?w:h)) 
+	    		{int w = helper.getRotatedWidth();
+	    		 int h = helper.getRotatedHeight();
+	    		 if(needNewImage(drawBuffer,w,h)) 
 	    		 	{ drawBuffer = null; 
 	    		 	}
 	    		}
@@ -1135,7 +1123,7 @@ public class RepaintManager implements VncScreenInterface,Config
 	    public void setRepaintStrategy(RepaintStrategy strat)
 	    {	
 	    	repaintStrategy = strat;
-	    	RepaintStrategy.setMenuChoice(strat);
+	    	RepaintStrategy.setStrategyMenuChoice(strat);
 	    	repaintStrategy.setSliders();
 	    	switch(strat)
 	    	{
@@ -1241,19 +1229,17 @@ public class RepaintManager implements VncScreenInterface,Config
 	     int errors = 0;
 	     private XImage createViewBuffer()
 	     {
-	    	 int width = client.getWidth();
-	    	 int height = client.getHeight();
-	    	 boolean qt = helper.quarterTurn();
-	    	 XImage pb = createOffScreen(qt?height:width,qt?width:height);
+	    	 int width = helper.getRotatedWidth();
+	    	 int height = helper.getRotatedHeight();
+	    	 XImage pb = createOffScreen(width,height);
 	    	 setViewBuffer(pb);
 	    	 return(pb);
 	     }
 	     private XImage createDrawBuffer()
 	     {
-	    	 int width = client.getWidth();
-	    	 int height = client.getHeight();
-	    	 boolean qt = helper.quarterTurn();
-	    	 XImage pb = createOffScreen(qt?height:width,qt?width:height);
+	    	 int width = helper.getRotatedWidth();
+	    	 int height = helper.getRotatedHeight();
+	    	 XImage pb = createOffScreen(width,height);
 	    	 drawBuffer =pb;
 	    	 return(pb);
 	     }
@@ -1361,10 +1347,8 @@ public class RepaintManager implements VncScreenInterface,Config
 			    
 	    	helper.showRectangles(offGC,100);
 
-	    	if(repaintStrategy==RepaintStrategy.Deferred)
-	    	{	
-	    		helper.paintSprites(offGC,pt);
-	    	}
+	    	helper.paintSprites(offGC,pt);
+
 	    	helper.ShowStats(offGC,pt,x,y);	// add some stats on top of everything
 			    
 	    	GC.setColor(offGC,Color.blue);
@@ -1427,7 +1411,7 @@ public class RepaintManager implements VncScreenInterface,Config
 	      */
 	     public void repaint(String w)
 	 	{ 	if(G.canRepaintLocally(client))
-	 		{ 	//G.startLog("repaint from mouse");
+	 		{ 	
 	     		repaint(0,w);
 	 		}
 	 	}
@@ -1451,7 +1435,6 @@ public class RepaintManager implements VncScreenInterface,Config
 	    	 	  // direct drawing lock is released only while we sleep
 	    	 	  //
 	    	 	  releaseDirectDrawingLock();
-
 	    	 	  G.timedWait(client,howLong);
 	    	 	  setSleeping(false);
 	    	 	  waited = true;
@@ -1512,7 +1495,7 @@ public class RepaintManager implements VncScreenInterface,Config
 	     *
 	     */
 	    public void wake()
-	    {	//Plog.log.addLog("RepaintManager Wake ",client);
+	    {	
 	        G.wake(client); 
 	    }
 	    //
@@ -1546,7 +1529,7 @@ public class RepaintManager implements VncScreenInterface,Config
 	    	case Direct_SingleBuffer: 
 	    		break;
 	    	default:
-	    		helper.resetLocalBoundsNow();
+	    		helper.resetLocalBoundsIfNeeded();
 	    	}
 	    }
 	    
@@ -1600,7 +1583,7 @@ public class RepaintManager implements VncScreenInterface,Config
 	    
 	    public boolean handleDeferredEvent(Object target)
 	    {	
-	    	RepaintStrategy v = RepaintStrategy.isMenu(target,repaintStrategy);
+	    	RepaintStrategy v = RepaintStrategy.isStrategyMenu(target,repaintStrategy);
     		if(v!=null)
     		{
     			setRepaintStrategy(v);
@@ -1762,10 +1745,11 @@ public class RepaintManager implements VncScreenInterface,Config
         public void drawFixedElements(Graphics gc,boolean complete)
         {
 			GC.setFont(gc,helper.getDefaultFont());
-			int w = helper.getWidth();
-			int h = helper.getHeight();
-			boolean qt = helper.quarterTurn();
-			complete |= createAllFixed(qt?h:w,qt?w:h);				// true if this is a new bitmap that needs to be painted
+			{
+			int w = helper.getRotatedWidth();
+			int h = helper.getRotatedHeight();
+			complete |= createAllFixed(w,h);				// true if this is a new bitmap that needs to be painted
+			}
           	XImage fixed = allFixed();		 // create backing bitmaps;
           	boolean drawn = false;
         	if(fixed!=null)

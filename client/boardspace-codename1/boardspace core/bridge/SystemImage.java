@@ -106,7 +106,8 @@ public void loadImage(URL name)
 	String namestr = name.urlString;
 	try {
 	ImageAdapter p=new DummyAdapter(); 
-	URLImage im = URLImage.createToStorage(EncodedImage.createFromImage(placeHolder,true), tempname, namestr,p);
+	EncodedImage created = EncodedImage.createFromImage(placeHolder,true);
+	URLImage im = URLImage.createToStorage(created, tempname, namestr,p);
 	setImage(im,namestr);
 	}
 	catch (Throwable err)

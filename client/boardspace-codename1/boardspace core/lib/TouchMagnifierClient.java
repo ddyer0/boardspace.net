@@ -2,11 +2,11 @@ package lib;
 
 import bridge.Component;
 
-public interface TouchMagnifierClient
+public interface TouchMagnifierClient extends SizeProvider
 {
-	public int getWidth();
+	public int getRotatedWidth();
 
-	public int getHeight();
+	public int getRotatedHeight();
 
 	public MouseManager getMouse();
 

@@ -140,7 +140,7 @@ public class NamedClasses {
      	classes.put("volo.VoloViewer",volo.VoloViewer.class);
       	classes.put("warp6.Warp6Viewer",warp6.Warp6Viewer.class);
       	classes.put("xiangqi.XiangqiViewer",xiangqi.XiangqiViewer.class);
-      	classes.put("y.YViewer", y.YViewer.class);
+      	classes.put("ygame.YViewer", ygame.YViewer.class);
      	classes.put("yinsh.common.YinshGameViewer",yinsh.common.YinshGameViewer.class);
      	classes.put("zertz.common.ZertzGameViewer",zertz.common.ZertzGameViewer.class);
      	

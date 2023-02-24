@@ -1,4 +1,4 @@
-package y;
+package ygame;
 
 import java.util.*;
 

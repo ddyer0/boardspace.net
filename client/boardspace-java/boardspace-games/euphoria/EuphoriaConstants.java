@@ -1286,6 +1286,7 @@ public interface EuphoriaConstants
 	    ChooseRecruit(null,"",false,false,false,true,	false,false,null),
 	    Magnifier(null,"",false,false,false,true,false,false,null),
 	    UnMagnifier(null,"",false,false,false,true,false,false,null),
+	    ShowPlayerPeek(null,"",false,false,false,true,	false,false,null),
 	    ShowPlayerView(null,"",false,false,false,true,	false,false,null),
 	    ShowPlayerRecruits(null,"",false,false,false,true,	false,false,null),	    
 	    FightTheOpressor(null,"Fight the Opressor",false,false,false,true,	false,false,null),

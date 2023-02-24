@@ -23,6 +23,8 @@ LAST_IS_MOVE,
 
 /** last mouse action is a pinch gesture */
 LAST_IS_PINCH,
+/** mouse wheel action */
+LAST_IS_WHEEL,
 
 /** last is idle, nothing happening! */
 LAST_IS_IDLE

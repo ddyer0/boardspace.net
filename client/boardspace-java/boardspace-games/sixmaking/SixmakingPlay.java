@@ -279,5 +279,50 @@ public class SixmakingPlay extends commonRobot<SixmakingBoard> implements Runnab
      return(move);
  }
 
+/*
+ * Sixth (also known as Six Making) is a fairly standard 2 player abstract strategy game.
+http://boardspace.net/sixmaking/english ... -Ro-Hu.pdf
 
+Vis-a-vis other games in the same class, the interesting point is that it's in the class where winning
+is akin to solving a puzzle - finding or constructing a winning position - rather than accumulating a
+material advantage which eventually leads to a win.
+
+The first stage of development was a completely vanilla MCTS with 5 seconds per move, which
+proved to be very strong. As a practical matter for online play, I downgraded the initial version
+by making it play faster to produce an AI that could be beaten with a little practice.
+
+The surprise came when I tried (as a routine experiment) to make an even stronger AI by giving
+it more time. To my surprise, a robot given 30 seconds per move lost every game when played
+against the same robot given 5 seconds per move. 5 seconds/move also won against 300 seconds
+per move. This was so surprising and counter-intuitive that it inspired an extended investigation,
+partly as a hunt for bugs, partly as a quest to understand MCTS behavior better.
+
+The immediate cause turned out to be the limit on the size of the UCT tree. There is, and
+pretty much has to be, a hard limit on the size of the tree to prevent the robot running out
+of memory. Various strategies are employed to avoid hitting the limit by restricting growth
+of the tree, and by pruning parts of the tree that can't (or aren't likely to) affect the result
+of the search; but the limit ultimately remains. I found that by stopping the search when
+this limit is reached (a) at certain phases of the game, the longer-thinking robots stopped
+early. and (b) the normal more-time-is-better relationship returned.
+
+Phase 2: I investigated if this new stop condition applied to other games as well, and
+generally speaking it did not. Other games using the same engine seemed to continue
+getting stronger, given more time, even if the size limit was reached.
+
+Lots of thought, study of game trees, and some new tools to help visualize game trees,
+eventually resulted in this insight:
+
+The "random playout" portion of the search, below the leaf nodes of the tree, yields the
+"average" value of the game below that point. In some games, the average is also typical
+because the children are pretty similar, Hex and Go are in this class. In others, some
+children are very good and some are very bad and the average is not particularly representative
+of the true value (because real players don't make random moves, they try to make the best).
+Sixmaking is in this class.
+
+If you consider the state of the lowest levels of the tree when it is frozen by the memory limit,
+those nodes evaluations are still close to the "average" of the move evaluation. They've been
+selected for exploration, but have not yet been explored. As you continue running random games
+from those leaves, random deviations from those average values will be amplified. When you
+amplify noise, you get worse results.
+ */
  }

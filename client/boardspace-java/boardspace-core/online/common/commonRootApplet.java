@@ -151,6 +151,7 @@ public class commonRootApplet implements  RootAppletProtocol, Runnable,  LobbyCo
     {	LPanel lf = new LPanel(name, fr, a);
     	return(lf);
     }
+
     public void StartLframe()
     {	try {
     	initSharedInfo();
@@ -177,12 +178,12 @@ public class commonRootApplet implements  RootAppletProtocol, Runnable,  LobbyCo
             					? server.getHostName()
             					: isTable 
             						? UDPService.getPlaytableName()
-            						: G.getString(OnlineConstants.GAMETYPE,offlineLauncher?"Offline Launcher" :"Lobby");
-            myLF = NewLPanel(rootname, myL,fr);
-             
+            						: G.getString(OnlineConstants.GAMETYPE,
+            								G.getTranslations().get(offlineLauncher?LauncherName :LobbyName));
             ExtendedHashtable sharedInfo = G.getGlobals();
             myL.init(sharedInfo,fr);
-            
+            myLF = NewLPanel(rootname, myL,fr);
+             
             if(isVNC|isTable|offlineLauncher)
             	{ 
             	  if(isVNC && server.isRpc())

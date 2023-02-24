@@ -32,7 +32,7 @@ public class TextWindow extends Canvas implements MouseListener,MouseMotionListe
 	{
 		
 	}
-	public void resetLocalBoundsNow()
+	public void resetLocalBoundsIfNeeded()
 	{
 		
 	}
@@ -111,6 +111,10 @@ public class TextWindow extends Canvas implements MouseListener,MouseMotionListe
 	{
 	
 	}
+	/** for mouseWheelListener */
+	public void mouseWheelMoved(MouseWheelEvent e) {
+		area.doMouseWheel(e.getX(),e.getY(),e.getWheelRotation());
+	}
 	//
 	// for repaintHelper
 	//
@@ -183,16 +187,7 @@ public class TextWindow extends Canvas implements MouseListener,MouseMotionListe
 	public double getGlobalZoom() {
 		return 1;
 	}
-	/** for mouseWheelListener */
-	public void mouseWheelMoved(MouseWheelEvent e) {
-		int mod = e.getModifiersEx();
-		if(mod==0)
-		{
-		int up = e.getWheelRotation();
-		area.doMouseWheel(up);
-		repaint(100);
-		}
-	}
+
 	public TextPrintStream getPrinter()
 	{
 		return TextPrintStream.getPrinter(new Utf8OutputStream(),area);
@@ -207,6 +202,4 @@ public class TextWindow extends Canvas implements MouseListener,MouseMotionListe
 	public void startProcess() {
 		// this is a dummy, we have no process.  TextMouseWindow has a process
 	}
-	
-
 }

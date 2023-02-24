@@ -1,20 +1,37 @@
 package bridge;
 
-import com.codename1.ui.geom.Rectangle;
-
 import lib.CanvasRotater;
 import lib.CanvasRotaterProtocol;
+import lib.ExtendedHashtable;
 import lib.G;
 import lib.Graphics;
 import lib.LFrameProtocol;
 import lib.PinchEvent;
+import lib.SizeProvider;
 
-public class Canvas extends Component implements CanvasRotaterProtocol,WindowListener,MouseListener,MouseWheelListener,MouseMotionListener
+public class Canvas extends Component implements WindowListener,MouseListener,MouseWheelListener,MouseMotionListener,
+		CanvasRotaterProtocol,SizeProvider
 {	
+	private CanvasRotater rotater = null;
+	public LFrameProtocol myFrame = null;
 	public Canvas(LFrameProtocol frame)
-	{
+	{	
 		super();
+		myFrame = frame;
+		rotater = frame.getCanvasRotater();
 	}
+	public void init(ExtendedHashtable h,LFrameProtocol f)
+	{
+		myFrame = f;
+		rotater = f.getCanvasRotater();
+	}
+	public void shutDown()
+	{
+		 LFrameProtocol f = myFrame;
+		 if(f!=null) { f.killFrame(); }
+	}
+	public boolean doSound() { return myFrame.doSound(); }
+	
 	public Canvas() { super(); }
 	
 	public void paint(Graphics g) { G.Error("Should be overridden");}
@@ -23,18 +40,6 @@ public class Canvas extends Component implements CanvasRotaterProtocol,WindowLis
 	{	
 		paint(Graphics.create(g));
 	}
-	// support for rotater buttons
-	CanvasRotaterProtocol rotater = new CanvasRotater(this);
-	public int getCanvasRotation() { return rotater.getCanvasRotation(); }
-	public boolean quarterTurn() { return rotater.quarterTurn(); }
-	public void setCanvasRotation(int n) { rotater.setCanvasRotation(n); }
-	public boolean rotateCanvas(lib.Graphics g) { return rotater.rotateCanvas(g); }
-	public void unrotateCanvas(lib.Graphics g) {  rotater.unrotateCanvas(g); }
-	public int rotateCanvasX(int x,int y) { return rotater.rotateCanvasX(x,y); }
-	public int rotateCanvasY(int x,int y) { return rotater.rotateCanvasY(x,y); }
-	public int unrotateCanvasX(int x,int y) { return rotater.unrotateCanvasX(x,y); }
-	public int unrotateCanvasY(int x,int y) { return rotater.unrotateCanvasY(x,y); }
-	public Rectangle getRotatedBounds() { return rotater.getRotatedBounds(); }
 
 	public void windowOpened(WindowEvent e) { }
 	public void windowClosing(WindowEvent e) {	}
@@ -55,4 +60,18 @@ public class Canvas extends Component implements CanvasRotaterProtocol,WindowLis
 	public void mouseDragged(MouseEvent e) { }
 	public void mouseMoved(MouseEvent e) { }
 	public void mousePinched(PinchEvent e) { }
+	public int rotateCanvasX(int x,int y) { return rotater.rotateCanvasX(x,y,this); }
+	public int rotateCanvasY(int x,int y) { return rotater.rotateCanvasY(x,y,this); }
+
+	public int getCanvasRotation() { return rotater.getCanvasRotation(); }
+	public void setCanvasRotation(int n) 
+		{ rotater.setCanvasRotation(n); }
+	public boolean rotateCanvas(Graphics g) { return rotater.rotateCanvas(g,this); }
+	public void unrotateCanvas(Graphics g) {  rotater.unrotateCanvas(g,this); }
+	public int unrotateCanvasX(int x,int y) { return rotater.unrotateCanvasX(x,y,this); }
+	public int unrotateCanvasY(int x,int y) { return rotater.unrotateCanvasY(x,y,this); }
+	public int getRotatedWidth() { return rotater.getRotatedWidth(this); }
+	public int getRotatedHeight() { return rotater.getRotatedHeight(this); }
+	public int getRotatedTop() { return rotater.getRotatedTop(this); }
+	public int getRotatedLeft() { return rotater.getRotatedLeft(this); }
 }

@@ -13,6 +13,7 @@ import lib.G;
 import lib.Graphics;
 import lib.Image;
 import lib.Log;
+import lib.Plog;
 
 public abstract class SystemGraphics {
 	public static boolean logging = false;
@@ -99,7 +100,12 @@ public abstract class SystemGraphics {
     	{
     	com.codename1.ui.Image image = im.getImage();
      	if(image!=null) 
-    	{ graphics.drawImage(image,x, y, w, h);
+    	{ 
+     	  try { graphics.drawImage(image,x, y, w, h); }
+     	  catch (Throwable e)
+     	  {
+     		  Plog.log.addLog("unexpected error drawing image ",this," ",e);
+     	  }
     	  recordDraw(x,y,w,h);
     	  return(true); 
     	}}

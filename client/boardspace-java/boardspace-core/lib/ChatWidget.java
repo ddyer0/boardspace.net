@@ -1010,7 +1010,7 @@ public class ChatWidget
 	public boolean activelyScrolling() {
 		return(activePane().activelyScrolling());
 	}
-	public boolean doMouseWheel(int xx,int yy,int amount)
+	public boolean doMouseWheel(int xx,int yy,double amount)
 	{	return activePane().doMouseWheel(xx,yy,amount);
 	
 	}
