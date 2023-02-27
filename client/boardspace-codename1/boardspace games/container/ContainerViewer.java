@@ -158,7 +158,8 @@ public class ContainerViewer extends CCanvas<ContainerCell,ContainerBoard> imple
     }
 
     ContainerBoard.playerBoard getCurrentPlayerBoard(ContainerBoard gb)
-    {	return(gb.playerBoard[allowed_to_edit|isPassAndPlay ? b.whoseTurn : getActivePlayer().boardIndex] ); 
+    {	int ind = allowed_to_edit|isPassAndPlay ? b.whoseTurn : getActivePlayer().boardIndex;
+    	return(gb.getPlayer(ind)); 
     }
 
     ContainerBoard.playerBoard getPlayerBoard(ContainerBoard gb,int n)
@@ -220,11 +221,12 @@ public class ContainerViewer extends CCanvas<ContainerCell,ContainerBoard> imple
         speedRect.barColor=ZoomColor;
         speedRect.highlightColor = HighlightColor;
  
-        b = new ContainerBoard(info.getString(OnlineConstants.GAMETYPE, Container_INIT),
+        b = new ContainerBoard(info.getString(GAMETYPE, Container_INIT),
         		players_in_game,ran,getStartingColorMap());
         if(G.debug()) {
         	ContainerConstants.putStrings();
         }
+        //useDirectDrawing();	// not checked yet
         doInit(false);
 
         
@@ -365,7 +367,7 @@ public class ContainerViewer extends CCanvas<ContainerCell,ContainerBoard> imple
         int atSeaX = islandX+islandWidth/4;
         
         G.SetRect(warehouseStorageRect,G.Left(boardRect)+CELLSIZE,G.Top(boardRect)+CELLSIZE, 4*CELLSIZE, 5*CELLSIZE);
-        G.SetRect(machineStorageRect,G.Left( boardRect)+CELLSIZE, G.Bottom(warehouseStorageRect) + C2,4*CELLSIZE, CELLSIZE*7);
+        G.SetRect(machineStorageRect,G.Left( boardRect)+CELLSIZE, G.Bottom(warehouseStorageRect) + C2,4*CELLSIZE, CELLSIZE*6+CELLSIZE/2);
         G.SetRect(containerStorageRect, G.Right(machineStorageRect)+CELLSIZE,G.Top( boardRect)+CELLSIZE,(CONTAINER_COLORS-2)*2*CELLSIZE, CELLSIZE*12);
          
         G.SetRect(loanRect, G.Right(containerStorageRect)+CELLSIZE, G.Bottom(containerStorageRect)-5*CELLSIZE, 2*CELLSIZE,4*CELLSIZE);
@@ -456,7 +458,7 @@ public class ContainerViewer extends CCanvas<ContainerCell,ContainerBoard> imple
         		chatX,
         		chatY,
         		atSeaX-C2-chatX, 
-        		Math.min(chatHeight,G.Top(lastbox)-chatY-CELLSIZE));
+        		Math.min(chatHeight,G.Top(lastbox)-chatY-CELLSIZE/2));
 
   
         G.SetRect(logRect, 
@@ -580,7 +582,8 @@ public class ContainerViewer extends CCanvas<ContainerCell,ContainerBoard> imple
     }
     private ContainerBoard.ContainerGoalSet selectedGoalSet()
     {
-    	if(showDevelopInfo() && (selectedPerspective>=0)) { return(b.playerBoard[selectedPerspective].possibleGoalSets[0]); }
+    	if(showDevelopInfo() && (selectedPerspective>=0)) 
+    		{ return(b.getPlayer(selectedPerspective).possibleGoalSets[0]); }
     	return(b.masterGoalSet);
     }
     
@@ -854,7 +857,7 @@ public class ContainerViewer extends CCanvas<ContainerCell,ContainerBoard> imple
        			wid = G.Width(machineStorageRect)/2,
        			sw = wid-wid/4,
        			ystep = (G.Height(machineStorageRect)-CELLSIZE)/3,
-       			y = G.Top(machineStorageRect)+ystep,
+       			y = G.Top(machineStorageRect)+ystep/2,
        			x = G.Left(machineStorageRect);
        		i<lim;
        		i++)
@@ -869,7 +872,7 @@ public class ContainerViewer extends CCanvas<ContainerCell,ContainerBoard> imple
     {       	// draw the warehouse storage
    		int wid =  G.Width(warehouseStorageRect)-G.Width(warehouseStorageRect)/5;
    		int xp = G.Left(warehouseStorageRect);
-   		int yp = G.Bottom(warehouseStorageRect)-CELLSIZE/2;
+   		int yp = G.Bottom(warehouseStorageRect)-CELLSIZE;
        	gb.warehouseStorage.drawBrick(gc,isAllowed(allowed,highlight,gb.warehouseStorage),true,xp,yp,
        		this,wid,wid/3,4,true,2.0,1.0,null);
        	HitPoint.setHelpText(any,warehouseStorageRect,s.get(UnsoldWarehouse));
@@ -930,7 +933,7 @@ public class ContainerViewer extends CCanvas<ContainerCell,ContainerBoard> imple
     // debugging information we are displaying on the island.
     //
     private void drawPlayerIsland(Graphics gc,ContainerBoard gb,int playeridx,HitPoint highlight,Hashtable<ContainerCell,ContainerCell> allowed,HitPoint any)
-    {	ContainerBoard.playerBoard ob = gb.playerBoard[playeridx];
+    {	ContainerBoard.playerBoard ob = gb.getPlayer(playeridx);
     	double islandSubRect[][] = {
    			{0.11,0.19,0.13,0.5},	// these are ad-hoc sub rectangles of the island rectangle
    			{0.28,0.17,0.13,0.5},
@@ -1258,8 +1261,8 @@ public class ContainerViewer extends CCanvas<ContainerCell,ContainerBoard> imple
 		{
 		int playeridx = ob.player;
 		int bidders = 0;
-		for(int i=0,limit=gb.playerBoard.length; i<limit; i++) 
-			{ ContainerBoard.playerBoard bbd = gb.playerBoard[i];
+		for(int i=0,limit=nPlayers(); i<limit; i++) 
+			{ ContainerBoard.playerBoard bbd = gb.getPlayer(i);
 			  if((bbd!=ob)&&bbd.willFundLoan) { bidders++; }
 			}
 		GC.setFont(gc,largeBoldFont());
@@ -1498,7 +1501,7 @@ public class ContainerViewer extends CCanvas<ContainerCell,ContainerBoard> imple
     private void drawPlayerMat(Graphics gc,ContainerBoard gb,int playeridx,HitPoint highlight,
     		Hashtable<ContainerCell,ContainerCell> allowed,boolean allowFactoryGold,HitPoint any,boolean moving,
     		Rectangle statRect)
-    {	ContainerBoard.playerBoard ob = gb.playerBoard[playeridx];
+    {	ContainerBoard.playerBoard ob = gb.getPlayer(playeridx);
  		ContainerCell source = moving ? gb.getSource() : null;
  		Rectangle master = playerMats[playeridx];
  

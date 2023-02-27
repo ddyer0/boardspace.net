@@ -634,7 +634,7 @@ public class RepaintManager implements VncScreenInterface,Config
   private void cantPaintNow()
 	{	Thread ll = directDrawingLock.locker();
 		Thread cc = Thread.currentThread();
-		System.out.println("Can't paint, locker "+ll+" current "+cc);
+		Plog.log.addLog("Can't paint, locker "+ll+" current "+cc);
 		cantPaint = true;
 		long now = G.Date();
 		if(waitingToPaintStart==0) { waitingToPaintStart = now; }

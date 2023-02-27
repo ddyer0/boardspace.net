@@ -366,7 +366,7 @@ public class ContainerViewer extends CCanvas<ContainerCell,ContainerBoard> imple
         int atSeaX = islandX+islandWidth/4;
        
         G.SetRect(warehouseStorageRect,G.Left(boardRect)+CELLSIZE,G.Top(boardRect)+CELLSIZE, 4*CELLSIZE, 5*CELLSIZE);
-        G.SetRect(machineStorageRect,G.Left( boardRect)+CELLSIZE, G.Bottom(warehouseStorageRect) + C2,4*CELLSIZE, CELLSIZE*7);
+        G.SetRect(machineStorageRect,G.Left( boardRect)+CELLSIZE, G.Bottom(warehouseStorageRect) + C2,4*CELLSIZE, CELLSIZE*6+CELLSIZE/2);
         G.SetRect(containerStorageRect, G.Right(machineStorageRect)+CELLSIZE,G.Top( boardRect)+CELLSIZE,(CONTAINER_COLORS-2)*2*CELLSIZE, CELLSIZE*12);
          
         G.SetRect(loanRect, G.Right(containerStorageRect)+CELLSIZE, G.Bottom(containerStorageRect)-5*CELLSIZE, 2*CELLSIZE,4*CELLSIZE);
@@ -457,7 +457,7 @@ public class ContainerViewer extends CCanvas<ContainerCell,ContainerBoard> imple
         		chatX,
         		chatY,
         		atSeaX-C2-chatX, 
-        		Math.min(chatHeight,G.Top(lastbox)-chatY-CELLSIZE));
+        		Math.min(chatHeight,G.Top(lastbox)-chatY-CELLSIZE/2));
 
   
         G.SetRect(logRect, 
@@ -856,7 +856,7 @@ public class ContainerViewer extends CCanvas<ContainerCell,ContainerBoard> imple
        			wid = G.Width(machineStorageRect)/2,
        			sw = wid-wid/4,
        			ystep = (G.Height(machineStorageRect)-CELLSIZE)/3,
-       			y = G.Top(machineStorageRect)+ystep,
+       			y = G.Top(machineStorageRect)+ystep/2,
        			x = G.Left(machineStorageRect);
        		i<lim;
        		i++)
@@ -871,7 +871,7 @@ public class ContainerViewer extends CCanvas<ContainerCell,ContainerBoard> imple
     {       	// draw the warehouse storage
    		int wid =  G.Width(warehouseStorageRect)-G.Width(warehouseStorageRect)/5;
    		int xp = G.Left(warehouseStorageRect);
-   		int yp = G.Bottom(warehouseStorageRect)-CELLSIZE/2;
+   		int yp = G.Bottom(warehouseStorageRect)-CELLSIZE;
        	gb.warehouseStorage.drawBrick(gc,isAllowed(allowed,highlight,gb.warehouseStorage),true,xp,yp,
        		this,wid,wid/3,4,true,2.0,1.0,null);
        	HitPoint.setHelpText(any,warehouseStorageRect,s.get(UnsoldWarehouse));

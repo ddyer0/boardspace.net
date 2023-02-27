@@ -250,7 +250,6 @@ public class XFrame extends JFrame implements WindowListener,SizeProvider,LFrame
 
 	public void windowClosed(WindowEvent e) {
 		killed=true;
-		
 	}
 
 	public void windowIconified(WindowEvent e) {

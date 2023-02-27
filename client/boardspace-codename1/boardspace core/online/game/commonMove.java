@@ -1,7 +1,8 @@
 package online.game;
 
 import bridge.ActionListener;
-
+import online.game.sgf.sgf_node;
+import online.game.sgf.sgf_property;
 import online.search.UCTNode;
 
 import java.io.PrintStream;
@@ -245,6 +246,41 @@ public abstract class commonMove implements lib.CompareTo<commonMove> , Opcodes,
     	Hashtable<String,Object> props = H().properties;
     	if(props!=null) { return(props.get(propName)); }
     	return(null);
+    }
+    public void copyPropertiesTo(sgf_node root)
+    {
+    	Hashtable<String,Object> props = H().properties;
+    	if(props!=null)
+    	{
+    		for(Enumeration<String> keys = props.keys(); keys.hasMoreElements();)
+    		{
+    			String k = keys.nextElement();
+    			Object v = props.get(k);
+    			if(v!=null)
+    			{
+    				root.set_property(k,v.toString());
+    			}
+    		}
+    	}
+    }
+    public void printProperties(PrintStream ps)
+    {
+    	Hashtable<String,Object> props = H().properties;
+    	if(props!=null)
+    	{
+    		for(Enumeration<String> keys = props.keys(); keys.hasMoreElements();)
+    		{
+    			String k = keys.nextElement();
+    			Object v = props.get(k);
+    			if(v!=null)
+    			{
+    			ps.print(k);
+    			ps.print("[");
+    			ps.print(sgf_property.bracketedString(v.toString()));
+    			ps.println("]");
+    			}
+    		}
+    	}
     }
     public void setProperty(String propName,Object value)
     {	if(HProps==null && value==null) {}

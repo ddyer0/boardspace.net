@@ -31,7 +31,6 @@ import lib.PopupManager;
 import lib.Random;
 import lib.RootAppletProtocol;
 import lib.StockArt;
-import lib.Text;
 import lib.TextButton;
 import lib.TextContainer;
 import online.common.SeatingChart.Seating;

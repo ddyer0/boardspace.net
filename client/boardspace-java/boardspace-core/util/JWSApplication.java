@@ -218,27 +218,37 @@ public class JWSApplication implements Config,Runnable
 		{	// this is the entry point from the miniloader
 			try {
 			StringStack args = new StringStack();
-			String os =G.getOS()+ " Executable Jar";
-			G.setPlatformName(os);
 			int idx = 0;
+			String classes = "Executable Jar";
+			String ts = "";
+			String tt = "";
+			
 			String mini = null;
 			do {
 				String aa = System.getProperty("mainargs-"+idx);
-				if(aa==null) { break; }
-				args.push(aa);
 				idx++;
+				if(aa==null) { break; }
+				
+				String av = System.getProperty("mainargs-"+idx);
+				idx++;
+				
+				args.push(aa);
+				args.push(av);
+				
+				if(OnlineConstants.CLASSDIR.equals(aa)) { classes = " "+av; }
+				if(OnlineConstants.TESTSERVER.equals(aa)) { ts = " TestServer"; }
+				if(OnlineConstants.TESTVERSION.equals(aa)) { tt = " Test"; }
+				if("miniloader".equals(aa)) { mini = av; }
+			
 			} while(true);
-			// this is where it might be appropriate to do something about obsolete 
-			for(int i=0;i<args.size();i+=2)
-			{
-				if("miniloader".equals(args.elementAt(i))) { mini = args.elementAt(i+1); }
-			}
+	
 			int jv = G.javaMajorVersion();
 			if((jv>=18) && (mini==null)) // the first miniloader that reports here is 1.3
 			{
 				G.infoBox("boardspace launcher","your version of the boardspace launcher is old.\nPlease install a new one from Boardspace.net");
 			}
-			
+			String os =G.getOS()+ " "+classes+ts+tt;
+			G.setPlatformName(os);
 			runLobby(args.toArray());
 			} catch (Throwable e)
 			{

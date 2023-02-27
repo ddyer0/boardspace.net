@@ -571,7 +571,8 @@ public class Boardspace extends URLClassLoader implements Runnable,LoaderConfig
 		s.write(msg);
 		s.close();
 	}
-	
+	public static String masterCache = "";
+
 	/*
 	 *  load the cache by immediately copying all the jar files specified
 	 *  if not present or older than the available web jar.  A progress
@@ -601,6 +602,7 @@ public class Boardspace extends URLClassLoader implements Runnable,LoaderConfig
 		boolean mismatch = !(firstLine.equals(getCacheName(cacheDir)));
 		String line = null;
 		int nlines = 0;
+		masterCache = specs[2];
 		while( (line=reader.readLine())!=null)
 			{
 			nlines++;
@@ -855,6 +857,8 @@ public class Boardspace extends URLClassLoader implements Runnable,LoaderConfig
 				}
 				System.setProperty("mainargs-"+argnum,val);
 			}
+		
+		
 		if(debug)
 		{	
 			System.setProperty("mainargs-"+argnum++,"debug");
@@ -872,12 +876,17 @@ public class Boardspace extends URLClassLoader implements Runnable,LoaderConfig
 			System.setProperty("mainargs-"+argnum++,"testversion");
 			System.setProperty("mainargs-"+argnum++,"true");			
 		}
+		
 
 		System.setProperty("mainargs-"+argnum++,"preload");
 		System.setProperty("mainargs-"+argnum++,allowPreload ? "true" : "false");
 		
 		File cacheDir = createTempDir();
 		Boardspace m =getMiniloader(cacheDir);
+		
+		System.setProperty("mainargs-"+argnum++,"classdir");
+		System.setProperty("mainargs-"+argnum++,masterCache);
+
 		Class<?> base = m.loadClass(runClass,false);	// get the class to run first
 		Thread t = new Thread(m,"Background cache loader");
 		t.setPriority(Thread.MIN_PRIORITY);

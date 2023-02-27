@@ -1318,7 +1318,7 @@ public class ContainerBoard extends RBoard<ContainerCell> implements BoardProtoc
     public CellStack animationStack = new CellStack();
     public boolean second_shipment = true;	//
     public boolean first_shipment = false;	//
-    public playerBoard playerBoard[] = null;	// player boards, one per player
+    private playerBoard playerBoard[] = null;	// player boards, one per player
     public playerBoard getShipOwner(ContainerChip ship)
     {
     	G.Assert(ship.isShip(),"must be a ship");

@@ -2977,7 +2977,7 @@ public class ContainerBoard extends RBoard<ContainerCell> implements BoardProtoc
     	return(null);
     }
     // get the player board associated with C, or null
-    public playerBoard getPlayerBoard(ContainerCell c)
+    private playerBoard getPlayerBoard(ContainerCell c)
     {	return((c==null)
     			? null 
     			: (c.col=='@')

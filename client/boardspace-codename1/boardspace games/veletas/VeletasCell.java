@@ -12,7 +12,7 @@ class CellStack extends OStack<VeletasCell>
 public class VeletasCell extends stackCell<VeletasCell,VeletasChip> implements VeletasConstants,PlacementProvider
 {	public int sweep_counter = 0;
 	int lastPlaced = -1;
-
+	int lastEmptied = -1;
 	public VeletasChip[] newComponentArray(int n) { return(new VeletasChip[n]); }
 	// constructor
 	public VeletasCell(char c,int r) 
@@ -31,11 +31,12 @@ public class VeletasCell extends stackCell<VeletasCell,VeletasChip> implements V
 	public void reInit()
 	{
 		super.reInit();
-		lastPlaced = -1;
+		lastPlaced = lastEmptied = -1;
 	}
 	public void copyFrom(VeletasCell other)
 	{	super.copyFrom(other);
 		lastPlaced = other.lastPlaced;
+		lastEmptied = other.lastEmptied;
 	}
 	/** upcast the cell id to our local type */
 	public VeletasId rackLocation() { return((VeletasId)rackLocation); }
@@ -81,6 +82,6 @@ public class VeletasCell extends stackCell<VeletasCell,VeletasChip> implements V
 	}
 	
 	public int getLastPlacement(boolean empty) {
-		return empty ? -1 : lastPlaced;
+		return empty ? lastEmptied : lastPlaced;
 	}
 }

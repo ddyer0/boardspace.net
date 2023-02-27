@@ -20,7 +20,7 @@ Change History
 Nov 12 2004  Iniital work in progress, support for Yinsh
 July 2005        Lightspeed progress toward a working version
 */
-public class YinshGameViewer extends CCanvas<YinshCell,YinshBoard> implements YinshConstants, GameLayoutClient
+public class YinshGameViewer extends CCanvas<YinshCell,YinshBoard> implements YinshConstants, GameLayoutClient,PlacementProvider
 {
      /**
 	 * 
@@ -31,7 +31,7 @@ public class YinshGameViewer extends CCanvas<YinshCell,YinshBoard> implements Yi
     
     // vcr stuff
     static final Color vcrButtonColor = new Color(0.7f, 0.7f, 0.75f);
-
+    private Color BlackArrowColor = new Color(230,200,255);
     // private state
     YinshBoard b = null; //the board from which we are displaying
     private double MASTER_SCALE = 1.0;
@@ -45,7 +45,7 @@ public class YinshGameViewer extends CCanvas<YinshCell,YinshBoard> implements Yi
      
     private Rectangle chipRects[] = addRect("ring",2);
     private Rectangle capturedRects[] = addRect("captured",2);
-    
+    private NumberMenu numberMenu =  null;
     private Rectangle chipPool = addRect("chipPool");
     private final Color reviewModeBackground = new Color(1.0f, 0.90f, 0.90f);
     private final Color HighlightColor = new Color(0.2f, 0.95f, 0.75f);
@@ -71,7 +71,7 @@ public class YinshGameViewer extends CCanvas<YinshCell,YinshBoard> implements Yi
     public void init(ExtendedHashtable info,LFrameProtocol frame)
     {	enableAutoDone = true;
         super.init(info,frame);
-        
+        numberMenu = new NumberMenu(this,YinshChip.WhiteChip,YinshId.ShowNumbers);
         b = new YinshBoard(info.getString(GAMETYPE, "Yinsh"),getStartingColorMap());
         useDirectDrawing(true); 
         doInit(false);
@@ -160,7 +160,7 @@ public class YinshGameViewer extends CCanvas<YinshCell,YinshBoard> implements Yi
         int stateX = boardX;
         
         RINGRADIUS = CELLSIZE/2; //ball radius to work with
-        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,viewsetRect,noChatRect);
+        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,numberMenu,viewsetRect,noChatRect);
     	G.SetRect(boardRect,boardX,boardY+stateH,boardW,boardH);
     	G.SetRect(chipPool,boardX+boardW-CELLSIZE*2,boardY+boardH-CELLSIZE*2-stateH*2,CELLSIZE*2,CELLSIZE*2);
      	
@@ -336,6 +336,8 @@ public class YinshGameViewer extends CCanvas<YinshCell,YinshBoard> implements Yi
 
         int height = G.Height(brect);
         boolean somehit = false;
+     	numberMenu.clearSequenceNumbers();
+     	
         DrawChipPool(gc, chipPool, highlight);
 
         int top = G.Bottom(brect);
@@ -345,6 +347,8 @@ public class YinshGameViewer extends CCanvas<YinshCell,YinshBoard> implements Yi
         		YinshCell c = cells.nextElement();
                 int ypos = top - gb.cellToY(c);
                 int xpos = left + gb.cellToX(c);
+                char piece = c.contents;
+                numberMenu.saveSequenceNumber(c,xpos,ypos,FIRST_PLAYER_INDEX==c.lastRing ? labelColor : BlackArrowColor);
                 char thiscol = c.col;
                 int thisrow = c.row;
                 boolean hitpoint = !somehit &&
@@ -357,7 +361,6 @@ public class YinshGameViewer extends CCanvas<YinshCell,YinshBoard> implements Yi
                     gb.isSource(thiscol, thisrow) ||
                     gb.isRemoved(thiscol, thisrow);
                 c.rotateCurrentCenter(gc,xpos,ypos);
-                char piece = c.contents;
 
                 // drawing
                 double pscale = chipScale(height,ypos);
@@ -397,6 +400,7 @@ public class YinshGameViewer extends CCanvas<YinshCell,YinshBoard> implements Yi
                 //if(gc!=null) { int ii = (xpos*ypos^(xpos+ypos))%15; if(ii<SELECTION_INDEX) 
                 //	{ drawChip(gc,ii,xpos,ypos,CELLSIZE); }}
             }
+        numberMenu.drawSequenceNumbers(gc,CELLSIZE*2/3,labelFont,labelColor);
     }
     
     void drawChip(Graphics gc, int idx, int x, int y, int boxw, double scale,
@@ -504,7 +508,7 @@ public class YinshGameViewer extends CCanvas<YinshCell,YinshBoard> implements Yi
         					b.blitz 
 												? s.get("make 5 in a row to capture a ring and win")
 												: s.get("make 5 in a row to capture a ring, 3 rings win"),progressRect, goalRect);
-
+        numberMenu.draw(gc,selectPos);
         drawVcrGroup(nonDragSelect, gc);
         drawViewsetMarker(gc,viewsetRect,nonDragSelect); 
     }
@@ -517,6 +521,7 @@ public class YinshGameViewer extends CCanvas<YinshCell,YinshBoard> implements Yi
     }
     public boolean Execute(commonMove m,replayMode replay)
     {   //System.out.println("e "+m);
+    	numberMenu.recordSequenceNumber(b.moveNumber);
     	handleExecute(b,m,replay);
         int size = CELLSIZE;
         int stackSize = b.animationStack.size();
@@ -581,7 +586,9 @@ public class YinshGameViewer extends CCanvas<YinshCell,YinshBoard> implements Yi
 					YinshCell last = animationStack.elementAt(animationStack.size()-1);
 					if(last!=to) 
 					{ startAnimation(to,to,last.animationChip(-1),size,0,lastTime,-1); 
-					  startAnimation(last,last,StockArt.SmallX,1,0,lastTime,-1);
+					  // this would draw an X at the destination point of a sliding ring
+					  // but I now think it is superfluous
+					  // startAnimation(last,last,StockArt.SmallX,size,0,lastTime,-1);
 					}
 				}
 				}
@@ -704,7 +711,9 @@ public class YinshGameViewer extends CCanvas<YinshCell,YinshBoard> implements Yi
         {
         default:
         	throw  G.Error("Hit Unknown: %s in state %s", hitCode,state);
- 
+        case ShowNumbers:
+        	numberMenu.showMenu();
+        	break;
         case BoardLocation:
 
             switch (state)
@@ -792,9 +801,9 @@ public class YinshGameViewer extends CCanvas<YinshCell,YinshBoard> implements Yi
 
     public boolean handleDeferredEvent(Object target, String command)
     {
-        boolean handled = super.handleDeferredEvent(target, command);
-
-        return (handled);
+        if(super.handleDeferredEvent(target, command)) { return true; }
+        if(numberMenu.selectMenu(target,this)) { return(true); }
+        return false;
     }
 
 
@@ -915,5 +924,9 @@ public class YinshGameViewer extends CCanvas<YinshCell,YinshBoard> implements Yi
             setComment(comments);
         }
     }
+
+public int getLastPlacement(boolean empty) {
+	return b.placementCount+(b.DoneState()?1:0);
+}
 
 }

@@ -948,9 +948,9 @@ public class BarcaViewer extends CCanvas<BarcaCell,BarcaBoard> implements BarcaC
             {
                 comments += value;
             }
-            else if (parseVersionCommand(name,value,2)) {}
+           else if (parseVersionCommand(name,value,2)) {}
            else if (parsePlayerCommand(name,value)) {}
-            else
+           else
             {	// handle standard game properties, and also publish any
             	// unexpected names in the chat area
             	replayStandardProps(name,value);

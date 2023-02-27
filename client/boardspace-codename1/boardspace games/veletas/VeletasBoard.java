@@ -438,6 +438,8 @@ class VeletasBoard extends rectBoard<VeletasCell> implements BoardProtocol,Velet
     		default: throw G.Error("Not expecting rackLocation %s",ps.rackLocation);
     		case BoardLocation: 
     				ps.addChip(po);
+    				ps.lastEmptied = lastEmptied;
+    				lastEmptied = -1;
     				if(po.isShooter())
     					{ shooterLocations.push(ps);
     					}
@@ -482,6 +484,7 @@ class VeletasBoard extends rectBoard<VeletasCell> implements BoardProtocol,Velet
 	// pick something up.  Note that when the something is the board,
     // the board location really becomes empty, and we depend on unPickObject
     // to replace the original contents if the pick is cancelled.
+    private int lastEmptied  = -1;
     private void pickObject(VeletasCell c)
     {	G.Assert(pickedObject==null,"pickedObject should be null");
     	G.Assert(!c.isEmpty(),"should have a chip");
@@ -491,6 +494,8 @@ class VeletasBoard extends rectBoard<VeletasCell> implements BoardProtocol,Velet
 		case BoardLocation: 
 			
 			VeletasChip ch = pickedObject = c.removeTop();
+			lastEmptied = c.lastEmptied;
+			c.lastEmptied = placementCount;
 			if(ch.isShooter()) 
 				{ shooterLocations.remove(c,false);
 				}

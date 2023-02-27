@@ -106,6 +106,9 @@ public interface CommonConfig {
 	String TESTSERVER = "testserver";
 	String SERVERKEY = "serverkey";
 	String PROTOCOL = "protocol";
+	String TESTVERSION = "testversion";
+	String CLASSDIR = "classdir";
+
 	String WebStarted = "webstarted";	// true if we are started by java web start
 
 	String icon_image_name = "boardspace-icon-small.png";

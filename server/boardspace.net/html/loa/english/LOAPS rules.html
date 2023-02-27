@@ -1,0 +1,342 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html><head><meta content="text/html; charset=ISO-8859-1" http-equiv="content-type"><title>LOAPS rules</title></head>
+<body><center><h2>SPECIAL RULES FOR LOAPS</h2></center>
+
+<hr color="D3A0D7">
+
+<font color="BLUE"><b>PREFACE</b></font>
+<table align="center" border="0" cellpadding="0" cellspacing="0" width="800"><tbody><tr><td width="600"><li></li><li>You will find many references to the original LOA game on the web.
+For the Programmer Of The Month LOAPS contest 
+only the rules of the game descibed on this page
+will apply.  The piece movement rules will be the same as you find
+on the other sites - but we play on a different sized board with fewer
+pieces and a different starting position.  In addition there
+are several "scoring methods" not present in the original which
+may change the primary connectivity goal of the original.
+I shall state all the LOAPS rules below with my usual clarity.
+</li><li>In addition to the "game rules", you will find some
+"program restrictions" below - most notably the time restriction
+of 60 seconds per program TOTAL for all game moves.  This is
+intended to behave something like a "chess clock" for computers.
+<br>
+<hr color="D3A0D7">
+
+<font color="BLUE"><b>THE GAME</b></font>
+</li><li>The board is a 7x7 grid.  Throughout the rules discussion the
+squares of the board will be marked in standard chess notation.
+</li><li>Each side begins with 8 pieces - placed as shown at the
+beginning of the game:
+<br>
+<img style="width: 295px; height: 296px;" alt="loaps board" src="LOAPS.jpg"><br>
+<br>
+</li><li>A "move" consists of changing the position of a single
+piece belonging to the mover according to the movement rules below.
+</li><li>The "RED" player moves first and the "BLUE" player second.
+For purposes of this description I'll try to refer to the two
+sides as "PLAYER 1" and "PLAYER 2" but may revert to "RED" and 
+"BLUE" if it seems clearer.
+
+<hr color="D3A0D7">
+
+<font color="BLUE"><b>MOVEMENT OF PIECES</b></font>
+</li><li>Pieces may move horizontally, vertically, or diagonally.
+</li><li>A piece moves <font color="BLUE">exactly</font> as many spaces as
+there are pieces (both yours and those of your opponent) on the line
+on which it is moving.
+</li><li>A piece may move over a friendly piece, but may not move over
+an opponent's piece.
+</li><li>A piece may land <font color="BLUE">on</font> an opponent's piece,
+resulting in capture and removal of the opponent's piece from the board.
+</li><li>A piece may not land <font color="BLUE">on</font> one of your own pieces when moving.
+</li><li>It is not permitted to pass - a piece must be moved on each turn.
+</li><li>A piece may not move off the board - no "wrap-around" is permitted.
+</li><li>Piece movement is the same as in the original "Lines Of Action" game.  For some movement examples, I refer you to
+<a href="http://en.wikipedia.org/wiki/Lines_of_action#Movement_summary">the LOA Wikipedia Article</a> which has some cogent examples, albeit on an 8x8 board.
+Dave Dyer has also implemented a LOAPS player at 
+<a href="http://www.boardspace.net/">http://www.boardspace.net/</a> - 
+the best way to get a feel for the movement is to play a game or two.
+</li><li>The "special" point-scoring green and yellow squares have no effect
+on the movement of the pieces.
+
+<hr color="D3A0D7">
+
+<font color="BLUE"><b>PLAY OF THE GAME</b></font>
+</li><li>Players alternate moves, beginning with the player with pieces
+	on the top and bottom rows - the "RED" player in the
+	diagrams.  This player will be known as "PLAYER 1".
+</li><li>A move consists of moving a single piece from its current position
+	to a position consistent with the movement rules above
+	and the constraints discussed in the programming section.
+</li><li>Play continues until one of the following conditions is met:
+<table align="center" width="95%">
+<tbody><tr><td><li>One of the two players achieves a board position where ALL
+	of his pieces are "connected".  Two pieces are "connected"
+	if they are adjacent either horizontally, vertically, or
+	diagonally.  Note that a single piece is considered "connected".
+</li></td></tr><tr><td><li>Both players have made 50 moves.
+</li></td></tr><tr><td><li>One of the players makes an illegal move or generates output
+	which is not a legal move.
+</li></td></tr><tr><td><li>One of the players exceeds the 60 second <sys +user=""> time
+	limit measured cumulatively over ALL moves thus far.
+</sys></li></td></tr></tbody></table>
+
+<hr color="D3A0D7">
+
+<font color="BLUE"><b>WINNING LOAPS</b></font>
+</li><li>A "match" between two programs will consist of two games, with
+each program having an opportunity to go first.
+</li><li>Two match-points are awarded for each game win (as determined by the
+number of accumulated game-points) regardless of victory margin.
+</li><li>If two programs accumulate the same number of game-points at the
+conclusion of the game each entry will receive one match-point.
+</li><li>If the fifty move limit is reached before either player achieves
+a connection, the game is declared a draw regardless of the game-score
+and each entry will receive one match-point.
+</li><li>A match consists of two games, with each entry having a chance to go first.
+Thus a total of four match-points are awarded for each match and the margins 
+of victory in the games do not factor into determining the match winner.
+</li><li> If a program is disqualified (for an illegal move, timeout, etc.) then its
+opponent will be declared the winner of that game.   Game-points scored over the
+course of that game are irrelevent.
+</li><li> It is possible to score 12 points for a connection (ending the game)
+and still have fewer points than your opponent ... in this case you will
+lose the game even though you made the final move.
+</li><li>At the conclusion of the LOAPS POTM, I will run a series of matches
+where each program has the opportunity to play against each other program.
+For example, if there are 25 eligible entries, each program will play 
+24 matches (48 games).
+</li><li> At the conclusion of the final runs, the program accumulating the most
+match-points will win the POTM.
+</li><li>Note that it does not matter by how much you won any of the games.
+A 1-0 game win is just as good as a 50-0 game win.
+</li><li>In the event that two or more programs accumulate the highest number of
+match-points, the winner will be determined by examining the results of
+head-to-head play to determine a winner among those that have tied.
+</li><li>If there is no clear winner after examining the results of these
+top finishers in head-to-head play (because the matches resulted in 
+ties) the POTM-MASTER will figure out what to do next at that time.
+</li><li><font color="RED">Jan 13:</font>
+<a href="http://dinsights.com/POTM/phpBB2/viewtopic.php?t=483"><font color="RED">
+Resolution of ties at this point is defined in this forum link.</font></a>
+
+<hr color="D3A0D7">
+
+<font color="BLUE"><b>WAYS TO SCORE POINTS</b></font>
+<table border="2" cellpadding="2">
+<tbody><tr><td align="center"><b>12</b></td><td>
+	You make a move that causes all your pieces 
+	to be "connected".  You score 12 and the game is over.
+</td></tr><tr><td align="center"><b>12</b></td><td>
+	Your opponent captures one of your pieces and leaves your
+	remaining pieces in a connected state (or leaves you with
+	a single piece).  The game is over and you
+	score 12 points unless your opponent's 
+	move resulted in a simultaneous connected position
+	for your opponent (see below).
+</td></tr><tr><td colspan="2" align="center"><hr>
+</td></tr><tr><td align="center"><b>1</b></td><td>
+	If you "capture" an opponent's piece by 
+	landing on it you score a single point.
+	If the move results in a connected state for either player,
+	points for the connection are awarded in addition to this point.
+	If the capture takes place on a bonus square, points for the
+	bonus are awarded in addition to this point.
+</td></tr><tr><td align="center" bgcolor="LTGREEN"><b>7</b></td><td>
+	If you land on the center square <b>(d4)</b> (green) you score seven points.
+	You and your opponent may land on this square multiple times and will
+	be awarded bonus points for each landing..
+</td></tr><tr><td align="center" bgcolor="YELLOW"><b>3</b></td><td>
+	If you land on one of the four corner bonus squares 
+	<b>(b2,b6,f2,f6)</b> 
+	(yellow) you score three points.
+	You and your opponent may land on this square multiple times and will
+	be awarded bonus points for each landing..
+</td></tr><tr><td colspan="2" align="center"><hr>
+</td></tr><tr><td align="center"><b>WIN</b></td><td>
+	If your opponent's sys+user game clock exceeds 
+	60 seconds the game is over and you win the game by default.
+</td></tr><tr><td align="center"><b>WIN</b></td><td>
+	If your opponent makes an illegal move the game is
+	over and you win the game by default.
+</td></tr><tr><td align="center"><b>WIN</b></td><td>
+	If your opponent cannot move they will either
+	output an illegal move or time out (or perhaps concede!).
+	In any case, you have "pinned" your opponent.  
+	You win the game by default.
+</td></tr><tr><td colspan="2" align="center"><hr>
+</td></tr><tr><td align="center"><b>DRAW</b></td><td>
+	If each player has made 50 moves and the game is not yet over
+	according to the above criteria, the game is declared a draw
+	regardless of the points accumulated during the game.
+</td></tr></tbody></table>
+</li><li>It is possible to make a capture move which simultaneously removes
+your opponent's next to last piece and connects all your pieces, or
+results in simultaneous connectivity for both sides.  In this
+case, you will be awarded 12 points for the connection and
+one point for the capture - your opponent will
+receive zero points.  In other words, a connectivity bonus for the mover only.
+There are no cases where BOTH players will be awarded 12 points 
+for connectivity.
+
+
+<hr color="D3A0D7">
+<font color="BLUE"><b>THE INPUT FILE</b></font>
+</li><li>will be provided as a full pathname argument to your executable, as in:
+<br><center><font color="blue"><b><pre>my_entry   /tmp/inputfile</pre></b></font></center>
+</li><li>Line one will contain two numbers.  The first is
+either a "1" or a "2" indicating
+whether you are the first player or the second player in this game and
+a second number contains the upcoming move number.  The upcoming move
+number will be "1" at the beginning of the game and "50" when you
+have only a last move remaining.
+</li><li>The second line will contain three numbers:  The first number will
+be "1" indicating this line will provide the current score and time
+remaining for player "1".  The second number on the line will be the
+current score (initialized with "0") of player one.  The third number
+on the line will be the total REMAINING time for player one expressed
+as a floating point number (for example 23.4 or 0.22).  This will be
+initialized with 60.0 indicating you have 60 seconds to work with.
+</li><li>The third line of the input file will be similar information for
+player number two.
+</li><li>The next seven lines of the input file will contain the current
+board position expressed as an ASCII map of the current board as if
+being viewed.  Notation on this map will be as follows:
+<br>&nbsp;&nbsp;"1" for each of player one's pieces;
+<br>&nbsp;&nbsp;"2" for each of player two's pieces;
+<br>&nbsp;&nbsp;"." for all other squares.  
+<br>&nbsp;&nbsp;The yellow and green bonus squares will not be marked
+in any particular way ... they will contain either a "1" or a "2" if
+there is a piece on them, or "." if there is no piece on them.
+Your program is responsible for remembering their five locations.
+</li><li>Some sample input files for the beginning and mid-game follow:
+<table align="center" border="2" cellpadding="6" width="95%">
+<tbody><tr>
+<td width="33%"> <pre>1 1<br>1 0 60.0<br>2 0 60.0<br>.11.11.<br>2.....2<br>2.....2<br>.......<br>2.....2<br>2.....2<br>.11.11.<br></pre>
+</td><td width="33%"> <pre>1 10<br>1  4  5.34<br>2  5  9.49<br>.11....<br>2....1.<br>2.2.2..<br>..1...1<br>......2<br>22.....<br>.11....<br></pre>
+</td><td width="33%"> <pre>2 28<br>1 13  8.91<br>2  7 40.7<br>.1..11.<br>2....2.<br>.......<br>...1.1.<br>2.....2<br>......2<br>.1..1..<br></pre>
+</td></tr><tr><td><font color="BLUE" size="-2">The starting position as presented to the first player
+</font></td><td><font color="BLUE" size="-2">Ready for the 10th move by player one.  
+Two of the 3-point bonus squares have pieces on them.
+</font></td><td><font color="BLUE" size="-2">Ready for the 28th move by 
+player two.  Player one has 13 points and has 8.91 seconds remaining.  
+Player two has 7 points and has 40.7 seconds remaining.
+</font></td></tr></tbody></table>
+</li><li>Your program should never be presented with a board that already contains
+a winning position for either player.
+<hr color="D3A0D7">
+<font color="BLUE"><b>OUTPUT OF YOUR ENTRY</b></font>
+</li><li>Important: The ONLY output of your program is a single line containing the
+starting position and ending position of the piece you chose to move
+separated by white space.
+</li><li>Output the starting square in chess notation (b4 for example) and the
+ending position (c3 for example) on a single line separated by white space.
+</li><li>Positions range from a1 through g7 as in the diagram.
+</li><li>There must be one of your pieces on the starting square and the 
+move must be a valid move according to the rules of LOAPS.
+
+<hr color="D3A0D7">
+<font color="BLUE"><b>LOAPS PROGRAMMING RESTRICTIONS</b></font>
+</li><li>You may use temporary files IN THE LOCAL DIRECTORY to store
+information about the current game.  If the file you create is
+"too big" you will hear from the POTM-MASTER.  If you have to
+ask, then it is too big.
+</li><li>You may NOT store information about previous games against
+the same opponent or other opponents.  Each game is intended to
+be completely independent of all other games.
+</li><li>Cooperation between opposing entries is strictly forbidden.
+Any effort to identify or recognize your opponent and take 
+action based on that identity will result in banning from the
+POTM and will earn the wrath of your fellow competitors.
+Note that recognition and response to "strategies" is no problem -
+this rule is intended solely to prevent cheating or teaming
+of entries to defeat the intent of the contest.
+</li><li>Incorporating a "book" of openings, endgame, or mid-game
+positions is permitted.  However, in order to discourage the
+pre-storing large numbers of positions, I will impose
+a limit of 500,000 bytes on the executable.
+
+<hr color="D3A0D7">
+<center><h2>COMMON RULES FOR POTM PROBLEMS</h2></center>
+<hr color="D3A0D7">
+<font color="BLUE"><b>WINNING</b></font>
+</li><li> Entries completing system test will be eligible for the final runs.
+</li><li> One entry per forum login
+</li><li> Multiple submissions of the same algorithm by the same person 
+or team will NOT be tolerated - please don't do this - it will be 
+obvious in the end and only cause pain for the other participants
+</li><li> Your official entry must be submitted for system test by the
+deadline (23:59 Eastern time on the deadline date) using the sandbox tools
+in order to participate in the finals.
+</li><li> Specific winning criteria will vary for each POTM and should be
+clear from the above sections.  If there are questions, use the forums please.
+
+<hr color="D3A0D7">
+
+<font color="BLUE"><b>Personal info, Consolation Awards and Other Fun Stuff</b></font>
+
+</li><li> Your email will never be made public and will not be shared
+with anyone.  To communicate, use the "private message" capabilities
+in the forums.
+</li><li> Your full name (provided for the sandbox) will not be revealed
+unless you happen to win - in which case it will appear on the trophy
+as you are announced with pride as the winner.  Of course, I will have
+no way of knowing if it is your real name.
+</li><li>Your code will be publicly available via the website (if you are worthy) 
+and the top finishers are usually given an opportunity to make their 
+code "pretty".  All entries should be considered as public domain.
+</li><li>The POTM is for fun.  In that spirit, there are generally 
+awards for things like best program name and the like ... 
+basically anything that I feel like at the end of a contest.  
+</li><li>Participants are also encouraged to provide an exposition
+on their algorithm after the deadline passes ... these responses are 
+often the most fun to read and offer insights into the foibles and 
+quirks of the participants.
+
+<hr color="D3A0D7">
+
+<font color="BLUE"><b>Running The Tests - the POTM-MASTER's job</b></font>
+</li><li> I will subject all entries to a "system test" to qualify them 
+for the actual event - these are run hourly via cron (in general).
+</li><li> Scores on the system test problem may (or may not) be public - this
+will vary by POTM at my discretion.
+</li><li> System test results are sent to the participant via email including
+whatever might be of use for debugging purposes.
+</li><li> If asked nicely (via private message in the forums) it may be
+possible to make a debugging run and supply the output, but in general
+all debugging should be done on YOUR machine.
+
+<hr color="D3A0D7">
+
+<font color="BLUE"><b>Programming Stuff</b></font>
+</li><li>Rules above for specific POTM contests will take precedence over 
+these generic rules if there is a conflict.
+</li><li> Input will (most frequently) be provided as a full path argument 
+to your entry
+<br><center><font color="blue"><b><pre>my_entry   /tmp/inputfile</pre></b></font></center>
+</li><li> Input file format will be explicitly defined for each POTM problem.
+</li><li> Your POTM problem output (with no extra output) goes to stdout
+</li><li> Explicit required output format will be defined for each POTM problem.
+</li><li> Nothing should be written to stderr
+</li><li> <font color="RED">Nov 10: You may create a file in the local directory
+named "DEBUG".  The contents of this file will be appended to the mail you
+receive after a system test.  The intent is to provide some help for finding
+bugs since stdout or stderr should not be used for that purpose.</font>
+</li><li> You may "save" information in small temp files in
+the local directory according to the rules of each individual problem.
+</li><li> There will be a per execution time limit (60 sec. sys+user time 
+as measured by /usr/bin/time unless otherwise stated).  
+Entries that exceed the time limit will receive a default score. 
+A signal (9) is sent to the program by the host when the time limit is exceeded.
+</li><li> any attempt to do anything whatever outside of your personal 
+run directory will be cause for disqualification and banning.
+</li><li>C and C++ programs will be compiled with only the math library 
+added to the standard libraries and no optimization.
+</li><li>Assember language optimizations are not permitted.
+</li><li> Non C/C++ entries must contain a first line beginning with "#!" as
+specified in the sandbox instructions.
+
+
+  </li></td></tr>
+
+  </tbody></table>
+</body></html>

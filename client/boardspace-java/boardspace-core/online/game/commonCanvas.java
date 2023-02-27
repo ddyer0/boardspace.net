@@ -409,6 +409,7 @@ public abstract class commonCanvas extends exCanvas
 	    private String loadUrlGame = null;
 	    private boolean urlLoaded = false;
 	    private int parsedTime = -1;
+	    private String parsedResult = null;
 	    private StackIterator<MoveAnnotation>parsedAnnotation = null;
 		private commonMove changeMove = null;
 	    private double boardZoomStartValue = 0.0;
@@ -450,8 +451,18 @@ public abstract class commonCanvas extends exCanvas
 	private static String PlayedOnDate = "Played on #1";
 	private static final String TrackMice = "Track Mice";
 	private static final String SelectAGameMessage = "Select Game";
+	private static final String SaveSingleGame = "Save Single Game";
 	private static final String RecordOfGame = "Record of Game #1";
+	private static final String SaveGameCollection = "Save Game Collection";
+	private static final String LoadGameFile = "Load Game File";
+	private static final String ReplayGameCollection = "Replay Game Collection";
+	private static final String ReplayGameFolder = "Replay games in folder";
 	static public String[] CanvasStrings = {
+			SaveSingleGame,
+			//ReplayGameFolder, // debug only
+			//ReplayGameCollection,
+			LoadGameFile,
+			SaveGameCollection,
 			TrackMice,
 	        TileSizeMessage,
 	        DrawOutcome,
@@ -694,7 +705,6 @@ public abstract class commonCanvas extends exCanvas
 	    private Object lastLastDropped2 = null;
 	    private int hurryState = 0;
 	    private long hurryTime = (60 * 14 * 1000);	// time to tell the player to finish up
-	    private boolean resign_needed = false;
 	    private long timePerTurn = (2 * 60 * 1000);	// tick him after this much time
 	    private long timePerDone = 15*1000;		
 	    private CellId vcr6ButtonCodes[] = 
@@ -723,11 +733,6 @@ public abstract class commonCanvas extends exCanvas
 	    private JMenuItem replayCollection = null;
 	    private JMenuItem replayFolder = null;
 	    private JMenuItem gameTest = null;
-	    private boolean loadGameNeeded = false;
-	    private boolean saveGameNeeded = false;
-	    private boolean saveCollectionNeeded = false;
-	    private boolean replayCollectionNeeded = false;
-	    private boolean replayFolderNeeded = false;
 	    
 	    private JMenuItem resignAction = null;
 	    private JMenuItem passMove = null;
@@ -917,7 +922,7 @@ public abstract class commonCanvas extends exCanvas
 	            doShowSgf();
 	        }
 	        else if(target==resignAction)
-	        {  resign_needed = true;
+	        {  doResign();
 	        }
 	        else if (target == passMove)
 	        {   doPassMove();
@@ -936,23 +941,22 @@ public abstract class commonCanvas extends exCanvas
 	        else if (target == train) { runRobotTraining(); }
 	        else if (target == loadGame)
 	        {
-	            loadGameNeeded = true;
+	        	doLoadGame();
 	        }
 	        else if (target == saveGame)
 	        {
-	            saveGameNeeded = true;
+	            doSaveGame();
 	        }
 	        else if (target == saveCollection)
-	        {
-	             saveCollectionNeeded = true;
+	        {	doSaveCollection();
 	        }
 	        else if (target== replayCollection)
 	        {
-	        	replayCollectionNeeded = true;
+	        	doReplayCollection();
 	        }
 	        else if (target== replayFolder)
 	        {
-	        	replayFolderNeeded = true;
+	           	doReplayFolder();
 	        }
 	        else if (target== gameTest)
 	        {
@@ -4783,19 +4787,22 @@ public abstract class commonCanvas extends exCanvas
        if(viewer || singlePlayer() || G.offline()) { setSeeChat(false); }
        if (viewer)
         {
-        	hidden.showText = myFrame.addAction(s.get("Show Raw Text"),deferredEvents);
         	if(G.isCodename1())
         		{ myFrame.setCanSavePanZoom(deferredEvents); 
         	}
-           	hidden.saveGame = myFrame.addAction("Save Single Game",deferredEvents); 
-        		hidden.saveCollection = myFrame.addAction("Save Game Collection",deferredEvents);
-            	hidden.loadGame = myFrame.addAction("Load Game File",deferredEvents);
+           	hidden.saveGame = myFrame.addAction(SaveSingleGame,deferredEvents); 
+           	hidden.saveCollection = myFrame.addAction(SaveGameCollection,deferredEvents);
+        	hidden.loadGame = myFrame.addAction(LoadGameFile,deferredEvents);
             	hidden.gamesMenu = new XJMenu(SelectAGameMessage,true);
                 myFrame.addToMenuBar(hidden.gamesMenu);
                 hidden.gamesMenu.addItemListener(deferredEvents);
                 
-        		hidden.replayCollection = myFrame.addAction("Replay Game Collection",deferredEvents); 
-        		hidden.replayFolder = myFrame.addAction("Replay games in folder",deferredEvents);
+            if(extraactions)
+            {
+        	hidden.showText = myFrame.addAction(s.get("Show Raw Text"),deferredEvents);
+        	hidden.replayCollection = myFrame.addAction(ReplayGameCollection,deferredEvents); 
+            hidden.replayFolder = myFrame.addAction(ReplayGameFolder,deferredEvents);
+            }
         	}
 
        if (extraactions)
@@ -5816,8 +5823,12 @@ public abstract class commonCanvas extends exCanvas
     public void doSaveCollection(String ss)
     {
         if (ss != null)
-        {
-            if (hidden.selectedGame!=null)
+        {	if(hidden.Games==null)
+        		{ hidden.Games = new sgf_gamestack();
+        		  addGame(History,"unnamed");
+        		}
+
+        if (hidden.selectedGame!=null)
             {
             	hidden.Games.replace(hidden.selectedGame,save_game());
             }
@@ -6133,6 +6144,9 @@ public abstract class commonCanvas extends exCanvas
   			ReplayMove(root);
   			if(l.parsedTime>=0) { History.top().setElapsedTime(l.parsedTime); }
   			if(l.parsedAnnotation!=null) { History.top().setAnnotations(l.parsedAnnotation); }
+  			if(l.parsedResult!=null) 
+  				{ History.top().setProperty(result_property,l.parsedResult); 
+  				}
    			int nSuccessors = root.nElements();
    			if(nSuccessors <= 1) { root = root.firstElement(); }	// iterate for simple nodes
    			else { 	
@@ -6322,8 +6336,8 @@ public abstract class commonCanvas extends exCanvas
      * @param root
      */
     public void setRootProperties(sgf_node root)
-    {
-    	
+    {	
+    	History.elementAt(0).copyPropertiesTo(root);
     }
     
     /** save the game as a sgf record structure, which will be printed
@@ -6448,6 +6462,9 @@ public abstract class commonCanvas extends exCanvas
         ps.println(setup_property+"[" + gameType() + "]");
         ps.println(date_property+ "[" + startingTime + "]");
         ps.println(gamename_property + "[" + nameString + "]");
+        
+        History.elementAt(0).printProperties(ps);
+        
         if(GameOver())
         {
         	ps.println(result_property+ "["+gameOverMessage()+"]");
@@ -6582,38 +6599,8 @@ public abstract class commonCanvas extends exCanvas
             		}
             	}
          }
-        if (hidden.resign_needed)
-        {	hidden.resign_needed=false;
-        	doResign();
-        }
-        if (hidden.loadGameNeeded)
-        {
-        	hidden.loadGameNeeded = false;
-            doLoadGame();
-        }
 
-        if (hidden.saveGameNeeded)
-        {
-        	hidden.saveGameNeeded = false;
-            doSaveGame();
-        }
-
-        if (hidden.saveCollectionNeeded)
-        {
-        	hidden.saveCollectionNeeded = false;
-            doSaveCollection();
-        }
-        if(hidden.replayCollectionNeeded)
-        {
-        	hidden.replayCollectionNeeded = false;
-        	doReplayCollection();
-        }
-        if(hidden.replayFolderNeeded)
-        {
-        	hidden.replayFolderNeeded = false;
-        	doReplayFolder();
-        }
-        boolean spritesIdle =  spritesIdle();
+         boolean spritesIdle =  spritesIdle();
         boolean idle = spritesIdle && SoundManager.soundIdle();
        
         if(!spritesIdle) 
@@ -6818,6 +6805,7 @@ public boolean replayStandardProps(String name,String value)
     }
     else if (name.equalsIgnoreCase(game_property))
     {	G.Assert(value.equalsIgnoreCase(sgfGameType()),WrongInitError,value);
+    	return true;
     }
     else if (name.equalsIgnoreCase(gametitle_property))
     {
@@ -6852,6 +6840,12 @@ public boolean replayStandardProps(String name,String value)
     	l.parsedTime = G.IntToken(value);
     	return(true);
     }
+    else if(result_property.equals(name))
+    {
+    	l.parsedResult = value;
+    	// fall through to print it into the chat
+    }
+    
     theChat.addAMessage("prop " + name + " = " +  value);
     return(false);
 	}

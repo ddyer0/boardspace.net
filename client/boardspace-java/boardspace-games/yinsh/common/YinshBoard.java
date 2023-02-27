@@ -7,7 +7,6 @@ import lib.*;
 //
 // Feb 14, 2006: major dogwash to switch to "cell" oriented coordinates
 //
-// TODO: ring removal with more than 7 chips doesn't work right.  See "eleven" in the test games area.
 //
 public class YinshBoard extends hexBoard<YinshCell> implements BoardProtocol,YinshConstants
 {
@@ -41,6 +40,7 @@ public class YinshBoard extends hexBoard<YinshCell> implements BoardProtocol,Yin
     String[] placeRingCommand = new String[2];
     String[] placeCommand = new String[2];
     int[] ringImageIndex = new int[2];
+    int placementCount = 0;
     
     public char GetBoardPos(char c,int r)
     {	YinshCell cel = getCell(c,r);
@@ -148,6 +148,7 @@ public class YinshBoard extends hexBoard<YinshCell> implements BoardProtocol,Yin
         {
             if (ringCell[color][i] == null)
             {	ringCell[color][i] = c;
+            	c.lastRing = color;
                 return;
             }
         }
@@ -270,8 +271,11 @@ public class YinshBoard extends hexBoard<YinshCell> implements BoardProtocol,Yin
             break;
 
         case BoardLocation:
-            cc = SetBoard(fromcol,fromrow, Empty);
-
+        {	YinshCell c = getCell(fromcol,fromrow);
+        	lastEmptied = c.lastEmptied;
+        	c.lastEmptied = placementCount;
+            cc = SetBoard(c, Empty);
+        }
             break;
         }
 
@@ -282,7 +286,7 @@ public class YinshBoard extends hexBoard<YinshCell> implements BoardProtocol,Yin
 
         return (cc);
     }
-
+    private int lastEmptied = -1;
     // undo previous pick
     private void UnPickObject()
     {	if(movingOrigin!=null)
@@ -326,8 +330,10 @@ public class YinshBoard extends hexBoard<YinshCell> implements BoardProtocol,Yin
             break;
 
         case BoardLocation:
-
-            char c = SetBoard(movingFromCol, movingFromRow, movingObjectChar);
+        	YinshCell cell = getCell(movingFromCol, movingFromRow);
+        	cell.lastEmptied = lastEmptied;
+        	lastEmptied = -1;
+            char c = SetBoard(cell, movingObjectChar);
 
             switch (c)
             {
@@ -413,13 +419,18 @@ public class YinshBoard extends hexBoard<YinshCell> implements BoardProtocol,Yin
             break;
 
         case BoardLocation:
-            SetBoard(tocol, torow, movingObjectChar);
+        	{
+       		YinshCell c = getCell(tocol, torow);
+       		lastPlaced = c.lastPlaced;
+       		c.lastPlaced = placementCount++;
+            SetBoard(c, movingObjectChar);
             FlipMove(replay);
-
+        	}
             break;
         }}
     }
-
+    private int lastPlaced = -1;
+    
     // undo previous drop, reverting to having a moving object
     private void UnDropObject()
     {	if(placedDest!=null)
@@ -459,9 +470,12 @@ public class YinshBoard extends hexBoard<YinshCell> implements BoardProtocol,Yin
             break;
 
         case BoardLocation:
-            SetBoard(placedToCol, placedToRow, Empty);
+        {	YinshCell c = getCell(placedToCol, placedToRow);
+        	c.lastPlaced = lastPlaced;
+        	lastPlaced = -1;
+            SetBoard(c, Empty);
             FlipMove(replayMode.Replay);
-
+        }
             break;
         }}
         placedToRow = 0;
@@ -521,6 +535,7 @@ public class YinshBoard extends hexBoard<YinshCell> implements BoardProtocol,Yin
         G.Assert(movingObjectChar == from_b.movingObjectChar,"movingObjectChar matches");
         G.Assert(movingOrigin == from_b.movingOrigin,"movingOrigin matches");
         G.Assert(placedDest == from_b.placedDest,"placed digest matches");
+        G.Assert(placementCount == from_b.placementCount,"placementCount matches");
         G.Assert(Digest()==from_b.Digest(), "Digest matches");
     }
 
@@ -589,6 +604,7 @@ public class YinshBoard extends hexBoard<YinshCell> implements BoardProtocol,Yin
             }
         }
         v ^= r.nextLong()*chips[0];
+        v ^= Digest(r,placementCount);
         v ^= Digest_Rings(r, rings);
         v ^= Digest_Rings(r, captured_rings);
         v ^= (movingFromCol*100+movingFromRow*10000+(movingOrigin==null?0:movingOrigin.ordinal()+1)*r.nextLong());
@@ -612,7 +628,7 @@ public class YinshBoard extends hexBoard<YinshCell> implements BoardProtocol,Yin
         movingObjectChar = from_b.movingObjectChar;
         movingOrigin = from_b.movingOrigin;
         placedDest = from_b.placedDest;
-        
+        placementCount = from_b.placementCount;
         sameboard(from_b);
     }
 
@@ -656,6 +672,7 @@ public class YinshBoard extends hexBoard<YinshCell> implements BoardProtocol,Yin
         placeRingCommand[bp] = "Place BR ";
         placeCommand[wp] =  "Place W ";
         placeCommand[bp] = "Place B ";
+        placementCount = 0;
 
         // note that firstPlayer is NOT initialized here
     }
@@ -756,7 +773,7 @@ public class YinshBoard extends hexBoard<YinshCell> implements BoardProtocol,Yin
         int sz = removes.size();
         int possible = 0;
         Yinshmovespec mpos = null;
-
+        boolean endline = false;
         if (sz == 0)
         {
         	throw G.Error("No removes are possible");
@@ -765,11 +782,28 @@ public class YinshBoard extends hexBoard<YinshCell> implements BoardProtocol,Yin
         for (int i = 0; i < sz; i++)
         {
             Yinshmovespec m = (Yinshmovespec) removes.elementAt(i);
-
-            if (isInLine(col, row, m.from_col, m.from_row, m.to_col, m.to_row))
-            {
+            char from_col = m.from_col;
+            int from_row = m.from_row;
+            char to_col = m.to_col;
+            int to_row = m.to_row;
+            if (isInLine(col, row, from_col,from_row,to_col,to_row))
+            {	boolean isend = isEndLine(col,row,from_col,from_row,to_col,to_row);
+            	if(mpos!=null)
+            	{	if(endline && !isend) {}
+            		else if(isend && !endline) 
+            		{	// take over the position
+            			mpos = m;
+            			endline = isend;
+            			possible = 1;
+            		}
+            		else { possible++; }
+            	}
+            	else
+            	{
                 mpos = m;
+                endline = isend;
                 possible++;
+            	}
             }
         }
 
@@ -1326,6 +1360,7 @@ public class YinshBoard extends hexBoard<YinshCell> implements BoardProtocol,Yin
             	YinshId dr = (m.object == YinshId.White_Ring_Cache) ? YinshId.White_Ring_Captured
                                                         : YinshId.Black_Ring_Captured;
                 PickObject(YinshId.BoardLocation, m.from_col, m.from_row);
+                placementCount++;
                 DropObject(dr, '@', -1,replay);
                 if(replay!=replayMode.Replay)
                 {
@@ -1559,7 +1594,12 @@ public class YinshBoard extends hexBoard<YinshCell> implements BoardProtocol,Yin
      			}
     	return(val);
     }
-    	
+    // true if col, row is either end of a line
+    public boolean isEndLine(char col, int row, char from_col, int from_row,char to_col, int to_row)
+    {
+    	return ((col==from_col && row==from_row)
+    			|| (col==to_col && row==to_row));
+    }
 
     public CommonMoveStack  legalFives(CommonMoveStack  result)
     {

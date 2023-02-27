@@ -104,6 +104,8 @@ public interface CommonConfig {
 	String DEVELOPHOST = "develophost";
 	String RELEASEHOST = "releasehost";
 	String SERVERNAME = "serverName";
+	String TESTVERSION = "testversion";
+	String CLASSDIR = "classdir";
 	String TESTSERVER = "testserver";
 	String SERVERKEY = "serverkey";
 	String PROTOCOL = "protocol";

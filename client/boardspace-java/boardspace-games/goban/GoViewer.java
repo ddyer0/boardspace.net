@@ -92,7 +92,7 @@ public class GoViewer extends CCanvas<GoCell,GoBoard> implements GoConstants, Ga
     }
 
     public void setRootProperties(sgf_node root)
-    {
+    {	super.setRootProperties(root);
     	for(Enumeration<String> prop = b.properties.keys();
     		prop.hasMoreElements();)
     	{
