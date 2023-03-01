@@ -7,10 +7,10 @@ These are things you need to do to make it boardspace.
 SSH:
 
 Disable ssh logins from root.  When doing root things, you will have to login to a 
-user account first, then su to root.
+user account first, then su to root. 
 
 Change the ssh port.  There are random bots trolling the standard port, tying passwords, all
-the fucking time.
+the fucking time. Boardspace uses port 9130 for ssh
 
 MYSQL:
 
@@ -21,6 +21,11 @@ Create and install the databases.  The "boardspace" database us all that's reqir
 but the phpbb database is also used.  The verion of phpbb used on boardspace is ancient,
 but has been specially modified to share boardspace' login information.  If the php database
 is not installed, some of the boardspace registration and account editing scripts will malfunction.
+
+Database names and passwords need to be installed in cgi-bin/include.pl and include.csh
+
+Manual database tweaks (inspection, changes...) are much easier to make using MysqlWorkbench
+from a pc.  Congfigure it to use ssh tunneling.  Use with extreme caution!
 
 YUM packages
 
