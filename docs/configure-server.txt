@@ -6,11 +6,16 @@ These are things you need to do to make it boardspace.
 
 SSH:
 
+In the Nodeworx control panel, ssh settings.
+
 Disable ssh logins from root.  When doing root things, you will have to login to a 
 user account first, then su to root. 
 
 Change the ssh port.  There are random bots trolling the standard port, tying passwords, all
 the fucking time. Boardspace uses port 9130 for ssh
+
+Once the ssh port has been changed and tested, the default port 22 should be disabled
+in the firewall.
 
 MYSQL:
 
@@ -46,3 +51,37 @@ perl cpan install GD GD::SVG GD::Graph
 procmail (contains lockfile)
 
 CRON
+
+
+PASSWORDS
+
+all the passwords and other secrets needed to run the perl scripts and 
+game server out to be localized in include.pl and include.csh.  DO NOT
+PUSH new versions containing actual passwords back to the repository.
+
+Generally speaking, the passwords in those files are only needed internally
+and can be changed as needed.  One exception to the general rule is the
+"tea" password, which is a shared secret with the java code.  Several of
+the passwords are "human secrets" that operators using web scripts might
+need to know.
+
+BUDDY BACKUPS
+
+Daily backups of some new state is done to tantrix.com account bstt
+via a cron script, "backup to tantrix".  Some ssh keys need to be shared to 
+make this work.   Recipricol backups use the account "tantrixb" on the
+boardspace server.
+
+ARCHIVE BACKUPS
+
+daily and monthly cron scripts make copies to be downloaded and archived,
+the copies are found in www/mirror/ and ~/mirror/  There are
+also daily backups of the databases, in cron/backup
+
+
+MAIN SERVER
+the main game server is built in ~/cserver and deployed in ~/server
+scripts in ~/server start it automatically when the first connection
+is attempted.
+
+
