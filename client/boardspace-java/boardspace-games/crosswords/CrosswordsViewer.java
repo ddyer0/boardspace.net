@@ -270,7 +270,7 @@ public class CrosswordsViewer extends CCanvas<CrosswordsCell,CrosswordsBoard> im
     	Rectangle main = layout.getMainRectangle();
     	int mainX = G.Left(main);
     	int mainY = G.Top(main);
-    	int mainW = G.Width(main)-stateH;
+    	int mainW = G.Width(main)-stateH*2;
     	int mainH = G.Height(main)-stateH*2;
     	
     	// There are two classes of boards that should be rotated. For boards with a strong
@@ -290,8 +290,8 @@ public class CrosswordsViewer extends CCanvas<CrosswordsCell,CrosswordsBoard> im
     	int boardH = (int)(nrows*CELLSIZE);
     	int extraW = Math.max(0, (mainW-boardW)/2);
     	int extraH = Math.max(0, (mainH-boardH)/2);
-    	int boardX = mainX+extraW+(planned?stateH:0);
-    	int boardY = mainY+extraH+(planned?stateH:0);
+    	int boardX = mainX+extraW+stateH;
+    	int boardY = mainY+extraH+stateH;
     	//
     	// state and top ornaments snug to the top of the board.  Depending
     	// on the rendering, it can occupy the same area or must be offset upwards
@@ -1083,7 +1083,22 @@ public void setLetterColor(Graphics gc,CrosswordsBoard gb,CrosswordsCell cell)
     private int bigX = 0;
     private int bigY = 0;
     
-
+    public void drawAnnotationMenu(Graphics g,HitPoint p)
+    {	// this makes the annotation menu follow the board rotation, which is independent of the window rotation
+    	GC.setRotatedContext(g,largerBoardRect,p,effectiveBoardRotation);
+    	super.drawAnnotationMenu(g,p);
+    	GC.unsetRotatedContext(g,p);
+    }
+    public void showAnnotationMenu()
+    {	// TODO: fix sub-rotated annotation menu on crosswordle 
+    	// this doesn't have the desired effect.  When you've used the local rotater on the menu,
+    	// the actual popup appears in full screen rotation
+    	//int oldro = getCanvasRotation() ;
+    	//int newro = oldro + boardRotation;
+    	//setCanvasRotation(newro);
+    	super.showAnnotationMenu();
+    	//setCanvasRotation(oldro);
+    }
     public void redrawBoard(Graphics gc, HitPoint selectPos)
     {  CrosswordsBoard gb = disB(gc);
     

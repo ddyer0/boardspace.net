@@ -859,9 +859,12 @@ public abstract class Platform implements Config{
     public static boolean isRealLastGameBoard()
     {
        	String info = getOSInfo();
-       	return (info.indexOf("display=w400")>=0);
+      	return ((info.indexOf("brand=TheLastGameboard")>=0) 
+       			|| (info.indexOf("display=w400")>=0  )
+       			|| (info.indexOf("model=Gameboard")>=0));
          	
     }
+    
     public static boolean isRealInfinityTable()
     {
     	String info = getOSInfo();

@@ -29,6 +29,9 @@ import lib.Toggle;
 
 /**
  * This code shows the overall structure appropriate for a game view window.
+ * 
+ * TODO: make castling more intuitive by moving the rook at the "confirm" stage
+ * 
 */
 public class ChessViewer extends CCanvas<ChessCell,ChessBoard> implements ChessConstants, GameLayoutClient
 {

@@ -7,6 +7,7 @@ import lib.StackIterator;
 import lib.Text;
 import lib.TextChunk;
 import online.game.*;
+import lib.Bitset;
 import lib.ExtendedHashtable;
 public class Viticulturemovespec extends commonMPMove implements ViticultureConstants
 {	// this is the dictionary of move names
@@ -39,7 +40,10 @@ public class Viticulturemovespec extends commonMPMove implements ViticultureCons
     static final int MOVE_TRAIN = 230;	// train a worker
     static final int MOVE_BONUS = 231;	// place a bonus action
     static final int MOVE_UNSELECT = 232;	// undo selections
-    
+    static final int EPHEMERAL_OPTION = 233;		// select option
+    static final int EPHEMERAL_READY = 234;		// select option
+    static final int MOVE_COMMENCE = 235;	// commence play
+   
     static
     {	// load the dictionary
         // these int values must be unique in the dictionary
@@ -72,6 +76,18 @@ public class Viticulturemovespec extends commonMPMove implements ViticultureCons
         D.putInt("Train",MOVE_TRAIN);
         D.putInt("PlaceBonus",MOVE_BONUS);
         D.putInt("Unselect", MOVE_UNSELECT);
+        D.putInt("Option",EPHEMERAL_OPTION);
+        D.putInt("Ready",EPHEMERAL_READY);
+        D.putInt("Commence",MOVE_COMMENCE);
+    }
+    public boolean isEphemeral()
+    {
+    	switch(op)
+    	{
+    	case EPHEMERAL_OPTION:
+    	case EPHEMERAL_READY: return true;
+    	default: return false;
+    	}
     }
     //
     // adding these makes the move specs use Same_Move_P instead of == in hash tables
@@ -124,6 +140,13 @@ public class Viticulturemovespec extends commonMPMove implements ViticultureCons
     	to_row = grape3;
  
     } 
+    public Viticulturemovespec(int opc,Option opt,boolean v,int p)
+    {
+    	op = opc;
+    	from_row = opt.ordinal();
+    	to_row = v ? 1 : 0;
+    	player = p;
+    }
     
     // for switch field moves
     public Viticulturemovespec(int opc,ViticultureCell from,int fidx,ViticultureCell to,int toidx,int pl)
@@ -370,6 +393,25 @@ public class Viticulturemovespec extends commonMPMove implements ViticultureCons
         op = D.getInt(cmd, MOVE_UNKNOWN);
         switch (op)
         {
+        case MOVE_COMMENCE:
+        	Bitset<Option> b = new Bitset<Option>();
+        	while(msg.hasMoreTokens())
+        	{
+        		Option a = Option.valueOf(msg.nextToken());
+        		b.set(a);
+        	}
+        	from_row = (int) b.members();
+        	G.Assert(from_row == b.members(),"option information lost");
+        	break;
+        case EPHEMERAL_READY:
+        	from_col = G.CharToken(msg);
+        	from_row = G.BoolToken(msg)?1:0;
+        	break;
+        case EPHEMERAL_OPTION:
+        	from_col = G.CharToken(msg);
+        	from_row = Option.valueOf(msg.nextToken()).ordinal();
+        	to_row = G.BoolToken(msg) ? 1 : 0;
+        	break;
         case MOVE_UNKNOWN:
         	throw G.Error("Cant parse %s", cmd);
         case MOVE_PASS:
@@ -567,18 +609,27 @@ public class Viticulturemovespec extends commonMPMove implements ViticultureCons
     {
         switch (op)
         {
+        case MOVE_COMMENCE:
+        	{
+        	Bitset<Option> b = new Bitset<Option>();
+        	b.setMembers(from_row);
+        	return "Options: "+b.memberString(Option.values());
+        	}
         case MOVE_PICKB:
         	String name = currentWorkerName();
         	return(name==null ? source.shortName : "Retrieve "+name);
-
+        case EPHEMERAL_READY:
+           	return G.concat("Ready ",from_col," ",((from_row==0) ? "false" : "true"));     	
+        case EPHEMERAL_OPTION:
+        	return G.concat("Option ",from_col," ",Option.values()[from_row]," ",to_row==0 ? "false" : "true");
         case MOVE_DROP:
         	switch(dest)
         	{
         	case WineBin: return "";
         	default: return dest.shortName();
         	}
-		case MOVE_DROPB:
-            return (dest.shortName);
+  		case MOVE_DROPB:
+			return (dest.shortName);
 		case MOVE_TAKEACTION:
 			return("takeaction "+source.shortName);
 			
@@ -599,7 +650,7 @@ public class Viticulturemovespec extends commonMPMove implements ViticultureCons
 		
         case MOVE_UPROOT:
         	return ("Uproot "+from_row+" "+from_index);
-        	
+ 
         case MOVE_SELECT:
         case MOVE_DISCARD:
         case MOVE_PICK:
@@ -618,7 +669,7 @@ public class Viticulturemovespec extends commonMPMove implements ViticultureCons
         	String color = currentWorker!=null ? currentWorker.color.name()+"-" : "";
         	return("build "+color+dest.shortName);
         	}        	
-        	
+
         case MOVE_RETRIEVE:
         	return("retrieve from "+source.shortName+" "+from_index);
         	
@@ -652,7 +703,7 @@ public class Viticulturemovespec extends commonMPMove implements ViticultureCons
 
         }
     }
-
+    
    
     /**
      * shortMoveText lets you return colorized text or mixed text and graphics.
@@ -666,7 +717,7 @@ public class Viticulturemovespec extends commonMPMove implements ViticultureCons
     public Text shortMoveText(commonCanvas v)
     {	String m = shortMoveString();
     	if((prev!=null) && (prev.op==MOVE_MAKEWINE) && (op == MOVE_MAKEWINE))
-    {
+    	{
     		m = m.substring(5);
     	}
     	prev = this;
@@ -700,11 +751,25 @@ public class Viticulturemovespec extends commonMPMove implements ViticultureCons
 		String indx = indexString();
 		String opname = indx+D.findUnique(op)+" ";
 
-        // adding the move index as a prefix provides numnbers
+		// adding the move index as a prefix provides numnbers
         // for the game record and also helps navigate in joint
         // review mode
         switch (op)
         {
+        case MOVE_COMMENCE:
+        	{
+        	Bitset<Option> b = new Bitset<Option>();
+        	b.setMembers(from_row);
+        	String os = b.memberString(Option.values());
+        	return G.concat(opname,os);
+        	}
+
+        case EPHEMERAL_READY:
+       	 	return G.concat(opname,from_col," ",(from_row==0 ? "false" : "true"));
+       	 	
+        case EPHEMERAL_OPTION:
+        	 return G.concat(opname,from_col," ",Option.values()[from_row]," ",to_row==0 ? "false" : "true");
+ 
         case MOVE_PICKB:
         	String index = from_index==0 ? "" : " "+from_index;
 	        return (opname + source.name()+ " " + from_row+index);

@@ -1,8 +1,10 @@
 package lib;
 
-public class Bitset <P extends Enum<?>>
+public class Bitset <P extends Enum<?>> implements Digestable
 {	private long members = 0;
 	public long members() { return(members);}
+	public void setMembers(long v) { members = v; }
+	
 	public Bitset() { }
 	@SafeVarargs
 	public Bitset(P... mods) 
@@ -26,6 +28,16 @@ public class Bitset <P extends Enum<?>>
 	{
 		for(P m : mods) { clear(m); }
 	}
+	public String memberString(P[] val)
+	{
+		StringBuilder b = new StringBuilder("");
+		String space = "";
+		for(P v : val)
+		{
+			if(test(v)) { b.append(space); b.append(v.name()); space=" "; }
+		}
+		return b.toString();
+	}
 	
 	public boolean test(P val)
 	{
@@ -36,4 +48,8 @@ public class Bitset <P extends Enum<?>>
 		members = from.members;
 	}
 	public boolean equals(Bitset<P>other) { return members==other.members; }
+
+	public long Digest(Random r) {
+		return r.nextLong()*members;
+	}
 }

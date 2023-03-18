@@ -337,11 +337,13 @@ public class YinshGameViewer extends CCanvas<YinshCell,YinshBoard> implements Yi
         int height = G.Height(brect);
         boolean somehit = false;
      	numberMenu.clearSequenceNumbers();
+     	gb.clearUICache();
      	
         DrawChipPool(gc, chipPool, highlight);
 
         int top = G.Bottom(brect);
         int left = G.Left(brect);
+        Yinshmovespec drawSelected = null;
         for(Enumeration<YinshCell> cells = gb.getIterator(Itype.TBRL); cells.hasMoreElements();)
             { //where we draw the grid
         		YinshCell c = cells.nextElement();
@@ -379,9 +381,23 @@ public class YinshGameViewer extends CCanvas<YinshCell,YinshBoard> implements Yi
 
                     if (gc != null)
                     {
-                        drawChip(gc, YinshChip.SELECTION_INDEX, xpos, ypos, CELLSIZE,
-                            pscale, ring_yscale);
+                    	switch(gb.getState())
+                    	{
+                        case SELECT_EARLY_REMOVE_CHIP_STATE:
+                        case SELECT_LATE_REMOVE_CHIP_STATE:
+                        	if(hitpoint) 
+                        		{ drawSelected = (Yinshmovespec)gb.findMoveForRemove(thiscol,thisrow); 
+                        		}
+							//$FALL-THROUGH$
+						default:
+                        	drawChip(gc, YinshChip.SELECTION_INDEX, xpos, ypos, CELLSIZE,
+                                    pscale, ring_yscale);
+                        	break;
+                    	}
+                    	
+                    	
                     }
+                    
                 }
 
                 if (gc != null && (c.activeAnimationHeight()==0))
@@ -400,6 +416,19 @@ public class YinshGameViewer extends CCanvas<YinshCell,YinshBoard> implements Yi
                 //if(gc!=null) { int ii = (xpos*ypos^(xpos+ypos))%15; if(ii<SELECTION_INDEX) 
                 //	{ drawChip(gc,ii,xpos,ypos,CELLSIZE); }}
             }
+        if(drawSelected!=null)
+        {
+      		YinshCell from = gb.getCell(drawSelected.from_col,drawSelected.from_row);
+    		YinshCell to = gb.getCell(drawSelected.to_col,drawSelected.to_row);
+    		int direction = gb.findDirection(from.col,from.row,to.col,to.row);
+    		do {
+    			int xpos = left+gb.cellToX(from.col,from.row);
+    			int ypos = top-gb.cellToY(from.col,from.row);
+    			StockArt.SmallX.drawChip(gc,this, CELLSIZE*2/3, 	xpos,	ypos,null);
+    			if(from==to) { break; }
+    			else { from = from.exitTo(direction); }
+    		} while(true);
+        }
         numberMenu.drawSequenceNumbers(gc,CELLSIZE*2/3,labelFont,labelColor);
     }
     
@@ -436,7 +465,8 @@ public class YinshGameViewer extends CCanvas<YinshCell,YinshBoard> implements Yi
 
     }
     public void redrawBoard(Graphics gc,HitPoint hi)
-    {	redrawBoard(gc,b,hi);
+    {	
+    	redrawBoard(gc,disB(gc),hi);
     }
     //
     // draw the board and balls on it.  If gc!=null then actually 
@@ -731,7 +761,7 @@ public class YinshGameViewer extends CCanvas<YinshCell,YinshBoard> implements Yi
             case SELECT_EARLY_REMOVE_CHIP_STATE:
             case SELECT_LATE_REMOVE_CHIP_STATE:
                // let the board figure it out.
-               PerformAndTransmit(b.moveForRemove(hp.col, hp.row,true),true,replayMode.Live);
+               PerformAndTransmit(b.findMoveForRemove(hp.col, hp.row),true,replayMode.Live);
                // hp.dragging = true;
 
                 break;

@@ -516,7 +516,9 @@ public class TweedViewer extends CCanvas<TweedCell,TweedBoard> implements TweedC
             		TweedMovespec m = targets.get(cell);
             		highlight.spriteColor = Color.red;
                 	highlight.awidth = CELLSIZE;
-                	if(m!=null) { highlight.hit_index = m.to_height;}
+                	if(m!=null) 
+                		{ highlight.hit_index = m.to_height;
+                		}
             }
             int ax = (int)(xpos-CELLSIZE/2+xscale*CELLSIZE*(h-1));
             int ay = (int)(ypos-CELLSIZE/2-yscale*CELLSIZE*(h-1));

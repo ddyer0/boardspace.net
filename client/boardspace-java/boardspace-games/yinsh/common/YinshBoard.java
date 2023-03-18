@@ -1,13 +1,16 @@
 package yinsh.common;
 
 import online.game.*;
+
+import java.util.Hashtable;
+
 import lib.*;
 
 
 //
 // Feb 14, 2006: major dogwash to switch to "cell" oriented coordinates
 //
-//
+
 public class YinshBoard extends hexBoard<YinshCell> implements BoardProtocol,YinshConstants
 {
 	private YinshState unresign;
@@ -761,15 +764,116 @@ public class YinshBoard extends hexBoard<YinshCell> implements BoardProtocol,Yin
     {
         return (GetBoardPos(col, row) == ringCharIndex[whoseTurn]);
     }
-
+    /*
     //
     // find the move in the legal list which removes col,row.  This is used
     // both to test if this location should be mouse sensitive, and to
     // get the full spec for the move once it is chosen by a single click.
     //
-    public Yinshmovespec moveForRemove(char col, int row, boolean unique)
+    //This original verision looked for a unique cell to designate a row to remvoe
+    //but eventually was found to be inadequate for lines 7 or more
+    //
+    
+    public Yinshmovespec moveForRemoveOld(char col, int row, boolean unique,CommonMoveStack removes)
     {
-    	CommonMoveStack  removes = legalFives(null);
+    	if(removes==null) {  removes = legalFives(null); }
+        int sz = removes.size();
+        int possible = 0;
+        Yinshmovespec mpos = null;
+
+        if (sz == 0)
+        {
+        	throw G.Error("No removes are possible");
+        }
+
+        for (int i = 0; i < sz; i++)
+        {
+            Yinshmovespec m = (Yinshmovespec) removes.elementAt(i);
+
+            if (isInLine(col, row, m.from_col, m.from_row, m.to_col, m.to_row))
+            {
+                mpos = m;
+                possible++;
+            }
+        }
+
+        if (unique)
+        { // if we want a unique result, complain if there were multiples
+
+            if (possible > 1)
+            {
+            	throw G.Error("multiple removes are possible");
+            }
+
+            return (mpos);
+        }
+
+        // if we just want to exclude multiples, return the move only if there was just one.
+        return ((possible == 1) ? mpos : null);
+    }
+    
+*/
+    private Hashtable<YinshCell,commonMove>cachedSolutions = null;
+    public void clearUICache() { cachedSolutions = null; }
+    
+    // this improved version assigns the sensitive removal cell to
+    // the end of the lines if there is overlap between several
+    // co-linear lines.  It almost works, exept in the case of
+    // a triangle of lines.  So the rarely used cleanup at the
+    // end looks for any previously unassigned cell, which picks
+    // up the endpoint that was rejected because it was shared
+    // with 2 different lines.   Running this test a lot in
+    // montebot games indicates it's probably good enough.
+    //
+    public Hashtable<YinshCell,commonMove> validateRemoves()
+       	{
+    	if(cachedSolutions==null)
+    	{
+
+    	CommonMoveStack removes = legalFives(null); 
+    	CommonMoveStack found = new CommonMoveStack();
+    	Hashtable <YinshCell,commonMove> solutions = new Hashtable<YinshCell,commonMove>();
+    	found.copyFrom(removes);
+    	for(YinshCell c = allCells; c!=null; c=c.next)
+    	{
+    		commonMove m = uniqueMoveForRemove(c.col,c.row,false,removes);   		
+    		if(m!=null) { solutions.put(c,m); found.remove(m); }
+    	}
+    	// in all but the rarest of cases, there is at least one cell that
+    	// is unique to a row to remove.  The rare case is a triangle of
+    	// moves formed by moving from one corner to just beyond the last,
+    	// flipping all the stones along the way.
+    	while(found.size()>0)
+    	{
+    		Yinshmovespec m = (Yinshmovespec)found.pop();
+    		YinshCell from = getCell(m.from_col,m.from_row);
+    		YinshCell to = getCell(m.to_col,m.to_row);
+    		int direction = findDirection(from.col,from.row,to.col,to.row);
+    		boolean solved = false;
+    		do {
+    			if(solutions.get(from)==null) { solutions.put(from,m); solved = true; }
+    			if(from==to) { break; }
+    			else { from = from.exitTo(direction); }
+    		} while (true);
+    		G.Advise(solved,"no unique solition for ",m);
+        }
+    	cachedSolutions = solutions;
+    }
+    	return cachedSolutions;
+    }
+    public commonMove findMoveForRemove(char col,int row)
+    {	cachedSolutions = null;
+    	Hashtable<YinshCell,commonMove>solutions = validateRemoves();
+    	return solutions.get(getCell(col,row)); 	
+    }
+    //
+    // find the move in the legal list which removes col,row.  This is used
+    // both to test if this location should be mouse sensitive, and to
+    // get the full spec for the move once it is chosen by a single click.
+    //
+    public Yinshmovespec uniqueMoveForRemove(char col, int row, boolean unique,CommonMoveStack removes)
+    {
+    	if(removes==null) {   removes = legalFives(null); }
         int sz = removes.size();
         int possible = 0;
         Yinshmovespec mpos = null;
@@ -821,7 +925,7 @@ public class YinshBoard extends hexBoard<YinshCell> implements BoardProtocol,Yin
         // if we just want to exclude multiples, return the move only if there was just one.
         return ((possible == 1) ? mpos : null);
     }
-
+ 
     //
     // this is the major state-dependant calculation to see if a board position
     // should be mouse sensitive right now.  
@@ -842,7 +946,9 @@ public class YinshBoard extends hexBoard<YinshCell> implements BoardProtocol,Yin
 
         case SELECT_EARLY_REMOVE_CHIP_STATE:
         case SELECT_LATE_REMOVE_CHIP_STATE:
-            return (moveForRemove(col, row, false) != null);
+        	Hashtable<YinshCell,commonMove> solutions = validateRemoves();
+        	YinshCell c = getCell(col,row);
+            return solutions.get(c)!= null;
 
         case MOVE_DONE_STATE:
 
@@ -1006,7 +1112,6 @@ public class YinshBoard extends hexBoard<YinshCell> implements BoardProtocol,Yin
             
         case SELECT_LATE_REMOVE_CHIP_DONE_STATE:
             setState(YinshState.SELECT_LATE_REMOVE_RING_STATE);
-
             break;
 
         case SELECT_EARLY_REMOVE_RING_DONE_STATE:
@@ -1048,8 +1153,10 @@ public class YinshBoard extends hexBoard<YinshCell> implements BoardProtocol,Yin
                 if (legalFivesExist())
                 { //it's possible for one player to create fives for the other.
                     nextState = YinshState.SELECT_EARLY_REMOVE_CHIP_STATE;
+                    if(G.debug()) { validateRemoves(); }
                 }
             }
+            else {   if(G.debug()) { validateRemoves(); }}
             setState(nextState);
             SetGameOverNow();
         }

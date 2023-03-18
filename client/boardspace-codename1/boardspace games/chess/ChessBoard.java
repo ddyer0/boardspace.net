@@ -2044,19 +2044,23 @@ private boolean addSuicideMove(CommonMoveStack all,ChessCell cell,int who)
  	if(rook_src==null) { return false; }	// rook captured
  	
  	// spaces between the king source and dest must be empty and not en prise
+ 	boolean fail = false;
+	if(king_src.col!=king_col)	// if the king doesn't move, it's all ok
+ 	{
  	int move_dir = king_src.col>king_col ? CELL_LEFT : CELL_RIGHT;
  	int other = nextPlayer[who];
  	ChessCell step = king_src.exitTo(move_dir);
- 	boolean fail = false;
  	while(!fail && step!=king_dest && step!=null)
  	{	if(step!=rook_src)
 		{
  			ChessChip top = step.topChip();
- 			if(top!=null) { fail = true; }	// must be empty
- 			else if(attackingSquare(step,other)) { fail = true; }
+ 			if(top!=null) 
+ 				{ fail = true; }	// must be empty
+ 			else if(attackingSquare(step,other))
+ 				{ fail = true; }
 				}
  		step = step.exitTo(move_dir);
-				}
+ 	}}
  	if(!fail && (all!=null))
  	{	
  		all.push(new ChessMovespec(MOVE_CASTLE,king_src,rook_src,who));
@@ -2662,7 +2666,6 @@ private boolean addSuicideMove(CommonMoveStack all,ChessCell cell,int who)
 	 case Ultima:
 	 case Chess960:
 	 case Chess:
- 		 // captures are mandatory
  		 switch(board_state)
  		 {
  		 default: throw G.Error("Not expecting state %s",board_state);

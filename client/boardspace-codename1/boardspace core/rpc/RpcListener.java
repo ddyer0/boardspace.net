@@ -7,6 +7,7 @@ import bridge.JavaServerSocket;
 import bridge.ServerSocket;
 import lib.G;
 import lib.Http;
+import lib.InternationalStrings;
 import lib.ServerSocketProxy;
 import lib.SocketProxy;
 
@@ -21,6 +22,13 @@ public class RpcListener implements Runnable,Config
     ServerSocketProxy listening;
     int sessions=0;
  
+     static String BindExplanation = "Binding socket #1 failed, probably another copy of Boardspace is running";
+    
+    public static void putStrings()
+    {
+    	String strs[] = { BindExplanation };
+    	InternationalStrings.put(strs);
+    }
     /**
      * listen for connections on the specified port, invoke
      * the service provider for each new connection
@@ -72,16 +80,23 @@ public class RpcListener implements Runnable,Config
 		{ G.print("Starting server on port "+port);
 		  listening = makeServerSocket(port); 
 		}
+		
 		SocketProxy p;
-		try {
 			p = listening.acceptProxy();
 			if(p!=null) 
 			{	sessions++;
 				tries=0;
 				new RpcTransmitter(p,port,"Sess-"+sessions).start();
 			}
-		} catch (IOException e) 
+		}}
+		catch (IOException e) 
 			{
+			if(listening==null)
+			{	InternationalStrings s = G.getTranslations();
+				G.infoBox(e.toString(),s.get(BindExplanation,port));
+				exitRequest = true;
+			}
+
 			if(!exitRequest)
 				{
 				e.printStackTrace();
@@ -91,8 +106,6 @@ public class RpcListener implements Runnable,Config
 				}
 			
 			}
-		}
-		}
 		catch (Throwable err)
 		{	
 			stop();

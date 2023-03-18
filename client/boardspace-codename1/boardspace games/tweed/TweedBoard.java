@@ -416,6 +416,12 @@ class TweedBoard
     				  occupiedCells[index].push(c);
     				  occupiedCells[index^1].remove(c,false);
     			  }
+    			  else {
+    				  // picking off the chip that claimed the neutral
+    				  int index = getPlayerIndex(old);
+    				  occupiedCells[index].remove(c,false);
+    				  chips_on_board--;
+    			  }
     			}
     		else if(old!=null && (old!=TweedChip.Gray) && (c.topChip()==null)) 
     			{int index = getPlayerIndex(old); 
@@ -437,11 +443,14 @@ class TweedBoard
     				int index = getPlayerIndex(old); 
     				chips_on_board--;
     				G.Assert(occupiedCells[index].remove(c,false)!=null,"nothing removed");
-    				}}
+    				}
+    			}
+    			{
     			int ind = getPlayerIndex(ch);
     			chips_on_board++;
+    			G.Assert(!occupiedCells[ind].contains(c),"shouldn't be there");
     			occupiedCells[ind].push(c);
-    			}		
+     			}}	
     		c.addChip(ch);
     	}
     	G.Assert(chips_on_board==(occupiedCells[0].size()+occupiedCells[1].size()),"cells missing out");
@@ -958,6 +967,11 @@ private void addPlaceLineMoves(CommonMoveStack all,CellStack fromAll,int who)
 	Hashtable<TweedCell,Integer>toAll = new Hashtable<TweedCell,Integer>();
 	Hashtable<TweedCell,TweedMovespec>toMoves = new Hashtable<TweedCell,TweedMovespec>();
 	TweedId id = getPlayerColor(who);
+	//
+	// the basic algorithm here is to start from each occupied cell
+	// and mark all the cells in each direction with the count of the
+	// number of different lines of sight it is visible from.
+	//
 	for(int lim = fromAll.size()-1; lim>=0; lim--)
 	{
 		TweedCell from = fromAll.elementAt(lim);

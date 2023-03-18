@@ -784,6 +784,18 @@ synchronized(allGames) {
 	 // only requires card concealment for the player cards and hidden recruits
 	 mm.longMessage = mmside;
 	
+	 mm = put(new GameInfo(145,ES.game,91,"VI",EuroGames,"Viticulture","Viticulture-p",
+				NoBots,null,
+				viticultureViewer,viticultureRules,"about_viticulture.html",
+				null,true, ecolors));		
+		 mm.minPlayers = 1;
+		 mm.maxPlayers = 6;
+		 mm.groupSortKey = "00042";
+		 mm.randomizeFirstPlayer = true;
+		 mm.hasHiddenInformation = true;
+		 // only requires card concealment for the player cards and hidden recruits
+		 mm.longMessage = mmside;
+
 	}
 	
 	{ 	String gobbletClass = "gobblet.GobGameViewer";

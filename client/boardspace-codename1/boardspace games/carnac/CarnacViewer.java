@@ -169,8 +169,9 @@ public class CarnacViewer extends CCanvas<CarnacCell,CarnacBoard> implements Car
         int boardW = SQUARESIZE * bcols;
         int boardH = SQUARESIZE * brows;
         int boardX = x+ C2;
-        int sparey = Math.max(0,(height-SQUARESIZE*(brows+2))/2);
-        G.SetRect(boardRect,boardX, y+sparey+(wideMode ? 0 : chatHeight)+SQUARESIZE-CS, boardW , boardH);      
+        int effectiveChatHeight = (wideMode ? 0 : chatHeight);
+        int sparey = Math.max(0,(height-effectiveChatHeight-SQUARESIZE*(brows+2))/2);
+        G.SetRect(boardRect,boardX, y+sparey+effectiveChatHeight+SQUARESIZE-CS, boardW , boardH);      
         {
         int stateH = CELLSIZE*2;
         G.placeRow(x + CS,

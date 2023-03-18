@@ -87,7 +87,9 @@ public abstract class Canvas extends java.awt.Canvas
 	CanvasRotater rotater = null;
 	public CanvasRotater getCanvasRotater() { return rotater; }
 
-	public int getCanvasRotation() { return rotater.getCanvasRotation(); }
+	public int getCanvasRotation()
+		{ return rotater.getCanvasRotation(); 
+		}
 	public void setCanvasRotation(int n) 
 		{ rotater.setCanvasRotation(n); }
 	public boolean rotateCanvas(Graphics g) { return rotater.rotateCanvas(g,this); }

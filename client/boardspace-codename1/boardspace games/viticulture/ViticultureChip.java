@@ -4,6 +4,7 @@ package viticulture;
 
 import com.codename1.ui.geom.Rectangle;
 
+import bridge.Color;
 import lib.Graphics;
 import lib.HitPoint;
 import lib.Image;
@@ -12,7 +13,9 @@ import lib.CompareTo;
 import lib.DrawableImage;
 import lib.DrawableImageStack;
 import lib.G;
+import lib.GC;
 import lib.ImageStack;
+import lib.InternationalStrings;
 import lib.OStack;
 import lib.Random;
 import lib.StackIterator;
@@ -924,6 +927,21 @@ public class ViticultureChip extends chip<ViticultureChip>
 		}
 		else
 		{ super.drawChip(gc, canvas, SQUARESIZE, xscale, cx, cy, showValue ? ""+order : isBack?null:label);
+		  if((cardBack==null)||(cardBack==this)) {}
+		  else
+		  {
+		  boolean limitPoints = limitPoints();
+		  boolean limitCash = limitMoney();
+		  if((limitPoints||limitCash) && ((canvas.getAltChipset()&1)==1))
+		  {
+		  int left = cx-SQUARESIZE/2;
+		  int h = SQUARESIZE/8;
+		  int top = cy+h;
+		  InternationalStrings s = G.getTranslations();
+		  if(limitPoints) {GC.Text(gc,true,left,top,SQUARESIZE, h, Color.yellow, null,s.get(Max3VP)); top+=h; }
+		  if(limitCash) { GC.Text(gc,true,left,top,SQUARESIZE, h, Color.yellow, null,s.get(Max6Money)); top+=h; }
+		  }
+		  }
 		}
 	}
 
@@ -1021,5 +1039,46 @@ public class ViticultureChip extends chip<ViticultureChip>
 
 	public int altCompareTo(ViticultureChip o) {
 		return(- compareTo(o));
+	}
+	public boolean limitPoints()
+	{
+		switch(type)
+  		{
+  		default: return false;
+  		
+  		case YellowCard:
+  			switch(order)
+  			{
+  			case 18:	// handyman
+  			case 31:	// swindler
+  				return true;
+  			default: return false;
+  			}
+  		case BlueCard:
+  			switch(order)
+  			{
+	  		case 7:	//uncertified teacher
+	  		case 25:// motivator
+	  		case 38:// guest speaker
+	  			return true;
+	  		default: return false;
+	  		}
+  		}
+	}
+	public boolean limitMoney()
+	{
+		switch(type)
+		{
+		default: return false;
+	  		
+		case YellowCard:
+			switch(order)
+			{
+			case 31:	// swindler
+			case 37:	// volunteer crew
+				return true;
+			default: return false;
+			}
+		}
 	}
 }

@@ -30,6 +30,7 @@ public interface OnlineConstants extends Config {
 	static final long CONNECTIONTIMEOUTINTERVAL = 63000;    /* give up after 1 minute plus a little */
 	static final String EXTRAMOUSE = "extramouse";
 	static final String EXTRAACTIONS = "extraactions";
+	static final String TESTVERSION = "testversion";
 	
 	static String BOARDCHATPERCENT = "boardchatpercent";
     static final String challengeSoundName = SOUNDPATH + "racetime" + Config.SoundFormat;

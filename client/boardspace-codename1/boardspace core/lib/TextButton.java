@@ -17,7 +17,7 @@ public class TextButton extends ToggleButton
 	Color highlightColor = Color.gray;
 	Color backgroundColor = Color.white;
 	Color inactiveColor = Color.white;
-	Color textColor = Color.black;
+	public Color textColor = Color.black;
 	public Color frameColor = Color.black;
 	public boolean square;
 	Text onText = TextChunk.create("button");

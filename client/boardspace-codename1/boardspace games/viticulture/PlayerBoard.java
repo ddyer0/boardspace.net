@@ -4,6 +4,7 @@ import static viticulture.ViticultureConstants.*;
 
 import java.util.StringTokenizer;
 
+import lib.Digestable;
 import lib.G;
 import lib.OStack;
 import lib.Random;
@@ -13,6 +14,95 @@ import viticulture.ViticultureConstants.ScoreType;
 import viticulture.ViticultureConstants.ViticultureId;
 import viticulture.ViticultureConstants.ViticultureState;
 
+class CardPointer implements Digestable
+{
+	ViticultureId source;
+	ViticultureChip card;
+	int index = -1;
+	public CardPointer(ViticultureId s,ViticultureChip chip,int i)
+	{
+		source = s;
+		card = chip;
+		index = i;
+	}
+	public long Digest(Random r) {
+		return (source.ordinal()*card.Digest(r)*(index+10));
+	}
+	public CardPointer copy() { return new CardPointer(source,card,index); }
+}
+class CardPointerStack extends OStack<CardPointer> implements Digestable
+{
+	public CardPointer[] newComponentArray(int sz) {	return new CardPointer[sz]; }
+	
+	public void copyFrom(OStack<CardPointer> other)
+	{
+		super.copyFrom(other);
+		for(int i=0;i<size();i++) { setElementAt(elementAt(i).copy(),i); }
+	}
+	public boolean contains(ViticultureChip ch)
+	{
+		for(int i=0;i<size();i++) { if(elementAt(i).card==ch) { return true; }}
+		return false;
+	}
+	public boolean contains(int index)
+	{
+		for(int i=0;i<size();i++) { if(elementAt(i).index==index) { return true; }}
+		return false;
+	}
+	public ViticultureChip remove(ViticultureId source,ViticultureChip chip,int index)
+	{	int ind = indexOf(source,chip,index);
+		if(ind>=0)
+		{
+			remove(ind);
+			return chip;
+		}
+		return null;
+	}
+	public ViticultureChip remove(ViticultureId source)
+	{	for(int lim=size()-1; lim>=0; lim--)
+			{	CardPointer cp = elementAt(lim);
+				if(cp.source==source) { remove(lim);  return cp.card; }
+			}
+		return null;
+	}
+	
+	public int indexOf(ViticultureId source,ViticultureChip chip,int index)
+	{
+		for(int lim = size()-1; lim>=0; lim--)
+		{
+			CardPointer item = elementAt(lim);
+			if(item.source==source && item.card==chip && item.index==index) 
+			{
+				return lim;
+			}
+		}
+		return -1;
+	}
+	public boolean contains(ViticultureId source,ViticultureChip chip,int index)
+	{
+		return indexOf(source,chip,index)>=0;
+	}
+	public boolean contains(ViticultureId source)
+	{
+		for(int lim=size()-1; lim>=0; lim--)
+		{
+			if(elementAt(lim).source==source) { return true; }
+		}
+		return false;
+	}
+	public CardPointer push(ViticultureId source,ViticultureChip chip,int index)
+	{	CardPointer cp = new CardPointer(source,chip,index);
+		push(cp);
+		return cp;
+	}
+
+	public long Digest(Random r) {
+		long v= 0;
+		for(int i=0;i<size();i++) { v ^= elementAt(i).Digest(r);}
+		return v;
+	}
+
+}
 public class PlayerBoard
 {
 	class ScoreEvent
@@ -59,7 +149,7 @@ public class PlayerBoard
 	char colCode;
 	public boolean publicCensoring = true;
 	public boolean hiddenCensoring = true;
-	
+
 	ViticultureCell messengerCell;	// place where your messenger was placed in the future
 	Viticulturemovespec messengerMove;
 	
@@ -106,18 +196,58 @@ public class PlayerBoard
 	ViticultureCell wineTypes[][] = { whiteWine, redWine, roseWine, champagne };
 	ViticultureCell fillableWineOrders;		// used by mercado
 	ViticultureCell cards;
-	ViticultureCell selectedCards = null;		// cards selected for the next operation
+
+	CardPointerStack selectedCards = new CardPointerStack();
+	
+	public int nSelectedCards() { return  selectedCards.size(); };
+	public int topSelectedCardIndex() 
+	{ return selectedCards.pop().index;
+	}
+
+	public CardPointer removeTopSelectedCard() 
+		{  
+		CardPointer top = selectedCards.pop();
+		// renumber the other cards in the stack if they refer to the same source
+		// and removing the selected card would change the index
+		for(int i=0;i<selectedCards.size();i++)
+		{	CardPointer item = selectedCards.elementAt(i);
+			if(item.source==top.source && item.index>top.index) { item.index--; }
+		}
+		
+		return top;
+		}
+	
+	public void clearSelectedCards()
+	{
+		selectedCards.clear();
+	}
+	
+	// select a single card from the hand
+	public void selectCardFromHand(int index)
+	{
+		{
+		 ViticultureChip ch = cards.chipAtIndex(index);
+		 ViticultureChip removed = selectedCards.remove(cards.rackLocation(),ch,index);
+		 selectedCards.clear();	// enforce single selection
+		 if(removed==null) 
+		 	{ selectedCards.push(cards.rackLocation(),ch,index);
+       	   	}
+		}
+	}
+	
 	ViticultureCell oracleCards = null;			// card for selection by the oracle
 	ViticultureCell oracleColors[] = null;
 	CellStack selectedCells = new CellStack();	// fields selected for the next operation
 	ViticultureCell structures[] = new ViticultureCell[2];
 	ViticultureCell wakeupPosition = null;
+	ViticultureCell activeWakeupPosition = null;
 	ViticultureCell destroyStructureWorker =null;
 	ViticultureCell pendingWorker = null;
 	ViticultureCell workerCells[] = null;
 	ViticultureCell buildStructureCells[] = null;
 	ViticultureCell workerTypes =null;
 	ViticultureChip grayWorker = null;	// if we get the gray one, it's also here
+	boolean isReady = false;
 	int usedWindmill = 0;			// year it was used
 	int usedTastingRoom = 0;		// year it was used
 	ViticultureChip flashChip = null;
@@ -127,6 +257,11 @@ public class PlayerBoard
 	int wineSalePoints;
 	int wineOrderPoints;
 	int startingScore;
+	int startingCash;
+	private int playerSeason;
+	public int season() { return playerSeason; }
+	public void setSeason(int n) { playerSeason = n; }
+	
 	StringBuilder scoreString = new StringBuilder();
 	public void buildStatString()
 	{	
@@ -303,7 +438,6 @@ public class PlayerBoard
 		stars = newcell(ViticultureId.PlayerStars,colCode,0,ChipType.Star,UnplacedStarsDescription);
 		cards = newcell(ViticultureId.Cards,colCode,0,ChipType.Card,CardDescription);
 		fillableWineOrders = newcell(ViticultureId.Cards,colCode,1,ChipType.Card,null);
-		selectedCards = newcell(ViticultureId.SelectedCards,colCode,0,ChipType.Card,null);
 		oracleCards = newcell(ViticultureId.SelectedCards,colCode,1,ChipType.Card,null);
 		oracleColors = null;
 		structures[0] = newcell(ViticultureId.PlayerStructureCard,colCode,0,ChipType.StructureCard,StructuresDescription);
@@ -338,6 +472,7 @@ public class PlayerBoard
 	{
 		isStartPlayer.reInit();
 		oracleColors = null;
+		setSeason(0);
 		if(bb.revision>=112) { grayWorker=null; }	// reset the gray meeple ownership between years.
 		for(ViticultureCell field : fields) 
 		{	// clear the "harvested" marker
@@ -365,7 +500,7 @@ public class PlayerBoard
 		whiteGrapeDisplay.addChip(ViticultureChip.WhiteGrape);
 		roosterDisplay.addChip(ViticultureChip.Roosters[colorIndex]);
 		pendingWorker.reInit();
-		selectedCards.reInit();
+		selectedCards.clear();
 		oracleCards.reInit();
 		oracleColors = null;
 		workerTypes.reInit();
@@ -373,19 +508,23 @@ public class PlayerBoard
 		selectedCells.clear();
 		papaResolved = false;
 		wakeupPosition = null;
+		activeWakeupPosition = null;
 		messengerCell = null;
 		grayWorker = null;
 		flashChip = null;
+		isReady = false;
 		cash = 0;
 		score = 0;
 		wineOrderPoints = 0;
 		wineSalePoints = 0;
 		peggingScore = 0;
-		startingScore = score;
 		nWorkers = 0;
 		usedWindmill = 0;
 		usedTastingRoom = 0;
 		residual = 0;
+		playerSeason = 0;
+		startingScore = score;
+		startingCash = cash;
 
 	}
 	public long Digest(Random r)
@@ -401,14 +540,20 @@ public class PlayerBoard
 		v ^= bb.Digest(r,usedWindmill);
 		v ^= bb.Digest(r,residual);
 		v ^= bb.Digest(r,wakeupPosition);
+		v ^= bb.Digest(r,activeWakeupPosition);
 		v ^= bb.Digest(r,messengerCell);
 		v ^= bb.Digest(r,grayWorker);
 		v ^= bb.Digest(r,selectedCells);
 		v ^= bb.Digest(r,pendingWorker);
 		v ^= bb.Digest(r,workerTypes);
-		v ^= bb.Digest(r,selectedCards);
+		v ^= selectedCards.Digest(r);
 		v ^= bb.Digest(r,oracleCards);
 		v ^= bb.Digest(r,roosterDisplay.selected);
+		v ^= bb.Digest(r,playerSeason);
+		v ^= bb.Digest(r,startingCash);
+		v ^= bb.Digest(r,startingScore);
+		v ^= bb.Digest(r,isReady);
+		
 		return(v);
 	}
 	public void sameBoard(PlayerBoard other)
@@ -419,9 +564,11 @@ public class PlayerBoard
 		}
 		G.Assert(papaResolved==other.papaResolved,"cash mismatch");
 		G.Assert(bb.sameCells(wakeupPosition, other.wakeupPosition),"wakeupposition mismatch");
+		G.Assert(bb.sameCells(activeWakeupPosition, other.activeWakeupPosition),"activeWakeupposition mismatch");
 		G.Assert(bb.sameCells(messengerCell, other.messengerCell),"messenger mismatch");
 		G.Assert(usedTastingRoom==other.usedTastingRoom,"usedTastingRoom mismatch");
 		G.Assert(usedWindmill==other.usedWindmill,"usedWindmill mismatch");
+		G.Assert(isReady == other.isReady,"isReady mismatch");
 		G.Assert(cash==other.cash,"cash mismatch");
 		G.Assert(score==other.score,"score mismatch");
 		G.Assert(nWorkers==other.nWorkers,"nWorkers mismatch");
@@ -430,10 +577,14 @@ public class PlayerBoard
 		G.Assert(bb.sameCells(selectedCells,other.selectedCells) , "selectedCells mismatch");
 		G.Assert(workerTypes.sameContents(other.workerTypes),"worker types mismatch");
 		G.Assert(pendingWorker.sameContents(other.pendingWorker),"pending worker types mismatch");
-		G.Assert(selectedCards.sameContents(other.selectedCards),"selected cards mismatch");
 		G.Assert(oracleCards.sameContents(other.oracleCards),"oracle cards mismatch");
 		G.Assert(oracleColors==other.oracleColors,"Oracle Colors mismatch");
 		G.Assert(roosterDisplay.selected==other.roosterDisplay.selected,"rooster selection mismatch");
+		G.Assert(selectedCards.size()==other.selectedCards.size(),"selectedCards mismatch");
+		bb.Assert(startingCash==other.startingCash,"startingCash mismatch");
+		G.Assert(startingScore==other.startingScore,"startingCash mismatch");
+		
+		G.Assert(playerSeason==other.playerSeason,"player season matches");
 	}
 	public void copyFrom(PlayerBoard other)
 	{
@@ -444,10 +595,12 @@ public class PlayerBoard
         cashDisplay.copyFrom(other.cashDisplay);
 		papaResolved = other.papaResolved;
 		wakeupPosition = bb.getCell(other.wakeupPosition);
+		activeWakeupPosition = bb.getCell(other.activeWakeupPosition);
 		messengerCell = bb.getCell(other.messengerCell);
 		messengerMove = Viticulturemovespec.copyFrom(other.messengerMove);
 		usedWindmill = other.usedWindmill;
 		usedTastingRoom = other.usedTastingRoom;
+		isReady = other.isReady;
 		cash = other.cash;
 		score = other.score;
 		wineSalePoints = other.wineSalePoints;
@@ -456,7 +609,8 @@ public class PlayerBoard
 		nWorkers = other.nWorkers;
 		residual = other.residual;
 		grayWorker = other.grayWorker;
-		startingScore = score;
+		startingScore = other.startingScore;
+		startingCash = other.startingCash;
 		bb.getCell(selectedCells,other.selectedCells);
 		workerTypes.copyFrom(other.workerTypes);
 		pendingWorker.copyFrom(other.pendingWorker);
@@ -465,6 +619,8 @@ public class PlayerBoard
 		oracleColors = other.oracleColors;
 		roosterDisplay.selected = other.roosterDisplay.selected;
 	    bb.copyFrom(unBuilt,other.unBuilt);
+	    selectedCards.copyFrom(other.selectedCards);
+	    playerSeason = other.playerSeason;
 	       
 	}
 	
@@ -853,7 +1009,7 @@ public class PlayerBoard
 			sumOfReds += card.redVineValue();
 		}
 		addWineOrGrapeChip(redGrape,ViticultureChip.RedGrape,sumOfReds,replay);
-		addWineOrGrapeChip(whiteGrape,ViticultureChip.WhiteGrape,sumOfWhites,replay);		
+		addWineOrGrapeChip(whiteGrape,ViticultureChip.WhiteGrape,sumOfWhites,replay);	
 		return new int[] {sumOfReds,sumOfWhites};
 	}
 	// count fields not sold but empty
@@ -1198,15 +1354,19 @@ public class PlayerBoard
 	}
 	
 	// find items in selectedCards in the from deck, remove and claim them
-	public boolean findAndClaimSelected(ViticultureCell stack,replayMode replay)
+	// the cards to be found are usually, but not always, the top chip
+	public boolean findAndClaimSelected(ViticultureCell stack,replayMode replay,boolean reInsert)
 	{	boolean some = false;
-		for(int lim=selectedCards.height()-1; !some && lim>=0; lim--)
-		{	ViticultureChip target = selectedCards.chipAtIndex(lim);
-			if(stack.containsChip(target))
+		for(int lim=selectedCards.size()-1; !some && lim>=0; lim--)
+		{	CardPointer target = selectedCards.elementAt(lim);
+			if(stack.rackLocation()==target.source)
 			{
 			// move the selected card
-			selectedCards.removeChip(target);
-			cards.addChip(stack.removeChip(target));
+			selectedCards.remove(lim);
+			G.Assert(stack.chipAtIndex(target.index)==target.card,"must match");
+			stack.removeChipAtIndex(target.index);
+			cards.addChip(target.card);
+			if(reInsert) {  bb.replaceCard(stack,target.card); }
 			some = true;
 			if(replay!=replayMode.Replay)
 				{
@@ -1252,12 +1412,12 @@ public class PlayerBoard
 		scoreString.append(" ");
 		scoreString.append(reason);
 		scoreString.append('\n');
-		score = Math.max(MIN_SCORE, Math.min(score+n,MAX_SCORE));
-    	scoreEvents.push(new ScoreEvent(bb.season,bb.year,n,score,reason,hint,type));
+		score = Math.max(MIN_SCORE, Math.min(score+n,MAX_SCORE));	
+    	scoreEvents.push(new ScoreEvent(bb.season(this),bb.year,n,score,reason,hint,type));
 	}
 	public void recordEvent(String reason,ViticultureChip hint,ScoreType type)
 	{
-		scoreEvents.push(new ScoreEvent(bb.season,bb.year,0,score,reason,hint,type));
+		scoreEvents.push(new ScoreEvent(bb.season(this),bb.year,0,score,reason,hint,type));
 	}
 	// count soldatos in a row containing this cell, or a single cell
 	public int nOpponentSoldato(ViticultureCell cell)
@@ -1315,6 +1475,21 @@ public class PlayerBoard
 	 				&& (top.type==ChipType.Field)	// find a vacant structure cell or field
 					&& (vines[c.row].height()==0));
 	 }
-	
+	//
+	// calculate the cost of selected cards in the market.
+	// for now, there are 1 or 2 free cards and the rest cost $1
+	//
+	public int committedCost()
+	{
+		int nfree = bb.resetState.nFree();
+		int cost = 0;
+		int ntotal = oracleCards.height();
+		for(int i=0,lim=selectedCards.size();  i<lim; i++)
+		{	// the top nfree cards in oracleCards are free
+			CardPointer item = selectedCards.elementAt(i);
+			if(item.index+nfree<ntotal) { cost++; }
+		}
+		return cost;
+	}
 
 }

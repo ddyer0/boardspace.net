@@ -1,6 +1,9 @@
 package yinsh.common;
 
 import online.game.*;
+
+import java.util.Hashtable;
+
 import lib.*;
 
 
@@ -40,6 +43,7 @@ public class YinshBoard extends hexBoard<YinshCell> implements BoardProtocol,Yin
     String[] placeRingCommand = new String[2];
     String[] placeCommand = new String[2];
     int[] ringImageIndex = new int[2];
+    int placementCount = 0;
     
     public char GetBoardPos(char c,int r)
     {	YinshCell cel = getCell(c,r);
@@ -147,6 +151,7 @@ public class YinshBoard extends hexBoard<YinshCell> implements BoardProtocol,Yin
         {
             if (ringCell[color][i] == null)
             {	ringCell[color][i] = c;
+            	c.lastRing = color;
                 return;
             }
         }
@@ -269,8 +274,11 @@ public class YinshBoard extends hexBoard<YinshCell> implements BoardProtocol,Yin
             break;
 
         case BoardLocation:
-            cc = SetBoard(fromcol,fromrow, Empty);
-
+        {	YinshCell c = getCell(fromcol,fromrow);
+        	lastEmptied = c.lastEmptied;
+        	c.lastEmptied = placementCount;
+            cc = SetBoard(c, Empty);
+        }
             break;
         }
 
@@ -281,7 +289,7 @@ public class YinshBoard extends hexBoard<YinshCell> implements BoardProtocol,Yin
 
         return (cc);
     }
-
+    private int lastEmptied = -1;
     // undo previous pick
     private void UnPickObject()
     {	if(movingOrigin!=null)
@@ -325,8 +333,10 @@ public class YinshBoard extends hexBoard<YinshCell> implements BoardProtocol,Yin
             break;
 
         case BoardLocation:
-
-            char c = SetBoard(movingFromCol, movingFromRow, movingObjectChar);
+        	YinshCell cell = getCell(movingFromCol, movingFromRow);
+        	cell.lastEmptied = lastEmptied;
+        	lastEmptied = -1;
+            char c = SetBoard(cell, movingObjectChar);
 
             switch (c)
             {
@@ -412,12 +422,17 @@ public class YinshBoard extends hexBoard<YinshCell> implements BoardProtocol,Yin
             break;
 
         case BoardLocation:
-            SetBoard(tocol, torow, movingObjectChar);
+        	{
+       		YinshCell c = getCell(tocol, torow);
+       		lastPlaced = c.lastPlaced;
+       		c.lastPlaced = placementCount++;
+            SetBoard(c, movingObjectChar);
             FlipMove(replay);
-
+        	}
             break;
         }}
     }
+    private int lastPlaced = -1;
 
     // undo previous drop, reverting to having a moving object
     private void UnDropObject()
@@ -458,9 +473,12 @@ public class YinshBoard extends hexBoard<YinshCell> implements BoardProtocol,Yin
             break;
 
         case BoardLocation:
-            SetBoard(placedToCol, placedToRow, Empty);
+        {	YinshCell c = getCell(placedToCol, placedToRow);
+        	c.lastPlaced = lastPlaced;
+        	lastPlaced = -1;
+            SetBoard(c, Empty);
             FlipMove(replayMode.Replay);
-
+        }
             break;
         }}
         placedToRow = 0;
@@ -520,6 +538,7 @@ public class YinshBoard extends hexBoard<YinshCell> implements BoardProtocol,Yin
         G.Assert(movingObjectChar == from_b.movingObjectChar,"movingObjectChar matches");
         G.Assert(movingOrigin == from_b.movingOrigin,"movingOrigin matches");
         G.Assert(placedDest == from_b.placedDest,"placed digest matches");
+        G.Assert(placementCount == from_b.placementCount,"placementCount matches");
         G.Assert(Digest()==from_b.Digest(), "Digest matches");
     }
 
@@ -588,6 +607,7 @@ public class YinshBoard extends hexBoard<YinshCell> implements BoardProtocol,Yin
             }
         }
         v ^= r.nextLong()*chips[0];
+        v ^= Digest(r,placementCount);
         v ^= Digest_Rings(r, rings);
         v ^= Digest_Rings(r, captured_rings);
         v ^= (movingFromCol*100+movingFromRow*10000+(movingOrigin==null?0:movingOrigin.ordinal()+1)*r.nextLong());
@@ -611,7 +631,7 @@ public class YinshBoard extends hexBoard<YinshCell> implements BoardProtocol,Yin
         movingObjectChar = from_b.movingObjectChar;
         movingOrigin = from_b.movingOrigin;
         placedDest = from_b.placedDest;
-        
+        placementCount = from_b.placementCount;
         sameboard(from_b);
     }
 
@@ -655,6 +675,7 @@ public class YinshBoard extends hexBoard<YinshCell> implements BoardProtocol,Yin
         placeRingCommand[bp] = "Place BR ";
         placeCommand[wp] =  "Place W ";
         placeCommand[bp] = "Place B ";
+        placementCount = 0;
 
         // note that firstPlayer is NOT initialized here
     }
@@ -743,15 +764,19 @@ public class YinshBoard extends hexBoard<YinshCell> implements BoardProtocol,Yin
     {
         return (GetBoardPos(col, row) == ringCharIndex[whoseTurn]);
     }
-
+    /*
     //
     // find the move in the legal list which removes col,row.  This is used
     // both to test if this location should be mouse sensitive, and to
     // get the full spec for the move once it is chosen by a single click.
     //
-    public Yinshmovespec moveForRemove(char col, int row, boolean unique)
+    //This original verision looked for a unique cell to designate a row to remvoe
+    //but eventually was found to be inadequate for lines 7 or more
+    //
+    
+    public Yinshmovespec moveForRemoveOld(char col, int row, boolean unique,CommonMoveStack removes)
     {
-    	CommonMoveStack  removes = legalFives(null);
+    	if(removes==null) {  removes = legalFives(null); }
         int sz = removes.size();
         int possible = 0;
         Yinshmovespec mpos = null;
@@ -769,6 +794,120 @@ public class YinshBoard extends hexBoard<YinshCell> implements BoardProtocol,Yin
             {
                 mpos = m;
                 possible++;
+            }
+        }
+
+        if (unique)
+        { // if we want a unique result, complain if there were multiples
+
+            if (possible > 1)
+            {
+            	throw G.Error("multiple removes are possible");
+            }
+
+            return (mpos);
+        }
+
+        // if we just want to exclude multiples, return the move only if there was just one.
+        return ((possible == 1) ? mpos : null);
+    }
+    
+*/
+    private Hashtable<YinshCell,commonMove>cachedSolutions = null;
+    public void clearUICache() { cachedSolutions = null; }
+    
+    // this improved version assigns the sensitive removal cell to
+    // the end of the lines if there is overlap between several
+    // co-linear lines.  It almost works, exept in the case of
+    // a triangle of lines.  So the rarely used cleanup at the
+    // end looks for any previously unassigned cell, which picks
+    // up the endpoint that was rejected because it was shared
+    // with 2 different lines.   Running this test a lot in
+    // montebot games indicates it's probably good enough.
+    //
+    public Hashtable<YinshCell,commonMove> validateRemoves()
+    {	
+    	if(cachedSolutions==null)
+    	{
+    
+    	CommonMoveStack removes = legalFives(null); 
+    	CommonMoveStack found = new CommonMoveStack();
+    	Hashtable <YinshCell,commonMove> solutions = new Hashtable<YinshCell,commonMove>();
+    	found.copyFrom(removes);
+    	for(YinshCell c = allCells; c!=null; c=c.next)
+    	{
+    		commonMove m = uniqueMoveForRemove(c.col,c.row,false,removes);   		
+    		if(m!=null) { solutions.put(c,m); found.remove(m); }
+    	}
+    	// in all but the rarest of cases, there is at least one cell that
+    	// is unique to a row to remove.  The rare case is a triangle of
+    	// moves formed by moving from one corner to just beyond the last,
+    	// flipping all the stones along the way.
+    	while(found.size()>0)
+    	{
+    		Yinshmovespec m = (Yinshmovespec)found.pop();
+    		YinshCell from = getCell(m.from_col,m.from_row);
+    		YinshCell to = getCell(m.to_col,m.to_row);
+    		int direction = findDirection(from.col,from.row,to.col,to.row);
+    		boolean solved = false;
+    		do {
+    			if(solutions.get(from)==null) { solutions.put(from,m); solved = true; }
+    			if(from==to) { break; }
+    			else { from = from.exitTo(direction); }
+    		} while (true);
+    		G.Advise(solved,"no unique solition for ",m);
+    	}	
+    	cachedSolutions = solutions;
+    	}
+    	return cachedSolutions;
+    }
+    public commonMove findMoveForRemove(char col,int row)
+    {	cachedSolutions = null;
+    	Hashtable<YinshCell,commonMove>solutions = validateRemoves();
+    	return solutions.get(getCell(col,row)); 	
+    }
+    //
+    // find the move in the legal list which removes col,row.  This is used
+    // both to test if this location should be mouse sensitive, and to
+    // get the full spec for the move once it is chosen by a single click.
+    //
+    public Yinshmovespec uniqueMoveForRemove(char col, int row, boolean unique,CommonMoveStack removes)
+    {
+    	if(removes==null) {   removes = legalFives(null); }
+        int sz = removes.size();
+        int possible = 0;
+        Yinshmovespec mpos = null;
+        boolean endline = false;
+        if (sz == 0)
+        {
+        	throw G.Error("No removes are possible");
+        }
+
+        for (int i = 0; i < sz; i++)
+        {
+            Yinshmovespec m = (Yinshmovespec) removes.elementAt(i);
+            char from_col = m.from_col;
+            int from_row = m.from_row;
+            char to_col = m.to_col;
+            int to_row = m.to_row;
+            if (isInLine(col, row, from_col,from_row,to_col,to_row))
+            {	boolean isend = isEndLine(col,row,from_col,from_row,to_col,to_row);
+            	if(mpos!=null)
+            	{	if(endline && !isend) {}
+            		else if(isend && !endline) 
+            		{	// take over the position
+            			mpos = m;
+            			endline = isend;
+            			possible = 1;
+            		}
+            		else { possible++; }
+            	}
+            	else
+            	{
+                mpos = m;
+                endline = isend;
+                possible++;
+            	}
             }
         }
 
@@ -807,7 +946,9 @@ public class YinshBoard extends hexBoard<YinshCell> implements BoardProtocol,Yin
 
         case SELECT_EARLY_REMOVE_CHIP_STATE:
         case SELECT_LATE_REMOVE_CHIP_STATE:
-            return (moveForRemove(col, row, false) != null);
+        	Hashtable<YinshCell,commonMove> solutions = validateRemoves();
+        	YinshCell c = getCell(col,row);
+            return solutions.get(c)!= null;
 
         case MOVE_DONE_STATE:
 
@@ -971,7 +1112,6 @@ public class YinshBoard extends hexBoard<YinshCell> implements BoardProtocol,Yin
             
         case SELECT_LATE_REMOVE_CHIP_DONE_STATE:
             setState(YinshState.SELECT_LATE_REMOVE_RING_STATE);
-
             break;
 
         case SELECT_EARLY_REMOVE_RING_DONE_STATE:
@@ -1013,8 +1153,10 @@ public class YinshBoard extends hexBoard<YinshCell> implements BoardProtocol,Yin
                 if (legalFivesExist())
                 { //it's possible for one player to create fives for the other.
                     nextState = YinshState.SELECT_EARLY_REMOVE_CHIP_STATE;
+                    if(G.debug()) { validateRemoves(); }
                 }
             }
+            else {   if(G.debug()) { validateRemoves(); }}
             setState(nextState);
             SetGameOverNow();
         }
@@ -1325,6 +1467,7 @@ public class YinshBoard extends hexBoard<YinshCell> implements BoardProtocol,Yin
             	YinshId dr = (m.object == YinshId.White_Ring_Cache) ? YinshId.White_Ring_Captured
                                                         : YinshId.Black_Ring_Captured;
                 PickObject(YinshId.BoardLocation, m.from_col, m.from_row);
+                placementCount++;
                 DropObject(dr, '@', -1,replay);
                 if(replay!=replayMode.Replay)
                 {
@@ -1558,7 +1701,12 @@ public class YinshBoard extends hexBoard<YinshCell> implements BoardProtocol,Yin
      			}
     	return(val);
     }
-    	
+    // true if col, row is either end of a line
+    public boolean isEndLine(char col, int row, char from_col, int from_row,char to_col, int to_row)
+    {
+    	return ((col==from_col && row==from_row)
+    			|| (col==to_col && row==to_row));
+    }
 
     public CommonMoveStack  legalFives(CommonMoveStack  result)
     {

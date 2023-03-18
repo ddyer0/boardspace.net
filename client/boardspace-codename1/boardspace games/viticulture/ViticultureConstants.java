@@ -18,6 +18,23 @@ public interface ViticultureConstants
 	static String VitiFall = "Fall";
 	static String VitiWinter = "Winter";
 	
+
+	 enum Option
+	 {		GreenMarket("select green cards from a market"),			// have a market for green cards
+			DraftPapa("choose from 2 mama and 2 papa cards"),			// draft the mama and papa cards
+			UnlimitedWorkers("Unlimited workers"),						// allow unlimited workers
+			ContinuousPlay("Continue playing after entering a season"),	// play immediately after moving to next season
+			DrawWithReplacement("Draw from decks with replacement"),	// draw from all decks with replacement
+			LimitPoints("limit per-player visitor cards to 3 VP and $6"),			// limit vp and cash windfalls
+			;				
+		 
+		 String message;
+		 ViticultureChip onIcon;
+		 ViticultureChip offIcon;
+		 Option(String ms) { message = ms; }
+		 static Option getOrd(int n) { return(values()[n]); }
+	 }
+	 
    	static String seasons[] = {VitiSpring,VitiSummer,VitiFall,VitiWinter};
 
    	enum ScoreType
@@ -34,6 +51,7 @@ public interface ViticultureConstants
 			SpringMessage,
 	};
 	static String FreeMessage = "(Free)";
+	static String TooExpensive = "Too expensive! You have only $#1";
 	static String YouMayBuildMinus2 = "You may build a structure with a $2 discount";
 	static String YouMayPlantOne = "You may plant 1 vine";
 	static String InnkeeperSteal = "Innkeeper steal #1";
@@ -48,7 +66,7 @@ public interface ViticultureConstants
 	static String DiscardOracleMode = "Discard 1 Card";
 	static String DiscardWineMode = "Discard Wine";
 	static String DiscardGrapeMode = "Discard Grapes";
-	static String ChooseCardsMode = "Take Cards";
+	static String ChooseCardsMode = "Take #1 Cards";
 	static String PlayCardsMode = "Play Cards";
 	static String GiveCardsMode = "Give Cards";
 	static String AutomaBonus = "Bonus Action";
@@ -96,6 +114,7 @@ public interface ViticultureConstants
 	static String PlantMode = "Planting";
 	static String UprootMode = "Uprooting";
 	static String SwapMode = "Swapping";
+	static String ChooseOptionsMode = "Choose Options";
 	static String ChoosePlayersMode = "Choose Players";
 	static String Select3Players = "Select up to 3 other players";
 	static String Select1Player = "You may select a player";
@@ -242,9 +261,24 @@ public interface ViticultureConstants
     static String NoSellMessage = "Do Not Sell";
     static String NoPlantMessage = "Do Not Plant";
     static String ShowBuildingInfo = "Show info about Buildings";
+    static String ShowOptionInfo = "Show the current Options";
+    static String NoVP = "+ 0 VP (limit)";
+    static String NoCash = "+ $0 (limit)";
+    static String Limit3 = "only 3 VP (limit)";
+	static String Max3VP = "Max 3 VP";
+	static String Max6Money = "Max $6";
+
 	static String ViticultureStrings[] = 
 	{  "Viticulture",
+		ShowOptionInfo,
+		NoVP,
+		Max3VP,
+		Max6Money,
+		Limit3,
+		ChooseOptionsMode,
+		NoCash,
 		FreeMessage,
+		TooExpensive,
 		NoPlantMessage,
 		PlantSomething,
 		UprootSomething,
@@ -584,6 +618,7 @@ public interface ViticultureConstants
 	static String ViticultureStringPairs[][] = 
 	{   {"Viticulture_family","Viticulture"},
 		{"Viticulture_variation","Standard Viticulture"},
+		{"Viticulture-p_variation","Viticulture Plus"},
 		{GainDollarOrStructure,"Gain $1 or\n 1 Structure Card"},
 		{SpecialWorkerInfo,"Special Worker\nDescriptions"},
 		{TradeSomething,"Trade Grapes, VP,\nCards or Coins"},
@@ -623,7 +658,12 @@ public interface ViticultureConstants
 		ShowBuildable,
 		ShowCard,
 		ShowPlayers,
-		ShowWorkers;
+		ShowWorkers,
+		
+		ShowMarket,	// show a card market for 1 or 2 cards
+		ShowPandM,	// show mama and papa cards
+		ShowOptions,
+		;
 	}
 	enum Activity
 	{
@@ -649,7 +689,8 @@ public interface ViticultureConstants
 		BuildStructure(BuildStructureMode),
 		SwitchVines(SwitchVinesMode),
 		Flip(FlipProperty),
-		ChoosePlayers(ChoosePlayersMode)
+		ChoosePlayers(ChoosePlayersMode),
+		ChooseOptions(ChooseOptionsMode),
 		;
 		String name;
 		String getName() { return(name); }
@@ -830,6 +871,13 @@ public interface ViticultureConstants
 	MisplacedMessenger(Activity.None,"Your Messenger is Useless, Click on Done",true,true,UI.Main),
 	SelectCardColor(Activity.ChooseCards,"Select the card type to use the Oracle",false,false, UI.ShowCardBacks),
 	// add new states at the end to avoid changing digests (which breaks shuffles)
+	
+	Select1Of2FromMarket(Activity.ChooseCards,"Select one card from the Market",false,false,UI.ShowMarket),
+	Select2Of3FromMarket(Activity.ChooseCards,"Select two cards from the Market",false,false,UI.ShowMarket),
+	Select1Of1FromMarket(Activity.ChooseCards,"Select one card from the Market",false,false,UI.ShowMarket),
+	Select2Of2FromMarket(Activity.ChooseCards,"Select two cards from the Market",false,false,UI.ShowMarket),
+	SelectPandM(Activity.ChooseCards,"Select one Papa and one Mama",false,false,UI.ShowPandM),
+	ChooseOptions(Activity.ChooseOptions,"Select the options for this game",false,false,UI.ShowOptions),
 	;
 		
 	//
@@ -851,6 +899,44 @@ public interface ViticultureConstants
 		case Discard2CardsFor4:
 			return(true);
 		default: return(false);
+		}
+	}
+	
+	// number of cards that are free in the market
+	public int nFree()
+	{
+		switch(this)
+		{
+		case Select1Of2FromMarket:
+		case Select2Of2FromMarket:
+			return 2;
+			
+		case Select1Of1FromMarket:
+			return 1;
+	
+		case Select2Of3FromMarket:
+			return 3;
+			
+		default: throw G.Error("shouldn't be asking");
+			
+		}
+	}
+	
+	// number of cards to take from the market
+	public int nToTake()
+	{
+		switch(this)
+		{
+		case Select2Of3FromMarket:
+		case Select2Of2FromMarket:
+			return 2;
+			
+		case Select1Of2FromMarket:
+		case Select1Of1FromMarket:
+			return 1;
+			
+		default: throw G.Error("shouldn't be asking");
+			
 		}
 	}
 	// true if the operation is choosing a single card	or whatever
@@ -885,7 +971,10 @@ public interface ViticultureConstants
 	public String description() { return(description); }
 	public boolean doneState() { return(doneState); }
 	public boolean digestState() { return(digestState); }
-		public boolean Puzzle() { return(this==Puzzle); } public boolean simultaneousTurnsAllowed() { return(false); }
+	public boolean Puzzle() { return(this==Puzzle); }
+	public boolean simultaneousTurnsAllowed()
+		{ return(this==ViticultureState.ChooseOptions);
+		}
 	
 	public boolean isWinemaking() { return(ui==UI.ShowWines); };
 	public boolean isBuilding() { return(ui==UI.ShowBuildable); }
@@ -1045,7 +1134,8 @@ public interface ViticultureConstants
     	ShowScores(null),
 		CloseOverlay(null),
 		ScoreSummary(null),
-		ShowBuildings("Show all Buildings"),
+		ShowBuildings("Show all Buildings"), SetOption(null),SetReady(null), 
+		ShowOptions("Show the current Options"),
     	;
     	String shortName = name();
     	public String shortName() { return(shortName); }
@@ -1117,7 +1207,7 @@ public interface ViticultureConstants
  enum ViticultureVariation
     {
     	viticulture("viticulture"),
-	 	viticulture_buildings("viticulture-buildings"),
+	 	viticulturep("viticulture-p"),			// plus boardspace version, with options
 	 	;
     	String name ;
     	// constructor

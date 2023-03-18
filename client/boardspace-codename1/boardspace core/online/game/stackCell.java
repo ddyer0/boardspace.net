@@ -302,7 +302,8 @@ public abstract class stackCell
 		removeTop();
 	}
 	/**
-	 * remove one chip like oldchip from somewhere in the stack. 
+	 * remove one chip like oldchip from somewhere in the stack, starting at the top
+	 * 
 	 * @param oldchip or null if not found
 	 */
 	public COMPONENTTYPE removeChip(COMPONENTTYPE oldchip)
@@ -313,6 +314,7 @@ public abstract class stackCell
 		}
 		return(null);
 	}
+	
 	/**
 	 * find the index for oldchip, starting at the top, or -1
 	 * @param oldchip

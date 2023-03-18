@@ -1,3 +1,24 @@
+HOSTING
+
+Hosting is currently done by Steadfast.net, which provides the server, routine maintenance
+and internet.  There are 3 primary web interfaces used to administer the site.
+
+https://manage.steadfast.net/client/ account 3392 
+buys services, can reboot servers, monitor health, pay bills and so on. 
+It's rarely needed in the routine running of things.
+
+https://boardspace.net:2443/nodeworx   account mb@tantrix.com
+is the master configuration for the system, establish
+sub domains and user accounts.
+
+https://boardspace.net:2443/siteworx/ one for each virtual site
+
+The main user shell account is boardspa@boardspace.net  Almost all the 
+routine site things are done with that account.  A few require root.
+
+It can be pretty confusing to find a particular control function among these links.
+
+
 
 Steps to configure a server.  
 
@@ -80,8 +101,8 @@ also daily backups of the databases, in cron/backup
 
 
 MAIN SERVER
-the main game server is built in ~/cserver and deployed in ~/server
+the main game server is built in ~/cserver and deployed in ~/bin
 scripts in ~/server start it automatically when the first connection
-is attempted.
+is attempted.  See local README files for more.
 
 

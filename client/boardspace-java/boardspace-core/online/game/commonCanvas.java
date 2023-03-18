@@ -3070,7 +3070,7 @@ public abstract class commonCanvas extends exCanvas
         	return true;
         	
         case ShowAnnotations:
-        	annotationMenu.showMenu();
+        	showAnnotationMenu(); 
         	return true;
     	case HitLiftButton: return(true); 	// maintained "lifted" variable
     	case FacingView: 
@@ -3262,6 +3262,18 @@ public abstract class commonCanvas extends exCanvas
     	  && !mutable_game_record
     	  && !getActivePlayer().spectator) 
     		{ scrollFarForward(); }
+    }
+    
+    public void drawAnnotationMenu(Graphics g,HitPoint p)
+    {
+    	if(G.Height(annotationMenu)>0)
+    	{
+    		annotationMenu.draw(g,p);
+    	}
+    }
+    public void showAnnotationMenu()
+    {
+    	annotationMenu.showMenu();
     }
     
   /**
