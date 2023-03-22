@@ -946,7 +946,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	    {String pname = User.prettyName(sess.players[i]);
 	     if((pname!=null) 
 	    	  && (name.equalsIgnoreCase(pname))
-	    	  && testname.equals(sess.playerName[i])
+	    	  && testname.equalsIgnoreCase(sess.playerName[i])
 	    	  ) 
 	          { return(true); }
 	    	 }

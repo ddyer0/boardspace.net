@@ -4,6 +4,7 @@ import static viticulture.ViticultureConstants.*;
 
 import java.util.StringTokenizer;
 
+import lib.Bitset;
 import lib.Digestable;
 import lib.G;
 import lib.OStack;
@@ -149,7 +150,8 @@ public class PlayerBoard
 	char colCode;
 	public boolean publicCensoring = true;
 	public boolean hiddenCensoring = true;
-
+	Bitset<Option> selectedOptions = new Bitset<Option>();
+	Bitset<Option> unSelectedOptions = new Bitset<Option>();
 	ViticultureCell messengerCell;	// place where your messenger was placed in the future
 	Viticulturemovespec messengerMove;
 	
@@ -525,7 +527,8 @@ public class PlayerBoard
 		playerSeason = 0;
 		startingScore = score;
 		startingCash = cash;
-
+		selectedOptions.clear();
+		unSelectedOptions.clear();
 	}
 	public long Digest(Random r)
 	{
@@ -621,7 +624,8 @@ public class PlayerBoard
 	    bb.copyFrom(unBuilt,other.unBuilt);
 	    selectedCards.copyFrom(other.selectedCards);
 	    playerSeason = other.playerSeason;
-	       
+	    selectedOptions.copy(other.selectedOptions);
+	    unSelectedOptions.copy(other.unSelectedOptions);
 	}
 	
 	ViticultureChip mama;

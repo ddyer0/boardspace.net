@@ -1141,10 +1141,10 @@ public int getMaxRevisionLevel() { return(REVISION); }
     	automa = (players==1);
 		setState(ViticultureState.Puzzle);
  
-    	doInitAfterOptions();
+    	doInitAfterOptions(variation==ViticultureVariation.viticulture);
     }
 
-	public void doInitAfterOptions()
+	public void doInitAfterOptions(boolean after)
 	{
     	random = new Random(randomKey);
     	turnChangeSamePlayer = false;
@@ -1291,7 +1291,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
         moveNumber = 1;
 	   	// deal a mama and a papa to each player, and the starting workers
         // this season and year is where the mamma and papa card draws will be recorded
-        if(!testOption(Option.DraftPapa))
+        if(after && !testOption(Option.DraftPapa))
         {
 	   	for(PlayerBoard pb : pbs)
 	   	{	pb.mama = mamaCards.removeTop();
@@ -1867,6 +1867,10 @@ public int getMaxRevisionLevel() { return(REVISION); }
     		break;
     		}
     	}
+    	else if(board_state==ViticultureState.ChooseOptions)
+    		{ return allPlayersReady();
+    		}
+
     	return(v);
     }
     // this is the default, so we don't need it explicitly here.
@@ -7229,7 +7233,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
 				break;
 			case ChooseOptions:
 				optionsResolved = true;
-				doInitAfterOptions();
+				doInitAfterOptions(true);
 				setInitialWakeupPositions(m.player);
 				break;
 			default: break;
@@ -7805,9 +7809,11 @@ public int getMaxRevisionLevel() { return(REVISION); }
    			   if(removed==null) { pb.selectedCards.push(m.source,card,m.from_index); }
    			   int finalh = resetState.nToTake();
    			   int committed = pb.committedCost();
-   			   Assert(committed<=pb.cash,"overcommitted");
-   			   setState(((pb.selectedCards.size()==finalh) || !canSelectMarketCards(pb))
-   					   			&& (committed<=pb.cash) 
+   			   int nSelected = pb.selectedCards.size();
+   			   setState(
+   					   ((committed<=pb.cash) 
+   					   	&& ((nSelected==finalh)
+   							   || ((nSelected<finalh) && !canSelectMarketCards(pb))))
    					   	? ViticultureState.Confirm 
    					   	: resetState);
    		   }
@@ -8053,7 +8059,17 @@ public int getMaxRevisionLevel() { return(REVISION); }
         	{// ignore strays that arrive late
         	Option op = Option.getOrd(m.from_row);
         	boolean was = testOption(op);
-        	if(m.to_row==0) { clearOption(op); } else { setOption(op); }
+        	PlayerBoard cp = getPlayerBoard(m.from_col-'A');
+        	if(m.to_row==0) 
+        		{ clearOption(op);
+        		  cp.selectedOptions.clear(op);
+        		  cp.unSelectedOptions.set(op);
+        		}
+        		else 
+        		{ setOption(op); 
+        		  cp.selectedOptions.set(op);
+        		  cp.unSelectedOptions.clear(op);
+        		}
         	boolean is = testOption(op);
         	if(was!=is)
         		{

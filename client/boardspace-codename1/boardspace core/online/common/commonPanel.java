@@ -540,6 +540,10 @@ public class commonPanel extends FullscreenPanel
 	    		}
         }
 		if(myCanvas!=null) { myCanvas.shutDown(); } 
+		if(myFrame!=null)
+		{
+			myFrame.dispose();
+		}
 	}
 
 

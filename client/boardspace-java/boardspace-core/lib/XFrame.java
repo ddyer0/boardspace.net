@@ -256,9 +256,13 @@ public class XFrame extends JFrame implements WindowListener,SizeProvider,LFrame
 		return(killed);
 	}
 
+	private boolean disposed = false;
 	public void dispose()
 	{	killed=true;
+		if(!disposed)
+		{	disposed = true;	
 		super.dispose();		
+	}
 	}
 
 	public void windowClosing(WindowEvent e) {

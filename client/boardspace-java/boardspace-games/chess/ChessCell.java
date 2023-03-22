@@ -3,14 +3,44 @@ package chess;
 import lib.Random;
 import chess.ChessConstants.ChessId;
 import lib.OStack;
+import online.game.PlacementProvider;
 import online.game.stackCell;
 
 class CellStack extends OStack<ChessCell>
 {
 	public ChessCell[] newComponentArray(int n) { return(new ChessCell[n]); }
 }
-public class ChessCell extends stackCell<ChessCell,ChessChip> 
+public class ChessCell extends stackCell<ChessCell,ChessChip> implements PlacementProvider
 {	int sweep_counter = 0;
+
+	// 
+	// support for placement history
+	//
+	int lastPlaced = -1;
+	int lastEmptied = -1;
+	int lastCaptured = -1;
+	ChessChip lastContents;
+
+
+	public void copyFrom(ChessCell ot)
+	{	super.copyFrom(ot);
+		lastPlaced = ot.lastPlaced;
+		lastEmptied = ot.lastEmptied;
+		lastCaptured = ot.lastCaptured;
+		lastContents = ot.lastContents;
+
+	}
+	public void reInit()
+	{	super.reInit();
+		lastPlaced = -1;
+		lastEmptied = -1;
+		lastCaptured = -1;
+		lastContents = null;
+	}
+	public int getLastPlacement(boolean empty) {
+		return empty ? lastEmptied : lastPlaced;
+	}
+
 	public ChessChip[] newComponentArray(int n) { return(new ChessChip[n]); }
 	// constructor
 	public ChessCell(char c,int r) 

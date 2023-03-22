@@ -64,7 +64,8 @@ public class NumberMenu extends Rectangle {
 	String helpText = "Show move numbers";
 	commonCanvas drawOn=null;
 	PopupManager menu = null;
-	NumberingMode selected = NumberingMode.None;
+	private NumberingMode selected = NumberingMode.None;
+	public NumberingMode selected() { return selected; }
 	PlacementProvider selectedProvider = null;
 	int startingNumber = 0;
 	double arrowOpacity = 0.7;		// opacity for arrows
@@ -75,7 +76,7 @@ public class NumberMenu extends Rectangle {
 	 * enum also serves as a singleton class with a selected value
 	 * with the ability to display a menu of choices.
 	 */
-	enum NumberingMode implements NameProvider
+	public enum NumberingMode implements NameProvider
 	{ None, All, Last, Last_2, Last_5, From_Here;
 	  public String getName() { return(toString().replace('_',' ')); }
 	}

@@ -153,7 +153,7 @@ public class WypsViewer extends CCanvas<WypsCell,WypsBoard> implements WypsConst
 
     public double aspects[] = {0.7,1.0,1.4};
     public void setLocalBounds(int x,int y,int w,int h)
-    {	rackSize = plannedSeating()?5:2;
+    {	rackSize = 5;
     	do {
     		setLocalBoundsV(x,y,w,h,aspects);
     		int boardw = G.Width(boardRect);

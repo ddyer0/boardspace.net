@@ -39,6 +39,7 @@ public interface LFrameProtocol extends MenuParentInterface
     public JCheckBoxMenuItem addOption(String text, boolean initial, JMenu m,DeferredEventManager l);
     public void killFrame();
 	public boolean killed();
+    public void dispose();
     public void setTitle(String str);
     public String getTitle();
     public void setDontKill(boolean v);

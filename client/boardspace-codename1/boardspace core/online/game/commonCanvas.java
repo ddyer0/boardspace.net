@@ -8157,22 +8157,14 @@ public void verifyGameRecord()
     {	//G.addLog("draw canvas");
     	if(startedOnce)
     	{
-    	if(!complete)
-    		{ Keyboard k = theChat.getKeyboard();
-    		  // if the keyboard is up, draw it and the chat and nothing else
-    		  if(k!=null) 
-    		  	{ redrawChat(offGC,hp);
-    		  	  drawKeyboard(offGC,hp);
-    		  	 return; 
-    		    }
-    		}
-   	
+    	Keyboard k = theChat.getKeyboard();
     	drawFixedElements(offGC,complete);
     	// draw the board contents and changing elements.
      	int hx = G.Left(hp);
      	int hy = G.Top(hp);
      	chatHasRun = false;
-        redrawClientBoard(offGC,hp);
+ 
+     	redrawClientBoard(offGC,k==null ? hp : null);		// no mouse activity if keyboard is up      
         if(!chatHasRun) { redrawChat(offGC,hp); }
         drawKeyboard(offGC,hp);
 

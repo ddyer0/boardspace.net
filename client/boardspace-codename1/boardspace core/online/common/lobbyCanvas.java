@@ -323,6 +323,10 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	    smallerBoldBasicFont = G.getFont(basicFont,G.Style.Bold,G.standardizeFontSize(13*scale));
 	    boldBasicFont = G.getFont(basicFont,G.Style.Bold,G.standardizeFontSize(14*scale));
 	    bigFont = G.getFont(basicFont,G.Style.Bold,G.standardizeFontSize(24*scale));
+	    if(G.debug())
+	    {
+	    	G.print("Fonts basic ",basicFont," scale ",scale," standard ",standardFontHeight);
+	    }
 	}
 	public void init(ExtendedHashtable info,LFrameProtocol frame)
 	  { super.init(info,frame);
@@ -940,7 +944,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	    {String pname = User.prettyName(sess.players[i]);
 	     if((pname!=null) 
 	    	  && (name.equalsIgnoreCase(pname))
-	    	  && testname.equals(sess.playerName[i])
+	    	  && testname.equalsIgnoreCase(sess.playerName[i])
 	    	  ) 
 	          { return(true); }
 	    	 }

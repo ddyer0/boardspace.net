@@ -210,7 +210,8 @@ public class MajoritiesViewer extends CCanvas<MajoritiesCell,MajoritiesBoard> im
     			margin,	
     			0.75,	// 60% of space allocated to the board
     			1.0,	// 1:1 aspect ratio for the board
-    			fh*2.5,	// maximum cell size
+    			fh*2.5,	// minimum cell size
+    			fh*3.5,	// max cell size
     			0.7		// preference for the designated layout, if any
     			);
         // place the chat and log automatically, preferring to place
@@ -295,9 +296,12 @@ public class MajoritiesViewer extends CCanvas<MajoritiesCell,MajoritiesBoard> im
 
         if (gc != null)
         { // draw a random pile of chips.  It's just for effect
-
-            int spacex = G.Width(r) - unit;
-            int spacey = G.Height(r) - unit;
+        	int width = G.Width(r);
+            int chipSize = Math.min(unit,width*2/3);
+            int left = G.Left(r);
+            int top = G.Top(r);
+            int spacex = width - chipSize;
+            int spacey = G.Height(r) - chipSize;
             Random rand = new Random(4321 + player); // consistant randoms, different for black and white 
             MajoritiesCell c = gb.getPlayerCell(player);
              MajoritiesChip chip = gb.getPlayerChip(player);
@@ -305,7 +309,7 @@ public class MajoritiesViewer extends CCanvas<MajoritiesCell,MajoritiesBoard> im
             while (nc-- > 0)
             {	int rx = Random.nextInt(rand, 100)*spacex/100;	// slightly obscure algorithm keeps the positions the same regargless of scale
                 int ry = Random.nextInt(rand, 100)*spacey/100;
-                c.drawChip(gc,this,chip.getAltDisplayChip(rx+ry),unit,G.Left(r)+unit/2+rx,G.Top(r)+unit/2+ry,null);
+                c.drawChip(gc,this,chip.getAltDisplayChip(rx+ry),chipSize,left+chipSize/2+rx,top+chipSize/2+ry,null);
              }
         }
  

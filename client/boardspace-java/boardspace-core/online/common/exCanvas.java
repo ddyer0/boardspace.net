@@ -133,7 +133,7 @@ public abstract class exCanvas extends Canvas
 	// support for global pan/zoom
 
     public boolean isZoomed() { return(getGlobalZoom()>1.0); }
-	public boolean isPassAndPlay() { return(G.offline() || G.isTable());}
+	public boolean isPassAndPlay() { return(G.offline());}
     public String getErrorReport() { return(""); }
     // set scroll X (in pan/zoom logic)
 	public void setSX(int x) 

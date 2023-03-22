@@ -32,7 +32,7 @@ import lib.Toggle;
  * TODO: make castling more intuitive by moving the rook at the "confirm" stage
  * 
 */
-public class ChessViewer extends CCanvas<ChessCell,ChessBoard> implements ChessConstants, GameLayoutClient
+public class ChessViewer extends CCanvas<ChessCell,ChessBoard> implements ChessConstants, GameLayoutClient, PlacementProvider
 {
 	static final String Chess_SGF = "Chess"; // sgf game number allocated for lyngk
     static final String ImageDir = "/chess/images/";
@@ -49,6 +49,7 @@ public class ChessViewer extends CCanvas<ChessCell,ChessBoard> implements ChessC
     // to visualize the layout during development.  Look for "show rectangles"
     // in the options menu.
     private Rectangle chipRects[] = addRect("chip",2);
+    private NumberMenu numberMenu = new NumberMenu(this,ChessChip.whiteRook,ChessId.ShowNumbers);
 
     private Rectangle reverseViewRect = addRect("reverse");
     private Toggle eyeRect = new Toggle(this,"eye",
@@ -222,7 +223,7 @@ public double setLocalBoundsA(int x, int y, int width, int height,double a)
     int stateY = boardY;
     int stateX = boardX;
 
-    G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,reverseViewRect,eyeRect,noChatRect);
+    G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,numberMenu,reverseViewRect,eyeRect,noChatRect);
     G.SetRect(boardRect,boardX, boardY, boardW, boardH);         
     G.placeRow(boardX, boardBottom-stateH,boardW,stateH,goalRect);       
     
@@ -374,7 +375,7 @@ public double setLocalBoundsA(int x, int y, int width, int height,double a)
      	ChessCell dest = gb.getDest();		// also the current dest and source
      	ChessCell src = gb.getSource();
      	ChessCell last = gb.getPrevDest();	// and the other player's last move
-
+    	numberMenu.clearSequenceNumbers();
      	//gb.simpleScore(gb.whoseTurn);
      	//int sweep = gb.sweep_counter;
      	//
@@ -394,6 +395,7 @@ public double setLocalBoundsA(int x, int y, int width, int height,double a)
             ChessCell cell = cells.nextElement();
             int ypos = G.Bottom(brect) - gb.cellToY(cell);
             int xpos = G.Left(brect) + gb.cellToX(cell);
+            numberMenu.saveSequenceNumber(cell,xpos,ypos);
             HitPoint hitNow = gb.legalToHitBoard(cell,targets) ? highlight : null;
             if( cell.drawStack(gc,this,hitNow,SQUARESIZE,xpos,ypos,0,0.1,null)) 
             	{ // draw a highlight rectangle here, but defer drawing an arrow until later, after the moving chip is drawn
@@ -407,10 +409,18 @@ public double setLocalBoundsA(int x, int y, int width, int height,double a)
             {
             	StockArt.SmallO.drawChip(gc,this,SQUARESIZE,xpos,ypos,null);
             }
-            if(cell==last)
+            if((cell==last) && (numberMenu.selected()==NumberMenu.NumberingMode.None ))
             {
             	StockArt.Dot.drawChip(gc,this,SQUARESIZE,xpos,ypos,null);
             }
+            if((cell.topChip()==null)
+        			&& cell.lastContents!=null 
+        			&& cell.lastCaptured>0
+        			&& numberMenu.getVisibleNumber(cell.lastCaptured)>0)
+                	{
+                		cell.lastContents.drawChip(gc,this,SQUARESIZE*2/3,xpos,ypos,null);
+                		StockArt.SmallX.drawChip(gc,this,SQUARESIZE,xpos,ypos,null);
+                	}
             if(showMoves && targets.get(cell)!=null)
             {
             	StockArt.SmallO.drawChip(gc,this,SQUARESIZE/2,xpos,ypos,null);
@@ -420,7 +430,7 @@ public double setLocalBoundsA(int x, int y, int width, int height,double a)
             //	StockArt.Dot.drawChip(gc,this,CELLSIZE,xpos,ypos,null);
             //	}
         	}
-    	
+     	numberMenu.drawSequenceNumbers(gc,SQUARESIZE*2/3,labelFont,labelColor);
     }
      public void drawAuxControls(Graphics gc,HitPoint highlight)
     {  
@@ -430,6 +440,7 @@ public double setLocalBoundsA(int x, int y, int width, int height,double a)
        DrawReverseMarker(gc,reverseViewRect,highlight,ChessId.ReverseViewButton);
        eyeRect.activateOnMouse=true;
        eyeRect.draw(gc,highlight);
+       numberMenu.draw(gc,highlight);
     }
     //
     // draw the board and things on it.  If gc!=null then actually 
@@ -539,7 +550,7 @@ public double setLocalBoundsA(int x, int y, int width, int height,double a)
     {	
         
 		if(b.pickedObject!=null) { lastDropped = b.pickedObject; }
-
+		numberMenu.recordSequenceNumber(b.moveNumber());
         handleExecute(b,mm,replay);
         startBoardAnimations(replay,b.animationStack,SQUARESIZE,MovementStyle.Sequential);
         if(replay!=replayMode.Replay) { playSounds(mm); }
@@ -692,6 +703,9 @@ private void playSounds(commonMove m)
         default:
         	throw G.Error("Hit Unknown: %s", hitObject);
 
+        case ShowNumbers:
+        	numberMenu.showMenu();
+        	break;
         case ToggleEye:
         	eyeRect.toggle();
         	break;
@@ -895,6 +909,7 @@ private void playSounds(commonMove m)
     		}
     		return(true);
     	}
+    	else if(numberMenu.selectMenu(target,this)) { return(true); }
     	else if(target==reverseOption)
     	{
     	b.setReverseY(reverseOption.getState());
@@ -973,5 +988,9 @@ private void playSounds(commonMove m)
             setComment(comments);
         }
     }
+
+    public int getLastPlacement(boolean empty) {
+    	return b.lastPlacedIndex;
+	}
 }
 

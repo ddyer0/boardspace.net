@@ -621,7 +621,9 @@ public class Viticulturemovespec extends commonMPMove implements ViticultureCons
         case EPHEMERAL_READY:
            	return G.concat("Ready ",from_col," ",((from_row==0) ? "false" : "true"));     	
         case EPHEMERAL_OPTION:
-        	return G.concat("Option ",from_col," ",Option.values()[from_row]," ",to_row==0 ? "false" : "true");
+        	{
+        	return G.concat(Option.values()[from_row]," ",to_row==0 ? "false" : "true");
+        	}
         case MOVE_DROP:
         	switch(dest)
         	{

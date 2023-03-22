@@ -569,7 +569,7 @@ public class MogulViewer extends CCanvas<MogulCell,MogulBoard> implements MogulC
     //
     public void redrawBoard(Graphics gc, HitPoint highlight)
     { 
-    	MogulBoard gb = disB(gc);
+      MogulBoard gb = disB(gc);
       int nPlayers = gb.nPlayers();
   	if(gc!=null)
   	{

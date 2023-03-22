@@ -38,11 +38,11 @@ that take care of the details, and also keep your local copy up to date
 with the current version. &nbsp;Whever method you choose,<br>you'll have to cope with windows efforts to prevent you being tricked in to downloading malware. &nbsp; <br>For the record: boardspace isn't malware, doesn't damage your PC, and won't annoy you with advertising.<br><span style="font-weight: bold;"></span><br><br><span style="font-weight: bold;">Method #1</span> &nbsp;Jar files should be directly executable, but you don't get a pretty icon by default.<br>You can download the launcher <a href="../java/jws/boardspace.jar">jar file</a>, place it anywhere, and click to launch it,&nbsp;or create a shell file containing something similar to.<br>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; #!/bin/sh<br>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;java -jar boardspace.jar<br> You can also copy this exact jar file to a&nbsp;Macintosh
 or a Windows PC and launch it there.<br><br><br><span style="font-weight: bold;">Method #2</span>: Use&nbsp;
 
-<a href="<!--#include virtual=/cgi-bin/applettag.cgi?tagname=jwsrawlink -->">
+<a href="%3C%21--#include%20virtual=/cgi-bin/applettag.cgi?tagname=jwsrawlink%20--%3E">
 
 <img style="border: 0px solid ; width: 80px; height: 43px;" alt="java web start icon" title="click to launch boardspace with java web start" src="../images/java-web-star-icon.jpg"></a> to
 
-<a href="<!--#include virtual=/cgi-bin/applettag.cgi?tagname=jwsrawlink -->">
+<a href="%3C%21--#include%20virtual=/cgi-bin/applettag.cgi?tagname=jwsrawlink%20--%3E">
 
 launch</a>
 the boardspace.net client. &nbsp; Your browser may resist java web start, or may offer<br>to
@@ -51,7 +51,7 @@ was downloaded. &nbsp; Historically, linux has not supported java<br>web start v
 
 <br>Also
 note that Java Web Start has been deprecated by Oracle is in the
-process of&nbsp;disappearing. &nbsp;There's an open source alternative<br><a href="https://openwebstart.com/">https://openwebstart.com/ .</a> Download and install Open web start, and Java Web Start will still work.<br>
+process of&nbsp;disappearing. &nbsp;There's an open source alternative<br><a href="https://openwebstart.com/">https://openwebstart.com/ .</a> Download and install Open web start, and Java Web Start will still work.<br><br><span style="font-weight: bold;">Note on Linux and Java distributions:<br></span>There are an awful lot of different linux distributions, desktop environments, and java versions for linux. It's impossible<br>for me to test them all. &nbsp; As far as I know, the "OpenJdk" and "Sun" variants of java both work with boardspace on<br>all known linux distributuions. &nbsp;If you find a pair that doesn't work, please report it to me; but it's probably not my <br>problem, so also reoport it to whomever is prividing the java and linux you are using.<br>
 
 <hr style="width: 100%; height: 2px;"><br><p>Whichever of these hoops you choose to jump through, when you run the launcher application you should see a window<br>similar to this, and you're on your way.</p><p><img style="width: 484px; height: 276px;" alt="login screen" src="../images/login-screen.jpg"></p><table style="width: 705px; height: 86px;">
 <tbody>

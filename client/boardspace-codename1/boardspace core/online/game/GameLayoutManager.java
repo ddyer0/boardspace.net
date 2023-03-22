@@ -2183,6 +2183,10 @@ public class GameLayoutManager  implements Opcodes
 		int halfMargin = extramargin/2;
 		//G.print("Make ",selectedSeating);
     	makeLayout(selectedSeating,nPlayers,halfMargin,halfMargin,width,height,client.createPlayerGroup(0,0,0,0,(int)selectedCellSize),margin);
+    	if(G.debug())
+    	{
+    		G.print("Cell Min ",minSize," max ",maxCellSize," actual ",selectedCellSize);
+    	}
         doLayout(client,zoom,(int)selectedCellSize,new Rectangle(halfMargin,halfMargin,fullwidth-margin,fullheight-margin));
 	    return(selectedPercent);	    
 	}

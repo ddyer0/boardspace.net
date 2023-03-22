@@ -1699,7 +1699,9 @@ class WypsBoard extends hexBoard<WypsCell> implements BoardProtocol,WypsConstant
         			if(tc!=null) { f.addChip(tc.getAltChip(fromColor));}
         			if(fc!=null) { t.addChip(fc.getAltChip(toColor)); }
         		}
-        		setState(WypsState.ConfirmFirstPlay);
+        		setState(board_state==WypsState.FirstPlay 
+        						? WypsState.ConfirmFirstPlay
+        						: WypsState.FirstPlay);
         	}
         	break;
         case MOVE_PLAYWORD:
@@ -1969,10 +1971,10 @@ class WypsBoard extends hexBoard<WypsCell> implements BoardProtocol,WypsConstant
         default:
         	throw G.Error("Not expecting Legal Hit state " + board_state);
         case FirstPlay: 
+        case ConfirmFirstPlay:
         case FlipTiles:
         	return(false); 
         case Confirm:
-        case ConfirmFirstPlay:
         case Play:
         case Atari:
         	// for pushfight, you can pick up a stone in the storage area

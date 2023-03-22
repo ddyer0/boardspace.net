@@ -72,7 +72,7 @@ public interface ChessConstants
     	White_Captured("WC"),
         BoardLocation(null),
         ReverseViewButton(null),
-        ToggleEye(null),
+        ToggleEye(null), ShowNumbers(null),
   	;
     	String shortName = name();
     	public String shortName() { return(shortName); }

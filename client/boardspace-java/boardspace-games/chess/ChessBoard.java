@@ -117,6 +117,11 @@ class ChessBoard extends rectBoard<ChessCell> implements BoardProtocol,ChessCons
     private boolean kingRookHasMoved[] = new boolean[2];
     private boolean queenRookHasMoved[] = new boolean[2];
     private ChessMovespec castleMove = null;
+    public int lastPlacedIndex = -1;
+	int previousLastPlaced = -1;
+  	int previousLastEmptied = -1;
+  	ChessChip previousLastContents = null;
+  	
 	// factory method
 	public ChessCell newcell(char c,int r)
 	{	return(new ChessCell(c,r));
@@ -267,6 +272,11 @@ class ChessBoard extends rectBoard<ChessCell> implements BoardProtocol,ChessCons
         unresign = from_b.unresign;
         repeatedPositions = from_b.repeatedPositions;
         robotBoard = from_b.robotBoard;
+        previousLastPlaced = from_b.previousLastPlaced;
+        previousLastEmptied = from_b.previousLastEmptied;
+        previousLastContents = from_b.previousLastContents;
+        lastPlacedIndex = from_b.lastPlacedIndex;
+
         sameboard(from_b);
     }
     public void doInit(String gtype,long rv)
@@ -439,6 +449,9 @@ class ChessBoard extends rectBoard<ChessCell> implements BoardProtocol,ChessCons
 		acceptPlacement();
         AR.setValue(win,false);
         moveNumber = 1;
+        previousLastEmptied = previousLastPlaced = -1;
+        lastPlacedIndex = 1;
+        
         // note that firstPlayer is NOT initialized here
     }
     
@@ -668,6 +681,8 @@ class ChessBoard extends rectBoard<ChessCell> implements BoardProtocol,ChessCons
 				{
 					kingLocation[ci] = getSource();
 				}
+				dr.lastPlaced = previousLastEmptied;
+				lastPlacedIndex--;
 				undoCaptures(); 
 				break;
 			case White_Chip_Pool:	// treat the pools as infinite sources and sinks
@@ -695,6 +710,8 @@ class ChessBoard extends rectBoard<ChessCell> implements BoardProtocol,ChessCons
     				ps.addChip(po);
     				int ci = playerIndex(po);
     				G.Assert(po.color==playerColor[ci],"matching color");
+    				ps.lastEmptied = previousLastEmptied;
+    				previousLastEmptied = -1;
     				occupiedCells[ci].push(ps);
     				break;
     		case White_Chip_Pool:
@@ -825,6 +842,9 @@ class ChessBoard extends rectBoard<ChessCell> implements BoardProtocol,ChessCons
 			int ci = playerIndex(pickedObject);
 			G.Assert(pickedObject.color==playerColor[ci],"matching color");
 			occupiedCells[ci].push(c);
+			previousLastPlaced = c.lastPlaced;
+			c.lastPlaced = lastPlacedIndex;
+			lastPlacedIndex++;
 			if(pickedObject.isKing())
 			{	kingLocation[ci] = c;
 			}
@@ -840,7 +860,6 @@ class ChessBoard extends rectBoard<ChessCell> implements BoardProtocol,ChessCons
        	droppedDestStack.push(c);
        	pickedObject = null;
     }
-    
 	// pick something up.  Note that when the something is the board,
     // the board location really becomes empty, and we depend on unPickObject
     // to replace the original contents if the pick is cancelled.
@@ -856,6 +875,8 @@ class ChessBoard extends rectBoard<ChessCell> implements BoardProtocol,ChessCons
 			int ci = playerIndex(ch);
 			G.Assert(ch.color==playerColor[ci],"matching color");
 			occupiedCells[ci].remove(c,false);
+			previousLastEmptied = c.lastEmptied;
+			c.lastEmptied = lastPlacedIndex;
 			break;
 		case White_Captured:
 		case Black_Captured:
@@ -1141,6 +1162,9 @@ class ChessBoard extends rectBoard<ChessCell> implements BoardProtocol,ChessCons
 		captureStack.push(mid);
 		capeeStack.push(capee);
 		captured[capee].addChip(ch);
+		mid.lastContents = ch;
+		mid.lastCaptured = lastPlacedIndex;
+		
 		if(ch.isKing())
 		{
 			kingLocation[capee]=null;

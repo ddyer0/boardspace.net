@@ -2103,7 +2103,7 @@ synchronized(allGames) {
 			Color.magenta,Color.green,Color.red};
 		GameInfo mm = put(new GameInfo(758,ES.game,62,"MG",EuroGames,"Mogul","Mogul",
 				OneBotPlus,
-				new double[]{1.0,0.01},
+				new double[]{0.4,0.01},
 				"mogul.MogulViewer","/mogul/english/Mogul.html","about_mogul.html",
 				null,true, mcolors));
 		 mm.minPlayers = 3;

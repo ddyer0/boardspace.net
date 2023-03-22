@@ -239,9 +239,13 @@ public class XFrame extends JFrame implements WindowListener,SizeProvider,LFrame
 		return(killed);
 	}
 
+	private boolean disposed = false;
 	public void dispose()
 	{	killed=true;
-		super.dispose();		
+		if(!disposed)
+		{	disposed = true;	
+			super.dispose();
+		}
 	}
 
 	public void windowClosing(WindowEvent e) {
@@ -446,7 +450,7 @@ public class XFrame extends JFrame implements WindowListener,SizeProvider,LFrame
         			""+G.Left(dim)+","+G.Top(dim)+","+G.Width(dim)+","+G.Height(dim));
         	
         }
-    }
+     }
 
     public void setDontKill(boolean v)
     {

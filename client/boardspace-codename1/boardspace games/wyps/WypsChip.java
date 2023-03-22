@@ -199,7 +199,6 @@ public class WypsChip extends chip<WypsChip> implements WypsConstants,CommonConf
 		letters = pool.toArray();  	
 		alphaLetters = new WypsChip[26];
 		for(WypsChip c : letters) { if(c.lcChar>='a') { alphaLetters[c.lcChar-'a'] = c; }}
-		
 		imagesLoaded = true;
 		}
     	

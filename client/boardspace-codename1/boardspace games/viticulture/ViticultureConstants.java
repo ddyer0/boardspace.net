@@ -84,6 +84,7 @@ public interface ViticultureConstants
 	static String AvailableFieldsMessage = "Available Fields";
 	static String AvailableWinesMessage = "Available Wines";
 	static String AvailableBuildingsMessage = "Available Buildings";
+	static String AllBuildingsMessage = "All Buildings";
 	static String GiveATourMessage = "Give a tour";
 	static String TrellisDescription = "trellis description";
 	static String WaterTowerDescription = "Water Tower";
@@ -420,6 +421,7 @@ public interface ViticultureConstants
 		AvailableFieldsMessage,
 		AvailableCardsMessage,
 		AvailableBuildingsMessage,
+		AllBuildingsMessage,
 		ViticultureVictoryCondition,
 		TimeLineDescription,
 		FlipFieldBonus,
@@ -618,7 +620,8 @@ public interface ViticultureConstants
 	static String ViticultureStringPairs[][] = 
 	{   {"Viticulture_family","Viticulture"},
 		{"Viticulture_variation","Standard Viticulture"},
-		{"Viticulture-p_variation","Viticulture Plus"},
+		{"Viticulture-p_variation","Viticulture + Options"},
+		{"Viticulture-p","Viticulture Plus"},
 		{GainDollarOrStructure,"Gain $1 or\n 1 Structure Card"},
 		{SpecialWorkerInfo,"Special Worker\nDescriptions"},
 		{TradeSomething,"Trade Grapes, VP,\nCards or Coins"},

@@ -1503,10 +1503,10 @@ private void drawPlayerBoard(Graphics gc,
     				ViticultureCell ac = p.activeWakeupPosition;
     				ViticultureCell ap = p.wakeupPosition;
     				if(ac!=ap)
-    				{	if(ac==c) { extra = p.getRooster(); }
-    					if((c==ac)||(c==ap))
+    				{	if(ac==c) { extra = p.getRooster();thisScale = scale*2/3; }
+    					if(c==ap)
     					{
-    					thisScale = scale*2/3;
+    					thisScale = scale*3/4;
     					}
     				}
     			}
@@ -4066,14 +4066,33 @@ private void drawPlayerBoard(Graphics gc,
 			toggle.setValue(on);
 			toggle.textColor = on ? Color.yellow : Color.black;
 			toggle.setBounds(x,y,w*2/3,step);
-			if(toggle.show(gc,highlightAll))
+			int l = x-step/2;
+			int r = x+w*2/3+step/2;
+			int cy = y+step/2;
+			for(PlayerBoard pb : gb.pbs) 
 			{
-				highlightAll.hitObject = op;
+				if(pb.selectedOptions.test(op)) 
+					{ pb.getScoreMarker().drawChip(gc,this,step,l,cy,null); 
+					  StockArt.Checkmark.drawChip(gc,this,step/2,l+step/4,cy,null);
+					  l -= step/2; 
+					}
+				if(pb.unSelectedOptions.test(op)) 
+					{ pb.getScoreMarker().drawChip(gc,this,step,r,cy,null);
+					  StockArt.SmallX.drawChip(gc,this,step,r+step/4,cy,null);
+					  r += step/2; 
+					}
+			}
+			if(toggle.show(gc,highlight))
+			{
+				highlight.hitObject = op;
 				highlight.hit_index = on ? 0 : 1;	// toggle
 			}
+			
 			y += step;
 		}
-		int xp = left+step;
+		if(highlight!=null)
+		{
+		int xp = left+step*2/3;
 		int ystep = step*3/2;
 		y = top+h/2-((ystep*mainBoard.nPlayers())/2);
 		for(PlayerBoard p : gb.pbs)
@@ -4091,7 +4110,7 @@ private void drawPlayerBoard(Graphics gc,
 				StockArt.Checkmark.drawChip(gc,this,step,xp,y,null);
 			}
 			y+= step*3/2;
-		}
+		}}
 		
 		int csize = w/20;
        	StockArt.FancyCloseBox.drawChip(gc, this, highlightAll, ViticultureId.CloseOverlay,csize, left+w-csize,top+csize,null);
@@ -4274,6 +4293,7 @@ private void drawPlayerBoard(Graphics gc,
     		}
     	}}
     	ViticultureCell cardDisplay = gb.cardDisplay;
+    	CardPointerStack cardIndex = new CardPointerStack();
     	cardDisplay.reInit();
     	if(showBuildings) 
     	{	
@@ -4284,6 +4304,7 @@ private void drawPlayerBoard(Graphics gc,
     			if(ch.type==ChipType.StructureCard) 
     				{ nBuilds++; 
     				cardDisplay.addChip(ch);
+    				cardIndex.push(pb.cards.rackLocation(),ch,lim);
     				}
     		}
     	}
@@ -4301,6 +4322,7 @@ private void drawPlayerBoard(Graphics gc,
     				if(chip.type==ChipType.StructureCard)
     				{	nBuilds++;
     					cardDisplay.addChip(chip);
+    					cardIndex.push(pb.cards.rackLocation(),chip,i);
     				}
     			}
     		}
@@ -4309,7 +4331,9 @@ private void drawPlayerBoard(Graphics gc,
     		Viticulturemovespec m = targets.get(pb.cards);
     		while(m!=null) 
     			{ nBuilds++;
-    			cardDisplay.addChip(pb.cards.chipAtIndex(m.from_index));
+    			ViticultureChip ch = pb.cards.chipAtIndex(m.from_index);
+    			cardDisplay.addChip(ch);
+    			cardIndex.push(pb.cards.rackLocation(),ch,m.from_index);
     			m=(Viticulturemovespec)m.next; 
     			}}
     	}}
@@ -4341,7 +4365,10 @@ private void drawPlayerBoard(Graphics gc,
     		quickExit = true;
     		GC.Text(gc, true, xp,yp,frameW,frameH/10, Color.black, null,CantBuildMessage);
     		}
-    	if(buildW>0) { GC.Text(gc, true, xp, yp-step, buildW,step,Color.black,null,s.get(AvailableBuildingsMessage)); }
+    	if(buildW>0) 
+    		{ GC.Text(gc, true, xp, yp-step, buildW,step,Color.black,null,
+    				s.get(showBuildings ? AllBuildingsMessage : AvailableBuildingsMessage));
+    		}
     	xp+=step;
     	for(int lim=pb.buildable.length-1; lim>=0; lim--)
     	{
@@ -4356,6 +4383,10 @@ private void drawPlayerBoard(Graphics gc,
     			if(drawStack(gc,state,null, d,mainHighlight,highlightAll, step,xp,yp+step/3, 0,0.0,0.0,null))
     				{	highlight.setHelpText(s.get(built.toolTip));
     				}
+    			if(showBuildings && built.topChip()!=null)
+    			{
+    				StockArt.Checkmark.drawChip(gc,this,step/4,xp,yp,null);
+    			}
     			
     			/** add prices */
     			Rectangle price = new Rectangle((int)(xp-step*0.4),yp+step*2/3,(int)(step*0.8),step/4);
@@ -4381,6 +4412,7 @@ private void drawPlayerBoard(Graphics gc,
     		if(drawStack(gc,state,null,cardDisplay,mainHighlight,highlightAll,step,xp+step/4,yp+step*1/3,0,1,0,censor ? ViticultureChip.BACK : null))
     		{
     			highlight.hitObject = cardDisplay.chipAtIndex(highlight.hit_index);
+    			highlight.hit_index = cardIndex.elementAt(highlight.hit_index).index;
     		}
         	CardPointerStack discards = pb.selectedCards;
     		// mark the currently selected cards
@@ -4388,7 +4420,9 @@ private void drawPlayerBoard(Graphics gc,
     		{	int xpos = xp+step*i;
     			int ypos = yp-step+step*3/2;
     			ViticultureChip ch = cardDisplay.chipAtIndex(i);
-    			if(discards.contains(pb.cards.rackLocation(),ch,i)) {
+    			int ci = cardIndex.elementAt(i).index;
+    			if(discards.contains(pb.cards.rackLocation(),ch,ci)) 
+    			{
     				boolean isDiscard = state.discardCards();
     	     		(isDiscard?StockArt.Exmark:StockArt.Checkmark).drawChip(gc,this,step/2,xpos,ypos,null);
     			}
@@ -4594,7 +4628,7 @@ private void drawPlayerBoard(Graphics gc,
         if(showBigStack) { hitBoard = null; tempOff = true; }
         HitPoint tipHighlight = (ui==UI.Main)||overlayClosed ? highlightAll : null;
         if(showBuildings) { ui = UI.ShowBuildable; overlayClosed = false; }
-        if(showOptions) { ui = UI.ShowOptions; overlayClosed = false; highlightAll = null; }
+        if(showOptions) { ui = UI.ShowOptions; overlayClosed = false; highlight = null; }
         switch(ui)
         {
 		case ShowWakeup:
@@ -6112,7 +6146,8 @@ private void drawPlayerBoard(Graphics gc,
       {
           super.ViewerRun(wait);
 
-          if(!reviewOnly
+          if(!reviewOnly 
+        	 && !G.offline()
         	 && !reviewMode() 
         	 && (mainBoard.getState()==ViticultureState.ChooseOptions)
         	 && (mainBoard.allPlayersReady())
@@ -6484,6 +6519,10 @@ private void drawPlayerBoard(Graphics gc,
   public commonMove convertToSynchronous(commonMove m)
   {
 	  return null;
+  }
+  public void updatePlayerTime(long inc,commonPlayer p)
+  {	if(!reviewMode() && simultaneous_turns_allowed()) {}
+  	else { super.updatePlayerTime(inc,p); }
   }
 }
 

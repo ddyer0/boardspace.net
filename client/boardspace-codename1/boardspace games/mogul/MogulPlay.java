@@ -212,7 +212,7 @@ public class MogulPlay extends commonRobot<MogulBoard> implements Runnable, Mogu
         monte_search_state.simulationsPerNode = 1;
         monte_search_state.node_expansion_rate = 2.0;
         monte_search_state.randomize_uct_children = true;     
-        monte_search_state.random_moves_per_second = WEAKBOT ? 10000:2000000;
+        monte_search_state.random_moves_per_second = WEAKBOT ? 10000:1000000;
         monte_search_state.max_random_moves_per_second = 3000000;
         monte_search_state.maxThreads = DEPLOY_THREADS;
         monte_search_state.blitz = false;
