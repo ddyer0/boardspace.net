@@ -129,7 +129,7 @@ public class FrogViewer extends CCanvas<FrogCell,FrogBoard> implements FrogConst
         zoomRect.value=INITIAL_TILE_SCALE;
         zoomRect.barColor=ZoomColor;
         zoomRect.highlightColor = HighlightColor;
-        b = new FrogBoard(info.getString(OnlineConstants.GAMETYPE, Frogs_INIT),randomv,pl,getStartingColorMap());
+        b = new FrogBoard(info.getString(GAMETYPE, Frogs_INIT),randomv,pl,getStartingColorMap());
         useDirectDrawing(true);
         doInit(false);
      }
@@ -180,7 +180,7 @@ public class FrogViewer extends CCanvas<FrogCell,FrogBoard> implements FrogConst
     	// to be appropriate to the window size
     	int fh = standardFontSize();
     	int minLogW = fh*14;	
-       	int minChatW = fh*40;	
+       	int minChatW = fh*35;	
         int minLogH = fh*12;	
         int margin = fh/2;
         int ncols = 20;
@@ -204,7 +204,7 @@ public class FrogViewer extends CCanvas<FrogCell,FrogBoard> implements FrogConst
     	layout.placeTheChatAndLog(chatRect, minChatW, chatHeight,minChatW*2,3*chatHeight/2,logRect,
     			minLogW, minLogH, minLogW*3/2, minLogH*3/2);
     	layout.placeDoneEditRep(buttonW, buttonW*2, doneRect,editRect,repRect);
-        layout.placeRectangle(bagRect,buttonW,buttonW,BoxAlignment.Center);
+        layout.placeRectangle(bagRect,buttonW,buttonW,BoxAlignment.Edge);
 
         Rectangle main = layout.getMainRectangle();
         int mainX = G.Left(main);

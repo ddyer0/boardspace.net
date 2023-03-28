@@ -82,10 +82,10 @@ public class XiangqiViewer extends CCanvas<XiangqiCell,XiangqiBoard> implements 
     private JMenuItem drawAction = null;
     public synchronized void preloadImages()
     {	
+       	XiangqiChip.preloadImages(loader,ImageDir);
         if (ornaments == null)
     	{ // note that for this to work correctly, the images and masks must be the same size.  
           // Refer to http://www.andromeda.com/people/ddyer/java/imagedemo/transparent.html
-        XiangqiChip.preloadImages(loader,ImageDir);
         textures = loader.load_images(ImageDir,TextureNames);
         images = loader.load_masked_images(ImageDir,ImageNames);
         ornaments = StockArt.preLoadArt(loader,ImageDir,ExtraImageNames,ExtraImageScale);
@@ -154,7 +154,7 @@ public class XiangqiViewer extends CCanvas<XiangqiCell,XiangqiBoard> implements 
     	int fh = standardFontSize();
     	int minLogW = fh*16;
     	int vcrW = fh*15;
-       	int minChatW = fh*40;	
+       	int minChatW = fh*35;	
         int minLogH = fh*10;	
         int buttonW = fh*8;
         int margin = fh/2;
@@ -193,10 +193,11 @@ public class XiangqiViewer extends CCanvas<XiangqiCell,XiangqiBoard> implements 
     	int boardW = (int)(ncols*cs);
     	int boardH = (int)(nrows*cs);
     	int extraW = Math.max(0, (mainW-boardW)/2);
-    	int extraH = Math.max(0, (mainH-boardH)/2);
+    	int extraH = Math.max(0, (mainH-boardH-stateH)/2);
     	int boardX = mainX+extraW;
-    	int boardY = mainY+extraH;
+    	int boardY = mainY+extraH+stateH;
         int boardBottom = boardY + boardH;
+       	layout.returnFromMain(extraW,extraH);
     	//
     	// state and top ornaments snug to the top of the board.  Depending
     	// on the rendering, it can occupy the same area or must be offset upwards

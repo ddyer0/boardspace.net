@@ -292,6 +292,7 @@ public class CrosswordsViewer extends CCanvas<CrosswordsCell,CrosswordsBoard> im
     	int extraH = Math.max(0, (mainH-boardH)/2);
     	int boardX = mainX+extraW+stateH;
     	int boardY = mainY+extraH+stateH;
+       	layout.returnFromMain(extraW,extraH);
     	//
     	// state and top ornaments snug to the top of the board.  Depending
     	// on the rendering, it can occupy the same area or must be offset upwards

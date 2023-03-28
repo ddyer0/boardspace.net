@@ -180,7 +180,7 @@ public class TraxGameViewer extends commonCanvas implements TraxConstants, GameL
     			0.5		// preference for the designated layout, if any
     			);
     	int minLogW = fh*12;	
-       	int minChatW = fh*40;	
+       	int minChatW = fh*35;	
         int minLogH = fh*10;	
         int buttonW = fh*8;
      	CELLSIZE = fh*2;

@@ -201,7 +201,7 @@ public class OrdoViewer extends CCanvas<OrdoCell,OrdoBoard> implements OrdoConst
     	int nPlayers = nPlayers();
      	int fh = standardFontSize();
      	int margin = fh/2;
-     	int minChatW = fh*40;
+     	int minChatW = fh*35;
     	int ideal_logwidth = fh*15;
      	
     	// this does the layout of the player boxes, and leaves
@@ -246,6 +246,7 @@ public class OrdoViewer extends CCanvas<OrdoCell,OrdoBoard> implements OrdoConst
         int extraH = (h-boardH-stateH*2)/2;
         int boardX = G.Left(main)+extraW;
         int boardY = G.Top(main)+extraH+stateH;
+       	layout.returnFromMain(extraW,extraH);
         G.SetRect(boardRect,boardX,boardY,boardW,boardH);
        
         if(rotate)

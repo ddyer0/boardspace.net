@@ -32,6 +32,9 @@ import online.common.exHashtable;
 
 // TODO: change the cursor when hovering over the chat window?
 // TODO: make it possible to copy/paste images
+// TODO: make chat windows float or pop out so they can be large without encumbering layout of the overall screen
+// TODO: make the chat windows for marginally small screens use the "framed" paradigm
+//
 public class ChatWidget 
 	implements ChatInterface,OnlineConstants,
 	SimpleObserver,ActionListener,MenuParentInterface,FocusListener

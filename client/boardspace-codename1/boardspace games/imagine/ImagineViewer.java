@@ -192,7 +192,7 @@ static String SWOOSH = ImageDir + "swoosh"+ Config.SoundFormat;
     	// to be appropriate to the window size
     	int fh = standardFontSize();
     	int minLogW = fh*22;	
-       	int minChatW = fh*40;	
+       	int minChatW = fh*35;	
         int minLogH = fh*14;	
         int margin = fh/2;
         int buttonW = fh*8;
@@ -242,7 +242,8 @@ static String SWOOSH = ImageDir + "swoosh"+ Config.SoundFormat;
     	int boardX = mainX+extraW;
     	int boardY = mainY+extraH;
     	int boardBottom = boardY+boardH;
-    	
+       	layout.returnFromMain(extraW,extraH);
+   	
         G.copy(boardRect,main);		// board is the whole extra area
 
     	//

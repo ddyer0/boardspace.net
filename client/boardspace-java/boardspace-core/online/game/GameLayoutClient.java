@@ -1,5 +1,6 @@
 package online.game;
 
+import java.awt.Color;
 import java.awt.Rectangle;
 
 import online.common.SeatingChart.DefinedSeating;
@@ -13,4 +14,5 @@ public interface GameLayoutClient
 	int standardFontSize();
 	void SetupVcrRects(int left, int top, int width, int height);
 	boolean isZoomed();
+	void positionTheChat(Rectangle actual, Color back,Color fore);
 }

@@ -242,10 +242,11 @@ public class WypsViewer extends CCanvas<WypsCell,WypsBoard> implements WypsConst
     	// center the board in the remaining space
     	int boardW = (int)(ncols*CELLSIZE);
     	int boardH = (int)(nrows*CELLSIZE);
-    	int extraW = Math.max(0, (mainW-boardW)/2);
+    	int extraW = Math.max(0, (mainW-boardW-stateH*3)/2);
     	int extraH = Math.max(0, (mainH-boardH)/2);
     	int boardX = mainX+extraW+(planned?stateH:0);
     	int boardY = mainY+extraH+(planned?stateH:0);
+       	layout.returnFromMain(extraW,extraH);
     	//
     	// state and top ornaments snug to the top of the board.  Depending
     	// on the rendering, it can occupy the same area or must be offset upwards

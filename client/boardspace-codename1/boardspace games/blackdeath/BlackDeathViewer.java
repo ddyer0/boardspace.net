@@ -144,7 +144,7 @@ public class BlackDeathViewer extends CCanvas<BlackDeathCell,BlackDeathBoard> im
         {	BlackDeathConstants.putStrings();
         }
         
-        String type = info.getString(OnlineConstants.GAMETYPE, BlackDeathVariation.blackdeath.name);
+        String type = info.getString(GAMETYPE, BlackDeathVariation.blackdeath.name);
         // recommended procedure is to supply players and randomkey, even for games which
         // are current strictly 2 player and no-randomization.  It will make it easier when
         // later, some variant is created, or the game code base is re purposed as the basis
@@ -192,8 +192,8 @@ public class BlackDeathViewer extends CCanvas<BlackDeathCell,BlackDeathBoard> im
         int stateH = fh*5/2;
     	int minLogW = fh*25;	
     	int vcrw = fh*16;
-       	int minChatW = fh*40;	
-        int minLogH = fh*10;	
+       	int minChatW = fh*35;	
+        int minLogH = fh*6;	
         int margin = fh/2;
         int buttonW = fh*8;
         	// this does the layout of the player boxes, and leaves
@@ -231,13 +231,14 @@ public class BlackDeathViewer extends CCanvas<BlackDeathCell,BlackDeathBoard> im
     	CELLSIZE = (int)cs;
     	//G.print("cell "+cs0+" "+cs+" "+bestPercent);
     	// center the board in the remaining space
-    	int boardW = (int)(ncols*CELLSIZE);
-    	int boardH = (int)(nrows*CELLSIZE);
+    	int boardW = (int)(ncols*cs);
+    	int boardH = (int)(nrows*cs);
     	int extraW = Math.max(0, (mainW-boardW)/2);
-    	int extraH = Math.max(0, (mainH-boardH)/2);
+    	int extraH = Math.max(0, (mainH-boardH-stateH)/2);
     	int boardX = mainX+extraW;
     	int boardY = mainY+stateH+extraH;
     	int boardBottom = boardY+boardH;
+    	layout.returnFromMain(extraW,extraH);
     	//
     	// state and top ornaments snug to the top of the board.  Depending
     	// on the rendering, it can occupy the same area or must be offset upwards

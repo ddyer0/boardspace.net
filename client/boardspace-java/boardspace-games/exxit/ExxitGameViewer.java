@@ -195,7 +195,7 @@ public class ExxitGameViewer extends CCanvas<ExxitCell,ExxitGameBoard> implement
     	
     	int vcrH = fh*8;
     	int minLogW = fh*15;
-       	int minChatW = fh*40;	
+       	int minChatW = fh*35;	
         int minLogH = fh*10;	
         int buttonW = fh*8;
      	CELLSIZE = fh*2;

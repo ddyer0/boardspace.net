@@ -712,8 +712,8 @@ public abstract class exCanvas extends ProxyWindow
     				  theChat.setBounds(G.Left(chatR)+sx,
     						  G.Top(chatR)+sy,G.Width(chatR),G.Height(chatR)); 
     				}
-        theChat.setBackgroundColor(chatCol);
-        theChat.setButtonColor(butCol);
+    			if(chatCol!=null) { theChat.setBackgroundColor(chatCol); }
+    			if(butCol!=null) { theChat.setButtonColor(butCol); }
     			}
     		catch (ThreadDeath err) { throw err;}
     		catch(Throwable err) { Http.postError(this,"set chat width",err); }
@@ -997,7 +997,7 @@ graphics when using a touch screen.
     {
     	return allRects.get(key);
     }
-    public void showRectangles(Graphics gc,Hashtable<String,Rectangle>allRects,int cellsize)
+    public void showRectangles(Graphics gc,HitPoint pt,Hashtable<String,Rectangle>allRects,int cellsize)
     {
         Rectangle bigr = null;
         Rectangle smallr = null;
@@ -1024,6 +1024,7 @@ graphics when using a touch screen.
             if (G.pointInRect(mx, my, r))
             {
                 GC.frameRect(gc, Color.red, r);
+                HitPoint.setHelpText(pt,r,G.concat(G.Left(r),",",G.Top(r)," to ",G.Right(r),",",G.Bottom(r)));
 
                 int thiss = G.Width(r) * G.Height(r);
 
@@ -1191,13 +1192,13 @@ graphics when using a touch screen.
      * @param gc
      * @param cellsize
      */
-        public void showRectangles(Graphics gc, int cellsize)
+        public void showRectangles(Graphics gc,HitPoint pt, int cellsize)
         {
             GC.setColor(gc,Color.black);
 
             if (show_rectangles)
             {
-            	showRectangles(gc,allRects,cellsize);
+            	showRectangles(gc,pt,allRects,cellsize);
             }
         }
         /**

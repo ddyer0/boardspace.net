@@ -203,7 +203,7 @@ public class CheckerGameViewer extends CCanvas<CheckerCell,CheckerBoard> impleme
     	int nPlayers = nPlayers();
      	int fh = standardFontSize();
      	int margin = fh/2;
-     	int minChatW = fh*40;
+     	int minChatW = fh*35;
     	int ideal_logwidth = fh*15;
      	
     	// this does the layout of the player boxes, and leaves
@@ -252,7 +252,8 @@ public class CheckerGameViewer extends CCanvas<CheckerCell,CheckerBoard> impleme
         int extraH = (h-boardH)/2;
         int boardX = G.Left(main)+extraW;
         int boardY = G.Top(main)+extraH;
-        G.SetRect(boardRect,boardX,boardY,boardW,boardH);
+       	layout.returnFromMain(extraW,extraH);
+       	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
         if(rotate)
         {	// this will trigger rotation of the board and it's coordinate system
         	// when it's drawn.

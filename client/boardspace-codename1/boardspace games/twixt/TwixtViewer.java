@@ -252,7 +252,7 @@ public class TwixtViewer extends CCanvas<TwixtCell,TwixtBoard> implements TwixtC
     	// to be appropriate to the window size
     	int fh = standardFontSize();
     	int minLogW = fh*15;	
-       	int minChatW = fh*40;	
+       	int minChatW = fh*35;	
         int minLogH = fh*10;	
         int buttonW = fh*8;
         int margin = fh/2;
@@ -297,6 +297,7 @@ public class TwixtViewer extends CCanvas<TwixtCell,TwixtBoard> implements TwixtC
     	int boardX = mainX+extraW;
     	int boardY = mainY+extraH+stateH/2;
     	int boardBottom = boardY+boardH;
+       	layout.returnFromMain(extraW,extraH);
     	//
     	// state and top ornaments snug to the top of the board.  Depending
     	// on the rendering, it can occupy the same area or must be offset upwards

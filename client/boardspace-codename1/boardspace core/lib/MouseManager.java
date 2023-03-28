@@ -525,7 +525,10 @@ public class MouseManager
 	            }
 	            dragPoint = null;
 	            //System.out.println("Up "+hp+"->"+highlightPoint);
-	            mouseMotion(x,y, MouseState.LAST_IS_IDLE);
+	            // this gives an idle "nowhere" hit, so touch screens
+	            // stop registering a mouse over.  On non touch screens
+	            // it is a general palette cleaner
+	            mouseMotion(-1,-1,MouseState.LAST_IS_IDLE);
 	            
 	        	}
 	        	

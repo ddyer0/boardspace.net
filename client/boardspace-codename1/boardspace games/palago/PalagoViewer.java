@@ -193,7 +193,7 @@ public class PalagoViewer extends CCanvas<PalagoCell,PalagoBoard> implements Pal
     	// to be appropriate to the window size
     	int fh = standardFontSize();
     	int minLogW = fh*15;	
-       	int minChatW = fh*40;	
+       	int minChatW = fh*35;	
         int minLogH = fh*10;	
         int buttonW = fh*8;
         int margin = fh/2;

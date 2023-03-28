@@ -205,7 +205,7 @@ public class ArimaaViewer extends CCanvas<ArimaaCell,ArimaaBoard> implements Ari
     	// to be appropriate to the window size
     	int fh = standardFontSize();
     	int minLogW = fh*25;	
-       	int minChatW = fh*40;	
+       	int minChatW = fh*35;	
         int minLogH = fh*10;	
         int vcrW = fh*16;
         int margin = fh/2;
@@ -250,6 +250,7 @@ public class ArimaaViewer extends CCanvas<ArimaaCell,ArimaaBoard> implements Ari
     	int boardX = mainX+extraW;
     	int boardY = mainY+extraH;
     	int boardBottom = boardY+boardW;
+    	layout.returnFromMain(extraW,extraH);
     	//
     	// state and top ornaments snug to the top of the board.  Depending
     	// on the rendering, it can occupy the same area or must be offset upwards

@@ -202,6 +202,7 @@ public class VolcanoGameViewer extends CCanvas<VolcanoCell,VolcanoBoard> impleme
     	int boardX = mainX+extraW;
     	int boardY = mainY+extraH+stateH/2;
     	int boardBottom = boardY+boardH+stateH;
+       	layout.returnFromMain(extraW,extraH);
     	//
     	// state and top ornaments snug to the top of the board.  Depending
     	// on the rendering, it can occupy the same area or must be offset upwards

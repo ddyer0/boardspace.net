@@ -273,7 +273,7 @@ public class BreakingAwayViewer extends CCanvas<BreakingAwayCell,BreakingAwayBoa
     	int boardX = G.Left(main)+extra;
     	int BCELL = boardW/80;
     	int stateX = boardX;
-
+    	layout.returnFromMain(extra,0);
     	G.SetRect(boardRect, boardX, boardY+stateH, boardW,boardH-stateH);
     	int stateY = boardY;
 

@@ -155,7 +155,7 @@ public class FanoronaGameViewer extends CCanvas<FanoronaCell,FanoronaBoard> impl
     	int fh = standardFontSize();
     	int vcrW = fh*15;
     	int minLogW = fh*15;	
-       	int minChatW = fh*40;	
+       	int minChatW = fh*35;	
        	int margin = fh/2;
         int minLogH = fh*10;	
         int ncols = b.ncols;
@@ -215,7 +215,8 @@ public class FanoronaGameViewer extends CCanvas<FanoronaCell,FanoronaBoard> impl
     	int boardX = mainX+extraW;
     	int boardY = mainY+extraH+stateH;
     	int boardBottom = boardY+boardH;
-    	//
+       	layout.returnFromMain(extraW,extraH);
+       	//
     	// state and top ornaments snug to the top of the board.  Depending
     	// on the rendering, it can occupy the same area or must be offset upwards
     	//

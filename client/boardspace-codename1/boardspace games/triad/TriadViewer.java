@@ -114,7 +114,7 @@ public class TriadViewer extends CCanvas<TriadCell,TriadBoard> implements TriadC
     	// to be appropriate to the window size
     	int fh = standardFontSize();
     	int minLogW = fh*25;	
-       	int minChatW = fh*40;	
+       	int minChatW = fh*35;	
         int minLogH = fh*10;	
         int margin = fh/2;
 
@@ -159,6 +159,7 @@ public class TriadViewer extends CCanvas<TriadCell,TriadBoard> implements TriadC
     	int boardY = mainY+stateH+extraH;
     	int boardBottom = boardY+boardH;
     	int stateY = boardY-stateH;
+       	layout.returnFromMain(extraW,extraH);
     	G.placeStateRow(boardX,stateY,boardW,stateH,iconRect,stateRect,eyeRect,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	G.SetRect(goalRect, boardX, boardBottom-stateH, boardW, stateH);

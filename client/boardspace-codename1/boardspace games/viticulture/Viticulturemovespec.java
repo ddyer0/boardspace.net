@@ -42,7 +42,8 @@ public class Viticulturemovespec extends commonMPMove implements ViticultureCons
     static final int MOVE_UNSELECT = 232;	// undo selections
     static final int EPHEMERAL_OPTION = 233;		// select option
     static final int EPHEMERAL_READY = 234;		// select option
-    static final int MOVE_COMMENCE = 235;	// commence play
+    static final int EPHEMERAL_COMMENCE = 235;	// commence play (in game setup)
+    static final int MOVE_COMMENCE = 236;	// commence play (in running game)
    
     static
     {	// load the dictionary
@@ -79,13 +80,16 @@ public class Viticulturemovespec extends commonMPMove implements ViticultureCons
         D.putInt("Option",EPHEMERAL_OPTION);
         D.putInt("Ready",EPHEMERAL_READY);
         D.putInt("Commence",MOVE_COMMENCE);
+        D.putInt("Ecommence",EPHEMERAL_COMMENCE);
     }
     public boolean isEphemeral()
     {
     	switch(op)
     	{
+    	case EPHEMERAL_COMMENCE:
     	case EPHEMERAL_OPTION:
-    	case EPHEMERAL_READY: return true;
+    	case EPHEMERAL_READY: 
+    		return true;
     	default: return false;
     	}
     }
@@ -393,6 +397,7 @@ public class Viticulturemovespec extends commonMPMove implements ViticultureCons
         op = D.getInt(cmd, MOVE_UNKNOWN);
         switch (op)
         {
+        case EPHEMERAL_COMMENCE:
         case MOVE_COMMENCE:
         	Bitset<Option> b = new Bitset<Option>();
         	while(msg.hasMoreTokens())
@@ -609,6 +614,7 @@ public class Viticulturemovespec extends commonMPMove implements ViticultureCons
     {
         switch (op)
         {
+        case EPHEMERAL_COMMENCE:
         case MOVE_COMMENCE:
         	{
         	Bitset<Option> b = new Bitset<Option>();
@@ -758,6 +764,7 @@ public class Viticulturemovespec extends commonMPMove implements ViticultureCons
         // review mode
         switch (op)
         {
+        case EPHEMERAL_COMMENCE:
         case MOVE_COMMENCE:
         	{
         	Bitset<Option> b = new Bitset<Option>();

@@ -310,7 +310,7 @@ public void ViewerRun(int wait)
     	// to be appropriate to the window size
     	int fh = standardFontSize();
     	int minLogW = fh*25;	
-       	int minChatW = fh*40;	
+       	int minChatW = fh*35;	
         int minLogH = fh*10;	
         int buttonW = fh*8;
         int margin = fh/2;
@@ -359,7 +359,8 @@ public void ViewerRun(int wait)
     	int boardY = mainY+extraH;
     	int boardBottom = boardY+boardH;
     	int stateY = boardY-stateH+C2;
-    	G.placeRow(boardX,stateY,boardW,stateH,stateRect,noChatRect);
+       	layout.returnFromMain(extraW,extraH);
+       	G.placeRow(boardX,stateY,boardW,stateH,stateRect,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	int goaly =  boardBottom-stateH+C2;
     	G.SetRect(scoreCard,boardX,goaly-stateH,stateH*2,stateH*2);

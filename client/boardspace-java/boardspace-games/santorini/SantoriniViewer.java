@@ -164,7 +164,7 @@ public class SantoriniViewer extends CCanvas<SantoriniCell,SantoriniBoard> imple
     	int fh = standardFontSize();
     	int minLogW = fh*20;	
     	int vcrW = fh*16;
-       	int minChatW = fh*40;	
+       	int minChatW = fh*35;	
         int minLogH = fh*10;	
         int buttonW = fh*8;
         int margin = fh/2;
@@ -215,6 +215,7 @@ public class SantoriniViewer extends CCanvas<SantoriniCell,SantoriniBoard> imple
     	int boardY = mainY+extraH;
     	int boardBottom = boardY+boardH;
     	int boardRight = boardX+boardW;
+       	layout.returnFromMain(extraW,extraH);
     	if(vertical)
     		{
     		G.SetRect(squareRect,boardX+(boardW-squareH)/2,boardBottom,squareH,squareW); 		

@@ -246,7 +246,7 @@ public class DayAndNightViewer extends CCanvas<DayAndNightCell,DayAndNightBoard>
     	// to be appropriate to the window size
     	int fh = standardFontSize();
     	int minLogW = fh*15;	
-       	int minChatW = fh*40;	
+       	int minChatW = fh*35;	
         int minLogH = fh*10;	
         int margin = fh/2;
         int buttonW = fh*8;
@@ -291,12 +291,13 @@ public class DayAndNightViewer extends CCanvas<DayAndNightCell,DayAndNightBoard>
     	int boardW = (int)(ncols*CELLSIZE);
     	int boardH = (int)(nrows*CELLSIZE);
     	int extraW = Math.max(0, (mainW-boardW)/2);
-    	int extraH = Math.max(0, (mainH-boardH)/2);
+    	int extraH = Math.max(0, (mainH-boardH-stateH)/2);
     	int boardX = mainX+extraW;
     	int boardY = mainY+extraH;
     	int boardBottom = boardY+boardH;
     	CHIPSIZE = (int)(CELLSIZE*1.1);
-    	//
+       	layout.returnFromMain(extraW,extraH);
+       	//
     	// state and top ornaments snug to the top of the board.  Depending
     	// on the rendering, it can occupy the same area or must be offset upwards
     	//

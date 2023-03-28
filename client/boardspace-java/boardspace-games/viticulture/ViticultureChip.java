@@ -920,8 +920,8 @@ public class ViticultureChip extends chip<ViticultureChip>
 	public static String TOP = "_top_";
 	public void drawChip(Graphics gc,exCanvas canvas,int SQUARESIZE,double xscale,int cx,int cy,String label)
 	{   boolean isBack = BACK.equals(label);
-		if(cardBack!=null && isBack)
-		{
+		if(cardBack!=null && (this!=cardBack) && (isBack || SQUARESIZE<15))
+		{// draw the card back for small cards where the image would be unintelligible anyway
 		 cardBack.drawChip(gc,canvas,SQUARESIZE,xscale, cx,cy,null);
 		}
 		else

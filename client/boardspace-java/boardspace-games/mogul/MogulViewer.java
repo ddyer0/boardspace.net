@@ -59,8 +59,9 @@ public class MogulViewer extends CCanvas<MogulCell,MogulBoard> implements MogulC
     // addRect is a service provided by commonCanvas, which supports a mode
     // to visualize the layout during development.  Look for "show rectangles"
     // in the options menu.
-    private Rectangle chipRect[] = addRect("chip",4);
-    private Rectangle cardRect[] = addRect("card",4);
+    
+    private Rectangle chipRect[] = addRect("chip",MAX_PLAYERS);
+    private Rectangle cardRect[] = addRect("card",MAX_PLAYERS);
     private Rectangle infoRect = addRect("infoRect");
 
     public String gameProgressString()

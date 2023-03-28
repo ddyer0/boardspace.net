@@ -215,20 +215,21 @@ public class TabGameViewer extends CCanvas<TabCell,TabGameBoard> implements TabC
     	BOARDCELLSIZE = CELLSIZE = (int)cs;
     	//G.print("cell "+cs0+" "+cs+" "+bestPercent);
     	// center the board in the remaining space
+        int stateH = CELLSIZE/3;
     	int boardW = (int)(ncols*CELLSIZE);
     	int boardH = (int)(nrows*CELLSIZE);
     	int extraW = Math.max(0, (mainW-boardW)/2);
-    	int extraH = Math.max(0, (mainH-boardH)/2);
+    	int extraH = Math.max(0, (mainH-boardH-stateH*3/2)/2);
     	int boardX = mainX+extraW;
-    	int boardY = mainY+extraH;
+    	int boardY = mainY+extraH+stateH;
     	int boardBottom = boardY+boardH;
     	int boardRight = boardX+boardW;
+       	layout.returnFromMain(extraW,extraH);
     	//
     	// state and top ornaments snug to the top of the board.  Depending
     	// on the rendering, it can occupy the same area or must be offset upwards
     	//
-        int stateH = CELLSIZE/3;
-        int stateY = boardY-stateH/2;
+         int stateY = boardY-stateH;
         int stateX = boardX;
         G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
@@ -240,7 +241,7 @@ public class TabGameViewer extends CCanvas<TabCell,TabGameBoard> implements TabC
     	// goal and bottom ornaments, depending on the rendering can share
     	// the rectangle or can be offset downward.  Remember that the grid
     	// can intrude too.
-    	G.SetRect(goalRect, boardX, boardBottom,boardW,stateH);      
+    	G.SetRect(goalRect, boardX, boardBottom-stateH/2,boardW,stateH);      
  
         setProgressRect(progressRect,goalRect);
         positionTheChat(chatRect,Color.white,Color.white);

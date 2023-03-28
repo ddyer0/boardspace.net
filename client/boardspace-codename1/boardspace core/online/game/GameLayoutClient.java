@@ -2,6 +2,7 @@ package online.game;
 
 import com.codename1.ui.geom.Rectangle;
 
+import bridge.Color;
 import online.common.SeatingChart.DefinedSeating;
 
 public interface GameLayoutClient 
@@ -13,4 +14,5 @@ public interface GameLayoutClient
 	int standardFontSize();
 	void SetupVcrRects(int left, int top, int width, int height);
 	boolean isZoomed();
+	void positionTheChat(Rectangle actual, Color back,Color fore);
 }

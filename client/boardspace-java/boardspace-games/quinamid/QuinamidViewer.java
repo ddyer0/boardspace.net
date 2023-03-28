@@ -42,13 +42,13 @@ public class QuinamidViewer extends CCanvas<QuinamidCell,QuinamidBoard> implemen
     private Color rackBackGroundColor = new Color(194,175,148);
     private Color boardBackgroundColor = new Color(220,165,155);
     
-    private String rotates[] = {
+    private static String rotates[] = {
     		"/quinamid/images/rotate-1" + Config.SoundFormat,
     		"/quinamid/images/rotate-2" + Config.SoundFormat,    				
     		"/quinamid/images/rotate-3" + Config.SoundFormat,
     		"/quinamid/images/rotate-4" + Config.SoundFormat    			
     };
-    private String shifts[] = {
+    private static String shifts[] = {
     		"/quinamid/images/scrape-1" + Config.SoundFormat,
     		"/quinamid/images/scrape-2" + Config.SoundFormat,    				
     		"/quinamid/images/scrape-3" + Config.SoundFormat,
@@ -175,7 +175,7 @@ public class QuinamidViewer extends CCanvas<QuinamidCell,QuinamidBoard> implemen
     	// to be appropriate to the window size
     	int fh = standardFontSize();
     	int minLogW = fh*15;	
-       	int minChatW = fh*40;	
+       	int minChatW = fh*35;	
         int minLogH = fh*10;	
         int margin = fh/2;
         int buttonW = fh*8;
@@ -221,6 +221,7 @@ public class QuinamidViewer extends CCanvas<QuinamidCell,QuinamidBoard> implemen
     	int boardX = mainX+extraW;
     	int boardY = mainY+extraH;
     	int boardBottom = boardY+boardH;
+       	layout.returnFromMain(extraW,extraH);
     	//
     	// state and top ornaments snug to the top of the board.  Depending
     	// on the rendering, it can occupy the same area or must be offset upwards

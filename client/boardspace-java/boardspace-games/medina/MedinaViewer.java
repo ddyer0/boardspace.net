@@ -169,7 +169,7 @@ public class MedinaViewer extends CCanvas<MedinaCell,MedinaBoard> implements Med
     	// to be appropriate to the window size
     	int fh = standardFontSize();
     	int minLogW = fh*16;	
-       	int minChatW = fh*40;	
+       	int minChatW = fh*35;	
         int minLogH = fh*10;	
         int margin = fh/2;
 
@@ -217,7 +217,8 @@ public class MedinaViewer extends CCanvas<MedinaCell,MedinaBoard> implements Med
     	int boardY = mainY+extraH;
     	int boardBottom = boardY+boardH;
     	int stateY = boardY-stateH+C2;
-    	
+       	layout.returnFromMain(extraW,extraH);
+   	
     	G.placeStateRow( boardX,stateY,boardW,stateH,iconRect,stateRect,viewsetRect,reverseRect,noChatRect);
     	
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);

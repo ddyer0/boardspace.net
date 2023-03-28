@@ -336,7 +336,7 @@ public class CarnacViewer extends CCanvas<CarnacCell,CarnacBoard> implements Car
        	boolean planned = plannedSeating();
        	int minLogW = fh * 18;
        	int minLogH = fh * 20;
-       	int minChatW = fh*40;	
+       	int minChatW = fh*35;	
         int margin = fh/2;
         int buttonW = fh*12;
         int stateH = fh*3;

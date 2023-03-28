@@ -151,7 +151,7 @@ public interface MogulConstants
 	
     static final String Mogul_SGF = "Mogul"; // sgf game name
     static final String[] MOGULGRIDSTYLE = { "1", null, "A" }; // left and bottom numbers
-
+    static final int MAX_PLAYERS = 6;
  
     // file names for jpeg images and masks
     static final String ImageDir = "/mogul/images/";

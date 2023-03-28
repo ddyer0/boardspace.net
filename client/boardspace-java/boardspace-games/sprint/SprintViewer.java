@@ -272,7 +272,8 @@ public class SprintViewer extends CCanvas<SprintCell,SprintBoard> implements Spr
     	int extraH = Math.max(0, (mainH-boardH)/2);
     	int boardX = mainX+extraW+(planned?stateH:0);
     	int boardY = mainY+extraH+(planned?stateH:0);
-    	//
+       	layout.returnFromMain(extraW,extraH);
+       	//
     	// state and top ornaments snug to the top of the board.  Depending
     	// on the rendering, it can occupy the same area or must be offset upwards
     	//

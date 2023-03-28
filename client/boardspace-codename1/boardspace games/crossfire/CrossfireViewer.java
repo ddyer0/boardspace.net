@@ -257,6 +257,7 @@ public class CrossfireViewer extends CCanvas<CrossfireCell,CrossfireBoard> imple
     	int boardBottom = boardY+boardH;
     	int zoomW = CELLSIZE*4;
     	int boardRight = boardX+boardW;
+       	layout.returnFromMain(extraW,extraH);
     	//
     	// state and top ornaments snug to the top of the board.  Depending
     	// on the rendering, it can occupy the same area or must be offset upwards

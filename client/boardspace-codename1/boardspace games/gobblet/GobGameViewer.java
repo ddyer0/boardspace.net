@@ -199,7 +199,7 @@ public class GobGameViewer extends CCanvas<GobCell,GobGameBoard> implements GobC
     	
         // place the chat and log automatically, preferring to place
     	// them together and not encroaching on the main rectangle.
-    	layout.placeTheChatAndLog(chatRect, minChatW, 3*chatHeight/4,minChatW*2,3*chatHeight/2,
+    	layout.placeTheChatAndLog(chatRect, minChatW, chatHeight,minChatW*2,3*chatHeight/2,
     						       logRect, minLogW,  minLogH,  minLogW*3/2, minLogH*3/2);
        	layout.placeDoneEditRep(buttonW,buttonW*4/3,doneRect,editRect);
     	layout.placeTheVcr(this,vcrW,3*vcrW/2 );
@@ -222,6 +222,7 @@ public class GobGameViewer extends CCanvas<GobCell,GobGameBoard> implements GobC
     	int boardX = mainX+extraW;
     	int boardY = mainY+extraH;
     	int boardBottom = boardY+boardH;
+       	layout.returnFromMain(extraW,extraH);
     	//
     	// state and top ornaments snug to the top of the board.  Depending
     	// on the rendering, it can occupy the same area or must be offset upwards

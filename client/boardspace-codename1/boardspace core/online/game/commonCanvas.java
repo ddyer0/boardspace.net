@@ -1704,7 +1704,9 @@ public abstract class commonCanvas extends exCanvas
     	int fh = fs*14;		// minimum lines, about 7
     	int fm = fs*20;		// maximum lines, about 10
     	int maxh = height*2/3;
-        return(Math.min(Math.min(fm, maxh), Math.max(Math.max(MINCHATHEIGHT,fh),nominal)));
+        return(Math.min(Math.min(fm, maxh),
+        				Math.max(Math.max(MINCHATHEIGHT,fh),
+        						nominal)));
     }
     
     public void drawRotatedSprite(Graphics gc,int chip,HitPoint hp,Point pt)
@@ -3416,7 +3418,7 @@ public abstract class commonCanvas extends exCanvas
     /**
      * this is called to display the rectangle grid while debugging layouts.
      */
-    public void showRectangles(Graphics gc, int cellsize)
+    public void showRectangles(Graphics gc,HitPoint pt, int cellsize)
     {	if(show_rectangles)
     	{
 	    	for(int i=0;i<players.length;i++) 
@@ -3433,9 +3435,10 @@ public abstract class commonCanvas extends exCanvas
     			{ Rectangle r = rects.elementAt(i);
     			  GC.fillRect(gc, new Color(0xff&(i*10),0xff&(i*20),0xff), r);
     			  GC.frameRect(gc, Color.green,G.Left(r),G.Top(r),G.Width(r),G.Height(r));
+    			  HitPoint.setHelpText(pt,r,G.concat(G.Left(r),",",G.Top(r)," - ",G.Right(r),",",G.Bottom(r)));
     			}
        	}}
-       	super.showRectangles(gc,cellsize);
+       	super.showRectangles(gc,pt,cellsize);
     }
     /**
      * This is called to display the current move's associated comments, in the chat window.
@@ -8531,7 +8534,11 @@ public void verifyGameRecord()
 	    	String msg = fixedServerRecordMessage(fixedHist);
 	    	return(msg);
 	    }
-
+	    public void testSwitch()
+	    {
+	    	autoOptimize = !autoOptimize;
+	    	setLocalBoundsSync(0,0,getWidth(),getHeight());
+	    }
 	    public boolean autoDone = false;
 	    public boolean enableAutoDone = false;
 	    // this flag tweaks the interaction of "undo" and "autodone".  When undoing,
@@ -8546,4 +8553,9 @@ public void verifyGameRecord()
 		public boolean autoDoneActive() { return autoDone && !skipAutoDone && !reviewMode(); }
 		public void doGameTest() { }
 		public boolean reverseView() { BoardProtocol b = getBoard(); return (b==null ? false : b.reverseView()); }
+		public boolean autoOptimize = true;
+		public void setLocalBoundsSync(int x,int y,int w,int h)
+		{	super.setLocalBoundsSync(x,y,w,h);
+			if(autoOptimize) { selectedLayout.optimize(); }
+		}
 }

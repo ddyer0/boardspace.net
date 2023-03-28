@@ -297,7 +297,7 @@ public class RepaintManager implements VncScreenInterface,Config
 		public void handleError(String s,String context,Throwable r);	// report an error
 		public void drawClientCanvas(Graphics g,boolean complete,HitPoint p);	// actual drawing, usually to a buffer
 		public void ShowStats(Graphics gc, HitPoint hp,int i, int j);
-		public void showRectangles(Graphics gc, int i);
+		public void showRectangles(Graphics gc, HitPoint pt,int i);
 		public Font getDefaultFont();
 		public void manageCanvasCache(int time);
 		public boolean needsCacheManagement();
@@ -1318,7 +1318,7 @@ public class RepaintManager implements VncScreenInterface,Config
 		 	    	}
 		 	    	paintedAFrame = true;
 		      		GC.setColor(gc,Color.blue);
-		        	helper.showRectangles(gc,100);
+		        	helper.showRectangles(gc,pt,100);
 		        	helper.ShowStats(gc,pt,0,0);
 	    	
 		    	}
@@ -1345,7 +1345,7 @@ public class RepaintManager implements VncScreenInterface,Config
 	  		helper.drawClientCanvas(offGC,complete,pt);
 	  		paintedAFrame = true;
 			    
-	    	helper.showRectangles(offGC,100);
+	    	helper.showRectangles(offGC,pt,100);
 
 	    	helper.paintSprites(offGC,pt);
 

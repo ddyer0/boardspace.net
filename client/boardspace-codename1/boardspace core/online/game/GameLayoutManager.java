@@ -1,13 +1,17 @@
 package online.game;
 
+
+
 import com.codename1.ui.geom.Rectangle;
 
 import bridge.FontMetrics;
 import lib.G;
 import lib.InternationalStrings;
+import lib.OStack;
 import lib.Plog;
 import lib.RectangleStack;
 import online.common.SeatingChart.DefinedSeating;
+import online.game.GameLayoutManager.Purpose;
 import online.game.PlayConstants.BoxAlignment;
 
 
@@ -23,9 +27,73 @@ import online.game.PlayConstants.BoxAlignment;
  * 2) placing by combining a horizontal or vertical "chip" from a rectangle with a spare rectangle.
  * 3) placing inside the main rectangle.  This is done only as a last resort.
  * 
+ * TODO: implement a "final optimize" phase which will enlarge boxes using adjacent empty space.
+ * preliminary plan: record the actual parameters for each box, then look for opportinities to
+ * enlarge to their maximum size.  This applies "mostly" to chat and log rectatangles.
+ * 
  * @author Ddyer
  *
  */
+
+
+/**
+ * this records all the specs for a rectangle, and the items it needs
+ * to complete the formatting and subdivision after the primary allocation.
+ * 
+ * @author ddyer
+ *
+ */
+class RectangleSpec
+{
+	Rectangle actual;
+	Rectangle allocated;
+	int minw;
+	int maxw;
+	int minh;
+	int maxh;
+	BoxAlignment align;
+	boolean preserveAspectRatio;
+	double preferredAspectRatio;
+	Purpose name=Purpose.Other;
+	Rectangle rect2;
+	Rectangle rect3;
+	Rectangle rectList[] = null;
+	GameLayoutClient client;
+	
+	public String toString() 
+	{ 	StringBuilder b = new StringBuilder("<spec ");
+		int aw = G.Width(allocated);
+		int ah = G.Height(allocated);
+		G.append(b,name," ",aw,"x",ah);
+		if(aw<maxw || ah<maxh) 
+		{
+			G.append(b," max ",maxw,"x",maxh);
+		}
+		G.append(b,">");
+		return b.toString();
+	} 
+	public RectangleSpec(Purpose note,Rectangle act,Rectangle alloc,int min_width,int max_width,int min_height,int max_height,BoxAlignment alignment,boolean aspect,double ratio)
+	{
+		name = note;
+		actual = act;
+		allocated = alloc;
+		minw = min_width;
+		maxw = max_width;
+		minh = min_height;
+		maxh = max_height;
+		align = alignment;
+		preserveAspectRatio = aspect;
+		preferredAspectRatio = ratio;
+	}
+}
+class RectangleSpecStack extends OStack<RectangleSpec>
+{
+
+	public RectangleSpec[] newComponentArray(int sz) {
+		return new RectangleSpec[sz];
+	}
+	
+}
 class RectangleManager
 {	static boolean allowChips = true;
 	static int MinCoord = 0;
@@ -38,13 +106,24 @@ class RectangleManager
 	// are the exact unused area which can be completely filled.
 	RectangleStack spareRects = new RectangleStack();
 	RectangleStack allocatedRects = new RectangleStack();
+	RectangleSpecStack specs = new RectangleSpecStack();
 	Rectangle mainRectangle = null;
+	Rectangle centerRectangle = null;
+	Rectangle allocatedMainRectangle = null;
 	Rectangle fullRect = null;
 	public int marginSize = 0;
 	Plog messages = new Plog(20);
 	public void setMainRectangle(Rectangle r) 
-	{ mainRectangle = r;
-	  if(r!=null) { checkRectangles(r); }
+	{   
+	  if(r==null) 
+	  	{ //when we claim the main rectangle, as reduced by other allocations
+		  G.Assert(allocatedMainRectangle==null,"only do this once");
+		  allocatedMainRectangle = new Rectangle(G.Left(mainRectangle)-marginSize,G.Top(mainRectangle)-marginSize,
+	  			G.Width(mainRectangle)+marginSize,G.Height(mainRectangle)+marginSize);
+	  	  checkRectangles();
+	  	}
+	  else { centerRectangle = r; allocatedMainRectangle=null; }
+	  mainRectangle = r;
 	}
 	private void zoomRectangle(Rectangle mr)
 	{
@@ -63,9 +142,10 @@ class RectangleManager
 	public Rectangle allocateMainRectangle()
 	{
 		Rectangle mr = mainRectangle;
+		allocatedRects.push(G.copy(null,mr));	// allocatedrects before trim and zoom
 		setMainRectangle(null);
+		centerRectangle = G.copy(null,mr);
 		G.insetRect(mr, marginSize); 
-		allocatedRects.push(G.copy(null,mr));	// allocatedrects before zoom
 		zoomRectangle(mr);
 		return(mr);
 	}
@@ -73,7 +153,7 @@ class RectangleManager
 	{	Rectangle mr = mainRectangle;
 		if(mr!=null)
 			{mr = G.copy(null,mr);
-		zoomRectangle(mr);
+			zoomRectangle(mr);
 			}
 		return(mr);
 	}
@@ -101,13 +181,13 @@ class RectangleManager
 				}
 		}
 	}
-
+	
 	//
 	// add a new spare rectangle to the pool.  Normally this is
 	// a consequence of allocating something that uses only part
 	// of another rectangle.
 	public void addToSpare(Rectangle r)
-	{
+	{	
 		int hr = G.Height(r);
 		int wr = G.Width(r);
 		if(wr>0 && hr>0) 
@@ -372,7 +452,7 @@ class RectangleManager
      * @param preserveAspectRatio
      * @return
      */
-    boolean placeInSpareRectangle(Rectangle targetRect, 
+    RectangleSpec placeInSpareRectangle(Purpose purpose,Rectangle targetRect, 
     		int minWX0,int minHX0,int maxWX0,int maxHX0,
     		int minWX1,int minHX1,int maxWX1,int maxHX1,
     		BoxAlignment align,boolean preserveAspectRatio,double preferredAspectRatio)
@@ -386,7 +466,7 @@ class RectangleManager
     	int minHM1 = minHX1+m2;
     	int maxHM0 = maxHX0+m2;
     	int maxHM1 = maxHX1+m2;
-    	
+    	Rectangle alloc = null;		// allocated new rectangle
     	placeInSpare_best = null;
     	placeInSpare_score = 0;
     	placeInSpare_bestAboveOrBelow = null;
@@ -413,20 +493,23 @@ class RectangleManager
     		
     		if(placeInSpare_bestAboveOrBelow!=null)
     		{
-    			placeInAboveOrBelowChip(targetRect,placeInSpare_best,
+    			alloc = placeInAboveOrBelowChip(targetRect,placeInSpare_best,
     					preserveAspectRatio ? bestMinW : Math.min(G.Width(placeInSpare_bestAboveOrBelow),Math.min(G.Width(placeInSpare_best),bestMaxW)),
     					bestMinH,
     					placeInSpare_bestAboveOrBelow,align);
     		}
     		else if(placeInSpare_bestLeftOrRight!=null) 
     		{
-    			placeInLeftOrRightChip(targetRect,placeInSpare_best,
+    			alloc = placeInLeftOrRightChip(targetRect,placeInSpare_best,
     					bestMinW,
     					preserveAspectRatio ? bestMinH : Math.min(G.Height(placeInSpare_bestLeftOrRight),Math.min(G.Height(placeInSpare_best), bestMaxH)),
     					placeInSpare_bestLeftOrRight,align);
     		}
     		else     			
-    		{
+    		{	alloc = placeInSpecificRectangle(targetRect,placeAboveOrBelow,placeInSpare_best,
+    						bestMinW,bestMinH,bestMinW,bestMaxH,
+    						preserveAspectRatio,preferredAspectRatio,align);
+    		/*
         		int actualW = Math.min(bestMaxW,G.Width(placeInSpare_best));
     			int actualH = Math.min(bestMaxH, G.Height(placeInSpare_best));
     			double aspect = (double)bestMinW/bestMinH;
@@ -438,13 +521,22 @@ class RectangleManager
     			
     			if(placeAboveOrBelow)
     			{	
-    			placeInAboveOrBelow(targetRect,placeInSpare_best,actualW,actualH,align);
+    			alloc = placeInAboveOrBelow(targetRect,placeInSpare_best,actualW,actualH,align);
     			}
     			else {
-    			placeInLeftOrRight(targetRect,placeInSpare_best,actualW,actualH,align);    			
+    			alloc = placeInLeftOrRight(targetRect,placeInSpare_best,actualW,actualH,align);    			
     			}
+    			*/
     		}
-		return(true);
+    	RectangleSpec spec = new RectangleSpec(
+    			purpose,targetRect,alloc,
+    			bestis1 ? minWX1 : minWX0,
+    			bestis1 ? maxWX1 : maxWX0,
+    			bestis1 ? minHX1 : minHX0,
+    			bestis1 ? maxHX1 : maxHX0,
+    			align,preserveAspectRatio,preferredAspectRatio);
+    	specs.push(spec);
+		return(spec);
     	}
     	// failed to find a placement
     	failedPlacements++;
@@ -452,12 +544,32 @@ class RectangleManager
     		{ messages.addLog("failed to place ",minWX0,"x",minHX0); 
     		}
     	
-    	return(false);
+    	return(null);
     }
-
-    boolean placeInSpareRectangle(Rectangle targetRect, int minW0,int minH0,int maxW0,int maxH0,
+    private Rectangle placeInSpecificRectangle(Rectangle targetRect,boolean aboveOrBelow,Rectangle fromRect,
+    		int minW,int minH,int maxW,int maxH,
+    		boolean preserveAspectRatio,double aspect,BoxAlignment align)
+    {
+    	int actualW = Math.min(maxW,G.Width(fromRect));
+		int actualH = Math.min(maxH, G.Height(fromRect));
+		if(preserveAspectRatio)
+		{
+			actualH = Math.max(minH,(int)Math.min(actualH, actualW/aspect));
+			actualW = Math.max(minW,(int)Math.min(actualH*aspect, actualW));
+		}
+		
+		if(aboveOrBelow)
+		{	
+		return placeInAboveOrBelow(targetRect,fromRect,actualW,actualH,align);
+		}
+		else {
+		return placeInLeftOrRight(targetRect,fromRect,actualW,actualH,align);   
+		}
+    }
+    
+    private RectangleSpec placeInSpareRectangle(Purpose purpose,Rectangle targetRect, int minW0,int minH0,int maxW0,int maxH0,
     		BoxAlignment align,boolean preserveAspectRatio,double preferredAspectRatio)
-    {	return placeInSpareRectangle(targetRect,minW0,minH0,maxW0,maxH0,
+    {	return placeInSpareRectangle(purpose,targetRect,minW0,minH0,maxW0,maxH0,
     		0,0,0,0,
     		align,preserveAspectRatio,preferredAspectRatio);
     }
@@ -497,8 +609,9 @@ class RectangleManager
    	//
     // place inside a single rectangle, add new waste to the spare list.
     // align is the preferred alignment relative to the main rectangle
+    // return the allocated rectangle
     //
-    private void placeInRectangle(Rectangle targetRect,int actualW,int actualH,Rectangle fromRect,BoxAlignment align1,BoxAlignment align2)
+    private Rectangle placeInRectangle(Rectangle targetRect,int actualW,int actualH,Rectangle fromRect,BoxAlignment align1,BoxAlignment align2)
     {
     G.Assert(fromRect!=null, "must be a from rectangle");
 	int availableW = G.Width(fromRect);
@@ -538,14 +651,14 @@ class RectangleManager
 		switch(align2)
 		{
 		case Center:
-			dtop = G.centerY(mainRectangle)-actualH/2;
+			dtop = G.centerY(centerRectangle)-actualH/2;
 			break;
 		case Top:
 			dtop = MinCoord;
 			break;
 		default:
 		case Edge:
-			dtop = (G.centerY(fromRect)<G.centerY(mainRectangle)) ? MinCoord : MaxCoord;
+			dtop = (G.centerY(fromRect)<G.centerY(centerRectangle)) ? MinCoord : MaxCoord;
 			break;
 		case Bottom: dtop = MaxCoord;
 			break;
@@ -564,21 +677,23 @@ class RectangleManager
 			break;
 		default:
 		case Edge:
-			dleft = G.centerX(fromRect)<G.centerX(mainRectangle) ? MinCoord : MaxCoord;
+			dleft = G.centerX(fromRect)<G.centerX(centerRectangle) ? MinCoord : MaxCoord;
 			break;
 		case Right:
 			dleft = MaxCoord;
 			break;
 		case Center:
-			dleft = G.centerX(mainRectangle)-actualW/2;
+			dleft = G.centerX(centerRectangle)-actualW/2;
 			break;
 		}
 		dleft = Math.min(fromRight-actualW,Math.max(dleft, fromLeft));
 		splitHorizontal(targetRect,dleft,actualW);
 	}
-	allocatedRects.push(G.copy(null, targetRect));	// before zoom or margin
+	Rectangle alloc = G.copy(null, targetRect);
+	allocatedRects.push(alloc);	// before zoom or margin
 	G.insetRect(targetRect,marginSize);
 	zoomRectangle(targetRect);
+	return alloc;
 }
 
     /**
@@ -594,12 +709,15 @@ class RectangleManager
      * @param preferredAspectRatio
      * @return
      */
-    public boolean placeInMainRectangle(Rectangle targetRect, int minW,int minH,int maxW,int maxH,
+    RectangleSpec placeInMainRectangle(Purpose purpose,Rectangle targetRect, int minW,int minH,int maxW,int maxH,
     		BoxAlignment align,boolean preserveAspectRatio,double preferredAspectRatio)
     {		G.SetRect(targetRect, 0, 0, 0, 0);
-    		return (  (maxW>0)
-    				&& (maxH>0)
-    				&& (placeInSpareRectangle(targetRect,minW,minH,maxW,maxH,align,preserveAspectRatio,preferredAspectRatio)));
+    		if (  (maxW>0)
+    				&& (maxH>0))
+    		{ return placeInSpareRectangle(purpose,targetRect,minW,minH,maxW,maxH,align,preserveAspectRatio,preferredAspectRatio);
+    		
+    		}
+    		return null;
     }
     /**
      * place one of two rectangles, whichever is more efficient.  This is generally used to place
@@ -620,18 +738,18 @@ class RectangleManager
      * @param preferredAspectRatio
      * @return
      */
-    public boolean placeInMainRectangle(Rectangle targetRect,
+    public RectangleSpec placeInMainRectangle(Purpose purpose,Rectangle targetRect,
     		int minW,int minH,int maxW,int maxH,
     		int minW1,int minH1,int maxW1,int maxH1,
     		BoxAlignment align,boolean preserveAspectRatio,double preferredAspectRatio)
     {	G.SetRect(targetRect, 0, 0, 0, 0);
-        return (placeInSpareRectangle(targetRect,
+        return (placeInSpareRectangle(purpose,targetRect,
     									minW,minH,maxW,maxH,
     									minW1,minH1,maxW1,maxH1,
     									align,preserveAspectRatio,preferredAspectRatio)
     			);
     }
-    private void placeInLeftOrRight(Rectangle targetRect,Rectangle fromRect,int actualW,int actualH,BoxAlignment align)
+    private Rectangle placeInLeftOrRight(Rectangle targetRect,Rectangle fromRect,int actualW,int actualH,BoxAlignment align)
     {
 		BoxAlignment align1 = align;
 		int fromLeft = G.Left(fromRect);
@@ -643,20 +761,21 @@ class RectangleManager
 		case Right:
 			break;
 		case Center:
-			align1 = (fromLeft>G.centerX(mainRectangle)) ? BoxAlignment.Left : BoxAlignment.Right;
+			align1 = (fromLeft>G.centerX(centerRectangle)) ? BoxAlignment.Left : BoxAlignment.Right;
 			break;
 		case Edge:
 		case Top:
 		case Bottom:
-			align1 = (fromLeft<G.centerX(mainRectangle)) ? BoxAlignment.Left : BoxAlignment.Right;
+			align1 = (fromLeft<G.centerX(centerRectangle)) ? BoxAlignment.Left : BoxAlignment.Right;
 			break;
 		}
-		placeInRectangle(targetRect,actualW,actualH,fromRect,align1,align);
+		return placeInRectangle(targetRect,actualW,actualH,fromRect,align1,align);
 
     }
     // fromRect is tall enough, but not wide enough for the placement. A chip from
     // chipLeftOrRight will supply the rest of the needed width.
-    private void placeInLeftOrRightChip(Rectangle targetRect,Rectangle fromRect,int actualW,int actualH,Rectangle chipLeftOrRight,BoxAlignment align)
+    // return the allocated rectangle
+    private Rectangle placeInLeftOrRightChip(Rectangle targetRect,Rectangle fromRect,int actualW,int actualH,Rectangle chipLeftOrRight,BoxAlignment align)
     {	int fromLeft = G.Left(fromRect);
     	int fromTop = G.Top(fromRect);
     	int fromBottom = G.Bottom(fromRect);
@@ -671,17 +790,17 @@ class RectangleManager
 		switch(align)
 		{
 		case Center:
-			dtop = G.centerX(mainRectangle)/2-actualH/2;
+			dtop = G.centerX(centerRectangle)/2-actualH/2;
 			break;
 		case Top:
 		default:
-			dtop = G.Top(mainRectangle);
+			dtop = G.Top(centerRectangle);
 			break;
 		case Bottom:
-			dtop = G.Bottom(mainRectangle);
+			dtop = G.Bottom(centerRectangle);
 			break;
 		case Edge:
-			dtop = (fromTop+fromBottom)>(G.Top(mainRectangle)+G.Bottom(mainRectangle)) ? MaxCoord : MinCoord;
+			dtop = (fromTop+fromBottom)>(G.Top(centerRectangle)+G.Bottom(centerRectangle)) ? MaxCoord : MinCoord;
 			break;
 		}
 		dtop = Math.min(chipBottom-actualH, Math.min(fromBottom-actualH, Math.max(chipTop,Math.max(dtop, fromTop))));
@@ -689,13 +808,16 @@ class RectangleManager
 		Rectangle split = splitNewVertical(chipLeftOrRight,dtop,actualH);
 		splitVertical(targetRect,dtop,actualH);
 		G.union(targetRect, split);
-		allocatedRects.push(G.copy(null, targetRect));	// allocated rects before zoom or margin
+		Rectangle alloc = G.copy(null, targetRect);
+		allocatedRects.push(alloc);	// allocated rects before zoom or margin
 		G.insetRect(targetRect,marginSize);
 		zoomRectangle(targetRect);
+		return alloc;
     }
     // fromRect is wide enough, but not tall enough for the placement.  
     // A chip from chipAboveOrBelow will supply the rest of the needed height.
-    private void placeInAboveOrBelowChip(Rectangle targetRect,Rectangle fromRect,int actualW,int actualH,Rectangle chipAboveOrBelow,BoxAlignment align)
+    // return the allocated rectangle
+    private Rectangle placeInAboveOrBelowChip(Rectangle targetRect,Rectangle fromRect,int actualW,int actualH,Rectangle chipAboveOrBelow,BoxAlignment align)
     {	int fromTop = G.Top(fromRect);
     	int fromBottom = G.Bottom(fromRect);
     	// remove a strip at the bottom, from left to right
@@ -709,17 +831,17 @@ class RectangleManager
 			switch(align)
 			{
 			case Center: 
-				dleft = G.centerX(mainRectangle)-actualW/2;
+				dleft = G.centerX(centerRectangle)-actualW/2;
 				break;
 			case Left:
 			default:
-				dleft = G.Left(mainRectangle);
+				dleft = G.Left(centerRectangle);
 				break;
 			case Right:
-				dleft = G.Right(mainRectangle);
+				dleft = G.Right(centerRectangle);
 				break;
 			case Edge:
-				dleft = ((fromTop+fromBottom)>(G.Top(mainRectangle)+G.Bottom(mainRectangle))) ? MaxCoord : MinCoord;
+				dleft = ((fromTop+fromBottom)>(G.Top(centerRectangle)+G.Bottom(centerRectangle))) ? MaxCoord : MinCoord;
 				break;
 			}
 			dleft = Math.min(Math.max(dleft, Math.max(chipLeft, G.Left(fromRect))), Math.min(chipRight-actualW,G.Right(fromRect)-actualW));
@@ -727,14 +849,16 @@ class RectangleManager
 			Rectangle split = splitNewHorizontal(chipAboveOrBelow,dleft,actualW);
 			splitHorizontal(targetRect,dleft,actualW);
 			G.union(targetRect,split);
-			allocatedRects.push(G.copy(null, targetRect));	// allocated rects before zoom and margin
+			Rectangle alloc = G.copy(null, targetRect);
+			allocatedRects.push(alloc);	// allocated rects before zoom and margin
 			G.insetRect(targetRect,marginSize);
 			zoomRectangle(targetRect);
+			return alloc;
     }
     // fromRect can contain the required placement, and the scoring
     // has determined that it's more efficient to take a horizontal
     // stripe.
-    private void placeInAboveOrBelow(Rectangle targetRect,Rectangle fromRect,int actualW,int actualH,BoxAlignment align)
+    private Rectangle placeInAboveOrBelow(Rectangle targetRect,Rectangle fromRect,int actualW,int actualH,BoxAlignment align)
     {	int fromTop = G.Top(fromRect);
 		BoxAlignment align1 = align;
 		switch(align)
@@ -744,15 +868,15 @@ class RectangleManager
 		case Bottom:
 			break;
 		case Center:
-			align1 = (fromTop<G.centerY(mainRectangle)) ? BoxAlignment.Bottom : BoxAlignment.Top;
+			align1 = (fromTop<G.centerY(centerRectangle)) ? BoxAlignment.Bottom : BoxAlignment.Top;
 			break;
 		case Edge:
 		case Left:
 		case Right:
-			align1 = (fromTop>G.centerY(mainRectangle)) ? BoxAlignment.Bottom : BoxAlignment.Top;
+			align1 = (fromTop>G.centerY(centerRectangle)) ? BoxAlignment.Bottom : BoxAlignment.Top;
 			break;
 		}
-	placeInRectangle(targetRect,actualW,actualH,fromRect,align1,align);
+	return placeInRectangle(targetRect,actualW,actualH,fromRect,align1,align);
 
     }
 	public void init(int i, int j, int w, int h) {
@@ -760,6 +884,425 @@ class RectangleManager
 		fullRect = new Rectangle(0,0,w,h);
 		allocatedRects.clear();
 		failedPlacements = 0;
+	}
+
+	/** new stuff to support optimization */
+	//
+	// left,top is the corner of a rectangle we want to expand
+	// scan left for spare rectangles whose right edge is our left edge
+	// recurse if we get only part of the way down
+	// return the new left edge we can achieve
+	private int expandLeft(int left,int top,int height)
+	{	
+		for(int lim = spareRects.size()-1; lim>=0; lim--)
+		{
+			Rectangle spare = spareRects.elementAt(lim);
+			if(G.Right(spare)==left)
+			{	// rectangle whose right edge is our left edge
+				int bot = G.Bottom(spare);
+				if((bot>top)
+					&& (G.Top(spare)<=top))
+				{	// rectangle contains the top corner
+					int remh = height-(bot-top);
+					int leftspare = G.Left(spare);
+					if(remh>0) 
+						{ return Math.max(leftspare,expandLeft(left,bot,remh)); 
+						}
+					return leftspare;
+				}
+					
+			}
+		}
+		return left;
+	}
+	//
+	// right,top is the corner of a rectangle we want to expand
+	// scan right for spare rectangles whose left edge is our right edge
+	// recurse if we get only part of the way down
+	// return the new right edge we can achieve
+	private int expandRight(int right,int top,int height)
+	{	
+		for(int lim = spareRects.size()-1; lim>=0; lim--)
+		{	
+			Rectangle spare = spareRects.elementAt(lim);
+			if(G.Left(spare)==right)
+			{	// rectangle whose left edge is our right edge
+				int bot = G.Bottom(spare);
+				if((bot>top)
+					&& (G.Top(spare)<=top))
+				{	// rectangle contains the top corner
+					int remh = height-(bot-top);
+					int rightspare = G.Right(spare);
+					if(remh>0) 
+						{ return Math.min(rightspare,expandRight(right,bot,remh)); 
+						}
+					return rightspare;
+				}
+			}
+		}
+		return right;
+	}
+	//
+	// left,top is the corner of a rectangle we want to expand
+	// scan up for spare rectangles whose bottom edge is our top edge
+	// recurse if we get only part of the way up
+	// return the new top edge we can achieve
+	private int expandUp(int left,int top,int width)
+	{	
+		for(int lim = spareRects.size()-1; lim>=0; lim--)
+		{	// rectangle whose bottom edge is our top edge
+			Rectangle spare = spareRects.elementAt(lim);
+			if(G.Bottom(spare)==top)
+			{	int right = G.Right(spare);
+				if((right>left)
+					&& (G.Left(spare)<=left))
+				{	// rectangle contains the left corner
+					int remw = width-(right-left);
+					int topspare = G.Top(spare);
+					if(remw>0) 
+						{ return Math.max(topspare,expandUp(right,top,remw)); 
+						}
+					return topspare;
+				}
+					
+			}
+		}
+		return top;
+	}
+	//
+	// left,bottom is the corner of a rectangle we want to expand
+	// scan down for spare rectangles whose top edge is our bottom edge
+	// recurse if we get only part of the way down
+	// return the new bottom edge we can achieve
+	private int expandDown(int left,int bottom,int width)
+	{	
+		for(int lim = spareRects.size()-1; lim>=0; lim--)
+		{	
+			Rectangle spare = spareRects.elementAt(lim);
+			if(G.Top(spare)==bottom)
+			{	// rectangle whose top edge is our bottom
+				int right = G.Right(spare);
+				if((right>left)
+					&& (G.Left(spare)<=left))
+				{	// rectangle contains the left corner
+					int remw = width-(right-left);
+					int bottomspare = G.Bottom(spare);
+					if(remw>0) 
+						{ return Math.min(bottomspare,expandDown(right,bottom,remw)); 
+						}
+					return bottomspare;
+				}
+					
+			}
+		}
+		return bottom;
+	}
+
+	private Rectangle expandRectangleV(RectangleSpec spec,Rectangle alloc)
+	{
+		boolean expanded = false;
+		int origT = G.Top(alloc);
+		int origH = G.Height(alloc);
+		int origW = G.Width(alloc);
+		int origL = G.Left(alloc);
+
+		// expand up and down
+		if(origH<spec.maxh)
+		{	int expT0 = origT;
+			int expT = expT0;
+			// drill left as far as we can
+			while ((expT = expandUp(origL,expT0,origW))<expT0) { expT0 = expT; }
+			if(expT<origT)
+			{	G.print("Expanded up ",origT-expT);
+				origH += (origT-expT);
+				origT = expT;
+				expanded = true;				
+			}
+			int allocB = origT+origH;
+			int expB0 = allocB;
+			int expB = expB0;
+			// drill right as far as we can
+			while ((expB = expandDown(origL,expB0,origW))>expB0) { expB0 = expB; }
+			if(expB>allocB)
+			{	G.print("Expanded down ",expB-allocB);
+				origH += expB-allocB;
+				expanded = true;
+				
+			}	
+		}
+		if(expanded) { return new Rectangle(origL,origT,origW,origH); }
+		return null;
+	}
+	
+	private Rectangle expandRectangleH(RectangleSpec spec,Rectangle alloc)
+	{
+		boolean expanded = false;
+		int origT = G.Top(alloc);
+		int origH = G.Height(alloc);
+		int origW = G.Width(alloc);
+		int origL = G.Left(alloc);
+		if(origW<spec.maxw)
+		{	int expL0 = origL;
+			int expL = expL0;
+			// drill left as far as we can
+			while ((expL = expandLeft(expL0,origT,origH))<expL0) { expL0 = expL; }
+			if(expL<origL)
+			{	G.print("Expanded left ",origL-expL);
+				origW += (origL-expL);
+				origL = expL;
+				expanded = true;				
+			}
+			int allocR = origL+origW;
+			int expR0 = allocR;
+			int expR = expR0;
+			// drill right as far as we can
+			while ((expR = expandRight(expR0,origT,origH))>expR0) { expR0 = expR; }
+			if(expR>allocR)
+			{	G.print("Expanded right ",expR-allocR);
+				origW += expR-allocR;
+				expanded = true;
+				
+			}	
+		}
+		if(expanded) { return new Rectangle(origL,origT,origW,origH); }
+		return null;
+	}
+	private Rectangle larger(Rectangle r1,Rectangle r2)
+	{
+		return G.Width(r1)*G.Height(r1)>G.Width(r2)*G.Height(r2)
+				? r1
+				: r2;
+	}
+	private Rectangle expandRectangle(RectangleSpec spec,Rectangle alloc)
+	{	if((spec.maxw>G.Width(alloc))||(spec.maxh>G.Height(alloc)))
+	{
+		Rectangle exH = expandRectangleH(spec,alloc);
+		Rectangle exV = expandRectangleV(spec,alloc);
+		if(exH!=null && exV!=null)
+		{	// if both horizontal and vertical expansions are possible, try both orders
+			Rectangle exHV = expandRectangleV(spec,exH);
+			Rectangle exVH = expandRectangleH(spec,exV);
+			if(exHV!=null && exVH!=null)
+			{ 	return larger(exHV,exVH);
+			}
+			else if (exHV!=null) { return larger(exHV,exV); }
+			else if (exVH!=null) { return larger(exVH,exH); }
+			return larger(exH,exV);
+		}
+		else if(exH!=null) { return exH; }
+		return exV;
+	}
+		return null;
+	}
+	//
+	// carve this target rectangle out of the spare rectangles
+	// the target was derived by expanding an allocated rectangle
+	// into adjacent unallocated space/
+	//
+	private void carveRectangle(Rectangle target)
+	{	int target_left = G.Left(target);
+		int target_right = G.Right(target);
+		int target_top = G.Top(target);
+		int target_bottom = G.Bottom(target);
+		for(int lim = spareRects.size()-1; lim>=0; lim--)
+		{
+			Rectangle chip = spareRects.elementAt(lim);
+			if(chip.intersects(target))
+			{	dissect(target_left,target_top,target_right,target_bottom,chip);
+			}
+		}
+	}
+	//
+	// dissect the target rectangle out of the chip
+	// 
+	private void dissect(int target_left,int target_top,int target_right,int target_bottom,Rectangle chip)
+	{
+		int chip_left = G.Left(chip);
+		int chip_right = G.Right(chip);
+		int chip_top = G.Top(chip);
+		int chip_bottom = G.Bottom(chip);
+
+		if((target_left<=chip_left) && (target_right>=chip_right))
+		{
+			// all the way through horizontally, split above or below
+			if(target_top<=chip_top)
+			{	// top absorbed
+				if(target_bottom>=chip_bottom) { spareRects.remove(chip); }	// all gone
+				else { G.SetTop(chip,target_bottom); G.SetHeight(chip,chip_bottom-target_bottom); }
+			}
+			else if(target_bottom>=chip_bottom)
+			{	// bottom absorbed
+				G.SetHeight(chip,target_top-chip_top);
+			}
+			else 
+			{	// through the middle
+				Rectangle bottom = G.splitTop(chip,null,chip_bottom-target_top);
+				G.SetTop(bottom,target_bottom);
+				G.SetHeight(bottom,chip_bottom-target_bottom);
+				spareRects.push(bottom);
+			}
+		}
+		else if((target_top<=chip_top) && (target_bottom>=chip_bottom))
+		{	// all the way through vertically, split left or right
+			if((target_left<=chip_left) && (target_right>=chip_left))
+			{	// left edge absorbed
+				if(target_right>=chip_right) { spareRects.remove(chip); }	// completely absorbed
+				else { G.SetLeft(chip,target_right); G.SetWidth(chip,chip_right-target_right); }
+			}
+			else if(target_right>=chip_right)
+			{	// right edge absorbed
+				G.SetWidth(chip,target_left-chip_left);
+			}
+			else 
+			{		// through the middle vertically
+				Rectangle left = G.splitLeft(chip,null,target_left-chip_left);
+				G.SetLeft(chip,target_right);
+				G.SetWidth(chip,chip_right-target_right);
+				spareRects.push(left);
+			}			
+		}
+		else if(target_left<=chip_left)
+		{
+			Rectangle left = G.splitLeft(chip,null,target_right-chip_left);
+			spareRects.push(left);
+			dissect(target_left,target_top,target_right,target_bottom,left);
+		}
+		else if(target_right>=chip_right)
+		{
+			Rectangle right = G.splitRight(chip,null,chip_right-target_left);
+			spareRects.push(right);
+			dissect(target_left,target_top,target_right,target_bottom,right);
+		}
+		else { G.Error("shouldn't get here"); }
+	}
+
+	public void reallocate(RectangleSpec spec,Rectangle to)
+	{	
+		Rectangle alloc = placeInSpecificRectangle(spec.actual,false,to,
+				spec.minw,spec.minh,spec.maxw,spec.maxh,
+				spec.preserveAspectRatio,spec.preferredAspectRatio,spec.align);
+		spec.allocated = alloc;
+		G.copy(spec.actual,alloc);
+		G.insetRect(spec.actual,marginSize);
+		G.print("Reallocated "+spec);
+		switch(spec.name)
+		{
+		case Draw:
+			// the draw group is sized by the language-specific
+			// text strings, and is never a variable size so 
+			// won't be optimized
+		default: G.print("can't realloc ",spec.name);
+			break;
+		case Other:
+		case Banner:	
+		case Log:
+		case Done:
+		case Edit:
+			// simple cases where we allocated a simple box 
+			// and didn't carve it up
+			break;
+		case Chat:
+			spec.client.positionTheChat(spec.actual,null,null);
+			break;
+		case Vcr:
+			finishVcr(spec);
+			break;
+		case DoneEdit:		
+			split2(spec);
+			break;
+			
+		case DoneEditRep:
+			splitDoneEditRep(spec);
+			break;
+		
+		}
+	}
+	void finishVcr(RectangleSpec spec)
+	{	Rectangle vcr = spec.actual;
+		spec.client.SetupVcrRects(G.Left(vcr),G.Top(vcr),G.Width(vcr),G.Height(vcr));
+	}
+	
+	// split one allocated rectangle into two over-under or left-right
+	// this is the continuation of done-edit 
+	void split2(RectangleSpec spec)
+    {
+   		Rectangle done = spec.actual;
+   		Rectangle edit = spec.rect2;
+		int l = G.Left(done);
+		int t = G.Top(done);
+		int w = G.Width(done);
+		int h = G.Height(done);
+		if(w>h)
+		{
+		int buttonW = (w-marginSize)/2;
+		G.SetWidth(done,buttonW); 
+		if(edit!=null) { G.AlignTop(edit,l+buttonW+marginSize,done); }
+		}
+		else 
+		{
+		int buttonH = (h-marginSize)/2;
+		G.SetHeight(done, buttonH);
+		if(edit!=null) { G.AlignLeft(edit, t+buttonH+marginSize,done); }
+		}
+    }
+	public void optimize() {
+		if(allocatedMainRectangle!=null)
+		{
+		G.print("\nMain ",G.Width(allocatedMainRectangle),"x",G.Height(allocatedMainRectangle));
+		for(int i=0;i<specs.size();i++)
+		{	RectangleSpec spec = specs.elementAt(i);
+			switch(spec.name)
+			{
+			default:
+			case DoneEdit:
+			case Done:
+			case Edit:
+			case Log:
+			case Chat:
+			case Vcr:
+			G.print(spec);
+			Rectangle alloc = spec.allocated;
+			Rectangle expanded = expandRectangle(spec,alloc);
+			if(expanded!=null)
+			{
+				carveRectangle(expanded);
+				checkRectangles();
+				allocatedRects.remove(spec.allocated);
+				spareRects.push(expanded);
+				spec.allocated = expanded;
+				reallocate(spec,expanded);
+				checkRectangles();
+			}}
+			
+		}
+		}
+	}
+	public void deallocate(Rectangle r) {
+		spareRects.addElement(r);
+		checkRectangles();
+	}
+	// continuation of DoneEditRep;
+	public void splitDoneEditRep(RectangleSpec spec) 
+	{	Rectangle r = spec.actual;
+		int l = G.Left(r);
+		int t = G.Top(r);
+		int w = G.Width(r);
+		int h = G.Height(r);
+		Rectangle done = spec.rect2;
+		Rectangle edit = spec.rect3;
+		Rectangle rep[] = spec.rectList;
+   		boolean hasButton = edit!=null || done!=null;
+   		int nrep = rep.length;
+		int buttonW = (w-marginSize)/2;
+		int buttonH = hasButton ? buttonW/2 : 0;
+  		if(done!=null) { G.SetRect(done,l,t,buttonW,buttonH); }
+		if(edit!=null) { G.SetRect(edit,l+w-buttonW,t,buttonW,buttonH); }
+		t += buttonH+marginSize/2;
+		int reph = (h-buttonH-marginSize/2)/nrep;
+		for(int i=0;i<nrep;i++)
+			{
+			G.SetRect(rep[i], l, t+i*reph,w,reph);
+			}		
 	}
 
 }
@@ -799,6 +1342,13 @@ class RequiredRectangle
  */
 public class GameLayoutManager  implements Opcodes
 {	
+	public enum Purpose
+	{
+		Chat,Done,DoneEdit,DoneEditRep,Edit,
+		Log,Banner,Vcr,Draw,
+		Other;
+	}
+	GameLayoutClient client = null;
 	int nPlayers;
 	// if true, consider the space left by the difference between the big rectangle
 	// and the board aspect ratio to be all waste.  This should be false for 
@@ -832,7 +1382,7 @@ public class GameLayoutManager  implements Opcodes
 	private int xright;
 	private int ybot;
 	private int margin;
-
+	
 	// define some common waypoints
 	private int xmid;			// not the true mid line, but offset by half a box
 	private int ymid;
@@ -848,7 +1398,7 @@ public class GameLayoutManager  implements Opcodes
 	
 	// add spare rectangles for skinny margins at left or left and right, from top to bottom
 	private void addSkinnyLeft(boolean addSkinnyRight,boolean fromtop,boolean tobottom)
-	{
+	{	
 		int spareY = ycenter-playerWM/2;
 		addSkinnyLeftFrom(true,spareY,addSkinnyRight,fromtop,tobottom);
 	}
@@ -870,15 +1420,15 @@ public class GameLayoutManager  implements Opcodes
 		{
 		if(addSkinnyLeft)
 			{
-		addToSpare(new Rectangle(left,spareYT,playerHM,spareYH));
-		addToSpare(new Rectangle(left,spareYB,playerHM,spareYBH));
+			addToSpare(new Rectangle(left,spareYT,playerHM,spareYH));
+			addToSpare(new Rectangle(left,spareYB,playerHM,spareYBH));
 			}
 		if(addSkinnyRight)
 			{	int spareX = right-playerHM;
 				addToSpare(new Rectangle(spareX,spareYT,playerHM,spareYH));
 				addToSpare(new Rectangle(spareX,spareYB,playerHM,spareYBH));
 			}
-	}
+		}
 	}
 	
 	// add spare rectangles for skinny margins at left or left and right
@@ -930,8 +1480,8 @@ public class GameLayoutManager  implements Opcodes
 			addToSpare(new Rectangle(xright,spareY,playerWM-playerHM,spareY2-spareY));
 		}
 	}
-	
-		
+
+
 	// add spare rectangles for .X.X. spacing 
 	private void add2XAcross(int ycoord)
 	{	
@@ -1156,7 +1706,7 @@ public class GameLayoutManager  implements Opcodes
 			// ok 8/2/2021
 			addSkinnyLeft(true,true,true);
 			left += playerHM;
-			right -= playerHM;
+			right -= playerHM;			
 		}
 		break;
 	case LeftCornerWide: // ok 2/4/2020
@@ -1550,11 +2100,11 @@ public class GameLayoutManager  implements Opcodes
 		// sideways recangles at the left and right might eat into it.
 		if(spareH>0)
 			{
-		addToSpare(new Rectangle(spareX,top,right-spareX,spareH));	
-		addToSpare(new Rectangle(left,top,xmid-left,spareH));
-		int yb = bottom-spareH;
-		addToSpare(new Rectangle(spareX,yb,right-spareX,spareH));	
-		addToSpare(new Rectangle(left,yb,xmid-left,spareH));
+			addToSpare(new Rectangle(spareX,top,right-spareX,spareH));	
+			addToSpare(new Rectangle(left,top,xmid-left,spareH));
+			int yb = bottom-spareH;
+			addToSpare(new Rectangle(spareX,yb,right-spareX,spareH));	
+			addToSpare(new Rectangle(left,yb,xmid-left,spareH));
 			}
 		// rectangles ok 8/2/2021
 		addSkinnyLeft(seating==DefinedSeating.FourAround,false,false);				
@@ -1614,9 +2164,7 @@ public class GameLayoutManager  implements Opcodes
 									{ xsideLeft,ytop+(playerWM-playerHM)/2}, 	// left, aligned to box top
 									{ xright,ytop},		// top ....X 
 								{xsideRight,boxY2}};	// right, aligned to box bottom
-			// in this layout we clip left and right margins only
-			// and the spare rectangles are in the new left and right spaces
-			// ok 2/26
+			// ok 3/27/2023
 			{				
 			int spareY = top+playerWM;
 			int spareX = left+playerHM;
@@ -1624,18 +2172,15 @@ public class GameLayoutManager  implements Opcodes
 			addToSpare(new Rectangle(spareX,top,spareXW,spareY-top));
 			addToSpare(new Rectangle(left,spareY,playerWM,ybot-spareY));
 			}	
-			
-			// space between the top right horizontal player and the top-left vertical player
-			Rectangle re = new Rectangle(playerWM,top,xright-(xleft+playerWX),playerHM);
-			addToSpare(re);
-			int y2 = ytop+playerHX;
-			
-			// space between the right vertical player and the right horizontal player
-			Rectangle ri = new Rectangle(right-playerHM,y2,playerHM,bottom-playerWM-y2);
-			addToSpare(ri);
+			right -= playerWM;
 			left += playerWM;
-			right -= playerHM;
-			top += playerHM;
+			
+			{
+			int spareY = top+playerHM;
+			int spareH = bottom-playerWM-spareY;
+			addToSpare(new Rectangle(right,spareY,playerWM,spareH));
+			addToSpare(new Rectangle(right,spareY+spareH,playerWM-playerHM,playerWM));
+			}
 		}
 		break;
 
@@ -1676,7 +2221,7 @@ public class GameLayoutManager  implements Opcodes
 			bottom -= playerHM;
 		}
 		break;
-
+		
 	case SixAround:	// ok 2/4/2020
 		{
 		/*
@@ -1938,6 +2483,7 @@ public class GameLayoutManager  implements Opcodes
 	{	
 	// place all the players	
 		fullRect = full;
+		client = window;
 		for(int i=0;i<nPlayers;i++)
 		{
 		int []position = positions[i];
@@ -1952,9 +2498,9 @@ public class GameLayoutManager  implements Opcodes
 			G.setRotation(playerRectc, -(window.getPlayerOrTemp(i).displayRotation));
 			if(!full.contains(playerRectc)) 
 				{G.print("player rectangle runs off screen\n",playerRectc,"\n",full);
+				}
 			}
 		}
-	}
 	}
 	
 	private DefinedSeating tryThese[] = 
@@ -1992,10 +2538,10 @@ public class GameLayoutManager  implements Opcodes
 	 * @param targetLayoutHysterisis when a seating layout is specified, weight this in favor of alternatives
 	 * @return the percent coverage for the board in the selected layout
 	 */
-	public double selectLayout(GameLayoutClient client,int nPlayers,int width,int height,
+	public double selectLayout(GameLayoutClient client0,int nPlayers,int width,int height,
 					int margin,double minBoardShare,
 					double aspectRatio,double maxCellSize, double targetLayoutHysterisis)
-	{
+	{	client = client0;
 		int minSize = client.standardFontSize();
 		double v = selectLayout(client,nPlayers,width,height,
 				margin,minBoardShare,
@@ -2037,7 +2583,7 @@ public class GameLayoutManager  implements Opcodes
 	public double selectLayout(GameLayoutClient client,int nPlayers,int fullwidth,int fullheight,
 			int margin,double minBoardShare,
 			double aspectRatio,double minSize,double maxCellSize, double targetLayoutHysterisis)
-	{	
+		{
 		double v = selectLayout(client,nPlayers,fullwidth,fullheight,
 				1.0,margin,minBoardShare,
 				aspectRatio,minSize,maxCellSize,targetLayoutHysterisis);
@@ -2045,9 +2591,8 @@ public class GameLayoutManager  implements Opcodes
 		if(rects.failedPlacements>0)
 		{
 			G.print(rects.messages.getLog());
-			}
+		}
 		//G.print("Select ",fullwidth,"x",fullheight,"=",selectedSeating()," ",selectedCellSize());
-
 		return v;
 	}
 
@@ -2087,11 +2632,12 @@ public class GameLayoutManager  implements Opcodes
 	 * @param targetLayoutHysterisis when a seating layout is specified, weight this in favor of alternatives
 	 * @return the percent coverage for the board in the selected layout
 	 */
-	public double selectLayout(GameLayoutClient client,int nPlayers,int fullwidth,int fullheight,
+	public double selectLayout(GameLayoutClient client0,int nPlayers,int fullwidth,int fullheight,
 			double zoom,int margin,double minBoardShare,
 			double aspectRatio,double minSize,double maxCellSize, double targetLayoutHysterisis)
 	{	// playtable has a deep bezil that makes the extreme edge hard to get to
 		//G.print("\nselect ",minSize,maxCellSize);
+		client = client0;
 		fullRect = new Rectangle(0,0,fullwidth,fullheight);
 		int extramargin = G.isRealPlaytable()?G.minimumFeatureSize()/2 : 0;
 		int width = (int)(fullwidth/zoom)-extramargin;
@@ -2155,7 +2701,7 @@ public class GameLayoutManager  implements Opcodes
 				  //sizeLayout(client,nPlayers,s,minBoardShare,desiredAspectRatio,maxCellSize,minSize,width,height);
 				}
 		}
-    	//G.print("best "+best+" "+bestPercent+" "+bestScore);
+		//G.print("best "+best+" "+bestPercent+" "+bestScore);
 
 		if(best==null || best==DefinedSeating.Undefined)
 		{	// the screen has no acceptable layouts (he's making his window tiny?)
@@ -2173,21 +2719,22 @@ public class GameLayoutManager  implements Opcodes
 	    sizeLayout(client,nPlayers,selectedSeating,minBoardShare,aspectRatio,maxCellSize,minSize,width,height,margin);
 
 	    if(selectedCellSize<=0)
-		{
+	    {
 	    	// in the rare case that the best layout still didn't produce a valid cell size,
 	    	// try once more with no minimum
 	    	if(G.debug()) { G.print("Emergency resize"); }
 		    sizeLayout(client,nPlayers,selectedSeating,0.2,aspectRatio,maxCellSize,1,width,height,margin);
-		}
-		
+	    }
+	    		
 		int halfMargin = extramargin/2;
 		//G.print("Make ",selectedSeating);
-    	makeLayout(selectedSeating,nPlayers,halfMargin,halfMargin,width,height,client.createPlayerGroup(0,0,0,0,(int)selectedCellSize),margin);
-    	if(G.debug())
-    	{
-    		G.print("Cell Min ",minSize," max ",maxCellSize," actual ",selectedCellSize);
-    	}
+		makeLayout(selectedSeating,nPlayers,halfMargin,halfMargin,width,height,client.createPlayerGroup(0,0,0,0,(int)selectedCellSize),margin);
+    	//if(G.debug())
+    	//{
+    	//	G.print("Cell Min ",minSize," max ",maxCellSize," actual ",selectedCellSize);
+    	//}
         doLayout(client,zoom,(int)selectedCellSize,new Rectangle(halfMargin,halfMargin,fullwidth-margin,fullheight-margin));
+        rects.specs.clear();
 	    return(selectedPercent);	    
 	}
 	
@@ -2247,7 +2794,7 @@ public class GameLayoutManager  implements Opcodes
  	   		 .........__
     		 
     		 */
-    	case ThreeAroundLeft:
+   	case ThreeAroundLeft:
     		
     		/* top and bottom are flush to the left, leaving a bigger right hand rectangle
  		   this is currently used by triad
@@ -2368,8 +2915,8 @@ public class GameLayoutManager  implements Opcodes
     		unitsY = playerH+playerW;
 	   		fixedW = marginSize*2;
 	   		fixedH = marginSize*3;
-    		edgeUnitsX = playerH*2;
-    		edgeUnitsY = playerH*2;
+    		edgeUnitsX = playerW*2;
+    		edgeUnitsY = 0;
     		break;
 	
 		case FourAroundEdge:
@@ -2380,12 +2927,12 @@ public class GameLayoutManager  implements Opcodes
 			..........._  
 			 
 			 */
-       		unitsX = playerW+playerH;
-    		unitsY = playerW+playerH;
+       		unitsX = playerW*2;
+    		unitsY = playerH;
 	   		fixedW = marginSize*2;
 	   		fixedH = marginSize*3;
-    		edgeUnitsX = playerH*2;
-    		edgeUnitsY = playerH*2;
+    		edgeUnitsX = playerW*2;
+    		edgeUnitsY = playerH;
     		break;
 		case FourAcrossEdge:
 			/*
@@ -2579,7 +3126,7 @@ public class GameLayoutManager  implements Opcodes
     		edgeUnitsY = playerH*2;
     		break;
  		// seating charts not represented in the seating viewer
-       	case RightCornerWide:
+    	case RightCornerWide:
       	case LeftCornerWide:
        		unitsX = playerW+playerH;
       		unitsY = playerW;
@@ -2745,7 +3292,7 @@ public class GameLayoutManager  implements Opcodes
     		edgeUnitsY = 0;
     		}
     		break;
-    	};
+     	};
     	
 		double boardPercent = 0;
 		double cell = (int)cellSize+2;
@@ -2838,7 +3385,7 @@ public class GameLayoutManager  implements Opcodes
     public Rectangle getMainRectangle()
     {	return rects.allocateMainRectangle();
     }
-    
+
     public void addToSpare(Rectangle r)
     {	if(G.debug())
     		{
@@ -2855,32 +3402,66 @@ public class GameLayoutManager  implements Opcodes
 
     public boolean placeTheVcr(GameLayoutClient client,int minW,int maxW)
     {	Rectangle vcr = new Rectangle();
-    	boolean ok = placeRectangle(vcr, minW, minW/2, maxW, maxW/2, BoxAlignment.Edge,true);
-    	if(ok)
-    	{
-    		client.SetupVcrRects(G.Left(vcr),G.Top(vcr),G.Width(vcr),G.Height(vcr));
+    	RectangleSpec spec = placeRectangle(Purpose.Vcr,vcr, minW, minW/2, maxW, maxW/2, BoxAlignment.Edge,true);
+    	if(spec!=null)
+    	{	spec.client = client;
+    		rects.finishVcr(spec);
+    		return true;
     	}
-    	return(ok);
+    	return(false);
     }
     public boolean placeTheChat(Rectangle chatRect, int minW,int minH,int maxW,int maxH)
-    {	return(rects.placeInMainRectangle(chatRect,minW,minH,maxW,maxH,BoxAlignment.Edge,false,preferredAspectRatio));
+    {	
+    	RectangleSpec ok = rects.placeInMainRectangle(Purpose.Chat,chatRect,minW,minH,maxW,maxH,BoxAlignment.Edge,false,preferredAspectRatio);
+    	if(ok==null)
+    	{// try extra hard to present a chat
+    	 Rectangle r = peekMainRectangle();
+    	 ok = rects.placeInMainRectangle(Purpose.Chat,chatRect,
+    			 Math.min(G.Width(r)-rects.marginSize*2,minW),
+    			 Math.min(G.Height(r)-rects.marginSize*2,minH),
+    			 maxW,maxH,BoxAlignment.Edge,false,preferredAspectRatio);
+    	}
+    	if(ok!=null)
+    	{
+    		ok.client = client;
+    	}
+    	return ok!=null;
+    }
+    private RectangleSpec placeRectangle(Purpose purpose,Rectangle targetRect,int minW,int minH,int maxW,int maxH,
+			BoxAlignment align,boolean preserveAspectRatio)
+    {	RectangleSpec spec = rects.placeInMainRectangle(purpose,targetRect,minW,minH,maxW,maxH,align,preserveAspectRatio,
+    		(double)maxW/maxH);
+    	return spec;
     }
     public boolean placeRectangle(Rectangle targetRect,int minW,int minH,int maxW,int maxH,
 			BoxAlignment align,boolean preserveAspectRatio)
-    {	return (rects.placeInMainRectangle(targetRect,minW,minH,maxW,maxH,align,preserveAspectRatio,preferredAspectRatio));
+    {	return (placeRectangle(Purpose.Other,targetRect,minW,minH,maxW,maxH,align,preserveAspectRatio)!=null);
     }
-    public boolean placeRectangle(Rectangle targetRect,int minW,int minH,int maxW,int maxH,
+
+    private RectangleSpec placeRectangle(Purpose purpose,Rectangle targetRect,int minW,int minH,int maxW,int maxH,
     		int minW1,int minH1,int maxW1,int maxH1,
  			BoxAlignment align,boolean preserveAspectRatio)
-     {	return (rects.placeInMainRectangle(targetRect,
+     {	return (rects.placeInMainRectangle(purpose,targetRect,
     		 minW,minH,maxW,maxH,
     		 minW1,minH1,maxW1,maxH1,
     		 align,preserveAspectRatio,preferredAspectRatio));
      }
-  
-    public boolean placeRectangle(Rectangle targetRect,int minW,int minH,BoxAlignment align)
-     {	return (rects.placeInMainRectangle(targetRect,minW,minH,minW,minH,align,true,preferredAspectRatio));
+    public boolean placeRectangle(Rectangle targetRect,int minW,int minH,int maxW,int maxH,
+    		int minW1,int minH1,int maxW1,int maxH1,
+ 			BoxAlignment align,boolean preserveAspectRatio)
+     {	RectangleSpec spec = placeRectangle(Purpose.Other,targetRect,
+    		 minW,minH,maxW,maxH,
+    		 minW1,minH1,maxW1,maxH1,
+    		 align,preserveAspectRatio);
+     	return spec!=null;
      }
+
+    public RectangleSpec placeRectangle(Purpose purpose,Rectangle targetRect,int minW,int minH,BoxAlignment align)
+     {	return (rects.placeInMainRectangle(purpose,targetRect,minW,minH,minW,minH,align,true,preferredAspectRatio));
+     }
+    public boolean placeRectangle(Rectangle targetRect,int minW,int minH,BoxAlignment align)
+    {	return (placeRectangle(Purpose.Other,targetRect,minW,minH,minW,minH,align,true)!=null);
+    }
 
      /**
      * place the chat and log rectangles.  If there's no chat, just place the log 
@@ -2924,7 +3505,7 @@ public class GameLayoutManager  implements Opcodes
     		addToSpare(new Rectangle(chatX-marginSize,logY,actualChatW+marginSize*2,actualChatH+chatY+marginSize-logY));
     	  }
     	  
-   	  return(placeRectangle(logRect,minLogW,minLogH,maxLogW,maxLogH,BoxAlignment.Edge,false));  
+   	  return(placeRectangle(Purpose.Log,logRect,minLogW,minLogH,maxLogW,maxLogH,BoxAlignment.Edge,false)!=null);  
          
     }
     /** allocate the done,edit and a block of option rectangles as a group, then split it
@@ -2949,25 +3530,19 @@ public class GameLayoutManager  implements Opcodes
     		int szw = 2*boxW+marginSize;
     		int szw2 = 2*maxW+marginSize;
     		int szh = buttonH1+nrep*boxW/3;
-    		int szh2 = buttonH2+2*nrep*boxW/3;
-    		placeRectangle(r,szw,szh,szw2,szh2,
+    		int szh2 = buttonH2+nrep*boxW/3;
+    		RectangleSpec spec = placeRectangle(Purpose.DoneEditRep,r,szw,szh,szw2,szh2,
     				BoxAlignment.Center,true);
-    		int l = G.Left(r);
-    		int t = G.Top(r);
-    		int w = G.Width(r);
-    		int h = G.Height(r);
-    		int buttonW = (w-marginSize)/2;
-    		int buttonH = hasButton ? buttonW/2 : 0;
-      		if(done!=null) { G.SetRect(done,l,t,buttonW,buttonH); }
-    		if(edit!=null) { G.SetRect(edit,l+w-buttonW,t,buttonW,buttonH); }
-    		t += buttonH+marginSize;
-    		int reph = (h-buttonH-marginSize)/nrep;
-    		for(int i=0;i<nrep;i++)
-    			{
-    			G.SetRect(rep[i], l, t+i*reph,w,reph);
-    			}
-    		}
+    		if(spec!=null)
+    		{
+    		spec.rect2 = done;
+    		spec.rect3 = edit;
+    		spec.rectList = rep;
+    		rects.splitDoneEditRep(spec);  		
+    		}}
     }
+    
+   
     //
     // place done-edit-rep in a situation where the done rect doesn't need to be
     // placed, as is typically true for offline games.
@@ -2992,39 +3567,34 @@ public class GameLayoutManager  implements Opcodes
     		if((done!=null) && (edit!=null) && plannedSeating() && !alwaysPlaceDone) { 
     			G.SetRect(done, 0,0,0,0);
     			int undoW = boxW*2/3;
-    			placeRectangle(edit,undoW,undoW,undoW,undoW,BoxAlignment.Center,true);
+    			placeRectangle(Purpose.Edit,edit,undoW,undoW,undoW,undoW,BoxAlignment.Center,true);
     		} 
     		else
     		{
-    	    if(done==null && (edit!=null)) { placeRectangle(edit,boxW,boxW/2,maxW,maxW/2,BoxAlignment.Center,true); }
-    		if(edit==null && (done!=null)) { placeRectangle(done,boxW,boxW/2,maxW,maxW/2,BoxAlignment.Center,true); }
+    	    if(done==null && (edit!=null)) { placeRectangle(Purpose.Edit,edit,boxW,boxW/2,maxW,maxW/2,BoxAlignment.Center,true); }
+    		if(edit==null && (done!=null)) 
+    			{ 	if(plannedSeating()&&!alwaysPlaceDone) { G.SetRect(done,0,0,0,0); }
+	    			else
+	    			{
+	    				placeRectangle(Purpose.Done,done,boxW,boxW/2,maxW,maxW/2,BoxAlignment.Center,true);
+	    			}}
     		if(done!=null && edit!=null)
     		{
-    		int marginSize = rects.marginSize;
     		int szw = boxW;
     		int szw2 = maxW;
+    		int marginSize = rects.marginSize;
     		int szh = boxW+marginSize;
     		int szh2 =maxW+marginSize;
-    		placeRectangle(done,szw,szh,szw2,szh2,
+    		RectangleSpec spec = placeRectangle(Purpose.DoneEdit,done,szw,szh,szw2,szh2,
     						szw*2+marginSize,szw/2,maxW*2+marginSize,maxW/2,
-    						BoxAlignment.Center,true);
-    		int l = G.Left(done);
-    		int t = G.Top(done);
-    		int w = G.Width(done);
-    		int h = G.Height(done);
-    		if(w>h)
+    						BoxAlignment.Center,true);    
+    		if(spec!=null)
     		{
-    		int buttonW = (w-marginSize)/2;
-    		G.SetWidth(done,buttonW); 
-    		if(edit!=null) { G.AlignTop(edit,l+buttonW+marginSize,done); }
-    		}
-    		else 
-    		{
-    		int buttonH = (h-marginSize)/2;
-    		G.SetHeight(done, buttonH);
-    		if(edit!=null) { G.AlignLeft(edit, t+buttonH+marginSize,done); }
+    		spec.rect2 = edit;
+    		rects.split2(spec);
     		}}}
    }
+
     public void placeDrawGroup(FontMetrics fm,Rectangle acceptDraw,Rectangle declineDraw)
     {	InternationalStrings s = G.getTranslations();
     	int len1 = fm.stringWidth(s.get(OFFERDRAW));
@@ -3032,7 +3602,7 @@ public class GameLayoutManager  implements Opcodes
     	int len3 = fm.stringWidth(s.get(DECLINEDRAW));
     	int h = fm.getHeight()*3;
     	int len = h+Math.max(len1, Math.max(len2, len3));
-    	placeRectangle(acceptDraw,len,h*2,len,h*2,
+    	placeRectangle(Purpose.Draw,acceptDraw,len,h*2,len,h*2,
     			len*2,h,len*2,h,
     			BoxAlignment.Center,true);
     	if(G.Width(acceptDraw)>len)
@@ -3060,4 +3630,29 @@ public class GameLayoutManager  implements Opcodes
      */
     public boolean plannedSeating() { return((seatingFaceToFace()||seatingAround())); }
 
+    public void optimize()
+    {
+    	rects.optimize();
+    }
+    public void deallocate(Rectangle r)
+    {
+    	rects.deallocate(r);
+    }
+    public void returnFromMain(int extraW,int extraH)
+    {	Rectangle main = rects.centerRectangle;
+    	int mainX = G.Left(main);
+    	int mainY = G.Top(main);
+    	int mainW = G.Width(main);
+    	int mainH = G.Height(main);
+        if(extraW>0)
+        {
+        	deallocate(new Rectangle(mainX,mainY,extraW,mainH));
+        	deallocate(new Rectangle(mainX+mainW-extraW,mainY,extraW,mainH));
+        }
+        if(extraH>0)
+        {
+        	deallocate(new Rectangle(mainX,mainY,mainW,extraH));
+        	deallocate(new Rectangle(mainX,mainY+mainH-extraH,mainW,extraH));
+        }
+    }
 }

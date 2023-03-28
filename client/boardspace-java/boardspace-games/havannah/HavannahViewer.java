@@ -269,7 +269,7 @@ public class HavannahViewer extends CCanvas<HavannahCell,HavannahBoard> implemen
     	// to be appropriate to the window size
     	int fh = standardFontSize();
     	int minLogW = fh*12;	
-       	int minChatW = fh*40;	
+       	int minChatW = fh*35;	
         int minLogH = fh*10;	
         int buttonW = fh*8;
         int margin = fh/2;
@@ -318,6 +318,7 @@ public class HavannahViewer extends CCanvas<HavannahCell,HavannahBoard> implemen
     	int boardY = mainY+extraH;
     	int boardBottom = boardY+boardH;
     	int boardRight = boardX+boardW;
+       	layout.returnFromMain(extraW,extraH);
     	
     	G.SetRect(swapButton, boardRight-buttonW, boardY+3*boardH/4, buttonW, buttonW/2);
     	//

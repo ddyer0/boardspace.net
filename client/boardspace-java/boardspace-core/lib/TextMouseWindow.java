@@ -113,7 +113,7 @@ public class TextMouseWindow extends MouseCanvas implements  RepaintHelper,Windo
 	public void ShowStats(Graphics gc, HitPoint hp,int i, int j) {
 		
 	}
-	public void showRectangles(Graphics gc, int i) {
+	public void showRectangles(Graphics gc, HitPoint p,int i) {
 		
 	}
 	public Font getDefaultFont() {

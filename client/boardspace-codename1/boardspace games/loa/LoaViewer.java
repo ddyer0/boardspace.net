@@ -112,7 +112,7 @@ public class LoaViewer extends commonCanvas implements UIC,GameLayoutClient
    	int fh = standardFontSize();
    	int minLogW = fh*15;	
    	int vcrW = fh*18;
-      	int minChatW = fh*40;	
+      	int minChatW = fh*35;	
        int minLogH = fh*10;	
        int margin = fh/2;
        int nrows =  b.boardSize();
@@ -155,6 +155,7 @@ public class LoaViewer extends commonCanvas implements UIC,GameLayoutClient
    	int boardX = mainX+extraW;
    	int boardY = stateY+stateH+extraH;
    	int boardBottom = boardY+boardH;
+   	layout.returnFromMain(extraW,extraH);
    	//
    	// state and top ornaments snug to the top of the board.  Depending
    	// on the rendering, it can occupy the same area or must be offset upwards
@@ -604,7 +605,7 @@ public class LoaViewer extends commonCanvas implements UIC,GameLayoutClient
 
             
             ShowStats(g,p, G.centerX(boardRect), G.Bottom(boardRect) + 10);
-            showRectangles(g, CELLSIZE);
+            showRectangles(g,p, CELLSIZE);
             //DrawTileSprite(offGC);      //draw the floating tile, if present
         }
         drawVcrGroup(p, g);

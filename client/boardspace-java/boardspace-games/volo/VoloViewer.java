@@ -152,7 +152,7 @@ public class VoloViewer extends CCanvas<VoloCell,VoloBoard> implements VoloConst
 		// to be appropriate to the window size
 		int fh = standardFontSize();
 		int minLogW = fh*20;	
-	   	int minChatW = fh*40;	
+	   	int minChatW = fh*35;	
 	    int minLogH = fh*10;	
 	    int vcrW = fh*15;
 	    int margin = fh/2;
@@ -190,18 +190,19 @@ public class VoloViewer extends CCanvas<VoloCell,VoloBoard> implements VoloConst
 		CELLSIZE = (int)cs;
 		//G.print("cell "+cs0+" "+cs+" "+bestPercent);
 		// center the board in the remaining space
+	    int stateH = (int)(fh*2.5);
 		int boardW = (int)((ncols+1)*CELLSIZE);
 		int boardH = (int)(nrows*CELLSIZE);
 		int extraW = Math.max(0, (mainW-boardW)/2);
-		int extraH = Math.max(0, (mainH-boardH)/2);
+		int extraH = Math.max(0, (mainH-boardH-stateH*2)/2);
 		int boardX = mainX+extraW;
-		int boardY = mainY+extraH;
+		int boardY = mainY+extraH+stateH;
 		int boardBottom = boardY+boardH;
+	   	layout.returnFromMain(extraW,extraH);
 		//
 		// state and top ornaments snug to the top of the board.  Depending
 		// on the rendering, it can occupy the same area or must be offset upwards
 		//
-	    int stateH = (int)(fh*2.5);
 	    int stateY = boardY-stateH;
 	    int stateX = boardX;
 	    G.placeStateRow( stateX,stateY,boardW ,stateH,iconRect,stateRect,noChatRect);

@@ -75,7 +75,6 @@ public class EntrapmentViewer extends CCanvas<EntrapmentCell,EntrapmentBoard> im
     private JCheckBoxMenuItem reverseOption = null;
     private Rectangle chipRects[]= addRect(",chip",2);
     private Rectangle repRect = addRect("repRect");
-
     public synchronized void preloadImages()
     {	
        	EntrapmentChip.preloadImages(loader,ImageDir);
@@ -159,7 +158,7 @@ public class EntrapmentViewer extends CCanvas<EntrapmentCell,EntrapmentBoard> im
     	int fh = standardFontSize();
     	int minLogW = fh*20;	
     	int vcrw = fh*16;
-       	int minChatW = fh*40;	
+       	int minChatW = fh*35;	
         int minLogH = fh*10;	
         int margin = fh/2;
         int ncols = 14;
@@ -184,7 +183,7 @@ public class EntrapmentViewer extends CCanvas<EntrapmentCell,EntrapmentBoard> im
     	layout.placeTheChatAndLog(chatRect, minChatW, chatHeight,minChatW*2,4*chatHeight/2,logRect,
     			minLogW, minLogH, minLogW*3/2, minLogH*2);
     	layout.placeTheVcr(this,vcrw,vcrw*3/2);
-    	layout.placeDoneEditRep(buttonW, buttonW,doneRect, editRect, repRect);
+    	layout.placeDoneEditRep(buttonW, buttonW*3/2,doneRect, editRect, repRect);
     	Rectangle main = layout.getMainRectangle();
     	int mainX = G.Left(main);
     	int mainY = G.Top(main);
@@ -204,6 +203,7 @@ public class EntrapmentViewer extends CCanvas<EntrapmentCell,EntrapmentBoard> im
     	int boardX = mainX+extraW;
     	int boardY = mainY+extraH;
     	int boardBottom = boardY+boardH;
+       	layout.returnFromMain(extraW,extraH);
 
         
     	//

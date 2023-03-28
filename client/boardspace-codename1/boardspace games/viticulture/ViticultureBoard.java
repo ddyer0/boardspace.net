@@ -2552,7 +2552,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
     	return(cost);
     }
     // cost of a worker to someone - can increase due to academy
-    private int costOfWorker(PlayerBoard pb,ViticultureChip worker,ViticultureState state)
+    public int costOfWorker(PlayerBoard pb,ViticultureChip worker,ViticultureState state)
     {	int cost = BASE_COST_OF_WORKER;
     	if(worker.type!=ChipType.Worker) { cost++; }  
     	for(PlayerBoard p : pbs)
@@ -2643,16 +2643,22 @@ public int getMaxRevisionLevel() { return(REVISION); }
 		
 		pb.nWorkers++;
 		
-		PlayerBoard academy = null;
-		for(PlayerBoard p : pbs) { if((p!=pb) && p.hasAcademy()) { academy=p; }}
-		if(academy!=null)
-		{
-		//p1("Pay the academy");
-		// add a dollar from the other player
-		changeCash(academy,1,pb.cashDisplay,replay);
+		for(PlayerBoard p : pbs) 
+			{ // even in the base game, there can be more
+			  // than one acadamy!
+			  if((p!=pb) && p.hasAcademy())
+				{
+				changeCash(p,1,pb.cashDisplay,replay);
+				logRawGameEvent(
+						"- $1 "
+						+ pb.getRooster().colorPlusName()
+						+"  + $1 "
+						+ p.getRooster().colorPlusName()
+						);
 		pb.cash--;
 		cost --;
 		}
+			}
 		// rest of the cost to the bank
 		changeCash(pb,-cost,yokeCash,replay);
 			
@@ -8043,6 +8049,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
         //G.print("E "+m+" for "+whoseTurn+" "+resetState); 
         switch (m.op)
         {
+        case EPHEMERAL_COMMENCE:
         case MOVE_COMMENCE:
         	options.setMembers(m.from_row);
         	doDone(replay,m);

@@ -34,8 +34,6 @@ import online.search.SimpleRobotProtocol;
 import rpc.RpcService;
 import vnc.VNCService;
 
-
-
 /**
  *  Initial work Sept 2020 
 */
@@ -281,6 +279,7 @@ public class JumbulayaViewer extends CCanvas<JumbulayaCell,JumbulayaBoard> imple
     	int extraH = Math.max(0, (mainH-largeH)/2);
     	int boardX = mainX+extraW;
     	int boardY = mainY+extraH;
+       	layout.returnFromMain(extraW,extraH);
     	//
     	// state and top ornaments snug to the top of the board.  Depending
     	// on the rendering, it can occupy the same area or must be offset upwards
@@ -330,7 +329,8 @@ public class JumbulayaViewer extends CCanvas<JumbulayaCell,JumbulayaBoard> imple
     	int boxW = G.Width(box);
     	int chipH = unitsize*3/2+(planned ? unitsize*2 : 0);
     	
-       	if(vertical) { G.SetRect(chip,	x,	G.Bottom(box),	(int)(boxW*rackSize),(int)(chipH*rackSize)); }
+       	if(vertical) { G.SetRect(chip,	x,	G.Bottom(box),	
+       					boxW,Math.min(chipH,G.Height(box))); }
        	else { 
        		G.SetRect(chip,G.Right(box)+doneW/4,y+unitsize/2,(int)(chipH*rackSize*5),(int)(chipH*rackSize));
        	}

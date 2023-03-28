@@ -222,7 +222,7 @@ public class MicropulViewer extends CCanvas<MicropulCell,MicropulBoard> implemen
     			0.5		// preference for the designated layout, if any
     			);
     	int minLogW = fh*20;	
-    	int minChatW = fh*40;
+    	int minChatW = fh*35;
     	int minLogH = fh*10;	
         int vcrW = fh*18;
         int buttonW = fh*8;

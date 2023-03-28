@@ -268,9 +268,15 @@ public interface ViticultureConstants
     static String Limit3 = "only 3 VP (limit)";
 	static String Max3VP = "Max 3 VP";
 	static String Max6Money = "Max $6";
-
+	static String AcceptOptionsMessage = "click to accept these options";
+	static String VetoMessage = "Veto";
+	static String AcceptMessage = "Accept";
+	
 	static String ViticultureStrings[] = 
 	{  "Viticulture",
+		AcceptOptionsMessage,
+		VetoMessage,
+		AcceptMessage,
 		ShowOptionInfo,
 		NoVP,
 		Max3VP,

@@ -29,6 +29,8 @@ import lib.*;
  * what damage the opponent can do using all 4 response steps.
  * @author ddyer
  *
+ * TODO: investigate using https://github.com/lightvector/arimaasharp as the basis for a better bot
+ * 
  */
 public class ArimaaPlay extends commonRobot<ArimaaBoard> implements Runnable, ArimaaConstants,
     RobotProtocol

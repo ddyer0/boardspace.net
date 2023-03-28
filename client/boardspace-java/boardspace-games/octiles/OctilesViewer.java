@@ -172,7 +172,7 @@ public class OctilesViewer extends CCanvas<OctilesCell,OctilesBoard> implements 
     	// to be appropriate to the window size
     	int fh = standardFontSize();
     	int minLogW = fh*15;	
-       	int minChatW = fh*40;	
+       	int minChatW = fh*35;	
         int minLogH = fh*14;	
         int margin = fh/2;
         int ncols = 20;
@@ -219,6 +219,7 @@ public class OctilesViewer extends CCanvas<OctilesCell,OctilesBoard> implements 
     	int boardY = mainY+extraH;
     	int boardBottom = boardY+boardH;
     	int stateY = boardY;
+       	layout.returnFromMain(extraW,extraH);
     	G.placeStateRow( boardX+CELLSIZE,stateY,boardW-CELLSIZE,stateH,iconRect,stateRect,eyeRect,viewsetRect,noChatRect);
      	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
         

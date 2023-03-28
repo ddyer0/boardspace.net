@@ -1877,6 +1877,7 @@ private boolean processEchoRoomtype(String messType,StringTokenizer localST)
     	if(f!=null) {
     		G.doDelay(1000);
     		f.killFrame(); 
+    		f.dispose();
     		}
       }
   }

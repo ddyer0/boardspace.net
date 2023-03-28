@@ -232,7 +232,7 @@ public class LyngkViewer extends CCanvas<LyngkCell,LyngkBoard> implements LyngkC
     	int fh = standardFontSize();
     	int minLogW = fh*20;	
     	int vcrW = fh*16;
-       	int minChatW = fh*40;	
+       	int minChatW = fh*35;	
         int minLogH = fh*10;	
         int nrows = 20;  
         int margin = fh/2;
@@ -266,16 +266,17 @@ public class LyngkViewer extends CCanvas<LyngkCell,LyngkBoard> implements LyngkC
     	int C2 = CELLSIZE/2;
     	//G.print("cell "+cs0+" "+cs+" "+bestPercent);
     	// center the board in the remaining space
-    	int boardW = (int)(nrows*SQUARESIZE);
+        int stateH = CELLSIZE*2; 
+        int boardW = (int)(nrows*SQUARESIZE);
     	int boardH = (int)(nrows*SQUARESIZE);
     	int unclaimedW = SQUARESIZE*2;
     	int unclaimedH = SQUARESIZE*10;
     	int extraW = Math.max(0, (mainW-boardW-unclaimedW)/2);
-    	int extraH = Math.max(0, (mainH-boardH)/2);
-        int stateH = CELLSIZE*2; 
-    	int boardY = extraH+mainY+stateH/2;
+    	int extraH = Math.max(0, (mainH-boardH-stateH)/2);
+    	int boardY = extraH+mainY+stateH;
     	int unclaimedX = mainX+extraW+SQUARESIZE/2;
     	G.SetRect(unclaimedChipRect,unclaimedX,boardY+(boardH-unclaimedH)/2,unclaimedW,unclaimedH);
+       	layout.returnFromMain(extraW,extraH);
 
     	int boardX = unclaimedX+unclaimedW;
     	int boardBottom = boardY+boardH;

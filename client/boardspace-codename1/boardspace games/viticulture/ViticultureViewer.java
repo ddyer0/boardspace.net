@@ -70,10 +70,10 @@ public class ViticultureViewer extends CCanvas<ViticultureCell,ViticultureBoard>
     boolean showOptions = false;
     
     public void testSwitch()
-    {
-    	BACKGROUND_OPTIMIZATION = !BACKGROUND_OPTIMIZATION;
-    	G.print("Now "+BACKGROUND_OPTIMIZATION);
-    	generalRefresh();
+    {	super.testSwitch();
+    	//BACKGROUND_OPTIMIZATION = !BACKGROUND_OPTIMIZATION;
+    	//G.print("Now "+BACKGROUND_OPTIMIZATION);
+    	//generalRefresh();
     	
     }
     // this is used mainly to position the check boxes on cards
@@ -489,14 +489,13 @@ public class ViticultureViewer extends CCanvas<ViticultureCell,ViticultureBoard>
     	//G.print("cell "+cs0+" "+cs+" "+bestPercent);
     	// center the board in the remaining space
     	{
-    	int boardW = (int)(ncols*CELLSIZE);
-    	int boardH = (int)(nrows*CELLSIZE);
-    	int extraW = Math.max(0, (mainW-boardW)/2);
+    	int boardW = (int)(ncols*cs);
+    	int boardH = (int)(nrows*cs);
+    	int extraW = Math.max(0, (mainW-boardW-(around?stateH:0))/2);
     	int extraH = Math.max(0, (mainH-stateH-boardH)/2);
     	int boardX = mainX+extraW+(around ? stateH : 0);
     	int boardY = mainY+stateH+extraH;
     	int boardBottom = boardY+boardH;
-
     	//
     	// state and top ornaments snug to the top of the board.  Depending
     	// on the rendering, it can occupy the same area or must be offset upwards
@@ -512,6 +511,8 @@ public class ViticultureViewer extends CCanvas<ViticultureCell,ViticultureBoard>
         setProgressRect(progressRect,goalRect);
 
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
+    	selectedLayout.returnFromMain(extraW,extraH);
+
     	if(rotateBoard)
     	{
     		G.setRotation(boardRect,-Math.PI/2);
@@ -541,9 +542,11 @@ public class ViticultureViewer extends CCanvas<ViticultureCell,ViticultureBoard>
     	G.SetRect(editRect,boardX+boardW-buttonW-fh*3,G.Top(passRect),buttonW,fh*3);
     	
         centerOnBox();
+        //selectedLayout.optimize();
         positionTheChat(chatRect, chatBackgroundColor,rackBackGroundColor);
         //return the board size as a score
         labelFont =standardPlainFont();
+        
         return(boardW*boardH);
     }
 
@@ -1933,29 +1936,11 @@ private void drawPlayerBoard(Graphics gc,
     	int step = Math.min((int)(G.Height(br)*0.3),w*3/10);
     	w = step*4;
     	int totalW = step*3;
-    	int discount = 0;
     	int left = G.centerX(br)-step;
     	int top = G.centerY(br)-step;
     	int totalH = step*2+step/3;
     	
-    	switch(state)
-    	{
-    	case TrainWorkerDiscount1AndUse:
-    	case TrainWorkerDiscount1:
-    		discount = 1;
-    		break;
-    	case TrainWorkerDiscount2:
-    		discount = 2;
-    		break;
-     	case TrainWorkerDiscount3: 
-    		discount = 3;
-    		break;
-     	case TrainWorkerAndUseFree:
-       	case TrainWorkerDiscount4:
-    		discount = 4;
-    		break;
-    	default: break;
-    	}
+ 
     	for(Enumeration<Viticulturemovespec> e = targets.elements(); e.hasMoreElements();)
     	{	
     		Viticulturemovespec m = e.nextElement();
@@ -1994,8 +1979,7 @@ private void drawPlayerBoard(Graphics gc,
     			{
     				highlight.hitObject = m;
     			}
-    			int cost = Math.max(0,4-discount);
-    			if(chip.type!=ChipType.Worker) { cost++; }
+    		   	int cost = gb.costOfWorker(pb,chip,state);
     			if(gb.movestackContains(m,gb.pendingMoves))
     			{
     				StockArt.Checkmark.drawChip(gc, this, step/5,xleft+step/5,ytop,null);
@@ -3349,14 +3333,17 @@ private void drawPlayerBoard(Graphics gc,
     		Hashtable<ViticultureCell,Viticulturemovespec>targets,boolean vines,boolean backs,ViticultureBoard gb)
     {
     	Viticulturemovespec cardMoves = targets.get(cards);	
+    	ViticultureId rack = cards.rackLocation();
 		while(cardMoves!=null) 
-			{ 
-			  ViticultureChip ch = backs ?  ViticultureChip.cardBack(cards.rackLocation()) : cards.chipAtIndex(cardMoves.from_index);
+			{ int index = cardMoves.from_index;
+			  ViticultureChip ch = backs ?  ViticultureChip.cardBack(rack) : cards.chipAtIndex(index);
 			  if(ch!=null)
+			{ 
+			  if((!vines || (ch.type==ChipType.GreenCard)) 
+					  && !in.contains(rack,ch,index))
 			  {
-			  if((!vines || (ch.type==ChipType.GreenCard)) && (gb.testOption(Option.DrawWithReplacement) || !cardDisplay.containsChip(ch)))
-			  	{ cardDisplay.addChip(ch); 
-			  	in.push(cards.rackLocation(),ch,cardMoves.from_index);
+				cardDisplay.addChip(ch); 
+			  	in.push(rack,ch,index);
 			  	}}
 			  cardMoves = (Viticulturemovespec)cardMoves.next;
 			}
@@ -3517,12 +3504,13 @@ private void drawPlayerBoard(Graphics gc,
 			ViticultureCell addTo = cardBacks||censor ? cardDisplay : unusedCards;
 			CardPointerStack indexTo = cardBacks||censor ? cardIndex : (unusedIndex = new CardPointerStack());
 			ViticultureCell addFrom = pb.cards;
+			ViticultureId rack = addFrom.rackLocation();
 			// add the green cards we're not using to either the main list or an auxiliary
 			for(int lim = addFrom.height()-1; lim>=0; lim--)
 			{	ViticultureChip card = addFrom.chipAtIndex(lim);
-				if((card.type==ChipType.GreenCard) && !cardDisplay.containsChip(card)) 
+				if((card.type==ChipType.GreenCard) && !cardIndex.contains(rack,card,lim)) 
 					{ addTo.addChip(card);
-					  indexTo.push(pb.cards.rackLocation(),card,lim); 
+					  indexTo.push(rack,card,lim); 
 					  extraHeight = true;
 					}
 			}
@@ -4043,13 +4031,13 @@ private void drawPlayerBoard(Graphics gc,
        	StockArt.FancyCloseBox.drawChip(gc, this, highlightAll, ViticultureId.CloseOverlay,csize, xp+totalW-csize,yp+csize,null);
        	GC.frameRect(gc,Color.black,fieldRect);
     }
-    // show cards and/or fields
+     // show cards and/or fields
     public void showOptions(Graphics gc, ViticultureBoard gb, Rectangle br,
     		HitPoint highlight0,HitPoint highlightAll,Hashtable<ViticultureCell,Viticulturemovespec>targets)
     {	
     	HitPoint highlight = highlight0;
         Option options[] = Option.values();
-		Rectangle fieldRect = br;
+ 		Rectangle fieldRect = br;
 		int w = G.Width(fieldRect);
 		int h = G.Height(fieldRect);
 		int left = G.Left(fieldRect);
@@ -4063,15 +4051,26 @@ private void drawPlayerBoard(Graphics gc,
 		int step = Math.min(fontsize * 4,h/Math.max(7,(options.length+1)));
 		int x =left + w/6;
 		int y = (h-step*options.length)/2+top;
+		int fullW = w*2/3;
+		if(highlight!=null)
+		{
+		GC.setFont(gc,standardBoldFont());
+		GC.Text(gc,true,x-step,y-step/2,step,step/2,Color.black,null,s.get(AcceptMessage));
+		GC.Text(gc,true,x+fullW,y-step/2,step,step/2,Color.black,null,s.get(VetoMessage));
+		}
 		GC.setFont(gc,largeBoldFont());
+		int nPlayers = gb.nPlayers();
 		for(Option op : options)
-		{	TextButton toggle = new TextButton(op.message,ViticultureId.SetOption,op.message,Color.white,null,null); 
+		{	// the limit option is only relevant if 5-6 players
+			if(nPlayers>4 || (op!=Option.LimitPoints))
+			{
+			TextButton toggle = new TextButton(op.message,ViticultureId.SetOption,op.message,Color.white,null,null); 
 			boolean on = gb.testOption(op);
 			toggle.setValue(on);
 			toggle.textColor = on ? Color.yellow : Color.black;
 			toggle.setBounds(x,y,w*2/3,step);
 			int l = x-step/2;
-			int r = x+w*2/3+step/2;
+			int r = x+fullW+step/2;
 			int cy = y+step/2;
 			for(PlayerBoard pb : gb.pbs) 
 			{
@@ -4094,6 +4093,7 @@ private void drawPlayerBoard(Graphics gc,
 			
 			y += step;
 		}
+		}
 		if(highlight!=null)
 		{
 		int xp = left+step*2/3;
@@ -4101,13 +4101,14 @@ private void drawPlayerBoard(Graphics gc,
 		y = top+h/2-((ystep*mainBoard.nPlayers())/2);
 		for(PlayerBoard p : gb.pbs)
 		{
-			ViticultureChip ch = p.getScoreMarker();
+			ViticultureChip ch = p.getRooster();
 			boolean ready = p.isReady;
 			boolean me = G.offline() || ( p.boardIndex==getActivePlayer().boardIndex);
 			if(ch.drawChip(gc,this,me ? highlight:null,ViticultureId.SetReady,step*2,xp,y,null))
 			{
 				highlight.hitObject = p;
 				highlight.hit_index = ready ? 0 : 1;
+				highlight.setHelpText(s.get(AcceptOptionsMessage));
 			}
 			if(ready)
 			{
@@ -4207,6 +4208,17 @@ private void drawPlayerBoard(Graphics gc,
 		if(resolvePapa(gc, pb, gb, highlight, p1,cr1,false))
 		{
 			highlight.hit_index = 1;
+			if(highlight.hitCode==DefaultId.HitNoWhere)
+			{	ViticultureCell choice = ca ? gb.choiceB : gb.choiceA;
+				highlight.hitObject = choice;
+				highlight.hitCode = choice.rackLocation();
+				highlight.spriteColor=Color.red;
+				Rectangle sp = new Rectangle((int)(px+cardStep*0.17),
+								(int)(py+cardStep*0.11),
+								(int)(cardW2*0.8),
+								(int)(cardStep*0.78));
+				highlight.spriteRect = sp;
+			}
 		}
 		if(selectp1) { mark.drawChip(gc,this,cardStep/4,px+cardW2/2,py+cardStep/2,null); }
 		
@@ -4215,13 +4227,27 @@ private void drawPlayerBoard(Graphics gc,
 		boolean selectp2 = selected.contains(p2);
 		gb.choiceA.selected = selectp2 && ca;
 		gb.choiceB.selected = selectp2 && cb;
-		Rectangle cr2 = new Rectangle(cardX+cardW2/3,cardY-cardStep/2,cardW2,cardStep);
+		py = cardY-cardStep/2;
+		Rectangle cr2 = new Rectangle(px,py,cardW2,cardStep);
 		if(resolvePapa(gc, pb, gb, highlight,p2,cr2,false))
 		{
 			highlight.hit_index = 0;
+			if(highlight.hitCode==DefaultId.HitNoWhere)
+			{	ViticultureCell choice = ca ? gb.choiceB : gb.choiceA;
+				highlight.hitObject = choice;
+				highlight.hitCode = choice.rackLocation();
+				highlight.spriteColor=Color.red;
+				Rectangle sp = new Rectangle((int)(px+cardStep*0.17),
+								(int)(py+cardStep*0.11),
+								(int)(cardW2*0.8),
+								(int)(cardStep*0.78));
+				highlight.spriteRect = sp;
+			}
+
 		}
 		if(selected.contains(p2)) { mark.drawChip(gc,this,cardStep/4,px+cardW2/2,cardY,null); }
 
+		
 		gb.choiceA.selected = ca;
 		gb.choiceB.selected = cb;
 		
@@ -5230,10 +5256,6 @@ private void drawPlayerBoard(Graphics gc,
     
         handleExecute(gb,mm,replay);
         
-        if(mm.op==MOVE_COMMENCE)
-        {
-        	canonicalizeHistory();
-        }
         /**
          * animations are handled by a simple protocol between the board and viewer.
          * when stones are moved around on the board, it pushes the source and destination
@@ -5486,7 +5508,8 @@ private void drawPlayerBoard(Graphics gc,
        	if(!(id instanceof ViticultureId)) 
        	{   // only do standard actions (like reset) if it is our turn
        		if(hiddenPlayerOrMainMove(findHiddenWindow(hp)))
-       			{ missedOneClick = performStandardActions(hp,missedOneClick);   
+       			{ 
+       			missedOneClick = performStandardActions(hp,missedOneClick);   
        			showBuildings = false;     
        			showOptions = false;
        			} 
@@ -5524,6 +5547,7 @@ private void drawPlayerBoard(Graphics gc,
         	showBuildings = !showBuildings;
         	break;
         case CloseOverlay:
+        	showOptions = false;
         	setOverlayClosed(gb,!overlayClosed);
         	break;
         case ShowScores: scoreRect.toggle();
@@ -5714,8 +5738,6 @@ private void drawPlayerBoard(Graphics gc,
         	case FillWineOptional:
         	case GiveYellow:
         		{
-        		int ind = pb.cards.findChip(hitChip);
-        		G.Assert(ind==hp.hit_index,"index mismatch");
         		PerformAndTransmit("Select "+ViticultureId.Cards.name()+" "+pb.colCode+" 0 "+hp.hit_index);
         		}	
         		break;
@@ -5749,8 +5771,6 @@ private void drawPlayerBoard(Graphics gc,
         	case Discard2CardsForAll:
         	case Discard2CardsFor4:
         		{
-        		int ind =pb.cards.findChip(hitChip);
-        		G.Assert(ind==hp.hit_index,"must match");
         		PerformAndTransmit("discard "+ViticultureId.Cards.name()+" "+pb.colCode+" 0 "+hp.hit_index);
         		}
         		break;
@@ -5773,8 +5793,6 @@ private void drawPlayerBoard(Graphics gc,
           		{
         		ViticultureCell from = gb.getStack(hitChip.type) ;
         		if(resetState==ViticultureState.Pick2Discards) { from = gb.getDiscards(from); }
-        		int ind = from.findChip(hitChip);
-        		G.Assert(ind==hp.hit_index,"must match");
         		PerformAndTransmit("Select "+from.rackLocation().name()+" @ 0 "+hp.hit_index);
         		}
         		break;
@@ -6157,7 +6175,7 @@ private void drawPlayerBoard(Graphics gc,
         	 && (mainBoard.allPlayersReady())
         	 && (G.offline()||(mainBoard.whoseTurn == getActivePlayer().boardIndex)))
           {	  
-        	  PerformAndTransmit("Commence "+mainBoard.options.memberString(Option.values()));
+        	  PerformAndTransmit("ECommence "+mainBoard.options.memberString(Option.values()));
           }
      }
     /**
@@ -6516,12 +6534,21 @@ private void drawPlayerBoard(Graphics gc,
   	if(mainBoard.testOption(Option.LimitPoints)) { v |= 1; }	// use alternate chipset bit 1 to indicate the limit points overlay
   	return v;
   }
+  public boolean PerformAndTransmit(commonMove m,boolean transmit,replayMode replay)
+  {
+  	boolean v = super.PerformAndTransmit(m,transmit,replay);
+  	if(v && m.op==EPHEMERAL_COMMENCE)
+  	{
+  		canonicalizeHistory();
+  	}
+  	return v;
+  }
   public void canonicalizeHistory()
   {
 	  super.canonicalizeHistory();
   }
   public commonMove convertToSynchronous(commonMove m)
-  {
+  {	  if(m.op==EPHEMERAL_COMMENCE) { m.op = MOVE_COMMENCE; return m; }
 	  return null;
   }
   public void updatePlayerTime(long inc,commonPlayer p)

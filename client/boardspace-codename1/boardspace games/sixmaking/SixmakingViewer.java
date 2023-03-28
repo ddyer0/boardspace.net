@@ -153,7 +153,7 @@ public class SixmakingViewer extends CCanvas<SixmakingCell,SixmakingBoard> imple
     			);
     	int minLogW = fh*18;	
     	int vcrw = fh*16;
-       	int minChatW = fh*40;	
+       	int minChatW = fh*35;	
         int minLogH = fh*15;	
         int buttonW = fh*8;
     	
@@ -185,6 +185,7 @@ public class SixmakingViewer extends CCanvas<SixmakingCell,SixmakingBoard> imple
     	int boardX = mainX+extraW;
     	int boardY = mainY+stateH+extraH;
     	int boardBottom = boardY+boardH;
+       	layout.returnFromMain(extraW,extraH);
 	      	
     	//
     	// state and top ornaments snug to the top of the board.  Depending

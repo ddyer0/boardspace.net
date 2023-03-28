@@ -161,7 +161,7 @@ public class SyzygyViewer extends CCanvas<SyzygyCell,SyzygyBoard> implements Syz
     	// to be appropriate to the window size
     	int fh = standardFontSize();
     	int minLogW = fh*15;	
-       	int minChatW = fh*40;	
+       	int minChatW = fh*35;	
         int minLogH = fh*10;	
         int CELLSIZE=(int)(fh*2.5);
         int C2 = CELLSIZE/2;

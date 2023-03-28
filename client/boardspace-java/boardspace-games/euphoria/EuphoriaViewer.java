@@ -573,7 +573,7 @@ private Color playerBackground[] = {
     			fh*(3.5-0.1*nPlayers),	// maximum cell size
     			0.2		// preference for the designated layout, if any
     			);
-      	int minChatW = fh*40;	 	
+      	int minChatW = fh*35;	 	
       	// if the chat is present, make the log the same width
       	// if not, make a narrower than the chat is required to be
       	// .. this subtlety in an attempt to optimize 3 player corner configurations on playtable
@@ -581,6 +581,7 @@ private Color playerBackground[] = {
         int buttonW = fh*8;
     	// place the chat and log automatically, preferring to place
     	// them together and not encroaching on the main rectangle.
+        
     	layout.placeTheChatAndLog(chatRect, minChatW, chatHeight,minChatW*2,3*chatHeight/2,
     							logRect,minLogW, minLogH, minLogW, minLogH*2);
      	
@@ -607,6 +608,7 @@ private Color playerBackground[] = {
     	int boardY = mainY+extraH+stateH;
     	int boardBottom = boardY+boardH;
         int stateY = boardY-stateH+stateH/4;
+        layout.returnFromMain(extraW,extraH);
         G.placeStateRow(boardX,stateY,boardW,stateH,iconRect,stateRect,magnifierRect,noChatRect);
 
         // make the recruit rect square and centered on the board, so everything
