@@ -1186,8 +1186,22 @@ public void setLetterColor(Graphics gc,WypsBoard gb,WypsCell cell)
 	    default: break;
 	       case Rack:
 	        case LocalRack:
+	    		sendRack(hp);
+	    		break;
+   
+	    case BoardLocation:
+	        WypsCell hitCell = hitCell(hp);
+	    	if(bb.isADest(hitCell))
+	    		{ PerformAndTransmit("Pickb "+hitCell.col+" "+hitCell.row);
+	    		}
+	    	break;
+        } 
+        }
+    }
+    private void sendRack(HitPoint hp)
 	    		{
 	    		// drawing the rack prepares the move
+    	WypsId hitObject =  (WypsId)hp.hitCode;
 	            String msg = (String)hp.hitObject;
 	            // transmit only drop from the board, not shuffling of the rack
 	            boolean transmit = (hitObject==WypsId.Rack);
@@ -1202,18 +1216,6 @@ public void setLetterColor(Graphics gc,WypsBoard gb,WypsCell cell)
 	            		PerformAndTransmit(msg.substring(1),false,replayMode.Live);
 	            	}
 	        	}
-	    		break;
-	    
-	    case BoardLocation:
-	        WypsCell hitCell = hitCell(hp);
-	    	if(bb.isADest(hitCell))
-	    		{ PerformAndTransmit("Pickb "+hitCell.col+" "+hitCell.row);
-	    		}
-	    	break;
-        } 
-        }
-    }
-
 	/** 
 	 * this is called on "mouse up".  We may have been just clicking
 	 * on something, or we may have just finished a click-drag-release.
@@ -1275,6 +1277,7 @@ public void setLetterColor(Graphics gc,WypsBoard gb,WypsCell cell)
         	}
         	break;
         case LocalRack:
+        	sendRack(hp);
         	break;
         case Rack:
 			{

@@ -188,29 +188,32 @@ public class GounkiViewer extends CCanvas<GounkiCell,GounkiBoard> implements Gou
         int stateH = fh*3;
     	int mainH = G.Height(main);
         boolean rotate = !perspective && seatingFaceToFaceRotated();
-       	int prows = perspective ? 15 : 27;
+        int prows = (perspective ? 15 : 27);
         int nrows = rotate ? 24 : prows;  
         int ncols = rotate ? prows : 24;
-      
+        int bufferCellsW = rotate ? 2 : 0;
+        int bufferCellsH = rotate ? 0 : 2;
+        
      	// calculate a suitable cell size for the board
-    	double cs = Math.min((double)mainW/ncols,(double)(mainH-(perspective?stateH*2:stateH/2))/nrows);
+    	double cs = Math.min((double)mainW/(ncols+bufferCellsW*2),(double)(mainH-stateH)/(nrows+bufferCellsH*2));
     	int CELLSIZE = (int)cs;
-    	SQUARESIZE = CELLSIZE*3;
+  
+        SQUARESIZE = CELLSIZE*3;
     	//G.print("cell "+cs0+" "+cs+" "+bestPercent);
     	// center the board in the remaining space
     	int boardW = (int)(ncols*CELLSIZE);
     	int boardH = (int)(nrows*CELLSIZE);
-    	int extraW = Math.max(0, (mainW-boardW)/2);
-    	int extraH = Math.max(0, (mainH-boardH)/2)+(perspective?stateH:0);
-    	int boardX = mainX+extraW;
-    	int boardY = mainY+extraH;
+    	int extraW = Math.max(0, (mainW-boardW-bufferCellsW*2*CELLSIZE)/2);
+    	int extraH = Math.max(0, (mainH-boardH-bufferCellsH*2*CELLSIZE)/2);
+    	int boardX = mainX+extraW+bufferCellsW*CELLSIZE;
+    	int boardY = mainY+extraH+bufferCellsH*CELLSIZE;
     	int boardBottom = boardY+boardH;
        	layout.returnFromMain(extraW,extraH);
     	//
     	// state and top ornaments snug to the top of the board.  Depending
     	// on the rendering, it can occupy the same area or must be offset upwards
     	//
-        int stateY = boardY-(perspective ? stateH*2 : stateH/4);
+        int stateY = boardY-bufferCellsH*CELLSIZE;
         int stateX = boardX;
         G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,reverseRect,altViewRect,viewsetRect,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);

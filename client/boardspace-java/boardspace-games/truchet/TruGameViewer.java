@@ -156,7 +156,7 @@ public class TruGameViewer extends CCanvas<TruCell,TruGameBoard> implements TruC
     			0.75,	// 60% of space allocated to the board
     			1.0,	// 1.0:1 aspect ratio for the board
     			fh*1.8,
-    			fh*2.5,	// maximum cell size
+    			fh*2.0,	// maximum cell size
     			0.4		// preference for the designated layout, if any
     			);
     	

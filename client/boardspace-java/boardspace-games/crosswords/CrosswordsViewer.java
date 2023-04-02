@@ -1462,21 +1462,7 @@ public void setLetterColor(Graphics gc,CrosswordsBoard gb,CrosswordsCell cell)
         case LocalRack:
         case RemoteRack:
     		{
-    		// drawing the rack prepares the move
-            String msg = (String)hp.hitObject;
-            // transmit only drop from the board, not shuffling of the rack
-            boolean transmit = (hitObject==CrosswordsId.Rack) 
-            						|| ((bb.whoseTurn==remoteViewer) && (hitObject==CrosswordsId.RemoteRack));
-            if(msg.startsWith("remotedrop "))
-        	{
-        		PerformAndTransmit(G.replace(msg,"remotedrop","replace"),false,replayMode.Live);
-        	}
-            PerformAndTransmit(msg,transmit,replayMode.Live);
-           
-            if(msg.startsWith("rlift "))
-            	{
-            		PerformAndTransmit(msg.substring(1),false,replayMode.Live);
-            	}
+    			sendRack(hp);
         	}
     		break;
         case BoardLocation:
@@ -1486,6 +1472,25 @@ public void setLetterColor(Graphics gc,CrosswordsBoard gb,CrosswordsCell cell)
         } 
         }
     }
+    private void sendRack(HitPoint hp)
+    {	CrosswordsId hitObject =  (CrosswordsId)hp.hitCode;
+   		// drawing the rack prepares the move
+        String msg = (String)hp.hitObject;
+        // transmit only drop from the board, not shuffling of the rack
+        boolean transmit = (hitObject==CrosswordsId.Rack) 
+        						|| ((bb.whoseTurn==remoteViewer) && (hitObject==CrosswordsId.RemoteRack));
+        if(msg.startsWith("remotedrop "))
+    	{
+    		PerformAndTransmit(G.replace(msg,"remotedrop","replace"),false,replayMode.Live);
+    	}
+        PerformAndTransmit(msg,transmit,replayMode.Live);
+       
+        if(msg.startsWith("rlift "))
+        	{
+        		PerformAndTransmit(msg.substring(1),false,replayMode.Live);
+        	}
+    }
+    
     private void showWords(WordStack ws,HitPoint hp,String msg)
     {
     	StringBuilder words = new StringBuilder();
@@ -1533,7 +1538,7 @@ public void setLetterColor(Graphics gc,CrosswordsBoard gb,CrosswordsCell cell)
         	break;
         case LocalRack:
         case RemoteRack:
-        	// local rack never has a real moving object
+        	sendRack(hp);
         	break;
         case Vocabulary:
         	bb.setVocabulary(vocabularyRect.value);
@@ -1866,7 +1871,7 @@ public void setLetterColor(Graphics gc,CrosswordsBoard gb,CrosswordsCell cell)
 		if(bb.whoseTurn==index)
 			{
 			 GC.Text(gc, true, turnnotice,
-			Color.red,null,YourTurnMessage);
+			Color.red,null,s.get(YourTurnMessage));
 			}
     	}
     }

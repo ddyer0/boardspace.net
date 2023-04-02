@@ -1435,7 +1435,7 @@ public class BreakingAwayViewer extends CCanvas<BreakingAwayCell,BreakingAwayBoa
     	else if(!adjust && b.whoseTurn==index)
     	{
  			 GC.Text(gc, true, doner,
-			Color.red,null,YourTurnMessage);
+			Color.red,null,s.get(YourTurnMessage));
    	}
     }
 

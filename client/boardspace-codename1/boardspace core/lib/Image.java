@@ -265,10 +265,11 @@ public class Image extends SystemImage implements Drawable,CompareTo<Image>
 	    	int yoff = (height-dh)/2;
 	    	int margin = (int)(scale+1);
 	  	  	Rectangle rr = GC.combinedClip(gc,x+xoff+margin,y+yoff+margin,dw-2*margin,dh-2*margin);
-	  	  	//Plog.log.addLog("caching ",this," ",dw,"x",dh);
+	  	  	//Log.appendLog("caching "+this+" "+dw+"x"+dh);
 	  	  	Image cached = cache.getCachedImage(this,dw,dh,false);
-	  	  	//Plog.log.addLog("cached ",cached);
+	  	  	//Log.addLog("cached "+cached);
 	  	  	cached.drawImage(gc,x+xoff,y+yoff,dw,dh);
+	  	  	//Log.appendLog("drew");
 	  	  	GC.setClip(gc,rr);
 	    	}
 	    }

@@ -224,9 +224,10 @@ public class DipoleGameViewer extends CCanvas<DipoleCell,DipoleBoard> implements
 		  boolean canhit = G.pointInRect(highlight,wasteRect) &&  b.legalToHitWaste();
 		  int xpos = G.centerX(wasteRect);
 		  int ypos = G.centerY(wasteRect);
-		  if(waste.drawStack(gc, this, canhit?highlight:null, SQUARESIZE, xpos, ypos, 0, 0.1, null))
+		  int w = G.Width(wasteRect);
+		  if(waste.drawStack(gc, this, canhit?highlight:null, w, xpos, ypos, 0, 0.1, null))
 		  {		highlight.arrow = hasMovingObject(highlight) ? StockArt.DownArrow : StockArt.UpArrow;
-		  		highlight.awidth = SQUARESIZE/3;
+		  		highlight.awidth = w/3;
 	    		highlight.spriteRect = wasteRect;
 	    		highlight.spriteColor = Color.red;		  
 		  }
@@ -241,11 +242,12 @@ public class DipoleGameViewer extends CCanvas<DipoleCell,DipoleBoard> implements
         DipoleCell thisCell = rack[forPlayer];
         int xpos = G.centerX(r);
         int ypos = G.centerY(r);
+        int w = G.Width(r);
         String msg = "     "+b.chips_on_board[player]+" - "+b.sum_of_rows[forPlayer];
         GC.setFont(gc,standardBoldFont());
-        if(thisCell.drawStack(gc,this,canhit?highlight:null,SQUARESIZE,xpos,ypos,0,0.1,msg))
+        if(thisCell.drawStack(gc,this,canhit?highlight:null,w,xpos,ypos,0,0.1,msg))
         {	highlight.arrow = canDrop ? StockArt.DownArrow : StockArt.UpArrow;
-        	highlight.awidth = SQUARESIZE/3;
+        	highlight.awidth = w/3;
         	highlight.spriteColor = Color.red;
         	highlight.spriteRect = r;
         }

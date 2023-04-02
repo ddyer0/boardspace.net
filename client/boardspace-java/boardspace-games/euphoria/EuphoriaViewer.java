@@ -3504,7 +3504,7 @@ private Color playerBackground[] = {
     		default:
     		GC.setFont(gc, efont);
     		GC.Text(gc, false, alertRect,
-    				Color.red,null,YourTurnMessage);
+    				Color.red,null,s.get(YourTurnMessage));
     		}
     	}
      	if(bigChip!=null)

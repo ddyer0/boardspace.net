@@ -499,7 +499,7 @@ public class OctilesViewer extends CCanvas<OctilesCell,OctilesBoard> implements 
  	    	pl.setRotatedContext(gc, highlight, true);
  			}
  		
-        standardGameMessage(gc,showRotation,
+        standardGameMessage(gc,
         		vstate==OctilesState.GAMEOVER_STATE?gameOverMessage():s.get(vstate.getDescription()),
         				vstate!=OctilesState.PUZZLE_STATE,
         				gb.whoseTurn,

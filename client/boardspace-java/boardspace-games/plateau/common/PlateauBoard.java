@@ -49,7 +49,9 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
     private pstack[][] rack = new pstack[2][NPIECETYPES]; // reserve pieces
     private pstack[][] bar = new pstack[2][NPIECETYPES]; // captured pieces
     private pstack[][] trade = new pstack[2][NPIECETYPES]; // prisoner exchange pieces
-
+    
+    public pstack[] getPlayerRack(int n) { return rack[n]; }
+ 
     //
     // these arrays are indexed by piece number and stack number respectively.  All
     // communication with the server and other players uses these indexes as proxies
@@ -189,7 +191,8 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
             GC.Text(gc, true, G.Left(rect), G.Top(rect), G.Width(rect), G.Height(rect),
                 Color.black, null, msg);
         }
-
+        if(mystack!=null)
+        {
         int npieces = mystack.length;
         int pwidth = G.Width(rect) / npieces;
         int px = G.Left(rect) + ((G.Width(rect) - (pwidth * npieces)) / 2);
@@ -198,13 +201,13 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
         {
             drawPstack(gc, mystack[i], px, G.Top(rect), pwidth, G.Height(rect), highlight);
             px += pwidth;
-        }
+        }}
     }
 
     // draw a single stack
     public void drawPstack(Graphics gc, pstack stack, int px, int py,
         int pwidth, int pheight, HitPoint highlight)
-    {
+    {	stack.drawnSize = pwidth;
         stack.Draw(gc, px, py, pwidth, pheight, 4, highlight);
     }
 
@@ -252,10 +255,8 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
     public void DrawRack(Graphics gc, Rectangle rect, int index,
         HitPoint highlight)
     {
-        if (index >= 0)
-        {
-            drawPstacks(gc, rack[index], rect, highlight, "");
-        }
+    	drawPstacks(gc, index>=0?rack[index]:null, rect, highlight, "");
+ 
     }
 
     // constructors for basic board setup
@@ -441,7 +442,6 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
         {
         	throw G.Error(WrongInitError, gtype);
         }
-
         setFlipped(null);
         moveNumber = 1;
         moveStep = -1;
@@ -596,7 +596,6 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
         	}
         board_state = from_b.board_state;
         unresign = from_b.unresign;
-
         sameboard(from_b);
                
     }

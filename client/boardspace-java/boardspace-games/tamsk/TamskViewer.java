@@ -20,6 +20,7 @@ import lib.TextButton;
 import lib.TextChunk;
 import lib.Toggle;
 import lib.LFrameProtocol;
+import lib.Log;
 import lib.SimpleSprite;
 import lib.Slider;
 import online.game.*;
@@ -100,7 +101,8 @@ public class TamskViewer extends CCanvas<TamskCell,TamskBoard> implements TamskC
     // private state
     private TamskBoard bb = null; //the board from which we are displaying
     private int CELLSIZE; 	//size of the layout cell
- 
+    private int CS;
+
     // addRect is a service provided by commonCanvas, which supports a mode
     // to visualize the layout during development.  Look for "show rectangles"
     // in the options menu.
@@ -171,7 +173,6 @@ public class TamskViewer extends CCanvas<TamskCell,TamskBoard> implements TamskC
         enableAutoDone = true;
         super.init(info,frame);
         // use_grid=reviewer;// use this to turn the grid letters off by default
-        
         addZoneRect("done",doneButton);	// this makes the "done" button a zone of its own
         
         if(G.debug())
@@ -322,6 +323,7 @@ public class TamskViewer extends CCanvas<TamskCell,TamskBoard> implements TamskC
     	// calculate a suitable cell size for the board
     	double cs = Math.min((double)mainW/ncols,(double)mainH/nrows);
     	CELLSIZE = (int)cs;
+    	CS = (int)(cs*1.1);
     	//G.print("cell "+cs0+" "+cs+" "+bestPercent);
     	// center the board in the remaining space
     	int boardW = (int)(ncols*CELLSIZE);
@@ -350,6 +352,8 @@ public class TamskViewer extends CCanvas<TamskCell,TamskBoard> implements TamskC
     	G.SetRect(timeRect,tx,ty,tw,th);
     	G.SetRect(shotRect,tx+tw+txtra,ty,tw-txtra,th);
     	G.SetRect(stopRect,tx,ty+th+th/4,tw,th);
+    	
+    	G.insetRect(boardRect,-boardW/10,-boardH/10);
     	
     	G.SetRect(fastRect,boardX+boardW-CELLSIZE*4,boardY+boardH-CELLSIZE*5,CELLSIZE*2,CELLSIZE*2);
     	// goal and bottom ornaments, depending on the rendering can share
@@ -389,28 +393,29 @@ public class TamskViewer extends CCanvas<TamskCell,TamskBoard> implements TamskC
     	Rectangle rings = ringRects[player];
         TamskCell cell = gb.getPlayerRing(player);
         boolean canhitRing = gb.legalToHitChips(cell,player) && G.pointInRect(highlight, rings);
+        int h = G.Height(rings);
+        int xp = G.Left(rings)+h/3;
+        int yp = G.Top(rings)+h/2;
         if (canhitRing)
         {
             highlight.hitCode = cell.rackLocation();
             highlight.arrow = (gb.pickedObject!=null)?StockArt.DownArrow:StockArt.UpArrow;
-            highlight.awidth = CELLSIZE;
+            highlight.awidth = h;
         	// draw a highlight background if appropriate
             GC.fillRect(gc, HighlightColor, rings);
         }
-        int h = G.Height(rings);
-        int xp = G.Left(rings)+h/3;
-        int yp = G.Top(rings)+h/2;
-        cell.drawStack(gc,this,null,CELLSIZE*7/8,xp,yp,0,0.18,0,""+cell.height());
+        cell.drawStack(gc,this,null,h/2,xp,yp,0,0.18,0,""+cell.height());
   
 
         GC.frameRect(gc, Color.black, r);
         TamskCell timer = gb.getPlayerTimer(player);
         boolean canHit = gb.legalToHitChips(timer,player) && G.pointInRect(highlight,r);
-        if(timer.drawStack(gc,this,canHit?highlight:null,G.Width(r)/2,G.centerX(r),G.centerY(r),0,0,null))
+        int cs = G.Width(r)/2;
+        if(timer.drawStack(gc,this,canHit?highlight:null,cs,G.centerX(r),G.centerY(r),0,0,null))
         {
             highlight.hitCode = timer.rackLocation();
             highlight.arrow = (gb.pickedObject!=null)?StockArt.DownArrow:StockArt.UpArrow;
-            highlight.awidth = CELLSIZE;
+            highlight.awidth = cs;
      	
         }
       }
@@ -433,7 +438,7 @@ public class TamskViewer extends CCanvas<TamskCell,TamskBoard> implements TamskC
     {
     	// draw an object being dragged
     	// use the board cell size rather than the window cell size
-    	TamskChip.getChip(obj).drawChip(g,this,CELLSIZE*7/8, xp, yp, null);
+    	TamskChip.getChip(obj).drawChip(g,this,CS*7/8, xp, yp, null);
     }
     // also related to sprites,
     // default position to display static sprites, typically the "moving object" in replay mode
@@ -468,8 +473,9 @@ public class TamskViewer extends CCanvas<TamskCell,TamskBoard> implements TamskC
 	  	setDisplayParameters(gb,brect);
 	      // if the board is one large graphic, for which the visual target points
 	      // are carefully matched with the abstract grid
+	  	  Log.startLog("draw tamsk bacground "+G.Width(brect)+" "+G.Height(brect));
 	  	  TamskChip.board.getImage().centerImage(gc, brect);
-
+	  	  Log.finishLog();
 	      // draw a picture of the board. In this version we actually draw just the grid
 	      // to draw the cells, set gb.Drawing_Style in the board init method.  Create a
 	      // DrawGridCoord(Graphics gc, Color clt,int xpos, int ypos, int cellsize,String txt)
@@ -502,14 +508,16 @@ public class TamskViewer extends CCanvas<TamskCell,TamskBoard> implements TamskC
     	boolean timers = gb.showTimers();
     	//G.print("");
     	gb.loadPositions();
+    	int left = G.Left(brect)+CS/15;
+    	int bottom = G.Bottom(brect);
     	for(TamskCell cell = gb.allCells; cell!=null; cell=cell.next)
           {	int xx = gb.cellToX(cell);
       		int yy = gb.cellToY(cell);
-      		int ypos = G.Bottom(brect) - yy;
-      		int yscale = (int)((yy*0.85/2.7)*CELLSIZE/h);
-      		int hoffset = (int)(cell.maxRings*CELLSIZE*0.1);
-      		int hsize = CELLSIZE-yscale;
-            int xpos = G.Left(brect) + xx;
+      		int ypos = bottom - yy;
+      		int yscale = (int)((yy*0.85/3.7)*CS/h);
+      		int hoffset = (int)(cell.maxRings*CS*0.1);
+      		int hsize = CS-yscale;
+            int xpos =  left + xx;
             cell.setCurrentCenter(xpos,ypos);
             cell.setLastSize(hsize/2);
             boolean canHit = gb.legalToHitBoard(cell,targets);
@@ -536,11 +544,11 @@ public class TamskViewer extends CCanvas<TamskCell,TamskBoard> implements TamskC
             		{
             		timer = timer.getCopy();
             		}
-            	drawTimer(gc,null,null,timers,gameTime,timer,null,CELLSIZE-yscale,xpos,ypos-hoffset);            	
+            	drawTimer(gc,null,null,timers,gameTime,timer,null,CS-yscale,xpos,ypos-hoffset);            	
             }
             if(show && canHit)
-            {	int button = cell.timer!=null ? CELLSIZE/5 : 0;
-            	StockArt.SmallO.drawChip(gc,this,CELLSIZE-yscale,xpos,ypos-hoffset+button,null);
+            {	int button = cell.timer!=null ? CS/5 : 0;
+            	StockArt.SmallO.drawChip(gc,this,CS-yscale,xpos,ypos-hoffset+button,null);
             }
       //      StockArt.SmallO.drawChip(gc,this,CELLSIZE,xpos,ypos,null);
       //      G.print("pos('",cell.col,"',",(char)('0'+cell.row),",",(int)(xx*100/w)/100.0,",",(int)(yy*100/h)/100.0,");");

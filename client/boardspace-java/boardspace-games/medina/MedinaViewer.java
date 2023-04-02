@@ -1032,7 +1032,7 @@ private void playSounds(commonMove m)
     	{
     		GC.setFont(gc, largeBoldFont());
     		GC.Text(gc, true, alertRect,
-    				Color.black,null,YourTurnMessage);
+    				Color.black,null,s.get(YourTurnMessage));
     	}
     }}
 }

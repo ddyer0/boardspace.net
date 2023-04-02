@@ -75,6 +75,16 @@ public class ConnectionManager
 
     private NetConn myNetConn = null;
     private int serverHashChecksumOffset = 0;
+    public static int serverHashChecksum(ConnectionManager m,String str,int off)
+    {
+    	if(m==null) { return G.hashChecksum(str,off); }
+    	else { return m.serverHashChecksum(str,off); }
+    }
+    public static int serverHashChecksumOffset(ConnectionManager m)
+    {
+    	if(m==null) { return 0; }
+    	else { return m.serverHashChecksumOffset(); }
+    }
     public int serverHashChecksum(String str,int off)
     {	NetConn mn = myNetConn;
     	if(mn==null)

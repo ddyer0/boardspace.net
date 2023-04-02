@@ -785,6 +785,10 @@ public class G extends Platform implements Timestamp
     {
     	G.SetRect(target,Left(target)+n, Top(target)+n,Width(target)-n*2,Height(target)-n*2);
     }
+    public static void insetRect(Rectangle target,int h,int v)
+    {
+    	G.SetRect(target,Left(target)+h, Top(target)+v,Width(target)-h*2,Height(target)-v*2);
+    }
     
     /**
      * if the rectangle height is greater than width, return +- PI/2 

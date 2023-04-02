@@ -993,7 +993,7 @@ private void playSounds(commonMove m)
     	{
         	GC.setFont(gc,myfont);
     		GC.Text(gc, false, l+step, t+topPart/2,w/3,topPart,
-    				Color.red,null,YourTurnMessage);
+    				Color.red,null,s.get(YourTurnMessage));
     	}
     }}
 

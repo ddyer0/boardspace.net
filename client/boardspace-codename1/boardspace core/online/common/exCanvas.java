@@ -263,7 +263,7 @@ public abstract class exCanvas extends ProxyWindow
     /** this is the default size (percent) of the chat window
      * 
      */
-    public int chatPercent = 25;
+    public int chatPercent = 20;
     /**
      * if true, show the UI rectangles for debugging.
      */

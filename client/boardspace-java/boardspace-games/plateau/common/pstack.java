@@ -17,7 +17,7 @@ public class pstack implements PlateauConstants
     int col_a_d; // the row and column for board stacks
     int row_1_4;
     Vector<piece> pieces = new Vector<piece>(); // the actual pieces in the stack
-
+    int drawnSize = -1;
     // constructor
     public pstack(pstack from)
     { // construct an unlinked, spare copy.  This is used to keep track of

@@ -1379,22 +1379,8 @@ public void verifyGameRecord()
         case LocalRack:
         case RemoteRack:
     		{
-    		// drawing the rack prepares the move
-            String msg = (String)hp.hitObject;
-            // transmit only drop from the board, not shuffling of the rack
-            boolean transmit = (hitObject==JumbulayaId.Rack) 
-            		|| ((bb.whoseTurn==remoteViewer)&&(hitObject==JumbulayaId.RemoteRack));
-            if(msg.startsWith("remotedrop "))
-        	{
-        		PerformAndTransmit(G.replace(msg,"remotedrop","replace"),false,replayMode.Live);
-        	}
-            PerformAndTransmit(msg,transmit,replayMode.Live);
-           
-            if(msg.startsWith("rlift "))
-            	{
-            		PerformAndTransmit(msg.substring(1),false,replayMode.Live);
-            	}
-        	}
+    			sendRack(hp);
+    		}
     		break;
 	    case BoardLocation:
 	    {
@@ -1409,7 +1395,24 @@ public void verifyGameRecord()
 	    	break;
         }} 
     }
-
+    private void sendRack(HitPoint hp)
+    {	JumbulayaId hitObject =  (JumbulayaId)hp.hitCode;
+		// drawing the rack prepares the move
+        String msg = (String)hp.hitObject;
+        // transmit only drop from the board, not shuffling of the rack
+        boolean transmit = (hitObject==JumbulayaId.Rack) 
+        		|| ((bb.whoseTurn==remoteViewer)&&(hitObject==JumbulayaId.RemoteRack));
+        if(msg.startsWith("remotedrop "))
+    	{
+    		PerformAndTransmit(G.replace(msg,"remotedrop","replace"),false,replayMode.Live);
+    	}
+        PerformAndTransmit(msg,transmit,replayMode.Live);
+       
+        if(msg.startsWith("rlift "))
+        	{
+        		PerformAndTransmit(msg.substring(1),false,replayMode.Live);
+        	}
+    }
     private void showWords(WordStack ws,HitPoint hp,String msg)
     {
     	StringBuilder words = new StringBuilder();
@@ -1474,7 +1477,7 @@ public void verifyGameRecord()
         	break;
         case LocalRack:
         case RemoteRack:
-        	// local rack never has a real moving object]
+        	sendRack(hp);
         	break;
         case Definition:
         	definitionCell = hitCell(hp);
@@ -1808,7 +1811,7 @@ public void verifyGameRecord()
 		if(bb.whoseTurn==index)
 			{
 			 GC.Text(gc, true, turnNotice,
-			Color.red,null,YourTurnMessage);
+			Color.red,null,s.get(YourTurnMessage));
 			}
     	}
     }

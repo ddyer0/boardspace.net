@@ -215,7 +215,7 @@ public class OrdoViewer extends CCanvas<OrdoCell,OrdoBoard> implements OrdoConst
        			0.3);	// preference for sticking with the designated layout
 
     	int chatHeight = selectChatHeight(height);
-        int logH = chatHeight==0 ? fh*15 : chatHeight;
+        int logH =  fh*15 ;
         int vcrW = fh*16;
         int vcrMW = fh*20;
         int stateH = fh*3;
@@ -761,6 +761,7 @@ private void playSounds(commonMove m)
 	    	PerformAndTransmit("Pick W "+cell.row+" "+chip.id.shortName);
 	    	break;
 	    case BoardLocation:
+	    	break;
 		default:
 			break;
         }

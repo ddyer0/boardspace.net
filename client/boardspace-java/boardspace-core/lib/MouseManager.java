@@ -521,14 +521,21 @@ public class MouseManager
 	            if(pt!=null) { pt.setButton(button); }
 	            if ((wasdragging || !amdragging) && (pt!=null))
 	            {	stopDragging(pt);
+		            if(canvas.hasMovingObject(pt)) 
+	        		{
+	        		 mouseMotion(x,y,MouseState.LAST_IS_IDLE); 
+	        		}
+	        		else 
+	        		{ mouseMotion(-1,-1,MouseState.LAST_IS_IDLE); 
+	        		}		          
+		            // this gives an idle "nowhere" hit, so touch screens
+		            // stop registering a mouse over.  
+	            	dragPoint = null;
 	            }
-	            dragPoint = null;
-	            //System.out.println("Up "+hp+"->"+highlightPoint);
-	            // this gives an idle "nowhere" hit, so touch screens
-	            // stop registering a mouse over.  On non touch screens
-	            // it is a general palette cleaner
-	            mouseMotion(-1,-1,MouseState.LAST_IS_IDLE);
-	            
+	            else
+	            { 	dragPoint = null;
+	            	mouseMotion(x,y,MouseState.LAST_IS_IDLE); 
+	            }
 	}
 
 

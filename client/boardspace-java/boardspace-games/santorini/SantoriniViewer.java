@@ -397,7 +397,7 @@ public class SantoriniViewer extends CCanvas<SantoriniCell,SantoriniBoard> imple
 			 GC.frameRect(gc,Color.black, l+lx-w/6,(int)(t+h*0.04),w/3,(int)(h*0.595));
 			}
 		}
-    	pl.setRotation(brect,gc, highlight, false);
+    	pl.setRotation(brect,gc, highlight, true);
 
 		return;
     }

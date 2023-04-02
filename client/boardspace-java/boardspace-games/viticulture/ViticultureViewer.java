@@ -6165,7 +6165,6 @@ private void drawPlayerBoard(Graphics gc,
           super.ViewerRun(wait);
 
           if(!reviewOnly 
-        	 && !G.offline()
         	 && !reviewMode() 
         	 && (mainBoard.getState()==ViticultureState.ChooseOptions)
         	 && (mainBoard.allPlayersReady())

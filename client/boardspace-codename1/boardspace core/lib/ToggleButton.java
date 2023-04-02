@@ -37,7 +37,7 @@ abstract public class ToggleButton extends Rectangle
 				&& (mouseOverNow ? !isOn : isOn)); }
 	
 	public void setTemporarilyOff(boolean v) { temporarilyOff = v;}
-   	public void draw(Graphics gc,HitPoint hp)
+   	public boolean draw(Graphics gc,HitPoint hp)
    	{	// the behavior of the hints box is choreographed so mouse-over
    		// turns on the hints while the mouse is present, click toggles
    		// it on and off
@@ -52,9 +52,11 @@ abstract public class ToggleButton extends Rectangle
    			{
    				mouseOverNow = true; 
    			}
+   			return true;
    		}
    		else { justTurnedOn = justTurnedOff=false; mouseOverNow = false; }
    		}
+   		return false;
    	}
    	public boolean isOn() { return isOn; }
    	public void setValue(boolean v) { isOn = v; }

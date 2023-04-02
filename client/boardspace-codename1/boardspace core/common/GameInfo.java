@@ -2199,9 +2199,8 @@ synchronized(allGames) {
 			"plateau.common.PlateauGameViewer","/plateau/english/rules.html","about_plateau.html",
 			"/plateau/english/plateau-video.html",false, BlackOverWhite));
 	 mm.hasHiddenInformation = true;
+	 mm.longMessage = "PlateauGameInfoMessage";
 	 // needs a compantion app for your played pieces and pool of available pieces
-	 mm.okForPassAndPlay = false;
-	 mm.okForPlaytable=false;
 
 	}
 	put(new GameInfo(691,ES.test,88,"MC",AncientGames,"Mancala","Mancala",
@@ -2296,7 +2295,8 @@ synchronized(allGames) {
 		}
 	}
 	public static String GameInfoStringPairs[][] =
-			{	{"MogulInfoMessage","side screens are needed to keep your stack of chips secret"},
+			{	{"PlateauGameInfoMessage","side screens are needed to conceal your rack"},
+				{"MogulInfoMessage","side screens are needed to keep your stack of chips secret"},
 				{"PortfolioInfoMessage","side screens are needed to keep your stock holdings secret"},
 				{"ContainerGameInfoMessage",
 				"Side screens are recommended, to show your cash and container valuations\n...and of course, to make secret bids"

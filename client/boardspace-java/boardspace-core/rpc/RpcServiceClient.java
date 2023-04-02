@@ -52,8 +52,8 @@ public class RpcServiceClient  extends exCanvas implements RpcInterface
 	public RpcServiceClient(ExtendedHashtable info, commonPanel p, LFrameProtocol f) {
 		panel = p;
 		frame = f;
-		setSize(panel.getWidth(),panel.getHeight());
 		init(info,frame);
+		setSize(panel.getWidth(),panel.getHeight());
 		panel.setCanvas(this);
 		setRpcIsActive(true);
 	}
@@ -109,6 +109,8 @@ public class RpcServiceClient  extends exCanvas implements RpcInterface
 			for(int servn = 0;servn<nServices;servn++)
 			{	
 				RpcChoice msg = choices.elementAt(servn);
+				if(msg!=null)
+				{
 				boolean attached = msg.active;
 				Rectangle r = new Rectangle(20,ypos,width-40,lineh);
 				GC.Text(gc, false, r, attached?Color.lightGray : Color.black,null,msg.name);
@@ -121,6 +123,7 @@ public class RpcServiceClient  extends exCanvas implements RpcInterface
 					GC.frameRect(gc, Color.red, r);
 				}
 				ypos+= lineh;
+				}
 				}
 			}
 		else if(active)

@@ -1551,7 +1551,7 @@ public class TammanyViewer extends CCanvas<TammanyCell,TammanyBoard> implements 
     	{
     		GC.setFont(gc, myfont);
     		GC.Text(gc, true, alertRect,
-    				Color.red,null,YourTurnMessage);
+    				Color.red,null,s.get(YourTurnMessage));
     	}
     }}
     

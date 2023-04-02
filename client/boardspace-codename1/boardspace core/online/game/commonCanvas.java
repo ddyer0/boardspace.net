@@ -465,23 +465,6 @@ public abstract class commonCanvas extends exCanvas
 			ExplainDone,
 			ExplainPass,
 			DrawNotAllowed,
-			DrawOutcome,
-			WonOutcome,
-			StackHeightMessage,
-			UndoAction,
-			SwapDescription,
-			YourTurnMessage,
-			ExplainDone,
-			ExplainPass,
-			DrawNotAllowed,DrawOutcome,
-			WonOutcome,
-			StackHeightMessage,
-			UndoAction,
-			SwapDescription,
-			YourTurnMessage,
-			ExplainDone,
-			ExplainPass,
-			DrawNotAllowed,
 			Reviewing,
 			ReverseViewExplanation,
 			CensoredGameRecordString,
@@ -756,7 +739,7 @@ public abstract class commonCanvas extends exCanvas
 	    /**
 	     * this is a {@link lib.Slider} this is a rectangle embedded in the VCR control cluster
 	     */
-	    private Slider animationSpeedRect = addSlider(".animationSpeed",AnimationSpeed,VcrId.sliderAnimSpeedButton,0.0,2.0,0.6);
+	    private Slider animationSpeedRect = addSlider(".animationSpeed",s.get(AnimationSpeed),VcrId.sliderAnimSpeedButton,0.0,2.0,0.6);
 	    
 	    private PopupManager vcrVarPopup = new PopupManager();
 	
@@ -1717,10 +1700,23 @@ public abstract class commonCanvas extends exCanvas
     	if((hidden==null)&&(remoteViewer<0))
     	{
     	// rotate the sprite to face the current player
+    	boolean drawn = false;
+    	for(commonPlayer p : players)
+    	{
+    		if(p.inPlayerBox(hp))
+    		{
+    			GC.setRotatedContext(gc,hp,p.displayRotation);
+    			drawSprite(gc,chip,left,top);
+    			GC.unsetRotatedContext(gc,hp);
+    			drawn = true;
+    		}
+    	}
+    	if(!drawn)
+    	{
     	GC.setRotatedContext(gc,hp,contextRotation);
     	drawSprite(gc,chip,left,top);
     	GC.unsetRotatedContext(gc,hp);
-    	}
+    	}}
     	else {
     		// if this is a hidden window, there should be no rotation
     		drawSprite(gc,chip,left,top);
@@ -1911,7 +1907,7 @@ public abstract class commonCanvas extends exCanvas
     
     public boolean hasMovingObject(HitPoint hp)
     {
-    	return(getMovingObject(hp)>=0);
+    	return(getOurMovingObject(hp)>=0);
     }
     /** get the board object associated with the game.
      * 

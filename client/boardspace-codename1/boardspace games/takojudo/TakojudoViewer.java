@@ -111,7 +111,7 @@ public class TakojudoViewer extends CCanvas<TakojudoCell,TakojudoBoard> implemen
     public Rectangle createPlayerGroup(int player,int x,int y,double rotation,int unitsize)
     {	commonPlayer pl = getPlayerOrTemp(player);
     	Rectangle chip = chipRects[player];
-    	int chipW = unitsize*4;
+    	int chipW = unitsize*3;
     	int doneW = plannedSeating() ? unitsize*6 : 0;
     	Rectangle done = doneRects[player];
     	G.SetRect(chip, x, y, chipW, chipW);
@@ -149,7 +149,7 @@ public class TakojudoViewer extends CCanvas<TakojudoCell,TakojudoBoard> implemen
     			margin,	//
     			0.75,	// 60% of space allocated to the board
     			1.0,	// 1.0:1 aspect ratio for the board
-    			fh*3,	// maximum cell size
+    			fh*2.5,	// maximum cell size
     			0.4		// preference for the designated layout, if any
     			);
     	

@@ -7,7 +7,6 @@ import com.codename1.ui.geom.Rectangle;
 import lib.CellId;
 import lib.ChatInterface;
 import lib.DefaultId;
-import online.common.OnlineConstants;
 
 import java.util.*;
 
@@ -18,9 +17,13 @@ import lib.G;
 import lib.GC;
 import lib.HitPoint;
 import lib.LFrameProtocol;
+import lib.StockArt;
+import lib.Toggle;
 import online.game.*;
 import online.game.sgf.*;
 import online.search.SimpleRobotProtocol;
+import rpc.RpcService;
+import vnc.VNCService;
 
 
 /*
@@ -80,7 +83,7 @@ the server will give up his escrowed master key to the opponent, which
 allows the robot to take over and reconstruct as above.
 
 */
-public class PlateauGameViewer extends commonCanvas implements PlateauConstants
+public class PlateauGameViewer extends commonCanvas implements PlateauConstants,GameLayoutClient
 {
     /**
 	 * 
@@ -113,6 +116,20 @@ public class PlateauGameViewer extends commonCanvas implements PlateauConstants
     private Rectangle whiteRackRect = addRect("whiteRackRect");
     private Rectangle CensoredRect = addRect("CensoredRect");
 
+    private Rectangle rackRects[] = { blackRackRect, whiteRackRect };
+    private Rectangle tradeRects[] = { blackTradeRect, whiteTradeRect };
+    private Rectangle exchangeRects[] = { blackExchangeRect, whiteExchangeRect };
+    private Rectangle barRects[] = { blackBarRect, whiteBarRect};
+    private Toggle eyeRects[] = { 
+    		new Toggle(
+	    		this,"eye0",
+				StockArt.NoEye,PlateauId.NoShow,HideRackMessage,
+				StockArt.Eye,PlateauId.Show,ShowRackMessage),
+	    	new Toggle(
+    	    		this,"eye1",
+    				StockArt.NoEye,PlateauId.NoShow,HideRackMessage,
+    				StockArt.Eye,PlateauId.Show,ShowRackMessage),
+    };
     
     private Rectangle repRect = addRect("repRect");
     
@@ -159,8 +176,10 @@ public class PlateauGameViewer extends commonCanvas implements PlateauConstants
         {
             showBoth = myFrame.addOption("Show Both Racks", false,deferredEvents);
         }
+        MouseColors = new Color[] {Color.black,Color.white};
+        MouseDotColors = new Color[] { Color.white,Color.black};
 
-        b = new PlateauBoard(info.getString(OnlineConstants.GAMETYPE, "Plateau"));
+        b = new PlateauBoard(info.getString(GAMETYPE, "Plateau"));
         // believed to be difficult 5/2022
         //useDirectDrawing(); // not tested yet
         doInit(false);
@@ -181,179 +200,127 @@ public class PlateauGameViewer extends commonCanvas implements PlateauConstants
         	}
     }
 
-    /**
-     * calculate a metric for one of three layouts, "normal" "wide" or "tall",
-     * which should normally correspond to the area devoted to the actual board.
-     * these don't have to be different, but devices with very rectangular
-     * aspect ratios make "wide" and "tall" important.  
-     * @param width
-     * @param height
-     * @param wideMode
-     * @param tallMode
-     * @return a metric corresponding to board size
-     */
-    public int setLocalBoundsSize(int width,int height,boolean wideMode,boolean tallMode)
-    {	
-        int chatHeight = selectChatHeight(height);
-        boolean noChat = chatHeight==0;
-    	double lncols = (b.ncols * 8) +(wideMode ? 67 : (tallMode ? 34 : 37)); // 
-        double lnrows = (b.nrows * 8) +17 + (tallMode ? 17 : wideMode ? -1 : noChat ? 10 : 0);
-        double cellh = (height-(wideMode ? 0 : chatHeight)) / lnrows;
-        double cellw = width / lncols;
-        CELLSIZE = (int)(4*Math.min(cellw, cellh)); //cell size
-        return(CELLSIZE);
-    }
-
-    public void setLocalBoundsWT(int x, int y, int width, int height,boolean wideMode,boolean tallMode)
+    boolean square = false;
+    public Rectangle createPlayerGroup(int player,int x,int y,double rotation,int unitsize)
     {   
-        int chatHeight = selectChatHeight(height);
-        boolean noChat = chatHeight==0;
-        G.SetRect(fullRect,x,y,width, height);
-        int C2 = CELLSIZE/2;
-        int C4 = CELLSIZE/4;
-        int minChatHeight = CELLSIZE*3;
-        int boardX = C2;
-        int boardY = CELLSIZE + (wideMode ? 0 : chatHeight);
-        int boardW = CELLSIZE * b.ncols * 2;
-        int boardH = CELLSIZE * b.nrows * 2;
-        int boardRight = boardX+boardW;
-        int boardBottom = boardY+boardH;
-        G.SetRect(boardRect, 
-        		boardX, 
-        		boardY,
-        		boardW,boardH);
-        b.lineStrokeWidth = boardW/400.0;
-        int boardB = boardBottom + C2;
-        int auxY = tallMode ? boardY + CELLSIZE*5 : boardB;
-        int auxX = tallMode ? boardRight+C2 : boardX;
-        int doneW = CELLSIZE*2;
-        int vcrW = CELLSIZE*4;
-        G.SetRect(doneRect, 
-        		tallMode ? auxX : auxX+vcrW+C2,
-        		auxY,
-        		doneW, 3*CELLSIZE/4 );
-
-        
-        SetupVcrRects(
-        		tallMode ? auxX+doneW+C2 : G.Left(boardRect), auxY, vcrW, vcrW/2);
-
-        G.SetRect(movingStackRect, boardRight-CELLSIZE, boardBottom-CELLSIZE, CELLSIZE * 2, CELLSIZE * 2);
-       
-        G.SetRect(progressRect, 2*CELLSIZE,boardB-C2, 6 * CELLSIZE, C2);
-        
-        G.SetRect(repRect, 3*CELLSIZE, boardBottom-C2,CELLSIZE*3,C2);
- 
-        
-        // "edit" rectangle
-        G.AlignLeft(editRect,G.Bottom( doneRect) + C2,doneRect);
-
-
-        {
-            commonPlayer pl0 =getPlayerOrTemp(0);
-            commonPlayer pl1 = getPlayerOrTemp(1);
-            Rectangle p0time = pl0.timeRect;
-            Rectangle p1time = pl1.timeRect;
-            Rectangle p0anim = pl0.animRect;
-            Rectangle p1anim = pl1.animRect;
-            Rectangle startBlackRect = pl0.nameRect;
-            Rectangle startWhiteRect = pl1.nameRect;
-            Rectangle blackPicRect = pl0.picRect;
-            Rectangle whitePicRect = pl1.picRect;  
+            commonPlayer pl =getPlayerOrTemp(player);
+            Rectangle rack = rackRects[player];
+            Rectangle exchange = exchangeRects[player];
+            Rectangle trade = tradeRects[player];
+            Rectangle bar = barRects[player];
+            Rectangle box = pl.createSquarePictureGroup(x,y,unitsize);
+            Rectangle done = doneRects[player];
+            Rectangle eye = eyeRects[player];
+            int donew = plannedSeating() ? unitsize*4 : 0;
+            int rbox = G.Right(box)+unitsize/3;
+            int bbox = G.Bottom(box);
+            int boxh = G.Height(box);
+            int bw = unitsize*14;
+            int bh = boxh/2;
+            G.SetRect(bar,rbox,y+unitsize/4,bw,bh);
+            G.SetRect(exchange,rbox,y+bh+unitsize/4,bw,bh/2);
+            G.SetRect(trade,rbox,y+bh+bh/2+unitsize/4,bw,bh);
+            G.SetRect(done,x,bbox,donew,donew/2);
             
-            int bbH = CELLSIZE;
-            int playerX = tallMode ? boardX : boardRight+C2;
-            int playerY = tallMode ? boardBottom+CELLSIZE : boardY-C2;
-            // start player1 rectangle
-            G.SetRect(startBlackRect,playerX,playerY,CELLSIZE*5/2,bbH / 2);
-            
- 
-            
-            // time display for player1
-            G.SetRect(p0time, G.Right(startBlackRect),G.Top( startBlackRect), CELLSIZE * 2,G.Height( startBlackRect));
-
-            G.SetRect(p0anim, G.Right(p0time),G.Top( p0time),G.Height( p0time),G.Height( p0time));
- 
-            // player portrait
-            G.SetRect(blackPicRect, G.Right(p0anim)+CELLSIZE/4,G.Top(startBlackRect), CELLSIZE * 3,CELLSIZE*3);
- 
-            //player1 stacks
-            int rackx = playerX;
-
-            G.SetRect(blackBarRect, rackx,G.Bottom(startBlackRect) + (CELLSIZE / 3), CELLSIZE * 5, bbH);          
-
-            //player1 stacks
-            G.SetRect(blackTradeRect, rackx,G.Bottom( blackBarRect) + (C4),G.Width(blackBarRect), CELLSIZE);
-
-            //player1 exchange area text
-            int beT = G.Bottom( blackBarRect);
-            G.SetRect(blackExchangeRect, rackx,beT,
-            		G.Width( blackTradeRect),G.Top(blackTradeRect) - beT);
-
-            int rackw = Math.max(CELLSIZE * 5, //as wide as the other bars
-                    Math.min(G.Right(blackPicRect)-rackx,
-                        (width - rackx - C2)));
-
-            int rackx2 = G.Right(blackPicRect)+C2;
-            int rackw2 = width-rackx2-C2;
-            G.SetRect(blackRackRect, 
-            		tallMode ? rackx2 : rackx,
-            		tallMode ? G.Top(blackBarRect)+C4 : G.Bottom(blackTradeRect) + (C4), 
-            		tallMode ? rackw2 : rackw, (CELLSIZE * 2));
-          
-            G.AlignLeft(whiteRackRect,G.Bottom(blackRackRect) + (C4),blackRackRect);
-        
-            //player2 trade
-            G.SetRect(whiteTradeRect,
-            		rackx,
-            		(tallMode ? G.Bottom(blackTradeRect) : G.Bottom( whiteRackRect)) + (C4),
-            		CELLSIZE * 5,CELLSIZE);
-
-            //player2 captives
-            G.SetRect(whiteBarRect, rackx,G.Bottom( whiteTradeRect) +C4,CELLSIZE * 5, CELLSIZE);
-
-            int weY = G.Bottom(whiteTradeRect);
-            G.SetRect(whiteExchangeRect, rackx,weY,G.Width( whiteTradeRect),G.Top(whiteBarRect) - weY);
-            // start player2 rectangle
-            G.SetRect(startWhiteRect,G.Left(startBlackRect),G.Bottom(whiteBarRect) + C4,
-            		G.Width(startBlackRect),G.Height(startBlackRect));
-
-
-            // time display for player2
-            G.SetRect(p1time,G.Left( p0time),G.Top(startWhiteRect),CELLSIZE * 2,G.Height( startWhiteRect));
-
-            G.SetRect(p1anim, G.Right(p1time),G.Top( p1time),G.Height( p1time),G.Height( p1time));
-            int cenY = G.Bottom(blackTradeRect);
-            G.SetRect(CensoredRect, boardRight,cenY, rackw + ((rackx - boardRight) * 2),G.Top( whiteTradeRect) - cenY);
-
-            G.SetRect(whitePicRect,G.Left( blackPicRect),G.Top( whiteTradeRect),G.Width( blackPicRect),G.Height( blackPicRect));
-     
-            boolean logBottom = ((tallMode&!noChat)|(!wideMode&noChat))&((height-G.Bottom(whitePicRect))>minChatHeight);
-            int chatX = wideMode ? G.Right(blackPicRect)+C2 : x+C2;
-            int chatW = wideMode|logBottom ? width-chatX-C2
-            		: width-CELLSIZE*6 ;
-            int logX = wideMode|logBottom ? chatX : noChat ? auxX : chatX+chatW+C4;
-            int logY = logBottom ?  G.Bottom(whitePicRect)+C2 : y;
-            int logH = logBottom 
-            			? height-G.Bottom(whitePicRect)-CELLSIZE 
-            			:noChat ? tallMode ? auxY-logY-C2 : minChatHeight : chatHeight;
-            int chatY = wideMode ? y+logH+C2 : y;
-            int chatH = wideMode&!noChat ? height-chatY-C2 : chatHeight;
-            int logW = Math.min(width/2,width-logX-C2);
-            G.SetRect(logRect, logX,logY,logW, logH);
-            G.SetRect(chatRect, chatX,chatY,chatW ,chatH);
-
+            if(square)
+            {
+            G.SetRect(rack,x+unitsize/3,Math.max(G.Bottom(done),G.Bottom(trade))+unitsize/3,rbox+bw-unitsize/3-x,boxh);
             }
-
+            else
+            {
+            	G.SetRect(rack,G.Right(trade)+unitsize/3,y+unitsize*3/4,rbox+bw-unitsize/3-x,boxh);    	
+            }
+            G.SetRect(eye,G.Right(rack)-unitsize*2,G.Top(rack),unitsize*3/2,unitsize*3/2);
+      
+            G.union(box,rack,done,trade,exchange,bar);
+            
+            pl.displayRotation = rotation;
+            return box;
+    }
+    
+    public void setLocalBounds(int x,int y,int width,int height)
+    {	setLocalBoundsV(x,y,width,height,new double[] {-1,1});
+    }
+    public double setLocalBoundsA(int x,int y,int width,int height,double a)
+    {	square = a>0;
+     	G.SetRect(fullRect, x, y, width, height);
+    	GameLayoutManager layout = selectedLayout;
+    	int nPlayers = nPlayers();
+        int chatHeight = selectChatHeight(height);
+       	// ground the size of chat and logs in the font, which is already selected
+    	// to be appropriate to the window size
+    	int fh = standardFontSize();
+    	int vcrW = fh*15;
+    	int minLogW = fh*30;	
+       	int minChatW = fh*35;	
+        int minLogH = fh*10;	
+        int margin = fh/2;
+        int buttonW = fh*8;
+        // this does the layout of the player boxes, and leaves
+    	// a central hole for the board.
+    	//double bestPercent = 
+    	layout.selectLayout(this, nPlayers, width, height,
+    			margin,	
+    			0.75,	// 60% of space allocated to the board
+    			1.0,	// aspect ratio for the board
+    			fh*2,	// minimum cell size
+    			fh*4,	// maximum cell size
+    			0.4		// preference for the designated layout, if any
+    			);
+    	
+        // place the chat and log automatically, preferring to place
+    	// them together and not encroaching on the main rectangle.
+    	layout.placeTheChatAndLog(chatRect, minChatW, chatHeight,minChatW*2,3*chatHeight/2,logRect,
+    			minLogW, minLogH, minLogW*3/2, minLogH*3/2);
+    	// games which have a private "done" button for each player don't need a public
+    	// done button, and also we can make the edit/undo button square so it can rotate
+    	// to face the player.
+       	layout.placeDoneEditRep(buttonW,buttonW*4/3,doneRect,editRect,repRect);
+    	layout.placeTheVcr(this,vcrW,vcrW*3/2);
  
-        // message rectangle
-        int stateX = C2;
-        int stateY = boardY-3*CELLSIZE/4;
-        int stateH = C2;
-        G.placeRow(stateX,stateY,boardW, stateH,stateRect,noChatRect);
-
+    	Rectangle main = layout.getMainRectangle();
+    	int mainX = G.Left(main);
+    	int mainY = G.Top(main);
+    	int mainW = G.Width(main);
+    	int mainH = G.Height(main);
+    	
+    	// There are two classes of boards that should be rotated. For boards with a strong
+    	// "my side" orientation, such as chess, use seatingFaceToFaceRotated() as
+    	// the test.  For boards that are noticably rectangular, such as Push Fight,
+    	// use mainW<mainH
+        int nrows = b.nrows;
+        int ncols = b.ncols;
+  	
+    	// calculate a suitable cell size for the board
+    	double cs = Math.min((double)mainW/ncols,(double)mainH/nrows);
+    	CELLSIZE = (int)cs;
+    	//G.print("cell "+cs0+" "+cs+" "+bestPercent);
+    	// center the board in the remaining space
+    	int boardW = (int)(ncols*CELLSIZE);
+    	int boardH = (int)(nrows*CELLSIZE);
+    	int extraW = Math.max(0, (mainW-boardW)/2);
+    	int extraH = Math.max(0, (mainH-boardH)/2);
+    	int boardX = mainX+extraW;
+    	int boardY = mainY+extraH;
+        int boardBottom = boardY+boardH;
+       	layout.returnFromMain(extraW,extraH);
+    	//
+    	// state and top ornaments snug to the top of the board.  Depending
+    	// on the rendering, it can occupy the same area or must be offset upwards
+    	//
+        int stateY = boardY;
+        int stateX = boardX;
+        int stateH = fh*3;
+        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,noChatRect);
+    	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
+    	
+    	// goal and bottom ornaments, depending on the rendering can share
+    	// the rectangle or can be offset downward.  Remember that the grid
+    	// can intrude too.
+    	G.SetRect(goalRect, boardX, boardBottom-stateH,boardW,stateH);       
+        setProgressRect(progressRect,goalRect);
         positionTheChat(chatRect,Color.white,Color.white);
- 
-        generalRefresh();
+        return boardW*boardH;
     }
 
     // pointing precision of 1/10 of a cell
@@ -375,7 +342,16 @@ public class PlateauGameViewer extends commonCanvas implements PlateauConstants
         pstack ps = new pstack(b, UNKNOWN_ORIGIN);
         int ystep = G.Height(boardRect) / ((b.nrows * 2) + 2); // 1/2 y square size
         int xstep = G.Width(boardRect) / ((b.ncols * 2) + 2); // 1/2 x square size
-
+        
+        if(!G.pointInRect(xp,yp,boardRect))
+        {
+        	pstack po = remoteViewer>=0 ? b.getPlayerRack(remoteViewer)[0] : b.takeOffStack();
+        if(po!=null && po.drawnSize>0)
+        {
+        	xstep = ystep = po.drawnSize*2/3;
+        }
+        }
+        
         while (height-- > 0)
         {
             new piece(stackcol, color).addToStack(ps);
@@ -389,15 +365,37 @@ public class PlateauGameViewer extends commonCanvas implements PlateauConstants
     }
 
 
-    public int concealedmode(int idx)
+    public int concealedmode(PlateauBoard bd,int idx)
     {
         return ((showBothRacks 
         		|| mutable_game_record 
-         		|| (!getActivePlayer().spectator && (getActivePlayer().boardIndex == idx)))
+        		|| G.offline() 
+        			? eyeRects[idx].isOn()
+        			: (!getActivePlayer().spectator && (getActivePlayer().boardIndex == idx)))
         		? idx 
-        		: (-1));
+        		: -1);
     }
 
+    public void drawPlayerStuff(Graphics gc,int pl,PlateauBoard bd,HitPoint ourTurnSelect,HitPoint any)
+    {	
+        bd.DrawTrade(gc, tradeRects[pl], FIRST_PLAYER_INDEX, ourTurnSelect,
+                s.get(PlacePrisonersMessage));
+
+        bd.DrawBar(gc, barRects[pl], FIRST_PLAYER_INDEX, ourTurnSelect,
+                s.get(PoolMessage[pl]));
+        bd.DrawRack(gc, rackRects[pl], concealedmode(bd,pl),
+            		ourTurnSelect);
+        bd.DrawExchangeSummary(gc, FIRST_PLAYER_INDEX, exchangeRects[pl]);
+        
+        if(G.offline()) 
+        	{ 
+        	if(eyeRects[pl].draw(gc,any))
+        		{
+        		any.hit_index = pl;
+        		}
+        	}
+    }
+    
     //
     // draw the board and balls on it.  If gc!=null then actually 
     // draw, otherwise just notice if the highlight should be on
@@ -422,40 +420,45 @@ public class PlateauGameViewer extends commonCanvas implements PlateauConstants
   
         bd.DrawBoard(gc, boardRect, ourTurnSelect, use_grid);
 
-        bd.DrawTrade(gc, blackTradeRect, FIRST_PLAYER_INDEX, ourTurnSelect,
-            s.get(PlacePrisonersMessage));
-        bd.DrawTrade(gc, whiteTradeRect, SECOND_PLAYER_INDEX, ourTurnSelect,
-            s.get(PlacePrisonersMessage));
-
-        bd.DrawBar(gc, blackBarRect, FIRST_PLAYER_INDEX, ourTurnSelect,
-            s.get(BlackPoolMessage));
-        bd.DrawBar(gc, whiteBarRect, SECOND_PLAYER_INDEX, ourTurnSelect,
-            s.get(WhitePoolMessage));
-        bd.DrawRack(gc, blackRackRect, concealedmode(FIRST_PLAYER_INDEX),
-        		ourTurnSelect);
-        bd.DrawRack(gc, whiteRackRect, concealedmode(SECOND_PLAYER_INDEX),
-        		ourTurnSelect);
-        DrawRepRect(gc,b.Digest(),repRect);
-
-        // if there are points on the bar
-        if (gc != null)
-        {
-            bd.DrawExchangeSummary(gc, FIRST_PLAYER_INDEX, blackExchangeRect);
-            bd.DrawExchangeSummary(gc, SECOND_PLAYER_INDEX, whiteExchangeRect);
-        }
-        GC.setFont(gc,standardBoldFont());
-        
         drawPlayerStuff(gc,(vstate==PlateauState.PUZZLE_STATE),nonDragSelect,
  	   			HighlightColor, boardBackgroundColor);
+
+        boolean planned = plannedSeating();
+        int whoseTurn = bd.whoseTurn;
+        for(int player=0;player<bd.players_in_game;player++)
+       	{ commonPlayer pl = getPlayerOrTemp(player);
+       	  pl.setRotatedContext(gc, selectPos,false);
+    	  drawPlayerStuff(gc, player, bd, ourTurnSelect,selectPos);
+
+    	  if(planned && whoseTurn==player)
+        {
+    		   handleDoneButton(gc,doneRects[player],(bd.DoneState() ? buttonSelect : null), 
+   					HighlightColor, boardBackgroundColor);
+        }
+       	   pl.setRotatedContext(gc, selectPos,true);
+       	}
+
+  
+        DrawRepRect(gc,b.Digest(),repRect);
+
+        GC.setFont(gc,standardBoldFont());
+        
 
         // draw the board control buttons 
         if (vstate != PlateauState.PUZZLE_STATE)
         {
+			if(!planned) {
 			handleDoneButton(gc,doneRect,(bd.DoneState() ? buttonSelect : null), 
 					HighlightColor, boardBackgroundColor);
+			}
  
 			handleEditButton(gc,editRect,buttonSelect,selectPos, HighlightColor, boardBackgroundColor);
             }
+        
+        // draw player card racks on hidden boards.  Draw here first so the animations will target
+        // the main screen location which is drawn next.
+        drawHiddenWindows(gc, selectPos);	
+
 		commonPlayer pl = getPlayerOrTemp(b.whoseTurn);
 		double messageRotation = pl.messageRotation();
 
@@ -464,8 +467,10 @@ public class PlateauGameViewer extends commonCanvas implements PlateauConstants
         				vstate!=PlateauState.PUZZLE_STATE,
         				bd.whoseTurn,
         				stateRect);
+    	GC.setFont(gc,standardPlainFont());
+
         goalAndProgressMessage(gc,nonDragSelect,
-				s.get(GoalMessage),progressRect, progressRect);
+				s.get(GoalMessage),progressRect,goalRect);
 
         gameLog.redrawGameLog(gc, nonDragSelect, logRect, boardBackgroundColor);
         
@@ -760,7 +765,6 @@ public class PlateauGameViewer extends commonCanvas implements PlateauConstants
     boolean nostomp = false;
     public void StopDragging(HitPoint hp)
     {
-        
         CellId id = hp.hitCode;
         if(id==DefaultId.HitNoWhere) { leaveLockedReviewMode(); }
 
@@ -826,6 +830,19 @@ public class PlateauGameViewer extends commonCanvas implements PlateauConstants
         switch(hitObject)
         {
         default: throw G.Error("Hit Unknown: %s", hitObject);
+        case Show:
+        	{
+        	int pl = hp.hit_index;
+        	eyeRects[pl].setValue(true);
+        	}
+         	break;
+        case NoShow:
+	    	{
+	    	int pl = hp.hit_index;
+	    	eyeRects[pl].setValue(false);
+	    	}
+    	break;
+
         case HitAChip:
 	        {
             piece which = (piece) hp.hitObject;
@@ -974,4 +991,72 @@ public class PlateauGameViewer extends commonCanvas implements PlateauConstants
             setComment(comments);
         }
     }
+    
+    public String nameHiddenWindow()
+    {	return ServiceName;
+    }
+    public void adjustPlayers(int n)
+    {
+        int HiddenViewWidth = 800;
+        int HiddenViewHeight = 400;
+    	super.adjustPlayers(n);
+        if(RpcService.isRpcServer() || VNCService.isVNCServer())
+        {
+        createHiddenWindows(n,HiddenViewWidth,HiddenViewHeight);
+        }
+    }
+ boolean once = true;
+    /*
+     * @see online.game.commonCanvas#drawHiddenWindow(Graphics, lib.HitPoint, online.game.HiddenGameWindow)
+   */
+  public void drawHiddenWindow(Graphics gc,HitPoint hp,int index,Rectangle bounds)
+  { 
+	  GC.fillRect(gc,Color.lightGray,bounds);
+
+	  if(!reviewMode()) 
+	  	{ 	// draw pstack wants the dragging flag to be set
+	  		hp.dragging |= hasMovingObject(hp); 
+	  	}
+	  if(once)
+	  {	once = false;
+	  	eyeRects[0].setValue(true);
+	  	eyeRects[1].setValue(true);
+	  }
+	  
+	  int t = G.Top(bounds);
+	  int w = G.Width(bounds);
+	  int h = G.Height(bounds);
+	  int margin = w/20;
+	  int rackL = G.Left(bounds)+margin;
+	  int rackW = w-margin*2;
+	  int rackH = Math.min(w/6,h/2);
+	  int rackT = G.centerY(bounds)-rackH/2;
+	  int eyeSize = rackH/4;
+	  int fh = standardFontSize();
+
+	  Toggle eye = eyeRects[index];
+	  Rectangle doner = new Rectangle(rackL,t,rackW,fh*8);
+	  Rectangle rack = new Rectangle(rackL,rackT,rackW,rackH);
+	  Rectangle state = new Rectangle(rackL,rackT-fh*4,rackW,fh*4);
+	  PlateauState vstate = b.getState();
+	  GC.setFont(gc,largeBoldFont());
+	  
+	  if(b.whoseTurn==index)
+  		{	GC.setFont(gc,largeBoldFont());
+			GC.Text(gc, true, doner,	Color.red,null,s.get(YourTurnMessage));
+  		}	  
+      standardGameMessage(gc,0,
+      		vstate==PlateauState.GAMEOVER_STATE?gameOverMessage():s.get(vstate.getDescription()),
+      				vstate!=PlateauState.PUZZLE_STATE,
+      				b.whoseTurn,
+      				state);
+
+	  G.SetRect(eye,rackL+rackW-eyeSize,rackT,eyeSize,eyeSize);
+	  b.DrawRack(gc, rack, concealedmode(b,index),hp);
+	  if(eye.draw(gc,hp))
+	  {
+		  hp.hit_index = index;
+	  }
+	  
+  }
 }

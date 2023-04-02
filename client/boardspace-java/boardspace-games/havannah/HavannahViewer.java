@@ -280,7 +280,7 @@ public class HavannahViewer extends CCanvas<HavannahCell,HavannahBoard> implemen
     			margin,	
     			0.6,	// 80% of space allocated to the board
     			aspect,	// aspect ratio for the board
-    			fh*3,
+    			fh*3.5,
     			fh*4,	// maximum cell size
     			0.4		// preference for the designated layout, if any
     			);
@@ -365,18 +365,21 @@ public class HavannahViewer extends CCanvas<HavannahCell,HavannahBoard> implemen
     private void DrawChipPool(Graphics gc, Rectangle r, int player, HitPoint highlight,HavannahBoard gb)
     {
         boolean canhit = gb.LegalToHitChips(player) && G.pointInRect(highlight, r);
+        int w = G.Width(r);
+        int h = G.Height(r) ;
+        int cs = Math.min(CELLSIZE,w*2/3);
         if (canhit)
         {
             highlight.hitCode = gb.getPlayerColor(player);
             highlight.arrow = (gb.pickedObject!=null)?StockArt.DownArrow:StockArt.UpArrow;
-            highlight.awidth = CELLSIZE;
+            highlight.awidth = cs;
         }
 
         if (gc != null)
         { // draw a random pile of chips.  It's just for effect
         	HavannahCell c = bb.getPlayerCell(player);
-            int spacex = Math.max(1, G.Width(r) - CELLSIZE);
-            int spacey = Math.max(1, G.Height(r) - CELLSIZE);
+            int spacex = Math.max(1, w - cs);
+            int spacey = Math.max(1, h - cs);
             Random rand = new Random(4321 + player); // consistant randoms, different for black and white 
 
             if (canhit)
@@ -390,7 +393,7 @@ public class HavannahViewer extends CCanvas<HavannahCell,HavannahBoard> implemen
             while (nc-- > 0)
             {	int rx = Random.nextInt(rand, spacex);
                 int ry = Random.nextInt(rand, spacey);
-                c.drawChip(gc,this,chip.getAltDisplayChip(rx+ry),(int)CELLSIZE,G.Left(r)+CELLSIZE/2+rx,G.Top(r)+CELLSIZE/2+ry,null);
+                c.drawChip(gc,this,chip.getAltDisplayChip(rx+ry),(int)cs,G.Left(r)+cs/2+rx,G.Top(r)+cs/2+ry,null);
              }
         }
     }

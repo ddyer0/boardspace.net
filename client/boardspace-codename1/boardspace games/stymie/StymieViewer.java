@@ -227,7 +227,7 @@ public class StymieViewer extends CCanvas<StymieCell,StymieBoard> implements Sty
     {	commonPlayer pl = getPlayerOrTemp(player);
     	Rectangle chip = chipRects[player];
     	Rectangle cap = capRects[player];
-    	int bs = unitsize*4;
+    	int bs = unitsize*3;
     	Rectangle box =  pl.createRectangularPictureGroup(x+bs,y,2*unitsize/3);
     	G.SetRect(chip,	x,	y,	bs,	bs);
     	G.SetRect(cap, x+bs, G.Bottom(box),bs+unitsize,4*unitsize/3);

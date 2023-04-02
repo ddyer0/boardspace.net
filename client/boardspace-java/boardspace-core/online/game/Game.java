@@ -4405,8 +4405,8 @@ public class Game extends commonPanel implements PlayConstants,DeferredEventHand
         int newlen = fixedHist.length();
         int len = Math.min(newlen,recordedLen);
         while((offset<len) && (fixedHist.charAt(offset) == recordedHistory.charAt(offset))) { offset++; }
-    	int sum1 = myNetConn.serverHashChecksum(recordedHistory,offset);
-    	int offset2 = myNetConn.serverHashChecksumOffset();
+    	int sum1 = ConnectionManager.serverHashChecksum(myNetConn,recordedHistory,offset);
+    	int offset2 = ConnectionManager.serverHashChecksumOffset(myNetConn);
     	// this is the crucial point where the UIDString is registered
     	// with the server.  After the initial registration, "*" is used
     	// to refer to the game, so spectators and former spectators don't

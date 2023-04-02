@@ -223,7 +223,8 @@ public class MagnetViewer extends CCanvas<MagnetCell,MagnetBoard> implements Mag
 				margin,	
 				0.75,	// 60% of space allocated to the board
 				1.0,	// aspect ratio for the board
-				fh*3,	// maximum cell size
+				fh*2.5,
+				fh*2.5,	// maximum cell size
 				0.7		// preference for the designated layout, if any
 				);
 		
@@ -258,9 +259,9 @@ public class MagnetViewer extends CCanvas<MagnetCell,MagnetBoard> implements Mag
 		int boardW = (int)(ncols*CELLSIZE);
 		int boardH = (int)(nrows*CELLSIZE);
 		int extraW = Math.max(0, (mainW-boardW)/2);
-		int extraH = Math.max(0, (mainH-boardH)/2);
+		int extraH = Math.max(0, (mainH-boardH-stateH*2)/2);
 		int boardX = mainX+extraW;
-		int boardY = mainY+extraH;
+		int boardY = mainY+extraH+stateH;
 		int boardBottom = boardY+boardH;
 	   	layout.returnFromMain(extraW,extraH);
 		//

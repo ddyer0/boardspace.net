@@ -78,16 +78,16 @@ public class NetPacketConn extends CommonNetConn<MixedPacket> implements Runnabl
       }
       
       // let TCP do the work, it's reliable (it says here)
-      Plog.log.addLog("tcp write ",outBuf," 0 ",outidx);
+      //Plog.log.addLog("tcp write ",outBuf," 0 ",outidx);
       os.write(outBuf,0,outidx);
       if(msgLen>0) 
       	{ 
-          Plog.log.addLog("tcp write msg ",theBuff," 0 ",msgLen);
+          //Plog.log.addLog("tcp write msg ",theBuff," 0 ",msgLen);
     	  os.write(theBuff,0,msgLen); 
       	}
       if(payLen>0) 
       	{
-    	  Plog.log.addLog("tcp write payload ",payload," 0 ",payLen);
+    	  //Plog.log.addLog("tcp write payload ",payload," 0 ",payLen);
       	 
     	  os.write(payload,0,payLen);
       	}

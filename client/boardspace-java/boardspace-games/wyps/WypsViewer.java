@@ -1182,22 +1182,7 @@ public void setLetterColor(Graphics gc,WypsBoard gb,WypsCell cell)
 	    default: break;
 	       case Rack:
 	       case LocalRack:
-	    		{
-	    		// drawing the rack prepares the move
-	            String msg = (String)hp.hitObject;
-	            // transmit only drop from the board, not shuffling of the rack
-	            boolean transmit = (hitObject==WypsId.Rack);
-	            if(msg.startsWith("remotedrop "))
-	        	{
-	        		PerformAndTransmit(G.replace(msg,"remotedrop","replace"),false,replayMode.Live);
-	        	}
-	            PerformAndTransmit(msg,transmit,replayMode.Live);
-	           
-	            if(msg.startsWith("rlift "))
-	            	{
-	            		PerformAndTransmit(msg.substring(1),false,replayMode.Live);
-	            	}
-	        	}
+	    		sendRack(hp);
 	    		break;
    
 	    case BoardLocation:
@@ -1209,7 +1194,24 @@ public void setLetterColor(Graphics gc,WypsBoard gb,WypsCell cell)
         } 
         }
     }
-
+    private void sendRack(HitPoint hp)
+    {
+		// drawing the rack prepares the move
+    	WypsId hitObject =  (WypsId)hp.hitCode;
+    	String msg = (String)hp.hitObject;
+        // transmit only drop from the board, not shuffling of the rack
+        boolean transmit = (hitObject==WypsId.Rack);
+        if(msg.startsWith("remotedrop "))
+    	{
+    		PerformAndTransmit(G.replace(msg,"remotedrop","replace"),false,replayMode.Live);
+    	}
+        PerformAndTransmit(msg,transmit,replayMode.Live);
+       
+        if(msg.startsWith("rlift "))
+        	{
+        		PerformAndTransmit(msg.substring(1),false,replayMode.Live);
+        	}
+     }
 	/** 
 	 * this is called on "mouse up".  We may have been just clicking
 	 * on something, or we may have just finished a click-drag-release.
@@ -1271,6 +1273,7 @@ public void setLetterColor(Graphics gc,WypsBoard gb,WypsCell cell)
         	}
         	break;
         case LocalRack:
+        	sendRack(hp);
         	break;
         case Rack:
 			{

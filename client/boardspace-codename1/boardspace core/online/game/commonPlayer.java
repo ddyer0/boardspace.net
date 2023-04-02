@@ -185,6 +185,15 @@ public class commonPlayer implements Opcodes,lib.CompareTo<commonPlayer>
     		else { GC.setRotatedContext(gc,playerBox,hp,displayRotation); }
     	}
     }
+    /** 
+     * rotate an arbitrary rectangle to display in the player's preferred
+     * rotation.  Call again with reverse=true to undo the rotation.
+     * 
+     * @param r		rectangle to display rotated, which is rotated around its center
+     * @param gc	the graphics to draw with
+     * @param hp	the hitpoint to register touches
+     * @param reverse true to reverse a previously set rotation
+     */
     public void setRotation(Rectangle r,Graphics gc,HitPoint hp,boolean reverse)
     {
     	if(displayRotation!=0)

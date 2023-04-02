@@ -126,7 +126,7 @@ public class TriadViewer extends CCanvas<TriadCell,TriadBoard> implements TriadC
     			margin,	
     			0.75,	// % of space allocated to the board
     			1.0,	// 1.0:1 aspect ratio for the board
-    			fh*3,	// maximum cell size based on font size
+    			fh*2.5,	// maximum cell size based on font size
     			0.5		// preference for the designated layout, if any
     			);
     	

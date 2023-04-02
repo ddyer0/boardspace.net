@@ -223,7 +223,9 @@ public abstract class SystemGraphics
 	  			java.awt.Image sim = im.getImage();
 	  			if(G.Advise(sim!=null,"should be an image %s",im))
 	  			{
+	  			Log.addLog("actual drawing "+this+" "+w+"x"+h);
 	    		v = graphics.drawImage(sim,x, y, w, h,im);
+	    		Log.addLog("finished actual drawing");
 	    		recordDraw(x,y,w,h);
 	  			}
 	    	}    	

@@ -129,7 +129,7 @@ public class VolcanoGameViewer extends CCanvas<VolcanoCell,VolcanoBoard> impleme
     	if(flatten)
     	{
         	G.SetRect(done, x, G.Bottom(box)+unitsize/3, doneW,doneW/2);
-        	G.SetRect(chip, G.Right(box),y,boxW,unitsize*6);
+        	G.SetRect(chip, G.Right(box),y,boxW,unitsize*4);
         	G.union(box, chip,done);
     		
     	}
@@ -137,7 +137,7 @@ public class VolcanoGameViewer extends CCanvas<VolcanoCell,VolcanoBoard> impleme
     	{
     	G.SetRect(done, G.Right(box), y+unitsize/2, doneW,doneW/2);
     	G.union(box, done,score);
-    	G.SetRect(chip, x, G.Bottom(box),boxW,unitsize*6);
+    	G.SetRect(chip, x, G.Bottom(box),boxW,unitsize*4);
     	G.union(box, chip);
     	}
     	pl.displayRotation = rotation;

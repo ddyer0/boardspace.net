@@ -1346,7 +1346,7 @@ public class RajViewer extends CCanvas<RajCell,RajBoard> implements RajConstants
     	{
     		GC.setFont(gc,myfont);
     		GC.Text(gc, true, l, t+topPart,w/5,topPart,
-    				Color.red,null,YourTurnMessage);
+    				Color.red,null,s.get(YourTurnMessage));
     	}
     }}
 }

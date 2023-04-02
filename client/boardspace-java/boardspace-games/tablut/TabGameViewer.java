@@ -23,7 +23,7 @@ import online.game.sgf.sgf_property;
 import online.search.SimpleRobotProtocol;
 
 /**
- * 
+ * TODO: revamp options screens, use viticulture as a template
  * Change History
 
  * The main classes are:
@@ -215,7 +215,7 @@ public class TabGameViewer extends CCanvas<TabCell,TabGameBoard> implements TabC
     	BOARDCELLSIZE = CELLSIZE = (int)cs;
     	//G.print("cell "+cs0+" "+cs+" "+bestPercent);
     	// center the board in the remaining space
-        int stateH = CELLSIZE/3;
+        int stateH = CELLSIZE/2;
     	int boardW = (int)(ncols*CELLSIZE);
     	int boardH = (int)(nrows*CELLSIZE);
     	int extraW = Math.max(0, (mainW-boardW)/2);

@@ -179,7 +179,7 @@ public class JumbulayaViewer extends CCanvas<JumbulayaCell,JumbulayaBoard> imple
     	do {
         	setLocalBoundsV(x,y,w,h,new double[] {0.7,-0.7});
     	
-    	G.print("Racksize "+rackSize+" scale "+selectedLayout.selectedCellSize()/fh," ",fh+" "+selectedLayout.selectedSeating());
+    	//G.print("Racksize "+rackSize+" scale "+selectedLayout.selectedCellSize()/fh," ",fh+" "+selectedLayout.selectedSeating());
         	int width = G.Width(boardRect);
             if(selectedLayout.selectedCellSize()>=fh*2)
             {
@@ -1384,6 +1384,24 @@ public void verifyGameRecord()
         case LocalRack:
         case RemoteRack:
     		{
+    			sendRack(hp);
+    		}
+    		break;
+	    case BoardLocation:
+	    {
+	    	JumbulayaState state = bb.getState();
+            if((state==JumbulayaState.Jumbulaya)||(state==JumbulayaState.ConfirmJumbulaya))
+            {}
+            else {
+	        JumbulayaCell hitCell = hitCell(hp);
+	    	PerformAndTransmit("Pickb "+hitCell.col+" "+hitCell.row);
+            }
+	    }
+	    	break;
+        }} 
+    }
+    private void sendRack(HitPoint hp)
+    {	JumbulayaId hitObject =  (JumbulayaId)hp.hitCode;
     		// drawing the rack prepares the move
             String msg = (String)hp.hitObject;
             // transmit only drop from the board, not shuffling of the rack
@@ -1400,21 +1418,6 @@ public void verifyGameRecord()
             		PerformAndTransmit(msg.substring(1),false,replayMode.Live);
             	}
         	}
-    		break;
-	    case BoardLocation:
-	    {
-	    	JumbulayaState state = bb.getState();
-            if((state==JumbulayaState.Jumbulaya)||(state==JumbulayaState.ConfirmJumbulaya))
-            {}
-            else {
-	        JumbulayaCell hitCell = hitCell(hp);
-	    	PerformAndTransmit("Pickb "+hitCell.col+" "+hitCell.row);
-            }
-	    }
-	    	break;
-        }} 
-    }
-
     private void showWords(WordStack ws,HitPoint hp,String msg)
     {
     	StringBuilder words = new StringBuilder();
@@ -1479,7 +1482,7 @@ public void verifyGameRecord()
         	break;
         case LocalRack:
         case RemoteRack:
-        	// local rack never has a real moving object]
+        	sendRack(hp);
         	break;
         case Definition:
         	definitionCell = hitCell(hp);
@@ -1813,7 +1816,7 @@ public void verifyGameRecord()
 		if(bb.whoseTurn==index)
 			{
 			 GC.Text(gc, true, turnNotice,
-			Color.red,null,YourTurnMessage);
+			Color.red,null,s.get(YourTurnMessage));
 			}
     	}
     }

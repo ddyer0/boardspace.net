@@ -171,7 +171,8 @@ public class CachedImageManager
     			|| (srcH==0)
     			|| (w==0) 
     			|| (h==0) /* || (w>=500)*/) 
-    		{ 	if(im.isUnloadable()) 
+    		{ 	
+    		    if(im.isUnloadable()) 
     				{ // put just the stub in the cache so it will be unloaded eventually.
     				CachedImage cim = cachedImages.get(im);
     				long now = G.Date();

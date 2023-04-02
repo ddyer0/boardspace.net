@@ -1467,6 +1467,18 @@ public void setLetterColor(Graphics gc,CrosswordsBoard gb,CrosswordsCell cell)
         case LocalRack:
         case RemoteRack:
     		{
+    			sendRack(hp);
+        	}
+    		break;
+        case BoardLocation:
+	        CrosswordsCell hitCell = hitCell(hp);
+	    	PerformAndTransmit("Pickb "+hitCell.col+" "+hitCell.row);
+	    	break;
+        } 
+        }
+    }
+    private void sendRack(HitPoint hp)
+    {	CrosswordsId hitObject =  (CrosswordsId)hp.hitCode;
     		// drawing the rack prepares the move
             String msg = (String)hp.hitObject;
             // transmit only drop from the board, not shuffling of the rack
@@ -1483,14 +1495,7 @@ public void setLetterColor(Graphics gc,CrosswordsBoard gb,CrosswordsCell cell)
             		PerformAndTransmit(msg.substring(1),false,replayMode.Live);
             	}
         	}
-    		break;
-        case BoardLocation:
-	        CrosswordsCell hitCell = hitCell(hp);
-	    	PerformAndTransmit("Pickb "+hitCell.col+" "+hitCell.row);
-	    	break;
-        } 
-        }
-    }
+    
     private void showWords(WordStack ws,HitPoint hp,String msg)
     {
     	StringBuilder words = new StringBuilder();
@@ -1538,7 +1543,7 @@ public void setLetterColor(Graphics gc,CrosswordsBoard gb,CrosswordsCell cell)
         	break;
         case LocalRack:
         case RemoteRack:
-        	// local rack never has a real moving object
+        	sendRack(hp);
         	break;
         case Vocabulary:
         	bb.setVocabulary(vocabularyRect.value);
@@ -1871,7 +1876,7 @@ public void setLetterColor(Graphics gc,CrosswordsBoard gb,CrosswordsCell cell)
 		if(bb.whoseTurn==index)
 			{
 			 GC.Text(gc, true, turnnotice,
-			Color.red,null,YourTurnMessage);
+			Color.red,null,s.get(YourTurnMessage));
 			}
     	}
     }

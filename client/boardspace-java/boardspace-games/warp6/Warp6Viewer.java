@@ -128,6 +128,7 @@ public class Warp6Viewer extends CCanvas<Warp6Cell,Warp6Board> implements Warp6C
     			margin,	
     			0.75,	// 60% of space allocated to the board
     			1.0,	// aspect ratio for the board
+    			fh*2.5,
     			fh*3,	// maximum cell size
     			0.4		// preference for the designated layout, if any
     			);
@@ -185,7 +186,7 @@ public class Warp6Viewer extends CCanvas<Warp6Cell,Warp6Board> implements Warp6C
     {	commonPlayer pl = getPlayerOrTemp(player);
     	Rectangle chip = chipRects[player];
     	Rectangle score = scoreRects[player];
-    	G.SetRect(score,	x,	y+unitsize,	unitsize,	unitsize);
+    	G.SetRect(score,	x,	y,	unitsize*2,	unitsize*2);
     	Rectangle box =  pl.createRectangularPictureGroup(x+2*unitsize,y,unitsize);
     	G.union(box, score);
     	G.SetRect(chip,x,G.Bottom(box),unitsize*18,unitsize*3);
@@ -283,7 +284,7 @@ public class Warp6Viewer extends CCanvas<Warp6Cell,Warp6Board> implements Warp6C
     	{
     	int idx = 6-b.chipsInWarp[player];
     	Warp6Chip cc = (idx>0) ? Warp6Chip.getChip(b.playerColor[player],6,idx) : null;
-    	if(cc!=null) { cc.drawChip(gc,this,(int)(CELLSIZE*scale),G.centerX(r),G.centerY(r),null); }
+    	if(cc!=null) { cc.drawChip(gc,this,(int)(G.Width(r)*scale),G.centerX(r),G.centerY(r),null); }
     	}
     }
     

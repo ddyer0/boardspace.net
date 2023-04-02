@@ -22,11 +22,17 @@ public interface PlateauConstants
 	static String PlacePrisonersMessage = "Place prisoners here for exhange";
 	static String BlackPoolMessage = "Prisoners captured by Black are held here";
 	static String WhitePoolMessage = "Prisoners captured by White are held here";
+	static String PoolMessage[] = { BlackPoolMessage,WhitePoolMessage};
 	static String MoveFlipped = "Move the flipped stack";
 	static String GoalMessage = "stack six or capture six";
-	
+	static String HideRackMessage = "Hide the contents of the rack";
+	static String ShowRackMessage = "Show the contents of the rack";
+	static String ServiceName = "Plateau rack for #1";
 	static String PlateauStrings[] = 
 		{	"Plateau", 
+			ServiceName,
+			HideRackMessage,
+			ShowRackMessage,
 			CompleteCapture,
 			BuildInitial,
 			PlaceEdge,
@@ -118,7 +124,7 @@ public interface PlateauConstants
     enum PlateauId implements CellId
     {
     	HitAChip, 		// some chip
-    	HitEmptyRack,; 	// hit one of the other racks
+    	HitEmptyRack, NoShow, Show,; 	// hit one of the other racks
     	public String shortName() { return(name()); }
    }
     public enum PlateauState implements BoardState
