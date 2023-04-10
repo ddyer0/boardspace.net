@@ -94,7 +94,7 @@ public class QyshinsuViewer extends CCanvas<QyshinsuCell,QyshinsuBoard> implemen
         MouseDotColors[0]= Color.white;
 
         b = new QyshinsuBoard(info.getString(OnlineConstants.GAMETYPE, "Qyshinsu"),getStartingColorMap());
-        useDirectDrawing(true); // not tested yet
+        useDirectDrawing(true);
         doInit(false);
        
      }
@@ -197,7 +197,7 @@ public class QyshinsuViewer extends CCanvas<QyshinsuCell,QyshinsuBoard> implemen
         int stateY = boardY;
         int stateX = boardX;
         int stateH = SQUARESIZE/2;
-        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,noChatRect);
+        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	lineStrokeWidth = boardW/400.0;
     	// goal and bottom ornaments, depending on the rendering can share

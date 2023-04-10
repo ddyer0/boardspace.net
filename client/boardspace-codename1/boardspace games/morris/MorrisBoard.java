@@ -339,7 +339,6 @@ class MorrisBoard extends squareBoard<MorrisCell> implements BoardProtocol,Morri
     {	switch(board_state)
     	{
     	case DrawPending: return true;
-    	
     	case Play:
     		return((moveNumber - lastProgressMove)>10);
     	case Capture:

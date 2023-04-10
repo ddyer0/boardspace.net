@@ -1543,9 +1543,8 @@ public long Digest()
     	addChip(to,pickedObject);
     	pickedObject = null;
     	ArimaaCell target = to;
-    	if(to.lastPlaceMoveNumber==moveNumber) { target = to.auxDisplay; }
-    	else if(to.auxDisplay!=null) { to.auxDisplay.lastPlaceMoveNumber=-1; }
-     	
+    	ArimaaCell ad = to.auxDisplay;
+     	if(ad!=null) { ad.lastPlaceMoveNumber=-1; }
     	previousPlaced.push(target.lastPlaced);
     	target.lastPlaced = placementIndex;
     	target.lastPlaceMoveNumber = moveNumber;

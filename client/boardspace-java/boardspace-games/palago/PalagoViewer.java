@@ -144,7 +144,7 @@ public class PalagoViewer extends CCanvas<PalagoCell,PalagoBoard> implements Pal
         labelColor = Color.red;
         labelFont = largeBoldFont();
         bb = new PalagoBoard(info.getString(GAMETYPE, "Palago"),getStartingColorMap());
-        useDirectDrawing(true); // not tested yet
+        useDirectDrawing(true);
         doInit(false);
     }
 
@@ -244,7 +244,7 @@ public class PalagoViewer extends CCanvas<PalagoCell,PalagoBoard> implements Pal
         int stateX = boardX;
         int stateH = CELLSIZE;
         int zoomW = CELLSIZE*5;
-        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,noChatRect);
+        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,noChatRect);
         G.placeRight(stateRect, zoomRect, zoomW);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	

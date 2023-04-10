@@ -71,7 +71,7 @@ public class BloomsPlay extends commonRobot<BloomsBoard> implements Runnable, Bl
 	boolean STORED_CHILD_LIMIT_STOP = false;	// if true, stop the search when the child pool is exhausted.
 
     int Strategy = DUMBOT_LEVEL;
-    
+    int forPlayer = 0;
     int boardSearchLevel = 0;				// the current search depth
     /**
      *  Constructor, strategy corresponds to the robot skill level displayed in the lobby.
@@ -127,17 +127,18 @@ public class BloomsPlay extends commonRobot<BloomsBoard> implements Runnable, Bl
  * pruned with alpha-beta.
  */
     public CommonMoveStack  List_Of_Legal_Moves()
-    {	switch(Strategy)
+    {	int player = board.getState().simultaneousTurnsAllowed() ? forPlayer : board.whoseTurn;
+    	switch(Strategy)
     	{
     	default: throw G.Error("Not expecting strategy %s",Strategy);
     	case MONTEBOT_LEVEL:
     	case TESTBOT_LEVEL_1:
-    		return(board.GetListOfAnyMoves());
+    		return(board.GetListOfAnyMoves(player));
     	case TESTBOT_LEVEL_2:
     	case SMARTBOT_LEVEL:
     	case DUMBOT_LEVEL:
     	case WEAKBOT_LEVEL:
-    		return(board.GetListOfLegalMoves());
+    		return(board.GetListOfLegalMoves(player));
     	}
         
     }
@@ -208,6 +209,7 @@ public void PrepareToMove(int playerIndex)
 	board.copyFrom(GameBoard);
     board.sameboard(GameBoard);	// check that we got a good copy.  Not expensive to do this once per move
     board.initRobotValues();
+    forPlayer = playerIndex;
 }
 
 

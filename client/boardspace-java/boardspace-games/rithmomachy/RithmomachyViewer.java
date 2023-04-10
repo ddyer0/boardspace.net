@@ -97,7 +97,7 @@ public class RithmomachyViewer extends CCanvas<RithmomachyCell,RithmomachyBoard>
        
         b = new RithmomachyBoard(info.getString(GAMETYPE, Rithmomachy_INIT),
         		randomKey,players_in_game,getStartingColorMap());
-        //useDirectDrawing(); // not tested yet
+        useDirectDrawing(true);
         doInit(false);
         b.setReverseY(preferredRotation());
         reverseOption = myFrame.addOption(s.get(ReverseView),b.reverseY(),deferredEvents);
@@ -228,7 +228,7 @@ public class RithmomachyViewer extends CCanvas<RithmomachyCell,RithmomachyBoard>
     	//
         int stateY = boardY+stateH/4;
         int stateX = boardX;
-        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,liftRect,reverseViewRect,noChatRect);
+        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,liftRect,reverseViewRect,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
      	if(rotateBoard) 
       		{ 

@@ -591,6 +591,8 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
             trade[FIRST_PLAYER_INDEX][i].copyFrom(from_b.trade[FIRST_PLAYER_INDEX][i]);
             trade[SECOND_PLAYER_INDEX][i].copyFrom(from_b.trade[SECOND_PLAYER_INDEX][i]);
         }
+        
+        
         for(int i=0;i<pieces.length;i++) 
         	{ pieces[i].placedPosition = from_b.pieces[i].placedPosition; 
         	}

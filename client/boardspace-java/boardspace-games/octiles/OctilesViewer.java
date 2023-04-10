@@ -125,7 +125,7 @@ public class OctilesViewer extends CCanvas<OctilesCell,OctilesBoard> implements 
         int map[]=getStartingColorMap();
         b = new OctilesBoard(info.getString(OnlineConstants.GAMETYPE, Octiles_INIT),players_in_game,
         		randomKey,map);
-        useDirectDrawing(true); // not tested yet
+        useDirectDrawing(true);
         doInit(false);
 
          
@@ -220,7 +220,7 @@ public class OctilesViewer extends CCanvas<OctilesCell,OctilesBoard> implements 
     	int boardBottom = boardY+boardH;
     	int stateY = boardY;
        	layout.returnFromMain(extraW,extraH);
-    	G.placeStateRow( boardX+CELLSIZE,stateY,boardW-CELLSIZE,stateH,iconRect,stateRect,eyeRect,viewsetRect,noChatRect);
+    	G.placeStateRow( boardX+CELLSIZE,stateY,boardW-CELLSIZE,stateH,iconRect,stateRect,annotationMenu,eyeRect,viewsetRect,noChatRect);
      	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
         
     	G.SetRect(goalRect, boardX, boardBottom-stateH*2, boardW, stateH);

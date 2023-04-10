@@ -127,7 +127,7 @@ public class PalabraViewer extends CCanvas<PalabraCell,PalabraBoard> implements 
         bb = new PalabraBoard(info.getString(GAMETYPE, Palabra_init),randomKey,np);
         
         printButton = myFrame.addAction("Print deck",deferredEvents);
-        //useDirectDrawing(); // not tested yet
+        useDirectDrawing(true); // not tested yet
         doInit(false);
 
     }
@@ -353,7 +353,7 @@ public class PalabraViewer extends CCanvas<PalabraCell,PalabraBoard> implements 
         int boardX = (nplayers==2) ? (width-boardW)/2 : playerW;
         int noY = (wideMode ? 0 : chatHeight);
         int stateH = CELLSIZE;
-        G.placeRow(CELLSIZE/2,noY,boardW,stateH,stateRect,noChatRect);
+        G.placeRow(CELLSIZE/2,noY,boardW,stateH,stateRect,annotationMenu,noChatRect);
         G.SetRect(boardRect,boardX ,G.Bottom(stateRect), boardW, CELLSIZE * 10 );
 
 

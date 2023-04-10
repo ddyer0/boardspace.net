@@ -135,7 +135,7 @@ public class RajViewer extends CCanvas<RajCell,RajBoard> implements RajConstants
         int np = Math.max(2,info.getInt(OnlineConstants.PLAYERS_IN_GAME));
          
         bb = new RajBoard(info.getString(OnlineConstants.GAMETYPE, Raj_INIT),randomKey,np,getStartingColorMap());
-        useDirectDrawing(true); // not tested yet
+        useDirectDrawing(true); 
         doInit(false);
 
     }
@@ -225,7 +225,7 @@ public class RajViewer extends CCanvas<RajCell,RajBoard> implements RajConstants
         int stateY = boardY;
         int stateX = boardX;
         int stateH = fh*3;
-        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,noChatRect);
+        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,noChatRect);
 
     	G.SetRect(boardRect,boardX,boardY+stateH,boardW,boardH-stateH);
 		// a pool of chips for the first player at the top

@@ -163,11 +163,8 @@ public class LoaViewer extends commonCanvas implements UIC,GameLayoutClient
    	// state and top ornaments snug to the top of the board.  Depending
    	// on the rendering, it can occupy the same area or must be offset upwards
    	//
-       int stateX = boardX;
-       int noChatX = boardX+boardW-stateH;
-    G.SetRect(noChatRect, noChatX, stateY,stateH,stateH);
-    G.SetRect(stateRect, stateX,stateY,noChatX-stateX-stateH/2 ,stateH);
-   	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
+    G.placeStateRow(boardX,stateY,boardW,stateH,iconRect,stateRect,annotationMenu,noChatRect);
+    G.SetRect(boardRect,boardX,boardY,boardW,boardH);
    	lineStrokeWidth = Math.max(1.0, boardW/350.0);
    	// goal and bottom ornaments, depending on the rendering can share
    	// the rectangle or can be offset downward.  Remember that the grid
@@ -370,7 +367,7 @@ public class LoaViewer extends commonCanvas implements UIC,GameLayoutClient
         MouseColors = LoaMouseColors;
         long randomKey = stuff.getInt(OnlineConstants.RANDOMSEED,-1);
         b = new Loa_Board(sharedInfo.getString(GAMETYPE,"LOA"),getStartingColorMap(),randomKey);
-        //useDirectDrawing(); // not tested yet
+        useDirectDrawing(true);
         doInit(false);
    }
 
@@ -406,7 +403,7 @@ public class LoaViewer extends commonCanvas implements UIC,GameLayoutClient
         return (null);
     }
 
-
+   
     void drawStone(Graphics g,Rectangle rec,Color fg,Color bg,String msg,int idx)
     {	int cx = G.Width(rec)/2;
     	int cy = G.Height(rec)/2;
@@ -599,6 +596,7 @@ public class LoaViewer extends commonCanvas implements UIC,GameLayoutClient
         				stateRect);
 
 
+        drawStone(g,iconRect,null,null,null,b.whoseTurn);
         goalAndProgressMessage(g,p,s.get(LoaGoal),progressRect, goalRect);
 
         // draw clocks, sprites, and other ephemera

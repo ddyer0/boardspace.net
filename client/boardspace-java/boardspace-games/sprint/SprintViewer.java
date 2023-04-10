@@ -26,8 +26,6 @@ import online.game.sgf.sgf_node;
 import online.game.sgf.sgf_property;
 import online.game.sgf.sgf_reader;
 import online.search.SimpleRobotProtocol;
-import rpc.RpcService;
-import vnc.VNCService;
 
 
 
@@ -48,9 +46,7 @@ public class SprintViewer extends CCanvas<SprintCell,SprintBoard> implements Spr
     private Color boardBackgroundColor = new Color(220,165,155);
     private Color newLetterColor = new Color(0.25f,0.25f,1.0f);
     private Color tempLetterColor = new Color(0.1f,0.5f,0.1f);
-	private Color middleGray = new Color(0x64,0x64,0x64);
     private Dictionary dictionary = Dictionary.getInstance();
-    private boolean robotGame = false;
     private int rackSize = 2;
     
     // private state
@@ -80,21 +76,10 @@ public class SprintViewer extends CCanvas<SprintCell,SprintBoard> implements Spr
     private Rectangle drawPileRect = addRect("drawPileRect");
     private TextButton passButton = addButton(PASS,GameId.HitPassButton,ExplainPass,
 			HighlightColor, rackBackGroundColor);
-    private Rectangle rotateRect = addRect("rotate");
-    private boolean lockOption = false;
-    private Rectangle lockRect = addRect("lock");
-    private Rectangle largerBoardRect = addRect(".largerBoard");
-    private Rectangle altNoChatRect = addRect("nochat");
-    //private Rectangle repRect = addRect("repRect");	// not needed for pushfight
-    int boardRotation = 0;
-    double effectiveBoardRotation = 0.0;
     private Rectangle bigRack = addZoneRect("bigrack");
-    private Rectangle backwardsRect = addRect("backwards");
-    private Rectangle diagonalsRect = addRect("diagonals");
-    private Rectangle connectedRect = addRect("connected");
-    private Rectangle dupsRect = addRect("duplicates");
-    private Rectangle openRect = addRect("openrack");
     private Rectangle noticeRect = addRect("notice");
+    private Rectangle upperBoardRect = addRect("upperboard");
+    
     private TextButton checkWordsButton = addButton(JustWordsMessage,SprintId.CheckWords,
     		JustWordsHelp,
 						HighlightColor, rackBackGroundColor);
@@ -141,7 +126,6 @@ public class SprintViewer extends CCanvas<SprintCell,SprintBoard> implements Spr
         // later, some variant is created, or the game code base is re purposed as the basis
         // for another game.
         bb = new SprintBoard(type,players_in_game,randomKey,getStartingColorMap(),dictionary,SprintBoard.REVISION);
-        robotGame = sharedInfo.get(exHashtable.ROBOTGAME)!=null;
         // some problems with the animation
         // useDirectDrawing();
         doInit(false);
@@ -227,7 +211,7 @@ public class SprintViewer extends CCanvas<SprintCell,SprintBoard> implements Spr
     			0.75,	// 60% of space allocated to the board
     			aspect,	// aspect ratio for the board
     			fh*2,	// min cell size
-    			fh*4,	// maximum cell size
+    			fh*2,	// maximum cell size
     			0.4		// preference for the designated layout, if any
     			);
     	
@@ -258,45 +242,34 @@ public class SprintViewer extends CCanvas<SprintCell,SprintBoard> implements Spr
     	// the test.  For boards that are noticably rectangular, such as Push Fight,
     	// use mainW<mainH
     	boolean planned = plannedSeating();
-    	int nrows =  bb.nrows+(planned?0:2);
-        int ncols =  bb.ncols+(planned?0:2);
+    	int nrows =  bb.nrows+4;
+        int ncols =  bb.ncols;
   	
     	// calculate a suitable cell size for the board
-    	double cs = Math.min((double)mainW/ncols,(double)mainH/nrows);
+    	double cs = Math.min((double)mainW/ncols,(double)(mainH-stateH)/nrows);
     	CELLSIZE = (int)cs;
     	//G.print("cell "+cs0+" "+cs+" "+bestPercent);
     	// center the board in the remaining space
-    	int boardW = (int)(ncols*CELLSIZE);
-    	int boardH = (int)(nrows*CELLSIZE);
+    	int boardW = (int)(ncols*cs);
+    	int boardH = (int)(nrows*cs);
     	int extraW = Math.max(0, (mainW-boardW)/2);
     	int extraH = Math.max(0, (mainH-boardH)/2);
-    	int boardX = mainX+extraW+(planned?stateH:0);
-    	int boardY = mainY+extraH+(planned?stateH:0);
+    	int boardX = mainX+extraW;
+    	int boardY = mainY+stateH+extraH;
        	layout.returnFromMain(extraW,extraH);
        	//
     	// state and top ornaments snug to the top of the board.  Depending
     	// on the rendering, it can occupy the same area or must be offset upwards
     	//
-        int stateY = boardY;
+        int stateY = boardY-stateH;
         int stateX = boardX;
     	int stripeW = CELLSIZE;
-    	G.placeRow(stateX,stateY,boardW ,stateH,stateRect,rotateRect,lockRect,altNoChatRect);
-    	G.SetRect(boardRect,boardX-(planned?CELLSIZE:0),boardY,boardW,boardH-(planned?0:2*CELLSIZE));
+    	G.placeRow(stateX,stateY,boardW ,stateH,stateRect,noChatRect);
+    	G.SetRect(upperBoardRect,boardX,boardY,boardW,2*CELLSIZE);
+    	G.SetRect(boardRect,boardX,boardY,boardW,boardH-2*CELLSIZE);
     	G.SetRect(goalRect, boardX, G.Bottom(boardRect),boardW,stateH);   
     	G.SetRect(bigRack, boardX+CELLSIZE/2, G.Bottom(goalRect), boardW-CELLSIZE-stripeW, planned?0:CELLSIZE*2);
-    	G.SetRect(largerBoardRect,boardX-stateH,boardY-stateH,boardW+stateH*2,boardH+stateH*2);
 
-    	int stripeLeft = G.Right(largerBoardRect)-stripeW-CELLSIZE/3;
-    	int stripeTop = boardY+boardH-9*stripeW;
-    	G.SetRect(backwardsRect,stripeLeft,stripeTop,stripeW,stripeW);
-    	stripeTop += stripeW+stateH/2;
-    	G.SetRect(diagonalsRect,stripeLeft,stripeTop,stripeW,stripeW);
-    	stripeTop += stripeW+stateH/2;
-    	G.SetRect(connectedRect,stripeLeft,stripeTop,stripeW,stripeW);
-       	stripeTop += stripeW+stateH/2;
-    	G.SetRect(dupsRect,stripeLeft,stripeTop,stripeW,stripeW);
-       	stripeTop += stripeW+stateH/2;
-    	G.SetRect(openRect,stripeLeft,stripeTop,stripeW,stripeW);
   
 
     	// goal and bottom ornaments, depending on the rendering can share
@@ -326,28 +299,12 @@ public class SprintViewer extends CCanvas<SprintCell,SprintBoard> implements Spr
     	G.SetRect(notice, donel , G.Bottom(done),doneW*2,doneW/4);
     	G.union(box, done,score,eye,notice);
     	int unith = rackSize*unitsize;
-       	G.SetRect(chip,	x,	G.Bottom(box),	unith*20/4,unith*7/8);
+       	G.SetRect(chip,	x,	G.Bottom(box),	unith*16/4, unith*16/4);
         G.union(box, chip);
     	pl.displayRotation = rotation;
     	return(box);
     }
-    private void drawOptions(Graphics gc,HitPoint highlight,HitPoint highlightAll,SprintBoard gb)
-    {
-   	
-     	drawOptionIcon(gc,Option.NoDuplicate,dupsRect,highlight,highlightAll);
-  
-    }
-    private void drawOptionIcon(Graphics gc,Option op,Rectangle r,HitPoint highlight,HitPoint highlightAll)
-    {	
-     	boolean value = bb.getOptionValue(op);
-    	SprintChip chip = value ? op.onIcon : op.offIcon;
-    	if(chip.drawChip(gc,this,r,!robotGame || op.allowedForRobot ? highlight : null,SprintId.SetOption))
-    		{
-    		highlight.hitObject = "SetOption "+op.name()+" "+!value;
-    		}
-    	HitPoint.setHelpText(highlightAll, r, s.get(op.message));
-    	GC.frameRect(gc,Color.black,r);
-     }
+
     private void drawDrawPile(Graphics gc,HitPoint highlight,SprintBoard gb)
     {	Rectangle r = drawPileRect;
     	int boxw = G.Width(r);
@@ -368,10 +325,6 @@ public class SprintViewer extends CCanvas<SprintCell,SprintBoard> implements Spr
       		highlight.spriteColor = Color.red;
       		highlight.spriteRect = r;
       		}
-      	if(inside)
-      	{
-      		HitPoint.setHelpText(highlight, r,s.get(DumpRackMessage));
-      	}
     	if(w>0 && h>0)
     	{
     	Random rand = new Random(2324);
@@ -400,30 +353,14 @@ public class SprintViewer extends CCanvas<SprintCell,SprintBoard> implements Spr
     	Rectangle rack = chipRects[pidx];
     	commonPlayer ap = getActivePlayer();
        	 
-    	if(G.offline() || (pl==ap))
-    	{
-    		drawEye(gc,gb,er,gb.openRack[pidx],highlightAll,pl.boardIndex);
-    	}
     	SprintCell prack[] = gb.getPlayerRack(pidx);
     	if(prack!=null)
     	{
-       	if(allowed_to_edit || ap==pl) { for(SprintCell c : prack) { c.seeFlyingTiles=true; }}
-       	boolean open = gb.openRack[pidx];
-      	boolean showTiles = open || allowed_to_edit; 
+      	boolean showTiles = allowed_to_edit; 
        	boolean anyRack = G.offline() || allowed_to_edit || (ap==pl);
        	drawRack(gc,gb,rack,prack,gb.getPlayerMappedRack(pidx),gb.getRackMap(pidx),gb.getMapPick(pidx),!showTiles ,anyRack ? highlightAll : null,!anyRack);  	
     	}}
-    private void drawEye(Graphics gc,SprintBoard gb,Rectangle er,boolean showing,HitPoint highlightAll,int who)
-    {
-   		StockArt chip = showing ? StockArt.NoEye : StockArt.Eye;
-   		String help = s.get(chip==StockArt.Eye ? ShowTilesMessage : HideTilesMessage);
-		if(chip.drawChip(gc, this, er, highlightAll, SprintId.EyeOption,help))
-		{	
-	   		boolean newv = !showing;
-			highlightAll.hitObject = (char)('A'+who)+(newv ?" true":" false");
-		}
-    }
-    /**
+     /**
      * major pain taken to allow racks to be rearranged any time.  There is an intermediate
      * map, used only by the user interface, which rearranges the location of the actual
      * cells containing the player's letters.  When the user picks up one of their letters,
@@ -648,7 +585,6 @@ public class SprintViewer extends CCanvas<SprintCell,SprintBoard> implements Spr
     {	// censor the identity of the moving object for other players
         if (OurMove())
         {	int mo = bb.movingObjectIndex();
-            if((mo>=0)&&!allowed_to_edit) { mo = SprintChip.Blank.chipNumber(); }
             return(mo);
         }
         return (NothingMoving);
@@ -667,9 +603,7 @@ public class SprintViewer extends CCanvas<SprintCell,SprintBoard> implements Spr
     	// use the board cell size rather than the window cell size
        	// hidden windows have x coordinates that are negative, we don't want to rotate tiles
        	// being displayed on hidden windows
-       	if(xp>=-100) { GC.setRotation(g, effectiveBoardRotation,xp,yp); }
        	drawPrerotatedSprite(g,obj,xp,yp);
-       	if(xp>=-1000) { GC.setRotation(g,effectiveBoardRotation,xp,yp); }
     }
     public void drawPrerotatedSprite(Graphics g,int obj,int xp,int yp)
     { 
@@ -715,14 +649,10 @@ public class SprintViewer extends CCanvas<SprintCell,SprintBoard> implements Spr
     public void drawFixedElements(Graphics gc)
     { 
      SprintChip.backgroundTile.image.tileImage(gc, fullRect);   
-      GC.setRotatedContext(gc,largerBoardRect,null,effectiveBoardRotation);
       drawFixedBoard(gc,boardRect);
-      GC.unsetRotatedContext(gc,null);  
-
      }
     public void drawFixedElements(Graphics gc,boolean complete)
-    {	commonPlayer pl = getPlayerOrTemp(bb.whoseTurn);
-    	if(!lockOption) { effectiveBoardRotation = (boardRotation*Math.PI/2+pl.displayRotation); }
+    {	
     	complete |= pendingFullRefresh;
     	super.drawFixedElements(gc,complete);
     }
@@ -764,7 +694,6 @@ public class SprintViewer extends CCanvas<SprintCell,SprintBoard> implements Spr
 
     	int tilesLeft = gb.drawPile.height();
     	v ^= (tilesLeft*r.nextLong());
-    	v ^= G.rotationQuarterTurns(effectiveBoardRotation)*r.nextLong();
         fixedTileDigest=v;
     }
     /**
@@ -792,9 +721,8 @@ public void setLetterColor(Graphics gc,SprintBoard gb,SprintCell cell)
     SprintChip ch = cell.topChip();
     if(ch!=null)
     {
-    boolean blank = ch.isBlank();
-    Color col = blank
-    			? middleGray 
+    Color col = cell.nonWord 
+    				? Color.black
     				: gb.lastLetters.contains(cell) 
     					? newLetterColor 
     					: (gb.isADest(cell) ? tempLetterColor : Color.black)
@@ -824,10 +752,8 @@ public void setLetterColor(Graphics gc,SprintBoard gb,SprintCell cell)
         // using closestCell is sometimes preferable to G.PointInside(highlight, xpos, ypos, CELLRADIUS)
         // because there will be no gaps or overlaps between cells.
         SprintCell closestCell = gb.closestCell(all,brect);
-        SprintState state = gb.getState();
-        boolean resolve = state==SprintState.ResolveBlank;
         boolean moving = getOurMovingObject(highlight)>=0;
-        boolean hitCell = !resolve && (highlight!=null) && gb.LegalToHitBoard(closestCell,moving);
+        boolean hitCell = (highlight!=null) && gb.LegalToHitBoard(closestCell,moving);
         if(hitCell)
         { // note what we hit, row, col, and cell
           boolean empty = closestCell.isEmpty();
@@ -842,7 +768,7 @@ public void setLetterColor(Graphics gc,SprintBoard gb,SprintCell cell)
         {	for(int lim=gb.words.size()-1; lim>=0; lim--)
         	{
         	Word word = gb.words.elementAt(lim);
-        	if(!resolve && (word.seed==closestCell))
+        	if(word.seed==closestCell)
         	{	all.hitCode = SprintId.Definition;
         		all.hitObject = closestCell;
         		all.setHelpText(s.get(GetDefinitionMessage,word.name));
@@ -869,10 +795,6 @@ public void setLetterColor(Graphics gc,SprintBoard gb,SprintCell cell)
             setLetterColor(gc,gb,cell);
             cell.drawStack(gc,this,null,CELLSIZE,xpos,ypos,1,1,null);
           }
-        }
-       if(resolve)
-        {
-        	drawResolveBlank(gc,gb,brect,highlight);
         }
         if(definitionCell!=null)
         {
@@ -912,48 +834,7 @@ public void setLetterColor(Graphics gc,SprintBoard gb,SprintCell cell)
     	hp.setHelpText(m);
     	}
     }
-    public void drawResolveBlank(Graphics gc, SprintBoard gb, Rectangle brect, HitPoint highlight)
-    {
-    	int w = CELLSIZE*7;
-    	int h = CELLSIZE*6;
-    	SprintCell focus = gb.lastDropped();
-    	if(focus!=null)
-    	{	// focus has to be non-null, unless there's a bug somewhere else.
-    		// guess why this test was added. :)
-    	boolean horizontal = gb.dropIsHorizontal();
-    	int left = G.Left(brect);
-    	int top = G.Top(brect);
-    	int bottom = G.Bottom(brect);
-    	int right = G.Right(brect);
-    	int xp = left+gb.cellToX(focus);
-    	int yp = bottom-gb.cellToY(focus);
-    	int q = CELLSIZE/5;
-    	if(horizontal)
-    	{	// place above or below
-    		if(focus.row*2>gb.nrows) { yp += CELLSIZE; } 
-    		else { yp -= (h+CELLSIZE); }
-    		xp = Math.max(Math.min(right-w-q,xp-w/2),left+q);
-    		}
-    	else {
-    		// place left or right
-    		if((focus.col-'A')*2<gb.ncols) { xp += CELLSIZE; }
-    		else { xp -= (w+CELLSIZE); }
-    		yp = Math.max(top+q,Math.min(yp-h/2,bottom-h-q));
-    	}
-    	Rectangle r = new Rectangle(xp,yp,w,h);
-    StockArt.Scrim.image.stretchImage(gc,r);
-    	GC.frameRect(gc, Color.black, r);
-    	GC.Text(gc,true,xp,yp+CELLSIZE/5,w,CELLSIZE/2,Color.black,null,s.get(SelectBlankMessage));
-    	
-    	int cx = xp+CELLSIZE;
-    	int cy = yp+CELLSIZE+CELLSIZE/7;
-    	for(SprintChip ch : SprintChip.assignedBlanks)
-    	{
-    		ch.drawChip(gc,this, highlight, SprintId.Blank, CELLSIZE, cx, cy,null,1.3,1.3);
-    		cx += CELLSIZE;
-    		if(cx>=xp+w) { cx = xp+CELLSIZE; cy += CELLSIZE; }
-    	}}
-    }
+
     private void drawNotice(Graphics gc,Rectangle r,SprintBoard gb)
     {
     	if(!gb.GameOver() && (gb.drawPile.height()==0))
@@ -999,9 +880,7 @@ public void setLetterColor(Graphics gc,SprintBoard gb,SprintCell cell)
        // hit anytime nothing is being moved, even if not our turn or we are a spectator
        HitPoint nonDragSelect = (moving && !reviewMode()) ? null : selectPos;
        
-       GC.setRotatedContext(gc,logRect,selectPos,effectiveBoardRotation);
        gameLog.redrawGameLog2(gc, nonDragSelect, logRect,Color.black, boardBackgroundColor,standardBoldFont(),standardBoldFont());
-       GC.unsetRotatedContext(gc,selectPos);
        
        GC.frameRect(gc, Color.black, logRect);
        // this does most of the work, but other functions also use contextRotation to rotate
@@ -1011,23 +890,12 @@ public void setLetterColor(Graphics gc,SprintBoard gb,SprintCell cell)
        commonPlayer pl = getPlayerOrTemp(gb.whoseTurn);
        double messageRotation = pl.messageRotation();
        {    
-	   GC.setRotatedContext(gc,largerBoardRect,selectPos,effectiveBoardRotation);
        standardGameMessage(gc,stateRect,state);
        drawBoardElements(gc, gb, boardRect, ourTurnSelect,selectPos);
-       drawOptions(gc,((state==SprintState.Puzzle)
-    		   			||((state==SprintState.Play) && robotGame && bb.moveNumber<=2)
-    		   			) ? ourTurnSelect :null,selectPos,gb);
 
        String msg = bb.invalidReason==null ? s.get(CrosswordsVictoryCondition) : s.get(bb.invalidReason);
        String goalmsg = bb.invalidReason==null ? GoalExplanation : InvalidExplanation;
        goalAndProgressMessage(gc,nonDragSelect,Color.black,msg,progressRect, goalRect,goalmsg);
-       if(planned) 
-       	{ StockArt.Rotate180.drawChip(gc, this,rotateRect, selectPos, SprintId.Rotate,s.get(RotateMessage)); 
-       	  SprintChip chip = lockOption ? SprintChip.UnlockRotation : SprintChip.LockRotation;
-       	  chip.drawChip(gc, this,lockRect, selectPos, SprintId.Lock,s.get(chip.tip)); 
-       	}
-       drawNoChat(gc,altNoChatRect,selectPos);
-       GC.unsetRotatedContext(gc,selectPos);
        }
        drawDrawPile(gc,ourTurnSelect,gb);
        for(int player=0;player<bb.players_in_game;player++)
@@ -1049,7 +917,7 @@ public void setLetterColor(Graphics gc,SprintBoard gb,SprintCell cell)
       	{  
     	   int ap = allowed_to_edit|G.offline() ? gb.whoseTurn : getActivePlayer().boardIndex;
     	   // generally prevent spectators seeing tiles, unless openracks or gameover
-    	   boolean censorSpectator =  !gb.openRack[ap] && getActivePlayer().spectator&&!allowed_to_edit;
+    	   boolean censorSpectator =  getActivePlayer().spectator&&!allowed_to_edit;
     	   drawRack(gc,gb,bigRack,gb.getPlayerRack(ap),gb.getPlayerMappedRack(ap),gb.getRackMap(ap),gb.getMapPick(ap),
     			   	censorSpectator,
     			   	censorSpectator ? null : selectPos,
@@ -1109,7 +977,7 @@ public void setLetterColor(Graphics gc,SprintBoard gb,SprintCell cell)
     {
         standardGameMessage(gc,
    				state==SprintState.Gameover?gameOverMessage():s.get(state.description()),
-   				state!=SprintState.Puzzle,
+   				(state!=SprintState.Puzzle) && !state.simultaneousTurnsAllowed(),
    				bb.whoseTurn,
    				stateRect);
 
@@ -1243,13 +1111,10 @@ public void setLetterColor(Graphics gc,SprintBoard gb,SprintCell cell)
       {	  // some damaged games ended up with naked "drop", this lets them pass 
     	  switch(nmove.op)
     	  {
-    	  case MOVE_SHOW:
     	  case MOVE_SEE:
     	  case MOVE_LIFT:
     	  case MOVE_REPLACE:
-    	  case MOVE_REMOTELIFT:
     	  case MOVE_DROPONRACK:
-    	  case MOVE_REMOTEDROP:
     	  case MOVE_CANCELLED:
     		  return(null);
     	  default: break;
@@ -1413,16 +1278,7 @@ public void setLetterColor(Graphics gc,SprintBoard gb,SprintCell cell)
         	bb.setVocabulary(vocabularyRect.value);
         	showWords(bb.checkLikelyWords(),hp,s.get(WordsMessage));
         	break;
-        case Lock:
-        	lockOption = !lockOption;
-        	break;
-        case Rotate:
-        	effectiveBoardRotation = (effectiveBoardRotation+Math.PI/2);
-        	boardRotation = (boardRotation+1)%4;
-        	contextRotation = 0;
-        	generalRefresh();
-        	break;
-        case EyeOption:
+         case EyeOption:
         	{
          	String op = (String)hp.hitObject;
          	int rm = remoteWindowIndex(hp);
@@ -1675,68 +1531,5 @@ public void setLetterColor(Graphics gc,SprintBoard gb,SprintCell cell)
         }
     }
 
-    /*
-     * support for hidden windows in pass-n-play mode
-     * */
-    public String nameHiddenWindow()
-    {	
-    		return(ServiceName);
-    }
-    public void adjustPlayers(int n)
-    {
-        int HiddenViewWidth = 800;
-        int HiddenViewHeight = 300;
-
-        super.adjustPlayers(n);
-        if(RpcService.isRpcServer() || VNCService.isVNCServer() || G.debug())
-        {
-        createHiddenWindows(n,HiddenViewWidth,HiddenViewHeight);
-        }
-    }
-
-    public void drawHiddenWindow(Graphics gc,HitPoint hp,int index,Rectangle bounds)
-    {	
-    	int margin = G.minimumFeatureSize()/4;
-    	int w = G.Width(bounds)-margin*2;
-    	int h = G.Height(bounds)-margin*2;
-    	int l = G.Left(bounds)+margin;
-    	int t = G.Top(bounds)+margin;
-    	int step = h/8;
-    	SprintCell rack [] = bb.getPlayerRack(index);
-    	if(rack!=null)
-    	{
-    	SprintCell prack[] =bb.getPlayerMappedRack(index);
-    	int hiddenRack[] = bb.getRackMap(index);
-    	int hiddenMapPick = bb.getMapPick(index);
-    	Rectangle rackRect = new Rectangle(l,t+h/2,w,(int)(step*3.25));
-    	Rectangle eyeRect = new Rectangle(l,t+step*2,step,step);
-    	Rectangle whoRect = new Rectangle(l+step*2,t+step*2,w-step*4,step*2);
-    	Rectangle stateRect = new Rectangle(l,t,w,step);
-    	Rectangle turnnotice = new Rectangle(l,t+step,w,step);
-    	Rectangle notice = new Rectangle(l,t+step,w/4,step);
-    	if (remoteViewer<0)
-    		{ StockArt.Scrim.image.stretchImage(gc, bounds);
-    		}
-    	Font myfont = G.getFont(largeBoldFont(), step/2);
-    	GC.setFont(gc, myfont);
-    	GC.Text(gc, true, whoRect, Color.black, null, s.get(ServiceName,prettyName(index)));
-    	SprintState state = bb.getState();
-    	GC.setFont(gc, myfont);
-   	
-    	standardGameMessage(gc,stateRect,state);
-    	boolean hide = bb.hiddenVisible[index];
-    	drawRack(gc,bb,rackRect,rack,prack,hiddenRack,hiddenMapPick,hide,hp,bb.whoseTurn!=index);
-    	GC.setFont(gc, myfont);
-    	drawNotice(gc,notice,bb);
-    	drawEye(gc,bb,eyeRect,hide,hp,index);
-    	
-    	GC.setFont(gc, myfont);
-		if(bb.whoseTurn==index)
-			{
-			 GC.Text(gc, true, turnnotice,
-			Color.red,null,s.get(YourTurnMessage));
-			}
-    	}
-    }
 }
 

@@ -165,7 +165,7 @@ public class TzaarViewer extends CCanvas<TzaarCell,TzaarBoard> implements TzaarC
     	layout.selectLayout(this, nPlayers, width, height,
     			margin,	
     			0.75,	// 60% of space allocated to the board
-    			0.8,	// aspect ratio for the board
+    			1.1,	// aspect ratio for the board
     			fh*2,	// maximum cell size
     			fh*3,	// maximum cell size
     			0.5		// preference for the designated layout, if any

@@ -126,7 +126,7 @@ public class TabGameViewer extends CCanvas<TabCell,TabGameBoard> implements TabC
         super.init(info,frame);
        
         b = new TabGameBoard(info.getString(GAMETYPE, Default_Tablut_Game),getStartingColorMap());
-        useDirectDrawing(true); // not tested yet
+        useDirectDrawing(true);
         doInit(false);
    }
 
@@ -232,7 +232,7 @@ public class TabGameViewer extends CCanvas<TabCell,TabGameBoard> implements TabC
     	//
          int stateY = boardY-stateH;
         int stateX = boardX;
-        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,noChatRect);
+        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
   
         

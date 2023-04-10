@@ -213,7 +213,8 @@ class TwixtBoard extends rectBoard<TwixtCell> implements BoardProtocol,TwixtCons
     	switch(board_state)
     	{
     	default: break;
-    	case QueryDraw: return true;
+    	case OfferDraw: return true;
+    	
     	case Play:
     	if(moveNumber>20)
     	{
@@ -608,12 +609,13 @@ class TwixtBoard extends rectBoard<TwixtCell> implements BoardProtocol,TwixtCons
     	{
     		addGhostPegsAndLinks(rv);
     	}
-
     	}
     	else {
     		rv.removeChip(rc);
     		pickedObject = rc;
     	}
+    	rv.lastPlaced = previousLastPlaced;
+    	previousLastPlaced = -1;
     	}
     	else { pickedObject = rv.topChip(); }
     	return(rv);
@@ -643,6 +645,7 @@ class TwixtBoard extends rectBoard<TwixtCell> implements BoardProtocol,TwixtCons
     		}}
     	return(po);
     }
+    int previousLastPlaced = -1;
     // 
     // undo the pick, getting back to base state for the move
     //
@@ -652,11 +655,13 @@ class TwixtBoard extends rectBoard<TwixtCell> implements BoardProtocol,TwixtCons
     	if(rv.onBoard)
     	{
     		addChip(rv,pickedObject);
+    		rv.lastPlaced = previousLastPlaced;
     	}
     	if(ghost)
     	{
     		addGhostPegsAndLinks(null);
     	}
+    	
     	pickedObject = null;
     }
 
@@ -772,6 +777,8 @@ class TwixtBoard extends rectBoard<TwixtCell> implements BoardProtocol,TwixtCons
              	}
             }
             else { c.addChip(po); }
+            previousLastPlaced = c.lastPlaced;
+            c.lastPlaced = moveNumber;
             break;
         }
      }

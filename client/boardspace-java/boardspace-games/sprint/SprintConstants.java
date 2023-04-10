@@ -11,23 +11,11 @@ public interface SprintConstants
 	static String CrosswordsVictoryCondition = "score the most points";
 	static String ResolveBlankState = "Assign a value to the blank tile";
 	static String DiscardTilesState = "Click on Done to discard your rack and draw a new one";
-	static String CrosswordsPlayState = "Place a word on the board";
-	static String FirstPlayState = "Position the starting tile and set word placement options";
+	static String SprintPlayState = "Form a complete crosswords grid";
 	static String TilesLeft = "#1{##no tiles, tile, tiles}";
 	static String LastTurnMessage = "Last Turn!";
-	static String NotWords = "Some sprint are not words";
-	static String NotALine = "Some letters are not connected";
-	static String DuplicateWord = "There are duplicate words";
-	static String NotNewConnected = "Not all new words are connected";
-	static String NoDuplicateMessage = "duplicate words";
-	static String OpenRackMessage = "open racks";
-	static String RotateMessage = "rotate the board";
-	static String ShowTilesMessage = "Show everyone your tiles";
-	static String LockMessage = "Lock auto-rotation of the board";
-	static String UnlockMessage = "allow auto-rotation of the board";
-	static String HideTilesMessage = "Hide your tiles";
-	static String DumpRackMessage = "Drop a tile here to dump your rack and redraw";
-	static String ServiceName = "Crossword Rack for #1";
+	static String NotWords = "Some are not words";
+	static String NotConnected = "Some letters are not connected";
 	static String AddWordMessage = "\"#1\" #2{ points, point, points}";
 	static String GetDefinitionMessage = "click for defintion of #1";
 	static String SelectBlankMessage = "Select the blank letter";
@@ -50,9 +38,7 @@ public interface SprintConstants
 	Resign(ResignStateDescription,true,false),
 	Gameover(GameOverStateDescription,false,false),
 	Confirm(ConfirmStateDescription,true,true),
-	Play(CrosswordsPlayState,false,false),
-	ResolveBlank(ResolveBlankState,false,false),
-	DiscardTiles(DiscardTilesState,true,true),
+	Play(SprintPlayState,false,false),
 	;
 	SprintState(String des,boolean done,boolean digest)
 	{
@@ -67,7 +53,8 @@ public interface SprintConstants
 	public String description() { return(description); }
 	public boolean doneState() { return(doneState); }
 	public boolean digestState() { return(digestState); }
-		public boolean Puzzle() { return(this==Puzzle); } public boolean simultaneousTurnsAllowed() { return(false); }
+	public boolean Puzzle() { return(this==Puzzle); }
+	public boolean simultaneousTurnsAllowed() { return(this==SprintState.Play); }
 	};
 	
     //	these next must be unique integers in the Jumbulayamovespec dictionary
@@ -92,22 +79,7 @@ public interface SprintConstants
     	public String shortName() { return(name()); }
 
 	}
- enum Option
- {
-	 NoDuplicate(NoDuplicateMessage,false);
-	 String message;
-	 boolean allowedForRobot = true;
-	 SprintChip onIcon;
-	 SprintChip offIcon;
-	 Option(String ms,boolean lo) { message = ms; allowedForRobot = lo; }
-	 static Option getOrd(int n) { return(values()[n]); }
-	 static int optionsAvailable(boolean robotgame)
-	 {
-		 int n=0;
-		 for(Option v : values()) { if(!robotgame || v.allowedForRobot) { n++; }}
-		 return(n);
-	 }
- }
+
  enum SprintVariation
     {	Sprint("Sprint",15);
     	String name ;
@@ -140,22 +112,11 @@ public interface SprintConstants
     			JustWordsHelp,
     			InvalidExplanation,
     			AddWordMessage,
-    			LockMessage,
-    			RotateMessage,
-    			UnlockMessage,
-    			ServiceName,
-    			ShowTilesMessage,
-    			DumpRackMessage,
-    			HideTilesMessage,
-    			NoDuplicateMessage,
-     			DuplicateWord,
-    			NotNewConnected,
-    			NotALine,
+    			NotConnected,
     			DiscardTilesState,
     			ResolveBlankState,
     			NotWords,
-    			FirstPlayState,
-    			CrosswordsPlayState,
+    			SprintPlayState,
     	        CrosswordsVictoryCondition,
     	        TilesLeft,
 

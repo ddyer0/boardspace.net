@@ -430,7 +430,7 @@ class CookieBoard extends hexBoard<CookieCell> implements BoardProtocol,CookieCo
     	case PLACE_OR_SWAP_STATE:
     		{	
     		// a bug showed up that turned out to be because clone() didn't copy starting moves
-    		// a consequence of useDirectDrawing();
+    		// a consequence of useDirectDrawing;
     		getStartingMoves();
     		Hashtable<CookieCell,CookieMovespec> hv = new Hashtable<CookieCell,CookieMovespec>();
     		for(Enumeration<CookieCell> keys = startingMoves.keys(); keys.hasMoreElements();)

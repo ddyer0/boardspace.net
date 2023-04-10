@@ -158,7 +158,7 @@ public class LyngkViewer extends CCanvas<LyngkCell,LyngkBoard> implements LyngkC
         // later, some variant is created, or the game code base is re purposed as the basis
         // for another game.
         bb = new LyngkBoard(type,players_in_game,randomKey,LyngkBoard.REVISION);
-        useDirectDrawing(true); // not tested yet
+        useDirectDrawing(true);
         doInit(false);
 
     }
@@ -258,21 +258,21 @@ public class LyngkViewer extends CCanvas<LyngkCell,LyngkBoard> implements LyngkC
     	int mainH = G.Height(main);
     	
     	// calculate a suitable cell size for the board
-    	double cs = Math.min((double)(mainW-fh)/(nrows+3),(double)mainH/(nrows+1));
+    	double cs = Math.min((double)(mainW)/(nrows+3),(double)mainH/(nrows+1));
     	SQUARESIZE = (int)cs;
     	CELLSIZE = SQUARESIZE/2;
     	int C2 = CELLSIZE/2;
     	//G.print("cell "+cs0+" "+cs+" "+bestPercent);
     	// center the board in the remaining space
         int stateH = CELLSIZE*2; 
-    	int boardW = (int)(nrows*SQUARESIZE);
-    	int boardH = (int)(nrows*SQUARESIZE);
+        int boardW = (int)(nrows*cs);
+    	int boardH = (int)(nrows*cs);
     	int unclaimedW = SQUARESIZE*2;
     	int unclaimedH = SQUARESIZE*10;
     	int extraW = Math.max(0, (mainW-boardW-unclaimedW)/2);
     	int extraH = Math.max(0, (mainH-boardH-stateH)/2);
     	int boardY = extraH+mainY+stateH;
-    	int unclaimedX = mainX+extraW+SQUARESIZE/2;
+    	int unclaimedX = mainX+extraW+SQUARESIZE/4;
     	G.SetRect(unclaimedChipRect,unclaimedX,boardY+(boardH-unclaimedH)/2,unclaimedW,unclaimedH);
        	layout.returnFromMain(extraW,extraH);
 
@@ -283,7 +283,7 @@ public class LyngkViewer extends CCanvas<LyngkCell,LyngkBoard> implements LyngkC
     	// state and top ornaments snug to the top of the board.  Depending
     	// on the rendering, it can occupy the same area or must be offset upwards
     	//
-    	G.placeRow(boardX,boardY-stateH, boardW, stateH,stateRect,viewsetRect,rotateRect,eyeRect,liftRect,noChatRect);
+    	G.placeRow(boardX,boardY-stateH, boardW, stateH,stateRect,annotationMenu,viewsetRect,rotateRect,eyeRect,liftRect,noChatRect);
 
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	
@@ -474,7 +474,7 @@ public class LyngkViewer extends CCanvas<LyngkCell,LyngkBoard> implements LyngkC
     	// something which might allow an action.  
     	LyngkCell last = gb.lastMove[nextPlayer[gb.whoseTurn]];
     	boolean perspective = usePerspective();
-        Enumeration<LyngkCell>cells = gb.getIterator(Itype.TBLR);
+        Enumeration<LyngkCell>cells = gb.getIterator(Itype.TBRL);
         boolean show = eyeRect.isOnNow();
     	while(cells.hasMoreElements())
           { LyngkCell cell = cells.nextElement();

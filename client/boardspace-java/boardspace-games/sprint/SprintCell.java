@@ -24,8 +24,7 @@ public class SprintCell extends stackCell<SprintCell,SprintChip>
 {	
 	int sweep_counter;		// the sweep counter for which blob is accurate
 	int wordDirections = 0;				// mask of directions where words exist
-	boolean isBlank = false;
-	public boolean seeFlyingTiles = false;
+	boolean nonWord = false;
 	StackIterator<Word> wordHead;
 	public void addWordHead(Word w)
 	{
@@ -34,7 +33,7 @@ public class SprintCell extends stackCell<SprintCell,SprintChip>
 	
 	public SprintChip animationChip(int idx)
 	{	SprintChip ch = chipAtIndex(idx);
-		if(!seeFlyingTiles && !onBoard && ch!=null && ch.back!=null ) { ch = ch.back; }
+		if(!onBoard && ch!=null && ch.back!=null ) { ch = ch.back; }
 		return(ch);
 	}
 
@@ -56,6 +55,8 @@ public class SprintCell extends stackCell<SprintCell,SprintChip>
 	 */
 	public void reInit()
 	{	super.reInit();
+		nonWord = false;
+		wordDirections = 0;
 	}
 	// constructor a cell not on the board, with a chip.  Used to construct the pool chips
 	public SprintCell(SprintChip cont)
@@ -63,7 +64,12 @@ public class SprintCell extends stackCell<SprintCell,SprintChip>
 		addChip(cont);
 		onBoard=false;
 	}
-
+	public void copyFrom(SprintCell other)
+	{
+		super.copyFrom(other);
+		nonWord = other.nonWord;
+		wordDirections = other.wordDirections;
+	}
 	
 	public SprintChip[] newComponentArray(int size) {
 		return(new SprintChip[size]);

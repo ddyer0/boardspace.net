@@ -98,7 +98,7 @@ import online.search.SimpleRobotProtocol;
  *  <li> do a cvs update on the original twixt hierarchy to get back the original code.
  *  
 */
-public class TwixtViewer extends CCanvas<TwixtCell,TwixtBoard> implements TwixtConstants, GameLayoutClient
+public class TwixtViewer extends CCanvas<TwixtCell,TwixtBoard> implements TwixtConstants, GameLayoutClient,PlacementProvider
 {	static final long serialVersionUID = 1000;
      // colors
     private Color reviewModeBackground = new Color(220,165,200);
@@ -132,6 +132,8 @@ public class TwixtViewer extends CCanvas<TwixtCell,TwixtBoard> implements TwixtC
     private Rectangle chipRects[] = addRect("chip",2);
     private Rectangle rotateRect = addRect("Reverse");
     private Rectangle flatRect = addRect("flat");
+    private NumberMenu numberMenu = new NumberMenu(this,TwixtChip.red_peg_flat,TwixtId.ShowNumbers) ;
+
 	private TextButton swapButton = addButton(SWAP,GameId.HitSwapButton,SwapDescription,
 			HighlightColor, rackBackGroundColor);
     private Rectangle acceptDrawRect = addRect("acceptDraw");
@@ -185,7 +187,7 @@ public class TwixtViewer extends CCanvas<TwixtCell,TwixtBoard> implements TwixtC
         // later, some variant is created, or the game code base is re purposed as the basis
         // for another game.
         bb = new TwixtBoard(type,players_in_game,randomKey,getStartingColorMap(),TwixtBoard.REVISION);
-        //useDirectDrawing(); // not tested yet
+        useDirectDrawing(true); 
         doInit(false);
 
     }
@@ -303,7 +305,7 @@ public class TwixtViewer extends CCanvas<TwixtCell,TwixtBoard> implements TwixtC
     	//
         int stateY = boardY-stateH/2;
         int stateX = boardX;
-        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,rotateRect,flatRect,viewsetRect,guidelinesRect,noChatRect);
+        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,numberMenu,rotateRect,flatRect,viewsetRect,guidelinesRect,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	lineStrokeWidth = boardW/600.0;
     	// goal and bottom ornaments, depending on the rendering can share
@@ -605,6 +607,8 @@ public class TwixtViewer extends CCanvas<TwixtCell,TwixtBoard> implements TwixtC
     		StockArt.SmallO.drawChip(gc, this, sz*4, xpos,ypos+sz/6,null);
     		}
     	}
+    	numberMenu.saveSequenceNumber(cell,xpos,ypos);
+
     	if(cell.drawStack(gc,this,hitCell?highlight:null,sz,xpos,ypos,0,showFlat?0:ycellscale,null))
     	{	boolean empty = cell.isEmpty();
         	
@@ -850,6 +854,8 @@ public class TwixtViewer extends CCanvas<TwixtCell,TwixtBoard> implements TwixtC
         commonPlayer activePlayer = getActivePlayer(); //viewerWhoseTurn()
     	TwixtPlay robot = (TwixtPlay)(extraactions ? (activePlayer.robotPlayer) : null);
 
+        numberMenu.clearSequenceNumbers();
+
         // this enumerates the cells in the board in an arbitrary order.  A more
         // conventional double xy loop might be needed if the graphics overlap and
         // depend on the shadows being cast correctly.
@@ -885,6 +891,7 @@ public class TwixtViewer extends CCanvas<TwixtCell,TwixtBoard> implements TwixtC
             	repaint(1000);
             	}
         }
+        numberMenu.drawSequenceNumbers(gc,gb.cellSize(),labelFont,labelColor);
         inBoardDraw = false;
     }
 
@@ -1010,6 +1017,7 @@ public class TwixtViewer extends CCanvas<TwixtCell,TwixtBoard> implements TwixtC
             				gb.whoseTurn,
             				stateRect);
         gb.playerChip[gb.whoseTurn].drawChip(gc,this,iconRect,null,0.5);
+        numberMenu.draw(gc,selectPos);
         goalAndProgressMessage(gc,nonDragSelect,Color.black,
         		s.get(TwixtVictoryCondition),progressRect, goalRect);
         
@@ -1152,6 +1160,10 @@ public class TwixtViewer extends CCanvas<TwixtCell,TwixtBoard> implements TwixtC
         {
         default:
         	throw G.Error("Hit Unknown: %s", hitObject);
+        case ShowNumbers:
+        	numberMenu.showMenu();
+        	break;
+
         case GuidelineButton:
         	guidelinesOn = !guidelinesOn;
         	break;
@@ -1399,10 +1411,12 @@ public class TwixtViewer extends CCanvas<TwixtCell,TwixtBoard> implements TwixtC
     		showDistances = showDistancesItem.getState();
     		return(true);
     	}
-    	if(target==showPreferredItem)
+    	else if(target==showPreferredItem)
     	{	showPreferred = showPreferredItem.getState();
     		return(true);
     	}
+    	else if(numberMenu.selectMenu(target,this)) { return true; }
+
         boolean handled = super.handleDeferredEvent(target, command);
 
 
@@ -1505,5 +1519,9 @@ public class TwixtViewer extends CCanvas<TwixtCell,TwixtBoard> implements TwixtC
             setComment(comments);
         }
     }
+
+	public int getLastPlacement(boolean empty) {
+		return bb.moveNumber+(bb.DoneState()?1:0);
+	}
 }
 

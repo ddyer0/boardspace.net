@@ -28,7 +28,7 @@ public class TextWindow extends Canvas implements MouseListener,MouseMotionListe
 			G.isCodename1()
 				? RepaintStrategy.Direct_Unbuffered
 				: RepaintStrategy.Direct_SingleBuffer);
-	public void drawBackground(Graphics gc) 
+	public void drawBackground(Graphics gc, Image image) 
 	{
 		
 	}

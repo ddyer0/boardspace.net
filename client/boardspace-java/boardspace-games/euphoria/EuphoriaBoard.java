@@ -1039,7 +1039,7 @@ public class EuphoriaBoard extends EuphoriaBoardConstructor implements EuphoriaC
 	public EPlayer getCurrentPlayer() { return(players[whoseTurn]); }
 	public EPlayer getPlayer(int in) { return(in<players.length ? players[in] : null); }
 	public void normalizePlayerViews() {  for(EPlayer p : players)
-		{ p.hiddenView = p.view = p.pendingView = EPlayer.PlayerView.Normal; }}
+		{ p.hiddenView = p.view = EPlayer.PlayerView.Normal; }}
 	public StringStack finalPath=new StringStack();
 	//
 	// finalpath is a debugging aid.  The possible paths through the "done" after placing
@@ -3132,9 +3132,10 @@ void dontDarrenTheRepeater(EPlayer p,replayMode replay)
     		 
     	}
     }
+    
     void setRecruitDialogState(EPlayer p)
     {	Assert(activePlayer>=0,"activePlayer set");
-    	boolean recruitsReady = (p.activeRecruits.height()>0) && (p.hiddenRecruits.height()>0);
+    	boolean recruitsReady = p.recruitsReady();
     	int factionLess = p.countRecruits(Allegiance.Factionless);
     	if(SIMULTANEOUS_PLAY)
     	{	
@@ -6899,9 +6900,9 @@ private void doAmandaTheBroker(EuphoriaCell dest,replayMode replay,RecruitChip a
         switch (m.op)
         {
         case EPHEMERAL_CHOOSE_RECRUITS:
-
-			recruitPlayer = getPlayer(m.from_color).boardIndex;
-			setRecruitDialogState(players[recruitPlayer]);
+        	int rp = getPlayer(m.from_color).boardIndex;
+			recruitPlayer = recruitPlayer==rp ? -1 : rp;
+			if(recruitPlayer>=0) { setRecruitDialogState(players[recruitPlayer]); }
 			break;
 			
         case MOVE_RECRUIT:
@@ -6986,6 +6987,7 @@ private void doAmandaTheBroker(EuphoriaCell dest,replayMode replay,RecruitChip a
         case NORMALSTART:
         	if(!hasReducedRecruits) { moveNumber--; doDone(null,replay); }
            	REINIT_SIMULTANEOUS_PLAY = SIMULTANEOUS_PLAY = false;
+           	recruitPlayer = -1;
            	doNormalStart();
            	break;
         case USE_DIE_ROLL:
@@ -7371,7 +7373,9 @@ private void doAmandaTheBroker(EuphoriaCell dest,replayMode replay,RecruitChip a
                 }
             	else { setRecruitDialogState(getPlayer(whoseTurn)); }
             }
-            else {     proceedWithTheGame(replay); }
+            else {
+            	recruitPlayer = -1;
+            	proceedWithTheGame(replay); }
             setWhoseTurn(m.player); 
 	        currentPlayerInTurnOrder = whoseTurn;
           break;
@@ -7407,6 +7411,9 @@ private void doAmandaTheBroker(EuphoriaCell dest,replayMode replay,RecruitChip a
 
         //if(replay==replayMode.Live)   	{ System.out.println("Ax "+m+" for "+whoseTurn+" "+board_state+" "+Digest());   	}
         if(gameEvents.size()>0) { m.gameEvents = gameEvents.toArray(); gameEvents.clear(); }
+        
+        //G.print("X "+m+" for "+whoseTurn+" "+board_state+" "+Digest()); 
+
         return (true);
     }
  

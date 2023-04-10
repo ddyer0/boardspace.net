@@ -172,7 +172,6 @@ public class TamskViewer extends CCanvas<TamskCell,TamskBoard> implements TamskC
         enableAutoDone = true;
         super.init(info,frame);
         // use_grid=reviewer;// use this to turn the grid letters off by default
-        painter.showBitmaps = true;
         addZoneRect("done",doneButton);	// this makes the "done" button a zone of its own
         
         if(G.debug())

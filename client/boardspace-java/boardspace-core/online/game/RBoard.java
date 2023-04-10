@@ -292,7 +292,7 @@ public abstract class RBoard<CELLTYPE extends cell<CELLTYPE> >  extends BaseBoar
    	CELLTYPE myc = allCells;
    	CELLTYPE hisc = from_b.allCells;
    	cellArray = null;
-       
+    boardRect = from_b.boardRect;
    	while((myc!=null)&&(hisc!=null)) 
    	{ //note that this may be subtly different from
    	  // myc.copyFrom(hisc)

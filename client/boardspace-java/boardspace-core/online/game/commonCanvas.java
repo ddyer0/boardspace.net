@@ -258,7 +258,6 @@ public abstract class commonCanvas extends exCanvas
 	    private JCheckBoxMenuItem auxSliders = null;
 	    private JCheckBoxMenuItem debugSwitch = null;
 	    private JCheckBoxMenuItem debugOnceSwitch = null;
-	    private JCheckBoxMenuItem copyBoardSwitch = null;
 	    private JCheckBoxMenuItem mouseCheckbox = null;
 	    private JMenuItem layoutAction = null;
 
@@ -400,7 +399,6 @@ public abstract class commonCanvas extends exCanvas
 	    /** if true, use a copy of the real board for screen drawing.
 	     *  this requires some attention to how the animations look.
 	     */
-	    public boolean enableCopyBoard = G.debug() || G.isCodename1();
 	    private BoardProtocol backupBoard = null;	// maybe in the process of being copied
 	    private BoardProtocol displayBoard = null;	// safe to display
 	    private boolean copyBoardSwapNeeded = false;
@@ -4819,7 +4817,6 @@ public abstract class commonCanvas extends exCanvas
        if (extraactions)
         {
         	l.debugSwitch = myFrame.addOption("debug",G.debug(),deferredEvents);
-        	l.copyBoardSwitch = myFrame.addOption("allow drawing to board copy",l.enableCopyBoard,deferredEvents);
         	l.debugOnceSwitch = myFrame.addOption("debug once", false,deferredEvents);
     		hidden.gameTest = myFrame.addAction("In game test",deferredEvents);
         	l.layoutAction = myFrame.addAction("check layouts",deferredEvents);
@@ -5021,11 +5018,6 @@ public abstract class commonCanvas extends exCanvas
         else if(target == l.debugSwitch)
         {
         	G.putGlobal(G.DEBUG,""+!G.debug());
-        	handled = true;
-        }
-        else if(target==l.copyBoardSwitch)
-        {
-        	l.enableCopyBoard = l.copyBoardSwitch.getState();
         	handled = true;
         }
         else if(target == l.debugOnceSwitch)
@@ -5589,31 +5581,29 @@ public abstract class commonCanvas extends exCanvas
 	}
     
     /**
-     * on codename1, use direct drawing instead of double buffering
-     * this requires some evaluation and adjustment in animations
+     * use direct drawing instead of double buffering, and 
+     * draw on a copy of the real board rather than the board itself.
+     * Since you're drawing based on a copy, it's stable and the drawing
+     * can be done directly in any process.
      * 
-     * on codename1 or when debugging on all platforms, use a copy of the main
-     * board for drawing and mouse handling operations.  This assures that there is no inconsistent
-     * state even if the drawing is done in a different process than the game thread.
+     * this requires some care, especially when board-level objects
+     * are visible to the user interface, such as cells or player sub boards.
      * 
      * Common problems when enabling this feature involve animations where the 
      * animation origin or destination is not set, usually on cells used only in the UI
      * This generally means the cell copyFrom operation wasn't called as part of board copyFrom.  
      */
     public void useDirectDrawing(boolean unbuffered)
-    {	if(l.enableCopyBoard)
-    	{
-         painter.drawLockRequired = false;
-         saveDisplayBoard(getBoard());	// make sure there is one
-         swapCopyBoardIfNeeded();
-         saveDisplayBoard(getBoard());	// make sure there are two
-         useCopyBoard = true;
-         G.print("use direct drawing for "+getBoard());
-         if(G.isCodename1() && unbuffered) 
-     		{	 
-        	 painter.setRepaintStrategy(RepaintStrategy.Direct_Unbuffered); 
-     		}
-    	}
+    {	
+	     painter.drawLockRequired = false;	// we can draw any time
+	     saveDisplayBoard(getBoard());		// make sure there is one
+	     swapCopyBoardIfNeeded();
+	     saveDisplayBoard(getBoard());		// make sure there are two
+	     useCopyBoard = true;
+	     if(G.isCodename1() && unbuffered) 
+	 		{	 
+	    	 painter.setRepaintStrategy(RepaintStrategy.Direct_Unbuffered); 
+	 		}
     }
 
 	private boolean saveDisplayBoardNeeded = false;
@@ -8253,8 +8243,10 @@ public void verifyGameRecord()
 	    {	// the GC is not used, but if it is not null, we get one and really draw
 			// otherwise this is a scan for mouse effect only
 	    	if(remoteViewer>=0)
-	    	{	
-	    		drawHiddenWindowRemote(useAgc,highlight,remoteViewer,getBounds());
+	    	{	double z =getGlobalZoom();
+	    		int w = (int)(getWidth()*z);
+	    		int h = (int)(getHeight()*z);
+	    		drawHiddenWindowRemote(useAgc,highlight,remoteViewer,new Rectangle(0,0,w,h));
 	    	}
 	    	else
 	    	{

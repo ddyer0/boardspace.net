@@ -2639,7 +2639,7 @@ public class GameLayoutManager  implements Opcodes
 		//G.print("\nselect ",minSize,maxCellSize);
 		client = client0;
 		fullRect = new Rectangle(0,0,fullwidth,fullheight);
-		int extramargin = G.isRealPlaytable()?G.minimumFeatureSize()/2 : 0;
+		int extramargin = G.isRealLastGameBoard()||G.isRealPlaytable()?G.minimumFeatureSize()/2 : 0;
 		int width = (int)(fullwidth/zoom)-extramargin;
 		int height = (int)(fullheight/zoom)-extramargin;
 		rects.zoom = zoom;

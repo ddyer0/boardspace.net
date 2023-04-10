@@ -1585,7 +1585,7 @@ graphics when using a touch screen.
         {	
         }
         
-        public void drawBackground(Graphics gc)
+        public void drawBackground(Graphics gc,Image im)
         {
         	// font, line style etc are not well defined at this point
     		GC.setFont(gc,standardPlainFont());

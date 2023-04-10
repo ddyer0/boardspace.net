@@ -91,7 +91,7 @@ public class QyshinsuViewer extends CCanvas<QyshinsuCell,QyshinsuBoard> implemen
         MouseDotColors[0]= Color.white;
 
         b = new QyshinsuBoard(info.getString(GAMETYPE, "Qyshinsu"),getStartingColorMap());
-        useDirectDrawing(true); // not tested yet
+        useDirectDrawing(true); 
         doInit(false);
        
      }
@@ -158,7 +158,7 @@ public class QyshinsuViewer extends CCanvas<QyshinsuCell,QyshinsuBoard> implemen
     			0.5,	// % of space allocated to the board
     			1,	// aspect ratio for the board
     			fh*2,
-    			fh*3,	// maximum cell size
+    			fh*2,	// maximum cell size
     			0.1		// preference for the designated layout, if any
     			);
         // place the chat and log automatically, preferring to place
@@ -194,7 +194,7 @@ public class QyshinsuViewer extends CCanvas<QyshinsuCell,QyshinsuBoard> implemen
         int stateY = boardY;
         int stateX = boardX;
         int stateH = SQUARESIZE/2;
-        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,noChatRect);
+        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	lineStrokeWidth = boardW/400.0;
     	// goal and bottom ornaments, depending on the rendering can share

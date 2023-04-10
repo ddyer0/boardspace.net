@@ -207,7 +207,7 @@ public class EuphoriaViewer extends CCanvas<EuphoriaCell,EuphoriaBoard> implemen
     public int getOurMovingObject(HitPoint highlight)
     {	if(bb.ephemeralRecruitMode())
     	{	
-    		int rp = selectedRecruitPlayer(highlight);
+    		int rp = selectedRecruitPlayer(highlight,bb);
     		if(rp>=0)
     		{
     			EPlayer pl = bb.getPlayer(rp);
@@ -464,7 +464,7 @@ private Color playerBackground[] = {
        	// magic number that produces a 3p game with 2 factionless recruits -1118173504
        	//randomKey = -1118173504;
         bb = new EuphoriaBoard(info.getString(GAMETYPE, Variation.Euphoria.name()),randomKey,players_in_game,getStartingColorMap(),EuphoriaBoard.REVISION);
-        //useDirectDrawing();
+        useDirectDrawing(true);
         doInit(false);      	 
     }
 
@@ -568,7 +568,7 @@ private Color playerBackground[] = {
     	layout.selectLayout(this, nPlayers, width, height,
     			margin,		// margin for boxes allocated
     			0.6 ,	// space allocated to the board
-    			1.3,	// 1.3:1 aspect ratio for the board
+    			1.0,	// 1:1 aspect ratio for the board
     			fh*2.5,
     			fh*(3.5-0.1*nPlayers),	// maximum cell size
     			0.2		// preference for the designated layout, if any
@@ -645,12 +645,13 @@ private Color playerBackground[] = {
     	// draw an object being dragged
     	// use the board cell size rather than the window cell size
     	if(simultaneous_turns_allowed() && (obj!=getMovingObject(null))) { return; }
-    	EuphoriaCell src = bb.getSource();
+    	EuphoriaBoard gb = disB(g);
+    	EuphoriaCell src = gb.getSource();
     	int scale0 = src!=null ? src.defaultScale : 0;
-    	int scale = scale0 <=0 ? bb.cellSize()*4 : scale0;
+    	int scale = scale0 <=0 ? gb.cellSize()*4 : scale0;
     	EuphoriaChip chip = EuphoriaChip.getChip(obj);
     	if(chip!=null) 
-    		{ if(bb.getState()!=EuphoriaState.Puzzle) { chip = chip.getSpriteProxy();}
+    		{ if(gb.getState()!=EuphoriaState.Puzzle) { chip = chip.getSpriteProxy();}
     		  chip.drawChip(g,this,remoteViewer>=0 ? scale*2 : scale, xp, yp, null); 
     		}
     }
@@ -1042,7 +1043,7 @@ private Color playerBackground[] = {
     			&& !somehit)
     	{
     		tip.hitCode = EuphoriaId.ShowPlayerView;
-    		p.pendingView = EPlayer.PlayerView.Normal;
+    		tip.hit_index = EPlayer.PlayerView.Normal.ordinal();
     		tip.hitObject = p.artifacts;
     		tip.awidth =CELLSIZE/4;
      		tip.spriteColor = Color.red;
@@ -1236,18 +1237,24 @@ private Color playerBackground[] = {
         	xp+= unitSize*4;
         	drawStackOnPlayer(gc,pl,gb,gb.legalToHitPlayer(p.workers,sources,dests)?highlight:null,pr,p.workers,xp,yp,tip,fromHiddenWindow);
         	StockArt.SmallO.drawChip(gc,this,unitSize*5/2,xp+unitSize/2,yp,""+p.totalWorkers);
-         	drawStackOnPlayer(gc,pl,gb,gb.legalToHitPlayer(p.dilemma,sources,dests)?highlight:null,pr,p.dilemma,xp+unitSize*3,G.Top(r)+unitSize/2,tip,fromHiddenWindow);
+        	
+        	{
+        	int hx = xp+unitSize*3;
+        	int hy = G.Top(r)+unitSize/2;
+        	drawStackOnPlayer(gc,pl,gb,gb.legalToHitPlayer(p.dilemma,sources,dests)?highlight:null,pr,p.dilemma,
+        			hx,hy ,tip,fromHiddenWindow);
+        	Rectangle ht = new Rectangle(xp+unitSize*2,G.Top(r),unitSize*2,unitSize);
         	if( (p.dilemma.height()>0)
-        			&& G.pointInRect(tip,xp+unitSize*2,G.Top(r),unitSize*2,unitSize) 
-        			&& (p.testPFlag(PFlag.HasResolvedDilemma) || anySelectionAllowed)
+        			&& G.pointInRect(tip,ht) 
+       			&& (p.testPFlag(PFlag.HasResolvedDilemma) || anySelectionAllowed)
         			&& (tip.hitCode==DefaultId.HitNoWhere))
          	{	tip.hitCode = EuphoriaId.ShowPlayerView;
          		tip.hitObject = p.artifacts;
-         		p.pendingView =  EPlayer.PlayerView.Dilemma;
-         		tip.awidth =unitSize;
+         		tip.spriteRect = ht;
+         		tip.hit_index =  EPlayer.PlayerView.Dilemma.ordinal();
         		tip.spriteColor = Color.red;
 
-          	}
+          	}}
 
          	xp += unitSize;
         	drawStackOnPlayer(gc,pl,gb,gb.legalToHitPlayer(p.food,sources,dests)?highlight:null,pr,p.food,xp,yp,tip,fromHiddenWindow);
@@ -1265,28 +1272,29 @@ private Color playerBackground[] = {
            			fromHiddenWindow);
 
         	// if we missed the artifacts but are nearby, put up the eye
+           	{
+           	Rectangle hr = new Rectangle(xp-unitSize,ypm-unitSize/2,unitSize*2,unitSize);
          	if( (p.artifacts.height()>0)
          			&& G.pointInRect(anySelectionAllowed
          					?tip
-         					:highlight,
-         			xp-unitSize/2,ypm-unitSize,unitSize,unitSize*2) && (tip.hitCode==DefaultId.HitNoWhere))
+         					:highlight,	hr) && (tip.hitCode==DefaultId.HitNoWhere))
          	{	tip.hitCode = EuphoriaId.ShowPlayerPeek;
          		tip.hitObject = p.artifacts;
-         		p.pendingView =  EPlayer.PlayerView.Artifacts;
-         		tip.awidth =unitSize;
-        		tip.arrow = StockArt.Eye;
+         		tip.hit_index =  EPlayer.PlayerView.Artifacts.ordinal();
+         		tip.spriteRect = hr;
         		tip.spriteColor = Color.red;
 
-          	}
+          	}}
 
         	xp += 2*unitSize+unitSize/2;
         	// require accurate placement for recruit cards because there are 2 piles.
         	drawStackOnPlayer(gc,pl,gb,gb.legalToHitPlayer(p.activeRecruits,sources,dests)?highlight:null,null,p.activeRecruits,xp,yp,tip,fromHiddenWindow);
            	
+        	{
         	drawStackOnPlayer(gc,pl,gb,null,null,p.allegianceStars,xp,yp,null,fromHiddenWindow);
-        	
+        	Rectangle hr = new Rectangle(xp-unitSize,yp-unitSize/2,unitSize*2,unitSize);
          	if( (p.activeRecruits.height()>0)
-         			&& G.pointInRect(tip,xp-unitSize/2,yp-unitSize,unitSize,unitSize*2) 
+         			&& G.pointInRect(tip,hr) 
          			&& p.hasReducedRecruits()
          			// added 10/2/2023, don't allow peeking at other players recruits when they
          			// have decided but we're still in the selection phase
@@ -1294,38 +1302,36 @@ private Color playerBackground[] = {
          			&& (tip.hitCode==DefaultId.HitNoWhere))
          	{	tip.hitCode = EuphoriaId.ShowPlayerView;
          		tip.hitObject = p.activeRecruits;
-         		p.pendingView = EPlayer.PlayerView.ActiveRecruits;
-         		tip.awidth =unitSize;
-        		tip.arrow = StockArt.Eye;
+         		tip.hit_index = EPlayer.PlayerView.ActiveRecruits.ordinal();
+         		tip.spriteRect = hr;
         		tip.spriteColor = Color.red;
-          	}
+          	}}
          	
 
         	// require accurate placement for recruit cards because there are 2 piles.
+         	{
         	drawStackOnPlayer(gc,pl,gb,
         			gb.legalToHitPlayer(p.hiddenRecruits,sources,dests)?highlight:null,
         			null,p.hiddenRecruits,xp,ypm,tip,fromHiddenWindow);
-         	
+         	Rectangle hr = new Rectangle(xp-unitSize,
+         					ypm-unitSize/2,
+         					unitSize*2,
+         					unitSize);
          	if( (p.hiddenRecruits.height()>0) 
          		
          			&& G.pointInRect(anySelectionAllowed
          								? tip 
          								: highlight,
-         					xp-unitSize/2,
-         					ypm-unitSize,
-         					unitSize,
-         					unitSize*2)
+         					hr)
          			&& (tip.hitCode==DefaultId.HitNoWhere))
          	{	tip.hitCode = EuphoriaId.ShowPlayerView;
          		tip.hitObject = p.hiddenRecruits;
-         		tip.awidth =unitSize;
-        		tip.arrow = StockArt.Eye;
-        		p.pendingView = EPlayer.PlayerView.HiddenRecruits;
+         		tip.spriteRect = hr;
+        		tip.hit_index = EPlayer.PlayerView.HiddenRecruits.ordinal();
         		tip.spriteColor = Color.red;
 
           	}
-         	
-        	}
+        	}}
    		
  		if(G.offline() && bb.ephemeralRecruitMode() && !p.hasReducedRecruits())
  		{	Rectangle subr = new Rectangle(leftR+widthR/4,topR+heightR/4,widthR/2,heightR/2);
@@ -1356,18 +1362,18 @@ private Color playerBackground[] = {
 			tip.hitObject = p.artifacts;
 			tip.awidth =unitSize;
     		tip.spriteColor = Color.red;
-			p.pendingView =  (hide && (view==PlayerView.AutoArtifacts)) ? PlayerView.Artifacts : PlayerView.Normal;
+			tip.hit_index =  (hide && (view==PlayerView.AutoArtifacts)) ? PlayerView.Artifacts.ordinal() : PlayerView.Normal.ordinal();
     		tip.arrow = StockArt.NoEye;
 		}
     	
     	if(G.offline() 
     			&& !fromHiddenWindow 
-    			&& enableDone()
+    			&& enableDone(gb)
     			&& plannedSeating()
     			&& (highlight!=null)
     			)
     	{	int dw = unitSize*3;
-    		handleDone(gc,highlight,new Rectangle(leftR+widthR-dw,topR,dw,dw/2));
+    		handleDone(gc,gb,highlight,new Rectangle(leftR+widthR-dw,topR,dw,dw/2));
     	}
      }
     boolean isIIB() { return bb.isIIB(); }
@@ -1741,7 +1747,7 @@ private Color playerBackground[] = {
     		EuphoriaChip ch = c.chipAtIndex(i);
     		if(ch.drawChip(gc,this,hitEye?null:hp,c.rackLocation,sz,xpos,ypos,null,1,1))
     		{	
-    		p.pendingView = PlayerView.Normal; 
+    		hp.hit_index = PlayerView.Normal.ordinal(); 
 			hp.hitCode = EuphoriaId.ShowPlayerView;
 			hp.hitObject = c;
 			hp.spriteRect = null;
@@ -1756,17 +1762,17 @@ private Color playerBackground[] = {
     	return hit;
     }
     private boolean showHiddenUI = false;
-    private int selectedRecruitPlayer()
+    private int selectedRecruitPlayer(EuphoriaBoard gb)
     {
     	return ( (G.offline()||reviewOnly)
-    				? (simultaneous_turns_allowed() ? bb.recruitPlayer : bb.whoseTurn)
+    				? (simultaneous_turns_allowed() ? gb.recruitPlayer : gb.whoseTurn)
     				: getActivePlayer().boardIndex
     				);
     }
-    private int selectedRecruitPlayer(HitPoint hp)
+    private int selectedRecruitPlayer(HitPoint hp,EuphoriaBoard gb)
     {
     	int rp = remoteWindowIndex(hp);
-    	return (rp>=0 ? rp : selectedRecruitPlayer());
+    	return (rp>=0 ? rp : selectedRecruitPlayer(gb));
     }
     
     private void showClosedOverlay(Graphics gc,Rectangle br,HitPoint highlight)
@@ -2423,10 +2429,10 @@ private Color playerBackground[] = {
     	}
     	return(s.get(val));
     }
-    private boolean useRecruitGui(EuphoriaState state)
+    private boolean useRecruitGui(EuphoriaState state,EuphoriaBoard gb)
     {
         boolean simultaneous = !getActivePlayer().spectator && state.simultaneousTurnsAllowed();
-        int pl = selectedRecruitPlayer();
+        int pl = selectedRecruitPlayer(gb);
         boolean ourMove = OurMove() || simultaneous;
  
     	return ((startedPlaying||reviewOnly) 
@@ -2438,26 +2444,26 @@ private Color playerBackground[] = {
     			   || ((state!=EuphoriaState.Puzzle)
     				  && (pl>=0)
           			  && ourMove 
-          			  &&  !bb.getPlayer(pl).hasReducedRecruits()
+          			  &&  !gb.getPlayer(pl).hasReducedRecruits()
     				  ));
     }
-    private boolean enableDone()
+    private boolean enableDone(EuphoriaBoard gb)
     {
-    	return(bb.DoneState()
-    			&&(!bb.ephemeralRecruitMode()||(selectedRecruitPlayer()>=0)));
+    	return(gb.DoneState()
+    			&&(!gb.ephemeralRecruitMode()||(selectedRecruitPlayer(gb)>=0)));
     }
-    private void handleDone(Graphics gc,HitPoint select,Rectangle r)
+    private void handleDone(Graphics gc,EuphoriaBoard gb,HitPoint select,Rectangle r)
     {
        if (GC.handleRoundButton(gc, r, 
-        			enableDone()
+        			enableDone(gb)
         				? select
         				: null, s.get(DoneAction),
                 HighlightColor, rackBackGroundColor))
         {	// always display the done button, but only make it active in
         	// the appropriate states
         	
-            select.hitCode = (bb.getState()==EuphoriaState.EphemeralConfirmRecruits)
-            							? bb.ephemeralRecruitMode() 
+            select.hitCode = (gb.getState()==EuphoriaState.EphemeralConfirmRecruits)
+            							? gb.ephemeralRecruitMode() 
             									? EuphoriaId.EConfirmOneRecruit
             									: EuphoriaId.EConfirmRecruits
             							:GameId.HitDoneButton;
@@ -2508,7 +2514,7 @@ private Color playerBackground[] = {
        //
        boolean simultaneous = !reviewMode() && !getActivePlayer().spectator && state.simultaneousTurnsAllowed();
        boolean ourMove = OurMove() || simultaneous;
-       boolean recruitGui = useRecruitGui(state);
+       boolean recruitGui = useRecruitGui(state,gb);
        boolean recruitOverlay = globalRecruits!=null;
        boolean bigChipOverlay = bigChip!=null; 
        boolean anyAuxGui = recruitGui|recruitOverlay|bigChipOverlay ;
@@ -2558,7 +2564,7 @@ private Color playerBackground[] = {
        		EuphoriaId rack = magnifier ? EuphoriaId.UnMagnifier : EuphoriaId.Magnifier;
        		ch.drawChip(gc,this,magnifierRect,ourTurnSelect,rack,(String)null);
        }
-	   int who = selectedRecruitPlayer();
+	   int who = selectedRecruitPlayer(gb);
 	   if(recruitGui)
        {    
     	   if(who>=0)
@@ -2618,7 +2624,7 @@ private Color playerBackground[] = {
         {	// if in any normal "playing" state, there should be a done button
 			// we let the board be the ultimate arbiter of if the "done" button
 			// is currently active.
-			if(!face) { handleDone(gc,buttonSelect,doneRect); }
+			if(!face) { handleDone(gc,gb,buttonSelect,doneRect); }
 			
 			if(currentZoom==null)
 				{ handleEditButton(gc,messageRotation,editRect,buttonSelect, selectPos,HighlightColor, rackBackGroundColor);
@@ -2640,7 +2646,7 @@ private Color playerBackground[] = {
         			&& !((p.view==EPlayer.PlayerView.Artifacts)
         				|| (p.view==EPlayer.PlayerView.AutoArtifacts)
         			    || (p.view==EPlayer.PlayerView.Dilemma)
-        			    || bb.ephemeralRecruitMode()
+        			    || gb.ephemeralRecruitMode()
         			    );
         	cp.setRotatedContext(gc, selectPos, false);
     		framePlayer(gc,p,cp.playerBox); 
@@ -2660,7 +2666,7 @@ private Color playerBackground[] = {
         	if(state==EuphoriaState.EphemeralChooseRecruits)
         		{
         		cp = gb.getPlayer(getActivePlayer().boardIndex);
-        		if(!useRecruitGui(state)) 
+        		if(!useRecruitGui(state,gb)) 
         			{msg = s.get(NormalStartState);
         			}
         		}
@@ -2669,9 +2675,9 @@ private Color playerBackground[] = {
             		messageRotation,
             		Color.black,
             		tmsg,
-          				state!=EuphoriaState.Puzzle,
-          					whoseMove,
-            				stateRect);
+          				state!=EuphoriaState.Puzzle && !state.simultaneousTurnsAllowed(),
+          				whoseMove,
+          				stateRect);
             EuphoriaChip.getAuthority(cp.color).drawChip(gc,this,iconRect,null);
             goalAndProgressMessage(gc,nonDragSelect,Color.white,s.get(EuphoriaVictoryCondition),progressRect, goalRect);
             //DrawRepRect(gc,gb.Digest(),repRect);	// Not needed for euphoria
@@ -3060,7 +3066,7 @@ private Color playerBackground[] = {
         	if(missedOneClick) {  bigChip = null; }
         	if(activeReset)
         	{	
-        		int player = selectedRecruitPlayer(hp);
+        		int player = selectedRecruitPlayer(hp,bb);
         		if(player>=0)
         		{
                 EPlayer pl = bb.getPlayer(player);
@@ -3119,7 +3125,7 @@ private Color playerBackground[] = {
 				case EConfirmOneRecruit:
 				case EConfirmRecruits:
 					{
-					int pl = selectedRecruitPlayer(hp);
+					int pl = selectedRecruitPlayer(hp,bb);
 					PerformAndTransmit(rack.name()+" "+ bb.getPlayer(reviewOnly ? bb.whoseTurn : pl).color);
 					}
 					break;
@@ -3138,8 +3144,9 @@ private Color playerBackground[] = {
 				    EuphoriaCell hitObject = hitCell(hp);
 					EPlayer p = bb.getPlayer(hitObject.color);
 					HiddenGameWindow hidden = findHiddenWindow(hp);
-					if((hidden!=null)||(remoteViewer>=0)) { p.hiddenView = p.pendingView; }
-					else { p.view = p.pendingView; }
+					EPlayer.PlayerView pend = EPlayer.PlayerView.values()[hp.hit_index];
+					if((hidden!=null)||(remoteViewer>=0)) { p.hiddenView = pend; }
+					else { p.view = pend; }
 					autoCardMode = false;
 					bigChip = null;
 					if((rack==EuphoriaId.ShowPlayerPeek)
@@ -3162,7 +3169,7 @@ private Color playerBackground[] = {
 					G.Assert(chip!=null,"recruit chip missing");
 					PerformAndTransmit(rack.name() +" \""+chip.name+"\"");
 					EPlayer p = bb.getCurrentPlayer();
-					p.view = p.pendingView = EPlayer.PlayerView.Normal;
+					p.view = EPlayer.PlayerView.Normal;
 					autoCardMode = false;
 					}
 					break;
@@ -3170,7 +3177,7 @@ private Color playerBackground[] = {
 				case JoinTheEstablishment:
 					{
 					EPlayer p = bb.getCurrentPlayer();
-					p.view = p.pendingView = EPlayer.PlayerView.Normal;
+					p.view = EPlayer.PlayerView.Normal;
 					globalRecruits = null;
 					bigChip = null;
 					PerformAndTransmit(rack.name());
@@ -3181,7 +3188,7 @@ private Color playerBackground[] = {
 					{
 						PerformAndTransmit(rack.name() +" \""+bb.activeRecruit().name+"\"");
 						EPlayer p = bb.getCurrentPlayer();
-						p.view = p.pendingView = EPlayer.PlayerView.Normal;
+						p.view = EPlayer.PlayerView.Normal;
 						autoCardMode = false;
 					}
 					break;
@@ -3192,16 +3199,17 @@ private Color playerBackground[] = {
 			else if(getMovingObject(hp)>=0)
 			{
 		        boolean simultaneous = simultaneous_turns_allowed();
-		        EuphoriaCell hitObject = hitCell(hp);
+		        EuphoriaCell hitObject = bb.getCell(hitCell(hp));
 		        if(simultaneous)
 		        {
-		        int player = selectedRecruitPlayer(hp);
+		        int player = selectedRecruitPlayer(hp,bb);
 		        EPlayer pl = bb.getPlayer(player);
 		        EuphoriaCell src = pl.ephemeralPickedSource;
 		        // unpick it
 		        PerformAndTransmit("Edrop "+src.color+" "+src.rackLocation().name(),false,replayMode.Live);
 		        // move it atomically, 
-		        if(src!=hitObject) {PerformAndTransmit("EChoose "+src.color+" "+src.rackLocation
+		        if(src!=hitObject)
+		        	{PerformAndTransmit("EChoose "+src.color+" "+src.rackLocation
 		        			    + " "+rack.name()); }			        
 		        }
 		        else
@@ -3484,21 +3492,27 @@ private Color playerBackground[] = {
     		}
     	
        	// draw the avatars
+     	boolean doneSelect = false;
     	String msg = (state==EuphoriaState.Gameover)
     					?gameOverMessage()
     					:getStateDescription(state,bb);
-    	
+    	if((state==EuphoriaState.EphemeralConfirmRecruits)
+    			&& pl.discardedRecruits.height()>0)
+    	{
+    		msg = s.get(NormalStartState);
+    		doneSelect = true;
+    	}
     	int who = bb.whoseTurn;
     	
     	GC.setFont(gc,efont);
     	Text tmsg = colorize(msg);
         standardGameMessage(gc,0,Color.black,
         		tmsg,
-      				state!=EuphoriaState.Puzzle,
+      				state!=EuphoriaState.Puzzle && !state.simultaneousTurnsAllowed(),
       					who,
         				stateRect);
 		boolean simul = state.simultaneousTurnsAllowed();
-    	if(who==index || simul)
+    	if(!doneSelect && (who==index || simul))
     	{	switch(state)
     		{
     		default:

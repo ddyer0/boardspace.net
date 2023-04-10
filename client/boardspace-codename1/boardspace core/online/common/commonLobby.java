@@ -325,7 +325,7 @@ void setLobbyState(ConnectionState state)
 ConnectionState getLobbyState() { return(myLobbyState); }
 
 
-void CloseConn(String why)
+private void CloseConn(String why)
   { ConnectionManager nc = myNetConn;
     pingtime = 0;
     hearbeatTime = 0;
@@ -338,7 +338,7 @@ void CloseConn(String why)
       }
     setLobbyState(ConnectionState.UNCONNECTED);
   }
-void ReStarting(boolean recon)
+private void ReStarting(boolean recon)
 { if(!myNetConn.reconnecting && !doNotReconnect && !exitFlag)
   {
   setLobbyState(ConnectionState.UNCONNECTED);

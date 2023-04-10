@@ -14,7 +14,6 @@ import lib.Random;
 import online.game.*;
 
 /**
- * TODO: implement the new rules for scoring
  * 
  * BloomdBoard knows all about the game of Hex, which is played
  * on a hexagonal board. It gets a lot of logistic support from 
@@ -41,7 +40,8 @@ import online.game.*;
  */
 
 class BloomsBoard extends hexBoard<BloomsCell> implements BoardProtocol
-{	static int REVISION = 100;			// 100 represents the initial version of the game
+{	static int REVISION = 101;			// 100 represents the initial version of the game
+										// 101 adds the endgame condition selection
 	public int getMaxRevisionLevel() { return(REVISION); }
     static final String[] BloomsGRIDSTYLE = { "1", null, "A" }; // left and bottom numbers
 	
@@ -55,7 +55,13 @@ class BloomsBoard extends hexBoard<BloomsCell> implements BoardProtocol
 	private CellStack captureStack = new CellStack();
 	private ChipStack chipStack = new ChipStack();
 	private int captured[] = new int[2];
-	
+	EndgameCondition endgameCondition = EndgameCondition.Territory;
+	boolean endgameApproved[] = new boolean[2];
+	boolean allApproved()
+	{
+		return endgameApproved[0]&&endgameApproved[1];
+	}
+	boolean endgameSelected = false;
 	private int sweep_counter = 0;
 	public BloomsState getState() { return(board_state); }
     /**
@@ -71,10 +77,26 @@ class BloomsBoard extends hexBoard<BloomsCell> implements BoardProtocol
 	}
     
 	public BloomsChip.ColorSet[] playerColorSet = new BloomsChip.ColorSet[2];
+	public int playerIndex(BloomsId source)
+	{
+		switch(source)
+		{
+		case Red_Chip_Pool:
+		case Orange_Chip_Pool: return 0;
+		case Green_Chip_Pool:
+		case Blue_Chip_Pool:	return 1;
+		default: throw G.Error("Not expecting %s",source);
+		}
+	}
+	
     public BloomsChip playerColors[][]=new BloomsChip[2][2];
     public BloomsCell playerCells[][]=new BloomsCell[2][2];
     public BloomsCell firstPlayedLocation = null;
     
+    public BloomsChip playerColor(int n)
+    {
+    	return playerColors[n][0];
+    }
 // this is required even if it is meaningless for this game, but possibly important
 // in other games.  When a draw by repetition is detected, this function is called.
 // the game should have a "draw pending" state and enter it now, pending confirmation
@@ -204,6 +226,9 @@ class BloomsBoard extends hexBoard<BloomsCell> implements BoardProtocol
 		AR.setValue(score, 0);
         animationStack.clear();
         moveNumber = 1;
+        endgameCondition = EndgameCondition.Territory;
+        AR.setValue(endgameApproved,false);
+        endgameSelected = revision==100;
 
         // note that firstPlayer is NOT initialized here
     }
@@ -240,7 +265,9 @@ class BloomsBoard extends hexBoard<BloomsCell> implements BoardProtocol
         pickedObject = from_b.pickedObject;
         lastPicked = from_b.lastPicked;
         firstPlayedLocation = getCell(from_b.firstPlayedLocation);
-        
+        endgameCondition = from_b.endgameCondition;
+        endgameSelected = from_b.endgameSelected;
+        AR.copy(endgameApproved,from_b.endgameApproved);
         AR.copy(captured,from_b.captured);
         sameboard(from_b); 
     }
@@ -269,6 +296,11 @@ class BloomsBoard extends hexBoard<BloomsCell> implements BoardProtocol
         G.Assert(sameContents(chipStack,from_b.chipStack),"chipStack mismatch");
         G.Assert(AR.sameArrayContents(captured,from_b.captured),"captured mismatch");
         G.Assert(sameCells(firstPlayedLocation,from_b.firstPlayedLocation),"playedLocation mismatch");
+        
+        G.Assert(endgameCondition == from_b.endgameCondition,"endgame condition mismatch");
+        G.Assert(endgameSelected == from_b.endgameSelected,"endgame selected mismatch");
+        G.Assert(AR.sameArrayContents(endgameApproved,from_b.endgameApproved),"endgame approved mismatch");
+        
         // this is a good overall check that all the copy/check/digest methods
         // are in sync, although if this does fail you'll no doubt be at a loss
         // to explain why.
@@ -320,6 +352,10 @@ class BloomsBoard extends hexBoard<BloomsCell> implements BoardProtocol
 		//v ^= Digest(r,captured);	// captured not included in the digest,	because it's not part of the official game state
 		v ^= Digest(r,firstPlayedLocation);
 		v ^= r.nextLong()*(board_state.ordinal()*10+whoseTurn);
+        v ^= Digest(r,endgameCondition.ordinal());
+        v ^= Digest(r,endgameSelected);
+        v ^= Digest(r,endgameApproved);
+
         return (v);
     }
 
@@ -373,6 +409,7 @@ class BloomsBoard extends hexBoard<BloomsCell> implements BoardProtocol
     	boolean win = false;
     	return(win);
     }
+    
     public int scoreForPlayer(int p)
     {	int n=0;
     	sweep_counter++;
@@ -388,6 +425,10 @@ class BloomsBoard extends hexBoard<BloomsCell> implements BoardProtocol
     		}
     	}
     	return(n);
+    }
+    public int capturesForPlayer(int p)
+    {
+    	return captured[p];
     }
     public double estScoreForPlayer(int p)
     {	double n=0;
@@ -668,11 +709,25 @@ class BloomsBoard extends hexBoard<BloomsCell> implements BoardProtocol
     	case Play1Capture:
     	case PlayFirst:
     	case Puzzle:
+    	case SelectEnd:
+    		if(endgameSelected)
+    		{
     		setState( (chips_on_board==0) ? BloomsState.PlayFirst : BloomsState.Play);
-    		
+    		if(endgameCondition.ncaptured>0)
+    			{
+    			int cap = endgameCondition.ncaptured;
+    			if(captured[whoseTurn]>=cap) { win[1^whoseTurn] = true; setState(BloomsState.Gameover); break;}
+    			else if(captured[whoseTurn^1]>=cap) { win[whoseTurn]=true; setState(BloomsState.Gameover); break; }
+    			}
+    		}
+    		else
+    		{
+    			setState(BloomsState.SelectEnd);
+    		}
     		break;
     	}
     }
+    
     private void killGroup(BloomsCell seed,replayMode replay)
     {
     	BloomsChip top = seed.removeTop();
@@ -1025,6 +1080,23 @@ class BloomsBoard extends hexBoard<BloomsCell> implements BoardProtocol
 			setState(BloomsState.Gameover);
 			break;
 
+		case EPHEMERAL_SELECT:
+			endgameCondition = EndgameCondition.values()[m.to_row];
+			AR.setValue(endgameApproved,false);
+			break;
+		case EPHEMERAL_APPROVE:
+			{
+			int ind = playerIndex(m.source);
+			endgameApproved[ind] = true;
+			m.target = playerColor(ind);
+			}
+			break;
+		case SELECT:
+			endgameSelected = true;
+			endgameCondition = EndgameCondition.values()[m.to_row];
+			AR.setValue(endgameApproved,true);
+			setNextStateAfterDone(replayMode.Live);
+			break;
         default:
         	cantExecute(m);
         }
@@ -1053,6 +1125,7 @@ class BloomsBoard extends hexBoard<BloomsCell> implements BoardProtocol
 		case Resign:
 		case Draw:
 		case Gameover:
+		case SelectEnd:
 			return(false);
         case Puzzle:
             return ((pickedObject!=null)?(pickedObject.colorSet==ch.colorSet):true);
@@ -1102,6 +1175,7 @@ class BloomsBoard extends hexBoard<BloomsCell> implements BoardProtocol
 		case Draw:
 			return(isDest(c));
 		case Gameover:
+		case SelectEnd:
 		case Resign:
 			return(false);
 		case Confirm:
@@ -1227,15 +1301,18 @@ class BloomsBoard extends hexBoard<BloomsCell> implements BoardProtocol
 	 return(c);
  }
 
- CommonMoveStack  GetListOfAnyMoves()
+ CommonMoveStack  GetListOfAnyMoves(int who)
  {	CommonMoveStack all = new CommonMoveStack();
  	switch(board_state)
  	{
  	default: throw G.Error("Not expecting state %s",board_state);
+ 	case SelectEnd:
+ 		addAsyncMoves(all,who);
+ 		break;
  	case Confirm:
  	case Resign:
  	case Draw:
- 		all.push(new Bloomsmovespec(MOVE_DONE,whoseTurn));
+ 		all.push(new Bloomsmovespec(MOVE_DONE,who));
  		break;
  	case Play1Capture:	// mandatory capture
  	case Play:
@@ -1249,28 +1326,41 @@ class BloomsBoard extends hexBoard<BloomsCell> implements BoardProtocol
  		// by preferring legal moves, because illegal moves lead to an immediate
  		// loss.  If the bot is forced to prefer an illegal move, the overall
  		// bot controller will resign instead of playing an illegal move.
- 		for(BloomsChip ch : playerColors[whoseTurn])
+ 		for(BloomsChip ch : playerColors[who])
  			{ 
  			  if(ch!=firstColor)
  			  	{ 
- 				  all.addElement(new Bloomsmovespec(MOVE_DROPB,c.col,c.row,ch.id,whoseTurn));
+ 				  all.addElement(new Bloomsmovespec(MOVE_DROPB,c.col,c.row,ch.id,who));
  			  	}
  			}
  		}
  	}
  	return(all);
  }
-
- CommonMoveStack  GetListOfLegalMoves()
+ private void addAsyncMoves(CommonMoveStack all,int who)
+ {
+		if(!endgameApproved[who])
+		{
+			all.push(new Bloomsmovespec(EPHEMERAL_APPROVE,playerColor(who).id,who));
+		}
+		else if(allApproved())
+		{
+			all.push(new Bloomsmovespec(SELECT,playerColor(who).id,endgameCondition,who));
+		}
+ }
+ CommonMoveStack  GetListOfLegalMoves(int who)
  {	CommonMoveStack all = new CommonMoveStack();
  	boolean mustCapture = false;
  	switch(board_state)
  	{
  	default: throw G.Error("Not expecting state %s",board_state);
+ 	case SelectEnd:
+ 		addAsyncMoves(all,who);
+ 		break;
  	case Confirm:
  	case Resign:
  	case Draw:
- 		all.push(new Bloomsmovespec(MOVE_DONE,whoseTurn));
+ 		all.push(new Bloomsmovespec(MOVE_DONE,who));
  		break;
  	case Play1Capture:	// mandatory capture
  		mustCapture = true;
@@ -1279,7 +1369,7 @@ class BloomsBoard extends hexBoard<BloomsCell> implements BoardProtocol
  	case Play1:
  	case PlayFirst:
  	case PlayLast:
- 	if(!mustCapture) { all.push(new Bloomsmovespec(MOVE_DONE,whoseTurn)); }
+ 	if(!mustCapture) { all.push(new Bloomsmovespec(MOVE_DONE,who)); }
  	BloomsChip firstColor = firstPlayedLocation!= null ? firstPlayedLocation.topChip() : null;
   	for(int lim = emptyCells.size()-1; lim>=0; lim--)
  	{	BloomsCell c = emptyCells.elementAt(lim);
@@ -1287,11 +1377,11 @@ class BloomsBoard extends hexBoard<BloomsCell> implements BoardProtocol
  		// by preferring legal moves, because illegal moves lead to an immediate
  		// loss.  If the bot is forced to prefer an illegal move, the overall
  		// bot controller will resign instead of playing an illegal move.
- 		for(BloomsChip ch : playerColors[whoseTurn])
+ 		for(BloomsChip ch : playerColors[who])
  			{ if(ch!=firstColor)
  			  if(sweepCanCapture(c,ch,firstPlayedLocation,mustCapture))
  			  	{ 
- 				  all.addElement(new Bloomsmovespec(MOVE_DROPB,c.col,c.row,ch.id,whoseTurn));
+ 				  all.addElement(new Bloomsmovespec(MOVE_DROPB,c.col,c.row,ch.id,who));
  			  	}
  			}
  		}

@@ -104,7 +104,8 @@ public interface TwixtConstants
     	BoardLocation(null),
     	ReverseViewButton(null),
     	FlatViewButton(null),
-    	GuidelineButton(null),
+    	GuidelineButton(null), 
+    	ShowNumbers(null),
     		;	
 		String shortName = name();
 		public String shortName() { return(shortName); }

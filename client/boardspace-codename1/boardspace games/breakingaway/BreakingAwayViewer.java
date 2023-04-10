@@ -31,7 +31,7 @@ import lib.Sort;
 import lib.StockArt;
 import lib.Text;
 // TODO: riders don't rotate with the rotate button
-// TODO: rotate board on portrait format screens
+// TODO: add a less-perspective mode for table play
 /**
  * 
  * Change History
@@ -275,7 +275,14 @@ public class BreakingAwayViewer extends CCanvas<BreakingAwayCell,BreakingAwayBoa
     	layout.returnFromMain(extra,0);
     	G.SetRect(boardRect, boardX, boardY+stateH, boardW,boardH-stateH);
     	int stateY = boardY;
-
+    	boolean rotate = boardH>boardW;
+    	if(rotate)
+    	{	// this conspires to rotate the drawing of the board
+    		// and contents if the players are sitting opposite
+    		// on the short side of the screen.
+    		G.setRotation(boardRect,-Math.PI/2);
+    		contextRotation = -Math.PI/2;
+    	}
     
 
 	G.SetRect(goalRect,boardX, boardY+boardH,boardW, stateH);
@@ -371,11 +378,13 @@ public class BreakingAwayViewer extends CCanvas<BreakingAwayCell,BreakingAwayBoa
      * */
     public void drawFixedElements(Graphics gc)
     { boolean backgroundReview = reviewMode() && !mutable_game_record;
+    
+    GC.setRotatedContext(gc,boardRect,null,contextRotation);    
+
       GC.setColor(gc,backgroundReview ? reviewModeBackground : boardBackgroundColor);
      textures[BACKGROUND_TILE_INDEX].tileImage(gc,fullRect);   
       //G.frameRect(gc,Color.black,tbRect);
           
-
       if(remoteViewer<0) 
       	{ 
     	  textures[backgroundReview ? BROWN_FELT_INDEX:YELLOW_FELT_INDEX].tileImage(gc,
@@ -386,6 +395,7 @@ public class BreakingAwayViewer extends CCanvas<BreakingAwayCell,BreakingAwayBoa
   		
       b.SetDisplayRectangle(boardRect);
     
+      GC.unsetRotatedContext(gc,null);
       // visualize the center lines of the track wedges
      // gc.setColor(Color.blue);
      // for(int i=0;i<BreakingAwayBoard.inner_points.length;i++)
@@ -888,8 +898,12 @@ public class BreakingAwayViewer extends CCanvas<BreakingAwayCell,BreakingAwayBoa
 		drawPlayerStuff(gc,(state==BreakState.PUZZLE_STATE),vcrSelect,
 				HighlightColor, rackBackGroundColor);
         }
+      	
+        GC.setRotatedContext(gc,boardRect,selectPos,contextRotation);
+
         drawBoardElements(gc, gb, boardRect, ourTurnSelect,vcrSelect);
         
+        GC.unsetRotatedContext(gc,selectPos);
         
         sizeRect.draw(gc,vcrSelect);
         

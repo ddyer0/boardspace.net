@@ -95,7 +95,7 @@ public class YViewer extends CCanvas<YCell,YBoard> implements YConstants, GameLa
         // later, some variant is created, or the game code base is re purposed as the basis
         // for another game.
         bb = new YBoard(type,players_in_game,randomKey,getStartingColorMap(),YBoard.REVISION);
-        useDirectDrawing(true); // not tested yet
+        useDirectDrawing(true);
         doInit(false);
         adjustPlayers(players_in_game);
     }

@@ -14,6 +14,8 @@ import lib.Random;
  * on a 8x8 board. It gets a lot of logistic support from 
  * squareBoard, which knows about the coordinate system and the lack of diagonal connectivity
  * 
+ * TODO: add a handicap mode based on removing some pieces
+ * TODO: add "phone booth" Arimaa - on a 5x5 or 5x7 board. Giant Arimaa played on a 10x8 board.
  * 
  * @author ddyer
  *
@@ -1543,9 +1545,8 @@ public long Digest()
     	addChip(to,pickedObject);
     	pickedObject = null;
     	ArimaaCell target = to;
-    	if(to.lastPlaceMoveNumber==moveNumber) { target = to.auxDisplay; }
-    	else if(to.auxDisplay!=null) { to.auxDisplay.lastPlaceMoveNumber=-1; }
-     	
+    	ArimaaCell ad = to.auxDisplay;
+     	if(ad!=null) { ad.lastPlaceMoveNumber=-1; }
     	previousPlaced.push(target.lastPlaced);
      	target.lastPlaced = placementIndex;
     	target.lastPlaceMoveNumber = moveNumber;

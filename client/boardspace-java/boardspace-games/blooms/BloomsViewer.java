@@ -3,6 +3,7 @@ package blooms;
 import java.awt.*;
 
 import static blooms.Bloomsmovespec.*;
+
 import online.common.*;
 import java.util.*;
 
@@ -14,11 +15,11 @@ import lib.GC;
 import lib.HitPoint;
 import lib.LFrameProtocol;
 import lib.StockArt;
+import lib.TextButton;
 import online.game.*;
 import online.game.sgf.sgf_node;
 import online.game.sgf.sgf_property;
 import online.search.SimpleRobotProtocol;
-
 
 /**
  * 
@@ -278,12 +279,12 @@ public class BloomsViewer extends CCanvas<BloomsCell,BloomsBoard> implements Blo
             	yp += spacey;
             }
      }
-    private void drawScore(Graphics gc,Rectangle r,int n)
+    private void drawScore(Graphics gc,Rectangle r,int n,int cap)
     {
     	if(bb.chips_on_board>4)
     	{
     		GC.setFont(gc, largeBoldFont());
-    		GC.Text(gc, true, r, Color.black, null, ""+n);
+    		GC.Text(gc, true, r, Color.black, null, cap+" / "+n);
     	}
 		GC.frameRect(gc, Color.black, r);
     }
@@ -357,8 +358,87 @@ public class BloomsViewer extends CCanvas<BloomsCell,BloomsBoard> implements Blo
        }
 
      }
-    
- 
+    private String goalMessage(EndgameCondition m)
+    {
+    	if(m.ncaptured==0) { return BloomsVictoryCondition; }
+    	else
+    	{
+    		return s.get(CaptureWinMessage,m.ncaptured);
+    	}
+    }
+    private void showEndgameOptions(Graphics gc,BloomsBoard gb,Rectangle brect,HitPoint highlight)
+    {
+    	Rectangle r = G.copy(null,brect);
+    	G.insetRect(r,G.Width(r)/5);
+    	StockArt.Scrim.image.stretchImage(gc, r);  
+    	GC.frameRect(gc,Color.black,r);
+    	int step = G.Height(stateRect);
+    	int left = G.Left(r);
+    	int top = G.Top(r);
+    	int width = G.Width(r);
+    	int centerX = G.centerX(r);
+    	GC.setFont(gc,largeBoldFont());
+    	GC.Text(gc,true,left,top,width,step, Color.black,null,s.get(SelectGoalMessage));
+    	EndgameCondition current = gb.endgameCondition;
+    	FontMetrics fm = G.getFontMetrics(largeBoldFont());
+    	int xstep = fm.stringWidth(s.get(ShortGoalMessage,20));
+    	int optionY = top+step*3;
+    	int optionX = centerX-xstep*2;
+    	int optionX0 = optionX;
+    	int stepn = 0;
+    	EndgameCondition options[] = EndgameCondition.values();
+    	
+    	for(EndgameCondition option : options)
+    	{	boolean selected = option==current;
+    		TextButton b = null;
+    		if(option==EndgameCondition.Territory)
+    		{
+    			b = new TextButton(s.get(ShortTerritory),
+    								BloomsId.Select,
+    								goalMessage(option),
+    								Color.white,null,null); 
+    			
+    			
+    		}
+    		else
+    		{
+    			b = new TextButton(s.get(ShortGoalMessage,option.ncaptured),
+    								BloomsId.Select,
+    								goalMessage(option),
+    								Color.white,null,null);
+    		}
+    		G.SetRect(b,optionX,optionY,xstep,step);
+			optionX += xstep;
+			stepn++;
+			if(stepn%4==0) { optionX = optionX0; optionY+=step;}
+    		b.textColor = selected ? Color.yellow : Color.lightGray;
+    		if(b.draw(gc,highlight))
+    		{
+    			highlight.hitObject = option;
+    		}   		
+    	}
+    	int approveY = optionY+step*2;
+    	int approveX = centerX-xstep*2+xstep/4;
+    	commonPlayer ap = getActivePlayer();
+    	for(int i=0;i<2;i++)
+    	{	boolean approved = gb.endgameApproved[i];
+    		TextButton b = new TextButton(prettyName(i),
+    							BloomsId.Approve,
+    							s.get(ApproveMessage),
+    							HighlightColor,boardBackgroundColor,boardBackgroundColor);
+    		b.textColor = Color.black;
+    		G.SetRect(b,approveX,approveY,xstep*3/2,step);
+    		if(b.draw(gc,i==ap.boardIndex||G.offline() ? highlight : null))
+    		{	
+    			highlight.hit_index = i;
+    		}
+    		if(approved)
+    		{
+    			StockArt.Checkmark.drawChip(gc,this,step,approveX+step/2,approveY+step/2,null);
+    		} 	
+    	approveX += xstep*2;
+    	}
+     }
     /**
 	 * draw the board and the chips on it.  This is also called when not actually drawing, to
 	 * track the mouse.
@@ -374,7 +454,12 @@ public class BloomsViewer extends CCanvas<BloomsCell,BloomsBoard> implements Blo
         // now draw the contents of the board and highlights or ornaments.  We're also
     	// called when not actually drawing, to determine if the mouse is pointing at
     	// something which might allow an action.  
-
+    	BloomsState state = gb.getState();
+    	if(state==BloomsState.SelectEnd)
+    	{
+    		showEndgameOptions(gc,gb,brect,highlight);
+    	}
+    	else {
         // using closestCell is sometimes preferable to G.PointInside(highlight, xpos, ypos, CELLRADIUS)
         // because there will be no gaps or overlaps between cells.
         BloomsCell closestCell = gb.closestCell(highlight,brect);
@@ -408,7 +493,7 @@ public class BloomsViewer extends CCanvas<BloomsCell,BloomsBoard> implements Blo
             cell.drawChip(gc,this,highlight,gb.cellSize(),xpos,ypos,null);
             
             }
-        }
+        }}
     }
 
     /**
@@ -466,7 +551,7 @@ public class BloomsViewer extends CCanvas<BloomsCell,BloomsBoard> implements Blo
        	{  commonPlayer pl = getPlayerOrTemp(i);
        	   pl.setRotatedContext(gc, selectPos, false);
      	   DrawChipPool(gc, chipRects[i],i, ourTurnSelect,gb);
-           drawScore(gc,scoreBox[i],gb.scoreForPlayer(i));
+           drawScore(gc,scoreBox[i],gb.scoreForPlayer(i),gb.capturesForPlayer(i^1));
            if(planned && (bb.whoseTurn==i))
            { handleDoneButton(gc,doneRects[i],(gb.DoneState() ? buttonSelect : null), 
            		HighlightColor, rackBackGroundColor);
@@ -506,7 +591,7 @@ public class BloomsViewer extends CCanvas<BloomsCell,BloomsBoard> implements Blo
         BloomsChip colors[] = gb.playerColors[gb.whoseTurn];
         colors[0].drawChip(gc,this,iconRect,null);
         colors[1].drawChip(gc, this, G.Width(iconRect),G.centerX(iconRect),G.Bottom(iconRect),null);
-        goalAndProgressMessage(gc,nonDragSelect,Color.black,s.get(BloomsVictoryCondition),progressRect, goalRect);
+        goalAndProgressMessage(gc,nonDragSelect,Color.black,goalMessage(gb.endgameCondition),progressRect, goalRect);
         // draw the vcr controls, last so the pop-up version will be above everything else
         drawVcrGroup(nonDragSelect, gc);
 
@@ -677,6 +762,17 @@ public class BloomsViewer extends CCanvas<BloomsCell,BloomsBoard> implements Blo
         {
         default:
         	throw G.Error("Hit Unknown: %s", hitObject);
+        case Select:
+        	{
+        	commonPlayer ap = getActivePlayer();
+        	PerformAndTransmit("Eselect "+bb.playerColor(ap.boardIndex).id.shortName()+" "+hp.hitObject);
+        	}
+        	break;
+        case Approve:
+        	{
+            	PerformAndTransmit("EApprove "+bb.playerColor(hp.hit_index).id.shortName());
+        	}
+        	break;
         case BoardLocation:	// we hit an occupied part of the board 			
         case EmptyBoard:
 			doDropChip(hitObject.col,hitObject.row);
@@ -897,6 +993,71 @@ public class BloomsViewer extends CCanvas<BloomsCell,BloomsBoard> implements Blo
         }
     }
 
+    //
+    // some magic in service of the preliminary setup phase.
+    //
+    public boolean PerformAndTransmit(commonMove m,boolean transmit,replayMode replay)
+    {	//
+    	// if stray ephemeral moves arrive after we have finalized the setup, just
+    	// flush them.  This can occur if there is a realtime race between confirming
+    	// the setup and the other player changing his mind about the setup.
+    	//
+    	if(!bb.getState().simultaneousTurnsAllowed()
+    		&& m.isEphemeral()) 
+    		{ return true;
+    		}
+    
+    	//
+    	// select sets the start of the real game.   canonicalizeHistory will
+    	// discard all the ephemeral moves and replaces them with the final
+    	// selection.
+    	//
+    	boolean v = super.PerformAndTransmit(m,transmit,replay);
+    	if(v && m.op==SELECT)
+    	{	m.setLineBreak(true);
+    		canonicalizeHistory();
+    	}
+    	return v;
+    }
 
-}
+    public commonMove convertToSynchronous(commonMove m)
+    {	
+  	  return null;
+    }
+
+     public void ViewerRun(int n)
+        {
+        	super.ViewerRun(n);
+        	BloomsState state = bb.getState();
+        	if(state.simultaneousTurnsAllowed())
+        	{
+            if(!reviewOnly 
+          	 && !reviewMode() 
+          	 && (bb.allApproved())
+          	 && (G.offline()||(bb.whoseTurn == getActivePlayer().boardIndex)))
+            	{	  
+          	  	PerformAndTransmit("Select R "+bb.endgameCondition);
+          	  	// test rejection of surplus ephemeral moves
+          	  	// PerformAndTransmit("ESelect R Capture5");
+            	}
+            else {
+            // run async robots. Normally robots only run when it is the robot's turn
+            // and not at all when simultaneous turns are in effect.   For blooms, the
+            // robot will only accept whatever endgame option the user wants, so all it
+            // will do is accept what the user selects.
+            //
+            for(commonPlayer pp : players)
+            { if( canStartRobotTurn(pp))
+            	{
+            	CommonMoveStack all = bb.GetListOfLegalMoves(pp.boardIndex);
+            	if(all.size()>0)
+            		{	// robot generates moves only if it hasn't accepted the
+            			// or needs to confirm the final selection.
+            			startRobotTurn(pp);
+            		}
+            	}
+            }}
+  
+        	}}
+    	}
 

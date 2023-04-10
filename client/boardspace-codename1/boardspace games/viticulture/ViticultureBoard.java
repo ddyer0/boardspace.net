@@ -1664,7 +1664,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
     	PlayerBoard pb = getCurrentPlayerBoard();
     	// activeWakeupposition is the same as wakeupPosition
     	// except in changing from one year to the next
-    	ViticultureCell wake = pb.wakeupPosition;
+    	ViticultureCell wake = pb.activeWakeupPosition;
     	return findFirstPlayerAnySeason(wake.row+1);
     }
     private PlayerBoard findFirstPlayerAnySeason(int row)
@@ -2535,7 +2535,6 @@ public int getMaxRevisionLevel() { return(REVISION); }
     {	ViticultureCell current = scoringTrack[pb.score-MIN_SCORE];
     	Assert(pb.score+n>=MIN_SCORE, "min score is %s", MIN_SCORE);
     	pb.changeScore(n,from,hint,type);
-     	if(Math.abs(n)<=3) { pb.peggingScore+= n; }
         if(replay != replayMode.Replay)
         {
         	animationStack.push(current);
@@ -4753,7 +4752,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
     		case Choice_A:
     			{
     			//p1("swindler choice a");
-    			if(testOption(Option.LimitPoints) && ((pb.cash-pb.startingCash)>=6))
+    			if(testOption(Option.LimitPoints) && ((anchor.cash-anchor.startingCash)>=6))
     				{
     					logGameEvent(NoCash);
     				}
@@ -4769,7 +4768,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
     		case Choice_B:
     			{
     			//p1("swindler choice b");
-    	   			if(testOption(Option.LimitPoints) && ((pb.score-pb.startingScore)>=6))
+    	   			if(testOption(Option.LimitPoints) && ((anchor.score-anchor.startingScore)>=3))
     	   			{
     	   				logGameEvent(NoVP);
     	   			}
@@ -5345,7 +5344,8 @@ public int getMaxRevisionLevel() { return(REVISION); }
        			int n=0;
     			for(PlayerBoard p : pbs)
     			{	// the card says 6 so we use MAX_WORKERS not maxWorkers()
-    				if((p!=pb) && (p.nWorkers==MAX_WORKERS)) { n++; }
+    				if((p!=pb) && (p.nWorkers==MAX_WORKERS)) 
+    					{ n++; }
     			}
     			if(testOption(Option.LimitPoints) && n>3) { n = 3; logGameEvent(Limit3); }
     			changeScore(pb,n,replay,UncertifiedTeacher,card,ScoreType.ScoreBlue);
@@ -6267,7 +6267,9 @@ public int getMaxRevisionLevel() { return(REVISION); }
     		 		{ to = structure; 
     		 		break; 
     		 		}
-    			}}
+    			}
+
+    			}
     		
     		if(to==choice0)
     		{	// giving a tour
@@ -6296,6 +6298,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
          	if(isStructureCard)
          		{ changeScore(pb,1,replay,BuildStructureMode,chip,ScoreType.OrangeCard);
          		logGameEvent(BuildMessage,chip.cardName);
+    			flashChip = chip;
          		}	// gains a point
            	to.addChip(chip);
  

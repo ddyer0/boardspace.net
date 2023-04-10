@@ -35,7 +35,7 @@ public class BarcaViewer extends CCanvas<BarcaCell,BarcaBoard> implements BarcaC
     private Color chatBackgroundColor = new Color(235,245,255);
     private Color rackBackGroundColor = new Color(235,245,255);
     private Color boardBackgroundColor = new Color(220,220,255);
-    private Color BlackArrowColor = new Color(230,200,255);;
+    private Color BlackArrowColor = new Color(230,200,255);
     
     // adjust the cell size for annotations.
     public int cellSize() { return (bb.cellSize()/(usePerspective() ? 2 : 1)); }

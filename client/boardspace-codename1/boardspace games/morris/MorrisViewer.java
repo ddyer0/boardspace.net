@@ -97,7 +97,7 @@ public class MorrisViewer extends CCanvas<MorrisCell,MorrisBoard> implements Mor
        
         b = new MorrisBoard(info.getString(GAMETYPE, Variation.Morris_9.name),randomKey,players_in_game,repeatedPositions,
         		getStartingColorMap());
-        useDirectDrawing(true); // not tested yet
+        useDirectDrawing(true);
         doInit(false);
         offerDrawAction = myFrame.addAction(s.get(OFFERDRAW),deferredEvents);       
      }
@@ -190,15 +190,15 @@ public class MorrisViewer extends CCanvas<MorrisCell,MorrisBoard> implements Mor
     	int boardX = mainX+extraW;
     	int boardY = mainY+extraH;
     	int boardBottom = boardY+boardH;
-    	SQUARESIZE = boardW/12;
        	layout.returnFromMain(extraW,extraH);
+    	SQUARESIZE = boardW/12;
     	//
     	// state and top ornaments snug to the top of the board.  Depending
     	// on the rendering, it can occupy the same area or must be offset upwards
     	//
         int stateY = boardY-stateH/4;
         int stateX = boardX;
-        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,eyeRect,noChatRect);
+        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,eyeRect,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	
     	// goal and bottom ornaments, depending on the rendering can share

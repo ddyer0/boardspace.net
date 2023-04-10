@@ -218,7 +218,7 @@ public void ViewerRun(int wait)
         // later, some variant is created, or the game code base is re purposed as the basis
         // for another game.
         bb = new QEBoard(type,players_in_game,randomKey,QEBoard.REVISION);
-        //useDirectDrawing(); // not tested yet
+        useDirectDrawing(true);
         doInit(false);
 
     }
@@ -362,7 +362,7 @@ public void ViewerRun(int wait)
     	int boardBottom = boardY+boardH;
     	int stateY = boardY-stateH+C2;
        	layout.returnFromMain(extraW,extraH);
-    	G.placeRow(boardX,stateY,boardW,stateH,stateRect,noChatRect);
+    	G.placeRow(boardX,stateY,boardW,stateH,stateRect,annotationMenu,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	int goaly =  boardBottom-stateH+C2;
     	G.SetRect(scoreCard,boardX,goaly-stateH,stateH*2,stateH*2);

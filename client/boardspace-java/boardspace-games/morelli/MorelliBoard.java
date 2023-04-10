@@ -446,6 +446,11 @@ public class MorelliBoard extends rectBoard<MorelliCell> implements BoardProtoco
         droppedDestStack.clear();
         pickedSourceStack.clear();
      }
+    
+    private int previousLastPlaced = 0;
+    private int previousLastEmptied = 0;
+    private int previousLastPlayer = 0;
+
     //
     // undo the drop, restore the moving object to moving status.
     //
@@ -459,6 +464,7 @@ public class MorelliBoard extends rectBoard<MorelliCell> implements BoardProtoco
 		currentCaptures = 0;
 		pickedObject = removeChip(dr); 
 		lastDest = null;
+		dr.lastPlaced = previousLastPlaced;    
 	  	}
     }
     // 
@@ -472,6 +478,8 @@ public class MorelliBoard extends rectBoard<MorelliCell> implements BoardProtoco
     		pickedObject = null;
     		lastSrc = prevLastSrc;
     		lastDest = prevLastDest;
+        	ps.lastEmptied = previousLastEmptied;
+        	ps.lastEmptiedPlayer = previousLastPlayer;
    			addChip(ps,po);
      	}
      }
@@ -483,6 +491,8 @@ public class MorelliBoard extends rectBoard<MorelliCell> implements BoardProtoco
     {   G.Assert(pickedObject!=null,"pickedObject should not be null"); 	    		
 		addChip(c,pickedObject);
 		droppedDestStack.push(c);
+        previousLastPlaced = c.lastPlaced;
+        c.lastPlaced = moveNumber;
 		pickedObject = null;
 		lastDest = c;
     	
@@ -523,6 +533,11 @@ public class MorelliBoard extends rectBoard<MorelliCell> implements BoardProtoco
 		pickedObject = removeChip(c); 
 		lastDest = null;
 		lastSrc = c;		// for the viewer
+		previousLastEmptied = c.lastEmptied;
+		previousLastPlayer = c.lastEmptiedPlayer;
+		c.lastEmptied = moveNumber;
+		c.lastEmptiedPlayer = whoseTurn;
+
     	pickedSourceStack.push(c);
    }
 

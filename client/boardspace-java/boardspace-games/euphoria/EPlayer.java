@@ -263,7 +263,6 @@ private void useBrianTheViticulturist() { setTFlag(TFlag.UsedBrianTheViticulturi
 // assist for the UI
 PlayerView hiddenView = PlayerView.Normal;
 PlayerView view = PlayerView.Normal;
-PlayerView pendingView = PlayerView.Normal;
 
 EuphoriaCell cardArray[] = new EuphoriaCell[6];
 
@@ -580,7 +579,12 @@ EuphoriaCell getCell(EuphoriaId r)
 {	EuphoriaCell c = allCellsHash.get(r);
 	return(c);
 }
-
+EuphoriaCell getCell(EuphoriaCell c)
+{	if(c==null) { return null; }
+	EuphoriaCell d = getCell(c.rackLocation());
+	G.Assert(d!=null,"cell %s not found",c);
+	return d;
+}
 int boardIndex;
 
 EPlayer(EuphoriaBoard myBoard,int idx,Colors cl,int finalrandom)
@@ -648,7 +652,6 @@ void doInit(EuphoriaCell rec,EuphoriaCell dil)
 	dilemma.addChip(dil.removeTop());		// 1 randomly selected ethical dilemma
 	view = PlayerView.Normal;
 	hiddenView = PlayerView.Normal;
-	pendingView = PlayerView.Normal;
 	mandatoryEquality = false;
 	samuelTheZapperLevel = 0;
 	taedAuthorityHeight = terriAuthorityHeight = authority.height();
@@ -699,7 +702,7 @@ public long Digest(Random r)
 	v ^= r.nextLong()*lostToAltruism;	// somelosttoaltruism is not included
 	v ^= EuphoriaChip.Digest(r,usedAlternateArtifact);
 	v ^= r.nextLong()*tf.members();
-	
+	v ^= EuphoriaChip.Digest(r,ephemeralPickedObject);
 	v ^= r.nextLong()*samuelTheZapperLevel;
     v ^= r.nextLong()*terriAuthorityHeight;
     v ^= r.nextLong()*taedAuthorityHeight;
@@ -761,7 +764,10 @@ public void copyFrom(EPlayer other)
     commodityKnowledge = other.commodityKnowledge;
     alternateArtifacts.copyFrom(other.alternateArtifacts);
     usedAlternateArtifact = other.usedAlternateArtifact;
-    
+    ephemeralPickedObject = other.ephemeralPickedObject;
+    ephemeralPickedSource = getCell(other.ephemeralPickedSource);
+    hiddenView = other.hiddenView;
+    view = other.view;
     tf.copy(other.tf);	// copy per turn flags
     
 
@@ -779,6 +785,9 @@ void clearUCTStats()
 	placements = 0;
 	retrievals = 0;
 }
+
+public boolean recruitsReady() { return (activeRecruits.height()>0) && (hiddenRecruits.height()>0); }
+
 //
 //	Service to the main board 
 //

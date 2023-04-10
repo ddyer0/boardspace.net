@@ -13,6 +13,27 @@ public interface BloomsConstants
 	static final String BloomsLastState = "Pass to end the game, or continue playing";
 	static final String BloomPlay1State = "Place a stone (other color) or click on Done";
 	static final String BloomPlay1CaptureState = "Complete a capture";
+	static final String SelectEndDescription = "Agree on the endgame condition";
+	static final String CaptureWinMessage = "First to capture #1 stones wins";
+	static final String ShortGoalMessage = "Capture #1";
+	static final String ShortTerritory = "Territory";
+	static final String SelectGoalMessage = "Select the endgame condition";
+	static final String ApproveMessage = "Approve this way to end the game";
+	
+ enum EndgameCondition 
+ 	{	
+	 Territory(0),
+	 Capture5(5),
+	 Capture10(10),
+	 Capture15(15),
+	 Capture20(20),
+	 Capture25(25),
+	 Capture30(30);
+	 int ncaptured = 0;
+	 EndgameCondition(int n)
+	 { ncaptured = n;
+	 }
+ };
 
  enum BloomsVariation
     {
@@ -68,6 +89,7 @@ Draw(DrawStateDescription,true,true),
 Resign(ResignStateDescription,true,false),
 Gameover(GameOverStateDescription,false,false),
 Confirm(ConfirmStateDescription,true,true),
+SelectEnd(SelectEndDescription,true,true),
 PlayLast(BloomsLastState,true,true),
 PlayFirst(BloomsPlayState,false,false),
 Play(BloomsPlayState,true,true),
@@ -87,7 +109,7 @@ public String description() { return(description); }
 public boolean doneState() { return(doneState); }
 public boolean digestState() { return(digestState); }
 public boolean Puzzle() { return(this==Puzzle); }
-public boolean simultaneousTurnsAllowed() { return(false); }
+public boolean simultaneousTurnsAllowed() { return(this==BloomsState.SelectEnd); }
 };
 
 //these next must be unique integers in the Bloomstypemovespec dictionary
@@ -99,7 +121,7 @@ Green_Chip_Pool("G"),
 	Blue_Chip_Pool("B"), // positive numbers are trackable
 Orange_Chip_Pool("O"),
 BoardLocation(null),
-EmptyBoard(null),;
+EmptyBoard(null), Select(null),Approve(null);
 String shortName = name();
 public String shortName() { return(shortName); }
 BloomsId(String sn) { if(sn!=null) { shortName = sn; }}
@@ -116,10 +138,16 @@ static public BloomsId find(String s)
 	 String bloomsStrings[] = 
 			{  "Blooms",
 				BloomsPlayState,
+				ApproveMessage,
 		        BloomsVictoryCondition,
 		        BloomPlay1State,
 		        BloomsLastState,
 		        BloomPlay1CaptureState,
+		        SelectEndDescription,
+		        CaptureWinMessage,
+		        ShortGoalMessage,
+		        ShortTerritory,
+		        SelectGoalMessage,
 		        "Blooms-4",
 		        "Blooms-5",
 		        "Blooms-6",

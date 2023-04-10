@@ -97,7 +97,7 @@ public class TumbleGameViewer extends CCanvas<TumbleCell,TumbleBoard> implements
        
         b = new TumbleBoard(info.getString(GAMETYPE, "Tumblingdown"),
         		getStartingColorMap());
-        useDirectDrawing(true); // not tested yet
+        useDirectDrawing(true);
         doInit(false);
         reverseOption = myFrame.addOption(s.get(ReverseView),b.reverseY(),deferredEvents);
         
@@ -191,7 +191,7 @@ public class TumbleGameViewer extends CCanvas<TumbleCell,TumbleBoard> implements
     	//
         int stateY = boardY-stateH/2;
         int stateX = boardX;
-        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,liftRect,reverseRect,noChatRect);
+        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,liftRect,reverseRect,noChatRect);
         
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	if(rotate)

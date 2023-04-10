@@ -6535,6 +6535,17 @@ private void drawPlayerBoard(Graphics gc,
   }
   public boolean PerformAndTransmit(commonMove m,boolean transmit,replayMode replay)
   {
+	  
+	  // if stray ephemeral moves arrive after we have finalized the setup, just
+	  // flush them.  This can occur if there is a realtime race between confirming
+	  // the setup and the other player changing his mind about the setup.
+	  //
+	  if(!mainBoard.getState().simultaneousTurnsAllowed()
+	  		&& m.isEphemeral()) 
+	  		{ return true;
+	  		}
+	  
+
   	boolean v = super.PerformAndTransmit(m,transmit,replay);
   	if(v && m.op==EPHEMERAL_COMMENCE)
   	{

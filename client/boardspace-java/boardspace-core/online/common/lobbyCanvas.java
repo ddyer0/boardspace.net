@@ -956,7 +956,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	  
 
 
-	  boolean ready_to_start(Session session)
+	private boolean ready_to_start(Session session)
 	  { boolean enabled = session.gameIsAvailable();
 	  	if(enabled)
 	  	{
@@ -988,7 +988,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 
 
 	  private PopupManager robotMenu = new PopupManager();
-	  void ChangeRobot(Session sess,int ex,int ey)
+	  private void ChangeRobot(Session sess,int ex,int ey)
 	  {	changeRoom = sess;
 	  	robotMenu.newPopupMenu(this,deferredEvents);
 	  	
@@ -1645,7 +1645,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	    GC.setFont(inG,basicFont);
 	    GC.Text(inG,false,gameSubheadRect,Color.black,null,s.get(UnsupportedGameMessage));
 	  }		  
-	void DrawInviteBox(Graphics inG,Session session)
+	private void DrawInviteBox(Graphics inG,Session session)
 	  {
 	    GC.setColor(inG,  ((highlightedSession==session)
 	                     && (highlightedItem == LobbyId.highlight_invitebox))
@@ -1656,7 +1656,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	    				: gameInviteRect;
 	    DrawCheckBox(inG,r,session.inviteBox,s.get(InvitePlayerMessage));
 	  }
-	int DrawReviewSession(Session session,Graphics inG,HitPoint hp)
+	private int DrawReviewSession(Session session,Graphics inG,HitPoint hp)
 	  {
 	   int h = DrawChatSession(session,inG,hp,s.get(Session.Mode.Review_Mode.shortName));
 	   DrawGameTypeBox(inG,session,hp,false);
@@ -1664,12 +1664,12 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 			   s.get(ReviewGamesMessage));
 	   return(h);
 	    }
-	int DrawChatSession(Session session,Graphics inG,HitPoint hp)
+	private int DrawChatSession(Session session,Graphics inG,HitPoint hp)
 	  {
 	    return(DrawChatSession(session,inG,hp,s.get(session.mode.modeName)));
 	  }
 
-	void drawActualSpectators(Session session,Graphics inG,int voff,String msg)
+	private void drawActualSpectators(Session session,Graphics inG,int voff,String msg)
 	{  int sw = (GAMEIMAGEWIDTH-(int)(20*SCALE))/3;
 	   int ten = (int)(10*SCALE);
 	   int fifteen = (int)(15*SCALE);
@@ -1679,12 +1679,12 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	   drawSpectatorList(session,inG,voff,(int)(ten*SCALE),sw);
 
 	}
-	public boolean isNewbieOrGuest()
+	private boolean isNewbieOrGuest()
 	{
 		User my = users.primaryUser();
 		return(my.isGuest || my.isNewbie);
 	}
-	void drawRoomTitle(Session session,Graphics inG,HitPoint hp,String topline)
+	private void drawRoomTitle(Session session,Graphics inG,HitPoint hp,String topline)
 	{
 		GC.setFont(inG,bigFont);
 	    int gamen=session.gameIndex;
@@ -1704,7 +1704,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	      }
 	      
 	    GameInfo game = session.currentGame;
-	    if(session.isAGameRoom() && game!=null)
+	    if(session.isAGameOrReviewRoom() && game!=null)
 	    {
 	    	String rules = game.rules;
 	    	if(rules!=null)
@@ -1747,7 +1747,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	    }
 	}
 	
-	int DrawChatSession(Session session,Graphics inG,HitPoint hp,String topline)
+	private int DrawChatSession(Session session,Graphics inG,HitPoint hp,String topline)
 	  { int vsize = requiredSpectatorHeight(session,10,SPECTATORCOLUMNWIDTH);
 		int hstep = STANDARDGAMEHEIGHT
 					-((session.mode==Session.Mode.Chat_Mode)?40:0)
@@ -1793,7 +1793,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	    
 	    return((int)(100000.5+inVal)-100000);
 	  }
-	  public void createWideHexPoly() {
+	  private void createWideHexPoly() {
 	    
 	    double cornerXs[] = new double[6];
 	    double cornerYs[] = new double[6];
@@ -1848,7 +1848,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	    widePoly = wide;
 	  }
 	  
-	    public void createSpectatePoly() {
+	  private void createSpectatePoly() {
 	    int nine = (int)(9*SCALE);
 	    int four = (int)(4*SCALE);
 	    int three = (int)(3*SCALE);
@@ -2103,7 +2103,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 		int top = G.Top(playingRect);
 		return( G.pointInRect(inX, inY,G.Left(playingRect),top+h/2,G.Width(playingRect),h/2));
 	}
-	int touchedIndex(int inX,int inY)
+	private int touchedIndex(int inX,int inY)
 	{	// index inside the user rectangle or the parallel game playing rectangle
 		if(userRect.contains(inX,inY)||playingRect.contains(inX,inY))
 		{	return (((inY - G.Top(userRect)) - UserScrollArea.currentImageOffset) / USERHEIGHT);
@@ -2112,7 +2112,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
     return (-1);
 	}
 
-	User inAnyUserToken(int inX,int inY)
+	private User inAnyUserToken(int inX,int inY)
 	{    //if off==0, display 1 corresponds to user[1]
 	    //if off>0 display 0 coresponds to user[1]
 	    
@@ -2130,7 +2130,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	}
 
 
-	public boolean inInviteModeBox(Session sess,int localX,int localY)
+	private boolean inInviteModeBox(Session sess,int localX,int localY)
 	{
 	  return((sess.state==Session.SessionState.Idle)
 	      && (sess.numberOfPlayers()>=1)
@@ -2143,7 +2143,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 
 	  
 
-	public Session inSession(int inX,int inY)
+	private Session inSession(int inX,int inY)
 	{  //return the session corresponding to x,y, or null
 	    if (!gameRect.contains(inX,inY)) {    return(null);  }
 	    for(int i=0;i<Sessions.length;i++)
@@ -2161,7 +2161,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 			    && sess.isAGameRoom()
 			    && (sess.mode==sess.pendingMode));
 	}
-	public boolean inChangeTimeControl(Session sess,int localX,int localY)
+	private boolean inChangeTimeControl(Session sess,int localX,int localY)
 	{	if(G.TimeControl() && isPendingSession(sess)
 			&& sess.getSubmode().isTimed()
 			&& sess.editable()
@@ -2171,7 +2171,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 		}
 		return(false);
 	}
-	public boolean inChangeBaseTime(Session sess,int localX,int localY)
+	private boolean inChangeBaseTime(Session sess,int localX,int localY)
 	{	if(G.TimeControl() && isPendingSession(sess)
 			&& sess.getSubmode().isTimed()
 			&& sess.editable()
@@ -2181,7 +2181,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 		}
 		return(false);
 	}
-	public boolean inChangeExtraTime(Session sess,int localX,int localY)
+	private boolean inChangeExtraTime(Session sess,int localX,int localY)
 	{	if(G.TimeControl() && isPendingSession(sess)
 			&& sess.getSubmode().isTimed()
 			&& sess.editable()
@@ -2192,7 +2192,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 		return(false);
 	}
 
-	public int inPlayToken(Session sess,int localX, int localY0) 
+	private int inPlayToken(Session sess,int localX, int localY0) 
 	{  //return a point whose x,y is the session,position we are in
 	  if( isPendingSession(sess))
 	    {
@@ -2218,7 +2218,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 
 		roomMenu.show(ex,ey);
 	}	
-	public boolean iCanEnterRoom(Session sess)
+	private boolean iCanEnterRoom(Session sess)
 	{	return( sess.gameIsAvailable()
 				&& ((sess.mode!=Session.Mode.Master_Mode)
 						&& (sess.pendingMode!=Session.Mode.Master_Mode))
@@ -2230,7 +2230,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	PopupManager secondsMenu = null;
 	PopupManager minutesMenu2 = null;
 	
-	public boolean handleSessionEvent(int inX,int inY)
+	private boolean handleSessionEvent(int inX,int inY)
 	{//handle events caused by pushing buttons in a session
 	 Session sess = inSession(inX,inY);
 	 if(sess!=null)
@@ -2656,7 +2656,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 		return(sp);
 		}
 	  }
-	public void DoMouseExited(int x,int y)
+	private void DoMouseExited(int x,int y)
 	{ 
 	  inUserArea=false;
 	  highlightedSession=null;
@@ -2664,7 +2664,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	  repaint(1000,"exitmouse");
 	}
 	
-	  public void moveToSess(Session sess,int playpos)
+	public void moveToSess(Session sess,int playpos)
 	  {  
 	      int m_movingToPos=playpos;
 	      // entering a room, select the robot that you can run
@@ -2689,7 +2689,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	      }
 	  }
 	  
-	public void handleMouseUpEvent(int x,int y)
+	private void handleMouseUpEvent(int x,int y)
 	  { 
 	  DoMouseExited(x,y);  
 	  }
@@ -2724,7 +2724,7 @@ public void ViewerRun(int wait)
 	}
 }
 
-public Session findSessionWithGame(GameInfo g,boolean empty)
+private Session findSessionWithGame(GameInfo g,boolean empty)
 {	if(g!=null)
 	{String gamename = g.gameName;
 	for(int i=1;i<Sessions.length;i++)
@@ -2744,7 +2744,7 @@ public Session findSessionWithGame(GameInfo g,boolean empty)
 	}}
 	return(null);
 }
-public Session makeSessionForGame(GameInfo g)
+private Session makeSessionForGame(GameInfo g)
 {	if(g!=null)
 	{
 	for(int i=1;i<Sessions.length;i++)
@@ -2759,7 +2759,7 @@ public Session makeSessionForGame(GameInfo g)
 	}}
 	return(null);
 }
-public Session findOrMakeSession(GameInfo g)
+private Session findOrMakeSession(GameInfo g)
 {	if(g!=null)
 	{
 	Session s = findSessionWithGame(g,false);
@@ -2870,9 +2870,9 @@ public boolean handleDeferredEvent(Object otarget, String command)
 private PopupManager muteMenu=new PopupManager();
 private User muteUser=null;
 private User invitedUser = null;
-long invitedTime = 0;
+private long invitedTime = 0;
 
-public void DoMute(User user,int ex,int ey)
+private void DoMute(User user,int ex,int ey)
 {	muteMenu.newPopupMenu(this,deferredEvents);
 	muteUser = user;
 	muteMenu.addMenuItem(s.get(user.ignored 
@@ -2892,7 +2892,7 @@ public void DoMute(User user,int ex,int ey)
    muteMenu.show(ex,ey);
 }
 
-public void changeMute(int index)
+private void changeMute(int index)
 	{
 	switch(index)
 		{
@@ -2954,23 +2954,23 @@ private int initialScrollY;
 private boolean isDragging = false;
 private int scrollXPos = 0;
 private int scrollYPos = 0;
-public void setScrollXPos(int x) 
+private void setScrollXPos(int x) 
 { 	int maxScroll = G.Right(fullRect)-getWidth();
 	scrollXPos = Math.max(0,Math.min(x,maxScroll)); 
 	repaint();
 }
-public void setScrollYPos(int y) 
+private void setScrollYPos(int y) 
 { 	int maxScroll = getHeight()-G.getFrameHeight();
 	scrollYPos = Math.max(0,Math.min(y,maxScroll));
 	repaint();
 }
-public int getScrollXPos() { return(scrollXPos); }
-public int getScrollYPos() { return(scrollYPos); }
+private int getScrollXPos() { return(scrollXPos); }
+private int getScrollYPos() { return(scrollYPos); }
 //
 // we scroll only on the x axis, which mainly allows the game
 // rooms to be made fully visible when the actual screen is small.
 //
-public void dragPinch(int x0,int y, boolean isD) {
+private void dragPinch(int x0,int y, boolean isD) {
 	//setScroll(x,y);
 	int scrollX = getScrollXPos();
 	int x = x0-scrollX;

@@ -1067,6 +1067,11 @@ class MagnetBoard extends hexBoard<MagnetCell> implements BoardProtocol
         }   
 
     }
+    public MagnetState resetState()
+    {
+    	if(stateStack.size()>0) { return stateStack.top(); }
+    	return board_state;
+    }
     public boolean Execute(commonMove mm,replayMode replay)
     {	Magnetmovespec m = (Magnetmovespec)mm;
         if(replay!=replayMode.Replay) { animationStack.clear(); }

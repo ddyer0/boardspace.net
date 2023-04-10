@@ -80,7 +80,7 @@ public class KnockaboutViewer extends CCanvas<KnockaboutCell,KnockaboutBoard> im
         int randomKey = sharedInfo.getInt(OnlineConstants.RANDOMSEED,-1);
         b = new KnockaboutBoard(randomKey,info.getString(GAMETYPE, Knockabout_Standard_Init),
         		getStartingColorMap());
-        useDirectDrawing(true); // not tested yet
+        useDirectDrawing(true);
         doInit(false);
         
      }
@@ -149,7 +149,7 @@ public class KnockaboutViewer extends CCanvas<KnockaboutCell,KnockaboutBoard> im
         // place the chat and log automatically, preferring to place
     	// them together and not encroaching on the main rectangle.
     	layout.placeTheChatAndLog(chatRect, minChatW, chatHeight,minChatW*2,3*chatHeight/2,
-    						       logRect, minLogW,  minLogH,  minLogW*3/2, minLogH*3/2);
+    						       logRect, minLogW,  minLogH,  minLogW*2, minLogH*3/2);
        	layout.placeDoneEditRep(buttonW,buttonW*4/3,doneRect,editRect);
     	layout.placeTheVcr(this,vcrw,vcrw*3/2);
 

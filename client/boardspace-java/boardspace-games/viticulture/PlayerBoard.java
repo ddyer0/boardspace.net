@@ -295,7 +295,6 @@ public class PlayerBoard
 		}
 		
 	}
-	int peggingScore;
 	int nWorkers;
 	int residual;
 	boolean showCards = false;
@@ -519,7 +518,6 @@ public class PlayerBoard
 		score = 0;
 		wineOrderPoints = 0;
 		wineSalePoints = 0;
-		peggingScore = 0;
 		nWorkers = 0;
 		usedWindmill = 0;
 		usedTastingRoom = 0;
@@ -537,7 +535,6 @@ public class PlayerBoard
 		v ^= bb.Digest(r,papaResolved);
 		v ^= bb.Digest(r,cash);
 		v ^= bb.Digest(r,score);
-		v ^= bb.Digest(r,peggingScore);
 		v ^= bb.Digest(r,nWorkers);
 		v ^= bb.Digest(r,usedTastingRoom);
 		v ^= bb.Digest(r,usedWindmill);
@@ -608,7 +605,6 @@ public class PlayerBoard
 		score = other.score;
 		wineSalePoints = other.wineSalePoints;
 		wineOrderPoints = other.wineOrderPoints;
-		peggingScore = other.peggingScore;
 		nWorkers = other.nWorkers;
 		residual = other.residual;
 		grayWorker = other.grayWorker;
@@ -636,7 +632,7 @@ public class PlayerBoard
    		workers.addChip(ViticultureChip.Bigmeeples[colorIndex]);	// technically this is with the papa
    		workers.addChip(ViticultureChip.Meeples[colorIndex]);
    		workers.addChip(ViticultureChip.Meeples[colorIndex]);
-   		nWorkers = 3;
+   		nWorkers += 3;
 		switch(mama.order)
 		{
 		case 1:	//alaena

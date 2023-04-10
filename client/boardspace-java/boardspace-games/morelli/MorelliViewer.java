@@ -6,6 +6,7 @@ import lib.Image;
 import java.awt.Rectangle;
 import javax.swing.JCheckBoxMenuItem;
 
+
 import online.common.*;
 import online.game.*;
 import online.game.sgf.*;
@@ -27,7 +28,7 @@ import static morelli.MorelliMovespec.*;
 /**
  * This code shows the overall structure appropriate for a game view window.
 */
-public class MorelliViewer extends CCanvas<MorelliCell,MorelliBoard> implements MorelliConstants, GameLayoutClient
+public class MorelliViewer extends CCanvas<MorelliCell,MorelliBoard> implements MorelliConstants, GameLayoutClient,PlacementProvider
 {
      /**
 	 * 
@@ -38,6 +39,7 @@ public class MorelliViewer extends CCanvas<MorelliCell,MorelliBoard> implements 
     private Color HighlightColor = new Color(0.2f, 0.95f, 0.75f);
     private Color rackBackGroundColor = new Color(170,175,168);
     private Color boardBackgroundColor = new Color(160,165,155);
+    private Color BlackArrowColor = new Color(230,200,255);;
     
     private boolean checkerEffect = true;
     public int getAltChipset() {  return(checkerEffect?1:0); }
@@ -52,7 +54,8 @@ public class MorelliViewer extends CCanvas<MorelliCell,MorelliBoard> implements 
     // to visualize the layout during development.  Look for "show rectangles"
     // in the options menu.
     private Rectangle chipRects[] = addRect("chip",2);
-    
+    private NumberMenu numberMenu = null;
+
     private JCheckBoxMenuItem checkerOption = null;
    
      private Rectangle altSetupRect = addRect("altSetup");
@@ -89,9 +92,11 @@ public class MorelliViewer extends CCanvas<MorelliCell,MorelliBoard> implements 
 
         int randomKey = info.getInt(OnlineConstants.RANDOMSEED,-1);
        
+        numberMenu = new NumberMenu(this,MorelliChip.getChip(0),MorelliId.ShowNumbers) ;
+        
         b = new MorelliBoard(info.getString(OnlineConstants.GAMETYPE, Variations.morelli_13.name),
         		randomKey,players_in_game,getStartingColorMap(),MorelliBoard.REVISION);
-        useDirectDrawing(true); // not tested yet
+        useDirectDrawing(true);
         doInit(false);
         checkerOption = myFrame.addOption(s.get(CheckerEffect),checkerEffect,deferredEvents);
 
@@ -190,7 +195,7 @@ public class MorelliViewer extends CCanvas<MorelliCell,MorelliBoard> implements 
         int stateY = boardY;
         int stateX = boardX;
         int stateH = fh*3;
-        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,noChatRect);
+        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,numberMenu,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	
     	// goal and bottom ornaments, depending on the rendering can share
@@ -295,6 +300,7 @@ public class MorelliViewer extends CCanvas<MorelliCell,MorelliBoard> implements 
         // but this iterator still draws everything in the correct order for occlusion
         // and shadows to work correctly.
         MorelliCell hitCell = null;
+        numberMenu.clearSequenceNumbers();
         Enumeration<MorelliCell> cells = gb.getIterator(Itype.LRTB);
         while (cells.hasMoreElements())
         {
@@ -303,6 +309,8 @@ public class MorelliViewer extends CCanvas<MorelliCell,MorelliBoard> implements 
             int xpos = G.Left(brect) + gb.cellToX(cell);
             boolean canHit = gb.LegalToHitBoard(cell);
             boolean isDest = dests.get(cell)!=null;
+            numberMenu.saveSequenceNumber(cell,xpos,ypos,cell.lastEmptiedPlayer==0 ? labelColor : BlackArrowColor);
+
             if( cell.drawStack(gc,this,canHit?highlight:null,squareSize,xpos,ypos,0,0.1,null)) 
             	{ // draw a highlight rectangle here, but defer drawing an arrow until later, after the moving chip is drawn
             	hitCell = cell;
@@ -320,9 +328,11 @@ public class MorelliViewer extends CCanvas<MorelliCell,MorelliBoard> implements 
         	highlight.awidth = squareSize/2;
         	highlight.spriteColor = Color.red;
     	}
+    	numberMenu.drawSequenceNumbers(gc,SQUARESIZE,labelFont,labelColor);
     }
      public void drawAuxControls(Graphics gc,HitPoint highlight)
     { 
+    	 numberMenu.draw(gc,highlight);
     }
     //
     // draw the board and things on it.  If gc!=null then actually 
@@ -609,6 +619,9 @@ private void playSounds(commonMove m)
         	PerformAndTransmit("Choose "+Setup.getSetup(hitObject));
         	break;
         	
+        case ShowNumbers:
+        	numberMenu.showMenu();
+        	break;
          case BoardLocation:	// we hit the board 
 			switch(state)
 			{
@@ -688,6 +701,7 @@ private void playSounds(commonMove m)
     	generalRefresh();
     	return(true);
     	}
+    	else if(numberMenu.selectMenu(target,this)) {  return true; }
     	else 
     	return(super.handleDeferredEvent(target,command));
      }
@@ -766,6 +780,9 @@ private void playSounds(commonMove m)
     				(dis<textColors.length) ? textColors[dis] : null)); 
     	
     }
-    
+
+	public int getLastPlacement(boolean empty) {
+		return b.moveNumber+(b.DoneState()?1:0);
+	}
 }
 

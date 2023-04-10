@@ -18,12 +18,12 @@ class CellStack extends OStack<TwixtCell>
  * @author ddyer
  *
  */
-public class TwixtCell extends stackCell<TwixtCell,TwixtChip> implements TwixtConstants
+public class TwixtCell extends stackCell<TwixtCell,TwixtChip> implements TwixtConstants,PlacementProvider
 {	
 	int sweep_counter;		// the sweep counter for which blob is accurate
 	TwixtBlob blob;			// the blob that contains this cell
 	int playerElgible;		// mask of players eligible to play on this cell
-	
+	int lastPlaced = -1;
 	// for blob finding the incomplete distance left to cross the board.
 	int distanceToEdge = -1;
 	int samples = 0;
@@ -153,6 +153,27 @@ public class TwixtCell extends stackCell<TwixtCell,TwixtChip> implements TwixtCo
 
 	public TwixtChip[] newComponentArray(int size) {
 		return(new TwixtChip[size]);
+	}
+	/**
+	 * reset back to the same state as when newly created.  This is used
+	 * when reinitializing a board.
+	 */
+	public void reInit()
+	{	super.reInit();
+		lastPlaced = -1;
+	}
+	
+	public int getLastPlacement(boolean empty) {
+		return lastPlaced;
+	}
+	/** copyFrom is called when cloning boards
+	 * 
+	 */
+	public void copyFrom(TwixtCell ot)
+	{	//hexCell other = (hexCell)ot;
+		// copy any variables that need copying
+		super.copyFrom(ot);
+		lastPlaced = ot.lastPlaced;
 	}
 	
 }

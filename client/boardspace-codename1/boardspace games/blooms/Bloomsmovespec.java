@@ -2,20 +2,22 @@ package blooms;
 
 import java.util.*;
 
-import blooms.BloomsConstants.BloomsId;
 import lib.G;
 import lib.Text;
 import lib.TextChunk;
 import lib.TextGlyph;
 import online.game.*;
 import lib.ExtendedHashtable;
-public class Bloomsmovespec extends commonMove
+public class Bloomsmovespec extends commonMove implements BloomsConstants
 {	// this is the dictionary of move names
     static ExtendedHashtable D = new ExtendedHashtable(true);
     static final int MOVE_PICK = 204; // pick a chip from a pool
     static final int MOVE_DROP = 205; // drop a chip
     static final int MOVE_PICKB = 206; // pick from the board
     static final int MOVE_DROPB = 207; // drop on the board
+    static final int EPHEMERAL_SELECT = 208;	// select an endgame condition
+    static final int EPHEMERAL_APPROVE = 210;	// start with current selection
+    static final int SELECT = 211;				// start with current selection
  
     static
     {	// load the dictionary
@@ -24,7 +26,20 @@ public class Bloomsmovespec extends commonMove
         	"Pick", MOVE_PICK,
         	"Pickb", MOVE_PICKB,
         	"Drop", MOVE_DROP,
-        	"Dropb", MOVE_DROPB);
+        	"Dropb", MOVE_DROPB,
+        	"ESelect",EPHEMERAL_SELECT,
+        	"EApprove",EPHEMERAL_APPROVE,
+        	"Select",SELECT);
+  }
+    public boolean isEphemeral()
+    {
+    	switch(op)
+    	{
+    	default: return false;
+    	case EPHEMERAL_SELECT:
+    	case EPHEMERAL_APPROVE:
+    		return true;
+    	}
   }
     //
     // adding these makes the move specs use Same_Move_P instead of == in hash tables
@@ -53,6 +68,22 @@ public class Bloomsmovespec extends commonMove
     public Bloomsmovespec(String str, int p)
     {
         parse(new StringTokenizer(str), p);
+    }
+    /* constructor 
+     */
+    public Bloomsmovespec(int opc,BloomsId s,int p)
+    {	player = p;
+    	source = s;
+    	op = opc;
+    }   
+    
+    /* constructor 
+     */
+    public Bloomsmovespec(int opc,BloomsId s,EndgameCondition option,int p)
+    {	player = p;
+    	source = s;
+    	op = opc;
+    	to_row = option.ordinal();
     }
     /** constructor for robot moves.  Having this "binary" constor is dramatically faster
      * than the standard constructor which parses strings
@@ -132,6 +163,14 @@ public class Bloomsmovespec extends commonMove
         op = opcode;
         switch (opcode)
         {
+        case EPHEMERAL_SELECT:
+        case SELECT:
+        	source =BloomsId.find(msg.nextToken());
+        	to_row = EndgameCondition.valueOf(msg.nextToken()).ordinal();
+        	break;
+        case EPHEMERAL_APPROVE:
+        	source =BloomsId.find(msg.nextToken());
+        	break;
         case MOVE_DROPB:
 				source = BloomsId.find(msg.nextToken());	// B or W
 	            to_col = G.CharToken(msg);
@@ -164,34 +203,6 @@ public class Bloomsmovespec extends commonMove
         }
     }
 
-    /** construct an abbreviated move string, mainly for use in the game log.  These
-     * don't have to be parseable, they're intended only to help humans understand
-     * the game record.  The alternative method {@link #shortMoveText} can be implemented
-     * to provide colored text or mixed text and icons.
-     * 
-     * */
-    public String shortMoveString()
-    {
-        switch (op)
-        {
-        case MOVE_PICKB:
-            return (""+ to_col + " " + to_row+">");
-
-		case MOVE_DROPB:
-            return (to_col + " " + to_row);
-
-        case MOVE_DROP:
-        case MOVE_PICK:
-            return (""+source.shortName);
-
-        case MOVE_DONE:
-            return ("");
-
-
-        default:
-        	return (D.findUniqueTrans(op));
-        }
-    }
     
     /**
      * shortMoveText lets you return colorized text or mixed text and graphics.
@@ -204,6 +215,17 @@ public class Bloomsmovespec extends commonMove
     public Text shortMoveText(commonCanvas v)
     {  	switch (op)
     {
+    	case SELECT:
+    	case EPHEMERAL_SELECT:
+    		{
+    		EndgameCondition option = EndgameCondition.values()[to_row];
+    		String msg = "Win "+(option.ncaptured==0 ? "Territory" : "Capture "+option.ncaptured);
+    		return TextChunk.create(msg);
+    		}
+    	case EPHEMERAL_APPROVE:
+    		return TextChunk.join(TextGlyph.create("xxx",target,v,new double[] {1,1.25,0,-0.2}),
+    					TextChunk.create("Approve"));
+    		
         case MOVE_PICKB:
             return TextChunk.create(""+ to_col + to_row+">");
 
@@ -246,6 +268,13 @@ public class Bloomsmovespec extends commonMove
         // review mode
         switch (op)
         {
+        case EPHEMERAL_SELECT:
+        case SELECT:
+        	return(G.concat(opname,source.shortName," ",EndgameCondition.values()[to_row]));
+        	
+        case EPHEMERAL_APPROVE:
+        	return G.concat(opname,source.shortName);
+
         case MOVE_PICKB:
 	        return (opname+ to_col + " " + to_row);
 

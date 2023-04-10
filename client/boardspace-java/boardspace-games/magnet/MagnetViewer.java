@@ -167,7 +167,7 @@ public class MagnetViewer extends CCanvas<MagnetCell,MagnetBoard> implements Mag
         bb = new MagnetBoard(type,players_in_game,randomKey,getActivePlayer(),MagnetBoard.REVISION);
         reverseOption = myFrame.addOption(s.get(ReverseView),bb.reverseY(),deferredEvents);
         if(reviewOnly) { bb.setSimultaneousPlay(false); }
-        useDirectDrawing(true); // not tested yet
+        useDirectDrawing(true); 
         doInit(false);
 
     }
@@ -270,7 +270,7 @@ public class MagnetViewer extends CCanvas<MagnetCell,MagnetBoard> implements Mag
 		//
 	    int stateY = boardY-stateH;
 	    int stateX = boardX;
-	    G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,reverseRect,noChatRect);
+	    G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,reverseRect,noChatRect);
 		G.SetRect(boardRect,boardX,boardY,boardW,boardH);
 		
 		if(rotate)
@@ -338,7 +338,7 @@ public class MagnetViewer extends CCanvas<MagnetCell,MagnetBoard> implements Mag
         	{
         	// if drawing the opposing rack, draw strictly left to right
         	// to conceal what's being picked and moved.
-    		if(drawStack(gc, cell,canHit?highlight:null,w,x,y))
+    		if(drawStack(gc, gb, cell,canHit?highlight:null,w,x,y))
     		{
     			highlight.arrow = gb.pickedObject!=null ? StockArt.DownArrow : StockArt.UpArrow;
     	    	highlight.awidth = w/2;
@@ -471,21 +471,22 @@ public class MagnetViewer extends CCanvas<MagnetCell,MagnetBoard> implements Mag
     {	return(shouldBeConcealed(c,getActivePlayer()));
     }
 
-    private boolean drawStack(Graphics gc,MagnetCell c,HitPoint highlight,int w,int x,int y)
+    private boolean drawStack(Graphics gc,MagnetBoard gb,MagnetCell c,HitPoint highlight,int w,int x,int y)
     {
     	MagnetCell target = c;
     	boolean hit = false;
     	if(shouldBeConcealed(c)) { target = temp; target.concealedCopyFrom(c); }
     	
     	if(target.drawStack(gc, this, highlight, w, x, y,0,0.6,null))
-    	{	MagnetState state = bb.getState();
+    	{	MagnetState state = gb.getState();
     		highlight.hitObject = c;
     		MagnetChip top = c.topChip();
-            boolean picked = (bb.pickedObject!=null);
+            boolean picked = (gb.pickedObject!=null);
      	 
-        	if((c==bb.selectedCell)
+        	if((c==gb.selectedCell)
         			||(state==MagnetState.FirstSelect) 
-        			|| (state==MagnetState.Select))
+        			|| (state==MagnetState.Select)
+        			|| (state==MagnetState.Confirm && gb.resetState()==MagnetState.Select))
         	{
         		highlight.hitCode = MagnetId.UnSelect;
         	}
@@ -498,7 +499,7 @@ public class MagnetViewer extends CCanvas<MagnetCell,MagnetBoard> implements Mag
             if((state==MagnetState.Promote) 
             		&& (highlight.hitCode!=MagnetId.Magnet))
             {
-            	highlight.arrow = bb.isNewlyPromoted(c) ? StockArt.Rotate_CCW : StockArt.Rotate_CW;
+            	highlight.arrow = gb.isNewlyPromoted(c) ? StockArt.Rotate_CCW : StockArt.Rotate_CW;
                 highlight.awidth = 3*CELLSIZE/3;
                 
             }
@@ -552,7 +553,7 @@ public class MagnetViewer extends CCanvas<MagnetCell,MagnetBoard> implements Mag
             				: gb.cellSize()*5;
             	 StockArt.SmallO.drawChip(gc,this,sz,xpos,ypos,null);                
              }
-            drawStack(gc,cell,drawhighlight?highlight:null,gb.cellSize(),xpos,ypos);
+            drawStack(gc,gb,cell,drawhighlight?highlight:null,gb.cellSize(),xpos,ypos);
 
             //StockArt.SmallO.drawChip(gc, this, CELLSIZE, xpos,ypos,null);
             }

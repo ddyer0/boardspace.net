@@ -12,6 +12,11 @@ public class XImage
 	private boolean readyToSee = false;	// true if prepared
 	private boolean written = false;	// true when written but not yet aged
 	private boolean waitForRewrite = false;
+	@SuppressWarnings("unused")
+	// lastGraphics remembers the last result of getGraphics.  It has no function
+	// other than preventing the underlying structures from being garbage collected
+	// current theory is that this is the underlying cause of the long running 
+	// "incomplete background" bug.
 	void clear() 
 	{ written = readyToSee = false; 
 	  waitForRewrite = true;

@@ -120,7 +120,7 @@ public class TammanyViewer extends CCanvas<TammanyCell,TammanyBoard> implements 
         // for another game.
         bb = new TammanyBoard(s,type,players_in_game,randomKey,getStartingColorMap(),TammanyBoard.REVISION);
         adjustPlayers(players_in_game);
-        //useDirectDrawing(); // not tested yet
+        useDirectDrawing(true); // not tested yet
         doInit(false);
 
     }
@@ -239,7 +239,7 @@ public class TammanyViewer extends CCanvas<TammanyCell,TammanyBoard> implements 
         int stateY = boardY;
         int stateX = boardX;
         int stateH = fh*3;
-        G.placeRow(stateX+stateH,stateY,boardW-stateH ,stateH,stateRect,noChatRect);
+        G.placeRow(stateX+stateH,stateY,boardW-stateH ,stateH,stateRect,annotationMenu,noChatRect);
         G.SetRect(iconRect, stateX, stateY, stateH, stateH);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	if(!portrait)
@@ -887,6 +887,7 @@ public class TammanyViewer extends CCanvas<TammanyCell,TammanyBoard> implements 
     {  
     	
        TammanyBoard gb = disB(gc);
+       setDisplayParameters(gb,boardRect);
        int nPlayers = gb.nPlayers();
        TammanyState state = gb.getState();
        boolean moving = hasMovingObject(selectPos);

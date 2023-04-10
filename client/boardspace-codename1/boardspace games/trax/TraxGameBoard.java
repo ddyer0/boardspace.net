@@ -274,6 +274,9 @@ class TraxGameBoard  extends BaseBoard implements BoardProtocol,TraxConstants
         right = from_b.right;
         bottom = from_b.bottom;
         blitz = from_b.blitz;
+        dropped_x = from_b.dropped_x;
+        dropped_y = from_b.dropped_y;
+        droppedDest = from_b.droppedDest;
         fillPath.clear();
         for(int x = left; x<right; x++) 
 	       { for (int y=top; y<bottom; y++) 
@@ -300,6 +303,8 @@ class TraxGameBoard  extends BaseBoard implements BoardProtocol,TraxConstants
         }
         droppedDest= TraxId.NoWhere;
         pickedSource=TraxId.NoWhere;
+        dropped_x = 0;
+        dropped_y = 0;
         moveNumber = 1;
         tilesOnBoard=0;
         fillPath.clear();

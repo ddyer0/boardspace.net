@@ -330,7 +330,7 @@ public class ArimaaViewer extends CCanvas<ArimaaCell,ArimaaBoard> implements Ari
         }
         if(hasRabbits && !hasNonRabbits && (gb.pickedObject==null) && (gb.getState()==ArimaaState.INITIAL_SETUP_STATE))
         	{
-        	Rectangle rr = new Rectangle(G.Left(r)+G.Width(r)/3,G.Top(r)+G.Height(r)/3,G.Width(r)/3,G.Height(r)/3);
+        	Rectangle rr = new Rectangle(G.Left(r)+G.Width(r)/4,G.Top(r)+G.Height(r)/3,G.Width(r)/2,G.Height(r)/3);
             if (GC.handleRoundButton(gc,rr, 
             		highlight, s.get(PlaceRabbits),
             		HighlightColor, rackBackGroundColor))

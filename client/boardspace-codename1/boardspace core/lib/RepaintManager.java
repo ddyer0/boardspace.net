@@ -309,7 +309,7 @@ public class RepaintManager implements VncScreenInterface,Config
 		public double getRotation();
 		public double getGlobalZoom();
 		public Component getComponent();
-		public void drawBackground(Graphics gc);
+		public void drawBackground(Graphics gc, Image image);
 		public void resetLocalBoundsIfNeeded();
 		public boolean rotateCanvas(Graphics g);
 		public void unrotateCanvas(Graphics g);
@@ -1750,7 +1750,7 @@ public class RepaintManager implements VncScreenInterface,Config
 			int h = helper.getRotatedHeight();
 			complete |= createAllFixed(w,h);				// true if this is a new bitmap that needs to be painted
 			}
-          	XImage fixed = allFixed();		 // create backing bitmaps;
+         	XImage fixed = allFixed();		 // create backing bitmaps;
           	boolean drawn = false;
         	if(fixed!=null)
         	{	// draw the fixed background elements, either into the fixed bitmap
@@ -1761,7 +1761,7 @@ public class RepaintManager implements VncScreenInterface,Config
         	    	 { // redraw the deep background
         	    		Graphics allFixedGC = fixed.getGraphics();
         	    		allFixedGC.translate(-tx,-ty);
-        	    		helper.drawBackground(allFixedGC);
+        	    		helper.drawBackground(allFixedGC, fixed.getImage());
         	    		allFixedGC.translate(tx,ty);
    						long fintime = G.Date();
    						long when = fintime+repaintStrategy.delayBeforeReading;
@@ -1780,7 +1780,7 @@ public class RepaintManager implements VncScreenInterface,Config
         	if(!drawn)
         		{
         		// this will redraw live if the background isn't ready to see yet
-            	helper.drawBackground(gc);
+            	helper.drawBackground(gc, null);
         		}
 
          }

@@ -6,6 +6,7 @@ import lib.Random;
 
 import lib.OStack;
 import online.common.exCanvas;
+import online.game.PlacementProvider;
 import online.game.chip;
 import online.game.stackCell;
 
@@ -14,8 +15,14 @@ class CellStack extends OStack<MorelliCell>
 	public MorelliCell[] newComponentArray(int n) { return(new MorelliCell[n]); }
 }
 
-public class MorelliCell extends stackCell<MorelliCell,MorelliChip> implements MorelliConstants
+public class MorelliCell extends stackCell<MorelliCell,MorelliChip> implements MorelliConstants, PlacementProvider
 {	int ring = 0;			// ring from edge
+
+	public int lastPlaced = -1;
+	public int lastEmptiedPlayer = -1;
+	public int lastEmptied = -1;
+
+
 	public MorelliChip[] newComponentArray(int n) { return(new MorelliChip[n]); }
 	// constructor
 	public MorelliCell(char c,int r) 
@@ -41,6 +48,25 @@ public class MorelliCell extends stackCell<MorelliCell,MorelliChip> implements M
     	MorelliChip.darkener.drawChip(gc,drawOn,SQUARESIZE,xscale,e_x,e_y,null);
     	}
     }
+
+	public void reInit()
+	{
+		super.reInit();
+		lastPlaced = -1;
+		lastEmptiedPlayer = -1;
+		lastEmptied = -1;
+	}
+	public void copyFrom(MorelliCell other)
+	{
+		super.copyFrom(other);
+		lastPlaced = other.lastPlaced;
+		lastEmptied = other.lastEmptied;
+		lastEmptiedPlayer = other.lastEmptiedPlayer;
+	}
+	
+	public int getLastPlacement(boolean empty) {
+		return empty ? lastEmptied : lastPlaced;
+	}
 	
 
 }

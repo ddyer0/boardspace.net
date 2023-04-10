@@ -119,7 +119,7 @@ public class QuinamidViewer extends CCanvas<QuinamidCell,QuinamidBoard> implemen
         }
         b = new QuinamidBoard(info.getString(GAMETYPE, Quinamid_INIT),
         		key,getStartingColorMap());
-        useDirectDrawing(true); // not tested yet
+        useDirectDrawing(true);
         doInit(false);
 
         
@@ -229,7 +229,7 @@ public class QuinamidViewer extends CCanvas<QuinamidCell,QuinamidBoard> implemen
         int stateY = boardY;
         int stateX = boardX;
         int stateH = SQUARESIZE/4;
-        G.placeStateRow(stateX,stateY,boardW,stateH,iconRect,stateRect,noChatRect);
+        G.placeStateRow(stateX,stateY,boardW,stateH,iconRect,stateRect,annotationMenu,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	
     	// goal and bottom ornaments, depending on the rendering can share

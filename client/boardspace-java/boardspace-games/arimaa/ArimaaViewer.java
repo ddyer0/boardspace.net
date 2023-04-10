@@ -226,7 +226,7 @@ public class ArimaaViewer extends CCanvas<ArimaaCell,ArimaaBoard> implements Ari
         // place the chat and log automatically, preferring to place
     	// them together and not encroaching on the main rectangle.
     	layout.placeTheChatAndLog(chatRect, minChatW, chatHeight,minChatW*2,3*chatHeight/2,logRect,
-    			minLogW, minLogH, minLogW*3/2, minLogH*2);
+    			minLogW, minLogH, minLogW*2, minLogH*2);
        	layout.placeDoneEditRep(buttonW,buttonW*4/3,doneRect,editRect,repRect);
     	layout.placeTheVcr(this,vcrW,vcrW*3/2);
        	int doneW = G.Width(editRect);
@@ -329,7 +329,7 @@ public class ArimaaViewer extends CCanvas<ArimaaCell,ArimaaBoard> implements Ari
         }
         if(hasRabbits && !hasNonRabbits && (gb.pickedObject==null) && (gb.getState()==ArimaaState.INITIAL_SETUP_STATE))
         	{
-        	Rectangle rr = new Rectangle(G.Left(r)+G.Width(r)/3,G.Top(r)+G.Height(r)/3,G.Width(r)/3,G.Height(r)/3);
+        	Rectangle rr = new Rectangle(G.Left(r)+G.Width(r)/4,G.Top(r)+G.Height(r)/3,G.Width(r)/2,G.Height(r)/3);
             if (GC.handleRoundButton(gc,rr, 
             		highlight, s.get(PlaceRabbits),
             		HighlightColor, rackBackGroundColor))

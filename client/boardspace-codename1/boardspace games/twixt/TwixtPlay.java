@@ -18,8 +18,8 @@ import lib.*;
 import online.game.*;
 import online.game.export.ViewerProtocol;
 import online.game.sgf.sgf_game;
-import online.game.sgf.export.sgf_names;
 import online.game.sgf.sgf_node;
+import online.game.sgf.export.sgf_names;
 import online.game.sgf.export.sgf_names.Where;
 import online.search.*;
 import online.search.nn.*;
@@ -28,6 +28,8 @@ import online.search.nn.*;
 
 
 /** 
+ * Twixt uses alpha-beta except for experiments
+ * 
  * the Robot player only has to implement the basic methods to generate and evaluate moves.
  * the actual search is handled by the search driver framework.
  * <p>

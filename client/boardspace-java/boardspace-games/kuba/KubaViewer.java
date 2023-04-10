@@ -102,7 +102,7 @@ public class KubaViewer extends CCanvas<KubaCell,KubaBoard> implements  KubaCons
         
         b = new KubaBoard(info.getString(GAMETYPE, "Traboulet"),
         		getStartingColorMap());
-        useDirectDrawing(true); 	// not tested yet
+        useDirectDrawing(true);
         doInit(false);
         
      }

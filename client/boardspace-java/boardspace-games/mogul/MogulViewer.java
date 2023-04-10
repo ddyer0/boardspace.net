@@ -111,7 +111,7 @@ public class MogulViewer extends CCanvas<MogulCell,MogulBoard> implements MogulC
         	{ InternationalStrings.put(MogulStrings);
         	  InternationalStrings.put(MogulStringPairs);
         	}
-        //useDirectDrawing(); // not tested yet
+        useDirectDrawing(true);
         doInit(false);
         
      }

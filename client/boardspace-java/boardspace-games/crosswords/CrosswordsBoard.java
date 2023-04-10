@@ -243,6 +243,7 @@ class CrosswordsBoard extends rectBoard<CrosswordsCell> implements BoardProtocol
 	public int getMaxRevisionLevel() { return(REVISION); }
 	static final int MAX_PLAYERS = 4;
 	static final int rackSize = 7;		// the number of filled slots in the rack.  Actual rack has some empty slots
+	static final int rackSpares = 2;
 	int sweep_counter = 0;
 	CrosswordsVariation variation = CrosswordsVariation.Crosswords;
 	private CrosswordsState board_state = CrosswordsState.Puzzle;	
@@ -390,7 +391,7 @@ class CrosswordsBoard extends rectBoard<CrosswordsCell> implements BoardProtocol
 		hiddenVisible = new boolean[MAX_PLAYERS];
 		openRack = new boolean[MAX_PLAYERS];		// part of the user interface
 
-       	rackMap = new int[MAX_PLAYERS][rackSize+2];
+       	rackMap = new int[MAX_PLAYERS][rackSize+rackSpares];
       	Random r = new Random(2975564);
        	drawPile = new CrosswordsCell(r,CrosswordsId.DrawPile);
 
@@ -543,11 +544,11 @@ class CrosswordsBoard extends rectBoard<CrosswordsCell> implements BoardProtocol
     	}
     	drawPile.shuffle(r);
   	    	
- 		int racks = revision<104 ? rackSize+2 : rackSize;
+ 		int racks = revision<104 ? rackSize+rackSpares : rackSize;
  		if(rack==null || rack.length!=players || racks!=rack[0].length)
  		{
     	rack = new CrosswordsCell[players][racks];
-       	mappedRack = new CrosswordsCell[players][rackSize+2];
+       	mappedRack = new CrosswordsCell[players][racks];
         
     	for(int i=0;i<players;i++)
     	{	CrosswordsCell prack[] = rack[i];
@@ -1345,7 +1346,7 @@ class CrosswordsBoard extends rectBoard<CrosswordsCell> implements BoardProtocol
     	{
     		if(idx!=crossIndex)
     		{
-    		 	int directionStep = diagonals ? 1 : 2;
+    		 	int directionStep = diagonals ? 1 : CELL_QUARTER_TURN;
     		 	int lastDir = backwards ? CELL_FULL_TURN : diagonals ? CELL_FULL_TURN/2 : CELL_FULL_TURN;
     		 	int firstDir = diagonals ? 0 : backwards ? CELL_LEFT : CELL_RIGHT;
     		 	// be a little more general than needed for square crosswords, to allow for diagonal and backwards crosswords
@@ -1478,7 +1479,7 @@ class CrosswordsBoard extends rectBoard<CrosswordsCell> implements BoardProtocol
     	int n = 1;
     	c.sweep_counter = sweep_counter;
     	c.wordDirections = 0;		// clear here, so markDirections doesn't have to.
-    	int directionStep = diagonals ? 1 : 2;
+    	int directionStep = diagonals ? 1 : CELL_QUARTER_TURN;
     	// don't mess with this, it's correct!
     	int lastDir = backwards ? CELL_FULL_TURN : diagonals ? CELL_FULL_TURN/2 : CELL_RIGHT;
     	// don't mess with this, it's correct!
@@ -2255,7 +2256,7 @@ class CrosswordsBoard extends rectBoard<CrosswordsCell> implements BoardProtocol
 		 		CrosswordsCell startingAt,char targetLetter,
 		 		int notInDirection,int inDirection)
  {	
- 	int directionStep = diagonals ? 1 : 2;
+ 	int directionStep = diagonals ? 1 : CELL_QUARTER_TURN;
  	int lastDir = inDirection>=0 ? inDirection+1 : backwards ? CELL_FULL_TURN : diagonals ? CELL_FULL_TURN/2 : CELL_FULL_TURN;
  	int firstDir = inDirection>=0 ? inDirection : diagonals ? 0 : backwards ? CELL_LEFT : CELL_RIGHT;
  	int total = 0;

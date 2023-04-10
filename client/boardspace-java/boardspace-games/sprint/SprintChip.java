@@ -65,7 +65,6 @@ public class SprintChip extends chip<SprintChip> implements SprintConstants
 		index = allChips.size();
 		allChips.push(this);
 	}
-	public boolean isBlank() { return(value==0); }
 	public int chipNumber() { return(index); }
 	
 
@@ -102,28 +101,7 @@ public class SprintChip extends chip<SprintChip> implements SprintConstants
     
 	public static SprintChip Icon = new SprintChip("icon-nomask",dscale,null,0);
 
-	public static SprintChip NoBackwards = new SprintChip("nobackwards-nomask",dscale,null,0);
-	public static SprintChip Backwards = new SprintChip("backwards-nomask",dscale,null,0);
-	public static SprintChip Diagonals = new SprintChip("diagonals-nomask",dscale,null,0);
-	public static SprintChip NoDiagonals = new SprintChip("nodiagonals-nomask",dscale,null,0);
-	public static SprintChip AllConnected = new SprintChip("allconnected-nomask",dscale,null,0);
-	public static SprintChip NotConnected = new SprintChip("noconnected-nomask",dscale,null,0);
-	public static SprintChip NoDuplicates = new SprintChip("noduplicates-nomask",dscale,null,0);
-	public static SprintChip Duplicates = new SprintChip("dups-nomask",dscale,null,0);
-	public static SprintChip OpenRacks = new SprintChip("openracks-nomask",dscale,null,0);
-	public static SprintChip ClosedRacks = new SprintChip("closedracks-nomask",dscale,null,0);
-
-	public static SprintChip LockRotation = new SprintChip("lock-nomask",dscale,LockMessage,0);
-	public static SprintChip UnlockRotation = new SprintChip("unlock-nomask",dscale,UnlockMessage,0);
-	
-	static {
-		Option.NoDuplicate.onIcon = NoDuplicates;
-		Option.NoDuplicate.offIcon = Duplicates;
-	}
-	static public SprintChip assignedBlanks[];
-    static private int letterSpecs[][] = {
-    		{' ',2,0},
-    		
+    static private int letterSpecs[][] = {   		
     		{'A',9,1},
     		{'E',12,1},
     		{'I',9,1},
@@ -157,8 +135,6 @@ public class SprintChip extends chip<SprintChip> implements SprintConstants
        		{'Q',1,10},
        		{'Z',1,10},
     };
-    public static SprintChip Blank; 
-    public static SprintChip A;
     /**
      * this is a fairly standard preloadImages method, called from the
      * game initialization.  It loads the images into the stack of
@@ -185,14 +161,8 @@ public class SprintChip extends chip<SprintChip> implements SprintConstants
 		letters = pool.toArray();  	
 		alphaLetters = new SprintChip[26];
 		for(SprintChip c : letters) { if(c.lcChar>='a') { alphaLetters[c.lcChar-'a'] = c; }}
-    	Blank = letters[0];
-    	A = letters[3];
-    	
-    	assignedBlanks = new SprintChip[26];
-		for(char ch='A'; ch<='Z'; ch = (char)(ch+1))
-		{
-			assignedBlanks[ch-'A']=new SprintChip(Blank,ch,0); 
-		}}
+ 		}
+
 	}   
 	Color ltblue = new Color(100,100,250);
 		
