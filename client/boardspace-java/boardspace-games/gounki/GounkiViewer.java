@@ -215,7 +215,7 @@ public class GounkiViewer extends CCanvas<GounkiCell,GounkiBoard> implements Gou
     	//
         int stateY = boardY-bufferCellsH*CELLSIZE;
         int stateX = boardX;
-        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,reverseRect,altViewRect,viewsetRect,noChatRect);
+        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,reverseRect,altViewRect,viewsetRect,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	if(rotate)
     	{

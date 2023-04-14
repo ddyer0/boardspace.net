@@ -220,7 +220,7 @@ public double setLocalBoundsA(int x,int y,int width,int height,double v)
 	//
     int stateY = boardY;
     int stateX = boardX;
-    G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,eyeRect,liftRect,reverseViewRect,viewsetRect,noChatRect);
+    G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,eyeRect,liftRect,reverseViewRect,viewsetRect,noChatRect);
 	G.SetRect(boardRect,boardX,boardY+(rotate?CELLSIZE/2:CELLSIZE),boardW,boardH);
 	if(rotate)
 	{	// this conspires to rotate the drawing of the board

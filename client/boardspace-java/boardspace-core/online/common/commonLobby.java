@@ -2261,8 +2261,6 @@ public void setRoomType(Session sess,Session.Mode mode,GameInfo g,boolean forced
   // so it can make a nice looking server status .html
   if((sess.mode!=mode)||(sess.currentGame!=g)||forced)
     {
-     
-     {
       // move out if we're in an invalid slot
    	  User myUser = users.primaryUser();
    	  Session mySess = myUser.session();	
@@ -2280,7 +2278,6 @@ public void setRoomType(Session sess,Session.Mode mode,GameInfo g,boolean forced
      if((g!=null) && (!G.allowRobots() || (g.nRobots() == 0))) 
      	{ sess.setCurrentRobot(sess.defaultNoRobot()); }
      if(sess.currentGame!=null && !forced) { PreloadClass(sess.currentGame.viewerClass); }; 
-    }
 }
 
 public void ClearOtherInviteBox(Session sess)

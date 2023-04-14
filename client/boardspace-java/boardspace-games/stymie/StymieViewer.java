@@ -209,7 +209,7 @@ public class StymieViewer extends CCanvas<StymieCell,StymieBoard> implements Sty
     	//
         int stateX = boardX;
         int stateY = boardY-stateH;
-        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,noChatRect);
+        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	
     	// goal and bottom ornaments, depending on the rendering can share

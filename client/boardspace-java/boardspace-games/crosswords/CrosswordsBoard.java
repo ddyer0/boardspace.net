@@ -548,7 +548,7 @@ class CrosswordsBoard extends rectBoard<CrosswordsCell> implements BoardProtocol
  		if(rack==null || rack.length!=players || racks!=rack[0].length)
  		{
     	rack = new CrosswordsCell[players][racks];
-       	mappedRack = new CrosswordsCell[players][racks];
+       	mappedRack = new CrosswordsCell[players][rackSize+rackSpares];
         
     	for(int i=0;i<players;i++)
     	{	CrosswordsCell prack[] = rack[i];

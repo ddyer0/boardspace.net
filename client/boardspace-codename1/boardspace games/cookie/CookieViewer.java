@@ -208,7 +208,7 @@ public class CookieViewer extends CCanvas<CookieCell,CookieBoard> implements Coo
     	//
         int zoomW = CELLSIZE*7;
 
-        G.placeStateRow(boardX,stateY,boardW ,stateH,iconRect,stateRect,noChatRect);
+        G.placeStateRow(boardX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,noChatRect);
         G.placeRight(stateRect,zoomRect,zoomW);
 
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);

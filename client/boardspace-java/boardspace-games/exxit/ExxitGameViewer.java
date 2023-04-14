@@ -228,7 +228,7 @@ public class ExxitGameViewer extends CCanvas<ExxitCell,ExxitGameBoard> implement
         int stateX = boardX;
         int stateH = CELLSIZE;
         int zoomW = CELLSIZE*5;
-        G.placeStateRow(stateX,stateY,boardW,stateH,iconRect,stateRect,eyeRect,liftRect,noChatRect);
+        G.placeStateRow(stateX,stateY,boardW,stateH,iconRect,stateRect,annotationMenu,eyeRect,liftRect,noChatRect);
         G.placeRight(stateRect,zoomRect,zoomW);
         
      	G.SetRect(boardRect,boardX,boardY,boardW,boardH);

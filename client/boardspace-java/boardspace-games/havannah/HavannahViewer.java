@@ -328,7 +328,7 @@ public class HavannahViewer extends CCanvas<HavannahCell,HavannahBoard> implemen
         int stateY = boardY;
         int stateX = boardX;
         int stateH = fh*3;
-        G.placeStateRow(stateX,stateY,boardW,stateH,iconRect,stateRect,numberMenu,noChatRect);
+        G.placeStateRow(stateX,stateY,boardW,stateH,iconRect,stateRect,annotationMenu,numberMenu,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	
     	if(rotate)

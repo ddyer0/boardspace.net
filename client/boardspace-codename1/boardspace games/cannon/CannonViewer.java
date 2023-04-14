@@ -4,7 +4,6 @@ import bridge.*;
 import com.codename1.ui.geom.Rectangle;
 
 import bridge.Config;
-import online.common.*;
 import online.game.*;
 import online.game.sgf.*;
 import online.search.SimpleRobotProtocol;
@@ -84,7 +83,7 @@ public class CannonViewer extends CCanvas<CannonCell,CannonBoard> implements Can
         super.init(info,frame);
         MouseColors = CannonMouseColors;
         MouseDotColors = CannonMouseDotColors;
-        b = new CannonBoard(info.getString(OnlineConstants.GAMETYPE, Cannon_INIT),
+        b = new CannonBoard(info.getString(GAMETYPE, Cannon_INIT),
         		getStartingColorMap());
         useDirectDrawing(true);
         doInit(false);
@@ -165,7 +164,7 @@ public class CannonViewer extends CCanvas<CannonCell,CannonBoard> implements Can
 		layout.placeTheChatAndLog(chatRect, minChatW, chatHeight,minChatW*2,3*chatHeight/2,logRect,
 				minLogW, minLogH, minLogW*3/2, minLogH*3/2);
 	   	layout.placeDoneEditRep(buttonW,buttonW*4/3,doneRect,editRect);
-		layout.placeTheVcr(this,minLogW/2,minLogW*3/2);
+		layout.placeTheVcr(this,minLogW,minLogW*3/2);
 	
 	
 		Rectangle main = layout.getMainRectangle();
@@ -197,7 +196,7 @@ public class CannonViewer extends CCanvas<CannonCell,CannonBoard> implements Can
 	    int stateY = boardY;
 	    int stateX = boardX;
 	    int stateH = fh*5/2;
-	    G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,reverseViewRect,noChatRect);
+	    G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,reverseViewRect,noChatRect);
 		G.SetRect(boardRect,boardX,boardY,boardW,boardH);
 		
 		if(rotate)

@@ -89,7 +89,6 @@ static private double SQUARE_SCALE[] = {0.44,0.545,0.91};
   /* pre load images and create the canonical pieces
    * 
    */
-   static final int counts[] = { 1,1,1,2,2,2,8};
    static final String[] ImageNames =  {"light-tile","dark-tile","trap-tile","glow","blue-glow" };
    static final String[] GoldNames = {"white-chip-np","gold-elephant","gold-camel","gold-horse","gold-dog","gold-cat","gold-rabbit"};
    static final String[] SilverNames = {"black-chip-np","silver-elephant","silver-camel","silver-horse","silver-dog","silver-cat","silver-rabbit"};

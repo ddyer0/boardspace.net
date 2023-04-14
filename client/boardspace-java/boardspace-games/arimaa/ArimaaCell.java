@@ -68,6 +68,8 @@ public class ArimaaCell extends stackCell<ArimaaCell,ArimaaChip> implements Plac
 		lastEmptiedPlayer = -1;
 		lastEmptyMoveNumber = -1;
 		lastPlaceMoveNumber = -1;
+		isTrap = false;
+		isTrapAdjacent = false;
 		lastContents = null;
 		if(auxDisplay!=null) { auxDisplay.reInit(); }
 	}
@@ -80,6 +82,8 @@ public class ArimaaCell extends stackCell<ArimaaCell,ArimaaChip> implements Plac
 		lastEmptiedPlayer = other.lastEmptiedPlayer;
 		lastEmptyMoveNumber = other.lastEmptyMoveNumber;
 		lastPlaceMoveNumber = other.lastPlaceMoveNumber;
+		isTrap = other.isTrap;
+		isTrapAdjacent = other.isTrapAdjacent;
 		if(auxDisplay!=null) { auxDisplay.copyFrom(other.auxDisplay); }
 	}
 	public int getLastPlacement(boolean empty) {

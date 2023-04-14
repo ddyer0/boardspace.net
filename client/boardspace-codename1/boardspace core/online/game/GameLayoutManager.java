@@ -432,7 +432,7 @@ class RectangleManager
 		return(newBest);
 	}
     
-    /** place one of two rectangles, whichever is more effecient.  When placing in the main rectangle, 
+    /** place one of two rectangles, whichever is more efficient.  When placing in the main rectangle, 
      * the efficiency of the remaining main rectangle is the criterion.  When placing in the existing
      * smaller rectangles, the amount of waste (smaller rectangles) generated is the criterion.
      *  
@@ -479,8 +479,16 @@ class RectangleManager
     		if((r!=mainRectangle) || (placeInSpare_best==null))
     				{
     				// chip from the main rectangle only if there is no choice.
-    				if(minWX0>0 && minHX0>0 && placeInSpareScore(r,minWM0,minHM0,preferredAspectRatio)) { bestis1 = false; }
-    				if(minWX1>0 && minHX1>0 && placeInSpareScore(r,minWM1,minHM1,preferredAspectRatio)) { bestis1 = true; }
+    				if(minWX0>0 
+    						&& minHX0>0
+    						&& placeInSpareScore(r,minWM0,minHM0,(r==mainRectangle) ? preferredAspectRatio : (double)minWM0/minHM0)) 
+    							{ bestis1 = false; 
+    							}
+    				if(minWX1>0
+    						&& minHX1>0 
+    						&& placeInSpareScore(r,minWM1,minHM1,(r==mainRectangle) ? preferredAspectRatio : (double)minWX1/minHX1)) 
+    							{ bestis1 = true; 
+    							}
     				}
     	}
     	int bestMinW = bestis1 ? minWM1 : minWM0;
@@ -502,13 +510,15 @@ class RectangleManager
     		{
     			alloc = placeInLeftOrRightChip(targetRect,placeInSpare_best,
     					bestMinW,
-    					preserveAspectRatio ? bestMinH : Math.min(G.Height(placeInSpare_bestLeftOrRight),Math.min(G.Height(placeInSpare_best), bestMaxH)),
+    					preserveAspectRatio 
+    						? bestMinH 
+    						: Math.min(G.Height(placeInSpare_bestLeftOrRight),Math.min(G.Height(placeInSpare_best), bestMaxH)),
     					placeInSpare_bestLeftOrRight,align);
     		}
     		else     			
     		{	alloc = placeInSpecificRectangle(targetRect,placeAboveOrBelow,placeInSpare_best,
-    						bestMinW,bestMinH,bestMinW,bestMaxH,
-    						preserveAspectRatio,preferredAspectRatio,align);
+    						bestMinW,bestMinH,bestMaxW,bestMaxH,
+    						preserveAspectRatio,align);
     		/*
         		int actualW = Math.min(bestMaxW,G.Width(placeInSpare_best));
     			int actualH = Math.min(bestMaxH, G.Height(placeInSpare_best));
@@ -548,14 +558,16 @@ class RectangleManager
     }
     private Rectangle placeInSpecificRectangle(Rectangle targetRect,boolean aboveOrBelow,Rectangle fromRect,
     		int minW,int minH,int maxW,int maxH,
-    		boolean preserveAspectRatio,double aspect,BoxAlignment align)
-    {
-    	int actualW = Math.min(maxW,G.Width(fromRect));
-		int actualH = Math.min(maxH, G.Height(fromRect));
+    		boolean preserveAspectRatio,BoxAlignment align)
+    {	int actualW = Math.min(maxW,G.Width(fromRect));
+    	int actualH =  Math.min(maxH,G.Height(fromRect));
+    	
 		if(preserveAspectRatio)
-		{
-			actualH = Math.max(minH,(int)Math.min(actualH, actualW/aspect));
-			actualW = Math.max(minW,(int)Math.min(actualH*aspect, actualW));
+		{	double aspect = (double)minW/minH;
+			int actualH0 = Math.max(minH,(int)Math.min(actualH, actualW/aspect));
+			int actualW0 = Math.max(minW,(int)Math.min(actualH*aspect, actualW));
+			actualW = actualW0;
+			actualH = actualH0;
 		}
 		
 		if(aboveOrBelow)
@@ -1136,7 +1148,7 @@ class RectangleManager
 			}
 			else 
 			{	// through the middle
-				Rectangle bottom = G.splitTop(chip,null,chip_bottom-target_top);
+				Rectangle bottom = G.splitBottom(chip,null,chip_bottom-target_top);
 				G.SetTop(bottom,target_bottom);
 				G.SetHeight(bottom,chip_bottom-target_bottom);
 				spareRects.push(bottom);
@@ -1179,8 +1191,9 @@ class RectangleManager
 	public void reallocate(RectangleSpec spec,Rectangle to)
 	{	
 		Rectangle alloc = placeInSpecificRectangle(spec.actual,false,to,
-				spec.minw,spec.minh,spec.maxw,spec.maxh,
-				spec.preserveAspectRatio,spec.preferredAspectRatio,spec.align);
+				spec.minw+marginSize*2,spec.minh+marginSize*2,
+				spec.maxw+marginSize*2,spec.maxh+marginSize*2,
+				spec.preserveAspectRatio,spec.align);
 		spec.allocated = alloc;
 		G.copy(spec.actual,alloc);
 		G.insetRect(spec.actual,marginSize);
@@ -3430,7 +3443,7 @@ public class GameLayoutManager  implements Opcodes
     private RectangleSpec placeRectangle(Purpose purpose,Rectangle targetRect,int minW,int minH,int maxW,int maxH,
 			BoxAlignment align,boolean preserveAspectRatio)
     {	RectangleSpec spec = rects.placeInMainRectangle(purpose,targetRect,minW,minH,maxW,maxH,align,preserveAspectRatio,
-    		(double)maxW/maxH);
+    		preferredAspectRatio);
     	return spec;
     }
     public boolean placeRectangle(Rectangle targetRect,int minW,int minH,int maxW,int maxH,

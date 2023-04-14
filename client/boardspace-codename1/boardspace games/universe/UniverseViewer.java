@@ -438,7 +438,7 @@ public class UniverseViewer extends CCanvas<UniverseCell,UniverseBoard> implemen
     	int stateY = boardY-stateH;
     	int boardRight = boardX+boardW;
     	layout.returnFromMain(extraW,extraH);
-    	G.placeStateRow( boardX+stateH,stateY,boardW-stateH,stateH,iconRect,stateRect,viewsetRect,noChatRect);
+    	G.placeStateRow( boardX+stateH,stateY,boardW-stateH,stateH,iconRect,stateRect,annotationMenu,viewsetRect,noChatRect);
 
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	lineStrokeWidth = boardW/400.0;

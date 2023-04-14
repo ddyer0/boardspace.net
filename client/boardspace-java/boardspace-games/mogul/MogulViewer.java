@@ -222,7 +222,7 @@ public class MogulViewer extends CCanvas<MogulCell,MogulBoard> implements MogulC
     
 	int stateX = boardX;
 	int stateY = boardY-stateH;
-	G.placeStateRow(stateX, stateY,boardW,stateH,iconRect,stateRect,noChatRect);
+	G.placeStateRow(stateX, stateY,boardW,stateH,iconRect,stateRect,annotationMenu,noChatRect);
     G.SetRect(goalRect,stateX, boardY+boardH,boardW, stateH);
     
     setProgressRect(progressRect,goalRect);

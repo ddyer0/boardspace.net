@@ -93,7 +93,7 @@ public class GoViewer extends CCanvas<GoCell,GoBoard> implements GoConstants, Ga
     }
 
     public void setRootProperties(sgf_node root)
-    {
+    {	super.setRootProperties(root);
     	for(Enumeration<String> prop = b.properties.keys();
     		prop.hasMoreElements();)
     	{
@@ -363,7 +363,7 @@ public class GoViewer extends CCanvas<GoCell,GoBoard> implements GoConstants, Ga
         boolean canPick = (thisChip!=null);
         boolean scoring = gb.getState().isScoringOrOver() ;
         HitPoint pt = (canHit && (canPick||canDrop))? highlight : null;
-        double dscore = gb.territoryForPlayer(forPlayer);
+        double dscore = gb.scoreForPlayer(forPlayer);
         double komi = gb.getKomi();
         boolean isint = (komi-(int)komi)==0.0;
         String scorestr = isint ? ""+(int)dscore : ""+dscore;

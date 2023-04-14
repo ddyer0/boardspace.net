@@ -362,7 +362,7 @@ public class GoViewer extends CCanvas<GoCell,GoBoard> implements GoConstants, Ga
         boolean canPick = (thisChip!=null);
         boolean scoring = gb.getState().isScoringOrOver() ;
         HitPoint pt = (canHit && (canPick||canDrop))? highlight : null;
-        double dscore = gb.territoryForPlayer(forPlayer);
+        double dscore = gb.scoreForPlayer(forPlayer);
         double komi = gb.getKomi();
         boolean isint = (komi-(int)komi)==0.0;
         String scorestr = isint ? ""+(int)dscore : ""+dscore;
@@ -1439,7 +1439,6 @@ private void playSounds(commonMove m)
 	 */
     public void StopDragging( HitPoint hp)
     {	CellId id = hp.hitCode;
-    	G.print("Stop "+hp);
     	if(!(id instanceof GoId)) 
     		{ // handle all the actions that aren't ours
     			missedOneClick = performStandardActions(hp,missedOneClick); 

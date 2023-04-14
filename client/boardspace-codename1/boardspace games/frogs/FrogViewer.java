@@ -223,7 +223,7 @@ public class FrogViewer extends CCanvas<FrogCell,FrogBoard> implements FrogConst
     	int boardBottom = mainY+mainH-stateH;
     	int boardH = boardBottom-boardY;
     	int stateY = boardY-stateH;
-    	G.placeStateRow( boardX,stateY,boardW,stateH,iconRect,stateRect,noChatRect);
+    	G.placeStateRow( boardX,stateY,boardW,stateH,iconRect,stateRect,annotationMenu,noChatRect);
      	
     	G.placeRight(stateRect, zoomRect, zoomW);
 

@@ -159,7 +159,7 @@ public class TriadViewer extends CCanvas<TriadCell,TriadBoard> implements TriadC
     	int boardBottom = boardY+boardH;
     	int stateY = boardY-stateH;
        	layout.returnFromMain(extraW,extraH);
-    	G.placeStateRow(boardX,stateY,boardW,stateH,iconRect,stateRect,eyeRect,noChatRect);
+    	G.placeStateRow(boardX,stateY,boardW,stateH,iconRect,stateRect,annotationMenu,eyeRect,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	G.SetRect(goalRect, boardX, boardBottom-stateH, boardW, stateH);
     	setProgressRect(progressRect,goalRect);

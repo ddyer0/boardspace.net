@@ -98,7 +98,6 @@ public class VeletasPlay extends commonRobot<VeletasBoard> implements Runnable, 
     public void InitBoardFromGame()
     {
         board.copyFrom(GameBoard);
-        board.acceptPlacement();
     }
 /** search for a move on behalf onf player p and report the result
  * to the game.  This is called in the robot process, so the normal

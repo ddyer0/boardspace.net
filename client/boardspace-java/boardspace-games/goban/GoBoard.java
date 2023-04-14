@@ -63,7 +63,7 @@ public class GoBoard extends squareBoard<GoCell> implements BoardProtocol,GoCons
     public int boardColumns;	// size of the board
     public int boardRows;
     public void SetDrawState() { setState(GoState.Draw); }
-    
+    public double finalTerritory[] = new double[] {0,0};
     public CellStack emptyCells = new CellStack(); 
     public GoCell rack[] = new GoCell[2];
     public GoCell rawRack[] = new GoCell[2];
@@ -235,6 +235,7 @@ public class GoBoard extends squareBoard<GoCell> implements BoardProtocol,GoCons
     public void copyFrom(GoBoard from_b)
     {	
         super.copyFrom(from_b);			// copies the standard game cells in allCells list
+        AR.copy(finalTerritory,from_b.finalTerritory);
         pickedObject = from_b.pickedObject;	
         komi = from_b.komi;
         komiIsSet = from_b.komiIsSet;
@@ -323,6 +324,7 @@ public class GoBoard extends squareBoard<GoCell> implements BoardProtocol,GoCons
         AR.setValue(win,false);
         chips_on_board=0;
         AR.setValue(ghostLevel,0);
+        AR.setValue(finalTerritory,0);
         moveNumber = 1;
         changeClock++;
     }
@@ -385,7 +387,9 @@ public class GoBoard extends squareBoard<GoCell> implements BoardProtocol,GoCons
     {	// return true if the conditions for a win exist for player right now
     	if(board_state==GoState.Gameover) { return(win[player]); }
     	classifyBoard();
-    	return(territoryForPlayer(player)>territoryForPlayer(nextPlayer[player]));
+    	double t1 = finalTerritory[player] = territoryForPlayer(player);
+    	double t2 = finalTerritory[nextPlayer[player]] = territoryForPlayer(nextPlayer[player]);
+    	return(t1>t2);
     }
 
 
@@ -2166,7 +2170,13 @@ public class GoBoard extends squareBoard<GoCell> implements BoardProtocol,GoCons
 		}
 		return(false);
 	}
-
+  double scoreForPlayer(int pl)
+  {
+	  if(board_state==GoState.Gameover) {
+		  return finalTerritory[pl];
+	  }
+	  return territoryForPlayer(pl);
+  }
   double territoryForPlayer(int pl)
   {		int p = getColorMap()[pl];
   		double n = (p==0) ? 0 : komi;

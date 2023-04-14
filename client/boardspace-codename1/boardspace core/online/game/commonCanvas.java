@@ -446,10 +446,12 @@ public abstract class commonCanvas extends exCanvas
 	private static final String LoadGameFile = "Load Game File";
 	private static final String ReplayGameCollection = "Replay Game Collection";
 	private static final String ReplayGameFolder = "Replay games in folder";
+	private static final String RemoteFor = "Remote for #1";
 	static public String[] CanvasStrings = {
 			SaveSingleGame,
 			//ReplayGameFolder, // debug only
 			//ReplayGameCollection,
+			RemoteFor,
 			LoadGameFile,
 			SaveGameCollection,
 			TrackMice,
@@ -709,7 +711,6 @@ public abstract class commonCanvas extends exCanvas
 	    private JMenuItem resignAction = null;
 	    private JMenuItem passMove = null;
 	    private JMenuItem saveAndCompare = null;
-	    private JCheckBoxMenuItem noChatMenu = null;
 	    private boolean separateChat = false;		// chat in a separate window
 	    private boolean hiddenChat = false;			// chat in current window, but hidden
 	    private JMenuItem showText = null;
@@ -865,10 +866,7 @@ public abstract class commonCanvas extends exCanvas
 	    	   w.setText(gameRecordString());
 	       }
 	    private boolean handleDeferredEvent(Object target)
-	    {	if(target==noChatMenu)
-	    	{	setSeeChat(!noChatMenu.getState());
-	    	}
-	    	else if(target==l.zoomButton)
+	    {	if(target==l.zoomButton)
 	    	{
 	    	setGlobalZoomButton();
 	    	}
@@ -3273,7 +3271,7 @@ public abstract class commonCanvas extends exCanvas
     public CellId drawVcrGroup(HitPoint p, Graphics inG)
     {  	
     	if(G.Height(noChatRect)>0) { drawNoChat(inG,noChatRect,p); }	// magically draw the chat/nochat button
-    	if(G.Height(annotationMenu)>0) {  annotationMenu.draw(inG,p); }
+    	drawAnnotationMenu(inG,p);
     	int artHeight = G.Height(vcrZone);
     	int artX = G.Left(vcrZone);
     	int artWidth = G.Width(vcrZone);
@@ -4839,19 +4837,18 @@ public abstract class commonCanvas extends exCanvas
             if(G.offline())
             {
             if(REMOTEVNC) { 
-            regService = new VncRemote("Spectate for "+gameName(),painter,this);
+            regService = new VncRemote(s.get(RemoteFor,gameName()),painter,this);
             VNCService.registerService(regService);
             }
             if(REMOTERPC)
             {
-            rpcService = new RpcRemoteServer("Spectate for "+gameName(),this,-1);
+            rpcService = new RpcRemoteServer(s.get(RemoteFor,gameName()),this,-1);
             RpcService.registerService(rpcService);
             }
             }
             
         }
         
-        hidden.noChatMenu = myFrame.addOption("No chat window",!seeChat(),deferredEvents);
         hidden.showSgf = myFrame.addAction(ShowSGFMessage,deferredEvents);
         hidden.emailSgf = myFrame.addAction(EmailSGFMessage,deferredEvents);
         setActivePlayer((commonPlayer)info.get(exHashtable.MYPLAYER));
@@ -8201,7 +8198,6 @@ public void verifyGameRecord()
 				}
 				else 
 				{ 
-				  if(hidden.noChatMenu!=null) { hidden.noChatMenu.setState(!v); }
 				  resetBounds();
 				}
 		}
@@ -8525,7 +8521,7 @@ public void verifyGameRecord()
 	    public void testSwitch()
 	    {
 	    	autoOptimize = !autoOptimize;
-	    	setLocalBoundsSync(0,0,getWidth(),getHeight());
+	    	resetBounds();
 	    }
 	    public boolean autoDone = false;
 	    public boolean enableAutoDone = false;
@@ -8541,7 +8537,7 @@ public void verifyGameRecord()
 		public boolean autoDoneActive() { return autoDone && !skipAutoDone && !reviewMode(); }
 		public void doGameTest() { }
 		public boolean reverseView() { BoardProtocol b = getBoard(); return (b==null ? false : b.reverseView()); }
-		public boolean autoOptimize = true;
+		static public boolean autoOptimize = true;
 		public void setLocalBoundsSync(int x,int y,int w,int h)
 		{	super.setLocalBoundsSync(x,y,w,h);
 			if(autoOptimize) { selectedLayout.optimize(); }

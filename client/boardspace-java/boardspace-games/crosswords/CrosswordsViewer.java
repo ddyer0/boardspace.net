@@ -1090,6 +1090,7 @@ public void setLetterColor(Graphics gc,CrosswordsBoard gb,CrosswordsCell cell)
     	super.drawAnnotationMenu(g,p);
     	GC.unsetRotatedContext(g,p);
     }
+ 
     public void showAnnotationMenu()
     {	// TODO: fix sub-rotated annotation menu on crosswordle 
     	// this doesn't have the desired effect.  When you've used the local rotater on the menu,
@@ -1100,6 +1101,7 @@ public void setLetterColor(Graphics gc,CrosswordsBoard gb,CrosswordsCell cell)
     	super.showAnnotationMenu();
     	//setCanvasRotation(oldro);
     }
+
     public void redrawBoard(Graphics gc, HitPoint selectPos)
     {  CrosswordsBoard gb = disB(gc);
     

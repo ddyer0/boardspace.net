@@ -20,7 +20,7 @@ public interface ArimaaConstants
 	static final String PullStep = "Complete the pull, step #1";
 	static final String PlaceState = "Place all your pieces in your two home rows";
 	static final String CompleteState = "Complete a push or pull, step #1";
-
+	static final String HandicapMessage = "handicap";
   
 	static final int White_Chip_Index = 0;
 	static final int Black_Chip_Index = 1;
@@ -39,6 +39,37 @@ public interface ArimaaConstants
     static final int MOVE_PLACE_RABBITS = 215;	// add the remaining rabbits
 	
     
+enum Variation
+{
+	Arimaa(8,8,
+			new int[][] {{'C',3},{'C',6},{'F',3},{'F',6}}, 
+			new int []{ 1,1,1,2,2,2,8}),
+	Arimaa_Blitz(5,7,
+			new int[][] {{'C',4}},
+			new int []{ 1,1,1,1,1,1,5}),
+	Arimaa_Grand(10,8,
+			new int[][] {{'D',3},{'D',6},{'G',3},{'G',6}},
+			new int []{ 1,1,1,2,2,2,8});
+	int nRows;
+	int nCols;
+	int [][]traps;
+	int counts[];
+	int numberOfPieces;
+	Variation(int cols,int rows,int[][]tr,int []ct)
+	{	traps = tr;
+		counts = ct;
+		nRows = rows;
+		nCols = cols;
+		// there is an extra column in the count for the blank 
+		int n=-1; for(int i : ct) { n+= i;}
+		numberOfPieces = n;
+	}
+	static Variation findVariation(String n)
+	{
+		for(Variation s : values()) { if(s.name().equalsIgnoreCase(n)) { return(s); }}
+		return(null);
+	}
+}
 
 class StateStack extends OStack<ArimaaState>
 {
@@ -73,7 +104,7 @@ public enum ArimaaId implements CellId
 	BoardLocation,
 	ReverseViewButton,
 	HitPlaceRabbitsButton, ShowNumbers,
-	AuxDisplay
+	AuxDisplay, BH, WH,
 	;
 	public static ArimaaId find(String wp)
 	{
@@ -91,12 +122,21 @@ public enum ArimaaId implements CellId
 				ArimaaGoal,
 				MoveStep,
 				PushStep,
+				HandicapMessage,
 				PullStep,
 				PlaceState,
 				CompleteState,
 			};
-		InternationalStrings.put("Arimaa_family","Arimaa");
-		InternationalStrings.put("Arimaa_variation","Standard Arimaa");  
+		final String ArimaaPairs[][] = {
+				{"Arimaa_family","Arimaa"},
+				{"Arimaa_Blitz","Blitz Arimaa"},
+				{"Arimaa_Grand","Grand Arimaa"},
+				{"Arimaa_variation","Standard Arimaa"},
+				{"Arimaa_Blitz_variation","Blitz Arimaa 5x7"},
+				{"Arimaa_Grand_variation","Grand Arimaa 10x8"}
+			};
+
+		InternationalStrings.put(ArimaaPairs);
 		InternationalStrings.put(ArimaaStrings);
 	}
 

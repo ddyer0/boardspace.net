@@ -234,7 +234,7 @@ public class SantoriniViewer extends CCanvas<SantoriniCell,SantoriniBoard> imple
         int stateX = boardX;
         int stateH = CELLSIZE*2/3;
         
-        G.placeStateRow(stateX,stateY,boardW, stateH,iconRect,stateRect,rightView,liftRect,viewsetRect,noChatRect);
+        G.placeStateRow(stateX,stateY,boardW, stateH,iconRect,stateRect,annotationMenu,rightView,liftRect,viewsetRect,noChatRect);
 
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	

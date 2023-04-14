@@ -216,7 +216,7 @@ public class ColoritoViewer extends CCanvas<ColoritoCell,ColoritoBoard>	implemen
         int stateX = boardX;
         int stateH = fh*3;
         
-        G.placeStateRow(stateX,stateY,boardW,stateH,iconRect,stateRect,reverseViewRect,eyeRect,noChatRect);
+        G.placeStateRow(stateX,stateY,boardW,stateH,iconRect,stateRect,annotationMenu,reverseViewRect,eyeRect,noChatRect);
         
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	

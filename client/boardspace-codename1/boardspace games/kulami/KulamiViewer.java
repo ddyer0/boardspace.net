@@ -251,8 +251,8 @@ public class KulamiViewer extends CCanvas<KulamiCell,KulamiBoard> implements Kul
     			margin,	
     			0.75,	// 60% of space allocated to the board
     			1.0,	// aspect ratio for the board
-    			fh*2,
-    			fh*3,	// maximum cell size
+    			fh*3,
+    			fh*4,	// maximum cell size
     			0.4		// preference for the designated layout, if any
     			);
     	
@@ -290,7 +290,7 @@ public class KulamiViewer extends CCanvas<KulamiCell,KulamiBoard> implements Kul
     	//
         int stateY = boardY-stateH;
         int stateX = boardX;
-        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,noChatRect);
+        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	
     	// goal and bottom ornaments, depending on the rendering can share
@@ -304,7 +304,7 @@ public class KulamiViewer extends CCanvas<KulamiCell,KulamiBoard> implements Kul
     public Rectangle createPlayerGroup(int player,int x,int y,double rotation,int unitsize)
     {	commonPlayer pl = getPlayerOrTemp(player);
     	Rectangle chip = chipRect[player];
-    	int chipW = 2*unitsize;
+    	int chipW = 3*unitsize;
     	int doneW = plannedSeating()?unitsize*5:0;
     	Rectangle scoreRect = scoreRects[player];
     	Rectangle done = doneRects[player];
@@ -325,9 +325,10 @@ public class KulamiViewer extends CCanvas<KulamiCell,KulamiBoard> implements Kul
     private void DrawChipPool(Graphics gc, Rectangle r, Rectangle sc,int player, HitPoint highlight,KulamiBoard gb)
     {
         boolean canhit = gb.LegalToHitChips(player) && G.pointInRect(highlight, r);
+        int w = G.Width(r);
         GC.frameRect(gc,Color.black,sc);
         GC.Text(gc, true, sc, Color.black, null, ""+bb.scoreForPlayer(player));
-        int cs = (int)(CELLSIZE*boardScale);
+        int cs = (int)Math.min((CELLSIZE*boardScale),w*2/3);
         if (canhit)
         {
             highlight.hitCode = gb.getPlayerColor(player);
@@ -337,7 +338,7 @@ public class KulamiViewer extends CCanvas<KulamiCell,KulamiBoard> implements Kul
 
         if (gc != null)
         { // draw a random pile of chips.  It's just for effect
-        	int w = G.Width(r);
+        	
         	int h = G.Height(r);
             int spacex = w - cs;
             int spacey = h - cs;

@@ -282,7 +282,7 @@ public class PushfightViewer extends CCanvas<PushfightCell,PushfightBoard> imple
         int stateY = boardY;
         int stateX = boardX;
         int stateH = fh*3;
-        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,reverseRect,viewsetRect,noChatRect);
+        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,reverseRect,viewsetRect,noChatRect);
         G.SetRect(iconRect,stateX,stateY,stateH,stateH);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	

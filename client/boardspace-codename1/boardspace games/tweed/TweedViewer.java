@@ -307,7 +307,7 @@ public class TweedViewer extends CCanvas<TweedCell,TweedBoard> implements TweedC
         int stateY = boardY;
         int stateX = boardX;
         int stateH = fh*3;
-        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,numberMenu,eyeRect,captureRect,numberRect,noChatRect);
+        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,numberMenu,eyeRect,captureRect,numberRect,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	G.SetRect(swapButton,boardX+buttonW/2,boardY+buttonW/2,buttonW,buttonW/2);
     	G.SetRect(passButton,boardX+boardW-buttonW*2,boardBottom-buttonW,buttonW,buttonW/2);

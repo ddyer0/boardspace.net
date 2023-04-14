@@ -159,13 +159,14 @@ public class TzaarViewer extends CCanvas<TzaarCell,TzaarBoard> implements TzaarC
         int buttonW = fh*8;
         int stateH = fh*3;
 		int ncols = b.ncols;
+		int nrows = b.ncols;
 		// this does the layout of the player boxes, and leaves
     	// a central hole for the board.
     	//double bestPercent = 
     	layout.selectLayout(this, nPlayers, width, height,
     			margin,	
     			0.75,	// 60% of space allocated to the board
-    			1.1,	// aspect ratio for the board
+    			0.9,	// aspect ratio for the board
     			fh*2,	// maximum cell size
     			fh*3,	// maximum cell size
     			0.5		// preference for the designated layout, if any
@@ -187,10 +188,10 @@ public class TzaarViewer extends CCanvas<TzaarCell,TzaarBoard> implements TzaarC
     	int mainH = G.Height(main);
 
     	// calculate a suitable cell size for the board
-    	double cs = Math.min((double)mainW/(ncols+1),(double)(mainH-2*stateH)/(ncols-1));
+    	double cs = Math.min((double)mainW/(ncols),(double)(mainH-2*stateH)/(nrows));
     	CELLSIZE = (int)cs;
-    	int boardW = (ncols+1)*CELLSIZE;
-    	int boardH = (ncols-1)*CELLSIZE;
+    	int boardW = (ncols)*CELLSIZE;
+    	int boardH = (nrows)*CELLSIZE;
     	
     	int extraW = Math.max(0, (mainW-boardW)/2);
     	int extraH = Math.max(0, (mainH-boardH-stateH*2)/2);
@@ -205,7 +206,7 @@ public class TzaarViewer extends CCanvas<TzaarCell,TzaarBoard> implements TzaarC
         int stateY = boardY-stateH;
         int stateX = boardX;
         int zoomW = stateH*5;
-        G.placeRow(stateX, stateY,boardW, stateH,stateRect,viewsetRect,liftRect,reverseViewRect,noChatRect);
+        G.placeRow(stateX, stateY,boardW, stateH,stateRect,annotationMenu,viewsetRect,liftRect,reverseViewRect,noChatRect);
         G.placeRight(stateRect, zoomRect, zoomW);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
         
@@ -260,13 +261,24 @@ public class TzaarViewer extends CCanvas<TzaarCell,TzaarBoard> implements TzaarC
       // for us, the board is one large graphic, for which the target points
       // are carefully matched with the abstract grid
       boolean perspective = getAltChipset()==0;
-     images[perspective?BOARD_INDEX:BOARD_FLAT_INDEX].centerImage(gc, boardRect);
+      if(perspective)
+      {	// this is an ad-hoc repositioning of the boardrect to match it with the image
+    	Rectangle largeBoardRect = G.copy(null,boardRect);
+        int step = -(int)(G.Width(boardRect)*0.025);
+        G.insetRect(largeBoardRect,step);
+        G.SetTop(largeBoardRect,G.Top(largeBoardRect)-step);
+    	images[BOARD_INDEX].centerImage(gc, largeBoardRect);
+      }
+      else
+      {
+    	  images[BOARD_FLAT_INDEX].centerImage(gc, boardRect);
+      }
       
       if(perspective)
     	{
     	double lr = 0;
 	    	b.SetDisplayParameters(
-    		 1.13, //0.93,	// scale 
+    		 1.0, //0.93,	// scale 
     		 0.83,	// yscale
 	    		 0.0,	// xoff
 	    		 -0.7,//-0.1,	// yoff
@@ -349,7 +361,7 @@ public class TzaarViewer extends CCanvas<TzaarCell,TzaarBoard> implements TzaarC
     
     private int scaleCellSize(int cellsize,int x,int y,Rectangle r)
     {	if(G.pointInRect(x,y,r))
-    	{ double scl = (((y-G.Top(r))*0.2)/G.Height(r))+0.9;
+    	{ double scl = (((y-G.Top(r))*0.2)/G.Height(r))+1;
     	  int cs = (int)(cellsize*scl);
     	  return(cs);
     	}

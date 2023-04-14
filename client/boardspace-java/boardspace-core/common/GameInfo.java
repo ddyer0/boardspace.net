@@ -845,6 +845,19 @@ synchronized(allGames) {
 			"/arimaa/english/arimaa-video.html",
 			false, GoldOverSilver));
 	  mm.groupSortKey = "00070";
+	  mm = put(new GameInfo(311,ES.game,39,"AA",RacingGames,"Arimaa","Arimaa_Blitz",
+				OneBotPlus,
+				new double[]{0.41,0.01},
+				"arimaa.ArimaaViewer","/arimaa/english/Arimaa%20Game%20Rules.htm","about_arimaa.html",
+				"/arimaa/english/arimaa-video.html",
+				false, GoldOverSilver));
+	  mm = put(new GameInfo(312,ES.game,39,"AA",RacingGames,"Arimaa","Arimaa_Grand",
+				OneBotPlus,
+				new double[]{0.41,0.01},
+				"arimaa.ArimaaViewer","/arimaa/english/Arimaa%20Game%20Rules.htm","about_arimaa.html",
+				"/arimaa/english/arimaa-video.html",
+				false, GoldOverSilver));
+
 	}
 	
 	{

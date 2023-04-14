@@ -203,7 +203,7 @@ public class SyzygyViewer extends CCanvas<SyzygyCell,SyzygyBoard> implements Syz
     	//
         int zoomW = CELLSIZE*7;
 
-        G.placeRow( boardX,stateY,boardW ,stateH,stateRect,noChatRect);
+        G.placeRow( boardX,stateY,boardW ,stateH,stateRect,annotationMenu,noChatRect);
         G.placeRight(stateRect, zoomRect, zoomW);
 
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);

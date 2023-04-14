@@ -968,7 +968,7 @@ public abstract class gBoard<CELLTYPE extends cell<CELLTYPE>> extends RBoard<CEL
                      (INTERPOLATE 
                      	? cellToX((char)(thiscol + (displayParameters.reverse_y ? 1 : -1)),row,0,0)
                      	: cellToX(thiscol, row,displayParameters.swapXY?0:-CELLSIZE / div,displayParameters.swapXY?CELLSIZE/div:0));
-                 int digit = (invert_digs ? (firstRowInCol.length - row + 1 ) : (row));
+            int digit = (invert_digs ? (nrows - row + 1 ) : (row));
                  char column = invert_cols ? (char)('A'+ncols-(thiscol-'A'+1)) : thiscol;
                  //G.print("left "+thiscol+" "+thisrow);
                  DrawGridCoord(gc, gridColor, xpos,ypos, (int)CELLSIZE,

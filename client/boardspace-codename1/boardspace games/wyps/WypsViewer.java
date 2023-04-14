@@ -154,6 +154,15 @@ public class WypsViewer extends CCanvas<WypsCell,WypsBoard> implements WypsConst
     	}
     }
     
+    
+    public void drawAnnotationMenu(Graphics g,HitPoint p)
+    {	// this makes the annotation menu follow the board rotation, which is independent of the window rotation
+    	GC.setRotatedContext(g,largerBoardRect,p,effectiveBoardRotation);
+    	super.drawAnnotationMenu(g,p);
+    	GC.unsetRotatedContext(g,p);
+    }
+ 
+ 
 
     public double aspects[] = {0.7,1.0,1.4};
     public void setLocalBounds(int x,int y,int w,int h)
@@ -257,7 +266,7 @@ public class WypsViewer extends CCanvas<WypsCell,WypsBoard> implements WypsConst
     	//
         int stateY = boardY;
         int stateX = boardX;
-        G.placeRow(stateX,stateY,boardW ,stateH,stateRect,rotateRect,lockRect,altNoChatRect);
+        G.placeRow(stateX,stateY,boardW ,stateH,stateRect,annotationMenu,rotateRect,lockRect,altNoChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH-(planned?0:2*CELLSIZE));
     	G.SetRect(goalRect, boardX, G.Bottom(boardRect),boardW,stateH);
     	G.SetRect(timeRect,  boardX, G.Bottom(goalRect),boardW,timeControl().timeControlMessage()==null?0:stateH); 

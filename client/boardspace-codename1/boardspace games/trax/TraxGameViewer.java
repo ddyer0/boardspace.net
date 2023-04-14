@@ -211,7 +211,7 @@ public class TraxGameViewer extends commonCanvas implements TraxConstants, GameL
         int stateX = boardX;
         
         int zoomW = CELLSIZE*5;
-        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,noChatRect);
+        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,noChatRect);
         G.placeRight(stateRect, zoomRect, zoomW);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	

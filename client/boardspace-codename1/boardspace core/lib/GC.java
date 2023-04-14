@@ -694,14 +694,15 @@ public class GC {
 	 * @param BackgroundColor
 	 * @return true if the button was hit
 	 */
-	     static public boolean handleSquareButton(Graphics inG, Rectangle r,
-	    	        Point highlight, Text text, Color textColor, Color frameColor, Color HighlightColor,  Color BackgroundColor)
+	  static public boolean handleSquareButton(Graphics inG, Rectangle r,
+	    	        HitPoint highlight, Text text, Color textColor, Color frameColor, Color HighlightColor,  Color BackgroundColor)
 	    {
 	        boolean inbutton = (highlight != null) &&
 	            r.contains(G.Left(highlight), G.Top(highlight));
 	
 	        if (inG != null)
-	        {	inG.drawTextButton(r,text,textColor,frameColor,inbutton ? HighlightColor : BackgroundColor);
+	        {	inG.drawTextButton(r,text,textColor,frameColor,
+	        		inbutton&&highlight.upCode!=MouseState.LAST_IS_IDLE ? HighlightColor : BackgroundColor);
 	        }
 	
 	        return (inbutton);
@@ -824,13 +825,13 @@ public class GC {
 	  * @return true of the button was hit
 	  */
 	 static public boolean handleRoundButton(Graphics gc,Rectangle r, int bevel,
-			 Point highlight, Text text, Color textColor,
+			 HitPoint highlight, Text text, Color textColor,
 			 Color frameColor, Color HighlightColor, Color BackgroundColor)
 	 {
 	     boolean inbutton = (highlight != null) && r.contains(G.Left(highlight), G.Top(highlight));
 	
 	     if (gc != null)
-	        {	Color cl = inbutton ? HighlightColor : BackgroundColor;
+	        {	Color cl = inbutton&&highlight.upCode!=MouseState.LAST_IS_IDLE ? HighlightColor : BackgroundColor;
 	        	gc.drawRoundTextButton(r,bevel, text, textColor,frameColor,cl);
 	        }
 	

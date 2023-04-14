@@ -197,7 +197,7 @@ public class GygesViewer extends CCanvas<GygesCell,GygesBoard> implements GygesC
         int stateY = boardY;
         int stateX = boardX;
         int stateH = (int)(fh*2.5);
-        G.placeRow(stateX,stateY,boardW,stateH,stateRect,eyeRect,reverseViewRect,noChatRect);
+        G.placeRow(stateX,stateY,boardW,stateH,stateRect,annotationMenu,eyeRect,reverseViewRect,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	
     	if(rotated)

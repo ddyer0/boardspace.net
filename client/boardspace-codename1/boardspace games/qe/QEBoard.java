@@ -154,6 +154,8 @@ import online.game.*;
 		 viewBid.copyFrom(from.viewBid);
 		 peekedWinningBid = from.peekedWinningBid;
 		 showPeeked = from.showPeeked;
+		 publicCensoring = from.publicCensoring;
+		 hiddenCensoring = from.hiddenCensoring;
 	 }
 	 long Digest(Random r)
 	 {	long v = tilesWon.Digest(r);

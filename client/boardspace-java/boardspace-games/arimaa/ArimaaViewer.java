@@ -95,6 +95,7 @@ public class ArimaaViewer extends CCanvas<ArimaaCell,ArimaaBoard> implements Ari
     private Rectangle blackStack = addRect("blackStack"); 
     private Rectangle stackRects[] = { whiteStack,blackStack };
     private Rectangle repRect = addRect("repRect");
+    private Rectangle handicapRect[] = { addRect("whiteHandicap"),addRect("blackhandicap")};
     private boolean normalChipset = false;
     public int getAltChipset()
     {	if(normalChipset) { return(0); }
@@ -185,13 +186,16 @@ public class ArimaaViewer extends CCanvas<ArimaaCell,ArimaaBoard> implements Ari
     	Rectangle done = doneRects[player];
     	Rectangle chipRect = chipRects[player];
     	Rectangle rackRect = stackRects[player];
+    	Rectangle handi = handicapRect[player];
         G.SetRect(chipRect,	x,	y,	chipw,	chipw+chipw/2);       
         Rectangle box = pl.createRectangularPictureGroup(x+chipw,y,2*unitsize/3);
+        int rbox = G.Right(box);
+        G.SetRect(handi,rbox+unitsize/2,y,unitsize*2,unitsize*2);
     	int doneW = plannedSeating()? unitsize*3 : 0;
-    	G.SetRect(done,G.Right(box)+unitsize/2,G.Top(box)+unitsize/2,doneW,doneW/2);
+    	G.SetRect(done,rbox+unitsize*2+unitsize,y+unitsize/2,doneW,doneW/2);
     	G.SetRect(rackRect,x,G.Bottom(box),rackw,unitsize*3);
 
-    	G.union(box, done,chipRect,rackRect);
+    	G.union(box, handi, done, chipRect, rackRect);
     	pl.displayRotation = rotation;
     	return(box);
     }
@@ -210,7 +214,9 @@ public class ArimaaViewer extends CCanvas<ArimaaCell,ArimaaBoard> implements Ari
         int vcrW = fh*16;
         int margin = fh/2;
         int buttonW = fh*9;
-        int nRows = 8;  // b.boardRows
+        int nRows = b.variation.nRows;
+        int nCols = b.variation.nCols;
+        		
         	// this does the layout of the player boxes, and leaves
     	// a central hole for the board.
     	//double bestPercent = 
@@ -240,16 +246,17 @@ public class ArimaaViewer extends CCanvas<ArimaaCell,ArimaaBoard> implements Ari
         int stateH = fh*5/2;
           	
     	// calculate a suitable cell size for the board
-    	double cs = Math.min((double)mainW/nRows,(double)(mainH)/nRows);
+    	double cs = Math.min((double)mainW/nCols,(double)(mainH-stateH)/nRows);
     	CELLSIZE = (int)cs;
     	//G.print("cell "+cs0+" "+cs+" "+bestPercent);
     	// center the board in the remaining space
-    	int boardW = (int)(nRows*CELLSIZE);
+    	int boardW = (int)(nCols*CELLSIZE);
+    	int boardH = (int)(nRows*CELLSIZE);
     	int extraW = Math.max(0, (mainW-boardW)/2);
-    	int extraH = Math.max(0, (mainH-boardW)/2);
+    	int extraH = Math.max(0, (mainH-boardH)/2);
     	int boardX = mainX+extraW;
     	int boardY = mainY+extraH;
-    	int boardBottom = boardY+boardW;
+    	int boardBottom = boardY+boardH;
     	layout.returnFromMain(extraW,extraH);
     	//
     	// state and top ornaments snug to the top of the board.  Depending
@@ -258,7 +265,7 @@ public class ArimaaViewer extends CCanvas<ArimaaCell,ArimaaBoard> implements Ari
         int stateY = boardY;
         int stateX = boardX;
         G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,viewsetRect,annotationMenu,numberMenu,reverseViewRect,noChatRect);
-    	G.SetRect(boardRect,boardX,boardY,boardW,boardW);
+    	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	if(rotate)
     	{
     		contextRotation = -Math.PI/2;
@@ -312,8 +319,7 @@ public class ArimaaViewer extends CCanvas<ArimaaCell,ArimaaBoard> implements Ari
         {
         ArimaaCell thisCell = chips[i];
         ArimaaChip thisChip = thisCell.topChip();
-        boolean canPick = !canDrop && (thisChip!=null) ;
-        HitPoint pt = ((canHit && canPick)||(canDrop && ((thisCell==srcCell)||puzzle)))? highlight : null; 
+        HitPoint pt = (canHit||(canDrop && ((thisCell==srcCell)||puzzle)))? highlight : null; 
         if(thisChip!=null)
         {
         	if(thisChip.chipType()==ArimaaChip.RABBIT_INDEX) 
@@ -481,6 +487,30 @@ public class ArimaaViewer extends CCanvas<ArimaaCell,ArimaaBoard> implements Ari
     	Rectangle done = doneRects[idx];
     	Rectangle chip = chipRects[idx];
     	Rectangle rack = stackRects[idx];
+    	Rectangle handi = handicapRect[idx];
+    	ArimaaState state = gb.getState();
+    	ArimaaCell handicapCell = gb.handicap[idx];
+    	boolean setting = (idx==gb.whoseTurn) 
+    						&& ((state==ArimaaState.PUZZLE_STATE)||(state==ArimaaState.INITIAL_SETUP_STATE));
+    	boolean some = handicapCell.topChip()!=null;
+    	boolean canDrop =  hasMovingObject(nonDragSelect);
+    	HitPoint hv = setting 
+    				 ? (canDrop 
+    						 ? dragSelect 
+    						 : (some ? dragSelect : null))
+    				 : null;
+    	if(setting || some)
+    	{
+    	GC.Text(gc,true,handi,Color.black,null,s.get(HandicapMessage));
+    	GC.frameRect(gc,Color.blue,handi); 
+    	}
+    	if(handicapCell.drawStack(gc,this,handi, hv,0, 0.1,null))
+        {	hv.arrow = canDrop ? StockArt.DownArrow : StockArt.UpArrow;
+        	hv.spriteRect = handi;
+        	hv.awidth = G.Width(handi);
+        	hv.spriteColor = Color.red;
+        }
+    	
         DrawSampleChip(gc,gb, idx,chip);
         DrawChipRack(gc,  idx,gb,rack,gb.whoseTurn,dragSelect);
         if(plannedSeating() && (gb.whoseTurn==player.boardIndex)) { handleDoneButton(gc,done,(gb.DoneState()? nonDragSelect : null),HighlightColor, rackBackGroundColor); }
@@ -669,11 +699,11 @@ public boolean allowResetUndo()
 
 	    switch(hitObject)
 	    {
+	    case BH:
+	    case WH:
  	    case B:
-	    	PerformAndTransmit("Pick B "+cell.row+" "+chip.chipNumber());
-	    	break;
 	    case W:
-	    	PerformAndTransmit("Pick W "+cell.row+" "+chip.chipNumber());
+	    	PerformAndTransmit(G.concat("Pick ",hitObject.name()," ",cell.row," ",chip.chipNumber()));
 	    	break;
 	    case BoardLocation:
 	    	// note, in this implementation the board squares are themselves pieces on the board
@@ -712,7 +742,7 @@ public boolean allowResetUndo()
         {
         default:
         	throw G.Error("Hit Unknown: %s", hitObject);
-         case ShowNumbers:
+        case ShowNumbers:
         	numberMenu.showMenu();
         	break;
          case HitPlaceRabbitsButton:
@@ -738,9 +768,10 @@ public boolean allowResetUndo()
 			}
 			break;
 
-			
-        case W:
-        case B:
+         case BH:
+         case WH:
+         case W:
+         case B:
         	{
         	boolean mov = b.movingObjectIndex()>=0;
         	String col =  hitObject.name();

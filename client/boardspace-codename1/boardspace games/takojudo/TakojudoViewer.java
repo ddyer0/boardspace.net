@@ -191,7 +191,7 @@ public class TakojudoViewer extends CCanvas<TakojudoCell,TakojudoBoard> implemen
     	//
         int stateY = boardY-stateH;
         int stateX = boardX;
-        G.placeStateRow(stateX,stateY,boardW ,stateH, iconRect,stateRect,eyeRect,viewsetRect,noChatRect);
+        G.placeStateRow(stateX,stateY,boardW ,stateH, iconRect,stateRect,annotationMenu,eyeRect,viewsetRect,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	if(rotate)
     	{

@@ -204,7 +204,7 @@ public class ModxViewer extends CCanvas<ModxCell,ModxBoard> implements ModxConst
     	//
         int stateY = boardY-stateH/2;
         int stateX = boardX;
-        G.placeRow(stateX+stateH,stateY,boardW-stateH ,stateH,stateRect,liftRect,viewsetRect,noChatRect);
+        G.placeRow(stateX+stateH,stateY,boardW-stateH ,stateH,stateRect,annotationMenu,liftRect,viewsetRect,noChatRect);
         G.SetRect(boardRect,boardX,boardY,boardW,boardH);
  
     	// goal and bottom ornaments, depending on the rendering can share

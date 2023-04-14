@@ -288,7 +288,7 @@ public class KulamiViewer extends CCanvas<KulamiCell,KulamiBoard> implements Kul
     	//
         int stateY = boardY-stateH;
         int stateX = boardX;
-        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,noChatRect);
+        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	
     	// goal and bottom ornaments, depending on the rendering can share
@@ -302,7 +302,7 @@ public class KulamiViewer extends CCanvas<KulamiCell,KulamiBoard> implements Kul
     public Rectangle createPlayerGroup(int player,int x,int y,double rotation,int unitsize)
     {	commonPlayer pl = getPlayerOrTemp(player);
     	Rectangle chip = chipRect[player];
-    	int chipW = 2*unitsize;
+    	int chipW = 3*unitsize;
     	int doneW = plannedSeating()?unitsize*5:0;
     	Rectangle scoreRect = scoreRects[player];
     	Rectangle done = doneRects[player];

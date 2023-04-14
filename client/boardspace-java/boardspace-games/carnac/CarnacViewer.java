@@ -177,7 +177,7 @@ public class CarnacViewer extends CCanvas<CarnacCell,CarnacBoard> implements Car
         G.placeRow(x + CS,
         		y+sparey+(wideMode ? 0 : chatHeight) +CS/3,
         		boardW-CELLSIZE*9, 
-        		stateH,stateRect,noChatRect);
+        		stateH,stateRect,annotationMenu,noChatRect);
         
         }
         G.SetRect(firstPlayerChipRect,

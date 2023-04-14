@@ -609,7 +609,7 @@ private Color playerBackground[] = {
     	int boardBottom = boardY+boardH;
         int stateY = boardY-stateH+stateH/4;
         layout.returnFromMain(extraW,extraH);
-        G.placeStateRow(boardX,stateY,boardW,stateH,iconRect,stateRect,magnifierRect,noChatRect);
+        G.placeStateRow(boardX,stateY,boardW,stateH,iconRect,stateRect,annotationMenu,magnifierRect,noChatRect);
 
         // make the recruit rect square and centered on the board, so everything
         // will be easy when displayed rotated.

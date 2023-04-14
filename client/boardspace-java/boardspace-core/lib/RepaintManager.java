@@ -250,7 +250,7 @@ public class RepaintManager implements VncScreenInterface,Config
 	}
 	public Color fill = Color.gray;
 	public String message = "";
-	public boolean showBitmaps = false;
+	static public boolean showBitmaps = false;
 	//
 	// if using direct drawing on regular java, the drawing thread
 	// interacts badly with the game thread.  This scheme implements
@@ -885,7 +885,6 @@ public class RepaintManager implements VncScreenInterface,Config
      }
 
     }
-
 
     /** create a blank image with the specified size.
 	    * 
@@ -1742,14 +1741,14 @@ public class RepaintManager implements VncScreenInterface,Config
 			new Thread(new Runnable() { public void run() { runLoop(); }}).start();
 		}
 		
+	    Image blank = Image.createTransparentImage(1,1);
+
         public void drawFixedElements(Graphics gc,boolean complete)
         {
 			GC.setFont(gc,helper.getDefaultFont());
-			{
 			int w = helper.getRotatedWidth();
 			int h = helper.getRotatedHeight();
 			complete |= createAllFixed(w,h);				// true if this is a new bitmap that needs to be painted
-			}
           	XImage fixed = allFixed();		 // create backing bitmaps;
           	boolean drawn = false;
         	if(fixed!=null)
@@ -1762,6 +1761,9 @@ public class RepaintManager implements VncScreenInterface,Config
         	    		Graphics allFixedGC = fixed.getGraphics();
         	    		allFixedGC.translate(-tx,-ty);
         	    		helper.drawBackground(allFixedGC, fixed.getImage());
+        	    		// this is an experiment to stall the pipeline and try
+        	    		// to avoid the damaged background image problem
+        	    		blank.drawImage(allFixedGC,0,0);
         	    		allFixedGC.translate(tx,ty);
    						long fintime = G.Date();
    						long when = fintime+repaintStrategy.delayBeforeReading;

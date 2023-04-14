@@ -197,7 +197,7 @@ public class DipoleGameViewer extends CCanvas<DipoleCell,DipoleBoard> implements
         int stateH = SQUARESIZE/3;
         int stateY = boardY;
         int stateX = boardX;
-        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,liftRect,noChatRect);
+        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,liftRect,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	if(rotate)
     	{	// board is square, no need to rotate

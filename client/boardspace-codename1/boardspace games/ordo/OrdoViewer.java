@@ -269,7 +269,7 @@ public class OrdoViewer extends CCanvas<OrdoCell,OrdoBoard> implements OrdoConst
         int stateX = boardX;
         G.placeStateRow(	stateX,
         			stateY,
-        			boardW,stateH,iconRect,stateRect,eyeRect,noChatRect);
+        			boardW,stateH,iconRect,stateRect,annotationMenu,eyeRect,noChatRect);
         
         G.placeRow(stateX, boardBottom-stateH/2, boardW, stateH, goalRect,reverseViewRect);
         

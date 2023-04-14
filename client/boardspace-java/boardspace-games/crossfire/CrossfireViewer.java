@@ -265,7 +265,7 @@ public class CrossfireViewer extends CCanvas<CrossfireCell,CrossfireBoard> imple
         int stateX = boardX;
         int ph = CELLSIZE*4;
        
-        G.placeStateRow(stateX,stateY,boardW,stateH,iconRect,stateRect,reverseViewRect,viewsetRect,noChatRect);
+        G.placeStateRow(stateX,stateY,boardW,stateH,iconRect,stateRect,annotationMenu,reverseViewRect,viewsetRect,noChatRect);
         
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	

@@ -210,7 +210,7 @@ public class PunctGameViewer extends CCanvas<punctCell,PunctGameBoard> implement
         int stateY = boardY;
         int stateX = boardX;
         int stateH = fh*5/2;
-        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,liftRect,noChatRect);
+        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,liftRect,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	
     	// goal and bottom ornaments, depending on the rendering can share

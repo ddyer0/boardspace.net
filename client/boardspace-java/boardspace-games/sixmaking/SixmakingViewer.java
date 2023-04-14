@@ -196,7 +196,7 @@ public class SixmakingViewer extends CCanvas<SixmakingCell,SixmakingBoard> imple
     	//
         int stateY = boardY-stateH;
         int stateX = boardX;
-        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,viewsetRect,liftRect,reverseViewRect,chessRect,noChatRect);
+        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,viewsetRect,liftRect,reverseViewRect,chessRect,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
  
     	
@@ -217,7 +217,7 @@ public class SixmakingViewer extends CCanvas<SixmakingCell,SixmakingBoard> imple
     	int w = G.Width(r);
     	int cx = G.centerX(r);
     	int t = G.Top(r);
-    	reverse.drawChip(gc,this,w,cx,+w/4,null);
+    	reverse.drawChip(gc,this,w,cx,t+w/4,null);
     	king.drawChip(gc,this,w,cx,t+w*3/4,null);
     	HitPoint.setHelpText(highlight,r,SixmakingId.ReverseViewButton,s.get(ReverseViewExplanation));
      }  

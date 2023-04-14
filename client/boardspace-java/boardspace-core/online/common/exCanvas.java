@@ -274,7 +274,7 @@ public abstract class exCanvas extends Canvas
     /**
      * if true, show the UI rectangles for debugging.
      */
-    public boolean show_rectangles = false;
+   static public boolean show_rectangles = false;
 
 
     protected long frameTime = G.isAndroid()

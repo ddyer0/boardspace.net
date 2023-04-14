@@ -264,7 +264,7 @@ public class SprintViewer extends CCanvas<SprintCell,SprintBoard> implements Spr
         int stateY = boardY-stateH;
         int stateX = boardX;
     	int stripeW = CELLSIZE;
-    	G.placeRow(stateX,stateY,boardW ,stateH,stateRect,noChatRect);
+    	G.placeRow(stateX,stateY,boardW ,stateH,stateRect,annotationMenu,noChatRect);
     	G.SetRect(upperBoardRect,boardX,boardY,boardW,2*CELLSIZE);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH-2*CELLSIZE);
     	G.SetRect(goalRect, boardX, G.Bottom(boardRect),boardW,stateH);   

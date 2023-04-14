@@ -205,7 +205,7 @@ public class XiangqiViewer extends CCanvas<XiangqiCell,XiangqiBoard> implements 
         int stateY = boardY-stateH/2;
         int stateX = boardX;
 
-        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,reverseViewRect,noChatRect);
+        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,reverseViewRect,noChatRect);
         G.SetRect(boardRect,boardX, boardY, boardW, boardH);         
         G.placeRow(boardX, boardBottom-stateH,boardW,stateH,goalRect,altchipRect);       
         if(rotate)

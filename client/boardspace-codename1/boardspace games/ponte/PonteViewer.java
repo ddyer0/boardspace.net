@@ -190,7 +190,7 @@ public class PonteViewer extends CCanvas<PonteCell,PonteBoard> implements PonteC
         int stateY = boardY;
         int stateX = boardX;
         int stateH = CELLSIZE/2;
-        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,noChatRect);
+        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	int chipW = SQUARESIZE;
     	G.SetRect(chipRects[0],boardRight,boardY+SQUARESIZE*2,chipW,chipW);

@@ -226,7 +226,7 @@ public class GobGameViewer extends CCanvas<GobCell,GobGameBoard> implements GobC
         int stateX = boardX;
         int stateH = CELLSIZE/4;
         
-        G.placeStateRow( stateX,stateY,boardW ,stateH, iconRect,stateRect,liftRect,boardIconRect,noChatRect);
+        G.placeStateRow( stateX,stateY,boardW ,stateH, iconRect,stateRect,annotationMenu,liftRect,boardIconRect,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	
     	// goal and bottom ornaments, depending on the rendering can share

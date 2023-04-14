@@ -179,7 +179,7 @@ public class StacViewer extends CCanvas<StacCell,StacBoard> implements StacConst
         int stateY = boardY;
         int stateX = boardX;
         int stateH = CELLSIZE;
-        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,liftRect,reverseViewRect,noChatRect);
+        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,liftRect,reverseViewRect,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	
     	// goal and bottom ornaments, depending on the rendering can share

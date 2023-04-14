@@ -498,7 +498,7 @@ public class ViticultureViewer extends CCanvas<ViticultureCell,ViticultureBoard>
     	//
         int stateY = boardY-stateH;
         int stateX = boardX+stateH*2;
-        G.placeRow(stateX,stateY,boardW-stateH*2 ,stateH,stateRect,scoreRect,hintRect,noChatRect);
+        G.placeRow(stateX,stateY,boardW-stateH*2 ,stateH,stateRect,annotationMenu,scoreRect,hintRect,noChatRect);
         G.SetRect(rotatedStateRect,stateX-boardH/2-stateH,stateY+boardH/2,boardH-stateH*2,stateH);
     	// goal and bottom ornaments, depending on the rendering can share
     	// the rectangle or can be offset downward.  Remember that the grid
@@ -4060,7 +4060,7 @@ private void drawPlayerBoard(Graphics gc,
 		{	// the limit option is only relevant if 5-6 players
 			if(nPlayers>4 || (op!=Option.LimitPoints))
 			{
-			TextButton toggle = new TextButton(op.message,ViticultureId.SetOption,op.message,Color.white,null,null); 
+			TextButton toggle = new TextButton(op.message,ViticultureId.SetOption,op.message,Color.lightGray,null,null); 
 			boolean on = gb.testOption(op);
 			toggle.setValue(on);
 			toggle.textColor = on ? Color.yellow : Color.black;

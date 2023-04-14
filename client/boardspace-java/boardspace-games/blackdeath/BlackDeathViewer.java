@@ -243,7 +243,7 @@ public class BlackDeathViewer extends CCanvas<BlackDeathCell,BlackDeathBoard> im
     	//
         int stateY = boardY-stateH;
         int stateX = boardX;
-        G.placeRow(stateX+stateH,stateY,boardW-stateH ,stateH,stateRect,noChatRect);
+        G.placeRow(stateX+stateH,stateY,boardW-stateH ,stateH,stateRect,annotationMenu,noChatRect);
         G.SetRect(idRect, stateX, stateY, stateH, stateH);
         
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);

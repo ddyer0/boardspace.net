@@ -339,7 +339,7 @@ public class HexGameViewer extends CCanvas<hexCell,HexGameBoard> implements HexC
         int stateY = boardY;
         int stateX = boardX;
         int stateH = fh*3;
-        G.placeStateRow(stateX,stateY,boardW,stateH,iconRect,stateRect,numberMenu,rotation,noChatRect);
+        G.placeStateRow(stateX,stateY,boardW,stateH,iconRect,stateRect,annotationMenu,numberMenu,rotation,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	
     	if(rotate)

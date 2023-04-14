@@ -14,16 +14,12 @@ import lib.Random;
  * on a 8x8 board. It gets a lot of logistic support from 
  * squareBoard, which knows about the coordinate system and the lack of diagonal connectivity
  * 
- * 
  * @author ddyer
  *
  */
 
 class ArimaaBoard extends squareBoard<ArimaaCell> implements BoardProtocol,ArimaaConstants
 {	   static final String[] ARIMAAGRIDSTYLE = { "2", null, "A" }; // left and bottom numbers
-	   static final int DEFAULT_COLUMNS = 8;	// 8x6 board
-       static final int DEFAULT_ROWS = 8;
-       static final int NUMBER_OF_PIECES  = 16;
    	   static final int STEPS_PER_TURN = 4;
 		ArimaaState unresign;
 		ArimaaState board_state;
@@ -49,6 +45,12 @@ class ArimaaBoard extends squareBoard<ArimaaCell> implements BoardProtocol,Arima
 			k = (k<<1)+player;
 			return(k);
 		}
+		public int getTrapMapKey(int player,int t1a,int t1b)
+		{
+			int k = (t1a<<3+t1b);
+			k = (k<<1)+player;
+			return(k);
+		}
 		public double[][] getTrapMap(int key)
 		{
 			if(trapMaps==null) { trapMaps=new IntObjHashtable<double[][]>(); }
@@ -56,7 +58,7 @@ class ArimaaBoard extends squareBoard<ArimaaCell> implements BoardProtocol,Arima
 		}
 		public double[][] makeTrapMap(int key)
 		{	if(trapMaps==null) { trapMaps=new IntObjHashtable<double[][]>(); }
-			double [][]map = new double[8][8];
+			double [][]map = new double[variation.nCols][variation.nRows];
 			trapMaps.put(key,map);
 			return(map);
 		}
@@ -74,6 +76,7 @@ class ArimaaBoard extends squareBoard<ArimaaCell> implements BoardProtocol,Arima
     //
     // private variables
     //
+    Variation variation=Variation.Arimaa;
  	public boolean started = false;
     public int lastAdvancementMoveNumber = 0;
  	private int captured =  0;
@@ -97,7 +100,7 @@ class ArimaaBoard extends squareBoard<ArimaaCell> implements BoardProtocol,Arima
     private ArimaaCell capturedLocation = null;
     private ArimaaChip capturedPiece2 = null;
     private ArimaaCell capturedLocation2 = null;
-
+    public ArimaaCell handicap[] = new ArimaaCell[2];
     private ArimaaCell pushPullSource = null;
     private ArimaaCell pushPullDest = null;
     private ArimaaMovespec lastRobotMove = null;
@@ -147,61 +150,62 @@ class ArimaaBoard extends squareBoard<ArimaaCell> implements BoardProtocol,Arima
         int map [] = getColorMap();
         Random r = new Random(5685343);
         for(int i=0,pl=FIRST_PLAYER_INDEX;i<=SECOND_PLAYER_INDEX; i++,pl=nextPlayer[pl])
-    	{
+    	{	ArimaaCell c = handicap[i] = new ArimaaCell(r);
+    		ArimaaId rackid = RackLocation[map[i]];
+    		c.rackLocation = rackid==ArimaaId.B ? ArimaaId.BH : ArimaaId.WH;
+    		c.col = (char)('A'+i);
+    		c.row = i;
 	     	for(int j=0;j<ArimaaChip.N_STANDARD_CHIPS;j++)
 	     	{
 	     		ArimaaCell cc = new ArimaaCell(r);
-	     		cc.rackLocation=RackLocation[map[i]];
+	     		cc.rackLocation=rackid;
 	     		cc.col = '@';
 	     		cc.row = j;
-
 	     		rack[i][j] = cc;
 	
 	     	}}
     	
         doInit(init,key); // do the initialization 
         autoReverseY();		// reverse_y based on the color map
-     }
+    }
 
 
     private void Init_Standard(String game)
-    { 	if(Arimaa_Init.equalsIgnoreCase(game)) 
-    		{ 
-    		}
-    	else { throw G.Error(WrongInitError,game); }
+    { 	
         gametype = game;
+        variation = Variation.findVariation(game);
         setState(ArimaaState.PUZZLE_STATE);
-        reInitBoard(DEFAULT_COLUMNS,DEFAULT_ROWS); //this sets up the board and cross links
+        reInitBoard(variation.nCols,variation.nRows); //this sets up the board and cross links
         robotOStack.clear(); 
         robotPStack.clear();
         destStack.clear();
         robotState.clear();
         robotDepth = 0;
         // fill the board with the background tiles
-        int nTraps = 0;
-        for(ArimaaCell c = allCells; c!=null; c=c.next)
-        {  int i = (c.row+c.col)%2;
-           boolean rr = (c.row==3)||(c.row==6);
-           boolean cc = (c.col=='C')||(c.col=='F');
-           boolean isTrap = (rr && cc);
-           c.isTrap = isTrap;
-           c.isTrapAdjacent = false;
-           if(isTrap)
-           {
-        	   c.addChip(ArimaaChip.getTile(2));
-        	   trapCells[nTraps++] = c;
-           }
-           else { c.addChip(ArimaaChip.getTile(i)); }
-        }
-        for(int lim = trapCells.length-1; lim>=0; lim--)
+        CellStack traps = new CellStack();
+        for(int []trap : variation.traps)
         {
-        	ArimaaCell tr = trapCells[lim];
+        	ArimaaCell c = getCell((char)trap[0],trap[1]);
+        	traps.push(c);
+        	c.isTrap = true;
+        	c.isTrapAdjacent = false;
+         	c.addChip(ArimaaChip.getTile(2));
+             	
         	for(int dir=CELL_FULL_TURN-1; dir>=0; dir--)
         	{
-        		ArimaaCell adj = tr.exitTo(dir);
-        		adj.isTrapAdjacent = true;
+        		ArimaaCell d = c.exitTo(dir);
+        		d.isTrapAdjacent = true;
         	}
         }
+        for(ArimaaCell c = allCells; c!=null; c=c.next)
+        {
+        	if(!c.isTrap) 
+        		{int i = (c.row+c.col)%2;
+        		 c.addChip(ArimaaChip.getTile(i)); 
+        		}
+        }
+        trapCells = traps.toArray();
+ 
         whoseTurn = FIRST_PLAYER_INDEX;
         started = false;
         captured = 0;
@@ -212,6 +216,7 @@ class ArimaaBoard extends squareBoard<ArimaaCell> implements BoardProtocol,Arima
         rabbitsOnBoard[i] = 0;
         chipsOnBoard[i]=0;
         }
+        reInit(handicap);
         AR.setValue(pickedSourceStack,null);
         AR.setValue(capturedCellStack,null);
         AR.setValue(capturedCellStack2,null);
@@ -229,9 +234,10 @@ class ArimaaBoard extends squareBoard<ArimaaCell> implements BoardProtocol,Arima
      */
     public void sameboard(ArimaaBoard from_b)
     {	super.sameboard(from_b);
-	
+		G.Assert(variation==from_b.variation,"variation mismatch");
     	G.Assert(AR.sameArrayContents(rabbitsOnBoard,from_b.rabbitsOnBoard),"rabbitsOnBoard mismatch");
         G.Assert(AR.sameArrayContents(chipsOnBoard,from_b.chipsOnBoard),"chipsOnBoard mismatch");
+        G.Assert(sameContents(handicap,from_b.handicap),"handicap mismatch");
         for (int i = 0; i < win.length; i++)
         {
 		   ArimaaCell row[]=rack[i];
@@ -319,6 +325,8 @@ public long Digest()
 	v ^= (board_state.ordinal()*10+whoseTurn)*r.nextLong();
 	v ^= cell.Digest(r,getSource());
     v ^= chip.Digest(r,pickedObject);
+    v ^= Digest(r,handicap);
+    v ^= (r.nextLong()*(1+variation.ordinal()));
     return (v);
 }
 
@@ -339,6 +347,7 @@ public long Digest()
      *  */
     public void copyFrom(ArimaaBoard from_b)
     {	super.copyFrom(from_b);
+    	variation = from_b.variation;
     	started = from_b.started;
         captured = from_b.captured;
         robotDepth = from_b.robotDepth;
@@ -351,6 +360,7 @@ public long Digest()
         unresign = from_b.unresign;
         board_state = from_b.board_state;
         playStep = from_b.playStep;
+        copyFrom(handicap,from_b.handicap);
         robotOStack.copyFrom(from_b.robotOStack);
         robotPStack.copyFrom(from_b.robotPStack);
         destStack.copyFrom(from_b.destStack);
@@ -368,7 +378,7 @@ public long Digest()
         pickedObject = from_b.pickedObject;
         stackIndex = from_b.stackIndex;
         placementIndex = from_b.placementIndex;
-            
+        
         sameboard(from_b);
     }
 
@@ -383,21 +393,22 @@ public long Digest()
        	pushPullDest = null;
        	animationStack.clear();
        	int map[]=getColorMap();
+        Init_Standard(gtype);
+       	
     	for(int i=0,pl=FIRST_PLAYER_INDEX;i<=SECOND_PLAYER_INDEX; i++,pl=nextPlayer[pl])
-    	{
-	     	for(int j=0;j<ArimaaChip.N_STANDARD_CHIPS;j++)
+    	{	int nc[] = variation.counts;
+	     	for(int j=0;j<nc.length;j++)
 	     	{
 	     		ArimaaCell cc = rack[i][j];
-	     		ArimaaChip ch = ArimaaChip.getChip(j+ArimaaChip.N_STANDARD_CHIPS*map[i]);
+	     		ArimaaChip ch = ArimaaChip.getChip(map[i],j);
 	     		cc.reInit();
 	     		cc.rackLocation=RackLocation[map[i]];
-	     		for(int h=0;h<ArimaaChip.counts[j]; h++)
+	     		for(int h=0;h<nc[j]; h++)
 	     			{
 	     			cc.addChip(ch);
 	     			}
 	     	}
-     	}
-        Init_Standard(gtype);
+     	}    
         moveNumber = 1;
         placementIndex = 1;
         acceptPlacement();
@@ -458,8 +469,8 @@ public long Digest()
     private int playerIndex(ArimaaChip ch) { return(playerColor[ch.colorIndex()]); }
     
     private boolean rabbitInHomeRow(int forPlayer)
-    {	int trow = (forPlayer==playerColor[FIRST_PLAYER_INDEX])?1:8;
-    	for(char col='A';col<'A'+DEFAULT_COLUMNS; col++)
+    {	int trow = (forPlayer==playerColor[FIRST_PLAYER_INDEX])?1:variation.nRows;
+    	for(char col='A';col<'A'+variation.nCols; col++)
     	{	ArimaaChip top = getCell(col,trow).topChip();
     		if((top!=null) && (playerIndex(top)==forPlayer)&& top.isRabbit()) { return(true); }
     	}
@@ -627,7 +638,33 @@ public long Digest()
     		}
    			if(map)
 			{
-   			G.Assert(trapCells.length==4,"four traps");
+   			switch(trapCells.length)
+   			{
+   			default: throw G.Error("Not expected");
+   			case 1:
+   				{
+  	   			ArimaaCell tr0 = trapCells[0];
+   				for(int player=FIRST_PLAYER_INDEX; player<=SECOND_PLAYER_INDEX; player++)
+  				{	int next = nextPlayer[player];
+  					int key = getTrapMapKey(player,tr0.trap_adj[player],tr0.trap_adj[next]);
+  					double [][] pmap = getTrapMap(key);
+  					if(pmap==null)
+  					{
+  					pmap = makeTrapMap(key);
+  					ArimaaCell trap = trapCells[0];
+  					int mytraps = trap.trap_adj[player];
+  					int histraps = trap.trap_adj[next];
+  					boolean elephant_trap = mytraps>=100;
+  					if(!elephant_trap && (mytraps<3))
+  					{ markTrapsFrom(pmap,trap,++trap_sweep,trapset[mytraps%100][histraps%100],0); 
+  					}
+  					}
+  					currentTrapMap[player]=pmap;
+  				}
+   				}
+   				break;
+   			case 4:
+   			{
    			ArimaaCell tr0 = trapCells[0];
    			ArimaaCell tr1 = trapCells[1];
    			ArimaaCell tr2 = trapCells[2];
@@ -653,7 +690,7 @@ public long Digest()
 				}
 				}
 				currentTrapMap[player]=pmap;
-			}
+			}}}
     	}
     	trapMapValid = true;
     	}}
@@ -1546,7 +1583,7 @@ public long Digest()
     	ArimaaCell ad = to.auxDisplay;
      	if(ad!=null) { ad.lastPlaceMoveNumber=-1; }
     	previousPlaced.push(target.lastPlaced);
-    	target.lastPlaced = placementIndex;
+     	target.lastPlaced = placementIndex;
     	target.lastPlaceMoveNumber = moveNumber;
     	placementIndex++;
     	return(to);
@@ -1558,6 +1595,13 @@ public long Digest()
         default: throw G.Error("Not expecting dest %s",dest);
         case BoardLocation: // an already filled board slot.
         	return(dropObject(getCell(col,row)));
+  
+        case WH:
+        	return dropObject(handicap[playerColor[FIRST_PLAYER_INDEX]]);
+
+        case BH:
+        	return dropObject(handicap[playerColor[SECOND_PLAYER_INDEX]]);
+        	
         case W:		// back in the pool
         	return(dropObject(rack[playerColor[FIRST_PLAYER_INDEX]][row]));
         case B:		// back in the pool
@@ -1611,6 +1655,10 @@ public long Digest()
             throw G.Error("Not expecting source %s", source);
         case BoardLocation:
         	return(getCell(col,row));
+        case WH:
+        	return(handicap[playerColor[FIRST_PLAYER_INDEX]]);
+        case BH:
+        	return(handicap[playerColor[SECOND_PLAYER_INDEX]]);
         case W:
         	return(rack[playerColor[FIRST_PLAYER_INDEX]][row]);
         case B:
@@ -1748,7 +1796,8 @@ public long Digest()
 			break;
         case INITIAL_SETUP_STATE:
         	acceptPlacement();
-        	if (chipsOnBoard[whoseTurn]==NUMBER_OF_PIECES) { setState(ArimaaState.CONFIRM_STATE); }
+        	if ((chipsOnBoard[whoseTurn]+handicap[whoseTurn].height())==variation.numberOfPieces)
+        		{ setState(ArimaaState.CONFIRM_STATE); }
         	break;
         case PUZZLE_STATE:
 			acceptPlacement();
@@ -1797,7 +1846,7 @@ public long Digest()
 
         case CONFIRM_STATE:
     	case PLAY_STATE:
-        	if(started || (chipsOnBoard[whoseTurn]==NUMBER_OF_PIECES)) 
+        	if(started || ((chipsOnBoard[whoseTurn]+handicap[whoseTurn].height())==variation.numberOfPieces)) 
     		{ setState(ArimaaState.PLAY_STATE);
     		started = true;
     		}
@@ -1814,14 +1863,16 @@ public long Digest()
         		  started = true;
         		  playStep = 0;
         		}
-        	else if (chipsOnBoard[whoseTurn]==NUMBER_OF_PIECES) { setState(ArimaaState.CONFIRM_STATE); moveNumber=whoseTurn+2; }
+        	else if ((chipsOnBoard[whoseTurn]+handicap[whoseTurn].height())==variation.numberOfPieces) 
+        		{ setState(ArimaaState.CONFIRM_STATE); moveNumber=whoseTurn+2;
+        		}
         	else { setState(ArimaaState.INITIAL_SETUP_STATE); }
         	break;
      	}
 
     }
    
-    
+   
     private boolean doDone()
     {	boolean captures = acceptPlacement();
         recentDigest = nextRecentDigest;
@@ -1859,9 +1910,9 @@ public long Digest()
         case MOVE_PLACE_RABBITS:
         	{
         	ArimaaCell rab = rack[whoseTurn][ArimaaChip.RABBIT_INDEX];
-        	for(int idx=0,row=(whoseTurn==playerColor[FIRST_PLAYER_INDEX])?7:1;  idx<=1; row++,idx++)
+        	for(int idx=0,row=(whoseTurn==playerColor[FIRST_PLAYER_INDEX])?variation.nRows-1:1;  idx<=1; row++,idx++)
         		{
-        		for(char col='A'; col<='H'; col++)
+        		for(char col='A',lastCol=(char)('A'+variation.nCols); col<lastCol; col++)
         			{
         			ArimaaCell c = getCell(col,row);
         			if((c.height()==0) && (rab.height()>0))
@@ -2098,7 +2149,7 @@ public long Digest()
 		case MOVE_GAMEOVERONTIME:
 			setGameOver(true,false);
 			break;
-
+ 
         default:
         	cantExecute(m);
         }
@@ -2144,7 +2195,7 @@ public long Digest()
         	/*$FALL-THROUGH$*/
         case INITIAL_SETUP_STATE:
         	if(whoseTurn==playerColor[FIRST_PLAYER_INDEX])
-        	{	if(cell.row<=(DEFAULT_ROWS-2)) { return(false); }
+        	{	if(cell.row<=(variation.nRows-2)) { return(false); }
         	}
         	else
         	{	if(cell.row>2) { return(false); }
@@ -2351,11 +2402,11 @@ public long Digest()
     
     // place a rack piece in each empty cell in s row
    private commonMove placeInRandomRow(Random rand,ArimaaCell from,int row,int who)
-    {int randomOffset = Random.nextSmallInt(rand,DEFAULT_COLUMNS);
-   	 for(int col0=0; col0<DEFAULT_COLUMNS; col0++)
+    {int randomOffset = Random.nextSmallInt(rand,variation.nCols);
+   	 for(int col0=0; col0<variation.nCols; col0++)
     	{
    		 int col1 = col0 + randomOffset;
-   		 if(col1>=DEFAULT_COLUMNS) { col1 -= DEFAULT_COLUMNS; }
+   		 if(col1>=variation.nCols) { col1 -= variation.nCols; }
    		 char col = (char)('A'+col1);
    		 ArimaaCell c = getCell(col,row);
    		 if(c.height()==0)
@@ -2369,7 +2420,7 @@ public long Digest()
  // place a rack piece in each empty cell in s row
  private void placeInRows(CommonMoveStack  all,ArimaaCell from,int row,int who)
  {	
-	 for(char col='A'; col<('A'+DEFAULT_COLUMNS); col++)
+	 for(char col='A'; col<('A'+variation.nCols); col++)
  		{
 		 ArimaaCell c = getCell(col,row);
 		 if(c.height()==0)
@@ -2386,10 +2437,10 @@ public long Digest()
  	for(int row0=torow; row0<=torow+1; row0++) 
 	{	int row = row0 + randomRow;
 		if(row>=torow+2) { row -= 2; };
-		int randomCol = Random.nextSmallInt(rand,DEFAULT_COLUMNS);
- 		for(char col0 = 0;col0<DEFAULT_COLUMNS; col0++)
+		int randomCol = Random.nextSmallInt(rand,variation.nCols);
+ 		for(char col0 = 0;col0<variation.nCols; col0++)
   		{int col1 = col0 + randomCol;
-  		 if(col1>=DEFAULT_COLUMNS) { col1 -= DEFAULT_COLUMNS; }
+  		 if(col1>=variation.nCols) { col1 -= variation.nCols; }
   		 char col = (char)('A'+col1);
 		 ArimaaCell c = getCell(col,row);
 		 if(c.height()==0)
@@ -2405,7 +2456,7 @@ public long Digest()
  // this is used to place the rabbits.
  private void placeInFirstRow(CommonMoveStack  all,ArimaaCell from,int torow,int who)
  {	for(int row=torow; row<=torow+1; row++)
-	 {for(char col='A'; col<('A'+DEFAULT_COLUMNS); col++)
+	 {for(char col='A'; col<('A'+variation.nCols); col++)
  		{
 		 ArimaaCell c = getCell(col,row);
 		 if(c.height()==0)
@@ -2967,7 +3018,7 @@ public long Digest()
 	 	// in the remaining spaces.
 	 	ArimaaCell row[]=rack[who];
 	 	{
-	 	int dest = (who==playerColor[FIRST_PLAYER_INDEX]) ? 7 : 2;
+	 	int dest = (who==playerColor[FIRST_PLAYER_INDEX]) ? variation.nRows-1 : 2;
 	 	for(int i=1,lim=ArimaaChip.RABBIT_INDEX; i<lim;i++)
 	 		{
 	 		 ArimaaCell c = row[i];
@@ -2981,7 +3032,7 @@ public long Digest()
 	 	// for each available cell, so no need to offer choices.
 	 	{
 	 	ArimaaCell c = row[ArimaaChip.RABBIT_INDEX];
-	 	int dest = (who==playerColor[FIRST_PLAYER_INDEX]) ? 7 : 1;
+	 	int dest = (who==playerColor[FIRST_PLAYER_INDEX]) ? variation.nRows-1 : 1;
 	 	if(c.height()>0)
 	 	{
 	 	 placeInFirstRow(all,c,dest,who);

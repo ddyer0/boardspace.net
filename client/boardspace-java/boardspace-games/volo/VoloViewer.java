@@ -205,7 +205,7 @@ public class VoloViewer extends CCanvas<VoloCell,VoloBoard> implements VoloConst
 		//
 	    int stateY = boardY-stateH;
 	    int stateX = boardX;
-	    G.placeStateRow( stateX,stateY,boardW ,stateH,iconRect,stateRect,noChatRect);
+	    G.placeStateRow( stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,noChatRect);
 		G.SetRect(boardRect,boardX,boardY,boardW,boardH);
         G.SetRect(passButton,boardX+ CELLSIZE,boardY + CELLSIZE,CELLSIZE*3,CELLSIZE*3/2);
 		

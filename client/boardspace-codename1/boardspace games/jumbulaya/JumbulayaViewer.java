@@ -166,6 +166,17 @@ public class JumbulayaViewer extends CCanvas<JumbulayaCell,JumbulayaBoard> imple
 
     	}
     }
+    
+    
+    
+    public void drawAnnotationMenu(Graphics g,HitPoint p)
+    {	// this makes the annotation menu follow the board rotation, which is independent of the window rotation
+    	GC.setRotatedContext(g,largerBoardRect,p,effectiveBoardRotation);
+    	super.drawAnnotationMenu(g,p);
+    	GC.unsetRotatedContext(g,p);
+    }
+ 
+ 
     /** this is called by the game controller when all players have connected
      * and the first player is about to be allowed to make his first move. This
      * may be a new game, or a game being restored, or a player rejoining a game.
@@ -286,7 +297,7 @@ public class JumbulayaViewer extends CCanvas<JumbulayaCell,JumbulayaBoard> imple
     	//
         int stateY = boardY-stateH/2;
         int stateX = boardX;
-    	G.placeStateRow(stateX,stateY,boardW ,stateH/2,iconRect,stateRect,rotateRect,lockRect,altNoChatRect);
+    	G.placeStateRow(stateX,stateY,boardW ,stateH/2,iconRect,stateRect,annotationMenu,rotateRect,lockRect,altNoChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	G.SetRect(goalRect, boardX, G.Bottom(boardRect)-stateH/4,boardW,stateH/2);   
     	G.SetRect(timeRect, boardX, G.Bottom(goalRect),boardW,timeControl().timeControlMessage()==null ? 0 : stateH/2);   

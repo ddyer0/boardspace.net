@@ -198,7 +198,7 @@ public class TintasViewer extends CCanvas<TintasCell,TintasBoard> implements Tin
         int stateY = boardY-stateH/2;
         int stateX = boardX;
 
-        G.placeRow(stateX,stateY,boardW ,stateH,stateRect,viewsetRect,eyeRect,noChatRect);
+        G.placeRow(stateX,stateY,boardW ,stateH,stateRect,annotationMenu,viewsetRect,eyeRect,noChatRect);
     	G.SetRect(boardRect,boardX,boardY-(perspective?(boardW-boardH)/2:0),
     			boardW,perspective ? boardW : boardH);
 

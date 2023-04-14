@@ -209,7 +209,7 @@ public class CheViewer extends CCanvas<CheCell,CheBoard> implements CheConstants
     	//
         int zoomW = CELLSIZE*5;
 
-        G.placeStateRow(boardX,stateY,boardW ,stateH,iconRect,stateRect,noChatRect);
+        G.placeStateRow(boardX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,noChatRect);
         G.placeRight(stateRect, zoomRect, zoomW);
 
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
