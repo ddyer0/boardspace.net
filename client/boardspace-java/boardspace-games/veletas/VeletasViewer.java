@@ -60,7 +60,6 @@ public class VeletasViewer extends CCanvas<VeletasCell,VeletasBoard> implements 
 				StockArt.Eye,VeletasId.ToggleEye,EyeExplanation
 				);
 
-    private NumberMenu numberMenu = new NumberMenu(this,VeletasChip.shooter,VeletasId.ShowNumbers);
 
     /**
      * preload all the images associated with the game. This is delegated to the chip class.
@@ -430,7 +429,6 @@ public class VeletasViewer extends CCanvas<VeletasCell,VeletasBoard> implements 
         goalAndProgressMessage(gc,ourSelect,Color.black,s.get(VictoryCondition),progressRect, goalRect);
    
         drawAuxControls(gc,ourSelect);
-        numberMenu.draw(gc,highlight);
         drawVcrGroup(ourSelect, gc);
    }
 
@@ -444,8 +442,9 @@ public class VeletasViewer extends CCanvas<VeletasCell,VeletasBoard> implements 
      */
      public boolean Execute(commonMove mm,replayMode replay)
     {	
-    	numberMenu.recordSequenceNumber(b.moveNumber);
+    	
         handleExecute(b,mm,replay);
+        numberMenu.recordSequenceNumber(b.moveNumber);
         startBoardAnimations(replay,b.animationStack,SQUARESIZE,MovementStyle.Simultaneous);
 		lastDropped = b.lastDroppedObject;	// this is for the image adjustment logic
 
@@ -656,9 +655,6 @@ private void playSounds(commonMove m)
         {
         default:
         	throw G.Error("Hit Unknown: %s", hitObject);
-        case ShowNumbers:
-        	numberMenu.showMenu();
-        	break;
         case ToggleEye:
         	eyeRect.toggle();
         	break;
@@ -804,8 +800,7 @@ private void playSounds(commonMove m)
      */
     public boolean handleDeferredEvent(Object target, String command)
     {
-    	if(numberMenu.selectMenu(target,this)) { return(true); }
-    	else if(target==reverseOption)
+    	if(target==reverseOption)
     	{
     	b.setReverseY(reverseOption.getState());
     	generalRefresh();
@@ -872,7 +867,7 @@ private void playSounds(commonMove m)
     }
 
 	public int getLastPlacement(boolean empty) {
-		return b.placementCount+(b.DoneState()?1:0);
+		return b.placementCount;
 	}
 }
 

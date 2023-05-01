@@ -1,6 +1,7 @@
 package gipf;
 
 import lib.Random;
+import lib.StackIterator;
 import gipf.GipfConstants.GipfId;
 import lib.G;
 import lib.OStack;
@@ -8,20 +9,21 @@ import online.game.*;
 class CellStack extends OStack<GipfCell>
 {
 	public GipfCell[] newComponentArray(int n) { return(new GipfCell[n]); }
+	public StackIterator<GipfCell> push(GipfCell c)
+	{
+		G.Assert(c!=null,"can't be null");
+		return super.push(c);
+	}
 }
 
-public class GipfCell extends stackCell<GipfCell,GipfChip>
+public class GipfCell extends stackCell<GipfCell,GipfChip> implements PlacementProvider
 {	
 	public GipfChip[] newComponentArray(int n) { return(new GipfChip[n]); }
  	int colorIndex = -1;	// color of chip we will contain
 	int rowcode = 0;
 	boolean preserved = false;		// preserved on this move number
 	int sweep_counter = 0;
-	// constructor for on-board cells
-	public void copyFrom(GipfCell to)
-	{	super.copyFrom(to);
-		preserved = to.preserved;
-	}
+
 	public boolean sameCell(GipfCell other)
 	{
 		return(super.sameCell(other) 
@@ -97,4 +99,61 @@ public class GipfCell extends stackCell<GipfCell,GipfChip>
 	}
 	public static boolean sameCell(GipfCell c,GipfCell d) { return((c==null)?(d==null):c.sameCell(d)); }
 
+
+	public int getLastPlacement(boolean empty) {
+		return empty ? lastEmptied : lastPlaced;
+	}
+	
+	
+	/**
+	 * wrap this method if the cell holds any additional state important to the game.
+	 * This method is called, with a random sequence, to digest the cell in unusual
+	 * roles, or when the digest of contents is complex.
+	 */
+	//public long Digest(Random r) { return(super.Digest(r)); }
+	
+	/** copyFrom is called when copying new cells for use in the UI
+	 * 
+	 */
+//	public void copyAllFrom(CheckerCell ot)
+//	{	
+//		super.copyAllFrom(ot);
+//	}
+	int lastPlaced = -1;
+	int lastEmptied = -1;
+	int lastCaptured = -1;
+	int previousLastPlaced = -1;
+	int previousLastEmptied = -1;
+	int previousLastCaptured = -1;
+	GipfChip previousLastContents = null;
+	GipfChip lastContents = null;
+	
+	public void copyFrom(GipfCell ot)
+	{	super.copyFrom(ot);
+		preserved = ot.preserved;
+		lastPlaced = ot.lastPlaced;
+		lastEmptied = ot.lastEmptied;
+		lastCaptured = ot.lastCaptured;
+		lastContents = ot.lastContents;
+		previousLastPlaced = ot.previousLastPlaced;
+		previousLastEmptied = ot.previousLastEmptied;
+		previousLastCaptured = ot.previousLastCaptured;
+		previousLastContents = ot.previousLastContents;
+
+	}
+	/**
+	 * reset back to the same state as when newly created.  This is used
+	 * when reinitializing a board.
+	 */
+	public void reInit()
+	{	super.reInit();
+		lastPlaced = -1;
+		lastEmptied = -1;
+		lastCaptured = -1;
+		previousLastPlaced = -1;
+		previousLastEmptied = -1;
+		previousLastCaptured = -1;
+		previousLastContents = null;
+		lastContents = null;
+	}
 }

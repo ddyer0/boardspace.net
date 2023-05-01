@@ -42,6 +42,12 @@ class PushfightBoard extends squareBoard<PushfightCell> implements BoardProtocol
 	private PushfightState board_state = PushfightState.Puzzle;	
 	private PushfightState unresign = null;	// remembers the orignal state when "resign" is hit
 	private StateStack robotState = new StateStack();
+	
+    private int previousLastPlaced = 0;
+    private int previousLastEmptied = 0;
+    private int previousLastPlayer = 0;
+    public int lastPlacedIndex = 0;
+    
 	public PushfightState getState() { return(board_state); }
 	static int [][]BlackPositions = {
 			{'B',2},
@@ -244,6 +250,11 @@ class PushfightBoard extends squareBoard<PushfightCell> implements BoardProtocol
 		cachedTargets = null;
         animationStack.clear();
         moveNumber = 1;
+        
+        previousLastPlaced = 0;
+        previousLastEmptied = 0;
+        previousLastPlayer = 0;
+        lastPlacedIndex = 1;
 
         // note that firstPlayer is NOT initialized here
     }
@@ -453,6 +464,8 @@ class PushfightBoard extends squareBoard<PushfightCell> implements BoardProtocol
     	setState(stateStack.pop());
     	pickedObject = SetBoard(rv,null); 	// SetBoard does ancillary bookkeeping
     	unsetPiece(rv,pickedObject);
+    	rv.lastPlaced = previousLastPlaced;    	
+    	lastPlacedIndex--;
     	return(rv);
     }
     // 
@@ -464,6 +477,9 @@ class PushfightBoard extends squareBoard<PushfightCell> implements BoardProtocol
     	setState(stateStack.pop());
     	SetBoard(rv,pickedObject);
     	setPiece(rv,pickedObject);
+    	rv.addChip(pickedObject);
+    	rv.lastEmptied = previousLastEmptied;
+    	rv.lastEmptiedPlayer = previousLastPlayer;
     	pickedObject = null;
     }
     
@@ -515,6 +531,9 @@ class PushfightBoard extends squareBoard<PushfightCell> implements BoardProtocol
     //
     private void dropObject(PushfightCell c)
     {	dropObject(c,pickedObject);
+
+    	lastDroppedObject = pickedObject;
+
     	pickedObject = null; 
     }
     private void dropObject(PushfightCell c,PushfightChip pickedObject)
@@ -525,6 +544,8 @@ class PushfightBoard extends squareBoard<PushfightCell> implements BoardProtocol
        SetBoard(c,pickedObject);
        setPiece(c,pickedObject);
        lastDroppedObject = pickedObject;
+       previousLastPlaced = c.lastPlaced;
+       c.lastPlaced = lastPlacedIndex++;
              
     }
     //
@@ -561,6 +582,12 @@ class PushfightBoard extends squareBoard<PushfightCell> implements BoardProtocol
     	lastPicked = pickedObject = c.topChip();
     	lastDroppedObject = null;
     	SetBoard(c,null);
+    	
+		previousLastEmptied = c.lastEmptied;
+		previousLastPlayer = c.lastEmptiedPlayer;
+		c.lastEmptied = lastPlacedIndex;
+		c.lastEmptiedPlayer = whoseTurn;
+
     	unsetPiece(c,pickedObject);
     }
     //	
@@ -646,14 +673,13 @@ class PushfightBoard extends squareBoard<PushfightCell> implements BoardProtocol
        	resetState = board_state;
     }
     private void doDone(replayMode replay)
-    {
+    {	lastPlacedIndex++;
     	switch(resetState)
     	{
     	case PushMove1:
     	case PushMove2:
     		PushfightCell e = pushedEnd;
     		setNextPlayer(replay);
-    		moveNumber++;
     		acceptPlacement();
     		setNextStateAfterDone(e,replay);
     		break;
@@ -661,7 +687,6 @@ class PushfightBoard extends squareBoard<PushfightCell> implements BoardProtocol
     		acceptPlacement();
     		initialPositionDone[whoseTurn] = true;
     		setNextPlayer(replay);
-    		moveNumber++;
     		setNextStateAfterDone(null,replay);
     		break;
     	case Gameover: break;
@@ -689,9 +714,11 @@ class PushfightBoard extends squareBoard<PushfightCell> implements BoardProtocol
 				else
 				{dest.addChip(po);
 				setPiece(dest,po);
+				dest.lastPlaced = lastPlacedIndex++;
 				}
 			po = top;
 			source = dest;
+			source.lastEmptied = lastPlacedIndex;
 			dest = dest.exitTo(direction);
 			if(replay!=replayMode.Replay)
 			{	
@@ -701,6 +728,7 @@ class PushfightBoard extends squareBoard<PushfightCell> implements BoardProtocol
 		}
 		pushedEnd = dest;
 		dest.addChip(po);
+		dest.lastPlaced = lastPlacedIndex++;
 		setPiece(dest,po);
 		if(pushedDest!=null) { pushedDest.removeTop(PushfightChip.Anchor); }
 		dest0.addChip(PushfightChip.Anchor);
@@ -766,7 +794,8 @@ class PushfightBoard extends squareBoard<PushfightCell> implements BoardProtocol
 			if(robot==null) { m.to = top; }
 			if(top==null)
 				{dropObject(dest);
-	            if((replay==replayMode.Single) || (m.op==MOVE_FROM_TO))
+	            if((replay!=replayMode.Replay)
+	            		&& ((replay==replayMode.Single) || (m.op==MOVE_FROM_TO)))
 	            	{ animationStack.push(getSource());
 	            	  animationStack.push(dest); 
 	            	}

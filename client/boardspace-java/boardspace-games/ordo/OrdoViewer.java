@@ -41,7 +41,6 @@ public class OrdoViewer extends CCanvas<OrdoCell,OrdoBoard> implements OrdoConst
  
     // private state
     private OrdoBoard b = null; 	// the board from which we are displaying
-    private int SQUARESIZE;			// size of a board square
     private int CHIPSIZE;
     
     // addRect is a service provided by commonCanvas, which supports a mode
@@ -230,16 +229,10 @@ public class OrdoViewer extends CCanvas<OrdoCell,OrdoBoard> implements OrdoConst
     	Rectangle main = layout.getMainRectangle();
       
         
-    	{
-    	int w = G.Width(main);
-    	int h = G.Height(main)-stateH*2;
-    	SQUARESIZE = Math.min(w/b.ncols,h/b.nrows);		// one extra square for top and bottom ornaments
-    	}
-
     	boolean rotate = seatingFaceToFaceRotated();	// divine is we want to rotate the board
     	int w = G.Width(main);
     	int h = G.Height(main);
-    	SQUARESIZE = Math.min(w/b.ncols,(h-stateH)/(b.nrows));
+    	int SQUARESIZE = Math.min(w/b.ncols,(h-stateH)/(b.nrows));
     	int boardW = SQUARESIZE * (rotate ? b.nrows : b.ncols);
         int boardH = SQUARESIZE * (rotate ? b.ncols : b.nrows);
         int extraW = (w-boardW)/2;
@@ -266,7 +259,7 @@ public class OrdoViewer extends CCanvas<OrdoCell,OrdoBoard> implements OrdoConst
         int stateX = boardX;
         G.placeStateRow(	stateX,
         			stateY,
-        			boardW,stateH,iconRect,stateRect,annotationMenu,eyeRect,noChatRect);
+        			boardW,stateH,iconRect,stateRect,annotationMenu,numberMenu,eyeRect,noChatRect);
         
         G.placeRow(stateX, boardBottom-stateH/2, boardW, stateH, goalRect,reverseViewRect);
         
@@ -370,6 +363,9 @@ public class OrdoViewer extends CCanvas<OrdoCell,OrdoBoard> implements OrdoConst
      	OrdoCell last = gb.getPrevDest();	// and the other player's last move
      	OrdoCell selectedStart = gb.selectedStart;
      	OrdoCell selectedEnd = gb.selectedEnd;
+     	
+    	numberMenu.clearSequenceNumbers();
+    	 
      	//
         // now draw the contents of the board and anything it is pointing at
         //
@@ -381,6 +377,9 @@ public class OrdoViewer extends CCanvas<OrdoCell,OrdoBoard> implements OrdoConst
             int ypos = G.Bottom(brect) - gb.cellToY(cell);
             int xpos = G.Left(brect) + gb.cellToX(cell);
             HitPoint hitNow = gb.legalToHitBoard(cell,targets) ? highlight : null;
+            
+            numberMenu.saveSequenceNumber(cell,xpos,ypos);
+
             if( cell.drawStack(gc,this,hitNow,CHIPSIZE,xpos,ypos,liftSteps,0.1,null)) 
             	{ // draw a highlight rectangle here, but defer drawing an arrow until later, after the moving chip is drawn
             	highlight.arrow =hasMovingObject(highlight) 
@@ -408,7 +407,16 @@ public class OrdoViewer extends CCanvas<OrdoCell,OrdoBoard> implements OrdoConst
             {
             	StockArt.Dot.drawChip(gc,this,CHIPSIZE*3/2,xpos,ypos,null);
             }
+            if((cell.topChip()==null)
+        			&& cell.lastContents!=null 
+        			&& cell.lastCaptured>0
+        			&& numberMenu.getVisibleNumber(cell.lastCaptured)>0)
+                	{	
+                		cell.lastContents.drawChip(gc,this,CHIPSIZE*2/3,xpos,ypos,null);
+                		StockArt.SmallX.drawChip(gc,this,CHIPSIZE,xpos,ypos,null);
+                	}
     	}
+     	numberMenu.drawSequenceNumbers(gc,CHIPSIZE*2/3,labelFont,labelColor);
 
     }
      public void drawAuxControls(Graphics gc,HitPoint highlight)
@@ -519,6 +527,8 @@ public class OrdoViewer extends CCanvas<OrdoCell,OrdoBoard> implements OrdoConst
      public boolean Execute(commonMove mm,replayMode replay)
     {	
         handleExecute(b,mm,replay);
+        numberMenu.recordSequenceNumber(b.moveNumber());
+
         lastDropped = b.lastDropped;
         
         startBoardAnimations(replay,b.animationStack,CHIPSIZE,MovementStyle.Simultaneous);        	
@@ -1095,5 +1105,8 @@ private void playSounds(commonMove m)
         }
     }
 
+	public int getLastPlacement(boolean empty) {
+		return b.lastPlacedIndex;
+	}
 }
 

@@ -1,7 +1,6 @@
 package online.game;
 
 import java.awt.Color;
-import java.awt.Point;
 import java.awt.Rectangle;
 
 import online.game.cell.Geometry;
@@ -13,9 +12,11 @@ import java.util.Enumeration;
 import lib.*;
 
 /* this is the base class for board geometry and coordinate systems for board where
- * the cells are in any of the common forms of grids
- * hexBoard  rectBoard and circBoard are built on top an game specific boards
- * on top of them.  The recommended access method to boards are these
+ * the cells are in any of the common forms of fixed grids
+ * hexBoard  rectBoard and circBoard are built on top, and game specific boards
+ * on top of them.  The recommended access method to boards are these.
+ * 
+ *
  * 
  * 	public cell allCells();
  *	public void SetDisplayRectangle(Rectangle r);
@@ -36,29 +37,8 @@ import lib.*;
  *  public int firstRowInColumn(char col);
  *	public int lastRowInColumn(char col);
  */
-class Bbox
-{
-	int left=0;
-	int top=0;
-	int right=-1;
-	int bottom=-1;
-	void addPoint(int x,int y)
-	{
-		if (left>right)
-        {   left = x;
-            top = y;
-            right = left;
-            bottom = top;
-        }
-        else
-        {   if (x < left) {  left = x;  }
-            if (x > right)  { right = x;  }
-            if (y < top) {  top = y; }
-            if (y > bottom) { bottom = y; }
-        }
-	}
-}
-public abstract class gBoard<CELLTYPE extends cell<CELLTYPE>> extends RBoard<CELLTYPE> implements Opcodes
+
+public abstract class gBoard<CELLTYPE extends cell<CELLTYPE>> extends fBoard<CELLTYPE> implements Opcodes
 {	
 	
 	/**
@@ -70,7 +50,7 @@ public abstract class gBoard<CELLTYPE extends cell<CELLTYPE>> extends RBoard<CEL
 	 * @author Ddyer
 	 *
 	 */
-    public class BoardIterator implements Enumeration<CELLTYPE> 
+    public class OldBoardIterator implements Enumeration<CELLTYPE> 
     {	gBoard<CELLTYPE> b;
     	int firstCol;
     	int thisCol;
@@ -84,12 +64,13 @@ public abstract class gBoard<CELLTYPE extends cell<CELLTYPE>> extends RBoard<CEL
     	int colNum;
     	boolean swapXY = false;
     	boolean swapOn = false;
+    	CELLTYPE currentCell;
     	Itype type;
     	public String toString() { return("<boardIterator "+type+">"); }
     	/*
     	 * create an iterator for the board
     	 */
-    	BoardIterator(gBoard<CELLTYPE> board,Itype typ)
+    	OldBoardIterator(gBoard<CELLTYPE> board,Itype typ)
     	{	type = typ;
     		b = board;
     		swapXY = b.displayParameters.swapXY;
@@ -107,6 +88,9 @@ public abstract class gBoard<CELLTYPE extends cell<CELLTYPE>> extends RBoard<CEL
     		
     		switch(type)
     		{
+    		case ANY:
+    			currentCell = allCells;
+    			break;
     		case BTLR:
     		case LRBT:
      		case LRTB:	
@@ -119,16 +103,23 @@ public abstract class gBoard<CELLTYPE extends cell<CELLTYPE>> extends RBoard<CEL
     		case BTRL:
     		case RLTB:
     		case TBRL:
+    		case RLBT:
     			// right to left
       			stepCol = -b.stepColNum();
     			swapOn = swapXY;
     			firstCol = thisCol = b.rightColNum();
     			lastCol =  b.leftColNum();
       			break;
+			
+			default:
+				break;
     		}
     		switch(type)
     		{
-       		case BTRL:
+    		case ANY:
+     			break;
+    		case RLBT:
+      		case BTRL:
        		case BTLR:
     		case LRBT:
     			// bottom to top
@@ -162,14 +153,22 @@ public abstract class gBoard<CELLTYPE extends cell<CELLTYPE>> extends RBoard<CEL
     	
     	public CELLTYPE nextElement()
     	{	
-     		CELLTYPE c = b.getCell((char)('A'+thisCol),thisRow);
     		seq++;
     		switch(type)
     		{
+    		case ANY:
+    			{
+    			CELLTYPE cc = currentCell;
+    			currentCell = currentCell.next;
+    			hasMore = currentCell!=null;
+    			return cc;
+    			}
     		case BTRL:
     		case BTLR:  			
     		case TBLR:
     		case TBRL:
+    			{
+         		CELLTYPE c = b.getCell((char)('A'+thisCol),thisRow);
 	    		// normal step for raster scans
 	    		if(thisRow == lastRow) 
 	    			{
@@ -195,11 +194,16 @@ public abstract class gBoard<CELLTYPE extends cell<CELLTYPE>> extends RBoard<CEL
 	    			}
 	    		else { thisRow += stepRow;
 	    			}
-    			break;
+	    			return c;
+    			}
+    			
+    		case RLBT:
     		case LRBT:
     		case LRTB:
     		case RLTB:
-	    		if(swapXY)
+    			{  
+    			CELLTYPE c = b.getCell((char)('A'+thisCol),thisRow);
+ 	    		if(swapXY)
 	    		{	// swapXY is true for rotation 1 and 3.  We want to iterate
 	    			// with rows as the fast axis instead of columns
 	    			if(thisRow==lastRow)
@@ -233,9 +237,14 @@ public abstract class gBoard<CELLTYPE extends cell<CELLTYPE>> extends RBoard<CEL
 	    		else { thisCol += stepCol;
 	    			}
 	    		}
-	    		break;
+ 	    		return(c);
+    			} 
+    		default:
+    			{
+    			CELLTYPE c = b.getCell((char)('A'+thisCol),thisRow);
+    			return c;
+    			}
     		}
-    		return(c);
     	}
         
     	public boolean hasMoreElements() {
@@ -245,16 +254,15 @@ public abstract class gBoard<CELLTYPE extends cell<CELLTYPE>> extends RBoard<CEL
 
     }
     /**
-     * get an Enumeration for the board's cells.
+     * get an Enumeration for the board's cells.  
+     * 
      * @param e
      * @return an Enumeration of the board's cell type.
      */
     public Enumeration<CELLTYPE> getIterator(Itype e)
     {
-    	return(new BoardIterator(this,e));
+    	return(new OldBoardIterator(this,e));
     }
-
-	public Geometry geometry = null;		// the expected geometry for the board
     /**
      * if true, display top to bottom instead of bottom to top on the Y axis.  This is intended
      * for games that want to offer a "reverse" view.  This is only fully tested for simple
@@ -332,14 +340,7 @@ public abstract class gBoard<CELLTYPE extends cell<CELLTYPE>> extends RBoard<CEL
      */
     private int gridRightColNum() { return(rightColNum()); }
     
-   
-    /** if isTorus is true, the edges of the board will be connected to create
-     * an edge less board.   I'm not sure if this makes sense for non-square
-     * boards.   At present (7/2006) this is actually implemented for hex
-     * boards for use by Hive.
-     */
-    public boolean isTorus=false;
-
+ 
 	
     /**
      * the number of rows needed to display the board
@@ -453,41 +454,17 @@ public abstract class gBoard<CELLTYPE extends cell<CELLTYPE>> extends RBoard<CEL
      */
     private int bottomRowInColumn(char c) { return(displayParameters.reverse_y?lastRowInColumn(c):firstRowInColumn(c)); }
 
-    /**
-     * convert col,row to x pixel coordinate with no rotation or perspective
-     * @param col
-     * @param row
-     * @return a double
-     */
-    public abstract double cellToX00(char col,int row);
-    /**
-     * convert col,row to y pixel coordinate with no rotation or perspective
-     * @param col
-     * @param row
-     * @return a double
-     */
-    public abstract double cellToY00(char col,int row);
-
-    /**
-     * factory method for the board cells.  This is used to create all the cells
-     * in the low level board.
-     * @param col columb id - usually 'A'-xx
-     * @param row column row = usually 1-nn
-     * @return a new instance of the appropriate cell class
-     */
-    public abstract CELLTYPE newcell(char col,int row);
-
  	@SuppressWarnings("unchecked")
 	public void createBoard(int xdim,int ydim)
     {  
     	board = new cell[xdim][ydim];
     	allCells=null;
-    	cellArray = null;
+    	forgetCellArray();
     }
     
     // this is used only during board construction, when we populate
     // the board array with cells, or subtypes of cells.
-    void SetBoardCell(char col,int row,CELLTYPE con)
+    public void SetBoardCell(char col,int row,CELLTYPE con)
     {	int y = BCtoYindex(col,row);
 		int x = BCtoXindex(col,row);
 		char nc = XindexToBC(x,y);
@@ -499,7 +476,7 @@ public abstract class gBoard<CELLTYPE extends cell<CELLTYPE>> extends RBoard<CEL
     }
 
 	@SuppressWarnings("unchecked")
-	private final CELLTYPE GetBoardCell(char col,int row)
+	public CELLTYPE GetBoardCell(char col,int row)
     {	if(validBoardPos(col,row))
     	{
     	int y = BCtoYindex(col,row);
@@ -508,29 +485,7 @@ public abstract class gBoard<CELLTYPE extends cell<CELLTYPE>> extends RBoard<CEL
     	}
     	return(null); 
     }
-    /**
-     * get the cell associated with col, row.  This is the "public" version that may be 
-     * overridden and augmented by the subclasses.
-     * @param col
-     * @param row
-     * @return the board cell corresponding to the col,row
-     */
-    public CELLTYPE getCell(char col,int row)
-    {
-    	return(GetBoardCell(col,row));
-    }
 
-
-
-    /**
-     * unlink the cell, then remove it from the board array too.
-     * @param c
-     */
-    public void removeCell(CELLTYPE c)
-    {
-    	unlinkCell(c);
-    	SetBoardCell(c.col,c.row,null);
-    }
 
     
     /** 
@@ -559,62 +514,15 @@ public abstract class gBoard<CELLTYPE extends cell<CELLTYPE>> extends RBoard<CEL
     {	// copy the contents and dynamic state from the other board
         super.copyFrom(from_b);
 	
-        isTorus = from_b.isTorus;
         nrows = from_b.nrows;
         ncols = from_b.ncols;
         firstRowInCol = from_b.firstRowInCol;
         nInCol = from_b.nInCol;
-        geometry = from_b.geometry;
-
       }
 	
+public abstract int[] dxs();
+public abstract int[] dys();
 
-   /**
-    * find the closest cell and encode the x,y as a position
-    * relative to the cell grid.  Normally the board has it's own
-    * mouse zone, so player views with boards in different positions 
-    * will still give a fair approximation to the mouse position on the board.
-    * @return a point
-    * @see #decodeCellPosition
-    */
-  public Point encodeCellPosition(int x,int y,double cellsize)
-  {	CELLTYPE mincell = closestCell(x,y);
-   	if(mincell!=null)
-   	{	int cellx = cellToX(mincell.col,mincell.row);
-   		int celly = cellToY(mincell.col,mincell.row);
-   		int reverse =  displayParameters.reverse_y ? -1 : 1;
-   		//System.out.println("Close to "+mincell);
-   		int xoff = 1000+(int)(10*(reverse*(x-cellx)/cellsize));
-   		int yoff = 1000+(int)(10*(reverse*(y-celly)/cellsize));
-   		// encode the subcell position in tenths of a cell, chinese remainder
-   		// the cell number with the subcell position.  This isn't quite correct
-   		// because it should also consider differences in rotation, but we don't
-   		// use vastly different rotations, so it's pretty much ok
-   		//
-   		//mincell = getCell('A',4);
-   		//G.print("encode "+mincell.col+mincell.row);
-		return(new Point(10000*(mincell.col-'A')+xoff,10000*mincell.row+yoff));
-   	}
-   	return(null);
-  }
-  /** decode a cell position (encoded by {@link #encodeCellPosition})
-   * to an x,y inside the board rectangle
-   */
- public Point decodeCellPosition(int x,int y,double cellsize)
- {	Point val = null;
- 	char col = (char)('A'+x/10000);
- 	int row = y/10000;
- 	if(validBoardPos(col,row))
- 	{	int cx = cellToX(col,row);
- 		int cy = cellToY(col,row);
- 		int subx = x%10000-1000;
- 		int suby = y%10000-1000;
- 		//G.print("decode "+col+row);
- 		int reverse =  displayParameters.reverse_y ? -1 : 1;
- 		val = new Point(cx+(int)(reverse*cellsize/10*subx),cy+(int)(reverse*cellsize/10*suby));
- 	}
- 	return(val);
- }  
 /**
  * dxs and dys together define the relative offset to adjacent cells in each
  * direction.  The number of offsets must agree with the geometry of cells on
@@ -623,13 +531,14 @@ public abstract class gBoard<CELLTYPE extends cell<CELLTYPE>> extends RBoard<CEL
  * @param dxs an array of x offsets
  * @param dys an array of y offsets
  */
- protected void setCrossLinks(int dxs[],int dys[])
- {	
+ protected void setCrossLinks()
+ {	int dxs[] = dxs();
+ 	int dys[] = dys();
 	G.Assert(dxs!=null && dys!=null,"dxs and dys must be supplied");
  	G.Assert(dxs.length==allCells.geometry.n,"the dxs.length %s must agree with the cell geometry %s",dxs.length,allCells.geometry);
 	 int mod = dxs.length;
      for(CELLTYPE cc = allCells; cc!=null; cc=cc.next)
-     {	int xc = BCtoXindex(cc.col,cc.row);
+     {	int xc = BCtoXindex(cc.col,cc.row);	// note that for torroidal boards, this is where the wrap occurs
  		int yc = BCtoYindex(cc.col,cc.row);
  		// do this in this convoluted way so we take into account
  		// the various ways that hexagonal grids can be numbered.  They all
@@ -645,64 +554,12 @@ public abstract class gBoard<CELLTYPE extends cell<CELLTYPE>> extends RBoard<CEL
   		    cc.addLink(dir,nc2);
  		  }
   	 }
-   for(CELLTYPE c=allCells; c!=null; c=c.next) { c.countLinks(); }
-     // verify that all the crosslinks are correct - that if a links to b, b links to a
-     // in the opposite direction as defined by exitToward.
- 	for(CELLTYPE c = allCells; c!=null; c=c.next)
- 	{	
- 		for(int dir=0;dir<mod;dir++)
- 		{	CELLTYPE c1 = c.exitTo(dir);
- 			if(isTorus) { G.Assert(!c1.isEdgeCell(),"not an edge cell"); }
- 			if(c1!=null) 
- 			{ CELLTYPE c2 = c1.exitTo(dir+mod/2);
- 			  int dirto = findDirection(c.col,c.row,c1.col,c1.row);
- 			  int dirfrom = findDirection(c1.col,c1.row,c.col,c.row);
- 			  // if this fails, then the "firstInCol" numbers are inconsistent
- 			  G.Assert(c2==c,"reverse map, from %s direction %s to %s and back %s",c,dirto,c1,c2);
-			  G.Assert(isTorus || ((dirto==dir)&&(dirfrom==(dir+mod/2)%mod)),"direction mapping");
- 			}
- 		}
- 	}
+     checkCrossLinks();
 
  }
  
 
- 
- /**
- // this sets the basic parameters of the board, to determine the location of the cell grid points
-  * within the rectangle.  For simple boards, this is just scale and offset.  With all the parameters,
-  * it can be used to match the grid points to an arbitrary piece of artwork.  Unfortunately these
-  * parameters are not independently adjustable, so to match artwork some experimentation is required
-  * to zero in on the desired grid.
-  * 
-  * @param scale	overall scale (normal 1.0)
-  * @param yscale	y scale relative to overall scale (normal 1.0)
-  * @param xoff		x offset in units of cells
-  * @param yoff		y offset in units of cells
-  * @param rot		rotation in degrees clockwise
-  * @param xperspec	x forshortening as a function of y (0 is no effect)
-  * @param yperspec y forshortening as a function of y (0 is no effect)
-  * @param skew		x multiply as a percentage of y
-  */
- public void SetDisplayParameters(double scale, double yscale, double xoff,double yoff,double rot,
-         double xperspec, double yperspec,double skew)
- {	displayParameters.SetDisplayParameters(scale, yscale, xoff, yoff, rot, xperspec, yperspec, skew);
- }
 
- /**
- // this sets the basic parameters of the board, to determine the location of the cell grid points
-  * within the rectangle.  
-  * 
-  * @param scale	overall scale (normal 1.0)
-  * @param yscale	y scale relative to overall scale (normal 1.0)
-  * @param xoff		x offset in units of cells
-  * @param yoff		y offset in units of cells
-  * @param rot		rotation in degrees clockwise
-  */
- public void SetDisplayParameters(double scale, double yscale, double xoff,double yoff,double rot)
- {
-	 SetDisplayParameters(scale,yscale,xoff,yoff,rot,0,0,0);
- }
  
  /**
   * The third method of setting display parameters requires mapping 4 points, and
@@ -717,91 +574,13 @@ public abstract class gBoard<CELLTYPE extends cell<CELLTYPE>> extends RBoard<CEL
  public void SetDisplayParameters(double LL[],double LR[],double UL[],double UR[])
  {	displayParameters.SetDisplayParameters(LL, LR, UL, UR); 
  }
- protected double yCellRatio() { return(1.0); }
- protected double yGridRatio() { return(2.0); }
- 
- /**
-  * adjust the internal scaling parameters so the board displays
-  * inside the specified rectangle.  This works by running a trial
-  * transformation of all the points on the board, then scaling the 
-  * result to completely fill the rectangle if possible.
-  * @param r
-  */
- public void SetDisplayRectangle(Rectangle r)
- {	super.SetDisplayRectangle(r);
- 	double ycell = yCellRatio();
- 	double ygrid = yGridRatio();
- 	displayParameters.setDisplayRectangle0(r,ycell,ygrid,ncols);
- 	
-	 //
-	 // do a quick traverse to determine the bounding box
-	 // this has an extra row in the calculation, which is 
-	 // not technically correct but the existing boards grew up
-	 // with it, so so have to keep it.  The extra row is where
-	 // the coordinates get drawn.
-	 //
-	 Bbox br = new Bbox();
-	 boolean isHex = allCells.nAdjacentCells()==6;
-	 boolean invx = displayParameters.reverse_x;
-	 boolean invy = displayParameters.reverse_y;
-	 double GRIDSIZE = displayParameters.GRIDSIZE;
-	 double YCELLSIZE = displayParameters.YCELLSIZE;
-	 
-	 //
-	 // used normal coordinates, so the box is always calculated the same
-	 displayParameters.reverse_x = displayParameters.reverse_y = false;
-	 for(CELLTYPE c = allCells; c!=null; c=c.next)
-	 {	char col = c.col;
-	 	// this is what makes calculating the box tricky for hexagonal grids with reverse coordinates
-	 	int thisrow = (isHex&&(c.row==1)) ? 0 : c.row;
-	
-	     br.addPoint(cellToX(col, thisrow, GRIDSIZE, 0),  cellToY(col, thisrow, GRIDSIZE, 0));
-	     br.addPoint(cellToX(col, thisrow, -GRIDSIZE, 0), cellToY(col, thisrow, -GRIDSIZE, 0));
-	     br.addPoint(cellToX(col, thisrow, 0, YCELLSIZE), cellToY(col, thisrow, 0, YCELLSIZE));
-	     br.addPoint(cellToX(col, thisrow, 0, -YCELLSIZE),cellToY(col, thisrow, 0, -YCELLSIZE));
-	 }
-	 displayParameters.reverse_x = invx;
-	 displayParameters.reverse_y = invy;
-	 
-	 displayParameters.setDisplayRectangle1(r,br,ycell,ygrid);
+public int initialSize() { return ncols; } 
 
- }
-
- 
-
-/**
- * rotate convert col,row to x,y, rotate, and add xoff yoff
- * @param colchar
- * @param row
- * @param offx
- * @param offy
- * @return a double
- */
- private double cellToX0(char colchar, int row, double offx, double offy)
- {	
-     double col0 = cellToX00(colchar, row) + offx;
-     return displayParameters.rotateX(col0, cellToY00(colchar, row) + offy);
- }
-
- /**
-  * rotate convert col,row to x,y, rotate, and add xoff yoff
-  * @param colchar
-  * @param thisrow
-  * @param offx
-  * @param offy
-  * @return a double
-  */
- private double cellToY0(char colchar, int thisrow, double offx, double offy)
- {
-     double y0 = cellToY00(colchar, thisrow) + offy;
-     return displayParameters.rotateY(cellToX00(colchar, thisrow) + offx, y0);
- }   
- 
 
  //
  // complete transform col,row to x
  //
- private int cellToX(char colchar0, int rownum0, double offx, double offy)
+ protected int cellToX(char colchar0, int rownum0, double offx, double offy)
  {	if(displayParameters.INTERPOLATE)
 	 {
 	 char colchar = displayParameters.swapXY ? (char)(rownum0+'A'-1) : colchar0;
@@ -820,43 +599,14 @@ public abstract class gBoard<CELLTYPE extends cell<CELLTYPE>> extends RBoard<CEL
 	 }
 	 else
 	 {
-     double xpos0 = displayParameters.XOFFSET + cellToX0(colchar0, rownum0, offx, offy);
-
-     if (displayParameters.XPERSPECTIVE > 0.0)
-     {
-         double ypos0 = cellToY0(colchar0, rownum0, offx, offy);
-
-         return ((int) displayParameters.XtoXP(xpos0, ypos0));
-     }
-
-     return ((int) xpos0);
+     return super.cellToX(colchar0, rownum0, offx, offy);
 	 }
- }
-
-/**
- * convert col,row to x,y
- * @param colchar
- * @param row
- * @return an integer
- */
- public int cellToX(char colchar, int row)
- {
-     return (cellToX(colchar, row, 0, 0));
- }
- /**
-  * convert a cell to its x
-  * @param c
-  * @return an integer
-  */
- public int cellToX(CELLTYPE c)
- {	
-	 return cellToX(c.col,c.row);
  }
 
  //
  // complete transform col,row to y
  //
- private int cellToY(char colchar0, int thisrow0, double offx, double offy)
+ protected int cellToY(char colchar0, int thisrow0, double offx, double offy)
  {	
 	 if(displayParameters.INTERPOLATE)
 	 {	char colchar = displayParameters.swapXY ? (char)('A'+thisrow0-1) : colchar0;
@@ -874,37 +624,11 @@ public abstract class gBoard<CELLTYPE extends cell<CELLTYPE>> extends RBoard<CEL
 		return((int)(yp*displayParameters.HEIGHT+offy));
 	 }
 	 else
-	 {
-	     double ypos0 = displayParameters.YOFFSET + cellToY0(colchar0, thisrow0, offx, offy);
-	
-	     if (displayParameters.YPERSPECTIVE > 0)
-	     {
-	         return ((int) (displayParameters.YSCALE*displayParameters.YtoYP(ypos0)));
-	     }
-	
-	     return ((int) (ypos0*displayParameters.YSCALE));
+	 {	return super.cellToY(colchar0, thisrow0, offx, offy);
 	 }
  }
  
 
-/** convert col,row to x,y
- * 
- * @param colchar
- * @param thisrow
- * @return an integer
- */
- public int cellToY(char colchar, int thisrow)
- {	
-     return (cellToY(colchar, thisrow, 0, 0));
- }
- /**
-  * convert a cell to it's y
-  * @param c
-  * @return an integer
-  */
- public int cellToY(CELLTYPE c)
- {	return cellToY(c.col,c.row);
- }
 
  /**
   * this is an overridable method of the board, used to draw the grid
@@ -1181,10 +905,6 @@ public abstract class gBoard<CELLTYPE extends cell<CELLTYPE>> extends RBoard<CEL
     
 	// display and initialization utilities
 
-	/** return the approximate cell size.
-	 * 
-	 */
-	public int cellSize() { return((int)displayParameters.CELLSIZE); }
 	/** return the first row in this column.  Note that if the board supports
 	 * a reverse-y option, it may be more useful to call {@link #topRowInColumn }
 	 * 

@@ -113,7 +113,6 @@ public class MajoritiesViewer extends CCanvas<MajoritiesCell,MajoritiesBoard> im
     private Rectangle tinyBoard0 = addRect("tinyBoard0");
     private Rectangle tinyBoard1 = addRect("tinyBoard1");
     private Rectangle tinyBoard2 = addRect("tinyBoard2");
-    private NumberMenu numberMenu = new NumberMenu(this,MajoritiesChip.White,MajoritiesId.ShowNumbers);
 /**
  * this is called during initialization to load all the images. Conventionally,
  * these are loading into a static variable so they can be shared by all.
@@ -556,7 +555,6 @@ public class MajoritiesViewer extends CCanvas<MajoritiesCell,MajoritiesBoard> im
             //DrawRepRect(gc,gb.Digest(),repRect);	// Not needed for majorities
         
         // draw the vcr controls
-        numberMenu.draw(gc,selectPos);
         drawVcrGroup(nonDragSelect, gc);
 
     }
@@ -572,8 +570,8 @@ public class MajoritiesViewer extends CCanvas<MajoritiesCell,MajoritiesBoard> im
      public boolean Execute(commonMove mm,replayMode replay)
     {	
        
+    	 handleExecute(bb,mm,replay);
          numberMenu.recordSequenceNumber(bb.moveNumber());    
-        handleExecute(bb,mm,replay);
         /**
          * animations are handled by a simple protocol between the board and viewer.
          * when stones are moved around on the board, it pushes the source and destination
@@ -689,9 +687,6 @@ public class MajoritiesViewer extends CCanvas<MajoritiesCell,MajoritiesBoard> im
         {
         default:
         	throw G.Error("Hit Unknown: %s", hitObject);
-        case ShowNumbers:
-        	numberMenu.showMenu();
-        	break;
         case BoardLocation:	// we hit an occupied part of the board 			
         case EmptyBoard:
 			doDropChip(hitObject.col,hitObject.row);
@@ -874,11 +869,6 @@ public class MajoritiesViewer extends CCanvas<MajoritiesCell,MajoritiesBoard> im
         {
             setComment(comments);
         }
-    }
-    public boolean handleDeferredEvent(Object target,String command)
-    {
-    	if(numberMenu.selectMenu(target,this)) { return true;}
-    	else return(super.handleDeferredEvent(target,command));
     }
  
 	public int getLastPlacement(boolean empty) {

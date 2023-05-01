@@ -144,7 +144,6 @@ public class HexGameViewer extends CCanvas<hexCell,HexGameBoard> implements HexC
 					hexChip.HexIconR,hexChip.HexIconR.id,DiamondView);
 	// private menu items
     private boolean lastRotation=!rotation.isOnNow();			// user to trigger background redraw
-    private NumberMenu numberMenu = new NumberMenu(this,hexChip.White,HexId.ShowNumbers) ;
     
 /**
  * this is called during initialization to load all the images. Conventionally,
@@ -680,7 +679,6 @@ public class HexGameViewer extends CCanvas<hexCell,HexGameBoard> implements HexC
             				stateRect);
         hexChip chip = gb.getPlayerChip(gb.whoseTurn);
         chip.drawChip(gc, this, iconRect,null);
-        numberMenu.draw(gc,selectPos);
         goalAndProgressMessage(gc,nonDragSelect,Color.black,s.get(HexVictoryCondition),progressRect, goalRect);
         //DrawRepRect(gc,pl.displayRotation,Color.black, gb.Digest(),repRect);	// Not needed for barca
         
@@ -702,9 +700,11 @@ public class HexGameViewer extends CCanvas<hexCell,HexGameBoard> implements HexC
     	// games where there is only 1 move per turn, this is unnecessary
     	// games like majorities where there are two moves per turn, this records the boundaries
     	//
-    	// numberMenu.recordSequenceNumber(bb.moveNumber());    
 
         handleExecute(bb,mm,replay);
+        
+        // record after to get the behavior of numbering partially complete moves
+        numberMenu.recordSequenceNumber(bb.moveNumber()); 
         
         /**
          * animations are handled by a simple protocol between the board and viewer.
@@ -952,9 +952,6 @@ public class HexGameViewer extends CCanvas<hexCell,HexGameBoard> implements HexC
         {
         default:
             	throw G.Error("Hit Unknown: %s", hitCode);
-        case ShowNumbers:
-        	numberMenu.showMenu();
-        	break;
         case ChangeRotation:
         	rotation.toggle();
         	break;
@@ -1113,16 +1110,6 @@ public class HexGameViewer extends CCanvas<hexCell,HexGameBoard> implements HexC
     }
 
 
-    /** handle action events from menus.  Don't do any real work, just note
-     * state changes and if necessary set flags for the run loop to pick up.
-     * 
-     */
-    public boolean handleDeferredEvent(Object target, String command)
-    {
-       boolean handled = super.handleDeferredEvent(target, command);
-       if(!handled) { handled = numberMenu.selectMenu(target,this); }
-       return (handled);
-    }
 /** handle the run loop, and any special actions we need to take.
  * The mouse handling and canvas painting will be called automatically.
  * <p>
@@ -1253,7 +1240,7 @@ public class HexGameViewer extends CCanvas<hexCell,HexGameBoard> implements HexC
 		// when the temporary piece is placed.  Without it, the "last"
 		// sequence shows the temporary move as well as the next complete move.
 		//
-		return (bb.moveNumber+(bb.DoneState()?1:0));
+		return (bb.moveNumber);
 	}
 }
 

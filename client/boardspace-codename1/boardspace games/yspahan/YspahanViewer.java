@@ -1,7 +1,7 @@
 package yspahan;
 
-import com.codename1.ui.geom.Rectangle;
-import bridge.*;
+import bridge.Color;
+import bridge.Config;
 
 import online.common.*;
 import online.game.*;
@@ -13,6 +13,8 @@ import vnc.VNCTransmitter;
 import yspahan.YspahanBoard.PlayerBoard;
 
 import java.util.*;
+
+import com.codename1.ui.geom.Rectangle;
 
 import lib.Graphics;
 import lib.Image;
@@ -39,8 +41,8 @@ import lib.TextGlyph;
  * July 2011 Initial work in progress. 
  *
  */
-public class YspahanViewer extends CCanvas<YspahanCell,YspahanBoard> implements YspahanConstants
-{   
+public class YspahanViewer extends CCanvas<YspahanCell,YspahanBoard> implements YspahanConstants,GameLayoutClient
+{
      /**
 	 * 
 	 */
@@ -109,8 +111,6 @@ public class YspahanViewer extends CCanvas<YspahanCell,YspahanBoard> implements 
     // private state
     private YspahanBoard b = null; 	// the board from which we are displaying
     private int CELLSIZE; 			// size of the layout cell.  
-    private static int SUBCELL = 4;	// number of cells in a square
-    private int SQUARESIZE;			// size of a board square
     
     // addRect is a service provided by commonCanvas, which supports a mode
     // to visualize the layout during development.  Look for "show rectangles"
@@ -141,15 +141,15 @@ public class YspahanViewer extends CCanvas<YspahanCell,YspahanBoard> implements 
     			? b.whoseTurn
     			: getActivePlayer().boardIndex ); 
     }
-
+    
     public synchronized void preloadImages()
     {	
+       	YspahanChip.preloadImages(loader,ImageDir);
         if (images == null)
     	{ // note that for this to work correctly, the images and masks must be the same size.  
           // Refer to http://www.andromeda.com/people/ddyer/java/imagedemo/transparent.html
-       	YspahanChip.preloadImages(loader,ImageDir);
         SoundManager.preloadSounds(Sounds);    
-        textures = loader.load_images(ImageDir,TextureNames);
+   		textures = loader.load_images(ImageDir,TextureNames);
         images = loader.load_masked_images(ImageDir,ImageNames);
     	}
         gameIcon = textures[BOARD_INDEX];
@@ -188,11 +188,11 @@ public class YspahanViewer extends CCanvas<YspahanCell,YspahanBoard> implements 
         int randomKey = info.getInt(OnlineConstants.RANDOMSEED,-1);
         MouseColors  = yMouseColors;
         MouseDotColors = yMouseDotColors;
-        b = new YspahanBoard(info.getString(OnlineConstants.GAMETYPE, Yspahan_INIT),
+        b = new YspahanBoard(info.getString(GAMETYPE, Yspahan_INIT),
         		randomKey,getStartingColorMap(),players_in_game);
         useDirectDrawing(true);
     	adjustPlayers(players_in_game);
-        doInit(false);
+     	doInit(false);
      }
 
     /** 
@@ -209,373 +209,172 @@ public class YspahanViewer extends CCanvas<YspahanCell,YspahanBoard> implements 
        	}
     }
 
-    int PlayerBoardWidth = 30;
-    int PlayerBoardHeight = 12;
-    void createPlayerGroup(int x,int y, int cellsize,commonPlayer pl0,  Rectangle r,boolean left)
-    {	pl0.displayRotation = 0;
-            Rectangle box = pl0.playerBox;
-            Rectangle p0time = pl0.timeRect;
-            Rectangle xtime = pl0.extraTimeRect;
-            Rectangle p0anim = pl0.animRect;
-        Rectangle p0name = pl0.nameRect;
-        Rectangle p0pic = pl0.picRect;
-        int pbw = PlayerBoardWidth*cellsize;
-        int pbh = PlayerBoardHeight*cellsize;
-        if(left)
-        {
-        	G.SetRect(r, x-pbw-CELLSIZE/2,y,pbw,pbh);
-        }
-        else {
-        	G.SetRect(r, x, y-pbw-CELLSIZE*2, pbh, pbw);
-        }
-            //first player name
-        G.SetRect(p0name, x, y+CELLSIZE/2, CELLSIZE * 10, CELLSIZE*2);
-            // first player portrait
-        G.SetRect(p0pic, x, G.Bottom(p0name), CELLSIZE * 8, CELLSIZE * 8);
-            // time display for first player
-            int timeH = CELLSIZE*2;
-        G.SetRect(p0time, G.Right(p0pic),G.Top(p0pic), CELLSIZE * 6, timeH);
-            G.AlignLeft(xtime, G.Bottom(p0time),p0time);
-            
-            // first player "i'm alive" animation ball
-            G.SetRect(p0anim,G.Left(xtime),G.Bottom( xtime),timeH,timeH);
-        G.SetHeight(box,-1);
-        G.union(box, p0name,p0pic,p0time);
-     }
-
-    int cols = 20;	// the board artwork is almost perfect 2:1 aspect ratio
-    int rows = 10;
-	int snrows;
-	int sncols;
-	public int setLocalBoundsSize(int width,int height,boolean wideFormat,boolean tallFormat)
-    {
-	   	int chatHeight = selectChatHeight(height);
-	   	boolean noChat = chatHeight==0;
-        boolean plannedSeating = plannedSeating();
-        if(plannedSeating&&wideFormat) { return(0); }
-	   	sncols = (cols*SUBCELL+(tallFormat ? 4 : 54)); // more cells wide to allow for the aux displays
-        snrows = (rows+6)*SUBCELL+(tallFormat ? ((noChat|plannedSeating)?40:56) : 4);  
-        int cellw = width / sncols;
-        int useheight = (height-(wideFormat|plannedSeating?0:chatHeight));
-        int cellh = useheight / snrows;
-        CELLSIZE = Math.max(1,Math.min(cellw, cellh));
-        SQUARESIZE = 4*CELLSIZE;
-        return(SQUARESIZE);
-    }
-    public void setLocalBoundsWT(int x, int y, int width, int height,boolean wideFormat,boolean tallFormat)
-    {	
-    	int chatHeight = selectChatHeight(height);
-    	boolean noChat = chatHeight==0;
-    	int nPlayers = b.nPlayers();
-    	int C2 = CELLSIZE/2;
-        G.SetRect(fullRect,0,0,width,height);
-        // game log.  This is generally off to the right, and it's ok if it's not
-        // completely visible in all configurations.
-        int breakageW = width - sncols*CELLSIZE;
-        int breakageH = height- snrows*CELLSIZE;
-        int buttonW = CELLSIZE*10;
-        int buttonH = 4*CELLSIZE;
-        if(breakageW>2*breakageH) { breakageW = breakageH*2; }
-        else { breakageH = breakageW/2; }
-        int logHeight = wideFormat&!noChat ? (int)(CELLSIZE*12) : chatHeight;
-
-        boolean plannedSeating = plannedSeating();
-        int cx2 = CELLSIZE*2;
-        G.SetHeight(speedRect,0);
-        if(plannedSeating && !wideFormat && !tallFormat)
-        {	int BSS = SQUARESIZE+SQUARESIZE/8;
-        	int boardWidth = BSS*cols;
-        	int boardHeight = BSS*rows;
-        	int blockWidth = 31*CELLSIZE;
-        	int blockHeight = 11*CELLSIZE;
-        	int stateH = CELLSIZE*3;
-        	int stateW = BSS*7;
-        	boolean seatingAround = seatingAround();
-        	int boardX = (width-boardWidth)/2+(seatingAround?0:BSS);
-        	int boardY = (height-boardHeight)/2;
-        	G.SetRect(boardRect, boardX, boardY, boardWidth, boardHeight);
-        	int boardBottom = boardY+boardHeight;
-        	int boardRight = boardX+boardWidth;
-        	int caravanW = BSS;
-        	int caravanX = boardX-caravanW;
-        	commonPlayer pl0 = getPlayerOrTemp(0);
-            commonPlayer pl1 = getPlayerOrTemp(1);
-            commonPlayer pl2 = getPlayerOrTemp(2);
-            commonPlayer pl3 = nPlayers>3 ? getPlayerOrTemp(3) : null;
-            int px = width/2+blockWidth/2-blockHeight;
-            if(seatingAround)
-            {	// seated around all around
-            	createPlayerGroup(px,height-blockHeight,CELLSIZE,pl0,playerRects[0],true);
-             	createPlayerGroup(-CELLSIZE,height/2+blockWidth/2,CELLSIZE,pl1,playerRects[1],false);
-            	pl1.displayRotation= Math.PI/2;
-            	createPlayerGroup(px,0,CELLSIZE,pl2,playerRects[2],true);
-            	pl2.displayRotation = Math.PI;
-            	if(nPlayers==4)
-            	{	createPlayerGroup(width-blockHeight-CELLSIZE,height/2+blockHeight,CELLSIZE,pl3,playerRects[3],false);
-            		pl3.displayRotation = -Math.PI/2;
-            	}
+    int PlayerBoardWidth = 35;
+    int PlayerBoardHeight = 13;
     
-            	G.placeStateRow(CELLSIZE,0,stateW,stateH,iconRect,stateRect);
-                 G.SetRect(goalRect,
-                		G.Right(pl0.playerBox)+CELLSIZE,
-                		boardBottom,
-                		CELLSIZE*37,
-                		cx2);
-                int vcX = CELLSIZE;
-                int vcSize = CELLSIZE*20;
-                int vcY = height-vcSize/2;
-                      SetupVcrRects(
-                 		vcX,
-                 		vcY,
-                 		vcSize,
-                 		vcSize/2);
-                 int logX = G.Right(vcrZone)+C2;
-                 int logY = boardBottom+CELLSIZE ;
-                 G.SetRect(logRect, 
-                       		logX ,
-                       		logY,
-                       		G.Left(playerRects[0])-logX-CELLSIZE,
-                       		height-logY-C2);
+    // modern construction
+	public Rectangle createPlayerGroup(int player, int x, int y, double rotation, int cellsize) 
+	{	int csc = (int)(cellsize*0.6);
+        int pbw = PlayerBoardWidth*csc;
+        int pbh = PlayerBoardHeight*csc;
+		Rectangle r = playerRects[player];	// big box
+		Rectangle done = doneRects[player];
+		commonPlayer pl = getPlayerOrTemp(player);
+		Rectangle box = pl.createRectangularPictureGroup(x+pbw+cellsize/3,y,cellsize);
+    	int doneW = plannedSeating()? cellsize*6 : 0;
+    	G.SetRect(done,G.Left(box)+cellsize/4,G.Bottom(box)+cellsize/4,doneW,doneW/2);	
+		G.SetRect(r,x,y,pbw,pbh);
+		G.union(box,done,r);
+		pl.displayRotation = rotation;
+		return box;
+	}
+   	int cols = 20;	// the board artwork is almost perfect 2:1 aspect ratio
+	int rows = 10;
+	public void setLocalBounds(int l,int t,int w,int h)
+	{
+		setLocalBoundsV(l,t,w,h,new double[] {0.6,1.4});
+	}
+	public double  setLocalBoundsA(int x,int y,int width,int height,double aspect)
+	{
+		G.SetRect(fullRect, x, y, width, height);
+    	GameLayoutManager layout = selectedLayout;
+    	int nPlayers = nPlayers();
+       	int chatHeight = selectChatHeight(height);
+       	// ground the size of chat and logs in the font, which is already selected
+    	// to be appropriate to the window size
+    	int fh = standardFontSize();
+    	int minLogW = fh*25;	
+       	int minChatW = fh*35;	
+        int minLogH = fh*10;	
+        int margin = fh/2;
+        // this does the layout of the player boxes, and leaves
+    	// a central hole for the board.
+    	//double bestPercent = 
+    	layout.selectLayout(this, nPlayers, width, height,
+    			margin,	
+    			0.75,	// 60% of space allocated to the board
+    			aspect,	// aspect ratio for the board
+    			fh*1.6,
+    			fh*3.0,	// maximum cell size
+    			0.3		// preference for the designated layout, if any
+    			);
+    	
+        // place the chat and log automatically, preferring to place
+    	// them together and not encroaching on the main rectangle.
+    	layout.placeTheChatAndLog(chatRect, minChatW, chatHeight,minChatW*2,3*chatHeight/2,logRect,
+    			minLogW, minLogH, minLogW*3/2, minLogH*3/2);
+    	// games which have a private "done" button for each player don't need a public
+    	// done button, and also we can make the edit/undo button square so it can rotate
+    	// to face the player.
+    	layout.placeTheVcr(this,fh*15,fh*20);
+       	//layout.placeDrawGroup(G.getFontMetrics(standardPlainFont()),acceptDrawRect,declineDrawRect);
 
-                 G.SetRect(noChatRect,width-stateH, 0, stateH, stateH);
-                 {	int chatX = G.Right(pl2.playerBox)+C2;
-                    G.SetRect(chatRect,
-                     		chatX,
-                     		0,
-                     		noChat?0:G.Left(noChatRect)-chatX-C2,boardY);
-                     }
-                 
-                 G.SetRect(payCamelRect,
-                		caravanX-buttonW-C2,boardY-buttonH,
-     	       			buttonW,buttonH);
-                 G.AlignLeft(sendCubeRect, 
-                		 	G.Bottom(payCamelRect)+CELLSIZE,
-                		 	payCamelRect);
-
-               }
-            else
-            {	// seating on top and bottom
-                createPlayerGroup(width-3*blockHeight/2,height-blockHeight,CELLSIZE,pl0,playerRects[0],true);
-                createPlayerGroup(blockWidth+CELLSIZE*1,height-blockHeight,CELLSIZE,pl1,playerRects[1],true);
-                if(nPlayers==3) 
-                	{ createPlayerGroup(px,0,CELLSIZE,pl2,playerRects[2],true);
-                	}
-                	else {
-                createPlayerGroup(blockWidth+CELLSIZE*1,0,CELLSIZE,pl2,playerRects[2],true);
-                	}
-                pl2.displayRotation=Math.PI;
-                if(nPlayers==4)
-                	{ createPlayerGroup(width-3*blockHeight/2,0,CELLSIZE,pl3,playerRects[3],true);
-                	  pl3.displayRotation = Math.PI; 
-                	}
-                int stateX = (nPlayers==3)? CELLSIZE : G.Right(pl2.playerBox)+BSS;
-                G.SetRect(stateRect, stateX+stateH,0,stateW-stateH,stateH);
-                G.SetRect(iconRect,stateX,0,stateH,stateH);
- 
-                G.SetRect(goalRect,
-                		boardX+BSS*5,
-                		boardBottom,
-                		CELLSIZE*40,
-                		cx2);
-          
-               int vcX = CELLSIZE;
-               int vcSize = CELLSIZE*20;
-               int vcY = G.Top(pl1.playerBox)+CELLSIZE-vcSize/2;
-                     SetupVcrRects(
-                		vcX,
-                		vcY,
-                		vcSize,
-                		vcSize/2);
+    	Rectangle main = layout.getMainRectangle();
+    	int mainX = G.Left(main);
+    	int mainY = G.Top(main);
+    	int mainW = G.Width(main);
+    	int mainH = G.Height(main);
+    	
+    	// There are two classes of boards that should be rotated. For boards with a strong
+    	// "my side" orientation, such as chess, use seatingFaceToFaceRotated() as
+    	// the test.  For boards that are noticably rectangular, such as Push Fight,
+    	// use mainW<mainH
+    	boolean rotate = mainW<mainH;	
+        int nrows = rotate ? cols : rows;  // b.boardRows
+        int ncols = rotate ? rows : cols; // b.boardColumns
+        int extraRows = 3;
+        int stateH = fh*3;
         
-               int logY = G.Top(vcrZone)-BSS*4;
-               G.SetRect(logRect, 
-                     		CELLSIZE ,
-                     		logY ,
-                     		caravanX-cx2,
-                     		BSS*3);
-
-               G.SetRect(noChatRect,((nPlayers==4)?G.Left(playerRects[3]):width)-stateH, boardY-stateH, stateH, stateH);
-               {  int chatX = G.Right(pl2.playerBox)+C2;
-               	  int chatY = nPlayers==4?G.Bottom(stateRect):0;
-                  G.SetRect(chatRect,
-                   		chatX,
-                   		chatY,
-                   		noChat?0:G.Left(noChatRect)-chatX-C2,boardY-chatY);
-                   }
-
-               G.SetRect(payCamelRect,
-               		caravanX-buttonW-C2,boardY+cx2,
-    	       			buttonW,buttonH);
-                G.AlignLeft(sendCubeRect, 
-               		 	G.Bottom(payCamelRect)+CELLSIZE,
-               		 	payCamelRect);
-     
-            }
-            
-            setProgressRect(progressRect,goalRect);
-            int goldX = boardRight+CELLSIZE;
-            G.SetRect(caravanRect,caravanX,boardY,
-            		caravanW,boardHeight);
-            
-            G.SetRect(goldRect, goldX ,boardY+CELLSIZE*3,3*BSS/2,2*BSS/3);
-            
-            G.AlignLeft(camelRect,boardBottom-6*CELLSIZE, goldRect);
-            
-            G.SetRect(cardRect, goldX, G.Bottom(goldRect)+CELLSIZE ,BSS, BSS*2);
-            
-            G.AlignLeft(discardRect, G.Bottom(cardRect)+CELLSIZE,cardRect);
-                    
-            // "edit" rectangle, available in reviewers to switch to puzzle mode
-            G.SetRect(editRect, goldX,G.Bottom(discardRect)+BSS/2, buttonW,buttonH);
-          
-            // "done" rectangle, should always be visible, but only active when a move is complete.
-            G.AlignLeft(doneRect, G.Bottom(editRect)+CELLSIZE,editRect);
-
-            // friendly warning message
-            G.AlignLeft(turnRect,G.Bottom(goalRect),goalRect);
-
-         }
-        else
-        {
-        // first player perspective 
-        int boardX = CELLSIZE;
-        int boardY = (wideFormat?0:chatHeight)+SQUARESIZE+(tallFormat?cx2:0);
-        int boardWidth = (SQUARESIZE * cols + breakageW);
-        int boardHeight = (SQUARESIZE * rows + breakageH);
-        G.SetRect(boardRect,boardX,boardY,
-        		boardWidth ,boardHeight);
-        int boardRight = boardX+boardWidth;
-        int boardBottom = boardY+boardHeight;
-
-        G.SetRect(caravanRect,boardX,boardBottom+cx2,
-        		SQUARESIZE*3*nPlayers,SQUARESIZE*2);
-        
-         
-        int zoomW = CELLSIZE*15;
-        int stateX = boardX + CELLSIZE;
-        int stateH =  (tallFormat ? 5 : 3)*CELLSIZE;
+    	// calculate a suitable cell size for the board
+    	double cs = Math.min((double)mainW/(ncols+(rotate ? extraRows : 0)),(double)(mainH-stateH)/(nrows+(rotate ? 0 : extraRows)));
+    	CELLSIZE = (int)cs;
+     	// center the board in the remaining space
+    	{
+       	int extraRowH = rotate ? 0 : extraRows*CELLSIZE;
+       	int extraRowW = rotate ? extraRows*CELLSIZE : 0;
+    	int boardW = (int)(ncols*CELLSIZE);
+    	int boardH = (int)(nrows*CELLSIZE);
+    	int extraW = Math.max(0, (mainW-boardW-extraRowW)/2);
+    	int extraH = Math.max(0, (mainH-boardH-stateH-extraRowH)/2);
+    	int boardX = mainX+extraW;
+     	int boardY = mainY+extraH+stateH;
+     	layout.returnFromMain(extraW,extraH);
+    	//
+    	// state and top ornaments snug to the top of the board.  Depending
+    	// on the rendering, it can occupy the same area or must be offset upwards
+    	//
         int stateY = boardY-stateH;
-        G.SetRect(noChatRect,boardRight-stateH, stateY, stateH, stateH);
-        G.SetRect(speedRect, G.Left(noChatRect)-zoomW-C2, stateY, zoomW,   stateH);
-        G.SetRect(stateRect, stateX+stateH,stateY,G.Left(speedRect)-stateX-stateH,stateH);
-        G.SetRect(iconRect, stateX,stateY,stateH,stateH);
-        int ideal_logwidth = (SQUARESIZE * 20);
-        int playerX = tallFormat? boardX+cx2 : boardRight+SQUARESIZE-2*CELLSIZE;
-        int playerRight = playerX + 53*CELLSIZE;
-        
-        boolean ultraWideFormat = wideFormat && (width - playerRight)>(((playerRight-boardRight)*0.5));
-        
-      
-        int playerY = tallFormat 
-        		? (boardBottom+CELLSIZE*10) 
-        		:  wideFormat ? logHeight+C2 : chatHeight+C2;
-        int playerY0 = playerY;
-        int ystep = (3*SQUARESIZE-CELLSIZE);;
-        commonPlayer pl0 = null;
-        int pbx = playerX+PlayerBoardWidth*CELLSIZE+C2;
-        for(int i=0;i<nPlayers;i++)
-        {
-        	createPlayerGroup(pbx,playerY, CELLSIZE, pl0=getPlayerOrTemp(i),playerRects[i],true);
-        	playerY += ystep;
-        }
-        int rpx = G.Right(pl0.playerBox)+CELLSIZE;
-        
-        G.SetRect(goldRect, boardRight-(SQUARESIZE*8),G.Top( caravanRect),2*SQUARESIZE,2*SQUARESIZE/3);
-        
-        G.AlignXY(camelRect,G.Left(goldRect), G.Bottom(goldRect)+CELLSIZE*3, goldRect);
-                
-        G.SetRect(cardRect, G.Right(goldRect)+cx2, G.Top(goldRect) ,SQUARESIZE, SQUARESIZE*2);
-         
-        G.AlignXY(discardRect, G.Right(cardRect)+CELLSIZE,G.Top(cardRect) ,cardRect);
-        
-        if(ultraWideFormat)
-        {	// ultra wide format
-    	   G.SetRect(chatRect, playerRight, playerY0,
-    			   width-playerRight-CELLSIZE,
-    			   Math.min(chatHeight,height-playerRight-CELLSIZE));
-        }
-        else
-        {
-        int chatY = wideFormat|noChat ? playerY+CELLSIZE : y;
-        G.SetRect(chatRect,
-        		wideFormat ? playerX : x+C2,
-        		chatY,
-        		wideFormat ? width-playerX-CELLSIZE : Math.max(boardWidth,width-ideal_logwidth-CELLSIZE),
-        			wideFormat&!noChat ? height-chatY-CELLSIZE : chatHeight);
-        }
-   
-        // "edit" rectangle, available in reviewers to switch to puzzle mode
-        G.SetRect(editRect, G.Right(discardRect)+2*CELLSIZE,G.Top(discardRect), buttonW,buttonH);
-      
-        // "done" rectangle, should always be visible, but only active when a move is complete.
-        G.AlignXY(doneRect,G.Left(editRect) , G.Bottom(editRect)+CELLSIZE,editRect);
-               
-        G.SetRect(turnRect,
-        		G.Right( doneRect) - SQUARESIZE*6,
-        		G.Bottom(doneRect)+C2,
-        		SQUARESIZE*6, cx2);
-             
-        G.SetRect(goalRect,
-        		boardX,
-        		boardBottom,
-        		CELLSIZE*40,
-        		cx2);
+        int stateX = boardX;
+        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,noChatRect);
+    	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
+       	if(rotate)
+    	{	// this conspires to rotate the drawing of the board
+    		// and contents if the players are sitting opposite
+    		// on the short side of the screen.
+       		boolean left = (G.centerX(boardRect)>width/2);
+     		double rot = left ? Math.PI/2 : -Math.PI/2;
+     		if(left) { G.SetLeft(boardRect,G.Left(boardRect)+CELLSIZE*extraRows); }
+    		G.setRotation(boardRect,rot);
+     		contextRotation = rot;
+    	}
 
-        setProgressRect(progressRect,goalRect);
+    	}
+    	//
+    	// yspahan places a block of things below the board
+    	// containing the camel track, piles of camels and gold, cards and discards.
+    	//
+    	// the board can be presented either normal or rotated
+    	//
+    	int boardH = G.Height(boardRect);
+    	int boardW = G.Width(boardRect);
+    	int boardBottom = G.Bottom(boardRect);
+    	int boardX = G.Left(boardRect);
+    	int lidW = boardH*2/3;
 
-        //this sets up the "vcr cluster" of forward and back controls.
-        int logX = tallFormat 
-        			? rpx 
-        			: wideFormat ? playerX : G.Right(noChat?boardRect:chatRect)+CELLSIZE/3;
-        int vcRow = G.Bottom(doneRect)-CELLSIZE;
-       int vcSize = CELLSIZE*20;
-       int vcX = 
-        		tallFormat 
-        			? G.Right(cardRect)
-        			: wideFormat|noChat ? boardX : playerX;
-       int vcY = tallFormat ? G.Bottom(turnRect)+C2 : wideFormat|noChat ? vcRow : G.Top(editRect);
-       G.AlignXY(payCamelRect,
-        	       			tallFormat ? vcX-buttonW-CELLSIZE : vcX+vcSize+cx2 ,
-        	       			wideFormat ? vcRow : vcY,
-        	       			doneRect);
-       	G.AlignXY(sendCubeRect, 
-        	       			G.Left(payCamelRect)  , 
-        	       			G.Bottom(payCamelRect)+CELLSIZE,
-        	       			payCamelRect);
-
-        SetupVcrRects(
-        		vcX,
-        		vcY,
-            vcSize,
-            vcSize/2);
- 
-        int logY = tallFormat 
-        		? G.Bottom(vcrRect)+cx2 
-        		: wideFormat&!noChat ? y : G.Top(chatRect);
-        G.SetRect(logRect, 
-        		logX ,
-        		logY ,
-        		tallFormat ? width-logX-CELLSIZE : Math.min(ideal_logwidth,width-logX-CELLSIZE),
-        		tallFormat|noChat ? height-logY-CELLSIZE : logHeight);
-
-        
-        }
-        //
-        // common configuration rectangles
-        //
-       	positionTheChat(chatRect,chatBackgroundColor,chatBackgroundColor);
-        
-       	int lidW = G.Height(boardRect)*2/3;
         G.SetRect(lidRect, 
-        		G.Right(boardRect)-lidW+cx2,
+        		G.Right(boardRect)-lidW,
         		G.Top(boardRect) ,
         		lidW,
         		G.Height(boardRect));
+   	
+    	// goal and bottom ornaments, depending on the rendering can share
+    	// the rectangle or can be offset downward.  Remember that the grid
+    	// can intrude too.
+        int caravanW = (int)(boardW*0.6);
+        G.SetRect(goalRect, boardX, boardBottom,caravanW,stateH);       
+        setProgressRect(progressRect,goalRect);
+        
+        int auxTop = boardBottom;
+        int goldX =boardX+caravanW+CELLSIZE/2;
+        int goldW = CELLSIZE*2;
+        int caravanY = auxTop+stateH;
+        int caravanH = CELLSIZE*3/2;
+        G.SetRect(caravanRect,boardX,caravanY, caravanW, caravanH);
+        G.SetRect(sendCubeRect,boardX+CELLSIZE*5,caravanY+caravanH, CELLSIZE*3, CELLSIZE*3/4);
+        G.AlignTop(payCamelRect,G.Right(sendCubeRect)+CELLSIZE/4,sendCubeRect);
+          
+        G.SetRect(goldRect, goldX,auxTop+CELLSIZE/3,goldW,CELLSIZE);
+        
+        G.AlignXY(camelRect,goldX, G.Bottom(goldRect)+CELLSIZE/2, goldRect);
+                
+        G.SetRect(cardRect, G.Right(goldRect)+CELLSIZE/3, auxTop,CELLSIZE, CELLSIZE*2);
+         
+        G.AlignXY(discardRect, G.Right(cardRect)+CELLSIZE/3,auxTop ,cardRect);
 
-        generalRefresh();
-    }
+        
+        // "edit" rectangle, available in reviewers to switch to puzzle mode
+        G.SetRect(editRect, G.Right(discardRect)+CELLSIZE/2,auxTop, CELLSIZE*9/4,CELLSIZE);
+
+        // "done" rectangle, should always be visible, but only active when a move is complete.
+        G.AlignLeft(doneRect, G.Bottom(editRect)+CELLSIZE/3,editRect);
+
+        // friendly warning message
+        G.SetRect(turnRect,G.Left(cardRect),G.Bottom(doneRect)+CELLSIZE/4,boardX+boardW-G.Left(cardRect),CELLSIZE/2);
     
 
+        positionTheChat(chatRect,chatBackgroundColor,rackBackGroundColor);
+		return boardW*boardH;
+	}
 
     //
     // sprites are normally a game piece that is "in the air" being moved
@@ -588,8 +387,8 @@ public class YspahanViewer extends CCanvas<YspahanCell,YspahanBoard> implements 
     {  	// draw an object being dragged
     	boolean hidden = xp<0;
     	int size = hidden 
-    			? SQUARESIZE*HiddenViewWidth/G.Width(playerRects[0]) 
-    			: SQUARESIZE ;
+    			? CELLSIZE*HiddenViewWidth/G.Width(playerRects[0]) 
+    			: CELLSIZE ;
     	YspahanChip ch = YspahanChip.getChip(obj%100);// Tiles have zero offset
     	int count = obj/100+1;
     	YspahanCell stack = b.tempCardCell;
@@ -608,7 +407,7 @@ public class YspahanViewer extends CCanvas<YspahanCell,YspahanBoard> implements 
     		}
      }
 
- 
+
     //** this is used by the game controller to supply entertainment strings to the lobby */
     // public String gameProgressString()
     // {	// this is what the standard method does
@@ -627,7 +426,7 @@ public class YspahanViewer extends CCanvas<YspahanCell,YspahanBoard> implements 
       YspahanBoard gb = disB(gc);
       GC.setColor(gc,review ? reviewModeBackground : rackBackGroundColor);
       //GC.fillRect(gc, fullRect);
-     textures[BACKGROUND_TILE_INDEX].tileImage(gc, fullRect);   
+      textures[BACKGROUND_TILE_INDEX].tileImage(gc, fullRect);   
       if(review)
       {	 
        textures[BACKGROUND_REVIEW_INDEX].tileImage(gc,boardRect);   
@@ -635,9 +434,14 @@ public class YspahanViewer extends CCanvas<YspahanCell,YspahanBoard> implements 
        
       // if the board is one large graphic, for which the visual target points
       // are carefully matched with the abstract grid
+     GC.setRotation(gc,contextRotation,G.centerX(boardRect),G.centerY(boardRect));
+     Rectangle rb = G.copy(null,boardRect);
+     G.setRotation(rb,-Math.PI/2);
      if(remoteViewer<0) { textures[BOARD_INDEX].centerImage(gc, boardRect); }
 	    gb.SetDisplayRectangle(boardRect);
-	    
+	 
+	 GC.setRotation(gc,-contextRotation,G.centerX(boardRect),G.centerY(boardRect));
+   
       //gb.DrawGrid(gc,brect,use_grid,Color.white,Color.black,Color.blue,Color.black);
     }
 
@@ -648,7 +452,7 @@ public class YspahanViewer extends CCanvas<YspahanCell,YspahanBoard> implements 
     	if(w>0 && h>0)
     	{
     	int sw = w;
-    	int sh = h;
+        int sh = h;
      	YspahanChip top = c.topChip();
     	boolean moving = gb.pickedObject!=null;
 		HitPoint myHit = gb.legalToHitCell(c) ? highlight : null;
@@ -712,7 +516,7 @@ public class YspahanViewer extends CCanvas<YspahanCell,YspahanBoard> implements 
     	boolean val = c.drawStack(gc,this,myHit,size,xpos,ypos,0, yscale,null); 
     	boolean moving = gb.pickedObject!=null;
     	if(val)
-    		{	highlight.awidth = SQUARESIZE/2;
+    		{	highlight.awidth = CELLSIZE/2;
 				highlight.arrow = moving ? StockArt.DownArrow :StockArt.UpArrow;
 				highlight.spriteColor = Color.red;
     		}
@@ -724,7 +528,7 @@ public class YspahanViewer extends CCanvas<YspahanCell,YspahanBoard> implements 
     	return(val);
     }
     
-    private void drawPlayerBoard(Graphics gc,double rotation,boolean hidden,YspahanBoard gb,YspahanBoard.PlayerBoard pb, Rectangle br,HitPoint highlight,HitPoint anyone)
+    private void drawPlayerBoard(Graphics gc,boolean hidden,YspahanBoard gb,YspahanBoard.PlayerBoard pb, Rectangle br,HitPoint highlight,HitPoint anyone)
     {	
     	HitPoint high = (allowed_to_edit || (gb.board_state==ystate.PUZZLE_STATE)||(gb.board_state==ystate.GAMEOVER_STATE))
     						?anyone
@@ -732,20 +536,16 @@ public class YspahanViewer extends CCanvas<YspahanCell,YspahanBoard> implements 
     	boolean seecards = !hidden
     						? pb.showCards
     						: pb.showHiddenWindowCards;
-     	if ( seecards) { showCards(gc,rotation,gb,pb,br,high); }
-    	else { showMainPlayerBoard(gc,rotation,gb,pb,br,high,anyone); }
+     	if ( seecards) { showCards(gc,gb,pb,br,high); }
+    	else { showMainPlayerBoard(gc,gb,pb,br,high,anyone); }
     }
     
-    private void showCards(Graphics gc,double rotation,YspahanBoard gb,YspahanBoard.PlayerBoard pb, Rectangle br0,HitPoint highlight)
+    private void showCards(Graphics gc,YspahanBoard gb,YspahanBoard.PlayerBoard pb, Rectangle br0,HitPoint highlight)
     {	YspahanCell c = pb.pmisc[ypmisc.card.index];
     	int cy = G.centerY(br0);
-    	int cx = G.centerX(br0);
     	int map[] = gb.getColorMap();
-    	GC.setRotation(gc, rotation, cx, cy);
-    	G.setRotation(highlight,rotation,cx,cy);
     	pb.hasSeenNewCard = pb.hasNewCard;
     	Rectangle br = G.copy(null,br0);
-    	G.setRotation(br, rotation, cx, cy);
 
 		boolean temp = isTemporaryCard(pb.myIndex);
        	int player = pb.myIndex;
@@ -754,11 +554,11 @@ public class YspahanViewer extends CCanvas<YspahanCell,YspahanBoard> implements 
        	int dx  = (G.Width(br)-size)/Math.max(1,height);
        	int SZ = (int)Math.min(size*1.6,dx*0.9);
        	HitPoint myHit = ((gb.getState()!=ystate.GAMEOVER_STATE) && gb.legalToHitCell(c)) 
-					? highlight
-					: null;
+       							? highlight
+       							: null;
        	int y  = cy;
        	int x = G.Left(br)+SZ;
-    textures[PLAYER_BLANK_INDEX[map[player]]].centerImage(gc, br);
+       	textures[PLAYER_BLANK_INDEX[map[player]]].centerImage(gc, br);
     	pb.setDisplayRectangle(br);
     	
     	for(int i=0; i<height; i++)
@@ -774,22 +574,15 @@ public class YspahanViewer extends CCanvas<YspahanCell,YspahanBoard> implements 
     		HitPoint.setHelpText(highlight,x,y,SZ,SZ*2,s.get(card.helpText));
     		x += dx;
     	}
-    	G.setRotation(highlight,-rotation,cx,cy);
-    	GC.setRotation(gc,-rotation, cx, cy);
-    }
+     }
     private boolean isTemporaryCard(int forplayer)
     {
     	return(b.hasTemporaryCard(forplayer));
     }
-    private void showMainPlayerBoard(Graphics gc,double rotation,YspahanBoard gb,YspahanBoard.PlayerBoard pb, Rectangle br0, HitPoint highlight,HitPoint anyone)
+    private void showMainPlayerBoard(Graphics gc,YspahanBoard gb,YspahanBoard.PlayerBoard pb, Rectangle br0, HitPoint highlight,HitPoint anyone)
     {	int player = pb.myIndex;
-    	int cx = G.centerX(br0);
-    	int cy = G.centerY(br0);
     	int map[]=gb.getColorMap();
     	Rectangle br = G.copy(null,br0);
-    	G.setRotation(br, rotation, cx, cy);
-    	GC.setRotation(gc,rotation, cx, cy);
-    	G.setRotation(anyone, rotation, cx, cy);	// note anyone and highlight are the same object or null
     	
 	textures[PLAYER_TEXTURE_INDEX[map[player]]].centerImage(gc, br);
 		pb.setDisplayRectangle(br);
@@ -797,17 +590,15 @@ public class YspahanViewer extends CCanvas<YspahanCell,YspahanBoard> implements 
     	int size = Math.min(G.Width(br)/3, G.Height(br))/4;
 
     	if(player == gb.startPlayer) 
-    		{ymisc.firstPlayer.chip.drawChip(gc,this,size,G.Left(br)-size/3,G.centerY(br),null);
+    		{
+    		ymisc.firstPlayer.chip.drawChip(gc,this,size,G.Left(br)+size/5,G.centerY(br),null);    			
     		}
     	for(int i=0;i<pb.buildings.length; i++) 
     	{	YspahanCell c = pb.buildings[i];
      		int xpos = pb.getX(c);
     		int ypos = pb.getY(c);
     		//StockArt.SmallO.drawChip(gc,this,SQUARESIZE,xpos,ypos,""+c.row);
-    		int screenX = G.rotateX(xpos, ypos, rotation, cx, cy);
-    		int screenY = G.rotateY(xpos, ypos, rotation, cx, cy);
-    		c.setCurrentCenter(screenX,screenY);
-    		drawHelpStack(gc,gb,c,highlight,anyone,xpos,ypos,size,1.0); 
+     		drawHelpStack(gc,gb,c,highlight,anyone,xpos,ypos,size,1.0); 
     	}
     	for(int i=0;i<pb.pmisc.length;i++)
     	{	YspahanCell c = pb.pmisc[i];
@@ -849,7 +640,7 @@ public class YspahanViewer extends CCanvas<YspahanCell,YspahanBoard> implements 
 				}
 	    		if(hidden)
 	    		{
-	    			GC.Text(gc,true,xpos-SQUARESIZE,ypos+3*SQUARESIZE/4,SQUARESIZE*2,SQUARESIZE/2,Color.black,null,
+	    			GC.Text(gc,true,xpos-CELLSIZE,ypos+3*CELLSIZE/4,CELLSIZE*2,CELLSIZE/2,Color.black,null,
 	    					s.get0or1(cardHelpText, c.height()));
 	    		}
 
@@ -864,44 +655,15 @@ public class YspahanViewer extends CCanvas<YspahanCell,YspahanBoard> implements 
 			drawHelpStack(gc,gb,c,highlight,anyone,xpos,ypos,size,0.15); 
 			}
     		// this makes the animation targets right
-    		int screenX = G.rotateX(xpos, ypos, rotation, cx, cy);
-    		int screenY = G.rotateY(xpos, ypos, rotation, cx, cy);
-    		c.setCurrentCenter(screenX,screenY);
 
 		}
-    	G.setRotation(anyone, -rotation, cx, cy);
-    	GC.setRotation(gc, -rotation, cx, cy);
     }
-    /**
-     * if the input rectangle is y-major, generate a rotated rectangle
-	 * with the same center.
-     * @param br
-     * @return a new rectangle
-     */
-    private Rectangle twistRect(Rectangle br)
-    {
-    	int w = G.Width(br);
-    	int h = G.Height(br);
-    	int l = G.Left(br);
-    	int t = G.Top(br);
-    	if(w<h)
-    	{	int w2=w/2;
-    		int h2=h/2;
-    		int cx = l+w2;
-    		int cy = t+h2;
-    		br = new Rectangle(cx-h2,cy-w2,h,w);
-     	}
-    	return(br);
-    }
-    private void drawCaravanBoard(Graphics gc,YspahanBoard gb, Rectangle br0, int whoseTurn,HitPoint highlight,HitPoint anyone)
-    {	int nPlayers = gb.nPlayers();
-    	int cx = G.centerX(br0);
-    	int cy = G.centerY(br0);
-    	Rectangle br = twistRect(br0);
-    	int neww = G.Width(br)*4/3;
-    	if(br!=br0) { GC.setRotation(gc, -Math.PI/2, cx,cy); neww = (int)(neww*0.9); }
 
-    textures[nPlayers==3?CARAVAN_3_INDEX:CARAVAN_INDEX].centerImage(gc, br);
+    private void drawCaravanBoard(Graphics gc,YspahanBoard gb, Rectangle br, int whoseTurn,HitPoint highlight,HitPoint anyone)
+    {	int nPlayers = gb.players_in_game;
+    	int neww = G.Width(br)*4/3;
+
+        textures[nPlayers==3?CARAVAN_3_INDEX:CARAVAN_INDEX].centerImage(gc, br);
     	YspahanBoard.Caravan pb = gb.caravan;
     	// correct for the 3 player camel track, which is has rows of 3 instead of 4
     	Rectangle r2 = (nPlayers==3) ? new Rectangle(G.Left(br),G.Top(br),
@@ -916,13 +678,12 @@ public class YspahanViewer extends CCanvas<YspahanCell,YspahanBoard> implements 
     		int ypos = pb.getY(c);
     		HitPoint myHigh = gb.legalToHitCell(c) ? highlight : null;
     		//StockArt.SmallO.drawChip(gc,this,SQUARESIZE,xpos,ypos,""+c.row);
-    		if(c.drawStack(gc,this,c.legalToAdd(gb.pickedObject)?myHigh:null,SQUARESIZE,xpos,ypos,0, 1.0,null))
-    		{	highlight.awidth = SQUARESIZE/2;
+    		if(c.drawStack(gc,this,c.legalToAdd(gb.pickedObject)?myHigh:null,CELLSIZE,xpos,ypos,0, 1.0,null))
+    		{	highlight.awidth = CELLSIZE/2;
     			highlight.arrow = moving?StockArt.UpArrow:StockArt.DownArrow;
     			highlight.spriteColor = Color.red;
     		}
     	}
-    	if(br0!=br) { GC.setRotation(gc,Math.PI/2,cx,cy); }
     }
     private void drawRowOfDice(Graphics gc,YspahanCell c,YspahanBoard gb,int whoseTurn,HitPoint highlight,HitPoint anyone)
     {
@@ -932,7 +693,7 @@ public class YspahanViewer extends CCanvas<YspahanCell,YspahanBoard> implements 
     	{
 		int xpos = gb.getX(c);
 		int ypos = gb.getY(c);
-		int spacing = SQUARESIZE*7/10;
+		int spacing = CELLSIZE*7/10;
     	int n=0;
 		int ix = xpos-2*spacing;
 		int initial_x = ix;
@@ -944,7 +705,7 @@ public class YspahanViewer extends CCanvas<YspahanCell,YspahanBoard> implements 
     	while (height-->0)
     	{
 		YspahanChip top = c.chipAtIndex(height);
-		c.drawChip(gc,this,top,SQUARESIZE, ix,iy,null);
+		c.drawChip(gc,this,top,CELLSIZE, ix,iy,null);
 		minx = Math.min(minx,ix);
 		miny = Math.min(miny,iy);
 		maxx = Math.max(maxx,ix);
@@ -954,10 +715,10 @@ public class YspahanViewer extends CCanvas<YspahanCell,YspahanBoard> implements 
 		if(n==5) { n=0; iy += spacing; ix = initial_x; }
 		//StockArt.SmallO.drawChip(gc,this,SQUARESIZE,xpos,ypos,""+c.row);
     	}
-    	minx -= SQUARESIZE/2;
-    	miny -= SQUARESIZE/2;
-    	maxx = maxx-minx+SQUARESIZE;
-    	maxy = maxy-miny+SQUARESIZE/2;
+    	minx -= CELLSIZE/2;
+    	miny -= CELLSIZE/2;
+    	maxx = maxx-minx+CELLSIZE;
+    	maxy = maxy-miny+CELLSIZE/2;
 		if(gb.legalToHitCell(c) && G.pointInRect(highlight,minx,miny,maxx,maxy))
 			{	highlight.spriteRect = new Rectangle(minx,miny,maxx,maxy);
 				highlight.spriteColor = Color.red;
@@ -980,13 +741,13 @@ public class YspahanViewer extends CCanvas<YspahanCell,YspahanBoard> implements 
     	for(YspahanCell c : gb.diceTowerExtraGold)
     	{	int xpos = gb.getX(c);
 			int ypos = gb.getY(c);
-			drawPile(gc,gb,c,highlight,anyone,SQUARESIZE,SQUARESIZE,SQUARESIZE*2/3,xpos,ypos,false);
+			drawPile(gc,gb,c,highlight,anyone,CELLSIZE,CELLSIZE,CELLSIZE*2/3,xpos,ypos,false);
 	   		//StockArt.SmallO.drawChip(gc,this,SQUARESIZE,xpos,ypos,null);
     	}
     	for(YspahanCell c : gb.diceTowerExtraCard)
     	{	int xpos = gb.getX(c);
 			int ypos = gb.getY(c);
-			Rectangle r = new Rectangle(xpos-SQUARESIZE/2,ypos-SQUARESIZE/2,SQUARESIZE,SQUARESIZE);
+			Rectangle r = new Rectangle(xpos-CELLSIZE/2,ypos-CELLSIZE/2,CELLSIZE,CELLSIZE);
     		drawCardStack(gc,gb,c,r,highlight,anyone,true,false);
     		//StockArt.SmallO.drawChip(gc,this,SQUARESIZE,xpos,ypos,null);
     	}
@@ -1002,28 +763,28 @@ public class YspahanViewer extends CCanvas<YspahanCell,YspahanBoard> implements 
     	for(YspahanCell c : dice) 
     		{	
     		int xpos = table.getX(c);
-    		int ypos = CELLSIZE*2+table.getY(c);
+    		int ypos = CELLSIZE/2+table.getY(c);
     		HitPoint myHit = gb.legalToHitCell(c)?highlight:null;
-	   		if(myHit!=null) { StockArt.LandingPad.drawChip(gc,this,SQUARESIZE/2,xpos,ypos,null); }
-	   		if(c.drawStack(gc,this,(i<N_DICE)?null:myHit,SQUARESIZE,xpos,ypos,0, 1.0,null))
+	   		if(myHit!=null) { StockArt.LandingPad.drawChip(gc,this,CELLSIZE/2,xpos,ypos,null); }
+	   		if(c.drawStack(gc,this,(i<N_DICE)?null:myHit,CELLSIZE,xpos,ypos,0, 1.0,null))
     		{	highlight.spriteColor = Color.red;
-    			highlight.awidth = SQUARESIZE;
+    			highlight.awidth = CELLSIZE;
     		}
-    		HitPoint.setHelpText(anyone,xpos,ypos,SQUARESIZE,SQUARESIZE,s.get("This die will be rolled"));
+    		HitPoint.setHelpText(anyone,xpos,ypos,CELLSIZE,CELLSIZE,s.get("This die will be rolled"));
     		i++;
     		}
     	for(YspahanCell d : extra)
     		{   
-     		int xpos = table.getX(d);
-    		int ypos = CELLSIZE*2+table.getY(d);
+     		int xpos = table.getX(d)-CELLSIZE/2;
+    		int ypos = CELLSIZE/2+table.getY(d);
 			boolean canPick = gb.goldCount(whoseTurn)>0;
 	   		HitPoint myHit = gb.legalToHitCell(d)?highlight:null;
-	   		if(myHit!=null) { StockArt.LandingPad.drawChip(gc,this,SQUARESIZE/2,xpos,ypos,null); }
-			if(d.drawStack(gc,this,canPick?myHit:null,SQUARESIZE,xpos,ypos,0, 1.0,null))
+	   		if(myHit!=null) { StockArt.LandingPad.drawChip(gc,this,CELLSIZE/2,xpos,ypos,null); }
+			if(d.drawStack(gc,this,canPick?myHit:null,CELLSIZE,xpos,ypos,0, 1.0,null))
 				{ highlight.spriteColor = Color.red;
-				  highlight.awidth = SQUARESIZE;
-			}
-			HitPoint.setHelpText(anyone,xpos,ypos,SQUARESIZE,SQUARESIZE,s.get("This die will not be rolled"));
+				  highlight.awidth = CELLSIZE;
+				}
+			HitPoint.setHelpText(anyone,xpos,ypos,CELLSIZE,CELLSIZE,s.get("This die will not be rolled"));
     		}
     }
    /* draw the board and the chips on it. */
@@ -1044,19 +805,19 @@ public class YspahanViewer extends CCanvas<YspahanCell,YspahanBoard> implements 
         	int ypos = gb.getY(c);
         	//StockArt.SmallO.drawChip(gc,this,SQUARESIZE,xpos,ypos,""+c.row);
          	HitPoint myHit = gb.legalToHitCell(c) ? highlight : null;
-        	if(c.drawStack(gc,this,myHit,SQUARESIZE,xpos,ypos,0, 1.0,null))
+        	if(c.drawStack(gc,this,myHit,CELLSIZE,xpos,ypos,0, 1.0,null))
         	{// draw a highlight rectangle here, but defer drawing an arrow until later, after the moving chip is drawn
       		highlight.arrow =hasMovingObject(anyone) 
       			? StockArt.DownArrow 
       			: c.height()>0?StockArt.UpArrow:null;
-      		highlight.awidth = SQUARESIZE/2;
+      		highlight.awidth = CELLSIZE/2;
       		highlight.spriteColor = Color.red;
         	}
         	if(dests.get(c)!=null)
-        	{	StockArt.SmallO.drawChip(gc,this,SQUARESIZE,xpos,ypos,null);
+        	{	StockArt.SmallO.drawChip(gc,this,CELLSIZE,xpos,ypos,null);
         	}
         	if(c==gb.selectedCube)
-        	{	StockArt.SmallX.drawChip(gc,this,SQUARESIZE,xpos,ypos,null);
+        	{	StockArt.SmallX.drawChip(gc,this,CELLSIZE,xpos,ypos,null);
         	}
          }
         if(myState!=ystate.ROLL_STATE) { drawDiceTower(gc,gb,whoseTurn, highlight,anyone); }
@@ -1132,9 +893,9 @@ public class YspahanViewer extends CCanvas<YspahanCell,YspahanBoard> implements 
     {  	
     	drawCardStack(gc,gb,gb.discards,discardRect,highlight,anyone,false,false);
     	drawCardStack(gc,gb,gb.cards,cardRect,highlight,anyone,true,false);
-       	drawPile(gc,gb,gb.gold,highlight,anyone,SQUARESIZE,G.Width(goldRect),G.Height(goldRect),
+       	drawPile(gc,gb,gb.gold,highlight,anyone,CELLSIZE,G.Width(goldRect),G.Height(goldRect),
        			G.centerX(goldRect),G.centerY(goldRect),false);
-       	drawPile(gc,gb,gb.camels,highlight,anyone,SQUARESIZE,G.Width(camelRect),G.Height(camelRect),
+       	drawPile(gc,gb,gb.camels,highlight,anyone,CELLSIZE,G.Width(camelRect),G.Height(camelRect),
        			G.centerX(camelRect),G.centerY(camelRect),false);
     }
     int gameLogScroll = 0;
@@ -1154,7 +915,7 @@ public class YspahanViewer extends CCanvas<YspahanCell,YspahanBoard> implements 
     		TextGlyph.create("Gold","xx",YspahanChip.getMiscChip(ymisc.gold),this,new double[]{1.0,1.5,0,-0.3}),
    };
     public Text censoredMoveText(commonMove m,int idx)
-                {
+    {
     	String str = ((YspahanMovespec)m).censoredMoveString(logState,b);
     	Text chunk = TextChunk.create(str);
     	chunk.colorize(s,icons);
@@ -1168,60 +929,43 @@ public class YspahanViewer extends CCanvas<YspahanCell,YspahanBoard> implements 
     public void redrawBoard(Graphics gc, HitPoint highlight)
     { 
       YspahanBoard gb = disB(gc);
-    	int nPlayers = gb.nPlayers();
-       boolean ourTurn = OurMove();
+      int nPlayers = gb.nPlayers();
+      boolean ourTurn = OurMove();
       boolean moving = hasMovingObject(highlight);
       HitPoint ot = ourTurn ? highlight : null;	// hit if our turn
       HitPoint select = moving?null:ot;	// hit if our turn and not dragging
       HitPoint ourSelect = (moving && !reviewMode()) ? null : highlight;	// hit if not dragging
       ystate myState = gb.getState();
       boolean ds = gb.DoneState();
-      gameLog.redrawGameLog2(gc,ourSelect, logRect,
+      int whoseTurn = gb.whoseTurn;
+      boolean planned = plannedSeating();
+
+      gameLog.redrawGameLog2(gc,ourSelect, logRect, 
     		  Color.black,rackBackGroundColor,
     		  standardBoldFont(),standardBoldFont());
     
+      {
+       GC.setRotatedContext(gc,boardRect,highlight,contextRotation);
        drawBoardElements(gc, gb, boardRect, gb.whoseTurn, ot,highlight);
        drawCaravanBoard(gc,gb,caravanRect,gb.whoseTurn,ot,highlight);
-  
-	   YspahanCell cube = gb.selectedCube;
-       if((myState==ystate.DESIGNATED_CUBE_STATE)
-    		   && cube!=null 
-    		   && (ot!=null)
-    		   && gb.playerWithColor(cube.topChip())!=gb.whoseTurn)
-       {
-           	   GC.setFont(gc,largeBoldFont());
-    		   GC.Text(gc,true,turnRect,Color.red,null, 
-        			   s.get(WarnCubeMessage));
-       }
-       else if((gb.gameDay%7)==6)
-       {   
-    	   GC.setFont(gc,largeBoldFont());
-    	   GC.Text(gc,true,turnRect,Color.blue,null, s.get((gb.gameDay>14)?"Last Turn" : "Last Turn before Scoring"));
+       drawAuxControls(gc,gb,ot,ourSelect);
+       GC.setFont(gc,largeBoldFont());
+       if (myState != ystate.PUZZLE_STATE)
+       {	HitPoint sel = (ds? select : null);
+       	boolean endturn = ((myState==ystate.CONFIRM_STATE)||(myState==ystate.BUILD_STATE));
+            if (!planned && GC.handleRoundButton(gc, doneRect, 
+           		sel, s.get((myState==ystate.ROLL_STATE)?"Roll":DoneAction),
+                   endturn?redHighlightColor:HighlightColor, 
+                   		endturn?reallyDoneColor
+                   				:ds ?  rackActiveColor : rackBackGroundColor))
+           {	// always display the done button, but only make it active in
+           	// the appropriate states
+               select.hitCode = GameId.HitDoneButton;
+           }
+            handleEditButton(gc,editRect,select, highlight, HighlightColor, rackBackGroundColor);
+		
        }
 
-       // draw player card racks on hidden boards.  Draw here first so the animations will target
-       // the main screen location which is drawn next.
-       drawHiddenWindows(gc, highlight);	
-
-       for(int i=0;i<nPlayers; i++)
-    	   { Rectangle r = playerRects[i];
-    	     PlayerBoard pb = gb.getPlayerBoard(i);
-    	   	 if(players[i]!=null && pb!=null) 
-    	   	 	{ drawPlayerBoard(gc,players[i].displayRotation,false,gb,pb,r,(i==gb.whoseTurn)?ot:null,highlight); }
-    	   	 // debugging
-    	   	if(showNetworkStats)
-    	   	{ 
-    	   	 HiddenGameWindow hidden = getHiddenWindow(i);
-    	     if(hidden!=null)
-    	    	 { VNCTransmitter trans = hidden.transmitter;
-    	    	   if(trans!=null)
-    	    		   {String stats = trans.netConn.stateSummary();
-    	    		   GC.Text(gc, false, G.Left(r),G.Top(r),G.Width(r),40,
-    	    			   Color.black,Color.white,stats);
-    	    		   }
-    	    	 }
-    	   }
-    	   }
        GC.setFont(gc,standardBoldFont());
        if (myState ==ystate.PAY_CAMEL_STATE)
         {if (GC.handleRoundButton(gc, payCamelRect, 
@@ -1238,24 +982,68 @@ public class YspahanViewer extends CCanvas<YspahanCell,YspahanBoard> implements 
                 }
         	
         }
-       commonPlayer pl = getPlayerOrTemp(gb.whoseTurn);
-       double messageRotation = pl.messageRotation(); 
+       goalAndProgressMessage(gc,ourSelect,"",progressRect, goalRect);
+
+      
+	   YspahanCell cube = gb.selectedCube;
+       if((myState==ystate.DESIGNATED_CUBE_STATE)
+    		   && cube!=null 
+    		   && (ot!=null)
+    		   && gb.playerWithColor(cube.topChip())!=gb.whoseTurn)
+       {
+           	   GC.setFont(gc,largeBoldFont());
+    		   GC.Text(gc,true,turnRect,Color.red,null, 
+        			   s.get(WarnCubeMessage));
+       }
+       else if((gb.gameDay%7)==6)
+       {   
+    	   GC.setFont(gc,largeBoldFont());
+    	   GC.Text(gc,true,turnRect,Color.blue,null, s.get((gb.gameDay>14)?"Last Turn" : "Last Turn before Scoring"));
+       }
+       GC.unsetRotatedContext(gc,highlight);
+       }
+  
+
+       // draw player card racks on hidden boards.  Draw here first so the animations will target
+       // the main screen location which is drawn next.
+       drawHiddenWindows(gc, highlight);	
+       for(int i=0;i<nPlayers; i++)
+    	   { Rectangle r = playerRects[i];
+    	     PlayerBoard pb = gb.getPlayerBoard(i);
+    	   	 if(players[i]!=null && pb!=null) 
+    	   	 	{ 
+    	   		 commonPlayer pl = getPlayerOrTemp(i);
+    	   		 pl.setRotatedContext(gc, highlight,false);
+    	   		 HitPoint sel = (i==gb.whoseTurn)?highlight:null;
+    	   		 drawPlayerBoard(gc,false,gb,pb,r,sel,highlight); 
+    	   		 if(planned && whoseTurn==i)
+    	    	   {
+    	   			if(GC.handleRoundButton(gc,doneRects[i],(gb.DoneState() ? select : null), 
+    	   					s.get((myState==ystate.ROLL_STATE)?"Roll":DoneAction),
+    	   					HighlightColor, rackBackGroundColor))
+    	   				{
+    	   				select.hitCode = GameId.HitDoneButton;
+    	   				}
+    	    	   }
+
+    	   		 pl.setRotatedContext(gc,highlight,true);
+    	   	 	}
+    	   	 // debugging
+    	   	if(showNetworkStats)
+    	   	{ 
+    	   	 HiddenGameWindow hidden = getHiddenWindow(i);
+    	     if(hidden!=null)
+    	    	 { VNCTransmitter trans = hidden.transmitter;
+    	    	   if(trans!=null)
+    	    		   {String stats = trans.netConn.stateSummary();
+    	    		   GC.Text(gc, false, G.Left(r),G.Top(r),G.Width(r),40,
+    	    			   Color.black,Color.white,stats);
+    	    		   }
+    	    	 }
+    	   	}
+    	   }
  
-       if (myState != ystate.PUZZLE_STATE)
-        {	HitPoint sel = (ds? select : null);
-        	boolean endturn = ((myState==ystate.CONFIRM_STATE)||(myState==ystate.BUILD_STATE));
-             if (GC.handleRoundButton(gc, doneRect, 
-            		sel, s.get((myState==ystate.ROLL_STATE)?"Roll":DoneAction),
-                    endturn?redHighlightColor:HighlightColor, 
-                    		endturn?reallyDoneColor
-                    				:ds ?  rackActiveColor : rackBackGroundColor))
-            {	// always display the done button, but only make it active in
-            	// the appropriate states
-                select.hitCode = GameId.HitDoneButton;
-            }
- 			handleEditButton(gc,messageRotation,editRect,select, highlight, HighlightColor, rackBackGroundColor);
- 			
-                }
+  
 
  		drawPlayerStuff(gc,(myState==ystate.PUZZLE_STATE),ourSelect,
  				HighlightColor,
@@ -1265,10 +1053,8 @@ public class YspahanViewer extends CCanvas<YspahanCell,YspahanBoard> implements 
  		drawStateMessage(gc,myState,gb,stateRect);
  		PlayerBoard pb = gb.getPlayerBoard(gb.whoseTurn);
     	if(pb!=null) { pb.playerChip().drawChip(gc,this,iconRect,null);}
- 		
-        goalAndProgressMessage(gc,ourSelect,"",progressRect, goalRect);
-        //speedRect.draw(gc,ourSelect);
-        drawAuxControls(gc,gb,ot,ourSelect);
+    	 
+         //speedRect.draw(gc,ourSelect);
         drawVcrGroup(ourSelect, gc);
 
     }
@@ -1378,7 +1164,7 @@ public class YspahanViewer extends CCanvas<YspahanCell,YspahanBoard> implements 
      		YspahanCell src = b.animationStack.pop();
      		YspahanChip top = dest.topChip();
     		if(top.isCard()) { top = ycard.back.chip; }
-    		startAnimation(src,dest,top,CELLSIZE*5,0,0);
+    		startAnimation(src,dest,top,CELLSIZE,0,0);
      		}
      	}}
      	finally {
@@ -1403,27 +1189,6 @@ public class YspahanViewer extends CCanvas<YspahanCell,YspahanBoard> implements 
      * prepare to add nmove to the history list, but also edit the history
      * to remove redundant elements, so that indecisiveness by the user doesn't
      * result in a messy game log.  
-     * 
-     * For all ordinary cases, this is now handled by the standard implementation
-     * in commonCanvas, which uses the board's Digest() method to distinguish new
-     * states and reversions to past states.
-     * 
-     * For reference, the commented out method below does the same thing for "Hex". 
-     * You could resort to similar techniques to replace or augment what super.EditHistory
-     * does, but your efforts would probably be better spent improving your Digest() method
-     * so the commonCanvas method gives the desired result.
-     * 
-     * Note that it should always be correct to simply return nmove and accept the messy
-     * game record.
-     * 
-     * This may require that move be merged with an existing history move
-     * and discarded.  Return null if nothing should be added to the history
-     * One should be very cautious about this, only to remove real pairs that
-     * result in a null move.  It is vital that the operations performed on
-     * the history are identical in effect to the manipulations of the board
-     * undoInfo performed by "nmove".  This is checked by verifyGameRecord().
-     * 
-     * in commonEditHistory()
      * 
      */
     public commonMove EditHistory(commonMove nmove)
@@ -1482,7 +1247,7 @@ private void playSounds(commonMove m)
  * StartDragging is called when he has done this.
  */
     public void StartDragging(HitPoint hp)
-    {
+    { 
         if (hp.hitCode instanceof yrack)// not dragging anything yet, so maybe start
         {
 		YspahanCell cell = hitCell(hp);
@@ -1502,7 +1267,7 @@ private void playSounds(commonMove m)
     {
         CellId id = hp.hitCode;
         if(id == DefaultId.HitNoWhere)
-        {
+        {	
         	boolean some = false;
         	for(PlayerBoard pb : b.playerBoards) 
 			{ some |= pb.showCards;
@@ -1557,8 +1322,8 @@ private void playSounds(commonMove m)
         		PlayerBoard pb = b.getPlayerBoard(index);
             	if(pb!=null)
             		{if(remoteWindow>=0) { pb.showHiddenWindowCards = !pb.showHiddenWindowCards; }
-            	else { pb.showCards = !pb.showCards; }
-            	}            	
+            		else { pb.showCards = !pb.showCards; }
+            		}
             	}            	
             	break;
             case Bag_Neighborhood:
@@ -1588,11 +1353,11 @@ private void playSounds(commonMove m)
             		{
             		boolean seeCards = remoteWindow<0 ? pb.showCards : pb.showHiddenWindowCards;
             		if(seeCards)
-            	{
+            		{
             		PerformAndTransmit((b.pickedObject==null?"Pick ":"Drop ")+hitObject.name + " " + cell.col +" "+ cell.row+" "+(hp.row/1000));
             		pb.showCards = pb.showHiddenWindowCards = false;
             		}}
-	            	}
+            	}
             	else {
             	YspahanCell dest = null;
             	if((b.pickedObject==null))
@@ -1647,7 +1412,7 @@ private void playSounds(commonMove m)
             		if(!fromDrag)
             		{	PlayerBoard pb = b.getPlayerBoard(b.whoseTurn);
             			if(pb!=null)
-            		{
+            			{
                     	YspahanCell dest = pb.pmisc[ypmisc.card.index];
                     	PerformAndTransmit("Move "+hitObject.name+" "+cell.col+" "+cell.row+" 1 "+dest.rackLocation().name+" "+dest.col+" "+dest.row);
             			}
@@ -1702,8 +1467,8 @@ private void playSounds(commonMove m)
                 	PerformAndTransmit("Move "+hitObject.name+" "+cell.col+" "+cell.row+" 1 "+dest.rackLocation().name+" "+dest.col+" "+dest.row);
                 	//SimpleSprite goldSprite = new SimpleSprite(ymisc.gold.chip,CELLSIZE*5,3.25,cell.current_center_x,cell.current_center_y,dest.current_center_x,dest.current_center_y);
                 	//addSprite(goldSprite);
+            		}
              	}
-            	}
             	}
             	else
             	{
@@ -1715,7 +1480,7 @@ private void playSounds(commonMove m)
             }
 
     }
-    
+
 
     /**
      * this is a token or tokens that initialize the variation and
@@ -1840,7 +1605,7 @@ private void playSounds(commonMove m)
     	int w = G.Width(bounds);
     	int h = G.Height(bounds);
     	if(remoteViewer<0) {textures[BACKGROUND_TILE_INDEX].tileImage(gc, bounds); }
-    	drawPlayerBoard(gc,0,true,b,pb,bounds,hp,hp);
+    	drawPlayerBoard(gc,true,b,pb,bounds,hp,hp);
     	Rectangle stateR =new Rectangle(G.Left(bounds)+CELLSIZE,G.Top(bounds),w-CELLSIZE,h/10);
     	drawStateMessage(gc,b.getState(),b,stateR);
     	if(showNetworkStats)
@@ -1849,5 +1614,6 @@ private void playSounds(commonMove m)
     	GC.Text(gc, true, bounds, Color.black, null,G.timeString(G.Date()));
     	}}
     }
+
 }
 

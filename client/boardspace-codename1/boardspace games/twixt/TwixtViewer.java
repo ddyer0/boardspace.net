@@ -110,7 +110,7 @@ public class TwixtViewer extends CCanvas<TwixtCell,TwixtBoard> implements TwixtC
     private Color boardBackgroundColor = new Color(220,165,155);
     
     public boolean usePerspective() { return(super.getAltChipset()==0); }
-     
+    
     // private state
     TwixtBoard bb = null; //the board from which we are displaying
  
@@ -133,7 +133,6 @@ public class TwixtViewer extends CCanvas<TwixtCell,TwixtBoard> implements TwixtC
     private Rectangle chipRects[] = addRect("chip",2);
     private Rectangle rotateRect = addRect("Reverse");
     private Rectangle flatRect = addRect("flat");
-    private NumberMenu numberMenu = new NumberMenu(this,TwixtChip.red_peg_flat,TwixtId.ShowNumbers) ;
 
 	private TextButton swapButton = addButton(SWAP,GameId.HitSwapButton,SwapDescription,
 			HighlightColor, rackBackGroundColor);
@@ -374,6 +373,7 @@ public class TwixtViewer extends CCanvas<TwixtCell,TwixtBoard> implements TwixtC
         for(TwixtCell c : rack)
         {
             boolean canhit = gb.legalToHitChips(c,player);
+            
         	if(c.drawStack(gc, this, (canhit&&!toDrop)?highlight:null,first?unit:unit/2, xp, yp, 0, 0.6,null))
         	{	hit = true;
         	}
@@ -629,7 +629,7 @@ public class TwixtViewer extends CCanvas<TwixtCell,TwixtBoard> implements TwixtC
     		if(po.isBridge())
     		{
     			// place this bridge with current cell as the source
-    			if(bb.legalToPlaceBridge(cell,po))
+    			if(gb.legalToPlaceBridge(cell,po))
     			{	TwixtCell to = cell.bridgeTo(po);
     		   		int yp1 = bot - gb.cellToY(to);
     	    		int xp1 = left+gb.cellToX(to);
@@ -645,7 +645,7 @@ public class TwixtViewer extends CCanvas<TwixtCell,TwixtBoard> implements TwixtC
     			}
     			// place this bridge with current cell as the destination
     			TwixtCell from = cell.bridgeFrom(po);
-    			if((from!=null) && bb.legalToPlaceBridge(from,po))
+    			if((from!=null) && gb.legalToPlaceBridge(from,po))
     			{
     		   		int yp1 = bot - gb.cellToY(from);
     	    		int xp1 = left+gb.cellToX(from);
@@ -661,12 +661,12 @@ public class TwixtViewer extends CCanvas<TwixtCell,TwixtBoard> implements TwixtC
     			}
     	}
     	}
-    	else if(bb.legalToPickBridge())
+    	else if(gb.legalToPickBridge())
     	{
     	for(int lim=cell.height()-1; lim>0; lim--)
     	{	// look for hit on a bridge
     		TwixtChip bridge = cell.chipAtIndex(lim);
-    		if((bridge.color()==bb.getPlayerColor(who)) || (state==TwixtState.Puzzle))
+    		if((bridge.color()==gb.getPlayerColor(who)) || (state==TwixtState.Puzzle))
     		{
     		TwixtCell conn = cell.bridgeTo(bridge);
     		G.Assert(conn!=null,"must connect");
@@ -1018,7 +1018,6 @@ public class TwixtViewer extends CCanvas<TwixtCell,TwixtBoard> implements TwixtC
             				gb.whoseTurn,
             				stateRect);
         gb.playerChip[gb.whoseTurn].drawChip(gc,this,iconRect,null,0.5);
-        numberMenu.draw(gc,selectPos);
         goalAndProgressMessage(gc,nonDragSelect,Color.black,
         		s.get(TwixtVictoryCondition),progressRect, goalRect);
         
@@ -1040,7 +1039,7 @@ public class TwixtViewer extends CCanvas<TwixtCell,TwixtBoard> implements TwixtC
     {	
        
         handleExecute(bb,mm,replay);
-        
+        numberMenu.recordSequenceNumber(bb.moveNumber()); 
         /**
          * animations are handled by a simple protocol between the board and viewer.
          * when stones are moved around on the board, it pushes the source and destination
@@ -1161,9 +1160,6 @@ public class TwixtViewer extends CCanvas<TwixtCell,TwixtBoard> implements TwixtC
         {
         default:
         	throw G.Error("Hit Unknown: %s", hitObject);
-        case ShowNumbers:
-        	numberMenu.showMenu();
-        	break;
 
         case GuidelineButton:
         	guidelinesOn = !guidelinesOn;
@@ -1416,7 +1412,6 @@ public class TwixtViewer extends CCanvas<TwixtCell,TwixtBoard> implements TwixtC
     	{	showPreferred = showPreferredItem.getState();
     		return(true);
     	}
-    	else if(numberMenu.selectMenu(target,this)) { return true; }
 
         boolean handled = super.handleDeferredEvent(target, command);
 
@@ -1522,7 +1517,7 @@ public class TwixtViewer extends CCanvas<TwixtCell,TwixtBoard> implements TwixtC
     }
 
 	public int getLastPlacement(boolean empty) {
-		return bb.moveNumber+(bb.DoneState()?1:0);
+		return bb.moveNumber;
 	}
 }
 

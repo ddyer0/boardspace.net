@@ -13,19 +13,19 @@ public abstract class rectBoard<CELLTYPE extends cell<CELLTYPE>> extends square_
     // factory method for the board cells
     private static int oct_dxs[] = {-1,-1,-1, 0, 1, 1, 1, 0};
     private static int oct_dys[] = {-1, 0, 1, 1, 1, 0,-1,-1};
-    public static  String oct_direction_names[] =
+    public static  String DIRECTION_NAMES[] =
 		{ "SW", "W", "NW", "N", "NE", "E", "SE", "S"};
+    
+    public int[] dxs() { return oct_dxs; }
+    public int[] dys() { return oct_dys; }
+    public Geometry geometry() { return Geometry.Oct; }
 
     /** create a square board with specified columns and rows.
      *  the newly crreated cells are linked to their neighbors
      *  and into a list through cell.next
      */
 	public void  initBoard(int ncol,int nrow)
-	{	dxs = oct_dxs;
-		dys = oct_dys;
-		DIRECTION_NAMES = oct_direction_names;
-
-		geometry = Geometry.Oct;
+	{	
 		super.initBoard(ncol,nrow);
 
 	}

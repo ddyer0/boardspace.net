@@ -14,31 +14,31 @@ import lib.G;
  */
 public class DisplayParameters
 {	public double CELLSIZE;
-	 public double YCELLSIZE;
-	 public double GRIDSIZE;
-	 public double rotation = 0; 	//rotation in degrees clockwise
+	public double YCELLSIZE;
+	public double GRIDSIZE;
+	public double rotation = 0; 	//rotation in degrees clockwise
 
-	 private double sinrot = 0.0;
-	 private double cosrot = 1.0;
-	 public int XOFFSET = 0;				// y offset
-	 public int YOFFSET = 0;				// x offset
-	 double XPERSPECTIVE = 0.0;		// x shrinkage as a function of y
-	 double YPERSPECTIVE = 0.0;		// y shrinkage as a function of x
-	 double XSKEW = 0.0;			// x as a function of y.  Zero is no effect
-	 boolean inited = false;
-	 public int HEIGHT = 0;
-	 public int WIDTH = 0; 
-	 double YSCALE = 1.0;
-	 double SCALE = 1.0;
-	 private double RAW_XOFF = 0.0;
-	 private double RAW_YOFF = 0.0;
-	 private boolean REGULAR=true;
+	private double sinrot = 0.0;
+	private double cosrot = 1.0;
+	public int XOFFSET = 0;				// y offset
+	public int YOFFSET = 0;				// x offset
+	double XPERSPECTIVE = 0.0;		// x shrinkage as a function of y
+	double YPERSPECTIVE = 0.0;		// y shrinkage as a function of x
+	double XSKEW = 0.0;			// x as a function of y.  Zero is no effect
+	boolean inited = false;
+	public int HEIGHT = 0;
+	public int WIDTH = 0; 
+	double YSCALE = 1.0;
+	double SCALE = 1.0;
+	private double RAW_XOFF = 0.0;
+	private double RAW_YOFF = 0.0;
+	private boolean REGULAR=true;
 	 
-	 boolean INTERPOLATE = false;	// another way to define the board's coordinate system is by defining 4 corners
-	 double LLCOORD[] = null;
-	 double LRCOORD[] = null;
-	 double ULCOORD[] = null;
-	 double URCOORD[] = null;
+	boolean INTERPOLATE = false;	// another way to define the board's coordinate system is by defining 4 corners
+	double LLCOORD[] = null;
+	double LRCOORD[] = null;
+	double ULCOORD[] = null;
+	double URCOORD[] = null;
 
 	   
 	// setup for torroidal board display.  This is used in conjunction with emptyColumn

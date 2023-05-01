@@ -28,7 +28,6 @@ import online.game.BoardProtocol;
 import online.game.CCanvas;
 import online.game.GameLayoutClient;
 import online.game.GameLayoutManager;
-import online.game.NumberMenu;
 import online.game.PlacementProvider;
 import online.game.commonMove;
 import online.game.commonPlayer;
@@ -86,7 +85,6 @@ public class ArimaaViewer extends CCanvas<ArimaaCell,ArimaaBoard> implements Ari
     private Rectangle firstPlayerChipRect = addRect("firstPlayerChipRect");
     private Rectangle secondPlayerChipRect = addRect("secondPlayerChipRect");
     private Rectangle chipRects[] = { firstPlayerChipRect, secondPlayerChipRect };
-    private NumberMenu numberMenu = null;
     private Rectangle reverseViewRect = addZoneRect("reverse");
     private JCheckBoxMenuItem reverseOption = null;
 
@@ -138,7 +136,6 @@ public class ArimaaViewer extends CCanvas<ArimaaCell,ArimaaBoard> implements Ari
        	// int players_in_game = Math.max(3,info.getInt(exHashtable.PLAYERS_IN_GAME,4));
        	// 
     	super.init(info,frame);
-    	numberMenu = new NumberMenu(this,ArimaaChip.getChip(FIRST_PLAYER_INDEX),ArimaaId.ShowNumbers);
     	if(G.debug()) { ArimaaConstants.putStrings(); }
 
     	// for games that require some random initialization, the random key should be
@@ -265,7 +262,7 @@ public class ArimaaViewer extends CCanvas<ArimaaCell,ArimaaBoard> implements Ari
     	//
         int stateY = boardY;
         int stateX = boardX;
-        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,viewsetRect,numberMenu,reverseViewRect,noChatRect);
+        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,viewsetRect,annotationMenu,numberMenu,reverseViewRect,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	if(rotate)
     	{
@@ -540,7 +537,6 @@ public class ArimaaViewer extends CCanvas<ArimaaCell,ArimaaBoard> implements Ari
 
       DrawReverseMarker(gc,reverseViewRect,vcrSelect);
       if(facingMode||G.debug()) { drawViewsetMarker(gc,viewsetRect,vcrSelect); }
-      numberMenu.draw(gc,vcrSelect);
       boolean planned = plannedSeating();
 	  for(int i=FIRST_PLAYER_INDEX;i<=SECOND_PLAYER_INDEX;i++)
 		  {drawPlayerStuff(gc,gb,i,(vstate==ArimaaState.PUZZLE_STATE),
@@ -589,8 +585,9 @@ public class ArimaaViewer extends CCanvas<ArimaaCell,ArimaaBoard> implements Ari
      * seriously wrong.
      */
      public boolean Execute(commonMove mm,replayMode replay)
-    {	numberMenu.recordSequenceNumber(b.moveNumber);
+    {	
         handleExecute(b,mm,replay);
+        numberMenu.recordSequenceNumber(b.moveNumber);
         startBoardAnimations(replay);
         if(replay!=replayMode.Replay) { playSounds(mm); }
  
@@ -743,9 +740,6 @@ public boolean allowResetUndo()
         {
         default:
         	throw G.Error("Hit Unknown: %s", hitObject);
-         case ShowNumbers:
-        	numberMenu.showMenu();
-        	break;
          case HitPlaceRabbitsButton:
         	 PerformAndTransmit("PlaceRabbits");
          	break;
@@ -835,7 +829,6 @@ public boolean allowResetUndo()
     	generalRefresh("reversed");
     	return(true);
     	}
-    	else if(numberMenu.selectMenu(target,this)) { return true; }
     	else 
         return(super.handleDeferredEvent(target,command));
      }

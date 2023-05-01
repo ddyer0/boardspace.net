@@ -350,8 +350,8 @@ public abstract class BaseBoard implements Opcodes,Digestable
 	 * might force a downgrade in the middle of a game.
 	 * 
 	 */
-	private int clientRevisionLevel = 0;	// the lowest support level of all clients reporting
-	public int revision = 0;				// the current active revision level
+	private int clientRevisionLevel = -1;	// the lowest support level of all clients reporting
+	public int revision = -1;				// the current active revision level
 	
 	// override this method in the game to be return(REVISION);
 	public int getMaxRevisionLevel() { return(revision); }	// default revision, most older and most simple games don't use it.
@@ -363,7 +363,7 @@ public abstract class BaseBoard implements Opcodes,Digestable
 	// called by game initialization as each client checks in
 	public void setClientRevisionLevel(int n) 
 	{	Plog.log.addLog(G.uniqueName()," Set rev ",n," was ",clientRevisionLevel);
-		if(n>0)
+		if(n>=0)
 			{ 
 			  if(clientRevisionLevel==0) { clientRevisionLevel = n; }
 		      else if(n<clientRevisionLevel) 
@@ -375,11 +375,14 @@ public abstract class BaseBoard implements Opcodes,Digestable
 	}
 	
 	// call this when replaying a new game, so the client revision level won't be a factor
-	public void resetClientRevision() { clientRevisionLevel = 0;started = false; }
+	public void resetClientRevision() 
+	{ 	clientRevisionLevel = -1;
+		started = false; 
+	}
 	
 	// call this from the doInit with a new revision level
 	public void adjustRevision(int n)
-	{ revision = (clientRevisionLevel>0 && clientRevisionLevel<n) ? clientRevisionLevel : n;
+	{ revision = (clientRevisionLevel>=0 && clientRevisionLevel<n) ? clientRevisionLevel : n;
 	}
 	boolean started = false;
 	// called from game initialization before the actual game starts.
@@ -387,7 +390,7 @@ public abstract class BaseBoard implements Opcodes,Digestable
 	{	//G.print(G.uniqueName()+" Check rev from ",revision," to ",clientRevisionLevel);
 		started = true;
 		//Log.addLog("checkClientRevision");
-		if(clientRevisionLevel>0 && revision>0 && clientRevisionLevel<revision) 
+		if(clientRevisionLevel>=0 && revision>=0 && clientRevisionLevel<revision) 
 			{ Plog.log.addLog(G.uniqueName()," Reinit to change revision from ",revision," to ",clientRevisionLevel);
 			  revision = clientRevisionLevel;
 			  doInit(); 

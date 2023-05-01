@@ -13,11 +13,6 @@ import lib.Random;
  */
 public abstract class square_geo_board<CELLTYPE extends cell<CELLTYPE>> extends gBoard<CELLTYPE>
 {	
-	private static int sq_dxs[] = { -1, 0, 1, 0};
-	private static int sq_dys[] = {  0, 1, 0, -1};
-	public String DIRECTION_NAMES[] = null;
-	int dxs[] = sq_dxs;
-	int dys[] = sq_dys;
 	
 	public void setRotation(int rotation)
 	{
@@ -54,6 +49,8 @@ public abstract class square_geo_board<CELLTYPE extends cell<CELLTYPE>> extends 
     public int findDirection(char fc,int fr0,char tc,int tr0)
     {	int dx = G.signum(tc-fc);
     	int dy = G.signum(tr0-fr0);
+    	int dxs[] = dxs();
+    	int dys[] = dys();
     	for(int i=0;i<dxs.length;i++) { if((dxs[i]==dx)&&(dys[i]==dy)) { return(i); }}
     	throw G.Error("No direction found");
     }
@@ -99,6 +96,7 @@ public abstract class square_geo_board<CELLTYPE extends cell<CELLTYPE>> extends 
     public void initBoard(int ncol,int nrow)
     {	nrows = nrow;
     	ncols = ncol;
+    	geometry = geometry();
     	createBoard(ncols,nrows);
     	// for future support of non-rectangular boards (ie for Domination)
     	firstRowInCol = new int[ncol];
@@ -122,7 +120,7 @@ public abstract class square_geo_board<CELLTYPE extends cell<CELLTYPE>> extends 
 	    	}
     	}
     	G.Assert(geometry==allCells.geometry,"Board geometry is %s, but should match cell geometry %s",geometry,allCells.geometry);
-    	setCrossLinks(dxs,dys);
+    	setCrossLinks();
  
     }
      /* convert col,row to a y */

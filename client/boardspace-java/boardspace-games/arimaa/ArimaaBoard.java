@@ -1876,6 +1876,7 @@ public long Digest()
     private boolean doDone()
     {	boolean captures = acceptPlacement();
         recentDigest = nextRecentDigest;
+        placementIndex++;
         if (board_state==ArimaaState.RESIGN_STATE)
         {	setGameOver(false,true);
         }
@@ -1917,7 +1918,9 @@ public long Digest()
         			ArimaaCell c = getCell(col,row);
         			if((c.height()==0) && (rab.height()>0))
         				{
-        				addChip(c,removeChip(rab));
+        				pickObject(rab);
+        				dropObject(c);
+
         				if(replay!=replayMode.Replay)
         					{
         					animationStack.push(rab);

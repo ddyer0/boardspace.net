@@ -73,7 +73,6 @@ public interface VeletasConstants
         BoardLocation(null),
         ReverseViewButton(null),
         ToggleEye(null),
-        ShowNumbers(null),
   	;
     	String shortName = name();
     	VeletasChip chip;

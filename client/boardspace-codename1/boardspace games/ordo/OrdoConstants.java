@@ -61,7 +61,8 @@ public enum OrdoState implements BoardState
 	}
 	public String getDescription() { return(description); }
 	public boolean GameOver() { return(this==Gameover); }
-		public boolean Puzzle() { return(this==Puzzle); } public boolean simultaneousTurnsAllowed() { return(false); }
+	public boolean Puzzle() { return(this==Puzzle); }
+	public boolean simultaneousTurnsAllowed() { return(false); }
 }
 public enum OrdoId implements CellId
 {

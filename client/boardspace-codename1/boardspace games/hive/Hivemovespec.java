@@ -160,7 +160,7 @@ public class Hivemovespec extends commonMove implements HiveConstants
 	            source = HiveId.BoardLocation;
 				HivePiece bug = HivePiece.getBug(pool.shortName,msg.nextToken());
 				object = bug;
-	            to_col = G.CharToken(msg);
+	            to_col = G.parseCol(msg);
 	            to_row = G.IntToken(msg);
 	            attachment = msg.nextToken();
         		}
@@ -174,7 +174,7 @@ public class Hivemovespec extends commonMove implements HiveConstants
             	object = player>=0
             				? HivePiece.getBug(player==0 ? "W":"B",tok) 
             				: HivePiece.getBug(tok);	// object to object number
-            	to_col = G.CharToken(msg);
+            	to_col = G.parseCol(msg);
             	to_row = G.IntToken(msg);
             	attachment = msg.nextToken();
             	}
@@ -182,7 +182,7 @@ public class Hivemovespec extends commonMove implements HiveConstants
         case MOVE_PDROPB:
 	            source = HiveId.BoardLocation;
 				object = HivePiece.getBug(msg.nextToken());	// object to object number
-	            to_col = G.CharToken(msg);
+	            to_col = G.parseCol(msg);
 	            to_row = G.IntToken(msg);
 	            attachment = msg.nextToken();
 	            break;
@@ -190,7 +190,7 @@ public class Hivemovespec extends commonMove implements HiveConstants
 		case MOVE_PICKB:
 			{
             source = HiveId.BoardLocation;
-            from_col = G.CharToken(msg);
+            from_col = G.parseCol(msg);
             from_row = G.IntToken(msg);
             String tok = msg.nextToken();
         	// old game records are not specific as modern ones, so we
@@ -281,7 +281,7 @@ public class Hivemovespec extends commonMove implements HiveConstants
     	
     	for(int i=0;i<c.nAdjacentCells();i++) 
     	{	HiveCell adjc = c.exitTo(i);
-    		if(adjc!=ignoreCell)
+    		if(adjc!=null && adjc!=ignoreCell)
     		{
     		HivePiece ab = adjc.topChip();
     		if(ab!=null) 
@@ -476,7 +476,7 @@ public class Hivemovespec extends commonMove implements HiveConstants
         {
         	
         case MOVE_PICKB:
-	        return (opname+ from_col + " " + from_row+" "+object.exactBugName());
+	        return (opname+ G.printCol(from_col) + " " + from_row+" "+object.exactBugName());
 
         case MOVE_MOVE:
         case MOVE_PMOVE:
@@ -484,11 +484,11 @@ public class Hivemovespec extends commonMove implements HiveConstants
         case MOVE_MOVE_DONE:
         	{
         	HivePiece bug = object;
-	        return (opname +bug.color.shortName()+" "+bug.exactBugName()+" " + to_col + " " + to_row+" "+attachment);
+	        return (opname +bug.color.shortName()+" "+bug.exactBugName()+" " + G.printCol(to_col) + " " + to_row+" "+attachment);
         	}
         case MOVE_DROPB:
         case MOVE_PDROPB:
-	        return (opname +object.exactBugName()+" " + to_col + " " + to_row+" "+attachment);
+	        return (opname +object.exactBugName()+" " + G.printCol(to_col) + " " + to_row+" "+attachment);
 
         case MOVE_DROP:
             return (opname +source.shortName+" "+to_row+" "+object.exactBugName()+" "+attachment);

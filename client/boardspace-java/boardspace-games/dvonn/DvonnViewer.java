@@ -67,6 +67,8 @@ public class DvonnViewer extends CCanvas<DvonnCell,DvonnBoard> implements DvonnC
     private Color rackBackGroundColor = new Color(194,175,148);
     private Color boardBackgroundColor = new Color(220,165,155);
     private Color chatBackgroundColor = new Color(250,240,230);
+    private Color BlackArrowColor = new Color(230,200,255);
+
     // images
     private static Image[] images = null; // images of black and white gobblets and board
     private static Image[] textures = null;// background textures
@@ -220,7 +222,7 @@ public double setLocalBoundsA(int x,int y,int width,int height,double v)
 	//
     int stateY = boardY;
     int stateX = boardX;
-    G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,eyeRect,liftRect,reverseViewRect,viewsetRect,noChatRect);
+    G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,numberMenu,eyeRect,liftRect,reverseViewRect,viewsetRect,noChatRect);
 	G.SetRect(boardRect,boardX,boardY+(rotate?CELLSIZE/2:CELLSIZE),boardW,boardH);
 	if(rotate)
 	{	// this conspires to rotate the drawing of the board
@@ -364,6 +366,8 @@ public Rectangle createPlayerGroup(int player,int x,int y,double rotation,int un
       	boolean canHit =  !dolift && (highlight!=null);
       	boolean show = eyeRect.isOnNow();
       	boolean perspective = usePerspective();
+        numberMenu.clearSequenceNumbers();
+
       	//
         // now draw the contents of the board and anything it is pointing at
         //
@@ -374,6 +378,7 @@ public Rectangle createPlayerGroup(int player,int x,int y,double rotation,int un
             boolean canHitCell = canHit && rb.LegalToHitBoard(c);
             int ypos = G.Bottom(brect) - rb.cellToY(c);
             int xpos = G.Left(brect) + rb.cellToX(c);
+            numberMenu.saveSequenceNumber(c,xpos,ypos,c.lastEmptiedPlayer==0 ? labelColor : BlackArrowColor);
             drawZoomStack(gc,c,xpos,ypos,liftSteps,(canHitCell?highlight:null),any,perspective);
             // mark the cells for debugging
             //StockArt.SmallO.drawChip(gc,this,SQUARESIZE,xpos,ypos,""+c.col+c.row);
@@ -397,6 +402,7 @@ public Rectangle createPlayerGroup(int player,int x,int y,double rotation,int un
 	       	DvonnCell rack = allPlaced ? rb.captures[player] : rb.rack[player];
 	       	drawRack(gc,pl,rb.LegalToHitChips(player)?highlight:null,highlight,rack,rackRects[player]);
        	}
+        numberMenu.drawSequenceNumbers(gc,CELLSIZE,labelFont,labelColor);
 
     }
     
@@ -503,7 +509,8 @@ public Rectangle createPlayerGroup(int player,int x,int y,double rotation,int un
     {	
   
         handleExecute(b,mm,replay);
-  
+        numberMenu.recordSequenceNumber(b.moveNumber);
+
         startBoardAnimations(replay);
         
         if(replay!=replayMode.Replay) { playSounds((DvonnMovespec)mm); }
@@ -762,5 +769,9 @@ private void playSounds(DvonnMovespec m)
             setComment(comments);
         }
     }
+    
+	public int getLastPlacement(boolean empty) {
+		return b.moveNumber;
+	}
 }
 

@@ -233,7 +233,7 @@ public class BloomsViewer extends CCanvas<BloomsCell,BloomsBoard> implements Blo
         int stateY = boardY;
         int stateX = boardX;
         int stateH = CELLSIZE;
-        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,noChatRect);
+        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,numberMenu,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	// goal and bottom ornaments, depending on the rendering can share
     	// the rectangle or can be offset downward.  Remember that the grid
@@ -457,6 +457,8 @@ public class BloomsViewer extends CCanvas<BloomsCell,BloomsBoard> implements Blo
     	// called when not actually drawing, to determine if the mouse is pointing at
     	// something which might allow an action.  
     	BloomsState state = gb.getState();
+        numberMenu.clearSequenceNumbers();
+        
     	if(state==BloomsState.SelectEnd)
     	{
     		showEndgameOptions(gc,gb,brect,highlight);
@@ -487,6 +489,7 @@ public class BloomsViewer extends CCanvas<BloomsCell,BloomsBoard> implements Blo
    				|| gb.isSource(cell);	// is legal for a "pick" operation+
          	int ypos = G.Bottom(brect) - gb.cellToY(cell);
             int xpos = G.Left(brect) + gb.cellToX(cell);
+            numberMenu.saveSequenceNumber(cell,xpos,ypos);
   
             if (drawhighlight)
              { // checking for pointable position
@@ -496,6 +499,8 @@ public class BloomsViewer extends CCanvas<BloomsCell,BloomsBoard> implements Blo
             
             }
         }}
+        numberMenu.drawSequenceNumbers(gc,gb.cellSize(),labelFont,labelColor);
+
     }
 
     /**
@@ -611,6 +616,7 @@ public class BloomsViewer extends CCanvas<BloomsCell,BloomsBoard> implements Blo
     {	
         
         handleExecute(bb,mm,replay);
+        numberMenu.recordSequenceNumber(bb.moveNumber);
         
         /**
          * animations are handled by a simple protocol between the board and viewer.
@@ -1061,5 +1067,9 @@ public class BloomsViewer extends CCanvas<BloomsCell,BloomsBoard> implements Blo
             }}
   
         	}}
+     
+ 	public int getLastPlacement(boolean empty) {
+		return bb.lastPlacement;
+	}
     	}
 

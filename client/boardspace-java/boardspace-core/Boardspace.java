@@ -683,6 +683,8 @@ public class Boardspace extends URLClassLoader implements Runnable,LoaderConfig
 
         return (b.toString());
     }
+    
+    private static int postedErrors = 0;
     /**
      * this posts an error to the web site.  The receiving application should be some
      * simple logger that just accepts the body of the message and logs it somehow.
@@ -691,6 +693,8 @@ public class Boardspace extends URLClassLoader implements Runnable,LoaderConfig
      */
    private static void postError(String m) throws IOException
    {
+	   if(postedErrors++<1)
+	   {
 	   	String finalmsg = 
 	   			"&name=Boardspace&data=" + escape(m);
 	   	
@@ -712,6 +716,10 @@ public class Boardspace extends URLClassLoader implements Runnable,LoaderConfig
 			log("web logging message: "+m);
 			log("web logging result: "+all); 
 			}
+	   }
+	   else {
+		   log("skipped web logging: "+m);
+	   }
    }
 	/** print an error message with a stack trace, show a visible pop up, and log to a web url
 	 * @param caption

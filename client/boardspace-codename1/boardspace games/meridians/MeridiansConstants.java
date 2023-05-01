@@ -20,7 +20,7 @@ public interface MeridiansConstants
 		Black, // positive numbers are trackable
 		White,
 		BoardLocation,
-		ToggleEye, ShowNumbers,;
+		ToggleEye,;
 		MeridiansChip chip;
 		public String shortName() { return(name()); }
 	

@@ -39,7 +39,6 @@ class BarcaBoard extends rectBoard<BarcaCell> implements BoardProtocol,BarcaCons
 {	static int REVISION = 100;			// 100 represents the initial version of the game
 	public int getMaxRevisionLevel() { return(REVISION); }
     static final String[] BARCAGRIDSTYLE = { "1", null, "A" }; // left and bottom numbers
- 
 	BarcaVariation variation = BarcaVariation.barca;
 	private BarcaState board_state = BarcaState.Puzzle;	
 	private BarcaState unresign = null;	// remembers the orignal state when "resign" is hit

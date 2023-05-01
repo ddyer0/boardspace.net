@@ -43,6 +43,9 @@ public class GipfBoard extends hexBoard<GipfCell> implements BoardProtocol,GipfC
 	public static int PRESSTACK = 100000;
 	public static int REMOVESTACK = 100;
     public int firstPlayer = -1; // changed as the game starts
+ 
+    public int lastPlacedIndex = -1;
+    
     public boolean standard_setup = false;
     public boolean tournament_setup = false;
     public boolean tournament_setup_done = false;
@@ -53,19 +56,18 @@ public class GipfBoard extends hexBoard<GipfCell> implements BoardProtocol,GipfC
     public int currentGipfCount[] = new int[2];			// count of gipfs currently on the board
     public int nongipfCount[] = new int[2];				// count of nongipfs ever committed
     private int sweep_counter = 0;
-    private GipfCell pickedSource[] = new GipfCell[10];
-    private GipfCell droppedDest[] = new GipfCell[10];
+    private CellStack pickedSource = new CellStack();
+    private CellStack droppedDest = new CellStack();
     private IStack robotPreservationStack = new IStack(); 
     private IStack preservationStack = new IStack();
-    private int dropUndo[] = new int[10];
-    private int stackIndex = 0;
+    private IStack dropUndo = new IStack();
     public GipfChip pickedObject = null;
     public int pickedHeight = 0;
     public int movingObjectIndex() 
     	{ GipfChip ch = pickedObject;
     	  return((ch==null)?NothingMoving:ch.pieceNumber()); 
     	}
-    
+  
 
     // not a draw state for us, but an end of game state
     public void SetDrawState()
@@ -79,7 +81,7 @@ public class GipfBoard extends hexBoard<GipfCell> implements BoardProtocol,GipfC
     private CellStack removalCells=new CellStack();
     
  
-     //
+    //
     // return true if balls[rack][ball] should be selectable, meaning
     // we can pick up a ball or drop a ball there.  movingBallColor is 
     // the ball we would drop, or -1 if we want to pick up
@@ -182,7 +184,7 @@ public class GipfBoard extends hexBoard<GipfCell> implements BoardProtocol,GipfC
  //       	  	{ lim=N_BASIC_CHIPS-2;
  //       	  	  if(!tournament_error_date2) { lim+=1; }
  //       	  	}
-        	  initial_height += lim+1;
+			  initial_height += lim+1;
         	  while(reserve[i].chipIndex<lim) { reserve[i].addChip(GipfChip.getChip(map[i])); }
        	}
         playerChip[map[0]] = GipfChip.getChip(0);
@@ -209,7 +211,9 @@ public class GipfBoard extends hexBoard<GipfCell> implements BoardProtocol,GipfC
         board_state = (firstPlayer >= 0) ? GipfState.DONE_STATE : GipfState.PUZZLE_STATE;
         pickedHeight = 0;
         pickedObject=null;
-        stackIndex=0;
+        dropUndo.clear();
+        pickedSource.clear();
+        droppedDest.clear();
         check_piece_count();
     }
 
@@ -219,12 +223,6 @@ public class GipfBoard extends hexBoard<GipfCell> implements BoardProtocol,GipfC
         standard_setup = Gipf_Standard_Init.equalsIgnoreCase(type);
         tournament_setup = Gipf_Tournament_Init.equalsIgnoreCase(type);
         reInitBoard(ZfirstInCol, ZnInCol, null);
-        while(stackIndex>=0) 
-        	{ pickedSource[stackIndex]=droppedDest[stackIndex]=null;
-        	  dropUndo[stackIndex]=0;
-        	stackIndex--; 
-        	}
-        stackIndex=0;
         preservationStack.clear();
         // remove edge-edge links
         for(GipfCell c=allCells; c!=null; c=c.next)
@@ -251,7 +249,6 @@ public class GipfBoard extends hexBoard<GipfCell> implements BoardProtocol,GipfC
         G.Assert(AR.sameArrayContents(gipfCount,from_b.gipfCount),"gipf count matches");
         G.Assert(AR.sameArrayContents(currentGipfCount,from_b.currentGipfCount),"gipf count matches");
         G.Assert(AR.sameArrayContents(nongipfCount,from_b.nongipfCount),"non gipf count matches");
-        G.Assert(stackIndex==from_b.stackIndex, "stackIndex matches");
         G.Assert(unresign==from_b.unresign,"unresign mismatch");
             //G.Assert(G.same
         for (int i = 0; i < 2; i++)
@@ -297,7 +294,7 @@ public class GipfBoard extends hexBoard<GipfCell> implements BoardProtocol,GipfC
     // is a legal move
     public Hashtable<GipfCell,GipfCell> getMoveDests()
     {	Hashtable<GipfCell,GipfCell> dd = new Hashtable<GipfCell,GipfCell>();
-    	GipfCell src = pickedSource[stackIndex];
+    	GipfCell src = pickedSource.top();
     	
     	if((src!=null)&&(pickedObject!=null))
     	{	
@@ -397,13 +394,13 @@ public class GipfBoard extends hexBoard<GipfCell> implements BoardProtocol,GipfC
     	case DONE_STATE: 
     	case DRAW_STATE:
     		if(pickedObject==null) 
-    			{ return((stackIndex>0) && (c==droppedDest[stackIndex-1])); }
+    			{ return(c==getDest()); }
     		return(false); 
     	case SLIDE_STATE:
     	case SLIDE_GIPF_STATE:
     		{	GipfCell src = (pickedObject!=null) 
-    							?pickedSource[stackIndex]
-    							:droppedDest[stackIndex-1];
+    							?getSource()
+    							:getDest();
     		    if(c==src) { return(true); }
     			if(c.isAdjacentTo(src)
     				&& c.emptyCellInDirection(findDirection(src.col,src.row,c.col,c.row))
@@ -480,7 +477,7 @@ public class GipfBoard extends hexBoard<GipfCell> implements BoardProtocol,GipfC
         board_state = from_b.board_state;
         tournament_setup_done = from_b.tournament_setup_done;
         unresign = from_b.unresign;
-        AR.copy(dropUndo,from_b.dropUndo);
+        dropUndo.copyFrom(from_b.dropUndo);
         AR.copy(gipfCount,from_b.gipfCount);
         AR.copy(currentGipfCount,from_b.currentGipfCount);
         AR.copy(nongipfCount,from_b.nongipfCount);
@@ -493,8 +490,8 @@ public class GipfBoard extends hexBoard<GipfCell> implements BoardProtocol,GipfC
 
         preservationStack.copyFrom(from_b.preservationStack);
 
-        stackIndex = from_b.stackIndex;
-  
+         
+        lastPlacedIndex = from_b.lastPlacedIndex;
         sameboard(from_b);
     }
     
@@ -544,6 +541,7 @@ public class GipfBoard extends hexBoard<GipfCell> implements BoardProtocol,GipfC
         tournament_setup_done = false;
         whoseTurn = 0;
         moveNumber = 1;
+        lastPlacedIndex = -1;
         // note that firstPlayer is NOT initialized here
     }
 
@@ -615,27 +613,31 @@ public class GipfBoard extends hexBoard<GipfCell> implements BoardProtocol,GipfC
     	}
     }
     public void pickFromCell(GipfCell c)
-    {	pickedSource[stackIndex] = c;
+    {	pickedSource.push(c);
     	pickedObject = c.removeTop();
     	pickedHeight++;
     }
     public void pickFromRack(GipfCell c)
     {	pickFromCell(c);
-    	pickedSource[stackIndex]=c;
     	if((board_state==GipfState.PLACE_GIPF_STATE)||(board_state==GipfState.PRECAPTURE_OR_START_GIPF_STATE))
     		{ pickFromCell(c); 
     		}
     }
     public void dropOnRack(GipfCell c)
-    {  	while(pickedHeight>0) { pickedHeight--; c.addChip(pickedObject); }
-    	dropUndo[stackIndex]=removalCells.size()*100;
-    	droppedDest[stackIndex] = null;
+    {  	while(pickedHeight>0) { pickedHeight--; c.addChip(pickedObject);  }
+    	dropUndo.push(removalCells.size()*100);
+    	droppedDest.push(c);
     	pickedObject = null;
     }
     public void dropOnBoard(GipfCell dest)
-    {	droppedDest[stackIndex] = dest;
-    	dropUndo[stackIndex]=removalCells.size()*100;
+    {	droppedDest.push(dest);
+    	dropUndo.push(removalCells.size()*100);
     	dropOnBoardCell(dest);
+    	
+		dest.previousLastPlaced = dest.lastPlaced;
+		dest.lastPlaced = lastPlacedIndex;
+		lastPlacedIndex++;
+		
     }
     public void dropOnBoardCell(GipfCell dest)
     {	G.Assert(dest.onBoard,"is on board");
@@ -654,8 +656,9 @@ public class GipfBoard extends hexBoard<GipfCell> implements BoardProtocol,GipfC
     }
     public void pickFromBoard(GipfCell src)
     {
-    	pickedSource[stackIndex] = src;
+    	pickedSource.push(src);
     	pickFromBoardCell(src);
+    	
     }
     public void pickFromBoardCell(GipfCell src)
     {	G.Assert(src.onBoard,"is a board cell");
@@ -667,16 +670,21 @@ public class GipfBoard extends hexBoard<GipfCell> implements BoardProtocol,GipfC
     		if(gipf) { nongipfCount[player]++; currentGipfCount[player]--; gipfCount[player]--; }
     		else { nongipfCount[player]--; }
     	}
+    	src.lastContents = src.previousLastContents;
+		src.lastEmptied = src.previousLastEmptied;
+		src.lastPlaced = src.previousLastPlaced;
+
     }
     public boolean isDest(char col,int row)
     {	GipfCell c = getCell(col,row);
-    	return((stackIndex>0)&&(c==droppedDest[stackIndex-1]));
+    	return droppedDest.contains(c);
     }
     public void unDropObject()
-    {
-    	if(droppedDest[stackIndex]!=null) 
-    	{ 	int undo = dropUndo[stackIndex]%PRESSTACK;
-    		int presinfo = dropUndo[stackIndex]/PRESSTACK;
+    {	GipfCell dr = droppedDest.pop();
+    	if(dr!=null) 
+    	{ 	int dundo = dropUndo.pop();
+    		int undo = dundo%PRESSTACK;
+    		int presinfo = dundo/PRESSTACK;
     		int dist = undo%REMOVESTACK;
     		int uncap = undo/REMOVESTACK;
     		if(uncap<removalCells.size())
@@ -684,62 +692,78 @@ public class GipfBoard extends hexBoard<GipfCell> implements BoardProtocol,GipfC
     			undoCaptures(uncap,whoseTurn);
     		}
     		if(dist>0) 
-    			{ undoSlide(droppedDest[stackIndex],pickedSource[stackIndex],dist);
+    			{ GipfCell s = pickedSource.top();
+    			  undoSlide(dr,s,dist);
     			  if(presinfo<preservationStack.size())  
     			  	{ discardPreservation(preservationStack);
     			  	  //restorePreservation(preservationStack); 
     			  	}
-    			  pickFromBoardCell(pickedSource[stackIndex]);
+    			  pickFromBoardCell(s);
      			}
     		else
     		{	
-    			pickFromBoardCell(droppedDest[stackIndex]);
+    			pickFromBoardCell(dr);
      		}
-    		
+    		dr.lastPlaced = dr.previousLastPlaced;
+    		lastPlacedIndex--;
     		
     	}
     	else
-    	{	pickFromBoardCell(droppedDest[stackIndex]);
+    	{	pickFromBoardCell(dr);
     	}
-    	
-    	droppedDest[stackIndex] = null;
-    	dropUndo[stackIndex]=0;
+  
     }
     public GipfCell getSource()
     {
-    	return(pickedSource[stackIndex]);
+    	return(pickedSource.top());
     }
     public GipfCell getDest()
-    {	if(stackIndex<1) { return(null); }
-    	return(droppedDest[stackIndex-1]);
+    {	return droppedDest.top();
     }
+    
     public void unPickObject()
-    {	GipfCell c = pickedSource[stackIndex];
+    {	GipfCell c = pickedSource.pop();
     	if(c!=null) 
-    		{ if(c.onBoard) { dropOnBoardCell(c); } else { dropOnRack(c); }
+    		{ if(c.onBoard) 
+    			{ dropOnBoardCell(c); 
+   				  c.lastEmptied = c.previousLastEmptied;
+    			} 
+    			else 
+    			{ dropOnRack(c); }
     		}
     		else if(pickedObject!=null)
     		{ throw G.Error("picked object has no source"); 
     		}
     	pickedObject = null;
-    	pickedSource[stackIndex] = null;
-   	
     }
     private void finalizePlacement()
-    {  	while(stackIndex>=0) 
-    	{ pickedSource[stackIndex]=droppedDest[stackIndex]=null;
-    	  dropUndo[stackIndex]=removalCells.size()*100;
-    	  stackIndex--; }
-    	stackIndex=0;
+    {  	droppedDest.clear();
+    	pickedSource.clear();
+    	dropUndo.clear();
+    	pickedObject = null;
+    }
+
+     // move a stack, bottom first
+    private void moveStack(GipfCell from,GipfCell to)
+    {	GipfChip ch = from.removeTop();
+    	from.lastEmptied = lastPlacedIndex;
+    	if(from.chipIndex>=0) { moveStack(from,to); }
+    	to.addChip(ch);
+    	to.lastPlaced = lastPlacedIndex++;
+    	from.preserved = false;
     }
 
     // move a stack, bottom first
-    private void moveStack(GipfCell from,GipfCell to)
-    {	GipfChip ch = from.removeTop();
-    	if(from.chipIndex>=0) { moveStack(from,to); }
-    	to.addChip(ch);
-    	from.preserved = false;
-    }
+   private void unMoveStack(GipfCell from,GipfCell to)
+   {	GipfChip ch = from.removeTop();
+   		from.lastEmptied = from.previousLastEmptied;
+   		from.lastPlaced = from.previousLastPlaced; 	
+   		lastPlacedIndex--;
+   		if(from.chipIndex>=0) { unMoveStack(from,to); }
+   		to.addChip(ch);
+   		from.preserved = false;
+   }
+   
     // do the slide portion, return the number of stones moved
     private int doSlide(GipfCell from,GipfCell to,int dir,replayMode replay,boolean animateFirst)
     {	int val = 1;
@@ -864,6 +888,10 @@ public class GipfBoard extends hexBoard<GipfCell> implements BoardProtocol,GipfC
     		pl = playerIndex(top);
     		GipfCell dest = (pl==whoseTurn) ? reserve[whoseTurn] : captures[whoseTurn];
     		dest.addChip(top);
+    		c.lastContents = top;
+    		c.previousLastCaptured = c.lastCaptured;
+    		c.lastCaptured = lastPlacedIndex;
+    		lastPlacedIndex++;
     		if(replay!=replayMode.Replay)
     		{
     			animationStack.push(c);
@@ -1006,6 +1034,7 @@ public class GipfBoard extends hexBoard<GipfCell> implements BoardProtocol,GipfC
     public void doDone(replayMode replay)
     {	
     	finalizePlacement();
+    	lastPlacedIndex++;
     	tournament_setup_done = (nongipfCount[0]>0) && (nongipfCount[1]>0);
         // dont change lastmove
         if (board_state==GipfState.RESIGN_STATE)
@@ -1062,26 +1091,34 @@ public class GipfBoard extends hexBoard<GipfCell> implements BoardProtocol,GipfC
         	pickFromRack(pickSource(m.source));
         	break;
         case MOVE_DROP:
-        	dropOnRack(pickSource(m.source));
+        	{
+        	GipfCell c = pickSource(m.source);
+        	if(c==getSource())
+        	{
+        	unPickObject();	
+        	}
+        	else
+        	{
+        	dropOnRack(c);
         	switch(board_state)
         	{
         	case SLIDE_STATE:	setState(GipfState.PLACE_STATE); break;
         	case SLIDE_GIPF_STATE: setState(GipfState.PLACE_GIPF_STATE); break;
         	case PUZZLE_STATE: finalizePlacement(); break;
         	default: break;
-        	}
+        	}}}
         	break;
         case MOVE_SLIDE:
         	{ GipfCell src = getCell(m.from_col,m.from_row);
        		  GipfCell from = reserve[whoseTurn];
     		  GipfChip pick = from.removeTop();
-        		src.addChip(pick);
-        		if(board_state==GipfState.PLACE_GIPF_STATE) 
-        		{	src.addChip(reserve[whoseTurn].removeTop());
-        			gipfCount[whoseTurn]++;
-        			currentGipfCount[whoseTurn]++;
-        		}
-        		else { nongipfCount[whoseTurn]++; }
+    		  src.addChip(pick);
+       		if(board_state==GipfState.PLACE_GIPF_STATE) 
+    		{	src.addChip(reserve[whoseTurn].removeTop());
+    			gipfCount[whoseTurn]++;
+    			currentGipfCount[whoseTurn]++;
+    		}
+    		else { nongipfCount[whoseTurn]++; }
         	}
 			//$FALL-THROUGH$
 		case MOVE_SLIDEFROM:
@@ -1104,14 +1141,14 @@ public class GipfBoard extends hexBoard<GipfCell> implements BoardProtocol,GipfC
         	case SLIDE_GIPF_STATE:
          	case SLIDE_STATE:
         		if(dest.isEdgeCell()) 
-        			{ if(pickedObject==null) { stackIndex--; unDropObject();  dropOnBoard(dest); stackIndex++; } 
-        				else { 	pickedSource[stackIndex]=null; stackIndex--; dropOnBoard(dest); stackIndex++; }
+        			{ if(pickedObject==null) {unDropObject();  dropOnBoard(dest);  } 
+        				else { 	dropOnBoard(dest); }
         			}
         			else 
         			{ int psize =  preservationStack.size();
         			  boolean animateFirst = pickedObject==null; 
-        			  if(animateFirst) { pickFromBoard(droppedDest[stackIndex-1]); }
-        			  GipfCell from = pickedSource[stackIndex];
+        			  if(animateFirst) { pickFromBoard(droppedDest.top()); }
+        			  GipfCell from = pickedSource.top();
         			  unPickObject(); 
          			  int cap = removalCells.size()*REMOVESTACK;
          			  if(replay!=replayMode.Replay && animateFirst)
@@ -1119,11 +1156,10 @@ public class GipfBoard extends hexBoard<GipfCell> implements BoardProtocol,GipfC
          			  animationStack.push(from);
          			  animationStack.push(dest);
          			  }
-        			  dropUndo[stackIndex] = m.undoinfo = psize*PRESSTACK+cap+doSlide(from,dest,
-        					  findDirection(from.col,from.row,dest.col,dest.row),replay,animateFirst); 
-        			  droppedDest[stackIndex]=dest;
-        			  pickedSource[stackIndex]=from;
-        			  stackIndex++;
+        			  dropUndo.push( m.undoinfo = psize*PRESSTACK+cap+doSlide(from,dest,
+        					  findDirection(from.col,from.row,dest.col,dest.row),replay,animateFirst)); 
+        			  droppedDest.push(dest);
+        			  pickedSource.push(from);
         			  setLastState();
  
           			}
@@ -1137,9 +1173,9 @@ public class GipfBoard extends hexBoard<GipfCell> implements BoardProtocol,GipfC
         	case PRECAPTURE_OR_START_GIPF_STATE:
         	case PRECAPTURE_OR_START_NORMAL_STATE:
         		if(pickedObject!=null) { unPickObject(); }
-        		dropUndo[stackIndex]=preservationStack.size()*PRESSTACK+removalCells.size()*REMOVESTACK;
-        		pickedSource[stackIndex]=droppedDest[stackIndex]=dest;
-        		stackIndex++;
+        		dropUndo.push(preservationStack.size()*PRESSTACK+removalCells.size()*REMOVESTACK);
+        		pickedSource.push(dest);
+        		droppedDest.push(dest);
         		doCaptures(replay);		// might capture some gipf pieces
 				//$FALL-THROUGH$
 			case PLACE_STATE: 
@@ -1154,7 +1190,6 @@ public class GipfBoard extends hexBoard<GipfCell> implements BoardProtocol,GipfC
         		}
         		dropOnBoard(dest);
         		setState((dest.height()==2)?GipfState.SLIDE_GIPF_STATE:GipfState.SLIDE_STATE); 
-        		stackIndex++;
         		break;
         	
         	}
@@ -1171,8 +1206,7 @@ public class GipfBoard extends hexBoard<GipfCell> implements BoardProtocol,GipfC
         	case DONE_CAPTURE_STATE:
         	case DESIGNATE_CAPTURE_OR_DONE_STATE:
         	case DESIGNATE_CAPTURE_STATE:
-        		G.Assert(c==droppedDest[stackIndex-1],"is dest");
-        		stackIndex--;
+        		G.Assert(c==droppedDest.top(),"is dest");
         		unDropObject();
         		setState((pickedHeight==2)?GipfState.SLIDE_GIPF_STATE:GipfState.SLIDE_STATE);
         		break;
@@ -1188,7 +1222,7 @@ public class GipfBoard extends hexBoard<GipfCell> implements BoardProtocol,GipfC
         	break;
         case MOVE_RESIGN:
         	unPickObject();
-           setState((unresign==null) ? GipfState.RESIGN_STATE : unresign);
+        	setState((unresign==null) ? GipfState.RESIGN_STATE : unresign);
             break;
         case MOVE_STANDARD:
         	{
@@ -1228,9 +1262,9 @@ public class GipfBoard extends hexBoard<GipfCell> implements BoardProtocol,GipfC
         	case 2:		direction = 1; break;
         	case 4: 	direction = 2; break;
         	}
-        	pickedSource[stackIndex] = droppedDest[stackIndex] = c;
-        	dropUndo[stackIndex]=removalCells.size()*100;
-        	stackIndex++;
+        	pickedSource.push(c);
+        	droppedDest.push(c);
+        	dropUndo.push(removalCells.size()*100);
         	doRowCaptures(c.exitTo(direction),direction,replay);
         	doRowCaptures(c,direction+3,replay);
         	{	boolean mark = markForRemoval(whoseTurn);
@@ -1265,7 +1299,7 @@ public class GipfBoard extends hexBoard<GipfCell> implements BoardProtocol,GipfC
         default:
         	cantExecute(m);
         }
-
+         
         //check_piece_count();
         return (true);
     }
@@ -1348,6 +1382,7 @@ private void undoCaptures(int uncap,int who)
 	   			{	captures[who].removeTop();
 	   			}
 	   			c.addChip(ch);
+	   			c.lastCaptured = c.previousLastCaptured;
 	   			if(c.isGipf()) { currentGipfCount[playerIndex(ch)]++; }
 	   		}	
 }
@@ -1355,7 +1390,7 @@ private void undoCaptures(int uncap,int who)
 	{ 	int dir = findDirection(from.col,from.row,to.col,to.row);
 		while(distance>0)
   	   		{	distance--;
-  	   			moveStack(to,from);
+  	   			unMoveStack(to,from);
    	   			from = to;
   	   			to = to.exitTo(dir);
   	   		}
@@ -1419,7 +1454,7 @@ private void undoCaptures(int uncap,int who)
    	   		if(m.op==MOVE_SLIDE)
    	   		{
   	   		undoDrop(from,m);
-  	   			}
+   	   		}
   	   	}
   	   		break;
        case MOVE_DONE:

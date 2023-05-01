@@ -52,7 +52,8 @@ public class SpanglesViewer extends CCanvas<SpanglesCell,SpanglesBoard> implemen
     public synchronized void preloadImages()
     {	
     	if(textures==null)
-    	{	SpanglesChip.preloadImages(loader,ImageDir);
+    	{
+            SpanglesChip.preloadImages(loader,ImageDir);
             textures = loader.load_images(ImageDir,TextureNames);
     	}
     	gameIcon = textures[ICON_INDEX];
@@ -327,6 +328,15 @@ public class SpanglesViewer extends CCanvas<SpanglesCell,SpanglesBoard> implemen
                 {GC.cacheAACircle(gc,xpos,ypos,2,Color.red,Color.yellow,true);
  
                 }
+        //if(G.debug() && (cell.topChip()==null))
+        //{	// draw a grid of other cells
+        //	GC.Text(gc,true,xpos-CELLSIZE/2,ypos-CELLSIZE/2,CELLSIZE,CELLSIZE,null,null,""+cell.col+cell.row);
+        //}
+        // the structure of the board is unusual.  This adds an arrow
+        // that shows the pointer to adjacent to help debugging
+        //SpanglesCell d = cell.exitTo(2);
+        //if(cell.topChip()!=null) { GC.drawArrow(gc,xpos,ypos,left+gb.cellToX(d),top-gb.cellToY(d),3,3);}
+
                                 }}
    	 	doBoardDrag(tbRect,anySelect,cellSize,SpanglesId.InvisibleDragBoard);
          GC.setClip(gc,oldClip);
@@ -362,7 +372,6 @@ public class SpanglesViewer extends CCanvas<SpanglesCell,SpanglesBoard> implemen
 	{
 	// note this gets called in the game loop as well as in the display loop
 	// and is pretty expensive, so we shouldn't do it in the mouse-only case
-
     	gb.SetDisplayParameters(zoomRect.value,1.0,board_center_x,board_center_y,0.0); // shrink a little and rotate 30 degrees
     	gb.SetDisplayRectangle(boardRect);
 	}
@@ -604,7 +613,7 @@ public class SpanglesViewer extends CCanvas<SpanglesCell,SpanglesBoard> implemen
      }
 
     // return what will be the init type for the game
-    public String gameType() { return(bb.gametype); }	// this is the subgame "setup" within the master type.
+    public String gameType() { return(bb.gameType()); }	// this is the subgame "setup" within the master type.
     public String sgfGameType() { return(Spangles_SGF); }	// this is the official SGF number assigned to the game
 
     
@@ -612,7 +621,20 @@ public class SpanglesViewer extends CCanvas<SpanglesCell,SpanglesBoard> implemen
     public void performHistoryInitialization(StringTokenizer his)
     {   //the initialization sequence
     	String token = his.nextToken();
+    	if(token.equals("Spangles")) 
+    	{
+    		// old school, where there was just the key Spangles
         bb.doInit(token);
+    }
+    	else
+    	{	// new game, with the revision protocol, flag their presence with lower case.
+    		// this is only a problem for games being restarted in the live context, or by spectators.
+    		int np = G.IntToken(his);
+    		long rv = G.LongToken(his);
+    		int rev = G.IntToken(his);
+    		bb.doInit(token,np,rv,rev);
+    	}
+ 
     }
 
 
@@ -684,7 +706,7 @@ public class SpanglesViewer extends CCanvas<SpanglesCell,SpanglesBoard> implemen
             
             if (setup_property.equals(name))
             {
-                bb.doInit(value);
+                bb.reInit(value);
              }
             else if (name.equals(comment_property))
             {

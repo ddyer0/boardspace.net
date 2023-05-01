@@ -134,7 +134,8 @@ public void ViewerRun(int wait)
 		return(censoring()
 				&& (G.offline() 
 						? p.publicCensoring 
-						: (getActivePlayer().spectator || (p.index!=getActivePlayer().boardIndex))));
+						: (getActivePlayer().spectator
+								|| (p.index!=getActivePlayer().boardIndex))));
 	}
 	public boolean censoring(commonMove m)
 	{
@@ -829,13 +830,14 @@ public void ViewerRun(int wait)
         	for(int i=0;i<gb.nPlayers();i++)
         	{
         	QEPlayer pl = gb.getPlayer(i);
-        	if(ob!=null && ob!=pl)
+        	if(ob==null || ob!=pl)
         		{	Rectangle r = new Rectangle(x,y,stepx,sizey);
         			commonPlayer ap = getActivePlayer();
         			QEState uis = getUIState(i);
         			HitPoint select = (canHitCard(uis,i) && (G.offline() || (i==(ap.boardIndex))))?highlight:null;
-        			drawBidCard(gc,pl,select,r,witnessing,	witnessing
-        						? G.offline() ? ob.publicCensoring : (ap.spectator || (ap.boardIndex!=obIndex)) 
+        			drawBidCard(gc,pl,select,r,witnessing,	
+        					witnessing
+        						? ob==null || (G.offline() ? ob.publicCensoring : (ap.spectator || (ap.boardIndex!=obIndex))) 
         						: censoring(pl)); 
         		}
 			x += stepx;

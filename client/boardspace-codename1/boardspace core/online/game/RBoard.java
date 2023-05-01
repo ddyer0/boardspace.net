@@ -1,8 +1,9 @@
 package online.game;
 
+import lib.Random;
+
 import com.codename1.ui.geom.Rectangle;
 
-import lib.Random;
 import lib.G;
 import lib.HitPoint;
 import lib.IStack;
@@ -56,9 +57,10 @@ public abstract class RBoard<CELLTYPE extends cell<CELLTYPE> >  extends BaseBoar
     static final int GRID_TOP = 1;	// index for the top element of grid_style
     static final int GRID_BOTTOM = 2;// index for the bottom element of grid_style
     static final int GRID_RIGHT = 3;	// index for the right element of the grid style
-
+    
     public CELLTYPE allCells;			// linked list of the whole board's cells
-    protected cell<CELLTYPE> cellArray[];			// a plain array of all cells.
+    public CELLTYPE allCells() { return allCells; }
+    protected cell<CELLTYPE> hiddenCellArray[];			// a plain array of all cells.
     protected Rectangle boardRect=new Rectangle(0,0,100,100);
     //
     // the board drawing section.  These support methods implement the transformation
@@ -71,11 +73,15 @@ public abstract class RBoard<CELLTYPE extends cell<CELLTYPE> >  extends BaseBoar
      * @return
      */
 	public boolean reverseView() { return displayParameters.reverse_y; }
-    
+
+	public void forgetCellArray() 
+	{
+		hiddenCellArray = null;
+	}
     public void initBoard()
     {
     	allCells = null;
-    	cellArray = null;
+    	forgetCellArray();
     	boardRect = null;
     }
     /**
@@ -105,7 +111,7 @@ public abstract class RBoard<CELLTYPE extends cell<CELLTYPE> >  extends BaseBoar
     {
     	c.next = allCells;
     	allCells = c;
-    	cellArray = null;
+    	forgetCellArray();
     }
     
     public long Digest(Random r)
@@ -120,15 +126,15 @@ public abstract class RBoard<CELLTYPE extends cell<CELLTYPE> >  extends BaseBoar
 
 	public cell<CELLTYPE>[] getCellArray()
     {
-    	if((cellArray==null) && (allCells!=null))
+    	if((hiddenCellArray==null) && (allCells!=null))
     	{
     	int nc = 0;
     	for(CELLTYPE c = allCells; c!=null; c=c.next) {nc++; }
-    	cellArray = allCells.newSelfArray(nc);
+    	hiddenCellArray = allCells.newSelfArray(nc);
     	nc = 0;
-    	for(CELLTYPE c = allCells; c!=null; c=c.next) { cellArray[nc++] = c; };  
+    	for(CELLTYPE c = allCells; c!=null; c=c.next) { hiddenCellArray[nc++] = c; };  
     	}
-    	return(cellArray);
+    	return(hiddenCellArray);
     }
 	
 	/**
@@ -231,7 +237,7 @@ public abstract class RBoard<CELLTYPE extends cell<CELLTYPE> >  extends BaseBoar
    		{
    		if(prev==null) { allCells = tc.next; } else { prev.next = tc.next; }
    		tc.unCrossLink();
-   		cellArray = null;
+   		forgetCellArray();
    		C.onBoard = false;
    		return;
   		}
@@ -254,18 +260,18 @@ public abstract class RBoard<CELLTYPE extends cell<CELLTYPE> >  extends BaseBoar
    
    public void checkSameCells(RBoard<CELLTYPE> from_b)
    {
-	if(allCells!=null)
-	{
- 	cell<CELLTYPE> myB[] = getCellArray();
- 	cell<CELLTYPE> otherB[]=from_b.getCellArray();
- 	
-   	int ysize = otherB.length;
-   	// don't check the actual contents, some games re-sort the array!
-   	G.Assert((ysize==myB.length),"Board Number of cells mismatch");
-   	for(CELLTYPE c = allCells,d=from_b.allCells; c!=null; c=c.next,d=d.next) 
-   		{ G.Assert(c.sameCell(d),"Cells %s and %s mismatch",c,d);
-   		}
- 	}
+		if(allCells!=null)
+		{
+	 	cell<CELLTYPE> myB[] = getCellArray();
+	  	cell<CELLTYPE> otherB[]=from_b.getCellArray();
+	 	
+	   	int ysize = otherB.length;
+	   	// don't check the actual contents, some games re-sort the array!
+	   	G.Assert((ysize==myB.length),"Board Number of cells mismatch");
+	   	for(CELLTYPE c = allCells,d=from_b.allCells; c!=null; c=c.next,d=d.next) 
+	   		{	G.Assert(c.sameCell(d),"Cells %s and %s mismatch",c,d); 
+	   		}
+	 	}
    }
    /**
     *  this is a visitor method so the actual board can clone the cell it's own way
@@ -275,7 +281,7 @@ public abstract class RBoard<CELLTYPE extends cell<CELLTYPE> >  extends BaseBoar
    public void copyFrom(CELLTYPE c,CELLTYPE from)
    {	if(c!=null) { c.copyFrom(from); }
    }  
-
+   
 
    /** copy from a given board.  This method is typically 
     * wrapped by each subclass.
@@ -291,7 +297,6 @@ public abstract class RBoard<CELLTYPE extends cell<CELLTYPE> >  extends BaseBoar
     displayParameters = from_b.displayParameters;
    	CELLTYPE myc = allCells;
    	CELLTYPE hisc = from_b.allCells;
-   	cellArray = null;
     boardRect = from_b.boardRect;
    	while((myc!=null)&&(hisc!=null)) 
    	{ //note that this may be subtly different from
@@ -324,7 +329,8 @@ public abstract class RBoard<CELLTYPE extends cell<CELLTYPE> >  extends BaseBoar
     * @param c cell on the board
     * */
    public abstract int cellToY(CELLTYPE c);
-  
+   
+   
    /**
    * find the closest cell to a given x,y.  This is used
    * to determine what the mouse is pointing at without
@@ -493,7 +499,7 @@ public abstract class RBoard<CELLTYPE extends cell<CELLTYPE> >  extends BaseBoar
 	   for(int i=0;i<st.length;i++) { v ^= Digest(r,st[i]); }
 	   return(v);
    }
-   
+
    /**
     * compare to arrays of the component cell type, and verify that they are the same
     * 
@@ -585,5 +591,7 @@ public abstract class RBoard<CELLTYPE extends cell<CELLTYPE> >  extends BaseBoar
   public boolean reverseX() { return displayParameters.reverse_x; }
   public void setReverseY(boolean v) {  displayParameters.reverse_y = v; }
   public void setReverseX(boolean v) {  displayParameters.reverse_x = v; }
+
+
   
 }

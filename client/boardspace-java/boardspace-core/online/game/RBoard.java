@@ -58,7 +58,8 @@ public abstract class RBoard<CELLTYPE extends cell<CELLTYPE> >  extends BaseBoar
     static final int GRID_RIGHT = 3;	// index for the right element of the grid style
     
     public CELLTYPE allCells;			// linked list of the whole board's cells
-    protected cell<CELLTYPE> cellArray[];			// a plain array of all cells.
+    public CELLTYPE allCells() { return allCells; }
+    protected cell<CELLTYPE> hiddenCellArray[];			// a plain array of all cells.
     protected Rectangle boardRect=new Rectangle(0,0,100,100);
     //
     // the board drawing section.  These support methods implement the transformation
@@ -72,10 +73,14 @@ public abstract class RBoard<CELLTYPE extends cell<CELLTYPE> >  extends BaseBoar
      */
 	public boolean reverseView() { return displayParameters.reverse_y; }
 
+	public void forgetCellArray() 
+	{
+		hiddenCellArray = null;
+	}
     public void initBoard()
     {
     	allCells = null;
-    	cellArray = null;
+    	forgetCellArray();
     	boardRect = null;
     }
     /**
@@ -105,7 +110,7 @@ public abstract class RBoard<CELLTYPE extends cell<CELLTYPE> >  extends BaseBoar
     {
     	c.next = allCells;
     	allCells = c;
-    	cellArray = null;
+    	forgetCellArray();
     }
     
     public long Digest(Random r)
@@ -120,15 +125,15 @@ public abstract class RBoard<CELLTYPE extends cell<CELLTYPE> >  extends BaseBoar
 
 	public cell<CELLTYPE>[] getCellArray()
     {
-    	if((cellArray==null) && (allCells!=null))
+    	if((hiddenCellArray==null) && (allCells!=null))
     	{
     	int nc = 0;
     	for(CELLTYPE c = allCells; c!=null; c=c.next) {nc++; }
-    	cellArray = allCells.newSelfArray(nc);
+    	hiddenCellArray = allCells.newSelfArray(nc);
     	nc = 0;
-    	for(CELLTYPE c = allCells; c!=null; c=c.next) { cellArray[nc++] = c; };  
+    	for(CELLTYPE c = allCells; c!=null; c=c.next) { hiddenCellArray[nc++] = c; };  
     	}
-    	return(cellArray);
+    	return(hiddenCellArray);
     }
 	
 	/**
@@ -231,7 +236,7 @@ public abstract class RBoard<CELLTYPE extends cell<CELLTYPE> >  extends BaseBoar
    		{
    		if(prev==null) { allCells = tc.next; } else { prev.next = tc.next; }
    		tc.unCrossLink();
-   		cellArray = null;
+   		forgetCellArray();
    		C.onBoard = false;
    		return;
   		}
@@ -291,7 +296,6 @@ public abstract class RBoard<CELLTYPE extends cell<CELLTYPE> >  extends BaseBoar
     displayParameters = from_b.displayParameters;
    	CELLTYPE myc = allCells;
    	CELLTYPE hisc = from_b.allCells;
-   	cellArray = null;
     boardRect = from_b.boardRect;
    	while((myc!=null)&&(hisc!=null)) 
    	{ //note that this may be subtly different from
@@ -324,7 +328,8 @@ public abstract class RBoard<CELLTYPE extends cell<CELLTYPE> >  extends BaseBoar
     * @param c cell on the board
     * */
    public abstract int cellToY(CELLTYPE c);
-  
+   
+   
    /**
    * find the closest cell to a given x,y.  This is used
    * to determine what the mouse is pointing at without
@@ -585,5 +590,7 @@ public abstract class RBoard<CELLTYPE extends cell<CELLTYPE> >  extends BaseBoar
   public boolean reverseX() { return displayParameters.reverse_x; }
   public void setReverseY(boolean v) {  displayParameters.reverse_y = v; }
   public void setReverseX(boolean v) {  displayParameters.reverse_x = v; }
+
+
   
 }

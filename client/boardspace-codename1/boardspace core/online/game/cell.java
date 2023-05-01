@@ -50,7 +50,6 @@ class ScreenData
 	public double lastYScale = 0.0;
 
 	public SpriteStack animations = null;	// if not null, could be an animation where we're the destination
-
 	public void addActiveAnimation(SpriteProtocol sprite)
 	{
 		if(animations==null) { animations = new SpriteStack(); }
@@ -91,6 +90,16 @@ public abstract class cell<FINALTYPE
 	public String getName() { return(toString()); }
 	public int getWidth() { return lastSize(); }
 	public int getHeight() { return lastSize(); }
+	public static long classHash = 0;
+	@SuppressWarnings("deprecation")
+	public long getClassHash()
+	{
+		if(classHash==0)
+		{
+			classHash = getClass().getName().hashCode()*0x12235652;
+		}
+		return classHash;
+	}
 	public enum Geometry 
 	{	/** isolated cell, no neighbors */
 		Standalone(0),
@@ -351,7 +360,7 @@ public abstract class cell<FINALTYPE
 	private long hiddenDigest() 
 	{ if(randomv==0) 
 		{ 
-		return(rackLocation.name().hashCode()+col*200+row+1); 
+		return(getClassHash()+rackLocation.name().hashCode()*1000L+col*200+row+1); 
 		}
 		return(randomv); 
 	}
@@ -573,7 +582,7 @@ public abstract class cell<FINALTYPE
 	 * a default printer which describes location and contents.
 	 */
 	@SuppressWarnings("deprecation")
-	public String toString() { return("<"+getClass().getName()+" "+col+row+ "=" + contentsString()+ ">"); }
+	public String toString() { return("<"+getClass().getName()+" "+G.printCol(col)+row+ "=" + contentsString()+ ">"); }
 
     /**
     * this is the convenient way to traverse a row, column, or diagonal

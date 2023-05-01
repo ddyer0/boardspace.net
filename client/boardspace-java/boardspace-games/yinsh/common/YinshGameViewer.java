@@ -45,7 +45,6 @@ public class YinshGameViewer extends CCanvas<YinshCell,YinshBoard> implements Yi
      
     private Rectangle chipRects[] = addRect("ring",2);
     private Rectangle capturedRects[] = addRect("captured",2);
-    private NumberMenu numberMenu =  null;
     private Rectangle chipPool = addRect("chipPool");
     private final Color reviewModeBackground = new Color(1.0f, 0.90f, 0.90f);
     private final Color HighlightColor = new Color(0.2f, 0.95f, 0.75f);
@@ -71,7 +70,6 @@ public class YinshGameViewer extends CCanvas<YinshCell,YinshBoard> implements Yi
     public void init(ExtendedHashtable info,LFrameProtocol frame)
     {	enableAutoDone = true;
         super.init(info,frame);
-        numberMenu = new NumberMenu(this,YinshChip.WhiteChip,YinshId.ShowNumbers);
         b = new YinshBoard(info.getString(GAMETYPE, "Yinsh"),getStartingColorMap());
         useDirectDrawing(true); 
         doInit(false);
@@ -539,7 +537,6 @@ public class YinshGameViewer extends CCanvas<YinshCell,YinshBoard> implements Yi
         					b.blitz 
 												? s.get("make 5 in a row to capture a ring and win")
 												: s.get("make 5 in a row to capture a ring, 3 rings win"),progressRect, goalRect);
-        numberMenu.draw(gc,selectPos);
         drawVcrGroup(nonDragSelect, gc);
         drawViewsetMarker(gc,viewsetRect,nonDragSelect); 
     }
@@ -552,8 +549,8 @@ public class YinshGameViewer extends CCanvas<YinshCell,YinshBoard> implements Yi
     }
     public boolean Execute(commonMove m,replayMode replay)
     {   //System.out.println("e "+m);
-    	numberMenu.recordSequenceNumber(b.moveNumber);
     	handleExecute(b,m,replay);
+    	numberMenu.recordSequenceNumber(b.moveNumber);
         int size = CELLSIZE;
         int stackSize = b.animationStack.size();
     	if(stackSize>=2)
@@ -742,9 +739,6 @@ public class YinshGameViewer extends CCanvas<YinshCell,YinshBoard> implements Yi
         {
         default:
         	throw  G.Error("Hit Unknown: %s in state %s", hitCode,state);
-        case ShowNumbers:
-        	numberMenu.showMenu();
-        	break;
         case BoardLocation:
 
             switch (state)
@@ -827,14 +821,6 @@ public class YinshGameViewer extends CCanvas<YinshCell,YinshBoard> implements Yi
     {   //the initialization sequence
     	String token = his.nextToken();
         b.doInit(token);
-    }
-
-
-    public boolean handleDeferredEvent(Object target, String command)
-    {
-        if(super.handleDeferredEvent(target, command)) { return true; }
-        if(numberMenu.selectMenu(target,this)) { return(true); }
-        return false;
     }
 
 
@@ -957,7 +943,7 @@ public class YinshGameViewer extends CCanvas<YinshCell,YinshBoard> implements Yi
     }
 
 public int getLastPlacement(boolean empty) {
-	return b.placementCount+(b.DoneState()?1:0);
+	return b.placementCount;
 }
 
 }

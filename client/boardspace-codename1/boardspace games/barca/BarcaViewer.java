@@ -36,7 +36,7 @@ public class BarcaViewer extends CCanvas<BarcaCell,BarcaBoard> implements BarcaC
     private Color chatBackgroundColor = new Color(235,245,255);
     private Color rackBackGroundColor = new Color(235,245,255);
     private Color boardBackgroundColor = new Color(220,220,255);
-    private Color BlackArrowColor = new Color(230,200,255);;
+    private Color BlackArrowColor = new Color(230,200,255);
     
     // adjust the cell size for annotations.
     public int cellSize() { return (bb.cellSize()/(usePerspective() ? 2 : 1)); }
@@ -67,7 +67,6 @@ public class BarcaViewer extends CCanvas<BarcaCell,BarcaBoard> implements BarcaC
     // to visualize the layout during development.  Look for "show rectangles"
     // in the options menu.
     private Rectangle chipRects[] = addZoneRect("chip",2);
-    private NumberMenu numberMenu = new NumberMenu(this,BarcaChip.White_Mouse,BarcaId.ShowNumbers) ;
     
     private Toggle eyeRect = new Toggle(this,"eye",
 			StockArt.NoEye,BarcaId.ToggleEye,NoeyeExplanation,
@@ -488,7 +487,7 @@ public class BarcaViewer extends CCanvas<BarcaCell,BarcaBoard> implements BarcaC
      public boolean Execute(commonMove mm,replayMode replay)
     {	
         handleExecute(bb,mm,replay);
-        
+        numberMenu.recordSequenceNumber(bb.moveNumber);
         /**
          * animations are handled by a simple protocol between the board and viewer.
          * when stones are moved around on the board, it pushes the source and destination
@@ -608,9 +607,6 @@ public class BarcaViewer extends CCanvas<BarcaCell,BarcaBoard> implements BarcaC
             {
         	throw G.Error("Hit Unknown %s", hitCode);
             }
-        	break;
-        case ShowNumbers:
-        	numberMenu.showMenu();
         	break;
         case ToggleEye:
         	eyeRect.toggle();
@@ -789,7 +785,6 @@ public class BarcaViewer extends CCanvas<BarcaCell,BarcaBoard> implements BarcaC
    {  	eyeRect.activateOnMouse=true;
     	eyeRect.draw(gc,highlight);
     	DrawReverseMarker(gc,reverseRect,highlight);
-    	numberMenu.draw(gc,highlight);
    }
     
     /** this is the place where the canvas is actually repainted.  We get here
@@ -967,22 +962,9 @@ public class BarcaViewer extends CCanvas<BarcaCell,BarcaBoard> implements BarcaC
         }
     }
 
-    /** handle action events from menus.  Don't do any real work, just note
-     * state changes and if necessary set flags for the run loop to pick up.
-     * 
-     */
-    public boolean handleDeferredEvent(Object target, String command)
-    {
-        boolean handled = super.handleDeferredEvent(target, command);
-        if(!handled)
-        {
-        	if(numberMenu.selectMenu(target,this)) {  handled = true;}
-        }
-        return (handled);
-    }
 
 	public int getLastPlacement(boolean empty) {
-		return bb.moveNumber+(bb.DoneState()?1:0);
+		return bb.moveNumber;
 	}
 }
 

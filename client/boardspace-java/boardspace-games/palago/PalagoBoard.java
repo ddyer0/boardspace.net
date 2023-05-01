@@ -33,14 +33,14 @@ import lib.Random;
  *
  */
 
-class PalagoBoard extends hexBoard<PalagoCell> implements BoardProtocol,PalagoConstants
-{	
+class PalagoBoard extends infiniteHexBoard<PalagoCell> implements BoardProtocol,PalagoConstants
+{	static final int REVISION = 101;		// 101 switches to an infinite board
+	public int getMaxRevisionLevel() { return(REVISION); }
+
     static final String[] PalagoGRIDSTYLE = { "1", null, "A" }; // left and bottom numbers
     /* the "external representation for the board is A1 B2 etc.  This internal representation is X,Y
     where adjacent X's are separated by 2.  This gives the board nice mathematical properties for
     calculating adjacency and connectivity. */
-    static int[] ZfirstInCol19 = { 18, 17, 16, 15, 14,13,12,11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0 }; // these are indexes into the first ball in a column, ie B1 has index 2
-    static int[] ZnInCol19 =     { 19,19,19,19,19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19 }; // depth of columns, ie A has 4, B 5 etc.
 	private PalagoState unresign;
 	private PalagoState board_state;
 	public PalagoState getState() {return(board_state); }
@@ -87,7 +87,7 @@ class PalagoBoard extends hexBoard<PalagoCell> implements BoardProtocol,PalagoCo
     {	int n=0;
  		for(int dir = 0;dir<CELL_FULL_TURN;dir++)
 		{	PalagoCell d = c.exitTo(dir);
-			if(d.height()==0)
+			if(d!=null && d.height()==0)
 			{	n++;
 				h.put(d,d);
 			}
@@ -114,7 +114,7 @@ class PalagoBoard extends hexBoard<PalagoCell> implements BoardProtocol,PalagoCo
 	    		{	n += addAdj(h,c);
 	    		}
 	    		if(n==0) 
-	    			{ PalagoCell c = getCell((char)('A'+ncols/2),nrows/4);
+	    			{ PalagoCell c = getCell((char)('A'+ncols/2),nrows/2);
 	    			  h.put(c,c);
 	    			}
 	    	}
@@ -132,10 +132,12 @@ class PalagoBoard extends hexBoard<PalagoCell> implements BoardProtocol,PalagoCo
     {
         drawing_style = DrawingStyle.STYLE_NOTHING; // don't draw the cells.  STYLE_CELL to draw them
         Grid_Style = PalagoGRIDSTYLE;
-        isTorus=true;
+        isTorus = false;
+        revision = REVISION;
         setColorMap(map);
         doInit(init); // do the initialization 
     }
+
     public PalagoBoard cloneBoard() 
 	{ PalagoBoard dup = new PalagoBoard(gametype,getColorMap()); 
 	  dup.copyFrom(this);
@@ -147,13 +149,12 @@ class PalagoBoard extends hexBoard<PalagoCell> implements BoardProtocol,PalagoCo
     // standared init for Hex.  Presumably there could be different
     // initializations for variation games.
     private void Init_Standard(String game)
-    {	int[] firstcol = null;
-    	int[] ncol = null;
-    	if(Palago_INIT.equalsIgnoreCase(game)) {  firstcol = ZfirstInCol19; ncol = ZnInCol19; }
+    {	
+    	if(Palago_INIT.equalsIgnoreCase(game)) {  }
     	else { throw G.Error(WrongInitError,game); }
         gametype = game;
         setState(PalagoState.PUZZLE_STATE);
-        reInitBoard(firstcol, ncol, null); //this sets up a hexagonal board
+        reInitBoard(19,19); //this sets up a hexagonal board
          
         whoseTurn = FIRST_PLAYER_INDEX;
         chips_on_board = 0;
@@ -238,7 +239,8 @@ class PalagoBoard extends hexBoard<PalagoCell> implements BoardProtocol,PalagoCo
     }
     // this visitor method implements copying the contents of a cell on the board
     public void copyFrom(PalagoCell cc,PalagoCell fc)
-    {	super.copyFrom(cc,fc);
+    {
+    	super.copyFrom(cc,fc);
     	cc.nextPlaced = getCell(fc.nextPlaced);
     }
     
@@ -263,12 +265,41 @@ class PalagoBoard extends hexBoard<PalagoCell> implements BoardProtocol,PalagoCo
 
         sameboard(from_b); 
     }
+    
+    public String gameType()
+    { 
+      if(revision<101) { return gametype; }
+      // the lower case is a secret clue that we're in 4 token mode
+      // instead of 1 token      else
+      return(G.concat(gametype.toLowerCase()," ",players_in_game," ",randomKey," ",revision));
+    }
 
+    public void reInit(String d)
+    {
+    	revision = 0;
+    	doInit(d);
+    }
     /* initialize a board back to initial empty state */
     public void doInit(String gtype,long key)
-    {  randomKey = key;
+    {  
+       
+   	   StringTokenizer tok = new StringTokenizer(gtype);
+   	   String typ = tok.nextToken();
+   	   int np = tok.hasMoreTokens() ? G.IntToken(tok) : players_in_game;
+   	   long ran = tok.hasMoreTokens() ? G.IntToken(tok) : key;
+   	   int rev = tok.hasMoreTokens() ? G.IntToken(tok) : revision;
+   	   
+   	   doInit(typ,np,ran,rev);
+    }
+    public void doInit(String typ,int np,long ran,int rev)
+    {  
        Random r = new Random(72094);
-       Init_Standard(gtype);
+   	   adjustRevision(rev);
+   	   randomKey =ran;
+   	   G.Assert(np==2,"players can only be 2");
+   	   setIsTorus(rev<101);
+       Init_Standard(typ);
+       
        for(int i=0;i<PalagoChip.nChips;i++)
        {	chipPool[i]=new PalagoCell(r,PalagoId.ChipPool,i,PalagoChip.getChip(i));
        }
@@ -556,7 +587,7 @@ class PalagoBoard extends hexBoard<PalagoCell> implements BoardProtocol,PalagoCo
     public boolean Execute(commonMove mm,replayMode replay)
     {	Palagomovespec m = (Palagomovespec)mm;
 
-       //G.print("E "+m+" for "+whoseTurn+" "+board_state);
+        //G.print("E "+m+" for "+whoseTurn+" "+board_state+" "+Digest());
         switch (m.op)
         {
        case MOVE_DONE:
@@ -584,6 +615,7 @@ class PalagoBoard extends hexBoard<PalagoCell> implements BoardProtocol,PalagoCo
 			pickedObject = PalagoChip.getChip(m.object);		// get this object
 			pickedSourceStack[stackIndex] = chipPool[m.object];
             dropBoardCell(c);
+            createExitCells(c);
             setNextStateAfterDrop();
             lines = null;
 			}
@@ -642,6 +674,8 @@ class PalagoBoard extends hexBoard<PalagoCell> implements BoardProtocol,PalagoCo
        default:
         	cantExecute(m);
         }
+        //G.print("X "+m+" for "+whoseTurn+" "+board_state+" "+Digest());
+
         return (true);
     }
 
@@ -694,7 +728,7 @@ class PalagoBoard extends hexBoard<PalagoCell> implements BoardProtocol,PalagoCo
 			   for(int i=0;i<CELL_FULL_TURN;i++) 
 			   {	PalagoCell nx = c.exitTo(i);
 			   		// must be adjacent to the existing matrix
-			   		if(nx.topChip()!=null) { return(true); }
+			   		if(nx!=null && nx.topChip()!=null) { return(true); }
 			   }
 			   
 			}
@@ -794,7 +828,7 @@ class PalagoBoard extends hexBoard<PalagoCell> implements BoardProtocol,PalagoCo
  	case PLAY_STATE:
  		if(chips_on_board==0) 
  			{ // always open with tile 0
- 				all.addElement(new Palagomovespec(whoseTurn,MOVE_DROPB,(char)('A'+ncols/2),nrows/4,0)); 
+ 				all.addElement(new Palagomovespec(whoseTurn,MOVE_DROPB,(char)('A'+ncols/2),nrows/2,0)); 
  			}
  		else 
  		{ Hashtable<PalagoCell,PalagoCell> moves = new Hashtable<PalagoCell,PalagoCell>();

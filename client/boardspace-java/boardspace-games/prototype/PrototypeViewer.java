@@ -124,12 +124,6 @@ public class PrototypeViewer extends CCanvas<PrototypeCell,PrototypeBoard> imple
 			HighlightColor, rackBackGroundColor,rackIdleColor);
 	private TextButton doneButton = addButton(DoneAction,GameId.HitDoneButton,ExplainDone,
 			HighlightColor, rackBackGroundColor,rackIdleColor);
-	/**
-	 * numbermenu offers several options for showing move numbers superimposed on the moves
-	 * -- requires some coordination with board and cell classes
-	 */
-    private NumberMenu numberMenu = new NumberMenu(this,PrototypeChip.White,PrototypeId.ShowNumbers);
-
 	// private menu items
     private JCheckBoxMenuItem rotationOption = null;		// rotate the board view
     private boolean doRotation=true;					// current state
@@ -728,7 +722,7 @@ public class PrototypeViewer extends CCanvas<PrototypeCell,PrototypeBoard> imple
    		}
        // 
        // if it is not our move, we can't click on the board or related supplies.
-       // we accomplish this by supressing the highlight pointer.
+       // we accomplish this by suppressing the highlight pointer.
        //
        HitPoint ourTurnSelect = OurMove() ? selectPos : null;
        //
@@ -802,7 +796,6 @@ public class PrototypeViewer extends CCanvas<PrototypeCell,PrototypeBoard> imple
             //      DrawRepRect(gc,pl.displayRotation,Color.black,b.Digest(),repRect);
         eyeRect.activateOnMouse = true;
         eyeRect.draw(gc,selectPos);
-        numberMenu.draw(gc,selectPos);
         // draw the vcr controls, last so the pop-up version will be above everything else
         drawVcrGroup(nonDragSelect, gc);
 
@@ -818,10 +811,8 @@ public class PrototypeViewer extends CCanvas<PrototypeCell,PrototypeBoard> imple
      */
      public boolean Execute(commonMove mm,replayMode replay)
     {	
-    	//this is unnecessary for games with simple move structures (1 action per move)
-    	//numberMenu.recordSequenceNumber(bb.moveNumber());
         handleExecute(bb,mm,replay);
-        
+        numberMenu.recordSequenceNumber(bb.moveNumber());
         /**
          * animations are handled by a simple protocol between the board and viewer.
          * when stones are moved around on the board, it pushes the source and destination
@@ -893,23 +884,6 @@ public class PrototypeViewer extends CCanvas<PrototypeCell,PrototypeBoard> imple
  * For all ordinary cases, this is now handled by the standard implementation
  * in commonCanvas, which uses the board's Digest() method to distinguish new
  * states and reversions to past states.
- * 
- * For reference, the commented out method below does the same thing for "Hex". 
- * You could resort to similar techniques to replace or augment what super.EditHistory
- * does, but your efforts would probably be better spent improving your Digest() method
- * so the commonCanvas method gives the desired result.
- * 
- * Note that it should always be correct to simply return nmove and accept the messy
- * game record.
- * 
- * This may require that move be merged with an existing history move
- * and discarded.  Return null if nothing should be added to the history
- * One should be very cautious about this, only to remove real pairs that
- * result in a null move.  It is vital that the operations performed on
- * the history are identical in effect to the manipulations of the board
- * state performed by "nmove".  This is checked by verifyGameRecord().
- * 
- * in commonEditHistory()
  * 
  */
       public commonMove EditHistory(commonMove nmove)
@@ -1071,9 +1045,6 @@ public class PrototypeViewer extends CCanvas<PrototypeCell,PrototypeBoard> imple
             	throw G.Error("Hit Unknown object " + hitObject);
             }
         	break;
-        case ShowNumbers:
-        	numberMenu.showMenu();
-        	break;
         case ToggleEye:
         	eyeRect.toggle();
         	break;
@@ -1214,8 +1185,7 @@ public class PrototypeViewer extends CCanvas<PrototypeCell,PrototypeBoard> imple
     public boolean handleDeferredEvent(Object target, String command)
     {
         boolean handled = super.handleDeferredEvent(target, command);
-        if(numberMenu.selectMenu(target,this)) { return(true); }
-        else if(target==rotationOption)
+        if(target==rotationOption)
         {	handled=true;
         	doRotation = rotationOption.getState();
         	resetBounds();
@@ -1445,7 +1415,7 @@ public class PrototypeViewer extends CCanvas<PrototypeCell,PrototypeBoard> imple
     }
 
 	public int getLastPlacement(boolean empty) {
-		return (bb.moveNumber + (bb.DoneState()?1:0));
+		return (bb.moveNumber);
 	}
 }
 

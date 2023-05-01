@@ -44,7 +44,6 @@ import lib.StockArt;
  */
 
 /**
- * 
  * Change History
  */
 public class PalagoViewer extends CCanvas<PalagoCell,PalagoBoard> implements PalagoConstants, GameLayoutClient,ColorNames
@@ -162,7 +161,7 @@ public class PalagoViewer extends CCanvas<PalagoCell,PalagoBoard> implements Pal
    	 		  board_center_x =  board_center_y = 0; 
    	 		}
  
-        bb.doInit(bb.gametype);						// initialize the board
+        bb.doInit(bb.gameType());						// initialize the board
         if(!preserve_history)
     	{ 
         	startFirstPlayer();
@@ -377,7 +376,6 @@ public class PalagoViewer extends CCanvas<PalagoCell,PalagoBoard> implements Pal
        int cellSize = gb.cellSize();
        boolean draggingBoard = draggingBoard(); 
  	   boolean canHit = !draggingBoard && G.pointInRect(ourTurnSelect,tbRect);
- 	  
  	   //
         // now draw the contents of the board and anything it is pointing at
         //
@@ -385,18 +383,19 @@ public class PalagoViewer extends CCanvas<PalagoCell,PalagoBoard> implements Pal
         PalagoCell sourceCell = gb.getSource();
         PalagoCell destCell = gb.getDest();
         int left = G.Left(tbRect);
-        int top = G.Bottom(tbRect);
+        int bottom = G.Bottom(tbRect);
+        //int right = G.Right(tbRect);
+        //int top = G.Top(tbRect);
         for(Enumeration<PalagoCell> cells = gb.getIterator(Itype.TBRL); cells.hasMoreElements(); )
         { //where we draw the grid
         	PalagoCell ccell = cells.nextElement();
             int xpos = left + gb.cellToX(ccell);
-            int ypos = top - gb.cellToY(ccell);     
-                            
+            int ypos = bottom - gb.cellToY(ccell);     
             boolean isADest = dests.get(ccell)!=null;
             boolean isASource = (ccell==sourceCell)||(ccell==destCell);
             boolean canHitThis = canHit && gb.LegalToHitBoard(ccell);
             String labl = use_grid ? ccell.cellName : "";//+ccell.col+ccell.row;
-            if(G.debug() && !use_grid) { labl+=""+ccell.col+ccell.row; }
+            //if(G.debug() && !use_grid) { labl+=""+ccell.printCol()+ccell.row; }
             if(ccell.drawChip(gc,this,canHitThis?ourTurnSelect:null,cellSize,xpos,ypos,labl))
             {	
                 boolean isEmpty = ccell.topChip()==null;
@@ -414,6 +413,11 @@ public class PalagoViewer extends CCanvas<PalagoCell,PalagoBoard> implements Pal
                 ourTurnSelect.spriteColor = Color.red;
                 }
             }
+            
+            //if(G.debug() && ccell.topChip()==null)
+            //{	// draw a grid of other cells
+            //	GC.Text(gc,true,xpos-CELLSIZE/2,ypos-CELLSIZE/2,CELLSIZE,CELLSIZE,null,null,""+G.printCol(ccell.col)+ccell.row);
+            //}
             if (gc != null)
             {
             if(ccell==destCell) 
@@ -757,7 +761,7 @@ public class PalagoViewer extends CCanvas<PalagoCell,PalagoBoard> implements Pal
 
 
     // return what will be the init type for the game
-    public String gameType() { return(bb.gametype); }	// this is the subgame "setup" within the master type.
+    public String gameType() { return(bb.gameType()); }	// this is the subgame "setup" within the master type.
     public String sgfGameType() { return(Palago_SGF); }	// this is the official SGF number assigned to the game
 
     
@@ -765,7 +769,18 @@ public class PalagoViewer extends CCanvas<PalagoCell,PalagoBoard> implements Pal
     public void performHistoryInitialization(StringTokenizer his)
     {   //the initialization sequence
     	String token = his.nextToken();
-        bb.doInit(token);
+    	if("Palago".equals(token))
+    	{
+            bb.doInit(token);
+    	}
+    	else
+    	{
+    	int np = G.IntToken(his);
+    	long rv = G.LongToken(his);
+    	int rev = G.IntToken(his);
+    	bb.doInit(token,np,rv,rev);
+    	}
+    	
     }
 
 
@@ -854,7 +869,7 @@ public class PalagoViewer extends CCanvas<PalagoCell,PalagoBoard> implements Pal
             
             if (setup_property.equals(name))
             {
-                bb.doInit(value);
+                bb.reInit(value);
              }
             else if (name.equals(comment_property))
             {

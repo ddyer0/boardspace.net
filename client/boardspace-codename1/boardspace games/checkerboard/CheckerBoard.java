@@ -761,6 +761,7 @@ class CheckerBoard extends rectBoard<CheckerCell> implements BoardProtocol
     	boolean kingMe = (dest!=null) && !isKing && (dest.row==kingRow[whoseTurn]);
     	lastDest[whoseTurn] = dest;
     	currentDest = null;
+    	lastPlacedIndex++;
     	if(!isKing) 
     		{ lastProgressMove = moveNumber; }
     	// special bit for the animations

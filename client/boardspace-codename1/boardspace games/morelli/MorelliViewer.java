@@ -53,7 +53,6 @@ public class MorelliViewer extends CCanvas<MorelliCell,MorelliBoard> implements 
     // to visualize the layout during development.  Look for "show rectangles"
     // in the options menu.
     private Rectangle chipRects[] = addRect("chip",2);
-    private NumberMenu numberMenu = null;
     
     private JCheckBoxMenuItem checkerOption = null;
    
@@ -91,7 +90,6 @@ public class MorelliViewer extends CCanvas<MorelliCell,MorelliBoard> implements 
 
         int randomKey = info.getInt(OnlineConstants.RANDOMSEED,-1);
        
-        numberMenu = new NumberMenu(this,MorelliChip.getChip(0),MorelliId.ShowNumbers) ;
         
         b = new MorelliBoard(info.getString(OnlineConstants.GAMETYPE, Variations.morelli_13.name),
         		randomKey,players_in_game,getStartingColorMap(),MorelliBoard.REVISION);
@@ -331,7 +329,6 @@ public class MorelliViewer extends CCanvas<MorelliCell,MorelliBoard> implements 
     }
      public void drawAuxControls(Graphics gc,HitPoint highlight)
     { 
-    	 numberMenu.draw(gc,highlight);
     }
     //
     // draw the board and things on it.  If gc!=null then actually 
@@ -412,6 +409,7 @@ public class MorelliViewer extends CCanvas<MorelliCell,MorelliBoard> implements 
      public boolean Execute(commonMove mm,replayMode replay)
     {	
         handleExecute(b,mm,replay);
+        numberMenu.recordSequenceNumber(b.moveNumber());
         startBoardAnimations(replay,b.animationStack,SQUARESIZE,MovementStyle.Simultaneous);
         if(replay!=replayMode.Replay) { playSounds(mm); }
  
@@ -618,9 +616,6 @@ private void playSounds(commonMove m)
         	PerformAndTransmit("Choose "+Setup.getSetup(hitObject));
         	break;
         	
-        case ShowNumbers:
-        	numberMenu.showMenu();
-        	break;
          case BoardLocation:	// we hit the board 
 			switch(state)
 			{
@@ -700,7 +695,6 @@ private void playSounds(commonMove m)
     	generalRefresh();
     	return(true);
     	}
-    	else if(numberMenu.selectMenu(target,this)) {  return true; }
     	else 
     	return(super.handleDeferredEvent(target,command));
      }
@@ -781,7 +775,7 @@ private void playSounds(commonMove m)
     }
     
 	public int getLastPlacement(boolean empty) {
-		return b.moveNumber+(b.DoneState()?1:0);
+		return b.moveNumber;
 	}
 }
 

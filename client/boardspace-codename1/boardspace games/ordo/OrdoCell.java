@@ -2,6 +2,7 @@ package ordo;
 
 import lib.Random;
 import lib.OStack;
+import online.game.PlacementProvider;
 import online.game.stackCell;
 import ordo.OrdoConstants.OrdoId;
 
@@ -9,8 +10,17 @@ class CellStack extends OStack<OrdoCell>
 {
 	public OrdoCell[] newComponentArray(int n) { return(new OrdoCell[n]); }
 }
-public class OrdoCell extends stackCell<OrdoCell,OrdoChip>
+public class OrdoCell extends stackCell<OrdoCell,OrdoChip> implements PlacementProvider
 {	int sweep_counter = 0;
+
+	int lastPlaced = -1;
+	int lastEmptied = -1;
+	int lastCaptured = -1;
+  	int previousLastPlaced = 0;
+  	int previousLastEmptied = 0;
+  	OrdoChip previousLastContents = null;
+	OrdoChip lastContents;
+
 	public OrdoChip[] newComponentArray(int n) { return(new OrdoChip[n]); }
 	// constructor
 	public OrdoCell(char c,int r) 
@@ -66,6 +76,29 @@ public class OrdoCell extends stackCell<OrdoCell,OrdoChip>
 	public void reInit()
 	{	super.reInit();
 		sweep_counter = 0;
+		lastPlaced = -1;
+		lastEmptied = -1;
+		lastCaptured = -1;
+		lastContents = null;
+	  	previousLastPlaced = -1;
+	  	previousLastEmptied = -1;
+	  	previousLastContents = null;
+
+	}
+	public void copyFrom(OrdoCell ot)
+	{	super.copyFrom(ot);
+		lastPlaced = ot.lastPlaced;
+		lastEmptied = ot.lastEmptied;
+		lastCaptured = ot.lastCaptured;
+		lastContents = ot.lastContents;
+	  	previousLastPlaced = ot.previousLastPlaced;
+	  	previousLastEmptied = ot.previousLastEmptied;
+	  	previousLastContents = ot.previousLastContents;
+
+
+	}
+	public int getLastPlacement(boolean empty) {
+		return empty ? lastEmptied : lastPlaced;
 	}
 
 }

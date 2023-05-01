@@ -133,7 +133,6 @@ public class PushfightChip extends chip<PushfightChip> implements PushfightConst
 		white_round.altChip = white_roundO;
 		red_oblique.altChip = red_obliqueO;
 		imagesLoaded = true;
-		
 		}
 	}   
 }

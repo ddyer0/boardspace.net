@@ -18,6 +18,7 @@ public class SpanglesCell extends chipCell<SpanglesCell,SpanglesChip> implements
 	public SpanglesCell(Random r) { super(r); }		// construct a cell not on the board
 	public SpanglesCell(char c,int r) 		// construct a cell on the board
 	{	super(Geometry.Triangle,c,r);
+		rackLocation = SpanglesId.BoardLocation;
 	};
 	// constructor a cell not on the board, with a chip.  Used to construct the pool chips
 	public SpanglesCell(Random r,SpanglesId loc,SpanglesChip cont)
@@ -30,7 +31,7 @@ public class SpanglesCell extends chipCell<SpanglesCell,SpanglesChip> implements
 	public boolean isIsolated(SpanglesCell ignoring)
 	{	for(int i=0;i<geometry.n;i++) 
 			{ SpanglesCell ex = exitTo(i);
-			  if((ex!=ignoring) && (ex.chip!=null)) { return(false); }
+			  if((ex!=null) && (ex!=ignoring) && (ex.chip!=null)) { return(false); }
 			}
 		return(true);
 	}

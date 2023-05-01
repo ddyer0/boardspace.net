@@ -41,6 +41,7 @@ public abstract class chip<T extends chip<T>> extends DrawableImage<T> implement
     {
  		return(getAltDisplayChip((int)c.randomv));
     }
+	
 	/**
 	 * this is the opportunity to substitute a decorative different chip on the way to being drawn,
 	 * based on the cell where it resides.  This is (for example) used to present one of several

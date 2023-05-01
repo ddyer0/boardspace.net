@@ -10,11 +10,15 @@ class CellStack extends OStack<DvonnCell>
 	public DvonnCell[] newComponentArray(int n) { return(new DvonnCell[n]); }
 }
 
-public class DvonnCell extends stackCell<DvonnCell,DvonnChip>
+public class DvonnCell extends stackCell<DvonnCell,DvonnChip> implements PlacementProvider
+
 {	public DvonnChip[] newComponentArray(int n) { return(new DvonnChip[n]); }
 	// constructor
 	int sweep_counter = 0;
 	int hasDvonn = 0;
+	int lastEmptied = -1;
+	int lastPlaced = -1;
+	int lastEmptiedPlayer = -1;
 	
 	// constructor
 	public DvonnCell(char c,int r,Geometry geom) 
@@ -33,6 +37,9 @@ public class DvonnCell extends stackCell<DvonnCell,DvonnChip>
 	}
 	public void reInit()
 	{	hasDvonn = 0;
+		lastEmptied = -1;
+		lastEmptiedPlayer = -1;
+		lastPlaced = -1;
 		super.reInit();
 	}
 
@@ -62,11 +69,18 @@ public class DvonnCell extends stackCell<DvonnCell,DvonnChip>
 	{
 		super.copyFrom(other);
 		hasDvonn = other.hasDvonn;
+		lastEmptied = other.lastEmptied;
+		lastEmptiedPlayer = other.lastEmptiedPlayer;
+		lastPlaced = other.lastPlaced;
 	}
 	public DvonnCell copy()
 	{	DvonnCell o = new DvonnCell(col,row,geometry);
 		o.copyAllFrom(this);
 		return(o);
+	}
+
+	public int getLastPlacement(boolean empty) {
+		return empty ? lastEmptied : lastPlaced;
 	}
 
 }

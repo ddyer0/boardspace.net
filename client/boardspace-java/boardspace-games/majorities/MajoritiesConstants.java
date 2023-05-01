@@ -53,8 +53,8 @@ public interface MajoritiesConstants
     	White_Chip_Pool("W"),
     	BoardLocation(null),
     	EmptyBoard(null), 
-    	ShowNumbers(null),;
-    	String shortName = name();
+    	;
+		String shortName = name();
     	MajoritiesChip chip;
     	public String shortName() { return(shortName); }
     	MajoritiesId(String sn) { if(sn!=null) { shortName = sn; }}

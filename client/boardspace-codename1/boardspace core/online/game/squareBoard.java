@@ -16,7 +16,11 @@ public abstract class squareBoard<CELLTYPE extends cell<CELLTYPE>> extends squar
 	
 	private static int sq_dxs[] = { -1, 0, 1, 0};
 	private static int sq_dys[] = {  0, 1, 0, -1};
-	private static String sq_direction_names[]  = {"Left","Up","Right","Down"};
+	public String DIRECTION_NAMES[] =  {"Left","Up","Right","Down"};
+	public int[] dxs() { return sq_dxs; }
+	public int[] dys() { return sq_dys; }
+	
+	public Geometry geometry() { return Geometry.Square; }
 
 	/** the direction to move visually left from this cell to the next cell */
 	protected static final int CELL_LEFT = 0;
@@ -46,13 +50,7 @@ public abstract class squareBoard<CELLTYPE extends cell<CELLTYPE>> extends squar
 	 */
 	public void  initBoard(int ncol,int nrow)
 	{	
-		dxs = sq_dxs;
-		dys = sq_dys;
-		DIRECTION_NAMES = 	sq_direction_names;
-
-		geometry = Geometry.Square;
 		super.initBoard(ncol,nrow);
-
 	}
 	/**
 	 * initialize a square geometry board with an irregular outline, similar to 
@@ -64,7 +62,7 @@ public abstract class squareBoard<CELLTYPE extends cell<CELLTYPE>> extends squar
     public void initBoard(int nc[],int fc[])
     {	int ncols = nc.length;
     	int nrows = 0;
-    	geometry = Geometry.Square;
+    	geometry = geometry();
     	for(int i=0;i<ncols;i++) { nrows = Math.max(nrows,nc[i]+fc[i]-1); }
     	initBoard(ncols,nrows);
     	// remove excess cells

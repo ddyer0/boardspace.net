@@ -48,7 +48,6 @@ public class CheckerGameViewer extends CCanvas<CheckerCell,CheckerBoard> impleme
     // to visualize the layout during development.  Look for "show rectangles"
     // in the options menu.
     private Rectangle playerChipRect[] = addRect("chip",2);
-    private NumberMenu numberMenu = new NumberMenu(this,CheckerChip.white,CheckerId.ShowNumbers);
  
     private Rectangle reverseViewRect = addRect("reverse");
     private JCheckBoxMenuItem reverseOption = null;
@@ -423,7 +422,6 @@ public class CheckerGameViewer extends CCanvas<CheckerCell,CheckerBoard> impleme
        DrawReverseMarker(gc,reverseViewRect,highlight,CheckerId.ReverseViewButton);
        eyeRect.activateOnMouse=true;
        eyeRect.draw(gc,highlight);
-       numberMenu.draw(gc,highlight);
     }
     //
     // draw the board and things on it.  If gc!=null then actually 
@@ -524,9 +522,10 @@ public class CheckerGameViewer extends CCanvas<CheckerCell,CheckerBoard> impleme
      * seriously wrong.
      */
      public boolean Execute(commonMove mm,replayMode replay)
-    {	// record where the boundaries in move numbers lie
-        numberMenu.recordSequenceNumber(b.moveNumber());
+    {	
         handleExecute(b,mm,replay);
+        // record where the boundaries in move numbers lie
+        numberMenu.recordSequenceNumber(b.moveNumber());
         lastDropped = b.lastDropped;
  
         startBoardAnimations(replay);
@@ -870,9 +869,6 @@ private void playSounds(commonMove m)
         {
         default:
         	throw G.Error("Hit Unknown: %s", hitObject);
-        case ShowNumbers:
-        	numberMenu.showMenu();
-        	break;
         case ToggleEye:
         	eyeRect.toggle();
         	break;
@@ -1089,7 +1085,6 @@ private void playSounds(commonMove m)
     		}
     		return(true);
     	}
-    	else if(numberMenu.selectMenu(target,this)) { return(true); }
     	else if(target==reverseOption)
     	{
     	b.setReverseY(reverseOption.getState());

@@ -13,8 +13,12 @@ public abstract class hexBoard<CELLTYPE extends cell<CELLTYPE>> extends gBoard<C
     /* the x,y offset to adjacent cell in any of the 6 directions of a hexagonal board. 
      * these are mostly superseded by using the exitToward method of the cells 
      */
-    private static final int[] dys = { -1, +1, +2, +1, -1, -2 }; 	//x offsets for adjacent space
-    private static final int[] dxs = { -1, -1, 0, 1, 1, 0 };		//y offsets for adjacent space
+    private static final int[] hex_dys = { -1, +1, +2, +1, -1, -2 }; 	//x offsets for adjacent space
+    private static final int[] hex_dxs = { -1, -1, 0, 1, 1, 0 };		//y offsets for adjacent space
+    public int[] dxs() { return hex_dxs; }
+    public int[] dys() { return hex_dys; }
+    public Geometry geometry() { return Geometry.Hex; }
+    
     public double yCellRatio() { return(1.165); }
     public double yGridRatio() { return(Math.sqrt(3.0)); }
     /** for hexagonal geometry, add this to rotate to the opposite direction */
@@ -194,7 +198,7 @@ public abstract class hexBoard<CELLTYPE extends cell<CELLTYPE>> extends gBoard<C
         
     		G.Assert(geometry==allCells.geometry,"board geometry should match cell geometry");
 
-        	setCrossLinks(dxs,dys);
+        	setCrossLinks();
   
     }
     private int prevfc[] = null;
@@ -237,7 +241,7 @@ public abstract class hexBoard<CELLTYPE extends cell<CELLTYPE>> extends gBoard<C
     {
         int col0 = col - 'A'; // convert A=0 B=1
         int y = ((col0 >= 0) && (col0 < ncols))
-            ? ((2 * ((row-1) - +firstRowInCol[col0])) + firstRowOffset[col0]) : 0; // y index in the board array
+            ? ((2 * ((row-1) - +firstRowInCol[col0])) + firstRowOffset(col0)) : 0; // y index in the board array
         return (y); // y index in the board array
     }
 
@@ -257,18 +261,19 @@ public abstract class hexBoard<CELLTYPE extends cell<CELLTYPE>> extends gBoard<C
         int col0 = x;
         int y0 = y;
         // this logic only tries to work if we step only one cell
-        if(col0==-1) {  col0 += ncols; y0 -= (firstRowOffset[0]-firstRowOffset[ncols-1]+1); }
-        else if(col0==ncols) { col0 -= ncols; y0 += (firstRowOffset[0]-firstRowOffset[ncols-1]+1); }
+        if(col0==-1) {  col0 += ncols; y0 -= (firstRowOffset(0)-firstRowOffset(ncols-1)+1); }
+        else if(col0==ncols) { col0 -= ncols; y0 += (firstRowOffset(0)-firstRowOffset(ncols-1)+1); }
         G.Assert(((col0 >= 0) && (col0 < ncols)),"%s not in board",col0);
-        int row = (((y0 - firstRowOffset[col0]) / 2)+1 + firstRowInCol[col0]);
+        int row = (((y0 - firstRowOffset(col0)) / 2)+1 + firstRowInCol[col0]);
         return(torusWrapRow((char)('A'+col0),row)); 
     	}
        
     int col0 = x;//(x - 1) / 2;
     int row = ((col0 >= 0) && (col0 < ncols))
-           ? (((y - firstRowOffset[col0]) / 2)+1 + firstRowInCol[col0]) : 0;
+           ? (((y - firstRowOffset(col0)) / 2)+1 + firstRowInCol[col0]) : 0;
     return (row);
     }
+    
     public final char torusWrapCol(char col) 
     { if(col<'A') { col+=ncols; }
       else if (col>=('A'+ncols)) { col -= ncols; }
@@ -326,24 +331,36 @@ public abstract class hexBoard<CELLTYPE extends cell<CELLTYPE>> extends gBoard<C
      * @return an integer
      */
     public final int geo_rownum(char col,int arow)
-    {	int fcol = Math.max(Math.min(ncols-1,col-'A'),0);	// can be out of range when asking about border rows for the grid
+    {	if(displayParameters.reverse_y)
+    	{
+    	int fcol = Math.max(Math.min(ncols-1,col-'A'),0);	// can be out of range when asking about border rows for the grid
     	int lcol = geo_colnum(col);
-    	return(displayParameters.reverse_y ?nInCol[fcol]-(arow-1-firstRowInCol[fcol])+firstRowInCol[lcol] : arow);
+    	return nInCol[fcol]-(arow-1-firstRowInCol[fcol])+firstRowInCol[lcol];
+    	}
+	    else
+	    {
+	    	return arow;
+	    }
+
     }
+
     /**
      * convert col into a column number, considering the reverse x and reverse y flags.
      * @param colchar
      * @return an integer
      */
     public final int geo_colnum(char colchar)
-    {
+    {	
     	int col = colchar - 'A';
     	if(displayParameters.reverse_x!=displayParameters.reverse_y) 
     		{ col = (ncols-col)-1; 
     		}
     	return(col);
     }
-
+    public int firstRowOffset(int col)
+    {
+    	return isTorus ? ncols-col : firstRowOffset[col];
+    }
  
     /** convert cell col,row to Y coordinate
      * 
@@ -352,9 +369,10 @@ public abstract class hexBoard<CELLTYPE extends cell<CELLTYPE>> extends gBoard<C
     {
         int col = geo_colnum(colchar);
         int thisrow = geo_rownum(colchar,arow);
-        int coffset = firstRowOffset[col];
-        double y0 = ((thisrow - firstRowInCol[col] ) * displayParameters.YCELLSIZE) +
-            (coffset * displayParameters.GRIDSIZE);
+        int coffset = firstRowOffset(col);
+        double y0 = ((thisrow - firstRowInCol[(col+ncols)%ncols] ) * displayParameters.YCELLSIZE) 
+        		+ (coffset * displayParameters.GRIDSIZE)
+        		;
 
         return (y0);
     }
@@ -365,7 +383,9 @@ public abstract class hexBoard<CELLTYPE extends cell<CELLTYPE>> extends gBoard<C
      public double cellToX00(char colchar, int row)
     {	
         int col = geo_colnum(colchar);
-        return ((((col * 2) + 2) * displayParameters.CELLSIZE) / 2);
+        double col2 = ((col+1) * displayParameters.CELLSIZE);
+        return col2;
+
     }
     /**
     // 

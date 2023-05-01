@@ -61,6 +61,11 @@ class DvonnBoard extends hexBoard<DvonnCell> implements BoardProtocol,DvonnConst
     public DvonnCell rack[] = new DvonnCell[2];		// unplaced rings
     public DvonnCell captures[] = new DvonnCell[2];	// captured rings
     public CellStack animationStack = new CellStack();
+    
+    private int previousLastPlaced = 0;
+    private int previousLastEmptied = 0;
+    private int previousLastPlayer = 0;
+
  // factory method
 	public DvonnCell newcell(char c,int r)
 	{	return(new DvonnCell(c,r,cell.Geometry.Hex));
@@ -178,6 +183,9 @@ class DvonnBoard extends hexBoard<DvonnCell> implements BoardProtocol,DvonnConst
     	undoCaptures(undoInfo,true);
     	moveStack(dr,pickedStack,droppedHeight);
     	droppedDest =  null;
+   
+    	dr.lastPlaced = previousLastPlaced;    	
+
     	}
        	undoInfo = null;
     }
@@ -193,7 +201,11 @@ class DvonnBoard extends hexBoard<DvonnCell> implements BoardProtocol,DvonnConst
     	if((pickedStack.height()>0) && (droppedDest==null))
     	{
     	moveStack(pickedStack,pickedSource,pickedStack.height());
+        
+        pickedSource.lastEmptied = previousLastEmptied;
+        pickedSource.lastEmptiedPlayer = previousLastPlayer;
         pickedSource = null;
+
      	}
      }
     // 
@@ -205,12 +217,22 @@ class DvonnBoard extends hexBoard<DvonnCell> implements BoardProtocol,DvonnConst
        droppedDest = d;
        droppedHeight = pickedStack.height();
        moveStack(pickedStack,d,droppedHeight);
+       
+       previousLastPlaced = d.lastPlaced;
+       d.lastPlaced = moveNumber;
+
        lastDropped = d.topChip();
     }
     private void pickObject(DvonnCell src,int height)
     {  	pickedSource = src;
    		int sz = (height>0) ? height : src.height();
     	moveStack(src,pickedStack,sz);
+    	
+		previousLastEmptied = src.lastEmptied;
+		previousLastPlayer = src.lastEmptiedPlayer;
+		src.lastEmptied = moveNumber;
+		src.lastEmptiedPlayer = whoseTurn;
+
      }
     
     private DvonnCell getCell(DvonnId source,char col,int row)
@@ -363,6 +385,11 @@ class DvonnBoard extends hexBoard<DvonnCell> implements BoardProtocol,DvonnConst
         board_state = from_b.board_state;
         unresign = from_b.unresign;
         robotDepth = from_b.robotDepth;
+        
+        previousLastPlaced = from_b.previousLastPlaced;
+        previousLastEmptied = from_b.previousLastEmptied;
+        previousLastPlayer = from_b.previousLastPlayer;
+
         sameboard(from_b);	// check
     }
     /* initialize a board back to initial empty state */
@@ -374,6 +401,10 @@ class DvonnBoard extends hexBoard<DvonnCell> implements BoardProtocol,DvonnConst
        pickedStack.reInit();
        robotState.clear();
        robotDepth = 0;
+       previousLastPlaced = 0;
+       previousLastEmptied = 0;
+       previousLastPlayer = 0;
+
        droppedHeight = 0;
        pickedSource = null;
        droppedDest = null;
@@ -743,6 +774,14 @@ class DvonnBoard extends hexBoard<DvonnCell> implements BoardProtocol,DvonnConst
         	m.setDestHeight(to.height());
         	moveStack(from,to,height);
         	undoInfo = m.undoInfo = sweepForDvonnContact(replay);
+        	
+        	previousLastEmptied = from.lastEmptied;
+        	previousLastPlayer = from.lastEmptiedPlayer;
+        	previousLastPlaced = to.lastPlaced;
+        	from.lastEmptied = moveNumber;
+        	from.lastEmptiedPlayer = whoseTurn;
+        	to.lastPlaced = moveNumber;
+
             setNextStateAfterDrop();
         	}
         	break;

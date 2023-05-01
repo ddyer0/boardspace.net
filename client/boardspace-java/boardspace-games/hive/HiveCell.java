@@ -92,7 +92,7 @@ public class HiveCell extends stackCell<HiveCell,HivePiece> implements Placement
 	public boolean isSurrounded()
 	{	for(int lim=geometry.n-1;lim>=0;lim--)
 		{ HiveCell c = exitTo(lim);
-		  if(c.height()==0) { return(false); }
+		  if(c!=null && c.height()==0) { return(false); }
 		}
 		return(true);
 	}
@@ -101,8 +101,11 @@ public class HiveCell extends stackCell<HiveCell,HivePiece> implements Placement
 	{	int n=0;
 		for(int lim=geometry.n-1;lim>=0;lim--)
 		{ HiveCell c = exitTo(lim);
+		  if(c!=null)
+		  {
 		  HivePiece bug = c.topChip();
 		  if((bug!=null) && (bug.color==color)) { n++; }
+		  }
 		}
 		return(n);
 	}
@@ -111,8 +114,11 @@ public class HiveCell extends stackCell<HiveCell,HivePiece> implements Placement
 	{	int n=0;
 		for(int lim=geometry.n-1;lim>=0;lim--)
 		{ HiveCell c = exitTo(lim);
+		  if(c!=null)
+		  {
 		  HivePiece bug = c.topChip();
 		  if((bug!=null) && (bug.color!=color)) { n++; }
+		  }
 		}
 		return(n);
 	}
@@ -121,7 +127,7 @@ public class HiveCell extends stackCell<HiveCell,HivePiece> implements Placement
 	{	int n=0;
 		for(int lim=geometry.n-1;lim>=0;lim--)
 		{ HiveCell c = exitTo(lim);
-		  if(c.height()>0) 
+		  if(c!=null && c.height()>0) 
 		  	{ n++; }
 		}
 		return(n);
@@ -203,7 +209,7 @@ public class HiveCell extends stackCell<HiveCell,HivePiece> implements Placement
 		for(int lim=geometry.n;lim>=0;lim--) 
 			{
 			HiveCell adjto = exitTo(lim);
-			if( (adjto.height() > 0) &&  (adjto!=empty) && s.isAdjacentTo(adjto)){ return(true); }
+			if(adjto!=null && (adjto.height() > 0) &&  (adjto!=empty) && s.isAdjacentTo(adjto)){ return(true); }
 			}
     	}
     	return(false);

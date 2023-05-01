@@ -70,8 +70,6 @@ public class ZertzGameViewer extends CCanvas<zCell,GameBoard> implements GameCon
     private Rectangle variationRect = addRect("variationRect");
     public Rectangle rackRects[] = addRect("rack",2);
     
-    private NumberMenu numberMenu = null;
-
     private TextButton swapButton = addButton(SwapFirst,GameId.HitSwapButton,SwapFirst,
 			HighlightColor, rackBackGroundColor);
     private Rectangle repRect = addRect("repRect");
@@ -113,7 +111,6 @@ public class ZertzGameViewer extends CCanvas<zCell,GameBoard> implements GameCon
         super.init(info,frame);
         MouseColors = zMouseColors;
         MouseDotColors = zMouseDotColors;
-        numberMenu = new NumberMenu(this,zChip.White,ZertzId.ShowNumbers);
      
         b = new GameBoard(info.getString(GAMETYPE, "Zertz"));
         useDirectDrawing(true);
@@ -550,7 +547,6 @@ public class ZertzGameViewer extends CCanvas<zCell,GameBoard> implements GameCon
     				PerformAndTransmit("SetBoard "+v.shortName);
      				return(true);
     			}
-    	else if(numberMenu.selectMenu(target,this)) { return true;}
     	else return(super.handleDeferredEvent(target,command));
     }
     
@@ -634,7 +630,6 @@ public class ZertzGameViewer extends CCanvas<zCell,GameBoard> implements GameCon
 				s.get(GoalMessage),progressRect, goalRect);
 
         DrawRepRect(gc,messageRotation,Color.black, bd.Digest(),repRect);	// Not needed for barca
-        numberMenu.draw(gc,selectPos);
         drawVcrGroup(nonDragSelect, gc);
         drawVariation(gc,ourTurnSelect);
     }
@@ -649,9 +644,11 @@ public class ZertzGameViewer extends CCanvas<zCell,GameBoard> implements GameCon
     	  replay = replayMode.Single; 
     	}
     	
+
+   	handleExecute(b,m,replay);
     // record where the boundaries in move numbers lie
     numberMenu.recordSequenceNumber(b.moveNumber());
-   	handleExecute(b,m,replay);
+    
    	if(m.op==MOVE_SETBOARD) { resetBounds(); }
    	// in capture moves, SequentialFromStart shows the captured ball in its original place
    	// until the jumping ball has landed
@@ -929,7 +926,6 @@ public class ZertzGameViewer extends CCanvas<zCell,GameBoard> implements GameCon
             }
 
         }
-        else if (hitObject == ZertzId.ShowNumbers) { numberMenu.showMenu(); }
         else if (hitObject == ZertzId.EmptyBoard)
         {	
             PerformAndTransmit("R- " + highlightBoardCol + " " +

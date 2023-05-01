@@ -80,7 +80,7 @@ July 2006 added repeatedPositions related functions
 // TODO: game records can acquire inconsistent times when editing with more than one player, which causes a flood of logged errors
 //
 public abstract class commonCanvas extends exCanvas 
-	implements PlayConstants,ViewerProtocol,CanvasProtocol,sgf_names,ActionListener,Opcodes
+	implements PlayConstants,ViewerProtocol,CanvasProtocol,sgf_names,ActionListener,Opcodes,PlacementProvider
 { // state shared with parent frame
     // aux sliders
     public static final String LiftExplanation = "spread stacks for easy viewing";
@@ -129,8 +129,10 @@ public abstract class commonCanvas extends exCanvas
      TBRL,	// top-bottom fast, right-left slow (normal for hexagonal grids)
      TBLR,	// top-bottom fast, left-right slow
      LRBT,	// left-right fast, bottom-top slow
+     RLBT,  // right-left fast, bottom-top slow
      BTLR,	// bottom-top fast, left-right slow
      BTRL,	// bottom-top fast, right-left slow
+     ANY,	// no preference
      ;
     }
 	
@@ -1388,7 +1390,7 @@ public abstract class commonCanvas extends exCanvas
     public Rectangle logRect = addZoneRect("logRect"); //the game log, normally off the the right
 
     public AnnotationMenu annotationMenu = new AnnotationMenu(this,GameId.ShowAnnotations);
-
+    public NumberMenu numberMenu =  new NumberMenu(this,StockArt.EmptyCheckbox,GameId.ShowNumbers);
    
     /**
      * this is a standard rectangle shared by all viewers which displays the progress
@@ -3053,7 +3055,9 @@ public abstract class commonCanvas extends exCanvas
     	case PlaceAnnotation:
     		annotationMenu.saveCurrentAnnotation(hitPoint,getCurrentMove());
         	return true;
-        	
+    	case ShowNumbers:
+    		showNumberMenu();
+    		return true;
         case ShowAnnotations:
         	showAnnotationMenu(); 
         	return true;
@@ -3248,7 +3252,13 @@ public abstract class commonCanvas extends exCanvas
     	  && !getActivePlayer().spectator) 
     		{ scrollFarForward(); }
     }
-    
+    /**
+     * this is where the annotation menu is actually drawn.
+     * Wrap this method if you need to make any adjustments
+     * 
+     * @param g
+     * @param p
+     */
     public void drawAnnotationMenu(Graphics g,HitPoint p)
     {
     	if(G.Height(annotationMenu)>0)
@@ -3256,14 +3266,43 @@ public abstract class commonCanvas extends exCanvas
     		annotationMenu.draw(g,p);
     	}
     }
+    /**
+     * this is where the number menu is actually drawn.
+     * Wrap this method if you need to make any adjustments.
+     * 
+     * @param g
+     * @param p
+     */
+    public void drawNumberMenu(Graphics g,HitPoint p)
+    {
+    	if(G.Height(numberMenu)>0)
+    	{
+    		numberMenu.draw(g,p);
+    	}
+    }
+    /**
+     * this is where the annotation menu is actually popped up.
+     * wrap this method if you need to make any adjustments
+     * 
+     */
     public void showAnnotationMenu()
     {
     	annotationMenu.showMenu();
     }
-    
+    /**
+     * this is where the number menu is actually popped up.
+     * wrap this method if you need to make any adjustments
+     * 
+     */
+    public void showNumberMenu()
+    {
+    	numberMenu.showMenu();
+    }
   /**
  * call this from your {@link #redrawBoard} method to draw the
- * vcr control.
+ * vcr control. It also draws annotationMenu and numberMenu if
+ * they are active.
+ * 
  * @param p
  * @param inG
  * @return the hit code for the subbutton hit
@@ -3272,6 +3311,7 @@ public abstract class commonCanvas extends exCanvas
     {  	
     	if(G.Height(noChatRect)>0) { drawNoChat(inG,noChatRect,p); }	// magically draw the chat/nochat button
     	drawAnnotationMenu(inG,p);
+    	drawNumberMenu(inG,p);
     	int artHeight = G.Height(vcrZone);
     	int artX = G.Left(vcrZone);
     	int artWidth = G.Width(vcrZone);
@@ -4983,6 +5023,7 @@ public abstract class commonCanvas extends exCanvas
         	performClientMessage("+" + TimeId.ChangeFutureTimeControl.shortName()+" "+futureTimeControl.print(),false,true);
         	handled = true;
         }
+        else if(numberMenu.selectMenu(target,this)) { return true; }
     	else if(annotationMenu.selectMenu(target)) { return true; }
     	else if(hidden.vcrVarPopup.selectMenuTarget(target))
     	{	chooseVcrVar((commonMove)(hidden.vcrVarPopup.rawValue));
@@ -7283,7 +7324,21 @@ public Point decodeScreenZone(String zone,int x,int y)
 
 /**
  * absorb the first few tokens from a game history string.  These
- * will the produced by your {@link #gameType} method.
+ * will the produced by your {@link #gameType} method.   Note that originally,
+ * the contents would be just a single token "Hive" for example.  The current
+ * standard is to include the game identifier, number of players, random initialization, and revision level
+ * for example:  Hive 2 0 101
+ * 
+ * the "identifier" is not necessarily the same as the game name, it might be a selected setup for example
+ * include the number of players even for games where it's not expected to change
+ * include the random initialization even for games with no randomness
+ * include the revision even for games where you know you've done it perfectly the first time.
+ * 
+ * transitioning old games to the new standard can be tricky, as the expanded format
+ * has extra tokens that need to be interpreted.  It's mostly an issue for games on 
+ * the server that are incomplete and might be restarted, or spectating in games
+ * that are using slightly out of date clients.
+ * 
  * @param his
  */
 public abstract void performHistoryInitialization(StringTokenizer his);
@@ -8541,5 +8596,8 @@ public void verifyGameRecord()
 		public void setLocalBoundsSync(int x,int y,int w,int h)
 		{	super.setLocalBoundsSync(x,y,w,h);
 			if(autoOptimize) { selectedLayout.optimize(); }
+		}
+		public int getLastPlacement(boolean empty) {
+			throw G.Error("Must be overriden");
 		}
 }

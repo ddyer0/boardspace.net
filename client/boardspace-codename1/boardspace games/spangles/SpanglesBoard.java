@@ -37,7 +37,8 @@ import online.game.*;
  */
 
 class SpanglesBoard extends triBoard<SpanglesCell> implements BoardProtocol,SpanglesConstants
-{	
+{	static int REVISION = 101;			// 101 switches to using and expandable board
+	public int getMaxRevisionLevel() { return(REVISION); }
 	private SpanglesState unresign;
 	private SpanglesState board_state;
 	public SpanglesState getState() {return(board_state); }
@@ -98,7 +99,8 @@ class SpanglesBoard extends triBoard<SpanglesCell> implements BoardProtocol,Span
     {
         drawing_style = DrawingStyle.STYLE_NOTHING; // don't draw the cells.  STYLE_CELL to draw them
         Grid_Style = SpanglesGRIDSTYLE;
-        isTorus=true;
+        isTorus=false;
+        revision = REVISION;
         setColorMap(map);
         doInit(init); // do the initialization 
     }
@@ -110,13 +112,12 @@ class SpanglesBoard extends triBoard<SpanglesCell> implements BoardProtocol,Span
     public void copyFrom(BoardProtocol b) { copyFrom((SpanglesBoard)b); }
 
     private void Init_Standard(String game)
-    {	int[] firstcol = null;
-    	int[] ncol = null;
-    	if(Spangles_INIT.equalsIgnoreCase(game)) {  firstcol = ZfirstInCol26; ncol = ZnInCol26; }
+    {	
+    	if(Spangles_INIT.equalsIgnoreCase(game)) {   }
     	else { throw G.Error(WrongInitError,game); }
         gametype = game;
         setState(SpanglesState.PUZZLE_STATE);
-        initBoard(firstcol, ncol, null); //this sets up a hexagonal board
+        reInitBoard(26,26); //this sets up a hexagonal board
          
         whoseTurn = FIRST_PLAYER_INDEX;
         chips_on_board = 0;
@@ -195,7 +196,8 @@ class SpanglesBoard extends triBoard<SpanglesCell> implements BoardProtocol,Span
      * the board that is being displayed.
      *  */
     public void copyFrom(SpanglesBoard from_b)
-    {	super.copyFrom(from_b);
+    {	
+    	super.copyFrom(from_b);
 
         chips_on_board = from_b.chips_on_board;
         occupiedCells = getCell(from_b.occupiedCells);
@@ -210,17 +212,42 @@ class SpanglesBoard extends triBoard<SpanglesCell> implements BoardProtocol,Span
         sameboard(from_b); 
     }
 
+    public String gameType() 
+    {   
+    	if(revision<101) { return gametype; }
+    	// the lower case is a secret flag so the "new" parsing can be recognized
+    	return(G.concat(gametype.toLowerCase()," ",players_in_game," ",randomKey," ",revision)); 
+    }
+
+    public void reInit(String d)
+    {
+    	revision = 0;
+    	doInit(d);
+    }
+    
     /* initialize a board back to initial empty state */
     public void doInit(String gtype,long key)
+    {	
+    
+	   StringTokenizer tok = new StringTokenizer(gtype);
+	   String typ = tok.nextToken();
+	   int np = tok.hasMoreTokens() ? G.IntToken(tok) : players_in_game;
+	   long ran = tok.hasMoreTokens() ? G.IntToken(tok) : key;
+	   int rev = tok.hasMoreTokens() ? G.IntToken(tok) : revision;
+	   doInit(typ,np,ran,rev);
+    }
+    public void doInit(String typ,int np,long ran,int rev)
     {	Random r = new Random(6278734);
-    	randomKey = key;
-       Init_Standard(gtype);
+	   adjustRevision(rev);
+	   G.Assert(np==2,"players can only be 2");
+   	   setIsTorus(rev<101);
+       randomKey = ran;
+       Init_Standard(typ);
        int map[]=getColorMap();
        for(int player=FIRST_PLAYER_INDEX; player<=SECOND_PLAYER_INDEX; player++)
         for(int i=0;i<2;i++)
         {	rack[map[player]][i]=new SpanglesCell(r,SpanglesId.ChipPool,SpanglesChip.getChip(player*2+i));
        }
-       allCells.setDigestChain(r);
         moveNumber = 1;
 
         // note that firstPlayer is NOT initialized here
@@ -287,7 +314,7 @@ class SpanglesBoard extends triBoard<SpanglesCell> implements BoardProtocol,Span
     	for(int bias=0; bias<CELL_FULL_TURN; bias++)
     	{
     	SpanglesCell down = c.Down(bias);
-    	if(down.chip!=null)
+    	if(down!=null && down.chip!=null)
     		{	SpanglesCell left = down.Left(bias);
     			SpanglesCell right = down.Right(bias);
     			SpanglesChip lt = left.topChip();
@@ -508,6 +535,7 @@ class SpanglesBoard extends triBoard<SpanglesCell> implements BoardProtocol,Span
     public void setBoardCell(char col,int row,int player)
     {
       	SpanglesCell c =getCell(col,row);
+		createExitCells(c);
        	int direction = col&1;
        	SpanglesChip ch =  rack[player][direction].topChip();
        	lastDroppedDest = ch;
@@ -539,7 +567,6 @@ class SpanglesBoard extends triBoard<SpanglesCell> implements BoardProtocol,Span
 				break;
 			}
 			setBoardCell(m.to_col,m.to_row,m.object);
-
             setNextStateAfterDrop();
 
             break;

@@ -57,7 +57,6 @@ public class GipfViewer extends CCanvas<GipfCell,GipfBoard> implements GipfConst
     private Rectangle reserveRects[] =  addRect("reserve",2);
     private Rectangle captureRects[] = addRect("capture",2);
     private Rectangle chipRects[] = addRect("chip",2);
-    
 
     private Rectangle standardRects[] = addRect("standard",2);
     boolean usePerspective() { return(getAltChipset()==0); }
@@ -211,7 +210,7 @@ public class GipfViewer extends CCanvas<GipfCell,GipfBoard> implements GipfConst
         int stateY = boardY;
         int stateX = boardX;
         int stateH = fh*3;
-        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,viewsetRect,noChatRect);
+        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,numberMenu,viewsetRect,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	
     	// goal and bottom ornaments, depending on the rendering can share
@@ -416,7 +415,7 @@ public class GipfViewer extends CCanvas<GipfCell,GipfBoard> implements GipfConst
      	Hashtable<GipfCell,GipfCell> dests = rb.getMoveDests();
      	Hashtable<GipfCell,GipfCell> captures = rb.getCaptures();
      	GipfState state = rb.getState();
-     	//
+     	numberMenu.clearSequenceNumbers();
         // now draw the contents of the board and anything it is pointing at
         //
      	GipfCell hitCell = null;
@@ -430,6 +429,7 @@ public class GipfViewer extends CCanvas<GipfCell,GipfBoard> implements GipfConst
             boolean isCaptured = captures.get(c)!=null;
             int ypos = G.Bottom(brect) - rb.cellToY(c);
             int xpos = G.Left(brect) + rb.cellToX(c);
+            numberMenu.saveSequenceNumber(c,xpos,ypos);
             int cs = perspective ? scaleCellSize(CELLSIZE,xpos,ypos,brect) : CELLSIZE;
             //StockArt.SmallO.drawChip(gc, this, CELLSIZE, xpos, ypos,null);     
             c.drawStack(gc,this,canHit?highlight:null,cs,xpos,ypos,0,
@@ -455,6 +455,18 @@ public class GipfViewer extends CCanvas<GipfCell,GipfBoard> implements GipfConst
 	       	{
 	       		GC.cacheAACircle(gc,xpos+dotsize,ypos,dotsize,Color.red,Color.gray,true);
 	       	}
+           	// draw ghost cells of the recently captured
+            if((c.topChip()==null)
+        			&& c.lastContents!=null 
+        			&& c.lastCaptured>0
+        			 )
+                	{	int vis = numberMenu.getVisibleNumber(c.lastCaptured);
+                		if(vis>0)
+                		{
+            			c.lastContents.drawChip(gc,this,CELLSIZE/2,xpos,ypos,numberMenu.moveNumberString(vis));
+                		StockArt.SmallX.drawChip(gc,this,CELLSIZE,xpos,ypos,null);
+                		}
+                	}
         }
        	if(hitCell!=null)
        	{
@@ -464,7 +476,7 @@ public class GipfViewer extends CCanvas<GipfCell,GipfBoard> implements GipfConst
             highlight.awidth = CELLSIZE/2;
             highlight.spriteColor = Color.red;
        	}
-     	
+       	numberMenu.drawSequenceNumbers(gc,CELLSIZE*2/3,labelFont,labelColor);
      }
     
    
@@ -488,7 +500,7 @@ public class GipfViewer extends CCanvas<GipfCell,GipfBoard> implements GipfConst
     	{ commonPlayer pl = getPlayerOrTemp(player);
     	  pl.setRotatedContext(gc, select,false);
     	gb.playerChip[player].drawChip(gc, this, chipRects[player],null);
-    	drawRack(gc,reserveRects[player],select,gb,gb.reserve[player]);
+    	drawRack(gc,reserveRects[player],ot,gb,gb.reserve[player]);
     	drawRack(gc,captureRects[player],select,gb,gb.captures[player]);
     	if(b.canTogglePlacementMode())
         {	if(GC.handleRoundButton(gc,standardRects[player],
@@ -562,12 +574,13 @@ public class GipfViewer extends CCanvas<GipfCell,GipfBoard> implements GipfConst
     }
     public boolean Execute(commonMove mm,replayMode replay)
     {	
-
-        	if(mm.op==MOVE_STANDARD) {  
-    			mm.setLineBreak(true);
+    	if(mm.op==MOVE_STANDARD) {  
+        		mm.setLineBreak(true);
         	}
     	
     	handleExecute(b,mm,replay);
+    	numberMenu.recordSequenceNumber(b.moveNumber()); 
+    	
         startBoardAnimations(replay,b.animationStack,animationCellSize(b.animationStack),MovementStyle.Stack);
         return (true);
     }
@@ -723,7 +736,11 @@ public class GipfViewer extends CCanvas<GipfCell,GipfBoard> implements GipfConst
         generalRefresh();
     }
 
-
+    public boolean handleDeferredEvent(Object target, String command)
+    {	
+    	if(numberMenu.selectMenu(target,this)) { return(true); }
+    	return super.handleDeferredEvent(target,command);
+     }
 
     public void drawBlankTile(Graphics g, int X, int Y, int radius,
         Color color, Color bgcolor)
@@ -802,5 +819,7 @@ public class GipfViewer extends CCanvas<GipfCell,GipfBoard> implements GipfConst
             setComment(comments);
         }
     }
-
+	public int getLastPlacement(boolean empty) {
+		return b.lastPlacedIndex;
+	}
 }

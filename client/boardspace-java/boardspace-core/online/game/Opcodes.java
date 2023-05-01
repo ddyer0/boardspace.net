@@ -84,6 +84,7 @@ public interface Opcodes {
 		FacingView("FacingView",MOVE_UNKNOWN),
 		TwistedView("TwistedView",MOVE_UNKNOWN), 
 		ShowAnnotations("Annotations",MOVE_UNKNOWN),
+		ShowNumbers("Numbers",MOVE_UNKNOWN),
 		PlaceAnnotation("PlaceAnnotation",MOVE_UNKNOWN),
 
 		;

@@ -55,6 +55,7 @@ class BloomsBoard extends hexBoard<BloomsCell> implements BoardProtocol
 	private CellStack captureStack = new CellStack();
 	private ChipStack chipStack = new ChipStack();
 	private int captured[] = new int[2];
+	public int lastPlacement = 0;
 	EndgameCondition endgameCondition = EndgameCondition.Territory;
 	boolean endgameApproved[] = new boolean[2];
 	boolean allApproved()
@@ -229,6 +230,7 @@ class BloomsBoard extends hexBoard<BloomsCell> implements BoardProtocol
         endgameCondition = EndgameCondition.Territory;
         AR.setValue(endgameApproved,false);
         endgameSelected = revision==100;
+        lastPlacement = 0;
 
         // note that firstPlayer is NOT initialized here
     }
@@ -269,6 +271,7 @@ class BloomsBoard extends hexBoard<BloomsCell> implements BoardProtocol
         endgameSelected = from_b.endgameSelected;
         AR.copy(endgameApproved,from_b.endgameApproved);
         AR.copy(captured,from_b.captured);
+        lastPlacement = from_b.lastPlacement;
         sameboard(from_b); 
     }
 
@@ -475,11 +478,14 @@ class BloomsBoard extends hexBoard<BloomsCell> implements BoardProtocol
     //
     // undo the drop, restore the moving object to moving status.
     //
+    int previousLastPlacement = -1;
     private BloomsCell unDropObject()
     {	BloomsCell rv = droppedDestStack.pop();
     	setState(stateStack.pop());
     	pickedObject = SetBoard(rv,null); 	// SetBoard does ancillary bookkeeping
-    	firstPlayedLocation = droppedDestStack.top();;    	
+    	firstPlayedLocation = droppedDestStack.top();;
+    	rv.lastPlaced = previousLastPlacement;
+    	lastPlacement--;
     	return(rv);
     }
     // 
@@ -489,7 +495,7 @@ class BloomsBoard extends hexBoard<BloomsCell> implements BoardProtocol
     {	BloomsCell rv = pickedSourceStack.pop();
     	setState(stateStack.pop());
     	SetBoard(rv,pickedObject);
-    	pickedObject = null;
+     	pickedObject = null;
     }
     
     // 
@@ -515,6 +521,8 @@ class BloomsBoard extends hexBoard<BloomsCell> implements BoardProtocol
            	SetBoard(c,pickedObject);
             lastDroppedObject = pickedObject;
             firstPlayedLocation = c;
+            previousLastPlacement = c.lastPlaced;
+            c.lastPlaced = lastPlacement++;
             pickedObject = null;
             break;
         }
@@ -948,6 +956,7 @@ class BloomsBoard extends hexBoard<BloomsCell> implements BoardProtocol
     private void doDone(replayMode replay)
     {
         acceptPlacement();
+        lastPlacement++;
         firstPlayedLocation = null;
         if(board_state==BloomsState.Draw)
         {	AR.setValue(score, -1);

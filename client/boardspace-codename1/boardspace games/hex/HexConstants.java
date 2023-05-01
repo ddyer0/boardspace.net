@@ -56,7 +56,7 @@ public interface HexConstants
     	BoardLocation(null),
     	ChangeRotation(null),
     	EmptyBoard(null), 
-    	ShowNumbers(null),;
+    	;
     	String shortName = name();
     	hexChip chip;
     	public String shortName() { return(shortName); }

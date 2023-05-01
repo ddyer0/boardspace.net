@@ -49,7 +49,6 @@ public class ChessViewer extends CCanvas<ChessCell,ChessBoard> implements ChessC
     // to visualize the layout during development.  Look for "show rectangles"
     // in the options menu.
     private Rectangle chipRects[] = addRect("chip",2);
-    private NumberMenu numberMenu = new NumberMenu(this,ChessChip.whiteRook,ChessId.ShowNumbers);
 
     private Rectangle reverseViewRect = addRect("reverse");
     private Toggle eyeRect = new Toggle(this,"eye",
@@ -194,7 +193,7 @@ public double setLocalBoundsA(int x, int y, int width, int height,double a)
 	layout.placeDrawGroup(G.getFontMetrics(standardPlainFont()),acceptDrawRect,declineDrawRect);
    	layout.placeDoneEdit(buttonW,3*buttonW/2,doneRect,editRect);
 	layout.placeTheVcr(this,vcrW,vcrW*3/2);
-	layout.placeRectangle(bannerRect,vcrW,vcrW/4,BoxAlignment.Top);
+	layout.placeRectangle(GameLayoutManager.Purpose.Banner,bannerRect,vcrW,vcrW/4,BoxAlignment.Top);
 	Rectangle main = layout.getMainRectangle();
 	int mainX = G.Left(main);
 	int mainY = G.Top(main);
@@ -216,7 +215,8 @@ public double setLocalBoundsA(int x, int y, int width, int height,double a)
 	int boardX = mainX+extraW;
 	int boardY = mainY+extraH;
     int boardBottom = boardY + boardH;
-   	layout.returnFromMain(extraW,extraH);
+    layout.returnFromMain(extraW,extraH);		// for use in the optimization phase
+
 	//
 	// state and top ornaments snug to the top of the board.  Depending
 	// on the rendering, it can occupy the same area or must be offset upwards
@@ -441,7 +441,6 @@ public double setLocalBoundsA(int x, int y, int width, int height,double a)
        DrawReverseMarker(gc,reverseViewRect,highlight,ChessId.ReverseViewButton);
        eyeRect.activateOnMouse=true;
        eyeRect.draw(gc,highlight);
-       numberMenu.draw(gc,highlight);
     }
     //
     // draw the board and things on it.  If gc!=null then actually 
@@ -551,8 +550,10 @@ public double setLocalBoundsA(int x, int y, int width, int height,double a)
     {	
         
 		if(b.pickedObject!=null) { lastDropped = b.pickedObject; }
-		numberMenu.recordSequenceNumber(b.moveNumber());
+
         handleExecute(b,mm,replay);
+		numberMenu.recordSequenceNumber(b.moveNumber());
+		
         startBoardAnimations(replay,b.animationStack,SQUARESIZE,MovementStyle.Sequential);
         if(replay!=replayMode.Replay) { playSounds(mm); }
  
@@ -704,9 +705,6 @@ private void playSounds(commonMove m)
         default:
         	throw G.Error("Hit Unknown: %s", hitObject);
 
-        case ShowNumbers:
-        	numberMenu.showMenu();
-        	break;
         case ToggleEye:
         	eyeRect.toggle();
         	break;
@@ -910,7 +908,6 @@ private void playSounds(commonMove m)
     		}
     		return(true);
     	}
-    	else if(numberMenu.selectMenu(target,this)) { return(true); }
     	else if(target==reverseOption)
     	{
     	b.setReverseY(reverseOption.getState());

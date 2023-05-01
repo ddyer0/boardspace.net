@@ -135,7 +135,7 @@ class Template
 	{	int n = 0;
 		Template from = seed;
 		for(int i=0;i<nsteps;i++)
-		{	int dir = r.nextInt(WypsBoard.geometry().n);
+		{	int dir = r.nextInt(Geometry.Hex.n);
 			boolean pre = r.nextInt(2)==1;
 			Template next = pre? from.prependTemplate(dir) : from.extendTemplate(dir);
 			if(next!=null) { n++; from = next; }
@@ -528,7 +528,7 @@ class WypsBoard extends hexBoard<WypsCell> implements BoardProtocol,WypsConstant
     {
     	return(selectedStack.contains(c));
     }
-    public static Geometry geometry() { return(Geometry.Hex); }
+    public Geometry geometry() { return(Geometry.Hex); }
     
 	// factory method to generate a board cell
 	public WypsCell newcell(char c,int r)

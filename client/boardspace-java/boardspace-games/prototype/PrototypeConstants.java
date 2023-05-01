@@ -22,7 +22,7 @@ public interface PrototypeConstants
 		White,
 		BoardLocation,
 		ToggleEye, 
-		ShowNumbers,;
+		;
 		PrototypeChip chip;
 		public String shortName() { return(name()); }
 	

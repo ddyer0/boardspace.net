@@ -2121,5 +2121,24 @@ public static String expandClassName(String classname)
         			"Feedback");
 			
 		}
+		public static String printCol(char col)
+		{	if(col>'Z') { int dx = col-'Z'; return ""+dx+'Z'; }
+			if(col<'A') { int dx = 'A'-col; return ""+dx+'A'; }
+			return (""+col);
+		}
+		public static char parseCol(StringTokenizer c)
+		{
+			return G.parseCol(c.nextToken());
+		}
+		public static char parseCol(String n)
+		{	if(n==null) { return(char)0;}
+			int len = n.length();
+			if(len==1) { return n.charAt(0); }
+			int off = IntToken(n.substring(0,len-1));
+			char end = n.charAt(len-1);
+			if(end=='A') { return (char)(end-off); }
+			if(end=='Z') { return (char)(end+off); }
+			throw Error("parse error for %s",n);
+		}
 }
  	

@@ -108,7 +108,7 @@ public interface YinshConstants
     	BoardLocation("board"), // the board
     	White_Ring_Captured("wrc"),
     	Black_Ring_Captured("brc"),
-    	RemoveFive(null), ShowNumbers(null),; // special for pick/drop of 5 chips
+    	RemoveFive(null), ; // special for pick/drop of 5 chips
 		
 	   	String shortName = name();
 		public String shortName() { return(shortName); }

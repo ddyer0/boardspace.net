@@ -34,23 +34,16 @@ import online.game.*;
  *
  */
 
-class HiveGameBoard extends hexBoard<HiveCell> implements BoardProtocol,HiveConstants
-{ 	
+class HiveGameBoard extends infiniteHexBoard<HiveCell> implements BoardProtocol,HiveConstants
+{ 	static final int REVISION = 101;		// 101 switches to an expandable board
+	public int getMaxRevisionLevel() { return(REVISION); }
+
     // indexes into the balls array, usually called the rack
     static final HiveId[] chipPoolIndex = { HiveId.White_Bug_Pool, HiveId.Black_Bug_Pool };
     static final HiveId[] setupPoolIndex = { HiveId.White_Setup_Pool, HiveId.Black_Setup_Pool };
     // sequence numbers for the standard pieces.  Those with multiples get 1 2 3 etc.
 	// those that are unique get no number indicated by -1
 	
-    /* the "external representation for the board is A1 B2 etc.  This internal representation is X,Y
-       where adjacent X's are separated by 2.  This gives the board nice mathematical properties for
-       calculating adjacency and connectivity. */
-    static int[] HiveCols = { 25,24,23,22,21,20,19,18, 17, 16, 15, 14,13,12,11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0 }; // these are indexes into the first ball in a column, ie B1 has index 2
-    static int[] HiveNInCol =     { 26,26,26,26,26,
-    								26,26,26,26,26,
-    								26,26,26,26,26,
-    								26,26,26,26,26,
-    								26,26,26,26,26,26 }; // depth of columns, ie A has 4, B 5 etc.
 
     static final String[] HIVEGRIDSTYLE = { "1", null, "A" }; // left and bottom numbers
 
@@ -171,10 +164,10 @@ public variation gamevariation = variation.hive;
 			if( (c!=firstC)			// not looped around
 				&& (c!=prevC)		// not backtracking
 				&& (c!=origin)		// not all the way back
-				&& ((threestep || (c.sweep_counter!=sweep_counter))	// not already seen (for ant moves)
-					)
+				&& (c!=null)
+				&& ((threestep || (c.sweep_counter!=sweep_counter)))	// not already seen (for ant moves)	
 				&& (c.height()==0) 	// not occupied
-				&& ((prevc==origin)||(nextc==origin)||(prevc.height()==0)||(nextc.height()==0))	// not a closed gate
+				&& ((prevc==origin)||(nextc==origin)||((prevc!=null)&&(prevc.height()==0))||((nextc!=null) && (nextc.height()==0)))	// not a closed gate
 				&& adjacentCell(c,source,origin)) // still part of the hive
 				{ c.sweep_counter=sweep_counter;
 				  if(path!=null) { path.push(c); }
@@ -589,10 +582,11 @@ public variation gamevariation = variation.hive;
 	}
 	public HiveGameBoard(String init,int map[]) // default constructor
     {
-        drawing_style = DrawingStyle.STYLE_CELL;//STYLE_NOTHING; // don't draw the cells.  STYLE_CELL to draw them
+        drawing_style = DrawingStyle.STYLE_NOTHING;//STYLE_NOTHING; // don't draw the cells.  STYLE_CELL to draw them
         Grid_Style = HIVEGRIDSTYLE;
-        isTorus=true;
         Random r = new Random(232534345);
+        isTorus = false;
+        revision = REVISION;
         setColorMap(map);
         // create the rack
         for(int i=0;i<racks.length;i++)
@@ -608,16 +602,13 @@ public variation gamevariation = variation.hive;
           	{ row[j] = new HiveCell(setupPoolIndex[pl],(char)('a'+pl),j,r.nextLong());
  			}
         }
-        int[] firstcol = null;
-    	int[] ncol = null;
-    	firstcol = HiveCols; 
-    	ncol = HiveNInCol;
-        Random r2 = new Random(69942354);
-        initBoard(firstcol, ncol, null); //this sets up a hexagonal board
-        allCells.setDigestChain(r2);
-        
+        initBoard(26,26); //this sets up a hexagonal board
         doInit(init); // do the initialization 
     }
+    public String gameType() 
+    {	if(revision<101) { return gametype; }
+    	// the lower case is a secret clue that the gametype is in 4 token format
+    	return(G.concat(gametype.toLowerCase()," ",players_in_game," ",randomKey," ",revision)); }
 
     public HiveGameBoard cloneBoard() 
 	{ HiveGameBoard dup = new HiveGameBoard(gametype,getColorMap()); 
@@ -628,12 +619,6 @@ public variation gamevariation = variation.hive;
     public void SetDrawState() 
     	{ setState(HiveState.DRAW_STATE); }
     
-    public void reInit(HiveCell[] c)
-    {	for(HiveCell d : c) { if(d!=null) { d.reInit(); }}
-    }
-    public void reInit(HiveCell[][] cells)
-    {	for(HiveCell c[] : cells) { reInit(c); }
-    }
  
     // standared init for Hex.  Presumably there could be different
     // initializations for variation games.
@@ -653,7 +638,6 @@ public variation gamevariation = variation.hive;
         // clear the rack
         reInit(racks);
         reInit(setupRacks);
-        for(HiveCell c = allCells; c!=null; c=c.next) { c.reInit(); }
         robotBoard = false;
         whoseTurn = FIRST_PLAYER_INDEX;
         droppedDest = null;
@@ -786,11 +770,47 @@ public variation gamevariation = variation.hive;
     	}
     	return(null);
     }
+    public void reInit(String d)
+    {
+    	revision = 0;
+    	doInit(d);
+    }
 
     /* initialize a board back to initial empty state */
     public void doInit(String gtype,long key)
     {  randomKey = key;
-       Init_Standard(gtype);
+    
+	   StringTokenizer tok = new StringTokenizer(gtype);
+	   String typ = tok.nextToken();
+	   int np = tok.hasMoreTokens() ? G.IntToken(tok) : players_in_game;
+	   long ran = tok.hasMoreTokens() ? G.IntToken(tok) : key;
+	   int rev = tok.hasMoreTokens() ? G.IntToken(tok) : revision;
+	   doInit(typ,np,ran,rev);
+    }
+    public void doInit(String typ,int np,long ran,int rev)
+    {
+	   adjustRevision(rev);
+	   gametype = typ;
+	   randomKey =ran;
+	   G.Assert(np==2,"players can only be 2");
+	   setIsTorus(rev<101);
+	   
+       Random r2 = new Random(69942354);	   
+       reInitBoard(19,19); //this sets up a hexagonal board
+       if(revision<101)
+       {
+       // legacy sets these randomv which has some effects,rare games
+       // in the legacy path miss repetitions
+       // see HV-Dumbot-1dafydd-2011-07-03-1800.sgf
+       // moves 87 91 95 are not recogised as repetitions because the
+       // "from" in moves 87 and 91 are different
+       allCells.setDigestChain(r2);
+       }
+
+       Init_Standard(gametype);
+
+       
+
        for(int pl=FIRST_PLAYER_INDEX; pl<=SECOND_PLAYER_INDEX;pl++)
        { for(int i=HivePiece.StartingPieceTypes.length-2; i>=0; i--)	// deliberately skip the blank
        		{ makepiece(pl,HivePiece.StartingPieceTypes[i],HivePiece.StartingPieceSeq[i]);
@@ -1329,16 +1349,16 @@ public variation gamevariation = variation.hive;
     	{
     	firstC.sweep_counter = sweep_counter;
     	firstC.slither_gradient = sweep_counter+distance;
-		int len = firstC.geometry.n;
+		int len = geometry.n;
 		for(int i=1;i<=len;i++)
-		{	int dir = (i+direction)%len;
-			int prevdir = (i+direction-1+len)%len;
-			int nextdir = (i+direction+1)%len;
+		{	int dir = (i+direction);
+			int prevdir = (i+direction-1+len);
+			int nextdir = (i+direction+1);
 			HiveCell c = firstC.exitTo(dir);
 			HiveCell prevc = firstC.exitTo(prevdir);
 			HiveCell nextc = firstC.exitTo(nextdir);
 			if( (c!=prevC)		// not backtracking
-				&& ((prevC==null)||(prevc.height()==0)||(nextc.height()==0))	// not a gate
+				&& ((prevc==null)||(prevc.height()==0)||((nextc==null)||(nextc.height()==0)))	// not a gate
 				&& adjacentCell(c,firstC,null)) // still part of the hive
 				{ if(c.height()==0) 	// not occupied
 					{int nv = slitherAndCountBoard(origin,c,firstC,((dir+len/2)%len),distance+1);
@@ -1539,7 +1559,7 @@ public variation gamevariation = variation.hive;
             	  		 }
              	  		 // do while the object is still picked
        	  		 		 dropObject(dest);
-	 
+       	  		 		 createExitCells(dest);
             	  		 prestun = (pieceTypeIncluded.test(PieceType.PILLBUG)||pmove) 
             	  		 				? dest 	// new pillbug, all moved pieces are stunned
             	  		 				: null;	// stunned only if moved by pillbug
@@ -1548,9 +1568,13 @@ public variation gamevariation = variation.hive;
             	  break;
            	  case PUZZLE_STATE:
            	  case Setup:
-           		  dropObject(getCell(m.source, m.to_col, m.to_row));
+           	  	{
+           		  HiveCell cc = getCell(m.source, m.to_col, m.to_row);
+           		  dropObject(cc);
+           		  createExitCells(c);
            		  setNextStateAfterDrop(replay);
            		  break;
+           	  	}
             }}
             if((m.op==MOVE_PMOVE_DONE)||(m.op==MOVE_MOVE_DONE)) { doDone(replay); }
             break;

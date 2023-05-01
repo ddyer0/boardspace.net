@@ -18,7 +18,6 @@ import lib.*;
 // are triggered to move in the context of a disconnection. Or possibly a robot
 // move that was in transit arrives after a reconnection.
 //
-// TODO: focus=n message should indicate who is shifting focus
 /* restart checklist
  * 
  ** start a robot game
@@ -1918,26 +1917,24 @@ public class Game extends commonPanel implements PlayConstants,Opcodes,DeferredE
                 }
             }
         }
-        else
+  
+  
+        if ( (v!=null)
+        		&& !v.isScored()
+        		&& !GameOver() 
+        		&& (nva != 0) 
+        		&& (v.salvageRobot()!=null)
+        		&& (v.MoveStep() >= 3))
         {
+            JMenu to = ColorChoiceMenu(s.get(RobotPlayMessage));
 
-            if ( (v!=null)
-            		&& !v.isScored()
-            		&& !GameOver() 
-            		&& (nva != 0) 
-            		&& (v.salvageRobot()!=null)
-            		&& (v.MoveStep() >= 3))
+            if (toRobot == null)
             {
-                JMenu to = ColorChoiceMenu(s.get(RobotPlayMessage));
-
-                if (toRobot == null)
-                {
-                    toRobot = to;
-                    myFrame.addAction(to,deferredEvents);
-                }
+                toRobot = to;
+                myFrame.addAction(to,deferredEvents);
             }
         }
-
+  
         if (extraactions)
         {
             testswitch = myFrame.addAction("test switch",deferredEvents);

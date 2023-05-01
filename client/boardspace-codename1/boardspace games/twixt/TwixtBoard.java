@@ -258,7 +258,8 @@ class TwixtBoard extends rectBoard<TwixtCell> implements BoardProtocol,TwixtCons
         robotBoard = from_b.robotBoard;
         getCell(redPegs,from_b.redPegs);
         getCell(blackPegs,from_b.blackPegs);
- 
+        playerRack[0] = from_b.playerRack[0];
+        playerRack[1] = from_b.playerRack[1];
         sameboard(from_b); 
     }
 
@@ -1028,6 +1029,9 @@ class TwixtBoard extends rectBoard<TwixtCell> implements BoardProtocol,TwixtCons
     	TwixtCell r[] = playerRack[0];
     	playerRack[0] = playerRack[1];
     	playerRack[1] = r;
+    	TwixtChip ch = playerChip[0];
+    	playerChip[0] = playerChip[1];
+    	playerChip[1] =  ch;
     	
     	swapped = !swapped;
     	setState(swapped ? TwixtState.ConfirmSwap : TwixtState.PlayOrSwap);

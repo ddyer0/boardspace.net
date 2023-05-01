@@ -506,7 +506,7 @@ class CheckerBoard extends rectBoard<CheckerCell> implements BoardProtocol
 					currentDest = droppedDestStack.top();
 				}
 				else { captureHeight.pop(); }
-				dr.lastPlaced = previousLastEmptied;
+				dr.lastPlaced = previousLastPlaced;
 				lastPlacedIndex--;
 				
 				break;
@@ -584,7 +584,7 @@ class CheckerBoard extends rectBoard<CheckerCell> implements BoardProtocol
 			if(isKing) { c.removeTop(); }
 			pickedHeight.push(isKing?2:1);
 			occupiedCells[playerIndex(ch)].remove(c,false);
-			previousLastContents = c.topChip();
+			previousLastContents = ch;
 			previousLastEmptied = c.lastEmptied;
 			c.lastEmptied = lastPlacedIndex;
 			
@@ -761,6 +761,7 @@ class CheckerBoard extends rectBoard<CheckerCell> implements BoardProtocol
     	boolean kingMe = (dest!=null) && !isKing && (dest.row==kingRow[whoseTurn]);
     	lastDest[whoseTurn] = dest;
     	currentDest = null;
+    	lastPlacedIndex++;
     	if(!isKing) 
     		{ lastProgressMove = moveNumber; }
     	// special bit for the animations

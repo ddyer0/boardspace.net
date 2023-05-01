@@ -1079,6 +1079,7 @@ public class YspahanBoard extends BaseBoard implements BoardProtocol,YspahanCons
 	 * the other.
 	 */
 	public long Digest() {
+		Random r = new Random(64 * 1000); // init the random number generator
 		long v = 0;
 
 		// the basic digestion technique is to xor a bunch of random numbers.
@@ -1089,7 +1090,6 @@ public class YspahanBoard extends BaseBoard implements BoardProtocol,YspahanCons
 		// existing
 		// digests are invalidated.
 		//
-		Random r = new Random(64 * 1000); // init the random number generator
 
 		for (YspahanCell c = allCells; c != null; c = c.next) {
 			v ^= c.Digest(r); // this gets all the cells actually on the main
@@ -1105,8 +1105,8 @@ public class YspahanBoard extends BaseBoard implements BoardProtocol,YspahanCons
 		// part of the game state
 		// this avoids problems with "undo" happening after the pile
 		// has been topped up.
-		// v ^= gold.Digest(r);
-		// v ^= camels.Digest(r);
+		// v ^= gold.Digest();
+		// v ^= camels.Digest();
 		v ^= ((confirmCardUndoState == null ? 0 : confirmCardUndoState
 				.ordinal()) * 10 + payCamelReturnPlayer) * r.nextLong();
 		v ^= resetState.ordinal() * r.nextLong();

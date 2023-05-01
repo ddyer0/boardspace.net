@@ -125,7 +125,6 @@ public class HavannahViewer extends CCanvas<HavannahCell,HavannahBoard> implemen
     //public Rectangle chatRect = addRect("chatRect");
     //public Rectangle stateRect = addRect("stateRect");
     //public Rectangle noChatRect = addRect("nochat");
-    private NumberMenu numberMenu = new NumberMenu(this,HavannahChip.White,HavannahId.ShowNumbers) ;
     
     //
     // addZoneRect also sets the rectangle as specifically known to the 
@@ -679,7 +678,6 @@ public class HavannahViewer extends CCanvas<HavannahCell,HavannahBoard> implemen
             				stateRect);
         HavannahChip chip = gb.getPlayerChip(gb.whoseTurn);
         chip.drawChip(gc, this, iconRect,null);
-        numberMenu.draw(gc,selectPos);
         goalAndProgressMessage(gc,nonDragSelect,Color.black,s.get(HavannahVictoryCondition),progressRect, goalRect);
         //DrawRepRect(gc,pl.displayRotation,Color.black, gb.Digest(),repRect);	// Not needed for barca
         
@@ -699,7 +697,7 @@ public class HavannahViewer extends CCanvas<HavannahCell,HavannahBoard> implemen
      public boolean Execute(commonMove mm,replayMode replay)
     {	
         handleExecute(bb,mm,replay);
-        
+        numberMenu.recordSequenceNumber(bb.moveNumber());
         /**
          * animations are handled by a simple protocol between the board and viewer.
          * when stones are moved around on the board, it pushes the source and destination
@@ -946,9 +944,6 @@ public class HavannahViewer extends CCanvas<HavannahCell,HavannahBoard> implemen
         {
         default:
             	throw G.Error("Hit Unknown: %s", hitCode);
-        case ShowNumbers:
-        	numberMenu.showMenu();
-        	break;
         case BoardLocation:	// we hit an occupied part of the board 
         case EmptyBoard:
         	{
@@ -1093,19 +1088,7 @@ public class HavannahViewer extends CCanvas<HavannahCell,HavannahBoard> implemen
     }
 
 
-    /** handle action events from menus.  Don't do any real work, just note
-     * state changes and if necessary set flags for the run loop to pick up.
-     * 
-     */
-    public boolean handleDeferredEvent(Object target, String command)
-    {
-        boolean handled = super.handleDeferredEvent(target, command);
-        if(!handled)
-        {
-        	if(numberMenu.selectMenu(target,this)) {  handled = true;}
-        }
-        return (handled);
-    }
+
 /** handle the run loop, and any special actions we need to take.
  * The mouse handling and canvas painting will be called automatically.
  * <p>
@@ -1231,7 +1214,7 @@ public class HavannahViewer extends CCanvas<HavannahCell,HavannahBoard> implemen
     }
 
 	public int getLastPlacement(boolean empty) {
-		return (bb.moveNumber+(bb.DoneState()?1:0));
+		return (bb.moveNumber);
 	}
 }
 

@@ -34,7 +34,7 @@ public interface HiveConstants
     	Black_Setup_Pool("BS"),
     	HitPlayWhiteAction("PlayWhite"),
     	HitPlayBlackAction("PlayBlack"),
-    	SeeMovable(null), ShowNumbers(null);
+    	SeeMovable(null);
 	String shortName = name();
 	public String shortName() { return(shortName); }
 	HiveId(String sn) { if(sn!=null) { shortName = sn; }}

@@ -20,13 +20,17 @@ class CellStack extends OStack<PushfightCell>
  * @author ddyer
  *
  */
-public class PushfightCell extends stackCell<PushfightCell,PushfightChip> implements PushfightConstants
+public class PushfightCell extends stackCell<PushfightCell,PushfightChip> implements PushfightConstants,PlacementProvider
 {	
 	public boolean offBoard = false;
 	public boolean halfBoard() { return(col<='E'); }
 	public int sweep_counter = 0;
 	public int edgeCount = 0;		//number of offboard directions
 	public int edgeDirections[] = null;	//and array of directions to "off board"
+	public int lastPlaced = -1;
+	public int lastEmptiedPlayer = -1;
+	public int lastEmptied = -1;
+
 	public void addEdge(int direction)
 	{
 		edgeCount++;
@@ -81,4 +85,20 @@ public class PushfightCell extends stackCell<PushfightCell,PushfightChip> implem
 	}
 
 	
+	public void reInit()
+	{
+		super.reInit();
+		lastPlaced = lastEmptied = lastEmptiedPlayer = -1;
+	}
+	public void copyFrom(PushfightCell other)
+	{
+		super.copyFrom(other);
+		lastPlaced = other.lastPlaced;
+		lastEmptiedPlayer = other.lastEmptiedPlayer;
+		lastEmptied = other.lastEmptied;
+	}
+	public int getLastPlacement(boolean empty) {
+		return empty ? lastEmptied : lastPlaced;
+	}
+
 }

@@ -78,6 +78,7 @@ public class PushfightViewer extends CCanvas<PushfightCell,PushfightBoard> imple
     private Color chatBackgroundColor = new Color(214,201,189);
     private Color rackBackGroundColor = new Color(214,201,189);
     private Color boardBackgroundColor = new Color(214,201,189);
+    private Color BlackArrowColor = new Color(230,200,255);
     
 
      
@@ -139,7 +140,7 @@ public class PushfightViewer extends CCanvas<PushfightCell,PushfightBoard> imple
         }
          
         
-        String type = info.getString(OnlineConstants.GAMETYPE, PushFightVariation.pushfight.name);
+        String type = info.getString(GAMETYPE, PushFightVariation.pushfight.name);
         // recommended procedure is to supply players and randomkey, even for games which
         // are current strictly 2 player and no-randomization.  It will make it easier when
         // later, some variant is created, or the game code base is re purposed as the basis
@@ -283,7 +284,7 @@ public class PushfightViewer extends CCanvas<PushfightCell,PushfightBoard> imple
         int stateY = boardY;
         int stateX = boardX;
         int stateH = fh*3;
-        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,reverseRect,viewsetRect,noChatRect);
+        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,numberMenu,reverseRect,viewsetRect,noChatRect);
         G.SetRect(iconRect,stateX,stateY,stateH,stateH);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	
@@ -398,6 +399,7 @@ public class PushfightViewer extends CCanvas<PushfightCell,PushfightBoard> imple
     	boolean perspective = usePerspective();
      	Enumeration<PushfightCell>cells = gb.getIterator(Itype.LRTB);
      	Hashtable<PushfightCell,Pushfightmovespec>targets = gb.getTargets();
+        numberMenu.clearSequenceNumbers();
      	
      	while(cells.hasMoreElements())
            {PushfightCell cell = cells.nextElement();
@@ -406,6 +408,7 @@ public class PushfightViewer extends CCanvas<PushfightCell,PushfightBoard> imple
             double dx = perspective ? 0 : 0;
             double dy = perspective ? 0.5 : 0;
             boolean canHit = gb.legalToHitBoard(cell,targets);
+            numberMenu.saveSequenceNumber(cell,xpos,ypos,cell.lastEmptiedPlayer==0 ? labelColor : BlackArrowColor);
             
             if(cell.drawStack(gc,this,canHit ? highlight : null,gb.cellSize(),xpos,ypos,0,dx,dy,null))
             {
@@ -416,6 +419,8 @@ public class PushfightViewer extends CCanvas<PushfightCell,PushfightBoard> imple
         	   {StockArt.SmallO.drawChip(gc,this,CELLSIZE, xpos, ypos , null);
         	   }
             }
+        numberMenu.drawSequenceNumbers(gc,CELLSIZE,labelFont,labelColor);
+
     }
 
     /**
@@ -534,6 +539,7 @@ public class PushfightViewer extends CCanvas<PushfightCell,PushfightBoard> imple
     {	
     	 
         handleExecute(bb,mm,replay);
+        numberMenu.recordSequenceNumber(bb.moveNumber);
     
         
         /**
@@ -985,6 +991,9 @@ public class PushfightViewer extends CCanvas<PushfightCell,PushfightBoard> imple
             setComment(comments);
         }
     }
-
+    public int getLastPlacement(boolean em)
+    {
+    	return bb.lastPlacedIndex;
+    }
 }
 

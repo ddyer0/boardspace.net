@@ -47,7 +47,7 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
     private Color ZoomColor = new Color(0.0f,0.0f,1.0f);
     private Color rackBackGroundColor = new Color(215,197,157);
     private Color rackActiveColor = new Color(225,207,127);		// done button when active
-    private Color BlackArrowColor = new Color(230,200,255);;
+    private Color BlackArrowColor = new Color(230,200,255);
     
     private Color chatBackgroundColor = new Color(240,230,210);
     private Font gameLogBoldFont=null;
@@ -68,7 +68,6 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
     //public Rectangle stateRect = addRect("stateRect");
     //public Rectangle noChatRect = addRect("nochat");
     private Rectangle repRect = addRect("repRect");
-    private NumberMenu numberMenu = new NumberMenu(this,HivePiece.BugIcon,HiveId.ShowNumbers);
     private Rectangle idRects[] = addRect("id",2);
     private Rectangle[]chipRects = addRect("chip",2);
     private Rectangle[]setupRects = addRect("setup",2);
@@ -105,8 +104,7 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
     		}
     	return(true);
     	}
-    	if(numberMenu.selectMenu(target,this)) { return(true); }
-    	else if(target==textNotation)
+    	if(target==textNotation)
         {
         	handled = true;
            	useTextNotation = textNotation.getState();
@@ -499,12 +497,13 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
           		boardRect); 
       GC.frameRect(gc,Color.black,boardRect);
 
+      // note this gets called in the game loop as well as in the display loop
+      // and is pretty expensive, so we shouldn't do it in the mouse-only case
       // draw a picture of the board. In this version we actually draw just the grid
       // to draw the cells, set gb.Drawing_Style in the board init method
       //gb.DrawGrid(gc, tbRect, use_grid, boardBackgroundColor, Color.blue, Color.blue,Color.black);
 
      }
-
     /* draw the board and the chips on it. */
 
      private void drawBoardElements(Graphics gc, HiveGameBoard gb, Rectangle tbRect,HitPoint ourTurnSelect,HitPoint anySelect)
@@ -613,6 +612,11 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
               	}*/
  
                  }
+             //if(G.debug() && (cell.topChip()==null))
+             //{	// draw a grid of other cells
+             //	GC.Text(gc,true,xpos-CELLSIZE/2,ypos-CELLSIZE/2,CELLSIZE,CELLSIZE,null,null,""+G.printCol(cell.col)+cell.row);
+             //}
+
              if(isASource || (see && canHit))
                  {GC.cacheAACircle(gc,xpos,ypos,2,Color.green,Color.yellow,true);
                  } else
@@ -648,9 +652,6 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
        HiveGameBoard gb = disB(gc);
        if(gc!=null)
        {
-    	   // note this gets called in the game loop as well as in the display loop
-    	   // and is pretty expensive, so we shouldn't do it in the mouse-only case
-
        gb.SetDisplayParameters(zoomRect.value,1.0,board_center_x,board_center_y,30.0); // shrink a little and rotate 30 degrees
        gb.SetDisplayRectangle(boardRect);
        }
@@ -683,7 +684,6 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
  
         DrawRepRect(gc,messageRotation,Color.black,gb.Digest(),repRect);
         DrawReverseMarker(gc,reverseRect,nonDraggingSelect,HiveId.ReverseRect);
-        numberMenu.draw(gc,nonDraggingSelect);
         seeMobile.draw(gc,nonDraggingSelect);
         switch(state)
         {     
@@ -775,6 +775,7 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
      public boolean Execute(commonMove m,replayMode replay)
     {
         handleExecute(b,m,replay);
+        numberMenu.recordSequenceNumber(b.moveNumber());
         lastDropped = b.lastDroppedObject;
         int cellSize =  (int)((b.cellSize()*1.15)*BOARD_TILE_SCALE);
         startBoardAnimations(replay,b.animationStack,cellSize,MovementStyle.Chained);
@@ -910,9 +911,6 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
         {
         default:
         	throw G.Error("Hit Unknown: %s", hitObject);
-        case ShowNumbers:
-        	numberMenu.showMenu();
-        	break;
         case SeeMovable:
         	seeMobile.toggle();
         	break;
@@ -979,12 +977,24 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
     }
 
     // return what will be the init type for the game
-    public String gameType() { return(b.gametype); }
+    public String gameType() { return(b.gameType()); }
     public String sgfGameType() { return(Hive_SGF); }
     public void performHistoryInitialization(StringTokenizer his)
     {   //the initialization sequence
     	String token = his.nextToken();
+    	if("Hive".equals(token))
+    	{
         b.doInit(token);
+    	}
+    	else
+    	{
+    		// new game, with the revision protocol, flag their presence with lower case.
+    		// this is only a problem for games being restarted in the live context, or by spectators.
+    		int np = G.IntToken(his);
+    		long rv = G.LongToken(his);
+    		int rev = G.IntToken(his);
+    		b.doInit(token,np,rv,rev);	
+    	}
         //PerformAndTransmit(reviewOnly?"Edit":"Start P0", false,true);
      }
 
@@ -1020,7 +1030,7 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
             //System.out.println("prop " + name + " " + value);
             if (setup_property.equals(name))
             {
-                b.doInit(value);
+                b.reInit(value);
              }
             else if (name.equals(comment_property))
             {

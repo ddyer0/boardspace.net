@@ -164,7 +164,7 @@ public class TwixtCell extends stackCell<TwixtCell,TwixtChip> implements TwixtCo
 	}
 	
 	public int getLastPlacement(boolean empty) {
-		return lastPlaced;
+		return empty ? -1 : lastPlaced;
 	}
 	/** copyFrom is called when cloning boards
 	 * 

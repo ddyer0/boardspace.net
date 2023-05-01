@@ -109,7 +109,7 @@ public class Palagomovespec extends commonMove implements PalagoConstants
 
         case MOVE_DROPB:
 	            source = PalagoId.EmptyBoard;
-				to_col = G.CharToken(msg);
+				to_col = G.parseCol(msg);
 	            to_row = G.IntToken(msg);
 	            object = G.IntToken(msg);
 
@@ -117,7 +117,7 @@ public class Palagomovespec extends commonMove implements PalagoConstants
 
 		case MOVE_PICKB:
             source = PalagoId.BoardLocation;
-            to_col = G.CharToken(msg);
+            to_col = G.parseCol(msg);;
             to_row = G.IntToken(msg);
 
             break;
@@ -147,10 +147,10 @@ public class Palagomovespec extends commonMove implements PalagoConstants
         switch (op)
         {
         case MOVE_PICKB:
-            return (D.findUnique(op) +" " + to_col + to_row);
+            return (D.findUnique(op) +" " + G.printCol(to_col) + to_row);
 
 		case MOVE_DROPB:
-            return (""+to_col + to_row+" "+object);
+            return (""+G.printCol(to_col) + to_row+" "+object);
         case MOVE_PICK:
         case MOVE_DONE:
             return ("");
@@ -173,10 +173,10 @@ public class Palagomovespec extends commonMove implements PalagoConstants
         switch (op)
         {
         case MOVE_PICKB:
-	        return (opname+ to_col + " " + to_row);
+	        return (opname+ G.printCol(to_col) + " " + to_row);
 
 		case MOVE_DROPB:
-	        return (opname+ to_col + " " + to_row+" "+object);
+	        return (opname+ G.printCol(to_col) + " " + to_row+" "+object);
 
          case MOVE_PICK:
             return (opname+to_row);

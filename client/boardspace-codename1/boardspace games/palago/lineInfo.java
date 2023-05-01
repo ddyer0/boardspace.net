@@ -60,7 +60,7 @@ public class lineInfo {
 			int nextEntry = (exit+mod/2)%mod; 				// complementary direction for next entry
 
 			PalagoCell next = current.exitTo(exit);			// next cell
-			PalagoChip nextTop = next.topChip();			// top of next cell
+			PalagoChip nextTop = next==null ? null : next.topChip();			// top of next cell
 			if((nextEntry==start) && (next == from))		// closed the loop
 				{ if(end1==null)
 					{ 

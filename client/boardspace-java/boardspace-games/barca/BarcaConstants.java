@@ -76,7 +76,7 @@ enum BarcaId implements CellId
 	Black_Elephant("BE"),
 	Reverse(null),
 	BoardLocation(null), 
-	ToggleEye(null), ShowNumbers(null);
+	ToggleEye(null);
 	String shortName = name();
 	public String shortName() { return(shortName); }
 	BarcaId afraidOf;

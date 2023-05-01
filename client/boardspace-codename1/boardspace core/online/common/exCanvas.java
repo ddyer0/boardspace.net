@@ -436,7 +436,7 @@ public abstract class exCanvas extends ProxyWindow
         {
         l.setNetConsole = myFrame.addAction("Set Net Logger",deferredEvents);
         painter.addUIChoices(myFrame,deferredEvents);
-        l.showRects = myFrame.addOption("Show Rectangles", false,deferredEvents);	
+        l.showRects = myFrame.addOption("Show Rectangles", show_rectangles,deferredEvents);	
         l.showStats = myFrame.addOption("show stats", false,null);	// no events
         l.showImages = myFrame.addOption("show Images",false,deferredEvents);
         l.useCache = myFrame.addOption("Cache images",imageCache.cache_images,deferredEvents);

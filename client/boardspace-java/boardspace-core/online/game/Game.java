@@ -1919,8 +1919,7 @@ public class Game extends commonPanel implements PlayConstants,DeferredEventHand
                 }
             }
         }
-        else
-        {
+  
  
             if (  (v!=null)
             		&& !v.isScored()
@@ -1937,7 +1936,6 @@ public class Game extends commonPanel implements PlayConstants,DeferredEventHand
                     myFrame.addAction(to,deferredEvents);
                 }
             }
-        }
 
         if (extraactions)
         {

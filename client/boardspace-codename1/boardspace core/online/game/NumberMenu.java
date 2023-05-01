@@ -68,6 +68,7 @@ public class NumberMenu extends Rectangle {
 	public NumberingMode selected() { return selected; }
 	PlacementProvider selectedProvider = null;
 	int startingNumber = 0;
+	public boolean includePartialMoves = true;
 	double arrowOpacity = 0.7;		// opacity for arrows
 	
 	/**
@@ -191,7 +192,7 @@ public class NumberMenu extends Rectangle {
 			case None: return -1;
 			case From_Here:
 			case All:
-				return number>=startingNumber ? (number-startingNumber) : -1;
+				return number>startingNumber ? (number-startingNumber) : -1;
 			case Last:
 				startingNumber = startingSequenceNumber(-1);
 				return number>=startingNumber ? number : -1;
@@ -224,21 +225,31 @@ public class NumberMenu extends Rectangle {
 	 * 
 	 * @param moveNumber0
 	 */
+	boolean newMoveNumber = false;
 	public void recordSequenceNumber(int moveNumber)
 	{	int sz = sequenceNumbers.size();
 		int last = selectedProvider.getLastPlacement(false);
 		while(sz>moveNumber+1) 		// the move number moved backwards, remove excess
 			{ sequenceNumbers.pop(); sz--; 
+			  newMoveNumber = true;
 			}
 		while(sz<moveNumber) 
 			{ sequenceNumbers.push(last-1); sz++; 	// the move number jumped ahead
+			  newMoveNumber = true;
 			}
 		if(sz==moveNumber) 							// on target next number
 			{ sequenceNumbers.push(last); 
+			  newMoveNumber = false;
 			}
 		if(sequenceNumbers.elementAt(moveNumber)>last)	// maybe replace the current with a lower sequence
 			{ sequenceNumbers.setElementAt(moveNumber,last);
+			  newMoveNumber = false;
 			}
+	}
+	public int sequenceOffset = 0;
+	public int currentSequenceNumber()
+	{
+		return Math.max(0,(sequenceNumbers.size()+((newMoveNumber||!includePartialMoves)? 0 : -1)));
 	}
 	/**
 	 * 
@@ -248,11 +259,11 @@ public class NumberMenu extends Rectangle {
 	 * @param back a small negative integer
 	 */
 	private int startingSequenceNumber(int back)
-	{	int sz = sequenceNumbers.size();
+	{	int sz = currentSequenceNumber();
 		if(sz>0)
-		{int currentMoveNumber = sequenceNumbers.size()+back;
+		{int currentMoveNumber = sz+back;
 		if(currentMoveNumber<=0) { return 0; }
-		else if(currentMoveNumber>=sequenceNumbers.size()) { return sequenceNumbers.top()+1; }
+		else if(currentMoveNumber>=sz) { return sequenceNumbers.top()+1; }
 		else return sequenceNumbers.elementAt(currentMoveNumber); 
 		}
 		else

@@ -102,14 +102,14 @@ public class Spanglesmovespec extends commonMove implements SpanglesConstants
 
         case MOVE_DROPB:
 	            source = SpanglesId.EmptyBoard;
-				to_col = G.CharToken(msg);
+				to_col = G.parseCol(msg);
 	            to_row = G.IntToken(msg);
 	            object = G.IntToken(msg);
 	            break;
 
 		case MOVE_PICKB:
             source = SpanglesId.BoardLocation;
-            to_col = G.CharToken(msg);
+            to_col = G.parseCol(msg);
             to_row = G.IntToken(msg);
 
             break;
@@ -139,10 +139,10 @@ public class Spanglesmovespec extends commonMove implements SpanglesConstants
         switch (op)
         {
         case MOVE_PICKB:
-            return ("" + to_col + " " + to_row);
+            return ("" + G.printCol(to_col) + " " + to_row);
 
 		case MOVE_DROPB:
-            return (to_col + " " + to_row);
+            return (G.printCol(to_col) + " " + to_row);
         case MOVE_PICK:
         case MOVE_DONE:
             return ("");
@@ -166,10 +166,10 @@ public class Spanglesmovespec extends commonMove implements SpanglesConstants
         {
   
         case MOVE_PICKB:
-	        return (opname+ to_col + " " + to_row);
+	        return (opname+ G.printCol(to_col) + " " + to_row);
 
 		case MOVE_DROPB:
-	        return (opname + to_col + " " + to_row+" "+object);
+	        return (opname + G.printCol(to_col) + " " + to_row+" "+object);
 
          case MOVE_PICK:
             return (opname+to_row);

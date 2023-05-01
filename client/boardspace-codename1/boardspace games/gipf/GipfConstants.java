@@ -19,7 +19,8 @@ public interface GipfConstants
 		Second_Player_Reserve("br"),
 		First_Player_Captures("wc"),
 		Second_Player_Captures("bc"),
-		Hit_Standard_Button(null);
+		Hit_Standard_Button(null), 
+		;
    	String shortName = name();
 	public String shortName() { return(shortName); }
    	GipfId(String sn) { if(sn!=null) { shortName = sn; }}
@@ -102,7 +103,7 @@ public interface GipfConstants
     		        {"Gipf-tournament","Gipf Expert"},
     		        {"Gipf_variation","no Gipf pieces"},
     		        {"Gipf-standard_variation","with Gipf pieces"},
-    		        {"Gipf", "Gipf Basic"},
+    		        {"Gipf", "Gipf"},
     		        {"Gipf-standard","Gipf Standard"},
     		};
     		InternationalStrings.put(GipfStrings);

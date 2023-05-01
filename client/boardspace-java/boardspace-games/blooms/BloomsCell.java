@@ -21,9 +21,10 @@ class CellStack extends OStack<BloomsCell>
  * @author ddyer
  *
  */
-public class BloomsCell extends chipCell<BloomsCell,BloomsChip> implements StackIterator<BloomsCell>
+public class BloomsCell extends chipCell<BloomsCell,BloomsChip> implements StackIterator<BloomsCell>,PlacementProvider
 {	
 	private int sweep_counter1;		// the sweep counter for which blob is accurate
+	public int lastPlaced = -1;
 	public void initRobotValues() 
 	{
 	}
@@ -239,6 +240,20 @@ public class BloomsCell extends chipCell<BloomsCell,BloomsChip> implements Stack
 	public StackIterator<BloomsCell> remove(int i)
 	{
 		return((i==0) ? null : this);
+	}
+	public void reInit()
+	{
+		super.reInit();
+		lastPlaced = -1;
+	}
+	public void copyFrom(BloomsCell other)
+	{
+		super.copyFrom(other);
+		lastPlaced = other.lastPlaced;
+	}
+	public int getLastPlacement(boolean empty) {
+		
+		return empty ? -1 : lastPlaced;
 	}
 	
 }

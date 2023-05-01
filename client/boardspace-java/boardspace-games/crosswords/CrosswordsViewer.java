@@ -1073,12 +1073,14 @@ public void setLetterColor(Graphics gc,CrosswordsBoard gb,CrosswordsCell cell)
     	}}
     }
     private void drawNotice(Graphics gc,Rectangle r,CrosswordsBoard gb)
-    {
-    	if(!gb.GameOver() && (gb.drawPile.height()==0))
-		{	
+    {	if((G.Width(r)>0) 
+    		&& !gb.GameOver()
+    		&& (gb.drawPile.height()==0)
+    		)
+    	{	
 		 	String msg = (gb.someRackIsEmpty()) ? LastTurnMessage : s.get(TilesLeft,0);
 			GC.Text(gc, true, r,Color.blue,null, msg);
-		}
+    	}
     }
     private String bigString = null;
     private int bigX = 0;

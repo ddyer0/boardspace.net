@@ -84,7 +84,7 @@ public interface MorelliConstants
     	RandomSetup,
     	BlocksSetup,
     	FreeSetup,
-    	RandomOpposite, ShowNumbers;
+    	RandomOpposite,;
     	public String shortName() { return(name()); }
    }
 	class StateStack extends OStack<MorelliState>

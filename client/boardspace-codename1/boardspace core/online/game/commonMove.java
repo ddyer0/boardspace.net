@@ -792,5 +792,4 @@ public abstract class commonMove implements lib.CompareTo<commonMove> , Opcodes,
 	// this is available for debugging, return true if this is a move "of interest"
 	public boolean visit() { return(false); };
 	public String indexString() { int ind = index();  return (ind<0 ? "" : ind+" "); }
-
 }

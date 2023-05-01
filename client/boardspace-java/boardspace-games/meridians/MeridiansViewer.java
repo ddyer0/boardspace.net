@@ -113,8 +113,7 @@ public class MeridiansViewer extends CCanvas<MeridiansCell,MeridiansBoard> imple
     //
     // zones ought to be mostly irrelevant if there is only one board layout.
     //
-    private NumberMenu numberMenu = new NumberMenu(this,MeridiansChip.White,MeridiansId.ShowNumbers);
-
+ 
     private TextButton swapButton = addButton(SWAP,GameId.HitSwapButton,SwapDescription,
  			HighlightColor, rackBackGroundColor,rackIdleColor);
 
@@ -651,7 +650,6 @@ public class MeridiansViewer extends CCanvas<MeridiansCell,MeridiansBoard> imple
             //      DrawRepRect(gc,pl.displayRotation,Color.black,b.Digest(),repRect);
         eyeRect.activateOnMouse = true;
         eyeRect.draw(gc,selectPos);
-        numberMenu.draw(gc,selectPos);
         // draw the vcr controls, last so the pop-up version will be above everything else
         drawVcrGroup(nonDragSelect, gc);
 
@@ -666,9 +664,9 @@ public class MeridiansViewer extends CCanvas<MeridiansCell,MeridiansBoard> imple
      * seriously wrong.
      */
      public boolean Execute(commonMove mm,replayMode replay)
-    {	numberMenu.recordSequenceNumber(bb.moveNumber());
+    {	
         handleExecute(bb,mm,replay);
-        
+        numberMenu.recordSequenceNumber(bb.moveNumber());
         /**
          * animations are handled by a simple protocol between the board and viewer.
          * when stones are moved around on the board, it pushes the source and destination
@@ -918,9 +916,6 @@ public class MeridiansViewer extends CCanvas<MeridiansCell,MeridiansBoard> imple
             	throw G.Error("Hit Unknown object " + hitObject);
             }
         	break;
-        case ShowNumbers:
-        	numberMenu.showMenu();
-        	break;
         case ToggleEye:
         	eyeRect.toggle();
         	break;
@@ -1048,21 +1043,7 @@ public class MeridiansViewer extends CCanvas<MeridiansCell,MeridiansBoard> imple
     }
 
 
-    /** handle action events from menus.  Don't do any real work, just note
-     * state changes and if necessary set flags for the run loop to pick up.
-     * 
-     */
-    public boolean handleDeferredEvent(Object target, String command)
-    {
-        boolean handled = super.handleDeferredEvent(target, command);
-        
-        if(!handled)
-        {
-        	handled = numberMenu.selectMenu(target,this);
-        }
-        
-        return (handled);
-    }
+
 /** handle the run loop, and any special actions we need to take.
  * The mouse handling and canvas painting will be called automatically.
  * <p>

@@ -72,7 +72,9 @@ class OrdoBoard extends rectBoard<OrdoCell> implements BoardProtocol
     private IStack captureSize = new IStack();
     
     public OrdoPlay robot = null;
-    
+  
+  	int lastPlacedIndex = 0;
+ 
     public boolean p1(String msg)
    	{
    		if(G.p1(msg) && robot!=null)
@@ -256,6 +258,7 @@ class OrdoBoard extends rectBoard<OrdoCell> implements BoardProtocol
         captureSize.copyFrom(from_b.captureSize);
         copyFrom(rack,from_b.rack);
         robot = from_b.robot;
+        lastPlacedIndex = from_b.lastPlacedIndex;
         sameboard(from_b);
     }
     public void doInit(String gtype,long rv)
@@ -351,6 +354,10 @@ class OrdoBoard extends rectBoard<OrdoCell> implements BoardProtocol
 		captureSize.clear();
         AR.setValue(win,false);
         moveNumber = 1;
+	    lastProgressMove = 0;
+	    lastDrawMove = 0;
+	    robotDepth = 0;
+	    lastPlacedIndex = 1;
 
         // note that firstPlayer is NOT initialized here
     }
@@ -488,8 +495,7 @@ class OrdoBoard extends rectBoard<OrdoCell> implements BoardProtocol
 	    	{
 	   		default: throw G.Error("Not expecting rackLocation %s",dr.rackLocation);
 			case BoardLocation: 
-				OrdoChip ch = pickedObject = dr.removeTop();
-				occupiedCells[playerIndex(ch)].remove(dr,false); 
+				unDropObject(dr);
 				break;
 			case White_Chip_Pool:	// treat the pools as infinite sources and sinks
 			case Black_Chip_Pool:	
@@ -498,6 +504,13 @@ class OrdoBoard extends rectBoard<OrdoCell> implements BoardProtocol
 	    	
 	    	}
 	    	}
+    }
+    private void unDropObject(OrdoCell dr)
+    {
+    	OrdoChip ch = pickedObject = dr.removeTop();
+		occupiedCells[playerIndex(ch)].remove(dr,false); 
+		dr.lastPlaced = dr.previousLastPlaced;
+		lastPlacedIndex--;
     }
     // 
     // undo the pick, getting back to base state for the move
@@ -512,6 +525,7 @@ class OrdoBoard extends rectBoard<OrdoCell> implements BoardProtocol
     		default: throw G.Error("Not expecting rackLocation %s",ps.rackLocation);
     		case BoardLocation: 
     				ps.addChip(po);
+    				ps.lastEmptied = -1;
     				occupiedCells[playerIndex(po)].push(ps);
     				break;
     		case White_Chip_Pool:
@@ -520,7 +534,14 @@ class OrdoBoard extends rectBoard<OrdoCell> implements BoardProtocol
     		pickedObject = null;
      	}
      }
-
+    private void unPickObject(OrdoCell c)
+    {
+    	c.addChip(pickedObject);
+    	c.lastContents = c.previousLastContents;
+    	c.lastEmptied = c.previousLastEmptied;
+    	occupiedCells[playerIndex(pickedObject)].push(c);
+    	pickedObject = null;
+    }
     // 
     // drop the floating object.
     //
@@ -532,6 +553,9 @@ class OrdoBoard extends rectBoard<OrdoCell> implements BoardProtocol
 		case BoardLocation:
 			c.addChip(pickedObject);
 			occupiedCells[playerIndex(pickedObject)].push(c);
+			c.previousLastPlaced = c.lastPlaced;
+			c.lastPlaced = lastPlacedIndex;
+			lastPlacedIndex++;
 			break;
 		case White_Chip_Pool:
 		case Black_Chip_Pool:	break;	// don't add back to the pool
@@ -552,6 +576,11 @@ class OrdoBoard extends rectBoard<OrdoCell> implements BoardProtocol
 		case BoardLocation: 
 			OrdoChip ch = pickedObject = c.removeTop();
 			occupiedCells[playerIndex(ch)].remove(c,false);
+			c.previousLastContents = c.lastContents;
+			c.lastContents =ch;
+			c.previousLastEmptied = c.lastEmptied;
+			c.lastEmptied = lastPlacedIndex;
+	
 			break;
 		case White_Chip_Pool:
 		case Black_Chip_Pool:	
@@ -727,6 +756,7 @@ class OrdoBoard extends rectBoard<OrdoCell> implements BoardProtocol
     private void doDone(replayMode replay)
     {	
     	lastDest[whoseTurn] = droppedDestStack.top();   	
+    	lastPlacedIndex++;
      	acceptPlacement();
  
         if (board_state==OrdoState.Resign)
@@ -767,6 +797,9 @@ class OrdoBoard extends rectBoard<OrdoCell> implements BoardProtocol
     {	
     	OrdoChip ch = mid.removeTop();
     	int capee = playerIndex(ch);
+    	mid.lastContents = ch;
+    	mid.lastCaptured = lastPlacedIndex;
+    	
 		occupiedCells[capee].remove(mid,false);
 		captureStack.push(mid);
     }
@@ -780,23 +813,17 @@ class OrdoBoard extends rectBoard<OrdoCell> implements BoardProtocol
     private void undoOrdoMove(OrdoCell toStart,OrdoCell toEnd,OrdoCell from)
     {
     	int direction = findDirection(toStart,toEnd);
-		OrdoCell sel = toStart;
 		boolean exit = false;
-		OrdoChip chip = null;
-		do { pickObject(from);
-			 chip = pickedObject;
-			 pickedObject = null;
-			 exit = sel==toEnd;
-			 sel = sel.exitTo(direction);
-			 from = from.exitTo(direction);      				 
-		} while(!exit);
-		exit = false;
-		do {
-			pickedObject = chip;
-			dropObject(toStart);
+		do { 
+			unDropObject(from);
+			unPickObject(toStart);
+			 
+			pickedObject = null;
 			exit = toStart==toEnd;
 			toStart = toStart.exitTo(direction);
+			from = from.exitTo(direction);      				 
 		} while(!exit);
+
 		droppedDestStack.clear();
 		pickedSourceStack.clear();
     }
@@ -904,41 +931,24 @@ class OrdoBoard extends rectBoard<OrdoCell> implements BoardProtocol
         	break;
         case MOVE_ORDO:	// ordo block move
         	{
-        		OrdoCell from0 = getCell(m.from_col,m.from_row);
-        		OrdoCell to0 = getCell(m.to_col,m.to_row);
-        		OrdoCell target0 = getCell(m.target_col,m.target_row);
-        		OrdoChip top =from0.topChip();
-        		if(target0.row!=from0.row) { lastProgressMove = moveNumber; }
-        		int dir = findDirection(from0,target0);
+        		OrdoCell from = getCell(m.from_col,m.from_row);
+        		OrdoCell to = getCell(m.to_col,m.to_row);
+        		OrdoCell target = getCell(m.target_col,m.target_row);
+        		if(target.row!=from.row) { lastProgressMove = moveNumber; }
+        		int dir = findDirection(from,target);
         		sidewaysMove = (variation==Variation.OrdoX) && m.from_row==m.to_row;
 
             	{
         		boolean exit = false;
-        		OrdoCell from = from0;
-        		OrdoCell to = to0;
-        		OrdoCell target = target0;
         		selectedDest = to;	// in case of undo
         		do {
         			pickObject(from);
-        			pickedObject = null;
+        			dropObject(to);	// this might overlap and temporarily create a stack of 2
         			if(replay!=replayMode.Replay) {
         				animationStack.push(from);
         				animationStack.push(to);
         			}
         			exit = (from==target);
-        			from = from.exitTo(dir);
-        			to = to.exitTo(dir);
-        		} while(!exit);
-        		}
-            	
-        		{
-        		boolean exit = false;
-        		OrdoCell from = from0;
-            	OrdoCell to = to0;
-            	OrdoCell target = target0;
-        		do {pickedObject = top;
-         			dropObject(to);
-         			exit = (from==target);
         			from = from.exitTo(dir);
         			to = to.exitTo(dir);
         		} while(!exit);

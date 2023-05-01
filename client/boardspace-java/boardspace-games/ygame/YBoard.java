@@ -139,7 +139,7 @@ class YBoard extends RBoard<YCell> implements BoardProtocol,YConstants
     	board = new YCell[nInCol.length][0];
     	int idx = 0;
     	allCells = null;
-    	cellArray = new YCell[coords.length];
+    	//cellArray = new YCell[coords.length];
     	for(int i=0;i<nInCol.length;i++) 
     		{ int nr = nInCol[i];
     		  YCell row[] = board[i]= new YCell[nr];
@@ -152,9 +152,11 @@ class YBoard extends RBoard<YCell> implements BoardProtocol,YConstants
     	     	  c.xloc = coords[idx][0];
     			  c.yloc = coords[idx][1];
     			  allCells = c;
-    			  cellArray[idx++] = c;
+    			  idx++;
+    			  //cellArray[idx++] = c;
     		  }
     		}
+    	cell<YCell> cellArray[] = getCellArray();
     	G.Assert(idx==coords.length,"Coords length mismatch");
     	G.Assert(idx==neighbors.length,"Neighbors length mismatch");
     	G.Assert(perm==null || idx==perm.length,"Perm length mismatch");

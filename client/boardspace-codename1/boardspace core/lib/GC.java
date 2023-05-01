@@ -1,7 +1,6 @@
 package lib;
 
 import com.codename1.ui.Font;
-import com.codename1.ui.geom.Point;
 import com.codename1.ui.geom.Rectangle;
 import com.codename1.ui.geom.Rectangle2D;
 import com.codename1.ui.geom.Shape;

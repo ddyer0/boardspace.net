@@ -81,11 +81,14 @@ public class ViticultureViewer extends CCanvas<ViticultureCell,ViticultureBoard>
     	int index;
     	double x=0,y=0,xscale=0.2,yscale=0.2;
     	public int getX(Rectangle r)
-    		{ return (int)((G.centerX(r)+G.Width(r)*x));
+    		{ 
+    		// the 0.038 is an ad hoc adjustment after the stockart was recentered
+    		return (int)((G.centerX(r)+G.Width(r)*(x+0.038)));
     		}
     	public int getY(Rectangle r)
     		{
-    		return ((int)((G.centerY(r)+G.Height(r)*y)));
+    		// the 0.019 is an ad hoc adjustment after the stockart was recentered
+    		return ((int)((G.centerY(r)+G.Height(r)*(y+0.019))));
     		}
     	public int getW(Rectangle r)
     		{
@@ -2522,11 +2525,10 @@ private void drawPlayerBoard(Graphics gc,
     		Rectangle wrect,boolean censor)
     {
      	gb.cardDisplay.reInit();
-     	IStack index = new IStack();
      	for(int lim = pb.cards.height()-1; lim>=0; lim--)
      	{
      		ViticultureChip chip = pb.cards.chipAtIndex(lim);
-     		if(chip.type==ChipType.PurpleCard) { gb.cardDisplay.addChip(chip); index.push(lim); } 
+     		if(chip.type==ChipType.PurpleCard) { gb.cardDisplay.addChip(chip);  } 
      	}
      	int ncards = gb.cardDisplay.height();
      	int cx = G.centerX(wrect);
@@ -2536,7 +2538,6 @@ private void drawPlayerBoard(Graphics gc,
      	{	highlight.arrow = StockArt.Eye;
      		highlight.awidth = cstep/4;
      		highlight.hitCode = ViticultureId.Magnify;
-     		highlight.hit_index = index.elementAt(highlight.hit_index);
      	}
     }
     private int lastWleft=0;
@@ -3112,7 +3113,7 @@ private void drawPlayerBoard(Graphics gc,
      		for(int i=0,lim=scores.size(); i<lim; i++)
      		{	ScoreEvent event = scores.elementAt(i);
      			int ypos = y+h-(-MIN_SCORE + event.net)*ystep-pb.colorIndex*ystep/20;
-     			int xpos = x+((event.year-1)*4+event.season)*xstep-pb.colorIndex*xstep/30;
+     			int xpos = x+(Math.max(0,(event.year-1))*4+event.season)*xstep-pb.colorIndex*xstep/30;
      			if(pass==1)
      			{
      			GC.setColor(gc, MouseColors[pb.colorIndex]);
@@ -3968,14 +3969,14 @@ private void drawPlayerBoard(Graphics gc,
 		{
 		int mleft = xp+step/8;
 		int doneWidth = w/10;
-		int doneRowCenter = h-doneWidth/2;
+		int doneRowCenter = centerY+h/2-doneWidth;
 		Rectangle r = new Rectangle(xp+totalW-doneWidth*3/2,doneRowCenter,doneWidth,doneWidth/2);
 		boolean done = gb.DoneState();
 		doneButton(gc,r,(done ? highlight : null));
 
 		String msg = state.activity.getName();
 		String tmsg = s.get(msg,nToTake);
-		GC.Text(gc,false, mleft,doneRowCenter,step,step/3,Color.blue,null,tmsg);
+		GC.Text(gc,false, mleft,centerY+h/2-step/2,step,step/3,Color.blue,null,tmsg);
 	
 		if(cost>pb.cash)
 		{

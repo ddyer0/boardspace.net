@@ -83,7 +83,6 @@ public class TweedViewer extends CCanvas<TweedCell,TweedBoard> implements TweedC
  			TweedChip.NoNumbers,TweedId.Numbers,NoNumbers
  			);
 
-   private NumberMenu numberMenu = new NumberMenu(this,TweedChip.Gray,TweedId.ShowNumbers);
 
    private Rectangle chipRects[] = addZoneRect("chip",2);
    private Rectangle scoreRects[] = addRect("score",2);
@@ -671,7 +670,6 @@ public class TweedViewer extends CCanvas<TweedCell,TweedBoard> implements TweedC
         numberRect.draw(gc,selectPos);
         captureRect.activateOnMouse = true;
         captureRect.draw(gc,selectPos);
-        numberMenu.draw(gc,selectPos);
      
         // draw the vcr controls, last so the pop-up version will be above everything else
         drawVcrGroup(nonDragSelect, gc);
@@ -689,6 +687,7 @@ public class TweedViewer extends CCanvas<TweedCell,TweedBoard> implements TweedC
      public boolean Execute(commonMove mm,replayMode replay)
     {	
         handleExecute(bb,mm,replay);
+        numberMenu.recordSequenceNumber(bb.moveNumber()); 
         
         /**
          * animations are handled by a simple protocol between the board and viewer.
@@ -944,9 +943,6 @@ public class TweedViewer extends CCanvas<TweedCell,TweedBoard> implements TweedC
             	throw G.Error("Hit Unknown object " + hitCode);
             }
         	break;
-        case ShowNumbers:
-        	numberMenu.showMenu();
-        	break;
         case Captures:
         	captureRect.toggle();
         	break;
@@ -1107,8 +1103,7 @@ public class TweedViewer extends CCanvas<TweedCell,TweedBoard> implements TweedC
     public boolean handleDeferredEvent(Object target, String command)
     {
         boolean handled = super.handleDeferredEvent(target, command);
-        if(numberMenu.selectMenu(target,this)) {}
-        else if(target==rotationOption)
+        if(target==rotationOption)
         {	handled=true;
         	doRotation = rotationOption.getState();
         	resetBounds();
