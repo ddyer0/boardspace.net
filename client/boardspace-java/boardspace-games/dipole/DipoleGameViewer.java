@@ -21,6 +21,8 @@ import lib.StockArt;
 /**
  * 
  * Change History
+ * 
+ * TODO: make it more obvious what's required when only "trash" moves are possible
  *
  * May 2007 initial work in progress. 
  *

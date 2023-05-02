@@ -350,10 +350,10 @@ public abstract class BaseBoard implements Opcodes,Digestable
 	 * 
 	 */
 	private int clientRevisionLevel = -1;	// the lowest support level of all clients reporting
-	public int revision = -1;				// the current active revision level
+	public int revision = 0;				// the current active revision level
 	
 	// override this method in the game to be return(REVISION);
-	public int getMaxRevisionLevel() { return(revision); }	// default revision, most older and most simple games don't use it.
+	public int getMaxRevisionLevel() { return(0); }	// default revision, most older and most simple games don't use it.
 	public int getActiveRevisionLevel() { return(revision); }
 
 	// called by the game doInit(..) to check for the need to downgrade

@@ -391,6 +391,11 @@ public class CheViewer extends CCanvas<CheCell,CheBoard> implements CheConstants
                 if(isADest)
                 {GC.cacheAACircle(gc,xpos,ypos,2,Color.red,Color.yellow,true);
                 }
+                //if(G.debug() && cell.topChip()==null)
+                //{	// draw a grid of other cells
+                //	GC.Text(gc,true,xpos-cellSize/2,ypos-cellSize/2,cellSize,cellSize,null,null,""+G.printCol(cell.col)+cell.row);
+                //}
+
                 }
         doBoardDrag(tbRect,anySelect,cellSize,CheId.InvisibleDragBoard); 
  
@@ -663,7 +668,7 @@ public class CheViewer extends CCanvas<CheCell,CheBoard> implements CheConstants
 		super.drawCanvas(offGC,complete,hp);
     }
     // return what will be the init type for the game
-    public String gameType() { return(bb.gametype); }	// this is the subgame "setup" within the master type.
+    public String gameType() { return(bb.gameType()); }	// this is the subgame "setup" within the master type.
     public String sgfGameType() { return(Che_SGF); }	// this is the official SGF number assigned to the game
 
    
@@ -671,7 +676,17 @@ public class CheViewer extends CCanvas<CheCell,CheBoard> implements CheConstants
     public void performHistoryInitialization(StringTokenizer his)
     {   //the initialization sequence
     	String token = his.nextToken();
+    	if("Che".equals(token))
+    	{
         bb.doInit(token,0L);
+    }
+    	else
+    	{
+    	int np = G.IntToken(his);
+    	long rv = G.LongToken(his);
+    	int rev = G.IntToken(his);
+    	bb.doInit(token,np,rv,rev);
+    	}
     }
 
 
@@ -743,7 +758,7 @@ public class CheViewer extends CCanvas<CheCell,CheBoard> implements CheConstants
             
             if (setup_property.equals(name))
             {
-                bb.doInit(value,0L);
+                bb.reInit(value);
              }
             else if (name.equals(comment_property))
             {

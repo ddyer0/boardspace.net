@@ -545,7 +545,7 @@ class MorrisBoard extends squareBoard<MorrisCell> implements BoardProtocol,Morri
     	{	MorrisCell next = dest.exitTo(direction);
     		if((next!=null)&&(next.topChip()==top))
     		{
-    			MorrisCell opp = dest.exitTo(direction+CELL_HALF_TURN());
+    			MorrisCell opp = dest.exitTo(direction+CELL_HALF_TURN);
     			if((opp!=null)&&(opp.topChip()==top))
     					{
     					return(true);

@@ -54,16 +54,7 @@ public abstract class square_geo_board<CELLTYPE extends cell<CELLTYPE>> extends 
     	for(int i=0;i<dxs.length;i++) { if((dxs[i]==dx)&&(dys[i]==dy)) { return(i); }}
     	throw G.Error("No direction found");
     }
-    /**
-     * find the direction from cell from to cell to, which are in a line
-     * @param from
-     * @param to
-     * @return an integer
-     */
-    public int findDirection(CELLTYPE from,CELLTYPE to)
-    {
-    	return(findDirection(from.col,from.row,to.col,to.row));
-    }
+
 	public int firstRowInColumn(char col) { return(1); } ;
 	public int lastRowInColumn(char col) { return(nrows); };
     /**

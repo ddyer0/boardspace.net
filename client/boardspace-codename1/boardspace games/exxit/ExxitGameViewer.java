@@ -146,7 +146,7 @@ public class ExxitGameViewer extends CCanvas<ExxitCell,ExxitGameBoard> implement
     {
         //System.out.println(myplayer.trueName + " doinit");
         super.doInit(preserve_history);				// let commonViewer do it's things
-        b.doInit(b.gametype);						// initialize the board
+        b.doInit(b.gameType());						// initialize the board
         if(!preserve_history)
         	{zoomRect.setValue(INITIAL_TILE_SCALE);
         	 board_center_x = board_center_y = 0.0;
@@ -485,6 +485,10 @@ public class ExxitGameViewer extends CCanvas<ExxitCell,ExxitGameBoard> implement
                  if(isADest)
                  {GC.cacheAACircle(gc,xpos,ypos,2,Color.red,Color.yellow,true);
                  }
+               //if(G.debug() && cell.topChip()==null)
+            //	   {	// draw a grid of other cells
+            //	   	GC.Text(gc,true,xpos-CELLSIZE/2,ypos-CELLSIZE/2,CELLSIZE,CELLSIZE,null,null,""+G.printCol(cell.col)+cell.row); 
+            //	   }
              }
          }
          
@@ -857,7 +861,7 @@ public class ExxitGameViewer extends CCanvas<ExxitCell,ExxitGameBoard> implement
  
     }  
     // return what will be the init type for the game
-    public String gameType() { return(b.gametype); }
+    public String gameType() { return(b.gameType()); }
     public String sgfGameType() { return(Exxit_SGF); }
     public void performHistoryInitialization(StringTokenizer his)
     {   //the initialization sequence
@@ -917,7 +921,7 @@ public class ExxitGameViewer extends CCanvas<ExxitCell,ExxitGameBoard> implement
 
             if (setup_property.equals(name))
             {
-                b.doInit(value);
+                b.reInit(value);
              }
             else if (name.equals(comment_property))
             {

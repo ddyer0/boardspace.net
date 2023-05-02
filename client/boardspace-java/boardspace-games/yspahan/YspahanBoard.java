@@ -2827,7 +2827,8 @@ public class YspahanBoard extends BaseBoard implements BoardProtocol,YspahanCons
 			accumulateNeighborhoodDests(dests, yrack.Chest_Neighborhood);
 			accumulateNeighborhoodDests(dests, yrack.Vase_Neighborhood);
 			accumulateNeighborhoodDests(dests, yrack.Barrel_Neighborhood);
-		} else {
+		} else if(selectedDice!=null) 
+		{
 			G.Assert(selectedDice.diceTower != null,
 					"a group of dice is selected");
 			getNeighborhoodDests(dests,

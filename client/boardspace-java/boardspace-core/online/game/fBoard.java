@@ -584,7 +584,26 @@ public class BoardIterator implements Enumeration<CELLTYPE>
 	 	return(val);
 	 }  
 	
-	 public abstract int findDirection(char col,int row,char toCol,int toRow);
+	 /**
+	  * find the direction from x,y to x1,y1 in the current board geometry.
+	  * @param fc
+	  * @param fr0
+	  * @param tc
+	  * @param tr0
+	  * @return an integer corresponding to a direction code
+	  */
+	 public abstract int findDirection(char fc,int fr0,char tc,int tr0);
+
+	 /**
+	  * find the direction from cell from to cell to, which are in a line
+	  * @param from
+	  * @param to
+	  * @return an integer
+	  */
+	    public int findDirection(CELLTYPE from,CELLTYPE to)
+	    {
+	    	return(findDirection(from.col,from.row,to.col,to.row));
+	    }
 	 /**
 	  * verify that all links are reversable, and the direction map is consistent
 	  */

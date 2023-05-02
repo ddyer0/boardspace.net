@@ -19,8 +19,10 @@ import lib.Random;
  *
  */
 
-class CheBoard extends rectBoard<CheCell> implements BoardProtocol,CheConstants
-{	
+class CheBoard extends infiniteRectangularBoard<CheCell> implements BoardProtocol,CheConstants
+{	static final int REVISION = 101;		// 101 switches to an infinite board
+	public int getMaxRevisionLevel() { return(REVISION); }
+
     static int BOARDCOLUMNS = 19;
     static int BOARDROWS = 19;
     static final String[] CheGRIDSTYLE = { "1", null, "A" }; // left and bottom numbers
@@ -103,7 +105,7 @@ class CheBoard extends rectBoard<CheCell> implements BoardProtocol,CheConstants
     {
         drawing_style = DrawingStyle.STYLE_NOTHING; // don't draw the cells.  STYLE_CELL to draw them
         Grid_Style = CheGRIDSTYLE;
-        isTorus=true;
+        revision = REVISION;
         setColorMap(map);
         doInit(init,0L); // do the initialization 
     }
@@ -141,7 +143,7 @@ class CheBoard extends rectBoard<CheCell> implements BoardProtocol,CheConstants
      */
     public void sameboard(CheBoard from_b)
     {
-        super.sameboard(from_b); // hexboard compares the boards
+        super.sameboard(from_b); // compares the boards
         
         // here, check any other state of the board to see if
         G.Assert((chips_on_board == from_b.chips_on_board),"chip count matches");
@@ -182,7 +184,21 @@ class CheBoard extends rectBoard<CheCell> implements BoardProtocol,CheConstants
     	}
     public void copyFrom(BoardProtocol b) { copyFrom((CheBoard)b); }
 
-    public CheCell getCell(CheCell c) { return(c==null ? null : getCell(c.col,c.row)); }
+    public CheCell getCell(CheCell c)
+    { 	if(c==null) { return null; }
+    	switch(c.rackLocation())
+    	{
+    	case BoardLocation:
+    	case EmptyBoard:
+    		return getCell(c.col,c.row);
+    	case ChipPool0:	return chipPool[0];
+    	case ChipPool1: return chipPool[1];
+    	case ChipPool2: return chipPool[2];
+    	case ChipPool3: return chipPool[3];
+    	default: G.Error("Not expecting %s",c.rackLocation());
+    	}
+    	
+    	return(c==null ? null : getCell(c.col,c.row)); }
     
     /* make a copy of a board.  This is used by the robot to get a copy
      * of the board for it to manipulate and analyze without affecting 
@@ -195,7 +211,7 @@ class CheBoard extends rectBoard<CheCell> implements BoardProtocol,CheConstants
         	{ CheCell ch = from_b.GetOccupiedCell(i);
         	  occupiedCells.push(getCell(ch));
         	}
-        copyFrom(chipPool,from_b.chipPool);
+        getCell(chipPool,from_b.chipPool);
         getCell(droppedDestStack,from_b.droppedDestStack);
         getCell(pickedSourceStack,from_b.pickedSourceStack);
         stackIndex = from_b.stackIndex;
@@ -207,16 +223,41 @@ class CheBoard extends rectBoard<CheCell> implements BoardProtocol,CheConstants
         sameboard(from_b); 
     }
 
+    public String gameType()
+    { 
+      if(revision<101) { return gametype; }
+      // the lower case is a secret clue that we're in 4 token mode
+      // instead of 1 token      else
+      return(G.concat(gametype.toLowerCase()," ",players_in_game," ",randomKey," ",revision));
+    }
+
+    public void reInit(String d)
+    {
+    	revision = 0;
+    	doInit(d);
+    }
+    
     /* initialize a board back to initial empty state */
     public void doInit(String gtype,long rv)
-    {	
-    	randomKey = rv;
-    	if(Che_INIT.equalsIgnoreCase(gtype)) {  reInitBoard(BOARDCOLUMNS,BOARDROWS);  }
-    	else { throw G.Error(WrongInitError,gtype); }
-        gametype = gtype;
+    {  StringTokenizer tok = new StringTokenizer(gtype);
+	   String typ = tok.nextToken();
+	   int np = tok.hasMoreTokens() ? G.IntToken(tok) : players_in_game;
+	   long ran = tok.hasMoreTokens() ? G.IntToken(tok) : rv;
+	   int rev = tok.hasMoreTokens() ? G.IntToken(tok) : revision;
+	   
+	   doInit(typ,np,ran,rev);
+    }
+    public void doInit(String typ,int np,long ran,int rev)
+    {
+    	randomKey = rev;
+    	if(Che_INIT.equalsIgnoreCase(typ)) {  reInitBoard(BOARDCOLUMNS,BOARDROWS);  }
+    	else { throw G.Error(WrongInitError,typ); }
+        gametype = typ;
+        adjustRevision(rev);
+        G.Assert(np==2,"players can only be 2");
+        setIsTorus(revision<101);
         setState(CheState.PUZZLE_STATE);
         
-        //initBoard(firstcol, ncol, null); //this sets up the board
         int map[]=getColorMap();
         playerDotColor[map[0]] = ChipColor.light;
         playerDotColor[map[1]] = ChipColor.dark;
@@ -499,6 +540,7 @@ class CheBoard extends rectBoard<CheCell> implements BoardProtocol,CheConstants
 				}
 			pickChip(m.object);
 			dropBoard(c);
+			createExitCells(c);
             setNextStateAfterDrop();
         	}
             break;

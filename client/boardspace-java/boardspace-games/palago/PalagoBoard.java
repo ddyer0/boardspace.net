@@ -132,7 +132,6 @@ class PalagoBoard extends infiniteHexBoard<PalagoCell> implements BoardProtocol,
     {
         drawing_style = DrawingStyle.STYLE_NOTHING; // don't draw the cells.  STYLE_CELL to draw them
         Grid_Style = PalagoGRIDSTYLE;
-        isTorus = false;
         revision = REVISION;
         setColorMap(map);
         doInit(init); // do the initialization 

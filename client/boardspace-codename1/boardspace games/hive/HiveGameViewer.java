@@ -982,7 +982,7 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
     public void performHistoryInitialization(StringTokenizer his)
     {   //the initialization sequence
     	String token = his.nextToken();
-    	if("Hive".equals(token))
+    	if(token.startsWith("Hive"))
     	{
         b.doInit(token);
     	}

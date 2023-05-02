@@ -221,7 +221,7 @@ class TruGameBoard extends rectBoard<TruCell> implements BoardProtocol,TruConsta
     	G.Assert(AR.sameArrayContents(chips_on_board,from_b.chips_on_board),"chips_on_board mismatch");
  
         // here, check any other state of the board to see if
-        G.Assert(s_focus == from_b.s_focus, "focus not the same");
+        G.Assert(sameCells(s_focus,from_b.s_focus), "focus not the same");
         G.Assert(Digest()==from_b.Digest(),"Digest matches");
     }
 
@@ -254,7 +254,7 @@ class TruGameBoard extends rectBoard<TruCell> implements BoardProtocol,TruConsta
     public void copyFrom(TruGameBoard from_b)
     {	super.copyFrom(from_b);
     	
-    	s_focus = from_b.s_focus;
+    	s_focus = getCell(from_b.s_focus);
         board_state = from_b.board_state;
         unresign = from_b.unresign;
     	getCell(sm_source,from_b.sm_source);
@@ -264,6 +264,10 @@ class TruGameBoard extends rectBoard<TruCell> implements BoardProtocol,TruConsta
     	AR.copy(sm_picked,from_b.sm_picked);
        	AR.copy(sm_state,from_b.sm_state);
        	AR.copy(chips_on_board,from_b.chips_on_board);
+       	pickedMergeMoves = from_b.pickedMergeMoves;
+       	pickedSplitMoves = from_b.pickedSplitMoves;
+       	pickedRiverMoves = from_b.pickedRiverMoves;
+       	m_focus = getCell(from_b.m_focus);
         sm_step = from_b.sm_step;
 
         sameboard(from_b);

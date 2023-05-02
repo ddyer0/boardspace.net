@@ -123,7 +123,7 @@ public class ExxitCell extends cell<ExxitCell> implements ExxitConstants
 		  {
 			  for(int dir = 0;dir<6;dir++)
 			  {	ExxitCell c = exitTo(dir);
-			  	if(c.isTileOnBoard()) { nTiles++; }
+			  	if(c!=null && c.isTileOnBoard()) { nTiles++; }
 			  }
 		  }
 		}

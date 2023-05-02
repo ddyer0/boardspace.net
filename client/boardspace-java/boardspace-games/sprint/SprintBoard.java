@@ -228,7 +228,7 @@ class Word implements StackIterator<Word>,CompareTo<Word>
 	}
 }
 
-class SprintBoard extends squareBoard<SprintCell> implements BoardProtocol
+class SprintBoard extends infiniteSquareBoard<SprintCell> implements BoardProtocol
 {	static int REVISION = 100;			// 100 represents the initial version of the game
 
 	static final String[] CrosswordsGRIDSTYLE = { "1", null, "A" }; // left and bottom numbers

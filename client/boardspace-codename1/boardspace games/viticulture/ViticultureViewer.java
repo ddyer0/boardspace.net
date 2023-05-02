@@ -903,7 +903,12 @@ public class ViticultureViewer extends CCanvas<ViticultureCell,ViticultureBoard>
     }
     
     private void togglePlayerMagnifier(ViticultureCell c,ViticultureBoard gb)
-    {	ViticultureId current = c.topChip().id;
+    {	if(c!=null)
+    	{
+    	ViticultureChip ch = c.topChip();
+    	if(ch!=null)
+    	{
+    	ViticultureId current = ch.id;
     	switch(current)
     	{
     	case Magnifier:
@@ -921,7 +926,7 @@ public class ViticultureViewer extends CCanvas<ViticultureCell,ViticultureBoard>
     	default:
     		if((c==gb.starMagnifier)||(c==gb.wakeupMagnifier)) {  setBoardMagnifiers(null,gb,null); }
     		else { 	setGlobalMagnifiers(null,gb,null,0); }
-    	}
+    	}}}
     }
     
     public boolean setGlobalZoom(double zoom,double rot)

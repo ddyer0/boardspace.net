@@ -97,4 +97,24 @@ public abstract class infiniteHexBoard<CELLTYPE extends cell<CELLTYPE>> extends 
 	  	return (fc<tc) ? CELL_UP : CELL_DOWN; 
 	}
  
+    private int firstRowOffset(int col)
+    {
+    	return ncols-col ;
+    }
+ 
+    /** convert cell col,row to Y coordinate
+     * 
+     */
+    public double cellToY00(char colchar, int arow)
+    {
+        int col = geo_colnum(colchar);
+        int thisrow = geo_rownum(colchar,arow);
+        int coffset = firstRowOffset(col);
+        double y0 = (thisrow * displayParameters.YCELLSIZE) 
+        		+ (coffset * displayParameters.GRIDSIZE)
+        		;
+
+        return (y0);
+    }
+
 }

@@ -40,7 +40,7 @@ public class SprintViewer extends CCanvas<SprintCell,SprintBoard> implements Spr
 	static final String ImageDir = "/sprint/images/";
      // colors
     private Color HighlightColor = new Color(0.2f, 0.95f, 0.75f);
-    private Color GridColor = Color.black;
+    //private Color GridColor = Color.black;
     private Color chatBackgroundColor = new Color(235,235,235);
     private Color rackBackGroundColor = new Color(192,192,192);
     private Color boardBackgroundColor = new Color(220,165,155);
@@ -678,8 +678,7 @@ public class SprintViewer extends CCanvas<SprintCell,SprintBoard> implements Spr
 	      // to draw the cells, set gb.Drawing_Style in the board init method.  Create a
 	      // DrawGridCoord(Graphics gc, Color clt,int xpos, int ypos, int cellsize,String txt)
 	      // on the board to fine tune the exact positions of the text
-	      bb.DrawGrid(gc, brect, use_grid, boardBackgroundColor, GridColor, GridColor, GridColor);
-
+	      //bb.DrawGrid(gc, brect, use_grid, boardBackgroundColor, GridColor, GridColor, GridColor);
 	  	}
 	//      draw
     }

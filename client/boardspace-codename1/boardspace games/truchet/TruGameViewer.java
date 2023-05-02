@@ -30,7 +30,7 @@ import lib.StockArt;
  *
  * May 2007 initial work in progress. 
  *
- * This code is derived from the "HexGameViewer" class.  Refer to the
+
  
 */
 public class TruGameViewer extends CCanvas<TruCell,TruGameBoard> implements TruConstants, GameLayoutClient
@@ -86,11 +86,11 @@ public class TruGameViewer extends CCanvas<TruCell,TruGameBoard> implements TruC
         super.init(info,frame);
         MouseColors = CheMouseColors;
         MouseDotColors = CheMouseDotColors;
-       b = new TruGameBoard(info.getString(OnlineConstants.GAMETYPE, "Truchet"),
+        b = new TruGameBoard(info.getString(GAMETYPE, "Truchet"),
         		info.getString(exHashtable.GAMEUID,
         		G.getString(exHashtable.GAMEUID,"testgame")),
         		getStartingColorMap());
-        //useDirectDrawing(); // not tested yet
+        useDirectDrawing(true); 
         doInit(false);
      }
 

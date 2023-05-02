@@ -62,6 +62,7 @@ public abstract class infiniteBoard<CELLTYPE extends cell<CELLTYPE>> extends fBo
     			char nc = getExitCol(c,direction);
     			int nr = getExitRow(c,direction);
     			CELLTYPE d2 = createInitialCell(nc,nr);
+    			//G.print("add adjacent "+d2);
     			linkAdjacentCells(d2);
     			addedCells.push(keyfor(nc,nr));
     		}
@@ -113,6 +114,7 @@ public abstract class infiniteBoard<CELLTYPE extends cell<CELLTYPE>> extends fBo
 		if(c==null && createNewCells && !isTorus)
 		{
 			c = createInitialCell(col,row);
+			//G.print("add "+c);
 			linkAdjacentCells(c);			
 			addedCells.push(keyfor(col,row));
 		}
@@ -157,7 +159,7 @@ public abstract class infiniteBoard<CELLTYPE extends cell<CELLTYPE>> extends fBo
 		// first discard the extra cells in this copy
 	 	IStack added = other.addedCells;
 	 	CELLTYPE oac = other.allCells;
-	 	if(!allCells.sameCellLocation(oac))
+	 	if(!(allCells.sameCellLocation(oac) && (added.size()==addedCells.size())))
 	 	{	int otherc = other.boardCellCount();
 	 		int ourc = boardCellCount();
 	 		while (ourc>otherc)
@@ -278,7 +280,7 @@ public abstract class infiniteBoard<CELLTYPE extends cell<CELLTYPE>> extends fBo
      * @param arow
      * @return an integer
      */
-    private final int geo_rownum(char col,int arow)
+    final int geo_rownum(char col,int arow)
     {	if(displayParameters.reverse_y)
     	{
     	return nrows-arow;
@@ -295,32 +297,13 @@ public abstract class infiniteBoard<CELLTYPE extends cell<CELLTYPE>> extends fBo
      * @param colchar
      * @return an integer
      */
-    private final int geo_colnum(char colchar)
+    final int geo_colnum(char colchar)
     {	
     	int col = colchar - 'A';
     	if(displayParameters.reverse_x!=displayParameters.reverse_y) 
     		{ return ncols-col;
     		}
     	return(col);
-    }
-    private int firstRowOffset(int col)
-    {
-    	return ncols-col ;
-    }
- 
-    /** convert cell col,row to Y coordinate
-     * 
-     */
-    public double cellToY00(char colchar, int arow)
-    {
-        int col = geo_colnum(colchar);
-        int thisrow = geo_rownum(colchar,arow);
-        int coffset = firstRowOffset(col);
-        double y0 = (thisrow * displayParameters.YCELLSIZE) 
-        		+ (coffset * displayParameters.GRIDSIZE)
-        		;
-
-        return (y0);
     }
 
     /** convert cell col,row to X coordinate
@@ -332,6 +315,15 @@ public abstract class infiniteBoard<CELLTYPE extends cell<CELLTYPE>> extends fBo
         double col2 = ((col+1) * displayParameters.CELLSIZE);
         return col2;
 
+    }
+    /** convert cell col,row to Y coordinate
+     * 
+     */
+    public double cellToY00(char colchar, int arow)
+    {
+        int thisrow = geo_rownum(colchar,arow);
+        double y0 = (thisrow * displayParameters.CELLSIZE);
+        return (y0);
     }
 
 }

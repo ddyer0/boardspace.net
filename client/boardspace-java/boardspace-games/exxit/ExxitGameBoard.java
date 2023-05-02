@@ -38,8 +38,9 @@ import lib.Random;
  *
  */
 
-public class ExxitGameBoard extends hexBoard<ExxitCell> implements BoardProtocol,ExxitConstants
-{ 	
+public class ExxitGameBoard extends infiniteHexBoard<ExxitCell> implements BoardProtocol,ExxitConstants
+{ 	static final int REVISION = 101;		// 101 switches to an infinite board
+	public int getMaxRevisionLevel() { return(REVISION); }
 	static final int NUMPIECES = 8;
     static final int NUMTILES = 39;
     static final int MAX_STACK_HEIGHT = NUMPIECES*3+1;	// we stack all the pieces on one tile
@@ -234,7 +235,7 @@ public class ExxitGameBoard extends hexBoard<ExxitCell> implements BoardProtocol
     	setColorMap(map);
         drawing_style = DrawingStyle.STYLE_CELL;//STYLE_NOTHING; // don't draw the cells.  STYLE_CELL to draw them
         Grid_Style = EXXITGRIDSTYLE;
-        isTorus=true;
+        revision = REVISION;
         transportCell = new ExxitCell('t',0); 
         transportCell.onBoard=false;
         undoCell = new ExxitCell('u',0);
@@ -267,19 +268,16 @@ public class ExxitGameBoard extends hexBoard<ExxitCell> implements BoardProtocol
     // standared init for Hex.  Presumably there could be different
     // initializations for variation games.
     private void Init_Standard(String game)
-    {	int[] firstcol = null;
-    	int[] ncol = null;
+    {	
     	boolean blitz = Exxit_BLITZ.equalsIgnoreCase(game);
     	boolean beginner = Exxit_Beginner.equalsIgnoreCase(game);
  		
 
     	int tilecount = blitz ? 29 : (beginner ? 19 : NUMTILES);
     	prosetup = Exxit_PRO.equalsIgnoreCase(game);
-    	firstcol = ExxitCols; 
-    	ncol = ExxitNInCol;
         gametype = game;
         setState(ExxitState.PUZZLE_STATE);
-        initBoard(firstcol, ncol, null); //this sets up a hexagonal board
+        reInitBoard(19,19); //this sets up a hexagonal board
         whoseTurn = FIRST_PLAYER_INDEX;
         numberOfThings = everyThing.length;
         
@@ -381,7 +379,7 @@ public class ExxitGameBoard extends hexBoard<ExxitCell> implements BoardProtocol
 					rv = c.Digest(r);
 					for(int j=0;j<c.nAdjacentCells();j++)
 					{	ExxitCell ac = c.exitTo(j);
-						rv += (pos[j]^ac.Digest(r));
+						if(ac!=null) { rv += (pos[j]^ac.Digest(r)); }
 					}
 					v += rv;
 				}
@@ -391,7 +389,13 @@ public class ExxitGameBoard extends hexBoard<ExxitCell> implements BoardProtocol
        v ^= (board_state.ordinal()*10+whoseTurn)*r.nextLong();
        return (v);
     }
-    
+    public String gameType()
+    { 
+      if(revision<101) { return gametype; }
+      // the lower case is a secret clue that we're in 4 token mode
+      // instead of 1 token      else
+      return(G.concat(gametype.toLowerCase()," ",players_in_game," ",randomKey," ",revision));
+    }
     // this visitor method implements copying the contents of a cell on the board
     public void copyFrom(ExxitCell c,ExxitCell from)
     {	c.copyFrom(from,allPieces,allTiles);
@@ -424,10 +428,28 @@ public class ExxitGameBoard extends hexBoard<ExxitCell> implements BoardProtocol
 
         sameboard(from_b);
     }
-
+    public void reInit(String d)
+    {
+    	revision = 0;
+    	doInit(d);
+    }
     /* initialize a board back to initial empty state */
     public void doInit(String gtype,long key)
-    {	randomKey =key;
+    {	
+   	   StringTokenizer tok = new StringTokenizer(gtype);
+   	   String typ = tok.nextToken();
+   	   int np = tok.hasMoreTokens() ? G.IntToken(tok) : players_in_game;
+   	   long ran = tok.hasMoreTokens() ? G.IntToken(tok) : key;
+   	   int rev = tok.hasMoreTokens() ? G.IntToken(tok) : revision;
+   	   doInit(typ,np,ran,rev);
+    }
+    public void doInit(String typ,int np,long ran,int rev)
+    {
+    	adjustRevision(rev);
+    	randomKey =ran;
+    	G.Assert(np==2,"players can only be 2");
+    	setIsTorus(rev<101);
+    	
     	robotDepth = 0;
     	whiteChips.doInit(); 
     	blackChips.doInit();
@@ -468,7 +490,7 @@ public class ExxitGameBoard extends hexBoard<ExxitCell> implements BoardProtocol
        moveNumber = 1;
        board_state=ExxitState.PUZZLE_STATE;
 
-       Init_Standard(gtype);
+       Init_Standard(typ);
        
         // note that firstPlayer is NOT initialized here
     }
@@ -1017,6 +1039,7 @@ public class ExxitGameBoard extends hexBoard<ExxitCell> implements BoardProtocol
     }
     private void doExchange(ExxitCell c,replayMode replay)
     {	// return the pieces to the reserve
+    	createExitCells(c);
     	while(c.height()>0)
     	{	ExxitPiece p = c.removeTop();
     		undoCell.push(p);
@@ -1044,9 +1067,9 @@ public class ExxitGameBoard extends hexBoard<ExxitCell> implements BoardProtocol
     	}
     	tilesOnBoard++;
     	blobs_valid = false;
-    	for(int dir=0;dir<6;dir++)
+    	for(int dir=0;dir<geometry.n;dir++)
     		{	ExxitCell cx =c.exitTo(dir);
-    			if((tiles.height()>0) && cx.canExchange()) { doExchange(cx,replay); }
+    			if((tiles.height()>0) && cx!=null && cx.canExchange()) { doExchange(cx,replay); }
     		}
      }
     
@@ -1140,26 +1163,31 @@ public class ExxitGameBoard extends hexBoard<ExxitCell> implements BoardProtocol
               case DROP_STATE:
               case DROPTILE_STATE:
              	  { 
-             		  ExxitCell d =getCell(m.source, m.from_col, m.from_row);
              		  if(pickedObject==null) 
-             	  		{ c = getCell(m.object,m.from_col,m.from_row);
-             	  		  pickObject(c);
+             	  		{ ExxitCell pool = getCell(m.object,m.from_col,m.from_row);
+             	  		  pickObject(pool);
              	  		  if(replay!=replayMode.Replay)
              	  		  {
+             	  			  animationStack.push(pool);
              	  			  animationStack.push(c);
-             	  			  animationStack.push(d);
              	  		  }
              	  		}
-            	   dropObject(d);
+            	   dropObject(c);
             	   setNextStateAfterDrop();
             	  }
             	  break;
            	  case PUZZLE_STATE:
            		  if(pickedObject==null) { pickObject(m.object,m.from_col,m.from_row); }
-           		  dropObject(getCell(m.source, m.from_col, m.from_row));
+           		  dropObject(c);
            		  setNextStateAfterDrop();
            		  break;
-            }}}
+            }
+              createExitCells(c);
+              }
+         		
+
+           
+            }
             break;
 
         case MOVE_PICKB:

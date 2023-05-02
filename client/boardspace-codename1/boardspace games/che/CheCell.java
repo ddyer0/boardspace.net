@@ -24,6 +24,7 @@ public class CheCell extends chipCell<CheCell,CheChip>
 	public CheCell() { super(); }		// construct a cell not on the board
 	public CheCell(char c,int r) 		// construct a cell on the board
 	{	super(cell.Geometry.Oct,c,r);
+		rackLocation = CheId.BoardLocation;
 	};
 	
 	public void reInit() { super.reInit(); cellName=""; }

@@ -50,21 +50,6 @@ public interface ExxitConstants
     static final String Exxit_Beginner = "exxit-beginner";	// very short game
     static final String Exxit_PRO = "exxit-pro";		// pro game
 
-    /* exxit uses the same board as hive, which is a hexagonal board with a torroidal global 
-     * geometry, implemented by adjacentcy links, and a diameter of 26.  26 is large 
-     * enough that with the normal constraints of play, you can't ever wrap around. 
-     * */
-    
-//  // these are indexes into the first ball in a column, ie B1 has index 2
-    static int[] ExxitCols = { 25,24,23,22,21,20,19,18, 17, 16, 15, 
-    	 						14,13,12,11, 10, 9, 8, 7, 6, 5,
-    	 						4, 3, 2, 1, 0 }; 
-//  // depth of columns, in this case all are 26
-    static int[] ExxitNInCol =     { 26,26,26,26,26,
-    								26,26,26,26,26,
-    								26,26,26,26,26,
-    								26,26,26,26,26,
-    								26,26,26,26,26,26 }; 
 
     public enum ExxitState implements BoardState
     {	PUZZLE_STATE(PuzzleStateDescription),

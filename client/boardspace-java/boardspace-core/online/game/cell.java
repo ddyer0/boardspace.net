@@ -91,6 +91,7 @@ public abstract class cell<FINALTYPE
 	public int getWidth() { return lastSize(); }
 	public int getHeight() { return lastSize(); }
 	public static long classHash = 0;
+	@SuppressWarnings("deprecation")
 	public long getClassHash()
 	{
 		if(classHash==0)

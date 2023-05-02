@@ -427,15 +427,6 @@ public abstract class gBoard<CELLTYPE extends cell<CELLTYPE>> extends fBoard<CEL
      */
     public abstract boolean validBoardPos(char col,int row);
     /**
-     * find the direction from x,y to x1,y1 in the current board geometry.
-     * @param fc
-     * @param fr0
-     * @param tc
-     * @param tr0
-     * @return an integer corresponding to a direction code
-     */
-    public abstract int findDirection(char fc,int fr0,char tc,int tr0);
-    /**
      * return the visually top row in a column, considering the current board
      * and the "reverse y" feature.  This is intended to be used in drawBoardElements when a board
      * should be drawn in top down (or bottom up) visual order to make overlapping
