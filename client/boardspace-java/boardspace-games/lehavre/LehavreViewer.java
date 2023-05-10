@@ -763,8 +763,8 @@ public class LehavreViewer extends exCanvas implements ViewerProtocol,NetworkInt
 	public boolean simultaneous_turns_allowed() {
 		return false;
 	}
-	public boolean fixed_move_baseline() {
-		return false;
+	public RecordingStrategy gameRecordingMode() {
+		return RecordingStrategy.All;
 	}
 	public boolean allowRobotsToRun() {
 		return false;

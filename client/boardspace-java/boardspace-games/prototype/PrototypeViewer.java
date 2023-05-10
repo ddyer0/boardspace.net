@@ -1402,9 +1402,9 @@ public class PrototypeViewer extends CCanvas<PrototypeCell,PrototypeBoard> imple
     public boolean simultaneous_turns_allowed()
     {	return super.simultaneous_turns_allowed();
     }
-    public boolean fixed_move_baseline()
-    {	return(super.fixed_move_baseline());
-    }
+  // public RecordingStrategy gameRecordingMode()
+  //  {	return(super.gameRecordingMode());
+  //  }
     
     // if there are simultaneous turns, robot start/stop can be tricky
     // by default, not allowed in simultaneous phases.  Return true 

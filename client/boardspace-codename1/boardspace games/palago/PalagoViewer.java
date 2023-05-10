@@ -394,7 +394,7 @@ public class PalagoViewer extends CCanvas<PalagoCell,PalagoBoard> implements Pal
                 boolean isADest = dests.get(ccell)!=null;
                 boolean isASource = (ccell==sourceCell)||(ccell==destCell);
                 boolean canHitThis = canHit && gb.LegalToHitBoard(ccell);
-                String labl = use_grid ? ccell.cellName : "";//+ccell.col+ccell.row;
+            String labl = use_grid ? ccell.cellName : "";//+G.printCol(ccell.col)+ccell.row;
             //if(G.debug() && !use_grid) { labl+=""+ccell.printCol()+ccell.row; }
                 if(ccell.drawChip(gc,this,canHitThis?ourTurnSelect:null,cellSize,xpos,ypos,labl))
                 {
@@ -637,7 +637,7 @@ public class PalagoViewer extends CCanvas<PalagoCell,PalagoBoard> implements Pal
 	    case BoardLocation:
 	    	if((c!=null) && c.topChip()!=null)
 	    	{
-	    	PerformAndTransmit("Pickb "+c.col+" "+c.row);
+	    	PerformAndTransmit("Pickb "+G.printCol(c.col)+" "+c.row);
 	    	}
 	    	break;
         }
@@ -650,14 +650,14 @@ public class PalagoViewer extends CCanvas<PalagoCell,PalagoBoard> implements Pal
 		default: throw G.Error("Not expecting state %s",state);
 		case PUZZLE_STATE:
 		{
-		PerformAndTransmit("dropb "+col+" "+row+" "+ch.index);
+		PerformAndTransmit("dropb "+G.printCol(col)+" "+row+" "+ch.index);
 		}
 		break;
 		case CONFIRM_STATE:
         case CONFIRM2_STATE:
 		case PLAY2_STATE:
 		case PLAY_STATE:
-				PerformAndTransmit("dropb "+col+" "+row+" "+ch.index);
+				PerformAndTransmit("dropb "+G.printCol(col)+" "+row+" "+ch.index);
 			break;
  		}
 	}
@@ -730,7 +730,7 @@ public class PalagoViewer extends CCanvas<PalagoCell,PalagoBoard> implements Pal
 					break;
 					}
 				// fall through and pick up the previously dropped piece
-				PerformAndTransmit("Pickb "+hitObject.col+" "+hitObject.row);
+				PerformAndTransmit("Pickb "+G.printCol(hitObject.col)+" "+hitObject.row);
 				break;
 			}
 			break;

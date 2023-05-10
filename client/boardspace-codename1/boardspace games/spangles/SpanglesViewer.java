@@ -312,7 +312,7 @@ public class SpanglesViewer extends CCanvas<SpanglesCell,SpanglesBoard> implemen
                 {	//SpanglesCell et = (SpanglesCell)cell.exitToward(2);
                 	//String ets = (et==null) ? "" : ("->"+et.col+et.row);
                 	// ""+cell.col+cell.row+ets
-                	String gridmsg = use_grid ? ""+cell.col+cell.row : null;
+                	String gridmsg = use_grid ? G.printCol(cell.col)+cell.row : null;
                 	GC.setColor(gc,Color.black);
                 	piece.drawChip(gc,this,cellSize,xpos,ypos,gridmsg); 
                     if (drawhighlight)
@@ -330,7 +330,7 @@ public class SpanglesViewer extends CCanvas<SpanglesCell,SpanglesBoard> implemen
                 }
         //if(G.debug() && (cell.topChip()==null))
         //{	// draw a grid of other cells
-        //	GC.Text(gc,true,xpos-CELLSIZE/2,ypos-CELLSIZE/2,CELLSIZE,CELLSIZE,null,null,""+cell.col+cell.row);
+        //	GC.Text(gc,true,xpos-CELLSIZE/2,ypos-CELLSIZE/2,CELLSIZE,CELLSIZE,null,null,""+G.printCol(cell.col)+cell.row);
         //}
         // the structure of the board is unusual.  This adds an arrow
         // that shows the pointer to adjacent to help debugging
@@ -514,7 +514,7 @@ public class SpanglesViewer extends CCanvas<SpanglesCell,SpanglesBoard> implemen
 	    		}
 	    	break;
 	    case BoardLocation:
-	    	if(c.topChip()!=null) { PerformAndTransmit("Pickb "+c.col+" "+c.row); }
+	    	if(c.topChip()!=null) { PerformAndTransmit("Pickb "+G.printCol(c.col)+" "+c.row); }
 	    	break;
         }
         }
@@ -526,12 +526,12 @@ public class SpanglesViewer extends CCanvas<SpanglesCell,SpanglesBoard> implemen
 		default: throw G.Error("Not expecting state %s",state);
 		case PUZZLE_STATE:
 		{
-		PerformAndTransmit("dropb "+col+" "+row+" "+ob);
+		PerformAndTransmit("dropb "+G.printCol(col)+" "+row+" "+ob);
 		}
 		break;
 		case CONFIRM_STATE:
 		case PLAY_STATE:
-			PerformAndTransmit("dropb "+col+" "+row+" "+ob);
+			PerformAndTransmit("dropb "+G.printCol(col)+" "+row+" "+ob);
 			break;
 					                 
 		
@@ -569,13 +569,13 @@ public class SpanglesViewer extends CCanvas<SpanglesCell,SpanglesBoard> implemen
 					// note that according to the general theory, this shouldn't
 					// ever occur because inappropriate spaces won't be mouse sensitve.
 					// this is just defense in depth.
-					PerformAndTransmit("Dropb "+hitObject.col+" "+hitObject.row+" "+bb.whoseTurn);
+					PerformAndTransmit("Dropb "+G.printCol(hitObject.col)+" "+hitObject.row+" "+bb.whoseTurn);
 					break;
 					}
 				// fall through and pick up the previously dropped piece
 				//$FALL-THROUGH$
 			case PUZZLE_STATE:
-				PerformAndTransmit("Pickb "+hitObject.col+" "+hitObject.row);
+				PerformAndTransmit("Pickb "+G.printCol(hitObject.col)+" "+hitObject.row);
 				break;
 			}
 			break;
@@ -587,7 +587,7 @@ public class SpanglesViewer extends CCanvas<SpanglesCell,SpanglesBoard> implemen
 					throw G.Error("Not expecting hit in state %s",state);
 				case PLAY_STATE:
 					if(bb.pickedObject==null)
-						{ PerformAndTransmit("Dropb "+hitObject.col+" "+hitObject.row+" "+bb.whoseTurn);
+						{ PerformAndTransmit("Dropb "+G.printCol(hitObject.col)+" "+hitObject.row+" "+bb.whoseTurn);
 						  break;
 						}
 

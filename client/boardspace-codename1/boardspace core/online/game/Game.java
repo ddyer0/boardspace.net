@@ -9,6 +9,7 @@ import common.GameInfo;
 import common.GameInfo.ScoringMode;
 import online.common.*;
 import online.game.export.ViewerProtocol;
+import online.game.export.ViewerProtocol.RecordingStrategy;
 import online.game.sgf.export.sgf_names;
 import online.search.SimpleRobotProtocol;
 import java.io.*;
@@ -38,7 +39,7 @@ import lib.*;
  * players disconnect and restart in a new room.  Spectators should be severed from the remains
  */
 
-public class Game extends commonPanel implements PlayConstants,Opcodes,DeferredEventHandler,Config,Crypto
+public class Game extends commonPanel implements PlayConstants,DeferredEventHandler,Config,ColorNames,Opcodes,Crypto
 {	/**
 	 * 
 	 */
@@ -271,7 +272,7 @@ public class Game extends commonPanel implements PlayConstants,Opcodes,DeferredE
     	recordedHistory = "";
     	UIDstring = //"1|||x|Dumbot|Yinsh-Blitz|4008";
     	"1||9|||Medina|30051"; //0 5381 ri 0 pi 0 1000 pi 1 1001 pi 2 1002
-        sendMessage(serverRecordString(false));
+        sendMessage(serverRecordString(RecordingStrategy.All));
     }
 
     // note when we pop up or down
@@ -387,10 +388,8 @@ public class Game extends commonPanel implements PlayConstants,Opcodes,DeferredE
 
     private void setGameState(ConnectionState newstate)
     {	
-        if (v != null)
-        {
-            v.setLimbo(newstate == ConnectionState.LIMBO);
-        }
+        	
+    	setLimbo(newstate == ConnectionState.LIMBO);
 
         if (gameState != newstate)
         { 	//System.out.println(my.trueName+": state is "+stateNames[newstate]);
@@ -465,6 +464,7 @@ public class Game extends commonPanel implements PlayConstants,Opcodes,DeferredE
     { //hack to disable communication for a while
         //if(showHints) { return(true); } else
       	ConnectionManager nc = myNetConn;
+      	G.Assert(!"".equals(message),"null message");
       	boolean connected = gameState.isConnected();
         if(connected && (nc!=null))
         {
@@ -519,8 +519,11 @@ public class Game extends commonPanel implements PlayConstants,Opcodes,DeferredE
     { 	// send this as a multiple message so the change in the server record string and the message
     	// this changed it are simultaneous.
         if(gameState.isConnected() && !G.offline())
-        { 	String combined = NetConn.SEND_MULTIPLE+" "+(message.length()+2)+" "+message+" ";
-        	String ss = " "+serverRecordString(v.fixed_move_baseline())+" ";
+        { 	
+        	RecordingStrategy rem = v.gameRecordingMode();
+        	
+        	String combined = NetConn.SEND_MULTIPLE+" "+(message.length()+2)+" "+message+" ";
+        	String ss = " "+serverRecordString(rem)+" ";
         	combined += ss.length()+ss;
         	sendMessage(combined);
         }
@@ -624,7 +627,7 @@ public class Game extends commonPanel implements PlayConstants,Opcodes,DeferredE
                 recordedHistory = "";
                 if(!G.offline())
                 {
-                String newstr = serverRecordString(false);
+        String newstr = serverRecordString(RecordingStrategy.All);
                 sendMessage(newstr);
                 sendMessage(NetConn.SEND_GROUP+KEYWORD_CHANGE_GAME+" "+selectedGame);
         }}
@@ -1456,9 +1459,21 @@ public class Game extends commonPanel implements PlayConstants,Opcodes,DeferredE
                 boolean parsed = wait || v.ParseMessage(rest, player.boardIndex);
                 // here we've received a move from another player, presumable one that
                 // he recorded, so we don't need to record it, only remember the current state.
-                if(!v.fixed_move_baseline()) 
-                	{ serverRecordString(false); // update the record string, but don't send anything.
-                	};		
+                RecordingStrategy mode = v.gameRecordingMode();
+                switch(mode)
+                {
+                case None:
+                case Fixed:
+                	break;
+                case All:
+                case Single:
+                	{
+                	String msg = serverRecordString(mode); // update the record string, but don't send anything.
+                	if(mode==RecordingStrategy.Single) {
+                		sendMessage(msg);
+                		}  	
+                	}
+                }
                 
             	if (parsed) //true if accepted in a real game
                 { // note, don't do any of this if we're a reviewer type
@@ -1962,9 +1977,34 @@ public class Game extends commonPanel implements PlayConstants,Opcodes,DeferredE
     	}
 
     }
+    private void setLimbo(boolean to)
+    {	if(v!=null)
+    	{
+    	if(to)
+    {
+    		
+        	RecordingStrategy oldStrat = v.gameRecordingMode();
+        	  v.stopRobots(); 
+        	  v.setLimbo(true);
+        	  RecordingStrategy newStrat = v.gameRecordingMode();
+        	  if(newStrat!=oldStrat)
+        	  {
+        		  recordedHistory = "";
+        		  if(newStrat==RecordingStrategy.Single)
+        		  {
+        			  sendMessage(serverRecordString(newStrat));
+        		  }
+        	  }
+            }
+    	else
+    	{
+    		v.setLimbo(false);
+    	}
+    	}
+    }
     private void disConnected(String why)
     {
-        if(v!=null) { v.stopRobots(); v.setLimbo(true);}
+        setLimbo(true);
         pingtime = 0;
         checkForSuperCede();
         if (!exitFlag)
@@ -2225,9 +2265,9 @@ public class Game extends commonPanel implements PlayConstants,Opcodes,DeferredE
 
 
         /* somebody became a spectator */
-        setGameState(ConnectionState.LIMBO);
         player.qcode = player.trueName;
         player.mouseObj = NothingMoving;	// not tracking anything
+        setGameState(ConnectionState.LIMBO);
         v.stopRobots();
         //G.print("stopping bots");
         changeActionMenus();
@@ -2643,7 +2683,8 @@ public class Game extends commonPanel implements PlayConstants,Opcodes,DeferredE
    		// record the initial state of the game
        	// otherwise, spectators who join will be misled if they receive the first move
        	// as can easily happen if the robot is making the first move.
-    	sendMessage(serverRecordString(v.fixed_move_baseline())); 	
+    	RecordingStrategy mode = v.gameRecordingMode();
+    	if(mode!=RecordingStrategy.None) { sendMessage(serverRecordString(mode)); } 	
     	// this allows spectators to join
     	sendMessage(NetConn.SEND_ASK_RESERVE + sessionNum + " "+KEYWORD_UNRESERVE);
     	}
@@ -3868,14 +3909,13 @@ public class Game extends commonPanel implements PlayConstants,Opcodes,DeferredE
     {  	super.runStep(wait);
 
     	checkUrlLoaded();
-
 		if(G.isCodename1()) { doFocus(G.isCompletelyVisible(this)); }
     	SetWhoseTurn();
 
     	boolean some = (v!=null) && v.ParseMessage(null, -1);
     	if(some) 
     		{ if(v.getReviewPosition()<0) 
-    				{ serverRecordString(false);
+    				{ serverRecordString(RecordingStrategy.All);
     				}
        		  doTouch();
     		}
@@ -4392,8 +4432,10 @@ public class Game extends commonPanel implements PlayConstants,Opcodes,DeferredE
 		}
     }
 
-    private String serverRecordString(boolean fixed_baseline)
-    {	
+    private String serverRecordString(RecordingStrategy mode)
+    {	if(mode==RecordingStrategy.None) 
+    		{ return ""; 
+    		}
     	String fixedHist = v.fixedServerRecordString(robotInit(), reviewOnly);
     	String msg = v.fixedServerRecordMessage(fixedHist);
         int offset = 0;
@@ -4430,7 +4472,7 @@ public class Game extends commonPanel implements PlayConstants,Opcodes,DeferredE
     	// which is the normal case.  In games with simultaneous moves, the baseline
     	// has to stay fixed while everyone chaotically moves.
     	//
-       	if(!fixed_baseline)
+       	if(mode==RecordingStrategy.All)
        		{ 
        		//G.print(my+"Baseline from "+recordedHistory.length()+" to "+fixedHist.length());
        		recordedHistory = fixedHist; 
@@ -4449,6 +4491,7 @@ public class Game extends commonPanel implements PlayConstants,Opcodes,DeferredE
         	// in one swell foop, followed by a game status.  This is not just
         	// cosmetic, it allows the server to hold the definitive game state.
         	doTouch();
+ 
         	String combined = NetConn.SEND_MULTIPLE;	// includes a trailing space
 	            while (!event.isEmpty())
 	            {
@@ -4459,9 +4502,12 @@ public class Game extends commonPanel implements PlayConstants,Opcodes,DeferredE
 	                		+ KEYWORD_VIEWER+" "+ss+" ";
 	                combined += msg.length()+msg;
 	            }
-
-	            String ss = " "+ serverRecordString(v.fixed_move_baseline());
+            	RecordingStrategy mode = v.gameRecordingMode();
+            	if(mode!=RecordingStrategy.None)
+            	{
+	            String ss = " "+ serverRecordString(mode);
 	            combined += ss.length()+ss;
+            	}
 	            //System.out.println(my.trueName+" " +combined);
 	            // we'll get separate echos for each of the component messages
 	            // so remember how many to keep the books straight.
@@ -4520,7 +4566,7 @@ public class Game extends commonPanel implements PlayConstants,Opcodes,DeferredE
        		// "append" half fails, we can end up with permanantly out of
        		// sync state.
        		msg = NetConn.SEND_MULTIPLE+(msg.length()+2)+" "+msg+" ";
-       		String rec = serverRecordString(v.fixed_move_baseline());
+       		String rec = serverRecordString(v.gameRecordingMode());
        		msg += (rec.length()+1)+" "+rec;
        		doSendState();			// possible note state, midpoint
       		sendMessage(msg);

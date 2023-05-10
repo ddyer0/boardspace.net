@@ -99,7 +99,6 @@ class SpanglesBoard extends triBoard<SpanglesCell> implements BoardProtocol,Span
     {
         drawing_style = DrawingStyle.STYLE_NOTHING; // don't draw the cells.  STYLE_CELL to draw them
         Grid_Style = SpanglesGRIDSTYLE;
-        isTorus=false;
         revision = REVISION;
         setColorMap(map);
         doInit(init); // do the initialization 

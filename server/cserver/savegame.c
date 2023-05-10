@@ -31,6 +31,9 @@ static void sanitizeName(char *name,char *out,long outsize)
 	case '/':
 	case '<':
 	case '>':
+#if WIN32
+	case '+':
+#endif
 	case '|': *out++ = '-'; break;
 
 	}
@@ -89,7 +92,7 @@ static void saveDirtyGameWriteStep(SaveGameInfo *G)
 		}
 		else
 		{	// no longer preserved, delete it
-		int val = unlink(gameName);
+		int val = UNLINK(gameName);
 		if(logging>=log_errors)
 		{
 			logEntry(&mainLog,"[%s] unlink for %s\n",

@@ -678,7 +678,7 @@ public class CrosswordsViewer extends CCanvas<CrosswordsCell,CrosswordsBoard> im
     	}
         if (OurMove())
         {
-            return (getBoard().movingObjectIndex());
+            return (bb.movingObjectIndex());
         }
         return (NothingMoving);
     }

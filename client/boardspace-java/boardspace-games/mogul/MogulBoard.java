@@ -1,8 +1,6 @@
 package mogul;
 
 import online.game.*;
-import online.game.cell.Geometry;
-
 import java.util.*;
 
 import lib.*;
@@ -36,7 +34,7 @@ import static mogul.MogulMovespec.*;
  */
 
 class MogulBoard extends trackBoard<MogulCell> implements BoardProtocol,MogulConstants
-{	public Geometry geometry() { return Geometry.Line; }
+{
 	// map a track around the board with 10 across and 6 down
 	private MogulState board_state = MogulState.Puzzle;	
 	private MogulState unresign = null;	// remembers the original state when "resign" is hit

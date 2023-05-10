@@ -8,6 +8,12 @@
 #include <fcntl.h>
 #include <errno.h>
 #include <sys/timeb.h>
+
+#define UNLINK _unlink
+#define STRCASECMP _strcasecmp
+#define STRNCASECMP _strncasecmp
+#define STRICMP _stricmp
+#define STRNICMP _strnicmp
 #if WIN32
 #include <process.h>
 #else
@@ -105,8 +111,8 @@
 #define EWOULDBLOCK WSAEWOULDBLOCK 
 #define FILESEPARATOR '\\'
 #else
-#define stricmp strcasecmp
-#define strnicmp strncasecmp
+#define STRICMP strcasecmp
+#define STRNICMP strncasecmp
 #include <sys/resource.h>
 #define closesocket close
 #define FILESEPARATOR '/'

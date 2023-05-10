@@ -1399,20 +1399,20 @@ public class TrikeViewer extends CCanvas<TrikeCell,TrikeBoard> implements TrikeC
     }
     
     // used by the UI to alter the behavior of clocks and prompts
-    public boolean simultaneous_turns_allowed()
-    {	return super.simultaneous_turns_allowed();
-    }
-    public boolean fixed_move_baseline()
-    {	return(super.fixed_move_baseline());
-    }
+ //   public boolean simultaneous_turns_allowed()
+ //   {	return super.simultaneous_turns_allowed();
+ //   }
+  //  public RecordingStrategy gameRecordingMode()
+  //   {	return(super.gameRecordingMode());
+  //  }
     
     // if there are simultaneous turns, robot start/stop can be tricky
     // by default, not allowed in simultaneous phases.  Return true 
     // to let them run "in their normal turn", but this will not allow
     // the robots to start at the beginning of the async phase.
-    public boolean allowRobotsToRun() {
-    	return super.allowRobotsToRun();
-    }
+  //  public boolean allowRobotsToRun() {
+  //  	return super.allowRobotsToRun();
+   // }
 
 	public int getLastPlacement(boolean empty) {
 		return (bb.moveNumber);

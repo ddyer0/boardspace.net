@@ -134,6 +134,9 @@ public abstract class cell<FINALTYPE
 	public double sensitiveSizeMultiplier() { return(sensitiveSizeMultiplier); }
 	public int linkCount() { return(0); }
 	public abstract chip<?> topChip();
+	/** true if this cell is empty */
+	public boolean isEmpty() { return topChip()==null; }
+	
 	/**
 	 * this is used only by animations to get the chip at depth
 	 * from the top.  It should never fail if the depth is nonsense.
@@ -293,7 +296,7 @@ public abstract class cell<FINALTYPE
 	 * but some directions lead off the board and are empty.
 	 * this is the convenient way to transit from one cell to and adjacent one
 	 * <p>
-	 * these adjacent cells are normally acessed by the exitToward method.
+	 * these adjacent cells are normally accessed by the exitToward method.
 	 */
     private cell<FINALTYPE> adjacent[] = null;
     /**

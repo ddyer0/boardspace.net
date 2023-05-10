@@ -26,6 +26,8 @@ public class SprintCell extends stackCell<SprintCell,SprintChip>
 	int wordDirections = 0;				// mask of directions where words exist
 	boolean nonWord = false;
 	StackIterator<Word> wordHead;
+	Object parent = null;
+	int displayRow = 0;
 	public void addWordHead(Word w)
 	{
 		wordHead = (wordHead==null) ? w : wordHead.push(w); 
@@ -64,6 +66,15 @@ public class SprintCell extends stackCell<SprintCell,SprintChip>
 		addChip(cont);
 		onBoard=false;
 	}
+	// constructor for unplaced cells
+	public SprintCell(SprintId rack,char co, int ro)
+	{
+		rackLocation = rack;
+		col = co;
+		row = ro;
+		geometry = Geometry.Standalone;
+	}
+	
 	public void copyFrom(SprintCell other)
 	{
 		super.copyFrom(other);

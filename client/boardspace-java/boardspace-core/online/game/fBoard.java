@@ -484,6 +484,14 @@ public class BoardIterator implements Enumeration<CELLTYPE>
  protected double yGridRatio() { return(2.0); }
  public abstract int initialSize();
  /**
+  * if true, include this cell in bounding box calculations.
+  * This is so infinite boards don't have to include all their cells in the box
+  * calculated by setDisplayRectangle
+  * @param c
+  * @return
+  */
+ public boolean includeInBoundingBox(CELLTYPE c) { return true; }
+ /**
   * adjust the internal scaling parameters so the board displays
   * inside the specified rectangle.  This works by running a trial
   * transformation of all the points on the board, then scaling the 
@@ -504,7 +512,7 @@ public class BoardIterator implements Enumeration<CELLTYPE>
 	 // the coordinates get drawn.
 	 //
 	 Bbox br = new Bbox();
-	 boolean isHex = allCells.nAdjacentCells()==6;
+	 boolean isHex = geometry().n==6;
 	 boolean invx = displayParameters.reverse_x;
 	 boolean invy = displayParameters.reverse_y;
 	 double GRIDSIZE = displayParameters.GRIDSIZE;
@@ -514,7 +522,10 @@ public class BoardIterator implements Enumeration<CELLTYPE>
 	 // used normal coordinates, so the box is always calculated the same
 	 displayParameters.reverse_x = displayParameters.reverse_y = false;
 	 for(CELLTYPE c = allCells; c!=null; c=c.next)
-	 {	char col = c.col;
+	 {	
+		if(includeInBoundingBox(c))	// this is so infinite boards don't have to include all their cells
+		{
+		char col = c.col;
 	 	// this is what makes calculating the box tricky for hexagonal grids with reverse coordinates
 	 	int thisrow = (isHex&&(c.row==1)) ? 0 : c.row;
 	
@@ -522,6 +533,7 @@ public class BoardIterator implements Enumeration<CELLTYPE>
 	     br.addPoint(cellToX(col, thisrow, -GRIDSIZE, 0), cellToY(col, thisrow, -GRIDSIZE, 0));
 	     br.addPoint(cellToX(col, thisrow, 0, YCELLSIZE), cellToY(col, thisrow, 0, YCELLSIZE));
 	     br.addPoint(cellToX(col, thisrow, 0, -YCELLSIZE),cellToY(col, thisrow, 0, -YCELLSIZE));
+		}
 	 }
 	 displayParameters.reverse_x = invx;
 	 displayParameters.reverse_y = invy;

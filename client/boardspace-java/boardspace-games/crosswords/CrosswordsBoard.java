@@ -1775,7 +1775,6 @@ class CrosswordsBoard extends rectBoard<CrosswordsCell> implements BoardProtocol
 	    	{
 	    	int who = m.to_col-'A';
 	    	CrosswordsCell rcells[] = mappedRack[who];
-	    	validateMap(who);
 	    	int map[] = rackMap[who];
 	    	int pick = mapPick[who];
 	    	if(pick>=0)

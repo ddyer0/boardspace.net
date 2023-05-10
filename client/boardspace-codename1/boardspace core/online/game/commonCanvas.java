@@ -2358,7 +2358,7 @@ public abstract class commonCanvas extends exCanvas
 	}
     private String leftBarMessage = null; // message dictated by the overall frame
     private Color leftBarMessageColor = null;
-    private boolean inLimbo = false;	   // true if we've been disconnected
+    public boolean inLimbo = false;	   // true if we've been disconnected
     /**
      * normally, the game record is considered immutable during a game, but
      * becomes mutable by the players after the game is over.  What starts
@@ -4016,7 +4016,8 @@ public abstract class commonCanvas extends exCanvas
       * @return a parsed move
       */
     public commonMove ParseMove(String str, int player)
-    {	commonMove m = ParseNewMove(str, player);
+    {	l.lastParsed = str;
+       	commonMove m = ParseNewMove(str, player);
     	if(G.debug())
     		{ String ms = m.moveString();
     		  commonMove m1 = ParseNewMove(ms, player);
@@ -4132,7 +4133,10 @@ public abstract class commonCanvas extends exCanvas
        		// pass the request to the opponent.
        		commonPlayer p = whoseTurn();
        		if(p!=l.my)
-       			{ if(transmit) { addEvent(m.moveString()); }}	// out of turn undo
+       			{ if(transmit)
+       				{ addEvent(m.moveString()); // out of turn undo
+       				}
+       			}	
        		else if(allowOpponentUndoNow()) 
        			{ PerformAndTransmit(UNDO_ALLOW); 
        			}
@@ -4142,7 +4146,7 @@ public abstract class commonCanvas extends exCanvas
         {
         	repaint(20);					 // states will have changed.
         	// str may be altered by AddToHistory, too, so get the string that must be transmitted first.
-        	String str = m.moveString();	// note that "movestring" may be altered by the "execute"
+        	String str = m.moveString();	// note that "moveString" may be altered by the "execute"
             boolean added = AddToHistory(m);
             // this is the active part of the "Start Evaluator" feature
             if (extraactions && (getActivePlayer().robotPlayer != null))
@@ -4293,10 +4297,15 @@ public abstract class commonCanvas extends exCanvas
     public commonMove EditHistory(commonMove m)
     {	return(EditHistory(m,false));
     }
-    public commonMove EditHistory(commonMove m,boolean okSame)
+    
+    public long setDigest(commonMove m)
     {
     	long dig = getBoard().Digest();
     	m.digest = dig;
+    	return dig;
+    }
+    public commonMove EditHistory(commonMove m,boolean okSame)
+    {	long dig = setDigest(m);
     	int size = History.size() - 1;
     	int fullsize = size;
     	switch(m.op) {
@@ -5234,10 +5243,14 @@ public abstract class commonCanvas extends exCanvas
      * other's view of the most recent move.  Note that this should have the
      * same value when the user interface is scrolled back during a game.
      */
-    public boolean fixed_move_baseline()
+    public RecordingStrategy gameRecordingMode()
     {	BoardState state = reviewMode() ? History.pre_review_state : getBoard().getState();
     	// state can be null if in intialization
-    	return(state==null ? false : state.simultaneousTurnsAllowed());
+    	return(state==null
+    			? RecordingStrategy.All 
+    			: state.simultaneousTurnsAllowed()
+    				? RecordingStrategy.Fixed 
+    				: RecordingStrategy.All );
     }
     
     /**
@@ -7000,7 +7013,7 @@ public void drawPlayerStuff(Graphics gc,commonPlayer pl,boolean button,	HitPoint
  * @return
  */
 public boolean playerIsActive(commonPlayer pl) 
-{ return (simultaneous_turns_allowed()||pl.boardIndex==getBoard().whoseTurn()); 
+{ return ((simultaneous_turns_allowed()&&!reviewOnly)||pl.boardIndex==getBoard().whoseTurn()); 
 } 
 
 
@@ -8442,8 +8455,8 @@ public void verifyGameRecord()
 			deferredEvents.actionPerformed(e);
 		}
 		public boolean allowRobotsToRun()
-		{	// don't allow robots during sumultaneous moves
-			return(!fixed_move_baseline());
+		{	// don't allow robots during simultaneous moves
+			return(gameRecordingMode()==RecordingStrategy.All);
 		}
 	    public void DrawReverseMarker(Graphics gc, Rectangle r,HitPoint highlight,CellId id)
 	    {	StockArt.Rotate180.drawChip(gc, this, r,highlight, id, s.get(ReverseViewExplanation));
@@ -8600,4 +8613,17 @@ public void verifyGameRecord()
 		public int getLastPlacement(boolean empty) {
 			throw G.Error("Must be overriden");
 		}
+		public void handleError(String msg,String context,Throwable err)
+		{	Utf8OutputStream bs = new Utf8OutputStream();
+			PrintStream os = Utf8Printer.getPrinter(bs);
+			if(context!=null)
+			{
+				os.print(" cxt: ");
+				os.print(context);
+			}
+			printDebugInfo(os);
+			os.flush();
+			logError(msg,bs.toString(), err);
+		}
+
 }

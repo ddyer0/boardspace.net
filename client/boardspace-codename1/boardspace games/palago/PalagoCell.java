@@ -64,7 +64,7 @@ public class PalagoCell extends chipCell<PalagoCell,PalagoChip> implements Palag
 			{ return(false); }
 		for(int dir=0;dir<geometry.n;dir++) 
 		{	PalagoCell nx = exitTo(dir);
-			if(nx.chip==null) 
+			if(nx==null || nx.chip==null) 
 				{ return(false); }
 		}
 		return(true);

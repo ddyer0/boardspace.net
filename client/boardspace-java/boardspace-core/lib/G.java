@@ -1014,8 +1014,9 @@ public class G extends Platform implements Timestamp
  * @return a char
  */
     static public char CharToken(StringTokenizer msg)
-    {
-        return (nextToken(msg).charAt(0));
+    {	String m = nextToken(msg);
+    	G.Assert(m.length()==1,"%s is not a single character",m);
+        return (m.charAt(0));
     }
 
     /**
@@ -2128,7 +2129,7 @@ public static String expandClassName(String classname)
 		public static String printCol(char col)
 		{	if(col>'Z') { int dx = col-'Z'; return ""+dx+'Z'; }
 			if(col<'A') { int dx = 'A'-col; return ""+dx+'A'; }
-			return Character.toString(col);
+			return (""+col);
 		}
 		public static char parseCol(StringTokenizer c)
 		{

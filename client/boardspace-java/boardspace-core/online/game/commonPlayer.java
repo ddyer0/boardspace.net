@@ -70,6 +70,10 @@ public class commonPlayer implements Opcodes,lib.CompareTo<commonPlayer>
     public void setQcode(String s) { qcode = s; }
     public boolean primary = false; //are we the primary player or one of the others
 
+    public boolean isActivePlayer()
+    {
+    	return !isRobot && qcode==null;
+    }
     //stuff for viewer
     public Image pic = null; //picture
     private boolean fetchingImage=false; 

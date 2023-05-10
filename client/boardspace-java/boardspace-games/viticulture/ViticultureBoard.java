@@ -1035,8 +1035,8 @@ public int getMaxRevisionLevel() { return(REVISION); }
         {
         	wineDisplay[i] = newcell(ViticultureId.WineBin,'@',i);
         }
-        wineSelect = new ViticultureCell[6];	// 4 types of wine and 2 types of grape
-        for(int i=0;i<wineSelect.length;i++)
+        wineSelect = new ViticultureCell[27];	// 4 types of wine and 2 types of grape
+        for(int i=0;i<wineSelect.length;i++)	// wine cave lets you select 2 of any, so need 27!
         {
         	wineSelect[i] = newUIcell(ViticultureId.WineSelection,'@',i);
         }

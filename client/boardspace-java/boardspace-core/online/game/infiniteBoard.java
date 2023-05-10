@@ -45,6 +45,11 @@ public abstract class infiniteBoard<CELLTYPE extends cell<CELLTYPE>> extends fBo
 	
 	public boolean createNewCells = true;
 
+	public boolean includeInBoundingBox(CELLTYPE c)
+	{
+		return (!(c.topChip()==null) 
+				|| (c.col>='A' && c.row>=1 && c.col<='A'+ncols && c.row<=nrows));
+	}
 	
     /**
      * create the adjacent cells to "c" and link them
@@ -159,14 +164,14 @@ public abstract class infiniteBoard<CELLTYPE extends cell<CELLTYPE>> extends fBo
 		// first discard the extra cells in this copy
 	 	IStack added = other.addedCells;
 	 	CELLTYPE oac = other.allCells;
-	 	if(!(allCells.sameCellLocation(oac) && (added.size()==addedCells.size())))
+	 	if(oac==null || !(allCells.sameCellLocation(oac) && (added.size()==addedCells.size())))
 	 	{	int otherc = other.boardCellCount();
 	 		int ourc = boardCellCount();
 	 		while (ourc>otherc)
 	 		{	removeAddedCell();
 	 			ourc--;
 	 		}
-	 		if(otherc==ourc)
+	 		if(otherc==ourc && allCells!=null)
 	 		{
 	 		while(!allCells.sameCellLocation(oac))
 	 		{	removeAddedCell();
@@ -185,7 +190,8 @@ public abstract class infiniteBoard<CELLTYPE extends cell<CELLTYPE>> extends fBo
 	 		CELLTYPE c = createInitialCell(col,row);
 	 		linkAdjacentCells(c);
 	 	}
-	 	G.Assert(allCells.sameCellLocation(other.allCells),"cells match");
+	 	G.Assert((allCells==null && other.allCells==null) 
+	 				|| allCells.sameCellLocation(other.allCells),"cells match");
 		super.copyFrom(other);
 	 	ncols = other.ncols;
 	 	nrows = other.nrows;

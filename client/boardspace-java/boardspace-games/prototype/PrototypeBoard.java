@@ -314,7 +314,7 @@ class PrototypeBoard
 		v ^= Digest(r,pickedSourceStack);
 		v ^= Digest(r,droppedDestStack);
 		v ^= Digest(r,revision);
-		v ^= r.nextLong()*(board_state.ordinal()*10+whoseTurn);
+		v ^= Digest(r,board_state.ordinal()*10+whoseTurn);
         return (v);
     }
 

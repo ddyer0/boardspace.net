@@ -8,14 +8,15 @@ import online.game.BaseBoard.BoardState;
 
 public interface SprintConstants
 {	static String InvalidExplanation = "The current letter placement is invalid because: #1";
-	static String CrosswordsVictoryCondition = "score the most points";
+	static String SprintVictoryCondition = "score the most points";
 	static String ResolveBlankState = "Assign a value to the blank tile";
 	static String DiscardTilesState = "Click on Done to discard your rack and draw a new one";
-	static String SprintPlayState = "Form a complete crosswords grid";
+	static String SprintPlayState = "Form a complete crossword grid using all the tiles";
 	static String TilesLeft = "#1{##no tiles, tile, tiles}";
-	static String LastTurnMessage = "Last Turn!";
+	static String LastTurnMessage = "No More Tiles!";
 	static String NotWords = "Some are not words";
 	static String NotConnected = "Some letters are not connected";
+	static String NotAllPlaced = "Not all tiles have been placed";
 	static String AddWordMessage = "\"#1\" #2{ points, point, points}";
 	static String GetDefinitionMessage = "click for defintion of #1";
 	static String SelectBlankMessage = "Select the blank letter";
@@ -23,7 +24,16 @@ public interface SprintConstants
 	static String JustWordsHelp = "Check for good words";
 	static String VocabularyMessage = "Vocabulary";
 	static String WordsMessage = "Best Words";
-
+	static String PullAction = "Pull";
+	static String EndGameAction = "End Game";
+	static String EndGameDescription = "Click on End Game to end the game with the current score";
+	static String ExplainPull = "Pull 2 more tiles from the draw pile";
+	static String SwitchExplanation = "Switch to viewing this player";
+	static final String[] SprintGRIDSTYLE = { "1", null, "A" }; // left and bottom numbers
+	static final int MAX_PLAYERS = 6;
+	static final int rackSize = 5;		// the number of filled slots in the rack.  Actual rack has some empty slots
+	static final int rackSpares = 0;	// no extra spaces
+	static final int TileIncrement = 2;	// tiles to take at a time
 
 	class StateStack extends OStack<SprintState>
 	{
@@ -37,7 +47,8 @@ public interface SprintConstants
 	Puzzle(PuzzleStateDescription,false,false),
 	Resign(ResignStateDescription,true,false),
 	Gameover(GameOverStateDescription,false,false),
-	Confirm(ConfirmStateDescription,true,true),
+	Confirm(ConfirmStateDescription,false,false),
+	Endgame(EndGameDescription,true,true),
 	Play(SprintPlayState,false,false),
 	;
 	SprintState(String des,boolean done,boolean digest)
@@ -63,31 +74,38 @@ public interface SprintConstants
 	{
     	BoardLocation,
     	Rack,
+    	Unplaced,
     	RackMap,
     	LocalRack,
-    	RemoteRack,
     	DrawPile,
     	EmptyBoard,
-    	SetOption,
+    	EndGame,
     	EyeOption,
     	Rotate,
     	Lock,
+    	Switch,
     	CheckWords,
     	Vocabulary,
     	Definition,
-    	Blank;
+    	PullAction,
+    	Blank, InvisibleDragBoard, ZoomSlider;
     	public String shortName() { return(name()); }
 
 	}
 
+ public int SprintGridSpan = 15;		// the visible size of the board
  enum SprintVariation
-    {	Sprint("Sprint",15);
+    {	Sprint("Sprint",10,20,40);
     	String name ;
     	int boardsize;
+    	int startTiles;
+    	int maxTiles;
     	// constructor
-    	SprintVariation(String n,int bs) 
+    	SprintVariation(String n,int bs,int st,int mx) 
     	{ name = n; 
     	  boardsize = bs;
+    	  maxTiles = mx;
+    	  startTiles = st;
     	}
     	// match the variation from an input string
     	static SprintVariation findVariation(String n)
@@ -102,8 +120,8 @@ public interface SprintConstants
     static void putStrings()
     {
     	
-    	String CrosswordsStrings[] = 
-    		{  "Crosswords",
+    	String SprintStrings[] = 
+    		{  "Sprint",
     			SelectBlankMessage,
     			GetDefinitionMessage,
     			WordsMessage,
@@ -113,21 +131,26 @@ public interface SprintConstants
     			InvalidExplanation,
     			AddWordMessage,
     			NotConnected,
+    			ExplainPull,
+    			NotAllPlaced,
+    			EndGameAction,
     			DiscardTilesState,
     			ResolveBlankState,
+    			EndGameDescription,
     			NotWords,
+    			SwitchExplanation,
+    			PullAction,
     			SprintPlayState,
-    	        CrosswordsVictoryCondition,
+    	        SprintVictoryCondition,
     	        TilesLeft,
 
     		};
-    		String CrosswordsStringPairs[][] = 
-    		{   {"Crosswords_family","Crosswords"},
-    				{"Crosswords_variation","Standard Crosswords"},
-    				{"Crosswords-17_variation","Big Crosswords"},
+    		String SprintStringPairs[][] = 
+    		{   {"Sprint_family","Sprint"},
+    				{"Sprint_variation","Standard Sprint"},
     		};
 
-    		InternationalStrings.put(CrosswordsStringPairs);
-    		InternationalStrings.put(CrosswordsStrings);
+    		InternationalStrings.put(SprintStringPairs);
+    		InternationalStrings.put(SprintStrings);
     }
 }

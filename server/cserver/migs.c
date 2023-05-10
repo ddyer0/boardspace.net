@@ -2037,7 +2037,7 @@ static void simpleCloseClient(User *u,char *cxt)
 		  // after a session is made private 
 		  s->sessionURLs[0]=(char)0; // clear password
 		}	
-	 if(stricmp("guest",u->clientRealName)==0)
+	 if(STRICMP("guest",u->clientRealName)==0)
 	 {//preserve the identity of guests
 	  char nam[CLIENTPUBLICNAMESIZE+13];
 	  lsprintf(sizeof(nam),&nam[0],"(%s#%d)",&u->clientPublicName[0],u->clientUid);
@@ -2817,7 +2817,7 @@ void freeGameBuffer(GameBuffer *rval)
 BOOLEAN reloadOneFile(char *name)
 {	char *dot = strrchr(name,'.');
 	BOOLEAN result = FALSE;
-	if(dot && (stricmp(dot+1,GAMESUFFIX)==0))
+	if(dot && (STRICMP(dot+1,GAMESUFFIX)==0))
 	{
 	GameBuffer *g = makeGameBuffer();
 	if(g)
@@ -2909,16 +2909,19 @@ void reloadGames()
 #if WIN32
 	WIN32_FIND_DATA find_data;
 	char gameDir[SMALLBUFSIZE];
-	lsprintf(sizeof(gameDir),gameDir,"%s\\*.*",THREAD_READ(G,gameCacheDir));
+	// gameDir should end with a \
+	lsprintf(sizeof(gameDir),gameDir,"%s*.*",THREAD_READ(G,gameCacheDir));
 	{
-	HANDLE val = FindFirstFile(gameDir,&find_data);
+	HANDLE val = FindFirstFileA(gameDir,&find_data);
 	if(val != INVALID_HANDLE_VALUE)
 	{
 	while(FindNextFile(val,&find_data))
 		{
-		char *fname = (char *)&find_data.cFileName;
+		char fname[SMALLBUFSIZE];
 		char fullpath[SMALLBUFSIZE];
-		lsprintf(sizeof(fullpath),fullpath,"%s%s",THREAD_READ(G,gameCacheDir),fname);
+		// convert wide chars to narrow chars
+		wcstombs(fname, &find_data.cFileName, sizeof(fname));
+		lsprintf(sizeof(fullpath),fullpath,"%s%s",THREAD_READ(G,gameCacheDir), fname);
 		if(reloadOneFile(fullpath)) { reloaded++; }
 		}
 	FindClose(val);
@@ -3043,7 +3046,7 @@ GameBuffer *recordGame(User *u,char *id,const char *msg)
 {	GameBuffer *g = findNamedGame(u,id);
 	if(g==NULL)
 		{	g = makeGameBuffer();
-			if(stricmp(id,"*")!=0)
+			if(STRICMP(id,"*")!=0)
 			{
 			g->hashCode=hashString(toLowercase(id));
 			MyStrncpy(g->idString,id,sizeof(g->idString));
@@ -3159,6 +3162,7 @@ GameBuffer *reRecordGame(User *u,char *id,int offset,int checksum,const char *ms
 	}
 	else
 	// verify the hash for the saved game
+	if(offset!=-1)
 	{
 	int hashval = hashNString(g->gamePtr,offset);
 	if(hashval==checksum)
@@ -3201,7 +3205,9 @@ GameBuffer *reRecordGame(User *u,char *id,int offset,int checksum,const char *ms
 	  {	  setGameBufferSize(g,whole,TRUE);
 	  }
 	  assert(whole < g->gamePtrSize);
-	  MyStrncpy(g->gamePtr+offset,msg,newpart);
+	  // offset -1 is special indicating just append
+	  int off = offset == -1 ? 0 : offset;
+	  MyStrncpy(g->gamePtr+off,msg,newpart);
 	  g->gamePtrOffset = (int)(offset+newpart-1);
 	  }
 	  markAsDirty(g);
@@ -4123,12 +4129,12 @@ static void doShutdown(User *u,const char *buf)
 }
 
 BOOLEAN userNameMatches(User *U,char *uname)
-{	if(strnicmp(uname,"guest",5)==0)
+{	if((uname,"guest",5)==0)
 	{  
-	 return(stricmp(uname,U->clientPublicName)==0);
+	 return(STRICMP(uname,U->clientPublicName)==0);
 	}
 	else 
-	{ return(stricmp(uname,U->clientRealName)==0);
+	{ return(STRICMP(uname,U->clientRealName)==0);
 	}
 }
 
@@ -5064,8 +5070,8 @@ void process_send_intro(char *data,User *u,char *seq)
 
 
 		if(Exempt_User[0] && 
-			( (stricmp(username,Exempt_User)==0)
-			  || (stricmp(Exempt_User,client_ip_string)==0)))
+			( (STRICMP(username,Exempt_User)==0)
+			  || (STRICMP(Exempt_User,client_ip_string)==0)))
 		{
 		 registerUser(serverKey,&username[0],usernum,info);
 		}
@@ -5424,7 +5430,10 @@ void process_check_score(char *data,User *u,char *seq)
 		   assert(nfound==pop);
 		   }
 		   if (nplayers == 1) {
-			   // special case for single player games
+			   // special case for single player games.  This enables the server check
+			   // for crosswordle.  Note that the check is suppressed after the first
+			   // puzzle in a session so that the rest of the mechanism doesn't have
+			   // to be messed with.
 			   okon2 = 1;
 		   }
 		   if(okon1 && okon2 && okon3 && okon4 && okon5 && okon6)
@@ -5911,7 +5920,7 @@ void process_send_group(char *data,User *u,char *seq)
 	}else
 	{
 	// log chats
-	if((strnicmp(data+1,"chat ",5)==0)
+	if((STRNICMP(data+1,"chat ",5)==0)
 		&& !u->session->sessionIsPrivate
 		&& ((data[0]!='t') 
 			&& (data[0]!='T')
@@ -5937,7 +5946,7 @@ void process_send_group(char *data,User *u,char *seq)
 BOOLEAN endsIn(char *str,char *end)
 {	size_t len = strlen(end);
 	size_t slen = strlen(str);
-	return((slen>=len) && (strnicmp(str+slen-len,end,len)==0));
+	return((slen>=len) && (STRNICMP(str+slen-len,end,len)==0));
 }
 void process_sendmessageto(char *data,User *u,char *seq)
 	{ /* echo to one member of the session */
@@ -6183,7 +6192,7 @@ void process_proxy_op(char *data,User *u,char *seq)
 	int idx = scanstr(data,command,sizeof(command));
 	if(idx>0)
 	{
-	if(stricmp(command,"connect")==0)
+	if(STRICMP(command,"connect")==0)
 	{	// connect to localhost on port 80
 		SOCKET sock = simpleOpenSocket();
 		char *phase = "create socket";
@@ -6253,7 +6262,7 @@ void process_proxy_op(char *data,User *u,char *seq)
 		 }
 
 	}	// end of connect command
-	else if(stricmp(command,"close")==0)
+	else if(STRICMP(command,"close")==0)
 	{	int sub=0;
 		int n = sscanf(data+idx,"%d",&sub);
 		if(n==1)

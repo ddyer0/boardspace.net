@@ -21,9 +21,9 @@ public class Sprintmovespec extends commonMPMove implements SprintConstants
     static final int MOVE_LIFT = 213; 		// lift a tile in the user interface rack
     static final int MOVE_REPLACE = 214; 	// replace a tile in the user interface rack
     static final int MOVE_MOVETILE = 215;		// move a tile from a rack to the board or back
-    static final int MOVE_CANCELLED = 224;		// was drop, but did nothing
-    static final int MOVE_DROPONRACK = 225;
-  
+    static final int MOVE_PULL = 226;			// pull more tiles
+    static final int MOVE_ENDGAME = 227;		// end the game now
+    static final int MOVE_SWITCH = 228;			// switch point of view
     static
     {	// load the dictionary
         // these int values must be unique in the dictionary
@@ -38,8 +38,9 @@ public class Sprintmovespec extends commonMPMove implements SprintConstants
         	"Lift", MOVE_LIFT,
         	"Replace",MOVE_REPLACE,
         	"move",MOVE_MOVETILE,
-        	"cancelled",MOVE_CANCELLED,
-        	"droponrack",MOVE_DROPONRACK
+        	"pull",MOVE_PULL,
+        	"endgame",MOVE_ENDGAME,
+        	"switch",MOVE_SWITCH
     			);
   }
     //
@@ -74,9 +75,9 @@ public class Sprintmovespec extends commonMPMove implements SprintConstants
     } // default constructor
 
     /* constructor */
-    public Sprintmovespec(String str, int p)
+    public Sprintmovespec(String str)
     {
-        parse(new StringTokenizer(str), p);
+        parse(new StringTokenizer(str));
     }
     public Sprintmovespec(Word w,int who)
     {
@@ -109,9 +110,9 @@ public class Sprintmovespec extends commonMPMove implements SprintConstants
     	player = who;
     }
     /* constructor */
-    public Sprintmovespec(StringTokenizer ss, int p)
+    public Sprintmovespec(StringTokenizer ss)
     {
-        parse(ss, p);
+        parse(ss);
     }
 
     /**
@@ -167,85 +168,91 @@ public class Sprintmovespec extends commonMPMove implements SprintConstants
      * @param msg a string tokenizer containing the move spec
      * @param the player index for whom the move will be.
      * */
-    private void parse(StringTokenizer msg, int p)
+    private void parse(StringTokenizer msg)
     {
         String cmd = msg.nextToken();
-        player = p;
-
+ 
         if (Character.isDigit(cmd.charAt(0)))
         { // if the move starts with a digit, assume it is a sequence number
             setIndex(G.IntToken(cmd));
             cmd = msg.nextToken();
         }
-
+        //
+        // for sprint, effectively all the moves are ephemeral, which means
+        // they have to contain the player doing the moving.  Rather than address
+        // this piecemiel, we make the player number uniformly the next token.
+        //
         op = D.getInt(cmd, MOVE_UNKNOWN);
+        if(op==MOVE_EDIT || op==MOVE_START || op==MOVE_RESET) { }
+        else { player = G.IntToken(msg); }
         switch (op)
         {
         case MOVE_UNKNOWN:
         	throw G.Error("Cant parse " + cmd);
+        case MOVE_PULL:	// pull new tiles from the pool
+        	to_row = G.IntToken(msg);
+        	break;
         case MOVE_PLAYWORD:
-           	to_col = G.CharToken(msg);
+           	to_col = G.parseCol(msg);
         	to_row = G.IntToken(msg);
         	direction = G.IntToken(msg);
         	word = msg.nextToken();
         	break;
         case MOVE_DROPB:
         	dest = SprintId.BoardLocation;
-        	to_col = G.CharToken(msg);
+        	to_col = G.parseCol(msg);
         	to_row = G.IntToken(msg);
         	break;
         case MOVE_MOVETILE:
         	source = SprintId.valueOf(msg.nextToken());
-        	from_col = G.CharToken(msg);
+        	from_col = G.parseCol(msg);
         	from_row = G.IntToken(msg);
         	dest = SprintId.valueOf(msg.nextToken());
-        	to_col = G.CharToken(msg);
+        	to_col = G.parseCol(msg);
         	to_row = G.IntToken(msg);
         	break;
         
       
 		case MOVE_PICKB:
             dest = SprintId.BoardLocation;
-            to_col = G.CharToken(msg);
+            to_col = G.parseCol(msg);
             to_row = G.IntToken(msg);
 
             break;
 		case MOVE_SELECT:
 			dest = SprintId.BoardLocation;
-			to_col = G.CharToken(msg);
+			to_col = G.parseCol(msg);
 			break;
 			
 		case MOVE_LIFT:
         case MOVE_PICK:
             dest = SprintId.valueOf(msg.nextToken());
-            to_col = G.CharToken(msg);
+            to_col = G.parseCol(msg);
             to_row = G.IntToken(msg);        
             mapped_row = (msg.hasMoreTokens()) ? G.IntToken(msg) : -1;
 			break;
 
-        case MOVE_DROPONRACK:
-		case MOVE_REPLACE:
+ 		case MOVE_REPLACE:
 		case MOVE_DROP:
             dest = SprintId.valueOf(msg.nextToken());
-            to_col = G.CharToken(msg);
+            to_col = G.parseCol(msg);
             to_row = G.IntToken(msg);
             mapped_row = msg.hasMoreTokens() ? G.IntToken(msg) : -1;
             break;
 
         case MOVE_START:
-            player = D.getInt(msg.nextToken());
-
+        	player = D.getInt(msg.nextToken());
             break;
          case MOVE_SEE:
         	{
-        	char pl = G.CharToken(msg);
+        	char pl = G.parseCol(msg);
         	boolean v = G.BoolToken(msg);
         	to_col = pl;
         	to_row = v ? 1 : 0;
         	}
         	break;
         default:
-        case MOVE_CANCELLED:
+        case MOVE_SWITCH:
 
             break;
         }
@@ -273,24 +280,25 @@ public class Sprintmovespec extends commonMPMove implements SprintConstants
         switch (op)
         {
         case MOVE_PLAYWORD:
-        	return TextChunk.create("Play "+to_col+to_row);
+        	return TextChunk.create("Play "+G.printCol(to_col)+to_row);
         case MOVE_PICKB:
-            return icon(v,to_col , to_row);
-
+            return icon(v,G.printCol(to_col) , to_row);
+        case MOVE_PULL:
+        	return icon(v," ",to_row);
         case MOVE_MOVETILE:
         case MOVE_DROPB:
-            return icon(v,to_col ,to_row);
+            return icon(v,G.printCol(to_col) ,to_row);
 
 		case MOVE_SELECT:
-        	return TextChunk.create("= "+to_col);
+        	return TextChunk.create("= "+G.printCol(to_col));
 		case MOVE_LIFT:
 		case MOVE_REPLACE:
         case MOVE_DROP:
         case MOVE_SEE:
         case MOVE_PICK:
+        case MOVE_SWITCH:
         case MOVE_DONE:
-        case MOVE_CANCELLED:
-        case MOVE_DROPONRACK:
+        case MOVE_ENDGAME:
             return TextChunk.create("");
         default:
             return TextChunk.create(D.findUniqueTrans(op));
@@ -304,41 +312,42 @@ public class Sprintmovespec extends commonMPMove implements SprintConstants
     public String moveString()
     {
         String ind = indexString();
-        String opname = ind+D.findUnique(op)+" ";
-
+        String opname = ind+D.findUnique(op)+" "+player+" ";
         // adding the move index as a prefix provides numnbers
         // for the game record and also helps navigate in joint
         // review mode
         switch (op)
         {
+        case MOVE_PULL:
+        	return G.concat(opname," ",to_row);
+        	
         case MOVE_PICKB:
 		case MOVE_DROPB:
-	        return G.concat(opname, to_col," ",to_row);
+	        return G.concat(opname, G.printCol(to_col)," ",to_row);
 		case MOVE_MOVETILE:
 	        return (G.concat(opname,
 	        		source.name()," ", from_col," ", from_row,
-	        		" ",dest.name()," ", to_col," ", to_row));
+	        		" ",dest.name()," ", G.printCol(to_col)," ", to_row));
 
-		case MOVE_DROPONRACK:
 		case MOVE_LIFT:
         case MOVE_DROP:
         case MOVE_PICK:
-        	 return G.concat(opname,dest.name()," ",to_col," ",to_row," ",mapped_row);
+        	 return G.concat(opname,dest.name()," ",G.printCol(to_col)," ",to_row," ",mapped_row);
         	 
 
 		case MOVE_REPLACE:
-             return G.concat(opname,dest.name()," ",to_col," ",to_row);
+             return G.concat(opname,dest.name()," ",G.printCol(to_col)," ",to_row);
         case MOVE_PLAYWORD:
-        	return G.concat(opname,to_col," ",to_row," ",direction," ",word);
+        	return G.concat(opname,G.printCol(to_col)," ",to_row," ",direction," ",word);
         case MOVE_START:
             return G.concat(ind,"Start P",player);
         case MOVE_SELECT:
-        	return G.concat(opname,to_col);
+        	return G.concat(opname,G.printCol(to_col));
         case MOVE_SEE:
-        	return G.concat(opname,to_col,((to_row==0)?" false" : " true"));
-        	
+        	return G.concat(opname,G.printCol(to_col),((to_row==0)?" false" : " true"));
         default:
-        case MOVE_CANCELLED:
+        case MOVE_ENDGAME:
+        case MOVE_SWITCH:
             return G.concat(opname);
         }
     }

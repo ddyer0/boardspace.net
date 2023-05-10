@@ -945,12 +945,12 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
 					String drop = ((state==HiveState.PUZZLE_STATE)
 										||(obj.color!=b.playerColor(b.whoseTurn)))?"PDropb " : "Dropb ";
 					
-					PerformAndTransmit(drop+obj.exactBugName()+" "+cell.col+" "+cell.row+" "+Hivemovespec.attachment(cell,null));
+					PerformAndTransmit(drop+obj.exactBugName()+" "+G.printCol(cell.col)+" "+cell.row+" "+Hivemovespec.attachment(cell,null));
 
 				}
 				else if(bug!=null)
 				{
-					PerformAndTransmit( "Pickb "+cell.col+" "+cell.row+" "+bug.exactBugName());					
+					PerformAndTransmit( "Pickb "+G.printCol(cell.col)+" "+cell.row+" "+bug.exactBugName());					
 				}}
 				break;
 			}}

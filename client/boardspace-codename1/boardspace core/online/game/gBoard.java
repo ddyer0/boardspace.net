@@ -1,5 +1,7 @@
 package online.game;
 
+import com.codename1.ui.geom.Rectangle;
+import bridge.Color;
 
 import online.game.cell.Geometry;
 import online.game.commonCanvas.Itype;
@@ -7,9 +9,6 @@ import online.game.commonCanvas.Itype;
 import static java.lang.Character.*;
 import java.util.Enumeration;
 
-import com.codename1.ui.geom.Rectangle;
-
-import bridge.Color;
 import lib.*;
 
 /* this is the base class for board geometry and coordinate systems for board where

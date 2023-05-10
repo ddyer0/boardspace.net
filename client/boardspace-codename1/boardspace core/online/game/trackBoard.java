@@ -22,6 +22,11 @@ public abstract class trackBoard<CELLTYPE extends cell<CELLTYPE>> extends square
 	public static final int CELL_LEFT = 0;
 	public static final int CELL_RIGHT = 1;
 	public static final int CELL_FULL_TURN = 2;
+	//
+	// separate boardColumns and boardRows is not a mistake
+	//
+	private int boardColumns;
+	private int boardRows;
 	
 	/**
 	 * construct a linear geometry board with a racetrack of square cells, like a monopoly board.
@@ -30,24 +35,26 @@ public abstract class trackBoard<CELLTYPE extends cell<CELLTYPE>> extends square
 	 */
 	public void  initBoard(int ncol,int nrow)
 	{	
+		boardColumns = ncol;
+		boardRows = nrow;
 		super.initBoard(1,nrow*2+ncol*2);	// represent as a 1d array of cells
 	}
 	// cut the x and y coordinates into 4 segments around the edges
 	public double cellToX00(char colchar, int thisRow)
 	{	int xpos = 0;
-		if(thisRow<=ncols) { xpos = thisRow; }
-		else if(thisRow<=(ncols+nrows)) { xpos =  ncols; }
-		else if(thisRow<=(ncols+ncols+nrows)) { xpos = ncols-(thisRow-(ncols+nrows)); }
+		if(thisRow<=boardColumns) { xpos = thisRow; }
+		else if(thisRow<=(boardColumns+boardRows)) { xpos =  boardColumns; }
+		else if(thisRow<=(boardColumns+boardColumns+boardRows)) { xpos = boardColumns-(thisRow-(boardColumns+boardRows)); }
 		else { xpos = 0; }
 		return(xpos*displayParameters.CELLSIZE);
 	}
 	// cut the x and y coordinates into 4 segments around the edges
 	public double cellToY00(char colchar, int thisRow)
 	{	int ypos = 0;
-		if(thisRow<=ncols) { ypos = 1; }
-		else if(thisRow<=(ncols+nrows)) { ypos = thisRow-ncols +1; }
-		else if(thisRow<=(ncols+ncols+nrows)) { ypos = nrows+1; }
-		else { ypos = nrows - (thisRow-(ncols+ncols+nrows+1)); }
+		if(thisRow<=boardColumns) { ypos = 1; }
+		else if(thisRow<=(boardColumns+boardRows)) { ypos = thisRow-boardColumns +1; }
+		else if(thisRow<=(boardColumns+boardColumns+boardRows)) { ypos = boardRows+1; }
+		else { ypos = boardRows - (thisRow-(boardColumns+boardColumns+boardRows+1)); }
 		return(ypos*displayParameters.YCELLSIZE);
 	}
 	

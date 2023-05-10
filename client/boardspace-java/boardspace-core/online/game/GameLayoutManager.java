@@ -2058,7 +2058,7 @@ public class GameLayoutManager  implements Opcodes
 				downsize = true;
 			}} while(downsize);
 		}
-		selectedCellSize = acceptedSize;
+		selectedCellSize = Math.max(1,acceptedSize);
 		//G.print("final size "+seating+cellSize+" "+minSize+" = "+selectedCellSize);
     	return(boardPercent);
     }

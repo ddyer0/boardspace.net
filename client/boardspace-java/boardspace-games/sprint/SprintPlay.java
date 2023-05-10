@@ -88,7 +88,7 @@ public class SprintPlay extends commonRobot<SprintBoard> implements Runnable,
  */
     public void Unmake_Move(commonMove m)
     {	Sprintmovespec mm = (Sprintmovespec)m;
-        board.UnExecute(mm);
+        pboard.UnExecute(mm);
     }
 /** Called from the search driver to make a move, saving information needed to 
  * unmake the move later.
@@ -96,7 +96,7 @@ public class SprintPlay extends commonRobot<SprintBoard> implements Runnable,
  */
     public void Make_Move(commonMove m)
     {   Sprintmovespec mm = (Sprintmovespec)m;
-        board.RobotExecute(mm);
+        pboard.RobotExecute(mm);
     }
 
 /** return a Vector of moves to consider at this point.  It doesn't have to be
@@ -106,7 +106,7 @@ public class SprintPlay extends commonRobot<SprintBoard> implements Runnable,
  */
     public CommonMoveStack  List_Of_Legal_Moves()
     {
-        return(board.GetListOfMoves());
+        return(pboard.GetListOfMoves());
     }
 
 
@@ -152,6 +152,7 @@ public class SprintPlay extends commonRobot<SprintBoard> implements Runnable,
         }
     }
 
+SingleBoard pboard ;
 
 /** PrepareToMove is called in the thread of the main game run loop at 
  * a point where it is appropriate to start a move.  We must capture the
@@ -163,9 +164,10 @@ public class SprintPlay extends commonRobot<SprintBoard> implements Runnable,
 public void PrepareToMove(int playerIndex)
 {	
 	//use this for a friendly robot that shares the board class
-	board.copyFrom(GameBoard);
-    board.sameboard(GameBoard);	// check that we got a good copy.  Not expensive to do this once per move
-    board.initRobotValues(this,vocabularySize);
+	SingleBoard pb = GameBoard.getPlayerBoard(playerIndex);
+	pboard = pb.cloneBoard();
+    pboard.sameboard(pb);	// check that we got a good copy.  Not expensive to do this once per move
+    pboard.initRobotValues(this,vocabularySize);
 }
 
 
@@ -184,13 +186,13 @@ public void PrepareToMove(int playerIndex)
  public commonMove DoHillClimbingMove()
  {	commonMove move = null;
  	try {	startTime = G.Date();
-        	CommonMoveStack all = board.GetListOfMoves();
+        	CommonMoveStack all = pboard.GetListOfMoves();
         	if(all.size()>0)
         	{
         		move = all.elementAt(0);
         	}
         	else 
-        	{ move = new Sprintmovespec(PASS,board.whoseTurn);	
+        	{ move = new Sprintmovespec(MOVE_PASS,board.whoseTurn);	
         	}
         }
  		finally { ; }

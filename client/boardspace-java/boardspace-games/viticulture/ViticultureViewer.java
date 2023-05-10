@@ -2846,12 +2846,10 @@ private void drawPlayerBoard(Graphics gc,
        	GC.frameRect(gc, Color.black, tradeRect);
        	ViticultureCell wineSelect[] = gb.wineSelect;
  
-    	int step = w/6;
-    	int boxStep = w/7;
-     	CommonMoveStack wines = new CommonMoveStack();
+      	CommonMoveStack wines = new CommonMoveStack();
      	
      	Hashtable<Viticulturemovespec,ViticultureCell> reverse = new Hashtable<Viticulturemovespec,ViticultureCell>();
-     	
+     	int nwines = 0;
     	for(Enumeration<ViticultureCell> e = targets.keys(); e.hasMoreElements();)
     	{	ViticultureCell c = e.nextElement();
     	    Viticulturemovespec m = targets.get(c);
@@ -2867,7 +2865,11 @@ private void drawPlayerBoard(Graphics gc,
     			position--;
     		}
     		wines.insertElementAt(m,position);
+    		nwines++;
     	}
+    	int ystep = w/6;
+       	int step = w/Math.max(6,nwines);
+    	int boxStep = w/Math.max(7,nwines+1);
     	int totalw = boxStep*wines.size()+step*2;
     	int boxx = cx-totalw/2;
     	int nWines = wines.size();
@@ -2879,7 +2881,7 @@ private void drawPlayerBoard(Graphics gc,
     		disp.addChip(ViticultureChip.getChip(m.source,m.from_row+ViticultureChip.minimumWineValue(m.source)));
  
     		int xp = boxx+step+step/2;
-    		int yp = y+step;
+    		int yp = y+ystep;
     		boolean hitBelow = false;
         	switch(state)
         	{
@@ -5914,9 +5916,13 @@ private void drawPlayerBoard(Graphics gc,
         case RedWine:
         case RoseWine:
         case Champaign:
+        	if(hp.hitObject instanceof Viticulturemovespec)
+        	{
         	PerformAndTransmit(((Viticulturemovespec)hp.hitObject).moveString());
         	break;
-        case WineBin:	// display bin for wines being made
+        	}
+			//$FALL-THROUGH$
+		case WineBin:	// display bin for wines being made
         case StartPlayer:		// display grape in winemaking mode
  	    	if(gb.pickedObject==null)
 	    		{

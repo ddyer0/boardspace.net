@@ -2,12 +2,13 @@ package meridians;
 
 import static meridians.MeridiansMovespec.*;
 
-import online.common.*;
-import java.util.*;
-
 import com.codename1.ui.geom.Rectangle;
 
 import bridge.Color;
+
+import online.common.*;
+import java.util.*;
+
 import lib.Graphics;
 import lib.CellId;
 import lib.ExtendedHashtable;
@@ -1107,35 +1108,7 @@ public class MeridiansViewer extends CCanvas<MeridiansCell,MeridiansBoard> imple
     {
     	throw G.Error("Needed in miltiplayer games");
     }
-/** this is used by the scorekeeper to determine who won. Draws are indicated
- * by both players returning false.  Be careful not to let both players return true!
- */
-   // public boolean WinForPlayer(commonPlayer p)
-   // { // this is what the standard method does
-      // return(getBoard().WinForPlayer(p.index));
-   //   return (super.WinForPlayer(p));
-   // }
 
-    /** start the robot.  This is used to invoke a robot player.  Mainly this needs 
-     * to know the class for the robot and any initialization it requires.  The return
-     * value is the player actually started, which is normally the same as requested,
-     * but might be different in some games, notably simultaneous play games like Raj
-     *  */
-   // public commonPlayer startRobot(commonPlayer p,commonPlayer runner,Bot bot)
-   // {	// this is what the standard method does:
-    	// int level = sharedInfo.getInt(sharedInfo.ROBOTLEVEL,0);
-    	// RobotProtocol rr = newRobotPlayer();
-    	// rr.InitRobot(sharedInfo, getBoard(), null, level);
-    	// p.startRobot(rr);
-    //	return(super.startRobot(p,runner,bot));
-    //}
-    // this is conventionally used as the game state message above the board,
-    // but it is also inserted into the game record as the RE property
-    //
-    //public String gameOverMessage()
-    //{
-    //	return super.gameOverMessage();
-    //}
     /** factory method to create a robot */
     public SimpleRobotProtocol newRobotPlayer() 
     {  return(new MeridiansPlay());
@@ -1180,92 +1153,6 @@ public class MeridiansViewer extends CCanvas<MeridiansCell,MeridiansBoard> imple
             setComment(comments);
         }
     }
-    /**
-     *****		 Simultaneous moves support *****
-     * 
-     * Games where all the players move at the same time cause a lot of problems, but
-     * it's the right thing to do in some cases.  The current games that use at least
-     * some simultaneous moves are:
-     *  Euphoria, Magnet, Raj, One Day In London, Q.E., Breaking Away, Tammany Hall, and Imagine
-     * 
-     * The root of the problem is that players WILL disagree about the order of arrival of 
-     * asynchronous moves. This causes their game records to be different from one another,
-     * and causes the server's incremental bookkeeping of the game state to be seen as
-     * inconsistent.
-     * 
-     * The overall strategy for dealing with his problem is to segregate the simultaneous
-     * moves to the end of the game record, and anchor the server's record of the game at
-     * the beginning of the ephemeral block.   At appropriate points, the ephemeral moves
-     * are replaced in the game record by equivalent non-ephemeral moves in canonical order.
-     * 
-     * 
-     * Another problem is time accounting - while in simultaneous mode, the clocks for all 
-     * the players who have not completed their move should tick.
-     * 
-     * Tendrils to support this are all over the place, which made support difficult; but
-     * the most common solutions are embodied in requirements for move specs, states, and
-     * in overridable methods of commonCanvas 
-     * 
-     * the xxMovespec class will use pairs of ephemeral/normal moves, and implement
-     * and board states which allow asynchronous moves will be distinct from the states
-     * that do not.
-     *  
-     * Reviews of games which originally had simultaneous moves will have all synchronous
-     * moves, so the game engine ought to function perfectly with any ephemeral moves.
-     * 
-     *  
-     */
-    /* for debugging and initial development, leave this false */
-    boolean SIMULTANEOUS_PLAY = false;		
-    /** true if this game ever has simultaneous moves.  If true, formEphemeralHistoryString
-     * will do a second pass to collect the ephemeral moves, and {@link #useEphemeraBuffer} will
-     * expect there to be one.
-     */
-    public boolean gameHasEphemeralMoves() { return(SIMULTANEOUS_PLAY); }
-    // these related methods can be wrapped or overridden to customize the behavior of the ephemeral part game records.
-    //
-    // public String formEphemeralHistoryString()
-    // public void useEphemeraBuffer(StringTokenizer h)
-    // public String formEphemeralMoveString() {} 
-    // public void useEphemeralMoves(StringTokenizer his) {}
-    // -- the top level --
-    // public void useStoryBuffer(String tok,StringTokenizer his) {}
-    // public void formHistoryString(PrintStream os,boolean includeTimes) {}
-
-    /**
-     * call this at appropriate times to convert ephemeral moves to their
-     * non ephemeral equivalents.  Usually, only the {@link #convertToSynchronous }
-     */
-    public void canonicalizeHistory()
-    {
-    	super.canonicalizeHistory();
-    }
-    /**
-     * convert an ephemeral move to it's no-ephemeral equivalent.  It's also
-     * ok to return null meaning the move should be deleted.  Normally, all
-     * this will do is change the m.op field, but it needs to agree with 
-     * the behavior of movespec {@link commonMove#isEphemeral} method.
-     */
-    public commonMove convertToSynchronous(commonMove m)
-    {	throw G.Error("Not implemented");
-    }
-    
-    // used by the UI to alter the behavior of clocks and prompts
-    public boolean simultaneous_turns_allowed()
-    {	return super.simultaneous_turns_allowed();
-    }
-    public boolean fixed_move_baseline()
-    {	return(super.fixed_move_baseline());
-    }
-    
-    // if there are simultaneous turns, robot start/stop can be tricky
-    // by default, not allowed in simultaneous phases.  Return true 
-    // to let them run "in their normal turn", but this will not allow
-    // the robots to start at the beginning of the async phase.
-    public boolean allowRobotsToRun() {
-    	return super.allowRobotsToRun();
-    }
-    
 
 	public int getLastPlacement(boolean empty) {
 		return bb.placementNumber;

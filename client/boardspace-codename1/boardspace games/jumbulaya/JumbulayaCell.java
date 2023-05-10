@@ -94,8 +94,12 @@ public class JumbulayaCell extends stackCell<JumbulayaCell,JumbulayaChip>
 	 * roles, or when the diest of contents is complex.
 	 */
 	public long Digest(Random r)
-		{ return(super.Digest(r)*(selected?r.nextLong():1)); }
-	
+		{ 
+		long v = super.Digest(r);
+		v ^= r.nextLong()*(selected?1:0);
+		v ^= r.nextLong()*(fromRack?1:0);
+		return v;
+		}	
 	public JumbulayaChip[] newComponentArray(int size) {
 		return(new JumbulayaChip[size]);
 	}

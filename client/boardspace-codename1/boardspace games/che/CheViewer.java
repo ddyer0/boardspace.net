@@ -353,7 +353,7 @@ public class CheViewer extends CCanvas<CheCell,CheBoard> implements CheConstants
                 	&& canhit
                 	&& G.pointInRect(xpos,ypos,tbRect)
                 	&& G.pointInside(ourTurnSelect, xpos, ypos, cellSize/2);
-                String labl = use_grid ? cell.cellName : "";//+ccell.col+ccell.row;              
+                String labl = use_grid ? cell.cellName : "";//+G.printCol(ccell.col)+ccell.row;              
                 if(canhit 
                 	&& !hitpoint
                 	&& (piece!=null) 
@@ -569,7 +569,7 @@ public class CheViewer extends CCanvas<CheCell,CheBoard> implements CheConstants
 	   		  PerformAndTransmit("Pick "+(hitObject.ordinal()-CheId.ChipPool0.ordinal()));
 	    	break;
 	    case BoardLocation:
-	    	PerformAndTransmit("Pickb "+c.col+" "+c.row);
+	    	PerformAndTransmit("Pickb "+G.printCol(c.col)+" "+c.row);
 	    	break;
         }
          }
@@ -580,16 +580,14 @@ public class CheViewer extends CCanvas<CheCell,CheBoard> implements CheConstants
 		{
 		default: throw G.Error("Not expecting state %s",state);
 		case PUZZLE_STATE:
-			PerformAndTransmit("dropb "+col+" "+row+" "+ch.index);
+			PerformAndTransmit("dropb "+G.printCol(col)+" "+row+" "+ch.index);
 			break;
 		case CONFIRM_STATE:
 		case FIRST_PLAY_STATE:
 		case PLAY_STATE:
 		case PLAY2_STATE:
-			PerformAndTransmit("dropb "+col+" "+row+" "+ch.index);
+			PerformAndTransmit("dropb "+G.printCol(col)+" "+row+" "+ch.index);
 			break;
-					                 
-		
 		}
 	}
 	private void doDropChip(char col,int row)
@@ -625,7 +623,7 @@ public class CheViewer extends CCanvas<CheCell,CheBoard> implements CheConstants
         	if(bb.pickedObject==null)
         	{
         		int index = hitObject.topChip().index;
-        		PerformAndTransmit("rotate "+hitObject.col+" "+hitObject.row+" " + (index^2));
+        		PerformAndTransmit("rotate "+G.printCol(hitObject.col)+" "+hitObject.row+" " + (index^2));
         	}
         	break;
         case BoardLocation:	// we hit an occupied part of the board 

@@ -1285,12 +1285,13 @@ synchronized(allGames) {
 	String pRules = "/sprint/english/rules.html";
 	String pViewer = "sprint.SprintViewer";  
 	
-	GameInfo mm = put(new GameInfo(2101,ES.test,107,"SC",WordGames,"Sprint","Sprint",
-			ThreeBotsPlus,
+	GameInfo mm = put(new GameInfo(2101,ES.game,107,"SC",WordGames,"Sprint","Sprint",
+			NoBots,//ThreeBotsPlus,
 			new double[]{0.1,1.0,1.0,0.01},
 			pViewer,pRules,"about_sprint.html",
 			null,true, null));
 	 mm.maxPlayers = 6;
+	 mm.minPlayers = 1;
 	 mm.groupSortKey = "0091";
 	 mm.robotTimed = true;
 	 mm.randomizeFirstPlayer = true;

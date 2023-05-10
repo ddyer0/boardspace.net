@@ -585,7 +585,6 @@ public variation gamevariation = variation.hive;
         drawing_style = DrawingStyle.STYLE_NOTHING;//STYLE_NOTHING; // don't draw the cells.  STYLE_CELL to draw them
         Grid_Style = HIVEGRIDSTYLE;
         Random r = new Random(232534345);
-        isTorus = false;
         revision = REVISION;
         setColorMap(map);
         // create the rack

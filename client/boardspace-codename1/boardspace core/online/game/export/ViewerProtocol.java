@@ -75,15 +75,6 @@ public interface ViewerProtocol extends ViewGameProtocol
     */
     public long Digest();
 
-    /**
-     * if true, the game should keep a fixed baseline of moves.  This should
-     * be true when simultaneous moves will actually occur.  It is used to
-     * inhibit triggering robot moves, and incremental updates to the shared
-     * game state.
-     * 
-     * @return a boolean
-     */
-    public boolean fixed_move_baseline();
   
     /** set up a robot for this player as p.robotPlayer.  Don't actually make any moves yet. 
      * this is where you instantiate the class that will implement RobotProtocol for the game.
@@ -193,6 +184,17 @@ public interface ViewerProtocol extends ViewGameProtocol
 	public Object getUrlNotes();
 	public void setScored(boolean v);
 	public boolean isScored();
+	public enum RecordingStrategy { All, Single, Fixed, None};
+	/**
+	 * recording strategy for this client.  Normal mode is All, each client records
+	 * what it sees and what it does. This is appropriate for normal synchonous play.
+	 * Fixed is for most simultaneous turn games, when there is a temporary simultaneous play
+	 * and all the current moves are recorded as ephemeral
+	 * None is for completely asynchronous games, where one player will do all the recording.
+	 * 
+	 * @return
+	 */
+	public RecordingStrategy gameRecordingMode();
 	
 
 }

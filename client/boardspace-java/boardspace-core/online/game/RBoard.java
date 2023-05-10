@@ -77,6 +77,10 @@ public abstract class RBoard<CELLTYPE extends cell<CELLTYPE> >  extends BaseBoar
 	{
 		hiddenCellArray = null;
 	}
+	public void setHiddenCellArray(CELLTYPE c[])
+	{
+		hiddenCellArray = c;
+	}
     public void initBoard()
     {
     	allCells = null;

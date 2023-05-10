@@ -558,7 +558,7 @@ public class WypsViewer extends CCanvas<WypsCell,WypsBoard> implements WypsConst
     	}
         if (OurMove())
         {
-            return (getBoard().movingObjectIndex());
+            return (bb.movingObjectIndex());
         }
         return (NothingMoving);
     }

@@ -322,6 +322,7 @@ public class MogulViewer extends CCanvas<MogulCell,MogulBoard> implements MogulC
     	int chipw = (int)(chipsiz*1.4); 
     	int stackW = xstep;
 		boolean showNow = !showChips
+				&& (G.offline() || (pl.myIndex==gb.whoseTurn))
 				&& (remoteWindowIndex(any)<0)
 				&& (StockArt.Eye.drawChip(gc, this, highlight,MogulId.SeeChips,  chipsiz, xstart,top+chipsiz/2+xstep/8,null))
 				;
@@ -572,14 +573,14 @@ public class MogulViewer extends CCanvas<MogulCell,MogulBoard> implements MogulC
     { 
       MogulBoard gb = disB(gc);
       int nPlayers = gb.nPlayers();
-  	if(gc!=null)
-  	{
-  	// note this gets called in the game loop as well as in the display loop
-  	// and is pretty expensive, so we shouldn't do it in the mouse-only case
-
-      b.SetDisplayParameters(1.03,1.07,-0.033,-0.05,0);
-      b.SetDisplayRectangle(boardRect);
-  	}
+      if(gc!=null)
+	  	{
+	  	// note this gets called in the game loop as well as in the display loop
+	  	// and is pretty expensive, so we shouldn't do it in the mouse-only case
+	
+	      gb.SetDisplayParameters(1.03,1.07,-0.033,-0.05,0);
+	      gb.SetDisplayRectangle(boardRect);
+	  	}
       boolean ourTurn = OurMove();
       boolean moving = hasMovingObject(highlight);
       HitPoint ot = ourTurn ? highlight : null;	// hit if our turn

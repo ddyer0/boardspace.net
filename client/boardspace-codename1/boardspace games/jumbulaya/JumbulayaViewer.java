@@ -168,7 +168,6 @@ public class JumbulayaViewer extends CCanvas<JumbulayaCell,JumbulayaBoard> imple
     }
     
     
-    
     public void drawAnnotationMenu(Graphics g,HitPoint p)
     {	// this makes the annotation menu follow the board rotation, which is independent of the window rotation
     	GC.setRotatedContext(g,largerBoardRect,p,effectiveBoardRotation);

@@ -153,6 +153,15 @@ public abstract class BaseBoard implements Opcodes,Digestable
 		permissiveReplay = from_b.permissiveReplay;
 		AR.copy(win,from_b.win);
 	}
+	
+	public long Digest(Random r)
+	{
+		long v = Digest(r,moveNumber);
+		v ^= Digest(r,whoseTurn);
+		v ^= Digest(r,revision);
+		return v;
+	}
+	
 	public void doInit(BaseBoard b)
 	{
 		doInit(b.gametype,b.randomKey);
@@ -317,10 +326,7 @@ public abstract class BaseBoard implements Opcodes,Digestable
 	   for(int lim = arr.length-1; lim>=0; lim--) { v ^= r.nextLong()*arr[lim]; }
 	   return(v);
    }
-   
-   
-	public long Digest(Random r) { throw G.Error("should be overridden"); }
-		
+   		
 	public void cantExecute(commonMove m)
 	{	throw G.Error("Can't execute %s", m);
 	}

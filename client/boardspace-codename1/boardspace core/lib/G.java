@@ -1010,8 +1010,9 @@ public class G extends Platform implements Timestamp
  * @return a char
  */
     static public char CharToken(StringTokenizer msg)
-    {
-        return (nextToken(msg).charAt(0));
+    {	String m = nextToken(msg);
+    	G.Assert(m.length()==1,"%s is not a single character",m);
+        return (m.charAt(0));
     }
 
     /**

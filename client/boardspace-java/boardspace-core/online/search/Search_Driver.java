@@ -147,7 +147,7 @@ public class Search_Driver extends CommonDriver implements Constants,Opcodes
 	{	commonMove result = null;
 		commonMove prev = null;
 		Search_Node rn = root_node;
-		while(rn!=null)
+		while(rn!=null && rn.current_move!=null)
 		{
 			commonMove mv = rn.current_move.Copy(null);
 			if(result==null) { result = mv; }
@@ -161,7 +161,7 @@ public class Search_Driver extends CommonDriver implements Constants,Opcodes
 	{	commonMove result = null;
 		commonMove prev = null;
 		Search_Node rn = root_node;
-		while(rn!=null)
+		while(rn!=null  && rn.current_move!=null)
 		{
 			commonMove mv = rn.current_move.Copy(null);
 			if(result==null) { result = mv; }

@@ -443,7 +443,7 @@ public abstract class exCanvas extends Canvas
         {
         l.setNetConsole = myFrame.addAction("Set Net Logger",deferredEvents);
         painter.addUIChoices(myFrame,deferredEvents);
-        l.showRects = myFrame.addOption("Show Rectangles", false,deferredEvents);	
+        l.showRects = myFrame.addOption("Show Rectangles", show_rectangles,deferredEvents);	
         l.showStats = myFrame.addOption("show stats", false,null);	// no events
         l.showImages = myFrame.addOption("show Images",false,deferredEvents);
         l.useCache = myFrame.addOption("Cache images",imageCache.cache_images,deferredEvents);
@@ -1609,7 +1609,7 @@ graphics when using a touch screen.
         }
 
         
-        private void logError(String m, Throwable err)
+        protected void logError(String m, String exm,Throwable err)
         {	ChatInterface chat = theChat;
         	ConnectionManager conn = (ConnectionManager)sharedInfo.get(exHashtable.NETCONN);
             String em = ((err == null) ? "" : err.toString());
@@ -1627,10 +1627,10 @@ graphics when using a touch screen.
             if(!(err instanceof ThreadDeath))
             {
             if (conn != null)
-    	        {   conn.logError(m, err);
+    	        {   conn.logError(m+exm, err);
     	        }
     	        else 
-    	        { Http.postError(this,m,err);
+    	        { Http.postError(this,m+exm,err);
     	        }
             }
 
@@ -2198,7 +2198,7 @@ graphics when using a touch screen.
 		//G.addLog("end acutalpaint");
 	}
 	public void handleError(String msg,String context,Throwable err)
-	{	logError(msg + ((context==null) ? "" : " cxt: "+context), err);
+	{	logError(msg, ((context==null) ? "" : " cxt: "+context), err);
 	}
 	
 

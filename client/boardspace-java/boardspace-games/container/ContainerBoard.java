@@ -6104,6 +6104,7 @@ CommonMoveStack  GetListOfMoves(int who,ContainerPlay robot,int search_depth,Con
 	 case FINANCEER_STATE:
 		 getLoanAuctionMoves(all,who,robot);
 		 break;
+	 case CONFIRM_AUCTION_STATE:
 	 case AUCTION_STATE:
 	 case REBID_STATE:
 	 	{

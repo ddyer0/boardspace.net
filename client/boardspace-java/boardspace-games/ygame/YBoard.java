@@ -113,6 +113,7 @@ class YBoard extends RBoard<YCell> implements BoardProtocol,YConstants
         drawing_style = DrawingStyle.STYLE_NOTHING; // don't draw the cells.  STYLE_CELL to draw them
         Grid_Style = YGRIDSTYLE;
         setColorMap(map);
+		initBoard(YnInCol,YNeighbors,YCoords ,YPerm );
         doInit(init,key,players,rev); // do the initialization 
         //autoReverseY();		// reverse_y based on the color map
     }
@@ -139,7 +140,8 @@ class YBoard extends RBoard<YCell> implements BoardProtocol,YConstants
     	board = new YCell[nInCol.length][0];
     	int idx = 0;
     	allCells = null;
-    	//cellArray = new YCell[coords.length];
+    	forgetCellArray();
+    	YCell cellArray[] = new YCell[coords.length];
     	for(int i=0;i<nInCol.length;i++) 
     		{ int nr = nInCol[i];
     		  YCell row[] = board[i]= new YCell[nr];
@@ -152,11 +154,14 @@ class YBoard extends RBoard<YCell> implements BoardProtocol,YConstants
     	     	  c.xloc = coords[idx][0];
     			  c.yloc = coords[idx][1];
     			  allCells = c;
-    			  idx++;
-    			  //cellArray[idx++] = c;
+     			  cellArray[idx++] = c;
     		  }
     		}
-    	cell<YCell> cellArray[] = getCellArray();
+    	// note that the connectivity array depends on this particular order
+    	// of the cells in the cellarray, so we build it ourselves rather
+    	// than whatever the default build process does.
+    	setHiddenCellArray(cellArray);
+    	
     	G.Assert(idx==coords.length,"Coords length mismatch");
     	G.Assert(idx==neighbors.length,"Neighbors length mismatch");
     	G.Assert(perm==null || idx==perm.length,"Perm length mismatch");
@@ -193,7 +198,6 @@ class YBoard extends RBoard<YCell> implements BoardProtocol,YConstants
 		{
 		default: throw G.Error("Not expecting variation %s",variation);
 		case Y:
-			initBoard(YnInCol,YNeighbors,YCoords ,YPerm );
 		}
 
 		allCells.setDigestChain(r);		// set the randomv for all cells on the board

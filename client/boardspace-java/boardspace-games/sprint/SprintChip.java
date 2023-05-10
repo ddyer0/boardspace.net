@@ -135,6 +135,7 @@ public class SprintChip extends chip<SprintChip> implements SprintConstants
        		{'Q',1,10},
        		{'Z',1,10},
     };
+    static SprintChip Vowels[] = null;
     /**
      * this is a fairly standard preloadImages method, called from the
      * game initialization.  It loads the images into the stack of
@@ -161,6 +162,9 @@ public class SprintChip extends chip<SprintChip> implements SprintConstants
 		letters = pool.toArray();  	
 		alphaLetters = new SprintChip[26];
 		for(SprintChip c : letters) { if(c.lcChar>='a') { alphaLetters[c.lcChar-'a'] = c; }}
+		char vl[] = new char[]{'a','e','i','o','u'};
+		Vowels = new SprintChip[vl.length];
+		for(int i=0; i<vl.length;i++) { Vowels[i] = alphaLetters[vl[i]-'a']; }
  		}
 
 	}   

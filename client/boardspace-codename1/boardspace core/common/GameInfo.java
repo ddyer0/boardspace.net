@@ -1291,6 +1291,7 @@ synchronized(allGames) {
 			pViewer,pRules,"about_sprint.html",
 			null,true, null));
 	 mm.maxPlayers = 6;
+	 mm.minPlayers = 1;
 	 mm.groupSortKey = "0091";
 	 mm.robotTimed = true;
 	 mm.randomizeFirstPlayer = true;
