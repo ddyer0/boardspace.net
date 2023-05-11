@@ -2,11 +2,16 @@ package sprint;
 
 import static sprint.Sprintmovespec.*;
 
-import java.awt.*;
 
 import online.common.*;
 import java.util.*;
 
+import com.codename1.ui.geom.Point;
+import com.codename1.ui.geom.Rectangle;
+
+import bridge.Color;
+import bridge.FileDialog;
+import bridge.FontMetrics;
 import bridge.JMenuItem;
 import dictionary.Dictionary;
 import dictionary.Entry;

@@ -1296,6 +1296,7 @@ synchronized(allGames) {
 	 mm.robotTimed = true;
 	 mm.randomizeFirstPlayer = true;
 	 mm.hasHiddenInformation = false;
+	 mm.okForPlaytable = false;
 
 	}
 	{

@@ -1,9 +1,10 @@
 package sprint;
 
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.FontMetrics;
 
+import com.codename1.ui.Font;
+
+import bridge.Color;
+import bridge.FontMetrics;
 import lib.DrawableImageStack;
 import lib.G;
 import lib.GC;
