@@ -1701,7 +1701,7 @@ public abstract class commonCanvas extends exCanvas
     	boolean drawn = false;
     	for(commonPlayer p : players)
     	{
-    		if(p.inPlayerBox(hp))
+    		if(p!=null && p.inPlayerBox(hp))
     		{
     			GC.setRotatedContext(gc,hp,p.displayRotation);
     			drawSprite(gc,chip,left,top);

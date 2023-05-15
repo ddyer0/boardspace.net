@@ -466,7 +466,6 @@ public class Game extends commonPanel implements PlayConstants,DeferredEventHand
     { //hack to disable communication for a while
         //if(showHints) { return(true); } else
       	ConnectionManager nc = myNetConn;
-       	G.Assert(!"".equals(message),"null message");
       	boolean connected = gameState.isConnected();
         if(connected && (nc!=null))
         {
@@ -523,11 +522,15 @@ public class Game extends commonPanel implements PlayConstants,DeferredEventHand
         if(gameState.isConnected() && !G.offline())
         { 	
         	RecordingStrategy rem = v.gameRecordingMode();
-        	
-        	String combined = NetConn.SEND_MULTIPLE+" "+(message.length()+2)+" "+message+" ";
-        	String ss = " "+serverRecordString(rem)+" ";
-        	combined += ss.length()+ss;
-        	sendMessage(combined);
+        	String combined = message;
+        	String msg = serverRecordString(rem);
+        	if(!"".equals(msg))
+        		{
+               	 combined = NetConn.SEND_MULTIPLE+" "+(message.length()+2)+" "+message+" ";
+        		 String ss = " "+msg+" ";
+        		 combined += ss.length()+ss;
+        		}
+      	     sendMessage(combined);
         }
         return(false);
     }
@@ -1692,9 +1695,8 @@ public class Game extends commonPanel implements PlayConstants,DeferredEventHand
         {  	
         	
         	boolean exp = false;
-        	String commandStr = myST.nextToken();
-        	
-        	if(isExpectedResponse(commandStr,fullMsg)) { exp = true; commandStr = myST.nextToken(); }
+        	String commandStr = myST.hasMoreTokens() ? myST.nextToken() : "";
+         	if(isExpectedResponse(commandStr,fullMsg)) { exp = true; commandStr = myST.nextToken(); }
         	
             if(commandStr.startsWith(KEYWORD_SPARE))	// spare spare1 etc.
             {
@@ -3198,10 +3200,10 @@ public class Game extends commonPanel implements PlayConstants,DeferredEventHand
         return (urlStr);
     }
 */
-    // get the scoring string for a 4 player game
+    // get the scoring string for a more than 2 player game
     private String getUrlStr4()
     {//u1=2&s1=0&t1=1&de=-218389066&dm=0&game=PT&u2=20&s2=1&t2=0&de=-218389066&dm=0&game=PT&key=159.4.159.157&session=1&sock=2255&mode=&samepublicip=1&samelocalip=1&fname=PT-ddyer-spec-2008-11-26-0723
-         int realPCtr = 1;
+        int realPCtr = 1;
         int digest = (int)v.Digest();
         int mid = (int)midDigest;
         String gametype = gameTypeString;
@@ -3424,6 +3426,7 @@ public class Game extends commonPanel implements PlayConstants,DeferredEventHand
     		switch(sm)
     		{
     		case SM_Multi:
+    			if(playerConnections.length>1)
 	    		{
 	            String baseUrl =recordKeeper4URL;
 	            String urlStr = getUrlStr4();
@@ -3441,7 +3444,8 @@ public class Game extends commonPanel implements PlayConstants,DeferredEventHand
 		    	}
 		    	break;
     		case SM_Normal:
-		    	{
+    			if(playerConnections.length>1)
+    			{
 		            String baseUrl = recordKeeperURL;
 		            String urlStr = getUrlStr();      
 		            urlStr = "params=" + XXTEA.combineParams(urlStr, TEA_KEY);
@@ -4507,8 +4511,11 @@ public class Game extends commonPanel implements PlayConstants,DeferredEventHand
             	RecordingStrategy mode = v.gameRecordingMode();
             	if(mode!=RecordingStrategy.None)
             	{
-	            String ss = " "+ serverRecordString(mode);
-	            combined += ss.length()+ss;
+            	String m = serverRecordString(mode);
+	            if(!"".equals(m)) 
+	            	{
+	            	 combined += (m.length()+1)+" "+m;
+	            	}
             	}
 	            //System.out.println(my.trueName+" " +combined);
 	            // we'll get separate echos for each of the component messages

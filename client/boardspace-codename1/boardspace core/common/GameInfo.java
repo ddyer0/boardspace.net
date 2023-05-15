@@ -1286,7 +1286,7 @@ synchronized(allGames) {
 	String pViewer = "sprint.SprintViewer";  
 	
 	GameInfo mm = put(new GameInfo(2101,ES.game,107,"SC",WordGames,"Sprint","Sprint",
-			ThreeBotsPlus,
+			NoBots,
 			new double[]{0.1,1.0,1.0,0.01},
 			pViewer,pRules,"about_sprint.html",
 			null,true, null));

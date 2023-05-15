@@ -55,6 +55,7 @@ public class SprintViewer extends CCanvas<SprintCell,SprintBoard> implements Spr
     private Dictionary dictionary = Dictionary.getInstance();
     private int rackSize = 2;
     private int plannedRackSize = 4;
+    public String deskBellSoundName = SOUNDPATH + "rdkbell" + SoundFormat;
     
     // private state
     private SprintBoard bb = null; //the board from which we are displaying
@@ -803,6 +804,10 @@ public void setLetterColor(Graphics gc,SingleBoard gb,SprintCell cell)
         { // note what we hit, row, col, and cell
           boolean empty = closestCell.isEmpty();
           boolean picked = (gb.pickedObject!=null);
+          if(picked && closestCell.isEdgeCell())
+          {
+        	  gb.createExitCells(closestCell);
+          }
           highlight.hitCode = (empty||picked) ? SprintId.EmptyBoard : SprintId.BoardLocation;
           highlight.hitObject = closestCell;
           highlight.arrow = (empty||picked) ? StockArt.DownArrow : StockArt.UpArrow;
@@ -1104,7 +1109,7 @@ public void setLetterColor(Graphics gc,SingleBoard gb,SprintCell cell)
 					}
         }
        
-		if(G.debug()||allowed_to_edit)
+		if(G.debug())
 		{ 	checkWordsButton.show(gc,messageRotation,selectPos);
 			vocabularyRect.draw(gc, selectPos);
 		}
@@ -1207,6 +1212,9 @@ public void setLetterColor(Graphics gc,SingleBoard gb,SprintCell cell)
  {
 	 switch(mm.op)
 	 {
+	 case MOVE_PULL:
+		 playASoundClip(deskBellSoundName,200);
+		 break;
 	 case MOVE_PLAYWORD:
 		 for(int i=0;i<mm.word.length();i++) 
 		 	{ playASoundClip(light_drop,150);

@@ -315,6 +315,11 @@ class SprintBoard extends BaseBoard implements BoardProtocol
         	drawTimer = G.Date()+InitialDrawTime;
         	
     		break;
+        case MOVE_ENDGAME:
+        	for(SingleBoard p : pbs) { p.Execute(m,replay); }
+        	setState(SprintState.Gameover);
+        	break;
+        	
         case MOVE_SWITCH:
         	whoseTurn = m.player;
         	break;

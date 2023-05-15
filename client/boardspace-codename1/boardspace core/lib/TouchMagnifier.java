@@ -18,6 +18,7 @@ public class TouchMagnifier {
     int magnifierPadY;
     double magnifierScale = 2.5;
     int magnifierSourceSize = G.minimumFeatureSize()*2;
+    Color fillColor = Color.lightGray;
     /**
      * the goal is to place the magnifier where it will be seen, preferentially
      * in the upper-left quadrant.  After initial placement, the magnifier should
@@ -142,6 +143,33 @@ public class TouchMagnifier {
 			
     	g2.translate(ax, ay);
     	g2.scale(1/scale, 1/scale);
+    	//
+    	// fill the undrawn space with a fill color
+    	//
+    	if(ax<0) 
+		{ g2.setColor(fillColor); 
+		  g2.fillRect(0,0,(int)(-ax*scale),dsize); 
+		}
+    	if(ay<0) 
+    	{
+    		g2.setColor(fillColor); 
+    		g2.fillRect(0,0,dsize,(int)(-ay*scale));
+    	}
+    	int w = client.getRotatedWidth();
+    	int ds = (int)(dsize/scale);
+    	if(ax+ds>=w)
+    	{	g2.setColor(fillColor); 
+    		int sw = (int)(scale*((ax+ds)-w));
+    		g2.fillRect(dsize-sw,0,sw,dsize);
+    	}
+    	int h = client.getRotatedHeight();
+    	if(ay+ds>=h)
+    	{	g2.setColor(fillColor); 
+    		int sh = (int)(scale*((ay+ds)-h));
+    		g2.fillRect(0,dsize-sh,dsize,sh);
+    	}
+  	
+
     	//
     	// ping pong two images, to avoid the redraw-not-ready condition
     	//

@@ -635,6 +635,7 @@ class SingleBoard extends infiniteSquareBoard<SprintCell> implements BoardProtoc
 			break;
         case Puzzle:
 			acceptPlacement();
+			validate(true);
             break;
         }
     }
@@ -688,7 +689,6 @@ class SingleBoard extends infiniteSquareBoard<SprintCell> implements BoardProtoc
 	 */
    synchronized boolean validate(boolean andScore)
     {
-    	sweep_counter++;
     	builder.setLength(0);
     	words.clear();
     	nonWords.clear();
@@ -702,16 +702,30 @@ class SingleBoard extends infiniteSquareBoard<SprintCell> implements BoardProtoc
     	if(andScore) 
     		{ findWordCaps(); 
     		  int sc = 0;
-    		  for(int i=0;i<words.size(); i++) { sc += words.elementAt(i).points; }
+    		  for(int i=0;i<words.size(); i++) { sc += (words.elementAt(i).points - WordPenalty); }
     		  score = sc;
     		  highScore = Math.max(score,highScore);
+    		  markNonWords();
     		}
      	return( connected 
     			&& allwords 
     			&& (invalidReason==null) // can't make valid words in 2 directions
     			&& (duplicate==null));
     }
-
+    private void markNonWords()
+    {
+    	for(int lim = nonWords.size()-1; lim>=0; lim--)
+		  {
+			Word w = nonWords.elementAt(lim);
+			SprintCell c = w.seed;
+			int direction = w.direction;
+			while(c!=null && c.topChip()!=null)
+			{
+				c.nonWord = true;
+				c = c.exitTo(direction);
+			}
+		  }
+    }
    	CellStack endCaps = new CellStack();	// cells at the end of words
    	CellStack startCaps = new CellStack(); 	// cells at the start of words
    	
@@ -734,7 +748,6 @@ class SingleBoard extends infiniteSquareBoard<SprintCell> implements BoardProtoc
    			if(beg!=null)
    			{ if(beg.sweep_counter!=sweep_counter) 
    				{ beg.wordDirections = 0;
-   				  beg.nonWord = false;
    				  beg.sweep_counter = sweep_counter;
    				  beg.wordHead = null;
    				}
@@ -913,6 +926,8 @@ class SingleBoard extends infiniteSquareBoard<SprintCell> implements BoardProtoc
     private boolean validateBoard()
     {	
     	int segments = 0;
+       	sweep_counter++;
+        for(int lim = occupiedCells.size()-1; lim>=0;lim--) { occupiedCells.elementAt(lim).nonWord = false; }
     	for(int lim = occupiedCells.size()-1; lim>=0; lim--)
     	{	int newletters = validateFrom(occupiedCells.elementAt(lim));
     		if(newletters>0)
@@ -929,7 +944,6 @@ class SingleBoard extends infiniteSquareBoard<SprintCell> implements BoardProtoc
     	int n = 1;
     	c.sweep_counter = sweep_counter;
     	c.wordDirections = 0;		// clear here, so markDirections doesn't have to.
-    	c.nonWord = false;
     	int directionStep = CELL_QUARTER_TURN;
     	// don't mess with this, it's correct!
     	int lastDir = CELL_RIGHT;
@@ -955,7 +969,6 @@ class SingleBoard extends infiniteSquareBoard<SprintCell> implements BoardProtoc
     				  	}
     				  	else { 
     				  		nonWords.push(word);
-    				  		markNonWord(word);
     				  	}
 
     				}
@@ -963,16 +976,6 @@ class SingleBoard extends infiniteSquareBoard<SprintCell> implements BoardProtoc
     	}
      	if(!some) { c.nonWord = true; }
     	return(n);
-    }
-    private void markNonWord(Word w)
-    {
-    	SprintCell seed = w.seed;
-    	while(seed!=null && (seed.topChip()!=null))
-    	{
-    		seed.nonWord = true;
-    		seed = seed.exitTo(w.direction);
-    		
-    	}
     }
     private void doDone(replayMode replay)
     {
@@ -987,7 +990,6 @@ class SingleBoard extends infiniteSquareBoard<SprintCell> implements BoardProtoc
         }
         else
         {	
-         G.Assert(board_state==SprintState.Endgame,"should be in endgame");
          setState(SprintState.Gameover);
  
          }
@@ -1176,8 +1178,11 @@ class SingleBoard extends infiniteSquareBoard<SprintCell> implements BoardProtoc
         	// be a temporary p
         	pickObject(src);
         	m.chip = pickedObject;
+        	if(src.onBoard)
+        	{
         	switch(board_state)
         	{
+        	case Endgame:
         	case Confirm:
         		setState(SprintState.Play);
 				//$FALL-THROUGH$
@@ -1185,8 +1190,12 @@ class SingleBoard extends infiniteSquareBoard<SprintCell> implements BoardProtoc
 			case Play:
         		break;
         	default: ;
-        	}}}
+        	}
     		validate(true);
+        	}
+        	
+ 			}}
+    		
     		break;
 	    	
         case MOVE_DROP: // drop on chip pool;

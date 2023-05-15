@@ -40,7 +40,7 @@ public interface SprintConstants
 	static final int FinalDrawTime = 5*60*1000;		// 1 minute
 	static final int NextDrawTime =  1*60*1000;	// 1 minute
 	static final int EndGameTime = 1*60*1000;	// 1 minute
-	
+	static final int WordPenalty = 2;	// negative points per word
 	class StateStack extends OStack<SprintState>
 	{
 		public SprintState[] newComponentArray(int n) { return(new SprintState[n]); }
