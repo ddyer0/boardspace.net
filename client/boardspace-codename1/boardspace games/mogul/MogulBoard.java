@@ -190,7 +190,7 @@ class MogulBoard extends trackBoard<MogulCell> implements BoardProtocol,MogulCon
 	}
     public MogulBoard(MogulViewer can,String init,long rv,int np,int map[]) // default constructor
     {   canvas = can;
-    	setColorMap(map);
+    	setColorMap(map, np);
         doInit(init,rv,np); // do the initialization 
      }
 

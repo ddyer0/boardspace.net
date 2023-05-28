@@ -114,7 +114,7 @@ class SantoriniBoard extends rectBoard<SantoriniCell> implements BoardProtocol,S
     public SantoriniBoard(String init,int map[]) // default constructor
     {   drawing_style = DrawingStyle.STYLE_NOTHING; // STYLE_CELL or STYLE_LINES
     	Grid_Style = SANTORINIGRIDSTYLE; //coordinates left and bottom
-    	setColorMap(map);	// the "colors" are cube and cylinder
+    	setColorMap(map, 2);	// the "colors" are cube and cylinder
         doInit(init); // do the initialization 
      }
 

@@ -89,7 +89,7 @@ class MorrisBoard extends squareBoard<MorrisCell> implements BoardProtocol,Morri
 	}
     public MorrisBoard(String init,long rv,int np,RepeatedPositions rep,int map[]) // default constructor
     {   repeatedPositions = rep;
-    	setColorMap(map);
+    	setColorMap(map, np);
         doInit(init,rv,np); // do the initialization 
      }
 
@@ -192,8 +192,8 @@ class MorrisBoard extends squareBoard<MorrisCell> implements BoardProtocol,Morri
         getCell(captureStack,from_b.captureStack);
         getCell(occupiedCells,from_b.occupiedCells);
         AR.copy(playerColor,from_b.playerColor);
-        copyFrom(captured,from_b.captured);
-        copyFrom(rack,from_b.rack);
+        copyAllFrom(captured,from_b.captured);
+        copyAllFrom(rack,from_b.rack);
         board_state = from_b.board_state;
         lastProgressMove = from_b.lastProgressMove;
         lastDrawMove = from_b.lastDrawMove;

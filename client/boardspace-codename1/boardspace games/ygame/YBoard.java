@@ -116,7 +116,7 @@ class YBoard extends RBoard<YCell> implements BoardProtocol,YConstants
     {
         drawing_style = DrawingStyle.STYLE_NOTHING; // don't draw the cells.  STYLE_CELL to draw them
         Grid_Style = YGRIDSTYLE;
-        setColorMap(map);
+        setColorMap(map, players);
 		initBoard(YnInCol,YNeighbors,YCoords ,YPerm );
         doInit(init,key,players,rev); // do the initialization 
         //autoReverseY();		// reverse_y based on the color map

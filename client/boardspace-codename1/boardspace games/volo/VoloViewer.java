@@ -954,6 +954,9 @@ public class VoloViewer extends CCanvas<VoloCell,VoloBoard> implements VoloConst
     /** replay a move specified in SGF format.  
      * this is mostly standard stuff, but the contract is to recognize
      * the elements that we generated in sgf_save
+     * summary: 5/23/2023
+     * 2180 files visited 0 problems
+     * 
      */
     public void ReplayMove(sgf_node no)
     {
@@ -973,6 +976,8 @@ public class VoloViewer extends CCanvas<VoloCell,VoloBoard> implements VoloConst
             {
                 comments += value;
             }
+            else if(game_property.equals(name) && "11".equals(value))	// oops
+           {}
            else if (parseVersionCommand(name,value,2)) {}
            else if (parsePlayerCommand(name,value)) {}
             else

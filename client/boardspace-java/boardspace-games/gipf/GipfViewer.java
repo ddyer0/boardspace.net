@@ -771,7 +771,10 @@ public class GipfViewer extends CCanvas<GipfCell,GipfBoard> implements GipfConst
     /** factory method to create a robot */
     public SimpleRobotProtocol newRobotPlayer() { return(new GipfPlay()); }
 
-
+/**
+ * summary: 5/26/2023
+ * 	10487 files visited 0 problems
+ */
 
     public void ReplayMove(sgf_node no)
     {

@@ -10,7 +10,7 @@ import lib.Random;
 
 
 /**
- * GygesBoard knows all about the game of Truchet, which is played
+ * GygesBoard knows all about the game of Gyges, which is played
  * on a 7x7 board. It gets a lot of logistic support from 
  * common.rectBoard, which knows about the coordinate system.  
  * 

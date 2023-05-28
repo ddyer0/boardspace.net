@@ -93,7 +93,7 @@ class ModxBoard extends rectBoard<ModxCell> implements BoardProtocol,ModxConstan
 	}
     public ModxBoard(String init,long rv,int np,RepeatedPositions rep,int map[],int rev) // default constructor
     {   repeatedPositions = rep;
-    	setColorMap(map);
+    	setColorMap(map, np);
         doInit(init,rv,np,rev); // do the initialization 
      }
 

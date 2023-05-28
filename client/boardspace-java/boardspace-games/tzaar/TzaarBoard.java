@@ -270,7 +270,7 @@ class TzaarBoard extends hexBoard<TzaarCell> implements BoardProtocol,TzaarConst
     	Grid_Style = TZAARGRIDSTYLE; //coordinates left and bottom
     	int ntypes = TzaarChip.NTYPES;
     	Random r = new Random(143006);
-    	setColorMap(map);
+    	setColorMap(map, 2);
     	
     	for(int p=FIRST_PLAYER_INDEX; p<=SECOND_PLAYER_INDEX; p++)
     		{ TzaarCell row[]=new TzaarCell[ntypes];

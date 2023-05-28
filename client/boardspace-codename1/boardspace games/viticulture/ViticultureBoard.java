@@ -1007,7 +1007,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
 	// constructor 
     public ViticultureBoard(String init,int players,long key,int map[],int rev) // default constructor
     {
-        setColorMap(map);
+        setColorMap(map, players);
     	cardDisplay.contentType = ChipType.Card;
     	cardDisplay1.contentType = ChipType.Card;
 

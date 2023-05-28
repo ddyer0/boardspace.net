@@ -542,7 +542,7 @@ class WypsBoard extends hexBoard<WypsCell> implements BoardProtocol,WypsConstant
         dictionary = di;
         drawing_style = DrawingStyle.STYLE_NOTHING; // don't draw the cells.  STYLE_CELL to draw them
         Grid_Style = WypsGRIDSTYLE;
-        setColorMap(map);
+        setColorMap(map, players);
     	// allocate the rack map once and for all, it's not used in the board
     	// only as part of the UI.
        	mapPick = new int[MAX_PLAYERS];

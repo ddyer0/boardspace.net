@@ -90,7 +90,7 @@ class VeletasBoard extends rectBoard<VeletasCell> implements BoardProtocol,Velet
 	{	return(new VeletasCell(c,r));
 	}
     public VeletasBoard(String init,long rv,int np,int map[],int rev) // default constructor
-    {  	setColorMap(map);
+    {  	setColorMap(map, 2);
     
 		Random r = new Random(67246765);
     	rack = new VeletasCell[2];

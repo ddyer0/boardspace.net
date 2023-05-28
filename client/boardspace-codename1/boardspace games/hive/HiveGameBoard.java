@@ -586,7 +586,7 @@ public variation gamevariation = variation.hive;
         Grid_Style = HIVEGRIDSTYLE;
         Random r = new Random(232534345);
         revision = REVISION;
-        setColorMap(map);
+        setColorMap(map, 2);
         // create the rack
         for(int i=0;i<racks.length;i++)
         { HiveCell row[]=racks[i];

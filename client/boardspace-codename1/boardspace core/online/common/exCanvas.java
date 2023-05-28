@@ -885,23 +885,37 @@ graphics when using a touch screen.
    
    public void performStandardStartDragging(HitPoint p)
    {
-	   if(theChat!=null  && runTheChat())
+	   if(p.hitCode==OnlineId.HitMagnifier)
+	   {
+	   }
+	   else if(theChat!=null  && runTheChat())
 	   	{  
 	   	   theChat.StartDragging(p);
 	   	}
    }
    public void performStandardStopDragging(HitPoint p)
    {
-	   if(theChat!=null && runTheChat())
+	   if(p.hitCode==OnlineId.HitMagnifier)
+	   {   // if the mouse is over the unmagnifier over the chat window, we do extra stuff to make sure it
+		   // takes precedence. This isn't a particularly clean way to get there.
+		   doMagnifier();
+	   }
+	   else if(theChat!=null && runTheChat())
 	   	{ 
 	   	   theChat.StopDragging(p);
 	   	}
+	   
 	   
    }
    public HitPoint performStandardMouseMotion(int x,int y,MouseState p)
    {   // simplemenu takes precedence over chat
 	   if(menu==null && theChat!=null && runTheChat())
-	   {	return(theChat.MouseMotion(x,y,p));
+	   {	HitPoint hp = (theChat.MouseMotion(x,y,p));
+	   		if(hp!=null)
+	   		{	// if the unmagnifier is in the zone, it will take over
+	   			drawUnmagnifier(null,hp);
+	   			return hp;
+	   		}
 	   }
 	   return(null);
    }
@@ -2053,15 +2067,18 @@ graphics when using a touch screen.
 	{	sprites.push(ss);
 		repaint(10,"new sprite");
 	}
-	public boolean performStandardButtons(CellId id, HitPoint hitPoint)
-	{	if(painter.performStandardButtons(id)) { return(true); }
-		if(id==OnlineId.HitMagnifier)
+	private void doMagnifier()
 		{
 			if(getGlobalZoom()<MINIMUM_ZOOM)
 			{
 				setGlobalZoomButton();
 			}
 			else { setGlobalUnZoomButton(); }
+	}
+	public boolean performStandardButtons(CellId id, HitPoint hitPoint)
+	{	if(painter.performStandardButtons(id)) { return(true); }
+		if(id==OnlineId.HitMagnifier)
+		{	doMagnifier();
 			return(true);
 		}
 		if(id==OnlineId.HitZoomSlider)
@@ -2325,8 +2342,9 @@ graphics when using a touch screen.
 	}
     public double getPreferredRotation() { return(0); }
 	
-    public void drawUnmagnifier(Graphics offGC,HitPoint hp)
-    {
+    // return true if the mouse is in the unmagnifier
+    public boolean drawUnmagnifier(Graphics offGC,HitPoint hp)
+    {	boolean v = false;
         double z = getGlobalZoom(); 
         if(z>1.0)
         {
@@ -2347,24 +2365,33 @@ graphics when using a touch screen.
         	{
         	default:
         	case 0:
-        		StockArt.UnMagnifier.drawChip(offGC,this,hp,OnlineId.HitMagnifier,size,getSX()+ax,getSY()+ay,null);
+        		v = drawUnmagnifier(offGC,hp,size,getSX()+ax,getSY()+ay);
         		break;
         	case 1:
-        		StockArt.UnMagnifier.drawChip(offGC,this,hp,OnlineId.HitMagnifier,size,cx+h/2-size,cy+w/2-size,null);
+        		v =  drawUnmagnifier(offGC,hp,size,cx+h/2-size,cy+w/2-size);
         		break;
         	case 2:
-        		StockArt.UnMagnifier.drawChip(offGC,this,hp,OnlineId.HitMagnifier,size,cx+w/2-size,cy+h/2-size,null);
+        		v = drawUnmagnifier(offGC,hp,size,cx+w/2-size,cy+h/2-size);
         		break;
         	case 3:
-        		StockArt.UnMagnifier.drawChip(offGC,this,hp,OnlineId.HitMagnifier,size,cx+h/2-size,cy+w/2-size,null);       		
+        		v =  drawUnmagnifier(offGC,hp,size,cx+h/2-size,cy+w/2-size);       		
         		break;
         	}
 
         GC.setRotation(offGC, -rot,cx,cy);
         G.setRotation(hp, -rot, cx, cy);
         }
+        return v;
     }
-	
+    private boolean drawUnmagnifier(Graphics offGC,HitPoint hp,int size,int x,int y)
+    {	boolean in = false;
+    	if(G.pointNearCenter(hp,x,y,size,size))
+    		{
+    		in = true;
+    		}
+    	StockArt.UnMagnifier.drawChip(offGC,this,hp,OnlineId.HitMagnifier,size,x,y,null);
+    	return in;
+    }
 	/**
      * return the dynamically adjusted size during an animation.  This allows
      * compensation for things like the zoom level of the board changing after

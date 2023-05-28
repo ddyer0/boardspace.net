@@ -138,7 +138,7 @@ class KingsColorBoard
     {
         drawing_style = DrawingStyle.STYLE_NOTHING; // don't draw the cells.  STYLE_CELL to draw them
         Grid_Style = GRIDSTYLE;
-        setColorMap(map);
+        setColorMap(map, players);
         
         captured[0] = new KingsColorCell(ColorId.Captured,'@',0);
         captured[1] = new KingsColorCell(ColorId.Captured,'@',1);

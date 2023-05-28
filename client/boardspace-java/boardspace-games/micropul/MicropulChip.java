@@ -577,7 +577,7 @@ public class MicropulChip extends chip<MicropulChip>
 	static final int tint_index = 10;
 	static final int blank_index = 13;
     static final String[] ImageNames = 
-        {   // square is borrowed from truchet.  circles are modified gray ball from zertz
+        {   // square is borrowed from dash.  circles are modified gray ball from zertz
     		// plus is a mutilated cross from the web.
     		"square","square-r1","square-r2","square-r3",
     		"red","blue","dot","plus",

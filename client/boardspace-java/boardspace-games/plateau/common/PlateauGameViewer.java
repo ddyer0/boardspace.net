@@ -946,7 +946,10 @@ public class PlateauGameViewer extends commonCanvas implements PlateauConstants,
         return(val);
     }
     boolean needStart = false;
-
+    /*
+     * summary: 5/27/2023
+		1338 files visited 0 problems
+     */
     public void ReplayMove(sgf_node no)
     {
         String comments = "";

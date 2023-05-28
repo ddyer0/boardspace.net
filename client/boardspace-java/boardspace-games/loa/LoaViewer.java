@@ -823,7 +823,10 @@ public class LoaViewer extends commonCanvas implements UIC,GameLayoutClient
     public SimpleRobotProtocol newRobotPlayer() { return(new RoboPlay()); }
 
 
-
+    /*
+     * summary: 5/27/2023
+     *  13546 files visited 0 problems
+     */
     public void ReplayMove(sgf_node no)
     {
         String comments = "";

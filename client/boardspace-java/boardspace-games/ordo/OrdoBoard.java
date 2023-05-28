@@ -130,7 +130,7 @@ class OrdoBoard extends rectBoard<OrdoCell> implements BoardProtocol
     public OrdoBoard(String init,long rv,int np,RepeatedPositions rep,int map[],int rev) // default constructor
     {   repeatedPositions = rep;
 
-    	setColorMap(map);
+    	setColorMap(map, np);
         doInit(init,rv,np,rev); // do the initialization 
         autoReverseY();		// reverse_y based on the color map
      }
@@ -960,6 +960,7 @@ class OrdoBoard extends rectBoard<OrdoCell> implements BoardProtocol
         case MOVE_BOARD_BOARD:
         	switch(board_state)
         	{	default: throw G.Error("Not expecting state %s",board_state);
+        		case Gameover:	// not legal, but permissive for damaged game OR-ddyer-bobc-2022-09-07-0143
         		case OrdoPlay:
         		case OrdoPlay2:
         		case Reconnect:

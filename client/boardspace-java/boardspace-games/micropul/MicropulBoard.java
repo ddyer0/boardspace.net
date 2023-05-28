@@ -113,7 +113,7 @@ class MicropulBoard extends squareBoard<MicropulCell> implements BoardProtocol,M
 	{	return(new MicropulCell(c,r));
 	}
     public MicropulBoard(long randomv,String init,int []map) // default constructor
-    {	setColorMap(map);
+    {	setColorMap(map, 2);
         drawing_style = DrawingStyle.STYLE_NOTHING; // don't draw the cells.  STYLE_CELL to draw them
         Grid_Style = MicropulGRIDSTYLE;
         isTorus=true;

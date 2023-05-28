@@ -219,6 +219,7 @@ public void PrepareToMove(int playerIndex)
     	else { changedToSynchronous = false; }
     }
     robotPlayer = playerIndex;
+    board.initRobotValues(this);
     robotRandom = new Random(board.Digest());
 }
 

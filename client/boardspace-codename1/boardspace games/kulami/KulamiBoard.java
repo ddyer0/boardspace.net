@@ -227,7 +227,7 @@ class KulamiBoard extends squareBoard<KulamiCell> implements BoardProtocol,Kulam
     {
         drawing_style = DrawingStyle.STYLE_NOTHING; // don't draw the cells.  STYLE_CELL to draw them
         Grid_Style = KulamiGRIDSTYLE;
-        setColorMap(map);
+        setColorMap(map, players);
  		Random r = new Random(734030546);	// this random is used to assign hash values to cells, common to all games of this type.
 	    blackChipPool = new KulamiCell(r,KulamiId.Black_Chip_Pool);
 	    redChipPool = new KulamiCell(r,KulamiId.Red_Chip_Pool);

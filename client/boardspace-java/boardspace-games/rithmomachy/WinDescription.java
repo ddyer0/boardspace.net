@@ -11,7 +11,7 @@ class WinStack extends OStack<WinDescription>
 	public WinDescription[] newComponentArray(int n) { return(new WinDescription[n]); }
 }
 /**
- * RithmomachyBoard knows all about the game of Truchet, which is played
+ * RithmomachyBoard knows all about the game of Rithmomachy, which is played
  * on a 7x7 board. It gets a lot of logistic support from 
  * common.rectBoard, which knows about the coordinate system.  
  * 

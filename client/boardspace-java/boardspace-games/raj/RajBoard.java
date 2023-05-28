@@ -484,7 +484,7 @@ class RajBoard extends squareBoard<RajCell> implements BoardProtocol,RajConstant
 	}
 
     public RajBoard(String init,long key,int np,int[]map) // default constructor
-    {	setColorMap(map);
+    {	setColorMap(map, np);
     	super.initBoard(10,10);	// not used really
     	Random r = new Random(12345);
     	allCells.setDigestChain(r);

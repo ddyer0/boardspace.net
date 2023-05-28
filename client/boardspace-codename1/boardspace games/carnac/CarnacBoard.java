@@ -65,7 +65,7 @@ class CarnacBoard extends squareBoard<CarnacCell> implements BoardProtocol,Carna
     	Grid_Style = CARNACGRIDSTYLE; //coordinates left and bottom
        	pool = new CarnacCell[4];
 		Random r = new Random(67246765);
-		setColorMap(map);
+		setColorMap(map, 2);
     	for(int i=0;i<4;i++)
     	{	pool[i] = new CarnacCell(r,CarnacId.Chip_Pool,i);
     		pool[i].addChip(CarnacChip.getChip(i));

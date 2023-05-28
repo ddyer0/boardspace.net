@@ -135,12 +135,12 @@ class FanoronaBoard extends rectBoard<FanoronaCell> implements BoardProtocol,Fan
 	    	fChips[i]=cell;
 	    	}  
     	gametype = init;
-        setColorMap(map);
+        setColorMap(map, 2);
         autoReverseY();		// reverse_y based on the color map
      }
-    public void setColorMap(int[]map)
+    public void setColorMap(int[]map, int players)
     {
-    	super.setColorMap(map);
+    	super.setColorMap(map, players);
     	doInit(gametype);
     }
     public FanoronaBoard cloneBoard() 

@@ -335,7 +335,7 @@ public class TextContainer extends Rectangle implements AppendInterface,KeyListe
 			if((caratPos>=scrollY)&&(caratPos+fontH<scrollY+availableHeight)) {}
 			else {
 				if(caratPos<scrollY) { setScrollY(caratPos); }
-				else { int mv = Math.max(0,caratPos-availableHeight+fontH);
+				else { int mv = Math.max(0,caratPos-availableHeight+fontH*3/2);
 					   setScrollY(mv); 
 					 }
 		}}

@@ -232,10 +232,9 @@ public class ExxitGameBoard extends infiniteHexBoard<ExxitCell> implements Board
 
     public ExxitGameBoard(String init,int map[]) // default constructor
     {	Random r = new Random(124656);
-    	setColorMap(map);
+    	setColorMap(map, 2);
         drawing_style = DrawingStyle.STYLE_CELL;//STYLE_NOTHING; // don't draw the cells.  STYLE_CELL to draw them
         Grid_Style = EXXITGRIDSTYLE;
-        isTorus=false;
         revision = REVISION;
         transportCell = new ExxitCell('t',0); 
         transportCell.onBoard=false;
@@ -278,7 +277,7 @@ public class ExxitGameBoard extends infiniteHexBoard<ExxitCell> implements Board
     	prosetup = Exxit_PRO.equalsIgnoreCase(game);
         gametype = game;
         setState(ExxitState.PUZZLE_STATE);
-        reInitBoard(19,19); //this sets up a hexagonal board
+        reInitBoard(26,26); //this sets up a hexagonal board
         whoseTurn = FIRST_PLAYER_INDEX;
         numberOfThings = everyThing.length;
         
@@ -1070,7 +1069,10 @@ public class ExxitGameBoard extends infiniteHexBoard<ExxitCell> implements Board
     	blobs_valid = false;
     	for(int dir=0;dir<geometry.n;dir++)
     		{	ExxitCell cx =c.exitTo(dir);
-    			if((tiles.height()>0) && cx!=null && cx.canExchange()) { doExchange(cx,replay); }
+    			if(cx!=null) 
+    				{ createExitCells(cx);
+    				if((tiles.height()>0) && cx.canExchange()) { doExchange(cx,replay); }
+    				}
     		}
      }
     

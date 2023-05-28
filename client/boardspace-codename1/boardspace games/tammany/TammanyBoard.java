@@ -401,7 +401,7 @@ import static tammany.TammanyMovespec.*;
 	 // constructor 
 	 public TammanyBoard(InternationalStrings strs,String init,int players,long key,int map[],int rev) // default constructor
 	 {	s = strs;
-	 	setColorMap(map);
+	 	setColorMap(map, players);
         electionBox = electionBox(43,75,73,95);
 	 	buildNetwork();
 	 	doInit(init,key,players,rev); // do the initialization 

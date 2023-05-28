@@ -94,7 +94,7 @@ class PunctGameBoard extends hexBoard<punctCell> implements BoardProtocol,PunctC
     {	
         drawing_style = DrawingStyle.STYLE_NOTHING; //coordinates left and bottom
         Grid_Style = PUNCTGRIDSTYLE;
-        setColorMap(map);
+        setColorMap(map, 2);
         makePieces();
         doInit(init); // do the initialization 
     }

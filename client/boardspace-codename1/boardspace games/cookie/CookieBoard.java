@@ -459,7 +459,7 @@ class CookieBoard extends hexBoard<CookieCell> implements BoardProtocol,CookieCo
         drawing_style = DrawingStyle.STYLE_NOTHING; // don't draw the cells.  STYLE_CELL to draw them
         Grid_Style = CookieGRIDSTYLE;
         isTorus=true;
-        setColorMap(map);
+        setColorMap(map, 2);
         startingMoves = new Hashtable<CookieCell,CookieMovespec>();
         for(int i=0;i<CookieChip.nChips+3;i++)
         {	chipPool[i]=new CookieCell(r,CookieId.ChipPool,CHIP_OFFSET+i);

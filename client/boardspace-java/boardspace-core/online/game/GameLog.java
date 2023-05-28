@@ -476,7 +476,7 @@ public class GameLog implements Opcodes
         	commonMove sp = history.elementAt(idx);
         	Text sms = (sp==null) ? TextChunk.create("") : canvas.censoredMoveText(sp,idx); 
            	variation |= (sp!=null) && (sp.nVariations()>1);
-           	String newnum = sp.getSliderNumString();
+           	String newnum = (sp==null) ? "" : sp.getSliderNumString();
         	int nextIdx = idx;
              // look for reasons to break rather than add this line to the current display line
            	if((moven!=null) 

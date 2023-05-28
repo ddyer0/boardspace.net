@@ -751,6 +751,17 @@ private void playSounds(commonMove m)
     /** replay a move specified in SGF format.  
      * this is mostly standard stuff, but the key is to recognize
      * the elements that we generated in sgf_save
+     * summary:
+		27: play Problem in zip file:G:\share\projects\boardspace-html\htdocs\colorito\coloritogames\coloritogames\archive-2017\games-Jun-23-2017.zip CL-Dumbot-guest-2016-05-05-2011.sgf lib.ErrorX: Not expecting drop in state Gameover
+		32: play Problem in zip file:G:\share\projects\boardspace-html\htdocs\colorito\coloritogames\coloritogames\archive-2017\games-Jun-23-2017.zip CL-Dumbot-mosquito-2014-06-12-1652.sgf lib.ErrorX: Not expecting drop in state Gameover
+		54: play Problem in zip file:G:\share\projects\boardspace-html\htdocs\colorito\coloritogames\coloritogames\archive-2017\games-Jun-23-2017.zip U!CL-barmaley-Dumbot-2016-03-27-0841.sgf lib.ErrorX: Not expecting drop in state Gameover
+		64: play Problem in zip file:G:\share\projects\boardspace-html\htdocs\colorito\coloritogames\coloritogames\archive-2017\games-Jun-23-2017.zip U!CL-guest-Dumbot-2014-05-05-1123.sgf lib.ErrorX: Not expecting robot in state Gameover
+		253: play Problem in file:G:\share\projects\boardspace-html\htdocs\colorito\coloritogames\coloritogames\games-Jun-23-2017\CL-Dumbot-guest-2016-05-05-2011.sgf lib.ErrorX: Not expecting drop in state Gameover
+		258: play Problem in file:G:\share\projects\boardspace-html\htdocs\colorito\coloritogames\coloritogames\games-Jun-23-2017\CL-Dumbot-mosquito-2014-06-12-1652.sgf lib.ErrorX: Not expecting drop in state Gameover
+		280: play Problem in file:G:\share\projects\boardspace-html\htdocs\colorito\coloritogames\coloritogames\games-Jun-23-2017\U!CL-barmaley-Dumbot-2016-03-27-0841.sgf lib.ErrorX: Not expecting drop in state Gameover
+		290: play Problem in file:G:\share\projects\boardspace-html\htdocs\colorito\coloritogames\coloritogames\games-Jun-23-2017\U!CL-guest-Dumbot-2014-05-05-1123.sgf lib.ErrorX: Not expecting robot in state Gameover
+		
+		304 files visited 8 problems
      */
     public void ReplayMove(sgf_node no)
     {

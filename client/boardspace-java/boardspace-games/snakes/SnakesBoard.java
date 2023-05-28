@@ -11,7 +11,7 @@ import lib.Random;
 
 
 /**
- * SnakesBoard knows all about the game of Truchet, which is played
+ * SnakesBoard knows all about the game of Snakes, which is played
  * on a 7x7 board. It gets a lot of logistic support from 
  * common.rectBoard, which knows about the coordinate system.  
  * 

@@ -76,7 +76,9 @@ public class EuphoriaCell extends stackCell<EuphoriaCell,EuphoriaChip>
 	 * @return true if this cell is in the same location as other (but presumably on a different board)
 	 */
 	public boolean sameCell(EuphoriaCell other)
-	{	return(super.sameCell(other)
+	{	
+	
+		return(super.sameCell(other)
 				&& (color==other.color)
 				&& (placementCost==other.placementCost)
 				&& (placementBenefit==other.placementBenefit)
@@ -97,7 +99,11 @@ public class EuphoriaCell extends stackCell<EuphoriaCell,EuphoriaChip>
 		placementCost = ot.placementCost;
 		defaultScale = ot.defaultScale;
 	}
-
+	public void copyAllFrom(EuphoriaCell other)
+	{
+		super.copyAllFrom(other);
+		color = other.color;
+	}
 	// constructor a cell not on the board, with a chip.  Used to construct the pool chips
 	public EuphoriaCell()
 	{	super();

@@ -70,6 +70,10 @@ class CrossfireBoard extends hexBoard<CrossfireCell> implements BoardProtocol,Cr
     public CrossfireChip lastPicked = null;
     public CrossfireCell reserve[] = new CrossfireCell[2];
     public CrossfireCell prisoners[] = new CrossfireCell[2];
+    CrossfireCell white_reserve = null;
+    CrossfireCell black_reserve = null;
+    CrossfireCell white_prisoners = null;
+    CrossfireCell black_prisoners = null;
     public CrossfireCell pickedSource = null; 
     public CrossfireCell prevPickedSource = null;
     public CrossfireCell prevDroppedDest = null;
@@ -89,7 +93,13 @@ class CrossfireBoard extends hexBoard<CrossfireCell> implements BoardProtocol,Cr
         drawing_style = DrawingStyle.STYLE_NOTHING; // don't draw the cells.  STYLE_CELL to draw them
         Grid_Style = CROSSFIREGRIDSTYLE;
         repeatedPositions = rep;
-        setColorMap(map);
+        Random r = new Random(6326462);
+        white_prisoners = new CrossfireCell(r,FIRST_PLAYER_INDEX,prisonerColor[FIRST_PLAYER_INDEX]);
+        black_prisoners = new CrossfireCell(r,SECOND_PLAYER_INDEX,prisonerColor[SECOND_PLAYER_INDEX]);
+        white_reserve = new CrossfireCell(r,FIRST_PLAYER_INDEX,playerColor[FIRST_PLAYER_INDEX]);
+        black_reserve = new CrossfireCell(r,SECOND_PLAYER_INDEX,playerColor[SECOND_PLAYER_INDEX]);
+ 
+        setColorMap(map, 2);
         doInit(init); // do the initialization 
         autoReverseY();		// reverse_y based on the color map
     }
@@ -103,10 +113,10 @@ class CrossfireBoard extends hexBoard<CrossfireCell> implements BoardProtocol,Cr
     public CrossfireCell getCell(CrossfireCell c) 
     { 	if(c==null) { return(null);} 
     	if(c.onBoard) { return(getCell(c.col,c.row)); }
-    	if(c.rackLocation==CrossId.Black_Chip_Pool) { return(reserve[getColorMap()[c.row]]); }
-    	if(c.rackLocation==CrossId.White_Chip_Pool) { return(reserve[getColorMap()[c.row]]); }
-    	if(c.rackLocation==CrossId.Black_Prisoner_Pool) { return(prisoners[getColorMap()[c.row]]); }
-    	if(c.rackLocation==CrossId.White_Prisoner_Pool) { return(prisoners[getColorMap()[c.row]]); }
+    	if(c.rackLocation==CrossId.Black_Chip_Pool) { return(black_reserve); }
+    	if(c.rackLocation==CrossId.White_Chip_Pool) { return(white_reserve); }
+    	if(c.rackLocation==CrossId.Black_Prisoner_Pool) { return(black_prisoners); }
+    	if(c.rackLocation==CrossId.White_Prisoner_Pool) { return(white_prisoners); }
     	throw G.Error("Unexpected cell %s",c);
    }
     static int start[][] = {{'B',1,1},{'B',2,0},{'B',3,0},{'B',4,0},
@@ -126,14 +136,19 @@ class CrossfireBoard extends hexBoard<CrossfireCell> implements BoardProtocol,Cr
     	else { throw G.Error(WrongInitError,game); }
         gametype = game;
         setState(CrossfireState.PUZZLE_STATE);
-        Random r = new Random(6326462);
+       
         reInitBoard(firstcol, ncol, null); //this sets up a hexagonal board
         animationStack.clear();
         int []map=getColorMap();
+        
+        
         for(int i=FIRST_PLAYER_INDEX; i<=SECOND_PLAYER_INDEX; i++)
-        {	prisoners[map[i]] = new CrossfireCell(r,i,prisonerColor[i]);
-        	reserve[map[i]] = new CrossfireCell(r,i,playerColor[i]);
+        {	CrossfireCell p = prisoners[map[i]] = getCell(prisonerColor[i],'@',0);
+        	CrossfireCell r = reserve[map[i]] = getCell(playerColor[i],'@',0);
+        	p.reInit();
+        	r.reInit();
         }
+        
         whoseTurn = FIRST_PLAYER_INDEX;
         prevDroppedDest = droppedDest = null;
         droppedUndoInfo = 0;
@@ -233,7 +248,8 @@ class CrossfireBoard extends hexBoard<CrossfireCell> implements BoardProtocol,Cr
         lastPicked = null;
         robotDepth = from_b.robotDepth;
 		for(int i=0;i<2;i++) 
-		{  
+		{  reserve[i] = getCell(from_b.reserve[i]);
+		   prisoners[i] = getCell(from_b.prisoners[i]);
 		   reserve[i].copyFrom(from_b.reserve[i]);
 		   prisoners[i].copyFrom(from_b.prisoners[i]);
 		}
@@ -459,12 +475,7 @@ class CrossfireBoard extends hexBoard<CrossfireCell> implements BoardProtocol,Cr
     	}
 
     }
-	// pick something up.  Note that when the something is the board,
-    // the board location really becomes empty, and we depend on unPickObject
-    // to replace the original contents if the pick is cancelled.
-    private void pickObject(CrossId source, char col, int row)
-    {	pickObject(getCell(source,col,row));
-    }
+
     private CrossfireCell getCell(CrossId source,char col,int row)
     {
         switch (source)
@@ -474,13 +485,13 @@ class CrossfireBoard extends hexBoard<CrossfireCell> implements BoardProtocol,Cr
         case BoardLocation:
         	return(getCell(col,row));
         case Black_Prisoner_Pool:
-        	return(prisoners[getColorMap()[SECOND_PLAYER_INDEX]]);
+        	return(black_prisoners);
         case Black_Chip_Pool:
-        	return(reserve[getColorMap()[SECOND_PLAYER_INDEX]]);
+        	return(black_reserve);
         case White_Prisoner_Pool:
-            return(prisoners[getColorMap()[FIRST_PLAYER_INDEX]]);
+            return(white_prisoners);
         case White_Chip_Pool:
-            return(reserve[getColorMap()[FIRST_PLAYER_INDEX]]);
+            return(white_reserve);
         }
     }
     //	
@@ -602,7 +613,6 @@ class CrossfireBoard extends hexBoard<CrossfireCell> implements BoardProtocol,Cr
         //G.print("E "+m+" for "+whoseTurn+" "+board_state);
         switch (m.op)
         {
-
         case MOVE_DONE:
          	doDone();
             break;
@@ -616,12 +626,22 @@ class CrossfireBoard extends hexBoard<CrossfireCell> implements BoardProtocol,Cr
         case MOVE_PICK:
             unDropObject();
             unPickObject();
+            
 			//$FALL-THROUGH$
 		case MOVE_PICKB:
         	// come here only where there's something to pick, which must
         	// be a temporary p
-        	pickObject(m.source, m.from_col, m.from_row);
+		{
+			CrossfireCell src = getCell(m.source, m.from_col, m.from_row);
+			if(src==null)
+			{	//some damaged games 
+				m.op=MOVE_REJECT;
+			}
+			else
+			{
+			pickObject(src);
         	if(board_state!=CrossfireState.PUZZLE_STATE) { setState(CrossfireState.PLAY_STATE); }
+			}}
             break;
 
         case MOVE_DROP: // drop on chip pool;

@@ -87,7 +87,7 @@ class GounkiBoard extends rectBoard<GounkiCell> implements BoardProtocol,GounkiC
 	{	return(new GounkiCell(c,r));
 	}
     public GounkiBoard(String init,long rv,int map[]) // default constructor
-    {   setColorMap(map);
+    {   setColorMap(map, 2);
         doInit(init,rv); // do the initialization 
         autoReverseY();		// reverse_y based on the color map
      }
@@ -204,7 +204,7 @@ class GounkiBoard extends rectBoard<GounkiCell> implements BoardProtocol,GounkiC
     public void copyFrom(GounkiBoard from_b)
     {	super.copyFrom(from_b);
         
-    	copyFrom(rack,from_b.rack);
+    	copyAllFrom(rack,from_b.rack);
         deploymentSize = from_b.deploymentSize;
         AR.copy(chipsOnBoard,from_b.chipsOnBoard);
         board_state = from_b.board_state;

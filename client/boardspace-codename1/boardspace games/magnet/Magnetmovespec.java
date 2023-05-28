@@ -18,10 +18,10 @@ public class Magnetmovespec extends commonMove
     static final int MOVE_DEMOTE = 210;	// demote the piece
     static final int MOVE_SELECT = 211;	// select first mover
     static final int MOVE_RANDOM = 212;
+	static final int NORMALSTART = 316;		// not ephemeral
 	static final int EPHEMERAL_PICK = 412;
 	static final int EPHEMERAL_MOVE = 414;
 	static final int EPHEMERAL_PICKB = 415;
-	static final int NORMALSTART = 416;
 	static final int EPHEMERAL_DONE = 417;
 
 	public boolean isEphemeral() { return(op>=400); }

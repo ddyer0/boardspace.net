@@ -81,7 +81,11 @@ public interface EuphoriaConstants
 	static String ConfirmRecruitOptionState = "Confirm using your recruit ability";
 	static String UseRecruitAbility = "Click to use this recruit ability";
 	static String DontUseRecruitAbility = "Do Not use this recruit ability";
-	
+	static String MarketName = "Market: #1";
+	static String CantGainMorale = "You can't gain morale if you have 3 or more";
+	static String CantPlaceWorkers = "You can't place workers on the board if any of yours on the board are 6";
+	static String CantGainResources = "You can't gain resources if you have 3 or more";
+	static String CantPlaceStars = "You can't place stars on empty territory";
 	static String NoExtraFood = "Extra Food cancelled (Registry of Personal Secrets)";
 	static String NoExtraWater = "Extra Water cancelled (Registry of Personal Secrets)";
 	static String NoExtraEnergy = "Extra Energy cancelled (Registry of Personal Secrets)";
@@ -209,7 +213,18 @@ public interface EuphoriaConstants
  	static String UseYoussefTheTunneler = "Get tunnel benefits for free (Youssef the Tunneler)";
  	static String CanUseJonTheAmateurHandyman= "You can pay 3 Commodity instead of the usual cost (Jon the Amateur Handyman)";
  	static String DumbkoffMode = "You lost a Artifact and can no longer pay";
- 	
+ 	static String CantBecauseBureau = "You can't place workers (Bureau of Restricted Tourism)";
+ 	static String PlayersMayRetrieve = "Players on your right and left may retrieve 1 Worker";
+ 	static String ArtifactsCostExtra = "Artifacts except the rightmost cost 1 extra";
+ 	static String PlaceStarLoseMorale = "When placing a star, lose 1 morale";
+ 	static String OnlyDifferentArtifacts = "You can only gain artifacts different than you already have";
+ 	static String Knowledge14 = "Knowledge tests have a threshold of 14 instead of 16";
+ 	static String Gain1Less = "gain 1 less Commodity";
+ 	static String NothingGained = "NOTHING GAINED (Lottery of Diminishing Returns)";
+ 	static String Treat2As3 = "Treat newly rolled 1 or 2 as 3 for the knownledge check";
+ 	static String Pay1Commod = "Pay 1 Commodity before bumping your own worker";
+ 	static String GainKnowledge = "After a knowledge check, gain knowledge if at least 2 of your workers have the same knowledge";
+ 	static String BumpKnowledge = "You must have less than 6 knowledge to bump your own workers.  If you do gain knowledge";
 	enum Allegiance { Euphorian, Subterran, Wastelander, Icarite, Factionless;
 		static void putStrings() { for(Allegiance a : values()) { InternationalStrings.put(a.name()); }}
 		};
@@ -751,22 +766,22 @@ public interface EuphoriaConstants
 		//
 		// ignorance is bliss market penalties
 		//
-		PayBeforeBumping("Pay 1 Commodity before bumping your own worker"),	// 21 Agency of Progressive Backstabbing
-		LimitOf2Commodities("NOTHING GAINED (Lottery of Diminishing Returns)"), // 22 Lottery of Diminishing Returns
-		UpgradeWorkerKnowledge("Treat newly rolled 1 or 2 as 3 for the knownledge check"), // 23 Institute of Orwellian Optimism
-		NotIf6OnBoard("You can't place workers on the board if any of yours on the board are 6"),//24 natural floridated spring
-		NoStarOnEmpty("You can't place stars on empty territory"), //25 field of agorophobia
-		ExtraRetrieval("Players on your right and left may retrieve 1 Worker"), //26 dilemmas prison
-		ExtraCostArtifacts("Artifacts except the rightmost cost 1 extra"), // 27 department of bribe regulation
-		LoseMoraleForStar("When placing a star, lose 1 morale"), //28 atheneum of mandatory guidelines
-		WorkerLimit2("You can't place workers (Bureau of Restricted Tourism)"), //29 bureau of restricted tourism
-		MoraleLimit3("You can't gain morale if you have 3 or more"), //30 concert hall of harmonious discord
-		ResourceLimit3("You can't gain resources if you have 3 or more"), // 31 palace of forced altruism
-		ArtifactsDifferent("You can only gain artifacts different than you already have"), // 32 storage of insufficient capacity
-		Knowledgest14("Knowledge tests have a threshold of 14 instead of 16"), // 33 the carousel
-		CommodityMinus1("gain 1 less Commodity"), //34 theater of endless monotony
-		KnowledgePlusDoubles("After a knowledge check, gain knowledge if at least 2 of your workers have the same knowledge"), // 35 thought police of the open mind
-		Knowledge6Bump("You must have less than 6 knowledge to bump your own workers.  If you do gain knowledge"), // 36 together we work alone camp
+		PayBeforeBumping(Pay1Commod),	// 21 Agency of Progressive Backstabbing
+		LimitOf2Commodities(NothingGained), // 22 Lottery of Diminishing Returns
+		UpgradeWorkerKnowledge(Treat2As3), // 23 Institute of Orwellian Optimism
+		NotIf6OnBoard(CantPlaceWorkers),//24 natural floridated spring
+		NoStarOnEmpty(CantPlaceStars), //25 field of agorophobia
+		ExtraRetrieval(PlayersMayRetrieve), //26 dilemmas prison
+		ExtraCostArtifacts(ArtifactsCostExtra), // 27 department of bribe regulation
+		LoseMoraleForStar(PlaceStarLoseMorale), //28 atheneum of mandatory guidelines
+		WorkerLimit2(CantBecauseBureau), //29 bureau of restricted tourism
+		MoraleLimit3(CantGainMorale), //30 concert hall of harmonious discord
+		ResourceLimit3(CantGainResources), // 31 palace of forced altruism
+		ArtifactsDifferent(OnlyDifferentArtifacts), // 32 storage of insufficient capacity
+		Knowledgest14(Knowledge14), // 33 the carousel
+		CommodityMinus1(Gain1Less), //34 theater of endless monotony
+		KnowledgePlusDoubles(GainKnowledge), // 35 thought police of the open mind
+		Knowledge6Bump(BumpKnowledge), // 36 together we work alone camp
 		;
 		String explanation;
 		MarketPenalty(String a) { explanation=a; }
@@ -1725,7 +1740,24 @@ public interface EuphoriaConstants
     	 	CanUseJonTheAmateurHandyman,
     	 	PayForBornaState,
     	 	DumbkoffMode,
+    	 	MarketName,
+    	 	CantGainMorale,
+    	 	CantPlaceWorkers,
+    	 	CantBecauseBureau,
+    	 	CantPlaceStars,
+    	 	CantGainResources,
+    	 	ArtifactsCostExtra,
+    	 	PlaceStarLoseMorale,
     	 	PlaceAnotherStateIIB,
+    	 	PlayersMayRetrieve,
+    	 	Knowledge14,
+    	 	Gain1Less,
+    	 	GainKnowledge,
+    	 	BumpKnowledge,
+    	 	NothingGained,
+    	 	Treat2As3,
+    	 	Pay1Commod,
+    	 	OnlyDifferentArtifacts,
     		};
     		String EuphoriaStringPairs[][] = 
     		{   {"Euphoria_family","Euphoria"},

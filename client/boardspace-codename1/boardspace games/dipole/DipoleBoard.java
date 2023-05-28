@@ -81,7 +81,7 @@ class DipoleBoard extends rectBoard<DipoleCell> implements BoardProtocol,DipoleC
     public DipoleBoard(String init,int map[]) // default constructor
     {   drawing_style = DrawingStyle.STYLE_NOTHING; // STYLE_CELL or STYLE_LINES
     	Grid_Style = DIPOLEGRIDSTYLE; //coordinates left and bottom
-    	setColorMap(map);
+    	setColorMap(map, 2);
         doInit(init); // do the initialization 
      }
 

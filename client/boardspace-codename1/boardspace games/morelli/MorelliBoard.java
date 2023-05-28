@@ -83,7 +83,7 @@ public class MorelliBoard extends rectBoard<MorelliCell> implements BoardProtoco
 	{	return(new MorelliCell(c,r));
 	}
     public MorelliBoard(String init,long rv,int np,int map[],int rev) // default constructor
-    {   setColorMap(map);
+    {   setColorMap(map, np);
         doInit(init,rv,rev,setup); // do the initialization 
      }
 
@@ -563,6 +563,9 @@ public class MorelliBoard extends rectBoard<MorelliCell> implements BoardProtoco
         case Puzzle:
 			acceptPlacement();
             break;
+            
+        case Gameover:
+        	break;
         }
     }
     //	
@@ -739,6 +742,11 @@ public class MorelliBoard extends rectBoard<MorelliCell> implements BoardProtoco
         case MOVE_BOARD_BOARD:
         	switch(board_state)
         	{	default: throw G.Error("Not expecting robot in state %s",board_state);
+        		// note, a bunch of games have moves in "gameover" state, it's unclear how this happened,
+        		// but including a few permissive Gameover states allows these games to be replayed without
+        		// error.  It's still the case that the UI doesn't produce these moves.
+        		// see U!MO-davedoma-Dumbot-2020-09-16-2247
+        		case Gameover:
         		case Play:
         			G.Assert(pickedObject==null,"something is moving");
         			MorelliCell src = getCell(MorelliId.BoardLocation, m.from_col, m.from_row);
@@ -796,6 +804,7 @@ public class MorelliBoard extends rectBoard<MorelliCell> implements BoardProtoco
         		  	case Play:
         		  	case SecondPlay:
          		  	case Puzzle:
+         		  	case Gameover:
         		  		break;
         		  }
          		}

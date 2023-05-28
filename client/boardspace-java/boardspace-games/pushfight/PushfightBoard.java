@@ -143,7 +143,7 @@ class PushfightBoard extends squareBoard<PushfightCell> implements BoardProtocol
     {
         drawing_style = DrawingStyle.STYLE_NOTHING; // don't draw the cells.  STYLE_CELL to draw them
         Grid_Style = PushfightGRIDSTYLE;
-        setColorMap(map);
+        setColorMap(map, players);
 		initBoard(10,4);
  		Random r = new Random(734687);	// this random is used to assign hash values to cells, common to all games of this type.
 		allCells.setDigestChain(r);		// set the randomv for all cells on the board

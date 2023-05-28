@@ -89,7 +89,7 @@ class MorrisBoard extends squareBoard<MorrisCell> implements BoardProtocol,Morri
 	}
     public MorrisBoard(String init,long rv,int np,RepeatedPositions rep,int map[]) // default constructor
     {   repeatedPositions = rep;
-    	setColorMap(map);
+    	setColorMap(map, np);
         doInit(init,rv,np); // do the initialization 
      }
 

@@ -107,7 +107,7 @@ class CheBoard extends infiniteRectangularBoard<CheCell> implements BoardProtoco
         drawing_style = DrawingStyle.STYLE_NOTHING; // don't draw the cells.  STYLE_CELL to draw them
         Grid_Style = CheGRIDSTYLE;
         revision = REVISION;
-        setColorMap(map);
+        setColorMap(map, 2);
         doInit(init,0L); // do the initialization 
     }
     public CheCell GetOccupiedCell(int i) { return(occupiedCells.elementAt(i)); }
@@ -942,7 +942,7 @@ static final boolean connectsInDirection(CheChip chip,int dir)
 	switch(dir)
 	{	
 		// Orthogonal directions always connect. This differs from 
-		// TruChip which didn't allow connections in these directions 
+		// DashChip which didn't allow connections in these directions 
 	default: return(true);		
 	case CELL_DOWN_LEFT: 
 		boolean as1 = colorInfo[1]==colorInfo[4];

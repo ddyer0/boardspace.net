@@ -85,7 +85,7 @@ class StacBoard extends squareBoard<StacCell> implements BoardProtocol,StacConst
 	}
     public StacBoard(String init,long rv,int np,RepeatedPositions re,int map[],int rev) // default constructor
     {   reps = re;
-    	setColorMap(map);
+    	setColorMap(map, np);
         doInit(init,rv,np,rev); // do the initialization 
      }
 

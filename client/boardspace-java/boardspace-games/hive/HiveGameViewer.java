@@ -1016,6 +1016,9 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
     /** replay a move specified in SGF format.  
      * this is mostly standard stuff, but the key is to recognize
      * the elements that we generated in sgf_save
+     * summary:5/24/2023
+		219567 files visited 0 problems
+     * 
      */
     public void ReplayMove(sgf_node no)
     {
@@ -1028,6 +1031,16 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
             String name = prop.getName();
             String value = (String) prop.getValue();
 
+            if(name.equalsIgnoreCase(colormap_property) 
+            		&& ("1,2".equals(value)
+            				||"1,3".equals(value)
+            				||"0,3".equals(value)
+            				))
+            {	// a bunch of games in 2020 and 2021 somehow got the color map in an impossible state
+            	G.print("Damaged CM value repaired");
+            	value = "0,1";
+            }
+            	
             //System.out.println("prop " + name + " " + value);
             if (setup_property.equals(name))
             {

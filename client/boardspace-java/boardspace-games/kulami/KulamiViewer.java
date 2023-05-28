@@ -999,6 +999,10 @@ public class KulamiViewer extends CCanvas<KulamiCell,KulamiBoard> implements Kul
     /** replay a move specified in SGF format.  
      * this is mostly standard stuff, but the contract is to recognize
      * the elements that we generated in sgf_save
+     * summary: 5/26/2023
+     *  1521 files visited 0 problems
+     *  (note, kulami is very slow on bulk replay because each launch has to solve a puzzle
+     *  to create the board)
      */
     public void ReplayMove(sgf_node no)
     {

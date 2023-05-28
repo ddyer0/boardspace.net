@@ -90,7 +90,7 @@ class ColoritoBoard extends rectBoard<ColoritoCell> implements BoardProtocol,Col
 	}
     public ColoritoBoard(String init,long rv,int np,RepeatedPositions pos,int map[]) // default constructor
     {   repeatedPositions = pos;
-    	setColorMap(map);
+    	setColorMap(map, np);
         doInit(init,rv,np); // do the initialization 
         autoReverseY();		// reverse_y based on the color map
     }

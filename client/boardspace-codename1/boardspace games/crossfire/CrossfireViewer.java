@@ -657,7 +657,11 @@ public class CrossfireViewer extends CCanvas<CrossfireCell,CrossfireBoard> imple
     {
         return (new CrossfireMovespec(st, player));
     }
-
+    public commonMove EditHistory(commonMove m)
+    {
+    	if(m.op==MOVE_REJECT) { return null; }
+    	return EditHistory(m,m.op==MOVE_PICK);
+    }
     
 /**
  * the preferred mouse gesture style is to let the user "pick up" objects
@@ -897,6 +901,8 @@ public class CrossfireViewer extends CCanvas<CrossfireCell,CrossfireBoard> imple
     /** replay a move specified in SGF format.  
      * this is mostly standard stuff, but the contract is to recognize
      * the elements that we generated in sgf_save
+	summary: 5/23/2023
+		746 files visited 0 problems
      */
     public void ReplayMove(sgf_node no)
     {

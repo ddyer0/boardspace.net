@@ -1432,6 +1432,14 @@ private void playSounds(commonMove m)
     /** replay a move specified in SGF format.  
      * this is mostly standard stuff, but the key is to recognize
      * the elements that we generated in sgf_save
+     * universe summary:
+		37 files visited 0 problems
+	   diagonal block duo summary:
+		1441 files visited 0 problems
+	   pan kai summary: 5/27/2023
+		1195 files visited 0 problems
+	   philip summary: 5/27/2023
+		1781 files visited 0 problems
      */
     public void ReplayMove(sgf_node no)
     {

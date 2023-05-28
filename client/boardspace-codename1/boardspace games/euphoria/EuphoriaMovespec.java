@@ -617,7 +617,7 @@ public class EuphoriaMovespec extends commonMPMove implements EuphoriaConstants
         public String mainMoveString()
         {
         String ind = indexString();
-        String opname = ind+" "+D.findUnique(op)+" ";
+        String opname = ind+D.findUnique(op)+" ";
         switch (op)
         {
         case CONFIRM_DISCARD:

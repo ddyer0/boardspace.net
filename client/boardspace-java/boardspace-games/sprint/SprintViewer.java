@@ -30,11 +30,11 @@ import online.search.SimpleRobotProtocol;
 
 
 /**
- *  Initial work Sept 2020 
+ *  Initial work May 2023
 */
 public class SprintViewer extends CCanvas<SprintCell,SprintBoard> implements SprintConstants, GameLayoutClient
 {	static final long serialVersionUID = 1000;
-	static final String Crosswords_SGF = "sprint"; // sgf game name
+	static final String Sprint_SGF = "sprint"; // sgf game name
 
 	// file names for jpeg images and masks
 	static final String ImageDir = "/sprint/images/";
@@ -62,10 +62,10 @@ public class SprintViewer extends CCanvas<SprintCell,SprintBoard> implements Spr
     //
     // zones ought to be mostly irrelevant if there is only one board layout.
     //
-    private Rectangle chipRects[] = addZoneRect("chips",6);
-    private Rectangle scoreRects[] = addZoneRect("playerScore",6);
-    private Rectangle eyeRects[] = addZoneRect("PlayerEye",6);
-    private Rectangle noticeRects[] = addRect("notice",6);
+    private Rectangle chipRects[] = addZoneRect("chips",MAX_PLAYERS);
+    private Rectangle scoreRects[] = addZoneRect("playerScore",MAX_PLAYERS);
+    private Rectangle eyeRects[] = addZoneRect("PlayerEye",MAX_PLAYERS);
+    private Rectangle noticeRects[] = addRect("notice",MAX_PLAYERS);
     private Rectangle drawPileRect = addRect("drawPileRect");
     private Rectangle pullTimer = addRect("pull");
     private Rectangle bigRack = addZoneRect("bigrack");
@@ -1297,7 +1297,7 @@ public void setLetterColor(Graphics gc,SingleBoard gb,SprintCell cell)
      * that need to be fixed eventually.
      */
   public void verifyGameRecord()
-   {	//super.verifyGameRecord();
+   {	super.verifyGameRecord();
    }
 // for reference, here's the standard definition
  //   public void verifyGameRecord()
@@ -1544,7 +1544,7 @@ public void setLetterColor(Graphics gc,SingleBoard gb,SprintCell cell)
     	}	
      
     // this is the subgame "setup" within the master type.
-    public String sgfGameType() { return(Crosswords_SGF); }	// this is the official SGF number assigned to the game
+    public String sgfGameType() { return(Sprint_SGF); }	// this is the official SGF number assigned to the game
 
    
     /**
@@ -1697,6 +1697,8 @@ public void setLetterColor(Graphics gc,SingleBoard gb,SprintCell cell)
     /** replay a move specified in SGF format.  
      * this is mostly standard stuff, but the contract is to recognize
      * the elements that we generated in sgf_save
+     * summary: 5/27/2023
+     * 12 files visited 0 problems
      */
     public void ReplayMove(sgf_node no)
     {

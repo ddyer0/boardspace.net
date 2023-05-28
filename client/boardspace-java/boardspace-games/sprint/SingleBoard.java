@@ -138,7 +138,7 @@ class SingleBoard extends infiniteSquareBoard<SprintCell> implements BoardProtoc
         drawing_style = DrawingStyle.STYLE_NOTHING; // don't draw the cells.  STYLE_CELL to draw them
         Grid_Style = CrosswordsGRIDSTYLE;
         isTorus=false;
-        setColorMap(map);
+        setColorMap(map, 1);
         boardIndex = bi;
        	doInit(init,key,1,rev); // do the initialization 
 

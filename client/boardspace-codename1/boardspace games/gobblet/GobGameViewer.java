@@ -5,7 +5,6 @@ import bridge.*;
 import com.codename1.ui.geom.Rectangle;
 
 
-import online.common.*;
 import online.game.*;
 import online.game.sgf.*;
 import online.search.SimpleRobotProtocol;
@@ -45,7 +44,7 @@ public class GobGameViewer extends CCanvas<GobCell,GobGameBoard> implements GobC
     // file names for jpeg images and masks
     static final String GobImageDir = "/gobblet/images/";
 	// sounds
-	static final String NESTED_PICK_SOUND = SOUNDPATH + "xspick-3" + Config.SoundFormat;
+	static final String NESTED_PICK_SOUND = SOUNDPATH+ "pick-3" + Config.SoundFormat;
 	
     static final int BOARD_INDEX = 0;
     static final String[] ImageFileNames = 
@@ -122,7 +121,7 @@ public class GobGameViewer extends CCanvas<GobCell,GobGameBoard> implements GobC
     public void init(ExtendedHashtable info,LFrameProtocol frame)
     {	enableAutoDone = true;
         super.init(info,frame);
-        b = new GobGameBoard(info.getString(OnlineConstants.GAMETYPE, "Gobblet"),getStartingColorMap());        
+        b = new GobGameBoard(info.getString(GAMETYPE, "Gobblet"),getStartingColorMap());   
         useDirectDrawing(true);
         doInit(false);
         
@@ -639,6 +638,8 @@ private void playSounds(commonMove mm)
     /** replay a move specified in SGF format.  
      * this is mostly standard stuff, but the key is to recognize
      * the elements that we generated in sgf_save
+	 * summary: 5/26/2023
+	 * 	27532 files visited 0 problems
      */
     public void ReplayMove(sgf_node no)
     {

@@ -134,7 +134,7 @@ class StymieBoard extends rectBoard<StymieCell> implements BoardProtocol,StymieC
     {
         drawing_style = DrawingStyle.STYLE_NOTHING; // don't draw the cells.  STYLE_CELL to draw them
         Grid_Style = GRIDSTYLE;
-        setColorMap(map);
+        setColorMap(map, players);
         
 
         doInit(init,key,players,rev); // do the initialization 

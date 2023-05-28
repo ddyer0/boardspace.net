@@ -148,7 +148,7 @@ class KubaBoard extends rectBoard<KubaCell> implements BoardProtocol,KubaConstan
     public KubaBoard(String init,int map[]) // default constructor
     {   drawing_style = DrawingStyle.STYLE_NOTHING; // STYLE_CELL or STYLE_LINES
     	Grid_Style = KUBAGRIDSTYLE; //coordinates left and bottom
-    	setColorMap(map);
+    	setColorMap(map, 2);
         Random r = new Random(6454267);
         for(int i=LeftIndex;i<=BottomIndex;i++)
     		{	{

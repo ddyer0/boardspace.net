@@ -1218,6 +1218,35 @@ synchronized(allGames) {
 	}
 	
 	{
+	String trikeRules = "/trike/english/rules.html";
+	String trikeViewer = "trike.TrikeViewer";  
+	String trikeAb = "about_trike.html";
+	String trikeVideo = null;
+	put(new GameInfo(11790,ES.game,114,"TK",OtherGames,"Trike","trike-7",
+			OneBotPlus,
+			new double[]{1.0,0.01},
+			trikeViewer,trikeRules,trikeAb,
+			trikeVideo,false, WhiteOverBlack));
+	put(new GameInfo(11795,ES.game,114,"TK",OtherGames,"Trike","trike-9",
+			OneBotPlus,
+			new double[]{1.0,0.01},
+			trikeViewer,trikeRules,trikeAb,
+			trikeVideo,false, WhiteOverBlack));
+	
+	put(new GameInfo(11796,ES.game,114,"TK",OtherGames,"Trike","trike-11",
+			OneBotPlus,
+			new double[]{1.0,0.01},
+			trikeViewer,trikeRules,trikeAb,
+			trikeVideo,false, WhiteOverBlack));
+	
+	put(new GameInfo(11797,ES.game,114,"TK",OtherGames,"Trike","trike-13",
+			OneBotPlus,
+			new double[]{1.0,0.01},
+			trikeViewer,trikeRules,trikeAb,
+			trikeVideo,false, WhiteOverBlack));
+
+	}
+	{
 	String tumbleweedRules = "/tumbleweed/english/Rules.html";
 	String tumbleweedViewer = "tweed.TweedViewer";  
 	String tumbleVideo = "/tumbleweed/english/tumbleweed-video.html";

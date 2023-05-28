@@ -1,6 +1,5 @@
 package trike;
 
-import javax.swing.JCheckBoxMenuItem;
 
 import static trike.Trikemovespec.*;
 
@@ -124,10 +123,6 @@ public class TrikeViewer extends CCanvas<TrikeCell,TrikeBoard> implements TrikeC
 			HighlightColor, rackBackGroundColor,rackIdleColor);
 	private TextButton doneButton = addButton(DoneAction,GameId.HitDoneButton,ExplainDone,
 			HighlightColor, rackBackGroundColor,rackIdleColor);
-	// private menu items
-    private JCheckBoxMenuItem rotationOption = null;		// rotate the board view
-    private boolean doRotation=true;					// current state
-    private boolean lastRotation=!doRotation;			// user to trigger background redraw
     
 /**
  * this is called during initialization to load all the images. Conventionally,
@@ -175,11 +170,9 @@ public class TrikeViewer extends CCanvas<TrikeCell,TrikeBoard> implements TrikeC
         	// will be console chatter about strings not in the list yet.
         	TrikeConstants.putStrings();
         }
-         
-        rotationOption = myFrame.addOption("rotate board",true,deferredEvents);
         
-        String type = info.getString(GAMETYPE, TrikeVariation.trike_7.name);
-        // recommended procedure is to supply players and randomkey, even for games which
+        String type = info.getString(GAMETYPE, TrikeVariation.Trike_7.name);
+        // recommended procedure is to supply players and random key, even for games which
         // are current strictly 2 player and no-randomization.  It will make it easier when
         // later, some variant is created, or the game code base is re purposed as the basis
         // for another game.
@@ -279,13 +272,7 @@ public class TrikeViewer extends CCanvas<TrikeCell,TrikeBoard> implements TrikeC
  //   	setLocalBoundsWT(x,y,width,height,useWide,useTall);
  //   }
 
-    boolean traditionalLayout = false;
     public void setLocalBounds(int x, int y, int width, int height)
-    {
-    	if(traditionalLayout) { super.setLocalBounds(x, y, width, height); }
-    	else { modernLayout(x,y,width,height); }
-    }
-    private void modernLayout(int x, int y, int width, int height)
     {	G.SetRect(fullRect, x, y, width, height);
     	GameLayoutManager layout = selectedLayout;
     	int nPlayers = nPlayers();
@@ -331,9 +318,8 @@ public class TrikeViewer extends CCanvas<TrikeCell,TrikeBoard> implements TrikeC
     	// "my side" orientation, such as chess, use seatingFaceToFaceRotated() as
     	// the test.  For boards that are noticably rectangular, such as Push Fight,
     	// use mainW<mainH
-    	boolean rotate = mainW<mainH;	
-        int nrows = rotate ? 24 : 15;  // b.boardRows
-        int ncols = rotate ? 15 : 24;	 // b.boardColumns
+        int nrows = 15;  // b.boardRows
+        int ncols = 24;	 // b.boardColumns
   	
     	// calculate a suitable cell size for the board
     	double cs = Math.min((double)mainW/ncols,(double)mainH/nrows);
@@ -357,14 +343,7 @@ public class TrikeViewer extends CCanvas<TrikeCell,TrikeBoard> implements TrikeC
         int stateH = fh*3;
         G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,numberMenu,eyeRect,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
-    	if(rotate)
-    	{	// this conspires to rotate the drawing of the board
-    		// and contents if the players are sitting opposite
-    		// on the short side of the screen.
-    		G.setRotation(boardRect,-Math.PI/2);
-    		contextRotation = -Math.PI/2;
-    	}
-    	
+     	G.SetRect(swapButton,boardX+CELLSIZE*2,boardY+CELLSIZE*2,CELLSIZE*4,CELLSIZE*2);
     	// goal and bottom ornaments, depending on the rendering can share
     	// the rectangle or can be offset downward.  Remember that the grid
     	// can intrude too.
@@ -376,7 +355,7 @@ public class TrikeViewer extends CCanvas<TrikeCell,TrikeBoard> implements TrikeC
     public Rectangle createPlayerGroup(int player,int x,int y,double rotation,int unitsize)
     {	commonPlayer pl = getPlayerOrTemp(player);
     	Rectangle chip = chipRects[player];
-    	G.SetRect(chip,	x,	y,	4*unitsize,	3*unitsize);
+    	G.SetRect(chip,	x,	y,	2*unitsize,	2*unitsize);
     	Rectangle box =  pl.createRectangularPictureGroup(x+2*unitsize,y,2*unitsize/3);
     	Rectangle done = doneRects[player];
     	int doneW = plannedSeating()? unitsize*3 : 0;
@@ -386,139 +365,27 @@ public class TrikeViewer extends CCanvas<TrikeCell,TrikeBoard> implements TrikeC
     	return(box);
     }
     
-    private Rectangle createPlayerGroup(commonPlayer pl,int x,int y,Rectangle chipRect,int unitsize)
-    {
-		// a pool of chips for the first player at the top
-        G.SetRect(chipRect,	x,	y,	2*unitsize,	3*unitsize);
-        Rectangle box = pl.createRectangularPictureGroup(x+2*unitsize,y,2*unitsize/3);
-        G.union(box, chipRect);
-        return(box);
-    }
-    
-    /**
-     * calculate a metric for one of three layouts, "normal" "wide" or "tall",
-     * which should normally correspond to the area devoted to the actual board.
-     * these don't have to be different, but devices with very rectangular
-     * aspect ratios make "wide" and "tall" important.  
-     * @param width
-     * @param height
-     * @param wideMode
-     * @param tallMode
-     * @return a metric corresponding to board size
-     */
-    public int setLocalBoundsSize(int width,int height,boolean wideMode,boolean tallMode)
-    {	
-        int ncols = tallMode ? 29 : wideMode ? 42 : 37; // more cells wide to allow for the aux displays
-        int nrows = tallMode ? 27 : 20;  
-        int cellw = width / ncols;
-        int chatHeight = selectChatHeight(height);
-        int cellh = (height-(wideMode?0:chatHeight)) / nrows;
-        
-        CELLSIZE = ((chatHeight==0)&&wideMode) 
-        				? 0	// no chat, never select wide mode 
-        				: Math.max(2,Math.min(cellw, cellh)); //cell size appropriate for the aspect ratio of the canvas
-        return(CELLSIZE);
-    }
-    public void setLocalBoundsWT(int x, int y, int width, int height,boolean wideMode,boolean tallMode)
-    {   
-        int nrows = 20;  
-        int chatHeight = selectChatHeight(height);
-        boolean noChat = (chatHeight==0);
-        int logHeight = wideMode||noChat||tallMode ? CELLSIZE*5 : chatHeight;
-        int C2 = CELLSIZE/2;
-        G.SetRect(fullRect,0, 0,width, height);
-
-        G.SetRect(boardRect, 0, wideMode ? 0 : chatHeight+C2,
-        		CELLSIZE * (int)(nrows*1.5), CELLSIZE * (nrows ));
-        int stateY = G.Top( boardRect);
-        int stateX = C2;
-        int stateH = CELLSIZE;
-        int stateW = G.Width(boardRect);
-        G.placeRow(stateX+stateH,stateY,stateW-stateH,stateH,stateRect,noChatRect);
-        G.SetRect(iconRect, stateX, stateY, stateH, stateH);
-        
- 		G.SetRect(swapButton,G.Left( boardRect) + CELLSIZE, G.Top(boardRect)+(doRotation?2:12)*CELLSIZE,
- 				 CELLSIZE * 5, 3*CELLSIZE/2 );
-
-		// a pool of chips for the first player at the top
-        int px = tallMode ? G.Left(boardRect)+CELLSIZE : G.Right(boardRect) - (wideMode? 0 : 11*CELLSIZE);
-        int py = tallMode ? G.Bottom(boardRect)+CELLSIZE : wideMode? CELLSIZE: chatHeight+CELLSIZE;
-        int lowest = py;
-        for(int pn = 0;pn<bb.players_in_game;pn++)
-        {	commonPlayer pl = getPlayerOrTemp(pn);
-        	createPlayerGroup(pl,px,py,chipRects[pn],CELLSIZE);
-        	int pw = G.Width(pl.playerBox)+C2;
-        	int ph = G.Height(pl.playerBox);
-        	lowest = Math.max(lowest, py+ph);
-        	px += tallMode ? 0 : wideMode ? pw : pw;
-        	py += tallMode ? ph : wideMode ? 0 : 0;
-         }
-
-		//this sets up the "vcr cluster" of forward and back controls.
-        SetupVcrRects(C2,
-            G.Bottom(boardRect) - (5 * CELLSIZE),
-            CELLSIZE * 6,
-            CELLSIZE*3);
-        
-        G.SetRect(goalRect, CELLSIZE * 5, G.Bottom(boardRect)-CELLSIZE,G.Width(boardRect)-16*CELLSIZE , CELLSIZE);
-        
-        setProgressRect(progressRect,goalRect);
-  
-            // "edit" rectangle, available in reviewers to switch to puzzle mode
-            G.SetRect(editRect, 
-            		G.Right(boardRect)-CELLSIZE*5,G.Bottom(boardRect)-5*CELLSIZE/2,
-            		CELLSIZE*3,3*CELLSIZE/2);
-          
-            int chatX = wideMode ? G.Right(boardRect):G.Left(fullRect);
-            int chatY = wideMode ? lowest : G.Top(fullRect);
-            boolean logBottom = tallMode & (height-lowest>CELLSIZE*6);
-            int logW = CELLSIZE * (logBottom ? 8 : 6);
-            int logX = wideMode 
-            			? G.Right(boardRect)-logW-CELLSIZE*2 
-            			: noChat&&!tallMode ? G.Right(boardRect) : width-logW-C2;
-
-            G.SetRect(chatRect, 
-            		chatX,		// the chat area
-            		chatY,
-            		width-(tallMode ? C2 : (wideMode?chatX:logW)+CELLSIZE),
-            		wideMode?height-chatY-C2:chatHeight);
-            int logY = logBottom 
-            			? lowest+C2 
-            			: noChat
-            			  ? (tallMode ? 0 : lowest+CELLSIZE)
-            			  : tallMode ? G.Bottom(chatRect)+CELLSIZE : y ;
-            G.SetRect(logRect,logX,    		logY,logW,
-            		logBottom ? height-lowest-CELLSIZE : logHeight);
-
-          
-            // "done" rectangle, should always be visible, but only active when a move is complete.
-            G.AlignXY(doneButton, G.Left(editRect)-4*CELLSIZE,
-            		G.Top(editRect),
-            		editRect);
-
-        positionTheChat(chatRect,chatBackgroundColor,rackBackGroundColor);
-        generalRefresh();
-    }
-
-
 
 	// draw a box of spare chips. For pushfight it's purely for effect, but if you
     // wish you can pick up and drop chips.
     private void DrawChipPool(Graphics gc, Rectangle r, commonPlayer pl, HitPoint highlight,TrikeBoard gb)
     {	int player = pl.boardIndex;
         boolean canhit = gb.legalToHitChips(player) && G.pointInRect(highlight, r);
+        int w = G.Width(r);
+        int h = G.Height(r);
+        int cs = Math.min(Math.min(w,h)*2/3,gb.cellSize());
         if (canhit)
         {
             highlight.hitCode = gb.getPlayerColor(player);
             highlight.arrow = (gb.pickedObject!=null)?StockArt.DownArrow:StockArt.UpArrow;
-            highlight.awidth = CELLSIZE;
+            highlight.awidth = cs;
         }
 
         if (gc != null)
         { // draw a random pile of chips.  It's just for effect
 
-            int spacex = G.Width(r) - CELLSIZE;
-            int spacey = G.Height(r) - CELLSIZE;
+            int spacex = w - cs;
+            int spacey = h - cs;
             Random rand = new Random(4321 + player); // consistent randoms, different for black and white 
 
             if (canhit)
@@ -538,7 +405,7 @@ public class TrikeViewer extends CCanvas<TrikeCell,TrikeBoard> implements TrikeC
                 int ry = Random.nextInt(rand, spacey);
                 // using the cell to draw the chip has the side effect of setting
                 // the cell's location for animation.
-                cell.drawChip(gc,this,chip,gb.cellSize(),G.Left(r)+CELLSIZE/2+rx,G.Top(r)+CELLSIZE/2+ry,null);
+                cell.drawChip(gc,this,chip,cs,G.Left(r)+cs/2+rx,G.Top(r)+cs/2+ry,null);
              }}
         }
      }
@@ -611,7 +478,7 @@ public class TrikeViewer extends CCanvas<TrikeCell,TrikeBoard> implements TrikeC
 	      // but for more complex graphics with overlapping shadows or stacked
 	      // objects, this double loop is useful if you need to control the
 	      // order the objects are drawn in.
-          TrikeChip tile = lastRotation?TrikeChip.hexTile:TrikeChip.hexTileNR;
+          TrikeChip tile = TrikeChip.hexTileNR;
           int left = G.Left(brect);
           int top = G.Bottom(brect);
           int xsize = gb.cellSize();//((lastRotation?0.80:0.8)*);
@@ -666,8 +533,18 @@ public class TrikeViewer extends CCanvas<TrikeCell,TrikeBoard> implements TrikeC
     	Hashtable<TrikeCell,Trikemovespec> targets = gb.getTargets();
      	numberMenu.clearSequenceNumbers();
 
+     	TrikeState state = gb.getState();
+     
+     	if(state==TrikeState.FirstPlay || state==TrikeState.Puzzle)
+     	{
+     		if(gb.pawnHome.drawStack(gc,this,highlight,CELLSIZE,G.centerX(swapButton),G.centerY(swapButton),0,0.1,0.1,null))
+     		{
+     			highlight.spriteColor = Color.red;
+            	highlight.awidth = CELLSIZE;
+     		}
+     	}
     	for(TrikeCell cell = gb.allCells; cell!=null; cell=cell.next)
-          {
+          	{
          	int ypos = G.Bottom(brect) - gb.cellToY(cell);
             int xpos = G.Left(brect) + gb.cellToX(cell);
             numberMenu.saveSequenceNumber(cell,xpos,ypos);
@@ -677,6 +554,10 @@ public class TrikeViewer extends CCanvas<TrikeCell,TrikeBoard> implements TrikeC
             		highlight.spriteColor = Color.red;
                 	highlight.awidth = CELLSIZE;
             		}
+            if(eyeRect.isOnNow() && targets.get(cell)!=null)
+            {
+            	StockArt.SmallO.drawChip(gc,this,CELLSIZE,xpos,ypos,null);
+            }
         }
     	numberMenu.drawSequenceNumbers(gc,CELLSIZE*2/3,labelFont,labelColor);
     }
@@ -763,7 +644,7 @@ public class TrikeViewer extends CCanvas<TrikeCell,TrikeBoard> implements TrikeC
        // draw the board control buttons 
 		if((state==TrikeState.ConfirmSwap) 
 			|| (state==TrikeState.PlayOrSwap) 
-			|| (state==TrikeState.Puzzle))
+			)
 			{// make the "swap" button appear if we're in the correct state
 				swapButton.show(gc, buttonSelect);
 			}
@@ -827,31 +708,7 @@ public class TrikeViewer extends CCanvas<TrikeCell,TrikeBoard> implements TrikeC
 		if(replay!=replayMode.Replay) { playSounds(mm); }
        return (true);
     }
-     /**
-      * This is a simple animation which moves everything at the same time, at a speed proportional to the distance
-      * for pushfight, this is normally just one chip moving.  Note that the interface to drawStack arranges to make the
-      * destination chip disappear until the animation is finished.
-      * @param replay
-      */
-//     void startBoardAnimations(replayMode replay)
-//     {
-//        if(replay!=replayMode.Replay)
-//     	{
-//     		double full = G.distance(0,0,G.Width(boardRect),G.Height(boardRect));
-//        	while(bb.animationStack.size()>1)
-//     		{
-//     		PushfightCell dest = bb.animationStack.pop();
-//     		PushfightCell src = bb.animationStack.pop();
-//    		double dist = G.distance(src.current_center_x, src.current_center_y, dest.current_center_x,  dest.current_center_y);
-//    		double endTime = masterAnimationSpeed*0.5*Math.sqrt(dist/full);
-    		//
-    		// in cases where multiple chips are flying, topChip() may not be the right thing.
-    		//
-//     		startAnimation(src,dest,dest.topChip(),bb.cellSize(),0,endTime);
-//     		}
-//     	}
-//        	bb.animationStack.clear();
-//     } 
+
 
  void playSounds(commonMove mm)
  {
@@ -971,6 +828,7 @@ public class TrikeViewer extends CCanvas<TrikeCell,TrikeBoard> implements TrikeC
 	    
  	    case Black:
  	    case White:
+ 	    case Pawn:
 	    	PerformAndTransmit(G.concat("Pick " , hitObject.shortName()));
 	    	break;
 	    case BoardLocation:
@@ -1052,13 +910,14 @@ public class TrikeViewer extends CCanvas<TrikeCell,TrikeBoard> implements TrikeC
 			switch(state)
 			{
 			default: throw G.Error("Not expecting drop on filled board in state "+state);
+			case FirstPlay:
 			case Confirm:
 			case Play:
 			case PlayOrSwap:
 				// fall through and pick up the previously dropped piece
 				//$FALL-THROUGH$
 			case Puzzle:
-				PerformAndTransmit((bb.pickedObject==null ? "Pickb ":"Dropb ")+hitObject.col+" "+hitObject.row);
+				PerformAndTransmit("Dropb "+hitObject.col+" "+hitObject.row);
 				break;
 			}
 			break;
@@ -1075,28 +934,10 @@ public class TrikeViewer extends CCanvas<TrikeCell,TrikeBoard> implements TrikeC
         }
     }
 
-
-
-    private boolean setDisplayParameters(TrikeBoard gb,Rectangle r)
+    private void setDisplayParameters(TrikeBoard gb,Rectangle r)
     {
-      	boolean complete = false;
-      	if(doRotation!=lastRotation)		//if changing the whole orientation of the screen, unusual steps have to be taken
-      	{ complete=true;					// for sure, paint everything
-      	  lastRotation=doRotation;			// and only do this once
-      	  if(doRotation)
-      	  {
-      	  // 0.95 and 1.0 are more or less magic numbers to match the board to the artwork
-          gb.SetDisplayParameters(0.95, 1.0, 0,0,60); // shrink a little and rotate 60 degrees
-     	  }
-      	  else
-      	  {
-          // the numbers for the square-on display are slightly ad-hoc, but they look right
-          gb.SetDisplayParameters( 0.825, 0.94, 0,0,28.2); // shrink a little and rotate 30 degrees
-      	  }
-      	}
+    	gb.SetDisplayParameters(0.95, 1.0, 0.3,-0.5,30); // shrink a little and rotate 60 degrees
       	gb.SetDisplayRectangle(r);
-      	if(complete) { generalRefresh(); }
-      	return(complete);
     }
     /** this is the place where the canvas is actually repainted.  We get here
      * from the event loop, not from the normal canvas repaint request.
@@ -1185,12 +1026,6 @@ public class TrikeViewer extends CCanvas<TrikeCell,TrikeBoard> implements TrikeC
     public boolean handleDeferredEvent(Object target, String command)
     {
         boolean handled = super.handleDeferredEvent(target, command);
-        if(target==rotationOption)
-        {	handled=true;
-        	doRotation = rotationOption.getState();
-        	resetBounds();
-        	repaint(20);
-        }
 
         return (handled);
     }

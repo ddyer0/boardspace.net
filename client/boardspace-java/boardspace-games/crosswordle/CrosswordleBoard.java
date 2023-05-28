@@ -99,7 +99,7 @@ package crosswordle;
 	 {
 		 drawing_style = DrawingStyle.STYLE_NOTHING; // don't draw the cells.  STYLE_CELL to draw them
 		 Grid_Style = CrosswordsGRIDSTYLE;
-		 setColorMap(map);
+		 setColorMap(map, players);
 		 hiddenVisible = new boolean[MAX_PLAYERS];
 		 openRack = new boolean[MAX_PLAYERS];		// part of the user interface
 		 if(rev>=101)

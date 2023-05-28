@@ -80,7 +80,7 @@ public class YinshBoard extends hexBoard<YinshCell> implements BoardProtocol,Yin
     int[] flips = new int[2]; // chips our rings can flip
 
     public YinshBoard(String init,int map[]) // default constructor
-    {	setColorMap(map);
+    {	setColorMap(map, 2);
         doInit(init);
     }
     public YinshBoard cloneBoard() 

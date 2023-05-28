@@ -11,7 +11,7 @@ import lib.Random;
 
 
 /**
- * CannonBoard knows all about the game of Truchet, which is played
+ * CannonBoard knows all about the game of Cannon, which is played
  * on a 10x10 board. It gets a lot of logistic support from 
  * common.rectBoard, which knows about the coordinate system.  
  * 
@@ -105,7 +105,7 @@ class CannonBoard extends rectBoard<CannonCell> implements BoardProtocol,CannonC
     {   drawing_style = DrawingStyle.STYLE_NOTHING; // STYLE_CELL or STYLE_LINES
     	Grid_Style = CANNONGRIDSTYLE; //coordinates left and bottom
     	Random r = new Random(105859505);
-    	setColorMap(cmap);
+    	setColorMap(cmap, 2);
      	for(int i=0;i<4; i++)
  		{
  		int idx = i%2;

@@ -78,7 +78,7 @@ public interface CrossfireConstants
     static final int MOVE_FROM_TO = 208;
     static final int MOVE_FROM_RESERVE = 209;
     static final int MOVE_ROBOT_RESIGN = 210;
-	
+	static final int MOVE_REJECT = 211;
 
  
 

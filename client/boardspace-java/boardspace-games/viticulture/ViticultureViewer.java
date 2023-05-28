@@ -6262,6 +6262,13 @@ private void drawPlayerBoard(Graphics gc,
      /** replay a move specified in SGF format.  
      * this is mostly standard stuff, but the contract is to recognize
      * the elements that we generated in sgf_save
+     * summary: 5/23/2023
+		225: play Problem in zip file:G:\share\projects\boardspace-html\htdocs\viticulture\viticulturegames\viticulturegames\archive-2020\games-Apr-25-2020.zip U!VI-mgahagen-epatterson-lmarkus001-Lgahagen-2020-04-12-2352.sgf lib.ErrorX: chip exists
+		267: play Problem in zip file:G:\share\projects\boardspace-html\htdocs\viticulture\viticulturegames\viticulturegames\archive-2020\games-Apr-25-2020.zip VI-ddyer-Wilson17-sven2-lfedel-mfeber-idyer-2020-04-19-1907.sgf lib.ErrorX: must be a blue card
+		284: play Problem in zip file:G:\share\projects\boardspace-html\htdocs\viticulture\viticulturegames\viticulturegames\archive-2020\games-Apr-25-2020.zip VI-mfeber-ddyer-idyer-sven2-2020-04-12-1916.sgf lib.ErrorX: must be a blue card
+		286: play Problem in zip file:G:\share\projects\boardspace-html\htdocs\viticulture\viticulturegames\viticulturegames\archive-2020\games-Apr-25-2020.zip VI-mfeber-Runcible-lfedel-idyer-ddyer-sven2-2020-04-11-0218.sgf lib.ErrorX: must be a blue card
+		298: play Problem in zip file:G:\share\projects\boardspace-html\htdocs\viticulture\viticulturegames\viticulturegames\archive-2020\games-Apr-25-2020.zip VI-wilson17-ddyer-sven2-2020-04-15-1937.sgf lib.ErrorX: Not expecting state Play
+		1971 files visited 5 problems
      */
     public void ReplayMove(sgf_node no)
     {

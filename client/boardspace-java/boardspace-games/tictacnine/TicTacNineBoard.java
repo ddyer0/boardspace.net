@@ -12,7 +12,7 @@ import online.game.replayMode;
 
 
 /**
- * TicTacNineBoard knows all about the game of Truchet, which is played
+ * TicTacNineBoard knows all about the game of TicTacNine, which is played
  * on a 7x7 board. It gets a lot of logistic support from 
  * common.rectBoard, which knows about the coordinate system.  
  * 

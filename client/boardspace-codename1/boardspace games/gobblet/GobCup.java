@@ -93,5 +93,4 @@ public class GobCup extends chip<GobCup> implements GobConstants
 	        check_digests(CC);
 			}
 		}
-
 }

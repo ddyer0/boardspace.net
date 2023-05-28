@@ -543,6 +543,7 @@ public class OnedayBoard extends RBoard<OnedayCell> implements BoardProtocol,One
     {  	
     	randomKey = rv;
     	players_in_game = np;
+    	setColorMap(null,np);
     	win = new boolean[np];
     	resigned = new boolean[np];
     	Random r = new Random(rv);

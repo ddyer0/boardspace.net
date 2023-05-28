@@ -947,6 +947,13 @@ private void playSounds(commonMove m)
     /** replay a move specified in SGF format.  
      * this is mostly standard stuff, but the key is to recognize
      * the elements that we generated in sgf_save
+     * 
+     * ultima summary:	5/23/2023
+		163 files visited 0 problems
+	   chess summary:
+		315 files visited 0 problems
+	   chess960 summary:
+		9 files visited 0 problems
      */
     public void ReplayMove(sgf_node no)
     {

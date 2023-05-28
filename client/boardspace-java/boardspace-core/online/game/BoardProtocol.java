@@ -175,8 +175,9 @@ public interface BoardProtocol extends Digestable
 	/**
 	 * set the color map for the game, or null to initialize it to the appropriate default
 	 * @param map
+	 * @param players TODO
 	 */
-	public void setColorMap(int[]map);
+	public void setColorMap(int[]map, int players);
 	/**
 	 * this supplies the maximum game revision for distribution to the other clients.
 	 * @return

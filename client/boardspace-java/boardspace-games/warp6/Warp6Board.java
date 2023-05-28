@@ -320,7 +320,7 @@ class Warp6Board extends squareBoard<Warp6Cell> implements BoardProtocol,Warp6Co
     public Warp6Board(long random,String init,int map[]) // default constructor
     {  	drawing_style =  DrawingStyle.STYLE_NOTHING;//  or STYLE_CELL or STYLE_LINES
     	Grid_Style = KNOXKABOUTGRIDSTYLE; //coordinates left and bottom
-    	setColorMap(map);
+    	setColorMap(map, 2);
        	initBoard(1,WarpPoints.length);
        	randomKey = random;
     	doInit(init,random); // do the initialization 

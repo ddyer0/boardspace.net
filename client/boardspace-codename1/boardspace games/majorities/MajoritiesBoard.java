@@ -171,7 +171,7 @@ class MajoritiesBoard extends hexBoard<MajoritiesCell> implements BoardProtocol,
     {
         drawing_style = DrawingStyle.STYLE_NOTHING; // don't draw the cells.  STYLE_CELL to draw them
         Grid_Style = MAJORITIESGRIDSTYLE;
-        setColorMap(map);
+        setColorMap(map, players);
  		Random r = new Random(734687);	// this random is used to assign hash values to cells, common to all games of this type.
 	    blackChipPool = new MajoritiesCell(r,MajoritiesId.Black_Chip_Pool);
 	    blackChipPool.chip = MajoritiesChip.Black;

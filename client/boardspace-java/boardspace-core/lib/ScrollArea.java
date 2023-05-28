@@ -180,7 +180,7 @@ public class ScrollArea
 }
     
     public void drawScrollBar(Graphics gc)
-    {   if(scrollBarVisible())
+    {   if(scrollBarVisible() && gc!=null)
     	{
     	GC.setColor(gc,backgroundColor);
         GC.fillRect(gc,scrollbarRect);

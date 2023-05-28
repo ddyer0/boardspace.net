@@ -126,7 +126,7 @@ public class PonteBoard extends rectBoard<PonteCell> implements BoardProtocol,Po
 	{	return(new PonteCell(c,r));
 	}
     public PonteBoard(String init,long rv,int np,int map[]) // default constructor
-    {   setColorMap(map);
+    {   setColorMap(map, np);
     
 		Random r = new Random(0xf62736f5);
 		for(int i=0;i<PonteChip.N_STANDARD_PIECES; i++)

@@ -114,7 +114,7 @@ class TwixtBoard extends rectBoard<TwixtCell> implements BoardProtocol,TwixtCons
         Grid_Style = G.debug() ? DEBUGGRIDSTYLE : 
         		TWIXTGRIDSTYLE;
         Random rand = new Random(7028362);
-        setColorMap(map);
+        setColorMap(map, players);
         for(int i=blackChipPool.length-1; i>=0; i--)
         {	TwixtChip bc = TwixtChip.blackChips[i];
         	blackChipPool[i] = new TwixtCell(rand,bc.id,i);

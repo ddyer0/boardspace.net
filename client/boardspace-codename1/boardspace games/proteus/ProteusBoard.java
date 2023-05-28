@@ -84,7 +84,7 @@ class ProteusBoard extends rectBoard<ProteusCell> implements BoardProtocol,Prote
 	{	return(new ProteusCell(c,r));
 	}
     public ProteusBoard(String init,long rv,int np,int map[],int rev) // default constructor
-    {   setColorMap(map);
+    {   setColorMap(map, np);
         doInit(init,rv,np,rev); // do the initialization 
      }
 

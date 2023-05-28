@@ -124,7 +124,7 @@ class CheckerBoard extends rectBoard<CheckerCell> implements BoardProtocol
     public CheckerBoard(String init,long rv,int np,RepeatedPositions rep,int map[],int rev) // default constructor
     {   repeatedPositions = rep;
 
-    	setColorMap(map);
+    	setColorMap(map, np);
         doInit(init,rv,np,rev); // do the initialization 
         autoReverseY();		// reverse_y based on the color map
      }

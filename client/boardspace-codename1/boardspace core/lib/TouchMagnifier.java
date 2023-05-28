@@ -5,7 +5,6 @@ import com.codename1.ui.geom.Rectangle;
 
 import bridge.Color;
 
-// TODO: touch magnifier doesn't clear properly when moved up to the top of the screen
 // TODO: magnifier shows some "flashy" behavior in some rotated modes
 public class TouchMagnifier {
 

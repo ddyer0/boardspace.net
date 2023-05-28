@@ -813,7 +813,7 @@ public class GameLayoutManager  implements Opcodes
 		
 	 	*/
 		{
-		rotations = new double[] {0,Math.PI/2,Math.PI};
+		rotations = new double[] {0,-Math.PI/2,Math.PI};
 		positions = new int[][] { {xmid,ybot},		// bottom ..X..
 								  {xsideRight,ymid},
 								  {xmid,ytop}};		// top ..X..};	// right

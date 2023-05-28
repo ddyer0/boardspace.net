@@ -155,7 +155,7 @@ class UniverseBoard extends squareBoard<UniverseCell> implements BoardProtocol,U
 	public UniverseBoard(String init,long key,int players,int []map,int rev) // default constructor
     {   drawing_style = DrawingStyle.STYLE_NOTHING; // STYLE_CELL or STYLE_LINES
     	Grid_Style = UNIVERSEGRIDSTYLE; //coordinates left and bottom
-       	setColorMap(map);
+       	setColorMap(map, players);
        	doInit(init,key,players,rev); // do the initialization 
     }
     

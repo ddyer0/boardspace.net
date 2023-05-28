@@ -101,7 +101,7 @@ public class GipfBoard extends hexBoard<GipfCell> implements BoardProtocol,GipfC
         	nongipfCount[i]=0;
         	currentGipfCount[i]=0;
         }
-        setColorMap(map);
+        setColorMap(map, 2);
         doInit(init,randomKey,rev); // do the initialization 
         allCells.setDigestChain(r);
     }
@@ -1221,7 +1221,7 @@ public class GipfBoard extends hexBoard<GipfCell> implements BoardProtocol,GipfC
         	}}
         	break;
         case MOVE_RESIGN:
-        	unPickObject();
+        	if(pickedObject!=null) { unPickObject(); }
         	setState((unresign==null) ? GipfState.RESIGN_STATE : unresign);
             break;
         case MOVE_STANDARD:

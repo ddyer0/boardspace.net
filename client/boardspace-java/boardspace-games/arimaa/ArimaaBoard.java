@@ -146,7 +146,7 @@ class ArimaaBoard extends squareBoard<ArimaaCell> implements BoardProtocol,Arima
     {   drawing_style = DrawingStyle.STYLE_NOTHING; // STYLE_CELL or STYLE_LINES
     	Grid_Style = ARIMAAGRIDSTYLE; //coordinates left and bottom
        	repeatedPositions = rep;
-    	setColorMap(cmap);
+    	setColorMap(cmap, 2);
         int map [] = getColorMap();
         Random r = new Random(5685343);
         for(int i=0,pl=FIRST_PLAYER_INDEX;i<=SECOND_PLAYER_INDEX; i++,pl=nextPlayer[pl])

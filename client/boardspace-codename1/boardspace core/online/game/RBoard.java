@@ -286,6 +286,14 @@ public abstract class RBoard<CELLTYPE extends cell<CELLTYPE> >  extends BaseBoar
    {	if(c!=null) { c.copyFrom(from); }
    }  
    
+   /**
+    *  this is a visitor method so the actual board can clone the cell it's own way
+    * @param c
+    * @param from
+    */
+   public void copyAllFrom(CELLTYPE c,CELLTYPE from)
+   {	if(c!=null) { c.copyAllFrom(from); }
+   }  
 
    /** copy from a given board.  This method is typically 
     * wrapped by each subclass.
@@ -452,6 +460,16 @@ public abstract class RBoard<CELLTYPE extends cell<CELLTYPE> >  extends BaseBoar
 	  for(int i=0;i<to.length; i++) { copyFrom(to[i],from[i]);}
    }
    /**
+    * copy an array of cells using copyFrom for each cell
+    * @param to
+    * @param from
+    */
+   public void copyAllFrom(CELLTYPE to[],CELLTYPE from[])
+   {
+	  for(int i=0;i<to.length; i++) { copyAllFrom(to[i],from[i]);}
+   }
+  
+   /**
     * copy a 2d array of cells using copyFrom for each cell
     * @param to
     * @param from
@@ -461,6 +479,15 @@ public abstract class RBoard<CELLTYPE extends cell<CELLTYPE> >  extends BaseBoar
 	  for(int i=0;i<to.length; i++) { copyFrom(to[i],from[i]);}
    } 
 
+   /**
+    * copy a 2d array of cells using copyFrom for each cell
+    * @param to
+    * @param from
+    */
+   public void copyAllFrom(CELLTYPE to[][],CELLTYPE from[][])
+   {
+	  for(int i=0;i<to.length; i++) { copyAllFrom(to[i],from[i]);}
+   } 
    
    /**
     * copy an IStack

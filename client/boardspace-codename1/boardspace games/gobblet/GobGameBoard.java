@@ -90,7 +90,7 @@ class GobGameBoard extends rectBoard<GobCell> implements BoardProtocol,GobConsta
     public GobGameBoard(String init,int[]map) // default constructor
     {   drawing_style = DrawingStyle.STYLE_NOTHING; // STYLE_CELL or STYLE_LINES
     	Grid_Style = GOBGRIDSTYLE; //coordinates left and bottom
-    	setColorMap(map);
+    	setColorMap(map, 2);
         doInit(init); // do the initialization 
      }
     public GobGameBoard cloneBoard() 
@@ -209,7 +209,7 @@ class GobGameBoard extends rectBoard<GobCell> implements BoardProtocol,GobConsta
         pickedObject = from_b.pickedObject;
         pickedSource = getCell(from_b.pickedSource);
         droppedDest = getCell(from_b.droppedDest);
-        copyFrom(rack,from_b.rack);
+        copyAllFrom(rack,from_b.rack);
         unresign = from_b.unresign;
 
         sameboard(from_b);

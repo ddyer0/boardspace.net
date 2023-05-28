@@ -132,7 +132,7 @@ class RithmomachyBoard extends rectBoard<RithmomachyCell> implements BoardProtoc
 	}
     public RithmomachyBoard(String init,long rv,int np,int map[]) // default constructor
     {   
-        setColorMap(map);
+        setColorMap(map, np);
         doInit(init,rv,np); // do the initialization 
      }
 

@@ -114,7 +114,7 @@ class MbraneBoard extends rectBoard<MbraneCell> implements BoardProtocol,MbraneC
 	
 	// constructor 
     public MbraneBoard(String init,int players,long key,int[]map,int rev) // default constructor
-    {	setColorMap(map);
+    {	setColorMap(map, players);
         drawing_style = DrawingStyle.STYLE_NOTHING; // don't draw the cells.  STYLE_CELL to draw them
         Grid_Style = MbraneGRIDSTYLE;
         Random r = new Random(1342356);

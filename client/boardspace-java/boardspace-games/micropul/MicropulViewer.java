@@ -990,6 +990,8 @@ public class MicropulViewer extends CCanvas<MicropulCell,MicropulBoard> implemen
     /** replay a move specified in SGF format.  
      * this is mostly standard stuff, but the key is to recognize
      * the elements that we generated in sgf_save
+     * summary: 5/27/2023
+     *  5222 files visited 0 problems
      */
     public void ReplayMove(sgf_node no)
     {

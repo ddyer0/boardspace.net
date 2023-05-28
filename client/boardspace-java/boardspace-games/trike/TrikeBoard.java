@@ -41,7 +41,7 @@ class TrikeBoard
 {	static int REVISION = 100;			// 100 represents the initial version of the game
 	public int getMaxRevisionLevel() { return(REVISION); }
 	static final String[] GRIDSTYLE = { "1", null, "A" }; // left and bottom numbers
-	TrikeVariation variation = TrikeVariation.trike_7;
+	TrikeVariation variation = TrikeVariation.Trike_7;
 	private TrikeState board_state = TrikeState.Puzzle;	
 	private TrikeState unresign = null;	// remembers the orignal state when "resign" is hit
 	private StateStack robotState = new StateStack();
@@ -89,19 +89,18 @@ class TrikeBoard
 // DrawRepRect to warn the user that repetitions have been seen.
 	public void SetDrawState() {throw G.Error("not expected"); };	
 	CellStack animationStack = new CellStack();
-    private int chips_on_board = 0;			// number of chips currently on the board
-    private int fullBoard = 0;				// the number of cells in the board
 
     private boolean swapped = false;
     // intermediate states in the process of an unconfirmed move should
     // be represented explicitly, so unwinding is easy and reliable.
     public TrikeChip pickedObject = null;
     public TrikeChip lastPicked = null;
+    public TrikeCell pawnLocation = null;
     private TrikeCell blackChipPool = null;	// dummy source for the chip pools
     private TrikeCell whiteChipPool = null;
-    private CellStack pickedSourceStack = new CellStack(); 
-    private CellStack droppedDestStack = new CellStack();
-    private StateStack stateStack = new StateStack();
+    private TrikeCell pickedSource = null; 
+    private TrikeCell droppedDest = null;
+    TrikeCell pawnHome = null;
     
     // save strings to be shown in the game log
     StringStack gameEvents = new StringStack();
@@ -114,9 +113,8 @@ class TrikeBoard
  		}
  	}
 
-    private CellStack emptyCells=new CellStack();
     private TrikeState resetState = TrikeState.Puzzle; 
-    public DrawableImage<?> lastDroppedObject = null;	// for image adjustment logic
+    public TrikeChip lastDroppedObject = null;	// for image adjustment logic
 
 	// factory method to generate a board cell
 	public TrikeCell newcell(char c,int r)
@@ -128,7 +126,7 @@ class TrikeBoard
     {
         drawing_style = DrawingStyle.STYLE_NOTHING; // don't draw the cells.  STYLE_CELL to draw them
         Grid_Style = GRIDSTYLE;
-        setColorMap(map);
+        setColorMap(map, players);
         
 		Random r = new Random(734687);
 		// do this once at construction
@@ -136,6 +134,7 @@ class TrikeBoard
 	    blackChipPool.addChip(TrikeChip.Black);
 	    whiteChipPool = new TrikeCell(r,TrikeId.White);
 	    whiteChipPool.addChip(TrikeChip.White);
+	    pawnHome = new TrikeCell(r,TrikeId.Pawn);
 
         doInit(init,key,players,rev); // do the initialization 
         autoReverseY();		// reverse_y based on the color map
@@ -167,7 +166,10 @@ class TrikeBoard
 		switch(variation)
 		{
 		default: throw G.Error("Not expecting variation %s",variation);
-		case trike_7:
+		case Trike_13:
+		case Trike_11:
+		case Trike_9:
+		case Trike_7:
 			// using reInitBoard avoids thrashing the creation of cells 
 			// when reviewing games.
 			reInitBoard(variation.firstInCol,variation.ZinCol,null);
@@ -179,25 +181,22 @@ class TrikeBoard
  		
 	    playerCell[FIRST_PLAYER_INDEX] = whiteChipPool; 
 	    playerCell[SECOND_PLAYER_INDEX] = blackChipPool; 
+	    pawnHome.reInit();
+	    pawnHome.addChip(TrikeChip.Pawn);
 	    
 	    whoseTurn = FIRST_PLAYER_INDEX;
-	    chips_on_board = 0;
-	    droppedDestStack.clear();
-	    pickedSourceStack.clear();
-	    stateStack.clear();
+	    droppedDest = null;
+	    pickedSource = null;
+	    pawnLocation = null;
 	    
 	    pickedObject = null;
-	    resetState = null;
+	    resetState = TrikeState.Puzzle;
 	    lastDroppedObject = null;
 	    int map[]=getColorMap();
 		playerColor[map[0]]=TrikeId.White;
 		playerColor[map[1]]=TrikeId.Black;
 		playerChip[map[0]]=TrikeChip.White;
 		playerChip[map[1]]=TrikeChip.Black;
-	    // set the initial contents of the board to all empty cells
-		emptyCells.clear();
-		for(TrikeCell c = allCells; c!=null; c=c.next) { c.reInit(); emptyCells.push(c); }
-		fullBoard = emptyCells.size();
 	    
         animationStack.clear();
         swapped = false;
@@ -221,18 +220,16 @@ class TrikeBoard
     public void copyFrom(TrikeBoard from_b)
     {
         super.copyFrom(from_b);
-        chips_on_board = from_b.chips_on_board;
-        fullBoard = from_b.fullBoard;
         robotState.copyFrom(from_b.robotState);
-        getCell(emptyCells,from_b.emptyCells);
         unresign = from_b.unresign;
         board_state = from_b.board_state;
-        getCell(droppedDestStack,from_b.droppedDestStack);
-        getCell(pickedSourceStack,from_b.pickedSourceStack);
+        pawnLocation = getCell(from_b.pawnLocation);
+        droppedDest = getCell(from_b.droppedDest);
+        pickedSource = getCell(from_b.pickedSource);
+        pawnHome.copyFrom(from_b.pawnHome);
         copyFrom(whiteChipPool,from_b.whiteChipPool);		// this will have the side effect of copying the location
         copyFrom(blackChipPool,from_b.blackChipPool);		// from display copy boards to the main board
         getCell(playerCell,from_b.playerCell);
-        stateStack.copyFrom(from_b.stateStack);
         pickedObject = from_b.pickedObject;
         resetState = from_b.resetState;
         lastPicked = null;
@@ -261,9 +258,10 @@ class TrikeBoard
         G.Assert(AR.sameArrayContents(playerColor,from_b.playerColor),"playerColor mismatch");
         G.Assert(AR.sameArrayContents(playerChip,from_b.playerChip),"playerChip mismatch");
         G.Assert(pickedObject==from_b.pickedObject, "picked Object mismatch");
-        G.Assert(chips_on_board == from_b.chips_on_board,"chips_on_board mismatch");
-        G.Assert(sameCells(pickedSourceStack,from_b.pickedSourceStack),"pickedsourceStack mismatch");
-        G.Assert(sameCells(droppedDestStack,from_b.droppedDestStack),"droppedDestStack mismatch");
+        G.Assert(sameCells(pickedSource,from_b.pickedSource),"pickedsource mismatch");
+        G.Assert(sameCells(pawnLocation,from_b.pawnLocation),"pawnlocation mismatch");
+               
+        G.Assert(sameCells(droppedDest,from_b.droppedDest),"droppedDest mismatch");
         G.Assert(sameCells(playerCell,from_b.playerCell),"player cell mismatch");
         // this is a good overall check that all the copy/check/digest methods
         // are in sync, although if this does fail you'll no doubt be at a loss
@@ -311,9 +309,11 @@ class TrikeBoard
 		// v ^= cell.Digest(r,pickedSource);
 		v ^= chip.Digest(r,playerChip[0]);	// this accounts for the "swap" button
 		v ^= chip.Digest(r,pickedObject);
-		v ^= Digest(r,pickedSourceStack);
-		v ^= Digest(r,droppedDestStack);
+		v ^= Digest(r,pickedSource);
+		v ^= Digest(r,droppedDest);
+		v ^= Digest(r,pawnLocation);
 		v ^= Digest(r,revision);
+		v ^= Digest(r,pawnHome);
 		v ^= r.nextLong()*(board_state.ordinal()*10+whoseTurn);
         return (v);
     }
@@ -350,7 +350,8 @@ class TrikeBoard
      * @return
      */
     public boolean DoneState()
-    {	return(board_state.doneState());
+    {	if(board_state==null) { board_state=TrikeState.Puzzle; }
+    	return(board_state.doneState());
     }
     // this is the default, so we don't need it explicitly here.
     // but games with complex "rearrange" states might want to be
@@ -369,49 +370,38 @@ class TrikeBoard
     	boolean win = false;
     	return(win);
     }
-
-
-    // set the contents of a cell, and maintain the books
-    private int lastPlaced = -1;
-    public TrikeChip SetBoard(TrikeCell c,TrikeChip ch)
-    {	TrikeChip old = c.topChip();
-    	if(c.onBoard)
-    	{
-    	if(old!=null) { chips_on_board--;emptyCells.push(c);  }
-     	if(ch!=null) { chips_on_board++; emptyCells.remove(c,false);  lastPlaced = c.lastPlaced; c.lastPlaced = moveNumber; }
-     		else { c.lastPlaced = lastPlaced; }
-    	}
-       	if(old!=null) { c.removeTop();}
-       	if(ch!=null) { c.addChip(ch);  }
-    	return(old);
-    }
     //
     // accept the current placements as permanent
     //
     public void acceptPlacement()
     {	
-        droppedDestStack.clear();
-        pickedSourceStack.clear();
-        stateStack.clear();
+        droppedDest = null;
+        pickedSource = null;
         pickedObject = null;
      }
     //
     // undo the drop, restore the moving object to moving status.
     //
     private TrikeCell unDropObject()
-    {	TrikeCell rv = droppedDestStack.pop();
-    	setState(stateStack.pop());
-    	pickedObject = SetBoard(rv,null); 	// SetBoard does ancillary bookkeeping
+    {	TrikeCell rv = droppedDest;
+    	setState(resetState);
+    	pickedObject = rv.removeTop(); 	// SetBoard does ancillary bookkeeping
+    	if((pickedObject==TrikeChip.Pawn) && !rv.isEmpty())
+    	{
+    		rv.removeTop();
+    		pawnLocation = pickedSource;
+    	}
     	return(rv);
     }
     // 
     // undo the pick, getting back to base state for the move
     //
     private void unPickObject()
-    {	TrikeCell rv = pickedSourceStack.pop();
-    	setState(stateStack.pop());
-    	SetBoard(rv,pickedObject);
+    {	TrikeCell rv = pickedSource;
+    	setState(resetState);
+    	rv.addChip(pickedObject);
     	pickedObject = null;
+    	pickedSource = null;
     }
     
     // 
@@ -419,20 +409,23 @@ class TrikeBoard
     //
     private void dropObject(TrikeCell c)
     {
-       droppedDestStack.push(c);
-       stateStack.push(board_state);
+       droppedDest = c;
        
        switch (c.rackLocation())
         {
         default:
         	throw G.Error("Not expecting dest " + c.rackLocation);
+        case Pawn:
+        	c.addChip(pickedObject);
+        	break;
         case Black:
         case White:		// back in the pool, we don't really care where
         	pickedObject = null;
             break;
         case BoardLocation:	// already filled board slot, which can happen in edit mode
-        	SetBoard(c,pickedObject);
-            pickedObject = null;
+        	c.addChip(pickedObject);
+        	c.lastPlaced = moveNumber;
+        	pickedObject = null;
             break;
         }
      }
@@ -441,10 +434,10 @@ class TrikeBoard
     // this is used to mark the one square where you can pick up a marker.
     //
     public boolean isDest(TrikeCell c)
-    {	return(droppedDestStack.top()==c);
+    {	return(droppedDest==c);
     }
     public TrikeCell getDest()
-    {	return(droppedDestStack.top());
+    {	return(droppedDest);
     }
  
 	//get the index in the image array corresponding to movingObjectChar 
@@ -470,7 +463,10 @@ class TrikeBoard
         switch (source)
         {
         default:
-        	throw G.Error("Not expecting source " + source);
+        	throw G.Error("Not expecting source %s" , source);
+        case Pawn:
+        	return pawnHome;
+        	
         case BoardLocation:
         	return(getCell(col,row));
         case Black:
@@ -491,20 +487,21 @@ class TrikeBoard
     // the board location really becomes empty, and we depend on unPickObject
     // to replace the original contents if the pick is cancelled.
     private void pickObject(TrikeCell c)
-    {	pickedSourceStack.push(c);
-    	stateStack.push(board_state);
+    {	pickedSource=c;
         switch (c.rackLocation())
         {
         default:
         	throw G.Error("Not expecting rackLocation " + c.rackLocation);
         case BoardLocation:
         	{
-            lastPicked = pickedObject = c.topChip();
+            lastPicked = pickedObject = c.removeTop();
+            c.lastEmptied = moveNumber;
          	lastDroppedObject = null;
-			SetBoard(c,null);
         	}
             break;
-
+        case Pawn:
+        	pickedObject = c.removeTop();
+        	break;
         case Black:
         case White:
         	lastPicked = pickedObject = c.topChip();
@@ -515,10 +512,10 @@ class TrikeBoard
     // by the board display to provide a visual marker where the floating chip came from.
     //
     public boolean isSource(TrikeCell c)
-    {	return(c==pickedSourceStack.top());
+    {	return(c==pickedSource);
     }
     public TrikeCell getSource()
-    {	return(pickedSourceStack.top());
+    {	return(pickedSource);
     }
  
     //
@@ -535,6 +532,7 @@ class TrikeBoard
         	setNextStateAfterDone(replay);
          	break;
         case Play:
+        case FirstPlay:
         case PlayOrSwap:
 			setState(TrikeState.Confirm);
 			break;
@@ -544,7 +542,7 @@ class TrikeBoard
         }
     }
     private void setNextStateAfterDone(replayMode replay)
-    {	G.Assert(chips_on_board+emptyCells.size()==fullBoard,"cells missing");
+    {	
        	switch(board_state)
     	{
     	default: throw G.Error("Not expecting after Done state "+board_state);
@@ -555,14 +553,37 @@ class TrikeBoard
     	case Confirm:
     	case Puzzle:
     	case Play:
+    	case FirstPlay:
     	case PlayOrSwap:
-    		setState(((chips_on_board==1)&&(whoseTurn==SECOND_PLAYER_INDEX)&&!swapped) 
-    				? TrikeState.PlayOrSwap
-    				: TrikeState.Play);
+    		setState(pawnLocation==null ? TrikeState.FirstPlay
+    				: ((resetState==TrikeState.FirstPlay)&&(whoseTurn==SECOND_PLAYER_INDEX)&&!swapped) 
+    					? TrikeState.PlayOrSwap
+    					: hasPawnMoves() ? TrikeState.Play : TrikeState.Gameover);
+    		if(board_state==TrikeState.Gameover)
+    		{
+    			win[whoseTurn] = majorityLinks();
+    			win[nextPlayer[whoseTurn]] = !win[whoseTurn];
+    		}
     		
     		break;
     	}
        	resetState = board_state;
+    }
+    private boolean majorityLinks()
+    {	int count = 0;
+    	int links = 1;
+    	TrikeChip target = getPlayerChip(whoseTurn);
+    	TrikeCell center = pawnLocation;
+    	if(center.chipAtIndex(0)==target) { count++; }
+    	for(int i=0;i<geometry.n;i++)
+    	{	TrikeCell adj = center.exitTo(i);
+    		if(adj!=null)
+    		{
+    			links++;
+    			if(adj.topChip()==target) { count++; }
+    	}	
+    	}
+    	return count*2>links;
     }
     private void doDone(replayMode replay)
     {
@@ -639,19 +660,46 @@ void doSwap(replayMode replay)
 				}
 				else 
 				{
-				m.chip = pickedObject;
-		           
+				m.chip = pickedObject;		
+		        
+				if(board_state==TrikeState.Puzzle && (pickedObject!=TrikeChip.Pawn))
+				{
+					TrikeChip added = pickedObject;
+					if(added==null) { added = lastDroppedObject; }
+					if(added==null) { added = getPlayerChip(whoseTurn); }
+					lastDroppedObject = added;
+					m.chip = added;
+					dest.addChip(added);
+				}
+				else
+				{
+				if(pickedSource==null)
+			        {
+			        	pickObject((pawnLocation==null)? pawnHome : pawnLocation);
+			        }
+		        if(pickedObject==TrikeChip.Pawn)
+		        {	if(dest.isEmpty())
+		        	{TrikeChip added = getPlayerChip(whoseTurn); 
+		        	lastDroppedObject = added;
+		        	m.chip = added;
+		        	dest.addChip(added); 
+		        	}
+		        	pawnLocation = dest;
+		        }
+		        
+	        
 	            dropObject(dest);
-	            /**
-	             * if the user clicked on a board space without picking anything up,
-	             * animate a stone moving in from the pool.  For Hex, the "picks" are
-	             * removed from the game record, so there are never picked stones in
-	             * single step replays.
-	             */
-	            if(replay!=replayMode.Replay && (po==null))
-	            	{ animationStack.push(getSource());
-	            	  animationStack.push(dest); 
-	            	}
+	            
+	            if(replay!=replayMode.Replay)
+            	{
+            	if(po==null)
+            	{ animationStack.push(getSource());
+            	  animationStack.push(dest); 
+            	}
+            	}
+				}
+
+	            	
 	            setNextStateAfterDrop(replay);
 				}
         	}
@@ -673,7 +721,7 @@ void doSwap(replayMode replay)
         	case Puzzle:
          		break;
         	case Confirm:
-        		setState(((chips_on_board==1) && !swapped) ? TrikeState.PlayOrSwap : TrikeState.Play);
+        		setState(resetState);
         		break;
         	default: ;
         	}}}
@@ -743,11 +791,9 @@ void doSwap(replayMode replay)
         default:
         	throw G.Error("Not expecting Legal Hit state " + board_state);
         case PlayOrSwap:
+        case FirstPlay:
         case Play:
-        	// for pushfight, you can pick up a stone in the storage area
-        	// but it's really optional
-        	return(player==whoseTurn);
-        case Confirm:
+         case Confirm:
 		case ConfirmSwap:
 		case Resign:
 		case Gameover:
@@ -763,15 +809,16 @@ void doSwap(replayMode replay)
         {
 		case Play:
 		case PlayOrSwap:
-			return(targets.get(c)!=null || isDest(c) || isSource(c));
+		case FirstPlay:
+			return(c==pawnLocation || (targets.get(c)!=null) || isDest(c) || isSource(c));
 		case ConfirmSwap:
 		case Gameover:
 		case Resign:
 			return(false);
 		case Confirm:
-			return(isDest(c) || c.isEmpty());
+			return(isDest(c));
         default:
-        	throw G.Error("Not expecting Hit Board state " + board_state);
+        	throw G.Error("Not expecting Hit Board state %s", board_state);
         case Puzzle:
             return (true);
         }
@@ -810,7 +857,7 @@ void doSwap(replayMode replay)
         switch (m.op)
         {
         default:
-   	    	throw G.Error("Can't un execute " + m);
+   	    	throw G.Error("Can't un execute %s" , m);
         case MOVE_DONE:
             break;
             
@@ -819,8 +866,8 @@ void doSwap(replayMode replay)
         	doSwap(replayMode.Replay);
         	break;
         case MOVE_DROPB:
-        	SetBoard(getCell(m.to_col,m.to_row),null);
-        	break;
+        	G.Error("Not");
+         	break;
         case MOVE_RESIGN:
             break;
         }
@@ -830,8 +877,31 @@ void doSwap(replayMode replay)
         	setWhoseTurn(m.player);
         }
  }
-  
-
+ public boolean hasPawnMoves()
+ {
+	 return addPawnMoves(null,pawnLocation,whoseTurn);
+ }
+ public boolean addPawnMoves(CommonMoveStack all,TrikeCell from,int who)
+ {	boolean some = false;
+	 for(int direction = 0; direction<geometry.n; direction++)
+	 {
+		 some |= addPawnMoves(all,from,direction,who);
+		 if(some && all==null) { return true; }
+	 }
+	 return some;
+ }
+ public boolean addPawnMoves(CommonMoveStack all,TrikeCell from,int direction,int who)
+ {
+	 TrikeCell next = from;
+	 boolean some = false;
+	 while( (next=next.exitTo(direction))!=null)
+			 {
+		 		if(next.topChip()!=null) { break; }
+		 		if(all==null) { return true; }
+		 		all.push(new Trikemovespec(MOVE_DROPB,next,who));
+			 }
+	 return some;
+ }
  CommonMoveStack  GetListOfMoves()
  {	CommonMoveStack all = new CommonMoveStack();
  	if(board_state==TrikeState.PlayOrSwap)
@@ -846,29 +916,38 @@ void doSwap(replayMode replay)
  			 	    c!=null;
  			 	    c = c.next)
  			 	{	if(c.topChip()==null)
- 			 		{all.addElement(new Trikemovespec(op,c.col,c.row,whoseTurn));
+ 			 		{all.addElement(new Trikemovespec(op,c,whoseTurn));
  			 		}
  			 	}
  		}
  		break;
- 	case Play:
+ 	case FirstPlay:
+ 		for(TrikeCell c = allCells; c!=null; c=c.next)
+ 		{
+ 			all.push(new Trikemovespec(MOVE_DROPB,c,whoseTurn));
+ 		}
+ 		break;
  	case PlayOrSwap:
+ 		all.push(new Trikemovespec(MOVE_SWAP,whoseTurn));
+		//$FALL-THROUGH$
+	case Play:
+ 		addPawnMoves(all,pawnLocation,whoseTurn);
+ 		break;
  	case Confirm:
+ 	case Resign:
+ 	case ConfirmSwap:
  		all.push(new Trikemovespec(MOVE_DONE,whoseTurn));
  		break;
- 		
+ 	case Gameover:
+ 		break;
  	default:
- 			G.Error("Not expecting state ",board_state);
+ 			G.Error("Not expecting state %s",board_state);
  	}
  	return(all);
  }
  
  public void initRobotValues()
  {
-	 for(int lim = emptyCells.size()-1; lim>=0; lim--)
-	 {
-		 emptyCells.elementAt(lim).initRobotValues();
-	 }
  }
 
  // small ad-hoc adjustment to the grid positions
@@ -876,10 +955,13 @@ void doSwap(replayMode replay)
  {   if(Character.isDigit(txt.charAt(0)))
 	 	{ switch(variation)
 	 		{
-	 		case trike_7:
+	 		case Trike_13:
+	 		case Trike_11:
+	 		case Trike_9:
+	 		case Trike_7:
 	 			xpos -= cellsize/2;
 	 			break;
- 			default: G.Error("case "+variation+" not handled");
+ 			default: G.Error("case %s not handled",variation);
 	 		}
 	 	}
  		else
@@ -911,10 +993,11 @@ void doSwap(replayMode replay)
  			targets.put(getCell(m.to_col,m.to_row),m);
  			break;
  		case MOVE_SWAP:
+ 		case MOVE_RESIGN:
  		case MOVE_DONE:
  			break;
 
- 		default: G.Error("Not expecting "+m);
+ 		default: G.Error("Not expecting %s",m);
  		
  		}
  	}

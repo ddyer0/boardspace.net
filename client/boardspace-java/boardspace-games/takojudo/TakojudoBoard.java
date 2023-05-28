@@ -71,7 +71,7 @@ class TakojudoBoard extends rectBoard<TakojudoCell> implements BoardProtocol,Tak
     {   drawing_style = DrawingStyle.STYLE_NOTHING; // STYLE_CELL or STYLE_LINES
     	Grid_Style = TACOJUDOGRIDSTYLE; //coordinates left and bottom
     	repeatedPositions = rep;
-    	setColorMap(map);
+    	setColorMap(map, 2);
         doInit(init,key); // do the initialization 
         autoReverseY();		// reverse_y based on the color map
      }

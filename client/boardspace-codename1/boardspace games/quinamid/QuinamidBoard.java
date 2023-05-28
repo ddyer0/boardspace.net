@@ -5,7 +5,7 @@ import lib.*;
 
 
 /**
- * QuinamidBoard knows all about the game of Truchet, which is played
+ * QuinamidBoard knows all about the game of Quinamid, which is played
  * on a 7x7 board. It gets a lot of logistic support from 
  * common.rectBoard, which knows about the coordinate system.  
  * 
@@ -302,7 +302,7 @@ class QuinamidBoard extends rectBoard<QuinamidCell> implements BoardProtocol,Qui
     {   drawing_style = DrawingStyle.STYLE_NOTHING; // STYLE_CELL or STYLE_LINES
     	Grid_Style = QUINAMIDGRIDSTYLE; //coordinates left and bottom
     	EdgeBoard lower = null;
-    	setColorMap(map);
+    	setColorMap(map, 2);
      	for(int lvl = NLEVELS-1; lvl>=0;lvl--)
     	{	stackedBoards[lvl] = lower = new EdgeBoard(DEFAULT_COLUMNS-lvl,lvl,lower);
     	}

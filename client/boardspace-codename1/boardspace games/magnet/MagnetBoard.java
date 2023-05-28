@@ -39,7 +39,8 @@ import online.game.*;
  */
 
 class MagnetBoard extends hexBoard<MagnetCell> implements BoardProtocol
-{	static int REVISION = 100;			// 100 represents the initial version of the game
+{	static int REVISION = 101;			// 100 represents the initial version of the game
+										// revision 101 fixes the problem where first play didn't move anything (magnet on a piece)
 	public int getMaxRevisionLevel() { return(REVISION); }
 	
     static final String[] MAGNETGRIDSTYLE = { null, "A1", "A1" }; // left and bottom numbers
@@ -47,7 +48,7 @@ class MagnetBoard extends hexBoard<MagnetCell> implements BoardProtocol
     static MagnetId playerRack[] = { MagnetId.Red_Chip_Pool, MagnetId.Blue_Chip_Pool};
     static final boolean ALLOW_ASYNC_PLAY = true;
     
-	MagnetVariation variation = MagnetVariation.magnet;
+    MagnetVariation variation = MagnetVariation.magnet;
 	private MagnetState board_state = MagnetState.Puzzle;	
 	private MagnetState unresign = null;	// remembers the orignal state when "resign" is hit
 	private boolean robotBoard = false;
@@ -60,7 +61,7 @@ class MagnetBoard extends hexBoard<MagnetCell> implements BoardProtocol
 	// this holds the chips that were captured
 	public int captureCount[] = new int[2];					// records the height of captures as of the last Done
 	public MagnetCell captures[][] = new MagnetCell[2][MagnetChip.nChips];
-	public CellStack magnetLocation = new CellStack();
+	public MagnetCell magnetLocation = null;
 	public MagnetCell center = null;
 	public MagnetCell kingLocation[] = new MagnetCell[2];
 	// this holds the locations chips were captured from
@@ -249,10 +250,9 @@ class MagnetBoard extends hexBoard<MagnetCell> implements BoardProtocol
 		playerChip[1]=MagnetChip.blue_back_1;
 	    // set the initial contents of the board to all empty cells
 		for(MagnetCell c = allCells; c!=null; c=c.next) { c.reInit(); }
-        magnetLocation.clear();
 		MagnetCell mag =  center = getCell('F',6);
 		mag.addChip(MagnetChip.magnet);
-		magnetLocation.push(mag);
+		magnetLocation = mag;
 		
         animationStack.clear();
         moveNumber = 1;
@@ -297,7 +297,7 @@ class MagnetBoard extends hexBoard<MagnetCell> implements BoardProtocol
         getCell(captureStack,from_b.captureStack);
         capturesThisTurn = from_b.capturesThisTurn;
         getCell(movementStack,from_b.movementStack);
-        getCell(magnetLocation,from_b.magnetLocation);
+        magnetLocation = getCell(from_b.magnetLocation);
         stateStack.copyFrom(from_b.stateStack);
         getCell(moveStack,from_b.moveStack);
         pickedObject = from_b.pickedObject;
@@ -410,7 +410,7 @@ class MagnetBoard extends hexBoard<MagnetCell> implements BoardProtocol
     //
     // change whose turn it is, increment the current move number
     //
-    public void setNextPlayer(replayMode replay)
+    public void setNextPlayer(int fromPlayer,replayMode replay)
     {
         switch (board_state)
         {
@@ -432,7 +432,7 @@ class MagnetBoard extends hexBoard<MagnetCell> implements BoardProtocol
         case NormalStart:
         case WaitForStart:
             moveNumber++; //the move is complete in these states
-            setWhoseTurn(nextPlayer[whoseTurn]);
+            setWhoseTurn(nextPlayer[fromPlayer]);
             return;
         }
     }
@@ -500,7 +500,8 @@ class MagnetBoard extends hexBoard<MagnetCell> implements BoardProtocol
     			break;
     		}
     		break;
-    	case Play: magnetLocation.pop();
+    	case Play: 
+    			magnetLocation = pickedSourceStack.top();
     		break;
     	}
     	undoCaptures();
@@ -567,7 +568,7 @@ class MagnetBoard extends hexBoard<MagnetCell> implements BoardProtocol
             {
             default: break;
             case Play:
-            	magnetLocation.push(c);
+            	magnetLocation = c;
              	break;
             }
             break;
@@ -683,6 +684,11 @@ class MagnetBoard extends hexBoard<MagnetCell> implements BoardProtocol
     	}
     	return(true);
     }
+    boolean allStartupPlaced()
+    {
+    	for(int i= FIRST_PLAYER_INDEX;i<=SECOND_PLAYER_INDEX;i++) { if(!allStartupPlaced(i)) { return false; }}
+    	return true;
+    }
     //
     // in the actual game, picks are optional; allowed but redundant.
     //
@@ -722,18 +728,20 @@ class MagnetBoard extends hexBoard<MagnetCell> implements BoardProtocol
         	else // player moves
         	{
         		int pl = dest.topChip().playerIndex();
-            	if(allStartupPlaced(pl) && (pl==myPlayer.boardIndex))
-            	{
-            		setState(MagnetState.Confirm_Setup);
+        		
+        		if(pl==myPlayer.boardIndex)
+             	{	boolean allPlaced = allStartupPlaced(pl);
+            		setState(allPlaced ? MagnetState.Confirm_Setup : MagnetState.Setup);
             	}
         	}
         	break;
+		case Confirm_Synchronous_Setup:
         case Synchronous_Setup:
         	if(allStartupPlaced(whoseTurn)) 
         		{ setState(MagnetState.Confirm_Synchronous_Setup);
         		}
         	break;
-        case Play:
+       case Play:
     	   G.Assert(dest.topChip()==MagnetChip.magnet,"not the magnet moving");
     	   if(firstMove() && multiplePiecesMove(dest,whoseTurn))
        		{
@@ -771,14 +779,17 @@ class MagnetBoard extends hexBoard<MagnetCell> implements BoardProtocol
     		
     	case NormalStart:
     		capturesThisTurn = 0;
-    		if(!setupDone[nextPlayer[forPlayer]])
+    		int nextP = nextPlayer[forPlayer];
+    		if(!setupDone[nextP])
     		{
-    			setState(asyncPlay?MagnetState.Setup:MagnetState.Synchronous_Setup);
+    			setState(asyncPlay
+    					?MagnetState.Setup
+    					:allStartupPlaced(nextP) ? MagnetState.Confirm_Synchronous_Setup : MagnetState.Synchronous_Setup);
     		}
     		else 
     			{ 
     			  setState((board_state==MagnetState.Confirm_Synchronous_Setup)
-    						  	?MagnetState.NormalStart	
+    					  	?MagnetState.NormalStart
     					  	:MagnetState.Play);
     			}
     		break;
@@ -789,7 +800,7 @@ class MagnetBoard extends hexBoard<MagnetCell> implements BoardProtocol
     	case Puzzle:
     	case Synchronous_Setup:
     		capturesThisTurn = 0;
-    		setState(MagnetState.Play);
+    		setState(MagnetState.Play);   		
     		break;
     	}
     }
@@ -884,7 +895,7 @@ class MagnetBoard extends hexBoard<MagnetCell> implements BoardProtocol
     					 animationStack.push(moving);
     					 animationStack.push(cap);
     				 }
-    					 record(" x",moving);
+					 record(" x",moving);
     				 moving.removeChipAtIndex(0);
     				 }
     				 if(victim.isTrap() && (chip!=null))
@@ -902,9 +913,9 @@ class MagnetBoard extends hexBoard<MagnetCell> implements BoardProtocol
     				 		  animationStack.push(moving);
     				 		  animationStack.push(cap);
     				 	  }
-    				 		  record(" x",moving);
-    				 	  }
+				 		  record(" x",moving);
     				 	}
+    			 }
     			 
     			}
     		}
@@ -922,7 +933,7 @@ class MagnetBoard extends hexBoard<MagnetCell> implements BoardProtocol
         		animationStack.push(firstMoving);
         		animationStack.push(moving);
         	}
-        		record(" >",moving);
+    		record(" >",moving);
 
 
     	}
@@ -940,15 +951,17 @@ class MagnetBoard extends hexBoard<MagnetCell> implements BoardProtocol
     	selectedCell = null;
     }
     private void doMovementAndCaptures(MagnetCell magnet,replayMode replay,int firstDirection)
-    	{
+    {
     	// the easy case where at most one piece reaches tower
 
-		if(firstMove())
-    	{
+		if(firstMove() && ((revision<101) || (selectedDirection>=0)))
+		{	// if selectedDirection is -1, there was only one movement, and so
+			// we skipped the select state that would have set it.
+			// instead, we do all directions "knowing" that only one will move.
 			doSingleMovementAndCaptures(magnet,replay,whoseTurn,firstDirection);	
-    	}
-    	else
-    	{
+		}
+		else
+		{
     	for(int dir=0;dir<magnet.geometry.n;dir++)
     		{
     		doSingleMovementAndCaptures(magnet,replay,whoseTurn,dir+firstDirection);
@@ -1030,7 +1043,7 @@ class MagnetBoard extends hexBoard<MagnetCell> implements BoardProtocol
         	throw G.Error("Not expecting done in state %s",board_state);
         case Resign:
         	win[nextPlayer[whoseTurn]] = true;
-    		setState(MagnetState.Gameover);
+        	setState(MagnetState.Gameover);
     		break;
         case Gameover:
          	break;
@@ -1041,13 +1054,13 @@ class MagnetBoard extends hexBoard<MagnetCell> implements BoardProtocol
 	    case Synchronous_Setup:
 		case WaitForStart:
 			setupDone[forPlayer] = true;
-			setNextPlayer(replay);
+			setNextPlayer(forPlayer,replay);
 			//$FALL-THROUGH$
         case NormalStart:
 			setNextStateAfterDone(forPlayer,replay);
 			break;
         case Confirm:
-           	doMovementAndCaptures(magnetLocation.top(),replay);
+           	doMovementAndCaptures(magnetLocation,replay);
 			if(checkForWin()) 
     		{ 
     		  setState(MagnetState.Gameover); 
@@ -1057,12 +1070,12 @@ class MagnetBoard extends hexBoard<MagnetCell> implements BoardProtocol
         	}
 			break;
         case Promote:
-        	setNextPlayer(replay);
-        for(int player = FIRST_PLAYER_INDEX; player<=SECOND_PLAYER_INDEX; player++)
-        {
-        captureCount[player] = captureStack[player].size();
-        movementCount[player] = movementStack[player].size();
-        }
+        	setNextPlayer(whoseTurn,replay);
+            for(int player = FIRST_PLAYER_INDEX; player<=SECOND_PLAYER_INDEX; player++)
+            {
+            captureCount[player] = captureStack[player].size();
+            movementCount[player] = movementStack[player].size();
+            }
         	setNextStateAfterDone(whoseTurn,replay);
         }   
 
@@ -1115,7 +1128,10 @@ class MagnetBoard extends hexBoard<MagnetCell> implements BoardProtocol
     			if(unpick) { unPickObject(); }
     			MagnetChip po = src.removeTop();
 	            dest.addChip(po);
-	            if(po==MagnetChip.magnet) { magnetLocation.push(dest); }
+	            if(po==MagnetChip.magnet)
+	            	{ 
+	            	  magnetLocation = dest;
+	            	}
 	            else if(po.isKing()) { kingLocation[po.playerIndex()] = dest; }
 	            /**
 	             * if the user clicked on a board space without picking anything up,
@@ -1137,24 +1153,24 @@ class MagnetBoard extends hexBoard<MagnetCell> implements BoardProtocol
 			MagnetCell src = getSource(); 
 			MagnetCell dest =  getCell(MagnetId.BoardLocation,m.to_col,m.to_row);
 			
-		            /**
-		             * if the user clicked on a board space without picking anything up,
-		             * animate a stone moving in from the pool.  For Hex, the "picks" are
-		             * removed from the game record, so there are never picked stones in
-		             * single step replays.
-		             */
-		            if((replay==replayMode.Single) && (po!=null))
-		            	{ animationStack.push(src);
-		            	  animationStack.push(dest); 
-		            	}
+	            /**
+	             * if the user clicked on a board space without picking anything up,
+	             * animate a stone moving in from the pool.  For Hex, the "picks" are
+	             * removed from the game record, so there are never picked stones in
+	             * single step replays.
+	             */
+	            if((replay==replayMode.Single) && (po!=null))
+	            	{ animationStack.push(src);
+	            	  animationStack.push(dest); 
+	            	}
 
-	            dropObject(dest,replay);
-	            setNextStateAfterDrop(m.op,dest,replay);
-				}
+            dropObject(dest,replay);
+            setNextStateAfterDrop(m.op,dest,replay);
+    	}
              break;
 		case MOVE_SELECT:
-			{
-				MagnetCell magnet = magnetLocation.top();
+			{	
+				MagnetCell magnet = magnetLocation;
 				MagnetCell selected = getCell(MagnetId.BoardLocation,m.from_col,m.from_row);
 				if(selected==selectedCell)
 				{
@@ -1167,7 +1183,7 @@ class MagnetBoard extends hexBoard<MagnetCell> implements BoardProtocol
 				selectedCell = selected;
 				stateStack.push(board_state);
 				setState(MagnetState.Confirm);
-			}
+				}
 			}
 			break;
         case EPHEMERAL_PICK:
@@ -1210,8 +1226,10 @@ class MagnetBoard extends hexBoard<MagnetCell> implements BoardProtocol
         	}
             break;
         case NORMALSTART:
-        	setWhoseTurn(FIRST_PLAYER_INDEX);
-        	doDone(FIRST_PLAYER_INDEX,replay);
+        	//if(board_state!=MagnetState.Play)
+        		{setWhoseTurn(FIRST_PLAYER_INDEX);
+        		 doDone(FIRST_PLAYER_INDEX,replay);
+        		}
         	break;
         case MOVE_START:
             setWhoseTurn(m.player);
@@ -1234,7 +1252,7 @@ class MagnetBoard extends hexBoard<MagnetCell> implements BoardProtocol
        case MOVE_RESIGN:
     	   	setState(unresign==null?MagnetState.Resign:unresign);
             break;
-        case MOVE_EDIT:
+       case MOVE_EDIT:
         	acceptPlacement();
             setWhoseTurn(FIRST_PLAYER_INDEX);
             setState(MagnetState.Puzzle);
@@ -1342,10 +1360,10 @@ class MagnetBoard extends hexBoard<MagnetCell> implements BoardProtocol
 		case WaitForStart:
 			return(false);
 		case FirstSelect:
-			return(pieceMoves(magnetLocation.top(),c,whoseTurn));
+			return(pieceMoves(magnetLocation,c,whoseTurn));
 
 		case Select:
-			return(pieceReachesMagnet(magnetLocation.top(),c,whoseTurn));
+			return(pieceReachesMagnet(magnetLocation,c,whoseTurn));
 		case Promote:
 			{
 				for(int lim=movementStack[whoseTurn].size()-1,start=movementCount[whoseTurn];
@@ -1442,7 +1460,7 @@ class MagnetBoard extends hexBoard<MagnetCell> implements BoardProtocol
     	captureCount[FIRST_PLAYER_INDEX] = robotLevel.pop();
         switch (m.op)
         {
-   	    default:
+        default:
    	    	throw G.Error("Can't un execute %s", m);
         case MOVE_DONE:
         	 if(state==MagnetState.Confirm_Synchronous_Setup)
@@ -1478,7 +1496,8 @@ class MagnetBoard extends hexBoard<MagnetCell> implements BoardProtocol
         		switch(state)
         		{
         		default: break;
-        		case Play:	magnetLocation.pop();
+        		case Play:	
+        				magnetLocation = src;
         			break;
         		}
 
@@ -1504,7 +1523,7 @@ class MagnetBoard extends hexBoard<MagnetCell> implements BoardProtocol
 		 G.Assert(top!=null && top.isKing(),"is king");
 	 }
  }
-  
+ 
  private void addSetupMoves(CommonMoveStack all,int who)
  {	CellStack dests = new CellStack();
  	for(MagnetCell c = allCells; c!=null; c=c.next)
@@ -1526,7 +1545,7 @@ class MagnetBoard extends hexBoard<MagnetCell> implements BoardProtocol
  	}
  }
  private void addMagnetMoves(CommonMoveStack all,int who)
- {	MagnetCell magnet = magnetLocation.top();
+ {	MagnetCell magnet = magnetLocation;
 	 for(MagnetCell c = allCells; c!=null; c=c.next)
 	 {
 		 if(causesMovement(c,who))
@@ -1536,7 +1555,7 @@ class MagnetBoard extends hexBoard<MagnetCell> implements BoardProtocol
 	 }
  }
  public void addFirstSelectMoves(CommonMoveStack all,int who)
- {	MagnetCell magnet = magnetLocation.top();
+ {	MagnetCell magnet = magnetLocation;
  	for(MagnetCell c = allCells; c!=null; c=c.next)
  	{
  		if(pieceMoves(magnet,c,whoseTurn))
@@ -1546,7 +1565,7 @@ class MagnetBoard extends hexBoard<MagnetCell> implements BoardProtocol
  	}
  }
  public void addSelectMoves(CommonMoveStack all,int who)
- {	MagnetCell magnet = magnetLocation.top();
+ {	MagnetCell magnet = magnetLocation;
  	for(MagnetCell c = allCells; c!=null; c=c.next)
  	{
  		if(pieceReachesMagnet(magnet,c,whoseTurn))
@@ -1559,7 +1578,7 @@ class MagnetBoard extends hexBoard<MagnetCell> implements BoardProtocol
  public boolean addPromotionMoves(CommonMoveStack all,int who)
  {	CellStack stack = movementStack[who];
  	boolean some = false;
-	 for(int lim=stack.size(),start=movementCount[who];
+ 	for(int lim=stack.size(),start=movementCount[who];
 				start<lim;
 				start+=2)
 			{
@@ -1581,6 +1600,17 @@ class MagnetBoard extends hexBoard<MagnetCell> implements BoardProtocol
 	 return(addPromotionMoves(null,who));
  }
  
+ MagnetPlay robot = null;
+ public boolean p1(String msg)
+	{
+		if(G.p1(msg) && robot!=null)
+		{	String dir = "g:/share/projects/boardspace-html/htdocs/magnet/magnetgames/robot/";
+			robot.saveCurrentVariation(dir+msg+".sgf");
+			return(true);
+		}
+		return(false);
+	}
+
  CommonMoveStack  GetListOfMoves()
  {	CommonMoveStack all = new CommonMoveStack();
 
@@ -1601,6 +1631,9 @@ class MagnetBoard extends hexBoard<MagnetCell> implements BoardProtocol
  		break;
  	case Play:
  		addMagnetMoves(all,whoseTurn);
+ 		if(all.size()==0) { 
+ 			all.push(new Magnetmovespec(MOVE_RESIGN,whoseTurn));
+ 		}
  		break;
  	case FirstSelect:
  		addFirstSelectMoves(all,whoseTurn);
@@ -1669,6 +1702,10 @@ public void randomizeHiddenState(Random robotRandom, int robotPlayer)
 	}
     checkKings();
     
+}
+public void initRobotValues(MagnetPlay magnetPlay) 
+{
+	robot = magnetPlay;
 }
 
 }

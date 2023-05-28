@@ -87,7 +87,7 @@ class TruGameBoard extends rectBoard<TruCell> implements BoardProtocol,TruConsta
 	{	return(new TruCell(c,r));
 	}
     public TruGameBoard(String init,int map[]) // default constructor
-    {   setColorMap(map);
+    {   setColorMap(map, 2);
     	doInit(init,0L); // do the initialization 
     }
     public TruGameBoard cloneBoard() 
@@ -101,7 +101,7 @@ class TruGameBoard extends rectBoard<TruCell> implements BoardProtocol,TruConsta
     	// this initializer determines the initial layout of the flippable tiles
     	long n=0L;
     	for(int i=0;i<gameid.length();i++) { n = (n*4+gameid.charAt(i))%100000000; };
-    	setColorMap(map);
+    	setColorMap(map, 2);
     	doInit(init,n);
     }
     // override method.  xpos ypos is the desired centerpoint for the text
@@ -252,8 +252,8 @@ class TruGameBoard extends rectBoard<TruCell> implements BoardProtocol,TruConsta
      *  */
     public void copyFrom(TruGameBoard from_b)
     {	super.copyFrom(from_b);
-    	
     	s_focus = getCell(from_b.s_focus);
+       	m_focus = getCell(from_b.m_focus);
         board_state = from_b.board_state;
         unresign = from_b.unresign;
     	getCell(sm_source,from_b.sm_source);
@@ -266,7 +266,6 @@ class TruGameBoard extends rectBoard<TruCell> implements BoardProtocol,TruConsta
        	pickedMergeMoves = from_b.pickedMergeMoves;
        	pickedSplitMoves = from_b.pickedSplitMoves;
        	pickedRiverMoves = from_b.pickedRiverMoves;
-       	m_focus = getCell(from_b.m_focus);
         sm_step = from_b.sm_step;
        
         sameboard(from_b);
@@ -295,7 +294,8 @@ class TruGameBoard extends rectBoard<TruCell> implements BoardProtocol,TruConsta
     	whiteCaptures = new TruCell(r,TruId.White_Captures);
 		captures[map[FIRST_PLAYER_INDEX]] = whiteCaptures;
 		captures[map[SECOND_PLAYER_INDEX]] = blackCaptures;
-       
+       s_focus = null;
+       m_focus = null;
        Init_Standard(gtype,randomKey);
        allCells.setDigestChain(r);
        sm_step = 0;

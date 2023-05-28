@@ -154,7 +154,7 @@ class BloomsBoard extends hexBoard<BloomsCell> implements BoardProtocol
 	    greenChipPool.addChip(BloomsChip.Green);
 
         doInit(init,key,players,rev); // do the initialization
-        setColorMap(map);
+        setColorMap(map, players);
     }
     
     public String gameType() { return(gametype+" "+players_in_game+" "+randomKey+" "+revision); }

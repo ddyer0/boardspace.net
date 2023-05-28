@@ -102,125 +102,126 @@ public class AR {
 	/**
 	    * copy the contents of one integer array into another.  If the
 	    * destination is null, create a copy of the source.
-	    * @param c1 the destination array
-	    * @param c2 the source array
-	    * @return c1 or the new array
+	    * @param to the destination array
+	    * @param from the source array
+	    * @return to or the new array
 	    */
-	   static public int[] copy(int c1[],int c2[])
-	   {	if(c2!=null)
-		    {int len = c2.length;
-		     if(c1==null) { c1 = new int[len]; }
-		     else { G.Assert(len==c1.length,"same length"); }
-	   	     for(int i=0;i<len;i++) { c1[i]=c2[i]; }
+	   static public int[] copy(int to[],int from[])
+	   {	if(from!=null)
+		    {int len = from.length;
+		     if(to==null) { to = new int[len]; }
+		     else { G.Assert(len==to.length,"same length"); }
+	   	     for(int i=0;i<len;i++) { to[i]=from[i]; }
 		    }
-	   		return(c1);
+	   		return(to);
 	   }
 
 	/**
 	    * copy the contents of one integer array into another, if the destination
 	    * is null, create a copy of the source.
-	    * @param c1 the destination array
-	    * @param c2 the source array
-	    * @return c1 or the new array
+	    * @param to the destination array
+	    * @param from the source array
+	    * @return to or the new array
 	    */
-	   static public long[] copy(long c1[],long c2[])
-	   {	if(c2!=null)
-		    {int len = c2.length;
-		    if(c1==null) { c1 = new long[len]; }
-		    else { G.Assert(len==c1.length,"same length");}
-	   	    for(int i=0;i<len;i++) { c1[i]=c2[i]; }
+	   static public long[] copy(long to[],long from[])
+	   {	if(from!=null)
+		    {int len = from.length;
+		    if(to==null) { to = new long[len]; }
+		    else { G.Assert(len==to.length,"same length");}
+	   	    for(int i=0;i<len;i++) { to[i]=from[i]; }
 		    }
-	   	return(c1);
+	   	return(to);
 	   }
 
 	/**
 	    * copy the contents of one double array into another, if the 
 	    * destination is null, create a copy of the source.
-	    * @param c1 the destination array
-	    * @param c2 the source array
-	    * @return c1 or the new array
+	    * @param to the destination array
+	    * @param from the source array
+	    * @return to or the new array
 	    */
-	   static public double[] copy(double c1[],double c2[])
-	   {	if(c2!=null)
-		    {int len = c2.length;
-		     if(c1==null) { c1 = new double[len]; }
-		     else { G.Assert(len==c1.length,"same length"); }
-	   	     for(int i=0;i<len;i++) { c1[i]=c2[i]; }
+	   static public double[] copy(double to[],double from[])
+	   {	if(from!=null)
+		    {int len = from.length;
+		     if(to==null) { to = new double[len]; }
+		     else { G.Assert(len==to.length,"same length"); }
+	   	     for(int i=0;i<len;i++) { to[i]=from[i]; }
 		    }
-	   		return(c1);
+	   		return(to);
 	   }
 
 	/**
 	    * copy the contents of one integer array into another
-	    * @param c1 the destination array
-	    * @param c2 the source array
+	    * @param to the destination array
+	    * @param from the source array
+	    * @return to or the new array
 	    */
-	   static public char[] copy(char c1[],char c2[])
-	   {	if(c2!=null)
-		   	{ int len = c2.length;
-		   	if(c1==null) { c1 = new char[len]; }
-		   	else { G.Assert(len==c1.length,"same length"); }
-	   	    for(int i=0;i<len;i++) { c1[i]=c2[i]; }
+	   static public char[] copy(char to[],char from[])
+	   {	if(from!=null)
+		   	{ int len = from.length;
+		   	if(to==null) { to = new char[len]; }
+		   	else { G.Assert(len==to.length,"same length"); }
+	   	    for(int i=0;i<len;i++) { to[i]=from[i]; }
 		   	}
-	   		return(c1);
+	   		return(to);
 	   }
 
 	/**
 	    * copy the contents of one array of objects to another
-	    * @param c1 the destination array
-	    * @param c2 the source array
+	    * @param to the destination array
+	    * @param from the source array
 	    */
-	   static public void copy(Object c1[],Object c2[])
-	   {	int len = c1.length;
-	   		G.Assert(len==c2.length,"same length");
+	   static public void copy(Object to[],Object from[])
+	   {	int len = to.length;
+	   		G.Assert(len==from.length,"same length");
 	   	    for(int i=0;i<len;i++) 
-	   	    { Object s = c2[i];
+	   	    { Object s = from[i];
 	   	      // limits to java type system.  Object[][] gets here too, and end up copying
 	   	      // the structure.  Trying to cast Object[][] to Object[] fails because arrays
 	   	      // are not the type of their contents.  The best we can do is scream.
 	   	      G.Assert(s==null || !s.getClass().isArray(),"can't be an array[][]");
-	   	      c1[i]=c2[i]; 
+	   	      to[i]=from[i]; 
 	   	    }
 	   }
 
 	/**
 	    * copy an array of arrays of integers
-	    * @param c1
-	    * @param c2
+	    * @param to
+	    * @param from
 	    */
-	   static public void copy(int [][]c1,int [][]c2)
+	   static public void copy(int [][]to,int [][]from)
 	   {
-		   int len = c1.length;
-		   G.Assert(len==c2.length,"same length");
-		   for(int i=0;i<len;i++) { copy(c1[i],c2[i]); }
+		   int len = to.length;
+		   G.Assert(len==from.length,"same length");
+		   for(int i=0;i<len;i++) { copy(to[i],from[i]); }
 	   }
 
 	/**
 	    * create a copy of an integer array
-	    * @param c1
+	    * @param from
 	    * @return a new array
 	    */
-	   static public int[]copy(int c1[])
+	   static public int[]copy(int from[])
 	   {	int val[] = null;
-		    if(c1!=null)
+		    if(from!=null)
 		    {
-		    	val = new int[c1.length];
-		    	copy(val,c1);
+		    	val = new int[from.length];
+		    	copy(val,from);
 		    }
 		    return(val);
 	   }
 
 	/**
 	    * create a copy of an double array
-	    * @param c1
+	    * @param from
 	    * @return a new array
 	    */
-	   static public double []copy(double c1[])
+	   static public double []copy(double from[])
 	   {	double val[] = null;
-		    if(c1!=null)
+		    if(from!=null)
 		    {
-		    	val = new double[c1.length];
-		    	copy(val,c1);
+		    	val = new double[from.length];
+		    	copy(val,from);
 		    }
 		    return(val);
 	   }

@@ -981,7 +981,7 @@ public class YspahanBoard extends BaseBoard implements BoardProtocol,YspahanCons
 
 	public YspahanBoard(String init, long key,int []map,int players) // default constructor
 	{
-		setColorMap(map);
+		setColorMap(map, players);
 		constructBoard();
 		doInit(init, key, players); // do the initialization
 	}

@@ -217,7 +217,7 @@ class KnockaboutBoard extends hexBoard<KnockaboutCell> implements BoardProtocol,
     {  	drawing_style =  DrawingStyle.STYLE_NOTHING;//  or STYLE_CELL or STYLE_LINES
     	Grid_Style = KNOXKABOUTGRIDSTYLE; //coordinates left and bottom
     	Random r = new Random(60404);
-    	setColorMap(map);
+    	setColorMap(map, 2);
        	initBoard(ZfirstInCol, ZnInCol, null);
        	allCells.setDigestChain(r);
        	randomKey = random;

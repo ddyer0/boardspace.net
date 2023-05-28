@@ -128,7 +128,7 @@ class PrototypeBoard
     {
         drawing_style = DrawingStyle.STYLE_NOTHING; // don't draw the cells.  STYLE_CELL to draw them
         Grid_Style = GRIDSTYLE;
-        setColorMap(map);
+        setColorMap(map, players);
         
 		Random r = new Random(734687);
 		// do this once at construction
@@ -863,8 +863,8 @@ void doSwap(replayMode replay)
  	return(all);
  }
  
- public void initRobotValues()
- {
+ public void initRobotValues(PrototypePlay m)
+ {	robot = m;
 	 for(int lim = emptyCells.size()-1; lim>=0; lim--)
 	 {
 		 emptyCells.elementAt(lim).initRobotValues();

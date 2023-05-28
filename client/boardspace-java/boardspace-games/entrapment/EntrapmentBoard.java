@@ -112,7 +112,7 @@ class EntrapmentBoard extends squareBoard<EntrapmentCell> implements BoardProtoc
 	}
     public EntrapmentBoard(String init,long rv,int[]map,int rev) // default constructor
     {   
-        setColorMap(map);
+        setColorMap(map, 2);
         doInit(init,rv,rev); // do the initialization 
       }
     public void SetDrawState() { setState(EntrapmentState.DRAW_STATE); }

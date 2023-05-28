@@ -7,7 +7,7 @@ import lib.StockArt;
 import online.game.chip;
 
 /**
- * This class is derived from "TruChip" in truchet.  There is more documentation about
+ * This class is derived from "DashChip" in dash.  There is more documentation about
  * the representation and motivation for the chip class there.
  * 
  * @author ddyer
@@ -40,7 +40,7 @@ public class CheChip extends chip<CheChip>
 	public int chipNumber() { return(index); }
 	
 	// these numbers make all the tiles the same size, and center them so the tile is
-	// centered in the cell.  These are the same chips as used in Truchet, but slightly
+	// centered in the cell.  These are the same chips as used in Che, but slightly
 	// resized and recentered to avoid the "bottom line" artifact at large scales.
     static final double[][] SCALES=
     {   {0.576388,0.4861111,1.79166},	// sw-ne light

@@ -84,7 +84,7 @@ class SixmakingBoard extends rectBoard<SixmakingCell> implements BoardProtocol,S
 	}
     public SixmakingBoard(String init,long rv,int np,RepeatedPositions rep,int map[]) // default constructor
     {   repeatedPositions = rep;
-    	setColorMap(map);
+    	setColorMap(map, np);
         doInit(init,rv,np); // do the initialization 
      }
 

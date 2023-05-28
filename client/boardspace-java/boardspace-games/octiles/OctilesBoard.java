@@ -175,7 +175,7 @@ class OctilesBoard extends rectBoard<OctilesCell>implements BoardProtocol,Octile
     public OctilesBoard(String init,int nplay,long ran,int map[]) // default constructor
     {   drawing_style = DrawingStyle.STYLE_NOTHING; // STYLE_CELL or STYLE_LINES
     	Grid_Style = OctilesGRIDSTYLE; //coordinates left and bottom
-    	setColorMap(map);
+    	setColorMap(map, nplay);
     	construct();
         doInit(init,ran,nplay); // do the initialization 
      }

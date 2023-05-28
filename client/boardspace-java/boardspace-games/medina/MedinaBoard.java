@@ -176,7 +176,7 @@ class MedinaBoard extends rectBoard<MedinaCell> implements BoardProtocol,MedinaC
     public MedinaBoard(String init,long randomv,int players,int[]colors,int rev) // default constructor
     {   drawing_style = DrawingStyle.STYLE_NOTHING; // STYLE_CELL or STYLE_LINES
     	Grid_Style = MEDINAGRIDSTYLE; //coordinates left and bottom
-    	setColorMap(colors);
+    	setColorMap(colors, players);
         doInit(init,randomv,players,rev); // do the initialization 
      }
 

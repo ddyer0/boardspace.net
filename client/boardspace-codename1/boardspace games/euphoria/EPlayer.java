@@ -727,7 +727,9 @@ public void sameBoard(EPlayer other)
 	b.Assert(terriAuthorityHeight==other.terriAuthorityHeight,"terriAuthorityHeight mismatch");
 	b.Assert(taedAuthorityHeight==other.taedAuthorityHeight,"taedAuthorityHeight mismatch");
 	b.Assert(samuelTheZapperLevel==other.samuelTheZapperLevel,"samuelTheZapperLevel mismatch");
-
+	//long d1 = Digest( new Random(225356));
+	//long d2 = other.Digest( new Random(225356));
+	//b.Assert(d1==d2,"digest matches");
 }
 public static void sameBoard(EPlayer p,EPlayer o)
 {	G.Assert((p==null)==(o==null),"board players mismatch");
@@ -735,9 +737,10 @@ public static void sameBoard(EPlayer p,EPlayer o)
 }
 public void copyFrom(EPlayer other)
 {	for(EuphoriaCell c = allCells,d=other.allCells; c!=null; c=c.next,d=d.next) 
-	{
-		c.copyFrom(d);
+	{	// copyAllFrom because we may be changing color of the player
+		c.copyAllFrom(d);
 	}
+	color = other.color;
 	boardIndex = other.boardIndex;
 	knowledge = other.knowledge;
 	penaltyMoves = other.penaltyMoves;

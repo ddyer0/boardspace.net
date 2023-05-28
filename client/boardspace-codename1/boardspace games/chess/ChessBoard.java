@@ -129,7 +129,7 @@ class ChessBoard extends rectBoard<ChessCell> implements BoardProtocol,ChessCons
     public ChessBoard(String init,long rv,int np,RepeatedPositions rep,int map[],int rev) // default constructor
     {   repeatedPositions = rep;
     	displayParameters.reverse_y = true;			// put white on top
-        setColorMap(map);
+        setColorMap(map, np);
         doInit(init,rv,np,rev); // do the initialization 
         autoReverseYNormal();		// reverse_y based on the color map
      }

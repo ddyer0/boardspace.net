@@ -6261,7 +6261,7 @@ public abstract class commonCanvas extends exCanvas
             {
             	BoardProtocol b = getBoard();
                 b.setPermissiveReplay(true);
-                b.setColorMap(null);		// standardize the color map
+                b.setColorMap(null, -1);		// standardize the color map
                 b.resetClientRevision();	// forget revision from the previous game 
                 if (sound)
                 {	// temporarily turn sound off
@@ -6505,9 +6505,10 @@ public abstract class commonCanvas extends exCanvas
         ps.println(setup_property+"[" + gameType() + "]");
         ps.println(date_property+ "[" + startingTime + "]");
         ps.println(gamename_property + "[" + nameString + "]");
-        
+        if(History.size()>0)
+        {
         History.elementAt(0).printProperties(ps);
-        
+        }
         if(GameOver())
         {
         	ps.println(result_property+ "["+gameOverMessage()+"]");
@@ -6865,7 +6866,7 @@ public boolean replayStandardProps(String name,String value)
     else if(name.equalsIgnoreCase(colormap_property))
     {
     	
-    	getBoard().setColorMap(G.parseColorMap(value)); 
+    	getBoard().setColorMap(G.parseColorMap(value), -1); 
     	return(true);
     }
     else if(name.equalsIgnoreCase(timecontrol_property))
@@ -7538,7 +7539,7 @@ public void useStoryBuffer(String tok,StringTokenizer his)
 			if (KEYWORD_COLORMAP.equals(tok))
 			{
 				String cm = his.nextToken();
-				getBoard().setColorMap(G.parseColorMap(cm));
+				getBoard().setColorMap(G.parseColorMap(cm), -1);
 			}
 			else if(sgf_names.timecontrol_property.equalsIgnoreCase(tok))
 			{
@@ -8446,8 +8447,8 @@ public void verifyGameRecord()
 		 * for the chat window and the chat scroll bar, and the game log scroll bar.
 		 */
 		public void positionTheChat(Rectangle specRect,Color chatBackgroundColor,Color buttons)
-		{	gameLog.backgroundColor = chatBackgroundColor;
-			gameLog.foregroundColor = buttons;
+		{	if(chatBackgroundColor!=null) { gameLog.backgroundColor = chatBackgroundColor; }
+			if(buttons!=null) { gameLog.foregroundColor = buttons; }
 			super.positionTheChat(specRect,chatBackgroundColor,buttons);
 		}
 		public void actionPerformed(ActionEvent e)

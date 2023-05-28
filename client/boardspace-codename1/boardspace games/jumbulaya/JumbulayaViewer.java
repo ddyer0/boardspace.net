@@ -257,7 +257,7 @@ public class JumbulayaViewer extends CCanvas<JumbulayaCell,JumbulayaBoard> imple
        	int doneW = G.Width(editRect);
        	layout.placeRectangle(passButton, doneW,doneW/2,BoxAlignment.Center);
     	layout.alwaysPlaceDone = G.debug();
-       	layout.placeDoneEditRep(doneW,doneW,checkWordsButton, checkJumbulayaButton,vocabularyRect);
+       	layout.placeDoneEditRep(buttonW,buttonW,checkWordsButton, checkJumbulayaButton,vocabularyRect);
        	commonPlayer pl = getPlayerOrTemp(0);
        	int spare = G.Height(pl.playerBox)/2;
        	layout.placeRectangle(drawPileRect,spare,spare,BoxAlignment.Center);
@@ -1728,6 +1728,8 @@ public void verifyGameRecord()
     /** replay a move specified in SGF format.  
      * this is mostly standard stuff, but the contract is to recognize
      * the elements that we generated in sgf_save
+     *summary: 5/26/2023
+     *	296 files visited 0 problems
      */
     public void ReplayMove(sgf_node no)
     {

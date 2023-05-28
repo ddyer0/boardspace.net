@@ -507,7 +507,7 @@ public class BlackDeathBoard extends RBoard<BlackDeathCell> implements BoardProt
 	// constructor 
     public BlackDeathBoard(String init,int players,long key,int map[],int rev) // default constructor
     {
-        setColorMap(map);
+        setColorMap(map, players);
         reloadCells();
         doInit(init,key,players,rev); // do the initialization 
     }

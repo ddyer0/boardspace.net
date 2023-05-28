@@ -566,8 +566,8 @@ public class GameBoard extends hexBoard<zCell> implements BoardProtocol,GameCons
      }
     // this override is unusual, but necessary to account for 
     // the basic board shape changing after init
-    public void doInit(BaseBoard bb)
-    {	GameBoard b = (GameBoard)bb;
+    public void doInit(GameBoard b,long randomv)
+    {	
     	doInit(b.gametype,b.variation,b.boardSetup,b.randomKey);
     }
 

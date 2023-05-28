@@ -109,7 +109,7 @@ class HavannahBoard extends hexBoard<HavannahCell> implements BoardProtocol,Hava
     {
         drawing_style = DrawingStyle.STYLE_NOTHING; // don't draw the cells.  STYLE_CELL to draw them
         Grid_Style = HEXGRIDSTYLE;
-        setColorMap(map);
+        setColorMap(map, players);
 		Random r = new Random(734687);	// this random is used to assign hash values to cells, common to all games of this type.
 	    blackChipPool = new HavannahCell(r,HavannahId.Black_Chip_Pool);
 	    blackChipPool.addChip(HavannahChip.Black);

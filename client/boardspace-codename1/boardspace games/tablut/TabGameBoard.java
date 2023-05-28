@@ -166,7 +166,7 @@ class TabGameBoard extends rectBoard<TabCell> implements BoardProtocol,TabConsta
     {
         drawing_style = DrawingStyle.STYLE_NOTHING; // don't draw the cells.  STYLE_CELL to draw them
         Grid_Style = TABGRIDSTYLE;
-        setColorMap(map);
+        setColorMap(map, 2);
         revision = REVISION;
         doInit(init); // do the initialization 
     }

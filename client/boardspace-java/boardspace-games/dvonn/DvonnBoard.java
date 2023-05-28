@@ -276,7 +276,7 @@ class DvonnBoard extends hexBoard<DvonnCell> implements BoardProtocol,DvonnConst
     	pickedStack = new DvonnCell(r,DvonnId.PickedStack);
        	initBoard(ZfirstInCol, ZnInCol, ZfirstCol);
        	allCells.setDigestChain(r);
-    	setColorMap(map);            	
+    	setColorMap(map, 2);            	
     	doInit(init,random); // do the initialization 
     }
 

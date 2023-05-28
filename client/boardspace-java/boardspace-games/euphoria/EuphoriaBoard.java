@@ -1386,7 +1386,7 @@ public class EuphoriaBoard extends EuphoriaBoardConstructor implements EuphoriaC
     InternationalStrings s = null;
     public EuphoriaBoard(String init,long key,int np,int[]colormap,int rev) // default constructor
     {	s = G.getTranslations();
-    	setColorMap(colormap);
+    	setColorMap(colormap, np);
         doInit(init,key,np,rev); // do the initialization 
         int n = 0;
         for(EuphoriaCell c = allCells; c!=null; c=c.next) 
@@ -1409,7 +1409,7 @@ public class EuphoriaBoard extends EuphoriaBoardConstructor implements EuphoriaC
     }
     public void doInit(String gtype,long rv)
     {	boolean sp = REINIT_SIMULTANEOUS_PLAY;
-    	doInit(gtype,rv,players.length,revision);
+    	doInit(gtype,rv,players_in_game,revision);
     	REINIT_SIMULTANEOUS_PLAY = SIMULTANEOUS_PLAY = sp;
     }
     public EuphoriaBoard cloneBoard() 
@@ -1717,7 +1717,7 @@ public class EuphoriaBoard extends EuphoriaBoardConstructor implements EuphoriaC
         v ^= unusedRecruits.Digest(r);
 
         }
-
+        //G.print("D1 ",v);
         v ^= Digest(r,allegiance);
 		v ^= Digest(r,tunnelPosition);
 		v ^= r.nextLong()*(hasReducedRecruits?1:2);
@@ -1727,9 +1727,14 @@ public class EuphoriaBoard extends EuphoriaBoardConstructor implements EuphoriaC
         v ^= EuphoriaChip.Digest(r,selectedDieRoll);
         v ^= EuphoriaChip.Digest(r,activeRecruit);
         v ^= Digest(r,lastDroppedWorker);
+  
+        //G.print("D2 ",v);
       
         for(EPlayer p : players) { v ^= p.Digest(r); }
- 		// many games will want to digest pickedSource too
+        
+        //G.print("D3 ",v);
+
+        // many games will want to digest pickedSource too
 		// v ^= cell.Digest(r,pickedSource);
 		v ^= chip.Digest(r,pickedObject);
 		v ^= Digest(r,reUsingWorker);
@@ -1760,6 +1765,7 @@ public class EuphoriaBoard extends EuphoriaBoardConstructor implements EuphoriaC
 			}
 		
 		v ^= r.nextLong()*board_state.ordinal()+whoseTurn;
+		//G.print("D4 ",v);
 		return (v);
     }
 
@@ -6769,7 +6775,7 @@ private void doAmandaTheBroker(EuphoriaCell dest,replayMode replay,RecruitChip a
    			marketToOpen = null;
    		}
    		openedMarket = markets[idx].topChip();
-   		logGameEvent("Market: #1",openedMarket.name);
+   		logGameEvent(MarketName,openedMarket.name);
    		
    		// randomize the market at the time it is actually opened
      	if(variation==Variation.Euphoria3T)
@@ -7663,7 +7669,7 @@ private void doAmandaTheBroker(EuphoriaCell dest,replayMode replay,RecruitChip a
         case FightTheOpressor:
         case ConfirmUseJackoOrContinue:
      	case ConfirmUseMwicheOrContinue:
-     		return((c==getSource()) || (dests.get(c)!=null));
+     		return((c==getSource()) || (dests!=null && dests.get(c)!=null));
         case Retrieve:
         case RetrieveCommodityWorkers:
         case RetrieveOrConfirm:
@@ -7742,7 +7748,7 @@ private void doAmandaTheBroker(EuphoriaCell dest,replayMode replay,RecruitChip a
         case PayForOptionalEffect:
         case CollectBenefit:
         case CollectOptionalBenefit:
-            	return(sources.get(c)!=null);
+            	return(sources!=null && sources.get(c)!=null);
        	  
 		case EphemeralConfirmRecruits:
         case ConfirmRecruits:

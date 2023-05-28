@@ -170,7 +170,7 @@ class MeridiansBoard
     {
         drawing_style = DrawingStyle.STYLE_LINES; //  draw the cells as triangulated lines
         Grid_Style = GRIDSTYLE;
-        setColorMap(map);
+        setColorMap(map, players);
         
 		Random r = new Random(734687);
 		// do this once at construction

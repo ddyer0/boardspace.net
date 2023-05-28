@@ -38,6 +38,7 @@ public class NamedClasses {
 
     
     	// game classes
+    	classes.put("trike.TrikeViewer",trike.TrikeViewer.class);
     	classes.put("sprint.SprintViewer",sprint.SprintViewer.class);
     	classes.put("meridians.MeridiansViewer",meridians.MeridiansViewer.class);
     	classes.put("ordo.OrdoViewer",ordo.OrdoViewer.class);

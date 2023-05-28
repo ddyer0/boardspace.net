@@ -617,7 +617,7 @@ public class MagnetViewer extends CCanvas<MagnetCell,MagnetBoard> implements Mag
        for(int i=0;i<2;i++)
        {   commonPlayer pl = getPlayerOrTemp(i);
        	   pl.setRotatedContext(gc,selectPos,false);
-           DrawRack(gc, rackRects[i],randomRects[i],i, i==gb.whoseTurn?ourTurnSelect:null,gb);  	   
+           DrawRack(gc, rackRects[i],randomRects[i],i, ourTurnSelect,gb);  	   
            DrawChipPool(gc, chipRects[i],i);
            if(planned && (state!=MagnetState.Setup) && gb.whoseTurn==i)
     	   {
@@ -1123,7 +1123,9 @@ public class MagnetViewer extends CCanvas<MagnetCell,MagnetBoard> implements Mag
     /** replay a move specified in SGF format.  
      * this is mostly standard stuff, but the contract is to recognize
      * the elements that we generated in sgf_save
-     */
+     * summary: 5/25/2023
+		46 files visited 0 problems
+    */
     public void ReplayMove(sgf_node no)
     {
         String comments = "";

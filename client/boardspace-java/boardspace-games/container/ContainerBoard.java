@@ -1384,7 +1384,7 @@ public class ContainerBoard extends RBoard<ContainerCell> implements BoardProtoc
     
    public ContainerBoard(String init,int players,long ran,int map[]) // default constructor
     { 
-	   setColorMap(map);
+	   setColorMap(map, players);
 	   doInit(init,ran,players); // do the initialization 
        guiBoards = new GuiBoard[MAX_PLAYERS];
        for(int i=0;i<MAX_PLAYERS;i++) { guiBoards[i]=new GuiBoard(); }

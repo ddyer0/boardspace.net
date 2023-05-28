@@ -94,7 +94,7 @@ class VoloBoard extends hexBoard<VoloCell> implements BoardProtocol,VoloConstant
         playerChips = new CellStack[2];
         playerChips[0] = new CellStack();
         playerChips[1] = new CellStack();
-        setColorMap(map);
+        setColorMap(map, 2);
         doInit(init); // do the initialization 
     }
     public VoloBoard cloneBoard() 

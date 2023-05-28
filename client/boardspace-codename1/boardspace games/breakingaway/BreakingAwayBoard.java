@@ -451,7 +451,7 @@ class BreakingAwayBoard extends RBoard<BreakingAwayCell> implements BoardProtoco
 	}
 	
 	public BreakingAwayBoard(String init, long randomv, int npl,int map[]) // default constructor
-	{	setColorMap(map);
+	{	setColorMap(map, npl);
 		doInit(init, randomv, npl); // do the initialization
 	}
 

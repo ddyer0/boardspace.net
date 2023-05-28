@@ -199,7 +199,7 @@ class TraxGameBoard  extends BaseBoard implements BoardProtocol,TraxConstants
 		return(nextColorMatchxy(x,y,tile));
 	}
     public TraxGameBoard(String init,int map[]) // default constructor
-    {	setColorMap(map);
+    {	setColorMap(map, 2);
     	doInit(init); // do the initialization 
     }
 

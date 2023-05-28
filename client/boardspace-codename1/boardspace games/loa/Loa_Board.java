@@ -65,7 +65,7 @@ public class Loa_Board extends BaseBoard implements BoardProtocol,UIC,Play2Const
 
     // constructor 
     public Loa_Board(String init_option,int map[],long random)
-    {	setColorMap(map);
+    {	setColorMap(map, 2);
     	randomKey = random;
     	revision = REVISION;
         doInit(init_option);

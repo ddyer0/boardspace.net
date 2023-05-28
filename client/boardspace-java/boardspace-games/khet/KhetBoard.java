@@ -71,7 +71,7 @@ class KhetBoard extends rectBoard<KhetCell> implements BoardProtocol,KhetConstan
     public KhetBoard(String init,long key,int map[]) // default constructor
     {   drawing_style = DrawingStyle.STYLE_NOTHING; // STYLE_CELL or STYLE_LINES
     	Grid_Style = KHETGRIDSTYLE; //coordinates left and bottom
-    	setColorMap(map);
+    	setColorMap(map, 2);
         doInit(init,key); // do the initialization 
         autoReverseY();		// reverse_y based on the color map
      }

@@ -132,7 +132,7 @@ public class GoBoard extends squareBoard<GoCell> implements BoardProtocol,GoCons
 		captureStack[0] = new CellStack();
 		captureStack[1] = new CellStack();
 
-        setColorMap(map);
+        setColorMap(map, np);
         doInit(init,rv,np); // do the initialization 
      }
     

@@ -846,6 +846,10 @@ public class YinshGameViewer extends CCanvas<YinshCell,YinshBoard> implements Yi
     	}
     	return(super.parsePlayerInfo(p, first, tokens));
     }
+    /**
+     * summary: 5/23/2023
+		28849 files visited 0 problems
+     */
    public void ReplayMove(sgf_node no)
     {
         String comments = "";

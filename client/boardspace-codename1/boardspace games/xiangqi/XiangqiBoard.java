@@ -114,7 +114,7 @@ public class XiangqiBoard extends rectBoard<XiangqiCell> implements BoardProtoco
     	 Grid_Style[1]=XIANGQIGRIDSTYLE[1]; //coordinates left and bottom
     	 Grid_Style[2]=XIANGQIGRIDSTYLE[2]; //coordinates left and bottom
     	 repeatedPositions = rep;			//share the repeated positions list with the viewer
-    	 setColorMap(map);
+    	 setColorMap(map, 2);
     	 doInit(init,key); // do the initialization 
          autoReverseY();		// reverse_y based on the color map
     }

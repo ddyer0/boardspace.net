@@ -94,7 +94,7 @@ class TriadBoard extends hexBoard<TriadCell> implements BoardProtocol,TriadConst
         Grid_Style = TRIADGRIDSTYLE;
         players_in_game = 3;
         win = new boolean[3];
-        setColorMap(map);
+        setColorMap(map, 3);
         doInit(init); // do the initialization 
     }
     public TriadBoard cloneBoard() 

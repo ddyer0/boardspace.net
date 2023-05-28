@@ -11,7 +11,7 @@ import dictionary.Dictionary;
 
 
 /**
- * Initial work September 2020
+ * Initial work May2023
  *  
  * This shares a lot with Crosswords and other word games.
  * if any features or bug fixes occur, evaluate them too.
@@ -93,7 +93,7 @@ class SprintBoard extends BaseBoard implements BoardProtocol
        	dictionary = di;
         robotVocabulary = dictionary.orderedSize;
 
-        setColorMap(map);
+        setColorMap(map, players);
     	// allocate the rack map once and for all, it's not used in the board
     	// only as part of the UI.
 

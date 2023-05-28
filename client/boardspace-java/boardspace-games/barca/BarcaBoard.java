@@ -92,7 +92,7 @@ class BarcaBoard extends rectBoard<BarcaCell> implements BoardProtocol,BarcaCons
     {	
         drawing_style = DrawingStyle.STYLE_NOTHING; // don't draw the cells.  STYLE_CELL to draw them
         Grid_Style = BARCAGRIDSTYLE;
-        setColorMap(map);
+        setColorMap(map, players);
         doInit(init,key,players,rev); // do the initialization 
         autoReverseYNormal();		// reverse_y based on the color map
    }

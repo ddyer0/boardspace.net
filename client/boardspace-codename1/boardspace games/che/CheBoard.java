@@ -106,7 +106,7 @@ class CheBoard extends infiniteRectangularBoard<CheCell> implements BoardProtoco
         drawing_style = DrawingStyle.STYLE_NOTHING; // don't draw the cells.  STYLE_CELL to draw them
         Grid_Style = CheGRIDSTYLE;
         revision = REVISION;
-        setColorMap(map);
+        setColorMap(map, 2);
         doInit(init,0L); // do the initialization 
     }
     public CheCell GetOccupiedCell(int i) { return(occupiedCells.elementAt(i)); }

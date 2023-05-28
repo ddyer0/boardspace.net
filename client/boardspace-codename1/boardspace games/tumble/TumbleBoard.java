@@ -69,7 +69,7 @@ class TumbleBoard extends rectBoard<TumbleCell> implements BoardProtocol,TumbleC
     public TumbleBoard(String init,int map[]) // default constructor
     {   drawing_style = DrawingStyle.STYLE_NOTHING; // STYLE_CELL or STYLE_LINES
     	Grid_Style = TUMBLEGRIDSTYLE; //coordinates left and bottom
-    	setColorMap(map);
+    	setColorMap(map, 2);
         doInit(init); // do the initialization
         autoReverseY();		// reverse_y based on the color map
      }

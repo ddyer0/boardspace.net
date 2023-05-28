@@ -18,6 +18,7 @@ public class CrossfireMovespec extends commonMove implements CrossfireConstants
         D.putInt("Drop", MOVE_DROP);
         D.putInt("Dropb", MOVE_DROPB);
         D.putInt("Move", MOVE_FROM_TO);
+        D.putInt("reject",MOVE_REJECT);
         D.putInt("Reserve", MOVE_FROM_RESERVE);
         D.putInt("RobotResign",MOVE_ROBOT_RESIGN);
   }
@@ -206,7 +207,7 @@ public class CrossfireMovespec extends commonMove implements CrossfireConstants
 
         case MOVE_DONE:
             return ("");
-
+ 
         case MOVE_ROBOT_RESIGN:
         	return(RESIGN);
         default:

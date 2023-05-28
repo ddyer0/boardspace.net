@@ -858,8 +858,8 @@ private Color playerBackground[] = {
        			{
        			// if we're allowed to pick them up, draw face up.  Don't allow an uncommitted card to be seen.
        			boolean isDest = gb.isDest(cell);
-       			// always hidden in the un-enlarged display
-       			hit = drawStack(gc,highlight,CELLSIZE/2,cell,xpos,ypos,1.25/(1+cell.height()),0.0,"?");
+       			// always hidden and unselectable in the un-enlarged display
+       			hit = drawStack(gc,null,CELLSIZE/2,cell,xpos,ypos,1.25/(1+cell.height()),0.0,"?");
         		if(hit && !isDest )
        			{	if(highlight.down || !G.isTouchInterface() )
        			{
@@ -2310,10 +2310,7 @@ private Color playerBackground[] = {
        		TextGlyph.create("Gold","xx",EuphoriaChip.Gold,this,chipScales),
        		TextGlyph.create("Stone","xx",EuphoriaChip.Stone,this,stoneScales),
        		TextGlyph.create("Clay","xx",EuphoriaChip.Clay,this,chipScales),
-       		TextGlyph.create("ConstructionSiteGold","xx",EuphoriaChip.Gold,this,chipScales),
-       		TextGlyph.create("ConstructionSiteStone","xx",EuphoriaChip.Stone,this,stoneScales),
-       		TextGlyph.create("ConstructionSiteClay","xx",EuphoriaChip.Clay,this,chipScales),
-
+ 
        		TextGlyph.create("Artifact","xx",ArtifactChip.CardBack,this,cardScales),
     		TextGlyph.create("Commodity","xx",EuphoriaChip.Commodity,this,new double[]{1.0,1.0,0,-0.5}),
     		TextGlyph.create("Resource","xx",EuphoriaChip.Resource,this,new double[]{1.0,1.0,0,-0.5}),
@@ -2607,7 +2604,7 @@ private Color playerBackground[] = {
 	   {
 		   drawGlobalRecruits(gc,gb, selectPos);
 	   }
-       else 
+       else if(!recruitGui)
        { showHiddenUI = false;	// make sure we will start hiding
          minimizeOverlay = false;
        }
@@ -2628,9 +2625,7 @@ private Color playerBackground[] = {
 			// is currently active.
 			if(!face) { handleDone(gc,gb,buttonSelect,doneRect); }
 			
-			if(currentZoom==null)
-				{ handleEditButton(gc,messageRotation,editRect,buttonSelect, selectPos,HighlightColor, rackBackGroundColor);
-				}
+			handleEditButton(gc,messageRotation,editRect,buttonSelect, selectPos,HighlightColor, rackBackGroundColor);
  
         }
 
@@ -3372,6 +3367,7 @@ private Color playerBackground[] = {
     /** replay a move specified in SGF format.  
      * this is mostly standard stuff, but the contract is to recognize
      * the elements that we generated in sgf_save
+     * 5/25/2023 no problems
      */
     public void ReplayMove(sgf_node no)
     {

@@ -285,9 +285,9 @@ public abstract class gBoard<CELLTYPE extends cell<CELLTYPE>> extends fBoard<CEL
 	   displayParameters.autoReverseYNormal = true; 
 	   displayParameters.autoReverseY=false;}
 
-	public void setColorMap(int[]map)
+	public void setColorMap(int[]map, int players)
 	{
-		super.setColorMap(map);
+		super.setColorMap(map, players);
 		if(displayParameters.autoReverseY) { autoReverseY(); }
 		if(displayParameters.autoReverseYNormal) { autoReverseYNormal(); }
 	}
