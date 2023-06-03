@@ -342,7 +342,7 @@ public class BlackDeathViewer extends CCanvas<BlackDeathCell,BlackDeathBoard> im
             Rectangle vr = new Rectangle((int)(v0x+i*boxw),v0y,boxi ,boxi);
             boolean can = targets.get(cell)!=null;
 
-            HitPoint.setHelpText(highlightAll,vr,s.get("Virulence #1",i));
+            HitPoint.setHelpText(highlightAll,vr,s.get(Virulence,i));
             if(cell.drawStack(gc,this,can ? highlight:null,(int)boxw,G.centerX(vr),G.centerY(vr),0,0,0,null))
             	{
             		highlight.spriteRect = vr;
@@ -354,7 +354,7 @@ public class BlackDeathViewer extends CCanvas<BlackDeathCell,BlackDeathBoard> im
             BlackDeathCell cell = pb.mortalityCells[i];
             Rectangle mr = new Rectangle((int)(v0x+i*boxw),v0y+boxi,boxi ,boxi);
             boolean can = targets.get(cell)!=null;
-            HitPoint.setHelpText(highlightAll,mr,s.get("Mortality #1",i));
+            HitPoint.setHelpText(highlightAll,mr,s.get(Mortality,i));
             if(cell.drawStack(gc,this,can ? highlight:null,(int)boxw,G.centerX(mr),G.centerY(mr),0,0,0,null))
         	{
         		highlight.spriteRect = mr;
@@ -1297,7 +1297,9 @@ public class BlackDeathViewer extends CCanvas<BlackDeathCell,BlackDeathBoard> im
 				}
 				break;
 			case Confirm:
-				if(!bb.isDest(hitObject))
+				{
+				BlackDeathCell ho = bb.getCell(hitObject);
+				if(!bb.isDest(ho))
 					{
 					// note that according to the general theory, this shouldn't
 					// ever occur because inappropriate spaces won't be mouse sensitve.
@@ -1305,11 +1307,11 @@ public class BlackDeathViewer extends CCanvas<BlackDeathCell,BlackDeathBoard> im
 					throw G.Error("shouldn't hit a chip in state "+state);
 					}
 				else {
-					BlackDeathMovespec mm = bb.getDestMove(hitObject);
+					BlackDeathMovespec mm = bb.getDestMove(ho);
 					if(mm!=null) 
 						{ undoToMove(mm);
 						}
-				}
+				}}
 				break;
 			case Puzzle:
 				noBigChip = false;

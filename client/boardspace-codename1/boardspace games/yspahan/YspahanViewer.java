@@ -666,18 +666,16 @@ public class YspahanViewer extends CCanvas<YspahanCell,YspahanBoard> implements 
         textures[nPlayers==3?CARAVAN_3_INDEX:CARAVAN_INDEX].centerImage(gc, br);
     	YspahanBoard.Caravan pb = gb.caravan;
     	// correct for the 3 player camel track, which is has rows of 3 instead of 4
-    	Rectangle r2 = (nPlayers==3) ? new Rectangle(G.Left(br),G.Top(br),
-    			neww,G.Height(br)) : br;
+    	Rectangle r2 = (nPlayers==3) 
+    						? new Rectangle(G.Left(br)-neww/30,G.Top(br),neww,G.Height(br)) 
+    						: br;
     	pb.setDisplayRectangle(r2);
     	boolean moving =  gb.pickedObject==null;
     	YspahanCell caravan[] = pb.caravan;
-    	int lim = caravan.length;
-    	if(nPlayers==3) { lim = lim/4*3; }
     	for(YspahanCell c : caravan) 
     	{	int xpos = pb.getX(c);
     		int ypos = pb.getY(c);
     		HitPoint myHigh = gb.legalToHitCell(c) ? highlight : null;
-    		//StockArt.SmallO.drawChip(gc,this,SQUARESIZE,xpos,ypos,""+c.row);
     		if(c.drawStack(gc,this,c.legalToAdd(gb.pickedObject)?myHigh:null,CELLSIZE,xpos,ypos,0, 1.0,null))
     		{	highlight.awidth = CELLSIZE/2;
     			highlight.arrow = moving?StockArt.UpArrow:StockArt.DownArrow;
@@ -1534,9 +1532,13 @@ private void playSounds(commonMove m)
     {	nextIntCompatabilityKludge(b,name,value,"Aug 25 2012");
     	return(super.replayStandardProps(name,value));
     }
+    
+    
     /** replay a move specified in SGF format.  
      * this is mostly standard stuff, but the key is to recognize
      * the elements that we generated in sgf_save
+     * summary: 5/23/2023
+		2061 files visited 0 problems
      */
     public void ReplayMove(sgf_node no)
     {

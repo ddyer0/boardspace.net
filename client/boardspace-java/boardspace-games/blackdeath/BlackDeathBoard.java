@@ -215,28 +215,20 @@ class PlayerBoard implements Digestable,CompareTo<PlayerBoard>
 	
 	public long Digest(Random r) {
 		long v = color.Digest(r);
-		//G.print("\np1 ",v);
 		v ^= chipCount*r.nextLong();
 		v ^= virulence*r.nextLong();
 		v ^= mortality*r.nextLong();
 		v ^= bodyCount*r.nextLong();
-		//G.print("p2 ",v);
 		v ^= baseVirulence*r.nextLong();
 		v ^= baseMortality*r.nextLong();
 		v ^= usedAutomaticWin*r.nextLong();
 		v ^= (virulenceSet?1235:023562)*r.nextLong();
 		v ^= (initialPlacementDone?523:252646)*r.nextLong();
-		//G.print("p3 ",v);
 		v ^= cards.Digest(r);
-		//G.print("p31 ",v);
 		v ^= parent.Digest(r,initialInfectionDone);
-		//G.print("p32 ",v);
 		v ^= temporaryCards.Digest(r);
-		//G.print("p33 ",v);
 		v ^= parent.Digest(r,closedRegions);
-		//G.print("p34 ",v);
 		v ^= closedLinks.Digest(r);
-		//G.print("p4 ",v);
 		return v;
 	}
 	public void sameBoard(PlayerBoard other)
@@ -989,7 +981,6 @@ public class BlackDeathBoard extends RBoard<BlackDeathCell> implements BoardProt
         //
         Random r = new Random(64 * 1000); // init the random number generator
         long v = super.Digest(r);
-        //G.print("\nD1 ",v);
 		// many games will want to digest pickedSource too
 		// v ^= cell.Digest(r,pickedSource);
 		v ^= chip.Digest(r,pickedObject);
@@ -998,9 +989,7 @@ public class BlackDeathBoard extends RBoard<BlackDeathCell> implements BoardProt
 		v ^= Digest(r,droppedDestStack);
 		v ^= Digest(r,revision);
 		v ^= r.nextLong()*(board_state.ordinal()*10+whoseTurn);
-		//G.print("D2 ",v);
 		for(int i=0;i<pbs.length;i++) { v ^= pbs[i].Digest(r); }
-		//G.print("D3 ",v);
 		v ^= Digest(r,turnOrder);
 		v ^= Digest(r,movementPoints);
 		v ^= Digest(r,infectionPoints);
@@ -1014,7 +1003,6 @@ public class BlackDeathBoard extends RBoard<BlackDeathCell> implements BoardProt
 		v ^= Digest(r,dropCost);
 		v ^= Digest(r,drawPile);
 		v ^= Digest(r,discardPile);
-		//G.print("D4 ",v);
 		return (v);
     }
     public void setWhoseTurn(int n)

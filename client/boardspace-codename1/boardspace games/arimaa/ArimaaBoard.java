@@ -90,12 +90,12 @@ class ArimaaBoard extends squareBoard<ArimaaCell> implements BoardProtocol,Arima
     // be represented explicitly, so unwinding is easy and reliable.
     public ArimaaChip pickedObject = null;
     public int playStep = 0;
-    private ArimaaCell pickedSourceStack[] = new ArimaaCell[10];
-    private ArimaaCell droppedDestStack[] = new ArimaaCell[10];
-    private ArimaaChip captureStack[] = new ArimaaChip[10];
-    private ArimaaCell capturedCellStack[] = new ArimaaCell[10];
-    private ArimaaChip captureStack2[] = new ArimaaChip[10];
-    private ArimaaCell capturedCellStack2[] = new ArimaaCell[10];
+    private ArimaaCell pickedSourceStack[] = new ArimaaCell[14];
+    private ArimaaCell droppedDestStack[] = new ArimaaCell[14];
+    private ArimaaChip captureStack[] = new ArimaaChip[14];
+    private ArimaaCell capturedCellStack[] = new ArimaaCell[14];
+    private ArimaaChip captureStack2[] = new ArimaaChip[14];
+    private ArimaaCell capturedCellStack2[] = new ArimaaCell[14];
     private ArimaaChip capturedPiece = null;
     private ArimaaCell capturedLocation = null;
     private ArimaaChip capturedPiece2 = null;
@@ -2066,7 +2066,9 @@ public long Digest()
       		  				setState(ArimaaState.PLAY_STATE);
        		  				playStep--;
        		  				}
-       		  			else { pickObject(ArimaaId.BoardLocation,m.from_col,m.from_row); }
+       		  			else { pickObject(ArimaaId.BoardLocation,m.from_col,m.from_row);
+       		  				setNextStateAfterPick();
+       		  			}
        		  			break;
          		  	case PLAY_STATE:
         		  		{
@@ -2194,7 +2196,7 @@ public long Digest()
         switch (board_state)
         {
         case CONFIRM_STATE:
-        	if(started) { return(false); }
+        	if(started) { return(isDest(cell)); }
         	/*$FALL-THROUGH$*/
         case INITIAL_SETUP_STATE:
         	if(whoseTurn==playerColor[FIRST_PLAYER_INDEX])

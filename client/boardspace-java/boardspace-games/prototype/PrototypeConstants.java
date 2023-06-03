@@ -21,6 +21,7 @@ public interface PrototypeConstants
 		Black, // positive numbers are trackable
 		White,
 		BoardLocation,
+		ReverseView,
 		ToggleEye, 
 		;
 		PrototypeChip chip;

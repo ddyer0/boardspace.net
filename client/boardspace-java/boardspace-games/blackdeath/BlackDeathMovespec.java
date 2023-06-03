@@ -2,14 +2,11 @@ package blackdeath;
 
 import java.util.*;
 
-import blackdeath.BlackDeathConstants.BlackDeathColor;
-import blackdeath.BlackDeathConstants.BlackDeathId;
-import blackdeath.BlackDeathConstants.CardEffect;
 import lib.G;
 import lib.Text;
 import online.game.*;
 import lib.ExtendedHashtable;
-public class BlackDeathMovespec extends commonMPMove
+public class BlackDeathMovespec extends commonMPMove implements BlackDeathConstants
 {	// this is the dictionary of move names
     static ExtendedHashtable D = new ExtendedHashtable(true);
     static final int MOVE_PICK = 204; // pick a chip from a pool
@@ -60,7 +57,7 @@ public class BlackDeathMovespec extends commonMPMove
         "Reinfect", MOVE_REINFECT,
         "PerfectRoll",MOVE_PERFECTROLL,
         "PerfectNext", MOVE_USE_PERFECTROLL,
-        "Playcard", MOVE_PLAYCARD,
+         PlayCard, MOVE_PLAYCARD,
         "killAndRemove",MOVE_KILLANDREMOVE,
         "quarantine", MOVE_QUARANTINE,
         "pogrom",MOVE_POGROM,
@@ -69,7 +66,7 @@ public class BlackDeathMovespec extends commonMPMove
         "tempMortality", MOVE_TEMPORARY_CHANGE_MORTALITY,
         "tempSwap",MOVE_TEMPORARY_SWAP_VIRULENCE,
         "closelink", MOVE_TEMPORARY_CLOSE,
-        "escape", MOVE_ESCAPE);
+         Escape, MOVE_ESCAPE);
     }
     //
     // adding these makes the move specs use Same_Move_P instead of == in hash tables

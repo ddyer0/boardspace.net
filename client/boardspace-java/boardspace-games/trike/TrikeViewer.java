@@ -79,7 +79,7 @@ public class TrikeViewer extends CCanvas<TrikeCell,TrikeBoard> implements TrikeC
 {		// move commands, actions encoded by movespecs.  Values chosen so these
     // integers won't look quite like all the other integers
  	
-    static final String Prototype_SGF = "trike"; // sgf game name
+    static final String Trike_SGF = "trike"; // sgf game name
 
     // file names for jpeg images and masks
     static final String ImageDir = "/trike/images/";
@@ -995,7 +995,7 @@ public class TrikeViewer extends CCanvas<TrikeCell,TrikeBoard> implements TrikeC
     	}	
      
     // this is the subgame "setup" within the master type.
-    public String sgfGameType() { return(Prototype_SGF); }	// this is the official SGF number assigned to the game
+    public String sgfGameType() { return(Trike_SGF); }	// this is the official SGF number assigned to the game
 
    
     /**

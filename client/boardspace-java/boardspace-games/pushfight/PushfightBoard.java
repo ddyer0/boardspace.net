@@ -477,7 +477,6 @@ class PushfightBoard extends squareBoard<PushfightCell> implements BoardProtocol
     	setState(stateStack.pop());
     	SetBoard(rv,pickedObject);
     	setPiece(rv,pickedObject);
-    	rv.addChip(pickedObject);
     	rv.lastEmptied = previousLastEmptied;
     	rv.lastEmptiedPlayer = previousLastPlayer;
     	pickedObject = null;

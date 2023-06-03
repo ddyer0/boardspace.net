@@ -5547,6 +5547,11 @@ public abstract class commonCanvas extends exCanvas
     	&& !l.drawingGameOverlay			// not in the endgame on time dialog
     	&& !hasDeferredMessages());
     }
+    //
+    // there's a rare glitch where the robot can be triggered twice, one example
+    // is  U!HV-Dumbot-wls-2022-06-30-2206 move 31
+    // TODO: fix the rare "double robot" glitch
+    //
     public void startRobotTurn(commonPlayer p)
     {
         if (canStartRobotTurn(p))

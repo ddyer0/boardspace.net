@@ -119,6 +119,7 @@ public class PrototypeViewer extends CCanvas<PrototypeCell,PrototypeBoard> imple
  			StockArt.NoEye,PrototypeId.ToggleEye,NoeyeExplanation,
  			StockArt.Eye,PrototypeId.ToggleEye,EyeExplanation
  			);
+    private Rectangle reverseRect = addRect("reverse");
     private Rectangle chipRects[] = addZoneRect("chip",2);
  	private TextButton swapButton = addButton(SWAP,GameId.HitSwapButton,SwapDescription,
 			HighlightColor, rackBackGroundColor,rackIdleColor);
@@ -355,7 +356,7 @@ public class PrototypeViewer extends CCanvas<PrototypeCell,PrototypeBoard> imple
         int stateY = boardY;
         int stateX = boardX;
         int stateH = fh*3;
-        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,numberMenu,eyeRect,noChatRect);
+        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,numberMenu,eyeRect,reverseRect,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	if(rotate)
     	{	// this conspires to rotate the drawing of the board
@@ -434,7 +435,7 @@ public class PrototypeViewer extends CCanvas<PrototypeCell,PrototypeBoard> imple
         int stateX = C2;
         int stateH = CELLSIZE;
         int stateW = G.Width(boardRect);
-        G.placeRow(stateX+stateH,stateY,stateW-stateH,stateH,stateRect,noChatRect);
+        G.placeRow(stateX+stateH,stateY,stateW-stateH,stateH,stateRect,reverseRect,noChatRect);
         G.SetRect(iconRect, stateX, stateY, stateH, stateH);
         
  		G.SetRect(swapButton,G.Left( boardRect) + CELLSIZE, G.Top(boardRect)+(doRotation?2:12)*CELLSIZE,
@@ -796,6 +797,7 @@ public class PrototypeViewer extends CCanvas<PrototypeCell,PrototypeBoard> imple
             //      DrawRepRect(gc,pl.displayRotation,Color.black,b.Digest(),repRect);
         eyeRect.activateOnMouse = true;
         eyeRect.draw(gc,selectPos);
+        DrawReverseMarker(gc,reverseRect,selectPos,PrototypeId.ReverseView);
         // draw the vcr controls, last so the pop-up version will be above everything else
         drawVcrGroup(nonDragSelect, gc);
 
@@ -1044,6 +1046,10 @@ public class PrototypeViewer extends CCanvas<PrototypeCell,PrototypeBoard> imple
             {
             	throw G.Error("Hit Unknown object " + hitObject);
             }
+        	break;
+        case ReverseView:
+        	bb.setReverseY(bb.reverseY());
+        	generalRefresh();
         	break;
         case ToggleEye:
         	eyeRect.toggle();

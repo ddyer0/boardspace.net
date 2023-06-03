@@ -949,7 +949,7 @@ public variation gamevariation = variation.hive;
     	switch(board_state)
     	{
     	case DrawPending:
-    	case DeclinePending:	// the accept/decline draw shouldn't affect the stun status
+    	case DeclinePending:	// the accept/decline draw shouldn't affect the stun status see HV-guest-guest-2021-05-23-1235
     		break;
     	default:
     		stunned = prestun;
@@ -1603,7 +1603,11 @@ public variation gamevariation = variation.hive;
         		setState(HiveState.AcceptOrDecline); 
         		break;
         	case AcceptOrDecline:
-        	case AcceptPending: setState(HiveState.DeclinePending); break;
+        	case AcceptPending: 
+        		// an important point here is that declining the draw doesn't change
+        		// the pillbug stunned piece.  See HV-guest-guest-2021-05-23-1235 for
+        		// a test case (one that was done incorrectly at the time)
+        		setState(HiveState.DeclinePending); break;
         	default: throw G.Error("Not expecting %s",board_state);
         	}
         	break;

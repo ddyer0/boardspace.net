@@ -47,8 +47,12 @@ public interface BlackDeathConstants
 	static final String AlwaysSucceeds = "always suceeds";
 	static final String AlwaysFails = "always fails";
 	static final String RollDetails = "virulence #1 #2";
+	static final String Virulence = "Virulence #1";
+	static final String Mortality = "Mortality #1";
 	static final String Success = "Succeeds";
 	static final String Failure = "Fails";
+	static final String Escape = "escape";
+	static final String PlayCard = "Playcard";
 	
 	enum DiseaseMod {
 		None,Wet,Cold,Warm,Crowd;
@@ -241,6 +245,10 @@ enum BlackDeathColor implements Digestable
 				RollDetails,
 				Success,
 				Failure,
+				Virulence,
+				Escape,
+				PlayCard,
+				Mortality,
 				AlwaysSucceeds,
 				BlackDeathRollState,
 				AlwaysFails,

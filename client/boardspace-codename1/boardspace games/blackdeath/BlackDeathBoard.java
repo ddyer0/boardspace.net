@@ -151,6 +151,7 @@ class PlayerBoard implements Digestable,CompareTo<PlayerBoard>
 		usedAutomaticWin = 0;
 		Random r0 = new Random(3455346);
 		Random r = new Random(924535+color.Digest(r0));
+		
 		chipCell = new BlackDeathCell(r,BlackDeathId.PlayerChips,color);
 		cards = new BlackDeathCell(r,BlackDeathId.Cards,color);
 		temporaryCards = new BlackDeathCell(r,BlackDeathId.TemporaryCards,color);
@@ -186,7 +187,12 @@ class PlayerBoard implements Digestable,CompareTo<PlayerBoard>
 	public PlayerBoard copyTo(PlayerBoard to)
 	{
 		if(to==null ) { to = new PlayerBoard(); }
-		to.chipCell.copyFrom(chipCell);	// needed for animations of board copy
+		
+		// these need copyall because the cell incorporates the color which is changeable
+		to.chipCell.copyAllFrom(chipCell);	// needed for animations of board copy
+		to.cards.copyAllFrom(cards);
+		to.temporaryCards.copyAllFrom(temporaryCards);
+
 		to.index = index;
 		to.color = color;
 		to.parent = parent;
@@ -199,9 +205,7 @@ class PlayerBoard implements Digestable,CompareTo<PlayerBoard>
 		to.virulenceSet = virulenceSet;
 		to.bodyCount = bodyCount;
 		to.initialPlacementDone = initialPlacementDone;
-		to.cards.copyFrom(cards);
 		to.initialInfectionDone = initialInfectionDone;
-		to.temporaryCards.copyFrom(temporaryCards);
 		parent.getCell(to.closedRegions,closedRegions);
 		to.closedLinks.copyFrom(closedLinks);
 		parent.copyFrom(to.mortalityCells,mortalityCells);
@@ -246,6 +250,9 @@ class PlayerBoard implements Digestable,CompareTo<PlayerBoard>
 		G.Assert(temporaryCards.sameContents(other.temporaryCards),"temporaryCards mismatch");
 		G.Assert(parent.sameCells(closedRegions, other.closedRegions),"closedRegions mismatch");
 		G.Assert(closedLinks.sameContents(other.closedLinks),"closed links mismatch");
+		long v1 = Digest(new Random(35325));
+		long v2 = other.Digest(new Random(35325));
+		G.Assert(v1==v2,"Digest matches");
 	}
 	
 	private long randomLong()
@@ -933,7 +940,9 @@ public class BlackDeathBoard extends RBoard<BlackDeathCell> implements BoardProt
         // this is a good overall check that all the copy/check/digest methods
         // are in sync, although if this does fail you'll no doubt be at a loss
         // to explain why.
-        G.Assert(Digest()==from_b.Digest(),"Digest matches");
+        long v1 = Digest();
+        long v2 = from_b.Digest();
+        G.Assert(v1==v2,"Digest matches");
 
     }
 
