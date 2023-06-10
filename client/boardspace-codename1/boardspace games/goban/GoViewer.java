@@ -22,6 +22,7 @@ import lib.LFrameProtocol;
 import lib.OStack;
 import lib.PopupManager;
 import lib.StockArt;
+import lib.Image;
 
 import static goban.GoMovespec.*;
 /**
@@ -409,7 +410,7 @@ public class GoViewer extends CCanvas<GoCell,GoBoard> implements GoConstants, Ga
     	return(super.gameProgressString());
     }
 
-
+    Image scaled = null;
 
     /* draw the deep unchangable objects, including those that might be rather expensive
      * to draw.  This background layer is used as a backdrop to the rest of the activity.
@@ -429,7 +430,7 @@ public class GoViewer extends CCanvas<GoCell,GoBoard> implements GoConstants, Ga
        
       // if the board is one large graphic, for which the visual target points
       // are carefully matched with the abstract grid
-     b.variation.image.image.centerImage(gc, boardRect);
+      scaled = b.variation.image.image.centerScaledImage(gc, boardRect,scaled);
 
       b.DrawGrid(gc,boardRect,use_grid,Color.white,Color.black,Color.black,Color.black);
       // add the hoshi points
@@ -1689,6 +1690,8 @@ private void playSounds(commonMove m)
     /** replay a move specified in SGF format.  
      * this is mostly standard stuff, but the key is to recognize
      * the elements that we generated in sgf_save
+     * summary: 5/27/2023
+		657 files visited 0 problems
      */
     public void ReplayMove(sgf_node no)
     {

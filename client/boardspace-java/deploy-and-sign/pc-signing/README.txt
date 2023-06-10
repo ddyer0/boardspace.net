@@ -14,10 +14,10 @@ in the launch4j sources, embodied in l4jsign.bat
 
 Sign with l4jsign.bat
 
-use launch-jsmooth.bat to start jsmooth
-use jsmooth and "boardspace-embedded-jre" to produce a new boardspace.net.exe, which is 
-the boardspace launcher bundled with it's own jvm.  The jvm used is whatever
-is in ../boardspace.net/java/
+use launch4j and boardspace-embedded.xml to generate boardspace.net/boardspace.net.exe
+sign with launch4jembedded.bat
+compress to boardspace.net.zip
+
 
 use "jbuild.bat" to produce a .msi bundled with a jvm - this uses the official
 jpackage technology which works but which doesn't handle signing issues.

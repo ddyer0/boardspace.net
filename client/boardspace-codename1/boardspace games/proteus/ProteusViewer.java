@@ -16,6 +16,7 @@ import lib.ExtendedHashtable;
 import lib.G;
 import lib.GC;
 import lib.HitPoint;
+import lib.Image;
 import lib.LFrameProtocol;
 import lib.StockArt;
 import lib.Text;
@@ -328,7 +329,7 @@ public class ProteusViewer extends CCanvas<ProteusCell,ProteusBoard> implements 
     	ch.drawChip(g,this,SQUARESIZE,xp,yp,null);
      }
 
-
+    Image scaled = null;
     /* draw the deep unchangable objects, including those that might be rather expensive
      * to draw.  This background layer is used as a backdrop to the rest of the activity.
      * in our cease, we draw the board and the chips on it. 
@@ -346,7 +347,7 @@ public class ProteusViewer extends CCanvas<ProteusCell,ProteusBoard> implements 
       
       // if the board is one large graphic, for which the visual target points
       // are carefully matched with the abstract grid
-     ProteusChip.board.image.centerImage(gc, boardRect);
+      scaled = ProteusChip.board.image.centerScaledImage(gc, boardRect,scaled);
 
 	  b.SetDisplayParameters(0.8,0.89,  0.025,0.05, 0);
 	  b.SetDisplayRectangle(boardRect);
@@ -817,6 +818,8 @@ private void playSounds(commonMove m)
     /** replay a move specified in SGF format.  
      * this is mostly standard stuff, but the key is to recognize
      * the elements that we generated in sgf_save
+     * summary: 5/27/2023
+		846 files visited 0 problems
      */
     public void ReplayMove(sgf_node no)
     {

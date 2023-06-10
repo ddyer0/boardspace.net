@@ -41,6 +41,13 @@ public enum TrenchState implements BoardState,TrenchConstants
 	Resign(ResignStateDescription,true,false),
 	Gameover(GameOverStateDescription,false,false),
 	Confirm(ConfirmStateDescription,true,true),
+	
+	// standard package for accept/decline draw
+   	DrawPending(DrawOfferDescription,true,true),		// offered a draw
+	AcceptOrDecline(DrawDescription,false,false),		// must accept or decline a draw
+	AcceptPending(AcceptDrawPending,true,true),		// accept a draw is pending
+   	DeclinePending(DeclineDrawPending,true,true),		// decline a draw is pending
+
 	Play(PlayState,false,false);
 	TrenchState(String des,boolean done,boolean digest)
 	{
@@ -58,6 +65,7 @@ public enum TrenchState implements BoardState,TrenchConstants
 	public boolean Puzzle() { return(this==Puzzle); } public boolean simultaneousTurnsAllowed() { return(false); }
 };
  int BoardSize = 8;
+ int WIN = 25;			// 25 points to win
  enum TrenchVariation
     {
     	trench("trench",BoardSize);
@@ -79,19 +87,19 @@ public enum TrenchState implements BoardState,TrenchConstants
 
 
 	static final String VictoryCondition = "capture 25 points of your opponent's army";
-	static final String PlayState = "move a man";
+	static final String PlayState = "Move a Man";
 	
 	static void putStrings()
 	{
 		String GameStrings[] = 
-		{  "Game",
+		{  "Trench",
 			PlayState,
 			VictoryCondition
 			
 		};
 		String GameStringPairs[][] = 
-		{   {"Game_family","Game"},
-			{"Game_variation","Game"},
+		{   {"Trench_family","Trench"},
+			{"Trench_variation","Trench"},
 		};
 		InternationalStrings.put(GameStrings);
 		InternationalStrings.put(GameStringPairs);

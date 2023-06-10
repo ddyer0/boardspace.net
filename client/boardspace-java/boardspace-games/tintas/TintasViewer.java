@@ -17,6 +17,7 @@ import lib.InternationalStrings;
 import lib.LFrameProtocol;
 import lib.StockArt;
 import lib.TextButton;
+import lib.Image;
 import lib.Toggle;
 import online.game.*;
 import online.game.sgf.sgf_node;
@@ -303,6 +304,8 @@ public class TintasViewer extends CCanvas<TintasCell,TintasBoard> implements Tin
     //	return(new Point(G.Right(boardRect)-celloff,G.Bottom(boardRect)-celloff));
     //}  
 
+    Image background = null;
+    Image scaled = null;
 
     /** draw the deep unchangable objects, including those that might be rather expensive
      * to draw.  This background layer is used as a backdrop to the rest of the activity.
@@ -323,8 +326,10 @@ public class TintasViewer extends CCanvas<TintasCell,TintasBoard> implements Tin
 
       // if the board is one large graphic, for which the visual target points
       // are carefully matched with the abstract grid
-     (usePerspective() ? TintasChip.board : TintasChip.board_np ).getImage(loader).centerImage(gc,
-    		  	boardRect);
+     Image board = (usePerspective() ? TintasChip.board : TintasChip.board_np ).getImage(loader);
+     if(board!=background) { scaled = null;}
+     background = board;
+     scaled = board.centerScaledImage(gc, 	boardRect, scaled);
 
       // draw a picture of the board. In this version we actually draw just the grid
       // to draw the cells, set gb.Drawing_Style in the board init method.  Create a

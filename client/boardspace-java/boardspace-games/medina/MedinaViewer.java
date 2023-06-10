@@ -390,6 +390,9 @@ public class MedinaViewer extends CCanvas<MedinaCell,MedinaBoard> implements Med
        textures[BACKGROUND_TILE_INDEX].tileImage(gc, fullRect);   
         drawFixedBoard(gc);
     }
+    Image scaled = null;
+    Image background = null;
+    
     public void drawFixedBoard(Graphics gc,Rectangle brect)
     { boolean reviewBackground = reviewMode() && !mutable_game_record;
       // erase
@@ -403,8 +406,10 @@ public class MedinaViewer extends CCanvas<MedinaCell,MedinaBoard> implements Med
       // if the board is one large graphic, for which the visual target points
       // are carefully matched with the abstract grid
      if(remoteViewer<0)
-    	 {images[ b.boardImageIndex(usePerspective())].centerImage(gc, 
-      	  brect); 
+    	 { Image board = images[ b.boardImageIndex(usePerspective())];
+    	   if(board!=background) { scaled = null; }
+    	   background = board;
+    	   scaled = board.centerScaledImage(gc,   brect, scaled); 
 
       b.DrawGrid(gc,brect,use_grid,Color.white,Color.black,Color.blue,Color.black);
       { int ybase = G.Bottom(brect);

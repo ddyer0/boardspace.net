@@ -182,7 +182,6 @@ class QyshinsuBoard extends circBoard<QyshinsuCell> implements BoardProtocol,Qys
    public long Digest()
     {
        Random r = new Random(64 * 1000); // init the random number generator
-       
 	   long v = super.Digest(r);
 
         // the basic digestion technique is to xor a bunch of random numbers. The key
@@ -190,6 +189,7 @@ class QyshinsuBoard extends circBoard<QyshinsuCell> implements BoardProtocol,Qys
         // xor some subset of them.  Note that if you tweak this, all the existing
         // digests are invalidated.
         //
+ 
         for(int i=0;i<vlastMove.length;i++)
 		{	v ^= cell.Digest(r,getLastMove(i));
 			v ^= chip.Digest(r,getLastChip(i));

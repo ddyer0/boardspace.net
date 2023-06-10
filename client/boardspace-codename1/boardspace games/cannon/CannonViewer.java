@@ -287,6 +287,7 @@ public class CannonViewer extends CCanvas<CannonCell,CannonBoard> implements Can
        textures[BACKGROUND_TILE_INDEX].tileImage(gc, fullRect);   
         drawFixedBoard(gc);
     }
+    Image scaled = null;
     public void drawFixedBoard(Graphics gc,Rectangle brect)
     {	boolean backgroundReview = reviewMode() && !mutable_game_record;
     	CannonBoard gb = disB(gc);
@@ -300,7 +301,7 @@ public class CannonViewer extends CCanvas<CannonCell,CannonBoard> implements Can
        
 	  // if the board is one large graphic, for which the visual target points
 	  // are carefully matched with the abstract grid
-	 images[BOARD_INDEX].centerImage(gc,brect);
+      scaled =images[BOARD_INDEX].centerScaledImage(gc,brect,scaled);
 	
 	  gb.DrawGrid(gc,brect,use_grid,Color.white,Color.black,Color.blue,Color.black);
     }
@@ -646,6 +647,8 @@ private void playSounds(commonMove mm)
     /** replay a move specified in SGF format.  
      * this is mostly standard stuff, but the key is to recognize
      * the elements that we generated in sgf_save
+     * summary: 5/24/2023
+     * 	2873 files visited 0 problems
      */
     public void ReplayMove(sgf_node no)
     {

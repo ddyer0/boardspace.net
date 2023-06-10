@@ -21,6 +21,7 @@ import lib.Slider;
 import lib.StockArt;
 import lib.TextButton;
 import lib.Random;
+import lib.Image;
 import online.game.*;
 import online.game.sgf.sgf_node;
 import online.game.sgf.sgf_property;
@@ -743,7 +744,7 @@ public class JumbulayaViewer extends CCanvas<JumbulayaCell,JumbulayaBoard> imple
     			     || pendingFullRefresh;
     	super.drawFixedElements(gc,complete);
     }
-
+    Image scaled = null;
     // land here after rotating the board drawing context if appropriate
     public void drawFixedBoard(Graphics gc,Rectangle brect)
     {	
@@ -760,7 +761,7 @@ public class JumbulayaViewer extends CCanvas<JumbulayaCell,JumbulayaBoard> imple
 	      // are carefully matched with the abstract grid
 	  	if(remoteViewer<0)
 	  	{
-	  	JumbulayaChip.Board.getImage().centerImage(gc, brect);
+	  	scaled = JumbulayaChip.Board.getImage().centerScaledImage(gc, brect,scaled);
 
 	      // draw a picture of the board. In this version we actually draw just the grid
 	      // to draw the cells, set gb.Drawing_Style in the board init method.  Create a

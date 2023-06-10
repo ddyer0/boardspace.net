@@ -16,6 +16,7 @@ import lib.ExtendedHashtable;
 import lib.G;
 import lib.GC;
 import lib.HitPoint;
+import lib.Image;
 import lib.InternationalStrings;
 import lib.LFrameProtocol;
 import lib.StockArt;
@@ -276,7 +277,7 @@ public class MorrisViewer extends CCanvas<MorrisCell,MorrisBoard> implements Mor
 
      }
 
-
+    Image scaled = null;
     /* draw the deep unchangeable objects, including those that might be rather expensive
      * to draw.  This background layer is used as a backdrop to the rest of the activity.
      * in our cease, we draw the board and the chips on it. 
@@ -295,11 +296,11 @@ public class MorrisViewer extends CCanvas<MorrisCell,MorrisBoard> implements Mor
        
       // if the board is one large graphic, for which the visual target points
       // are carefully matched with the abstract grid
-      MorrisChip.board_9.drawChip(gc,this,boardRect,null);
+      scaled = MorrisChip.board_9.getImage().centerScaledImage(gc,boardRect,scaled);
       
       //G.centerImage(gc,MorrisChip.board_9.image, brect,this);
       Variation v = b.variation;
-      if(v.banner!=null) {v.banner.image.centerImage(gc,bannerRect); }
+      if(v.banner!=null) { v.banner.image.centerImage(gc,bannerRect); }
       
       b.DrawGrid(gc,boardRect,use_grid,Color.white,Color.black,Color.blue,Color.black);
     }
@@ -801,6 +802,8 @@ private void playSounds(commonMove m)
     /** replay a move specified in SGF format.  
      * this is mostly standard stuff, but the key is to recognize
      * the elements that we generated in sgf_save
+     * summary: 5/27/2023
+     * 1247 files visited 0 problems
      */
     public void ReplayMove(sgf_node no)
     {

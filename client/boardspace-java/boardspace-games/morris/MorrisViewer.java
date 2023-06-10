@@ -15,6 +15,7 @@ import lib.CellId;
 import lib.ExtendedHashtable;
 import lib.G;
 import lib.GC;
+import lib.Image;
 import lib.HitPoint;
 import lib.InternationalStrings;
 import lib.LFrameProtocol;
@@ -276,7 +277,7 @@ public class MorrisViewer extends CCanvas<MorrisCell,MorrisBoard> implements Mor
 
      }
 
-
+    Image scaled = null;
     /* draw the deep unchangeable objects, including those that might be rather expensive
      * to draw.  This background layer is used as a backdrop to the rest of the activity.
      * in our cease, we draw the board and the chips on it. 
@@ -295,11 +296,11 @@ public class MorrisViewer extends CCanvas<MorrisCell,MorrisBoard> implements Mor
        
       // if the board is one large graphic, for which the visual target points
       // are carefully matched with the abstract grid
-      MorrisChip.board_9.drawChip(gc,this,boardRect,null);
+      scaled = MorrisChip.board_9.getImage().centerScaledImage(gc,boardRect,scaled);
       
       //G.centerImage(gc,MorrisChip.board_9.image, brect,this);
       Variation v = b.variation;
-      if(v.banner!=null) {v.banner.image.centerImage(gc,bannerRect); }
+      if(v.banner!=null) { v.banner.image.centerImage(gc,bannerRect); }
       
       b.DrawGrid(gc,boardRect,use_grid,Color.white,Color.black,Color.blue,Color.black);
     }

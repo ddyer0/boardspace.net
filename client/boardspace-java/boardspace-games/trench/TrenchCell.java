@@ -27,6 +27,9 @@ public class TrenchCell
 	// records when the cell was last filled.  In games with captures or movements, more elaborate bookkeeping will be needed
 	int lastPlaced = -1;
 	int lastEmptied = -1;
+	int lastCaptured = -1;
+	TrenchChip lastContents = null;
+	
 	public void initRobotValues() 
 	{
 	}
@@ -60,6 +63,9 @@ public class TrenchCell
 		// copy any variables that need copying
 		super.copyFrom(ot);
 		lastPlaced = ot.lastPlaced;
+		lastEmptied = ot.lastEmptied;
+		lastCaptured = ot.lastCaptured;
+		lastContents = ot.lastContents;
 	}
 	/**
 	 * reset back to the same state as when newly created.  This is used
@@ -68,6 +74,9 @@ public class TrenchCell
 	public void reInit()
 	{	super.reInit();
 		lastPlaced = -1;
+		lastEmptied = -1;
+		lastCaptured = -1;
+		lastContents = null;
 	}
 	// constructor a cell not on the board, with a chip.  Used to construct the pool chips
 	public TrenchCell(TrenchChip cont)

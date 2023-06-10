@@ -11,7 +11,7 @@ import lib.Random;
 import online.game.*;
 
 /**
- * StymieBoard knows all about the game of Trench, which is played
+ * TrenchBoard knows all about the game of Trench, which is played
  * on a diagonal board. It gets a lot of logistic support from 
  * common.hexBoard, which knows about the coordinate system.  
  * 
@@ -45,6 +45,7 @@ class TrenchBoard
 	private TrenchState board_state = TrenchState.Puzzle;	
 	private TrenchState unresign = null;	// remembers the orignal state when "resign" is hit
 	private StateStack robotState = new StateStack();
+	private IStack robotStack = new IStack();
 	public TrenchState getState() { return(board_state); }
     /**
      * this is the preferred method when using the modern "enum" style of game state
@@ -58,8 +59,8 @@ class TrenchBoard
 			}
 	}
 
-    private TrenchId playerColor[]={TrenchId.White,TrenchId.Black};    
-    private TrenchChip playerChip[]={TrenchChip.white_5p,TrenchChip.black_5p};
+    private TrenchId playerColor[]={TrenchId.Black,TrenchId.White};    
+    private TrenchChip playerChip[]={TrenchChip.black_5p,TrenchChip.white_5p};
     // occupied index is always black=0 white=1
     private CellStack occupied(TrenchChip ch) 
     	{ return (ch.color==TrenchId.Black)
@@ -68,7 +69,7 @@ class TrenchBoard
     	}
     private CellStack occupied(int who)
     {
-    	return occupiedCells[getColorMap()[who]^1];
+    	return occupiedCells[getColorMap()[who]];
     }
     private TrenchCell playerCell[]=new TrenchCell[2];
     // get the chip pool and chip associated with a player.  these are not 
@@ -106,6 +107,9 @@ class TrenchBoard
     public TrenchChip lastPicked = null;
     private TrenchCell blackCaptured = null;	// dummy source for the chip pools
     private TrenchCell whiteCaptured = null;
+    private int lastProgressMove = 0;
+    private int lastDrawMove = 0;
+    
     private CellStack pickedSourceStack = new CellStack(); 
     private CellStack droppedDestStack = new CellStack();
     private CellStack captureStack = new CellStack();
@@ -120,7 +124,7 @@ class TrenchBoard
     	default: throw G.Error("Not expecting %s",top.color);
     	}
     }
-    private TrenchCell captured(int who)
+    public TrenchCell captured(int who)
     {
     	return captured(playerChip[who]);
     }
@@ -199,6 +203,8 @@ class TrenchBoard
  		
 	    
 	    whoseTurn = FIRST_PLAYER_INDEX;
+	    lastProgressMove = 0;
+	    lastDrawMove = 0;
 	    droppedDestStack.clear();
 	    pickedSourceStack.clear();
 	    captureStack.clear();
@@ -209,12 +215,14 @@ class TrenchBoard
 	    resetState = null;
 	    lastDroppedObject = null;
 	    int map[]=getColorMap();
+	    blackCaptured.reInit();
+	    whiteCaptured.reInit();
 	    playerCell[map[FIRST_PLAYER_INDEX]] = whiteCaptured; 
 	    playerCell[map[SECOND_PLAYER_INDEX]] = blackCaptured; 
-		playerColor[map[FIRST_PLAYER_INDEX]]=TrenchId.White;
-		playerColor[map[SECOND_PLAYER_INDEX]]=TrenchId.Black;
-		playerChip[map[FIRST_PLAYER_INDEX]]=TrenchChip.white_5p;
-		playerChip[map[SECOND_PLAYER_INDEX]]=TrenchChip.black_5p;
+		playerColor[map[FIRST_PLAYER_INDEX]]=TrenchId.Black;
+		playerColor[map[SECOND_PLAYER_INDEX]]=TrenchId.White;
+		playerChip[map[FIRST_PLAYER_INDEX]]=TrenchChip.black_5;
+		playerChip[map[SECOND_PLAYER_INDEX]]=TrenchChip.white_5;
 	    // set the initial contents of the board to all empty cells
 		occupiedCells[FIRST_PLAYER_INDEX].clear();
 		occupiedCells[SECOND_PLAYER_INDEX].clear();
@@ -266,6 +274,8 @@ class TrenchBoard
         getCell(occupiedCells,from_b.occupiedCells);
         unresign = from_b.unresign;
         board_state = from_b.board_state;
+        lastProgressMove = from_b.lastProgressMove;
+        lastDrawMove = from_b.lastDrawMove;
         getCell(captureStack,from_b.captureStack);
         captureHeight.copyFrom(from_b.captureHeight);
         getCell(droppedDestStack,from_b.droppedDestStack);
@@ -305,8 +315,12 @@ class TrenchBoard
         G.Assert(sameCells(pickedSourceStack,from_b.pickedSourceStack),"pickedsourceStack mismatch");
         G.Assert(sameCells(droppedDestStack,from_b.droppedDestStack),"droppedDestStack mismatch");
         G.Assert(sameCells(captureStack,from_b.captureStack),"captureStack mismatch");
+        G.Assert(lastProgressMove==from_b.lastProgressMove,"lastProgressMove mismatch");
+        G.Assert(lastDrawMove==from_b.lastDrawMove,"lastDrawMove mismatch");
         G.Assert(sameContents(captureHeight,from_b.captureHeight),"captureHeight mismatch");
         G.Assert(sameCells(playerCell,from_b.playerCell),"player cell mismatch");
+        G.Assert(blackCaptured.sameContents(from_b.blackCaptured),"blackCaptured mismatch");
+        G.Assert(whiteCaptured.sameContents(from_b.whiteCaptured),"whiteCaptured mismatch");
         // this is a good overall check that all the copy/check/digest methods
         // are in sync, although if this does fail you'll no doubt be at a loss
         // to explain why.
@@ -356,8 +370,12 @@ class TrenchBoard
 		v ^= Digest(r,pickedSourceStack);
 		v ^= Digest(r,droppedDestStack);
 		v ^= Digest(r,captureStack);
+		v ^= Digest(r,lastProgressMove);
+		v ^= Digest(r,lastDrawMove);
 		v ^= Digest(r,captureHeight);
 		v ^= Digest(r,revision);
+		v ^= Digest(r,blackCaptured);
+		v ^= Digest(r,whiteCaptured);
 		v ^= Digest(r,board_state.ordinal()*10+whoseTurn);
         return (v);
     }
@@ -380,6 +398,9 @@ class TrenchBoard
         	if(replay==replayMode.Live) { throw G.Error("Move not complete, can't change the current player in state ",board_state); }
 			//$FALL-THROUGH$
         case Confirm:
+        case AcceptPending:
+        case DeclinePending:
+        case DrawPending:
         case Resign:
             moveNumber++; //the move is complete in these states
             setWhoseTurn(nextPlayer[whoseTurn]);
@@ -407,9 +428,17 @@ class TrenchBoard
 
     public boolean gameOverNow() { return(board_state.GameOver()); }
     public boolean winForPlayerNow(int player)
-    {	if(win[player]) { return(true); }
-    	boolean win = false;
-    	return(win);
+    {	return win[player];
+    }
+    
+    public boolean checkForWin(int player)
+    {	
+    	if(totalCaptured(nextPlayer[player])>=WIN)
+    	{
+		win[whoseTurn] = true;
+		return true;
+    	}
+    	return(false);
     }
 
 
@@ -448,7 +477,7 @@ class TrenchBoard
     {	TrenchCell rv = droppedDestStack.pop();
     	setState(stateStack.pop());
     	pickedObject = SetBoard(rv,null); 	// SetBoard does ancillary bookkeeping
-    	undoCaptures();
+    	if(board_state!=TrenchState.Puzzle) { undoCaptures(whoseTurn); }
     	return(rv);
     }
     // 
@@ -464,8 +493,8 @@ class TrenchBoard
     // 
     // drop the floating object.
     //
-    private void dropObject(TrenchCell c)
-    {
+    private void dropObject(TrenchCell c,int index)
+    {  
        droppedDestStack.push(c);
        stateStack.push(board_state);
        
@@ -475,13 +504,15 @@ class TrenchBoard
         	throw G.Error("Not expecting dest " + c.rackLocation);
         case Black:
         case White:		// back in the pool, we don't really care where
-        	pickedObject = null;
+        	if(index<0 || index>=c.height()) { c.addChip(pickedObject); }
+        	else { c.insertChipAtIndex(index,pickedObject); }
             break;
         case BoardLocation:	// already filled board slot, which can happen in edit mode
         	SetBoard(c,pickedObject);
-            pickedObject = null;
-            break;
+             break;
         }
+       pickedObject = null;
+       
      }
     //
     // true if c is the place where something was dropped and not yet confirmed.
@@ -537,7 +568,7 @@ class TrenchBoard
 	// pick something up.  Note that when the something is the board,
     // the board location really becomes empty, and we depend on unPickObject
     // to replace the original contents if the pick is cancelled.
-    private void pickObject(TrenchCell c)
+    private void pickObject(TrenchCell c,int index)
     {	pickedSourceStack.push(c);
     	stateStack.push(board_state);
         switch (c.rackLocation())
@@ -554,7 +585,7 @@ class TrenchBoard
 
         case Black:
         case White:
-        	lastPicked = pickedObject = c.topChip();
+        	lastPicked = pickedObject = ((index<0)||index>=c.height()) ? c.removeTop() : c.removeChipAtIndex(index);
         }
     }
     //	
@@ -595,9 +626,18 @@ class TrenchBoard
     	{
     	default: throw G.Error("Not expecting after Done state=%s ",board_state);
     	case Gameover: break;
-    	case Confirm:
+    	case DrawPending:
+    		lastDrawMove = moveNumber;
+    		setState(TrenchState.AcceptOrDecline);
+    		break;
+       	case AcceptPending:
+       		setState(TrenchState.Gameover);
+       		break;
+    	case DeclinePending:
+     	case Confirm:
     	case Puzzle:
     	case Play:
+    		
     		setState(TrenchState.Play);
     		
     		break;
@@ -607,15 +647,14 @@ class TrenchBoard
     private void doDone(replayMode replay)
     {
         acceptPlacement();
-        captureHeight.push(captureStack.size());
         if (board_state==TrenchState.Resign)
         {
             win[nextPlayer[whoseTurn]] = true;
     		setState(TrenchState.Gameover);
         }
         else
-        {	if(winForPlayerNow(whoseTurn)) 
-        		{ win[whoseTurn]=true;
+        {	if(checkForWin(whoseTurn)) 
+        		{ 
         		  setState(TrenchState.Gameover); 
         		}
         	else {setNextPlayer(replay);
@@ -623,20 +662,28 @@ class TrenchBoard
         	}
         }
     }
-    private void undoCaptures()
-    {	int h = captureHeight.top();
+    private void undoCaptures(int who)
+    {	
+    	int h = captureHeight.pop();
+    	lastProgressMove = captureHeight.pop();
     	while(captureStack.size()>h)
     	{
     		TrenchCell dest = captureStack.pop();
-    		TrenchCell cap = captured(whoseTurn);
+    		TrenchCell cap = captured(nextPlayer[who]);
     		TrenchChip top = cap.removeTop();
-    		dest.addChip(top);
+    		dest.lastCaptured = -1;
+    		dest.lastContents = null;
+    		SetBoard(dest,top);   		
     	}
     }
-    private void doCapture(TrenchCell from,TrenchChip top,replayMode replay)
+    private void doCapture(TrenchCell from,replayMode replay)
     {
     	captureStack.push(from);
+    	lastProgressMove = moveNumber;
+    	TrenchChip top = SetBoard(from,null);
     	TrenchCell to = captured(top);
+    	from.lastCaptured = moveNumber;
+    	from.lastContents = top;
     	to.addChip(top);
     	if(replay!=replayMode.Replay)
     	{
@@ -644,32 +691,38 @@ class TrenchBoard
     		animationStack.push(to);
     	}
     }
-	private void moveFromTo(TrenchCell from,TrenchCell to,TrenchChip po,replayMode replay)
-	{	if(po==null) { pickObject(from); }
+	private void moveFromTo(Trenchmovespec m,TrenchCell from,TrenchCell to,TrenchChip po,replayMode replay)
+	{	
+		if(po==null) { pickObject(from,-1); }
+		m.chip = pickedObject;
+		m.captures = 0;
         /**
          * if the user clicked on a board space without picking anything up,
          * animate a stone moving in from the pool.  For Hex, the "picks" are
          * removed from the game record, so there are never picked stones in
          * single step replays.
          */
-		if(board_state==TrenchState.Puzzle)
+		int direction = findDirection(from,to);
+		TrenchCell next = from;
+		if(board_state!=TrenchState.Puzzle)
 		{
-		dropObject(to);
-		}
-		else
+		captureHeight.push(lastProgressMove);
+		captureHeight.push(captureStack.size());
+		while( (next=next.exitTo(direction))!=null)
 		{
-			int direction = findDirection(from,to);
-			TrenchCell next = from;
-			while( (next=from.exitTo(direction))!=to)
-			{
 				TrenchChip top = next.topChip();
 				if(top!=null)
-				{
-					doCapture(next,top,replay);
+				{	m.captures++;
+					doCapture(next,replay);
 				}
+				if(next==to) { break; }
 			}
+			
 		}
 		
+		dropObject(to,-1);
+	
+
         if(replay!=replayMode.Replay && (po==null))
         	{ animationStack.push(from);
         	  animationStack.push(to); 
@@ -683,6 +736,37 @@ class TrenchBoard
         //G.print("E "+m+" for "+whoseTurn+" "+state);
         switch (m.op)
         {
+        case MOVE_OFFER_DRAW:
+        	if(board_state==TrenchState.DrawPending) { setState(TrenchState.Play); }
+        	else { 
+        			setState(TrenchState.DrawPending);
+        		}
+        	break;
+        case MOVE_ACCEPT_DRAW:
+           	switch(board_state)
+        	{	
+        	case AcceptPending: 	// cancel accept and revert to neutral
+        		setState(TrenchState.AcceptOrDecline); 
+        		break;
+           	case AcceptOrDecline:
+           	case DeclinePending:	// accept pending
+           		setState(TrenchState.AcceptPending); 
+           		break;
+        	default: throw G.Error("Not expecting %s",board_state);
+        	}
+           	break;
+        case MOVE_DECLINE_DRAW:
+        	switch(board_state)
+        	{	
+        	case DeclinePending:	// cancel decline and revert to neutral
+        		setState(TrenchState.AcceptOrDecline); 
+        		break;
+        	case AcceptOrDecline:
+        	case AcceptPending: setState(TrenchState.DeclinePending); break;
+        	default: throw G.Error("Not expecting %s",board_state);
+        	}
+        	break;
+
         case MOVE_DONE:
 
          	doDone(replay);
@@ -698,15 +782,28 @@ class TrenchBoard
 				}
 				else 
 				{
-				m.chip = pickedObject;
 				lastDroppedObject = pickedObject;
-	            moveFromTo(getSource(),dest,pickedObject,replay);
+	            moveFromTo(m,getSource(),dest,pickedObject,replay);
 
 				}
         	}
              break;
-
+        case MOVE_FROM_TO:
+        case MOVE_CAPTURE:
+        case MOVE_ATTACK:
+        	{
+        	TrenchCell from = getCell(m.from_col,m.from_row);
+        	TrenchCell to = getCell(m.to_col,m.to_row);
+        	moveFromTo(m,from,to,null,replay);
+        	}
+        	break;
         case MOVE_PICK:
+			{
+			TrenchCell src = getCell(m.source,m.to_col,m.to_row);
+			pickObject(src,m.to_row);
+			m.chip = pickedObject;
+			}
+			break;
  		case MOVE_PICKB:
         	// come here only where there's something to pick, which must
  			{
@@ -714,34 +811,20 @@ class TrenchBoard
  			if(isDest(src)) { unDropObject(); }
  			else
  			{
-        	// be a temporary p
-        	pickObject(src);
-        	m.chip = pickedObject;
-        	switch(board_state)
-        	{
-        	case Puzzle:
-         		break;
-        	case Confirm:
-        		setState(TrenchState.Play);
-        		break;
-        	default: ;
-        	}}}
+        	pickObject(src,-1);
+        	m.chip = pickedObject;	
+        	}}
             break;
 
         case MOVE_DROP: // drop on chip pool;
         	if(pickedObject!=null)
         	{
             TrenchCell dest = getCell(m.source,m.to_col,m.to_row);
-            if(isSource(dest)) { unPickObject(); }
-            else 
-            	{
-		        if(replay==replayMode.Live)
-	        	{ lastDroppedObject = pickedObject.getAltDisplayChip(dest);
-	        	  //G.print("last ",lastDroppedObject); 
-	        	}      	
-            	dropObject(dest); 
-            
-            	}
+            if(replay==replayMode.Live)
+            	{ lastDroppedObject = pickedObject.getAltDisplayChip(dest);
+            	}      	
+            dropObject(dest,m.to_row); 
+        	acceptPlacement();
         	}
             break;
  
@@ -752,8 +835,8 @@ class TrenchBoard
             // standardize the gameover state.  Particularly importing if the
             // sequence in a game is resign/start
             setState(TrenchState.Puzzle);	// standardize the current state
-            if((win[whoseTurn]=winForPlayerNow(whoseTurn))
-               ||(win[nextp]=winForPlayerNow(nextp)))
+            if((win[whoseTurn]=checkForWin(whoseTurn))
+               ||(win[nextp]=checkForWin(nextp)))
                	{ setState(TrenchState.Gameover); 
                	}
             else {  setNextStateAfterDone(replay); }
@@ -792,15 +875,17 @@ class TrenchBoard
         default:
         	throw G.Error("Not expecting Legal Hit state " + board_state);
         case Play:
-        	// for pushfight, you can pick up a stone in the storage area
-        	// but it's really optional
-        	return(player==whoseTurn);
+        	return(false);
         case Confirm:
 		case Resign:
 		case Gameover:
+		case AcceptOrDecline:
+		case DeclinePending:
+		case AcceptPending:
+		case DrawPending:
 			return(false);
         case Puzzle:
-            return ((pickedObject!=null)?(pickedObject==playerChip[player]):true);
+            return ((pickedObject!=null)?(pickedObject.color==playerColor[player]):true);
         }
     }
 
@@ -812,6 +897,10 @@ class TrenchBoard
 			return(targets.get(c)!=null || isDest(c) || isSource(c));
 		case Gameover:
 		case Resign:
+		case AcceptOrDecline:
+		case DeclinePending:
+		case AcceptPending:
+		case DrawPending:
 			return(false);
 		case Confirm:
 			return(isDest(c));
@@ -833,13 +922,14 @@ class TrenchBoard
     public void RobotExecute(Trenchmovespec m)
     {
         robotState.push(board_state); //record the starting state. The most reliable
+        robotStack.push(lastDrawMove);
         // to undo state transistions is to simple put the original state back.
         
         //G.Assert(m.player == whoseTurn, "whoseturn doesn't agree");
-
+        //G.print("R "+m);
         Execute(m,replayMode.Replay);
-        acceptPlacement();
-       
+        if(board_state==TrenchState.Confirm) { doDone(replayMode.Replay); }
+        else {  acceptPlacement(); }
     }
  
 
@@ -850,18 +940,29 @@ class TrenchBoard
     //
     public void UnExecute(Trenchmovespec m)
     {
-        //System.out.println("U "+m+" for "+whoseTurn);
-    	TrenchState state = robotState.pop();
+        //G.print("U "+m);
+        TrenchState state = robotState.pop();
+        lastDrawMove = robotStack.pop();
         switch (m.op)
         {
         default:
    	    	throw G.Error("Can't un execute " + m);
         case MOVE_DONE:
+        case MOVE_OFFER_DRAW:
+        case MOVE_ACCEPT_DRAW:
+        case MOVE_DECLINE_DRAW:
             break;
-            
-        case MOVE_DROPB:
-        	SetBoard(getCell(m.to_col,m.to_row),null);
-        	break;
+        case MOVE_FROM_TO:
+        case MOVE_CAPTURE:
+        case MOVE_ATTACK:
+            {
+            	TrenchCell from = getCell(m.from_col,m.from_row);
+            	TrenchCell to = getCell(m.to_col,m.to_row);
+            	TrenchChip top = SetBoard(to,null);
+            	undoCaptures(m.player);
+            	SetBoard(from,top);
+             	}
+            break;
         case MOVE_RESIGN:
             break;
         }
@@ -925,8 +1026,7 @@ class TrenchBoard
 							
 							if(to.cellType==top.color) 
 								{ distance = 0; 
-								  // attacking a piece in your home territory
-								  all.push(new Trenchmovespec(MOVE_CAPTURE,from,to,who));
+								  // can't capture back into our own territory
 								}
 								else
 								{ // attacking into enemy territory, don't need to stop
@@ -976,11 +1076,25 @@ class TrenchBoard
  		break;
  	case Play:
  		addPieceMoves(all,whoseTurn);
+ 		if(drawIsLikely()
+ 				&& (moveNumber-lastDrawMove)>4)
+ 		{
+ 			all.push(new Trenchmovespec(MOVE_OFFER_DRAW,whoseTurn));
+ 		}
  		break;
+ 	case DrawPending:
+ 	case DeclinePending:
+ 	case AcceptPending:
  	case Confirm:
  		all.push(new Trenchmovespec(MOVE_DONE,whoseTurn));
  		break;
- 		
+ 	case Gameover:
+ 		break;
+ 	case AcceptOrDecline:
+			 all.push(new Trenchmovespec(MOVE_ACCEPT_DRAW,whoseTurn));
+			 all.push(new Trenchmovespec(MOVE_DECLINE_DRAW,whoseTurn));
+			 break;
+
  	default:
  			G.Error("Not expecting state ",board_state);
  	}
@@ -1034,6 +1148,9 @@ class TrenchBoard
  			break;
  		case MOVE_SWAP:
  		case MOVE_DONE:
+ 		case MOVE_OFFER_DRAW:
+ 		case MOVE_ACCEPT_DRAW:
+ 		case MOVE_DECLINE_DRAW:
  			break;
  		case MOVE_FROM_TO:
  		case MOVE_ATTACK:
@@ -1055,7 +1172,35 @@ class TrenchBoard
  	return(targets);
  }
  
+public int totalCaptured(int player)
+{
+	TrenchCell cap = captured(player);
+	int sum = 0;
+	for(int lim=cap.height()-1; lim>=0; lim--)
+	{
+		sum += cap.chipAtIndex(lim).type.distance;
+	}
+	return sum;
+}
+public double simpleScore(int player)
+{
+	double cap = totalCaptured(nextPlayer[player]);
+	return cap;
+}
 
+//
+// this is used by the UI to decide when to display the OFFERDRAW box
+//
+public boolean drawIsLikely()
+{	switch(board_state)
+	{
+	case DrawPending: return true;
+	case Play:
+		return((moveNumber - lastProgressMove)>10);
+	default: return(false);
+	}
+	
+}
 
  // most multi player games can't handle individual players resigning
  // this provides an escape hatch to allow it.

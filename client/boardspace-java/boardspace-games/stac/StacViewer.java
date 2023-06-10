@@ -18,6 +18,7 @@ import lib.ExtendedHashtable;
 import lib.G;
 import lib.GC;
 import lib.HitPoint;
+import lib.Image;
 import lib.InternationalStrings;
 import lib.LFrameProtocol;
 import lib.StockArt;
@@ -249,7 +250,8 @@ public class StacViewer extends CCanvas<StacCell,StacBoard> implements StacConst
      }
 
 
-
+    Image scaled = null;
+    
     /* draw the deep unchangable objects, including those that might be rather expensive
      * to draw.  This background layer is used as a backdrop to the rest of the activity.
      * in our cease, we draw the board and the chips on it. 
@@ -266,7 +268,7 @@ public class StacViewer extends CCanvas<StacCell,StacBoard> implements StacConst
        
       // if the board is one large graphic, for which the visual target points
       // are carefully matched with the abstract grid
-     StacChip.board.getImage(loader).centerImage(gc, boardRect);
+      scaled = StacChip.board.getImage(loader).centerScaledImage(gc, boardRect,scaled);
       /*
 	 	    gb.SetDisplayParameters(
 	 	    		new double[]{0.20,0.33},

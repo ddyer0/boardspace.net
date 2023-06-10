@@ -611,9 +611,10 @@ public class OnedayViewer extends CCanvas<OnedayCell,OnedayBoard> implements One
 	  Line.drawAllLines(gc,r,0.5);
       Station.drawAllStops(gc,this,r,0.5);
     }
+    Image scaled = null;
     public void drawPrizeBoard(Graphics gc,OnedayBoard gb,Rectangle r)
     { gb.SetDisplayRectangle(r);
-     images[BOARD_INDEX].centerImage(gc, r);
+      scaled = images[BOARD_INDEX].centerScaledImage(gc, r,scaled);
 	  Line.drawAllLines(gc,r,0.5);
       Station.drawAllStops(gc,this,r,0.5);
       double scl = (double)G.Width(r)/G.Width(boardRect);

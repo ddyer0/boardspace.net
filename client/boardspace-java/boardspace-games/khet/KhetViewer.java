@@ -315,6 +315,8 @@ public class KhetViewer extends CCanvas<KhetCell,KhetBoard> implements  KhetCons
        textures[BACKGROUND_TILE_INDEX].tileImage(gc, fullRect);   
         drawFixedBoard(gc);
     }
+    Image scaled = null;
+    Image background = null;
     public void drawFixedBoard(Graphics gc,Rectangle brect)
     { boolean reviewBackground = reviewMode() && !mutable_game_record;
       if(reviewBackground)
@@ -326,7 +328,10 @@ public class KhetViewer extends CCanvas<KhetCell,KhetBoard> implements  KhetCons
       	  int cy = G.centerY(brect);
     	  boolean reverse = !b.reverseY();
     	  if(reverse) { GC.setRotation(gc, Math.PI,cx,cy); }
-    	  images[BOARD_NP_INDEX].getImage(loader).centerImage(gc,brect);
+    	  Image board = images[BOARD_NP_INDEX].getImage(loader);
+    	  if(board!=background) { scaled = null; }
+    	  background = board;
+    	  scaled = board.centerScaledImage(gc,brect,scaled);
        	  if(reverse) { GC.setRotation(gc, -Math.PI,cx,cy); }
        	  b.SetDisplayParameters(
        			  new double[] {0.11,0.12},
@@ -338,7 +343,10 @@ public class KhetViewer extends CCanvas<KhetCell,KhetBoard> implements  KhetCons
       {
       // if the board is one large graphic, for which the visual target points
       // are carefully matched with the abstract grid
-     images[b.reverseY()?BOARD_INDEX:BOARD_FLIPPED_INDEX].getImage(loader).centerImage(gc, brect);
+    	Image board = images[b.reverseY()?BOARD_INDEX:BOARD_FLIPPED_INDEX].getImage(loader);
+    	if(board!=background) { scaled = null; }
+    	background = board;
+    	scaled = board.centerScaledImage(gc, brect,scaled);
     	b.SetDisplayParameters(0.91,0.91, 
 	    		0.08,0.20,0.0,  
 	    		0.114,0.1,

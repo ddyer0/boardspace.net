@@ -5,8 +5,6 @@ import com.codename1.ui.geom.Rectangle;
 import lib.Graphics;
 import lib.Image;
 
-import online.common.*;
-
 import online.game.*;
 import online.game.sgf.*;
 import online.search.SimpleRobotProtocol;
@@ -27,8 +25,6 @@ import lib.StockArt;
  *
  * May 2007 initial work in progress. 
  *
- * This code is derived from the "HexGameViewer" class.  Refer to the
- 
 */
 public class KubaViewer extends CCanvas<KubaCell,KubaBoard> implements KubaConstants, GameLayoutClient
 {
@@ -103,7 +99,7 @@ public class KubaViewer extends CCanvas<KubaCell,KubaBoard> implements KubaConst
     {
         super.init(info,frame);
         
-        b = new KubaBoard(info.getString(OnlineConstants.GAMETYPE, "Traboulet"),
+        b = new KubaBoard(info.getString(GAMETYPE, "Traboulet"),
         		getStartingColorMap());
         useDirectDrawing(true);
         doInit(false);
@@ -227,6 +223,7 @@ public class KubaViewer extends CCanvas<KubaCell,KubaBoard> implements KubaConst
     }
 
 
+    Image scaled = null;
 
     /* draw the deep unchangable objects, including those that might be rather expensive
      * to draw.  This background layer is used as a backdrop to the rest of the activity.
@@ -245,7 +242,7 @@ public class KubaViewer extends CCanvas<KubaCell,KubaBoard> implements KubaConst
        
       // for us, the board is one large graphic, for which the target points
       // are carefully matched with the abstract grid
-     images[BOARD_INDEX].centerImage(gc, boardRect);
+     scaled = images[BOARD_INDEX].centerScaledImage(gc, boardRect,scaled);
   	b.SetDisplayParameters(0.58,1.0,  0.1,0.0,  0);
     b.SetDisplayRectangle(boardRect);
 
@@ -582,6 +579,8 @@ boolean startMotion(KubaId hitObject,KubaCell cell,KubaChip chip)
     /** replay a move specified in SGF format.  
      * this is mostly standard stuff, but the key is to recognize
      * the elements that we generated in sgf_save
+     * summary: 5/23/2023
+		3739 files visited 0 problems
      */
     public void ReplayMove(sgf_node no)
     {

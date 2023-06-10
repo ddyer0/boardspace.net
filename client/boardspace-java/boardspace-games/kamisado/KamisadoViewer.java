@@ -328,6 +328,7 @@ public class KamisadoViewer extends CCanvas<KamisadoCell,KamisadoBoard> implemen
        textures[BACKGROUND_TILE_INDEX].tileImage(gc, fullRect);   
         drawFixedBoard(gc);
     }
+    Image scaled = null;
     public void drawFixedBoard(Graphics gc,Rectangle brect)
     { boolean reviewBackground = reviewMode() && !mutable_game_record;
       if(reviewBackground)
@@ -337,7 +338,7 @@ public class KamisadoViewer extends CCanvas<KamisadoCell,KamisadoBoard> implemen
        
       // if the board is one large graphic, for which the visual target points
       // are carefully matched with the abstract grid
-     images[BOARD_INDEX].centerImage(gc, brect);
+      scaled = images[BOARD_INDEX].centerScaledImage(gc, brect,scaled);
 	    b.SetDisplayParameters(0.83,0.90,  
 	    		0.0,0.18, 
 	    		0.0, 

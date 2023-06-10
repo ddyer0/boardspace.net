@@ -300,6 +300,7 @@ public class FanoronaGameViewer extends CCanvas<FanoronaCell,FanoronaBoard> impl
        textures[BACKGROUND_TILE_INDEX].tileImage(gc, fullRect);   
         drawFixedBoard(gc);
     }
+    Image scaled = null;
     public void drawFixedBoard(Graphics gc,Rectangle brect)
     { boolean reviewBackground = reviewMode() && !mutable_game_record;
       int cx = G.centerX(brect);
@@ -313,7 +314,7 @@ public class FanoronaGameViewer extends CCanvas<FanoronaCell,FanoronaBoard> impl
        
       // for us, the board is one large graphic, for which the target points
       // are carefully matched with the abstract grid
-     images[BOARD_INDEX].centerImage(gc, brect);
+      scaled = images[BOARD_INDEX].centerScaledImage(gc, brect,scaled);
      	b.SetDisplayParameters(0.9,1.0,  0.15,0.15,  0);
     	b.SetDisplayRectangle(brect);
 
@@ -663,6 +664,8 @@ boolean startMotion(FanId hitObject,FanoronaCell cell,FanoronaChip chip)
     /** replay a move specified in SGF format.  
      * this is mostly standard stuff, but the key is to recognize
      * the elements that we generated in sgf_save
+     * summary: 5/25/2023
+     * 	28398 files visited 0 problems
      */
     public void ReplayMove(sgf_node no)
     {

@@ -12,6 +12,7 @@ import lib.ExtendedHashtable;
 import lib.G;
 import lib.GC;
 import lib.HitPoint;
+import lib.Image;
 import lib.StockArt;
 import lib.LFrameProtocol;
 import online.game.*;
@@ -141,7 +142,7 @@ public class MijnlieffViewer extends CCanvas<MijnlieffCell,MijnlieffBoard> imple
         }
          
         
-        String type = info.getString(OnlineConstants.GAMETYPE, MijnlieffVariation.Mijnlieff.name);
+        String type = info.getString(GAMETYPE, MijnlieffVariation.Mijnlieff.name);
         // recommended procedure is to supply players and randomkey, even for games which
         // are current strictly 2 player and no-randomization.  It will make it easier when
         // later, some variant is created, or the game code base is re purposed as the basis
@@ -412,6 +413,7 @@ public class MijnlieffViewer extends CCanvas<MijnlieffCell,MijnlieffBoard> imple
      MijnlieffChip.backgroundTile.image.tileImage(gc, fullRect);   
       drawFixedBoard(gc);
      }
+    Image scaled = null;
     
     // land here after rotating the board drawing context if appropriate
     public void drawFixedBoard(Graphics gc,Rectangle brect)
@@ -427,7 +429,7 @@ public class MijnlieffViewer extends CCanvas<MijnlieffCell,MijnlieffBoard> imple
 	  	setDisplayParameters(gb,brect);
 	      // if the board is one large graphic, for which the visual target points
 	      // are carefully matched with the abstract grid
-	   MijnlieffChip.board.getImage().centerImage(gc, brect);
+	  	scaled = MijnlieffChip.board.getImage().centerScaledImage(gc, brect,scaled);
 
 	      // draw a picture of the board. In this version we actually draw just the grid
 	      // to draw the cells, set gb.Drawing_Style in the board init method.  Create a
@@ -1017,6 +1019,8 @@ public class MijnlieffViewer extends CCanvas<MijnlieffCell,MijnlieffBoard> imple
     /** replay a move specified in SGF format.  
      * this is mostly standard stuff, but the contract is to recognize
      * the elements that we generated in sgf_save
+     * summary: 5/27/2023
+     *  353 files visited 0 problems
      */
     public void ReplayMove(sgf_node no)
     {

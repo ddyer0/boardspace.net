@@ -62,8 +62,8 @@ public class TrenchPlay extends commonRobot<TrenchBoard> implements Runnable, Tr
     
 	// alpha beta parameters
     private static final double VALUE_OF_WIN = 10000.0;
-    private int DUMBOT_DEPTH = 7;
-    private int MAX_DEPTH = 7;						// search depth.
+    private int DUMBOT_DEPTH = 8;
+    private int MAX_DEPTH = 8;						// search depth.
     private static final boolean KILLER = false;	// if true, allow the killer heuristic in the search
     private static final double GOOD_ENOUGH_VALUE = VALUE_OF_WIN;	// good enough to stop looking
     private int boardSearchLevel = 1;				// the current search depth
@@ -187,8 +187,7 @@ public class TrenchPlay extends commonRobot<TrenchBoard> implements Runnable, Tr
      */
     double ScoreForPlayer(TrenchBoard evboard,int player,boolean print)
     {	
-		double val = 0.0;
-		G.Error("Score for player not implemented");
+		double val = evboard.simpleScore(player);
      	return(val);
     }
 
@@ -251,7 +250,7 @@ public class TrenchPlay extends commonRobot<TrenchBoard> implements Runnable, Tr
                int randomn = RANDOMIZE ? ((board.moveNumber <= 6) ? (14 - 2*board.moveNumber) : 0) : 0;
                boardSearchLevel = 0;
 
-               int depth = MAX_DEPTH;	// search depth
+               int depth = MAX_DEPTH - (WEAKBOT ? 1 : 0);	// search depth
                double dif = 0.0;		// stop randomizing if the value drops this much
                // if the "dif" and "randomn" arguments to Find_Static_Best_Move
                // are both > 0, then alpha-beta will be disabled to avoid randomly
@@ -278,7 +277,7 @@ public class TrenchPlay extends commonRobot<TrenchBoard> implements Runnable, Tr
                	// doesn't really matter, but some games have disasterous
                	// opening moves that we wouldn't want to choose randomly
                    move = (Trenchmovespec) search_state.Find_Static_Best_Move(randomn,dif);
-               }
+                }
            }
            finally
            {
@@ -332,7 +331,11 @@ public class TrenchPlay extends commonRobot<TrenchBoard> implements Runnable, Tr
            	MAX_DEPTH = DUMBOT_DEPTH;
          	break;
         	
-        case MONTEBOT_LEVEL: ALPHA = .25; MONTEBOT=true; EXP_MONTEBOT = true; break;
+        case MONTEBOT_LEVEL:
+        	ALPHA = .25;
+        	MONTEBOT=true;
+        	EXP_MONTEBOT = true; 
+        	break;
         }
     }
 
@@ -415,7 +418,7 @@ public void PrepareToMove(int playerIndex)
         monte_search_state.dead_child_optimization = true;
         monte_search_state.simulationsPerNode = 1;
         monte_search_state.killHopelessChildrenShare = CHILD_SHARE;
-        monte_search_state.final_depth = 9999;		// note needed for pushfight which is always finite
+        monte_search_state.final_depth = 100;		// declare a draw at this depth
         monte_search_state.node_expansion_rate = NODE_EXPANSION_RATE;
         monte_search_state.randomize_uct_children = true;     
         monte_search_state.maxThreads = DEPLOY_THREADS;
@@ -468,7 +471,9 @@ public void PrepareToMove(int playerIndex)
  	if(win) { return(UCT_WIN_LOSS? 1.0 : 0.8+0.2/boardSearchLevel); }
  	boolean win2 = board.winForPlayerNow(nextPlayer[player]);
  	if(win2) { return(- (UCT_WIN_LOSS?1.0:(0.8+0.2/boardSearchLevel))); }
- 	return(0);
+ 	double score0 = ScoreForPlayer(board,player,false);
+ 	double score1 = ScoreForPlayer(board,nextPlayer[player],false);
+ 	return (score0-score1)/WIN;
  }
 /**
  * for a multiplayer game, it would be something like this

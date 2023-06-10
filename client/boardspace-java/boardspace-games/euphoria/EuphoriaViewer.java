@@ -664,7 +664,8 @@ private Color playerBackground[] = {
     //}  
 
 
-
+    Image scaled = null;
+    
     /** draw the deep unchangable objects, including those that might be rather expensive
      * to draw.  This background layer is used as a backdrop to the rest of the activity.
      * in our cease, we draw the board and the chips on it. 
@@ -684,7 +685,7 @@ private Color playerBackground[] = {
       // are carefully matched with the abstract grid
       if(remoteViewer<0)
       {
-    	  textures[BOARD_INDEX].centerImage(gc, brect);
+    	  scaled = textures[BOARD_INDEX].centerScaledImage(gc, brect,scaled);
     	  if(gc!=null) { drawDecorations(gc,gb,brect); }
       if(isIIB())
       {

@@ -415,6 +415,7 @@ public class YspahanViewer extends CCanvas<YspahanCell,YspahanBoard> implements 
     // 	return(super.gameProgressString());
     // }
 
+    Image scaled = null;
 
     /* draw the deep unchangable objects, including those that might be rather expensive
      * to draw.  This background layer is used as a backdrop to the rest of the activity.
@@ -437,7 +438,7 @@ public class YspahanViewer extends CCanvas<YspahanCell,YspahanBoard> implements 
      GC.setRotation(gc,contextRotation,G.centerX(boardRect),G.centerY(boardRect));
      Rectangle rb = G.copy(null,boardRect);
      G.setRotation(rb,-Math.PI/2);
-     if(remoteViewer<0) { textures[BOARD_INDEX].centerImage(gc, boardRect); }
+     if(remoteViewer<0) { scaled = textures[BOARD_INDEX].centerScaledImage(gc, boardRect,scaled); }
 	    gb.SetDisplayRectangle(boardRect);
 	 
 	 GC.setRotation(gc,-contextRotation,G.centerX(boardRect),G.centerY(boardRect));

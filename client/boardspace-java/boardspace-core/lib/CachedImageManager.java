@@ -60,6 +60,7 @@ public class CachedImageManager
     	long shortExpDate = now-10000;		// 10 seconds ago, consider forgetting an uncached image
     	//G.addLog("Clearing "+cachedImagesIdle);
     	CachedImage big = null;
+   	 
     	for(Enumeration<Image> e = cachedImages.keys();
     		e.hasMoreElements();)
     	{	Image k = e.nextElement();
@@ -90,7 +91,7 @@ public class CachedImageManager
          				
      					if(LOG_CACHE) { Plog.log.addLog("Scaled ",k," ",v.ScaledW," ",v.ScaledH); }
  
-      					Image im = CachedImage.getScaledInstance(k,v.ScaledW,v.ScaledH,Image.SCALE_SMOOTH);
+      					Image im = CachedImage.getScaledInstance(k,v.ScaledW,v.ScaledH,Image.ScaleType.defaultScale);
     					v.im = im;
      				  	if((big==null) || (big.ScaledW<v.ScaledW))
     				  	{	//w=k.getWidth(this);
@@ -199,7 +200,8 @@ public class CachedImageManager
     	{ if((cim.ScaledW==w)&&(cim.ScaledH==h)) 
     		{ result = cim.im;
     		  if(result==null) 
-    		  	{ result=im; 	// use the original
+    		  	{ needManagement = true;
+    			  result=im; 	// use the original
     		  	}
     		}
     		else
@@ -215,6 +217,7 @@ public class CachedImageManager
     		result = im;
     			// later im.getScaledInstance(w,h,Image.SCALE_SMOOTH);
     		cim.next = original_cim;
+    		cim.useTime = now;
     		if(LOG_CACHE)
     			{ Plog.log.addLog("Add scaled stub ",im," ",w,"x",h); 
     			}

@@ -11,6 +11,7 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.util.*;
 
+import bridge.JMenuItem;
 import lib.Graphics;
 import lib.CellId;
 import lib.ExtendedHashtable;
@@ -118,6 +119,8 @@ public class TrenchViewer extends CCanvas<TrenchCell,TrenchBoard> implements Tre
     //
     // zones ought to be mostly irrelevant if there is only one board layout.
     //
+    private JMenuItem offerDrawAction = null;
+
     private Toggle eyeRect = new Toggle(this,"eye",
  			StockArt.NoEye,TrenchId.ToggleEye,NoeyeExplanation,
  			StockArt.Eye,TrenchId.ToggleEye,EyeExplanation
@@ -128,6 +131,10 @@ public class TrenchViewer extends CCanvas<TrenchCell,TrenchBoard> implements Tre
  	private TextButton doneButton = addButton(DoneAction,GameId.HitDoneButton,ExplainDone,
 			HighlightColor, rackBackGroundColor,rackIdleColor);
  	private Rectangle reverseViewRect = addRect("reverse");
+ 	private Rectangle repRect = addRect("repetitions");
+    private Rectangle declineDrawRect = addRect("declineDraw");
+    private Rectangle acceptDrawRect = addRect("acceptDraw");	
+
 /**
  * this is called during initialization to load all the images. Conventionally,
  * these are loading into a static variable so they can be shared by all.
@@ -188,6 +195,8 @@ public class TrenchViewer extends CCanvas<TrenchCell,TrenchBoard> implements Tre
         // in the user interface.
         useDirectDrawing(true);
         doInit(false);
+        offerDrawAction = myFrame.addAction(s.get(OFFERDRAW),deferredEvents);     
+        
         adjustPlayers(players_in_game);
     }
 
@@ -308,10 +317,13 @@ public class TrenchViewer extends CCanvas<TrenchCell,TrenchBoard> implements Tre
     	// them together and not encroaching on the main rectangle.
     	layout.placeTheChatAndLog(chatRect, minChatW, chatHeight,minChatW*2,3*chatHeight/2,logRect,
     			minLogW, minLogH, minLogW*3/2, minLogH*3/2);
+
+    	layout.placeDrawGroup(G.getFontMetrics(standardPlainFont()),acceptDrawRect,declineDrawRect);
+
     	// games which have a private "done" button for each player don't need a public
     	// done button, and also we can make the edit/undo button square so it can rotate
     	// to face the player.
-       	layout.placeDoneEditRep(buttonW,buttonW*4/3,doneButton,editRect);
+       	layout.placeDoneEditRep(buttonW,buttonW*4/3,doneButton,editRect,repRect);
     	layout.placeTheVcr(this,minLogW,minLogW*3/2);
        	//layout.placeDrawGroup(G.getFontMetrics(standardPlainFont()),acceptDrawRect,declineDrawRect);
 
@@ -343,7 +355,7 @@ public class TrenchViewer extends CCanvas<TrenchCell,TrenchBoard> implements Tre
         int stateY = boardY;
         int stateX = boardX;
         int stateH = fh*3;
-        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,numberMenu,eyeRect,reverseViewRect,viewsetRect,chatRect);
+        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,numberMenu,eyeRect,reverseViewRect,viewsetRect,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
       	
     	// goal and bottom ornaments, depending on the rendering can share
@@ -374,14 +386,36 @@ public class TrenchViewer extends CCanvas<TrenchCell,TrenchBoard> implements Tre
     // wish you can pick up and drop chips.
     private void DrawChipPool(Graphics gc, Rectangle r, Rectangle cr, commonPlayer pl, HitPoint highlight,TrenchBoard gb)
     {	int player = pl.boardIndex;
-        boolean canhit = gb.legalToHitChips(player) && G.pointInRect(highlight, r);
-        if (canhit)
+    	int other = nextPlayer[player];
+    	gb.getPlayerChip(player).drawChip(gc,this,G.Width(r)/2,G.centerX(r),G.centerY(r),null);
+        TrenchCell cap = gb.captured(other);
+        double cells = (double)G.Width(cr)/(CELLSIZE*3/4);
+        boolean canHit = gb.legalToHitChips(other);
+        int size = CELLSIZE*2/3;
+        boolean hit = false;
+        double space = Math.min(cells/cap.height(),1.7);
+        if(cap.drawStack(gc,this,canHit?highlight:null,
+        		size,G.Left(cr)+CELLSIZE/2,G.centerY(cr),
+        		0,space,0,null))
         {
-            highlight.hitCode = gb.getPlayerColor(player);
-            highlight.arrow = (gb.pickedObject!=null)?StockArt.DownArrow:StockArt.UpArrow;
-            highlight.awidth = CELLSIZE;
+        	highlight.spriteColor = Color.red;
+        	int index = Math.max(0,highlight.hit_index);
+         	highlight.spriteRect = new Rectangle(G.Left(cr)+(int)(index*space*size)+size/4,
+        										 G.centerY(cr)-CELLSIZE/2,
+        										 CELLSIZE,CELLSIZE);
+         	hit = true;
         }
-        gb.getPlayerChip(player).drawChip(gc,this,G.Width(r)/3,G.centerX(r),G.centerY(r),null);
+        if(canHit && !hit && gb.pickedObject!=null && G.pointInRect(highlight,cr))
+        {
+        	highlight.hitCode = cap.rackLocation();
+        	highlight.hit_index = -1;
+        	
+        }
+        int hh = G.Height(cr)/5;
+        GC.setFont(gc,largeBoldFont());
+        GC.Text(gc,false,G.Left(cr)+hh,G.Bottom(cr)-hh,G.Width(cr),hh,
+        		Color.black,null,
+        		s.get("Total: #1 points",gb.totalCaptured(nextPlayer[player])));
         GC.frameRect(gc,Color.black,cr);
        // gb.captured[player];
   
@@ -405,7 +439,10 @@ public class TrenchViewer extends CCanvas<TrenchCell,TrenchBoard> implements Tre
     {
     	// draw an object being dragged
     	// use the board cell size rather than the window cell size
-    	TrenchChip.getChip(obj).drawChip(g,this,CELLSIZE, xp, yp, null);
+    	int size = G.pointInRect(xp,yp,boardRect)
+    				? scaledCellSize(boardRect,G.Bottom(boardRect)-yp)
+    				: CELLSIZE;
+     	TrenchChip.getChip(obj).drawChip(g,this,size, xp, yp, null);
     }
     // also related to sprites,
     // default position to display static sprites, typically the "moving object" in replay mode
@@ -426,6 +463,8 @@ public class TrenchViewer extends CCanvas<TrenchCell,TrenchBoard> implements Tre
       drawFixedBoard(gc);
      }
     
+    Image background = null;
+    Image prevBoard = null;
     // land here after rotating the board drawing context if appropriate
     public void drawFixedBoard(Graphics gc,Rectangle brect)
     {	TrenchBoard gb = disB(gc);
@@ -447,8 +486,9 @@ public class TrenchViewer extends CCanvas<TrenchCell,TrenchBoard> implements Tre
 	  			  			: reverseView() 
 	  			  				? TrenchChip.pboard_reverse.getImage()
 	  			  				: TrenchChip.pboard.image);
-
-	  	  board.centerImage(gc,brect);
+	  	  if(board!=prevBoard) { background = null; }
+	  	  prevBoard = board;
+	  	  background = board.centerScaledImage(gc,brect,background);
 
 	      // draw a picture of the board. In this version we actually draw just the grid
 	      // to draw the cells, set gb.Drawing_Style in the board init method.  Create a
@@ -471,7 +511,16 @@ public class TrenchViewer extends CCanvas<TrenchCell,TrenchBoard> implements Tre
     {
     	return(super.encodeScreenZone(x,y,p));
     }
-
+    private int scaledCellSize(Rectangle brect,int ypos0)
+    {
+     	boolean perspective = !usePerspective();
+     	double hscale = G.Height(brect)*7;
+        double scale = perspective
+				? 1.05-(ypos0/hscale) 
+				: 1;
+        int size = (int)(CELLSIZE*scale);
+        return size;
+    }
     /**
 	 * draw the board and the chips on it.  This is also called when not actually drawing, to
 	 * track the mouse.
@@ -494,18 +543,29 @@ public class TrenchViewer extends CCanvas<TrenchCell,TrenchBoard> implements Tre
      	//int seq = 0;
     	while(cells.hasMoreElements())
           {	TrenchCell cell = cells.nextElement();
-         	int ypos = G.Bottom(brect) - gb.cellToY(cell);
+          	int ypos0 =  gb.cellToY(cell);
+         	int ypos = G.Bottom(brect) - ypos0;
             int xpos = G.Left(brect) + gb.cellToX(cell);
             numberMenu.saveSequenceNumber(cell,xpos,ypos);
             boolean canHit = gb.legalToHitBoard(cell,targets);
             //seq++;
             String msg = null;//""+seq;
-            if(cell.drawStack(gc,this,canHit?highlight:null,CELLSIZE,xpos,ypos,0,0.1,0.1,msg))
+            int size = scaledCellSize(brect,ypos0);
+            if(cell.drawStack(gc,this,canHit?highlight:null,size,xpos,ypos,0,0.1,0.1,msg))
             		{
             		highlight.spriteColor = Color.red;
-                	highlight.awidth = CELLSIZE;
+                	highlight.awidth = size;
             		}
             if(canHit && show) { StockArt.SmallO.drawChip(gc,this,CELLSIZE,xpos,ypos,null); }
+            if((cell.topChip()==null)
+        			&& cell.lastContents!=null 
+        			&& cell.lastCaptured>0
+        			&& numberMenu.getVisibleNumber(cell.lastCaptured)>0)
+                	{
+                		cell.lastContents.drawChip(gc,this,size*2/3,xpos,ypos,null);
+                		StockArt.SmallX.drawChip(gc,this,size,xpos,ypos,null);
+                	}
+
            //visualize the grid
            //StockArt.SmallO.drawChip(gc,this,CELLSIZE,xpos,ypos,null);
         }
@@ -592,6 +652,32 @@ public class TrenchViewer extends CCanvas<TrenchCell,TrenchBoard> implements Tre
        
        GC.setFont(gc,standardBoldFont());
        
+       switch(state)
+       {
+       default:
+       	if(gb.drawIsLikely())
+       	{	// if not making progress, put the draw option on the UI
+           	if(GC.handleSquareButton(gc,acceptDrawRect,buttonSelect,s.get(OFFERDRAW),
+           			HighlightColor,
+           			state==TrenchState.DrawPending ? HighlightColor : rackBackGroundColor))
+           	{
+           		buttonSelect.hitCode = GameId.HitOfferDrawButton;
+           	}	
+       	}
+       	break;
+       case AcceptOrDecline:
+       case AcceptPending:
+       case DeclinePending:
+       	if(GC.handleSquareButton(gc,messageRotation,acceptDrawRect,buttonSelect,s.get(ACCEPTDRAW),HighlightColor,rackBackGroundColor))
+       	{
+       		buttonSelect.hitCode = GameId.HitAcceptDrawButton;
+       	}
+       	if(GC.handleSquareButton(gc,messageRotation,declineDrawRect,buttonSelect,s.get(DECLINEDRAW),HighlightColor,rackBackGroundColor))
+       	{
+       		buttonSelect.hitCode = GameId.HitDeclineDrawButton;
+       	}
+      	break;
+       }
 
        if (state != TrenchState.Puzzle)
         {	// if in any normal "playing" state, there should be a done button
@@ -618,7 +704,7 @@ public class TrenchViewer extends CCanvas<TrenchCell,TrenchBoard> implements Tre
             				stateRect);
         gb.getPlayerChip(gb.whoseTurn).drawChip(gc,this,iconRect,null);
         goalAndProgressMessage(gc,nonDragSelect,Color.black,s.get(VictoryCondition),progressRect, goalRect);
-            //      DrawRepRect(gc,pl.displayRotation,Color.black,b.Digest(),repRect);
+        DrawRepRect(gc,pl.displayRotation,Color.black,gb.Digest(),repRect);
         eyeRect.activateOnMouse = true;
         eyeRect.draw(gc,selectPos);
         drawViewsetMarker(gc,viewsetRect,selectPos);
@@ -774,7 +860,7 @@ public class TrenchViewer extends CCanvas<TrenchCell,TrenchBoard> implements Tre
 	    
  	    case Black:
  	    case White:
-	    	PerformAndTransmit(G.concat("Pick " , hitObject.shortName()));
+	    	PerformAndTransmit(G.concat("Pick " , hitObject.shortName()," ",hp.hit_index));
 	    	break;
 	    case BoardLocation:
 	        TrenchCell hitCell = hitCell(hp);
@@ -873,7 +959,7 @@ public class TrenchViewer extends CCanvas<TrenchCell,TrenchBoard> implements Tre
         case White:
            if(bb.pickedObject!=null) 
 			{//if we're dragging a black chip around, drop it.
-            	PerformAndTransmit(G.concat("Drop ",hitCode.name()));
+            	PerformAndTransmit(G.concat("Drop ",hitCode.name()," ",hp.hit_index));
 			}
            break;
  
@@ -1013,9 +1099,17 @@ public class TrenchViewer extends CCanvas<TrenchCell,TrenchBoard> implements Tre
      */
     public boolean handleDeferredEvent(Object target, String command)
     {
-        boolean handled = super.handleDeferredEvent(target, command);
- 
-        return (handled);
+        if(target==offerDrawAction)
+     	{	if(OurMove() 
+     			&& (bb.movingObjectIndex()<=0)
+     			&& ((bb.getState()==TrenchState.Play) || (bb.getState()==TrenchState.DrawPending))) 							
+     		{
+     		PerformAndTransmit(OFFERDRAW);
+     		}
+     		return(true);
+     	}
+       boolean handled = super.handleDeferredEvent(target, command);
+         return (handled);
     }
 /** handle the run loop, and any special actions we need to take.
  * The mouse handling and canvas painting will be called automatically.

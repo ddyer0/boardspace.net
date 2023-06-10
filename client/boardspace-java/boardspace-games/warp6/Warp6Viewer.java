@@ -224,7 +224,7 @@ public class Warp6Viewer extends CCanvas<Warp6Cell,Warp6Board> implements Warp6C
     			+" "+(5-b.chipsInWarp[1]));
     }
 
-
+    Image scaled = null;
     /* draw the deep unchangable objects, including those that might be rather expensive
      * to draw.  This background layer is used as a backdrop to the rest of the activity.
      * in our cease, we draw the board and the chips on it. 
@@ -242,7 +242,7 @@ public class Warp6Viewer extends CCanvas<Warp6Cell,Warp6Board> implements Warp6C
       
       // for us, the board is one large graphic, for which the target points
       // are carefully matched with the abstract grid
-     images[BOARD_INDEX].getImage(this.loader).centerImage(gc, boardRect);
+      scaled = images[BOARD_INDEX].getImage(this.loader).centerScaledImage(gc, boardRect,scaled);
 	    {	// good for board-skew : gb.SetDisplayParameters(0.7,0.8,  0.0,0.00,  2.3, .15, 0.25);
 	    	// good for board-skew2 gb.SetDisplayParameters(0.67,0.72,  0.0,0.00,  14.5, .22, 0.25);
 	    	// good for board-skew3 gb.SetDisplayParameters(0.54,0.80,  0.0,-0.30,  7.0, .250, 0.32);

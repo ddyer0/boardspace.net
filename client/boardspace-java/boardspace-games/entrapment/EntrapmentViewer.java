@@ -309,7 +309,8 @@ public class EntrapmentViewer extends CCanvas<EntrapmentCell,EntrapmentBoard> im
 
     public boolean usePerspective() { return(getAltChipset()==0); }
 
-
+    Image background = null;
+    Image scaled = null;
     /* draw the deep unchangable objects, including those that might be rather expensive
      * to draw.  This background layer is used as a backdrop to the rest of the activity.
      * in our cease, we draw the board and the chips on it. 
@@ -332,7 +333,10 @@ public class EntrapmentViewer extends CCanvas<EntrapmentCell,EntrapmentBoard> im
       int left = G.Left(boardRect);
       int top = G.Top(boardRect);
       Rectangle r = boardRect;
-     images[perspective ? BOARD_INDEX : BOARD_NP_INDEX].centerImage(gc, r);
+      Image board = images[perspective ? BOARD_INDEX : BOARD_NP_INDEX];
+      if(board!=background) { scaled = null; }
+      background = board;
+      scaled = board.centerScaledImage(gc, r,scaled);
       if(b.is6x7)
       	{ 
     	  Rectangle srect =

@@ -6,14 +6,15 @@
 <JVMSearchPath>jrepath</JVMSearchPath>
 <JVMSearchPath>jview</JVMSearchPath>
 <JVMSearchPath>jdkpath</JVMSearchPath>
+<arguments></arguments>
 <bundledJVMPath>..\boardspace.net\Java</bundledJVMPath>
-<currentDirectory>${EXECUTABLEPATH}</currentDirectory>
+<currentDirectory>G:\share\projects\boardspace-java\deploy-and-sign\boardspace.net\boardspace.net-only.exe\${EXECUTABLEPATH}</currentDirectory>
 <embeddedJar>true</embeddedJar>
 <executableName>..\boardspace.net\boardspace.net-only.exe</executableName>
 <iconLocation>boardspace_icon_128-indexed.ico</iconLocation>
 <initialMemoryHeap>-1</initialMemoryHeap>
 <jarLocation>..\..\..\boardspace-html\htdocs\java\v102\boardspace.jar</jarLocation>
-<mainClassName>Miniloader</mainClassName>
+<mainClassName>Boardspace</mainClassName>
 <maximumMemoryHeap>-1</maximumMemoryHeap>
 <maximumVersion></maximumVersion>
 <minimumVersion>1.6</minimumVersion>

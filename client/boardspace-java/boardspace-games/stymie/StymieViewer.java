@@ -13,6 +13,7 @@ import lib.G;
 import lib.GC;
 import lib.HitPoint;
 import lib.Random;
+import lib.Image;
 import lib.StockArt;
 import lib.InternationalStrings;
 import lib.LFrameProtocol;
@@ -329,6 +330,7 @@ public class StymieViewer extends CCanvas<StymieCell,StymieBoard> implements Sty
      StymieChip.backgroundTile.image.tileImage(gc, fullRect);   
       drawFixedBoard(gc);
      }
+    Image scaled = null;
     
     // land here after rotating the board drawing context if appropriate
     public void drawFixedBoard(Graphics gc,Rectangle brect)
@@ -344,7 +346,7 @@ public class StymieViewer extends CCanvas<StymieCell,StymieBoard> implements Sty
 	  	setDisplayParameters(bb,brect);
 	      // if the board is one large graphic, for which the visual target points
 	      // are carefully matched with the abstract grid
-	  StymieChip.board.getImage().centerImage(gc, brect);
+	  	scaled = StymieChip.board.getImage().centerScaledImage(gc, brect, scaled);
 
 	      // draw a picture of the board. In this version we actually draw just the grid
 	      // to draw the cells, set gb.Drawing_Style in the board init method.  Create a

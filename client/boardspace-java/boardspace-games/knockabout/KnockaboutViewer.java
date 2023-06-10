@@ -233,6 +233,7 @@ public class KnockaboutViewer extends CCanvas<KnockaboutCell,KnockaboutBoard> im
        textures[BACKGROUND_TILE_INDEX].tileImage(gc, fullRect);   
         drawFixedBoard(gc);
     }
+    Image scaled = null;
     public void drawFixedBoard(Graphics gc,Rectangle brect)
     { boolean reviewBackground = reviewMode() && !mutable_game_record;
       if(reviewBackground)
@@ -243,8 +244,7 @@ public class KnockaboutViewer extends CCanvas<KnockaboutCell,KnockaboutBoard> im
       // for us, the board is one large graphic, for which the target points
       // are carefully matched with the abstract grid
 
-
-     images[BOARD_INDEX].getImage(this.loader).centerImage(gc, brect);
+      scaled = images[BOARD_INDEX].getImage(this.loader).centerScaledImage(gc, brect,scaled);
       b.SetDisplayParameters(
        		 0.965, //0.93,	// scale 
        		 0.8,	// yscale

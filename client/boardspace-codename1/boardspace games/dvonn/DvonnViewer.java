@@ -292,6 +292,9 @@ public Rectangle createPlayerGroup(int player,int x,int y,double rotation,int un
        textures[BACKGROUND_TILE_INDEX].tileImage(gc, fullRect);   
         drawFixedBoard(gc);
     }
+    Image scaled = null;
+    Image background = null;
+    
     public void drawFixedBoard(Graphics gc,Rectangle brect)
     { 	boolean reviewBackground = reviewMode() && !mutable_game_record;
     	boolean perspective = usePerspective();
@@ -313,15 +316,12 @@ public Rectangle createPlayerGroup(int player,int x,int y,double rotation,int un
       {	 
        textures[BACKGROUND_REVIEW_INDEX].tileImage(gc,boardRect);   
       }
+      Rectangle rect = perspective ? brect : innerBoardRect;
+      Image board = perspective ? images[BOARD_INDEX] : images[BOARD_FLAT_INDEX];
+      if(board!=background) { scaled = null; }
+      background = board;
+      scaled = board.centerScaledImage(gc,rect,scaled);
        
-      if(perspective)
-      {
-     images[BOARD_INDEX].centerImage(gc,brect);
-      }
-      else 
-      {	
-         images[BOARD_FLAT_INDEX].centerImage(gc,innerBoardRect);
-      }
       b.DrawGrid(gc,brect,use_grid,Color.white,Color.black,Color.blue,Color.yellow);
 
     }
@@ -733,6 +733,8 @@ private void playSounds(DvonnMovespec m)
     /** replay a move specified in SGF format.  
      * this is mostly standard stuff, but the key is to recognize
      * the elements that we generated in sgf_save
+     * summary: 5/25/2023
+	 *	11839 files visited 0 problems
      */
     public void ReplayMove(sgf_node no)
     {

@@ -1284,11 +1284,11 @@ synchronized(allGames) {
 	{
 	String pRules = "/trench/english/rules.pdf";
 	String pViewer = "trench.TrenchViewer";  
-	put(new GameInfo(1790,ES.test,114,"PP",CapturingGames,"Trench","Trench",
+	put(new GameInfo(1790,ES.game,115,"TX",CapturingGames,"Trench","Trench",
 			OneBotPlus,
 			new double[]{1.0,0.01},
 			pViewer,pRules,"about_trench.html",
-			null,false, WhiteOverBlack));
+			null,false, BlackOverWhite));
 	}
 
 	{

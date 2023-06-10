@@ -20,6 +20,7 @@ import lib.ExtendedHashtable;
 import lib.G;
 import lib.GC;
 import lib.HitPoint;
+import lib.Image;
 import lib.InternationalStrings;
 import lib.LFrameProtocol;
 import lib.SimpleSprite;
@@ -633,6 +634,10 @@ private void playSounds(commonMove m)
 
         }}
     }
+    
+    Image scaled = null;
+    Image background = null;
+    
 /**
  * draw the deep unchangeable objects, including those that might be rather expensive
  * to draw.  This background layer is used as a backdrop to the rest of the activity.
@@ -653,8 +658,10 @@ private void playSounds(commonMove m)
       {	 
        ModxChip.backgroundReviewTile.image.tileImage(gc,boardRect);   
       }
-      
-      (perspective ? ModxChip.board.image : ModxChip.board_np.image).centerImage(gc,boardRect);
+      Image board = (perspective ? ModxChip.board.image : ModxChip.board_np.image);
+      if(board!=background) { scaled = null; }
+      background = board;
+      scaled = board.centerScaledImage(gc,boardRect,scaled);
       
       b.DrawGrid(gc,boardRect,use_grid,Color.white,Color.black,Color.blue,Color.black);
     } 
@@ -727,14 +734,6 @@ private void playSounds(commonMove m)
 //        }
 //    }
 
-    /** handle action events
-     * 
-     */
-    public boolean handleDeferredEvent(Object target, String command)
-    {
-
-    	return(super.handleDeferredEvent(target,command));
-     }
 
     public BoardProtocol getBoard()   {    return (b);   }
     public SimpleRobotProtocol newRobotPlayer() { return(new ModxPlay()); }
@@ -743,6 +742,8 @@ private void playSounds(commonMove m)
     /** replay a move specified in SGF format.  
      * this is mostly standard stuff, but the key is to recognize
      * the elements that we generated in sgf_save
+     * summary: 5/27/2023
+     *  365 files visited 0 problems
      */
     public void ReplayMove(sgf_node no)
     {

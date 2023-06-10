@@ -371,7 +371,8 @@ public class BreakingAwayViewer extends CCanvas<BreakingAwayCell,BreakingAwayBoa
        	alt.drawChip(g,this,cellS,comp,xp,yp,null);
     }
     
-
+    Image background = null;
+    Image scaled = null;
     /* draw the deep unchangable objects, including those that might be rather expensive
      * to draw.  This background layer is used as a backdrop to the rest of the activity.
      * in our cease, we draw the board and the chips on it. 
@@ -379,17 +380,20 @@ public class BreakingAwayViewer extends CCanvas<BreakingAwayCell,BreakingAwayBoa
     public void drawFixedElements(Graphics gc)
     { boolean backgroundReview = reviewMode() && !mutable_game_record;
     
-    GC.setRotatedContext(gc,boardRect,null,contextRotation);    
 
       GC.setColor(gc,backgroundReview ? reviewModeBackground : boardBackgroundColor);
-     textures[BACKGROUND_TILE_INDEX].tileImage(gc,fullRect);   
-      //G.frameRect(gc,Color.black,tbRect);
+      textures[BACKGROUND_TILE_INDEX].tileImage(gc,fullRect);   
+
+      GC.setRotatedContext(gc,boardRect,null,contextRotation);    
           
       if(remoteViewer<0) 
       	{ 
     	  textures[backgroundReview ? BROWN_FELT_INDEX:YELLOW_FELT_INDEX].tileImage(gc,
     	          		boardRect); 
-     images[(b.reverseY()?BOARD_OBLIQUE_REVERSE_INDEX:BOARD_OBLIQUE_INDEX)].centerImage(gc, boardRect);
+    	  Image boardImage = images[(b.reverseY()?BOARD_OBLIQUE_REVERSE_INDEX:BOARD_OBLIQUE_INDEX)];
+    	  if(boardImage!=background) { scaled = null; }
+    	  background = boardImage;
+    	  scaled = boardImage.centerScaledImage(gc, boardRect,scaled);
   		
       	}
   		
@@ -1287,6 +1291,8 @@ public class BreakingAwayViewer extends CCanvas<BreakingAwayCell,BreakingAwayBoa
     /** replay a move specified in SGF format.  
      * this is mostly standard stuff, but the key is to recognize
      * the elements that we generated in sgf_save
+     * summary: 5/24/2023
+     * 	920 files visited 0 problems
      */
     public void ReplayMove(sgf_node no)
     {

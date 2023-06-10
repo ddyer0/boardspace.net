@@ -25,7 +25,8 @@ import dictionary.Dictionary;
  *
  */
 class SprintBoard extends BaseBoard implements BoardProtocol
-{	static int REVISION = 100;			// 100 represents the initial version of the game
+{	static int REVISION = 101;			// 100 represents the initial version of the game
+										// 101 introduces the EndingGame state when finishing
 	public int getMaxRevisionLevel() { return(REVISION); }
 	
 	/**
@@ -315,11 +316,22 @@ class SprintBoard extends BaseBoard implements BoardProtocol
         	drawTimer = G.Date()+InitialDrawTime;
         	
     		break;
-        case MOVE_ENDGAME:
-        	for(SingleBoard p : pbs) { p.Execute(m,replay); }
-        	setState(SprintState.Gameover);
+        case MOVE_ENDEDGAME:
+        	{
+        	SingleBoard pb = pbs[m.player];
+        	pb.Execute(mm,replay);
+        	boolean all = true;
+        	for(SingleBoard p : pbs) { all &= (p.getState()==SprintState.Gameover); }
+        	if(all) { setState(SprintState.Gameover); }
         	break;
-        	
+        	}
+        case MOVE_ENDGAME:
+        	{
+        	SingleBoard pb = pbs[m.player];
+        	pb.Execute(mm,replay);
+        	setState(revision<101 ? SprintState.Gameover : SprintState.EndingGame);
+        	break;
+        	}
         case MOVE_SWITCH:
         	whoseTurn = m.player;
         	break;

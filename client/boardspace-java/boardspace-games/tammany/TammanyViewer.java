@@ -21,6 +21,7 @@ import lib.PopupManager;
 import lib.StockArt;
 import lib.TextChunk;
 import lib.Text;
+import lib.Image;
 import lib.TextGlyph;
 import online.game.*;
 import online.game.BaseBoard.BoardState;
@@ -413,11 +414,11 @@ public class TammanyViewer extends CCanvas<TammanyCell,TammanyBoard> implements 
       // if the board is one large graphic, for which the visual target points
       // are carefully matched with the abstract grid
       }
-    
+     Image scaled = null;
      // called after supplying the rotation context
      public void drawFixedBoard(Graphics gc,Rectangle rect)
      {
-    	 if(remoteViewer<0) { TammanyChip.board.image.centerImage(gc, rect);	} 
+    	 if(remoteViewer<0) { scaled = TammanyChip.board.image.centerScaledImage(gc, rect,scaled);	} 
          setDisplayParameters(bb,boardRect);      	
      }
     /**

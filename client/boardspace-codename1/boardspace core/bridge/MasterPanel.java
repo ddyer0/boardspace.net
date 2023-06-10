@@ -401,7 +401,7 @@ public class MasterPanel extends JPanel implements NullLayoutProtocol,ActionList
 		{
 			int h = l.getHeight();
 			int neww = (int)(im.getWidth()*((double)h/im.getHeight()));
-			icon = im.getScaledInstance(neww, h,Image.SCALE_SMOOTH);
+			icon = im.getScaledInstance(neww, h,Image.ScaleType.SCALE_SMOOTH);
 		}
 		if(newName!=null)
 		{

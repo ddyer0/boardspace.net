@@ -16,6 +16,7 @@ import lib.HitPoint;
 import lib.LFrameProtocol;
 import lib.StockArt;
 import lib.TextButton;
+import lib.Image;
 import online.game.*;
 import online.game.sgf.sgf_node;
 import online.game.sgf.sgf_property;
@@ -351,7 +352,8 @@ public class MbraneViewer extends CCanvas<MbraneCell,MbraneBoard> implements Mbr
     //	return(new Point(G.Right(boardRect)-celloff,G.Bottom(boardRect)-celloff));
     //}  
 
-
+    Image scaled = null;
+    
     /** draw the deep unchangable objects, including those that might be rather expensive
      * to draw.  This background layer is used as a backdrop to the rest of the activity.
      * in our cease, we draw the board and the chips on it. 
@@ -376,7 +378,7 @@ public class MbraneViewer extends CCanvas<MbraneCell,MbraneBoard> implements Mbr
       }
       // if the board is one large graphic, for which the visual target points
       // are carefully matched with the abstract grid
-	 MbraneChip.board.image.centerImage(gc, activeBoardRect);
+      scaled = MbraneChip.board.image.centerScaledImage(gc, activeBoardRect,scaled);
 
       // draw a picture of the board. In this version we actually draw just the grid
       // to draw the cells, set gb.Drawing_Style in the board init method.  Create a

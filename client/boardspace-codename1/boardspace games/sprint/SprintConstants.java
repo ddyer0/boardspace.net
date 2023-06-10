@@ -24,11 +24,12 @@ public interface SprintConstants
 	static String JustWordsHelp = "Check for good words";
 	static String VocabularyMessage = "Vocabulary";
 	static String WordsMessage = "Best Words";
-	static String EndGameMessage = "End Game";
+	static String EndGameMessage = "Time Left";
 	static String NextDrawMessage = "Next Draw";
 	static String PullAction = "Pull";
 	static String EndGameAction = "End Game";
 	static String EndGameDescription = "Click on End Game to end the game with the current score";
+	static String EndingGameDescription = "Waiting for the other players stop";
 	static String ExplainPull = "Pull 2 more tiles from the draw pile";
 	static String SwitchExplanation = "Switch to viewing this player";
 	static final String[] SprintGRIDSTYLE = { "1", null, "A" }; // left and bottom numbers
@@ -55,6 +56,8 @@ public interface SprintConstants
 	Gameover(GameOverStateDescription,false,false),
 	Confirm(ConfirmStateDescription,false,false),
 	Endgame(EndGameDescription,true,true),
+	EndingGame(EndingGameDescription,true,true),
+
 	Play(SprintPlayState,false,false),
 	;
 	SprintState(String des,boolean done,boolean digest)
@@ -150,6 +153,7 @@ public interface SprintConstants
     	    	NextDrawMessage,
     			SprintPlayState,
     	        SprintVictoryCondition,
+    	        EndingGameDescription,
     	        TilesLeft,
 
     		};

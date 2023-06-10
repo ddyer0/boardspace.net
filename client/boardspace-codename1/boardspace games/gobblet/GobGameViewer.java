@@ -284,6 +284,8 @@ public class GobGameViewer extends CCanvas<GobCell,GobGameBoard> implements GobC
     	sprite.drawChip(g,this,SQUARESIZE,xp,yp,null);
     }
  
+    Image scaled = null;
+    Image background = null;
 
     /* draw the deep unchangable objects, including those that might be rather expensive
      * to draw.  This background layer is used as a backdrop to the rest of the activity.
@@ -302,7 +304,10 @@ public class GobGameViewer extends CCanvas<GobCell,GobGameBoard> implements GobC
        
       // for us, the board is one large graphic, for which the target points
       // are carefully matched with the abstract grid
-     images[BOARD_INDEX+(use_perspective()?1:0)].centerImage(gc, boardRect);
+      Image board = images[BOARD_INDEX+(use_perspective()?1:0)];
+      if(board!=background) { scaled = null; }
+      background = board;
+      scaled = board.centerScaledImage(gc, boardRect,scaled);
       if (use_perspective())
 	    {	// this are purely emphirical magic numbers to match the grid to the actual artwork.
 	        b.SetDisplayParameters(0.72, 1.0,   0.20,0.3, 0, 0.22,0.30,0);

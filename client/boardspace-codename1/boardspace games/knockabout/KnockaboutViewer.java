@@ -78,7 +78,7 @@ public class KnockaboutViewer extends CCanvas<KnockaboutCell,KnockaboutBoard> im
     {	enableAutoDone = true;
         super.init(info,frame);
         int randomKey = sharedInfo.getInt(OnlineConstants.RANDOMSEED,-1);
-        b = new KnockaboutBoard(randomKey,info.getString(OnlineConstants.GAMETYPE, Knockabout_Standard_Init),
+        b = new KnockaboutBoard(randomKey,info.getString(GAMETYPE, Knockabout_Standard_Init),
         		getStartingColorMap());
         useDirectDrawing(true);
         doInit(false);
@@ -233,6 +233,7 @@ public class KnockaboutViewer extends CCanvas<KnockaboutCell,KnockaboutBoard> im
        textures[BACKGROUND_TILE_INDEX].tileImage(gc, fullRect);   
         drawFixedBoard(gc);
     }
+    Image scaled = null;
     public void drawFixedBoard(Graphics gc,Rectangle brect)
     { boolean reviewBackground = reviewMode() && !mutable_game_record;
       if(reviewBackground)
@@ -243,8 +244,7 @@ public class KnockaboutViewer extends CCanvas<KnockaboutCell,KnockaboutBoard> im
       // for us, the board is one large graphic, for which the target points
       // are carefully matched with the abstract grid
 
-
-     images[BOARD_INDEX].getImage(this.loader).centerImage(gc, brect);
+      scaled = images[BOARD_INDEX].getImage(this.loader).centerScaledImage(gc, brect,scaled);
       b.SetDisplayParameters(
        		 0.965, //0.93,	// scale 
        		 0.8,	// yscale
@@ -573,6 +573,8 @@ private void playSounds(commonMove m)
     /** replay a move specified in SGF format.  
      * this is mostly standard stuff, but the key is to recognize
      * the elements that we generated in sgf_save
+     * summary: 5/26/2023
+     * 	13725 files visited 0 problems
      */
     public void ReplayMove(sgf_node no)
     {

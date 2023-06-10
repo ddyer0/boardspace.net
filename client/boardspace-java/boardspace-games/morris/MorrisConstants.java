@@ -11,7 +11,7 @@ public interface MorrisConstants
 	static String MorrisPlaceDescription = "Place a man on the board";
 	static String MorrisCaptureDescription = "Take one of your opponent's men";
 	static String Morris9Rules = "9 men morris rules";
-	static String MorrisMoveDescription = "MorrisMove a man";
+	static String MorrisMoveDescription = "Move a Man";
 	static public String MorrisStrings[] =
 	{	"Morris",
 		MorrisPlaceDescription,
@@ -20,8 +20,6 @@ public interface MorrisConstants
 	};
 	static public String MorrisStringPairs[][] = 
 	{   {"Morris_family","Nine Men Morris"},
-		{MorrisMoveDescription,"Move a man"},
-
 		{"Morris_variation","Standard 9 Men Morris"},
 		{"Morris-9","Nine Men Morris"},
 		{"Morris-9_variation","Standard 9 Men Morris"},

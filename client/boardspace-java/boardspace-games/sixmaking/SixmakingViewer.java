@@ -19,6 +19,7 @@ import lib.DefaultId;
 import lib.ExtendedHashtable;
 import lib.G;
 import lib.GC;
+import lib.Image;
 import lib.HitPoint;
 import lib.InternationalStrings;
 import lib.LFrameProtocol;
@@ -284,7 +285,9 @@ public class SixmakingViewer extends CCanvas<SixmakingCell,SixmakingBoard> imple
      }
 
  
-
+    Image background = null;
+    Image scaled = null;
+    
     /* draw the deep unchangeable objects, including those that might be rather expensive
      * to draw.  This background layer is used as a backdrop to the rest of the activity.
      * in our cease, we draw the board and the chips on it. 
@@ -303,7 +306,10 @@ public class SixmakingViewer extends CCanvas<SixmakingCell,SixmakingBoard> imple
       boolean perspective = usePerspective();
       // if the board is one large graphic, for which the visual target points
       // are carefully matched with the abstract grid
-      (perspective ? SixmakingChip.board.image : SixmakingChip.board_np.image).centerImage(gc, boardRect);
+      Image board = (perspective ? SixmakingChip.board.image : SixmakingChip.board_np.image);
+      if(board!=background) { scaled = null; }
+      background = board;
+      scaled = board.centerScaledImage(gc, boardRect,scaled);
       
       b.DrawGrid(gc,boardRect,use_grid,Color.white,Color.black,Color.blue,Color.black);
     }

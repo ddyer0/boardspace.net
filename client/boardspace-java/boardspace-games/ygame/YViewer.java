@@ -13,6 +13,7 @@ import lib.G;
 import lib.GC;
 import lib.HitPoint;
 import lib.Random;
+import lib.Image;
 import lib.StockArt;
 import lib.TextButton;
 import lib.InternationalStrings;
@@ -290,7 +291,7 @@ public class YViewer extends CCanvas<YCell,YBoard> implements YConstants, GameLa
      YChip.backgroundTile.image.tileImage(gc, fullRect);   
       drawFixedBoard(gc);
      }
-    
+    Image scaled = null;
     // land here after rotating the board drawing context if appropriate
     public void drawFixedBoard(Graphics gc,Rectangle brect)
     {
@@ -302,7 +303,7 @@ public class YViewer extends CCanvas<YCell,YBoard> implements YConstants, GameLa
 
         setDisplayParameters(bb,brect);
 
-       YChip.board.getImage().centerImage(gc,boardRect);
+        scaled = YChip.board.getImage().centerScaledImage(gc,boardRect,scaled);
         
 	  	bb.DrawGrid(gc, boardRect, use_grid,
 	  			Color.black, Color.black,

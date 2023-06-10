@@ -107,7 +107,7 @@ public class GygesViewer extends CCanvas<GygesCell,GygesBoard> implements GygesC
 
         int randomKey = info.getInt(OnlineConstants.RANDOMSEED,-1);
        
-        b = new GygesBoard(info.getString(OnlineConstants.GAMETYPE, Gyges_INIT_beginner),randomKey);
+        b = new GygesBoard(info.getString(GAMETYPE, Gyges_INIT_beginner),randomKey);
         useDirectDrawing(true);
         doInit(false);
         
@@ -282,6 +282,7 @@ public class GygesViewer extends CCanvas<GygesCell,GygesBoard> implements GygesC
        textures[BACKGROUND_TILE_INDEX].tileImage(gc, fullRect);   
         drawFixedBoard(gc);
     }
+    Image scaled = null;
     public void drawFixedBoard(Graphics gc,Rectangle brect)
     { boolean reviewBackground = reviewMode() && !mutable_game_record;
       // erase
@@ -292,7 +293,7 @@ public class GygesViewer extends CCanvas<GygesCell,GygesBoard> implements GygesC
        
       // if the board is one large graphic, for which the visual target points
       // are carefully matched with the abstract grid
-     images[BOARD_INDEX].centerImage(gc, brect);
+      scaled = images[BOARD_INDEX].centerScaledImage(gc, brect,scaled);
 	    b.SetDisplayParameters(0.63,0.78,  -0.0,0.55,  0, 00,0.0,0);
 	    b.SetDisplayRectangle(brect);
 
@@ -927,6 +928,8 @@ private void playSounds(commonMove m)
     /** replay a move specified in SGF format.  
      * this is mostly standard stuff, but the key is to recognize
      * the elements that we generated in sgf_save
+     * summary: 5/26/2023
+     *  2717 files visited 0 problems
      */
     public void ReplayMove(sgf_node no)
     {

@@ -15,6 +15,7 @@ import lib.GC;
 import lib.HitPoint;
 import lib.InternationalStrings;
 import lib.LFrameProtocol;
+import lib.Image;
 import lib.StockArt;
 import lib.TextButton;
 import online.game.*;
@@ -434,6 +435,8 @@ public class TwixtViewer extends CCanvas<TwixtCell,TwixtBoard> implements TwixtC
 	  	  chip.drawChip(gc, this, 2*SQUARESIZE/3, xp1,yp1,null);
 
     }
+    Image scaled = null;
+    TwixtChip background = null;
     /** draw the deep unchangable objects, including those that might be rather expensive
      * to draw.  This background layer is used as a backdrop to the rest of the activity.
      * in our cease, we draw the board and the chips on it. 
@@ -454,7 +457,9 @@ public class TwixtViewer extends CCanvas<TwixtCell,TwixtBoard> implements TwixtC
       boolean perspective = usePerspective();
       if(perspective)
       {
-     TwixtChip.board.image.centerImage(gc, boardRect);
+      if(background!=TwixtChip.board) { scaled = null; }
+      background = TwixtChip.board;
+      scaled = TwixtChip.board.image.centerScaledImage(gc, boardRect,scaled);
       if((rotation&1)!=0)
       {
       int l = G.Left(boardRect);
@@ -476,7 +481,9 @@ public class TwixtViewer extends CCanvas<TwixtCell,TwixtBoard> implements TwixtC
       	  int cy = G.centerY(boardRect);
       	  boolean rotate = (rotation&1)!=0;
       	  if(rotate) { GC.setRotation(gc,Math.PI/2,cx,cy);}
-         TwixtChip.board_np.image .centerImage(gc, boardRect);
+      	  if(background!=TwixtChip.board_np) { scaled = null; }
+      	  background = TwixtChip.board_np;
+      	  scaled = TwixtChip.board_np.image .centerScaledImage(gc, boardRect,scaled);
           if(rotate) { GC.setRotation(gc,-Math.PI/2, cx, cy); }
       }
       // draw a picture of the board. In this version we actually draw just the grid

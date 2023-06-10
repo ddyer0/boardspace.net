@@ -566,7 +566,8 @@ public class RithmomachyViewer extends CCanvas<RithmomachyCell,RithmomachyBoard>
      }
 
 
-
+    Image scaled = null;
+    
     /* draw the deep unchangable objects, including those that might be rather expensive
      * to draw.  This background layer is used as a backdrop to the rest of the activity.
      * in our cease, we draw the board and the chips on it. 
@@ -590,7 +591,7 @@ public class RithmomachyViewer extends CCanvas<RithmomachyCell,RithmomachyBoard>
 	       
       // if the board is one large graphic, for which the visual target points
       // are carefully matched with the abstract grid
-     images[BOARD_INDEX].centerImage(gc, boardRect);
+      scaled = images[BOARD_INDEX].centerScaledImage(gc, boardRect,scaled);
       b.SetDisplayParameters(rotateBoard?0.85:0.878,1.0,  0.18,0.05,  0);
       b.SetDisplayRectangle(boardRect);
 

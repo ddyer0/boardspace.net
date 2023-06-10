@@ -21,6 +21,7 @@ import lib.StockArt;
 import lib.G;
 import lib.GC;
 import lib.HitPoint;
+import lib.Image;
 import lib.LFrameProtocol;
 import online.game.*;
 import online.game.sgf.sgf_node;
@@ -395,6 +396,9 @@ public class MagnetViewer extends CCanvas<MagnetCell,MagnetBoard> implements Mag
        MagnetChip.backgroundTile.image.tileImage(gc, fullRect);   
         drawFixedBoard(gc);
     }
+    Image scaled = null;
+    Image background = null;
+    
     public void drawFixedBoard(Graphics gc,Rectangle brect)
     { // erase
       boolean reviewBackground = reviewMode()&&!mutable_game_record;
@@ -406,7 +410,10 @@ public class MagnetViewer extends CCanvas<MagnetCell,MagnetBoard> implements Mag
       // if the board is one large graphic, for which the visual target points
       // are carefully matched with the abstract grid
       MagnetChip bd = bb.reverseY() ? MagnetChip.board_reversed : MagnetChip.board;
-     bd.getImage(loader).centerImage(gc, brect);
+      Image im = bd.getImage(loader);
+      if(im!=background) { scaled = null;}
+      background = im;
+      scaled = im.centerScaledImage(gc, brect,scaled);
 
       // draw a picture of the board. In this version we actually draw just the grid
       // to draw the cells, set gb.Drawing_Style in the board init method.  Create a

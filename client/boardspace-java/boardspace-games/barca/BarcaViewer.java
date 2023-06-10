@@ -16,6 +16,8 @@ import lib.HitPoint;
 import lib.LFrameProtocol;
 import lib.StockArt;
 import lib.Toggle;
+import lib.Image;
+
 import online.game.*;
 import online.game.sgf.sgf_node;
 import online.game.sgf.sgf_property;
@@ -275,6 +277,9 @@ public class BarcaViewer extends CCanvas<BarcaCell,BarcaBoard> implements BarcaC
        BarcaChip.backgroundTile.image.tileImage(gc, fullRect);   
         drawFixedBoard(gc);
     }
+    Image scaled = null;
+    Image lastBoard = null;
+    
     public void drawFixedBoard(Graphics gc,Rectangle brect)
     {
       boolean reviewBackground = reviewMode()&&!mutable_game_record;
@@ -285,7 +290,10 @@ public class BarcaViewer extends CCanvas<BarcaCell,BarcaBoard> implements BarcaC
       boolean perspective = usePerspective();
       // if the board is one large graphic, for which the visual target points
       // are carefully matched with the abstract grid
-     (perspective ? BarcaChip.board.image : BarcaChip.board_np.image).centerImage(gc, brect);
+      Image board = (perspective ? BarcaChip.board.image : BarcaChip.board_np.image);
+      if(board!=lastBoard) { scaled = null; }
+      lastBoard = board;
+      scaled = board.centerScaledImage(gc, brect,scaled);
       
 
       // draw a picture of the board. In this version we actually draw just the grid

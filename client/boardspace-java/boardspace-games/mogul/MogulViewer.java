@@ -258,7 +258,7 @@ public class MogulViewer extends CCanvas<MogulCell,MogulBoard> implements MogulC
     // 	return(super.gameProgressString());
     // }
 
-
+    Image scaled = null;
     /* draw the deep unchangable objects, including those that might be rather expensive
      * to draw.  This background layer is used as a backdrop to the rest of the activity.
      * in our cease, we draw the board and the chips on it. 
@@ -278,7 +278,9 @@ public class MogulViewer extends CCanvas<MogulCell,MogulBoard> implements MogulC
       // are carefully matched with the abstract grid
       
       
-      if(remoteViewer<0) {images[BOARD_INDEX].getImage(loader).centerImage(gc, boardRect); }
+      if(remoteViewer<0) 
+      	{	scaled = images[BOARD_INDEX].getImage(loader).centerScaledImage(gc, boardRect, scaled);
+      	}
 
       //gb.DrawGrid(gc,brect,use_grid,Color.white,Color.black,Color.blue,Color.black);
     }

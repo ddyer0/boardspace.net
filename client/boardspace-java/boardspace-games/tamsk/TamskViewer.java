@@ -19,6 +19,7 @@ import lib.Text;
 import lib.TextButton;
 import lib.TextChunk;
 import lib.Toggle;
+import lib.Image;
 import lib.LFrameProtocol;
 import lib.SimpleSprite;
 import lib.Slider;
@@ -457,6 +458,7 @@ public class TamskViewer extends CCanvas<TamskCell,TamskBoard> implements TamskC
       TamskChip.backgroundTile.image.tileImage(gc, fullRect);   
       drawFixedBoard(gc);
      }
+    Image scaled = null;
     
     // land here after rotating the board drawing context if appropriate
     public void drawFixedBoard(Graphics gc,Rectangle brect)
@@ -472,7 +474,7 @@ public class TamskViewer extends CCanvas<TamskCell,TamskBoard> implements TamskC
 	  	setDisplayParameters(gb,brect);
 	      // if the board is one large graphic, for which the visual target points
 	      // are carefully matched with the abstract grid
-	  	  TamskChip.board.getImage().centerImage(gc, brect);
+	  	  scaled = TamskChip.board.getImage().centerScaledImage(gc, brect, scaled);
 	      // draw a picture of the board. In this version we actually draw just the grid
 	      // to draw the cells, set gb.Drawing_Style in the board init method.  Create a
 	      // DrawGridCoord(Graphics gc, Color clt,int xpos, int ypos, int cellsize,String txt)

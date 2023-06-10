@@ -307,7 +307,8 @@ public class VolcanoGameViewer extends CCanvas<VolcanoCell,VolcanoBoard> impleme
 	  b.getRealBoard().SetDisplayRectangle(boardRect);
 
     }
-
+    Image scaled = null;
+    Image background = null;
     /* draw the deep unchangable objects, including those that might be rather expensive
      * to draw.  This background layer is used as a backdrop to the rest of the activity.
      * in our cease, we draw the board and the chips on it. 
@@ -326,10 +327,13 @@ public class VolcanoGameViewer extends CCanvas<VolcanoCell,VolcanoBoard> impleme
       
       // for us, the board is one large graphic, for which the target points
       // are carefully matched with the abstract grid
-     images[perspective
+     Image board = images[perspective
                               ? b.hexBoard?HBOARD_INDEX:BOARD_INDEX
                               : b.hexBoard?HBOARD_NP_INDEX : RBOARD_NP_INDEX
-    		  ].centerImage(gc, boardRect);
+    		  ];
+      if(background!=board) { scaled = null; }
+      background = board;
+      scaled = board.centerScaledImage(gc, boardRect,scaled);
       prepareBoardGeometry(b);
       b.getRealBoard().DrawGrid(gc,boardRect,use_grid,Color.white,Color.black,Color.blue,Color.yellow);
     }

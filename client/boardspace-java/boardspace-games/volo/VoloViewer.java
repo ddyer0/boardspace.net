@@ -281,7 +281,9 @@ public class VoloViewer extends CCanvas<VoloCell,VoloBoard> implements VoloConst
     //	return(new Point(G.Right(boardRect)-celloff,G.Bottom(boardRect)-celloff));
     //}  
 
-
+    Image background = null;
+    Image scaled = null;
+    
     /** draw the deep unchangable objects, including those that might be rather expensive
      * to draw.  This background layer is used as a backdrop to the rest of the activity.
      * in our cease, we draw the board and the chips on it. 
@@ -301,7 +303,10 @@ public class VoloViewer extends CCanvas<VoloCell,VoloBoard> implements VoloConst
        
       // if the board is one large graphic, for which the visual target points
       // are carefully matched with the abstract grid
-     images[bb.smallBoard?BOARD84_INDEX:BOARD_INDEX].centerImage(gc, boardRect);
+      Image board = images[bb.smallBoard?BOARD84_INDEX:BOARD_INDEX];
+      if(board!=background) { scaled = null; }
+      background = board;
+      scaled = board.centerScaledImage(gc, boardRect,scaled);
 
       // draw a picture of the board. In this version we actually draw just the grid
       // to draw the cells, set gb.Drawing_Style in the board init method.  Create a

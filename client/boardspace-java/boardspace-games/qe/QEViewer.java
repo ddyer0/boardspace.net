@@ -517,7 +517,7 @@ public void ViewerRun(int wait)
     //	return(new Point(G.Right(boardRect)-celloff,G.Bottom(boardRect)-celloff));
     //}  
 
-
+    Image scaled = null;
     /** draw the deep unchangable objects, including those that might be rather expensive
      * to draw.  This background layer is used as a backdrop to the rest of the activity.
      * in our cease, we draw the board and the chips on it. 
@@ -540,7 +540,7 @@ public void ViewerRun(int wait)
       // to draw the cells, set gb.Drawing_Style in the board init method.  Create a
       // DrawGridCoord(Graphics gc, Color clt,int xpos, int ypos, int cellsize,String txt)
       // on the board to fine tune the exact positions of the text
-      if(remoteViewer<0) { QEChip.Board.getImage(loader).centerImage(gc, boardRect); }
+      if(remoteViewer<0) { scaled = QEChip.Board.getImage(loader).centerScaledImage(gc, boardRect,scaled); }
       bb.SetDisplayRectangle(boardRect);
      }
     

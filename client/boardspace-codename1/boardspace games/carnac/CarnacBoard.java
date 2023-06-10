@@ -274,7 +274,6 @@ class CarnacBoard extends squareBoard<CarnacCell> implements BoardProtocol,Carna
         
         poolSize = from_b.poolSize;
         emptySize = from_b.emptySize;
-        nDolmondsValid = from_b.nDolmondsValid;
         unresign = from_b.unresign;
         board_state = from_b.board_state;
         AR.copy(nDolmonds,from_b.nDolmonds);
@@ -289,6 +288,7 @@ class CarnacBoard extends squareBoard<CarnacCell> implements BoardProtocol,Carna
         pickedLastPlaced = getCell(from_b.pickedLastPlaced);
         pickedLastTipped = getCell(from_b.pickedLastTipped);
         pickedLastChip = lastPlacedChip;
+        nDolmondsValid = false;
         sameboard(from_b);
     }
 

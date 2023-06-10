@@ -267,7 +267,7 @@ public class QyshinsuViewer extends CCanvas<QyshinsuCell,QyshinsuBoard> implemen
 
 
 
-
+    Image scaled = null;
 
     /* draw the deep unchangable objects, including those that might be rather expensive
      * to draw.  This background layer is used as a backdrop to the rest of the activity.
@@ -286,7 +286,7 @@ public class QyshinsuViewer extends CCanvas<QyshinsuCell,QyshinsuBoard> implemen
        
       // if the board is one large graphic, for which the visual target points
       // are carefully matched with the abstract grid
-     images[BOARD_INDEX].centerImage(gc,  boardRect);
+      scaled = images[BOARD_INDEX].centerScaledImage(gc,  boardRect, scaled);
       setDisplayParameters(b);
       b.DrawGrid(gc,boardRect,use_grid,Color.white,Color.red,Color.blue,Color.red);
     }

@@ -1,4 +1,7 @@
 package lib;
+
+import bridge.SystemImage.ScaleType;
+
 /**
  * this is a small utility class used by the scaled image cache.
  * 
@@ -25,7 +28,7 @@ public class CachedImage {
 		return( (m==null ? 0 : m.imageSize(imstack))
 				+ (n==null ? 0 : next.imageSize(imstack)));
 	}
-	public static Image getScaledInstance(Image im,int w,int h,int scal)
+	public static Image getScaledInstance(Image im,int w,int h,ScaleType scal)
 	{	// ignore the scaling parameter for now.
 		return(im.getScaledInstance(w,h,scal));
 	}

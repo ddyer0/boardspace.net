@@ -7669,7 +7669,7 @@ private void doAmandaTheBroker(EuphoriaCell dest,replayMode replay,RecruitChip a
         case FightTheOpressor:
         case ConfirmUseJackoOrContinue:
      	case ConfirmUseMwicheOrContinue:
-     		return((c==getSource()) || (dests.get(c)!=null));
+     		return((c==getSource()) || (dests!=null && dests.get(c)!=null));
         case Retrieve:
         case RetrieveCommodityWorkers:
         case RetrieveOrConfirm:
@@ -7748,7 +7748,7 @@ private void doAmandaTheBroker(EuphoriaCell dest,replayMode replay,RecruitChip a
         case PayForOptionalEffect:
         case CollectBenefit:
         case CollectOptionalBenefit:
-            	return(sources.get(c)!=null);
+            	return(sources!=null && sources.get(c)!=null);
        	  
 		case EphemeralConfirmRecruits:
         case ConfirmRecruits:

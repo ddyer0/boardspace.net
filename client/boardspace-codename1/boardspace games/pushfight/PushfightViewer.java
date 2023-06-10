@@ -16,6 +16,7 @@ import lib.ExtendedHashtable;
 import lib.G;
 import lib.GC;
 import lib.HitPoint;
+import lib.Image;
 import lib.InternationalStrings;
 import lib.LFrameProtocol;
 import lib.StockArt;
@@ -353,6 +354,8 @@ public class PushfightViewer extends CCanvas<PushfightCell,PushfightBoard> imple
      PushfightChip.backgroundTile.image.tileImage(gc, fullRect);
       drawFixedBoard(gc);
     }
+    Image scaled = null;
+    PushfightChip background = null;
     public void drawFixedBoard(Graphics gc,Rectangle brect)
     {
       boolean reviewBackground = reviewMode()&&!mutable_game_record;
@@ -368,8 +371,9 @@ public class PushfightViewer extends CCanvas<PushfightCell,PushfightBoard> imple
       // if the board is one large graphic, for which the visual target points
       // are carefully matched with the abstract grid
       PushfightChip board = usePerspective() ? PushfightChip.board : PushfightChip.boardO;
-
-	 board.getImage().centerImage(gc, brect);
+      if(board!=background) { scaled = null; }
+      background = board;
+      scaled = board.getImage().centerScaledImage(gc, brect,scaled);
 
       // draw a picture of the board. In this version we actually draw just the grid
       // to draw the cells, set gb.Drawing_Style in the board init method.  Create a

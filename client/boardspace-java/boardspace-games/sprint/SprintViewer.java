@@ -878,7 +878,7 @@ public void setLetterColor(Graphics gc,SingleBoard gb,SprintCell cell)
     	int spareX = (width-cols*cs)/2;
     	int rows = 0;
     	SprintCell source = gb.getSource();
-    	
+    	boolean running = gb.getState()!=SprintState.Gameover;
     	// first pass, count the number of rows we need
     	for(int i=0;i<cols;i++)
     	{	int idx = i;
@@ -928,7 +928,7 @@ public void setLetterColor(Graphics gc,SingleBoard gb,SprintCell cell)
     			{
     			int yp = ypos+displayRow*cs;
     			SprintChip topchip = c.topChip();
-    			boolean canHit = ( moving == (topchip==null));
+    			boolean canHit = running && ( moving == (topchip==null));
     			if(c.drawStack(gc,this,canHit ? highlight:null,cs,xp,yp,1,1, null))
     				{	// checking for pointable position
     					highlight.spriteRect = new Rectangle(xp-cs/2,yp-cs/2,cs,cs);
@@ -1633,7 +1633,9 @@ public void setLetterColor(Graphics gc,SingleBoard gb,SprintCell cell)
         	case Puzzle:
         	case Gameover:
         		break;
-        		
+        	case EndingGame:
+        		PerformAndTransmit("Ended "+getActivePlayer().boardIndex); 
+        		break;
           	case Play: 
         		if(pullTimeExpired(bb))
         		{

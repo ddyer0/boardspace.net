@@ -562,6 +562,7 @@ public class RithmomachyViewer extends CCanvas<RithmomachyCell,RithmomachyBoard>
      }
 
 
+    Image scaled = null;
 
     /* draw the deep unchangable objects, including those that might be rather expensive
      * to draw.  This background layer is used as a backdrop to the rest of the activity.
@@ -586,7 +587,7 @@ public class RithmomachyViewer extends CCanvas<RithmomachyCell,RithmomachyBoard>
        
       // if the board is one large graphic, for which the visual target points
       // are carefully matched with the abstract grid
-     images[BOARD_INDEX].centerImage(gc, boardRect);
+      scaled = images[BOARD_INDEX].centerScaledImage(gc, boardRect,scaled);
       b.SetDisplayParameters(rotateBoard?0.85:0.878,1.0,  0.18,0.05,  0);
 	    b.SetDisplayRectangle(boardRect);
 
@@ -1132,6 +1133,8 @@ private void playSounds(commonMove m)
     /** replay a move specified in SGF format.  
      * this is mostly standard stuff, but the key is to recognize
      * the elements that we generated in sgf_save
+     * summary: 5/27/2023
+     * 624 files visited 0 problems
      */
     public void ReplayMove(sgf_node no)
     {

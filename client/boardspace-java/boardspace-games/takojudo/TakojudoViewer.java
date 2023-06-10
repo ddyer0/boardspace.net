@@ -276,6 +276,9 @@ public class TakojudoViewer extends CCanvas<TakojudoCell,TakojudoBoard> implemen
        textures[BACKGROUND_TILE_INDEX].tileImage(gc, fullRect);   
         drawFixedBoard(gc);
     }
+    Image background = null;
+    Image scaled = null;
+    
     public void drawFixedBoard(Graphics gc,Rectangle brect)
     {boolean review = reviewMode() && !mutable_game_record;
       if(review)
@@ -286,7 +289,10 @@ public class TakojudoViewer extends CCanvas<TakojudoCell,TakojudoBoard> implemen
       // if the board is one large graphic, for which the visual target points
       // are carefully matched with the abstract grid
       boolean perspective = usePerspective();
-     images[perspective ? BOARD_INDEX : BOARD_NP_INDEX].centerImage(gc, brect);
+      Image board = images[perspective ? BOARD_INDEX : BOARD_NP_INDEX];
+      if(board!=background) { scaled = null; }
+      background = board;
+      scaled = board.centerScaledImage(gc, brect,scaled);
       if(perspective)
       {
 	    b.SetDisplayParameters(0.95, 0.9,  		0.0,0.0, 0.0,0.2,0.1,0.0);

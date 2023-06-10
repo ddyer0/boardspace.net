@@ -192,8 +192,8 @@ class MorrisBoard extends squareBoard<MorrisCell> implements BoardProtocol,Morri
         getCell(captureStack,from_b.captureStack);
         getCell(occupiedCells,from_b.occupiedCells);
         AR.copy(playerColor,from_b.playerColor);
-        copyFrom(captured,from_b.captured);
-        copyFrom(rack,from_b.rack);
+        copyAllFrom(captured,from_b.captured);
+        copyAllFrom(rack,from_b.rack);
         board_state = from_b.board_state;
         lastProgressMove = from_b.lastProgressMove;
         lastDrawMove = from_b.lastDrawMove;
@@ -545,7 +545,7 @@ class MorrisBoard extends squareBoard<MorrisCell> implements BoardProtocol,Morri
     	{	MorrisCell next = dest.exitTo(direction);
     		if((next!=null)&&(next.topChip()==top))
     		{
-    			MorrisCell opp = dest.exitTo(direction+CELL_HALF_TURN());
+    			MorrisCell opp = dest.exitTo(direction+CELL_HALF_TURN);
     			if((opp!=null)&&(opp.topChip()==top))
     					{
     					return(true);

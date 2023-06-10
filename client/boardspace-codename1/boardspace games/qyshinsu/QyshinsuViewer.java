@@ -7,7 +7,6 @@ import bridge.*;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.StringTokenizer;
-import online.common.*;
 import lib.Graphics;
 import lib.Image;
 import lib.CellId;
@@ -93,7 +92,7 @@ public class QyshinsuViewer extends CCanvas<QyshinsuCell,QyshinsuBoard> implemen
         MouseDotColors[1]= Color.white;
         MouseDotColors[0]= Color.white;
 
-        b = new QyshinsuBoard(info.getString(OnlineConstants.GAMETYPE, "Qyshinsu"),getStartingColorMap());
+        b = new QyshinsuBoard(info.getString(GAMETYPE, "Qyshinsu"),getStartingColorMap());
         useDirectDrawing(true);
         doInit(false);
        
@@ -161,7 +160,7 @@ public class QyshinsuViewer extends CCanvas<QyshinsuCell,QyshinsuBoard> implemen
     			0.5,	// % of space allocated to the board
     			1,	// aspect ratio for the board
     			fh*2,
-    			fh*3,	// maximum cell size
+    			fh*2,	// maximum cell size
     			0.1		// preference for the designated layout, if any
     			);
         // place the chat and log automatically, preferring to place
@@ -270,7 +269,7 @@ public class QyshinsuViewer extends CCanvas<QyshinsuCell,QyshinsuBoard> implemen
 
 
 
-
+    Image scaled = null;
 
     /* draw the deep unchangable objects, including those that might be rather expensive
      * to draw.  This background layer is used as a backdrop to the rest of the activity.
@@ -289,7 +288,7 @@ public class QyshinsuViewer extends CCanvas<QyshinsuCell,QyshinsuBoard> implemen
        
       // if the board is one large graphic, for which the visual target points
       // are carefully matched with the abstract grid
-     images[BOARD_INDEX].centerImage(gc,  boardRect);
+      scaled = images[BOARD_INDEX].centerScaledImage(gc,  boardRect, scaled);
       setDisplayParameters(b);
       b.DrawGrid(gc,boardRect,use_grid,Color.white,Color.red,Color.blue,Color.red);
     }
@@ -637,6 +636,8 @@ private void playSounds(commonMove m)
     /** replay a move specified in SGF format.  
      * this is mostly standard stuff, but the key is to recognize
      * the elements that we generated in sgf_save
+     * summary: 5/27/2023
+     * 9245 files visited 0 problems
      */
     public void ReplayMove(sgf_node no)
     {

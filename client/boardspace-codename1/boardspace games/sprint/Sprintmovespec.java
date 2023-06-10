@@ -24,6 +24,7 @@ public class Sprintmovespec extends commonMPMove implements SprintConstants
     static final int MOVE_PULL = 226;			// pull more tiles
     static final int MOVE_ENDGAME = 227;		// end the game now
     static final int MOVE_SWITCH = 228;			// switch point of view
+    static final int MOVE_ENDEDGAME = 229;		// ack endgame
     static
     {	// load the dictionary
         // these int values must be unique in the dictionary
@@ -40,6 +41,7 @@ public class Sprintmovespec extends commonMPMove implements SprintConstants
         	"move",MOVE_MOVETILE,
         	"pull",MOVE_PULL,
         	"endgame",MOVE_ENDGAME,
+        	"ended",MOVE_ENDEDGAME,
         	"switch",MOVE_SWITCH
     			);
   }
@@ -300,6 +302,7 @@ public class Sprintmovespec extends commonMPMove implements SprintConstants
         case MOVE_SWITCH:
         case MOVE_DONE:
         case MOVE_ENDGAME:
+        case MOVE_ENDEDGAME:
             return TextChunk.create("");
         default:
             return TextChunk.create(D.findUniqueTrans(op));
@@ -348,6 +351,7 @@ public class Sprintmovespec extends commonMPMove implements SprintConstants
         	return G.concat(opname,G.printCol(to_col),((to_row==0)?" false" : " true"));
         default:
         case MOVE_ENDGAME:
+        case MOVE_ENDEDGAME:
         case MOVE_SWITCH:
             return G.concat(opname);
         }

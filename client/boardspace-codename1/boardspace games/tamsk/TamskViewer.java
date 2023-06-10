@@ -14,6 +14,7 @@ import lib.ExtendedHashtable;
 import lib.G;
 import lib.GC;
 import lib.HitPoint;
+import lib.Image;
 import lib.StockArt;
 import lib.Text;
 import lib.TextButton;
@@ -457,6 +458,7 @@ public class TamskViewer extends CCanvas<TamskCell,TamskBoard> implements TamskC
       TamskChip.backgroundTile.image.tileImage(gc, fullRect);   
       drawFixedBoard(gc);
      }
+    Image scaled = null;
     
     // land here after rotating the board drawing context if appropriate
     public void drawFixedBoard(Graphics gc,Rectangle brect)
@@ -472,7 +474,7 @@ public class TamskViewer extends CCanvas<TamskCell,TamskBoard> implements TamskC
 	  	setDisplayParameters(gb,brect);
 	      // if the board is one large graphic, for which the visual target points
 	      // are carefully matched with the abstract grid
-	  	  TamskChip.board.getImage().centerImage(gc, brect);
+	  	  scaled = TamskChip.board.getImage().centerScaledImage(gc, brect, scaled);
 	      // draw a picture of the board. In this version we actually draw just the grid
 	      // to draw the cells, set gb.Drawing_Style in the board init method.  Create a
 	      // DrawGridCoord(Graphics gc, Color clt,int xpos, int ypos, int cellsize,String txt)
@@ -1360,6 +1362,8 @@ public class TamskViewer extends CCanvas<TamskCell,TamskBoard> implements TamskC
     /** replay a move specified in SGF format.  
      * this is mostly standard stuff, but the contract is to recognize
      * the elements that we generated in sgf_save
+     * summary: 3/23/2023
+     * 	207 files visited 0 problems
      */
     public void ReplayMove(sgf_node no)
     {

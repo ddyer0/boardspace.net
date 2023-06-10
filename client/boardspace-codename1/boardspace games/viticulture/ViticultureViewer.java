@@ -1240,6 +1240,7 @@ private void drawPlayerBoard(Graphics gc,
     //	return(new Point(G.Right(boardRect)-celloff,G.Bottom(boardRect)-celloff));
     //}    
 
+    Image scaled = null;
     /** draw the deep unchangable objects, including those that might be rather expensive
      * to draw.  This background layer is used as a backdrop to the rest of the activity.
      * in our cease, we draw the board and the chips on it. 
@@ -1267,7 +1268,8 @@ private void drawPlayerBoard(Graphics gc,
       // if the board is one large graphic, for which the visual target points
       // are carefully matched with the abstract grid
       if(remoteViewer<0)
-      {ViticultureChip.board.image.centerImage(gc,brect);
+      {
+      scaled = ViticultureChip.board.image.centerScaledImage(gc,brect,scaled);
       // draw a picture of the board. In this version we actually draw just the grid
       // to draw the cells, set gb.Drawing_Style in the board init method.  Create a
       // DrawGridCoord(Graphics gc, Color clt,int xpos, int ypos, int cellsize,String txt)
@@ -3255,7 +3257,7 @@ private void drawPlayerBoard(Graphics gc,
     		  	    cardDisplay1.reInit();
     		  	    yleft-= step*2/3;
     		  	    while(cardDisplay.height()>cardLimit)
-    		  	    	{ cardDisplay1.insertChipAtIndex(0,cardDisplay.removeTop());
+    		  	    	{ cardDisplay1.addChip(cardDisplay.removeTop());
     		  	    	  card1Index.push(cardIndex.pop());
     		  	    	}
     		  	    if(drawStack(gc,state,null,cardDisplay1,highlight,highlightAll,cardStep,xleft,yleft+step*5 ,0,1,0,cardLabel))
@@ -5925,6 +5927,7 @@ private void drawPlayerBoard(Graphics gc,
         	PerformAndTransmit(((Viticulturemovespec)hp.hitObject).moveString());
         	break;
         	}
+			//$FALL-THROUGH$
         case WineBin:	// display bin for wines being made
         case StartPlayer:		// display grape in winemaking mode
  	    	if(gb.pickedObject==null)
@@ -6265,6 +6268,13 @@ private void drawPlayerBoard(Graphics gc,
      /** replay a move specified in SGF format.  
      * this is mostly standard stuff, but the contract is to recognize
      * the elements that we generated in sgf_save
+     * summary: 5/23/2023
+		225: play Problem in zip file:G:\share\projects\boardspace-html\htdocs\viticulture\viticulturegames\viticulturegames\archive-2020\games-Apr-25-2020.zip U!VI-mgahagen-epatterson-lmarkus001-Lgahagen-2020-04-12-2352.sgf lib.ErrorX: chip exists
+		267: play Problem in zip file:G:\share\projects\boardspace-html\htdocs\viticulture\viticulturegames\viticulturegames\archive-2020\games-Apr-25-2020.zip VI-ddyer-Wilson17-sven2-lfedel-mfeber-idyer-2020-04-19-1907.sgf lib.ErrorX: must be a blue card
+		284: play Problem in zip file:G:\share\projects\boardspace-html\htdocs\viticulture\viticulturegames\viticulturegames\archive-2020\games-Apr-25-2020.zip VI-mfeber-ddyer-idyer-sven2-2020-04-12-1916.sgf lib.ErrorX: must be a blue card
+		286: play Problem in zip file:G:\share\projects\boardspace-html\htdocs\viticulture\viticulturegames\viticulturegames\archive-2020\games-Apr-25-2020.zip VI-mfeber-Runcible-lfedel-idyer-ddyer-sven2-2020-04-11-0218.sgf lib.ErrorX: must be a blue card
+		298: play Problem in zip file:G:\share\projects\boardspace-html\htdocs\viticulture\viticulturegames\viticulturegames\archive-2020\games-Apr-25-2020.zip VI-wilson17-ddyer-sven2-2020-04-15-1937.sgf lib.ErrorX: Not expecting state Play
+		1971 files visited 5 problems
      */
     public void ReplayMove(sgf_node no)
     {

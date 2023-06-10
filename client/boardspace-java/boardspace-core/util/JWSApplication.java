@@ -222,7 +222,7 @@ public class JWSApplication implements Config,Runnable
 			String classes = "Executable Jar";
 			String ts = "";
 			String tt = "";
-			
+			String ml = " loader=old";
 			String mini = null;
 			do {
 				String aa = System.getProperty("mainargs-"+idx);
@@ -238,7 +238,7 @@ public class JWSApplication implements Config,Runnable
 				if(OnlineConstants.CLASSDIR.equals(aa)) { classes = " "+av; }
 				if(OnlineConstants.TESTSERVER.equals(aa)) { ts = " TestServer"; }
 				if(OnlineConstants.TESTVERSION.equals(aa)) { tt = " Test"; }
-				if("miniloader".equals(aa)) { mini = av; }
+				if("miniloader".equals(aa)) { mini = av;  ml = " loader="+av; }
 			
 			} while(true);
 	
@@ -247,7 +247,7 @@ public class JWSApplication implements Config,Runnable
 			{
 				G.infoBox("boardspace launcher","your version of the boardspace launcher is old.\nPlease install a new one from Boardspace.net");
 			}
-			String os =G.getOS()+ " "+classes+ts+tt;
+			String os =G.getOS()+ " "+classes+ts+tt+ml;
 			G.setPlatformName(os);
 			runLobby(args.toArray());
 			} catch (Throwable e)

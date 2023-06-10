@@ -55,6 +55,7 @@ public class Trenchmovespec
     int from_row;
     
     TrenchChip chip;
+    int captures = 0;
     
     // these provide an interface to log annotations that will be seen in the game log
     String gameEvents[] = null;
@@ -122,8 +123,9 @@ public class Trenchmovespec
         to.to_row = to_row;
         to.source = source;
         to.from_col = from_col;
-        to.to_col = to_col;
+        to.from_row = from_row;
         to.chip = chip;
+        to.captures = captures;
     }
 
     public commonMove Copy(commonMove to)
@@ -181,6 +183,7 @@ public class Trenchmovespec
         case MOVE_DROP:
         case MOVE_PICK:
             source = TrenchId.valueOf(msg.nextToken());
+            to_row = msg.hasMoreElements() ? G.IntToken(msg) : -1;
             break;
 
         case MOVE_START:
@@ -195,7 +198,7 @@ public class Trenchmovespec
     }
 
     private Text icon(commonCanvas v,Object... msg)
-    {	double chipScale[] = {1,1.5,-0.2,-0.5};
+    {	double chipScale[] = {1,1.0,-0.2,-0.5};
     	Text m = TextChunk.create(G.concat(msg));
     	if(chip!=null)
     	{
@@ -204,7 +207,15 @@ public class Trenchmovespec
     	}
     	return(m);
     }
-
+    private String captureString()
+    {
+    	if(captures==0) { return " "; }
+    	String  c = " ";
+    	for(int i=0;i<captures;i++) { c += "x";}
+    	c += " ";
+    	return c;
+    	
+    }
     /** construct an abbreviated move string, mainly for use in the game log.  These
      * don't have to be parseable, they're intended only to help humans understand
      * the game record.  The alternative method {@link #shortMoveText} can be implemented
@@ -219,12 +230,12 @@ public class Trenchmovespec
             return icon(v,to_col , to_row);
 
 		case MOVE_DROPB:
-            return icon(v,to_col ,to_row);
+            return icon(v,captureString(),to_col ,to_row);
             
 		case MOVE_CAPTURE:
 		case MOVE_ATTACK:
 		case MOVE_FROM_TO:
-            return icon(v,from_col,from_row,to_col ,to_row);
+            return icon(v,from_col,from_row,captureString(),to_col ,to_row);
 
         case MOVE_DROP:
         case MOVE_PICK:
@@ -261,7 +272,7 @@ public class Trenchmovespec
 
 		case MOVE_DROP:
         case MOVE_PICK:
-            return G.concat(opname , source.shortName());
+            return G.concat(opname , source.shortName()," ",to_row);
 
         case MOVE_START:
             return G.concat(indx,"Start P" , player);

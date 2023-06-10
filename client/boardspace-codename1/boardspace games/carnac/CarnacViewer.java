@@ -22,6 +22,7 @@ import lib.*;
  * Change History
  *
  *
+ *TODO: add a top-down auxiliary view like in majorities
 */
 public class CarnacViewer extends CCanvas<CarnacCell,CarnacBoard> implements CarnacConstants//,GameLayoutClient
 {
@@ -379,7 +380,6 @@ public class CarnacViewer extends CCanvas<CarnacCell,CarnacBoard> implements Car
     	int extraH = Math.max(0, (mainH-boardH)/2);
     	int boardX = mainX+extraW;
     	int boardY = mainY+extraH;
-   		layout.returnFromMain(extraW,extraH);
         G.SetRect(boardRect,boardX,boardY,boardW,boardH);
         
  
@@ -1230,6 +1230,8 @@ private void playSounds(commonMove m)
     /** replay a move specified in SGF format.  
      * this is mostly standard stuff, but the key is to recognize
      * the elements that we generated in sgf_save
+     * summary: 5/24/2023
+     * 	1476 files visited 0 problems
      */
     public void ReplayMove(sgf_node no)
     {

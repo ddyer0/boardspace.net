@@ -3640,8 +3640,17 @@ public int getMaxRevisionLevel() { return(REVISION); }
       			  Assert(ns==null,"shouldn't be a next state");
       			}
       		}
-      		else { changeWakeup(pb,
-      				getCell(ViticultureId.RoosterTrack,'A',pb.boardIndex),
+      		else { 
+      			ViticultureCell dcell = getCell(ViticultureId.RoosterTrack,'A',pb.boardIndex);
+      			if(dcell.topChip()!=null)
+      			{	// if the position is already occupied, find a vacant slot.
+      				// this is purely cosmetic, there never will be a wakeup.
+      				int idx = roosterTrack.length-1;
+      				while( (dcell = getCell(ViticultureId.RoosterTrack,'A',idx)).topChip()!=null) { idx--; }
+      				
+      			}
+      			changeWakeup(pb,
+      				dcell,
       				replay); }
       	}
       	else
@@ -4752,13 +4761,14 @@ public int getMaxRevisionLevel() { return(REVISION); }
     		case Choice_A:
     			{
     			//p1("swindler choice a");
-    			if(testOption(Option.LimitPoints) && ((anchor.cash-anchor.startingCash)>=6))
-    				{
-    					logGameEvent(NoCash);
+    			boolean nogain = testOption(Option.LimitPoints) && ((anchor.cash-anchor.startingCash)>=6);
+    			changeCash(pb,-2,anchor.cashDisplay,replay);
+    			if(nogain)
+    				{logGameEvent(NoCash);
     				}
-    			else { 
+    			else 
+    				{
 		    			changeCash(anchor,2,anchor.cashDisplay,replayMode.Replay);
-		  				changeCash(pb,-2,anchor.cashDisplay,replay);
 		  				String to = pbs[targetPlayer].getRooster().colorPlusName();
 		  				String msg = G.concat(pb.getRooster().colorPlusName()," : ",to," $2"); 
 		  				logRawGameEvent(msg);

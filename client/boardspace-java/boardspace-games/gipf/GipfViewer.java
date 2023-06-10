@@ -327,8 +327,8 @@ public class GipfViewer extends CCanvas<GipfCell,GipfBoard> implements GipfConst
     	dummyCell.drawStack(g,this,null,CELLSIZE,xp,yp,0,0.2,null);
     }
 
-
-
+    Image background = null;
+    Image scaled = null;
     /* draw the deep unchangable objects, including those that might be rather expensive
      * to draw.  This background layer is used as a backdrop to the rest of the activity.
      * in our cease, we draw the board and the chips on it. 
@@ -347,7 +347,10 @@ public class GipfViewer extends CCanvas<GipfCell,GipfBoard> implements GipfConst
       // for us, the board is one large graphic, for which the target points
       // are carefully matched with the abstract grid
       boolean perspective = usePerspective();
-     images[perspective ? BOARD_INDEX : BOARD_FLAT_INDEX].centerImage(gc, boardRect);
+      Image board = images[perspective ? BOARD_INDEX : BOARD_FLAT_INDEX];
+      if(board!=background) { scaled = null; }
+      background = board;
+      scaled = board.centerScaledImage(gc, boardRect,scaled);
       if(perspective)
       {
       b.SetDisplayParameters(

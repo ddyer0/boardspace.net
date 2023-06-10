@@ -1282,6 +1282,16 @@ synchronized(allGames) {
 			null,false, WhiteOverBlack));
 	}
 	{
+	String pRules = "/trench/english/rules.pdf";
+	String pViewer = "trench.TrenchViewer";  
+	put(new GameInfo(1790,ES.game,115,"TX",CapturingGames,"Trench","Trench",
+			OneBotPlus,
+			new double[]{1.0,0.01},
+			pViewer,pRules,"about_trench.html",
+			null,false, BlackOverWhite));
+	}
+
+	{
 	String pRules = "/crosswords/english/rules.html";
 	String pViewer = "crosswords.CrosswordsViewer";  
 	{GameInfo mm = put(new GameInfo(1490,ES.game,95,"CW",WordGames,"Crosswords","Crosswords",

@@ -257,7 +257,7 @@ public class PonteViewer extends CCanvas<PonteCell,PonteBoard> implements PonteC
     	ch.drawChip(g,this,SQUARESIZE,xp,yp,null);
      }
 
-
+    Image scaled = null;
 
     /* draw the deep unchangable objects, including those that might be rather expensive
      * to draw.  This background layer is used as a backdrop to the rest of the activity.
@@ -276,7 +276,7 @@ public class PonteViewer extends CCanvas<PonteCell,PonteBoard> implements PonteC
        
       // if the board is one large graphic, for which the visual target points
       // are carefully matched with the abstract grid
-     images[BOARD_INDEX].centerImage(gc, boardRect);
+      scaled = images[BOARD_INDEX].centerScaledImage(gc, boardRect,scaled);
 
   	// and is pretty expensive, so we shouldn't do it in the mouse-only case
       b.SetDisplayRectangle(boardRect);

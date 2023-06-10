@@ -12,6 +12,7 @@ import lib.G;
 import lib.GC;
 import lib.HitPoint;
 import lib.StockArt;
+import lib.Image;
 import lib.LFrameProtocol;
 import online.game.*;
 import online.game.sgf.sgf_node;
@@ -411,6 +412,7 @@ public class MijnlieffViewer extends CCanvas<MijnlieffCell,MijnlieffBoard> imple
      MijnlieffChip.backgroundTile.image.tileImage(gc, fullRect);   
       drawFixedBoard(gc);
      }
+    Image scaled = null;
     
     // land here after rotating the board drawing context if appropriate
     public void drawFixedBoard(Graphics gc,Rectangle brect)
@@ -426,7 +428,7 @@ public class MijnlieffViewer extends CCanvas<MijnlieffCell,MijnlieffBoard> imple
 	  	setDisplayParameters(gb,brect);
 	      // if the board is one large graphic, for which the visual target points
 	      // are carefully matched with the abstract grid
-	   MijnlieffChip.board.getImage().centerImage(gc, brect);
+	  	scaled = MijnlieffChip.board.getImage().centerScaledImage(gc, brect,scaled);
 
 	      // draw a picture of the board. In this version we actually draw just the grid
 	      // to draw the cells, set gb.Drawing_Style in the board init method.  Create a

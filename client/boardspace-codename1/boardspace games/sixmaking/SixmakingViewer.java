@@ -17,6 +17,7 @@ import lib.ExtendedHashtable;
 import lib.G;
 import lib.GC;
 import lib.HitPoint;
+import lib.Image;
 import lib.InternationalStrings;
 import lib.LFrameProtocol;
 import lib.StockArt;
@@ -148,7 +149,7 @@ public class SixmakingViewer extends CCanvas<SixmakingCell,SixmakingBoard> imple
     			0.75,	// space allocated to the board
     			1,		// aspect ratio for the board
     			fh*2.0,
-    			fh*2.5,	// maximum cell size
+    			fh*3.5,	// maximum cell size
     			0.5		// preference for the designated layout, if any
     			);
     	int minLogW = fh*18;	
@@ -281,6 +282,8 @@ public class SixmakingViewer extends CCanvas<SixmakingCell,SixmakingBoard> imple
      }
 
 
+    Image background = null;
+    Image scaled = null;
 
     /* draw the deep unchangeable objects, including those that might be rather expensive
      * to draw.  This background layer is used as a backdrop to the rest of the activity.
@@ -300,7 +303,10 @@ public class SixmakingViewer extends CCanvas<SixmakingCell,SixmakingBoard> imple
       boolean perspective = usePerspective();
       // if the board is one large graphic, for which the visual target points
       // are carefully matched with the abstract grid
-      (perspective ? SixmakingChip.board.image : SixmakingChip.board_np.image).centerImage(gc, boardRect);
+      Image board = (perspective ? SixmakingChip.board.image : SixmakingChip.board_np.image);
+      if(board!=background) { scaled = null; }
+      background = board;
+      scaled = board.centerScaledImage(gc, boardRect,scaled);
       
       b.DrawGrid(gc,boardRect,use_grid,Color.white,Color.black,Color.blue,Color.black);
     }
@@ -780,6 +786,8 @@ private void playSounds(commonMove m)
     /** replay a move specified in SGF format.  
      * this is mostly standard stuff, but the key is to recognize
      * the elements that we generated in sgf_save
+     * summary: 5/27/2023
+	 * 3635 files visited 0 problems
      */
     public void ReplayMove(sgf_node no)
     {

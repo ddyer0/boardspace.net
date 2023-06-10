@@ -224,7 +224,8 @@ public class KubaViewer extends CCanvas<KubaCell,KubaBoard> implements  KubaCons
     }
 
 
-
+    Image scaled = null;
+    
     /* draw the deep unchangable objects, including those that might be rather expensive
      * to draw.  This background layer is used as a backdrop to the rest of the activity.
      * in our cease, we draw the board and the chips on it. 
@@ -242,7 +243,7 @@ public class KubaViewer extends CCanvas<KubaCell,KubaBoard> implements  KubaCons
        
       // for us, the board is one large graphic, for which the target points
       // are carefully matched with the abstract grid
-     images[BOARD_INDEX].centerImage(gc, boardRect);
+     scaled = images[BOARD_INDEX].centerScaledImage(gc, boardRect,scaled);
   	b.SetDisplayParameters(0.58,1.0,  0.1,0.0,  0);
     b.SetDisplayRectangle(boardRect);
 

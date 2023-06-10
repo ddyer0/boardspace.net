@@ -1,7 +1,5 @@
 package lib;
 
-
-
 import java.awt.Rectangle;
 
 import bridge.SystemImage;
@@ -39,6 +37,7 @@ public class Image extends SystemImage implements Drawable,CompareTo<Image>
 	public static CachedImageManager cache = new CachedImageManager();
 	public static Image getCachedImage(String name) { return(cache.getCachedImage(name)); }
 	public static CachedImageManager getImageCache() { return(cache); }
+	
 	public static boolean manageCachedImages(int n)
 	{
 		if(cache.needsManagement())
@@ -255,14 +254,17 @@ public class Image extends SystemImage implements Drawable,CompareTo<Image>
 	 * @param width
 	 * @param height
 	 */
-	    public void centerImage(Graphics gc,int x,int y,int width,int height)
+	public void centerImage(Graphics gc,int x,int y,int width,int height)
 	    { if(gc!=null)
-	    	{int w = getWidth();
+	    	{
+	    	Size d = getCenteredSize(width,height);    	
+	    	int dw = d.getWidth();
+	    	int dh = d.getHeight();
+	    	int w = getWidth();
 	    	int h = getHeight();
 	    	double scale = (double)width/w;
 	    	if(h*scale > height) { scale = (double)height/h; }
-	    	int dw = (int)(w*scale);
-	    	int dh = (int)(h*scale);
+
 	    	int xoff = (width-dw)/2;
 	    	int yoff = (height-dh)/2;
 	    	int margin = (int)(scale+1);
@@ -275,12 +277,34 @@ public class Image extends SystemImage implements Drawable,CompareTo<Image>
 	  	  	GC.setClip(gc,rr);
 	    	}
 	    }
+	public Size getCenteredSize(Rectangle r)
+	{
+		return getCenteredSize(G.Width(r),G.Height(r));
+	}
+	/**
+	 * get the size that will be needed to present this image as widthxheight with
+	 * preserved aspect ratio
+	 * 
+	 * @param width
+	 * @param height
+	 * @return
+	 */
+	public Size getCenteredSize(int width,int height)
+	{
+		int w = getWidth();
+    	int h = getHeight();
+    	double scale = (double)width/w;
+    	if(h*scale > height) { scale = (double)height/h; }
+    	int dw = (int)(w*scale);
+    	int dh = (int)(h*scale);
+    	return new Size(dw,dh);
+	}
 	public void stretchImage(Graphics gc,Rectangle r)
 	{
 		drawImage(gc,G.Left(r),G.Top(r), G.Right(r),G.Bottom(r),
 				0,0,getWidth(),getHeight());
-	
 	}
+	
 	/**
 	 * Tile copies of the image to fill all of the rectangle.  
 	   * @param gc
@@ -416,6 +440,158 @@ public class Image extends SystemImage implements Drawable,CompareTo<Image>
 	      	}
 	      	return(false);
 	      }
+	    /**
+	     * center a smooth scaled image to a rectangle, and return the scaled image used.
+	     * this is intended to be used to display maximally pretty background boards.  The
+	     * method "centerImage" used to be the goto image for this, but it frequently missed
+	     * out on using a scaled image because the large background images were not used
+	     * frequently enough.
+	     * 
+	     * @param gc
+	     * @param brect the destination rectangle
+	     * @param scaled a previously scaled image or null.  Not necessarily the correct size.
+	     * @return a correctly scaled image
+	     */
+		public Image centerScaledImage(Graphics gc, Rectangle brect, Image scaled) 
+		{
+			Size sz = getCenteredSize(brect);
+			int sw = sz.getWidth();
+			int sh = sz.getHeight();
+			if(scaled==null 
+					|| (scaled.getWidth()!=sw)
+					|| (scaled.getHeight()!=sh))
+			{	// never scale up in size, use the original image instead
+				scaled = (sw<getWidth() && sh<getHeight()) 
+							? getScaledInstance(sz,ScaleType.defaultScale)
+							: this;			
+			}
+			// this will calculate a scale of 1
+			scaled.centerImage(gc,brect);
+			return scaled;
+		}
 
-
+		public Image getScaledInstance(Size s,ScaleType scal)
+		{
+			return getScaledInstance(s.getWidth(),s.getHeight(),scal);
+		}
+		
+		 private static double cubic(double t,double v0,double v1,double v2,double v3)
+		 {	//int xv = Interpolate_Value((int)v0,(int)v1,(int)v2,(int)v3,t);
+		 	double p = (v3 - v2) - (v0 - v1);
+		 	double q = (v0 - v1) - p;
+		 	double r = v2 - v0;
+		 	double s = v1;
+		 	double tSqrd = t * t;
+		 	double vv = (p * (tSqrd * t)) + (q * tSqrd) + (r * t) + s;
+		 	return vv;
+		 	//return (p * (tSqrd * t) + 0.5f) + (q * tSqrd + 0.5f) + (r * t + 0.5f) + s; // Use this one for nicer interpolation, it rounds instead of truncates.
+		 }
+	
+	/* 
+	Scale a bitmap with bicubic sampling.  This produces sharper images than the standard smooth scaling.
+	
+	This code doesn't work on our typical images under IOS, because constructing
+	the image with createImage converts a pixel value of 0x0000000 to 0x00ffffff 
+	*/
+    public Image BicubicScale(int d_wid,int d_hgt)
+		 {	
+		 	
+		 	int s_wid= getWidth();
+		 	int s_hgt= getHeight();
+		 	int [] srcArr = getRGB(null);
+		 	int [] dstArr = new int[d_wid*d_hgt];
+		 	int hscale=(s_wid<<16)/d_wid;
+		 	int vscale=(s_hgt<<16)/d_hgt;
+		 	
+		 	int dspan=d_wid;
+		 	int sspan=s_wid;
+		 	
+		 	int y1 = vscale/2;	// used as a totalizer
+		 	int w_limit = (s_wid<<16)-1;
+		 	int h_limit = (s_hgt<<16)-1;
+		 	for(int j=0,row=0; j<d_hgt; j++,row+=dspan)
+		 	{	int x1 = hscale/2;	// used as a totalizer
+		 		int yindex = y1>>16;
+		 		int yindex1 = yindex+1;
+		 		int yindex2 = yindex+2;
+		 	
+		 		double ypart = (y1&0xffff)/(double)(0x10000);
+		 		for(int i=0; i<d_wid; i++)
+		 		{
+		 			int xindex = x1>>16;
+		 			int xindex1 = xindex+1;
+		 			int xindex2 = xindex+2;
+		 			double xpart = (x1&0xffff)/(double)(0x10000);
+		 			int pb = yindex*sspan + xindex;
+		 			
+		 			{	double temp10,temp00,temp20,temp30;
+		 			    double temp11,temp01,temp21,temp31;
+		 			    double temp12,temp02,temp22,temp32;
+		 			    double temp13,temp03,temp23,temp33;
+		 			    
+		 				{int d1 = srcArr[pb];
+		 				int d0 = xindex>0 ? srcArr[pb-1] : d1;
+		 				int d2 = (xindex1 < s_wid) ? srcArr[pb+1] : d1;
+		 				int d3 = (xindex2 < s_wid) ? srcArr[pb+2] : d2;
+		 				temp10 = cubic(xpart,d0&0xff,d1&0xff,d2&0xff,d3&0xff);
+		 				temp11 = cubic(xpart,(d0>>8)&0xff,(d1>>8)&0xff,(d2>>8)&0xff,(d3>>8)&0xff);
+		 				temp12 = cubic(xpart,(d0>>16)&0xff,(d1>>16)&0xff,(d2>>16)&0xff,(d3>>16)&0xff);
+		 				temp13 = cubic(xpart,(d0>>24)&0xff,(d1>>24)&0xff,(d2>>24)&0xff,(d3>>24)&0xff);
+		 				}
+		 				
+		 				if(yindex<=0) { temp00 = temp10; temp01=temp11; temp02=temp12; temp03=temp13; }
+		 				else {
+		 				int pb0 = pb - sspan;
+		 				int d1 = srcArr[pb0];
+		 				int d0 = xindex>0 ? srcArr[pb0-1] : d1;
+		 				int d2 = (xindex1 < s_wid) ? srcArr[pb0+1] : d1;
+		 				int d3 = (xindex2 < s_wid) ? srcArr[pb0+2] : d2;
+		 				temp00 = cubic(xpart,d0&0xff,d1&0xff,d2&0xff,d3&0xff);
+		 				temp01 = cubic(xpart,(d0>>8)&0xff,(d1>>8)&0xff,(d2>>8)&0xff,(d3>>8)&0xff);
+		 				temp02 = cubic(xpart,(d0>>16)&0xff,(d1>>16)&0xff,(d2>>16)&0xff,(d3>>16)&0xff);
+		 				temp03 = cubic(xpart,(d0>>24)&0xff,(d1>>24)&0xff,(d2>>24)&0xff,(d3>>24)&0xff);
+		 				}
+		 	
+		 				int pb1 = pb += sspan;
+		 				if(yindex1>=s_hgt) { temp20 = temp10; temp21=temp11; temp22=temp12; temp23=temp13; }
+		 				else {
+		 				int d1 = srcArr[pb1];
+		 				int d0 = xindex>0 ? srcArr[pb1-1] : d1;
+		 				int d2 = (xindex1 < s_wid) ? srcArr[pb1+1] : d1;
+		 				int d3 = (xindex2 < s_wid) ? srcArr[pb1+2] : d2;
+		 				temp20 = cubic(xpart,d0&0xff,d1&0xff,d2&0xff,d3&0xff);
+		 				temp21 = cubic(xpart,(d0>>8)&0xff,(d1>>8)&0xff,(d2>>8)&0xff,(d3>>8)&0xff);
+		 				temp22 = cubic(xpart,(d0>>16)&0xff,(d1>>16)&0xff,(d2>>16)&0xff,(d3>>16)&0xff);
+		 				temp23 = cubic(xpart,(d0>>24)&0xff,(d1>>24)&0xff,(d2>>24)&0xff,(d3>>24)&0xff);
+		 				}
+		 	
+		 				pb1 += sspan;
+		 				if(yindex2>=s_hgt) { temp30 = temp20; temp31=temp21; temp32=temp22; temp33=temp23; }
+		 				else {
+		 				int d1 = srcArr[pb1];
+		 				int d0 = xindex>0 ? srcArr[pb1-1] : d1;
+		 				int d2 = (xindex1 < s_wid) ? srcArr[pb1+1] : d1;
+		 				int d3 = (xindex2 < s_wid) ? srcArr[pb1+2] : d2;
+		 				temp30 = cubic(xpart,d0&0xff,d1&0xff,d2&0xff,d3&0xff);
+		 				temp31 = cubic(xpart,(d0>>8)&0xff,(d1>>8)&0xff,(d2>>8)&0xff,(d3>>8)&0xff);
+		 				temp32 = cubic(xpart,(d0>>16)&0xff,(d1>>16)&0xff,(d2>>16)&0xff,(d3>>16)&0xff);
+		 				temp33 = cubic(xpart,(d0>>24)&0xff,(d1>>24)&0xff,(d2>>24)&0xff,(d3>>24)&0xff);
+		 				}
+		 	
+		 				{
+		 				int val0 = Math.max(0,Math.min(255,(int)(cubic(ypart,temp00,temp10,temp20,temp30))));
+		 				int val1 = Math.max(0,Math.min(255,(int)(cubic(ypart,temp01,temp11,temp21,temp31))));
+		 				int val2 = Math.max(0,Math.min(255,(int)(cubic(ypart,temp02,temp12,temp22,temp32))));
+		 				int val3 = Math.max(0,Math.min(255,(int)(cubic(ypart,temp03,temp13,temp23,temp33))));
+		 				dstArr[i+row] = val0 | (val1<<8) | (val2<<16) | (val3<<24);
+		 				}
+		 			}
+		 			x1 = Math.min(x1+hscale,w_limit);
+		 		}
+		 		y1 = Math.min(y1+vscale,h_limit);
+		 	}
+		 	Image dst = new Image("{scaled}"+getName());
+		 	dst.createImageFromInts(dstArr,d_wid,d_hgt,0,d_wid);
+		 	return(dst);
+		 }
 }

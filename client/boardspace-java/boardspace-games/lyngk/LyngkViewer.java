@@ -427,7 +427,8 @@ public class LyngkViewer extends CCanvas<LyngkCell,LyngkBoard> implements LyngkC
     //}  
 
     public boolean usePerspective() { return(getAltChipset()==0); }
-
+    Image scaled = null;
+    Image background = null;
     /** draw the deep unchangable objects, including those that might be rather expensive
      * to draw.  This background layer is used as a backdrop to the rest of the activity.
      * in our cease, we draw the board and the chips on it. 
@@ -447,7 +448,9 @@ public class LyngkViewer extends CCanvas<LyngkCell,LyngkBoard> implements LyngkC
       // are carefully matched with the abstract grid
       boolean perspective = usePerspective();
       Image image = (perspective? LyngkChip.board : LyngkChip.boardFlat).getImage(loader);
-     image.centerImage(gc, boardRect);
+      if(image!=background) { scaled = null;}
+      background = image;
+      scaled = image.centerScaledImage(gc, boardRect,scaled);
 
       // draw a picture of the board. In this version we actually draw just the grid
       // to draw the cells, set gb.Drawing_Style in the board init method.  Create a

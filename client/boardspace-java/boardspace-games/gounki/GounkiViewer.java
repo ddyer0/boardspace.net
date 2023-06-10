@@ -305,6 +305,8 @@ public class GounkiViewer extends CCanvas<GounkiCell,GounkiBoard> implements Gou
        textures[BACKGROUND_TILE_INDEX].tileImage(gc, fullRect);   
         drawFixedBoard(gc);
     }
+    Image scaled = null;
+    Image background = null;
     public void drawFixedBoard(Graphics gc,Rectangle brect)
     { boolean reviewBackground = reviewMode() && !mutable_game_record;
       // erase
@@ -315,10 +317,12 @@ public class GounkiViewer extends CCanvas<GounkiCell,GounkiBoard> implements Gou
        
       // if the board is one large graphic, for which the visual target points
       // are carefully matched with the abstract grid
-     images[usePerspective() 
+     Image board = images[usePerspective() 
                               	? twist?BOARD_TWIST_INDEX:BOARD_INDEX
-                              	: BOARD_NP_INDEX].centerImage(gc,
-                              	brect);
+                              	: BOARD_NP_INDEX];
+     if(board!=background) { scaled = null; }
+     background = board;
+     scaled = board.centerScaledImage(gc,	brect, scaled);
 
       setBoardParameters(b,brect);
       

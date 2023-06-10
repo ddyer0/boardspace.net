@@ -241,7 +241,8 @@ public class TzaarViewer extends CCanvas<TzaarCell,TzaarBoard> implements TzaarC
     }
 
 
-
+    Image scaled = null;
+    int background = -1;
 
     /* draw the deep unchangable objects, including those that might be rather expensive
      * to draw.  This background layer is used as a backdrop to the rest of the activity.
@@ -267,11 +268,14 @@ public class TzaarViewer extends CCanvas<TzaarCell,TzaarBoard> implements TzaarC
         int step = -(int)(G.Width(boardRect)*0.025);
         G.insetRect(largeBoardRect,step);
         G.SetTop(largeBoardRect,G.Top(largeBoardRect)-step);
-    	images[BOARD_INDEX].centerImage(gc, largeBoardRect);
+        if(background!=BOARD_INDEX) { scaled = null; }
+        background = BOARD_INDEX;
+    	scaled = images[BOARD_INDEX].centerScaledImage(gc, largeBoardRect,scaled);
       }
       else
-      {
-    	  images[BOARD_FLAT_INDEX].centerImage(gc, boardRect);
+      {	  if(background!=BOARD_FLAT_INDEX) { scaled = null; }
+      	  background = BOARD_FLAT_INDEX;
+    	  scaled = images[BOARD_FLAT_INDEX].centerScaledImage(gc, boardRect,scaled);
       }
       
       if(perspective)

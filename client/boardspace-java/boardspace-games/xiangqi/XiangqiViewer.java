@@ -337,6 +337,7 @@ public class XiangqiViewer extends CCanvas<XiangqiCell,XiangqiBoard> implements 
        textures[BACKGROUND_TILE_INDEX].tileImage(gc, fullRect);   
         drawFixedBoard(gc);
     }
+    Image scaled = null;
     public void drawFixedBoard(Graphics gc,Rectangle brect)
     { boolean review = reviewMode() && !mutable_game_record;
       if(review)
@@ -346,7 +347,7 @@ public class XiangqiViewer extends CCanvas<XiangqiCell,XiangqiBoard> implements 
        
       // if the board is one large graphic, for which the visual target points
       // are carefully matched with the abstract grid
-     images[BOARD_INDEX].centerImage(gc, brect);
+      scaled = images[BOARD_INDEX].centerScaledImage(gc, brect,scaled);
 	    b.SetDisplayParameters(0.91,1.04,  0.16,0.2,  0);
 	    b.SetDisplayRectangle(brect);
 

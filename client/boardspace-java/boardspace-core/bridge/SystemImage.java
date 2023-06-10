@@ -41,10 +41,20 @@ import lib.Plog;
  *
  */
 public abstract class SystemImage implements ImageObserver
-{
-	public static int SCALE_DEFAULT = java.awt.Image.SCALE_DEFAULT;
-	public static int SCALE_FAST = java.awt.Image.SCALE_FAST;
-	public static int SCALE_SMOOTH = java.awt.Image.SCALE_SMOOTH;
+{	 
+	public enum ScaleType { 
+		SCALE_DEFAULT(java.awt.Image.SCALE_DEFAULT),
+		SCALE_FAST(java.awt.Image.SCALE_FAST),
+		// there's a problem with scale_smooth; apparently there's no defined interface
+		// to determine when the scaling is complete. 
+		SCALE_SMOOTH(java.awt.Image.SCALE_SMOOTH),
+		//  SCALE_BICUBIC is locally implemented so it's a known quantity
+		SCALE_BICUBIC(0);
+	public static ScaleType defaultScale = SCALE_BICUBIC;
+	public int v = 0;
+	ScaleType(int ico) { v = ico; }
+}
+
 
 	protected java.awt.Image image;		// the actual system image
 	protected int width =-1;
@@ -310,15 +320,17 @@ public abstract class SystemImage implements ImageObserver
            ipix[i] = (fg & 0xffffff) | (ma << 24);
        }
 	   SystemImage.pixelCount += w*h;
-       setImage(Toolkit.getDefaultToolkit().createImage(new MemoryImageSource(w, h, ipix,
-                   0, mspan)));
-
+	   createImageFromInts(ipix,w,h,0,mspan);
        return (true);
    }
    Plog.log.addLog("Composite failed");
    return(false);
 }
    
+public void createImageFromInts(int ipix[],int w,int h,int off,int mspan)
+{	setImage(Toolkit.getDefaultToolkit().createImage(new MemoryImageSource(w, h, ipix, off, mspan)));
+}
+
 public static Image createImage(java.awt.Image im)
 	{	Image nim = new Image("created");
 		nim.setImage(im);
@@ -398,6 +410,7 @@ root.appendChild(dim);
 
 metadata.mergeTree("javax_imageio_1.0", root);
  }
+ 
 
  public void SaveImage(String name)
     {  	
@@ -411,18 +424,41 @@ metadata.mergeTree("javax_imageio_1.0", root);
 		}
     }
  
-public Image getScaledInstance(int w,int h,int scal)
-	{	java.awt.Image ai = getImage();
+public abstract Image BicubicScale(int w,int h);
+
+ /**
+  * return a new image scaled to w,h using scaling method scal
+  * scal is defined by image scaling hints
+  * @param w
+  * @param h
+  * @param typ
+  * @return
+  */
+public Image getScaledInstance(int w,int h,ScaleType typ)
+	{	
 		long now = G.Date();
-		java.awt.Image scl = ai.getScaledInstance(w, h, scal);
-		long later = G.Date();
-		Image v = Image.createImage(scl,"{scaled}"+getName());
+		Image newImage = null;
+		if(typ==ScaleType.SCALE_BICUBIC)
+			{ 
+			//
+			// there's a problem with scale_smooth, that there's apparently no way to know
+			// when it is complete.  Bicubic scale is all ours so it's a known quantity
+			newImage = BicubicScale(w,h);
+			}
+		else 
+		{
+		java.awt.Image scl = getImage().getScaledInstance(w, h, typ.v);		
+		
+		newImage = Image.createImage(scl,"{scaled}"+getName());
+		}
+		
 		long last = G.Date();
 		if(G.debug() && (last-now > 1000))
-			{ Plog.log.addLog("Scale ",this," to ",+w,"x",h," took ",(int)(later-now),"+",(int)(last-later));
+			{ Plog.log.addLog("Scale ",this," to ",+w,"x",h," took ",(int)(last-now));
 			}
-		return(v);
+		return newImage;
 	}
+
 public void Dispose() 
 { 	java.awt.Image ai = getImage();
 	if(ai!=null) { ai.flush(); }

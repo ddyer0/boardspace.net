@@ -13,6 +13,7 @@ import online.search.SimpleRobotProtocol;
 
 import java.util.*;
 import lib.Graphics;
+import lib.Image;
 import lib.*;
 
 
@@ -558,6 +559,7 @@ public class CarnacViewer extends CCanvas<CarnacCell,CarnacBoard> implements Car
     // }
 
 
+    Image scaled = null;
     /* draw the deep unchangable objects, including those that might be rather expensive
      * to draw.  This background layer is used as a backdrop to the rest of the activity.
      * in our cease, we draw the board and the chips on it. 
@@ -576,7 +578,7 @@ public class CarnacViewer extends CCanvas<CarnacCell,CarnacBoard> implements Car
 	       
     	// if the board is one large graphic, for which the visual target points
     	// are carefully matched with the abstract grid
-    	b.rules.board.image.centerImage(gc, boardRect);
+    	scaled = b.rules.board.image.centerScaledImage(gc, boardRect, scaled);
 	      
     	setBoardParameters(b,boardRect); 
 	

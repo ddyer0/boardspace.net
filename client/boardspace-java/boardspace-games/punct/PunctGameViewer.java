@@ -354,7 +354,8 @@ public class PunctGameViewer extends CCanvas<punctCell,PunctGameBoard> implement
    {	return(new Point(G.Left(boardRect)+CELLSIZE*3,G.Top(boardRect)+CELLSIZE*2));
    }
 
-
+   Image scaled = null;
+   
     /* draw the deep unchangable objects, including those that might be rather expensive
      * to draw.  This background layer is used as a backdrop to the rest of the activity.
      * in our cease, we draw the board and the chips on it. 
@@ -373,7 +374,7 @@ public class PunctGameViewer extends CCanvas<punctCell,PunctGameBoard> implement
  		b.SetDisplayRectangle(boardRect);
       // for us, the board is one large graphic, for which the target points
       // are carefully matched with the abstract grid
-     PunctPiece.images[BOARD_INDEX].centerImage(gc, boardRect);
+ 	  scaled = PunctPiece.images[BOARD_INDEX].centerScaledImage(gc, boardRect,scaled);
       
       // draw a picture of the board. In this version we actually draw just the grid.
       b.DrawGrid(gc, boardRect, use_grid, boardBackgroundColor, GridColor, GridColor, GridColor);

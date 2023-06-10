@@ -1236,6 +1236,7 @@ private void drawPlayerBoard(Graphics gc,
     //	return(new Point(G.Right(boardRect)-celloff,G.Bottom(boardRect)-celloff));
     //}    
 
+    Image scaled = null;
     /** draw the deep unchangable objects, including those that might be rather expensive
      * to draw.  This background layer is used as a backdrop to the rest of the activity.
      * in our cease, we draw the board and the chips on it. 
@@ -1263,7 +1264,8 @@ private void drawPlayerBoard(Graphics gc,
       // if the board is one large graphic, for which the visual target points
       // are carefully matched with the abstract grid
       if(remoteViewer<0)
-      {ViticultureChip.board.image.centerImage(gc,brect);
+      {
+      scaled = ViticultureChip.board.image.centerScaledImage(gc,brect,scaled);
       // draw a picture of the board. In this version we actually draw just the grid
       // to draw the cells, set gb.Drawing_Style in the board init method.  Create a
       // DrawGridCoord(Graphics gc, Color clt,int xpos, int ypos, int cellsize,String txt)
@@ -3251,7 +3253,7 @@ private void drawPlayerBoard(Graphics gc,
     		  	    cardDisplay1.reInit();
     		  	    yleft-= step*2/3;
     		  	    while(cardDisplay.height()>cardLimit)
-    		  	    	{ cardDisplay1.insertChipAtIndex(0,cardDisplay.removeTop());
+    		  	    	{ cardDisplay1.addChip(cardDisplay.removeTop());
     		  	    	  card1Index.push(cardIndex.pop());
     		  	    	}
     		  	    if(drawStack(gc,state,null,cardDisplay1,highlight,highlightAll,cardStep,xleft,yleft+step*5 ,0,1,0,cardLabel))

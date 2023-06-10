@@ -376,6 +376,10 @@ class SingleBoard extends infiniteSquareBoard<SprintCell> implements BoardProtoc
     	// different identity for the second use.
         //
         Random r = new Random(64 * 1000); // init the random number generator
+        return Digest(r);
+    }
+    public long Digest(Random r)
+    {
         long v = super.Digest(r);
         // G.print();
         // G.print("d0 "+v);
@@ -623,8 +627,11 @@ class SingleBoard extends infiniteSquareBoard<SprintCell> implements BoardProtoc
         {
         default:
         	throw G.Error("Not expecting drop in state " + board_state);
+        case Gameover:
+        	break;
         case Confirm:
         case Endgame:
+        case EndingGame:
         case Play:
         	if(validate(true)) 
         		{ 	
@@ -1078,10 +1085,13 @@ class SingleBoard extends infiniteSquareBoard<SprintCell> implements BoardProtoc
         //G.print("E "+m+" for "+whoseTurn+" "+board_state);
         switch (m.op)
         {
-        case MOVE_ENDGAME:
+        case MOVE_ENDEDGAME:
         	//(replay==replayMode.Live) { G.print(Plog.log.finishLog()); }
          	doDone(replay);
-
+         	break;
+         	
+        case MOVE_ENDGAME:
+        	setState(SprintState.EndingGame);
             break;
         case MOVE_PLAYWORD:
         	{
@@ -1187,6 +1197,7 @@ class SingleBoard extends infiniteSquareBoard<SprintCell> implements BoardProtoc
         		setState(SprintState.Play);
 				//$FALL-THROUGH$
            	case Puzzle:
+           	case EndingGame:
 			case Play:
         		break;
         	default: ;
@@ -1278,6 +1289,7 @@ class SingleBoard extends infiniteSquareBoard<SprintCell> implements BoardProtoc
         default:
         	throw G.Error("Not expecting Legal Hit state " + board_state);
         case Confirm:
+		case EndingGame:
         case Endgame:
         case Play:
         	return ( (c!=null) 
@@ -1296,6 +1308,7 @@ class SingleBoard extends infiniteSquareBoard<SprintCell> implements BoardProtoc
         switch (board_state)
         {
  		case Confirm:
+		case EndingGame:
  		case Endgame:
 		case Play:
 			return(picked ? c.isEmpty() : (c.topChip()!=null));
