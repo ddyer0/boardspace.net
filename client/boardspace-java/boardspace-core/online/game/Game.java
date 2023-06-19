@@ -1461,7 +1461,10 @@ public class Game extends commonPanel implements PlayConstants,DeferredEventHand
                 boolean ismyrobot = wait||(player.robotPlayer != null);
                 String rest = G.restof(myST);
                 myNetConn.LogMessage("echo: ",wait," ",ismyrobot," ",rest," ",player);
-                boolean parsed = wait || v.ParseMessage(rest, player.boardIndex);
+                // passing -1 instead of the current player boardIndex means the appropriate
+                // number will be used based on whose move it is.  In normal play this will
+                // be the same, but in replay or review, it may be anyone.
+                boolean parsed = wait || v.ParseMessage(rest, -1);
                 // here we've received a move from another player, presumable one that
                 // he recorded, so we don't need to record it, only remember the current state.
                 RecordingStrategy mode = v.gameRecordingMode();
@@ -4503,10 +4506,28 @@ public class Game extends commonPanel implements PlayConstants,DeferredEventHand
 	            {
 	                String ss = event.remove(0);
 	                // be careful about the padding.  Each subcommand should end with a space, so "combined" always ends with a space
+	                if(ss.charAt(0)=='@')
+	                {
+	                //
+	                // commands that start with an @ are sent to all clients in the group
+	                // not only to the other players.  This is used to send the "pullstart"
+	                // command to all players, so it can be acted on synchronously by all
+	                //
+	                String msg = " "+NetConn.SEND_AS_ROBOT_ECHO + my.channel+" "+KEYWORD_VIEWER+" "+ss.substring(1);
+	                combined += msg.length()+msg;
+	                }
+	                else
+	                {
+	                //
+	                // send a viewer message to all the other players, we have already
+	                // executed it outselves.  This is the normal way of doing things
+	                // in games where the main play is synchronous.
+	                //
 	                String msg =                 		 
 	                		" "+NetConn.SEND_GROUP
 	                		+ KEYWORD_VIEWER+" "+ss+" ";
 	                combined += msg.length()+msg;
+	                }
 	            }
             	RecordingStrategy mode = v.gameRecordingMode();
             	if(mode!=RecordingStrategy.None)

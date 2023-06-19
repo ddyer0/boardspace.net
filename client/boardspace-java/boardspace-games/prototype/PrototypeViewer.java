@@ -1411,7 +1411,15 @@ public class PrototypeViewer extends CCanvas<PrototypeCell,PrototypeBoard> imple
   // public RecordingStrategy gameRecordingMode()
   //  {	return(super.gameRecordingMode());
   //  }
-    
+    private String vprogressString()
+    {	return super.gameProgressString()+" score score";
+    }
+    public String gameProgressString()
+    {	// this is what the standard method does
+    	 return(mutable_game_record 
+    			? Reviewing
+    			: vprogressString());
+    }
     // if there are simultaneous turns, robot start/stop can be tricky
     // by default, not allowed in simultaneous phases.  Return true 
     // to let them run "in their normal turn", but this will not allow

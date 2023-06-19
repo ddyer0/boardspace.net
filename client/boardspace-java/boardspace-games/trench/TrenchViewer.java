@@ -1334,5 +1334,17 @@ public class TrenchViewer extends CCanvas<TrenchCell,TrenchBoard> implements Tre
 	public int getLastPlacement(boolean empty) {
 		return (bb.moveNumber);
 	}
+	
+    private String vprogressString()
+    {	return super.gameProgressString()
+     		+" " +bb.totalCaptured(SECOND_PLAYER_INDEX)
+    		+" " +bb.totalCaptured(FIRST_PLAYER_INDEX);
+    }
+    public String gameProgressString()
+    {	// this is what the standard method does
+    	 return(mutable_game_record 
+    			? Reviewing
+    			: vprogressString());
+    }
 }
 

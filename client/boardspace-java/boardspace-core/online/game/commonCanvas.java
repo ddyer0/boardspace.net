@@ -188,11 +188,13 @@ public abstract class commonCanvas extends exCanvas
 	     	while(hasDeferredMessages())
 	    	{	DeferredMessage st = deferredMessages.elementAt(0);
 	    		deferredMessages.removeElementAt(0);
+	    		if(filterMessage(st))
+	    		{
 	    		switch(st.type) {
 	    		case Move:
 	    			// a game move, nominally from another client,
 	    			// which could be from a RPC screen performing an ordinary game operation
-	    			some |= performMessage(st.str,-1);
+	    			some |= performMessage(st.str,st.player);
 	    			break;
 	    		case Command:
 	    			// a request for a service from a RPC screen,
@@ -202,6 +204,7 @@ public abstract class commonCanvas extends exCanvas
 	    		}
 	    		
 	            if(GameOverNow()) { stopRobots(); }
+	    		}
 	    	}
 	    	return(some);	//  
 	    }
@@ -632,10 +635,18 @@ public abstract class commonCanvas extends exCanvas
 		l.currentMoveTime = -1;
 		}	
     }
+    /** default filter for incoming Viewer messages
+     *  this method is currently unused, but might come in handy
+     * 
+     * */
+    public boolean filterMessage(DeferredMessage st)
+    {
+    	return true;
+    }
     
     // replay one incoming move.  This is the entry point for network moves
     // and also for rpc local mirror moves.
-    private boolean performMessage(String st0,int player)
+    public boolean performMessage(String st0,int player)
     {	boolean playing = !mutable_game_record;
     	//Plog.log.appendNewLog("performMessage ");
     	//Plog.log.appendLog(player<0 ? whoseTurn() : player);
@@ -663,7 +674,7 @@ public abstract class commonCanvas extends exCanvas
     	return (playing);
     }
     // perform a rpc request
-    private boolean performMessage(RpcInterface.Keyword cmd,SimpleObserver who,String st0,int player)
+    public boolean performMessage(RpcInterface.Keyword cmd,SimpleObserver who,String st0,int player)
     {	
     	switch(cmd)
     	{
@@ -4106,6 +4117,11 @@ public abstract class commonCanvas extends exCanvas
     {
     	return (m.op==MOVE_PLEASEUNDO);
     }
+    public void TransmitAll(String str)
+    {
+    	addEvent("@"+str);
+    }
+    
     /**
      * perform and optionally transmit a move, return true if ok.  Note, it's tempting
      * to do any "auto move" that is needed in the continuation of this method, but don't.
@@ -4160,7 +4176,7 @@ public abstract class commonCanvas extends exCanvas
             // this is the active part of the "Start Evaluator" feature
             if (extraactions && (getActivePlayer().robotPlayer != null))
             {	// get the robot to static eval this position
-                //getActivePlayer().robotPlayer.StaticEval();
+                getActivePlayer().robotPlayer.StaticEval();
             }
  
             if(added)

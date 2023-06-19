@@ -205,7 +205,8 @@ class CheckerBoard extends rectBoard<CheckerCell> implements BoardProtocol
 		v ^= Digest(r,occupiedCells[SECOND_PLAYER_INDEX].size());	// not completely specific because the stack can be shuffled
 		v ^= Digest(r,occupiedCells[FIRST_PLAYER_INDEX].size());
 		v ^= Digest(r,currentDest);
-		v ^= (board_state.ordinal()*10+whoseTurn)*r.nextLong();
+		v ^= Digest(r,board_state);
+		v ^= Digest(r,whoseTurn);
         return (v);
     }
    public CheckerBoard cloneBoard() 

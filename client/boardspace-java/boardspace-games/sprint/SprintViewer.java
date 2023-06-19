@@ -17,7 +17,6 @@ import lib.G;
 import lib.GC;
 import lib.HitPoint;
 import lib.LFrameProtocol;
-import lib.Slider;
 import lib.StockArt;
 import lib.TextButton;
 import lib.Random;
@@ -78,12 +77,7 @@ public class SprintViewer extends CCanvas<SprintCell,SprintBoard> implements Spr
 	private TextButton endgameButton = addButton(EndGameAction,SprintId.EndGame,EndGameDescription,
 			HighlightColor, rackBackGroundColor,boardBackgroundColor);
 
-	private TextButton checkWordsButton = addButton(JustWordsMessage,SprintId.CheckWords,
-    		JustWordsHelp,
-						HighlightColor, rackBackGroundColor);
-    private Slider vocabularyRect = new Slider(VocabularyMessage,SprintId.Vocabulary,0,1,
-    		SprintPlay.vocabularyPart(online.search.RobotProtocol.DUMBOT_LEVEL));
-
+  
 /**
  * this is called during initialization to load all the images. Conventionally,
  * these are loading into a static variable so they can be shared by all.
@@ -237,7 +231,7 @@ public class SprintViewer extends CCanvas<SprintCell,SprintBoard> implements Spr
        	layout.placeDoneEditRep(buttonW,buttonW*4/3,endgameButton,editRect,noticeRect);
        	int doneW = G.Width(editRect);
        	layout.alwaysPlaceDone = true;
-       	layout.placeDoneEditRep(doneW,doneW,pullButton,checkWordsButton,vocabularyRect);
+       	layout.placeDoneEditRep(doneW,doneW,pullButton,null);
       	 
     	layout.placeTheVcr(this,vcrw,vcrw*3/2);
        	
@@ -452,7 +446,7 @@ public class SprintViewer extends CCanvas<SprintCell,SprintBoard> implements Spr
     		SprintCell[]cells,
     		SprintCell[]mappedCells,
     		int map[],int picked,boolean censor,HitPoint highlight,boolean rackOnly)
-    {
+    {	int forPlayer = gb.boardIndex;
     	int h = G.Height(rack);
     	int w = G.Width(rack);
     	int cy = G.centerY(rack)-h/10;
@@ -505,19 +499,19 @@ public class SprintViewer extends CCanvas<SprintCell,SprintBoard> implements Spr
     			{
     				if(top==null)
     				{
-    	    			highlight.hitObject = G.concat( "drop " ,getActivePlayer().boardIndex," Rack ",myCol," ",idx);
+    	    			highlight.hitObject = G.concat( "drop " ,forPlayer," Rack ",myCol," ",idx);
     	    			hit = true;
    					
     				}
     			}
     			else {
-    			highlight.hitObject = G.concat("replace ",getActivePlayer().boardIndex," Rack ",myCol," ",idx);
+    			highlight.hitObject = G.concat("replace ",forPlayer," Rack ",myCol," ",idx);
 				hit = true;
     			}
     			
     		}
     		else
-    		{   highlight.hitObject = G.concat("lift ",getActivePlayer().boardIndex," Rack ",myCol," ",idx," ",map[idx]);
+    		{   highlight.hitObject = G.concat("lift ",forPlayer," Rack ",myCol," ",idx," ",map[idx]);
 				hit = true;
     		}
     		if(hit)
@@ -574,7 +568,7 @@ public class SprintViewer extends CCanvas<SprintCell,SprintBoard> implements Spr
     		if(c!=null) { return(c); }
     	}
     	else {
-    	{int ap = allowed_to_edit||G.offline() ? bb.whoseTurn : getActivePlayer().boardIndex;
+    	{int ap = getViewPlayer();
     	 SprintCell c = getMovingTile(ap);
     	 if(c!=null) { return(c); }
     	}
@@ -782,7 +776,7 @@ public void setLetterColor(Graphics gc,SingleBoard gb,SprintCell cell)
  		boolean censor = all==null;
     	boolean draggingBoard = draggingBoard(); 
     	boolean canHit = !draggingBoard && G.pointInRect(highlight,brect);
-    	int cs = (int)gb.cellSize();
+    	int cs = Math.max(5,(int)gb.cellSize());
     	Rectangle oldClip = GC.combinedClip(gc,brect);
     	//GC.fillRect(gc,new Color(0.8f,0.8f,0.85f),brect);
         //
@@ -867,7 +861,7 @@ public void setLetterColor(Graphics gc,SingleBoard gb,SprintCell cell)
     // the second and third rows vanish.
     //
     public void drawUnplacedTiles(Graphics gc, SingleBoard gb, Rectangle brect, HitPoint highlight,HitPoint all)
-    {	 
+    {	int forPlayer = gb.boardIndex;
     	int left = G.Left(brect);
     	int top = G.Top(brect);
     	int width = G.Width(brect);
@@ -933,7 +927,7 @@ public void setLetterColor(Graphics gc,SingleBoard gb,SprintCell cell)
     				{	// checking for pointable position
     					highlight.spriteRect = new Rectangle(xp-cs/2,yp-cs/2,cs,cs);
     					highlight.spriteColor = Color.red;
-    		   		    highlight.hitObject = G.concat((moving ? "drop ":"pick "),getActivePlayer().boardIndex," Unplaced ",c.col," ",c.row);	
+    		   		    highlight.hitObject = G.concat((moving ? "drop ":"pick "),forPlayer," Unplaced ",c.col," ",c.row);	
     				}
     			}
 					   				     			
@@ -988,6 +982,7 @@ public void setLetterColor(Graphics gc,SingleBoard gb,SprintCell cell)
     private int bigX = 0;
     private int bigY = 0;
     
+    private boolean iAmSpectator() { return getActivePlayer().spectator; }
 
     public void redrawBoard(Graphics gc, HitPoint selectPos)
     {  SprintBoard gb = disB(gc);
@@ -1041,7 +1036,7 @@ public void setLetterColor(Graphics gc,SingleBoard gb,SprintCell cell)
     	   }
     	   GC.setFont(gc, largeBoldFont());
     	   drawNotice(gc,noticeRects[player],gb);
-    	   if((G.debug()||mutable_game_record) && G.pointInRect(selectPos,pl1.playerBox))
+    	   if((mutable_game_record || iAmSpectator()) && G.pointInRect(selectPos,pl1.playerBox))
     	   {
     		   selectPos.hitCode = SprintId.Switch;
     		   selectPos.hit_index = player;
@@ -1067,9 +1062,11 @@ public void setLetterColor(Graphics gc,SingleBoard gb,SprintCell cell)
        if(!planned)
       	{  
     	   // generally prevent spectators seeing tiles, unless openracks or gameover
-    	   boolean censorSpectator =  getActivePlayer().spectator&&!allowed_to_edit;
-    	   drawRack(gc,pboard,bigRack,pboard.getPlayerRack(),pboard.getPlayerMappedRack(),
+    	   boolean censorSpectator =  iAmSpectator()&&!allowed_to_edit;
+    	   drawRack(gc,pboard,bigRack,
+    			    pboard.getPlayerRack(),pboard.getPlayerMappedRack(),
     			    pboard.getRackMap(),pboard.getMapPick(),
+
     			   	censorSpectator,
     			   	censorSpectator ? null : selectPos,
     			   	ourTurnSelect==null); 
@@ -1104,10 +1101,6 @@ public void setLetterColor(Graphics gc,SingleBoard gb,SprintCell cell)
 					}
         }
        
-		if(G.debug())
-		{ 	checkWordsButton.show(gc,messageRotation,selectPos);
-			vocabularyRect.draw(gc, selectPos);
-		}
 
 		// if the state is Puzzle, present the player names as start buttons.
 		// in any case, pass the mouse location so tooltips will be attached.
@@ -1139,9 +1132,40 @@ public void setLetterColor(Graphics gc,SingleBoard gb,SprintCell cell)
     }
     public boolean allowResetUndo() { return(false); }
     
+    private commonPlayer viewPlayer = null;
+    public void setViewPlayer(commonPlayer p)
+    {
+    	viewPlayer = p;
+    }
+    public int getViewPlayer()
+    {
+    	if(viewPlayer!=null) { return viewPlayer.boardIndex; }
+    	return getActivePlayer().boardIndex;
+    }
     public boolean PerformAndTransmit(commonMove m, boolean transmit,replayMode mode)
     {
-    	return(super.PerformAndTransmit(m,transmit,mode));
+    	boolean v = super.PerformAndTransmit(m,transmit,mode);
+    	
+        if(m.op==MOVE_SWITCH)
+        {
+        	setViewPlayer(getPlayerOrTemp(m.player));
+        }
+        else if(m.op==MOVE_PULLSTART)
+        {	if((mode==replayMode.Live) && !iAmSpectator())
+        	{
+        	int pl = getActivePlayer().boardIndex;
+        	// synchronously pull new tiles
+         	int count = bb.pullCount();
+        	while(count>0)
+        	{
+        		String pc = bb.getPullMove(pl);
+        		if(pc!=null) { PerformAndTransmit(pc); }
+        		count--;
+        	}
+        	}
+        }          
+
+    	return v;
     }
     /**
      * Execute a move by the other player, or as a result of local mouse activity,
@@ -1151,13 +1175,10 @@ public void setLetterColor(Graphics gc,SingleBoard gb,SprintCell cell)
      * @return true if all went well.  Normally G.Error would be called if anything went
      * seriously wrong.
      */
-     public boolean Execute(commonMove mm,replayMode replay)
+    public boolean Execute(commonMove mm,replayMode replay)
     {	
-        handleExecute(bb,mm,replay);
-        if(mm.op==MOVE_SWITCH)
-        {
-        	setActivePlayer(getPlayerOrTemp(mm.player));
-        }
+    	handleExecute(bb,mm,replay);
+     
         /**
          * animations are handled by a simple protocol between the board and viewer.
          * when stones are moved around on the board, it pushes the source and destination
@@ -1173,9 +1194,11 @@ public void setLetterColor(Graphics gc,SingleBoard gb,SprintCell cell)
 		if(replay!=replayMode.Replay) { playSounds((Sprintmovespec)mm); }
 		return (true);
     }
+    
+
      SingleBoard currentPlayerBoard(SprintBoard gb)
      {
-    	 return gb.getPlayerBoard(getActivePlayer().boardIndex);
+    	 return gb.getPlayerBoard(getViewPlayer());
      }
      /**
       * This is a simple animation which moves everything at the same time, at a speed proportional to the distance
@@ -1210,11 +1233,6 @@ public void setLetterColor(Graphics gc,SingleBoard gb,SprintCell cell)
 	 case MOVE_PULL:
 		 playASoundClip(deskBellSoundName,200);
 		 break;
-	 case MOVE_PLAYWORD:
-		 for(int i=0;i<mm.word.length();i++) 
-		 	{ playASoundClip(light_drop,150);
-		 	}
-		 break;		 
 	 case MOVE_MOVETILE:
 	 case MOVE_DROPB:
 	 case MOVE_PICKB:
@@ -1299,36 +1317,7 @@ public void setLetterColor(Graphics gc,SingleBoard gb,SprintCell cell)
   public void verifyGameRecord()
    {	super.verifyGameRecord();
    }
-// for reference, here's the standard definition
- //   public void verifyGameRecord()
- //   {	BoardProtocol ourB =  getBoard();
- //   	int ourDig = ourB.Digest();
- //   	BoardProtocol dup = dupBoard = ourB.cloneBoard();
- //   	int dupDig = dup.Digest();
- //   	G.Assert(dupDig==ourDig,"Duplicate Digest Matches");
- //   	dup.doInit();
- //   	int step = History.size();
- //   	int limit = viewStep>=0 ? viewStep : step;
- //   	for(int i=0;i<limit;i++) 
- //   		{ commonMove mv = History.elementAt(i);
- //   		  //G.print(".. "+mv);
- //   		  dup.Execute(mv); 
- //   		}
- //   	int dupRedig = dup.Digest();
- //   	G.Assert(dup.whoseTurn()==ourB.whoseTurn(),"Replay whose turn matches");
- //   	G.Assert(dup.moveNumber()==ourB.moveNumber(),"Replay move number matches");
- //   	if(dupRedig!=ourDig)
- //   	{
- //   	//int d0 = ourB.Digest();
- //   	//int d1 = dup.Digest();
- //   	G.Assert(false,"Replay digest matches");
- //   	}
- //   	// note: can't quite do this because the timing of "SetDrawState" is wrong.  ourB
- //   	// may be a draw where dup is not if ourB is pending a draw.
- //   	//G.Assert(dup.getState()==ourB.getState(),"Replay state matches");
- //   	dupBoard = null;
- //   }
-    
+
 /**
  * the preferred mouse gesture style is to let the user "pick up" objects
  * by simply clicking on them, but we also allow him to click and drag. 
@@ -1360,26 +1349,13 @@ public void setLetterColor(Graphics gc,SingleBoard gb,SprintCell cell)
     		break;
         case BoardLocation:
 	        SprintCell hitCell = hitCell(hp);
-	    	PerformAndTransmit("Pickb "+getActivePlayer().boardIndex+" "+hitCell.col+" "+hitCell.row);
+	    	PerformAndTransmit("Pickb "+getViewPlayer()+" "+hitCell.col+" "+hitCell.row);
 	    	break;
         } 
         }
     }
 
-    private void showWords(WordStack ws,HitPoint hp,String msg)
-    {
-    	StringBuilder words = new StringBuilder();
-    	G.append(words,msg,"\n");
-    	for(int lim=ws.size(),i=0;i<lim;i++)
-    		{
-    		Word w = ws.elementAt(i);
-    		SprintCell seed = w.seed;
-    		G.append(words, w.name," @",seed.col,seed.row," ",w.points," points\n");
-    		}
-    	bigX = G.Left(hp);
-    	bigY = G.Top(hp);
-    	bigString = words.toString();
-    }
+
 	/** 
 	 * this is called on "mouse up".  We may have been just clicking
 	 * on something, or we may have just finished a click-drag-release.
@@ -1416,13 +1392,13 @@ public void setLetterColor(Graphics gc,SingleBoard gb,SprintCell cell)
         	PerformAndTransmit("switch "+hp.hit_index,mutable_game_record,replayMode.Live);
         	break;
         case EndGame:
-        	PerformAndTransmit("EndGame "+getActivePlayer().boardIndex);
+        	PerformAndTransmit("EndGame "+getViewPlayer());
         	break;
         case ZoomSlider:
         case InvisibleDragBoard:
 			break;
         case PullAction:
-        	PerformAndTransmit("Pull "+getActivePlayer().boardIndex+" "+bb.nextTileCount());
+        	PerformAndTransmit("Pull "+getViewPlayer()+" "+bb.nextTileCount());
         	break;
         case LocalRack:
         	{
@@ -1431,27 +1407,20 @@ public void setLetterColor(Graphics gc,SingleBoard gb,SprintCell cell)
             PerformAndTransmit(msg);
         	}
         	break;
-        case Vocabulary:
-        	bb.setVocabulary(vocabularyRect.value);
-        	break;
         case Definition:
         	definitionCell = hitCell(hp);
         	break;
-        case CheckWords:
-        	bb.setVocabulary(vocabularyRect.value);
-        	showWords(currentPlayerBoard(bb).checkLikelyWords(),hp,s.get(WordsMessage));
-        	break;
-         case EyeOption:
+        case EyeOption:
         	{
          	String op = (String)hp.hitObject;
          	int rm = remoteWindowIndex(hp);
-        	PerformAndTransmit((rm<0 ? "show ":"see ")+getActivePlayer().boardIndex+" "+op);
+        	PerformAndTransmit((rm<0 ? "show ":"see ")+getViewPlayer()+" "+op);
         	}
         	break;
         case Blank:
         	{
         	SprintChip ch = (SprintChip)hp.hitObject;
-        	PerformAndTransmit("SetBlank "+getActivePlayer().boardIndex+" "+ch.letter);
+        	PerformAndTransmit("SetBlank "+getViewPlayer()+" "+ch.letter);
         	}
         	break;
         case Unplaced:
@@ -1473,27 +1442,27 @@ public void setLetterColor(Graphics gc,SingleBoard gb,SprintCell cell)
             	{	SprintCell c = getPickedRackCell(hp);
             		if(c!=null)
             		{
-            			PerformAndTransmit(G.concat("move ",getActivePlayer().boardIndex," Rack ",G.printCol(c.col)," ",c.row," ",
+            			PerformAndTransmit(G.concat("move ",getViewPlayer()," Rack ",G.printCol(c.col)," ",c.row," ",
             					hitCode.name()," ",G.printCol(hitObject.col)," ",hitObject.row));
             		}
             		else 
             		{
-            			PerformAndTransmit(G.concat("Pick ",getActivePlayer().boardIndex," ",hitCode.name()," ",G.printCol(hitObject.col)," ",hitObject.row));
+            			PerformAndTransmit(G.concat("Pick ",getViewPlayer()," ",hitCode.name()," ",G.printCol(hitObject.col)," ",hitObject.row));
             		}
             	}
         		else if(hitCode==SprintId.DrawPile)
         		{
-        			PerformAndTransmit(G.concat("Drop ",getActivePlayer().boardIndex," ",hitCode.name()," ",G.printCol(hitObject.col)," ",hitObject.row)); 
+        			PerformAndTransmit(G.concat("Drop ",getViewPlayer()," ",hitCode.name()," ",G.printCol(hitObject.col)," ",hitObject.row)); 
         		}
         		else {
-        			PerformAndTransmit(G.concat("Dropb ",getActivePlayer().boardIndex," ",G.printCol(hitObject.col)," ",hitObject.row)); 
+        			PerformAndTransmit(G.concat("Dropb ",getViewPlayer()," ",G.printCol(hitObject.col)," ",hitObject.row)); 
         		}
         	}
         	break;
         case BoardLocation:	// we hit an occupied part of the board 
         	{
             SprintCell hitObject = hitCell(hp);
- 			PerformAndTransmit(G.concat("Pickb ",getActivePlayer().boardIndex," ",G.printCol(hitObject.col)," ",hitObject.row));
+ 			PerformAndTransmit(G.concat("Pickb ",getViewPlayer()," ",G.printCol(hitObject.col)," ",hitObject.row));
         	}
 			break;
 			
@@ -1625,8 +1594,11 @@ public void setLetterColor(Graphics gc,SingleBoard gb,SprintCell cell)
     {	
         super.ViewerRun(wait);
         if(!reviewOnly 
+        	 && !GameOver()
+        	 && !iAmSpectator()
            	 && !reviewMode())
-        {	SprintState state = currentPlayerBoard(bb).getState();
+        {	SingleBoard pb = currentPlayerBoard(bb);
+        	SprintState state = pb.getState();
          	switch(state)
         	{
         	default:
@@ -1634,30 +1606,37 @@ public void setLetterColor(Graphics gc,SingleBoard gb,SprintCell cell)
         	case Gameover:
         		break;
         	case EndingGame:
-        		PerformAndTransmit("Ended "+getActivePlayer().boardIndex); 
+        		PerformAndTransmit("Ended "+getViewPlayer()); 
         		break;
           	case Play: 
+          		if(gameRecordingMode()==RecordingStrategy.None) { break; }
         		if(pullTimeExpired(bb))
         		{
 	        		if(bb.tilesLeft()==0)
 	        		{	     		
-        			PerformAndTransmit("EndGame "+getActivePlayer().boardIndex);
+        			PerformAndTransmit("EndGame "+getViewPlayer());
         			break;
 	        		}
         		}
         		else { break; }
 				//$FALL-THROUGH$
 			case Confirm: 
+        		if(bb.revision<102)
         		{
         		int nt = bb.nextTileCount();
-        		PerformAndTransmit(G.concat("Pull ",getActivePlayer().boardIndex," ",nt));
+        		PerformAndTransmit(G.concat("Pull ",getViewPlayer()," ",nt));
         		}
+        		else if(bb.tilesLeft()>0)
+        		{
+        			PerformAndTransmit(G.concat("PullStart ",getViewPlayer()));
+         		}
         		break;
 
           	case Endgame:
+          		if(gameRecordingMode()==RecordingStrategy.None) { break; }
         		if(pullTimeExpired(bb))
         		{
-        			PerformAndTransmit("EndGame "+getActivePlayer().boardIndex);
+        			PerformAndTransmit("EndGame "+getViewPlayer());
         		}
         	}
         }
@@ -1798,6 +1777,30 @@ public void setLetterColor(Graphics gc,SingleBoard gb,SprintCell cell)
    	boolean now = b.GameOver();
    	gameOver |= now;
    	return(now);	// game over right now?
+   }
+   public boolean gameHasEphemeralMoves()
+   {
+	   return true;
+   }
+   static String KEYWORD_TIMER = "Timer";
+   static String KEYWORD_END = "ENDEPHEMERAL";
+   
+   public String formEphemeralMoveString()
+   {
+	   return " " + KEYWORD_TIMER +" "+ bb.drawTimer + " "+KEYWORD_END;
+   }
+   public void useEphemeralMoves(StringTokenizer c)
+   {
+	   String command = "";
+	   while( !KEYWORD_END.equals(command=c.nextToken()))
+	   {
+		   if(KEYWORD_TIMER.equals(command))
+		   {
+			   long g = G.LongToken(c);
+			   bb.drawTimer = g;
+			   
+		   }
+	   }
    }
 }
 

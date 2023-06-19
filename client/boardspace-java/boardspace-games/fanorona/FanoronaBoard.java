@@ -298,7 +298,8 @@ class FanoronaBoard extends rectBoard<FanoronaCell> implements BoardProtocol,Fan
 
 		v ^= chip.Digest(r,pickedObject);
 		v ^= cell.Digest(r,getSource());
-		v ^= r.nextLong()*(board_state.ordinal()*10+whoseTurn);		// keep this
+		v ^= Digest(r,board_state);
+		v ^= Digest(r,whoseTurn);
         return (v);
     }
     

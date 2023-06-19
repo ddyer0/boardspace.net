@@ -296,7 +296,8 @@ class HexGameBoard extends hexBoard<hexCell> implements BoardProtocol,HexConstan
 		v ^= Digest(r,droppedDestStack);
 		v ^= Digest(r,revision);
 		v ^= Digest(r,moveStack);
-		v ^= r.nextLong()*(board_state.ordinal()*10+whoseTurn+100*startingPlayer);
+		v ^= Digest(r,board_state);
+		v ^= Digest(r,whoseTurn+100*startingPlayer);
         return (v);
     }
 

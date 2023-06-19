@@ -50,7 +50,7 @@ public abstract class SystemImage implements ImageObserver
 		SCALE_SMOOTH(java.awt.Image.SCALE_SMOOTH),
 		//  SCALE_BICUBIC is locally implemented so it's a known quantity
 		SCALE_BICUBIC(0);
-	public static ScaleType defaultScale = SCALE_BICUBIC;
+	public static ScaleType defaultScale = SCALE_SMOOTH;
 	public int v = 0;
 	ScaleType(int ico) { v = ico; }
 }

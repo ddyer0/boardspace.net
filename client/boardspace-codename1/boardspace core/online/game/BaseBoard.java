@@ -294,11 +294,12 @@ public abstract class BaseBoard implements Opcodes,Digestable
 	
 	public void setPermissiveReplay(boolean tf) { permissiveReplay = tf; }	
     public long Digest(Random r,Digestable c) { return(c==null)?0:c.Digest(r); }
-    public long Digest(Random r,int n) { return(r.nextLong()^n); }
-    public long Digest(Random r,long n) { return(r.nextLong()^n); }
-    public long Digest(Random r,boolean n) { return(r.nextLong()*(n?0:1)); }
+    // use * instead of just ^ to vastly improve the mixing
+    public long Digest(Random r,int n) { return(r.nextLong()*(n^256464235)); }
+    public long Digest(Random r,long n) { return(r.nextLong()*(n^246675775)); }
+    public long Digest(Random r,boolean n) { return(r.nextLong()*(n?0x52342356:0x47568)); }
     public long Digest(Random r,boolean n[]) { long v=0; for(boolean b : n) { v ^= Digest(r,b); } return(v); }
- 
+    public long Digest(Random r,BoardState m) { return r.nextLong()*(m.ordinal()^7356356); }
     
     public boolean sameContents(IStack a,IStack b)
     {

@@ -724,7 +724,7 @@ public class ChatWidget
 
 		// this is something of a mess, redraw sometimes captures the pointer
 		// and chat hitcodes leak out to the general population
-		if(p.hitCode instanceof ChatId) { p.inStandard=true; }
+		if(p!=null && p.hitCode instanceof ChatId) { p.inStandard=true; }
 		
 	}
 	

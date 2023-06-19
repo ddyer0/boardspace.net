@@ -87,7 +87,7 @@ public enum TrenchState implements BoardState,TrenchConstants
 
 
 	static final String VictoryCondition = "capture 25 points of your opponent's army";
-	static final String PlayState = "Move a Man";
+	static final String PlayState = "Move a Unit";
 	
 	static void putStrings()
 	{

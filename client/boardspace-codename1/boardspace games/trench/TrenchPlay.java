@@ -186,8 +186,20 @@ public class TrenchPlay extends commonRobot<TrenchBoard> implements Runnable, Tr
      * @return
      */
     double ScoreForPlayer(TrenchBoard evboard,int player,boolean print)
+    {	double val = 0;
+    	switch(Strategy)
     {	
-		double val = evboard.simpleScore(player);
+    	default: throw G.Error("not expecting strategy");
+    	case DUMBOT_LEVEL:
+    	case MONTEBOT_LEVEL:
+    	case WEAKBOT_LEVEL:
+    		val = evboard.simpleScore(player);
+    		break;
+    	case SMARTBOT_LEVEL:
+    		val = evboard.smartScore(player);
+    		break;
+    	}
+	
      	return(val);
     }
 
@@ -319,9 +331,8 @@ public class TrenchPlay extends commonRobot<TrenchBoard> implements Runnable, Tr
         case -100:	// old dumbot, before shift in pruning and randomization 
         	MONTEBOT = DEPLOY_MONTEBOT; break;
         case SMARTBOT_LEVEL:
-        	MONTEBOT=DEPLOY_MONTEBOT;
-        	NODE_EXPANSION_RATE = 0.25;
-        	ALPHA = 1.0;
+        	MONTEBOT=false;
+        	MAX_DEPTH = DUMBOT_DEPTH;
          	break;
         case WEAKBOT_LEVEL:
         	WEAKBOT = true;

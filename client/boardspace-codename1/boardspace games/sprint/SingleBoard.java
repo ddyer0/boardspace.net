@@ -9,7 +9,6 @@ import lib.Random;
 import online.game.*;
 import online.game.cell.Geometry;
 import dictionary.Dictionary;
-import dictionary.DictionaryHash;
 import dictionary.Entry;
 
 /**
@@ -46,7 +45,8 @@ class SingleBoard extends infiniteSquareBoard<SprintCell> implements BoardProtoc
     int tilesPlaced = 0;
     public SprintCell unplacedTiles[] = null;
     int unplacedCount = 0;
-    
+   	SprintCell drawPile = null;
+   	
  	void logGameEvent(String str,String... args)
  	{	//if(!robotBoard)
  		{String trans = s.get(str,args);
@@ -140,8 +140,10 @@ class SingleBoard extends infiniteSquareBoard<SprintCell> implements BoardProtoc
         isTorus=false;
         setColorMap(map, 1);
         boardIndex = bi;
-       	doInit(init,key,1,rev); // do the initialization 
+       	Random r = new Random(235256);
+       	drawPile = new SprintCell(r,SprintId.DrawPile);
 
+       	doInit(init,key,1,rev); // do the initialization 
 
        	dictionary = di;
         robotVocabulary = dictionary.orderedSize;
@@ -249,7 +251,7 @@ class SingleBoard extends infiniteSquareBoard<SprintCell> implements BoardProtoc
 		robotState.clear();		
 	    	    
 	    whoseTurn = FIRST_PLAYER_INDEX;
-	    
+	    drawPile.reInit();
 	    acceptPlacement();
 	    unplacedCount = 0;
 	    resetState = SprintState.Puzzle;
@@ -262,7 +264,9 @@ class SingleBoard extends infiniteSquareBoard<SprintCell> implements BoardProtoc
     }
     
     public void placeNewTile(SprintChip chip)
-    {	
+    {	SprintChip top = drawPile.removeTop();
+    	//G.print("Placenew "+boardIndex+" "+top);
+    	G.Assert(top==chip,"draw mismatch");
     	for(int i=0;i<unplacedTiles.length;i++)
     	{
     		SprintCell c = unplacedTiles[i];
@@ -308,6 +312,7 @@ class SingleBoard extends infiniteSquareBoard<SprintCell> implements BoardProtoc
         tilesPlaced = from_b.tilesPlaced;
         unplacedCount = from_b.unplacedCount;
         getCell(occupiedCells,from_b.occupiedCells);
+        drawPile.copyFrom(from_b.drawPile);
         sameboard(from_b); 
     }
 
@@ -335,6 +340,7 @@ class SingleBoard extends infiniteSquareBoard<SprintCell> implements BoardProtoc
         G.Assert(tilesPlaced==from_b.tilesPlaced,"tilesPlaced mismatch");
         G.Assert(sameContents(unplacedTiles,from_b.unplacedTiles),"unplaced tiles mismatch");
         G.Assert(unplacedCount==from_b.unplacedCount,"unplacedCount mismatch");
+        G.Assert(drawPile.sameContents(from_b.drawPile),"drawPile mismatch");
         // this is a good overall check that all the copy/check/digest methods
         // are in sync, although if this does fail you'll no doubt be at a loss
         // to explain why.
@@ -401,7 +407,9 @@ class SingleBoard extends infiniteSquareBoard<SprintCell> implements BoardProtoc
 		v ^= Digest(r,unplacedTiles);
 		v ^= Digest(r,unplacedCount);
 		v ^= Digest(r,tilesPlaced);
-		v ^= Digest(r,board_state.ordinal()*10+whoseTurn);
+		v ^= Digest(r,drawPile);
+		v ^= Digest(r,board_state);
+		v ^= Digest(r,boardIndex);
 		//G.print("dx "+v);
        return (v);
     }
@@ -1005,25 +1013,7 @@ class SingleBoard extends infiniteSquareBoard<SprintCell> implements BoardProtoc
 	{
 		return((droppedDest==null) && (pickedSource==null));
 	}
-	private void placeWord(SprintCell from,SprintCell rack[],String word,int direction,replayMode replay)
-	{	SprintCell c = from;
-		for(int i=0,lim=word.length(); i<lim; i++,c=c.exitTo(direction))
-		{	SprintChip top = c.topChip();
-			if(top==null)
-			{
-			char ch = word.charAt(i);
-			SprintCell placeFrom= findChar(rack,ch);
-			pickObject(placeFrom);
-			dropObject(c);
-			if(replay!=replayMode.Replay)
-				{
-				animationStack.push(placeFrom);
-				animationStack.push(c);
-				}
-			}
-		}
-	}
-	
+
 	public void dropAndSlide(SprintCell from,int moving0,int pick0,int dest0,replayMode replay)
 	{	// the map is invalid when we enter, because we've dropped a tile
 		// and haven't mapped it yet.
@@ -1085,30 +1075,27 @@ class SingleBoard extends infiniteSquareBoard<SprintCell> implements BoardProtoc
         //G.print("E "+m+" for "+whoseTurn+" "+board_state);
         switch (m.op)
         {
+        case MOVE_PULLNEW:
+        	{
+         	SprintChip top = drawPile.removeTop();
+        	SprintChip ch = SprintChip.getLetter(m.from_col);
+           	//G.print("pull "+boardIndex+" "+top);
+        	//G.Assert(top==ch,"matching draw");
+        	SprintCell c = unplacedTiles[m.to_row];
+        	c.addChip(ch);
+        	unplacedCount++; 
+			tilesPlaced++;
+   			setState(SprintState.Play);
+        	}
+        	break;
         case MOVE_ENDEDGAME:
         	//(replay==replayMode.Live) { G.print(Plog.log.finishLog()); }
          	doDone(replay);
          	break;
-
+         	
         case MOVE_ENDGAME:
-        	setState(SprintState.EndingGame);
+        	if(board_state!=SprintState.Gameover) { setState(SprintState.EndingGame); }
             break;
-        case MOVE_PLAYWORD:
-        	{
-        	SprintCell c = getCell(m.to_col,m.to_row);
-        	placeWord(c,rack,m.word,m.direction,replay);   
-        	
-        	SprintCell r[] = rack;
-        	int map[] = rackMap;
-        	for(int lim=map.length-1; lim>=0; lim--)
-        	{	int idx = map[lim];
-        		if((idx>=0) && (r[idx].topChip()==null)) { map[lim]=-1; }
-        	}
-        	validateMap();
- 
-        	setNextStateAfterDrop(replay);
-        	}
-        	break;
         case MOVE_SEE:
         	{	// see tiles in the hidden rack on hand held device
         		hiddenVisible = (m.to_row==0?false:true);
@@ -1202,7 +1189,7 @@ class SingleBoard extends infiniteSquareBoard<SprintCell> implements BoardProtoc
         		break;
         	default: ;
         	}
-    		validate(true);
+        	validate(true);
         	}
         	
  			}}
@@ -1269,6 +1256,7 @@ class SingleBoard extends infiniteSquareBoard<SprintCell> implements BoardProtoc
     	   win[whoseTurn] = true;
     	   setState(SprintState.Gameover);
     	   break;
+       case MOVE_PULLSTART:
        case MOVE_PASS:
     	   break;
         default:
@@ -1407,52 +1395,7 @@ class SingleBoard extends infiniteSquareBoard<SprintCell> implements BoardProtoc
         	setWhoseTurn(m.player);
         }
  }
- // true if we could place the word as specified.  Any cells already occupied
- // must match letters from the word.  Its assumed the letters in the word 
- // are available from the rack. Note that the -1 and n+1 letters of the word
- // are checked to be empty.  Words on other directions that may also being
- // formed are NOT checked here.  From should be a cell that contains letter of the word at firstIndex
- // return the cell that would be the head of the new word
- // this is used both the place ordinary sprint (where one letter is already placed)
- // and "cap words" where we are placing a crossword at the beginning or end of an existnig word
- private SprintCell canPlaceWord(String word,int firstIndex,SprintCell from,int direction)
- {	int reverse = direction+CELL_HALF_TURN;
- 	SprintCell head = from;
- 	int usedLetters = 0;
- 	// check the previous letters for space
- 	{
- 	 	SprintCell c = from.exitTo(reverse);
- 	 	for(int idx = firstIndex-1; idx>=0; idx--)
- 	 	{	if(c==null) { return(null); }		// can't fall off the edge
- 		 	SprintChip ch = c.topChip();
- 		 	if(ch==null) { usedLetters++; }
- 		 	else if(ch.lcChar!=word.charAt(idx)) { return(null); }
- 			head = c;	// this might be the head cell of the word
- 			c = c.exitTo(reverse);
- 	 	}
- 	 	// must be an empty space previous to the beginning
- 	 	if((c!=null) && (c.topChip()!=null)) { return(null); }
- 	}
- 	
- 	// check the rest of the word for space
- 	{
- 	SprintCell c = from.exitTo(direction);
- 	for(int idx = firstIndex+1,lastIdx = word.length(); idx<lastIdx; idx++)
- 	{	
- 		if(c==null) { return(null); }		// can't fall off the edge
-	 	SprintChip ch = c.topChip();
-	 	if(ch==null) { usedLetters++; }
-	 	else if(ch.lcChar!=word.charAt(idx)) { return(null); }
-		c = c.exitTo(direction);
- 	}
- 	// word matches, c is either the next position or null if we reached
- 	// the edge of the board
- 	if(usedLetters==0) { return(null); }	// we didn't use any of our own letters
- 	if((c==null) || (c.topChip()==null)) { return(head); }	// need a empty space next
- 	return(null);
- 	}
- }
- 
+
  private int findLetter(SprintCell fromRack[],char ch,boolean blank)
  {
 	 for (int lim = fromRack.length-1; lim>=0; lim--)
@@ -1507,318 +1450,6 @@ class SingleBoard extends infiniteSquareBoard<SprintCell> implements BoardProtoc
  	return(score*wordMultiplier);
  }
  
- // true if this word can be placed from the rack.  This is called
- // if the set of letters is plausible, but there might be more duplicates
- // in the targetWord than there are in the rack
- private boolean canPlaceFromRack(String targetWord,SprintCell rack[],char targetLetter)
- {	char seedLetter = targetLetter;
- 	sweep_counter++;
- 	for(int lim=targetWord.length()-1; lim>=0; lim--)
- 	{
- 		char wordLetter = targetWord.charAt(lim);
- 		if(wordLetter==seedLetter) { seedLetter=(char)0; }
- 		else
- 		{	boolean found = false;
- 			for(SprintCell rackCell : rack)
- 			{
- 				SprintChip ch = rackCell.topChip();
- 				if((ch!=null) && (rackCell.sweep_counter!=sweep_counter) && (ch.lcChar==wordLetter))
- 				{	rackCell.sweep_counter=sweep_counter;
- 					found = true;
- 					break;
- 				}
- 			}
- 			if(!found) { return(false); }
- 		}
- 	}
-	return(true);
- }
- private int findLetter(String targetString,char wordLetter,int usedLetters)
- {
-	 int used = 1;
-	 for(int lim=targetString.length()-1; lim>=0; lim--)
-	 {
-		 if(((used & usedLetters)==0) && (targetString.charAt(lim)==wordLetter)) { return(used); }
-		 used = used<<1;
-	 }
-	 return(0);
- }
- private boolean canPlaceFromRack(String targetWord,SprintCell rack[],String targetString)
- {	int usedLetters = 0;
- 	sweep_counter++;
- 	for(int lim=targetWord.length()-1; lim>=0; lim--)
- 	{
- 		char wordLetter = targetWord.charAt(lim);
- 		int newletter = findLetter(targetString,wordLetter,usedLetters);
- 		if(newletter>0) { usedLetters |= newletter; }
- 		else
- 		{	boolean found = false;
- 			for(SprintCell rackCell : rack)
- 			{
- 				SprintChip ch = rackCell.topChip();
- 				if((ch!=null) && (rackCell.sweep_counter!=sweep_counter) && (ch.lcChar==wordLetter))
- 				{	rackCell.sweep_counter=sweep_counter;
- 					found = true;
- 					break;
- 				}
- 			}
- 			if(!found) { return(false); }
- 		}
- 	}
-	return(true);
- }
- // find words that can be placed in a different direction across an existing word.  This is used
- // both to place ordinary sprint and to place "cap words" where a letter is being added to 
- // the beginning or end of an existing word.
- public int checkCrossWords(DictionaryHash subDictionary,SprintCell fromRack[],long letterMask,
-		 		SprintCell startingAt,char targetLetter,
-		 		int notInDirection,int inDirection)
- {	
- 	int directionStep =  CELL_QUARTER_TURN;
- 	int lastDir = inDirection>=0 ? inDirection+1 : CELL_FULL_TURN;
- 	int firstDir = inDirection>=0 ? inDirection : CELL_RIGHT;
- 	int total = 0;
- 	for(Enumeration<Entry> words = subDictionary.elements(); words.hasMoreElements();)
- 		{	Entry word = words.nextElement();
- 			String targetWord = word.word;
- 			// first a quick check that the word doesn't contain any letters that aren't available
- 			// this ought to filter out the vast majority of words
- 			if(word.order<robotVocabulary								// within the vocabulary limit 
- 					&& ((word.letterMask | letterMask)==letterMask))	// if the word doesn't require any letters not in the rack
- 			{
-			 int targetIndex = targetWord.indexOf(targetLetter);
-			 while(targetIndex>=0)
-			 {
-			 for(int direction = firstDir; direction<lastDir; direction+=directionStep )
-			 {	 if(direction!=notInDirection)
-			 	{
-				 if(canPlaceFromRack(targetWord,fromRack,targetLetter))
-			 	 {
-				 SprintCell head = canPlaceWord(targetWord,targetIndex,startingAt,direction);
-				 if(head!=null)
-				 {
-				 int value = scoreWord(targetWord,head,direction,fromRack);
-			     Word newword = candidateWords.recordCandidate(notInDirection<0?"Ordinary Crossword":"Cap word",
-			    		 				head, targetWord, direction,value,word);
-			     if(newword!=null)
-			     {
-			    	 int extra = checkIllegalCrosswords(targetWord,targetIndex,head,direction,fromRack);
-			    	 if(extra<0) { candidateWords.unAccept(newword); }
-			    	 else if(extra>0)
-			    	 	{ newword.points += extra;
-			    	 	 // G.print("extra sprint ",extra," for ",targetWord);
-			    	 	}
-			     }
-				 total++;
-				 }}}
-			 }
-			 targetIndex = targetWord.indexOf(targetLetter,targetIndex+1);
-			 }
- 			}
- 		}
-	 return(total);
- }
- // find words that can be placed in a different direction across an existing word.  This is used
- // both to place ordinary sprint and to place "cap words" where a letter is being added to 
- // the beginning or end of an existing word.
- public int checkExtensionWords(DictionaryHash subDictionary,SprintCell fromRack[],long letterMask, Word seed)
- {	int total = 0;
- 	int direction = seed.direction;
- 	for(Enumeration<Entry> words = subDictionary.elements(); words.hasMoreElements();)
- 	{	Entry word = words.nextElement();
- 		String targetWord = word.word;
- 		// first a quick check that the word doesn't contain any letters that aren't available
- 		// this ought to filter out the vast majority of words
- 		if(word.order<robotVocabulary								// within the vocabulary limit 
- 				&& ((word.letterMask | letterMask)==letterMask)	// if the word doesn't require any letters not in the rack
- 				)		// can actually be placed
- 		{	int position = targetWord.indexOf(seed.name);
- 			if(position>=0 && canPlaceFromRack(targetWord,fromRack,seed.name))
- 				{SprintCell head = canPlaceWord(targetWord,position,seed.seed,direction);
- 				if(head!=null)
- 				{
- 				int value = scoreWord(targetWord,head,direction,fromRack);
-			    Word newword = candidateWords.recordCandidate("Extension Word",head, targetWord, direction,value,word);
-			    if(newword!=null)
-			     {
-			    	 int extra = checkIllegalCrosswords(targetWord,position,head,direction,fromRack);
-			    	 if(extra<0) { candidateWords.unAccept(newword); }
-			    	 else if(extra>0)
-			    	 	{ newword.points += extra;
-			    	 	  //G.print("extra sprint ",extra," for ",targetWord);
-			    	 	}
-			     }
-				total++;
- 				}
- 		}}}
-	 return(total);
- }
- // check sprint against a particular dictionary
- // which will be one of the word length subdictionaryies
- // which are tried starting with the shortest words.
- private int checkCrossWords(DictionaryHash subDictionary,CellStack fromPlaces,SprintCell rack[],long letterMask)
- {	
- 	int total = 0;
- 	for(int lim=fromPlaces.size()-1; lim>=0; lim--)
- 	{
- 		SprintCell seed = fromPlaces.elementAt(lim);
- 		SprintChip top = seed.topChip();
- 		char targetLetter = top.lcChar;
- 		total += checkCrossWords(subDictionary,rack,Dictionary.letterMask(letterMask,targetLetter),seed,targetLetter,-1,-1); 
- 	}
- 	return(total);
- }
- 
-
- private SprintCell findChar(SprintCell rack[],char ch)
- {	SprintCell blank = null;
-	for(int lim=rack.length-1; lim>=0; lim--)
-	{	SprintCell c = rack[lim];
-		SprintChip chip = c.topChip();
-		if((chip!=null) && (chip.lcChar==ch)) { return(c); }
-	}
-	return(blank);
- }
-
- // this generates a mask in the same manner as Dictionary.letterSet, but
- // uses a rack as the source
- private long letterSet(SprintCell rack[])
-	{	long s = 0;
-		for(SprintCell c : rack)
-		{
-			SprintChip ch = c.topChip();
-			if(ch!=null)
-			{	char letter = ch.lcChar;
-				s = Dictionary.letterMask(s,letter);
-			}
-		}
-		return(s);
-	}
-
- //
- // check for words that can be made with rack. This finds all simple sprint
- // that don't join another word, and a few "double tower" sprint where
- // the word extends to intersect another word.  To final all, it would 
- // have to include the additional letters in the rack mask, and it would
- // have to add one to the max size word for each additional intercept.
- // 
- private void checkCrossWords(CellStack fromPlaces,SprintCell rack[],long letterMask,double baseProgress,double progressFraction)
- {	int totalsize = dictionary.totalSize;
- 	int usedSize = 0;
-	for(int wordlen=2;wordlen<=rackSize+1;wordlen++)
- 	{	DictionaryHash sub = dictionary.getSubdictionary(wordlen);
- 		checkCrossWords(sub,fromPlaces,rack,letterMask);
- 		usedSize += sub.size();
- 		recordProgress(baseProgress+usedSize*progressFraction/totalsize);
- 	}
- }
- 
- 
- // look for a single letter from the rack added to the beginning or end of a word,
- // then add complete sprint from the rack using that letter.
- private int checkCapWords(SprintCell wordHead,SprintCell rack[],long letterMask,boolean atStart)
- {	int total = 0;
- 	for(int lim=wordHead.wordHead.size()-1; lim>=0; lim--)
-	 {
-		 Word w = wordHead.wordHead.elementAt(lim);
-		 String name = w.name;
-		 for(SprintCell r : rack)
-		 {
-			 SprintChip top = r.topChip();
-			 if(top!=null)
-			 {
-				 String newWord = atStart ? top.lcChar+name : name+top.lcChar;
-				 Entry e = lookupRobotWord(newWord);
-				 if(e != null) 
-				 {	
-					 for(int len=2; len<rackSize;len++)
-					 {
-						 DictionaryHash subDict = dictionary.getSubdictionary(len);
-						 total += checkCrossWords(subDict,rack,letterMask,wordHead,(char)0,w.direction,-1);
-					 }
-				 }
-			 }
-		 }
-	 }
- 	return(total);
- }
- 
- // look for adding multiple letters to the beginning or end of a word
- private int checkExtensionWords(Word w,SprintCell rack[],long letterMask,boolean atStart)
- {	int total = 0;
- 	String name = w.name;
- 	Entry e = lookupRobotWord(name);
- 	if(e != null) 
-		 {	int namelen = name.length();
-		    for(int len= namelen+2,max = Math.min(Dictionary.MAXLEN, namelen+rackSize); len<=max;len++)
-		    {
-		    	DictionaryHash subDict = dictionary.getSubdictionary(len);
-		    	total += checkExtensionWords(subDict,rack,letterMask|e.letterMask,w);
-		    }
-		 }
- 	return(total);
- }
-
- // check words formed by adding a top or bottom letter to an existing word
- private void checkCapWords(CellStack fromPlaces,SprintCell rack[],long letterMask,boolean atStart)
- {	
-	 for(int lim=fromPlaces.size()-1; lim>=0; lim--)
-	 {
-		 checkCapWords(fromPlaces.elementAt(lim),rack,letterMask,atStart);
-	 }
- }
- 
- // look for adding multiple letters to the beginning or end of a word
- private void checkExtensionWords(WordStack words,SprintCell rack[],long letterMask,boolean atStart)
- {	
- 	for(int lim=words.size()-1; lim>=0; lim--)
-	 {
-		 checkExtensionWords(words.elementAt(lim),rack,letterMask,atStart);
-	 }
- }
- private void checkWords(SprintCell rack[],double baseProgress,double progressScale)
- {	
-	 // check ordinary sprint
-     long letterMask = letterSet(rack);
-	 checkCrossWords(occupiedCells,rack,letterMask,baseProgress,0.5*progressScale);		// ordinary sprint
-	 recordProgress(baseProgress+0.5*progressScale);
-	 
-	 // cap words are single letters added to the beginning or end of an existing word
-	 checkCapWords(startCaps,rack,letterMask,true);		// add a new prefix letter + a crossword
-	 recordProgress(baseProgress+0.6*progressScale);
-	 checkCapWords(endCaps,rack,letterMask,false);			// add a new final letter + a crossword
-	 recordProgress(baseProgress+0.7*progressScale);
-	 
-	 // extension words are multiple letters added to an existing word to make a longer word
-	 checkExtensionWords(words,rack,letterMask,true);		// add multiple letters to the beginning or end
- }
- private void checkWordsCore()
- {	candidateWords.clear();
- 	checkWords(rack,0,1);
- 	candidateWords.sort(true);
- }
- 
- /**
-  * do a word search for the user interface review mode
-  * @return
-  */
- public WordStack checkLikelyWords()
- {	checkWordsCore();
- 	return(candidateWords);
-	 
- }
- /**
-  * the basic algorithm is to check words in the dictionary to see if they
-  * can be placed on the board.
-  */
- public void checkWords()
- {	checkWordsCore();
- 	for(int i=0;i<candidateWords.size();i++)
- 	{	G.print(candidateWords.elementAt(i));
- 	}
- 	G.print("accepted ",candidateWords.accepted," declined ",candidateWords.declined);
- }
-
 
  CommonMoveStack  GetListOfMoves()
  {	CommonMoveStack all = new CommonMoveStack();
@@ -1831,11 +1462,6 @@ class SingleBoard extends infiniteSquareBoard<SprintCell> implements BoardProtoc
     	all.push(new Sprintmovespec(MOVE_DONE,whoseTurn));
     	break;
     case Play:
-    	checkWords();
-     	for(int i=0;i<candidateWords.size();i++)
-     	{
-     		all.push(new Sprintmovespec(candidateWords.elementAt(i),whoseTurn));
-     	}
      	if(all.size()==0)
      	{
      		all.push(new Sprintmovespec(MOVE_PASS,whoseTurn));
@@ -1853,6 +1479,24 @@ class SingleBoard extends infiniteSquareBoard<SprintCell> implements BoardProtoc
  public void initRobotValues(SprintPlay rob,int vocab)
  {	robot = rob;
  	robotVocabulary = vocab;
+ }
+ //
+ // get the string for a pull move for chip
+ //
+ public String getPullMove()
+ {
+	 SprintChip chip = drawPile.topChip();
+	 if(chip!=null)
+	 {
+     for(int i=0;i<unplacedTiles.length;i++)
+     {
+    	 SprintCell c = unplacedTiles[i];
+    	 if((c!=pickedSource) && (c.topChip()==null))
+    	 {
+    		 return "Pullnew "+boardIndex+" "+chip.lcChar+" "+i;
+    	 }
+     }}
+     return null;
  }
 
 

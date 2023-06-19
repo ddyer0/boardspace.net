@@ -52,7 +52,7 @@ public interface SprintConstants
 	public enum SprintState implements BoardState
 	{
 	Puzzle(PuzzleStateDescription,false,false),
-	Resign(ResignStateDescription,true,false),
+	Resign(ResignStateDescription,true,false),	
 	Gameover(GameOverStateDescription,false,false),
 	Confirm(ConfirmStateDescription,false,false),
 	Endgame(EndGameDescription,true,true),
@@ -93,8 +93,6 @@ public interface SprintConstants
     	Rotate,
     	Lock,
     	Switch,
-    	CheckWords,
-    	Vocabulary,
     	Definition,
     	PullAction,
     	Blank, InvisibleDragBoard, ZoomSlider;

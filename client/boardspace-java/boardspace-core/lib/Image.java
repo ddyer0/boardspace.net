@@ -462,7 +462,7 @@ public class Image extends SystemImage implements Drawable,CompareTo<Image>
 					|| (scaled.getHeight()!=sh))
 			{	// never scale up in size, use the original image instead
 				scaled = (sw<getWidth() && sh<getHeight()) 
-							? getScaledInstance(sz,ScaleType.defaultScale)
+							? getScaledInstance(sz,ScaleType.SCALE_BICUBIC)
 							: this;			
 			}
 			// this will calculate a scale of 1

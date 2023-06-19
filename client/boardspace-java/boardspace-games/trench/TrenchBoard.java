@@ -375,8 +375,11 @@ class TrenchBoard
 		v ^= Digest(r,captureHeight);
 		v ^= Digest(r,revision);
 		v ^= Digest(r,blackCaptured);
-		v ^= Digest(r,whiteCaptured);
-		v ^= Digest(r,board_state.ordinal()*10+whoseTurn);
+		v ^= Digest(r,whiteCaptured);		
+		// a rare numerical coincidence made the standard formulation board_state.ordinal*10+whoseTurn
+		// result in a "no change" digest. 
+		v ^= Digest(r,board_state);
+		v ^= Digest(r,whoseTurn);
         return (v);
     }
 
@@ -733,7 +736,7 @@ class TrenchBoard
     {	Trenchmovespec m = (Trenchmovespec)mm;
         if(replay!=replayMode.Replay) { animationStack.clear(); }
 
-        //G.print("E "+m+" for "+whoseTurn+" "+state);
+       // G.print("E "+m+" for "+whoseTurn+" "+board_state+" "+Digest());
         switch (m.op)
         {
         case MOVE_OFFER_DRAW:
@@ -864,6 +867,8 @@ class TrenchBoard
         if(gameEvents.size()>0) { m.gameEvents = gameEvents.toArray(); gameEvents.clear(); }
 
         //System.out.println("Ex "+m+" for "+whoseTurn+" "+state);
+        //G.print("X "+m+" for "+whoseTurn+" "+board_state+" "+Digest());
+        
         return (true);
     }
 
@@ -1089,6 +1094,7 @@ class TrenchBoard
  		all.push(new Trenchmovespec(MOVE_DONE,whoseTurn));
  		break;
  	case Gameover:
+ 	case Resign:
  		break;
  	case AcceptOrDecline:
 			 all.push(new Trenchmovespec(MOVE_ACCEPT_DRAW,whoseTurn));
@@ -1188,6 +1194,64 @@ public double simpleScore(int player)
 	return cap;
 }
 
+double trenchWeight = 0.05;
+public double smartScore(int player)
+{	int nextP = nextPlayer[player];
+	double cap = totalCaptured(nextP);
+	TrenchId myColor = playerColor[player];
+	double trenchAttackWeight = 0.01;
+	double intruderAttackWeight = 0.01;
+	
+	int piecesInEnemy = 0;
+	int piecesInTrench = 0;
+	int sumInEnemy = 0;
+	int sumInTrench = 0;
+	int intruders = 0;
+	int sumIntruders = 0;
+	int enemyInTrench = 0;
+	int enemyTrenchWeight = 0;
+	{
+	CellStack occupied = occupied(player);
+	for(int lim = occupied.size()-1;lim>=0; lim--)
+	{
+		TrenchCell c = occupied.elementAt(lim);
+		TrenchId ctype = c.cellType;
+		if(ctype==TrenchId.Trench)
+		{
+			piecesInTrench++;
+			sumInTrench += c.topChip().type.distance;
+		}
+		else if(ctype!=myColor)
+		{
+			piecesInEnemy++;
+			sumInEnemy += c.topChip().type.distance;
+		}
+	}}
+	
+	{
+	CellStack occupied = occupied(nextP);
+	for(int lim = occupied.size()-1;lim>=0; lim--)
+	{
+		TrenchCell c = occupied.elementAt(lim);
+		TrenchId ctype = c.cellType;
+		if(ctype==TrenchId.Trench)
+		{
+			enemyInTrench++;
+			enemyTrenchWeight += c.topChip().type.distance;
+		}
+		if(ctype==myColor)
+		{
+			intruders++;
+			sumIntruders += c.topChip().type.distance;
+		}
+	}}
+	
+	cap -= intruderAttackWeight*sumIntruders*sumInTrench*piecesInTrench*intruders;
+	cap += intruderAttackWeight*sumInEnemy*enemyTrenchWeight*enemyInTrench*piecesInEnemy;
+	cap += trenchAttackWeight*sumInTrench;
+	
+	return cap;
+}
 //
 // this is used by the UI to decide when to display the OFFERDRAW box
 //

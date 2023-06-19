@@ -205,7 +205,8 @@ class CheckerBoard extends rectBoard<CheckerCell> implements BoardProtocol
 		v ^= Digest(r,occupiedCells[SECOND_PLAYER_INDEX].size());	// not completely specific because the stack can be shuffled
 		v ^= Digest(r,occupiedCells[FIRST_PLAYER_INDEX].size());
 		v ^= Digest(r,currentDest);
-		v ^= (board_state.ordinal()*10+whoseTurn)*r.nextLong();
+		v ^= Digest(r,board_state);
+		v ^= Digest(r,whoseTurn);
         return (v);
     }
    public CheckerBoard cloneBoard() 
@@ -506,7 +507,7 @@ class CheckerBoard extends rectBoard<CheckerCell> implements BoardProtocol
 					currentDest = droppedDestStack.top();
 				}
 				else { captureHeight.pop(); }
-				dr.lastPlaced = previousLastEmptied;
+				dr.lastPlaced = previousLastPlaced;
 				lastPlacedIndex--;
 				
 				break;
@@ -584,7 +585,7 @@ class CheckerBoard extends rectBoard<CheckerCell> implements BoardProtocol
 			if(isKing) { c.removeTop(); }
 			pickedHeight.push(isKing?2:1);
 			occupiedCells[playerIndex(ch)].remove(c,false);
-			previousLastContents = c.topChip();
+			previousLastContents = ch;
 			previousLastEmptied = c.lastEmptied;
 			c.lastEmptied = lastPlacedIndex;
 			

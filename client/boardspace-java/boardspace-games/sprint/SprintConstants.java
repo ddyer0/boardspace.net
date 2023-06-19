@@ -93,8 +93,6 @@ public interface SprintConstants
     	Rotate,
     	Lock,
     	Switch,
-    	CheckWords,
-    	Vocabulary,
     	Definition,
     	PullAction,
     	Blank, InvisibleDragBoard, ZoomSlider;

@@ -16,7 +16,6 @@ public class Sprintmovespec extends commonMPMove implements SprintConstants
     static final int MOVE_PICKB = 206; // pick from the board
     static final int MOVE_DROPB = 207; // drop on the board
     static final int MOVE_SELECT = 208;	// select value for a blank
-    static final int MOVE_PLAYWORD = 211;	// play a word from the rack
     static final int MOVE_SEE = 212;		// see tiles on the hidden rack
     static final int MOVE_LIFT = 213; 		// lift a tile in the user interface rack
     static final int MOVE_REPLACE = 214; 	// replace a tile in the user interface rack
@@ -25,6 +24,9 @@ public class Sprintmovespec extends commonMPMove implements SprintConstants
     static final int MOVE_ENDGAME = 227;		// end the game now
     static final int MOVE_SWITCH = 228;			// switch point of view
     static final int MOVE_ENDEDGAME = 229;		// ack endgame
+    static final int MOVE_PULLNEW = 230;		// better version of pull
+    static final int MOVE_PULLSTART = 231;		//
+    
     static
     {	// load the dictionary
         // these int values must be unique in the dictionary
@@ -34,12 +36,13 @@ public class Sprintmovespec extends commonMPMove implements SprintConstants
         	"Drop", MOVE_DROP,
         	"Dropb", MOVE_DROPB,
         	"SetBlank", MOVE_SELECT,
-        	"Play",MOVE_PLAYWORD,
         	"See", MOVE_SEE,
         	"Lift", MOVE_LIFT,
         	"Replace",MOVE_REPLACE,
         	"move",MOVE_MOVETILE,
         	"pull",MOVE_PULL,
+        	"pullnew",MOVE_PULLNEW,
+        	"pullstart",MOVE_PULLSTART,
         	"endgame",MOVE_ENDGAME,
         	"ended",MOVE_ENDEDGAME,
         	"switch",MOVE_SWITCH
@@ -80,16 +83,6 @@ public class Sprintmovespec extends commonMPMove implements SprintConstants
     public Sprintmovespec(String str)
     {
         parse(new StringTokenizer(str));
-    }
-    public Sprintmovespec(Word w,int who)
-    {
-    	op = MOVE_PLAYWORD;
-    	to_col = w.seed.col;
-    	to_row = w.seed.row;
-    	direction = w.direction;
-    	word = w.name;
-    	player = who;
-    	mapped_row = -1;
     }
     /** constructor for simple robot moves - pass and done 
      */
@@ -195,12 +188,14 @@ public class Sprintmovespec extends commonMPMove implements SprintConstants
         case MOVE_PULL:	// pull new tiles from the pool
         	to_row = G.IntToken(msg);
         	break;
-        case MOVE_PLAYWORD:
-           	to_col = G.parseCol(msg);
-        	to_row = G.IntToken(msg);
-        	direction = G.IntToken(msg);
-        	word = msg.nextToken();
+        case MOVE_PULLSTART:
         	break;
+        case MOVE_PULLNEW:
+        	from_col = G.CharToken(msg);	// the letter drawn
+        	to_row = G.IntToken(msg);	// index to deposit to
+        	
+        	break;
+        	
         case MOVE_DROPB:
         	dest = SprintId.BoardLocation;
         	to_col = G.parseCol(msg);
@@ -282,12 +277,13 @@ public class Sprintmovespec extends commonMPMove implements SprintConstants
     {
         switch (op)
         {
-        case MOVE_PLAYWORD:
-        	return TextChunk.create("Play "+G.printCol(to_col)+to_row);
         case MOVE_PICKB:
             return icon(v,G.printCol(to_col) , to_row);
         case MOVE_PULL:
         	return icon(v," ",to_row);
+        case MOVE_PULLNEW:
+        	return icon(v," ",from_col," ",to_row);
+        	
         case MOVE_MOVETILE:
         case MOVE_DROPB:
             return icon(v,G.printCol(to_col) ,to_row);
@@ -303,7 +299,8 @@ public class Sprintmovespec extends commonMPMove implements SprintConstants
         case MOVE_DONE:
         case MOVE_ENDGAME:
         case MOVE_ENDEDGAME:
-            return TextChunk.create("");
+        case MOVE_PULLSTART:
+             return TextChunk.create("");
         default:
             return TextChunk.create(D.findUniqueTrans(op));
 
@@ -323,7 +320,10 @@ public class Sprintmovespec extends commonMPMove implements SprintConstants
         switch (op)
         {
         case MOVE_PULL:
-        	return G.concat(opname," ",to_row);
+        	return G.concat(opname,to_row);
+        	
+        case MOVE_PULLNEW:
+        	return G.concat(opname,from_col," ",to_row);
         	
         case MOVE_PICKB:
 		case MOVE_DROPB:
@@ -341,8 +341,6 @@ public class Sprintmovespec extends commonMPMove implements SprintConstants
 
 		case MOVE_REPLACE:
              return G.concat(opname,dest.name()," ",G.printCol(to_col)," ",to_row);
-        case MOVE_PLAYWORD:
-        	return G.concat(opname,G.printCol(to_col)," ",to_row," ",direction," ",word);
         case MOVE_START:
             return G.concat(ind,"Start P",player);
         case MOVE_SELECT:
@@ -352,6 +350,7 @@ public class Sprintmovespec extends commonMPMove implements SprintConstants
         default:
         case MOVE_ENDGAME:
         case MOVE_ENDEDGAME:
+        case MOVE_PULLSTART:
         case MOVE_SWITCH:
             return G.concat(opname);
         }

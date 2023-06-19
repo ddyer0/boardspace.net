@@ -7,6 +7,7 @@ import java.util.*;
 import lib.*;
 import lib.Random;
 import online.game.*;
+import sprint.SprintConstants.SprintState;
 import dictionary.Dictionary;
 
 
@@ -25,8 +26,10 @@ import dictionary.Dictionary;
  *
  */
 class SprintBoard extends BaseBoard implements BoardProtocol
-{	static int REVISION = 101;			// 100 represents the initial version of the game
+{	static int REVISION = 102;			// 100 represents the initial version of the game
 										// 101 introduces the EndingGame state when finishing
+										// 102 switches to "pullnew" instead of "pull"
+
 	public int getMaxRevisionLevel() { return(REVISION); }
 	
 	/**
@@ -45,7 +48,7 @@ class SprintBoard extends BaseBoard implements BoardProtocol
     int startingTiles = 20;	// reloaded from the variation
     int maxTiles = 40;		// reloaded from the variation
     long drawTimer = -1;
-    
+    int lastActivePlayer  = -1;
  	void logGameEvent(String str,String... args)
  	{	//if(!robotBoard)
  		{String trans = s.get(str,args);
@@ -159,12 +162,16 @@ class SprintBoard extends BaseBoard implements BoardProtocol
    	
     	drawPile.shuffle(r);
     	while(drawPile.height()>maxTiles){ drawPile.removeTop(); }
+  	
+    	for(SingleBoard p : pbs) { p.drawPile.copyFrom(drawPile); }
+    	
     	for(int i=0;i<startingTiles;i++) { placeNewTile(); }
 
  		setState(SprintState.Puzzle);
 	    	    
 	    whoseTurn = FIRST_PLAYER_INDEX;
 	    drawTimer = -1;
+	    lastActivePlayer = -1;
 	    lastDroppedObject = null;
 	    // set the initial contents of the board to all empty cells
         moveNumber = 1;
@@ -198,6 +205,7 @@ class SprintBoard extends BaseBoard implements BoardProtocol
         board_state = from_b.board_state;
         drawPile.copyFrom(from_b.drawPile);
         robotVocabulary = from_b.robotVocabulary;
+        lastActivePlayer = from_b.lastActivePlayer;
         lastPicked = null;
         sameboard(from_b); 
     }
@@ -219,6 +227,7 @@ class SprintBoard extends BaseBoard implements BoardProtocol
         G.Assert(variation==from_b.variation,"variation matches");
         G.Assert(robotVocabulary==from_b.robotVocabulary,"robotVocabulary mismatch");
         G.Assert(drawPile.sameContents(from_b.drawPile),"drawPile mismatch");
+        G.Assert(lastActivePlayer==from_b.lastActivePlayer,"lastActivePlayer mismatch");
         // this is a good overall check that all the copy/check/digest methods
         // are in sync, although if this does fail you'll no doubt be at a loss
         // to explain why.
@@ -245,6 +254,7 @@ class SprintBoard extends BaseBoard implements BoardProtocol
 		// v ^= cell.Digest(r,pickedSource);
 		v ^= Digest(r,drawPile);
 		v ^= Digest(r,robotVocabulary);
+		v ^= Digest(r,lastActivePlayer);
 		v ^= r.nextLong()*(board_state.ordinal()*10+whoseTurn);
         return (v);
     }
@@ -322,30 +332,43 @@ class SprintBoard extends BaseBoard implements BoardProtocol
         	pb.Execute(mm,replay);
         	boolean all = true;
         	for(SingleBoard p : pbs) { all &= (p.getState()==SprintState.Gameover); }
-        	if(all) { setState(SprintState.Gameover); }
+        	lastActivePlayer = m.player;
+        	if(all) 
+        		{ setState(SprintState.Gameover); 
+        		}
         	break;
         	}
         case MOVE_ENDGAME:
         	{
-        	SingleBoard pb = pbs[m.player];
-        	pb.Execute(mm,replay);
+        	for(SingleBoard pb : pbs) { pb.Execute(mm,replay); }
         	setState(revision<101 ? SprintState.Gameover : SprintState.EndingGame);
+        	lastActivePlayer = mm.player;
         	break;
         	}
         case MOVE_SWITCH:
-        	whoseTurn = m.player;
         	break;
         case MOVE_PULL:
-        	moveNumber++;
-        	while(drawPile.height()>m.to_row)
+         	while(drawPile.height()>m.to_row)
         	{	SprintChip chip = drawPile.removeTop();
         		for(SingleBoard p : pbs)
         		{
         			p.placeNewTile(chip);
         		}
         	}
-        	drawTimer = G.Date()+(drawPile.height()==0 ? FinalDrawTime : NextDrawTime);
+         	restartTimer();
         	break;
+        case MOVE_PULLSTART:
+        	for(int lim = Math.min(pullCount(),drawPile.height()); lim>0;lim--) { drawPile.removeTop(); }
+        	break;
+        case MOVE_PULLNEW:
+        	{
+        	SingleBoard pb = pbs[m.player];        	
+        	pb.Execute(mm,replay);
+        	restartTimer();
+        	setState(SprintState.Play);
+        	}
+        	break;
+        	
         default:
         	SingleBoard pb = pbs[m.player];
         	int mn = pb.moveNumber();
@@ -357,10 +380,22 @@ class SprintBoard extends BaseBoard implements BoardProtocol
         
         return (true);
     }
-
+ public void restartTimer()
+ {
+ 	drawTimer = G.Date()+(drawPile.height()==0 ? FinalDrawTime : NextDrawTime);
+ }
+ public int pullCount()
+ {
+	 return 2;
+ }
+ public String getPullMove(int p)
+ {	
+	 return pbs[p].getPullMove();
+ }
+ 
  public int nextTileCount()
  {
-	 return Math.max(0,drawPile.height()-2);
+	 return Math.max(0,drawPile.height()-pullCount());
  }
  public int tilesLeft() { return drawPile.height(); }
  

@@ -25,7 +25,7 @@ public abstract class SystemImage implements ImageObserver
 		//  SCALE_BICUBIC is locally implemented so it's a known quantity
 		SCALE_BICUBIC(0);
 		public int v = 0;
-		public static ScaleType defaultScale = ScaleType.SCALE_BICUBIC;
+		public static ScaleType defaultScale = ScaleType.SCALE_SMOOTH;
 		ScaleType(int ico) { v = ico; }
 	}
 	protected com.codename1.ui.Image image = null;
