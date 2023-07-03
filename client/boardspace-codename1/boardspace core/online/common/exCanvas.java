@@ -2401,5 +2401,14 @@ graphics when using a touch screen.
 	public void printDebugInfo(PrintStream s) {}
 	public void testSwitch() {}
 
+    /**
+     * draw the sprite rectangle if needed
+     * @param gc
+     * @param hp
+     * @return true if something was drawn
+     */
+    public boolean drawTileSprite(Graphics gc,HitPoint hp)
+    {	return magnifier.DrawTileSprite(gc,hp);
+    }
 	
 }

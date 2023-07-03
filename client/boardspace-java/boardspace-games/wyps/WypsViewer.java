@@ -1196,7 +1196,7 @@ public void setLetterColor(Graphics gc,WypsBoard gb,WypsCell cell)
    
 	    case BoardLocation:
 	        WypsCell hitCell = hitCell(hp);
-	    	if(bb.isADest(hitCell))
+	    	if((bb.getState()==WypsState.Puzzle) || bb.isADest(hitCell))
 	    		{ PerformAndTransmit("Pickb "+hitCell.col+" "+hitCell.row);
 	    		}
 	    	break;

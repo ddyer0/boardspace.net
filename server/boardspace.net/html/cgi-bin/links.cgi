@@ -61,7 +61,9 @@ sub standard_stuff()
 
 {	my $dbh = &connect();
 	print header;
-	if($dbh && (&allow_ip_access($dbh,$ENV{'REMOTE_ADDR'})>=0))
+	if($dbh)
+	{
+	if(&allow_ip_access($dbh,$ENV{'REMOTE_ADDR'})>=0)
 	{
 	my %cookies = fetch CGI::Cookie();
 	my $pname = $cookies{'nickname'};
@@ -70,5 +72,12 @@ sub standard_stuff()
 	if($language) { $language = $language->value;}
 	&standard_stuff($dbh,$pname,$language);
 	}
+	else {
+	  print "<h1>database access blocked<h1>";
+	}
+	}
+	else
+	{
+	 print "<h1>mysql not connecting</h1>";
+	}
 }
-

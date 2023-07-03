@@ -155,6 +155,7 @@ public class WypsViewer extends CCanvas<WypsCell,WypsBoard> implements WypsConst
     }
     
     
+    
     public void drawAnnotationMenu(Graphics g,HitPoint p)
     {	// this makes the annotation menu follow the board rotation, which is independent of the window rotation
     	GC.setRotatedContext(g,largerBoardRect,p,effectiveBoardRotation);
@@ -163,7 +164,6 @@ public class WypsViewer extends CCanvas<WypsCell,WypsBoard> implements WypsConst
     }
  
  
-
     public double aspects[] = {0.7,1.0,1.4};
     public void setLocalBounds(int x,int y,int w,int h)
     {	rackSize = 5;
@@ -562,7 +562,7 @@ public class WypsViewer extends CCanvas<WypsCell,WypsBoard> implements WypsConst
     	}
         if (OurMove())
         {
-            return (getBoard().movingObjectIndex());
+            return (bb.movingObjectIndex());
         }
         return (NothingMoving);
     }
@@ -1200,7 +1200,7 @@ public void setLetterColor(Graphics gc,WypsBoard gb,WypsCell cell)
    
 	    case BoardLocation:
 	        WypsCell hitCell = hitCell(hp);
-	    	if(bb.isADest(hitCell))
+	    	if((bb.getState()==WypsState.Puzzle) || bb.isADest(hitCell))
 	    		{ PerformAndTransmit("Pickb "+hitCell.col+" "+hitCell.row);
 	    		}
 	    	break;
@@ -1485,6 +1485,8 @@ public void setLetterColor(Graphics gc,WypsBoard gb,WypsCell cell)
     /** replay a move specified in SGF format.  
      * this is mostly standard stuff, but the contract is to recognize
      * the elements that we generated in sgf_save
+     * summary: 5/23/2023
+     * 	324 files visited 0 problems
      */
     public void ReplayMove(sgf_node no)
     {

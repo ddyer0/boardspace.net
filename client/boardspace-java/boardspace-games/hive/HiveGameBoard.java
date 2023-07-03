@@ -605,7 +605,10 @@ public variation gamevariation = variation.hive;
         doInit(init); // do the initialization 
     }
     public String gameType() 
-    {	if(revision<101) { return gametype; }
+    {	if(revision<101)
+    		{ //return this uppercased version as a secret cue that this is an old revision game.
+    			return "Hive"; 
+    		}
     	// the lower case is a secret clue that the gametype is in 4 token format
     	return(G.concat(gametype.toLowerCase()," ",players_in_game," ",randomKey," ",revision)); }
 
@@ -2018,7 +2021,7 @@ boolean GetListOfMoves1(CommonMoveStack all)
 		all.addElement(new Hivemovespec(whoseTurn,MOVE_DONE));
 		break;
 	case AcceptOrDecline:
-		all.addElement(new Hivemovespec(whoseTurn,MOVE_ACCEPT_DRAW));
+		all.addElement(new Hivemovespec(whoseTurn,MOVE_ACCEPT_DRAW)); 
 		all.addElement(new Hivemovespec(whoseTurn,MOVE_DECLINE_DRAW));
 		break;
 	default:

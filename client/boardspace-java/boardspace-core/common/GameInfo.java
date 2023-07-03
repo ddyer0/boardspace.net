@@ -1338,6 +1338,26 @@ synchronized(allGames) {
 	 mm.okForPlaytable = false;
 
 	}
+	
+	{
+	String pRules = "/honey/english/rules.html";
+	String pViewer = "honey.HoneyViewer";  
+	
+	GameInfo mm = put(new GameInfo(2105,ES.test,117,"SC",WordGames,"HoneyComb","HoneyComb",
+			NoBots,//ThreeBotsPlus,
+			new double[]{0.1,1.0,1.0,0.01},
+			pViewer,pRules,"about_honeycomb.html",
+			null,true, null));
+	 mm.maxPlayers = 6;
+	 mm.minPlayers = 1;
+	 mm.groupSortKey = "0091";
+	 mm.robotTimed = true;
+	 mm.randomizeFirstPlayer = true;
+	 mm.hasHiddenInformation = false;
+	 mm.okForPlaytable = false;
+
+	}
+	
 	{
 	String pRules = "/crosswordle/english/rules.html";
 	String pViewer = "crosswordle.CrosswordleViewer";  

@@ -552,7 +552,7 @@ public class TrenchViewer extends CCanvas<TrenchCell,TrenchBoard> implements Tre
             //seq++;
             String msg = null;//""+seq;
             int size = scaledCellSize(brect,ypos0);
-            if(cell.drawStack(gc,this,canHit?highlight:null,size,xpos,ypos,0,0.1,0.1,msg))
+            if(cell.drawStack(gc,this,canHit?highlight:null,size,xpos,ypos,0,1,1,msg))
             		{
             		highlight.spriteColor = Color.red;
                 	highlight.awidth = size;
@@ -1346,6 +1346,18 @@ public class TrenchViewer extends CCanvas<TrenchCell,TrenchBoard> implements Tre
     	 return(mutable_game_record 
     			? Reviewing
     			: vprogressString());
+    }
+    
+    public boolean drawTileSprite(Graphics gc,HitPoint hp)
+    {	int px = hp.hit_x;
+    	int py = hp.hit_y;
+    	if(G.pointInRect(px,py,boardRect))
+    	{	int w = hp.awidth;
+    		TrenchChip.Marker.drawChip(gc,this,w,px-w/4,py+w/4,null);
+    		return true;
+    	}
+    	
+    	return super.drawTileSprite(gc,hp);
     }
 }
 

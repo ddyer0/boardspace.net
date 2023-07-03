@@ -213,36 +213,44 @@ sub doit()
   print header;
   print "<title>$ENV{'HTTP_HOST'} Ip Monitor</title><h2>$ENV{'HTTP_HOST'} Ip Monitor</h2>\n";
   print "<form method=post action=$ENV{'REQUEST_URI'}>\n";
-  my $dbh = &connect();
 
-  if($dbh 
-  	&& $'sendmessage_password 
-  	&& ($password eq $'sendmessage_password)
-  	&& (&allow_ip_access($dbh,$myaddr)>=0)
-  	&& (&allow_ip_access($dbh,$bannercookie)>=0))
-  { print "<input type=hidden name=password value='$password'>\n";
-	if($edited) { &finish_edit($dbh); }
- 	if($add) { &edit_form($dbh,0); }
+   my $dbh = &connect();
+
+   if($dbh)
+	{
+	if($'sendmessage_password 
+    		&& ($password eq $'sendmessage_password))
+  	{
+  	 if((&allow_ip_access($dbh,$myaddr)>=0)
+  	 	&& (&allow_ip_access($dbh,$bannercookie)>=0))
+  	  { print "<input type=hidden name=password value='$password'>\n";
+	    if($edited) { &finish_edit($dbh); }
+ 	    if($add) { &edit_form($dbh,0); }
  		elsif ($edit) { &edit_form($dbh,$edit); }
  		else 
  			{
  			 &normal_form($dbh,$delete,$recent,$banned,$forip,$forcomments,$ip); 
  			 }
-  }
-  else
-  {
-      if($dbh)
-      {
-  	if($password && !($password eq $'sendmessage_password))
+	  }
+	  else {  
+	  print "<h1>Database access denied</h1>";
+	}
+ 	}
+  	else
+  	{
+   	if($password && !($password eq $'sendmessage_password))
   		{
   		&note_failed_login($dbh,$myaddr,"IP: view '$ENV{'REQUEST_URI'}");
                 &note_failed_login($dbh,$bannercookie,"CK: view '$ENV{'REQUEST_URI'}");
  		}
+  	print "<br>password: ";
+  	print "<input type=password name=password value='' SIZE=20 MAXLENGTH=25>\n";
+	}
+    	&disconnect($dbh);
   	}
-  print "<br>password: ";
-  print "<input type=password name=password value='' SIZE=20 MAXLENGTH=25>\n";
-  }
-  if($dbh) {  	&disconnect($dbh); }
+ else {
+	print "<h1>Database connection failed</h1>";
+	}
   print "</form>\n"
 
  

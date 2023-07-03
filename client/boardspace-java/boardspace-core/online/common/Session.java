@@ -861,5 +861,16 @@ public class Session implements LobbyConstants
 		    && isAGameOrReviewRoom() 
 		   	&& editable());
 	}
+
+	public void setPlayer(User user, int pl) {
+		User sp[] = players;
+		String pn[] = playerName;
+		G.Assert(currentGame==null || (pl<currentGame.maxPlayers),"player seat #1 too many for #2",pl,currentGame);
+		for(int i=0;i<sp.length;i++)
+		{
+			if(i==pl) { sp[i] = user; pn[i]=user.publicName; }
+			else if(sp[i]==user) { sp[i]=null; pn[i]=null; }
+		}
+	}
     
 }

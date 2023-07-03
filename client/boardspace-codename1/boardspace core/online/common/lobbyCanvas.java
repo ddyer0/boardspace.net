@@ -2670,9 +2670,9 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	        {// don't send submode here, so we won't change the setting based on possibly
 	         // incomplete information
 	    	  lobby.movingToSess = sess.gameIndex;
-	    	 String msg = sess.gameIndex+" "+m_movingToPos + " -1";	
+	    	 String msg = sess.gameIndex+" "+m_movingToPos + " -1";
 	    	 sendMessage(NetConn.SEND_LOBBY_INFO+msg);
-	         sendMessage(NetConn.SEND_GROUP+KEYWORD_IMIN+" "+msg);
+	         sendMessage(NetConn.SEND_GROUP+KEYWORD_IMIN+" "+msg + " -1 game "+sess.currentGame.publicID	);
 	    	 lobby.sendMyInfo = true;
 
 	        }
@@ -2996,7 +2996,7 @@ public boolean touchZoomEnabled()
 	
 public void drawCanvasSprites(Graphics gc, HitPoint pt) 
 {
-	if(mouseTrackingAvailable(pt)) { magnifier.DrawTileSprite(gc,pt); }
+	if(mouseTrackingAvailable(pt)) { drawTileSprite(gc,pt); }
 }
 
 

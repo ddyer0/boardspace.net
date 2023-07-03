@@ -102,6 +102,7 @@ public abstract class commonMove implements lib.CompareTo<commonMove> , Opcodes,
 	{
 		NOT_EVALUATED,					// not examined yet
 		EVALUATED,						// static evaluated
+		EVALUATED_DRAWN,				// evaluated as a draw
 		DEPTH_LIMITED_SEARCH,			// depth limited by search
 		DEPTH_LIMITED_GAMEOVER,			// depth limited because the game is over
 		DEPTH_LIMITED_TRANSPOSITION;	// depth limited by the transposition table
@@ -145,6 +146,7 @@ public abstract class commonMove implements lib.CompareTo<commonMove> , Opcodes,
    	  //G.print("E "+this+" "+h.elapsedTime+"->"+v);
       h.elapsedTime = v; }
     public boolean gameover() { return(RProps==null ? false : R().gameover); }
+    public boolean isDrawn() { return(RProps==null ? false : R().depth_limited==EStatus.EVALUATED_DRAWN); }
     public void setGameover(boolean v) { if((RProps==null)&&(v==false)) {} else { R().gameover = v; }}  
     public EStatus depth_limited() { return(R().depth_limited);}
     public void set_depth_limited(EStatus v) { R().depth_limited = v; }

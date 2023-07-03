@@ -665,6 +665,10 @@ class TrenchBoard
         	}
         }
     }
+    public boolean isQuiet()
+    {
+    	return captureHeight.top()==captureStack.size();
+    }
     private void undoCaptures(int who)
     {	
     	int h = captureHeight.pop();
@@ -933,7 +937,7 @@ class TrenchBoard
         //G.Assert(m.player == whoseTurn, "whoseturn doesn't agree");
         //G.print("R "+m);
         Execute(m,replayMode.Replay);
-        if(board_state==TrenchState.Confirm) { doDone(replayMode.Replay); }
+        if(board_state.doneState()) { doDone(replayMode.Replay); }
         else {  acceptPlacement(); }
     }
  
@@ -1082,6 +1086,7 @@ class TrenchBoard
  	case Play:
  		addPieceMoves(all,whoseTurn);
  		if(drawIsLikely()
+ 				&& (robotStack.size()==0)
  				&& (moveNumber-lastDrawMove)>4)
  		{
  			all.push(new Trenchmovespec(MOVE_OFFER_DRAW,whoseTurn));
@@ -1097,7 +1102,7 @@ class TrenchBoard
  	case Resign:
  		break;
  	case AcceptOrDecline:
-			 all.push(new Trenchmovespec(MOVE_ACCEPT_DRAW,whoseTurn));
+			 if(drawIsLikely()) { all.push(new Trenchmovespec(MOVE_ACCEPT_DRAW,whoseTurn)); }
 			 all.push(new Trenchmovespec(MOVE_DECLINE_DRAW,whoseTurn));
 			 break;
 
@@ -1198,6 +1203,7 @@ double trenchWeight = 0.05;
 public double smartScore(int player)
 {	int nextP = nextPlayer[player];
 	double cap = totalCaptured(nextP);
+	if(cap>=WIN) { return WIN*2; }
 	TrenchId myColor = playerColor[player];
 	double trenchAttackWeight = 0.01;
 	double intruderAttackWeight = 0.01;

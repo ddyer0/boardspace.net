@@ -1228,7 +1228,7 @@ public Hashtable<MorrisCell,MorrisMovespec>getTargets()
  		 {
  		 default: throw G.Error("Not expecting state %s",board_state);
  		 case AcceptOrDecline:
- 			 all.push(new MorrisMovespec(MOVE_ACCEPT_DRAW,whoseTurn));
+ 			if(drawIsLikely()) { all.push(new MorrisMovespec(MOVE_ACCEPT_DRAW,whoseTurn)); }
  			 all.push(new MorrisMovespec(MOVE_DECLINE_DRAW,whoseTurn));
  			 break;
  		 case Place:

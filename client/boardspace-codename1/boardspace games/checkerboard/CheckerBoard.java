@@ -1453,7 +1453,7 @@ private void checkOccupied()
  		 {
  		 default: throw G.Error("Not expecting state %s",board_state);
  		 case AcceptOrDecline:
- 			 all.push(new CheckerMovespec(MOVE_ACCEPT_DRAW,whoseTurn));
+ 			if(drawIsLikely()) { all.push(new CheckerMovespec(MOVE_ACCEPT_DRAW,whoseTurn)); }
  			 all.push(new CheckerMovespec(MOVE_DECLINE_DRAW,whoseTurn));
  			 break;
  		 case Play:

@@ -8,7 +8,6 @@ import lib.*;
 import lib.Random;
 import online.game.*;
 import online.game.cell.Geometry;
-import sprint.SprintConstants.SprintId;
 import dictionary.Dictionary;
 import dictionary.Entry;
 
@@ -844,80 +843,7 @@ class SingleBoard extends infiniteSquareBoard<SprintCell> implements BoardProtoc
     	return(score);
     }
     
-    // check for extra sprint above and below the intended word
-    // which must be words, too. return the total score associated
-    // with any new words that are formed.  CrossIndex is the index 
-    // of the known crossword - ie the word we are building from,
-    // which has already been checked and also won't score
-    public int checkIllegalCrosswords(String word,int crossIndex,SprintCell from,int inDirection,SprintCell fromRack[])
-    {	int extraScore = 0;
-    	SprintCell c = from;
-    	int oppdir = (inDirection+CELL_HALF_TURN)%CELL_FULL_TURN;
-    	for(int idx = 0,len=word.length(); idx<len; idx++,c = c.exitTo(inDirection))
-    	{
-    		if(idx!=crossIndex)
-    		{
-    		 	int directionStep =  CELL_QUARTER_TURN;
-    		 	int lastDir = CELL_FULL_TURN;
-    		 	int firstDir = CELL_RIGHT;
-    		 	// be a little more general than needed for square sprint, to allow for diagonal and backwards sprint
-    		 	for(int direction = firstDir; direction<lastDir; direction+=directionStep)
-    		 	{	
-    		 	
-    		 		if((direction!=inDirection) && (oppdir!=direction))
-    		 		{
-    		 		// first back up to the beginning of the possible word
-    		 		int revDir = direction+CELL_HALF_TURN;
-    		 		SprintCell head = c;
-    		 		SprintCell prev = c.exitTo(revDir);
-    		 		SprintCell next = c.exitTo(direction);
-    		 		int nchars = 0;
-    		 		if(prev!=null) 
-    		 		{
-    		 			SprintChip ptop = prev.topChip();
-    		 			if(ptop!=null)
-    		 			{
-    		 				builder.setLength(0);
-    		 				do 
-    		 					{ builder.append(ptop.lcChar);
-    		 					  head = prev;
-   		 					      nchars++;
-    		 					  prev = prev.exitTo(revDir);
-    		 					  ptop = prev==null ? null :prev.topChip();
-    		 					} while(ptop!=null);
-    		 				builder.reverse();
-    		 				}
-    		 			}
-    		 		if(nchars>0) { builder.append(word.charAt(idx)); nchars++; }
-    		 		if(next!=null)
-    		 			{
-    		 			SprintChip ntop = next.topChip();
-    		 			if(ntop!=null)
-    		 				{
-    		 				if(nchars==0) { builder.setLength(0); builder.append(word.charAt(idx)); nchars++; }
-    		 				nchars++;
-    		 				do { 
-    		 					builder.append(ntop.lcChar);
-    		 					nchars++;
-    		 					next = next.exitTo(direction);
-    		 					ntop = next==null ? null : next.topChip();
-    		 					}
-    		 					while(ntop!=null);
-    		 				}}
-    		 			if(nchars>1)
-    		 			{
-    		 			String newWord = builder.toString();
-    		 			Entry e = lookupRobotWord(newWord);
-    		 			if(e==null) { // found an illegal crossword
-    		 					return(-1);
-    		 				}
-    		 			extraScore += scoreWord(newWord,head,direction,fromRack);
-    		 			}
-    		 		}
-    		 	}}
-    	}
-    	return(extraScore);
-    }
+
     // score a letter on the board, and change wordMultiplier as a side
     // effect.  This is used both for scoring actually placed words and
     // for proposed words that are not yet on the board
@@ -925,11 +851,6 @@ class SingleBoard extends infiniteSquareBoard<SprintCell> implements BoardProtoc
     private int scoreLetter(SprintCell c,SprintChip top)
     {	int letterScore = top.value;
 		return(letterScore);
-    }
-    private Entry lookupRobotWord(String word)
-    {	Entry entry = dictionary.get(word);
-    	if(entry!=null) { if(entry.order>robotVocabulary) { entry = null; }}
-    	return(entry);
     }
     
 
@@ -1078,10 +999,10 @@ class SingleBoard extends infiniteSquareBoard<SprintCell> implements BoardProtoc
         {
         case MOVE_PULLNEW:
         	{
-         	SprintChip top = drawPile.removeTop();
         	SprintChip ch = SprintChip.getLetter(m.from_col);
+        	SprintChip top = drawPile.removeTop();
            	//G.print("pull "+boardIndex+" "+top);
-        	//G.Assert(top==ch,"matching draw");
+        	G.Assert(top==ch,"matching draw");
         	SprintCell c = unplacedTiles[m.to_row];
         	c.addChip(ch);
         	unplacedCount++; 
@@ -1397,59 +1318,6 @@ class SingleBoard extends infiniteSquareBoard<SprintCell> implements BoardProtoc
         }
  }
 
- private int findLetter(SprintCell fromRack[],char ch,boolean blank)
- {
-	 for (int lim = fromRack.length-1; lim>=0; lim--)
-	 {
-		 SprintCell c = fromRack[lim];
-		 if(c.sweep_counter!=sweep_counter)
-		 {	SprintChip top = c.topChip();
-		 	if(top!=null && top.lcChar==ch)
-		 	{	if(top.lcChar==ch) { return lim; }
-		 	}
-		 }	 
-	 }
-	 return(-1);
- }
- // we have already verified the placement to be legal, now score the
- // word considering the new letters we will place.
- // this does not check for illegal sprint
- // one complication is that the search for words using blanks
- // involves "temporarily" placing the actual letter in the rack
- private int scoreWord(String word,SprintCell from,int direction,SprintCell fromRack[])
- {	
-	int score = 0;
-	sweep_counter++;
-	wordMultiplier = 1;
-	AR.setValue(wordBonus, null);
-	SprintCell c = from;
- 	for(int idx = 0,lastIdx = word.length(); idx<lastIdx; idx++)
- 	{	
-	 	SprintChip ch = c.topChip();
-	 	if(ch==null)
-	 	{	// we'll place this letter, so it scores
-	 		char letter = word.charAt(idx);
-	 		int rackidx = findLetter(fromRack,letter,false);	// find as a real letter
-	 		if(rackidx>=0)
-	 			{
-	 			
-	 			score += scoreLetter(c,SprintChip.getLetter(letter));
-	 			fromRack[rackidx].sweep_counter = sweep_counter;	// mark it used
-	 			}
-	 		else {
-	 			int blankIdx = findLetter(fromRack,letter,true);
-	 			G.Assert(blankIdx>=0,"blank letter not found");
-	 			fromRack[blankIdx].sweep_counter = sweep_counter;
-	 		}
-	 	}
-	 	else { 
-	 		score += ch.value;
-	 	}
-		c = c.exitTo(direction);
- 	}
- 	
- 	return(score*wordMultiplier);
- }
  
 
  CommonMoveStack  GetListOfMoves()

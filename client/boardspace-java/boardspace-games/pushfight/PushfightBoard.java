@@ -124,6 +124,7 @@ class PushfightBoard extends squareBoard<PushfightCell> implements BoardProtocol
     public PushfightCell secondMoved = null;
     private CellStack pickedSourceStack = new CellStack(); 
     private CellStack droppedDestStack = new CellStack();
+    private PushfightCell prevPushedDest = null;
     private StateStack stateStack = new StateStack();
     private CellStack robotStack = new CellStack();
     private IStack robotIstack = new IStack();
@@ -220,6 +221,7 @@ class PushfightBoard extends squareBoard<PushfightCell> implements BoardProtocol
 	    resetState = PushfightState.Puzzle;
 	    pushedEnd = null;
 	    pushedDest = null;
+	    prevPushedDest = null;
 	    lastDroppedObject = null;
 	    int map[]=getColorMap();
 	    AR.copy(playerColorIndex,map);
@@ -286,6 +288,7 @@ class PushfightBoard extends squareBoard<PushfightCell> implements BoardProtocol
         initMoves = from_b.initMoves;
         pushedEnd = getCell(from_b.pushedEnd);
         pushedDest = getCell(from_b.pushedDest);
+        prevPushedDest = getCell(from_b.prevPushedDest);
         lastPicked = null;
         firstMoved = getCell(from_b.firstMoved);
         secondMoved = getCell(from_b.secondMoved);
@@ -460,10 +463,31 @@ class PushfightBoard extends squareBoard<PushfightCell> implements BoardProtocol
     //
     @SuppressWarnings("unused")
 	private PushfightCell unDropObject()
-    {	PushfightCell rv = droppedDestStack.pop();
-    	setState(stateStack.pop());
+    {   setState(stateStack.pop());
+    	PushfightCell rv = droppedDestStack.pop();
+   		PushfightCell from = getSource();
+    	if(pushedEnd!=rv)
+		{	// undo push      
+    	PushfightChip t = rv.removeTop();
+    	G.Assert(t==PushfightChip.Anchor,"should be the anchor");
+    	pickedObject = rv.removeTop();
+    	unsetPiece(rv,pickedObject);
+    	int direction = findDirection(getSource(),rv);
+		while(rv!=pushedEnd)
+			{
+			PushfightCell next = rv.exitTo(direction);
+			rv.addChip(next.removeTop());
+			setPiece(next,rv);
+			rv = next;
+			}
+		pushedDest = prevPushedDest;
+		if(pushedDest!=null) { pushedDest.addChip(PushfightChip.Anchor); }
+		}
+    	else
+    	{
     	pickedObject = SetBoard(rv,null); 	// SetBoard does ancillary bookkeeping
     	unsetPiece(rv,pickedObject);
+    	}
     	rv.lastPlaced = previousLastPlaced;    	
     	lastPlacedIndex--;
     	return(rv);
@@ -741,6 +765,7 @@ class PushfightBoard extends squareBoard<PushfightCell> implements BoardProtocol
 			animationStack.push(pushedDest);
 			animationStack.push(dest0);
 		}
+		prevPushedDest = pushedDest;
 		pushedDest = dest0;
 		
 		//checkPieces();
@@ -818,12 +843,10 @@ class PushfightBoard extends squareBoard<PushfightCell> implements BoardProtocol
         	// come here only where there's something to pick, which must
  			{
  			PushfightCell src = getCell(m.from_col,m.from_row);
- 			if(board_state==PushfightState.Confirm)
- 			{	G.Error("this should be handled by undo");
- 			}
+        	// be a temporary p
+ 			if(isDest(src)&& (board_state==PushfightState.Confirm)) { unDropObject(); }
  			else
  			{
-        	// be a temporary p
         	pickObject(src);
         	m.from = pickedObject;
  			}}

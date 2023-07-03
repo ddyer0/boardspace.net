@@ -17,6 +17,7 @@ import bridge.Color;
 
 
 import lib.CellId;
+import online.game.sgf.sgf_property;
 import lib.DrawableImage;
 import lib.G;
 import lib.Graphics;
@@ -193,7 +194,10 @@ public class AnnotationMenu extends Rectangle implements PlayConstants,OnlineCon
 		{
 		// this queues the annotation to be sent to the other players and spectators
 		// spectators can't place public annotations during a game
-		annotationActions.push(G.concat(ANNOTATION_TAG," ",m.playerString()," \"",m.longMoveString(),"\" ",
+		annotationActions.push(G.concat(ANNOTATION_TAG," ",m.playerString(),
+				" \"",
+				sgf_property.bracketedString(m.longMoveString()),
+				"\" ",
 				"\"",n.toReadableString(),"\""));
 		}
 	}
@@ -358,7 +362,6 @@ public class AnnotationMenu extends Rectangle implements PlayConstants,OnlineCon
 		{
 		int ind = fullMessage.indexOf(cmdStr);
 		Tokenizer tok = new Tokenizer(fullMessage.substring(ind+cmdStr.length()));
-		
 		// general form is SPAREA1 P0 "move spec" "(readableannotation)"
 		String playerString = tok.nextElement();
 		String moveStr = tok.nextElement();

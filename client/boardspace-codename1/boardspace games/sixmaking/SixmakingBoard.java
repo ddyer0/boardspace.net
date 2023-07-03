@@ -1154,7 +1154,7 @@ private boolean addKingMovesFor(CommonMoveStack all,SixmakingCell from,int heigh
  		break;
  	case AcceptOrDecline:
  		if(all==null) { return(true); }
- 		all.push(new SixmakingMovespec(MOVE_ACCEPT_DRAW,who));
+ 		if(drawIsLikely()) { all.push(new SixmakingMovespec(MOVE_ACCEPT_DRAW,who)); }
  		all.push(new SixmakingMovespec(MOVE_DECLINE_DRAW,who));
  		break;
  	case Play:

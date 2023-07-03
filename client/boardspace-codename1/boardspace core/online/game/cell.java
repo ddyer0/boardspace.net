@@ -943,7 +943,7 @@ public abstract class cell<FINALTYPE
   	}
 	
 	/**
-	 * test the highlight point for a hit on this puece, as adjusted by the image aspect
+	 * test the highlight point for a hit on this piece, as adjusted by the image aspect
 	 * ratio, the scale, and offsets for this chip
 	 * @param highlight
 	 * @param piece
@@ -996,6 +996,12 @@ public abstract class cell<FINALTYPE
       // drawing methods can keep track of what is being drawn.  Specificially
       // all the pentomino games use single cell "pieces" that actually
       // extend across many pieces.
+      //
+      // note that the gc based method of locating the highlight probably isn't correct, it interacts
+      // with the peculiar characteristics of the artwork, in particular "trench" which overrides this
+      // method.  The crux of the issue is if the artwork isn't perfectly centered and is being recentered
+      // using the scale x,y,size
+      //
       boolean val = (last>=0 && gc.last_count==last+1 ) 
     		  			? findChipHighlight(highlight,piece,gc.last_w,gc.last_h,gc.last_x+gc.last_w/2,gc.last_y+gc.last_h/2) 
     		  			: findChipHighlight(highlight,piece,squareWidth,squareHeight,e_x,e_y);

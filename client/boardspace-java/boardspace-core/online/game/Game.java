@@ -1398,8 +1398,8 @@ public class Game extends commonPanel implements PlayConstants,DeferredEventHand
 		        }
 		
             }
-            else if (commandStr.equals(KEYWORD_IMNAMED) 
-                    || (istrue = commandStr.equals(KEYWORD_TRUENAME)))
+            else if (commandStr.equalsIgnoreCase(KEYWORD_IMNAMED) 
+                    || (istrue = commandStr.equalsIgnoreCase(KEYWORD_TRUENAME)))
             {
                 String localNS = myST.nextToken();
                 commonPlayer player = getPlayer(playerID);
@@ -4405,7 +4405,17 @@ public class Game extends commonPanel implements PlayConstants,DeferredEventHand
         {	// the player who just ended the game will also send the official record
             if (GameOver())
             {
-                FinishUp(true);
+            switch(v.gameRecordingMode())
+            	{
+	            case All:
+	            case Single:
+	            	FinishUp(true);
+	            	break;
+	            case Fixed:
+	            case None:
+	            default:
+	            	break;
+            	}
             }
         }
         

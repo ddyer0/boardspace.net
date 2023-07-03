@@ -30,7 +30,13 @@ public class User implements LobbyConstants,CompareTo<User>
     private Session session = null;
     private int playLocation;
     GameInfo preferredGame;
-    public void setSession(Session s,int pl) { session = s; playLocation = pl; }
+    
+    public void setSession(Session s,int pl) 
+    {	if(session!=null) { session.setPlayer(this,-1); }
+    	session = s; 
+    	playLocation = pl;
+    	if(s!=null) { s.setPlayer(this,pl); }
+    }
     public Session session() 
     {
     	Session sess = session;

@@ -54,7 +54,7 @@ public interface SprintConstants
 	Puzzle(PuzzleStateDescription,false,false),
 	Resign(ResignStateDescription,true,false),	
 	Gameover(GameOverStateDescription,false,false),
-	Confirm(ConfirmStateDescription,false,false),
+	Confirm(ConfirmStateDescription,true,true),
 	Endgame(EndGameDescription,true,true),
 	EndingGame(EndingGameDescription,true,true),
 

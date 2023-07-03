@@ -844,8 +844,6 @@ private void PreloadClass(String classname)
       {       
         if (fromSess != null) 
           { /* get him out of wherever he was */
-            fromSess.players[fromPlay] = null;
-            fromSess.playerName[fromPlay] = null;
             user.setSession(null,0);
 			if(fromSess!=toSess)
 			   { int nPlayers=fromSess.numberOfPlayers();
@@ -879,7 +877,6 @@ private void PreloadClass(String classname)
         if(toSess!=null) 
         {
         
-        toSess.players[toPlay] = user;
         toSess.readySoundPlayed = false;	// new policy is to ring the bell when a new person joins
         toSess.restartable_pending=false;
         toSess.restartable=false;
@@ -910,11 +907,11 @@ private void PreloadClass(String classname)
 
 private boolean handleChat(int playerID,String commandStr,StringTokenizer localST)
 {
-	if (KEYWORD_PPCHAT.equals(commandStr) 
- 		   || KEYWORD_PCHAT.equals(commandStr)
- 		   || KEYWORD_SCHAT.equals(commandStr)
- 		   || KEYWORD_LOBBY_CHAT.equals(commandStr)
- 		   || KEYWORD_PSCHAT.equals(commandStr)) 
+	if (KEYWORD_PPCHAT.equalsIgnoreCase(commandStr) 
+ 		   || KEYWORD_PCHAT.equalsIgnoreCase(commandStr)
+ 		   || KEYWORD_SCHAT.equalsIgnoreCase(commandStr)
+ 		   || KEYWORD_LOBBY_CHAT.equalsIgnoreCase(commandStr)
+ 		   || KEYWORD_PSCHAT.equalsIgnoreCase(commandStr)) 
  	  
    {  String localTempStr = " ";
        while (localST.hasMoreTokens()) {
@@ -948,11 +945,13 @@ private boolean processEchoGroup(String messType,StringTokenizer localST,String 
       int playerID = G.IntToken(localST);
       boolean remain = false;
       String commandStr = localST.nextToken();
-      boolean isimin = commandStr.equals(KEYWORD_IMIN);
-      if (isimin || commandStr.equals(KEYWORD_UIMIN)) 
+      boolean isimin = commandStr.equalsIgnoreCase(KEYWORD_IMIN);
+      boolean isuimin = commandStr.equalsIgnoreCase(KEYWORD_UIMIN);
+      if (isimin || isuimin) 
       { int toSess = G.IntToken(localST);
         int toPlay = G.IntToken(localST);
         User user = getUser(playerID);
+        int gameId = -1;
         Session sess = getSession(toSess);
         if((user!=null) && (sess!=null))
         { if(isimin) 
@@ -961,12 +960,19 @@ private boolean processEchoGroup(String messType,StringTokenizer localST,String 
           */
           sess.SetGameState(Session.SessionState.Idle); 
         }
-        remain = parseImin(sess,localST);;
+        remain = parseImin(sess,localST);
+        gameId = parsedGameId;
         }
-      if((sess==null) || !remain) { PutInSess(user,sess,toPlay); } 
+      // don't set session based on uimin because that is triggered as introduction
+      // before the true state of the session is known.  If the gameindex is supplied
+      // ok if the game index matches.
+      boolean putok = gameId>0 ? gameId==sess.currentGame.publicID : isimin;
+      if(putok && ((sess==null) || !remain))
+      	{ PutInSess(user,sess,toPlay); 
+      	} 
       }
       else if(handleChat(playerID,commandStr,localST)) {}
-      else if(commandStr.equals(KEYWORD_RANK))
+      else if(commandStr.equalsIgnoreCase(KEYWORD_RANK))
       { User user = getUser(playerID);
         if(user!=null) 
           {
@@ -975,7 +981,7 @@ private boolean processEchoGroup(String messType,StringTokenizer localST,String 
             setUIDRankings(localST,false);
           }
       }
-      else if(commandStr.equals(KEYWORD_VERSION))
+      else if(commandStr.equalsIgnoreCase(KEYWORD_VERSION))
       {
       // obsolete as of version 5.87	  
       User user = getUser(playerID);
@@ -985,21 +991,21 @@ private boolean processEchoGroup(String messType,StringTokenizer localST,String 
          //user.majorVersion=maj;
          //er.minorVersion=min;        
       }}
-      else if (commandStr.equals(KEYWORD_IMNAMED)) 
+      else if (commandStr.equalsIgnoreCase(KEYWORD_IMNAMED)) 
       {
         String playerNameStr = localST.nextToken();
         String playerUidStr = localST.hasMoreTokens() ? localST.nextToken() : null;
         setUserName(playerID,playerNameStr,playerUidStr);
       } 
-      else if (commandStr.equals(KEYWORD_LAUNCH)) 
+      else if (commandStr.equalsIgnoreCase(KEYWORD_LAUNCH)) 
       {
         LaunchGameNow(localST);
       }
-      else if (KEYWORD_SPARE.equals(commandStr))
+      else if (KEYWORD_SPARE.equalsIgnoreCase(commandStr))
       {
     	  // this is a loophole for future use
       }
-      else if (commandStr.equals(KEYWORD_INFO))
+      else if (commandStr.equalsIgnoreCase(KEYWORD_INFO))
       { User user = getUser(playerID);
         if(user!=null)
           {String tok = localST.nextToken();
@@ -1018,7 +1024,7 @@ private boolean processEchoGroup(String messType,StringTokenizer localST,String 
             }
         }
       }
-      else if(commandStr.equals(KEYWORD_USERMENU))
+      else if(commandStr.equalsIgnoreCase(KEYWORD_USERMENU))
       {  int index = G.IntToken(localST);
         int userChannel = G.IntToken(localST);
         User victim = getUser(userChannel);
@@ -1100,8 +1106,10 @@ private boolean processEchoGroup(String messType,StringTokenizer localST,String 
 } 
   return(false);  
 }
+  private int parsedGameId = -1;
   private boolean parseImin(Session sess,StringTokenizer localST)
   {	boolean remain = false;
+    parsedGameId = -1;
       if(localST.hasMoreTokens()) 
       { Session.JoinMode usecode=Session.JoinMode.findMode(G.IntToken(localST));
         if((usecode != null) && (sess.getSubmode()!=usecode))
@@ -1118,6 +1126,7 @@ private boolean processEchoGroup(String messType,StringTokenizer localST,String 
       while(localST.hasMoreTokens())
       {
       	String cmd = localST.nextToken();
+      	if(cmd.equalsIgnoreCase("game")) { parsedGameId = G.IntToken(localST); }
       	if(cmd.equalsIgnoreCase("remain")) { remain = true; }
       	if(cmd.equalsIgnoreCase(sgf_names.timecontrol_property))
       	{
@@ -1406,7 +1415,7 @@ private boolean processEchoGroup(String messType,StringTokenizer localST,String 
     	  commandStr = localST.nextToken();
       }
 
-      if (commandStr.equals(KEYWORD_IMIN)) 
+      if (commandStr.equalsIgnoreCase(KEYWORD_IMIN)) 
       {
           int toSess = G.IntToken(localST);
           int toPlay = G.IntToken(localST);
@@ -1414,13 +1423,13 @@ private boolean processEchoGroup(String messType,StringTokenizer localST,String 
           if(localST.hasMoreTokens()) 
           { G.IntToken(localST);	// skip useCode, whatever that is.
           }
-      boolean put = sess==null;
+          boolean put = sess==null;
       if(localST.hasMoreTokens())
       {
     	  String rem = localST.nextToken();
     	  if("remain".equalsIgnoreCase(rem)) { put = false; }
       }
-      if(put) { PutInSess(user,sess,toPlay); }
+          if(put) { PutInSess(user,sess,toPlay); }
       }
       else 
       if(commandStr.equals(KEYWORD_LAUNCH))
@@ -1941,7 +1950,10 @@ private boolean processEchoRoomtype(String messType,StringTokenizer localST)
    int bot = (muSess!=null) ? muSess.currentRobot.idx : -1;
    msg += " " + code+ " "+bot;
    }
-   sendMessage(msg);
+   else {
+	   msg += " -1 -1";
+   }
+   sendMessage(msg+ " game "+muSess.currentGame.publicID);
    }
    
    if(mu.ranking!=null)
@@ -2191,12 +2203,17 @@ public void setRoomSubMode(Session sess,Session.JoinMode submode)
   	sendLobbyInfo(sess,KEYWORD_IMIN,true);
   }
 }
-private void sendLobbyInfo(Session sess,String key2,boolean own)
+private String sendImin(Session sess,String key2,boolean own)
 {	User me = users.primaryUser();
 	int myloc = me.playLocation();
 	String msg0 = sess.gameIndex + " " +myloc+" "+sess.getSubmode().ordinal()+" "+sess.currentRobot.idx;
-	String rem = sess.iOwnTheRoom ? "" : " remain";
+	String rem = " game "+sess.currentGame.publicID+" " + (sess.iOwnTheRoom ? "" : " remain");
 	sendMessage(NetConn.SEND_GROUP+key2+" " + msg0+rem);
+	return msg0;
+}
+private void sendLobbyInfo(Session sess,String key2,boolean own)
+{	
+	String msg0 = sendImin(sess,key2,own);
 	if(own) 
 		{
 		String time = G.TimeControl() 
@@ -2505,7 +2522,7 @@ void LaunchGameNow(StringTokenizer localST)
 		sess.launchUser = null;
 		sess.launchUsers = null;
 	    sendMessage(NetConn.SEND_LOBBY_INFO + "0 0 0");
-	    sendMessage(NetConn.SEND_GROUP+KEYWORD_IMIN+" 0 0 0");
+    sendMessage(NetConn.SEND_GROUP+KEYWORD_IMIN+" 0 0 0");
 		}}
 	}}
 }

@@ -2,6 +2,7 @@ package trench;
 
 import lib.*;
 import online.game.*;
+import online.game.commonMove.EStatus;
 import online.game.export.ViewerProtocol;
 import online.search.*;
 
@@ -62,6 +63,7 @@ public class TrenchPlay extends commonRobot<TrenchBoard> implements Runnable, Tr
     
 	// alpha beta parameters
     private static final double VALUE_OF_WIN = 10000.0;
+    private static final double VALUE_OF_DRAW = -1;
     private int DUMBOT_DEPTH = 8;
     private int MAX_DEPTH = 8;						// search depth.
     private static final boolean KILLER = false;	// if true, allow the killer heuristic in the search
@@ -104,14 +106,19 @@ public class TrenchPlay extends commonRobot<TrenchBoard> implements Runnable, Tr
      * @param max the declared maximum depth.
      * 
      */
-/*    public boolean Depth_Limit(int current, int max)
+    public boolean Depth_Limit(int current, int max)
     {	// for simple games where there is always one move per player per turn
     	// current>=max is good enough.  For more complex games where there could
     	// be several moves per turn, we have to keep track of the number of turn changes.
     	// it's also possible to implement quiescence search by carefully adjusting when
     	// this method returns true.
-        return(current>=max);
-   }*/
+    	if(current<max) { return false; }
+    	if(((Strategy==SMARTBOT_LEVEL)||(Strategy==BESTBOT_LEVEL)) && !board.isQuiet()) 
+    		{ return false; }
+    	return true;
+   }
+    
+    
 /** Called from the search driver to undo the effect of a previous Make_Move.  These
  * will always be done in reverse sequence. This is usually the most troublesome 
  * method to implement - everything else in the board manipulations moves "forward".
@@ -194,9 +201,12 @@ public class TrenchPlay extends commonRobot<TrenchBoard> implements Runnable, Tr
     	case MONTEBOT_LEVEL:
     	case WEAKBOT_LEVEL:
     		val = evboard.simpleScore(player);
+    		if(val>=WIN) { return VALUE_OF_WIN; }
     		break;
+    	case BESTBOT_LEVEL:
     	case SMARTBOT_LEVEL:
     		val = evboard.smartScore(player);
+    		if(val>=WIN*2) { return VALUE_OF_WIN; }
     		break;
     	}
 	
@@ -210,7 +220,8 @@ public class TrenchPlay extends commonRobot<TrenchBoard> implements Runnable, Tr
      * Not needed for MonteCarlo searches
      */
     public double reScorePosition(commonMove m,int forplayer)
-    {	return(m.reScorePosition(forplayer,VALUE_OF_WIN));
+    {	if(m.depth_limited()==EStatus.EVALUATED_DRAWN) { return VALUE_OF_DRAW; }
+    	return(m.reScorePosition(forplayer,VALUE_OF_WIN));
     }
     /** this is called from the search driver to evaluate a particular position. The driver
      * calls List_of_Legal_Moves, then calls Make_Move/Static_Evaluate_Position/UnMake_Move
@@ -229,6 +240,12 @@ public class TrenchPlay extends commonRobot<TrenchBoard> implements Runnable, Tr
         // is included here because this is supposed to be an example.
         if(val0>=VALUE_OF_WIN) { return(val0); }
         if(val1>=VALUE_OF_WIN) { return(-val1); }
+        if(board.gameOverNow() )
+        	{ 
+        	// this is an innovation for Trench, to record explicitly that the outcome is a draw
+        	m.set_depth_limited(EStatus.EVALUATED_DRAWN);
+        	// draw looks like a slightly favorable outcome, meaning the player that offered it things it's slightly undesirable
+        	return VALUE_OF_DRAW; }	
         return(val0-val1);
     }
     /**
@@ -272,7 +289,9 @@ public class TrenchPlay extends commonRobot<TrenchBoard> implements Runnable, Tr
                // for games such as pushfight, where there are no "fools mate" type situations
                // the best solution is to use dif=0.0;  For games with fools mates,
                // set dif so the really bad choices will be avoided
-               Search_Driver search_state = Setup_For_Search(depth, false);
+               Search_Driver search_state = ((Strategy==BESTBOT_LEVEL)||(Strategy==SMARTBOT_LEVEL))
+            	   								?Setup_For_Search(depth+1, 0.5,depth-1)
+            	   								:Setup_For_Search(depth,false);
                search_state.save_all_variations = SAVE_TREE;
                search_state.good_enough_to_quit = GOOD_ENOUGH_VALUE;
                search_state.verbose = verbose;
@@ -330,6 +349,7 @@ public class TrenchPlay extends commonRobot<TrenchBoard> implements Runnable, Tr
         default: throw G.Error("Not expecting strategy "+strategy);
         case -100:	// old dumbot, before shift in pruning and randomization 
         	MONTEBOT = DEPLOY_MONTEBOT; break;
+        case BESTBOT_LEVEL:
         case SMARTBOT_LEVEL:
         	MONTEBOT=false;
         	MAX_DEPTH = DUMBOT_DEPTH;

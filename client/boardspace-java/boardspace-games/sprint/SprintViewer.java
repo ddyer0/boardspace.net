@@ -1231,10 +1231,13 @@ public void setLetterColor(Graphics gc,SingleBoard gb,SprintCell cell)
 	 switch(mm.op)
 	 {
 	 case MOVE_PULL:
+	 case MOVE_PULLSTART:
 		 playASoundClip(deskBellSoundName,200);
 		 break;
-	 case MOVE_MOVETILE:
 	 case MOVE_DROPB:
+		 if(mm.player!=getActivePlayer().boardIndex) { break; }
+		//$FALL-THROUGH$
+	 case MOVE_MOVETILE:
 	 case MOVE_PICKB:
 	 case MOVE_PICK:
 	 case MOVE_DROP:

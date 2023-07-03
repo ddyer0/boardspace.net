@@ -1585,7 +1585,7 @@ class FanoronaBoard extends rectBoard<FanoronaCell> implements BoardProtocol,Fan
   	switch(board_state)
  	{
   	case AcceptOrDecline:
-  		all.addElement(new FanoronaMovespec(MOVE_ACCEPT_DRAW,whoseTurn));
+  		if(drawIsLikely()) { all.addElement(new FanoronaMovespec(MOVE_ACCEPT_DRAW,whoseTurn)); }
   		all.addElement(new FanoronaMovespec(MOVE_DECLINE_DRAW,whoseTurn));
   		break;
  	case CONFIRM_STATE:

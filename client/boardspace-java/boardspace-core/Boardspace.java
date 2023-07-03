@@ -536,7 +536,8 @@ public class Boardspace extends URLClassLoader implements Runnable,LoaderConfig
 	 * @return
 	 */
 	private static File exists(String some, long date, File[]files)
-	{	String match = some.substring(some.lastIndexOf('/')+1).toLowerCase();
+	{	String match = some.substring(some.lastIndexOf('/')+1);
+		if(match!=null) { match = match.toLowerCase(); }
 		for(File f : files)
 		{
 			String name = f.getName().toLowerCase();
@@ -585,12 +586,15 @@ public class Boardspace extends URLClassLoader implements Runnable,LoaderConfig
 		// sending the "environment" parameter is a little bit of future proofing
 		// so the receiving script can determine the suitability of this client.
 		String dir = getCacheSource(webUrl+"&environment="+escape(props));
+		if(!"".equals(dir))
+		{
 		BufferedReader reader = new BufferedReader(new StringReader(dir));
 		// the first line of the result is "version,1,xxx" where xxx is the identifier for the cache
 		// changing xxx results in the entire cache being reloaded.
 		// the rest of the result is a list of dates (unix format, seconds since the epoch),files to be cached,
 		//
-		String firstLine = reader.readLine().toLowerCase();
+		String firstLine = reader.readLine();
+		if(firstLine!=null) { firstLine = firstLine.toLowerCase(); }
 		if(verbose) { log("webinfo:"+firstLine); }
 		String specs[] = firstLine==null ? null : firstLine.split(",");
 		if(specs!=null
@@ -642,7 +646,7 @@ public class Boardspace extends URLClassLoader implements Runnable,LoaderConfig
 		else {
 			if(verbose) { log("bad cache key in:\n"+dir+"\n"); }
 			throw new Error("bad cache key:\n"+firstLine);
-		}
+		}}
 	}
 	
     private static final char[] HexDig = 

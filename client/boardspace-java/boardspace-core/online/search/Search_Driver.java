@@ -2,6 +2,7 @@ package online.search;
 
 
 import online.game.*;
+import online.game.commonMove.EStatus;
 
 import java.io.*;
 import java.util.*;
@@ -403,7 +404,11 @@ public class Search_Driver extends CommonDriver implements Constants,Opcodes
                 //G.Assert(newval==value_to_parent,"rescore gives correct result");
                 //System.out.println("S: "+pcm+" e "+pcm.score +"=>"+value_to_parent);
                 pcm.setEvaluation(newval); //reset the eval
-                pcm.setGameover(sn.best_move.gameover());
+                commonMove bm = sn.best_move;
+                boolean over = bm.gameover();
+                if(over && bm.depth_limited()==EStatus.EVALUATED_DRAWN) 
+                	{ pcm.set_depth_limited(EStatus.EVALUATED_DRAWN); }
+                pcm.setGameover(over);
 
                 //G.Assert(pcm.Same_Move_P(r.current_move.Contents()),"moves not in sync");
             }
@@ -625,7 +630,8 @@ public class Search_Driver extends CommonDriver implements Constants,Opcodes
                 else if(progressive)
                 {	if((root_node!=null) 
                 		&& (root_node.best_move!=null)
-                		&& (root_node.best_move.gameover()))
+                		&& (root_node.best_move.gameover())
+                		&& !root_node.best_move.isDrawn())
                 	{	
                 	done = Search_Result.Done;
                     finished = true;

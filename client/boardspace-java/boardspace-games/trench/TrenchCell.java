@@ -1,7 +1,10 @@
 package trench;
 
 import lib.Random;
+import lib.Graphics;
+import lib.HitPoint;
 import lib.OStack;
+import online.common.exCanvas;
 import online.game.*;
 
 class CellStack extends OStack<TrenchCell>
@@ -105,6 +108,15 @@ public class TrenchCell
 	public int getLastPlacement(boolean empty) {
 		return empty ? lastEmptied : lastPlaced;
 	}
-
+//	public boolean registerChipHit(HitPoint highlight,int x,int y,int w,int h)
+//	{	return super.registerChipHit(highlight,x,y,w,h);
+//	}
 	
+	public boolean drawChip(Graphics gc,chip<?> piece,exCanvas drawOn,HitPoint highlight,int squareWidth,double scale,int e_x,int e_y,String thislabel)
+	{ // this is a nonstandard version because the standard version interacts badly with the particular artwork
+	  // for trench.  Probably the standard methods are wrong, but fixing them would be delicate.
+      drawChip(gc,drawOn,piece,squareWidth,scale,e_x,e_y,thislabel);
+      return findChipHighlight(highlight,piece,squareWidth,squareWidth,e_x,e_y);
+ 	}
+
 }

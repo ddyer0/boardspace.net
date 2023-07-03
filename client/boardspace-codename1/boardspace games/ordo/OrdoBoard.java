@@ -1651,7 +1651,7 @@ public Hashtable<OrdoCell,OrdoMovespec>getTargets()
 			 p1("state "+board_state+" unexpected");
 			 throw G.Error("State %s not expected",board_state);
  		 case AcceptOrDecline:
- 			 all.push(new OrdoMovespec(MOVE_ACCEPT_DRAW,whoseTurn));
+ 			if(drawIsLikely()) { all.push(new OrdoMovespec(MOVE_ACCEPT_DRAW,whoseTurn)); }
  			 all.push(new OrdoMovespec(MOVE_DECLINE_DRAW,whoseTurn));
  			 break;
 		 case Confirm:

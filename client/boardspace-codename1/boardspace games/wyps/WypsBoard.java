@@ -528,7 +528,6 @@ class WypsBoard extends hexBoard<WypsCell> implements BoardProtocol,WypsConstant
     {
     	return(selectedStack.contains(c));
     }
-    public Geometry geometry() { return(Geometry.Hex); }
     
 	// factory method to generate a board cell
 	public WypsCell newcell(char c,int r)

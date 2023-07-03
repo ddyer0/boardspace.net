@@ -246,6 +246,7 @@ public class GoBoard extends squareBoard<GoCell> implements BoardProtocol,GoCons
         getCell(captureStack,from_b.captureStack);
         board_state = from_b.board_state;
         unresign = from_b.unresign;
+        lastHit = getCell(from_b.lastHit);
         koLocation = getCell(from_b.koLocation);
         getCell(emptyCells,from_b.emptyCells);
         sameboard(from_b);

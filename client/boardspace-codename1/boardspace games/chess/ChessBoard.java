@@ -2695,7 +2695,7 @@ private boolean addSuicideMove(CommonMoveStack all,ChessCell cell,int who)
  		 {
  		 default: throw G.Error("Not expecting state %s",board_state);
  		 case AcceptOrDecline:
- 			 all.push(new ChessMovespec(MOVE_ACCEPT_DRAW,whoseTurn));
+ 			if(drawIsLikely()) { all.push(new ChessMovespec(MOVE_ACCEPT_DRAW,whoseTurn)); }
  			 all.push(new ChessMovespec(MOVE_DECLINE_DRAW,whoseTurn));
  			 break;
  		 case Check:

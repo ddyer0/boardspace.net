@@ -679,11 +679,6 @@ public class PushfightViewer extends CCanvas<PushfightCell,PushfightBoard> imple
 	    
 	    case BoardLocation:
 	        PushfightCell hitCell = hitCell(hp);
-	        if(bb.getState()==PushfightState.Confirm)
-	        {
-	        	hitCell = bb.getSource();
-	        	PerformAndTransmit(UNDO_ALLOW);	// use undo to do the complicated un-push
-	        }
 	        PerformAndTransmit("Pickb "+(char)(hitCell.col-1)+" "+hitCell.row);
 	    	break;
         } 

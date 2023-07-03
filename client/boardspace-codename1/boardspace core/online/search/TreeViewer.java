@@ -95,6 +95,10 @@ public class TreeViewer extends exCanvas implements TreeViewerProtocol
 	public void Pinch(int x, int y, double amount,double angle) {
 		
 	}
+	public void Wheel(int x, int y, int button,double amount) {
+		
+	}
+
 	public void drawCanvasSprites(Graphics gc, HitPoint pt) {
 		
 	}

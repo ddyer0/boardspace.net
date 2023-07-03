@@ -464,7 +464,7 @@ public class GoViewer extends CCanvas<GoCell,GoBoard> implements GoConstants, Ga
     	boolean scoring = state.isScoring(); 
     	Hashtable<GoCell,GoChip> ghostChips = scoring ? gb.getGhostCells() : null;
     	int CS = CELLSIZE/4;
-    	GoCell last = gb.lastHit;
+    	GoCell last = null;
     	
     	if(scoring && (gc!=null))
     	{
@@ -490,6 +490,7 @@ public class GoViewer extends CCanvas<GoCell,GoBoard> implements GoConstants, Ga
     	boolean twoDigits = false;
     	switch(NumberingMode.selected)
     	{	case None:
+    			last = gb.lastHit;
     			break;
     		default:
     		{
@@ -730,7 +731,7 @@ public class GoViewer extends CCanvas<GoCell,GoBoard> implements GoConstants, Ga
 	            }
         	}
         	else { 
-        		if (!undoPending && !reviewMode() && GC.handleRoundButton(gc, doneRect, 
+        		if (!undoPending && !mutable_game_record && GC.handleRoundButton(gc, doneRect, 
                 		highlight, s.get(UndoAction),
                         HighlightColor, rackBackGroundColor))
     	            {	// always display the done button, but only make it active in

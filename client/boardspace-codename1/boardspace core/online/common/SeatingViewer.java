@@ -1178,7 +1178,7 @@ public class SeatingViewer extends exCanvas implements LobbyConstants
 			GC.frameRect(gc, Color.black, r);
 		}
 		if(mouseTrackingAvailable(pt) || pt.down) 
-			{ magnifier.DrawTileSprite(gc,pt); 
+			{ drawTileSprite(gc,pt); 
 			}
 	}
 	//

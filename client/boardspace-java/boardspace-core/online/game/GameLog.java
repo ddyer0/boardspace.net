@@ -486,14 +486,14 @@ public class GameLog implements Opcodes
                	{	// changing move number
                    	linebreak = true;
                    	}
-                if((player!=-100) && (player!=sp.player)) 
+                if((player!=-100) && (sp!=null) && (player!=sp.player)) 
                		{ linebreak = true; 
                		}
                 
                 if(!linebreak) 
                 { 	// process this line
             	if(!"".equals(newnum)) { moven = newnum; }
-                gameEvents = combineEvents(gameEvents,sp.gameEvents());
+                if(sp!=null) { gameEvents = combineEvents(gameEvents,sp.gameEvents()); }
                 // this is an attempt to avoid constructing absurdly long lines
                 // when there are a lot of actions in a turn.  Case in point
                 // is word games, where you can shuffle tiles a lot
@@ -507,7 +507,7 @@ public class GameLog implements Opcodes
                 	linebreak = true;
                 	currentLine = savedLine;
                 }
-                else 
+                else if(sp!=null)
                 { currentLine = newline; 
                 	player = sp.player;
                 	linebreak = sp.getLineBreak();

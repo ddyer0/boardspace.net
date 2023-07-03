@@ -1758,7 +1758,7 @@ public abstract class commonCanvas extends exCanvas
     	// draw a moving tile
     	boolean seen = false;
     	
-     	if(mouseTrackingAvailable(hp)) { magnifier.DrawTileSprite(gc,hp); }
+     	if(mouseTrackingAvailable(hp)) {  drawTileSprite(gc,hp); }
     	int chip = getOurMovingObject(hp);
         if(reviewMode()) // in review mode we normally display moving pieces beside the vcr controls
           {	
@@ -5959,6 +5959,7 @@ public abstract class commonCanvas extends exCanvas
     {
     	ReplayGame(game);
     	hidden.selectedGame = game;
+        l.urlLoaded = true;
     	return(true);
     	
     }
@@ -6091,7 +6092,6 @@ public abstract class commonCanvas extends exCanvas
             	hidden.Games.pushArray(gg);
             if((gg.length>0) && "".equals(gamename)) { selectGame(gg[0]); }
             	else { selectGame(gamename); }
-            l.urlLoaded = true;
             }
             printer.flush();
         }

@@ -148,6 +148,8 @@ public class TrenchChip extends chip<TrenchChip> implements CommonConfig
 			}
 	}
 	
+	static public TrenchChip Marker = new TrenchChip("marker",new double[] {0.49,0.52,3},null,null);
+
     /**
      * this is the basic hook to substitute an alternate chip for display.  The canvas getAltChipSet
      * method is called from drawChip, and the result is passed here to substitute a different chip.
@@ -155,7 +157,7 @@ public class TrenchChip extends chip<TrenchChip> implements CommonConfig
      */
 	public TrenchChip getAltChip(int set)
 	{	
-		return set==0 ? this : alt;
+		return (set==0||alt==null) ? this : alt;
 	}
 
 

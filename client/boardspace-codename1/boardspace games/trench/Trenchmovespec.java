@@ -230,7 +230,7 @@ public class Trenchmovespec
             return icon(v,to_col , to_row);
 
 		case MOVE_DROPB:
-            return icon(v,captureString(),to_col ,to_row);
+            return TextChunk.create(G.concat(captureString(),to_col ,to_row));
             
 		case MOVE_CAPTURE:
 		case MOVE_ATTACK:
