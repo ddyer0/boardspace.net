@@ -9,8 +9,6 @@ import lib.Random;
 import online.game.*;
 import online.game.cell.Geometry;
 import dictionary.Dictionary;
-import dictionary.Entry;
-import honey.HoneyConstants.HoneyId;
 
 /**
  * Initial work September 2020
@@ -1058,7 +1056,6 @@ class HBoard extends hexBoard<HoneyCell> implements BoardProtocol,HoneyConstants
             break;
        case MOVE_EDIT:
         	acceptPlacement();
-            setWhoseTurn(FIRST_PLAYER_INDEX);
             setState(HoneyState.Puzzle);
  
             break;

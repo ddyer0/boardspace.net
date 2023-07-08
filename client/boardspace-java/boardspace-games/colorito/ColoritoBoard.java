@@ -689,7 +689,6 @@ class ColoritoBoard extends rectBoard<ColoritoCell> implements BoardProtocol,Col
             break;
         case MOVE_EDIT:
     		acceptPlacement();
-            setWhoseTurn(FIRST_PLAYER_INDEX);
             // standardize "gameover" is not true
             setState(ColoritoState.Puzzle);
  

@@ -960,7 +960,6 @@ class ModxBoard extends rectBoard<ModxCell> implements BoardProtocol,ModxConstan
             break;
         case MOVE_EDIT:
     		acceptPlacement();
-            setWhoseTurn(FIRST_PLAYER_INDEX);
             // standardize "gameover" is not true
             setState(ModxState.Puzzle);
  

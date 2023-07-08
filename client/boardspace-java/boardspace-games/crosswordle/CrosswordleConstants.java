@@ -152,7 +152,10 @@ public interface CrosswordleConstants
  
     		};
     		String CrosswordsStringPairs[][] = 
-    		{   {"Crosswordle_family","Crosswordle"},
+    		{   {"Crosswordle-55","Crosswordle 5x5"},
+    			{"Crosswordle-65","Crosswordle 6x5"},
+    			{"Crosswordle-66","Crosswordle 6x6"},
+    			{"Crosswordle_family","Crosswordle"},
     			{"Crosswordle-55_variation","Crosswordle 5x5"},
     			{"Crosswordle-65_variation","Crosswordle 6x5"},
     			{"Crosswordle-66_variation","Crosswordle 6x6"},

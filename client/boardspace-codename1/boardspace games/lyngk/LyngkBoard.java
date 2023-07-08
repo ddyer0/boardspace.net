@@ -784,7 +784,6 @@ class LyngkBoard extends hexBoard<LyngkCell> implements BoardProtocol,LyngkConst
             break;
         case MOVE_EDIT:
         	acceptPlacement();
-            setWhoseTurn(FIRST_PLAYER_INDEX);
             setState(LyngkState.Puzzle);
  
             break;

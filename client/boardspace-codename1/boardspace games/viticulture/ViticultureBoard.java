@@ -8469,7 +8469,6 @@ public int getMaxRevisionLevel() { return(REVISION); }
             break;
        case MOVE_EDIT:
         	acceptPlacement();
-            setWhoseTurn(FIRST_PLAYER_INDEX);
             setState(resetState = ViticultureState.Puzzle);
  
             break;

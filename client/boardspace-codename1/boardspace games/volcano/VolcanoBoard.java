@@ -931,7 +931,6 @@ class VolcanoBoard extends BaseBoard implements BoardProtocol,VolcanoConstants
             break;
         case MOVE_EDIT:
         	finalizePlacement();
-            setWhoseTurn(FIRST_PLAYER_INDEX);
             setState(VolcanoState.PUZZLE_STATE);
 
             break;

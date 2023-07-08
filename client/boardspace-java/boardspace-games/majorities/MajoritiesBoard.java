@@ -731,7 +731,6 @@ class MajoritiesBoard extends hexBoard<MajoritiesCell> implements BoardProtocol,
             break;
        case MOVE_EDIT:
         	acceptPlacement();
-            setWhoseTurn(FIRST_PLAYER_INDEX);
             setState(MajoritiesState.Puzzle);
  
             break;

@@ -4402,7 +4402,6 @@ public class ContainerBoard extends RBoard<ContainerCell> implements BoardProtoc
 
         case MOVE_EDIT:
     		acceptPlacement();
-            setWhoseTurn(FIRST_PLAYER_INDEX);
             setState(ContainerState.PUZZLE_STATE);
 
             break;

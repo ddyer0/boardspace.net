@@ -831,7 +831,6 @@ class Warp6Board extends squareBoard<Warp6Cell> implements BoardProtocol,Warp6Co
             break;
         case MOVE_EDIT:
         	finalizePlacement();
-            setWhoseTurn(FIRST_PLAYER_INDEX);
             setState(Warp6State.PUZZLE_STATE);
 
             break;

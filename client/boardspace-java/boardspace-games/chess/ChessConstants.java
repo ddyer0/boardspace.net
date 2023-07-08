@@ -123,6 +123,7 @@ public interface ChessConstants
     		String ChessStrings[] =
     		{	"Chess",
     			"Ultima",
+    			"Chess960",
     			ChessMoveDescription,
     			VictoryCondition,
     		};

@@ -39,6 +39,7 @@ class StateStack extends OStack<PrototypeState>
 public enum PrototypeState implements BoardState,PrototypeConstants
 {
 	Puzzle(PuzzleStateDescription,false,false),
+	Draw(DrawStateDescription,true,true),
 	Resign(ResignStateDescription,true,false),
 	Gameover(GameOverStateDescription,false,false),
 	Confirm(ConfirmStateDescription,true,true),

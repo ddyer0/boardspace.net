@@ -87,8 +87,7 @@ class PrototypeBoard
 // dithering by the user, or the "Digest()" method is not returning unique results
 // other parts of this mechanism: the Viewer ought to have a "repRect" and call
 // DrawRepRect to warn the user that repetitions have been seen.
-	public void SetDrawState() {throw G.Error("not expected"); };	
-	CellStack animationStack = new CellStack();
+	public void SetDrawState() { setState(PrototypeState.Draw); }	CellStack animationStack = new CellStack();
     private int chips_on_board = 0;			// number of chips currently on the board
     private int fullBoard = 0;				// the number of cells in the board
 
@@ -717,9 +716,7 @@ void doSwap(replayMode replay)
             break;
        case MOVE_EDIT:
         	acceptPlacement();
-            setWhoseTurn(FIRST_PLAYER_INDEX);
             setState(PrototypeState.Puzzle);
- 
             break;
 
        case MOVE_GAMEOVERONTIME:

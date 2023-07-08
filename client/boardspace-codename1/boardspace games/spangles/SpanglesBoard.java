@@ -611,7 +611,6 @@ class SpanglesBoard extends triBoard<SpanglesCell> implements BoardProtocol,Span
             break;
         case MOVE_EDIT:
         	acceptPlacement();
-            setWhoseTurn(FIRST_PLAYER_INDEX);
             setState(SpanglesState.PUZZLE_STATE);
 
             break;

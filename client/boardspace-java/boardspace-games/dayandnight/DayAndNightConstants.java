@@ -111,11 +111,12 @@ public interface DayAndNightConstants
     			PlayState,
     			DropDarkState,
     			DropLightState,
-    	       VictoryCondition
-    			
+    	       VictoryCondition,    			
     		};
     	 String DayAndNightStringPairs[][] = 
     		{   {"DayAndNight","Day And Night"},
+    			{"DayAndNight-15","Day And Night 15"},
+     	        {"DayAndNight-19","Day And Night 19"},
     			{"DayAndNight_family","Day And Night"},
     			{"DayAndNight_variation","11 x 11 board"},
     			{"DayAndNight-15_variation","15 x 15 board"},

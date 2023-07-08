@@ -1041,8 +1041,7 @@ class ImagineBoard
             
        case MOVE_EDIT:
         	acceptPlacement();
-            setWhoseTurn(FIRST_PLAYER_INDEX);
-            setState(ImagineState.Puzzle);
+             setState(ImagineState.Puzzle);
  
             break;
 

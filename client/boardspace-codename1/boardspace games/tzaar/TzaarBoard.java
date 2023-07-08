@@ -864,7 +864,6 @@ class TzaarBoard extends hexBoard<TzaarCell> implements BoardProtocol,TzaarConst
             break;
         case MOVE_EDIT:
         	finalizePlacement();
-            setWhoseTurn(FIRST_PLAYER_INDEX);
             setState(TzaarState.PUZZLE_STATE);
 
             break;

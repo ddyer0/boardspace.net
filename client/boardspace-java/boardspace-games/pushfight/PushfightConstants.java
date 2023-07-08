@@ -26,7 +26,7 @@ public interface PushfightConstants
 		
 	};
 	static String PushfightStringPairs[][] = 
-	{ 
+	{ 	{"PushFight","Push Fight"},
 		{"Push Fight_family","Push Fight"},
 		{"PushFight_variation","standard Push Fight"},
 	};

@@ -2146,7 +2146,6 @@ public long Digest()
         case MOVE_EDIT:
     		acceptPlacement();
     		playStep = 0;
-            setWhoseTurn(FIRST_PLAYER_INDEX);
             // standardize "gameover" is not true
             setState(ArimaaState.PUZZLE_STATE);
  

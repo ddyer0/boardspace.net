@@ -907,7 +907,6 @@ class VoloBoard extends hexBoard<VoloCell> implements BoardProtocol,VoloConstant
             break;
        case MOVE_EDIT:
         	acceptPlacement();
-            setWhoseTurn(FIRST_PLAYER_INDEX);
             setState(VoloState.PUZZLE_STATE);
             moveStack.push(m);
             stateStack.push(board_state);

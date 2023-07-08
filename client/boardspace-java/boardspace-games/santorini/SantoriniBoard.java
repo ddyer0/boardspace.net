@@ -1070,7 +1070,6 @@ class SantoriniBoard extends rectBoard<SantoriniCell> implements BoardProtocol,S
             break;
         case MOVE_EDIT:
     		acceptPlacement();
-            setWhoseTurn(FIRST_PLAYER_INDEX);
             setState(SantoriniState.PUZZLE_STATE);
 
             break;

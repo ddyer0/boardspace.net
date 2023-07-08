@@ -1090,7 +1090,6 @@ class OrdoBoard extends rectBoard<OrdoCell> implements BoardProtocol
             break;
         case MOVE_EDIT:
     		acceptPlacement();
-            setWhoseTurn(FIRST_PLAYER_INDEX);
             // standardize "gameover" is not true
             setState(OrdoState.Puzzle);
  

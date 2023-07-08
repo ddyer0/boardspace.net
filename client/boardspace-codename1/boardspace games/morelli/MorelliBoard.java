@@ -832,7 +832,6 @@ public class MorelliBoard extends rectBoard<MorelliCell> implements BoardProtoco
             break;
         case MOVE_EDIT:
     		acceptPlacement();
-            setWhoseTurn(FIRST_PLAYER_INDEX);
             // standardize "gameover" is not true
             setState(MorelliState.Puzzle);
  

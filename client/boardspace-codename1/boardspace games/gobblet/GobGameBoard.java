@@ -741,7 +741,6 @@ class GobGameBoard extends rectBoard<GobCell> implements BoardProtocol,GobConsta
             break;
         case MOVE_EDIT:
     		acceptPlacement();
-            setWhoseTurn(FIRST_PLAYER_INDEX);
             setState(GobbletState.PUZZLE_STATE);
 
             break;

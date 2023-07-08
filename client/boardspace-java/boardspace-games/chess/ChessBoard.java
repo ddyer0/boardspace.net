@@ -1445,7 +1445,6 @@ class ChessBoard extends rectBoard<ChessCell> implements BoardProtocol,ChessCons
             break;
         case MOVE_EDIT:
     		acceptPlacement();
-            setWhoseTurn(FIRST_PLAYER_INDEX);
             // standardize "gameover" is not true
             setState(ChessState.Puzzle);
  

@@ -721,7 +721,6 @@ class SnakesBoard extends squareBoard<SnakesCell> implements BoardProtocol,Snake
             break;
         case MOVE_EDIT:
     		acceptPlacement();
-            setWhoseTurn(FIRST_PLAYER_INDEX);
             // standardize "gameover" is not true
             setState(SnakeState.PUZZLE_STATE);
  

@@ -985,7 +985,6 @@ class RithmomachyBoard extends rectBoard<RithmomachyCell> implements BoardProtoc
             break;
         case MOVE_EDIT:
     		acceptPlacement();
-            setWhoseTurn(FIRST_PLAYER_INDEX);
             // standardize "gameover" is not true
             setState(RithmomachyState.Puzzle);
  

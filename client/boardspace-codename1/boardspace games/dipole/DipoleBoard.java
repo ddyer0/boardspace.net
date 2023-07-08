@@ -776,7 +776,6 @@ class DipoleBoard extends rectBoard<DipoleCell> implements BoardProtocol,DipoleC
             break;
         case MOVE_EDIT:
     		acceptPlacement();
-            setWhoseTurn(FIRST_PLAYER_INDEX);
             setState(DipoleState.PUZZLE_STATE);
  
             break;

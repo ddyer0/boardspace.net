@@ -2575,7 +2575,6 @@ public class YspahanBoard extends BaseBoard implements BoardProtocol,
 			break;
 		case MOVE_EDIT:
 			acceptPlacement();
-			setWhoseTurn(FIRST_PLAYER_INDEX);
 			// standardize "gameover" is not true
 			setState(ystate.PUZZLE_STATE);
 

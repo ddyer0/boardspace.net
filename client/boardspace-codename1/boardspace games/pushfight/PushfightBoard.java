@@ -866,7 +866,6 @@ class PushfightBoard extends squareBoard<PushfightCell> implements BoardProtocol
             break;
        case MOVE_EDIT:
         	acceptPlacement();
-            setWhoseTurn(FIRST_PLAYER_INDEX);
             setState(resetState=PushfightState.Puzzle);
  
             break;

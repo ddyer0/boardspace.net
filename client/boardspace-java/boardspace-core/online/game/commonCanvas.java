@@ -94,6 +94,7 @@ public abstract class commonCanvas extends exCanvas
     // aux sliders
     public static final String LiftExplanation = "spread stacks for easy viewing";
     public  static final String AnimationSpeed = "Animation Speed";
+    public static String DisabledForSpectators = "Disabled for Spectators";
     private  static final String CantResign = "You can only resign when it is your move";
     public  static final String CantDraw = "You can only offer a draw when it is your move";
     public  static final String ColorBlindOption = "Colorblind";
@@ -488,6 +489,7 @@ public abstract class commonCanvas extends exCanvas
 			NoeyeExplanation,
 			EyeExplanation,
 			AnimationSpeed,
+			DisabledForSpectators,
 			ColorBlindOption,
 			// game lobby
 			CantResign,
@@ -3283,8 +3285,21 @@ public abstract class commonCanvas extends exCanvas
     {
     	if(G.Height(annotationMenu)>0)
     	{
-    		annotationMenu.draw(g,p);
+    		annotationMenu.draw(g,disableForSpectators(p));
     	}
+    }
+    public boolean disableForSpectators()
+    {
+    	return (mutable_game_record && !allowed_to_edit);
+    }
+    public HitPoint disableForSpectators(HitPoint p)
+    {
+    	if(p!=null && mutable_game_record && !allowed_to_edit)
+    	{
+    		p.setHelpText(s.get(DisabledForSpectators));
+    		return null;
+    	}
+    	return p;
     }
     /**
      * this is where the number menu is actually drawn.
@@ -3327,12 +3342,13 @@ public abstract class commonCanvas extends exCanvas
  * @param inG
  * @return the hit code for the subbutton hit
  */
-    public CellId drawVcrGroup(HitPoint p, Graphics inG)
+    public CellId drawVcrGroup(HitPoint p0, Graphics inG)
     {  	
-    	if(G.Height(noChatRect)>0) { drawNoChat(inG,noChatRect,p); }	// magically draw the chat/nochat button
+    	if(G.Height(noChatRect)>0) { drawNoChat(inG,noChatRect,p0); }	// magically draw the chat/nochat button
+       	drawNumberMenu(inG,p0);
+       	HitPoint p = disableForSpectators(p0);
     	drawAnnotationMenu(inG,p);
-    	drawNumberMenu(inG,p);
-    	int artHeight = G.Height(vcrZone);
+     	int artHeight = G.Height(vcrZone);
     	int artX = G.Left(vcrZone);
     	int artWidth = G.Width(vcrZone);
     	int artY = G.Top(vcrZone);
@@ -3354,19 +3370,7 @@ public abstract class commonCanvas extends exCanvas
     			artY+artHeight/2,
     			null);
 
-    	if(/*!hasControlToken() ||*/	// if this is on, the vcr goes blank when you can't drive.
-    									// it's informative, but I decided it's annoying
-    			(mutable_game_record && !allowed_to_edit)) 
-    		{	// after a game, spectators are allowed to see the players talk over
-    			// the game, but are not allowed to "drive".  It's important that they
-    			// don't also change the view
-    			//p=null; 
-    			//
-    			// keep the mesa, but don't draw any controls
-    			//
-    			return(DefaultId.HitNoWhere);
-    		}
-    	CellId rval = DefaultId.HitNoWhere;
+     	CellId rval = DefaultId.HitNoWhere;
     	
         if(useAuxSliders)
     	{	l.drawAuxSliders(inG,p);
@@ -7474,6 +7478,7 @@ public boolean somethingIsMoving()
  */
 public void performReset()
 {	if(remoteViewer>=0) { return; }
+	if(disableForSpectators()) { return; }
 	if(!allowed_to_edit && reviewMode()) { scrollFarForward(); }
     else if(ourActiveMove() && (allowResetUndo() || allowBackwardStep() || isPuzzleState())) 
     	{ PerformAndTransmit(RESET); 

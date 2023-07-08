@@ -1254,7 +1254,6 @@ class MagnetBoard extends hexBoard<MagnetCell> implements BoardProtocol
             break;
        case MOVE_EDIT:
         	acceptPlacement();
-            setWhoseTurn(FIRST_PLAYER_INDEX);
             setState(MagnetState.Puzzle);
  
             break;

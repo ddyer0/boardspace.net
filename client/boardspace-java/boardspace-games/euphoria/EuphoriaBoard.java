@@ -7393,7 +7393,6 @@ private void doAmandaTheBroker(EuphoriaCell dest,replayMode replay,RecruitChip a
             break;
        case MOVE_EDIT:
         	acceptPlacement();
-            setWhoseTurn(FIRST_PLAYER_INDEX);
 	        currentPlayerInTurnOrder = whoseTurn;
             setState(EuphoriaState.Puzzle);
             proceedGameStep = ProceedStep.Start;

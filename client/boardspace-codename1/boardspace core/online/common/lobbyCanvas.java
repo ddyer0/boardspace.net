@@ -2193,7 +2193,8 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 		// in tournament mode, add extra spacing for the time management info
 		int off = (G.TimeControl() && sess.getSubmode().isTimed()) ? G.Height(timeControlRect)*2 : 0;
 		int localY = localY0-off;
-		for (int playerSpaceIndex=0;playerSpaceIndex<Session.MAXPLAYERSPERGAME;playerSpaceIndex++) 
+		int maxPlayers = sess.currentMaxPlayers();
+		for (int playerSpaceIndex=0;playerSpaceIndex<maxPlayers;playerSpaceIndex++) 
 	    {
 	     if (playPoly.contains(localX-POLYXOFFSETS[playerSpaceIndex],localY- POLYYOFFSETS[playerSpaceIndex]))
 	      { 

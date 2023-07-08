@@ -1083,8 +1083,7 @@ class EntrapmentBoard extends squareBoard<EntrapmentCell> implements BoardProtoc
             break;
         case MOVE_EDIT:
     		acceptPlacement();
-            setWhoseTurn(FIRST_PLAYER_INDEX);
-            // standardize "gameover" is not true
+             // standardize "gameover" is not true
             setState(EntrapmentState.PUZZLE_STATE);
  
             break;

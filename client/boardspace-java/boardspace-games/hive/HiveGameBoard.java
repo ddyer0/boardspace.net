@@ -1688,7 +1688,6 @@ public variation gamevariation = variation.hive;
         	break;
         case MOVE_EDIT:
         	acceptPlacement();
-            setWhoseTurn(FIRST_PLAYER_INDEX);
             setState(HiveState.PUZZLE_STATE);
 
             break;

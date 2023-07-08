@@ -773,8 +773,7 @@ void doSwap()
             break;
         case MOVE_EDIT:
         	acceptPlacement();
-            setWhoseTurn(FIRST_PLAYER_INDEX);
-            setState(TablutState.PUZZLE_STATE);
+             setState(TablutState.PUZZLE_STATE);
 
             break;
 		case MOVE_GAMEOVERONTIME:

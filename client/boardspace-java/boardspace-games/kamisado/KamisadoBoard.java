@@ -594,7 +594,6 @@ class KamisadoBoard extends rectBoard<KamisadoCell> implements BoardProtocol,Kam
             break;
         case MOVE_EDIT:
     		acceptPlacement();
-            setWhoseTurn(FIRST_PLAYER_INDEX);
             // standardize "gameover" is not true
             setState(KamisadoState.PUZZLE_STATE);
  

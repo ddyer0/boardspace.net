@@ -1349,7 +1349,6 @@ class OctilesBoard extends rectBoard<OctilesCell>implements BoardProtocol,Octile
             break;
         case MOVE_EDIT:
     		acceptPlacement();
-            setWhoseTurn(FIRST_PLAYER_INDEX);
             setState(OctilesState.PUZZLE_STATE);
 
             break;

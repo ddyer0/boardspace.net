@@ -3106,7 +3106,7 @@ GameBuffer *reRecordGame(User *u,char *id,int offset,int checksum,const char *ms
 		if(logErrorFor(u))
 		{
 		unusual_events++;
-		logEntry(&securityLog,"[%s] Unusual: Spectator C%d (%s#%d) S%d  session %d tried to re record Game %s\n",
+		logEntry(&mainLog,"[%s] Unusual: Spectator C%d (%s#%d) S%d  session %d tried to re record Game %s\n",
 			 timestamp(),
 			 u->userNUM,u->clientRealName,u->clientUid,u->socket,							
 			 u->session->sessionNUM,
@@ -3130,7 +3130,7 @@ GameBuffer *reRecordGame(User *u,char *id,int offset,int checksum,const char *ms
 		if(logErrorFor(u))
 		{
 		unusual_events++;
-		logEntry(&securityLog,"[%s] Unusual: C%d (%s#%d) S%d  session %d Re Record %s is missing off %d check %d",
+		logEntry(&mainLog,"[%s] Unusual: C%d (%s#%d) S%d  session %d Re Record %s is missing off %d check %d",
 			 timestamp(),
 			 u->userNUM,u->clientRealName,u->clientUid,u->socket,							
 			 u->session->sessionNUM,
@@ -3153,12 +3153,6 @@ GameBuffer *reRecordGame(User *u,char *id,int offset,int checksum,const char *ms
 			 offset,g->gamePtrOffset,
 			 g->gamePtr,
 			 msg);
-		logEntry(&securityLog,"[%s] Unusual: C%d (%s#%d) S%d  session %d  Game %s offset %d is greater than stored offset %d\n",
-			 timestamp(),
-			 u->userNUM,u->clientRealName,u->clientUid,u->socket,							
-			 u->session->sessionNUM,
-			 id,
-			 offset,g->gamePtrOffset);
 	}
 	else
 	// verify the hash for the saved game
@@ -3181,12 +3175,6 @@ GameBuffer *reRecordGame(User *u,char *id,int offset,int checksum,const char *ms
 			 offset,checksum,hashval,
 			 g->gamePtr,
 			 msg);
-		logEntry(&securityLog,"[%s] Unusual: C%d (%s#%d) S%d  session %d  Game %s appended checksum incorrect; off %d check %d is %d\n",
-			 timestamp(),
-			 u->userNUM,u->clientRealName,u->clientUid,u->socket,							
-			 u->session->sessionNUM,
-			 id,
-			 offset,checksum,hashval);
 		}
 		{
 		char xB[SMALLBUFSIZE];

@@ -118,7 +118,7 @@ public class TrenchChip extends chip<TrenchChip> implements CommonConfig
 	static public TrenchChip white_5 = new TrenchChip("white-5",new double[] {0.53,0.49,2.4},TrenchId.White,Type.m5);
 	static public TrenchChip white_4 = new TrenchChip("white-4",new double[] {0.5,0.45,2.4},TrenchId.White,Type.m4);
 	static public TrenchChip white_3 = new TrenchChip("white-3",new double[] {0.5,0.5,2.4},TrenchId.White,Type.m3);
-	static public TrenchChip white_2 = new TrenchChip("white-2",new double[] {0.49,0.46,2.39},TrenchId.White,Type.m2);
+	static public TrenchChip white_2 = new TrenchChip("white-2",new double[] {0.49,0.46,2.27},TrenchId.White,Type.m2);
 	static public TrenchChip white_1 = new TrenchChip("white-1",new double[] {0.55,0.50,2.23},TrenchId.White,Type.m1);
 	
 	static public TrenchChip black_5p = new TrenchChip("black-5-p",new double[] {0.56,0.48,2.60},TrenchId.Black,Type.m5);
@@ -130,7 +130,7 @@ public class TrenchChip extends chip<TrenchChip> implements CommonConfig
 	static public TrenchChip white_5p = new TrenchChip("white-5-p",new double[] {0.59,0.47,2.75},TrenchId.White,Type.m5);
 	static public TrenchChip white_4p = new TrenchChip("white-4-p",new double[] {0.5,0.5,2.75},TrenchId.White,Type.m4);
 	static public TrenchChip white_3p = new TrenchChip("white-3-p",new double[] {0.55,0.49,2.75},TrenchId.White,Type.m3);
-	static public TrenchChip white_2p = new TrenchChip("white-2-p",new double[] {0.52,0.57,2.75},TrenchId.White,Type.m2);
+	static public TrenchChip white_2p = new TrenchChip("white-2-p",new double[] {0.52,0.57,2.64},TrenchId.White,Type.m2);
 	static public TrenchChip white_1p = new TrenchChip("white-1-p",new double[] {0.49,0.52,2.60},TrenchId.White,Type.m1);
 
 	static TrenchChip blackP[] = { black_5p,black_4p,black_3p,black_2p,black_1p};

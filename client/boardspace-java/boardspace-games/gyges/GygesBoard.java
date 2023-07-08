@@ -861,7 +861,6 @@ class GygesBoard extends squareBoard<GygesCell> implements BoardProtocol,GygesCo
             break;
         case MOVE_EDIT:
     		acceptPlacement();
-            setWhoseTurn(FIRST_PLAYER_INDEX);
             // standardize "gameover" is not true
             playing = false;
             setState(GygesState.Puzzle);

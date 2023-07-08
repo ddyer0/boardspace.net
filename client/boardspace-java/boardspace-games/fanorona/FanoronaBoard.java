@@ -1187,7 +1187,6 @@ class FanoronaBoard extends rectBoard<FanoronaCell> implements BoardProtocol,Fan
             break;
         case MOVE_EDIT:
         	finalizePlacement();
-            setWhoseTurn(FIRST_PLAYER_INDEX);
             setState(FanoronaState.PUZZLE_STATE);
             break;
 		case MOVE_GAMEOVERONTIME:

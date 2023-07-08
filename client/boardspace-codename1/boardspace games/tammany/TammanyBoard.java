@@ -1978,8 +1978,7 @@ import static tammany.TammanyMovespec.*;
         	slanderPlacement.reInit();
         	reInit(bossPlacement);
 
-            setWhoseTurn(FIRST_PLAYER_INDEX);
-            setState(TammanyState.Puzzle);
+        	setState(TammanyState.Puzzle);
  
             break;
 		case MOVE_GAMEOVERONTIME:

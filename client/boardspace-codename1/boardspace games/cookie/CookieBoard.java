@@ -1250,7 +1250,6 @@ class CookieBoard extends hexBoard<CookieCell> implements BoardProtocol,CookieCo
             break;
         case MOVE_EDIT:
         	acceptPlacement();
-            setWhoseTurn(FIRST_PLAYER_INDEX);
             setState(CookieState.PUZZLE_STATE);
             unwind_state = board_state;
             break;

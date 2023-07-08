@@ -1153,7 +1153,6 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
 
         case MOVE_EDIT:
             setState(PlateauState.PUZZLE_STATE);
-            setWhoseTurn(FIRST_PLAYER_INDEX);
             break;
 
         case MOVE_START:

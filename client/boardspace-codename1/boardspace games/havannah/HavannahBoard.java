@@ -810,7 +810,6 @@ void doSwap(replayMode replay)
             break;
        case MOVE_EDIT:
         	acceptPlacement();
-            setWhoseTurn(FIRST_PLAYER_INDEX);
             setState(HavannahState.Puzzle);
  
             break;

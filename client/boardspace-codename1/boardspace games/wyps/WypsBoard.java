@@ -1924,7 +1924,6 @@ class WypsBoard extends hexBoard<WypsCell> implements BoardProtocol,WypsConstant
             break;
        case MOVE_EDIT:
         	acceptPlacement();
-            setWhoseTurn(FIRST_PLAYER_INDEX);
             setState(WypsState.Puzzle);
  
             break;

@@ -780,7 +780,6 @@ class ShogiBoard extends rectBoard<ShogiCell> implements BoardProtocol,ShogiCons
     	   break;
         case MOVE_EDIT:
     		acceptPlacement();
-            setWhoseTurn(FIRST_PLAYER_INDEX);
             setState(ShogiState.Puzzle);
             win[0]=win[1]=false;
 

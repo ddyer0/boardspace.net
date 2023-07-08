@@ -854,7 +854,6 @@ class CannonBoard extends rectBoard<CannonCell> implements BoardProtocol,CannonC
             break;
         case MOVE_EDIT:
     		acceptPlacement();
-            setWhoseTurn(FIRST_PLAYER_INDEX);
             setState(CannonState.PUZZLE_STATE);
             break;
         case MOVE_GAMEOVERONTIME:

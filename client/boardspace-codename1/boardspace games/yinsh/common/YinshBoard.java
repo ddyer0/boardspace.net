@@ -1425,7 +1425,6 @@ public class YinshBoard extends hexBoard<YinshCell> implements BoardProtocol,Yin
             // edit state is where you can just move things around at will
            commitToMove();
            setState(YinshState.PUZZLE_STATE);
-           setWhoseTurn(FIRST_PLAYER_INDEX);
             
             break;
 

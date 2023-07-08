@@ -871,7 +871,6 @@ class KingsColorBoard
             break;
        case MOVE_EDIT:
         	acceptPlacement();
-            setWhoseTurn(FIRST_PLAYER_INDEX);
             setState(KingsColorState.Puzzle);
  
             break;

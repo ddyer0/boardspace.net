@@ -1293,7 +1293,6 @@ class TruGameBoard extends rectBoard<TruCell> implements BoardProtocol,TruConsta
             break;
         case MOVE_EDIT:
     		acceptPlacement();
-            setWhoseTurn(FIRST_PLAYER_INDEX);
             setState(TruchetState.PUZZLE_STATE);
 
             break;

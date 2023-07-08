@@ -798,7 +798,6 @@ class StacBoard extends squareBoard<StacCell> implements BoardProtocol,StacConst
             break;
         case MOVE_EDIT:
     		acceptPlacement();
-            setWhoseTurn(FIRST_PLAYER_INDEX);
             // standardize "gameover" is not true
             setState(StacState.Puzzle);
  

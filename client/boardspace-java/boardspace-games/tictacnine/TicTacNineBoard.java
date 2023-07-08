@@ -588,7 +588,6 @@ class TicTacNineBoard extends rectBoard<TicTacNineCell> implements BoardProtocol
             break;
         case MOVE_EDIT:
     		acceptPlacement();
-            setWhoseTurn(FIRST_PLAYER_INDEX);
             // standardize "gameover" is not true
             setState(TictacnineState.PUZZLE_STATE);
  

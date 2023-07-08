@@ -772,8 +772,10 @@ public void setLetterColor(Graphics gc,SingleBoard gb,SprintCell cell)
      * @param highlight	the mouse location
      */
     public void drawBoardElements(Graphics gc, SingleBoard gb, Rectangle brect, HitPoint highlight,HitPoint all)
-    {	 
+    {	long time =  getActivePlayer().elapsedTime;
+    	boolean leadin = time<5000;
  		boolean censor = all==null;
+ 		if(leadin) { highlight=null; }
     	boolean draggingBoard = draggingBoard(); 
     	boolean canHit = !draggingBoard && G.pointInRect(highlight,brect);
     	int cs = Math.max(5,(int)gb.cellSize());
@@ -836,7 +838,7 @@ public void setLetterColor(Graphics gc,SingleBoard gb,SprintCell cell)
             setLetterColor(gc,gb,cell);
             cell.drawStack(gc,this,null,cs,xpos,ypos,1,1,censor ? SprintChip.BACK : null);
 	        
-	        //if(!censor && G.debug() && cell.topChip()==null)
+ 	        //if(!censor && G.debug() && cell.topChip()==null)
 	        //{	// draw a grid of other cells
 	        //	GC.setFont(gc,standardPlainFont());
 	        //	GC.Text(gc,true,xpos-cs/2,ypos-cs/2,cs,cs,Color.black,null,""+G.printCol(cell.col)+cell.row);
@@ -848,7 +850,16 @@ public void setLetterColor(Graphics gc,SingleBoard gb,SprintCell cell)
         	drawDefinition(gc,gb,all,brect);
         }
         doBoardDrag(brect,all,cs,SprintId.InvisibleDragBoard);
-       // GC.Text(gc,false,G.Left(brect),G.Top(brect),300,100,Color.blue,null,""+gb);
+
+        if(leadin)
+        {	String secs = ""+ ( ((5000-time)/1000)+1);
+        	Font cf = G.getFont(largeBoldFont(),200);
+        	GC.setFont(gc,cf);
+        	GC.Text(gc,true,boardRect,Color.black,null,secs);
+        	repaint(200);
+        }
+
+        // GC.Text(gc,false,G.Left(brect),G.Top(brect),300,100,Color.blue,null,""+gb);
         GC.setClip(gc,oldClip);
 		GC.frameRect(gc,Color.black,brect);
 
@@ -1081,13 +1092,10 @@ public void setLetterColor(Graphics gc,SingleBoard gb,SprintCell cell)
         {	// if in any normal "playing" state, there should be a done button
 			// we let the board be the ultimate arbiter of if the "done" button
 			// is currently active.
-			if(!planned)
+			if(!planned && (gb.tilesLeft()==0))
 				{
 				boolean done = pboard.DoneState();
-				if(done)
-					{
-					endgameButton.draw(gc,buttonSelect);
-					}
+				endgameButton.draw(gc,done ? buttonSelect : null);
 				}
 			drawNotice(gc,noticeRect,gb);
 			

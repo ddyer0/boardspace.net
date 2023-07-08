@@ -1248,7 +1248,6 @@ public class ExxitGameBoard extends infiniteHexBoard<ExxitCell> implements Board
             setState(unresign==null?ExxitState.RESIGN_STATE:unresign);
             break;
         case MOVE_EDIT:
-            setWhoseTurn(FIRST_PLAYER_INDEX);
             setState(ExxitState.PUZZLE_STATE);
             undoCell.doInit();
             transportCell.doInit();

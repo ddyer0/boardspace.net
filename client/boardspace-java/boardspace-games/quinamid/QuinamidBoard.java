@@ -1036,7 +1036,6 @@ class QuinamidBoard extends rectBoard<QuinamidCell> implements BoardProtocol,Qui
             break;
         case MOVE_EDIT:
     		acceptPlacement();
-            setWhoseTurn(FIRST_PLAYER_INDEX);
             // standardize "gameover" is not true
             lastMovedBoard = -1;
             setState(QuinamidState.PUZZLE_STATE);

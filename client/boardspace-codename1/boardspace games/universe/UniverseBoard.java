@@ -2980,7 +2980,6 @@ class UniverseBoard extends squareBoard<UniverseCell> implements BoardProtocol,U
         case MOVE_EDIT:
     		acceptPlacement();
     		createUniverseRegions();
-            setWhoseTurn(FIRST_PLAYER_INDEX);
             // standardize "gameover" is not true
             setState(UniverseState.PUZZLE_STATE);
  

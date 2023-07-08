@@ -776,7 +776,6 @@ class TintasBoard extends hexBoard<TintasCell> implements BoardProtocol,TintasCo
             break;
         case MOVE_EDIT:
         	acceptPlacement();
-            setWhoseTurn(FIRST_PLAYER_INDEX);
             setState(TintasState.Puzzle);
  
             break;

@@ -98,7 +98,7 @@ class TrenchBoard
 // dithering by the user, or the "Digest()" method is not returning unique results
 // other parts of this mechanism: the Viewer ought to have a "repRect" and call
 // DrawRepRect to warn the user that repetitions have been seen.
-	public void SetDrawState() {throw G.Error("not expected"); };	
+	public void SetDrawState() { setState(TrenchState.Draw); };	
 	CellStack animationStack = new CellStack();
 
     // intermediate states in the process of an unconfirmed move should
@@ -177,6 +177,14 @@ class TrenchBoard
     	int rev = tok.hasMoreTokens() ? G.IntToken(tok) : revision;
     	doInit(typ,ran,np,rev);
     }
+    private void markTrenchCells(TrenchCell d, int direction)
+    {	int n = 0;
+		while( ((d = d.exitTo(direction))!=null)
+				&& (++n<=5))
+			{
+			 d.visibleFromTrench += 6-n;
+			}
+    }
     /* initialize a board back to initial empty state */
     public void doInit(String gtype,long key,int players,int rev)
     {	randomKey = key;
@@ -195,12 +203,18 @@ class TrenchBoard
 			// using reInitBoard avoids thrashing the creation of cells 
 			// when reviewing games.
 			reInitBoard(variation.size,variation.size);
-			// or initBoard(variation.firstInCol,variation.ZinCol,null);
-			// Random r = new Random(734687);	// this random is used to assign hash values to cells, common to all games of this type.
-			// allCells.setDigestChain(r);		// set the randomv for all cells on the board
 		}
 
- 		
+		for(TrenchCell c = allCells; c!=null; c=c.next)
+		{	if(c.cellType==TrenchId.Trench)
+			{
+			markTrenchCells(c,CELL_UP_RIGHT);
+			markTrenchCells(c,CELL_RIGHT);
+			markTrenchCells(c,CELL_DOWN_LEFT);
+			markTrenchCells(c,CELL_DOWN);
+
+			}
+		}
 	    
 	    whoseTurn = FIRST_PLAYER_INDEX;
 	    lastProgressMove = 0;
@@ -369,10 +383,7 @@ class TrenchBoard
 		v ^= chip.Digest(r,pickedObject);
 		v ^= Digest(r,pickedSourceStack);
 		v ^= Digest(r,droppedDestStack);
-		v ^= Digest(r,captureStack);
 		v ^= Digest(r,lastProgressMove);
-		v ^= Digest(r,lastDrawMove);
-		v ^= Digest(r,captureHeight);
 		v ^= Digest(r,revision);
 		v ^= Digest(r,blackCaptured);
 		v ^= Digest(r,whiteCaptured);		
@@ -404,6 +415,7 @@ class TrenchBoard
         case AcceptPending:
         case DeclinePending:
         case DrawPending:
+        case Draw:
         case Resign:
             moveNumber++; //the move is complete in these states
             setWhoseTurn(nextPlayer[whoseTurn]);
@@ -628,11 +640,13 @@ class TrenchBoard
        	switch(board_state)
     	{
     	default: throw G.Error("Not expecting after Done state=%s ",board_state);
+    	
     	case Gameover: break;
     	case DrawPending:
     		lastDrawMove = moveNumber;
     		setState(TrenchState.AcceptOrDecline);
     		break;
+    	case Draw:
        	case AcceptPending:
        		setState(TrenchState.Gameover);
        		break;
@@ -855,7 +869,6 @@ class TrenchBoard
             break;
        case MOVE_EDIT:
         	acceptPlacement();
-            setWhoseTurn(FIRST_PLAYER_INDEX);
             setState(TrenchState.Puzzle);
  
             break;
@@ -892,6 +905,7 @@ class TrenchBoard
 		case DeclinePending:
 		case AcceptPending:
 		case DrawPending:
+		case Draw:
 			return(false);
         case Puzzle:
             return ((pickedObject!=null)?(pickedObject.color==playerColor[player]):true);
@@ -910,6 +924,7 @@ class TrenchBoard
 		case DeclinePending:
 		case AcceptPending:
 		case DrawPending:
+		case Draw:
 			return(false);
 		case Confirm:
 			return(isDest(c));
@@ -1094,6 +1109,7 @@ class TrenchBoard
  		break;
  	case DrawPending:
  	case DeclinePending:
+ 	case Draw:
  	case AcceptPending:
  	case Confirm:
  		all.push(new Trenchmovespec(MOVE_DONE,whoseTurn));
@@ -1199,15 +1215,99 @@ public double simpleScore(int player)
 	return cap;
 }
 
+public double simpleScoreTest(int player)
+{	double trenchVisibleWeight = 0.001;
+	double cap = totalCaptured(nextPlayer[player]);
+	double trench = 0;
+	CellStack occupied = occupied(player);
+	TrenchId myColor = playerColor[player];
+	for(int lim = occupied.size()-1;lim>=0; lim--)
+	{
+		TrenchCell c = occupied.elementAt(lim);
+		TrenchId ctype = c.cellType;
+		if(ctype==TrenchId.Trench)
+		{
+		}
+		else if(ctype!=myColor)
+		{	trench += trenchVisibleWeight*c.visibleFromTrench*c.topChip().type.distance;
+		}
+	}
+	return cap+trench;
+}
+
 double trenchWeight = 0.05;
 public double smartScore(int player)
 {	int nextP = nextPlayer[player];
+
+double cap = totalCaptured(nextP);
+if(cap>=WIN) { return WIN*2; }
+TrenchId myColor = playerColor[player];
+double trenchVisibleWeight = 0.01;
+double trenchAttackWeight = 0.01;
+double intruderAttackWeight = 0.01;
+double trench = 0;
+int piecesInEnemy = 0;
+int piecesInTrench = 0;
+int sumInEnemy = 0;
+int sumInTrench = 0;
+int intruders = 0;
+int sumIntruders = 0;
+int enemyInTrench = 0;
+int enemyTrenchWeight = 0;
+{
+CellStack occupied = occupied(player);
+for(int lim = occupied.size()-1;lim>=0; lim--)
+{
+	TrenchCell c = occupied.elementAt(lim);
+	TrenchId ctype = c.cellType;
+	if(ctype==TrenchId.Trench)
+	{
+		piecesInTrench++;
+		sumInTrench += c.topChip().type.distance;
+	}
+	else if(ctype!=myColor)
+	{
+		piecesInEnemy++;
+		sumInEnemy += c.topChip().type.distance;
+		trench += trenchVisibleWeight*c.visibleFromTrench*c.topChip().type.distance;
+	}
+}}
+
+{
+CellStack occupied = occupied(nextP);
+for(int lim = occupied.size()-1;lim>=0; lim--)
+{
+	TrenchCell c = occupied.elementAt(lim);
+	TrenchId ctype = c.cellType;
+	if(ctype==TrenchId.Trench)
+	{
+		enemyInTrench++;
+		enemyTrenchWeight += c.topChip().type.distance;
+	}
+	if(ctype==myColor)
+	{
+		intruders++;
+		sumIntruders += c.topChip().type.distance;
+	}
+}}
+
+cap -= intruderAttackWeight*sumIntruders*sumInTrench*piecesInTrench*intruders;
+cap += intruderAttackWeight*sumInEnemy*enemyTrenchWeight*enemyInTrench*piecesInEnemy;
+cap += trenchAttackWeight*sumInTrench;
+cap += trench;
+
+return cap;
+}
+public double smartScoreTest(int player)
+{	int nextP = nextPlayer[player];
+
 	double cap = totalCaptured(nextP);
 	if(cap>=WIN) { return WIN*2; }
 	TrenchId myColor = playerColor[player];
+	double trenchVisibleWeight = 0.005;
 	double trenchAttackWeight = 0.01;
 	double intruderAttackWeight = 0.01;
-	
+	double trench = 0;
 	int piecesInEnemy = 0;
 	int piecesInTrench = 0;
 	int sumInEnemy = 0;
@@ -1231,6 +1331,7 @@ public double smartScore(int player)
 		{
 			piecesInEnemy++;
 			sumInEnemy += c.topChip().type.distance;
+			trench += trenchVisibleWeight*c.visibleFromTrench*c.topChip().type.distance;
 		}
 	}}
 	
@@ -1255,18 +1356,23 @@ public double smartScore(int player)
 	cap -= intruderAttackWeight*sumIntruders*sumInTrench*piecesInTrench*intruders;
 	cap += intruderAttackWeight*sumInEnemy*enemyTrenchWeight*enemyInTrench*piecesInEnemy;
 	cap += trenchAttackWeight*sumInTrench;
+	cap += trench;
 	
 	return cap;
 }
+
 //
 // this is used by the UI to decide when to display the OFFERDRAW box
 //
 public boolean drawIsLikely()
 {	switch(board_state)
 	{
+	case AcceptOrDecline:
+	case DeclinePending:
 	case DrawPending: return true;
 	case Play:
-		return((moveNumber - lastProgressMove)>10);
+		return( ((moveNumber - lastProgressMove)>10)
+				&& (totalCaptured(whoseTurn)>10));
 	default: return(false);
 	}
 	

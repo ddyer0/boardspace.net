@@ -802,7 +802,6 @@ public class XiangqiBoard extends rectBoard<XiangqiCell> implements BoardProtoco
     	   break;
         case MOVE_EDIT:
     		acceptPlacement();
-            setWhoseTurn(FIRST_PLAYER_INDEX);
             setState(XiangqiState.PUZZLE_STATE);
             win[0]=win[1]=false;
 

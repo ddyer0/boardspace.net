@@ -151,7 +151,7 @@ public class GameLog implements Opcodes
         if (((gc != null)||G.pointInRect(mainHighlight,r)) && canvas.rectangleIsVisible(r))
         {	//G.Assert(Thread.currentThread()==runThread,"running in the wrong thread");
 
-        	redrawGameLog_internal(gc,highlight,r,textColor,highlightColor,playerFont,lineFont);
+        	redrawGameLog_internal(gc,canvas.disableForSpectators(highlight),r,textColor,highlightColor,playerFont,lineFont);
         }
     }
     private void redrawGameLog_internal(Graphics gc,HitPoint highlight, Rectangle r, 
@@ -396,7 +396,7 @@ public class GameLog implements Opcodes
   	   	
     	 if (((gc != null)||G.pointInRect(mainHighlight, r)) && canvas.rectangleIsVisible(r))
             {
-    		 redrawGameLog2_internal(gc,mainHighlight,r,textColor,highlightColor,bold,normal);
+    		 redrawGameLog2_internal(gc,canvas.disableForSpectators(mainHighlight),r,textColor,highlightColor,bold,normal);
             }
        }
        private void redrawGameLog2_internal(Graphics gc,HitPoint highlight,Rectangle r,

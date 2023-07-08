@@ -747,7 +747,6 @@ class BarcaBoard extends rectBoard<BarcaCell> implements BoardProtocol,BarcaCons
             break;
         case MOVE_EDIT:
         	acceptPlacement();
-            setWhoseTurn(FIRST_PLAYER_INDEX);
             setState(BarcaState.Puzzle);
  
             break;

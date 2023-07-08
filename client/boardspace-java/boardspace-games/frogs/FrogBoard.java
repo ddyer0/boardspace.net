@@ -843,7 +843,6 @@ class FrogBoard extends hexBoard<FrogCell> implements BoardProtocol, FrogConstan
 			break;
 		case MOVE_EDIT:
 			acceptPlacement();
-			setWhoseTurn(FIRST_PLAYER_INDEX);
 			setState(FrogState.PUZZLE_STATE);
 
 			break;

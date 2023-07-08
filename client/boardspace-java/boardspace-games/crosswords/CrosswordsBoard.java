@@ -1909,7 +1909,6 @@ class CrosswordsBoard extends rectBoard<CrosswordsCell> implements BoardProtocol
             break;
        case MOVE_EDIT:
         	acceptPlacement();
-            setWhoseTurn(FIRST_PLAYER_INDEX);
             setState(CrosswordsState.Puzzle);
  
             break;

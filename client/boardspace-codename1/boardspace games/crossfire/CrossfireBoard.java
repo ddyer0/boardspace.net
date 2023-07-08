@@ -697,7 +697,6 @@ class CrossfireBoard extends hexBoard<CrossfireCell> implements BoardProtocol,Cr
             break;
         case MOVE_EDIT:
         	acceptPlacement();
-            setWhoseTurn(FIRST_PLAYER_INDEX);
             setState(CrossfireState.PUZZLE_STATE);
  
             break;

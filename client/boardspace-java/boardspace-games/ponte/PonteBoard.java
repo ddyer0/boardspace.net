@@ -1124,7 +1124,6 @@ public class PonteBoard extends rectBoard<PonteCell> implements BoardProtocol,Po
             break;
         case MOVE_EDIT:
     		acceptPlacement();
-            setWhoseTurn(FIRST_PLAYER_INDEX);
             // standardize "gameover" is not true
             setState(PonteState.Puzzle);
  

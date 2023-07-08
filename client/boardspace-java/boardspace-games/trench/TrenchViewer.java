@@ -565,7 +565,10 @@ public class TrenchViewer extends CCanvas<TrenchCell,TrenchBoard> implements Tre
                 		cell.lastContents.drawChip(gc,this,size*2/3,xpos,ypos,null);
                 		StockArt.SmallX.drawChip(gc,this,size,xpos,ypos,null);
                 	}
-
+           // if(cell.visibleFromTrench>0)
+           // {
+           // 	StockArt.SmallO.drawChip(gc,this,CELLSIZE,xpos,ypos,""+cell.visibleFromTrench);
+           // }
            //visualize the grid
            //StockArt.SmallO.drawChip(gc,this,CELLSIZE,xpos,ypos,null);
         }

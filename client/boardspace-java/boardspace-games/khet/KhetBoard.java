@@ -841,8 +841,7 @@ class KhetBoard extends rectBoard<KhetCell> implements BoardProtocol,KhetConstan
             break;
         case MOVE_EDIT:
     		acceptPlacement();
-            setWhoseTurn(FIRST_PLAYER_INDEX);
-            // standardize "gameover" is not true
+    		// standardize "gameover" is not true
             setState(KhetState.PUZZLE_STATE);
  
             break;

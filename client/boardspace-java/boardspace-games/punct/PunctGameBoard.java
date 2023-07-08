@@ -1119,7 +1119,6 @@ class PunctGameBoard extends hexBoard<punctCell> implements BoardProtocol,PunctC
             break;
         case MOVE_EDIT:
             acceptPlacement();
-            setWhoseTurn(FIRST_PLAYER_INDEX);
             setState(PunctState.PUZZLE_STATE);
 
             break;

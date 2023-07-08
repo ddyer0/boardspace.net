@@ -716,7 +716,6 @@ class TumbleBoard extends rectBoard<TumbleCell> implements BoardProtocol,TumbleC
              break;
         case MOVE_EDIT:
     		acceptPlacement();
-            setWhoseTurn(FIRST_PLAYER_INDEX);
             setState(TumbleState.PUZZLE_STATE);
 
             break;

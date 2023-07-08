@@ -1351,13 +1351,13 @@ public class Game extends commonPanel implements PlayConstants,DeferredEventHand
             boolean lchat = false;
             boolean istrue = false;
             int ind = fullMsg.indexOf(commandStr) + commandStr.length() + 1;
-            if ((lchat = commandStr.equals(KEYWORD_LOBBY_CHAT)) 
-            		||(pchat = (commandStr.equals(KEYWORD_PCHAT)) 
-        		 	|| commandStr.equals(KEYWORD_PPCHAT)) 
-        		 	|| (tmchat = commandStr.equals(KEYWORD_TMCHAT)) //translateable chat messasge with args
-        		 	|| (tchat = commandStr.equals(KEYWORD_TRANSLATE_CHAT)) //translateable chat
-        		 	|| (schat = commandStr.equals(KEYWORD_SCHAT)
-        		 				||commandStr.equals(KEYWORD_PSCHAT))
+            if ((lchat = commandStr.equalsIgnoreCase(KEYWORD_LOBBY_CHAT)) 
+            		||(pchat = (commandStr.equalsIgnoreCase(KEYWORD_PCHAT)) 
+        		 	|| commandStr.equalsIgnoreCase(KEYWORD_PPCHAT)) 
+        		 	|| (tmchat = commandStr.equalsIgnoreCase(KEYWORD_TMCHAT)) //translateable chat messasge with args
+        		 	|| (tchat = commandStr.equalsIgnoreCase(KEYWORD_TRANSLATE_CHAT)) //translateable chat
+        		 	|| (schat = commandStr.equalsIgnoreCase(KEYWORD_SCHAT)
+        		 				||commandStr.equalsIgnoreCase(KEYWORD_PSCHAT))
             		)
             {
 		        if (lchat 
@@ -1375,8 +1375,8 @@ public class Game extends commonPanel implements PlayConstants,DeferredEventHand
 		                if(tournamentMode
 		                	&& !my.spectator
 		                	&& !GameOver()
-		            		&& (NEWSPECTATOR.equals(trimmed)
-		            				|| LEAVEROOM.equals(trimmed)))
+		            		&& (NEWSPECTATOR.equalsIgnoreCase(trimmed)
+		            				|| LEAVEROOM.equalsIgnoreCase(trimmed)))
 		                {	// make spectator coming and going silent during
 		                	// tournament games.
 		                	commandStr=KEYWORD_QCHAT;
@@ -1384,7 +1384,7 @@ public class Game extends commonPanel implements PlayConstants,DeferredEventHand
 		                theChat.postMessage(ChatInterface.GAMECHANNEL, commandStr,
 		                		s.get(trimmed,theChat.getUserName(playerID)));
 		                char ch = msgstr.charAt(0);
-		                if((ch==' ') && trimmed.equals(CHATSPECTATOR) || trimmed.equals(NEWSPECTATOR))
+		                if((ch==' ') && trimmed.equalsIgnoreCase(CHATSPECTATOR) || trimmed.equalsIgnoreCase(NEWSPECTATOR))
 		                {	// this is a side channel that signals the sender will accept ASK/ANSWER
 		                	doAsk(playerID);
 		                }
@@ -1441,7 +1441,7 @@ public class Game extends commonPanel implements PlayConstants,DeferredEventHand
                     theChat.setUser(playerID, localNS);
                 }
             }
-            else if (!expectingHistory && KEYWORD_VIEWER.equals(commandStr))
+            else if (!expectingHistory && KEYWORD_VIEWER.equalsIgnoreCase(commandStr))
             {
             	if(deferActionsSwitch)
             	{

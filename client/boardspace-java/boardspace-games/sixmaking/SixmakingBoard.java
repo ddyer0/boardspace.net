@@ -764,7 +764,6 @@ class SixmakingBoard extends rectBoard<SixmakingCell> implements BoardProtocol,S
             break;
         case MOVE_EDIT:
     		acceptPlacement();
-            setWhoseTurn(FIRST_PLAYER_INDEX);
             // standardize "gameover" is not true
             setState(SixmakingState.Puzzle);
  

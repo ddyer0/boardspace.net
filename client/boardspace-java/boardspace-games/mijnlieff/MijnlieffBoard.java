@@ -740,7 +740,6 @@ class MijnlieffBoard
             break;
        case MOVE_EDIT:
         	acceptPlacement();
-            setWhoseTurn(FIRST_PLAYER_INDEX);
             setState(MijnlieffState.Puzzle);
  
             break;

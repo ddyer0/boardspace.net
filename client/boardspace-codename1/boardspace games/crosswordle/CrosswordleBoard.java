@@ -836,7 +836,6 @@ package crosswordle;
             break;
        case MOVE_EDIT:
         	acceptPlacement();
-            setWhoseTurn(FIRST_PLAYER_INDEX);
             setState(CrosswordleState.Puzzle);
  
             break;

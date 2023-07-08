@@ -720,7 +720,6 @@ class KnockaboutBoard extends hexBoard<KnockaboutCell> implements BoardProtocol,
             break;
         case MOVE_EDIT:
         	finalizePlacement();
-            setWhoseTurn(FIRST_PLAYER_INDEX);
             setState(KnockaboutState.PUZZLE_STATE);
 
             break;

@@ -664,7 +664,6 @@ class DashBoard extends rectBoard<DashCell> implements BoardProtocol,DashConstan
             break;
         case MOVE_EDIT:
     		acceptPlacement();
-            setWhoseTurn(FIRST_PLAYER_INDEX);
             setState(DashState.PUZZLE_STATE);
 
             break;

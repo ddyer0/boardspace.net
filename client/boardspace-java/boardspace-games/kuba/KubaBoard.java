@@ -1030,7 +1030,6 @@ class KubaBoard extends rectBoard<KubaCell> implements BoardProtocol,KubaConstan
             break;
         case MOVE_EDIT:
         	finalizePlacement(replayMode.Replay);
-            setWhoseTurn(FIRST_PLAYER_INDEX);
             setState(KubaState.PUZZLE_STATE);
 
             break;

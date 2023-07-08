@@ -1419,8 +1419,7 @@ public class OnedayBoard extends RBoard<OnedayCell> implements BoardProtocol,One
             break;
         case MOVE_EDIT:
     		acceptPlacement();
-            setWhoseTurn(FIRST_PLAYER_INDEX);
-            // standardize "gameover" is not true
+    		// standardize "gameover" is not true
             setState(OnedayState.Puzzle);
  
             break;

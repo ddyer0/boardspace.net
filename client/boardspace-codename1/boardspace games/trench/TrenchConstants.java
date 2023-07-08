@@ -38,6 +38,7 @@ class StateStack extends OStack<TrenchState>
 public enum TrenchState implements BoardState,TrenchConstants
 {
 	Puzzle(PuzzleStateDescription,false,false),
+	Draw(DrawStateDescription,true,true),				// involuntary draw by repetition
 	Resign(ResignStateDescription,true,false),
 	Gameover(GameOverStateDescription,false,false),
 	Confirm(ConfirmStateDescription,true,true),

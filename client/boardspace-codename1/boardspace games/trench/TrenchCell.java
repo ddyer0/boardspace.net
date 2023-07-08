@@ -31,6 +31,7 @@ public class TrenchCell
 	int lastPlaced = -1;
 	int lastEmptied = -1;
 	int lastCaptured = -1;
+	int visibleFromTrench = 0;
 	TrenchChip lastContents = null;
 	
 	public void initRobotValues() 
@@ -65,6 +66,7 @@ public class TrenchCell
 	{	//PushfightCell other = (PushfightCell)ot;
 		// copy any variables that need copying
 		super.copyFrom(ot);
+		visibleFromTrench = ot.visibleFromTrench;
 		lastPlaced = ot.lastPlaced;
 		lastEmptied = ot.lastEmptied;
 		lastCaptured = ot.lastCaptured;

@@ -1152,7 +1152,6 @@ class TamskBoard
        case MOVE_EDIT:
         	acceptPlacement();
         	timeRunning = false;
-            setWhoseTurn(FIRST_PLAYER_INDEX);
             setState(TamskState.Puzzle);
  
             break;

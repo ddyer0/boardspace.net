@@ -1970,7 +1970,6 @@ class JumbulayaBoard extends squareBoard<JumbulayaCell> implements BoardProtocol
             break;
        case MOVE_EDIT:
         	acceptPlacement();
-            setWhoseTurn(FIRST_PLAYER_INDEX);
             setState(JumbulayaState.Puzzle);
  
             break;

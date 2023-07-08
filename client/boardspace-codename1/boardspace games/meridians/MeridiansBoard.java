@@ -847,7 +847,6 @@ class MeridiansBoard
             break;
        case MOVE_EDIT:
         	acceptPlacement();
-            setWhoseTurn(FIRST_PLAYER_INDEX);
             setState(MeridiansState.Puzzle);
  
             break;

@@ -997,7 +997,6 @@ class StymieBoard extends rectBoard<StymieCell> implements BoardProtocol,StymieC
             break;
        case MOVE_EDIT:
         	acceptPlacement();
-            setWhoseTurn(FIRST_PLAYER_INDEX);
             setState(StymieState.Puzzle);
  
             break;

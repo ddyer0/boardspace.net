@@ -1091,7 +1091,6 @@ class RajBoard extends squareBoard<RajCell> implements BoardProtocol,RajConstant
             break;
         case MOVE_EDIT:
         	acceptPlacement();
-            setWhoseTurn(FIRST_PLAYER_INDEX);
             setState(RajState.PUZZLE_STATE);
  
             break;

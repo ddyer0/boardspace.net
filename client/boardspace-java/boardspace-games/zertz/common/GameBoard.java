@@ -1453,7 +1453,6 @@ public class GameBoard extends hexBoard<zCell> implements BoardProtocol,GameCons
         case MOVE_EDIT:
             lastMove = null;
             needStart = false;
-            setWhoseTurn(FIRST_PLAYER_INDEX);
             setState(ZertzState.PUZZLE_STATE);
 
             break;

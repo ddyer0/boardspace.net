@@ -690,7 +690,6 @@ class QyshinsuBoard extends circBoard<QyshinsuCell> implements BoardProtocol,Qys
         case MOVE_EDIT:
             if(droppedDest!=null) { acceptPlacement(replay); }
       		unPickObject();
-      	    setWhoseTurn(FIRST_PLAYER_INDEX);
    		  	setState(QyshinsuState.PUZZLE_STATE);
 
             break;

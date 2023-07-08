@@ -2324,7 +2324,6 @@ public class BlackDeathBoard extends RBoard<BlackDeathCell> implements BoardProt
             break;
        case MOVE_EDIT:
         	acceptPlacement();
-            setWhoseTurn(FIRST_PLAYER_INDEX,replay);
             setState(BlackDeathState.Puzzle);
  
             break;

@@ -1691,7 +1691,6 @@ class MedinaBoard extends rectBoard<MedinaCell> implements BoardProtocol,MedinaC
 
         case MOVE_EDIT:
     		acceptPlacement();
-            setWhoseTurn(FIRST_PLAYER_INDEX);
             setState(MedinaState.PUZZLE_STATE);
 
             break;

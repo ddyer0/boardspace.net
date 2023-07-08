@@ -977,7 +977,6 @@ class SyzygyBoard extends hexBoard<SyzygyCell> implements BoardProtocol,SyzygyCo
             // and be like reset
        case MOVE_EDIT:
         	acceptPlacement();
-            setWhoseTurn(FIRST_PLAYER_INDEX);
             setState(SyzygyState.PUZZLE_STATE);
             unwind_state = board_state;
             break;

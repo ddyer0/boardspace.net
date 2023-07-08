@@ -884,7 +884,6 @@ class DvonnBoard extends hexBoard<DvonnCell> implements BoardProtocol,DvonnConst
             break;
         case MOVE_EDIT:
         	finalizePlacement();
-            setWhoseTurn(FIRST_PLAYER_INDEX);
             setState(DvonnState.PUZZLE_STATE);
   
             break;

@@ -241,6 +241,60 @@ sub printEditLink()
 	print "<a href='javascript:{}' onclick='document.getElementById(\"$formname\").submit(); return false;'>$message</a>\n";
 
 }
+
+sub printDetailLink()
+{	my ($mid,$name) = @_;
+	my $formname = "details${mid}form";
+	my $message = "Comment<br>Details";
+	print "<font size=1><center>";
+	print "<a href='javascript:{}' onclick='document.getElementById(\"$formname\").submit(); return false;'>$message</a>\n";
+	print "</center></font>\n";
+}
+sub printDetailMatchForm()
+{
+	my ($tournamentid,$admin) = @_;
+	print "<form method=post id='detailmatch' action=\"$ENV{'SCRIPT_NAME'}\" >\n";
+	&printHiddenAdmin($admin);
+	print "<input type=hidden name=matchid value=''>\n";
+	print "<input type=hidden name=tournamentid value=$tournamentid>\n";
+	print "<input type=hidden name=operation value=detailmatch>\n";
+	print "</form>\n";
+	print "";
+	my $msg = <<endofjs;
+	<script language='javascript'>
+	function showDetailedComments(matchid)
+	{
+	 var form = document.getElementById("detailmatch");
+	 form.elements['matchid'].value = matchid;
+	 form.submit();
+	}
+	</script>
+endofjs
+	print $msg;
+}
+
+# link from the non-edit match description
+sub printDetailMatchLink()
+{	my ($mid) = @_;
+	my $formname = "details${mid}form";
+	my $message = "Comment Details";
+	print "<font size=2>";
+	print "<a href='javascript:showDetailedComments(\"$mid\")'>$message</a>\n";
+	print "</font>\n";
+}
+
+sub printDetailForm()
+{	my ($matchid,$name,$tournamentid,$admin) = @_;
+	my $formname = "details${matchid}form";
+	print "<form method=post action=\"$ENV{'SCRIPT_NAME'}\" id='$formname'>\n";
+	&printHiddenAdmin($admin);
+	print "<input type=hidden name=operation value='detailmatch'>\n";
+	print "<input type=hidden name=matchid value='$matchid'>\n";
+	print "<input type=hidden name=fromname value='$name'>\n";
+	print "<input type=hidden name=tournamentid value='$tournamentid'>\n";
+	print "</form>\n";
+}
+
 sub printEditmatchLink()
 {	my ($message,$thisid,$name) = @_;
 	my $formname = "editmatch${thisid}${name}form";
@@ -266,6 +320,8 @@ sub printTournamentLink()
 	print "</form></font>\n";
 	print "<a href='javascript:{}' onclick='document.getElementById(\"$formname\").submit(); return false;'>$message </a>\n";
 }
+
+
 #
 # list the active or scheduled tournaments.  
 # If a particular tournament id is supplied, list details
@@ -510,7 +566,7 @@ sub processInputForm
         if($bounce)
         {
         print "<b>";
-        print &trans("Sorry, you can't sign up for a tournmant unless your email address is working.");
+        print &trans("Sorry, you can't sign up for a tournament unless your email address is working.");
         my $ad = "<a href=\"javascript:edituser('$fromname',0)\">$fromname</a>";
         print " " . &trans("You can edit your email address at #1", $ad);
         print "</b><p>";
@@ -742,7 +798,7 @@ sub show_matches_in_group()
 {	my ($dbh,$tournamentid,$group,$type,$status,$mcomment,$sortkey,$admin) = @_;
 	
 	&show_notready_matches($admin,$dbh,$tournamentid,$group);
-
+	&printDetailMatchForm($tournamentid,$admin);
 	print "<!-- show_matches_in_group() --!>\n";
 
 
@@ -880,7 +936,7 @@ sub show_matches_in_group()
 		{
 		$hasmatch{$pl1} = 1;
 		
-		if($changeint eq 0 || ($played && ($playedint>$changeint))) { $change = substr($played,0,-3); $changeint=$playedint ; }
+		if($changeint eq 0 || ($played && ($playedint>$changeint))) { $change = $played; $changeint=$playedint ; }
 		
 			#
 			# combine outcome and comment sections
@@ -930,8 +986,11 @@ sub show_matches_in_group()
 		  print "<td colspan=$difplayers></td>"; 
 	    }
 	print "<td colspan=2>$out$points</td>"; 
-	print "<td>$change</td>";
-	print "<td>$comm</td>"; 
+	my $ch = &convertTime($change,$changeint);
+	print "<td>$ch</td>";
+	print "<td>$comm";
+	&printDetailMatchLink($matchid,$admin);
+	print "</td>"; 
 	print "</tr>";
 	$first = 1;
 	}
@@ -1331,6 +1390,17 @@ sub show_edit_tournament()
 	}
 }
 
+sub convertTime()
+{	my ($played,$uplayed) = @_;
+	my $magictime = 1657667172 ; # the magic time at which we started recording gmt instead of local time
+	if($uplayed<$magictime)
+	{
+	$played = substr($played,0,-3);
+	}
+	else { $played = substr($played,0,-3) . " GMT"; }
+	return $played;
+}
+
 #
 # print a form to edit a match
 #
@@ -1346,13 +1416,13 @@ sub show_edit_match()
 	# come from matchparticipant records.  The 'A' in the admin select is a 
 	# trick to make it sort last.
 	#
-	my $q = "select matchgroup.status,player,points,tournament,outcome,played,scheduled,"
+	my $q = "select matchgroup.status,player,points,tournament,outcome,played,UNIX_TIMESTAMP(played),scheduled,"
 				. " matchparticipant.comment,tournament_group,matchparticipant.uid"
 				. " from matchparticipant left join matchgroup "
 				. " on matchparticipant.tournament = matchgroup.uid and matchgroup.name = matchparticipant.tournament_group "
 				. " where matchid=$qm "
 				# note that because of the particular structure of this join query, $outcome seems to be padded with a lot of nulls
-				. " union select matchgroup.status,-2,0,tournament,if(admin='winner',admin_winner,admin),played,scheduled,"
+				. " union select matchgroup.status,-2,0,tournament,if(admin='winner',admin_winner,admin),played,UNIX_TIMESTAMP(played),scheduled,"
 				. " matchrecord.comment,tournament_group,'A'"
 				. " from matchrecord left join matchgroup "
 				. "	on matchrecord.tournament = matchgroup.uid and matchgroup.name = matchrecord.tournament_group "
@@ -1376,13 +1446,14 @@ sub show_edit_match()
 	{	my $nrm = $nr-1;
 		print "<input type=hidden name=nplayers value='$nrm'>\n";
 	}
+	my $ftime = 1;
 	if($nr>0)
 	{	print "<table border=1>";
 		print "<tr><td>who</td><td>outcome</td><td>points</td><td>last change</td><td align=center colspan=2>Comments</td>";
 		my $pn = 0;
 		while($nr-- > 0)
 		{
-		my ($status,$player,$points,$tournament,$outcome,$played,$scheduled,$comment,$tournament_group,$uid,$matchid) = &nextArrayRow($sth);
+		my ($status,$player,$points,$tournament,$outcome,$played,$uplayed,$scheduled,$comment,$tournament_group,$uid) = &nextArrayRow($sth);
 
 		# note that because of the particular structure of the join query, $outcome and $uid seem to be padded with a lot of nulls
 		# this removes the nulls
@@ -1391,7 +1462,14 @@ sub show_edit_match()
 		$pn++;
 		$closed = ($status eq 'closed');
 		$fromtournament = $tournament;
-			
+
+		if($ftime)
+		{
+		print "<td colspan=2 rowspan=3>";
+		&printDetailLink($matchid,$fromname);
+		print "</td>";
+		$ftime = 0;
+		}
 		if(!$filled)
 		{	#once we have the tournament, fill the name table 
 			&fill_player_info($dbh,$tournament,'');
@@ -1463,8 +1541,10 @@ sub show_edit_match()
 			{	print "<td>$points</td>";
 			}	
 		}
-		
-		print "<td>" . substr($played,0,-3) . "</td><td colspan=2>$comment</td>";
+
+		$played = &convertTime($played,$uplayed);
+
+		print "<td>" . $played . "</td><td colspan=2>$comment</td>";
 
 		print "</tr>\n";
 		}	# end of if admin
@@ -1527,19 +1607,54 @@ sub show_edit_match()
 		print "<br><input type=checkbox name='send_email' value='yes' checked>" . &trans("Send Emails") . "\n";
 		print "<br><input type=submit value='edit match'>";
 		print "</form>\n";
-
 		}			
 		else { print &trans("Results for this group are closed"); }
 		
 		print "</td></tr></table>";		# outer table end
 
     &print_form_header($admin);
-	print "<input type=hidden name=operation value=subscribe>";
-	print "<input type=hidden name=tournamentid value=$fromtournament>";
-	print "<input type=submit value='back to match view'>";
+	print "<input type=hidden name=operation value=subscribe>\n";
+	print "<input type=hidden name=tournamentid value=$fromtournament>\n";
+	print "<input type=submit value='back to match view'>\n";
 	print "</form>\n";
+	&printDetailForm($matchid,$fromname,$fromtournament,$admin);
 
   } #end of $nr
+
+}
+
+#
+# print a form to edit a match
+#
+sub show_detail_match()
+{	my ($dbh,$matchid,$fromname,$tournamentid,$admin) = @_;
+	#&printForm();
+	
+	print "<!-- show_detail_match() --!>\n";
+	my $qm = $dbh->quote($matchid);
+
+	my $q = "select commentHistory from matchrecord where matchid=$qm";
+#print "q: $q\n";
+	my $sth = &query($dbh,$q);
+	my ($comment) = &nextArrayRow($sth);
+	print "<pre>";
+	print $comment;
+	print "</pre>";
+
+	&print_form_header($admin);
+	if($fromname eq '')
+	{
+	print "<input type=hidden name=operation value=showtournament>\n";
+	print "<input type=hidden name=tournamentid value=$tournamentid>\n";
+	}
+	else
+	{
+	print "<input type=hidden name=operation value=editmatch>\n";
+	print "<input type=hidden name=matchid value=$matchid>\n";
+	print "<input type=hidden name=fromname value=$fromname>\n";
+	}
+	print "<input type=submit value='back to match view'>\n";
+	print "</form>\n";
 
 }
 #
@@ -1593,7 +1708,7 @@ sub do_edit_match()
 		. "comment=$qcom,"
 		. "scheduled=$qsched,"
 		. $win
-		. "played=CURRENT_TIMESTAMP"
+		. "played=UTC_TIMESTAMP()"
 		. " where matchid=$qmatch and tournament=$qtid";
 	&commandQuery($dbh,$q);
 	}
@@ -1602,10 +1717,17 @@ sub do_edit_match()
 	my $q = "update matchparticipant set outcome=$qoutcome,"
 		. "comment=$qcom,"
 		. "scheduled=$qsched,"
-		. "played=CURRENT_TIMESTAMP"
+		. "played=UTC_TIMESTAMP()"
 		. " where matchid=$qmatch and player=$qpl and tournament=$qtid";
 	&commandQuery($dbh,$q);
 	#print "q: $q<br>";
+	&fill_player_info($dbh,$tid);
+	my $na = $names{$playerid};
+print "name is $na<p>";
+	my $q2 = "update matchrecord set commentHistory=concat(if(commentHistory is null,'',commentHistory),'\n',UTC_TIMESTAMP(),' ','$na',': ',$qcom,'\n')"
+			. " where matchid=$qmatch and tournament = $qtid";
+	&commandQuery($dbh,$q2);
+	#print "q: $q2<br>";
 	}
 	if($email) { &sendMatchNotify($dbh,$matchid); } else { print "No emails sent<br>"; }
 
@@ -1922,7 +2044,11 @@ sub do_tournamentboard()
 	   }
 	   elsif ($operation eq 'editmatch')
 	   {	my $matchid = param('matchid');
-			&show_edit_match($dbh,$matchid,$fromname,$admin);
+		&show_edit_match($dbh,$matchid,$fromname,$admin);
+	   }
+  	   elsif ($operation eq 'detailmatch')
+	   {	my $matchid = param('matchid');
+		&show_detail_match($dbh,$matchid,$fromname,$tournamentid,$admin);
 	   }
 	   elsif ($admin && ($operation eq 'doedittournament'))
 	   {

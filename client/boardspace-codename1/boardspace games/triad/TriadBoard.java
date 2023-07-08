@@ -750,7 +750,6 @@ class TriadBoard extends hexBoard<TriadCell> implements BoardProtocol,TriadConst
             candidate_player = -1;
             captureIndex = captureCellStack.size();
             acceptPlacement();
-            setWhoseTurn(FIRST_PLAYER_INDEX);
             setState(TriadState.PUZZLE_STATE);
 
             break;

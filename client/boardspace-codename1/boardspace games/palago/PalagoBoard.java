@@ -662,7 +662,6 @@ class PalagoBoard extends infiniteHexBoard<PalagoCell> implements BoardProtocol,
             break;
         case MOVE_EDIT:
         	acceptPlacement();
-            setWhoseTurn(FIRST_PLAYER_INDEX);
             setState(PalagoState.PUZZLE_STATE);
 
             break;

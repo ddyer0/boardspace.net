@@ -587,7 +587,6 @@ class CheBoard extends infiniteRectangularBoard<CheCell> implements BoardProtoco
             break;
         case MOVE_EDIT:
         	acceptPlacement();
-            setWhoseTurn(FIRST_PLAYER_INDEX);
             setState(CheState.PUZZLE_STATE);
 
             break;

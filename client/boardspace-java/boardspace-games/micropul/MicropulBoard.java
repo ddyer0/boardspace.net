@@ -836,7 +836,6 @@ class MicropulBoard extends squareBoard<MicropulCell> implements BoardProtocol,M
             // and be like reset
        case MOVE_EDIT:
         	acceptPlacement();
-            setWhoseTurn(FIRST_PLAYER_INDEX);
             setState(MicropulState.PUZZLE_STATE);
 
             break;

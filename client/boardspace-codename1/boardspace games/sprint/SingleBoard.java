@@ -1169,7 +1169,6 @@ class SingleBoard extends infiniteSquareBoard<SprintCell> implements BoardProtoc
             break;
        case MOVE_EDIT:
         	acceptPlacement();
-            setWhoseTurn(FIRST_PLAYER_INDEX);
             setState(SprintState.Puzzle);
  
             break;

@@ -62,6 +62,7 @@ public class ChessViewer extends CCanvas<ChessCell,ChessBoard> implements ChessC
     private Rectangle acceptDrawRect = addRect("acceptDraw");	
     private Rectangle bannerRect = addRect("banner");			// the game type, positioned at the top
     private Rectangle capRects[] = addRect("cap",2);
+    private Rectangle repRect = addRect("repetition");
     /**
      * preload all the images associated with the game. This is delegated to the chip class.
      */
@@ -191,7 +192,7 @@ public double setLocalBoundsA(int x, int y, int width, int height,double a)
 	layout.placeTheChatAndLog(chatRect, minChatW, chatHeight,minChatW*2,3*chatHeight/2,
 						       logRect, minLogW,  minLogH,  minLogW*3/2, minLogH*3/2);
 	layout.placeDrawGroup(G.getFontMetrics(standardPlainFont()),acceptDrawRect,declineDrawRect);
-   	layout.placeDoneEdit(buttonW,3*buttonW/2,doneRect,editRect);
+   	layout.placeDoneEditRep(buttonW,3*buttonW/2,doneRect,editRect,repRect);
 	layout.placeTheVcr(this,vcrW,vcrW*3/2);
 	layout.placeRectangle(GameLayoutManager.Purpose.Banner,bannerRect,vcrW,vcrW/4,BoxAlignment.Top);
 	Rectangle main = layout.getMainRectangle();
@@ -533,7 +534,7 @@ public double setLocalBoundsA(int x, int y, int width, int height,double a)
         }
         goalAndProgressMessage(gc,highlight,Color.black,s.get(VictoryCondition),progressRect, goalRect);
    
-        DrawRepRect(gc,messageRotation,Color.black, gb.Digest(),acceptDrawRect);	// Not needed for barca
+        DrawRepRect(gc,messageRotation,Color.black, gb.Digest(),repRect);
         drawVcrGroup(ourSelect, gc);
         drawAuxControls(gc,ourSelect);
     }

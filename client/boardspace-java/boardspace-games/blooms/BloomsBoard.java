@@ -1079,7 +1079,6 @@ class BloomsBoard extends hexBoard<BloomsCell> implements BoardProtocol
        case MOVE_EDIT:
         	acceptPlacement();
         	firstPlayedLocation = null;
-            setWhoseTurn(FIRST_PLAYER_INDEX);
             setState(BloomsState.Puzzle);
  
             break;

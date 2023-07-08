@@ -903,7 +903,6 @@ class PalabraBoard extends squareBoard<PalabraCell> implements BoardProtocol,Pal
             break;
        case MOVE_EDIT:
         	acceptPlacement();
-            setWhoseTurn(FIRST_PLAYER_INDEX);
             setState(PalabraState.PUZZLE_STATE);
  
             break;

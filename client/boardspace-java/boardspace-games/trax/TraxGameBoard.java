@@ -979,7 +979,6 @@ class TraxGameBoard  extends BaseBoard implements BoardProtocol,TraxConstants
             setState(unresign==null?TraxState.RESIGN_STATE:unresign);
             break;
         case MOVE_EDIT:
-            setWhoseTurn(FIRST_PLAYER_INDEX);
             setState(TraxState.PUZZLE_STATE);
 
             break;

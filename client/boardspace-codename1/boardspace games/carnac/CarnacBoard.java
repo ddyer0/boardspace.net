@@ -896,7 +896,6 @@ class CarnacBoard extends squareBoard<CarnacCell> implements BoardProtocol,Carna
             break;
         case MOVE_EDIT:
     		acceptPlacement();
-            setWhoseTurn(FIRST_PLAYER_INDEX);
             // standardize "gameover" is not true
             lastPlaced = lastTipped = null;
  			lastPlacedChip = null;
