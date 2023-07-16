@@ -66,6 +66,7 @@ determine if you attack something with a move that delivers check at the same ti
 class ShogiBoard extends rectBoard<ShogiCell> implements BoardProtocol,ShogiConstants
 {	private ShogiState board_state = ShogiState.Puzzle;
 	private ShogiState unresign = null;
+	private int lastDrawMove = 0;
 	public ShogiState getState() { return(board_state); }
 	public void setState(ShogiState st) 
 	{ 	unresign = ((st==ShogiState.Resign)||(st==ShogiState.OfferDraw))?board_state:null;
@@ -238,6 +239,7 @@ class ShogiBoard extends rectBoard<ShogiCell> implements BoardProtocol,ShogiCons
         originalPickedObject = from_b.originalPickedObject;
         board_state = from_b.board_state;
         unresign = from_b.unresign;
+        lastDrawMove = from_b.lastDrawMove;
         pickedSource = getCell(from_b.pickedSource);
         droppedDest = getCell(from_b.droppedDest);
         copyFrom(rack,from_b.rack);
@@ -273,6 +275,8 @@ class ShogiBoard extends rectBoard<ShogiCell> implements BoardProtocol,ShogiCons
         droppedDest = null;
         prevPickedSource = null;
         prevDroppedDest = null;
+        unresign = null;
+        lastDrawMove = 0;
         moveNumber = 1;
         currentPlayState = ShogiState.Puzzle;
 
@@ -564,6 +568,7 @@ class ShogiBoard extends rectBoard<ShogiCell> implements BoardProtocol,ShogiCons
         default: throw G.Error("Not expecting state %s",board_state);
         case OfferDraw:
         	setState(ShogiState.QueryDraw);
+        	lastDrawMove = moveNumber;
         	break;
         case AcceptDraw:
         	setGameOver(false,false);
@@ -786,7 +791,9 @@ class ShogiBoard extends rectBoard<ShogiCell> implements BoardProtocol,ShogiCons
             break;
 
         case MOVE_OFFER_DRAW:
-        {
+        {	
+        	if(canOfferDraw())
+        	{
         	ShogiState bs = board_state;
         	if(bs==ShogiState.OfferDraw)
         	{
@@ -795,7 +802,7 @@ class ShogiBoard extends rectBoard<ShogiCell> implements BoardProtocol,ShogiCons
         	{
         	unresign = bs;
         	setState(ShogiState.OfferDraw);
-        	}}
+        	}}}
         	break;
         	
         case MOVE_ACCEPT_DRAW:
@@ -1530,4 +1537,7 @@ class ShogiBoard extends rectBoard<ShogiCell> implements BoardProtocol,ShogiCons
  	return(h);
 	 
  }
+public boolean canOfferDraw() {
+	return (moveNumber-lastDrawMove>4);
+}
 }

@@ -238,6 +238,14 @@ class CheBoard extends infiniteRectangularBoard<CheCell> implements BoardProtoco
     	doInit(d);
     }
     
+    
+    /* initialize a board back to initial empty state */
+    public void doInitOld(String gtype)
+    {  
+	   doInit(gtype,0,0,0);
+    }
+
+    
     /* initialize a board back to initial empty state */
     public void doInit(String gtype,long rv)
     {  StringTokenizer tok = new StringTokenizer(gtype);
@@ -941,7 +949,7 @@ static final boolean connectsInDirection(CheChip chip,int dir)
 	switch(dir)
 	{	
 		// Orthogonal directions always connect. This differs from 
-		// DashChip which didn't allow connections in these directions 
+		// CheChip which didn't allow connections in these directions 
 	default: return(true);		
 	case CELL_DOWN_LEFT: 
 		boolean as1 = colorInfo[1]==colorInfo[4];

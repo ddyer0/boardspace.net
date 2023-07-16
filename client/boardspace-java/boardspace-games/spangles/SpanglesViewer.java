@@ -623,7 +623,7 @@ public class SpanglesViewer extends CCanvas<SpanglesCell,SpanglesBoard> implemen
     	if(token.equals("Spangles")) 
     	{
     		// old school, where there was just the key Spangles
-            bb.doInit(token);
+            bb.doInitOld(token);
     	}
     	else
     	{	// new game, with the revision protocol, flag their presence with lower case.

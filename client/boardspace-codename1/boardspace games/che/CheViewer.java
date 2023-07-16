@@ -543,7 +543,14 @@ public class CheViewer extends CCanvas<CheCell,CheBoard> implements CheConstants
     {
         return (new Chemovespec(st, player));
     }
+    public commonMove EditHistory(commonMove nmove)
+    {	 
+      // some damaged games ended up with naked "rotate", this lets them pass 
+  	  boolean oknone = (nmove.op==MOVE_ROTATE);
+  	  commonMove rval = EditHistory(nmove,oknone);
 
+  	  return(rval);
+    }
 /**
  * the preferred mouse gesture style is to let the user "pick up" objects
  * by simply clicking on them, but we also allow him to click and drag. 
@@ -676,7 +683,7 @@ public class CheViewer extends CCanvas<CheCell,CheBoard> implements CheConstants
     	String token = his.nextToken();
     	if("Che".equals(token))
     	{
-        bb.doInit(token,0L);
+            bb.doInitOld(token);
     }
     	else
     	{
@@ -743,6 +750,8 @@ public class CheViewer extends CCanvas<CheCell,CheBoard> implements CheConstants
     /** replay a move specified in SGF format.  
      * this is mostly standard stuff, but the key is to recognize
      * the elements that we generated in sgf_save
+     * summary: 5/24/2023
+     * 	2200 files visited 0 problems
      */
     public void ReplayMove(sgf_node no)
     {

@@ -7,7 +7,7 @@ import lib.StockArt;
 import online.game.chip;
 
 /**
- * This class is derived from "TruChip" in Che.  There is more documentation about
+ * This class is derived from "CheChip" in Che.  There is more documentation about
  * the representation and motivation for the chip class there.
  * 
  * @author ddyer

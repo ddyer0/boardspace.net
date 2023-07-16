@@ -38,7 +38,8 @@ import lib.Random;
  */
 
 class ChessBoard extends rectBoard<ChessCell> implements BoardProtocol,ChessConstants
-{	static int REVISION = 101;			// revision numbers start at 100
+{	static int REVISION = 102;			// revision numbers start at 100
+										// revision 102 adds defense against multiple draw offers
 	static final int White_Chip_Index = 0;
 	static final int Black_Chip_Index = 1;
 	static final ChessId RackLocation[] = { ChessId.White_Chip_Pool,ChessId.Black_Chip_Pool};
@@ -1411,10 +1412,12 @@ class ChessBoard extends rectBoard<ChessCell> implements BoardProtocol,ChessCons
             }
             break;
         case MOVE_OFFER_DRAW:
+        	if(revision<102 || canOfferDraw())
+        	{ 			
         	if(board_state==ChessState.DrawPending) { setState(dropState.pop()); }
         	else { dropState.push(board_state);
         			setState(ChessState.DrawPending);
-        		}
+        		}}
         	break;
         case MOVE_ACCEPT_DRAW:
            	switch(board_state)
@@ -2751,6 +2754,9 @@ private boolean addSuicideMove(CommonMoveStack all,ChessCell cell,int who)
   	}
  	return(all);
  }
+public boolean canOfferDraw() {
+	return (moveNumber-lastDrawMove>4);
+}
  
  
 

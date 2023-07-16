@@ -728,7 +728,12 @@ private void playSounds(commonMove m)
     	{
     		if(OurMove()) 
     			{ 
-    			  PerformAndTransmit(OFFERDRAW); }
+        		if(b.canOfferDraw())
+    			{
+    			PerformAndTransmit(OFFERDRAW);
+    			}
+        		else { G.infoBox(null,s.get(DrawNotAllowed)); }
+        		}
     		else {
                 theChat.postMessage(ChatInterface.GAMECHANNEL, KEYWORD_CHAT,
                     s.get(CantDraw));

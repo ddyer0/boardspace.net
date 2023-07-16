@@ -34,7 +34,8 @@ import static stac.StacMovespec.*;
  */
 
 class StacBoard extends squareBoard<StacCell> implements BoardProtocol,StacConstants
-{	static int REVISION = 101;			// revision 101 fixes the double carry bug
+{	static int REVISION = 102;			// revision 101 fixes the double carry bug
+										// revision 102 adds defense against multiple draw offers
 	public int getMaxRevisionLevel() { return(REVISION); }
     public int boardColumns;			// size of the board
     public int boardRows;
@@ -803,10 +804,12 @@ class StacBoard extends squareBoard<StacCell> implements BoardProtocol,StacConst
  
             break;
         case MOVE_OFFER_DRAW:
+			if(revision<102 || canOfferDraw())
+			{
         	if(board_state==StacState.DrawPending) { setState(pickedState.pop()); }
         	else { if(pickedState.size()==0) { pickedState.push(board_state); }
         		   setState(StacState.DrawPending);
-        	}
+        	}}
         	break;
         case MOVE_ACCEPT_DRAW:
         	if(board_state==StacState.AcceptPending) { setState(pickedState.pop()); }
@@ -1140,5 +1143,8 @@ class StacBoard extends squareBoard<StacCell> implements BoardProtocol,StacConst
 	 }
  	return(all);
  }
+public boolean canOfferDraw() {
+	return (moveNumber-lastDrawMove>4);
+}
  
 }

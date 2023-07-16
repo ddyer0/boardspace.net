@@ -977,10 +977,12 @@ class CheckerBoard extends rectBoard<CheckerCell> implements BoardProtocol
             break;
         case MOVE_OFFER_DRAW:
         	currentDest=null;
+           	if(revision<101 || canOfferDraw())
+           	{
         	if(board_state==CheckerState.DrawPending) { setState(dropState.pop()); }
         	else { dropState.push(board_state);
         			setState(CheckerState.DrawPending);
-        		}
+        		}}
         	break;
         case MOVE_ACCEPT_DRAW:
            	currentDest=null;
@@ -1508,6 +1510,10 @@ private void checkOccupied()
  	addMoves(all,whoseTurn);
  	return(all);
  }
+
+public boolean canOfferDraw() {
+	return (moveNumber-lastDrawMove>4);
+}
  
 
 }

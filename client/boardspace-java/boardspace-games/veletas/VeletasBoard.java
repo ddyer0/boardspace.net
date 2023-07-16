@@ -1180,9 +1180,6 @@ class VeletasBoard extends rectBoard<VeletasCell> implements BoardProtocol,Velet
         	break;
   
         case MOVE_RESIGN:
-        case MOVE_ACCEPT_DRAW:
-        case MOVE_DECLINE_DRAW:
-        case MOVE_OFFER_DRAW:
             break;
         }
    }

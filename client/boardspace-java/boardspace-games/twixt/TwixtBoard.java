@@ -59,6 +59,7 @@ class TwixtBoard extends rectBoard<TwixtCell> implements BoardProtocol,TwixtCons
     public TwixtChip pickedObject = null;
     public TwixtChip lastPicked = null;
     public TwixtCell lastDropped = null;
+    private int lastDrawMove = 0;
     public TwixtChip lastDroppedChip = null;
     private TwixtCell[] blackChipPool = new TwixtCell[TwixtChip.blackChips.length];	// dummy source for the chip pools
     private TwixtCell[] redChipPool = new TwixtCell[TwixtChip.blackChips.length];
@@ -198,7 +199,7 @@ class TwixtBoard extends rectBoard<TwixtCell> implements BoardProtocol,TwixtCons
 	    pickedObject = null;
 	    resetState = null;
 	    lastDroppedObject = null;
-		
+		lastDrawMove = 0;
         animationStack.clear();
         moveNumber = 1;
 
@@ -256,6 +257,7 @@ class TwixtBoard extends rectBoard<TwixtCell> implements BoardProtocol,TwixtCons
         swapped = from_b.swapped;
         lastPicked = null;
         robotBoard = from_b.robotBoard;
+        lastDrawMove = from_b.lastDrawMove;
         getCell(redPegs,from_b.redPegs);
         getCell(blackPegs,from_b.blackPegs);
         playerRack[0] = from_b.playerRack[0];
@@ -980,6 +982,7 @@ class TwixtBoard extends rectBoard<TwixtCell> implements BoardProtocol,TwixtCons
     	
         case OfferDraw:
         	setState(TwixtState.QueryDraw);
+        	lastDrawMove = moveNumber;
         	break;
         case AcceptDraw:
         	setState(TwixtState.Gameover);
@@ -1046,7 +1049,8 @@ class TwixtBoard extends rectBoard<TwixtCell> implements BoardProtocol,TwixtCons
         {
 
         case MOVE_OFFER_DRAW:
-        {
+        {	if(canOfferDraw())
+        	{
         	TwixtState bs = board_state;
         	if(bs==TwixtState.OfferDraw)
         	{	setState(stateStack.pop());
@@ -1054,7 +1058,7 @@ class TwixtBoard extends rectBoard<TwixtCell> implements BoardProtocol,TwixtCons
         	{
         		stateStack.push(bs);
         		setState(TwixtState.OfferDraw);
-        	}}
+        	}}}
         break;
         	
         case MOVE_ACCEPT_DRAW:
@@ -2093,5 +2097,8 @@ public double Static_Evaluate_Position2(int playerIndex,boolean print)
  	}}
  	return(combined);
  }
-
+ public boolean canOfferDraw()
+ {
+	 return (moveNumber-lastDrawMove>4);
+ }
 }

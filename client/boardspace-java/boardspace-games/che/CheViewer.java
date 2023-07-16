@@ -681,7 +681,7 @@ public class CheViewer extends CCanvas<CheCell,CheBoard> implements CheConstants
        	String token = his.nextToken();
     	if("Che".equals(token))
     	{
-            bb.doInit(token,0L);
+            bb.doInitOld(token);
     	}
     	else
     	{

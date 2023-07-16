@@ -22,7 +22,7 @@ import online.search.*;
 public class DvonnPlay extends commonRobot<DvonnBoard> implements Runnable,  RobotProtocol
 {  
 	private int MONTE_TIME = 20;
-    
+    private int MONTE_START_TIME = MONTE_TIME/10;
      /* constructor */
     public DvonnPlay()
     {
@@ -79,10 +79,22 @@ public class DvonnPlay extends commonRobot<DvonnBoard> implements Runnable,  Rob
         case WEAKBOT_LEVEL: 
         		WEAKBOT = true;
 			//$FALL-THROUGH$
-		case DUMBOT_LEVEL:  MONTE_TIME = 10; break;
-        case SMARTBOT_LEVEL:MONTE_TIME = 20; break;
-        case BESTBOT_LEVEL: MONTE_TIME = 30; break;
-        case MONTEBOT_LEVEL: MONTE_TIME = 10; break;
+		case DUMBOT_LEVEL:  
+			MONTE_TIME = 10; 
+			MONTE_START_TIME = MONTE_TIME/10;
+			break;
+        case SMARTBOT_LEVEL:
+        	MONTE_TIME = 20; 
+        	MONTE_START_TIME = MONTE_TIME/5;
+        	break;
+        case BESTBOT_LEVEL: 
+        	MONTE_TIME = 30;
+        	MONTE_START_TIME = MONTE_TIME/2;
+        	break;
+        case MONTEBOT_LEVEL: 
+           	MONTE_TIME = 20; 
+        	MONTE_START_TIME = MONTE_TIME/10;
+        	break;
         }
 
     }
@@ -132,7 +144,7 @@ public class DvonnPlay extends commonRobot<DvonnBoard> implements Runnable,  Rob
         monte_search_state.win_randomization = randomn;		// a little bit of jitter because the values tend to be very close
         monte_search_state.timePerMove =
         		(board.board_state==DvonnState.PLACE_RING_STATE)
-        			? MONTE_TIME/10 
+        			? MONTE_START_TIME 
         			: MONTE_TIME;		// 20 seconds per move
         monte_search_state.verbose = verbose;
         monte_search_state.alpha = 0.5;

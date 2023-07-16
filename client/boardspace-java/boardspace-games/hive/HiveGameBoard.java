@@ -49,7 +49,6 @@ class HiveGameBoard extends infiniteHexBoard<HiveCell> implements BoardProtocol,
 
     // support for placement displays
     public int lastPlacement = 1;
-    
     private HiveState unresign;
 	private HiveState board_state;
 	private HiveState undrawState;
@@ -646,7 +645,7 @@ public variation gamevariation = variation.hive;
         pickedSource = null;
         pickedObject = null;
         lastPlacement = 1;
-    }
+     }
 
     public void sameboard(BoardProtocol f) { sameboard((HiveGameBoard)f); }
     /**
@@ -665,7 +664,7 @@ public variation gamevariation = variation.hive;
         //G.Assert(sameCells(stunned,from_b.stunned),"stunned piece mismatch");
         G.Assert(pickedObject==from_b.pickedObject, "pickedObject matches");
         G.Assert(lastPlacement==from_b.lastPlacement,"lastPlacement mismatch");
-        
+         
     }
 
     /** this is used in fraud detection to see if the same game is being played
@@ -777,7 +776,13 @@ public variation gamevariation = variation.hive;
     	revision = 0;
     	doInit(d);
     }
-
+    
+    /* initialize a board back to initial empty state */
+    public void doInitOld(String gtype)
+    {  
+	   doInit(gtype,2,0,0);
+    }
+    
     /* initialize a board back to initial empty state */
     public void doInit(String gtype,long key)
     {  randomKey = key;
@@ -786,7 +791,7 @@ public variation gamevariation = variation.hive;
 	   String typ = tok.nextToken();
 	   int np = tok.hasMoreTokens() ? G.IntToken(tok) : players_in_game;
 	   long ran = tok.hasMoreTokens() ? G.IntToken(tok) : key;
-	   int rev = tok.hasMoreTokens() ? G.IntToken(tok) : revision;
+	   int rev = tok.hasMoreTokens() ? G.IntToken(tok) : revision ;
 	   doInit(typ,np,ran,rev);
     }
     public void doInit(String typ,int np,long ran,int rev)
@@ -1581,10 +1586,12 @@ public variation gamevariation = variation.hive;
             if((m.op==MOVE_PMOVE_DONE)||(m.op==MOVE_MOVE_DONE)) { doDone(replay); }
             break;
         case MOVE_OFFER_DRAW:
+           	if(canOfferDraw())
+           	{
         	if(board_state==HiveState.DrawPending) { setState(undrawState); }
         	else {  undrawState = board_state;
         			setState(HiveState.DrawPending);
-        		}
+        		}}
         	break;
         case MOVE_ACCEPT_DRAW:
            	switch(board_state)

@@ -869,7 +869,7 @@ public class ExxitGameViewer extends CCanvas<ExxitCell,ExxitGameBoard> implement
     	String token = his.nextToken();
     	if(token.startsWith("Exxit"))
     	{
-        b.doInit(token);
+            b.doInitOld(token);
     }
     	else
     	{

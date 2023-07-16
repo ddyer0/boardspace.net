@@ -779,6 +779,12 @@ public variation gamevariation = variation.hive;
     }
 
     /* initialize a board back to initial empty state */
+    public void doInitOld(String gtype)
+    {  
+	   doInit(gtype,2,0,0);
+    }
+    
+    /* initialize a board back to initial empty state */
     public void doInit(String gtype,long key)
     {  randomKey = key;
     
@@ -786,7 +792,7 @@ public variation gamevariation = variation.hive;
 	   String typ = tok.nextToken();
 	   int np = tok.hasMoreTokens() ? G.IntToken(tok) : players_in_game;
 	   long ran = tok.hasMoreTokens() ? G.IntToken(tok) : key;
-	   int rev = tok.hasMoreTokens() ? G.IntToken(tok) : revision;
+	   int rev = tok.hasMoreTokens() ? G.IntToken(tok) : revision ;
 	   doInit(typ,np,ran,rev);
     }
     public void doInit(String typ,int np,long ran,int rev)

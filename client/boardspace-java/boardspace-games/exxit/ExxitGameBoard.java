@@ -433,6 +433,10 @@ public class ExxitGameBoard extends infiniteHexBoard<ExxitCell> implements Board
     	revision = 0;
     	doInit(d);
     }
+    public void doInitOld(String gtype)
+    {
+    	doInit(gtype,0,0,0);
+    }
     /* initialize a board back to initial empty state */
     public void doInit(String gtype,long key)
     {	

@@ -1019,7 +1019,11 @@ private void playSounds(commonMove m)
     			&& (b.movingObjectIndex()<=0)
     			&& ((b.getState()==OrdoState.OrdoPlay)||(b.getState()==OrdoState.DrawPending)))
     		{
-    		PerformAndTransmit(OFFERDRAW);
+    		if(b.canOfferDraw())
+			{
+			PerformAndTransmit(OFFERDRAW);
+			}
+    		else { G.infoBox(null,s.get(DrawNotAllowed)); }
     		}
     		return(true);
     	}

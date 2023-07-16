@@ -20,6 +20,7 @@ import lib.ExtendedHashtable;
 import lib.G;
 import lib.GC;
 import lib.HitPoint;
+import lib.Image;
 import lib.InternationalStrings;
 import lib.LFrameProtocol;
 import lib.StockArt;
@@ -251,6 +252,7 @@ public class StacViewer extends CCanvas<StacCell,StacBoard>	implements StacConst
      }
 
  
+    Image scaled = null;
 
     /* draw the deep unchangable objects, including those that might be rather expensive
      * to draw.  This background layer is used as a backdrop to the rest of the activity.
@@ -268,7 +270,7 @@ public class StacViewer extends CCanvas<StacCell,StacBoard>	implements StacConst
        
       // if the board is one large graphic, for which the visual target points
       // are carefully matched with the abstract grid
-     StacChip.board.getImage(loader).centerImage(gc, boardRect);
+      scaled = StacChip.board.getImage(loader).centerScaledImage(gc, boardRect,scaled);
       /*
 	 	    gb.SetDisplayParameters(
 	 	    		new double[]{0.20,0.33},
@@ -650,8 +652,13 @@ private void playSounds(commonMove m)
     			&& (b.movingObjectIndex()<=0)
     			&& ((b.getState()==StacState.Play)||(b.getState()==StacState.Carry)||(b.getState()==StacState.DrawPending)))
     		{
+        		if(b.canOfferDraw())
+    			{
     			PerformAndTransmit(OFFERDRAW);
     		}
+        		else { G.infoBox(null,s.get(DrawNotAllowed)); }
+        		}
+    		
     		return(true);
     	}
     	else if(target==reverseOption)
@@ -681,6 +688,8 @@ private void playSounds(commonMove m)
     /** replay a move specified in SGF format.  
      * this is mostly standard stuff, but the key is to recognize
      * the elements that we generated in sgf_save
+     * summary: 5/27/2023
+     * 464 files visited 0 problems
      */
     public void ReplayMove(sgf_node no)
     {

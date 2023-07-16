@@ -81,7 +81,7 @@ action will be taken in the spring.
   
  */
 class ViticultureBoard extends RBoard<ViticultureCell> implements BoardProtocol,ViticultureConstants
-{	static int REVISION = 155;			// 100 represents the initial version of the game
+{	static int REVISION = 156;			// 100 represents the initial version of the game
 										// games with no revision information will be 100
 										// revision 101, correct the sale price of champagne to 4
 										// revision 102, fix the cash distribution for the cafe
@@ -154,7 +154,12 @@ class ViticultureBoard extends RBoard<ViticultureCell> implements BoardProtocol,
 										// 		also fixes "producer" to only forbid retrieving itself
 										// revision 154 adds "fill" to jack of all trades if makewine is a choice
 										// revision 155 makes politico not offer to harvest 3 if there are less
-// ****** this is the point where extensions were added ************
+
+//****** this is the point where extensions were added ************
+
+										// revision 156 fixes farmer bug for green card markets and also fixes
+										// the "planner" bug, planner actions trigger when you enter the season
+
 public int getMaxRevisionLevel() { return(REVISION); }
 	PlayerBoard pbs[] = null;		// player boards
 	
@@ -272,6 +277,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
 		PoliticoTradeExtra,
 		Harvest2Optional,
 		TrainScholarWorker,
+		ExecutePlanner,
 		// add new continuations to the end to avoid changing the digest, which breaks shuffles
 		// likewise for adding new states and new cards
 		
@@ -684,7 +690,12 @@ public int getMaxRevisionLevel() { return(REVISION); }
 			if(targetPlayer>=0) { setState(resetState = ViticultureState.Make2Draw2); }
 			else { doContinuation(pb,replay,m);  }
 			break;
-			
+		case ExecutePlanner:
+			{
+			ViticultureState nexts = takePlannerAction(pbs[whoseTurn],replay);
+			if(nexts!=null) { setState(resetState=nexts); }
+			}
+			break;
 		default: G.Error("Continuation %s not handled",next);
 		}
 	}
@@ -1541,11 +1552,11 @@ public int getMaxRevisionLevel() { return(REVISION); }
     public void setNextPlayer(replayMode replay)
     {	PlayerBoard current = pbs[whoseTurn];
     	if(revision>=105)
-    		{PlayerBoard oldPB = pbs[whoseTurn];
+    		{
     		 // this is probably always ok, but just to make sure condition on the
     		 // revision number.
-    	     oldPB.unselect();
-    	     oldPB.unselectUI();
+    		current.unselect();
+    		current.unselectUI();
     		}
     	PlayerBoard pb = findNextPlayer(replay);		
     	currentWorker = null;
@@ -1704,11 +1715,29 @@ public int getMaxRevisionLevel() { return(REVISION); }
     	}
     	return(null);
     }
+
+    private void queuePlannerAction(PlayerBoard pb)
+    {
+    	for(int i=0;i<plannerCells.size();i++)
+    	{	ViticultureCell c = plannerCells.elementAt(i);
+    		if(workerCellSeason(c)==season(pb)
+    			&& (plannerMoves.elementAt(i).player==pb.boardIndex))
+    		{
+    			addContinuation(Continuation.ExecutePlanner);
+    		}
+    	}
+    }
+
+    
     private ViticultureState takePlannerAction(PlayerBoard pb,replayMode replay)
     {	//if(plannerCells.size()>1) { //p1("multiple planner actions"); }
     	for(int i=0;i<plannerCells.size();i++)
     	{	ViticultureCell c = plannerCells.elementAt(i);
-    		if(workerCellSeason(c)==season(pb))
+    		if(workerCellSeason(c)==season(pb)
+    				&& (!testOption(Option.ContinuousPlay)
+    					|| revision<156
+    					|| (plannerMoves.elementAt(i).player==pb.boardIndex))
+    				)
     		{	plannerCells.remove(i,true);
     			ViticultureChip meeple = plannerMeeples.remove(i,true);
     			Viticulturemovespec m = (Viticulturemovespec)plannerMoves.remove(i, true);
@@ -2281,8 +2310,16 @@ public int getMaxRevisionLevel() { return(REVISION); }
   		
 		PlayerBoard pb = getCurrentPlayerBoard();
 		
-		
-		ViticultureState plannerState = takePlannerAction(pb,replay);
+		// after discussion of VI-sven2-ddyer-pangolin-mfeber-idyer-2023-07-09-1902 year 4
+		// white had use the planner card to place on harvest2, which was unexpectedly triggered 
+		// before the next player played in fall.  This seemed odd at the time, it was decided
+		// that the "more natural" interpretation would be to execute the planner action immediately
+		// when the planner player enters fall.  This means the planner could in principle be 
+		// bumped (by a chef) before it's executed, but also that it's guaranteed to to happen
+		// until the player voluntarily enters the season.
+		ViticultureState plannerState = (revision>=156)&&testOption(Option.ContinuousPlay)
+					? null  
+					: takePlannerAction(pb,replay);
 		if(plannerState!=null) { setState(plannerState); }
 		else {
 		ViticultureState messengerState = takeMessengerAction(pb,replay);
@@ -3035,7 +3072,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
    				{
   					pb.oracleCards.reInit();
   	   				for(int i=0;i<gotncards;i++) { pb.oracleCards.addChip(pb.cards.removeTop()); }
-  	   				nextState = bonus ? ViticultureState.Select2Of2FromMarket : ViticultureState.Select1Of1FromMarket;
+  	   				nextState = bonus|(revision>=156&&isFarmer) ? ViticultureState.Select2Of2FromMarket : ViticultureState.Select1Of1FromMarket;
    				}
    				else if(nextState==ViticultureState.Discard1ForOracle)
    				{
@@ -3665,7 +3702,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
       	// rather than make this a rare occurrence, always do it this way.
   		addContinuation(Continuation.FinishNewSeason);
       	}
-     	return(nextState);
+      	return(nextState);
     }
 
     private ViticultureState finishNewSeason(PlayerBoard pb,replayMode replay,Viticulturemovespec m)
@@ -3679,11 +3716,19 @@ public int getMaxRevisionLevel() { return(REVISION); }
       	pb.setSeason(newseason);
     	nextState = takeRoosterBonus(pb,replay,m);
     	
+     	if((revision>=156) && testOption(Option.ContinuousPlay))
+    	{
+    		queuePlannerAction(pb);
+    	}
+    	
     	// handle the cottage
     	if((oldseason==1) && (pb.cottage.topChip()!=null))
     	{	triggerCard = pb.getCottage();
     		addContinuation(Continuation.TakeYellowOrBlue);
     	}
+    	
+ 
+
     	return(nextState);
     }
     

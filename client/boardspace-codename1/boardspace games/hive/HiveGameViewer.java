@@ -984,7 +984,7 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
     	String token = his.nextToken();
     	if(token.startsWith("Hive"))
     	{
-        b.doInit(token);
+    		 b.doInitOld(token);
     	}
     	else
     	{

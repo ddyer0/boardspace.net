@@ -5,7 +5,7 @@ import static twixt.Twixtmovespec.*;
 import com.codename1.ui.geom.Rectangle;
 import bridge.Color;
 import bridge.JCheckBoxMenuItem;
-
+import bridge.JMenuItem;
 import online.common.*;
 import java.util.*;
 import lib.Graphics;
@@ -109,6 +109,7 @@ public class TwixtViewer extends CCanvas<TwixtCell,TwixtBoard> implements TwixtC
     private Color chatBackgroundColor = new Color(245,245,250);
     private Color rackBackGroundColor = new Color(245,245,250);
     private Color boardBackgroundColor = new Color(220,165,155);
+    private JMenuItem offerDrawAction = null;
     
     public boolean usePerspective() { return(super.getAltChipset()==0); }
     
@@ -189,6 +190,7 @@ public class TwixtViewer extends CCanvas<TwixtCell,TwixtBoard> implements TwixtC
         // for another game.
         bb = new TwixtBoard(type,players_in_game,randomKey,getStartingColorMap(),TwixtBoard.REVISION);
         useDirectDrawing(true); 
+        offerDrawAction = myFrame.addAction(s.get(OFFERDRAW),deferredEvents);     
         doInit(false);
 
     }
@@ -1410,6 +1412,18 @@ public class TwixtViewer extends CCanvas<TwixtCell,TwixtBoard> implements TwixtC
      */
     public boolean handleDeferredEvent(Object target, String command)
     {
+        if(target==offerDrawAction)
+     	{	if(OurMove() 
+     			&& (bb.movingObjectIndex()<=0)) 							
+     		{
+    		if(bb.canOfferDraw())
+			{
+			PerformAndTransmit(OFFERDRAW);
+			}
+    		else { G.infoBox(null,s.get(DrawNotAllowed)); }
+    		}
+     		return(true);
+     	}
     	if(target==showDistancesItem)
     	{
     		showDistances = showDistancesItem.getState();

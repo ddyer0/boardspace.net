@@ -46,7 +46,8 @@ class OrdoBoard extends rectBoard<OrdoCell> implements BoardProtocol
 	 * replaying an "old" version of the game, revision numbers help keep the old
 	 * games playing the same as always.
 	 */
-	static int REVISION = 100;			// revision numbers start at 100
+	static int REVISION = 101;			// revision numbers start at 100
+										// revision 101 adds protection against multiple draw offers
     static final int White_Chip_Index = 0;
     static final int Black_Chip_Index = 1;
     static final String[] GRIDSTYLE = { "1", null, "A" }; // left and bottom numbers
@@ -1057,9 +1058,12 @@ class OrdoBoard extends rectBoard<OrdoCell> implements BoardProtocol
             }
             break;
         case MOVE_OFFER_DRAW:
+        	if(revision<101 || canOfferDraw())
+        	{
         	if(board_state==OrdoState.DrawPending) { setState(resetState); }
         	else { 	setState(OrdoState.DrawPending);
         		}
+        	}
         	break;
         case MOVE_ACCEPT_DRAW:
            	switch(board_state)
@@ -1729,6 +1733,10 @@ public commonMove Get_Random_Move(Random rand,double ordoProbability)
 	}
 
 	return null;
+}
+
+public boolean canOfferDraw() {
+	return (moveNumber-lastDrawMove>4);
 }
 
 }

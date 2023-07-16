@@ -1108,8 +1108,12 @@ public class TrenchViewer extends CCanvas<TrenchCell,TrenchBoard> implements Tre
      			&& (bb.movingObjectIndex()<=0)
      			&& ((bb.getState()==TrenchState.Play) || (bb.getState()==TrenchState.DrawPending))) 							
      		{
+    		if(bb.canOfferDraw())
+			{
      		PerformAndTransmit(OFFERDRAW);
      		}
+    		else { G.infoBox(null,s.get(DrawNotAllowed)); }
+    		}
      		return(true);
      	}
        boolean handled = super.handleDeferredEvent(target, command);

@@ -11,9 +11,11 @@ import online.common.*;
 import online.game.*;
 import online.game.sgf.*;
 import online.search.SimpleRobotProtocol;
+
 import java.util.Hashtable;
 import java.util.StringTokenizer;
-
+import lib.Graphics;
+import lib.Image;
 import lib.*;
 /**
  * 
@@ -338,6 +340,7 @@ public class ShogiViewer extends CCanvas<ShogiCell,ShogiBoard> implements ShogiC
        textures[BACKGROUND_TILE_INDEX].tileImage(gc, fullRect);   
         drawFixedBoard(gc);
     }
+    Image scaled = null;
     public void drawFixedBoard(Graphics gc,Rectangle brect)
     { boolean review = reviewMode() && !mutable_game_record;
       if(review)
@@ -347,7 +350,7 @@ public class ShogiViewer extends CCanvas<ShogiCell,ShogiBoard> implements ShogiC
        
       // if the board is one large graphic, for which the visual target points
       // are carefully matched with the abstract grid
-     images[BOARD_INDEX].centerImage(gc, brect);
+      scaled = images[BOARD_INDEX].centerScaledImage(gc, brect, scaled);
 	    b.SetDisplayParameters(0.87,1.08,  0.16,-0.02,  0);
 	    b.SetDisplayRectangle(brect);
 
@@ -771,7 +774,11 @@ private void playSounds(commonMove m)
     	{
     		if(OurMove()) 
     			{ 
+        		if(b.canOfferDraw())
+    			{
     			  PerformAndTransmit(OFFERDRAW); 
+    			}
+        		else { G.infoBox(null,s.get(DrawNotAllowed)); }
     			}
     		else {
                 theChat.postMessage(ChatInterface.GAMECHANNEL, KEYWORD_CHAT,
@@ -789,6 +796,8 @@ private void playSounds(commonMove m)
     /** replay a move specified in SGF format.  
      * this is mostly standard stuff, but the key is to recognize
      * the elements that we generated in sgf_save
+     * summary: 5/27/2023
+	 * 337 files visited 0 problems
      */
     public void ReplayMove(sgf_node no)
     {

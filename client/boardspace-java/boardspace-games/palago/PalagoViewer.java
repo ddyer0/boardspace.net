@@ -771,7 +771,7 @@ public class PalagoViewer extends CCanvas<PalagoCell,PalagoBoard> implements Pal
     	String token = his.nextToken();
     	if("Palago".equals(token))
     	{
-            bb.doInit(token);
+            bb.doInitOld(token);
     	}
     	else
     	{

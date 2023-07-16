@@ -823,10 +823,13 @@ class MorrisBoard extends squareBoard<MorrisCell> implements BoardProtocol,Morri
             }
             break;
         case MOVE_OFFER_DRAW:
+        	if(canOfferDraw())
+        	{
         	if(board_state==MorrisState.DrawPending) { setState(dropState.pop()); }
         	else { dropState.push(board_state);
         			setState(MorrisState.DrawPending);
         		}
+        	}
         	break;
         case MOVE_ACCEPT_DRAW:
            	switch(board_state)
@@ -1279,6 +1282,9 @@ public Hashtable<MorrisCell,MorrisMovespec>getTargets()
  	addMoves(all,whoseTurn);
  	return(all);
  }
+public boolean canOfferDraw() {
+	return moveNumber-lastDrawMove>4;
+}
  
 
 }

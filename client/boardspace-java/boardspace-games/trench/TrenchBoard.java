@@ -38,7 +38,8 @@ import online.game.*;
 class TrenchBoard 
 	extends rectBoard<TrenchCell>	// for a square grid board, this could be rectBoard or squareBoard 
 	implements BoardProtocol,TrenchConstants
-{	static int REVISION = 100;			// 100 represents the initial version of the game
+{	static int REVISION = 101;			// 100 represents the initial version of the game
+										// revision 101 adds defense for multiple draw offers
 	public int getMaxRevisionLevel() { return(REVISION); }
 	static final String[] GRIDSTYLE = { "1", null, "A" }; // left and bottom numbers
 	TrenchVariation variation = TrenchVariation.trench;
@@ -758,10 +759,13 @@ class TrenchBoard
         switch (m.op)
         {
         case MOVE_OFFER_DRAW:
+        	if(revision<101 || canOfferDraw())
+        	{
         	if(board_state==TrenchState.DrawPending) { setState(TrenchState.Play); }
         	else { 
         			setState(TrenchState.DrawPending);
         		}
+        	}
         	break;
         case MOVE_ACCEPT_DRAW:
            	switch(board_state)
@@ -1376,6 +1380,9 @@ public boolean drawIsLikely()
 	default: return(false);
 	}
 	
+}
+public boolean canOfferDraw() {
+	return (moveNumber-lastDrawMove>4);
 }
 
  // most multi player games can't handle individual players resigning

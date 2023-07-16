@@ -65,6 +65,7 @@ determine if you attack something with a move that delivers check at the same ti
 public class XiangqiBoard extends rectBoard<XiangqiCell> implements BoardProtocol,XiangqiConstants
 {
 	private XiangqiState unresign;
+	private int lastDrawMove = 0;
 	private XiangqiState board_state;
 	public XiangqiState getState() {return(board_state); }
 	public void setState(XiangqiState st) 
@@ -293,6 +294,8 @@ public class XiangqiBoard extends rectBoard<XiangqiCell> implements BoardProtoco
         prevPickedSource = null;
         prevDroppedDest = null;
         moveNumber = 1;
+        unresign = null;
+        lastDrawMove = 0;
         prev_state = XiangqiState.PUZZLE_STATE;
 
         // note that firstPlayer is NOT initialized here
@@ -591,6 +594,7 @@ public class XiangqiBoard extends rectBoard<XiangqiCell> implements BoardProtoco
         default: throw G.Error("Not expecting state %s",board_state);
         case OFFER_DRAW_STATE:
         	setState(XiangqiState.QUERY_DRAW_STATE);
+        	lastDrawMove = moveNumber;
         	break;
         case ACCEPT_DRAW_STATE:
         	setGameOver(false,false);
@@ -808,6 +812,7 @@ public class XiangqiBoard extends rectBoard<XiangqiCell> implements BoardProtoco
             break;
 
         case MOVE_OFFER_DRAW:
+        	if(canOfferDraw())
         {
         	XiangqiState bs = board_state;
         	if(bs==XiangqiState.OFFER_DRAW_STATE)
@@ -1359,4 +1364,7 @@ public class XiangqiBoard extends rectBoard<XiangqiCell> implements BoardProtoco
  	return(h);
 	 
  }
+public boolean canOfferDraw() {
+	return (moveNumber-lastDrawMove>4);
+}
 }

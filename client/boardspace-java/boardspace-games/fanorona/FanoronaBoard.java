@@ -1019,7 +1019,10 @@ class FanoronaBoard extends rectBoard<FanoronaCell> implements BoardProtocol,Fan
     			|| ((moveNumber-lastDrawMove)>4)
     				&& ((moveNumber-lastProgressMove)>10));
     }
-    
+    public boolean canOfferDraw()
+    {
+    	return (moveNumber-lastDrawMove>4);
+    }
     public boolean Execute(commonMove mm,replayMode replay)
     {	FanoronaMovespec m = (FanoronaMovespec)mm;
 
@@ -1028,8 +1031,9 @@ class FanoronaBoard extends rectBoard<FanoronaCell> implements BoardProtocol,Fan
         {
         
         case MOVE_OFFER_DRAW:
-        	if(moveNumber-lastDrawMove>4)
+        	if(canOfferDraw())
         	{
+        	// ignore repeated draw offers
         	if(board_state==FanoronaState.DrawPending) { setState(FanoronaState.PLAY_STATE); }
         	else { 
         			setState(FanoronaState.DrawPending);

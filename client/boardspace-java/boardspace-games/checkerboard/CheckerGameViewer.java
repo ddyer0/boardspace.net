@@ -1082,7 +1082,11 @@ private void playSounds(commonMove m)
     			&& (b.movingObjectIndex()<=0)
     			&& ((b.getState()==CheckerState.Play) || (b.getState()==CheckerState.DrawPending)))
     		{
-    		PerformAndTransmit(OFFERDRAW);
+    		if(b.canOfferDraw())
+			{
+			PerformAndTransmit(OFFERDRAW);
+			}
+    		else { G.infoBox(null,s.get(DrawNotAllowed)); }
     		}
     		return(true);
     	}

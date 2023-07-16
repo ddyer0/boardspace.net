@@ -47,7 +47,8 @@ class CheckerBoard extends rectBoard<CheckerCell> implements BoardProtocol
 	 * replaying an "old" version of the game, revision numbers help keep the old
 	 * games playing the same as always.
 	 */
-	static int REVISION = 100;			// revision numbers start at 100
+	static int REVISION = 101;			// revision numbers start at 100
+										// revision 101 adds defense against multiple draw offers
     static final int White_Chip_Index = 0;
     static final int Black_Chip_Index = 1;
     static final String[] GRIDSTYLE = { "1", null, "A" }; // left and bottom numbers
@@ -977,10 +978,12 @@ class CheckerBoard extends rectBoard<CheckerCell> implements BoardProtocol
             break;
         case MOVE_OFFER_DRAW:
         	currentDest=null;
+           	if(revision<101 || canOfferDraw())
+           	{
         	if(board_state==CheckerState.DrawPending) { setState(dropState.pop()); }
         	else { dropState.push(board_state);
         			setState(CheckerState.DrawPending);
-        		}
+        		}}
         	break;
         case MOVE_ACCEPT_DRAW:
            	currentDest=null;
@@ -1508,6 +1511,10 @@ private void checkOccupied()
  	addMoves(all,whoseTurn);
  	return(all);
  }
+
+public boolean canOfferDraw() {
+	return (moveNumber-lastDrawMove>4);
+}
  
 
 }
