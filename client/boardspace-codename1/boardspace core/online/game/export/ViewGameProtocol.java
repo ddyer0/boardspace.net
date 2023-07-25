@@ -180,7 +180,7 @@ public interface ViewGameProtocol
 	 * This service is normally completely covered by the commonCanvas class, which records
 	 * the activity for later action by the viewerRun loop
    */
-   public boolean doScrollTo(int val); 
+   public boolean doRemoteScrollTo(int val); 
    /** set the requested review position
 	 * This service is normally completely covered by the commonCanvas class, which records
 	 * the activity for later action by the viewerRun loop

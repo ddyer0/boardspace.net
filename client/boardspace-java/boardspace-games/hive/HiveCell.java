@@ -74,9 +74,10 @@ public class HiveCell extends stackCell<HiveCell,HivePiece> implements Placement
 			  }
 			  
 			}
-			if(na==0) { v^=randomv; }	// if it's an isolated cell, include the exact location
+			if(na==0) 
+				{ v^=hiddenDigest(); }	// if it's an isolated cell, include the exact location
 			}
-		else { v = v*randomv;}
+		else { v = v*hiddenDigest();}
 		return(v);
 	}
 	

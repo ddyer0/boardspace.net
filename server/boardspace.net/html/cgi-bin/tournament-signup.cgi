@@ -1637,9 +1637,10 @@ sub show_detail_match()
 #print "q: $q\n";
 	my $sth = &query($dbh,$q);
 	my ($comment) = &nextArrayRow($sth);
-	print "<pre>";
+	$comment =~ s/\n/<br>/g;
+	print "<code>";
 	print $comment;
-	print "</pre>";
+	print "</code>";
 
 	&print_form_header($admin);
 	if($fromname eq '')

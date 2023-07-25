@@ -5420,10 +5420,10 @@ private void drawPlayerBoard(Graphics gc,
      * be warned if you do this because it is throwing an error, there are other problems
      * that need to be fixed eventually.
      */
-      //public void verifyGameRecord()
-      //{	//DISABLE_VERIFY = true;
-      //	super.verifyGameRecord();
-      //}
+  public void verifyGameRecord()
+{	//DISABLE_VERIFY = true;
+   	super.verifyGameRecord();
+ }
     
 /**
  * the preferred mouse gesture style is to let the user "pick up" objects

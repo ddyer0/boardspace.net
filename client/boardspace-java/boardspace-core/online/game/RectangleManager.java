@@ -451,27 +451,9 @@ public class RectangleManager
     		{	alloc = placeInSpecificRectangle(targetRect,placeAboveOrBelow,placeInSpare_best,
     						bestMinW,bestMinH,bestMaxW,bestMaxH,
     						preserveAspectRatio,align);
-    		/*
-        		int actualW = Math.min(bestMaxW,G.Width(placeInSpare_best));
-    			int actualH = Math.min(bestMaxH, G.Height(placeInSpare_best));
-    			double aspect = (double)bestMinW/bestMinH;
-    			if(preserveAspectRatio)
-    			{
-    				actualH = Math.max(bestMinH,(int)Math.min(actualH, actualW/aspect));
-    				actualW = Math.max(bestMinW,(int)Math.min(actualH*aspect, actualW));
-    			}
-    			
-    			if(placeAboveOrBelow)
-    			{	
-    			alloc = placeInAboveOrBelow(targetRect,placeInSpare_best,actualW,actualH,align);
-    			}
-    			else {
-    			alloc = placeInLeftOrRight(targetRect,placeInSpare_best,actualW,actualH,align);    			
-    			}
-    			*/
     		}
     	RectangleSpec spec = new RectangleSpec(
-    			purpose,targetRect,alloc,
+    			purpose,targetRect,alloc,!bestis1,
     			bestis1 ? minWX1 : minWX0,
     			bestis1 ? maxWX1 : maxWX0,
     			bestis1 ? minHX1 : minHX0,
@@ -1238,6 +1220,9 @@ public class RectangleManager
 		Rectangle rep[] = spec.rectList;
    		boolean hasButton = edit!=null || done!=null;
    		int nrep = rep.length;
+   		
+   		if(spec.firstAlternate)
+   		{
 		int buttonW = (w-marginSize)/2;
 		int buttonH = hasButton ? buttonW/2 : 0;
   		if(done!=null) { G.SetRect(done,l,t,buttonW,buttonH); }
@@ -1247,7 +1232,29 @@ public class RectangleManager
 		for(int i=0;i<nrep;i++)
 			{
 			G.SetRect(rep[i], l, t+i*reph,w,reph);
-			}		
+			}	
+   		}
+   		else
+   		{	// horizontal format
+   			int buttonH = h;
+   			int buttonW = w/((nrep+1)*2);
+   			if(done!=null)
+   			{
+   				G.SetRect(done,l,t,buttonW-marginSize,buttonH);
+   				l += buttonW;
+   			}
+   			if(edit!=null)
+   			{
+   				G.SetRect(edit,l,t,buttonW-marginSize,buttonH);
+   				l += buttonW;	
+   			}
+   			for(int i=0;i<nrep;i++)
+			{
+			G.SetRect(rep[i], l, t,buttonW*2-marginSize,buttonH);
+			l += buttonW*4;
+			}	
+   			
+   		}
 	}
 
 }
@@ -1282,6 +1289,7 @@ class RectangleSpec
 	int maxw;
 	int minh;
 	int maxh;
+	boolean firstAlternate = false;
 	BoxAlignment align;
 	boolean preserveAspectRatio;
 	double preferredAspectRatio;
@@ -1303,9 +1311,10 @@ class RectangleSpec
 		G.append(b,">");
 		return b.toString();
 	} 
-	public RectangleSpec(Purpose note,Rectangle act,Rectangle alloc,int min_width,int max_width,int min_height,int max_height,BoxAlignment alignment,boolean aspect,double ratio)
+	public RectangleSpec(Purpose note,Rectangle act,Rectangle alloc,boolean first,int min_width,int max_width,int min_height,int max_height,BoxAlignment alignment,boolean aspect,double ratio)
 	{
 		name = note;
+		firstAlternate = first;
 		actual = act;
 		allocated = alloc;
 		minw = min_width;

@@ -955,7 +955,7 @@ class IroBoard
         case FirstPlay:
         	// for pushfight, you can pick up a stone in the storage area
         	// but it's really optional
-        	return(player==whoseTurn);
+        	return(player==whoseTurn && (pickedObject==null || pickedObject.id==getPlayerColor(whoseTurn)));
         case Confirm:
 		case Resign:
 		case ConfirmSetup:
@@ -980,7 +980,7 @@ class IroBoard
         {
         case FirstPlay:
         case InvalidBoard:
-        	return targets.get(c)!=null; 
+        	return targets.get(c)!=null || c==getSource(); 
         case Puzzle:
 		case Play:
 		case ConfirmSetup:

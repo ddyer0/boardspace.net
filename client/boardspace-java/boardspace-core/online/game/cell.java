@@ -360,7 +360,7 @@ public abstract class cell<FINALTYPE
 	 *  Digest the cell's identity
 	 *  @return an integer
 	 */
-	private long hiddenDigest() 
+	public long hiddenDigest() 
 	{ if(randomv==0) 
 		{ 
 		return(getClassHash()+rackLocation.name().hashCode()*1000L+col*200+row+1); 

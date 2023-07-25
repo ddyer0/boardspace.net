@@ -1087,7 +1087,7 @@ public abstract class commonCanvas extends exCanvas
 	        int v0 = History.viewStep;
 
 	        if (History.viewStep > 0)
-	        {
+	        {	showComments();	// save as a side effect
 	            UndoStep(v0-n);
 	        }
 	        showComments(); 
@@ -2142,7 +2142,7 @@ public abstract class commonCanvas extends exCanvas
      * the clients relinquishing the lock in a timely manner.
      */
     public void setControlToken(boolean val,long timeStamp)
-    {	//G.print("Set "+val);
+    {	//G.print("Set "+val+" "+getActivePlayer());
     	//G.print(G.getStackTrace());
      	if(val && (timeStamp>0))
     	{
@@ -2590,12 +2590,12 @@ public abstract class commonCanvas extends exCanvas
         {   hidden.enterReviewMode();
         	if(mode!=replayMode.Replay)
         		{ showComments(); 	// save modified comments as a side effect
+                commentedMove = commentedMoveSeen = null;
+                if(reviewOnly) { theChat.clearMessages(true); }
         		}
             doInit(true);	// reinitialize
-            showComments();
+            // showComments();
             History.viewStep = 0;	// position 0
-            commentedMove = commentedMoveSeen = null;
-            if(reviewOnly) { theChat.clearMessages(true); }
             hidden.doForward(mode);	// the history is seeded with a start command
         }
     }
@@ -3631,13 +3631,23 @@ public abstract class commonCanvas extends exCanvas
     	return(hidden.doForward(replay));
     }
     
-    
+   // scroll by action by this player.  we should have control
    public boolean doScrollTo(int whence)
+   {	
+	   return doScroll(whence,"local");
+   }
+   // scroll by another player.  We should NOT have control here
+   public boolean doRemoteScrollTo(int whence)
+   {	
+	   return doScroll(whence,"remote");
+   }
+    
+   public boolean doScroll(int whence,String remote)
    {	boolean val = false;
    		if(whence!=History.viewStep)
     	{BoardState pre_state = getBoard().getState();
     	int pre_view = History.viewStep;
-    	val = doScrollTo_internal(whence);
+    	val = doScrollTo_internal(whence,remote);
     	if((pre_view==-1) && (History.viewStep!=-1))
     		{	History.pre_review_state = pre_state;
     		}}
@@ -3651,11 +3661,11 @@ public abstract class commonCanvas extends exCanvas
      * scroll to a particular move number, or to one of the
      * special positions indicated by negative codes.
      */
-    private boolean doScrollTo_internal(int val)
+    private boolean doScrollTo_internal(int val,String remote)
     {	boolean rval = false;
         int vs = History.viewStep;
         History.sliderPosition = -1;
-        rawHistory.addElement(new dummyMove("vcr:@"+vs+" doScrollTo "+val));
+        rawHistory.addElement(new dummyMove("vcr:@"+vs+" doScrollTo "+val+" control "+hasControlToken()+" "+remote));
         switch (val)
         {
         case BACKWARD_ONE:
@@ -4134,12 +4144,16 @@ public abstract class commonCanvas extends exCanvas
     	{ G.Assert(reviewOnly || mutable_game_record || !reviewMode(),
     			"can't send moves during in-game review: %s",m); 
     	}
-       if ((m.index()>=0)||(History.viewStep>0))  // maybe backed up
+       if(m.index()>=0)
        {   // something delicate here.  m.index=-1 for newly input moves
     	   // moves being replayed may have an index, in which case their position 
     	   // in the history is fixed. The replayers can add optional "done" moves
-    	   // which are immediately followed by real done moves which superceed them.
-            rewindHistory((m.index()>0)? m.index() : History.viewStep);
+    	   // which are immediately followed by real done moves which supercede them.
+    	   rewindHistory(m.index());
+       }
+       else if (History.viewStep>0)  // maybe backed up
+       	{   
+            rewindHistory(History.viewStep);
        } 
        		// collect the spec before executing or adding to history, so that
        		// edits made to m by execute or editHistory will not be transmitted
@@ -4426,10 +4440,12 @@ public abstract class commonCanvas extends exCanvas
         if ((size >= 0) && (size < History.size()))
         {
             //System.out.println("Truncating history at step "+size);
-            doScrollTo(size);
+        	//this is called both live and as replay from an opponent
+        	// so use doScroll which doesn't check control 
+            doScroll(size,"rewind");
             mutated_game_record = true;
             setHistorySize(size);
-            doScrollTo(FORWARD_TO_END);
+            doScroll(FORWARD_TO_END,"new variation");
          }
     }
 
@@ -6700,7 +6716,8 @@ public abstract class commonCanvas extends exCanvas
 	        }
         }
         if(animating && spritesIdle) 
-    	{ if(reviewMode()) 
+    	{ 	// it is important to stop animating if we no longer have control
+        	if(reviewMode() && hasControlToken()) 
     		{long now = G.Date();
     		 int interval = (int)(250*masterAnimationSpeed);
     		 long pause = now-hidden.lastAnimTime;

@@ -2217,7 +2217,15 @@ public class GameLayoutManager  implements Opcodes
     		int szw2 = 2*maxW+marginSize;
     		int szh = buttonH1+nrep*boxW/3;
     		int szh2 = buttonH2+nrep*boxW/3;
-    		RectangleSpec spec = placeRectangle(Purpose.DoneEditRep,r,szw,szh,szw2,szh2,
+    		
+    		int hszw = szw * (nrep+1);
+    		int hszw2 = szw2 * (nrep+1);
+    		int hszh = buttonH1;
+    		int hszh2 = buttonH2;
+    		
+    		RectangleSpec spec = placeRectangle(Purpose.DoneEditRep,r,
+    					szw,szh,szw2,szh2,		// vertical format with done/edit side by side
+    					hszw,hszh,hszw2,hszh2,	// horizontal format with everything flat
     				BoxAlignment.Center,true);
     		if(spec!=null)
     		{

@@ -503,7 +503,7 @@ public class LehavreViewer extends exCanvas implements ViewerProtocol,NetworkInt
 		
 	}
 
-	public boolean doScrollTo(int val) {
+	public boolean doRemoteScrollTo(int val) {
 		return false;
 	}
 

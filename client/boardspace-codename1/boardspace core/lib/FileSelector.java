@@ -1,6 +1,9 @@
 package lib;
 
 import bridge.*;
+import bridge.File;
+import bridge.FileNotFoundException;
+import bridge.ThreadDeath;
 
 import com.codename1.ui.geom.Dimension;
 import net.sf.jazzlib.ZipEntry;

@@ -267,7 +267,7 @@ public class ViticultureChip extends chip<ViticultureChip>
     public static ViticultureChip VictoryPoint_3 = new ViticultureChip("victorypoint-3",null,ChipType.VP,vpScale);
     public static ViticultureChip VictoryPoint_4 = new ViticultureChip("victorypoint-4",null,ChipType.VP,vpScale);
     public static ViticultureChip VictoryPoints[] = {VictoryPoint_0,VictoryPoint_1,VictoryPoint_2,VictoryPoint_3,VictoryPoint_4 };
-    public static ViticultureChip GenericWine = new ViticultureChip("generic-wine",null,ChipType.Art,vpScale);
+    public static ViticultureChip GenericWine = new ViticultureChip("generic-wine",null,ChipType.Art,new double[] {0.5,0.5,0.8});
     
     public static ViticultureChip GrapesAndWines[] = { RedWine,WhiteWine,RoseWine,Champagne,GenericWine,RedGrape,WhiteGrape};
     

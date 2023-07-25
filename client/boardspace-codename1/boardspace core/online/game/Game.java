@@ -1611,7 +1611,7 @@ public class Game extends commonPanel implements PlayConstants,DeferredEventHand
                 {
                     if (where != GET_CURRENT_POSITION) //-2 means just tell us
                     {	//if(my.spectator) { System.out.println("Scrollto "+where); }
-                        v.doScrollTo(where);
+                        v.doRemoteScrollTo(where);
                     }
                     else if(!GameOver())
                     {

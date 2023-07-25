@@ -175,7 +175,7 @@ public interface BoardProtocol extends Digestable
 	/**
 	 * set the color map for the game, or null to initialize it to the appropriate default
 	 * @param map
-	 * @param players TODO
+	 * @param players
 	 */
 	public void setColorMap(int[]map, int players);
 	/**
@@ -199,6 +199,10 @@ public interface BoardProtocol extends Digestable
 	 */
 	public void resetClientRevision();
 	
+	/** for debugging - copies of board are given informative names which indicate
+	 * who is using it.
+	 * @return
+	 */
 	public String getName();
 	public void setName(String s);
 	public BoardState getState();

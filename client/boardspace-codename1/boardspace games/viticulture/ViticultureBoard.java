@@ -1151,7 +1151,8 @@ public int getMaxRevisionLevel() { return(REVISION); }
     	players_in_game = players;
     	automa = (players==1);
 		setState(ViticultureState.Puzzle);
- 
+		choiceA.selected = false;
+		choiceB.selected = false;
     	doInitAfterOptions(variation==ViticultureVariation.viticulture);
     }
 
@@ -1417,6 +1418,9 @@ public int getMaxRevisionLevel() { return(REVISION); }
 		optionsResolved = from_b.optionsResolved;
 		options.copy(from_b.options);
 
+		choiceA.selected = from_b.choiceA.selected;
+		choiceB.selected = from_b.choiceB.selected;
+		
 	    sameboard(from_b); 
     }
 
@@ -1449,7 +1453,8 @@ public int getMaxRevisionLevel() { return(REVISION); }
         for(int i=0;i<pbs.length; i++) { pbs[i].sameBoard(from_b.pbs[i]); }
         Assert(currentWorker==from_b.currentWorker,"currentWorker mismatch");
         Assert(sameCells(currentAction,from_b.currentAction),"currentAction mismatch");
-        
+        Assert(choiceA.selected==choiceA.selected,"choiceA different");
+        Assert(choiceB.selected==from_b.choiceB.selected,"choiceB different");
 		Assert(optionsResolved == from_b.optionsResolved,"optionsResolved mismatch");
 		Assert(options.equals(from_b.options),"options mismatch");
 
@@ -1518,6 +1523,8 @@ public int getMaxRevisionLevel() { return(REVISION); }
 		v ^= Digest(r,currentWorker);
 		v ^= Digest(r,currentAction);
 		v ^= Digest(r,optionsResolved);
+		v ^= Digest(r,choiceA.selected);
+		v ^= Digest(r,choiceB.selected);
 		v ^= Digest(r,options);
 
 		if(pendingMoves.size()>0)

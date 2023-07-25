@@ -49,7 +49,6 @@ class HiveGameBoard extends infiniteHexBoard<HiveCell> implements BoardProtocol,
 
     // support for placement displays
     public int lastPlacement = 1;
-    
 	private HiveState unresign;
 	private HiveState board_state;
 	private HiveState undrawState;
@@ -1587,10 +1586,12 @@ public variation gamevariation = variation.hive;
             if((m.op==MOVE_PMOVE_DONE)||(m.op==MOVE_MOVE_DONE)) { doDone(replay); }
             break;
         case MOVE_OFFER_DRAW:
+           	if(canOfferDraw())
+           	{
         	if(board_state==HiveState.DrawPending) { setState(undrawState); }
         	else {  undrawState = board_state;
         			setState(HiveState.DrawPending);
-        		}
+        		}}
         	break;
         case MOVE_ACCEPT_DRAW:
            	switch(board_state)

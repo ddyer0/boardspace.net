@@ -683,10 +683,19 @@ public abstract class CommonNetConn<TYPE> implements Runnable, Config
     }
 	public static SocketProxy makeSocketConnection(String server,int port) throws IOException
 	{	Plog.log.addLog("Open socket ",server,":",port);
-		SocketProxy p = (USE_NATIVE_SOCKETS && !G.isIOS()
-		? new ClientSocket(server, port)
-		: new Socket(server,port));
+		boolean useNative = (USE_NATIVE_SOCKETS && !G.isIOS());
+		SocketProxy p = null;
+		if(useNative)
+		{
+			p = new ClientSocket(server, port);
+			if(p!=null && !p.isConnected()) { p = null; }
+		}
+		if(p==null)
+		{
+			p = new Socket(server, port);
+		}
 		Plog.log.addLog("opened socket ",p);
 		return(p);
 	}
 }
+

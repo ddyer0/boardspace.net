@@ -39,7 +39,7 @@ public class ImageLoader
 				  if(u!=null) { es = es + " "+ u; }
 				}
 		    names.put("error",es);
-		    if(throwerror)
+		if(throwerror)
         {
 		    master.setLowMemory("Not all images loaded correctly: "+es);
         }
@@ -216,7 +216,12 @@ private Image[] composite_images(Image[]images,Image[]masks,String names[])
     for (int i = 0; i < images.length; i++)
     {	Image mask = single ? masks[0]:masks[i];
         if(mask!=null && images[i]!=null) 
-        { try { images[i] = images[i].compositeSelf(mask);
+        { try { Image mi = images[i].compositeSelf(mask);
+        		if(mi!=null) { images[i] = mi; }
+        		}
+        	catch (OutOfMemoryError err) 
+        			{
+        		  master.setLowMemory("compositing "+names[i]+" "+err); 
         		}
         	catch (Throwable err)
         	{	throw G.Error("Error compositing  %s %s", names[i],err);

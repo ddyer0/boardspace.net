@@ -433,7 +433,7 @@ public class IroViewer extends CCanvas<IroCell,IroBoard> implements IroConstants
     	if(chip.id==IroId.Tile) 
     	{
     		IroCell src = bb.getSource();
-    		rotation = rotations[src.rotation];
+    		if(src!=null) { rotation = rotations[src.rotation]; }
     	}
     	chip.drawRotatedChip(g,this,rotation,bb.cellSize(), 1, xp, yp, null);
     }
@@ -529,6 +529,7 @@ public class IroViewer extends CCanvas<IroCell,IroBoard> implements IroConstants
 	       */
        
     }
+
 
     /**
 	 * draw the board and the chips on it.  This is also called when not actually drawing, to
@@ -1239,6 +1240,8 @@ public class IroViewer extends CCanvas<IroCell,IroBoard> implements IroConstants
     /** replay a move specified in SGF format.  
      * this is mostly standard stuff, but the contract is to recognize
      * the elements that we generated in sgf_save
+     * summary: 5/26/2023
+     * 	50 files visited 0 problems
      */
     public void ReplayMove(sgf_node no)
     {

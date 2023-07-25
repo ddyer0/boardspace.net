@@ -1064,7 +1064,7 @@ public abstract class Platform implements Config{
 			else if(asknanotime)
 			{	asknanotime = false;
 				time = NativeLookup.create(SystemTime.class);
-				if( time.isSupported())
+				if(time!=null && time.isSupported())
 				{	// try once
 					try {
 						

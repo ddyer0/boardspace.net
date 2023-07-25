@@ -116,7 +116,7 @@ public class commonRootApplet implements  RootAppletProtocol, Runnable,  LobbyCo
 
             if(G.offline())
             {	// get a list of supported games for offline viewing
-             	String params = "&tagname=gamedir";
+             	String params = "&tagname=gamedir"+G.platformString();
              	// unencrypted version is getInfoURL
                	UrlResult result = Http.postEncryptedURL(serverName,getEncryptedURL,params,web_server_sockets);            	
         		if(result.error==null)

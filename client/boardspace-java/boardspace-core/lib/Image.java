@@ -469,10 +469,23 @@ public class Image extends SystemImage implements Drawable,CompareTo<Image>
 			scaled.centerImage(gc,brect);
 			return scaled;
 		}
-
+		/**
+		 * get a scaled to size copy of this image. Normally, the
+		 * size will be smaller.  In rare cases where an OutOfMemory error
+		 * occurs, the original image is returned rather than a new image
+		 * @param s
+		 * @param scal
+		 * @return
+		 */
 		public Image getScaledInstance(Size s,ScaleType scal)
-		{
+		{	try {
 			return getScaledInstance(s.getWidth(),s.getHeight(),scal);
+			}
+			catch (OutOfMemoryError err) 
+				{ // this skips the maintenance of the "low memory" state, but
+				  // if it is happening here, it will happen elsewhere as well.
+				  return this; 
+				}
 		}
 		
 		 private static double cubic(double t,double v0,double v1,double v2,double v3)
