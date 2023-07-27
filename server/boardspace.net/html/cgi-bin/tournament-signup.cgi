@@ -1673,7 +1673,7 @@ sub do_edit_match()
 	my $qpl = $dbh->quote($playerid);
 	my $qtid = $dbh->quote($tid);
 	my $sched = &param('scheduled');
-	my $qsched = $dbh->quote($sched);
+	my $qsched = ($sched eq '') ? '' : "scheduled=" . $dbh->quote($sched) . ",";
 	if($admin)
 	{	my $npla = &param('nplayers');
 		while($npla>0)
@@ -1706,8 +1706,9 @@ sub do_edit_match()
 		   $qoutcome="'winner'"; 
 		 }
 	my $q = "update matchrecord set admin=$qoutcome,"
+		. "commentHistory=concat(if(commentHistory is null,'',commentHistory),'\\n',UTC_TIMESTAMP(),' admin: ',$qcom,'\\n'),"
 		. "comment=$qcom,"
-		. "scheduled=$qsched,"
+		. $qsched
 		. $win
 		. "played=UTC_TIMESTAMP()"
 		. " where matchid=$qmatch and tournament=$qtid";
@@ -1717,15 +1718,14 @@ sub do_edit_match()
 	{
 	my $q = "update matchparticipant set outcome=$qoutcome,"
 		. "comment=$qcom,"
-		. "scheduled=$qsched,"
+		. $qsched
 		. "played=UTC_TIMESTAMP()"
 		. " where matchid=$qmatch and player=$qpl and tournament=$qtid";
 	&commandQuery($dbh,$q);
 	#print "q: $q<br>";
 	&fill_player_info($dbh,$tid);
 	my $na = $names{$playerid};
-print "name is $na<p>";
-	my $q2 = "update matchrecord set commentHistory=concat(if(commentHistory is null,'',commentHistory),'\n',UTC_TIMESTAMP(),' ','$na',': ',$qcom,'\n')"
+	my $q2 = "update matchrecord set commentHistory=concat(if(commentHistory is null,'',commentHistory),'\\n',UTC_TIMESTAMP(),' ','$na',': ',$qcom,'\\n')"
 			. " where matchid=$qmatch and tournament = $qtid";
 	&commandQuery($dbh,$q2);
 	#print "q: $q2<br>";
