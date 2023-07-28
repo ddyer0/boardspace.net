@@ -3686,13 +3686,9 @@ public class Game extends commonPanel implements PlayConstants,DeferredEventHand
     { //do these things before we let the screen refresh
 
 
-        RootAppletProtocol theRoot = G.getRoot();
-
-        if (theRoot != null)
-        {
-            SoundManager.loadASoundClip(gameOverSoundName);
-        }
-         setServerFile(serverFile);
+    	SoundManager.loadASoundClip(gameOverSoundName);
+ 
+    	setServerFile(serverFile);
 
         if(myNetConn!=null)
         {

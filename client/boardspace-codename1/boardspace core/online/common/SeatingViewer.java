@@ -29,7 +29,6 @@ import lib.MouseState;
 import lib.OfflineGames;
 import lib.PopupManager;
 import lib.Random;
-import lib.RootAppletProtocol;
 import lib.StockArt;
 import lib.TextButton;
 import lib.TextContainer;
@@ -1387,13 +1386,13 @@ public class SeatingViewer extends exCanvas implements LobbyConstants
 	 }
 
     static public SeatingViewer doSeatingViewer(ExtendedHashtable sharedInfo)
-    {   RootAppletProtocol theRoot = G.getRoot();
+    {  
     	commonPanel panel = (commonPanel)G.MakeInstance("online.common.commonPanel");
     	LFrameProtocol frame;
     	SeatingViewer viewer = (SeatingViewer)G.MakeInstance("online.common.SeatingViewer");
     	if(viewer!=null)
     	{
-    	frame = theRoot.NewLFrame("Game Selector",panel);
+    	frame = LPanel.newLFrame("Game Selector",panel);
     	viewer.init(sharedInfo,frame);
     	panel.setCanvas(viewer);
     	viewer.setVisible(true);

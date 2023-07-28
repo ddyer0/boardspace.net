@@ -1,15 +1,29 @@
 package util;
 
+import java.util.StringTokenizer;
+
 import bridge.*;
 import bridge.ThreadDeath;
+import common.GameInfo;
+import lib.CanvasProtocol;
+import lib.ConnectionManager;
 import lib.DataCache;
 import lib.ExtendedHashtable;
 import lib.G;
 import lib.Http;
+import lib.InternationalStrings;
 import lib.OfflineGames;
-import lib.RootAppletProtocol;
+import lib.Plog;
 import lib.SoundManager;
+import lib.UrlResult;
+import lib.XFrame;
+import online.common.LPanel;
+import online.common.LobbyConstants;
 import online.common.OnlineConstants;
+import online.common.commonPanel;
+import rpc.RpcReceiver;
+import udp.PlaytableServer;
+import udp.PlaytableStack;
 import udp.UDPService;
 import vnc.VNCService;
 
@@ -42,14 +56,203 @@ import vnc.VNCService;
  * @author ddyer
  *
  */
-
-public class JWSApplication implements Config 
+public class JWSApplication implements Config,LobbyConstants
 {
-		public JWSApplication() { 
-	        SoundManager.getInstance();		// get it warmed up
-		}
+
+	// this should be the complete set of applet parameters that
+	// can ever be supplied, except for an indefinite number of
+	// reviewer directories
+	static final String DATALOCATION = "datalocation";
+
+	static String DefaultParameters[][] = {
+			{PLAYERS_IN_GAME,"2"},
+			{CHATWIDGET,""+USE_CHATWIDGET},
+			{BOARDCHATPERCENT,"25"},
+			{G.DEBUG, "false"},
+			{RANDOMSEED,"-1"},
+	        {GAMEINDEX,"-1"},	// game index for save game
+	        {G.LANGUAGE,DefaultLanguageName},
+	        {LOBBYPORT,"-1"},
+	        {TESTSERVER, "false"},
+	        {PICTURE, "false"},
+	        {WebStarted,"false"},
+	        {ConnectionManager.UID, "0"},
+	        {ConnectionManager.BANNERMODE, "N"},
+	        {ConnectionManager.USERNAME,"me"},
+	        {UIDRANKING,""},
+	        {GAMESPLAYED,"0"},
+	        {DefaultGameClass,"online.common.commonLobby"},	// this directs the master class
+	        //
+	        // all these null values need to be here, because they
+	        // trigger the applet client to look for the parameter
+	        // among the applet parameters.
+	        //
+			{GAMENAME,null},		// a file name, not a game type
+			{GAMETYPE,null},
+			{VIEWERCLASS,null},
+			{G.VNCCLIENT,"false"},
+			{G.ALLOWOFFLINEROBOTS,"false"},
+			{GAMEINFO,null},
+			{IMAGELOCATION,null},	// used by the player map 
+	        {DATALOCATION,null},	// used by the player map 
+	        {SMALL_MAP_CENTER_X,null},// used by the player map 
+			{SMALL_MAP_CENTER_Y,null},// used by the player map 
+			
+			{EXTRAMOUSE,null},	// debugging and admin options
+			{EXTRAACTIONS,null},
+			{FAVORITES,null},	// favorite games list, from login
+			{COUNTRY,null},		// country of origin, from login
+			{LATITUDE,null},	// current location, from login
+			{LOGITUDE,null},
+			{PROTOCOL,null},	// http or https
+			{SERVERNAME,null},	// the server we connect to
+			{SERVERKEY,null},	// permission token to connect
+			{FRAMEWIDTH,null},
+			{FRAMEHEIGHT,null},
+	    };
+
+	public static void setDefaults()
+	{	// apply the defaults
+		for(String p[] : DefaultParameters)
+    	{		
+			G.putGlobal(p[0],p[1]);
+    	}
+ 	}
+ 
+  
+	private static void init()
+    {
+       //System.out.println("init");
+        try
+        {
+            //do a definitive test in G.Composite instead
+            //if(isJDK_GEQ(1,4)) { G.jdk_supports_getpixels=true; }
+            String serverName = G.getString(SERVERNAME,null);
+
+            if (serverName == null)
+            {
+                URL codebase = G.getCodeBase();
+                serverName = codebase.getHost();
+            }
+            
+            Http.setHostName(serverName);
+            serverName = Http.getHostName(); 	// setHostName blesses and normalizes the name
+
+            if(G.offline())
+            {	// get a list of supported games for offline viewing
+             	String params = "&tagname=gamedir"+G.platformString();
+             	// unencrypted version is getInfoURL
+               	UrlResult result = Http.postEncryptedURL(serverName,getEncryptedURL,params,web_server_sockets);            	
+        		if(result.error==null)
+        		{	
+        			StringTokenizer tok = new StringTokenizer(result.text,"\n\r,");
+        			while(tok.hasMoreTokens())
+        			{
+        				int idx = G.IntToken(tok);
+        				tok.nextToken();	// skip the name
+        				String dir = tok.nextToken();
+        				G.putGlobal(REVIEWERDIR+idx,dir);
+        			}
+         		}
+        		String info = G.getString(GAMEINFO, null);
+        		if(info!=null) { GameInfo.parseInfo(info); }
+            }
+
+        }
+    	catch (ThreadDeath err) { throw err;}
+        catch (Throwable err)
+        {	
+            Http.postError(null, "Error in FrameLauncher init", err);
+        }
+    }
+
+ 
+    public static void StartLframe()
+    {	try {
+        Http.setDefaultProtocol(G.getString(PROTOCOL,null));
+        InternationalStrings.initLanguage();
+        boolean isViewer = (G.getString(OnlineConstants.GAMENAME,null)!=null)
+        					|| (G.getString(OnlineConstants.GAMETYPE, null)!=null);
+        if(isViewer) { G.setOffline(true); }
+    	boolean offline = G.offline() ;
+        boolean isVNC = G.getBoolean(G.VNCCLIENT,false);
+        PlaytableServer server = isVNC ? PlaytableStack.getSelectedServer() : null;
+    	boolean offlineLauncher = !isVNC && offline && !isViewer && offlineTableLauncher;
+        boolean isTable = offline && !offlineLauncher && G.isTable() ;
+        String classname = isViewer
+        					? "G:game.Game" 
+        					: isVNC|isTable|offlineLauncher
+        						? "online.common.commonPanel"
+        					: G.getString(DefaultGameClass,"online.common.commonLobby");
+ 
+        G.setIdString(""+G.getCodeBase());
+        commonPanel myL = (commonPanel) G.MakeInstance(classname);
+        if (myL != null)
+        {	XFrame fr = new XFrame();
+    	 	
+            String rootname = isVNC
+            					? server.getHostName()
+            					: isTable 
+            						? UDPService.getPlaytableName()
+            						: G.getString(OnlineConstants.GAMETYPE,
+            								G.getTranslations().get(offlineLauncher?LauncherName :LobbyName));
+            ExtendedHashtable sharedInfo = G.getGlobals();
+            myL.init(sharedInfo,fr);
+            // create the free standing frame
+            new LPanel(rootname, fr,myL);
+             
+            if(isVNC|isTable|offlineLauncher)
+            	{ 
+            	  if(isVNC && server.isRpc())
+            	  {	// starting a rpc style viewer, the window will change but we want to establish a connection
+            		RpcReceiver.start(server,sharedInfo,myL,fr);
+            	  }
+            	  else 
+            	  {
+            	  CanvasProtocol viewer = isVNC 
+            			  					? (CanvasProtocol)G.MakeInstance("vnc.AuxViewer")
+            			  					: (CanvasProtocol)G.MakeInstance("online.common.SeatingViewer");
+            	  // init first, then add to the frame, to avoid races in lockAndLoadImages
+            	  viewer.init(sharedInfo,fr);
+            	  myL.setCanvas(viewer);
+            	  }
+            	}
+            int fx = 5;
+            int fy = 10;
+            int fw = G.tableWidth();
+            int fh = G.tableHeight();
+            
+            if(G.debug()&&(G.isTable()))
+            {      	
+            }
+            else
+            {
+            double sc = G.getDisplayScale();
+            fx = 100;
+            fy = 50;
+            fw = (int)(sc*G.getInt(OnlineConstants.FRAMEWIDTH,offlineLauncher?1000 : DEFAULTWIDTH));
+            fh = (int)(sc*G.getInt(OnlineConstants.FRAMEHEIGHT,offlineLauncher ? 700 : DEFAULTHEIGHT));
+            }
+            fr.setInitialBounds(fx,fy,fw,fh );
+                      
+      	 	if(fr!=null) { fr.setVisible(true); } 
+
+            myL.run();
+            //System.out.println("root start");
+          }
+    }
+    	catch (Throwable e)
+    	{	Http.postError(null,"FrameLauncher outer run",e);
+    	}	
+    }
+
+    public void runLframe()
+    {	init();
+		StartLframe();
+    }
+
 		public boolean runnable = true;
-		public void runLogin(String serverName,RootAppletProtocol realRoot)
+		public void runLogin(String serverName)
 		{	
 			// the global state table can be contaminated during play.  In case of 
 			// a loop around, we save the original contents and restore it.
@@ -65,7 +268,7 @@ public class JWSApplication implements Config
         	boolean vnc =  G.getBoolean(G.VNCCLIENT,false);
         	if(vnc || ( webStarted && !G.offline()))
         	{	
-        		runApp(realRoot);					
+				runLframe();					
 			}
         	if(vnc) { G.setOffline(false); }
         	// 
@@ -83,14 +286,14 @@ public class JWSApplication implements Config
 	        G.waitAWhile(this,500);
 		}
 		
-		public void runOffline(String serverName,RootAppletProtocol realRoot)
+		public void runOffline(String serverName)
 		{	
 			OfflineGames.pruneOfflineGames(90);
 	    	// the global state table can be contaminated during play.  In case of 
 			// a loop around, we save the original contents and restore it.
 			ExtendedHashtable savedGlobals = G.getGlobals().copy();
 				
-			runApp(realRoot);					
+		  	runLframe();					
 			// 
         	// restore the globals to their initial state, except serverName
         	//
@@ -104,26 +307,19 @@ public class JWSApplication implements Config
 	        G.waitAWhile(this,100);
 		}
 		
-		public void runApp(RootAppletProtocol realRoot)
-		{	
-			realRoot.init();
-	        realRoot.StartLframe();
-		}
 
 		public void runMain(String args[])
 		{ 	
 			// must be first because it loads the defaults
-			RootAppletProtocol realRoot = new online.common.commonRootApplet();
+			setDefaults();
 			G.setGlobalDefaultFont();	// set a reasonable global default
 			// copy the web start parameters
-			
-			
-			for(int i=0; i<args.length; i+=2)
+			for(int i=0; i<args.length-1; i+=2)
 			{	String par = args[i].toLowerCase();
 				String arg = args[i+1];
 				if(arg!=null) 
 					{ G.putGlobal(par,arg);
-					  //System.out.println("put "+par+" "+arg);
+					  Plog.log.addLog("put arg " ,par," ",arg);
 					}
 			}
 			String serverName = G.getString(SERVERNAME,DEFAULT_SERVERNAME);
@@ -163,11 +359,11 @@ public class JWSApplication implements Config
 			  		boolean wasOff = G.offline();
 			  		if(wasOff)
 			  		{	
-			  			runOffline(serverName,realRoot);
+			  			runOffline(serverName);
 			  		}
 			  		else 
 			  		{	
-			  			runLogin(serverName,realRoot); 
+			  			runLogin(serverName); 
 			  		}
 			  	if(G.offline()==wasOff) { 
 			  		// didn't change modes, revert to the default
@@ -176,7 +372,7 @@ public class JWSApplication implements Config
 			  	while(G.isCodename1());
 	        }
 	        else 
-	        { 	runApp(realRoot);
+	        { 	runLframe();
 	    	}
 		}
 		// main methods cause IOS builds to fail by failing to launch

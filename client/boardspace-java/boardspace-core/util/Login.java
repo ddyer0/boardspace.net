@@ -183,7 +183,8 @@ public class Login implements SimpleObserver,Config,Crypto
 					 G.infoBox("server unavailable","The game server is not running.  Please try again later.");
 				 }
 				 else if(result.text.startsWith("message"))
-				 {	doMessage(result.text.substring(9));
+				 {	captured = true;
+				 	doMessage(result.text.substring(9));
 				 }
 				 else if(result.text.startsWith("applet"))
 				 {

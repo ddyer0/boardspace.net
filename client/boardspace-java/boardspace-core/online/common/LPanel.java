@@ -8,6 +8,7 @@ import javax.swing.BoxLayout;
 import bridge.JPopupMenu;
 import bridge.FullscreenPanel;
 import lib.G;
+import lib.LFrameProtocol;
 import lib.NullLayout;
 import lib.XFrame;
 
@@ -50,7 +51,21 @@ public class LPanel extends FullscreenPanel implements WindowListener,LobbyConst
         
         add(theLobby);
     }
-
+    
+    /**
+     * create a free standing frame containing panel "a"
+     * 
+     * @param name
+     * @param a
+     * @return
+     */
+    public static LFrameProtocol newLFrame(String name,commonPanel a)
+    {
+    	XFrame fr = new XFrame();
+    	new LPanel(name, fr, a);
+    	return(fr);
+    }
+    
     public void setVisible(boolean v)
     {
     	super.setVisible(v);

@@ -545,13 +545,13 @@ public abstract class exCanvas extends ProxyWindow
     }
     
     private AuxViewer doViewer(ExtendedHashtable sharedInfo)
-    {   RootAppletProtocol theRoot = G.getRoot();
+    {  
     	commonPanel panel = (commonPanel)new commonPanel();
     	LFrameProtocol frame;
     	AuxViewer viewer = (AuxViewer)new vnc.AuxViewer();
     	if(viewer!=null)
     	{
-    	frame = theRoot.NewLFrame("VNC viewer",panel);
+    	frame = LPanel.newLFrame("VNC viewer",panel);
     	viewer.init(sharedInfo,frame);
     	panel.setCanvas(viewer);
     	viewer.setVisible(true);
@@ -1717,12 +1717,18 @@ graphics when using a touch screen.
         public void setLowMemory(String msg)
         {	
     		  G.print(msg);
-    		  if(l.nlowmemories++ < 2)
+     		  int nlow = l.nlowmemories++;
+    		  if(nlow < 2)
     		  {
     		  G.getGlobals().putBoolean(G.LOWMEMORY,true); 
+    		  String lowmessage = (s==null)?LowMemoryMessage:s.get(LowMemoryMessage);
     		  if(theChat!=null) 
     		  { theChat.postMessage(ChatInterface.LOBBYCHANNEL , KEYWORD_LOBBY_CHAT,
-    				  (s==null)?LowMemoryMessage:s.get(LowMemoryMessage));
+    				  lowmessage);
+    		  }
+    		  else if(nlow==0)
+    		  {
+    			  G.infoBox(lowmessage,msg);
     		  }
               if(sharedInfo!=null)	// can be null if preloading
               {ConnectionManager myNetConn = (ConnectionManager)sharedInfo.get(exHashtable.NETCONN);
@@ -1734,7 +1740,7 @@ graphics when using a touch screen.
       				  myNetConn.sendMessage(seq + NetConn.SEND_NOTE+"low memory: "+msg);
       				  myNetConn.na.Unlock();
       				}}
-      		  if(l.nlowmemories==1) { System.gc(); }
+      		  if(nlow==0) { System.gc(); }
         	}
         }
 

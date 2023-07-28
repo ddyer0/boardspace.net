@@ -1553,10 +1553,6 @@ public static void randomDelay()
 	}
 }
 
-private static RootAppletProtocol theRoot = null;
-public static final void setRoot(RootAppletProtocol r) { theRoot = r; }
-public static final RootAppletProtocol getRoot() { return(theRoot); }
-
 private static InternationalStrings translations = null;
 public static final InternationalStrings getTranslations()
 {	if(translations==null) 

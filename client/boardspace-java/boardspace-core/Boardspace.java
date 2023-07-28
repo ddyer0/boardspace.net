@@ -18,6 +18,7 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
+import java.net.SocketException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.net.URLConnection;
@@ -27,6 +28,7 @@ import java.util.Stack;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
+import javax.net.ssl.SSLHandshakeException;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
@@ -43,7 +45,7 @@ import javax.swing.JTextArea;
  * (3) Parse the index file for the application found in that jar, which provides
  *     the mapping between package names and the rest of the jar files.
  * (4) start a background process that will load all the jars, eventually
- * (5) start the main application.  Any classes no yet cached in background
+ * (5) start the main application.  Any classes not yet cached in background
  *     are loaded immediately.
  * 
  * For testing purposes, you can run/debug this directly from eclipse, or
@@ -139,6 +141,12 @@ class CacheInfo {
 	{	// this is synchronized so only one copy operation can ever be in progress for a given file.  The "loaded" flag is set
 		// here so there's no race contition.   "parent" is passed in so the addURL method of the classloader can be called, which
 		// is important for java 18 and above
+		boolean doit = true;
+		boolean retry = false;
+		while(doit)
+		{
+		doit = false;
+		try {
 		InputStream input = new URL(host+from).openConnection().getInputStream();
 		if(loaded)
 		{
@@ -168,6 +176,12 @@ class CacheInfo {
 		// register the new jar
 		parent.addURL(toFile.toURI().toURL());
 		}
+		}
+		catch (SSLHandshakeException|SocketException err) 
+			{ Boardspace.log("retrying after "+err+" copying "+from+" to "+to);
+			  if(!retry) { retry = doit = true; }}
+		}
+		
 	}
 	
 	// copy and cache a file, using the appropriate copy method

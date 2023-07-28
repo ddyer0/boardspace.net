@@ -14,7 +14,6 @@ public class NamedClasses {
     	classes.put("online.search.UCTTreeViewer", online.search.UCTTreeViewer.class);
     	classes.put("online.common.commonPanel", online.common.commonPanel.class);
     	classes.put("online.common.commonLobby",online.common.commonLobby.class);
-    	classes.put("online.common.commonRootApplet",online.common.commonRootApplet.class);
     	classes.put("online.game.Game",online.game.Game.class);
     	classes.put("online.common.lobbyCanvas",online.common.lobbyCanvas.class);
      	classes.put("online.common.LobbyMapViewer",online.common.LobbyMapViewer.class);

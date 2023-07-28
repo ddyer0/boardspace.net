@@ -23,12 +23,14 @@ public interface LoaderConfig {
 	 */
 	static final String webUrl = "/cgi-bin/applettag.cgi?tagname=appjarinfo";	// url to fetch the list of jars
 	/**
-	 * this url is a logging application, specically to log problems the end user
+	 * this url is a logging application, specifically to log problems the end user
 	 * has with this application.  there's no other way you'll ever know!
 	 */
     static final String errorURL = "/cgi-bin/error.cgi";	
     
-	static final String MiniloaderVersion = "1.3";
+	static final String MiniloaderVersion = "1.4";
+				// version 1.4 adds a retry in copyurl
+	
     static final String MiniloaderId = "miniloader=version-"+MiniloaderVersion;
 
 	/**

@@ -28,6 +28,7 @@ import lib.*;
 import lib.RepaintManager.RepaintStrategy;
 import lib.SimpleSprite.Movement;
 import lib.TimeControl.TimeId;
+import online.common.LPanel;
 import online.common.LaunchUser;
 import online.common.LaunchUserStack;
 import online.common.OnlineConstants;
@@ -1126,17 +1127,17 @@ public abstract class commonCanvas extends exCanvas
 	    }
 	    
 	    private void doTreeViewer(boolean uct)
-	    {   RootAppletProtocol theRoot = G.getRoot();
+	    {   
 	    	commonPanel panel = (commonPanel)G.MakeInstance("online.common.commonPanel");
 	    	LFrameProtocol frame;
 	    	if(uct)
 	    		{
 	    		treeViewer = (UCTTreeViewer)G.MakeInstance("online.search.UCTTreeViewer");
-	    		frame = theRoot.NewLFrame("UCT search tree viewer",panel);
+	    		frame = LPanel.newLFrame("UCT search tree viewer",panel);
 	    		}
 	    	else {
 		    	treeViewer = (AlphaTreeViewer)G.MakeInstance("online.search.AlphaTreeViewer");
-		    	frame = theRoot.NewLFrame("AlphaBeta search tree viewer",panel);	    		
+		    	frame = LPanel.newLFrame("AlphaBeta search tree viewer",panel);	    		
 	    	}
 	    	treeViewer.init(sharedInfo,frame);
 	    	treeViewer.setCanvas(commonCanvas.this);

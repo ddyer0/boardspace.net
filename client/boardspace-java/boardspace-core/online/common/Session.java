@@ -11,7 +11,6 @@ import lib.ExtendedHashtable;
 import lib.G;
 import lib.IStack;
 import lib.PopupManager;
-import lib.RootAppletProtocol;
 import lib.StringStack;
 import lib.TimeControl;
 import lib.TimeControl.Kind;
@@ -653,10 +652,9 @@ public class Session implements LobbyConstants
 		                       + gameIndex 
 		                       + ((spectator&&!chatmode) ? (" - "+s.get(SpectatorMessage)) : "");
 	
-	     RootAppletProtocol theRoot = G.getRoot();
 		 commonPanel theGame = (commonPanel)G.MakeInstance("G:game.Game");
 		 String frameName = G.isCodename1()?framename : s.get(WebsiteMessage,framename);
-		 LFrameProtocol frame = playFrame = theRoot.NewLFrame(frameName,theGame);
+		 LFrameProtocol frame = playFrame = LPanel.newLFrame(frameName,theGame);
 		 //System.out.println("Sess " + sess.seedSet+" order " + sess.myOrder);
 		  GameInfo GI = currentGame;
 		  

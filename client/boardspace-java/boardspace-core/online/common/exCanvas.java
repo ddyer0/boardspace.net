@@ -551,13 +551,13 @@ public abstract class exCanvas extends Canvas
     }
     
     private AuxViewer doViewer(ExtendedHashtable sharedInfo)
-    {   RootAppletProtocol theRoot = G.getRoot();
+    {  
     	commonPanel panel = (commonPanel)new commonPanel();
     	LFrameProtocol frame;
     	AuxViewer viewer = (AuxViewer)new vnc.AuxViewer();
     	if(viewer!=null)
     	{
-    	frame = theRoot.NewLFrame("VNC viewer",panel);
+    	frame = LPanel.newLFrame("VNC viewer",panel);
     	viewer.init(sharedInfo,frame);
     	panel.setCanvas(viewer);
     	viewer.setVisible(true);

@@ -366,16 +366,7 @@ public class FileSelector extends FullscreenPanel
     }
 
     private void initGame(String game)
-    {
-        if (observer.countObservers() == 0)
-        {	// re-launch the game if it has been closed.
-            G.getRoot().StartLframe();
-   		  	G.doDelay(200);
-   		  	// wait for the frame to start up, which will as a side effect set observer
-   		  	// it's also a good idea to let things settle to avoid races in configuring
-   		  	// the frame.
-        }
-        
+    {        
         if(dirField!=null) 
         	{ 
         	  if(currentSource.currentZip!=null)
