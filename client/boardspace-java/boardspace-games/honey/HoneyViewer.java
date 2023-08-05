@@ -65,15 +65,10 @@ public class HoneyViewer extends CCanvas<HoneyCell,HoneyBoard> implements HoneyC
     private Rectangle scoreRects[] = addZoneRect("playerScore",MAX_PLAYERS);
     private Rectangle eyeRects[] = addZoneRect("PlayerEye",MAX_PLAYERS);
     private Rectangle noticeRects[] = addRect("notice",MAX_PLAYERS);
-    private Rectangle drawPileRect = addRect("drawPileRect");
     private Rectangle pullTimer = addRect("pull");
-    private Rectangle bigRack = addZoneRect("bigrack");
     private Rectangle noticeRect = addRect("notice");
-    private Rectangle upperBoardRect = addRect("upperboard");
     private Color ZoomColor = new Color(0.0f,0.0f,1.0f);
 
-	private TextButton pullButton = addButton(PullAction,HoneyId.PullAction,ExplainPull,
-			HighlightColor, rackBackGroundColor,boardBackgroundColor);
 	private TextButton endgameButton = addButton(EndGameAction,HoneyId.EndGame,EndGameDescription,
 			HighlightColor, rackBackGroundColor,boardBackgroundColor);
 
@@ -88,7 +83,7 @@ public class HoneyViewer extends CCanvas<HoneyCell,HoneyBoard> implements HoneyC
     }
     public int ScoreForPlayer(commonPlayer p)
     {
-    	return(bb.getPlayerBoard(p.boardIndex).highScore());
+    	return(bb.getPlayerBoard(p.boardIndex).score());
     }
   
     public boolean WinForPlayer(commonPlayer p)
@@ -229,32 +224,22 @@ public class HoneyViewer extends CCanvas<HoneyCell,HoneyBoard> implements HoneyC
     	//layout.placeRectangle(logRect,minLogW, minLogW, minLogW*3/2, minLogW*3/2,BoxAlignment.Edge,true);
        	layout.alwaysPlaceDone = false;
        	layout.placeDoneEditRep(buttonW,buttonW*4/3,endgameButton,editRect,noticeRect);
-       	int doneW = G.Width(editRect);
        	layout.alwaysPlaceDone = true;
-       	layout.placeDoneEditRep(doneW,doneW,pullButton,null);
-      	 
+      	layout.placeRectangle(pullTimer,buttonW*2,buttonW*2,BoxAlignment.Center);
     	layout.placeTheVcr(this,vcrw,vcrw*3/2);
        	
-       //	commonPlayer pl = getPlayerOrTemp(0);
-       //	int spare = G.Height(pl.playerBox)/3;
-       // layout.placeRectangle(drawPileRect,spare,spare,BoxAlignment.Center);
        	       	
     	Rectangle main = layout.getMainRectangle();
     	int mainX = G.Left(main);
     	int mainY = G.Top(main);
-    	int mainW = G.Width(main)-stateH*2;
+    	int mainW = G.Width(main);
     	int mainH = G.Height(main)-stateH*2;
     	
     	// There are two classes of boards that should be rotated. For boards with a strong
     	// "my side" orientation, such as chess, use seatingFaceToFaceRotated() as
     	// the test.  For boards that are noticably rectangular, such as Push Fight,
     	// use mainW<mainH
-     	int nrows =  24;
-        int ncols =  20;
-  	
     	// calculate a suitable cell size for the board
-    	double cs = Math.min((double)mainW/ncols,(double)(mainH-stateH)/nrows);
-    	int CELLSIZE = (int)cs;
     	//G.print("cell "+cs0+" "+cs+" "+bestPercent);
     	// center the board in the remaining space
     	int boardW = mainW;
@@ -267,30 +252,12 @@ public class HoneyViewer extends CCanvas<HoneyCell,HoneyBoard> implements HoneyC
     	//
         int stateY = boardY-stateH;
         int stateX = boardX;
-    	int stripeW = CELLSIZE*2*(rackSize+3);
     	int zoomW = stateH*4;
     	G.placeRow(stateX,stateY,boardW ,stateH,stateRect,annotationMenu,noChatRect);
     	G.placeRight(stateRect, zoomRect, zoomW);
-    	if(plannedSeating())
-    	{ G.SetRect(boardRect,0,0,0,0);
-    	  G.SetRect(upperBoardRect,0,0,0,0);
-    	  G.SetRect(bigRack,0,0,0,0);
-    	  G.SetRect(goalRect,0,0,0,0);
-    	}
-    	else 
-    	{	int sp = (boardW-stripeW)/2;
-    		int c2 = CELLSIZE*2;
-  
-        	G.SetRect(boardRect,boardX,boardY,boardW,boardH-c2);
-           	G.SetRect(upperBoardRect,boardX,boardY,boardW,c2);
-        	G.SetRect(goalRect, boardX, G.Bottom(boardRect),boardW,stateH);   
-        	int goalB = G.Bottom(goalRect);
-        	G.SetRect(bigRack, boardX+sp, goalB, stripeW, planned?0:c2);
-        	G.SetRect(drawPileRect,boardX,goalB, c2,c2);
-        	G.SetRect(pullTimer,boardX+boardW-c2,goalB,c2,c2);
-    	}
-
-  
+    	
+    	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
+    	G.SetRect(goalRect,boardX,boardY+boardH-stateH,boardW,stateH);
 
     	// goal and bottom ornaments, depending on the rendering can share
     	// the rectangle or can be offset downward.  Remember that the grid
@@ -369,175 +336,12 @@ public class HoneyViewer extends CCanvas<HoneyCell,HoneyBoard> implements HoneyC
     	}
     	GC.frameRect(gc,Color.black,r);
     }
-    private void drawDrawPile(Graphics gc,HitPoint highlight,HoneyBoard gb)
-    {	Rectangle r = drawPileRect;
-    	int boxw = G.Width(r);
-    	int cs = Math.min(gb.cellSize(),boxw/4);
-    	int w = boxw-cs;
-    	int h = G.Height(r)-cs-cs/2;
-    	int l = G.Left(r)+cs/2;
-    	int t = G.Top(r)+cs/2;
-    	boolean canHit = false;
-		gb.drawPile.setLastSize(cs);
-    	GC.frameRect(gc,Color.black,r);
-      	if(canHit && highlight!=null)
-      		{
-      		highlight.hitObject = gb.drawPile;
-      		highlight.hitCode=HoneyId.DrawPile;
-      		highlight.spriteColor = Color.red;
-      		highlight.spriteRect = r;
-      		}
-    	if(w>0 && h>0)
-    	{
-    	Random rand = new Random(2324);
-    	int tilesLeft = gb.drawPile.height();
-    	for(int i=0;i<tilesLeft;i++)
-    	{
-    		int dx = l+rand.nextInt(w);
-    		int dy = t+rand.nextInt(h);
-    		boolean hide = true;
-    		if(gb.drawPile.chipAtIndex(i).drawChip(gc, this, canHit?highlight:null, HoneyId.DrawPile,cs,dx,dy,
-    				hide ? HoneyChip.BACK : null))
-    		{
-    			highlight.hitObject = gb.drawPile;
-    		}
-    		gb.drawPile.rotateCurrentCenter(gc,dx,dy);
-    	}
-    	GC.setFont(gc, largeBoldFont());
-    	GC.Text(gc, true, l,G.Bottom(r)-cs/2,w,cs/2,Color.black,null,s.get(TilesLeft,tilesLeft));
-    	}
-     }
-	// draw a box of spare chips. For pushfight it's purely for effect, but if you
-    // wish you can pick up and drop chips.
-    private void DrawChipPool(Graphics gc, Rectangle r,Rectangle er, commonPlayer pl, HitPoint highlight,HitPoint highlightAll,HBoard pboard)
-    {	
-    	if(gc!=null)
-    	{
-    		setDisplayParameters(pboard,r,true);
-    		drawBoardElements(gc,pboard,r,null,null);
-    	}
-    }
-    
-     /**
-     * major pain taken to allow racks to be rearranged any time.  There is an intermediate
-     * map, used only by the user interface, which rearranges the location of the actual
-     * cells containing the player's letters.  When the user picks up one of their letters,
-     * nothing changes in the actual rack, and nothing is transmitted to the opponents.
-     * When the used drops the letter back onto the rack, the map is reordered but again,
-     * nothing changes from the public perspective.  If a tile is dropped on the board,
-     * which can only happen when it is the player's turn, an actual "move tile" is sent.
-     * 
-     * Additional complications take care of displaying the sprite with the correct
-     * orientation, both during this local rearrangement and global play on the board,
-     * which is being rotated to match the player's seat.
-     * @param gc
-     * @param gb
-     * @param rack
-     * @param rackmap
-     * @param cells
-     * @param map
-     * @param picked
-     * @param censor
-     * @param highlight
-     * @param rackOnly
-     * @param pl
-     */
-    private void drawRack(Graphics gc,HBoard gb, Rectangle rack,
-    		HoneyCell[]cells,
-    		HoneyCell[]mappedCells,
-    		int map[],int picked,boolean censor,HitPoint highlight,boolean rackOnly)
-    {	int forPlayer = gb.boardIndex;
-    	int h = G.Height(rack);
-    	int w = G.Width(rack);
-    	int cy = G.centerY(rack)-h/10;
-    	int nsteps = map.length;
-    	int xstep = Math.min(w/(nsteps+1),h*3/4); 
-    	int tileSize = (int)(xstep*1);
-    	int cx = G.Left(rack)+(w-xstep*nsteps)/2+xstep/2;
-    	boolean full = gb.rackIsFull();
-    	GC.fillRect(gc,Color.lightGray,rack);
-       	GC.frameRect(gc, Color.black, rack);
-
-
-    	for(int idx = 0;idx<nsteps;idx++)
-		{
-    	int mapValue = map[idx];
-    	HoneyCell c = mapValue>=0 ? cells[mapValue] : null;
-    	HoneyCell mc = mappedCells[idx];
-    	HoneyChip top = c==null ? null : c.topChip();
-    	mc.reInit();
-    	if(top!=null) { mc.addChip(top); }
-       	boolean legalPick = gb.LegalToHitChips(mc);
-    	if(picked==idx) { top = null; }
-     	boolean localDrop = !full && (picked>=0 || gb.pickedObject!=null);
-     	boolean moving = gb.pickedObject!=null;
-    	boolean ourDrop = !rackOnly && moving;	// we can drop from the board, and something is moving
-    	char myCol = cells[0].col;
-    	boolean canPick = legalPick && 
-    				(!localDrop
-    						&& (top!=null)
-    						&& !ourDrop);
-
-    	{
-       	if(mc.activeAnimationHeight()>0) { top = null; }
-      	setLetterColor(gc,gb,mc);
-      	//print("Draw "+idx+" "+c+" "+top+" @ "+cx);
-    	mc.drawChip(gc, this, top, tileSize, cx, cy, censor ? HoneyChip.BACK : null);
-    	if(c!=null) { c.copyCurrentCenter(mc);	}// set the center so animations look right
-       	}
-
-    	if(localDrop && top==null)
-    	{
-    		StockArt.SmallO.drawChip(gc,this,tileSize,cx,cy,null);
-    		
-    	}  
-     	if((canPick||localDrop) 
-     			&& G.pointInRect(highlight, cx-tileSize/2,cy-tileSize/2,tileSize,tileSize))
-    	{	boolean hit = false;
-    		if(localDrop )
-    		{	if(moving)
-    			{
-    				if(top==null)
-    				{
-    	    			highlight.hitObject = G.concat( "drop " ,forPlayer," Rack ",myCol," ",idx);
-    	    			hit = true;
-   					
-    				}
-    			}
-    			else {
-    			highlight.hitObject = G.concat("replace ",forPlayer," Rack ",myCol," ",idx);
-				hit = true;
-    			}
-    			
-    		}
-    		else
-    		{   highlight.hitObject = G.concat("lift ",forPlayer," Rack ",myCol," ",idx," ",map[idx]);
-				hit = true;
-    		}
-    		if(hit)
-    		{
-  			highlight.hit_x = cx;
-    		highlight.hit_y = cy;
-			highlight.hitCode = HoneyId.LocalRack;
-			highlight.spriteColor = Color.red;
-			highlight.awidth = tileSize;
-    		}
- 
-			
-    	}
-		cx += xstep;
-		}
-
-    }
-
 
     private void DrawScore(Graphics gc, Rectangle r, commonPlayer pl, HitPoint highlight,HBoard pboard)
     {	
     	int val = pboard.score();
-    	int high = pboard.highScore();
-    	GC.frameRect(gc,Color.black,r);
+     	GC.frameRect(gc,Color.black,r);
     	String msg = ""+val;
-    	if(high>val) { msg += "\nHigh: "+high; }
     	GC.Text(gc, true,r,Color.black,null,msg);
     }
     /**
@@ -547,41 +351,8 @@ public class HoneyViewer extends CCanvas<HoneyCell,HoneyBoard> implements HoneyC
      */
     //public int activeAnimationSize(Drawable chip,int thissize) { 	 return(thissize); 	} 
     
-    private HoneyCell getMovingTile(int ap)
-    {	HBoard pboard = currentPlayerBoard(bb);
-    	int picked = pboard.getMapTarget();
-    	if(picked>=0) { 
-    		HoneyCell[] prack = pboard.getPlayerRack();
-    		if(prack==null) { return null;}
-    		if(picked>=0 && picked<prack.length)
-    		{
-    			return prack[picked];
-    		}
-    	}
-    	return(null);
-    }
-    private HoneyCell getPickedRackCell(HitPoint highlight)
-    {
-       	int rm = remoteWindowIndex(highlight);
-    	if(rm>=0)
-    	{	HoneyCell c = getMovingTile(rm);
-    		if(c!=null) { return(c); }
-    	}
-    	else {
-    	{int ap = getViewPlayer();
-    	 HoneyCell c = getMovingTile(ap);
-    	 if(c!=null) { return(c); }
-    	}
- 
-     	if(allowed_to_edit || G.offline())
-    	{	commonPlayer pl = inPlayerBox(highlight);
-    		if(pl!=null)
-    			{HoneyCell c = getMovingTile(pl.boardIndex);
-    			return(c);
-    			}
-    	}}
-    	return(null);
-    }
+
+
     // return the player whose chip rect this HitPoint is in
     // considering the rotation of the player block
     
@@ -595,12 +366,7 @@ public class HoneyViewer extends CCanvas<HoneyCell,HoneyBoard> implements HoneyC
     	return(null);
     }
     public int getOurMovingObject(HitPoint highlight)
-    {	HoneyCell picked = getPickedRackCell(highlight);
-    	if(picked!=null)
-    	{
-    		HoneyChip top = picked.topChip();
-    		if(top!=null) { return(top.chipNumber()); }
-    	}
+    {	
         if (OurMove())
         {	
             return (currentPlayerBoard(bb).movingObjectIndex());
@@ -738,11 +504,6 @@ public class HoneyViewer extends CCanvas<HoneyCell,HoneyBoard> implements HoneyC
      */
     public String encodeScreenZone(int x, int y,Point p)
     {
-    	if (bigRack.contains(x, y)&&!mutable_game_record)
-    	{	G.SetLeft(p, -1);
-    		G.SetTop(p,-1);
-    		return("off");
-    	}
     	return(super.encodeScreenZone(x,y,p));
     }
     
@@ -934,7 +695,6 @@ public void setLetterColor(Graphics gc,HBoard gb,HoneyCell cell)
        String goalmsg = pboard.invalidReason==null ? GoalExplanation : InvalidExplanation;
        goalAndProgressMessage(gc,nonDragSelect,Color.black,msg,progressRect, goalRect,goalmsg);
        }
-       drawDrawPile(gc,ourTurnSelect,gb);
        drawPullTimer(gc,ourTurnSelect,gb);
        for(int player=0;player<bb.players_in_game;player++)
        	{ commonPlayer pl1 = getPlayerOrTemp(player);
@@ -972,18 +732,6 @@ public void setLetterColor(Graphics gc,HBoard gb,HoneyCell cell)
        {
        drawBoardElements(gc, pboard, boardRect, ourTurnSelect,selectPos);
        }
-       if(!planned)
-      	{  
-    	   // generally prevent spectators seeing tiles, unless openracks or gameover
-    	   boolean censorSpectator =  iAmSpectator()&&!allowed_to_edit;
-    	   drawRack(gc,pboard,bigRack,
-    			    pboard.getPlayerRack(),pboard.getPlayerMappedRack(),
-    			    pboard.getRackMap(),pboard.getMapPick(),
-
-    			   	censorSpectator,
-    			   	censorSpectator ? null : selectPos,
-    			   	ourTurnSelect==null); 
-      	}
        GC.setFont(gc,standardBoldFont());
        zoomRect.draw(gc,nonDragSelect);
      
@@ -1006,12 +754,6 @@ public void setLetterColor(Graphics gc,HBoard gb,HoneyCell cell)
 			
 			
 			handleEditButton(gc,messageRotation,editRect,buttonSelect,selectPos,HighlightColor, rackBackGroundColor);
-			if(state==HoneyState.Confirm 
-					|| mutable_game_record
-					)
-					{
-					pullButton.show(gc, messageRotation, buttonSelect);
-					}
         }
        
 
@@ -1238,14 +980,6 @@ public void setLetterColor(Graphics gc,HBoard gb,HoneyCell cell)
 	    case ZoomSlider:
         case InvisibleDragBoard:
 			break;
-        case Rack:
-        case LocalRack:
-        	{
-        	String msg = (String)hp.hitObject;
-            // transmit only drop from the board, not shuffling of the rack
-            PerformAndTransmit(msg);
-        	}
-    		break;
         case BoardLocation:
 	        HoneyCell hitCell = hitCell(hp);
 	    	PerformAndTransmit("Pickb "+getViewPlayer()+" "+hitCell.col+" "+hitCell.row);
@@ -1299,13 +1033,6 @@ public void setLetterColor(Graphics gc,HBoard gb,HoneyCell cell)
         case PullAction:
         	PerformAndTransmit("Pull "+getViewPlayer()+" "+bb.nextTileCount());
         	break;
-        case LocalRack:
-        	{
-        	String msg = (String)hp.hitObject;
-            // transmit only drop from the board, not shuffling of the rack
-            PerformAndTransmit(msg);
-        	}
-        	break;
         case Definition:
         	definitionCell = hitCell(hp);
         	break;
@@ -1322,37 +1049,15 @@ public void setLetterColor(Graphics gc,HBoard gb,HoneyCell cell)
         	PerformAndTransmit("SetBlank "+getViewPlayer()+" "+ch.letter);
         	}
         	break;
-        case Rack:
-    		{
-    		// drawing the rack prepares the move
-            String msg = (String)hp.hitObject;
-            // transmit only drop from the board, not shuffling of the rack
-            PerformAndTransmit(msg);
-        	}
-        	
-        	break;
-        case DrawPile:
         case EmptyBoard:
         	{
         		HoneyCell hitObject = hitCell(hp);
         		HBoard pb = currentPlayerBoard(bb);
         		if(pb.pickedObject==null)
-            	{	HoneyCell c = getPickedRackCell(hp);
-            		if(c!=null)
-            		{
-            			PerformAndTransmit(G.concat("move ",getViewPlayer()," Rack ",G.printCol(c.col)," ",c.row," ",
-            					hitCode.name()," ",G.printCol(hitObject.col)," ",hitObject.row));
-            		}
-            		else 
-            		{
-            			PerformAndTransmit(G.concat("Pick ",getViewPlayer()," ",hitCode.name()," ",G.printCol(hitObject.col)," ",hitObject.row));
-            		}
+            	{	
+            		PerformAndTransmit(G.concat("Pick ",getViewPlayer()," ",hitCode.name()," ",G.printCol(hitObject.col)," ",hitObject.row));
             	}
-        		else if(hitCode==HoneyId.DrawPile)
-        		{
-        			PerformAndTransmit(G.concat("Drop ",getViewPlayer()," ",hitCode.name()," ",G.printCol(hitObject.col)," ",hitObject.row)); 
-        		}
-        		else {
+         		else {
         			PerformAndTransmit(G.concat("Dropb ",getViewPlayer()," ",G.printCol(hitObject.col)," ",hitObject.row)); 
         		}
         	}
@@ -1371,7 +1076,7 @@ public void setLetterColor(Graphics gc,HBoard gb,HoneyCell cell)
 
     private void setDisplayParameters(HBoard pboard,Rectangle r,boolean fixed)
     {
-    	pboard.SetDisplayParameters(1,1.0,0.3,0,30.0); // shrink a little and rotate 30 degrees
+    	pboard.SetDisplayParameters(1.1,1.0,0.3,-0.35,30.0); // shrink a little and rotate 30 degrees
        	pboard.SetDisplayRectangle(r);
     }
 

@@ -59,7 +59,6 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
     private static final String SelectBotMessage = "Select Robot";
     private static final String NoRobotMessage = "Player 1 Moves first";
     private static final String ShowInfoMessage = "Show info for #1";
-    private static final String UnknownPlayerMessage = "(unknown)";
     private static final String YourNameMessage = "your name";
     private static final String ActiveInMessage = "Active in";
     private static final String WaitingInMessage = "Waiting in";
@@ -113,8 +112,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
     		SelectBotMessage,
     		NoRobotMessage,
     		ShowInfoMessage,
-    		UnknownPlayerMessage,
-    		YourNameMessage,
+     		YourNameMessage,
     		ActiveInMessage,
     		WaitingInMessage,
     		
@@ -609,7 +607,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 		String rankstring =  bestRankString(user);
 		String rank = rankstring;
 		String name = user.name;
-		if(name==null) { name = s.get(UnknownPlayerMessage); }
+		if(name==null) { name = s.get(UNKNOWNPLAYER); }
 		GC.setColor(inG,(lobbyState == ConnectionState.IDLE) ?Color.gray : Color.blue);
 		if((user.chatTime+CHATINTERVAL)>now) 
 		{ GC.setColor(inG,lightBlue); 
@@ -2705,7 +2703,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	private String userPrettyName(User u)
 	{
 		String p = u.publicName;
-	    return((p!=null) ? p.toLowerCase() : s.get("(unknown)")); 
+	    return((p!=null) ? p.toLowerCase() : s.get(UNKNOWNPLAYER)); 
 	}
 public void shutDown()
 {	UDPService.stop();
@@ -2988,9 +2986,7 @@ private void dragPinch(int x0,int y, boolean isD) {
 
 public boolean touchZoomEnabled()
 {
-	int x = mouse.getX();
-	int y = mouse.getY();
-	if((chatRect!=null) && G.pointInRect(x,y,chatRect)) { return(false); }
+	if((chatRect!=null) && G.pointInRect(mouse.getX(),mouse.getY(),chatRect)) { return(false); }
 	if(theChat!=null && theChat.activelyScrolling()) { return(false); }
 	if(GameScrollArea.activelyScrolling() 
 			|| UserScrollArea.activelyScrolling())

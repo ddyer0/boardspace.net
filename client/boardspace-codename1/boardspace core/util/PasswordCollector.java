@@ -33,7 +33,6 @@ import udp.PlaytableStack;
 	 public String toString() { return name;}
 	 public StringPair(String n,String v) { name = n; value = v; }
  }
-
  public class PasswordCollector extends JPanel
 						   implements ActionListener,ItemListener,WindowListener,OnlineConstants,
 						   Config
@@ -170,7 +169,6 @@ import udp.PlaytableStack;
 		 case Confirmation: configureForConfirmation(); break;	// confirm after register
 		 }
 		 if(!G.isCodename1()) { autoSize(); }
-		 
 		 repaint();
 	 }
 
@@ -208,11 +206,11 @@ import udp.PlaytableStack;
 	 private JLabel errorText = null;
 	 private JButton[] serverButtons = null; 
 	 // constructor
-
 	public PasswordCollector(JFrame f,SimpleObserver o) 
 	 {	 //PlatformLogger l = PlatformLogger.getLogger("java.util.prefs");
 	 	 //l.setLevel(Level.SEVERE);	// quench a warning message
 		 controllingFrame = f;
+
 		 observer = o;
 		 setUIID("Password");
 		 
@@ -275,7 +273,7 @@ import udp.PlaytableStack;
 	 private static void initLanguage()
 	 {
 		 String lang = language ;
-		 if(lang==null) { lang = prefs.get(langKey, "english"); }
+		 if(lang==null) { lang = prefs.get(langKey,"english"); }
 		 if(lang==null) { lang = "english"; }
 		 language = lang = lang.toLowerCase();
     	 prefs.put(langKey,language);
@@ -475,7 +473,7 @@ import udp.PlaytableStack;
 		 pane.add(label);
 
 		 
-		 passwordField = new JPasswordField(10);
+		 passwordField = new JPasswordField(13);
 		 passwordField.setActionCommand(OK);
 		 passwordField.addActionListener(this);
 		 passwordField.setUIID("LoginTextField");
@@ -504,7 +502,7 @@ import udp.PlaytableStack;
 		 JPanel panel =  new JPanel(new FlowLayout(FlowLayout.CENTER));
 		 JLabel nameLabel = new JLabel(s.get(YourRealName));
 		 nameLabel.setUIID("LoginLabel");
-		 realNameField = new JTextField(10);
+		 realNameField = new JTextField(25);
 		 realNameField.setUIID("LoginTextField");
 		 realNameField.setText(realName);
 		 panel.add(nameLabel);
@@ -527,7 +525,7 @@ import udp.PlaytableStack;
 		 JPanel panel =  new JPanel(new FlowLayout(FlowLayout.CENTER));
 		 JLabel nameLabel = new JLabel(s.get(YourEmail));
 		 nameLabel.setUIID("LoginLabel");
-		 emailField = new JTextField(10);
+		 emailField = new JTextField(25);
 		 emailField.setUIID("LoginTextField");
 
 		 emailField.setText(email);
@@ -555,7 +553,7 @@ import udp.PlaytableStack;
 		 JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		 JLabel nameLabel = new JLabel(s.get(YourName));
 		 nameLabel.setUIID("LoginLabel");
-		 nameField = new JTextField(10);
+		 nameField = new JTextField(13);
 		 nameField.setUIID("LoginTextField");
 
 		 nameField.setActionCommand(OK);
@@ -803,8 +801,6 @@ import udp.PlaytableStack;
 		adjustGuestPassword(isGuest || guestName.equalsIgnoreCase(name),false);
 
 		add(vpanel);
-
-
 	 }
 
 	 //

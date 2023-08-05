@@ -26,9 +26,7 @@ import honey.HoneyConstants.HoneyState;
  *
  */
 class HoneyBoard extends BaseBoard implements BoardProtocol
-{	static int REVISION = 102;			// 100 represents the initial version of the game
-										// 101 introduces the EndingGame state when finishing
-										// 102 switches to "pullnew" instead of "pull"
+{	static int REVISION = 100;			// 100 represents the initial version of the game
 
 	public int getMaxRevisionLevel() { return(REVISION); }
 	
@@ -102,7 +100,7 @@ class HoneyBoard extends BaseBoard implements BoardProtocol
     	// only as part of the UI.
 
       	Random r = new Random(2975564);
-       	drawPile = new HoneyCell(r,HoneyId.DrawPile);
+       	drawPile = new HoneyCell(r,null);
 
        	doInit(init,key,players,rev); // do the initialization 
 
@@ -134,10 +132,7 @@ class HoneyBoard extends BaseBoard implements BoardProtocol
     		pbs[i] = new HBoard(gtype, i, key,getColorMap(),dictionary,rev);
     		}
     	}
-    	else {
-    		for(HBoard p : pbs) { p.doInit(); }
-    	}
-    	win = new boolean[players];
+     	win = new boolean[players];
 		variation = HoneyVariation.findVariation(gtype);
 		G.Assert(variation!=null,WrongInitError,gtype);
     	gametype = gtype;
@@ -155,17 +150,11 @@ class HoneyBoard extends BaseBoard implements BoardProtocol
     	{
     		drawPile.addChip(c);
     	}
-		for(HoneyChip ch : HoneyChip.Vowels)
-		{	// remove the set of vowels that will be placed on the rack
-			drawPile.removeChip(ch);
-		}
    	
     	drawPile.shuffle(r);
-    	while(drawPile.height()>maxTiles){ drawPile.removeTop(); }
   	
-    	for(HBoard p : pbs) { p.drawPile.copyFrom(drawPile); }
+    	for(HBoard p : pbs) { p.drawPile.copyFrom(drawPile); p.doInit(); }
     	
-
  		setState(HoneyState.Puzzle);
 	    	    
 	    whoseTurn = FIRST_PLAYER_INDEX;
@@ -285,7 +274,7 @@ class HoneyBoard extends BaseBoard implements BoardProtocol
     {	int me = -1;
     	int other = -1;
     	for(int i=0;i<pbs.length;i++)
-    	{	int sco =  pbs[i].highScore();
+    	{	int sco =  pbs[i].score();
     		if(pl==i) { me = sco ; }
     		else { other = Math.max(other,sco );}
     	}

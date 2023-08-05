@@ -285,7 +285,7 @@ public class RithmomachyViewer extends CCanvas<RithmomachyCell,RithmomachyBoard>
     private void drawScore(Graphics gc,RithmomachyBoard gb,int forPlayer,Rectangle r)
     {	int perc = (gb.capturedValue[forPlayer]*100)/gb.startingValue[forPlayer];
     	GC.setFont(gc,largeBoldFont());
-    	GC.Text(gc,true,r,Color.black,null,s.get("#1 Captured, #2%",gb.captured[forPlayer].height(),perc));
+    	GC.Text(gc,true,r,Color.black,null,s.get(CapturedMessage,gb.captured[forPlayer].height(),perc));
     }
     
     int framedLeft = 12;
@@ -327,8 +327,8 @@ public class RithmomachyViewer extends CCanvas<RithmomachyCell,RithmomachyBoard>
     		}
     	}
     	if(space==wide) 
-    		{ msg = s.get("Ambush")+": "+msg;
-    		  space="\n"+s.get("Eruption")+": "; 
+    		{ msg = s.get(AmbushMessage)+": "+msg;
+    		  space="\n"+s.get(EruptionMessage)+": "; 
     		}
     	for(int idx1=numbers.size()-1; idx1>=0; idx1--)
     	{	int lv = numbers.elementAt(idx1);
@@ -340,7 +340,7 @@ public class RithmomachyViewer extends CCanvas<RithmomachyCell,RithmomachyBoard>
     			}
     	}
     	if(G.eq(space,wide))
-    		{ space="\n"+ s.get("Equality") + ": "; 
+    		{ space="\n"+ s.get(EqualityMessage) + ": "; 
     		}
     	for(int idx1=numbers.size()-1; idx1>=0; idx1--)
     	{	int lv = numbers.elementAt(idx1);

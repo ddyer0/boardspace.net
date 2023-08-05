@@ -646,7 +646,7 @@ private User getUser(int id)
 {
 	User u = users.getExistingUser(id);
 	if(u==null)
-	{  u = addUser(id,G.getTranslations().get("(unknown)"),null,false);
+	{  u = addUser(id,G.getTranslations().get(UNKNOWNPLAYER),null,false);
 	}
 	return(u);
 }

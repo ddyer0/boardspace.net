@@ -308,7 +308,7 @@ public class RajViewer extends CCanvas<RajCell,RajBoard> implements RajConstants
     	if(played.drawHStack(gc,this,
     				canHitPlayedCards?highlight:null,unit*2,
     				left+(unit*3),mid-step,0,0.07,null))
-    	{	highlight.setHelpText(s.get("Used Cards"));
+    	{	highlight.setHelpText(s.get(UsedCardsMessage));
     		highlight.hit_index = -1;
     		highlight.arrow = (movingObjectIndex()<0)?StockArt.UpArrow:StockArt.DownArrow;
     		highlight.awidth = unit;

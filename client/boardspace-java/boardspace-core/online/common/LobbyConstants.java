@@ -17,7 +17,6 @@ public interface LobbyConstants extends OnlineConstants
     static final Color redder_rose = new Color(140, 220, 255);
     static final Color lightGreen = new Color(204, 255, 204);
     static final Color tourneyBlue = new Color(255, 200, 255); // tournament game in progress
-    static final Color offlineRed = new Color(255, 200, 200); // offline game room
     static final Color lightBGgray = new Color(160, 160, 160);
     static final double SMALL_MAP_X_CENTER = 0.747;
     static final double SMALL_MAP_Y_CENTER = 0.0;
@@ -78,6 +77,7 @@ public interface LobbyConstants extends OnlineConstants
         	LowMemoryMessage,
          	LimboMessage,
          	LEAVEROOM,
+         	UNKNOWNPLAYER,
             ConnectionErrorMessage,
             RejoinGameMessage,  //rejoin a game you were playing
             DisconnectedString,

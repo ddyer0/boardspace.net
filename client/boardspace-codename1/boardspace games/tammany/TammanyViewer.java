@@ -24,6 +24,7 @@ import lib.PopupManager;
 import lib.StockArt;
 import lib.TextChunk;
 import lib.Text;
+import lib.Image;
 import lib.TextGlyph;
 import online.game.*;
 import online.game.BaseBoard.BoardState;
@@ -148,7 +149,7 @@ public class TammanyViewer extends CCanvas<TammanyCell,TammanyBoard> implements 
     	Rectangle influence = playerInfluenceRect[pl];
     	Rectangle done = doneRects[pl];
     	Rectangle eye = playerEyeRect[pl];
-    	int doneW = unit*3;		// we use the done rect even in unplanned seating
+    	int doneW = G.offline() ? unit*3 : 0;		// we use the done rect even in unplanned seating
     	int px = x+unit*4+doneW;
     	int influenceW = unit*4;
     	int influenceY = y+unit*2;
@@ -416,11 +417,11 @@ public class TammanyViewer extends CCanvas<TammanyCell,TammanyBoard> implements 
       // if the board is one large graphic, for which the visual target points
       // are carefully matched with the abstract grid
       }
-    
+     Image scaled = null;
      // called after supplying the rotation context
      public void drawFixedBoard(Graphics gc,Rectangle rect)
      {
-    	 if(remoteViewer<0) { TammanyChip.board.image.centerImage(gc, rect);	} 
+    	 if(remoteViewer<0) { scaled = TammanyChip.board.image.centerScaledImage(gc, rect,scaled);	} 
          setDisplayParameters(bb,boardRect);      	
      }
     /**
@@ -1427,6 +1428,8 @@ public class TammanyViewer extends CCanvas<TammanyCell,TammanyBoard> implements 
     /** replay a move specified in SGF format.  
      * this is mostly standard stuff, but the contract is to recognize
      * the elements that we generated in sgf_save
+     * summary: 5/23/2023
+		57 files visited 0 problems
      */
     public void ReplayMove(sgf_node no)
     {

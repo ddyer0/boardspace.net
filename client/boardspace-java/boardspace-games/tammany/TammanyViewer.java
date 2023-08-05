@@ -146,7 +146,7 @@ public class TammanyViewer extends CCanvas<TammanyCell,TammanyBoard> implements 
     	Rectangle influence = playerInfluenceRect[pl];
     	Rectangle done = doneRects[pl];
     	Rectangle eye = playerEyeRect[pl];
-    	int doneW = unit*3;		// we use the done rect even in unplanned seating
+    	int doneW = G.offline() ? unit*3 : 0;		// we use the done rect even in unplanned seating
     	int px = x+unit*4+doneW;
     	int influenceW = unit*4;
     	int influenceY = y+unit*2;

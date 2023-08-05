@@ -41,7 +41,7 @@ import lib.*;
  * players disconnect and restart in a new room.  Spectators should be severed from the remains
  */
 
-public class Game extends commonPanel implements PlayConstants,DeferredEventHandler,Config,ColorNames,Opcodes,Crypto
+public class Game extends commonPanel implements PlayConstants,OnlineConstants,DeferredEventHandler,Config,ColorNames,Opcodes,Crypto
 {	/**
 	 * 
 	 */
@@ -1162,7 +1162,7 @@ public class Game extends commonPanel implements PlayConstants,DeferredEventHand
     {	// 203 <channel> <playerflag=0> <position/color> <uid> <name> <play order> 
     	// 203 1496 0 -1 2 ddyer -1
          //if (theChat.isKnownUser(tempID))
-        {	String name = s.get("(unknown)");
+        {	String name = s.get(UNKNOWNPLAYER);
         	String uid = "0";
         	if(myST.hasMoreTokens())
         	{
@@ -2250,7 +2250,7 @@ public class Game extends commonPanel implements PlayConstants,DeferredEventHand
             KEYWORD_SERVER.equals(deathcode);
         boolean spectate = KEYWORD_SPECTATE.equals(deathcode);
         boolean suicide = KEYWORD_SUICIDE.equals(deathcode);
-        String pname = ("".equals(player.userName)) ? s.get("(unknown)")
+        String pname = ("".equals(player.userName)) ? s.get(UNKNOWNPLAYER)
                                                     : player.trueName;
         //G.print("quit "+player+deathcode);
         if (serverkill && (player == my))
@@ -3545,7 +3545,8 @@ public class Game extends commonPanel implements PlayConstants,DeferredEventHand
 	            		p = commonPlayer.nextPlayer(playerConnections, p))
 	            {	boolean win = v.WinForPlayer(p);
 	            	if(win) 
-	            		{ theChat.postMessage(ChatInterface.GAMECHANNEL, KEYWORD_CHAT,s.get("Game won by #1",p.userName));
+	            		{ 
+	            		  theChat.postMessage(ChatInterface.GAMECHANNEL, KEYWORD_CHAT,s.get(WonOutcome,p.userName));
 	            		  somewin |= win;
 	            		}
 	            }

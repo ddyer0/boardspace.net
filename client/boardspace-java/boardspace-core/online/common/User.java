@@ -187,7 +187,7 @@ public class User implements LobbyConstants,CompareTo<User>
     public String prettyName()
     {
     	String p = publicName;
-        return((p!=null) ? p : G.getTranslations().get("(unknown)")); 
+        return((p!=null) ? p : G.getTranslations().get(UNKNOWNPLAYER)); 
     }
 
 	public PlayerClass getPlayerClass() { return(playerClass); }

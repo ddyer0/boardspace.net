@@ -252,7 +252,7 @@ public class YspahanViewer extends CCanvas<YspahanCell,YspahanBoard> implements 
     			margin,	
     			0.75,	// 60% of space allocated to the board
     			aspect,	// aspect ratio for the board
-    			fh*1.6,
+    			fh*2,
     			fh*3.0,	// maximum cell size
     			0.3		// preference for the designated layout, if any
     			);

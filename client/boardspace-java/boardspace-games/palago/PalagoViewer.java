@@ -531,7 +531,7 @@ public class PalagoViewer extends CCanvas<PalagoCell,PalagoBoard> implements Pal
         				gb.whoseTurn,
         				stateRect);
         DrawLogo(gc,iconRect,gb.whoseTurn);
-        goalAndProgressMessage(gc,nonDragSelect,s.get("Form a closed shape in your color"),progressRect, goalRect);
+        goalAndProgressMessage(gc,nonDragSelect,s.get(GoalMessage),progressRect, goalRect);
         //DrawRepRect(gc,gb.Digest(),repRect);	// Not needed for games with no possible repetition
         
         // draw the vcr controls

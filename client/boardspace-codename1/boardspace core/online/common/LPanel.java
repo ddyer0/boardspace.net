@@ -76,7 +76,7 @@ public class LPanel extends FullscreenPanel implements WindowListener,LobbyConst
     }
 
 
-    Dimension oldsize = new Dimension(0,0);
+    private Dimension oldsize = new Dimension(0,0);
     public void setLocalBounds(int l,int t,int w,int h)
     {	
         if ((theLobby != null) 

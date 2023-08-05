@@ -26,7 +26,7 @@ sub init
 {
    $| = 1;                         # force writes
 }
-
+var $'include_ladder = 0;
 sub rank_header()
 {	my ($dbh,$nitems,$retired,$mode,$ccode,$variation,$myname,$order,$vname,$months)=@_;
 	my $country = $ccode;
@@ -53,8 +53,9 @@ sub rank_header()
 	 $header = ($mode eq 'master') ? $masterstr : $normalstr;
 	 $altheader = ($mode eq 'master') ? $normalstr : $masterstr;
   };
-  my $link = &get_link($vname,$country,$altheader,$myname,(($mode eq 'master') ? '' : "master"),$retired,$order);	
-  my $ladder = ($nplayers > 2) ? "" : "<td>" . &getLadderLink($vname,&trans("#1 Ranking Ladder",$pvar),$myname) . "</td>";
+  my $link = &get_link($vname,$country,$altheader,$myname,(($mode eq 'master') ? '' : "master"),$retired,$order);
+  $'include_ladder = $nplayers<=2;	
+  my $ladder = $'include_ladder ? "<td>" . &getLadderLink($vname,&trans("#1 Ranking Ladder",$pvar),$myname) . "</td>" : "";
   my $dbmes=&trans("#1 game results database",$pvar);
   my $dblink = "<a href='javascript:link(\"/cgi-bin/player_analysis.cgi?game=$variation\",0)'>$dbmes</a>";
   my $vlink = &gamecode_to_gameviewer($dbh,$vname);
@@ -85,7 +86,6 @@ print "</td><td>";
 &show_activity_table($dbh,0,$months,&timezoneCookie(),$variation);
 
 print "</td></tr></table>\n";
-
 print <<Header
 <p>
 <table border=1 cellpadding=3><tr>$ladder<td>$link</td><td>$dblink</td></tr></table>
@@ -210,7 +210,7 @@ sub update_rankings
 	my $real_clause = $realplayers ? " AND (is_robot is NULL) " : " or (is_robot='y') ";
     my $qvar = $dbh->quote($variation);
 	my $mstat = ($mode eq 'master') ? 'yes' : 'no';
-	my $ladder_clause = (($order eq 'LadderUp') || ($order eq 'LadderDown')) ? " AND ladder_level is not null " : "";
+	my $ladder_clause =  ($'include_ladder &&(($order eq 'LadderUp') || ($order eq 'LadderDown'))) ? " AND ladder_level is not null " : "";
 	my $query = "SELECT player_name, e_mail, $lp, value, country, "
 				. "max_rank,ranking.games_played as played, "
 				. "advocate, "
@@ -267,10 +267,11 @@ sub update_rankings
 				(($order eq 'WinpDown')?'WinpUp':'WinpDown'));
 
 # my ($variation,$pretty,$myname,$mode,$retired,$order) = @_;
-    		print "<TR><td></td><TD><b><P align=left>$Rank</b></TD>"
+	  my $lclause = $'include_ladder ? "<TD><p align=left><b>$Ladder</b>" : "";
+    	  print "<TR><td></td><TD><b><P align=left>$Rank</b></TD>"
 	   				. "<TD><p align=left><b>$Player</b></TD>"
     				. "<TD><p align=left><b>$Ranking</b>"    
-    				. "<TD><p align=left><b>$Ladder</b>"
+    				. $lclause
      				. "<TD><p align=left><b>$Group</b></TD>"
     				. "</TD><td><b>$winp</b></td><TD><b>$lastp</b></td>"
     				. "<TD><p align=left><b>$Country</b></TD><TD align=center><b>$MaxRank</b></td>"
@@ -322,9 +323,10 @@ sub update_rankings
 		{ $group_description = "title='" . &trans("${group}-description") . "' ";
 		  $group = &trans("$group-group");
 		}
+		my $lclause = $'include_ladder ? "<td><P align=left>$ladder</td>" : "";
  		my $line = "<TR><td></td><TD>$n</TD><TD><P ALIGN=left><A HREF=\"javascript:editlink('$curname',0)\">$bold$curname$nobold</A></TD>"
 					. "<TD><P ALIGN=left>$ranking</TD>"
-					. "<td><P align=left>$ladder</td>"
+					. $lclause
 					. "<td $group_description><P align=left>$group</td>"
 					. "<td>$pcent</td><TD align=left>$daysago</TD>"
 					. "<TD><P ALIGN=center><img width=33 height=22 alt=\"$country\" src=\"$cflag\"></TD><TD align=center>$max_rank</td><td align=center>$played</td>"

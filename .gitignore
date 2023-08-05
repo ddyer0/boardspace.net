@@ -1,2 +1,6 @@
 
 *.bak
+*.shtml~
+*.txt~
+*.html~
+*.shtml#

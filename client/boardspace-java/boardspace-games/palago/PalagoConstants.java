@@ -50,7 +50,8 @@ public interface PalagoConstants
     static final int MOVE_PICKB = 206; // pick from the board
     static final int MOVE_DROPB = 207; // drop on the board
  		
-
+    static final String GoalMessage = "Form a closed shape in your color";
+    
     //
     //ad hoc scale factors to fit the stones to the board
     static void putStrings()
@@ -58,7 +59,7 @@ public interface PalagoConstants
 			{"Palago",
 			 TileColorMessage,
 			 "Place a second tile adjacent to the first",
-			 "Form a closed shape in your color"};
+			 GoalMessage};
     	String palagoStringPairs[][] = {
     			{"Palago_variation","standard Palago"},
     			{"Palago_family","Palago"},

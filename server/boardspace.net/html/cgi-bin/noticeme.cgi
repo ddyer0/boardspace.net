@@ -27,7 +27,7 @@ sub doit()
 	print header;
 	if($dbh && (&allow_ip_access($dbh,$ip)>=0))
 	{
-	&banme($dbh,$ip,$from);
+	&banme($dbh,$ip,"robot honeypot $from");
 	}
 	else 
 	{ sleep(10);

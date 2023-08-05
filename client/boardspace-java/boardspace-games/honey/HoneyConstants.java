@@ -82,11 +82,7 @@ public interface HoneyConstants
 	enum HoneyId implements CellId
 	{
     	BoardLocation,
-    	Rack,
-    	RackMap,
-    	LocalRack,
-    	DrawPile,
-    	EmptyBoard,
+     	EmptyBoard,
     	EndGame,
     	EyeOption,
     	Rotate,

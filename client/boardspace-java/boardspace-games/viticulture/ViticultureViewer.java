@@ -3582,10 +3582,11 @@ private void drawPlayerBoard(Graphics gc,
 		}	
     	
 		int w = G.Width(br);
+		int h = G.Height(br);
 		int nCards = cardDisplay.height();
 		int nCardSlots = (nCards==1 ? 2 : nCards);
 		int nFieldSlots = (wineIndex==0) ? 0 : (wineIndex+1);
-		int step = Math.min(3*G.Height(br)/10,w/Math.max(5, 1+(nCardSlots+nFieldSlots)));
+		int step = Math.min(3*h/10,w/Math.max(5, 1+(nCardSlots+nFieldSlots)));
 		
 		int fstep = cardAndWineMode ? step*2/3 : step*6/5;
       	String cardLabel = censor ? ViticultureChip.BACK : null;
@@ -3598,8 +3599,9 @@ private void drawPlayerBoard(Graphics gc,
 		int centerX = G.centerX(br);
 		int centerY = G.centerY(br);
 		int xp = (int)(centerX-totalW/2);
-		int yp = (int)(centerY-step*3/2-(extraHeight ? step/3 : 0));
-		int cardH = step*3+(extraHeight ? step*3/4 : 0);
+		int cardH = Math.min(h,step*3+(extraHeight ? step*3/4 : 0));
+		step = Math.min(step,(int)(cardH*0.27));
+		int yp = (int)(centerY-cardH/2);
 		Rectangle fieldRect = new Rectangle(xp,yp,totalW,cardH);
     ViticultureChip.Scrim.image.stretchImage(gc, fieldRect);  
     	

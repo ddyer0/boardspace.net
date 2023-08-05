@@ -376,7 +376,7 @@ public class TrenchViewer extends CCanvas<TrenchCell,TrenchBoard> implements Tre
     	Rectangle done = doneRects[player];
     	int doneW = plannedSeating()? unitsize*3 : 0;
     	G.SetRect(done,G.Right(box)+unitsize/2,G.Top(box)+unitsize/2,doneW,doneW/2);
-    	G.SetRect(cap,x,G.Bottom(box),G.Width(box)+chipw,unitsize*2);
+    	G.SetRect(cap,x,G.Bottom(box),G.Width(box)+chipw,(int)(unitsize*1.8));
     	G.union(box, done,chip,cap);
     	pl.displayRotation = rotation;
     	return(box);
@@ -395,7 +395,7 @@ public class TrenchViewer extends CCanvas<TrenchCell,TrenchBoard> implements Tre
         boolean hit = false;
         double space = Math.min(cells/cap.height(),1.7);
         if(cap.drawStack(gc,this,canHit?highlight:null,
-        		size,G.Left(cr)+CELLSIZE/2,G.centerY(cr),
+        		size,G.Left(cr)+CELLSIZE/2,G.Top(cr)+(int)(G.Height(cr)*0.45),
         		0,space,0,null))
         {
         	highlight.spriteColor = Color.red;
@@ -411,11 +411,11 @@ public class TrenchViewer extends CCanvas<TrenchCell,TrenchBoard> implements Tre
         	highlight.hit_index = -1;
         	
         }
-        int hh = G.Height(cr)/5;
+        int hh = G.Height(cr)/3;
         GC.setFont(gc,largeBoldFont());
         GC.Text(gc,false,G.Left(cr)+hh,G.Bottom(cr)-hh,G.Width(cr),hh,
         		Color.black,null,
-        		s.get("Total: #1 points",gb.totalCaptured(nextPlayer[player])));
+        		s.get(PointsMessage,gb.totalCaptured(nextPlayer[player])));
         GC.frameRect(gc,Color.black,cr);
        // gb.captured[player];
   

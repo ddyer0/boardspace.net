@@ -315,7 +315,7 @@ sub banme()
 {	my ($dbh,$ip,$from) = @_;
 	my $qip = $dbh->quote(&ip_to_int($ip));
 	my $msg1 = "auto-banned ip=$ip for tripping the robot alarm from $from";
-	my $msg2 = "robot alarm from $from";
+	my $msg2 = "alarm from $from";
 	my $qmsg1 = $dbh->quote($msg1);
 	my $qmsg2 = $dbh->quote($msg2);
 	my $da = $dbh->quote(&datestring());
@@ -333,6 +333,7 @@ sub banme()
 		my $qcomm = $dbh->quote($comm);
 		&commandQuery($dbh,"update ipinfo set comment = $qcomm where uid=$quid");
 	}
+	&finishQuery($sth);
 	# add an alert which will be sent with email
 	# &commandQuery($dbh,"INSERT into messages SET type='alert',message=$qmsg1");
 }

@@ -137,7 +137,9 @@ public class SantoriniPlay extends commonRobot<SantoriniBoard> implements Runnab
         	TIMEPERMOVE = 20;
          	MAX_DEPTH = BESTBOT_DEPTH;
         	break;
- 
+        case MONTEBOT_LEVEL:
+        	MONTEBOT = true;
+        	break;
         default: throw G.Error("Not expecting strategy %s",strategy);
         }
     }

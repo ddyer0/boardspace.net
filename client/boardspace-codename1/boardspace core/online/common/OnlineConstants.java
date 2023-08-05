@@ -36,7 +36,7 @@ public interface OnlineConstants extends Config {
     static final String challengeSoundName = SOUNDPATH + "racetime" + Config.SoundFormat;
     static final String clickSound = SOUNDPATH + "click4" + Config.SoundFormat;
     static final String turnChangeSoundName = SOUNDPATH + "turnch"  + SoundFormat;
-
+    static final String UNKNOWNPLAYER = "(unknown)";
     static final String LEAVEROOM = "#1 quitting";
     static enum OnlineId  implements CellId
     {
@@ -119,7 +119,8 @@ public interface OnlineConstants extends Config {
     static final String ShowRulesMessage = "view the rules for this game";
     static final String ConnectionErrorMessage = "Connection error";
     static final String GuestNameMessage = "guest";
-   
+    static final String WonOutcome = "Game won by #1";
+
     static final String DisconnectedString = "You have been disconnected: #1";
     static final String NoLaunchMessage =  "nolaunch"; 
 

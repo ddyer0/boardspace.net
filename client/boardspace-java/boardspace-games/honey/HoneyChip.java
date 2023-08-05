@@ -48,7 +48,8 @@ public class HoneyChip extends chip<HoneyChip> implements HoneyConstants
 	{	scale = from.scale;
 		image = from.image;
 		back = from;
-		letter = ""+l;
+		letter = ""+l+((l=='Q') ? "U" : "");
+		
 		lcChar = (l>='A' && l<='Z') ? (char)(l+'a'-'A') : l;
 		value = v;
 		randomv = r.nextLong();
@@ -85,7 +86,7 @@ public class HoneyChip extends chip<HoneyChip> implements HoneyConstants
     static public HoneyChip backgroundReviewTile = new HoneyChip("background-review-tile-nomask",null,null,0);
    	
     
-   static private double letterScale[]  = new double[] {0.5,0.52,1.25 };
+   static private double letterScale[]  = new double[] {0.55,0.52,1.25 };
 
    static public HoneyChip Letter[] = {new HoneyChip("light-1",letterScale,null,0),
    		new HoneyChip("light-2",letterScale,null,0),
@@ -131,7 +132,6 @@ public class HoneyChip extends chip<HoneyChip> implements HoneyConstants
        		{'Q',1,10},
        		{'Z',1,10},
     };
-    static HoneyChip Vowels[] = null;
     /**
      * this is a fairly standard preloadImages method, called from the
      * game initialization.  It loads the images into the stack of
@@ -158,9 +158,6 @@ public class HoneyChip extends chip<HoneyChip> implements HoneyConstants
 		letters = pool.toArray();  	
 		alphaLetters = new HoneyChip[26];
 		for(HoneyChip c : letters) { if(c.lcChar>='a') { alphaLetters[c.lcChar-'a'] = c; }}
-		char vl[] = new char[]{'a','e','i','o','u'};
-		Vowels = new HoneyChip[vl.length];
-		for(int i=0; i<vl.length;i++) { Vowels[i] = alphaLetters[vl[i]-'a']; }
  		}
 
 	}   
@@ -173,10 +170,7 @@ public class HoneyChip extends chip<HoneyChip> implements HoneyConstants
             int cx,
             int cy,
             java.lang.String label)
-    {	//if(lcChar=='o') { /* letter */scale = new double[] {0.51,0.365,1.45 };}
-    	//if(lcChar=='i') { /* letter2 */scale = new double[] {0.495,0.365,1.45 };}
-       	//if(lcChar=='a') { /* letter0 */scale = new double[] {0.51,0.365,1.45 };}
-       	//if(lcChar=='c') { /* letter1 */scale = new double[] {0.51,0.37,1.45 };}
+    {	
 		super.drawChip(gc, canvas, SQUARESIZE*6/5, xscale, cx, cy, null);
     	if(BACK.equals(label)) {}
     	else if(letter!=null)
@@ -191,10 +185,10 @@ public class HoneyChip extends chip<HoneyChip> implements HoneyConstants
     		GC.setFont(gc, f);
     		GC.setFont(gc, ww.selectFontSize(gc, ss,ss));
     		FontMetrics fm = G.getFontMetrics(f);
-     		GC.Text(gc, letter, (int)(cx-fm.stringWidth(letter)*0.75),cy+(int)(SQUARESIZE*0.2));
+     		GC.Text(gc, letter, (int)(cx-fm.stringWidth(letter)*0.6),cy+(int)(SQUARESIZE*0.15));
      		if(value!=0)
      		{
-    		GC.Text(gc,true,cx+SQUARESIZE/10,cy+SQUARESIZE/6,SQUARESIZE/5,SQUARESIZE/5,ltblue,null,""+value);
+    		GC.Text(gc,true,cx+SQUARESIZE/10,cy+SQUARESIZE/5,SQUARESIZE/5,SQUARESIZE/5,ltblue,null,""+value);
      		}
     		}
     	}

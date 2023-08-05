@@ -377,8 +377,9 @@ sub print_tag()
 	}
 	else
 	{
+	my $ip = $ENV{'REMOTE_ADDR'};
 	my $dbh = &connect();
-	if($dbh && (&allow_ip_access($dbh,$ENV{'REMOTE_ADDR'})>=0))
+	if($dbh && (&allow_ip_access($dbh,$ip)>=0))
 		{
 		&readtrans_db($dbh);
 		my $game = &param('game');
@@ -402,7 +403,7 @@ sub print_tag()
 		elsif($tagname eq 'mobileinfo') { &print_mobileinfo(); }
 		else
 		{
-		&log_error("applet tag $tagname is not defined",$ENV{'SCRIPT_NAME'});
+		&banme($dbh,$ip,"bad applettag \"$tagname\" in $ENV{'SCRIPT_NAME'}");
 		}
 		}
 	&disconnect($dbh);

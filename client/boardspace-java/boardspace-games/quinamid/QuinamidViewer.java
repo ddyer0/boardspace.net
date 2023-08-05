@@ -652,7 +652,7 @@ public class QuinamidViewer extends CCanvas<QuinamidCell,QuinamidBoard> implemen
         				stateRect);
         gb.playerChip[whoseTurn].drawChip(gc, this, iconRect,null);
         
-        goalAndProgressMessage(gc,ourSelect,s.get("make 5 in a row"),progressRect, goalRect);
+        goalAndProgressMessage(gc,ourSelect,s.get(GoalMessage),progressRect, goalRect);
      
         DrawRepRect(gc,messageRotation,Color.black,gb.Digest(),repRect);
         drawAuxControls(gc,ourSelect);

@@ -195,8 +195,8 @@ public class SantoriniViewer extends CCanvas<SantoriniCell,SantoriniBoard> imple
     	int mainW = G.Width(main);
     	int mainH = G.Height(main);
     	boolean vertical = mainH>mainW;
-    	int cols = vertical ? ncols : ncols+4;
-    	int rows = vertical ? nrows+4 : nrows;
+    	int cols = vertical ? ncols : ncols+3;
+    	int rows = vertical ? nrows+3 : nrows;
     	// calculate a suitable cell size for the board
     	double cs = Math.min((double)mainW/cols,(double)mainH/rows);
     	int CELLSIZE = (int)cs;
@@ -218,11 +218,11 @@ public class SantoriniViewer extends CCanvas<SantoriniCell,SantoriniBoard> imple
        	layout.returnFromMain(extraW,extraH);
     	if(vertical)
     		{
-    		G.SetRect(squareRect,boardX+(boardW-squareH)/2,boardBottom,squareH,squareW); 		
+    		G.SetRect(squareRect,boardX+(boardW-squareH)/2,boardBottom+CELLSIZE,squareH,squareW); 		
     		}
     		else
     		{
-    		G.SetRect(squareRect,boardRight+squareW/2,boardY+(boardH-squareH)/2,squareW,squareH);
+    		G.SetRect(squareRect,boardRight,boardY+(boardH-squareH)/2,squareW,squareH);
     		}
 
     	//

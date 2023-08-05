@@ -40,8 +40,6 @@ class HBoard extends hexBoard<HoneyCell> implements BoardProtocol,HoneyConstants
 	public HoneyState getState() { return(board_state); }
     StringStack gameEvents = new StringStack();
     InternationalStrings s = G.getTranslations();
-    int maxTiles = -1;
-    int tilesPlaced = 0;
     HoneyCell drawPile = null;
    	
  	void logGameEvent(String str,String... args)
@@ -66,16 +64,6 @@ class HBoard extends hexBoard<HoneyCell> implements BoardProtocol,HoneyConstants
 	{
 		setState(HoneyState.Gameover);
 	}
-	HoneyCell rack[] = null;
-	private HoneyCell mappedRack[] = null;
-	
-	public HoneyCell[] getPlayerRack()
-	{
-		return rack;
-	}
-	public HoneyCell[] getPlayerMappedRack()
-	{	return mappedRack;
-	}
 
 	private int mapPick = -1;
 	private int mapTarget = -1;		// which actual cell is picked (per player)
@@ -94,13 +82,9 @@ class HBoard extends hexBoard<HoneyCell> implements BoardProtocol,HoneyConstants
 
 	public boolean hiddenVisible = false;
 	int score = 0;
-	int highScore = 0;
 	
 	public int score() { return score; }
-	public int highScore() { return highScore; }
-	int chipsOnBoard = 0;
 	Dictionary dictionary ;				// the current dictionary
-	CellStack occupiedCells = new CellStack();
 	
 // this is required even if it is meaningless for this game, but possibly important
 // in other games.  When a draw by repetition is detected, this function is called.
@@ -137,20 +121,12 @@ class HBoard extends hexBoard<HoneyCell> implements BoardProtocol,HoneyConstants
         isTorus=false;
         setColorMap(map, 1);
         boardIndex = bi;
-       	Random r = new Random(235256);
-       	drawPile = new HoneyCell(r,HoneyId.DrawPile);
-
-       	doInit(init,key,1,rev); // do the initialization 
-
+        gametype = init;
+        Random r = new Random(235256);
+       	drawPile = new HoneyCell(r,null);
        	dictionary = di;
         robotVocabulary = dictionary.orderedSize;
  
-    }
-    private void initRackMap()
-    { 	int full = rackMap.length;
-    	int max = rackSize;
-    	int off = (full-max)/2;
-    	for(int i=0; i<rackMap.length;i++) { rackMap[i] = (i>=off && i<max+off) ? i-off : -1; }
     }
     
     public String gameType() { return(gametype+" "+players_in_game+" "+randomKey+" "+revision); }
@@ -159,20 +135,10 @@ class HBoard extends hexBoard<HoneyCell> implements BoardProtocol,HoneyConstants
     {	
         // create a grid for the tile cells
         reInitBoard(n,k,null);		 //this sets up the primary board and cross links
-		for(HoneyCell c = allCells; c!=null; c=c.next)
-		{
-			c.addChip(HoneyChip.getLetter('A'));
-		}
     }
     public void doInit(String gtype,long key)
     {
-    	StringTokenizer tok = new StringTokenizer(gtype);
-    	String typ = tok.nextToken();
-    	
-    	int np = tok.hasMoreTokens() ? G.IntToken(tok) : players_in_game;
-    	long ran = tok.hasMoreTokens() ? G.IntToken(tok) : key;
-    	int rev = tok.hasMoreTokens() ? G.IntToken(tok) : revision;
-    	doInit(typ,ran,np,rev);
+    	doInit(gtype,key,players_in_game,revision);
     }
 
     /* initialize a board back to initial empty state */
@@ -183,15 +149,10 @@ class HBoard extends hexBoard<HoneyCell> implements BoardProtocol,HoneyConstants
     	win = new boolean[players];
 		variation = HoneyVariation.findVariation(gtype);
 		G.Assert(variation!=null,WrongInitError,gtype);
-		score = 0;
-		highScore = 0;
     	gametype = gtype;
-     	tilesPlaced = 0;
+		score = 0;
      	unresign = null;
-    	maxTiles = variation.maxTiles;
- 	    occupiedCells.clear();
-	    initRackMap();
- 		switch(variation)
+  		switch(variation)
 		{
 		default: throw G.Error("Not expecting variation %s",variation);
 		case HoneyComb:
@@ -199,39 +160,9 @@ class HBoard extends hexBoard<HoneyCell> implements BoardProtocol,HoneyConstants
 		}
  		
  		construct(variation.firstincol,variation.nincol);
- 		chipsOnBoard = 0;    
     	Random r = new Random(randomKey+100);
     	r.nextLong();//  use one random, for compatibility
      	
-    	// create the player racks
- 		int racks = rackSize+rackSpares;
- 		if(rack==null || racks!=rack.length)
- 		{
-    	rack = new HoneyCell[racks];
-       	mappedRack = new HoneyCell[racks];
-        
-       	for(int j = 0;j<rack.length;j++)
-       	{ HoneyCell c = rack[j] = new HoneyCell(HoneyId.Rack,(char)('A'+boardIndex),j,Geometry.Standalone);
-       	  c.onBoard = false;
-       	}
-       	for(int j = 0;j<mappedRack.length; j++)
-       	{
-       		mappedRack[j] = new HoneyCell(HoneyId.RackMap,(char)('A'+boardIndex),j,Geometry.Standalone);
-       	}
-  		}
-    	else 
-    		{ reInit(rack); 
-    		  reInit(mappedRack);
-    		}
- 		
- 		// load the racks with vowels
-    	int idx = 0;
-    	for(char l : new char[]{ 'a','e','i','o','u'})
-    	{
-    		HoneyChip letter = HoneyChip.getLetter(l);
-     		rack[idx].addChip(letter);		
-    		idx++;
-    	}
     	
     	mapPick = -1;
        	mapTarget = -1;
@@ -240,13 +171,16 @@ class HBoard extends hexBoard<HoneyCell> implements BoardProtocol,HoneyConstants
 		robotState.clear();		
 	    	    
 	    whoseTurn = FIRST_PLAYER_INDEX;
-	    drawPile.reInit();
 	    acceptPlacement();
 	    resetState = HoneyState.Puzzle;
 	    lastDroppedObject = null;
 	    // set the initial contents of the board to all empty cells
         animationStack.clear();
         moveNumber = 1;
+
+		for(HoneyCell c = allCells; c!=null; c=c.next)
+		{	c.addChip(drawPile.removeTop());
+		}
 
         // note that firstPlayer is NOT initialized here
     }
@@ -269,18 +203,13 @@ class HBoard extends hexBoard<HoneyCell> implements BoardProtocol,HoneyConstants
         robotState.copyFrom(from_b.robotState);
         unresign = from_b.unresign;
         board_state = from_b.board_state;
-        chipsOnBoard = from_b.chipsOnBoard;
         droppedDest = getCell(from_b.droppedDest);
         pickedSource = getCell(from_b.pickedSource);
         pickedObject = from_b.pickedObject;
         resetState = from_b.resetState;
-        copyFrom(rack,from_b.rack);
         score=from_b.score;
-        highScore = from_b.highScore;
         robotVocabulary = from_b.robotVocabulary;
         lastPicked = null;
-        tilesPlaced = from_b.tilesPlaced;
-        getCell(occupiedCells,from_b.occupiedCells);
         drawPile.copyFrom(from_b.drawPile);
         sameboard(from_b); 
     }
@@ -301,12 +230,8 @@ class HBoard extends hexBoard<HoneyCell> implements BoardProtocol,HoneyConstants
         G.Assert(unresign==from_b.unresign,"unresign mismatch");
         G.Assert(variation==from_b.variation,"variation matches");
         G.Assert(pickedObject==from_b.pickedObject, "picked Object mismatch");
-        G.Assert(chipsOnBoard==from_b.chipsOnBoard,"chipsOnBoard mismatch");
         G.Assert(robotVocabulary==from_b.robotVocabulary,"robotVocabulary mismatch");
-        G.Assert(sameContents(rack,from_b.rack),"rack mismatch");
         G.Assert(score==from_b.score,"score mismatch");
-        G.Assert(highScore==from_b.highScore,"highscore mismatch");
-        G.Assert(tilesPlaced==from_b.tilesPlaced,"tilesPlaced mismatch");
         G.Assert(drawPile.sameContents(from_b.drawPile),"drawPile mismatch");
         // this is a good overall check that all the copy/check/digest methods
         // are in sync, although if this does fail you'll no doubt be at a loss
@@ -360,18 +285,12 @@ class HBoard extends hexBoard<HoneyCell> implements BoardProtocol,HoneyConstants
 		// v ^= cell.Digest(r,pickedSource);
 		v ^= chip.Digest(r,pickedObject);
 		v ^= Digest(r,revision);
-		//G.print("d1 "+v);
 
-		v ^= Digest(r,rack);
-		//G.print("d1a "+v);
-		v ^= Digest(r,chipsOnBoard);
 		//G.print("d1b "+v);
 
 		v ^= Digest(r,score);
 		//G.print("d2 "+v);
-		v ^= Digest(r,highScore);
 		v ^= Digest(r,robotVocabulary);
-		v ^= Digest(r,tilesPlaced);
 		v ^= Digest(r,drawPile);
 		v ^= Digest(r,board_state);
 		v ^= Digest(r,boardIndex);
@@ -433,14 +352,12 @@ class HBoard extends hexBoard<HoneyCell> implements BoardProtocol,HoneyConstants
     	if(c.onBoard)
     	{
     	if(ch==null) 
-    		{ if(c.topChip()!=null) { chipsOnBoard--; }
+    		{ 
     		  c.reInit();
-    		  occupiedCells.remove(c,false);
     		}
     	else { G.Assert(c.isEmpty(),"not expecting to make stacks");
     		c.addChip(ch);
-    		occupiedCells.push(c);
-    		chipsOnBoard++;
+    		
     		}
     	}
     	else {
@@ -480,11 +397,6 @@ class HBoard extends hexBoard<HoneyCell> implements BoardProtocol,HoneyConstants
         {
         default:
         	throw G.Error("Not expecting dest " + c.rackLocation);
-        case Rack:
-           	G.Assert(c.topChip()==null && pickedObject!=null,"drop something on empty %s %s",c,pickedObject);
-        	c.addChip(pickedObject);
-        	pickedObject = null;
-        	break;
         case BoardLocation:	// already filled board slot, which can happen in edit mode
         case EmptyBoard:
             droppedDest = c;
@@ -526,8 +438,6 @@ class HBoard extends hexBoard<HoneyCell> implements BoardProtocol,HoneyConstants
         {
         default:
         	throw G.Error("Not expecting source " + source);
-        case Rack:
-        	return(rack[row]);
         case BoardLocation:
         case EmptyBoard:
         	return(getCell(col,row));
@@ -550,19 +460,6 @@ class HBoard extends hexBoard<HoneyCell> implements BoardProtocol,HoneyConstants
         {
         default:
         	throw G.Error("Not expecting rackLocation " + c.rackLocation);
-        case Rack:
-        	{
-        	mapPick=-1;
-        	mapTarget=-1;
-        	int map[] = rackMap;
-        	validateMap();
-        	for(int i=0;i<map.length;i++) { if(map[i]==c.row) { map[i]=-1; break; }} 
-          	HoneyChip po = c.removeTop();
-            lastPicked = pickedObject = po;
-         	lastDroppedObject = null;
- 			validateMap(); 
-        	}
- 			break;
 		case BoardLocation:
         	{
         	HoneyChip po = c.topChip();
@@ -599,7 +496,7 @@ class HBoard extends hexBoard<HoneyCell> implements BoardProtocol,HoneyConstants
         case Play:
         	if(validate(true)) 
         		{ 	
-        			setState(tilesPlaced==maxTiles ? HoneyState.Endgame : HoneyState.Confirm); 
+        			setState(HoneyState.Confirm); 
         		}
         	else { setState(HoneyState.Play); }
         	moveNumber++;
@@ -614,12 +511,6 @@ class HBoard extends hexBoard<HoneyCell> implements BoardProtocol,HoneyConstants
     public void setVocabulary(double value) {
     	Dictionary dict = Dictionary.getInstance();
     	robotVocabulary = (int)(dict.totalSize*value);
-    }
-
-    public boolean rackIsFull()
-    {
-    	for(HoneyCell c : rack) { if(c.topChip()==null) { return false; }}
-    	return mapPick<0;
     }
     private void setNextStateAfterDone(replayMode replay)
     {	
@@ -674,7 +565,6 @@ class HBoard extends hexBoard<HoneyCell> implements BoardProtocol,HoneyConstants
     		  int sc = 0;
     		  for(int i=0;i<words.size(); i++) { sc += (words.elementAt(i).points - WordPenalty); }
     		  score = sc;
-    		  highScore = Math.max(score,highScore);
     		  markNonWords();
     		}
      	return( connected 
@@ -836,45 +726,6 @@ class HBoard extends hexBoard<HoneyCell> implements BoardProtocol,HoneyConstants
 		return((droppedDest==null) && (pickedSource==null));
 	}
 
-	public void dropAndSlide(HoneyCell from,int moving0,int pick0,int dest0,replayMode replay)
-	{	// the map is invalid when we enter, because we've dropped a tile
-		// and haven't mapped it yet.
-		HoneyCell rcells[] = mappedRack;
-    	int pick = pick0;
-    	int dest = dest0;
-    	int moving = moving0;
-    	int map[] = rackMap;
-    	{
-    	int i=0;
-    	int len = map.length;
-    	while(pick<0)
-    	{
-    		if((dest+i<len) && map[dest+i]<0) { pick = dest+i; }
-    		else if((dest-i>=0) && map[dest-i]<0) { pick = dest-i; }
-    		i++;
-    	}}
-    	int direction = dest>=pick ? -1 : 1;
-    	
-    	if(replay==replayMode.Single && from!=null)
-		{
-			animationStack.push(from);
-			animationStack.push(rcells[dest]);
-		}
-		while(map[dest]!=-1)
-		{	if(replay!=replayMode.Replay)
-			{
-			animationStack.push(rcells[dest]);
-			animationStack.push(rcells[dest+direction]);
-			}
-			int mov = map[dest];
-			map[dest] = moving;
-			moving = mov;
-			pick = dest;
-			dest += direction;
-		}
-		map[dest] = moving;
-		validateMap();
-	}
 	// when receive a move that includes a rack map slot, it may
 	// not be accurate since we don't track the opposing players 
 	// rack.
@@ -893,7 +744,6 @@ class HBoard extends hexBoard<HoneyCell> implements BoardProtocol,HoneyConstants
     public boolean Execute(commonMove mm,replayMode replay)
     {	Honeymovespec m = (Honeymovespec)mm;
         if(replay!=replayMode.Replay) { animationStack.clear(); }
-        validateMap();
         //G.print("E "+m+" for "+whoseTurn+" "+board_state);
         switch (m.op)
         {
@@ -934,45 +784,10 @@ class HBoard extends hexBoard<HoneyCell> implements BoardProtocol,HoneyConstants
 
              break;
 
-        case MOVE_REPLACE:
-        	
-	    	{
-	    	HoneyCell rcells[] = mappedRack;
-	    	int map[] = rackMap;
-	    	int pick = mapPick;
-	    	if(pick>=0)
-	    	{
-	    	int dest = m.to_row;
-	    	int moving = map[pick];
-	    	map[pick] = -1;
-	    	mapPick = -1;
-	    	mapTarget = -1;
-	    	dropAndSlide(rcells[pick],moving,pick,dest,replay);
-	    	}}
-	    	break;
         case MOVE_LIFT:
         	{
         	mapPick = m.to_row;
         	mapTarget = m.mapped_row;
-        	}
-        	break;
-        case MOVE_MOVETILE:
-        	{
-           	validateMap();
-           	HoneyCell src = getCell(m.source,m.from_col,m.from_row);
-        	HoneyCell dest = getCell(m.dest,m.to_col,m.to_row);
-        	pickObject(src);
-        	dropObject(dest);
-           	validateMap();
-           	// no animation needed because this is really from 
-        	// a pick/drop pair sourced in the rack
-            if(replay==replayMode.Single)
-        	{ animationStack.push(src);
-        	  animationStack.push(dest); 
-        	}
- 
-        	setNextStateAfterDrop(replay);
-
         	}
         	break;
         case MOVE_PICK:		// pick from the draw pile
@@ -1005,41 +820,6 @@ class HBoard extends hexBoard<HoneyCell> implements BoardProtocol,HoneyConstants
     		
     		break;
 	    	
-        case MOVE_DROP: // drop on chip pool;
-        	if((pickedObject==null) && mapPick>=0) 
-        	{
-        		pickObject(getCell(HoneyId.Rack,'@',rackMap[mapPick]));
-        	}
-        	if(pickedObject!=null)
-        	{	
-        	switch(m.dest)
-	  		  {
-	  		  default: 
-	  		  	{
-	  			HoneyCell dest = getCell(m.dest,m.to_col,m.to_row);
-	        	dropObject(dest);
-	  		  	}
-	  		  	break;
-	  		  case Rack:
-	  		  	{	
-	  		  		for(int i=0;i<rack.length;i++)
-	  		  		{
-	  		  			HoneyCell dest = rack[i];
-	  		  			if(dest.topChip()==null)
-	  		  			{	
-	  		  				dropObject(dest);
-	  		  				setRackMap(rackMap,m.to_row,i);
-	  		  				break;
-	  		  			}
-	  		  		}
-	  		  	}
-	  		  }
-        	setNextStateAfterDrop(replay);
-        	}
-        	else { 
-        		G.Error("no chip to drop");
-        	}
-            break;
  
         case MOVE_START:
             setWhoseTurn(m.player);
@@ -1070,7 +850,6 @@ class HBoard extends hexBoard<HoneyCell> implements BoardProtocol,HoneyConstants
         default:
         	cantExecute(m);
         }
-        validateMap();
 
         if(gameEvents.size()>0) { m.gameEvents = gameEvents.toArray(); gameEvents.clear(); }
         //System.out.println("Ex "+m+" for "+whoseTurn+" "+state);
@@ -1118,30 +897,6 @@ class HBoard extends hexBoard<HoneyCell> implements BoardProtocol,HoneyConstants
             return (picked == (c.topChip()==null));
         }
     }
-    public void validateMap()
-    {		int used = 0;
-    		int mapped = 0;
-    		int nmapped = 0;
-    		HoneyCell prack[] = rack;
-    		for(HoneyCell c : prack)
-    		{
-    			if(c.topChip()!=null) { used++; }
-    		}
-    		int mapi[] = rackMap;
-    		for(int i=0;i<mapi.length;i++)
-    		{	int idx = mapi[i];
-    			if(idx>=0) { 
-    				int bit = 1<<idx;
-    				if((bit&mapped)!=0) { G.Error("idx "+idx+" is mapped twice"); }
-    				else if(prack[idx].topChip()!=null)
-    					{ nmapped++; mapped|=bit; 
-    					}
-    				else { G.Error("index "+idx+" maps to empty", idx); }
-    			}
-    		}
-    		G.Assert(nmapped==used,"map not complete");
-    		}
-
 
     
  /** assistance for the robot.  In addition to executing a move, the robot

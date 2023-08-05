@@ -22,9 +22,11 @@ public interface RajConstants
     static final String ClickToSelect = "Click to select a card";
     static final String TotalString = "Total";
     static final String ServiceName = "Info for #1";
+    static final String UsedCardsMessage = "Used Cards";
     static String RajStrings[] = 
     {	"Raj",
     	ServiceName,
+    	UsedCardsMessage,
     	ClickToSelect,
     	PlayCardDescription,
     	SelectPrizeDescription,

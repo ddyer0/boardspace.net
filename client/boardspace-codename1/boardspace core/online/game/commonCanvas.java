@@ -81,7 +81,7 @@ July 2006 added repeatedPositions related functions
 // TODO: game records can acquire inconsistent times when editing with more than one player, which causes a flood of logged errors
 //
 public abstract class commonCanvas extends exCanvas 
-	implements PlayConstants,ViewerProtocol,CanvasProtocol,sgf_names,ActionListener,Opcodes,PlacementProvider
+	implements PlayConstants,OnlineConstants,ViewerProtocol,CanvasProtocol,sgf_names,ActionListener,Opcodes,PlacementProvider
 { // state shared with parent frame
     // aux sliders
     public static final String LiftExplanation = "spread stacks for easy viewing";
@@ -108,7 +108,6 @@ public abstract class commonCanvas extends exCanvas
     public  static String Reviewing = "reviewing";
     public  static String DrawOutcome = "The game is a draw";
     public  static String DrawNotAllowed = "You can't offer a draw on this turn";
-    public  static String WonOutcome = "Game won by #1";
     public  static String StackHeightMessage = "Stack Height";
     private  static String GoalExplanationOnlyDetail = "The goal of the game is:\n#1";
     public static final String diceSoundName = DICEPATH + "dice" + Config.SoundFormat;

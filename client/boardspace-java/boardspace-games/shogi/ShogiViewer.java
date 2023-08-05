@@ -113,7 +113,7 @@ public class ShogiViewer extends CCanvas<ShogiCell,ShogiBoard> implements ShogiC
         b = new ShogiBoard(info.getString(GAMETYPE, Shogi_INIT),randomKey,repeatedPositions);
         useDirectDrawing(true);
         doInit(false);
-        chipsetOption = myFrame.addOption(s.get("Traditional Pieces"),traditional_chips,deferredEvents);
+        chipsetOption = myFrame.addOption(s.get(TraditionalPieces),traditional_chips,deferredEvents);
         reverseOption = myFrame.addOption(s.get(ReverseView),b.reverseY(),deferredEvents);
         drawAction = myFrame.addAction(s.get(OFFERDRAW),deferredEvents);
         
@@ -251,7 +251,7 @@ public class ShogiViewer extends CCanvas<ShogiCell,ShogiBoard> implements ShogiC
     {	ShogiChip truking = ShogiChip.getChip(0,ShogiChip.PieceType.General);
     	ShogiChip king = truking.alt_image;
     	king.drawChip(gc,this,r,null);
-    	if(HitPoint.setHelpText(highlight,r,s.get(traditional_chips ? "Switch to westernized pieces" : "Switch to traditional pieces")))
+    	if(HitPoint.setHelpText(highlight,r,s.get(traditional_chips ? SwitchWesternMessage : SwitchTraditionalMessage)))
     	{	highlight.spriteRect = r;
     		highlight.spriteColor = Color.red;
     		highlight.hitCode = ShogiId.ChangeChipsetButton;
@@ -523,7 +523,7 @@ public class ShogiViewer extends CCanvas<ShogiCell,ShogiBoard> implements ShogiC
         				vstate!=ShogiState.Puzzle,
         				gb.whoseTurn,
         				stateRect);
-            goalAndProgressMessage(gc,ourSelect,s.get("Checkmate your opponent's general"),progressRect, goalRect);
+            goalAndProgressMessage(gc,ourSelect,s.get(GoalMessage),progressRect, goalRect);
 
             DrawRepRect(gc,standardRotation,Color.black, gb.Digest(),repRect);	// Not needed for barca
             drawVcrGroup(ourSelect, gc);
@@ -737,19 +737,6 @@ private void playSounds(commonMove m)
         b.doInit(token,rk);
     }
 
-    
- //   public void doShowText()
- //   {
- //       if (debug)
- //       {
- //           super.doShowText();
- //       }
- //       else
- //       {
- //           theChat.postMessage(GAMECHANNEL,KEYWORD_CHAT,
- //               s.get("The game record is not available during the game"));
-//        }
-//    }
 
     /** handle action events
      * 
