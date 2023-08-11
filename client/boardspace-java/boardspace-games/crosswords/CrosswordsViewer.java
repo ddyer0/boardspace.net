@@ -1151,6 +1151,7 @@ public void setLetterColor(Graphics gc,CrosswordsBoard gb,CrosswordsCell cell)
 	   GC.setRotatedContext(gc,largerBoardRect,selectPos,effectiveBoardRotation);
        standardGameMessage(gc,stateRect,state);
        drawBoardElements(gc, gb, boardRect, ourTurnSelect,selectPos);
+       redrawChat(gc,selectPos);
        drawOptions(gc,((state==CrosswordsState.Puzzle)
     		   			||(state==CrosswordsState.ConfirmFirstPlay)
     		   			||(state==CrosswordsState.FirstPlay)

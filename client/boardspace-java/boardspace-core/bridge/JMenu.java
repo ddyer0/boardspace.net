@@ -71,12 +71,19 @@ public class JMenu extends javax.swing.JMenu implements NativeMenuInterface,Nati
 	protected void processMouseEvent(MouseEvent e) 
 	{	try {
 		int id = e.getID();
+		if(G.isCheerpj())
+		{
+		G.print("mouse event "+e+ " "+this);
+		G.print(G.getStackTrace());
+		}
             switch(id)
             {
             case MouseEvent.MOUSE_ENTERED:	
             	// inhibit mouse entered to avoid auto-selection moving
             	// between items on the jmenubar
             	if(getItemCount()==0) { break; }
+            case MouseEvent.MOUSE_PRESSED:
+            	//G.infoBox("button",G.getStackTrace());
             default: 
             	super.processMouseEvent(e);
             }
@@ -85,6 +92,9 @@ public class JMenu extends javax.swing.JMenu implements NativeMenuInterface,Nati
 			{ Plog.log.addLog("error in java menu ",err);
 			}
         }
-
+	public void show()
+	{
+		super.show();
+	}
 	
 }

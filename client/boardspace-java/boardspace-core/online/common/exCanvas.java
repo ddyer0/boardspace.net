@@ -860,6 +860,12 @@ graphics when using a touch screen.
    { return((theChat!=null) && theChat.embedded()); 
    }
    public boolean runTheChatLocally() { return(chatHasRun); }
+   
+   /**
+    * redraw board for the mouse effect only, no actual drawing will occur
+    * 
+    * @param p
+    */
    public void redrawBoard(HitPoint p)
    {
 	   if(menu!=null) { drawMenu(null,p); }
@@ -1934,7 +1940,7 @@ graphics when using a touch screen.
 	 */
 	private Rectangle getHelptextBounds(int x,int y,Rectangle bounds)
 	{	
-		if(theChat.isWindow())	// if old style chat window, we need to avoid it
+		if(theChat.isWindow() || !chatHasRun)	// if old style chat window, we need to avoid it
 		{
 		Rectangle chatBounds = theChat.getBounds();
 		int l = G.Left(chatBounds);
@@ -2214,9 +2220,10 @@ graphics when using a touch screen.
  	}
     
     public void paintSprites(Graphics g,HitPoint hp)
-    {	
+    {		    	
+    	if(!chatHasRun) { redrawChat(g,hp); }
 		drawCanvasSprites(g,hp); 
-		drawVirtualMouse(g,hp);
+		drawVirtualMouse(g,hp);		// also draws tooltips
 		drawMenu(g,hp);
 		//G.addLog("end acutalpaint");
 	}

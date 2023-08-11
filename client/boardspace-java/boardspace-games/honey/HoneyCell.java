@@ -28,6 +28,7 @@ public class HoneyCell extends stackCell<HoneyCell,HoneyChip>
 	StackIterator<HWord> wordHead;
 	Object parent = null;
 	int displayRow = 0;
+	boolean selected = false;
 	public void addWordHead(HWord w)
 	{
 		wordHead = (wordHead==null) ? w : wordHead.push(w); 
@@ -58,6 +59,7 @@ public class HoneyCell extends stackCell<HoneyCell,HoneyChip>
 	public void reInit()
 	{	super.reInit();
 		nonWord = false;
+		selected = false;
 		wordDirections = 0;
 	}
 	// constructor a cell not on the board, with a chip.  Used to construct the pool chips
@@ -79,6 +81,7 @@ public class HoneyCell extends stackCell<HoneyCell,HoneyChip>
 	{
 		super.copyFrom(other);
 		nonWord = other.nonWord;
+		selected = other.selected;
 		wordDirections = other.wordDirections;
 	}
 	

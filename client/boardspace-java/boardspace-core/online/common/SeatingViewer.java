@@ -198,14 +198,14 @@ public class SeatingViewer extends exCanvas implements LobbyConstants
 			G.SetRect(gameSelectionRect, l+stripHeight,t,w-l-stripHeight-margin,gameH);
 			G.SetRect(seatingChart, left, t+gameH, w-left-margin, h/3);
 			G.SetRect(gearRect,w-margin*3,t+margin,margin*2,margin*2);
-			G.SetRect(helpRect,G.Left(gearRect)-w/4+w/30,t+stripHeight/4,w/5,stripHeight/2);
+			G.SetRect(helpRect,G.Left(gearRect)-w/4+w/30,t+(int)(stripHeight*0.43),w/5,stripHeight/2);
 		}
 		else 
 		{
 		stripHeight = h/7;
 		G.SetRect(seatingSelectRect, l, t, w,stripHeight);
 		G.SetRect(gameSelectionRect, l,t+stripHeight,w/2,h-stripHeight);
-		G.SetRect(helpRect,G.Right(gameSelectionRect)-w/6,t+stripHeight+stripHeight/4,w/7,stripHeight/2);
+		G.SetRect(helpRect,G.Right(gameSelectionRect)-w/6,t+(int)(stripHeight*1.4),w/7,stripHeight/2);
 		int left = l+w/2+w/40;
 		int margin = stripHeight/2;
 		G.SetRect(seatingChart, left, t+stripHeight+margin, w-left-margin, h-stripHeight-stripHeight/2-margin);
@@ -985,13 +985,14 @@ public class SeatingViewer extends exCanvas implements LobbyConstants
 		    // circumstances, this.getFont() may also be null.
 		    GC.setFont(gc,lb);
 		    FontMetrics fm = G.getFontMetrics(lb);
-		    int topPart = fm.getHeight()*3/2;
+		    int fh = fm.getHeight();
+		    int topPart = fh*3;
 		    int messageY = G.Bottom(helpRect)+topPart/3;
 		    Rectangle ur = new Rectangle(gameX,messageY,gameW,topPart);
 		    GC.frameRect(gc,Color.blue,ur);
 		    GC.Text(gc,true,gameX,messageY,gameW,topPart,Color.black,null,"Play Offline");
 		    GC.setFont(gc,standardPlainFont());
-		    messageArea.setBounds(gameX,messageY+topPart+1,gameW,gameH-topPart);
+		    messageArea.setBounds(gameX,messageY+topPart+1,gameW,gameH-topPart-fh);
 		    if(!messageArea.isVisible())
 			  {
 			  messageArea.setVisible(true);

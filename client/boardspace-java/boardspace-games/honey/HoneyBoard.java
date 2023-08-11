@@ -311,40 +311,12 @@ class HoneyBoard extends BaseBoard implements BoardProtocol
         	drawTimer = G.Date()+InitialDrawTime;
         	
     		break;
-        case MOVE_ENDEDGAME:
-        	{
-        	HBoard pb = pbs[m.player];
-        	pb.Execute(mm,replay);
-        	boolean all = true;
-        	for(HBoard p : pbs) { all &= (p.getState()==HoneyState.Gameover); }
-        	lastActivePlayer = m.player;
-        	if(all) 
-        		{ setState(HoneyState.Gameover); 
-        		}
+        case MOVE_SELECT:
+        	for(HBoard p : pbs) { p.Execute(m,replay); }
         	break;
-        	}
-        case MOVE_ENDGAME:
-        	{
-        	for(HBoard pb : pbs) { pb.Execute(mm,replay); }
-        	setState(revision<101 ? HoneyState.Gameover : HoneyState.EndingGame);
-        	lastActivePlayer = mm.player;
-        	break;
-        	}
         case MOVE_SWITCH:
         	break;
-        case MOVE_PULLSTART:
-        	for(int lim = Math.min(pullCount(),drawPile.height()); lim>0;lim--) { drawPile.removeTop(); }
-        	break;
-        case MOVE_PULLNEW:
-        	{
-        	HBoard pb = pbs[m.player];        	
-        	pb.Execute(mm,replay);
-        	restartTimer();
-        	setState(HoneyState.Play);
-        	}
-        	break;
-        	
-        default:
+         default:
         	HBoard pb = pbs[m.player];
         	int mn = pb.moveNumber();
         	pb.Execute(mm,replay);

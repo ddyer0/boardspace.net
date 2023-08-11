@@ -290,7 +290,7 @@ public class JumbulayaViewer extends CCanvas<JumbulayaCell,JumbulayaBoard> imple
     	// state and top ornaments snug to the top of the board.  Depending
     	// on the rendering, it can occupy the same area or must be offset upwards
     	//
-        int stateY = boardY-stateH/2;
+        int stateY = boardY-stateH/8;
         int stateX = boardX;
     	G.placeStateRow(stateX,stateY,boardW ,stateH/2,iconRect,stateRect,annotationMenu,rotateRect,lockRect,altNoChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
@@ -1069,6 +1069,8 @@ public void setLetterColor(Graphics gc,JumbulayaBoard gb,JumbulayaCell cell)
 	   ch.drawChip(gc,this,iconRect,null);
        standardGameMessage(gc,stateRect,state);
        drawBoardElements(gc, gb, boardRect, ourTurnSelect,selectPos);
+       redrawChat(gc,selectPos); 
+
        String msg = 
     		   bb.invalidReason==null 
     		   	? definitionString()

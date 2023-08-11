@@ -41,6 +41,7 @@ class HBoard extends hexBoard<HoneyCell> implements BoardProtocol,HoneyConstants
     StringStack gameEvents = new StringStack();
     InternationalStrings s = G.getTranslations();
     HoneyCell drawPile = null;
+    CellStack selectedCells = new CellStack();
    	
  	void logGameEvent(String str,String... args)
  	{	//if(!robotBoard)
@@ -181,7 +182,7 @@ class HBoard extends hexBoard<HoneyCell> implements BoardProtocol,HoneyConstants
 		for(HoneyCell c = allCells; c!=null; c=c.next)
 		{	c.addChip(drawPile.removeTop());
 		}
-
+		selectedCells.clear();
         // note that firstPlayer is NOT initialized here
     }
     
@@ -211,6 +212,7 @@ class HBoard extends hexBoard<HoneyCell> implements BoardProtocol,HoneyConstants
         robotVocabulary = from_b.robotVocabulary;
         lastPicked = null;
         drawPile.copyFrom(from_b.drawPile);
+        getCell(selectedCells,from_b.selectedCells);
         sameboard(from_b); 
     }
 
@@ -233,6 +235,7 @@ class HBoard extends hexBoard<HoneyCell> implements BoardProtocol,HoneyConstants
         G.Assert(robotVocabulary==from_b.robotVocabulary,"robotVocabulary mismatch");
         G.Assert(score==from_b.score,"score mismatch");
         G.Assert(drawPile.sameContents(from_b.drawPile),"drawPile mismatch");
+        G.Assert(sameCells(selectedCells,from_b.selectedCells),"selected cells mismatch");
         // this is a good overall check that all the copy/check/digest methods
         // are in sync, although if this does fail you'll no doubt be at a loss
         // to explain why.
@@ -294,6 +297,7 @@ class HBoard extends hexBoard<HoneyCell> implements BoardProtocol,HoneyConstants
 		v ^= Digest(r,drawPile);
 		v ^= Digest(r,board_state);
 		v ^= Digest(r,boardIndex);
+		v ^= Digest(r,selectedCells);
 		//G.print("dx "+v);
        return (v);
     }
@@ -747,79 +751,6 @@ class HBoard extends hexBoard<HoneyCell> implements BoardProtocol,HoneyConstants
         //G.print("E "+m+" for "+whoseTurn+" "+board_state);
         switch (m.op)
         {
-        case MOVE_ENDEDGAME:
-        	//(replay==replayMode.Live) { G.print(Plog.log.finishLog()); }
-         	doDone(replay);
-         	break;
-         	
-        case MOVE_ENDGAME:
-        	if(board_state!=HoneyState.Gameover) { setState(HoneyState.EndingGame); }
-            break;
-        case MOVE_SEE:
-        	{	// see tiles in the hidden rack on hand held device
-        		hiddenVisible = (m.to_row==0?false:true);
-        	}
-        	break;
-        case MOVE_DROPB:
-        	{
-                G.Assert(m.player==boardIndex,"mismatch");
-			HoneyCell src = pickedSource;
-			HoneyChip po = pickedObject;
-			HoneyCell dest =  getCell(HoneyId.BoardLocation,m.to_col,m.to_row);		
-			m.chip = po;
-			dropObject(dest);
-	           
-			/**
-	             * if the user clicked on a board space without picking anything up,
-	             * animate a stone moving in from the pool.  For Hex, the "picks" are
-	             * removed from the game record, so there are never picked stones in
-	             * single step replays.
-	             */
-	            if(replay!=replayMode.Replay && (po==null))
-	            	{ animationStack.push(src);
-	            	  animationStack.push(dest); 
-	            	}
-	            setNextStateAfterDrop(replay);
-				}
-
-             break;
-
-        case MOVE_LIFT:
-        	{
-        	mapPick = m.to_row;
-        	mapTarget = m.mapped_row;
-        	}
-        	break;
-        case MOVE_PICK:		// pick from the draw pile
- 		case MOVE_PICKB:	// pick from the board
-        	// come here only where there's something to pick, which must
- 			{
- 			HoneyCell src = getCell(m.dest,m.to_col,m.to_row);
- 			{
-        	// be a temporary p
-        	pickObject(src);
-        	m.chip = pickedObject;
-        	if(src.onBoard)
-        	{
-        	switch(board_state)
-        	{
-        	case Endgame:
-        	case Confirm:
-        		setState(HoneyState.Play);
-				//$FALL-THROUGH$
-           	case Puzzle:
-           	case EndingGame:
-			case Play:
-        		break;
-        	default: ;
-        	}
-        	validate(true);
-        	}
-        	
- 			}}
-    		
-    		break;
-	    	
  
         case MOVE_START:
             setWhoseTurn(m.player);
@@ -830,6 +761,22 @@ class HBoard extends hexBoard<HoneyCell> implements BoardProtocol,HoneyConstants
             setNextStateAfterDone(replay);
 
             break;
+        case MOVE_SELECT:
+    	{
+    	HoneyCell c = getCell(m.from_col,m.from_row);
+    	HoneyCell top = selectedCells.top();
+    		if(c==top) {}
+    		else if(selectedCells.contains(c)) 
+    				{	
+    				setState(HoneyState.MultiUse); 			
+    				}
+    		else if(top==null || c.isAdjacentTo(top))
+    		{	selectedCells.push(c);
+   				c.selected = true;
+    		}
+    		else { setState(HoneyState.NotAdjacent); }
+    	}
+    	break;
 
        case MOVE_RESIGN:
     	   	setState(unresign==null?HoneyState.Resign:unresign);
@@ -844,7 +791,6 @@ class HBoard extends hexBoard<HoneyCell> implements BoardProtocol,HoneyConstants
     	   win[whoseTurn] = true;
     	   setState(HoneyState.Gameover);
     	   break;
-       case MOVE_PULLSTART:
        case MOVE_PASS:
     	   break;
         default:
@@ -945,10 +891,6 @@ class HBoard extends hexBoard<HoneyCell> implements BoardProtocol,HoneyConstants
    	    	throw G.Error("Can't un execute " + m);
         case MOVE_DONE:
             break;
-            
-        case MOVE_DROPB:
-        	SetBoard(getCell(m.to_col,m.to_row),null);
-        	break;
         case MOVE_RESIGN:
             break;
         }

@@ -511,6 +511,8 @@ public class Image extends SystemImage implements Drawable,CompareTo<Image>
 		 	
 		 	int s_wid= getWidth();
 		 	int s_hgt= getHeight();
+		 	if(s_wid>0 && s_hgt>0 && d_wid>0 && d_hgt>0) 
+		 	{
 		 	int [] srcArr = getRGB(null);
 		 	int [] dstArr = new int[d_wid*d_hgt];
 		 	int hscale=(s_wid<<16)/d_wid;
@@ -606,5 +608,7 @@ public class Image extends SystemImage implements Drawable,CompareTo<Image>
 		 	Image dst = new Image("{scaled}"+getName());
 		 	dst.createImageFromInts(dstArr,d_wid,d_hgt,0,d_wid);
 		 	return(dst);
+		 }
+		 else { return this; }
 		 }
 }

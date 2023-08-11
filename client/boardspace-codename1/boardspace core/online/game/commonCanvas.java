@@ -3638,8 +3638,11 @@ public abstract class commonCanvas extends exCanvas
    }
    // scroll by another player.  We should NOT have control here
    public boolean doRemoteScrollTo(int whence)
-   {	
-	   return doScroll(whence,"remote");
+   {
+	   boolean v = doScroll(whence,"remote");
+	   repaint();
+	   return v;
+	   
    }
     
    public boolean doScroll(int whence,String remote)
@@ -7261,7 +7264,11 @@ public void goalAndProgressMessage(Graphics gc,HitPoint highlight,Color color,St
     }
  
 }
-
+/**
+ * draws a pop up bubble with incoming chat lines
+ * 
+ * @param gc
+ */
 private void drawUnseenChat(Graphics gc)
 {
 	if(unseenPop!=null)
@@ -7825,8 +7832,9 @@ public void verifyGameRecord()
     
     public void paintSprites(Graphics g,HitPoint hp)
     { 	
+    	if(!chatHasRun) { redrawChat(g,hp); }
     	super.paintSprites(g, hp);
-    	drawUnseenChat(g);
+    	drawUnseenChat(g);		// draw a popup bubble with incoming chat
     	
     }
 
@@ -8263,7 +8271,10 @@ public void verifyGameRecord()
      	chatHasRun = false;
  
      	redrawClientBoard(offGC,k==null ? hp : null);		// no mouse activity if keyboard is up      
-        if(!chatHasRun) { redrawChat(offGC,hp); }
+        if(!chatHasRun) 
+        	{ // this draws the chat window if it wasn't explicitly drawn during the redraw
+        	redrawChat(offGC,hp); 
+        	}
         drawKeyboard(offGC,hp);
 
 

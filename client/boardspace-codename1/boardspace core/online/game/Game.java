@@ -1143,6 +1143,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
         	{ playedGameOverSound = true; 
         	  v.stopRobots();
         	}
+        theChat.setSpectator(my.spectator);
         setGameState( my.spectator ? ConnectionState.SPECTATE
         				: ((commonPlayer.numberOfVacancies(playerConnections) > 0)&&!gameo)
         				? ConnectionState.LIMBO 
@@ -1364,7 +1365,11 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
 		        	|| chatOnly 
 		       		|| tmchat
 		            || (pchat && playerComments.getState()) 
-		            || (( tchat || schat) && spectatorComments.getState()))
+		            || (( tchat || schat) 
+		            		&& spectatorComments.getState()
+		            		// don't let tournament players see spectator comments
+		            		&& (!isTournamentPlayer() || GameOver())
+		            		))
 		        {
 		            String msgstr = fullMsg.substring(ind);
 		            if (tmchat)
@@ -1394,7 +1399,6 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
 		                theChat.postMessage(playerID, commandStr, msgstr);
 		            }
 		        }
-		
             }
             else if (commandStr.equalsIgnoreCase(KEYWORD_IMNAMED) 
                     || (istrue = commandStr.equalsIgnoreCase(KEYWORD_TRUENAME)))
@@ -2716,6 +2720,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     	int rev = 0;
     	if(b!=null) { rev = b.getMaxRevisionLevel(); }
     	v.startPlaying();
+    	theChat.setSpectator(my.spectator);
     	if(b!=null) 
     		{ int rev2 = b.getActiveRevisionLevel(); 
     	mplog(msg+" "+rev+" "+rev2);
@@ -3500,9 +3505,12 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     private void FinishUp(boolean forme)
     { //myNetConn.LogMessage("finish " + forme + " " + my.id);
     	v.stopRobots();
+    	
+    	
     	boolean gameOverSeen = v.isScored();
         if (!gameOverSeen && !reviewOnly)
         {	v.setScored(true);
+        	if(isTournamentPlayer()) { spectatorComments.setState(true); }
             resultForMe = forme;
 
             if (forme)
@@ -3642,7 +3650,10 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
 
          }
     }
-
+    boolean isTournamentPlayer()
+    {
+    	return tournamentMode && !my.spectator;
+    }
     private void ExtendOptions()
     {
         if (messageMenu == null)
@@ -3651,7 +3662,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
             playerComments = myFrame.addOption(s.get(SeePlayerComments),
                     true, messageMenu,deferredEvents);
             spectatorComments = myFrame.addOption(s.get(SeeSpectatorComments),
-                    true, messageMenu,deferredEvents);
+                    !isTournamentPlayer(), messageMenu,deferredEvents);
             jointReview = myFrame.addOption(s.get(JointReview), reviewOnly,
                     messageMenu,deferredEvents);
  
@@ -3851,6 +3862,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
         if((myNetConn!=null)
         		&& myNetConn.hasLock 
         		&& (v!=null)
+        		&& (numberOfConnections()>1)
         		&& v.hasExplicitControlToken()
         		&& (currentT > (lastcontrol+CONTROL_IDLE_TIMEOUT)))
         {	// release control we're not using it for a while
@@ -3901,6 +3913,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
                 int step = v.getJointReviewStep();
                 if(v.hasControlTokenOrPending())
                 	{
+                	doTouch();
                 	String scrollMessage = NetConn.SEND_GROUP+KEYWORD_SCROLL+" "+ step;
                 	sendStatechangeMessage(scrollMessage /* + b.placedPositionString() */);
                 	}

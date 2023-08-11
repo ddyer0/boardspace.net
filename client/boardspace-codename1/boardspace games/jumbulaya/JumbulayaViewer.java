@@ -21,6 +21,7 @@ import lib.ExtendedHashtable;
 import lib.G;
 import lib.GC;
 import lib.HitPoint;
+import lib.Image;
 import lib.LFrameProtocol;
 import lib.Slider;
 import lib.StockArt;
@@ -294,7 +295,7 @@ public class JumbulayaViewer extends CCanvas<JumbulayaCell,JumbulayaBoard> imple
     	// state and top ornaments snug to the top of the board.  Depending
     	// on the rendering, it can occupy the same area or must be offset upwards
     	//
-        int stateY = boardY-stateH/2;
+        int stateY = boardY-stateH/8;
         int stateX = boardX;
     	G.placeStateRow(stateX,stateY,boardW ,stateH/2,iconRect,stateRect,annotationMenu,rotateRect,lockRect,altNoChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
@@ -748,7 +749,7 @@ public class JumbulayaViewer extends CCanvas<JumbulayaCell,JumbulayaBoard> imple
     			     || pendingFullRefresh;
     	super.drawFixedElements(gc,complete);
     }
-
+    Image scaled = null;
     // land here after rotating the board drawing context if appropriate
     public void drawFixedBoard(Graphics gc,Rectangle brect)
     {	
@@ -765,7 +766,7 @@ public class JumbulayaViewer extends CCanvas<JumbulayaCell,JumbulayaBoard> imple
 	      // are carefully matched with the abstract grid
 	  	if(remoteViewer<0)
 	  	{
-	  	  JumbulayaChip.Board.getImage().centerImage(gc, brect);
+	  	scaled = JumbulayaChip.Board.getImage().centerScaledImage(gc, brect,scaled);
 
 	      // draw a picture of the board. In this version we actually draw just the grid
 	      // to draw the cells, set gb.Drawing_Style in the board init method.  Create a
@@ -1073,6 +1074,8 @@ public void setLetterColor(Graphics gc,JumbulayaBoard gb,JumbulayaCell cell)
 	   ch.drawChip(gc,this,iconRect,null);
        standardGameMessage(gc,stateRect,state);
        drawBoardElements(gc, gb, boardRect, ourTurnSelect,selectPos);
+       redrawChat(gc,selectPos); 
+
        String msg = 
     		   bb.invalidReason==null 
     		   	? definitionString()

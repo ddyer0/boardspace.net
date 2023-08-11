@@ -1753,7 +1753,8 @@ private void drawPlayerBoard(Graphics gc,
        	Loc.make(ChipType.BlueCard, 12, ViticultureId.Choice_B,-0.28,0.32,0.15);
 
        	// professor
-		Loc.make(ChipType.BlueCard, 13, ViticultureId.Choice_A,-0.48,0.28,0.20);	// big box, centered
+		Loc.make(ChipType.BlueCard, 13, ViticultureId.Choice_A,-0.4,0.21,0.15);
+     	Loc.make(ChipType.BlueCard, 13, ViticultureId.Choice_B,-0.4,0.327,0.15);
 
       	// master vintner
        	Loc.make(ChipType.BlueCard, 14, ViticultureId.Choice_A,-0.44,0.22,0.15);

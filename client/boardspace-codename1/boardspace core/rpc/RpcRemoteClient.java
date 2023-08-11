@@ -68,7 +68,7 @@ public class RpcRemoteClient implements RpcInterface,SimpleObserver
 	{ 	active = v; 
 		if(!v) 
 			{ canvas.removeObserver(this);
-			  canvas.shutDown();
+			  panel.requestShutdown();
 			  panel.remove(canvas.getComponent());
 			  panel.repaint();
 			}

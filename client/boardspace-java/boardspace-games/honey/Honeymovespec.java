@@ -11,41 +11,15 @@ import lib.ExtendedHashtable;
 public class Honeymovespec extends commonMPMove implements HoneyConstants
 {	// this is the dictionary of move names
     static ExtendedHashtable D = new ExtendedHashtable(true);
-    static final int MOVE_PICK = 204; // pick a chip from a pool
-    static final int MOVE_DROP = 205; // drop a chip
-    static final int MOVE_PICKB = 206; // pick from the board
-    static final int MOVE_DROPB = 207; // drop on the board
     static final int MOVE_SELECT = 208;	// select value for a blank
-    static final int MOVE_SEE = 212;		// see tiles on the hidden rack
-    static final int MOVE_LIFT = 213; 		// lift a tile in the user interface rack
-    static final int MOVE_REPLACE = 214; 	// replace a tile in the user interface rack
-    static final int MOVE_MOVETILE = 215;		// move a tile from a rack to the board or back
-    static final int MOVE_PULL = 226;			// pull more tiles
-    static final int MOVE_ENDGAME = 227;		// end the game now
     static final int MOVE_SWITCH = 228;			// switch point of view
-    static final int MOVE_ENDEDGAME = 229;		// ack endgame
-    static final int MOVE_PULLNEW = 230;		// better version of pull
-    static final int MOVE_PULLSTART = 231;		//
-    
+     
     static
     {	// load the dictionary
         // these int values must be unique in the dictionary
     	addStandardMoves(D,	// this adds "start" "done" "edit" and so on.
-        	"Pick", MOVE_PICK,
-        	"Pickb", MOVE_PICKB,
-        	"Drop", MOVE_DROP,
-        	"Dropb", MOVE_DROPB,
-        	"SetBlank", MOVE_SELECT,
-        	"See", MOVE_SEE,
-        	"Lift", MOVE_LIFT,
-        	"Replace",MOVE_REPLACE,
-        	"move",MOVE_MOVETILE,
-        	"pull",MOVE_PULL,
-        	"pullnew",MOVE_PULLNEW,
-        	"pullstart",MOVE_PULLSTART,
-        	"endgame",MOVE_ENDGAME,
-        	"ended",MOVE_ENDEDGAME,
-        	"switch",MOVE_SWITCH
+        	"select", MOVE_SELECT,
+         	"switch",MOVE_SWITCH
     			);
   }
     //
@@ -185,70 +159,15 @@ public class Honeymovespec extends commonMPMove implements HoneyConstants
         {
         case MOVE_UNKNOWN:
         	throw G.Error("Cant parse " + cmd);
-        case MOVE_PULL:	// pull new tiles from the pool
-        	to_row = G.IntToken(msg);
-        	break;
-        case MOVE_PULLSTART:
-        	break;
-        case MOVE_PULLNEW:
-        	from_col = G.CharToken(msg);	// the letter drawn
-        	to_row = G.IntToken(msg);	// index to deposit to
-        	
-        	break;
-        	
-        case MOVE_DROPB:
-        	dest = HoneyId.BoardLocation;
-        	to_col = G.parseCol(msg);
-        	to_row = G.IntToken(msg);
-        	break;
-        case MOVE_MOVETILE:
-        	source = HoneyId.valueOf(msg.nextToken());
-        	from_col = G.parseCol(msg);
-        	from_row = G.IntToken(msg);
-        	dest = HoneyId.valueOf(msg.nextToken());
-        	to_col = G.parseCol(msg);
-        	to_row = G.IntToken(msg);
-        	break;
-        
-      
-		case MOVE_PICKB:
-            dest = HoneyId.BoardLocation;
-            to_col = G.parseCol(msg);
-            to_row = G.IntToken(msg);
-
-            break;
-		case MOVE_SELECT:
+         	
+  		case MOVE_SELECT:
 			dest = HoneyId.BoardLocation;
 			to_col = G.parseCol(msg);
 			break;
-			
-		case MOVE_LIFT:
-        case MOVE_PICK:
-            dest = HoneyId.valueOf(msg.nextToken());
-            to_col = G.parseCol(msg);
-            to_row = G.IntToken(msg);        
-            mapped_row = (msg.hasMoreTokens()) ? G.IntToken(msg) : -1;
-			break;
-
- 		case MOVE_REPLACE:
-		case MOVE_DROP:
-            dest = HoneyId.valueOf(msg.nextToken());
-            to_col = G.parseCol(msg);
-            to_row = G.IntToken(msg);
-            mapped_row = msg.hasMoreTokens() ? G.IntToken(msg) : -1;
-            break;
 
         case MOVE_START:
         	player = D.getInt(msg.nextToken());
             break;
-         case MOVE_SEE:
-        	{
-        	char pl = G.parseCol(msg);
-        	boolean v = G.BoolToken(msg);
-        	to_col = pl;
-        	to_row = v ? 1 : 0;
-        	}
-        	break;
         default:
         case MOVE_SWITCH:
 
@@ -277,30 +196,11 @@ public class Honeymovespec extends commonMPMove implements HoneyConstants
     {
         switch (op)
         {
-        case MOVE_PICKB:
-            return icon(v,G.printCol(to_col) , to_row);
-        case MOVE_PULL:
-        	return icon(v," ",to_row);
-        case MOVE_PULLNEW:
-        	return icon(v," ",from_col," ",to_row);
-        	
-        case MOVE_MOVETILE:
-        case MOVE_DROPB:
-            return icon(v,G.printCol(to_col) ,to_row);
-
 		case MOVE_SELECT:
         	return TextChunk.create("= "+G.printCol(to_col));
-		case MOVE_LIFT:
-		case MOVE_REPLACE:
-        case MOVE_DROP:
-        case MOVE_SEE:
-        case MOVE_PICK:
         case MOVE_SWITCH:
         case MOVE_DONE:
-        case MOVE_ENDGAME:
-        case MOVE_ENDEDGAME:
-        case MOVE_PULLSTART:
-             return TextChunk.create("");
+              return TextChunk.create("");
         default:
             return TextChunk.create(D.findUniqueTrans(op));
 
@@ -319,38 +219,11 @@ public class Honeymovespec extends commonMPMove implements HoneyConstants
         // review mode
         switch (op)
         {
-        case MOVE_PULL:
-        	return G.concat(opname,to_row);
-        	
-        case MOVE_PULLNEW:
-        	return G.concat(opname,from_col," ",to_row);
-        	
-        case MOVE_PICKB:
-		case MOVE_DROPB:
-	        return G.concat(opname, G.printCol(to_col)," ",to_row);
-		case MOVE_MOVETILE:
-	        return (G.concat(opname,
-	        		source.name()," ", from_col," ", from_row,
-	        		" ",dest.name()," ", G.printCol(to_col)," ", to_row));
-
-		case MOVE_LIFT:
-        case MOVE_DROP:
-        case MOVE_PICK:
-        	 return G.concat(opname,dest.name()," ",G.printCol(to_col)," ",to_row," ",mapped_row);
-        	 
-
-		case MOVE_REPLACE:
-             return G.concat(opname,dest.name()," ",G.printCol(to_col)," ",to_row);
         case MOVE_START:
             return G.concat(ind,"Start P",player);
         case MOVE_SELECT:
         	return G.concat(opname,G.printCol(to_col));
-        case MOVE_SEE:
-        	return G.concat(opname,G.printCol(to_col),((to_row==0)?" false" : " true"));
         default:
-        case MOVE_ENDGAME:
-        case MOVE_ENDEDGAME:
-        case MOVE_PULLSTART:
         case MOVE_SWITCH:
             return G.concat(opname);
         }

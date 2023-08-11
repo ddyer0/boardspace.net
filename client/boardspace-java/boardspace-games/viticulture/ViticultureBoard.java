@@ -81,7 +81,7 @@ action will be taken in the spring.
   
  */
 class ViticultureBoard extends RBoard<ViticultureCell> implements BoardProtocol,ViticultureConstants
-{	static int REVISION = 156;			// 100 represents the initial version of the game
+{	static int REVISION = 157;			// 100 represents the initial version of the game
 										// games with no revision information will be 100
 										// revision 101, correct the sale price of champagne to 4
 										// revision 102, fix the cash distribution for the cafe
@@ -159,6 +159,7 @@ class ViticultureBoard extends RBoard<ViticultureCell> implements BoardProtocol,
 
 										// revision 156 fixes farmer bug for green card markets and also fixes
 										// the "planner" bug, planner actions trigger when you enter the season
+										// revision 157 fixes "professor" bug with unlimited workers option
 
 public int getMaxRevisionLevel() { return(REVISION); }
 	PlayerBoard pbs[] = null;		// player boards
@@ -5497,18 +5498,28 @@ public int getMaxRevisionLevel() { return(REVISION); }
 
 
     	case 13: // professor
-    		if(pb.nWorkers==maxWorkers())
+    		// revision 157, the resolution was always set correctly
+    		// with unlimited workers, it can be a real choice
+    		ViticultureId res = resolution;
+    		// before the fix, the resolution was always choice a
+    		if((revision<157) && pb.nWorkers==6) { res = ViticultureId.Choice_B; }
+    		switch(res)
     		{
-       			//p1("professor a");
-       			changeScore(pb,2,replay,Professor,card,ScoreType.ScoreBlue); 
-    		}
-    		else 
-    		{
-       			//p1("professor b");
-       			nextState = doTrainWorker(pb,2,false,false,replay);
+    		case Choice_B:
+	    		{
+	       			//p1("professor a");
+	       			changeScore(pb,2,replay,Professor,card,ScoreType.ScoreBlue); 
+	    		}
+	    		break;
+    		case Choice_A:
+	    		{
+	       			//p1("professor b");
+	       			nextState = doTrainWorker(pb,2,false,false,replay);
+	    		}
+	    		break;
+	    	default: G.Error("Not expecting resolution %s",res);
     		}
     		break;
-
        	case 14:	// master vintner
     		switch(resolution)
     		{	
@@ -9703,10 +9714,12 @@ public void placeWorkerInAction(PlayerBoard pb,int action,int lastSlot,
 				if(pb.cards.height()>=1) { addChoice(all,ViticultureId.Choice_B,generator); }
 				break;
 			case 13: // professor
+				
 				if(pb.cash>=costOfWorker(pb)-2 && (pb.nWorkers<maxWorkers())) { addChoice(all,ViticultureId.Choice_A,generator); }
-				else if(pb.nWorkers==maxWorkers()) 
+				// revision 157, make this not an "else" since it cab be a "both"
+				if(pb.nWorkers==6) // yes, exactly 6 is what it says on the card
 					{ // professor, you can gain 2 vp if you have exactly 6
-					  addChoice(all,ViticultureId.Choice_A,generator); 
+					  addChoice(all,ViticultureId.Choice_B,generator); 
 					}
 				break;
 			case 14: // master vintner

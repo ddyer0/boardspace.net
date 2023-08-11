@@ -8,6 +8,8 @@ import online.game.BaseBoard.BoardState;
 
 public interface HoneyConstants
 {	static String InvalidExplanation = "The current letter placement is invalid because: #1";
+	static String NotAdjacentExplanation = "Not a continuous word";
+	static String MultiUseExplanation = "Used the same cell twice";
 	static String HoneyVictoryCondition = "score the most points";
 	static String ResolveBlankState = "Assign a value to the blank tile";
 	static String DiscardTilesState = "Click on Done to discard your rack and draw a new one";
@@ -59,6 +61,8 @@ public interface HoneyConstants
 	EndingGame(EndingGameDescription,true,true),
 
 	Play(HoneyPlayState,false,false),
+	NotAdjacent(NotAdjacentExplanation,false,false),
+	MultiUse(MultiUseExplanation,false,false);
 	;
 	HoneyState(String des,boolean done,boolean digest)
 	{
@@ -141,6 +145,8 @@ public interface HoneyConstants
     	String HoneyStrings[] = 
     		{  "HoneyComb",
     			SelectBlankMessage,
+    			NotAdjacentExplanation,
+    			MultiUseExplanation,
     			GetDefinitionMessage,
     			WordsMessage,
     			VocabularyMessage,

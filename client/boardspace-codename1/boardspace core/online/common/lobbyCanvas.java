@@ -2980,9 +2980,7 @@ private void dragPinch(int x0,int y, boolean isD) {
 
 public boolean touchZoomEnabled()
 {
-	int x = mouse.getX();
-	int y = mouse.getY();
-	if((chatRect!=null) && G.pointInRect(x,y,chatRect)) { return(false); }
+	if((chatRect!=null) && G.pointInRect(mouse.getX(),mouse.getY(),chatRect)) { return(false); }
 	if(theChat!=null && theChat.activelyScrolling()) { return(false); }
 	if(GameScrollArea.activelyScrolling() 
 			|| UserScrollArea.activelyScrolling())

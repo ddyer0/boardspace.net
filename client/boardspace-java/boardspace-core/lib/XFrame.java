@@ -68,11 +68,13 @@ public class XFrame extends JFrame implements WindowListener,SizeProvider,LFrame
 	/** constructor */
 	public XFrame(String string) 
 	{ 	super(string);
+		setJMenuBar(new JMenuBar()); 
 		initStuff(string);
 	}
 	/** constructor */
 	public XFrame()
 	{	super();
+		setJMenuBar(new JMenuBar()); 
 		initStuff("");
 
 
@@ -126,6 +128,8 @@ public class XFrame extends JFrame implements WindowListener,SizeProvider,LFrame
 		if("restorepanzoom".equals(cmd)) { return(hasSavePanZoom); }
 		return(false);
 	}
+	
+	// this is used in the codename1 branch
 	public void buttonMenuBar(ActionEvent evt,int x,int y)
 	{	String cmd = evt.getActionCommand().toString();
 		if("twist3".equals(cmd))

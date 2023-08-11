@@ -5,6 +5,7 @@ import com.codename1.ui.Component;
 import lib.Image;
 import com.codename1.ui.geom.Dimension;
 import com.codename1.ui.layouts.Insets;
+import com.codename1.ui.layouts.Layout;
 
 import bridge.*;
 import common.CommonConfig;
@@ -184,7 +185,7 @@ import udp.PlaytableStack;
 	 private Checkbox savePasswordField;	// save the password (and the liver!)
 	 private Checkbox loginAsGuestField;	// log in as a guest instead of a registered user
 	 private Choice<String> langField;				// preferred language
-	 private Choice<StringPair> linkField;
+	 private Choice<StringPair> linkField;				// site links
 	 private Choice<String> countryField;			// home country
 	 private JTextField nameField;			// user name
 	 private JTextField realNameField;		// real name, or whatever
@@ -210,14 +211,11 @@ import udp.PlaytableStack;
 	 {	 //PlatformLogger l = PlatformLogger.getLogger("java.util.prefs");
 	 	 //l.setLevel(Level.SEVERE);	// quench a warning message
 		 controllingFrame = f;
-
-		 observer = o;
-		 setUIID("Password");
-		 
 		 BoxLayout bl = new BoxLayout(this,BoxLayout.Y_AXIS);
 		 bl.setAlign(Component.CENTER);
 		 setLayout(bl);
-		 
+
+		 observer = o;
 		 if(isAcceptableVersion())
 		 	{
 			 reconfigure(Screen.Login);
@@ -397,10 +395,7 @@ import udp.PlaytableStack;
 	 }
 	 public JPanel createSuccessPanel()
 	 {	
-	 	JPanel panel = mainPanel = new JPanel();
-	 	BoxLayout bl = new BoxLayout(panel,BoxLayout.Y_AXIS);
-	 	panel.setLayout(bl);
-	 	bl.setAlign(Component.CENTER);
+	 	JPanel panel = mainPanel = subPanel();
 		 
 		 JLabel nameLabel = new JLabel(s.get(SuccessMessage));
 		 JLabel nameLabel2 = new JLabel(s.get(SuccessMessage2));
@@ -413,11 +408,7 @@ import udp.PlaytableStack;
 	 private void configureForConfirmation()
 	 { 	
 	 	disposeMainPanel();	// get rid of any previous
-		JPanel vpanel = mainPanel = new JPanel();
-	 	BoxLayout bl = new BoxLayout(vpanel,BoxLayout.Y_AXIS);
-	 	bl.setAlign(Component.CENTER);
-	 	vpanel.setLayout(bl);
-		
+		JPanel vpanel = mainPanel = subPanel();
 		vpanel.add(createSuccessPanel());
 		vpanel.add(createConfirmedPanel());
 		add(vpanel);
@@ -430,10 +421,7 @@ import udp.PlaytableStack;
 	 	disposeMainPanel();
 	 	boolean ok = getPreregInfo();	// get timestamp and country list
 		 
-	 	JPanel vpanel = mainPanel = new JPanel();
-	 	BoxLayout bl = new BoxLayout(vpanel,BoxLayout.Y_AXIS);
-		bl.setAlign(Component.CENTER);
-		vpanel.setLayout(bl);
+		JPanel vpanel = mainPanel = subPanel();
 
 		if(ok)
 		{
@@ -465,8 +453,7 @@ import udp.PlaytableStack;
 	 
 	 public JPanel createPasswordPanel(String txt, boolean includeSave)
 	 {
-		 JPanel pane = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		 
+		 JPanel pane = subPanel(new FlowLayout(FlowLayout.CENTER));		 
 		 JLabel label = new JLabel(s.get(txt));
 		 label.setUIID("LoginLabel");
 		 label.setLabelFor(passwordField);
@@ -482,7 +469,9 @@ import udp.PlaytableStack;
 		 
 		 if(includeSave)
 		 {	String passw = s.get(SavePassword);
-			 savePasswordField = new Checkbox("true".equals(prefs.get(savePassKey,"true")));
+			 savePasswordField = new Checkbox(passw,"true".equals(prefs.get(savePassKey,"true")));
+			 Component.setSameSize(passwordField,savePasswordField);
+			 passwordField.setUIID("LoginLabel");
 			 passwordField.setText(unobfuscate(prefs.get(passKey,""),name+SALT));
 			 String pass = password;
 			 if(pass==null)
@@ -491,7 +480,6 @@ import udp.PlaytableStack;
 		 		}
 			 if(pass!=null) { passwordField.setText(pass); }
 			 pane.add(savePasswordField);
-			 pane.add(new Label(passw));
 		 }
 		 return(pane);
 	 }
@@ -499,7 +487,7 @@ import udp.PlaytableStack;
 
 	 private JPanel createRealNamePanel()
 	 {
-		 JPanel panel =  new JPanel(new FlowLayout(FlowLayout.CENTER));
+		 JPanel panel =  subPanel(new FlowLayout(FlowLayout.CENTER));
 		 JLabel nameLabel = new JLabel(s.get(YourRealName));
 		 nameLabel.setUIID("LoginLabel");
 		 realNameField = new JTextField(25);
@@ -511,9 +499,10 @@ import udp.PlaytableStack;
 		 return(panel);
 	 }
 	 private JPanel createErrorPanel()
-	 {	JPanel panel =  new JPanel(new FlowLayout(FlowLayout.CENTER));
+	 {	JPanel panel =  subPanel(new FlowLayout(FlowLayout.CENTER));
 	 	errorText = new JLabel(" ");
 	 	errorText.setUIID("LoginLabel");
+	 	errorText.setFocusable(false);
 	 	errorText.setForeground(Color.red);
 	 	//errorText.setWidth(80);
 	 	panel.add(errorText);
@@ -522,7 +511,7 @@ import udp.PlaytableStack;
 
 	 private JPanel createEmailPanel()
 	 {
-		 JPanel panel =  new JPanel(new FlowLayout(FlowLayout.CENTER));
+		 JPanel panel =  subPanel(new FlowLayout(FlowLayout.CENTER));
 		 JLabel nameLabel = new JLabel(s.get(YourEmail));
 		 nameLabel.setUIID("LoginLabel");
 		 emailField = new JTextField(25);
@@ -540,7 +529,7 @@ import udp.PlaytableStack;
 	 }
 	 public JPanel createConfirmedPanel()
 	 {
-		 JPanel panel =  new JPanel();
+		 JPanel panel =  subPanel();
 		 finalRegisterButton = new JButton(FINALREGISTER);
 		 finalRegisterButton.setActionCommand(FINALREGISTER);
 		 finalRegisterButton.addActionListener(this);
@@ -550,7 +539,7 @@ import udp.PlaytableStack;
 
 	 private JPanel createUsernamePanel(boolean includeGuest)
 	 {
-		 JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		 JPanel panel = subPanel(new FlowLayout(FlowLayout.CENTER));
 		 JLabel nameLabel = new JLabel(s.get(YourName));
 		 nameLabel.setUIID("LoginLabel");
 		 nameField = new JTextField(13);
@@ -565,11 +554,12 @@ import udp.PlaytableStack;
 		 
 		 if(includeGuest)
 			 { String guestm = s.get(LoginAsGuest);
-			   loginAsGuestField = new Checkbox(false);
+			   loginAsGuestField = new Checkbox(guestm,false);
+			   loginAsGuestField.setUIID("LoginLabel");
+			   Component.setSameSize(nameField,loginAsGuestField);
 			   loginAsGuestField.addItemListener(this);
 			   // this papers over a codename1 bug that broke checkmarks with labels
 			   panel.add(loginAsGuestField);
-			   panel.add(new Label(guestm));
 			 }
 		 	else { loginAsGuestField = null ; }
 		 
@@ -577,7 +567,7 @@ import udp.PlaytableStack;
 	 }
 	 public JPanel createLanguagePanel()
 	 {
-		 JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		 JPanel panel = subPanel(new FlowLayout(FlowLayout.CENTER));
 		 String lang = language;
 		 if(lang==null) { lang=prefs.get(langKey,"english"); }
 		 language = lang;
@@ -600,8 +590,7 @@ import udp.PlaytableStack;
 	 
 	 public JPanel createCountryPanel()
 	 {
-		 JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-
+		 JPanel panel = subPanel(new FlowLayout(FlowLayout.CENTER));
 		 JLabel llab = new JLabel(s.get(COUNTRY));
 		 llab.setUIID("LoginLabel");
 		 countryField = new Choice<String>();
@@ -642,7 +631,7 @@ import udp.PlaytableStack;
 	 }
 	 private Component createVisitButton()
 	 {	
-		 JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		 JPanel panel = subPanel(new FlowLayout(FlowLayout.RIGHT));
 		 String host = Http.httpProtocol+"//"+Http.getHostName();
 		 linkField = new Choice<StringPair>();
 		 linkField.addItem(new StringPair(s.get(SiteLinks,APPNAME),null));
@@ -668,9 +657,8 @@ import udp.PlaytableStack;
 		return(feedbackButton);
 	 }
 	 public Component createRegisterPanel()
-	 {	JPanel p = new JPanel(); 
+	 {	JPanel p = subPanel(new FlowLayout(FlowLayout.CENTER)); 
 	 	String rega = s.get(RegisterAccount);
-	 	p.setLayout(new FlowLayout(FlowLayout.CENTER));
 	 	registerAccountButton = new JButton(rega);
 	 	registerAccountButton.setActionCommand(rega);
 	 	registerAccountButton.addActionListener(this);
@@ -707,7 +695,7 @@ import udp.PlaytableStack;
 	 	String platform = G.getPlatformPrefix();
 	 	String prefVersion = G.getString(platform+"_version",null);
 		String va = s.get(VersionMessage,appversion);
-		JPanel p = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		JPanel p = subPanel(new FlowLayout(FlowLayout.CENTER));
 
 		if((prefVersion!=null)
 	 		&&	G.isCodename1())
@@ -739,7 +727,7 @@ import udp.PlaytableStack;
 	 }
 	 public Component createReviewPanel()
 	 {	
-		 JPanel p = new JPanel(new FlowLayout(FlowLayout.CENTER)); 
+		 JPanel p = subPanel(new FlowLayout(FlowLayout.CENTER)); 
  		 String rega = s.get(ReviewMessage);
  		 reviewButton = new JButton(rega);
  		 reviewButton.setActionCommand(rega);
@@ -779,10 +767,7 @@ import udp.PlaytableStack;
 	 	JPanel userPanel = createUsernamePanel(true);	// do first, side effect is to get user name
 	 	passPane = createPasswordPanel(YourPassword,true);	// password pane pops up and down depending on "guest"
 
-	 	JPanel vpanel = mainPanel = new JPanel();
-	 	BoxLayout bl = new BoxLayout(mainPanel,BoxLayout.Y_AXIS);
-	 	bl.setAlign(Component.CENTER);
-	 	mainPanel.setLayout(bl);
+	 	JPanel vpanel = mainPanel = subPanel();
 	 	vpanel.setOpaque(false);
 	 	BoxLayout bv = new BoxLayout(vpanel,BoxLayout.Y_AXIS);
 	 	bv.setAlign(Component.CENTER);
@@ -811,7 +796,7 @@ import udp.PlaytableStack;
 	 	disposeMainPanel();		// get rid of any previous
 	 	setBackground(FrameBackgroundColor);
 	 	
-	 	JPanel vpanel = mainPanel = new JPanel();
+	 	JPanel vpanel = mainPanel = subPanel();
 	 	TextArea text = new TextArea();
 	 	text.setText(s.get(VersionRejectedMessage));
 		vpanel.add(text);
@@ -831,10 +816,24 @@ import udp.PlaytableStack;
 		 for(int i=0;i<bytes.length;i++) { bytes[i]=bytes[i] ^= ((salt.charAt(i%salt.length()))+(((i+163)*17253))&0xff); }
 		 return(Base64.encode(bytes,true));
 	 }
-
+	 private JPanel subPanel(Layout l)
+	 {	JPanel panel = new JPanel(l);
+	 	panel.setBackground(FrameBackgroundColor);
+	 	panel.setOpaque(true);
+	 	return panel;
+	 }
+	 private JPanel subPanel()
+	 {	JPanel panel = new JPanel();
+	 	panel.setBackground(FrameBackgroundColor);
+	 	panel.setOpaque(true);
+	 	BoxLayout bl = new BoxLayout(panel,BoxLayout.Y_AXIS);
+		bl.setAlign(Component.CENTER);
+		panel.setLayout(bl);
+	 	return panel;
+	 }
 	 // create the panel with the OK and Cancel buttons
 	 protected JPanel createLoginButtonPanel() {
-		 JPanel p = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		 JPanel p = subPanel(new FlowLayout(FlowLayout.CENTER));
 		 {
 		 String ok = s.get(OK);
 		 okButton = new JButton(ok);
@@ -854,7 +853,7 @@ import udp.PlaytableStack;
 
 	 // create the panel with the OK and Cancel buttons
 	 protected JPanel createHostPanel(String alt) {
-		 JPanel p = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		 JPanel p = subPanel(new FlowLayout(FlowLayout.CENTER));
 		 {String host = "use host "+alt;
 		  Checkbox ch = new Checkbox(G.getBoolean("develophostoption",false));
 		  ch.addItemListener(this);
@@ -873,7 +872,7 @@ import udp.PlaytableStack;
 	 // create the panel with the OK and Cancel buttons
 	 protected JPanel createRegisterButtonPanel() {
 		 
-		 JPanel p = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		 JPanel p = subPanel(new FlowLayout(FlowLayout.CENTER));
 		 {
 		 String ok = s.get(REGISTER);
 		 registerButton = new JButton(ok);

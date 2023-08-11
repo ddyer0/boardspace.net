@@ -186,6 +186,7 @@ public interface CommonConfig {
 		"esperanto",
 		"french",
 		"german",
+		"italian",
 		"greek",
 		"japanese",
 		"norwegian",

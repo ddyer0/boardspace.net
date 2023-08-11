@@ -110,11 +110,16 @@ public class Login implements SimpleObserver,Config,Crypto
 	public boolean initFromWebStart()
     {	boolean captured = false;
     	boolean exit = false;
-
+    	boolean show = false;
     	{
     	while(!exit)
     	{
 		PasswordCollector collector = PasswordCollector.createAndShowGUI(this);
+		if(show) 
+			{ show = false; 
+			// do this after the respawn, so we hope this window will appear on top
+			G.showDocument(Http.httpProtocol+"//"+Http.getHostName()+recoverPasswordUrl,"Change Password");
+			}
 		// note than in the codename1 port, createAndShowGui operates as
 		// a modal dialog, so this is allready complete and this waiting
 		// is superfluous.
@@ -158,7 +163,6 @@ public class Login implements SimpleObserver,Config,Crypto
 			params = "&" + IdentityParameterName + "="+Http.escape("x"+G.getIdentity())+params;
 			
 			params = "params="+XXTEA.combineParams(params,TEA_KEY);
-			
 			UrlResult result = Http.postURL(Http.getHostName(),loginURL,params,socks);
 			
 			if(result.error!=null)
@@ -174,8 +178,7 @@ public class Login implements SimpleObserver,Config,Crypto
 					String v = G.optionBox("Login error","User name and password were not accepted",
 							"Try again","Recover lost password");
 					if("Recover lost password".equals(v))
-					{
-						G.showDocument(Http.httpProtocol+"//"+Http.getHostName()+recoverPasswordUrl,"Change Password");
+					{	show = true;
 					}
 				 }
 				 else if(result.text.startsWith("unavailable")) 
@@ -207,7 +210,8 @@ public class Login implements SimpleObserver,Config,Crypto
 					 }
 				}
 		}
-		else if(PasswordCollector.cancel.equals(collector.exitValue)) { exit = true; }
+		else if(PasswordCollector.cancel.equals(collector.exitValue)) 
+			{ exit = true; }
 		else 
 		{	
 			G.print("Unexpected termination: " + collector.exitValue); exit=true; 

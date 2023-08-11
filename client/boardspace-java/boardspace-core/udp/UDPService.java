@@ -52,7 +52,8 @@ class UdpRunner implements Runnable
 	 * @return
 	 */
 	public String getMessage(int waitTime)
-	{   String msg = dead ? null : listener.getMessage(waitTime);
+	{	UdpListener l = listener;
+		String msg = (dead||l==null) ? null : l.getMessage(waitTime);
 		if(msg!=null) { log("In: "+msg); }
 		return(msg);
 	}

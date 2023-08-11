@@ -251,6 +251,9 @@ public class JWSApplication implements Config,LobbyConstants
 		StartLframe();
     }
 
+	
+	
+
 		public boolean runnable = true;
 		public void runLogin(String serverName)
 		{	
@@ -307,7 +310,6 @@ public class JWSApplication implements Config,LobbyConstants
 	        G.waitAWhile(this,100);
 		}
 		
-
 		public void runMain(String args[])
 		{ 	
 			// must be first because it loads the defaults

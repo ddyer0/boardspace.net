@@ -872,14 +872,7 @@ public void setLetterColor(Graphics gc,HBoard gb,HoneyCell cell)
  {
 	 switch(mm.op)
 	 {
-	 case MOVE_PULL:
-		 playASoundClip(deskBellSoundName,200);
-		 break;
-	 case MOVE_MOVETILE:
-	 case MOVE_DROPB:
-	 case MOVE_PICKB:
-	 case MOVE_PICK:
-	 case MOVE_DROP:
+	 case MOVE_SELECT:
 		 playASoundClip(light_drop,100);
 		 break;
 	 default: break;
@@ -924,17 +917,7 @@ public void setLetterColor(Graphics gc,HBoard gb,HoneyCell cell)
  */
       public commonMove EditHistory(commonMove nmove)
       {	  // some damaged games ended up with naked "drop", this lets them pass 
-    	  switch(nmove.op)
-    	  {
-    	  case MOVE_SEE:
-    	  case MOVE_LIFT:
-    	  case MOVE_REPLACE:
-    		  return(null);
-    	  default: break;
-    	  }
-
-    	  commonMove rval = EditHistory(nmove,false);
-     	     
+    	  commonMove rval = EditHistory(nmove,false);   	     
     	  return(rval);
       }
       public long setDigest(commonMove m)
@@ -982,7 +965,7 @@ public void setLetterColor(Graphics gc,HBoard gb,HoneyCell cell)
 			break;
         case BoardLocation:
 	        HoneyCell hitCell = hitCell(hp);
-	    	PerformAndTransmit("Pickb "+getViewPlayer()+" "+hitCell.col+" "+hitCell.row);
+	    	PerformAndTransmit("Select "+getViewPlayer()+" "+hitCell.col+" "+hitCell.row);
 	    	break;
         } 
         }
@@ -1055,11 +1038,8 @@ public void setLetterColor(Graphics gc,HBoard gb,HoneyCell cell)
         		HBoard pb = currentPlayerBoard(bb);
         		if(pb.pickedObject==null)
             	{	
-            		PerformAndTransmit(G.concat("Pick ",getViewPlayer()," ",hitCode.name()," ",G.printCol(hitObject.col)," ",hitObject.row));
+            		PerformAndTransmit(G.concat("Select ",getViewPlayer()," ",hitCode.name()," ",G.printCol(hitObject.col)," ",hitObject.row));
             	}
-         		else {
-        			PerformAndTransmit(G.concat("Dropb ",getViewPlayer()," ",G.printCol(hitObject.col)," ",hitObject.row)); 
-        		}
         	}
         	break;
         case BoardLocation:	// we hit an occupied part of the board 
