@@ -237,7 +237,7 @@ class MicropulBoard extends squareBoard<MicropulCell> implements BoardProtocol,M
         // here, check any other state of the board to see if
         G.Assert(chips_on_board == from_b.chips_on_board , "chips_on_board not the same");
         
-        G.Assert(Digest()==from_b.Digest(),"Digest matches");
+        G.Assert(Digest()==from_b.Digest(),"Sameboard ok, Digest mismatch");
 
     }
 

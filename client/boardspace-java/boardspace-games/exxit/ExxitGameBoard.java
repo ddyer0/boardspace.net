@@ -351,7 +351,7 @@ public class ExxitGameBoard extends infiniteHexBoard<ExxitCell> implements Board
         // here, check any other state of the board to see if
         G.Assert((pass_ends_game == from_b.pass_ends_game),"pass ends matches");
         G.Assert((tilesOnBoard == from_b.tilesOnBoard),"tilesOnBoard matches");
-        G.Assert(Digest()==from_b.Digest(),"Digest matches");
+        G.Assert(Digest()==from_b.Digest(),"Sameboard ok, Digest mismatch");
     }
 
     /** this is used in fraud detection to see if the same game is being played

@@ -190,7 +190,7 @@ class FrogBoard extends hexBoard<FrogCell> implements BoardProtocol, FrogConstan
 		}
 		G.Assert(pickedObject==from_b.pickedObject, "pickedObject matches");
 		G.Assert(FrogCell.sameCell(pickedSource,from_b.pickedSource), "pickedSource matches");
-		G.Assert(Digest()==from_b.Digest(),"digest matches");
+		G.Assert(Digest()==from_b.Digest(),"Sameboard ok, Digest mismatch");
 	}
 
 	/**

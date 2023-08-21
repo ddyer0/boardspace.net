@@ -377,14 +377,14 @@ public class PlateauGameViewer extends commonCanvas implements PlateauConstants,
 
     public void drawPlayerStuff(Graphics gc,int pl,PlateauBoard bd,HitPoint ourTurnSelect,HitPoint any)
     {	
-        bd.DrawTrade(gc, tradeRects[pl], FIRST_PLAYER_INDEX, ourTurnSelect,
+        bd.DrawTrade(gc, tradeRects[pl], pl, ourTurnSelect,
                 s.get(PlacePrisonersMessage));
 
-        bd.DrawBar(gc, barRects[pl], FIRST_PLAYER_INDEX, ourTurnSelect,
+        bd.DrawBar(gc, barRects[pl], pl, ourTurnSelect,
                 s.get(PoolMessage[pl]));
         bd.DrawRack(gc, rackRects[pl], concealedmode(bd,pl),
             		ourTurnSelect);
-        bd.DrawExchangeSummary(gc, FIRST_PLAYER_INDEX, exchangeRects[pl]);
+        bd.DrawExchangeSummary(gc, pl, exchangeRects[pl]);
         
         if(G.offline()) 
         	{ 

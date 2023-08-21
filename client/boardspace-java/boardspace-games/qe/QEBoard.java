@@ -680,7 +680,7 @@ import online.game.*;
 		 G.Assert(auctionRound==from_b.auctionRound,"auctionRound mismatch");
 		 for(int i=0;i<players.length;i++) { getPlayer(i).sameAs(from_b.getPlayer(i)); }
 		 G.Assert(winningBids.size()==from_b.winningBids.size(),"winning Bids mismatch");
-		 G.Assert(Digest()==from_b.Digest(),"Digest matches");
+		 G.Assert(Digest()==from_b.Digest(),"Sameboard ok, Digest mismatch");
  }
  
 	 /** 

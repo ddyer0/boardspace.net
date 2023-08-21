@@ -528,7 +528,7 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
             	throw G.Error("Rack mismatch at %s", i);
             }
         }
-        G.Assert(Digest()==from_b.Digest(),"Digest matches"); 
+        G.Assert(Digest()==from_b.Digest(),"Sameboard ok, Digest mismatch"); 
     }
 
     // hash digest the contents of a rack

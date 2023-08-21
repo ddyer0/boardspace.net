@@ -529,7 +529,7 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
             	throw G.Error("Rack mismatch at %s", i);
             }
         }
-        G.Assert(Digest()==from_b.Digest(),"Digest matches"); 
+        G.Assert(Digest()==from_b.Digest(),"Sameboard ok, Digest mismatch"); 
     }
 
     // hash digest the contents of a rack
@@ -592,6 +592,8 @@ public class PlateauBoard extends BaseBoard implements BoardProtocol,PlateauCons
             trade[FIRST_PLAYER_INDEX][i].copyFrom(from_b.trade[FIRST_PLAYER_INDEX][i]);
             trade[SECOND_PLAYER_INDEX][i].copyFrom(from_b.trade[SECOND_PLAYER_INDEX][i]);
         }
+        
+        
         for(int i=0;i<pieces.length;i++) 
         	{ pieces[i].placedPosition = from_b.pieces[i].placedPosition; 
         	}

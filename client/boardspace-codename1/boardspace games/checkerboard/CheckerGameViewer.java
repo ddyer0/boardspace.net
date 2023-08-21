@@ -499,7 +499,7 @@ public class CheckerGameViewer extends CCanvas<CheckerCell,CheckerBoard> impleme
             standardGameMessage(gc,messageRotation,
             		vstate==CheckerState.Gameover
             			?gameOverMessage()
-            			:s.get(vstate.getDescription()),
+            			:s.get0or1(vstate.getDescription(),gb.drawCountdown()),
             				vstate!=CheckerState.Puzzle,
             				whoseTurn,
             				stateRect);
@@ -882,6 +882,7 @@ private void playSounds(commonMove m)
 			{
 			default: throw G.Error("Not expecting drop on filled board in state %s",state);
 			case Confirm:
+			case Endgame:
 			case Play:
 			case Capture:
 			case CaptureMore:
@@ -1070,7 +1071,16 @@ private void playSounds(commonMove m)
  //               s.get(CensoredGameRecordString));
 //        }
 //    }
-
+    private boolean offerDrawState()
+    {	switch(b.getState())
+    	{
+    	case Play:
+    	case Endgame:
+    	case DrawPending:
+    		return true;
+    	default: return false;
+    	}
+    }
     /** handle action events
      * 
      */
@@ -1079,7 +1089,7 @@ private void playSounds(commonMove m)
     	if(target==offerDrawAction)
     	{	if(OurMove() 
     			&& (b.movingObjectIndex()<=0)
-    			&& ((b.getState()==CheckerState.Play) || (b.getState()==CheckerState.DrawPending)))
+    			&& offerDrawState())
     		{
     		if(b.canOfferDraw())
 			{

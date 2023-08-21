@@ -181,7 +181,7 @@ public class PlateauGameViewer extends commonCanvas implements PlateauConstants,
 
         b = new PlateauBoard(info.getString(GAMETYPE, "Plateau"));
         // believed to be difficult 5/2022
-        //useDirectDrawing(); // not tested yet
+        // useDirectDrawing(true); // not tested yet
         doInit(false);
     }
 
@@ -378,14 +378,14 @@ public class PlateauGameViewer extends commonCanvas implements PlateauConstants,
 
     public void drawPlayerStuff(Graphics gc,int pl,PlateauBoard bd,HitPoint ourTurnSelect,HitPoint any)
     {	
-        bd.DrawTrade(gc, tradeRects[pl], FIRST_PLAYER_INDEX, ourTurnSelect,
+        bd.DrawTrade(gc, tradeRects[pl], pl, ourTurnSelect,
                 s.get(PlacePrisonersMessage));
 
-        bd.DrawBar(gc, barRects[pl], FIRST_PLAYER_INDEX, ourTurnSelect,
+        bd.DrawBar(gc, barRects[pl], pl, ourTurnSelect,
                 s.get(PoolMessage[pl]));
         bd.DrawRack(gc, rackRects[pl], concealedmode(bd,pl),
             		ourTurnSelect);
-        bd.DrawExchangeSummary(gc, FIRST_PLAYER_INDEX, exchangeRects[pl]);
+        bd.DrawExchangeSummary(gc, pl, exchangeRects[pl]);
         
         if(G.offline()) 
         	{ 
@@ -947,7 +947,10 @@ public class PlateauGameViewer extends commonCanvas implements PlateauConstants,
         return(val);
     }
     boolean needStart = false;
-    
+    /*
+     * summary: 5/27/2023
+		1338 files visited 0 problems
+     */
     public void ReplayMove(sgf_node no)
     {
         String comments = "";

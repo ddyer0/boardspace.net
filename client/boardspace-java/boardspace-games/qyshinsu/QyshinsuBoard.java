@@ -162,7 +162,7 @@ class QyshinsuBoard extends circBoard<QyshinsuCell> implements BoardProtocol,Qys
        	G.Assert(sameCells(vlastMove,from_b.vlastMove),"vlastMove mismatch");
        	G.Assert(sameContents(vlastChip,from_b.vlastChip),"vlastMove mismatch");
       	G.Assert(pickedObject==from_b.pickedObject,"pickedObject matches");
-      	G.Assert(Digest()==from_b.Digest(),"Digest mismatch");
+      	G.Assert(Digest()==from_b.Digest(),"Sameboard ok, Digest mismatch");
      }
 
     /** 

@@ -51,7 +51,11 @@ public abstract class square_geo_board<CELLTYPE extends cell<CELLTYPE>> extends 
     	int dy = G.signum(tr0-fr0);
     	int dxs[] = dxs();
     	int dys[] = dys();
-    	for(int i=0;i<dxs.length;i++) { if((dxs[i]==dx)&&(dys[i]==dy)) { return(i); }}
+    	//
+    	// adding signum to the dxs/dys allows their connections to be other than
+    	// directly adjacent, an option which is used in Frisian checkers.
+    	//
+    	for(int i=0;i<dxs.length;i++) { if((G.signum(dxs[i])==dx)&&(G.signum(dys[i])==dy)) { return(i); }}
     	throw G.Error("No direction found");
     }
 

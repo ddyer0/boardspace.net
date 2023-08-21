@@ -14,10 +14,11 @@ public interface CheckerConstants
 	static String AmericanCheckersRules = "american checkers rules";
 	static String TurkishCheckersRules = "turkish checkers rules";
 	static String InternationalCheckersRules = "international checkers rules";
-	
-	
+	static String FrisianCheckersRules = "frisian checkers rules";
+	static String EndgameDescription = "The game will be a draw after #1 moves";
 	static enum Variation
-	{	Checkers_Turkish(CheckerChip.turkish,TurkishCheckersRules,"checkers-turkish",8,true),
+	{	Checkers_Frisian(CheckerChip.frisian,FrisianCheckersRules,"checkers-frisian",10,true),
+		Checkers_Turkish(CheckerChip.turkish,TurkishCheckersRules,"checkers-turkish",8,true),
 		Checkers_International(CheckerChip.international,InternationalCheckersRules,"checkers-international",10,true),
 		Checkers_American(CheckerChip.american,AmericanCheckersRules,"checkers-american",8,false),
 		Checkers_10(null,null,"checkers-10",10,false),	// empty checkers board size 10
@@ -61,6 +62,7 @@ public enum CheckerState implements BoardState
 	AcceptOrDecline(DrawDescription),		// must accept or decline a draw
 	AcceptPending(AcceptDrawPending),		// accept a draw is pending
    	DeclinePending(DeclineDrawPending),		// decline a draw is pending
+   	Endgame(EndgameDescription),				// frisian endgame, kings only
 	;
 	String description;
 	CheckerState(String des)
@@ -102,7 +104,8 @@ static void putStrings()
 			CheckerMoveDescription,
 			CheckerCaptureDescription,
 			CheckerCaptureMoreDescription,
-			VictoryCondition
+			VictoryCondition,
+			EndgameDescription,
 		};
 	// there should be a line in masterstrings.java which causes
 	// these to be included in the upload/download process for 
@@ -111,7 +114,8 @@ static void putStrings()
 		String CheckerStringPairs[][] = 
 		{   {"Checkers_family","Checkers"},
 			{"Checkers_variation","Standard Checkers"},
-			
+			{"Checkers-frisian","Frisian Checkers"},
+			{"Checkers-frisian_variation","Frisian Checkers"},
 			{"Checkers-international","International Checkers"},
 			{"Checkers-international_variation","International Checkers"},
 			{"Checkers-turkish","Turkish Checkers"},
@@ -121,6 +125,7 @@ static void putStrings()
 			{AmericanCheckersRules,"move forward 1 space diagonally\nmandatory capture forward diagonally\nkings move and capture forward and backward"},
 			{TurkishCheckersRules,"move forward or sideways orthogonally\nmandatory captures forward or sideways\nflying kings move and capture orthoginally\nmaximal captures are required"},
 			{InternationalCheckersRules,"move forward diagonally\nmandatory captures forward or backwards diagonally\nflying kings move and capture diagonally\nmaximal captures are required"},
+			{FrisianCheckersRules,"move forward diagonally\nmandatory captures in all 8 directions\nflying kings move and capture in all directions, captures are required"}
 		};
 		InternationalStrings.put(CheckerStrings);
 		InternationalStrings.put(CheckerStringPairs);

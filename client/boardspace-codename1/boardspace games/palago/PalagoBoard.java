@@ -192,7 +192,7 @@ class PalagoBoard extends infiniteHexBoard<PalagoCell> implements BoardProtocol,
         // here, check any other state of the board to see if
         G.Assert((stackIndex == from_b.stackIndex),"stackIndex matches");
         G.Assert((chips_on_board == from_b.chips_on_board),"chips on board matches");
-        G.Assert(Digest()==from_b.Digest(),"Digest matches");
+        G.Assert(Digest()==from_b.Digest(),"Sameboard ok, Digest mismatch");
         
     }
 

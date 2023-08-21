@@ -458,7 +458,7 @@ class MedinaBoard extends rectBoard<MedinaCell> implements BoardProtocol,MedinaC
         well_row = from_b.well_row;
         pickedObject = from_b.pickedObject;
         sameboard(from_b);
-        G.Assert(Digest()==from_b.Digest(),"digest mismatch");
+        G.Assert(Digest()==from_b.Digest(),"digest mismatch after copyFrom");
     }
 
 
