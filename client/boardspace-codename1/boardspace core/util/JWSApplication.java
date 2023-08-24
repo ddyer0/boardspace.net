@@ -236,8 +236,9 @@ public class JWSApplication implements Config,LobbyConstants
             fr.setInitialBounds(fx,fy,fw,fh );
                       
       	 	if(fr!=null) { fr.setVisible(true); } 
-
             myL.run();
+            if(fr!=null) { fr.remove(); }
+            
             //System.out.println("root start");
           }
     }

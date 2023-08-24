@@ -26,7 +26,6 @@ sub init
 {
    $| = 1;                         # force writes
 }
-var $'include_ladder = 0;
 sub rank_header()
 {	my ($dbh,$nitems,$retired,$mode,$ccode,$variation,$myname,$order,$vname,$months)=@_;
 	my $country = $ccode;
@@ -54,8 +53,7 @@ sub rank_header()
 	 $altheader = ($mode eq 'master') ? $normalstr : $masterstr;
   };
   my $link = &get_link($vname,$country,$altheader,$myname,(($mode eq 'master') ? '' : "master"),$retired,$order);
-  $'include_ladder = $nplayers<=2;	
-  my $ladder = $'include_ladder ? "<td>" . &getLadderLink($vname,&trans("#1 Ranking Ladder",$pvar),$myname) . "</td>" : "";
+  my $ladder = "<td>" . &getLadderLink($vname,&trans("#1 Ranking Ladder",$pvar),$myname) . "</td>";
   my $dbmes=&trans("#1 game results database",$pvar);
   my $dblink = "<a href='javascript:link(\"/cgi-bin/player_analysis.cgi?game=$variation\",0)'>$dbmes</a>";
   my $vlink = &gamecode_to_gameviewer($dbh,$vname);
@@ -210,7 +208,7 @@ sub update_rankings
 	my $real_clause = $realplayers ? " AND (is_robot is NULL) " : " or (is_robot='y') ";
     my $qvar = $dbh->quote($variation);
 	my $mstat = ($mode eq 'master') ? 'yes' : 'no';
-	my $ladder_clause =  ($'include_ladder &&(($order eq 'LadderUp') || ($order eq 'LadderDown'))) ? " AND ladder_level is not null " : "";
+	my $ladder_clause =  " AND ladder_level is not null " ;
 	my $query = "SELECT player_name, e_mail, $lp, value, country, "
 				. "max_rank,ranking.games_played as played, "
 				. "advocate, "
@@ -267,7 +265,7 @@ sub update_rankings
 				(($order eq 'WinpDown')?'WinpUp':'WinpDown'));
 
 # my ($variation,$pretty,$myname,$mode,$retired,$order) = @_;
-	  my $lclause = $'include_ladder ? "<TD><p align=left><b>$Ladder</b>" : "";
+	  my $lclause =  "<TD><p align=left><b>$Ladder</b>";
     	  print "<TR><td></td><TD><b><P align=left>$Rank</b></TD>"
 	   				. "<TD><p align=left><b>$Player</b></TD>"
     				. "<TD><p align=left><b>$Ranking</b>"    
@@ -323,7 +321,7 @@ sub update_rankings
 		{ $group_description = "title='" . &trans("${group}-description") . "' ";
 		  $group = &trans("$group-group");
 		}
-		my $lclause = $'include_ladder ? "<td><P align=left>$ladder</td>" : "";
+		my $lclause = "<td><P align=left>$ladder</td>";
  		my $line = "<TR><td></td><TD>$n</TD><TD><P ALIGN=left><A HREF=\"javascript:editlink('$curname',0)\">$bold$curname$nobold</A></TD>"
 					. "<TD><P ALIGN=left>$ranking</TD>"
 					. $lclause

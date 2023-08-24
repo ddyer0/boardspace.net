@@ -115,7 +115,6 @@ public class EuphoriaViewer extends CCanvas<EuphoriaCell,EuphoriaBoard> implemen
     static final String ImageDir = G.isCodename1() ? "/appdata/euphoria-other/images/" : "/euphoria/images/";
 	// sound files
 	static String CARD_PLACE = SoundDir + "Card place #2"+ Config.SoundFormat;
-	static String CARD_SHUFFLE = SoundDir + "Card shuffle #2"+ Config.SoundFormat;
 	static String DOOR_OPEN = SoundDir + "door"+ Config.SoundFormat;
 	static String KACHING = SoundDir + "CashRegister"+ Config.SoundFormat;
 	static String WONTGETFOOLED = SoundDir + "wontgetfooled"+ Config.SoundFormat;

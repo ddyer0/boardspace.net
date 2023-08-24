@@ -5317,6 +5317,10 @@ private void drawPlayerBoard(Graphics gc,
 	 	break;
 	 default: break;
 	 }
+	 if(mainBoard.reshuffled())
+	 {	G.print("Play "+CARD_SHUFFLE);
+		 playASoundClip(CARD_SHUFFLE,500);
+	 }
  }
 /**
  * parse a move specifier on behalf of the current player.  This is called by the 

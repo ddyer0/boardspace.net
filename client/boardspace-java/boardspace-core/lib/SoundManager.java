@@ -173,12 +173,8 @@ public class SoundManager implements Runnable
 	    	getInstance().playASoundClip(clipName,false,delay);
 	    }
 
-	    public static void playASoundClip(URL clip,int delay)
-	    {	
-	    	getInstance().playAsoundClip(clip, delay);
-	    }
-	    
-	    public synchronized void playAsoundClip(URL clip,int delay)
+    
+	    public synchronized void playASoundClip(URL clip,int delay)
 	    {	long now = G.Date();
 	        sounds[writePtr] = clip;
 	        delays[writePtr] = nextDelay;

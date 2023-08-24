@@ -31,6 +31,7 @@ import vnc.AuxViewer;
 import vnc.VNCService;
 import vnc.VNCTransmitter;
 import vnc.VncEventInterface;
+// TODO: make font size menu appear in the designated size
 
 public abstract class exCanvas extends Canvas 
 	implements SimpleObserver,DeferredEventHandler, 

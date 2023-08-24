@@ -104,7 +104,7 @@ public interface Opcodes {
 			PASS,RESIGN,UNDO,EDIT,SWAP,
 		};
 		String pairs[][] = {
-				{GAMEOVERONTIME.toLowerCase(),"Win On Time"},
+				{GAMEOVERONTIME,"Win On Time"},
 		};
 		InternationalStrings.put(strings);
 		InternationalStrings.put(pairs);

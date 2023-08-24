@@ -261,15 +261,14 @@ sub main_score_routine()
 	   	SET players.last_played=$last_played
     		WHERE players.uid=$qlow ";
 	  &commandQuery($dbh,$command);
-				  
 	  }
 	  else
 	  {
 	  # $mw orders by the sort order, not the player number
 	  my $ladder_update = "ladder_order='-$mw',";
-	  my $qladlow = $dbh->quote($ladder_level[$low]);
 	  if($ladder_level[$low]<=0) 
 		{	$ladder_level[$low] = &entry_ladder_level($dbh,'ranking',$qgame);
+			 my $qladlow = $dbh->quote($ladder_level[$low]);
 			$ladder_update .= "ladder_level = $qladlow,";
 		}
 		elsif($wins[$low]>0 && ($ladder_level[$low]>1))
@@ -277,7 +276,7 @@ sub main_score_routine()
 			&pushnew(\@ladder_resort,$ladder_level[$low]);
 			$ladder_level[$low]--;
 		}
-		
+	
 	  &pushnew(\@ladder_resort,$ladder_level[$low]);
 	  #lowest levels are very volatile, one new game can upset them all.
 	  if($ladder_level[$low]<=2)
@@ -346,6 +345,7 @@ sub main_score_routine()
 	&commandQuery($dbh,$q);
  
 	# reorder the ranking ladders
+	#print "Ladder resort $#ladder_resort \n";
  	if($#ladder_resort>=0)
 	{
 	@ladder_resort = reverse sort(@ladder_resort);	# put them in order

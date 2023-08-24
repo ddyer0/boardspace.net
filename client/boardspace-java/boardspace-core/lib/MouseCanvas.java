@@ -11,9 +11,6 @@ public class MouseCanvas extends Canvas implements MouseClient,DeferredEventHand
 {	private boolean PINCHROTATION = false;		
 	public static double MINIMUM_ZOOM = 1.05;
 	public static double MAXIMUM_ZOOM = 5.0;
-    static final String VirtualMouse = "Virtual Mouse";
-    static final String SpeedTestMessage = "Cpu speed test";
-    static final String FontSize = "Set Font Size";
     static final String ZoomMessage = "Zoom=";
 
     

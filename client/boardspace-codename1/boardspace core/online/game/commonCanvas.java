@@ -59,6 +59,8 @@ Feb 2005 switched the PAINT and MOUSE functions to synchronize through
 
 July 2006 added repeatedPositions related functions
 
+ TODO: when multiple viewers are reviewing, only the primary sees animations during playback
+ 
 */
 /**
  * This class extends exCanvas and provides a bunch of services for the
@@ -108,6 +110,7 @@ public abstract class commonCanvas extends exCanvas
     public  static String Reviewing = "reviewing";
     public  static String DrawOutcome = "The game is a draw";
     public  static String DrawNotAllowed = "You can't offer a draw on this turn";
+    public  static String WonOutcome = "Game won by #1";
     public  static String StackHeightMessage = "Stack Height";
     private  static String GoalExplanationOnlyDetail = "The goal of the game is:\n#1";
     public static final String diceSoundName = DICEPATH + "dice" + Config.SoundFormat;
@@ -118,6 +121,7 @@ public abstract class commonCanvas extends exCanvas
     public static final String clockSound = SOUNDPATH + "ticktock" + Config.SoundFormat;
     public static final String beepBeepSoundName = SOUNDPATH + "meepmeep"  + SoundFormat;
     public static final String doorBell = SOUNDPATH + "Doorbl" + SoundFormat;
+	public static final String CARD_SHUFFLE = SOUNDPATH + "CardShuffle"+ Config.SoundFormat;
 
 	/**
 	 * board cell iterator types. 

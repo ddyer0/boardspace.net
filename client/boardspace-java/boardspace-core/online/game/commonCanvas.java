@@ -130,6 +130,7 @@ public abstract class commonCanvas extends exCanvas
     public static final String clockSound = SOUNDPATH + "ticktock" + Config.SoundFormat;
     public static final String beepBeepSoundName = SOUNDPATH + "meepmeep"  + SoundFormat;
     public static final String doorBell = SOUNDPATH + "Doorbl" + SoundFormat;
+	public static final String CARD_SHUFFLE = SOUNDPATH + "CardShuffle"+ Config.SoundFormat;
 
 	/**
 	 * board cell iterator types. 

@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# record results of game, and also update the ladder
+# record results of 2 player game, and also update the ladder
 #
 
 use CGI qw(:standard);
@@ -314,7 +314,7 @@ if( param() )
                    ranking.games_played=ranking.games_played+1,
                    max_rank = $newmax2
 		    	   WHERE players.uid='$u[ $loser ]' $plaism  AND ranking.is_master='$ism'  AND ranking.uid='$u[ $loser ]' AND variation=$qgame";
-			#print "$command\n";
+	#print "$command\n";
 			 &commandQuery($dbh,$command);
 	  } 
     else 
@@ -322,11 +322,13 @@ if( param() )
     my $command="UPDATE players 
 	   				SET players.last_played=$last_played
 		    		WHERE players.uid='$u[ $loser ]'";
+	#print "$command\n";
 	&commandQuery($dbh,$command);
     }
     &printrank("${mmstr}ranking",$pname[$loser],$new_ranking[$loser],$oldrank[$loser],
 		$hasLadder ? $ladder_level[$loser] : 0);
 
+	#print "ladder $ladderUpdate1\n";
 	if(!($ladderUpdate1 eq ""))
 	{
 		#print "$ladderUpdate1\n";

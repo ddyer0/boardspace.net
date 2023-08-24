@@ -173,7 +173,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
 	
 	boolean optionsResolved = false;
 	static int MarketSize = 2;
-	
+	int reshuffleAt = 0;
 	// affected cards for limitPoints:
 	// handyman yellow #18
 	// swindler yellow #31
@@ -1154,6 +1154,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
 		setState(ViticultureState.Puzzle);
 		choiceA.selected = false;
 		choiceB.selected = false;
+		reshuffleAt = -1;
     	doInitAfterOptions(variation==ViticultureVariation.viticulture);
     }
 
@@ -1421,10 +1422,18 @@ public int getMaxRevisionLevel() { return(REVISION); }
 
 		choiceA.selected = from_b.choiceA.selected;
 		choiceB.selected = from_b.choiceB.selected;
-		
+		reshuffleAt = from_b.reshuffleAt;
 	    sameboard(from_b); 
     }
-
+    public boolean reshuffled()
+    {	int rs = reshuffleAt;
+    	boolean yes = rs==moveNumber;
+    	if(yes)
+    	{
+    		reshuffleAt = -1;
+    	}
+    	return yes; 
+    }
     
 
     public void sameboard(BoardProtocol f) { sameboard((ViticultureBoard)f); }
@@ -2391,7 +2400,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
 		discards.reInit();
 		from.shuffle(new Random(seed));
 		logGameEvent(ReshuffleMessage,from.contentType.name());
-		
+		reshuffleAt = moveNumber;
     }
     
    

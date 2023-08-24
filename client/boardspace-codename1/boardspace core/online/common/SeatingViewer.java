@@ -1378,7 +1378,7 @@ public class SeatingViewer extends exCanvas implements LobbyConstants
 			},
 		 };
 	 public void shutDown()
-	 {
+	 {	
 		 super.shutDown();
 		 if(REMOTEVNC) { VNCService.stopVNCServer(); }
 		 if(REMOTERPC) { RpcService.stopRpcServer(); }	
