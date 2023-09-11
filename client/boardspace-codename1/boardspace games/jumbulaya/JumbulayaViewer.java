@@ -285,11 +285,11 @@ public class JumbulayaViewer extends CCanvas<JumbulayaCell,JumbulayaBoard> imple
     	int largeW = CELLSIZE*ncols;
     	int largeH = CELLSIZE*nrows+stateH;
     	int boardW = (int)(bcols*CELLSIZE);
-    	int boardH = (int)(brows*CELLSIZE+stateH);
+    	int boardH = (int)(brows*CELLSIZE);
     	int extraW = Math.max(0, (mainW-largeW)/2);
     	int extraH = Math.max(0, (mainH-largeH)/2);
     	int boardX = mainX+extraW;
-    	int boardY = mainY+extraH;
+    	int boardY = mainY+extraH+stateH;
        	layout.returnFromMain(extraW,extraH);
     	//
     	// state and top ornaments snug to the top of the board.  Depending
@@ -907,6 +907,7 @@ public void setLetterColor(Graphics gc,JumbulayaBoard gb,JumbulayaCell cell)
             {	JumbulayaChip chip = gb.getPlayerChip(gb.whoseTurn);
             	chip.drawChip(gc,this,CELLSIZE*4/5,xpos-CELLSIZE/3,ypos,null);
             }
+            //StockArt.SmallO.drawChip(gc,this,CELLSIZE,xpos,ypos,null);
         }
 
 
@@ -935,6 +936,7 @@ public void setLetterColor(Graphics gc,JumbulayaBoard gb,JumbulayaCell cell)
         	}
         	}
         	if(definitionCell!=closestCell) { definitionCell = null; }
+        	
         }
         // this enumerates the cells in the board in an arbitrary order.  A more
         // conventional double xy loop might be needed if the graphics overlap and
@@ -960,7 +962,10 @@ public void setLetterColor(Graphics gc,JumbulayaBoard gb,JumbulayaCell cell)
             //if(G.debug() && (gb.endCaps.contains(cell) || gb.startCaps.contains(cell)))
             //	{ StockArt.SmallO.drawChip(gc, this, CELLSIZE,xpos,ypos,null); 
             //	}
+            //StockArt.SmallO.drawChip(gc,this,CELLSIZE,xpos,ypos,null);
+           
             }
+        
         }
         
         if(definitionCell!=null)
@@ -1611,7 +1616,7 @@ public void verifyGameRecord()
     {
       	boolean complete = false;
       	// the numbers for the square-on display are slightly ad-hoc, but they look right
-      	gb.SetDisplayParameters(0.896, 1.12, 0.39,-0.10,0); // shrink a little and rotate 60 degrees
+      	gb.SetDisplayParameters(0.9, 1.13, 0.39,-0.1,0); // shrink a little and rotate 60 degrees
        	gb.SetDisplayRectangle(r);
       	if(complete) { generalRefresh(); }
       	return(complete);

@@ -1603,7 +1603,8 @@ class FanoronaBoard extends rectBoard<FanoronaCell> implements BoardProtocol,Fan
  	case PLAY_STATE:
 		freeMovesFor(whoseTurn,all);
 		// we should always find moves, otherwise should be gameover_state
-		if(((moveNumber-lastProgressMove)>15)
+		if(canOfferDraw()
+				&& ((moveNumber-lastProgressMove)>15)
 				&& ((moveNumber-lastDrawMove)>8))
 			{ 
 			all.addElement(new FanoronaMovespec(MOVE_OFFER_DRAW,whoseTurn));

@@ -92,9 +92,5 @@ public class JMenu extends javax.swing.JMenu implements NativeMenuInterface,Nati
 			{ Plog.log.addLog("error in java menu ",err);
 			}
         }
-	public void show()
-	{
-		super.show();
-	}
 	
 }

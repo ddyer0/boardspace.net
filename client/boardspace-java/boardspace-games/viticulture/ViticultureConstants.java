@@ -66,7 +66,7 @@ public interface ViticultureConstants
 	static String DiscardOracleMode = "Discard 1 Card";
 	static String DiscardWineMode = "Discard Wine";
 	static String DiscardGrapeMode = "Discard Grapes";
-	static String ChooseCardsMode = "Take #1 Cards";
+	static String ChooseCardsMode = "Take #1{##,# Card,# Cards}";
 	static String PlayCardsMode = "Play Cards";
 	static String GiveCardsMode = "Give Cards";
 	static String AutomaBonus = "Bonus Action";

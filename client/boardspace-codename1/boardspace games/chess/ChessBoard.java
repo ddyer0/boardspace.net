@@ -2719,8 +2719,8 @@ private boolean addSuicideMove(CommonMoveStack all,ChessCell cell,int who)
  			 {
  			 some = addSimpleMoves(all,source,piece,who); 
  			 }}
- 			if( ((moveNumber-lastProgressMove)>8)
- 					 && ((moveNumber-lastDrawMove)>4))
+ 			if( canOfferDraw()
+ 					&& ((moveNumber-lastProgressMove)>8))
  			 {
  				 all.push(new ChessMovespec(MOVE_OFFER_DRAW,whoseTurn));
  			 }

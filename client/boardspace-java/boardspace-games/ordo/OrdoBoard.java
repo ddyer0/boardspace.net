@@ -1666,8 +1666,8 @@ public Hashtable<OrdoCell,OrdoMovespec>getTargets()
 		 case OrdoPlay:
 			 addOrdoSingletonMoves(all,who,true,false);
 			 addOrdoMoves(all,who,true,false);
-			 if( ((moveNumber-lastProgressMove)>8)
- 					 && ((moveNumber-lastDrawMove)>4))
+			 if( canOfferDraw()
+					 && ((moveNumber-lastProgressMove)>8))
 			 {
 				 all.push(new OrdoMovespec(MOVE_OFFER_DRAW,who));
 			 }

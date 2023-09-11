@@ -92,11 +92,13 @@ sub doit()
   my $error = 0;
   my $u1 = $dbh->quote(&param("u1"));		# uid
   my $t1 = $dbh->quote(&param("t1"));		# time for player
-  my $s1 = $dbh->quote(param("s1"));   		# score for player
+  my $sl0 = param("s1");
+  my $s1 = $dbh->quote($sl0);   		# score for player
   my $unranked = param("nr1") eq 'true';
   my $puzzleid = $dbh->quote(param("puzzleid"));	# the actual puzzle text
   my $puzzledate = $dbh->quote(param("puzzledate"));	# epoch date for this puzzle
-  my $variation = $dbh->quote(param("variation"));		# puzzle type
+  my $var0 = param("variation");
+  my $variation = $dbh->quote($var0);		# puzzle type
   my $mode = (param("hard") eq ('true')) ? "'hard'" : "'normal'";		# if hard puzzle group
   my $now = $dbh->quote(&ctime());
 
@@ -120,7 +122,7 @@ sub doit()
 	  ;
     #print "Q: $q\n";
     &commandQuery($dbh,$q);
-    &make_log("$pname-($s1-$puzzledate)");
+    &make_log("$pname\t$sl0\t$var0\t$fname");
     }
   }
 

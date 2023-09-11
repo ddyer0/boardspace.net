@@ -81,7 +81,7 @@ action will be taken in the spring.
   
  */
 class ViticultureBoard extends RBoard<ViticultureCell> implements BoardProtocol,ViticultureConstants
-{	static int REVISION = 157;			// 100 represents the initial version of the game
+{	static int REVISION = 158;			// 100 represents the initial version of the game
 										// games with no revision information will be 100
 										// revision 101, correct the sale price of champagne to 4
 										// revision 102, fix the cash distribution for the cafe
@@ -160,7 +160,7 @@ class ViticultureBoard extends RBoard<ViticultureCell> implements BoardProtocol,
 										// revision 156 fixes farmer bug for green card markets and also fixes
 										// the "planner" bug, planner actions trigger when you enter the season
 										// revision 157 fixes "professor" bug with unlimited workers option
-
+										// revision 158 fixes the interaction between oracle and green card market
 public int getMaxRevisionLevel() { return(REVISION); }
 	PlayerBoard pbs[] = null;		// player boards
 	
@@ -3092,7 +3092,11 @@ public int getMaxRevisionLevel() { return(REVISION); }
   	   				nextState = bonus|(revision>=156&&isFarmer) ? ViticultureState.Select2Of2FromMarket : ViticultureState.Select1Of1FromMarket;
    				}
    				else if(nextState==ViticultureState.Discard1ForOracle)
-   				{
+   				{	if(revision>=158)
+   					{
+ 					pb.oracleCards.reInit();
+  	   				for(int i=0;i<gotncards;i++) { pb.oracleCards.addChip(pb.cards.removeTop()); }
+   					}
    					nextState = bonus ? ViticultureState.Select2Of3FromMarket : ViticultureState.Select1Of2FromMarket;
    				}
    				else { G.Error("Not expecting nextstate %s",nextState); }

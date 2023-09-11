@@ -62,21 +62,23 @@ class Splash extends FullscreenPanel implements FullScreen,Runnable,Config
 				}
 			}
 	}
+	static Splash comp = null;
 	public static void doSplash()
 	{	
+		G.runInEdt(new Runnable() { public void run() { 
 		Plog.log.addLog("Start splash");
 		Image splash = Image.getImage(SPLASHSCREENIMAGE);
 		if(splash==null) { G.infoBox("splash screen missing",SPLASHSCREENIMAGE); }
 		Plog.log.addLog("Got splash image");
-		Splash comp = new Splash(splash);
+		comp = new Splash(splash);
 		comp.setVisible(true);
-		new Thread(comp,"launcher").start();
+		}});
+		new Thread(comp,"splash").start();
 	}
 
 	public void run() {
-		frame.show();
 		G.doDelay(5000);	
-		frame.remove();
+		G.runInEdt(new Runnable() { public void run() { frame.remove();}});
 	}
 }
 

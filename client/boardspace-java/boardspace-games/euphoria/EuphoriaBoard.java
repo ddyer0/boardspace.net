@@ -1224,10 +1224,10 @@ public class EuphoriaBoard extends EuphoriaBoardConstructor implements EuphoriaC
     
 
    
-	EuphoriaState board_state = EuphoriaState.Puzzle;	
-	private EuphoriaState unresign = null;			// remembers the orignal state when "resign" is hit
+	private EuphoriaState board_state = EuphoriaState.Puzzle;	
+	private boolean resignPending = false;			// remembers the orignal state when "resign" is hit
 	boolean hasReducedRecruits = false;		// true if we've reduced the recruits at startup
-	boolean normalStartSeen = false;			// make sure exactly one "normalstart" get saved in the game record
+	boolean normalStartSeen = false;			// make sure exactly one "normal start" get saved in the game record
 	WorkerChip doublesElgible = null;			// a die if we placed part of a double
 	boolean usingDoubles = false;
 	int doublesCount = 0;
@@ -1270,12 +1270,13 @@ public class EuphoriaBoard extends EuphoriaBoardConstructor implements EuphoriaC
     }
     
 	public EuphoriaState getState() { return(board_state); }
+	public EuphoriaState getGuiState() { return resignPending ? EuphoriaState.Resign : board_state; }
     /**
      * this is the preferred method when using the modern "enum" style of game state
      * @param st
      */
 	public void setState(EuphoriaState st) 
-	{ 	unresign = (st==EuphoriaState.Resign)?board_state:null;
+	{ 	
 		board_state = st;
 		if(!board_state.GameOver()) 
 			{ AR.setValue(win,false); 	// make sure "win" is cleared
@@ -1582,6 +1583,7 @@ public class EuphoriaBoard extends EuphoriaBoardConstructor implements EuphoriaC
 		bumpingWorker = null;
 		selectedDieRoll = null;
 		activeRecruit = null;
+		resignPending = false;
 		randomKey = key;
 		finalPath.clear();
         animationStack.clear();
@@ -1635,7 +1637,7 @@ public class EuphoriaBoard extends EuphoriaBoardConstructor implements EuphoriaC
         Assert(sameCells(unusedRecruits,from_b.unusedRecruits),"unused recruits mismatch");
         Assert(activePlayer==from_b.activePlayer,"activePlayer mismatch");
         Assert(variation==from_b.variation,"variation mismatch");
-        Assert(unresign==from_b.unresign,"unresign mismatch");
+        Assert(resignPending==from_b.resignPending,"resignPending mismatch");
         Assert(pickedObject==from_b.pickedObject, "picked Object mismatch");
         Assert(reUsingWorker==from_b.reUsingWorker,"reusing worker mismatch");
         Assert(hasPlacedWorker==from_b.hasPlacedWorker,"hasPlacedWorker worker mismatch");
@@ -1727,7 +1729,7 @@ public class EuphoriaBoard extends EuphoriaBoardConstructor implements EuphoriaC
         v ^= EuphoriaChip.Digest(r,selectedDieRoll);
         v ^= EuphoriaChip.Digest(r,activeRecruit);
         v ^= Digest(r,lastDroppedWorker);
-  
+        v ^= Digest(r,resignPending);
         //G.print("D2 ",v);
       
         for(EPlayer p : players) { v ^= p.Digest(r); }
@@ -1821,7 +1823,7 @@ public class EuphoriaBoard extends EuphoriaBoardConstructor implements EuphoriaC
         steps = from_b.steps;
      
         // below here are copied but not digested
-        unresign = from_b.unresign;
+        resignPending = from_b.resignPending;
         REINIT_SIMULTANEOUS_PLAY = from_b.REINIT_SIMULTANEOUS_PLAY;
         SIMULTANEOUS_PLAY = from_b.SIMULTANEOUS_PLAY;
         activePlayer = from_b.activePlayer;
@@ -2231,7 +2233,7 @@ public class EuphoriaBoard extends EuphoriaBoardConstructor implements EuphoriaC
      * @return
      */
     public boolean DoneState()
-    {	
+    {	if(resignPending) { return true; }
     	switch(board_state)
     	{
     	case PayCost:
@@ -3368,12 +3370,13 @@ void dontDarrenTheRepeater(EPlayer p,replayMode replay)
     {	EPlayer p = players[whoseTurn];
     	openedMarket = null;
     	marketToOpen = (chipin!=null && chipin.isMarket()) ? chipin : null;
-        switch(board_state)
-        {
-        case Resign:
+    	if(resignPending) { 
         	win[(whoseTurn+1)%players.length] = true;
     		setState(EuphoriaState.Gameover);
-    		break;
+     	}
+    	else 
+    	switch(board_state)
+        {
         case ConfirmDiscardFactionless:
         	{
         		Assert(p.discardedRecruits.height()>=1,"should be trashed");
@@ -7387,10 +7390,9 @@ private void doAmandaTheBroker(EuphoriaCell dest,replayMode replay,RecruitChip a
           break;
 
        case MOVE_RESIGN:
-    	    EuphoriaState newstate = (unresign==null)?EuphoriaState.Resign:unresign;
+    	    resignPending = !resignPending;
     	    if(pickedObject!=null) { unPickObject(); }
-    	   	setState(newstate);
-            break;
+    	    break;
        case MOVE_EDIT:
         	acceptPlacement();
 	        currentPlayerInTurnOrder = whoseTurn;
@@ -8080,7 +8082,9 @@ private void doAmandaTheBroker(EuphoriaCell dest,replayMode replay,RecruitChip a
     	throw Error("Not expected");
     }
  
- public boolean ephemeralRecruitMode() { return (board_state.hasRecruitGui()&&board_state.simultaneousTurnsAllowed()); }
+ public boolean ephemeralRecruitMode() 
+ 	{ return (board_state.hasRecruitGui()&&board_state.simultaneousTurnsAllowed()); 
+ 	}
  
  /** get all the destination moves for the current picked worker */
  public Hashtable<EuphoriaCell,EuphoriaMovespec> getDests(int who)

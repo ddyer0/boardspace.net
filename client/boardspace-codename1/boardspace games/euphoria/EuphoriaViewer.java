@@ -652,7 +652,7 @@ private Color playerBackground[] = {
     	int scale = scale0 <=0 ? gb.cellSize()*4 : scale0;
     	EuphoriaChip chip = EuphoriaChip.getChip(obj);
     	if(chip!=null) 
-    		{ if(gb.getState()!=EuphoriaState.Puzzle) { chip = chip.getSpriteProxy();}
+    		{ if(gb.getGuiState()!=EuphoriaState.Puzzle) { chip = chip.getSpriteProxy();}
     		  chip.drawChip(g,this,remoteViewer>=0 ? scale*2 : scale, xp, yp, null); 
     		}
     }
@@ -820,7 +820,7 @@ private Color playerBackground[] = {
     			hit = cell.drawStack(gc,this,highlight,CELLSIZE,xpos,ypos,0,0.9,null);
     			if(hit)
     				{
-    				switch (gb.getState())
+    				switch (gb.getGuiState())
     				{
     				case PlaceNew:
     				case Place:
@@ -899,7 +899,7 @@ private Color playerBackground[] = {
     			break;
     			
     	}
-    	if(!hit && (gb.getState()!=EuphoriaState.Puzzle) && (gb.pickedObject!=null) && (highlight!=null) && (r!=null))
+    	if(!hit && (gb.getGuiState()!=EuphoriaState.Puzzle) && (gb.pickedObject!=null) && (highlight!=null) && (r!=null))
     	{
     		hit = G.pointInRect(highlight,r);	// just drop anywhere
     		if(hit)
@@ -993,7 +993,7 @@ private Color playerBackground[] = {
     		}
     	}
     	if(activeRecruits && recruit==RecruitChip.ChagaTheGamer && (highlight!=null))
-    	{	EuphoriaState state = gb.board_state;
+    	{	EuphoriaState state = gb.getGuiState();
     		if(((state==EuphoriaState.PlaceOrRetrieve) || (state==EuphoriaState.Retrieve))
     				&& p.canUseChagaTheGamer())
     		{
@@ -1010,7 +1010,7 @@ private Color playerBackground[] = {
     	if(c.rackLocation()==EuphoriaId.PlayerDilemma)
     	{	
     		// offer the choice to resolve the dilemma
-    		if(gb.getState().isInitialWorkerState() 
+    		if(gb.getGuiState().isInitialWorkerState() 
     				&& (gb.pickedSourceStack.size()==0)
     				&& gb.canResolveDilemma(p)
     				&& (highlight!=null)
@@ -1082,7 +1082,7 @@ private Color playerBackground[] = {
     //
     private void filterArtifactHits(HitPoint hp,EuphoriaBoard gb,EuphoriaCell cell)
     {
-    	switch(gb.board_state)
+    	switch(gb.getGuiState())
     	{
     	case PayCost:
     		{
@@ -1131,7 +1131,7 @@ private Color playerBackground[] = {
     {	EPlayer p = gb.getPlayer(player);
     	Colors color = p.color;
      	Rectangle pr =  r;
-     	EuphoriaState state = gb.getState();
+     	EuphoriaState state = gb.getGuiState();
      	boolean useFullScreen = !G.offline() || (!fromHiddenWindow && !reviewMode() && (player==gb.whoseTurn));
      	int topR = G.Top(r);
      	int leftR = G.Left(r);
@@ -1460,7 +1460,7 @@ private Color playerBackground[] = {
     			break;
     		case UnusedWorkers:
     			cell.defaultScale = CELLSIZE;
-    			if((gb.board_state==EuphoriaState.Puzzle)
+    			if((gb.getGuiState()==EuphoriaState.Puzzle)
     				&& (cell.height()>0)
     				&& (gb.pickedObject==null)
     				&& (gb.getPlayer(cell.row).totalWorkers>=MAX_WORKERS))
@@ -1484,7 +1484,7 @@ private Color playerBackground[] = {
     			
     		case Market:	// the big market chips, sometimes with authority tokens
     			// pay for lionel is when lionel the cook is dropping food.  It doesn't drop here.
-    			boolean lionel = gb.board_state==EuphoriaState.PayForLionel;
+    			boolean lionel = gb.getGuiState()==EuphoriaState.PayForLionel;
     			cell.defaultScale = CELLSIZE;
     			if((cell.height()>0) && (cell.topChip()!=MarketChip.CardBack))
     				{
@@ -1595,7 +1595,7 @@ private Color playerBackground[] = {
     		  drawExtraChips(gc,gb);
     		}
     	popupDisplay = null;
-    	boolean puzzle = gb.getState()==EuphoriaState.Puzzle;
+    	boolean puzzle = gb.getGuiState()==EuphoriaState.Puzzle;
     	boolean moving = gb.pickedObject!=null;
         for(EuphoriaCell cell = gb.displayCells ;	// display cells continues into allCells
         			cell!=null;
@@ -1791,7 +1791,7 @@ private Color playerBackground[] = {
     
     private void drawRecruitElements(Graphics gc,EuphoriaBoard gb,int pl,Rectangle brect,HitPoint highlight,HitPoint anySelect,
     			Hashtable<EuphoriaCell,EuphoriaMovespec>sources,Hashtable<EuphoriaCell,EuphoriaMovespec>dests,boolean fromHidden)
-    {	EuphoriaState state = gb.getState();
+    {	EuphoriaState state = gb.getGuiState();
     	EPlayer p = gb.getPlayer(pl);
     	commonPlayer cpl = getPlayerOrTemp(pl);
     	boolean showHidden = reviewOnly || fromHidden || !G.offline() || showHiddenUI;
@@ -2107,7 +2107,7 @@ private Color playerBackground[] = {
     	double zoom[] = null;
     	if(startZoom==0) { startZoom = now;}
     	double zoomStep = Math.min(1.0,(now-startZoom)/zoomTime);
-      	switch(gb.getState())
+      	switch(gb.getGuiState())
     	{
       	case FightTheOpressor:
       	case JoinTheEstablishment:
@@ -2461,7 +2461,7 @@ private Color playerBackground[] = {
         {	// always display the done button, but only make it active in
         	// the appropriate states
         	
-            select.hitCode = (gb.getState()==EuphoriaState.EphemeralConfirmRecruits)
+            select.hitCode = (gb.getGuiState()==EuphoriaState.EphemeralConfirmRecruits)
             							? gb.ephemeralRecruitMode() 
             									? EuphoriaId.EConfirmOneRecruit
             									: EuphoriaId.EConfirmRecruits
@@ -2499,7 +2499,7 @@ private Color playerBackground[] = {
     {  EuphoriaBoard gb = disB(gc);
        int nPlayers = gb.nPlayers();
        //drawFixedElements(gc);
-       EuphoriaState state = gb.getState();
+       EuphoriaState state = gb.getGuiState();
        boolean moving = getMovingObject(selectPos)>=0;
     	if(gc!=null)
 		{
@@ -2513,7 +2513,7 @@ private Color playerBackground[] = {
        //
        boolean simultaneous = !reviewMode() && !getActivePlayer().spectator && state.simultaneousTurnsAllowed();
        boolean ourMove = OurMove() || simultaneous;
-       boolean recruitGui = useRecruitGui(state,gb);
+       boolean recruitGui = useRecruitGui(gb.getState(),gb);
        boolean recruitOverlay = globalRecruits!=null;
        boolean bigChipOverlay = bigChip!=null; 
        boolean anyAuxGui = recruitGui|recruitOverlay|bigChipOverlay ;
@@ -2585,6 +2585,8 @@ private Color playerBackground[] = {
  			  case EphemeralConfirmDiscardFactionless:
  			  case EphemeralConfirmRecruits:
  			  case ConfirmDiscardFactionless:	 
+ 			  case Resign:
+ 			  case Gameover:
  				  rect = fullPlayerRecruitRect;
  				  break;
  			  default: break;
@@ -2923,7 +2925,7 @@ private Color playerBackground[] = {
     private void doDrop(EuphoriaCell target,replayMode replay)
     {
  		EuphoriaId rack = target.rackLocation();
- 		EuphoriaState state = bb.getState();
+ 		EuphoriaState state = bb.getGuiState();
         boolean simultaneous = state.simultaneousTurnsAllowed();
         if(bb.pickedObject!=null)
         {
@@ -2952,7 +2954,7 @@ private Color playerBackground[] = {
         if(hitObject.isSpecialCommand) {}
         else if(mov<0)
         {  EuphoriaCell hitCell = bb.getCell(hitCell(hp));
-           EuphoriaState state = bb.getState();
+           EuphoriaState state = bb.getGuiState();
            boolean simultaneous = simultaneous_turns_allowed();
            boolean isDest = bb.isDest(hitCell);
            if(hitCell.topChip()!=null)
@@ -2965,7 +2967,7 @@ private Color playerBackground[] = {
            }
            else if(hitObject.perPlayer)
         	{ 
-        	  if( (bb.getState()==EuphoriaState.PlaceAnother)
+        	  if( (bb.getGuiState()==EuphoriaState.PlaceAnother)
         			&& bb.loseMoraleLosesArtifact())
         			
         		{
@@ -2997,7 +2999,7 @@ private Color playerBackground[] = {
         }
         if (bb.movingObjectIndex() >= 0)
 	        {	// if we got something started, inform the mouse handler
-        		EuphoriaState state = bb.getState();
+        		EuphoriaState state = bb.getGuiState();
         		hp.dragging = true;
         		switch(state)
         		{
@@ -3466,7 +3468,7 @@ private Color playerBackground[] = {
     	Rectangle rackRect = new Rectangle(l+topPart,t+topSpace,w-topSpace,h-topSpace-margin);
     	Rectangle alertRect = new Rectangle(textX, t+topPart*2,textW/2,topPart);
      	boolean moving = pl.ephemeralPickedObject!=null;
-     	EuphoriaState state = bb.getState();
+     	EuphoriaState state = bb.getGuiState();
      	Font efont = G.getFont(largeBoldFont(),topPart*2/3);
      	labelFont = efont;
    	   	GC.setFont(gc,efont);

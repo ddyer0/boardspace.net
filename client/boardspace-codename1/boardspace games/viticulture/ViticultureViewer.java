@@ -3635,12 +3635,10 @@ private void drawPlayerBoard(Graphics gc,
 		{
 		int cardsToGo = (state==ViticultureState.DiscardCards) 
 							? pb.cards.height()-7
-							: 0;
+							: 1;
 		{String msg = state.activity.getName();
 		String tmsg = oracleMode ? s.get(OracleCardsMessage2)
-					: (state.activity==Activity.DiscardCards)
-						? s.get(msg,cardsToGo)
-						: s.get(msg);
+					: s.get0or1(msg,cardsToGo);
 		GC.Text(gc,false, mleft,top,step,step/3,Color.blue,null,tmsg);
 		}
        	if(showWines)

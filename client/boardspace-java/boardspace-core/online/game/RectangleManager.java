@@ -1251,7 +1251,7 @@ public class RectangleManager
    			for(int i=0;i<nrep;i++)
 			{
 			G.SetRect(rep[i], l, t,buttonW*2-marginSize,buttonH);
-			l += buttonW*4;
+			l += buttonW*2;
 			}	
    			
    		}

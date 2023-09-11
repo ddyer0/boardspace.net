@@ -536,21 +536,33 @@ synchronized(allGames) {
 	}
 	
 	{
-	put(new GameInfo(760,ES.game,76,"CK",AncientGames,"Checkers","Checkers-international",
+	 GameInfo g = put(new GameInfo(763,ES.test,76,"CK",AncientGames,"Checkers","Checkers-frisian",
+				OneBotPlus,
+				new double[]{1.0,0.01},
+				"checkerboard.CheckerGameViewer","/checkers/english/Frisian%20Checkers%20Rules.html","about_checkers.html",
+				null,false, WhiteOverBlack));
+	 g.distinctVariations = true;
+	 g = put(new GameInfo(760,ES.game,76,"CK",AncientGames,"Checkers","Checkers-international",
 			OneBotPlus,
 			new double[]{1.0,0.01},
 			"checkerboard.CheckerGameViewer","/checkers/english/International%20Checkers%20Rules.html","about_checkers.html",
 			null,false, WhiteOverBlack));
-	 put(new GameInfo(761,ES.game,76,"CK",AncientGames,"Checkers","Checkers-turkish",
+	 g.distinctVariations = true;
+
+	 g =put(new GameInfo(761,ES.game,76,"CK",AncientGames,"Checkers","Checkers-turkish",
 			OneBotPlus,
 			new double[]{1.0,0.01},
 			"checkerboard.CheckerGameViewer","/checkers/english/Turkish_Checkers_Rules.pdf","about_checkers.html",
 			null,false, WhiteOverBlack));
-	 put(new GameInfo(762,ES.game,76,"CK",AncientGames,"Checkers","Checkers-american",
+	 g.distinctVariations = true;
+
+	 g = put(new GameInfo(762,ES.game,76,"CK",AncientGames,"Checkers","Checkers-american",
 			OneBotPlus,
 			new double[]{1.0,0.01},
 			"checkerboard.CheckerGameViewer","/checkers/english/rules_of_checkers_english.pdf","about_checkers.html",
 			 null,false, WhiteOverBlack));
+	 g.distinctVariations = true;
+
 	}
 	{
 	 put(new GameInfo(763,ES.game,112,"OR",RacingGames,"Ordo","Ordo",
@@ -1338,6 +1350,26 @@ synchronized(allGames) {
 	 mm.okForPlaytable = false;
 
 	}
+	
+	{
+	String pRules = "/honey/english/rules.html";
+	String pViewer = "honey.HoneyViewer";  
+	
+	GameInfo mm = put(new GameInfo(2105,ES.test,117,"SC",WordGames,"HoneyComb","HoneyComb",
+			NoBots,//ThreeBotsPlus,
+			new double[]{0.1,1.0,1.0,0.01},
+			pViewer,pRules,"about_honeycomb.html",
+			null,true, null));
+	 mm.maxPlayers = 6;
+	 mm.minPlayers = 1;
+	 mm.groupSortKey = "0091";
+	 mm.robotTimed = true;
+	 mm.randomizeFirstPlayer = true;
+	 mm.hasHiddenInformation = false;
+	 mm.okForPlaytable = false;
+
+	}
+	
 	{
 	String pRules = "/crosswordle/english/rules.html";
 	String pViewer = "crosswordle.CrosswordleViewer";  

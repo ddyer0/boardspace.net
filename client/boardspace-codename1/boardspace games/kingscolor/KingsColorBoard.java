@@ -1450,7 +1450,7 @@ KingsColorBoard targetBoard = null;
  		ColorId owner = nocastle ? playerColor[whoseTurn^1] : null;
  		for(KingsColorCell c = allCells; c!=null; c=c.next)
  		{
- 			c.marked = c.castleOwner==owner;
+ 			c.marked = c.wall && c.castleOwner==owner;
  		}
  		
  	}

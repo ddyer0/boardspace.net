@@ -98,8 +98,8 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     static final String BeSpectatorMessage = "Become a Spectator";
     static final String ProblemSavingMessage = "Problem saving #1";
 	private static String LaunchFailedMessage = "launchfailed";
-
-
+	static final String CantReconnectMessage = "Can't reconnect";
+	static final String CantReconnectExplanation = "Close this game window and restart the game";
 	ViewerProtocol v;
 	public ViewerProtocol getGameViewer() { return(v); }
 	// this is use to lock out some complex interactions with the viewer
@@ -510,7 +510,6 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
         if(playerConnections.length>2 && (robot!=null))
 			{	// place first among the orderinfo
 				return KEYWORD_ROBOTMASTER +" "+robotMasterOrder+" ";
-				
 			}
         return("");
     }
@@ -916,6 +915,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     					: NetConn.SEND_FETCH_ACTIVE_GAME_FILTERED);
  
     }
+    private String sessionKey = "";
     boolean process_ECHO_INTRO_SELF(String cmdStr, StringTokenizer mySTa,String fullMsg)
     {
         if (NetConn.ECHO_INTRO_SELF.equals(cmdStr))
@@ -923,6 +923,27 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
             // we're first and only player so far
             my.channel = myNetConn.myChannel;
             my.IP = myNetConn.ip;
+            @SuppressWarnings("unused")
+			String sessionn = mySTa.nextToken();
+            @SuppressWarnings("unused")
+            String userId = mySTa.nextToken();
+            @SuppressWarnings("unused")
+            String serverId = mySTa.nextToken();
+            String oldSessionKey = sessionKey;
+            sessionKey = mySTa.nextToken();
+            if(!("".equals(oldSessionKey) || oldSessionKey.equals(sessionKey)))
+            {   // fix "slow reconnection" problem.
+                // 1) The basic scenario is that a player loses connectivity during a game, for long enough that the game is marked as abandoned.
+                // 2) Some other player starts some other game in the same session on the same session number.
+                // 3) The original player regains connectivity and attempts to reconnect, but the game he thinks he is
+                //    reconnecting to no longer exists.  He connects to the game and finds unexpected game in progress.
+                //    there's no way this can be correct unless it's still the same game in progress
+
+            	myNetConn.do_not_reconnect = true;
+            	myNetConn.closeConn();
+            	G.infoBox(CantReconnectMessage,CantReconnectExplanation);
+            	return true;
+            }
             commonPlayer.initPlayers(playerConnections,reviewOnly);
             
             sendMessage(NetConn.SEND_MYNAME + my.userName + " " + my.uid);
@@ -1040,7 +1061,13 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     private void useStoryBuffer(StringTokenizer myST)
     {	if(myST.hasMoreTokens())
     	{	String tok = myST.nextToken();
-    		if(KEYWORD_ROBOTMASTER.equals(tok))
+    		if(tok.startsWith(KEYWORD_SPARE))
+    		{	// trap door to make future expansion easier
+    			// valid from v7.50 on
+    			tok = myST.nextToken();
+    			tok = myST.nextToken();
+    		}
+  	    	if(KEYWORD_ROBOTMASTER.equalsIgnoreCase(tok))
     		{
     			robotMasterOrder = G.IntToken(myST);
     			tok = myST.nextToken();
@@ -3023,8 +3050,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
                 G.append(urlStr ,"&sameclock=1");
             }
         }
-        String fn = fileNameString();
-        G.append(urlStr ,"&fname=" , fn,"&xx=xx");	// dummy at the end to avoid "gord's problem"
+        G.append(urlStr ,"&fname=" , fileNameString(),"&xx=xx");	// dummy at the end to avoid "gord's problem"
 
     }
     // get the scoring string for a 2 player game
@@ -4670,6 +4696,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     	   			 //exCanvas c = (exCanvas)v;
     	   			 //String msg = gameRecordString("goo");
     	   			 //disConnected("test");
+    	   			 myNetConn.closeConn();
     	   			 v.testSwitch();
     	   			 //c.getComponent().mouse.testDrag();
     	   			 //((commonCanvas)c).painter.showBitmaps = !((commonCanvas)c).painter.showBitmaps;
@@ -4768,6 +4795,8 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
 	public static final String GameStrings[] = {
 		       // review rooms
 		       	ProblemSavingMessage,
+		       	CantReconnectMessage,
+		       	CantReconnectExplanation,
 				BeSpectatorMessage,
 				TakeOverMessage,
 				RobotPlayMessage,

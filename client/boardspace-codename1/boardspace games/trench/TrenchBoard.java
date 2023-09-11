@@ -1106,7 +1106,7 @@ class TrenchBoard
  		addPieceMoves(all,whoseTurn);
  		if(drawIsLikely()
  				&& (robotStack.size()==0)
- 				&& (moveNumber-lastDrawMove)>4)
+ 				&& canOfferDraw())
  		{
  			all.push(new Trenchmovespec(MOVE_OFFER_DRAW,whoseTurn));
  		}

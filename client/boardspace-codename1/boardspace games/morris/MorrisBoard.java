@@ -823,7 +823,8 @@ class MorrisBoard extends squareBoard<MorrisCell> implements BoardProtocol,Morri
             }
             break;
         case MOVE_OFFER_DRAW:
-        	if(canOfferDraw())
+        	//skip this, as there are games where the proscription is violated
+        	//if(canOfferDraw())
         	{
         	if(board_state==MorrisState.DrawPending) { setState(dropState.pop()); }
         	else { dropState.push(board_state);
@@ -1253,8 +1254,8 @@ public Hashtable<MorrisCell,MorrisMovespec>getTargets()
  			 some = addSimpleMoves(all,getSource(),whoseTurn()); 
  			 }
  			 
- 			if( ((moveNumber-lastProgressMove)>8)
- 					 && ((moveNumber-lastDrawMove)>4))
+ 			if( canOfferDraw()
+ 					&& ((moveNumber-lastProgressMove)>8))
  			 {
  				 all.push(new MorrisMovespec(MOVE_OFFER_DRAW,whoseTurn));
  			 }

@@ -799,6 +799,9 @@ public interface EuphoriaConstants
 	public enum EuphoriaState implements BoardState
 	{
 	Puzzle(PuzzleStateDescription,false,false),
+	// resign state is treated in an unusual way.  The board_state is never actually Resign
+	// so the complicated dance associated with simultaneous turns doesn't have to deal with it.
+	// instead the use of getState() and getGuiState() has to be correctly orchestrated.
 	Resign(ResignStateDescription,true,false),
 	Gameover(GameOverStateDescription,false,false),
 	PlaceOrRetrieve(EuphoriaPlayState,false,false),

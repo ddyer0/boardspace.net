@@ -306,7 +306,7 @@ class StacBoard extends squareBoard<StacCell> implements BoardProtocol,StacConst
          case AcceptPending:
          case RepetitionPending:
          case DeclinePending:
-            return (true);
+        	 return (true);
 
         default:
             return (false);
@@ -1134,7 +1134,8 @@ class StacBoard extends squareBoard<StacCell> implements BoardProtocol,StacConst
 		//$FALL-THROUGH$
 	 case Play:
 		 addMoveMoves(all,pawnLocation[whoseTurn],whoseTurn);
-		 if( ((moveNumber-lastStackMove)>(4*nSingleChips))
+		 if( canOfferDraw()
+				 && ((moveNumber-lastStackMove)>(4*nSingleChips))
 				 && ((moveNumber-lastDrawMove)>(2*nSingleChips)))
 		 {
 			 all.push(new StacMovespec(MOVE_OFFER_DRAW,whoseTurn));

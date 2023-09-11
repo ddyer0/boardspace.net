@@ -1254,8 +1254,8 @@ public Hashtable<MorrisCell,MorrisMovespec>getTargets()
  			 some = addSimpleMoves(all,getSource(),whoseTurn()); 
  			 }
  			 
- 			if( ((moveNumber-lastProgressMove)>8)
- 					 && ((moveNumber-lastDrawMove)>4))
+ 			if( canOfferDraw()
+ 					&& ((moveNumber-lastProgressMove)>8))
  			 {
  				 all.push(new MorrisMovespec(MOVE_OFFER_DRAW,whoseTurn));
  			 }

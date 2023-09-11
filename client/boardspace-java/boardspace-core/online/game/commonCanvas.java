@@ -7560,12 +7560,9 @@ Used by spectators, multiple reviewers, and players recovering their connection
 this consumes the strings produced by {@link #formHistoryString }
 */
 public void useStoryBuffer(String tok,StringTokenizer his)
-{	if(tok==null) { tok = his.nextToken(); }
-
-	if(KEYWORD_ROBOTMASTER.equals(tok))
-		{ // this keyword is used in notmal games, we need to ignore it for remove viewers
-		tok = his.nextToken(); 
-		}
+{	
+	
+	if(tok==null) { tok = his.nextToken(); }
 	
 	if(his.hasMoreTokens())
 	{	
@@ -7632,7 +7629,21 @@ public void useStoryBuffer(String tok,StringTokenizer his)
 }
 
 public void useRemoteStoryBuffer(String tok,StringTokenizer his)
-{	useStoryBuffer(tok,his);
+{	
+	if(tok.startsWith(KEYWORD_SPARE))
+	{
+		// trap door to make future expansion easier
+		// valid from v7.50 on
+		tok = his.nextToken();
+		tok = his.nextToken();
+	}
+	if(KEYWORD_ROBOTMASTER.equalsIgnoreCase(tok))
+	{ // this keyword is used in normal games, we need to ignore it for remote viewers
+	tok = his.nextToken(); 
+	tok = his.nextToken(); 	
+	}
+
+	useStoryBuffer(tok,his);
     if(his.hasMoreTokens())
     {
     //String playerToMove = 
