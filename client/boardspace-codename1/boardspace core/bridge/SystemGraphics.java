@@ -129,8 +129,10 @@ public abstract class SystemGraphics {
     	// corner of the characters, so if you drawline(x,y,x1,y)
     	// and drawtext at x,y, the text is below the line.
     	if(logging) { Log.appendNewLog("Text "); Log.appendLog(msg);  }
-    	int h = G.getFontSize(f);
-    	graphics.drawString(msg, x, y-h);	
+    	if(msg!=null)
+    		{int h = G.getFontSize(f);
+    		 graphics.drawString(msg, x, y-h);	
+    		}
     	if(logging) { Log.finishEvent(); } 
     }	
 

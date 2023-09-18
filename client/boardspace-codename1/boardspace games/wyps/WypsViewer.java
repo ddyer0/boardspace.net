@@ -274,7 +274,7 @@ public class WypsViewer extends CCanvas<WypsCell,WypsBoard> implements WypsConst
     	G.SetRect(bigRack, boardX, goalBottom, boardW, planned?0:CELLSIZE*6/3);
     	G.SetRect(largerBoardRect,boardX-stateH,boardY-stateH,boardW+stateH*2,boardH+stateH*2);
     	int sz = Math.min(boardW/4,CELLSIZE*3);
-    	G.SetRect(swapButton,G.Right(boardRect)+CELLSIZE/2-sz,boardY+CELLSIZE*2,sz,sz/3);
+    	G.SetRect(swapButton,G.Right(boardRect)-CELLSIZE/2-sz,boardY+CELLSIZE*2,sz,sz/3);
 
 
     	// goal and bottom ornaments, depending on the rendering can share

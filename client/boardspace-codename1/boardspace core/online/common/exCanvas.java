@@ -1673,7 +1673,7 @@ graphics when using a touch screen.
         private String imageLoadString(ImageStack im)
         {	double megabytes = imageSize(im)/1e6;
         	
-        	return(" I: "+(int)megabytes);
+        	return(" i: "+(int)megabytes);
         }
         public void ShowStats(Graphics gc,HitPoint hp, int x, int y)
         {	
@@ -1704,7 +1704,7 @@ graphics when using a touch screen.
         		{	String ss = myNetConn.stateSummary();
         			GC.Text(gc,false,x,y-20,fm.stringWidth(ss)+3,20,Color.blue,Color.white,ss);
          		}
-                GC.Text(gc, false, x, y-2,fm.stringWidth(msg)+3,20,Color.blue,Color.white,msg);
+                GC.Text(gc, false, x, y,fm.stringWidth(msg)+3,20,Color.blue,Color.white,msg);
                 
                 if(showImage)
                 {
@@ -1722,7 +1722,7 @@ graphics when using a touch screen.
         	}
         }
         public void setLowMemory(String msg)
-        {	
+        {
     		  G.print(msg);
      		  int nlow = l.nlowmemories++;
     		  if(nlow < 2)

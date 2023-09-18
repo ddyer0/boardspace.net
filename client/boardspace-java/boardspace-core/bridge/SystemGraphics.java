@@ -247,10 +247,11 @@ public abstract class SystemGraphics
 	public void Text(String msg,int x,int y)
     {	if(logging) { Log.appendNewLog("text ");Log.appendLog(msg); }
     	//graphics.drawString(msg,x,y); 
-    	
+    	if(msg!=null)
+    	{
     	graphics.drawGlyphVector(graphics.getFont().createGlyphVector(graphics.getFontRenderContext(), msg.toCharArray()),
     			x,y);
-    	
+    	}
     	if(logging) { Log.finishEvent(); }
     }
 	   

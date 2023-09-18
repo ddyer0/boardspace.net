@@ -22,7 +22,7 @@ public interface TrenchConstants
 		Trench,
 		BoardLocation,
 		ToggleEye, 
-		Single, Reverse
+		Single, Reverse, ToggleArrow
 		;
 		public String shortName() { return(name()); }
 	
@@ -88,12 +88,16 @@ public enum TrenchState implements BoardState,TrenchConstants
 	static final String VictoryCondition = "capture 25 points of your opponent's army";
 	static final String PlayState = "Move a Unit";
 	static final String PointsMessage = "Total: #1 points";
+	static final String NoArrowExplanation = "do not display movement direction arrows";
+	static final String ArrowExplanation = "display movement direction arrows";
 	static void putStrings()
 	{
 		String GameStrings[] = 
 		{  "Trench",
 			PlayState,
 			PointsMessage,
+			NoArrowExplanation,
+			ArrowExplanation,
 			VictoryCondition
 			
 		};

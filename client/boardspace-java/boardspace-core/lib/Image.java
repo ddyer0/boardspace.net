@@ -76,7 +76,11 @@ public class Image extends SystemImage implements Drawable,CompareTo<Image>
 	}
 	
 	
-	public void discard() { flags |= Discarded; image = null; setLastUsed(0); }
+	public void discard() 
+	{ 
+	  flags |= Discarded; 
+	  setImage(null); 
+	  setLastUsed(0); }
 	public void unload() 
 	{ 
 	  setImage(null);

@@ -14,6 +14,9 @@ import online.game.sgf.export.sgf_names;
 import online.search.SimpleRobotProtocol;
 import java.io.*;
 import java.util.*;
+
+import com.codename1.ui.Display;
+
 import lib.*;
 // TODO: fix the "robot start" problem.  There's a deep problem where robots 
 // are triggered to move in the context of a disconnection. Or possibly a robot
@@ -4696,7 +4699,10 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     	   			 //exCanvas c = (exCanvas)v;
     	   			 //String msg = gameRecordString("goo");
     	   			 //disConnected("test");
-    	   			 myNetConn.closeConn();
+    	   			 boolean newval = !Display.getInstance().getProperty("encodedImageScaling", "true").equals("true");
+    	   			 Display.getInstance().setProperty("encodedImageScaling", ""+newval);
+    	   			 Plog.log.addLog("new scaled property is ",newval);
+    	   			 //myNetConn.closeConn();
     	   			 v.testSwitch();
     	   			 //c.getComponent().mouse.testDrag();
     	   			 //((commonCanvas)c).painter.showBitmaps = !((commonCanvas)c).painter.showBitmaps;

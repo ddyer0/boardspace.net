@@ -1265,7 +1265,16 @@ private void drawPlayerBoard(Graphics gc,
       // are carefully matched with the abstract grid
       if(remoteViewer<0)
       {
+      if(brect.equals(boardRect))
+      {
       scaled = ViticultureChip.board.image.centerScaledImage(gc,brect,scaled);
+      }
+      else
+      {
+      // note that this uses centerImage rather than centerScaledImage, so we 
+      // don't randomize scaled images during zooms
+      ViticultureChip.board.image.centerImage(gc,brect);
+      }
       // draw a picture of the board. In this version we actually draw just the grid
       // to draw the cells, set gb.Drawing_Style in the board init method.  Create a
       // DrawGridCoord(Graphics gc, Color clt,int xpos, int ypos, int cellsize,String txt)

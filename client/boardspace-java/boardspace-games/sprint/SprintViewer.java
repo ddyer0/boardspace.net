@@ -94,6 +94,11 @@ public class SprintViewer extends CCanvas<SprintCell,SprintBoard> implements Spr
     public boolean WinForPlayer(commonPlayer p)
     {	return bb.winForPlayer(p.boardIndex);
     }
+    public void adjustPlayers(int n)
+    {
+    	viewPlayer = null;
+    	super.adjustPlayers(n);
+    }
 	/**
 	 * 
 	 * this is the real instance intialization, performed only once.
@@ -773,7 +778,7 @@ public void setLetterColor(Graphics gc,SingleBoard gb,SprintCell cell)
      */
     public void drawBoardElements(Graphics gc, SingleBoard gb, Rectangle brect, HitPoint highlight,HitPoint all)
     {	long time =  getActivePlayer().elapsedTime;
-    	boolean leadin = time<5000;
+    	boolean leadin = !mutable_game_record && time<5000;
  		boolean censor = all==null;
  		if(leadin) { highlight=null; }
     	boolean draggingBoard = draggingBoard(); 
@@ -856,6 +861,7 @@ public void setLetterColor(Graphics gc,SingleBoard gb,SprintCell cell)
         	Font cf = G.getFont(largeBoldFont(),200);
         	GC.setFont(gc,cf);
         	GC.Text(gc,true,boardRect,Color.black,null,secs);
+        	GC.setFont(gc,largeBoldFont());
         	repaint(200);
         }
 
@@ -982,12 +988,20 @@ public void setLetterColor(Graphics gc,SingleBoard gb,SprintCell cell)
     }
 
     private void drawNotice(Graphics gc,Rectangle r,SprintBoard gb)
-    {
-    	if(!gb.GameOver() && (gb.tilesLeft()==0))
+    {   SingleBoard pboard = currentPlayerBoard(gb);
+    	SprintState state = pboard.getState();
+    	boolean gameover = state.GameOver();
+    	if(!gameover && (gb.tilesLeft()==0))
 		{	
 		 	String msg =  LastTurnMessage ;
 			GC.Text(gc, true, r,Color.blue,null, msg);
 		}
+    	else if(gameover && gb.endgamePlayer>=0)
+    	{
+    		String msg = s.get(EndedMessage,prettyName(gb.endgamePlayer));
+    		GC.Text(gc, true, r,Color.blue,null, msg);
+    	}
+    		
     }
     private String bigString = null;
     private int bigX = 0;
@@ -1297,6 +1311,7 @@ public void setLetterColor(Graphics gc,SingleBoard gb,SprintCell cell)
     	  {
     	  case MOVE_SEE:
     	  case MOVE_LIFT:
+    	  case MOVE_SWITCH:
     	  case MOVE_REPLACE:
     		  return(null);
     	  default: break;

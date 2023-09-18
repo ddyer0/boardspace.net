@@ -2067,7 +2067,11 @@ public abstract class commonCanvas extends exCanvas
     public void drawGameOverlay(Graphics gc,HitPoint p)
     {	boolean drawing = false;
     	BoardProtocol b = getBoard();
-    	if(b!=null && (b.nPlayers()==2) && !b.GameOver() && !reviewMode())
+    	if(b!=null 
+    			&& (b.nPlayers()==2) 
+    			&& !b.GameOver() 
+    			&& !reviewMode()
+    			&& !mutable_game_record)
     	{	commonPlayer my = whoseTurn();
     		if(my!=null)
     		{ 	

@@ -125,6 +125,13 @@ public class TrenchViewer extends CCanvas<TrenchCell,TrenchBoard> implements Tre
  			StockArt.NoEye,TrenchId.ToggleEye,NoeyeExplanation,
  			StockArt.Eye,TrenchId.ToggleEye,EyeExplanation
  			);
+    
+    private Toggle arrowRect = new Toggle(this,"arrow",
+ 			TrenchChip.noarrow,TrenchId.ToggleArrow,NoArrowExplanation,
+ 			TrenchChip.arrow,TrenchId.ToggleArrow,ArrowExplanation
+ 			);
+
+    
     private Rectangle chipRects[] = addZoneRect("chip",2);
     private Rectangle capRects[] = addZoneRect("capture",2);
     
@@ -355,7 +362,7 @@ public class TrenchViewer extends CCanvas<TrenchCell,TrenchBoard> implements Tre
         int stateY = boardY;
         int stateX = boardX;
         int stateH = fh*3;
-        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,numberMenu,eyeRect,reverseViewRect,viewsetRect,noChatRect);
+        G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,numberMenu,eyeRect,arrowRect,reverseViewRect,viewsetRect,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
       	
     	// goal and bottom ornaments, depending on the rendering can share
@@ -540,6 +547,7 @@ public class TrenchViewer extends CCanvas<TrenchCell,TrenchBoard> implements Tre
      	numberMenu.clearSequenceNumbers();
      	Enumeration<TrenchCell> cells = gb.getIterator(Itype.TBRL);
      	boolean show = eyeRect.isOnNow();
+     	boolean showArrows = arrowRect.isOnNow();
      	//int seq = 0;
     	while(cells.hasMoreElements())
           {	TrenchCell cell = cells.nextElement();
@@ -556,6 +564,55 @@ public class TrenchViewer extends CCanvas<TrenchCell,TrenchBoard> implements Tre
             		highlight.spriteColor = Color.red;
                 	highlight.awidth = size;
             		}
+            if(showArrows)
+            {
+            	TrenchChip top = cell.topChip();
+            	if(top!=null)
+            	{	boolean rev = gb.reverseY();
+            		int chipset = getAltChipset();
+            		TrenchChip arrow = top.getAltChip(2+chipset);
+            		boolean perspective = chipset==1;
+            		if(rev)
+            		{
+                		switch(top.type)
+            			{
+            			case m4:
+	        				{
+	        				// ad hoc rotation and reposioning of the arrows so the reversed positions
+	        				// work correctly
+	        				boolean white = top.color==TrenchId.White;
+	        				int dx = perspective ? -size/3 : white ? -(int)(size*0.15) : (int)(size*0.1);
+	        				int dy = perspective ? size/2 : white ? -(int)(size*0.2) : 0;
+	        				GC.translate(gc,xpos,ypos);
+	        				GC.setRotation(gc,Math.PI);
+	        				arrow.drawChip(gc,this,size,dx,dy,null);
+	        				GC.setRotation(gc,-Math.PI);
+	        				GC.translate(gc,-xpos,-ypos);
+	        				}
+	        				break;
+            			case m2:
+            				{
+            				// ad hoc rotation and reposioning of the arrows so the reversed positions
+    	        			// work correctly
+             				int dx = (int)(perspective ? -(0.05*size) : -0.2*size);
+            				int dy = (int)(perspective ? (0.6*size) : -0.1*size);
+            				GC.translate(gc,xpos,ypos);
+            				GC.setRotation(gc,Math.PI);
+            				arrow.drawChip(gc,this,size,dx,dy,null);
+            				GC.setRotation(gc,-Math.PI);
+            				GC.translate(gc,-xpos,-ypos);
+            				}
+            				break;
+            			default:
+            				arrow.drawChip(gc,this,size,xpos,ypos,null);
+            			}
+            		}
+            		else
+            		{
+                		arrow.drawChip(gc,this,size,xpos,ypos,null);
+            		}
+            	}
+            }
             if(canHit && show) { StockArt.SmallO.drawChip(gc,this,CELLSIZE,xpos,ypos,null); }
             if((cell.topChip()==null)
         			&& cell.lastContents!=null 
@@ -710,6 +767,8 @@ public class TrenchViewer extends CCanvas<TrenchCell,TrenchBoard> implements Tre
         DrawRepRect(gc,pl.displayRotation,Color.black,gb.Digest(),repRect);
         eyeRect.activateOnMouse = true;
         eyeRect.draw(gc,selectPos);
+        arrowRect.activateOnMouse = true;
+        arrowRect.draw(gc,selectPos);
         drawViewsetMarker(gc,viewsetRect,selectPos);
         DrawReverseMarker(gc,reverseViewRect,selectPos,TrenchId.Reverse);
         // draw the vcr controls, last so the pop-up version will be above everything else
@@ -940,6 +999,9 @@ public class TrenchViewer extends CCanvas<TrenchCell,TrenchBoard> implements Tre
         case Reverse:
         	bb.setReverseY(!bb.reverseY());
         	generalRefresh();
+        	break;
+        case ToggleArrow:
+        	arrowRect.toggle();
         	break;
         case ToggleEye:
         	eyeRect.toggle();

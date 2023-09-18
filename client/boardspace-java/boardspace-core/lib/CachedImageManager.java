@@ -112,7 +112,8 @@ public class CachedImageManager
     			}
     			else
     			{	// consider flushing
-    				if(v.useTime<longExpDate)
+    				long dt = v.useTime-longExpDate;
+    				if(dt<0)
     				{	toFlush = true;
     				}
     			}
@@ -194,11 +195,13 @@ public class CachedImageManager
     		}
     	
      	Image result = null;
+     	long now = G.Date();
     	CachedImage cim = cachedImages.get(im);
     	CachedImage original_cim=cim;
     	while(cim!=null && (result==null)) 
     	{ if((cim.ScaledW==w)&&(cim.ScaledH==h)) 
     		{ result = cim.im;
+    		  cim.useTime = now;
     		  if(result==null) 
     		  	{ needManagement = true;
     			  result=im; 	// use the original
@@ -209,7 +212,6 @@ public class CachedImageManager
    			}
     	}
     	if(zoom) { return(im); }	// if zooming, don't create new slots
-    	long now = G.Date();
     	if(result==null)
     	{
            	G.Assert( w<3000 && h<3000,"unreasonable image size");

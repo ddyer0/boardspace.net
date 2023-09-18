@@ -12,7 +12,6 @@ import lib.AwtComponent;
 import lib.G;
 import lib.Graphics;
 import lib.Image;
-import lib.Plog;
 
 public abstract class SystemImage implements ImageObserver
 {
@@ -61,17 +60,29 @@ public abstract class SystemImage implements ImageObserver
 		setLastUsed(G.Date());
 	}
 
+	@SuppressWarnings("deprecation")
 	public void setImage(com.codename1.ui.Image im) 
 	{
 		synchronized(this)
 		{
+		//if(im==null) { Plog.log.addLog("Unload ",this); 	}
+		com.codename1.ui.Image old = image;
 		image = im;
 		if(im!=null)
 			{
 			getSystemImageSize();
 			setLastUsed(G.Date());
 			}
-		else { setLastUsed(0); }
+		else 
+			{ setLastUsed(0);
+			  if(old!=null) 
+			  	{ // this ought to be safe since we're sure the image
+				  // is discarded.  However experiments indicate it
+				  // also has no effect.  EncocdedImage it does nothing
+				  // regular images, they're gc'd effectively. [9/2023 ddyer]
+				  //  	  old.dispose(); 
+				  }
+			}
 		}
 	}
 
@@ -168,7 +179,7 @@ public static Image getURLImage(URL name)
 			else {
 				loadImage(url);
 			}
-			Plog.log.addLog("reload "+this);
+			//Plog.log.addLog("reload ",this);
 		}}
 		if(image==null)
 		{	setFlagsOn(Image.Error);
@@ -331,15 +342,20 @@ public static Image getURLImage(URL name)
 	   G.runInEdt(new Runnable() 
 	   {
 	   public String toString() { return("create image "+w+"x"+h); }
-	   public void run() { imr[0]=com.codename1.ui.Image.createImage(out,w,h); }});
-	   setImage(imr[0]);
+	   public void run()
+	   	{ 
+		   imr[0] = makeEncodedImages 
+						? EncodedImage.createFromImage(com.codename1.ui.Image.createImage(out,w, h),false)
+						: com.codename1.ui.Image.createImage(out,w, h);
+		    }});
+	   	setImage(imr[0]);
 	   }
    }
    public void createImageFromInts(int opix[],int w,int h,int off,int span)
    {	G.Assert(off==0 && span==w,"not supported");
 	   	setImage(createImageFromInts(opix,w,h));
    }
-   
+   static boolean makeEncodedImages = false;	// true only for torture testing
    protected static final com.codename1.ui.Image createImageFromInts(int opix[],int w,int h)
    {	com.codename1.ui.Image im[] = new com.codename1.ui.Image[1];
    		G.runInEdt(new Runnable() 
@@ -347,7 +363,11 @@ public static Image getURLImage(URL name)
    				public String toString() { return("create image "+w+"x"+h); }
    				public void run() 
    							{
-   							im[0]=com.codename1.ui.Image.createImage(opix,w, h); 
+   							com.codename1.ui.Image im0 = makeEncodedImages 
+   															? EncodedImage.createFromImage(com.codename1.ui.EncodedImage.createImage(opix,w, h),false)
+   															: com.codename1.ui.Image.createImage(opix,w, h);
+   							im[0] = im0;
+   							
    							}
    						});
    		return(im[0]);
@@ -410,8 +430,10 @@ public void SaveImage(String name)
 }
 public abstract Image BicubicScale(int w,int h);
 
+public static boolean scaleAsEncodedImage = false;
 public Image getScaledInstance(int w,int h,ScaleType scal)
 {	// ignore the scaling parameter for now.
+	
 	if(!G.isIOS() && (scal==ScaleType.SCALE_BICUBIC))
 	{
 	// ios has a bug that makes this code not work correctly, 
@@ -420,7 +442,26 @@ public Image getScaledInstance(int w,int h,ScaleType scal)
 	}
 	else
 	{
-	return(Image.createImage(getImage().scaled(w,h),"scaled "+getName()));
+	// the loaded images are EncodedImage type, and the default behavior
+	// creates more EncodedImages as scaled copies.  On IOS this results
+	// in "out of memory" misbehavior when animating long viticulture games. 
+	// This tweaks the default so regular images are created, which seems to paper
+	// over the problem. [ddyer 9/2023]
+	// final analysis; there are only a few EncodedImages in use, and the
+	// intent for scaling is to have something ready to deploy, so this
+	// hack that turns off scaled EncodedImages is good 
+	if(!scaleAsEncodedImage)
+		{ //Display.getInstance().setProperty("encodedImageScaling", "false");
+		  scaleAsEncodedImage = true;
+		}
+	com.codename1.ui.Image from = getImage();
+	Image im = Image.createImage(from.scaled(w,h),"scaled "+getName());
+	//if(from instanceof com.codename1.ui.EncodedImage)
+	//{
+	//Plog.log.addLog("scale ",this,
+	//				" to ",im.getImage().getClass().getSimpleName()," ",im.getImage() instanceof com.codename1.ui.EncodedImage," ",w,"x",h);
+	//}
+	return im;
 	}
 }
 

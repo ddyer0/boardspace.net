@@ -32,6 +32,7 @@ public interface SprintConstants
 	static String EndingGameDescription = "Waiting for the other players stop";
 	static String ExplainPull = "Pull 2 more tiles from the draw pile";
 	static String SwitchExplanation = "Switch to viewing this player";
+	static String EndedMessage = "Ended by #1";
 	static final String[] SprintGRIDSTYLE = { "1", null, "A" }; // left and bottom numbers
 	static final int MAX_PLAYERS = 6;
 	static final int rackSize = 5;		// the number of filled slots in the rack.  Actual rack has some empty slots
@@ -150,6 +151,7 @@ public interface SprintConstants
     	    	EndGameMessage,
     	    	NextDrawMessage,
     			SprintPlayState,
+    			EndedMessage,
     	        SprintVictoryCondition,
     	        EndingGameDescription,
     	        TilesLeft,

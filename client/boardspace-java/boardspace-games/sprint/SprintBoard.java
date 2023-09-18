@@ -49,6 +49,7 @@ class SprintBoard extends BaseBoard implements BoardProtocol
     int maxTiles = 40;		// reloaded from the variation
     long drawTimer = -1;
     int lastActivePlayer  = -1;
+    int endgamePlayer = -1;
  	void logGameEvent(String str,String... args)
  	{	//if(!robotBoard)
  		{String trans = s.get(str,args);
@@ -171,7 +172,7 @@ class SprintBoard extends BaseBoard implements BoardProtocol
 	    	    
 	    whoseTurn = FIRST_PLAYER_INDEX;
 	    drawTimer = -1;
-	    lastActivePlayer = -1;
+	    endgamePlayer = lastActivePlayer = -1;
 	    lastDroppedObject = null;
 	    // set the initial contents of the board to all empty cells
         moveNumber = 1;
@@ -206,6 +207,7 @@ class SprintBoard extends BaseBoard implements BoardProtocol
         drawPile.copyFrom(from_b.drawPile);
         robotVocabulary = from_b.robotVocabulary;
         lastActivePlayer = from_b.lastActivePlayer;
+        endgamePlayer = from_b.endgamePlayer;
         lastPicked = null;
         sameboard(from_b); 
     }
@@ -228,6 +230,7 @@ class SprintBoard extends BaseBoard implements BoardProtocol
         G.Assert(robotVocabulary==from_b.robotVocabulary,"robotVocabulary mismatch");
         G.Assert(drawPile.sameContents(from_b.drawPile),"drawPile mismatch");
         G.Assert(lastActivePlayer==from_b.lastActivePlayer,"lastActivePlayer mismatch");
+        G.Assert(endgamePlayer==from_b.endgamePlayer,"endgamePlayer mismatch");
         // this is a good overall check that all the copy/check/digest methods
         // are in sync, although if this does fail you'll no doubt be at a loss
         // to explain why.
@@ -255,6 +258,7 @@ class SprintBoard extends BaseBoard implements BoardProtocol
 		v ^= Digest(r,drawPile);
 		v ^= Digest(r,robotVocabulary);
 		v ^= Digest(r,lastActivePlayer);
+		v ^= Digest(r,endgamePlayer);
 		v ^= r.nextLong()*(board_state.ordinal()*10+whoseTurn);
         return (v);
     }
@@ -342,7 +346,7 @@ class SprintBoard extends BaseBoard implements BoardProtocol
         	{
         	for(SingleBoard pb : pbs) { pb.Execute(mm,replay); }
         	setState(revision<101 ? SprintState.Gameover : SprintState.EndingGame);
-        	lastActivePlayer = mm.player;
+        	endgamePlayer = lastActivePlayer = mm.player;
         	break;
         	}
         case MOVE_SWITCH:
