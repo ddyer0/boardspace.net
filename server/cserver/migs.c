@@ -1,11 +1,27 @@
+/*
+	Copyright 2006-2023 by Dave Dyer
+
+	This file is part of the Boardspace project.
+
+	Boardspace is free software: you can redistribute it and/or modify it under the terms of
+	the GNU General Public License as published by the Free Software Foundation,
+	either version 3 of the License, or (at your option) any later version.
+
+	Boardspace is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+	without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+	See the GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License along with Boardspace.
+	If not, see https://www.gnu.org/licenses/.
+ */
 #include "migs-declarations.h"
 #if 0
 
-  This is the server that provides communications among clients for boardspace.net and tantrix.com.  It evolved
+  This is the server that provides communications among clients for boardspace.net and tantrix.com.  It evolvedsession reserved
   from a very simple server that did very little more than transmit lines of text back and forth, as you might do
   in a student proof of concept client/server.  Over time, many more features were added, but never enough at one
   time to trigger a complete rewrite.  So remember, don't fix what's not broken.  This server is very reliable
-  and much higher performance than required by the current or any likely server load.
+  and much higher performance than required by the current or any likely sserver load.
 
     The basic transmission is still based on a line of text, but over time, the lines have acquired the ability
     to restart games (both after crashes and when interrupted by the clients), log events and rotate the logs,
@@ -5343,13 +5359,21 @@ void process_check_score(char *data,User *u,char *seq)
 		int uid4 = -1;
 		int uid5 = -1;
 		int uid6 = -1;
+
+		int uid7 = -1;
+		int uid8 = -1;
+		int uid9 = -1;
+		int uid10 = -1;
+		int uid11 = -1;
+		int uid12 = -1;
+
 		int sess=0;
 		int ip1=0,ip2=0,ip3=0,ip4=0;
 		//
 		// Sep 2009, expanded to allow 2 more uids after the key
 		// April 2011, added 2 more so 6 players are supported
 		//
-		int nc=sscanf(data,"%d %d %d %d.%d.%d.%d %d %d %d %d",
+		int nc=sscanf(data,"%d %d %d %d.%d.%d.%d %d %d %d %d %d %d %d %d %d %d",
 				&sess,	// session number is arg 1
 				&uid1,	// uid 1 is arg 2
 				&uid2,	// uid 2 is arg 3
@@ -5357,7 +5381,13 @@ void process_check_score(char *data,User *u,char *seq)
 				&uid3,	// uid3 is arg 8
 				&uid4,	// uid4 is arg 9
 				&uid5,	// uid5 is arg 10
-				&uid6	// uid6 is arg 11
+				&uid6,	// uid6 is arg 11
+				&uid7,
+				&uid8,
+				&uid9,	// uid7 through uid12 args 12-17
+				&uid10,
+				&uid11,
+				&uid12
 				);
 		int sent=0;
 		if(((u->ip==server_ip)		//we're asked from the server
@@ -5379,6 +5409,14 @@ void process_check_score(char *data,User *u,char *seq)
 		   int okon4=(nc<9) || okon1;
 		   int okon5=(nc<10) || okon1;
 		   int okon6=(nc<11) || okon1;
+
+		   int okon7 = (nc < 12) || okon1;
+		   int okon8 = (nc < 13) || okon1;
+		   int okon9 = (nc < 14) || okon1;
+		   int okon10 = (nc < 15) || okon1;
+		   int okon11 = (nc < 16) || okon1;
+		   int okon12 = (nc < 17) || okon1;
+
 		   int nplayers = 0;
 		   {
 		   User *u=S->first_user;
@@ -5410,6 +5448,30 @@ void process_check_score(char *data,User *u,char *seq)
 				{ okon6=1;
 				}
 
+				else if ((uid7 > 0) && (uid7 == u->clientUid))
+				{
+					okon7 = 1;
+				}
+				else if ((uid8 > 0) && (uid8 == u->clientUid))
+				{
+					okon8 = 1;
+				}
+				else if ((uid9 > 0) && (uid9 == u->clientUid))
+				{
+					okon9 = 1;
+				}
+				else if ((uid10 > 0) && (uid10 == u->clientUid))
+				{
+					okon10 = 1;
+				}
+				else if ((uid11 > 0) && (uid11 == u->clientUid))
+				{
+					okon11 = 1;
+				}
+				else if ((uid12 > 0) && (uid12 == u->clientUid))
+				{
+					okon12 = 1;
+				}
 				}
 			u=next;
 			nfound++;
@@ -5424,7 +5486,8 @@ void process_check_score(char *data,User *u,char *seq)
 			   // to be messed with.
 			   okon2 = 1;
 		   }
-		   if(okon1 && okon2 && okon3 && okon4 && okon5 && okon6)
+		   if(okon1 && okon2 && okon3 && okon4 && okon5 && okon6
+			   && okon7 && okon8 && okon9 && okon10 && okon11 && okon12)
 			{ 
 
 			 if(logging>=log_connections)

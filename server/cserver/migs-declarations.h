@@ -1,3 +1,19 @@
+/*
+	Copyright 2006-2023 by Dave Dyer
+
+	This file is part of the Boardspace project.
+
+	Boardspace is free software: you can redistribute it and/or modify it under the terms of
+	the GNU General Public License as published by the Free Software Foundation,
+	either version 3 of the License, or (at your option) any later version.
+
+	Boardspace is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+	without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+	See the GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License along with Boardspace.
+	If not, see https://www.gnu.org/licenses/.
+ */
 #ifndef __MIGS__
 #define __MIGS__
 #ifndef X64
@@ -9,13 +25,14 @@
 #include <errno.h>
 #include <sys/timeb.h>
 
-#define UNLINK _unlink
 #define STRCASECMP _strcasecmp
 #define STRNCASECMP _strncasecmp
-#define STRICMP _stricmp
-#define STRNICMP _strnicmp
+
 #if WIN32
 #include <process.h>
+#define UNLINK _unlink
+#define STRICMP _stricmp
+#define STRNICMP _strnicmp
 #else
 #include <stdlib.h>
 #include <stdarg.h>
@@ -111,6 +128,7 @@
 #define EWOULDBLOCK WSAEWOULDBLOCK 
 #define FILESEPARATOR '\\'
 #else
+#define UNLINK unlink
 #define STRICMP strcasecmp
 #define STRNICMP strncasecmp
 #include <sys/resource.h>
