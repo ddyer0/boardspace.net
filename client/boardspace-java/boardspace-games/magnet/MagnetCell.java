@@ -1,4 +1,4 @@
-package magnet;
+/* copyright notice */package magnet;
 
 import lib.Random;
 import magnet.MagnetConstants.MagnetId;

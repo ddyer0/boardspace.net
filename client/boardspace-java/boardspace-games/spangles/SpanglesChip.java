@@ -1,4 +1,4 @@
-package spangles;
+/* copyright notice */package spangles;
 
 import lib.Image;
 import lib.ImageLoader;

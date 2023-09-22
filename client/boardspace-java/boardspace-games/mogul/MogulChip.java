@@ -1,4 +1,4 @@
-package mogul;
+/* copyright notice */package mogul;
 
 import lib.Graphics;
 import lib.Image;

@@ -1,4 +1,4 @@
-package colorito;
+/* copyright notice */package colorito;
 
 import lib.Random;
 import colorito.ColoritoConstants.ColoritoId;

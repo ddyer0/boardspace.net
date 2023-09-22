@@ -1,4 +1,4 @@
-package medina;
+/* copyright notice */package medina;
 import lib.Image;
 import lib.ImageLoader;
 import lib.G;

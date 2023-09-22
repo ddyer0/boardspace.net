@@ -1,4 +1,4 @@
-package mbrane;
+/* copyright notice */package mbrane;
 
 import lib.*;
 import online.game.*;

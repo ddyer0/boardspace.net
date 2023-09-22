@@ -1,4 +1,4 @@
-package kulami;
+/* copyright notice */package kulami;
 
 import static kulami.Kulamimovespec.*;
 

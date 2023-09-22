@@ -1,4 +1,4 @@
-package blooms;
+/* copyright notice */package blooms;
 
 import lib.CellId;
 import lib.InternationalStrings;

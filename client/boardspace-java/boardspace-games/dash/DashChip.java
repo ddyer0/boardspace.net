@@ -1,5 +1,5 @@
 
-package dash;
+/* copyright notice */package dash;
 
 import lib.Image;
 import lib.ImageLoader;

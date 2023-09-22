@@ -1,4 +1,4 @@
-package imagine;
+/* copyright notice */package imagine;
 
 import java.io.File;
 

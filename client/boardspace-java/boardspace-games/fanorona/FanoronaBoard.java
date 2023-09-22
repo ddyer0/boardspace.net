@@ -1,4 +1,4 @@
-package fanorona;
+/* copyright notice */package fanorona;
 
 import java.awt.Color;
 import java.util.*;

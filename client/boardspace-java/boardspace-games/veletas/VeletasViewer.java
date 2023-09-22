@@ -1,4 +1,4 @@
-package veletas;
+/* copyright notice */package veletas;
 
 import javax.swing.JCheckBoxMenuItem;
 import java.awt.*;

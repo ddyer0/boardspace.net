@@ -1,4 +1,4 @@
-package dvonn;
+/* copyright notice */package dvonn;
 
 import java.awt.*;
 import javax.swing.JCheckBoxMenuItem;

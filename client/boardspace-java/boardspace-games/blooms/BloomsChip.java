@@ -1,4 +1,4 @@
-package blooms;
+/* copyright notice */package blooms;
 
 import blooms.BloomsConstants.BloomsId;
 import common.CommonConfig;

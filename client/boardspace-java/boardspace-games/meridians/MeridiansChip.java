@@ -1,4 +1,4 @@
-package meridians;
+/* copyright notice */package meridians;
 
 import lib.DrawableImageStack;
 import lib.ImageLoader;

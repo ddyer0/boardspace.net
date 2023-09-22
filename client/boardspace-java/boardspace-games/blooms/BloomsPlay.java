@@ -1,4 +1,4 @@
-package blooms;
+/* copyright notice */package blooms;
 
 import static blooms.Bloomsmovespec.MOVE_DROPB;
 

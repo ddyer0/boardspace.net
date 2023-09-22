@@ -1,4 +1,4 @@
-package dictionary;
+/* copyright notice */package dictionary;
 
 import java.util.Enumeration;
 

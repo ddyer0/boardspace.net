@@ -1,3 +1,19 @@
+/*
+	Copyright 2006-2023 by Dave Dyer
+
+    This file is part of the Boardspace project.
+
+    Boardspace is free software: you can redistribute it and/or modify it under the terms of 
+    the GNU General Public License as published by the Free Software Foundation, 
+    either version 3 of the License, or (at your option) any later version.
+    
+    Boardspace is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+    without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+    See the GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License along with Boardspace.
+    If not, see https://www.gnu.org/licenses/.
+ */
 package imagine;
 
 
@@ -61,13 +77,14 @@ static String SWOOSH = ImageDir + "swoosh"+ Config.SoundFormat;
     private Color rackBackGroundColor = new Color(225,225,225);
     private Color boardBackgroundColor = new Color(225,225,225);
     
-	private Color ViticultureMouseColors[] = {
-			 Color.blue, Color.green, bsOrange, bsPurple, Color.black, Color.yellow 
+	private Color ImagineMouseColors[] = {
+			 Color.blue, Color.green, bsOrange, bsPurple, Color.black, Color.yellow ,Color.black,Color.white
 
 	};
-	private Color ViticultureMouseDotColors[] = {
+	private Color ImagineMouseDotColors[] = {
 			Color.white,Color.white,Color.white,
-			Color.white,Color.white,Color.black
+			Color.white,Color.white,Color.black,
+			Color.white,Color.black
 	};
   
     // private state
@@ -77,8 +94,8 @@ static String SWOOSH = ImageDir + "swoosh"+ Config.SoundFormat;
     // addRect is a service provided by commonCanvas, which supports a mode
     // to visualize the layout during development.  Look for "show rectangles"
     // in the options menu.
-    private Rectangle chipRects[] = addZoneRect("chip",6);
-    private Rectangle infoRects[] = addZoneRect("info",6);
+    private Rectangle chipRects[] = addZoneRect("chip",MAX_PLAYERS);
+    private Rectangle infoRects[] = addZoneRect("info",MAX_PLAYERS);
 
     private Rectangle skipRect = addRect("skipRect");	// used for "skip a turn" button
     private Rectangle getnewRect = addRect("getnewRect");	// used for "skip a turn" button
@@ -122,8 +139,8 @@ static String SWOOSH = ImageDir + "swoosh"+ Config.SoundFormat;
         	// will be console chatter about strings not in the list yet.
         	ImagineConstants.putStrings();
         }
-        MouseColors  = ViticultureMouseColors;
-        MouseDotColors = ViticultureMouseDotColors;
+        MouseColors  = ImagineMouseColors;
+        MouseDotColors = ImagineMouseDotColors;
          
         String type = info.getString(GAMETYPE, ImagineVariation.Imagine.name);
         // recommended procedure is to supply players and randomkey, even for games which
@@ -1451,6 +1468,8 @@ static String SWOOSH = ImageDir + "swoosh"+ Config.SoundFormat;
     /** replay a move specified in SGF format.  
      * this is mostly standard stuff, but the contract is to recognize
      * the elements that we generated in sgf_save
+     * summary: 5/26/2023
+     * 	18 files visited 0 problems
      */
     public void ReplayMove(sgf_node no)
     {

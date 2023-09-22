@@ -1,4 +1,4 @@
-package crosswords;
+/* copyright notice */package crosswords;
 
 import dictionary.Dictionary;
 import lib.*;

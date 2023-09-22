@@ -1,4 +1,4 @@
-package hex;
+/* copyright notice */package hex;
 
 // maintain a connection between two blobs, connecting through a particular cell
 public class hexConnection {

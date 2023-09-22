@@ -1,4 +1,4 @@
-package xeh;
+/* copyright notice */package xeh;
 
 // maintain a connection between two blobs, connecting through a particular cell
 public class XehConnection {

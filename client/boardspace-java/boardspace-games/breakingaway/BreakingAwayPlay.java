@@ -1,4 +1,4 @@
-package breakingaway;
+/* copyright notice */package breakingaway;
 
 import online.game.*;
 import online.game.export.ViewerProtocol;

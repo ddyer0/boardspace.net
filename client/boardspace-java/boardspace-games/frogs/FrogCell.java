@@ -1,4 +1,4 @@
-package frogs;
+/* copyright notice */package frogs;
 
 import lib.Random;
 import frogs.FrogConstants.FrogId;

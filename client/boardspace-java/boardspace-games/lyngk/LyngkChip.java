@@ -1,4 +1,4 @@
-package lyngk;
+/* copyright notice */package lyngk;
 
 import lib.DrawableImageStack;
 import lib.G;

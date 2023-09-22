@@ -1,4 +1,4 @@
-package snakes;
+/* copyright notice */package snakes;
 
 import java.util.Hashtable;
 

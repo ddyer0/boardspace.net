@@ -1,4 +1,4 @@
-package punct;
+/* copyright notice */package punct;
 
 import java.awt.Color;
 import lib.Graphics;

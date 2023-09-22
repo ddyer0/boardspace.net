@@ -1,4 +1,4 @@
-package honey;
+/* copyright notice */package honey;
 
 import java.awt.Color;
 import java.awt.Font;

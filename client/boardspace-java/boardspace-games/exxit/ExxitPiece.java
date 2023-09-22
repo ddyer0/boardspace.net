@@ -1,4 +1,4 @@
-package exxit;
+/* copyright notice */package exxit;
 import lib.Random;
 import online.game.chip;
 import lib.G;

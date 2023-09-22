@@ -1,4 +1,4 @@
-package cannon;
+/* copyright notice */package cannon;
 
 import online.game.*;
 import java.util.*;

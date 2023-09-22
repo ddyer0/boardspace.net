@@ -1,4 +1,4 @@
-package kamisado;
+/* copyright notice */package kamisado;
 
 import lib.OStack;
 import lib.CellId;

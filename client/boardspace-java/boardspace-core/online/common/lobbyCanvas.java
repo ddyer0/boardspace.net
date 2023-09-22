@@ -1,3 +1,19 @@
+/*
+	Copyright 2006-2023 by Dave Dyer
+
+    This file is part of the Boardspace project.
+    
+    Boardspace is free software: you can redistribute it and/or modify it under the terms of 
+    the GNU General Public License as published by the Free Software Foundation, 
+    either version 3 of the License, or (at your option) any later version.
+    
+    Boardspace is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+    without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+    See the GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License along with Boardspace.
+    If not, see https://www.gnu.org/licenses/. 
+ */
 package online.common;
 
 import bridge.Polygon;
@@ -224,6 +240,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	private final Rectangle discardGameRect = new Rectangle();
 	
 	// these have to be sized for MAXPLAYERSPERGAME
+	/*
 	static final int s_POLYXOFFSETS[] =   
 		{s_MINIMUM_X_OFFSET,s_SECOND_X_OFFSET,
 		 s_MINIMUM_X_OFFSET,s_SECOND_X_OFFSET,
@@ -235,7 +252,16 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 		  };
 	int POLYXOFFSETS[] = new int[s_POLYXOFFSETS.length];
 	int POLYYOFFSETS[] = new int[s_POLYYOFFSETS.length];
-	
+	*/
+	  private int polyXOffsets(int ind)
+	  {
+		  return (int)(SCALE*(((ind&1)==0) ? s_MINIMUM_X_OFFSET : s_SECOND_X_OFFSET));
+	  }
+	  private int polyYOffsets(int ind)
+	  {
+		  int row = ind/2;
+		  return (int)(SCALE*(s_PLAYERTITLEYOFFSET+10+row*s_PLAYERCELLSIZE));
+	  }
 	  private Polygon playPoly, widePoly, narrowPoly;
 	  private Rectangle narrowPolyBounds=null;
 	  
@@ -270,6 +296,12 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	  highlight_player4,
 	  highlight_player5,
 	  highlight_player6,
+	  highlight_player7,
+	  highlight_player8,
+	  highlight_player9,
+	  highlight_player10,
+	  highlight_player11,
+	  highlight_player12,
 	  // for time control
 	  highlight_changeTimeControl,
 	  highlight_changeBaseTime,
@@ -278,7 +310,9 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	  ;
 	  public String shortName() { return(name()); }
 		  
-	  static public LobbyId playerId[] = { highlight_player1,highlight_player2,highlight_player3,highlight_player4,highlight_player5,highlight_player6};
+	  static public LobbyId playerId[] = 
+		  { highlight_player1,highlight_player2,highlight_player3,highlight_player4,highlight_player5,highlight_player6,
+				  highlight_player7,highlight_player8,highlight_player9,highlight_player10,highlight_player11,highlight_player12};
 	  boolean isPlayer() 
 	  { for(int i=0;i<playerId.length;i++) { if(this==playerId[i]) { return(true); }}
 	    return(false);
@@ -425,12 +459,13 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 		SPECTATORBUTTONXCENTER = (int)(s_SPECTATORBUTTONXCENTER*scale);
 		CHECKBOXSIZE = (int)(s_CHECKBOXSIZE*scale);
 		int LEFTSCROLLBARWIDTH = SCROLLBARWIDTH;
-		for(int lim=s_POLYXOFFSETS.length-1; lim>=0; lim--)
+/*		for(int lim=s_POLYXOFFSETS.length-1; lim>=0; lim--)
 		{	POLYXOFFSETS[lim] = (int)(s_POLYXOFFSETS[lim]*scale);
 		}
 		for(int lim=s_POLYYOFFSETS.length-1; lim>=0; lim--)
 		{	POLYYOFFSETS[lim] = (int)(s_POLYYOFFSETS[lim]*scale);
 		}
+		*/
 	    createHexPolygon();
 	    createWideHexPoly();
 	    createSpectatePoly();
@@ -1218,7 +1253,9 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	    {
 		User u = session.players[j];
 	    boolean emptyslot = (u == null);
-	    GC.translate(inG,POLYXOFFSETS[draw],POLYYOFFSETS[draw]);
+	    int px = polyXOffsets(draw);
+	    int py = polyYOffsets(draw);
+	    GC.translate(inG,px,py);
 	    if(!gameInProgress || !emptyslot)
 	    {
 	    Color emptycolor = dimPlayerColor;
@@ -1283,8 +1320,8 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	                  )
 	         { GC.Text(inG,false,PLAYPOLYWIDTH+ten,-ten,GAMEIMAGEWIDTH/3,fifteen,Color.black,null,s.get(UnoccupiedMessage));
 	         }
-	    GC.translate(inG,-POLYXOFFSETS[draw],-(POLYYOFFSETS[draw]));
-	    maxPolyY = Math.max(maxPolyY,POLYYOFFSETS[draw]);
+	    GC.translate(inG,-px,-py);
+	    maxPolyY = Math.max(maxPolyY,py);
 	    draw++;
 	    }
 	  	return(maxPolyY);
@@ -2200,7 +2237,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 		int maxPlayers = sess.currentMaxPlayers();
 		for (int playerSpaceIndex=0;playerSpaceIndex<maxPlayers;playerSpaceIndex++) 
 	    {
-	     if (playPoly.contains(localX-POLYXOFFSETS[playerSpaceIndex],localY- POLYYOFFSETS[playerSpaceIndex]))
+	     if (playPoly.contains(localX-polyXOffsets(playerSpaceIndex),localY- polyYOffsets(playerSpaceIndex)))
 	      { 
 	      return(playerSpaceIndex); 
 	      }
@@ -2245,6 +2282,13 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 		 case highlight_player4:
 		 case highlight_player5:
 		 case highlight_player6:
+		 case highlight_player7:
+		 case highlight_player8:
+		 case highlight_player9:
+		 case highlight_player10:
+		 case highlight_player11:
+		 case highlight_player12:
+
 			 {
 			 int playpos = highlight.ordinal()-LobbyId.highlight_player1.ordinal();
 			 User player = sess.players[playpos];

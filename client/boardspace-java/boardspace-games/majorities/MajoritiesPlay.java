@@ -1,4 +1,4 @@
-package majorities;
+/* copyright notice */package majorities;
 
 import lib.*;
 import online.game.*;

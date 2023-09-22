@@ -1,4 +1,4 @@
-package kingscolor;
+/* copyright notice */package kingscolor;
 
 import java.util.*;
 

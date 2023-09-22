@@ -1,4 +1,4 @@
-package checkerboard;
+/* copyright notice */package checkerboard;
 
 import bridge.Config;
 import checkerboard.CheckerConstants.CheckerId;

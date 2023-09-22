@@ -1,4 +1,4 @@
-package trike;
+/* copyright notice */package trike;
 
 import lib.DrawableImageStack;
 import lib.ImageLoader;

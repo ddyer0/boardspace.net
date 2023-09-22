@@ -1,4 +1,4 @@
-package kamisado;
+/* copyright notice */package kamisado;
 
 import kamisado.KamisadoConstants.KamisadoState;
 import lib.*;

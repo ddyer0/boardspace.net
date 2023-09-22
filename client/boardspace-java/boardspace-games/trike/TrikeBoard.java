@@ -1,4 +1,4 @@
-package trike;
+/* copyright notice */package trike;
 
 
 import static trike.Trikemovespec.*;

@@ -1,4 +1,4 @@
-package plateau.common;
+/* copyright notice */package plateau.common;
 
 import java.awt.Color;
 

@@ -1,4 +1,4 @@
-package yspahan;
+/* copyright notice */package yspahan;
 
 public class YspahanPlayStratFactory implements YspahanPlayStratConst
 {

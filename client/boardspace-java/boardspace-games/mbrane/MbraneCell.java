@@ -1,4 +1,4 @@
-package mbrane;
+/* copyright notice */package mbrane;
 
 import lib.Random;
 import mbrane.MbraneConstants.MbraneId;

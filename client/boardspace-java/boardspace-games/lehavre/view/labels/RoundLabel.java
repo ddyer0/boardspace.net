@@ -1,4 +1,4 @@
-package lehavre.view.labels;
+/* copyright notice */package lehavre.view.labels;
 
 import java.awt.*;
 import java.awt.image.*;

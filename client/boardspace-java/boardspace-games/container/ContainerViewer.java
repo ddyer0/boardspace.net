@@ -1,4 +1,4 @@
-package container;
+/* copyright notice */package container;
 
 import java.awt.Color;
 import java.awt.Font;

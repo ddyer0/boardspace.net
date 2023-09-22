@@ -1,4 +1,4 @@
-package arimaa;
+/* copyright notice */package arimaa;
 
 import lib.Graphics;
 import lib.Image;

@@ -1,4 +1,4 @@
-package palabra;
+/* copyright notice */package palabra;
 
 import java.awt.Color;
 

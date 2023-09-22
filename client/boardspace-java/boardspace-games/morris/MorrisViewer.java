@@ -1,4 +1,4 @@
-package morris;
+/* copyright notice */package morris;
 
 import java.awt.*;
 import javax.swing.JMenuItem;

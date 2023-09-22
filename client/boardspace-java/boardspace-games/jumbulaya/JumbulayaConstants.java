@@ -1,4 +1,4 @@
-package jumbulaya;
+/* copyright notice */package jumbulaya;
 
 import lib.InternationalStrings;
 import lib.OStack;

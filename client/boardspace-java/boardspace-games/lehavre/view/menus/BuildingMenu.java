@@ -1,4 +1,4 @@
-package lehavre.view.menus;
+/* copyright notice */package lehavre.view.menus;
 
 import java.awt.event.*;
 import java.util.ArrayList;

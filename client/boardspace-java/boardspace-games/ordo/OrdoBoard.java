@@ -1,4 +1,4 @@
-package ordo;
+/* copyright notice */package ordo;
 
 import online.game.*;
 import ordo.OrdoConstants.OrdoId;

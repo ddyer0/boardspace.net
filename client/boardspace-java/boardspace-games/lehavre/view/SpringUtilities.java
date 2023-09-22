@@ -1,4 +1,4 @@
-package lehavre.view;
+/* copyright notice */package lehavre.view;
 
 import javax.swing.*;
 import javax.swing.SpringLayout;

@@ -1,4 +1,4 @@
-package sixmaking;
+/* copyright notice */package sixmaking;
 
 import online.game.*;
 import java.util.*;

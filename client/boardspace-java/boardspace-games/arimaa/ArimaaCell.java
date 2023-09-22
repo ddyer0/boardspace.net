@@ -1,4 +1,4 @@
-package arimaa;
+/* copyright notice */package arimaa;
 import lib.Random;
 import arimaa.ArimaaConstants.ArimaaId;
 import lib.OStack;

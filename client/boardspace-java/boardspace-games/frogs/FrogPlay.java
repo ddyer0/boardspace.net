@@ -1,4 +1,4 @@
-package frogs;
+/* copyright notice */package frogs;
 
 import online.game.*;
 import online.game.export.ViewerProtocol;

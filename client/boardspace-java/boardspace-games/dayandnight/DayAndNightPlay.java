@@ -1,4 +1,4 @@
-package dayandnight;
+/* copyright notice */package dayandnight;
 
 import dayandnight.DayAndNightConstants.Generator;
 import lib.*;

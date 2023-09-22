@@ -1,4 +1,4 @@
-package tamsk;
+/* copyright notice */package tamsk;
 
 
 import java.awt.*;

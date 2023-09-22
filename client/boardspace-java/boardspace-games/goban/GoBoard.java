@@ -1,4 +1,4 @@
-package goban;
+/* copyright notice */package goban;
 
 
 import java.awt.Color;

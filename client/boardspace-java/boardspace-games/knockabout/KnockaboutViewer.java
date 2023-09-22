@@ -1,4 +1,4 @@
-package knockabout;
+/* copyright notice */package knockabout;
 
 import java.awt.Color;
 

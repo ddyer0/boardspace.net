@@ -1,4 +1,4 @@
-package tamsk;
+/* copyright notice */package tamsk;
 
 import lib.CellId;
 import lib.InternationalStrings;

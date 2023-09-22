@@ -1,4 +1,4 @@
-package loa;
+/* copyright notice */package loa;
 
 import java.awt.Point;
 
@@ -156,8 +156,11 @@ public class U implements UIC,Opcodes
 }
 
 /*
-$Id: U.java,v 1.1.2.26 2021/11/15 18:52:40 ddyer Exp $
+$Id: U.java,v 1.1.2.27 2023/09/22 04:01:37 ddyer Exp $
 $Log: U.java,v $
+Revision 1.1.2.27  2023/09/22 04:01:37  ddyer
+add copyright and license
+
 Revision 1.1.2.26  2021/11/15 18:52:40  ddyer
 rearrangement of constants and interfaces
 

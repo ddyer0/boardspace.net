@@ -1,4 +1,4 @@
-package havannah;
+/* copyright notice */package havannah;
 
 import lib.Random;
 import havannah.HavannahConstants.HavannahId;

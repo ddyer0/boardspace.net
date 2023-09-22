@@ -1,4 +1,4 @@
-package kamisado;
+/* copyright notice */package kamisado;
 
 import online.game.*;
 import java.util.*;

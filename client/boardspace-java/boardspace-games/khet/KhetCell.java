@@ -1,4 +1,4 @@
-package khet;
+/* copyright notice */package khet;
 
 import lib.Random;
 import khet.KhetConstants.KhetId;

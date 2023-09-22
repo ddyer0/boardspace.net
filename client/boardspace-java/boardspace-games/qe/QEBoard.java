@@ -1,4 +1,4 @@
-package qe;
+/* copyright notice */package qe;
 
 import static qe.QEmovespec.*;
 

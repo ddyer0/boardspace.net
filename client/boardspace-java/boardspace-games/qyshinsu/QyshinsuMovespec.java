@@ -1,4 +1,4 @@
-package qyshinsu;
+/* copyright notice */package qyshinsu;
 
 import java.util.*;
 import lib.G;

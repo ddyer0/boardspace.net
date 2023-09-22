@@ -1,4 +1,4 @@
-package ponte;
+/* copyright notice */package ponte;
 
 import online.game.*;
 import java.util.*;

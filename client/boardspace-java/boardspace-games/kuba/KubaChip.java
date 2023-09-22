@@ -1,4 +1,4 @@
-package kuba;
+/* copyright notice */package kuba;
 
 import lib.Image;
 

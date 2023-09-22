@@ -1,4 +1,4 @@
-package quinamid;
+/* copyright notice */package quinamid;
 
 import lib.G;
 import lib.CellId;

@@ -1,4 +1,4 @@
-package meridians;
+/* copyright notice */package meridians;
 
 import lib.Random;
 import meridians.MeridiansConstants.MeridiansId;

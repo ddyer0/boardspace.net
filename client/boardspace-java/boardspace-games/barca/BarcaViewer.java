@@ -1,4 +1,4 @@
-package barca;
+/* copyright notice */package barca;
 
 import static barca.Barcamovespec.*;
 

@@ -1,4 +1,4 @@
-package fanorona;
+/* copyright notice */package fanorona;
 
 import lib.G;
 import lib.InternationalStrings;

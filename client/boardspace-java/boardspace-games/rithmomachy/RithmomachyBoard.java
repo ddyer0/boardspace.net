@@ -1,4 +1,4 @@
-package rithmomachy;
+/* copyright notice */package rithmomachy;
 
 import online.game.*;
 

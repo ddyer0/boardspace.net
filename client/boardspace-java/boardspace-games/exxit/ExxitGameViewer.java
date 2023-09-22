@@ -1,4 +1,4 @@
-package exxit;
+/* copyright notice */package exxit;
 
 import java.awt.*;
 import javax.swing.JCheckBoxMenuItem;

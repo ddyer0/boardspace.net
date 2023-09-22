@@ -1,4 +1,4 @@
-package stac;
+/* copyright notice */package stac;
 
 import java.awt.*;
 import javax.swing.JCheckBoxMenuItem;

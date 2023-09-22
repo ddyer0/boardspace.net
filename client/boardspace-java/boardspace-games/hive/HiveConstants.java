@@ -1,4 +1,4 @@
-package hive;
+/* copyright notice */package hive;
 
 import lib.InternationalStrings;
 import lib.Bitset;

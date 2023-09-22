@@ -1,4 +1,4 @@
-package oneday;
+/* copyright notice */package oneday;
 
 import lib.G;
 import lib.OStack;

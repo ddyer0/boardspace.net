@@ -1,4 +1,4 @@
-package dvonn;
+/* copyright notice */package dvonn;
 
 import lib.Image;
 import lib.ImageLoader;

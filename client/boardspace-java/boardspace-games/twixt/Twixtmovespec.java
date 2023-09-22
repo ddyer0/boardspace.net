@@ -1,4 +1,4 @@
-package twixt;
+/* copyright notice */package twixt;
 
 import java.util.*;
 

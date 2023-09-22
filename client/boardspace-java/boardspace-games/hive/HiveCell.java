@@ -1,4 +1,4 @@
-package hive;
+/* copyright notice */package hive;
 
 import lib.Random;
 import hive.HiveConstants.HiveId;

@@ -1,4 +1,4 @@
-package colorito;
+/* copyright notice */package colorito;
 
 import online.game.*;
 import java.util.*;

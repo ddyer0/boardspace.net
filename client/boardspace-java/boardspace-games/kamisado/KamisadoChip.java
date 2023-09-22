@@ -1,4 +1,4 @@
-package kamisado;
+/* copyright notice */package kamisado;
 
 import kamisado.KamisadoConstants.KColor;
 import lib.Image;

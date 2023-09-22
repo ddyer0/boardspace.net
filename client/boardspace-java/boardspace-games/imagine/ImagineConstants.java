@@ -1,4 +1,4 @@
-package imagine;
+/* copyright notice */package imagine;
 
 import lib.G;
 import lib.InternationalStrings;
@@ -85,7 +85,7 @@ public interface ImagineConstants
 	static int CARDS_PER_PLAYER = 6;
 	static int MIN_VOTING_CARDS = 5;
 	
-	enum Colors { Blue, Green, Orange, Purple, White, Yellow ;
+	enum Colors { Blue, Green, Orange, Purple, Red, Yellow,Black, White ;
 		ImagineChip chip = null;
 		ImagineChip checkMark = null;
 		static public Colors find(int n) 
@@ -111,6 +111,7 @@ public interface ImagineConstants
 			return(f);
 		};
 	}
+	static final int MAX_PLAYERS = Colors.values().length;
 	
     //	these next must be unique integers in the Stymiemovespec dictionary
 	//  they represent places you can click to pick up or drop a stone

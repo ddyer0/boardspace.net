@@ -1,4 +1,4 @@
-package lehavre.view;
+/* copyright notice */package lehavre.view;
 
 import java.awt.event.*;
 import lehavre.main.*;

@@ -1,4 +1,4 @@
-package arimaa;
+/* copyright notice */package arimaa;
 
 import lib.CellId;
 import lib.G;

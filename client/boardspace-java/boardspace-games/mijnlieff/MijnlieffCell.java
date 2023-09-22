@@ -1,4 +1,4 @@
-package mijnlieff;
+/* copyright notice */package mijnlieff;
 
 import lib.Random;
 import mijnlieff.MijnlieffConstants.MijnlieffId;

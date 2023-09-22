@@ -1,4 +1,4 @@
-package khet;
+/* copyright notice */package khet;
 
 import online.game.*;
 import java.util.*;

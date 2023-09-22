@@ -1,4 +1,4 @@
-package barca;
+/* copyright notice */package barca;
 
 import lib.Random;
 import barca.BarcaConstants.BarcaId;

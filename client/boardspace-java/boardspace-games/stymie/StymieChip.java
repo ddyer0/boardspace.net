@@ -1,4 +1,4 @@
-package stymie;
+/* copyright notice */package stymie;
 
 import lib.DrawableImageStack;
 import lib.ImageLoader;

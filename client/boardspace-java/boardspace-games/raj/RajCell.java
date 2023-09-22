@@ -1,4 +1,4 @@
-package raj;
+/* copyright notice */package raj;
 
 import lib.Graphics;
 

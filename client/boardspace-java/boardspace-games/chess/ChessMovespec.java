@@ -1,4 +1,4 @@
-package chess;
+/* copyright notice */package chess;
 
 import online.game.*;
 import java.util.*;

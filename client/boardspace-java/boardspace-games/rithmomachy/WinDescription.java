@@ -1,4 +1,4 @@
-package rithmomachy;
+/* copyright notice */package rithmomachy;
 
 import lib.CompareTo;
 import lib.IStack;

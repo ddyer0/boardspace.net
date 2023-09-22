@@ -1,4 +1,4 @@
-package che;
+/* copyright notice */package che;
 
 import online.game.*;
 import java.util.*;

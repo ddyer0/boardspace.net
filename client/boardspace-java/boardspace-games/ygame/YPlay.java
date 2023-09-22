@@ -1,4 +1,4 @@
-package ygame;
+/* copyright notice */package ygame;
 
 import lib.*;
 import online.game.*;

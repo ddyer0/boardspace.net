@@ -1,4 +1,4 @@
-package tammany;
+/* copyright notice */package tammany;
 
 import lib.*;
 import online.game.*;

@@ -1,4 +1,4 @@
-package tweed;
+/* copyright notice */package tweed;
 
 
 import static tweed.TweedMovespec.*;

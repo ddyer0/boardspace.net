@@ -1,4 +1,4 @@
-package trax;
+/* copyright notice */package trax;
 
 import java.awt.Color;
 import javax.swing.JCheckBoxMenuItem;

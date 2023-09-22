@@ -1,4 +1,4 @@
-package prototype;
+/* copyright notice */package prototype;
 
 import javax.swing.JCheckBoxMenuItem;
 

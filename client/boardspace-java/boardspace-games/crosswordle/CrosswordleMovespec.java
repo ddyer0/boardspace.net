@@ -1,4 +1,4 @@
-package crosswordle;
+/* copyright notice */package crosswordle;
 
 import java.util.*;
 

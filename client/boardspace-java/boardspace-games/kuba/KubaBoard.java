@@ -1,4 +1,4 @@
-package kuba;
+/* copyright notice */package kuba;
 
 import java.awt.Color;
 import java.util.*;

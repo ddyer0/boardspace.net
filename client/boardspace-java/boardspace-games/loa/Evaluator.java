@@ -1,4 +1,4 @@
-package loa;
+/* copyright notice */package loa;
 
 class Evaluator implements Move_Mapper
 {

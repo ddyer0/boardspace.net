@@ -1,4 +1,4 @@
-package mijnlieff;
+/* copyright notice */package mijnlieff;
 
 import lib.DrawableImageStack;
 import lib.ImageLoader;

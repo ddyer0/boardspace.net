@@ -1,4 +1,4 @@
-package honey;
+/* copyright notice */package honey;
 
 import dictionary.Dictionary;
 import lib.*;

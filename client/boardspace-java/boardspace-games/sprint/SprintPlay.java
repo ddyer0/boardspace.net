@@ -1,4 +1,4 @@
-package sprint;
+/* copyright notice */package sprint;
 
 import dictionary.Dictionary;
 import lib.*;

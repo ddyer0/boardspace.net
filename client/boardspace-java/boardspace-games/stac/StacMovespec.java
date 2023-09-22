@@ -1,4 +1,4 @@
-package stac;
+/* copyright notice */package stac;
 
 import online.game.*;
 import java.util.*;

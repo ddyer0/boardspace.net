@@ -1,4 +1,4 @@
-package dipole;
+/* copyright notice */package dipole;
 
 import java.awt.*;
 import online.game.*;

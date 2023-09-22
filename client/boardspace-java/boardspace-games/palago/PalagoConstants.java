@@ -1,4 +1,4 @@
-package palago;
+/* copyright notice */package palago;
 
 import lib.CellId;
 import lib.InternationalStrings;

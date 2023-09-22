@@ -1,4 +1,4 @@
-package checkerboard;
+/* copyright notice */package checkerboard;
 
 import lib.Random;
 import checkerboard.CheckerConstants.CheckerId;

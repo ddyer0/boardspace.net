@@ -1,4 +1,4 @@
-package dipole;
+/* copyright notice */package dipole;
 
 import lib.*;
 import online.game.*;

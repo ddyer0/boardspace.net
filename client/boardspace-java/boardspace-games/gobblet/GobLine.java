@@ -1,4 +1,4 @@
-package gobblet;
+/* copyright notice */package gobblet;
 
 public class GobLine {
 	public int myBigCups=0;

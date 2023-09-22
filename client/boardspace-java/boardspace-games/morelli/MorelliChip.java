@@ -1,4 +1,4 @@
-package morelli;
+/* copyright notice */package morelli;
 
 import lib.Image;
 import lib.ImageLoader;

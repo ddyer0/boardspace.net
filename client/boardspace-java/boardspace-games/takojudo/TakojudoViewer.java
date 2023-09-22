@@ -1,4 +1,4 @@
-package takojudo;
+/* copyright notice */package takojudo;
 
 import java.awt.*;
 import javax.swing.JCheckBoxMenuItem;

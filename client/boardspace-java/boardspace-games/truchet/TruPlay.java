@@ -1,4 +1,4 @@
-package truchet;
+/* copyright notice */package truchet;
 
 import lib.*;
 import online.game.*;

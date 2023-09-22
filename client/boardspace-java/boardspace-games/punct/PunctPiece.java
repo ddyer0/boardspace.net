@@ -1,4 +1,4 @@
-package punct;
+/* copyright notice */package punct;
 import lib.Random;
 import online.common.exCanvas;
 

@@ -1,4 +1,4 @@
-package carnac;
+/* copyright notice */package carnac;
 
 import lib.Image;
 import lib.ImageLoader;

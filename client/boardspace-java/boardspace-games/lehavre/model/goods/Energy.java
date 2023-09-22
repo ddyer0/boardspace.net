@@ -1,4 +1,4 @@
-package lehavre.model.goods;
+/* copyright notice */package lehavre.model.goods;
 
 /**
  *	The <code>Energy</code> class is a dummy class for energy.

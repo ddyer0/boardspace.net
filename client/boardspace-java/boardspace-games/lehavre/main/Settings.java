@@ -1,4 +1,4 @@
-package lehavre.main;
+/* copyright notice */package lehavre.main;
 
 import java.util.*;
 import lehavre.model.*;

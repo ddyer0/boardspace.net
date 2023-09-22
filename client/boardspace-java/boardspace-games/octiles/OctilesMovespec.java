@@ -1,4 +1,4 @@
-package octiles;
+/* copyright notice */package octiles;
 
 import online.game.*;
 

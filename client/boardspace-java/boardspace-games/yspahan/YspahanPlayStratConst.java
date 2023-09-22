@@ -1,7 +1,7 @@
 /**
  * 
  */
-package yspahan;
+/* copyright notice */package yspahan;
 
 /**
  * @author rosengue

@@ -1,4 +1,4 @@
-package goban;
+/* copyright notice */package goban;
 
 import goban.GoConstants.ConnectCode;
 import goban.GoConstants.GoId;

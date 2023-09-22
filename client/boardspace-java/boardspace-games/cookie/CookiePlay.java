@@ -1,4 +1,4 @@
-package cookie;
+/* copyright notice */package cookie;
 
 import lib.*;
 import online.search.*;

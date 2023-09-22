@@ -1,4 +1,4 @@
-package mogul;
+/* copyright notice */package mogul;
 
 import online.game.*;
 import java.util.*;

@@ -1,4 +1,4 @@
-package jumbulaya;
+/* copyright notice */package jumbulaya;
 
 import dictionary.Dictionary;
 import lib.*;

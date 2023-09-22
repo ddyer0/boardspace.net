@@ -1,4 +1,4 @@
-package cookie;
+/* copyright notice */package cookie;
 
 import lib.Image;
 import lib.ImageLoader;

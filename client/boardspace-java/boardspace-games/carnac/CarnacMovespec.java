@@ -1,4 +1,4 @@
-package carnac;
+/* copyright notice */package carnac;
 
 import online.game.*;
 import java.util.*;

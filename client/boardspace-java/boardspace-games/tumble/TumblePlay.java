@@ -1,4 +1,4 @@
-package tumble;
+/* copyright notice */package tumble;
 
 import lib.*;
 import online.game.*;

@@ -1,4 +1,4 @@
-package lehavre.model.goods;
+/* copyright notice */package lehavre.model.goods;
 
 /**
  *	The <code>Wood</code> class is a dummy class for wood.

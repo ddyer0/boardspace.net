@@ -1,4 +1,4 @@
-package sprint;
+/* copyright notice */package sprint;
 
 import lib.Random;
 import lib.StackIterator;

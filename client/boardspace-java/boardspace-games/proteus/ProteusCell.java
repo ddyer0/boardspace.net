@@ -1,4 +1,4 @@
-package proteus;
+/* copyright notice */package proteus;
 
 import lib.Random;
 import lib.HitPoint;

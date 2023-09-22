@@ -1,4 +1,4 @@
-package frogs;
+/* copyright notice */package frogs;
 
 import lib.OStack;
 import lib.CellId;

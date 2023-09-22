@@ -1,3 +1,19 @@
+/*
+	Copyright 2006-2023 by Dave Dyer
+
+    This file is part of the Boardspace project.
+
+    Boardspace is free software: you can redistribute it and/or modify it under the terms of 
+    the GNU General Public License as published by the Free Software Foundation, 
+    either version 3 of the License, or (at your option) any later version.
+    
+    Boardspace is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+    without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+    See the GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License along with Boardspace.
+    If not, see https://www.gnu.org/licenses/.
+ */
 package imagine;
 
 import lib.G;
@@ -84,7 +100,7 @@ public interface ImagineConstants
 	static int CARDS_PER_PLAYER = 6;
 	static int MIN_VOTING_CARDS = 5;
 	
-	enum Colors { Blue, Green, Orange, Purple, White, Yellow ;
+	enum Colors { Blue, Green, Orange, Purple, Red, Yellow,Black, White ;
 		ImagineChip chip = null;
 		ImagineChip checkMark = null;
 		static public Colors find(int n) 
@@ -110,6 +126,7 @@ public interface ImagineConstants
 			return(f);
 		};
 	}
+	static final int MAX_PLAYERS = Colors.values().length;
 	
     //	these next must be unique integers in the Stymiemovespec dictionary
 	//  they represent places you can click to pick up or drop a stone

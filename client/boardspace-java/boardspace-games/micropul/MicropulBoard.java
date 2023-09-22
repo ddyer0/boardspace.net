@@ -1,4 +1,4 @@
-package micropul;
+/* copyright notice */package micropul;
 
 import java.awt.Color;
 import java.util.*;

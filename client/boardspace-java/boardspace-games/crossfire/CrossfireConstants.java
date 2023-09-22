@@ -1,4 +1,4 @@
-package crossfire;
+/* copyright notice */package crossfire;
 
 import lib.G;
 import lib.InternationalStrings;

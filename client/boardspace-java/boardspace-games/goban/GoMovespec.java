@@ -1,4 +1,4 @@
-package goban;
+/* copyright notice */package goban;
 
 import online.game.*;
 import java.util.*;

@@ -1,3 +1,19 @@
+/*
+	Copyright 2006-2023 by Dave Dyer
+
+    This file is part of the Boardspace project.
+    
+    Boardspace is free software: you can redistribute it and/or modify it under the terms of 
+    the GNU General Public License as published by the Free Software Foundation, 
+    either version 3 of the License, or (at your option) any later version.
+    
+    Boardspace is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+    without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+    See the GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License along with Boardspace.
+    If not, see https://www.gnu.org/licenses/. 
+ */
 package lib;
 
 /**
@@ -30,7 +46,23 @@ public class Plog {
 	{
 	    finishEvent();
 		setLogThread();
-		StringBuilder el = eventLog = new StringBuilder();
+		/*
+		Copyright 2006-2023 by Dave Dyer
+
+	    This file is part of the Boardspace project.
+	    
+	    Boardspace is free software: you can redistribute it and/or modify it under the terms of 
+	    the GNU General Public License as published by the Free Software Foundation, 
+	    either version 3 of the License, or (at your option) any later version.
+	    
+	    Boardspace is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+	    without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+	    See the GNU General Public License for more details.
+
+	    You should have received a copy of the GNU General Public License along with Boardspace.
+	    If not, see https://www.gnu.org/licenses/. 
+	 */
+StringBuilder el = eventLog = new StringBuilder();
 		long now60 = G.nanoTime()%60000000000l;			// 60 seconds
 		int secs = (int)(now60/1000000000l);			//
 		int nanos = (int)(now60%1000000000l);

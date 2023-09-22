@@ -1,4 +1,4 @@
-package mutton;
+/* copyright notice */package mutton;
 
 //
 // Specialized cell used for the game Mutton.

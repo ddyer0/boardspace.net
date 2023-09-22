@@ -1,0 +1,36 @@
+			About deployment of Boardspace after an update.
+
+
+There are two more or less separate procedures, one for desktop apps based on java; the
+other for mobile apps created by codename1. 
+
+Java:
+The sources for this are in the "Java" hierarchy.
+
+Compile all sources, using the "kawa" app, which is an ancient java ide.  This creates
+a set of .class files in the \v101 folder.   The v101 folder also contains the deployed
+copies of images and sounds.   It is OK, and sometimes necessary, to delete all the .class
+files, but the .jpg and .au files should remain.   
+
+Build and sign jars using the script "jdk11c" which invokes the script "make-online-jar.bat"
+and indirectly "sign.bat".   This creates a separate set of signed jars in the \v102 folder,
+which is what is ready to be copied to the live site.    Note on signing:   signing only necessary
+for java web start.  The boardspace.exe launcher doesn't check signatures.   Current generation
+of signing involves a code signing certificate from ssl.com, and a hardware "yubikey".
+
+Upload v102 to the htdocs\java folder, rename the v102 to a new folder name, update the
+"jws" alias to point to the new folder (this is used by java web start).  edit \cgi-bin\include.pl
+to point to the new directory (this is used by the boardspace.exe launcher).  
+
+Codename1:
+The sources for this are in the "Codename1" hierarchy.  These are functionally
+identical to the Java sources, and mostly differ from them only in the first
+few lines of any .java file.   The other major difference is that images and
+sounds are in separate .res files, rather than in the images/ subfolders.
+
+Build test versions using the boardspace-cn2 project, android builds and ios debug builds.
+These builds can be installed on devices directly from the codename1 build site.
+
+Build release versions using the boardspace-cn1 project, android builds and ios release builds.
+These and be uploaded to the app stores.
+When accepted by the app stores, update cgi-bin\include.pl to make the new versions the preferred versions.

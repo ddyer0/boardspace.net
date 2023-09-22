@@ -1,4 +1,4 @@
-package pushfight;
+/* copyright notice */package pushfight;
 
 import lib.*;
 import online.game.*;

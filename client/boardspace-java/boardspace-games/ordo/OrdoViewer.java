@@ -1,4 +1,4 @@
-package ordo;
+/* copyright notice */package ordo;
 
 import java.awt.*;
 import javax.swing.JCheckBoxMenuItem;

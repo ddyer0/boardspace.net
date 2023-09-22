@@ -1,4 +1,4 @@
-package yinsh.common;
+/* copyright notice */package yinsh.common;
 
 import lib.Drawable;
 import lib.OStack;

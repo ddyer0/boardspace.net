@@ -1,4 +1,4 @@
-package triad;
+/* copyright notice */package triad;
 
 import java.util.*;
 

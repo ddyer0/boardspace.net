@@ -1,4 +1,4 @@
-package havannah;
+/* copyright notice */package havannah;
 
 // maintain a connection between two blobs, connecting through a particular cell
 public class HavannahConnection {

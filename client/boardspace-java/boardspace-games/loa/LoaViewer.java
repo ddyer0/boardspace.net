@@ -1,4 +1,4 @@
-package loa;
+/* copyright notice */package loa;
 /**
  * This is derived from deep legacy code, the LOA program that Ray Tayek 
  * and I wrote.

@@ -1,4 +1,4 @@
-package syzygy;
+/* copyright notice */package syzygy;
 
 import online.game.*;
 

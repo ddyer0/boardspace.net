@@ -46,5 +46,5 @@ Resize images to delivery size
 Add game to kawa compilation
 copy images to delivery directory
 add new game to manifest.txt and make-online-jar
-create offline viewer file
+(no longer used) create offline viewer file 
 

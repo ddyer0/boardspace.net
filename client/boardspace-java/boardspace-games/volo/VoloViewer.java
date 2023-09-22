@@ -1,4 +1,4 @@
-package volo;
+/* copyright notice */package volo;
 
 import java.awt.*;
 

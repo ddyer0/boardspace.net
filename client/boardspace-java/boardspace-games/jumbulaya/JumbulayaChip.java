@@ -1,4 +1,4 @@
-package jumbulaya;
+/* copyright notice */package jumbulaya;
 
 import java.awt.Color;
 import java.awt.Font;

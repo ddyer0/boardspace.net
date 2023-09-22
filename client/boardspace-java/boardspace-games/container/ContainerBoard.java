@@ -1,4 +1,4 @@
-package container;
+/* copyright notice */package container;
 
 import online.game.*;
 

@@ -1,4 +1,4 @@
-package gounki;
+/* copyright notice */package gounki;
 
 import java.awt.*;
 

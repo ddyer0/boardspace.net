@@ -1,4 +1,4 @@
-package volcano;
+/* copyright notice */package volcano;
 
 
 import lib.G;

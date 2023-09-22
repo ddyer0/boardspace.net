@@ -1,4 +1,4 @@
-package xeh;
+/* copyright notice */package xeh;
 
 import static xeh.XehMovespec.MOVE_DROPB;
 

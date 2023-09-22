@@ -1,4 +1,4 @@
-package breakingaway;
+/* copyright notice */package breakingaway;
 
 import lib.CellId;
 import lib.InternationalStrings;

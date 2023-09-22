@@ -1,4 +1,4 @@
-package punct;
+/* copyright notice */package punct;
 
 class crossLink
 {	crossLink next;		// link to next crosslink

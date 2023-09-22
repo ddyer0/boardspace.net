@@ -1,4 +1,4 @@
-package hive;
+/* copyright notice */package hive;
 
 import online.game.*;
 import online.game.export.ViewerProtocol;

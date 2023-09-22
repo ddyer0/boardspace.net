@@ -1,4 +1,4 @@
-package tumble;
+/* copyright notice */package tumble;
 
 import bridge.Config;
 import lib.Image;

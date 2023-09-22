@@ -1,5 +1,5 @@
 
-package truchet;
+/* copyright notice */package truchet;
 
 import lib.Image;
 import lib.ImageLoader;

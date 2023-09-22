@@ -1,4 +1,4 @@
-package tictacnine;
+/* copyright notice */package tictacnine;
 
 import online.common.*;
 import online.game.*;

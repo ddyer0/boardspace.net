@@ -1,4 +1,4 @@
-package loa;
+/* copyright notice */package loa;
 /**
  * loa uses alpha-beta only
  * 

@@ -1,4 +1,4 @@
-package havannah;
+/* copyright notice */package havannah;
 
 import static havannah.HavannahMovespec.*;
 

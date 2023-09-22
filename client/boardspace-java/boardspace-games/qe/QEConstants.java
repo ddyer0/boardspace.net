@@ -1,4 +1,4 @@
-package qe;
+/* copyright notice */package qe;
 
 import lib.G;
 import lib.OStack;

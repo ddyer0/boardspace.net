@@ -1,4 +1,4 @@
-package entrapment;
+/* copyright notice */package entrapment;
 import lib.Random;
 import entrapment.EntrapmentConstants.EntrapmentId;
 import lib.OStack;

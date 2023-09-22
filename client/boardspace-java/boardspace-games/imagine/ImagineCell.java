@@ -1,4 +1,4 @@
-package imagine;
+/* copyright notice */package imagine;
 
 import lib.Random;
 import imagine.ImagineConstants.ImagineId;

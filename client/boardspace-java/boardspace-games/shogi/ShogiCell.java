@@ -1,4 +1,4 @@
-package shogi;
+/* copyright notice */package shogi;
 
 import lib.Graphics;
 

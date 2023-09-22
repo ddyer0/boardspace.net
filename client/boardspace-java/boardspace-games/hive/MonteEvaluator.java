@@ -1,4 +1,4 @@
-package hive;
+/* copyright notice */package hive;
 
 import hive.HiveConstants.HiveId;
 import lib.DStack;

@@ -1,4 +1,4 @@
-package santorini;
+/* copyright notice */package santorini;
 
 import lib.OStack;
 import lib.Random;

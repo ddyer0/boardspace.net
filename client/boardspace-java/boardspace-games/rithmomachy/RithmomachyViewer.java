@@ -1,4 +1,4 @@
-package rithmomachy;
+/* copyright notice */package rithmomachy;
 
 import java.awt.*;
 import javax.swing.JCheckBoxMenuItem;

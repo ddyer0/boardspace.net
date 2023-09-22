@@ -1,4 +1,4 @@
-package gipf;
+/* copyright notice */package gipf;
 
 import lib.Random;
 import lib.StackIterator;

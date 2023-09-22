@@ -1,4 +1,4 @@
-package blackdeath;
+/* copyright notice */package blackdeath;
 
 import lib.CellId;
 import lib.Digestable;

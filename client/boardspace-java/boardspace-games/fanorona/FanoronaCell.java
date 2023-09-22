@@ -1,4 +1,4 @@
-package fanorona;
+/* copyright notice */package fanorona;
 
 import lib.Random;
 import fanorona.FanoronaConstants.FanId;

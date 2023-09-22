@@ -1,4 +1,4 @@
-package euphoria;
+/* copyright notice */package euphoria;
 
 import java.awt.FileDialog;
 import java.io.File;

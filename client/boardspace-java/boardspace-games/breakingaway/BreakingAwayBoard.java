@@ -1,4 +1,4 @@
-package breakingaway;
+/* copyright notice */package breakingaway;
 
 import java.awt.Point;
 import java.awt.Rectangle;

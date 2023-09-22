@@ -1,4 +1,4 @@
-package tzaar;
+/* copyright notice */package tzaar;
 
 import lib.Image;
 import lib.ImageLoader;

@@ -1,4 +1,4 @@
-package prototype;
+/* copyright notice */package prototype;
 
 import lib.Random;
 import lib.OStack;

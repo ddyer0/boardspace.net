@@ -1,4 +1,4 @@
-package mutton;
+/* copyright notice */package mutton;
 
 /**
  * This class generates permutations of N things.

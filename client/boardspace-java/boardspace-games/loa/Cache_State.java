@@ -1,4 +1,4 @@
-package loa;
+/* copyright notice */package loa;
 
 import lib.NamedObject;
 

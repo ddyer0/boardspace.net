@@ -1,4 +1,4 @@
-package xiangqi;
+/* copyright notice */package xiangqi;
 
 import online.game.*;
 import java.util.*;

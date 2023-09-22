@@ -1,5 +1,5 @@
 
-package trax;
+/* copyright notice */package trax;
 
 import lib.Image;
 import lib.ImageLoader;

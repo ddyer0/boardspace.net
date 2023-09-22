@@ -1,4 +1,4 @@
-package knockabout;
+/* copyright notice */package knockabout;
 
 import lib.OStack;
 import online.game.*;

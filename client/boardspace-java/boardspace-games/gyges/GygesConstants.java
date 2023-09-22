@@ -1,4 +1,4 @@
-package gyges;
+/* copyright notice */package gyges;
 
 import lib.G;
 import lib.InternationalStrings;

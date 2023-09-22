@@ -1,4 +1,4 @@
-package chess;
+/* copyright notice */package chess;
 
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenuItem;

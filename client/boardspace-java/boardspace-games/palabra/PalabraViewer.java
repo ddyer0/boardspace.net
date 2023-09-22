@@ -1,4 +1,4 @@
-package palabra;
+/* copyright notice */package palabra;
 /**
  * The unusual feature of Raj is simultaneous play, and no "done" moves.
  */

@@ -1,4 +1,4 @@
-package proteus;
+/* copyright notice */package proteus;
 
 import lib.G;
 import lib.InternationalStrings;

@@ -1,4 +1,4 @@
-package entrapment;
+/* copyright notice */package entrapment;
 
 import lib.*;
 import online.game.*;

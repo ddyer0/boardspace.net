@@ -1,4 +1,4 @@
-package majorities;
+/* copyright notice */package majorities;
 
 import java.util.*;
 

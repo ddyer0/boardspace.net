@@ -1,4 +1,4 @@
-package mutton;
+/* copyright notice */package mutton;
 
 /**
  * This class generates combinations of N things taken R at a time.

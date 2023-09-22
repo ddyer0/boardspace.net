@@ -1,4 +1,4 @@
-package crosswords;
+/* copyright notice */package crosswords;
 
 import java.awt.Color;
 import java.awt.Font;

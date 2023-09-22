@@ -1,4 +1,4 @@
-package kingscolor;
+/* copyright notice */package kingscolor;
 
 import lib.Random;
 import kingscolor.KingsColorConstants.GridColor;

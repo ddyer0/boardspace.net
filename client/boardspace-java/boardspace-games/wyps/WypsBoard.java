@@ -1,4 +1,4 @@
-package wyps;
+/* copyright notice */package wyps;
 
 import static wyps.Wypsmovespec.*;
 

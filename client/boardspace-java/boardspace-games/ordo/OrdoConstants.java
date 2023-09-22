@@ -1,4 +1,4 @@
-package ordo;
+/* copyright notice */package ordo;
 
 import lib.CellId;
 import lib.InternationalStrings;

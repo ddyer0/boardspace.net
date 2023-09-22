@@ -1,4 +1,4 @@
-package yspahan;
+/* copyright notice */package yspahan;
 
 import lib.*;
 import online.game.*;

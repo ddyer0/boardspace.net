@@ -1,4 +1,4 @@
-package tumble;
+/* copyright notice */package tumble;
 import lib.OStack;
 import lib.Random;
 

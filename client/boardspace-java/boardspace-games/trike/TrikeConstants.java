@@ -1,4 +1,4 @@
-package trike;
+/* copyright notice */package trike;
 
 import lib.CellId;
 import lib.InternationalStrings;

@@ -1,4 +1,4 @@
-package gobblet;
+/* copyright notice */package gobblet;
 
 import lib.*;
 import online.game.*;

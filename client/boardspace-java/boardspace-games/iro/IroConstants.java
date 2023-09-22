@@ -1,4 +1,4 @@
-package iro;
+/* copyright notice */package iro;
 
 import lib.CellId;
 import lib.InternationalStrings;

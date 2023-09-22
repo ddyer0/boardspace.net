@@ -1,4 +1,4 @@
-package quinamid;
+/* copyright notice */package quinamid;
 
 import online.game.*;
 import java.util.*;

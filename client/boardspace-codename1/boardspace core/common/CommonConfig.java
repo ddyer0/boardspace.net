@@ -1,3 +1,19 @@
+/*
+	Copyright 2006-2023 by Dave Dyer
+
+    This file is part of the Boardspace project.
+
+    Boardspace is free software: you can redistribute it and/or modify it under the terms of 
+    the GNU General Public License as published by the Free Software Foundation, 
+    either version 3 of the License, or (at your option) any later version.
+    
+    Boardspace is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+    without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+    See the GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License along with Boardspace.
+    If not, see https://www.gnu.org/licenses/.
+ */
 package common;
 
 import bridge.Color;
@@ -59,9 +75,10 @@ public interface CommonConfig {
     // bs_uni2 adds master scoring
     // bs_uni3 adds ladder scoring
     static final String recordKeeperURL = "/cgi-bin/bs_uni3.cgi";
+    // bs_uni12 is used for 3-12 player scoring
     // bs_uni4 is used for 3-6 player scoring
     // bs_uni5 adds ladder scoring
-    static final String recordKeeper4URL = "/cgi-bin/bs_uni5.cgi";
+    static final String recordKeeper4URL = "/cgi-bin/bs_uni12.cgi";
     // bs_uni1 is a new script used for crosswordle, and probably other 1 player games
     static final String recordKeeper1URL = "/cgi-bin/bs_uni1_score.cgi";
     
@@ -103,12 +120,11 @@ public interface CommonConfig {
 	String DEVELOPHOST = "develophost";
 	String RELEASEHOST = "releasehost";
 	String SERVERNAME = "serverName";
+	String TESTVERSION = "testversion";
+	String CLASSDIR = "classdir";
 	String TESTSERVER = "testserver";
 	String SERVERKEY = "serverkey";
 	String PROTOCOL = "protocol";
-	String TESTVERSION = "testversion";
-	String CLASSDIR = "classdir";
-
 	String WebStarted = "webstarted";	// true if we are started by java web start
 
 	String icon_image_name = "boardspace-icon-small.png";
@@ -186,6 +202,7 @@ public interface CommonConfig {
 		"esperanto",
 		"french",
 		"german",
+		"italian",
 		"greek",
 		"japanese",
 		"norwegian",

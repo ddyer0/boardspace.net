@@ -1,4 +1,4 @@
-package checkerboard;
+/* copyright notice */package checkerboard;
 
 import online.game.*;
 import java.util.*;

@@ -1,4 +1,4 @@
-package tumble;
+/* copyright notice */package tumble;
 
 import java.awt.*;
 import javax.swing.JCheckBoxMenuItem;

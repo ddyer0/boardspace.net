@@ -8,8 +8,8 @@
 $'reject_line='';
 
 sub check_server
-{ # p3 p4 p5 p6 are optional
-  my ($port,$session,$key,$p1,$p2,$p3,$p4,$p5,$p6)=@_;
+{ # p3 .. p12 are optional
+  my ($port,$session,$key,$p1,$p2,$p3,$p4,$p5,$p6,$p7,$p8,$p9,$p10,$p11,$p12)=@_;
   #print "not checking server\n";
   #return(1);
   unless (socket(SOCK, PF_INET, SOCK_STREAM, $'proto))
@@ -29,6 +29,16 @@ sub check_server
   if($p4) { $msg .= " $p4"; }
   if($p5) { $msg .= " $p5"; }
   if($p6) { $msg .= " $p6"; }
+
+  if($p7) { $msg .= " $p7"; }
+  if($p8) { $msg .= " $p8"; }
+  if($p9) { $msg .= " $p9"; }
+
+  if($p10) { $msg .= " $p10"; }
+  if($p11) { $msg .= " $p11"; }
+  if($p12) { $msg .= " $p12"; }
+
+
   print SOCK "$msg\n";
   my $line = <SOCK>;
   $line = substr($line,1,5);

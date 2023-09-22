@@ -1,4 +1,4 @@
-package tablut;
+/* copyright notice */package tablut;
 
 import lib.Image;
 import lib.ImageLoader;

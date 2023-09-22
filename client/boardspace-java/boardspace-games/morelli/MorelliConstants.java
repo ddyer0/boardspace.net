@@ -1,4 +1,4 @@
-package morelli;
+/* copyright notice */package morelli;
 
 import lib.CellId;
 import lib.OStack;

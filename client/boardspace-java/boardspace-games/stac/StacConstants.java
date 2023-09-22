@@ -1,4 +1,4 @@
-package stac;
+/* copyright notice */package stac;
 
 import lib.G;
 import lib.OStack;

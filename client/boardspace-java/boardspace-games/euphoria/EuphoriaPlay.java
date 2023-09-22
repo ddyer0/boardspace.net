@@ -1,4 +1,4 @@
-package euphoria;
+/* copyright notice */package euphoria;
 
 
 import static euphoria.EuphoriaMovespec.*;

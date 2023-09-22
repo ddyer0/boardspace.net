@@ -1,4 +1,4 @@
-package universe;
+/* copyright notice */package universe;
 
 // universe games use MCTS
 //

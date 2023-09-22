@@ -1,4 +1,4 @@
-package tweed;
+/* copyright notice */package tweed;
 
 import lib.*;
 import online.game.*;

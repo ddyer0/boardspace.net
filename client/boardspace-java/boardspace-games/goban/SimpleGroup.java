@@ -1,4 +1,4 @@
-package goban;
+/* copyright notice */package goban;
 
 import goban.shape.shape.ElementProvider;
 import goban.shape.shape.Globals;

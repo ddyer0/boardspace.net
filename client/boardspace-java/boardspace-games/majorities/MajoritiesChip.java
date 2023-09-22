@@ -1,4 +1,4 @@
-package majorities;
+/* copyright notice */package majorities;
 
 import lib.DrawableImageStack;
 import lib.ImageLoader;

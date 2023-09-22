@@ -1,4 +1,4 @@
-package magnet;
+/* copyright notice */package magnet;
 
 import java.util.*;
 

@@ -1,4 +1,4 @@
-package tweed;
+/* copyright notice */package tweed;
 
 import lib.DrawableImageStack;
 import lib.ImageLoader;

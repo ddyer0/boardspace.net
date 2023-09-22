@@ -1,4 +1,4 @@
-package viticulture;
+/* copyright notice */package viticulture;
 
 //TODO: side screens need to display the context sensitive cards for planting and building
 //TODO: add bar chart for "points from source" to the final status graph

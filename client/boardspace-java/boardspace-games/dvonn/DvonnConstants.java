@@ -1,4 +1,4 @@
-package dvonn;
+/* copyright notice */package dvonn;
 
 import lib.G;
 import lib.InternationalStrings;

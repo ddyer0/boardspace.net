@@ -1,4 +1,4 @@
-package mutton;
+/* copyright notice */package mutton;
 
 
 import java.awt.*;

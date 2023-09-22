@@ -1,4 +1,4 @@
-package stymie;
+/* copyright notice */package stymie;
 
 import lib.Random;
 import lib.OStack;

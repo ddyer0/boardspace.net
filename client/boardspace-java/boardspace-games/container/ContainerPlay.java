@@ -1,4 +1,4 @@
-package container;
+/* copyright notice */package container;
 
 import lib.*;
 import container.ContainerBoard.ContainerGoalSet;

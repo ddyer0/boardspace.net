@@ -1,3 +1,19 @@
+/*
+	Copyright 2006-2023 by Dave Dyer
+
+    This file is part of the Boardspace project.
+    
+    Boardspace is free software: you can redistribute it and/or modify it under the terms of 
+    the GNU General Public License as published by the Free Software Foundation, 
+    either version 3 of the License, or (at your option) any later version.
+    
+    Boardspace is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+    without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+    See the GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License along with Boardspace.
+    If not, see https://www.gnu.org/licenses/. 
+ */
 package common;
 import java.awt.Color;
 
@@ -762,7 +778,7 @@ synchronized(allGames) {
 
 
 	{	
-	Color []ecolors = {  Color.blue, Color.green, bsOrange, bsPurple, Color.red, Color.yellow };
+	Color []ecolors = {  Color.blue, Color.green, bsOrange, bsPurple, Color.red, Color.yellow, Color.black, Color.white};
 	String mmside = "ImagineInfoMessage";
 	String imagineRules ="/imagine/english/rules.html";
 	String imagineViewer =  "imagine.ImagineViewer";
@@ -772,7 +788,7 @@ synchronized(allGames) {
 			imagineViewer,imagineRules,"about_imagine.html",
 			null,false, ecolors));		
 	 mm.minPlayers = 3;
-	 mm.maxPlayers = 6;
+	 mm.maxPlayers = 8;
 	 mm.randomizeFirstPlayer = true;
 	 mm.hasHiddenInformation = true;
 	 mm.okForPassAndPlay = false;
@@ -1341,7 +1357,7 @@ synchronized(allGames) {
 			new double[]{0.1,1.0,1.0,0.01},
 			pViewer,pRules,"about_sprint.html",
 			null,true, null));
-	 mm.maxPlayers = 6;
+	 mm.maxPlayers = 8;
 	 mm.minPlayers = 1;
 	 mm.groupSortKey = "0091";
 	 mm.robotTimed = true;
@@ -1360,7 +1376,7 @@ synchronized(allGames) {
 			new double[]{0.1,1.0,1.0,0.01},
 			pViewer,pRules,"about_honeycomb.html",
 			null,true, null));
-	 mm.maxPlayers = 6;
+	 mm.maxPlayers = 12;
 	 mm.minPlayers = 1;
 	 mm.groupSortKey = "0091";
 	 mm.robotTimed = true;

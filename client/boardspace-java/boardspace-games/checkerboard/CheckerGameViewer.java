@@ -1,4 +1,4 @@
-package checkerboard;
+/* copyright notice */package checkerboard;
 
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenuItem;

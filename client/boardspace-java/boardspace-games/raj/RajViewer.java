@@ -1,4 +1,4 @@
-package raj;
+/* copyright notice */package raj;
 /**
  * The unusual feature of Raj is simultaneous play, and no "done" moves.
  */

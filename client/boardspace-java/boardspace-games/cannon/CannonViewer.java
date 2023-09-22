@@ -1,4 +1,4 @@
-package cannon;
+/* copyright notice */package cannon;
 
 import java.awt.*;
 import javax.swing.JCheckBoxMenuItem;

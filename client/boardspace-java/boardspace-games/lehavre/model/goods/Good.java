@@ -1,4 +1,4 @@
-package lehavre.model.goods;
+/* copyright notice */package lehavre.model.goods;
 
 /**
  *	The <code>Good</code> class is a super class for dummy goods objects.

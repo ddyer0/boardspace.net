@@ -1,4 +1,4 @@
-package oneday;
+/* copyright notice */package oneday;
 
 // do not edit, derived from the London database.  run the  Cardmaker.main
 

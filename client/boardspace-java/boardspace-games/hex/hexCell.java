@@ -1,4 +1,4 @@
-package hex;
+/* copyright notice */package hex;
 
 import lib.Random;
 import hex.HexConstants.HexId;

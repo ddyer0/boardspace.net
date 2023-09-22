@@ -1,3 +1,19 @@
+/*
+	Copyright 2006-2023 by Dave Dyer
+
+    This file is part of the Boardspace project.
+    
+    Boardspace is free software: you can redistribute it and/or modify it under the terms of 
+    the GNU General Public License as published by the Free Software Foundation, 
+    either version 3 of the License, or (at your option) any later version.
+    
+    Boardspace is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+    without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+    See the GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License along with Boardspace.
+    If not, see https://www.gnu.org/licenses/. 
+ */
 package online.game;
 
 import bridge.*;
@@ -1410,7 +1426,7 @@ public abstract class commonCanvas extends exCanvas
      * standard rectangles of all viewers, showing the private "done" rectangle
      * for the player in offline mode.
      */
-    public Rectangle doneRects[] = addZoneRect("zone",6);
+    public Rectangle doneRects[] = addZoneRect("zone",Session.MAXPLAYERSPERGAME);
     
     /** standard rectangle of all viewers used to display the log of game's moves */
     public Rectangle logRect = addZoneRect("logRect"); //the game log, normally off the the right
@@ -1512,12 +1528,18 @@ public abstract class commonCanvas extends exCanvas
     public Color[] MouseColors = 
     	{ Color.white, Color.black ,
     	  Color.green, Color.yellow,
-    	  Color.blue,Color.red};
+    	  Color.blue,Color.red,
+    	  Color.orange,Color.cyan,
+    	  Color.darkGray,Color.lightGray,
+    	  Color.pink,Color.magenta};
     /** default for center dots of mouse sprites */
     public Color[] MouseDotColors = 
     	{ Color.black, Color.white, 
     		Color.yellow, Color.green,
-    		Color.red,Color.blue
+    		Color.red,Color.blue,
+    		Color.cyan,Color.orange,
+    		Color.lightGray,Color.darkGray,
+    		Color.magenta,Color.pink
     		};
 
     /**
@@ -2359,7 +2381,7 @@ public abstract class commonCanvas extends exCanvas
     
     // list of player objects, list of time clock rectangles  
     public commonPlayer[] players = {null}; //shared with player
-    private commonPlayer[] tempPlayers = new commonPlayer[6]; 
+    private commonPlayer[] tempPlayers = new commonPlayer[Session.MAXPLAYERSPERGAME]; 
      /**
      * add a new player to the list of players in the game, replacing the
      * specified player.
@@ -3130,6 +3152,13 @@ public abstract class commonCanvas extends exCanvas
      	case HitStartP4Button:
     	case HitStartP5Button:
     	case HitStartP6Button:
+    	case HitStartP7Button:
+    	case HitStartP8Button:
+    	case HitStartP9Button:
+     	case HitStartP10Button:
+    	case HitStartP11Button:
+    	case HitStartP12Button:
+
      	case HitPassButton:
      	case HitSwapButton:
        	case HitDoneButton:
@@ -5968,7 +5997,7 @@ public abstract class commonCanvas extends exCanvas
     }
     private void extendPlayers(int idx)
     {
-    	G.Assert((idx>=0)&&(idx<=10), "%s is not a plausible number of players",idx);
+    	G.Assert((idx>=0)&&(idx<=Session.MAXPLAYERSPERGAME), "%s is not a plausible number of players",idx);
     	if(idx>=players.length) 
     		{ adjustPlayers(idx+1);
     		}
@@ -5976,7 +6005,7 @@ public abstract class commonCanvas extends exCanvas
     public void adjustPlayers(int n)
     {	if(n!=players.length)
     	{
-    	G.Assert((n>0)&&(n<=6),"too many players");
+    	G.Assert((n>0)&&(n<=Session.MAXPLAYERSPERGAME),"too many players");
     	commonPlayer newp[] = new commonPlayer[n];
     	int minp = Math.min(n,players.length);
     	for(int i=0;i<minp;i++) { newp[i]=players[i]; }

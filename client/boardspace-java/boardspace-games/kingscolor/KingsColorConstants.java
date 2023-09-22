@@ -1,4 +1,4 @@
-package kingscolor;
+/* copyright notice */package kingscolor;
 
 import lib.G;
 import lib.InternationalStrings;

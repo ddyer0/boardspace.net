@@ -1,4 +1,4 @@
-package micropul;
+/* copyright notice */package micropul;
 
 import lib.*;
 import online.game.*;

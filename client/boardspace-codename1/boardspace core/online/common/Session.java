@@ -1,3 +1,19 @@
+/*
+	Copyright 2006-2023 by Dave Dyer
+
+    This file is part of the Boardspace project.
+
+    Boardspace is free software: you can redistribute it and/or modify it under the terms of 
+    the GNU General Public License as published by the Free Software Foundation, 
+    either version 3 of the License, or (at your option) any later version.
+    
+    Boardspace is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+    without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+    See the GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License along with Boardspace.
+    If not, see https://www.gnu.org/licenses/.
+ */
 package online.common;
 
 import bridge.Color;
@@ -28,7 +44,7 @@ public class Session implements LobbyConstants
         ConnectionManager.UID,
     	};
 
-	static final int MAXPLAYERSPERGAME = 6;
+	public static final int MAXPLAYERSPERGAME = 12;
 	static final int CLIENTHEIGHT = 700;
 	static final int CLIENTWIDTH = 780;    //default size for game frames
 	static final int CLIENTY = 10;

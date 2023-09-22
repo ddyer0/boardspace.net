@@ -1,4 +1,4 @@
-package crossfire;
+/* copyright notice */package crossfire;
 
 import java.awt.*;
 import javax.swing.JCheckBoxMenuItem;

@@ -1,4 +1,4 @@
-package trike;
+/* copyright notice */package trike;
 
 import lib.*;
 import online.game.*;

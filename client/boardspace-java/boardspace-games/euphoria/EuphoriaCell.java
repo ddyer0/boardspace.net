@@ -1,4 +1,4 @@
-package euphoria;
+/* copyright notice */package euphoria;
 
 import lib.Random;
 import euphoria.EuphoriaConstants.Allegiance;

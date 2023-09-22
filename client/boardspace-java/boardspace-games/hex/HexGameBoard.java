@@ -1,4 +1,4 @@
-package hex;
+/* copyright notice */package hex;
 
 import java.awt.Color;
 import java.util.*;

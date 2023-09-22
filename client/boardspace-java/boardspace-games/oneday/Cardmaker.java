@@ -1,4 +1,4 @@
-package oneday;
+/* copyright notice */package oneday;
 import java.awt.Color;
 import java.awt.Font;
 import lib.Graphics;
@@ -378,7 +378,7 @@ public class Cardmaker extends exCanvas implements Runnable
 	  		int dot = className.lastIndexOf('.');
 	  		if(dot>=0) { className = className.substring(0,dot); }
 	  		osw = new OutputStreamWriter(outFile);   
-	  		osw.write("package oneday;\n");
+	  		osw.write("/* copyright notice */package oneday;\n");
 	  		osw.write("\n// do not edit, derived from the London database.  run the  Cardmaker.main\n\n");
 	  		osw.write("public class "+className +" {\n");
 	  		osw.write("public static void loadData()\n{\n");

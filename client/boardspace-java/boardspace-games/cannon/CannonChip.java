@@ -1,4 +1,4 @@
-package cannon;
+/* copyright notice */package cannon;
 
 import cannon.CannonConstants.CannonId;
 import lib.Image;

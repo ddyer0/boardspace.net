@@ -1,4 +1,4 @@
-package tzaar;
+/* copyright notice */package tzaar;
 
 import java.awt.*;
 import javax.swing.JCheckBoxMenuItem;

@@ -1,4 +1,4 @@
-package palago;
+/* copyright notice */package palago;
 
 import lib.Image;
 import lib.ImageLoader;

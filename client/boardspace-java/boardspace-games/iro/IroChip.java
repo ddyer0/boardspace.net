@@ -1,4 +1,4 @@
-package iro;
+/* copyright notice */package iro;
 
 import lib.DrawableImageStack;
 import lib.ImageLoader;

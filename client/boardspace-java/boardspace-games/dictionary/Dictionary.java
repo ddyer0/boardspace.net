@@ -1,4 +1,4 @@
-package dictionary;
+/* copyright notice */package dictionary;
 
 /* dictionary for words games.
  * 

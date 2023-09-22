@@ -1,3 +1,19 @@
+/*
+	Copyright 2006-2023 by Dave Dyer
+
+    This file is part of the Boardspace project.
+    
+    Boardspace is free software: you can redistribute it and/or modify it under the terms of 
+    the GNU General Public License as published by the Free Software Foundation, 
+    either version 3 of the License, or (at your option) any later version.
+    
+    Boardspace is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+    without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+    See the GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License along with Boardspace.
+    If not, see https://www.gnu.org/licenses/. 
+ */
 package online.game;
 
 import lib.CellId;
@@ -72,6 +88,12 @@ public interface Opcodes {
 		HitStartP4Button("Start P3",MOVE_UNKNOWN), // "start player 4" button
 		HitStartP5Button("Start P4",MOVE_UNKNOWN), // "start player 5" button
 		HitStartP6Button("Start P5",MOVE_UNKNOWN), // "start player 6" button
+		HitStartP7Button("Start P6",MOVE_UNKNOWN), // "start player 7" button
+		HitStartP8Button("Start P7",MOVE_UNKNOWN), // "start player 8" button
+		HitStartP9Button("Start P8",MOVE_UNKNOWN), // "start player 9" button
+		HitStartP10Button("Start P9",MOVE_UNKNOWN), // "start player 10" button
+		HitStartP11Button("Start P10",MOVE_UNKNOWN), // "start player 11" button
+		HitStartP12Button("Start P11",MOVE_UNKNOWN), // "start player 12" button
 		HitPassButton(PASS,MOVE_PASS),
 		HitOfferDrawButton(OFFERDRAW,MOVE_OFFER_DRAW),		// offer a draw
 		HitAcceptDrawButton(ACCEPTDRAW,MOVE_ACCEPT_DRAW),	// accept a draw
@@ -96,7 +118,9 @@ public interface Opcodes {
 			if(n!=null) { shortName = n; }
 			opcode = op; 
 		}
-		public static GameId HitStartP[] = { HitStartP1Button, HitStartP2Button,HitStartP3Button,HitStartP4Button,HitStartP5Button,HitStartP6Button};
+		public static GameId HitStartP[] = 
+			{ HitStartP1Button, HitStartP2Button,HitStartP3Button,HitStartP4Button,HitStartP5Button,HitStartP6Button,
+					HitStartP7Button,HitStartP8Button,HitStartP9Button,HitStartP10Button,HitStartP11Button,HitStartP12Button};
 		
 	}
 	public static void putStrings()

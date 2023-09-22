@@ -1,4 +1,4 @@
-package takojudo;
+/* copyright notice */package takojudo;
 
 import online.game.*;
 import static takojudo.TakojudoMovespec.*;

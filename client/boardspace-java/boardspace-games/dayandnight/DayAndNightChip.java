@@ -1,4 +1,4 @@
-package dayandnight;
+/* copyright notice */package dayandnight;
 
 import bridge.Config;
 import dayandnight.DayAndNightConstants.DayAndNightId;

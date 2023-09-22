@@ -1,4 +1,4 @@
-package stymie;
+/* copyright notice */package stymie;
 
 import java.awt.*;
 import static stymie.Stymiemovespec.*;

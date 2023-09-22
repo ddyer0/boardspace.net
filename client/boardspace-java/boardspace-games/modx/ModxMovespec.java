@@ -1,4 +1,4 @@
-package modx;
+/* copyright notice */package modx;
 
 import online.game.*;
 import java.util.*;

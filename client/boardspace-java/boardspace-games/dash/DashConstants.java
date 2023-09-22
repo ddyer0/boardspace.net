@@ -1,4 +1,4 @@
-package dash;
+/* copyright notice */package dash;
 
 import lib.G;
 import lib.CellId;

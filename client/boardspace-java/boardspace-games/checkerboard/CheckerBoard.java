@@ -1,4 +1,4 @@
-package checkerboard;
+/* copyright notice */package checkerboard;
 /**
  * TODO: needs to be more willing to accept draws
  */

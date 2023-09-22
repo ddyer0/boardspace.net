@@ -1,4 +1,4 @@
-package chess;
+/* copyright notice */package chess;
 /**
  * TODO: needs to be more willing to accept draws
  * TODO: ultima needs to be better at checkmate

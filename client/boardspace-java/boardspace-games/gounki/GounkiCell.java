@@ -1,4 +1,4 @@
-package gounki;
+/* copyright notice */package gounki;
 
 import gounki.GounkiConstants.GounkiId;
 import lib.G;

@@ -1,4 +1,4 @@
-package iro;
+/* copyright notice */package iro;
 
 import javax.swing.JCheckBoxMenuItem;
 

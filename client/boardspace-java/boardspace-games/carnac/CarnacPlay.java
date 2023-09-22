@@ -1,4 +1,4 @@
-package carnac;
+/* copyright notice */package carnac;
 
 import carnac.CarnacConstants.CarnacState;
 import lib.*;

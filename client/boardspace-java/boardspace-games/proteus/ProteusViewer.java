@@ -1,4 +1,4 @@
-package proteus;
+/* copyright notice */package proteus;
 
 import java.awt.*;
 import javax.swing.JCheckBoxMenuItem;

@@ -1,3 +1,19 @@
+/*
+	Copyright 2006-2023 by Dave Dyer
+
+    This file is part of the Boardspace project.
+    
+    Boardspace is free software: you can redistribute it and/or modify it under the terms of 
+    the GNU General Public License as published by the Free Software Foundation, 
+    either version 3 of the License, or (at your option) any later version.
+    
+    Boardspace is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+    without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+    See the GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License along with Boardspace.
+    If not, see https://www.gnu.org/licenses/. 
+ */
 package online.game;
 
 import lib.ExtendedHashtable;
@@ -14,10 +30,16 @@ public abstract class commonMPMove extends commonMove implements Play6Constants 
 	static public void addStandardMoves(ExtendedHashtable D,Object... more)
 	{
 		D.addStringPairs(
-			P2,THIRD_PLAYER_INDEX,
-			P3,FOURTH_PLAYER_INDEX,
-			P4,FIFTH_PLAYER_INDEX,
-			P5,SIXTH_PLAYER_INDEX);
+			P2,2,
+			P3,3,
+			P4,4,
+			P5,5,
+			P6,6,
+			P7,7,
+			P8,8,
+			P9,9,
+			P10,10,
+			P11,11);
 		add2PStandardMoves(D,more);
 	}
 	public void setNPlayers(int n) 

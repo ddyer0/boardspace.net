@@ -1,4 +1,4 @@
-package lyngk;
+/* copyright notice */package lyngk;
 
 import lib.G;
 import lib.InternationalStrings;

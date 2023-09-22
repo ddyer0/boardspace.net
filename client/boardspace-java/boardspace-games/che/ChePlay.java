@@ -1,4 +1,4 @@
-package che;
+/* copyright notice */package che;
 
 import lib.*;
 import online.game.*;

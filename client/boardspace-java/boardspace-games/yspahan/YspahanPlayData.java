@@ -1,7 +1,7 @@
 /**
  * 
  */
-package yspahan;
+/* copyright notice */package yspahan;
 
 import java.util.ArrayList;
 import java.util.Arrays;

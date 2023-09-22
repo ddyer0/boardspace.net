@@ -1,4 +1,4 @@
-package sprint;
+/* copyright notice */package sprint;
 
 import java.awt.Color;
 import java.awt.Font;

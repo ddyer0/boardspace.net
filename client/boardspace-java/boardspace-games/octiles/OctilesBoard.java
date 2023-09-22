@@ -1,4 +1,4 @@
-package octiles;
+/* copyright notice */package octiles;
 
 import java.awt.Color;
 import java.awt.Rectangle;

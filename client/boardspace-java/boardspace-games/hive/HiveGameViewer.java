@@ -1,4 +1,4 @@
-package hive;
+/* copyright notice */package hive;
 
 import java.awt.*;
 import javax.swing.JCheckBoxMenuItem;

@@ -1,4 +1,4 @@
-package kulami;
+/* copyright notice */package kulami;
 
 import lib.G;
 import lib.InternationalStrings;

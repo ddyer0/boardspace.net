@@ -1,4 +1,4 @@
-package lehavre.model;
+/* copyright notice */package lehavre.model;
 
 import lehavre.model.buildings.*;
 import lehavre.util.*;

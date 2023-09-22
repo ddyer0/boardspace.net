@@ -1,4 +1,4 @@
-package tictacnine;
+/* copyright notice */package tictacnine;
 
 import lib.AR;
 import lib.G;

@@ -1,4 +1,4 @@
-package gyges;
+/* copyright notice */package gyges;
 
 import lib.Image;
 import lib.ImageLoader;

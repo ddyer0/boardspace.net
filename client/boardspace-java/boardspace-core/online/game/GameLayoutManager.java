@@ -1,3 +1,19 @@
+/*
+	Copyright 2006-2023 by Dave Dyer
+
+    This file is part of the Boardspace project.
+    
+    Boardspace is free software: you can redistribute it and/or modify it under the terms of 
+    the GNU General Public License as published by the Free Software Foundation, 
+    either version 3 of the License, or (at your option) any later version.
+    
+    Boardspace is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+    without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+    See the GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License along with Boardspace.
+    If not, see https://www.gnu.org/licenses/. 
+ */
 package online.game;
 
 import java.awt.FontMetrics;
@@ -231,7 +247,6 @@ public class GameLayoutManager  implements Opcodes
 		}
 		if(playerWM>playerHM) { addToSpare(new Rectangle(spareX2,stripY,playerWM-playerHM,playerWM)); }
 	}
-	static double noRotation[] = {0,0,0,0,0,0};
 	static double fourAcrossRotation[] = {0,0,Math.PI,Math.PI,Math.PI};	//extra pi for fivearound
 	static double fourAroundRotation[] = {0,Math.PI/2,Math.PI,-Math.PI/2};
 	static double fiveAroundRotation[] = { 0,0,Math.PI/2,Math.PI,-Math.PI/2};
@@ -239,6 +254,23 @@ public class GameLayoutManager  implements Opcodes
 	public double preferredAspectRatio = 1.0;
 	public RectangleManager rects = new RectangleManager(1.0);
 	
+	private int[][] stackedPositions(int players,int ystart,int ystep,int...xes)
+	{	int cols = xes.length;
+		int ypos = ystart;
+		int result[][] = new int[players][];
+		for(int ind = 0;ind<players;)
+		{
+			for(int col = 0;col<cols && ind<players;col++)
+			{
+				int rr[] = new int[2];
+				rr[0] = xes[col];
+				rr[1] = ypos;
+				result[ind++] = rr;
+			}
+			ypos += ystep;
+		}
+		return result;
+	}
 	/**
 	 * assign coordinates based on a seating chart, number of players,
 	 * cell size, and board width and height.
@@ -264,7 +296,7 @@ public class GameLayoutManager  implements Opcodes
 	bottom = t+h;
 	margin = marginSize;
 	positions = null;
-	rotations = noRotation;
+	rotations = new double[nPlayers];
 	playerWX = G.Width(player);	// exact size
 	playerWM = playerWX + marginSize;	// includes margin 
 	playerHX = G.Height(player);// exact size
@@ -513,8 +545,7 @@ public class GameLayoutManager  implements Opcodes
 		int x2 = xleft+playerWM;
 		int x3 = xleft+playerWM*2;
 		// spare rects ok 2/26
-		positions = new int[][]{{ xleft,start}, {x2,start},{x3,start},
-					 { xleft,start+playerHM}, {x2,start+playerHM},{x3,start+playerHM}};
+		positions = stackedPositions(nPlayers,start,playerHM,xleft,x2,x3);
 		int spareX = left+playerWM*3;
 		int spareH = playerHM*(rows+1);
 		bottom -= spareH;
@@ -535,9 +566,7 @@ public class GameLayoutManager  implements Opcodes
 		int start = ybot - playerHM*rows;
 		int x2 = xleft+playerWM;
 		// spare rects ok 2/26
-		positions = new int[][]{{ xleft,start}, {x2,start},
-					 { xleft,start+playerHM}, {x2,start+playerHM},
-					 { xleft,start+2*playerHM}, {x2,start+playerHM*2}};
+		positions = stackedPositions(nPlayers,start,playerHM,xleft,x2);
 		int spareX = left+playerWM*2;
 		// rectangles ok 2/26
 		int spareH = playerHM*(rows+1);
@@ -1104,17 +1133,16 @@ public class GameLayoutManager  implements Opcodes
 
 	case Portrait:	// ok 2/4/2020
 		{
-		positions = new int[nPlayers][2] ;
 		bottom -= playerHM*nPlayers;
-		for(int i=0;i<nPlayers;i++) { positions[i][0] = xleft; positions[i][1]=bottom+i*playerHM; }
+		positions = stackedPositions(nPlayers,bottom,playerHM,xleft) ;
 		int spareX = xleft+playerWM;
 		addToSpare(new Rectangle(spareX,bottom,right-spareX,playerHM*nPlayers));
 		}
 		break;
 	case Landscape3X:
 		{
-		positions = new int[][] { {xright-playerWM*2,ytop},{xright-playerWM,ytop},{xright,ytop},
-								  {xright-playerWM*2,ytop+playerHM},{xright-playerWM,ytop+playerHM}, { xright, ytop+playerHM}};
+		positions = stackedPositions(nPlayers,ytop,playerHM,xright-playerWM*2,xright-playerWM,xright);
+		
 		right -= playerWM*3;
 		int spareY = top+(playerHM*((nPlayers+2)/3));
 		// rectangles ok 2/26
@@ -1129,9 +1157,7 @@ public class GameLayoutManager  implements Opcodes
 	
 	case Landscape2X:
 		{
-		positions = new int[][] { {xright-playerWM,ytop},{xright,ytop},
-			{xright-playerWM,ytop+playerHM}, { xright, ytop+playerHM},
-			{xright-playerWM,ytop+playerHM*2}, { xright,ytop+playerHM*2}};
+		positions = stackedPositions(nPlayers,ytop,playerHM,xright-playerWM,xright);
 		right -= playerWM*2;
 		int spareY = top+(playerHM*((nPlayers+1)/2));
 		// rectangles ok 2/26

@@ -1,4 +1,4 @@
-package warp6;
+/* copyright notice */package warp6;
 
 import bridge.Config;
 import lib.G;

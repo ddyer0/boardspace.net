@@ -1,4 +1,4 @@
-package prototype;
+/* copyright notice */package prototype;
 
 import lib.DrawableImageStack;
 import lib.ImageLoader;

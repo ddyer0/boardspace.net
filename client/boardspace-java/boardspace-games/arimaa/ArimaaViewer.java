@@ -1,4 +1,4 @@
-package arimaa;
+/* copyright notice */package arimaa;
 /*
  * TODO: for playtable, do a no-compromise inverted piece set.
  * TODO: in face to face modes, the silver tiles are a little off center

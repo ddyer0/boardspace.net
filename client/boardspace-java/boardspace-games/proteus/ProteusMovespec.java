@@ -1,4 +1,4 @@
-package proteus;
+/* copyright notice */package proteus;
 
 import online.game.*;
 import proteus.ProteusConstants.ProteusId;

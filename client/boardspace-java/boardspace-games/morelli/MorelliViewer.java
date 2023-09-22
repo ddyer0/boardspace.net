@@ -1,4 +1,4 @@
-package morelli;
+/* copyright notice */package morelli;
 
 import java.awt.Color;
 import lib.Graphics;

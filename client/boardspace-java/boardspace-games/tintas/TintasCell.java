@@ -1,4 +1,4 @@
-package tintas;
+/* copyright notice */package tintas;
 
 import lib.OStack;
 import online.game.*;

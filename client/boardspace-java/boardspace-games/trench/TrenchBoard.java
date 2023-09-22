@@ -1,4 +1,4 @@
-package trench;
+/* copyright notice */package trench;
 
 
 import static trench.Trenchmovespec.*;

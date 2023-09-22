@@ -1,4 +1,4 @@
-package morris;
+/* copyright notice */package morris;
 
 import lib.G;
 import lib.OStack;

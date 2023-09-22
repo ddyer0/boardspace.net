@@ -1,4 +1,4 @@
-package qyshinsu;
+/* copyright notice */package qyshinsu;
 
 import javax.swing.JCheckBoxMenuItem;
 import java.awt.*;

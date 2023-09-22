@@ -1,4 +1,4 @@
-package chess;
+/* copyright notice */package chess;
 
 import lib.Random;
 import chess.ChessConstants.ChessId;

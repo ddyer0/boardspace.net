@@ -1,4 +1,4 @@
-package sixmaking;
+/* copyright notice */package sixmaking;
 
 import lib.Random;
 import lib.OStack;

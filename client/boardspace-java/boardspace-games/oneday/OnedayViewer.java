@@ -1,4 +1,4 @@
-package oneday;
+/* copyright notice */package oneday;
 
 import java.awt.*;
 import static java.lang.Math.atan2;

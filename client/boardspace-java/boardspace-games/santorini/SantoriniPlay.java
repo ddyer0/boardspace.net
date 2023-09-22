@@ -1,4 +1,4 @@
-package santorini;
+/* copyright notice */package santorini;
 import lib.*;
 import online.game.*;
 import online.game.export.ViewerProtocol;

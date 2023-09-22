@@ -1,4 +1,4 @@
-package viticulture;
+/* copyright notice */package viticulture;
 
 import java.util.*;
 

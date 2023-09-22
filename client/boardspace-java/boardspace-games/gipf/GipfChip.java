@@ -1,4 +1,4 @@
-package gipf;
+/* copyright notice */package gipf;
 
 import lib.Image;
 import lib.ImageLoader;

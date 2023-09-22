@@ -1,4 +1,4 @@
-package universe;
+/* copyright notice */package universe;
 
 import lib.CellId;
 import lib.OStack;

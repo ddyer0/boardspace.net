@@ -1,4 +1,4 @@
-package zertz.common;
+/* copyright notice */package zertz.common;
 
 import lib.DStack;
 import online.game.BoardProtocol;

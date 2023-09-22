@@ -1,4 +1,4 @@
-package imagine;
+/* copyright notice */package imagine;
 
 
 import static imagine.Imaginemovespec.*;
@@ -57,13 +57,14 @@ static String SWOOSH = ImageDir + "swoosh"+ Config.SoundFormat;
     private Color rackBackGroundColor = new Color(225,225,225);
     private Color boardBackgroundColor = new Color(225,225,225);
 
-	private Color ViticultureMouseColors[] = {
-			 Color.blue, Color.green, bsOrange, bsPurple, Color.black, Color.yellow 
+	private Color ImagineMouseColors[] = {
+			 Color.blue, Color.green, bsOrange, bsPurple, Color.black, Color.yellow ,Color.black,Color.white
 
 	};
-	private Color ViticultureMouseDotColors[] = {
+	private Color ImagineMouseDotColors[] = {
 			Color.white,Color.white,Color.white,
-			Color.white,Color.white,Color.black
+			Color.white,Color.white,Color.black,
+			Color.white,Color.black
 	};
   
     // private state
@@ -73,8 +74,8 @@ static String SWOOSH = ImageDir + "swoosh"+ Config.SoundFormat;
     // addRect is a service provided by commonCanvas, which supports a mode
     // to visualize the layout during development.  Look for "show rectangles"
     // in the options menu.
-    private Rectangle chipRects[] = addZoneRect("chip",6);
-    private Rectangle infoRects[] = addZoneRect("info",6);
+    private Rectangle chipRects[] = addZoneRect("chip",MAX_PLAYERS);
+    private Rectangle infoRects[] = addZoneRect("info",MAX_PLAYERS);
 
     private Rectangle skipRect = addRect("skipRect");	// used for "skip a turn" button
     private Rectangle getnewRect = addRect("getnewRect");	// used for "skip a turn" button
@@ -118,8 +119,8 @@ static String SWOOSH = ImageDir + "swoosh"+ Config.SoundFormat;
         	// will be console chatter about strings not in the list yet.
         	ImagineConstants.putStrings();
         }
-        MouseColors  = ViticultureMouseColors;
-        MouseDotColors = ViticultureMouseDotColors;
+        MouseColors  = ImagineMouseColors;
+        MouseDotColors = ImagineMouseDotColors;
          
         String type = info.getString(GAMETYPE, ImagineVariation.Imagine.name);
         // recommended procedure is to supply players and randomkey, even for games which

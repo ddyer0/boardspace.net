@@ -1,4 +1,4 @@
-package lehavre.util;
+/* copyright notice */package lehavre.util;
 
 import java.util.ArrayList;
 import lehavre.model.Good;

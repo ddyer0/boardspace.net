@@ -1,4 +1,4 @@
-package xiangqi;
+/* copyright notice */package xiangqi;
 
 import lib.G;
 import lib.CellId;

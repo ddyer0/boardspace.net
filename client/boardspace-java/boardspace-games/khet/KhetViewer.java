@@ -1,4 +1,4 @@
-package khet;
+/* copyright notice */package khet;
 
 import java.awt.*;
 import online.common.*;

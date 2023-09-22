@@ -1,4 +1,4 @@
-package snakes;
+/* copyright notice */package snakes;
 
 import java.awt.Component;
 import lib.Image;

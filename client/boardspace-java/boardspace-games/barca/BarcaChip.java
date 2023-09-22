@@ -1,4 +1,4 @@
-package barca;
+/* copyright notice */package barca;
 
 import lib.Graphics;
 import lib.ImageLoader;

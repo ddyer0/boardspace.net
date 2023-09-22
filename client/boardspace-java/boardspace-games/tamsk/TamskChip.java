@@ -1,4 +1,4 @@
-package tamsk;
+/* copyright notice */package tamsk;
 
 import lib.DrawableImageStack;
 import lib.ImageLoader;

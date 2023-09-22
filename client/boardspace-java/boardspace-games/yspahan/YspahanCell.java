@@ -1,4 +1,4 @@
-package yspahan;
+/* copyright notice */package yspahan;
 import lib.Random;
 import lib.G;
 import lib.HitPoint;

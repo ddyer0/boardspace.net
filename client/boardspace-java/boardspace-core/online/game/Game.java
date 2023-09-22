@@ -1,3 +1,19 @@
+/*
+	Copyright 2006-2023 by Dave Dyer
+
+    This file is part of the Boardspace project.
+    
+    Boardspace is free software: you can redistribute it and/or modify it under the terms of 
+    the GNU General Public License as published by the Free Software Foundation, 
+    either version 3 of the License, or (at your option) any later version.
+    
+    Boardspace is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+    without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+    See the GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License along with Boardspace.
+    If not, see https://www.gnu.org/licenses/. 
+ */
 package online.game;
 
 import java.net.*;
@@ -1874,8 +1890,8 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
         return (true);
     }
     private void sendRegister(int order,int seat,String name,String uid,int channel,int rev)
-    {	G.Assert(order>=0&&order<=6,"bad order %s",order);
-	    G.Assert(seat>=-1&&seat<=6,"bad seat %s",seat);
+    {	G.Assert(order>=0&&order<=Session.MAXPLAYERSPERGAME,"bad order %s",order);
+	    G.Assert(seat>=-1&&seat<=Session.MAXPLAYERSPERGAME,"bad seat %s",seat);
 	    //
 	    // potential magic here!  At various times "order" has been used to pass 
 	    // information about the capabilities of the client.  As of 8/2022 these
@@ -2933,8 +2949,8 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
 				  revKnown = rev>=0;
 			  	}
 			}		
-		G.Assert((order>=-1)&&(order<=6),"bad order %s",order);
-    	G.Assert((position>=-1)&&(position<=6),"bad seat %s",position);
+		G.Assert((order>=-1)&&(order<=Session.MAXPLAYERSPERGAME),"bad order %s",order);
+    	G.Assert((position>=-1)&&(position<=Session.MAXPLAYERSPERGAME),"bad seat %s",position);
     	if(!uid.equals(Bot.Automa.uid))
     	{
     	commonPlayer p = createPlayer(chan,name,order,uid);

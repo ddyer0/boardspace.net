@@ -1,4 +1,4 @@
-package medina;
+/* copyright notice */package medina;
 import java.awt.Color;
 import java.awt.Rectangle;
 import java.awt.Font;

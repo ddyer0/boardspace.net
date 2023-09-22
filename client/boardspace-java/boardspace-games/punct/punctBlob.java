@@ -1,4 +1,4 @@
-package punct;
+/* copyright notice */package punct;
 import lib.G;
 
 // accumulate information about a connected blob of cells, as viewed from

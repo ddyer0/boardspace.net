@@ -1,4 +1,4 @@
-package dice;
+/* copyright notice */package dice;
 
 public class Dice {
 

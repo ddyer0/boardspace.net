@@ -1,4 +1,4 @@
-package imagine;
+/* copyright notice */package imagine;
 
 import static imagine.Imaginemovespec.*;
 import java.util.*;

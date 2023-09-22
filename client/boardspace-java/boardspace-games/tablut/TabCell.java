@@ -1,4 +1,4 @@
-package tablut;
+/* copyright notice */package tablut;
 
 import lib.OStack;
 import lib.Random;

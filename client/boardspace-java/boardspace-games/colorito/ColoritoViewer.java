@@ -1,4 +1,4 @@
-package colorito;
+/* copyright notice */package colorito;
 
 import java.awt.*;
 import javax.swing.JCheckBoxMenuItem;

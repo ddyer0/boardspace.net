@@ -1,4 +1,4 @@
-package gipf;
+/* copyright notice */package gipf;
 
 import lib.G;
 import lib.InternationalStrings;

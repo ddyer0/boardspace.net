@@ -1,4 +1,4 @@
-package meridians;
+/* copyright notice */package meridians;
 
 import lib.CellId;
 import lib.InternationalStrings;

@@ -1,4 +1,4 @@
-package medina;
+/* copyright notice */package medina;
 
 import online.game.*;
 import java.util.*;

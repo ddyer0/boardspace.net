@@ -1,4 +1,4 @@
-package crossfire;
+/* copyright notice */package crossfire;
 
 import lib.Random;
 import crossfire.CrossfireConstants.CrossId;

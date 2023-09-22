@@ -1,4 +1,4 @@
-package honey;
+/* copyright notice */package honey;
 
 import lib.InternationalStrings;
 import lib.OStack;
@@ -35,7 +35,7 @@ public interface HoneyConstants
 	static String ExplainPull = "Pull 2 more tiles from the draw pile";
 	static String SwitchExplanation = "Switch to viewing this player";
 	static final String[] HoneyGRIDSTYLE = { "1", null, "A" }; // left and bottom numbers
-	static final int MAX_PLAYERS = 6;
+	static final int MAX_PLAYERS = 12;
 	static final int rackSize = 5;		// the number of filled slots in the rack.  Actual rack has some empty slots
 	static final int rackSpares = 0;	// no extra spaces
 	static final int TileIncrement = 2;	// tiles to take at a time

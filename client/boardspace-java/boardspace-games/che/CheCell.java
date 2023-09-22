@@ -1,4 +1,4 @@
-package che;
+/* copyright notice */package che;
 import lib.Random;
 import che.CheConstants.CheId;
 import lib.OStack;

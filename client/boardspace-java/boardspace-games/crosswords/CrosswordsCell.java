@@ -1,4 +1,4 @@
-package crosswords;
+/* copyright notice */package crosswords;
 
 import lib.Random;
 import lib.StackIterator;

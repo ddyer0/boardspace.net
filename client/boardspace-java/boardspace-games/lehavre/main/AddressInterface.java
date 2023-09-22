@@ -1,4 +1,4 @@
-package lehavre.main;
+/* copyright notice */package lehavre.main;
 
 public interface AddressInterface {
 
