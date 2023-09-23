@@ -1,3 +1,19 @@
+/*
+	Copyright 2006-2023 by Dave Dyer
+
+    This file is part of the Boardspace project.
+    
+    Boardspace is free software: you can redistribute it and/or modify it under the terms of 
+    the GNU General Public License as published by the Free Software Foundation, 
+    either version 3 of the License, or (at your option) any later version.
+    
+    Boardspace is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+    without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+    See the GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License along with Boardspace.
+    If not, see https://www.gnu.org/licenses/. 
+ */
 package language;
 
 import lib.ChatWidget;
@@ -14,10 +30,10 @@ import knockabout.KnockaboutConstants;
 import kuba.KubaConstants;
 import kulami.KulamiConstants;
 import hive.HiveConstants;
+import honey.HoneyConstants;
 import imagine.ImagineConstants;
 import iro.IroConstants;
 import jumbulaya.JumbulayaConstants;
-import lib.RootAppletProtocol;
 import lib.TimeControl;
 import lyngk.LyngkConstants;
 import magnet.MagnetConstants;
@@ -59,12 +75,15 @@ import online.common.LobbyConstants;
 import online.common.SeatingChart;
 import online.common.SeatingViewer;
 import online.common.Session;
+import online.game.AnnotationMenu;
+import online.game.NumberMenu;
 import online.game.Opcodes;
 import ordo.OrdoConstants;
 import palago.PalagoConstants;
 import plateau.common.PlateauConstants;
 import oneday.OnedayConstants;
 import rithmomachy.RithmomachyConstants;
+import rpc.RpcListener;
 import santorini.SantoriniConstants;
 import tablut.TabConstants;
 import takojudo.TakojudoConstants;
@@ -72,7 +91,9 @@ import tammany.TammanyConstants;
 import tamsk.TamskConstants;
 import tintas.TintasConstants;
 import trax.TraxConstants;
+import trench.TrenchConstants;
 import triad.TriadConstants;
+import trike.TrikeConstants;
 import tweed.TweedConstants;
 import twixt.TwixtConstants;
 import tzaar.TzaarConstants;
@@ -83,9 +104,10 @@ import vnc.VNCConstants;
 import volcano.VolcanoConstants;
 import wyps.WypsConstants;
 import xiangqi.XiangqiConstants;
-import y.YConstants;
+import ygame.YConstants;
 import shogi.ShogiConstants;
 import sixmaking.SixmakingConstants;
+import sprint.SprintConstants;
 import crosswords.CrosswordsConstants;
 import stac.StacConstants;
 import stymie.StymieConstants;
@@ -112,7 +134,6 @@ import barca.BarcaConstants;
 import blackdeath.BlackDeathConstants;
 import static online.game.Game.GameStrings;
 import static online.game.Game.GameStringPairs;
-
 //
 // available font families: 
 //  serif (timesroman)
@@ -120,7 +141,7 @@ import static online.game.Game.GameStringPairs;
 //  monospaced (courier)
 //
 public class masterStrings extends InternationalStrings
-{   public void readData(RootAppletProtocol root) 
+{   public void readData() 
 	{ 
 	}
     static
@@ -128,7 +149,7 @@ public class masterStrings extends InternationalStrings
     	setContext("VNC network");
     	put(VNCConstants.VncStrings);
     	
-        setContext("lobby");
+    	setContext("lobby");
         put("fontfamily", "sansserif");
         put(TimeControl.TimeControlStrings);
         put(TimeControl.TimeControlStringPairs);
@@ -139,12 +160,26 @@ public class masterStrings extends InternationalStrings
         put(LobbyConstants.LobbyMessagePairs);
         put(GameInfo.GameInfoStringPairs);
         SeatingChart.putStrings();
+        RpcListener.putStrings();
         put(Session.SessionStrings);
         put(SeatingViewer.SeatingStrings);
         put(SeatingViewer.SeatingStringPairs);
         put(LoginStrings);
         put(InternationalStrings.languages)
         ;
+        
+        setContext("Trench");
+        TrenchConstants.putStrings();
+        
+        setContext("Trike");
+        TrikeConstants.putStrings();
+        
+        setContext("Sprint");
+        SprintConstants.putStrings();
+        
+        setContext("HoneyComb");
+        HoneyConstants.putStrings();
+        
         setContext("Meridians");
         MeridiansConstants.putStrings();
         
@@ -338,7 +373,7 @@ public class masterStrings extends InternationalStrings
         
  
      	put("Punct_family","Pünct");
-         put("Spangles_family","Spangles");
+        put("Spangles_family","Spangles");
         put("Truchet_family","Truchet");
         put("TumblingDown_family","Tumbling Down");
         put("TumblingDown","Tumbling Down");
@@ -365,7 +400,8 @@ public class masterStrings extends InternationalStrings
         setContext("games");
         put(GameStrings);
         put(GameStringPairs);
-        
+       	AnnotationMenu.putStrings();
+
         // common game strings
         // system error
         setContext("CommonGames");
@@ -373,12 +409,13 @@ public class masterStrings extends InternationalStrings
         put(online.game.commonCanvas.CanvasStrings);
         put(online.game.commonCanvas.commonStringPairs);
         put(online.game.BaseBoard.BoardState.StateStrings);
-        put(online.common.LPanel.LPanelMessages);
+        put(lib.XFrame.XFrameMessages);
         put(online.common.exCanvas.CanvasMessages);
         put(online.common.commonLobby.LobbyMessages);
         put(online.common.commonLobby.LobbyMessagePairs);
         put(online.common.lobbyCanvas.LCStrings);
         put(online.common.lobbyCanvas.LCMessagePairs);
+        NumberMenu.putStrings();
         
         setContext("Color Names");
         
@@ -461,8 +498,8 @@ public class masterStrings extends InternationalStrings
         put("Pick the stack to move","Pick the stack to move");
 
         
-        //truchet
-        setContext("truchet");
+        //dash
+        setContext("dash");
         put("Occupy 3 enemy bases","Occupy 3 enemy bases");
         put("Flip a tile, or Move Split or Merge a stack",
         		"Flip a tile, or Move Split or Merge a stack");
@@ -516,7 +553,7 @@ public class masterStrings extends InternationalStrings
           
         // "spangles"
         setContext("spangles");
-        put("form a larger triangle with your color at the tips","form a larger triangle with your color at the tips");
+        put("form a larger triangle with your color at the tips");
 
          
         setContext("micropul");
