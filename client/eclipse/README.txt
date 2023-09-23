@@ -8,6 +8,12 @@ select import/general/exisiting projects
 
 you should be offered all projects in this directory, select them all.
 
+the initial build may include a lot of errors, caused by changes in 
+the structure and contents of the projects since the eclipse skeleton
+was last used.  Use the eclipse "refresh" option to update everything.
+You should end up with a project with no errors and a finite number of
+warnings, the exact number depending on your eclipse settings.
+
 bsh, joi, pf, and jzlib are minor supporting projects, with very little
 dependency in the main java projects. 
 
@@ -26,6 +32,7 @@ boardspace		all the games
 boardspace-cn1-prod	the production project for mobile release
 boardspace-cn2		the debug project for mobile development, which shares all
 			all sources with boardspace-cn1-prod
+boardspace-strings	maintains the language translation database, in the boardspace "translation" table.
 
 the files in the codename1 and desktop branches are almost identical.  My practice
 is to do development in the desktop branch, then use winmerge to migrate the changes
