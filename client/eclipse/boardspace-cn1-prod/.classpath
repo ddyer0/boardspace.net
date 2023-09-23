@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="src" path="boardspace-core"/>
+	<classpathentry kind="src" path="boardspace core"/>
 	<classpathentry kind="src" path="boardspace-games"/>
 	<classpathentry kind="src" path="codename1"/>
 	<classpathentry kind="lib" path="lib/CLDC11.jar"/>

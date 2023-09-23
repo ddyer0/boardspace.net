@@ -26,19 +26,19 @@
 	</natures>
 	<linkedResources>
 		<link>
-			<name>boardspace-core</name>
+			<name>boardspace core</name>
 			<type>2</type>
-			<location>G:/share/projects/boardspace-codename1/boardspace core</location>
+			<location>F:/github/boardspace.net/client/boardspace-codename1/boardspace core</location>
 		</link>
 		<link>
 			<name>boardspace-games</name>
 			<type>2</type>
-			<location>G:/share/projects/boardspace-codename1/boardspace games</location>
+			<location>F:/github/boardspace.net/client/boardspace-codename1/boardspace games</location>
 		</link>
 		<link>
 			<name>codename1</name>
 			<type>2</type>
-			<location>G:/share/projects/boardspace-codename1/codename1</location>
+			<location>F:/github/boardspace.net/client/boardspace-codename1/codename1</location>
 		</link>
 		<link>
 			<name>icons</name>

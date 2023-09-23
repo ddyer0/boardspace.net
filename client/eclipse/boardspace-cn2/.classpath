@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="src" path="boardspace-core"/>
-	<classpathentry kind="src" path="boardspace-games"/>
+	<classpathentry kind="src" path="boardspace core"/>
+	<classpathentry kind="src" path="boardspace games"/>
 	<classpathentry kind="src" path="codename1"/>
 	<classpathentry kind="src" path="jazzlib"/>
-	<classpathentry kind="src" path="icons"/>
+	<classpathentry kind="src" path="dev-icons"/>
 	<classpathentry kind="lib" path="lib/CLDC11.jar"/>
 	<classpathentry kind="lib" path="lib/CodenameOne.jar" sourcepath="lib/CodenameOne_SRC.zip">
 		<attributes>
