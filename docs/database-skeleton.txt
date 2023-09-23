@@ -1,8 +1,8 @@
--- MySQL dump 10.14  Distrib 5.5.68-MariaDB, for Linux (x86_64)
+-- MySQL dump 10.13  Distrib 5.6.21, for Win64 (x86_64)
 --
 -- Host: localhost    Database: boardspace
 -- ------------------------------------------------------
--- Server version	5.5.68-MariaDB
+-- Server version	5.6.21-log
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -122,7 +122,7 @@ CREATE TABLE `ipinfo` (
   UNIQUE KEY `uidindex` (`uid`),
   UNIQUE KEY `miinindex` (`min`,`max`),
   KEY `statusindex` (`status`)
-) ENGINE=InnoDB AUTO_INCREMENT=286113 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -164,7 +164,7 @@ CREATE TABLE `matchparticipant` (
   `scheduled` datetime DEFAULT '0000-00-00 00:00:00',
   PRIMARY KEY (`uid`),
   KEY `tournament` (`tournament`)
-) ENGINE=InnoDB AUTO_INCREMENT=4710 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1838 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -184,9 +184,10 @@ CREATE TABLE `matchrecord` (
   `tournament_group` tinytext NOT NULL,
   `admin_winner` int(11) DEFAULT NULL,
   `scheduled` datetime DEFAULT '0000-00-00 00:00:00',
+  `commentHistory` text,
   PRIMARY KEY (`matchid`),
   KEY `tourney` (`tournament`)
-) ENGINE=InnoDB AUTO_INCREMENT=2675 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1185 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -212,7 +213,7 @@ DROP TABLE IF EXISTS `mp_gamerecord`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `mp_gamerecord` (
-  `variation` enum('medina','triad','octiles','frogs','breakingaway','container','lehavre','yspahan','raj','universe','diagonal-blocks','mogul','oneday','euphoria','tammany','qe','viticulture','blackdeath','crosswords','portfolio','imagine','jumbulaya','dayandnight') DEFAULT NULL,
+  `variation` enum('medina','triad','octiles','frogs','breakingaway','container','lehavre','yspahan','raj','universe','diagonal-blocks','mogul','oneday','euphoria','tammany','qe','viticulture','blackdeath','crosswords','portfolio','imagine','jumbulaya','sprint','crosswordle','dash','honeycomb') DEFAULT NULL,
   `player1` int(11) NOT NULL DEFAULT '0',
   `player2` int(11) NOT NULL DEFAULT '0',
   `player3` int(11) NOT NULL DEFAULT '0',
@@ -244,8 +245,30 @@ CREATE TABLE `mp_gamerecord` (
   `gmtdate` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
   `digest_mid` int(11) DEFAULT NULL,
   `digest_end` int(11) DEFAULT NULL,
-  `uniquerow` int(11) NOT NULL AUTO_INCREMENT,
-  PRIMARY KEY (`uniquerow`),
+  `player7` int(11) NOT NULL DEFAULT '0',
+  `player8` int(11) NOT NULL DEFAULT '0',
+  `player9` int(11) NOT NULL DEFAULT '0',
+  `player10` int(11) NOT NULL DEFAULT '0',
+  `player11` int(11) NOT NULL DEFAULT '0',
+  `player12` int(11) NOT NULL DEFAULT '0',
+  `time7` int(11) DEFAULT NULL,
+  `time8` int(11) DEFAULT NULL,
+  `time9` int(11) DEFAULT NULL,
+  `time10` int(11) DEFAULT NULL,
+  `time11` int(11) DEFAULT NULL,
+  `time12` int(11) DEFAULT NULL,
+  `rank7` int(11) DEFAULT NULL,
+  `rank8` int(11) DEFAULT NULL,
+  `rank9` int(11) DEFAULT NULL,
+  `rank10` int(11) DEFAULT NULL,
+  `rank11` int(11) DEFAULT NULL,
+  `rank12` int(11) DEFAULT NULL,
+  `score7` int(11) DEFAULT NULL,
+  `score8` int(11) DEFAULT NULL,
+  `score9` int(11) DEFAULT NULL,
+  `score10` int(11) DEFAULT NULL,
+  `score11` int(11) DEFAULT NULL,
+  `score12` int(11) DEFAULT NULL,
   KEY `player4` (`player4`),
   KEY `player5` (`player5`),
   KEY `digest_mid` (`digest_mid`),
@@ -257,7 +280,7 @@ CREATE TABLE `mp_gamerecord` (
   KEY `player3` (`player3`),
   KEY `variation_index` (`variation`,`gmtdate`),
   KEY `dateindex` (`gmtdate`)
-) ENGINE=InnoDB AUTO_INCREMENT=39043 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -290,7 +313,7 @@ CREATE TABLE `notes` (
   `expires` datetime DEFAULT NULL,
   `content` varchar(500) DEFAULT NULL,
   UNIQUE KEY `messageid` (`messageid`)
-) ENGINE=InnoDB AUTO_INCREMENT=522 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=457 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -346,7 +369,7 @@ CREATE TABLE `passwordrecovery` (
   `recoverydate` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `ipaddress` varchar(45) DEFAULT NULL,
   PRIMARY KEY (`uid`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -375,7 +398,7 @@ CREATE TABLE `players` (
   `city` varchar(20) DEFAULT '',
   `proposal` int(11) DEFAULT NULL,
   `last_ip` varchar(16) DEFAULT NULL,
-  `status` enum('unconfirmed','banned','nologin','retired','ok','deleted') NOT NULL DEFAULT 'unconfirmed',
+  `status` enum('unconfirmed','banned','nologin','retired','ok') NOT NULL DEFAULT 'unconfirmed',
   `locked` enum('y') DEFAULT NULL,
   `is_master` enum('n','y','d') NOT NULL DEFAULT 'n',
   `is_tournament_manager` enum('No','Yes') DEFAULT 'No',
@@ -395,7 +418,7 @@ CREATE TABLE `players` (
   KEY `proposal` (`proposal`),
   KEY `identityindex` (`identity`),
   KEY `logonindex` (`last_logon`)
-) ENGINE=InnoDB AUTO_INCREMENT=49528 DEFAULT CHARSET=latin1 PACK_KEYS=1;
+) ENGINE=InnoDB AUTO_INCREMENT=38683 DEFAULT CHARSET=latin1 PACK_KEYS=1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -415,7 +438,7 @@ CREATE TABLE `proposals` (
   `status` enum('new','rejected','deleted','accepted','implemented','commented') DEFAULT NULL,
   `comment` text,
   UNIQUE KEY `uid` (`uid`)
-) ENGINE=InnoDB AUTO_INCREMENT=90 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=83 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -427,7 +450,7 @@ DROP TABLE IF EXISTS `ranking`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `ranking` (
   `uid` int(11) DEFAULT NULL,
-  `variation` enum('zertz','zertz+11','zertz+24','zertz+xx','tumblingdown','kuba','loa','plateau','yinsh','yinsh-blitz','dvonn','gipf','tamsk','hex','hex-15','hex-19','trax','looptrax','trax-8x8','punct','loap','gobblet','gobbletm','hive','exxit','tablut','dipole','truchet','fanorona','volcano','tzaar','qyshinsu','knockabout','palago','santorini','spangles','che','micropul','medina','yavalath','mutton','cannon','warp6','triad','octiles','frogs','breakingaway','xiangqi','container','arimaa','crossfire','entrapment','lehavre','gounki','quinamid','twixt','yspahan','volo','cookie-disco','raj','universe','pan-kai','diagonal-blocks','diagonal-blocks-duo','phlip','kamisado','khet','syzygy','carnac','gyges','takojudo','mogul','align','rithmomachy','ponte','shogi','oneday','morelli','colorito','euphoria','tammany','majorities','proteus','go','stac','checkers','morris','sixmaking','veletas','modx','lyngk','chess','ultima','magnet','tintas','barca','qe','mancala','blooms','mbrane','viticulture','kulami','pushfight','blackdeath','crosswords','wyps','y','stymie','portfolio','imagine','mijnlieff','jumbulaya','dayandnight','kingscolor','chess960','iro') DEFAULT NULL,
+  `variation` enum('zertz','zertz+11','zertz+24','zertz+xx','tumblingdown','kuba','loa','plateau','yinsh','yinsh-blitz','dvonn','gipf','tamsk','hex','hex-15','hex-19','trax','looptrax','trax-8x8','punct','loap','gobblet','gobbletm','hive','exxit','tablut','dipole','truchet','fanorona','volcano','tzaar','qyshinsu','knockabout','palago','santorini','spangles','che','micropul','medina','yavalath','mutton','cannon','warp6','triad','octiles','frogs','breakingaway','xiangqi','container','arimaa','crossfire','entrapment','lehavre','gounki','quinamid','twixt','yspahan','volo','cookie-disco','raj','universe','pan-kai','diagonal-blocks','diagonal-blocks-duo','phlip','kamisado','khet','syzygy','carnac','gyges','takojudo','mogul','align','rithmomachy','ponte','shogi','oneday','morelli','colorito','euphoria','tammany','majorities','proteus','go','stac','checkers','morris','sixmaking','veletas','modx','lyngk','chess','ultima','magnet','tintas','barca','qe','mancala','blooms','mbrane','viticulture','kulami','blackdeath','pushfight','crosswords','wyps','y','stymie','portfolio','imagine','mijnlieff','jumbulaya','dayandnight','kingscolor','chess960','iro','sprint','havannah','crosswordle','tumbleweed','ordo','meridians','trike','trench','dash','honeycomb') DEFAULT NULL,
   `is_master` enum('No','Yes') DEFAULT 'No',
   `value` int(11) DEFAULT '1500',
   `last_played` int(11) DEFAULT '0',
@@ -467,6 +490,30 @@ CREATE TABLE `single_site_stat` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Table structure for table `sp_record`
+--
+
+DROP TABLE IF EXISTS `sp_record`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `sp_record` (
+  `player1` int(11) NOT NULL,
+  `variation` enum('crosswordle_55','crosswordle_66','crosswordle_65') NOT NULL,
+  `score1` int(11) NOT NULL,
+  `gamename` char(64) NOT NULL,
+  `puzzleid` varchar(45) NOT NULL,
+  `puzzledate` char(16) NOT NULL,
+  `gmtdate` datetime NOT NULL,
+  `time1` int(11) NOT NULL,
+  `mode` enum('normal','hard') NOT NULL,
+  `uid` int(11) NOT NULL AUTO_INCREMENT,
+  PRIMARY KEY (`uid`),
+  KEY `player1` (`player1`),
+  KEY `puzzleid` (`puzzleid`)
+) ENGINE=InnoDB AUTO_INCREMENT=27 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Table structure for table `tournament`
 --
 
@@ -484,7 +531,7 @@ CREATE TABLE `tournament` (
   `description` varchar(100) NOT NULL DEFAULT '',
   `game_threshold` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`uid`)
-) ENGINE=InnoDB AUTO_INCREMENT=101 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=50 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -496,7 +543,7 @@ DROP TABLE IF EXISTS `translation`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `translation` (
   `keystring` varchar(200) NOT NULL DEFAULT '',
-  `language` enum('english','french','spanish','german','catala','norwegian','polish','portuguese','dutch','esperanto','russian','swedish','greek','chinese','czech','chinese-traditional','romanian','japanese','italian') NOT NULL DEFAULT 'english',
+  `language` enum('english','french','spanish','german','catala','norwegian','polish','portuguese','dutch','esperanto','russian','swedish','greek','chinese','czech','chinese-traditional','romanian','italian') NOT NULL DEFAULT 'english',
   `comment` text,
   `context` text,
   `translation` text NOT NULL,
@@ -539,7 +586,7 @@ DROP TABLE IF EXISTS `zertz_gamerecord`;
 CREATE TABLE `zertz_gamerecord` (
   `player1` int(11) NOT NULL DEFAULT '0',
   `player2` int(11) NOT NULL DEFAULT '0',
-  `variation` enum('zertz','zertz+11','zertz+24','zertz+xx','tumblingdown','kuba','loa','plateau','yinsh','yinsh-blitz','dvonn','gipf','tamsk','hex','hex-15','hex-19','trax','looptrax','trax-8x8','punct','loap','gobblet','gobbletm','hive','exxit','tablut','dipole','truchet','fanorona','volcano','tzaar','qyshinsu','knockabout','palago','santorini','spangles','che','micropul','medina','yavalath','mutton','cannon','warp6','tajii','xiangqi','arimaa','crossfire','entrapment','gounki','quinamid','twixt','volo','cookie-disco','pan-kai','diagonal-blocks-duo','phlip','kamisado','khet','syzygy','carnac','gyges','takojudo','align','rithmomachy','ponte','shogi','morelli','colorito','majorities','proteus','go','stac','checkers','morris','sixmaking','veletas','modx','lyngk','chess','ultima','magnet','tintas','barca','mancala','blooms','mbrane','kulami','pushfight','wyps','y','stymie','mijnlieff','crosswords','dayandnight','kingscolor','chess960','iro') DEFAULT NULL,
+  `variation` enum('zertz','zertz+11','zertz+24','zertz+xx','tumblingdown','kuba','loa','plateau','yinsh','yinsh-blitz','dvonn','gipf','tamsk','hex','hex-15','hex-19','trax','looptrax','trax-8x8','punct','loap','gobblet','gobbletm','hive','exxit','tablut','dipole','truchet','fanorona','volcano','tzaar','qyshinsu','knockabout','palago','santorini','spangles','che','micropul','medina','yavalath','mutton','cannon','warp6','tajii','xiangqi','arimaa','crossfire','entrapment','gounki','quinamid','twixt','volo','cookie-disco','pan-kai','diagonal-blocks-duo','phlip','kamisado','khet','syzygy','carnac','gyges','takojudo','align','rithmomachy','ponte','shogi','morelli','colorito','majorities','proteus','go','stac','checkers','morris','sixmaking','veletas','modx','lyngk','chess','ultima','magnet','tintas','barca','mancala','blooms','mbrane','kulami','pushfight','wyps','y','se','mijnlieff','dayandnight','kingscolor','chess960','iro','havannah','tumbleweed','ordo','meridians','trike','trench') DEFAULT NULL,
   `winner` enum('player1','player2','draw') DEFAULT NULL,
   `time1` int(11) DEFAULT NULL,
   `time2` int(11) DEFAULT NULL,
@@ -561,7 +608,7 @@ CREATE TABLE `zertz_gamerecord` (
   KEY `player1` (`player1`),
   KEY `variation` (`variation`,`gmtdate`),
   KEY `dateindex` (`gmtdate`)
-) ENGINE=InnoDB AUTO_INCREMENT=444121 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=345914 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -573,4 +620,4 @@ CREATE TABLE `zertz_gamerecord` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2022-04-23 19:45:43
+-- Dump completed on 2023-09-22 15:26:33
