@@ -3,7 +3,6 @@
 	<classpathentry kind="src" path="boardspace core"/>
 	<classpathentry kind="src" path="boardspace games"/>
 	<classpathentry kind="src" path="codename1"/>
-	<classpathentry kind="src" path="jazzlib"/>
 	<classpathentry kind="src" path="dev-icons"/>
 	<classpathentry kind="lib" path="lib/CLDC11.jar"/>
 	<classpathentry kind="lib" path="lib/CodenameOne.jar" sourcepath="lib/CodenameOne_SRC.zip">
@@ -11,7 +10,6 @@
 			<attribute name="javadoc_location" value="https://www.codenameone.com/javadoc/"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="G:/share/projects/eclipse/boardspace-cn2/jmf-2.1.1e.jar"/>
 	<classpathentry kind="lib" path="lib/impl/cls"/>
 	<classpathentry kind="lib" path="lib/impl/stubs"/>
 	<classpathentry kind="output" path="bin"/>
