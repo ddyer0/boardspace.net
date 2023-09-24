@@ -1,3 +1,19 @@
+/*
+	Copyright 2006-2023 by Dave Dyer
+
+    This file is part of the Boardspace project.
+
+    Boardspace is free software: you can redistribute it and/or modify it under the terms of 
+    the GNU General Public License as published by the Free Software Foundation, 
+    either version 3 of the License, or (at your option) any later version.
+    
+    Boardspace is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+    without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+    See the GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License along with Boardspace.
+    If not, see https://www.gnu.org/licenses/.
+ */
 package bridge;
 
 import android.app.Activity;
@@ -45,14 +61,16 @@ public class InstallerPackageImpl {
 	        context.sendBroadcast(intent);
 	    }
 
+	public void setDrawers(boolean vis)
+	{	Context c = AndroidNativeUtil.getContext();
+		setDrawerVisibility(c,vis);
+	}
+	
 	public String eval(String command)
 	{	
 		try{
 			Context c = AndroidNativeUtil.getContext();
-			setDrawerVisibility(c,false);
-			//this is the alternate that imitates the adb commands that turn the drawer off.
-			//it requires that app have the INTERACT_ACROSS_USERS permission granted
-			//Runtime.getRuntime().exec(command);
+			Runtime.getRuntime().exec(command);
 		}
 		catch(Throwable e){
 		    return e.toString();

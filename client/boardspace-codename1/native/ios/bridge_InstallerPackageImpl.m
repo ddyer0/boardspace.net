@@ -2,6 +2,10 @@
 
 @implementation bridge_InstallerPackageImpl
 
+-(NSString*)eval:(NSString*)param{
+    return nil;
+}
+
 -(NSString*)getPackages{
     return nil;
 }
