@@ -1,0 +1,26 @@
+
+Other things you will need to be a full-stack developer
+
+A L.A.M.P. type web site.   Lots of vendors provide these.  Boardspace currently
+rents a low end VM from steadfast.net.  About $50/month.
+
+To deploy jar files that are acceptable to java web start, you'll need a code
+signing certificate and a hardware dongle.  The system is organized around 
+corporate customers, but it's possible to buy a "personal certificate" after
+jumping through some hoops.    Certicates cost from $60-$250 per year.  The
+cheapest vendor I've found is SSL.com.   Hardware dongles cost $60 and up.
+I use a usb dongle from Yubico
+
+
+To develop mobile versions, you'll need to pay for a subscription to the
+codenameone.com build service, $25/month.  It's technically possible to 
+avoid this by building your own, but that involves a number of other hassles.
+... and besides, codename1 deserves support.  It's great.
+
+To develop IOS versions, you'll need to sign up with the apple developer program,
+$100/year.   You'll also absolutely have to have access to a reasonably modern
+Mac to upload new app versions to the apple app store.
+
+To develop android versions, you'll need a google developer account.  Free
+(or maybe with a small 1 time fee, I forget).
+
