@@ -20,7 +20,6 @@ import bridge.*;
 import bridge.File;
 import bridge.FileOutputStream;
 import bridge.ThreadDeath;
-import common.Crypto;
 import common.GameInfo;
 import common.GameInfo.ScoringMode;
 import online.common.*;
@@ -58,7 +57,7 @@ import lib.*;
  * players disconnect and restart in a new room.  Spectators should be severed from the remains
  */
 
-public class Game extends commonPanel implements PlayConstants,OnlineConstants,DeferredEventHandler,Config,ColorNames,Opcodes,Crypto
+public class Game extends commonPanel implements PlayConstants,OnlineConstants,DeferredEventHandler,Config,ColorNames,Opcodes
 {	/**
 	 * 
 	 */
@@ -3481,7 +3480,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
 	    		{
 	            String baseUrl =recordKeeper4URL;
 	            String urlStr = getUrlStr4();
-	            urlStr = "params=" + XXTEA.combineParams(urlStr, TEA_KEY);
+	            urlStr = "params=" + XXTEA.combineParams(urlStr, XXTEA.getTeaKey());
 	            sendTheResult(serverName,web_server_sockets,baseUrl+"?"+urlStr);
 	    		}
 	    		break;
@@ -3489,7 +3488,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
 		    	{
 		            String baseUrl = recordKeeper1URL;
 		            String urlStr = getUrlStr1();      
-		            urlStr = "params=" + XXTEA.combineParams(urlStr, TEA_KEY);
+		            urlStr = "params=" + XXTEA.combineParams(urlStr, XXTEA.getTeaKey());
 		            sendTheResult(serverName,web_server_sockets,baseUrl+"?"+urlStr);
             
 		    	}
@@ -3499,7 +3498,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
 		    	{
 		            String baseUrl = recordKeeperURL;
 		            String urlStr = getUrlStr();      
-            urlStr = "params=" + XXTEA.combineParams(urlStr, TEA_KEY);			
+            urlStr = "params=" + XXTEA.combineParams(urlStr, XXTEA.getTeaKey());			
             sendTheResult(serverName,web_server_sockets,baseUrl+"?"+urlStr);
     	}
 		    	break;

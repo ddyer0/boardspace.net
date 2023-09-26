@@ -35,10 +35,9 @@ package lib;
 import java.io.UnsupportedEncodingException;
 
 import common.CommonConfig;
-import common.Crypto;
 import common.SaltInterface;
 
-public final class XXTEA implements CommonConfig,Crypto{
+public final class XXTEA implements CommonConfig{
 
     private static final int DELTA = 0x9E3779B9;
 
@@ -329,7 +328,11 @@ public final class XXTEA implements CommonConfig,Crypto{
     	loadSalt();
     	if(theSalt!=null) { theSalt.loadChecksum( n); }
     }
-    
+    public static String getTeaKey()
+    {
+    	loadSalt();
+    	return ((theSalt!=null) ? theSalt.getTeaKey() : "dummy encryption key");
+    }
     /**
      * package the urlstr in the manner expected by {@link validate}, with 
      * length and checksum, then encrypt it with "key" and armor the result
@@ -346,6 +349,13 @@ public final class XXTEA implements CommonConfig,Crypto{
     	int vv = checksumVersion();
     	String urlStr = urlStr0;
     	int check = 0;
+    	//
+    	// this "checksum version" hack is a defence against damaging the live site boardspace
+    	// from experiments using sources cloned from github.   The general scheme is that the
+    	// live site specifies a "checksum version" as one of the login parameters, which triggers
+    	// the use of a shared secret salt to the checksum on login and scoring http transactions.
+    	// the github repository, missing this shared secret, can't connect.
+    	// this scheme is operational in version 7.55 and later
     	if(vv==0)
     	{
     		check = Base64.simplecs(urlStr);
@@ -369,8 +379,8 @@ public final class XXTEA implements CommonConfig,Crypto{
     public static void teatest()
     {
     	String text = "The quick brown fox jumps over the lazy dog's back.";
-    	String cyper = Encode(text, TEA_KEY);
-    	String decode = Decode(cyper,TEA_KEY);
+    	String cyper = Encode(text, getTeaKey());
+    	String decode = Decode(cyper,getTeaKey());
   
     	G.print("in ",text,"\nout ",cyper,"\nre ",decode);
     }

@@ -31,7 +31,6 @@ import bridge.FileDialog;
 import bridge.FontMetrics;
 import bridge.JMenuItem;
 import bridge.Platform.Style;
-import common.Crypto;
 import dictionary.Dictionary;
 import dictionary.Entry;
 import lib.Graphics;
@@ -73,7 +72,7 @@ import online.search.SimpleRobotProtocol;
  *   The basic puzzle is to solve de densely packed crossword grid
 */
 public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard> 
-	implements CrosswordleConstants, GameLayoutClient,Crypto
+	implements CrosswordleConstants, GameLayoutClient
 {	static final long serialVersionUID = 1000;
 	static final String Crosswordle_SGF = "Crosswordle"; // sgf game name
 	boolean useKeyboard = G.isCodename1();
@@ -1189,7 +1188,7 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
     			"&variation=",vname,
     			"&hard=",hards);
         statCaption = s.get(SolutionsFor,vname,dateString);
-        urlStr = "params=" + XXTEA.combineParams(urlStr, TEA_KEY);
+        urlStr = "params=" + XXTEA.combineParams(urlStr, XXTEA.getTeaKey());
        
         statStr = null;
         urlResult = Http.postAsyncUrl(serverName,baseUrl,urlStr,null);

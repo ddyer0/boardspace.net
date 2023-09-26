@@ -25,7 +25,11 @@ public class NamedClasses {
     //
     public static Hashtable<String,Class<?>>classes = new Hashtable<String,Class<?>>();
     static {
+    	// if you see an error on this line, just comment it out.  "Salt.java" is part
+    	// of the defenses of the live site boardspace against accidental damage from
+    	// experiments using sources cloned from github.
     	classes.put("common.Salt",common.Salt.class);
+    	
     	classes.put("vnc.AuxViewer",vnc.AuxViewer.class);
     	classes.put("online.common.SeatingViewer",online.common.SeatingViewer.class);
     	classes.put("online.search.UCTTreeViewer", online.search.UCTTreeViewer.class);

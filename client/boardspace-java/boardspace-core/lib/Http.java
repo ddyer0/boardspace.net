@@ -28,7 +28,6 @@ import java.io.PrintStream;
 import bridge.Config;
 import bridge.Utf8OutputStream;
 import bridge.Utf8Printer;
-import common.Crypto;
 
 
 /**
@@ -36,7 +35,7 @@ import common.Crypto;
  * @author ddyer
  *
  */
-public class Http implements Config,Crypto {
+public class Http implements Config {
 	private static String hostName = null;
 	public static String httpProtocol = defaultProtocol;
 	public static String getDefaultProtocol() { return(httpProtocol); }
@@ -97,12 +96,12 @@ public class Http implements Config,Crypto {
     static public UrlResult postEncryptedURL(String server,String urlStr,String data,int sockets[])
     {
     	String params = data;
-    	params = "params=" + XXTEA.combineParams(params, TEA_KEY);
+    	params = "params=" + XXTEA.combineParams(params, XXTEA.getTeaKey());
     	if(G.debug()) { G.print(params); }
     	UrlResult result = Http.postURL(server,urlStr,params,sockets);
     	if(result.error==null)
     	{
-    	String dec = XXTEA.Decode(result.text,TEA_KEY);
+    	String dec = XXTEA.Decode(result.text,XXTEA.getTeaKey());
     	String valid = XXTEA.validate(dec);
     	if(valid==null)
     		{

@@ -17,7 +17,6 @@
 package util;
 
 import bridge.*;
-import common.Crypto;
 import lib.Base64;
 import lib.G;
 import lib.Http;
@@ -36,7 +35,7 @@ import lib.XXTEA;
  *
  */
 @SuppressWarnings("deprecation")
-public class Login implements SimpleObserver,Config,Crypto
+public class Login implements SimpleObserver,Config
 {	
     
     
@@ -178,7 +177,7 @@ public class Login implements SimpleObserver,Config,Crypto
 			params = "&" + TimezoneParameterName + "="+Http.escape("x"+G.getLocalTimeOffset())+params;
 			params = "&" + IdentityParameterName + "="+Http.escape("x"+G.getIdentity())+params;
 			
-			params = "params="+XXTEA.combineParams(params,TEA_KEY);
+			params = "params="+XXTEA.combineParams(params,XXTEA.getTeaKey());
 			UrlResult result = Http.postURL(Http.getHostName(),loginURL,params,socks);
 			
 			if(result.error!=null)
