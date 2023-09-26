@@ -170,7 +170,7 @@ public class Base64 implements CommonConfig {
    // in login.cgi
    //
    public static int simplecs(String str)
-   {
+ 	{
  		int len = str.length();
 		int cs = len;
 		for(int i=0;i<len;i++)

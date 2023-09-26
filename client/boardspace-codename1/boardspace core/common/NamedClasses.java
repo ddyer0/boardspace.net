@@ -25,6 +25,7 @@ public class NamedClasses {
     //
     public static Hashtable<String,Class<?>>classes = new Hashtable<String,Class<?>>();
     static {
+    	classes.put("common.Salt",common.Salt.class);
     	classes.put("vnc.AuxViewer",vnc.AuxViewer.class);
     	classes.put("online.common.SeatingViewer",online.common.SeatingViewer.class);
     	classes.put("online.search.UCTTreeViewer", online.search.UCTTreeViewer.class);

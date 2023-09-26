@@ -1,4 +1,20 @@
-/* copyright notice */package oneday;
+/*
+	Copyright 2006-2023 by Dave Dyer
+
+    This file is part of the Boardspace project.
+    
+    Boardspace is free software: you can redistribute it and/or modify it under the terms of 
+    the GNU General Public License as published by the Free Software Foundation, 
+    either version 3 of the License, or (at your option) any later version.
+    
+    Boardspace is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+    without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+    See the GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License along with Boardspace.
+    If not, see https://www.gnu.org/licenses/. 
+ */
+package oneday;
 import java.awt.Color;
 import java.awt.Font;
 import lib.Graphics;
@@ -378,7 +394,7 @@ public class Cardmaker extends exCanvas implements Runnable
 	  		int dot = className.lastIndexOf('.');
 	  		if(dot>=0) { className = className.substring(0,dot); }
 	  		osw = new OutputStreamWriter(outFile);   
-	  		osw.write("/* copyright notice */package oneday;\n");
+	  		osw.write("package oneday;\n");
 	  		osw.write("\n// do not edit, derived from the London database.  run the  Cardmaker.main\n\n");
 	  		osw.write("public class "+className +" {\n");
 	  		osw.write("public static void loadData()\n{\n");

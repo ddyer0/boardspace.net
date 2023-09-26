@@ -36,6 +36,7 @@ import java.io.UnsupportedEncodingException;
 
 import common.CommonConfig;
 import common.Crypto;
+import common.SaltInterface;
 
 public final class XXTEA implements CommonConfig,Crypto{
 
@@ -301,6 +302,34 @@ public final class XXTEA implements CommonConfig,Crypto{
     	}}
     	return(null);
     }
+    public static SaltInterface theSalt = null;
+    public static boolean saltInterfaceLoaded = false;
+    public static void loadSalt()
+    {
+    	if(!saltInterfaceLoaded)
+    	{
+    		saltInterfaceLoaded = true;
+    		try {
+    			theSalt = (SaltInterface)G.MakeInstance("common.Salt");
+    		} 
+    		catch (Throwable e) {}
+    	}
+    }
+    public static String getSalt()
+    {	loadSalt();
+    	return theSalt==null ? "" : theSalt.getSalt(); 	
+    }
+    public static int checksumVersion()
+    {
+    	loadSalt();
+    	return theSalt==null ? 0 : theSalt.checksumVersion();
+    }
+    public static void loadChecksum(int n)
+    {
+    	loadSalt();
+    	if(theSalt!=null) { theSalt.loadChecksum( n); }
+    }
+    
     /**
      * package the urlstr in the manner expected by {@link validate}, with 
      * length and checksum, then encrypt it with "key" and armor the result
@@ -310,13 +339,27 @@ public final class XXTEA implements CommonConfig,Crypto{
      * @return
      */
     // this does it all - pack and encrypt the url str
-    public static String combineParams(String urlStr,String key)
-    {
-    	int check = Base64.simplecs(urlStr);
+    public static String combineParams(String urlStr0,String key)
+    {	//int salt = 
+    	//String urlStr = "checksumversion="+Salt.ChecksumVersion+"\n";
+    	//int check = 
+    	int vv = checksumVersion();
+    	String urlStr = urlStr0;
+    	int check = 0;
+    	if(vv==0)
+    	{
+    		check = Base64.simplecs(urlStr);
+    	}
+    	else
+    	{ urlStr = "&checksumversion="+vv+urlStr0;
+    	  check = Base64.simplecs(getSalt()+urlStr);
+    	}
+    
 		int len = urlStr.length();		
 		// new scheme to make parameters harder to hack, combine and them all and checksum
 		// send only the combined for the moment the site still accepts the old format
 		// this forgiveness can be eliminated when client 4.82 is obsolete
+		
 		String ss = "len="+len+"\ncalc="+check+"\n"+urlStr;
 		String enc = Encode(ss,key);
 		//if(G.debug()) { G.print("params ",enc); }
