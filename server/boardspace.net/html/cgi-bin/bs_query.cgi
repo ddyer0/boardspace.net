@@ -108,7 +108,10 @@ sub print_mobileinfo()
 	#
 	$val .= "message " . &encode64long($'mobile_login_message) . "\n";
 	$val .= "versions " . &encode64long($'mobile_version_info) . "\n";
-
+	if($'checksum_version>0)
+	{
+	  $val .= "checksumversion " .&encode64long("$'checksum_version") . "\n";
+	}
 	$'result = $val;
 }
 #

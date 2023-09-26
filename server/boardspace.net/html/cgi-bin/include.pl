@@ -110,4 +110,7 @@ $proposal_password="xxxxx";
 $changenews_password="xxxxx";
 $log_viewer_password = "xxxxx";
 $tea_key="xxxxxxxxxx";
+$checksum_salt2 = 'some salt for version 2';
+$checksum_version = 0;
+$checksum_salt1 = some salt for version 1';
 

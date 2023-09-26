@@ -310,7 +310,16 @@ sub check_bonus()
 	else { $deficit=int($deficit); }
 	return($deficit);
 }
-
+sub banmenow()
+{	my ($from) = @_;
+	my $dbh = &connect();
+	if($dbh)
+	{
+	my $ip = $ENV{'REMOTE_ADDR'};
+	&banme($dbh,$ip,$from);
+	&disconnect($dbh);
+	}
+}
 sub banme()
 {	my ($dbh,$ip,$from) = @_;
 	my $qip = $dbh->quote(&ip_to_int($ip));

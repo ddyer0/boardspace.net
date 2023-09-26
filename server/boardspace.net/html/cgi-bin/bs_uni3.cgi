@@ -23,7 +23,7 @@ __dStart( "$'debug_log",$ENV{'SCRIPT_NAME'});;
 if( param() ) 
 {
   $| = 1;                         # force writes
-  my $ok = &useCombinedParams($'tea_key,1);
+  my $ok = &useCombinedParams($'tea_key,1) && checkChecksumVersion();
   if($ok)
   {
   print header;

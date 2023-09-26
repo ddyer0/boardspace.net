@@ -371,7 +371,7 @@ sub doit()
 
 	if( param() ) 
 	{
-	my $ok = &useCombinedParams($'tea_key);
+	my $ok = &useCombinedParams($'tea_key) && checkChecksumVersion();
 	if($ok)
 	{
   	print header;

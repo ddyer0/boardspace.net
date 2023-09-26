@@ -560,10 +560,10 @@ if( param() )
 	# return true if we're not using combined params
 	# or if the combined params were parsed and validated
 	my $ok = &useCombinedParams($'tea_key);
-	if($ok)
+	if($ok && checkChecksumVersion())
 	{
-	my $forjws = param('jws');
 	my $pname = param('pname');
+	my $forjws = param('jws');
 	$pname = &despace(substr($pname,0,25));
 	my $passwd = param('password');
 	$passwd = &despace(substr($passwd,0,25));

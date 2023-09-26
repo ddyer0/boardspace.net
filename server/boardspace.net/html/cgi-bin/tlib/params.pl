@@ -86,8 +86,6 @@ require "tlib/xxtea.pl";
        return $str;
     }
     
-  
-
 #
 # this is a simple nonscientific checksum intended to validate
 # strings sent between server and client.  In addition to validating
@@ -146,10 +144,16 @@ sub validate()
   my $lenend = index($params,"\n",$lenidx+4);
   my $len = substr($params,$lenidx+4,$lenend-$lenidx-4);
   my $rest = substr($params,$calcEnd+1);
+  # check the checksum according to the declared version
+  my $checkv = index($params,"checksumversion=");
+  my $checkve = $checkv>=0 ? index($params,"&",$checkv+16) : -1;
+  my $checktype = $checkve>$checkv ? substr($params,$checkv+16,$checkve-$checkv-16) : "";
+  if($checktype eq '1') { $rest = $'checksum_salt1 . $rest; }
+  elsif($checktype eq '2') { $rest = $'checksum_salt2 . $rest; }
   my $restlen = length($rest);
-  #print "Checksum is $checksum\n len is $len\n restlen is $restlen\nrest is $rest\n";
   my $cs = &simplecs($rest);
   my $ok = $cs eq $checksum;
+  #print "Checksum ($checkv $checkve $checktype) is $checksum\n len is $len\n restlen is $restlen\nrest is $rest\n"; 
   #print "cs $cs $ok\n";
   if($ok) { 
 	#__d("params Checksum is $checksum\n len is $len\n restlen is $restlen\nrest is $rest\n$params\n");
@@ -192,6 +196,23 @@ sub useCombinedParams()
 		}
 	}
   return(1);
+}
+#
+# sensitive scripts require that the checksum used is the one specified to the login process
+#
+sub checkChecksumVersion()
+{	if($'checksum_version>0)
+	{
+	my $vers = param('checksumversion');
+	if(!($vers eq $'checksum_version))
+		{
+		my $from = $ENV{'SCRIPT_NAME'};
+		__d("user banned from $from\n");
+		&banmenow("$from not following checksum protocol");
+		return 0;
+		}
+	}
+	return 1;
 }
 
 #
