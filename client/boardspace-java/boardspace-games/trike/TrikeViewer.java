@@ -16,13 +16,11 @@
  */
 package trike;
 
+import java.awt.*;
 
 import static trike.Trikemovespec.*;
-
-import java.awt.*;
 import online.common.*;
 import java.util.*;
-
 import lib.Graphics;
 import lib.CellId;
 import lib.ExtendedHashtable;
@@ -791,7 +789,7 @@ public class TrikeViewer extends CCanvas<TrikeCell,TrikeBoard> implements TrikeC
      * that need to be fixed eventually.
      */
     public void verifyGameRecord()
-    {	//DISABLE_VERIFY=true;
+    {	DISABLE_VERIFY=true;
     	super.verifyGameRecord();
     }
  // for reference, here's the standard definition

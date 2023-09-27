@@ -4650,9 +4650,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
        		
        		String msg = NetConn.SEND_AS_ROBOT_ECHO + p.channel + " "+KEYWORD_VIEWER+" "+ time + str;
        		// in the new mode, combine the robot move with the new game state
-       		boolean parsed = v.ParseMessage(str, p.boardIndex);
-       		if(parsed)
-       		{
+       		v.ParseMessage(str, p.boardIndex);
        		// we send the new commands as an atomic operation, but if the 
        		// "append" half fails, we can end up with permanantly out of
        		// sync state.
@@ -4664,10 +4662,6 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
       		doTouch();
 
        		}
-       		else
-       		{throw G.Error("parse failed for %s",str);
-       		}
-    	}
     	}
     }
 

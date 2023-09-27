@@ -16,7 +16,6 @@
  */
 package online.game;
 
-
 import bridge.*;
 import common.GameInfo;
 import net.sf.jazzlib.*;
