@@ -552,7 +552,7 @@ synchronized(allGames) {
 	}
 	
 	{
-	 GameInfo g = put(new GameInfo(763,ES.test,76,"CK",AncientGames,"Checkers","Checkers-frisian",
+	 GameInfo g = put(new GameInfo(763,ES.game,76,"CK",AncientGames,"Checkers","Checkers-frisian",
 				OneBotPlus,
 				new double[]{1.0,0.01},
 				"checkerboard.CheckerGameViewer","/checkers/english/Frisian%20Checkers%20Rules.html","about_checkers.html",

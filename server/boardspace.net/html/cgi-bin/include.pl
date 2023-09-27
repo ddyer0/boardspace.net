@@ -113,4 +113,5 @@ $tea_key="xxxxxxxxxx";
 $checksum_salt2 = 'some salt for version 2';
 $checksum_version = 0;
 $checksum_salt1 = some salt for version 1';
+$checksum_saltx = 'the rest of them';
 

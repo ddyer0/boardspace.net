@@ -150,6 +150,8 @@ sub validate()
   my $checktype = $checkve>$checkv ? substr($params,$checkv+16,$checkve-$checkv-16) : "";
   if($checktype eq '1') { $rest = $'checksum_salt1 . $rest; }
   elsif($checktype eq '2') { $rest = $'checksum_salt2 . $rest; }
+  elsif($checktype eq "") {}
+  else { $rest = $'checksum_saltx . $checktype . $rest; }
   my $restlen = length($rest);
   my $cs = &simplecs($rest);
   my $ok = $cs eq $checksum;
