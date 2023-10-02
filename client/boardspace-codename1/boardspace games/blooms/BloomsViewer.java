@@ -38,7 +38,6 @@ import online.game.sgf.sgf_node;
 import online.game.sgf.sgf_property;
 import online.search.SimpleRobotProtocol;
 
-
 /**
  * 
  * This is intended to be maintained as the reference example how to interface to boardspace.
@@ -702,7 +701,7 @@ public class BloomsViewer extends CCanvas<BloomsCell,BloomsBoard> implements Blo
  */
       public commonMove EditHistory(commonMove nmove)
       {	  // some damaged games ended up with naked "drop", this lets them pass 
-    	  boolean oknone = (nmove.op==MOVE_DROP);
+    	  boolean oknone = (nmove.op==MOVE_DROP) || (nmove.op==EPHEMERAL_APPROVE);
     	  commonMove rval = EditHistory(nmove,oknone);
     	  return(rval);
       }
@@ -980,6 +979,8 @@ public class BloomsViewer extends CCanvas<BloomsCell,BloomsBoard> implements Blo
     /** replay a move specified in SGF format.  
      * this is mostly standard stuff, but the contract is to recognize
      * the elements that we generated in sgf_save
+     * summary: 5/24/2023
+     * 	653 files visited 0 problems
      */
     public void ReplayMove(sgf_node no)
     {
