@@ -620,10 +620,13 @@ public static synchronized Object MakeInstance(String classname)
 	{	
 	    return(java.awt.GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames());
 	}
+
 	
 	public static AudioClip getAudioClip(URL url)
-	{	return Applet.newAudioClip(url);
+	{	if(G.isCheerpj()) { return null; }
+		else { return Applet.newAudioClip(url); }
 	}
+	
 	public static int getIdentity()
 	{
 		String id = getHostUID();
@@ -754,7 +757,7 @@ public static synchronized Object MakeInstance(String classname)
 	    	return(adj);
 	    }
 	    
-	    public static final Comparator<String> CASE_INSENSITIVE_ORDER = String.CASE_INSENSITIVE_ORDER;
+	 public static final Comparator<String> CASE_INSENSITIVE_ORDER = String.CASE_INSENSITIVE_ORDER;
 	 // this is a factory for chat windows which conceals that we
 	 // removed the source code for the old style "window based" interface on codename1 
 	 public static ChatInterface CreateChat(boolean useChat,LFrameProtocol myFrame,ExtendedHashtable sharedInfo,boolean framed)

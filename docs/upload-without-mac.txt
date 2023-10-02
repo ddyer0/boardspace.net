@@ -1,3 +1,5 @@
+[update 10/1/2023] Apple broke itmstransporter sometime around the beginning of 2023,
+and hasn't fixed it yet, so as of now, this doesn't work.
 
 There's an incantation to allow uploading apps to the apple store without using a mac
 
@@ -13,3 +15,15 @@ fixed paths and names into the upload.cmd script
 
 to actually do an upload, move the .ipa and appstoreinfo.plist into the usual place,
 open a shell and run the upload command
+
+
+Sample upload.cmd 
+
+# this script uploaded a .ipa file to the apple store from a pc
+# so you don't really need a real mac and "transporter" after all.
+# download the .ipa and the AppStoreInfo.plist files from the build server,
+# then run this script.
+echo "uploading %1"
+"C:\Program Files (x86)\itms\iTMSTransporter.cmd" -Dasu.channels.default=3.1.0.8 -m upload -o g:\temp\log\mylogFile.log -u "ddyer-apple@real-me.net" -p vofm-iyor-uhmx-pksm -v eXtreme -assetFile "g:\share\projects\boardspace-codename1\releases\%1" -assetDescription "%dir%AppStoreInfo.plist" 
+
+

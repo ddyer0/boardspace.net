@@ -38,9 +38,17 @@ public class ExtendedHashtable extends TreeMap<String,Object> implements OnlineC
 	static final long serialVersionUID = 1L;
 	private boolean noCase = false;
 	  // constructor
+	//public static boolean once = true;
     public ExtendedHashtable(boolean nc)
     {
         super(nc?G.CASE_INSENSITIVE_ORDER:null);
+        //this helped document a subtle initialization problem with cheerpj
+        //System.out.println("Exhashtable "+nc+" comp "+G.CASE_INSENSITIVE_ORDER);
+        //if(once)
+        //{
+        //once = false;
+        //G.infoBox("Exhashtable "+nc+" comparator is "+G.CASE_INSENSITIVE_ORDER,G.getStackTrace());
+        //}
         noCase = nc;
     }
 
@@ -172,7 +180,10 @@ public class ExtendedHashtable extends TreeMap<String,Object> implements OnlineC
             Object val = getInternal(key);
             if((val==null)||(val==NullObject)) { return(defaultval); }
             if(val instanceof Boolean) { return(((Boolean)val).booleanValue());}
-            if(val instanceof String) { return(Boolean.parseBoolean((String)val)); }
+            if(val instanceof String) 
+            { boolean nv = Boolean.parseBoolean((String)val);
+              return(nv); 
+            }
             throw G.Error("no boolean value for "+val+" for key "+ key);
         }
 

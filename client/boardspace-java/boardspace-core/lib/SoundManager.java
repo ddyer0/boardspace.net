@@ -113,7 +113,7 @@ public class SoundManager implements Runnable
 
 	        try
 	        {	
-	        	v = G.getAudioClip(name);
+	       	v = G.getAudioClip(name);
 	        }
 	        catch (NullPointerException ex)
 	        {
@@ -231,8 +231,8 @@ public class SoundManager implements Runnable
         for (; !exit;)
         {	final AudioClip clip = getAClip();
                 if (clip != null)
-                {	
-                	clip.play();
+                {
+                	clip.play(); 
                 }
              };
     }

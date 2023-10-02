@@ -56,10 +56,10 @@ public class G extends Platform implements Timestamp
 	
 	public static boolean TimedRobots() { return(TIMEDROBOTS || debug()); }
 	
-	public static boolean TimeControl() { return globals.getBoolean("timecontrol",true); }
+	public static boolean TimeControl() { return getGlobals().getBoolean("timecontrol",true); }
 	public static boolean allowRobots()
 	{
-		return(!offline() || globals.getBoolean(G.ALLOWOFFLINEROBOTS,false));
+		return(!offline() || getGlobals().getBoolean(G.ALLOWOFFLINEROBOTS,false));
 	}
 	
 	private static boolean offline = false;
@@ -1692,43 +1692,53 @@ private static final String[] publicSystemProperties =
     OS_VERSION
 };
 
-private static ExtendedHashtable globals = new ExtendedHashtable(true);
+private static ExtendedHashtable globalsInstance = null;
+	
 // constants expected to be used with globals
 public static final String LOWMEMORY = "lowmemory";
 
 static final public boolean isCheerpj() { return("cheerpj".equals(System.getProperty(G.OS_ARCH))); }
 
-public static ExtendedHashtable getGlobals() { return(globals); }
-public static void setGlobals(ExtendedHashtable e) { globals = e; }
-public static boolean debug() { return(globals.getBoolean(DEBUG,false)); }
+public static ExtendedHashtable getGlobals() 
+{ 	if(globalsInstance==null) 
+		{  // switching to this just-in-time creation papers over a subtle
+	 	   // static initialization problem in cheerpj
+		globalsInstance = new ExtendedHashtable(true); 
+		}
+	return globalsInstance;
+}
+public static void setGlobals(ExtendedHashtable e) 
+{ globalsInstance = e; 
+}
+public static boolean debug() { return(getGlobals().getBoolean(DEBUG,false)); }
 private static boolean once = false;
 public static void setDebugOnce() { once = true; }
 public static boolean debugOnce() { boolean o = once; once = false; return(o); }
 
 public static void putGlobal(String p,Object v) 
 { 
-	globals.put(p, v);
+	getGlobals().put(p, v);
 //G.print("put "+p+" "+v);
 }
-public static Object getGlobal(String p) { return(globals.get(p)); }
+public static Object getGlobal(String p) { return(getGlobals().get(p)); }
 public static boolean getBoolean(String m,boolean def)
-{	return globals.getBoolean(m,def); 
+{	return getGlobals().getBoolean(m,def); 
 }
 public static int getInt(String m,int def)
 {
-	return globals.getInt(m,def);
+	return getGlobals().getInt(m,def);
 }
 public static int getInt(String m,int def,int min,int max)
 {
-	return globals.getInt(m,def,min,max);
+	return getGlobals().getInt(m,def,min,max);
 }
 public static String getString(String m,String def)
 {
-	return globals.getString(m,def);
+	return getGlobals().getString(m,def);
 }
 public static double getDouble(String m,double def)
 {
-	return(globals.getDouble(m,def));
+	return(getGlobals().getDouble(m,def));
 }
 /**
  * 
@@ -1736,8 +1746,8 @@ public static double getDouble(String m,double def)
  */
 public static URL getCodeBase()
 {
-	String g = globals.getString(CODEBASE,"/");
-	URL u = getUrl(g.indexOf(":")>0 ? g : Http.getDefaultProtocol()+"//"+globals.getString(SERVERNAME)+g);
+	String g = getGlobals().getString(CODEBASE,"/");
+	URL u = getUrl(g.indexOf(":")>0 ? g : Http.getDefaultProtocol()+"//"+getGlobals().getString(SERVERNAME)+g);
 	return(u);
 }
 /**
@@ -1747,8 +1757,8 @@ public static URL getCodeBase()
  */
 public static URL getDocumentBase()
 {
-	String g = globals.getString(DOCUMENTBASE,"/");	
-	URL u = getUrl(g.indexOf(":")>0? g :Http.getDefaultProtocol()+"//"+globals.getString(SERVERNAME)+g);
+	String g = getGlobals().getString(DOCUMENTBASE,"/");	
+	URL u = getUrl(g.indexOf(":")>0? g :Http.getDefaultProtocol()+"//"+getGlobals().getString(SERVERNAME)+g);
 	return(u);
 }
 /**

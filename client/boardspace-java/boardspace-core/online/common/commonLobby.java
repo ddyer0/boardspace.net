@@ -2416,9 +2416,16 @@ void LaunchGameNow(StringTokenizer localST)
 	int seedvalue = randomseed.nextInt();
 	String myHost = users.primaryUser().getHostUID();
 	// one for each player, always up to the max players for this game
-	for(int i=0;i<Session.MAXPLAYERSPERGAME;i++)
+	String peek = null;
+	for(int i=0;i<Session.MAXPLAYERSPERGAME && peek==null;i++)
 	{
-	int user = G.IntToken(localST);
+	String nx = localST.nextToken();
+	// this is a hack to bridge the transition from 6 to 12 players max
+	if(nx.length()>12) { peek = nx; }
+	else
+	{
+	int user = G.IntToken(nx);
+	
 	if(user!=-1) 
 	 {
 	  LaunchUser lu = new LaunchUser();
@@ -2444,8 +2451,9 @@ void LaunchGameNow(StringTokenizer localST)
 	  }
 	  else { failed = true; }
 	  
-	}}
-	sess.startingName=localST.nextToken();
+	}}}
+	sess.startingName= peek==null ? localST.nextToken() : peek;
+	
 	seedvalue = G.IntToken(localST);				// random seed for the game
 	int starter =  G.IntToken(localST);	// boss player
 	

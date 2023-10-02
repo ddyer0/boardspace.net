@@ -170,6 +170,7 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
         	HiveConstants.putStrings();
         }
         doInit(false);
+        
     }
 
     /** 

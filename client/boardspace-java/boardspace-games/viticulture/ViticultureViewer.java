@@ -3760,21 +3760,22 @@ private void drawPlayerBoard(Graphics gc,
 
 			}
 		}
+		HitPoint hl = (censor&&!cardBacks) ? null 
+				: apCards
+					? highlightAll 
+					: highlight;
 		if(drawStack(gc,state,null, cardDisplay,
-					(censor&&!cardBacks) ? null 
-						: apCards
-							? highlightAll 
-							: highlight,
+					hl,
 					highlightAll,cardStep,xp+cardStep,cardY, 0,1,0.0, cardLabel))
 		{	if(apCards)
 			{
-			highlightAll.hitCode = ViticultureId.Magnify;
-			highlightAll.arrow = StockArt.Eye;
-			highlightAll.awidth = step/4;
+			hl.hitCode = ViticultureId.Magnify;
+			hl.arrow = StockArt.Eye;
+			hl.awidth = step/4;
 			}
 			else
 			{
-			ViticultureChip card = cardDisplay.chipAtIndex(highlight.hit_index);
+			ViticultureChip card = cardDisplay.chipAtIndex(hl.hit_index);
 			
 			// in case this is a planting move, note the field that has been selected
 			ViticultureCell selectedField = null;
@@ -3790,12 +3791,12 @@ private void drawPlayerBoard(Graphics gc,
 					&& (limitedVines && !gb.canPlantValue(card,selectedField))
 					)
 			{
-				highlight.hitCode = ViticultureId.OverValue;
+				hl.hitCode = ViticultureId.OverValue;
 			}
 			else {
-			highlight.hitObject = card;
+				hl.hitObject = card;
 			}
-			highlight.hit_index = cardIndex.elementAt(highlight.hit_index).index;
+			hl.hit_index = cardIndex.elementAt(hl.hit_index).index;
 			}
 		}
 		// mark the currently selected cards

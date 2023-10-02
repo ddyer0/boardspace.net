@@ -1,0 +1,91 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+<meta http-equiv="content-type" content="text/html;
+charset=windows-1252"><title>Sgf format files at Boardspace.net</title></head>
+<body style="background-image: url(/images/background-image.jpg);">
+<table style="width: 100%; text-align: left;" border="0" cellpadding="2" cellspacing="0">
+<tbody>
+<tr>
+
+<td style="vertical-align: top;">
+<h1 style="text-align: center;"><img alt="boardspace.net" src="../images/master-logo.jpg" style="width: 600px; height: 100px;"></h1>
+</td>
+
+</tr>
+</tbody>
+</table>
+<br>All the game records saved at Boardspace are in <span style="font-weight: bold;"><a href="https://en.wikipedia.org/wiki/Smart_Game_Format">SGF</a> </span>format,
+a&nbsp;used game file format that is mainly used for the game Go.
+&nbsp;The skeleton of that format, and basic syntax conventions, are
+fixed, and expandable enough&nbsp; to accommadate a wide variety of
+games. &nbsp; This file documents the overall adaptions you'll find in
+Boardspace' sgf files.<br><br>Here's an abbreviation of a typical sgf format file at Boardspace.<br><pre></pre><div style="margin-left: 40px;"> (;<br>GM[Majorities]VV[1]<br>CM[0,1]<br>TC[None]<br>SU[Majorities-5 2 18340105 100]<br>DT[Thu May 18 17:03:46 PDT 2023]<br>GN[MA-AntiSkub-ddyer-2023-05-19-0003]<br>RE[Game won by ddyer]<br>P0[id "AntiSkub"]<br>P1[id "ddyer"]<br>; P0[0 Start P0]<br>; P0[1 Pick W]TM[11896]<br>; P0[2 Dropb W A 5]TM[13462]<br>; P0[3 Done ]TM[14526]<br>; P1[4 Dropb B E 5]TM[2325]<br>; P1[5 Dropb B H 2]TM[4851]<br>; P1[6 Done ]TM[6703]<br>...<br>;<br>P0[time 0:11:40 ]<br>P1[time 0:04:44 ]<br>)<br> <br></div><pre><span style="font-weight: bold;">GM[Majorities]<br></span></pre><div style="margin-left: 40px;">The
+name of the game, generally the geneneric name for the base game.
+&nbsp;SGF format expects the GM propertu to be an integer "game
+number", which was used for the first few games at boardspace, but it
+rapidly became too cumbersome to beg the sgf comittee to assign new
+integers.</div><pre><span style="font-weight: bold;">VV[1]<br></span></pre><div style="margin-left: 40px;">This
+is the format of the SGF file itself, and should always have the value
+1. &nbsp;If there ever were to be a drastic incompatible change, this
+would become 2</div><pre><span style="font-weight: bold;">CM[0,1]<br></span></pre><div style="margin-left: 40px;">This
+is the mapping of colors from their "normal" values,whatever that means
+for the game. &nbsp;This property is not present in older game records.</div><pre><span style="font-weight: bold;">TC[None]<br></span></pre><div style="margin-left: 40px;">Indicates the type of time controls for this game. &nbsp;The default is None, and this property may not always be present.</div><pre><span style="font-weight: bold;">SU[Majorities-5 2 18340105 100]<br></span></pre><div style="margin-left: 40px;">Indicates
+the details of fixed setup for this game. &nbsp;This field normally
+identifies the exact variation, board size and so on, but the details
+will vary depending on the game and the vintage of the game record.
+&nbsp;The "best practice" for new games is to include "variation"
+"number of players" "random number seed" and "revision number".
+&nbsp;So for example, this record is for<br><ol><li>Majorities played on a 5x board</li><li>2 players</li><li>18340105
+as a random number seed. &nbsp;This seed affects things such as deck
+shuffles and dice rolls, which will depend on the exact sequence of
+random numbers generated from this seed.</li><li>100 is the revision/bug fix level</li></ol>It's
+standard to include the number of players in the SU property, even for
+games which always have the same number of players, and to include the
+random number seed even for games which have no randomness.<br>The
+revision number is a clue to viewers to what bug fixes or other changes
+may be included in this game record. and will affect the interpretation
+of the game record. &nbsp;In effect, this value allows games to be
+replayed in "backward compatability" mode with the rules and features
+as they were at the time. &nbsp;For simple games, it will
+probably never change, but complex games developed over a long period
+of time, it might change frequently. &nbsp; For example, Viticulture
+started at 100 but is currently at revision 155. &nbsp;The details are
+highly game dependent - consult the developer and the source code!<br><br>Note that this property is likely to change over time and acquire more properties if you look back at earlier game records. <br></div><pre><span style="font-weight: bold;">DT[Thu May 18 17:03:46 PDT 2023]<br></span></pre><div style="margin-left: 40px;">The
+date the game was started, in whatever format the local device reported
+it. &nbsp;There is a lot of parochial variation, and some records
+include unusual character sets.</div><pre><span style="font-weight: bold;">GN[MA-AntiSkub-ddyer-2023-05-19-0003]<br></span></pre><div style="margin-left: 40px;">This
+is the unique game name assigned when the game was played. &nbsp;Some
+old game records do not contain this as an internal property, or include a less specfic, non-unique name.</div><pre><span style="font-weight: bold;">RE[Game won by ddyer]<br></span></pre><div style="margin-left: 40px;">The result of the game, &nbsp;not always exactly the same format over time, and not present in some older game records/</div><pre><span style="font-weight: bold;">P0[id "AntiSkub"]<br></span><span style="font-weight: bold;">P1[id "ddyer"]</span><br style="font-weight: bold;"></pre><div style="margin-left: 40px;"><span style="font-weight: bold;"></span>The name and possibly other properties of the players</div><pre><span style="font-weight: bold;"></span>; <span style="font-weight: bold;"><br></span></pre><div style="margin-left: 40px;"><span style="font-weight: bold;">	</span>The first semicolon sepatates the general game properties from the actual record of the game. <br><span style="font-weight: bold;"></span></div><pre></pre><ul><li>P0[0 Start P0]<span style="font-weight: bold;"><br></span>; P0[1 Pick W]TM[11896]<br>; P0[2 Dropb W A 5]TM[13462]<br>; P0[3 Done ]TM[14526]<br>; P1[4 Dropb B E 5]TM[2325]<br>; P1[5 Dropb B H 2]TM[4851]<br>; P1[6 Done ]TM[6703]<br></li></ul><div style="margin-left: 40px;">The
+actual record of the game. &nbsp;This part of potentially different for
+every kind of game, but boardspace generally used P0 P1 P2 and so on to
+identify the players.<br>The details inside the [] for each move are
+highly variable per game. &nbsp;Additional properties for each move are
+optional. &nbsp; Newer game recrods will contain TM<br>properties, which is cumulative player time in milliseconds. &nbsp; Game records <span style="font-style: italic;">may </span>also contain C[] properties which are comments per move, and AN[] annotation<br>properties.</div><pre><span style="font-weight: bold;">...</span><br style="font-weight: bold;"><span style="font-weight: bold;">;</span><br style="font-weight: bold;"><span style="font-weight: bold;">P0[time 0:11:40 ]</span><br style="font-weight: bold;"><span style="font-weight: bold;">P1[time 0:04:44 ]<br></span></pre><div style="margin-left: 40px;">total times used for eact player, hours:minutes:seconds</div><pre>)<br> <br></pre><h2>Other wrapper details:</h2><ul><li>There
+may be more than one game per file. &nbsp;The multiple games could be a
+deliberate collection, or it part of an automatically saved game, it's
+an accident from some past debugging, and the second copy of the game
+should be ignored.</li><li>Zip files are packaged automaically from recently played games.</li><li>Games may contain variations in standard sgf &nbsp;format.</li></ul><pre></pre>
+<br><span style="font-weight: bold;"></span><br>
+<hr>
+<center>
+<table style="width: 100%;">
+<tbody>
+<tr>
+<td align="left"><font size="-1">
+<script language="javascript">
+document.write("<a href='mailto:gamemaste");
+document.write("r\@board");
+document.write("space.net'>gamemaste<n>r@board<n>space.net</a>");
+</script></font><br>
+</td>
+<td style="vertical-align: top; text-align: center;"><br>
+</td>
+<td style="vertical-align: top;"><a href="logon-page.html">Site<br>
+&nbsp;Map</a></td>
+<td align="right">Go to <a href="/">BoardSpace.net
+home page</a> </td>
+</tr>
+</tbody>
+</table>
+</center>
+</body></html>

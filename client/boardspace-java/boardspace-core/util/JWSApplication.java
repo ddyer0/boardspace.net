@@ -188,8 +188,10 @@ public class JWSApplication implements Config,Runnable,LobbyConstants
     {	try {
         Http.setDefaultProtocol(G.getString(PROTOCOL,null));
         InternationalStrings.initLanguage();
-        boolean isViewer = (G.getString(OnlineConstants.GAMENAME,null)!=null)
-        					|| (G.getString(OnlineConstants.GAMETYPE, null)!=null);
+        String gn = G.getString(OnlineConstants.GAMENAME,null);
+        String gt = G.getString(OnlineConstants.GAMETYPE, null);
+        boolean isViewer = (gn!=null)
+        					|| (gt!=null);
         if(isViewer) { G.setOffline(true); }
     	boolean offline = G.offline() ;
         boolean isVNC = G.getBoolean(G.VNCCLIENT,false);
@@ -347,7 +349,9 @@ public class JWSApplication implements Config,Runnable,LobbyConstants
 	    	String lang=prefs.get(langKey,"english"); 
 			if(lang!=null) { G.putGlobal(G.LANGUAGE,lang); }
 	    	Http.setHostName(serverName);
-	    	if(!G.getBoolean(OnlineConstants.REVIEWONLY,false) &&  G.getString(OnlineConstants.VIEWERCLASS,null)==null)
+	    	String vc = G.getString(OnlineConstants.VIEWERCLASS,null);
+	    	boolean gb = G.getBoolean(OnlineConstants.REVIEWONLY,false);
+	    	if(!gb &&  vc==null)
 	        {	boolean isTable = G.isTable();
 	    		G.setOffline(isTable);
 	    		boolean startoff = isTable;

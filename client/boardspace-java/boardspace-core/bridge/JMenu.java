@@ -87,12 +87,7 @@ public class JMenu extends javax.swing.JMenu implements NativeMenuInterface,Nati
 	protected void processMouseEvent(MouseEvent e) 
 	{	try {
 		int id = e.getID();
-		if(G.isCheerpj())
-		{
-		G.print("mouse event "+e+ " "+this);
-		G.print(G.getStackTrace());
-		}
-            switch(id)
+		switch(id)
             {
             case MouseEvent.MOUSE_ENTERED:	
             	// inhibit mouse entered to avoid auto-selection moving
