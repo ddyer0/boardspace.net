@@ -701,7 +701,7 @@ public class BloomsViewer extends CCanvas<BloomsCell,BloomsBoard> implements Blo
  */
       public commonMove EditHistory(commonMove nmove)
       {	  // some damaged games ended up with naked "drop", this lets them pass 
-    	  boolean oknone = (nmove.op==MOVE_DROP) || (nmove.op==EPHEMERAL_APPROVE);
+    	  boolean oknone = (nmove.op==MOVE_DROP) || (nmove.op==EPHEMERAL_APPROVE) || (nmove.op==EPHEMERAL_SELECT);
     	  commonMove rval = EditHistory(nmove,oknone);
     	  return(rval);
       }
