@@ -208,7 +208,7 @@ sub update_rankings
 	my $real_clause = $realplayers ? " AND (is_robot is NULL) " : " or (is_robot='y') ";
     my $qvar = $dbh->quote($variation);
 	my $mstat = ($mode eq 'master') ? 'yes' : 'no';
-	my $ladder_clause =  " AND ladder_level is not null " ;
+	my $ladder_clause =  ""; #" AND ladder_level is not null "  this has the effect of excluding players who only play robots
 	my $query = "SELECT player_name, e_mail, $lp, value, country, "
 				. "max_rank,ranking.games_played as played, "
 				. "advocate, "
@@ -222,6 +222,7 @@ sub update_rankings
 				. " AND (($lp $rtest $sunset $retired_test $country_clause) "
 				. $real_clause . " ) "
 				. " ORDER BY $order_key";
+	#print "Q: $query";
   my $sth =&query($dbh,$query );
 	#print "Q: $query\n";
 	&rank_header($dbh,$nitems,$retired,$mode,$country,$variation,$myname,$order,$vname,$months);

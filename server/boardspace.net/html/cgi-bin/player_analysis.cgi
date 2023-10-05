@@ -38,7 +38,9 @@ sub print_game_selector()
 sub comparison_header()
 { my ($dbh,$game,$maxplayers,
 		$player1,$player2,$player3,$player4,$player5,$player6,
+		$player7,$player8,$player9,$player10,$player11,$player12,
 		$uid1,$uid2,$uid3,$uid4,$uid5,$uid6,
+		$uid7,$uid8,$uid9,$uid10,$uid11,$uid12,
 		$start_date,$end_date)=@_;
   my $header=param('header');
   my $sorting=param('sort');
@@ -52,6 +54,13 @@ sub comparison_header()
   my $str4 = "";
   my $str5 = "";
   my $str6 = "";
+  my $str7 = "";
+  my $str8 = "";
+  my $str9 = "";
+  my $str10 = "";
+  my $str11 = "";
+  my $str12 = "";
+
   my $selgamecode = &gamename_to_gamecode($dbh,$game);
   my $ghead = &trans("Boardspace #1 Games Analysis",$game);
   print "<head><title>$ghead</title></head>\n";
@@ -73,6 +82,13 @@ sub comparison_header()
   $str4 = &trans("Player unknown") if ( $player4 && ! $uid4 ) ;
   $str5 = &trans("Player unknown") if ( $player5 && ! $uid5 ) ;
   $str6 = &trans("Player unknown") if ( $player6 && ! $uid6 ) ;
+  $str7 = &trans("Player unknown") if ( $player7 && ! $uid7 ) ;
+  $str8 = &trans("Player unknown") if ( $player8 && ! $uid8 ) ;
+  $str9 = &trans("Player unknown") if ( $player9 && ! $uid9 ) ;
+  $str10 = &trans("Player unknown") if ( $player10 && ! $uid10 ) ;
+  $str11 = &trans("Player unknown") if ( $player11 && ! $uid11 ) ;
+  $str12 = &trans("Player unknown") if ( $player12 && ! $uid12 ) ;
+
   print "<input type=hidden name=submitted value=true>\n";
   &print_timestamp();
   print &trans("Select Game")
@@ -89,7 +105,7 @@ sub comparison_header()
   print "<p><table width=50%><tr>";
   {my $idx = 1;
    print "<tr>";
-   while($idx<=$maxplayers)
+   while($idx<= ($maxplayers>=5 ? 6 : $maxplayers))
    { my $pn = &trans("Player #1",$idx);
      print "<TD>$pn</TD>\n";
      $idx++;
@@ -103,7 +119,23 @@ sub comparison_header()
   if($maxplayers>3) {print "<TD width=\"40\"><input type=text name=player4 value=$player4></TD>\n";}
   if($maxplayers>4) {print "<TD width=\"40\"><input type=text name=player5 value=$player5></TD>\n";}
   if($maxplayers>5) {print "<TD width=\"40\"><input type=text name=player6 value=$player6></TD>\n";}
-
+  if($maxplayers>5) {print "</tr><tr>";
+ { my $idx = 7;
+   print "<tr>";
+   while($idx<= $maxplayers)
+   { my $pn = &trans("Player #1",$idx);
+     print "<TD>$pn</TD>\n";
+     $idx++;
+   }
+   print "</tr>\n";
+  }
+ }
+  if($maxplayers>6) {print "<TD width=\"40\"><input type=text name=player7 value=$player7></TD>\n";}
+  if($maxplayers>7) {print "<TD width=\"40\"><input type=text name=player8 value=$player8></TD>\n";}
+  if($maxplayers>8) {print "<TD width=\"40\"><input type=text name=player9 value=$player9></TD>\n";}
+  if($maxplayers>9) {print "<TD width=\"40\"><input type=text name=player10 value=$player10></TD>\n";}
+  if($maxplayers>10) {print "<TD width=\"40\"><input type=text name=player11 value=$player11></TD>\n";}
+  if($maxplayers>11) {print "<TD width=\"40\"><input type=text name=player12 value=$player12></TD>\n";}
   print "<TD>&nbsp;&nbsp;<input type=submit value=\"$nat\"></TD></TR>\n";
   print "<TR><TD><font color=\"red\">$str1</font></TD><TD>"
 	. "<font color=\"red\">$str2</font></TD></TR>\n" if ( $str1 || $str2 );   
@@ -235,6 +267,7 @@ sub get_uid_and_dates
      {
      ($uid,$first,$last) = $sth->fetchrow();
      }
+ 
      &finishQuery($sth);
   }
   return($uid,$first,$last);
@@ -243,14 +276,12 @@ sub get_uid_and_dates
 sub print_summary
 { my ($titel,$games,$won,$lost,$tied,$t1,$t2) = @_;
 
-   my $percentage = ($games>0) ? sprintf ' (%1.1f%)',100*$won/($games) : "n/a";
-   my $opp_percentage = ($games>0) ? sprintf ' (%1.1f%)',100*$lost/($games) : "n/a";
-   my $tie_percentage = ($games > 0) ? sprintf ' (%1.1f%)',100*$tied/($games) : "n/a";
+   my $percentage = ($games>0) ? sprintf ' (%1.1f%)',100*$won/($games) : "";
+   my $opp_percentage = ($games>0) ? sprintf ' (%1.1f%)',100*$lost/($games) : "";
+   my $tie_percentage = ($games > 0) ? sprintf ' (%1.1f%)',100*$tied/($games) : "";
 
-   $t1 = int($t1/$games);
-   $t2 = int($t2/$games);
-   my $str1 = timestr($t1);
-   my $str2 = timestr($t2);
+   my $str1 = ($games>0) ? timestr(int($t1/$games)) : "n/a";
+   my $str2 = ($games>0) ? timestr(int($t2/$games)) : "n/a";
    if($games eq "") { $games = "0"; }
    if($won eq "") {$won = "0"; }
    if($lost eq "") { $lost = "0"; }
@@ -283,8 +314,8 @@ sub getGameInfo()
 
 sub average_opponent_time()
 {
-  my ($index,$p1,$p2,$p3,$p4,$p5,$p6,
-             $t1,$t2,$t3,$t4,$t5,$t6) = @_;
+  my ($index,$p1,$p2,$p3,$p4,$p5,$p6, $p7,$p8,$p9,$p10,$p11,$p12,
+             $t1,$t2,$t3,$t4,$t5,$t6, $t7,$t8,$t9,$t10,$t11,$t12) = @_;
   my $no=0;
   my $tt=0;
   if (!($index eq 1) && !($p1 eq 0)) { $no++; $tt+=$t1; }
@@ -293,6 +324,12 @@ sub average_opponent_time()
   if (!($index eq 4) && !($p4 eq 0)) { $no++; $tt+=$t4; }
   if (!($index eq 5) && !($p5 eq 0)) { $no++; $tt+=$t5; }
   if (!($index eq 6) && !($p6 eq 0)) { $no++; $tt+=$t6; }
+  if (!($index eq 7) && !($p7 eq 0)) { $no++; $tt+=$t7; }
+  if (!($index eq 8) && !($p8 eq 0)) { $no++; $tt+=$t8; }
+  if (!($index eq 9) && !($p9 eq 0)) { $no++; $tt+=$t9; }
+  if (!($index eq 10) && !($p10 eq 0)) { $no++; $tt+=$t10; }
+  if (!($index eq 11) && !($p11 eq 0)) { $no++; $tt+=$t11; }
+  if (!($index eq 12) && !($p12 eq 0)) { $no++; $tt+=$t12; }
   if($no>0) { return($tt/$no); }
   return(0);
 }
@@ -300,8 +337,8 @@ sub average_opponent_time()
 # score as winner only if we're the best, not tied
 sub winner_among()
 {
-  my ($p1,$p2,$p3,$p4,$p5,$p6,
-      $t1,$t2,$t3,$t4,$t5,$t6) = @_;
+  my ($p1,$p2,$p3,$p4,$p5,$p6, $p7,$p8,$p9,$p10,$p11,$p12,
+      $t1,$t2,$t3,$t4,$t5,$t6, $t7,$t8,$t9,$t10,$t11,$t12) = @_;
   my $best = 0;
   my $second = 0;
   my $bests = -1;
@@ -330,6 +367,31 @@ sub winner_among()
     { if($t6>$bests) { $second = $best; $seconds = $bests; $best=$p6; $bests=$t6; }
       elsif ($t6>$seconds) { $seconds=$t6; $second=$p6; }
     }
+  if ($p7 > 0)
+    { if($t7>$bests) { $second = $best; $seconds = $bests; $best=$p7; $bests=$t7; }
+      elsif ($t7>$seconds) { $seconds=$t7; $second=$p7; }
+    }
+  if ($p8 > 0)
+    { if($t8>$bests) { $second = $best; $seconds = $bests; $best=$p8; $bests=$t8; }
+      elsif ($t8>$seconds) { $seconds=$t8; $second=$p8; }
+    }
+  if ($p9 > 0)
+    { if($t9>$bests) { $second = $best; $seconds = $bests; $best=$p9; $bests=$t9; }
+      elsif ($t9>$seconds) { $seconds=$t9; $second=$p9; }
+    }
+  if ($p10 > 0)
+    { if($t10>$bests) { $second = $best; $seconds = $bests; $best=$p10; $bests=$t10; }
+      elsif ($t10>$seconds) { $seconds=$t10; $second=$p10; }
+    }
+  if ($p11 > 0)
+    { if($t11>$bests) { $second = $best; $seconds = $bests; $best=$p11; $bests=$t11; }
+      elsif ($t11>$seconds) { $seconds=$t11; $second=$p11; }
+    }
+  if ($p12 > 0)
+    { if($t12>$bests) { $second = $best; $seconds = $bests; $best=$p12; $bests=$t12; }
+      elsif ($t12>$seconds) { $seconds=$t12; $second=$p12; }
+    }
+
   if($bests > $seconds) { return($best); }
   return(0);
 }
@@ -337,8 +399,8 @@ sub winner_among()
 # score as draw only if we're tied for the best, not tied
 sub draw_among()
 {
-  my ($p1,$p2,$p3,$p4,$p5,$p6,
-      $t1,$t2,$t3,$t4,$t5,$t6) = @_;
+  my ($p1,$p2,$p3,$p4,$p5,$p6,$p7,$p8,$p9,$p10,$p11,$p12,
+      $t1,$t2,$t3,$t4,$t5,$t6,$t7,$t8,$t9,$t10,$t11,$t12) = @_;
   my $best = 0;
   my $second = 0;
   my $bests = -1;
@@ -368,6 +430,32 @@ sub draw_among()
     { if($t6>$bests) { $second = $best; $seconds = $bests; $best=$p6; $bests=$t6; }
       elsif ($t6>$seconds) { $seconds=$t6; $second=$p6; }
     }
+
+  if ($p7 > 0)
+    { if($t7>$bests) { $second = $best; $seconds = $bests; $best=$p7; $bests=$t7; }
+      elsif ($t7>$seconds) { $seconds=$t7; $second=$p7; }
+    }
+  if ($p8 > 0)
+    { if($t8>$bests) { $second = $best; $seconds = $bests; $best=$p8; $bests=$t8; }
+      elsif ($t8>$seconds) { $seconds=$t8; $second=$p8; }
+    }
+  if ($p9 > 0)
+    { if($t9>$bests) { $second = $best; $seconds = $bests; $best=$p9; $bests=$t9; }
+      elsif ($t9>$seconds) { $seconds=$t9; $second=$p9; }
+    }
+  if ($p10 > 0)
+    { if($t10>$bests) { $second = $best; $seconds = $bests; $best=$p10; $bests=$t10; }
+      elsif ($t10>$seconds) { $seconds=$t10; $second=$p10; }
+    }
+  if ($p11 > 0)
+    { if($t11>$bests) { $second = $best; $seconds = $bests; $best=$p11; $bests=$t11; }
+      elsif ($t11>$seconds) { $seconds=$t11; $second=$p11; }
+    }
+  if ($p12 > 0)
+    { if($t12>$bests) { $second = $best; $seconds = $bests; $best=$p12; $bests=$t12; }
+      elsif ($t12>$seconds) { $seconds=$t12; $second=$p12; }
+    }
+
   if($bests eq $seconds) 
    { return($best,$second); 
    }
@@ -376,8 +464,8 @@ sub draw_among()
 # score as loser only if we're the worst, not tied
 sub loser_among()
 {
-  my ($p1,$p2,$p3,$p4,$p5,$p6,
-      $t1,$t2,$t3,$t4,$t5,$t6) = @_;
+  my ($p1,$p2,$p3,$p4,$p5,$p6, $p7,$p8,$p9,$p10,$p11,$p12,
+      $t1,$t2,$t3,$t4,$t5,$t6, $t7,$t8,$t9,$t10,$t11,$t12) = @_;
   my $best = 0;
   my $second = 0;
   my $bests = 999999;
@@ -407,14 +495,38 @@ sub loser_among()
     { if($t6<$bests) { $second = $best; $seconds = $bests; $best=$p6; $bests=$t6; }
       elsif ($t6<$seconds) { $seconds=$t6; $second=$p6; }
     }
+  if ($p7 > 0)
+    { if($t7<$bests) { $second = $best; $seconds = $bests; $best=$p7; $bests=$t7; }
+      elsif ($t7<$seconds) { $seconds=$t7; $second=$p7; }
+    }
+  if ($p8 > 0)
+    { if($t8<$bests) { $second = $best; $seconds = $bests; $best=$p8; $bests=$t8; }
+      elsif ($t8<$seconds) { $seconds=$t8; $second=$p8; }
+    }
+  if ($p9 > 0)
+    { if($t9<$bests) { $second = $best; $seconds = $bests; $best=$p9; $bests=$t9; }
+      elsif ($t9<$seconds) { $seconds=$t9; $second=$p9; }
+    }
+  if ($p10 > 0)
+    { if($t10>$bests) { $second = $best; $seconds = $bests; $best=$p10; $bests=$t10; }
+      elsif ($t10<$seconds) { $seconds=$t10; $second=$p10; }
+    }
+  if ($p11 > 0)
+    { if($t11>$bests) { $second = $best; $seconds = $bests; $best=$p11; $bests=$t11; }
+      elsif ($t11<$seconds) { $seconds=$t11; $second=$p11; }
+    }
+  if ($p12 > 0)
+    { if($t12<$bests) { $second = $best; $seconds = $bests; $best=$p12; $bests=$t12; }
+      elsif ($t12<$seconds) { $seconds=$t12; $second=$p12; }
+    }
   if($bests < $seconds) { return($best); }
   return(0);
 }
 # score as draw only if we're tied for the best, not tied
 sub position_among()
 {
-  my ($index,$p1,$p2,$p3,$p4,$p5,$p6,
-      $t1,$t2,$t3,$t4,$t5,$t6) = @_;
+  my ($index,$p1,$p2,$p3,$p4,$p5,$p6, $p7,$p8,$p9,$p10,$p11,$p12,
+      $t1,$t2,$t3,$t4,$t5,$t6, $t7,$t8,$t9,$t10,$t11,$t12) = @_;
   my $greater = 0;
   my $lesser = 0;
   my $same = 0;
@@ -425,6 +537,13 @@ sub position_among()
   if($p4>0) {if($t4 > $index) { $greater++; } elsif($t4<$index) { $lesser++; } else {$same++};}
   if($p5>0) {if($t5 > $index) { $greater++; } elsif($t5<$index) { $lesser++; } else {$same++};}
   if($p5>0) {if($t6 > $index) { $greater++; } elsif($t6<$index) { $lesser++; } else {$same++};}
+ 
+  if($p7>0) {if($t7 > $index) { $greater++; } elsif($t7<$index) { $lesser++; } else {$same++};}
+  if($p8>0) {if($t8 > $index) { $greater++; } elsif($t8<$index) { $lesser++; } else {$same++};}
+  if($p9>0) {if($t9 > $index) { $greater++; } elsif($t9<$index) { $lesser++; } else {$same++};}
+  if($p10>0) {if($t10 > $index) { $greater++; } elsif($t10<$index) { $lesser++; } else {$same++};}
+  if($p11>0) {if($t11 > $index) { $greater++; } elsif($t11<$index) { $lesser++; } else {$same++};}
+  if($p12>0) {if($t12 > $index) { $greater++; } elsif($t12<$index) { $lesser++; } else {$same++};}
   return(($greater+$same/2)/($greater+$same+$lesser));
 }
 
@@ -470,7 +589,8 @@ sub compare_players
 	my @uids;					# uids for players used in the form
 	my $sunrise_date = 	0;		# player registration date
 	my $sunset_date = 0;		# player last login date
-
+	my $fail = 0;
+	my $failmessage = "";
 	#
 	# collect player names and uids from the form
 	#
@@ -478,13 +598,12 @@ sub compare_players
 	my %playernames;			# player names index by parameter name
 	my %playeruids;				# player uids index by parameter name
 	&honeypot();
-	for(my $i=1; $i<=6; $i++)
+	for(my $i=1; $i<=12; $i++)
 	{
 	my $pn = "player$i";
-    my $pla = param($pn);
+    	my $pla = param($pn);
 
    	&bless_parameter_length($pla,20);	#assess for penalty
-
 	my $pl = &despace(substr($pla,0,25));
 	if($pl)
 	{
@@ -498,6 +617,9 @@ sub compare_players
 		{ push(@players,$pl); 
 		  push(@uids,$uu);
 		}
+		else { $fail = 1; 
+		$failmessage .= &trans("there is no player named #1<br>\n",$pl);
+		}
 	}}
 	
 	# print the header for the next round, including the player names
@@ -508,6 +630,12 @@ sub compare_players
 				$playernames{'player4'},
 				$playernames{'player5'},
 				$playernames{'player6'},
+				$playernames{'player7'},
+				$playernames{'player8'},
+				$playernames{'player9'},
+				$playernames{'player10'},
+				$playernames{'player11'},
+				$playernames{'player12'},
 
 				$playeruids{'player1'},
 				$playeruids{'player2'},
@@ -515,12 +643,21 @@ sub compare_players
 				$playeruids{'player4'},
 				$playeruids{'player5'},
 				$playeruids{'player6'},
+				$playeruids{'player7'},
+				$playeruids{'player8'},
+				$playeruids{'player9'},
+				$playeruids{'player10'},
+				$playeruids{'player11'},
+				$playeruids{'player12'},
 
 				$start_date,$end_date);
 	}
-	#
-	if($sub eq 'true')
-    {  
+	if($fail)
+	{
+	print "<b>$failmessage</b>";
+	}
+	elsif($sub eq 'true')
+    	{  
 
 	#
 	# the general strategy is to extend the query to 6 players, and specifically
@@ -580,14 +717,20 @@ sub compare_players
 
 	if($multiplayer || $allgames)
 	{
-	my $mpfields = "player1,player2,player3,player4,player5,player6,variation,"
-				. "score1,score2,score3,score4,score5,score6,"
-				. "time1,time2,time3,time4,time5,time6,"
+	my $mpfields = "player1,player2,player3,player4,player5,player6,player7,player8,player9,player10,player11,player12,variation,"
+				. "score1,score2,score3,score4,score5,score6,score7,score8,score9,score10,score11,score12,"
+				. "time1,time2,time3,time4,time5,time6,time7,time8,time9,time10,time11,time12,"
 				. "gamename,mode,tournament,gmtdate+0 as da,"
 				. "players.player_name,players2.player_name,players3.player_name,"
 				. "players4.player_name,players5.player_name,players6.player_name,"
+				. "players7.player_name,players8.player_name,players9.player_name,"
+				. "players10.player_name,players11.player_name,players12.player_name,"
+
 				. "players.is_robot,players2.is_robot,players3.is_robot,"
-				. "players4.is_robot,players5.is_robot,players6.is_robot"
+				. "players4.is_robot,players5.is_robot,players6.is_robot,"
+				. "players7.is_robot,players8.is_robot,players9.is_robot,"
+				. "players10.is_robot,players11.is_robot,players12.is_robot"
+
 				. ",0"
 				;
 
@@ -598,6 +741,13 @@ sub compare_players
 		. " left join players as players4 on players4.uid=mp_gamerecord.player4 "
 		. " left join players as players5 on players5.uid=mp_gamerecord.player5 "
 		. " left join players as players6 on players6.uid=mp_gamerecord.player6 "
+		. " left join players as players7 on players7.uid=mp_gamerecord.player7 "
+		. " left join players as players8 on players8.uid=mp_gamerecord.player8 " 
+		. " left join players as players9 on players9.uid=mp_gamerecord.player9 "
+		. " left join players as players10 on players10.uid=mp_gamerecord.player10 "
+		. " left join players as players11 on players11.uid=mp_gamerecord.player11 "
+		. " left join players as players12 on players12.uid=mp_gamerecord.player12 "
+
 		;
 	$query .= "($mpselect $bselect ORDER by gmtdate desc LIMIT $limit  )";
 	}
@@ -605,12 +755,12 @@ sub compare_players
 	if(!$multiplayer || $allgames)
 	{
 	my $union = $allgames ? " UNION " : "";
-	my $tpfields = "player1,player2,0,0,0,0,variation,"
-				. "winner,0,0,0,0,0,"
-				. "time1,time2,0,0,0,0,"
+	my $tpfields = "player1,player2,0,0,0,0, 0,0,0,0,0,0, variation,"
+				. "winner,0,0,0,0,0,0,0,0,0,0,0,"
+				. "time1,time2,0,0,0,0,0,0,0,0,0,0,"
 				. "gamename,mode,tournament,gmtdate+0 as da,"
-				. "players.player_name,players2.player_name,'','','','',"
-				. "players.is_robot,players2.is_robot,'','','','',1"
+				. "players.player_name,players2.player_name,'','','','', '','','','','','',"
+				. "players.is_robot,players2.is_robot,'','','','', '','','','','','',1"
 				;
 	my $tpselect = "SELECT $tpfields FROM zertz_gamerecord "
 		. " left join players on players.uid=zertz_gamerecord.player1 "
@@ -685,20 +835,22 @@ sub compare_players
 
 	while ($numr>0 )
 	{	$numr--;
-		my ($p1,$p2,$p3,$p4,$p5,$p6,$variation,
+		my ($p1,$p2,$p3,$p4,$p5,$p6,
+		    $p7,$p8,$p9,$p10,$p11,$p12,
+			$variation,
 			$score1,$score2,$score3,$score4,$score5,$score6,
+			$score7,$score8,$score9,$score10,$score11,$score12,
 			$time1,$time2,$time3,$time4,$time5,$time6,
+			$time7,$time8,$time9,$time10,$time11,$time12,
 			$gamename,$mode,$tournament,$date,
 			$p1name,$p2name,$p3name,$p4name,$p5name,$p6name,
-			$p1rob,$p2rob,$p3rob,$p4rob,$p5rob,$p6rob,$is2p)
+			$p7name,$p8name,$p9name,$p10name,$p11name,$p12name,
+			$p1rob,$p2rob,$p3rob,$p4rob,$p5rob,$p6rob,
+			$p7rob,$p8rob,$p9rob,$p10rob,$p11rob,$p12rob,
+
+			$is2p)
 		 = nextArrayRow($sth);
-   
- 		if($p1name) { $names{$p1} = $p1name; }
-		if($p2name) { $names{$p2} = $p2name; }
-		if($p3name) { $names{$p3} = $p3name; if(3>$maxplayerresults) { $maxplayerresults=3; } }
-		if($p4name) { $names{$p4} = $p4name; if(4>$maxplayerresults) { $maxplayerresults=4; }}
-		if($p5name) { $names{$p5} = $p5name; if(5>$maxplayerresults) { $maxplayerresults=5; }}
-		if($p6name) { $names{$p6} = $p6name; if(6>$maxplayerresults) { $maxplayerresults=6; }}
+
 		my $robogame = 0;
 		if($p1rob eq 'y') { $robots{$p1}='y' ; $robogame=1; }
 		if($p2rob eq 'y') { $robots{$p2}='y' ; $robogame=1;  }
@@ -706,11 +858,34 @@ sub compare_players
 		if($p4rob eq 'y') { $robots{$p4}='y' ; $robogame=1; }
 		if($p5rob eq 'y') { $robots{$p5}='y' ; $robogame=1;  }
 		if($p6rob eq 'y') { $robots{$p6}='y' ; $robogame=1; }
+		if($p7rob eq 'y') { $robots{$p7}='y' ; $robogame=1; }
+		if($p8rob eq 'y') { $robots{$p8}='y' ; $robogame=1;  }
+		if($p9rob eq 'y') { $robots{$p9}='y' ; $robogame=1; }
+		if($p10rob eq 'y') { $robots{$p10}='y' ; $robogame=1; }
+		if($p11rob eq 'y') { $robots{$p11}='y' ; $robogame=1;  }
+		if($p12rob eq 'y') { $robots{$p12}='y' ; $robogame=1; }
+
+	my $useThisGame = ($norobot ? !$robogame : 1);
+
+		if($useThisGame)
+		{
+  		if($p1name) { $names{$p1} = $p1name; }
+		if($p2name) { $names{$p2} = $p2name; }
+		if($p3name) { $names{$p3} = $p3name; if(3>$maxplayerresults) { $maxplayerresults=3; } }
+		if($p4name) { $names{$p4} = $p4name; if(4>$maxplayerresults) { $maxplayerresults=4; }}
+		if($p5name) { $names{$p5} = $p5name; if(5>$maxplayerresults) { $maxplayerresults=5; }}
+		if($p6name) { $names{$p6} = $p6name; if(6>$maxplayerresults) { $maxplayerresults=6; }}
+		if($p7name) { $names{$p7} = $p7name; if(7>$maxplayerresults) { $maxplayerresults=7; }}
+		if($p8name) { $names{$p8} = $p8name; if(8>$maxplayerresults) { $maxplayerresults=8; }}
+		if($p9name) { $names{$p9} = $p9name; if(9>$maxplayerresults) { $maxplayerresults=9; } }
+		if($p10name) { $names{$p10} = $p10name; if(10>$maxplayerresults) { $maxplayerresults=10; }}
+		if($p11name) { $names{$p11} = $p11name; if(11>$maxplayerresults) { $maxplayerresults=11; }}
+		if($p12name) { $names{$p12} = $p12name; if(12>$maxplayerresults) { $maxplayerresults=12; }}
+		}
 
     # in 2 player games from zertz_gamerecord, the score1 field is
     # actually the table's winner field
 	my $winnermoving="";
-
     if($is2p)
     {
 	 #
@@ -739,35 +914,42 @@ sub compare_players
 			}
 	 }
     }
-    my $useThisGame = ($norobot ? !$robogame : 1);
+    
 
     if($useThisGame)
     {
-    my $ww = &winner_among($p1,$p2,$p3,$p4,$p5,$p6,$score1,$score2,$score3,$score4,$score5,$score6);
-    my $ll = &loser_among( $p1,$p2,$p3,$p4,$p5,$p6,$score1,$score2,$score3,$score4,$score5,$score6);
-    my ($tt1,$tt2) = &draw_among($p1,$p2,$p3,$p4,$p5,$p6,$score1,$score2,$score3,$score4,$score5,$score6);
+    my $ww = &winner_among($p1,$p2,$p3,$p4,$p5,$p6, $p7,$p8,$p9,$p10,$p11,$p12, $score1,$score2,$score3,$score4,$score5,$score6, $score7,$score8,$score9,$score10,$score11,$score12);
+    my $ll = &loser_among( $p1,$p2,$p3,$p4,$p5,$p6, $p7,$p8,$p9,$p10,$p11,$p12, $score1,$score2,$score3,$score4,$score5,$score6, $score7,$score8,$score9,$score10,$score11,$score12);
+    my ($tt1,$tt2) = &draw_among($p1,$p2,$p3,$p4,$p5,$p6, $p7,$p8,$p9,$p10,$p11,$p12,$score1,$score2,$score3,$score4,$score5,$score6, $score7,$score8,$score9,$score10,$score11,$score12);
     $wins{$ww}++;
     $loss{$ll}++;
     # count ties for both players
     if($tt1) { $ties{$tt1}++; }
     if($tt2) { $ties{$tt2}++; }
     
-    $position{$p1}+= &position_among($score1, $p1,$p2,$p3,$p4,$p5,$p6,$score1,$score2,$score3,$score4,$score5,$score6);
-    $position{$p2}+= &position_among($score2, $p1,$p2,$p3,$p4,$p5,$p6,$score1,$score2,$score3,$score4,$score5,$score6);
-    $position{$p3}+= &position_among($score3, $p1,$p2,$p3,$p4,$p5,$p6,$score1,$score2,$score3,$score4,$score5,$score6);
-    $position{$p4}+= &position_among($score4, $p1,$p2,$p3,$p4,$p5,$p6,$score1,$score2,$score3,$score4,$score5,$score6);
-    $position{$p5}+= &position_among($score5, $p1,$p2,$p3,$p4,$p5,$p6,$score1,$score2,$score3,$score4,$score5,$score6);
-    $position{$p6}+= &position_among($score6, $p1,$p2,$p3,$p4,$p5,$p6,$score1,$score2,$score3,$score4,$score5,$score6);
-    
+    $position{$p1}+= &position_among($score1, $p1,$p2,$p3,$p4,$p5,$p6, $p7,$p8,$p9,$p10,$p11,$p12, $score1,$score2,$score3,$score4,$score5,$score6, $score7,$score8,$score9,$score10,$score11,$score12);
+    $position{$p2}+= &position_among($score2, $p1,$p2,$p3,$p4,$p5,$p6, $p7,$p8,$p9,$p10,$p11,$p12, $score1,$score2,$score3,$score4,$score5,$score6, $score7,$score8,$score9,$score10,$score11,$score12);
+    $position{$p3}+= &position_among($score3, $p1,$p2,$p3,$p4,$p5,$p6, $p7,$p8,$p9,$p10,$p11,$p12, $score1,$score2,$score3,$score4,$score5,$score6, $score7,$score8,$score9,$score10,$score11,$score12);
+    $position{$p4}+= &position_among($score4, $p1,$p2,$p3,$p4,$p5,$p6, $p7,$p8,$p9,$p10,$p11,$p12, $score1,$score2,$score3,$score4,$score5,$score6, $score7,$score8,$score9,$score10,$score11,$score12);
+    $position{$p5}+= &position_among($score5, $p1,$p2,$p3,$p4,$p5,$p6, $p7,$p8,$p9,$p10,$p11,$p12, $score1,$score2,$score3,$score4,$score5,$score6, $score7,$score8,$score9,$score10,$score11,$score12);
+    $position{$p6}+= &position_among($score6, $p1,$p2,$p3,$p4,$p5,$p6, $p7,$p8,$p9,$p10,$p11,$p12, $score1,$score2,$score3,$score4,$score5,$score6, $score7,$score8,$score9,$score10,$score11,$score12);
+ 
+    $position{$p7}+= &position_among($score7, $p1,$p2,$p3,$p4,$p5,$p6, $p7,$p8,$p9,$p10,$p11,$p12, $score1,$score2,$score3,$score4,$score5,$score6, $score7,$score8,$score9,$score10,$score11,$score12);
+    $position{$p8}+= &position_among($score8, $p1,$p2,$p3,$p4,$p5,$p6, $p7,$p8,$p9,$p10,$p11,$p12, $score1,$score2,$score3,$score4,$score5,$score6, $score7,$score8,$score9,$score10,$score11,$score12);
+    $position{$p9}+= &position_among($score9, $p1,$p2,$p3,$p4,$p5,$p6, $p7,$p8,$p9,$p10,$p11,$p12, $score1,$score2,$score3,$score4,$score5,$score6, $score7,$score8,$score9,$score10,$score11,$score12);
+    $position{$p10}+= &position_among($score10, $p1,$p2,$p3,$p4,$p5,$p6, $p7,$p8,$p9,$p10,$p11,$p12, $score1,$score2,$score3,$score4,$score5,$score6, $score7,$score8,$score9,$score10,$score11,$score12);
+    $position{$p11}+= &position_among($score11, $p1,$p2,$p3,$p4,$p5,$p6, $p7,$p8,$p9,$p10,$p11,$p12, $score1,$score2,$score3,$score4,$score5,$score6, $score7,$score8,$score9,$score10,$score11,$score12);
+    $position{$p12}+= &position_among($score12, $p1,$p2,$p3,$p4,$p5,$p6, $p7,$p8,$p9,$p10,$p11,$p12, $score1,$score2,$score3,$score4,$score5,$score6, $score7,$score8,$score9,$score10,$score11,$score12);
+   
     # save a specific game row for later
     if ( $numrows < 50 || ($fulltable eq 'on' &&  $numrows < 500) )
      {
 		  $numrows++;
-		  push @table, [$p1, $p2 , $p3, $p4, $p5, $p6,
-		                $time1, $time2, $time3, $time4, $time5, $time6,
-						$score1,$score2,$score3,$score4,$score5,$score6,
+		  push @table, [$p1, $p2 , $p3, $p4, $p5, $p6, $p7,$p8,$p9,$p10,$p11,$p12,
+		                $time1, $time2, $time3, $time4, $time5, $time6, $time7, $time8, $time9, $time10, $time11, $time12,
+						$score1,$score2,$score3,$score4,$score5,$score6, $score7,$score8,$score9,$score10,$score11,$score12,
 						$ww,$ll,$tt1,$tt2,$winnermoving,$gamename, $mode,$tournament,$date,
-						$p1name,$p2name,$p3name,$p4name,$p5name, $p6name];
+						$p1name,$p2name,$p3name,$p4name,$p5name, $p6name, $p7name,$p8name,$p9name,$p10name,$p11name, $p12name];
 		  }
     
       # accumulate time totals per uid
@@ -777,25 +959,51 @@ sub compare_players
       $tottime{$p4} += $time4;
       $tottime{$p5} += $time5;
       $tottime{$p6} += $time6;
+      $tottime{$p7} += $time7;
+      $tottime{$p8} += $time8;
+      $tottime{$p9} += $time9;
+      $tottime{$p10} += $time10;
+      $tottime{$p11} += $time11;
+      $tottime{$p12} += $time12;
 	
-      my $ao1 = &average_opponent_time(1,$p1,$p2,$p3,$p4,$p5,$p6,
-                        $time1,$time2,$time3,$time4,$time5,$time6);
-      my $ao2 = &average_opponent_time(2,$p1,$p2,$p3,$p4,$p5,$p6,
-                        $time1,$time2,$time3,$time4,$time5,$time6);
-      my $ao3 = &average_opponent_time(3,$p1,$p2,$p3,$p4,$p5,$p6,
-                        $time1,$time2,$time3,$time4,$time5,$time6);
-      my $ao4 = &average_opponent_time(4,$p1,$p2,$p3,$p4,$p5,$p6,
-                        $time1,$time2,$time3,$time4,$time5,$time6);
-      my $ao5 = &average_opponent_time(5,$p1,$p2,$p3,$p4,$p5,$p6,
-                        $time1,$time2,$time3,$time4,$time5,$time6);
-      my $ao6 = &average_opponent_time(6,$p1,$p2,$p3,$p4,$p5,$p6,
-                        $time1,$time2,$time3,$time4,$time5,$time6);
+      my $ao1 = &average_opponent_time(1,$p1,$p2,$p3,$p4,$p5,$p6,$p7,$p8,$p9,$p10,$p11,$p12,
+                        $time1,$time2,$time3,$time4,$time5,$time6,$time7, $time8, $time9, $time10, $time11, $time12);
+      my $ao2 = &average_opponent_time(2,$p1,$p2,$p3,$p4,$p5,$p6,$p7,$p8,$p9,$p10,$p11,$p12,
+                        $time1,$time2,$time3,$time4,$time5,$time6,$time7, $time8, $time9, $time10, $time11, $time12);
+      my $ao3 = &average_opponent_time(3,$p1,$p2,$p3,$p4,$p5,$p6,$p7,$p8,$p9,$p10,$p11,$p12,
+                        $time1,$time2,$time3,$time4,$time5,$time6,$time7, $time8, $time9, $time10, $time11, $time12);
+      my $ao4 = &average_opponent_time(4,$p1,$p2,$p3,$p4,$p5,$p6,$p7,$p8,$p9,$p10,$p11,$p12,
+                        $time1,$time2,$time3,$time4,$time5,$time6,$time7, $time8, $time9, $time10, $time11, $time12);
+      my $ao5 = &average_opponent_time(5,$p1,$p2,$p3,$p4,$p5,$p6,$p7,$p8,$p9,$p10,$p11,$p12,
+                        $time1,$time2,$time3,$time4,$time5,$time6,$time7, $time8, $time9, $time10, $time11, $time12);
+      my $ao6 = &average_opponent_time(6,$p1,$p2,$p3,$p4,$p5,$p6,$p7,$p8,$p9,$p10,$p11,$p12,
+                        $time1,$time2,$time3,$time4,$time5,$time6,$time7, $time8, $time9, $time10, $time11, $time12);
+    
+      my $ao7 = &average_opponent_time(7,$p1,$p2,$p3,$p4,$p5,$p6,$p7,$p8,$p9,$p10,$p11,$p12,
+                        $time1,$time2,$time3,$time4,$time5,$time6,$time7, $time8, $time9, $time10, $time11, $time12);
+      my $ao8 = &average_opponent_time(8,$p1,$p2,$p3,$p4,$p5,$p6,$p7,$p8,$p9,$p10,$p11,$p12,
+                        $time1,$time2,$time3,$time4,$time5,$time6,$time7, $time8, $time9, $time10, $time11, $time12);
+      my $ao9 = &average_opponent_time(9,$p1,$p2,$p3,$p4,$p5,$p6,$p7,$p8,$p9,$p10,$p11,$p12,
+                        $time1,$time2,$time3,$time4,$time5,$time6,$time7, $time8, $time9, $time10, $time11, $time12);
+      my $ao10 = &average_opponent_time(10,$p1,$p2,$p3,$p4,$p5,$p6,$p7,$p8,$p9,$p10,$p11,$p12,
+                        $time1,$time2,$time3,$time4,$time5,$time6,$time7, $time8, $time9, $time10, $time11, $time12);
+      my $ao11 = &average_opponent_time(11,$p1,$p2,$p3,$p4,$p5,$p6,$p7,$p8,$p9,$p10,$p11,$p12,
+                        $time1,$time2,$time3,$time4,$time5,$time6,$time7, $time8, $time9, $time10, $time11, $time12);
+      my $ao12 = &average_opponent_time(12,$p1,$p2,$p3,$p4,$p5,$p6,$p7,$p8,$p9,$p10,$p11,$p12,
+                        $time1,$time2,$time3,$time4,$time5,$time6,$time7, $time8, $time9, $time10, $time11, $time12);
+
       $opptime{$p1} += $ao1;
       $opptime{$p2} += $ao2;
       $opptime{$p3} += $ao3;
       $opptime{$p4} += $ao4;
       $opptime{$p5} += $ao5;
       $opptime{$p6} += $ao6;
+      $opptime{$p7} += $ao7;
+      $opptime{$p8} += $ao8;
+      $opptime{$p9} += $ao9;
+      $opptime{$p10} += $ao10;
+      $opptime{$p11} += $ao11;
+      $opptime{$p12} += $ao12;
 
     $games{$p1}++;
     $games{$p2}++;
@@ -803,6 +1011,12 @@ sub compare_players
     $games{$p4}++;
     $games{$p5}++;
     $games{$p6}++;
+    $games{$p7}++;
+    $games{$p8}++;
+    $games{$p9}++;
+    $games{$p10}++;
+    $games{$p11}++;
+    $games{$p12}++;
 
 
 	if ( $mode eq 'master' )
@@ -814,12 +1028,27 @@ sub compare_players
         $mtottime{$p4} += $time4;
         $mtottime{$p5} += $time5;
         $mtottime{$p6} += $time6;
+
+        $mtottime{$p7} += $time7;
+        $mtottime{$p8} += $time8;
+        $mtottime{$p9} += $time9;
+        $mtottime{$p10} += $time10;
+        $mtottime{$p11} += $time11;
+        $mtottime{$p12} += $time12;
+
         $mopptime{$p1} += $ao1;
         $mopptime{$p2} += $ao2;
         $mopptime{$p3} += $ao3;
         $mopptime{$p4} += $ao4;
         $mopptime{$p5} += $ao5;
         $mopptime{$p6} += $ao6;
+
+        $mopptime{$p7} += $ao7;
+        $mopptime{$p8} += $ao8;
+        $mopptime{$p9} += $ao9;
+        $mopptime{$p10} += $ao10;
+        $mopptime{$p11} += $ao11;
+        $mopptime{$p12} += $ao12;
 
         $mwins{$ww}++;
         $mloss{$ll}++;
@@ -836,13 +1065,28 @@ sub compare_players
         $utottime{$p4} += $time4;
         $utottime{$p5} += $time5;
         $utottime{$p6} += $time6;
+
+	$utottime{$p7} += $time7;
+        $utottime{$p8} += $time8;
+        $utottime{$p9} += $time9;
+        $utottime{$p10} += $time10;
+        $utottime{$p11} += $time11;
+        $utottime{$p12} += $time12;
+
         $uopptime{$p1} += $ao1;
         $uopptime{$p2} += $ao2;
         $uopptime{$p3} += $ao3;
         $uopptime{$p4} += $ao4;
         $uopptime{$p5} += $ao5;
         $uopptime{$p6} += $ao6;
-        
+
+        $uopptime{$p7} += $ao7;
+        $uopptime{$p8} += $ao8;
+        $uopptime{$p9} += $ao9;
+        $uopptime{$p10} += $ao10;
+        $uopptime{$p11} += $ao11;
+        $uopptime{$p12} += $ao12;
+      
         $uwins{$ww}++;
         $uloss{$ll}++;
         if($tt1) { $uties{$tt1}++; }
@@ -858,12 +1102,28 @@ sub compare_players
         $ttottime{$p4} += $time4;
         $ttottime{$p5} += $time5;
         $ttottime{$p6} += $time6;
+
+        $ttottime{$p7} += $time7;
+        $ttottime{$p8} += $time8;
+        $ttottime{$p9} += $time9;
+        $ttottime{$p10} += $time10;
+        $ttottime{$p11} += $time11;
+        $ttottime{$p12} += $time12;
+
         $topptime{$p1} += $ao1;
         $topptime{$p2} += $ao2;
         $topptime{$p3} += $ao3;
         $topptime{$p4} += $ao4;
         $topptime{$p5} += $ao5;
         $topptime{$p6} += $ao6;
+
+        $topptime{$p7} += $ao7;
+        $topptime{$p8} += $ao8;
+        $topptime{$p9} += $ao9;
+        $topptime{$p10} += $ao10;
+        $topptime{$p11} += $ao11;
+        $topptime{$p12} += $ao12;
+
 	    $twins{$ww}++;
         $tloss{$ll}++;
         if($tt1) { $tties{$tt1}++; }
@@ -1017,23 +1277,36 @@ sub compare_players
 	my %scores;
 
 	for $row ( @table) {
-		my ($p1, $p2 , $p3, $p4, $p5, $p6,
-			$time1, $time2, $time3, $time4, $time5, $time6,
-		    $score1, $score2, $score3, $score4, $score5, $score6,
+		my ($p1, $p2 , $p3, $p4, $p5, $p6, $p7, $p8, $p9, $p10, $p11, $p12,
+			$time1, $time2, $time3, $time4, $time5, $time6, $time7, $time8, $time9, $time10, $time11, $time12,
+		    $score1, $score2, $score3, $score4, $score5, $score6, $score7, $score8, $score9, $score10, $score11, $score12,
 			$winner, $loser, $tied1, $tied2, $winnermoving, $gamename, $mode,$tournament,$date,
-			$p1name,$p2name,$p3name,$p4name,$p5name,$p6name) = @$row;
+			$p1name,$p2name,$p3name,$p4name,$p5name,$p6name, $p7name,$p8name,$p9name,$p10name,$p11name,$p12name) = @$row;
 		$times{$p1} = timestr($time1);
 		$times{$p2} = timestr($time2);
 		$times{$p3} = timestr($time3);
 		$times{$p4} = timestr($time4);
 		$times{$p5} = timestr($time5);
 		$times{$p6} = timestr($time6);
+		$times{$p7} = timestr($time7);
+		$times{$p8} = timestr($time8);
+		$times{$p9} = timestr($time9);
+		$times{$p10} = timestr($time10);
+		$times{$p11} = timestr($time11);
+		$times{$p12} = timestr($time12);
+
 		$scores{$p1} = $score1;
 		$scores{$p2} = $score2;
 		$scores{$p3} = $score3;
 		$scores{$p4} = $score4;
 		$scores{$p5} = $score5;
 		$scores{$p6} = $score6;
+		$scores{$p7} = $score7;
+		$scores{$p8} = $score8;
+		$scores{$p9} = $score9;
+		$scores{$p10} = $score10;
+		$scores{$p11} = $score11;
+		$scores{$p12} = $score12;
 
 		my $timestr = "";
 		my $datestr = datestr($date);
@@ -1057,6 +1330,26 @@ sub compare_players
 		if($p6) { my $ns = "$names{$p6} ";
 				  $cols++;
 				  $timestr .= "<TD align=right><b>$ns$times{$p6}</b></TD>" }
+
+		if($p7) { my $ns = "$names{$p7} ";
+				  $cols++;
+		          $timestr .= "<TD align=right><b>$ns$times{$p7}</b></TD>" }
+		if($p8) { my $ns = "$names{$p8} ";
+				  $cols++;
+				  $timestr .= "<TD align=right><b>$ns$times{$p8}</b></TD>" }
+		if($p9) { my $ns = "$names{$p9} ";
+				  $cols++;
+				  $timestr .= "<TD align=right><b>$ns$times{$p9}</b></TD>" }
+		if($p10) { my $ns = "$names{$p10} ";
+				  $cols++;
+				  $timestr .= "<TD align=right><b>$ns$times{$p10}</b></TD>" }
+		if($p11) { my $ns = "$names{$p11} ";
+				  $cols++;
+				  $timestr .= "<TD align=right><b>$ns$times{$p11}</b></TD>" }
+		if($p12) { my $ns = "$names{$p12} ";
+				  $cols++;
+				  $timestr .= "<TD align=right><b>$ns$times{$p12}</b></TD>" }
+
 
 	    while ($cols<$maxplayerresults) { $timestr .= "<TD></TD>"; $cols++; }
 
