@@ -456,7 +456,7 @@ public class ViticultureViewer extends CCanvas<ViticultureCell,ViticultureBoard>
     	int fh = standardFontSize();
     	FontMetrics fm = getFontMetrics(standardPlainFont());
     	int minLogW = fh*15;	
-    	int vcrW = fh*16;
+    	int vcrW = minLogW;
        	int minChatW = fh*30;	
          int buttonW = fh*8;
         int buttonH = buttonW*2/3;
@@ -464,16 +464,8 @@ public class ViticultureViewer extends CCanvas<ViticultureCell,ViticultureBoard>
         Rectangle main1 = selectedLayout.peekMainRectangle();
         int minLogH = Math.min(fh*15,G.Height(main1)-margin*2);	
         
-        	// this does the layout of the player boxes, and leaves
-    	// a central hole for the board.
-    	// G.print("layout "+width+" "+height+" "+fh+" "+bestPercent);
-        // place the chat and log automatically, preferring to place
-    	// them together and not encroaching on the main rectangle.
-        if(chatHeight>0)
-        {
         selectedLayout.placeTheChatAndLog(chatRect, minChatW, chatHeight,minChatW*3/2,3*chatHeight/2,logRect,
     			minLogW, minLogH, minLogW*3/2, minLogH*3);
-        }
         selectedLayout.placeRectangle(doneRect,buttonW,buttonH,BoxAlignment.Center);
         selectedLayout.placeTheVcr(this,vcrW,vcrW*3/2);
      	int passw = 0;
@@ -481,12 +473,6 @@ public class ViticultureViewer extends CCanvas<ViticultureCell,ViticultureBoard>
        		{ passw = Math.max(passw,fm.stringWidth(s.get(NextSeasonMessage,s.get(season))));
        		}
        	
-        if(chatHeight<=0)
-        {
-        selectedLayout.placeTheChatAndLog(chatRect, minChatW, chatHeight,minChatW*3/2,3*chatHeight/2,logRect,
-    			minLogW, minLogH, minLogW*3/2, minLogH*3);
-        }
-
     	Rectangle main = selectedLayout.getMainRectangle();
     	int mainX = G.Left(main);
     	int mainY = G.Top(main);

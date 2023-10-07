@@ -1903,9 +1903,15 @@ public static String expandClassName(String classname)
     	switch(n)
     	{
     	// god only knows why these few characters are exceptions to the 1:1 translation
-    	case 0x92:	return '’';	// \u0092
-    	case 0x93:	return '“';	// \u0093
-    	case 0x94: 	return '”';	// \u0094
+    	case 0x92:	
+    		//G.print("N ",n," ",'’','=',(int)'’');
+    		return (char)8217; // '’'
+    	case 0x93:	
+    		//G.print("N ",n," ",'“','=',(int)'“');
+    		return (char)8220;// '“';
+    	case 0x94: 	
+    		//G.print("N ",n," ",'”','=',(int)'”');
+    		return (char)8221;//'”';
     	default: return((char)n);
     	}
     }

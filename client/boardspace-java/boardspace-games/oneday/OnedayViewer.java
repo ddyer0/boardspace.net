@@ -43,6 +43,9 @@ import oneday.OnedayBoard.PlayerBoard;
 
 import static oneday.OnedayMovespec.*;
 
+// TODO: the descriptive strings for OneDay are not in the translations database.
+// TODO: there is a new line in london, the jubilee line, which is not represented
+
 /**
  * The viewer for One Day in London is pretty standard except for the game setup
  * phase, where all the players get to select and place their cards at the same time.

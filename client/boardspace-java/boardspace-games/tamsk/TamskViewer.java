@@ -319,7 +319,7 @@ public class TamskViewer extends CCanvas<TamskCell,TamskBoard> implements TamskC
     	// games which have a private "done" button for each player don't need a public
     	// done button, and also we can make the edit/undo button square so it can rotate
     	// to face the player.
-       	layout.placeDoneEditRep(buttonW,buttonW*4/3,doneButton,editRect);
+      	layout.placeDoneEditRep(buttonW,buttonW*4/3,doneButton,editRect);
     	layout.placeTheVcr(this,minLogW,minLogW*3/2);
        	//layout.placeDrawGroup(G.getFontMetrics(standardPlainFont()),acceptDrawRect,declineDrawRect);
 

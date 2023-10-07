@@ -172,19 +172,19 @@ public interface GameConstants
 
     	String ZertzStringPairs[][]=
     	{
-		{"Zertz","Zèrtz"},
-		{"Zertz+11","Zèrtz+11"},
-		{"Zertz+24","Zèrtz+24"},
+		{"Zertz","Z\u00E8rtz"},
+		{"Zertz+11","Z\u00E8rtz+11"},
+		{"Zertz+24","Z\u00E8rtz+24"},
 
-    	{"Zertz+H","Handicap Zèrtz"},
-    	{"Zertz+H_variation","Zèrtz + Handicaps"},
-		{"Handicap Zertz_variation","Zèrtz + Handicaps"},
-        {"Zertz+xx","Zèrtz Extreme"},
+    	{"Zertz+H","Handicap Z\u00E8rtz"},
+    	{"Zertz+H_variation","Z\u00E8rtz + Handicaps"},
+		{"Handicap Zertz_variation","Z\u00E8rtz + Handicaps"},
+        {"Zertz+xx","Z\u00E8rtz Extreme"},
         {"Zertz+xx_variation","custom layout"},
-        {"Zertz_variation","standard Zèrtz"},
+        {"Zertz_variation","standard Z\u00E8rtz"},
         {"Zertz+11_variation","+ 11 extra rings"},
         {"Zertz+24_variation","+ 24 extra rings"},
-   		{"Zertz_family","Zèrtz"},
+   		{"Zertz_family","Z\u00E8rtz"},
  	
     	};
     	InternationalStrings.put(ZertzStrings);

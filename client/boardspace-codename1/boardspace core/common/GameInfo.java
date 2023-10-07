@@ -135,6 +135,7 @@ public class GameInfo implements lib.CompareTo<GameInfo>,LobbyConstants
 	public String viewerClass;		// the class to instantiate as a viewer/window
 	public String groupSortKey;
 	public int maxPlayers=2;
+	/** note that minPlayers here must agree with the min_players field of the variation database table */
 	public int minPlayers=2;
 	public int maxRobotPlayers = 1;
 	public boolean variableColorMap = false;				// if true, player order is linked to color map

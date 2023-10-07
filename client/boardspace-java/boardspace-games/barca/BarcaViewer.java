@@ -171,7 +171,7 @@ public class BarcaViewer extends CCanvas<BarcaCell,BarcaBoard> implements BarcaC
     			0.75,	// % of space allocated to the board
     			1.0,	// aspect ratio for the board
     			fh*2,	// minimum cell size
-    			fh*4,	// max cell size
+    			fh*3,	// max cell size
     			0.3		// preference for the designated layout, if any
     			);
     	
@@ -179,8 +179,8 @@ public class BarcaViewer extends CCanvas<BarcaCell,BarcaBoard> implements BarcaC
     	// them together and not encroaching on the main rectangle.
     	layout.placeTheChatAndLog(chatRect, minChatW, chatHeight,minChatW*3/2,3*chatHeight/2,logRect,
     			minLogW, minLogH, minLogW*3/2, minLogH*2);
-    	layout.placeDoneEditRep(buttonW,buttonW*4/3,doneRect, editRect, repRect);
     	layout.placeTheVcr(this,minLogW,minLogW*3/2);
+    	layout.placeDoneEditRep(buttonW,buttonW*4/3,doneRect, editRect, repRect);
 
     	Rectangle main = layout.getMainRectangle();
     	int mainX = G.Left(main);

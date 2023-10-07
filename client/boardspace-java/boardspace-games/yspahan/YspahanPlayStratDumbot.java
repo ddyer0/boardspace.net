@@ -26,7 +26,7 @@ import lib.G;
 
 
 /**
- * @author Günther Rosenbaum
+ * @author Gunther Rosenbaum
  * 
  */
 public class YspahanPlayStratDumbot extends YspahanPlayStratCore implements

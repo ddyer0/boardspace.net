@@ -1002,6 +1002,13 @@ public class ZertzGameViewer extends CCanvas<zCell,GameBoard> implements GameCon
     }
 
     private int ppn = -1;
+    /* 5/23/2023 
+    summary:
+    	3975: play Problem in zip file:G:\share\projects\boardspace-html\htdocs\zertz\games\games\archive-2004\games-Oct-31-2004.zip Z-ddyer-Qarl-2004-10-29-2141.sgf lib.ErrorX: Destination cell not empty!
+    	4051: play Problem in zip file:G:\share\projects\boardspace-html\htdocs\zertz\games\games\archive-2004\games-Oct-31-2004.zip Z-Qarl-ddyer-2004-10-29-2155.sgf lib.ErrorX: Destination is not empty
+
+    	74252 files visited 2 problems
+    	*/
     public void ReplayMove(sgf_node no)
     {
         String comments = "";

@@ -30,7 +30,7 @@ import yspahan.YspahanConstants.ycard;
 import yspahan.YspahanPlayData.CubeGroup;
 
 /**
- * @author Günther Rosenbaum The core features and utility methods for all
+ * @author Gunther Rosenbaum The core features and utility methods for all
  *         strategies are implemented here, together with common properties.
  */
 public abstract class YspahanPlayStratCore implements YspahanPlayStratConst
@@ -1094,7 +1094,7 @@ public abstract class YspahanPlayStratCore implements YspahanPlayStratConst
 	protected boolean a_BuildPrioBuilding(boolean exact)
 	{
 
-		// Px = 0 ignorieren; Px=1..6 Prio-Gebäude; Px=11..16 non Prio Gebäude
+		// Px = 0 ignorieren; Px=1..6 Prio-Gebaude; Px=11..16 non Prio Gebaude
 		boolean trade = false;
 		boolean res = false;
 

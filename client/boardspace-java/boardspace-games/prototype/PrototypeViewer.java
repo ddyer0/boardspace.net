@@ -335,6 +335,8 @@ public class PrototypeViewer extends CCanvas<PrototypeCell,PrototypeBoard> imple
     	// done button, and also we can make the edit/undo button square so it can rotate
     	// to face the player.
        	layout.placeDoneEditRep(buttonW,buttonW*4/3,doneButton,editRect);
+       	// its generally recommended for the vcr to be no wider than the game log,
+       	// this helps the vcr to tuck into the spare space allocated for the log
     	layout.placeTheVcr(this,minLogW,minLogW*3/2);
        	//layout.placeDrawGroup(G.getFontMetrics(standardPlainFont()),acceptDrawRect,declineDrawRect);
 

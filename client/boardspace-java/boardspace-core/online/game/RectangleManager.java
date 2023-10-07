@@ -558,79 +558,90 @@ public class RectangleManager
     G.Assert(fromRect!=null, "must be a from rectangle");
 	int availableW = G.Width(fromRect);
 	int availableH = G.Height(fromRect);
-	int fromLeft = G.Left(fromRect);
-	int fromRight = G.Right(fromRect);
-	int fromTop = G.Top(fromRect);
-	int fromBottom = G.Bottom(fromRect);
 
 	G.Assert(actualW<=availableW && actualH<=availableH,"size too large");
 	
-	boolean exactWidth = false;
 	switch(align1)
 	{
 	case Left:
 		G.splitLeft(fromRect,targetRect,actualW);
-		exactWidth = true;
+		if(availableW==actualW) 
+			{ spareRects.remove(fromRect); }
 		break;
 	case Top:
 		G.splitTop(fromRect, targetRect, actualH);
-		exactWidth = false;
+		if(actualH==availableH) 
+			{ spareRects.remove(fromRect); }
 		break;
 	case Right:
 		G.splitRight(fromRect,targetRect,actualW);
-		exactWidth = true;
+		if(availableW==actualW) 
+			{ spareRects.remove(fromRect); }
 		break;
 	case Bottom:
 		G.splitBottom(fromRect, targetRect, actualH);
-		exactWidth = false;
+		if(actualH==availableH) 
+			{ spareRects.remove(fromRect); }
 		break;
 	default:
 		G.Error("Not expecting align1 %s", align1);
 	}
-	if(exactWidth)
-	{	// trim the height
-		int dtop = 0;
-		switch(align2)
-		{
-		case Center:
-			dtop = G.centerY(centerRectangle)-actualH/2;
-			break;
-		case Top:
-			dtop = MinCoord;
-			break;
-		default:
-		case Edge:
-			dtop = (G.centerY(fromRect)<G.centerY(centerRectangle)) ? MinCoord : MaxCoord;
-			break;
-		case Bottom: dtop = MaxCoord;
-			break;
+	// targetrect is now a (possibly oversized) allocated rectangle
+	return placeInRectangle(targetRect,actualW,actualH,align2);
+    }
+    //
+    // split from a rectangle and return pieces to the spare rectangle pool
+    //
+    private Rectangle placeInRectangle(Rectangle targetRect,int actualW,int actualH,BoxAlignment align)
+    {
+		if(G.Width(targetRect)==actualW)
+		{	// trim the height
+			int dtop = 0;
+			switch(align)
+			{
+			case Center:
+				dtop = G.centerY(centerRectangle)-actualH/2;
+				break;
+			case Top:
+				dtop = MinCoord;
+				break;
+			default:
+			case Edge:
+				int tp = G.centerY(centerRectangle)-G.Top(targetRect);
+				int tb = G.Bottom(targetRect)-G.centerY(centerRectangle);
+				dtop = tp<=tb ? MinCoord : MaxCoord;
+				break;
+			case Bottom: dtop = MaxCoord;
+				break;
+			}
+			dtop = Math.min(Math.max(dtop,G.Top(targetRect)),G.Bottom(targetRect)-actualH);
+			splitVertical(targetRect,dtop,actualH);
 		}
-		dtop = Math.min(Math.max(dtop,fromTop),fromBottom-actualH);
-		splitVertical(targetRect,dtop,actualH);
-
-	}
-	else
-	{	// tdrim the width
-		int dleft = 0;
-		switch(align2)
-		{
-		case Left:
-			dleft = MinCoord;
-			break;
-		default:
-		case Edge:
-			dleft = G.centerX(fromRect)<G.centerX(centerRectangle) ? MinCoord : MaxCoord;
-			break;
-		case Right:
-			dleft = MaxCoord;
-			break;
-		case Center:
-			dleft = G.centerX(centerRectangle)-actualW/2;
-			break;
+		else if(G.Height(targetRect)==actualH)
+		{	// tdrim the width
+			int dleft = 0;
+			switch(align)
+			{
+			case Left:
+				dleft = MinCoord;
+				break;
+			default:
+			case Edge:
+				int dl = G.centerX(centerRectangle)-G.Left(targetRect);
+				int dr = G.Right(targetRect)-G.centerY(centerRectangle);
+				dleft = dl<=dr ? MinCoord : MaxCoord;
+				break;
+			case Right:
+				dleft = MaxCoord;
+				break;
+			case Center:
+				dleft = G.centerX(targetRect)-actualW/2;
+				break;
+			}
+			dleft = Math.min(G.Right(targetRect)-actualW,Math.max(dleft, G.Left(targetRect)));
+			splitHorizontal(targetRect,dleft,actualW);
 		}
-		dleft = Math.min(fromRight-actualW,Math.max(dleft, fromLeft));
-		splitHorizontal(targetRect,dleft,actualW);
-	}
+		else { G.Error("Either width or height should already match"); }
 	Rectangle alloc = G.copy(null, targetRect);
 	allocatedRects.push(alloc);	// before zoom or margin
 	G.insetRect(targetRect,marginSize);
@@ -694,21 +705,20 @@ public class RectangleManager
     private Rectangle placeInLeftOrRight(Rectangle targetRect,Rectangle fromRect,int actualW,int actualH,BoxAlignment align)
     {
 		BoxAlignment align1 = align;
-		int fromLeft = G.Left(fromRect);
 		// align1 defines the "first cut" of a chip from a new block
 		// the original align defines the final cut.
 		switch(align)
 		{
+		case Top:
+		case Bottom:
 		case Left:
 		case Right:
 			break;
 		case Center:
-			align1 = (fromLeft>G.centerX(centerRectangle)) ? BoxAlignment.Left : BoxAlignment.Right;
+			align1 = (G.centerX(fromRect)<G.centerX(centerRectangle)) ? BoxAlignment.Right : BoxAlignment.Left;
 			break;
 		case Edge:
-		case Top:
-		case Bottom:
-			align1 = (fromLeft<G.centerX(centerRectangle)) ? BoxAlignment.Left : BoxAlignment.Right;
+			align1 = (G.centerX(fromRect)<G.centerX(centerRectangle)) ? BoxAlignment.Left : BoxAlignment.Right;
 			break;
 		}
 		return placeInRectangle(targetRect,actualW,actualH,fromRect,align1,align);
@@ -732,7 +742,7 @@ public class RectangleManager
 		switch(align)
 		{
 		case Center:
-			dtop = G.centerX(centerRectangle)/2-actualH/2;
+			dtop = G.centerY(centerRectangle)-actualH/2;
 			break;
 		case Top:
 		default:
@@ -801,21 +811,21 @@ public class RectangleManager
     // has determined that it's more efficient to take a horizontal
     // stripe.
     private Rectangle placeInAboveOrBelow(Rectangle targetRect,Rectangle fromRect,int actualW,int actualH,BoxAlignment align)
-    {	int fromTop = G.Top(fromRect);
+    {	
 		BoxAlignment align1 = align;
 		switch(align)
 		{
 		
+		case Left:
+		case Right:
 		case Top:
 		case Bottom:
 			break;
 		case Center:
-			align1 = (fromTop<G.centerY(centerRectangle)) ? BoxAlignment.Bottom : BoxAlignment.Top;
+			align1 = (G.centerY(fromRect)>G.centerY(centerRectangle)) ? BoxAlignment.Top : BoxAlignment.Bottom;
 			break;
 		case Edge:
-		case Left:
-		case Right:
-			align1 = (fromTop>G.centerY(centerRectangle)) ? BoxAlignment.Bottom : BoxAlignment.Top;
+			align1 = (G.centerY(fromRect)>G.centerY(centerRectangle)) ? BoxAlignment.Bottom : BoxAlignment.Top;
 			break;
 		}
 	return placeInRectangle(targetRect,actualW,actualH,fromRect,align1,align);

@@ -26,7 +26,7 @@ import lib.G;
 
 
 /**
- * @author Günther Rosenbaum
+ * @author Gunther Rosenbaum
  * 
  */
 public class YspahanPlayStrat12 extends YspahanPlayStratCore implements

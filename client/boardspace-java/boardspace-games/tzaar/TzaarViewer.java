@@ -173,7 +173,7 @@ public class TzaarViewer extends CCanvas<TzaarCell,TzaarBoard> implements TzaarC
         int minLogH = fh*10;	
         int margin = fh/2;
         int buttonW = fh*8;
-        int stateH = fh*3;
+        int stateH = fh*5/2;
 		int ncols = b.ncols;
 		int nrows = b.ncols;
 		// this does the layout of the player boxes, and leaves
@@ -221,7 +221,7 @@ public class TzaarViewer extends CCanvas<TzaarCell,TzaarBoard> implements TzaarC
     	//
         int stateY = boardY-stateH;
         int stateX = boardX;
-        int zoomW = stateH*5;
+        int zoomW = stateH*4;
         G.placeRow(stateX, stateY,boardW, stateH,stateRect,annotationMenu,viewsetRect,liftRect,reverseViewRect,noChatRect);
         G.placeRight(stateRect, zoomRect, zoomW);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);

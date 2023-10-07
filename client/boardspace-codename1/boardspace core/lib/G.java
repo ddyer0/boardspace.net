@@ -1896,11 +1896,17 @@ public static String expandClassName(String classname)
     static private char ucodeToChar(int n)
     {	
     	switch(n)
-    {
+    	{
     	// god only knows why these few characters are exceptions to the 1:1 translation
-    	case 0x92:	return '’';	// \u0092
-    	case 0x93:	return '“';	// \u0093
-    	case 0x94: 	return '”';	// \u0094
+    	case 0x92:	
+    		// alternate single quote
+    		return (char)8217; 
+    	case 0x93:	
+    		//backward double quote
+    		return (char)8220;
+    	case 0x94: 	
+    		//forward double quote
+    		return (char)8221;
     	default: return((char)n);
    					}
     }

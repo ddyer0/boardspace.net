@@ -246,7 +246,7 @@ public class PushfightViewer extends CCanvas<PushfightCell,PushfightBoard> imple
     	// to be appropriate to the window size
     	int fh = standardFontSize();
     	int minLogW = fh*14;	
-    	int vcrw = fh*16;
+    	int vcrw = minLogW;
        	int minChatW = fh*35;	
         int minLogH = fh*15;	
         int margin = fh/2;

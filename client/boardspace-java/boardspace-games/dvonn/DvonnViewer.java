@@ -178,7 +178,7 @@ public double setLocalBoundsA(int x,int y,int width,int height,double v)
 	// to be appropriate to the window size
 	int fh = standardFontSize();
 	int minLogW = fh*16;	
-	int vcrW = fh*16;
+	int vcrW = minLogW;
    	int minChatW = fh*35;	
     int minLogH = fh*10;	
     int margin = fh/2;

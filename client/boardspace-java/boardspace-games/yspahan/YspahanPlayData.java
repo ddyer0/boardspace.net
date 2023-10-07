@@ -27,7 +27,7 @@ import lib.Http;
 
 
 /**
- * @author Günther Rosenbaum
+ * @author Gunther Rosenbaum
  * 
  */
 public class YspahanPlayData implements YspahanPlayStratConst, YspahanConstants

@@ -7653,7 +7653,7 @@ public void useStoryBuffer(String tok,StringTokenizer his)
 
 public void useRemoteStoryBuffer(String tok,StringTokenizer his)
 {	
-	if(tok.startsWith(KEYWORD_SPARE))
+	if((tok!=null) && tok.startsWith(KEYWORD_SPARE))
 	{
 		// trap door to make future expansion easier
 		// valid from v7.50 on

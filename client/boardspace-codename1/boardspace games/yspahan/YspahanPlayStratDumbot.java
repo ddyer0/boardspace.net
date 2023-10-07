@@ -1,3 +1,6 @@
+/**
+ * 
+ */
 /*
 	Copyright 2006-2023 by Dave Dyer
 
@@ -23,7 +26,7 @@ import lib.G;
 
 
 /**
- * @author Günther Rosenbaum
+ * @author Gunther Rosenbaum
  * 
  */
 public class YspahanPlayStratDumbot extends YspahanPlayStratCore implements

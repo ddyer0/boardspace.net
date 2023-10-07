@@ -132,8 +132,8 @@ public class Warp6Viewer extends CCanvas<Warp6Cell,Warp6Board> implements Warp6C
        	// ground the size of chat and logs in the font, which is already selected
     	// to be appropriate to the window size
     	int fh = standardFontSize();
-    	int minLogW = fh*12;	
-    	int vcrw = fh*16;
+    	int minLogW = fh*14;	
+    	int vcrw = minLogW;
        	int minChatW = fh*35;	
         int minLogH = fh*10;	
         int margin = fh/2;

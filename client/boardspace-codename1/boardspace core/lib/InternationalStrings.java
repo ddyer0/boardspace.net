@@ -523,6 +523,10 @@ public abstract class InternationalStrings implements Config
     		if(line==null) { eof = true; }
     		else if("".equals(line)) { savedKey = null; }
     		else {
+       			// test for an ad hoc case
+    			//char []seq = new char[] { 'x', '\\','u','0','0','9','2','\\','u','0','0','9','3','\\','u','0','0','9','4','x'};
+       		    //			String str = new String(seq);
+    			//line = G.utfDecode(str);
     			line = G.utfDecode(line);
         		if(line.length()==1) { line = line+" "; }	// guard against trailing blanks
     			String key = line.substring(0,2);

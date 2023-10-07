@@ -4707,7 +4707,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     	   			 //exCanvas c = (exCanvas)v;
     	   			 //String msg = gameRecordString("goo");
     	   			 //disConnected("test");
-    	   			 myNetConn.closeConn();
+    	   			 //myNetConn.closeConn();
     	   			 v.testSwitch();
     	   			 //c.getComponent().mouse.testDrag();
     	   			 //((commonCanvas)c).painter.showBitmaps = !((commonCanvas)c).painter.showBitmaps;

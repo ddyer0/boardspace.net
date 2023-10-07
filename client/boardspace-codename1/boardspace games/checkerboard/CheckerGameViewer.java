@@ -218,7 +218,7 @@ public class CheckerGameViewer extends CCanvas<CheckerCell,CheckerBoard> impleme
      	int fh = standardFontSize();
      	int margin = fh/2;
      	int minChatW = fh*35;
-    	int ideal_logwidth = fh*15;
+    	int minLogW = fh*15;
      	
     	// this does the layout of the player boxes, and leaves
     	// a central hole for the board.
@@ -233,16 +233,18 @@ public class CheckerGameViewer extends CCanvas<CheckerCell,CheckerBoard> impleme
 
     	int chatHeight = selectChatHeight(height);
         int logH = chatHeight==0 ? fh*10 : chatHeight;
-        int vcrW = fh*16;
+        // as a general guideline, it's useful for the VCR to be no wider than the game log
+        // this helps the vcr tuck into space created by allocating the log.
+        int vcrW = minLogW;
         int vcrMW = fh*20;
     	int bannerW = fh*20;
     	int bannerH = fh*4;
         int stateH = fh*5/2;
         int buttonW = fh*8;
-      	layout.placeTheVcr(this,vcrW,vcrMW);
       	layout.placeRectangle(bannerRect,bannerW,bannerH,bannerW*2,bannerH*2,BoxAlignment.Top,true);
        	layout.placeTheChatAndLog(chatRect, minChatW, chatHeight, minChatW*2, 3*chatHeight/2, logRect,
-    			ideal_logwidth,logH,ideal_logwidth*2,logH*3/2);
+    			minLogW,logH,minLogW*2,logH*3/2);
+      	layout.placeTheVcr(this,vcrW,vcrMW);
  
       	layout.placeDoneEditRep(buttonW, buttonW*3/2, doneRect, editRect, repRect);
     	layout.placeDrawGroup(G.getFontMetrics(standardPlainFont()),acceptDrawRect,declineDrawRect);
