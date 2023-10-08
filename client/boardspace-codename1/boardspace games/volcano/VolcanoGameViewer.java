@@ -325,7 +325,8 @@ public class VolcanoGameViewer extends CCanvas<VolcanoCell,VolcanoBoard> impleme
 	  b.getRealBoard().SetDisplayRectangle(boardRect);
 
     }
-
+    Image scaled = null;
+    Image background = null;
     /* draw the deep unchangable objects, including those that might be rather expensive
      * to draw.  This background layer is used as a backdrop to the rest of the activity.
      * in our cease, we draw the board and the chips on it. 
@@ -333,6 +334,7 @@ public class VolcanoGameViewer extends CCanvas<VolcanoCell,VolcanoBoard> impleme
     public void drawFixedElements(Graphics gc)
     {boolean review = reviewMode() && !mutable_game_record;
       // erase
+      VolcanoBoard gb = disB(gc);
       GC.setColor(gc,review ? reviewModeBackground : boardBackgroundColor);
       //GC.fillRect(gc, fullRect);
      textures[BACKGROUND_TILE_INDEX].tileImage(gc, fullRect);   
@@ -344,12 +346,15 @@ public class VolcanoGameViewer extends CCanvas<VolcanoCell,VolcanoBoard> impleme
        
       // for us, the board is one large graphic, for which the target points
       // are carefully matched with the abstract grid
-     images[perspective
-                              ? b.hexBoard?HBOARD_INDEX:BOARD_INDEX
-                              : b.hexBoard?HBOARD_NP_INDEX : RBOARD_NP_INDEX
-    		  ].centerImage(gc, boardRect);
-      prepareBoardGeometry(b);
-      b.getRealBoard().DrawGrid(gc,boardRect,use_grid,Color.white,Color.black,Color.blue,Color.yellow);
+     Image board = images[perspective
+                              ? gb.hexBoard?HBOARD_INDEX:BOARD_INDEX
+                              : gb.hexBoard?HBOARD_NP_INDEX : RBOARD_NP_INDEX
+    		  ];
+      if(background!=board) { scaled = null; }
+      background = board;
+      scaled = board.centerScaledImage(gc, boardRect,scaled);
+      prepareBoardGeometry(gb);
+      gb.getRealBoard().DrawGrid(gc,boardRect,use_grid,Color.white,Color.black,Color.blue,Color.yellow);
     }
  	double yscale = 1/15.0;
 
@@ -633,6 +638,8 @@ private void playSounds(VolcanoMovespec m)
     /** replay a move specified in SGF format.  
      * this is mostly standard stuff, but the key is to recognize
      * the elements that we generated in sgf_save
+     * summary: 5/23/2023
+		3735 files visited 0 problems
      */
     public void ReplayMove(sgf_node no)
     {

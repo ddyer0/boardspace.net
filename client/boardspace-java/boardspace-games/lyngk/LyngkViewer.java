@@ -282,7 +282,7 @@ public class LyngkViewer extends CCanvas<LyngkCell,LyngkBoard> implements LyngkC
     	int C2 = CELLSIZE/2;
     	//G.print("cell "+cs0+" "+cs+" "+bestPercent);
     	// center the board in the remaining space
-        int stateH = CELLSIZE*2; 
+        int stateH = fh*5/2; 
         int boardW = (int)(nrows*cs);
     	int boardH = (int)(nrows*cs);
     	int unclaimedW = SQUARESIZE*2;
@@ -451,6 +451,7 @@ public class LyngkViewer extends CCanvas<LyngkCell,LyngkBoard> implements LyngkC
      * */
     public void drawFixedElements(Graphics gc)
     { // erase
+      LyngkBoard gb = disB(gc);
       boolean reviewBackground = reviewMode()&&!mutable_game_record;
       GC.setColor(gc,reviewBackground ? reviewModeBackground : boardBackgroundColor);
       //GC.fillRect(gc, fullRect);
@@ -472,8 +473,8 @@ public class LyngkViewer extends CCanvas<LyngkCell,LyngkBoard> implements LyngkC
       // to draw the cells, set gb.Drawing_Style in the board init method.  Create a
       //  DrawGridCoord(gc, Color clt,int xpos, int ypos, int cellsize,String txt)
       // on the board to fine tune the exact positions of the text
-	  setDisplayParameters(bb,boardRect);
-      bb.DrawGrid(gc, boardRect, use_grid, Color.black,  Color.black,  Color.black,Color.black);
+	  setDisplayParameters(gb,boardRect);
+      gb.DrawGrid(gc, boardRect, use_grid, Color.black,  Color.black,  Color.black,Color.black);
 
      }
   

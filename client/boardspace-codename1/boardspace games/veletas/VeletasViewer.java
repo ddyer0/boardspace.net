@@ -228,7 +228,7 @@ public class VeletasViewer extends CCanvas<VeletasCell,VeletasBoard> implements 
 		//
 	    int stateY = boardY;
 	    int stateX = boardX;
-	    int stateH = fh*3;
+	    int stateH = fh*5/2;
 	    G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect, stateRect,annotationMenu,numberMenu,eyeRect,noChatRect);
         G.SetRect(boardRect,boardX,boardY,boardW,boardH);
         
@@ -741,8 +741,8 @@ private void playSounds(commonMove m)
     public void drawFixedElements(Graphics gc)
     {	
       boolean reviewBackground = reviewMode()&&!mutable_game_record;
-      
-      setBoardRect(b);	// set up the coordinate system for the board
+      VeletasBoard gb = disB(gc);
+      setBoardRect(gb);	// set up the coordinate system for the board
       
       // erase
      VeletasChip.backgroundTile.image.tileImage(gc, fullRect);   
@@ -757,7 +757,7 @@ private void playSounds(commonMove m)
       // are carefully matched with the abstract grid
       //G.centerImage(gc,images[BOARD_INDEX], brect,this);
       
-      b.DrawGrid(gc,boardRect,use_grid,Color.white,Color.black,Color.blue,Color.black);
+      gb.DrawGrid(gc,boardRect,use_grid,Color.white,Color.black,Color.blue,Color.black);
     } 
     
     private void setBoardRect(VeletasBoard gb)
@@ -843,6 +843,8 @@ private void playSounds(commonMove m)
     /** replay a move specified in SGF format.  
      * this is mostly standard stuff, but the key is to recognize
      * the elements that we generated in sgf_save
+     * summary: 5/23/2023
+		342 files visited 0 problems
      */
     public void ReplayMove(sgf_node no)
     {

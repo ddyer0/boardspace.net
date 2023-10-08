@@ -37,6 +37,7 @@ import lib.ExtendedHashtable;
 import lib.G;
 import lib.GC;
 import lib.HitPoint;
+import lib.Image;
 import lib.LFrameProtocol;
 import online.game.*;
 import online.game.sgf.sgf_node;
@@ -466,8 +467,9 @@ public class BlackDeathViewer extends CCanvas<BlackDeathCell,BlackDeathBoard> im
        BlackDeathChip.backgroundTile.image.tileImage(gc, fullRect);   
         drawFixedBoard(gc);
     }
+    Image scaled = null;
     public void drawFixedBoard(Graphics gc,Rectangle brect)
-    {
+    { BlackDeathBoard gb = disB(gc);
       boolean reviewBackground = reviewMode()&&!mutable_game_record;
       if(reviewBackground)
       {	 
@@ -476,11 +478,11 @@ public class BlackDeathViewer extends CCanvas<BlackDeathCell,BlackDeathBoard> im
 	  	// drawing the empty board requires detailed board coordinate information
 	  	// games with less detailed dependency in the fixed background may not need
 	  	// this. 
-	  	setDisplayParameters(bb,brect);
+	  	setDisplayParameters(gb,brect);
       
       // if the board is one large graphic, for which the visual target points
       // are carefully matched with the abstract grid
-     BlackDeathChip.board.getImage().centerImage(gc,brect);
+     scaled = BlackDeathChip.board.getImage().centerScaledImage(gc,brect,scaled);
 
      }
     public int ScoreForPlayer(commonPlayer p)

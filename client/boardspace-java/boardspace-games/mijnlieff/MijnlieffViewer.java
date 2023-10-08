@@ -297,18 +297,19 @@ public class MijnlieffViewer extends CCanvas<MijnlieffCell,MijnlieffBoard> imple
        	layout.placeDoneEditRep(buttonW,buttonW*4/3,doneRect,editRect);
     	layout.placeTheVcr(this,vcrW,vcrW*3/2);
        	//layout.placeDrawGroup(G.getFontMetrics(standardPlainFont()),acceptDrawRect,declineDrawRect);
+        int stateH = fh*5/2;
 
     	Rectangle main = layout.getMainRectangle();
     	int mainX = G.Left(main);
     	int mainY = G.Top(main);
     	int mainW = G.Width(main);
-    	int mainH = G.Height(main);
+    	int mainH = G.Height(main)-stateH*3/2;
     	
     	// There are two classes of boards that should be rotated. For boards with a strong
     	// "my side" orientation, such as chess, use seatingFaceToFaceRotated() as
     	// the test.  For boards that are noticably rectangular, such as Push Fight,
     	// use mainW<mainH
-        int nrows = 18;
+        int nrows = 16;
         int ncols = 16;
   	
     	// calculate a suitable cell size for the board
@@ -321,23 +322,22 @@ public class MijnlieffViewer extends CCanvas<MijnlieffCell,MijnlieffBoard> imple
     	int extraW = Math.max(0, (mainW-boardW)/2);
     	int extraH = Math.max(0, (mainH-boardH)/2);
     	int boardX = mainX+extraW;
-    	int boardY = mainY+extraH;
+    	int boardY = mainY+stateH/2+extraH;
     	int boardBottom = boardY+boardH;
        	layout.returnFromMain(extraW,extraH);
     	//
     	// state and top ornaments snug to the top of the board.  Depending
     	// on the rendering, it can occupy the same area or must be offset upwards
     	//
-        int stateY = boardY;
+        int stateY = boardY-stateH/2;
         int stateX = boardX;
-        int stateH = CELLSIZE;
         G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
      	
     	// goal and bottom ornaments, depending on the rendering can share
     	// the rectangle or can be offset downward.  Remember that the grid
     	// can intrude too.
-    	G.SetRect(goalRect, boardX, boardBottom-stateH*3/2,boardW,stateH);       
+    	G.SetRect(goalRect, boardX, boardBottom,boardW,stateH);       
         setProgressRect(progressRect,goalRect);
         positionTheChat(chatRect,chatBackgroundColor,rackBackGroundColor);
         return boardW*boardH;

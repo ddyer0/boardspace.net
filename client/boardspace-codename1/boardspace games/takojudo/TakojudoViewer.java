@@ -186,7 +186,7 @@ public class TakojudoViewer extends CCanvas<TakojudoCell,TakojudoBoard> implemen
     	int mainY = G.Top(main);
     	int mainW = G.Width(main);
     	int mainH = G.Height(main);
-        int stateH = fh*3;
+        int stateH = fh*5/2;
     	
     	// calculate a suitable cell size for the board
     	double cs = Math.min((double)mainW/ncols,(double)(mainH-stateH*2)/nrows);
@@ -295,6 +295,7 @@ public class TakojudoViewer extends CCanvas<TakojudoCell,TakojudoBoard> implemen
     
     public void drawFixedBoard(Graphics gc,Rectangle brect)
     {boolean review = reviewMode() && !mutable_game_record;
+      TakojudoBoard gb = disB(gc);
       if(review)
       {	 
        textures[BACKGROUND_REVIEW_INDEX].tileImage(gc,brect);   
@@ -309,16 +310,16 @@ public class TakojudoViewer extends CCanvas<TakojudoCell,TakojudoBoard> implemen
       scaled = board.centerScaledImage(gc, brect,scaled);
       if(perspective)
       {
-	    b.SetDisplayParameters(0.95, 0.9,  		0.0,0.0, 0.0,0.2,0.1,0.0);
+	    gb.SetDisplayParameters(0.95, 0.9,  		0.0,0.0, 0.0,0.2,0.1,0.0);
       }
       else
       {
-  	    b.SetDisplayParameters(1, 1,  		0.0,0.0, 0.0 );
+  	    gb.SetDisplayParameters(1, 1,  		0.0,0.0, 0.0 );
     	  
       }
-	    b.SetDisplayRectangle(brect);
+	    gb.SetDisplayRectangle(brect);
 
-      b.DrawGrid(gc,brect,use_grid,Color.white,Color.black,Color.blue,Color.black);
+      gb.DrawGrid(gc,brect,use_grid,Color.white,Color.black,Color.blue,Color.black);
     }
 
    /* draw the board and the chips on it. */

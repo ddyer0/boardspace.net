@@ -212,6 +212,7 @@ public class ExxitGameViewer extends CCanvas<ExxitCell,ExxitGameBoard> implement
     	int vcrH = fh*8;
     	int minLogW = fh*15;
        	int minChatW = fh*35;	
+        int stateH = fh*5/2;
         int minLogH = fh*10;	
         int buttonW = fh*8;
      	CELLSIZE = fh*2;
@@ -231,18 +232,17 @@ public class ExxitGameViewer extends CCanvas<ExxitCell,ExxitGameBoard> implement
     	Rectangle main = layout.getMainRectangle();
 
     	int boardX = G.Left(main);
-    	int boardY = G.Top(main)+CELLSIZE;
+    	int boardY = G.Top(main)+stateH;
     	int boardW = G.Width(main);
-    	int boardH = G.Height(main)-CELLSIZE*2;
+    	int boardH = G.Height(main)-stateH*2;
          	
       	int boardBottom = boardY+boardH;
     	//
     	// state and top ornaments snug to the top of the board.  Depending
     	// on the rendering, it can occupy the same area or must be offset upwards
     	//
-        int stateY = boardY-CELLSIZE;
+        int stateY = boardY-stateH;
         int stateX = boardX;
-        int stateH = CELLSIZE;
         int zoomW = CELLSIZE*5;
         G.placeStateRow(stateX,stateY,boardW,stateH,iconRect,stateRect,annotationMenu,eyeRect,liftRect,noChatRect);
         G.placeRight(stateRect,zoomRect,zoomW);

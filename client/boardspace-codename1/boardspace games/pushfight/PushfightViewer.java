@@ -300,7 +300,7 @@ public class PushfightViewer extends CCanvas<PushfightCell,PushfightBoard> imple
     	//
         int stateY = boardY;
         int stateX = boardX;
-        int stateH = fh*3;
+        int stateH = fh*5/2;
         G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,numberMenu,reverseRect,viewsetRect,noChatRect);
         G.SetRect(iconRect,stateX,stateY,stateH,stateH);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
@@ -373,7 +373,7 @@ public class PushfightViewer extends CCanvas<PushfightCell,PushfightBoard> imple
     Image scaled = null;
     PushfightChip background = null;
     public void drawFixedBoard(Graphics gc,Rectangle brect)
-    {
+    {	PushfightBoard gb = disB(gc);
       boolean reviewBackground = reviewMode()&&!mutable_game_record;
       if(reviewBackground)
       {	 
@@ -382,7 +382,7 @@ public class PushfightViewer extends CCanvas<PushfightCell,PushfightBoard> imple
 	  	// drawing the empty board requires detailed board coordinate information
 	  	// games with less detailed dependency in the fixed background may not need
 	  	// this. 
-	  	setDisplayParameters(bb,brect);
+	  	setDisplayParameters(gb,brect);
       
       // if the board is one large graphic, for which the visual target points
       // are carefully matched with the abstract grid
@@ -395,7 +395,7 @@ public class PushfightViewer extends CCanvas<PushfightCell,PushfightBoard> imple
       // to draw the cells, set gb.Drawing_Style in the board init method.  Create a
       // DrawGridCoord(Graphics gc, Color clt,int xpos, int ypos, int cellsize,String txt)
       // on the board to fine tune the exact positions of the text
-      bb.DrawGrid(gc, brect, use_grid, boardBackgroundColor, GridColor, GridColor, GridColor);
+      gb.DrawGrid(gc, brect, use_grid, boardBackgroundColor, GridColor, GridColor, GridColor);
 
  
      }

@@ -134,7 +134,7 @@ public class QuinamidViewer extends CCanvas<QuinamidCell,QuinamidBoard> implemen
         	row += r.nextInt()&1;
         	key += col+""+row;
         }
-        b = new QuinamidBoard(info.getString(OnlineConstants.GAMETYPE, Quinamid_INIT),
+        b = new QuinamidBoard(info.getString(GAMETYPE, Quinamid_INIT),
         		key,getStartingColorMap());
         useDirectDrawing(true);
         doInit(false);
@@ -245,7 +245,7 @@ public class QuinamidViewer extends CCanvas<QuinamidCell,QuinamidBoard> implemen
     	//
         int stateY = boardY;
         int stateX = boardX;
-        int stateH = SQUARESIZE/4;
+        int stateH = fh*5/2;
         G.placeStateRow(stateX,stateY,boardW,stateH,iconRect,stateRect,annotationMenu,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	
@@ -314,6 +314,7 @@ public class QuinamidViewer extends CCanvas<QuinamidCell,QuinamidBoard> implemen
     public void drawFixedElements(Graphics gc)
     { boolean review = reviewMode() && !mutable_game_record;
       // erase
+      QuinamidBoard gb = disB(gc);
       GC.setColor(gc,review ? reviewModeBackground : boardBackgroundColor);
       //GC.fillRect(gc, fullRect);
      textures[BACKGROUND_TILE_INDEX].tileImage(gc, fullRect);   
@@ -321,14 +322,14 @@ public class QuinamidViewer extends CCanvas<QuinamidCell,QuinamidBoard> implemen
       {	 
        textures[BACKGROUND_REVIEW_INDEX].tileImage(gc,boardRect);   
       }
-	    b.SetDisplayParameters(MASTER_SCALE,1.0,  0.16,0.045,  0);
-	    b.SetDisplayRectangle(boardRect);
+	    gb.SetDisplayParameters(MASTER_SCALE,1.0,  0.16,0.045,  0);
+	    gb.SetDisplayRectangle(boardRect);
       
       // if the board is one large graphic, for which the visual target points
       // are carefully matched with the abstract grid
       //G.centerImage(gc,images[BOARD_INDEX], brect,this);
 
-      b.DrawGrid(gc,boardRect,use_grid,Color.white,Color.black,Color.blue,Color.black);
+      gb.DrawGrid(gc,boardRect,use_grid,Color.white,Color.black,Color.blue,Color.black);
     }
 
    /* draw the board and the chips on it. */
@@ -669,7 +670,7 @@ public class QuinamidViewer extends CCanvas<QuinamidCell,QuinamidBoard> implemen
         				stateRect);
         gb.playerChip[whoseTurn].drawChip(gc, this, iconRect,null);
         
-        goalAndProgressMessage(gc,ourSelect,s.get("make 5 in a row"),progressRect, goalRect);
+        goalAndProgressMessage(gc,ourSelect,s.get(GoalMessage),progressRect, goalRect);
      
         DrawRepRect(gc,messageRotation,Color.black,gb.Digest(),repRect);
         drawAuxControls(gc,ourSelect);
@@ -876,6 +877,8 @@ private void playSounds(commonMove mm)
     /** replay a move specified in SGF format.  
      * this is mostly standard stuff, but the key is to recognize
      * the elements that we generated in sgf_save
+     * summary: 5/27/2023
+     * 1949 files visited 0 problems
      */
     public void ReplayMove(sgf_node no)
     {

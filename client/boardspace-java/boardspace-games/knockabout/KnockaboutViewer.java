@@ -170,30 +170,30 @@ public class KnockaboutViewer extends CCanvas<KnockaboutCell,KnockaboutBoard> im
     	layout.placeTheVcr(this,vcrw,vcrw*3/2);
 
     	Rectangle main = layout.getMainRectangle();
+        int stateH = fh*5/2;
     	int mainX = G.Left(main);
     	int mainY = G.Top(main);
     	int mainW = G.Width(main);
-    	int mainH = G.Height(main);
+    	int mainH = G.Height(main)-stateH;
      	// calculate a suitable cell size for the board
     	double cs = Math.min((double)mainW/ncols,(double)mainH/nrows);
     	int CELLSIZE = (int)cs;
     	SQUARESIZE = CELLSIZE;
     	//G.print("cell "+cs0+" "+cs+" "+bestPercent);
     	// center the board in the remaining space
-    	int boardW = rotate ?  (int)(nrows*CELLSIZE) : (int)(ncols*CELLSIZE);
+        int boardW = rotate ?  (int)(nrows*CELLSIZE) : (int)(ncols*CELLSIZE);
     	int boardH = rotate ? (int)(ncols*CELLSIZE) : (int)(nrows*CELLSIZE);
     	int extraW = Math.max(0, (mainW-boardW)/2);
     	int extraH = Math.max(0, (mainH-boardH-CELLSIZE/2)/2);
     	int boardX = mainX+extraW;
-    	int boardY = mainY+extraH;
+    	int boardY = mainY+stateH+extraH;
     	int boardBottom = boardY+boardH;
        	layout.returnFromMain(extraW,extraH);
     	//
     	// state and top ornaments snug to the top of the board.  Depending
     	// on the rendering, it can occupy the same area or must be offset upwards
     	//
-        int stateH = fh*3;
-        int stateY = boardY;
+        int stateY = boardY-stateH;
         int stateX = boardX;
         G.placeStateRow(stateX,stateY,boardW,stateH,iconRect,stateRect,annotationMenu,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
@@ -207,7 +207,7 @@ public class KnockaboutViewer extends CCanvas<KnockaboutCell,KnockaboutBoard> im
     	// goal and bottom ornaments, depending on the rendering can share
     	// the rectangle or can be offset downward.  Remember that the grid
     	// can intrude too.
-    	G.SetRect(goalRect, boardX, boardBottom-stateH-stateH/2,boardW,stateH);       
+    	G.SetRect(goalRect, boardX, boardBottom-stateH,boardW,stateH);       
         setProgressRect(progressRect,goalRect);
         positionTheChat(chatRect,Color.white,Color.white);
         
@@ -252,6 +252,7 @@ public class KnockaboutViewer extends CCanvas<KnockaboutCell,KnockaboutBoard> im
     Image scaled = null;
     public void drawFixedBoard(Graphics gc,Rectangle brect)
     { boolean reviewBackground = reviewMode() && !mutable_game_record;
+      KnockaboutBoard gb = disB(gc);
       if(reviewBackground)
       {	 
        textures[BACKGROUND_REVIEW_INDEX].tileImage(gc,brect);   
@@ -261,7 +262,7 @@ public class KnockaboutViewer extends CCanvas<KnockaboutCell,KnockaboutBoard> im
       // are carefully matched with the abstract grid
 
       scaled = images[BOARD_INDEX].getImage(this.loader).centerScaledImage(gc, brect,scaled);
-      b.SetDisplayParameters(
+      gb.SetDisplayParameters(
        		 0.965, //0.93,	// scale 
        		 0.8,	// yscale
        		 -0.02,	// xoff
@@ -271,8 +272,8 @@ public class KnockaboutViewer extends CCanvas<KnockaboutCell,KnockaboutBoard> im
        		 0.0,	// yperspective
        		 0.0	// skew
        		 );
-      b.SetDisplayRectangle(brect);
-      b.DrawGrid(gc,brect,use_grid,Color.white,Color.black,Color.blue,Color.black);
+      gb.SetDisplayRectangle(brect);
+      gb.DrawGrid(gc,brect,use_grid,Color.white,Color.black,Color.blue,Color.black);
     }
     private void DrawScore(Graphics gc,Rectangle r,int player)
     {	if(gc!=null)

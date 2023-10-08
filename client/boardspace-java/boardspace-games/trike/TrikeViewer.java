@@ -354,7 +354,7 @@ public class TrikeViewer extends CCanvas<TrikeCell,TrikeBoard> implements TrikeC
     	//
         int stateY = boardY;
         int stateX = boardX;
-        int stateH = fh*3;
+        int stateH = fh*5/2;
         G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,numberMenu,eyeRect,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
      	G.SetRect(swapButton,boardX+CELLSIZE*2,boardY+CELLSIZE*2,CELLSIZE*4,CELLSIZE*2);
@@ -789,7 +789,7 @@ public class TrikeViewer extends CCanvas<TrikeCell,TrikeBoard> implements TrikeC
      * that need to be fixed eventually.
      */
     public void verifyGameRecord()
-    {	DISABLE_VERIFY=true;
+    {	//DISABLE_VERIFY=true;
     	super.verifyGameRecord();
     }
  // for reference, here's the standard definition

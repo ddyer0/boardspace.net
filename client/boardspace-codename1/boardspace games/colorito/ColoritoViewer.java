@@ -121,7 +121,7 @@ public class ColoritoViewer extends CCanvas<ColoritoCell,ColoritoBoard>	implemen
 
         int randomKey = info.getInt(OnlineConstants.RANDOMSEED,-1);
        
-        b = new ColoritoBoard(info.getString(OnlineConstants.GAMETYPE, Variation.Colorito_10.name),randomKey,
+        b = new ColoritoBoard(info.getString(GAMETYPE, Variation.Colorito_10.name),randomKey,
         		players_in_game,repeatedPositions,getStartingColorMap());
         useDirectDrawing(true);
         doInit(false);
@@ -230,7 +230,7 @@ public class ColoritoViewer extends CCanvas<ColoritoCell,ColoritoBoard>	implemen
     	//
         int stateY = boardY;
         int stateX = boardX;
-        int stateH = fh*3;
+        int stateH = fh*5/2;
         
         G.placeStateRow(stateX,stateY,boardW,stateH,iconRect,stateRect,annotationMenu,reverseViewRect,eyeRect,noChatRect);
         
@@ -296,20 +296,20 @@ public class ColoritoViewer extends CCanvas<ColoritoCell,ColoritoBoard>	implemen
         drawFixedBoard(gc);
     }
     public void drawFixedBoard(Graphics gc,Rectangle brect)
-    {
+    {	ColoritoBoard gb = disB(gc);
     	boolean reviewBackground = reviewMode()&&!mutable_game_record;
       if(reviewBackground)
       {	 
        textures[BACKGROUND_REVIEW_INDEX].tileImage(gc,brect);   
       }
-	    b.SetDisplayParameters(0.94,1.0,  0.12,0.1,  0);
-	    b.SetDisplayRectangle(brect);
+	    gb.SetDisplayParameters(0.94,1.0,  0.12,0.1,  0);
+	    gb.SetDisplayRectangle(brect);
      
       // if the board is one large graphic, for which the visual target points
       // are carefully matched with the abstract grid
       //G.centerImage(gc,images[BOARD_INDEX], brect,this);
 
-      b.DrawGrid(gc,brect,use_grid,Color.white,Color.black,Color.blue,Color.black);
+      gb.DrawGrid(gc,brect,use_grid,Color.white,Color.black,Color.blue,Color.black);
     }
 
    /* draw the board and the chips on it. */
@@ -768,6 +768,17 @@ private void playSounds(commonMove m)
     /** replay a move specified in SGF format.  
      * this is mostly standard stuff, but the key is to recognize
      * the elements that we generated in sgf_save
+     * summary:
+		27: play Problem in zip file:G:\share\projects\boardspace-html\htdocs\colorito\coloritogames\coloritogames\archive-2017\games-Jun-23-2017.zip CL-Dumbot-guest-2016-05-05-2011.sgf lib.ErrorX: Not expecting drop in state Gameover
+		32: play Problem in zip file:G:\share\projects\boardspace-html\htdocs\colorito\coloritogames\coloritogames\archive-2017\games-Jun-23-2017.zip CL-Dumbot-mosquito-2014-06-12-1652.sgf lib.ErrorX: Not expecting drop in state Gameover
+		54: play Problem in zip file:G:\share\projects\boardspace-html\htdocs\colorito\coloritogames\coloritogames\archive-2017\games-Jun-23-2017.zip U!CL-barmaley-Dumbot-2016-03-27-0841.sgf lib.ErrorX: Not expecting drop in state Gameover
+		64: play Problem in zip file:G:\share\projects\boardspace-html\htdocs\colorito\coloritogames\coloritogames\archive-2017\games-Jun-23-2017.zip U!CL-guest-Dumbot-2014-05-05-1123.sgf lib.ErrorX: Not expecting robot in state Gameover
+		253: play Problem in file:G:\share\projects\boardspace-html\htdocs\colorito\coloritogames\coloritogames\games-Jun-23-2017\CL-Dumbot-guest-2016-05-05-2011.sgf lib.ErrorX: Not expecting drop in state Gameover
+		258: play Problem in file:G:\share\projects\boardspace-html\htdocs\colorito\coloritogames\coloritogames\games-Jun-23-2017\CL-Dumbot-mosquito-2014-06-12-1652.sgf lib.ErrorX: Not expecting drop in state Gameover
+		280: play Problem in file:G:\share\projects\boardspace-html\htdocs\colorito\coloritogames\coloritogames\games-Jun-23-2017\U!CL-barmaley-Dumbot-2016-03-27-0841.sgf lib.ErrorX: Not expecting drop in state Gameover
+		290: play Problem in file:G:\share\projects\boardspace-html\htdocs\colorito\coloritogames\coloritogames\games-Jun-23-2017\U!CL-guest-Dumbot-2014-05-05-1123.sgf lib.ErrorX: Not expecting robot in state Gameover
+		
+		304 files visited 8 problems
      */
     public void ReplayMove(sgf_node no)
     {

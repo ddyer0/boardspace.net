@@ -609,6 +609,7 @@ public class OnedayViewer extends CCanvas<OnedayCell,OnedayBoard> implements One
     public void drawFixedElements(Graphics gc)
     {	boolean reviewBackground = reviewMode()&&!mutable_game_record;
       // erase
+      OnedayBoard gb = disB(gc);
       GC.setColor(gc,reviewBackground ? reviewModeBackground : boardBackgroundColor);
       //GC.fillRect(gc, fullRect);
      textures[BACKGROUND_TILE_INDEX].tileImage(gc, fullRect);   
@@ -619,7 +620,7 @@ public class OnedayViewer extends CCanvas<OnedayCell,OnedayBoard> implements One
       // if the board is one large graphic, for which the visual target points
       // are carefully matched with the abstract grid
       drawFixedBoard(gc,boardRect);
-	  b.SetDisplayRectangle(boardRect);
+	  gb.SetDisplayRectangle(boardRect);
        
     }
     public void drawFixedBoard(Graphics gc,Rectangle r)

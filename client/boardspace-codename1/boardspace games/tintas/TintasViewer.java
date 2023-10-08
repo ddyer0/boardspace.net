@@ -34,6 +34,7 @@ import lib.InternationalStrings;
 import lib.LFrameProtocol;
 import lib.StockArt;
 import lib.TextButton;
+import lib.Image;
 import lib.Toggle;
 import online.game.*;
 import online.game.sgf.sgf_node;
@@ -192,7 +193,7 @@ public class TintasViewer extends CCanvas<TintasCell,TintasBoard> implements Tin
     	int mainX = G.Left(main);
     	int mainY = G.Top(main);
     	int mainW = G.Width(main);
-        int stateH = fh*3;
+        int stateH = fh*5/2;
     	int mainH = G.Height(main);
      	// calculate a suitable cell size for the board
     	double cs = Math.min((double)mainW/ncols,(double)(mainH-stateH)/nrows);
@@ -211,7 +212,7 @@ public class TintasViewer extends CCanvas<TintasCell,TintasBoard> implements Tin
     	// state and top ornaments snug to the top of the board.  Depending
     	// on the rendering, it can occupy the same area or must be offset upwards
     	//
-        int stateY = boardY-stateH/2;
+        int stateY = boardY-stateH/3;
         int stateX = boardX;
 
         G.placeRow(stateX,stateY,boardW ,stateH,stateRect,annotationMenu,viewsetRect,eyeRect,noChatRect);
@@ -320,6 +321,8 @@ public class TintasViewer extends CCanvas<TintasCell,TintasBoard> implements Tin
     //	return(new Point(G.Right(boardRect)-celloff,G.Bottom(boardRect)-celloff));
     //}  
 
+    Image background = null;
+    Image scaled = null;
 
     /** draw the deep unchangable objects, including those that might be rather expensive
      * to draw.  This background layer is used as a backdrop to the rest of the activity.
@@ -327,6 +330,7 @@ public class TintasViewer extends CCanvas<TintasCell,TintasBoard> implements Tin
      * */
     public void drawFixedElements(Graphics gc)
     { // erase
+      TintasBoard gb = disB(gc);
       boolean reviewBackground = reviewMode()&&!mutable_game_record;
       GC.setColor(gc,reviewBackground ? reviewModeBackground : boardBackgroundColor);
       //GC.fillRect(gc, fullRect);
@@ -340,15 +344,17 @@ public class TintasViewer extends CCanvas<TintasCell,TintasBoard> implements Tin
 
       // if the board is one large graphic, for which the visual target points
       // are carefully matched with the abstract grid
-     (usePerspective() ? TintasChip.board : TintasChip.board_np ).getImage(loader).centerImage(gc,
-    		  	boardRect);
+     Image board = (usePerspective() ? TintasChip.board : TintasChip.board_np ).getImage(loader);
+     if(board!=background) { scaled = null;}
+     background = board;
+     scaled = board.centerScaledImage(gc, 	boardRect, scaled);
 
       // draw a picture of the board. In this version we actually draw just the grid
       // to draw the cells, set gb.Drawing_Style in the board init method.  Create a
       // DrawGridCoord(Graphics gc, Color clt,int xpos, int ypos, int cellsize,String txt)
       // on the board to fine tune the exact positions of the text
-      setDisplayParameters(bb,boardRect);
-      bb.DrawGrid(gc, boardRect, use_grid, boardBackgroundColor, GridColor, GridColor, GridColor);
+      setDisplayParameters(gb,boardRect);
+      gb.DrawGrid(gc, boardRect, use_grid, boardBackgroundColor, GridColor, GridColor, GridColor);
 
 
      }
@@ -891,6 +897,8 @@ public class TintasViewer extends CCanvas<TintasCell,TintasBoard> implements Tin
     /** replay a move specified in SGF format.  
      * this is mostly standard stuff, but the contract is to recognize
      * the elements that we generated in sgf_save
+     * summary: 5/23/2023
+     *  3951 files visited 0 problems
      */
     public void ReplayMove(sgf_node no)
     {

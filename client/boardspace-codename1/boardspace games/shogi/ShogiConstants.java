@@ -79,11 +79,16 @@ public interface ShogiConstants
     		public boolean Puzzle() { return(this==Puzzle); } public boolean simultaneousTurnsAllowed() { return(false); }
     }
     	
-   
+    String TraditionalPieces = "Traditional Pieces";
+    String GoalMessage = "Checkmate your opponent's general";
+    String SwitchWesternMessage = "Switch to westernized pieces";
+    String SwitchTraditionalMessage = "Switch to traditional pieces";
     static public String ShogiStrings[] = 
     		{"Shogi","Move a piece, or drop a captured piece",
-    		 "Switch to westernized pieces",
-    		 "Switch to traditional pieces",
+    		 SwitchWesternMessage,
+    		 SwitchTraditionalMessage,
+    		 TraditionalPieces,
+    		 GoalMessage,
     		};
     static public String ShogiStringPairs[][] = {
     		{"Shogi_family","Shogi"},

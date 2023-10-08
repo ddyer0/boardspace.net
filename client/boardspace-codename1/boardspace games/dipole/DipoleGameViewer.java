@@ -40,6 +40,8 @@ import lib.StockArt;
  * 
  * Change History
  *
+ * TODO: make it more obvious what's required when only "trash" moves are possible
+ *
  * May 2007 initial work in progress. 
  *
 */
@@ -210,7 +212,7 @@ public class DipoleGameViewer extends CCanvas<DipoleCell,DipoleBoard> implements
     	// state and top ornaments snug to the top of the board.  Depending
     	// on the rendering, it can occupy the same area or must be offset upwards
     	//
-        int stateH = SQUARESIZE/3;
+        int stateH = fh*5/2;
         int stateY = boardY;
         int stateX = boardX;
         G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,liftRect,noChatRect);
@@ -290,15 +292,16 @@ public class DipoleGameViewer extends CCanvas<DipoleCell,DipoleBoard> implements
     public void drawFixedBoard(Graphics gc,Rectangle brect)
     { boolean reviewBackground = reviewMode() && !mutable_game_record;
       //GC.fillRect(gc, fullRect);
+      DipoleBoard gb = disB(gc);
       if(reviewBackground)
       {	 
        textures[BACKGROUND_REVIEW_INDEX].tileImage(gc,brect);   
       }
 
-  		b.SetDisplayParameters(0.94,1.0,  0.12,0.1,  0);
-	    b.SetDisplayRectangle(brect);     
+  		gb.SetDisplayParameters(0.94,1.0,  0.12,0.1,  0);
+	    gb.SetDisplayRectangle(brect);     
 	    
-      b.DrawGrid(gc,brect,use_grid,Color.white,Color.black,Color.blue,Color.black);
+      gb.DrawGrid(gc,brect,use_grid,Color.white,Color.black,Color.blue,Color.black);
     }
 
    /* draw the board and the chips on it. */
@@ -596,6 +599,8 @@ private void playSounds(DipoleMovespec m)
     /** replay a move specified in SGF format.  
      * this is mostly standard stuff, but the key is to recognize
      * the elements that we generated in sgf_save
+     * summary: 5/25/2023
+     * 	2390 files visited 0 problems
      */
     public void ReplayMove(sgf_node no)
     {

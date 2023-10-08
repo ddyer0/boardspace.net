@@ -332,6 +332,7 @@ public class VolcanoGameViewer extends CCanvas<VolcanoCell,VolcanoBoard> impleme
     public void drawFixedElements(Graphics gc)
     {boolean review = reviewMode() && !mutable_game_record;
       // erase
+      VolcanoBoard gb = disB(gc);
       GC.setColor(gc,review ? reviewModeBackground : boardBackgroundColor);
       //GC.fillRect(gc, fullRect);
      textures[BACKGROUND_TILE_INDEX].tileImage(gc, fullRect);   
@@ -344,14 +345,14 @@ public class VolcanoGameViewer extends CCanvas<VolcanoCell,VolcanoBoard> impleme
       // for us, the board is one large graphic, for which the target points
       // are carefully matched with the abstract grid
      Image board = images[perspective
-                              ? b.hexBoard?HBOARD_INDEX:BOARD_INDEX
-                              : b.hexBoard?HBOARD_NP_INDEX : RBOARD_NP_INDEX
+                              ? gb.hexBoard?HBOARD_INDEX:BOARD_INDEX
+                              : gb.hexBoard?HBOARD_NP_INDEX : RBOARD_NP_INDEX
     		  ];
       if(background!=board) { scaled = null; }
       background = board;
       scaled = board.centerScaledImage(gc, boardRect,scaled);
-      prepareBoardGeometry(b);
-      b.getRealBoard().DrawGrid(gc,boardRect,use_grid,Color.white,Color.black,Color.blue,Color.yellow);
+      prepareBoardGeometry(gb);
+      gb.getRealBoard().DrawGrid(gc,boardRect,use_grid,Color.white,Color.black,Color.blue,Color.yellow);
     }
  	double yscale = 1/15.0;
 

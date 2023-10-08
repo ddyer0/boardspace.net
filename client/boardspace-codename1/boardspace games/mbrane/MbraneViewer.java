@@ -34,6 +34,7 @@ import lib.HitPoint;
 import lib.LFrameProtocol;
 import lib.StockArt;
 import lib.TextButton;
+import lib.Image;
 import online.game.*;
 import online.game.sgf.sgf_node;
 import online.game.sgf.sgf_property;
@@ -214,7 +215,7 @@ public class MbraneViewer extends CCanvas<MbraneCell,MbraneBoard> implements Mbr
        	G.splitBottom(okendgame,noendgame,fh*5/2);
 
     	Rectangle main = layout.getMainRectangle();
-        int stateH = fh*3;
+        int stateH = fh*5/2;
         int mainX = G.Left(main);
     	int mainY = G.Top(main);
     	int mainW = G.Width(main);
@@ -257,6 +258,7 @@ public class MbraneViewer extends CCanvas<MbraneCell,MbraneBoard> implements Mbr
         labelFont = G.getFont(largeBoldFont(),CELLSIZE/3);
  	
     }
+    
     public Rectangle createPlayerGroup(int player,int x,int y,double rotation,int unitsize)
     {	commonPlayer pl = getPlayerOrTemp(player);
     	Rectangle chip = chipRects[player];
@@ -273,6 +275,7 @@ public class MbraneViewer extends CCanvas<MbraneCell,MbraneBoard> implements Mbr
     	G.union(box, chip,done);
     	return(box);
     }
+ 
 	// draw a box of spare chips. For Mbrane it's purely for effect, but if you
     // wish you can pick up and drop chips.
     private void DrawChipPool(Graphics gc, Rectangle r, HitPoint hit,int player,MbraneBoard gb)
@@ -367,6 +370,7 @@ public class MbraneViewer extends CCanvas<MbraneCell,MbraneBoard> implements Mbr
     //	return(new Point(G.Right(boardRect)-celloff,G.Bottom(boardRect)-celloff));
     //}  
 
+    Image scaled = null;
 
     /** draw the deep unchangable objects, including those that might be rather expensive
      * to draw.  This background layer is used as a backdrop to the rest of the activity.
@@ -374,6 +378,7 @@ public class MbraneViewer extends CCanvas<MbraneCell,MbraneBoard> implements Mbr
      * */
     public void drawFixedElements(Graphics gc)
     { // erase
+      MbraneBoard gb = disB(gc);
       boolean reviewBackground = reviewMode()&&!mutable_game_record;
       GC.setColor(gc,reviewBackground ? reviewModeBackground : boardBackgroundColor);
       //GC.fillRect(gc, fullRect);
@@ -385,20 +390,20 @@ public class MbraneViewer extends CCanvas<MbraneCell,MbraneBoard> implements Mbr
 	  	// drawing the empty board requires detailed board coordinate information
 	  	// games with less detailed dependency in the fixed background may not need
 	  	// this. 
-	  	setDisplayParameters(bb,activeBoardRect);
+	  	setDisplayParameters(gb,activeBoardRect);
       if(twistBoard)
       {
     	  GC.setRotation(gc,-Math.PI/2,G.centerX(boardRect),G.centerY(boardRect));
       }
       // if the board is one large graphic, for which the visual target points
       // are carefully matched with the abstract grid
-	 MbraneChip.board.image.centerImage(gc, activeBoardRect);
+      scaled = MbraneChip.board.image.centerScaledImage(gc, activeBoardRect,scaled);
 
       // draw a picture of the board. In this version we actually draw just the grid
       // to draw the cells, set gb.Drawing_Style in the board init method.  Create a
       // DrawGridCoord(Graphics gc, Color clt,int xpos, int ypos, int cellsize,String txt)
       // on the board to fine tune the exact positions of the text
-      bb.DrawGrid(gc, activeBoardRect, use_grid, boardBackgroundColor, GridColor, GridColor, GridColor);
+      gb.DrawGrid(gc, activeBoardRect, use_grid, boardBackgroundColor, GridColor, GridColor, GridColor);
       if(twistBoard)
       {
     	  GC.setRotation(gc,Math.PI/2,G.centerX(boardRect),G.centerY(boardRect));
@@ -818,7 +823,6 @@ public class MbraneViewer extends CCanvas<MbraneCell,MbraneBoard> implements Mbr
         missedOneClick = false;
         MbraneId hitCode = (MbraneId)id;
         MbraneCell hitObject = hitCell(hp);
-		MbraneState state = bb.getState();
         switch (hitCode)
         {
         default:
@@ -835,28 +839,6 @@ public class MbraneViewer extends CCanvas<MbraneCell,MbraneBoard> implements Mbr
         	PerformAndTransmit("PlaceBlack");
         	break;
         case BoardLocation:	// we hit an occupied part of the board 
-			switch(state)
-			{
-			default: throw G.Error("Not expecting drop on filled board in state %s",state);
-			case Confirm:
-			case Play:
-			case PlayNoResolve:
-			case PlayOrSwap:
-				if(!bb.isDest(hitObject))
-					{
-					// note that according to the general theory, this shouldn't
-					// ever occur because inappropriate spaces won't be mouse sensitve.
-					// this is just defense in depth.
-					throw G.Error("shouldn't hit a chip in state %s",state);
-					}
-				// fall through and pick up the previously dropped piece
-				//$FALL-THROUGH$
-			case Puzzle:
-				PerformAndTransmit("Pickb "+hitObject.col+" "+hitObject.row);
-				break;
-			}
-			break;
-			
         case EmptyBoard:
 			doDropChip(hitObject.col,hitObject.row);
 			break;
@@ -987,6 +969,8 @@ public class MbraneViewer extends CCanvas<MbraneCell,MbraneBoard> implements Mbr
     /** replay a move specified in SGF format.  
      * this is mostly standard stuff, but the contract is to recognize
      * the elements that we generated in sgf_save
+     * summary: 5/27/2023
+     *  50 files visited 0 problems
      */
     public void ReplayMove(sgf_node no)
     {

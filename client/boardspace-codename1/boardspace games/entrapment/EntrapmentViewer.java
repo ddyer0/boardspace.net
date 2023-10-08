@@ -228,7 +228,7 @@ public class EntrapmentViewer extends CCanvas<EntrapmentCell,EntrapmentBoard> im
     	//
         int stateY = boardY+C2/2;
         int stateX = boardX;
-        int stateH = CELLSIZE/2;
+        int stateH = fh*5/2;
 
         G.placeStateRow(stateX,stateY,boardW,stateH,iconRect,stateRect,annotationMenu,reverseViewRect,viewsetRect,noChatRect);
         
@@ -333,6 +333,7 @@ public class EntrapmentViewer extends CCanvas<EntrapmentCell,EntrapmentBoard> im
      * */
     public void drawFixedElements(Graphics gc)
     { boolean reviewBackground = reviewMode() && !mutable_game_record;
+      EntrapmentBoard gb = disB(gc);
       // erase
       Rectangle nrect = G.clone(boardRect);
       double coords[] = { 0.8, 0.7,0.6,0.5,0.3,0.177 }; 
@@ -353,7 +354,7 @@ public class EntrapmentViewer extends CCanvas<EntrapmentCell,EntrapmentBoard> im
       if(board!=background) { scaled = null; }
       background = board;
       scaled = board.centerScaledImage(gc, r,scaled);
-      if(b.is6x7)
+      if(gb.is6x7)
       	{ 
     	  Rectangle srect =
     			  perspective 
@@ -377,7 +378,7 @@ public class EntrapmentViewer extends CCanvas<EntrapmentCell,EntrapmentBoard> im
         G.SetTop(nrect, off);
        // G.centerImage(gc,images[STRIP_0_INDEX+i], nrect, this);
       }
-      b.DrawGrid(gc,boardRect,use_grid,Color.white,Color.black,Color.blue,Color.black);
+      gb.DrawGrid(gc,boardRect,use_grid,Color.white,Color.black,Color.blue,Color.black);
     }
     void setDisplayRectangles()
     {  	boolean is6x7 = b.is6x7;

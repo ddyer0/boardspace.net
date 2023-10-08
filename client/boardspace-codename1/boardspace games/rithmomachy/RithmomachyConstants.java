@@ -24,7 +24,10 @@ import online.game.BaseBoard.BoardState;
 public interface RithmomachyConstants 
 {	static String VictoryCondition = "Capture 50% of pieces, or 75% of value, or form a glorious victory";
 	static String PlayDescription = "Move a piece";  
-	
+	static String AmbushMessage = "Ambush";
+	static String EruptionMessage = "Eruption";
+	static String EqualityMessage = "Equality";
+	static String CapturedMessage = "#1 Captured, #2%";
 	static String RithmomachyStrings[] =
 	{	"Rithmomachy",
 		PlayDescription,
@@ -34,10 +37,10 @@ public interface RithmomachyConstants
 		"Geometric series",
 		"harmonic",
 		"Harmonic series",
-		"Equality",
-		"Ambush",
-		"Eruption",
-		"#1 Captured, #2%",
+		EqualityMessage,
+		AmbushMessage,
+		EruptionMessage,
+		CapturedMessage,
 		VictoryCondition
 	};
 	static String RithmomachyStringPairs[][] = 

@@ -228,7 +228,7 @@ public class OctilesViewer extends CCanvas<OctilesCell,OctilesBoard> implements 
     	CELLSIZE = (int)cs;
         SQUARESIZE = (int)(cs*(usePerspective()?1.7:2.1));
     	// center the board in the remaining space
-        int stateH = fh*3;
+        int stateH = fh*5/2;
     	int boardW = (int)(ncols*cs);
     	int boardH = (int)(ncols*cs);
     	
@@ -310,7 +310,7 @@ public class OctilesViewer extends CCanvas<OctilesCell,OctilesBoard> implements 
      * */
     public void drawFixedElements(Graphics gc)
     { boolean review = reviewMode() && !mutable_game_record;
-      OctilesBoard gb = b;
+      OctilesBoard gb = disB(gc);
       // erase
       GC.setColor(gc,review ? reviewModeBackground : boardBackgroundColor);
       //GC.fillRect(gc, fullRect);

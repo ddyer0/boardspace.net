@@ -616,7 +616,7 @@ private Color playerBackground[] = {
     	// center the board in the remaining space
     	int boardW = (int)(ncols*cs);
     	int boardH = (int)(nrows*cs);
-        int stateH = CELLSIZE;
+        int stateH = fh*5/2;
     	int extraW = (mainW-boardW)/2;
     	int extraH = (mainH-boardH-stateH)/2;
     	int boardX = mainX+extraW;
@@ -3244,7 +3244,7 @@ private Color playerBackground[] = {
     // draw the fixed elements, using the saved background if it is available
     // and believed to be valid.
     public void drawFixedElements(Graphics offGC)
-    {	drawFixedElements(offGC, bb,boardRect);	
+    {	drawFixedElements(offGC, disB(offGC),boardRect);	
     }
 
     /**

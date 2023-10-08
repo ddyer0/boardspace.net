@@ -304,7 +304,7 @@ public class TwixtViewer extends CCanvas<TwixtCell,TwixtBoard> implements TwixtC
     	int mainY = G.Top(main);
     	int mainW = G.Width(main);
     	int mainH = G.Height(main);
-        int stateH = fh*3;
+        int stateH = fh*5/2;
              	// calculate a suitable cell size for the board
     	double cs = Math.min((double)mainW/ncols,(double)(mainH-stateH)/nrows);
     	SQUARESIZE = (int)cs;
@@ -462,6 +462,7 @@ public class TwixtViewer extends CCanvas<TwixtCell,TwixtBoard> implements TwixtC
      * */
     public void drawFixedElements(Graphics gc)
     { // erase
+      TwixtBoard gb = disB(gc);
       boolean reviewBackground = reviewMode()&&!mutable_game_record;
       GC.setColor(gc,reviewBackground ? reviewModeBackground : boardBackgroundColor);
       //GC.fillRect(gc, fullRect);
@@ -509,12 +510,12 @@ public class TwixtViewer extends CCanvas<TwixtCell,TwixtBoard> implements TwixtC
       // to draw the cells, set gb.Drawing_Style in the board init method.  Create a
       // DrawGridCoord(Graphics gc, Color clt,int xpos, int ypos, int cellsize,String txt)
       // on the board to fine tune the exact positions of the text
-      setDisplayParameters(bb,boardRect);
-      bb.DrawGrid(gc, boardRect, use_grid, boardBackgroundColor, GridColor, GridColor, GridColor);
+      setDisplayParameters(gb,boardRect);
+      gb.DrawGrid(gc, boardRect, use_grid, boardBackgroundColor, GridColor, GridColor, GridColor);
       if(use_grid)
     	  {
     	  drawArrow(gc,'A',1);
-    	  drawArrow(gc,(char)('A'+bb.ncols-1),1);
+    	  drawArrow(gc,(char)('A'+gb.ncols-1),1);
     	  }
       // draw the tile grid.  The positions are determined by the underlying board
       // object, and the tile itself if carefully crafted to tile the twixt board

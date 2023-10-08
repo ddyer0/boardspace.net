@@ -375,9 +375,9 @@ public class TrenchViewer extends CCanvas<TrenchCell,TrenchBoard> implements Tre
     	// state and top ornaments snug to the top of the board.  Depending
     	// on the rendering, it can occupy the same area or must be offset upwards
     	//
-        int stateY = boardY;
+        int stateH = fh*5/2;
+        int stateY = boardY+stateH/3;
         int stateX = boardX;
-        int stateH = fh*3;
         G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,numberMenu,eyeRect,arrowRect,reverseViewRect,viewsetRect,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
       	

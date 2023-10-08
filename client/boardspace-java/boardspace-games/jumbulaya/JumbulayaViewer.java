@@ -331,8 +331,8 @@ public class JumbulayaViewer extends CCanvas<JumbulayaCell,JumbulayaBoard> imple
     	Rectangle score = scoreRects[player];
     	Rectangle eye = eyeRects[player];
     	Rectangle jrect = startJrects[player];
-    	int scoreW = unitsize*3;
-    	int scoreH = unitsize*3;
+    	int scoreW = unitsize*5/2;
+    	int scoreH = unitsize*5/2;
     	G.SetRect(score,x,y+unitsize*3/2,scoreW,scoreH);
     	Rectangle box =  pl.createRectangularPictureGroup(x+scoreW-unitsize,y,unitsize);
     	Rectangle done = doneRects[player];
@@ -344,7 +344,7 @@ public class JumbulayaViewer extends CCanvas<JumbulayaCell,JumbulayaBoard> imple
     	int dtop = top+unitsize/4;
     	int donex = donel+unitsize/2;
     	G.SetRect(done,donex,dtop,doneW,doneW/2);
-    	G.SetRect(jrect,donex,dtop+doneW*2/3,doneW*2,doneW*2/3);
+    	G.SetRect(jrect,donex,dtop+doneW*2/3,doneW*2,doneW/3);
     	int dright = donex+doneW*2;
     	G.SetRect(eye, dright-doneW/2,dtop,eyeSize,eyeSize);
     	G.union(box, done,score,eye,jrect);
@@ -763,7 +763,7 @@ public class JumbulayaViewer extends CCanvas<JumbulayaCell,JumbulayaBoard> imple
     Image scaled = null;
     // land here after rotating the board drawing context if appropriate
     public void drawFixedBoard(Graphics gc,Rectangle brect)
-    {	
+    {	JumbulayaBoard gb = disB(gc);
         boolean reviewBackground = reviewMode()&&!mutable_game_record;
         if(reviewBackground)
         {	 
@@ -772,7 +772,7 @@ public class JumbulayaViewer extends CCanvas<JumbulayaCell,JumbulayaBoard> imple
 	  	// drawing the empty board requires detailed board coordinate information
 	  	// games with less detailed dependency in the fixed background may not need
 	  	// this. 
-	  	setDisplayParameters(bb,brect);
+	  	setDisplayParameters(gb,brect);
 	      // if the board is one large graphic, for which the visual target points
 	      // are carefully matched with the abstract grid
 	  	if(remoteViewer<0)
@@ -783,10 +783,10 @@ public class JumbulayaViewer extends CCanvas<JumbulayaCell,JumbulayaBoard> imple
 	      // to draw the cells, set gb.Drawing_Style in the board init method.  Create a
 	      // DrawGridCoord(Graphics gc, Color clt,int xpos, int ypos, int cellsize,String txt)
 	      // on the board to fine tune the exact positions of the text
-	      bb.DrawGrid(gc, brect, use_grid, boardBackgroundColor, GridColor, GridColor, GridColor);
+	      gb.DrawGrid(gc, brect, use_grid, boardBackgroundColor, GridColor, GridColor, GridColor);
 
 	      if(DRAWBACKGROUNDTILES) 
-	    	  { drawFixedTiles(gc,brect,bb);
+	    	  { drawFixedTiles(gc,brect,gb);
 	    	  }
 	  	}
 	//      draw

@@ -480,7 +480,7 @@ public class HoneyViewer extends CCanvas<HoneyCell,HoneyBoard> implements HoneyC
 
     // land here after rotating the board drawing context if appropriate
     public void drawFixedBoard(Graphics gc,Rectangle brect)
-    {	
+    {	HoneyBoard gb = disB(gc);
         boolean reviewBackground = reviewMode()&&!mutable_game_record;
         if(reviewBackground)
         {	 
@@ -490,7 +490,7 @@ public class HoneyViewer extends CCanvas<HoneyCell,HoneyBoard> implements HoneyC
 	  	// games with less detailed dependency in the fixed background may not need
 	  	// this. 
 	  	//setDisplayParameters(bb,brect);
-        setDisplayParameters(currentPlayerBoard(bb),brect,false);
+        setDisplayParameters(currentPlayerBoard(gb),brect,false);
 	      // if the board is one large graphic, for which the visual target points
 	      // are carefully matched with the abstract grid
 	      //G.centerImage(gc,images[BOARD_INDEX], brect,this);

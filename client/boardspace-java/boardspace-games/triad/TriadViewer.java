@@ -165,7 +165,7 @@ public class TriadViewer extends CCanvas<TriadCell,TriadBoard> implements TriadC
     	CELLSIZE = (int)cs;
     	int C2 = CELLSIZE/2;
     	// center the board in the remaining space
-        int stateH = fh*3;
+        int stateH = fh*5/2;
     	int boardW = (int)(ncols*CELLSIZE);
     	int boardH = (int)((nrows-1)*CELLSIZE);
     	int extraW = (mainW-boardW)/2;
@@ -261,6 +261,7 @@ public class TriadViewer extends CCanvas<TriadCell,TriadBoard> implements TriadC
      * */
     public void drawFixedElements(Graphics gc)
     { boolean review = reviewMode() && !mutable_game_record;
+      TriadBoard gb = disB(gc);
       // erase
       GC.setColor(gc,review ? reviewModeBackground : boardBackgroundColor);
       //GC.fillRect(gc, fullRect);
@@ -270,14 +271,14 @@ public class TriadViewer extends CCanvas<TriadCell,TriadBoard> implements TriadC
        textures[BACKGROUND_REVIEW_INDEX].tileImage(gc,boardRect);   
       }
       // the numbers for the square-on display are slightly ad-hoc, but they look right
-      bb.SetDisplayParameters( 1.0,1.0, 0.3,0,30.0, 0, 0,0); // shrink a little and rotate 30 degrees
-      bb.SetDisplayRectangle(boardRect);
+      gb.SetDisplayParameters( 1.0,1.0, 0.3,0,30.0, 0, 0,0); // shrink a little and rotate 30 degrees
+      gb.SetDisplayRectangle(boardRect);
       
       // draw a picture of the board. In this version we actually draw just the grid
       // to draw the cells, set gb.Drawing_Style in the board init method.  Create a
       // DrawGridCoord(Graphics gc, Color clt,int xpos, int ypos, int cellsize,String txt)
       // on the board to fine tune the exact positions of the text
-      bb.DrawGrid(gc, boardRect, use_grid, boardBackgroundColor, GridColor, GridColor, GridColor);
+      gb.DrawGrid(gc, boardRect, use_grid, boardBackgroundColor, GridColor, GridColor, GridColor);
 
       // draw the tile grid.  The positions are determined by the underlying board
       // object, and the tile itself if carefully crafted to tile the board
@@ -286,13 +287,13 @@ public class TriadViewer extends CCanvas<TriadCell,TriadBoard> implements TriadC
       // but for more complex graphics with overlapping shadows or stacked
       // objects, this double loop is useful if you need to control the
       // order the objects are drawn in.
-      int cell = (int)(bb.cellSize()*xscale);
+      int cell = (int)(gb.cellSize()*xscale);
       int top = G.Bottom(boardRect);
       int left = G.Left(boardRect);
-      for(TriadCell c = bb.allCells; c!=null ; c=c.next)
+      for(TriadCell c = gb.allCells; c!=null ; c=c.next)
       { //where we draw the grid
-    	  int ypos = top - bb.cellToY(c);
-    	  int xpos = left + bb.cellToX(c);
+    	  int ypos = top - gb.cellToY(c);
+    	  int xpos = left + gb.cellToX(c);
     	  int bindex = HEXTILE_BORDER_NR_INDEX;
     	  int hidx = c.color.ordinal()+HEXTILE_NR_INDEX; 
     	  // to fine tune the board rendering.

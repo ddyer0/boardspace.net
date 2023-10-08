@@ -211,7 +211,7 @@ public class KubaViewer extends CCanvas<KubaCell,KubaBoard> implements  KubaCons
     	//
         int stateY = boardY;
         int stateX = boardX;
-        int stateH = CELLSIZE/3;
+        int stateH = fh*5/2;
         G.placeStateRow(stateX,stateY,boardW,stateH,iconRect,stateRect,annotationMenu,noChatRect);
      	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	
@@ -249,6 +249,7 @@ public class KubaViewer extends CCanvas<KubaCell,KubaBoard> implements  KubaCons
     public void drawFixedElements(Graphics gc)
     { boolean reviewBackground = reviewMode() && !mutable_game_record;
       // erase
+      KubaBoard gb = disB(gc);
       GC.setColor(gc,reviewBackground ? reviewModeBackground : boardBackgroundColor);
       //GC.fillRect(gc, fullRect);
      textures[BACKGROUND_TILE_INDEX].tileImage(gc,fullRect);   
@@ -260,10 +261,10 @@ public class KubaViewer extends CCanvas<KubaCell,KubaBoard> implements  KubaCons
       // for us, the board is one large graphic, for which the target points
       // are carefully matched with the abstract grid
      scaled = images[BOARD_INDEX].centerScaledImage(gc, boardRect,scaled);
-  	b.SetDisplayParameters(0.58,1.0,  0.1,0.0,  0);
-    b.SetDisplayRectangle(boardRect);
+  	 gb.SetDisplayParameters(0.58,1.0,  0.1,0.0,  0);
+     gb.SetDisplayRectangle(boardRect);
 
-      b.DrawGrid(gc,boardRect,use_grid,Color.white,Color.black,Color.blue,Color.black);
+     gb.DrawGrid(gc,boardRect,use_grid,Color.white,Color.black,Color.blue,Color.black);
     }
     private void drawBall(Graphics gc,KubaCell cell,int xpos,int ypos)
     {

@@ -250,6 +250,7 @@ public class Warp6Viewer extends CCanvas<Warp6Cell,Warp6Board> implements Warp6C
     public void drawFixedElements(Graphics gc)
     { boolean review = reviewMode() && !mutable_game_record;
       // erase
+      Warp6Board gb = disB(gc);
       GC.setColor(gc,review ? reviewModeBackground : boardBackgroundColor);
       //GC.fillRect(gc, fullRect);
      textures[BACKGROUND_TILE_INDEX].tileImage(gc,fullRect);   
@@ -264,7 +265,7 @@ public class Warp6Viewer extends CCanvas<Warp6Cell,Warp6Board> implements Warp6C
 	    {	// good for board-skew : gb.SetDisplayParameters(0.7,0.8,  0.0,0.00,  2.3, .15, 0.25);
 	    	// good for board-skew2 gb.SetDisplayParameters(0.67,0.72,  0.0,0.00,  14.5, .22, 0.25);
 	    	// good for board-skew3 gb.SetDisplayParameters(0.54,0.80,  0.0,-0.30,  7.0, .250, 0.32);
-	    	b.SetDisplayParameters(
+	    	gb.SetDisplayParameters(
 	    		 1.0, //0.93,	// scale 
 	    		 1.0,	// yscale
 	    		 0.0,	// xoff
@@ -272,25 +273,25 @@ public class Warp6Viewer extends CCanvas<Warp6Cell,Warp6Board> implements Warp6C
 	    		 0.0	// rot
 	    		 );
     	}
-        b.SetDisplayRectangle(boardRect);
+        gb.SetDisplayRectangle(boardRect);
      
       //gb.DrawGrid(gc,brect,use_grid,Color.white,Color.black,Color.blue,Color.black);
       if( SHOW_DEBUG_GRID)
       {
-      for(Warp6Cell c = b.allCells;  c!=null;  c=c.next)
-      { int xx = G.Left(boardRect) + b.cellToX(c.col,c.row);
-      	int yy = G.Bottom(boardRect) - b.cellToY(c.col,c.row);
+      for(Warp6Cell c = gb.allCells;  c!=null;  c=c.next)
+      { int xx = G.Left(boardRect) + gb.cellToX(c.col,c.row);
+      	int yy = G.Bottom(boardRect) - gb.cellToY(c.col,c.row);
       	Warp6Cell next = c.exitTo(Warp6Board.CELL_UP());
       	if(next!=null)
-      	{ int x2 =  G.Left(boardRect) + b.cellToX(next.col,next.row);
-      	  int y2 = G.Bottom(boardRect) - b.cellToY(next.col,next.row);
+      	{ int x2 =  G.Left(boardRect) + gb.cellToX(next.col,next.row);
+      	  int y2 = G.Bottom(boardRect) - gb.cellToY(next.col,next.row);
       	  GC.setColor(gc,Color.red);
       	  GC.drawLine(gc,xx,yy,x2,y2);
       	}
       	Warp6Cell up = c.exitTo(Warp6Board.CELL_RIGHT());
       	if(up!=null)
-      	{int x2 =  G.Left(boardRect) + b.cellToX(up.col,up.row);
-      	 int y2 = G.Bottom(boardRect) -b.cellToY(up.col,up.row);
+      	{int x2 =  G.Left(boardRect) + gb.cellToX(up.col,up.row);
+      	 int y2 = G.Bottom(boardRect) -gb.cellToY(up.col,up.row);
       	 GC.setColor(gc,Color.yellow);
       	 GC.drawLine(gc,xx,yy,x2,y2);
       	}

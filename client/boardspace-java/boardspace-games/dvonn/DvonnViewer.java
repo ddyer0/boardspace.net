@@ -313,19 +313,20 @@ public Rectangle createPlayerGroup(int player,int x,int y,double rotation,int un
     
     public void drawFixedBoard(Graphics gc,Rectangle brect)
     { 	boolean reviewBackground = reviewMode() && !mutable_game_record;
+    	DvonnBoard gb = disB(gc);
     	boolean perspective = usePerspective();
     	{	// good for board-skew : gb.SetDisplayParameters(0.7,0.8,  0.0,0.00,  2.3, .15, 0.25);
     	// good for board-skew2 gb.SetDisplayParameters(0.67,0.72,  0.0,0.00,  14.5, .22, 0.25);
     	// good for board-skew3 gb.SetDisplayParameters(0.54,0.80,  0.0,-0.30,  7.0, .250, 0.32);
     	if(perspective)
     	{
-    	b.SetDisplayParameters(.68,0.8, 0.85,-0.4, 30.0,0.2, 0.10,0.0);
+    	gb.SetDisplayParameters(.68,0.8, 0.85,-0.4, 30.0,0.2, 0.10,0.0);
     	}
     	else 
     	{
-    	   	b.SetDisplayParameters(.78,1.03, 0.1,0.33, 30,0,0,0.0);  		
+    	   	gb.SetDisplayParameters(.78,1.03, 0.1,0.33, 30,0,0,0.0);  		
     	}
- 	    b.SetDisplayRectangle(brect);
+ 	    gb.SetDisplayRectangle(brect);
     	}
 
       if(reviewBackground)
@@ -338,7 +339,7 @@ public Rectangle createPlayerGroup(int player,int x,int y,double rotation,int un
       background = board;
       scaled = board.centerScaledImage(gc,rect,scaled);
       
-      b.DrawGrid(gc,brect,use_grid,Color.white,Color.black,Color.blue,Color.yellow);
+      gb.DrawGrid(gc,brect,use_grid,Color.white,Color.black,Color.blue,Color.yellow);
 
     }
     private void DrawScore(Graphics gc,Rectangle r,Rectangle chipR,int player)

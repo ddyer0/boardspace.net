@@ -353,7 +353,7 @@ public class HexGameViewer extends CCanvas<hexCell,HexGameBoard> implements HexC
     	//
         int stateY = boardY;
         int stateX = boardX;
-        int stateH = fh*3;
+        int stateH = fh*5/2;
         G.placeStateRow(stateX,stateY,boardW,stateH,iconRect,stateRect,annotationMenu,numberMenu,rotation,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	
@@ -462,7 +462,7 @@ public class HexGameViewer extends CCanvas<hexCell,HexGameBoard> implements HexC
     }
     // land here after rotating the board drawing context if appropriate
     public void drawFixedBoard(Graphics gc,Rectangle brect)
-    {
+    { HexGameBoard gb  = disB(gc);
       boolean reviewBackground = reviewMode()&&!mutable_game_record;
       if(reviewBackground)
       {	 
@@ -472,7 +472,7 @@ public class HexGameViewer extends CCanvas<hexCell,HexGameBoard> implements HexC
 	  	// drawing the empty board requires detailed board coordinate information
 	  	// games with less detailed dependency in the fixed background may not need
 	  	// this. 
-	  	setDisplayParameters(bb,brect);
+	  	setDisplayParameters(gb,brect);
 
       // if the board is one large graphic, for which the visual target points
       // are carefully matched with the abstract grid
@@ -482,7 +482,7 @@ public class HexGameViewer extends CCanvas<hexCell,HexGameBoard> implements HexC
       // to draw the cells, set gb.Drawing_Style in the board init method.  Create a
       // DrawGridCoord(Graphics gc, Color clt,int xpos, int ypos, int cellsize,String txt)
       // on the board to fine tune the exact positions of the text
-      bb.DrawGrid(gc, brect, use_grid, boardBackgroundColor, GridColor, GridColor, GridColor);
+      gb.DrawGrid(gc, brect, use_grid, boardBackgroundColor, GridColor, GridColor, GridColor);
 
       // draw the tile grid.  The positions are determined by the underlying board
       // object, and the tile itself if carefully crafted to tile the hex board
@@ -494,15 +494,15 @@ public class HexGameViewer extends CCanvas<hexCell,HexGameBoard> implements HexC
       hexChip tile = lastRotation?hexChip.hexTile:hexChip.hexTileNR;
       int left = G.Left(brect);
       int top = G.Bottom(brect);
-      int xsize = bb.cellSize();
+      int xsize = gb.cellSize();
       hexChip btiles[] = lastRotation ? hexChip.border : hexChip.borderNR;
 
-      for(Enumeration<hexCell>cells = bb.getIterator(Itype.TBRL); cells.hasMoreElements();)
+      for(Enumeration<hexCell>cells = gb.getIterator(Itype.TBRL); cells.hasMoreElements();)
       {
     	  hexCell c = cells.nextElement();
-    	  int x = left+bb.cellToX(c);
-    	  int y = top-bb.cellToY(c);
-    	  int color = bb.triColor(c.col,c.row);
+    	  int x = left+gb.cellToX(c);
+    	  int y = top-gb.cellToY(c);
+    	  int color = gb.triColor(c.col,c.row);
     	  hexChip to = tile.getAltDisplayChip(color);
     	  to.drawChip(gc,this,xsize,x,y,null);
           // test 3-coloring algorithm

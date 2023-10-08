@@ -204,7 +204,7 @@ public class GounkiViewer extends CCanvas<GounkiCell,GounkiBoard> implements Gou
     	int mainX = G.Left(main);
     	int mainY = G.Top(main);
     	int mainW = G.Width(main);
-        int stateH = fh*3;
+        int stateH = fh*5/2;
     	int mainH = G.Height(main);
         boolean rotate = !perspective && seatingFaceToFaceRotated();
         int prows = (perspective ? 15 : 27);
@@ -328,6 +328,7 @@ public class GounkiViewer extends CCanvas<GounkiCell,GounkiBoard> implements Gou
     Image background = null;
     public void drawFixedBoard(Graphics gc,Rectangle brect)
     { boolean reviewBackground = reviewMode() && !mutable_game_record;
+      GounkiBoard gb = disB(gc);
       // erase
       if(reviewBackground)
       {	 
@@ -343,9 +344,9 @@ public class GounkiViewer extends CCanvas<GounkiCell,GounkiBoard> implements Gou
      background = board;
      scaled = board.centerScaledImage(gc,	brect, scaled);
 
-      setBoardParameters(b,brect);
+      setBoardParameters(gb,brect);
       
-      b.DrawGrid(gc,brect,use_grid,Color.white,Color.black,Color.blue,Color.black);
+      gb.DrawGrid(gc,brect,use_grid,Color.white,Color.black,Color.blue,Color.black);
     }
 
     private double yScale(int y,int h)

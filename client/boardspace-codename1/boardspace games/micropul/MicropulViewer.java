@@ -269,9 +269,9 @@ public class MicropulViewer extends CCanvas<MicropulCell,MicropulBoard> implemen
     	// state and top ornaments snug to the top of the board.  Depending
     	// on the rendering, it can occupy the same area or must be offset upwards
     	//
-        int stateY = boardY-CELLSIZE;
+        int stateH = fh*5/2;
+        int stateY = boardY-stateH;
         int stateX = boardX;
-        int stateH = CELLSIZE;
         int zoomW = CELLSIZE*5;
          
         G.placeStateRow(stateX,stateY,boardW,stateH,iconRect,stateRect,annotationMenu,noChatRect);
@@ -1008,6 +1008,8 @@ public class MicropulViewer extends CCanvas<MicropulCell,MicropulBoard> implemen
     /** replay a move specified in SGF format.  
      * this is mostly standard stuff, but the key is to recognize
      * the elements that we generated in sgf_save
+     * summary: 5/27/2023
+     *  5222 files visited 0 problems
      */
     public void ReplayMove(sgf_node no)
     {

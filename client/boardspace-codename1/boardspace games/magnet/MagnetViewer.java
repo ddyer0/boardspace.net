@@ -417,6 +417,7 @@ public class MagnetViewer extends CCanvas<MagnetCell,MagnetBoard> implements Mag
     
     public void drawFixedBoard(Graphics gc,Rectangle brect)
     { // erase
+      MagnetBoard gb = disB(gc);
       boolean reviewBackground = reviewMode()&&!mutable_game_record;
       if(reviewBackground)
       {	 
@@ -425,7 +426,7 @@ public class MagnetViewer extends CCanvas<MagnetCell,MagnetBoard> implements Mag
        
       // if the board is one large graphic, for which the visual target points
       // are carefully matched with the abstract grid
-      MagnetChip bd = bb.reverseY() ? MagnetChip.board_reversed : MagnetChip.board;
+      MagnetChip bd = gb.reverseY() ? MagnetChip.board_reversed : MagnetChip.board;
       Image im = bd.getImage(loader);
       if(im!=background) { scaled = null;}
       background = im;
@@ -435,8 +436,8 @@ public class MagnetViewer extends CCanvas<MagnetCell,MagnetBoard> implements Mag
       // to draw the cells, set gb.Drawing_Style in the board init method.  Create a
       // DrawGridCoord(Graphics gc, Color clt,int xpos, int ypos, int cellsize,String txt)
       // on the board to fine tune the exact positions of the text
-	  setDisplayParameters(bb,brect);
-      bb.DrawGrid(gc, brect, use_grid, boardBackgroundColor, GridColor, GridColor, GridColor);
+	  setDisplayParameters(gb,brect);
+      gb.DrawGrid(gc, brect, use_grid, boardBackgroundColor, GridColor, GridColor, GridColor);
 
      }
     private boolean censorPlayerRects(int x,int y)

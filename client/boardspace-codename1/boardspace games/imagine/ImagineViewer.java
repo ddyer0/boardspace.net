@@ -268,7 +268,7 @@ static String SWOOSH = ImageDir + "swoosh"+ Config.SoundFormat;
     	// on the rendering, it can occupy the same area or must be offset upwards
     	//
         int stateY = boardY;
-        int stateH = fh*3;
+        int stateH = fh*5/2;
         G.placeStateRow(boardX,stateY,boardW ,stateH,iconRect,stateRect,noChatRect);
         int storyLeft = boardX+CELLSIZE;
         int storyTop = stateY+stateH;
@@ -397,6 +397,7 @@ static String SWOOSH = ImageDir + "swoosh"+ Config.SoundFormat;
     public void drawFixedBoard(Graphics gc,Rectangle brect)
     {
         boolean reviewBackground = reviewMode()&&!mutable_game_record;
+        ImagineBoard gb = disB(gc);
         if(reviewBackground)
         {	 
          ImagineChip.backgroundReviewTile.image.tileImage(gc,brect);   
@@ -404,7 +405,7 @@ static String SWOOSH = ImageDir + "swoosh"+ Config.SoundFormat;
 	  	// drawing the empty board requires detailed board coordinate information
 	  	// games with less detailed dependency in the fixed background may not need
 	  	// this. 
-	  	setDisplayParameters(bb,brect);
+	  	setDisplayParameters(gb,brect);
 	      // if the board is one large graphic, for which the visual target points
 	      // are carefully matched with the abstract grid
 	      //G.centerImage(gc,images[BOARD_INDEX], brect,this);

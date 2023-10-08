@@ -199,7 +199,7 @@ public class XiangqiViewer extends CCanvas<XiangqiCell,XiangqiBoard> implements 
     	int mainX = G.Left(main);
     	int mainY = G.Top(main);
     	int mainW = G.Width(main);
-        int stateH = fh*3;
+        int stateH = fh*5/2;
     	int mainH = G.Height(main);
      	// calculate a suitable cell size for the board
     	double cs = Math.min((double)mainW/ncols,(double)(mainH-stateH)/nrows);

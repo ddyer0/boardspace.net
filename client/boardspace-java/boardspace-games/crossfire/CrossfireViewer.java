@@ -232,7 +232,7 @@ public class CrossfireViewer extends CCanvas<CrossfireCell,CrossfireBoard> imple
         int minLogH = fh*10;	
         int margin = fh/2;
         int buttonW = fh*8;
-        int stateH = fh*3;
+        int stateH = fh*5/2;
         	// this does the layout of the player boxes, and leaves
     	// a central hole for the board.
     	//double bestPercent = 
@@ -422,6 +422,7 @@ public class CrossfireViewer extends CCanvas<CrossfireCell,CrossfireBoard> imple
      * */
     public void drawFixedElements(Graphics gc)
     { // erase
+      CrossfireBoard gb = disB(gc);
       boolean backgroundReview = reviewMode() && !mutable_game_record;
       GC.setColor(gc,backgroundReview ? reviewModeBackground : boardBackgroundColor);
       //GC.fillRect(gc, fullRect);
@@ -438,7 +439,7 @@ public class CrossfireViewer extends CCanvas<CrossfireCell,CrossfireBoard> imple
       // are carefully matched with the abstract grid
      tileImages[HEXTILE_PBOARD_INDEX].getImage(loader).centerImage(gc, boardRect);
       
-      bb.SetDisplayParameters( 0.93, 0.825,
+      gb.SetDisplayParameters( 0.93, 0.825,
       		  0,0.35,
       		  0.0,
       		  0.2, 0.18,0.0); // shrink a little and rotate 30 degrees
@@ -449,18 +450,18 @@ public class CrossfireViewer extends CCanvas<CrossfireCell,CrossfireBoard> imple
           // are carefully matched with the abstract grid
          tileImages[HEXTILE_NP_INDEX].getImage(loader).centerImage(gc, boardRect);
           
-          bb.SetDisplayParameters( 0.97,0.97,0.1,-0.5,0); // shrink a little and rotate 30 degrees
+          gb.SetDisplayParameters( 0.97,0.97,0.1,-0.5,0); // shrink a little and rotate 30 degrees
 
       }
       
-      bb.SetDisplayRectangle(boardRect);
+      gb.SetDisplayRectangle(boardRect);
   
 
       // draw a picture of the board. In this version we actually draw just the grid
       // to draw the cells, set gb.Drawing_Style in the board init method.  Create a
       // DrawGridCoord(Graphics gc, Color clt,int xpos, int ypos, int cellsize,String txt)
       // on the board to fine tune the exact positions of the text
-      bb.DrawGrid(gc, boardRect, use_grid, boardBackgroundColor, GridFillColor, GridTextColor,GridColor);
+      gb.DrawGrid(gc, boardRect, use_grid, boardBackgroundColor, GridFillColor, GridTextColor,GridColor);
 
  
     }

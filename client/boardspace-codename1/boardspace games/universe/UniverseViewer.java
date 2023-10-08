@@ -729,6 +729,7 @@ public class UniverseViewer extends CCanvas<UniverseCell,UniverseBoard> implemen
      * */
     public void drawFixedElements(Graphics gc)
     {boolean review = reviewMode() && !mutable_game_record;
+     UniverseBoard gb = disB(gc);
       // erase
       GC.setColor(gc,review ? reviewModeBackground : boardBackgroundColor);
       //GC.fillRect(gc, fullRect);
@@ -737,16 +738,16 @@ public class UniverseViewer extends CCanvas<UniverseCell,UniverseBoard> implemen
       {	 
        textures[BACKGROUND_REVIEW_INDEX].tileImage(gc,boardRect);   
       }
-      setDisplayParameters(b,boardRect);
+      setDisplayParameters(gb,boardRect);
       
-      for(UniverseCell c = b.allCells; c!=null;  c=c.next)
-      {	int ypos = G.Bottom(boardRect) - b.cellToY(c.col, c.row);
-      	int xpos = G.Left(boardRect) + b.cellToX(c.col,c.row);
-      	images[c.cellImageIndex].drawChip(gc,this,b.cellSize(),xpos,ypos,null);
+      for(UniverseCell c = gb.allCells; c!=null;  c=c.next)
+      {	int ypos = G.Bottom(boardRect) - gb.cellToY(c.col, c.row);
+      	int xpos = G.Left(boardRect) + gb.cellToX(c.col,c.row);
+      	images[c.cellImageIndex].drawChip(gc,this,gb.cellSize(),xpos,ypos,null);
       	c.rotateCurrentCenter(gc,xpos,ypos);
       }
     	 
-      b.DrawGrid(gc,boardRect,use_grid,Color.white,Color.black,Color.blue,Color.black);
+      gb.DrawGrid(gc,boardRect,use_grid,Color.white,Color.black,Color.blue,Color.black);
     }
     private void showSudokuValue(int value,Graphics gc,int SQUARE,int xpos,int ypos)
     {
@@ -1449,6 +1450,14 @@ private void playSounds(commonMove m)
     /** replay a move specified in SGF format.  
      * this is mostly standard stuff, but the key is to recognize
      * the elements that we generated in sgf_save
+     * universe summary:
+		37 files visited 0 problems
+	   diagonal block duo summary:
+		1441 files visited 0 problems
+	   pan kai summary: 5/27/2023
+		1195 files visited 0 problems
+	   philip summary: 5/27/2023
+		1781 files visited 0 problems
      */
     public void ReplayMove(sgf_node no)
     {

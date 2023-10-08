@@ -150,7 +150,7 @@ public class RajViewer extends CCanvas<RajCell,RajBoard> implements RajConstants
         int randomKey = info.getInt(OnlineConstants.RANDOMSEED,-1);
         int np = Math.max(2,info.getInt(OnlineConstants.PLAYERS_IN_GAME));
          
-        bb = new RajBoard(info.getString(OnlineConstants.GAMETYPE, Raj_INIT),randomKey,np,getStartingColorMap());
+        bb = new RajBoard(info.getString(GAMETYPE, Raj_INIT),randomKey,np,getStartingColorMap());
         useDirectDrawing(true); 
         doInit(false);
 
@@ -240,7 +240,7 @@ public class RajViewer extends CCanvas<RajCell,RajBoard> implements RajConstants
     	//
         int stateY = boardY;
         int stateX = boardX;
-        int stateH = fh*3;
+        int stateH = fh*5/2;
         G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,noChatRect);
 
     	G.SetRect(boardRect,boardX,boardY+stateH,boardW,boardH-stateH);
@@ -328,7 +328,7 @@ public class RajViewer extends CCanvas<RajCell,RajBoard> implements RajConstants
     	if(played.drawHStack(gc,this,
     				canHitPlayedCards?highlight:null,unit*2,
     				left+(unit*3),mid-step,0,0.07,null))
-    	{	highlight.setHelpText(s.get("Used Cards"));
+    	{	highlight.setHelpText(s.get(UsedCardsMessage));
     		highlight.hit_index = -1;
     		highlight.arrow = (movingObjectIndex()<0)?StockArt.UpArrow:StockArt.DownArrow;
     		highlight.awidth = unit;
@@ -442,6 +442,7 @@ public class RajViewer extends CCanvas<RajCell,RajBoard> implements RajConstants
     public void drawFixedElements(Graphics gc)
     { boolean review = reviewMode() && !mutable_game_record;
       // erase
+      RajBoard gb = disB(gc);
       GC.setColor(gc,review ? reviewModeBackground : boardBackgroundColor);
       //GC.fillRect(gc, fullRect);
      textures[review?BACKGROUND_REVIEW_INDEX:BACKGROUND_INDEX].tileImage(gc, fullRect);  
@@ -450,8 +451,8 @@ public class RajViewer extends CCanvas<RajCell,RajBoard> implements RajConstants
     	  {textures[BACKGROUND_TILE_INDEX].tileImage(gc,boardRect);   
       GC.frameRect(gc,Color.black,boardRect);
     	  }
-      bb.SetDisplayParameters( 1.0, 1.0, 0, 0, 0); // shrink a little and rotate 30 degrees
-      bb.SetDisplayRectangle(boardRect);
+      gb.SetDisplayParameters( 1.0, 1.0, 0, 0, 0); // shrink a little and rotate 30 degrees
+      gb.SetDisplayRectangle(boardRect);
       
       // if the board is one large graphic, for which the visual target points
       // are carefully matched with the abstract grid
@@ -490,21 +491,6 @@ public class RajViewer extends CCanvas<RajCell,RajBoard> implements RajConstants
     	return(super.encodeScreenZone(x,y,p));
     }
     
-	/**
-	 * Overriding this method so that we can "animate" a wolf while the
-	 * wolf player is hiding & choosing a meal.
-	 */
-	public Point decodeScreenZone(String z,int x, int y) {
-		if (HIDDEN.equals(z)) {
-			// This is indication that the wolf player is moving within
-			// the area with a hidden wolf, so use the Y coordinate as
-			// the animation updated value.
-			return new Point (0, 0);
-		}
-
-		return super.decodeScreenZone(z,x, y);
-	}
-
    /** draw the board and the chips on it. the gc will normally draw on a background
     * array which contains the slowly changing part of the board. 
     * */
@@ -1008,6 +994,8 @@ public class RajViewer extends CCanvas<RajCell,RajBoard> implements RajConstants
     /** replay a move specified in SGF format.  
      * this is mostly standard stuff, but the contract is to recognize
      * the elements that we generated in sgf_save
+     * summary: 5/27/2023
+     * 2058 files visited 0 problems
      */
     public void ReplayMove(sgf_node no)
     {

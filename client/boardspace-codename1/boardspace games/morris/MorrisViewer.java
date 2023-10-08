@@ -31,8 +31,8 @@ import lib.CellId;
 import lib.ExtendedHashtable;
 import lib.G;
 import lib.GC;
-import lib.HitPoint;
 import lib.Image;
+import lib.HitPoint;
 import lib.InternationalStrings;
 import lib.LFrameProtocol;
 import lib.StockArt;
@@ -189,7 +189,7 @@ public class MorrisViewer extends CCanvas<MorrisCell,MorrisBoard> implements Mor
         layout.placeDrawGroup(G.getFontMetrics(standardPlainFont()),acceptDrawRect,declineDrawRect);
         layout.placeRectangle(bannerRect,buttonW*3,buttonW/2,buttonW*5,5*buttonW/2,BoxAlignment.Top,false);
     	Rectangle main = layout.getMainRectangle();
-        int stateH = fh*3;
+        int stateH = fh*5/2;
     	int mainX = G.Left(main);
     	int mainY = G.Top(main);
     	int mainW = G.Width(main);
@@ -300,7 +300,8 @@ public class MorrisViewer extends CCanvas<MorrisCell,MorrisBoard> implements Mor
      * */
     public void drawFixedElements(Graphics gc)
     {	boolean reviewBackground = reviewMode()&&!mutable_game_record;
-    	setBoardRect(b);
+        MorrisBoard gb = disB(gc);
+    	setBoardRect(gb);
       // erase
      MorrisChip.backgroundTile.image.tileImage(gc, fullRect);   
       //gc.setColor(Color.black);
@@ -315,10 +316,10 @@ public class MorrisViewer extends CCanvas<MorrisCell,MorrisBoard> implements Mor
       scaled = MorrisChip.board_9.getImage().centerScaledImage(gc,boardRect,scaled);
       
       //G.centerImage(gc,MorrisChip.board_9.image, brect,this);
-      Variation v = b.variation;
+      Variation v = gb.variation;
       if(v.banner!=null) { v.banner.image.centerImage(gc,bannerRect); }
       
-      b.DrawGrid(gc,boardRect,use_grid,Color.white,Color.black,Color.blue,Color.black);
+      gb.DrawGrid(gc,boardRect,use_grid,Color.white,Color.black,Color.blue,Color.black);
     }
 
    /* draw the board and the chips on it. */

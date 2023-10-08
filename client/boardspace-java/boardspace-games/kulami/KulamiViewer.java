@@ -279,7 +279,7 @@ public class KulamiViewer extends CCanvas<KulamiCell,KulamiBoard> implements Kul
 
 
     	Rectangle main = layout.getMainRectangle();
-        int stateH = fh*3;
+        int stateH = fh*5/2;
         int mainX = G.Left(main);
     	int mainY = G.Top(main)+stateH;
     	int mainW = G.Width(main);
@@ -415,6 +415,7 @@ public class KulamiViewer extends CCanvas<KulamiCell,KulamiBoard> implements Kul
     public void drawFixedElements(Graphics gc)
     { // erase
       boolean reviewBackground = reviewMode()&&!mutable_game_record;
+      KulamiBoard gb = disB(gc);
       GC.setColor(gc,reviewBackground ? reviewModeBackground : boardBackgroundColor);
       //GC.fillRect(gc, fullRect);
      KulamiChip.backgroundTile.image.tileImage(gc, fullRect);   
@@ -425,7 +426,7 @@ public class KulamiViewer extends CCanvas<KulamiCell,KulamiBoard> implements Kul
 	  	// drawing the empty board requires detailed board coordinate information
 	  	// games with less detailed dependency in the fixed background may not need
 	  	// this. 
-	  	setDisplayParameters(bb,boardRect);
+	  	setDisplayParameters(gb,boardRect);
       
       // if the board is one large graphic, for which the visual target points
       // are carefully matched with the abstract grid
@@ -435,7 +436,7 @@ public class KulamiViewer extends CCanvas<KulamiCell,KulamiBoard> implements Kul
       // to draw the cells, set gb.Drawing_Style in the board init method.  Create a
       // DrawGridCoord(Graphics gc, Color clt,int xpos, int ypos, int cellsize,String txt)
       // on the board to fine tune the exact positions of the text
-      bb.DrawGrid(gc, boardRect, use_grid, boardBackgroundColor, GridColor, GridColor, GridColor);
+      gb.DrawGrid(gc, boardRect, use_grid, boardBackgroundColor, GridColor, GridColor, GridColor);
 
       // draw the tile grid.  The positions are determined by the underlying board
       // object, and the tile itself if carefully crafted to tile the Kulami board
@@ -445,14 +446,14 @@ public class KulamiViewer extends CCanvas<KulamiCell,KulamiBoard> implements Kul
       // objects, this double loop is useful if you need to control the
       // order the objects are drawn in.
       {
-    	Enumeration<KulamiCell>cells = bb.getIterator(Itype.LRTB);
+    	Enumeration<KulamiCell>cells = gb.getIterator(Itype.LRTB);
        	while(cells.hasMoreElements())
        	{	KulamiCell c = cells.nextElement();
        		SubBoard sub = c.subBoard;
        		if((sub!=null) && (sub.location==c))
        		{
-            	int ypos = G.Bottom(boardRect) - bb.cellToY(c);
-                int xpos = G.Left(boardRect) + bb.cellToX(c) - (int)(0.177*CELLSIZE);
+            	int ypos = G.Bottom(boardRect) - gb.cellToY(c);
+                int xpos = G.Left(boardRect) + gb.cellToX(c) - (int)(0.177*CELLSIZE);
       			sub.chip.drawChip(gc,this,(int)(CELLSIZE*boardScale),xpos,ypos,null);
        		}
        	}}

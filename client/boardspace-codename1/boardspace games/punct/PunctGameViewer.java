@@ -32,8 +32,8 @@ import lib.G;
 import lib.GC;
 import lib.HitPoint;
 import lib.LFrameProtocol;
-import lib.RepaintManager.RepaintStrategy;
 import lib.StockArt;
+import lib.RepaintManager.RepaintStrategy;
 import online.game.*;
 import online.game.sgf.*;
 import online.search.SimpleRobotProtocol;
@@ -381,6 +381,7 @@ public class PunctGameViewer extends CCanvas<punctCell,PunctGameBoard> implement
     public void drawFixedElements(Graphics gc)
     { boolean review = reviewMode() && !mutable_game_record;
       // erase
+      PunctGameBoard gb = disB(gc);
       GC.setColor(gc,review ? reviewModeBackground : boardBackgroundColor);
       //GC.fillRect(gc, fullRect);
      textures[BACKGROUND_TILE_INDEX].tileImage(gc,fullRect);   
@@ -388,14 +389,14 @@ public class PunctGameViewer extends CCanvas<punctCell,PunctGameBoard> implement
       {	 
        textures[BACKGROUND_REVIEW_INDEX].tileImage(gc,boardRect);   
       }
-		b.SetDisplayParameters(0.91, 0.99, 0.03,-0.09,0); //
-  		b.SetDisplayRectangle(boardRect);
+		gb.SetDisplayParameters(0.91, 0.99, 0.03,-0.09,0); //
+ 		gb.SetDisplayRectangle(boardRect);
       // for us, the board is one large graphic, for which the target points
       // are carefully matched with the abstract grid
  	  scaled = PunctPiece.images[BOARD_INDEX].centerScaledImage(gc, boardRect,scaled);
       
       // draw a picture of the board. In this version we actually draw just the grid.
-      b.DrawGrid(gc, boardRect, use_grid, boardBackgroundColor, GridColor, GridColor, GridColor);
+      gb.DrawGrid(gc, boardRect, use_grid, boardBackgroundColor, GridColor, GridColor, GridColor);
        
       // draw the tile grid - this is used to match the grid to the graphic, and also 
       // is useful when tuning the position of the pieces

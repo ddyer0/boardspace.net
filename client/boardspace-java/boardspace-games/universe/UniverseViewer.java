@@ -728,6 +728,7 @@ public class UniverseViewer extends CCanvas<UniverseCell,UniverseBoard> implemen
      * */
     public void drawFixedElements(Graphics gc)
     {boolean review = reviewMode() && !mutable_game_record;
+     UniverseBoard gb = disB(gc);
       // erase
       GC.setColor(gc,review ? reviewModeBackground : boardBackgroundColor);
       //GC.fillRect(gc, fullRect);
@@ -736,16 +737,16 @@ public class UniverseViewer extends CCanvas<UniverseCell,UniverseBoard> implemen
       {	 
        textures[BACKGROUND_REVIEW_INDEX].tileImage(gc,boardRect);   
       }
-      setDisplayParameters(b,boardRect);
+      setDisplayParameters(gb,boardRect);
       
-      for(UniverseCell c = b.allCells; c!=null;  c=c.next)
-      {	int ypos = G.Bottom(boardRect) - b.cellToY(c.col, c.row);
-      	int xpos = G.Left(boardRect) + b.cellToX(c.col,c.row);
-      	images[c.cellImageIndex].drawChip(gc,this,b.cellSize(),xpos,ypos,null);
+      for(UniverseCell c = gb.allCells; c!=null;  c=c.next)
+      {	int ypos = G.Bottom(boardRect) - gb.cellToY(c.col, c.row);
+      	int xpos = G.Left(boardRect) + gb.cellToX(c.col,c.row);
+      	images[c.cellImageIndex].drawChip(gc,this,gb.cellSize(),xpos,ypos,null);
       	c.rotateCurrentCenter(gc,xpos,ypos);
        }
     	 
-      b.DrawGrid(gc,boardRect,use_grid,Color.white,Color.black,Color.blue,Color.black);
+      gb.DrawGrid(gc,boardRect,use_grid,Color.white,Color.black,Color.blue,Color.black);
     }
     private void showSudokuValue(int value,Graphics gc,int SQUARE,int xpos,int ypos)
     {

@@ -195,7 +195,7 @@ public class StacViewer extends CCanvas<StacCell,StacBoard> implements StacConst
     	//
         int stateY = boardY;
         int stateX = boardX;
-        int stateH = CELLSIZE;
+        int stateH = fh*5/2;
         G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,liftRect,reverseViewRect,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	
@@ -275,6 +275,7 @@ public class StacViewer extends CCanvas<StacCell,StacBoard> implements StacConst
     public void drawFixedElements(Graphics gc)
     {	boolean reviewBackground = reviewMode()&&!mutable_game_record;
       // erase
+      StacBoard gb = disB(gc);
       GC.setColor(gc,reviewBackground ? reviewModeBackground : boardBackgroundColor);
      StacChip.backgroundTile.image.tileImage(gc, fullRect);   
       if(reviewBackground)
@@ -292,10 +293,10 @@ public class StacViewer extends CCanvas<StacCell,StacBoard> implements StacConst
 	 	    		new double[]{0.96,0.375},
 	 	    		new double[]{.89,.83});
 	 	    		*/
-      b.SetDisplayParameters(0.79,0.55,0.0,1.4,3.0,0.09,0,0.05);
+      gb.SetDisplayParameters(0.79,0.55,0.0,1.4,3.0,0.09,0,0.05);
 
-      b.SetDisplayRectangle(boardRect);
-      b.DrawGrid(gc,boardRect,use_grid,Color.white,Color.black,Color.blue,Color.black);
+      gb.SetDisplayRectangle(boardRect);
+      gb.DrawGrid(gc,boardRect,use_grid,Color.white,Color.black,Color.blue,Color.black);
     }
 
    /* draw the board and the chips on it. */

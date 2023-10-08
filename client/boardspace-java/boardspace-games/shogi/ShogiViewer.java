@@ -191,7 +191,7 @@ public class ShogiViewer extends CCanvas<ShogiCell,ShogiBoard> implements ShogiC
     	int mainX = G.Left(main);
     	int mainY = G.Top(main);
     	int mainW = G.Width(main);
-        int stateH = fh*3;
+        int stateH = fh*5/2;
     	int mainH = G.Height(main);
         boolean rotate = seatingFaceToFaceRotated();
         int nrows = rotate ? b.boardColumns : b.boardRows;  
@@ -356,6 +356,7 @@ public class ShogiViewer extends CCanvas<ShogiCell,ShogiBoard> implements ShogiC
     Image scaled = null;
     public void drawFixedBoard(Graphics gc,Rectangle brect)
     { boolean review = reviewMode() && !mutable_game_record;
+      ShogiBoard gb = disB(gc);
       if(review)
       {	 
        textures[BACKGROUND_REVIEW_INDEX].tileImage(gc,brect);   
@@ -364,10 +365,10 @@ public class ShogiViewer extends CCanvas<ShogiCell,ShogiBoard> implements ShogiC
       // if the board is one large graphic, for which the visual target points
       // are carefully matched with the abstract grid
       scaled = images[BOARD_INDEX].centerScaledImage(gc, brect, scaled);
-	    b.SetDisplayParameters(0.87,1.08,  0.16,-0.02,  0);
-	    b.SetDisplayRectangle(brect);
+	    gb.SetDisplayParameters(0.87,1.08,  0.16,-0.02,  0);
+	    gb.SetDisplayRectangle(brect);
 
-      b.DrawGrid(gc,brect,use_grid,Color.white,Color.black,Color.blue,Color.black);
+      gb.DrawGrid(gc,brect,use_grid,Color.white,Color.black,Color.blue,Color.black);
     }
 
    /* draw the board and the chips on it. */

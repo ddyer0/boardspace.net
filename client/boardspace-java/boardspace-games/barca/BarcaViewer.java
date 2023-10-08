@@ -196,7 +196,7 @@ public class BarcaViewer extends CCanvas<BarcaCell,BarcaBoard> implements BarcaC
     	SQUARESIZE = CELLSIZE*2;
     	//G.print("cell "+cs0+" "+cs+" "+bestPercent);
     	// center the board in the remaining space
-        int stateH = 3*CELLSIZE/4;
+        int stateH = fh*5/2;
     	int boardW = (int)(ncols*cs);
     	int boardH = (int)(nrows*cs);
     	int extraW = Math.max(0, (mainW-boardW)/2);
@@ -311,13 +311,13 @@ public class BarcaViewer extends CCanvas<BarcaCell,BarcaBoard> implements BarcaC
       lastBoard = board;
       scaled = board.centerScaledImage(gc, brect,scaled);
       
-
+      BarcaBoard gb = disB(gc);
       // draw a picture of the board. In this version we actually draw just the grid
       // to draw the cells, set gb.Drawing_Style in the board init method.  Create a
       // DrawGridCoord(Graphics gc, Color clt,int xpos, int ypos, int cellsize,String txt)
       // on the board to fine tune the exact positions of the text
-	  setDisplayParameters(bb,brect);	// make sure the coordinate system is in sync
-      bb.DrawGrid(gc, brect, use_grid, boardBackgroundColor, GridColor, GridColor, GridColor);
+	  setDisplayParameters(gb,brect);	// make sure the coordinate system is in sync
+      gb.DrawGrid(gc, brect, use_grid, boardBackgroundColor, GridColor, GridColor, GridColor);
 
      }
     

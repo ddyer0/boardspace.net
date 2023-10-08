@@ -324,10 +324,11 @@ public class TamskViewer extends CCanvas<TamskCell,TamskBoard> implements TamskC
        	//layout.placeDrawGroup(G.getFontMetrics(standardPlainFont()),acceptDrawRect,declineDrawRect);
 
     	Rectangle main = layout.getMainRectangle();
+        int stateH = fh*5/2;
     	int mainX = G.Left(main);
     	int mainY = G.Top(main);
     	int mainW = G.Width(main);
-    	int mainH = G.Height(main);
+    	int mainH = G.Height(main)-stateH;
     	
     	// There are two classes of boards that should be rotated. For boards with a strong
     	// "my side" orientation, such as chess, use seatingFaceToFaceRotated() as
@@ -347,16 +348,15 @@ public class TamskViewer extends CCanvas<TamskCell,TamskBoard> implements TamskC
     	int extraW = Math.max(0, (mainW-boardW)/2);
     	int extraH = Math.max(0, (mainH-boardH)/2);
     	int boardX = mainX+extraW;
-    	int boardY = mainY+extraH;
+    	int boardY = mainY+extraH+stateH;
     	int boardBottom = boardY+boardH;
        	layout.returnFromMain(extraW,extraH);
     	//
     	// state and top ornaments snug to the top of the board.  Depending
     	// on the rendering, it can occupy the same area or must be offset upwards
     	//
-        int stateY = boardY;
+        int stateY = boardY-stateH/2;
         int stateX = boardX;
-        int stateH = fh*3;
         G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,sandRect,eyeRect,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	

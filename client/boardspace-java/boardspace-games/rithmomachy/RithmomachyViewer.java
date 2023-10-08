@@ -219,7 +219,7 @@ public class RithmomachyViewer extends CCanvas<RithmomachyCell,RithmomachyBoard>
     	int mainY = G.Top(main);
     	int mainW = G.Width(main);
     	int mainH = G.Height(main);
-        int stateH = fh*3;
+        int stateH = fh*5/2;
         rotateBoard = mainH>mainW;
     	if(rotateBoard) { ncols+=3; }
      	// calculate a suitable cell size for the board
@@ -592,7 +592,7 @@ public class RithmomachyViewer extends CCanvas<RithmomachyCell,RithmomachyBoard>
     {	boolean reviewBackground = reviewMode()&&!mutable_game_record;
     	int cx = G.centerX(boardRect);
     	int cy = G.centerY(boardRect);
-    	
+    	RithmomachyBoard gb = disB(gc);
     	// erase
     	GC.setColor(gc,reviewBackground ? reviewModeBackground : boardBackgroundColor);
     	//GC.fillRect(gc, fullRect);
@@ -608,10 +608,10 @@ public class RithmomachyViewer extends CCanvas<RithmomachyCell,RithmomachyBoard>
       // if the board is one large graphic, for which the visual target points
       // are carefully matched with the abstract grid
       scaled = images[BOARD_INDEX].centerScaledImage(gc, boardRect,scaled);
-      b.SetDisplayParameters(rotateBoard?0.85:0.878,1.0,  0.18,0.05,  0);
-      b.SetDisplayRectangle(boardRect);
+      gb.SetDisplayParameters(rotateBoard?0.85:0.878,1.0,  0.18,0.05,  0);
+      gb.SetDisplayRectangle(boardRect);
 
-      b.DrawGrid(gc,boardRect,use_grid,Color.white,Color.black,Color.blue,Color.black);
+      gb.DrawGrid(gc,boardRect,use_grid,Color.white,Color.black,Color.blue,Color.black);
       
       if(rotateBoard) 
   		{ GC.setRotation(gc, -Math.PI/2, cx, cy);

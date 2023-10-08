@@ -279,7 +279,7 @@ public class BreakingAwayViewer extends CCanvas<BreakingAwayCell,BreakingAwayBoa
 		CELLSIZE = Math.min(height/40,width/60);
         }
     	int C2 = CELLSIZE/2;
-     	int stateH = CELLSIZE+C2;   
+      	int stateH = fh*5/2;   
         int boardY = G.Top(main);
     	int boardH = G.Height(main)-stateH;
     	int boxW =G.Width(main);
@@ -315,14 +315,8 @@ public class BreakingAwayViewer extends CCanvas<BreakingAwayCell,BreakingAwayBoa
 
     G.SetRect(sprintRect, G.Right(vcrZone),bottomLine, BCELL*15, BCELL*2);
 
-    int sizeX = boardX+boardW-CELLSIZE*16;
-	G.SetRect(sizeRect, 
-    		sizeX,
-    		boardY+CELLSIZE*2,
-    		CELLSIZE*7,
-    		CELLSIZE*2);
-    
 	G.placeStateRow(stateX, stateY,boardW,stateH,iconRect,stateRect,noChatRect);
+	G.placeRight(stateRect, sizeRect ,CELLSIZE*12);
 
     int timeW = 2*BCELL;
     int timeY = G.Top(vcrZone)-timeW;
@@ -396,24 +390,22 @@ public class BreakingAwayViewer extends CCanvas<BreakingAwayCell,BreakingAwayBoa
     public void drawFixedElements(Graphics gc)
     { boolean backgroundReview = reviewMode() && !mutable_game_record;
     
-
+    BreakingAwayBoard gb = disB(gc);
       GC.setColor(gc,backgroundReview ? reviewModeBackground : boardBackgroundColor);
       textures[BACKGROUND_TILE_INDEX].tileImage(gc,fullRect);   
-
       GC.setRotatedContext(gc,boardRect,null,contextRotation);    
-          
       if(remoteViewer<0) 
       	{ 
     	  textures[backgroundReview ? BROWN_FELT_INDEX:YELLOW_FELT_INDEX].tileImage(gc,
     	          		boardRect); 
-    	  Image boardImage = images[(b.reverseY()?BOARD_OBLIQUE_REVERSE_INDEX:BOARD_OBLIQUE_INDEX)];
+    	  Image boardImage = images[(gb.reverseY()?BOARD_OBLIQUE_REVERSE_INDEX:BOARD_OBLIQUE_INDEX)];
     	  if(boardImage!=background) { scaled = null; }
     	  background = boardImage;
     	  scaled = boardImage.centerScaledImage(gc, boardRect,scaled);
   		
       	}
   		
-      b.SetDisplayRectangle(boardRect);
+      gb.SetDisplayRectangle(boardRect);
     
       GC.unsetRotatedContext(gc,null);
       // visualize the center lines of the track wedges

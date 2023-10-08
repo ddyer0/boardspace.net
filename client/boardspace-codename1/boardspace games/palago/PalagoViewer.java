@@ -255,9 +255,9 @@ public class PalagoViewer extends CCanvas<PalagoCell,PalagoBoard> implements Pal
     	// state and top ornaments snug to the top of the board.  Depending
     	// on the rendering, it can occupy the same area or must be offset upwards
     	//
-        int stateY = boardY-CELLSIZE;
+        int stateH = fh*5/2;
+        int stateY = boardY-stateH;
         int stateX = boardX;
-        int stateH = CELLSIZE;
         int zoomW = CELLSIZE*5;
         G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,noChatRect);
         G.placeRight(stateRect, zoomRect, zoomW);
@@ -547,7 +547,7 @@ public class PalagoViewer extends CCanvas<PalagoCell,PalagoBoard> implements Pal
         				gb.whoseTurn,
         				stateRect);
         DrawLogo(gc,iconRect,gb.whoseTurn);
-        goalAndProgressMessage(gc,nonDragSelect,s.get("Form a closed shape in your color"),progressRect, goalRect);
+        goalAndProgressMessage(gc,nonDragSelect,s.get(GoalMessage),progressRect, goalRect);
         //DrawRepRect(gc,gb.Digest(),repRect);	// Not needed for games with no possible repetition
         
         // draw the vcr controls

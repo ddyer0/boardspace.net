@@ -207,7 +207,7 @@ public class MorelliViewer extends CCanvas<MorelliCell,MorelliBoard> implements 
     	//
         int stateY = boardY;
         int stateX = boardX;
-        int stateH = fh*3;
+        int stateH = fh*5/2;
         G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,numberMenu,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	
@@ -253,6 +253,7 @@ public class MorelliViewer extends CCanvas<MorelliCell,MorelliBoard> implements 
      * */
     public void drawFixedElements(Graphics gc)
     {	boolean reviewBackground = reviewMode()&&!mutable_game_record;
+      MorelliBoard gb = disB(gc);
       // erase
       GC.setColor(gc,reviewBackground ? reviewModeBackground : boardBackgroundColor);
       //GC.fillRect(gc, fullRect);
@@ -265,10 +266,10 @@ public class MorelliViewer extends CCanvas<MorelliCell,MorelliBoard> implements 
       // if the board is one large graphic, for which the visual target points
       // are carefully matched with the abstract grid
       //G.centerImage(gc,images[BOARD_INDEX], brect,this);
-	    b.SetDisplayParameters(0.94,1.0,  0.12,0.1,  0);
-	    b.SetDisplayRectangle(boardRect);
+	    gb.SetDisplayParameters(0.94,1.0,  0.12,0.1,  0);
+	    gb.SetDisplayRectangle(boardRect);
 
-      b.DrawGrid(gc,boardRect,use_grid,Color.white,Color.black,Color.blue,Color.black);
+      gb.DrawGrid(gc,boardRect,use_grid,Color.white,Color.black,Color.blue,Color.black);
     }
     private void drawAltBoards(Graphics gc,MorelliBoard gb,HitPoint highlight,Rectangle rect)
     {	Setup setups[] = Setup.values();
@@ -731,6 +732,8 @@ private void playSounds(commonMove m)
     /** replay a move specified in SGF format.  
      * this is mostly standard stuff, but the key is to recognize
      * the elements that we generated in sgf_save
+     * summary: 5/27/2023
+     * 2733 files visited 0 problems
      */
     public void ReplayMove(sgf_node no)
     {

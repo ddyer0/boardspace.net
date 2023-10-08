@@ -373,7 +373,7 @@ public class PrototypeViewer extends CCanvas<PrototypeCell,PrototypeBoard> imple
     	//
         int stateY = boardY;
         int stateX = boardX;
-        int stateH = fh*3;
+        int stateH = fh*5/2;
         G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,numberMenu,eyeRect,reverseRect,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	if(rotate)
@@ -603,7 +603,10 @@ public class PrototypeViewer extends CCanvas<PrototypeCell,PrototypeBoard> imple
     
     // land here after rotating the board drawing context if appropriate
     public void drawFixedBoard(Graphics gc,Rectangle brect)
-    {	PrototypeBoard gb = disB(gc);
+    {	// note, drawing using disB is very important for boards which have different sizes
+    	// and which are using copyies of the real board for drawing.
+    	// Not so important for boards which are always the same dimensions, but it's always safe.
+    	PrototypeBoard gb = disB(gc);
         boolean reviewBackground = reviewMode()&&!mutable_game_record;
         if(reviewBackground)
         {	 

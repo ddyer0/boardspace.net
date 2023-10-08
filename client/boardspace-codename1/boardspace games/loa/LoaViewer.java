@@ -156,7 +156,7 @@ public class LoaViewer extends commonCanvas implements UIC,GameLayoutClient
    	int mainY = G.Top(main);
    	int mainW = G.Width(main);
    	int mainH = G.Height(main);
-    int stateH = fh*3;
+    int stateH = fh*5/2;
    	
    	// calculate a suitable cell size for the board
    	double cs = Math.min((double)mainW/(nrows+1),(double)(mainH-stateH)/(nrows+1));
@@ -631,14 +631,14 @@ public class LoaViewer extends commonCanvas implements UIC,GameLayoutClient
     }
 
     public void drawFixedElements(Graphics g)
-    {
+    {	Loa_Board gb = (Loa_Board)disB(g);
             LoaMove cm = currentMove();
             Rectangle rb = boardRect;
-            int n = b.boardSize();
+            int n = gb.boardSize();
             int height = G.Height(rb);
             int width = G.Width(rb);
             int squaresize = SQUARESIZE;
-            boolean isLOAP= (b.setup==Setup_Type.LOAP);
+            boolean isLOAP= (gb.setup==Setup_Type.LOAP);
             
            textures[BACKGROUND_TILE_INDEX].tileImage(g, fullRect);   
             if(reviewMode())
@@ -668,10 +668,10 @@ public class LoaViewer extends commonCanvas implements UIC,GameLayoutClient
 
             int off = Math.max(1, (int) (squaresize * 0.05));
             int wff = off * 2;
-            Stone Empty = b.emptyStone();
-            Stone White = b.whiteStone();
-            Stone Black = b.blackStone();
-            Stone Blocked = b.blockedStone();
+            Stone Empty = gb.emptyStone();
+            Stone White = gb.whiteStone();
+            Stone Black = gb.blackStone();
+            Stone Blocked = gb.blockedStone();
             Rectangle[][] rects = new Rectangle[n][n];
             int center = n/2;
             int edge = n-2;
@@ -705,7 +705,7 @@ public class LoaViewer extends commonCanvas implements UIC,GameLayoutClient
                     		xc+s2,yc+s2,squaresize);
                     
                     {
-                        Stone st = b.squareContents(x, invert_y ? (n - y - 1) : y);
+                        Stone st = gb.squareContents(x, invert_y ? (n - y - 1) : y);
 
                         if (st == Black)
                         {	
@@ -747,7 +747,7 @@ public class LoaViewer extends commonCanvas implements UIC,GameLayoutClient
                 int oy = topmargin + (squaresize * y) + (squaresize / 2);
                 GC.setColor(g,selected_arrow_color);
 
-                for (Enumeration<Move_Spec> moves = b.getLegalMoves(selected.x, selected.y);
+                for (Enumeration<Move_Spec> moves = gb.getLegalMoves(selected.x, selected.y);
                         moves.hasMoreElements();)
                 {
                     LoaMove m = moves.nextElement();
@@ -836,7 +836,7 @@ public class LoaViewer extends commonCanvas implements UIC,GameLayoutClient
     public SimpleRobotProtocol newRobotPlayer() { return(new RoboPlay()); }
 
 
-/*
+    /*
  * summary: 5/27/2023
  *  13546 files visited 0 problems
  */

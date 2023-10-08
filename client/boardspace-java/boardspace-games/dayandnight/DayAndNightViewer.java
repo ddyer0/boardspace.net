@@ -297,7 +297,7 @@ public class DayAndNightViewer extends CCanvas<DayAndNightCell,DayAndNightBoard>
     	
         int nrows = bb.nrows;
         int ncols = bb.ncols;
-        int stateH = fh*3;
+        int stateH = fh*5/2;
 	
     	// calculate a suitable cell size for the board
     	double cs = Math.min((double)mainW/ncols,(double)(mainH-stateH)/nrows);

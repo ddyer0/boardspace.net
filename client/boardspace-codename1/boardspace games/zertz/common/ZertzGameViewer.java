@@ -161,7 +161,7 @@ public class ZertzGameViewer extends CCanvas<zCell,GameBoard> implements GameCon
        	// ground the size of chat and logs in the font, which is already selected
     	// to be appropriate to the window size
     	int fh = standardFontSize();
-        int stateH = fh*3;
+        int stateH = fh*5/2;
     	int minLogW = fh*18;	
     	int vcrw = fh*16;
        	int minChatW = fh*35;	

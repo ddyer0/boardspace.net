@@ -1393,7 +1393,7 @@ private void drawPlayerBoard(Graphics gc,
     
     public void drawFixedElements(Graphics gc)
     {
-    	drawFixedElements(gc,mainBoard,boardRect);
+    	drawFixedElements(gc,disB(gc),boardRect);
     }
     
 

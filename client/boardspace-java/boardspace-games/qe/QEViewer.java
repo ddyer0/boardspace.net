@@ -367,7 +367,7 @@ public void ViewerRun(int wait)
     	CELLSIZE = (int)cs;
        	int C2 = CELLSIZE/2;
             	// center the board in the remaining space
-        int stateH = CELLSIZE/2;
+        int stateH = fh*5/2;
     	int boardW = (int)(ncols*CELLSIZE);
     	int boardH = (int)((nrows-1)*CELLSIZE);
     	int extraW = (mainW-boardW)/2;
@@ -540,6 +540,7 @@ public void ViewerRun(int wait)
      * */
     public void drawFixedElements(Graphics gc)
     { // erase
+      QEBoard gb = disB(gc);
       boolean reviewBackground = reviewMode()&&!mutable_game_record;
       GC.setColor(gc,reviewBackground ? reviewModeBackground : boardBackgroundColor);
       //GC.fillRect(gc, fullRect);
@@ -557,7 +558,7 @@ public void ViewerRun(int wait)
       // DrawGridCoord(Graphics gc, Color clt,int xpos, int ypos, int cellsize,String txt)
       // on the board to fine tune the exact positions of the text
       if(remoteViewer<0) { scaled = QEChip.Board.getImage(loader).centerScaledImage(gc, boardRect,scaled); }
-      bb.SetDisplayRectangle(boardRect);
+      gb.SetDisplayRectangle(boardRect);
      }
     
     private void drawStack(boolean showBacks,Graphics gc,QECell cell,HitPoint hit,

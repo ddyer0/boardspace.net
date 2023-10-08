@@ -189,7 +189,7 @@ public class TruGameViewer extends CCanvas<TruCell,TruGameBoard> implements TruC
     	int mainY = G.Top(main);
     	int mainW = G.Width(main);
     	int mainH = G.Height(main);
-        int stateH = fh*3;
+        int stateH = fh*5/2;
     	
     	// calculate a suitable cell size for the board
     	double cs = Math.min((double)mainW/nrows,(double)mainH/nrows);
@@ -304,12 +304,13 @@ public class TruGameViewer extends CCanvas<TruCell,TruGameBoard> implements TruC
     }
     public void drawFixedBoard(Graphics gc,Rectangle brect)
     { boolean review = reviewMode() && !mutable_game_record;
+     TruGameBoard gb = disB(gc);
      if(review)
       {	 
        textures[BACKGROUND_REVIEW_INDEX].tileImage(gc,brect);   
       }
-      b.SetDisplayParameters(0.94,1.0,  0.12,0.1,  0);
-      b.SetDisplayRectangle(brect);
+      gb.SetDisplayParameters(0.94,1.0,  0.12,0.1,  0);
+      gb.SetDisplayRectangle(brect);
 
         
       // for us, the board is one large graphic, for which the target points
@@ -317,7 +318,7 @@ public class TruGameViewer extends CCanvas<TruCell,TruGameBoard> implements TruC
       //G.centerImage(gc,images[BOARD_INDEX], 
       //	  brect.x,brect.y,brect.width,brect.height,this);
 
-      b.DrawGrid(gc,brect,use_grid,Color.white,Color.black,Color.blue,Color.black);
+      gb.DrawGrid(gc,brect,use_grid,Color.white,Color.black,Color.blue,Color.black);
     }
 
    /* draw the board and the chips on it. */

@@ -222,7 +222,7 @@ public class WypsViewer extends CCanvas<WypsCell,WypsBoard> implements WypsConst
         int minLogH = fh*10;	
         int margin = fh/2;
         int buttonW = (G.isCodename1()?8:6)*fh;
-        int stateH = fh*3;
+        int stateH = fh*5/2;
         // this does the layout of the player boxes, and leaves
     	// a central hole for the board.
     	//double bestPercent = 
@@ -652,18 +652,19 @@ public class WypsViewer extends CCanvas<WypsCell,WypsBoard> implements WypsConst
      * in our cease, we draw the board and the chips on it. 
      * */
     public void drawFixedElements(Graphics gc)
-    { 
+    { WypsBoard gb = disB(gc);
      WypsChip.backgroundTile.image.tileImage(gc, fullRect);   
       GC.setRotatedContext(gc,largerBoardRect,null,effectiveBoardRotation);
       drawFixedBoard(gc,boardRect);
       GC.unsetRotatedContext(gc,null);  
       if(DRAWBACKGROUNDTILES)
       {
-    		drawDrawPile(gc,null,bb);
+    		drawDrawPile(gc,null,gb);
       }
      }
     public void drawFixedElements(Graphics gc,boolean complete)
-    {	commonPlayer pl = getPlayerOrTemp(bb.whoseTurn);
+    {	WypsBoard gb = disB(gc);
+    	commonPlayer pl = getPlayerOrTemp(gb.whoseTurn);
     	if(!lockOption) { effectiveBoardRotation = (boardRotation*Math.PI/2+pl.displayRotation); }
     	complete |= (DRAWBACKGROUNDTILES && (digestFixedTiles()!=fixedTileDigest))
     				|| pendingFullRefresh;
@@ -672,7 +673,7 @@ public class WypsViewer extends CCanvas<WypsCell,WypsBoard> implements WypsConst
 
     // land here after rotating the board drawing context if appropriate
     public void drawFixedBoard(Graphics gc,Rectangle brect)
-    {	
+    {	WypsBoard gb = disB(gc);
         boolean reviewBackground = reviewMode()&&!mutable_game_record;
         if(reviewBackground)
         {	 
@@ -681,7 +682,7 @@ public class WypsViewer extends CCanvas<WypsCell,WypsBoard> implements WypsConst
 	  	// drawing the empty board requires detailed board coordinate information
 	  	// games with less detailed dependency in the fixed background may not need
 	  	// this. 
-	  	setDisplayParameters(bb,brect);
+	  	setDisplayParameters(gb,brect);
 	      // if the board is one large graphic, for which the visual target points
 	      // are carefully matched with the abstract grid
 	      //G.centerImage(gc,images[BOARD_INDEX], brect,this);
@@ -690,7 +691,7 @@ public class WypsViewer extends CCanvas<WypsCell,WypsBoard> implements WypsConst
 	      // to draw the cells, set gb.Drawing_Style in the board init method.  Create a
 	      // DrawGridCoord(Graphics gc, Color clt,int xpos, int ypos, int cellsize,String txt)
 	      // on the board to fine tune the exact positions of the text
-	      bb.DrawGrid(gc, brect, use_grid, boardBackgroundColor, GridColor, GridColor, GridColor);
+	      gb.DrawGrid(gc, brect, use_grid, boardBackgroundColor, GridColor, GridColor, GridColor);
 
 	      // draw the tile grid.  The positions are determined by the underlying board
 	      // object, and the tile itself if carefully crafted to tile the pushfight board
@@ -699,16 +700,16 @@ public class WypsViewer extends CCanvas<WypsCell,WypsBoard> implements WypsConst
 	      // but for more complex graphics with overlapping shadows or stacked
 	      // objects, this double loop is useful if you need to control the
 	      // order the objects are drawn in.
-    	  int xsize = bb.cellSize();
-	      for(WypsCell c = bb.allCells; c!=null; c=c.next)
+    	  int xsize = gb.cellSize();
+	      for(WypsCell c = gb.allCells; c!=null; c=c.next)
 	      {
-	    	  int ypos = G.Bottom(brect) - bb.cellToY(c.col, c.row);
-	    	  int xpos = G.Left(brect) + bb.cellToX(c.col, c.row);
+	    	  int ypos = G.Bottom(brect) - gb.cellToY(c.col, c.row);
+	    	  int xpos = G.Left(brect) + gb.cellToX(c.col, c.row);
 	    	  WypsChip.Tile.getAltDisplayChip(c).drawChip(gc,this,xsize,xpos,ypos,null);              
 	      }     
        	
 	      if(DRAWBACKGROUNDTILES) 
-	    	  { drawFixedTiles(gc,brect,bb);
+	    	  { drawFixedTiles(gc,brect,gb);
 	    	  }
 	//      draw
     }

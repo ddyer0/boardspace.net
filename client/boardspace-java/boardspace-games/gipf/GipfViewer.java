@@ -225,7 +225,7 @@ public class GipfViewer extends CCanvas<GipfCell,GipfBoard> implements GipfConst
     	//
         int stateY = boardY;
         int stateX = boardX;
-        int stateH = fh*3;
+        int stateH = fh*5/2;
         G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,numberMenu,viewsetRect,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	
@@ -352,6 +352,7 @@ public class GipfViewer extends CCanvas<GipfCell,GipfBoard> implements GipfConst
     public void drawFixedElements(Graphics gc)
     { boolean reviewBackground = reviewMode() && !mutable_game_record;
       // erase
+      GipfBoard gb = disB(gc);
       GC.setColor(gc,reviewBackground ? reviewModeBackground : boardBackgroundColor);
       //GC.fillRect(gc, fullRect);
      textures[BACKGROUND_TILE_INDEX].tileImage(gc, fullRect);   
@@ -369,7 +370,7 @@ public class GipfViewer extends CCanvas<GipfCell,GipfBoard> implements GipfConst
       scaled = board.centerScaledImage(gc, boardRect,scaled);
       if(perspective)
       {
-      b.SetDisplayParameters(
+      gb.SetDisplayParameters(
 	    		0.895,	// x scale 
 	    		 0.90,	// y scale
 	    		 0.17,	// x offset
@@ -381,7 +382,7 @@ public class GipfViewer extends CCanvas<GipfCell,GipfBoard> implements GipfConst
 	    		 );
       }
       else {
-          b.SetDisplayParameters(
+          gb.SetDisplayParameters(
   	    		1.06,	// x scale 
   	    		 0.89,	// y scale
   	    		 -0.05,	// x offset
@@ -394,9 +395,9 @@ public class GipfViewer extends CCanvas<GipfCell,GipfBoard> implements GipfConst
 
       }
       
-  	 b.SetDisplayRectangle(boardRect);
+  	 gb.SetDisplayRectangle(boardRect);
   	
-      b.DrawGrid(gc,boardRect,use_grid,Color.white,Color.black,Color.blue,Color.black);
+      gb.DrawGrid(gc,boardRect,use_grid,Color.white,Color.black,Color.blue,Color.black);
     }
  
     private void drawRack(Graphics gc,Rectangle r,HitPoint p,GipfBoard rb,GipfCell rack)

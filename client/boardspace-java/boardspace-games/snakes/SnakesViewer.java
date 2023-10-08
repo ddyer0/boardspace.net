@@ -307,6 +307,7 @@ public class SnakesViewer extends CCanvas<SnakesCell,SnakesBoard> implements Sna
     public void drawFixedElements(Graphics gc)
     {boolean review = reviewMode() && !mutable_game_record;
       // erase
+     SnakesBoard gb = disB(gc);
       GC.setColor(gc,review ? reviewModeBackground : boardBackgroundColor);
       //GC.fillRect(gc, fullRect);
      textures[BACKGROUND_TILE_INDEX].tileImage(gc, fullRect);   
@@ -317,20 +318,20 @@ public class SnakesViewer extends CCanvas<SnakesCell,SnakesBoard> implements Sna
       
       SnakesChip chip = SnakesChip.getTile(0);
       SnakesChip tchip = SnakesChip.getTile(1);
-      for(SnakesCell c = b.allCells; c!=null; c=c.next)
-      {	int ypos = G.Bottom(boardRect) - b.cellToY(c.col, c.row);
-      	int xpos = G.Left(boardRect) + b.cellToX(c.col, c.row);
+      for(SnakesCell c = gb.allCells; c!=null; c=c.next)
+      {	int ypos = G.Bottom(boardRect) - gb.cellToY(c.col, c.row);
+      	int xpos = G.Left(boardRect) + gb.cellToX(c.col, c.row);
       	SnakesChip cc = (c.onTarget ? tchip : chip);
      	cc.drawChip(gc,this,SQUARESIZE,xpos,ypos,null);
       }
-	    b.SetDisplayParameters(0.94,1.0,  0.12,0.1,  0);
-	    b.SetDisplayRectangle(boardRect);
+	    gb.SetDisplayParameters(0.94,1.0,  0.12,0.1,  0);
+	    gb.SetDisplayRectangle(boardRect);
        
       // if the board is one large graphic, for which the visual target points
       // are carefully matched with the abstract grid
       //G.centerImage(gc,images[BOARD_INDEX], brect,this);
 
-      b.DrawGrid(gc,boardRect,use_grid,Color.white,Color.black,Color.blue,Color.black);
+      gb.DrawGrid(gc,boardRect,use_grid,Color.white,Color.black,Color.blue,Color.black);
     }
 
    /* draw the board and the chips on it. */

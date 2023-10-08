@@ -230,7 +230,7 @@ public class YspahanViewer extends CCanvas<YspahanCell,YspahanBoard> implements 
     
     // modern construction
 	public Rectangle createPlayerGroup(int player, int x, int y, double rotation, int cellsize) 
-	{	int csc = (int)(cellsize*0.6);
+	{	int csc = (int)(cellsize*0.4);
         int pbw = PlayerBoardWidth*csc;
         int pbh = PlayerBoardHeight*csc;
 		Rectangle r = playerRects[player];	// big box
@@ -271,7 +271,7 @@ public class YspahanViewer extends CCanvas<YspahanCell,YspahanBoard> implements 
     			0.75,	// 60% of space allocated to the board
     			aspect,	// aspect ratio for the board
     			fh*2,
-    			fh*3.0,	// maximum cell size
+    			fh*2.5,	// maximum cell size
     			0.3		// preference for the designated layout, if any
     			);
     	
@@ -299,7 +299,7 @@ public class YspahanViewer extends CCanvas<YspahanCell,YspahanBoard> implements 
         int nrows = rotate ? cols : rows;  // b.boardRows
         int ncols = rotate ? rows : cols; // b.boardColumns
         int extraRows = 3;
-        int stateH = fh*3;
+        int stateH = fh*5/2;
         
     	// calculate a suitable cell size for the board
     	double cs = Math.min((double)mainW/(ncols+(rotate ? extraRows : 0)),(double)(mainH-stateH)/(nrows+(rotate ? 0 : extraRows)));

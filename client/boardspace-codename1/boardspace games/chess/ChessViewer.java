@@ -797,17 +797,17 @@ private void playSounds(commonMove m)
         drawFixedBoard(gc);
     }
     public void drawFixedBoard(Graphics gc,Rectangle brect)
-    {
+    { ChessBoard gb = disB(gc);
       boolean reviewBackground = reviewMode()&&!mutable_game_record;
       
-      setBoardRect(b);	// set up the coordinate system for the board
+      setBoardRect(gb);	// set up the coordinate system for the board
       
       if(reviewBackground)
       {	 
        ChessChip.backgroundReviewTile.image.tileImage(gc,brect);   
       }
        
-      b.DrawGrid(gc,brect,use_grid,Color.white,Color.black,Color.blue,Color.black);
+      gb.DrawGrid(gc,brect,use_grid,Color.white,Color.black,Color.blue,Color.black);
     } 
     
     private void setBoardRect(ChessBoard gb)

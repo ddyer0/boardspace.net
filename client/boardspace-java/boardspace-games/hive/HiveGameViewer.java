@@ -259,9 +259,9 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
     	//int fh = standardFontSize();
     	int minLogW = fh*15;	
        	int minChatW = fh*35;	
-        int minLogH = fh*14;	
+        int minLogH = fh*12;	
         int margin = fh/2;
-        int buttonW = fh*8;
+        int buttonW = fh*15/2;
         layout.strictBoardsize = false;
         // this does the layout of the player boxes, and leaves
     	// a central hole for the board.
@@ -302,7 +302,7 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
     	//
         int stateY = mainY;
         int stateX = mainX;
-        int stateH = CELLSIZE;
+        int stateH = fh*5/2;
         int boardY = stateY+stateH+C4;
         int boardBottom = G.Bottom(main)-stateH-C4;
         int boardH = boardBottom-boardY;

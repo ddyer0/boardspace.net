@@ -207,7 +207,7 @@ public class KhetViewer extends CCanvas<KhetCell,KhetBoard> implements KhetConst
     	layout.placeTheVcr(this,minLogW,minLogW*3/2);
 
     	Rectangle main = layout.getMainRectangle();
-    	int stateH = fh*3;
+    	int stateH = fh*5/2;
     	int mainX = G.Left(main);
     	int mainY = G.Top(main);
     	int mainW = G.Width(main);
@@ -337,6 +337,7 @@ public class KhetViewer extends CCanvas<KhetCell,KhetBoard> implements KhetConst
     Image background = null;
     public void drawFixedBoard(Graphics gc,Rectangle brect)
     { boolean reviewBackground = reviewMode() && !mutable_game_record;
+      KhetBoard gb = disB(gc);
       if(reviewBackground)
       {	 
        textures[BACKGROUND_REVIEW_INDEX].tileImage(gc,brect);   
@@ -344,14 +345,14 @@ public class KhetViewer extends CCanvas<KhetCell,KhetBoard> implements KhetConst
       if(!usePerspective())
       {	  int cx = G.centerX(brect);
       	  int cy = G.centerY(brect);
-    	  boolean reverse = !b.reverseY();
+    	  boolean reverse = !gb.reverseY();
     	  if(reverse) { GC.setRotation(gc, Math.PI,cx,cy); }
     	  Image board = images[BOARD_NP_INDEX].getImage(loader);
     	  if(board!=background) { scaled = null; }
     	  background = board;
     	  scaled = board.centerScaledImage(gc,brect,scaled);
        	  if(reverse) { GC.setRotation(gc, -Math.PI,cx,cy); }
-       	  b.SetDisplayParameters(
+       	  gb.SetDisplayParameters(
        			  new double[] {0.11,0.12},
        			  new double[]{0.99,0.12}, 
        			  new double[] {0.11,0.98},
@@ -361,18 +362,18 @@ public class KhetViewer extends CCanvas<KhetCell,KhetBoard> implements KhetConst
       {
       // if the board is one large graphic, for which the visual target points
       // are carefully matched with the abstract grid
-    	Image board = images[b.reverseY()?BOARD_INDEX:BOARD_FLIPPED_INDEX].getImage(loader);
+    	Image board = images[gb.reverseY()?BOARD_INDEX:BOARD_FLIPPED_INDEX].getImage(loader);
     	if(board!=background) { scaled = null; }
     	background = board;
     	scaled = board.centerScaledImage(gc, brect,scaled);
-    	b.SetDisplayParameters(0.91,0.91, 
+    	gb.SetDisplayParameters(0.91,0.91, 
 	    		0.08,0.20,0.0,  
 	    		0.114,0.1,
 	    		0);
       }
-	    b.SetDisplayRectangle(brect);
+	  gb.SetDisplayRectangle(brect);
 
-      b.DrawGrid(gc,brect,use_grid,Color.white,Color.white,Color.blue,Color.white);
+      gb.DrawGrid(gc,brect,use_grid,Color.white,Color.white,Color.blue,Color.white);
     }
     int adjustedSquareSize(int startingSize,int ydistance,int height)
     {

@@ -211,7 +211,7 @@ public class CheViewer extends CCanvas<CheCell,CheBoard> implements CheConstants
     	Rectangle main = layout.getMainRectangle();
     	int boardX = G.Left(main);
     	int stateY = G.Top(main);
-        int stateH = CELLSIZE;
+        int stateH = fh*5/2;
         int boardY = stateY+stateH;
     	int boardW = G.Width(main);
     	int boardH = G.Height(main)-stateH*2;

@@ -236,7 +236,7 @@ public class RajViewer extends CCanvas<RajCell,RajBoard> implements RajConstants
     	//
         int stateY = boardY;
         int stateX = boardX;
-        int stateH = fh*3;
+        int stateH = fh*5/2;
         G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,noChatRect);
 
     	G.SetRect(boardRect,boardX,boardY+stateH,boardW,boardH-stateH);
@@ -438,6 +438,7 @@ public class RajViewer extends CCanvas<RajCell,RajBoard> implements RajConstants
     public void drawFixedElements(Graphics gc)
     { boolean review = reviewMode() && !mutable_game_record;
       // erase
+      RajBoard gb = disB(gc);
       GC.setColor(gc,review ? reviewModeBackground : boardBackgroundColor);
       //GC.fillRect(gc, fullRect);
      textures[review?BACKGROUND_REVIEW_INDEX:BACKGROUND_INDEX].tileImage(gc, fullRect);  
@@ -446,8 +447,8 @@ public class RajViewer extends CCanvas<RajCell,RajBoard> implements RajConstants
     	  {textures[BACKGROUND_TILE_INDEX].tileImage(gc,boardRect);   
     	  GC.frameRect(gc,Color.black,boardRect);
     	  }
-      bb.SetDisplayParameters( 1.0, 1.0, 0, 0, 0); // shrink a little and rotate 30 degrees
-      bb.SetDisplayRectangle(boardRect);
+      gb.SetDisplayParameters( 1.0, 1.0, 0, 0, 0); // shrink a little and rotate 30 degrees
+      gb.SetDisplayRectangle(boardRect);
       
       // if the board is one large graphic, for which the visual target points
       // are carefully matched with the abstract grid

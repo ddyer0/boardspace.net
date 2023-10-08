@@ -378,7 +378,7 @@ public class TrenchViewer extends CCanvas<TrenchCell,TrenchBoard> implements Tre
     	//
         int stateY = boardY;
         int stateX = boardX;
-        int stateH = fh*3;
+        int stateH = fh*5/2;
         G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,numberMenu,eyeRect,arrowRect,reverseViewRect,viewsetRect,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
       	

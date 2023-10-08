@@ -226,7 +226,7 @@ public class GipfViewer extends CCanvas<GipfCell,GipfBoard> implements GipfConst
     	//
         int stateY = boardY;
         int stateX = boardX;
-        int stateH = fh*3;
+        int stateH = fh*5/2;
         G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,numberMenu,viewsetRect,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	
@@ -344,8 +344,8 @@ public class GipfViewer extends CCanvas<GipfCell,GipfBoard> implements GipfConst
     	dummyCell.drawStack(g,this,null,CELLSIZE,xp,yp,0,0.2,null);
     }
 
-
-
+    Image background = null;
+    Image scaled = null;
     /* draw the deep unchangable objects, including those that might be rather expensive
      * to draw.  This background layer is used as a backdrop to the rest of the activity.
      * in our cease, we draw the board and the chips on it. 
@@ -353,6 +353,7 @@ public class GipfViewer extends CCanvas<GipfCell,GipfBoard> implements GipfConst
     public void drawFixedElements(Graphics gc)
     { boolean reviewBackground = reviewMode() && !mutable_game_record;
       // erase
+      GipfBoard gb = disB(gc);
       GC.setColor(gc,reviewBackground ? reviewModeBackground : boardBackgroundColor);
       //GC.fillRect(gc, fullRect);
      textures[BACKGROUND_TILE_INDEX].tileImage(gc, fullRect);   
@@ -364,10 +365,13 @@ public class GipfViewer extends CCanvas<GipfCell,GipfBoard> implements GipfConst
       // for us, the board is one large graphic, for which the target points
       // are carefully matched with the abstract grid
       boolean perspective = usePerspective();
-     images[perspective ? BOARD_INDEX : BOARD_FLAT_INDEX].centerImage(gc, boardRect);
+      Image board = images[perspective ? BOARD_INDEX : BOARD_FLAT_INDEX];
+      if(board!=background) { scaled = null; }
+      background = board;
+      scaled = board.centerScaledImage(gc, boardRect,scaled);
       if(perspective)
       {
-      b.SetDisplayParameters(
+      gb.SetDisplayParameters(
 	    		0.895,	// x scale 
 	    		 0.90,	// y scale
 	    		 0.17,	// x offset
@@ -379,7 +383,7 @@ public class GipfViewer extends CCanvas<GipfCell,GipfBoard> implements GipfConst
 	    		 );
       }
       else {
-          b.SetDisplayParameters(
+          gb.SetDisplayParameters(
   	    		1.06,	// x scale 
   	    		 0.89,	// y scale
   	    		 -0.05,	// x offset
@@ -392,9 +396,9 @@ public class GipfViewer extends CCanvas<GipfCell,GipfBoard> implements GipfConst
 
       }
       
-  	 b.SetDisplayRectangle(boardRect);
+  	 gb.SetDisplayRectangle(boardRect);
   	
-      b.DrawGrid(gc,boardRect,use_grid,Color.white,Color.black,Color.blue,Color.black);
+      gb.DrawGrid(gc,boardRect,use_grid,Color.white,Color.black,Color.blue,Color.black);
     }
  
     private void drawRack(Graphics gc,Rectangle r,HitPoint p,GipfBoard rb,GipfCell rack)
@@ -788,7 +792,10 @@ public class GipfViewer extends CCanvas<GipfCell,GipfBoard> implements GipfConst
     /** factory method to create a robot */
     public SimpleRobotProtocol newRobotPlayer() { return(new GipfPlay()); }
 
-
+/**
+ * summary: 5/26/2023
+ * 	10487 files visited 0 problems
+ */
 
     public void ReplayMove(sgf_node no)
     {

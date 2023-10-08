@@ -247,7 +247,7 @@ public class SantoriniViewer extends CCanvas<SantoriniCell,SantoriniBoard> imple
     	//
         int stateY = boardY;
         int stateX = boardX;
-        int stateH = CELLSIZE*2/3;
+        int stateH = fh*5/2;
         
         G.placeStateRow(stateX,stateY,boardW, stateH,iconRect,stateRect,annotationMenu,rightView,liftRect,viewsetRect,noChatRect);
 
@@ -345,6 +345,7 @@ public class SantoriniViewer extends CCanvas<SantoriniCell,SantoriniBoard> imple
      * */
     public void drawFixedElements(Graphics gc)
     {boolean review = reviewMode() && !mutable_game_record;
+     SantoriniBoard gb = disB(gc);
       // erase
       //gc.setColor(reviewMode() ? reviewModeBackground : boardBackgroundColor);
       //GC.fillRect(gc, fullRect);
@@ -358,9 +359,9 @@ public class SantoriniViewer extends CCanvas<SantoriniCell,SantoriniBoard> imple
       // are carefully matched with the abstract grid
       //G.centerImage(gc,images[BOARD_INDEX], 
       //	  brect.x,brect.y,brect.width,brect.height,this);
-	  sizeToRectangle(b,useLeftView,boardRect);	// resize back to the real rectangle
+	  sizeToRectangle(gb,useLeftView,boardRect);	// resize back to the real rectangle
 
-      b.DrawGrid(gc,boardRect,use_grid,Color.white,Color.black,Color.blue,Color.black);
+      gb.DrawGrid(gc,boardRect,use_grid,Color.white,Color.black,Color.blue,Color.black);
     }
     public int scaleCell(double cellsize,int x,int y,Rectangle r)
     {

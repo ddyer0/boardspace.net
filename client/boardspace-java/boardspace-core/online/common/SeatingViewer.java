@@ -608,12 +608,12 @@ public class SeatingViewer extends exCanvas implements LobbyConstants
 			// draw the other available colors
 			if(map!=null)
 			{
-			int nsteps = map.length-seats.length;
 			double [][]pos = {{0.33,.19},{0.33,-0.25},{-0.4,0.19},{-0.4,-0.25},{-0.4,0},{0.33,0}};
+			int nsteps = Math.min(pos.length,map.length-seats.length);
 			if(nsteps>0)
 			{
 			// draw the unassigned colors
-			for(int i=seats.length,idx=0; i<map.length;i++,idx++)
+			for(int i=seats.length,idx=0; i<nsteps;i++,idx++)
 			{
 				double ps[] = pos[idx];
 				int xo = centerX+(int)(ps[0]*tableSize*(square?0.8:1));

@@ -205,7 +205,7 @@ public class StymieViewer extends CCanvas<StymieCell,StymieBoard> implements Sty
     	
         int nrows = bb.nrows;
         int ncols = bb.ncols;
-        int stateH = fh*3;
+        int stateH = fh*5/2;
  	
     	// calculate a suitable cell size for the board
     	double cs = Math.min((double)mainW/ncols,(double)(mainH-stateH)/nrows);
@@ -350,7 +350,7 @@ public class StymieViewer extends CCanvas<StymieCell,StymieBoard> implements Sty
     
     // land here after rotating the board drawing context if appropriate
     public void drawFixedBoard(Graphics gc,Rectangle brect)
-    {
+    {	StymieBoard gb = disB(gc);
         boolean reviewBackground = reviewMode()&&!mutable_game_record;
         if(reviewBackground)
         {	 
@@ -359,7 +359,7 @@ public class StymieViewer extends CCanvas<StymieCell,StymieBoard> implements Sty
 	  	// drawing the empty board requires detailed board coordinate information
 	  	// games with less detailed dependency in the fixed background may not need
 	  	// this. 
-	  	setDisplayParameters(bb,brect);
+	  	setDisplayParameters(gb,brect);
 	      // if the board is one large graphic, for which the visual target points
 	      // are carefully matched with the abstract grid
 	  	scaled = StymieChip.board.getImage().centerScaledImage(gc, brect, scaled);
@@ -368,7 +368,7 @@ public class StymieViewer extends CCanvas<StymieCell,StymieBoard> implements Sty
 	      // to draw the cells, set gb.Drawing_Style in the board init method.  Create a
 	      // DrawGridCoord(Graphics gc, Color clt,int xpos, int ypos, int cellsize,String txt)
 	      // on the board to fine tune the exact positions of the text
-	      bb.DrawGrid(gc, brect, use_grid, boardBackgroundColor, GridColor, GridColor, GridColor);
+	      gb.DrawGrid(gc, brect, use_grid, boardBackgroundColor, GridColor, GridColor, GridColor);
 
 	      // draw the tile grid.  The positions are determined by the underlying board
 	      // object, and the tile itself if carefully crafted to tile the pushfight board

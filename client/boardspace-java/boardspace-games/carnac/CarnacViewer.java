@@ -583,6 +583,7 @@ public class CarnacViewer extends CCanvas<CarnacCell,CarnacBoard> implements Car
     public void drawFixedElements(Graphics gc)
     { boolean backgroundReview = reviewMode() && !mutable_game_record;
       // erase
+      CarnacBoard gb = disB(gc);
     	GC.setRotatedContext(gc,fullRect,null,fullBoardRotation);
     	GC.setColor(gc,backgroundReview ? reviewModeBackground : boardBackgroundColor);
     	//GC.fillRect(gc, fullRect);
@@ -594,11 +595,11 @@ public class CarnacViewer extends CCanvas<CarnacCell,CarnacBoard> implements Car
 	       
     	// if the board is one large graphic, for which the visual target points
     	// are carefully matched with the abstract grid
-    	scaled = b.rules.board.image.centerScaledImage(gc, boardRect, scaled);
+    	scaled = gb.rules.board.image.centerScaledImage(gc, boardRect, scaled);
 	      
-    	setBoardParameters(b,boardRect); 
+    	setBoardParameters(gb,boardRect); 
 	
-    	b.DrawGrid(gc,boardRect,use_grid,Color.white,Color.black,Color.blue,b.rules.gridColor);
+    	gb.DrawGrid(gc,boardRect,use_grid,Color.white,Color.black,Color.blue,gb.rules.gridColor);
     	GC.unsetRotatedContext(gc,null);
    }
     private CarnacCell reverseViewCell(CarnacCell c)

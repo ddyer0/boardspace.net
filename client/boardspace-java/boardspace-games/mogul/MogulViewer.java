@@ -229,7 +229,7 @@ public class MogulViewer extends CCanvas<MogulCell,MogulBoard> implements MogulC
 	int boardCellH = (int)(boardAH/(TRACK_DOWN+1.5));
     int boardCellW = boardAW/(TRACK_ACROSS);
     SQUARESIZE = Math.min(boardCellW, boardCellH);
-	int stateH = fh*3;
+	int stateH = fh*5/2;
 	int boardW = (TRACK_ACROSS)*SQUARESIZE;
 	int boardH = (TRACK_DOWN)*SQUARESIZE;
 	int boardX = left + (boardAW-boardW)/2;

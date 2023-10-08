@@ -191,7 +191,7 @@ public class SixmakingViewer extends CCanvas<SixmakingCell,SixmakingBoard> imple
     	int mainY = G.Top(main);
     	int mainW = G.Width(main);
     	int mainH = G.Height(main);
-        int stateH = fh*3;
+        int stateH = fh*5/2;
     	int ncols = 5;
     	double cs = Math.min((double)mainW/ncols,(double)(mainH-stateH)/ncols);
     	SQUARESIZE = (int)cs;
@@ -315,6 +315,7 @@ public class SixmakingViewer extends CCanvas<SixmakingCell,SixmakingBoard> imple
      SixmakingChip.backgroundTile.image.tileImage(gc, fullRect);   
       //gc.setColor(Color.black);
       //GC.fillRect(gc, boardRect);
+      SixmakingBoard gb = disB(gc);
       if(reviewBackground)
       {	 
        SixmakingChip.backgroundReviewTile.image.tileImage(gc,boardRect);   
@@ -327,7 +328,7 @@ public class SixmakingViewer extends CCanvas<SixmakingCell,SixmakingBoard> imple
       background = board;
       scaled = board.centerScaledImage(gc, boardRect,scaled);
       
-      b.DrawGrid(gc,boardRect,use_grid,Color.white,Color.black,Color.blue,Color.black);
+      gb.DrawGrid(gc,boardRect,use_grid,Color.white,Color.black,Color.blue,Color.black);
     }
    private boolean showChessTops = false;
    private boolean drawChipWithIcon(Graphics gc,HitPoint hitNow,SixmakingCell cell,

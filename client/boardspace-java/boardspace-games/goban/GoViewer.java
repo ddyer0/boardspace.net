@@ -433,8 +433,9 @@ public class GoViewer extends CCanvas<GoCell,GoBoard> implements GoConstants, Ga
      * */
     public void drawFixedElements(Graphics gc)
     {	boolean reviewBackground = reviewMode()&&!mutable_game_record;
+    	GoBoard gb = disB(gc);
       // erase
-      setupBoardRect(b,boardRect);
+      setupBoardRect(gb,boardRect);
       GC.setColor(gc,reviewBackground ? reviewModeBackground : boardBackgroundColor);
       //GC.fillRect(gc, fullRect);
      GoChip.backgroundTile.image.tileImage(gc, fullRect);   
@@ -445,23 +446,23 @@ public class GoViewer extends CCanvas<GoCell,GoBoard> implements GoConstants, Ga
        
       // if the board is one large graphic, for which the visual target points
       // are carefully matched with the abstract grid
-      scaled = b.variation.image.image.centerScaledImage(gc, boardRect,scaled);
+      scaled = gb.variation.image.image.centerScaledImage(gc, boardRect,scaled);
 
-      b.DrawGrid(gc,boardRect,use_grid,Color.white,Color.black,Color.black,Color.black);
+      gb.DrawGrid(gc,boardRect,use_grid,Color.white,Color.black,Color.black,Color.black);
       // add the hoshi points
-      int centerx = (b.boardColumns+1)/2;
-      int centery = (b.boardRows+1)/2;
-      drawHoshi(gc,b,centerx,centery,boardRect);
+      int centerx = (gb.boardColumns+1)/2;
+      int centery = (gb.boardRows+1)/2;
+      drawHoshi(gc,gb,centerx,centery,boardRect);
    
-      drawHoshi(gc,b,4,4,boardRect);
-      drawHoshi(gc,b,4,b.boardRows-3,boardRect);
-      drawHoshi(gc,b,b.boardColumns-3,b.boardRows-3,boardRect);
-      drawHoshi(gc,b,b.boardColumns-3,4,boardRect);
+      drawHoshi(gc,gb,4,4,boardRect);
+      drawHoshi(gc,gb,4,gb.boardRows-3,boardRect);
+      drawHoshi(gc,gb,gb.boardColumns-3,gb.boardRows-3,boardRect);
+      drawHoshi(gc,gb,gb.boardColumns-3,4,boardRect);
       
-      drawHoshi(gc,b,centerx,4,boardRect);
-      drawHoshi(gc,b,centerx,b.boardColumns-3,boardRect);
-      drawHoshi(gc,b,b.boardRows-3,centerx,boardRect);
-      drawHoshi(gc,b,4,centery,boardRect);
+      drawHoshi(gc,gb,centerx,4,boardRect);
+      drawHoshi(gc,gb,centerx,gb.boardColumns-3,boardRect);
+      drawHoshi(gc,gb,gb.boardRows-3,centerx,boardRect);
+      drawHoshi(gc,gb,4,centery,boardRect);
     }
     private void drawHoshi(Graphics gc,GoBoard gb,int x,int y,Rectangle r)
     {

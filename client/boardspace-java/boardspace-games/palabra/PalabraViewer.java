@@ -325,7 +325,7 @@ public class PalabraViewer extends CCanvas<PalabraCell,PalabraBoard> implements 
     	//
         int stateY = boardY;
         int stateX = boardX;
-        int stateH = CELLSIZE;
+        int stateH = fh*5/2;
         G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	if(rotate)
@@ -594,13 +594,14 @@ public class PalabraViewer extends CCanvas<PalabraCell,PalabraBoard> implements 
     public void drawFixedElements(Graphics gc)
     { boolean review = reviewMode() && !mutable_game_record;
       // erase
+     PalabraBoard gb = disB(gc);
       GC.setColor(gc,review ? reviewModeBackground : boardBackgroundColor);
       //GC.fillRect(gc, fullRect);
      textures[review?BACKGROUND_REVIEW_INDEX:BACKGROUND_INDEX].tileImage(gc, fullRect);  
      textures[BACKGROUND_TILE_INDEX].tileImage(gc,boardRect);   
       GC.frameRect(gc,Color.black,boardRect);
-      bb.SetDisplayParameters( 1.0, 1.0, 0, 0, 0); // shrink a little and rotate 30 degrees
-      bb.SetDisplayRectangle(boardRect);
+      gb.SetDisplayParameters( 1.0, 1.0, 0, 0, 0); // shrink a little and rotate 30 degrees
+      gb.SetDisplayRectangle(boardRect);
       
       // if the board is one large graphic, for which the visual target points
       // are carefully matched with the abstract grid

@@ -45,8 +45,8 @@ import oneday.OnedayBoard.PlayerBoard;
 
 import static oneday.OnedayMovespec.*;
 
-//TODO: the descriptive strings for OneDay are not in the translations database.
-//TODO: there is a new line in london, the jubilee line, which is not represented
+// TODO: the descriptive strings for OneDay are not in the translations database.
+// TODO: there is a new line in london, the jubilee line, which is not represented
 
 /**
  * The viewer for One Day in London is pretty standard except for the game setup
@@ -611,6 +611,7 @@ public class OnedayViewer extends CCanvas<OnedayCell,OnedayBoard> implements One
     public void drawFixedElements(Graphics gc)
     {	boolean reviewBackground = reviewMode()&&!mutable_game_record;
       // erase
+      OnedayBoard gb = disB(gc);
       GC.setColor(gc,reviewBackground ? reviewModeBackground : boardBackgroundColor);
       //GC.fillRect(gc, fullRect);
      textures[BACKGROUND_TILE_INDEX].tileImage(gc, fullRect);   
@@ -621,7 +622,7 @@ public class OnedayViewer extends CCanvas<OnedayCell,OnedayBoard> implements One
       // if the board is one large graphic, for which the visual target points
       // are carefully matched with the abstract grid
       drawFixedBoard(gc,boardRect);
-	  b.SetDisplayRectangle(boardRect);
+	  gb.SetDisplayRectangle(boardRect);
 
     }
     public void drawFixedBoard(Graphics gc,Rectangle r)

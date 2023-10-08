@@ -213,7 +213,7 @@ public class MbraneViewer extends CCanvas<MbraneCell,MbraneBoard> implements Mbr
        	G.splitBottom(okendgame,noendgame,fh*5/2);
        	
     	Rectangle main = layout.getMainRectangle();
-        int stateH = fh*3;
+        int stateH = fh*5/2;
         int mainX = G.Left(main);
     	int mainY = G.Top(main);
     	int mainW = G.Width(main);
@@ -376,6 +376,7 @@ public class MbraneViewer extends CCanvas<MbraneCell,MbraneBoard> implements Mbr
      * */
     public void drawFixedElements(Graphics gc)
     { // erase
+      MbraneBoard gb = disB(gc);
       boolean reviewBackground = reviewMode()&&!mutable_game_record;
       GC.setColor(gc,reviewBackground ? reviewModeBackground : boardBackgroundColor);
       //GC.fillRect(gc, fullRect);
@@ -387,7 +388,7 @@ public class MbraneViewer extends CCanvas<MbraneCell,MbraneBoard> implements Mbr
 	  	// drawing the empty board requires detailed board coordinate information
 	  	// games with less detailed dependency in the fixed background may not need
 	  	// this. 
-	  	setDisplayParameters(bb,activeBoardRect);
+	  	setDisplayParameters(gb,activeBoardRect);
       if(twistBoard)
       {
     	  GC.setRotation(gc,-Math.PI/2,G.centerX(boardRect),G.centerY(boardRect));
@@ -400,7 +401,7 @@ public class MbraneViewer extends CCanvas<MbraneCell,MbraneBoard> implements Mbr
       // to draw the cells, set gb.Drawing_Style in the board init method.  Create a
       // DrawGridCoord(Graphics gc, Color clt,int xpos, int ypos, int cellsize,String txt)
       // on the board to fine tune the exact positions of the text
-      bb.DrawGrid(gc, activeBoardRect, use_grid, boardBackgroundColor, GridColor, GridColor, GridColor);
+      gb.DrawGrid(gc, activeBoardRect, use_grid, boardBackgroundColor, GridColor, GridColor, GridColor);
       if(twistBoard)
       {
     	  GC.setRotation(gc,Math.PI/2,G.centerX(boardRect),G.centerY(boardRect));

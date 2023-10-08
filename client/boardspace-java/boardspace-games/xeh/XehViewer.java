@@ -462,7 +462,8 @@ public class XehViewer extends CCanvas<XehCell,XehBoard> implements XehConstants
      * */
     public void drawFixedElements(Graphics gc)
     { // erase
-      setDisplayParameters(bb,boardRect);
+      XehBoard gb = disB(gc);
+      setDisplayParameters(gb,boardRect);
       boolean reviewBackground = reviewMode()&&!mutable_game_record;
        //GC.fillRect(gc, fullRect);
      XehChip.backgroundTile.image.tileImage(gc, fullRect);   
@@ -478,7 +479,7 @@ public class XehViewer extends CCanvas<XehCell,XehBoard> implements XehConstants
       // to draw the cells, set gb.Drawing_Style in the board init method.  Create a
       // DrawGridCoord(Graphics gc, Color clt,int xpos, int ypos, int cellsize,String txt)
       // on the board to fine tune the exact positions of the text
-      bb.DrawGrid(gc, boardRect, use_grid, boardBackgroundColor, GridColor, GridColor, GridColor);
+      gb.DrawGrid(gc, boardRect, use_grid, boardBackgroundColor, GridColor, GridColor, GridColor);
 	  // draw the tile grid.  The positions are determined by the underlying board
       // object, and the tile itself if carefully crafted to tile the board
       // when drawn this way.  For games with simple graphics, we could use the
@@ -486,14 +487,14 @@ public class XehViewer extends CCanvas<XehCell,XehBoard> implements XehConstants
       // but for more complex graphics with overlapping shadows or stacked
       // objects, this double loop is useful if you need to control the
       // order the objects are drawn in.
-      int xsize = bb.cellSize();
+      int xsize = gb.cellSize();
       int left = G.Left(boardRect);
       int top = G.Bottom(boardRect);
-      for(Enumeration<XehCell>cells = bb.getIterator(Itype.TBRL); cells.hasMoreElements(); )
+      for(Enumeration<XehCell>cells = gb.getIterator(Itype.TBRL); cells.hasMoreElements(); )
       { 
     	XehCell c = cells.nextElement();
-      	int ypos = top - bb.cellToY(c);
-      	int xpos = left + bb.cellToX(c);
+      	int ypos = top - gb.cellToY(c);
+      	int xpos = left + gb.cellToX(c);
       	XehChip tile = lastRotation?XehChip.hexTile:XehChip.hexTileNR;
       	XehChip btiles[] = lastRotation ? XehChip.border : XehChip.borderNR;
              // double scale[] = TILESCALES[hidx];

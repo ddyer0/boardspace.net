@@ -246,7 +246,7 @@ public class BloomsViewer extends CCanvas<BloomsCell,BloomsBoard> implements Blo
     	//
         int stateY = boardY;
         int stateX = boardX;
-        int stateH = CELLSIZE;
+        int stateH = fh*5/2;
         G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,numberMenu,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	// goal and bottom ornaments, depending on the rendering can share
@@ -333,7 +333,8 @@ public class BloomsViewer extends CCanvas<BloomsCell,BloomsBoard> implements Blo
      * */
     public void drawFixedElements(Graphics gc)
     { // erase
-      setDisplayParameters(bb,boardRect);
+      BloomsBoard gb = disB(gc);
+      setDisplayParameters(gb,boardRect);
       boolean reviewBackground = reviewMode()&&!mutable_game_record;
       GC.setColor(gc,reviewBackground ? reviewModeBackground : boardBackgroundColor);
       //GC.fillRect(gc, fullRect);
@@ -351,7 +352,7 @@ public class BloomsViewer extends CCanvas<BloomsCell,BloomsBoard> implements Blo
       // to draw the cells, set gb.Drawing_Style in the board init method.  Create a
       // DrawGridCoord(Graphics gc, Color clt,int xpos, int ypos, int cellsize,String txt)
       // on the board to fine tune the exact positions of the text
-      bb.DrawGrid(gc, boardRect, use_grid, boardBackgroundColor, GridColor, GridColor, GridColor);
+      gb.DrawGrid(gc, boardRect, use_grid, boardBackgroundColor, GridColor, GridColor, GridColor);
 
       // draw the tile grid.  The positions are determined by the underlying board
       // object, and the tile itself if carefully crafted to tile the Blooms board
@@ -363,13 +364,13 @@ public class BloomsViewer extends CCanvas<BloomsCell,BloomsBoard> implements Blo
       int left = G.Left(boardRect);
       int top = G.Bottom(boardRect);
       BloomsChip tile = BloomsChip.hexTileNR;
-      int xsize = bb.cellSize();//((lastRotation?0.80:0.8)*);
+      int xsize = gb.cellSize();//((lastRotation?0.80:0.8)*);
       
-      for(Enumeration<BloomsCell>cells = bb.getIterator(Itype.TBRL); cells.hasMoreElements();)
+      for(Enumeration<BloomsCell>cells = gb.getIterator(Itype.TBRL); cells.hasMoreElements();)
       { //where we draw the grid
     	  BloomsCell cell = cells.nextElement();
-    	  int ypos = top - bb.cellToY(cell);
-    	  int xpos = left + bb.cellToX(cell);
+    	  int ypos = top - gb.cellToY(cell);
+    	  int xpos = left + gb.cellToX(cell);
     	  tile.getAltDisplayChip(cell.col*cell.row^cell.row).drawChip(gc,this,xsize,xpos,ypos,null);              
        }
 

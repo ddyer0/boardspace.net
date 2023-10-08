@@ -451,16 +451,16 @@ public class YinshGameViewer extends CCanvas<YinshCell,YinshBoard> implements Yi
     }
 
 	public void drawFixedElements(Graphics gc)
-    {	
+    {	YinshBoard gb = disB(gc);
 	  	if (use_perspective())
 	    {
-	    b.SetDisplayParameters(MASTER_SCALE, MASTER_YSCALE, 0,0,0,XPERSPECTIVE, YPERSPECTIVE,0);
+	    gb.SetDisplayParameters(MASTER_SCALE, MASTER_YSCALE, 0,0,0,XPERSPECTIVE, YPERSPECTIVE,0);
 	    }
 	    else
 	    {
-	        b.SetDisplayParameters(MASTER_NP_YSCALE, MASTER_NP_YSCALE, 0,0,0);
+	        gb.SetDisplayParameters(MASTER_NP_YSCALE, MASTER_NP_YSCALE, 0,0,0);
 	    }
-		b.SetDisplayRectangle(boardRect);    	
+		gb.SetDisplayRectangle(boardRect);    	
        backgrounds[NORMAL_BACKGROUND_INDEX].tileImage(gc,fullRect);
         boolean review = reviewMode() && !mutable_game_record;
         if(review)
@@ -471,7 +471,7 @@ public class YinshGameViewer extends CCanvas<YinshCell,YinshBoard> implements Yi
            //draw the actual board
         Color bgcolor = review ? reviewModeBackground : boardBackgroundColor;
 
-        b.DrawGrid(gc, boardRect, use_grid, bgcolor, RingFillColor,
+        gb.DrawGrid(gc, boardRect, use_grid, bgcolor, RingFillColor,
                 LineFillColor,GridColor);
     	
   
@@ -860,6 +860,10 @@ public class YinshGameViewer extends CCanvas<YinshCell,YinshBoard> implements Yi
     	}
     	return(super.parsePlayerInfo(p, first, tokens));
     }
+    /**
+     * summary: 5/23/2023
+		28849 files visited 0 problems
+     */
    public void ReplayMove(sgf_node no)
     {
         String comments = "";

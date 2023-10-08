@@ -236,7 +236,7 @@ public class OrdoViewer extends CCanvas<OrdoCell,OrdoBoard> implements OrdoConst
         int logH =  fh*15 ;
         int vcrW = fh*16;
         int vcrMW = fh*20;
-        int stateH = fh*3;
+        int stateH = fh*5/2;
         int buttonW = fh*8;
       	layout.placeTheVcr(this,vcrW,vcrMW);
        	layout.placeTheChatAndLog(chatRect, minChatW, chatHeight, minChatW*2, 3*chatHeight/2, logRect,
@@ -892,7 +892,6 @@ private void playSounds(commonMove m)
     public void drawFixedElements(Graphics gc)
     {	
       
-      setBoardRect(b);	// set up the coordinate system for the board
       
       // erase
      OrdoChip.backgroundTile.image.tileImage(gc, fullRect);   
@@ -901,7 +900,8 @@ private void playSounds(commonMove m)
       drawFixedBoard(gc);
     }
     public void drawFixedBoard(Graphics gc,Rectangle rect)
-    {
+    { OrdoBoard gb = disB(gc);
+    	setBoardRect(gb);	// set up the coordinate system for the board
       boolean reviewBackground = reviewMode()&&!mutable_game_record;
       if(reviewBackground)
       {	 
@@ -915,7 +915,7 @@ private void playSounds(commonMove m)
       // items in the cells, so they are drawn in the drawBoardElements method
       //
       
-      b.DrawGrid(gc,rect,use_grid,Color.white,Color.black,Color.blue,Color.black);
+      gb.DrawGrid(gc,rect,use_grid,Color.white,Color.black,Color.blue,Color.black);
     } 
     
     private void setBoardRect(OrdoBoard gb)

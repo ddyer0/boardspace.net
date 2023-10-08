@@ -211,7 +211,7 @@ public class ModxViewer extends CCanvas<ModxCell,ModxBoard> implements ModxConst
     	int extraW = Math.max(0, (mainW-boardW)/2);
     	int extraH = Math.max(0, (mainH-boardH)/2);
     	int boardX = mainX+extraW;
-        int stateH = SQUARESIZE/3;
+        int stateH = fh*5/2;
         int boardY = mainY+extraH+stateH;
     	int boardBottom = boardY+boardH;
        	layout.returnFromMain(extraW,extraH);
@@ -663,8 +663,8 @@ private void playSounds(commonMove m)
     public void drawFixedElements(Graphics gc)
     {	
       boolean reviewBackground = reviewMode()&&!mutable_game_record;
-      
-      setBoardRect(b);	// set up the coordinate system for the board
+      ModxBoard gb = disB(gc);
+      setBoardRect(gb);	// set up the coordinate system for the board
       boolean perspective = usePerspective();
       // erase
      ModxChip.backgroundTile.image.tileImage(gc, fullRect);   
@@ -679,7 +679,7 @@ private void playSounds(commonMove m)
       background = board;
       scaled = board.centerScaledImage(gc,boardRect,scaled);
       
-      b.DrawGrid(gc,boardRect,use_grid,Color.white,Color.black,Color.blue,Color.black);
+      gb.DrawGrid(gc,boardRect,use_grid,Color.white,Color.black,Color.blue,Color.black);
     } 
     
     private void setBoardRect(ModxBoard gb)

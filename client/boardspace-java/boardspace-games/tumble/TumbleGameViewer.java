@@ -183,7 +183,7 @@ public class TumbleGameViewer extends CCanvas<TumbleCell,TumbleBoard> implements
     	int mainY = G.Top(main);
     	int mainW = G.Width(main);
     	int mainH = G.Height(main);
-        int stateH = fh*3;
+        int stateH = fh*5/2;
     	
     	// calculate a suitable cell size for the board
     	double cs = Math.min((double)mainW/nrows,(double)mainH/(nrows+0.5));
@@ -271,6 +271,7 @@ public class TumbleGameViewer extends CCanvas<TumbleCell,TumbleBoard> implements
     public void drawFixedElements(Graphics gc)
     { boolean review = reviewMode() && !mutable_game_record;
       // erase
+      TumbleBoard gb = disB(gc);
       GC.setColor(gc,review ? reviewModeBackground : boardBackgroundColor);
       //GC.fillRect(gc, fullRect);
      textures[BACKGROUND_TILE_INDEX].tileImage(gc, fullRect);   
@@ -279,15 +280,15 @@ public class TumbleGameViewer extends CCanvas<TumbleCell,TumbleBoard> implements
        textures[BACKGROUND_REVIEW_INDEX].tileImage(gc,boardRect);   
       }
        
-      b.SetDisplayParameters(0.94,1.0,  0.12,0.1,  0);
-      b.SetDisplayRectangle(boardRect);
+      gb.SetDisplayParameters(0.94,1.0,  0.12,0.1,  0);
+      gb.SetDisplayRectangle(boardRect);
         
        // for us, the board is one large graphic, for which the target points
       // are carefully matched with the abstract grid
       //G.centerImage(gc,images[BOARD_INDEX], 
       //	  brect.x,brect.y,brect.width,brect.height,this);
 
-      b.DrawGrid(gc,boardRect,use_grid,Color.white,Color.black,Color.blue,Color.black);
+      gb.DrawGrid(gc,boardRect,use_grid,Color.white,Color.black,Color.blue,Color.black);
     }
 
    /* draw the board and the chips on it. */

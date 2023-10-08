@@ -951,8 +951,9 @@ private void playSounds(commonMove m)
  */
     public void drawFixedElements(Graphics gc)
     {	
+      CheckerBoard gb = disB(gc);
       
-      setBoardRect(b);	// set up the coordinate system for the board
+      setBoardRect(gb);	// set up the coordinate system for the board
       
       // erase
      CheckerChip.backgroundTile.image.tileImage(gc, fullRect);   
@@ -961,7 +962,7 @@ private void playSounds(commonMove m)
       drawFixedBoard(gc);
     }
     public void drawFixedBoard(Graphics gc,Rectangle rect)
-    {
+    { CheckerBoard gb = disB(gc);
       boolean reviewBackground = reviewMode()&&!mutable_game_record;
       if(reviewBackground)
       {	 
@@ -974,10 +975,10 @@ private void playSounds(commonMove m)
       // in this implementation, the checker squares of the board are actually
       // items in the cells, so they are drawn in the drawBoardElements method
       //
-      Variation v = b.variation;
+      Variation v = gb.variation;
       if(v.banner!=null) {v.banner.image.centerImage(gc,bannerRect); }
       
-      b.DrawGrid(gc,rect,use_grid,Color.white,Color.black,Color.blue,Color.black);
+      gb.DrawGrid(gc,rect,use_grid,Color.white,Color.black,Color.blue,Color.black);
     } 
     
     private void setBoardRect(CheckerBoard gb)

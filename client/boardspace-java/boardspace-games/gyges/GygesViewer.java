@@ -300,6 +300,7 @@ public class GygesViewer extends CCanvas<GygesCell,GygesBoard> implements GygesC
     Image scaled = null;
     public void drawFixedBoard(Graphics gc,Rectangle brect)
     { boolean reviewBackground = reviewMode() && !mutable_game_record;
+      GygesBoard gb = disB(gc);
       // erase
       if(reviewBackground)
       {	 
@@ -309,10 +310,10 @@ public class GygesViewer extends CCanvas<GygesCell,GygesBoard> implements GygesC
       // if the board is one large graphic, for which the visual target points
       // are carefully matched with the abstract grid
       scaled = images[BOARD_INDEX].centerScaledImage(gc, brect,scaled);
-	    b.SetDisplayParameters(0.63,0.78,  -0.0,0.55,  0, 00,0.0,0);
-	    b.SetDisplayRectangle(brect);
+	    gb.SetDisplayParameters(0.63,0.78,  -0.0,0.55,  0, 00,0.0,0);
+	    gb.SetDisplayRectangle(brect);
 
-      b.DrawGrid(gc,brect,use_grid,Color.white,Color.white,Color.blue,Color.yellow);
+      gb.DrawGrid(gc,brect,use_grid,Color.white,Color.white,Color.blue,Color.yellow);
     }
 
     private boolean handleCell(Graphics gc,GygesBoard gb,Rectangle brect,HitPoint highlight,

@@ -412,26 +412,26 @@ public class MedinaViewer extends CCanvas<MedinaCell,MedinaBoard> implements Med
     public void drawFixedBoard(Graphics gc,Rectangle brect)
     { boolean reviewBackground = reviewMode() && !mutable_game_record;
       // erase
-    
+      MedinaBoard gb = disB(gc);
       if(reviewBackground)
       {	 
        textures[BACKGROUND_REVIEW_INDEX].tileImage(gc,brect);   
       }
-      setBoardParameters(b,brect,usePerspective());
+      setBoardParameters(gb,brect,usePerspective());
        
       // if the board is one large graphic, for which the visual target points
       // are carefully matched with the abstract grid
      if(remoteViewer<0)
-    	 { Image board = images[ b.boardImageIndex(usePerspective())];
+    	 { Image board = images[ gb.boardImageIndex(usePerspective())];
     	   if(board!=background) { scaled = null; }
     	   background = board;
     	   scaled = board.centerScaledImage(gc,   brect, scaled); 
 
-      b.DrawGrid(gc,brect,use_grid,Color.white,Color.black,Color.blue,Color.black);
+      gb.DrawGrid(gc,brect,use_grid,Color.white,Color.black,Color.blue,Color.black);
       { int ybase = G.Bottom(brect);
    		int xbase = G.Left(brect);
    		Font giantFont = G.getFont(standardPlainFont(), G.Style.Bold, 60);
-   		Color bignum = (b.variation==Variation.Medina_V1)
+   		Color bignum = (gb.variation==Variation.Medina_V1)
    							?new Color(0.7f,0.3f,0.3f)
    							:new Color(0.4f,0.7f,0.2f);
    		// these are ad-hoc coordinates to get us close to where the
@@ -441,10 +441,10 @@ public class MedinaViewer extends CCanvas<MedinaCell,MedinaBoard> implements Med
         { int row[] = pos[corner];
           char col = (char)row[0];
           int rw = row[1];
-          int rev = b.reverseY() ? -1 : 1;
+          int rev = gb.reverseY() ? -1 : 1;
           String msg = ""+row[2];
-          int xp = xbase + b.cellToX(col,rw)+rev*((col>'A')?CELLSIZE/2:-CELLSIZE/2);
-          int yp = ybase - b.cellToY(col,rw)+rev*((rw>1)?-CELLSIZE/2:CELLSIZE/4);
+          int xp = xbase + gb.cellToX(col,rw)+rev*((col>'A')?CELLSIZE/2:-CELLSIZE/2);
+          int yp = ybase - gb.cellToY(col,rw)+rev*((rw>1)?-CELLSIZE/2:CELLSIZE/4);
         GC.setFont(gc,giantFont);
         //G.frameRect(gc,Color.red,xp,yp,CELLSIZE*2,CELLSIZE*2);
         GC.Text(gc,true,xp-CELLSIZE,yp-CELLSIZE,CELLSIZE*2,CELLSIZE*2,bignum,null,msg);

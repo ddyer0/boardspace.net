@@ -229,7 +229,7 @@ public class ColoritoViewer extends CCanvas<ColoritoCell,ColoritoBoard> implemen
     	//
         int stateY = boardY;
         int stateX = boardX;
-        int stateH = fh*3;
+        int stateH = fh*5/2;
         
         G.placeStateRow(stateX,stateY,boardW,stateH,iconRect,stateRect,annotationMenu,reverseViewRect,eyeRect,noChatRect);
         
@@ -295,20 +295,20 @@ public class ColoritoViewer extends CCanvas<ColoritoCell,ColoritoBoard> implemen
         drawFixedBoard(gc);
     }
     public void drawFixedBoard(Graphics gc,Rectangle brect)
-    {
+    {	ColoritoBoard gb = disB(gc);
     	boolean reviewBackground = reviewMode()&&!mutable_game_record;
     	if(reviewBackground)
     	{	 
        textures[BACKGROUND_REVIEW_INDEX].tileImage(gc,brect);   
     	}
-	    b.SetDisplayParameters(0.94,1.0,  0.12,0.1,  0);
-	    b.SetDisplayRectangle(brect);
+	    gb.SetDisplayParameters(0.94,1.0,  0.12,0.1,  0);
+	    gb.SetDisplayRectangle(brect);
      
       // if the board is one large graphic, for which the visual target points
       // are carefully matched with the abstract grid
       //G.centerImage(gc,images[BOARD_INDEX], brect,this);
 
-      b.DrawGrid(gc,brect,use_grid,Color.white,Color.black,Color.blue,Color.black);
+      gb.DrawGrid(gc,brect,use_grid,Color.white,Color.black,Color.blue,Color.black);
     }
 
    /* draw the board and the chips on it. */

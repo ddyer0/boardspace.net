@@ -201,7 +201,7 @@ public class FanoronaGameViewer extends CCanvas<FanoronaCell,FanoronaBoard> impl
        	layout.placeTheVcr(this,vcrW,vcrW*3/2);
               
     	Rectangle main = layout.getMainRectangle();
-        int stateH = CELLSIZE+C2;
+        int stateH = fh*5/2;
     	int mainX = G.Left(main);
     	int mainY = G.Top(main);
     	int mainW = G.Width(main);
@@ -321,7 +321,7 @@ public class FanoronaGameViewer extends CCanvas<FanoronaCell,FanoronaBoard> impl
     { boolean reviewBackground = reviewMode() && !mutable_game_record;
       int cx = G.centerX(brect);
       int cy = G.centerY(brect);
-      
+      FanoronaBoard gb = disB(gc);
       GC.setRotation(gc, boardRotation, cx,cy);
       if(reviewBackground)
       {	 
@@ -331,10 +331,10 @@ public class FanoronaGameViewer extends CCanvas<FanoronaCell,FanoronaBoard> impl
       // for us, the board is one large graphic, for which the target points
       // are carefully matched with the abstract grid
       scaled = images[BOARD_INDEX].centerScaledImage(gc, brect,scaled);
-     	b.SetDisplayParameters(0.9,1.0,  0.15,0.15,  0);
-    	b.SetDisplayRectangle(brect);
+     	gb.SetDisplayParameters(0.9,1.0,  0.15,0.15,  0);
+    	gb.SetDisplayRectangle(brect);
 
-      b.DrawGrid(gc,brect,use_grid,Color.white,Color.black,Color.blue,Color.black);
+      gb.DrawGrid(gc,brect,use_grid,Color.white,Color.black,Color.blue,Color.black);
       
       GC.setRotation(gc, -boardRotation, cx, cy);
     }

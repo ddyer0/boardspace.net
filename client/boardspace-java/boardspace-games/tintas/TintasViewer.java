@@ -192,7 +192,7 @@ public class TintasViewer extends CCanvas<TintasCell,TintasBoard> implements Tin
     	int mainX = G.Left(main);
     	int mainY = G.Top(main);
     	int mainW = G.Width(main);
-        int stateH = fh*3;
+        int stateH = fh*5/2;
     	int mainH = G.Height(main);
      	// calculate a suitable cell size for the board
     	double cs = Math.min((double)mainW/ncols,(double)(mainH-stateH)/nrows);
@@ -211,7 +211,7 @@ public class TintasViewer extends CCanvas<TintasCell,TintasBoard> implements Tin
     	// state and top ornaments snug to the top of the board.  Depending
     	// on the rendering, it can occupy the same area or must be offset upwards
     	//
-        int stateY = boardY-stateH/2;
+        int stateY = boardY-stateH/3;
         int stateX = boardX;
 
         G.placeRow(stateX,stateY,boardW ,stateH,stateRect,annotationMenu,viewsetRect,eyeRect,noChatRect);
@@ -329,6 +329,7 @@ public class TintasViewer extends CCanvas<TintasCell,TintasBoard> implements Tin
      * */
     public void drawFixedElements(Graphics gc)
     { // erase
+      TintasBoard gb = disB(gc);
       boolean reviewBackground = reviewMode()&&!mutable_game_record;
       GC.setColor(gc,reviewBackground ? reviewModeBackground : boardBackgroundColor);
       //GC.fillRect(gc, fullRect);
@@ -351,8 +352,8 @@ public class TintasViewer extends CCanvas<TintasCell,TintasBoard> implements Tin
       // to draw the cells, set gb.Drawing_Style in the board init method.  Create a
       // DrawGridCoord(Graphics gc, Color clt,int xpos, int ypos, int cellsize,String txt)
       // on the board to fine tune the exact positions of the text
-      setDisplayParameters(bb,boardRect);
-      bb.DrawGrid(gc, boardRect, use_grid, boardBackgroundColor, GridColor, GridColor, GridColor);
+      setDisplayParameters(gb,boardRect);
+      gb.DrawGrid(gc, boardRect, use_grid, boardBackgroundColor, GridColor, GridColor, GridColor);
 
 
      }

@@ -721,6 +721,7 @@ public class SprintViewer extends CCanvas<SprintCell,SprintBoard> implements Spr
     public void drawFixedBoard(Graphics gc,Rectangle brect)
     {	
         boolean reviewBackground = reviewMode()&&!mutable_game_record;
+        SprintBoard gb = disB(gc);
         if(reviewBackground)
         {	 
          SprintChip.backgroundReviewTile.image.tileImage(gc,brect);   
@@ -729,7 +730,7 @@ public class SprintViewer extends CCanvas<SprintCell,SprintBoard> implements Spr
 	  	// games with less detailed dependency in the fixed background may not need
 	  	// this. 
 	  	//setDisplayParameters(bb,brect);
-        setDisplayParameters(currentPlayerBoard(bb),brect,false);
+        setDisplayParameters(currentPlayerBoard(gb),brect,false);
 	      // if the board is one large graphic, for which the visual target points
 	      // are carefully matched with the abstract grid
 	      //G.centerImage(gc,images[BOARD_INDEX], brect,this);

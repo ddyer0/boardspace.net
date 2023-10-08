@@ -211,14 +211,14 @@ public class QyshinsuViewer extends CCanvas<QyshinsuCell,QyshinsuBoard> implemen
     	//
         int stateY = boardY;
         int stateX = boardX;
-        int stateH = SQUARESIZE/2;
+        int stateH = fh*5/2;
         G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	lineStrokeWidth = boardW/400.0;
     	// goal and bottom ornaments, depending on the rendering can share
     	// the rectangle or can be offset downward.  Remember that the grid
     	// can intrude too.
-    	G.SetRect(goalRect, boardX, boardBottom-stateH*2,boardW,stateH);       
+    	G.SetRect(goalRect, boardX, boardBottom-stateH,boardW,stateH);       
         setProgressRect(progressRect,goalRect);
         positionTheChat(chatRect,Color.white,chatBackgroundColor);
         return(boardW*boardH);
@@ -294,6 +294,7 @@ public class QyshinsuViewer extends CCanvas<QyshinsuCell,QyshinsuBoard> implemen
     public void drawFixedElements(Graphics gc)
     { boolean review = reviewMode() && !mutable_game_record;
       // erase
+      QyshinsuBoard gb = disB(gc);
       GC.setColor(gc,review ? reviewModeBackground : boardBackgroundColor);
       //GC.fillRect(gc, fullRect);
      textures[BACKGROUND_TILE_INDEX].tileImage(gc, fullRect);   
@@ -305,8 +306,8 @@ public class QyshinsuViewer extends CCanvas<QyshinsuCell,QyshinsuBoard> implemen
       // if the board is one large graphic, for which the visual target points
       // are carefully matched with the abstract grid
       scaled = images[BOARD_INDEX].centerScaledImage(gc,  boardRect, scaled);
-      setDisplayParameters(b);
-      b.DrawGrid(gc,boardRect,use_grid,Color.white,Color.red,Color.blue,Color.red);
+      setDisplayParameters(gb);
+      gb.DrawGrid(gc,boardRect,use_grid,Color.white,Color.red,Color.blue,Color.red);
     }
 
    /* draw the board and the chips on it. */

@@ -32,9 +32,9 @@ import lib.ExtendedHashtable;
 import lib.G;
 import lib.GC;
 import lib.HitPoint;
-import lib.Image;
 import lib.LFrameProtocol;
 import lib.StockArt;
+import lib.Image;
 import lib.Text;
 import lib.TextChunk;
 
@@ -210,7 +210,7 @@ public class ProteusViewer extends CCanvas<ProteusCell,ProteusBoard> implements 
     	// state and top ornaments snug to the top of the board.  Depending
     	// on the rendering, it can occupy the same area or must be offset upwards
     	//
-        int stateH = 2*CELLSIZE/3;
+        int stateH = fh*5/2;
         int stateY = boardY;
         int stateX = boardX;
         G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,noChatRect);
@@ -353,6 +353,7 @@ public class ProteusViewer extends CCanvas<ProteusCell,ProteusBoard> implements 
     public void drawFixedElements(Graphics gc)
     {	boolean reviewBackground = reviewMode()&&!mutable_game_record;
       // erase
+      ProteusBoard gb = disB(gc);
       GC.setColor(gc,reviewBackground ? reviewModeBackground : boardBackgroundColor);
   
      ProteusChip.backgroundTile.image.tileImage(gc, fullRect);   
@@ -365,9 +366,9 @@ public class ProteusViewer extends CCanvas<ProteusCell,ProteusBoard> implements 
       // are carefully matched with the abstract grid
       scaled = ProteusChip.board.image.centerScaledImage(gc, boardRect,scaled);
 
-	  b.SetDisplayParameters(0.8,0.89,  0.025,0.05, 0);
-	  b.SetDisplayRectangle(boardRect);
-      b.DrawGrid(gc,boardRect,use_grid,Color.white,Color.black,Color.blue,Color.black);
+	  gb.SetDisplayParameters(0.8,0.89,  0.025,0.05, 0);
+	  gb.SetDisplayRectangle(boardRect);
+      gb.DrawGrid(gc,boardRect,use_grid,Color.white,Color.black,Color.blue,Color.black);
     }
 
    /* draw the board and the chips on it. */

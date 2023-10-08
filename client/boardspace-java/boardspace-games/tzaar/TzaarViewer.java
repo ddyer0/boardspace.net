@@ -267,6 +267,7 @@ public class TzaarViewer extends CCanvas<TzaarCell,TzaarBoard> implements TzaarC
     public void drawFixedElements(Graphics gc)
     {boolean review = reviewMode() && !mutable_game_record;
       // erase
+      TzaarBoard gb = disB(gc);
       GC.setColor(gc,review ? reviewModeBackground : boardBackgroundColor);
       //GC.fillRect(gc, fullRect);
      textures[BACKGROUND_TILE_INDEX].tileImage(gc, fullRect);   
@@ -297,7 +298,7 @@ public class TzaarViewer extends CCanvas<TzaarCell,TzaarBoard> implements TzaarC
       if(perspective)
     	{
     	double lr = 0;
-    	b.SetDisplayParameters(
+    	gb.SetDisplayParameters(
     		 1.0, //0.93,	// scale 
     		 0.83,	// yscale
     		 0.0,	// xoff
@@ -309,7 +310,7 @@ public class TzaarViewer extends CCanvas<TzaarCell,TzaarBoard> implements TzaarC
     		 );
     	}else
     	{
-    	   	b.SetDisplayParameters(
+    	   	gb.SetDisplayParameters(
     	    		 1.1, // scale 
     	    		 0.89,	// yscale
     	    		 -0.1,	// xoff
@@ -322,9 +323,9 @@ public class TzaarViewer extends CCanvas<TzaarCell,TzaarBoard> implements TzaarC
 
     	}
     	
-    	b.SetDisplayRectangle(boardRect);
+    	gb.SetDisplayRectangle(boardRect);
   
-      b.DrawGrid(gc,boardRect,use_grid,Color.white,Color.black,Color.blue,Color.black);
+      gb.DrawGrid(gc,boardRect,use_grid,Color.white,Color.black,Color.blue,Color.black);
     }
     private void DrawScore(Graphics gc,Rectangle r,int player)
     {	

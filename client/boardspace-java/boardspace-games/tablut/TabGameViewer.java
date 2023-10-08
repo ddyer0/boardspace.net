@@ -231,7 +231,7 @@ public class TabGameViewer extends CCanvas<TabCell,TabGameBoard> implements TabC
     	BOARDCELLSIZE = CELLSIZE = (int)cs;
     	//G.print("cell "+cs0+" "+cs+" "+bestPercent);
     	// center the board in the remaining space
-        int stateH = CELLSIZE/2;
+        int stateH = fh*5/2;
     	int boardW = (int)(ncols*CELLSIZE);
     	int boardH = (int)(nrows*CELLSIZE);
     	int extraW = Math.max(0, (mainW-boardW)/2);
@@ -283,7 +283,8 @@ public class TabGameViewer extends CCanvas<TabCell,TabGameBoard> implements TabC
     public void drawFixedElements(Graphics gc)
     {boolean review = reviewMode() && !mutable_game_record;
       // erase
-      b.SetDisplayRectangle(boardRect); 	   // this is necessary to inform disb of the board geometry
+      TabGameBoard gb = disB(gc);
+      gb.SetDisplayRectangle(boardRect); 	   // this is necessary to inform disb of the board geometry
 
       GC.setColor(gc,review ? reviewModeBackground : boardBackgroundColor);
      textures[BACKGROUND_TILE_INDEX].tileImage(gc, fullRect);   
@@ -294,7 +295,7 @@ public class TabGameViewer extends CCanvas<TabCell,TabGameBoard> implements TabC
        
       // draw a picture of the board. In this version we actually draw just the grid
       // to draw the cells, set gb.Drawing_Style in the board init method
-      b.DrawGrid(gc, boardRect, use_grid, boardBackgroundColor, GridColor, GridColor, GridColor);
+      gb.DrawGrid(gc, boardRect, use_grid, boardBackgroundColor, GridColor, GridColor, GridColor);
 
       // draw the tile grid.  The positions are determined by the underlying board
       // object, and the tile itself if carefully crafted to tile the board
@@ -303,15 +304,15 @@ public class TabGameViewer extends CCanvas<TabCell,TabGameBoard> implements TabC
       // but for more complex graphics with overlapping shadows or stacked
       // objects, this double loop is useful if you need to control the
       // order the objects are drawn in.
-      int lastincol = b.ncols;
+      int lastincol = gb.ncols;
        for (int col = lastincol-1; col >= 0; col--)
        {
            char thiscol = (char) ('A' + col);
            for (int thisrow = lastincol-1; thisrow >= 0; thisrow--) // start at row 1 (0 is the grid) 
            { //where we draw the grid
-        	  TabCell cell = b.getCell(thiscol,thisrow+1);
-              int ypos = G.Bottom(boardRect) - b.cellToY(thiscol, thisrow+1);
-              int xpos = G.Left(boardRect) + b.cellToX(thiscol, thisrow);
+        	  TabCell cell = gb.getCell(thiscol,thisrow+1);
+              int ypos = G.Bottom(boardRect) - gb.cellToY(thiscol, thisrow+1);
+              int xpos = G.Left(boardRect) + gb.cellToX(thiscol, thisrow);
               TabChip tile = TabChip.HexTile;
               if(cell.flagArea) { tile = TabChip.HexTile_Gold2; }
               else if(cell.centerArea) { tile = TabChip.HexTile_Gold; }

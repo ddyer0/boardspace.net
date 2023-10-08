@@ -212,7 +212,7 @@ public class TraxGameViewer extends commonCanvas implements TraxConstants, GameL
     	layout.placeTheVcr(this,minLogW,minLogW*3/2);
 
     	Rectangle main = layout.getMainRectangle();
-    	int stateH = fh*3;
+    	int stateH = fh*5/2;
     	int boardX = G.Left(main);
     	int boardY = G.Top(main)+stateH;
     	int boardW = G.Width(main);

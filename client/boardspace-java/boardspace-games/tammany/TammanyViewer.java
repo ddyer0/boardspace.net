@@ -209,10 +209,10 @@ public class TammanyViewer extends CCanvas<TammanyCell,TammanyBoard> implements 
     	//double bestPercent = 
     	layout.selectLayout(this, nPlayers, width, height,
     			margin,	
-    			0.15,	// 60% of space allocated to the board
+    			0.5,	// 60% of space allocated to the board
     			0.75,	// 3:4 aspect ratio for the board
     			fh*2,
-    			fh*3,	// maximum cell size
+    			fh*2.5,	// maximum cell size
     			0.4		// preference for the designated layout, if any
     			);
     	
@@ -252,7 +252,7 @@ public class TammanyViewer extends CCanvas<TammanyCell,TammanyBoard> implements 
     	//
         int stateY = boardY;
         int stateX = boardX;
-        int stateH = fh*3;
+        int stateH = fh*5/2;
         G.placeRow(stateX+stateH,stateY,boardW-stateH ,stateH,stateRect,annotationMenu,noChatRect);
         G.SetRect(iconRect, stateX, stateY, stateH, stateH);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
@@ -433,9 +433,9 @@ public class TammanyViewer extends CCanvas<TammanyCell,TammanyBoard> implements 
      Image scaled = null;
      // called after supplying the rotation context
      public void drawFixedBoard(Graphics gc,Rectangle rect)
-     {
+     {	TammanyBoard gb = disB(gc);
     	 if(remoteViewer<0) { scaled = TammanyChip.board.image.centerScaledImage(gc, rect,scaled);	} 
-         setDisplayParameters(bb,boardRect);      	
+         setDisplayParameters(gb,boardRect);      	
      }
     /**
      * translate the mouse coordinate x,y into a size-independent representation

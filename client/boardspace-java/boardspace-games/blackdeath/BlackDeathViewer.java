@@ -467,7 +467,7 @@ public class BlackDeathViewer extends CCanvas<BlackDeathCell,BlackDeathBoard> im
     }
     Image scaled = null;
     public void drawFixedBoard(Graphics gc,Rectangle brect)
-    {
+    { BlackDeathBoard gb = disB(gc);
       boolean reviewBackground = reviewMode()&&!mutable_game_record;
       if(reviewBackground)
       {	 
@@ -476,7 +476,7 @@ public class BlackDeathViewer extends CCanvas<BlackDeathCell,BlackDeathBoard> im
 	  	// drawing the empty board requires detailed board coordinate information
 	  	// games with less detailed dependency in the fixed background may not need
 	  	// this. 
-	  	setDisplayParameters(bb,brect);
+	  	setDisplayParameters(gb,brect);
       
       // if the board is one large graphic, for which the visual target points
       // are carefully matched with the abstract grid

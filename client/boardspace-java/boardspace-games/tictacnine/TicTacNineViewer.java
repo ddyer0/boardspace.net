@@ -360,6 +360,7 @@ public class TicTacNineViewer extends CCanvas<TicTacNineCell,TicTacNineBoard> im
     public void drawFixedElements(Graphics gc)
     {boolean review = reviewMode() && !mutable_game_record;
       // erase
+      TicTacNineBoard gb = disB(gc);
       GC.setColor(gc,review ? reviewModeBackground : boardBackgroundColor);
       //GC.fillRect(gc, fullRect);
      textures[BACKGROUND_TILE_INDEX].tileImage(gc, fullRect);   
@@ -371,10 +372,10 @@ public class TicTacNineViewer extends CCanvas<TicTacNineCell,TicTacNineBoard> im
       // if the board is one large graphic, for which the visual target points
       // are carefully matched with the abstract grid
      images[BOARD_INDEX].centerImage(gc, boardRect);
-	    b.SetDisplayParameters(0.748,1.0,  -0.1,0.086,  0, 0, 0,0);
-	    b.SetDisplayRectangle(boardRect);
+	    gb.SetDisplayParameters(0.748,1.0,  -0.1,0.086,  0, 0, 0,0);
+	    gb.SetDisplayRectangle(boardRect);
 
-      b.DrawGrid(gc,boardRect,use_grid,Color.white,Color.black,Color.blue,Color.black);
+      gb.DrawGrid(gc,boardRect,use_grid,Color.white,Color.black,Color.blue,Color.black);
     }
 
    /* draw the board and the chips on it. */

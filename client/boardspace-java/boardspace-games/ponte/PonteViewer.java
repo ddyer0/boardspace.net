@@ -204,7 +204,7 @@ public class PonteViewer extends CCanvas<PonteCell,PonteBoard> implements PonteC
     	//
         int stateY = boardY;
         int stateX = boardX;
-        int stateH = CELLSIZE/2;
+        int stateH = fh*5/2;
         G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	int chipW = SQUARESIZE;
@@ -282,6 +282,7 @@ public class PonteViewer extends CCanvas<PonteCell,PonteBoard> implements PonteC
     public void drawFixedElements(Graphics gc)
     {
       // erase
+      PonteBoard gb = disB(gc);
       GC.setColor(gc,!animating && reviewMode() ? reviewModeBackground : boardBackgroundColor);
       //GC.fillRect(gc, fullRect);
      textures[BACKGROUND_TILE_INDEX].tileImage(gc, fullRect);   
@@ -295,9 +296,9 @@ public class PonteViewer extends CCanvas<PonteCell,PonteBoard> implements PonteC
       scaled = images[BOARD_INDEX].centerScaledImage(gc, boardRect,scaled);
 
   	// and is pretty expensive, so we shouldn't do it in the mouse-only case
-      b.SetDisplayRectangle(boardRect);
-  	  b.SetDisplayParameters(0.844,1.0, 0.25,0.3,0);
-      b.DrawGrid(gc,boardRect,use_grid,Color.white,Color.black,Color.blue,Color.black);
+      gb.SetDisplayRectangle(boardRect);
+  	  gb.SetDisplayParameters(0.844,1.0, 0.25,0.3,0);
+      gb.DrawGrid(gc,boardRect,use_grid,Color.white,Color.black,Color.blue,Color.black);
     }
 
    /* draw the board and the chips on it. */

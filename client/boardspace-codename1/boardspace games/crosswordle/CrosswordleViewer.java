@@ -262,7 +262,7 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
        	int vcrw = fh*16;
         int margin = fh/2;
         int buttonW = (G.isCodename1()?8:6)*fh;
-        int stateH = fh*3;
+        int stateH = fh*5/2;
         // this does the layout of the player boxes, and leaves
     	// a central hole for the board.
     	//double bestPercent = 
@@ -476,7 +476,7 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
 
     // land here after rotating the board drawing context if appropriate
     public void drawFixedBoard(Graphics gc,Rectangle brect)
-    {	
+    {	CrosswordleBoard gb = disB(gc);
         boolean reviewBackground = reviewMode()&&!mutable_game_record;
         if(reviewBackground)
         {	 
@@ -485,7 +485,7 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
 	  	// drawing the empty board requires detailed board coordinate information
 	  	// games with less detailed dependency in the fixed background may not need
 	  	// this. 
-	  	setDisplayParameters(bb,brect);
+	  	setDisplayParameters(gb,brect);
 	      // if the board is one large graphic, for which the visual target points
 	      // are carefully matched with the abstract grid
 	      //G.centerImage(gc,images[BOARD_INDEX], brect,this);
@@ -495,7 +495,7 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
 	      // to draw the cells, set gb.Drawing_Style in the board init method.  Create a
 	      // DrawGridCoord(Graphics gc, Color clt,int xpos, int ypos, int cellsize,String txt)
 	      // on the board to fine tune the exact positions of the text
-	      bb.DrawGrid(gc, brect, use_grid, boardBackgroundColor, GridColor, GridColor, GridColor);
+	      gb.DrawGrid(gc, brect, use_grid, boardBackgroundColor, GridColor, GridColor, GridColor);
 
 	      // draw the tile grid.  The positions are determined by the underlying board
 	      // object, and the tile itself if carefully crafted to tile the pushfight board
@@ -504,10 +504,10 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
 	      // but for more complex graphics with overlapping shadows or stacked
 	      // objects, this double loop is useful if you need to control the
 	      // order the objects are drawn in.
-	      for(CrosswordleCell c = bb.allCells; c!=null; c=c.next)
+	      for(CrosswordleCell c = gb.allCells; c!=null; c=c.next)
 	      {
-	    	  int ypos = G.Bottom(brect) - bb.cellToY(c.col, c.row);
-	    	  int xpos = G.Left(brect) + bb.cellToX(c.col, c.row);
+	    	  int ypos = G.Bottom(brect) - gb.cellToY(c.col, c.row);
+	    	  int xpos = G.Left(brect) + gb.cellToX(c.col, c.row);
 	    	  int ind = c.row&1|c.col&2;
 	    	  CrosswordleChip.Letter[ind].drawChip(gc,this,CELLSIZE*2/3,xpos,ypos,null);  
 	    	  //GC.Text(gc,""+ind,xpos,ypos);

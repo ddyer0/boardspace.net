@@ -191,9 +191,9 @@ public class MajoritiesViewer extends CCanvas<MajoritiesCell,MajoritiesBoard> im
     public Rectangle createPlayerGroup(int player,int x,int y,double rotation,int unitsize)
     {	commonPlayer pl = getPlayerOrTemp(player);
     	Rectangle chip = chipRects[player];
-    	int chipW = unitsize*5;
-    	int chipH = unitsize*5;
-    	int doneW = unitsize*5;
+    	int chipW = unitsize*3;
+    	int chipH = unitsize*3;
+    	int doneW = unitsize*4;
     	Rectangle box = pl.createRectangularPictureGroup(x+chipW,y,unitsize);
     	Rectangle done = doneRects[player];
     	
@@ -259,10 +259,11 @@ public class MajoritiesViewer extends CCanvas<MajoritiesCell,MajoritiesBoard> im
        	}
  
     	Rectangle main = layout.getMainRectangle();
+        int stateH = fh*5/2;
     	int mainX = G.Left(main);
     	int mainY = G.Top(main);
     	int mainW = G.Width(main);
-    	int mainH = G.Height(main);
+    	int mainH = G.Height(main)-stateH;
      	// calculate a suitable cell size for the board
     	double cs = Math.min((double)mainW/ncols,(double)mainH/ncols);
     	CELLSIZE = (int)cs;
@@ -273,15 +274,14 @@ public class MajoritiesViewer extends CCanvas<MajoritiesCell,MajoritiesBoard> im
     	int extraW = Math.max(0, (mainW-boardW)/2);
     	int extraH = Math.max(0, (mainH-boardH)/2);
     	int boardX = mainX+extraW;
-    	int boardY = mainY+extraH;
+    	int boardY = mainY+extraH+stateH/2;
     	int boardBottom = boardY+boardH;
        	layout.returnFromMain(extraW,extraH);
     	//
     	// state and top ornaments snug to the top of the board.  Depending
     	// on the rendering, it can occupy the same area or must be offset upwards
     	//
-        int stateH = CELLSIZE;
-        int stateY = boardY;
+        int stateY = boardY-stateH/2;
         int stateX = boardX;
         G.placeStateRow(stateX,stateY,boardW ,stateH,iconRect,stateRect,annotationMenu,numberMenu,noChatRect);
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
@@ -289,7 +289,7 @@ public class MajoritiesViewer extends CCanvas<MajoritiesCell,MajoritiesBoard> im
     	// goal and bottom ornaments, depending on the rendering can share
     	// the rectangle or can be offset downward.  Remember that the grid
     	// can intrude too.
-    	G.SetRect(goalRect, boardX, boardBottom-stateH,boardW,stateH);       
+    	G.SetRect(goalRect, boardX, boardBottom-stateH/2,boardW,stateH);       
         setProgressRect(progressRect,goalRect);
         positionTheChat(chatRect,chatBackgroundColor,chatBackgroundColor);
    
@@ -389,6 +389,7 @@ public class MajoritiesViewer extends CCanvas<MajoritiesCell,MajoritiesBoard> im
      * */
     public void drawFixedElements(Graphics gc)
     { // erase
+    	MajoritiesBoard gb = disB(gc);
     	boolean reviewBackground = reviewMode()&&!mutable_game_record;
       GC.setColor(gc,reviewBackground ? reviewModeBackground : boardBackgroundColor);
       //GC.fillRect(gc, fullRect);
@@ -401,15 +402,15 @@ public class MajoritiesViewer extends CCanvas<MajoritiesCell,MajoritiesBoard> im
       // if the board is one large graphic, for which the visual target points
       // are carefully matched with the abstract grid
       //G.centerImage(gc,images[BOARD_INDEX], brect,this);
-      setDisplayParameters(bb,boardRect);
+      setDisplayParameters(gb,boardRect);
 
       // draw a picture of the board. In this version we actually draw just the grid
       // to draw the cells, set gb.Drawing_Style in the board init method.  Create a
       // DrawGridCoord(Graphics gc, Color clt,int xpos, int ypos, int cellsize,String txt)
       // on the board to fine tune the exact positions of the text
-      bb.DrawGrid(gc, boardRect, use_grid, boardBackgroundColor, GridColor, GridColor, GridColor);
+      gb.DrawGrid(gc, boardRect, use_grid, boardBackgroundColor, GridColor, GridColor, GridColor);
 
-      drawBoardCells(gc,bb,boardRect);
+      drawBoardCells(gc,gb,boardRect);
     }
 
     
@@ -851,6 +852,8 @@ public class MajoritiesViewer extends CCanvas<MajoritiesCell,MajoritiesBoard> im
     /** replay a move specified in SGF format.  
      * this is mostly standard stuff, but the contract is to recognize
      * the elements that we generated in sgf_save
+     * summary: 5/27/2023
+	 *  2044 files visited 0 problems
      */
     public void ReplayMove(sgf_node no)
     {

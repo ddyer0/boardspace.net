@@ -347,7 +347,7 @@ public class IroViewer extends CCanvas<IroCell,IroBoard> implements IroConstants
     	// use mainW<mainH
     	int nrows = rotateBoard ? 6 : 8;  // b.boardRows
         int ncols = rotateBoard ? 8 : 6;	 // b.boardColumns
-        int stateH = fh*3;
+        int stateH = fh*5/2;
   	
     	// calculate a suitable cell size for the board
     	double cs = Math.min((double)mainW/ncols,(double)(mainH-stateH)/nrows);
