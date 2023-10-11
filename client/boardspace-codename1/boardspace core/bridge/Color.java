@@ -441,7 +441,7 @@ public class Color  {
      * @return     a new <code>Color</code> object that is
      *                 a brighter version of this <code>Color</code>
      *                 with the same {@code alpha} value.
-     * @see        java.awt.Color#darker
+     * @see        bridge.Color#darker
      * @since      JDK1.0
      */
     public Color brighter() {
@@ -484,7 +484,7 @@ public class Color  {
      * @return  a new <code>Color</code> object that is
      *                    a darker version of this <code>Color</code>
      *                    with the same {@code alpha} value.
-     * @see        java.awt.Color#brighter
+     * @see        bridge.Color#brighter
      * @since      JDK1.0
      */
     public Color darker() {

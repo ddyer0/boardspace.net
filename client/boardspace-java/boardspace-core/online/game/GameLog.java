@@ -161,14 +161,15 @@ public class GameLog implements Opcodes
     public void redrawGameLog(Graphics gc,HitPoint highlight, Rectangle r, 
     		Color textColor, Color highlightColor,
     		Font playerFont,Font lineFont)
-    {	
+    {	if(G.Height(r)>0)
+    	{
       	boolean scrolled = scrollbar.mouseIsActive();
       	HitPoint mainHighlight = scrolled&!scrollbar.activelyScrolling() ? highlight : null;
         if (((gc != null)||G.pointInRect(mainHighlight,r)) && canvas.rectangleIsVisible(r))
         {	//G.Assert(Thread.currentThread()==runThread,"running in the wrong thread");
 
         	redrawGameLog_internal(gc,canvas.disableForSpectators(highlight),r,textColor,highlightColor,playerFont,lineFont);
-        }
+        }}
     }
     private void redrawGameLog_internal(Graphics gc,HitPoint highlight, Rectangle r, 
     		Color textColor, Color highlightColor,
@@ -406,6 +407,8 @@ public class GameLog implements Opcodes
        	// which was the newest.  
        	//
        	//G.startLog("start log "+gameLogScroll);
+    	if(G.Height(r)>0)
+    	{
     	boolean scrolled = scrollbar.mouseIsActive();   
     	boolean active = scrollbar.activelyScrolling();
   	   	HitPoint mainHighlight = scrolled && !active ? highlight :null;
@@ -414,7 +417,7 @@ public class GameLog implements Opcodes
             {
     		 redrawGameLog2_internal(gc,canvas.disableForSpectators(mainHighlight),r,textColor,highlightColor,bold,normal);
             }
-       }
+       }}
        private void redrawGameLog2_internal(Graphics gc,HitPoint highlight,Rectangle r,
     		   	Color textColor,Color highlightColor,Font bold,Font normal)
        {

@@ -9744,7 +9744,10 @@ public void placeWorkerInAction(PlayerBoard pb,int action,int lastSlot,
 				break;
 			case 13: // professor
 				
-				if(pb.cash>=costOfWorker(pb)-2 && (pb.nWorkers<maxWorkers())) { addChoice(all,ViticultureId.Choice_A,generator); }
+				if(pb.cash>=costOfWorker(pb)-2
+					&& (pb.nWorkers!=maxWorkers()))
+					{ addChoice(all,ViticultureId.Choice_A,generator); 
+					}
 				// revision 157, make this not an "else" since it cab be a "both"
 				if(pb.nWorkers==6) // yes, exactly 6 is what it says on the card
 					{ // professor, you can gain 2 vp if you have exactly 6

@@ -194,7 +194,6 @@ public class FanoronaGameViewer extends CCanvas<FanoronaCell,FanoronaBoard> impl
     			minLogW, minLogH, minLogW*3/2, minLogH*3/2);
         		
     	CELLSIZE = (int)(fh*2);
-    	int C2 = CELLSIZE/2;
     	int buttonW = CELLSIZE*5;
     	layout.placeDrawGroup(G.getFontMetrics(standardPlainFont()),acceptDrawRect,declineDrawRect);	
        	layout.placeDoneEditRep(buttonW,buttonW*4/3,doneRect,editRect,repRect);

@@ -2676,7 +2676,8 @@ public abstract class commonCanvas extends exCanvas
  * @param h
  */
     public void SetupVcrRects(int x,int y,int w,int h)
-    {	setupVcrRects(x,y,w,h,false);
+    {	if(boardMax) { setupVcrRects(0,0,0,0,false); }
+    	else { setupVcrRects(x,y,w,h,false); }
     }
     private void setupVcrRects(int x,int y,int w,int h,boolean expanded)
     {
@@ -3497,7 +3498,10 @@ public abstract class commonCanvas extends exCanvas
             hidden.vcrVarPopup.show( G.Left(hidden.vcrFrontRect), G.Top(hidden.vcrFrontRect));
         }
     }
-    public GameLayoutManager selectedLayout = new GameLayoutManager();
+    public boolean boardMax = false;
+    private JCheckBoxMenuItem boardMaxCheckbox = null;
+    
+    public GameLayoutManager selectedLayout = new GameLayoutManager(boardMax);
     /**
      * this is called to display the rectangle grid while debugging layouts.
      */
@@ -4896,13 +4900,18 @@ public abstract class commonCanvas extends exCanvas
         gridOption.setForeground(Color.blue);
         l.tickTockOption = myFrame.addOption(s.get(TickTockAction),l.playTickTockSounds,deferredEvents);
         l.tickTockOption.setForeground(Color.blue);
+        
+        boardMax = reviewOnly  ? false : Default.getBoolean(Default.boardMax);
+        boardMaxCheckbox = myFrame.addOption(s.get(BoardMaxEverywhere),boardMax,deferredEvents);
+        boardMaxCheckbox.setForeground(Color.blue);
+        selectedLayout.boardMax = boardMax;
+        
         l.mouseCheckbox = myFrame.addOption(s.get(TrackMice),true,null);
         if(enableAutoDone())
         {	autoDone = Default.getBoolean(Default.autodone);
         	autoDoneCheckbox = myFrame.addOption(s.get(AutoDoneEverywhere),autoDone,deferredEvents);
         }
         
- 		 
         boolean viewer = reviewOnly;
 
 
@@ -5116,6 +5125,13 @@ public abstract class commonCanvas extends exCanvas
     	else if (target == autoDoneCheckbox)
     	{
     		autoDone = autoDoneCheckbox.getState();
+    	}
+    	else if (target == boardMaxCheckbox)
+    	{
+    		boardMax = boardMaxCheckbox.getState();
+    		selectedLayout.boardMax = boardMax;
+    		Config.Default.setBoolean(Config.Default.boardMax,boardMax);
+    		resetBounds();
     	}
         else if (target == l.tickTockOption)
         {

@@ -230,7 +230,7 @@ public class YspahanViewer extends CCanvas<YspahanCell,YspahanBoard> implements 
     
     // modern construction
 	public Rectangle createPlayerGroup(int player, int x, int y, double rotation, int cellsize) 
-	{	int csc = (int)(cellsize*0.4);
+	{	int csc = (int)(cellsize*0.5);
         int pbw = PlayerBoardWidth*csc;
         int pbh = PlayerBoardHeight*csc;
 		Rectangle r = playerRects[player];	// big box

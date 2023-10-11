@@ -357,8 +357,8 @@ sub show_tournaments
 	  &printTournamentLink($msg,-1,$admin,0);
 	  print "</td>";
 	  print "</tr><tr>";
-	  print "<td>";
-      print "<td align=center><b>"
+          if($admin) { print "<td></td>"; }
+	  print "<td align=center><b>"
 	  . &trans("Players")
 	  . "</b></td><td align=center>";
 	  

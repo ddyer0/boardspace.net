@@ -909,21 +909,24 @@ public interface ViticultureConstants
 	// true if this state is a "discard" state.  We use this
 	// to decide to present X instead of checkmarks for selected cards.
 	//
-	public boolean discardCards()
+	public int discardCards()
 	{
 		switch(this)
 		{
-		case DiscardCards: 
-		case Discard2Green:
-		case DiscardGreen:
-		case Discard1ForOracle:
-		case Discard3CardsAnd1WineFor3VP:
-		case Discard4CardsFor3:
+		case DiscardCards: return 0;
 		case Discard2CardsFor2VP:
 		case Discard2CardsFor1VP:
 		case Discard2CardsFor4:
-			return(true);
-		default: return(false);
+		case Discard2Green:
+			return 2;
+		case Discard1ForOracle:
+		case DiscardGreen:
+			return 1;
+		case Discard3CardsAnd1WineFor3VP:
+			return 3;
+		case Discard4CardsFor3:
+			return 4;
+		default: return(-1);
 		}
 	}
 	

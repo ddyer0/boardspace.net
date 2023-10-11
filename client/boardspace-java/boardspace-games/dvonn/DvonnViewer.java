@@ -48,7 +48,7 @@ import lib.Toggle;
  *
  * Feb 2008 initial work. 
  * Jan 2013 Changed moving object to a stack.  Added animation to robot and replay
- *
+ * TODO: add a variant that has automatic first phase - not random but OK placenet.
  * 
  */
 public class DvonnViewer extends CCanvas<DvonnCell,DvonnBoard> implements DvonnConstants, GameLayoutClient

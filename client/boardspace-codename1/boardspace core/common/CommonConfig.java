@@ -150,6 +150,7 @@ public interface CommonConfig {
 		   ticktock("true"),
 		   colorblind("false"),
 		   autodone("false"),
+		   boardMax("false"),
 		   showgrid("false"),
 		   ;
 		   String value;

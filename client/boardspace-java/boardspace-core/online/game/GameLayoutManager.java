@@ -50,6 +50,7 @@ public class GameLayoutManager  implements Opcodes
 		Log,Banner,Vcr,Draw,
 		Other;
 	}
+	public GameLayoutManager(boolean max) { boardMax = max; }
 	GameLayoutClient client = null;
 	int nPlayers;
 	// if true, consider the space left by the difference between the big rectangle
@@ -62,7 +63,8 @@ public class GameLayoutManager  implements Opcodes
 	public boolean alwaysPlaceDone = false;		
 
 	public String toString() { return("<GamelayoutManager "+selectedSeating+">"); }
-
+	public boolean boardMax = false;
+	
 	// left top right and bottom include necessary margins, so new content
 	// can exactly reach the given values
 	private int left;				// these define the central rectangle that is still unallocated
@@ -2114,6 +2116,9 @@ public class GameLayoutManager  implements Opcodes
 
     public boolean placeTheVcr(GameLayoutClient client,int minW,int maxW)
     {	Rectangle vcr = new Rectangle();
+        if(boardMax) { G.SetRect(vcr,0,0,0,0); client.SetupVcrRects(0,0,0,0);  return true; }
+        else
+        {
     	RectangleSpec spec = placeRectangle(Purpose.Vcr,vcr, minW, minW/2, maxW, maxW/2, BoxAlignment.Edge,true);
     	if(spec!=null)
     	{	spec.client = client;
@@ -2121,6 +2126,7 @@ public class GameLayoutManager  implements Opcodes
     		return true;
     	}
     	return(false);
+        }
     }
     public boolean placeTheChat(Rectangle chatRect, int minW,int minH,int maxW,int maxH)
     {	
@@ -2216,7 +2222,7 @@ public class GameLayoutManager  implements Opcodes
     		G.SetHeight(chatRect,logY-chatY-marginSize);
     		addToSpare(new Rectangle(chatX-marginSize,logY,actualChatW+marginSize*2,actualChatH+chatY+marginSize-logY));
     	  }
-    	  
+      if(boardMax) { G.SetRect(logRect,0,0,0,0); return true; }
    	  return(placeRectangle(Purpose.Log,logRect,minLogW,minLogH,maxLogW,maxLogH,BoxAlignment.Edge,false)!=null);  
          
     }

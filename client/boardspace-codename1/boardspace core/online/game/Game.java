@@ -2236,9 +2236,12 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
 				sendMessage(NetConn.SEND_GROUP+exHashtable.TIME+" " + my.elapsedTime);
 				sendMessage(NetConn.SEND_AS_ROBOT_ECHO+newp.channel+" "+exHashtable.TIME+" "+newp.elapsedTime);
 				}
+				if(!name.equalsIgnoreCase(newp.trueName))
+				{
               theChat.postMessage(ChatInterface.LOBBYCHANNEL, KEYWORD_CHAT,
                     s.get(TakeOverDetail, name,
                         playcolor, newp.trueName));
+				}
     			//sendMessage(NetConn.SEND_NOTE + "user "+playerID+" takes over for "+newp.channel);
  
     			//if(newp.robotPlayer!=null) { G.print("stopping robot"); }
@@ -4708,9 +4711,6 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     	   			 //exCanvas c = (exCanvas)v;
     	   			 //String msg = gameRecordString("goo");
     	   			 //disConnected("test");
-    	   			 boolean newval = !Display.getInstance().getProperty("encodedImageScaling", "true").equals("true");
-    	   			 Display.getInstance().setProperty("encodedImageScaling", ""+newval);
-    	   			 Plog.log.addLog("new scaled property is ",newval);
     	   			 //myNetConn.closeConn();
     	   			 v.testSwitch();
     	   			 //c.getComponent().mouse.testDrag();

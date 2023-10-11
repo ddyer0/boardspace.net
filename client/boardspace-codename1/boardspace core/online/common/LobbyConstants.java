@@ -78,6 +78,7 @@ public interface LobbyConstants extends OnlineConstants
         	LauncherName,
          	RestartMessage,
          	AutoDoneEverywhere,
+         	BoardMaxEverywhere,
         	DiscardGameMessage,
         	EmptyName,
         	AddAName,

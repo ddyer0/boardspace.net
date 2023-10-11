@@ -818,7 +818,7 @@ public class ViticultureViewer extends CCanvas<ViticultureCell,ViticultureBoard>
       	} 
      	
      	if(c.isSelected())
-     	{	boolean isDiscard = state.discardCards();
+     	{	boolean isDiscard = state.discardCards()>=0;
      		(isDiscard?StockArt.Exmark:StockArt.Checkmark).drawChip(gc, this, sz/2, xpos, ypos,null);
      	}
      	return(selected);
@@ -3299,7 +3299,7 @@ private void drawPlayerBoard(Graphics gc,
   				  	int yp = yleft+step*2+cardStep/2;
   				  	ViticultureChip chip = cardDisplay.chipAtIndex(i);
   				  	if(pb.selectedCards.contains(pb.cards.rackLocation(),chip,cardIndex.elementAt(i)))
-    				  {	boolean isDiscard = state.discardCards();
+    				  {	boolean isDiscard = state.discardCards()>=0;
     		     		(isDiscard?StockArt.Exmark:StockArt.Checkmark).drawChip(gc, this, step/2,xp,yp,null);
     				  }
   				  	  Rectangle sr = new Rectangle(xp-step/2,yp+step,step,step/3);
@@ -3403,7 +3403,8 @@ private void drawPlayerBoard(Graphics gc,
         boolean showFields = true;
      	ViticultureState state = gb.resetState;
      	boolean swapMode = false;
-        boolean isDiscard = state.discardCards();
+        int nToDiscard = state.discardCards();
+        boolean isDiscard = nToDiscard>=0;
         StockArt mark = (isDiscard?StockArt.Exmark:StockArt.Checkmark);
         boolean quickExit = false;
         PlayerBoard pb = gb.getCurrentPlayerBoard();
@@ -3460,21 +3461,32 @@ private void drawPlayerBoard(Graphics gc,
      	boolean destroyMode = false;
      	boolean uncensored = false;
      	boolean oracleMode = false;
-        boolean showWines = (state.activity==Activity.FillWine)||(state.activity==Activity.DiscardWines);
-        boolean selectWines = (state.activity==Activity.DiscardWines);
-        boolean harvesting  = (state.activity==Activity.Harvesting);
-        if(!apCards)
-        {
-        switch(gb.getState())
-        {
-        case Plant1AndGive2:
-     		optionalPlant =  true;
-     		break;
-     	default: break;
+        boolean showWines = false;
+        boolean selectWines = false;
+        boolean harvesting  = false;
+        switch(state.activity) {
+
+        case DiscardWines: 
+        	selectWines = true;
+			//$FALL-THROUGH$
+		case FillWine:
+        	showWines = true;
+        	break;
+        case Harvesting: 
+        	harvesting = true; 
+        	break;
+        default: break;
         }
+        
      	switch(state)
      	{
-    	case SelectCardColor:
+        case DiscardCards: 
+        	nToDiscard = pb.cards.height()-7;
+        	break;
+        case Plant1AndGive2:
+      		optionalPlant =  true;
+      		break;
+        case SelectCardColor:
      		oracleMode = true;
      		break;
      	case Discard3CardsAnd1WineFor3VP:
@@ -3490,7 +3502,7 @@ private void drawPlayerBoard(Graphics gc,
      		uncensored = true;
      		break;
      	default: break;
-     	}}
+     	}
         int wineIndex = 0;
     	ViticultureCell fields[] = pb.fields;
     	ViticultureCell vines[] = pb.vines;
@@ -3644,12 +3656,9 @@ private void drawPlayerBoard(Graphics gc,
 		}
 		else if(!apCards)
 		{
-		int cardsToGo = (state==ViticultureState.DiscardCards) 
-							? pb.cards.height()-7
-							: 1;
 		{String msg = state.activity.getName();
 		String tmsg = oracleMode ? s.get(OracleCardsMessage2)
-					: s.get0or1(msg,cardsToGo);
+							: s.get0or1(msg,nToDiscard);
 		GC.Text(gc,false, mleft,top,step,step/3,Color.blue,null,tmsg);
 		}
        	if(showWines)
@@ -4476,7 +4485,7 @@ private void drawPlayerBoard(Graphics gc,
     			int ci = cardIndex.elementAt(i).index;
     			if(discards.contains(pb.cards.rackLocation(),ch,ci)) 
     			{
-    				boolean isDiscard = state.discardCards();
+    				boolean isDiscard = state.discardCards()>=0;
     	     		(isDiscard?StockArt.Exmark:StockArt.Checkmark).drawChip(gc,this,step/2,xpos,ypos,null);
     			}
     			int netCost = Math.max(0,ch.costToBuild()-discount);
