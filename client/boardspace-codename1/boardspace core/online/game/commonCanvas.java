@@ -3377,6 +3377,9 @@ public abstract class commonCanvas extends exCanvas
        	HitPoint p = disableForSpectators(p0);
     	drawAnnotationMenu(inG,p);
     	int artHeight = G.Height(vcrZone);
+     	CellId rval = DefaultId.HitNoWhere;
+    	if(artHeight>0)
+    	{
     	int artX = G.Left(vcrZone);
     	int artWidth = G.Width(vcrZone);
     	int artY = G.Top(vcrZone);
@@ -3398,7 +3401,6 @@ public abstract class commonCanvas extends exCanvas
     			artY+artHeight/2,
     			null);
 
-    	CellId rval = DefaultId.HitNoWhere;
     	
         if(useAuxSliders)
     	{	l.drawAuxSliders(inG,p);
@@ -3479,6 +3481,7 @@ public abstract class commonCanvas extends exCanvas
         		// control token has been passed and we should be silent
         		rval = DefaultId.HitNoWhere; 
         	}
+    	}
         return (rval);
     }
 

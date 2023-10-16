@@ -48,7 +48,8 @@ import vnc.VNCService;
 
 /**
  *  Initial work Sept 2020 
-*/
+ *  
+ */
 public class JumbulayaViewer extends CCanvas<JumbulayaCell,JumbulayaBoard> implements JumbulayaConstants, GameLayoutClient
 {	static final long serialVersionUID = 1000;
 
@@ -240,7 +241,7 @@ public class JumbulayaViewer extends CCanvas<JumbulayaCell,JumbulayaBoard> imple
        	// ground the size of chat and logs in the font, which is already selected
     	// to be appropriate to the window size
     	int fh = standardFontSize();
-    	int minLogW = fh*22;	
+    	int minLogW = boardMax ? 0 : fh*22;	
        	int minChatW = fh*35;	
        	int vcrw = fh*16;
         int margin = fh/2;
@@ -331,14 +332,15 @@ public class JumbulayaViewer extends CCanvas<JumbulayaCell,JumbulayaBoard> imple
     	Rectangle score = scoreRects[player];
     	Rectangle eye = eyeRects[player];
     	Rectangle jrect = startJrects[player];
+     	boolean planned = plannedSeating();
+    	boolean showRacks = G.offline() || !boardMax;
     	int scoreW = unitsize*5/2;
     	int scoreH = unitsize*5/2;
     	G.SetRect(score,x,y+unitsize*3/2,scoreW,scoreH);
     	Rectangle box =  pl.createRectangularPictureGroup(x+scoreW-unitsize,y,unitsize);
     	Rectangle done = doneRects[player];
-     	boolean planned = plannedSeating();
     	int doneW = planned ? unitsize*4 : 0;
-    	int eyeSize = unitsize*3/2;
+    	int eyeSize = showRacks ?  unitsize*3/2 : 0;
     	int donel = G.Right(box);
     	int top =  G.Top(box);
     	int dtop = top+unitsize/4;
@@ -349,7 +351,7 @@ public class JumbulayaViewer extends CCanvas<JumbulayaCell,JumbulayaBoard> imple
     	G.SetRect(eye, dright-doneW/2,dtop,eyeSize,eyeSize);
     	G.union(box, done,score,eye,jrect);
     	int boxW = G.Width(box);
-    	int chipH = unitsize*3/2+(planned ? unitsize*2 : 0);
+    	int chipH = showRacks ? unitsize*3/2+(planned ? unitsize*2 : 0) : 0;
     	
        	if(vertical) { G.SetRect(chip,	x,	G.Bottom(box),	
        					boxW,Math.min(chipH,G.Height(box))); }

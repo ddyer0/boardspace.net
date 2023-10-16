@@ -200,7 +200,7 @@ public class CrosswordsViewer extends CCanvas<CrosswordsCell,CrosswordsBoard> im
      */
 
 
-    public double aspects[] = {0.7,1.0,1.4,-0.7,-1,-1.4};
+    public double aspects[] = {0.9,1.0,1.1};
     public void setLocalBounds(int x,int y,int w,int h)
     {	if(plannedSeating())
     	{
@@ -219,9 +219,9 @@ public class CrosswordsViewer extends CCanvas<CrosswordsCell,CrosswordsBoard> im
     	setLocalBoundsV(x,y,w,h,aspects);
     }
 
-    	int sz = standardFontSize();
-   		G.print("Racksize "+rackSize+" "+selectedLayout);
-   		G.print("cell size ",(int)(selectedLayout.selectedCellSize()/sz)," ",sz);
+//    	int sz = standardFontSize();
+//   		G.print("Racksize "+rackSize+" "+selectedLayout);
+//   		G.print("cell size ",(int)(selectedLayout.selectedCellSize()/sz)," ",sz);
 
     }
 	/**
@@ -251,7 +251,7 @@ public class CrosswordsViewer extends CCanvas<CrosswordsCell,CrosswordsBoard> im
        	// ground the size of chat and logs in the font, which is already selected
     	// to be appropriate to the window size
     	int fh = standardFontSize();
-    	int minLogW = fh*18;	
+    	int minLogW = boardMax ? 0 : fh*18;	
        	int minChatW = fh*35;	
        	int vcrw = fh*16;
         int margin = fh/2;
@@ -280,8 +280,8 @@ public class CrosswordsViewer extends CCanvas<CrosswordsCell,CrosswordsBoard> im
       	 
     	layout.placeTheVcr(this,vcrw,vcrw*3/2);
        	commonPlayer pl = getPlayerOrTemp(0);
-       	int spare = G.Height(pl.playerBox);
-       	layout.placeRectangle(drawPileRect,spare,spare,BoxAlignment.Center);
+       	int spare = Math.min(G.Height(pl.playerBox),fh*10);
+       	layout.placeRectangle(drawPileRect,spare,spare,BoxAlignment.Edge);
        	       	
     	Rectangle main = layout.getMainRectangle();
     	int mainX = G.Left(main);
@@ -319,7 +319,8 @@ public class CrosswordsViewer extends CCanvas<CrosswordsCell,CrosswordsBoard> im
     	G.placeRow(stateX,stateY,boardW ,stateH,stateRect,rotateRect,lockRect,annotationMenu,altNoChatRect);
     	G.SetRect(boardRect,boardX-(planned?CELLSIZE:0),boardY,boardW,boardH-(planned?0:2*CELLSIZE));
     	G.SetRect(goalRect, boardX, G.Bottom(boardRect),boardW,stateH);   
-    	G.SetRect(bigRack, boardX+CELLSIZE/2, G.Bottom(goalRect), boardW-CELLSIZE-stripeW, planned?0:CELLSIZE*2);
+    	int bigRackH = planned?0:CELLSIZE*2;
+    	G.SetRect(bigRack, boardX+CELLSIZE/2, G.Bottom(goalRect), boardW-CELLSIZE-stripeW, bigRackH);
     	G.SetRect(largerBoardRect,boardX-stateH,boardY-stateH,boardW+stateH*2,boardH+stateH*2);
 
     	int stripeLeft = G.Right(largerBoardRect)-stripeW-CELLSIZE/3;
@@ -341,28 +342,32 @@ public class CrosswordsViewer extends CCanvas<CrosswordsCell,CrosswordsBoard> im
         setProgressRect(progressRect,goalRect);
         positionTheChat(chatRect,chatBackgroundColor,rackBackGroundColor);
         labelFont = largeBoldFont();
-        return(boardW*boardH+rackSize*layout.selectedCellSize()*boardW);
+        
+        return(boardW*boardH+bigRackH*boardW);
     }
     boolean vertical = false;
     public Rectangle createPlayerGroup(int player,int x,int y,double rotation,int unitsize)
     {	commonPlayer pl = getPlayerOrTemp(player);
+    	boolean planned = plannedSeating();
+    	boolean showRacks = G.offline() || !boardMax;
     	Rectangle chip = chipRects[player];
     	Rectangle score = scoreRects[player];
     	Rectangle eye = eyeRects[player];
     	int scoreW = unitsize*5/2;
     	int scoreH = unitsize*3/2;
     	G.SetRect(score,x,y,scoreW-2,scoreH);
-    	G.SetRect(eye, x, y+scoreH, unitsize*2, unitsize*2);
+    	int eyesize = showRacks ? unitsize*2 : 0;
+    	G.SetRect(eye, x, y+scoreH, eyesize,eyesize);
     	Rectangle box =  pl.createRectangularPictureGroup(x+scoreW,y,unitsize);
     	Rectangle done = doneRects[player];
     	Rectangle notice = noticeRects[player];
     	
-    	int doneW = plannedSeating()? unitsize*4 : 0;
+    	int doneW = planned ? unitsize*4 : 0;
     	int donel = G.Right(box)+unitsize/2;
     	int noticeH = unitsize;
     	G.SetRect(done,donel,G.Top(box)+unitsize/2,doneW,doneW/2);
     	G.union(box, done,score,eye);
-    	double unith = rackSize*unitsize;
+    	double unith = showRacks ? rackSize*unitsize : 0;
        	if(vertical)
        		{ 
        		G.SetRect(chip,	x,	G.Bottom(box),	(int)(unith*5),(int)(unith*7/8)); 

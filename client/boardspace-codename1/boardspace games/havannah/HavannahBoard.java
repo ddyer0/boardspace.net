@@ -53,7 +53,8 @@ import online.search.UCTNode;
  */
 
 class HavannahBoard extends hexBoard<HavannahCell> implements BoardProtocol,HavannahConstants
-{	static int REVISION = 100;			// 100 represents the initial version of the game
+{	static int REVISION = 101;			// 100 represents the initial version of the game
+										// revision fixes the definition of a ring
 	public int getMaxRevisionLevel() { return(REVISION); }
 
 	static final String[] HEXGRIDSTYLE = { null, "A1", "A1" }; // left and bottom numbers
@@ -443,7 +444,7 @@ class HavannahBoard extends hexBoard<HavannahCell> implements BoardProtocol,Hava
     public boolean buildBlobForWin( HavannahBlob blob,HavannahCell home)
     {
     	expandBlobForWin(blob,home);
-    	blob.checkForRing(sweep_counter);
+    	blob.checkForRing(sweep_counter,revision>=101);
     	return blob.isWin();
     }
     public boolean gameOverNow() { return(board_state.GameOver()); }

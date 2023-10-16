@@ -56,20 +56,21 @@ public class HavannahBlob
       	+ color+">");
     }
  
- public void checkForRing(int sweep)
+ public void checkForRing(int sweep,boolean revised)
  {	ring = false;
  	if(size<6) { return ;}	// smallest possible ring is 6 cells
  	for(HavannahCell c = cells; c!=null && !ring; c = c.nextInBlob)
  		{	for(int dir = 0; dir<c.geometry.n;dir++)
  		{	HavannahCell adj = c.exitTo(dir);
- 			if(adj!=null && adj.topChip()!=color && !hasEdgeContactFrom(adj,sweep,1)) 
+ 			// revision 101, the cell doesn't have to be a different color
+ 			if(adj!=null && (revised || (adj.topChip()!=color)) && !hasEdgeContactFrom(adj,sweep,1)) 
  					{ ring = true;
  					 return;
  					}
  		}}
  }
  
-// from is a cell, not occupied by our color; ie empty or the other color
+// from is a cell to act are the center of a ring
 private boolean hasEdgeContactFrom(HavannahCell from,int sweep,int depth)
 {	
 	for(int dir = 0;dir<from.geometry.n ;dir++)
