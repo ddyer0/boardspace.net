@@ -14,15 +14,9 @@
     You should have received a copy of the GNU General Public License along with Boardspace.
     If not, see https://www.gnu.org/licenses/.
  */
-package online.common;
+package lib;
 
-import lib.Graphics;
-
-import lib.CanvasProtocol;
-import lib.ChatInterface;
-import lib.ExtendedHashtable;
-import lib.HitPoint;
-import lib.LFrameProtocol;
+import online.common.exCanvas;
 /*
  * this is used to create a standalone chat window for chat rooms
  */
@@ -36,7 +30,6 @@ public class ChatWindow extends exCanvas
 		init(sharedInfo,frame);
 		theChat = chat;
 		theChat.setCanvas(this);
-		theChat.setVisible(true);
 		addMouseListener(this);
 		addMouseMotionListener(this);
 		setVisible(true);

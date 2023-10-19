@@ -34,7 +34,6 @@ public interface exHashtable
     public static final String MYGAME = "mygameinstance";	// the game instance
 	public static final String NETCONN = "netconn";			// network connection manager
 	public static final String MYINFO = "myinfo";			// user misc info
-    public static final String THECHAT = "thechat";			// the associated chat window
     public static final String GAME = "game";					// the associated game object
     
 	public static final String RULES = "rules";
@@ -44,7 +43,6 @@ public interface exHashtable
      */
     public static final String NUMBER_OF_PLAYER_CONNECTIONS = "numberOfPlayerConnections";
     public static final String SEATINGCHART = "seatingchart";
-    public static final String COLORMAP = "colormap";
     public static final String GAMEINFO = "gameinfo";
     public static final String TIMECONTROL = "timecontrol";
 
@@ -71,10 +69,11 @@ public interface exHashtable
 	public static final String NEWBIE = "newbie";				// user has played few games
 	public static final String RANKING = "ranking";
 	public static final String TIME = "time";
-	public static final String LOBBYCHATFRAMED = "lobbychatframed";	// put the lobby chat in a separate frame
 	public static final String CHALLENGE = "challenge";		// remember if this user accepts challenges
 	public static final String SESSION = "session";
 	public static final String IDENT_INFO = "ident";
+	public static final String COLORMAP = "colormap";
+	public static final String CHATFRAMED = "chatframed";	// put the lobby chat in a separate frame
 	
 
  

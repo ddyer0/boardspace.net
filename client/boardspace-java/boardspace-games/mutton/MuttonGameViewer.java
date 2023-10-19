@@ -1539,7 +1539,7 @@ public class MuttonGameViewer extends commonCanvas implements MuttonConstants
 		if (mutable_game_record || G.debug()) {
 			super.doShowSgf();
 		} else {
-			theChat.postMessage( ChatInterface.GAMECHANNEL , KEYWORD_CHAT,
+			theChat.postMessage( ChatInterface.GAMECHANNEL , ChatInterface.KEYWORD_CHAT,
 			    s.get( CensoredGameRecordString));
 		}
 	}

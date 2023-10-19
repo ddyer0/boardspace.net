@@ -1073,7 +1073,7 @@ public class MagnetViewer extends CCanvas<MagnetCell,MagnetBoard> implements Mag
          }
          else
          {
-             theChat.postMessage(ChatInterface.GAMECHANNEL, KEYWORD_CHAT,
+             theChat.postMessage(ChatInterface.GAMECHANNEL, ChatInterface.KEYWORD_CHAT,
                  s.get(CensoredGameRecordString));
          }
      }

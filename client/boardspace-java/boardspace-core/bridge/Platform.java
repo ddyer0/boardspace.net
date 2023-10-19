@@ -773,5 +773,8 @@ public static synchronized Object MakeInstance(String classname)
 	 public static void hardExit()
 	 {	System.exit(0);
 	 }
-	 
+	 public static boolean smallFrame()
+	 {
+	 	return false;
+	 }
 }

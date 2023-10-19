@@ -93,7 +93,6 @@ public interface LobbyConstants extends OnlineConstants
         	ShowRulesMessage,
         	LowMemoryMessage,
          	LimboMessage,
-         	LEAVEROOM,
          	UNKNOWNPLAYER,
             ConnectionErrorMessage,
             RejoinGameMessage,  //rejoin a game you were playing

@@ -41,7 +41,6 @@ import online.common.OnlineConstants;
 import online.common.SeatingChart;
 import online.common.SeatingChart.DefinedSeating;
 import online.common.Session;
-import online.common.commonPanel;
 import online.common.exCanvas;
 import online.common.exHashtable;
 import online.game.BaseBoard.BoardState;
@@ -1137,7 +1136,7 @@ public abstract class commonCanvas extends exCanvas
 	    
 	    private void doTreeViewer(boolean uct)
 	    {   
-	    	commonPanel panel = (commonPanel)G.MakeInstance("online.common.commonPanel");
+	    	commonPanel panel = new commonPanel();
 	    	LFrameProtocol frame;
 	    	if(uct)
 	    		{
@@ -1716,7 +1715,7 @@ public abstract class commonCanvas extends exCanvas
      * @return the height to assign to the chat window
      */
     public int selectChatHeight(int height)
-    {	if(sharedInfo.getBoolean(exHashtable.LOBBYCHATFRAMED,false)) { return(0); }
+    {	if(chatFramed) { return(0); }
     	if(hidden.separateChat || hidden.hiddenChat) { return(0); }
     	int nominal = hidden.chatSizeAdj+(height*chatPercent)/100;
     	int fs = G.getFontSize(standardPlainFont());
@@ -6834,7 +6833,7 @@ public abstract class commonCanvas extends exCanvas
     public void doResign()
     {   
     if(!canResign()) 
-    	{theChat.postMessage(ChatInterface.GAMECHANNEL, KEYWORD_CHAT,
+    	{theChat.postMessage(ChatInterface.GAMECHANNEL, ChatInterface.KEYWORD_CHAT,
             s.get(NoResignMessage));
     	}
     	else
@@ -6845,7 +6844,7 @@ public abstract class commonCanvas extends exCanvas
         }
         else
         {
-            theChat.postMessage(ChatInterface.GAMECHANNEL, KEYWORD_CHAT,
+            theChat.postMessage(ChatInterface.GAMECHANNEL, ChatInterface.KEYWORD_CHAT,
                 s.get(CantResign));
         }
     	}

@@ -22,6 +22,7 @@ import bridge.*;
 import bridge.ThreadDeath;
 import common.GameInfo;
 import lib.CanvasProtocol;
+import lib.ChatInterface;
 import lib.ConnectionManager;
 import lib.DataCache;
 import lib.ExtendedHashtable;
@@ -33,10 +34,10 @@ import lib.Plog;
 import lib.SoundManager;
 import lib.UrlResult;
 import lib.XFrame;
+import lib.commonPanel;
 import online.common.LPanel;
 import online.common.LobbyConstants;
 import online.common.OnlineConstants;
-import online.common.commonPanel;
 import rpc.RpcReceiver;
 import udp.PlaytableServer;
 import udp.PlaytableStack;
@@ -82,7 +83,7 @@ public class JWSApplication implements Config,LobbyConstants
 
 	static String DefaultParameters[][] = {
 			{PLAYERS_IN_GAME,"2"},
-			{CHATWIDGET,""+USE_CHATWIDGET},
+			{ChatInterface.CHATWIDGET,""+USE_CHATWIDGET},
 			{BOARDCHATPERCENT,"25"},
 			{G.DEBUG, "false"},
 			{RANDOMSEED,"-1"},

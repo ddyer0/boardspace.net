@@ -26,7 +26,7 @@ import lib.Plog;
 import lib.SimpleObservable;
 import lib.SimpleObserver;
 import lib.StringStack;
-import online.common.commonPanel;
+import lib.commonPanel;
 import online.common.exHashtable;
 import online.game.commonCanvas;
 import online.game.commonPlayer;

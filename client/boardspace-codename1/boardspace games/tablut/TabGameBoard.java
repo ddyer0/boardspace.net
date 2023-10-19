@@ -358,6 +358,8 @@ class TabGameBoard extends rectBoard<TabCell> implements BoardProtocol,TabConsta
 			return goldPool;
 		case SilverShipLocation:
 			return silverPool;
+		case GoldFlagLocation:
+			return goldFlagPool;
 		default:
 			if(c.onBoard) { return getCell(c.col,c.row); }
 			throw G.Error("getCell not handled %s",c);

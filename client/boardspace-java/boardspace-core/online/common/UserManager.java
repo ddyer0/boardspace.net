@@ -199,7 +199,7 @@ public synchronized void removeUserFromUserlist(User u)
         }}
   }
 
-public void FlushDeadUsers()
+public void FlushDeadUsers(commonLobby can)
 { // flush the dead users at a safe point where the user list is not being held by the mouse
   if(all_users_seen)
   {
@@ -209,6 +209,7 @@ public void FlushDeadUsers()
       {
       //System.out.println("Timeout Removing " + user.name );
       removeUserFromUserlist(user);
+      can.PutInSess(user,null,0);		// users that just disappeared (closed connection)
       }
   }
   synchronized (this)

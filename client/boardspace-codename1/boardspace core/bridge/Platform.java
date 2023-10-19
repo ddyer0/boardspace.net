@@ -40,7 +40,6 @@ import com.codename1.ui.Font;
 
 import lib.LFrameProtocol;
 import lib.Plog;
-
 import com.codename1.ui.URLImage.ImageAdapter;
 import com.codename1.ui.geom.Dimension;
 import com.codename1.ui.geom.Point;
@@ -67,6 +66,7 @@ class DummyAdapter implements ImageAdapter
 	
 }
 
+	 
 class LogCapture extends Log
 {	Log oldLog;
 	StringWriter myWriter;
@@ -1153,6 +1153,13 @@ public static ChatInterface CreateChat(boolean useChat,LFrameProtocol myFrame,Ex
     
     }
     throw G.Error("Old style chat not supported");// commonChatApplet(myFrame,sharedInfo,false);
+}
+public static boolean smallFrame()
+{
+	double scale = G.getDisplayScale();
+	boolean framed = (G.getFrameWidth()<400*scale)
+		 				|| (G.getFrameHeight()<400*scale);
+	 return framed;
 }
 
 }

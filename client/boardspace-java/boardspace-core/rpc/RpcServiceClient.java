@@ -33,7 +33,7 @@ import lib.LFrameProtocol;
 import lib.OStack;
 import lib.SimpleObservable;
 import lib.StringStack;
-import online.common.commonPanel;
+import lib.commonPanel;
 import online.common.exCanvas;
 /**
  * this class presents the choice of games to join to side screens

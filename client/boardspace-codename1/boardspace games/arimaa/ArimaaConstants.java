@@ -36,7 +36,7 @@ public interface ArimaaConstants
 	static final String PlaceState = "Place all your pieces in your two home rows";
 	static final String CompleteState = "Complete a push or pull, step #1";
 	static final String HandicapMessage = "handicap";
-  
+	static final String CantPass = "The board position must change";
 	static final int White_Chip_Index = 0;
 	static final int Black_Chip_Index = 1;
 	ArimaaId RackLocation[] = { ArimaaId.W,ArimaaId.B};
@@ -141,6 +141,7 @@ public enum ArimaaId implements CellId
 				PullStep,
 				PlaceState,
 				CompleteState,
+				CantPass,
 			};
 		final String ArimaaPairs[][] = {
 				{"Arimaa_family","Arimaa"},

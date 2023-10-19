@@ -2253,7 +2253,7 @@ private void playSounds(commonMove m)
     	  super.ReplayGame(ga);
     	  for(int i=0;i<b.complaints.size(); i++)
     	  {
-    		  theChat.postMessage(ChatInterface.GAMECHANNEL, KEYWORD_CHAT,b.complaints.elementAt(i)); 
+    		  theChat.postMessage(ChatInterface.GAMECHANNEL, ChatInterface.KEYWORD_CHAT,b.complaints.elementAt(i)); 
     	  }
     	}
     

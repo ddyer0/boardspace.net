@@ -45,7 +45,6 @@ public interface OnlineConstants extends Config {
 	}
 	static final long CONNECTIONTIMEOUTINTERVAL = 63000;    /* give up after 1 minute plus a little */
 	static final String EXTRAMOUSE = "extramouse";
-	static final String EXTRAACTIONS = "extraactions";
 	static final String TESTVERSION = "testversion";
 	
 	static String BOARDCHATPERCENT = "boardchatpercent";
@@ -53,7 +52,6 @@ public interface OnlineConstants extends Config {
     static final String clickSound = SOUNDPATH + "click4" + Config.SoundFormat;
     static final String turnChangeSoundName = SOUNDPATH + "turnch"  + SoundFormat;
     static final String UNKNOWNPLAYER = "(unknown)";
-    static final String LEAVEROOM = "#1 quitting";
     static enum OnlineId  implements CellId
     {
     	HitZoomSlider,
@@ -142,9 +140,7 @@ public interface OnlineConstants extends Config {
 
 
     static final double Root3 = 1.73205080756; // used in spacing the grid
-    static final int MINCHATHEIGHT = 80;
 
-    static final String KEYWORD_CHAT = "chat";
     static final String KEYWORD_COLORMAP = "colormap";
     static final String KEYWORD_ROBOTMASTER = "rm";			// robot master position
     static final String KEYWORD_PLAYER = "player";			// used to introduce player names in review mode game story
@@ -159,15 +155,6 @@ public interface OnlineConstants extends Config {
     static final String KEYWORD_SPARE = "spare";	// "for later"
     static final String KEYWORD_TIMECONTROLS = "+timecontrol";	// indicated time control overlay is available.
     static final String KEYWORD_KILLED = "killed";
-    static final String KEYWORD_SUICIDE = "suicide";
-    static final String KEYWORD_CCHAT = "cchat";
-    static final String KEYWORD_QCHAT = "qchat";
-    static final String KEYWORD_PCHAT = "pchat";
-    static final String KEYWORD_PPCHAT = "ppchat";
-    static final String KEYWORD_TRANSLATE_CHAT = "tchat";
-    static final String KEYWORD_TMCHAT = "tmchat";
-    static final String KEYWORD_SCHAT = "schat";
-    static final String KEYWORD_PSCHAT = "pschat";
     static final String KEYWORD_ASK = "ask";
     static final String KEYWORD_ANSWER = "answer";
     
@@ -189,7 +176,6 @@ public interface OnlineConstants extends Config {
     static final String FRAMEWIDTH = "framewidth";
     static final String FRAMEHEIGHT = "frameheight";
     static final String PLAYERS_IN_GAME = "playersingame";
-    static final String CHATWIDGET = "chatwidget";
     static final String PICTURE = "picture";
     static final String HOSTUID = "hostuid";		// unique host id string, generated at launch
     static final String AutoDoneEverywhere = "Automatic \"Done\"";

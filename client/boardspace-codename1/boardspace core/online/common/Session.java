@@ -28,6 +28,7 @@ import lib.IStack;
 import lib.PopupManager;
 import lib.StringStack;
 import lib.TimeControl;
+import lib.commonPanel;
 import lib.TimeControl.Kind;
 import lib.InternationalStrings;
 import lib.LFrameProtocol;
@@ -42,6 +43,7 @@ public class Session implements LobbyConstants
         SERVERNAME,
         ConnectionManager.USERNAME,
         ConnectionManager.UID,
+        exHashtable.CHATFRAMED,
     	};
 
 	public static final int MAXPLAYERSPERGAME = 12;
@@ -775,13 +777,6 @@ public class Session implements LobbyConstants
 		 myInfo.put(ConnectionManager.LAUNCHUSERS,launchUsers);
 		 myInfo.put(ConnectionManager.LAUNCHUSER,launchUser);
 		 myInfo.putInt(exHashtable.FIRSTPLAYER, selectedFirstPlayerIndex);
-		 if(G.isCodename1())
-			 {double scale = G.getDisplayScale();
-		 boolean framed = sharedInfo.getBoolean(exHashtable.LOBBYCHATFRAMED,false) 
-				 		|| (G.getFrameWidth()<400*scale)
-				 		|| (G.getFrameHeight()<400*scale);
-		 myInfo.putBoolean(exHashtable.LOBBYCHATFRAMED,framed);
-		 }
 		 theGame.init(myInfo,frame);
 		 
 		 if(G.isCodename1()) 

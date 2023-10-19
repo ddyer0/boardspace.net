@@ -562,13 +562,12 @@ public class ArimaaViewer extends CCanvas<ArimaaCell,ArimaaBoard> implements Ari
         GC.setFont(gc,standardBoldFont());
       commonPlayer pl = getPlayerOrTemp(gb.whoseTurn);
       double messageRotation = pl.messageRotation();
+      boolean doneState = gb.DoneState();
 		if (vstate != ArimaaState.PUZZLE_STATE)
         {	
-        	if(!planned) { handleDoneButton(gc,doneRect,(gb.DoneState()? ourNonDragSelect : null),HighlightColor, rackBackGroundColor); }
+        	if(!planned) { handleDoneButton(gc,doneRect,(doneState? ourNonDragSelect : null),HighlightColor, rackBackGroundColor); }
         	handleEditButton(gc,messageRotation,editRect,ourNonDragSelect,highlight,HighlightColor, rackBackGroundColor);
-            if(gb.started 
-            		&& ((vstate==ArimaaState.PLAY_STATE)||(vstate==ArimaaState.CONFIRM_STATE)) 
-            		&& (gb.playStep<4) && (gb.playStep>0))
+            if(gb.canPass())
             {
             	passButton.show(gc,messageRotation,ourNonDragSelect);         
             }
@@ -579,6 +578,7 @@ public class ArimaaViewer extends CCanvas<ArimaaCell,ArimaaBoard> implements Ari
         			?s.get(pmsg,""+(gb.playStep+1))
         			:s.get(pmsg);
     	String stateMessage = vstate==ArimaaState.GAMEOVER_STATE?gameOverMessage():msg;
+    	if(vstate==ArimaaState.CONFIRM_STATE && !doneState) { stateMessage = s.get(CantPass); }
         standardGameMessage(gc,messageRotation,
         		stateMessage,
             		vstate!=ArimaaState.PUZZLE_STATE,

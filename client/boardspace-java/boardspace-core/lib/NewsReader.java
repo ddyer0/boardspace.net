@@ -38,7 +38,7 @@ public class NewsReader extends Thread implements Runnable, OnlineConstants
 
         if (postMessage != null)
         {
-            myChat.postMessage(ChatInterface.GAMECHANNEL, KEYWORD_CHAT, postMessage);
+            myChat.postMessage(ChatInterface.GAMECHANNEL, ChatInterface.KEYWORD_CHAT, postMessage);
         }
         if(postMessageHost!=null)
         	{	myChat.postHostMessages(postMessageHost);

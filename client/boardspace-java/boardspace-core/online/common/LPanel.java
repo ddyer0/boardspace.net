@@ -27,6 +27,7 @@ import lib.G;
 import lib.LFrameProtocol;
 import lib.NullLayout;
 import lib.XFrame;
+import lib.commonPanel;
 
 
 public class LPanel extends FullscreenPanel implements WindowListener,LobbyConstants

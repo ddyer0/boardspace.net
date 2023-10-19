@@ -35,6 +35,7 @@ import java.util.Vector;
 import lib.AR;
 import lib.BSDate;
 import lib.Base64;
+import lib.CanvasProtocol;
 import lib.ChatInterface;
 import lib.ConnectionManager;
 import lib.DeferredEventHandler;
@@ -49,6 +50,7 @@ import lib.Random;
 import lib.SimpleObservable;
 import lib.SoundManager;
 import lib.TimeControl;
+import lib.commonPanel;
 import online.game.sgf.export.sgf_names;
 
 /** general notes about the lobby class.
@@ -389,14 +391,22 @@ public void init(ExtendedHashtable info,LFrameProtocol frame)
     info.putInt(ConnectionManager.ROOMNUMBER,0);
     isTestServer = info.getBoolean(TESTSERVER);
     info.put(exHashtable.NETCONN,myNetConn);	// for debugging
-    double scale = G.getDisplayScale();
-    if(G.isCodename1())
-    {
-    if((G.getFrameHeight()<400*scale) || (G.getFrameWidth()<400*scale)) 
-    	{ info.putBoolean(exHashtable.LOBBYCHATFRAMED,true); 
-    	}
-    }
 	super.init(info,frame);
+    CreateChat(info.getBoolean(exHashtable.CHATFRAMED,false) || G.smallFrame());
+
+	CanvasProtocol can = myCanvas;
+    if ((can == null) && !chatOnly )
+    {
+    String classname = info.getString(OnlineConstants.VIEWERCLASS,"");
+    if (classname!=null && !"".equals(classname) && !"none".equals(classname))
+        {
+    	 can = (CanvasProtocol) G.MakeInstance(classname);
+    	 can.init(info,frame);
+    	 setCanvas(can);
+    	
+       }
+     }
+    
 	v = (lobbyCanvas)myCanvas;
 	v.setUsers(users);
 		myNetConn=new ConnectionManager(info); 
@@ -494,7 +504,7 @@ private void setGameTime()
         if(m!=null)
         {
         	m.logError(msg,err);
-        	if(theChat!=null) { theChat.postMessage(ChatInterface.ERRORCHANNEL,KEYWORD_CHAT,msg);}
+        	if(theChat!=null) { theChat.postMessage(ChatInterface.ERRORCHANNEL,ChatInterface.KEYWORD_CHAT,msg);}
         	m.PrintLog(System.out);
         }
         else
@@ -592,18 +602,18 @@ private void doUNCONNECTED()
      else if (myNetConn.connFailed() || (connectionTimeout < now))
       { if(connectionTimeout<now)
       	{
-        theChat.postMessage(ChatInterface.ERRORCHANNEL,KEYWORD_CHAT,s.get(NoResponseMessage1));
-        theChat.postMessage(ChatInterface.ERRORCHANNEL,KEYWORD_CHAT,s.get(NoResponseMessage2));
+        theChat.postMessage(ChatInterface.ERRORCHANNEL,ChatInterface.KEYWORD_CHAT,s.get(NoResponseMessage1));
+        theChat.postMessage(ChatInterface.ERRORCHANNEL,ChatInterface.KEYWORD_CHAT,s.get(NoResponseMessage2));
       	}
       else
       	{
         String m = myNetConn.errString();
         if(m!=null) {  
-          theChat.postMessage(ChatInterface.ERRORCHANNEL,KEYWORD_CHAT,s.get(ConnectionErrorMessage)+":"+m);
+          theChat.postMessage(ChatInterface.ERRORCHANNEL,ChatInterface.KEYWORD_CHAT,s.get(ConnectionErrorMessage)+":"+m);
           myNetConn.logError(m,null);
         }
         else {
-        	theChat.postMessage(ChatInterface.ERRORCHANNEL,KEYWORD_CHAT,s.get(SessionExpiredMessage));
+        	theChat.postMessage(ChatInterface.ERRORCHANNEL,ChatInterface.KEYWORD_CHAT,s.get(SessionExpiredMessage));
         }}
         exitFlag=true;
       }
@@ -736,7 +746,7 @@ private boolean processEchoExit(String messType,StringTokenizer localST,String f
     	else if("bad-banner-id".equals(tok)||("bad-id".equals(tok)))
         { exitFlag=true;
           G.doDelay(5000);
-          theChat.postMessage(ChatInterface.GAMECHANNEL,KEYWORD_CHAT,"rcv 221 err"+s.get(ConnectionErrorMessage));
+          theChat.postMessage(ChatInterface.GAMECHANNEL,ChatInterface.KEYWORD_CHAT,"rcv 221 err"+s.get(ConnectionErrorMessage));
           suicide();
         }
       }
@@ -777,7 +787,7 @@ private void setUserName(User user,String name,String uid)
       
       theChat.setUser(user.serverIndex,user.publicName);
       if(users.all_users_seen && announcePlayers.getState() && !guestUID.equalsIgnoreCase(uid))
-        {theChat.postMessage(ChatInterface.LOBBYCHANNEL,KEYWORD_CHAT,s.get(EnterMessage,user.publicName));
+        {theChat.postMessage(ChatInterface.LOBBYCHANNEL,ChatInterface.KEYWORD_CHAT,s.get(EnterMessage,user.publicName));
         }
       v.repaint("new user");
   
@@ -789,7 +799,7 @@ private void setUserName(User user,String name,String uid)
             { //if we're trustworthy, tell the world too
               sendMessage(NetConn.SEND_GROUP+"usermenu 0 "+user.serverIndex+" true");
             }
-            theChat.postMessage(ChatInterface.LOBBYCHANNEL,KEYWORD_CHAT,s.get(AutoMuteMessage,name));
+            theChat.postMessage(ChatInterface.LOBBYCHANNEL,ChatInterface.KEYWORD_CHAT,s.get(AutoMuteMessage,name));
         }
     }
   }
@@ -921,11 +931,11 @@ private void PreloadClass(String classname)
 
 private boolean handleChat(int playerID,String commandStr,StringTokenizer localST)
 {
-	if (KEYWORD_PPCHAT.equalsIgnoreCase(commandStr) 
- 		   || KEYWORD_PCHAT.equalsIgnoreCase(commandStr)
- 		   || KEYWORD_SCHAT.equalsIgnoreCase(commandStr)
+	if (ChatInterface.KEYWORD_PPCHAT.equalsIgnoreCase(commandStr) 
+ 		   || ChatInterface.KEYWORD_PCHAT.equalsIgnoreCase(commandStr)
+ 		   || ChatInterface.KEYWORD_SCHAT.equalsIgnoreCase(commandStr)
  		   || KEYWORD_LOBBY_CHAT.equalsIgnoreCase(commandStr)
- 		   || KEYWORD_PSCHAT.equalsIgnoreCase(commandStr)) 
+ 		   || ChatInterface.KEYWORD_PSCHAT.equalsIgnoreCase(commandStr)) 
 
    {  String localTempStr = " ";
        while (localST.hasMoreTokens()) {
@@ -946,7 +956,7 @@ private boolean handleChat(int playerID,String commandStr,StringTokenizer localS
                user.messages++;	// count the messages we've actually seen
              }
              user.setChatTime(); 
-             v.repaint(KEYWORD_CHAT);
+             v.repaint(ChatInterface.KEYWORD_CHAT);
            }
        return(true);
    }
@@ -1034,7 +1044,7 @@ private boolean processEchoGroup(String messType,StringTokenizer localST,String 
             {
             user.ignored = true;
             sendMessage(NetConn.SEND_GROUP+KEYWORD_USERMENU+" 0 "+user.serverIndex+" true");
-            theChat.postMessage(ChatInterface.LOBBYCHANNEL,KEYWORD_CHAT,s.get(AutoMuteMessage,user.prettyName()));
+            theChat.postMessage(ChatInterface.LOBBYCHANNEL,ChatInterface.KEYWORD_CHAT,s.get(AutoMuteMessage,user.prettyName()));
             }
         }
       }
@@ -1098,7 +1108,7 @@ private boolean processEchoGroup(String messType,StringTokenizer localST,String 
 	   		? s.get(InvitePlayMessage, actor.name,users.primaryUser().name,
 	   				s.get(sess.currentGame.variationName),""+room)
 	   		: s.get(InviteWhoMessage,actor.name,users.primaryUser().name,""+room);
-	   theChat.postMessage(ChatInterface.LOBBYCHANNEL,KEYWORD_CCHAT,msg);
+	   theChat.postMessage(ChatInterface.LOBBYCHANNEL,ChatInterface.KEYWORD_CCHAT,msg);
 	  }
     }
     break;
@@ -1108,7 +1118,7 @@ private boolean processEchoGroup(String messType,StringTokenizer localST,String 
          +" MUTED by " + users.primaryUser().name+" @ " 
          + myNetConn.getLocalAddress());
   }
-  theChat.postMessage(ChatInterface.LOBBYCHANNEL,KEYWORD_CHAT,
+  theChat.postMessage(ChatInterface.LOBBYCHANNEL,ChatInterface.KEYWORD_CHAT,
       s.get(ConsensusMuteMessage,victim.name));
   	victim.automute = true;
 		break;
@@ -1815,7 +1825,7 @@ private boolean processEchoRoomtype(String messType,StringTokenizer localST)
     v.setVisible(true);
     initialized=true;
 
-    theChat.postMessage(ChatInterface.LOBBYCHANNEL,KEYWORD_CHAT,WelcomeMessage);
+    theChat.postMessage(ChatInterface.LOBBYCHANNEL,ChatInterface.KEYWORD_CHAT,WelcomeMessage);
     
     if(!me.isGuest && !me.isNewbie) 
       {showHostMessages = Http.getHostName();
@@ -1844,7 +1854,7 @@ private boolean processEchoRoomtype(String messType,StringTokenizer localST)
         		}
         		else if(netFail++>1) {
         			netFail=0;
-        			theChat.postMessage(ChatInterface.GAMECHANNEL,KEYWORD_CHAT,"the network connection is unhealthy");
+        			theChat.postMessage(ChatInterface.GAMECHANNEL,ChatInterface.KEYWORD_CHAT,"the network connection is unhealthy");
         		}
         	}
 
@@ -2090,7 +2100,7 @@ private boolean processEchoRoomtype(String messType,StringTokenizer localST)
          Session.Mode mode = sess.mode;
          String chatMessage = mode.launchMessage;
           
-     	theChat.postMessage(ChatInterface.LOBBYCHANNEL,commonLobby.KEYWORD_CHAT,s.get(chatMessage,""+sess.gameIndex));
+     	theChat.postMessage(ChatInterface.LOBBYCHANNEL,ChatInterface.KEYWORD_CHAT,s.get(chatMessage,""+sess.gameIndex));
 
          v.repaint("launch");    
           }
@@ -2116,11 +2126,11 @@ private boolean processEchoRoomtype(String messType,StringTokenizer localST)
         {  /* 1 min. warning */
         if (noPlayFrames && !gaveWarning)
         {
-          theChat.postMessage(ChatInterface.LOBBYCHANNEL,KEYWORD_CHAT,s.get(TimeoutWarningMessage));
+          theChat.postMessage(ChatInterface.LOBBYCHANNEL,ChatInterface.KEYWORD_CHAT,s.get(TimeoutWarningMessage));
           gaveWarning = true;
         }}
         if (noPlayFrames && gaveWarning && (now > lobbyIdleTimeout)) {
-          theChat.postMessage(ChatInterface.LOBBYCHANNEL,KEYWORD_CHAT,s.get(LobbyShutdownMessage));
+          theChat.postMessage(ChatInterface.LOBBYCHANNEL,ChatInterface.KEYWORD_CHAT,s.get(LobbyShutdownMessage));
           exitFlag=true;
           setLobbyState(ConnectionState.IDLE);
         }

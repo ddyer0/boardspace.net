@@ -987,7 +987,6 @@ public class TextContainer extends Rectangle implements AppendInterface,KeyListe
 	}
 	public void keyPressed(KeyEvent e) {
 		int code = e.getExtendedKeyCode();
-		//G.print("Pressed "+code);
 		switch(code)
 		{
 		case 222:
@@ -1061,7 +1060,8 @@ public class TextContainer extends Rectangle implements AppendInterface,KeyListe
 	}
 
 	public boolean doMouseDrag(int ex,int ey)
-	{	if(!G.pointInRect(ex, ey,this)) 
+	{	
+		if(!G.pointInRect(ex, ey,this)) 
 			{ return(false); 
 			}
 		if(!mouseActive)

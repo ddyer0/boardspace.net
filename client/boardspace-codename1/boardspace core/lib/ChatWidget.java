@@ -815,8 +815,10 @@ public class ChatWidget
 	
 	private exCanvas canvas = null;
 	public void setCanvas(exCanvas can) 
-	{ 	
-		if(canvas!=can)
+	{ 	// note, this should be set only once.  If this is a 
+		// standalone chat window, it will be set first by the chatwindow
+		// and then ignore a second attempt to set it from the parent
+		if(canvas==null)
 			{
 			canvas = can; 
 			// if using our own keyboard, the standard focus mechanism is irrelevant

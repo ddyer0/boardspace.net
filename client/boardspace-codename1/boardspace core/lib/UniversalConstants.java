@@ -24,6 +24,9 @@ public interface UniversalConstants {
      * the real window.
      */
     static final int HIDDEN_WINDOW_RIGHT = -2000;
+    static final int MINCHATHEIGHT = 80;
+    static final String KEYWORD_SUICIDE = "suicide";
+    static final String EXTRAACTIONS = "extraactions";
   
 
 }

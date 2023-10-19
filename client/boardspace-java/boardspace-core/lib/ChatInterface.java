@@ -27,6 +27,7 @@ import online.common.exCanvas;
 public interface ChatInterface extends Config {
 	
     static final String KEYWORD_GOODHINT = "goodhint";
+    static final String CHATWIDGET = "chatwidget";
 
 	// note: these "channels" correspond to the server communications IDs for
 	// player connections.  They have to be greater than all "real" channels
@@ -49,6 +50,16 @@ public interface ChatInterface extends Config {
 	String gameSoundName = SOUNDPATH + "rgamechat" + Config.SoundFormat;
     String lobbySoundName = SOUNDPATH + "rlobbychimes" + Config.SoundFormat;
     String knockSoundName=SOUNDPATH + "knock" + Config.SoundFormat;
+
+	String KEYWORD_CHAT = "chat";
+	String KEYWORD_CCHAT = "cchat";
+	String KEYWORD_QCHAT = "qchat";
+	String KEYWORD_PCHAT = "pchat";
+	String KEYWORD_PPCHAT = "ppchat";
+	String KEYWORD_TMCHAT = "tmchat";
+	String KEYWORD_SCHAT = "schat";
+	String KEYWORD_PSCHAT = "pschat";
+	String KEYWORD_TRANSLATE_CHAT = "tchat";
     static final int CHATSIZELIMIT = 300;		// maximum size of chat string to send
     static final String HintChannel = "Hint";
     static final String GameChannel = "Game";

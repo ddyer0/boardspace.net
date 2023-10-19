@@ -29,8 +29,8 @@ import lib.Plog;
 import lib.SimpleObservable;
 import lib.SimpleObserver;
 import lib.XFrame;
+import lib.commonPanel;
 import lib.Base64;
-import online.common.commonPanel;
 import udp.PlaytableServer;
 
 /*

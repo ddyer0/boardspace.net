@@ -707,7 +707,7 @@ public abstract class exCanvas extends Canvas
 	 * @return a String
 	 */
 	public String errorContext() { return(""); }
-	
+	public boolean chatFramed = false;
     public void setTheChat(ChatInterface p,boolean framed)
     {	if(theChat==null)
     	{
@@ -715,6 +715,7 @@ public abstract class exCanvas extends Canvas
         theChat = p;
         resetBounds();
      	}
+    	chatFramed = framed;
    }
     
     public Rectangle chatRect = null;
@@ -728,9 +729,8 @@ public abstract class exCanvas extends Canvas
     	G.runInEdt(new Runnable() {
     		public void run() {
     			try {
-    			boolean framed = sharedInfo.getBoolean(exHashtable.LOBBYCHATFRAMED,false);
     			boolean isWindow = theChat.isWindow();
-    			if(!framed ) 
+    			if(!chatFramed ) 
 	    		{ int sx = isWindow ? -getSX() : 0;
 	    		  int sy = isWindow ? -getSY() : 0;   
 	     		  theChat.setBounds(G.Left(chatR)+sx,
@@ -1654,7 +1654,7 @@ graphics when using a touch screen.
 
             if (chat != null)
             {
-                chat.postMessage(ChatInterface.ERRORCHANNEL, KEYWORD_CHAT, m + em);
+                chat.postMessage(ChatInterface.ERRORCHANNEL, ChatInterface.KEYWORD_CHAT, m + em);
             }
 
             if (err != null)
@@ -1957,7 +1957,7 @@ graphics when using a touch screen.
 	 */
 	private Rectangle getHelptextBounds(int x,int y,Rectangle bounds)
 	{	
-		if(theChat.isWindow() || !chatHasRun)	// if old style chat window, we need to avoid it
+		if(theChat!=null && ( theChat.isWindow() || !chatHasRun))	// if old style chat window, we need to avoid it
 		{
 		Rectangle chatBounds = theChat.getBounds();
 		int l = G.Left(chatBounds);

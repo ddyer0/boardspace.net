@@ -48,6 +48,7 @@ import lib.Random;
 import lib.StockArt;
 import lib.TextButton;
 import lib.TextContainer;
+import lib.commonPanel;
 import online.common.SeatingChart.Seating;
 import rpc.RpcService;
 import udp.UDPService;
@@ -1404,7 +1405,7 @@ public class SeatingViewer extends exCanvas implements LobbyConstants
 
     static public SeatingViewer doSeatingViewer(ExtendedHashtable sharedInfo)
     {  
-    	commonPanel panel = (commonPanel)G.MakeInstance("online.common.commonPanel");
+    	commonPanel panel = new commonPanel();
     	LFrameProtocol frame;
     	SeatingViewer viewer = (SeatingViewer)G.MakeInstance("online.common.SeatingViewer");
     	if(viewer!=null)

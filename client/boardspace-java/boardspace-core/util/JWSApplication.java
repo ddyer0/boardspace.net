@@ -24,6 +24,7 @@ import java.util.StringTokenizer;
 import bridge.Config;
 import common.GameInfo;
 import lib.CanvasProtocol;
+import lib.ChatInterface;
 import lib.ConnectionManager;
 import lib.ExtendedHashtable;
 import lib.G;
@@ -35,10 +36,10 @@ import lib.SoundManager;
 import lib.StringStack;
 import lib.UrlResult;
 import lib.XFrame;
+import lib.commonPanel;
 import online.common.LPanel;
 import online.common.LobbyConstants;
 import online.common.OnlineConstants;
-import online.common.commonPanel;
 import rpc.RpcReceiver;
 import udp.PlaytableServer;
 import udp.PlaytableStack;
@@ -83,7 +84,7 @@ public class JWSApplication implements Config,Runnable,LobbyConstants
 
 	static String DefaultParameters[][] = {
 			{PLAYERS_IN_GAME,"2"},
-			{CHATWIDGET,""+USE_CHATWIDGET},
+			{ChatInterface.CHATWIDGET,""+USE_CHATWIDGET},
 			{BOARDCHATPERCENT,"25"},
 			{G.DEBUG, "false"},
 			{RANDOMSEED,"-1"},
@@ -201,7 +202,7 @@ public class JWSApplication implements Config,Runnable,LobbyConstants
         String classname = isViewer
         					? "G:game.Game" 
         					: isVNC|isTable|offlineLauncher
-        						? "online.common.commonPanel"
+        						? "lib.commonPanel"
         					: G.getString(DefaultGameClass,"online.common.commonLobby");
  
         G.setIdString(""+G.getCodeBase());

@@ -19,8 +19,9 @@ package common;
 import bridge.Color;
 import bridge.Preferences;
 import lib.G;
+import lib.UniversalConstants;
 
-public interface CommonConfig {
+public interface CommonConfig extends UniversalConstants {
 	static final String DEFAULT_SERVERNAME = "Boardspace.net";
 	static boolean TIMEDROBOTS = false;
 	

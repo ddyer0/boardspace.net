@@ -14,9 +14,8 @@
     You should have received a copy of the GNU General Public License along with Boardspace.
     If not, see https://www.gnu.org/licenses/. 
  */
-package online.common;
+package lib;
 
-import java.awt.Color;
 import java.awt.event.*;
 import java.io.PrintStream;
 import java.security.AccessControlException;
@@ -24,33 +23,10 @@ import java.security.AccessControlException;
 import bridge.FullscreenPanel;
 import bridge.Utf8OutputStream;
 import bridge.Utf8Printer;
-import common.GameInfo;
-
+import common.CommonConfig;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Vector;
-
-import lib.AR;
-import lib.CanvasProtocol;
-import lib.ChatInterface;
-import lib.ConnectionManager;
-import lib.DeferredEventHandler;
-import lib.DeferredEventManager;
-import lib.ExtendedHashtable;
-import lib.G;
-import lib.Http;
-import lib.InternationalStrings;
-import lib.LFrameProtocol;
-import lib.MenuInterface;
-import lib.MenuParentInterface;
-import lib.NetConn;
-import lib.NewsReader;
-import lib.NullLayout;
-import lib.Plog;
-import lib.SimpleObservable;
-import lib.SoundManager;
-import lib.StockArt;
-import lib.XFrame;
 //
 // note on JPanel verses Panel here.
 //
@@ -67,7 +43,7 @@ import lib.XFrame;
  *
  */
 public class commonPanel extends FullscreenPanel 
-	implements Runnable, WindowListener, OnlineConstants,
+	implements Runnable, WindowListener,CommonConfig,
 		DeferredEventHandler,MenuParentInterface
 {	/**
 	 * 
@@ -100,8 +76,7 @@ public class commonPanel extends FullscreenPanel
     /* this somewhat complex bit is to make sure the set values are consistant */
     private Vector<String[]> deferredSetName = new Vector<String[]>();
     public boolean isPassAndPlay() { return(G.offline() || G.isTable());}
-
-    public void killFrame(LFrameProtocol inTF)
+	public void killFrame(LFrameProtocol inTF)
     {
     	//    	overridden by Lobby and Game classes
     }
@@ -167,10 +142,9 @@ public class commonPanel extends FullscreenPanel
     
     
     public void CreateChat(boolean framed)
-    {	boolean useChat = G.getBoolean(CHATWIDGET,USE_CHATWIDGET);
+    {	boolean useChat = G.getBoolean(ChatInterface.CHATWIDGET,USE_CHATWIDGET);
     	theChat = G.CreateChat(useChat,myFrame,sharedInfo,framed);
-    	sharedInfo.put(exHashtable.THECHAT, theChat);
-    	if(chatOnly)
+     	if(chatOnly)
         {
 	    	if(useChat)
 	    	{
@@ -191,7 +165,7 @@ public class commonPanel extends FullscreenPanel
 			if(useChat)
 	    	{	
 	    		ChatWindow cw = new ChatWindow(myFrame,sharedInfo,theChat);
-	    		commonPanel panel = (commonPanel)G.MakeInstance("online.common.commonPanel");
+	    		commonPanel panel = new commonPanel();
 	    		panel.setCanvas(cw);
 	    		f.add(panel);
 	    		panel.start();
@@ -341,7 +315,7 @@ public class commonPanel extends FullscreenPanel
         	String err = G.getPostedError();
         	if(err!=null)
         	{
-        		 theChat.postMessage(ChatInterface.ERRORCHANNEL, KEYWORD_CHAT, err);
+        		 theChat.postMessage(ChatInterface.ERRORCHANNEL, ChatInterface.KEYWORD_CHAT, err);
         	}
 
 	    }
@@ -386,7 +360,7 @@ public class commonPanel extends FullscreenPanel
         {
         if(!G.isCodename1() || (chatFrame==null)) 
         	{ theChat.addTo(this); }
-        can.setTheChat(theChat,chatFrame==null);
+        can.setTheChat(theChat,chatFrame!=null);
         // reset the chat icon here, because for the lobby
         // chat it hasn't been loaded yet when set the first time
         // in createchat
@@ -399,50 +373,16 @@ public class commonPanel extends FullscreenPanel
     {
     	setLayout(new NullLayout(this));
     }
-    public Session.Mode gameMode = Session.Mode.Game_Mode;
     
     public void init(ExtendedHashtable extendedHashtable,LFrameProtocol frame)
     { //System.out.println("common init");
         sharedInfo = extendedHashtable;
         s = G.getTranslations();
         myFrame = frame;
-        gameMode = Session.Mode.findMode(sharedInfo.getString(exHashtable.MODE,gameMode.modeName));
-        chatOnly = gameMode==Session.Mode.Chat_Mode;
         
-        extraactions = G.getBoolean(OnlineConstants.EXTRAACTIONS, extraactions);
-        boolean chatFramed = extendedHashtable.getBoolean(exHashtable.LOBBYCHATFRAMED,false);
-        CreateChat(chatFramed);
-        CanvasProtocol can =myCanvas;
+        extraactions = G.getBoolean(EXTRAACTIONS, extraactions);
 
-       	if (extendedHashtable.get(OnlineConstants.RANDOMSEED) == null)
-    	{
-     	int seedValue = (int) (G.Date());
-        extendedHashtable.putInt(OnlineConstants.RANDOMSEED,seedValue);
-    	}
-
-        if ((can == null) && !chatOnly )
-        {
-        GameInfo gameinfo = sharedInfo.getGameInfo();
-        String defaultclass = gameinfo==null ? "" : gameinfo.viewerClass;
-        String classname = extendedHashtable.getString(OnlineConstants.VIEWERCLASS,defaultclass);
-        if(gameinfo!=null )
-        {	// this is to assure that games started directly, without going through
-        	// the launcher, don't have to specify a default color map
-        	Color cm[] = gameinfo.colorMap;
-        	if(cm!=null && G.getGlobal(exHashtable.COLORMAP)==null)
-        	{
-        		G.putGlobal(exHashtable.COLORMAP, AR.intArray(cm.length));
-        	}
-        }
-	     if (classname!=null && !"".equals(classname) && !"none".equals(classname))
-	        {
-	    	 can = (CanvasProtocol) G.MakeInstance(classname);
-	    	 can.init(extendedHashtable,frame);
-	    	 setCanvas(can);
-	    	
-           }
-         }
-      }
+    }
 
 
     public long doTouch()
@@ -515,7 +455,8 @@ public class commonPanel extends FullscreenPanel
     		}
     	return(false);
     }
-    
+    public static final String LEAVEROOM = "#1 quitting";
+
     public void shutDown()
     { 	CanvasProtocol cp = myCanvas;
     	ConnectionManager conn = myNetConn;
@@ -525,7 +466,7 @@ public class commonPanel extends FullscreenPanel
 	    	sendMessage(NetConn.SEND_NOTE+G.getSystemProperties() 
 	    			+ ((cp==null)?"": cp.statsForLog()));
 	    
-            sendMessage(NetConn.SEND_GROUP+ KEYWORD_TRANSLATE_CHAT + " " + LEAVEROOM);
+            sendMessage(NetConn.SEND_GROUP+ ChatInterface.KEYWORD_TRANSLATE_CHAT + " " + LEAVEROOM);
             conn.setEofOk();
 	        sendMessage(NetConn.SEND_REQUEST_EXIT+KEYWORD_SUICIDE);
 	        G.doDelay(1000);

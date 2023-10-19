@@ -785,7 +785,7 @@ private void playSounds(commonMove m)
         		else { G.infoBox(null,s.get(DrawNotAllowed)); }
     			}
     		else {
-                theChat.postMessage(ChatInterface.GAMECHANNEL, KEYWORD_CHAT,
+                theChat.postMessage(ChatInterface.GAMECHANNEL, ChatInterface.KEYWORD_CHAT,
                     s.get(CantDraw));
             }
     		return(true);

@@ -140,7 +140,7 @@ public class ZertzGameViewer extends CCanvas<zCell,GameBoard> implements GameCon
         b.doInit(b.gametype);
         hasDones=false;		// for use by replayMove
         if(!preserve_history)
-    	{ if(b.variation!=Zvariation.Zertz_h) { startFirstPlayer(); }
+    	{ if(b.boardSetup!=Zvariation.Zertz_h) { startFirstPlayer(); }
     		else 
     		{ PerformAndTransmit(EDIT,false,replayMode.Replay); 
     		}
@@ -188,7 +188,7 @@ public class ZertzGameViewer extends CCanvas<zCell,GameBoard> implements GameCon
        	Rectangle rack = rackRects[1];
        	G.copy(swapButton,rack);
     	layout.placeTheVcr(this,vcrw,vcrw*3/2);
-    	if(reviewOnly || (b.variation==Zvariation.Zertz_h))
+    	if(reviewOnly || (b.boardSetup==Zvariation.Zertz_h))
     		{ layout.placeRectangle(variationRect, vcrw, vcrw/4,BoxAlignment.Edge);
     		}
     	else { G.SetHeight(variationRect,0); }
@@ -578,7 +578,7 @@ public class ZertzGameViewer extends CCanvas<zCell,GameBoard> implements GameCon
     // draw, otherwise just notice if the highlight should be on
     //
     public void redrawBoard(Graphics gc, HitPoint selectPos)
-    {
+    {	
     	GC.fillRect(gc, tableColor(),fullRect);
     	
     	GameBoard bd = disB(gc);

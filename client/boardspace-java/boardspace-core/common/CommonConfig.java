@@ -20,8 +20,9 @@ import java.awt.Color;
 import java.util.prefs.Preferences;
 
 import lib.G;
+import lib.UniversalConstants;
 
-public interface CommonConfig {
+public interface CommonConfig extends UniversalConstants {
 	static final String DEFAULT_SERVERNAME = "Boardspace.net";
 	static boolean TIMEDROBOTS = false;
 	

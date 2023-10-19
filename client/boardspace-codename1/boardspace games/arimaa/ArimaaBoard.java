@@ -81,7 +81,6 @@ class ArimaaBoard extends squareBoard<ArimaaCell> implements BoardProtocol,Arima
 
 	public RepeatedPositions repeatedPositions = null;	// this is shared structure with the canvas
 	public long recentDigest = 0;						// special digest "SubDigest" used to detect "effective pass" moves
-	public long nextRecentDigest = 0;					// the Subdigest after all moves (but not yet confirmed by "done"
 	public int playerColor[] = new int[2];
 	
 	public void SetDrawState() 
@@ -345,7 +344,11 @@ public long Digest()
     v ^= (r.nextLong()*(1+variation.ordinal()));
     return (v);
 }
-
+public long positionDigest()
+{   Random r = new Random(64 * 1000); // init the random number generator
+	long v = SubDigest(r);
+    return (v);
+}
    public ArimaaBoard cloneBoard() 
 	{ ArimaaBoard copy = new ArimaaBoard(gametype,randomKey,repeatedPositions,getColorMap());
 	  copy.copyFrom(this); 
@@ -372,7 +375,6 @@ public long Digest()
         lastAdvancementMoveNumber = from_b.lastAdvancementMoveNumber;
         repeatedPositions = from_b.repeatedPositions.copy();
         recentDigest = from_b.recentDigest;
-        nextRecentDigest = from_b.nextRecentDigest;
         unresign = from_b.unresign;
         board_state = from_b.board_state;
         playStep = from_b.playStep;
@@ -402,7 +404,6 @@ public long Digest()
     public void doInit(String gtype,long key)
     {	randomKey = key;	// not used, but for reference in this demo game
        	recentDigest = 0;
-       	nextRecentDigest = 0;
        	trapMapValid = false;
        	trapMaps = null;
        	pushPullSource = null;
@@ -461,8 +462,11 @@ public long Digest()
     public boolean DoneState()
     {	
         switch (board_state)
-        {case RESIGN_STATE:
+        {
          case CONFIRM_STATE:
+        	 long dig = positionDigest();
+        	 return dig!=recentDigest;
+         case RESIGN_STATE:
          case DRAW_STATE:
             return (true);
 
@@ -1891,7 +1895,6 @@ public long Digest()
    
     private boolean doDone()
     {	boolean captures = acceptPlacement();
-        recentDigest = nextRecentDigest;
         placementIndex++;
         if (board_state==ArimaaState.RESIGN_STATE)
         {	setGameOver(false,true);
@@ -1900,7 +1903,12 @@ public long Digest()
         {	boolean win1 = WinForPlayerNow(whoseTurn);
         	boolean win2 = WinForPlayerNow(nextPlayer[whoseTurn]);
         	if(win1 || win2)  { setGameOver(win1,win2); }
-        	else {setNextPlayer(); setNextStateAfterDone(); }
+        	else 
+        	{
+        	setNextPlayer(); 
+        	setNextStateAfterDone(); 
+        	recentDigest = positionDigest();
+        	}
         }
         return(captures);
     }
@@ -2296,9 +2304,16 @@ public long Digest()
                 } 
             	doDone();
             }
+            else if (board_state==ArimaaState.CONFIRM_STATE) {
+            	// unusual case where the robot is investigating an illegal move
+            	// that doesn't change the board state
+            	setGameOver(false,true);
+            }
             else 
-            {	switch(m.op)
             	{
+            	switch(m.op)
+            	{
+            		
             	case MOVE_PULL:
             	case MOVE_PUSH:
             		lastRobotMove = m;
@@ -3085,5 +3100,12 @@ public long Digest()
     if(all.size()==0) { all.addElement(new ArimaaMovespec(MOVE_RESIGN,whoseTurn)); }
   	return(all);
  }
+public boolean canPass() {
+	return started 
+			&& ((board_state==ArimaaState.PLAY_STATE)||(board_state==ArimaaState.CONFIRM_STATE)) 
+			&& (playStep<4) && (playStep>0)
+			&& positionDigest()!=recentDigest;
+}
+
  
 }

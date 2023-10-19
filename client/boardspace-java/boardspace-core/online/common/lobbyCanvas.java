@@ -432,8 +432,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 		}}
 		
 		adjustFonts(SCALE/rawscale);
-		boolean chatFramed = sharedInfo.getBoolean(exHashtable.LOBBYCHATFRAMED,false);
-		int chatHeight = chatFramed ? 0 : wideMode ? inHeight : (inHeight > 370*SCALE)?(inHeight)/3: 180;
+		int chatHeight = (lobby.chatFrame!=null) ? 0 : wideMode ? inHeight : (inHeight > 370*SCALE)?(inHeight)/3: 180;
 		int baseY = wideMode ? 0 : chatHeight-inY+1;
 		double scale = SCALE;
 		PLAYPOLYWIDTH = (int)(s_PLAYPOLYWIDTH*scale);
@@ -527,7 +526,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 		G.SetRect(playingRect,USERIMAGEWIDTH+LEFTSCROLLBARWIDTH,baseY,PLAYINGIMAGEWIDTH,gheight);
 		G.SetRect(gameRect,G.Right(playingRect),baseY, GAMEIMAGEWIDTH,gheight);
 
-		if(theChat!=null && !chatFramed)
+		if(theChat!=null && (lobby.chatFrame==null))
 			{ 
 			  int chatX = wideMode ? G.Right(gameRect)+SCROLLBARWIDTH : inX;
 			  theChat.setBounds(chatX,inY,inWidth-chatX-2,chatHeight);  
@@ -591,7 +590,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	  if(!inUserArea) 
 	  	{ //prune and resort the list only if the mouse is elsewhere.
 		  //this allows the mouse to hover over a stable set of targets
-		  users.FlushDeadUsers(); 	  	  
+		  users.FlushDeadUsers(lobby); 	  	  
 	  	}
 	  
 	  int numberOfUsers = users.numberOfUsers();

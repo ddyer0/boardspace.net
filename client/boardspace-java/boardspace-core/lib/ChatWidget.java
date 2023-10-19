@@ -813,8 +813,10 @@ public class ChatWidget
 	
 	private exCanvas canvas = null;
 	public void setCanvas(exCanvas can) 
-	{ 	
-		if(canvas!=can)
+	{ 	// note, this should be set only once.  If this is a 
+		// standalone chat window, it will be set first by the chatwindow
+		// and then ignore a second attempt to set it from the parent
+		if(canvas==null)
 			{
 			canvas = can; 
 			// if using our own keyboard, the standard focus mechanism is irrelevant
@@ -881,7 +883,7 @@ public class ChatWidget
 			return canvas.setHighlightPoint(p);
 		}
 		else 
-		{ if(upcode==MouseState.LAST_IS_EXIT) 
+		{ 	if(upcode==MouseState.LAST_IS_EXIT) 
 			{ sendToFields(ex,ey,upcode);
 			}
 		  draggingOutside = upcode==MouseState.LAST_IS_DRAG; 

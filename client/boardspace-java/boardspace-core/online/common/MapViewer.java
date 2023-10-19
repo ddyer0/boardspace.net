@@ -23,6 +23,7 @@ import bridge.*;
 import lib.Image;
 import lib.LFrameProtocol;
 import lib.Utf8Reader;
+import lib.commonPanel;
 import lib.Graphics;
 import lib.ExtendedHashtable;
 import lib.G;

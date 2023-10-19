@@ -415,7 +415,7 @@ private Color playerBackground[] = {
         }
         else
         {//super.doShowSgf();
-            theChat.postMessage(ChatInterface.GAMECHANNEL, KEYWORD_CHAT,
+            theChat.postMessage(ChatInterface.GAMECHANNEL, ChatInterface.KEYWORD_CHAT,
                 s.get(CensoredGameRecordString));	// not available during the game
             
         }

@@ -58,7 +58,6 @@ public class GameBoard extends hexBoard<zCell> implements BoardProtocol,GameCons
     static double black_value = 1.0;
     private boolean swapped_state = false;
     public int placementIndex = 0;
-    public Zvariation variation=Zvariation.Zertz;
     public Zvariation boardSetup=Zvariation.Zertz;
     public int movingObjectIndex() { return(NothingMoving); }
  
@@ -438,7 +437,6 @@ public class GameBoard extends hexBoard<zCell> implements BoardProtocol,GameCons
 
     public void sameboard(GameBoard from_b)
     {   super.sameboard(from_b);
-    	G.Assert(variation==from_b.variation,"variation mismatch");
     	G.Assert(boardSetup==from_b.boardSetup,"boardSetup mismatch");
         G.Assert(balls_on_board == from_b.balls_on_board,"same balls on board");
         G.Assert(balls_in_play == from_b.balls_in_play,"same balls in play");
@@ -520,6 +518,10 @@ public class GameBoard extends hexBoard<zCell> implements BoardProtocol,GameCons
     /* make a copy of a board */
     public void copyFrom(GameBoard from_b)
     {	
+    	if(boardSetup!=from_b.boardSetup)
+    	{
+    		doInit(from_b.gametype,from_b.boardSetup,from_b.randomKey);
+    	}
    		super.copyFrom(from_b);
  
     	needStart = from_b.needStart;
@@ -562,15 +564,14 @@ public class GameBoard extends hexBoard<zCell> implements BoardProtocol,GameCons
     public void doInit(String gtype,long key)
     {   Zvariation variation = Zvariation.find(gtype);
     	G.Assert(variation!=null,WrongInitError,gtype);
-    	doInit(gtype,variation,variation.boardSetup,key);
+    	doInit(gtype,variation.boardSetup,key);
     }
     public void doInit()
     {
-    	doInit(gametype,variation,boardSetup,randomKey);
+    	doInit(gametype,boardSetup,randomKey);
     }
-    private void doInit(String gt,Zvariation v,Zvariation bs,long k)
+    private void doInit(String gt,Zvariation bs,long k)
     {	gametype = gt;
-    	variation = v;
     	randomKey = k;
     	setBoardType(bs);
     	
@@ -584,7 +585,7 @@ public class GameBoard extends hexBoard<zCell> implements BoardProtocol,GameCons
     // the basic board shape changing after init
     public void doInit(GameBoard b,long randomv)
     {	
-    	doInit(b.gametype,b.variation,b.boardSetup,b.randomKey);
+    	doInit(b.gametype,b.boardSetup,b.randomKey);
     }
 
     // true if two adjacent sides are free, ie if it's an edge
@@ -1381,7 +1382,7 @@ public class GameBoard extends hexBoard<zCell> implements BoardProtocol,GameCons
         switch (m.op)
         {
         case MOVE_SETBOARD:
-        	setBoardType(Zvariation.values()[m.to_row]);
+     		doInit(Zvariation.values()[m.to_row].shortName,randomKey);
         	break;
         case MOVE_BtoB:
             lastMove = new movespec(m.player, MOVE_BtoB, m.from_col,
@@ -1939,6 +1940,7 @@ public void addRingMoves(CommonMoveStack  result, boolean limitrings)
 }
 
 /*
+
 --
   white  grey  black
 11259  2  4  5    // any ball wins
