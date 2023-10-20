@@ -26,7 +26,7 @@ import lib.G;
 import lib.HitPoint;
 import lib.LFrameProtocol;
 import lib.ShellProtocol;
-import online.common.exCanvas;
+import lib.exCanvas;
 import online.game.commonCanvas;
 
 public class TreeViewer extends exCanvas implements TreeViewerProtocol

@@ -22,7 +22,7 @@ import lib.G;
 import lib.GC;
 import lib.HitPoint;
 import lib.Random;
-import online.common.exCanvas;
+import lib.exCanvas;
 import online.game.chip;
 import online.game.stackCell;
 import container.ContainerConstants.ContainerId;

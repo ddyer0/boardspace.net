@@ -18,7 +18,7 @@ package yspahan;
 
 import java.awt.*;
 import bridge.Config;
-
+import common.GameInfo;
 import online.common.*;
 import online.game.*;
 import online.game.sgf.*;
@@ -202,7 +202,7 @@ public class YspahanViewer extends CCanvas<YspahanCell,YspahanBoard> implements 
         int randomKey = info.getInt(OnlineConstants.RANDOMSEED,-1);
         MouseColors  = yMouseColors;
         MouseDotColors = yMouseDotColors;
-        b = new YspahanBoard(info.getString(GAMETYPE, Yspahan_INIT),
+        b = new YspahanBoard(info.getString(GameInfo.GAMETYPE, Yspahan_INIT),
         		randomKey,getStartingColorMap(),players_in_game);
         useDirectDrawing(true);
     	adjustPlayers(players_in_game);

@@ -17,6 +17,8 @@
 package entrapment;
 
 import bridge.*;
+import common.GameInfo;
+
 import static com.codename1.util.MathUtil.pow;
 import com.codename1.ui.geom.Rectangle;
 
@@ -123,7 +125,7 @@ public class EntrapmentViewer extends CCanvas<EntrapmentCell,EntrapmentBoard> im
 
         int randomKey = info.getInt(OnlineConstants.RANDOMSEED,-1);
        
-        b = new EntrapmentBoard(info.getString(GAMETYPE, Entrapment_INIT),
+        b = new EntrapmentBoard(info.getString(GameInfo.GAMETYPE, Entrapment_INIT),
         		randomKey,getStartingColorMap(),EntrapmentBoard.REVISION);
         useDirectDrawing(true);
         doInit(false);

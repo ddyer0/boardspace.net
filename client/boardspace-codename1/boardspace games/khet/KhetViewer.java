@@ -17,6 +17,8 @@
 package khet;
 
 import bridge.*;
+import common.GameInfo;
+
 import com.codename1.ui.geom.Rectangle;
 
 import online.common.*;
@@ -124,7 +126,7 @@ public class KhetViewer extends CCanvas<KhetCell,KhetBoard> implements KhetConst
 
         int randomKey = info.getInt(OnlineConstants.RANDOMSEED,-1);
         int map[] = getStartingColorMap();
-        b = new KhetBoard(info.getString(OnlineConstants.GAMETYPE, Khet_Classic_Init),randomKey,map);
+        b = new KhetBoard(info.getString(GameInfo.GAMETYPE, Khet_Classic_Init),randomKey,map);
         if(seatingFaceToFace()) { b.autoReverseYNormal(); }
         useDirectDrawing(true);
         doInit(false);

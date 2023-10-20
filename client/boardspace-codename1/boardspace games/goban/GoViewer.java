@@ -18,6 +18,8 @@ package goban;
 import bridge.*;
 import bridge.Color;
 import bridge.JCheckBoxMenuItem;
+import common.GameInfo;
+
 import com.codename1.ui.geom.Rectangle;
 
 import online.common.*;
@@ -168,7 +170,7 @@ public class GoViewer extends CCanvas<GoCell,GoBoard> implements GoConstants, Ga
 
         int randomKey = info.getInt(OnlineConstants.RANDOMSEED,-1);
        
-        b = new GoBoard(info.getString(GAMETYPE, Variation.Go_19.name),
+        b = new GoBoard(info.getString(GameInfo.GAMETYPE, Variation.Go_19.name),
         		randomKey,players_in_game,getStartingColorMap());
         useDirectDrawing(true);
         doInit(false);

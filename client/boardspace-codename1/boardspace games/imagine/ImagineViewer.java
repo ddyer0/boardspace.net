@@ -25,6 +25,7 @@ import com.codename1.ui.geom.Rectangle;
 
 import bridge.Color;
 import bridge.Config;
+import common.GameInfo;
 import online.common.*;
 import java.util.*;
 
@@ -142,7 +143,7 @@ static String SWOOSH = ImageDir + "swoosh"+ Config.SoundFormat;
         MouseColors  = ImagineMouseColors;
         MouseDotColors = ImagineMouseDotColors;
          
-        String type = info.getString(GAMETYPE, ImagineVariation.Imagine.name);
+        String type = info.getString(GameInfo.GAMETYPE, ImagineVariation.Imagine.name);
         // recommended procedure is to supply players and randomkey, even for games which
         // are current strictly 2 player and no-randomization.  It will make it easier when
         // later, some variant is created, or the game code base is re purposed as the basis

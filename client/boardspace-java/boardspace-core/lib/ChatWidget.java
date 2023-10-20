@@ -36,11 +36,7 @@ import java.io.InputStream;
 import java.util.Hashtable;
 import java.util.StringTokenizer;
 
-
 import lib.TextContainer.Op;
-import online.common.OnlineConstants;
-import online.common.exCanvas;
-import online.common.exHashtable;
 
 /* plug-in replacement for commonChatWindow that will not use real windows */
 
@@ -50,7 +46,7 @@ import online.common.exHashtable;
 // TODO: make the chat windows for marginally small screens use the "framed" paradigm
 //
 public class ChatWidget
-	implements ChatInterface,OnlineConstants,
+	implements ChatInterface,
 	SimpleObserver,ActionListener,MenuParentInterface,FocusListener
 {
 	enum ChatId implements CellId
@@ -402,7 +398,7 @@ public class ChatWidget
 
     public void postMessage(int userNum, String command, String theMessage)
     {	SimpleUser u = getUser(userNum);
-    	String name = command.equals(KEYWORD_LOBBY_CHAT)
+    	String name = command.equals(ChatInterface.KEYWORD_LOBBY_CHAT)
     			? s.get("Lobby")
     			: (u==null)
     						? s.get(USERPROMPT) + userNum
@@ -671,7 +667,7 @@ public class ChatWidget
 				 if(!priv)
 				 {
 					 @SuppressWarnings("unchecked")
-					 Hashtable<String,String>xm = (Hashtable<String,String>)sharedInfo.getObj(exHashtable.MYXM);
+					 Hashtable<String,String>xm = (Hashtable<String,String>)sharedInfo.getObj(ConnectionManager.MYXM);
 					 xm.put(seq.toString(),base.toString());
 				 }
 				 seq.append(' ');
@@ -777,7 +773,7 @@ public class ChatWidget
     					 if(!priv)
     					 {
     						 @SuppressWarnings("unchecked")
-							 Hashtable<String,String>xm = (Hashtable<String,String>)sharedInfo.getObj(exHashtable.MYXM);
+							 Hashtable<String,String>xm = (Hashtable<String,String>)sharedInfo.getObj(ConnectionManager.MYXM);
     						 xm.put(seq,base);
     					 }
     					}

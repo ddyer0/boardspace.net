@@ -16,6 +16,8 @@
  */
 package kuba;
 import bridge.*;
+import common.GameInfo;
+
 import com.codename1.ui.geom.Rectangle;
 
 import lib.Graphics;
@@ -116,7 +118,7 @@ public class KubaViewer extends CCanvas<KubaCell,KubaBoard> implements KubaConst
     {
         super.init(info,frame);
         
-        b = new KubaBoard(info.getString(GAMETYPE, "Traboulet"),
+        b = new KubaBoard(info.getString(GameInfo.GAMETYPE, "Traboulet"),
         		getStartingColorMap());
         useDirectDrawing(true);
         doInit(false);

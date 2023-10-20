@@ -759,8 +759,8 @@ public class Session implements LobbyConstants
 			 myInfo.put(exHashtable.ROBOTGAME,null);
 		 }
 		 myInfo.put(exHashtable.WEAKROBOT, weakestRobot());
-		 myInfo.putString(OnlineConstants.GAMETYPE,gametype);
-		 myInfo.putString(OnlineConstants.GAMENAME,gamename);
+		 myInfo.putString(GameInfo.GAMETYPE,gametype);
+		 myInfo.putString(GameInfo.GAMENAME,gamename);
 		 myInfo.putString(exHashtable.GAMETYPEID,gametypeid);
 		 myInfo.putString(OnlineConstants.VIEWERCLASS,(GI.viewerClass==null)?"none":GI.viewerClass);
 		 myInfo.putObj(ConnectionManager.BANNERMODE,sharedInfo.getString(ConnectionManager.BANNERMODE,"N"));

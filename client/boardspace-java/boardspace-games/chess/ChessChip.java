@@ -21,8 +21,8 @@ import lib.ImageLoader;
 import bridge.Config;
 import lib.DrawableImageStack;
 import lib.Random;
+import lib.exCanvas;
 import online.game.chip;
-import online.common.exCanvas;
 /*
  * generic "playing piece class, provides canonical playing pieces, 
  * image artwork, scales, and digests.  For our purposes, the squares

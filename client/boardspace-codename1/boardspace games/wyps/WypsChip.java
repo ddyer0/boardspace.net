@@ -31,7 +31,7 @@ import lib.Random;
 import lib.StockArt;
 import lib.Text;
 import lib.TextChunk;
-import online.common.exCanvas;
+import lib.exCanvas;
 import online.game.chip;
 
 class ChipStack extends OStack<WypsChip>

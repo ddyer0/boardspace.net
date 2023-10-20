@@ -23,6 +23,7 @@ import javax.swing.JCheckBoxMenuItem;
 import static breakingaway.BreakingAwayMovespec.*;
 import static breakingaway.BreakingAwayBoard.*;
 import breakingaway.BreakingAwayPiece.ChipColor;
+import common.GameInfo;
 /* below here should be the same for codename1 and standard java */
 import online.common.*;
 import online.game.*;
@@ -188,7 +189,7 @@ public class BreakingAwayViewer extends CCanvas<BreakingAwayCell,BreakingAwayBoa
         sizeRect.value=INITIAL_TILE_SCALE;
         sizeRect.barColor=ZoomColor;
         sizeRect.highlightColor = HighlightColor;
-        b = new BreakingAwayBoard(info.getString(GAMETYPE, Variation.Standard.name),
+        b = new BreakingAwayBoard(info.getString(GameInfo.GAMETYPE, Variation.Standard.name),
         			randomv,
         			pl,getStartingColorMap()
         			);

@@ -22,7 +22,7 @@ import com.codename1.ui.geom.Rectangle;
 import bridge.Color;
 import bridge.JCheckBoxMenuItem;
 import bridge.JMenuItem;
-
+import common.GameInfo;
 import online.common.*;
 import online.game.*;
 import online.game.sgf.*;
@@ -129,7 +129,7 @@ public class ShogiViewer extends CCanvas<ShogiCell,ShogiBoard> implements ShogiC
     	MouseDotColors = ShogiMouseDotColors;
     	MouseColors = ShogiMouseColors;
     	
-        b = new ShogiBoard(info.getString(GAMETYPE, Shogi_INIT),randomKey,repeatedPositions);
+        b = new ShogiBoard(info.getString(GameInfo.GAMETYPE, Shogi_INIT),randomKey,repeatedPositions);
         useDirectDrawing(true);
         doInit(false);
         chipsetOption = myFrame.addOption(s.get(TraditionalPieces),traditional_chips,deferredEvents);

@@ -19,6 +19,8 @@ package chess;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenuItem;
 
+import common.GameInfo;
+
 import java.awt.*;
 
 /* below here should be the same for codename1 and standard java */
@@ -122,7 +124,7 @@ public class ChessViewer extends CCanvas<ChessCell,ChessBoard> implements ChessC
 
         int randomKey = info.getInt(OnlineConstants.RANDOMSEED,-1);
         int map[] = getStartingColorMap();
-        b = new ChessBoard(info.getString(GAMETYPE, Variation.Chess.name),randomKey,players_in_game,
+        b = new ChessBoard(info.getString(GameInfo.GAMETYPE, Variation.Chess.name),randomKey,players_in_game,
         		repeatedPositions,map,ChessBoard.REVISION);
         useDirectDrawing(true);
         doInit(false);

@@ -19,6 +19,8 @@ package checkerboard;
 import bridge.Color;
 import bridge.JCheckBoxMenuItem;
 import bridge.JMenuItem;
+import common.GameInfo;
+
 import com.codename1.ui.geom.Rectangle;
 /* below here should be the same for codename1 and standard java */
 import online.common.*;
@@ -112,7 +114,7 @@ public class CheckerGameViewer extends CCanvas<CheckerCell,CheckerBoard> impleme
 
         int randomKey = info.getInt(OnlineConstants.RANDOMSEED,-1);
        
-        b = new CheckerBoard(info.getString(GAMETYPE, Variation.Checkers_10.name),randomKey,players_in_game,
+        b = new CheckerBoard(info.getString(GameInfo.GAMETYPE, Variation.Checkers_10.name),randomKey,players_in_game,
         			repeatedPositions,getStartingColorMap(),CheckerBoard.REVISION);
         useDirectDrawing(true);
         doInit(false);

@@ -22,6 +22,7 @@ import online.common.*;
 
 import java.util.*;
 
+import common.GameInfo;
 import lib.Graphics;
 import lib.Image;
 import lib.*;
@@ -127,7 +128,7 @@ public class CookieViewer extends CCanvas<CookieCell,CookieBoard> implements Coo
         labelColor = Color.red;
         labelFont = largeBoldFont();
         
-        bb = new CookieBoard(info.getString(GAMETYPE, "cookie-disco"),
+        bb = new CookieBoard(info.getString(GameInfo.GAMETYPE, "cookie-disco"),
         		getStartingColorMap());
         useDirectDrawing(true);
         Random r = new Random(randomKey);

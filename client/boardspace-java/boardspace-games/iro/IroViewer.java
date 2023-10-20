@@ -18,6 +18,8 @@ package iro;
 
 import javax.swing.JCheckBoxMenuItem;
 
+import common.GameInfo;
+
 import static iro.Iromovespec.*;
 
 import java.awt.*;
@@ -187,7 +189,7 @@ public class IroViewer extends CCanvas<IroCell,IroBoard> implements IroConstants
         colorBlindOption.setForeground(Color.blue);
         setColorBlind(cb);
         
-        String type = info.getString(OnlineConstants.GAMETYPE, IroVariation.iro.name);
+        String type = info.getString(GameInfo.GAMETYPE, IroVariation.iro.name);
         // recommended procedure is to supply players and randomkey, even for games which
         // are current strictly 2 player and no-randomization.  It will make it easier when
         // later, some variant is created, or the game code base is re purposed as the basis

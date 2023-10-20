@@ -17,13 +17,11 @@
 package oneday;
 
 
-import lib.Graphics;
 import com.codename1.ui.geom.Rectangle;
 
 import lib.*;
 
 import oneday.OnedayBoard.OnedayLocation;
-import online.common.exCanvas;
 
 
 // platform is a particular direction of travel on a particular line

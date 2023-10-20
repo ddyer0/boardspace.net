@@ -16,7 +16,6 @@
  */
 package lib;
 
-import online.common.exCanvas;
 /*
  * this is used to create a standalone chat window for chat rooms
  */

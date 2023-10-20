@@ -26,6 +26,7 @@ import online.common.*;
 import java.util.*;
 
 import bridge.Config;
+import common.GameInfo;
 import euphoria.EPlayer.PFlag;
 import euphoria.EPlayer.PlayerView;
 import euphoria.EPlayer.TFlag;
@@ -478,7 +479,7 @@ private Color playerBackground[] = {
        	int randomKey = info.getInt(OnlineConstants.RANDOMSEED,-1);
        	// magic number that produces a 3p game with 2 factionless recruits -1118173504
        	//randomKey = -1118173504;
-        bb = new EuphoriaBoard(info.getString(GAMETYPE, Variation.Euphoria.name()),randomKey,players_in_game,getStartingColorMap(),EuphoriaBoard.REVISION);
+        bb = new EuphoriaBoard(info.getString(GameInfo.GAMETYPE, Variation.Euphoria.name()),randomKey,players_in_game,getStartingColorMap(),EuphoriaBoard.REVISION);
         useDirectDrawing(true);
         doInit(false);      	 
     }

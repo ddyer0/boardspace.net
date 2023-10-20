@@ -21,6 +21,8 @@ import java.awt.*;
 import static trike.Trikemovespec.*;
 import online.common.*;
 import java.util.*;
+
+import common.GameInfo;
 import lib.Graphics;
 import lib.CellId;
 import lib.ExtendedHashtable;
@@ -185,7 +187,7 @@ public class TrikeViewer extends CCanvas<TrikeCell,TrikeBoard> implements TrikeC
         	TrikeConstants.putStrings();
         }
         
-        String type = info.getString(GAMETYPE, TrikeVariation.Trike_7.name);
+        String type = info.getString(GameInfo.GAMETYPE, TrikeVariation.Trike_7.name);
         // recommended procedure is to supply players and random key, even for games which
         // are current strictly 2 player and no-randomization.  It will make it easier when
         // later, some variant is created, or the game code base is re purposed as the basis

@@ -24,6 +24,7 @@ import online.common.*;
 import java.util.*;
 
 import bridge.JMenuItem;
+import common.GameInfo;
 import dictionary.Dictionary;
 import dictionary.Entry;
 import lib.Graphics;
@@ -133,7 +134,7 @@ public class HoneyViewer extends CCanvas<HoneyCell,HoneyBoard> implements HoneyC
         zoomRect.barColor=ZoomColor;
         zoomRect.highlightColor = HighlightColor;   
 
-        String type = info.getString(GAMETYPE, HoneyVariation.HoneyComb.name);
+        String type = info.getString(GameInfo.GAMETYPE, HoneyVariation.HoneyComb.name);
         // recommended procedure is to supply players and randomkey, even for games which
         // are current strictly 2 player and no-randomization.  It will make it easier when
         // later, some variant is created, or the game code base is re purposed as the basis

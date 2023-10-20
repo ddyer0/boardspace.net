@@ -17,6 +17,8 @@
 package breakingaway;
 
 import bridge.*;
+import common.GameInfo;
+
 import com.codename1.ui.Font;
 import com.codename1.ui.geom.Rectangle;
 import static breakingaway.BreakingAwayMovespec.*;
@@ -187,7 +189,7 @@ public class BreakingAwayViewer extends CCanvas<BreakingAwayCell,BreakingAwayBoa
         sizeRect.value=INITIAL_TILE_SCALE;
         sizeRect.barColor=ZoomColor;
         sizeRect.highlightColor = HighlightColor;
-        b = new BreakingAwayBoard(info.getString(GAMETYPE, Variation.Standard.name),
+        b = new BreakingAwayBoard(info.getString(GameInfo.GAMETYPE, Variation.Standard.name),
         			randomv,
         			pl,getStartingColorMap()
         			);

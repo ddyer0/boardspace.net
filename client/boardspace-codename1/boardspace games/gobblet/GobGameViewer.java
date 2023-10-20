@@ -28,6 +28,7 @@ import online.search.SimpleRobotProtocol;
 import java.util.*;
 
 import bridge.Config;
+import common.GameInfo;
 import lib.Graphics;
 import lib.Image;
 import lib.CellId;
@@ -137,7 +138,7 @@ public class GobGameViewer extends CCanvas<GobCell,GobGameBoard> implements GobC
     public void init(ExtendedHashtable info,LFrameProtocol frame)
     {	enableAutoDone = true;
         super.init(info,frame);
-        b = new GobGameBoard(info.getString(GAMETYPE, "Gobblet"),getStartingColorMap());   
+        b = new GobGameBoard(info.getString(GameInfo.GAMETYPE, "Gobblet"),getStartingColorMap());   
         useDirectDrawing(true);
         doInit(false);
         

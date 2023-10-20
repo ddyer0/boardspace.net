@@ -18,7 +18,7 @@ package vnc;
 
 import java.awt.Component;
 
-import online.common.exCanvas;
+import lib.exCanvas;
 
 public class VncAuxWindow extends OffscreenWindow
 {

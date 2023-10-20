@@ -22,6 +22,7 @@ import com.codename1.ui.geom.Rectangle;
 import bridge.Color;
 import bridge.JCheckBoxMenuItem;
 import bridge.JMenuItem;
+import common.GameInfo;
 
 import static ordo.OrdoMovespec.*;
 
@@ -114,7 +115,7 @@ public class OrdoViewer extends CCanvas<OrdoCell,OrdoBoard> implements OrdoConst
 
         int randomKey = info.getInt(OnlineConstants.RANDOMSEED,-1);
        
-        b = new OrdoBoard(info.getString(GAMETYPE, Variation.Ordo.name),randomKey,players_in_game,
+        b = new OrdoBoard(info.getString(GameInfo.GAMETYPE, Variation.Ordo.name),randomKey,players_in_game,
         			repeatedPositions,getStartingColorMap(),OrdoBoard.REVISION);
         useDirectDrawing(true);
         doInit(false);

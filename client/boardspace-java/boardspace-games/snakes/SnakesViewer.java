@@ -24,6 +24,7 @@ import online.search.SimpleRobotProtocol;
 import java.awt.*;
 import java.util.*;
 
+import common.GameInfo;
 import lib.Graphics;
 import lib.Image;
 import lib.CellId;
@@ -104,7 +105,7 @@ public class SnakesViewer extends CCanvas<SnakesCell,SnakesBoard> implements Sna
 
         int randomKey = info.getInt(OnlineConstants.RANDOMSEED,-1);
        
-        b = new SnakesBoard(info.getString(GAMETYPE, Snakes_INIT),randomKey);
+        b = new SnakesBoard(info.getString(GameInfo.GAMETYPE, Snakes_INIT),randomKey);
         doInit(false);
 
         

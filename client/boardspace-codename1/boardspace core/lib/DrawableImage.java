@@ -19,8 +19,6 @@ package lib;
 import com.codename1.ui.geom.Rectangle;
 import bridge.Color;
 
-import online.common.exCanvas;
-
 
 /**
  * DrawableImage is an extension on Image, with support for loading, masking, scaling and displaying
@@ -123,7 +121,7 @@ public class DrawableImage<T> implements Drawable,StackIterator<T>
 	 * if you had a set of red/green chips as an alternative to the standard white/black.
 	 * 
 	 * @param chipset
-	 * @see online.common.exCanvas#getAltChipset getAltChipSet
+	 * @see lib.exCanvas#getAltChipset getAltChipSet
 	 * @return a new instance of this class, or this instance
 	 */
 	@SuppressWarnings("unchecked")

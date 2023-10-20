@@ -24,7 +24,7 @@ import lib.G;
 import lib.GC;
 import lib.Random;
 import lib.StockArt;
-import online.common.exCanvas;
+import lib.exCanvas;
 import online.game.chip;
 
 public class MicropulChip extends chip<MicropulChip>

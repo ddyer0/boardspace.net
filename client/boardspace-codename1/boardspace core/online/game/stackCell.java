@@ -19,8 +19,8 @@ package online.game;
 import com.codename1.ui.geom.Rectangle;
 
 import lib.Graphics;
-import online.common.*;
 import lib.Random;
+import lib.exCanvas;
 import lib.CellId;
 import lib.Drawable;
 import lib.G;

@@ -19,11 +19,11 @@ package oneday;
 import lib.Graphics;
 import java.awt.Rectangle;
 
-import online.common.exCanvas;
 import lib.Digestable;
 import lib.G;
 import lib.OStack;
 import lib.Random;
+import lib.exCanvas;
 import oneday.OnedayBoard.OnedayLocation;
 
 

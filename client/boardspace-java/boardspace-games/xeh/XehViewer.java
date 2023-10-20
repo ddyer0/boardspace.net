@@ -18,6 +18,8 @@ package xeh;
 
 import javax.swing.JCheckBoxMenuItem;
 
+import common.GameInfo;
+
 import static xeh.XehMovespec.*;
 
 import java.awt.*;
@@ -153,7 +155,7 @@ public class XehViewer extends CCanvas<XehCell,XehBoard> implements XehConstants
          
         rotationOption = myFrame.addOption("rotate board",true,deferredEvents);
         
-        String type = info.getString(GAMETYPE, XehVariation.xeh.name);
+        String type = info.getString(GameInfo.GAMETYPE, XehVariation.xeh.name);
         // recommended procedure is to supply players and randomkey, even for games which
         // are current strictly 2 player and no-randomization.  It will make it easier when
         // later, some variant is created, or the game code base is re purposed as the basis

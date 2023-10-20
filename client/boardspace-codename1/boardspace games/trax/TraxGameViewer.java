@@ -18,6 +18,8 @@ package trax;
 
 import bridge.Color;
 import bridge.JCheckBoxMenuItem;
+import common.GameInfo;
+
 import com.codename1.ui.geom.Point;
 import com.codename1.ui.geom.Rectangle;
 import java.util.StringTokenizer;
@@ -140,7 +142,7 @@ public class TraxGameViewer extends commonCanvas implements TraxConstants, GameL
         
         useClassicItem = myFrame.addOption(ClassicTileOption,false,deferredEvents);
         
-        b = new TraxGameBoard(info.getString(GAMETYPE, "Trax"),
+        b = new TraxGameBoard(info.getString(GameInfo.GAMETYPE, "Trax"),
         		getStartingColorMap());
         useDirectDrawing(true);
         doInit(false);

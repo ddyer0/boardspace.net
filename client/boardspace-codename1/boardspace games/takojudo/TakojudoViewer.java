@@ -17,6 +17,8 @@
 package takojudo;
 
 import bridge.*;
+import common.GameInfo;
+
 import com.codename1.ui.geom.Rectangle;
 
 import lib.*;
@@ -104,7 +106,7 @@ public class TakojudoViewer extends CCanvas<TakojudoCell,TakojudoBoard> implemen
 
         int randomKey = info.getInt(OnlineConstants.RANDOMSEED,-1);
        
-        b = new TakojudoBoard(info.getString(GAMETYPE, Tacojudo_INIT),
+        b = new TakojudoBoard(info.getString(GameInfo.GAMETYPE, Tacojudo_INIT),
         		randomKey,repeatedPositions,getStartingColorMap());
         useDirectDrawing(true); 
         doInit(false);

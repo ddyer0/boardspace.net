@@ -17,6 +17,8 @@
 package plateau.common;
 
 import bridge.*;
+import common.GameInfo;
+
 import com.codename1.ui.geom.Point;
 import com.codename1.ui.geom.Rectangle;
 
@@ -195,7 +197,7 @@ public class PlateauGameViewer extends commonCanvas implements PlateauConstants,
         MouseColors = new Color[] {Color.black,Color.white};
         MouseDotColors = new Color[] { Color.white,Color.black};
 
-        b = new PlateauBoard(info.getString(GAMETYPE, "Plateau"));
+        b = new PlateauBoard(info.getString(GameInfo.GAMETYPE, "Plateau"));
         // believed to be difficult 5/2022
         // useDirectDrawing(true); // not tested yet
         doInit(false);

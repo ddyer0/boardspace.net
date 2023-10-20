@@ -55,6 +55,7 @@ import lib.Sort;
 import lib.SoundManager;
 import lib.StockArt;
 import lib.TimeControl;
+import lib.exCanvas;
 
 public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProtocol
 {	
@@ -94,6 +95,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
     private static final String RejoinMessage = "Rejoin #1";
     private static final String MEMBERS = "Members";
     public static final String LCStrings[] = {
+        	LowMemoryMessage,
     		AcceptChatMessage,
     		MEMBERS,
     		IgnoreChatMessage,
@@ -2035,7 +2037,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	    if (narrowPoly.contains(localX-SPECTATORBUTTONXCENTER,localY-ycenter))
 	      {  if((lobby.startingSession==null)) { return(true); }
 	    	  //waiting for another session to launch
-	         theChat.postMessage(ChatInterface.HINTCHANNEL,KEYWORD_BADHINT,s.get(StillWaitingMessage));
+	         theChat.postMessage(ChatInterface.HINTCHANNEL,ChatInterface.KEYWORD_BADHINT,s.get(StillWaitingMessage));
 	       }
 	    }
 	    return(false);
@@ -2957,7 +2959,7 @@ private void changeMute(int index)
 				{
 				sendMessage(NetConn.SEND_GROUP+"usermenu 2 "+muteUser.serverIndex+" "+users.primaryUser().inviteSession);
 				if(myFrame.doSound())
-					{ SoundManager.playASoundClip(challengeSoundName); 
+					{ SoundManager.playASoundClip(ChatInterface.challengeSoundName); 
 					}
 				}
 				invitedUser=muteUser;

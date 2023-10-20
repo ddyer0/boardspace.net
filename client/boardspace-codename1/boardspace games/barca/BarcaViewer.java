@@ -20,7 +20,7 @@ import static barca.Barcamovespec.*;
 
 import com.codename1.ui.geom.Rectangle;
 import bridge.Color;
-
+import common.GameInfo;
 import online.common.*;
 import java.util.*;
 
@@ -127,7 +127,7 @@ public class BarcaViewer extends CCanvas<BarcaCell,BarcaBoard> implements BarcaC
         	BarcaConstants.putStrings();
         }    
         
-        String type = info.getString(GAMETYPE, BarcaVariation.barca.name);
+        String type = info.getString(GameInfo.GAMETYPE, BarcaVariation.barca.name);
         // recommended procedure is to supply players and randomkey, even for games which
         // are current strictly 2 player and no-randomization.  It will make it easier when
         // later, some variant is created, or the game code base is re purposed as the basis

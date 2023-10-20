@@ -22,6 +22,7 @@ import java.awt.*;
 import online.common.*;
 import java.util.*;
 
+import common.GameInfo;
 import lib.Graphics;
 import lib.CellId;
 import lib.ExtendedHashtable;
@@ -189,7 +190,7 @@ public class KulamiViewer extends CCanvas<KulamiCell,KulamiBoard> implements Kul
         }
          
         
-        String type = info.getString(OnlineConstants.GAMETYPE, KulamiVariation.Kulami.name);
+        String type = info.getString(GameInfo.GAMETYPE, KulamiVariation.Kulami.name);
         // recommended procedure is to supply players and randomkey, even for games which
         // are current strictly 2 player and no-randomization.  It will make it easier when
         // later, some variant is created, or the game code base is re purposed as the basis

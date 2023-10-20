@@ -16,9 +16,7 @@
  */
 package lib;
 
-import online.common.OnlineConstants;
-
-public class NewsReader extends Thread implements Runnable, OnlineConstants
+public class NewsReader extends Thread implements Runnable
 {
     ChatInterface myChat = null;
     String postMessage = null;

@@ -21,7 +21,7 @@ import java.awt.Rectangle;
 import lib.Graphics;
 import lib.G;
 import lib.HitPoint;
-import online.common.exCanvas;
+import lib.exCanvas;
 import online.game.chip;
 
 

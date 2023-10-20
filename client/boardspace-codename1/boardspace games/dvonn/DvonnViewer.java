@@ -17,6 +17,8 @@
 package dvonn;
 
 import bridge.*;
+import common.GameInfo;
+
 import com.codename1.ui.geom.Rectangle;
 
 import online.common.*;
@@ -144,7 +146,7 @@ public class DvonnViewer extends CCanvas<DvonnCell,DvonnBoard> implements DvonnC
         sizeRect.barColor=ZoomColor;
         sizeRect.highlightColor = ZoomHighlightColor;
  
-        b = new DvonnBoard(randomKey,info.getString(GAMETYPE, "dvonn"),
+        b = new DvonnBoard(randomKey,info.getString(GameInfo.GAMETYPE, "dvonn"),
         		getStartingColorMap());
         useDirectDrawing(true);
         doInit(false);

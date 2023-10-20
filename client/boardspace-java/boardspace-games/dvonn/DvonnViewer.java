@@ -19,6 +19,7 @@ package dvonn;
 import java.awt.*;
 import javax.swing.JCheckBoxMenuItem;
 
+import common.GameInfo;
 import online.common.*;
 import online.game.*;
 import online.game.sgf.*;
@@ -144,7 +145,7 @@ public class DvonnViewer extends CCanvas<DvonnCell,DvonnBoard> implements DvonnC
         sizeRect.barColor=ZoomColor;
         sizeRect.highlightColor = ZoomHighlightColor;
  
-        b = new DvonnBoard(randomKey,info.getString(GAMETYPE, "dvonn"),
+        b = new DvonnBoard(randomKey,info.getString(GameInfo.GAMETYPE, "dvonn"),
         		getStartingColorMap());
         useDirectDrawing(true);
         doInit(false);

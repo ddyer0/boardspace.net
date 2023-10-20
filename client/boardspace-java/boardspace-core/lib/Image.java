@@ -19,7 +19,6 @@ package lib;
 import java.awt.Rectangle;
 
 import bridge.SystemImage;
-import online.common.exCanvas;
 /**
  * this is a wrapper class for the system Image class, which allows us to do
  * some useful things, such as caching, metering, and dynamically loading

@@ -17,6 +17,8 @@
 package dipole;
 
 import bridge.*;
+import common.GameInfo;
+
 import com.codename1.ui.geom.Rectangle;
 
 import online.game.*;
@@ -117,7 +119,7 @@ public class DipoleGameViewer extends CCanvas<DipoleCell,DipoleBoard> implements
     {	enableAutoDone = true;
         super.init(info,frame);
         
-        b = new DipoleBoard(info.getString(GAMETYPE, "Dipole"),
+        b = new DipoleBoard(info.getString(GameInfo.GAMETYPE, "Dipole"),
         		getStartingColorMap());
         useDirectDrawing(true);
         doInit(false);

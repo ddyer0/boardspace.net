@@ -28,8 +28,8 @@ import lib.Image;
 import lib.ImageLoader;
 import lib.OStack;
 import lib.Random;
+import lib.exCanvas;
 import online.common.OnlineConstants;
-import online.common.exCanvas;
 import online.game.chip;
 
 class ChipStack extends OStack<BlackDeathChip>

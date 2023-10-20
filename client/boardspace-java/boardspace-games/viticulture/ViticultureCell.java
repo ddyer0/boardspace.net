@@ -18,13 +18,12 @@ package viticulture;
 
 import lib.Sort;
 import lib.StackIterator;
-
+import lib.exCanvas;
 import lib.Graphics;
 import lib.Drawable;
 import lib.G;
 import lib.HitPoint;
 import lib.OStack;
-import online.common.exCanvas;
 import online.game.*;
 
 class CellStack extends OStack<ViticultureCell>

@@ -22,6 +22,7 @@ import java.awt.*;
 import javax.swing.JCheckBoxMenuItem;
 
 import bridge.JMenuItem;
+import common.GameInfo;
 import online.common.*;
 import java.util.*;
 import lib.Graphics;
@@ -199,7 +200,7 @@ public class TwixtViewer extends CCanvas<TwixtCell,TwixtBoard> implements TwixtC
         }
          
         
-        String type = info.getString(GAMETYPE, TwixtVariation.twixt.name);
+        String type = info.getString(GameInfo.GAMETYPE, TwixtVariation.twixt.name);
         // recommended procedure is to supply players and randomkey, even for games which
         // are current strictly 2 player and no-randomization.  It will make it easier when
         // later, some variant is created, or the game code base is re purposed as the basis

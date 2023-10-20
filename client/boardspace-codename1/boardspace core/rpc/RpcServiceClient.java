@@ -36,7 +36,7 @@ import lib.OStack;
 import lib.SimpleObservable;
 import lib.StringStack;
 import lib.commonPanel;
-import online.common.exCanvas;
+import lib.exCanvas;
 /**
  * this class presents the choice of games to join to side screens
  * @author ddyer

@@ -20,7 +20,6 @@ import java.awt.Color;
 import java.awt.FontMetrics;
 
 import bridge.Icon;
-import online.common.exCanvas;
 
 /**
  * this is an extension to {@link TextChunk} which draws {@link lib.Drawable} objects instead of text.

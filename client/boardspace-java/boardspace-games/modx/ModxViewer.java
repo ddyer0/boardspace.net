@@ -29,6 +29,7 @@ import online.search.SimpleRobotProtocol;
 
 import java.util.*;
 
+import common.GameInfo;
 import lib.Graphics;
 import lib.CellId;
 import lib.Drawable;
@@ -107,7 +108,7 @@ public class ModxViewer extends CCanvas<ModxCell,ModxBoard> implements ModxConst
 
         int randomKey = info.getInt(OnlineConstants.RANDOMSEED,-1);
        
-        b = new ModxBoard(info.getString(GAMETYPE, Variation.Modx.name),
+        b = new ModxBoard(info.getString(GameInfo.GAMETYPE, Variation.Modx.name),
         		randomKey,players_in_game,repeatedPositions,getStartingColorMap(),ModxBoard.REVISION);
         useDirectDrawing(true);
         doInit(false);

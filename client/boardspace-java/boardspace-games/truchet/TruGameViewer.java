@@ -28,6 +28,7 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.StringTokenizer;
 
+import common.GameInfo;
 import lib.Graphics;
 import lib.Image;
 import lib.CellId;
@@ -100,7 +101,7 @@ public class TruGameViewer extends CCanvas<TruCell,TruGameBoard> implements TruC
         super.init(info,frame);
         MouseColors = CheMouseColors;
         MouseDotColors = CheMouseDotColors;
-        b = new TruGameBoard(info.getString(GAMETYPE, "Truchet"),
+        b = new TruGameBoard(info.getString(GameInfo.GAMETYPE, "Truchet"),
         		info.getString(exHashtable.GAMEUID,
         		G.getString(exHashtable.GAMEUID,"testgame")),
         		getStartingColorMap());

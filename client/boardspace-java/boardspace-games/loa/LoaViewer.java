@@ -27,6 +27,7 @@ import lib.Image;
 import java.util.Enumeration;
 import java.util.StringTokenizer;
 
+import common.GameInfo;
 import lib.ExtendedHashtable;
 import lib.G;
 import lib.GC;
@@ -382,7 +383,7 @@ public class LoaViewer extends commonCanvas implements UIC,GameLayoutClient
         MouseDotColors = LoaMouseDotColors;
         MouseColors = LoaMouseColors;
         long randomKey = stuff.getInt(OnlineConstants.RANDOMSEED,-1);
-        b = new Loa_Board(sharedInfo.getString(GAMETYPE,"LOA"),getStartingColorMap(),randomKey);
+        b = new Loa_Board(sharedInfo.getString(GameInfo.GAMETYPE,"LOA"),getStartingColorMap(),randomKey);
         useDirectDrawing(true);
         doInit(false);
    }

@@ -16,8 +16,6 @@
  */
 package lib;
 
-/* below here should be the same for codename1 and standard java */
-import online.common.exCanvas;
 /**
  * a Drawable object can be anything that implements drawChip, used for the purpose of displaying
  * an animation element or icon. The primary use of this interface is for {@link lib.DrawableImage} and it's subclasses;

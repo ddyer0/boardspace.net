@@ -20,8 +20,8 @@ import com.codename1.ui.geom.Rectangle;
 import lib.G;
 import lib.SimpleSprite;
 import lib.StockArt;
+import lib.exCanvas;
 import lib.SimpleSprite.Movement;
-import online.common.exCanvas;
 
 public class TrainSimulator {
 	StopStack stops = new StopStack();

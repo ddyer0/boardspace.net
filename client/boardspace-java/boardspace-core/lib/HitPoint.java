@@ -22,9 +22,9 @@ import java.awt.*;
  * this extension of {@link Point} is the collection point for information
  * about the location of the mouse, and the object it points at.
  * <p>
- * @see online.common.exCanvas#StartDragging StartDragging
- * @see online.common.exCanvas#StopDragging StopDragging
- * @see online.common.exCanvas#paintCanvas paintCanvas
+ * @see lib.exCanvas#StartDragging StartDragging
+ * @see lib.exCanvas#StopDragging StopDragging
+ * @see lib.exCanvas#paintCanvas paintCanvas
  * @author ddyer
  *
  */
@@ -55,7 +55,7 @@ public class HitPoint extends Point
 		}
 	}
 /** if not null, the help text to be draw in in a bubble.  Drawing is
-normally done by {@link online.common.exCanvas#DrawArrow DrawArrow}  if the mouse has not moved for a while  */
+normally done by {@link lib.exCanvas#DrawArrow DrawArrow}  if the mouse has not moved for a while  */
 	private Text helpText = null;
 	private double helpDistance = -1;
 	
@@ -92,9 +92,9 @@ normally done by {@link online.common.exCanvas#DrawArrow DrawArrow}  if the mous
      * <p>
      * The canvas startDragging method should set this flag if this kind
      * of pickup event has occurred.
-     * @see online.common.exCanvas#StartDragging StartDragging
-     * @see online.common.exCanvas#StopDragging StopDragging
-     * @see online.common.exCanvas#repaintCanvas repaintCanvas
+     * @see lib.exCanvas#StartDragging StartDragging
+     * @see lib.exCanvas#StopDragging StopDragging
+     * @see lib.exCanvas#repaintCanvas repaintCanvas
      */
     public boolean dragging = false;
     /**
@@ -114,7 +114,7 @@ normally done by {@link online.common.exCanvas#DrawArrow DrawArrow}  if the mous
      * when the mouse is determined to be pointing at something
      * that can be picked up or dropped, set this to a piece of
      * StockArt to be displayed.  You must also set {@link #awidth}
-     * to a suitable size, and (eventually) call {@link online.common.exCanvas#DrawArrow DrawArrow}
+     * to a suitable size, and (eventually) call {@link lib.exCanvas#DrawArrow DrawArrow}
      * to actuallly do the drawing.
      * @see DrawableImage
      */
@@ -122,17 +122,17 @@ normally done by {@link online.common.exCanvas#DrawArrow DrawArrow}  if the mous
     /**
      * the width of the StockArt rectangle.  If {@link #arrow} is not null, <b>awidth</b>
      * <i>must</i> also be set to a reasonable value.
-     * @see online.common.exCanvas#DrawArrow DrawArrow
+     * @see lib.exCanvas#DrawArrow DrawArrow
      */
     public int awidth = 0;
     /**
      * the x offset to display the Stockart, which will default to the mouse position 
-     * @see online.common.exCanvas#DrawArrow DrawArrow
+     * @see lib.exCanvas#DrawArrow DrawArrow
      */
     public int a_x = -1;	// x,y to draw the arrow
     /**
      * the y offset to display the StockArt, which will default to the mouse position
-     * @see online.common.exCanvas#DrawArrow DrawArrow
+     * @see lib.exCanvas#DrawArrow DrawArrow
      */
     public int a_y = -1;
     /**

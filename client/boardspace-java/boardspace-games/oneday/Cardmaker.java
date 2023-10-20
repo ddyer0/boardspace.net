@@ -38,13 +38,13 @@ import java.util.StringTokenizer;
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 
-import online.common.exCanvas;
 import lib.G;
 import lib.GC;
 import lib.HitPoint;
 import lib.MouseState;
 import lib.StockArt;
 import lib.XImage;
+import lib.exCanvas;
 
 
 public class Cardmaker extends exCanvas implements Runnable

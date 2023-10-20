@@ -16,7 +16,6 @@
  */
 package lib;
 
-import online.common.exCanvas;
 /**
  * a container to contain multiple glyphs which implement {@link lib.Drawable}, and draw them as one.
  * These are used in menus and in {@link lib.Text} objects to present compound icons.  
@@ -78,7 +77,7 @@ public class MultiGlyph implements Drawable {
 
 	/*
 	 * (non-Javadoc)
-	 * @see lib.Drawable#drawChip(Graphics, online.common.exCanvas, int, int, int, java.lang.String)
+	 * @see lib.Drawable#drawChip(Graphics, exCanvas, int, int, int, java.lang.String)
 	 */
 	public void drawChip(Graphics gc, exCanvas c, int size, int posx, int posy,	String msg) 
 	{

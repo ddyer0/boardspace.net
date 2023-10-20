@@ -22,6 +22,7 @@ import java.awt.*;
 import java.util.Hashtable;
 import java.util.StringTokenizer;
 
+import common.GameInfo;
 import lib.Graphics;
 import lib.Image;
 import lib.BSDate;
@@ -140,7 +141,7 @@ public class TabGameViewer extends CCanvas<TabCell,TabGameBoard> implements TabC
     {
         super.init(info,frame);
        
-        b = new TabGameBoard(info.getString(GAMETYPE, Default_Tablut_Game),getStartingColorMap());
+        b = new TabGameBoard(info.getString(GameInfo.GAMETYPE, Default_Tablut_Game),getStartingColorMap());
         useDirectDrawing(true);
         doInit(false);
    }

@@ -20,7 +20,7 @@ package sixmaking;
 import java.awt.*;
 import javax.swing.JMenuItem;
 
-
+import common.GameInfo;
 /* below here should be the same for codename1 and standard java */
 import online.common.*;
 import online.game.*;
@@ -110,7 +110,7 @@ public class SixmakingViewer extends CCanvas<SixmakingCell,SixmakingBoard> imple
 
         int randomKey = info.getInt(OnlineConstants.RANDOMSEED,-1);
        
-        b = new SixmakingBoard(info.getString(GAMETYPE, Variation.Sixmaking.name),
+        b = new SixmakingBoard(info.getString(GameInfo.GAMETYPE, Variation.Sixmaking.name),
         		randomKey,players_in_game,repeatedPositions,getStartingColorMap());
         useDirectDrawing(true);
         doInit(false);

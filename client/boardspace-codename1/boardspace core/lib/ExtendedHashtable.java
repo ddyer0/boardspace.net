@@ -20,14 +20,12 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import common.GameInfo;
-import online.common.OnlineConstants;
-import online.common.exHashtable;
 
 /*
  * an optionally case insensitive hashmap 
  */
 
-public class ExtendedHashtable extends TreeMap<String,Object> implements OnlineConstants
+public class ExtendedHashtable extends TreeMap<String,Object> 
 {
 	/**
 	 * reworked 6/2020 to use TreeMap instead of Hashtable, so the .toLowerCase() in get(x) could be 
@@ -232,17 +230,17 @@ public class ExtendedHashtable extends TreeMap<String,Object> implements OnlineC
       // put this the one place so we always get the same answer
       public GameInfo getGameInfo()
       {
-    	  GameInfo info = (GameInfo)get(exHashtable.GAMEINFO);
+    	  GameInfo info = (GameInfo)get(GameInfo.GAMEINFO);
           if(info==null)
           {
-          	info = GameInfo.findByName(getString(GAMETYPE ,getString(GAMENAME,null)));
+          	info = GameInfo.findByName(getString(GameInfo.GAMETYPE ,getString(GameInfo.GAMENAME,null)));
           	setGameInfo(info);
           }
           return info;
       }
       public void setGameInfo(GameInfo gi)
       {
-    	  put(exHashtable.GAMEINFO,gi);
+    	  put(GameInfo.GAMEINFO,gi);
       }
     /**
      * put a string value, error if already present or if value is null

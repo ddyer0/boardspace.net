@@ -25,7 +25,7 @@ import bridge.Color;
 
 import bridge.Utf8OutputStream;
 import bridge.Utf8Printer;
-
+import common.GameInfo;
 import online.common.*;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
@@ -150,7 +150,7 @@ public class RajViewer extends CCanvas<RajCell,RajBoard> implements RajConstants
         int randomKey = info.getInt(OnlineConstants.RANDOMSEED,-1);
         int np = Math.max(2,info.getInt(OnlineConstants.PLAYERS_IN_GAME));
          
-        bb = new RajBoard(info.getString(GAMETYPE, Raj_INIT),randomKey,np,getStartingColorMap());
+        bb = new RajBoard(info.getString(GameInfo.GAMETYPE, Raj_INIT),randomKey,np,getStartingColorMap());
         useDirectDrawing(true); 
         doInit(false);
 

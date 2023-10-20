@@ -24,6 +24,7 @@ import java.awt.*;
 import online.common.*;
 import java.util.*;
 
+import common.GameInfo;
 import lib.Image;
 import lib.Graphics;
 import lib.CellId;
@@ -366,7 +367,7 @@ public class ViticultureViewer extends CCanvas<ViticultureCell,ViticultureBoard>
         MouseColors  = ViticultureMouseColors;
         MouseDotColors = ViticultureMouseDotColors;
  
-        String type = info.getString(GAMETYPE, ViticultureVariation.viticulture.name);
+        String type = info.getString(GameInfo.GAMETYPE, ViticultureVariation.viticulture.name);
         // recommended procedure is to supply players and randomkey, even for games which
         // are current strictly 2 player and no-randomization.  It will make it easier when
         // later, some variant is created, or the game code base is re purposed as the basis

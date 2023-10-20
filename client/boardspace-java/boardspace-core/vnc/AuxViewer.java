@@ -21,7 +21,6 @@ import java.awt.Rectangle;
 import javax.swing.JCheckBoxMenuItem;
 
 import lib.*;
-import online.common.exCanvas;
 import udp.PlaytableServer;
 import udp.PlaytableStack;
 

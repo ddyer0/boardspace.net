@@ -18,11 +18,11 @@ package volcano;
 
 import lib.Graphics;
 
-import online.common.*;
 import online.game.*;
 import lib.HitPoint;
 import lib.OStack;
 import lib.Random;
+import lib.exCanvas;
 
 class CellStack extends OStack<VolcanoCell>
 {

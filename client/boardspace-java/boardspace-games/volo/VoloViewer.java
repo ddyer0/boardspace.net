@@ -37,6 +37,7 @@ import online.game.RBoard.DrawingStyle;
 import java.util.Hashtable;
 import java.util.StringTokenizer;
 
+import common.GameInfo;
 import online.game.sgf.sgf_node;
 import online.game.sgf.sgf_property;
 import online.search.SimpleRobotProtocol;
@@ -121,7 +122,7 @@ public class VoloViewer extends CCanvas<VoloCell,VoloBoard> implements VoloConst
 
          
         
-        bb = new VoloBoard(info.getString(GAMETYPE, Volo_Init),
+        bb = new VoloBoard(info.getString(GameInfo.GAMETYPE, Volo_Init),
         		getStartingColorMap());
         useDirectDrawing(true); 
         doInit(false);

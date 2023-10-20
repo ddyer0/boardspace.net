@@ -20,10 +20,10 @@ import lib.Graphics;
 
 import lib.OStack;
 import lib.Random;
+import lib.exCanvas;
 import online.game.cell;
 import online.game.chip;
 import online.game.chipCell;
-import online.common.exCanvas;
 import online.game.stackCell;
 
 class CellStack extends OStack<PalabraCell>

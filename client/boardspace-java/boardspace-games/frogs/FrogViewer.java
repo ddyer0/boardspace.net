@@ -26,6 +26,7 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.StringTokenizer;
 
+import common.GameInfo;
 import lib.Graphics;
 import lib.Image;
 import lib.CellId;
@@ -142,7 +143,7 @@ public class FrogViewer extends CCanvas<FrogCell,FrogBoard> implements FrogConst
         zoomRect.value=INITIAL_TILE_SCALE;
         zoomRect.barColor=ZoomColor;
         zoomRect.highlightColor = HighlightColor;
-        b = new FrogBoard(info.getString(GAMETYPE, Frogs_INIT),randomv,pl,getStartingColorMap());
+        b = new FrogBoard(info.getString(GameInfo.GAMETYPE, Frogs_INIT),randomv,pl,getStartingColorMap());
         useDirectDrawing(true);
         doInit(false);
      }

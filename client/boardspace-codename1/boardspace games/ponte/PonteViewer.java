@@ -17,6 +17,8 @@
 package ponte;
 
 import bridge.*;
+import common.GameInfo;
+
 import com.codename1.ui.geom.Rectangle;
 
 import online.common.*;
@@ -101,7 +103,7 @@ public class PonteViewer extends CCanvas<PonteCell,PonteBoard> implements PonteC
 
         int randomKey = info.getInt(OnlineConstants.RANDOMSEED,-1);
        
-        b = new PonteBoard(info.getString(GAMETYPE, Ponte_INIT),randomKey,
+        b = new PonteBoard(info.getString(GameInfo.GAMETYPE, Ponte_INIT),randomKey,
         		players_in_game,getStartingColorMap());
         useDirectDrawing(true);
         doInit(false);

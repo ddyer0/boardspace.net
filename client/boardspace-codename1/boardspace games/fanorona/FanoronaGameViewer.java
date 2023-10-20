@@ -17,6 +17,7 @@
 package fanorona;
 
 import bridge.*;
+import common.GameInfo;
 
 import com.codename1.ui.geom.Rectangle;
 
@@ -124,7 +125,7 @@ public class FanoronaGameViewer extends CCanvas<FanoronaCell,FanoronaBoard> impl
         super.init(info,frame);
 
          
-        b = new FanoronaBoard(info.getString(GAMETYPE, "Fanorona"),getStartingColorMap());
+        b = new FanoronaBoard(info.getString(GameInfo.GAMETYPE, "Fanorona"),getStartingColorMap());
         offerDrawAction = myFrame.addAction(s.get(OFFERDRAW),deferredEvents);     
         useDirectDrawing(true);
         doInit(false);

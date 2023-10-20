@@ -24,6 +24,7 @@ import online.common.*;
 import java.util.*;
 
 import bridge.JMenuItem;
+import common.GameInfo;
 import dictionary.Dictionary;
 import dictionary.Entry;
 import lib.Graphics;
@@ -145,7 +146,7 @@ public class JumbulayaViewer extends CCanvas<JumbulayaCell,JumbulayaBoard> imple
         MouseColors = new Color[]{Color.red,Color.green,Color.blue,Color.yellow};
         MouseDotColors = new Color[]{ Color.white,Color.white,Color.white,Color.black};
         
-        String type = info.getString(OnlineConstants.GAMETYPE, JumbulayaVariation.Jumbulaya.name);
+        String type = info.getString(GameInfo.GAMETYPE, JumbulayaVariation.Jumbulaya.name);
         // recommended procedure is to supply players and randomkey, even for games which
         // are current strictly 2 player and no-randomization.  It will make it easier when
         // later, some variant is created, or the game code base is re purposed as the basis

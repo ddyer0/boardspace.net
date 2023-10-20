@@ -148,6 +148,10 @@ public class GameInfo implements lib.CompareTo<GameInfo>,LobbyConstants
 	public String longMessage = null;
 	public boolean distinctVariations = false;		// if true, expand the variations list for this game in review rooms
 	private ScoringMode scoringMode = null;
+	public static final String GAMENAME = "GameName";
+	// parameters expected in the root, supplied in login 
+	public static final String GAMETYPE = "GameType";
+	public static final String GAMEINFO = "gameinfo";
 	public ScoringMode scoringMode()
 	{
 		if(scoringMode==null)

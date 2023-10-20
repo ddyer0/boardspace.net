@@ -16,14 +16,13 @@
  */
 package lib;
 
-import online.common.exCanvas;
 /**
  * The sprite protocol is a rudimentary mechanism for animating sprites across
  * the board, with minimal interaction or effort to the game.  A sample implementation
  * is available as {@link SimpleSprite}.  The general expectation is that sprites have a
  * starting and ending time, and will draw themselves on request any time between the
  * start and finish.
- * <p>use {@link online.common.exCanvas#addSprite addSprite} to add a sprite to the active list
+ * <p>use {@link lib.exCanvas#addSprite addSprite} to add a sprite to the active list
  * @author ddyer
  *
  */

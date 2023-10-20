@@ -32,6 +32,8 @@ import online.game.*;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.StringTokenizer;
+
+import common.GameInfo;
 import online.game.sgf.sgf_node;
 import online.game.sgf.sgf_property;
 import online.search.SimpleRobotProtocol;
@@ -95,7 +97,7 @@ public class SpanglesViewer extends CCanvas<SpanglesCell,SpanglesBoard> implemen
         zoomRect.value=INITIAL_TILE_SCALE;
         zoomRect.barColor=ZoomColor;
         zoomRect.highlightColor = HighlightColor;       
-        bb = new SpanglesBoard(info.getString(GAMETYPE, Spangles_INIT),
+        bb = new SpanglesBoard(info.getString(GameInfo.GAMETYPE, Spangles_INIT),
         		getStartingColorMap());
         useDirectDrawing(true); 
         doInit(false);

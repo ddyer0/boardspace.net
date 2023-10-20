@@ -24,6 +24,7 @@ import online.search.SimpleRobotProtocol;
 
 import java.util.*;
 
+import common.GameInfo;
 import lib.Graphics;
 import lib.Image;
 import lib.CellId;
@@ -122,7 +123,7 @@ public class CheViewer extends CCanvas<CheCell,CheBoard> implements CheConstants
         zoomRect.value=INITIAL_TILE_SCALE;
         zoomRect.barColor=ZoomColor;
         zoomRect.highlightColor = HighlightColor;       
-        bb = new CheBoard(info.getString(GAMETYPE, Che_INIT),
+        bb = new CheBoard(info.getString(GameInfo.GAMETYPE, Che_INIT),
         		getStartingColorMap());
         useDirectDrawing(true);
         doInit(false);

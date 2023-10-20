@@ -35,7 +35,7 @@ import lib.Http;
 import lib.MixedPacket;
 import lib.NetPacketConn;
 import lib.PinchEvent;
-import online.common.exCanvas;
+import lib.exCanvas;
 /**
  * this implements a VNC-like client, but the actual protocols are strictly
  * locally defined, unrelated to "real" vnc

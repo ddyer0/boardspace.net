@@ -26,6 +26,7 @@ import java.util.*;
 
 import javax.swing.JMenuItem;
 
+import common.GameInfo;
 import lib.Graphics;
 import lib.Image;
 import lib.CellId;
@@ -140,7 +141,7 @@ public class PalabraViewer extends CCanvas<PalabraCell,PalabraBoard> implements 
         int randomKey = info.getInt(OnlineConstants.RANDOMSEED,-1);
         int np = Math.max(2,info.getInt(OnlineConstants.PLAYERS_IN_GAME));
          
-        bb = new PalabraBoard(info.getString(GAMETYPE, Palabra_init),randomKey,np);
+        bb = new PalabraBoard(info.getString(GameInfo.GAMETYPE, Palabra_init),randomKey,np);
         
         printButton = myFrame.addAction("Print deck",deferredEvents);
         useDirectDrawing(true); // not tested yet

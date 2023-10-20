@@ -20,6 +20,8 @@ package xiangqi;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenuItem;
 
+import common.GameInfo;
+
 import java.awt.*;
 
 
@@ -133,7 +135,7 @@ public class XiangqiViewer extends CCanvas<XiangqiCell,XiangqiBoard> implements 
     	MouseDotColors = XiangqiMouseDotColors;
     	MouseColors = XiangqiMouseColors;
     	
-        b = new XiangqiBoard(info.getString(GAMETYPE, Xiangqi_INIT),randomKey,
+        b = new XiangqiBoard(info.getString(GameInfo.GAMETYPE, Xiangqi_INIT),randomKey,
         		repeatedPositions,getStartingColorMap());
         useDirectDrawing(true);
         doInit(false);

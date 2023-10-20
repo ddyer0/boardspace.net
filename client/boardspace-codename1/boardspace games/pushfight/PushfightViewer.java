@@ -21,7 +21,7 @@ import static pushfight.Pushfightmovespec.*;
 import com.codename1.ui.geom.Rectangle;
 import bridge.Color;
 import bridge.JCheckBoxMenuItem;
-
+import common.GameInfo;
 import online.common.*;
 import online.common.SeatingChart.DefinedSeating;
 
@@ -157,7 +157,7 @@ public class PushfightViewer extends CCanvas<PushfightCell,PushfightBoard> imple
         }
          
         
-        String type = info.getString(GAMETYPE, PushFightVariation.pushfight.name);
+        String type = info.getString(GameInfo.GAMETYPE, PushFightVariation.pushfight.name);
         // recommended procedure is to supply players and randomkey, even for games which
         // are current strictly 2 player and no-randomization.  It will make it easier when
         // later, some variant is created, or the game code base is re purposed as the basis

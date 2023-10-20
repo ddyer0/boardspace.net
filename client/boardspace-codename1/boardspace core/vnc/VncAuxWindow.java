@@ -17,7 +17,7 @@
 package vnc;
 
 import bridge.Component;
-import online.common.exCanvas;
+import lib.exCanvas;
 
 public class VncAuxWindow extends OffscreenWindow
 {

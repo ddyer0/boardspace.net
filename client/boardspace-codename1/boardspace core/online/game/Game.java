@@ -653,7 +653,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     {
         String msg = s.get(SelectingGameMessage, file);
         theChat.postMessage(ChatInterface.GAMECHANNEL,ChatInterface.KEYWORD_CHAT, msg);
-        sendMessage(NetConn.SEND_GROUP+KEYWORD_LOBBY_CHAT+" "+ msg);
+        sendMessage(NetConn.SEND_GROUP+ChatInterface.KEYWORD_LOBBY_CHAT+" "+ msg);
 
         expectingHistory = false;
         v.selectGame(file);
@@ -674,7 +674,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     public void init(ExtendedHashtable info,LFrameProtocol frame)
     {  	sharedInfo = info;
     	info.put(exHashtable.MYGAME, this);
-    	info.put(exHashtable.MYXM,pendingEchos);
+    	info.put(ConnectionManager.MYXM,pendingEchos);
     	gameInfo = info.getGameInfo();
 
     	int playersInGame = info.getInt(OnlineConstants.PLAYERS_IN_GAME,2);
@@ -748,7 +748,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
       
         info.put(exHashtable.GAME, this);
         gameTypeString = info.getString(exHashtable.GAMETYPEID,"");
-        gameNameString = info.getString(GAMENAME,"gamename");
+        gameNameString = info.getString(GameInfo.GAMENAME,"gamename");
         // session >=0 means we're a game with a connection
         if(info.get(ConnectionManager.ROOMNUMBER)==null) { info.putInt(exHashtable.SESSION,-1); }
         sessionNum = info.getInt(exHashtable.SESSION);
@@ -764,7 +764,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
         if(!G.offline())
 	        {
 	        myNetConn = new ConnectionManager(info);
-	        info.put(exHashtable.NETCONN,myNetConn);
+	        info.put(exCanvas.NETCONN,myNetConn);
 	        }
         LaunchUser lu = (LaunchUser)info.get(ConnectionManager.LAUNCHUSER);
         {my.launchUser = lu;
@@ -837,7 +837,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     }
     // game directory as a local file name
     public String localGameDirectory()
-    {	String fname = sharedInfo.getString(GAMENAME);
+    {	String fname = sharedInfo.getString(GameInfo.GAMENAME);
     	GameInfo info = GameInfo.findByName(fname);
     	if(info!=null)
     	{	String name = info.gameName.toLowerCase();
@@ -1407,7 +1407,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
             boolean lchat = false;
             boolean istrue = false;
             int ind = fullMsg.indexOf(commandStr) + commandStr.length() + 1;
-            if ((lchat = commandStr.equalsIgnoreCase(KEYWORD_LOBBY_CHAT)) 
+            if ((lchat = commandStr.equalsIgnoreCase(ChatInterface.KEYWORD_LOBBY_CHAT)) 
             		||(pchat = (commandStr.equalsIgnoreCase(ChatInterface.KEYWORD_PCHAT)) 
         		 	|| commandStr.equalsIgnoreCase(ChatInterface.KEYWORD_PPCHAT)) 
         		 	|| (tmchat = commandStr.equalsIgnoreCase(ChatInterface.KEYWORD_TMCHAT)) //translateable chat messasge with args
@@ -1674,7 +1674,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
                     }
                     else if(!GameOver())
                     {
-                        theChat.postMessage(playerID, KEYWORD_LOBBY_CHAT,
+                        theChat.postMessage(playerID, ChatInterface.KEYWORD_LOBBY_CHAT,
                             s.get(StartJointReview,player));
                     }
 
@@ -1685,7 +1685,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
                     if (!sentReviewHint)
                     {
                         sentReviewHint = true;
-                        theChat.postMessage(playerID, KEYWORD_LOBBY_CHAT,
+                        theChat.postMessage(playerID, ChatInterface.KEYWORD_LOBBY_CHAT,
                             s.get(RequestJointReview,player));
                     }
                 }}
@@ -2081,7 +2081,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
             {
  
                 theChat.postMessage(ChatInterface.ERRORCHANNEL, ChatInterface.KEYWORD_CHAT,
-                    s.get(DisconnectedString, why));
+                    s.get(ChatInterface.DisconnectedString, why));
 
                 if (myNetConn.can_reconnect && !myNetConn.do_not_reconnect)
                 {
@@ -3446,7 +3446,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     					line = dis.readLine();
     					success = true; 
     					if(line!=null) 
-    						{ sendMessage(NetConn.SEND_GROUP+KEYWORD_LOBBY_CHAT+" " + line);
+    						{ sendMessage(NetConn.SEND_GROUP+ChatInterface.KEYWORD_LOBBY_CHAT+" " + line);
 
                               theChat.postMessage(ChatInterface.GAMECHANNEL, ChatInterface.KEYWORD_CHAT, line);
     						}

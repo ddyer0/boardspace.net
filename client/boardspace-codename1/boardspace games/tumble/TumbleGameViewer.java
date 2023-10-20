@@ -27,6 +27,7 @@ import com.codename1.ui.geom.Rectangle;
 
 import bridge.Color;
 import bridge.JCheckBoxMenuItem;
+import common.GameInfo;
 import lib.Graphics;
 import lib.Image;
 import lib.CellId;
@@ -111,7 +112,7 @@ public class TumbleGameViewer extends CCanvas<TumbleCell,TumbleBoard> implements
         zoomRect.barColor=ZoomColor;
         zoomRect.highlightColor = ZoomHighlightColor;
        
-        b = new TumbleBoard(info.getString(GAMETYPE, "Tumblingdown"),
+        b = new TumbleBoard(info.getString(GameInfo.GAMETYPE, "Tumblingdown"),
         		getStartingColorMap());
         useDirectDrawing(true);
         doInit(false);

@@ -19,6 +19,7 @@ package exxit;
 import java.awt.*;
 import javax.swing.JCheckBoxMenuItem;
 
+import common.GameInfo;
 import online.game.*;
 import online.game.sgf.sgf_node;
 import online.game.sgf.sgf_property;
@@ -147,7 +148,7 @@ public class ExxitGameViewer extends CCanvas<ExxitCell,ExxitGameBoard> implement
 
         useWoodenTiles = myFrame.addOption(s.get(WoodenTilesMessage),false,deferredEvents);
        
-        b = new ExxitGameBoard(info.getString(GAMETYPE, "Exxit"),getStartingColorMap());
+        b = new ExxitGameBoard(info.getString(GameInfo.GAMETYPE, "Exxit"),getStartingColorMap());
         //not suitable for direct drawing for reasons not quite clear,
         //but probably something to do with the pieces not being immutable
         //useDirectDrawing();

@@ -24,7 +24,6 @@ import java.util.*;
 import javax.swing.*;
 import javax.swing.plaf.metal.MetalLookAndFeel;
 
-import online.common.exCanvas;
 import lehavre.main.*;
 import lehavre.main.Dictionary;
 import lehavre.model.*;
@@ -39,6 +38,7 @@ import lib.HitPoint;
 import lib.MouseState;
 import lib.SimpleObservable;
 import lib.SimpleObserver;
+import lib.exCanvas;
 
 /**
  *

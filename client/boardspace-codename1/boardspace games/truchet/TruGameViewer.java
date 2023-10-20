@@ -19,7 +19,7 @@ package truchet;
 
 import com.codename1.ui.geom.Rectangle;
 import bridge.*;
-
+import common.GameInfo;
 import online.common.*;
 import online.game.*;
 import online.game.sgf.sgf_node;
@@ -102,7 +102,7 @@ public class TruGameViewer extends CCanvas<TruCell,TruGameBoard> implements TruC
         super.init(info,frame);
         MouseColors = CheMouseColors;
         MouseDotColors = CheMouseDotColors;
-        b = new TruGameBoard(info.getString(GAMETYPE, "Truchet"),
+        b = new TruGameBoard(info.getString(GameInfo.GAMETYPE, "Truchet"),
         		info.getString(exHashtable.GAMEUID,
         		G.getString(exHashtable.GAMEUID,"testgame")),
         		getStartingColorMap());

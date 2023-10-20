@@ -23,6 +23,7 @@ import lib.HitPoint;
 import lib.Keyboard;
 import lib.SimpleObservable;
 import lib.TextContainer;
+import lib.exCanvas;
 import lib.TextContainer.Op;
 
 @SuppressWarnings("serial")

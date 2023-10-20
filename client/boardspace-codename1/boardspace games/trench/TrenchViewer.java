@@ -29,6 +29,7 @@ import com.codename1.ui.geom.Rectangle;
 
 import bridge.Color;
 import bridge.JMenuItem;
+import common.GameInfo;
 import lib.Graphics;
 import lib.CellId;
 import lib.ExtendedHashtable;
@@ -207,7 +208,7 @@ public class TrenchViewer extends CCanvas<TrenchCell,TrenchBoard> implements Tre
         }
          
         
-        String type = info.getString(GAMETYPE, TrenchVariation.trench.name);
+        String type = info.getString(GameInfo.GAMETYPE, TrenchVariation.trench.name);
         // recommended procedure is to supply players and randomkey, even for games which
         // are current strictly 2 player and no-randomization.  It will make it easier when
         // later, some variant is created, or the game code base is re purposed as the basis

@@ -18,7 +18,7 @@ package spangles;
 
 import com.codename1.ui.geom.Rectangle;
 import bridge.*;
-
+import common.GameInfo;
 import lib.Graphics;
 import lib.Image;
 import lib.CellId;
@@ -96,7 +96,7 @@ public class SpanglesViewer extends CCanvas<SpanglesCell,SpanglesBoard> implemen
         zoomRect.value=INITIAL_TILE_SCALE;
         zoomRect.barColor=ZoomColor;
         zoomRect.highlightColor = HighlightColor;       
-        bb = new SpanglesBoard(info.getString(GAMETYPE, Spangles_INIT),
+        bb = new SpanglesBoard(info.getString(GameInfo.GAMETYPE, Spangles_INIT),
         		getStartingColorMap());
         useDirectDrawing(true); 
         doInit(false);

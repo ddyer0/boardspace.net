@@ -16,8 +16,7 @@
  */
 package punct;
 import lib.Random;
-import online.common.exCanvas;
-
+import lib.exCanvas;
 import lib.Graphics;
 import lib.Image;
 import lib.ImageLoader;

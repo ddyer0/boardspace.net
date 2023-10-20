@@ -21,7 +21,7 @@ import static meridians.MeridiansMovespec.*;
 import com.codename1.ui.geom.Rectangle;
 
 import bridge.Color;
-
+import common.GameInfo;
 import online.common.*;
 import java.util.*;
 
@@ -191,7 +191,7 @@ public class MeridiansViewer extends CCanvas<MeridiansCell,MeridiansBoard> imple
         	MeridiansConstants.putStrings();
         }
          
-        String type = info.getString(GAMETYPE, MeridiansVariation.meridians_5p.name);
+        String type = info.getString(GameInfo.GAMETYPE, MeridiansVariation.meridians_5p.name);
         // recommended procedure is to supply players and randomkey, even for games which
         // are current strictly 2 player and no-randomization.  It will make it easier when
         // later, some variant is created, or the game code base is re purposed as the basis

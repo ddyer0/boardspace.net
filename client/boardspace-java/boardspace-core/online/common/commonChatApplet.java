@@ -116,7 +116,7 @@ public class commonChatApplet extends FullscreenPanel
     public boolean muted = false;
     private String prevstr[]={"","",""};
     private int prevStringCount=0;
-    private String soundNames[]={ knockSoundName,chatSoundName,challengeSoundName,lobbySoundName,
+    private String soundNames[]={ knockSoundName,chatSoundName,ChatInterface.challengeSoundName,lobbySoundName,
     		goodHintSoundName,badHintSoundName,gameSoundName};
 
 
@@ -450,7 +450,7 @@ public class commonChatApplet extends FullscreenPanel
 
     public void postMessage(int userNum, String command, String theMessage)
      {	SimpleUser u = getUser(userNum);
-     	String name = command.equals(KEYWORD_LOBBY_CHAT)
+     	String name = command.equals(ChatInterface.KEYWORD_LOBBY_CHAT)
      			? s.get("Lobby")
      			: (u==null)
      						? s.get("User ") + userNum
@@ -496,7 +496,7 @@ public class commonChatApplet extends FullscreenPanel
                 //System.out.println(this + " root " + theRoot);
                 if (command.equals(KEYWORD_CCHAT))
                 {
-                    clipname = challengeSoundName;
+                    clipname = ChatInterface.challengeSoundName;
                     clipTime = 2000;	// 2 seconds
                 }
                 else if (KEYWORD_PPCHAT.equals(command) 
@@ -524,7 +524,7 @@ public class commonChatApplet extends FullscreenPanel
             {
             	SoundManager.playASoundClip(goodHintSoundName);
             }
-            else if (command.equals(KEYWORD_BADHINT))
+            else if (command.equals(ChatInterface.KEYWORD_BADHINT))
             {
             	SoundManager.playASoundClip(badHintSoundName);
             }
@@ -552,7 +552,7 @@ public class commonChatApplet extends FullscreenPanel
 				 if(!priv)
 				 {
 					 @SuppressWarnings("unchecked")
-					 Hashtable<String,String>xm = (Hashtable<String,String>)sharedInfo.getObj(exHashtable.MYXM);
+					 Hashtable<String,String>xm = (Hashtable<String,String>)sharedInfo.getObj(ConnectionManager.MYXM);
 					 xm.put(seq,base);
 				 }
 				 base  = seq + " "+base;	
@@ -626,7 +626,7 @@ public class commonChatApplet extends FullscreenPanel
     					 if(!priv)
     					 {
     						 @SuppressWarnings("unchecked")
-							 Hashtable<String,String>xm = (Hashtable<String,String>)sharedInfo.getObj(exHashtable.MYXM);
+							 Hashtable<String,String>xm = (Hashtable<String,String>)sharedInfo.getObj(ConnectionManager.MYXM);
     						 xm.put(seq,base);
     					 }
     					}
@@ -643,7 +643,7 @@ public class commonChatApplet extends FullscreenPanel
     						+ chatKey
     						+" "
     						+ str))
-       				{ str=s.get(DisconnectedString,"??");
+       				{ str=s.get(ChatInterface.DisconnectedString,"??");
     				}}
      				theConn.na.Unlock();
     				}

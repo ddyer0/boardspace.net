@@ -17,6 +17,8 @@
 package warp6;
 
 import bridge.Color;
+import common.GameInfo;
+
 import com.codename1.ui.geom.Rectangle;
 
 import java.util.Hashtable;
@@ -103,7 +105,7 @@ public class Warp6Viewer extends CCanvas<Warp6Cell,Warp6Board> implements Warp6C
         MouseDotColors = Warp6MouseDotColors;
         int randomKey = sharedInfo.getInt(OnlineConstants.RANDOMSEED,-1);
 
-        b = new Warp6Board(randomKey,info.getString(GAMETYPE, Warp6_Standard_Init),
+        b = new Warp6Board(randomKey,info.getString(GameInfo.GAMETYPE, Warp6_Standard_Init),
         		getStartingColorMap());
         useDirectDrawing(true);
         doInit(false);

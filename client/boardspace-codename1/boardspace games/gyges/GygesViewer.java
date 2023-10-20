@@ -17,6 +17,8 @@
 package gyges;
 
 import bridge.*;
+import common.GameInfo;
+
 import com.codename1.ui.geom.Rectangle;
 
 import online.common.*;
@@ -123,7 +125,7 @@ public class GygesViewer extends CCanvas<GygesCell,GygesBoard> implements GygesC
 
         int randomKey = info.getInt(OnlineConstants.RANDOMSEED,-1);
        
-        b = new GygesBoard(info.getString(GAMETYPE, Gyges_INIT_beginner),randomKey);
+        b = new GygesBoard(info.getString(GameInfo.GAMETYPE, Gyges_INIT_beginner),randomKey);
         useDirectDrawing(true);
         doInit(false);
         

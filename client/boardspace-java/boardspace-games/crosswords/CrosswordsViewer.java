@@ -24,6 +24,7 @@ import online.common.*;
 import java.util.*;
 
 import bridge.JMenuItem;
+import common.GameInfo;
 import dictionary.Dictionary;
 import dictionary.Entry;
 import lib.Graphics;
@@ -158,7 +159,7 @@ public class CrosswordsViewer extends CCanvas<CrosswordsCell,CrosswordsBoard> im
         	CrosswordsConstants.putStrings();
         }
         
-        String type = info.getString(OnlineConstants.GAMETYPE, CrosswordsVariation.Crosswords.name);
+        String type = info.getString(GameInfo.GAMETYPE, CrosswordsVariation.Crosswords.name);
         // recommended procedure is to supply players and randomkey, even for games which
         // are current strictly 2 player and no-randomization.  It will make it easier when
         // later, some variant is created, or the game code base is re purposed as the basis

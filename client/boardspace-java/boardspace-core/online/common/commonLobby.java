@@ -50,6 +50,7 @@ import lib.SimpleObservable;
 import lib.SoundManager;
 import lib.TimeControl;
 import lib.commonPanel;
+import lib.exCanvas;
 import online.game.sgf.export.sgf_names;
 
 /** general notes about the lobby class.
@@ -386,10 +387,10 @@ public void init(ExtendedHashtable info,LFrameProtocol frame)
 
 	info.putString(OnlineConstants.VIEWERCLASS,"L:-common.lobbyCanvas");
     info.putObj(exHashtable.LOBBY,this);
-    info.putObj(exHashtable.MYXM,pendingEchos);
+    info.putObj(ConnectionManager.MYXM,pendingEchos);
     info.putInt(ConnectionManager.ROOMNUMBER,0);
     isTestServer = info.getBoolean(TESTSERVER);
-    info.put(exHashtable.NETCONN,myNetConn);	// for debugging
+    info.put(exCanvas.NETCONN,myNetConn);	// for debugging
  	super.init(info,frame);
     CreateChat(info.getBoolean(exHashtable.CHATFRAMED,false) || G.smallFrame());
 
@@ -933,7 +934,7 @@ private boolean handleChat(int playerID,String commandStr,StringTokenizer localS
 	if (ChatInterface.KEYWORD_PPCHAT.equalsIgnoreCase(commandStr) 
  		   || ChatInterface.KEYWORD_PCHAT.equalsIgnoreCase(commandStr)
  		   || ChatInterface.KEYWORD_SCHAT.equalsIgnoreCase(commandStr)
- 		   || KEYWORD_LOBBY_CHAT.equalsIgnoreCase(commandStr)
+ 		   || ChatInterface.KEYWORD_LOBBY_CHAT.equalsIgnoreCase(commandStr)
  		   || ChatInterface.KEYWORD_PSCHAT.equalsIgnoreCase(commandStr)) 
  	  
    {  String localTempStr = " ";
@@ -2357,7 +2358,7 @@ public void ClearOtherInviteBox(Session sess)
   	{
   		boolean even = Random.nextInt(new Random(),2)==0;
   		String msg = s.get(CoinFlipMessage,users.primaryUser().prettyName(),s.get(even?Heads:Tails));
-  		theChat.sendAndPostMessage(ChatInterface.LOBBYCHANNEL,KEYWORD_LOBBY_CHAT,msg);
+  		theChat.sendAndPostMessage(ChatInterface.LOBBYCHANNEL,ChatInterface.KEYWORD_LOBBY_CHAT,msg);
   		return(true);
    	}
   	else

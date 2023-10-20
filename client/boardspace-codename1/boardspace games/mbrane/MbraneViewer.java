@@ -20,6 +20,8 @@ package mbrane;
 import static mbrane.Mbranemovespec.*;
 
 import bridge.*;
+import common.GameInfo;
+
 import com.codename1.ui.geom.Rectangle;
 
 import online.common.*;
@@ -141,7 +143,7 @@ public class MbraneViewer extends CCanvas<MbraneCell,MbraneBoard> implements Mbr
         	MbraneConstants.putStrings();
         }
         
-        String type = info.getString(OnlineConstants.GAMETYPE, MbraneVariation.Mbrane.name);
+        String type = info.getString(GameInfo.GAMETYPE, MbraneVariation.Mbrane.name);
         // recommended procedure is to supply players and randomkey, even for games which
         // are current strictly 2 player and no-randomization.  It will make it easier when
         // later, some variant is created, or the game code base is re purposed as the basis

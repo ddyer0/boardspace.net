@@ -17,6 +17,9 @@
 package qyshinsu;
 
 import javax.swing.JCheckBoxMenuItem;
+
+import common.GameInfo;
+
 import java.awt.*;
 import java.util.Enumeration;
 import java.util.Hashtable;
@@ -106,7 +109,7 @@ public class QyshinsuViewer extends CCanvas<QyshinsuCell,QyshinsuBoard> implemen
         MouseDotColors[1]= Color.white;
         MouseDotColors[0]= Color.white;
 
-        b = new QyshinsuBoard(info.getString(GAMETYPE, "Qyshinsu"),getStartingColorMap());
+        b = new QyshinsuBoard(info.getString(GameInfo.GAMETYPE, "Qyshinsu"),getStartingColorMap());
         useDirectDrawing(true); 
         doInit(false);
        

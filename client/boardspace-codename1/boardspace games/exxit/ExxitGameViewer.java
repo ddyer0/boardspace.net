@@ -17,6 +17,8 @@
 package exxit;
 
 import bridge.*;
+import common.GameInfo;
+
 import com.codename1.ui.Font;
 import com.codename1.ui.geom.Rectangle;
 
@@ -148,7 +150,7 @@ public class ExxitGameViewer extends CCanvas<ExxitCell,ExxitGameBoard> implement
 
         useWoodenTiles = myFrame.addOption(s.get(WoodenTilesMessage),false,deferredEvents);
        
-        b = new ExxitGameBoard(info.getString(GAMETYPE, "Exxit"),getStartingColorMap());
+        b = new ExxitGameBoard(info.getString(GameInfo.GAMETYPE, "Exxit"),getStartingColorMap());
         //not suitable for direct drawing for reasons not quite clear,
         //but probably something to do with the pieces not being immutable
         //useDirectDrawing();

@@ -19,6 +19,7 @@ package tumble;
 import java.awt.*;
 import javax.swing.JCheckBoxMenuItem;
 
+import common.GameInfo;
 import online.game.*;
 import online.game.sgf.*;
 import online.search.SimpleRobotProtocol;
@@ -109,7 +110,7 @@ public class TumbleGameViewer extends CCanvas<TumbleCell,TumbleBoard> implements
         zoomRect.barColor=ZoomColor;
         zoomRect.highlightColor = ZoomHighlightColor;
        
-        b = new TumbleBoard(info.getString(GAMETYPE, "Tumblingdown"),
+        b = new TumbleBoard(info.getString(GameInfo.GAMETYPE, "Tumblingdown"),
         		getStartingColorMap());
         useDirectDrawing(true);
         doInit(false);

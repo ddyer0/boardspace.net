@@ -19,9 +19,9 @@ package shogi;
 import lib.Graphics;
 
 import lib.Random;
+import lib.exCanvas;
 import lib.HitPoint;
 import lib.OStack;
-import online.common.exCanvas;
 import online.game.stackCell;
 
 class CellStack extends OStack<ShogiCell>

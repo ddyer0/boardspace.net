@@ -23,9 +23,6 @@ import com.codename1.ui.geom.Point;
 import com.codename1.ui.geom.Rectangle;
 
 import bridge.*;
-import online.common.exCanvas;
-import static online.common.OnlineConstants.clickSound;
-
 
 import java.util.HashSet;
 import java.util.Set;
@@ -1028,7 +1025,7 @@ public class TextContainer extends Rectangle implements AppendInterface,KeyListe
 			G.writeTextToClipboard(str);
 			if(canvas!=null && canvas.doSound())
 			  {
-				  SoundManager.playASoundClip(clickSound,100);
+				  SoundManager.playASoundClip(Keyboard.clickSound,100);
 			  }
 		}}}
 	}

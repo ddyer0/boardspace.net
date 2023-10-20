@@ -21,7 +21,6 @@ import com.codename1.ui.geom.Rectangle;
 import java.util.Hashtable;
 
 import lib.*;
-import online.common.exCanvas;
 import online.game.chip;
 import online.game.cell.Geometry;
 class ChipStack extends OStack<UniverseChip>

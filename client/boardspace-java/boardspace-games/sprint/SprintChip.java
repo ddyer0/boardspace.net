@@ -29,7 +29,7 @@ import lib.OStack;
 import lib.Random;
 import lib.Text;
 import lib.TextChunk;
-import online.common.exCanvas;
+import lib.exCanvas;
 import online.game.chip;
 
 class ChipStack extends OStack<SprintChip>

@@ -21,6 +21,7 @@ import java.awt.*;
 import java.util.Hashtable;
 import java.util.StringTokenizer;
 
+import common.GameInfo;
 import online.common.*;
 import lib.Graphics;
 import lib.AR;
@@ -127,7 +128,7 @@ public class TammanyViewer extends CCanvas<TammanyCell,TammanyBoard> implements 
         MouseColors  = TammanyMouseColors;
         MouseDotColors = TammanyMouseDotColors;
 
-        String type = info.getString(GAMETYPE, TammanyVariation.tammany.name);
+        String type = info.getString(GameInfo.GAMETYPE, TammanyVariation.tammany.name);
         // recommended procedure is to supply players and randomkey, even for games which
         // are current strictly 2 player and no-randomization.  It will make it easier when
         // later, some variant is created, or the game code base is re purposed as the basis

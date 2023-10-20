@@ -17,6 +17,7 @@
 package morelli;
 
 import bridge.*;
+import common.GameInfo;
 import lib.Graphics;
 import lib.Image;
 import com.codename1.ui.geom.Rectangle;
@@ -107,7 +108,7 @@ public class MorelliViewer extends CCanvas<MorelliCell,MorelliBoard> implements 
         int randomKey = info.getInt(OnlineConstants.RANDOMSEED,-1);
        
         
-        b = new MorelliBoard(info.getString(OnlineConstants.GAMETYPE, Variations.morelli_13.name),
+        b = new MorelliBoard(info.getString(GameInfo.GAMETYPE, Variations.morelli_13.name),
         		randomKey,players_in_game,getStartingColorMap(),MorelliBoard.REVISION);
         useDirectDrawing(true);
         doInit(false);

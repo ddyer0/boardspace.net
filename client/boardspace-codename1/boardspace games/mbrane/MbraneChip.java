@@ -27,8 +27,8 @@ import lib.G;
 import lib.GC;
 import lib.OStack;
 import lib.Random;
+import lib.exCanvas;
 import mbrane.MbraneConstants.MbraneColor;
-import online.common.exCanvas;
 import online.game.chip;
 
 class ChipStack extends OStack<MbraneChip>

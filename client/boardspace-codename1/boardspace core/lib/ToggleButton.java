@@ -17,8 +17,6 @@
 package lib;
 
 import com.codename1.ui.geom.Rectangle;
-
-import online.common.exCanvas;
 /**
  * a image-based button that has standard button behavior and appearance.
  * This class extends Rectangle, so it can be positioned by the standard layout methods

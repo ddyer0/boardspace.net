@@ -18,7 +18,6 @@ package lib;
 
 import java.awt.Color;
 import java.awt.Rectangle;
-import online.common.exCanvas;
 
 
 /**
@@ -122,7 +121,7 @@ public class DrawableImage<T> implements Drawable,StackIterator<T>
 	 * if you had a set of red/green chips as an alternative to the standard white/black.
 	 * 
 	 * @param chipset
-	 * @see online.common.exCanvas#getAltChipset getAltChipSet
+	 * @see lib.exCanvas#getAltChipset getAltChipSet
 	 * @return a new instance of this class, or this instance
 	 */
 	@SuppressWarnings("unchecked")
@@ -242,7 +241,6 @@ public class DrawableImage<T> implements Drawable,StackIterator<T>
 		drawChipInternal(gc,canvas,SQUARESIZE,xscale,cx,cy,label);
 		if(rotation!=0) { GC.setRotation(gc, -rotation, cx, cy); }
 	}
-
 	/**
 	 * this is the bottom level of the chip "draw" line.  It substitutes a different piece of stockart
 	 * based on canvas.getAltChipSet(), and scales the scale factors as required by the "show aux slider"

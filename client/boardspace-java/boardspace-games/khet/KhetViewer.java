@@ -23,6 +23,8 @@ import online.game.sgf.*;
 import online.search.SimpleRobotProtocol;
 
 import java.util.*;
+
+import common.GameInfo;
 import lib.Graphics;
 import lib.Image;
 import lib.SimpleSprite.Movement;
@@ -122,7 +124,7 @@ public class KhetViewer extends CCanvas<KhetCell,KhetBoard> implements  KhetCons
 
         int randomKey = info.getInt(OnlineConstants.RANDOMSEED,-1);
         int map[] = getStartingColorMap();
-        b = new KhetBoard(info.getString(OnlineConstants.GAMETYPE, Khet_Classic_Init),randomKey,map);
+        b = new KhetBoard(info.getString(GameInfo.GAMETYPE, Khet_Classic_Init),randomKey,map);
         if(seatingFaceToFace()) { b.autoReverseYNormal(); }
         useDirectDrawing(true);
         doInit(false);

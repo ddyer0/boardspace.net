@@ -18,8 +18,7 @@ package volo;
 
 import com.codename1.ui.geom.Rectangle;
 import bridge.*;
-
-
+import common.GameInfo;
 import lib.Graphics;
 import lib.Image;
 import online.common.*;
@@ -122,7 +121,7 @@ public class VoloViewer extends CCanvas<VoloCell,VoloBoard> implements VoloConst
 
          
         
-        bb = new VoloBoard(info.getString(GAMETYPE, Volo_Init),
+        bb = new VoloBoard(info.getString(GameInfo.GAMETYPE, Volo_Init),
         		getStartingColorMap());
         useDirectDrawing(true); 
         doInit(false);

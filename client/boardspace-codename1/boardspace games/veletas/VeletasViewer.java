@@ -20,6 +20,7 @@ import com.codename1.ui.geom.Rectangle;
 
 import bridge.Color;
 import bridge.JCheckBoxMenuItem;
+import common.GameInfo;
 /* below here should be the same for codename1 and standard java */
 import online.common.*;
 import online.game.*;
@@ -114,7 +115,7 @@ public class VeletasViewer extends CCanvas<VeletasCell,VeletasBoard> implements 
 
         int randomKey = info.getInt(OnlineConstants.RANDOMSEED,-1);
        
-        b = new VeletasBoard(info.getString(GAMETYPE, Variation.Veletas_10.name),
+        b = new VeletasBoard(info.getString(GameInfo.GAMETYPE, Variation.Veletas_10.name),
         		randomKey,players_in_game,getStartingColorMap(),VeletasBoard.REVISION);
         doInit(false);
     	useDirectDrawing(true);

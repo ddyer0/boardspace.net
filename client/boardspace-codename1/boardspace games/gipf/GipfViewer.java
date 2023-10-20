@@ -17,7 +17,7 @@
 package gipf;
 
 import bridge.*;
-
+import common.GameInfo;
 
 import com.codename1.ui.geom.Rectangle;
 
@@ -112,7 +112,7 @@ public class GipfViewer extends CCanvas<GipfCell,GipfBoard> implements GipfConst
             startEvaluator = myFrame.addOption("Start Evaluator", false,deferredEvents);
         }
 
-        b = new GipfBoard(info.getString(GAMETYPE, "Gipf"),getStartingColorMap(),GipfBoard.REVISION);
+        b = new GipfBoard(info.getString(GameInfo.GAMETYPE, "Gipf"),getStartingColorMap(),GipfBoard.REVISION);
         useDirectDrawing(true);
         doInit(false);
     }

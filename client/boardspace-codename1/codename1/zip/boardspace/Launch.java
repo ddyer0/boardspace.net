@@ -10,6 +10,7 @@ import bridge.Color;
 import bridge.Frame;
 import bridge.FullScreen;
 import bridge.Panel;
+import common.GameInfo;
 import bridge.Config;
 
 import com.codename1.io.Log;
@@ -95,7 +96,7 @@ class BoardspaceLauncher implements Runnable,stuff
         		G.DEBUG,""+develop,
         		OnlineConstants.EXTRAACTIONS,"true",
         		OnlineConstants.EXTRAMOUSE,"true",
-        		OnlineConstants.GAMETYPE,game,
+        		GameInfo.GAMETYPE,game,
         		OnlineConstants.VIEWERCLASS,viewer,
           		OnlineConstants.REVIEWERDIR+"0",dir,
         		//"playersingame","3",

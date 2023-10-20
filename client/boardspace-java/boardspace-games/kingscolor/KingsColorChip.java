@@ -22,7 +22,7 @@ import lib.Graphics;
 import lib.ImageLoader;
 import lib.OStack;
 import lib.Random;
-import online.common.exCanvas;
+import lib.exCanvas;
 import online.game.chip;
 import common.CommonConfig;
 import kingscolor.KingsColorConstants.GridColor;

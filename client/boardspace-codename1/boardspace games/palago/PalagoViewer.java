@@ -17,6 +17,8 @@
 package palago;
 
 import bridge.*;
+import common.GameInfo;
+
 import com.codename1.ui.geom.Rectangle;
 
 import java.util.*;
@@ -158,7 +160,7 @@ public class PalagoViewer extends CCanvas<PalagoCell,PalagoBoard> implements Pal
         zoomRect.highlightColor = HighlightColor;   
         labelColor = Color.red;
         labelFont = largeBoldFont();
-        bb = new PalagoBoard(info.getString(GAMETYPE, "Palago"),getStartingColorMap());
+        bb = new PalagoBoard(info.getString(GameInfo.GAMETYPE, "Palago"),getStartingColorMap());
         useDirectDrawing(true);
         doInit(false);
     }

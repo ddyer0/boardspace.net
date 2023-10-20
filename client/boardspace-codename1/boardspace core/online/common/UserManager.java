@@ -23,6 +23,7 @@ import lib.G;
 import lib.InternationalStrings;
 import lib.PopupManager;
 import lib.Sort;
+import lib.exCanvas;
 import util.PasswordCollector;
 
 public class UserManager implements LobbyConstants

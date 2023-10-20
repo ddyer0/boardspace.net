@@ -23,6 +23,7 @@ import java.awt.*;
 import online.common.*;
 import java.util.*;
 
+import common.GameInfo;
 import lib.Graphics;
 import lib.CellId;
 import lib.ExtendedHashtable;
@@ -139,7 +140,7 @@ public class MbraneViewer extends CCanvas<MbraneCell,MbraneBoard> implements Mbr
         	MbraneConstants.putStrings();
         }
         
-        String type = info.getString(OnlineConstants.GAMETYPE, MbraneVariation.Mbrane.name);
+        String type = info.getString(GameInfo.GAMETYPE, MbraneVariation.Mbrane.name);
         // recommended procedure is to supply players and randomkey, even for games which
         // are current strictly 2 player and no-randomization.  It will make it easier when
         // later, some variant is created, or the game code base is re purposed as the basis

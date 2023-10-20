@@ -23,7 +23,6 @@ import bridge.Container;
 import java.util.StringTokenizer;
 
 import bridge.Config;
-import online.common.exCanvas;
 
 public interface ChatInterface extends Config {
 
@@ -61,6 +60,11 @@ public interface ChatInterface extends Config {
 	String KEYWORD_SCHAT = "schat";
 	String KEYWORD_PSCHAT = "pschat";
 	String KEYWORD_TRANSLATE_CHAT = "tchat";
+	String KEYWORD_LOBBY_CHAT = "lchat";
+	String BOARDCHATPERCENT = "boardchatpercent";
+	String challengeSoundName = SOUNDPATH + "racetime" + Config.SoundFormat;
+	String KEYWORD_BADHINT = "badhint";
+	String DisconnectedString = "You have been disconnected: #1";
     static final int CHATSIZELIMIT = 300;		// maximum size of chat string to send
     static final String HintChannel = "Hint";
     static final String GameChannel = "Game";

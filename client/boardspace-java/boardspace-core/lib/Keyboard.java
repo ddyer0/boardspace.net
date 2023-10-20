@@ -21,8 +21,6 @@ import java.awt.FontMetrics;
 import java.awt.Rectangle;
 
 import bridge.Config;
-import online.common.exCanvas;
-import static online.common.OnlineConstants.clickSound;
 
 
 /** pop up keyboard */
@@ -263,6 +261,7 @@ public class Keyboard implements Config
 	// the area of the new keyboard.  It will see a mouse up for which there
 	// was no mouse down, and should not count that as a keystroke.
 	private boolean sawDown = false;
+	public static final String clickSound = SOUNDPATH + "click4" + Config.SoundFormat;
 	public void doMouseMove(int ex, int ey,MouseState upcode)
 	{	if(containsPoint(ex,ey))
 		{

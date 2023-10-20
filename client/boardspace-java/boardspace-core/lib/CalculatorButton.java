@@ -20,8 +20,6 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Rectangle;
 
-import online.common.exCanvas;
-
 /** buttons on the calculator */
 public class CalculatorButton {
 	private double x;

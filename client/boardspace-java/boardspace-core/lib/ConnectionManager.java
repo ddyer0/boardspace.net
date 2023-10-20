@@ -634,6 +634,8 @@ public class ConnectionManager
     	return(null);
     }
     private int extraMessages = 0;
+    // TODO: remove MYXM and move the logic that uses it here.
+	public static final String MYXM = "expectedReplies";	// expected reply sequences
     public synchronized int count(int n)
     {	extraMessages += n;
     	return(extraMessages);

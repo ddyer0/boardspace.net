@@ -17,10 +17,10 @@
 package trench;
 
 import lib.Random;
+import lib.exCanvas;
 import lib.Graphics;
 import lib.HitPoint;
 import lib.OStack;
-import online.common.exCanvas;
 import online.game.*;
 
 class CellStack extends OStack<TrenchCell>

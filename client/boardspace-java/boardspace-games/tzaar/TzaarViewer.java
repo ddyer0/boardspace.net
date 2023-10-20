@@ -19,6 +19,8 @@ package tzaar;
 import java.awt.*;
 import javax.swing.JCheckBoxMenuItem;
 
+import common.GameInfo;
+
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.StringTokenizer;
@@ -105,7 +107,7 @@ public class TzaarViewer extends CCanvas<TzaarCell,TzaarBoard> implements TzaarC
         zoomRect.barColor=ZoomColor;
         zoomRect.highlightColor = ZoomHighlightColor;
   
-        b = new TzaarBoard(randomKey,info.getString(OnlineConstants.GAMETYPE, Tzaar_Standard_Init),
+        b = new TzaarBoard(randomKey,info.getString(GameInfo.GAMETYPE, Tzaar_Standard_Init),
         		getStartingColorMap());
         useDirectDrawing(true);
         doInit(false);

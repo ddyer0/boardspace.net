@@ -23,7 +23,6 @@ import bridge.Color;
 import java.util.StringTokenizer;
 
 import bridge.Config;
-import online.common.exCanvas;
 import online.game.commonPlayer;
 import online.game.commonCanvas;
 

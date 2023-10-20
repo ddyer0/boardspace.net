@@ -22,7 +22,7 @@ import lib.Image;
 import lib.ImageLoader;
 import lib.G;
 import lib.Random;
-import online.common.exCanvas;
+import lib.exCanvas;
 import online.game.chip;
 
 /*

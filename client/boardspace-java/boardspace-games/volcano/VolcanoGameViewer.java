@@ -28,6 +28,7 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.StringTokenizer;
 
+import common.GameInfo;
 import lib.Graphics;
 import lib.Image;
 import lib.CellId;
@@ -100,7 +101,7 @@ public class VolcanoGameViewer extends CCanvas<VolcanoCell,VolcanoBoard> impleme
         super.init(info,frame);
         int randomKey = sharedInfo.getInt(OnlineConstants.RANDOMSEED,-1);
 
-        b = new VolcanoBoard(randomKey,info.getString(GAMETYPE, "volcano"));
+        b = new VolcanoBoard(randomKey,info.getString(GameInfo.GAMETYPE, "volcano"));
         useDirectDrawing(true); 
         doInit(false);
         

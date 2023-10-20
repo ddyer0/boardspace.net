@@ -16,6 +16,7 @@
  */
 package micropul;
 import bridge.*;
+import common.GameInfo;
 
 import com.codename1.ui.geom.Rectangle;
 
@@ -150,7 +151,7 @@ public class MicropulViewer extends CCanvas<MicropulCell,MicropulBoard> implemen
    
         int randomKey = sharedInfo.getInt(OnlineConstants.RANDOMSEED,-1);
 
-        bb = new MicropulBoard(randomKey,info.getString(GAMETYPE, Micropul_INIT),getStartingColorMap());
+        bb = new MicropulBoard(randomKey,info.getString(GameInfo.GAMETYPE, Micropul_INIT),getStartingColorMap());
         useDirectDrawing(true); 
         doInit(false);
     }

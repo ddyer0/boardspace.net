@@ -22,7 +22,6 @@ import com.codename1.ui.geom.Rectangle;
 import bridge.Color;
 import bridge.JCheckBoxMenuItem;
 import lib.*;
-import online.common.exCanvas;
 import udp.PlaytableServer;
 import udp.PlaytableStack;
 

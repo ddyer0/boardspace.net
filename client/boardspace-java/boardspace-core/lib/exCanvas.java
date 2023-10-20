@@ -2,7 +2,7 @@
 	Copyright 2006-2023 by Dave Dyer
 
     This file is part of the Boardspace project.
-
+    
     Boardspace is free software: you can redistribute it and/or modify it under the terms of 
     the GNU General Public License as published by the Free Software Foundation, 
     either version 3 of the License, or (at your option) any later version.
@@ -12,48 +12,55 @@
     See the GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License along with Boardspace.
-    If not, see https://www.gnu.org/licenses/.
+    If not, see https://www.gnu.org/licenses/. 
  */
-package online.common;
+package lib;
 
-import com.codename1.ui.Font;
-import com.codename1.ui.geom.Rectangle;
-
-
-
+import java.awt.Color;
+import java.awt.Container;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Rectangle;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
+import java.io.PrintStream;
+import java.security.AccessControlException;
+import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JMenuItem;
 
 /* below here should be the same for codename1 and standard java */
 import bridge.*;
-import bridge.ThreadDeath;
-
-import java.io.PrintStream;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
-import lib.*;
 import lib.RepaintManager.RepaintHelper;
 import lib.RepaintManager.RepaintStrategy;
-import rpc.RpcService;
-import udp.UDPService;
-import vnc.AuxViewer;
-import vnc.VNCService;
-import vnc.VNCTransmitter;
-import vnc.VncEventInterface;
+
 // TODO: make font size menu appear in the designated size
 
-public abstract class exCanvas extends ProxyWindow 
+public abstract class exCanvas extends Canvas 
 	implements SimpleObserver,DeferredEventHandler, 
-		CanvasProtocol,Config,OnlineConstants,
+		CanvasProtocol,Config,
 		ImageConsumer,RepaintHelper,MenuParentInterface,
-		VncEventInterface,MouseClient,MouseMotionListener,MouseListener,MouseWheelListener,
+		MouseClient,MouseMotionListener,MouseListener,MouseWheelListener,
 		TouchMagnifierClient
 {	// two specials just for standard java
     static final String VirtualMouse = "Virtual Mouse";
     static final String SpeedTestMessage = "Cpu speed test";
     static final String FontSize = "Set Font Size";
     static final String ZoomMessage = "Zoom=";
+    static enum OnlineId  implements CellId
+    {
+    	HitZoomSlider,
+		HitMagnifier,
+		;
+		public String shortName() { return(name());	}
+    };
 
     // the codename1 simulator supplies mouse move events, which is not
     // typical of real hardware, so normally we don't want the simulator
@@ -79,28 +86,21 @@ public abstract class exCanvas extends ProxyWindow
     };
     
 	class Layout {
-	    private IconMenu rotate180Menu = null;
-	    private IconMenu rotate90Menu = null;
-	    private IconMenu rotate270Menu = null;
-		VNCTransmitter transmitter;
+    private IconMenu rotate180Menu = null;
+    private IconMenu rotate90Menu = null;
+    private IconMenu rotate270Menu = null;
 	    private int runSteps = 0;
 	    private int inputSteps = 0;
-	    private AuxViewer vncViewer = null;
-	    private SeatingViewer seatingViewer = null;
 	    private JCheckBoxMenuItem showStats = null;
 	    private JCheckBoxMenuItem showImages = null;
-	    private JMenuItem startviewer = null; //for testing, disable the transmitter
 	    private JMenuItem logGraphics = null;	// log a graphics cycle
 	    private long logGraphicsStart = 0;
-	    private JMenuItem startseatviewer = null; //for testing, disable the transmitter
-	    private JMenuItem startserver = null; //for testing, disable the transmitter
 	    private JMenu fontSizeMenu = null;	// select a font size
 	    private JMenu languageMenu = null;	// select a language
 	    private JCheckBoxMenuItem useCache = null;
 	    private JCheckBoxMenuItem virtualMouseCheckbox = null;
 	    private JMenuItem cpuTest = null;
 	    private JMenuItem setConsole = null;
-	    private JMenuItem setNetConsole = null;
 	    private Font standardBoldFont;
 	    private Font largeBoldFont;
 	    private Font standardPlainFont;
@@ -124,6 +124,8 @@ public abstract class exCanvas extends ProxyWindow
         private int nlowmemories = 0;
     	private boolean touched = false;
         private JCheckBoxMenuItem showRects = null;
+	    private JCheckBoxMenuItem debugSwitch = null;
+	    private JCheckBoxMenuItem debugOnceSwitch = null;
 	    private boolean shouldBeVisible=false;
 	    private Text helpTest= null;//TextChunk.create("this is a test help text not the real thing");
 
@@ -131,20 +133,19 @@ public abstract class exCanvas extends ProxyWindow
 	}
 	Layout l = new Layout();
 	
-		/**
-		 * this is the thtead executing the viewerRun method.  Since the basic
-		 * model requires that everything happens in this thread, code where you
-		 * suspect "leakage" in to other processes can check.
-		 * @see #ViewerRun
-		 */
+	/**
+	 * this is the thtead executing the viewerRun method.  Since the basic
+	 * model requires that everything happens in this thread, code where you
+	 * suspect "leakage" in to other processes can check.
+	 * @see #ViewerRun
+	 */
     public Thread runThread=null;
 
 	public boolean doSound() { return(myFrame.doSound()); }
-	public void setTransmitter(VNCTransmitter m) { l.transmitter = m; }
 	// support for global pan/zoom
 
     public boolean isZoomed() { return(getGlobalZoom()>1.0); }
-    public boolean isPassAndPlay() { return(G.offline());}
+	public boolean isPassAndPlay() { return(G.offline());}
     public String getErrorReport() { return(""); }
     // set scroll X (in pan/zoom logic)
 	public void setSX(int x) 
@@ -190,7 +191,7 @@ public abstract class exCanvas extends ProxyWindow
 	// imageloader abstracts the different ways of loading images
 	// split off to combat code bloat for codename1
 	public final ImageLoader loader = new ImageLoader(this);
-	public ImageLoader loader() {	return loader; }
+	public ImageLoader loader() { return loader; }
 	
 	final CachedImageManager imageCache = new CachedImageManager();
 
@@ -213,7 +214,7 @@ public abstract class exCanvas extends ProxyWindow
 	 * should be synchronized with the game even loop using the deferredEvents queue
 	 */
 	public DeferredEventManager deferredEvents = new DeferredEventManager(this);
-	/**
+	/** 
 	 * the chat window associated with this window
 	 * 
 	 */
@@ -228,7 +229,7 @@ public abstract class exCanvas extends ProxyWindow
      * this contains the translations for all the messages in the user interface.
      */
     public InternationalStrings s = G.getTranslations(); //language translations
-    /**
+       /**
      * the frame we live in.  This is primarily used as the focus for a
      * few permanant menu items.
      */
@@ -243,14 +244,14 @@ public abstract class exCanvas extends ProxyWindow
 
     public HitPoint getDragPoint() { return(mouse.getDragPoint()); }
     public HitPoint getHighlightPoint() { return(mouse.getHighlightPoint()); }
-   
+    
     /**
      * a <b>bold</b> font for random use.
      */
 	public Font standardBoldFont() {
 		return l.standardBoldFont;
 	}
-    /**
+   /**
      * a larger <b>bold</b> font for random use.
      */
 	public Font largeBoldFont() {
@@ -285,7 +286,7 @@ public abstract class exCanvas extends ProxyWindow
     /**
      * if true, show the UI rectangles for debugging.
      */
-    static public boolean show_rectangles = false;
+   static public boolean show_rectangles = false;
 
 
     protected long frameTime = G.isAndroid()
@@ -300,7 +301,7 @@ public abstract class exCanvas extends ProxyWindow
       //{System.out.println("visible "+this); }
       if(!l.shouldBeVisible)
       	{ l.shouldBeVisible|=v; 
-      	  super.setVisible(v); 
+      	  super.setVisible(v);
 
       	}
     }
@@ -324,10 +325,10 @@ public abstract class exCanvas extends ProxyWindow
  * @param str
  */
     public void addEvent(String str) // add a string to the event list
-    {
-        l.events.addElement(str);
-        setChanged();
-    }
+    { 
+    	l.events.addElement(str);
+    	setChanged();
+     }
     
 
     // some help mapping the java refresh actions into our canvas.  It's desirable 
@@ -365,7 +366,7 @@ public abstract class exCanvas extends ProxyWindow
     	super.setBounds(l,t,w,h);
         if((w>0)&&(h>0) && ((oldw!=w)||(oldh!=h))) 
         	{ // changing orientation unzooms
-        	  if(oldw<oldh != w<h) { setGlobalZoom(0,0); }
+      	  	  if(oldw<oldh != w<h) { setGlobalZoom(0,0); }
         	  setSX(getSX());
         	  setSY(getSY());	// clip scrolling when the geometry changes
         	  imageCache.clearCachedImages();
@@ -373,7 +374,7 @@ public abstract class exCanvas extends ProxyWindow
         	}
     }  
     private Rectangle getZoomedBounds()
-    { 
+    {
     	int w = getWidth();
     	int h = getHeight();
     	double z = getGlobalZoom();
@@ -398,15 +399,15 @@ public abstract class exCanvas extends ProxyWindow
     public synchronized void lockAndLoadImages() 
     { 	// synchronized because it can be called from the preloader
     	// as well as the instantiate canvas code.
-     	try
+    	try
     	{
-        StockArt.preloadImages(loader,IMAGEPATH);
+    	StockArt.preloadImages(loader,IMAGEPATH);
       	preloadImages();
        	}
     	catch(Throwable err)
     	{	throw G.Error("error in lockAndLoadImages:"+err+"\n"+G.getStackTrace(err));
     	}
-      }
+    }
  
     public void adjustStandardFonts(double height)
     {	double zoom = getGlobalZoom();
@@ -429,17 +430,17 @@ public abstract class exCanvas extends ProxyWindow
     /** this init method should be wrapped by individual games
      * to do once-only initialization.
      * @param info
-     */
+     */  
     public void init(ExtendedHashtable info,LFrameProtocol frame)
     {	super.init(info,frame);
-     	sharedInfo = info;
+        sharedInfo = info;
         myFrame = frame;
         
         
         SCALE = G.getDisplayScale();
-        chatPercent = info.getInt(BOARDCHATPERCENT,chatPercent);
+        chatPercent = info.getInt(ChatInterface.BOARDCHATPERCENT,chatPercent);
         extraactions = G.getBoolean(EXTRAACTIONS, extraactions);
- 
+         
         adjustStandardFonts(G.defaultFontSize);
         
         globalZoomRect = addSlider(".globalZoom",s.get(ZoomMessage),OnlineId.HitZoomSlider);
@@ -452,16 +453,14 @@ public abstract class exCanvas extends ProxyWindow
         l.setConsole = myFrame.addAction("Start Console",deferredEvents);
         if(extraactions)
         {
-        l.setNetConsole = myFrame.addAction("Set Net Logger",deferredEvents);
         painter.addUIChoices(myFrame,deferredEvents);
         l.showRects = myFrame.addOption("Show Rectangles", show_rectangles,deferredEvents);	
         l.showStats = myFrame.addOption("show stats", false,null);	// no events
         l.showImages = myFrame.addOption("show Images",false,deferredEvents);
         l.useCache = myFrame.addOption("Cache images",imageCache.cache_images,deferredEvents);
-        l.startviewer = myFrame.addAction("start viewer",deferredEvents);
         l.logGraphics = myFrame.addAction("log graphics",deferredEvents);
-        l.startseatviewer = myFrame.addAction("start seat selector",deferredEvents);
-        l.startserver = myFrame.addAction((VNCService.isVNCServer()||RpcService.isRpcServer()) ? "stop server" : "start server",deferredEvents);
+        l.debugSwitch = myFrame.addOption("debug",G.debug(),deferredEvents);
+     	l.debugOnceSwitch = myFrame.addOption("debug once", false,deferredEvents);
         }
         
         l.fontSizeMenu = myFrame.addChoiceMenu(s.get(FontSize),deferredEvents);
@@ -481,14 +480,7 @@ public abstract class exCanvas extends ProxyWindow
 
         
         l.cpuTest = myFrame.addAction(SpeedTestMessage,deferredEvents);
-        SeatingChart chart = (SeatingChart)sharedInfo.get(exHashtable.SEATINGCHART);
-        
-        if(chart!=null)
-        {
-        	if(chart.seatingFaceToFace()) { currentViewset = ViewSet.Reverse; }
-        }
-        else if(G.isTable()) { currentViewset = ViewSet.Reverse; }
-        
+       
         addMouseMotionListener(this);
         addMouseListener(this);
         addMouseWheelListener(this);
@@ -561,26 +553,7 @@ public abstract class exCanvas extends ProxyWindow
     	generalRefresh();
     }
     
-    private AuxViewer doViewer(ExtendedHashtable sharedInfo)
-    {  
-    	commonPanel panel = (commonPanel)new commonPanel();
-    	LFrameProtocol frame;
-    	AuxViewer viewer = (AuxViewer)new vnc.AuxViewer();
-    	if(viewer!=null)
-    	{
-    	frame = LPanel.newLFrame("VNC viewer",panel);
-    	viewer.init(sharedInfo,frame);
-    	panel.setCanvas(viewer);
-    	viewer.setVisible(true);
-    	double scale = G.getDisplayScale();
-    	frame.setInitialBounds(100,100,(int)(scale*800),(int)(scale*600));
-    	frame.setVisible(true);
-    	panel.start();
-    	}
-    	return(viewer);
-    }
-    
-    /**
+   /**
      * handle an event that was deferred.  This is a visitor method to 
      * handle menu items, both fixed and popup.
      * @param target the object that was target of the menu event
@@ -630,46 +603,24 @@ public abstract class exCanvas extends ProxyWindow
          	// setBounds(bounds.x,bounds.y,bounds.width-(show_rectangles?1:-1),bounds.height);
             return(true);
         }
-       else if(painter.handleDeferredEvent(target)) { return(true); }
-       else if(target==l.setNetConsole)
-       {   ConnectionManager myNetConn = (ConnectionManager)sharedInfo.get(exHashtable.NETCONN);
-       	   boolean wasOn = G.getPrinter()!=null;
-       	   if(wasOn) { G.print("Net logger off"); l.setNetConsole.setText("Start Net logger"); G.setPrinter(null); }
-       	   else 
-       	   { ShellProtocol m = (myNetConn==null) ? null : myNetConn.getPrintStream();
-       	     if(m==null)
-       	     { G.print("Not connected, can't net log"); 
-       	     }
-       	     else { G.setPrinter(m); G.print("Net Logger on"); 
-       	     l.setNetConsole.setText("Stop Net logger"); }
-       	     }
-       	   return(true);
+       else if(target == l.debugSwitch)
+       {
+       	G.putGlobal(G.DEBUG,""+!G.debug());
+       	return true;
        }
+       else if(target == l.debugOnceSwitch)
+       {
+       	G.setDebugOnce();
+       	return true;
+       }
+
+       else if(painter.handleDeferredEvent(target)) { return(true); }
        else if (target == l.logGraphics)
        		{
     	   	l.logGraphicsStart = G.Date()+5*1000;
     	   	return(true);
        		}
-       else if (target == l.startviewer)  
-			{ 
-    	   	l.vncViewer = doViewer(sharedInfo);
-    	   	return(true);
-			}
-       else if (target == l.startseatviewer)  
-			{ 
-    	   	 l.seatingViewer = SeatingViewer.doSeatingViewer(sharedInfo);
-			 return(true);
-			}
-       else if (target == l.startserver)  
- 			{ 
-    	   	 boolean running = VNCService.isVNCServer()||RpcService.isRpcServer(); 
-    	   	 if(!running) { UDPService.start(true); } else { UDPService.stop(); }
-    	   	 VNCService.runVNCServer(!running);
-    	   	 RpcService.runRpcServer(!running);
-    	     l.startserver.setText(running ? "start server" : "stop server");
-    	   	 return(true);
- 			}
-	   else if(target==l.setConsole)
+ 	   else if(target==l.setConsole)
 	   {   G.createConsole();
 	   	   return(true);
 	   }
@@ -682,7 +633,7 @@ public abstract class exCanvas extends ProxyWindow
         	{ double time = G.cpuTest();
         	  
         	  if(theChat!=null)
-        		  {theChat.postMessage(ChatInterface.LOBBYCHANNEL , KEYWORD_LOBBY_CHAT,
+        		  {theChat.postMessage(ChatInterface.LOBBYCHANNEL , ChatInterface.KEYWORD_LOBBY_CHAT,
 					  "cpu test "+time+" standard cpus");
         		  }
         	  //SSDP.main(null);
@@ -729,9 +680,9 @@ public abstract class exCanvas extends ProxyWindow
     			if(!chatFramed ) 
 	    		{ int sx = isWindow ? -getSX() : 0;
 	    		  int sy = isWindow ? -getSY() : 0;   
-    				  theChat.setBounds(G.Left(chatR)+sx,
-    						  G.Top(chatR)+sy,G.Width(chatR),G.Height(chatR)); 
-    				}
+	     		  theChat.setBounds(G.Left(chatR)+sx,
+	    				  G.Top(chatR)+sy,G.Width(chatR),G.Height(chatR)); 
+	     		}
     			if(chatCol!=null) { theChat.setBackgroundColor(chatCol); }
     			if(butCol!=null) { theChat.setButtonColor(butCol); }
     			}
@@ -750,7 +701,7 @@ public abstract class exCanvas extends ProxyWindow
         l.observer.addObserver(o);
     }
     public synchronized void deleteObservers()
-    	{
+    {	
     	l.observer.deleteObservers();
     }
     public void setChanged()
@@ -772,7 +723,7 @@ public abstract class exCanvas extends ProxyWindow
     }
 
     public synchronized void removeObserver(SimpleObserver o)
-            {
+    {
     	l.observer.removeObserver(o);
     }
    //
@@ -824,7 +775,7 @@ graphics when using a touch screen.
     public HitPoint setHighlightPoint(HitPoint p)
     { 	
     	painter.setHighlightPoint(p==null?new HitPoint(mouse.getX(),mouse.getY(),mouse.getLastMouseState()):p);
-      return(mouse.setHighlightPoint(p)); 
+    	return(mouse.setHighlightPoint(p)); 
     }
 
 
@@ -858,7 +809,7 @@ graphics when using a touch screen.
     * @param hp
     */
    public void redrawChat(Graphics gc,HitPoint hp)
-   {
+   {	
 	   if(runTheChat())
 	   	{ 
 		  theChat.redrawBoard(gc,hp); 
@@ -951,7 +902,7 @@ graphics when using a touch screen.
 	}
    /**
  
-  
+ 
     /** add a rectangle to the canvas rectangle list. 
      * These rectangles are visible to developers when "show rectangles" 
      * option is enabled. 
@@ -1196,16 +1147,16 @@ graphics when using a touch screen.
     	addRect(name,b);
     	return(b);
     }
-    
+  
     /**
      * @return return true if global zoom is being used
      */
     
-    public boolean zoomIsActive() { return(false); }
+      public boolean zoomIsActive() { return(false); }
       /**
        * return true if the image cache may need management
        */
-    public boolean needsCacheManagement() 
+      public boolean needsCacheManagement() 
       { return(imageCache.needsManagement() || Image.getImageCache().needsManagement()); 
       }
       /**
@@ -1219,9 +1170,9 @@ graphics when using a touch screen.
     	   long later = G.Date();
     	   time -= (later-now);
     	   if(time>0)
-    	   {
+      {
     		   some |= Image.getImageCache().manageCachedImages(time);
-    	   }
+    	  	}
     	  if(some)
     	  	{ repaint(60,"image cache"); 	// if we did something, schedule a repaint
     	  	}}
@@ -1280,12 +1231,12 @@ graphics when using a touch screen.
         		Graphics.logging = true;
         		l.logGraphicsStart = 0;
         	}
-	  		pt.hitCode = DefaultId.HitNoWhere;
-	        pt.spriteRect = null;
-	        pt.spriteColor = null;
-	        pt.hitObject = null;
+ 	  		pt.hitCode = DefaultId.HitNoWhere;
+	       	pt.spriteRect = null;
+	       	pt.spriteColor = null;
+	       	pt.hitObject = null;
         	drawCanvas(offGC,complete,pt);
-       	
+
 
         	if(logging)
         	{
@@ -1320,7 +1271,7 @@ graphics when using a touch screen.
           	GC.translate(g,-x,-y);
         	fillUnseenBackground(g,im,x,y,zoom,zoomStart);
         	GC.translate(g,x,y);
-         	}
+        	}
         }
         
         
@@ -1337,7 +1288,7 @@ graphics when using a touch screen.
         	int remW = (w+x)-fullW;
         	int remH = (h+y)-fullH;
         	if(x<0)
-            	{	
+        {
             		GC.fillRect(gc,fill,x,y,-x,h);    		
             	}
         	if(y<0)
@@ -1422,7 +1373,7 @@ graphics when using a touch screen.
     	public double getRotation() { return(PINCHROTATION ? globalRotation : 0.0); }
 
 
-     	public synchronized boolean changeZoom(double z,double rot)
+    	public synchronized boolean changeZoom(double z,double rot)
     	{ 	
     		if(z<MINIMUM_ZOOM)
     		 {	// if we're reverting to no zoom, set pan to zero first
@@ -1476,7 +1427,7 @@ graphics when using a touch screen.
          */
         public boolean changeZoomAndRecenter(double z,double r,int realX,int realY)
         {	
-        	int sx = getSX();
+           	int sx = getSX();
         	int sy = getSY();
         	double startingZoom = getGlobalZoom();
         	//Plog.log.addLog("Change Zoom ",startingZoom," - ",z,"@",realX,",",realY);
@@ -1531,71 +1482,71 @@ graphics when using a touch screen.
     		//Log.addLog("X "+realx+","+realy+" "+val+" "+cx+","+cy);
 
     		
-        		if(globalPinchEnable 
-        			&& !touchZoomInProgress()
-        			&& G.pointInRect(realx,realy,fullRect))
-        		{	
-        			//G.print("Twist "+startingPinch+" "+globalRotation+" "+twist);
-            		if(startingPinch)	// start of a pinch 
+    		if(globalPinchEnable 
+    			&& !touchZoomInProgress()
+    			&& G.pointInRect(realx,realy,fullRect))
+    		{	
+    			//G.print("Twist "+startingPinch+" "+globalRotation+" "+twist);
+        		if(startingPinch)	// start of a pinch 
         			{ 
-            			  globalZoomStartValue = globalZ;
-            			  globalPanStartX = realx;
-            			  globalPanStartY = realy;
+        			  globalZoomStartValue = globalZ;
+        			  globalPanStartX = realx;
+        			  globalPanStartY = realy;
               			  l.globalRotationStart = globalRotation;
               			  l.globalTwistStart = twist;
               			  l.globalTwistLast = twist;
-            			  // initial center for expansion
+        			  // initial center for expansion
              			  l.activePanLastX = realx;
              			  l.activePanLastY = realy;
-            			  
-            			  val = 1.0;
-            			}
+        			  
+        			  val = 1.0;
+        			}
             		int dx = l.activePanLastX-realx;
             		int dy = l.activePanLastY-realy;
-            		globalPanLastX = realx;	// adjust for slow pan
-            		globalPanLastY = realy;
-            		int scrollX = cx+dx;	// add the local movement (assuming just drag)
-            		int scrollY = cy+dy;
-           		
-               		setSX(scrollX);
-            		setSY(scrollY);
+        		globalPanLastX = realx;	// adjust for slow pan
+        		globalPanLastY = realy;
+        		int scrollX = cx+dx;	// add the local movement (assuming just drag)
+        		int scrollY = cy+dy;
+       		
+           		setSX(scrollX);
+        		setSY(scrollY);
 
             		l.activePanLastX = realx;
             		l.activePanLastY = realy;
        		
-            		//Log.addLog("Pan "+cx+","+cy+" - "+scrollX+","+scrollY);
+        		//Log.addLog("Pan "+cx+","+cy+" - "+scrollX+","+scrollY);
             		double dtwist = twist-l.globalTwistLast;
-            		if(Math.abs(dtwist)>Math.PI/2)
-            		{
-            			// if we seems to have instantaneously twisted by more than 
-            			// a quarter turn, it's more likely that the first/second finger flipped
-            			// the direction by PI
+        		if(Math.abs(dtwist)>Math.PI/2)
+        		{
+        			// if we seems to have instantaneously twisted by more than 
+        			// a quarter turn, it's more likely that the first/second finger flipped
+        			// the direction by PI
             			l.globalTwistStart =+ dtwist>0 ? Math.PI : -Math.PI;
         		}
-           		
+       		
             		double changerot = l.globalTwistStart-twist;
             		boolean change = changeZoomAndRecenter( globalZoomStartValue*val,l.globalRotationStart + changerot,realx,realy);
             		l.globalTwistLast = twist;
-             		if(change)
-            		{
+         		if(change)
+        		{
              			l.globalRotationStart = globalRotation;
              			l.globalTwistStart = twist;
              			l.globalTwistLast = twist;
         		   	generalRefresh();	// force complete paint
            		}
-            		}
-            		//Log.addLog("New start "+activePanLastX+","+activePanLastY);
-           		 
-        	}
+    		}
+        		//Log.addLog("New start "+activePanLastX+","+activePanLastY);
+       		 
+       }
         
         public boolean touchZoomEnabled() { return(false); }
         private void drawVirtualMouse(Graphics gc,HitPoint hp)
-        {	
-           	if(mouse.virtualMouseMode())
+        {
+        	if(mouse.virtualMouseMode())
         	{	int x = G.Left(hp);
         		int y = G.Top(hp);
         		int ms = G.minimumFeatureSize();
-         		StockArt.SolidUpArrow.drawChip(gc,this,ms,x,y+ms/2,null);
+        		StockArt.SolidUpArrow.drawChip(gc,this,ms,x,y+ms/2,null);
         	}
            	else if(touchZoomInProgress() || touchZoomEnabled())
            	{	
@@ -1629,7 +1580,7 @@ graphics when using a touch screen.
     		fillUnseenBackground(gc);
     		//G.setColor(gc,Color.blue);
     		//G.drawLine(gc, 0, 0, getWidth(), getHeight());
-        }
+         }
         /**
          * this is the default method which may be overridden.  Normally it 
          * allocates an offscreen bitmap using {@link #createAllFixed}, which is 
@@ -1640,12 +1591,12 @@ graphics when using a touch screen.
          */
         public void drawFixedElements(Graphics gc,boolean complete)
         {   painter.drawFixedElements(gc,complete);
-         	}
+        }
 
         
         protected void logError(String m, String exm,Throwable err)
         {	ChatInterface chat = theChat;
-        	ConnectionManager conn = (ConnectionManager)sharedInfo.get(exHashtable.NETCONN);
+        	ConnectionManager conn = (ConnectionManager)sharedInfo.get(NETCONN);
             String em = ((err == null) ? "" : err.toString());
             G.print(m);
 
@@ -1668,7 +1619,7 @@ graphics when using a touch screen.
     	        }
             }
 
-        }         
+        }
 
         public boolean processMessage(String cmd,StringTokenizer localST,String st)
         {
@@ -1703,7 +1654,7 @@ graphics when using a touch screen.
                if(showImage) { l.loadedImages = new ImageStack(); }
                String imagesum = imageLoadString(l.loadedImages);
                GC.setFont(gc, G.getGlobalDefaultFont());
-               ConnectionManager myNetConn = (ConnectionManager)sharedInfo.get(exHashtable.NETCONN);
+               ConnectionManager myNetConn = (ConnectionManager)sharedInfo.get(NETCONN);
                if(!l.showStatsWasOn)
                {   if(myNetConn!=null) { myNetConn.resetStats(); }
                		l.showStatsWasOn = true;
@@ -1729,7 +1680,7 @@ graphics when using a touch screen.
                 {
                 	showImages(gc,hp,l.loadedImages);
                 }
-            }
+           }
             else { l.showStatsWasOn = false; }
         }
         private void showImages(Graphics gc,HitPoint hp,ImageStack loadedImages)
@@ -1740,16 +1691,18 @@ graphics when using a touch screen.
         	DrawableImage.showGrid(gc, null, hp,ims, new Rectangle(0,100,getWidth(),getHeight()-100));
         	}
         }
+        public static final String LowMemoryMessage = "Memory is low";
+
         public void setLowMemory(String msg)
         {
-    		  G.print(msg);
+     		  G.print(msg);
      		  int nlow = l.nlowmemories++;
     		  if(nlow < 2)
     		  {
     		  G.getGlobals().putBoolean(G.LOWMEMORY,true); 
     		  String lowmessage = (s==null)?LowMemoryMessage:s.get(LowMemoryMessage);
     		  if(theChat!=null) 
-    		  { theChat.postMessage(ChatInterface.LOBBYCHANNEL , KEYWORD_LOBBY_CHAT,
+    		  { theChat.postMessage(ChatInterface.LOBBYCHANNEL , ChatInterface.KEYWORD_LOBBY_CHAT,
     				  lowmessage);
     		  }
     		  else if(nlow==0)
@@ -1757,7 +1710,7 @@ graphics when using a touch screen.
     			  G.infoBox(lowmessage,msg);
     		  }
               if(sharedInfo!=null)	// can be null if preloading
-              {ConnectionManager myNetConn = (ConnectionManager)sharedInfo.get(exHashtable.NETCONN);
+              {ConnectionManager myNetConn = (ConnectionManager)sharedInfo.get(NETCONN);
       			if(myNetConn!=null)
       				{ myNetConn.na.getLock();
       				  String seq = "";
@@ -1767,7 +1720,7 @@ graphics when using a touch screen.
       				  myNetConn.na.Unlock();
       				}}
       		  if(nlow==0) { System.gc(); }
-        	}
+    		  }
         }
 
         /**
@@ -1781,7 +1734,7 @@ graphics when using a touch screen.
          * @see #handleDeferredEvent 
          * @see #repaintCanvas
          */
-         public void ViewerRun(int waitTime)
+        public void ViewerRun(int waitTime)
         {	
         	 l.runSteps++;
              runThread=Thread.currentThread();
@@ -1808,15 +1761,11 @@ graphics when using a touch screen.
         	initialized=false;
         	deleteObservers();
         	painter.shutdown();
-        	AuxViewer v = l.vncViewer;
-        	if(v!=null) { l.vncViewer = null; v.shutDown(); }
-        	SeatingViewer sv = l.seatingViewer;
-        	if(sv!=null) { l.seatingViewer = null; sv.shutDown(); }
         	removeThis();
-        			
+
         	wake();		
         }
-    	
+ 
 
   /**
    * draw an image with smooth scaling and caching
@@ -1839,7 +1788,7 @@ graphics when using a touch screen.
       }
 
   }
-
+  
     /**
      * this is the primary method to draw an images with transparent
      * backgrounds on a canvas.  The images are clipped to a slightly smaller box to avoid the "edge garbage"
@@ -1867,7 +1816,7 @@ graphics when using a touch screen.
     	//note, the "scale" magic numbers are visually tuned to center and scale the
         //somewhat arbitrary graphics (derived from real photos)
     	if(im!=null)
-    	{
+    	{ 
         int imw = im.getWidth();
         int imh = im.getHeight();
         double scalew_d = scale==null ? boxw : scale[2] *  boxw;
@@ -1899,7 +1848,7 @@ graphics when using a touch screen.
         // image and the presentation won't know about the scaled copy we make.
         //
         Image cached = imageCache.getCachedImage(im,scalew2,scaleh,zoomIsActive());
-       cached.drawImage(gc, ax, ay, scalew2, scaleh);
+        cached.drawImage(gc, ax, ay, scalew2, scaleh);
         GC.setClip(gc,sh);	// reset the clipping rectangle before drawing the label
         if(text!=null)
         { //G.frameRect(gc,Color.white,x+5,y+5,scalew-10,scaleh-10);
@@ -1910,39 +1859,17 @@ graphics when using a touch screen.
           int tx = artCenterText ? tax : (int)(x - (0.5*scalew_d2) + jx);
           int ty = artCenterText ? ay : (int)(y - (0.5*scaleh_d) + jy);
           GC.drawOutlinedText(gc,true,tx,ty,scalew3,scaleh,labelColor,Color.black,text);
-        }
+         }
           
         return(rr);
-    }
+    	}
     	return(null);
     }
     
     public void adjustScales(double pscale[],DrawableImage<?> last) { };	// dummy method
     public void adjustScales2(double pscale[],DrawableImage<?> last) { };	// dummy method
 	
-    public enum ViewSet { Normal(0),Reverse(1),Twist(2);
-    	int value;
-    	ViewSet(int v) { value = v; }
-    }
-    public ViewSet currentViewset = ViewSet.Normal;
- 
-
-   /**
-     * This is the key method for defining alternate sets of artwork based on
-     * the {@link lib.DrawableImage} class.  At a very low level, just before the canvas 
-     * draws an image based on {@link DrawableImage}, it
-     * calls {@link lib.DrawableImage#getAltChip getAltChip}.  These two methods
-     * work together to make appropriate substututions in the artwork.
-     * <p>
-     * The meaning of the alternate chip index, and the nature of the substitutions
-     * made, are a matter of agreement between your canvas and chip classes.
-     * <p>
-     * @see lib.DrawableImage#getAltChip getAltChip
-     * @return a chipset index (default 0)
-     */
-    public int getAltChipset() { return(currentViewset.value); }
-
-
+  
 	/**
 	 * given a nominal position of x,y, find a good rectangle to use for the 
 	 * help text.  This takes into account the location of the chat window
@@ -2035,7 +1962,7 @@ graphics when using a touch screen.
 	 * @param hp the hit point
 	 */
 	public void DrawArrow(Graphics gc,HitPoint hp)
-	{  
+	{      
 
 		if(hp!=null)
 		{	if(hp.arrow!=null)
@@ -2046,7 +1973,7 @@ graphics when using a touch screen.
 		    hp.arrow.drawChip(gc,this,hp.awidth,hp.a_x>0?hp.a_x:G.Left(hp),hp.a_y>0?hp.a_y:G.Top(hp),null);
 		    GC.setClip(gc,oldClip); 
 		    }}
-		    }
+		}
 
 	}
 	
@@ -2085,7 +2012,7 @@ graphics when using a touch screen.
 			else 
 				{ repaint(0,"end of sprites");	// end of the animation
 				}
-		}
+			}
 		}
 	}
 	/**
@@ -2100,12 +2027,12 @@ graphics when using a touch screen.
 		repaint(10,"new sprite");
 	}
 	private void doMagnifier()
+	{
+		if(getGlobalZoom()<MINIMUM_ZOOM)
 		{
-			if(getGlobalZoom()<MINIMUM_ZOOM)
-			{
-				setGlobalZoomButton();
-			}
-			else { setGlobalUnZoomButton(); }
+			setGlobalZoomButton();
+		}
+		else { setGlobalUnZoomButton(); }
 	}
 	public boolean performStandardButtons(CellId id, HitPoint hitPoint)
 	{	if(painter.performStandardButtons(id)) { return(true); }
@@ -2122,7 +2049,7 @@ graphics when using a touch screen.
 	}
 	public boolean performVcrButton(CellId hc,HitPoint hp) { return(false); }
 
-	
+    
 	public void resetLocalBoundsIfNeeded()
 	{
 		if(l.needLocalBounds) 
@@ -2130,7 +2057,7 @@ graphics when using a touch screen.
 			G.runInEdt(new Runnable() { public void run() { realNullLayout();}});
 		}
 	}
-   
+	
 	public void doNullLayout(Container parent)
 	{	l.needLocalBounds = true;
 	}
@@ -2154,7 +2081,7 @@ graphics when using a touch screen.
 		}
   	  	
 	}
-	
+
     /**
      * this captures the normal java "paint" request, but doesn't
      * do any painting in regular java.  On codename1 a cached bitmap
@@ -2162,7 +2089,7 @@ graphics when using a touch screen.
      */
     public void paint(Graphics g)
     {  	GC.setFont(g,getDefaultFont());
-    	painter.paint(g);
+    	painter.paint(g); 
     }
     public void update(Graphics g)
     {
@@ -2178,7 +2105,7 @@ graphics when using a touch screen.
 	{ 	
 		painter.repaint("now");
 	}
-	
+    
 	public synchronized void repaint(int tm)
 	{
 		painter.repaint(tm,"later");
@@ -2219,24 +2146,24 @@ graphics when using a touch screen.
     public void wake()
     {	
     	painter.wake();
-    }
+	}
     
     public Image getOffScreenImage()
     {
     	return(painter.getOffScreenImage());
     }
-	//
+    //
 	// RepaintHelper methods we must provide
     //	public void actualPaint(Graphics g) 
     public void actualPaint(Graphics g,HitPoint hp)
 	{ 	
 		super.actualPaint(g); 
-	}
+ 	}
     
     public void paintSprites(Graphics g,HitPoint hp)
-    {	
+    {		    	
     	if(!chatHasRun) { redrawChat(g,hp); }
-		drawCanvasSprites(g,hp);
+		drawCanvasSprites(g,hp); 
 		drawVirtualMouse(g,hp);		// also draws tooltips
 		drawMenu(g,hp);
 		//G.addLog("end acutalpaint");
@@ -2244,7 +2171,7 @@ graphics when using a touch screen.
 	public void handleError(String msg,String context,Throwable err)
 	{	logError(msg, ((context==null) ? "" : " cxt: "+context), err);
 	}
-
+	
 
 	public void keyStroke(int keycode) {
 		
@@ -2304,7 +2231,8 @@ graphics when using a touch screen.
 			 painter.showMenu(popup,myFrame.getMenuParent(),sx,sy);
 			 }
 	}
-	SimpleMenu menu = null;
+	public SimpleMenu menu = null;
+	public static final String NETCONN = "netconn";			// network connection manager
 	public void drawMenu(Graphics gc,HitPoint hp)
 	{	SimpleMenu m = menu;
 		if(m!=null) 
@@ -2314,7 +2242,7 @@ graphics when using a touch screen.
 			{ menu = null; }
 		}
 	}
-
+		
 	public void trackMouse(int x,int y) { }
    
     public boolean mouseDownEvent(boolean newv)
@@ -2337,7 +2265,7 @@ graphics when using a touch screen.
 		setTouched(true);
 		mouse.setMouse(MouseState.LAST_IS_MOVE,e.getButton(),x,y);
 		trackMouse(x+mouse.getSX(),y+mouse.getSY());
-		}
+	}
 	}
 	public void mouseClicked(MouseEvent e) {
 	}
@@ -2388,13 +2316,13 @@ graphics when using a touch screen.
         	int sy = getSY();
         	int cx = sx+w/2;
         	int cy = sy+h/2;
-        	double rot = getPreferredRotation();       
+        	double rot = getPreferredRotation();     
         	int qt = G.rotationQuarterTurns(rot);
     		GC.setRotation(offGC, rot,cx,cy);
     		G.setRotation(hp, rot, cx, cy);
     		int ax = w-size;
     		int ay = h-size;
-      		switch(qt)
+     		switch(qt)
         	{
         	default:
         	case 0:
@@ -2443,5 +2371,21 @@ graphics when using a touch screen.
     public boolean drawTileSprite(Graphics gc,HitPoint hp)
     {	return magnifier.DrawTileSprite(gc,hp);
     }
-	
+    /**
+     * This is the key method for defining alternate sets of artwork based on
+     * the {@link lib.DrawableImage} class.  At a very low level, just before the canvas 
+     * draws an image based on {@link DrawableImage}, it
+     * calls {@link lib.DrawableImage#getAltChip getAltChip}.  These two methods
+     * work together to make appropriate substututions in the artwork.
+     * <p>
+     * The meaning of the alternate chip index, and the nature of the substitutions
+     * made, are a matter of agreement between your canvas and chip classes.
+     * <p>
+     * @see lib.DrawableImage#getAltChip getAltChip
+     * @return a chipset index (default 0)
+     */
+	public int getAltChipset() {	
+		return 0;
+	}
+  
 }

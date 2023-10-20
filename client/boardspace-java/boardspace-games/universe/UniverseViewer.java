@@ -21,6 +21,8 @@ import java.awt.*;
 
 import javax.swing.JMenuItem;
 
+import common.GameInfo;
+
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.StringTokenizer;
@@ -298,7 +300,7 @@ public class UniverseViewer extends CCanvas<UniverseCell,UniverseBoard> implemen
     	//
         int randomKey = info.getInt(OnlineConstants.RANDOMSEED,-1);
         int np = Math.max(1,info.getInt(OnlineConstants.PLAYERS_IN_GAME));
-        String gameType = info.getString(GAMETYPE, variation.Universe.name);
+        String gameType = info.getString(GameInfo.GAMETYPE, variation.Universe.name);
         b = new UniverseBoard(gameType,randomKey,np,getStartingColorMap(),UniverseBoard.REVISION);
         adjustPlayers(b.nPlayers());	// players can be adjusted in init
         if(b.rules.isNudoku())

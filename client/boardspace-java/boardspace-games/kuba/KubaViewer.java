@@ -28,6 +28,7 @@ import online.search.SimpleRobotProtocol;
 
 import java.util.*;
 
+import common.GameInfo;
 import lib.CellId;
 import lib.ExtendedHashtable;
 import lib.G;
@@ -116,7 +117,7 @@ public class KubaViewer extends CCanvas<KubaCell,KubaBoard> implements  KubaCons
     {
         super.init(info,frame);
         
-        b = new KubaBoard(info.getString(GAMETYPE, "Traboulet"),
+        b = new KubaBoard(info.getString(GameInfo.GAMETYPE, "Traboulet"),
         		getStartingColorMap());
         useDirectDrawing(true);
         doInit(false);

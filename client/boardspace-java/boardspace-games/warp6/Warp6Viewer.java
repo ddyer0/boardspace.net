@@ -20,6 +20,7 @@ import java.awt.*;
 import java.util.Hashtable;
 import java.util.StringTokenizer;
 
+import common.GameInfo;
 import lib.Image;
 import lib.CellId;
 import lib.ExtendedHashtable;
@@ -101,7 +102,7 @@ public class Warp6Viewer extends CCanvas<Warp6Cell,Warp6Board> implements Warp6C
         MouseDotColors = Warp6MouseDotColors;
         int randomKey = sharedInfo.getInt(OnlineConstants.RANDOMSEED,-1);
 
-        b = new Warp6Board(randomKey,info.getString(GAMETYPE, Warp6_Standard_Init),
+        b = new Warp6Board(randomKey,info.getString(GameInfo.GAMETYPE, Warp6_Standard_Init),
         		getStartingColorMap());
         useDirectDrawing(true);
         doInit(false);

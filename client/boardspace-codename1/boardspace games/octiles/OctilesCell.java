@@ -22,7 +22,7 @@ import lib.G;
 import lib.HitPoint;
 import lib.OStack;
 import lib.Random;
-import online.common.exCanvas;
+import lib.exCanvas;
 import online.game.chip;
 import online.game.stackCell;
 

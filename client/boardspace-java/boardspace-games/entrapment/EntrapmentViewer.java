@@ -18,6 +18,8 @@ package entrapment;
 
 import javax.swing.JCheckBoxMenuItem;
 
+import common.GameInfo;
+
 import static java.lang.Math.pow;
 import java.awt.*;
 /* below here should be the same for codename1 and standard java */
@@ -123,7 +125,7 @@ public class EntrapmentViewer extends CCanvas<EntrapmentCell,EntrapmentBoard> im
 
         int randomKey = info.getInt(OnlineConstants.RANDOMSEED,-1);
        
-        b = new EntrapmentBoard(info.getString(GAMETYPE, Entrapment_INIT),
+        b = new EntrapmentBoard(info.getString(GameInfo.GAMETYPE, Entrapment_INIT),
         		randomKey,getStartingColorMap(),EntrapmentBoard.REVISION);
         useDirectDrawing(true);
         doInit(false);

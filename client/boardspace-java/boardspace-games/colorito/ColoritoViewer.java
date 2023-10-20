@@ -19,6 +19,7 @@ package colorito;
 import java.awt.*;
 import javax.swing.JCheckBoxMenuItem;
 
+import common.GameInfo;
 import online.common.*;
 import online.game.*;
 import online.game.sgf.*;
@@ -120,7 +121,7 @@ public class ColoritoViewer extends CCanvas<ColoritoCell,ColoritoBoard> implemen
 
         int randomKey = info.getInt(OnlineConstants.RANDOMSEED,-1);
        
-        b = new ColoritoBoard(info.getString(GAMETYPE, Variation.Colorito_10.name),randomKey,
+        b = new ColoritoBoard(info.getString(GameInfo.GAMETYPE, Variation.Colorito_10.name),randomKey,
         		players_in_game,repeatedPositions,getStartingColorMap());
         useDirectDrawing(true);
         doInit(false);

@@ -29,8 +29,8 @@ import lib.GC;
 import lib.OStack;
 import lib.Random;
 import lib.StockArt;
+import lib.exCanvas;
 import oneday.OnedayBoard.OnedayLocation;
-import online.common.exCanvas;
 
 class StationStack extends OStack<Station>
 {

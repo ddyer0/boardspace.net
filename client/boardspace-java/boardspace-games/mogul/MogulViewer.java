@@ -28,6 +28,7 @@ import vnc.VNCService;
 import java.io.PrintStream;
 import java.util.*;
 
+import common.GameInfo;
 import lib.Graphics;
 import lib.Image;
 import lib.CellId;
@@ -121,7 +122,7 @@ public class MogulViewer extends CCanvas<MogulCell,MogulBoard> implements MogulC
         int randomKey = info.getInt(OnlineConstants.RANDOMSEED,-1);
         int np = Math.max(2,info.getInt(OnlineConstants.PLAYERS_IN_GAME));
         adjustPlayers(np);
-        b = new MogulBoard(this,info.getString(GAMETYPE, Mogul_INIT),
+        b = new MogulBoard(this,info.getString(GameInfo.GAMETYPE, Mogul_INIT),
         		randomKey,np,getStartingColorMap());
         if(G.debug()) 
         	{ InternationalStrings.put(MogulStrings);

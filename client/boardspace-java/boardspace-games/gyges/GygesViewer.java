@@ -26,6 +26,7 @@ import online.search.SimpleRobotProtocol;
 
 import java.util.*;
 
+import common.GameInfo;
 import lib.Graphics;
 import lib.Image;
 import lib.*;
@@ -122,7 +123,7 @@ public class GygesViewer extends CCanvas<GygesCell,GygesBoard> implements GygesC
 
         int randomKey = info.getInt(OnlineConstants.RANDOMSEED,-1);
        
-        b = new GygesBoard(info.getString(GAMETYPE, Gyges_INIT_beginner),randomKey);
+        b = new GygesBoard(info.getString(GameInfo.GAMETYPE, Gyges_INIT_beginner),randomKey);
         useDirectDrawing(true);
         doInit(false);
         

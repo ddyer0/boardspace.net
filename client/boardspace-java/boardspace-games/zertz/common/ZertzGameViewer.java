@@ -20,6 +20,7 @@ import java.awt.*;
 import java.util.Enumeration;
 import java.util.StringTokenizer;
 
+import common.GameInfo;
 import lib.Graphics;
 import lib.CellId;
 import lib.DefaultId;
@@ -126,7 +127,7 @@ public class ZertzGameViewer extends CCanvas<zCell,GameBoard> implements GameCon
         MouseColors = zMouseColors;
         MouseDotColors = zMouseDotColors;
 
-        b = new GameBoard(info.getString(GAMETYPE, "Zertz"));
+        b = new GameBoard(info.getString(GameInfo.GAMETYPE, "Zertz"));
         useDirectDrawing(true);
         doInit(false);
    }

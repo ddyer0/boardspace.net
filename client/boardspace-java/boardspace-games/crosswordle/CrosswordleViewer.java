@@ -25,6 +25,7 @@ import java.util.*;
 
 import bridge.JMenuItem;
 import bridge.Platform.Style;
+import common.GameInfo;
 import dictionary.Dictionary;
 import dictionary.Entry;
 import lib.Graphics;
@@ -178,7 +179,7 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
         	CrosswordleConstants.putStrings();
         }
         
-        String type = info.getString(GAMETYPE, CrosswordleVariation.Crosswordle_55.name);
+        String type = info.getString(GameInfo.GAMETYPE, CrosswordleVariation.Crosswordle_55.name);
         // recommended procedure is to supply players and randomkey, even for games which
         // are current strictly 2 player and no-randomization.  It will make it easier when
         // later, some variant is created, or the game code base is re purposed as the basis

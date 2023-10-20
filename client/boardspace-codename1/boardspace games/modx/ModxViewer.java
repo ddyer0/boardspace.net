@@ -18,6 +18,7 @@ package modx;
 
 import com.codename1.ui.geom.Rectangle;
 import bridge.Color;
+import common.GameInfo;
 
 /* below here should be the same for codename1 and standard java */
 
@@ -107,7 +108,7 @@ public class ModxViewer extends CCanvas<ModxCell,ModxBoard> implements ModxConst
 
         int randomKey = info.getInt(OnlineConstants.RANDOMSEED,-1);
        
-        b = new ModxBoard(info.getString(GAMETYPE, Variation.Modx.name),
+        b = new ModxBoard(info.getString(GameInfo.GAMETYPE, Variation.Modx.name),
         		randomKey,players_in_game,repeatedPositions,getStartingColorMap(),ModxBoard.REVISION);
         useDirectDrawing(true);
         doInit(false);

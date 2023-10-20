@@ -20,7 +20,7 @@ package volcano;
 
 import com.codename1.ui.geom.Rectangle;
 import bridge.*;
-
+import common.GameInfo;
 import online.common.*;
 import online.game.*;
 import online.game.sgf.*;
@@ -102,7 +102,7 @@ public class VolcanoGameViewer extends CCanvas<VolcanoCell,VolcanoBoard> impleme
         super.init(info,frame);
         int randomKey = sharedInfo.getInt(OnlineConstants.RANDOMSEED,-1);
 
-        b = new VolcanoBoard(randomKey,info.getString(GAMETYPE, "volcano"));
+        b = new VolcanoBoard(randomKey,info.getString(GameInfo.GAMETYPE, "volcano"));
         useDirectDrawing(true); 
         doInit(false);
         

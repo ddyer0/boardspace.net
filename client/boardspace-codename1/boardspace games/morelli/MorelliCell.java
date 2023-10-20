@@ -19,9 +19,8 @@ package morelli;
 import lib.Graphics;
 
 import lib.Random;
-
+import lib.exCanvas;
 import lib.OStack;
-import online.common.exCanvas;
 import online.game.PlacementProvider;
 import online.game.chip;
 import online.game.stackCell;

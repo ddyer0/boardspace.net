@@ -21,7 +21,7 @@ import com.codename1.ui.geom.Point;
 import com.codename1.ui.geom.Rectangle;
 
 import bridge.Color;
-
+import common.GameInfo;
 import online.common.*;
 import online.game.*;
 import online.game.sgf.*;
@@ -237,7 +237,7 @@ public class ContainerViewer extends CCanvas<ContainerCell,ContainerBoard> imple
         speedRect.barColor=ZoomColor;
         speedRect.highlightColor = HighlightColor;
  
-        b = new ContainerBoard(info.getString(GAMETYPE, Container_INIT),
+        b = new ContainerBoard(info.getString(GameInfo.GAMETYPE, Container_INIT),
         		players_in_game,ran,getStartingColorMap());
         if(G.debug()) {
         	ContainerConstants.putStrings();

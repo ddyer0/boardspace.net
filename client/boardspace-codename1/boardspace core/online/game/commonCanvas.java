@@ -41,7 +41,6 @@ import online.common.OnlineConstants;
 import online.common.SeatingChart;
 import online.common.SeatingChart.DefinedSeating;
 import online.common.Session;
-import online.common.exCanvas;
 import online.common.exHashtable;
 import online.game.BaseBoard.BoardState;
 import online.game.export.ViewerProtocol;
@@ -57,6 +56,8 @@ import rpc.RpcInterface;
 import rpc.RpcRemoteServer;
 import rpc.RpcService;
 import vnc.VNCService;
+import vnc.VNCTransmitter;
+import vnc.VncEventInterface;
 import vnc.VncServiceProvider;
 import vnc.VncRemote;
 import online.search.AlphaTreeViewer;
@@ -97,7 +98,7 @@ July 2006 added repeatedPositions related functions
 // TODO: game records can acquire inconsistent times when editing with more than one player, which causes a flood of logged errors
 //
 public abstract class commonCanvas extends exCanvas 
-	implements PlayConstants,OnlineConstants,ViewerProtocol,CanvasProtocol,sgf_names,ActionListener,Opcodes,PlacementProvider
+	implements PlayConstants,OnlineConstants,ViewerProtocol,CanvasProtocol,sgf_names,ActionListener,Opcodes,PlacementProvider,VncEventInterface
 { // state shared with parent frame
     // aux sliders
     public static final String LiftExplanation = "spread stacks for easy viewing";
@@ -271,8 +272,6 @@ public abstract class commonCanvas extends exCanvas
 	    private IconMenu paperclipRestoreMenu = null;
 	    private commonPlayer my = null;
 	    private JCheckBoxMenuItem auxSliders = null;
-	    private JCheckBoxMenuItem debugSwitch = null;
-	    private JCheckBoxMenuItem debugOnceSwitch = null;
 	    private JCheckBoxMenuItem mouseCheckbox = null;
 	    private JMenuItem layoutAction = null;
 		
@@ -1624,7 +1623,7 @@ public abstract class commonCanvas extends exCanvas
      * @param ev
      */
     public void SendNote(String ev)
-    {  	ConnectionManager myNetConn = (ConnectionManager)sharedInfo.get(exHashtable.NETCONN);
+    {  	ConnectionManager myNetConn = (ConnectionManager)sharedInfo.get(NETCONN);
         if(myNetConn!=null) 
         	{ myNetConn.na.getLock();
         	  String seq = "";
@@ -1641,12 +1640,12 @@ public abstract class commonCanvas extends exCanvas
      * @param ev
      */
     private void LogMessage(String ev)
-    { ConnectionManager myNetConn = (ConnectionManager)sharedInfo.get(exHashtable.NETCONN);
+    { ConnectionManager myNetConn = (ConnectionManager)sharedInfo.get(NETCONN);
       if(myNetConn!=null) { myNetConn.LogMessage(ev); }
     }
     
     private void LogMessage(String ev,Object ...od)
-    { ConnectionManager myNetConn = (ConnectionManager)sharedInfo.get(exHashtable.NETCONN);
+    { ConnectionManager myNetConn = (ConnectionManager)sharedInfo.get(NETCONN);
       if(myNetConn!=null) { myNetConn.LogMessage(ev,od); }
     }
     /** draw a mouse sprite for a particular player, and if there is a moving
@@ -4857,6 +4856,16 @@ public abstract class commonCanvas extends exCanvas
         }
         }}
     }
+    public enum ViewSet { Normal(0),Reverse(1),Twist(2);
+    	int value;
+    	ViewSet(int v) { value = v; }
+    }
+    public ViewSet currentViewset = ViewSet.Normal;
+ 
+
+ 
+    public int getAltChipset() { return(currentViewset.value); }
+
 
     private TimeControl timeControl = new TimeControl(TimeControl.Kind.None);
     private TimeControl futureTimeControl = new TimeControl(TimeControl.Kind.None);
@@ -4867,6 +4876,15 @@ public abstract class commonCanvas extends exCanvas
     public void init(ExtendedHashtable info,LFrameProtocol frame)
     {
         super.init(info,frame);
+        
+        SeatingChart chart = (SeatingChart)sharedInfo.get(exHashtable.SEATINGCHART);
+        
+        if(chart!=null)
+        {
+        	if(chart.seatingFaceToFace()) { currentViewset = ViewSet.Reverse; }
+        }
+        else if(G.isTable()) { currentViewset = ViewSet.Reverse; }
+ 
         TimeControl tc = (TimeControl)info.get(exHashtable.TIMECONTROL);
         if(tc==null) { tc = new TimeControl(TimeControl.Kind.None);}
         timeControl = tc;
@@ -4940,8 +4958,7 @@ public abstract class commonCanvas extends exCanvas
 
        if (extraactions)
         {
-        	l.debugSwitch = myFrame.addOption("debug",G.debug(),deferredEvents);
-        	l.debugOnceSwitch = myFrame.addOption("debug once", false,deferredEvents);
+           setNetConsole = myFrame.addAction("Set Net Logger",deferredEvents);
     		hidden.gameTest = myFrame.addAction("In game test",deferredEvents);
         	l.layoutAction = myFrame.addAction("check layouts",deferredEvents);
         	{
@@ -5146,16 +5163,6 @@ public abstract class commonCanvas extends exCanvas
         	checkLayouts();
         	handled = true;
         }
-        else if(target == l.debugSwitch)
-        {
-        	G.putGlobal(G.DEBUG,""+!G.debug());
-        	handled = true;
-        }
-        else if(target == l.debugOnceSwitch)
-        {
-        	G.setDebugOnce();
-        	handled = true;
-        }
         else if("savepanzoom".equals(command) || (target == l.paperclipMenu))
         {	
         	doSavePanZoom("");
@@ -5180,7 +5187,20 @@ public abstract class commonCanvas extends exCanvas
         	useAuxSliders = l.auxSliders.getState();
         	handled = true;
         }
- 
+        else if(target==setNetConsole)
+        {   ConnectionManager myNetConn = (ConnectionManager)sharedInfo.get(NETCONN);
+        	   boolean wasOn = G.getPrinter()!=null;
+        	   if(wasOn) { G.print("Net logger off"); setNetConsole.setText("Start Net logger"); G.setPrinter(null); }
+        	   else 
+        	   { ShellProtocol m = (myNetConn==null) ? null : myNetConn.getPrintStream();
+        	     if(m==null)
+        	     { G.print("Not connected, can't net log"); 
+        	     }
+        	     else { G.setPrinter(m); G.print("Net Logger on"); 
+        	     setNetConsole.setText("Stop Net logger"); }
+        	     }
+        	   return(true);
+        }
         }
         return (handled);
     }
@@ -5211,7 +5231,7 @@ public abstract class commonCanvas extends exCanvas
     	l.panAndZoom.pushNew(pz + specs);
     	if(l.paperclipRestoreMenu!=null) { l.paperclipRestoreMenu.setText(""+l.panAndZoom.size()); }
     	myFrame.setHasSavePanZoom(true);
-    	playASoundClip(clickSound,50); 
+    	playASoundClip(Keyboard.clickSound,50); 
     }
  
     public void doRestorePanZoom(String specs)
@@ -5552,7 +5572,7 @@ public abstract class commonCanvas extends exCanvas
     	if((str!=null) && has)	
         {	if(!l.deferWarningSent)
         	{
-        	if(theChat!=null) { theChat.postMessage(ChatInterface.LOBBYCHANNEL, KEYWORD_LOBBY_CHAT,
+        	if(theChat!=null) { theChat.postMessage(ChatInterface.GAMECHANNEL, ChatInterface.KEYWORD_LOBBY_CHAT,
                 s.get(MovesComingIn));}
         	l.deferWarningSent = true;
         	}
@@ -5822,7 +5842,7 @@ public abstract class commonCanvas extends exCanvas
 
     public String gameName()
     {
-    	return sharedInfo.getString(OnlineConstants.GAMENAME,"gamename");
+    	return sharedInfo.getString(GameInfo.GAMENAME,"gamename");
     }
     public void doSaveCollection()
     {
@@ -6063,7 +6083,7 @@ public abstract class commonCanvas extends exCanvas
     {
         if (ss != null)
         {
-            theChat.sendAndPostMessage(ChatInterface.GAMECHANNEL, KEYWORD_LOBBY_CHAT, "Loading " + ss);
+            theChat.sendAndPostMessage(ChatInterface.GAMECHANNEL, ChatInterface.KEYWORD_LOBBY_CHAT, "Loading " + ss);
             hidden.selectedGame = null;
 
             PrintStream pw = Utf8Printer.getPrinter(System.out);
@@ -6957,7 +6977,7 @@ public boolean replayStandardProps(String name,String value)
     }
     else if (name.equalsIgnoreCase(date_property))
     {
-        theChat.sendAndPostMessage(ChatInterface.GAMECHANNEL, KEYWORD_LOBBY_CHAT,
+        theChat.sendAndPostMessage(ChatInterface.GAMECHANNEL, ChatInterface.KEYWORD_LOBBY_CHAT,
             s.get(PlayedOnDate,value));
         datePlayed = value;
         return(true);
@@ -8745,5 +8765,8 @@ public void verifyGameRecord()
 			os.flush();
 			logError(msg,bs.toString(), err);
 		}
+		VNCTransmitter transmitter = null;
+		private JMenuItem setNetConsole = null;
+		public void setTransmitter(VNCTransmitter m) { transmitter = m; }
 
 }

@@ -20,6 +20,7 @@ import java.awt.*;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenuItem;
 
+import common.GameInfo;
 import lib.Graphics;
 import lib.Image;
 
@@ -111,7 +112,7 @@ public class RithmomachyViewer extends CCanvas<RithmomachyCell,RithmomachyBoard>
 
         int randomKey = info.getInt(OnlineConstants.RANDOMSEED,-1);
        
-        b = new RithmomachyBoard(info.getString(GAMETYPE, Rithmomachy_INIT),
+        b = new RithmomachyBoard(info.getString(GameInfo.GAMETYPE, Rithmomachy_INIT),
         		randomKey,players_in_game,getStartingColorMap());
         useDirectDrawing(true);
         doInit(false);

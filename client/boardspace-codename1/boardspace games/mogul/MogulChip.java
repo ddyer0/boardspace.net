@@ -21,7 +21,7 @@ import lib.Image;
 import lib.ImageLoader;
 import lib.Random;
 import lib.StockArt;
-import online.common.exCanvas;
+import lib.exCanvas;
 import online.game.chip;
 /*
  * generic "playing piece class, provides canonical playing pieces, 

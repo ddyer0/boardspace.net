@@ -21,7 +21,7 @@ import javax.swing.JCheckBoxMenuItem;
 
 import carnac.CarnacChip.FaceColor;
 import carnac.CarnacChip.FaceOrientation;
-
+import common.GameInfo;
 import online.common.*;
 import online.game.*;
 import online.game.sgf.*;
@@ -112,7 +112,7 @@ public class CarnacViewer extends CCanvas<CarnacCell,CarnacBoard> implements Car
 
         int randomKey = info.getInt(OnlineConstants.RANDOMSEED,-1);
        
-        b = new CarnacBoard(info.getString(GAMETYPE, variation.getDefault()),
+        b = new CarnacBoard(info.getString(GameInfo.GAMETYPE, variation.getDefault()),
         		randomKey,getStartingColorMap());
         useDirectDrawing(true);
         doInit(false);

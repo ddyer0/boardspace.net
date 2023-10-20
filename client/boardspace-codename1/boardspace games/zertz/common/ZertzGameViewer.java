@@ -18,6 +18,7 @@ package zertz.common;
 
 import com.codename1.ui.geom.Rectangle;
 import bridge.Color;
+import common.GameInfo;
 
 import java.util.Enumeration;
 import java.util.StringTokenizer;
@@ -128,7 +129,7 @@ public class ZertzGameViewer extends CCanvas<zCell,GameBoard> implements GameCon
         MouseColors = zMouseColors;
         MouseDotColors = zMouseDotColors;
      
-        b = new GameBoard(info.getString(GAMETYPE, "Zertz"));
+        b = new GameBoard(info.getString(GameInfo.GAMETYPE, "Zertz"));
         useDirectDrawing(true);
         doInit(false);
    }

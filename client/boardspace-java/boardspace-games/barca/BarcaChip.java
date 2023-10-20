@@ -21,7 +21,7 @@ import lib.ImageLoader;
 import barca.BarcaConstants.BarcaId;
 import lib.DrawableImageStack;
 import lib.Random;
-import online.common.exCanvas;
+import lib.exCanvas;
 import online.game.chip;
 
 /**

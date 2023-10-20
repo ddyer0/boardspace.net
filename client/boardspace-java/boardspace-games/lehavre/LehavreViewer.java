@@ -26,9 +26,9 @@ import java.util.Vector;
 
 import javax.swing.JFrame;
 
+import common.GameInfo;
 import online.common.LaunchUser;
 import online.common.OnlineConstants;
-import online.common.exCanvas;
 import online.common.exHashtable;
 import lib.ConnectionManager;
 import lib.ExtendedHashtable;
@@ -41,6 +41,7 @@ import lib.Plog;
 import lib.SimpleObservable;
 import lib.SimpleObserver;
 import lib.TimeControl;
+import lib.exCanvas;
 import online.game.BoardProtocol;
 import online.game.CommonMoveStack;
 import online.game.Game;
@@ -87,7 +88,7 @@ class Message implements Serializable
 	public Order order;
 	Message(AddressInterface a,Order o) { addr = a; order=o; }
 }
-public class LehavreViewer extends exCanvas implements ViewerProtocol,NetworkInterface,LeHavreConstants
+public class LehavreViewer extends exCanvas implements OnlineConstants,ViewerProtocol,NetworkInterface,LeHavreConstants
 {	
 	/**
 	 * 
@@ -360,7 +361,7 @@ public class LehavreViewer extends exCanvas implements ViewerProtocol,NetworkInt
 		else { language = "en"; }
 		try { 
 			controller = new LeHavre(this,language,false);
-			String gametype = h.getString(GAMETYPE);
+			String gametype = h.getString(GameInfo.GAMETYPE);
 			if(gametype.equals("LeHavreTest"))
 			{	// this branch is for non-networked testing.
 				standaloneGame = true;

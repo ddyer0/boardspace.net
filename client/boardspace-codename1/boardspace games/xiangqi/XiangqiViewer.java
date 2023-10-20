@@ -19,6 +19,7 @@ package xiangqi;
 
 import com.codename1.ui.geom.Rectangle;
 import bridge.*;
+import common.GameInfo;
 
 import java.util.Hashtable;
 import java.util.StringTokenizer;
@@ -130,7 +131,7 @@ public class XiangqiViewer extends CCanvas<XiangqiCell,XiangqiBoard> implements 
     	MouseDotColors = XiangqiMouseDotColors;
     	MouseColors = XiangqiMouseColors;
     	
-        b = new XiangqiBoard(info.getString(GAMETYPE, Xiangqi_INIT),randomKey,
+        b = new XiangqiBoard(info.getString(GameInfo.GAMETYPE, Xiangqi_INIT),randomKey,
         		repeatedPositions,getStartingColorMap());
         useDirectDrawing(true);
         doInit(false);

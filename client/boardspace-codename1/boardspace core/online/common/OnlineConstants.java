@@ -17,7 +17,6 @@
 package online.common;
 
 import bridge.Config;
-import lib.CellId;
 import lib.G;
 import online.search.RobotProtocol;
 
@@ -47,18 +46,8 @@ public interface OnlineConstants extends Config {
 	static final String EXTRAMOUSE = "extramouse";
 	static final String TESTVERSION = "testversion";
 	
-	static String BOARDCHATPERCENT = "boardchatpercent";
-    static final String challengeSoundName = SOUNDPATH + "racetime" + Config.SoundFormat;
-    static final String clickSound = SOUNDPATH + "click4" + Config.SoundFormat;
     static final String turnChangeSoundName = SOUNDPATH + "turnch"  + SoundFormat;
     static final String UNKNOWNPLAYER = "(unknown)";
-    static enum OnlineId  implements CellId
-    {
-    	HitZoomSlider,
-		HitMagnifier,
-		;
-		public String shortName() { return(name());	}
-    };
     static final String RandomizedMessage = "Random first player";
     static final String RandomPlayerMessage = "No Robot, Random first player";
     static final String FirstPlayerMessage = "No Robot, Player 1 moves first";
@@ -129,13 +118,11 @@ public interface OnlineConstants extends Config {
     static final String guestUID = "3";
     static final String LimboMessage = "LIMBO";
     static final String PlayerNumber = "Player #1";
-    static final String LowMemoryMessage = "Memory is low";
     static final String ShowRulesMessage = "view the rules for this game";
     static final String ConnectionErrorMessage = "Connection error";
     static final String GuestNameMessage = "guest";
     static final String WonOutcome = "Game won by #1";
 
-    static final String DisconnectedString = "You have been disconnected: #1";
     static final String NoLaunchMessage =  "nolaunch"; 
 
 
@@ -158,8 +145,6 @@ public interface OnlineConstants extends Config {
     static final String KEYWORD_ASK = "ask";
     static final String KEYWORD_ANSWER = "answer";
     
-    static final String KEYWORD_LOBBY_CHAT = "lchat";
-    static final String KEYWORD_BADHINT = "badhint";
     static final String KEYWORD_ID = "id";
     
 
@@ -168,8 +153,6 @@ public interface OnlineConstants extends Config {
     static final String RANDOMIZEBOT = "randomize";	// randomize in robot games, default true
     static final String DONOTRECORD = "doNotRecord";
     static final String FRAMENAME = "framename";
-	// parameters expected in the root, supplied in login 
-    static final String GAMETYPE = "GameType";
     static final String GAMEINDEX = "gameindex";
     static final String REVIEWERDIR = "reviewerdir";
     static final String GAME = "game";
@@ -194,6 +177,5 @@ public interface OnlineConstants extends Config {
 	String LATITUDE = "latitude";
 	String LOGITUDE = "logitude";
 	String COUNTRY = "country";
-	String GAMENAME = "GameName";
 	String PREFERREDGAME = "PreferredGame";
  }

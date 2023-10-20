@@ -18,6 +18,8 @@ package online.common;
 
 import java.awt.*;
 
+import lib.ChatInterface;
+
 
 public interface LobbyConstants extends OnlineConstants
 {	
@@ -91,12 +93,11 @@ public interface LobbyConstants extends OnlineConstants
         	RandomPlayerMessage,
         	FirstPlayerMessage,
         	ShowRulesMessage,
-        	LowMemoryMessage,
          	LimboMessage,
          	UNKNOWNPLAYER,
             ConnectionErrorMessage,
             RejoinGameMessage,  //rejoin a game you were playing
-            DisconnectedString,
+            ChatInterface.DisconnectedString,
  
         };
 }

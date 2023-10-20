@@ -84,7 +84,7 @@ public class JWSApplication implements Config,LobbyConstants
 	static String DefaultParameters[][] = {
 			{PLAYERS_IN_GAME,"2"},
 			{ChatInterface.CHATWIDGET,""+USE_CHATWIDGET},
-			{BOARDCHATPERCENT,"25"},
+			{ChatInterface.BOARDCHATPERCENT,"25"},
 			{G.DEBUG, "false"},
 			{RANDOMSEED,"-1"},
 	        {GAMEINDEX,"-1"},	// game index for save game
@@ -104,8 +104,8 @@ public class JWSApplication implements Config,LobbyConstants
 	        // trigger the applet client to look for the parameter
 	        // among the applet parameters.
 	        //
-			{GAMENAME,null},		// a file name, not a game type
-			{GAMETYPE,null},
+			{GameInfo.GAMENAME,null},		// a file name, not a game type
+			{GameInfo.GAMETYPE,null},
 			{VIEWERCLASS,null},
 			{G.VNCCLIENT,"false"},
 			{G.ALLOWOFFLINEROBOTS,"false"},
@@ -188,8 +188,8 @@ public class JWSApplication implements Config,LobbyConstants
     {	try {
         Http.setDefaultProtocol(G.getString(PROTOCOL,null));
         InternationalStrings.initLanguage();
-        boolean isViewer = (G.getString(OnlineConstants.GAMENAME,null)!=null)
-        					|| (G.getString(OnlineConstants.GAMETYPE, null)!=null);
+        boolean isViewer = (G.getString(GameInfo.GAMENAME,null)!=null)
+        					|| (G.getString(GameInfo.GAMETYPE, null)!=null);
         if(isViewer) { G.setOffline(true); }
     	boolean offline = G.offline() ;
         boolean isVNC = G.getBoolean(G.VNCCLIENT,false);
@@ -211,7 +211,7 @@ public class JWSApplication implements Config,LobbyConstants
             					? server.getHostName()
             					: isTable 
             						? UDPService.getPlaytableName()
-            						: G.getString(OnlineConstants.GAMETYPE,
+            						: G.getString(GameInfo.GAMETYPE,
             								G.getTranslations().get(offlineLauncher?LauncherName :LobbyName));
             ExtendedHashtable sharedInfo = G.getGlobals();
             myL.init(sharedInfo,fr);

@@ -17,10 +17,11 @@
 package crossfire;
 
 import bridge.*;
+import common.GameInfo;
+
 import com.codename1.ui.geom.Rectangle;
 
 
-import online.common.*;
 import java.util.*;
 
 import lib.Graphics;
@@ -160,7 +161,7 @@ public class CrossfireViewer extends CCanvas<CrossfireCell,CrossfireBoard> imple
         zoomRect.highlightColor = ZoomHighlightColor;
         zoomRect.helpText = s.get(AdjustChipSpacing);
         
-        bb = new CrossfireBoard(info.getString(OnlineConstants.GAMETYPE, Crossfire_INIT),
+        bb = new CrossfireBoard(info.getString(GameInfo.GAMETYPE, Crossfire_INIT),
         		repeatedPositions,getStartingColorMap());
         useDirectDrawing(true);
         doInit(false);

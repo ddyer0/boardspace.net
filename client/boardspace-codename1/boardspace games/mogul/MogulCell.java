@@ -21,7 +21,7 @@ import lib.Graphics;
 import lib.HitPoint;
 import lib.OStack;
 import lib.Random;
-import online.common.exCanvas;
+import lib.exCanvas;
 import online.game.stackCell;
 
 class CellStack extends OStack<MogulCell>

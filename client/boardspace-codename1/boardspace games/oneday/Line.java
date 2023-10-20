@@ -22,12 +22,12 @@ import com.codename1.ui.geom.Rectangle;
 
 import java.util.StringTokenizer;
 
-import online.common.exCanvas;
 import lib.G;
 import lib.GC;
 import lib.OStack;
 import lib.Random;
 import lib.StockArt;
+import lib.exCanvas;
 
 class LineStack extends OStack<Line>
 {

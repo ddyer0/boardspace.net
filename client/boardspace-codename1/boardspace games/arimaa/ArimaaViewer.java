@@ -22,7 +22,7 @@ package arimaa;
 import com.codename1.ui.geom.Rectangle;
 import bridge.Color;
 import bridge.JCheckBoxMenuItem;
-
+import common.GameInfo;
 import bridge.Config;
 import java.util.Enumeration;
 import java.util.Hashtable;
@@ -161,7 +161,7 @@ public class ArimaaViewer extends CCanvas<ArimaaCell,ArimaaBoard> implements Ari
         int randomKey = sharedInfo.getInt(OnlineConstants.RANDOMSEED,-1);
         
         
-        b = new ArimaaBoard(info.getString(GAMETYPE, Arimaa_Init),randomKey,
+        b = new ArimaaBoard(info.getString(GameInfo.GAMETYPE, Arimaa_Init),randomKey,
         		repeatedPositions, getStartingColorMap());
     	useDirectDrawing(true);
         doInit(false);

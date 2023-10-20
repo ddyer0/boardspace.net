@@ -30,6 +30,8 @@ import lib.*;
 import java.util.Enumeration;
 import java.util.StringTokenizer;
 
+import common.GameInfo;
+
 /*
 Change History
 
@@ -86,7 +88,7 @@ public class YinshGameViewer extends CCanvas<YinshCell,YinshBoard> implements Yi
     public void init(ExtendedHashtable info,LFrameProtocol frame)
     {	enableAutoDone = true;
         super.init(info,frame);
-        b = new YinshBoard(info.getString(GAMETYPE, "Yinsh"),getStartingColorMap());
+        b = new YinshBoard(info.getString(GameInfo.GAMETYPE, "Yinsh"),getStartingColorMap());
         useDirectDrawing(true); 
         doInit(false);
    }

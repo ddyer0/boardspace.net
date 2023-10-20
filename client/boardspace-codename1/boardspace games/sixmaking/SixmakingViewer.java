@@ -17,6 +17,8 @@
 package sixmaking;
 
 import bridge.*;
+import common.GameInfo;
+
 import com.codename1.ui.geom.Rectangle;
 /* below here should be the same for codename1 and standard java */
 import online.common.*;
@@ -107,7 +109,7 @@ public class SixmakingViewer extends CCanvas<SixmakingCell,SixmakingBoard> imple
 
         int randomKey = info.getInt(OnlineConstants.RANDOMSEED,-1);
        
-        b = new SixmakingBoard(info.getString(GAMETYPE, Variation.Sixmaking.name),
+        b = new SixmakingBoard(info.getString(GameInfo.GAMETYPE, Variation.Sixmaking.name),
         		randomKey,players_in_game,repeatedPositions,getStartingColorMap());
         useDirectDrawing(true);
         doInit(false);

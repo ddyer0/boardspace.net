@@ -19,7 +19,6 @@ package lib;
 import com.codename1.ui.Font;
 import com.codename1.ui.geom.Rectangle;
 import bridge.Color;
-import online.common.exCanvas;
 
 /** buttons on the calculator */
 public class CalculatorButton {

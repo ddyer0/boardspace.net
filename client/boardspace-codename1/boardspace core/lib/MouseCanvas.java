@@ -19,7 +19,6 @@ package lib;
 import bridge.MouseEvent;
 import bridge.MouseWheelEvent;
 import bridge.Canvas;
-import online.common.OnlineConstants.OnlineId;
 
 @SuppressWarnings("serial")
 public class MouseCanvas extends Canvas implements MouseClient,DeferredEventHandler
@@ -120,7 +119,7 @@ public class MouseCanvas extends Canvas implements MouseClient,DeferredEventHand
 
 	private double globalRotation = 0.0;
 	private double previousZoomValue = 0.0;
-	private Slider globalZoomRect = new Slider(G.getTranslations().get(ZoomMessage),OnlineId.HitZoomSlider);
+	private Slider globalZoomRect = new Slider(G.getTranslations().get(ZoomMessage),exCanvas.OnlineId.HitZoomSlider);
     public IconMenu zoomMenu = null;
     public SliderMenu sliderMenu = null;
 

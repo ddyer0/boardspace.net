@@ -22,7 +22,7 @@ import lib.Image;
 
 import lib.ImageLoader;
 import lib.Random;
-import online.common.exCanvas;
+import lib.exCanvas;
 
 /*
  * extension of EuphoriaChip for recruit cards.  Remember that these are treated as Immutable.

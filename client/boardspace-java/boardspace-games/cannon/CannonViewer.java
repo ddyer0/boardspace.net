@@ -20,6 +20,7 @@ import java.awt.*;
 import javax.swing.JCheckBoxMenuItem;
 
 import bridge.Config;
+import common.GameInfo;
 import online.game.*;
 import online.game.sgf.*;
 import online.search.SimpleRobotProtocol;
@@ -99,7 +100,7 @@ public class CannonViewer extends CCanvas<CannonCell,CannonBoard> implements Can
         super.init(info,frame);
         MouseColors = CannonMouseColors;
         MouseDotColors = CannonMouseDotColors;
-        b = new CannonBoard(info.getString(GAMETYPE, Cannon_INIT),
+        b = new CannonBoard(info.getString(GameInfo.GAMETYPE, Cannon_INIT),
         		getStartingColorMap());
         useDirectDrawing(true);
         doInit(false);

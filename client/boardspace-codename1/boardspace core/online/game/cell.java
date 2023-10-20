@@ -20,7 +20,6 @@ import com.codename1.ui.geom.Rectangle;
 import bridge.Color;
 import com.codename1.ui.Font;
 
-import online.common.*;
 import lib.*;
 
 /** this is the common cell which can be used by all boards.
@@ -902,7 +901,7 @@ public abstract class cell<FINALTYPE
      * @param SQUARESIZE
      * @param e_x
      * @param e_y
-     * @param thislabel draw this text using {@link online.common.exCanvas#labelFont labelFont} and {@link online.common.exCanvas#labelColor labelColor}
+     * @param thislabel draw this text using {@link lib.exCanvas#labelFont labelFont} and {@link lib.exCanvas#labelColor labelColor}
      */
     public void drawChip(Graphics gc,exCanvas drawOn,chip<?> piece,int SQUARESIZE,int e_x,int e_y,String thislabel)
     {	drawChip(gc,drawOn,piece,SQUARESIZE,1.0,e_x,e_y,thislabel);

@@ -23,6 +23,8 @@ import lib.Graphics;
 import lib.Image;
 import online.common.*;
 import java.util.*;
+
+import common.GameInfo;
 import lib.*;
 import online.game.*;
 /**
@@ -129,7 +131,7 @@ public class SyzygyViewer extends CCanvas<SyzygyCell,SyzygyBoard> implements Syz
         labelColor = Color.red;
         labelFont = largeBoldFont();
         
-        bb = new SyzygyBoard(info.getString(OnlineConstants.GAMETYPE, "syzygy"));
+        bb = new SyzygyBoard(info.getString(GameInfo.GAMETYPE, "syzygy"));
         useDirectDrawing(true);
         doInit(false,randomKey);
     }

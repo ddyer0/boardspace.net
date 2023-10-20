@@ -25,6 +25,7 @@ import online.search.SimpleRobotProtocol;
 
 import java.util.*;
 
+import common.GameInfo;
 import lib.Graphics;
 import lib.Image;
 import lib.CellId;
@@ -139,7 +140,7 @@ public class OctilesViewer extends CCanvas<OctilesCell,OctilesBoard> implements 
         MouseColors = OctilesMouseColors;
         MouseDotColors = OctilesMouseDotColors;
         int map[]=getStartingColorMap();
-        b = new OctilesBoard(info.getString(OnlineConstants.GAMETYPE, Octiles_INIT),players_in_game,
+        b = new OctilesBoard(info.getString(GameInfo.GAMETYPE, Octiles_INIT),players_in_game,
         		randomKey,map);
         useDirectDrawing(true);
         doInit(false);

@@ -24,6 +24,7 @@ import online.search.SimpleRobotProtocol;
 
 import java.util.*;
 
+import common.GameInfo;
 import lib.Graphics;
 import lib.Image;
 import lib.CellId;
@@ -148,7 +149,7 @@ public class MicropulViewer extends CCanvas<MicropulCell,MicropulBoard> implemen
    
         int randomKey = sharedInfo.getInt(OnlineConstants.RANDOMSEED,-1);
 
-        bb = new MicropulBoard(randomKey,info.getString(GAMETYPE, Micropul_INIT),getStartingColorMap());
+        bb = new MicropulBoard(randomKey,info.getString(GameInfo.GAMETYPE, Micropul_INIT),getStartingColorMap());
         useDirectDrawing(true); 
         doInit(false);
     }

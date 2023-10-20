@@ -19,6 +19,7 @@ package morris;
 import java.awt.*;
 import javax.swing.JMenuItem;
 
+import common.GameInfo;
 import online.common.*;
 import online.game.*;
 import online.game.sgf.*;
@@ -112,7 +113,7 @@ public class MorrisViewer extends CCanvas<MorrisCell,MorrisBoard> implements Mor
 
         int randomKey = info.getInt(OnlineConstants.RANDOMSEED,-1);
        
-        b = new MorrisBoard(info.getString(GAMETYPE, Variation.Morris_9.name),randomKey,players_in_game,repeatedPositions,
+        b = new MorrisBoard(info.getString(GameInfo.GAMETYPE, Variation.Morris_9.name),randomKey,players_in_game,repeatedPositions,
         		getStartingColorMap());
         useDirectDrawing(true);
         doInit(false);

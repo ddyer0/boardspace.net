@@ -18,6 +18,8 @@ package oneday;
 
 import static com.codename1.util.MathUtil.atan2;
 import bridge.Color;
+import common.GameInfo;
+
 import com.codename1.ui.geom.Point;
 import com.codename1.ui.geom.Rectangle;
 
@@ -170,7 +172,7 @@ public class OnedayViewer extends CCanvas<OnedayCell,OnedayBoard> implements One
 
         int randomKey = info.getInt(OnlineConstants.RANDOMSEED,-1);
        
-        b = new OnedayBoard(info.getString(GAMETYPE, OnedayVariation.Standard.name),randomKey,players_in_game);
+        b = new OnedayBoard(info.getString(GameInfo.GAMETYPE, OnedayVariation.Standard.name),randomKey,players_in_game);
         //useDirectDrawing(); // not tested yet
         doInit(false);
 

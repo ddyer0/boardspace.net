@@ -20,7 +20,7 @@ import lib.Graphics;
 import lib.Image;
 import lib.ImageLoader;
 import lib.Random;
-import online.common.exCanvas;
+import lib.exCanvas;
 import online.game.chip;
 
 /* a generic icehouse piece, 3 sizes and n colors

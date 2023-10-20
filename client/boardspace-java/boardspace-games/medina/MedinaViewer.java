@@ -20,6 +20,7 @@ import java.awt.Rectangle;
 import java.awt.Font;
 import javax.swing.JCheckBoxMenuItem;
 
+import common.GameInfo;
 import lib.Graphics;
 import lib.Image;
 import online.common.*;
@@ -125,7 +126,7 @@ public class MedinaViewer extends CCanvas<MedinaCell,MedinaBoard> implements Med
         MouseColors = MedinaMouseColors;
         MouseDotColors = MedinaMouseDotColors;
         int randomKey = info.getInt(OnlineConstants.RANDOMSEED,-1);
-        String game = info.getString(GAMETYPE, Variation.Medina_V1.shortName);
+        String game = info.getString(GameInfo.GAMETYPE, Variation.Medina_V1.shortName);
         b = new MedinaBoard(game,randomKey,players_in_game,getStartingColorMap(),MedinaBoard.REVISION);
         //useDirectDrawing(); // not tested yet
         doInit(false);

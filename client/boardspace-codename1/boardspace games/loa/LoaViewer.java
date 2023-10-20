@@ -17,6 +17,8 @@
 package loa;
 
 import bridge.Color;
+import common.GameInfo;
+
 import com.codename1.ui.geom.Rectangle;
 
 import lib.Graphics;
@@ -379,7 +381,7 @@ public class LoaViewer extends commonCanvas implements UIC,GameLayoutClient
         MouseDotColors = LoaMouseDotColors;
         MouseColors = LoaMouseColors;
         long randomKey = stuff.getInt(OnlineConstants.RANDOMSEED,-1);
-        b = new Loa_Board(sharedInfo.getString(GAMETYPE,"LOA"),getStartingColorMap(),randomKey);
+        b = new Loa_Board(sharedInfo.getString(GameInfo.GAMETYPE,"LOA"),getStartingColorMap(),randomKey);
         useDirectDrawing(true);
         doInit(false);
    }

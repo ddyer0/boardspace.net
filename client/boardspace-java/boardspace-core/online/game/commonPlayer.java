@@ -30,12 +30,13 @@ import lib.SimpleObservable;
 import lib.SimpleObserver;
 import lib.Sort;
 import lib.StockArt;
+import lib.exCanvas;
 import online.common.*;
 import online.search.SimpleRobotProtocol;
 
 /** this class holds information about players.  It's used by both the game controller
  * and the game client.  Rectangles defined in the player object should be laid out
- * by the game's {@link online.common.exCanvas#setLocalBounds} method
+ * by the game's {@link lib.exCanvas#setLocalBounds} method
  *
  */
 public class commonPlayer implements Opcodes,lib.CompareTo<commonPlayer>

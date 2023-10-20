@@ -24,6 +24,7 @@ import online.search.SimpleRobotProtocol;
 import java.awt.*;
 import java.util.*;
 
+import common.GameInfo;
 import lib.Graphics;
 import lib.Image;
 import lib.CellId;
@@ -109,7 +110,7 @@ public class TicTacNineViewer extends CCanvas<TicTacNineCell,TicTacNineBoard> im
 
         int randomKey = info.getInt(OnlineConstants.RANDOMSEED,-1);
        
-        b = new TicTacNineBoard(info.getString(GAMETYPE, TicTacNine_INIT),randomKey);
+        b = new TicTacNineBoard(info.getString(GameInfo.GAMETYPE, TicTacNine_INIT),randomKey);
         doInit(false);
  
         

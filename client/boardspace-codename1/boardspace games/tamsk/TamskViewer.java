@@ -18,6 +18,7 @@ package tamsk;
 
 import com.codename1.ui.geom.Rectangle;
 import bridge.*;
+import common.GameInfo;
 
 import static tamsk.Tamskmovespec.*;
 import online.common.*;
@@ -197,7 +198,7 @@ public class TamskViewer extends CCanvas<TamskCell,TamskBoard> implements TamskC
         	TamskConstants.putStrings();
         }
          
-        String type = info.getString(GAMETYPE, TamskVariation.tamsk.name);
+        String type = info.getString(GameInfo.GAMETYPE, TamskVariation.tamsk.name);
         // recommended procedure is to supply players and randomkey, even for games which
         // are current strictly 2 player and no-randomization.  It will make it easier when
         // later, some variant is created, or the game code base is re purposed as the basis

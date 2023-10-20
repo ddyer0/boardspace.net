@@ -19,9 +19,8 @@ package qyshinsu;
 import lib.Graphics;
 import lib.Image;
 
-import online.common.*;
-
 import lib.Random;
+import lib.exCanvas;
 import lib.ImageLoader;
 import lib.OStack;
 import online.game.*;

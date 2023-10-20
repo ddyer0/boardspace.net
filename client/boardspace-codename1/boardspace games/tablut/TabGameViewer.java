@@ -17,6 +17,8 @@
 package tablut;
 
 import bridge.*;
+import common.GameInfo;
+
 import com.codename1.ui.geom.Point;
 import com.codename1.ui.geom.Rectangle;
 
@@ -141,7 +143,7 @@ public class TabGameViewer extends CCanvas<TabCell,TabGameBoard> implements TabC
     {
         super.init(info,frame);
        
-        b = new TabGameBoard(info.getString(GAMETYPE, Default_Tablut_Game),getStartingColorMap());
+        b = new TabGameBoard(info.getString(GameInfo.GAMETYPE, Default_Tablut_Game),getStartingColorMap());
         useDirectDrawing(true);
         doInit(false);
    }

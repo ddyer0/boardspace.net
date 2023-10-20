@@ -29,10 +29,8 @@ public interface exHashtable
 {
 	static final long serialVersionUID = 1L;
     public static final String LOBBY = "lobby";				// the lobby itself
-    public static final String MYXM = "expectedReplies";	// expected reply sequences
     public static final String MYPLAYER = "myplayer";
     public static final String MYGAME = "mygameinstance";	// the game instance
-	public static final String NETCONN = "netconn";			// network connection manager
 	public static final String MYINFO = "myinfo";			// user misc info
     public static final String GAME = "game";					// the associated game object
     
@@ -43,7 +41,6 @@ public interface exHashtable
      */
     public static final String NUMBER_OF_PLAYER_CONNECTIONS = "numberOfPlayerConnections";
     public static final String SEATINGCHART = "seatingchart";
-    public static final String GAMEINFO = "gameinfo";
     public static final String TIMECONTROL = "timecontrol";
     
     

@@ -18,9 +18,6 @@ package lib;
 
 import static com.codename1.util.MathUtil.exp;
 import static java.lang.Math.*;
-
-
-import online.common.exCanvas;
 /**
  * this is a mostly simple implementation of {@link SpriteProtocol}, which should be adequate
  * for any simple requirement to drag a sprite across the screen. 

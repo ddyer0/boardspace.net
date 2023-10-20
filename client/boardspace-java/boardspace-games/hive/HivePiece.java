@@ -29,7 +29,7 @@ import hive.HiveConstants.PieceType;
 import lib.G;
 import lib.OStack;
 import lib.Random;
-import online.common.exCanvas;
+import lib.exCanvas;
 import online.game.chip;
 
 class ChipStack extends OStack<HivePiece>

@@ -24,6 +24,7 @@ import lib.Graphics;
 import java.awt.Rectangle;
 import java.net.URL;
 import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 
 import common.GameInfo;
@@ -49,9 +50,11 @@ import lib.StockArt;
 import lib.TextButton;
 import lib.TextContainer;
 import lib.commonPanel;
+import lib.exCanvas;
 import online.common.SeatingChart.Seating;
 import rpc.RpcService;
 import udp.UDPService;
+import vnc.AuxViewer;
 import vnc.VNCService;
 import static util.PasswordCollector.VersionMessage;
 
@@ -158,6 +161,8 @@ public class SeatingViewer extends exCanvas implements LobbyConstants
         	InternationalStrings.put(SeatingViewer.SeatingStrings);
         	InternationalStrings.put(SeatingViewer.SeatingStringPairs);
         }
+        startserver = myFrame.addAction((VNCService.isVNCServer()||RpcService.isRpcServer()) ? "stop server" : "start server",deferredEvents);
+
         String name = UDPService.getPlaytableName();
         namefield.setText(name);
         namefield.singleLine = true;
@@ -166,7 +171,8 @@ public class SeatingViewer extends exCanvas implements LobbyConstants
         autoDone = myFrame.addOption(s.get(AutoDoneEverywhere),Default.getBoolean(Default.autodone),deferredEvents);
         autoDone.setForeground(Color.blue);
        // this starts the servers that listen for connections from side screens
-        
+        if(extraactions) { startviewer = myFrame.addAction("start viewer",deferredEvents); }
+       
         favoriteGames.reloadGameList(FAVORITES);
         recentGames.reloadGameList(RECENTS);
         
@@ -1313,10 +1319,43 @@ public class SeatingViewer extends exCanvas implements LobbyConstants
 			}
 			
 		}
+	    if (target == startserver)  
+	 			{ 
+	    	   	 boolean running = VNCService.isVNCServer()||RpcService.isRpcServer(); 
+	    	   	 if(!running) { UDPService.start(true); } else { UDPService.stop(); }
+	    	   	 VNCService.runVNCServer(!running);
+	    	   	 RpcService.runRpcServer(!running);
+	    	     startserver.setText(running ? "start server" : "stop server");
+	    	   	 return(true);
+	 			}
+	    if (target == startviewer)  
+				{ 
+	    	   	vncViewer = doViewer(sharedInfo);
+				 return(true);
+				}
 
 		return(false);
 	}
-	
+    private AuxViewer doViewer(ExtendedHashtable sharedInfo)
+    {  
+    	commonPanel panel = (commonPanel)new commonPanel();
+    	LFrameProtocol frame;
+    	AuxViewer viewer = (AuxViewer)new vnc.AuxViewer();
+    	if(viewer!=null)
+    	{
+    	frame = LPanel.newLFrame("VNC viewer",panel);
+    	viewer.init(sharedInfo,frame);
+    	panel.setCanvas(viewer);
+    	viewer.setVisible(true);
+    	double scale = G.getDisplayScale();
+    	frame.setInitialBounds(100,100,(int)(scale*800),(int)(scale*600));
+    	frame.setVisible(true);
+    	panel.start();
+    	}
+    	return(viewer);
+    }
+    
+ 
 	static String SoloMode = "Solo review of games";
 	static String NPlayerMode = "Games for #1 Players";
 	static String CategoriesMode = "Categories";
@@ -1397,6 +1436,12 @@ public class SeatingViewer extends exCanvas implements LobbyConstants
 	 public void shutDown()
 	 {
 		 super.shutDown();
+		 SeatingViewer sv = seatingViewer;
+		 if(sv!=null) { seatingViewer = null; sv.shutDown(); }
+  
+		 AuxViewer v = vncViewer;
+     	 if(v!=null) { vncViewer = null; v.shutDown(); }
+
 		 if(REMOTEVNC) { VNCService.stopVNCServer(); }
 		 if(REMOTERPC) { RpcService.stopRpcServer(); }	
 		 LFrameProtocol f = myFrame;
@@ -1433,6 +1478,10 @@ public class SeatingViewer extends exCanvas implements LobbyConstants
     }
     private Keyboard keyboard = null;
 	private boolean useKeyboard = G.isCodename1();
+	private JMenuItem startserver = null; //for testing, disable the transmitter
+	private SeatingViewer seatingViewer = null;
+	private AuxViewer vncViewer = null;
+	private JMenuItem startviewer = null; //for testing, disable the transmitter
     public void createKeyboard()
     {	if(useKeyboard)
     	{

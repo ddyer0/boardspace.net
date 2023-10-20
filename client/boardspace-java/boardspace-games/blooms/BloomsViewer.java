@@ -23,6 +23,7 @@ import static blooms.Bloomsmovespec.*;
 import online.common.*;
 import java.util.*;
 
+import common.GameInfo;
 import lib.Graphics;
 import lib.CellId;
 import lib.ExtendedHashtable;
@@ -156,7 +157,7 @@ public class BloomsViewer extends CCanvas<BloomsCell,BloomsBoard> implements Blo
         }
          
         
-        String type = info.getString(GAMETYPE, BloomsVariation.blooms_4.name);
+        String type = info.getString(GameInfo.GAMETYPE, BloomsVariation.blooms_4.name);
         // recommended procedure is to supply players and randomkey, even for games which
         // are current strictly 2 player and no-randomization.  It will make it easier when
         // later, some variant is created, or the game code base is re purposed as the basis

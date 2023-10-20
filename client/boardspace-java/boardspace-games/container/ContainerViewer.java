@@ -30,6 +30,7 @@ import vnc.VNCService;
 
 import java.util.*;
 
+import common.GameInfo;
 import lib.*;
 import lib.SimpleSprite.Movement;
 
@@ -236,7 +237,7 @@ public class ContainerViewer extends CCanvas<ContainerCell,ContainerBoard> imple
         speedRect.barColor=ZoomColor;
         speedRect.highlightColor = HighlightColor;
  
-        b = new ContainerBoard(info.getString(GAMETYPE, Container_INIT),
+        b = new ContainerBoard(info.getString(GameInfo.GAMETYPE, Container_INIT),
         		players_in_game,ran,getStartingColorMap());
         if(G.debug()) {
         	ContainerConstants.putStrings();

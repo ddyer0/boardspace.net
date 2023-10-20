@@ -19,7 +19,7 @@ package plateau.common;
 import java.awt.*;
 import javax.swing.JCheckBoxMenuItem;
 
-
+import common.GameInfo;
 import lib.CellId;
 import lib.ChatInterface;
 import lib.DefaultId;
@@ -194,7 +194,7 @@ public class PlateauGameViewer extends commonCanvas implements PlateauConstants,
         MouseColors = new Color[] {Color.black,Color.white};
         MouseDotColors = new Color[] { Color.white,Color.black};
         
-        b = new PlateauBoard(info.getString(GAMETYPE, "Plateau"));
+        b = new PlateauBoard(info.getString(GameInfo.GAMETYPE, "Plateau"));
         // believed to be difficult 5/2022
         // useDirectDrawing(true); // not tested yet
         doInit(false);

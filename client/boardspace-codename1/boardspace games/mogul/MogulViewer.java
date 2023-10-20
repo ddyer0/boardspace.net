@@ -17,6 +17,7 @@
 package mogul;
 
 import bridge.*;
+import common.GameInfo;
 
 import com.codename1.ui.Font;
 import com.codename1.ui.geom.Rectangle;
@@ -125,7 +126,7 @@ public class MogulViewer extends CCanvas<MogulCell,MogulBoard> implements MogulC
         int randomKey = info.getInt(OnlineConstants.RANDOMSEED,-1);
         int np = Math.max(2,info.getInt(OnlineConstants.PLAYERS_IN_GAME));
         adjustPlayers(np);
-        b = new MogulBoard(this,info.getString(GAMETYPE, Mogul_INIT),
+        b = new MogulBoard(this,info.getString(GameInfo.GAMETYPE, Mogul_INIT),
         		randomKey,np,getStartingColorMap());
         if(G.debug()) 
         	{ InternationalStrings.put(MogulStrings);

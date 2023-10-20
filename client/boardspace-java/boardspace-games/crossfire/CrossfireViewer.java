@@ -19,6 +19,8 @@ package crossfire;
 import java.awt.*;
 import javax.swing.JCheckBoxMenuItem;
 
+import common.GameInfo;
+
 import java.util.*;
 
 import lib.Graphics;
@@ -30,7 +32,6 @@ import lib.GC;
 import lib.HitPoint;
 import lib.LFrameProtocol;
 import lib.StockArt;
-import online.common.OnlineConstants;
 import online.game.*;
 import online.game.sgf.sgf_node;
 import online.game.sgf.sgf_property;
@@ -159,7 +160,7 @@ public class CrossfireViewer extends CCanvas<CrossfireCell,CrossfireBoard> imple
         zoomRect.highlightColor = ZoomHighlightColor;
         zoomRect.helpText = s.get(AdjustChipSpacing);
         
-        bb = new CrossfireBoard(info.getString(OnlineConstants.GAMETYPE, Crossfire_INIT),
+        bb = new CrossfireBoard(info.getString(GameInfo.GAMETYPE, Crossfire_INIT),
         		repeatedPositions,getStartingColorMap());
         useDirectDrawing(true);
         doInit(false);

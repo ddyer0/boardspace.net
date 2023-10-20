@@ -35,7 +35,7 @@ import lib.OStack;
 import lib.Random;
 import lib.StackIterator;
 import lib.StockArt;
-import online.common.exCanvas;
+import lib.exCanvas;
 import online.game.chip;
 
 class ChipStack extends OStack<ViticultureChip>

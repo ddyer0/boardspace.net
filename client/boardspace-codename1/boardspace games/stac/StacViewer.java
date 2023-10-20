@@ -19,7 +19,7 @@ package stac;
 
 import com.codename1.ui.geom.Rectangle;
 import bridge.*;
-
+import common.GameInfo;
 import online.common.*;
 import online.game.*;
 import online.game.sgf.sgf_node;
@@ -110,7 +110,7 @@ public class StacViewer extends CCanvas<StacCell,StacBoard>	implements StacConst
 
         int randomKey = info.getInt(OnlineConstants.RANDOMSEED,-1);
        
-        b = new StacBoard(info.getString(GAMETYPE, Variation.Stac.name),
+        b = new StacBoard(info.getString(GameInfo.GAMETYPE, Variation.Stac.name),
         		randomKey,players_in_game,repeatedPositions,getStartingColorMap(),StacBoard.REVISION);
         useDirectDrawing(true);
         doInit(false);

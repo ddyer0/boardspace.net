@@ -25,6 +25,7 @@ import online.search.SimpleRobotProtocol;
 
 import java.util.*;
 
+import common.GameInfo;
 import lib.Graphics;
 import lib.Image;
 import lib.CellId;
@@ -100,7 +101,7 @@ public class PonteViewer extends CCanvas<PonteCell,PonteBoard> implements PonteC
 
         int randomKey = info.getInt(OnlineConstants.RANDOMSEED,-1);
        
-        b = new PonteBoard(info.getString(GAMETYPE, Ponte_INIT),randomKey,
+        b = new PonteBoard(info.getString(GameInfo.GAMETYPE, Ponte_INIT),randomKey,
         		players_in_game,getStartingColorMap());
         useDirectDrawing(true);
         doInit(false);

@@ -21,6 +21,7 @@ import java.awt.*;
 import java.util.Hashtable;
 import java.util.StringTokenizer;
 
+import common.GameInfo;
 import online.common.*;
 import lib.Graphics;
 import lib.Image;
@@ -100,7 +101,7 @@ public class TriadViewer extends CCanvas<TriadCell,TriadBoard> implements TriadC
         MouseDotColors = TriadMouseDotColors; 
         
         // use_grid=reviewer;// use this to turn the grid letters off by default      
-        bb = new TriadBoard(info.getString(GAMETYPE, Triad_INIT),
+        bb = new TriadBoard(info.getString(GameInfo.GAMETYPE, Triad_INIT),
         		getStartingColorMap());
         useDirectDrawing(true); 
         doInit(false);

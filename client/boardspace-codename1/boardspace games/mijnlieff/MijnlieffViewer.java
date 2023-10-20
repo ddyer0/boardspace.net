@@ -18,6 +18,7 @@ package mijnlieff;
 
 import com.codename1.ui.geom.Rectangle;
 import bridge.Color;
+import common.GameInfo;
 
 import static mijnlieff.Mijnlieffmovespec.*;
 import online.common.*;
@@ -158,7 +159,7 @@ public class MijnlieffViewer extends CCanvas<MijnlieffCell,MijnlieffBoard> imple
         }
          
         
-        String type = info.getString(GAMETYPE, MijnlieffVariation.Mijnlieff.name);
+        String type = info.getString(GameInfo.GAMETYPE, MijnlieffVariation.Mijnlieff.name);
         // recommended procedure is to supply players and randomkey, even for games which
         // are current strictly 2 player and no-randomization.  It will make it easier when
         // later, some variant is created, or the game code base is re purposed as the basis

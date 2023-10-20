@@ -17,6 +17,9 @@
 package veletas;
 
 import javax.swing.JCheckBoxMenuItem;
+
+import common.GameInfo;
+
 import java.awt.*;
 
 /* below here should be the same for codename1 and standard java */
@@ -113,7 +116,7 @@ public class VeletasViewer extends CCanvas<VeletasCell,VeletasBoard> implements 
 
         int randomKey = info.getInt(OnlineConstants.RANDOMSEED,-1);
        
-        b = new VeletasBoard(info.getString(GAMETYPE, Variation.Veletas_10.name),
+        b = new VeletasBoard(info.getString(GameInfo.GAMETYPE, Variation.Veletas_10.name),
         		randomKey,players_in_game,getStartingColorMap(),VeletasBoard.REVISION);
         doInit(false);
     	useDirectDrawing(true);

@@ -17,8 +17,6 @@
 package lib;
 
 import java.awt.Color;
-
-import online.common.exCanvas;
 /**
  * a simple drawable bar, intended to be embedded in a text glyph
  * @author Ddyer

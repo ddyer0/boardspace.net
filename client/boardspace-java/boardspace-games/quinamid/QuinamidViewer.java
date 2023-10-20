@@ -26,6 +26,7 @@ import online.search.SimpleRobotProtocol;
 import java.util.*;
 
 import bridge.Config;
+import common.GameInfo;
 import lib.Graphics;
 import lib.Image;
 import lib.CellId;
@@ -133,7 +134,7 @@ public class QuinamidViewer extends CCanvas<QuinamidCell,QuinamidBoard> implemen
         	row += r.nextInt()&1;
         	key += col+""+row;
         }
-        b = new QuinamidBoard(info.getString(GAMETYPE, Quinamid_INIT),
+        b = new QuinamidBoard(info.getString(GameInfo.GAMETYPE, Quinamid_INIT),
         		key,getStartingColorMap());
         useDirectDrawing(true);
         doInit(false);

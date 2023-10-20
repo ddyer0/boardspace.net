@@ -17,6 +17,7 @@
 package gounki;
 
 import bridge.*;
+import common.GameInfo;
 
 import com.codename1.ui.geom.Rectangle;
 
@@ -116,7 +117,7 @@ public class GounkiViewer extends CCanvas<GounkiCell,GounkiBoard> implements Gou
     	super.init(info,frame);
         int randomKey = sharedInfo.getInt(OnlineConstants.RANDOMSEED,-1);
         int map[] = getStartingColorMap();
-        b = new GounkiBoard(info.getString(GAMETYPE, Gounki_INIT),
+        b = new GounkiBoard(info.getString(GameInfo.GAMETYPE, Gounki_INIT),
         		randomKey,map);
         if(seatingFaceToFace()) { b.autoReverseYNormal(); }
         useDirectDrawing(true);

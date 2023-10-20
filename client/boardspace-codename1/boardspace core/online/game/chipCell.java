@@ -15,10 +15,10 @@
     If not, see https://www.gnu.org/licenses/.
  */
 package online.game;
-import online.common.*;
 import lib.Graphics;
 
 import lib.Random;
+import lib.exCanvas;
 import lib.CellId;
 import lib.G;
 import lib.HitPoint;

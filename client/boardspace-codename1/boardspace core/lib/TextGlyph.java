@@ -19,7 +19,6 @@ package lib;
 import bridge.Color;
 import bridge.FontMetrics;
 import bridge.Icon;
-import online.common.exCanvas;
 
 /**
  * this is an extension to {@link TextChunk} which draws {@link lib.Drawable} objects instead of text.

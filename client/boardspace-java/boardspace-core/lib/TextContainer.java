@@ -24,10 +24,6 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import online.common.exCanvas;
-import static online.common.OnlineConstants.clickSound;
-
-
 import java.util.HashSet;
 import java.util.Set;
 // TODO: selecting text, the bounds of the clipboard aren't quite right
@@ -1029,7 +1025,7 @@ public class TextContainer extends Rectangle implements AppendInterface,KeyListe
 			G.writeTextToClipboard(str);
 			if(canvas!=null && canvas.doSound())
 			  {
-				  SoundManager.playASoundClip(clickSound,100);
+				  SoundManager.playASoundClip(Keyboard.clickSound,100);
 			  }
 		}}}
 	}

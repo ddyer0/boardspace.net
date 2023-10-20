@@ -17,6 +17,8 @@
 package mutton;
 
 import bridge.*;
+import common.GameInfo;
+
 import com.codename1.ui.geom.Point;
 import com.codename1.ui.geom.Rectangle;
 
@@ -225,7 +227,7 @@ public class MuttonGameViewer extends commonCanvas implements MuttonConstants
 		historyDisplayOption = myFrame.addOption("Display chart", true, deferredEvents);
 
 		// Create the board
-		myBoard = new MuttonGameBoard (info.getString(OnlineConstants.GAMETYPE, Mutton_INIT),
+		myBoard = new MuttonGameBoard (info.getString(GameInfo.GAMETYPE, Mutton_INIT),
 		                               sharedInfo.getInt(OnlineConstants. RANDOMSEED , -1));
 		doInit(false);
 
