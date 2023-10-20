@@ -3540,7 +3540,7 @@ public abstract class commonCanvas extends exCanvas
     	// contexts it creates a lot of confusion testing the number of connections tweaks
     	// the behavior to be the "right thing" 7/2015
     	//
-        if (reviewOnly && (numberOfConnections()<=1))	
+        if (reviewOnly && (numberOfConnections()<=1) && theChat!=null)	
         {
             commonMove m = History.currentHistoryMove();
             if(m!=null)
@@ -5552,8 +5552,8 @@ public abstract class commonCanvas extends exCanvas
     	if((str!=null) && has)	
         {	if(!l.deferWarningSent)
         	{
-        	theChat.postMessage(ChatInterface.LOBBYCHANNEL, KEYWORD_LOBBY_CHAT,
-                s.get(MovesComingIn));
+        	if(theChat!=null) { theChat.postMessage(ChatInterface.LOBBYCHANNEL, KEYWORD_LOBBY_CHAT,
+                s.get(MovesComingIn));}
         	l.deferWarningSent = true;
         	}
          }
@@ -8328,7 +8328,7 @@ public void verifyGameRecord()
     {	//G.addLog("draw canvas");
     	if(startedOnce)
     	{
-    	Keyboard k = theChat.getKeyboard();
+    	Keyboard k = theChat!=null ? theChat.getKeyboard() : null;
     	drawFixedElements(offGC,complete);
     	// draw the board contents and changing elements.
      	int hx = G.Left(hp);

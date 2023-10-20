@@ -681,8 +681,10 @@ public abstract class exCanvas extends ProxyWindow
        else if(target==l.cpuTest) 
         	{ double time = G.cpuTest();
         	  
-        	  theChat.postMessage(ChatInterface.LOBBYCHANNEL , KEYWORD_LOBBY_CHAT,
+        	  if(theChat!=null)
+        		  {theChat.postMessage(ChatInterface.LOBBYCHANNEL , KEYWORD_LOBBY_CHAT,
 					  "cpu test "+time+" standard cpus");
+        		  }
         	  //SSDP.main(null);
         	  return(true);
         	}
@@ -894,7 +896,7 @@ graphics when using a touch screen.
    }
    public boolean drawKeyboard(Graphics g,HitPoint p)
    {
-	   	  Keyboard k = theChat.getKeyboard();
+		  Keyboard k = theChat!=null ? theChat.getKeyboard() : null;
 		  if(k!=null)
 		  	{ k.draw(g,p);
 		  	  return(true); 
@@ -911,7 +913,7 @@ graphics when using a touch screen.
 	   if(p.hitCode==OnlineId.HitMagnifier)
 	   {
 	   }
-	   else if(theChat!=null  && runTheChat())
+	   else if(runTheChat())
 	   	{  
 	   	   theChat.StartDragging(p);
 	   	}
@@ -923,7 +925,7 @@ graphics when using a touch screen.
 		   // takes precedence. This isn't a particularly clean way to get there.
 		   doMagnifier();
 	   }
-	   else if(theChat!=null && runTheChat())
+	   else if(runTheChat())
 	   	{ 
 	   	   theChat.StopDragging(p);
 	   	}
@@ -932,7 +934,7 @@ graphics when using a touch screen.
    }
    public HitPoint performStandardMouseMotion(int x,int y,MouseState p)
    {   // simplemenu takes precedence over chat
-	   if(menu==null && theChat!=null && runTheChat())
+	   if(menu==null && runTheChat())
 	   {	HitPoint hp = (theChat.MouseMotion(x,y,p));
 	   		if(hp!=null)
 	   		{	// if the unmagnifier is in the zone, it will take over
@@ -1499,6 +1501,7 @@ graphics when using a touch screen.
 
         public void Wheel(int x, int y, int mod,double amount) 
         {	boolean moved = (mod==0) 
+        				&& (theChat!=null)
 						&& (theChat.doMouseWheel(x, y,amount));
 			if(!moved)
 			{	double step = G.isCodename1() ? 1.05 : 1.1;	
