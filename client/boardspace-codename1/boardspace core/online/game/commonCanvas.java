@@ -98,7 +98,7 @@ July 2006 added repeatedPositions related functions
 // TODO: game records can acquire inconsistent times when editing with more than one player, which causes a flood of logged errors
 //
 public abstract class commonCanvas extends exCanvas 
-	implements PlayConstants,OnlineConstants,ViewerProtocol,CanvasProtocol,sgf_names,ActionListener,Opcodes,PlacementProvider,VncEventInterface
+	implements OnlineConstants,PlayConstants,ViewerProtocol,CanvasProtocol,sgf_names,ActionListener,Opcodes,PlacementProvider,VncEventInterface
 { // state shared with parent frame
     // aux sliders
     public static final String LiftExplanation = "spread stacks for easy viewing";
@@ -137,6 +137,9 @@ public abstract class commonCanvas extends exCanvas
     public static final String beepBeepSoundName = SOUNDPATH + "meepmeep"  + SoundFormat;
     public static final String doorBell = SOUNDPATH + "Doorbl" + SoundFormat;
 	public static final String CARD_SHUFFLE = SOUNDPATH + "CardShuffle"+ Config.SoundFormat;
+	public static final String TimeExpiredMessage = "Time has expired for #1";
+	public static final String TimeEndGameMessage = "end the game with a loss for #1";
+	public static final String ChangeLimitsMessage = "change the time limits";
 
 	/**
 	 * board cell iterator types. 
@@ -427,7 +430,10 @@ public abstract class commonCanvas extends exCanvas
 	    private double boardZoomStartValue = 0.0;
 
 	}
+    // use cautiously, it will not be present in offline games launched directly
+    // for debugging or other direct launch configurations.
     public GameInfo gameInfo = null;
+    
 	public Layout l = new Layout();
 	// scrolling directives
 	private static final int FORWARD_TO_END = 99999;
@@ -503,6 +509,9 @@ public abstract class commonCanvas extends exCanvas
 			CantResign,
 			CantDraw,
 			LiftExplanation,
+			TimeEndGameMessage,
+			ChangeLimitsMessage,
+			TimeExpiredMessage,
 
 			ResumePlayText,
 			PlayedOnDate,
@@ -623,7 +632,7 @@ public abstract class commonCanvas extends exCanvas
     			  st = st.substring(space2+1);
     			  l.currentMoveTime = G.IntToken(payload); 
     			}
-    		else if(futureTimeControl.performMessage(this,op,st)) { st = null ; }
+    		else if(performMessage(futureTimeControl,op,st)) { st = null ; }
     		else { G.print("Unexpected message ",op); }
     		
     		if("".equals(st)) { st = null; }
@@ -2075,6 +2084,89 @@ public abstract class commonCanvas extends exCanvas
     	PerformAndTransmit(DONE);
     	}
     }
+
+	public boolean performStandardActions(TimeControl time,HitPoint hp,commonCanvas canvas)
+	{	CellId id = hp.hitCode;
+		if(id instanceof TimeId)
+		{
+		TimeId tid = (TimeId)id;
+		int left = G.Left(hp);
+		int top = G.Top(hp);
+		switch(tid)
+		{	case ChangeTimeControl:
+			case GameOverOnTime:
+	  			canvas.performClientMessage("+" + id.shortName(),true,true);
+	  			return(true);
+	  			
+	  		// the rest of these pop up menus
+			case ChangeMode:
+				time.changeTimeControlKind(left,top,canvas,canvas);
+				return(true);
+			case ChangeIncrementalTime:
+				time.changeSeconds(left,top,canvas,canvas);
+				return(true);
+			case ChangeFixedTime:
+				time.changeMinutes(left,top,canvas,canvas,2);
+				return(true);
+			case ChangeDifferentialTime:
+				time.changeMinutes2(left,top,canvas,canvas);
+				return(true);
+			default: G.Error("not handled %s", tid);
+		}}
+		return(false);
+	}
+
+	/**
+	 * this is used within a 2-player game when the time has expired.  It allows
+	 * the game to be ended on the current terms, or for the time controls to 
+	 * be changed.  This is called for the *winning* player, so no cooperation
+	 * with the losing player is required.
+	 * 
+	 * @param gc
+	 * @param hitPoint
+	 * @param expired
+	 * @param canvas
+	 * @param boardRect
+	 */
+    public void drawGameOverlay(Graphics gc,TimeControl time,HitPoint hitPoint0,commonPlayer expired,commonCanvas canvas,Rectangle boardRect)
+    {	InternationalStrings s = G.getTranslations();
+    	commonPlayer who = canvas.whoseTurn();
+    	boolean robo = (who.robotRunner==expired);
+    	HitPoint hitPoint = robo||canvas.ourActiveMove() ? hitPoint0 : null;
+    	if(hitPoint!=null) { hitPoint.neutralize(); }
+    	int left = G.Left(boardRect);
+    	int top = G.Top(boardRect);
+    	int width = G.Width(boardRect);
+    	int height = G.Height(boardRect);
+    	int inside = (int)(width*0.05);
+    	int l =left+inside;
+    	int t = top+inside;
+    	int w = width-inside*2;
+    	int h = height-inside*2;
+    	Rectangle ir = new Rectangle(l,t,w,h);
+    	StockArt.Scrim.getImage().stretchImage(gc, ir);  
+    	GC.setFont(gc,canvas.largeBoldFont());
+    	String pname = expired.prettyName("");
+    	String banner = s.get(TimeExpiredMessage,pname);
+    	String endgame = s.get(TimeEndGameMessage,pname);
+    	String changetime = s.get(ChangeLimitsMessage);
+    	GC.Text(gc,true,l,t,w,inside*2,Color.black,null,banner);
+    	
+    	if(GC.handleSquareButton(gc, new Rectangle(l+inside*2,t+inside*3,w-inside*4,inside), hitPoint, endgame,
+    			bsBlue,Color.lightGray))
+    	{
+    		hitPoint.hitCode = TimeId.GameOverOnTime;
+    	}
+    	if(GC.handleSquareButton(gc, new Rectangle(l+inside*2,t+(int)(inside*4.5),w-inside*4,inside), hitPoint, changetime,
+    			bsBlue,Color.lightGray))
+    	{
+    		hitPoint.hitCode = TimeId.ChangeTimeControl;
+    	}
+    	Rectangle timeControlRect = new Rectangle(l+w/6,t+inside*6,4*w/6,inside);
+    	time.drawTimeControl(gc,canvas,hitPoint!=null,hitPoint,timeControlRect);
+    	
+    }
+
     /**
      * in 2 player games with time controls, this will draw an overlay
      * on the board if the opponents time has expired.  The overlay lets
@@ -2099,7 +2191,7 @@ public abstract class commonCanvas extends exCanvas
     			  { // we don't want the clock to tick while the player considers endgame
     				my.setElapsedTimeFrozen(true);
     				drawing = true;
-    				futureTimeControl.drawGameOverlay(gc,p,expired,this,boardRect);
+    				drawGameOverlay(gc,futureTimeControl,p,expired,this,boardRect);
     			  }
     			else
     			{ my.setElapsedTimeFrozen(false);
@@ -2823,7 +2915,7 @@ public abstract class commonCanvas extends exCanvas
 	  	else if(id == DefaultId.HitNoWhere) { if(miss) { performReset(); } else { armed = true;  }} 
 	  	else if(performVcrButton(id, hp)) {  }
 	  	else if(id ==GameId.HitNothing) { }
-	  	else if(futureTimeControl.performStandardActions(hp,this)) { }
+	  	else if(performStandardActions(futureTimeControl,hp,this)) { }
 	  	else 
 	  	{	// this should only occur if there's a bug in the
 	  		// standard widgets used in the UI
@@ -2831,6 +2923,28 @@ public abstract class commonCanvas extends exCanvas
 	    }
 	  	return(armed);
   }
+	
+	public boolean performMessage(TimeControl time,String op,String rest)
+	   {
+		   TimeId v = TimeId.find(op);
+		   if(v!=null)
+		   {
+		   switch(v)
+		   {
+		   case ChangeFutureTimeControl:
+			   TimeControl tc = TimeControl.parse(rest);
+			   time.copyFrom(tc);
+			   return(true);
+		   case GameOverOnTime:
+			   doEndGameOnTime();
+			   return(true);
+		   case ChangeTimeControl:
+			   adoptNewTimeControl();
+			   return(true);
+		   default: G.Error("Can't handle %s",v);
+		   }}
+		   return(false);
+	   }
   /**
    * draw a standard "done" button
    * @param gc
@@ -5130,7 +5244,7 @@ public abstract class commonCanvas extends exCanvas
         					|| hidden.handleDeferredEvent(target);
         if(!handled)
         {
-        if(futureTimeControl.handleDeferredEvent(this,target,command)) 
+        if(futureTimeControl.handleDeferredEvent(target,command)) 
         {	//update the other client
         	performClientMessage("+" + TimeId.ChangeFutureTimeControl.shortName()+" "+futureTimeControl.print(),false,true);
         	handled = true;
@@ -6548,7 +6662,7 @@ public abstract class commonCanvas extends exCanvas
         // only emit color map information if it's active in this environment
          root.set_property(colormap_property,colorMapString());
         }
-       	if(G.TimeControl() && timeControl!=null)
+       	if(timeControl!=null)
     	{
        		root.set_property(timecontrol_property,timeControl.print()); 
     	}
@@ -6616,7 +6730,7 @@ public abstract class commonCanvas extends exCanvas
             // only emit color map information if it's active in this environment
         	String colormap = colorMapString();
         	if(colormap!=null) {  	ps.println(colormap_property+"["+colormap+"]"); }
-        	if(G.TimeControl() && timeControl!=null)
+        	if(timeControl!=null)
         	{
         		ps.println(timecontrol_property+"["+timeControl.print()+"]"); }
         	}
@@ -8706,7 +8820,7 @@ public void verifyGameRecord()
 	        
 	        TimeControl time = timeControl();
 	        
-	        if(G.TimeControl() && time!=null)
+	        if(time!=null)
 	        {
 	        	G.append(playerinfo,sgf_names.timecontrol_property , " ",time.print()," ");
 	        }

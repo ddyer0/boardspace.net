@@ -16,10 +16,9 @@
  */
 package online.search;
 
+import bridge.JMenuItem;
 import lib.Graphics;
 import bridge.JMenu;
-import bridge.JMenuItem;
-
 import lib.ExtendedHashtable;
 import lib.G;
 import lib.HitPoint;

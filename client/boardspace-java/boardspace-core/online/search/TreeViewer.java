@@ -16,10 +16,9 @@
  */
 package online.search;
 
-import lib.Graphics;
-
 import javax.swing.JMenuItem;
 
+import lib.Graphics;
 import bridge.JMenu;
 import lib.ExtendedHashtable;
 import lib.G;

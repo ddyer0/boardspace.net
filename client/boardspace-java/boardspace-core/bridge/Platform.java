@@ -27,7 +27,7 @@ import java.awt.Frame;
 
 import lib.LFrameProtocol;
 import lib.Plog;
-import online.common.commonChatApplet;
+import lib.commonChatApplet;
 
 import java.awt.Point;
 import java.awt.Rectangle;

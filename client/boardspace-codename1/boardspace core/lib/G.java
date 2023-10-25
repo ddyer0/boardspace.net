@@ -51,10 +51,10 @@ public class G extends Platform implements Timestamp
 	
 	public static boolean TimedRobots() { return(TIMEDROBOTS || debug()); }
 	
-	public static boolean TimeControl() { return getGlobals().getBoolean("timecontrol",true); }
+	// TODO: implement robot setup in the offline launcher, still conditioned by AllowOfflineRobots
 	public static boolean allowRobots()
 	{
-		return(!offline() || getGlobals().getBoolean(G.ALLOWOFFLINEROBOTS,false));
+		return(!offline() || getGlobals().getBoolean(G.ALLOWOFFLINEROBOTS,AllowOfflineRobots));
 	}
 	
 	private static boolean offline = false;
@@ -1693,7 +1693,96 @@ private static ExtendedHashtable globalsInstance = null;
 public static final String LOWMEMORY = "lowmemory";
 
 static final public boolean isCheerpj() { return("cheerpj".equals(System.getProperty(G.OS_ARCH))); }
+/**
+ * globals are ..um.. global settings from a variety of sources, but principally
+ * from the launcher or the login transaction.    Globals are also used as
+ * communication between distant or not-usually-conneted parts of the app.
+ *  "language"		default language, generally overridden from the global preferences
+ *  "lobbyport"		the port number to connect to the game server (supplied from the login transaction)
+ *  "protocol"		protocol to try first, http or (https with fallback to http)
+	"servername"	the hostname of the server to connect to.
+	"SERVERKEY"		permission token supplied by the login transaction
+ *  "testserver"	connect to the test server rather than the main server
+ *  "uid"			the logged in user UID
+ *  "gamesplayed"	the number of games (of all types) the logged in user has played
+ *  "bannermode"	the supervisor status of the logged in user
+ *  "username"		the logged in nickname of the logged in user
+ *  "favorites"		game favorites of the logged in player
+ *  "country"		county of the logged in player
+ *  "FRAMEWIDTH"	default width of windows (desktops only)
+ *  "FRAMEHEIGHT"	default height of windows (desktops only)
+ *  "defaultgameclass"	the class for the lobby
+ *  "playtable"		if true, behave as a table server rather than hand held mobile
+ *  "vncclient"		if true, we are acting as a side screen for a table server
+ *  
+ *  the initial transaction with the server returns some basic configuration
+ *  information about how to talk to it.
+ *   "servername"	game server hostname to connect to 
+ *	 "releasehost"	the host to connect to on http/https
+ *   "message"		a message to present before continuing
+ *  information about mobile versions that are allowed to connect
+ *   "ios_min_version" 	minimum version that can connect
+ *   "ios_version"			preferred version
+ *   "android_min_version" minimum android version that can connect
+ *   "android_version" 	preferred version
+ *
+ *  the user login transaction supplies a bunch of information about the server
+ *  and the user 
+ *  	"bannerMode" 	user supervisor status
+ *  	"favorites" 	most frequently played games
+ * 		"codebase"	 	value to use as codebase for http transactions
+ *		"documentbase"	value to use as documentbase for http transactions
+ *		"localIP"		your IP address as seen by the server
+ *		serverKey		permission key to connect to the server
+ *		lobbyportnumber port number to connect to the server
+ *		robotlobby 		hook for connecting a remote robot as a player
+ *		time-correction time correction (milliseconds) from your clock to the system clock
+ *		uid				logged in player uid
+ *		"uidranking"	rankings for numerous games
+ *		"picture"		true if the player is known to have an avatar picture
+ *		"country"		country for the logged in player
+ *		"playerclass"	player seniority class
+ *		"gamesplayed"	total games played, all games
+ *		"latitude"		guess at players latitude
+ *		"logitude"		guess at players longitude
+ *		"language"		players registered language
+ *		reviewerdir0 ... reviewerdirn	mapping from game index to directories on the server
+ *  
+ *  
+ *  the player map is effectively a separate application with its own parameterization
+ *  these globals configure its behavior
+ *  "imagelocation"		the url for the map used by the player map
+ *  "datalocation"		the url to retrieve data for the player location map
+ * 	"latitude"			the latitude of the logged in player
+ *  "longitude"			the longitude of the logged in player
+ * 	"SMALL_MAP_CENTER_X"	used by the player map 
+ *	"SMALL_MAP_CENTER_Y"	used by the player map 
 
+
+ * Globals are also used to store the current values of system parameters
+ * from CommonConfig which are normally set from defaults, but different values are used 
+ * in testing or developmenment.  
+ * Some of those are:
+ *   "debug"		if true turn on debug behavior
+ *   "EXTRAMOUSE"	debugging and admin options
+ *	 "EXTRAACTIONS"	debugging and admin actions
+
+ * 	 "chatwidget"	if true use the ChatWidget instead of commonChatApplet
+ *   "chatpercent"  default chat size - largely obsolete
+ *   
+ *   When launching a game directly (ie; not from the offline launcher or online lobby)
+ *   parameters gave to be supplied to specify the game.  This is used in development
+ *   for new games, and also for offline reviewers for established games.
+ *    "randomseed" 	random number initialization
+ *    "gameindex"   game index in the server game directory list
+ *	  "gamename"	the specific variation of the game to play, used to lookup in the GameInfo table
+ *    "gametype"	the generic game to play, used to lookup in the GameInfo table
+ *	  "viewerclass"	the class to for the game to launch.  This is how to launch otherwise unknow games in development.
+ *	  "gameinfo"	the gameinfo table for the game being launched (from the launcher or lobby)
+ *	
+
+ * @return
+ */
 public static ExtendedHashtable getGlobals() 
 { 	if(globalsInstance==null) 
 		{  // switching to this just-in-time creation papers over a subtle

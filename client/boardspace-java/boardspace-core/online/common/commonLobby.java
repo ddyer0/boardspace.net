@@ -375,7 +375,7 @@ private void ReStarting(boolean recon)
   movingToSess=-1;
   myNetConn.Connect("Lobby "+G.getPlatformName(),
 		  			sharedInfo.getString(SERVERNAME),
-		  			sharedInfo.getInt(OnlineConstants.LOBBYPORT));
+		  			sharedInfo.getInt(OnlineConstants.LOBBYPORT,-1));
 
   PutInSess(users.primaryUser(),null,0);
   }
@@ -386,10 +386,8 @@ public void init(ExtendedHashtable info,LFrameProtocol frame)
 	//G.startDeadlockDetector(); //never stops
 
 	info.putString(OnlineConstants.VIEWERCLASS,"L:-common.lobbyCanvas");
-    info.putObj(exHashtable.LOBBY,this);
-    info.putObj(ConnectionManager.MYXM,pendingEchos);
-    info.putInt(ConnectionManager.ROOMNUMBER,0);
-    isTestServer = info.getBoolean(TESTSERVER);
+    info.putInt(ConnectionManager.SESSION,0);
+    isTestServer = info.getBoolean(TESTSERVER,false);
     info.put(exCanvas.NETCONN,myNetConn);	// for debugging
  	super.init(info,frame);
     CreateChat(info.getBoolean(exHashtable.CHATFRAMED,false) || G.smallFrame());
@@ -420,9 +418,9 @@ public void init(ExtendedHashtable info,LFrameProtocol frame)
          robot_launch_players=G.getInt(ROBOTLAUNCHPLAYERS,0);
         }
       }
-    sharedInfo.putInt(GAMESPLAYED,G.getInt(GAMESPLAYED,0));
-    
-    int played = info.getInt(GAMESPLAYED,0);
+    // the value of GAMESPLAYED is ultimately supplied by the login transaction
+    int played = G.getInt(GAMESPLAYED,0);
+    sharedInfo.putInt(GAMESPLAYED,played);
     User prim = users.primaryUser();
     prim.isNewbie = played<10;
 
@@ -438,8 +436,8 @@ public void init(ExtendedHashtable info,LFrameProtocol frame)
 
     SoundManager.loadASoundClip(deskBellSoundName);
             
-    String namePassedIn=sharedInfo.getString(ConnectionManager.USERNAME);
-    addUser(-1,namePassedIn,sharedInfo.getString(ConnectionManager.UID),true); 
+    String namePassedIn=sharedInfo.getString(ConnectionManager.USERNAME,"me");
+    addUser(-1,namePassedIn,sharedInfo.getString(ConnectionManager.UID,"0"),true); 
     announcePlayers=myFrame.addOption(s.get(AnnounceOption),Default.getBoolean(Default.announce),deferredEvents);	// no events
     announcePlayers.setForeground(Color.blue);
     autoDone = myFrame.addOption(s.get(AutoDoneEverywhere),Default.getBoolean(Default.autodone),deferredEvents);
@@ -543,7 +541,7 @@ private void setGameTime()
 		  StringTokenizer msg = new StringTokenizer(message);
 		  String fir = msg.nextToken();
 		  if(NetConn.SEND_REQUEST_EXIT_COMMAND.equals(fir) || NetConn.SEND_GROUP_COMMAND.equals(fir))
-		  {	pendingEchos.put(seq,message);
+		  {	myNetConn.savePendingEcho(seq,message);
 		    //G.print("add "+seq+" "+message);
 		  }
 		  message = seq + " "+message;
@@ -586,11 +584,7 @@ private void doUNCONNECTED()
     if(myNetConn.startServer())
     { myNetConn.setInputSemaphore(v);		// wake us on new input
       sentMessages = 0;
-      extraWarningSent = false;
-      pendingWarningSent = false;
-      pendingEchos.clear();
-      extraEchos.clear();
-      myNetConn.count(-myNetConn.count(0));
+      myNetConn.clearEchos();
       setLobbyState(ConnectionState.CONNECTED);
       connectionTimeout=0;
       if(myNetConn.reconnecting) 
@@ -732,7 +726,7 @@ private boolean processEchoExit(String messType,StringTokenizer localST,String f
     { if(localST.hasMoreTokens())
       { 
     	String tok = localST.nextToken();
-    	if(isExpectedResponse(tok,fullmessage))
+    	if(myNetConn.isExpectedResponse(tok,fullmessage))
     	{
     		tok = localST.nextToken();
     	}
@@ -773,7 +767,7 @@ boolean isRegisteredVoter()
   {  //return true if I am a trustworthy enough player to be allowed to vote
     //on muting players and other matters of import.
 	User me = users.primaryUser();
-    return(!me.isGuest && !me.isNewbie && (sharedInfo.getInt(GAMESPLAYED)>50));  
+    return(!me.isGuest && !me.isNewbie && (sharedInfo.getInt(GAMESPLAYED,0)>50));  
   }
 private void setUserName(User user,String name,String uid)
   {  
@@ -1375,7 +1369,7 @@ private boolean processEchoGroup(String messType,StringTokenizer localST,String 
        else { now &= ~1;  }
        myNetConn.na.Unlock();
 	   myNetConn.addPing(now);
-	   checkMissing(pingseq);
+	   myNetConn.checkMissing(pingseq);
        }
        return(true);
     }
@@ -1434,7 +1428,7 @@ private boolean processEchoGroup(String messType,StringTokenizer localST,String 
 	if(isSelf)
     {
       String commandStr = localST.nextToken();
-      if(isExpectedResponse(commandStr,fullMessage))
+      if(myNetConn.isExpectedResponse(commandStr,fullMessage))
       {
     	  commandStr = localST.nextToken();
       }
@@ -1834,7 +1828,7 @@ private boolean processEchoRoomtype(String messType,StringTokenizer localST)
     
 
     //after robot and self are added as users, use the ranking string supplied from the login
-    setUIDRankings(new StringTokenizer(sharedInfo.getString(OnlineConstants.UIDRANKING)),false);
+    setUIDRankings(new StringTokenizer(sharedInfo.getString(OnlineConstants.UIDRANKING,"")),false);
     PreloadClass("G:game.Game");	// load the game support stuff
     try 
     {
@@ -2240,9 +2234,7 @@ private void sendLobbyInfo(Session sess,String key2,boolean own)
 	String msg0 = sendImin(sess,key2,own);
 	if(own) 
 		{
-		String time = G.TimeControl() 
-				? " "+sgf_names.timecontrol_property+" "+sess.timeControl().print() 
-				: "";
+		String time =  " "+sgf_names.timecontrol_property+" "+sess.timeControl().print() ;
 		String msg = msg0 + time;
 		if(!sess.iOwnTheRoom)
 		{

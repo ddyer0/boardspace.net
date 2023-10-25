@@ -14,7 +14,7 @@
     You should have received a copy of the GNU General Public License along with Boardspace.
     If not, see https://www.gnu.org/licenses/. 
  */
-package online.common;
+package lib;
 
 import java.net.URL;
 import javax.swing.JButton;
@@ -28,17 +28,17 @@ import java.awt.TextField;
 
 import java.awt.event.*;
 import bridge.*;
-import lib.*;
 
-import java.util.Hashtable;
 import java.util.StringTokenizer;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
 /**
- * this class is the customary chat window for boardspace.  It caches information about
- * player names, and presents chat messages from other players or the system.
+ * this class is the "old school" chat window for boardspace, which uses standard AWT windows and text input.
+ * It caches information about player names, and presents chat messages from other players or the system.
+ * 
+ * It's not currently used by default.
  * 
  * @author ddyer
  *
@@ -52,7 +52,7 @@ public class commonChatApplet extends FullscreenPanel
 // but that still leaves the focus problem.   The sweet spot seems to be to leave this a "Panel"
 // and make commonPanel based on JPanel.
 //
-	implements ChatInterface,OnlineConstants,ActionListener,MouseListener,MouseMotionListener,NullLayoutProtocol
+	implements ChatInterface,ActionListener,MouseListener,MouseMotionListener,NullLayoutProtocol
 {	
 	/**
 	 * 
@@ -65,7 +65,6 @@ public class commonChatApplet extends FullscreenPanel
 	static private final String MESSAGETOPROMPT = "MessageTo:";
     static private final String InitMessage = "Type your message here.";
     private boolean hasInitMessage = false;
-    private ExtendedHashtable sharedInfo = null;
     private int floodStrings = 0;
     private int MAXLENGTH = 10000;
 	private Color reddishColor = new Color(1.0f,0.7f,0.7f);
@@ -139,7 +138,6 @@ public class commonChatApplet extends FullscreenPanel
 
     public commonChatApplet(LFrameProtocol frame,ExtendedHashtable info,boolean emb)
     {	embedded = emb;
-        sharedInfo = info;
         s = G.getTranslations();
         basicFont = G.getFont(s.get("fontfamily"), G.Style.Plain, G.standardizeFontSize(G.defaultFontSize));
         theFrame = frame;
@@ -538,9 +536,9 @@ public class commonChatApplet extends FullscreenPanel
         if (theConn != null)
         {	SimpleUser toSingleUser = users.getToSingleUser(); 
 			boolean priv = (toSingleUser!=null) ;
-			String base = priv 
+			StringBuilder base = new StringBuilder(priv 
 				? NetConn.SEND_MESSAGE_TO + toSingleUser.channel()+" "
-				: NetConn.SEND_GROUP;				
+				: NetConn.SEND_GROUP);				
 			theConn.na.getLock();
 			if(theConn.hasSequence) 		
 				{
@@ -548,14 +546,7 @@ public class commonChatApplet extends FullscreenPanel
 				 // note that this is deliberately duplicative and poorly
 				 // structured, to make it more likely to trip up hackers
 				 // using advanced tools to mess with our communications.
-				 String seq = "x"+theConn.na.seq++;
-				 if(!priv)
-				 {
-					 @SuppressWarnings("unchecked")
-					 Hashtable<String,String>xm = (Hashtable<String,String>)sharedInfo.getObj(ConnectionManager.MYXM);
-					 xm.put(seq,base);
-				 }
-				 base  = seq + " "+base;	
+				 theConn.pendingMessage(priv,base);
 				}
 
 			theConn.count(1);
@@ -610,25 +601,14 @@ public class commonChatApplet extends FullscreenPanel
     				boolean priv = (toSingleUser!=null) ;
     				String chatKey = (priv ? (isSpectator? KEYWORD_PSCHAT : KEYWORD_PPCHAT)
     									: (isSpectator? KEYWORD_SCHAT : KEYWORD_PCHAT));
-    				String base = priv 
+    				StringBuilder base = new StringBuilder(priv 
     								? NetConn.SEND_MESSAGE_TO + toSingleUser.channel()+" "
-            						: NetConn.SEND_GROUP;
+            						: NetConn.SEND_GROUP);
     				
     				theConn.na.getLock();
     				if(theConn.hasSequence) 		
     					{
-    					 // add sequence number and keep the accounting straight.
-    					 // note that this is deliberately duplicative and poorly
-    					 // structured, to make it more likely to trip up hackers
-    					 // using advanced tools to mess with our communications. 					
-    					 String seq = "x"+theConn.na.seq++;
-    					 base  = seq + " "+base;	
-    					 if(!priv)
-    					 {
-    						 @SuppressWarnings("unchecked")
-							 Hashtable<String,String>xm = (Hashtable<String,String>)sharedInfo.getObj(ConnectionManager.MYXM);
-    						 xm.put(seq,base);
-    					 }
+    					 theConn.pendingMessage(priv,base);
     					}
      				if(str.length()>CHATSIZELIMIT)
     					{ // prevent children from flooding the lobby

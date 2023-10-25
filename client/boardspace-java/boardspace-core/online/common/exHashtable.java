@@ -16,26 +16,20 @@
  */
 package online.common;
 
-/** extended hash table. Contents are typed. Error if null is retrieved
- from a typed fetch, or if a typed put would clobber an existing key.
- This class is intended to serve as a repository of shared context between
- cooperating frames.
- <p>
- the many static strings associated with this class are the expected key names. Using
+/**
+ the many static strings in this class are the expected key names. Using
  these keywords rather than random strings makes it easy to find where the keys are
  used, and also prevents "typo" class bugs.
  */
 public interface exHashtable
 {
     static final long serialVersionUID = 1L;
-    public static final String LOBBY = "lobby";				// the lobby itself
     public static final String MYPLAYER = "myplayer";
-    public static final String MYGAME = "mygameinstance";	// the game instance
-	public static final String MYINFO = "myinfo";			// user misc info
     public static final String GAME = "game";					// the associated game object
-    
+    // url link to the rules of the game, normally a html or pdf
 	public static final String RULES = "rules";
-    public static final String SAVE_GAME_INDEX = "gameindex";	// server index for the game, which determines the directory it is saved to
+	// this is the communication between clients and the server about where to store saved games
+	public static final String SAVE_GAME_INDEX = "gameindex";	// server index for the game, which determines the directory it is saved to
     /**
      * the number of real players who will connect
      */
@@ -67,9 +61,10 @@ public interface exHashtable
 	public static final String RANKING = "ranking";
 	public static final String TIME = "time";
 	public static final String CHALLENGE = "challenge";		// remember if this user accepts challenges
-	public static final String SESSION = "session";
 	public static final String IDENT_INFO = "ident";
 	public static final String COLORMAP = "colormap";
+	// if true, chat windows are created in a separate frame or tab.  This is the
+	// default only for very small screen mobiles
 	public static final String CHATFRAMED = "chatframed";	// put the lobby chat in a separate frame
 	
 

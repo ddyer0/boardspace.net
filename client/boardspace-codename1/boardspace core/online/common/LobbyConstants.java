@@ -17,6 +17,7 @@
 package online.common;
 
 import bridge.Color;
+
 import lib.ChatInterface;
 
 
@@ -40,6 +41,7 @@ public interface LobbyConstants extends OnlineConstants
 	static final String SMALL_MAP_CENTER_X = "mapcenter_x";
 	static final String SMALL_MAP_CENTER_Y = "mapcenter_y";
 	static final String IMAGELOCATION = "imagelocation";
+	// total games (of any kind) played, reported by the login transaction
 	static final String GAMESPLAYED = "gamesplayed";
 	static final String RejoinGameMessage = "Rejoin";
     static final String StartMessage = "Start";
@@ -64,6 +66,7 @@ public interface LobbyConstants extends OnlineConstants
     static final String DiscardGameMessage = "Discard This Game";
     static final String LobbyName = "Lobby";
     static final String LauncherName = "Launcher";
+    static final String ConnectionErrorMessage = "Connection error";
     
     static final String LobbyMessagePairs[][] = 
         {        //hints

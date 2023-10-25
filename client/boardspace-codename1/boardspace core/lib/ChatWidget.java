@@ -35,7 +35,6 @@ import bridge.Utf8OutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Hashtable;
 import java.util.StringTokenizer;
 
 import lib.TextContainer.Op;
@@ -115,7 +114,6 @@ public class ChatWidget
     
 	public boolean isWindow() { return(false); }	// we're free of the window system
     private InternationalStrings s = null;
-    private ExtendedHashtable sharedInfo = null;
     private int floodStrings = 0;
     private int prevStringCount = 0;
     private long knockTimer=0;
@@ -359,7 +357,6 @@ public class ChatWidget
     {
         //sharedInfo = info;
     	embedded = emb;
-    	sharedInfo = shared;
         s = G.getTranslations();
         theFrame = frame;
         basicFont = G.getFont(s.get("fontfamily"), G.Style.Plain, G.standardizeFontSize(G.defaultFontSize));
@@ -660,20 +657,7 @@ public class ChatWidget
 			theConn.na.getLock();
 			if(theConn.hasSequence) 		
 				{
-				 // add sequence number and keep the accounting straight.
-				 // note that this is deliberately duplicative and poorly
-				 // structured, to make it more likely to trip up hackers
-				 // using advanced tools to mess with our communications.
-				 StringBuilder seq = new StringBuilder("x");
-				 seq.append(theConn.na.seq++);
-				 if(!priv)
-				 {
-					 @SuppressWarnings("unchecked")
-					 Hashtable<String,String>xm = (Hashtable<String,String>)sharedInfo.getObj(ConnectionManager.MYXM);
-					 xm.put(seq.toString(),base.toString());
-				 }
-				 seq.append(' ');
-				 base.insert(0,seq.toString());
+				 theConn.pendingMessage(priv,base);
 				}
 
 			theConn.count(1);
@@ -759,9 +743,9 @@ public class ChatWidget
     				boolean priv = (toSingleUser!=null) ;
     				String chatKey = (priv ? (isSpectator? KEYWORD_PSCHAT : KEYWORD_PPCHAT)
     									: (isSpectator? KEYWORD_SCHAT : KEYWORD_PCHAT));
-    				String base = priv 
+    				StringBuilder base = new StringBuilder(priv 
     								? NetConn.SEND_MESSAGE_TO + toSingleUser.channel()+" "
-            						: NetConn.SEND_GROUP;
+            						: NetConn.SEND_GROUP);
     				
     				theConn.na.getLock();
     				if(theConn.hasSequence) 		
@@ -770,14 +754,7 @@ public class ChatWidget
     					 // note that this is deliberately duplicative and poorly
     					 // structured, to make it more likely to trip up hackers
     					 // using advanced tools to mess with our communications. 					
-    					 String seq = "x"+theConn.na.seq++;
-    					 base  = seq + " "+base;	
-    					 if(!priv)
-    					 {
-    						 @SuppressWarnings("unchecked")
-							 Hashtable<String,String>xm = (Hashtable<String,String>)sharedInfo.getObj(ConnectionManager.MYXM);
-    						 xm.put(seq,base);
-    					 }
+    					 theConn.pendingMessage(priv,base);
     					}
      				if(str.length()>CHATSIZELIMIT)
     					{ // prevent children from flooding the lobby

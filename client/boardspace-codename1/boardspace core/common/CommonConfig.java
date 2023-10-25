@@ -37,6 +37,8 @@ public interface CommonConfig extends UniversalConstants {
 	static boolean SHOW_SITE_MESSAGES = true;	// if true, show messages from the site database on login
 	static boolean offlineTableLauncher = true;	// present the table launcher for all offline games
 	static boolean StringsHaveDataFiles = true;	// InternationalStrings uses files
+	static boolean AllowOfflineRobots = false;
+
 	// not complete. Needs replacement for chat windows and text input windows first
 	// also arithmetic for pointing and dragging when rotated
 	static boolean PINCHROTATION = false;		

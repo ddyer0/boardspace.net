@@ -24,8 +24,6 @@ import bridge.FullscreenPanel;
 import bridge.Utf8OutputStream;
 import bridge.Utf8Printer;
 import common.CommonConfig;
-import java.util.Enumeration;
-import java.util.Hashtable;
 import java.util.Vector;
 //
 // note on JPanel verses Panel here.
@@ -220,66 +218,16 @@ public class commonPanel extends FullscreenPanel
             G.wake(this);
         }
     }
-    public void checkMissing(int sent)
-    {	int nn = 0;
-    	String str = "";
-        if(!pendingWarningSent) 
-    	{ // this is the trigger for possible fraud alert
-       	for(Enumeration<String> keyenum = pendingEchos.keys(); keyenum.hasMoreElements();)
-    		{String key = keyenum.nextElement();
-    		int keyval = G.IntToken(key.substring(1));
-    		if(keyval<=sent)
-    		{
-    		str += key + " "+pendingEchos.get(key)+"\n";
-    		nn++;
-    		}
-    		}
-       	if(nn>0)
-       	{
-       	ConnectionManager m = myNetConn;
-       	if(m!=null)
-       	{
-     	pendingWarningSent = !G.debug();
-    	String pendErr = "unusual missing echoes : "+nn+" "+str+"\n\nlog:"+m.PrintLog();
-        m.logError(pendErr,null);
-        
-    	}}}
-    }
-    public boolean pendingWarningSent = false;
-    public boolean extraWarningSent = false;
+
     public void runStep(int wait)
     {	
         deferredSet();
 
         ConnectionManager nc = myNetConn;
         if(nc!=null)
-        {
-        String echoErr = null;
-        nc.na.getLock();   	
-        try
-        {
- 
-        if(!extraWarningSent && (extraEchos.size()>0)) 
-        	{ // this is the trigger for possible fraud alert
-        	String str = "";
-        	int nn = 0;
-        	extraWarningSent = true;
-        	for(Enumeration<String> keyenum = extraEchos.keys(); keyenum.hasMoreElements();)
-        		{String key = keyenum.nextElement();
-        		str += key + " "+extraEchos.get(key)+"\n";
-        		nn++;
-        		}
-        	echoErr = "unusual extra echoes : "+nn+" "+str;
+        	{	
+        	nc.checkExtra();
         	}
- 
-        }
-        finally
-        { 
-	        nc.na.Unlock();
-        }
-	        // log the errors outside the lock
-	        if(echoErr!=null) { nc.logError(echoErr,null);}
-        }
         
         if((myFrame!=null) && myFrame.killed())
         {
@@ -421,8 +369,6 @@ public class commonPanel extends FullscreenPanel
     public void doFocus(boolean on) {}
     
 	
-	public Hashtable<String,String> pendingEchos = new Hashtable<String,String>();
-    public Hashtable<String,String> extraEchos = new Hashtable<String,String>();
     public boolean isExpectedSequence(String commandStr,String fullMessage)
     {
     	if((commandStr.length()>=2)
@@ -430,31 +376,7 @@ public class commonPanel extends FullscreenPanel
   		  		&& Character.isDigit(commandStr.charAt(1))) { return(true); }
     	return(false);
     }
-    private String lastCmd = null;
-    public boolean isExpectedResponse(String commandStr,String fullMessage)
-    {	String message = pendingEchos.get(commandStr);
-    	if(message!=null)
-    	{
-  	  	 pendingEchos.remove(commandStr);
-   	  	 lastCmd = commandStr;
-  	  	 //G.print("remove "+commandStr);
-  	  	 return(true);
-    	}
-    	else if((lastCmd!=null) && lastCmd.equals(commandStr))
-		  {	
-    		// send multiple can generate multiple replies with the same sequence
-    		return(true);
-		  }
-    	else if((commandStr.length()>=2)
-    			&& (commandStr.charAt(0)=='x')
-  		  		&& Character.isDigit(commandStr.charAt(1)))
-    		{
-    			// an unexpected reply, pretend it was expected so there's a buildup
-    			extraEchos.put(commandStr,fullMessage);
-    			return(true);
-    		}
-    	return(false);
-    }
+
     public static final String LEAVEROOM = "#1 quitting";
 
     public void shutDown()
@@ -478,6 +400,7 @@ public class commonPanel extends FullscreenPanel
 
 
 	public boolean sendMessage(String message) {
+		if(myNetConn!=null) { G.Error("sendMessage should be overridden"); }
 		return false;
 	}
 

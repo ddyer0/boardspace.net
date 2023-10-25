@@ -23,8 +23,6 @@ import bridge.Color;
 import java.util.StringTokenizer;
 
 import bridge.Config;
-import online.game.commonPlayer;
-import online.game.commonCanvas;
 
 public class TimeControl implements Config
 {	
@@ -64,14 +62,8 @@ public class TimeControl implements Config
 	private static String FixedTime = "fixed time";
 	public static String TimeControlToolTip = "timecontroltip";
 	private static String NoTime = "No time control";
-	private static String TimeExpiredMessage = "Time has expired for #1";
-	private static String EndGameMessage = "end the game with a loss for #1";
-	private static String ChangeLimitsMessage = "change the time limits";
 	public static String []TimeControlStrings = {
 		FixedTime,
-		ChangeLimitsMessage,
-		EndGameMessage,
-		TimeExpiredMessage,
 		SecondsMessage,
 		MinutesMessage,
 		PrettyDifTimeMessage,
@@ -196,58 +188,6 @@ public class TimeControl implements Config
 	public int timeOverResolution = 0;
 	
 
-	public boolean performStandardActions(HitPoint hp,commonCanvas canvas)
-	{	CellId id = hp.hitCode;
-		if(id instanceof TimeId)
-		{
-		TimeId tid = (TimeId)id;
-		int left = G.Left(hp);
-		int top = G.Top(hp);
-		switch(tid)
-		{	case ChangeTimeControl:
-			case GameOverOnTime:
-	  			canvas.performClientMessage("+" + id.shortName(),true,true);
-	  			return(true);
-	  			
-	  		// the rest of these pop up menus
-			case ChangeMode:
-				changeTimeControlKind(left,top,canvas,canvas);
-				return(true);
-			case ChangeIncrementalTime:
-				changeSeconds(left,top,canvas,canvas);
-				return(true);
-			case ChangeFixedTime:
-				changeMinutes(left,top,canvas,canvas,2);
-				return(true);
-			case ChangeDifferentialTime:
-				changeMinutes2(left,top,canvas,canvas);
-	  			return(true);
-			default: G.Error("not handled %s", tid);
-		}}
-		return(false);
-	  			}
-	
-	public boolean performMessage(commonCanvas canvas,String op,String rest)
-				{
-		   TimeId v = TimeId.find(op);
-		   if(v!=null)
-	{
-		   switch(v)
-	   {
-		   case ChangeFutureTimeControl:
-			   TimeControl tc = parse(rest);
-			   copyFrom(tc);
-			   return(true);
-		   case GameOverOnTime:
-			   canvas.doEndGameOnTime();
-			   	return(true);
-		   case ChangeTimeControl:
-			   canvas.adoptNewTimeControl();
-			   return(true);
-		   default: G.Error("Can't handle %s",v);
-		   }}
-		   return(false);
-	   }
 	/**
 	 * true if the time has expired.  Times are in milliseconds.
 	 * For plustime, dif should be the accumulated bonus time
@@ -410,56 +350,6 @@ public class TimeControl implements Config
 			}
 	  	  }}
 	  }
-	/**
-	 * this is used within a 2-player game when the time has expired.  It allows
-	 * the game to be ended on the current terms, or for the time controls to 
-	 * be changed.  This is called for the *winning* player, so no cooperation
-	 * with the losing player is required.
-	 * 
-	 * @param gc
-	 * @param hitPoint
-	 * @param expired
-	 * @param canvas
-	 * @param boardRect
-	 */
-    public void drawGameOverlay(Graphics gc,HitPoint hitPoint0,commonPlayer expired,commonCanvas canvas,Rectangle boardRect)
-    {	InternationalStrings s = G.getTranslations();
-    	commonPlayer who = canvas.whoseTurn();
-    	boolean robo = (who.robotRunner==expired);
-    	HitPoint hitPoint = robo||canvas.ourActiveMove() ? hitPoint0 : null;
-    	if(hitPoint!=null) { hitPoint.neutralize(); }
-    	int left = G.Left(boardRect);
-    	int top = G.Top(boardRect);
-    	int width = G.Width(boardRect);
-    	int height = G.Height(boardRect);
-    	int inside = (int)(width*0.05);
-    	int l =left+inside;
-    	int t = top+inside;
-    	int w = width-inside*2;
-    	int h = height-inside*2;
-    	Rectangle ir = new Rectangle(l,t,w,h);
-    StockArt.Scrim.getImage().stretchImage(gc, ir);  
-    	GC.setFont(gc,canvas.largeBoldFont());
-    	String pname = expired.prettyName("");
-    	String banner = s.get(TimeExpiredMessage,pname);
-    	String endgame = s.get(EndGameMessage,pname);
-    	String changetime = s.get(ChangeLimitsMessage);
-    	GC.Text(gc,true,l,t,w,inside*2,Color.black,null,banner);
-    	
-    	if(GC.handleSquareButton(gc, new Rectangle(l+inside*2,t+inside*3,w-inside*4,inside), hitPoint, endgame,
-    			bsBlue,Color.lightGray))
-    	{
-    		hitPoint.hitCode = TimeId.GameOverOnTime;
-    	}
-    	if(GC.handleSquareButton(gc, new Rectangle(l+inside*2,t+(int)(inside*4.5),w-inside*4,inside), hitPoint, changetime,
-    			bsBlue,Color.lightGray))
-    	{
-    		hitPoint.hitCode = TimeId.ChangeTimeControl;
-    	}
-    	Rectangle timeControlRect = new Rectangle(l+w/6,t+inside*6,4*w/6,inside);
-    	drawTimeControl(gc,canvas,hitPoint!=null,hitPoint,timeControlRect);
-    	
-    }
     
 	  private PopupManager timeControlMenu;
 	  public PopupManager changeTimeControlKind(int ex,int ey,MenuParentInterface parent,ActionListener deferredEvents)
@@ -524,7 +414,7 @@ public class TimeControl implements Config
 	   * @param command
 	   * @return true if we recognised the hit on target
 	   */
-	  public boolean handleDeferredEvent(commonCanvas canvas,Object target, String command)
+	  public boolean handleDeferredEvent(Object target, String command)
 		{
 			if(timeControlMenu!=null && timeControlMenu.selectMenuTarget(target))
 			{

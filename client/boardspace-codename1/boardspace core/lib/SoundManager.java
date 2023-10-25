@@ -121,7 +121,7 @@ public class SoundManager implements Runnable
 	             /* shouldn't happen */
 	        }
 	        catch (Throwable err)
-	        {
+	        {	G.print("LoadAClip Failed for ",name, " ", err);
 	            Http.postError(RAThread, "LoadAClip Failed for " + name, err);
 	        }
 
@@ -143,7 +143,6 @@ public class SoundManager implements Runnable
 	    	theInstance = new SoundManager();
             Thread rr = new Thread(theInstance,"RA thread");
             rr.start();
-            RAThread = rr;
 	    	}
 	    }
 	    public static SoundManager getInstance()
@@ -166,12 +165,12 @@ public class SoundManager implements Runnable
 	        {
 	            if ((RAThread == null) || !RAThread.isAlive())
 	            {
-	                if (RAThread != null)
-	                {
-	                    Http.postError(RAThread, "RAThread died", null);
-	                }
 	                exit = true;
 	                theInstance=null;
+	                if (RAThread != null)
+	                {	RAThread = null;
+	                    Http.postError(RAThread, "RAThread died", null);
+	                }
 	            }
 	        }
 	    }
@@ -179,11 +178,13 @@ public class SoundManager implements Runnable
 	    public void playASoundClip(String clipName, boolean doc,int delay)
 	    { //System.out.println("play "+clipName);
 	        fixRAThread();
+	        if(!exit)
+	        {
 	        URL u = G.getUrl(clipName,doc);
 	        if(GetCachedClip(u)!=null)	// get it loaded now
 	        {
 	        playASoundClip(u,delay);
-	        }
+	        }}
 	    }
 	    public static void playASoundClip(String clipName,int delay )
 	    {	

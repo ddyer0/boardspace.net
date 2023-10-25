@@ -378,7 +378,7 @@ public class ConnectionManager
 	public static final String BANNERMODE = "bannerMode";		// normal, supervisor, banned
 	public static final String SERVERKEY = "serverKey";		// server permission token to connect
 	public static final String USERNAME = "username";			// user's nickname
-	public static final String ROOMNUMBER = "session";
+	public static final String SESSION = "session";
 	public static final String SESSIONPASSWORD = "sessionPassword";
 	public static final String LAUNCHUSERS = "launchusers";
 	public static final String LAUNCHUSER = "launchuser"; 
@@ -425,10 +425,12 @@ public class ConnectionManager
 	            }
 	            // send SEND_INTRO to the server to register us.  These args can't be changed
 	            // without coordinating with the server and all the existing clients.
-	            String msg = NetConn.SEND_INTRO + info.getInt(ROOMNUMBER) + " " +
-	                info.get(USERNAME) + "#" + info.getString(UID) + " " +
+	            String msg = NetConn.SEND_INTRO + info.getInt(SESSION) + " " +
+	                info.getString(USERNAME,"me") + "#" + info.getString(UID,"0") + " " +
 	                info.getString(SERVERKEY) + " " + password + " " +
 	                "0" + " "+		// placeholder for a browser cookie we no longer use
+	                // this is a potentially security loophole, changing "bannermode" could
+	                // escalate privileges for the current user
 	                info.getString(BANNERMODE, "N") + " " +
 	                info.getString(UID, "");
 	            myNetConn.alwaysSendMessage(msg);	// bypass the normal sendmessage
@@ -633,12 +635,151 @@ public class ConnectionManager
 		}}
     	return(null);
     }
+    /**
+     * this "echo tracking" is mostly an anti-hacking mechanism.  Some commands
+     * to the server create a mandatory echo response.  These are recorded and
+     * checked, both that the echo is expected, and that all the expected echos
+     * are received.   The idea is that if anyone is injecting input into the
+     * command stream, it will cause disruptions in the pattern of echos.
+     * Note, this actually happened, when some script kiddie used a proxy
+     * (or some similar technique) to allow them to inject commands into the
+     * control stream.    
+     */
     private int extraMessages = 0;
-    // TODO: remove MYXM and move the logic that uses it here.
-	public static final String MYXM = "expectedReplies";	// expected reply sequences
+    private boolean extraWarningSent = false;
+	private boolean pendingWarningSent = false;  
+	private Hashtable<String,String> pendingEchos = new Hashtable<String,String>();
+    private Hashtable<String,String> extraEchos = new Hashtable<String,String>();
+    private Hashtable<String,String> multipleEchos = new Hashtable<String,String>();
+    private Object[] echoTables = { pendingEchos, multipleEchos };
+    public synchronized void clearEchos()
+    {
+        pendingEchos.clear();
+        extraEchos.clear();
+        multipleEchos.clear();
+        extraWarningSent = false;
+        pendingWarningSent = false;
+
+        extraMessages = 0;
+    }
+    public synchronized void pendingMessage(String key,String body)
+    {
+    	pendingEchos.put(key,body);
+    }
+    public synchronized void pendingMultipleMessage(String key,String body)
+    {
+    	multipleEchos.put(key,body);
+    }
+
+    public synchronized void pendingMessage(boolean priv, StringBuilder base)
+    {
+		 // add sequence number and keep the accounting straight.
+		 // note that this is deliberately duplicative and poorly
+		 // structured, to make it more likely to trip up hackers
+		 // using advanced tools to mess with our communications.
+		 StringBuilder seq = new StringBuilder("x");
+		 seq.append(na.seq++);
+		 if(!priv)
+		 {
+			 pendingMessage(seq.toString(),base.toString());
+		 }
+		 seq.append(' ');
+		 base.insert(0,seq.toString());
+    }
+    
     public synchronized int count(int n)
     {	extraMessages += n;
     	return(extraMessages);
     }
-
+    private String lastCmd = null;
+    public boolean isExpectedResponse(String commandStr,String fullMessage)
+    {	
+    	String message = pendingEchos.get(commandStr);   	
+    	if(message!=null)
+    	{
+  	  	 pendingEchos.remove(commandStr);
+   	  	 lastCmd = null;
+  	  	 //G.print("remove "+commandStr);
+  	  	 return(true);
+    	}
+    	else if((message = multipleEchos.get(commandStr))!=null)
+    	{
+    		multipleEchos.remove(commandStr);
+       	  	lastCmd = commandStr;
+       	  	return true;
+  		
+    	}
+    	else if((lastCmd!=null) && lastCmd.equals(commandStr))
+		  {	
+    		// send multiple can generate multiple replies with the same sequence
+    		// this is actually a loophole which could be patched by also recording
+    		// the number of echos expected.
+    		return(true);
+		  }
+    	else if((commandStr.length()>=2)
+    			&& (commandStr.charAt(0)=='x')
+  		  		&& Character.isDigit(commandStr.charAt(1)))
+    		{
+    			// an unexpected reply, pretend it was expected so there's a buildup
+    			extraEchos.put(commandStr,fullMessage);
+    			return(true);
+    		}
+    	return(false);
+    }
+	public void savePendingEcho(String seq, String message) {
+		pendingEchos.put(seq,message);
+	}
+	public void savePendingMultipleEcho(String seq,String message)
+	{
+		multipleEchos.put(seq,message);
+	}
+	
+	// check for echos that are expected and never arrived
+    public void checkMissing(int sent)
+    {	int nn = 0;
+    	String str = "";
+        if(!pendingWarningSent) 
+    	{ // this is the trigger for possible fraud alert
+        for(int i=0;i<echoTables.length;i++)
+        {
+        @SuppressWarnings("unchecked")
+		Hashtable<String,String>table = (Hashtable<String,String>)echoTables[i];
+       	for(Enumeration<String> keyenum = table.keys(); keyenum.hasMoreElements();)
+    		{String key = keyenum.nextElement();
+    		int keyval = G.IntToken(key.substring(1));
+    		if(keyval<=sent)
+    		{
+    		str += key + " "+table.get(key)+"\n";
+    		nn++;
+    		}
+    		}}
+	       	if(nn>0)
+	       	{
+	      	pendingWarningSent = !G.debug();
+	    	String pendErr = "unusual missing echoes : "+nn+" "+str+"\n\nlog:"+PrintLog();
+	        logError(pendErr,null);
+	        
+	    	}
+    	}
+    }
+    
+    public void checkExtra()
+    {	na.getLock();  
+    	try {
+        if(!extraWarningSent && (extraEchos.size()>0)) 
+        	{ // this is the trigger for possible fraud alert
+        	String str = "";
+        	int nn = 0;
+        	extraWarningSent = true;
+        	for(Enumeration<String> keyenum = extraEchos.keys(); keyenum.hasMoreElements();)
+        		{String key = keyenum.nextElement();
+        		str += key + " "+extraEchos.get(key)+"\n";
+        		nn++;
+        		}
+        	String echoErr = "unusual extra echoes : "+nn+" "+str;
+        	logError(echoErr,null);
+        	}
+    	} 
+    	finally { na.Unlock(); }
+    }
 }

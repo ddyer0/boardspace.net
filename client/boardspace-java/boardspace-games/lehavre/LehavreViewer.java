@@ -353,7 +353,6 @@ public class LehavreViewer extends exCanvas implements OnlineConstants,ViewerPro
 	//
 	public void init(ExtendedHashtable h,LFrameProtocol frame) {
 		sharedInfo = h;
-		boardspace = (Game)h.getObj(exHashtable.MYGAME);
 		myFrame = frame;
 		expecting_initial_state = false;
 		String language = G.getString(G.LANGUAGE,DefaultLanguageName);

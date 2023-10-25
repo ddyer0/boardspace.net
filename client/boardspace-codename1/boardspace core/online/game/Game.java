@@ -27,7 +27,6 @@ import online.game.export.ViewerProtocol;
 import online.game.export.ViewerProtocol.RecordingStrategy;
 import online.game.sgf.export.sgf_names;
 import online.search.SimpleRobotProtocol;
-
 import java.io.*;
 import java.util.*;
 import lib.*;
@@ -80,6 +79,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     static final String KEYWORD_NOCONTROL = "nocontrol";
     static final String KEYWORD_UNRESERVE =  "<no_password>";	// these strings are known to the server
     static final String KEYWORD_RESERVE = "<private>";
+    static final String KEYWORD_VIEWER = "viewer";		// command to be passed to the viewer
 
     public static final String NEWSPECTATOR = "#1 Joining as a spectator";
     public static final String CHATSPECTATOR = "#1 has entered the room";
@@ -116,6 +116,8 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
 	private static String LaunchFailedMessage = "launchfailed";
 	static final String CantReconnectMessage = "Can't reconnect";
 	static final String CantReconnectExplanation = "Close this game window and restart the game";
+	static final String WonOutcome = "Game won by #1";
+
 	ViewerProtocol v;
 	public ViewerProtocol getGameViewer() { return(v); }
 	// this is use to lock out some complex interactions with the viewer
@@ -123,6 +125,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
 	private boolean startplaying_called = false;
 	private String serverFile = "";
 	private String selectedGame = "";
+	private String gameTypeId = "xx";
 	private boolean hasGameFocus = true;
 	private boolean sendFocusMessage = false;
     private FileSelector selector = null;
@@ -187,7 +190,11 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     private JCheckBoxMenuItem flushOutput = null; //for testing, disable the transmitter
     private JMenuItem inspectGame = null; //for testing,
     private JMenuItem inspectViewer = null; //for testing, 
+    
+    // use cautiously, it will not be present in offline games launched directly
+    // for debugging or other direct launch configurations.
     private GameInfo gameInfo = null;
+    
     private boolean deferActionsSwitch = false;
     private StringStack deferredActions = new StringStack();
     
@@ -262,7 +269,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     private String fileNameString()
     {
         String str = unrankedMode ? "U!" : masterMode ? "M!" : "";
-        String gameTypeString = gameInfo.id;
+        String gameTypeString = gameTypeId;
         if (tournamentMode)
         {
             str = "T" + ("".equals(str) ? "!" : str);
@@ -502,13 +509,13 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
      		    {	// not entirely correct, since send_multiples can include anything, but
      		    	// it currently only includes one send command and one append_game command.
      		    	// we exclude robot moves here, which as send_as_robot
-     		    	pendingEchos.put(seq,message);
+     		    	myNetConn.savePendingMultipleEcho(seq,message);
      		    	//G.print("Put ",seq," ",message);
      		    }
      		  }
      		  else if(NetConn.SEND_REQUEST_EXIT_COMMAND.equals(fir) || NetConn.SEND_GROUP_COMMAND.equals(fir))
      		  {	// note this assumes that a send_multiple will contain exactly one echoable string
-     			  pendingEchos.put(seq,message);
+     			 myNetConn.savePendingEcho(seq,message);
      			 //G.print("Put ",seq," ",message);
      		  }
      		  message = seq +" "+ message;
@@ -665,6 +672,10 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
  * will separately execute initialization with similar parameters, which will cause the
  * clients to all connect to the server to form an active game.
  * 
+ * Much of the information from "info" is copied or derived from the
+ * GameInfo record, or stored there from the runtime initialization arguments
+ * So it should remain in "info" so runtime can override the stored defaults.
+ * 
  * @see OnlineConstants#PLAYERS_IN_GAME PLAYERS_IN_GAME
  * @see exHashtable#NUMBER_OF_PLAYER_CONNECTIONS NUMBER_OF_PLAYER_CONNECTIONS
  * @see exHashtable#SCORING_MODE SCORING_MODE
@@ -673,8 +684,6 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
  */
     public void init(ExtendedHashtable info,LFrameProtocol frame)
     {  	sharedInfo = info;
-    	info.put(exHashtable.MYGAME, this);
-    	info.put(ConnectionManager.MYXM,pendingEchos);
     	gameInfo = info.getGameInfo();
 
     	int playersInGame = info.getInt(OnlineConstants.PLAYERS_IN_GAME,2);
@@ -682,7 +691,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     	playerConnections = new commonPlayer[playersInGame];
     	Session.Mode gameMode = Session.Mode.findMode(sharedInfo.getString(exHashtable.MODE,Session.Mode.Game_Mode.modeName));
         chatOnly = gameMode==Session.Mode.Chat_Mode;
-
+        gameTypeId = info.getString(exHashtable.GAMETYPEID,"xx");
     	my = new commonPlayer(0); 
     	my.primary = true; //mark it as "us"
     	my.launchUser = (LaunchUser)info.get(ConnectionManager.LAUNCHUSER);
@@ -745,13 +754,13 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     		  	}
    
     		}
-      
+    	// this will be used to give robots access to the game object
         info.put(exHashtable.GAME, this);
-        gameTypeString = info.getString(exHashtable.GAMETYPEID,"");
+        // used in reporting game results and naming saved games
+        gameTypeString = info.getString(exHashtable.GAMETYPEID,"xx");
         gameNameString = info.getString(GameInfo.GAMENAME,"gamename");
         // session >=0 means we're a game with a connection
-        if(info.get(ConnectionManager.ROOMNUMBER)==null) { info.putInt(exHashtable.SESSION,-1); }
-        sessionNum = info.getInt(exHashtable.SESSION);
+        sessionNum = info.getInt(ConnectionManager.SESSION,-1);
         
         
         serverFile = G.getString(FileSelector.SERVERFILE, "");
@@ -838,12 +847,17 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     // game directory as a local file name
     public String localGameDirectory()
     {	String fname = sharedInfo.getString(GameInfo.GAMENAME);
+    	if(fname==null) { fname = sharedInfo.getString(GameInfo.GAMETYPE);}
+    	if(fname!=null)
+    	{
     	GameInfo info = GameInfo.findByName(fname);
     	if(info!=null)
     	{	String name = info.gameName.toLowerCase();
     		// zertz is grandfathered because its cusomary game directory
     		// is just "games"
     		return(name.equals("zertz") ? "games/" : name+"games/");
+    	}
+    	else { return fname+"games/"; }
     	}
     	return("");
     }
@@ -880,10 +894,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     	    myNetConn.setInputSemaphore(v);		// wake us on new input
     	    sentMessages = 0;
     	    myNetConn.count(-myNetConn.count(0));
-    	    extraWarningSent = false;
-    	    pendingWarningSent = false;
-    	    pendingEchos.clear();
-    	    extraEchos.clear();
+    	    myNetConn.clearEchos();
     	    setUserMessage(Color.white,null);
     	    recordedHistory = "";
        	    // note, the natural thing to do here was to call v.doInit() but
@@ -1756,7 +1767,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
         	
         	boolean exp = false;
         	String commandStr = myST.hasMoreTokens() ? myST.nextToken() : "";
-         	if(isExpectedResponse(commandStr,fullMsg)) { exp = true; commandStr = myST.nextToken(); }
+         	if(myNetConn.isExpectedResponse(commandStr,fullMsg)) { exp = true; commandStr = myST.nextToken(); }
         	
             if(commandStr.startsWith(KEYWORD_SPARE))	// spare spare1 etc.
             {
@@ -2288,7 +2299,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
       if (myST.hasMoreTokens())
         {
             String tok = myST.nextToken();
-            if(isExpectedResponse(tok,fullMsg)) { tok = myST.nextToken(); }
+            if(myNetConn.isExpectedResponse(tok,fullMsg)) { tok = myST.nextToken(); }
             if("timeout".equals(tok)) 
             { G.print("timed out");
               shutDown(); 
@@ -2673,7 +2684,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
                 else { now &= ~1;  }
                 myNetConn.na.Unlock();
                 myNetConn.addPing(now);
-         	    checkMissing(pingseq);
+         	    myNetConn.checkMissing(pingseq);
 
                 //System.out.println("Game ping "+now);
             }
@@ -3137,7 +3148,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
 
         G.append(urlStr,"&key=" , myNetConn.sessionKey ,
         		"&session=",sessionNum ,
-        		"&sock=" , sharedInfo.getInt(OnlineConstants.LOBBYPORT) , 
+        		"&sock=" , sharedInfo.getInt(OnlineConstants.LOBBYPORT,-1) , 
         		"&mode=" ,mode , tm);
 
         appendNotes(urlStr);
@@ -3165,8 +3176,8 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
         G.append(urlStr,
         		"&key=" , myNetConn.sessionKey ,
         		"&session=",sessionNum ,
-        		"&sock=" , sharedInfo.getInt(OnlineConstants.LOBBYPORT) , 
-        		"&game=" , gameInfo.id ,
+        		"&sock=" , sharedInfo.getInt(OnlineConstants.LOBBYPORT,-1) , 
+        		"&game=" , gameTypeId ,
         		"&mode=" ,mode , 
         		"&u1=",p.uid,
         		"&s1=", v.ScoreForPlayer(p),
@@ -3322,7 +3333,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
         	}
         }
         G.append(urlStr,"&key=" , myNetConn.sessionKey , "&session=" , sessionNum,
-        				"&sock=" , sharedInfo.getInt(OnlineConstants.LOBBYPORT) ,"&mode=" , mode , tm);
+        				"&sock=" , sharedInfo.getInt(OnlineConstants.LOBBYPORT,-1) ,"&mode=" , mode , tm);
         appendNotes(urlStr);
         String str = urlStr.toString();
         /*
@@ -3762,7 +3773,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
         {
         myNetConn.Connect((my.spectator ? "Spectator " : "Game ")+" "+gameInfo.gameName,
         					sharedInfo.getString(SERVERNAME),
-        					sharedInfo.getInt(LOBBYPORT));
+        					sharedInfo.getInt(LOBBYPORT,-1));
         setGameState(ConnectionState.UNCONNECTED);
 
         theChat.setConn(myNetConn);
@@ -3836,9 +3847,6 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
         msg.append(" ");
         if(v!=null)
         {	
-
-        if(G.TimeControl())
-        {
         	TimeControl tc = (TimeControl)sharedInfo.get(exHashtable.TIMECONTROL);
         	if(tc!=null)
         	{
@@ -3847,7 +3855,6 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
             		msg.append(tc.print());
             		msg.append(" ");
         	}
-        }
         	if(tournamentMode) { msg.append("t "); }
         	String maps = v.colorMapString();
         	if(maps!=null)
@@ -4819,6 +4826,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
 	public static final String GameStrings[] = {
 		       // review rooms
 		       	ProblemSavingMessage,
+		       	WonOutcome,
 		       	CantReconnectMessage,
 		       	CantReconnectExplanation,
 				BeSpectatorMessage,

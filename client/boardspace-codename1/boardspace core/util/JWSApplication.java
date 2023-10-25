@@ -22,8 +22,6 @@ import bridge.*;
 import bridge.ThreadDeath;
 import common.GameInfo;
 import lib.CanvasProtocol;
-import lib.ChatInterface;
-import lib.ConnectionManager;
 import lib.DataCache;
 import lib.ExtendedHashtable;
 import lib.G;
@@ -81,61 +79,6 @@ public class JWSApplication implements Config,LobbyConstants
 	// reviewer directories
 	static final String DATALOCATION = "datalocation";
 
-	static String DefaultParameters[][] = {
-			{PLAYERS_IN_GAME,"2"},
-			{ChatInterface.CHATWIDGET,""+USE_CHATWIDGET},
-			{ChatInterface.BOARDCHATPERCENT,"25"},
-			{G.DEBUG, "false"},
-			{RANDOMSEED,"-1"},
-	        {GAMEINDEX,"-1"},	// game index for save game
-	        {G.LANGUAGE,DefaultLanguageName},
-	        {LOBBYPORT,"-1"},
-	        {TESTSERVER, "false"},
-	        {PICTURE, "false"},
-	        {WebStarted,"false"},
-	        {ConnectionManager.UID, "0"},
-	        {ConnectionManager.BANNERMODE, "N"},
-	        {ConnectionManager.USERNAME,"me"},
-	        {UIDRANKING,""},
-	        {GAMESPLAYED,"0"},
-	        {DefaultGameClass,"online.common.commonLobby"},	// this directs the master class
-	        //
-	        // all these null values need to be here, because they
-	        // trigger the applet client to look for the parameter
-	        // among the applet parameters.
-	        //
-			{GameInfo.GAMENAME,null},		// a file name, not a game type
-			{GameInfo.GAMETYPE,null},
-			{VIEWERCLASS,null},
-			{G.VNCCLIENT,"false"},
-			{G.ALLOWOFFLINEROBOTS,"false"},
-			{GAMEINFO,null},
-			{IMAGELOCATION,null},	// used by the player map 
-	        {DATALOCATION,null},	// used by the player map 
-	        {SMALL_MAP_CENTER_X,null},// used by the player map 
-			{SMALL_MAP_CENTER_Y,null},// used by the player map 
-			
-			{EXTRAMOUSE,null},	// debugging and admin options
-			{EXTRAACTIONS,null},
-			{FAVORITES,null},	// favorite games list, from login
-			{COUNTRY,null},		// country of origin, from login
-			{LATITUDE,null},	// current location, from login
-			{LOGITUDE,null},
-			{PROTOCOL,null},	// http or https
-			{SERVERNAME,null},	// the server we connect to
-			{SERVERKEY,null},	// permission token to connect
-			{FRAMEWIDTH,null},
-			{FRAMEHEIGHT,null},
-	    };
-
-	public static void setDefaults()
-	{	// apply the defaults
-		for(String p[] : DefaultParameters)
-    	{		
-			G.putGlobal(p[0],p[1]);
-    	}
- 	}
- 
   
 	private static void init()
     {
@@ -331,7 +274,6 @@ public class JWSApplication implements Config,LobbyConstants
 		public void runMain(String args[])
 		{ 	
 			// must be first because it loads the defaults
-			setDefaults();
 			G.setGlobalDefaultFont();	// set a reasonable global default
 			// copy the web start parameters
 			for(int i=0; i<args.length-1; i+=2)

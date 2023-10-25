@@ -358,9 +358,13 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	    boldBasicFont = G.getFont(basicFont,G.Style.Bold,G.standardizeFontSize(14*scale));
 	    bigFont = G.getFont(basicFont,G.Style.Bold,G.standardizeFontSize(24*scale));
 	}
+	public void addSelfTo(Container p)
+	{
+		lobby = (commonLobby)p;
+		super.addSelfTo(p);
+	}
 	public void init(ExtendedHashtable info,LFrameProtocol frame)
 	  { super.init(info,frame);
-	    lobby = (commonLobby)info.get(exHashtable.LOBBY);
 	    Image icon = Image.getImage(IMAGEPATH+CommonConfig.lobby_icon_image_name);
 	    myFrame.setIconAsImage(icon);
 	    if(G.isIOS()) 
@@ -370,7 +374,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	    	painter.setRepaintStrategy(lib.RepaintManager.RepaintStrategy.SingleBuffer); 
 	    	}
 	    /* test here to see what shape of polygon to create */
-	    isTestServer = info.getBoolean(Config.TESTSERVER);
+	    isTestServer = info.getBoolean(Config.TESTSERVER,false);
 	    GameInfo.adjustGameEnables();
 	    setBackground(Color.white);
 	    adjustFonts(1.0);
@@ -1367,7 +1371,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	    boolean editable = session.editable();	    
 	    
 	  	boolean timedMode = !gameInProgress && session.getSubmode().isTimed();
-	  	int extraSpacing = (G.TimeControl() && timedMode) ? G.Height(timeControlRect) : 0;
+	  	int extraSpacing = (timedMode) ? G.Height(timeControlRect) : 0;
 	  	if(!gameInProgress) { extraSpacing = extraSpacing*2; }
 	  	int height = Math.min(GAMEHEIGHT,STANDARDGAMEHEIGHT 
 	  				+ ((maxPlayers+1)/2-2)*PLAYERCELLSIZE 
@@ -1564,7 +1568,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	  // and the player information.  We shuffle the origin to make room
 	  // for the extra line of stuff, and we knew this would happen at the
 	  // top of the funcition when we calculated "height"
-	  if(G.TimeControl() && timedMode)
+	  if(timedMode)
 	  {	  int tcspace = G.Height(timeControlRect);
 	  	  int bottomSpacing = gameInProgress ? extraSpacing+tcspace : extraSpacing;
 	  	  int topSpacing = gameInProgress ? -tcspace : 0;
@@ -2192,7 +2196,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 			    && (sess.mode==sess.pendingMode));
 	}
 	private boolean inChangeTimeControl(Session sess,int localX,int localY)
-	{	if(G.TimeControl() && isPendingSession(sess)
+	{	if(isPendingSession(sess)
 			&& sess.getSubmode().isTimed()
 			&& sess.editable()
 			&& sess.timeControl().inModeRect(localX,localY))
@@ -2202,7 +2206,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 		return(false);
 	}
 	private boolean inChangeBaseTime(Session sess,int localX,int localY)
-	{	if(G.TimeControl() && isPendingSession(sess)
+	{	if(isPendingSession(sess)
 			&& sess.getSubmode().isTimed()
 			&& sess.editable()
 			&& sess.timeControl().inMainRect(localX,localY))
@@ -2212,7 +2216,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 		return(false);
 	}
 	private boolean inChangeExtraTime(Session sess,int localX,int localY)
-	{	if(G.TimeControl() && isPendingSession(sess)
+	{	if(isPendingSession(sess)
 			&& sess.getSubmode().isTimed()
 			&& sess.editable()
 			&& sess.timeControl().inExtraRect(localX,localY))
@@ -2227,7 +2231,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	  if( isPendingSession(sess))
 	    {
 		// in tournament mode, add extra spacing for the time management info
-		int off = (G.TimeControl() && sess.getSubmode().isTimed()) ? G.Height(timeControlRect)*2 : 0;
+		int off = sess.getSubmode().isTimed() ? G.Height(timeControlRect)*2 : 0;
 		int localY = localY0-off;
 		int maxPlayers = sess.currentMaxPlayers();
 		for (int playerSpaceIndex=0;playerSpaceIndex<maxPlayers;playerSpaceIndex++) 

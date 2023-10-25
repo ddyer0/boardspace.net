@@ -731,14 +731,13 @@ public class Session implements LobbyConstants
 				 				?numActivePlayers
 				 				:numOpps+((robotGame!=null)?1:0),GI.minPlayers));
 		 myInfo.putBoolean(exHashtable.SPECTATOR,spectator);
-		 myInfo.putInt(ConnectionManager.ROOMNUMBER,gameIndex);
+		 myInfo.putInt(ConnectionManager.SESSION,gameIndex);
 		 myInfo.putString(ConnectionManager.SESSIONPASSWORD,password);
 	
 		 myInfo.putInt(OnlineConstants.RANDOMSEED,seedValue);  //seed for random sequence
 		 myInfo.putBoolean(exHashtable.GUEST,primaryUser.isGuest);
 		 myInfo.putBoolean(exHashtable.NEWBIE,primaryUser.isNewbie||primaryUser.isGuest);
 		 myInfo.putString(exHashtable.GAMEUID,startingName);
-		 myInfo.putObj(exHashtable.MYINFO,primaryUser.info);
 		 
 		 myInfo.putObj(exHashtable.MODE,mode.modeName);
 		 myInfo.putBoolean(exHashtable.TOURNAMENTMODE,tournamentMode);

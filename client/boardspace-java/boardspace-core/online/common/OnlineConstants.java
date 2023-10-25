@@ -119,10 +119,8 @@ public interface OnlineConstants extends Config {
     static final String LimboMessage = "LIMBO";
     static final String PlayerNumber = "Player #1";
     static final String ShowRulesMessage = "view the rules for this game";
-    static final String ConnectionErrorMessage = "Connection error";
     static final String GuestNameMessage = "guest";
-    static final String WonOutcome = "Game won by #1";
-
+ 
     static final String NoLaunchMessage =  "nolaunch"; 
 
  
@@ -133,7 +131,6 @@ public interface OnlineConstants extends Config {
     static final String KEYWORD_PLAYER = "player";			// used to introduce player names in review mode game story
     static final String KEYWORD_PINFO = "pi";				// player info
     static final String KEYWORD_PINFO2 = "qi";				// player info 2
-    static final String KEYWORD_VIEWER = "viewer";		// command to be passed to the viewer
     static final String KEYWORD_VERSION = "version";	// version info
     static final String KEYWORD_RANK = "imranked";
     static final String KEYWORD_IMNAMED = "imnamed";
