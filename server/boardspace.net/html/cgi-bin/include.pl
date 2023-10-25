@@ -1,7 +1,7 @@
 #
 # include.pl	- Global variables used by game server
 #
-$features="timecontrol=true";
+$features="";
 $class_dir = "v5.98";
 $test_class_dir = "test";
 #$test_class_dir = "v4.99a";
@@ -95,9 +95,6 @@ $supervisor_email= "gamemaster\@boardspace.net";
 $announce_email = "boardspace-announcements\@boardspace.net";
 $noreply_email = "boardspace-noreply\@boardspace.net";
 $from_email = "registrationdesk\@boardspace.net";
-$root_applet = "online.Root.class";
-# just the root jar, others are loaded through the manifest and index files inside the root jar
-$jar_collection="OnlineLobby.jar";
 $bonus_games=5;
 $mobile_login_message = "none";
 $mobile_version_info = "test_games xx enable_games xx disable_games xx java_version $class_dir ios_min_version 5.40 android_min_version 5.40 android_version 5.98 ios_version 5.98 android_reject_versions 0 ios_reject_versions 0 ";

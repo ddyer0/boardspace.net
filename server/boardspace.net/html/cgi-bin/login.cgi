@@ -122,7 +122,7 @@ sub check_server
 
 sub print_jws_applet()
 { my ($dbh,$fav,$pname,$uid,$languageName,$uidrank,$haspicture,$country,$latitude,$logitude,
-      $pclass,$played,$timec,$banner,$bannermode) = @_;
+      $pclass,$played,$timec,$bannermode) = @_;
   my $language=$languageName."Strings";
   my $use_class_dir = param('classes');
   my $test = (param('test') eq 'true') && !($'class_dir eq $'test_class_dir);
@@ -134,14 +134,10 @@ sub print_jws_applet()
    if($use_class_dir eq "") { $use_class_dir = $'class_dir; }
    if($test) { $use_class_dir = $'test_class_dir; }
 
-  my $rootclass = $'root_applet;
-  my $jarclass = $'jar_collection;
   my $extra = $'extramouse;
   my $feat = $'features;
   if(param('extra')) { $extra='true'; }
-  if(!($banner eq ""))
-  {  $banner = "bannerString=$banner\n";
-  }
+  my $banner="";  # this used to be part of a cookie based protol to exclude undesirables
   if(!($bannermode eq ""))
   {  $banner .="bannerMode=$bannermode\n";
   }
@@ -170,8 +166,6 @@ sub print_jws_applet()
    my $msg = utfEncode("$banner$fav$testserver$dd
 codebase=/$'java_dir/$use_class_dir/
 documentbase=/$languageName/
-archive=$jarclass
-code=$rootclass
 servername=$ENV{'HTTP_HOST'}
 localIP=$ENV{'REMOTE_ADDR'}
 serverKey=$'serverKey
@@ -514,7 +508,7 @@ sub logon()
     #noframes version.  
     print "applet\n";
       &print_jws_applet($dbh,$fav,$pname,$uid,$languageName,$uidrank,$haspicture,$country,$latitude,
-                       $logitude,$pclass,$games_played,$timec,$bannercookie,$bannermode);
+                       $logitude,$pclass,$games_played,$timec,$bannermode);
     }
 
   } 
