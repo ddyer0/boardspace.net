@@ -855,7 +855,7 @@ public class YinshGameViewer extends CCanvas<YinshCell,YinshBoard> implements Yi
 
     public boolean parsePlayerInfo(commonPlayer p,String first,StringTokenizer tokens)
     {
-    	if(exHashtable.TIME.equals(first) && b.DoneState())
+    	if(OnlineConstants.TIME.equals(first) && b.DoneState())
     	{
     		PerformAndTransmit("Done",false,replayMode.Replay);
     	}

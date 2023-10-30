@@ -104,6 +104,7 @@ class UCTThread extends Thread implements Opcodes
 		blitz = master.blitz;
 		initialWinRateWeight = master.initialWinRateWeight;
 	}
+
 	public String toString()
 	{
 		return("<robot "+getName()+">");
@@ -685,6 +686,7 @@ class UCTThread extends Thread implements Opcodes
 		master.root.update(val,1,master.alpha);
 		
 		G.Assert(backTrack.size()==0,"must be unwound");
+		G.Assert(traverseMovesThisRun>0 || randomMovesThisRun>0,"no progress made");
 		synchronized(master)
 		{	master.totalSimulations++; 
 			master.randomMoves += randomMovesThisRun; 
@@ -815,6 +817,8 @@ class UCTThread extends Thread implements Opcodes
 		}
 	}
 
+	public Throwable error = null;
+	public String errorStack = null;
 	public void requestExit() { stop = true; }
 
 }
@@ -828,6 +832,25 @@ public class UCTMoveSearcher extends CommonDriver
 		// tunable parameters
 		//
 		
+	/**
+	 * if true, use the model of starting a group of threads to do the actual search
+	 * and use the original thread to monitor the progress of the working threads.  If
+	 * any of the threads stalls, it indicates a possible thread synchronization deadlock.
+	 * 
+	 * if false, do the search directly in the original thread, with no separate monitor.
+	 * There ought to be no possibility of synchronization errors, so the monitor is 
+	 * unnecessary.
+	 * 
+	 * Two comments about this choice:   true keeps the workflow consistent no matter
+	 * how many threads are actually in use.   false removes an unnecessary layer, BUT
+	 * see issue https://github.com/codenameone/CodenameOne/issues/3753.   The underlying
+	 * problem was that the GC was wedged, which caused threads to become unrunnable when
+	 * they were flagged for GC.  This manifest as a "thread deadlock" error, uniquely
+	 * because the threads were being monitored externally.  The other manifestation of
+	 * this error was a complete lockup/freeze which was even more mysterious.
+	 * 
+	 */
+	boolean MONITOR_SINGLE_THREAD = true;
 		
 		public Thread[] getThreads() { return(threads); }
 		
@@ -1145,10 +1168,12 @@ public class UCTMoveSearcher extends CommonDriver
 			// 1 is intended only for testing that a copy thread is the same as 0
 			// 2 or more uses parallel threads.
 			//
+			
 			int cores = Math.max(1,G.getAvailableProcessors());
 			int count = Math.min(cores,Math.max(1,maxThreads));
 			
 			{
+			// allocate a thread object for ourself, even if we won't start it
 			UCTThread mythreads[] = new UCTThread[count];			
 			mythreads[0] = new UCTThread(this,leadRobot,null);
 			for(int i=1;i<count; i++) 
@@ -1160,6 +1185,8 @@ public class UCTMoveSearcher extends CommonDriver
 			
 			long before = System.currentTimeMillis();
 			long after;
+			double timeTargetDone = 0;
+
 			{
 			leadRobot.prepareForDescent(this);
 			CommonMoveStack moves = leadRobot.List_Of_Legal_Moves();
@@ -1194,27 +1221,38 @@ public class UCTMoveSearcher extends CommonDriver
 			treeSize++;
 			TreeViewerProtocol viewer = leadRobot.getTreeViewer();
 			active = true;
+			boolean monitor = MONITOR_SINGLE_THREAD || count>=2;
+			
 			if(viewer!=null)
 			{
 				viewer.setTree(this);
 			}
-			if(maxThreads>0)
-			{
+			if(monitor)
+			{	// start the threads if there are more than just us
 				for(UCTThread th : threads) { th.start(); }
 			}
+			long now = G .Date();
+			long loops = 0;
 			do
 			{	
 				before += commonPause();// just in case we pause
 
-				if(maxThreads==0) 
+				if(!monitor) 
 					{ UCTThread s = threads[0];
-					  s.simUsingTree(); 
+					  s.simUsingTree();
+					  long later = G.Date();
+					  loops++;
+					  if(later-now>1000)
+					  {	  now=later;
+						  G.print("Single search "+loops," T ",traverseMoves," R ",randomMoves);
+						  
+					  }
 					  before += s.pausedTime;
 					  s.pausedTime = 0;
 					}
 				else 
 					{ // threads are doing the work, we're just waiting
-					  G.doDelay(250); 
+					  G.stall(250); 
 					  if(viewer==null) 
 					  	{ viewer=leadRobot.getTreeViewer();
 					  	  if(viewer!=null) { viewer.setTree(this); }
@@ -1247,7 +1285,7 @@ public class UCTMoveSearcher extends CommonDriver
 			after = System.currentTimeMillis();
 			double moveTargetDone = (randomMoves+traverseMoves)/randomMoveTarget;
 			double maxTarget = (randomMoves+traverseMoves)/randomMoveTargetMax;
-			double timeTargetDone = ((after-before)/1000.0)/timePerMove;
+			timeTargetDone = ((after-before)/1000.0)/timePerMove;
 			partDone = Math.max(maxTarget,Math.min(moveTargetDone,timeTargetDone));
 
 			if(stored_children>=stored_child_limit) 
@@ -1265,7 +1303,13 @@ public class UCTMoveSearcher extends CommonDriver
 				int  rate = (randomMoves-prevRandomMoves)+(traverseMoves-prevTraverseMoves);
 				prevRandomMoves = randomMoves;
 				prevTraverseMoves = traverseMoves;
-				if(rate*10<peakRate) { rateStall++; } else { rateStall=0; }
+				if(rate*10<peakRate) 
+				 { rateStall++; 
+				   Plog.log.addLog("rate stall ",rateStall," ",randomMoves,  " ",traverseMoves," rate ",rate," peak ",peakRate);
+				 }
+				else
+				{ rateStall=0; 
+				}
 				peakRate = Math.max(rate, peakRate);
 				
 					leadRobot.setProgress(partDone);
@@ -1283,11 +1327,26 @@ public class UCTMoveSearcher extends CommonDriver
 					&& (root.getNoOfChildren()!=1)
 					&& (!stored_child_limit_stop || (stored_children<stored_child_limit)) 
 					&& (partDone<1.0));
-			
-			if(maxThreads>0)
+			if(decided==null)
+			{
+			Plog.log.addLog("Done stall ",stall,
+					"\naborted ",aborted,
+					"\nrateStall ",rateStall,
+					"\nsims ",totalSimulations," max ",maximum_playouts,
+					" children ",root.getNoOfChildren(),"\nstored stop ",stored_child_limit_stop,
+					"\nstored ",stored_children,
+					" limit ",stored_child_limit,
+					"\npartdone ",partDone);
+			}
+			if(stall<STALL_LIMIT) 
+				{ stall = 0;		// we didn't stop due to a stall, start over		
+				}
+			if(count>=2)
 			{	// wait for all the threads to close up
 				before += commonPause();// just in case we pause
-				for(UCTThread th : threads) { th.requestExit(); }
+				for(UCTThread th : threads) 
+					{ th.requestExit(); 
+					}
 				boolean allstop = false;
 				while(!allstop && (stall<STALL_LIMIT))
 				{ allstop = true; 
@@ -1295,16 +1354,19 @@ public class UCTMoveSearcher extends CommonDriver
 				  for(UCTThread th : threads) 
 				  	{ if(!th.stopped) 
 				  		{
+				  		if(!th.isAlive()) { th.stopped=true; }
+				  		else
+				  		{
 				  		allstop = false; 
-				  		G.doDelay(100); 
-				  		}
+				  		G.stall(100); 
+				  		}}
 				  	}
 				}
 				if(!allstop)
 				{	StringBuffer p = new StringBuffer();
 					// this is a last ditch defense against thread interlocks.  If they do occur,
 					// try to get a report out and abort the robot.
-					for(Thread th : threads)
+					for(UCTThread th : threads)
 					{
 						StackTraceElement[]trace = G.getStackTraceElements(th);
 						p.append("stuck thread "+th+"\n");
@@ -1315,6 +1377,11 @@ public class UCTMoveSearcher extends CommonDriver
 							p.append(trace[i].toString());
 							p.append("\n");
 						}}
+						if(th.error!=null)
+						{
+							p.append("error was "+th.error);
+							p.append("\nerror trace "+th.errorStack);
+						}
 					}
 					throw G.Error("thread deadlock:\n%s",p.toString());
 				}

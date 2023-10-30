@@ -170,7 +170,7 @@ public class CrosswordsViewer extends CCanvas<CrosswordsCell,CrosswordsBoard> im
         // later, some variant is created, or the game code base is re purposed as the basis
         // for another game.
         bb = new CrosswordsBoard(type,players_in_game,randomKey,getStartingColorMap(),dictionary,CrosswordsBoard.REVISION);
-        robotGame = sharedInfo.get(exHashtable.ROBOTGAME)!=null;
+        robotGame = sharedInfo.get(OnlineConstants.ROBOTGAME)!=null;
         // some problems with the animation
         // useDirectDrawing();
         doInit(false);

@@ -473,7 +473,22 @@ public class G extends Platform implements Timestamp
         {
         }
     }
-    
+    // wait "for sure"
+    public static void stall(int inDel)
+    {
+    	long now = G.Date();
+    	long later = now;
+    	int loops = 0;
+    	do
+    	{	loops++;
+    		G.doDelay(inDel);
+    		later = G.Date();
+    	} while ((later-now)<inDel);
+    	if(loops>3)
+    	{
+    		G.print("Stall ",inDel," took ",loops," tries");
+    	}
+    }
     /**
      * split a  string into an array of substrings separated by ch, which is normally 
      * expected to be \n  Leading and trailing "ch" are deleted.

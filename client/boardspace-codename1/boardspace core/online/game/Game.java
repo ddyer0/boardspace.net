@@ -677,32 +677,32 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
  * So it should remain in "info" so runtime can override the stored defaults.
  * 
  * @see OnlineConstants#PLAYERS_IN_GAME PLAYERS_IN_GAME
- * @see exHashtable#NUMBER_OF_PLAYER_CONNECTIONS NUMBER_OF_PLAYER_CONNECTIONS
+ * @see OnlineConstants#NUMBER_OF_PLAYER_CONNECTIONS NUMBER_OF_PLAYER_CONNECTIONS
  * @see exHashtable#SCORING_MODE SCORING_MODE
  * @see OnlineConstants#RANDOMSEED RANDOMSEED
- * @see exHashtable#GAMETYPEID GAMETYPEID
+ * @see OnlineConstants#GAMETYPEID GAMETYPEID
  */
     public void init(ExtendedHashtable info,LFrameProtocol frame)
     {  	sharedInfo = info;
     	gameInfo = info.getGameInfo();
 
     	int playersInGame = info.getInt(OnlineConstants.PLAYERS_IN_GAME,2);
-        numberOfPlayerConnections = info.getInt(exHashtable.NUMBER_OF_PLAYER_CONNECTIONS,0);	// number of real players
+        numberOfPlayerConnections = info.getInt(OnlineConstants.NUMBER_OF_PLAYER_CONNECTIONS,0);	// number of real players
     	playerConnections = new commonPlayer[playersInGame];
-    	Session.Mode gameMode = Session.Mode.findMode(sharedInfo.getString(exHashtable.MODE,Session.Mode.Game_Mode.modeName));
+    	Session.Mode gameMode = Session.Mode.findMode(sharedInfo.getString(OnlineConstants.MODE,Session.Mode.Game_Mode.modeName));
         chatOnly = gameMode==Session.Mode.Chat_Mode;
-        gameTypeId = info.getString(exHashtable.GAMETYPEID,"xx");
+        gameTypeId = info.getString(OnlineConstants.GAMETYPEID,"xx");
     	my = new commonPlayer(0); 
     	my.primary = true; //mark it as "us"
     	my.launchUser = (LaunchUser)info.get(ConnectionManager.LAUNCHUSER);
-        my.spectator = info.getBoolean(exHashtable.SPECTATOR,false);
-    	info.put(exHashtable.MYPLAYER,my);			// required by the viewer
+        my.spectator = info.getBoolean(OnlineConstants.SPECTATOR,false);
+    	info.put(OnlineConstants.MYPLAYER,my);			// required by the viewer
         usePNP = G.offline();
         launchUsers = (LaunchUser[])info.get(ConnectionManager.LAUNCHUSERS);
        
         super.init(info,frame);		// viewer is created here
 
-        CreateChat(info.getBoolean(exHashtable.CHATFRAMED,false) || G.smallFrame());
+        CreateChat(info.getBoolean(OnlineConstants.CHATFRAMED,false) || G.smallFrame());
 
         CanvasProtocol can = myCanvas;
         if ((can == null) && !chatOnly )
@@ -714,9 +714,9 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
         {	// this is to assure that games started directly, without going through
         	// the launcher, don't have to specify a default color map
         	Color cm[] = gameinfo.colorMap;
-        	if(cm!=null && G.getGlobal(exHashtable.COLORMAP)==null)
+        	if(cm!=null && G.getGlobal(KEYWORD_COLORMAP)==null)
         	{
-        		G.putGlobal(exHashtable.COLORMAP, AR.intArray(cm.length));
+        		G.putGlobal(KEYWORD_COLORMAP, AR.intArray(cm.length));
         	}
         }
 	     if (classname!=null && !"".equals(classname) && !"none".equals(classname))
@@ -755,9 +755,9 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
    
     		}
     	// this will be used to give robots access to the game object
-        info.put(exHashtable.GAME, this);
+        info.put(GAME, this);
         // used in reporting game results and naming saved games
-        gameTypeString = info.getString(exHashtable.GAMETYPEID,"xx");
+        gameTypeString = info.getString(OnlineConstants.GAMETYPEID,"xx");
         gameNameString = info.getString(GameInfo.GAMENAME,"gamename");
         // session >=0 means we're a game with a connection
         sessionNum = info.getInt(ConnectionManager.SESSION,-1);
@@ -788,14 +788,14 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
         // G.print("init "+my);
         unrankedMode = gameMode==Session.Mode.Unranked_Mode;
         masterMode = gameMode==Session.Mode.Master_Mode;
-        tournamentMode = info.getBoolean(exHashtable.TOURNAMENTMODE);
-        isGuest = info.getBoolean(exHashtable.GUEST);
-        UIDstring = info.getString(exHashtable.GAMEUID);
+        tournamentMode = info.getBoolean(OnlineConstants.TOURNAMENTMODE);
+        isGuest = info.getBoolean(OnlineConstants.GUEST);
+        UIDstring = info.getString(OnlineConstants.GAMEUID);
         doNotRecord = G.getBoolean(OnlineConstants.DONOTRECORD, false);
-        doSound = info.getBoolean(exHashtable.SOUND);
+        doSound = info.getBoolean(OnlineConstants.SOUND);
         myFrame.setDoSound(doSound);
 
-        robot = (Bot)info.get(exHashtable.ROBOTGAME);
+        robot = (Bot)info.get(OnlineConstants.ROBOTGAME);
         if (!my.spectator && robot!=null)
         {	
 
@@ -803,9 +803,9 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
         	// as the "robot master" who will actually run the robot.  That player sends
         	// messages that the robot would have sent if he were real.  The tricky bit
         	// is if the robot master quits.
-        	robotMasterOrder = info.getInt(exHashtable.ROBOTMASTERORDER);
-            robotPosition = info.getInt(exHashtable.ROBOTPOSITION);
-            robotOrder = info.getInt(exHashtable.ROBOTORDER);
+        	robotMasterOrder = info.getInt(OnlineConstants.ROBOTMASTERORDER);
+            robotPosition = info.getInt(OnlineConstants.ROBOTPOSITION);
+            robotOrder = info.getInt(OnlineConstants.ROBOTORDER);
             numberOfPlayerConnections++;
         }
                 
@@ -840,7 +840,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     // game directory on the web site, generally /gameame/gamenamegames/
     public String webGameDirectory()
     {
-    	String key = REVIEWERDIR + sharedInfo.getInt(exHashtable.SAVE_GAME_INDEX);
+    	String key = REVIEWERDIR + sharedInfo.getInt(OnlineConstants.SAVE_GAME_INDEX,-1);
     	String dir = G.getString(key,null);
     	return(dir);
     }
@@ -1155,7 +1155,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
         	  if(robot!=null)
         	  {
 			  robotPlayer = p;
-			  sharedInfo.put(exHashtable.ROBOTGAME, robot);
+			  sharedInfo.put(OnlineConstants.ROBOTGAME, robot);
         	  }
         	}
         	if(isGuest && uid.equals(my.uid) && !hasQuit) 
@@ -1331,7 +1331,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
 
     // send a player a time string he needs
     private void sendOneTime(commonPlayer p)
-    {	sendMessage(NetConn.SEND_AS_ROBOT_ECHO+p.channel+" "+exHashtable.TIME+" "+p.elapsedTime);
+    {	sendMessage(NetConn.SEND_AS_ROBOT_ECHO+p.channel+" "+OnlineConstants.TIME+" "+p.elapsedTime);
  
     }
     private void sendMyName(int toindex)
@@ -1716,7 +1716,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
                 {   int val = G.IntToken(myST);
                     if(!iRunThisRobot(player)) { player.UpdateProgress(val / 100.0); }
                 }
-                else if (commandStr.equals(exHashtable.TIME))
+                else if (commandStr.equals(OnlineConstants.TIME))
                 {
                     if(!iRunThisRobot(player)) { GetTime(player, myST); }
                 }
@@ -2254,8 +2254,8 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
 				if(!my.spectator)
 				{
 				// send our time and the time we have for the player resuming
-				sendMessage(NetConn.SEND_GROUP+exHashtable.TIME+" " + my.elapsedTime);
-				sendMessage(NetConn.SEND_AS_ROBOT_ECHO+newp.channel+" "+exHashtable.TIME+" "+newp.elapsedTime);
+				sendMessage(NetConn.SEND_GROUP+OnlineConstants.TIME+" " + my.elapsedTime);
+				sendMessage(NetConn.SEND_AS_ROBOT_ECHO+newp.channel+" "+OnlineConstants.TIME+" "+newp.elapsedTime);
 				}
 				if(!name.equalsIgnoreCase(newp.trueName))
 				{
@@ -3052,7 +3052,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
             else if ((myNetConn!=null) && myNetConn.haveConn())
             {
                 GameResultString = NetConn.SEND_GAME_SGF +
-                sharedInfo.getInt(exHashtable.SAVE_GAME_INDEX) + " " +
+                sharedInfo.getInt(OnlineConstants.SAVE_GAME_INDEX) + " " +
                     filename + " " + grs;
 
                 if (sendMessage(GameResultString))
@@ -3824,7 +3824,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     	if((p==my && !p.spectator) || iRunThisRobot(p))
     	{
 		String tmsg = ((p==my) ? NetConn.SEND_GROUP : NetConn.SEND_AS_ROBOT_ECHO+p.channel+" ")
-								+ exHashtable.TIME+" " + p.elapsedTime + " " + p.clock + " " + p.ping;
+								+ OnlineConstants.TIME+" " + p.elapsedTime + " " + p.clock + " " + p.ping;
 		// send always, the other players use it to notice we're still alive
 		sendMessage(tmsg);
 		}
@@ -3847,7 +3847,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
         msg.append(" ");
         if(v!=null)
         {	
-        	TimeControl tc = (TimeControl)sharedInfo.get(exHashtable.TIMECONTROL);
+        	TimeControl tc = (TimeControl)sharedInfo.get(OnlineConstants.TIMECONTROL);
         	if(tc!=null)
         	{
             		msg.append(sgf_names.timecontrol_property);

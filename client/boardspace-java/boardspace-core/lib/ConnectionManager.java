@@ -486,9 +486,11 @@ public class ConnectionManager
     }
 
     public void PrintLog(PrintStream stream)
+    {	if(stream!=null)
     {
         stream.println("Network log:");
         stream.println(messages.getUnseen());
+    }
     }
 
     /**

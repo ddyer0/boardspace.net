@@ -35,6 +35,8 @@ public class UserManager implements LobbyConstants
 	public int numberOfUsers() { return(numberOfUsers); }
 	public User[] getUsers() { return(Users); }
 	public boolean all_users_seen = false;
+	private static final int MAX_OFFLINE_USERS = 20;
+	private static final int OFFLINE_USERID = 999990-MAX_OFFLINE_USERS;
 	
 	public User addUser(int playerID,String name,String uid,boolean local)
 	  { 
@@ -69,12 +71,12 @@ public class UserManager implements LobbyConstants
 		else {
 			changeOfflineUser("me",false);
 			}
-		for(int i=0;i<MAX_OFFLINE_USERS;i++)
+		for(int i=0;i<UserManager.MAX_OFFLINE_USERS;i++)
 		{
 			String name = prefs.get(PasswordCollector.nameKey+"-"+i,null);
 			if((name!=null)&&!name.equalsIgnoreCase(primaryname))
 			{	
-				addUser(OFFLINE_USERID+i,name,""+(OFFLINE_USERID+i),true);
+				addUser(UserManager.OFFLINE_USERID+i,name,""+(UserManager.OFFLINE_USERID+i),true);
 			}
 		}
 		
@@ -168,7 +170,7 @@ public void changeOfflineUser(String newname,boolean remove)
 	Preferences prefs = Preferences.userRoot();
 	{
 	int slot = -1;
-	for(int i=0;i<MAX_OFFLINE_USERS;i++)
+	for(int i=0;i<UserManager.MAX_OFFLINE_USERS;i++)
 	{
 		String name = prefs.get(PasswordCollector.nameKey+"-"+i,null);
 		if(name!=null)
@@ -182,7 +184,7 @@ public void changeOfflineUser(String newname,boolean remove)
 		else if(slot==-1) { slot = i; } 
 	}
 	if(slot>=0)
-	{	changeUser(prefs,PasswordCollector.nameKey+"-"+slot,OFFLINE_USERID+slot,newname,remove);
+	{	changeUser(prefs,PasswordCollector.nameKey+"-"+slot,UserManager.OFFLINE_USERID+slot,newname,remove);
 	}}
 }
 

@@ -61,6 +61,7 @@ public interface LobbyConstants extends OnlineConstants
     static final String KEYWORD_UIMIN = "uimin";
     static final String KEYWORD_LAUNCH = "launch";
 	String SESSIONIDLETIME = "sessionidletime";
+	String RandomizedMessage = "Random first player";
     static final String WebsiteMessage = "website";
     static final String RestartMessage = "Restart";
     static final String DiscardGameMessage = "Discard This Game";

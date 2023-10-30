@@ -103,8 +103,8 @@ public class TruGameViewer extends CCanvas<TruCell,TruGameBoard> implements TruC
         MouseColors = CheMouseColors;
         MouseDotColors = CheMouseDotColors;
         b = new TruGameBoard(info.getString(GameInfo.GAMETYPE, "Truchet"),
-        		info.getString(exHashtable.GAMEUID,
-        		G.getString(exHashtable.GAMEUID,"testgame")),
+        		info.getString(OnlineConstants.GAMEUID,
+        		G.getString(OnlineConstants.GAMEUID,"testgame")),
         		getStartingColorMap());
         useDirectDrawing(true); 
         doInit(false);

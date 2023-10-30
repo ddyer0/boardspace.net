@@ -115,7 +115,7 @@ public class SantoriniViewer extends CCanvas<SantoriniCell,SantoriniBoard> imple
   	    MouseColors[1] = new Color(0.1f,0.9f,0.1f);
         
   	    // santorini is an odd duck, it's two "colors" are cube and cylinder
-  	    int first = info.getInt(exHashtable.FIRSTPLAYER,0);
+  	    int first = info.getInt(OnlineConstants.FIRSTPLAYER,0);
   	    int map[]=AR.intArray(2);
         if(first==1) { map[0] = 1; map[1]=0; }
         b = new SantoriniBoard(info.getString(GameInfo.GAMETYPE, Santorini_INIT),map);

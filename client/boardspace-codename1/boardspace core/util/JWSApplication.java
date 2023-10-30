@@ -114,7 +114,7 @@ public class JWSApplication implements Config,LobbyConstants
         				G.putGlobal(REVIEWERDIR+idx,dir);
         			}
          		}
-        		String info = G.getString(GAMEINFO, null);
+        		String info = G.getString(GameInfo.GAMEINFO, null);
         		if(info!=null) { GameInfo.parseInfo(info); }
             }
 

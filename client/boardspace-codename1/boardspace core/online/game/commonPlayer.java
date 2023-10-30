@@ -774,7 +774,7 @@ public class commonPlayer implements Opcodes,lib.CompareTo<commonPlayer>
     public void setPlayerInfo(String key, String val)
     {
         info.put(key, val);
-        if(exHashtable.TIME.equals(key)) 
+        if(OnlineConstants.TIME.equals(key)) 
         { setElapsedTime(val);
         }
     }

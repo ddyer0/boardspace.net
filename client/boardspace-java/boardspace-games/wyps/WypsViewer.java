@@ -137,7 +137,7 @@ public class WypsViewer extends CCanvas<WypsCell,WypsBoard> implements WypsConst
         // later, some variant is created, or the game code base is re purposed as the basis
         // for another game.
         bb = new WypsBoard(type,players_in_game,randomKey,getStartingColorMap(),dictionary,WypsBoard.REVISION);
-        robotGame = sharedInfo.get(exHashtable.ROBOTGAME)!=null;
+        robotGame = sharedInfo.get(OnlineConstants.ROBOTGAME)!=null;
         // flickers background, keep off 5/13/2022
         // useDirectDrawing(G.isIOS());
         doInit(false);

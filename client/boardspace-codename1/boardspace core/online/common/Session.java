@@ -43,7 +43,7 @@ public class Session implements LobbyConstants
         SERVERNAME,
         ConnectionManager.USERNAME,
         ConnectionManager.UID,
-        exHashtable.CHATFRAMED,
+        OnlineConstants.CHATFRAMED,
     	};
 
 	public static final int MAXPLAYERSPERGAME = 12;
@@ -680,9 +680,9 @@ public class Session implements LobbyConstants
 		  String gametypeid = GI.id;
 		 String rules = GI.rules;
 		 ExtendedHashtable myInfo = new ExtendedHashtable();
-		 myInfo.putInt(exHashtable.SAVE_GAME_INDEX,GI.dirNum);
-		 if(rules!=null) { myInfo.putString(exHashtable.RULES,rules); }
-		 myInfo.putObj(exHashtable.SEATINGCHART,
+		 myInfo.putInt(OnlineConstants.SAVE_GAME_INDEX,GI.dirNum);
+		 if(rules!=null) { myInfo.putString(OnlineConstants.RULES,rules); }
+		 myInfo.putObj(OnlineConstants.SEATINGCHART,
 				 seatingChart==null
 				 	?SeatingChart.defaultSeatingChart(startingNplayers)
 				 	:seatingChart);
@@ -722,45 +722,45 @@ public class Session implements LobbyConstants
 			 	}
 			 	    activeColorMap = ci;
 		 	};
-		 myInfo.put(exHashtable.TIMECONTROL,startingTimeControl);
-		 myInfo.put(exHashtable.COLORMAP,activeColorMap);
-		 myInfo.putInt(exHashtable.NUMBER_OF_PLAYER_CONNECTIONS,spectator?numActivePlayers:numOpps);
+		 myInfo.put(OnlineConstants.TIMECONTROL,startingTimeControl);
+		 myInfo.put(KEYWORD_COLORMAP,activeColorMap);
+		 myInfo.putInt(OnlineConstants.NUMBER_OF_PLAYER_CONNECTIONS,spectator?numActivePlayers:numOpps);
 		 myInfo.putInt(OnlineConstants.PLAYERS_IN_GAME,
 				 			Math.max(spectator
 				 				?numActivePlayers
 				 				:numOpps+((robotGame!=null)?1:0),GI.minPlayers));
-		 myInfo.putBoolean(exHashtable.SPECTATOR,spectator);
+		 myInfo.putBoolean(OnlineConstants.SPECTATOR,spectator);
 		 myInfo.putInt(ConnectionManager.SESSION,gameIndex);
 		 myInfo.putString(ConnectionManager.SESSIONPASSWORD,password);
 	
 		 myInfo.putInt(OnlineConstants.RANDOMSEED,seedValue);  //seed for random sequence
-		 myInfo.putBoolean(exHashtable.GUEST,primaryUser.isGuest);
-		 myInfo.putBoolean(exHashtable.NEWBIE,primaryUser.isNewbie||primaryUser.isGuest);
-		 myInfo.putString(exHashtable.GAMEUID,startingName);
+		 myInfo.putBoolean(OnlineConstants.GUEST,primaryUser.isGuest);
+		 myInfo.putBoolean(OnlineConstants.NEWBIE,primaryUser.isNewbie||primaryUser.isGuest);
+		 myInfo.putString(OnlineConstants.GAMEUID,startingName);
 		 
-		 myInfo.putObj(exHashtable.MODE,mode.modeName);
-		 myInfo.putBoolean(exHashtable.TOURNAMENTMODE,tournamentMode);
-		 myInfo.putBoolean(exHashtable.SOUND,sound);
-		 myInfo.putInt(exHashtable.ROTATION,rotation);
+		 myInfo.putObj(OnlineConstants.MODE,mode.modeName);
+		 myInfo.putBoolean(OnlineConstants.TOURNAMENTMODE,tournamentMode);
+		 myInfo.putBoolean(OnlineConstants.SOUND,sound);
+		 myInfo.putInt(OnlineConstants.ROTATION,rotation);
 		 myInfo.copyFrom(sharedInfo,sharedValues);
 		 
 		 if(robotGame!=null)
 		 {
-		 myInfo.putObj(exHashtable.ROBOTGAME,robotGame);
+		 myInfo.putObj(OnlineConstants.ROBOTGAME,robotGame);
 		 if(startingPlayer!=null)
 			 {
-			 myInfo.putInt(exHashtable.ROBOTMASTERORDER, startingPlayer.order);
+			 myInfo.putInt(OnlineConstants.ROBOTMASTERORDER, startingPlayer.order);
 			 }
-		 myInfo.putInt(exHashtable.ROBOTPOSITION,startingRobotPosition);
-		 myInfo.putInt(exHashtable.ROBOTORDER,startingRobotOrder);
+		 myInfo.putInt(OnlineConstants.ROBOTPOSITION,startingRobotPosition);
+		 myInfo.putInt(OnlineConstants.ROBOTORDER,startingRobotOrder);
 		 }
 		 else {
-			 myInfo.put(exHashtable.ROBOTGAME,null);
+			 myInfo.put(OnlineConstants.ROBOTGAME,null);
 		 }
-		 myInfo.put(exHashtable.WEAKROBOT, weakestRobot());
+		 myInfo.put(OnlineConstants.WEAKROBOT, weakestRobot());
 		 myInfo.putString(GameInfo.GAMETYPE,gametype);
 		 myInfo.putString(GameInfo.GAMENAME,gamename);
-		 myInfo.putString(exHashtable.GAMETYPEID,gametypeid);
+		 myInfo.putString(OnlineConstants.GAMETYPEID,gametypeid);
 		 myInfo.putString(OnlineConstants.VIEWERCLASS,(GI.viewerClass==null)?"none":GI.viewerClass);
 		 myInfo.putObj(ConnectionManager.BANNERMODE,sharedInfo.getString(ConnectionManager.BANNERMODE,"N"));
 	
@@ -775,7 +775,7 @@ public class Session implements LobbyConstants
 		 // the game itself will treat the slave clients similar to robots.
 		 myInfo.put(ConnectionManager.LAUNCHUSERS,launchUsers);
 		 myInfo.put(ConnectionManager.LAUNCHUSER,launchUser);
-		 myInfo.putInt(exHashtable.FIRSTPLAYER, selectedFirstPlayerIndex);
+		 myInfo.putInt(OnlineConstants.FIRSTPLAYER, selectedFirstPlayerIndex);
 		 theGame.init(myInfo,frame);
 		 
 		 if(G.isCodename1()) 

@@ -29,7 +29,6 @@ import javax.swing.JFrame;
 import common.GameInfo;
 import online.common.LaunchUser;
 import online.common.OnlineConstants;
-import online.common.exHashtable;
 import lib.ConnectionManager;
 import lib.ExtendedHashtable;
 import lib.G;
@@ -364,7 +363,7 @@ public class LehavreViewer extends exCanvas implements OnlineConstants,ViewerPro
 			if(gametype.equals("LeHavreTest"))
 			{	// this branch is for non-networked testing.
 				standaloneGame = true;
-				myPlayer = (commonPlayer)h.get(exHashtable.MYPLAYER);
+				myPlayer = (commonPlayer)h.get(OnlineConstants.MYPLAYER);
 				G.Assert(myPlayer!=null,"myPlayer not supplied");
 				creatorToken = myToken = IdToken.getIdToken(myPlayer);
 				changePlayerList(myPlayer,null);
@@ -411,7 +410,7 @@ public class LehavreViewer extends exCanvas implements OnlineConstants,ViewerPro
 	//
 	public void startPlaying() {
 		// get these now, they weren't ready when the game init method was called.
-		myPlayer = (commonPlayer)sharedInfo.get(exHashtable.MYPLAYER);
+		myPlayer = (commonPlayer)sharedInfo.get(OnlineConstants.MYPLAYER);
 		myToken = IdToken.getIdToken(myPlayer);
 		commonPlayer.reorderPlayers(players);
 		for(int i=0;i<players.length;i++) 

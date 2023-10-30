@@ -2398,7 +2398,7 @@ synchronized(allGames) {
 		{
 		String name = tok.nextToken();	// game name
 		String cl = tok.nextToken();	// class name
-		put(new GameInfo(OFFLINE_USERID,ES.game,OFFLINE_USERID,name,OtherGames,name,name,
+		put(new GameInfo(999999,ES.game,999999,name,OtherGames,name,name,
 				ThreeBotsPlus,null,cl,null,null,null,false, null));
 		}
 	}

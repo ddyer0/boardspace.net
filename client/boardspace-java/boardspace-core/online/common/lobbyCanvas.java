@@ -1477,7 +1477,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
           }
           switch(bot)
 		   {
-		   case NoRobotRandom: msg = RandomizedMessage ;
+		   case NoRobotRandom: msg = LobbyConstants.RandomizedMessage ;
 		   		break;
 		   case NoRobot: msg = NoRobotMessage;
 		   		break;
@@ -2935,7 +2935,7 @@ private void DoMute(User user,int ex,int ey)
 	  					user.publicName),1);
    muteMenu.addMenuItem(s.get(ShowInfoMessage, user.publicName),3);								
    int sessn=users.primaryUser().inviteSession;
-   if((sessn>0) && !"true".equals(user.getInfo(exHashtable.CHALLENGE)) && !user.nochallengeMe)
+   if((sessn>0) && !"true".equals(user.getInfo(OnlineConstants.CHALLENGE)) && !user.nochallengeMe)
 		{ muteMenu.addMenuItem(s.get(InviteMessage,user.publicName,""+sessn),2);
 		}
    muteMenu.show(ex,ey);
@@ -2947,7 +2947,7 @@ private void changeMute(int index)
 		{
 		case 0:	
 				muteUser.ignored = !muteUser.ignored;
-				String id = muteUser.getInfo(exHashtable.IDENT_INFO);
+				String id = muteUser.getInfo(OnlineConstants.IDENT_INFO);
 				String ignored = muteUser.ignored?"true":"false";
 				if(id!=null)
 					{ lobby.IgnoredUsers.put(id,ignored); 

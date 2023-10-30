@@ -51,7 +51,6 @@ import online.common.OnlineConstants;
 import online.common.SeatingChart;
 import online.common.SeatingChart.DefinedSeating;
 import online.common.Session;
-import online.common.exHashtable;
 import online.game.BaseBoard.BoardState;
 import online.game.export.ViewerProtocol;
 import online.game.sgf.sgf_game;
@@ -150,6 +149,7 @@ public abstract class commonCanvas extends exCanvas
 	public static final String TimeExpiredMessage = "Time has expired for #1";
 	public static final String TimeEndGameMessage = "end the game with a loss for #1";
 	public static final String ChangeLimitsMessage = "change the time limits";
+	private String RANKING = "ranking";
 
 	/**
 	 * board cell iterator types. 
@@ -3247,7 +3247,7 @@ public abstract class commonCanvas extends exCanvas
     		}
     		return(true);
     	case HitRulesButton:
-    		{	String rules = sharedInfo.getString(exHashtable.RULES,null);
+    		{	String rules = sharedInfo.getString(OnlineConstants.RULES,null);
     			if(rules!=null)
     				{
     				URL u = G.getUrl(rules,true);
@@ -4866,7 +4866,7 @@ public abstract class commonCanvas extends exCanvas
     public boolean singlePlayer() 
     {	int nPlayers = sharedInfo.getInt(OnlineConstants.PLAYERS_IN_GAME,0);
     	return ( (nPlayers<2) || 
-    				( sharedInfo.get(exHashtable.ROBOTGAME)!=null)
+    				( sharedInfo.get(OnlineConstants.ROBOTGAME)!=null)
     					&& nPlayers==2);	
     }
     
@@ -4901,7 +4901,7 @@ public abstract class commonCanvas extends exCanvas
      * @return an array of integers, which remap the colors 
      */
     public int[]getStartingColorMap() 
-    { 	Object map = sharedInfo.get(exHashtable.COLORMAP);
+    { 	Object map = sharedInfo.get(KEYWORD_COLORMAP);
     	if(map instanceof String) { map = G.parseColorMap((String)map); }
     	return((int[])map);
     }
@@ -4912,7 +4912,7 @@ public abstract class commonCanvas extends exCanvas
     	if(gameInfo!=null)
     	{
     	if(gameInfo.variableColorMap)
-    		{ first = sharedInfo.getInt(exHashtable.FIRSTPLAYER,0); }
+    		{ first = sharedInfo.getInt(OnlineConstants.FIRSTPLAYER,0); }
        	if(first<0 && (gameInfo.colorMap!=null)) 
 		{ // if the first player is not specified explicitly, find the player playing color 0
        	  BoardProtocol b = getBoard();
@@ -5001,7 +5001,7 @@ public abstract class commonCanvas extends exCanvas
     {
         super.init(info,frame);
         
-        SeatingChart chart = (SeatingChart)sharedInfo.get(exHashtable.SEATINGCHART);
+        SeatingChart chart = (SeatingChart)sharedInfo.get(OnlineConstants.SEATINGCHART);
         
         if(chart!=null)
         {
@@ -5009,15 +5009,15 @@ public abstract class commonCanvas extends exCanvas
         }
         else if(G.isTable()) { currentViewset = ViewSet.Reverse; }
  
-        TimeControl tc = (TimeControl)info.get(exHashtable.TIMECONTROL);
+        TimeControl tc = (TimeControl)info.get(OnlineConstants.TIMECONTROL);
         if(tc==null) { tc = new TimeControl(TimeControl.Kind.None);}
         timeControl = tc;
         futureTimeControl = tc.copy();
         datePlayed = "";
-        setCanvasRotation(info.getInt(exHashtable.ROTATION,0));
+        setCanvasRotation(info.getInt(OnlineConstants.ROTATION,0));
         if(info.getBoolean(REVIEWONLY,false)) { gameMode = Session.Mode.Review_Mode; }
-        gameMode = Session.Mode.findMode(info.getString(exHashtable.MODE,gameMode.modeName));
-        l.tournamentMode = info.getBoolean(exHashtable.TOURNAMENTMODE,false);
+        gameMode = Session.Mode.findMode(info.getString(OnlineConstants.MODE,gameMode.modeName));
+        l.tournamentMode = info.getBoolean(OnlineConstants.TOURNAMENTMODE,false);
 
         Random.setNextIntCompatibility(false);
         gameInfo = info.getGameInfo();
@@ -5127,7 +5127,7 @@ public abstract class commonCanvas extends exCanvas
         
         hidden.showSgf = myFrame.addAction(ShowSGFMessage,deferredEvents);
         hidden.emailSgf = myFrame.addAction(EmailSGFMessage,deferredEvents);
-        setActivePlayer((commonPlayer)info.get(exHashtable.MYPLAYER));
+        setActivePlayer((commonPlayer)info.get(OnlineConstants.MYPLAYER));
         G.Assert(getActivePlayer()!=null,"my player not supplied");
 
         if (!getActivePlayer().spectator)
@@ -5148,7 +5148,7 @@ public abstract class commonCanvas extends exCanvas
 
         
         }
-        seatingChart = (SeatingChart)info.get(exHashtable.SEATINGCHART);
+        seatingChart = (SeatingChart)info.get(OnlineConstants.SEATINGCHART);
         if(seatingChart==null) 
         	{ seatingChart = SeatingChart.defaultSeatingChart(info.getInt(OnlineConstants.PLAYERS_IN_GAME,2)); 
         	}
@@ -6410,8 +6410,8 @@ public abstract class commonCanvas extends exCanvas
 		p.setPlayerName(G.trimQuotes(G.decodeAlphaNumeric(name)),false,this);
 		return(true);
     	}
-    	else if(exHashtable.TIME.equals(first)
-   				|| exHashtable.RANKING.equals(first) 
+    	else if(OnlineConstants.TIME.equals(first)
+   				|| RANKING.equals(first) 
    				|| OnlineConstants.COUNTRY.equals(first))
     	{
     		p.setPlayerInfo(first,G.restof(tokens)); 
@@ -6482,7 +6482,7 @@ public abstract class commonCanvas extends exCanvas
             boolean sound = myFrame.doSound();
             Random.setNextIntCompatibility(false);
             mutated_game_record = false;
-            if (sharedInfo.getInt("session") <= 0)
+            if (G.offline())
             {
                 theChat.clearMessages(true);
                 commentedMove = commentedMoveSeen = null;
@@ -6643,11 +6643,11 @@ public abstract class commonCanvas extends exCanvas
             { //don't translate the color here
 
                 {
-                    String rank = p.getPlayerInfo(exHashtable.RANKING);
+                    String rank = p.getPlayerInfo(RANKING);
 
                     if ((rank != null) && !("".equals(rank)))
                     {
-                        root.set_property(p.playerString(), exHashtable.RANKING+" " + rank);
+                        root.set_property(p.playerString(), RANKING+" " + rank);
                     }
                 }
 
@@ -6691,11 +6691,11 @@ public abstract class commonCanvas extends exCanvas
 
             if (p != null)
             {
-                String timestring = p.getPlayerInfo(exHashtable.TIME);
+                String timestring = p.getPlayerInfo(OnlineConstants.TIME);
 
                 if (!"".equals(timestring))
                 {
-                    timestring = " "+exHashtable.TIME+" " + timestring;
+                    timestring = " "+OnlineConstants.TIME+" " + timestring;
                     curr.set_property(p.playerString(), timestring);
                 }
             }
@@ -6776,11 +6776,11 @@ public abstract class commonCanvas extends exCanvas
             ps.println(p.playerString() + "[id \"" + p.trueName + "\"]");
 
             {
-                String rank = p.getPlayerInfo(exHashtable.RANKING);
+                String rank = p.getPlayerInfo(RANKING);
 
                 if ((rank != null) && !("".equals(rank)))
                 {
-                    ps.println(p.playerString() + "["+exHashtable.RANKING+" " + rank + "]");
+                    ps.println(p.playerString() + "["+RANKING+" " + rank + "]");
                 }
             }
 
@@ -6827,7 +6827,7 @@ public abstract class commonCanvas extends exCanvas
             int col = p.colourIndex();
             if ((col >= 0))
             {
-                ps.println(p.playerString() + "["+exHashtable.TIME+" " +
+                ps.println(p.playerString() + "["+OnlineConstants.TIME+" " +
                     G.timeString(p.elapsedTime) + " ]");
             }
         }
@@ -7003,7 +7003,7 @@ public abstract class commonCanvas extends exCanvas
     // do time related things for the board.
     private void doTime(commonPlayer whoseTurn,boolean doSound)
     { boolean turnChange = whoseTurn!=hidden.lastPlayer;
-      boolean tournamentMode = sharedInfo.getBoolean(exHashtable.TOURNAMENTMODE,false);
+      boolean tournamentMode = sharedInfo.getBoolean(OnlineConstants.TOURNAMENTMODE,false);
       long currentT = G.Date();
       if(turnChange)
       {	hidden.lastPlayer = whoseTurn;
@@ -7417,7 +7417,7 @@ public void goalAndProgressMessage(Graphics gc,HitPoint highlight,Color color,St
 
 {	boolean someProgress = false;
 	String ruledefault = G.debug() ? "rules" : null;
-	String rules = sharedInfo.getString(exHashtable.RULES,ruledefault);
+	String rules = sharedInfo.getString(OnlineConstants.RULES,ruledefault);
 	GC.setFont(gc,largePlainFont());
 	String timeMessage = timeControl.timeControlMessage();
 	if(timeMessage!=null && GoalExplanation.equals(ToolTip))
@@ -8654,7 +8654,7 @@ public void verifyGameRecord()
 	    }
 	    public Bot salvageRobot()
 	    {
-	    	return ((Bot)sharedInfo.get(exHashtable.WEAKROBOT));
+	    	return ((Bot)sharedInfo.get(OnlineConstants.WEAKROBOT));
 	    }
 	    private double currentPlayerRotation()
 		{	commonPlayer wt = whoseTurn();

@@ -23,6 +23,8 @@ package bridge;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Hashtable;
+
 import lib.G;
 import lib.SocketProxy;
 
@@ -88,11 +90,33 @@ public class Socket extends SocketConnection  implements SocketProxy// SocketCon
 	// not the usual definition, but only needed in transition to getHostAddress
 	public InetAddress getLocalAddress() { return(new InetAddress()); }
 	public InetAddress getInetAddress() {return(new InetAddress());	}
-	// probably not needed
+
+	// this is a temporary hack to prevent SocketInputStream and SocketOutputStream from
+	// being garbage collected, because a bug in a codename1 finalizer causes the garbage
+	// collector to crash.  We don't let them become garbage.
+	// [ddyer 10/27/2023] re https://github.com/codenameone/CodenameOne/issues/3753
+	//
+	public static Hashtable<Object,Object>streams=new Hashtable<Object,Object>();
+	
 	public void close() throws IOException
-	{	
-		if(input!=null) { input.close(); input = null; }
-		if(output!=null) { output.close(); output=null; }
+	{	InputStream in = input;
+		OutputStream out = output;
+		if(in!=null) 
+			{ input = null;
+				in.close();
+				if(G.isIOS()) 
+				{ streams.put(in,in); ; 
+				  G.print("in stream close is leaked ",in);
+				}
+			}
+		if(out!=null) 
+			{ output = null;
+			  out.close();
+			  if(G.isIOS())
+			  { streams.put(out,out);
+			    G.print("out stream close is leaked ",out);
+			  }
+			}
 	}
 
 }

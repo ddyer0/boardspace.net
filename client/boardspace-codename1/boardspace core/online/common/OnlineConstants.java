@@ -48,7 +48,6 @@ public interface OnlineConstants extends Config {
 	
     static final String turnChangeSoundName = SOUNDPATH + "turnch"  + SoundFormat;
     static final String UNKNOWNPLAYER = "(unknown)";
-    static final String RandomizedMessage = "Random first player";
     static final String RandomPlayerMessage = "No Robot, Random first player";
     static final String FirstPlayerMessage = "No Robot, Player 1 moves first";
     
@@ -162,17 +161,52 @@ public interface OnlineConstants extends Config {
     static final String BoardMaxEverywhere = "Maximize Board Size";
     static final String VIEWERCLASS = "viewerclass";
     static final String REVIEWONLY = "reviewonly";
+	static final String PREFERREDGAME = "PreferredGame";
     
-	int MAX_OFFLINE_USERS = 20;
-	int OFFLINE_USERID = 999990-MAX_OFFLINE_USERS;
+	// these are expected parameters from the login transaction
+	static final String LOBBYPORT = "lobbyportnumber";	// port to connect
+	static final String UIDRANKING = "uidranking";		// user uid and ranking associations
+	static final String FAVORITES = "favorites";		// recently played games
+	static final String LATITUDE = "latitude";
+	static final String LOGITUDE = "logitude";
+	static final String COUNTRY = "country";
 	
-	String GAMEINFO = "gameinfo";
-	String LOBBYPORT = "lobbyportnumber";	// port to connect
 	
-	String UIDRANKING = "uidranking";		// user uid and ranking associations
-	String FAVORITES = "favorites";		// recently played games
-	String LATITUDE = "latitude";
-	String LOGITUDE = "logitude";
-	String COUNTRY = "country";
-	String PREFERREDGAME = "PreferredGame";
+	String MYPLAYER = "myplayer";
+	// url link to the rules of the game, normally a html or pdf
+	String RULES = "rules";
+	// this is the communication between clients and the server about where to store saved games
+	String SAVE_GAME_INDEX = "gameindex";	// server index for the game, which determines the directory it is saved to
+	/**
+	 * the number of real players who will connect
+	 */
+	String NUMBER_OF_PLAYER_CONNECTIONS = "numberOfPlayerConnections";
+	String SEATINGCHART = "seatingchart";
+	String TIMECONTROL = "timecontrol";
+	String SPECTATOR = "spectator";
+	/**
+	 * a short (usually 2 letter) id for this game.  This is used in scoring to 
+	 * identify the game to be scored, and <i>must</i> agree with the name found
+	 * in the database.
+	 */
+	String GAMETYPEID = "GameTypeID";		// short id
+	String GAMEUID = "gameUID";			// unique name constructed for this game
+	String MODE = "mode";
+	String TOURNAMENTMODE = "tournamentMode";	// true if a tournament game
+	String ROTATION = "rotation";
+	String SOUND = "sound";					// true if sound is initially on
+	String ROBOTGAME = "robotgame";		// true if this game includes a robot
+	String WEAKROBOT = "weakrobot";		// the weakest robot for this game
+	String ROBOTMASTERORDER = "robotmasterorder";	// the master's order
+	String ROBOTPOSITION = "robotposition";	// seat position of the robot
+	String ROBOTORDER = "robotorder";		// play order of the robot
+	String FIRSTPLAYER = "firstplayer";		// player to move first
+	String GUEST = "guest";				// user is a guest
+	String NEWBIE = "newbie";				// user has played few games
+	String TIME = "time";
+	String CHALLENGE = "challenge";		// remember if this user accepts challenges
+	String IDENT_INFO = "ident";
+	// if true, chat windows are created in a separate frame or tab.  This is the
+	// default only for very small screen mobiles
+	String CHATFRAMED = "chatframed";	// put the lobby chat in a separate frame
  }

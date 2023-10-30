@@ -719,7 +719,7 @@ public class TriadViewer extends CCanvas<TriadCell,TriadBoard> implements TriadC
     }
     public boolean parsePlayerInfo(commonPlayer p,String first,StringTokenizer tokens)
     {
-    	if(exHashtable.TIME.equals(first) && bb.DoneState())
+    	if(OnlineConstants.TIME.equals(first) && bb.DoneState())
     	{
     		PerformAndTransmit("Done",false,replayMode.Replay);
     	}

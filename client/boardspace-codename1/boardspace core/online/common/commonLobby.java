@@ -163,7 +163,7 @@ Change log:
 */
   
 public class commonLobby extends commonPanel 
-	implements Runnable, LobbyConstants, DeferredEventHandler,exHashtable
+	implements Runnable, LobbyConstants, DeferredEventHandler
 { 
 	static String [] shared_lobby_info = {
 		    OnlineConstants.PREFERREDGAME,
@@ -173,7 +173,7 @@ public class commonLobby extends commonPanel
 		    OnlineConstants.LATITUDE,
 		    OnlineConstants.LOGITUDE,
 		    G.LANGUAGE,
-		    IDENT_INFO,CHALLENGE,
+		    OnlineConstants.IDENT_INFO,OnlineConstants.CHALLENGE,
 		    ConnectionManager.UID,
 		    OnlineConstants.HOSTUID,
 		};
@@ -391,7 +391,7 @@ public void init(ExtendedHashtable info,LFrameProtocol frame)
     isTestServer = info.getBoolean(TESTSERVER,false);
     info.put(exCanvas.NETCONN,myNetConn);	// for debugging
 	super.init(info,frame);
-    CreateChat(info.getBoolean(exHashtable.CHATFRAMED,false) || G.smallFrame());
+    CreateChat(info.getBoolean(OnlineConstants.CHATFRAMED,false) || G.smallFrame());
 
 	CanvasProtocol can = myCanvas;
     if ((can == null) && !chatOnly )
@@ -716,7 +716,7 @@ private boolean process_ECHO_INTRO_SELF(String messType,StringTokenizer localSTx
       sendMessage(NetConn.SEND_PING);
       }
       String idstring = localip  + "-"+me.localIP;
-      sharedInfo.putString(exHashtable.IDENT_INFO,idstring);
+      sharedInfo.putString(OnlineConstants.IDENT_INFO,idstring);
       return(true);
     }
     return(false);
@@ -1033,7 +1033,7 @@ private boolean processEchoGroup(String messType,StringTokenizer localST,String 
            while(localST.hasMoreTokens()) 
                { val += ((val==empty)?empty:" ") + localST.nextToken(); }
           user.setInfo(tok,val);
-          if(exHashtable.IDENT_INFO.equals(tok)
+          if(OnlineConstants.IDENT_INFO.equals(tok)
              && !user.ignored
              && "true".equals(IgnoredUsers.get(val)))
             {
@@ -1867,8 +1867,8 @@ private boolean processEchoRoomtype(String messType,StringTokenizer localST)
       
       if(noChallengeState!=noChallenge.getState())     // maybe turned off challenges
         { noChallengeState = !noChallengeState;
-          sharedInfo.putBoolean(exHashtable.CHALLENGE,noChallengeState);
-          SendMyInfo(exHashtable.CHALLENGE);  //tell the world
+          sharedInfo.putBoolean(OnlineConstants.CHALLENGE,noChallengeState);
+          SendMyInfo(OnlineConstants.CHALLENGE);  //tell the world
         }
        boolean sound = myFrame.doSound();
        if(sound!=soundState)

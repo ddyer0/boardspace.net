@@ -22,7 +22,6 @@ import lib.Http;
 import lib.Random;
 import lib.TimeControl;
 import online.common.OnlineConstants;
-import online.common.exHashtable;
 import online.game.BoardProtocol;
 import online.game.CommonMoveStack;
 import online.game.Game;
@@ -47,7 +46,7 @@ import online.game.sgf.sgf_reader;
  */
 
 
-public abstract class commonRobot<BOARDTYPE extends BoardProtocol> implements Runnable, RobotProtocol,Opcodes
+public abstract class commonRobot<BOARDTYPE extends BoardProtocol> implements Runnable, RobotProtocol,Opcodes,OnlineConstants
 {	public boolean MONTEBOT = false;
 	public boolean WEAKBOT = false;
 	protected CommonDriver search_driver = null;
@@ -70,8 +69,9 @@ public abstract class commonRobot<BOARDTYPE extends BoardProtocol> implements Ru
 	public double Static_Evaluate_Position(commonMove m) {
 		throw G.Error("Not implemented, needed for Alpha-Beta searches");
 	}
+	// used by the "start evaluator" option, not usually implemented for mcts searches
 	public void StaticEval() {
-		throw G.Error("Not implemented, needed for Alpha-Beta searches");
+		return;
 	}
     //
     // stuff for nonrecursive alpha-beta search
@@ -412,7 +412,7 @@ public abstract class commonRobot<BOARDTYPE extends BoardProtocol> implements Ru
 
     public void InitRobot(ViewerProtocol v, ExtendedHashtable info, int strategy)
     {	sharedInfo = info;
-        game = (Game)info.get(exHashtable.GAME);
+        game = (Game)info.get(GAME);
         viewer = v;
         
     	robotTime = v.timeControl().copy();

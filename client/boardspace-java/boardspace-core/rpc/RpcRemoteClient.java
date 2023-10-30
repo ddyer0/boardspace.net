@@ -27,7 +27,7 @@ import lib.SimpleObservable;
 import lib.SimpleObserver;
 import lib.StringStack;
 import lib.commonPanel;
-import online.common.exHashtable;
+import online.common.OnlineConstants;
 import online.game.commonCanvas;
 import online.game.commonPlayer;
 
@@ -60,7 +60,7 @@ public class RpcRemoteClient implements RpcInterface,SimpleObserver
 		G.setRemoteViewer(true);
     	commonPlayer my = new commonPlayer(0); 
     	my.primary = true; //mark it as "us"
-    	info.put(exHashtable.MYPLAYER,my);
+    	info.put(OnlineConstants.MYPLAYER,my);
     	
 		canvas = (online.game.commonCanvas)G.MakeInstance(cls);		
 		canvas.init(info,frame);

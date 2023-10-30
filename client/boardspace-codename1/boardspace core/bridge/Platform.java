@@ -265,9 +265,9 @@ public abstract class Platform implements Config{
 		return("<thread stack trace not available>");
 	}
 
-	public static StackTraceElement[] getStackTraceElements(Thread th)
-	{	// th.getStackTrace() is not implemented by codename1
-		return(null);
+	public static java.lang.StackTraceElement[] getStackTraceElements(Thread th)
+	{	
+		return(th.getStackTrace());
 	}
 
 	public static Dimension getMinimumSize(Component c)
