@@ -17,6 +17,15 @@
 package language;
 
 
+import java.awt.FileDialog;
+import java.awt.Frame;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.sql.*;
 import java.util.*;
 import java.util.prefs.Preferences;
@@ -26,6 +35,7 @@ import com.jcraft.jsch.Session;
 
 import lib.G;
 import lib.InternationalStrings;
+import lib.Utf8Reader;
 
 /**
  * this is the uploader that uploads the contents of masterStrings to a database.
@@ -53,7 +63,7 @@ public class UploadStrings
   		while(idx < nchars)
 	  		{
 	  		char ch = str.charAt(idx++);
-	  		if((ch!='\\') && (ch<128)) { out.append(ch); }
+	  		if(ch<128) { out.append(ch); }
 	  		else { 
 	  			//have a look at this chart (expand "latin 1 suppliment" and 
 	  			//"latin suppliment a"
@@ -65,12 +75,12 @@ public class UploadStrings
 	  			//they look much the same.  How does inputting these
 	  			//characters work for you?  I have no idea how to type them.
 	  			
-	  			// ad hoc adjustment, unichode \u009e is used instead of \u017e
+	  			// ad hoc adjustment, unicode \u009e is used instead of \u017e
 	  			// this resulted in blobs in czech
 		  		if(ch==0x009e) { ch=(char)(0x017e); }
-	  			   String chstring = Integer.toHexString(ch);
-		  	  	   out.append( "\\u0000".substring(0,6-chstring.length()));	// leading zeros 
-		  	  	   out.append(chstring);
+		  		String chstring = Integer.toHexString(ch);
+		  		out.append( "\\u0000".substring(0,6-chstring.length()));	// leading zeros 
+		  		out.append(chstring);
 	  		}
 
 		 }
@@ -301,14 +311,72 @@ public class UploadStrings
 	  	}	  
 
   }
-	
+  
+  static boolean verbose = true;
+  int BUFFERSIZE = 1024;
+	/**
+	 * this is a one-time use function to convert files with stray UTF8
+	 * characters in otherwise-ascii files to \u0000 format.
+	 * 
+	 * the utf8 reader will input files with a mixture of normal ascii,
+	 * abnormal ascii (chars 128-255) and unicode encoded as \u0000 + n
+	 * and output  a well formed file with all unicode printed as \u0000 +n
+	 * ... so reprinting a file will be idempotent if it was already well
+	 * behaved.
+	 */
+	private static boolean copyAndEncode() throws IOException
+	{	FileDialog fd = new FileDialog((Frame)null,"Select a sgf format file");
+		fd.setVisible(true);
+		String from = fd.getDirectory()+fd.getFile();
+		boolean ok = false;
+		InputStream input = new FileInputStream(from);
+		if(input!=null)
+		{
+		boolean isin = from.endsWith("-in");
+		String toName = isin 
+							? from.substring(0,from.length()-3)
+							: from + "-out";
+		Utf8Reader reader = new Utf8Reader(input);
+		if(verbose) { G.print("Copying "+from+" > "+toName); } 
+
+		OutputStream output = new FileOutputStream(toName);
+		if(output!=null)
+		{
+		Writer out = new OutputStreamWriter(output, "UTF8");
+		String line = null;
+		while(  (line = reader.readLine())!=null) 
+		{	
+			out.write(line);
+			out.write("\n");
+		}
+		out.close();
+		output.close(); 
+		ok =true;
+		}
+		reader.close();
+		input.close();
+		}
+		return ok;
+	}
+	public static void enc()
+	{	try {
+		while (copyAndEncode()) {};
+		} catch(IOException err) { }
+	}
 /**
  * a typical preferences string would be
      -sshpass shellaccountpassword
      -p databasepassword
  */
   public static void main(String args[])
-  {   
+  {   if(args.length>=1 && args[0].equals("-translate"))
+  			{
+	  		// special hack to recode a file containing stray
+	  		// chars in the 128-255 range into a well formed file
+	  		// with all such chars encoded as \u0000 + n
+	  		enc();
+	  		return;
+  			}
 	  String host = "boardspace.net";
 	  String user = "root";
   	  String pass = "xxxxx";
@@ -316,7 +384,6 @@ public class UploadStrings
   	  String sshPass = "xxxx";
   	  String database = "boardspace";
   	  int sshPort = 9130;
-  	  
   	  Preferences prefs = Preferences.userRoot();
   	  String initialValue = prefs.get("UploadStrings","");
   	  String pars = G.textAreaDialog(null,"Parameters for Upload strings",initialValue);
