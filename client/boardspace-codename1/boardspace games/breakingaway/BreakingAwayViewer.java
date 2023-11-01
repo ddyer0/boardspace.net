@@ -315,7 +315,7 @@ public class BreakingAwayViewer extends CCanvas<BreakingAwayCell,BreakingAwayBoa
         vcrY, CELLSIZE * 10,
         5 * CELLSIZE);
 
-    G.SetRect(sprintRect, G.Right(vcrZone),bottomLine, BCELL*15, BCELL*2);
+    G.SetRect(sprintRect, Math.max(boardX+BCELL,G.Right(vcrZone)),bottomLine, BCELL*15, BCELL*2);
 
 	G.placeStateRow(stateX, stateY,boardW,stateH,iconRect,stateRect,noChatRect);
 	G.placeRight(stateRect, sizeRect ,CELLSIZE*12);
@@ -329,8 +329,9 @@ public class BreakingAwayViewer extends CCanvas<BreakingAwayCell,BreakingAwayBoa
     
     G.SetRect(animateButton,boardX+boardW-7*BCELL,boardY+BCELL*7, timeW*3, timeW);
     
-    G.SetRect(reverseViewRect, G.Right(sizeRect)+C2,boardY+BCELL*2,
-    			G.Width(animateButton)+BCELL*2,BCELL*4);
+    int revw = G.Width(animateButton)+BCELL*2;
+    G.SetRect(reverseViewRect, G.Right(boardRect)-revw-BCELL,boardY+BCELL*2,
+    			revw,BCELL*4);
     
     G.SetRect(bubbleRect, boardX+boardW-BCELL*4+BCELL/2, boardY+boardH-BCELL*4, BCELL*3,BCELL*3);
     int currentW = CELLSIZE*20;

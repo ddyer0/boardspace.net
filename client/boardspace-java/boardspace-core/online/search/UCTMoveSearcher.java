@@ -209,7 +209,23 @@ class UCTThread extends Thread implements Opcodes
 		randomMovesThisRun++;
 		return(result);
 	}
-	
+    public StringBuffer getStackTrace(StringBuffer p)
+    {	if(p==null) { p = new StringBuffer(); }
+		StackTraceElement[]trace = G.getStackTraceElements(this);
+		if(trace!=null)
+		{
+		for(int i=0;i<Math.min(trace.length,10);i++)
+		{
+			p.append(trace[i].toString());
+			p.append("\n");
+		}}
+		if(error!=null)
+		{
+			p.append("error was "+error);
+			p.append("\nerror trace "+errorStack);
+		}
+		return p;
+    }
 	//
 	// true of a node with no children node should be expanded.
 	//
@@ -686,7 +702,6 @@ class UCTThread extends Thread implements Opcodes
 		master.root.update(val,1,master.alpha);
 		
 		G.Assert(backTrack.size()==0,"must be unwound");
-		G.Assert(traverseMovesThisRun>0 || randomMovesThisRun>0,"no progress made");
 		synchronized(master)
 		{	master.totalSimulations++; 
 			master.randomMoves += randomMovesThisRun; 
@@ -1341,7 +1356,7 @@ public class UCTMoveSearcher extends CommonDriver
 			if(stall<STALL_LIMIT) 
 				{ stall = 0;		// we didn't stop due to a stall, start over		
 				}
-			if(count>=2)
+			if(monitor)
 			{	// wait for all the threads to close up
 				before += commonPause();// just in case we pause
 				for(UCTThread th : threads) 
@@ -1368,20 +1383,8 @@ public class UCTMoveSearcher extends CommonDriver
 					// try to get a report out and abort the robot.
 					for(UCTThread th : threads)
 					{
-						StackTraceElement[]trace = G.getStackTraceElements(th);
 						p.append("stuck thread "+th+"\n");
-						if(trace!=null)
-						{
-						for(int i=0;i<Math.min(trace.length,10);i++)
-						{
-							p.append(trace[i].toString());
-							p.append("\n");
-						}}
-						if(th.error!=null)
-						{
-							p.append("error was "+th.error);
-							p.append("\nerror trace "+th.errorStack);
-						}
+						th.getStackTrace(p);
 					}
 					throw G.Error("thread deadlock:\n%s",p.toString());
 				}

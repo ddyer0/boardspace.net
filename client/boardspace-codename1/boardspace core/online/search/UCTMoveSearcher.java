@@ -703,7 +703,6 @@ class UCTThread extends Thread implements Opcodes
 		master.root.update(val,1,master.alpha);
 		
 		G.Assert(backTrack.size()==0,"must be unwound");
-		G.Assert(traverseMovesThisRun>0 || randomMovesThisRun>0,"no progress made");
 		synchronized(master)
 		{	master.totalSimulations++; 
 			master.randomMoves += randomMovesThisRun; 
@@ -1160,7 +1159,6 @@ public class UCTMoveSearcher extends CommonDriver
 	    	}
 	    	return(val);
 	    }
-
 		public commonMove getBestMonteMove()
 		{
 			aborted = false;
@@ -1359,7 +1357,7 @@ public class UCTMoveSearcher extends CommonDriver
 			if(stall<STALL_LIMIT) 
 				{ stall = 0;		// we didn't stop due to a stall, start over		
 				}
-			if(count>=2)
+			if(monitor)
 			{	// wait for all the threads to close up
 				before += commonPause();// just in case we pause
 				for(UCTThread th : threads) 
@@ -1376,7 +1374,6 @@ public class UCTMoveSearcher extends CommonDriver
 				  		else
 				  		{
 				  		allstop = false; 
-				  		
 				  		G.stall(100); 
 				  		}}
 				  	}

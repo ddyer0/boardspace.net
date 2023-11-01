@@ -2333,6 +2333,7 @@ private void drawPlayerBoard(Graphics gc,
      		if(pb.cards.drawStack(gc, this, censor?null:highlight, sz/6, cx+sz/10, yp-sz/5, 0, 1, 0, censor?ViticultureChip.BACK:null))
     		{	
     			highlight.hitCode = ViticultureId.Magnify;
+    			highlight.hitObject = pb.cards.chipAtIndex(highlight.hit_index);
     			highlight.awidth = sz/15;
     			highlight.arrow = StockArt.Eye;
     		}
@@ -2557,6 +2558,7 @@ private void drawPlayerBoard(Graphics gc,
      	if(gb.cardDisplay.drawStack(gc, this, censor ? null : highlight, cstep, cx-cstep*ncards/2,cy,0, 1,0,censor ? ViticultureChip.BACK : null))
      	{	highlight.arrow = StockArt.Eye;
      		highlight.awidth = cstep/4;
+     		highlight.hitObject = gb.cardDisplay.chipAtIndex(highlight.hit_index);
      		highlight.hitCode = ViticultureId.Magnify;
      	}
     }
@@ -3720,25 +3722,27 @@ private void drawPlayerBoard(Graphics gc,
 		{
 			cardY = yp+step*7/6;
 			int cardy2 = cardY+step*3/2;
+			HitPoint hp = (censor&!cardBacks)
+					? null 
+					: apCards
+							? highlightAll 
+							: highlight;
 			if(drawStack(gc,state,null, cardDisplay1,
-								(censor&!cardBacks)
-										? null 
-										: (apCards && !getActivePlayer().spectator)
-												? highlightAll 
-												: highlight,
+								hp,
 							highlightAll,secondCardStep,xp+secondCardStep,cardy2, 0,1,0.0,
 							cardLabel))
 			{	
 				if(apCards)
 				{
-				highlightAll.hitCode = ViticultureId.Magnify;
-				highlightAll.arrow = StockArt.Eye;
-				highlightAll.awidth = step/4;
+					hp.hitCode = ViticultureId.Magnify;
+					hp.hitObject = cardDisplay1.chipAtIndex(hp.hit_index);
+					hp.arrow = StockArt.Eye;
+					hp.awidth = step/4;
 				}
 				else 
-					{ highlightAll.hitObject = cardDisplay1.chipAtIndex(highlightAll.hit_index);
+					{ hp.hitObject = cardDisplay1.chipAtIndex(hp.hit_index);
 					}
-				highlightAll.hit_index = card1Index.elementAt(highlightAll.hit_index).index;
+				hp.hit_index = card1Index.elementAt(hp.hit_index).index;
 			}
 			// mark the currently selected cards
 			for(int i=0;i<cardDisplay1.height();i++)
@@ -3767,6 +3771,7 @@ private void drawPlayerBoard(Graphics gc,
 			{
 			hl.hitCode = ViticultureId.Magnify;
 			hl.arrow = StockArt.Eye;
+			hl.hitObject = cardDisplay.chipAtIndex(hl.hit_index);
 			hl.awidth = step/4;
 			}
 			else
@@ -5620,7 +5625,7 @@ private void drawPlayerBoard(Graphics gc,
         	}
         case Magnify:
         	{
-        	ViticultureChip newChip = hitObject.chipAtIndex(hp.hit_index);
+        	ViticultureChip newChip = (ViticultureChip)hp.hitObject;
         	if(hiddenPb!=null) {
         		if(hiddenPb.showHiddenBigStack) { hiddenPb.showHiddenBigStack = false; }
         		else { 	hiddenPb.showHiddenBigStack = true; 
@@ -6518,6 +6523,7 @@ private void drawPlayerBoard(Graphics gc,
   			if(card2.drawStack(gc,this,hp,size,left+size*5/4,ypos+(int)(size*1.6),0,1,0,cardId))
   			{
   				hp.hitCode = ViticultureId.Magnify;
+  				hp.hitObject = card2.chipAtIndex(hp.hit_index);
   				hp.arrow = StockArt.Eye;
   				hp.awidth = size/4;
   			}
@@ -6525,6 +6531,7 @@ private void drawPlayerBoard(Graphics gc,
   		if(cards.drawStack(gc, this, hp, size, left+size*5/4, ypos, 0, 1, 0, cardId))
   		{
 			hp.hitCode = ViticultureId.Magnify;
+			hp.hitObject = cards.chipAtIndex(hp.hit_index);
 			hp.arrow = StockArt.Eye;
 			hp.awidth = size/4;			
   		}
