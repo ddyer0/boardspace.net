@@ -232,25 +232,70 @@ sub print_prereg_info()
 {	&print_timestamp_code();
 	&print_country_list();
 }
-
+sub getGameDir()
+{
+	my ($dbh,$name) = @_;
+	my $qn = $dbh->quote($name);
+	my $q = "select directory_index,directory from variation where name=$qn";
+	my $sth = &query($dbh,$q);
+	my $nr = &numRows($sth);
+	my $index;
+	my $directory;
+	if($nr>0)
+	{
+	($index,$directory) = &nextArrayRow($sth);
+	}
+	#print "q $q nr $nr $index $directory<p>";
+	&finishQuery($sth);
+	return ($index,$directory);
+}
 sub print_standard_reviewer()
 {	my ($dbh) = @_;
 	my $game = &param('game');
 	my $width = &param('width');
 	my $height= &param('height');
 	my $cgame = ucfirst($game);
-	my $title = &trans("Review #1 games offline",$cgame);
+	my ($index,$dir) = &getGameDir($dbh,$game);
+	my $protocol = $ENV{'REQUEST_SCHEME'};
+	my $host = $ENV{'HTTP_HOST'};
+	my $title = &trans("Review #1 games offline.  The games are archived at #2",$cgame,$dir);
 	print "<title>$title</title>\n";
 	print "<h2>$title</h2><p>";
-	print &trans("With this review applet, you can view the same games as in online Review rooms, but without connecting to the lobby.");
+print <<ENDBODY
+<head>
+  <script src="$'cheerpj">
+</script>
+<script src="/js/site.js"> </script>
+</head>
+<body background="/images/background-image.jpg">
+<meta charset="utf-8">
 
-	print "<form method=post action='/cgi-bin/applettag.cgi'>\n";
-	print "<input type=hidden name=tagname value=offlinejwsviewer>";
-	print "<input type=hidden name=game value=$game>\n";
-	print "<input type=hidden name=width value=$width>\n";
-	print "<input type=hidden name=height value=$height>\n";
-	print "<input type=submit value='Launch Java Viewer for $cgame'>\n";
-	print "</form>";
+ <script>
+      async function myInit() {
+      await cheerpjInit();
+      cheerpjCreateDisplay(-1,-1,document.body);
+      cheerpjRunMain("util.JWSApplication", "/app/java/jws/OnlineLobby.jar",
+                        "servername","$host",
+                        "rootviewer","true",
+			"protocol","$protocol",
+                        "session","0",
+			"gameindex","$index",
+			"reviewerdir$index","$dir",
+                        "reviewonly","true",
+                        "framewidth","$width",
+			"frameheight","$height",
+                        "rootname","Offline viewer for $cgame",
+                        "gamename","$game",
+                        );
+      }
+      myInit();
+  </script>
+
+</body>
+
+</html>
+ENDBODY
+
 
 }
 sub print_appcookies()

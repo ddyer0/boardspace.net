@@ -59,7 +59,7 @@ $game_completed_log = "/home/boardspa/logs/game-results.log";
 $server_logon_log = "/home/boardspa/logs/game-logon.log";
 $contact_log = "/home/boardspa/logs/contact.log";
 $banner_file = "/home/boardspa/htdocs/banner.txt";
-
+$cheerph =  "https://cjrtnc.leaningtech.com/3_20231103_261/cj3loader.js";
 # this makes a table appear on the login page
 $top_players_per_row=5;
 $top_players_columns=10;
