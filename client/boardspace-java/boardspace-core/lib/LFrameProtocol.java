@@ -28,6 +28,7 @@ import bridge.JMenuItem;
  */
 public interface LFrameProtocol extends MenuParentInterface
 {   public void setInitialBounds(int theX, int theY, int theW, int theH);
+	public void screenResized();
 	/**
 	 * query if sound is on.  You should call this before playing any sound.
 	 * 

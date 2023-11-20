@@ -139,9 +139,9 @@ public class ZertzGameViewer extends CCanvas<zCell,GameBoard> implements GameCon
         //System.out.println(myplayer.trueName + " doinit");
         super.doInit(preserve_history);
         b.doInit(b.gametype);
-        hasDones=false;		// for use by replayMove
         if(!preserve_history)
-    	{ if(b.boardSetup!=Zvariation.Zertz_h) { startFirstPlayer(); }
+    	{  	hasDones=false;		// for use by replayMove
+    		if(b.boardSetup!=Zvariation.Zertz_h) { startFirstPlayer(); }
     		else 
     		{ PerformAndTransmit(EDIT,false,replayMode.Replay); 
     		}

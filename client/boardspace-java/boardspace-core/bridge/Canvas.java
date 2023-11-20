@@ -56,8 +56,6 @@ public abstract class Canvas extends java.awt.Canvas
 		 if(f!=null) { f.killFrame(); }
 	 }
 
-	public boolean doSound() { return(myFrame.doSound()); }
-
 	public void init(ExtendedHashtable h,LFrameProtocol f)
 	{	myFrame = f;
 		rotater = f.getCanvasRotater();

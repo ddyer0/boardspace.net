@@ -378,7 +378,7 @@ public class LehavreViewer extends exCanvas implements OnlineConstants,ViewerPro
 	public void startOtherPlayers()
 	{	if(standaloneGame)
 		{
-		int playersToStart = sharedInfo.getInt(OnlineConstants.PLAYERS_IN_GAME);
+		int playersToStart = sharedInfo.getInt(OnlineConstants.PLAYERS_IN_GAME,2);
 		for(int n=1; n<playersToStart; n++) 
 		{
 			commonPlayer p = new commonPlayer(n);

@@ -828,52 +828,54 @@ public class TextContainer extends Rectangle implements AppendInterface,KeyListe
 		//G.finishLog();
 		return(hit);
 	}
-
+	private void doControlCodes(int code)
+	{	code = (char)(0x40|code);	// uppercase
+		switch(code)
+		{
+		case 'A':	
+				selectAll();
+				setChanged(Op.Repaint);
+				break;
+		case 'B':
+				doBack();
+				break;
+		case 'C':
+			doCopy();
+			break;
+		case 'D':
+				doDel(true);
+				break;
+		case 'E':
+				doToEnd();
+				break;
+		case 'F':
+				doForward();
+				break;
+		case 'H':
+				doDel(false);
+				break;
+		case 'I':
+				insert('\t');
+				break;
+		case 'M':
+				doSend();
+				break;
+		case 'V':
+				doPaste();
+				break;
+		case 'X':
+				doDel(false);
+				break;
+		default: break;
+		}
+	}
 	public void keyTyped(KeyEvent e) {
 		if(editable && hasFocus())
 		{	int mod = e.getModifiersEx();
 			char code = e.getKeyChar();
 			if((mod & KeyEvent.CTRL_DOWN_MASK)!=0)
 			{
-				code = (char)(0x40|code);
-				switch(code)
-				{
-				case 'A':	
-						selectAll();
-						setChanged(Op.Repaint);
-						break;
-				case 'B':
-						doBack();
-						break;
-				case 'C':
-					doCopy();
-					break;
-				case 'D':
-						doDel(true);
-						break;
-				case 'E':
-						doToEnd();
-						break;
-				case 'F':
-						doForward();
-						break;
-				case 'H':
-						doDel(false);
-						break;
-				case 'I':
-						insert('\t');
-						break;
-				case 'M':
-						doSend();
-						break;
-				case 'V':
-						doPaste();
-						break;
-				case 'X':
-						doDel(false);
-						break;
-				default: break;
-				}
+				doControlCodes(code);
 			}
 			else {
 				switch(code)
@@ -983,8 +985,17 @@ public class TextContainer extends Rectangle implements AppendInterface,KeyListe
 	}
 	public void keyPressed(KeyEvent e) {
 		int code = e.getExtendedKeyCode();
+		int mod = e.getModifiersEx();
+		if(((mod & KeyEvent.CTRL_DOWN_MASK)!=0) && G.isCheerpj())
+		{	
+			doControlCodes(e.getKeyCode());
+		}
 		switch(code)
 		{
+		case 8:
+		case 127:
+			if(G.isCheerpj()) { doDel(false); }
+			break;
 		case 222:
 			// this is fuckin mysterious - single quotes are not otherwise found.
 			if(e.getKeyChar()=='\'') { append('\''); } 

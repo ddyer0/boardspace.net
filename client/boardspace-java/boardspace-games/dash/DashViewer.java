@@ -102,7 +102,7 @@ public class DashViewer extends CCanvas<DashCell,DashBoard> implements DashConst
         MouseDotColors = CheMouseDotColors;
         b = new DashBoard(info.getString(GameInfo.GAMETYPE, "Dash"),
                 info.getInt(OnlineConstants.RANDOMSEED,-1),
-                info.getInt(OnlineConstants.PLAYERS_IN_GAME),
+                info.getInt(OnlineConstants.PLAYERS_IN_GAME,1),
         		getStartingColorMap());
         useDirectDrawing(true); 
         doInit(false); 

@@ -139,7 +139,7 @@ public class PalabraViewer extends CCanvas<PalabraCell,PalabraBoard> implements 
 
         MouseColors = rajMouseColors;
         int randomKey = info.getInt(OnlineConstants.RANDOMSEED,-1);
-        int np = Math.max(2,info.getInt(OnlineConstants.PLAYERS_IN_GAME));
+        int np = Math.max(2,info.getInt(OnlineConstants.PLAYERS_IN_GAME,2));
          
         bb = new PalabraBoard(info.getString(GameInfo.GAMETYPE, Palabra_init),randomKey,np);
         

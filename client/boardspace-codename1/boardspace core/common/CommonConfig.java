@@ -38,7 +38,6 @@ public interface CommonConfig extends UniversalConstants {
 	static boolean offlineTableLauncher = true;	// present the table launcher for all offline games
 	static boolean StringsHaveDataFiles = true;	// InternationalStrings uses files
 	static boolean AllowOfflineRobots = false;
-
 	// not complete. Needs replacement for chat windows and text input windows first
 	// also arithmetic for pointing and dragging when rotated
 	static boolean PINCHROTATION = false;		
@@ -123,13 +122,12 @@ public interface CommonConfig extends UniversalConstants {
 	String DEVELOPHOST = "develophost";
 	String RELEASEHOST = "releasehost";
 	String SERVERNAME = "serverName";
+	String GAMESERVERNAME = "gameservername";
 	String TESTVERSION = "testversion";
 	String CLASSDIR = "classdir";
 	String TESTSERVER = "testserver";
 	String SERVERKEY = "serverkey";
 	String PROTOCOL = "protocol";
-	String WebStarted = "webstarted";	// true if we are started by java web start
-
 	String icon_image_name = "boardspace-icon-small.png";
 
 	String lobby_icon_image_name = "lobby-icon.png";

@@ -1041,8 +1041,9 @@ public class Search_Driver extends CommonDriver implements Constants,Opcodes
     Search_Result Step_Simple_Search(int n_steps)
     {
         Search_Result result = Search_Result.Done;
-        double now = G.Date();
-
+        long now = G.Date();
+        long later = now;
+        boolean cheer = G.isCheerpj();
         if (!finished)
         {
             Search_Result done = Search_Result.Active;
@@ -1052,6 +1053,15 @@ public class Search_Driver extends CommonDriver implements Constants,Opcodes
                     (done == Search_Result.Active); i++)
             {
                 done = Continue_Search();
+                if(cheer)
+                	{	
+                	long l = G.Date();
+                	if(l-later>1000) 
+                		{ G.doDelay(10);
+                		  G.print("slow yield "+(l-later)/1000.0 +" after "+i); 
+                		  later = l;  
+                		}
+                	}
             }
 
             result = done;
@@ -1132,6 +1142,7 @@ public class Search_Driver extends CommonDriver implements Constants,Opcodes
             while ((done != Search_Result.Done) && !aborted)
             {
                 done = Step_Simple_Search(1000);
+                if(G.isCheerpj()) { G.doDelay(100); }
                 if(progressive && (completed_progressive_search!=null) && (progressive_time_limit>0))
                 {	// if we have some completed search as a baseline, consider aborting
                 	double progressive_time = progressive_time_limit*60000;// minutes to milliseconds

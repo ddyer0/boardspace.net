@@ -228,7 +228,6 @@ public class JWSApplication implements Config,LobbyConstants
 			// change this to skip the login and return true for impersonation login
 			boolean impersonate = G.debug() && G.getBoolean("Impersonation",false);
 			boolean webStarted = impersonate || login.initFromWebStart();
-        	G.putGlobal(WebStarted,webStarted?"true":"false");
         	boolean vnc =  G.getBoolean(G.VNCCLIENT,false);
         	if(vnc || ( webStarted && !G.offline()))
         	{	

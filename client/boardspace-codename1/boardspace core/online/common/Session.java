@@ -678,10 +678,8 @@ public class Session implements LobbyConstants
 		  String gametype = GI.variationName;
 		  String gamename = GI.gameName;
 		  String gametypeid = GI.id;
-		 String rules = GI.rules;
 		 ExtendedHashtable myInfo = new ExtendedHashtable();
 		 myInfo.putInt(OnlineConstants.SAVE_GAME_INDEX,GI.dirNum);
-		 if(rules!=null) { myInfo.putString(OnlineConstants.RULES,rules); }
 		 myInfo.putObj(OnlineConstants.SEATINGCHART,
 				 seatingChart==null
 				 	?SeatingChart.defaultSeatingChart(startingNplayers)

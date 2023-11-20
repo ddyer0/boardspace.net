@@ -232,8 +232,10 @@ public class ExtendedHashtable extends TreeMap<String,Object>
       {
     	  GameInfo info = (GameInfo)get(GameInfo.GAMEINFO);
           if(info==null)
-          {
-          	info = GameInfo.findByName(getString(GameInfo.GAMETYPE ,getString(GameInfo.GAMENAME,null)));
+          {	String name = getString(GameInfo.GAMETYPE ,getString(GameInfo.GAMENAME,null));
+          	info = GameInfo.findByName(name);
+          	if(info==null) { info = GameInfo.findByVariation(name); }
+          	if(info==null) { G.print("No info for game ",name); }
           	setGameInfo(info);
           }
           return info;

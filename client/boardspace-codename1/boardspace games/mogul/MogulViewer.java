@@ -124,7 +124,7 @@ public class MogulViewer extends CCanvas<MogulCell,MogulBoard> implements MogulC
         // randomKey = info.getInt(exHashtable.RANDOMSEED,-1);
     	//
         int randomKey = info.getInt(OnlineConstants.RANDOMSEED,-1);
-        int np = Math.max(2,info.getInt(OnlineConstants.PLAYERS_IN_GAME));
+        int np = Math.max(2,info.getInt(OnlineConstants.PLAYERS_IN_GAME,3));
         adjustPlayers(np);
         b = new MogulBoard(this,info.getString(GameInfo.GAMETYPE, Mogul_INIT),
         		randomKey,np,getStartingColorMap());
@@ -279,7 +279,7 @@ public class MogulViewer extends CCanvas<MogulCell,MogulBoard> implements MogulC
     // 	return(super.gameProgressString());
     // }
 
-
+    Image scaled = null;
     /* draw the deep unchangable objects, including those that might be rather expensive
      * to draw.  This background layer is used as a backdrop to the rest of the activity.
      * in our cease, we draw the board and the chips on it. 
@@ -299,7 +299,9 @@ public class MogulViewer extends CCanvas<MogulCell,MogulBoard> implements MogulC
       // are carefully matched with the abstract grid
       
       
-      if(remoteViewer<0) {images[BOARD_INDEX].getImage(loader).centerImage(gc, boardRect); }
+      if(remoteViewer<0) 
+      	{	scaled = images[BOARD_INDEX].getImage(loader).centerScaledImage(gc, boardRect, scaled);
+      	}
 
       //gb.DrawGrid(gc,brect,use_grid,Color.white,Color.black,Color.blue,Color.black);
     }
@@ -343,7 +345,7 @@ public class MogulViewer extends CCanvas<MogulCell,MogulBoard> implements MogulC
     	int chipw = (int)(chipsiz*1.4); 
     	int stackW = xstep;
 		boolean showNow = !showChips
-				&& (pl.myIndex==gb.whoseTurn)
+				&& (G.offline() || (pl.myIndex==gb.whoseTurn))
 				&& (remoteWindowIndex(any)<0)
 				&& (StockArt.Eye.drawChip(gc, this, highlight,MogulId.SeeChips,  chipsiz, xstart,top+chipsiz/2+xstep/8,null))
 				;
@@ -599,8 +601,8 @@ public class MogulViewer extends CCanvas<MogulCell,MogulBoard> implements MogulC
   	// note this gets called in the game loop as well as in the display loop
   	// and is pretty expensive, so we shouldn't do it in the mouse-only case
 
-     b.SetDisplayParameters(1.03,1.07,-0.033,-0.05,0);
-      b.SetDisplayRectangle(boardRect);
+	      gb.SetDisplayParameters(1.03,1.07,-0.033,-0.05,0);
+	      gb.SetDisplayRectangle(boardRect);
   	}
       boolean ourTurn = OurMove();
       boolean moving = hasMovingObject(highlight);
@@ -904,6 +906,8 @@ private void playSounds(commonMove m)
     /** replay a move specified in SGF format.  
      * this is mostly standard stuff, but the key is to recognize
      * the elements that we generated in sgf_save
+     * summary: 5/27/2023
+     *  701 files visited 0 problems
      */
     public void ReplayMove(sgf_node no)
     {

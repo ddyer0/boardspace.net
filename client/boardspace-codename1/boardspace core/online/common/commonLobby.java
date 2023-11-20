@@ -375,7 +375,7 @@ private void ReStarting(boolean recon)
   updatePending=false;
   movingToSess=-1;
   myNetConn.Connect("Lobby "+G.getPlatformName(),
-		  			sharedInfo.getString(SERVERNAME),
+		  			sharedInfo.getString(GAMESERVERNAME,sharedInfo.getString(SERVERNAME)),
 		  			sharedInfo.getInt(OnlineConstants.LOBBYPORT,-1));
 
   PutInSess(users.primaryUser(),null,0);

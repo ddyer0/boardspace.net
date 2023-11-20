@@ -95,7 +95,7 @@ public class Login implements SimpleObserver,Config
     				  val = val.substring(0,val.length()-"Strings".length());
     			  }
     			  G.putGlobal(key,val);			// load into the applet parameter table
-     			  //System.out.println("K "+key+" V '"+val+"'");
+     			  System.out.println("K "+key+" V '"+val+"'");
     			}
     		if(eol>0) { prev = eol+1; } else { prev = next+1; }
     	}
@@ -124,9 +124,9 @@ public class Login implements SimpleObserver,Config
     @SuppressWarnings("deprecation")
 	public boolean initFromWebStart()
     {	boolean captured = false;
+    
     	boolean exit = false;
-
-     	{
+    	{
     	while(!exit)
     	{
 		PasswordCollector collector = PasswordCollector.createAndShowGUI(this);
@@ -163,6 +163,7 @@ public class Login implements SimpleObserver,Config
 				+Http.escape(name)
 				+"&language="+Http.escape(lang)
 				+ (test ? "&test=true" : "")
+				+ (G.isCheerpj() ? "&cheerpj=true" : "")
 				+(guestName.equals(name)?"":"&cookie=1");
 
 			// the name of the password parameter is a minor difference between boardspace and tantrix

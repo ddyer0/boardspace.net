@@ -1312,13 +1312,10 @@ public class PlayerBoard
 	public boolean hasMediumCellar() { return(mediumCellar.topChip()!=null); }
 	
 	public boolean canFillWineOrder(ViticultureChip order)
-	{	return(fillWineOrder(order,false,replayMode.Replay));
-	}
-	public boolean fillWineOrder(ViticultureChip order,replayMode replay)
-	{	return fillWineOrder(order,true,replay);
+	{	return(fillWineOrder(order,false,false,replayMode.Replay));
 	}
 	// parse a wine order, return true if we can fill it.
-	public boolean fillWineOrder(ViticultureChip order,boolean doit,replayMode replay)
+	public boolean fillWineOrder(ViticultureChip order,boolean bonus,boolean doit,replayMode replay)
 	{	G.Assert(order.type==ChipType.PurpleCard, "needs a wine order card");
 		StringTokenizer tok = new StringTokenizer(order.description);
 		ViticultureCell rack[] = null;
@@ -1339,7 +1336,7 @@ public class PlayerBoard
 				int residual = G.IntToken(tok); 
 				if(doit) 
 					{
-					 bb.changeScore(this,idx,replay,FillWineOrder,order,ScoreType.WineOrder);
+					 bb.changeScore(this,idx+(bonus?1:0),replay,FillWineOrder+(bonus?"+1":""),order,ScoreType.WineOrder);
 					 bb.changeResidual(this,residual,replay);
 					}
 				return(true);

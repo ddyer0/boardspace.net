@@ -276,7 +276,8 @@ public abstract class stackCell
 	 * @return the chip removed
 	 */
 	public COMPONENTTYPE removeChipAtIndex(int idx)
-	{	G.Assert((idx>=0) && (idx<=chipIndex),"chip exists");
+	{	
+		G.Assert((idx>=0) && (idx<=chipIndex),"chip exists");
 		COMPONENTTYPE c = chipStack[idx];
 		while(idx<chipIndex)
 		{	chipStack[idx]=chipStack[idx+1];

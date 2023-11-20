@@ -149,7 +149,6 @@ public interface OnlineConstants extends Config {
     static final String RANDOMIZEBOT = "randomize";	// randomize in robot games, default true
     static final String DONOTRECORD = "doNotRecord";
     static final String FRAMENAME = "framename";
-	static final String GAMEINDEX = "gameindex";
     static final String REVIEWERDIR = "reviewerdir";
     static final String GAME = "game";
     static final String FRAMEWIDTH = "framewidth";    

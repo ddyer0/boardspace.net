@@ -66,7 +66,7 @@ public class ChatWidget
 	}};
 	
 	Keyboard keyboard = null;
-	boolean useKeyboard = G.isCodename1();
+	boolean useKeyboard = G.isCodename1() || (G.isCheerpj() && (G.isIOS()||G.isAndroid()));
 	boolean hasFocus = false;
 	int flipInterval = 500;
 	boolean inputVisible = false;

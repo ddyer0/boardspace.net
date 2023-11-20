@@ -148,7 +148,7 @@ public class RajViewer extends CCanvas<RajCell,RajBoard> implements RajConstants
 
         MouseColors = rajMouseColors;
         int randomKey = info.getInt(OnlineConstants.RANDOMSEED,-1);
-        int np = Math.max(2,info.getInt(OnlineConstants.PLAYERS_IN_GAME));
+        int np = Math.max(2,info.getInt(OnlineConstants.PLAYERS_IN_GAME,2));
          
         bb = new RajBoard(info.getString(GameInfo.GAMETYPE, Raj_INIT),randomKey,np,getStartingColorMap());
         useDirectDrawing(true); 

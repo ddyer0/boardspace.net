@@ -120,7 +120,7 @@ public class MogulViewer extends CCanvas<MogulCell,MogulBoard> implements MogulC
         // randomKey = info.getInt(exHashtable.RANDOMSEED,-1);
     	//
         int randomKey = info.getInt(OnlineConstants.RANDOMSEED,-1);
-        int np = Math.max(2,info.getInt(OnlineConstants.PLAYERS_IN_GAME));
+        int np = Math.max(2,info.getInt(OnlineConstants.PLAYERS_IN_GAME,3));
         adjustPlayers(np);
         b = new MogulBoard(this,info.getString(GameInfo.GAMETYPE, Mogul_INIT),
         		randomKey,np,getStartingColorMap());

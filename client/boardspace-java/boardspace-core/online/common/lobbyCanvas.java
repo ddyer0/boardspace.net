@@ -418,6 +418,15 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 		double rawscale = G.getDisplayScale();
 		SCALE = rawscale;
 		int minw = (int)(G.Width(dim)*SCALE);
+		G.print("setlocal ",inX," ",inY," x ",inWidth," ",inHeight);
+		G.print("screen w ",G.getScreenWidth()," h ",G.getScreenHeight());
+		java.awt.Component c = this;
+		while(c!=null)
+		{
+			G.print(c," ",c.getWidth(),"x",c.getHeight());
+			c = c.getParent();
+		}
+		
 		boolean wideMode = inWidth>inHeight && inWidth>=minw*1.6;
 		{
 		double s_minw = (s_USERIMAGEWIDTH+s_GAMEIMAGEWIDTH+2*ScrollArea.DEFAULT_SCROLL_BAR_WIDTH+s_PLAYINGIMAGEWIDTH);

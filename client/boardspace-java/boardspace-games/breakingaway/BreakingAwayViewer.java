@@ -170,8 +170,8 @@ public class BreakingAwayViewer extends CCanvas<BreakingAwayCell,BreakingAwayBoa
 	 * */
     public void init(ExtendedHashtable info,LFrameProtocol frame)
     {   
-        int randomv = info.getInt(OnlineConstants.RANDOMSEED);
-        int pl = Math.min(MAXPLAYERS,Math.max(MINPLAYERS,info.getInt(OnlineConstants.PLAYERS_IN_GAME)));
+        int randomv = info.getInt(OnlineConstants.RANDOMSEED,-1);
+        int pl = Math.min(MAXPLAYERS,Math.max(MINPLAYERS,info.getInt(OnlineConstants.PLAYERS_IN_GAME,3)));
     
         super.init(info,frame);
         

@@ -1025,7 +1025,15 @@ import udp.PlaytableStack;
                 newContentPane.resetFocus();
             }
         });
-
+		   
+    	if(G.isCheerpj()
+			&& (G.isIOS() || G.isAndroid()))
+    	{
+    	// this won't be functional until isIOS and isAndroid work in this environment
+		G.infoBox("Not Supported",
+				"Using a browser on IOS or Android is not supported.  Please use the boardspace.net app");
+    	}
+ 
         //Display the window.
         frame.pack();
         frame.setLocationRelativeTo(null);

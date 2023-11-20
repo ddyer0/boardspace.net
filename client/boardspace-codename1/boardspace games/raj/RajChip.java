@@ -161,7 +161,9 @@ public class RajChip extends chip<RajChip> implements RajConstants,CompareTo<Raj
     	"red-front","green-front","blue-front","brown-front","purple-front",
     	"red-back","green-back","blue-back","brown-back","purple-back"
     };
+    
     private static boolean imagesLoaded = false;
+    
    /**
      * this is a fairly standard preloadImages method, called from the
      * game initialization.  It loads the images (all two of them) into

@@ -2147,12 +2147,11 @@ public abstract class commonCanvas extends exCanvas
     	int left = G.Left(boardRect);
     	int top = G.Top(boardRect);
     	int width = G.Width(boardRect);
-    	int height = G.Height(boardRect);
     	int inside = (int)(width*0.05);
     	int l =left+inside;
     	int t = top+inside;
     	int w = width-inside*2;
-    	int h = height-inside*2;
+    	int h = inside*7;
     	Rectangle ir = new Rectangle(l,t,w,h);
     	StockArt.Scrim.getImage().stretchImage(gc, ir);  
     	GC.setFont(gc,canvas.largeBoldFont());
@@ -2162,17 +2161,17 @@ public abstract class commonCanvas extends exCanvas
     	String changetime = s.get(ChangeLimitsMessage);
     	GC.Text(gc,true,l,t,w,inside*2,Color.black,null,banner);
     	
-    	if(GC.handleSquareButton(gc, new Rectangle(l+inside*2,t+inside*3,w-inside*4,inside), hitPoint, endgame,
+    	if(GC.handleSquareButton(gc, new Rectangle(l+inside*2,t+inside*2,w-inside*4,inside), hitPoint, endgame,
     			bsBlue,Color.lightGray))
     	{
     		hitPoint.hitCode = TimeId.GameOverOnTime;
     	}
-    	if(GC.handleSquareButton(gc, new Rectangle(l+inside*2,t+(int)(inside*4.5),w-inside*4,inside), hitPoint, changetime,
+    	if(GC.handleSquareButton(gc, new Rectangle(l+inside*2,t+(int)(inside*3.5),w-inside*4,inside), hitPoint, changetime,
     			bsBlue,Color.lightGray))
     	{
     		hitPoint.hitCode = TimeId.ChangeTimeControl;
     	}
-    	Rectangle timeControlRect = new Rectangle(l+w/6,t+inside*6,4*w/6,inside);
+    	Rectangle timeControlRect = new Rectangle(l+w/6,t+inside*5,4*w/6,inside);
     	time.drawTimeControl(gc,canvas,hitPoint!=null,hitPoint,timeControlRect);
     	
     }
@@ -3247,7 +3246,7 @@ public abstract class commonCanvas extends exCanvas
     		}
     		return(true);
     	case HitRulesButton:
-    		{	String rules = sharedInfo.getString(OnlineConstants.RULES,null);
+    		{	String rules = rulesUrl();
     			if(rules!=null)
     				{
     				URL u = G.getUrl(rules,true);
@@ -7398,7 +7397,11 @@ public void goalAndProgressMessage(Graphics gc,HitPoint highlight,Color color,St
 {
 	goalAndProgressMessage(gc,highlight,color,message,progressRect,goalRect,GoalExplanation);
 }
-
+public String rulesUrl()
+{
+	String ruledefault = gameInfo!=null ? gameInfo.rules : G.debug() ? "rules" : null;
+	return sharedInfo.getString(OnlineConstants.RULES,ruledefault);
+}
 /**
  * display the standard "goal of the game" message, or if there is a 
  * robot running, display the robot's progress slider. Tooltip is a message
@@ -7416,8 +7419,6 @@ public void goalAndProgressMessage(Graphics gc,HitPoint highlight,Color color,St
 		Rectangle progressRect, Rectangle goalRect,String ToolTip)
 
 {	boolean someProgress = false;
-	String ruledefault = G.debug() ? "rules" : null;
-	String rules = sharedInfo.getString(OnlineConstants.RULES,ruledefault);
 	GC.setFont(gc,largePlainFont());
 	String timeMessage = timeControl.timeControlMessage();
 	if(timeMessage!=null && GoalExplanation.equals(ToolTip))
@@ -7439,6 +7440,7 @@ public void goalAndProgressMessage(Graphics gc,HitPoint highlight,Color color,St
 	}
     if ((goalRect!=null) && (!someProgress ||  !progressRect.intersects(goalRect)))
     {
+       	String rules = rulesUrl();
     	int h = G.Height(goalRect);
     	GC.Text(gc, true, G.Left(goalRect), G.Top(goalRect), 
     			G.Width(goalRect)-(rules!=null?h:0),

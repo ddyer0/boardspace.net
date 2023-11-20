@@ -129,8 +129,8 @@ public class FrogViewer extends CCanvas<FrogCell,FrogBoard> implements FrogConst
 	 * */
     public void init(ExtendedHashtable info,LFrameProtocol frame)
     {   
-        int randomv = info.getInt(OnlineConstants.RANDOMSEED);
-        int pl = info.getInt(OnlineConstants.PLAYERS_IN_GAME);
+        int randomv = info.getInt(OnlineConstants.RANDOMSEED,-1);
+        int pl = info.getInt(OnlineConstants.PLAYERS_IN_GAME,2);
         enableAutoDone = true;
         super.init(info,frame);
         use_grid = false;
@@ -656,6 +656,8 @@ public class FrogViewer extends CCanvas<FrogCell,FrogBoard> implements FrogConst
     /** replay a move specified in SGF format.  
      * this is mostly standard stuff, but the key is to recognize
      * the elements that we generated in sgf_save
+     * summary: 5/24/2023
+     * 	4082 files visited 0 problems
      */
     public void ReplayMove(sgf_node no)
     {

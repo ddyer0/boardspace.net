@@ -97,9 +97,9 @@ public class YinshGameViewer extends CCanvas<YinshCell,YinshBoard> implements Yi
         //System.out.println(myplayer.trueName + " doinit");
         super.doInit(preserve_history);
         b.doInit(b.gametype);
-        hasDones=false;		// for use by replayMove
         if(!preserve_history)
-    	{ startFirstPlayer();
+    	{   hasDones=false;		// for use by replayMove
+    		startFirstPlayer();
     	}
      }
     boolean horizontal = false;

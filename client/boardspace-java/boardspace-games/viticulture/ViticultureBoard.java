@@ -97,7 +97,7 @@ action will be taken in the spring.
   
  */
 class ViticultureBoard extends RBoard<ViticultureCell> implements BoardProtocol,ViticultureConstants
-{	static int REVISION = 158;			// 100 represents the initial version of the game
+{	static int REVISION = 159;			// 100 represents the initial version of the game
 										// games with no revision information will be 100
 										// revision 101, correct the sale price of champagne to 4
 										// revision 102, fix the cash distribution for the cafe
@@ -170,13 +170,13 @@ class ViticultureBoard extends RBoard<ViticultureCell> implements BoardProtocol,
 										// 		also fixes "producer" to only forbid retrieving itself
 										// revision 154 adds "fill" to jack of all trades if makewine is a choice
 										// revision 155 makes politico not offer to harvest 3 if there are less
-
 //****** this is the point where extensions were added ************
 
 										// revision 156 fixes farmer bug for green card markets and also fixes
 										// the "planner" bug, planner actions trigger when you enter the season
 										// revision 157 fixes "professor" bug with unlimited workers option
 										// revision 158 fixes the interaction between oracle and green card market
+										// revision 159 fixes a problem where max points gained were incorrectly limited
 public int getMaxRevisionLevel() { return(REVISION); }
 	PlayerBoard pbs[] = null;		// player boards
 	
@@ -2041,8 +2041,8 @@ public int getMaxRevisionLevel() { return(REVISION); }
     			else if(n==bestCount) { nBest++; }
     		}
     		if(nBest==1 && bestP!=null) 	// winner for this area
-    		{
-    			changeScore(bestP,StarVps[star.row],replay,StarInfluence,bestP.getStar(),ScoreType.Star);
+    		{	String who = bestP.getStar().colorPlusName();
+    			changeScore(bestP,StarVps[star.row],replay,who,bestP.getStar(),ScoreType.Star);
     		}
     	}
     }
@@ -2605,7 +2605,10 @@ public int getMaxRevisionLevel() { return(REVISION); }
     {	ViticultureCell current = scoringTrack[pb.score-MIN_SCORE];
     	Assert(pb.score+n>=MIN_SCORE, "min score is %s", MIN_SCORE);
     	pb.changeScore(n,from,hint,type);
-        if(replay != replayMode.Replay)
+    	String to = pb.getRooster().colorPlusName();
+		String msg = G.concat(to," ",from,n>=0 ? " +":" -",Math.abs(n),"VP"); 
+		logRawGameEvent(msg);
+    	if(replay != replayMode.Replay)
         {
         	animationStack.push(current);
         	animationStack.push(scoringTrack[pb.score-MIN_SCORE]);
@@ -2746,7 +2749,6 @@ public int getMaxRevisionLevel() { return(REVISION); }
 		{
 			pb.usedTastingRoom = year;
 			changeScore(pb,1,replay,GiveATourMessage,pb.getTastingroom(),ScoreType.Other);
-			logGameEvent("+1VP #1",pb.getTastingroom().colorPlusName());
 		}
 		
 		for(PlayerBoard p : pbs)
@@ -3977,6 +3979,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
     // user clicks "done" after deploying a blue card.  Decide what to do next
     private ViticultureState playBlueCard(PlayerBoard pb,int index,replayMode replay,Viticulturemovespec m)
     {	ViticultureState nextState = null;
+    	if(revision>=159) { pb.startingScore = pb.score;	}// reset at the start of each card
     	ViticultureChip card = pb.cards.chipAtIndex(index);
     	Assert(card.type==ChipType.BlueCard,"must be a blue card");
 		pb.recordEvent("Play Blue",card,ScoreType.PlayBlue);   	
@@ -4867,9 +4870,6 @@ public int getMaxRevisionLevel() { return(REVISION); }
     	   			else
     	   			{
     	   				changeScore(anchor,1,replay,Swindler,card,ScoreType.ScoreYellow);
-    	    			String to = pbs[targetPlayer].getRooster().colorPlusName();
-    	    			String msg = G.concat(pb.getRooster().colorPlusName()," : ",to," 1VP"); 
-    	           		logRawGameEvent(msg);
     	   			}
        			}
     			break;
@@ -4984,7 +4984,6 @@ public int getMaxRevisionLevel() { return(REVISION); }
     			}
     		else 
     			{ changeScore(pbs[targetPlayer],1,replay,Governor,card,ScoreType.ScoreBlue);
-    			  logRawGameEvent(pb.getRooster().colorPlusName()+" : "+pbs[targetPlayer].getRooster().colorPlusName()+" 1VP");
     			}
     		break;
     	case 10: // retrieve grande
@@ -5287,9 +5286,6 @@ public int getMaxRevisionLevel() { return(REVISION); }
 					  else
 					  {
 					  changeScore(ap,1,replay,Motivator,ViticultureChip.MotivatorCard,ScoreType.ScoreBlue);
-		   			  String to = ap.getRooster().colorPlusName();
-	    			  String msg = ">>"+pb.getGrandeWorker().colorPlusName()+"  &  #1 1VP"; 
-	           		  logRawGameEvent(msg,to);
 					  }
 					}// give the motivator 1 point 
 				else {
@@ -5954,6 +5950,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
     private ViticultureState playYellowCard(PlayerBoard pb,int index,replayMode replay,Viticulturemovespec m)
     {	ViticultureState nextState = null;
     	ViticultureChip card = pb.cards.chipAtIndex(index);
+    	if(revision>=159) { pb.startingScore = pb.score;	}// reset at the start of each card
     	Assert(card.type==ChipType.YellowCard,"must be a yellow card");
 		pb.recordEvent("Play Yellow",card,ScoreType.PlayYellow);   	
     	discardCard(pb.cards,index,replay,PlayCardMessage);
@@ -6068,7 +6065,6 @@ public int getMaxRevisionLevel() { return(REVISION); }
     		break;
     	case VP:
     		changeScore(pb,-1,replay,Trade,ViticultureChip.VictoryPoint_Minus,ScoreType.Other);
-    		logRawGameEvent("- 1VP");
     		break;
     	case RedGrape:
     	case RedGrapeDisplay:
@@ -6093,7 +6089,6 @@ public int getMaxRevisionLevel() { return(REVISION); }
 			break;
 		case VP:
 			changeScore(pb,1,replay,Trade,ViticultureChip.VictoryPoint_1,ScoreType.Other);
-			logRawGameEvent("+ 1VP");
 			break;
 		case RedGrape:
 			placeGrapeOrWine(pb.redGrape,ViticultureChip.RedGrape,0,replay);
@@ -7017,9 +7012,7 @@ public int getMaxRevisionLevel() { return(REVISION); }
     		if(replay!=replayMode.Replay) { flashChip = card;	}			// if the viewer notices this card, it will flash up for 2 seconds
     		purpleDiscards.addChip(card);	// put on the discard pile, otherwise it would just vanish
     		pb.cards.removeChip(card);
-    		pb.fillWineOrder(card,true,replay);
-    		
-    		}
+    		boolean bonus = false;
     		switch(resetState)
     		{
     		case FillWineFor2VPMore:
@@ -7029,10 +7022,14 @@ public int getMaxRevisionLevel() { return(REVISION); }
 				break;
     		case FillWineBonus:
 			case FillWineBonusOptional:
-				changeScore(pb,1,replay,FillWineBonus,ViticultureChip.VictoryPoint_1,ScoreType.WineOrder);
+				bonus = true;
 				break;
 			default: break;
+    		}		
+    		pb.fillWineOrder(card,bonus,true,replay);
+    		
     		}
+
 
     		break;
 		case DestroyStructure:

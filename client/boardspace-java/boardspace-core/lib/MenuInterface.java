@@ -28,4 +28,5 @@ public interface MenuInterface {
 	public void setVisible(boolean b);
 	public MenuInterface newSubMenu(String msg);
 	public boolean useSimpleMenu();
+	
 }

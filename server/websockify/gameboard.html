@@ -1,0 +1,27 @@
+<html>
+<title>Hive Offline Viewer</title>
+<!-  src="https://cjrtnc.leaningtech.com/LATEST.txt">
+<head> 
+  <script src="https://cjrtnc.leaningtech.com/3_20231106_268/cj3loader.js">
+  </script>
+<script src="/js/site.js"> </script>
+</head>
+<body background="/images/background-image.jpg">
+<meta charset="utf-8">
+ <script>
+      async function myInit() {
+      await cheerpjInit();
+      cheerpjCreateDisplay(-1,-1,document.body); 
+      cheerpjRunMain("util.JWSApplication", "/app/java/v102/OnlineLobby.jar",
+			"servername","boardspace.net",
+                        "gameboard","true",
+                        "debug","true",
+			"framewidth","700",
+			); 
+      }
+      myInit();
+  </script>
+
+</body>
+Experimental! cheerpj3 Please report problems.
+</html>

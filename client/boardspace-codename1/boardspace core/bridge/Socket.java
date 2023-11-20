@@ -105,16 +105,16 @@ public class Socket extends SocketConnection  implements SocketProxy// SocketCon
 			{ input = null;
 				in.close();
 				if(G.isIOS()) 
-				{ streams.put(in,in); ; 
-				  G.print("in stream close is leaked ",in);
+				{ //streams.put(in,in); ; 
+				  //G.print("in stream close is leaked ",in);
 				}
 			}
 		if(out!=null) 
 			{ output = null;
 			  out.close();
 			  if(G.isIOS())
-			  { streams.put(out,out);
-			    G.print("out stream close is leaked ",out);
+			  { //streams.put(out,out);
+			    //G.print("out stream close is leaked ",out);
 			  }
 			}
 	}

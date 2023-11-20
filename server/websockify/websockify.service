@@ -1,0 +1,13 @@
+[Unit]
+Description=Websocket service for Boardspace
+
+[Service]
+Type=simple
+ExecStart=/usr/sbin/websockify-service-start
+ExecReload=/bin/kill -HUP $MAINPID
+KillMode=process
+Restart=always
+RestartSec=60
+
+[Install]
+WantedBy=multi-user.target

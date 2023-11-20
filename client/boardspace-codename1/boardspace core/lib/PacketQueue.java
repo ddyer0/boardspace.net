@@ -28,47 +28,47 @@ public class PacketQueue<TYPE>
 	private Object[] Queue = null;			// the actual queue
 	int countItems = 0;						//total items ever put in the queue
 	private long []queueTimes = new long[HISTORYBITS+1];
-private long lastqueueGettime = 0; //time when last item was removed from the queue
-private long lastqueuePuttime = 0; //time last item was put in the input queue
+	private long lastqueueGettime = 0; //time when last item was removed from the queue
+	private long lastqueuePuttime = 0; //time last item was put in the input queue
 	private long lastqueueWaitStart = 0;	// time when last started waiting for activity
-public void setWaitStart(long val) { lastqueueWaitStart = val; }
-private String myName = "queue";
+	public void setWaitStart(long val) { lastqueueWaitStart = val; }
+	private String myName = "queue";
 	public Object inputSemaphore=null;		// object to wake on input
 	public boolean dead = false;			// true if this queue is no longer active
-
+	public String toString() { return "<q "+myName+">"; }
 	// constructor
-public PacketQueue(String myNam, int len)
-{	countItems = 0;
+	public PacketQueue(String myNam, int len)
+	{	countItems = 0;
     myName = myNam;
     Queue = new Object[len];
-}
+	}
 	
-synchronized int getStats()
-{	// items sent - items pending
+	synchronized int getStats()
+	{	// items sent - items pending
 	int ql = Queue.length;
 	return(countItems - (ql+QueueWrite-QueueRead)%ql);
-}
+	}
 
-public synchronized int queueLength()
-{
+	public synchronized int queueLength()
+	{
 	return(Math.abs(QueueWrite-QueueRead));
-}
+	}
 
-public void reset()
-{
+	public void reset()
+	{
     lastqueueGettime = 0;
     lastqueuePuttime = 0;
     countItems = 0;
     QueueRead = 0;
     QueueWrite = 0;
-}
+	}
 
 	public String stateSummary(String msg)
-{
+	{
     long now = G.Date();
     String wait = (lastqueueWaitStart>0) 
     					? " Waiting "+(now-lastqueueWaitStart)
-    					: "not waiting";
+	    					: " not waiting";
     return (" " + msg +"#"+countItems
     		+ "(" + (now - lastqueuePuttime) 
     		+ " since put," 
@@ -76,7 +76,7 @@ public void reset()
     		+ " since take, " 
     		+ "Queue: " + queueLength()
     		+ wait);
-}
+	}
 	public String getHistory()
 	{
 		int ptr = QueueWrite-HISTORYBITS-1;
@@ -96,30 +96,30 @@ public void reset()
 		return(msg.toString());
 	}
 
-public boolean healthCheck()
-{
+	public boolean healthCheck()
+	{
 	long now = G.Date();
 	if(lastqueueGettime==0) { return(true); }
 	long dif1 = now-lastqueuePuttime;
 	long dif2 = now-lastqueueGettime;
 	return((dif1<DISTRESS_TIME) &&  (dif2<DISTRESS_TIME));
-}
+	}
 	@SuppressWarnings("unchecked")
-public synchronized TYPE peekItem()
-{
+	public synchronized TYPE peekItem()
+	{
 	 if ((QueueRead != QueueWrite) && (Queue[QueueRead] != null))
 	 {
 		 return((TYPE)(Queue[QueueRead])); 
 	 }
 	 return(null);
-}
+	}
 	public synchronized boolean hasData()
-{
+	{
 	return (dead || ((QueueRead != QueueWrite) && (Queue[QueueRead] != null)));
-}
-/** extract an item from the  queue */
-public synchronized TYPE getItem()
-{
+	}
+	/** extract an item from the  queue */
+	public synchronized TYPE getItem()
+	{
     if (!dead && hasData())
     {
         lastqueueGettime = G.Date();
@@ -141,17 +141,16 @@ public synchronized TYPE getItem()
     }
 
     return (null);
-}
+	}
 
-/** add an item to the  queue, return an informative string as an error */
-public synchronized String putItem(TYPE inStr)
-{     
+	/** add an item to the  queue, return an informative string as an error */
+	public synchronized String putItem(TYPE inStr)
+	{     
 	if(dead) { return(null); }
     long now = G.Date();
     int oldQueueWrite = QueueWrite;
     int newQueueWrite = oldQueueWrite + 1;
     countItems++;
-    
     if (newQueueWrite == Queue.length)
     {
         newQueueWrite = 0;
@@ -180,5 +179,5 @@ public synchronized String putItem(TYPE inStr)
     			+myName+", last taken" 
     			+(dif / 1000.0) + " seconds ago";
     return (msg);
-}
+	}
 }

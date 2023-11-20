@@ -1,0 +1,84 @@
+<html>
+<title>Hive Offline Viewer</title>
+<!-  src="https://cjrtnc.leaningtech.com/LATEST.txt">
+<head> 
+  <script src="https://cjrtnc.leaningtech.com/3_20231108_272/cj3loader.js">
+  </script>
+<script src="/js/site.js"> </script>
+</head>
+<body background="/images/background-image.jpg">
+<meta charset="utf-8">
+ <script>
+
+   const sleep = (delay) => new Promise((resolve) => setTimeout(resolve, delay));
+
+      async function myInit() {
+
+      let socket = new WebSocket("ws://boardspace.net:12345/chat");
+      let connok = false;
+      let message = null;
+
+	socket.addEventListener("open", (event) => {
+		  console.log("connected");
+                  connok = true;
+		});
+
+	socket.addEventListener("message", (event) => {
+	  	console.log("recv", event.data);
+		message = message==null ? event.data : message . event.data;
+		});
+
+        while(!connok) { await sleep(100); };
+
+        console.log("connok " + connok);
+
+        socket.send("abcdef\n");
+        await sleep(1000);
+        socket.send("this is a test\n");
+        await sleep(1000);
+        socket.send("the end\n");
+        await sleep(1000);
+        {
+        let i=0; 
+        while(i++ < 3) 
+	{		
+        while(message==null) { await sleep(100); console.log("waiting"); }
+        console.log("initial read: " + message);
+        message = null;
+	}};
+
+	await cheerpjInit({
+	  natives: {
+	    async Java_WebSocket_read(lib,_this) {
+	      const m = message;
+	      message = null;
+      console.log("inread");
+      console.log(m);
+      console.log("inread exit");
+	      return m;
+
+   },
+    async Java_WebSocket_send(lib,_this,message) {
+      console.log("sending");
+      console.log(message);
+	      socket.send(message);
+
+	    },
+	    Java_WebSocket_connect(host,_this,socket)
+	    {	
+		console.log("make socket");
+
+		//socket = new WebSocket("ws://localhost:12345");
+	     }
+	  }
+	});
+
+      cheerpjCreateDisplay(1000, 950);
+      cheerpjRunMain("WebSocket", "/app/java/v102/WebSocket.jar"); 
+      }
+      myInit();
+  </script>
+
+</body>
+Experimental! cheerpj3 Please report problems.
+</html>

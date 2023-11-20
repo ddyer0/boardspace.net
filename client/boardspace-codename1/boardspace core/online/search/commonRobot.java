@@ -16,12 +16,13 @@
  */
 package online.search;
 
+import bridge.ThreadDeath;
+import lib.*;
+
 import online.common.*;
 import online.game.*;
 import online.game.export.ViewerProtocol;
 import online.game.sgf.sgf_reader;
-import bridge.ThreadDeath;
-import lib.*;
 
 
 

@@ -649,7 +649,8 @@ public class NetConn extends CommonNetConn<String> implements Runnable,Config
                last_read = G.Date();
                if(!cserr) 
                	{ if(!discardInput) 
-               		{ String err = inQueue.putItem(str);
+               		{
+               		  String err = inQueue.putItem(str);
                		  boolean isError = (err != null);
 
                          if (isError)

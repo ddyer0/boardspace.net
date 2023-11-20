@@ -80,19 +80,7 @@ public class JWSApplication implements Config,Runnable,LobbyConstants
 	// reviewer directories
 	static final String DATALOCATION = "datalocation";
 
-	static String DefaultParameters[][] = {
 
-	    };
-
-	public static void setDefaults()
-	{	// apply the defaults
-		for(String p[] : DefaultParameters)
-    	{		
-			G.putGlobal(p[0],p[1]);
-    	}
- 	}
- 
-  
 	private static void init()
     {
        //System.out.println("init");
@@ -159,9 +147,10 @@ public class JWSApplication implements Config,Runnable,LobbyConstants
         					: isVNC|isTable|offlineLauncher
         						? "lib.commonPanel"
         					: G.getString(DefaultGameClass,"online.common.commonLobby");
- 
+        G.print("StartLframe "+classname);
         G.setIdString(""+G.getCodeBase());
         commonPanel myL = (commonPanel) G.MakeInstance(classname);
+        G.print("Myl "+myL);
         if (myL != null)
         {	XFrame fr = new XFrame();
     	 	
@@ -211,13 +200,14 @@ public class JWSApplication implements Config,Runnable,LobbyConstants
             fr.setInitialBounds(fx,fy,fw,fh );
                       
       	 	if(fr!=null) { fr.setVisible(true); } 
-
+      	 	G.print("running "+myL);
             myL.run();
             //System.out.println("root start");
           }
     }
     	catch (Throwable e)
-    	{	Http.postError(null,"FrameLauncher outer run",e);
+    	{	G.print("Error in FrameLauncher outer loop ",e,e.getStackTrace());
+    		Http.postError(null,"FrameLauncher outer run",e);
     	}	
     }
 
@@ -285,11 +275,10 @@ public class JWSApplication implements Config,Runnable,LobbyConstants
 		public void runMain(String args[])
 		{ 	
 			// must be first because it loads the defaults
-			setDefaults();
 			G.setGlobalDefaultFont();	// set a reasonable global default
 			// copy the web start parameters
 			for(int i=0; i<args.length-1; i+=2)
-			{	String par = args[i].toLowerCase();
+			{	String par = (args[i].toLowerCase());
 				String arg = args[i+1];
 				if(arg!=null) 
 					{ G.putGlobal(par,arg);

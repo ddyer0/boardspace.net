@@ -5339,9 +5339,12 @@ private void drawPlayerBoard(Graphics gc,
 	 case MOVE_MAKEWINE:
 	 	{	if(mm.gameEvents!=null)
 	 		{
-	 		// the only gameevent associated with makewine is the splash event
+	 		// the game events associated with makewine are "discard" which is translatable
+	 		// and +vp which is not
+	 		if(mm.gameEvents[0].indexOf("Penthouse")<0)
+	 		{
 	 		playASoundClip(drainSound,500);
-	 		}
+	 		}}
 	 	}
 	 	break;
 	 default: break;

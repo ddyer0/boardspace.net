@@ -259,6 +259,7 @@ public class MouseManager
     	{
         case LAST_IS_MOVE:
         	mouse_move_events++;	// count mouse moves since last up
+        	G.mouseMoveEvents++;	// count for possible fallback to touch interface
         	mouseMovesSinceClick++;
         	mouseMovesBeforeClick = Math.max(mouseMovesBeforeClick,mouseMovesSinceClick);
         	lastMouseTime = now;
@@ -599,5 +600,6 @@ public class MouseManager
 	        //Plog.log.addLog("Wake ",canvas);
 	        canvas.wake();	// canvas.wake() is correct, it knows how to wake itself
     	}
+	    
     }
 

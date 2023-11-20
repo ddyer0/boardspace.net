@@ -30,6 +30,7 @@ import lib.*;
 import lib.Random;
 import static checkerboard.CheckerMovespec.*;
 /**
+ * TODO: add a "select variation" menu to checkers
  * CheckerBoard knows all about the game of Checkers.
  * It gets a lot of logistic support from game.rectBoard, 
  * which knows about the coordinate system.  
@@ -103,6 +104,9 @@ class CheckerBoard extends rectBoard<CheckerCell> implements BoardProtocol
  		switch(variation)
  		{
  		default: throw G.Error("Not expecting %s",variation);
+ 		case Checkers_10:
+ 		case Checkers_8:
+ 		case Checkers_6:
 		case Checkers_American:
  		case Checkers_International:
  		case Checkers_Turkish:
@@ -119,6 +123,9 @@ class CheckerBoard extends rectBoard<CheckerCell> implements BoardProtocol
 		case Checkers_American:
  		case Checkers_International:
  		case Checkers_Turkish:
+ 		case Checkers_10:
+ 		case Checkers_8:
+ 		case Checkers_6:
  			return super.dys();
  		case Checkers_Frisian:
  			return FrisDY;

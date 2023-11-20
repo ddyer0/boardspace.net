@@ -52,7 +52,10 @@ public class PopupManager extends SimpleObservable implements ActionListener
 	
 	public class bsSwingMenu implements MenuInterface
 	{
-	public boolean useSimpleMenu() { return useSimpleMenu; }
+	public boolean useSimpleMenu() 
+		{ 			
+		  return useSimpleMenu || (G.isCheerpj() && G.isTouchInterface());
+		}
 	private JPopupMenu swingPopupMenu = null;
 		   
 	public NativeMenuInterface getNativeMenu() { return(swingPopupMenu); }
@@ -133,7 +136,12 @@ public class PopupManager extends SimpleObservable implements ActionListener
 	public class bsSwingSubMenu implements MenuInterface
 	{
 		   private JMenu jsubmenu = null;
-		   public boolean useSimpleMenu() { return useSimpleMenu; }
+		   public boolean useSimpleMenu() 
+		   { 
+				
+				  return useSimpleMenu || (G.isCheerpj() && G.isTouchInterface());
+
+		   }
 		   public NativeMenuInterface getNativeMenu() { return(jsubmenu); }
 		   // constructor for submenus
 		   public bsSwingSubMenu(String msg)
@@ -189,7 +197,11 @@ public class PopupManager extends SimpleObservable implements ActionListener
    public class bsAwtMenu implements MenuInterface
    {
 	   private PopupMenu awtPopupMenu = null;	
-	   public boolean useSimpleMenu() { return useSimpleMenu; }
+	   public boolean useSimpleMenu()
+	   { 
+		  return useSimpleMenu || (G.isCheerpj() && G.isTouchInterface());
+
+	   }
 	   public NativeMenuInterface getNativeMenu() { return(awtPopupMenu); }
 	   // constructor for submenus
 	   public bsAwtMenu(String msg)

@@ -1604,6 +1604,10 @@ public static URL getUrl(String fr)
 		return(null);
 	}
 }
+public static boolean isBrowserUrl(String u)
+{	String ul = u.toLowerCase();
+	return (ul.startsWith("http:") || ul.startsWith("https:"));
+}
 
 public static URL getUrl(String name, boolean doc)
 {	URL cname = getResourceUrl(name, doc); 
@@ -1712,7 +1716,10 @@ private static ExtendedHashtable globalsInstance = null;
 // constants expected to be used with globals
 public static final String LOWMEMORY = "lowmemory";
 
-static final public boolean isCheerpj() { return("cheerpj".equals(System.getProperty(G.OS_ARCH))); }
+static final public boolean isCheerpj() 
+{ String prop = System.getProperty(G.OS_ARCH);
+  return("cheerpj".equals(prop)); 
+}
 /**
  * globals are ..um.. global settings from a variety of sources, but principally
  * from the launcher or the login transaction.    Globals are also used as
@@ -2243,10 +2250,10 @@ public static String expandClassName(String classname)
 	    	return G.concat(getPlatformName(),getPlatformSubtype()," ",getAppVersion());
 	    }
 	    public static String platformString()
-	    {
+	    {	String id = platformId();
 	    	return("&"
 	    			+ PlatformParameterName 
-	    			+ "="+Http.escape(platformId()));
+	    			+ "="+Http.escape(id));
 	    }
 		public static void getFeedback() {
 			String msg = G.concat("feedback for ",platformId()); 	

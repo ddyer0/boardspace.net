@@ -687,8 +687,8 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     public void init(ExtendedHashtable info,LFrameProtocol frame)
     {  	sharedInfo = info;
     	gameInfo = info.getGameInfo();
-
-    	int playersInGame = info.getInt(OnlineConstants.PLAYERS_IN_GAME,2);
+    	int defPlayers = gameInfo==null ? 2 : gameInfo.minPlayers;
+    	int playersInGame = info.getInt(OnlineConstants.PLAYERS_IN_GAME,defPlayers);
         numberOfPlayerConnections = info.getInt(OnlineConstants.NUMBER_OF_PLAYER_CONNECTIONS,0);	// number of real players
     	playerConnections = new commonPlayer[playersInGame];
     	Session.Mode gameMode = Session.Mode.findMode(sharedInfo.getString(OnlineConstants.MODE,Session.Mode.Game_Mode.modeName));
@@ -709,13 +709,12 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
         CanvasProtocol can = myCanvas;
         if ((can == null) && !chatOnly )
         {
-        GameInfo gameinfo = sharedInfo.getGameInfo();
-        String defaultclass = gameinfo==null ? "" : gameinfo.viewerClass;
+        String defaultclass = gameInfo==null ? "" : gameInfo.viewerClass;
         String classname = info.getString(OnlineConstants.VIEWERCLASS,defaultclass);
-        if(gameinfo!=null )
+        if(gameInfo!=null )
         {	// this is to assure that games started directly, without going through
         	// the launcher, don't have to specify a default color map
-        	Color cm[] = gameinfo.colorMap;
+        	Color cm[] = gameInfo.colorMap;
         	if(cm!=null && G.getGlobal(KEYWORD_COLORMAP)==null)
         	{
         		G.putGlobal(KEYWORD_COLORMAP, AR.intArray(cm.length));
@@ -841,7 +840,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     }
     // game directory on the web site, generally /gameame/gamenamegames/
     public String webGameDirectory()
-    {
+    {	
     	String key = REVIEWERDIR + sharedInfo.getInt(OnlineConstants.SAVE_GAME_INDEX,-1);
     	String dir = G.getString(key,null);
     	return(dir);
@@ -3774,7 +3773,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
         if(myNetConn!=null)
         {
         myNetConn.Connect((my.spectator ? "Spectator " : "Game ")+" "+gameInfo.gameName,
-        					sharedInfo.getString(SERVERNAME),
+        					sharedInfo.getString(GAMESERVERNAME,sharedInfo.getString(SERVERNAME)),
         					sharedInfo.getInt(LOBBYPORT,-1));
         setGameState(ConnectionState.UNCONNECTED);
 
@@ -4032,6 +4031,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
             {	
                 try
                 {	long now = G.Date();
+                	myFrame.screenResized();
                     runStep(hadMessage?0:2000); //common run things, including the lobby and waiting for time to pass
                     if(requestControlNow) 
                     { requestControlNow = false; 

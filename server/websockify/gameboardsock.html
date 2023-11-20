@@ -1,0 +1,72 @@
+<html>
+<title>Hive Offline Viewer</title>
+<!-  src="https://cjrtnc.leaningtech.com/LATEST.txt">
+<head> 
+  <script src="https://cjrtnc.leaningtech.com/3_20231108_272/cj3loader.js">
+  </script>
+<script src="/js/site.js"> </script>
+</head>
+<body background="/images/background-image.jpg">
+<meta charset="utf-8">
+ <script>
+
+  	let sockets = [];
+        let nsockets = 0;  
+
+    async function myInit() {
+
+  
+	await cheerpjInit({
+	  natives: {
+	    async Java_lib_WebSocket_read(lib,_this,sock) {
+              let socket = sockets[sock];
+	      const m = socket.message;
+	      socket.message = null;
+	      return m;
+	    },
+	      async Java_lib_WebSocket_send(lib,_this,sock,message) {
+              let socket = sockets[sock];
+	      socket.send(message);
+	    },
+	Java_lib_WebSocket_isConnected(lib,_this,sock)
+	{ let socket = sockets[sock];
+	  return socket.connok;
+	},
+	 Java_lib_WebSocket_connect(lib,_this,host,socket)
+	    {	
+		console.log("make socket");
+               let sock = new WebSocket("ws://" + host + ":" + 12345);
+               sock.message =null;
+	       sock.connok = false;
+
+	sock.addEventListener("open", (event) => {
+		  console.log("connected");
+                  sock.connok = true;
+		});
+
+	sock.addEventListener("message", (event) => {
+                console.log("recv ",event.data);
+		sock.message = sock.message==null ? event.data : sock.message + event.data;
+		});
+
+                 let n = nsockets++;
+                 sockets[n] = sock;
+                 return n;
+	     }
+	  }
+	});
+
+      cheerpjCreateDisplay(1000, 950);
+      cheerpjRunMain("util.JWSApplication", "/app/java/v102/OnlineLobby.jar",
+			"servername","boardspace.net",
+                        "gameboard","true",
+                        "debug","true",
+			"framewidth","700",
+			); 
+      }
+      myInit();
+  </script>
+
+</body>
+Experimental! cheerpj3 Please report problems.
+</html>

@@ -160,7 +160,6 @@ public interface ViticultureConstants
 	static String BuildMessage = "Build #1";
 	// ways to score
 	static String FlipFieldBonus = "Flip Field";
-	static String StarInfluence = "Star Influence";
 	static String FillWineOrder = "Wine Order";
 	static String WakeupTrack = "Wakeup Track 6";
 	static String Surveyor = "Surveyor";
@@ -208,7 +207,7 @@ public interface ViticultureConstants
 	static String Barn = "Barn";
 	static String Entertainer = "Entertainer";
 	static String Windmill = "Windmill";
-	static String FillWineBonus = "Wine Order +1";
+	static String FillWineBonus = "Wine Order";
 	static String StatueBonus = "Statue";
 	static String UncertifiedOenologist = "Uncertified Oenologist";
 	static String ReshuffleMessage = "Reshuffle #1";
@@ -447,7 +446,6 @@ public interface ViticultureConstants
 		ViticultureVictoryCondition,
 		TimeLineDescription,
 		FlipFieldBonus,
-		StarInfluence,
 		FillWineOrder,
 		WakeupTrack,
 		Surveyor,

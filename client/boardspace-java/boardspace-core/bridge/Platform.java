@@ -103,7 +103,7 @@ public static boolean isRealWindroid() { return false; }
 
 static final public String getPlatformSubtype()
 {
-	 return isTable() ? " sometable" : "";
+	 return G.isCheerpj() ? " cheerpj" : isTable() ? " sometable" : "";
 }
 /**
  * synchronized because two processes (lobby and loadthread for example) may try
@@ -406,32 +406,31 @@ public static synchronized Object MakeInstance(String classname)
     	Dimension2D con = Toolkit.getDefaultToolkit().getScreenSize();
     	int width = (int)con.getWidth();
     	int height = (int)con.getHeight();
+    	if(G.isCheerpj() ) 
+    		{ width = Math.min(width,Cheerpj.getScreenWidth()); 
+    		  height = Math.min(height,Cheerpj.getScreenHeight()); 
+    	    }
     	return(""+width+"x"+height);
     }
     static public int getScreenWidth()
     {	if(SIMULATE_FIRE) { return(1184); }
     	Dimension2D con = Toolkit.getDefaultToolkit().getScreenSize();
     	int width = (int)con.getWidth();
-    	
+    	if(G.isCheerpj() ) { width = Math.min(width,Cheerpj.getScreenWidth()); }
     	return width;
     }
     static public int getScreenHeight()
     {	if(SIMULATE_FIRE) { return(800); }
     	Dimension2D con = Toolkit.getDefaultToolkit().getScreenSize();
     	int height = (int)con.getHeight();
+    	if(G.isCheerpj() ) { height = Math.min(height,Cheerpj.getScreenHeight()); }
     	return height;
     }
     static public int getFrameWidth()
-    {
-    	Dimension2D con = Toolkit.getDefaultToolkit().getScreenSize();
-    	int width = (int)con.getWidth();
-    	return width;
-    }
+    {	return getScreenWidth();
+     }
     static public int getFrameHeight()
-    {
-    	Dimension2D con = Toolkit.getDefaultToolkit().getScreenSize();
-    	int height = (int)con.getHeight();
-    	return height;
+    {	return getScreenHeight();
     }
     static final public boolean isCodename1() { return(false); }
     static String platformName = "Java";
@@ -455,8 +454,10 @@ public static synchronized Object MakeInstance(String classname)
     static public String replace(String from, String find, String repl)
     {	return(from.replace(find,repl));
     }
+    
     static public void showDocument(URI u)
-    {	try {
+    {	
+    	try {
 		java.awt.Desktop.getDesktop().browse(u);
 			} 
     	catch (UnsupportedOperationException e)
@@ -494,10 +495,12 @@ public static synchronized Object MakeInstance(String classname)
 	{
 		G.print("Not LastGameBoard");
 	}
+	
+	
 	static public void showDocument(String u) { showDocument(u,"Browser"); }
     static public void showDocument(String u,String title)
     {	
-    	try {
+     	try {
 		showDocument(new URI(u));
     	}
     	catch (URISyntaxException e) {
@@ -536,10 +539,10 @@ public static synchronized Object MakeInstance(String classname)
      }
  
 
-
+    public static int mouseMoveEvents=0;
     public static boolean isPlatformTouchInterface()
     {
-       	return(false);
+       	return(mouseMoveEvents==0);
     }
 
     public static void startDeadlockDetector()
@@ -623,8 +626,7 @@ public static synchronized Object MakeInstance(String classname)
 
 	
 	public static AudioClip getAudioClip(URL url)
-	{	if(G.isCheerpj()) { return null; }
-		else { return Applet.newAudioClip(url); }
+	{	return Applet.newAudioClip(url); 
 	}
 	
 	public static int getIdentity()

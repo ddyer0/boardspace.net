@@ -1,0 +1,57 @@
+<html>
+<title>Hive Offline Viewer</title>
+<!-  src="https://cjrtnc.leaningtech.com/LATEST.txt">
+<head> 
+  <script src="https://cjrtnc.leaningtech.com/3_20231106_268/cj3loader.js">
+  </script>
+<script src="/js/site.js"> </script>
+</head>
+<body background="/images/background-image.jpg">
+Experimental! cheerpj3 (localhost) Please report problems.
+<meta charset="utf-8">
+ <script>
+      async function myInit() {
+  	let socket = new WebSocket("ws://local.boardspace.net:1234");
+	let message = null;
+	socket.addEventListener("open", (event) => {
+		  console.log("connected");
+		});
+	socket.addEventListener("message", (event) => {
+	  	console.log("recv", event.data);
+		message = event.data;
+		});
+
+	await cheerpjInit({
+	  natives: {
+	    async Java_com_web_WebSocket_read(lib) {
+	      const m = message;
+	      message = null;
+	      return m;
+	    },
+	    async Java_com_web_WebSocket_send(lib, message) {
+	      socket.send(message);
+	    },
+	    Java_com_web_WebSocket_connect(host,socket)
+	    {	
+		console.log("make socket");
+
+		//socket = new WebSocket("ws://localhost:1234");
+	     }
+	  }
+	});
+
+      cheerpjCreateDisplay(1000, 950);
+      cheerpjRunMain("TestWebsocket", "/app/TestWebsocket.jar",
+			"servername","local.boardspace.net",
+			"gameservername","localhost",
+                        "gameboard","true",
+			"framewidth","700",
+			); 
+      }
+
+      myInit();
+  </script>
+
+</body>
+
+</html>

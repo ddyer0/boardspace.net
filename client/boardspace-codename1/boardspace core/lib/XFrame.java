@@ -125,6 +125,8 @@ public class XFrame extends JFrame implements WindowListener,SizeProvider,LFrame
 		if("restorepanzoom".equals(cmd)) { return(hasSavePanZoom); }
 		return(false);
 	}
+	
+	// this is used in the codename1 branch
 	public void buttonMenuBar(ActionEvent evt,int x,int y)
 	{	String cmd = evt.getActionCommand().toString();
 		if("twist3".equals(cmd))
@@ -288,7 +290,18 @@ public class XFrame extends JFrame implements WindowListener,SizeProvider,LFrame
 	public void show(MenuInterface menu, int x, int y) throws AccessControlException {
 		G.show(this, menu, x, y);		
 	}
-	
+	int lastKnownWidth = -1;
+	int lastKnownHeight = -1;
+	public void screenResized()
+	{	int w = lastKnownWidth;
+		int h = lastKnownHeight;
+		lastKnownWidth = G.getScreenWidth();
+		lastKnownHeight = G.getScreenHeight();
+		if(lastKnownWidth!=w || lastKnownHeight!=h)
+		  {
+		   setInitialBounds(getX(),getY(),getWidth(),getHeight());
+		  }
+	}
 	public void setInitialBounds(int inx,int iny,int inw,int inh)
 	{
 		if(G.isCodename1()) 
@@ -315,12 +328,12 @@ public class XFrame extends JFrame implements WindowListener,SizeProvider,LFrame
 	            }
 	            //
 	            // make sure the bounds are minimally acceptable
-	            int screenW = G.getScreenWidth();
-	            int screenH = G.getScreenHeight();
-	            fw = Math.max(screenW/5,Math.min(fw,screenW));
-	            fh = Math.max(screenH/5,Math.min(fh,screenH));
-	            fx = Math.max(0,Math.min(screenW-fw,fx));
-	            fy = Math.max(0,Math.min(screenH-fh,fy));
+	            lastKnownWidth = G.getScreenWidth();
+	            lastKnownHeight = G.getScreenHeight();
+	            fw = Math.max(lastKnownWidth/5,Math.min(fw,lastKnownWidth));
+	            fh = Math.max(lastKnownHeight/5,Math.min(fh,lastKnownHeight));
+	            fx = Math.max(0,Math.min(lastKnownWidth-fw,fx));
+	            fy = Math.max(0,Math.min(lastKnownHeight-fh,fy));
 				setBounds(fx,fy,fw,fh);   			
 			} 	
 	}

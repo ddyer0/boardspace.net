@@ -176,7 +176,7 @@ public class SeatingViewer extends exCanvas implements LobbyConstants
         favoriteGames.reloadGameList(FAVORITES);
         recentGames.reloadGameList(RECENTS);
         
-        if(G.isTable())
+        if(G.isTable() && !G.isCheerpj())
         {
         UDPService.start(true);	// listen for tables
         if(REMOTEVNC) { VNCService.runVNCServer(true); }

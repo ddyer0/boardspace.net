@@ -128,6 +128,7 @@ public class GameInfo implements lib.CompareTo<GameInfo>,LobbyConstants
 	public String id;				// this is the game's 1 or 2 letter designator for score keeping
 	public String groupName;		// the main menu this item appears under
 	public String gameName;			// game itself
+	public String alternateName = ""; 	// the alternate for matching with the database (ie; kuba)
 	public String familyName;		// game family, for "I want to play"
 	public String variationName;	// the exact name this item appears under
 	public Bot[] robots = null;		// how many levels of robot for this game
@@ -221,6 +222,7 @@ public class GameInfo implements lib.CompareTo<GameInfo>,LobbyConstants
 	{	for(int lim = allGames.size()-1; lim>=0; lim--)
 		{	GameInfo gi = allGames.elementAt(lim);
 			if(gi.gameName.equalsIgnoreCase(n)) { return(gi); }
+			if(gi.alternateName.equalsIgnoreCase(n)) { return (gi); }
 			}
 		// null for not found, rather than futureGame
 		return(null);
@@ -457,6 +459,22 @@ synchronized(allGames) {
 				null,false, WhiteOverBlack));
 		g1.groupSortKey = "00014";	// force capturing games after ancient games
 	}
+	{ 
+		// note: for random uncontrolled reasons, kingscolor has to come before chess so
+		// the offline reviewer will find regular chess properly.
+		 GameInfo m =  put(new GameInfo(781,ES.game,104,"KC",AncientGames,"Chess","KingsColor",TwoBotsPlus,
+					new double[]{0.5,1.0,0.05},
+					"kingscolor.KingsColorViewer","/kingscolor/english/kingscolor-rules.html","about_kingscolor.html",
+					null,false, WhiteOverBlack));	
+		 m.robotTimed = true;
+		 m.familyName="Kings Color";
+		 m = put(new GameInfo(781,ES.game,104,"KC",OtherGames,"KingsColor","KingsColor",TwoBotsPlus,
+					new double[]{0.5,1.0,0.05},
+					"kingscolor.KingsColorViewer","/kingscolor/english/kingscolor-rules.html","about_kingscolor.html",
+					null,false, WhiteOverBlack));	  
+		 m.robotTimed = true;
+		 m.familyName="Kings Color";
+		}
 	
 	{ double chessBot[] = {0.5,0.05};
 	  put(new GameInfo(780,ES.game,82,"CS",AncientGames,"Chess","Chess",OneBotPlus,
@@ -472,21 +490,6 @@ synchronized(allGames) {
 				new double[]{0.5,0.05},
 				"chess.ChessViewer","/chess/english/ultima-rules.html","about_chess.html",
 				null,false, WhiteOverBlack));	  
-	}
-	{ 
-
-	 GameInfo m =  put(new GameInfo(781,ES.game,104,"KC",AncientGames,"Chess","KingsColor",TwoBotsPlus,
-				new double[]{0.5,1.0,0.05},
-				"kingscolor.KingsColorViewer","/kingscolor/english/kingscolor-rules.html","about_kingscolor.html",
-				null,false, WhiteOverBlack));	
-	 m.robotTimed = true;
-	 m.familyName="Kings Color";
-	 m = put(new GameInfo(781,ES.game,104,"KC",OtherGames,"KingsColor","KingsColor",TwoBotsPlus,
-				new double[]{0.5,1.0,0.05},
-				"kingscolor.KingsColorViewer","/kingscolor/english/kingscolor-rules.html","about_kingscolor.html",
-				null,false, WhiteOverBlack));	  
-	 m.robotTimed = true;
-	 m.familyName="Kings Color";
 	}
 	{
 	put(new GameInfo(753,ES.game,74,"GO",AncientGames,"Go","Go-9",NoBots,null,
@@ -647,6 +650,7 @@ synchronized(allGames) {
 	  mm.minPlayers = 2;
 	  mm.maxPlayers = 4;
 	  mm.randomizeFirstPlayer = true;
+	  mm.alternateName = "frogs";
 	  mm.groupSortKey="00030";	// Connection games after capturing games, ArmyOfFrogs first in connection games
 
 	}
@@ -708,7 +712,7 @@ synchronized(allGames) {
 		String pfRules = "/pushfight/english/pushfightgame_com.pdf";
 		String pfViewer = "pushfight.PushfightViewer";
 		String pfVideo = "/pushfight/english/pushfight-video.html";
-		put(new GameInfo(144,ES.game,94,"PF",OtherGames,"Push Fight","PushFight",
+		put(new GameInfo(144,ES.game,94,"PF",OtherGames,"Push Fight","pushfight",
 				ThreeBotsPlus,
 				new double[]{1.0,1.0,1.0,0.01},
 				pfViewer,pfRules,"about_pushfight.html",
@@ -1047,11 +1051,12 @@ synchronized(allGames) {
     		null,true, WhiteOverBlack));
 	}
 	{
-	put(new GameInfo(80,ES.game,16,"KU",CapturingGames,"Traboulet","Traboulet",
+	GameInfo mm = put(new GameInfo(80,ES.game,16,"KU",CapturingGames,"Traboulet","Traboulet",
 			ThreeBotsPlus,
 			new double[]{0.09,1,1,0.01},
 			"kuba.KubaViewer","/kuba/english/rules.html","about_kuba.html",
 			null,false, WhiteOverBlack));
+	 mm.alternateName = "kuba";
 	}
 	{
 	put(new GameInfo(660,ES.game,68,"MO",CapturingGames,"Morelli","morelli-9",
@@ -2257,6 +2262,7 @@ synchronized(allGames) {
 	  mm.maxPlayers = 4;
 	  mm.randomizeFirstPlayer = true;
 	  mm.hasHiddenInformation = true;
+	  mm.alternateName="oneday";
 	  // needs a companion app for your current rack
 	  mm.okForPassAndPlay = false;
 	  mm.okForPlaytable=false;

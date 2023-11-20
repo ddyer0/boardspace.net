@@ -125,8 +125,8 @@ public class FrogViewer extends CCanvas<FrogCell,FrogBoard> implements FrogConst
 	 * */
     public void init(ExtendedHashtable info,LFrameProtocol frame)
     {   
-        int randomv = info.getInt(OnlineConstants.RANDOMSEED);
-        int pl = info.getInt(OnlineConstants.PLAYERS_IN_GAME);
+        int randomv = info.getInt(OnlineConstants.RANDOMSEED,-1);
+        int pl = info.getInt(OnlineConstants.PLAYERS_IN_GAME,2);
         enableAutoDone = true;
         super.init(info,frame);
         use_grid = false;

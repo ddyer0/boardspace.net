@@ -910,7 +910,6 @@ class UniverseBoard extends squareBoard<UniverseCell> implements BoardProtocol,U
    }
    public long Digest()
     {
-       Random r = new Random(64 * 1000); // init the random number generator
        long v = 0;
 
         // the basic digestion technique is to xor a bunch of random numbers. The key
@@ -918,6 +917,7 @@ class UniverseBoard extends squareBoard<UniverseCell> implements BoardProtocol,U
         // xor some subset of them.  Note that if you tweak this, all the existing
         // digests are invalidated.
         //
+        Random r = new Random(64 * 1000); // init the random number generator
         v += UniverseChip.DigestAll();
  		for(UniverseCell c = allCells; c!=null; c=c.next)
 		{	v ^= c.Digest(r);

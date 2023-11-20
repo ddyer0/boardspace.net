@@ -1,0 +1,12 @@
+
+Cheerpj Glitches and Gochas
+
+
+No sockets.  Websockets are possible.
+
+KeyListener doesn't deliver exacty the same events, especially for Del Backspace
+and control characters.
+
+Compute bound threads that never yield will choke the system.  Just doing
+an occasional Thread.yield() is not enough, you must actually sleep a little
+to let other things run.

@@ -35,7 +35,7 @@ public class PacketQueue<TYPE>
 	private String myName = "queue";
 	public Object inputSemaphore=null;		// object to wake on input
 	public boolean dead = false;			// true if this queue is no longer active
-
+	public String toString() { return "<q "+myName+">"; }
 	// constructor
 	public PacketQueue(String myNam, int len)
 	{	countItems = 0;
@@ -151,7 +151,6 @@ public class PacketQueue<TYPE>
 	    int oldQueueWrite = QueueWrite;
 	    int newQueueWrite = oldQueueWrite + 1;
 	    countItems++;
-	    
 	    if (newQueueWrite == Queue.length)
 	    {
 	        newQueueWrite = 0;

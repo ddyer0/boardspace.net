@@ -420,10 +420,12 @@ public abstract class Platform implements Config{
     	return(dis.isEdt());
     }
     public static void setEdt() { }
+    
+    public static int mouseMoveEvents=0;
 
     public static boolean isPlatformTouchInterface()
     {
-       	return Display.getInstance().isPureTouch();
+       	return (mouseMoveEvents==0) || Display.getInstance().isPureTouch();
     }
     
  

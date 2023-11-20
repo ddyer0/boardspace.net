@@ -123,6 +123,7 @@ public interface CommonConfig extends UniversalConstants {
 	String DEVELOPHOST = "develophost";
 	String RELEASEHOST = "releasehost";
 	String SERVERNAME = "serverName";
+	String GAMESERVERNAME = "gameservername";
 	String TESTVERSION = "testversion";
 	String CLASSDIR = "classdir";
 	String TESTSERVER = "testserver";

@@ -198,7 +198,8 @@ class KubaBoard extends rectBoard<KubaCell> implements BoardProtocol,KubaConstan
       	return(chip);
     }  
     private void Init_Standard(String game)
-    { 	if(Traboulet_INIT.equalsIgnoreCase(game)) 
+    {	if("kuba".equalsIgnoreCase(game)) { game = Traboulet_INIT; }
+    	else if(Traboulet_INIT.equalsIgnoreCase(game)) 
     		{ 
     		}
     	else { throw G.Error(WrongInitError,game); }

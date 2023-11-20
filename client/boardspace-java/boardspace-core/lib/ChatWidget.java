@@ -64,7 +64,7 @@ public class ChatWidget
 	}};
 	
 	Keyboard keyboard = null;
-	boolean useKeyboard = G.isCodename1();
+	boolean useKeyboard = G.isCodename1() || (G.isCheerpj() && (G.isIOS()||G.isAndroid()));
 	boolean hasFocus = false;
 	int flipInterval = 500;
 	boolean inputVisible = false;
@@ -482,7 +482,7 @@ public class ChatWidget
 	public synchronized void PostNews(String showNews)
     {
         try
-        {	
+        {
             URL newsu = G.getUrl(showNews, true);
             InputStream fs = newsu.openStream();
             

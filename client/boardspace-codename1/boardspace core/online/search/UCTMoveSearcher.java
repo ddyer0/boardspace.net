@@ -1,4 +1,3 @@
-
 /*
 	Copyright 2006-2023 by Dave Dyer
 
@@ -820,6 +819,7 @@ class UCTThread extends Thread implements Opcodes
 		while(!stop)
 		{
 			simUsingTree();
+			if(G.isCheerpj()) { Thread.yield(); }
 		}
 		}
 		catch (Throwable err)
@@ -1237,7 +1237,8 @@ public class UCTMoveSearcher extends CommonDriver
 			treeSize++;
 			TreeViewerProtocol viewer = leadRobot.getTreeViewer();
 			active = true;
-			boolean monitor = MONITOR_SINGLE_THREAD || count>=2;
+			// maxthreads -1 means no theads and no monitor thread
+			boolean monitor = maxThreads>=0 && (MONITOR_SINGLE_THREAD || count>=2);
 			
 			if(viewer!=null)
 			{
@@ -1258,6 +1259,7 @@ public class UCTMoveSearcher extends CommonDriver
 					  s.simUsingTree();
 					  long later = G.Date();
 					  loops++;
+					  if(G.isCheerpj()) { Thread.yield(); }
 					  if(later-now>1000)
 					  {	  now=later;
 						  G.print("Single search "+loops," T ",traverseMoves," R ",randomMoves);
@@ -1374,9 +1376,9 @@ public class UCTMoveSearcher extends CommonDriver
 				  		else
 				  		{
 				  		allstop = false; 
-				  		G.stall(100); 
 				  		}}
 				  	}
+				  	if(!allstop) { G.stall(100); }
 				}
 				if(!allstop)
 				{	StringBuffer p = new StringBuffer();
