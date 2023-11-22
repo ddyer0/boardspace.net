@@ -17,6 +17,7 @@
 package lib;
 
 import bridge.MasterForm;
+import bridge.WheelDetector;
 
 /*
  * logically part of exCanvas, split off to combat code bloat for codename1
@@ -395,7 +396,7 @@ public class MouseManager
 		public void performMouse()
 	    {	CanvasMouseEvent ev;
 	    	// only needed in codename1
-	    	//WheelDetector.releaseLatentPress();		// release a latent mouse down, if any and appropriate
+	    	WheelDetector.releaseLatentPress();		// release a latent mouse down, if any and appropriate
 	    	@SuppressWarnings("unused")
 			int loops = 0;
 	    	while((ev = getMouse())!=null)

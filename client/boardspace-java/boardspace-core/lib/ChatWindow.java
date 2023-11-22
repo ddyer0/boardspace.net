@@ -20,8 +20,7 @@ package lib;
  * this is used to create a standalone chat window for chat rooms
  */
 @SuppressWarnings("serial")
-public class ChatWindow extends exCanvas  
-	implements CanvasProtocol
+public class ChatWindow extends exCanvas  implements CanvasProtocol,Runnable
 {	
 	ExtendedHashtable info;
 	public ChatWindow(LFrameProtocol frame,ExtendedHashtable sharedInfo,ChatInterface chat)
@@ -29,11 +28,10 @@ public class ChatWindow extends exCanvas
 		init(sharedInfo,frame);
 		theChat = chat;
 		theChat.setCanvas(this);
-		addMouseListener(this);
-		addMouseMotionListener(this);
+		this.setTheChat(theChat,true);
 		setVisible(true);
+		new Thread(this).start();
 	}
-
 
 	public void ViewerRun(int w)
 	{	super.ViewerRun(w);
@@ -48,16 +46,8 @@ public class ChatWindow extends exCanvas
 	}
 
 
-	public void Pinch(int x, int y, double amount, double twist) {
-		
-	}
-	public boolean touchZoomEnabled() { return(true); }
 	public boolean runTheChat() { return(true); }
-		
-	public void MouseDown(HitPoint hp)
-	{
-		theChat.MouseDown(hp);
-	}
+
 	public void StartDragging(HitPoint hp) {
 		theChat.StartDragging(hp);	
 	}
@@ -77,16 +67,14 @@ public class ChatWindow extends exCanvas
 			}
 	}
 
-
 	public void drawCanvasSprites(Graphics gc, HitPoint pt) {
 	   	if(mouseTrackingAvailable(pt)) { magnifier.DrawTileSprite(gc,pt); }
  	}
 	
-	public void Wheel(int x, int y, int button,double amount) {
-
-		if((button==0) && theChat.doMouseWheel(x,y,amount))
+	public void run() {
+		while(true)
 		{
-			repaint(10,"mouse wheel");
+			ViewerRun(100);
 		}
 	}
 }

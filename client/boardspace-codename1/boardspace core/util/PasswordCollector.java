@@ -197,16 +197,16 @@ import udp.PlaytableStack;
 	 public boolean finished = false;
 	 private JFrame controllingFrame; 		//the controlling frame, needed for dialogs
 	 
-	 private JPasswordField passwordField;	// the password
-	 private JPasswordField passwordField2;	// second copy for registration
+	 private XPasswordField passwordField;	// the password
+	 private XPasswordField passwordField2;	// second copy for registration
 	 private Checkbox savePasswordField;	// save the password (and the liver!)
 	 private Checkbox loginAsGuestField;	// log in as a guest instead of a registered user
 	 private Choice<String> langField;				// preferred language
 	 private Choice<StringPair> linkField;				// site links
 	 private Choice<String> countryField;			// home country
-	 private JTextField nameField;			// user name
-	 private JTextField realNameField;		// real name, or whatever
-	 private JTextField emailField;			// email address
+	 private XTextField nameField;			// user name
+	 private XTextField realNameField;		// real name, or whatever
+	 private XTextField emailField;			// email address
 	 private JPanel passPane;				// passpane can appear and disappear depending on "guest"
 	 private JButton registerAccountButton;	// switch to registeration
 	 private JButton reviewButton;
@@ -478,7 +478,7 @@ import udp.PlaytableStack;
 		 pane.add(label);
 
 		 
-		 passwordField = new JPasswordField(13);
+		 passwordField = new XPasswordField(13);
 		 passwordField.setActionCommand(OK);
 		 passwordField.addActionListener(this);
 		 passwordField.setUIID("LoginTextField");
@@ -508,7 +508,7 @@ import udp.PlaytableStack;
 		 JPanel panel =  subPanel(new FlowLayout(FlowLayout.CENTER));
 		 JLabel nameLabel = new JLabel(s.get(YourRealName));
 		 nameLabel.setUIID("LoginLabel");
-		 realNameField = new JTextField(25);
+		 realNameField = new XTextField(25);
 		 realNameField.setUIID("LoginTextField");
 		 realNameField.setText(realName);
 		 panel.add(nameLabel);
@@ -532,7 +532,7 @@ import udp.PlaytableStack;
 		 JPanel panel =  subPanel(new FlowLayout(FlowLayout.CENTER));
 		 JLabel nameLabel = new JLabel(s.get(YourEmail));
 		 nameLabel.setUIID("LoginLabel");
-		 emailField = new JTextField(25);
+		 emailField = new XTextField(25);
 		 emailField.setUIID("LoginTextField");
 
 		 emailField.setText(email);
@@ -560,7 +560,7 @@ import udp.PlaytableStack;
 		 JPanel panel = subPanel(new FlowLayout(FlowLayout.CENTER));
 		 JLabel nameLabel = new JLabel(s.get(YourName));
 		 nameLabel.setUIID("LoginLabel");
-		 nameField = new JTextField(13);
+		 nameField = new XTextField(13);
 		 nameField.setUIID("LoginTextField");
 
 		 nameField.setActionCommand(OK);

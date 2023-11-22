@@ -484,9 +484,9 @@ public class XFrame extends JFrame implements WindowListener,SizeProvider,LFrame
 	private boolean dontKill = false;
 
 	public void killFrame()
-    { 
+    { 	
         pleaseKill = true;			// remember some tried to do it
-        if(!dontKill) { killed = true; }
+        if(!dontKill) { killed = true; setVisible(false);}
         //
         // record the default position and size
         if(!G.isCodename1())

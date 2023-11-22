@@ -276,6 +276,17 @@ public class Keyboard implements Config
 	{ 	if(targetDisplay!=null) { targetDisplay.setText(display.getText()); } 
 		closed = true; 
 	}
+	public void doSendKey()
+	{
+		if((targetDisplay!=null)&&(targetDisplay!=display)) 
+		{ targetDisplay.setText(display.getText()); 
+		  closed |= targetDisplay.doSend();
+		  display.clear();
+		}	
+		else 
+		{ closed |= display.doSend();
+		}
+	}
 	
 	public boolean handleKey(HitPoint hp)
 	{
@@ -334,17 +345,11 @@ public class Keyboard implements Config
 					break;
 				case CloseKeyboard:
 				case NarrowCloseKeyboard:
+					doSendKey();
 					setClosed();
 					break;
 				case Nenter:
-					if((targetDisplay!=null)&&(targetDisplay!=display)) 
-						{ targetDisplay.setText(display.getText()); 
-						  closed |= targetDisplay.doSend();
-						  display.clear();
-						}	
-						else 
-						{ closed |= display.doSend();
-						}
+					doSendKey();
 					break;
 				case NAlpha:
 					symbol = false;

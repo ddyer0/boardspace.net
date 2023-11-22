@@ -43,6 +43,9 @@ public abstract class ProxyWindow implements SizeProvider,EventListener,AwtCompo
 	public ComponentProxy getComponent() { return(theComponent); }
 	public Component getMediaComponent() { return theComponent; }
 	public Font getFont() { return(theComponent.getFont()); }
+	public void requestFocus() {  theComponent.requestFocus(); }
+	public boolean hasFocus() { return theComponent.hasFocus(); }
+	public void setFocusable(boolean v) { theComponent.setFocusable(v); }
 	public Dimension getPreferredSize()
 	{
 		return getComponent().getPreferredSize();

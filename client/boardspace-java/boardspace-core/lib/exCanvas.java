@@ -125,6 +125,7 @@ public abstract class exCanvas extends Canvas
     	private boolean touched = false;
         private JCheckBoxMenuItem showRects = null;
 	    private JCheckBoxMenuItem debugSwitch = null;
+	    private JCheckBoxMenuItem useKeyboard = null;
 	    private JCheckBoxMenuItem debugOnceSwitch = null;
 	    private boolean shouldBeVisible=false;
 	    private Text helpTest= null;//TextChunk.create("this is a test help text not the real thing");
@@ -460,6 +461,7 @@ public abstract class exCanvas extends Canvas
         l.useCache = myFrame.addOption("Cache images",imageCache.cache_images,deferredEvents);
         l.logGraphics = myFrame.addAction("log graphics",deferredEvents);
         l.debugSwitch = myFrame.addOption("debug",G.debug(),deferredEvents);
+        l.useKeyboard = myFrame.addOption("use soft keyboard",G.defaultUseKeyboard(),deferredEvents);
      	l.debugOnceSwitch = myFrame.addOption("debug once", false,deferredEvents);
         }
         
@@ -607,6 +609,11 @@ public abstract class exCanvas extends Canvas
        {
        	G.putGlobal(G.DEBUG,""+!G.debug());
        	return true;
+       }
+       else if(target==l.useKeyboard)
+       {
+    	   G.useKeyboard = l.useKeyboard.getState();
+    	   G.useKeyboardSet = true;
        }
        else if(target == l.debugOnceSwitch)
        {
@@ -900,7 +907,6 @@ graphics when using a touch screen.
 	{
 		if(theChat!=null) { theChat.MouseDown(hp); }
 	}
-   /**
  
  
     /** add a rectangle to the canvas rectangle list. 

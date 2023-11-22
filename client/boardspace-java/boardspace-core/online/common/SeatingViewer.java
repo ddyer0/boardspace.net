@@ -1477,7 +1477,7 @@ public class SeatingViewer extends exCanvas implements LobbyConstants
     	}
     }
     private Keyboard keyboard = null;
-	private boolean useKeyboard = G.isCodename1();
+	private boolean useKeyboard = G.defaultUseKeyboard();
 	private JMenuItem startserver = null; //for testing, disable the transmitter
 	private SeatingViewer seatingViewer = null;
 	private AuxViewer vncViewer = null;

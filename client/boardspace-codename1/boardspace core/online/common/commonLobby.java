@@ -1836,7 +1836,7 @@ private boolean processEchoRoomtype(String messType,StringTokenizer localST)
     long checkTime = 0;
     int netFail = 0;
     for (;!exitFlag;) 
-    {
+    { myFrame.screenResized();
       try 
       { long now = G.Date();
    	    if((myNetConn!=null) && myNetConn.connected() && ((now-checkTime)>10000)) 

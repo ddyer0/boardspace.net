@@ -40,7 +40,7 @@ public class Label extends com.codename1.ui.Label implements AwtComponent
 		super(ic.getImage());
 	}
 	public Font getFont() { return(G.getFont(getStyle())); }
-	public void setLabelFor(JPasswordField passwordField) {
+	public void setLabelFor(XPasswordField passwordField) {
 		
 	}
 

@@ -24,6 +24,8 @@ import java.net.URL;
 import java.security.AccessControlException;
 
 import javax.swing.JOptionPane;
+import javax.swing.text.JTextComponent;
+
 import java.net.MalformedURLException;
 import java.util.Calendar;
 import java.util.Hashtable;
@@ -1998,6 +2000,32 @@ public static String expandClassName(String classname)
 	}});
 	}
 
+    /**
+     * create a simple console window that will be the target of {@link #print}
+     */
+	static public XFrame createChatFrame()
+	{	
+		XFrame f = new XFrame("Chat");
+		ChatInterface chat = CreateChat(true,f,null,true);
+		ChatWindow w = new ChatWindow(f,getGlobals(),chat);
+		f.add(w);
+		w.setVisible(true);
+		f.setVisible(true);
+		return f;
+	}
+    /**
+     * create a simple console window that will be the target of {@link #print}
+     */
+	static public XFrame createInputFrame(JTextComponent to)
+	{	
+		XFrame f = new XFrame("Text Input");
+		TextInputWindow in = new TextInputWindow(getGlobals(),f,to);
+		f.add(in);
+		in.setVisible(true);
+		f.setVisible(true);
+		return f;
+	}
+
 	/** this is the hash checksum used by the server */
     public static int hashChecksum(String str,int n)
     {   int hash = 5381;
@@ -2283,6 +2311,11 @@ public static String expandClassName(String classname)
 			if(end=='A') { return (char)(end-off); }
 			if(end=='Z') { return (char)(end+off); }
 			throw Error("parse error for %s",n);
+		}
+		static boolean useKeyboardSet = false;
+		static boolean useKeyboard = false;
+		public static boolean defaultUseKeyboard() {
+			return useKeyboardSet ? useKeyboard :  isCodename1() || (isCheerpj() && isTouchInterface());
 		}
 }
  	

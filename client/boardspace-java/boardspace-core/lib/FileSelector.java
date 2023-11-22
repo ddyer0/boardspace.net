@@ -21,7 +21,7 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTextField;
+import bridge.XTextField;
 import bridge.Config;
 import bridge.FullscreenPanel;
 import bridge.ScrollableList;
@@ -85,10 +85,10 @@ public class FileSelector extends FullscreenPanel
 	}
 
 	// some display components
-    private JTextField moveField; //the activity message, "reading directory .." and so on
-    private JTextField dirField; //the current directory message
+    private XTextField moveField; //the activity message, "reading directory .." and so on
+    private XTextField dirField; //the current directory message
     private Label dirLabel ;
-    private JTextField filterField; //the current filter words
+    private XTextField filterField; //the current filter words
     private ScrollableList<ProxyString> gameList; //the list of individual files
     private String gamefile; //the currently selected file
     private ScrollableList<ProxyString> dirList; //the list of directories
@@ -219,7 +219,7 @@ public class FileSelector extends FullscreenPanel
     	
     	add(sourcePanel);
     
-        dirField = new JTextField(52);
+        dirField = new XTextField(52);
         dirField.setBackground(Config.FrameBackgroundColor);
         dirField.setActionCommand("ok");
         dirPanel = new JPanel();
@@ -251,7 +251,7 @@ public class FileSelector extends FullscreenPanel
         gameList = new ScrollableList<ProxyString>(12, false);       
         dirList = new ScrollableList<ProxyString>(8, false);
         
-        moveField = new JTextField(40);
+        moveField = new XTextField(40);
         moveField.setEditable(false);
         moveField.setText("");
         moveField.setBackground(Config.FrameBackgroundColor);
@@ -262,7 +262,7 @@ public class FileSelector extends FullscreenPanel
         JLabel matchLabel = new JLabel(s.get(MatchWords));
         matchLabel.setBackground(Config.FrameBackgroundColor);
         filterPanel.add(matchLabel);
-        filterField = new JTextField(40);
+        filterField = new XTextField(40);
         filterField.setEditable(true);
         filterField.setActionCommand("ok");
         filterField.setText("");

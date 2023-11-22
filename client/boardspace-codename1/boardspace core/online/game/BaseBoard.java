@@ -393,10 +393,10 @@ public abstract class BaseBoard implements Opcodes,Digestable
 	
 	// called by game initialization as each client checks in
 	public void setClientRevisionLevel(int n) 
-	{	Plog.log.addLog(G.uniqueName()," Set rev ",n," was ",clientRevisionLevel);
+	{	//Plog.log.addLog(G.uniqueName()," Set rev ",n," was ",clientRevisionLevel);
 		if(n>=0)
 			{ 
-			  if(clientRevisionLevel==0) { clientRevisionLevel = n; }
+			  if(clientRevisionLevel<0) { clientRevisionLevel = n; }
 		      else if(n<clientRevisionLevel) 
 		      	{ 
 		    	  if(started) { Plog.log.addLog(G.uniqueName()," already started, reduce to ",n); }
@@ -410,17 +410,19 @@ public abstract class BaseBoard implements Opcodes,Digestable
 	{ 	clientRevisionLevel = -1;
 		started = false; 
 	}
-	
 	// call this from the doInit with a new revision level
 	public void adjustRevision(int n)
-	{ revision = (clientRevisionLevel>=0 && clientRevisionLevel<n) ? clientRevisionLevel : n;
+	{ 
+		//Plog.log.addLog("adjust revision to ",n," old is ",revision);
+		revision = (clientRevisionLevel>=0 && clientRevisionLevel<n) ? clientRevisionLevel : n;
+		//Plog.log.addLog("new rev is ",revision);
 	}
 	boolean started = false;
 	// called from game initialization before the actual game starts.
 	public boolean checkClientRevision()
 	{	//G.print(G.uniqueName()+" Check rev from ",revision," to ",clientRevisionLevel);
 		started = true;
-		//Log.addLog("checkClientRevision");
+		Plog.log.addLog("checkClientRevision client ",clientRevisionLevel," rev ",revision);
 		if(clientRevisionLevel>=0 && revision>=0 && clientRevisionLevel<revision) 
 			{ Plog.log.addLog(G.uniqueName()," Reinit to change revision from ",revision," to ",clientRevisionLevel);
 			  revision = clientRevisionLevel;
@@ -429,6 +431,7 @@ public abstract class BaseBoard implements Opcodes,Digestable
 			}
 		return(false);
 	}
+
 	public boolean canResign()
 	{
 		return(players_in_game<=2);

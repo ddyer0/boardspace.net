@@ -84,7 +84,7 @@ extends ControlledWindow
 		/* Create the text input field */
 		input = new JTextField();
 		input.setBorder(BorderFactory.createLoweredBevelBorder());
-		input.setBackground(gui.getColor("TextField"));
+		input.setBackground(gui.getColor("XTextField"));
 		input.setOpaque(true);
 		input.addKeyListener(
 			new KeyAdapter() {

@@ -4029,6 +4029,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
             {	
                 try
                 {	long now = G.Date();
+                	myFrame.screenResized();
                     runStep(hadMessage?0:2000); //common run things, including the lobby and waiting for time to pass
                     if(requestControlNow) 
                     { requestControlNow = false; 
