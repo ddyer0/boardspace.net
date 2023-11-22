@@ -395,7 +395,7 @@ public abstract class BaseBoard implements Opcodes,Digestable
 	// called by game initialization as each client checks in
 	public void setClientRevisionLevel(int n) 
 	{	//Plog.log.addLog(G.uniqueName()," Set rev ",n," was ",clientRevisionLevel);
-		if(n>=0)
+		if(n>0)
 			{ 
 			  if(clientRevisionLevel<0) { clientRevisionLevel = n; }
 		      else if(n<clientRevisionLevel) 
