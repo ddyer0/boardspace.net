@@ -1,4 +1,18 @@
 
+
+function isTouchEnabled() {
+	    return ( 'ontouchstart' in window ) || 
+		( navigator.maxTouchPoints > 0 ) || 
+		( navigator.msMaxTouchPoints > 0 );
+};
+
+function touchTest()
+{  let mouse = matchMedia('(pointer:fine)').matches;
+   if( !mouse && isTouchEnabled())
+{ alert("touch interfaces are not supported yet,\nplease use the boardspace.net app");
+}
+}
+
 let sockets = [];
 let nsockets = 0;  
 

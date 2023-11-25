@@ -17,7 +17,15 @@ can run unchanged.
 
 echo.c is a simple echo server cribbed from a random internet page.
 
+cheerpj.js contains the initialization for cheerpj, including the tricky
+	 native interfaces that have to match the java code exactly.
+	 it's normally deployed as /js/cheerpj.js
 
+applettag.cgi provides the launchers for offline reviewing (and a
+	collection of other services.).  It's invoked by each of the
+	xx-viewer.shtml files
+
+apple
 so summary: the server runs unmodified
 	    websockify runs as a proxy between 
 

@@ -6,3 +6,6 @@
 *.shtml#
 client/boardspace-java/boardspace-core/common/Salt.java
 client/boardspace-codename1/boardspace core/common/Salt.java
+server/websockify/startserver~
+server/websockify/websocket.o
+server/websockify/websockify.o
