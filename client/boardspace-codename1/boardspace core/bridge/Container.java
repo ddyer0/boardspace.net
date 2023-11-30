@@ -30,17 +30,7 @@ public class Container extends Component
 	public Container(Layout x) { super(x); }
 	public Container() { super(); }
 	public void validate() {}
-	public void layoutContainer()
-	{
-		try {
-			super.layoutContainer();
-		}
-    	catch (ThreadDeath err) { throw err;}
-		catch (Throwable err)
-		{
-			Http.postError(this,"error in layoutContainer",err);
-		}
-	}
+
 	public void paint(Graphics g)
 	{	try {
 		if(MasterForm.canRepaintLocally(this))

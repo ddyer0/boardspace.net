@@ -312,7 +312,8 @@ public class XFrame extends JFrame implements WindowListener,SizeProvider,LFrame
 	int lastKnownWidth = -1;
 	int lastKnownHeight = -1;
 	public void screenResized()
-	{	int w = lastKnownWidth;
+	{	if(G.isCheerpj())
+		{int w = lastKnownWidth;
 		int h = lastKnownHeight;
 		lastKnownWidth = G.getScreenWidth();
 		lastKnownHeight = G.getScreenHeight();
@@ -320,6 +321,7 @@ public class XFrame extends JFrame implements WindowListener,SizeProvider,LFrame
 		  {
 		   setInitialBounds(getX(),getY(),getWidth(),getHeight());
 		  }
+	}
 	}
 	public void setInitialBounds(int inx,int iny,int inw,int inh)
 	{

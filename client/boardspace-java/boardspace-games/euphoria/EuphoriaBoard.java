@@ -2340,7 +2340,7 @@ public class EuphoriaBoard extends EuphoriaBoardConstructor implements EuphoriaC
     /**
      * return a score for the player in a multiplayer game. 
      */
-    public int ScoreForPlayer(int pl)
+    public int scoreForPlayer(int pl)
     {	EPlayer p = players[pl];
     	return( (STARTING_AUTHORITY_TOKENS-p.authorityTokensRemaining())*100000
     			+ p.morale*10000

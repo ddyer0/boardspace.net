@@ -72,9 +72,13 @@ public abstract class exCanvas extends Canvas
     public Image gameIcon = null;
 
 	public  void setCanvasRotation(int n) {
+		int old = getCanvasRotation();
 		super.setCanvasRotation(n);
+		if(old!=n)
+		{
        	resetBounds();
        	repaint();
+		}
 
     }
 

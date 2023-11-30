@@ -611,7 +611,7 @@ public class KulamiViewer extends CCanvas<KulamiCell,KulamiBoard> implements Kul
   
         // draw the avatars
         standardGameMessage(gc,messageRotation,
-            				state==KulamiState.Gameover?gameOverMessage():s.get(state.description()),
+            				state==KulamiState.Gameover?gameOverMessage(gb):s.get(state.description()),
             				state!=KulamiState.Puzzle,
             				gb.whoseTurn,
             				stateRect);

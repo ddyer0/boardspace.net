@@ -517,7 +517,7 @@ public class SixmakingViewer extends CCanvas<SixmakingCell,SixmakingBoard> imple
 
  		standardGameMessage(gc,messageRotation,
             		vstate==SixmakingState.Gameover
-            			?gameOverMessage()
+            			?gameOverMessage(gb)
             			:s.get(vstate.getDescription()),
             				vstate!=SixmakingState.Puzzle,
             				gb.whoseTurn,

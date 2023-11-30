@@ -438,7 +438,7 @@ public class VeletasViewer extends CCanvas<VeletasCell,VeletasBoard> implements 
         {	
             standardGameMessage(gc,messageRotation,
             		vstate==VeletasState.Gameover
-            			?gameOverMessage()
+            			?gameOverMessage(gb)
             			:s.get(vstate.getDescription()),
             				vstate!=VeletasState.Puzzle,
             				gb.whoseTurn,
@@ -721,6 +721,7 @@ private void playSounds(commonMove m)
             	{
             	default: throw G.Error("can't drop on rack in state %s",state);
                 case Play:
+                case PlaceOrSwap:
                 case PlayStone:
                 case PlaceShooters:
                 case PlaceSingleStone:

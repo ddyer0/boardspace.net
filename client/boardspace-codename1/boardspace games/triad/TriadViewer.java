@@ -450,7 +450,7 @@ public class TriadViewer extends CCanvas<TriadCell,TriadBoard> implements TriadC
         {	// draw the avatars
 
              standardGameMessage(gc,messageRotation,
-            		state==TriadState.GAMEOVER_STATE?gameOverMessage():s.get(state.getDescription()),
+            		state==TriadState.GAMEOVER_STATE?gameOverMessage(gb):s.get(state.getDescription()),
             				state!=TriadState.PUZZLE_STATE,
             				whoseTurn,
             				stateRect);
@@ -697,21 +697,6 @@ public class TriadViewer extends CCanvas<TriadCell,TriadBoard> implements TriadC
      * access to the default board object.
      */
     public BoardProtocol getBoard()   {    return (bb);   }
-
-    //** this is used by the game controller to supply entertainment strings to the lobby */
-    // public String gameProgressString()
-    // {	// this is what the standard method does
-    // 	// return ((mutable_game_record ? Reviewing : ("" + viewMove)));
-    // 	return(super.gameProgressString());
-    // }
-    /**
-     * return a score for the player in a multiplayer game. 
-     */
-    public int ScoreForPlayer(commonPlayer p)
-    {	return(bb.ScoreForPlayer(p.boardIndex));
-    }
-
-
 
 
     /** factory method to create a robot */

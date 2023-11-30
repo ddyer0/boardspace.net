@@ -659,5 +659,5 @@ public static Image getVolatileImage(Component c,int width,int height)
    	im.setImage(ai);
     	return(im);
    }
-
+   public boolean isEncoded() { return false; }
 }

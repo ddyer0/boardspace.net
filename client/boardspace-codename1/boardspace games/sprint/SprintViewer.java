@@ -110,11 +110,7 @@ public class SprintViewer extends CCanvas<SprintCell,SprintBoard> implements Spr
     {	SprintChip.preloadImages(loader,ImageDir);	// load the images used by stones
 		gameIcon = SprintChip.Icon.image;
     }
-    public int ScoreForPlayer(commonPlayer p)
-    {
-    	return(bb.getPlayerBoard(p.boardIndex).highScore());
-    }
-  
+
     public boolean WinForPlayer(commonPlayer p)
     {	return bb.winForPlayer(p.boardIndex);
     }
@@ -1063,7 +1059,7 @@ public void setLetterColor(Graphics gc,SingleBoard gb,SprintCell cell)
        commonPlayer pl = getPlayerOrTemp(pboard.whoseTurn);
        double messageRotation = pl.messageRotation();
        {    
-       standardGameMessage(gc,stateRect,state);
+       standardGameMessage(gc,gb,stateRect,state);
       	
        
        String msg = pboard.invalidReason==null ? s.get(SprintVictoryCondition) : s.get(pboard.invalidReason);
@@ -1168,10 +1164,10 @@ public void setLetterColor(Graphics gc,SingleBoard gb,SprintCell cell)
         }
  
     }
-    public void standardGameMessage(Graphics gc,Rectangle stateRect,SprintState state)
+    public void standardGameMessage(Graphics gc,SprintBoard gb,Rectangle stateRect,SprintState state)
     {
         standardGameMessage(gc,
-   				state==SprintState.Gameover?gameOverMessage():s.get(state.description()),
+   				state==SprintState.Gameover?gameOverMessage(gb):s.get(state.description()),
    				(state!=SprintState.Puzzle) && !state.simultaneousTurnsAllowed(),
    				bb.whoseTurn,
    				stateRect);

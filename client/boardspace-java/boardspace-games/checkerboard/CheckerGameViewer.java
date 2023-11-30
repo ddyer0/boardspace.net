@@ -519,7 +519,7 @@ public class CheckerGameViewer extends CCanvas<CheckerCell,CheckerBoard> impleme
         {	
             standardGameMessage(gc,messageRotation,
             		vstate==CheckerState.Gameover
-            			?gameOverMessage()
+            			?gameOverMessage(gb)
             			:s.get0or1(vstate.getDescription(),gb.drawCountdown()),
             				vstate!=CheckerState.Puzzle,
             				whoseTurn,

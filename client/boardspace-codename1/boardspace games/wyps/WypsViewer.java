@@ -914,7 +914,7 @@ public void setLetterColor(Graphics gc,WypsBoard gb,WypsCell cell)
        {
        
        GC.setRotatedContext(gc,largerBoardRect,selectPos,effectiveBoardRotation);
-       standardGameMessage(gc,stateRect,state);
+       standardGameMessage(gc,gb,stateRect,state);
        drawBoardElements(gc, gb, boardRect, ourTurnSelect,selectPos);
        /*
        drawOptions(gc,((state==WypsState.Puzzle)
@@ -1026,10 +1026,10 @@ public void setLetterColor(Graphics gc,WypsBoard gb,WypsCell cell)
 
 
     }
-    public void standardGameMessage(Graphics gc,Rectangle stateRect,WypsState state)
+    public void standardGameMessage(Graphics gc,WypsBoard gb,Rectangle stateRect,WypsState state)
     {
         standardGameMessage(gc,
-   				state==WypsState.Gameover?gameOverMessage():s.get(state.description()),
+   				state==WypsState.Gameover?gameOverMessage(gb):s.get(state.description()),
    				state!=WypsState.Puzzle,
    				bb.whoseTurn,
    				stateRect);

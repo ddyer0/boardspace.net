@@ -311,23 +311,12 @@ public class ViticultureViewer extends CCanvas<ViticultureCell,ViticultureBoard>
 		gameIcon = ViticultureChip.Icon.image;
 		
     }
-	public int ScoreForPlayer(commonPlayer p)
-	{	
-		if(UsingAutoma())
-		{	// no tiebreak on with the automa
-			if(p.boardIndex>0) { return(mainBoard.automaScore); }
-			PlayerBoard pb = mainBoard.pbs[p.boardIndex];
-			return(pb.score);
-		}
+
+	public int PrettyScoreForPlayer(BoardProtocol gb, commonPlayer p)
+	{	ViticultureBoard b = (ViticultureBoard)gb;
+		if(UsingAutoma() && (p.boardIndex>0)) { return(b.automaScore); }
 		else {
-			PlayerBoard pb = mainBoard.pbs[p.boardIndex];
-			return(pb.tiebreakScore());
-		}
-	}
-	public int PrettyScoreForPlayer(commonPlayer p)
-	{	if(UsingAutoma() && (p.boardIndex>0)) { return(ScoreForAutoma()); }
-		else {
-			PlayerBoard pb = mainBoard.pbs[p.boardIndex];
+			PlayerBoard pb = b.pbs[p.boardIndex];
 			return(pb.score);
 		}
 	}
@@ -381,7 +370,7 @@ public class ViticultureViewer extends CCanvas<ViticultureCell,ViticultureBoard>
         
         scoreRect.setValue(true);	// turn it on
         //believed to work, but the display on android is too glitchy
-        //useDirectDrawing(); 
+        useDirectDrawing(!G.isAndroid());
         doInit(false);
         adjustPlayers(players_in_game);
         ready = true;
@@ -755,10 +744,14 @@ public class ViticultureViewer extends CCanvas<ViticultureCell,ViticultureBoard>
 			proxy.copyCurrentCenter(c); 
 			for(int i=0,lim=size-1;i<=lim;i++)
 			{	ViticultureChip target = c.chipAtIndex(i);
+			    //if(target==null) { G.print("no target for ",c, " @ ",i);   }
+			    //else
+			    {
 				ViticultureChip back = target.cardBack;
 				ViticultureChip alt = back!=null ? back : target;
 				if(backs || (tops&&(i<lim))) { proxy.addChip(alt); }
 				else proxy.addChip(target);
+			}
 			}
 			boolean v = proxy.drawStack(gc,this,highlight,sz,xpos,ypos, 0, xscale,yscale, null);
 			if(v) { highlight.hitObject = c; }
@@ -1285,7 +1278,7 @@ private void drawPlayerBoard(Graphics gc,
       //bb.DrawGrid(gc, boardRect, use_grid, boardBackgroundColor, GridColor, GridColor, GridColor);
       
       if(BACKGROUND_OPTIMIZATION) 
-      { drawBackgroundElements(gc,null,mainBoard,brect,null,null,dummyTargets); 
+      { drawBackgroundElements(gc,null,gb,brect,null,null,dummyTargets); 
       backgroundDigest = backgroundDigest();
     }}
       GC.unsetRotatedContext(gc,null);
@@ -3101,7 +3094,7 @@ private void drawPlayerBoard(Graphics gc,
      	int ystep = h/(MAX_SCORE-MIN_SCORE);
 
       	GC.setFont(gc,largeBoldFont());
-     	GC.Text(gc,true,x+w/2-xstep*10,y,xstep*20,ystep*6,Color.black,null,"Summary of Scoring");
+     	GC.Text(gc,true,x+w/2-xstep*10,y,xstep*20,ystep*6,Color.black,null,ScoreSummaryMessage);
     	
      	GC.setFont(gc, standardPlainFont());
 		GC.setColor(gc,Color.darkGray);
@@ -5112,7 +5105,7 @@ private void drawPlayerBoard(Graphics gc,
     	}
     }
 
-    public String simpleGameOverMessage()
+    public String simpleGameOverMessage(BoardProtocol gb)
     {	if(UsingAutoma())
     	{
     	boolean win = WinForPlayer(players[0]);
@@ -5122,7 +5115,7 @@ private void drawPlayerBoard(Graphics gc,
     	return(s.get(DrawOutcome));
     	}
     	else
-    	{ return (super.simpleGameOverMessage());
+    	{ return (super.simpleGameOverMessage(gb));
     	}
     }
     public void drawFixedElements(Graphics gc,boolean complete)
@@ -5243,7 +5236,7 @@ private void drawPlayerBoard(Graphics gc,
         drawHiddenWindows(gc, selectPos);	
         
       	String stateMessage = state==ViticultureState.Gameover
-				?gameOverMessage()
+				?gameOverMessage(gb)
 				:gameStateMessage(gb,state);
       	Text stateText = TextChunk.colorize(stateMessage, null, gameMoveText());
 
@@ -6546,7 +6539,7 @@ private void drawPlayerBoard(Graphics gc,
   	labelFont = largeBoldFont();
   	pb.cashDisplay.drawStack(gc,this,null,lineH*3/2,coinX,coinY,0,0.3,0,""+pb.cash);
   	ViticultureChip.playermat.drawChip(gc, this,hp, ViticultureId.ShowPlayerBoard, lineH*4/3, boardX,boardY,null);
-  	String stateMessage = (uistate==ViticultureState.Gameover)?gameOverMessage():gameStateMessage(mainBoard,uistate);
+  	String stateMessage = (uistate==ViticultureState.Gameover)?gameOverMessage(mainBoard):gameStateMessage(mainBoard,uistate);
   	Text stateText = TextChunk.colorize(stateMessage, s, gameMoveText());
  	standardGameMessage(gc,0,Color.black,
  			stateText,

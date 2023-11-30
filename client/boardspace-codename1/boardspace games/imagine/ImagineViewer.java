@@ -426,10 +426,7 @@ static String SWOOSH = ImageDir + "swoosh"+ Config.SoundFormat;
  
       	
     }
-    public int ScoreForPlayer(commonPlayer pl)
-    {
-    	return bb.getPlayerBoard(pl.boardIndex).getScore();
-    }
+
     
     /**
      * translate the mouse coordinate x,y into a size-independent representation
@@ -996,7 +993,7 @@ static String SWOOSH = ImageDir + "swoosh"+ Config.SoundFormat;
         // draw the avatars
         PlayerBoard apb = gb.getPlayerBoard(ap.boardIndex);
         standardGameMessage(gc,messageRotation,
-            				state==ImagineState.Gameover?gameOverMessage():standardGameMessage(apb,state),
+            				state==ImagineState.Gameover?gameOverMessage(gb):standardGameMessage(apb,state),
             				state!=ImagineState.Puzzle && !state.simultaneousTurnsAllowed(),
             				gb.whoseTurn,
             				stateRect);

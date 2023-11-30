@@ -501,7 +501,7 @@ public class TzaarViewer extends CCanvas<TzaarCell,TzaarBoard> implements TzaarC
          }
 
         standardGameMessage(gc,messageRotation,
-        		vstate==TzaarState.GAMEOVER_STATE?gameOverMessage():s.get(vstate.getDescription()),
+        		vstate==TzaarState.GAMEOVER_STATE?gameOverMessage(gb):s.get(vstate.getDescription()),
         				vstate!=TzaarState.PUZZLE_STATE,
         				gb.whoseTurn,
         				stateRect);

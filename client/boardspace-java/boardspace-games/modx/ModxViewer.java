@@ -382,7 +382,7 @@ public class ModxViewer extends CCanvas<ModxCell,ModxBoard> implements ModxConst
         	
             standardGameMessage(gc,messageRotation,
             		vstate==ModxState.Gameover
-            			?gameOverMessage()
+            			?gameOverMessage(gb)
             			:s.get(vstate.getDescription()),
             				vstate!=ModxState.Puzzle,
             				gb.whoseTurn,

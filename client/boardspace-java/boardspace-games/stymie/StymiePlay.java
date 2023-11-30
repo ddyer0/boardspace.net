@@ -156,7 +156,7 @@ public class StymiePlay extends commonRobot<StymieBoard> implements Runnable, St
      */
     double ScoreForPlayer(StymieBoard evboard,int player,boolean print)
     {	
-		double val = evboard.scoreForPlayer(player);
+		double val = evboard.scoreEstimateForPlayer(player);
      	return(val);
     }
 

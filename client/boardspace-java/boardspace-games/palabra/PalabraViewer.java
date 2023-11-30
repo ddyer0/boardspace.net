@@ -757,7 +757,7 @@ public class PalabraViewer extends CCanvas<PalabraCell,PalabraBoard> implements 
     	double messageRotation = pl.messageRotation();
 
         standardGameMessage(gc,messageRotation,
-        		state==PalabraState.GAMEOVER_STATE?gameOverMessage():s.get(state.getDescription()),
+        		state==PalabraState.GAMEOVER_STATE?gameOverMessage(gb):s.get(state.getDescription()),
         				state!=PalabraState.PUZZLE_STATE,
         				activePl,
         				stateRect);
@@ -981,10 +981,6 @@ public class PalabraViewer extends CCanvas<PalabraCell,PalabraBoard> implements 
      */
     public BoardProtocol getBoard()   {    return (bb);   }
 
-
-    public int ScoreForPlayer(commonPlayer p)
-    {	return(bb.ScoreForPlayerNow(p.boardIndex));
-    }
 
 
     /** factory method to create a robot */

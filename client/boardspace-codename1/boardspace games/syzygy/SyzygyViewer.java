@@ -519,7 +519,7 @@ public class SyzygyViewer extends CCanvas<SyzygyCell,SyzygyBoard> implements Syz
         	GC.setColor(gc,Color.white);
             standardGameMessage(gc,messageRotation,
             		Color.yellow,
-            		state==SyzygyState.GAMEOVER_STATE?gameOverMessage():s.get(state.getDescription()),
+            		state==SyzygyState.GAMEOVER_STATE?gameOverMessage(gb):s.get(state.getDescription()),
             				state!=SyzygyState.PUZZLE_STATE,
             				gb.whoseTurn,
             				stateRect);

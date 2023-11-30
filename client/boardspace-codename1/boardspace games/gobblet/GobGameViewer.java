@@ -442,7 +442,7 @@ public class GobGameViewer extends CCanvas<GobCell,GobGameBoard> implements GobC
             }
  
        standardGameMessage(gc,messageRotation,
-        		vstate==GobbletState.GAMEOVER_STATE?gameOverMessage():s.get(vstate.getDescription()),
+        		vstate==GobbletState.GAMEOVER_STATE?gameOverMessage(gb):s.get(vstate.getDescription()),
         				vstate!=GobbletState.PUZZLE_STATE,
         				gb.whoseTurn,
         				stateRect);

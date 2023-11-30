@@ -1040,7 +1040,7 @@ public class TwixtViewer extends CCanvas<TwixtCell,TwixtBoard> implements TwixtC
  
         // draw the avatars
         standardGameMessage(gc,messageRotation,
-            		state==TwixtState.Gameover?gameOverMessage():s.get(state.description()),
+            		state==TwixtState.Gameover?gameOverMessage(gb):s.get(state.description()),
             				state!=TwixtState.Puzzle,
             				gb.whoseTurn,
             				stateRect);

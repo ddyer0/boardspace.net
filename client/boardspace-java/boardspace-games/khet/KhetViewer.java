@@ -526,7 +526,7 @@ public class KhetViewer extends CCanvas<KhetCell,KhetBoard> implements  KhetCons
  		drawPlayerStuff(gc,(vstate==KhetState.PUZZLE_STATE),ourSelect,HighlightColor,rackBackGroundColor);
 
        standardGameMessage(gc,messageRotation,
-        		vstate==KhetState.GAMEOVER_STATE?gameOverMessage():s.get(vstate.getDescription()),
+        		vstate==KhetState.GAMEOVER_STATE?gameOverMessage(gb):s.get(vstate.getDescription()),
         				vstate!=KhetState.PUZZLE_STATE,
         				gb.whoseTurn,
         				stateRect);

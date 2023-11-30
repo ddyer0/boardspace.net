@@ -84,11 +84,20 @@ public interface BoardProtocol extends Digestable
 	 * @return true if the player has won
 	 */
 	public boolean WinForPlayer(int idx);
+
+	/** return the current score, only important at endgame, in a multiplayer game
+	 * 
+	 * @param idx
+	 * @return
+	 */
+	public int scoreForPlayer(int idx);
+
 	/**
 	 * return the current move number.  Changes in move numbers are used to 
 	 * trigger new columns in the visible game log.
 	 * @return the current move number
 	 */
+	
 	public int moveNumber();
 	/**
 	 * return the index of the current player.  This index doesn't necessarily

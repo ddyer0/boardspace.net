@@ -2317,18 +2317,18 @@ public abstract class commonCanvas extends exCanvas
     }
     /**
      * return a score for the player in a multiplayer game.  This ought to 
-     * include any tiebreaker differentiation, so may not be the score
+     * include any tie breaker differentiation, so may not be the score
      * the user expects to see.  The extra info will be packed by some
-     * kind of chinese remaindering. 
+     * kind of Chinese remaindering. 
      */
     public int ScoreForPlayer(commonPlayer p)
-    {	throw G.Error("Shouldn't call this for a 2 player game");
+    {	return getBoard().scoreForPlayer(p.boardIndex);
     }
    
     //
     // a less precise but suitable for viewing score. This
-    // may not include tiebreak informaiton
-    public int PrettyScoreForPlayer(commonPlayer p)
+    // may not include tie break information
+    public int PrettyScoreForPlayer(BoardProtocol gb, commonPlayer p)
     {
     	return(ScoreForPlayer(p));
     }
@@ -4456,7 +4456,7 @@ public abstract class commonCanvas extends exCanvas
         GameOverNow();	// notice if the game is over now
         // this saves a copy of the board for use in redisplay
         // if it is necessary to do so - ie on codename1
-        saveDisplayBoard();
+        if(mode!=replayMode.Replay) { saveDisplayBoard(); }
     }
     /**
      *  the default behavior is if there is a picked piece, unpick it
@@ -6538,6 +6538,7 @@ public abstract class commonCanvas extends exCanvas
                 }
             }
             resetBounds();
+            saveDisplayBoard();
             generalRefresh();
 
 
@@ -6742,7 +6743,7 @@ public abstract class commonCanvas extends exCanvas
         }
         if(GameOver())
         {
-        	ps.println(result_property+ "["+gameOverMessage()+"]");
+        	ps.println(result_property+ "["+gameOverMessage(getBoard())+"]");
         }
         for (commonPlayer p = commonPlayer.firstPlayer(players); p != null;
                 p = commonPlayer.nextPlayer(players, p))
@@ -7306,11 +7307,12 @@ public void standardGameMessage(Graphics gc,double rotation,Color cc,Text defaul
 /**
  * general a "gameover" message appropriate for games where someone wins
  * but there is no score per se.
+ * @param gb TODO
  * @return a gameOver message
  */
-public String simpleGameOverMessage()
+public String simpleGameOverMessage(BoardProtocol gb)
 {
-	for(int i=0;i<players.length;i++) 
+	for(int i=0;i<gb.nPlayers();i++) 
 	{ 
 	commonPlayer pl = getPlayerOrTemp(i);
 	if((pl!=null) && WinForPlayer(pl))
@@ -7325,17 +7327,19 @@ public String simpleGameOverMessage()
 /**
  * generate a "gameover" message appropriate for games where every player
  * has a final score.
+ * @param gb TODO
  * @return a gameOver message
  */
-private String scoredGameOverMessage()
+private String scoredGameOverMessage(BoardProtocol gb)
 {
 	// multi player game
 	String msg = s.get(GameOverMessage);
-	ScoreItem scores[] = new ScoreItem[players.length];
+	int np = gb.nPlayers(); 
+	ScoreItem scores[] = new ScoreItem[np];
 	
-	for(int i=0;i<players.length; i++) 
+	for(int i=0;i<np; i++) 
 	{ commonPlayer p = getPlayerOrTemp(i);
-	  scores[i] = new ScoreItem(prettyName(i),ScoreForPlayer(p),PrettyScoreForPlayer(p));
+	  scores[i] = new ScoreItem(prettyName(i),gb.scoreForPlayer(p.boardIndex),PrettyScoreForPlayer(gb, p));
 	}
 		
 	Sort.sort(scores);	// show the scores high to low
@@ -7347,14 +7351,15 @@ private String scoredGameOverMessage()
 }
 /**
  * construct a "game won by" message, with scores for multiplayer games
+ * @param gb TODO
  * @return a String
  */
-public String gameOverMessage()
-{	if(players.length<=2)
-	{ return(simpleGameOverMessage());
+public String gameOverMessage(BoardProtocol gb)
+{	if(gb.nPlayers()<=2)
+	{ return(simpleGameOverMessage(gb));
 	}
 	else
-	{ return(scoredGameOverMessage());
+	{ return(scoredGameOverMessage(gb));
 	}
 }
 
@@ -8109,7 +8114,8 @@ public void verifyGameRecord()
     	HitPoint mo = getDragPoint();
     	boolean nowDragging = G.pointInRect(anySelect,tbRect) && (mo!=null) && (mo.hitCode==id);
     	if(nowDragging)
-	      	{	int w = G.Width(tbRect);
+	      	{	if(cs>0)
+	      		{int w = G.Width(tbRect);
 	      		int h = G.Height(tbRect);
 	      		double across = w/cs;
 	      		double down = h/cs;
@@ -8123,6 +8129,7 @@ public void verifyGameRecord()
 	      	    G.SetTop(mo,G.Top(anySelect));
 	      	    G.SetLeft(mo,G.Left(anySelect));
 	      	    repaint(20);
+	      	}
 	      	}
          if(startBoardDrag(anySelect,tbRect)||nowDragging)
       		{ anySelect.hitCode = id; 

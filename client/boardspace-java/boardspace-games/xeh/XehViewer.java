@@ -711,7 +711,7 @@ public class XehViewer extends CCanvas<XehCell,XehBoard> implements XehConstants
  
         // draw the avatars
         standardGameMessage(gc,
-            		state==XehState.Gameover?gameOverMessage():s.get(state.description()),
+            		state==XehState.Gameover?gameOverMessage(gb):s.get(state.description()),
             				state!=XehState.Puzzle,
             				gb.whoseTurn,
             				stateRect);

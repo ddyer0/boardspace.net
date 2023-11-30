@@ -134,7 +134,7 @@ public class PalabraPlay extends commonRobot<PalabraBoard> implements Runnable, 
      */
     double ScoreForPlayer(PalabraBoard evboard,int player,boolean print)
     {	
-		double val = evboard.ScoreForPlayerNow(player);
+		double val = evboard.scoreForPlayer(player);
 
     	// we're going to subtract two values, and the result must be inside the
     	// bounds defined by +-WIN

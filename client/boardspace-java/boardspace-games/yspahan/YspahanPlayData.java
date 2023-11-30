@@ -548,7 +548,7 @@ public class YspahanPlayData implements YspahanPlayStratConst, YspahanConstants
 			}
 			spInfo.gold = bd.goldCount(i);
 			spInfo.camels = bd.camelCount(i);
-			spInfo.victoryPoints = bd.currentScoreForPlayer(i);
+			spInfo.victoryPoints = bd.scoreForPlayer(i);
 			cardStackEmpty = (bd.cards.topChip() == null);
 			spInfo.cubes = 100; // cubes are unlimited here
 

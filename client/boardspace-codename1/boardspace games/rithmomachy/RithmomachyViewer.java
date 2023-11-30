@@ -796,7 +796,7 @@ public class RithmomachyViewer extends CCanvas<RithmomachyCell,RithmomachyBoard>
 
          standardGameMessage(gc,messageRotation,
         		vstate==RithmomachyState.Gameover
-        			?gameOverMessage()
+        			?gameOverMessage(gb)
         			:s.get(vstate.getDescription()),
         				vstate!=RithmomachyState.Puzzle,
         				gb.whoseTurn,

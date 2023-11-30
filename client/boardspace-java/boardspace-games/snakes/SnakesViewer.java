@@ -510,7 +510,7 @@ public class SnakesViewer extends CCanvas<SnakesCell,SnakesBoard> implements Sna
 
 
         standardGameMessage(gc,
-        		vstate==SnakeState.GAMEOVER_STATE?gameOverMessage():s.get(vstate.getDescription()),
+        		vstate==SnakeState.GAMEOVER_STATE?gameOverMessage(gb):s.get(vstate.getDescription()),
         				vstate!=SnakeState.PUZZLE_STATE,
         				gb.whoseTurn,
         				stateRect);

@@ -966,11 +966,11 @@ class MedinaBoard extends rectBoard<MedinaCell> implements BoardProtocol,MedinaC
     public boolean WinForPlayer(int player)
     {	if(board_state==MedinaState.GAMEOVER_STATE)
     	{	if(resigned) { return(win[player]);}
-    		int best = currentScoreForPlayer(player);
+    		int best = scoreForPlayer(player);
     		int second = -1;
     		for(int i=0;i<score.length;i++)
     		{	if(i!=player) 
-    			{  int sc = currentScoreForPlayer(i);
+    			{  int sc = scoreForPlayer(i);
     			   if(sc>=second) { second=sc; }
     			}
     		}
@@ -978,7 +978,7 @@ class MedinaBoard extends rectBoard<MedinaCell> implements BoardProtocol,MedinaC
     	}
     	return(false);
     }
-    int currentScoreForPlayer(int pl)
+    public int scoreForPlayer(int pl)
     {
     	buildClusters();
     	return(score[pl]);

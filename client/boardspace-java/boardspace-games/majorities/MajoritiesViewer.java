@@ -564,7 +564,7 @@ public class MajoritiesViewer extends CCanvas<MajoritiesCell,MajoritiesBoard> im
  
        	// draw the avatars
             standardGameMessage(gc,messageRotation,
-            		state==MajoritiesState.Gameover?gameOverMessage():s.get(state.description()),
+            		state==MajoritiesState.Gameover?gameOverMessage(gb):s.get(state.description()),
             				state!=MajoritiesState.Puzzle,
             				gb.whoseTurn,
             				stateRect);

@@ -531,7 +531,7 @@ public class PushfightViewer extends CCanvas<PushfightCell,PushfightBoard> imple
  
         // draw the avatars
         standardGameMessage(gc,messageRotation,
-            				state==PushfightState.Gameover?gameOverMessage():s.get(state.description()),
+            				state==PushfightState.Gameover?gameOverMessage(gb):s.get(state.description()),
             				state!=PushfightState.Puzzle,
             				gb.whoseTurn,
             				stateRect);

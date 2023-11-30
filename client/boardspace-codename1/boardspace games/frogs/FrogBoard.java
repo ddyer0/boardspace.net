@@ -62,7 +62,14 @@ class FrogBoard extends hexBoard<FrogCell> implements BoardProtocol, FrogConstan
 			{ AR.setValue(win,false); 	// make sure "win" is cleared
 			}
 	}
-	int sweep_counter = 0;
+	   /**
+     * return a score for the player in a multiplayer game. 
+     */
+    public int scoreForPlayer(int idx)
+    {	return(win[idx]?11:10-numberOfGroups(idx));
+    }
+
+    int sweep_counter = 0;
 	int sweep_connected = 0;
 	public FrogCell hand[][] = new FrogCell[NCOLORS][2]; // player hand of 2 frogs
 	public FrogCell bag = null;

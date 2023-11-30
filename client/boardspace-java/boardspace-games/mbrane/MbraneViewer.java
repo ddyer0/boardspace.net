@@ -627,7 +627,7 @@ public class MbraneViewer extends CCanvas<MbraneCell,MbraneBoard> implements Mbr
  
         // draw the avatars
         standardGameMessage(gc,messageRotation,
-            		state==MbraneState.Gameover?gameOverMessage():s.get(state.description()),
+            		state==MbraneState.Gameover?gameOverMessage(gb):s.get(state.description()),
             				state!=MbraneState.Puzzle,
             				gb.whoseTurn,
             				stateRect);

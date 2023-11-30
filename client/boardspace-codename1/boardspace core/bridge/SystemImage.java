@@ -18,6 +18,7 @@ package bridge;
 
 import com.codename1.io.Storage;
 import com.codename1.ui.Component;
+import com.codename1.ui.Display;
 import com.codename1.ui.EncodedImage;
 import com.codename1.ui.RGBImage;
 import com.codename1.ui.URLImage;
@@ -467,7 +468,7 @@ public Image getScaledInstance(int w,int h,ScaleType scal)
 	// intent for scaling is to have something ready to deploy, so this
 	// hack that turns off scaled EncodedImages is good 
 	if(!scaleAsEncodedImage)
-		{ //Display.getInstance().setProperty("encodedImageScaling", "false");
+		{ Display.getInstance().setProperty("encodedImageScaling", "false");
 		  scaleAsEncodedImage = true;
 		}
 	com.codename1.ui.Image from = getImage();
@@ -640,4 +641,8 @@ public static Image getIconImage(Icon ic,AwtComponent c)
 	//G.drawLine(gr,0,0,w,h);
 	return(im);
 }
+public boolean isEncoded()
+{	return image instanceof EncodedImage;
+}
+
 }

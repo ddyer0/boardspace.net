@@ -578,7 +578,7 @@ public class ArimaaViewer extends CCanvas<ArimaaCell,ArimaaBoard> implements Ari
     	String msg = ((vstate==ArimaaState.PLAY_STATE)||(vstate==ArimaaState.PUSH_STATE)||(vstate==ArimaaState.PULL_STATE)||(vstate==ArimaaState.PUSHPULL_STATE))
     			?s.get(pmsg,""+(gb.playStep+1))
     			:s.get(pmsg);
-    	String stateMessage = vstate==ArimaaState.GAMEOVER_STATE?gameOverMessage():msg;
+    	String stateMessage = vstate==ArimaaState.GAMEOVER_STATE?gameOverMessage(gb):msg;
     	if(vstate==ArimaaState.CONFIRM_STATE && !doneState) { stateMessage = s.get(CantPass); }
         standardGameMessage(gc,messageRotation,
         		stateMessage,

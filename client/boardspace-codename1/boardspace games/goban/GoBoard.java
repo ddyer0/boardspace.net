@@ -2186,7 +2186,7 @@ public class GoBoard extends squareBoard<GoCell> implements BoardProtocol,GoCons
 		}
 		return(false);
 	}
-  double scoreForPlayer(int pl)
+  double scoreEstimateForPlayer(int pl)
   {
 	  if(board_state==GoState.Gameover) {
 		  return finalTerritory[pl];

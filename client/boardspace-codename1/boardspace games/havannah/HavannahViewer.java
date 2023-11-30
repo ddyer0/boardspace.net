@@ -688,7 +688,7 @@ public class HavannahViewer extends CCanvas<HavannahCell,HavannahBoard> implemen
  
         // draw the avatars
         standardGameMessage(gc,messageRotation,
-            		state==HavannahState.Gameover?gameOverMessage():s.get(state.description()),
+            		state==HavannahState.Gameover?gameOverMessage(gb):s.get(state.description()),
             				state!=HavannahState.Puzzle,
             				gb.whoseTurn,
             				stateRect);

@@ -537,7 +537,7 @@ public class ShogiViewer extends CCanvas<ShogiCell,ShogiBoard> implements ShogiC
  		eyeRect.activateOnMouse = true;
  		eyeRect.draw(gc,select);
   		standardGameMessage(gc,standardRotation,
-        		vstate==ShogiState.Gameover?gameOverMessage():s.get(vstate.getDescription()),
+        		vstate==ShogiState.Gameover?gameOverMessage(gb):s.get(vstate.getDescription()),
         				vstate!=ShogiState.Puzzle,
         				gb.whoseTurn,
         				stateRect);

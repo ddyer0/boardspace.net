@@ -559,7 +559,7 @@ public class CookieViewer extends CCanvas<CookieCell,CookieBoard> implements Coo
      
 
             standardGameMessage(gc,messageRotation,
-            		state==CookieState.GAMEOVER_STATE?gameOverMessage():s.get(state.getDescription()),
+            		state==CookieState.GAMEOVER_STATE?gameOverMessage(gb):s.get(state.getDescription()),
             				state!=CookieState.PUZZLE_STATE,
             				gb.whoseTurn,
             				stateRect);

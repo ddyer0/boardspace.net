@@ -452,7 +452,7 @@ public class VolcanoGameViewer extends CCanvas<VolcanoCell,VolcanoBoard> impleme
 			handleEditButton(gc,messageRotation,editRect,select,highlight, HighlightColor, rackBackGroundColor);
          }
 		standardGameMessage(gc,messageRotation,
-            		vstate==VolcanoState.GAMEOVER_STATE?gameOverMessage():s.get(vstate.getDescription()),
+            		vstate==VolcanoState.GAMEOVER_STATE?gameOverMessage(gb):s.get(vstate.getDescription()),
             				vstate!=VolcanoState.PUZZLE_STATE,
             				gb.whoseTurn,
             				stateRect);

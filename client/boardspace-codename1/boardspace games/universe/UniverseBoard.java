@@ -196,7 +196,7 @@ class UniverseBoard extends squareBoard<UniverseCell> implements BoardProtocol,U
     }
     
     // estimated score for static evaluator
-    public int ScoreForPlayer(int pl)
+    public int scoreForPlayer(int pl)
     {	// be a little defensive for displays when the board is being reinitialized for a new game
     	if(pl>=nPlayers()) { return(0); }
     	switch(rules)
@@ -247,7 +247,7 @@ class UniverseBoard extends squareBoard<UniverseCell> implements BoardProtocol,U
     }
     public boolean currentPlayerIsBehind()
     {	G.Assert(players_in_game==2,"not a 2 player game");
-    	return(ScoreForPlayer(whoseTurn)<ScoreForPlayer(getNextPlayer(whoseTurn)));
+    	return(scoreForPlayer(whoseTurn)<scoreForPlayer(getNextPlayer(whoseTurn)));
     }
 
     //
@@ -4390,7 +4390,7 @@ class UniverseBoard extends squareBoard<UniverseCell> implements BoardProtocol,U
  	}
  	public void findWorstGame(int depth,int pass)
  		{
- 		int total = ScoreForPlayer(0)+ScoreForPlayer(1);
+ 		int total = scoreForPlayer(0)+scoreForPlayer(1);
  		if(total>=bestScore) { return; }
  		if(GameOver()) 
  			{	//bestScore = total;

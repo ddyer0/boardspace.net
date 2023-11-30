@@ -271,7 +271,10 @@ class CrosswordsBoard extends rectBoard<CrosswordsCell> implements BoardProtocol
 	public CrosswordsState getState() { return(board_state); }
     StringStack gameEvents = new StringStack();
     InternationalStrings s = G.getTranslations();
-    
+    public int scoreForPlayer(int i)
+    {
+    	return(score[i]);
+    }
  	void logGameEvent(String str,String... args)
  	{	//if(!robotBoard)
  		{String trans = s.get(str,args);

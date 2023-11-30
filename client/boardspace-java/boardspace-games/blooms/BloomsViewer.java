@@ -607,7 +607,7 @@ public class BloomsViewer extends CCanvas<BloomsCell,BloomsBoard> implements Blo
         // draw the avatars
         standardGameMessage(gc,
         			messageRotation,
-            		state==BloomsState.Gameover?gameOverMessage():s.get(state.description()),
+            		state==BloomsState.Gameover?gameOverMessage(gb):s.get(state.description()),
             				state!=BloomsState.Puzzle,
             				gb.whoseTurn,
             				stateRect);

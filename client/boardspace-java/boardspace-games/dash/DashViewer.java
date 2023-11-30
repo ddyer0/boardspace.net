@@ -417,7 +417,7 @@ public class DashViewer extends CCanvas<DashCell,DashBoard> implements DashConst
 
         String msg = s.get(vstate.getDescription());
         standardGameMessage(gc,messageRotation,
-        		vstate==DashState.GAMEOVER_STATE?gameOverMessage():msg,
+        		vstate==DashState.GAMEOVER_STATE?gameOverMessage(gb):msg,
         				vstate!=DashState.PUZZLE_STATE,
         				gb.whoseTurn,
         				stateRect);

@@ -525,7 +525,7 @@ public class StymieViewer extends CCanvas<StymieCell,StymieBoard> implements Sty
  
         // draw the avatars
         standardGameMessage(gc,messageRotation,
-            				state==StymieState.Gameover?gameOverMessage():s.get(state.description()),
+            				state==StymieState.Gameover?gameOverMessage(gb):s.get(state.description()),
             				state!=StymieState.Puzzle,
             				gb.whoseTurn,
             				stateRect);

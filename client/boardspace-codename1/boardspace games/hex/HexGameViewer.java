@@ -692,7 +692,7 @@ public class HexGameViewer extends CCanvas<hexCell,HexGameBoard> implements HexC
  
         // draw the avatars
         standardGameMessage(gc,messageRotation,
-            		state==HexState.Gameover?gameOverMessage():s.get(state.description()),
+            		state==HexState.Gameover?gameOverMessage(gb):s.get(state.description()),
             				state!=HexState.Puzzle,
             				gb.whoseTurn,
             				stateRect);

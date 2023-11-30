@@ -286,9 +286,10 @@ public interface ViticultureConstants
 	static String AcceptOptionsMessage = "click to accept these options";
 	static String VetoMessage = "Veto";
 	static String AcceptMessage = "Accept";
-
+	static String ScoreSummaryMessage = "Summary of Scoring";
 	static String ViticultureStrings[] = 
 	{  "Viticulture",
+		ScoreSummaryMessage,
 		AcceptOptionsMessage,
 		VetoMessage,
 		AcceptMessage,

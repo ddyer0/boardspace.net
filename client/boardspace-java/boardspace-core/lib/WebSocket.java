@@ -5,12 +5,10 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetAddress;
 
-public class WebSocket implements SocketProxy
+import bridge.NativeWebSocket;
+
+public class WebSocket extends NativeWebSocket implements SocketProxy
 {
-  public native String read(int sock); // poll this to read
-  public native void send(int sock,String message);
-  public native boolean isConnected(int socket);   
-  public native  int connect(String host,int socket);
   int socket = -1;
   public WebSocket(String host,int port)
   {	  G.print("create websocket");

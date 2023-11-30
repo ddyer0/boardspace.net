@@ -928,7 +928,7 @@ public boolean findBlobs(int forPlayer)
 
 	return(winner);
 }
-double scoreForPlayer(int player)
+double scoreEstimateForPlayer(int player)
 {	double val = 0.0;
 	findBlobs(player);
 	val += max_blob_size[player];

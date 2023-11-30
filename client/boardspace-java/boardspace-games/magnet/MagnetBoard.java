@@ -111,7 +111,7 @@ class MagnetBoard extends hexBoard<MagnetCell> implements BoardProtocol
     }
     double maxPips ;
     
-    public double scoreForPlayer(int pl)
+    public double scoreEstimateForPlayer(int pl)
     {	int pln = nextPlayer[pl];
     	return( (maxPips-countPips(captures[pln],captureCount[pln]))/maxPips);
     }

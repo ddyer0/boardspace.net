@@ -63,7 +63,10 @@ package crosswordle;
 	  gameEvents.push(trans);
 	 }
    }
- 
+   public int scoreForPlayer(int i)
+   {
+   	return(score[i]);
+   }
 	 /**
 	  * this is the preferred method when using the modern "enum" style of game state
 	  * @param st

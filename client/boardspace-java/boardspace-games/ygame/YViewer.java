@@ -491,7 +491,7 @@ public class YViewer extends CCanvas<YCell,YBoard> implements YConstants, GameLa
  
         // draw the avatars
         standardGameMessage(gc,messageRotation,
-            				state==YState.Gameover?gameOverMessage():s.get(state.description()),
+            				state==YState.Gameover?gameOverMessage(gb):s.get(state.description()),
             				state!=YState.Puzzle,
             				gb.whoseTurn,
             				stateRect);

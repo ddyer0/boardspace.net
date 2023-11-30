@@ -347,7 +347,7 @@ public void PrepareToMove(int playerIndex)
  	if(win2)
  		{ return(- (UCT_WIN_LOSS?1.0:(0.95+0.05/boardSearchLevel))); }
  	if(UCT_WIN_LOSS) { return(0); }
- 	return(board.scoreForPlayer(player)-board.scoreForPlayer(nextPlayer[player]));
+ 	return(board.scoreEstimateForPlayer(player)-board.scoreEstimateForPlayer(nextPlayer[player]));
  }
 
  }

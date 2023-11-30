@@ -559,7 +559,7 @@ public class SantoriniViewer extends CCanvas<SantoriniCell,SantoriniBoard> imple
 
 		
         standardGameMessage(gc,messageRotation,
-        		vstate==SantoriniState.GAMEOVER_STATE?gameOverMessage():s.get(vstate.getDescription()),
+        		vstate==SantoriniState.GAMEOVER_STATE?gameOverMessage(gb):s.get(vstate.getDescription()),
         				vstate!=SantoriniState.PUZZLE_STATE,
         				gb.whoseTurn,
         				stateRect);

@@ -597,7 +597,7 @@ public class MijnlieffViewer extends CCanvas<MijnlieffCell,MijnlieffBoard> imple
  
         // draw the avatars
         standardGameMessage(gc,messageRotation,
-            				state==MijnlieffState.Gameover?gameOverMessage():s.get(state.description()),
+            				state==MijnlieffState.Gameover?gameOverMessage(gb):s.get(state.description()),
             				state!=MijnlieffState.Puzzle,
             				whoseTurn,
             				stateRect);
@@ -1015,18 +1015,6 @@ public class MijnlieffViewer extends CCanvas<MijnlieffCell,MijnlieffBoard> imple
      * access to the default board object.
      */
     public BoardProtocol getBoard()   {    return (bb);   }
-
-    //** this is used by the game controller to supply entertainment strings to the lobby */
-    // public String gameProgressString()
-    // {	// this is what the standard method does
-    // 	// return ((mutable_game_record ? Reviewing : ("" + viewMove)));
-    // 	return(super.gameProgressString());
-    // }
-
-    public int ScoreForPlayer(commonPlayer pl)
-    {
-    	throw G.Error("Needed in miltiplayer games");
-    }
 
     /** factory method to create a robot */
     public SimpleRobotProtocol newRobotPlayer() 

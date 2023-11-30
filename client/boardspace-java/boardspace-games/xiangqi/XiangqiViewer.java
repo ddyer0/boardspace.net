@@ -500,7 +500,7 @@ public class XiangqiViewer extends CCanvas<XiangqiCell,XiangqiBoard> implements 
 
 
        	standardGameMessage(gc,messageRotation,
-        		vstate==XiangqiState.GAMEOVER_STATE?gameOverMessage():s.get(vstate.getDescription()),
+        		vstate==XiangqiState.GAMEOVER_STATE?gameOverMessage(gb):s.get(vstate.getDescription()),
         				vstate!=XiangqiState.PUZZLE_STATE,
         				gb.whoseTurn,
         				stateRect);

@@ -452,7 +452,7 @@ public class SpanglesViewer extends CCanvas<SpanglesCell,SpanglesBoard> implemen
  
     	// draw the avatars
         standardGameMessage(gc,messageRotation,
-        		state==SpanglesState.GAMEOVER_STATE?gameOverMessage():s.get(state.getDescription()),
+        		state==SpanglesState.GAMEOVER_STATE?gameOverMessage(gb):s.get(state.getDescription()),
         				state!=SpanglesState.PUZZLE_STATE,
         				gb.whoseTurn,
         				stateRect);

@@ -466,7 +466,7 @@ public class MorrisViewer extends CCanvas<MorrisCell,MorrisBoard> implements Mor
 
             standardGameMessage(gc,messageRotation,
             		vstate==MorrisState.Gameover
-            			?gameOverMessage()
+            			?gameOverMessage(gb)
             			:s.get(vstate.getDescription()),
             				vstate!=MorrisState.Puzzle,
             				gb.whoseTurn,

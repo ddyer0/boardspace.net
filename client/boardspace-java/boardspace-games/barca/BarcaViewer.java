@@ -485,7 +485,7 @@ public class BarcaViewer extends CCanvas<BarcaCell,BarcaBoard> implements BarcaC
   
  
         standardGameMessage(gc,messageRotation,
-            		state==BarcaState.Gameover?gameOverMessage():s.get(state.description()),
+            		state==BarcaState.Gameover?gameOverMessage(gb):s.get(state.description()),
             				state!=BarcaState.Puzzle,
             				gb.whoseTurn,
             				stateRect);

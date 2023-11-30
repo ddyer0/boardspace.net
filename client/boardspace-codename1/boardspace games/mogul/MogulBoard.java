@@ -159,15 +159,11 @@ class MogulBoard extends trackBoard<MogulCell> implements BoardProtocol,MogulCon
 	public double simpleEvaluation(int pl,boolean print)
 	{	return(players[pl].finalVP());
 	}
-	public int trueScore(int pl)
+	public int scoreForPlayer(int pl)
 	{
 		return(players[pl].trueScore(board_state==MogulState.Gameover));
 	}
-	public int scoreForPlayer(int pl)
-	{
-		MogulPlayer p = players[pl];
-		return(p.trueScore((board_state==MogulState.Gameover)));
-	}
+
 	private MogulPlayer players[] = null;
 	public MogulPlayer getPlayer(int n)
 	{	MogulPlayer pp[] = players;

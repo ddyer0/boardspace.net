@@ -122,10 +122,7 @@ public class JumbulayaViewer extends CCanvas<JumbulayaCell,JumbulayaBoard> imple
     {	JumbulayaChip.preloadImages(loader,ImageDir);	// load the images used by stones
 		gameIcon = JumbulayaChip.Icon.image;
     }
-    public int ScoreForPlayer(commonPlayer p)
-    {
-    	return(bb.score[p.boardIndex]);
-    }
+
 	/**
 	 * 
 	 * this is the real instance intialization, performed only once.
@@ -1096,7 +1093,7 @@ public void setLetterColor(Graphics gc,JumbulayaBoard gb,JumbulayaCell cell)
 	   GC.setRotatedContext(gc,largerBoardRect,selectPos,effectiveBoardRotation);
 	   JumbulayaChip ch = gb.getPlayerChip(gb.whoseTurn);
 	   ch.drawChip(gc,this,iconRect,null);
-       standardGameMessage(gc,stateRect,state);
+       standardGameMessage(gc,gb,stateRect,state);
        drawBoardElements(gc, gb, boardRect, ourTurnSelect,selectPos);
        redrawChat(gc,selectPos); 
 
@@ -1215,10 +1212,10 @@ public void setLetterColor(Graphics gc,JumbulayaBoard gb,JumbulayaCell cell)
         	GC.drawBubble(gc,bigX,bigY,bigString,fullRect,messageRotation);
         }
     }
-    public void standardGameMessage(Graphics gc,Rectangle stateRect,JumbulayaState state)
+    public void standardGameMessage(Graphics gc,JumbulayaBoard gb,Rectangle stateRect,JumbulayaState state)
     {
         standardGameMessage(gc,
-   				state==JumbulayaState.Gameover?gameOverMessage():s.get(state.description()),
+   				state==JumbulayaState.Gameover?gameOverMessage(gb):s.get(state.description()),
    				state!=JumbulayaState.Puzzle,
    				bb.whoseTurn,
    				stateRect);
@@ -1842,7 +1839,7 @@ public void verifyGameRecord()
     	GC.Text(gc, true, whoRect, Color.black, null, s.get(ServiceName,prettyName(index)));
     	JumbulayaState state = bb.getState();
     	
-    	standardGameMessage(gc,stateRect,state);
+    	standardGameMessage(gc,bb,stateRect,state);
         
     	boolean hide = bb.hiddenVisible[index];
     	if(rack!=null)

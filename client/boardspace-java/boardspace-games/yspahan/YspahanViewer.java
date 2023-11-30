@@ -141,11 +141,7 @@ public class YspahanViewer extends CCanvas<YspahanCell,YspahanBoard> implements 
     private Rectangle camelRect = addRect("camelRect");
     private Slider speedRect = null;
     private boolean showNetworkStats = false;	// debugging overlay
-    public int ScoreForPlayer(commonPlayer pl)
-    {	
-    	return(b.currentScoreForPlayer(pl.boardIndex));
-    	
-    }
+
     // get the player index of the player looking at the UI.  
     // In review or pass-and-play this is the play whose turn it is
     // if multiplayer, it's the main player for this UI, no matter whose turn it is.
@@ -1141,7 +1137,7 @@ public class YspahanViewer extends CCanvas<YspahanCell,YspahanBoard> implements 
         commonPlayer pl = getPlayerOrTemp(gb.whoseTurn);
         double messageRotation = pl.messageRotation();
 
-     	standardGameMessage(gc,messageRotation,over?gameOverMessage():rawstate,addname,playerToMove,r);
+     	standardGameMessage(gc,messageRotation,over?gameOverMessage(gb):rawstate,addname,playerToMove,r);
  
         }
     }

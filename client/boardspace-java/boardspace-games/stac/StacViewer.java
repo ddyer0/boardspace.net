@@ -438,7 +438,7 @@ public class StacViewer extends CCanvas<StacCell,StacBoard> implements StacConst
 
 		standardGameMessage(gc,messageRotation,
             		vstate==StacState.Gameover
-            			?gameOverMessage()
+            			?gameOverMessage(gb)
             			:s.get(vstate.getDescription()),
             				vstate!=StacState.Puzzle,
             				gb.whoseTurn,

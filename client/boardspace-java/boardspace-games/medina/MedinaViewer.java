@@ -69,11 +69,7 @@ public class MedinaViewer extends CCanvas<MedinaCell,MedinaBoard> implements Med
     {
         return(getAltChipset()==0);
     }
-    
-    public int ScoreForPlayer(commonPlayer p)
-    {  	//G.Assert(b.getState()==MedinaState.GAMEOVER_STATE,"gameover");
-    	return(b.currentScoreForPlayer(p.boardIndex));
-    }
+
     // images
     private static Image[] textures = null;// background textures
     private static Image[] images = null;	// masked images
@@ -630,7 +626,7 @@ public class MedinaViewer extends CCanvas<MedinaCell,MedinaBoard> implements Med
 
         }
 
-		standardGameMessage(gc,messageRotation,stateRect,vstate,gb.whoseTurn);
+		standardGameMessage(gc,gb,messageRotation,stateRect,vstate,gb.whoseTurn);
 		DrawCommonChipPool(gc,null,gb.whoseTurn,iconRect,gb,false);
         goalAndProgressMessage(gc,ourSelect,s.get(VictoryCondition),progressRect, goalRect);
 
@@ -642,10 +638,10 @@ public class MedinaViewer extends CCanvas<MedinaCell,MedinaBoard> implements Med
          drawHiddenWindows(gc, highlight);
 
     }
-    private void standardGameMessage(Graphics gc,double messageRotation,Rectangle stateRect,MedinaState vstate,int whose)
+    private void standardGameMessage(Graphics gc,MedinaBoard gb,double messageRotation,Rectangle stateRect,MedinaState vstate,int whose)
     {
         standardGameMessage(gc,messageRotation,
-        		vstate==MedinaState.GAMEOVER_STATE?gameOverMessage():s.get(vstate.getDescription()),
+        		vstate==MedinaState.GAMEOVER_STATE?gameOverMessage(gb):s.get(vstate.getDescription()),
         				vstate!=MedinaState.PUZZLE_STATE,
         				whose,
         				stateRect);
@@ -1050,7 +1046,7 @@ private void playSounds(commonMove m)
  
         drawRack(gc,null,hp,index,rackRect,b,visibleHiddenChips[index]); 
 
-		standardGameMessage(gc,0,stateRect,b.getState(),b.whoseTurn);
+		standardGameMessage(gc,b,0,stateRect,b.getState(),b.whoseTurn);
 		 
     	if(b.whoseTurn==index)
     	{

@@ -160,7 +160,7 @@ public class BarcaPlay extends commonRobot<BarcaBoard> implements Runnable,
     	switch(Strategy)
     	{
     	case SMARTBOT_LEVEL: 
-    		increment = evboard.scoreForPlayer(player);
+    		increment = evboard.scoreEstimateForPlayer(player);
     		break;
     	case DUMBOT_LEVEL:
     		increment = evboard.scoreForPlayer_2(player);
@@ -411,7 +411,7 @@ public void PrepareToMove(int playerIndex)
  	int np = player^1;
  	boolean win2 = board.winForPlayerNow(np);
  	if(win2) { return(- (UCT_WIN_LOSS?1.0:(0.9+0.1/boardSearchLevel))); }
- 	return(board.scoreForPlayer(player)-board.scoreForPlayer(np));
+ 	return(board.scoreEstimateForPlayer(player)-board.scoreEstimateForPlayer(np));
  }
 
  }

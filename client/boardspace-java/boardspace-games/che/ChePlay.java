@@ -91,7 +91,7 @@ public class ChePlay extends commonRobot<CheBoard> implements Runnable,   RobotP
     double dumbotEval(CheBoard evboard,int player,boolean print)
     {	// note we don't need "player" here because the blobs variable
     	// contains all the information, and was calculated for the player
-    	double val = evboard.scoreForPlayer(player);
+    	double val = evboard.scoreEstimateForPlayer(player);
     	if(print) { System.out.println("Score "+player+" "+val);}
     	return(val);
     }

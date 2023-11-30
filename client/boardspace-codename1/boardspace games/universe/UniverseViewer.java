@@ -262,9 +262,7 @@ public class UniverseViewer extends CCanvas<UniverseCell,UniverseBoard> implemen
     private Rectangle givensRect = addRect("givensRect");
     private Rectangle takensRect = addRect("takensRect");
      
-    public int ScoreForPlayer(commonPlayer p)
-    {	return(b.ScoreForPlayer(p.boardIndex));
-    }
+  
     public commonMove EditHistory(commonMove m)
     {	if(m.op!=MOVE_ASSIGN) { m = super.EditHistory(m); }
     	return(m);
@@ -528,7 +526,7 @@ public class UniverseViewer extends CCanvas<UniverseCell,UniverseBoard> implemen
     private void drawScore(Graphics gc,Rectangle r,UniverseBoard gb,int pl)
     {	GC.setFont(gc,largeBoldFont());
     	UniverseChip ch = UniverseChip.getChip(gb.playerColor[pl],0);
-    	ch.drawChip(gc, this, r, ""+gb.ScoreForPlayer(pl));
+    	ch.drawChip(gc, this, r, ""+gb.scoreForPlayer(pl));
     	GC.frameRect(gc,Color.black,r);
     }
     private boolean drawPickedTile(Graphics gc,HitPoint hgh,Rectangle r,UniverseBoard gb,UniverseChip ch)
@@ -1125,7 +1123,7 @@ public class UniverseViewer extends CCanvas<UniverseCell,UniverseBoard> implemen
 
         standardGameMessage(gc,
         		messageRotation,
-        		vstate==UniverseState.GAMEOVER_STATE?gameOverMessage():s.get(vstate.getDescription()),
+        		vstate==UniverseState.GAMEOVER_STATE?gameOverMessage(gb):s.get(vstate.getDescription()),
         				vstate!=UniverseState.PUZZLE_STATE,
         				gb.whoseTurn,
         				stateRect);

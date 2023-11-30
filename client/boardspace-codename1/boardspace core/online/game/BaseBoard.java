@@ -100,6 +100,10 @@ public abstract class BaseBoard implements Opcodes,Digestable
      * @return true if this player has won
      */
     public boolean WinForPlayer(int pl) { return(win[pl]); }
+    public int scoreForPlayer(int pl)
+    {
+    	throw G.Error("should be defined for multiplayer games");
+    }
     /**
      * the type of the current game, which is printed into game records
      * and used to create duplicates boards in the "same" mode.

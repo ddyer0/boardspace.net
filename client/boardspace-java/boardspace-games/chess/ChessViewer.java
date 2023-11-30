@@ -543,7 +543,7 @@ public double setLocalBoundsA(int x, int y, int width, int height,double a)
         {	
             standardGameMessage(gc,messageRotation,
             		vstate==ChessState.Gameover
-            			?gameOverMessage()
+            			?gameOverMessage(gb)
             			:s.get(vstate.getDescription()),
             				vstate!=ChessState.Puzzle,
             				whoseTurn,

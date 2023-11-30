@@ -665,7 +665,7 @@ public class QuinamidViewer extends CCanvas<QuinamidCell,QuinamidBoard> implemen
  		drawPlayerStuff(gc,(vstate==QuinamidState.PUZZLE_STATE),ourSelect,HighlightColor,rackBackGroundColor);
 
         standardGameMessage(gc,messageRotation,
-        		vstate==QuinamidState.GAMEOVER_STATE?gameOverMessage():s.get(vstate.getDescription()),
+        		vstate==QuinamidState.GAMEOVER_STATE?gameOverMessage(gb):s.get(vstate.getDescription()),
         				vstate!=QuinamidState.PUZZLE_STATE,
         				whoseTurn,
         				stateRect);

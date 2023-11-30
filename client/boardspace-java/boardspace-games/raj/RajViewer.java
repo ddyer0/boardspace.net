@@ -636,7 +636,7 @@ public class RajViewer extends CCanvas<RajCell,RajBoard> implements RajConstants
     								
 
         standardGameMessage(gc,messageRotation,
-        		state==RajState.GAMEOVER_STATE?gameOverMessage():s.get(state.getDescription()),
+        		state==RajState.GAMEOVER_STATE?gameOverMessage(gb):s.get(state.getDescription()),
         				state!=RajState.PUZZLE_STATE,
         				activePl,
         				stateRect);
@@ -972,11 +972,6 @@ public class RajViewer extends CCanvas<RajCell,RajBoard> implements RajConstants
      * access to the default board object.
      */
     public BoardProtocol getBoard()   {    return (bb);   }
-
-
-    public int ScoreForPlayer(commonPlayer p)
-    {	return(bb.ScoreForPlayerNow(p.boardIndex));
-    }
 
 
     /** factory method to create a robot */
@@ -1326,7 +1321,7 @@ public class RajViewer extends CCanvas<RajCell,RajBoard> implements RajConstants
     		{GC.fillRect(gc,rackBackGroundColor,r);
     		}
     	standardGameMessage(gc,
-        		vstate==RajState.GAMEOVER_STATE?gameOverMessage():s.get(vstate.getDescription()),
+        		vstate==RajState.GAMEOVER_STATE?gameOverMessage(bb):s.get(vstate.getDescription()),
         				vstate!=RajState.PUZZLE_STATE,
         				bb.whoseTurn,
         				stateRect);

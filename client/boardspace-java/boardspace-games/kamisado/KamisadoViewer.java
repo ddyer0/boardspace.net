@@ -483,7 +483,7 @@ public class KamisadoViewer extends CCanvas<KamisadoCell,KamisadoBoard> implemen
     	}
         standardGameMessage(gc,
         		messageRotation,
-        		vstate==KamisadoState.GAMEOVER_STATE?gameOverMessage():msg,
+        		vstate==KamisadoState.GAMEOVER_STATE?gameOverMessage(gb):msg,
         				vstate!=KamisadoState.PUZZLE_STATE,
         				gb.whoseTurn,
         				stateRect);

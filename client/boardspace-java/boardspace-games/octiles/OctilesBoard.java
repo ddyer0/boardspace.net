@@ -109,7 +109,7 @@ class OctilesBoard extends rectBoard<OctilesCell>implements BoardProtocol,Octile
     		}
     	return(tiles[col-'a'][row-1]);
     }
-   public int numberHome(int pl)
+   public int scoreForPlayer(int pl)
    {   int count = 0;
 	   OctilesCell goals[] = goalPads[pl];
 	   for(int i=0,lim=goals.length; i<lim;i++)

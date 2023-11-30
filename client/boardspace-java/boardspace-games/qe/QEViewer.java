@@ -1032,7 +1032,7 @@ public void ViewerRun(int wait)
         if(bigChip!=null) { drawBigChip(gc); }
         
         standardGameMessage(gc,messageRotation,
-            		state==QEState.Gameover?gameOverMessage():s.get(state.description()),
+            		state==QEState.Gameover?gameOverMessage(gb):s.get(state.description()),
             				(state!=QEState.Puzzle)&&!simultaneous_turns_allowed(),
             				gb.whoseTurn,
             				stateRect);
@@ -1503,16 +1503,6 @@ public void ViewerRun(int wait)
      */
     public BoardProtocol getBoard()   {    return (bb);   }
 
-    //** this is used by the game controller to supply entertainment strings to the lobby */
-    // public String gameProgressString()
-    // {	// this is what the standard method does
-    // 	// return ((mutable_game_record ? Reviewing : ("" + viewMove)));
-    // 	return(super.gameProgressString());
-    // }
-
-   public int ScoreForPlayer(commonPlayer p)
-   {	return(bb.scoreForPlayer(p.boardIndex));
-   }
 
     /** factory method to create a robot */
     public SimpleRobotProtocol newRobotPlayer() 
@@ -1665,7 +1655,7 @@ public void ViewerRun(int wait)
        	
         // draw the game state
         standardGameMessage(gc,
-            		uistate==QEState.Gameover?gameOverMessage():s.get(uistate.description()),
+            		uistate==QEState.Gameover?gameOverMessage(bb):s.get(uistate.description()),
             				(uistate!=QEState.Puzzle)&&!simultaneous_turns_allowed(),
             				bb.whoseTurn,
             				stateR);

@@ -839,10 +839,6 @@ public class TammanyViewer extends CCanvas<TammanyCell,TammanyBoard> implements 
     	return(colorize(str)); 
     }
 
-    public int ScoreForPlayer(commonPlayer p)
-    {
-    	return(bb.scoreForPlayer(p.boardIndex));
-    }
     public void showVoteButton(Graphics gc,TammanyPlayer p,HitPoint hp,Rectangle r,Rectangle eyeR,boolean eyeState,boolean onlyifactive)
     {	HitPoint select = ((p.allVotesSet
     						&& bb.playerCanVote(p.myIndex)
@@ -976,8 +972,8 @@ public class TammanyViewer extends CCanvas<TammanyCell,TammanyBoard> implements 
  
         drawPlayerStuff(gc,state==TammanyState.Puzzle,nonDragSelect,HighlightColor,rackBackGroundColor);
   
-        drawStateMessage(gc,state,stateRect,false);
-        drawPlayerChip(gc,bb.getPlayer(bb.whoseTurn),iconRect);
+        drawStateMessage(gc,gb,state,stateRect,false);
+        drawPlayerChip(gc,gb.getPlayer(gb.whoseTurn),iconRect);
 
         goalAndProgressMessage(gc,nonDragSelect,Color.black,s.get(TammanyVictoryCondition),progressRect, goalRect);
          
@@ -985,7 +981,7 @@ public class TammanyViewer extends CCanvas<TammanyCell,TammanyBoard> implements 
         drawVcrGroup(nonDragSelect, gc);
   
     }
-    private void drawStateMessage(Graphics gc,TammanyState state,Rectangle r,boolean hidden)
+    private void drawStateMessage(Graphics gc,TammanyBoard gb,TammanyState state,Rectangle r,boolean hidden)
     {
     	 
         // draw the avatars
@@ -993,7 +989,7 @@ public class TammanyViewer extends CCanvas<TammanyCell,TammanyBoard> implements 
         	switch(state)
         	{
         	case Gameover:	
-        		message = gameOverMessage();
+        		message = gameOverMessage(gb);
         		break;
         	case SimultaneousElection:
         	case Election:
@@ -1544,7 +1540,7 @@ public class TammanyViewer extends CCanvas<TammanyCell,TammanyBoard> implements 
     	Rectangle stateRect =addRect("sidestate",l+topSpace*2,t+topSpace/2,w-margin*2,topPart);
     	drawPlayerIcon(gc,p,icon);
     	   
-    	drawStateMessage(gc,state,stateRect,true);
+    	drawStateMessage(gc,bb,state,stateRect,true);
     	int tsize = topSpace*3;
     	int donew = topSpace*2;
     	int ew = margin+donew;

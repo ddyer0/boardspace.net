@@ -66,9 +66,13 @@ public abstract class exCanvas extends ProxyWindow
     public Image gameIcon = null;
 
 	public  void setCanvasRotation(int n) {
+		int old = getCanvasRotation();
 		super.setCanvasRotation(n);
-       	resetBounds();
-       	repaint();
+		if(old!=n)
+		{
+			resetBounds();
+			repaint();
+		}
 
     }
 

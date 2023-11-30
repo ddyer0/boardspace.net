@@ -534,7 +534,7 @@ public class TintasViewer extends CCanvas<TintasCell,TintasBoard> implements Tin
  
         // draw the avatars
         standardGameMessage(gc,messageRotation,
-            		state==TintasState.Gameover?gameOverMessage():s.get(state.description()),
+            		state==TintasState.Gameover?gameOverMessage(gb):s.get(state.description()),
             				state!=TintasState.Puzzle,
             				gb.whoseTurn,
             				stateRect);

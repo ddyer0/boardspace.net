@@ -553,7 +553,7 @@ public class TabGameViewer extends CCanvas<TabCell,TabGameBoard> implements TabC
  
 		// draw the avatars
         standardGameMessage(gc,messageRotation,
-        		state==TablutState.GAMEOVER_STATE?gameOverMessage():s.get(state.getDescription()),
+        		state==TablutState.GAMEOVER_STATE?gameOverMessage(gb):s.get(state.getDescription()),
         				state!=TablutState.PUZZLE_STATE,
         				gb.whoseTurn,
         				stateRect);

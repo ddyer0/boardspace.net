@@ -558,7 +558,7 @@ public class TraxGameViewer extends commonCanvas implements TraxConstants, GameL
         if (gc != null)
         {
             standardGameMessage(gc,messageRotation,
-            		state==TraxState.GAMEOVER_STATE?gameOverMessage():s.get(state.getDescription()),
+            		state==TraxState.GAMEOVER_STATE?gameOverMessage(gb):s.get(state.getDescription()),
             				state!=TraxState.PUZZLE_STATE,
             				gb.whoseTurn,
             				stateRect);

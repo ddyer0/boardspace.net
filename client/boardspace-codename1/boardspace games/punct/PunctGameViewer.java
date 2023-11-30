@@ -685,7 +685,7 @@ public class PunctGameViewer extends CCanvas<punctCell,PunctGameBoard> implement
 
       
         standardGameMessage(gc,messageRotation,
-        		vstate==PunctState.GAMEOVER_STATE?gameOverMessage():s.get(vstate.getDescription()),
+        		vstate==PunctState.GAMEOVER_STATE?gameOverMessage(gb):s.get(vstate.getDescription()),
         				vstate!=PunctState.PUZZLE_STATE,
         				gb.whoseTurn,
         				stateRect);

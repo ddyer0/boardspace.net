@@ -542,7 +542,7 @@ public class YinshGameViewer extends CCanvas<YinshCell,YinshBoard> implements Yi
 
 
         standardGameMessage(gc,messageRotation,
-        		vstate==YinshState.GAMEOVER_STATE?gameOverMessage():s.get(vstate.getDescription()),
+        		vstate==YinshState.GAMEOVER_STATE?gameOverMessage(gb):s.get(vstate.getDescription()),
         				vstate!=YinshState.PUZZLE_STATE,
         				gb.whoseTurn,
         				stateRect);

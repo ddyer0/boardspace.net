@@ -571,7 +571,7 @@ public class GygesViewer extends CCanvas<GygesCell,GygesBoard> implements GygesC
  		drawPlayerStuff(gc,(vstate==GygesState.Puzzle),ourSelect,HighlightColor,rackBackGroundColor);
 
         standardGameMessage(gc,messageRotation,
-            		vstate==GygesState.Gameover?gameOverMessage():s.get(vstate.getDescription()),
+            		vstate==GygesState.Gameover?gameOverMessage(gb):s.get(vstate.getDescription()),
             				vstate!=GygesState.Puzzle,
             				gb.whoseTurn,
             				stateRect);

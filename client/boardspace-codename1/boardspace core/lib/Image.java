@@ -70,6 +70,7 @@ public class Image extends SystemImage implements Drawable,CompareTo<Image>
 	public String toString()
 	{ return("<image "
 				+ flags
+				+ (isEncoded() ? "E" : "")
 				+ " "
 				+ getShortName()
 				+ " "+width+"x"+height

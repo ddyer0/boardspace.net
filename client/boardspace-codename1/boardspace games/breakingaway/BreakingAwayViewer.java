@@ -138,15 +138,7 @@ public class BreakingAwayViewer extends CCanvas<BreakingAwayCell,BreakingAwayBoa
     private Rectangle cycleRect[] = addRect("cycle",6);
     private Rectangle chipRect[] = addRect("chip",6);
 
-   
-    
-    /**
-     * return a score for the player in a multiplayer game. 
-     */
-    public int ScoreForPlayer(commonPlayer p)
-    {	return(b.pointsPerPlayer[p.boardIndex]);
-    }
-    
+     
     public synchronized void preloadImages()
     {	BreakingAwayPiece.preloadImages(loader,ImageDir);
 	    if (artwork == null)
@@ -658,7 +650,7 @@ public class BreakingAwayViewer extends CCanvas<BreakingAwayCell,BreakingAwayBoa
     	chip.drawChip(gc,this,G.Width(r),cx,cy,null);
     	GC.frameRect(gc,Color.black,G.Left(r),G.Top(r),h22,h22);
         GC.setFont(gc,standardBoldFont());
-    	GC.Text(gc,true,G.Left(r),G.Top(r),h22,h22,Color.black,null,""+gb.pointsPerPlayer[pla]);
+    	GC.Text(gc,true,G.Left(r),G.Top(r),h22,h22,Color.black,null,""+gb.scoreForPlayer[pla]);
     	}
     	if(select!=null)
     	{
@@ -960,7 +952,7 @@ public class BreakingAwayViewer extends CCanvas<BreakingAwayCell,BreakingAwayBoa
 
         int who = gb.whoseTurn;
         standardGameMessage(gc,messageRotation,
-        		state==BreakState.GAMEOVER_STATE?gameOverMessage():s.get(state.getDescription()),
+        		state==BreakState.GAMEOVER_STATE?gameOverMessage(gb):s.get(state.getDescription()),
         		state!=BreakState.PUZZLE_STATE,
         		who,stateRect);
         

@@ -449,7 +449,7 @@ public class TicTacNineViewer extends CCanvas<TicTacNineCell,TicTacNineBoard> im
         if (gc != null)
         {
             standardGameMessage(gc,
-            		vstate==TictacnineState.GAMEOVER_STATE?gameOverMessage():s.get(vstate.getDescription()),
+            		vstate==TictacnineState.GAMEOVER_STATE?gameOverMessage(gb):s.get(vstate.getDescription()),
             				vstate!=TictacnineState.PUZZLE_STATE,
             				gb.whoseTurn,
             				stateRect);

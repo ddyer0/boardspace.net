@@ -133,10 +133,7 @@ public class CrosswordsViewer extends CCanvas<CrosswordsCell,CrosswordsBoard> im
     {	CrosswordsChip.preloadImages(loader,ImageDir);	// load the images used by stones
 		gameIcon = CrosswordsChip.Icon.image;
     }
-    public int ScoreForPlayer(commonPlayer p)
-    {
-    	return(bb.score[p.boardIndex]);
-    }
+
 	/**
 	 * 
 	 * this is the real instance intialization, performed only once.
@@ -1171,7 +1168,7 @@ public void setLetterColor(Graphics gc,CrosswordsBoard gb,CrosswordsCell cell)
        double messageRotation = pl.messageRotation();
        {    
 	   GC.setRotatedContext(gc,largerBoardRect,selectPos,effectiveBoardRotation);
-       standardGameMessage(gc,stateRect,state);
+       standardGameMessage(gc,gb,stateRect,state);
        drawBoardElements(gc, gb, boardRect, ourTurnSelect,selectPos);
        redrawChat(gc,selectPos);
        drawOptions(gc,((state==CrosswordsState.Puzzle)
@@ -1267,10 +1264,10 @@ public void setLetterColor(Graphics gc,CrosswordsBoard gb,CrosswordsCell cell)
        }
        drawHiddenWindows(gc, selectPos);
     }
-    public void standardGameMessage(Graphics gc,Rectangle stateRect,CrosswordsState state)
+    public void standardGameMessage(Graphics gc,CrosswordsBoard gb,Rectangle stateRect,CrosswordsState state)
     {
         standardGameMessage(gc,
-   				state==CrosswordsState.Gameover?gameOverMessage():s.get(state.description()),
+   				state==CrosswordsState.Gameover?gameOverMessage(gb):s.get(state.description()),
    				state!=CrosswordsState.Puzzle,
    				bb.whoseTurn,
    				stateRect);
@@ -1886,8 +1883,7 @@ public void setLetterColor(Graphics gc,CrosswordsBoard gb,CrosswordsCell cell)
     	GC.Text(gc, true, whoRect, Color.black, null, s.get(ServiceName,prettyName(index)));
     	CrosswordsState state = bb.getState();
     	GC.setFont(gc, myfont);
-   	
-    	standardGameMessage(gc,stateRect,state);
+    	standardGameMessage(gc,bb,stateRect,state);
     	boolean hide = bb.hiddenVisible[index];
     	drawRack(gc,bb,rackRect,rack,prack,hiddenRack,hiddenMapPick,hide,hp,bb.whoseTurn!=index);
     	GC.setFont(gc, myfont);

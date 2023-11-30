@@ -441,7 +441,7 @@ public class QyshinsuViewer extends CCanvas<QyshinsuCell,QyshinsuBoard> implemen
          }
  
         standardGameMessage(gc,messageRotation,
-        		vstate==QyshinsuState.GAMEOVER_STATE?gameOverMessage():s.get(vstate.getDescription()),
+        		vstate==QyshinsuState.GAMEOVER_STATE?gameOverMessage(gb):s.get(vstate.getDescription()),
         				vstate!=QyshinsuState.PUZZLE_STATE,
         				gb.whoseTurn,
         				stateRect);

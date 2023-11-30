@@ -948,7 +948,7 @@ public class CarnacViewer extends CCanvas<CarnacCell,CarnacBoard> implements Car
 
             standardGameMessage(gc,0,
             		veryLtGreen,
-            		vstate==CarnacState.GAMEOVER_STATE?gameOverMessage():s.get(vstate.getDescription()),
+            		vstate==CarnacState.GAMEOVER_STATE?gameOverMessage(gb):s.get(vstate.getDescription()),
             				vstate!=CarnacState.PUZZLE_STATE,
             				whoseTurn,
             				stateRect);

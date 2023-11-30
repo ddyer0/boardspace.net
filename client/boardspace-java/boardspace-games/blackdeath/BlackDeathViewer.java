@@ -484,9 +484,6 @@ public class BlackDeathViewer extends CCanvas<BlackDeathCell,BlackDeathBoard> im
      scaled = BlackDeathChip.board.getImage().centerScaledImage(gc,brect,scaled);
 
      }
-    public int ScoreForPlayer(commonPlayer p)
-    {	return(bb.scoreForPlayer(p.boardIndex));
-    }
 
     public void drawLink(Graphics gc,BlackDeathBoard gb,HitPoint hp,BlackDeathLink link,DrawableImage<?> icon,BlackDeathMovespec m)
     {
@@ -878,7 +875,7 @@ public class BlackDeathViewer extends CCanvas<BlackDeathCell,BlackDeathBoard> im
         // draw the avatars
         standardGameMessage(gc,messageRotation,
             				state==BlackDeathState.Gameover
-            					?gameOverMessage()
+            					?gameOverMessage(gb)
             					:activeGameMessage(state,gb),
             				state!=BlackDeathState.Puzzle,
             				gb.whoseTurn,

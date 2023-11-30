@@ -1958,7 +1958,7 @@ public class ContainerBoard extends RBoard<ContainerCell> implements BoardProtoc
      * @param pl
      * @return
      */
-    int currentScoreForPlayer(int pl)
+    public int scoreForPlayer(int pl)
     {	if(pl<playerBoard.length) { return(currentScoreForPlayer(pl,masterGoalSet)); }
     	else { return(0); }
     }

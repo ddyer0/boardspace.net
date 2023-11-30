@@ -407,7 +407,7 @@ public class DipoleGameViewer extends CCanvas<DipoleCell,DipoleBoard> implements
  
         
             standardGameMessage(gc,messageRotation,
-            		vstate==DipoleState.GAMEOVER_STATE?gameOverMessage():s.get(vstate.getDescription()),
+            		vstate==DipoleState.GAMEOVER_STATE?gameOverMessage(gb):s.get(vstate.getDescription()),
             				vstate!=DipoleState.PUZZLE_STATE,
             				gb.whoseTurn,
             				stateRect);

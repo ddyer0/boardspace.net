@@ -603,7 +603,7 @@ public class EntrapmentViewer extends CCanvas<EntrapmentCell,EntrapmentBoard> im
 
 
  		standardGameMessage(gc,messageRotation,
-            		vstate==EntrapmentState.GAMEOVER_STATE?gameOverMessage():s.get(vstate.getDescription()),
+            		vstate==EntrapmentState.GAMEOVER_STATE?gameOverMessage(gb):s.get(vstate.getDescription()),
             				vstate!=EntrapmentState.PUZZLE_STATE,
             				gb.whoseTurn,
             				stateRect);

@@ -106,9 +106,7 @@ public class OctilesViewer extends CCanvas<OctilesCell,OctilesBoard> implements 
 	{ Color.white, Color.black, 
 		Color.black, Color.white
     };
-    public int ScoreForPlayer(commonPlayer p)
-    {	return(b.numberHome(p.boardIndex));
-    }
+
     private static boolean imagesLoaded=false;
     public synchronized void preloadImages()
     {	
@@ -525,7 +523,7 @@ public class OctilesViewer extends CCanvas<OctilesCell,OctilesBoard> implements 
  			}
  		
         standardGameMessage(gc,
-        		vstate==OctilesState.GAMEOVER_STATE?gameOverMessage():s.get(vstate.getDescription()),
+        		vstate==OctilesState.GAMEOVER_STATE?gameOverMessage(gb):s.get(vstate.getDescription()),
         				vstate!=OctilesState.PUZZLE_STATE,
         				gb.whoseTurn,
         				stateRect);

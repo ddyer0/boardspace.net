@@ -499,7 +499,7 @@ public class VoloViewer extends CCanvas<VoloCell,VoloBoard> implements VoloConst
  
 	// draw the avatars
         standardGameMessage(gc,messageRotation,
-        		state==VoloState.GAMEOVER_STATE?gameOverMessage():s.get(state.getDescription()),
+        		state==VoloState.GAMEOVER_STATE?gameOverMessage(gb):s.get(state.getDescription()),
         				state!=VoloState.PUZZLE_STATE,
         				gb.whoseTurn,
         				stateRect);

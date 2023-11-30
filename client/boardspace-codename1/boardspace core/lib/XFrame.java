@@ -224,7 +224,7 @@ public class XFrame extends JFrame implements WindowListener,SizeProvider,LFrame
 	}
 
 	public void expand()
-	{
+	{		
 		if(oldBounds!=null)
 		{ setBounds(G.Left(oldBounds),G.Top(oldBounds),G.Width(oldBounds),G.Height(oldBounds));
 		  oldBounds = null; 
@@ -293,7 +293,8 @@ public class XFrame extends JFrame implements WindowListener,SizeProvider,LFrame
 	int lastKnownWidth = -1;
 	int lastKnownHeight = -1;
 	public void screenResized()
-	{	int w = lastKnownWidth;
+	{	if(G.isCheerpj())
+		{int w = lastKnownWidth;
 		int h = lastKnownHeight;
 		lastKnownWidth = G.getScreenWidth();
 		lastKnownHeight = G.getScreenHeight();
@@ -301,6 +302,7 @@ public class XFrame extends JFrame implements WindowListener,SizeProvider,LFrame
 		  {
 		   setInitialBounds(getX(),getY(),getWidth(),getHeight());
 		  }
+		}
 	}
 	public void setInitialBounds(int inx,int iny,int inw,int inh)
 	{
@@ -467,7 +469,7 @@ public class XFrame extends JFrame implements WindowListener,SizeProvider,LFrame
 	public void killFrame()
     { 
         pleaseKill = true;			// remember some tried to do it
-        if(!dontKill) { killed = true; }
+        if(!dontKill) { killed = true; setVisible(false);}
         //
         // record the default position and size
         if(!G.isCodename1())

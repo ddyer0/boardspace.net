@@ -382,7 +382,7 @@ public class GoViewer extends CCanvas<GoCell,GoBoard> implements GoConstants, Ga
         boolean canPick = (thisChip!=null);
         boolean scoring = gb.getState().isScoringOrOver() ;
         HitPoint pt = (canHit && (canPick||canDrop))? highlight : null;
-        double dscore = gb.scoreForPlayer(forPlayer);
+        double dscore = gb.scoreEstimateForPlayer(forPlayer);
         double komi = gb.getKomi();
         boolean isint = (komi-(int)komi)==0.0;
         String scorestr = isint ? ""+(int)dscore : ""+dscore;
@@ -822,7 +822,7 @@ public class GoViewer extends CCanvas<GoCell,GoBoard> implements GoConstants, Ga
 
             standardGameMessage(gc,messageRotation,
             		vstate==GoState.Gameover
-            			?gameOverMessage()
+            			?gameOverMessage(gb)
             			:s.get(vstate.getDescription()),
             				vstate!=GoState.Puzzle,
             				gb.whoseTurn,

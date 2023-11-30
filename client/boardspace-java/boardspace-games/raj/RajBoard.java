@@ -463,7 +463,7 @@ class RajBoard extends squareBoard<RajCell> implements BoardProtocol,RajConstant
 	{	SIMULTANEOUS_PLAY = sim;
 		myIndex = Math.max(0,n);
 	}
-	public int ScoreForPlayerNow(int pl)
+	public int scoreForPlayer(int pl)
 	{
 		return(playerBoards[pl].score());
 	}
@@ -485,16 +485,16 @@ class RajBoard extends squareBoard<RajCell> implements BoardProtocol,RajConstant
 	}	
 	public boolean WinForPlayer(int pl)
 	{	// for 2 player games, also for montebot in multiplayer games
-		int myScore = ScoreForPlayerNow(pl);
+		int myScore = scoreForPlayer(pl);
 		int oScore = -100;
-		for(int i=0;i<playerBoards.length; i++) { if(i!=pl) { oScore = Math.max(oScore,ScoreForPlayerNow(i)); }}
+		for(int i=0;i<playerBoards.length; i++) { if(i!=pl) { oScore = Math.max(oScore,scoreForPlayer(i)); }}
 		return(myScore>oScore);
 	}
 	public boolean winForPlayerNow(int pl)
-	{	int myscore = ScoreForPlayerNow(pl);
+	{	int myscore = scoreForPlayer(pl);
 	 	int best = -1;
 	 	for(int i=0;i<players_in_game; i++)
-	 	{	if(i!=pl) { best=Math.max(best,ScoreForPlayerNow(i)); }
+	 	{	if(i!=pl) { best=Math.max(best,scoreForPlayer(i)); }
 	 	}
 	 	return(myscore>best);
 	}

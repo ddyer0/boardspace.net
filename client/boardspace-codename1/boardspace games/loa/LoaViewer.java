@@ -605,7 +605,7 @@ public class LoaViewer extends commonCanvas implements UIC,GameLayoutClient
             ? s.get(SelectSourceMessage, s.get(col.name))
             : s.get(SelectDestMessage);
         standardGameMessage(g,pl.messageRotation(),
-        		b.GameOver()?gameOverMessage():msg,
+        		b.GameOver()?gameOverMessage(gb):msg,
         				true,
         				b.whoseTurn,
         				stateRect);

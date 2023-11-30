@@ -544,7 +544,7 @@ public class PalagoViewer extends CCanvas<PalagoCell,PalagoBoard> implements Pal
 
 		// draw the avatars
         standardGameMessage(gc,messageRotation,
-        		state==PalagoState.GAMEOVER_STATE?gameOverMessage():s.get(state.getDescription()),
+        		state==PalagoState.GAMEOVER_STATE?gameOverMessage(gb):s.get(state.getDescription()),
         				state!=PalagoState.PUZZLE_STATE,
         				gb.whoseTurn,
         				stateRect);

@@ -481,7 +481,7 @@ public class PlateauGameViewer extends commonCanvas implements PlateauConstants,
 		double messageRotation = pl.messageRotation();
 
         standardGameMessage(gc,messageRotation,
-        		vstate==PlateauState.GAMEOVER_STATE?gameOverMessage():s.get(vstate.getDescription()),
+        		vstate==PlateauState.GAMEOVER_STATE?gameOverMessage(bd):s.get(vstate.getDescription()),
         				vstate!=PlateauState.PUZZLE_STATE,
         				bd.whoseTurn,
         				stateRect);
@@ -1067,7 +1067,7 @@ public class PlateauGameViewer extends commonCanvas implements PlateauConstants,
 			GC.Text(gc, true, doner,	Color.red,null,s.get(YourTurnMessage));
   		}	  
       standardGameMessage(gc,0,
-      		vstate==PlateauState.GAMEOVER_STATE?gameOverMessage():s.get(vstate.getDescription()),
+      		vstate==PlateauState.GAMEOVER_STATE?gameOverMessage(b):s.get(vstate.getDescription()),
       				vstate!=PlateauState.PUZZLE_STATE,
       				b.whoseTurn,
       				state);

@@ -414,7 +414,7 @@ public class ColoritoViewer extends CCanvas<ColoritoCell,ColoritoBoard> implemen
 
         standardGameMessage(gc,messageRotation,
             		vstate==ColoritoState.Gameover
-            			?gameOverMessage()
+            			?gameOverMessage(gb)
             			:s.get(vstate.getDescription()),
             				vstate!=ColoritoState.Puzzle,
             				whoseTurn,

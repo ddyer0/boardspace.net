@@ -330,7 +330,7 @@ public class UniversePlay extends commonRobot<UniverseBoard> implements Runnable
 	      	{	
 	     		for(int i=0; i<lim; i++)
 		      	{
-		      		move.playerScores[i] = board.ScoreForPlayer(i)/81.0; 
+		      		move.playerScores[i] = board.scoreForPlayer(i)/81.0; 
 		      	}
 	      	}
 	      	
@@ -753,7 +753,7 @@ Update -1.0 0 P1[onboard B 4 1 J 10] P0[onboard A 5 6 D 7]
  }
  public boolean visitSubset(UniverseCell subset[])
  {	 board.copyFrom(GameBoard);
-	 int startingSize = board.ScoreForPlayer(0)+board.ScoreForPlayer(1);
+	 int startingSize = board.scoreForPlayer(0)+board.scoreForPlayer(1);
 	 board.bestScore = startingSize;
 	 board.mainBoard = GameBoard;
 	 String rem = "";

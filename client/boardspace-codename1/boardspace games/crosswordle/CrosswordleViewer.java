@@ -158,10 +158,6 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
     {	CrosswordleChip.preloadImages(loader,ImageDir);	// load the images used by stones
 		gameIcon = CrosswordleChip.Icon.image;
     }
-    public int ScoreForPlayer(commonPlayer p)
-    {
-    	return(bb.score[p.boardIndex]);
-    }
     
 	/**
 	 * 
@@ -659,7 +655,7 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
        double messageRotation = pl.messageRotation();
        {    
 	   GC.setRotatedContext(gc,largerBoardRect,selectPos,effectiveBoardRotation);
-       standardGameMessage(gc,stateRect,state);
+       standardGameMessage(gc,gb,stateRect,state);
        drawBoardElements(gc, gb, boardRect, ourTurnSelect,selectPos);
 
        String msg = bb.invalidReason==null ? s.get(CrosswordsVictoryCondition) : s.get(bb.invalidReason);
@@ -877,15 +873,15 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
    	}
 
     }
-    public String gameOverMessage()
+    public String gameOverMessage(BoardProtocol gb)
     {	commonPlayer pl =getPlayerOrTemp(0);
     	long time = pl.elapsedTime;
     	return s.get(SolvedMessage,""+bb.guesses.size(),G.briefTimeString(time));
     }
-    public void standardGameMessage(Graphics gc,Rectangle stateRect,CrosswordleState state)
+    public void standardGameMessage(Graphics gc,CrosswordleBoard gb,Rectangle stateRect,CrosswordleState state)
     {
         standardGameMessage(gc,
-   				state==CrosswordleState.Gameover?gameOverMessage():s.get(state.description()),
+   				state==CrosswordleState.Gameover?gameOverMessage(gb):s.get(state.description()),
    				state!=CrosswordleState.Puzzle,
    				bb.whoseTurn,
    				stateRect);

@@ -316,7 +316,12 @@ class JumbulayaBoard extends squareBoard<JumbulayaCell> implements BoardProtocol
 	boolean skipTurn[] = new boolean[MAX_PLAYERS];
 	boolean resigned[] = new boolean[MAX_PLAYERS];
 	
-	private void setUnclaimed(int row)
+    public int scoreForPlayer(int idx)
+    {
+    	return(score[idx]);
+    }
+
+    private void setUnclaimed(int row)
 	{
 	   	JumbulayaCell c = claimed[row-1];
 	   	JumbulayaChip top = c.topChip();

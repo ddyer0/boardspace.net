@@ -4,6 +4,7 @@ public class Cheerpj {
 	
     public native int getWidth();
     public native int getHeight();
+    
     public static int getScreenWidth()
     {	
     	return getInstance().getWidth();

@@ -203,6 +203,19 @@ public int getMaxRevisionLevel() { return(REVISION); }
 		if(p!=null && n<p.length) { return(p[n]);}
 		return(null);
 	}
+	public int scoreForPlayer(int idx)
+	{	
+		if(automa)
+		{	// no tiebreak on with the automa
+			if(idx>0) { return(automaScore); }
+			PlayerBoard pb = pbs[idx];
+			return(pb.score);
+		}
+		else {
+			PlayerBoard pb = pbs[idx];
+			return(pb.tiebreakScore());
+		}
+	}
 	public PlayerBoard getCurrentPlayerBoard() { return(pbs[whoseTurn]); }
 	public Random random = null;
 	public ViticultureCell uiCells=null;

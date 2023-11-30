@@ -233,6 +233,13 @@ class ImagineBoard
 	private ImagineState unresign = null;	// remembers the orignal state when "resign" is hit
 	private StateStack robotState = new StateStack();
 	public ImagineState getState() { return(board_state); }
+	
+    public int scoreForPlayer(int idx)
+    {
+    	return getPlayerBoard(idx).getScore();
+    }
+   
+    
     /**
      * this is the preferred method when using the modern "enum" style of game state
      * @param st

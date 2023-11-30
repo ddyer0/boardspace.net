@@ -118,7 +118,7 @@ class BarcaBoard extends rectBoard<BarcaCell> implements BoardProtocol,BarcaCons
     
     // a very simple score based on the manhattan distance to the watering holes.
     // which are either empty or occupied by opponents
-    public double scoreForPlayer(int pl)
+    public double scoreEstimateForPlayer(int pl)
     {	double val = 0;
     	CellStack from = filledCells[pl];
     	for(int lim = from.size()-1; lim>=0; lim--)

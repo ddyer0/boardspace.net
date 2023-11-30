@@ -1422,7 +1422,7 @@ public class YspahanBoard extends BaseBoard implements BoardProtocol,YspahanCons
 		throw G.Error("not implemented");
 	}
 
-	public int currentScoreForPlayer(int pl) {
+	public int scoreForPlayer(int pl) {
 		return (playerBoards[pl].getVP());
 	}
 	

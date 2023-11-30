@@ -557,7 +557,7 @@ public class GipfViewer extends CCanvas<GipfCell,GipfBoard> implements GipfConst
         
 
         standardGameMessage(gc,messageRotation,
-        		vstate==GipfState.GAMEOVER_STATE?gameOverMessage():s.get(vstate.getDescription()),
+        		vstate==GipfState.GAMEOVER_STATE?gameOverMessage(gb):s.get(vstate.getDescription()),
         				vstate!=GipfState.PUZZLE_STATE,
         				gb.whoseTurn,
         				stateRect);

@@ -520,7 +520,7 @@ public class OrdoViewer extends CCanvas<OrdoCell,OrdoBoard> implements OrdoConst
         {	
             standardGameMessage(gc,messageRotation,
             		vstate==OrdoState.Gameover
-            			?gameOverMessage()
+            			?gameOverMessage(gb)
             			:s.get(vstate.getDescription()),
             				vstate!=OrdoState.Puzzle,
             				whoseTurn,

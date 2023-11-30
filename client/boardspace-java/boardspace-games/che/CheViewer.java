@@ -507,7 +507,7 @@ public class CheViewer extends CCanvas<CheCell,CheBoard> implements CheConstants
         }
 		// draw the avatars
         standardGameMessage(gc,messageRotation,
-            		state==CheState.GAMEOVER_STATE?gameOverMessage():s.get(state.getDescription()),
+            		state==CheState.GAMEOVER_STATE?gameOverMessage(gb):s.get(state.getDescription()),
             		state!=CheState.PUZZLE_STATE,
             		gb.whoseTurn,
             		stateRect);

@@ -98,11 +98,7 @@ public class HoneyViewer extends CCanvas<HoneyCell,HoneyBoard> implements HoneyC
     {	HoneyChip.preloadImages(loader,ImageDir);	// load the images used by stones
 		gameIcon = HoneyChip.Icon.image;
     }
-    public int ScoreForPlayer(commonPlayer p)
-    {
-    	return(bb.getPlayerBoard(p.boardIndex).score());
-    }
-  
+ 
     public boolean WinForPlayer(commonPlayer p)
     {	return bb.winForPlayer(p.boardIndex);
     }
@@ -705,7 +701,7 @@ public void setLetterColor(Graphics gc,HBoard gb,HoneyCell cell)
        commonPlayer pl = getPlayerOrTemp(pboard.whoseTurn);
        double messageRotation = pl.messageRotation();
        {    
-       standardGameMessage(gc,stateRect,state);
+       standardGameMessage(gc,gb,stateRect,state);
       	
        
        String msg = pboard.invalidReason==null ? s.get(HoneyVictoryCondition) : s.get(pboard.invalidReason);
@@ -793,10 +789,10 @@ public void setLetterColor(Graphics gc,HBoard gb,HoneyCell cell)
         }
  
     }
-    public void standardGameMessage(Graphics gc,Rectangle stateRect,HoneyState state)
+    public void standardGameMessage(Graphics gc,HoneyBoard gb,Rectangle stateRect,HoneyState state)
     {
         standardGameMessage(gc,
-   				state==HoneyState.Gameover?gameOverMessage():s.get(state.description()),
+   				state==HoneyState.Gameover?gameOverMessage(gb):s.get(state.description()),
    				(state!=HoneyState.Puzzle) && !state.simultaneousTurnsAllowed(),
    				bb.whoseTurn,
    				stateRect);

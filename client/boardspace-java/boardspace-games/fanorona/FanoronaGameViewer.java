@@ -491,7 +491,7 @@ public class FanoronaGameViewer extends CCanvas<FanoronaCell,FanoronaBoard> impl
 		drawPlayerStuff(gc,(vstate==FanoronaState.PUZZLE_STATE),ourSelect,HighlightColor,rackBackGroundColor);
 
 		standardGameMessage(gc,messageRotation,
-            		vstate==FanoronaState.GAMEOVER_STATE?gameOverMessage():s.get(vstate.getDescription()),
+            		vstate==FanoronaState.GAMEOVER_STATE?gameOverMessage(gb):s.get(vstate.getDescription()),
             				vstate!=FanoronaState.PUZZLE_STATE,
             				gb.whoseTurn,
             				stateRect);

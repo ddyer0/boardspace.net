@@ -753,7 +753,7 @@ public class HiveGameViewer extends CCanvas<HiveCell,HiveGameBoard> implements H
 		
 
         standardGameMessage(gc,messageRotation,
-            		state==HiveState.GAMEOVER_STATE?gameOverMessage():s.get(state.getDescription()),
+            		state==HiveState.GAMEOVER_STATE?gameOverMessage(gb):s.get(state.getDescription()),
             				state!=HiveState.PUZZLE_STATE,
             				whoseTurn,
             				stateRect);

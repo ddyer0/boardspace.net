@@ -1097,7 +1097,7 @@ public class MuttonGameViewer extends commonCanvas implements MuttonConstants
 		double messageRotation = pl.messageRotation();
 
 		standardGameMessage(gc,messageRotation,
-            		state==MuttonState.GAMEOVER_STATE?gameOverMessage():s.get(displayState.getDescription()),
+            		state==MuttonState.GAMEOVER_STATE?gameOverMessage(gb):s.get(displayState.getDescription()),
             				state!=MuttonState.PUZZLE_STATE,
             				gb.whoseTurn,
             				stateRect);

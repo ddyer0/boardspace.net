@@ -1143,7 +1143,7 @@ public class OnedayViewer extends CCanvas<OnedayCell,OnedayBoard> implements One
         	}}
             standardGameMessage(gc,
             		vstate==OnedayState.Gameover
-            			?simpleGameOverMessage()
+            			?simpleGameOverMessage(gb)
             			:s.get(vstate.getDescription()),
             				vstate!=OnedayState.Puzzle && !vstate.simultaneousTurnsAllowed(),
             				gb.whoseTurn,
@@ -1587,12 +1587,7 @@ private void playSounds(commonMove m)
     public BoardProtocol getBoard()   {    return (b);   }
     public SimpleRobotProtocol newRobotPlayer() { return(new OnedayPlay()); }
 
-    /**
-     * return a score for the player in a multiplayer game. 
-     */
-    public int ScoreForPlayer(commonPlayer p)
-    {	return(b.scoreForPlayer(p.boardIndex));
-    }
+
     /** replay a move specified in SGF format.  
      * this is mostly standard stuff, but the key is to recognize
      * the elements that we generated in sgf_save

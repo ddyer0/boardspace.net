@@ -498,7 +498,7 @@ public class TruGameViewer extends CCanvas<TruCell,TruGameBoard> implements TruC
         String msg = s.get(vstate.getDescription());
         if(G.debug()) { msg = "("+b.sm_step+")"+msg;}
         standardGameMessage(gc,messageRotation,
-        		vstate==TruchetState.GAMEOVER_STATE?gameOverMessage():msg,
+        		vstate==TruchetState.GAMEOVER_STATE?gameOverMessage(gb):msg,
         				vstate!=TruchetState.PUZZLE_STATE,
         				gb.whoseTurn,
         				stateRect);

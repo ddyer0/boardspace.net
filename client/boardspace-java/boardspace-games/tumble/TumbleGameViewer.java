@@ -400,7 +400,7 @@ public class TumbleGameViewer extends CCanvas<TumbleCell,TumbleBoard> implements
          }
 
 		standardGameMessage(gc,messageRotation,
-        		vstate==TumbleState.GAMEOVER_STATE?gameOverMessage():s.get(vstate.getDescription()),
+        		vstate==TumbleState.GAMEOVER_STATE?gameOverMessage(gb):s.get(vstate.getDescription()),
         				vstate!=TumbleState.PUZZLE_STATE,
         				gb.whoseTurn,
         				stateRect);

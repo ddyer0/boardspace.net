@@ -2677,7 +2677,7 @@ private Color playerBackground[] = {
         }}
  
        	// draw the avatars
-        	String msg = state==EuphoriaState.Gameover?gameOverMessage():getStateDescription(state,gb);
+        	String msg = state==EuphoriaState.Gameover?gameOverMessage(gb):getStateDescription(state,gb);
         	EPlayer cp = gb.getCurrentPlayer();
         	if(state==EuphoriaState.EphemeralChooseRecruits)
         		{
@@ -3344,14 +3344,8 @@ private Color playerBackground[] = {
     // 	return(super.gameProgressString());
     // }
 
-    /**
-     * return a score for the player in a multiplayer game. 
-     */
-    public int ScoreForPlayer(commonPlayer p)
-    {	return(bb.ScoreForPlayer(p.boardIndex));
-    }
-    public int PrettyScoreForPlayer(commonPlayer p)
-    {	return(bb.PrettyScoreForPlayer(p.boardIndex));
+    public int PrettyScoreForPlayer(BoardProtocol gb, commonPlayer p)
+    {	return(((EuphoriaBoard)gb).PrettyScoreForPlayer(p.boardIndex));
     }
 
 
@@ -3511,7 +3505,7 @@ private Color playerBackground[] = {
        	// draw the avatars
      	boolean doneSelect = false;
     	String msg = (state==EuphoriaState.Gameover)
-    					?gameOverMessage()
+    					?gameOverMessage(bb)
     					:getStateDescription(state,bb);
     	if((state==EuphoriaState.EphemeralConfirmRecruits)
     			&& pl.discardedRecruits.height()>0)

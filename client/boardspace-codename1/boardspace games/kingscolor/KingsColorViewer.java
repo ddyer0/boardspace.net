@@ -584,7 +584,7 @@ public class KingsColorViewer extends CCanvas<KingsColorCell,KingsColorBoard> im
  
         // draw the avatars
         standardGameMessage(gc,messageRotation,
-            				state==KingsColorState.Gameover?gameOverMessage():s.get(state.description()),
+            				state==KingsColorState.Gameover?gameOverMessage(gb):s.get(state.description()),
             				state!=KingsColorState.Puzzle,
             				gb.whoseTurn,
             				stateRect);
@@ -1007,17 +1007,7 @@ public class KingsColorViewer extends CCanvas<KingsColorCell,KingsColorBoard> im
      */
     public BoardProtocol getBoard()   {    return (bb);   }
 
-    //** this is used by the game controller to supply entertainment strings to the lobby */
-    // public String gameProgressString()
-    // {	// this is what the standard method does
-    // 	// return ((mutable_game_record ? Reviewing : ("" + viewMove)));
-    // 	return(super.gameProgressString());
-    // }
 
-    public int ScoreForPlayer(commonPlayer pl)
-    {
-    	throw G.Error("Needed in miltiplayer games");
-    }
     /** factory method to create a robot */
     public SimpleRobotProtocol newRobotPlayer() 
     {  return(new KingsColorPlay());

@@ -93,10 +93,7 @@ public class ContainerViewer extends CCanvas<ContainerCell,ContainerBoard> imple
     // version 2 is after a serious state machine bug is fixed.  Version 1 game records can still be read
     public String sgfGameVersion() { return(""+SGF_GAME_VERSION); }
     
-    public int ScoreForPlayer(commonPlayer p)
-    {  	
-    	return(b.currentScoreForPlayer(p.boardIndex));
-    }
+
     // images
     private static Image[] textures = null;// background textures
     private static Image[] images = null;	// masked images
@@ -1223,7 +1220,7 @@ public class ContainerViewer extends CCanvas<ContainerCell,ContainerBoard> imple
 						  Rectangle price = new Rectangle( cardRight, cardTop-size/3, space,space/2);
 						  GC.Text(gc, true, price,Color.black,Color.white,"$ "+cash);
 						  GC.frameRect(gc, Color.black,price);
-						  int score = gb.currentScoreForPlayer(ob.player);
+						  int score = gb.scoreForPlayer(ob.player);
 						  if(showBig)
 						  {
 						  G.SetTop(price,G.Bottom(price)+size/8);
@@ -1701,7 +1698,7 @@ public class ContainerViewer extends CCanvas<ContainerCell,ContainerBoard> imple
             	}
             else if(gui.pendingAuctionDone || gui.pendingLoanDone) { msg = ContainerState.CONFIRM_STATE.getDescription(); }
             standardGameMessage(gc,
-            		vstate==ContainerState.GAMEOVER_STATE?gameOverMessage():msg,
+            		vstate==ContainerState.GAMEOVER_STATE?gameOverMessage(gb):msg,
             				vstate!=ContainerState.PUZZLE_STATE,
             				gb.whoseTurn,
             				stateRect);
@@ -2362,7 +2359,7 @@ private void playSounds(commonMove m)
 		
 		{	// net worth
 		Rectangle worthRect = interpolateBox(hiddenViewRect,hiddenNetworthRect,bounds);
-		if(!hidden) { GC.Text(gc,true,worthRect,Color.blue,null,"="+b.currentScoreForPlayer(bd.player)); }
+		if(!hidden) { GC.Text(gc,true,worthRect,Color.blue,null,"="+b.scoreForPlayer(bd.player)); }
 		GC.frameRect(gc,Color.blue,worthRect);			
 		}
 		

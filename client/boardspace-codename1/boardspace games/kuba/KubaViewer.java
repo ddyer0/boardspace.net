@@ -429,7 +429,7 @@ public class KubaViewer extends CCanvas<KubaCell,KubaBoard> implements KubaConst
 
  
         standardGameMessage(gc,messageRotation,
-        		vstate==KubaState.GAMEOVER_STATE?gameOverMessage():s.get(vstate.getDescription()),
+        		vstate==KubaState.GAMEOVER_STATE?gameOverMessage(gb):s.get(vstate.getDescription()),
         				vstate!=KubaState.PUZZLE_STATE,
         				gb.whoseTurn,
         				stateRect);

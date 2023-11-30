@@ -412,7 +412,7 @@ public class CannonViewer extends CCanvas<CannonCell,CannonBoard> implements Can
 
        
         standardGameMessage(gc,messageRotation,
-            		vstate==CannonState.GAMEOVER_STATE?gameOverMessage():s.get(vstate.getDescription()),
+            		vstate==CannonState.GAMEOVER_STATE?gameOverMessage(gb):s.get(vstate.getDescription()),
             				vstate!=CannonState.PUZZLE_STATE,
             				gb.whoseTurn,
             				stateRect);

@@ -575,7 +575,7 @@ public class ExxitGameViewer extends CCanvas<ExxitCell,ExxitGameBoard> implement
 
 
             standardGameMessage(gc,messageRotation,
-            		state==ExxitState.GAMEOVER_STATE?gameOverMessage():s.get(state.getDescription()),
+            		state==ExxitState.GAMEOVER_STATE?gameOverMessage(gb):s.get(state.getDescription()),
             				state!=ExxitState.PUZZLE_STATE,
             				gb.whoseTurn,
             				stateRect);

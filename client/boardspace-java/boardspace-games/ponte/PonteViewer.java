@@ -446,7 +446,7 @@ public class PonteViewer extends CCanvas<PonteCell,PonteBoard> implements PonteC
 
         standardGameMessage(gc,messageRotation,
         		vstate==PonteState.Gameover
-        			?gameOverMessage()
+        			?gameOverMessage(gb)
         			:s.get(vstate.getDescription()),
         				vstate!=PonteState.Puzzle,
         				gb.whoseTurn,

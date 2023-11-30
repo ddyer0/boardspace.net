@@ -184,12 +184,17 @@ public class MasterForm extends Form implements com.codename1.ui.events.ActionLi
 		adjustSpacer();
 		super.setSize(d);
 	}
+	private Rectangle oldbounds = null; 
 	public void layoutContainer()
-	{	adjustSpacer();
+	{	Rectangle newbounds = getBounds();
+		if(!newbounds.equals(oldbounds))
+		{
+		oldbounds = newbounds;
+		adjustSpacer();
 		super.layoutContainer();
-		//Rectangle bb = getBounds();
-		//Http.postError(this,"Layout "+bb,null);
+		}
 	}
+
 	public void showInEdt()
 	{	try {
 		MasterPanel p = getMasterPanel();

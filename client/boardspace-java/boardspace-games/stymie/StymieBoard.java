@@ -1074,7 +1074,7 @@ class StymieBoard extends rectBoard<StymieCell> implements BoardProtocol,StymieC
         }
     }
     
-    public double scoreForPlayer(int player)
+    public double scoreEstimateForPlayer(int player)
     {	
     	int center = centerCount[player];
     	int captive = playerCaptives[player].height();

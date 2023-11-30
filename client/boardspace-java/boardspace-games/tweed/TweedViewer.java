@@ -673,7 +673,7 @@ public class TweedViewer extends CCanvas<TweedCell,TweedBoard> implements TweedC
         // draw the avatars
         standardGameMessage(gc,messageRotation,
         					// note that gameOverMessage() is also put into the game record
-            				state==TweedState.Gameover?gameOverMessage():s.get(state.description()),
+            				state==TweedState.Gameover?gameOverMessage(gb):s.get(state.description()),
             				state!=TweedState.Puzzle,
             				gb.whoseTurn,
             				stateRect);
@@ -1174,17 +1174,7 @@ public class TweedViewer extends CCanvas<TweedCell,TweedBoard> implements TweedC
      */
     public BoardProtocol getBoard()   {    return (bb);   }
 
-    //** this is used by the game controller to supply entertainment strings to the lobby */
-    // public String gameProgressString()
-    // {	// this is what the standard method does
-    // 	// return ((mutable_game_record ? Reviewing : ("" + viewMove)));
-    // 	return(super.gameProgressString());
-    // }
 
-    public int ScoreForPlayer(commonPlayer pl)
-    {
-    	throw G.Error("Needed in miltiplayer games");
-    }
 /** this is used by the scorekeeper to determine who won. Draws are indicated
  * by both players returning false.  Be careful not to let both players return true!
  */

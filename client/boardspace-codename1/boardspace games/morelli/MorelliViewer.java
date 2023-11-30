@@ -403,7 +403,7 @@ public class MorelliViewer extends CCanvas<MorelliCell,MorelliBoard> implements 
         
  		standardGameMessage(gc,messageRotation,
             		vstate==MorelliState.Gameover
-            			?gameOverMessage()
+            			?gameOverMessage(gb)
             			:s.get(vstate.getDescription()),
             				vstate!=MorelliState.Puzzle,
             				gb.whoseTurn,

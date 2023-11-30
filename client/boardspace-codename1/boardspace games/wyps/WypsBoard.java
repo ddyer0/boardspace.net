@@ -999,11 +999,7 @@ class WypsBoard extends hexBoard<WypsCell> implements BoardProtocol,WypsConstant
     static final double EdgeMultiplier = 1000;
     static final double TileMultiplier = 1;
     
-    public double scoreForPlayer(int p)
-    {	// about the simplest thing that could push the scores in the right direction.
-    	// count of edges and number of stones on the board are the only factors.
-    	return( (edgeContactCount(p)*EdgeMultiplier+nOnBoard[p])/(3*EdgeMultiplier+fullBoardSize*TileMultiplier));
-    }
+
     public double templateScore(Template template,int p)
     {	// about the simplest thing that could push the scores in the right direction.
     	// count of edges and number of stones on the board are the only factors.

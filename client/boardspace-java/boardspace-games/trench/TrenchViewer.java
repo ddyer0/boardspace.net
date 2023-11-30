@@ -775,7 +775,7 @@ public class TrenchViewer extends CCanvas<TrenchCell,TrenchBoard> implements Tre
         // draw the avatars
         standardGameMessage(gc,messageRotation,
         					// note that gameOverMessage() is also put into the game record
-            				state==TrenchState.Gameover?gameOverMessage():s.get(state.description()),
+            				state==TrenchState.Gameover?gameOverMessage(gb):s.get(state.description()),
             				state!=TrenchState.Puzzle,
             				gb.whoseTurn,
             				stateRect);
@@ -1247,17 +1247,7 @@ public class TrenchViewer extends CCanvas<TrenchCell,TrenchBoard> implements Tre
      */
     public BoardProtocol getBoard()   {    return (bb);   }
 
-    //** this is used by the game controller to supply entertainment strings to the lobby */
-    // public String gameProgressString()
-    // {	// this is what the standard method does
-    // 	// return ((mutable_game_record ? Reviewing : ("" + viewMove)));
-    // 	return(super.gameProgressString());
-    // }
 
-    public int ScoreForPlayer(commonPlayer pl)
-    {
-    	throw G.Error("Needed in miltiplayer games");
-    }
 /** this is used by the scorekeeper to determine who won. Draws are indicated
  * by both players returning false.  Be careful not to let both players return true!
  */

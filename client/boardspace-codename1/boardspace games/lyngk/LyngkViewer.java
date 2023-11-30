@@ -611,7 +611,7 @@ public class LyngkViewer extends CCanvas<LyngkCell,LyngkBoard> implements LyngkC
         // draw the avatars
         standardGameMessage(gc,
         			messageRotation,
-            		state==LyngkState.Gameover?gameOverMessage():s.get(state.description()),
+            		state==LyngkState.Gameover?gameOverMessage(gb):s.get(state.description()),
             				state!=LyngkState.Puzzle,
             				gb.whoseTurn,
             				stateRect);

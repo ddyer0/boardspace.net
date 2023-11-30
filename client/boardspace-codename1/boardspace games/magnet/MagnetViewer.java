@@ -676,7 +676,7 @@ public class MagnetViewer extends CCanvas<MagnetCell,MagnetBoard> implements Mag
         // draw the avatars
         boolean simultaneous = simultaneous_turns_allowed();
         standardGameMessage(gc,
-            		state==MagnetState.Gameover?gameOverMessage():s.get(state.description()),
+            		state==MagnetState.Gameover?gameOverMessage(gb):s.get(state.description()),
             				state!=MagnetState.Puzzle && !simultaneous,
             				gb.whoseTurn,
             				stateRect);

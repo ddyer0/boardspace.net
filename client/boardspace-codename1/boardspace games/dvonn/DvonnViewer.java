@@ -491,7 +491,7 @@ public Rectangle createPlayerGroup(int player,int x,int y,double rotation,int un
  
         
             standardGameMessage(gc,messageRotation,
-            		vstate==DvonnState.GAMEOVER_STATE?gameOverMessage():s.get(vstate.getDescription()),
+            		vstate==DvonnState.GAMEOVER_STATE?gameOverMessage(gb):s.get(vstate.getDescription()),
             				vstate!=DvonnState.PUZZLE_STATE,
             				gb.whoseTurn,
             				stateRect);

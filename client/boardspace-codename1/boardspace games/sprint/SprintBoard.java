@@ -72,6 +72,10 @@ class SprintBoard extends BaseBoard implements BoardProtocol
  		 gameEvents.push(trans);
  		}
  	}
+    public int scoreForPlayer(int idx)
+    {
+    	return(getPlayerBoard(idx).highScore());
+    }
 
     /**
      * this is the preferred method when using the modern "enum" style of game state

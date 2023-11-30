@@ -639,7 +639,7 @@ public class ZertzGameViewer extends CCanvas<zCell,GameBoard> implements GameCon
             
         }
         standardGameMessage(gc,messageRotation,
-        		vstate==ZertzState.GAMEOVER_STATE?gameOverMessage():s.get(vstate.getDescription()),
+        		vstate==ZertzState.GAMEOVER_STATE?gameOverMessage(bd):s.get(vstate.getDescription()),
         				vstate!=ZertzState.PUZZLE_STATE,
         				whoseTurn,
         				stateRect);

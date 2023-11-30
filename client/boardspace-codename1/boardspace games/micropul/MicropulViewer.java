@@ -699,7 +699,7 @@ public class MicropulViewer extends CCanvas<MicropulCell,MicropulBoard> implemen
   
 		// draw the avatars
         standardGameMessage(gc,messageRotation,
-        		state==MicropulState.GAMEOVER_STATE?gameOverMessage():s.get(state.getDescription()),
+        		state==MicropulState.GAMEOVER_STATE?gameOverMessage(gb):s.get(state.getDescription()),
         				state!=MicropulState.PUZZLE_STATE,
         				gb.whoseTurn,
         				stateRect);

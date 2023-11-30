@@ -419,7 +419,7 @@ public class KnockaboutViewer extends CCanvas<KnockaboutCell,KnockaboutBoard> im
         }
  
         standardGameMessage(gc,messageRotation,
-        		vstate==KnockaboutState.GAMEOVER_STATE?gameOverMessage():s.get(vstate.getDescription()),
+        		vstate==KnockaboutState.GAMEOVER_STATE?gameOverMessage(gb):s.get(vstate.getDescription()),
         				vstate!=KnockaboutState.PUZZLE_STATE,
         				gb.whoseTurn,
         				stateRect);

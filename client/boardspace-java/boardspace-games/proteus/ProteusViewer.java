@@ -493,7 +493,7 @@ public class ProteusViewer extends CCanvas<ProteusCell,ProteusBoard> implements 
 
             standardGameMessage(gc,messageRotation,
             		vstate==ProteusState.Gameover
-            			?gameOverMessage()
+            			?gameOverMessage(gb)
             			:s.get(vstate.getDescription()),
             				vstate!=ProteusState.Puzzle,
             				whoseTurn,

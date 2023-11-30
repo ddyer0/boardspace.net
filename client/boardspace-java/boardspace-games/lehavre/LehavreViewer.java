@@ -612,10 +612,6 @@ public class LehavreViewer extends exCanvas implements OnlineConstants,ViewerPro
 		return false;
 	}
 
-	public int ScoreForPlayer(commonPlayer p) {
-		return 0;
-	}
-	
 	public boolean UsingAutoma() { return(false); }
 	public int ScoreForAutoma() { return(-1); }
 	public String getUrlNotes() { return ""; }
@@ -782,6 +778,11 @@ public class LehavreViewer extends exCanvas implements OnlineConstants,ViewerPro
 	}
 	public boolean isScored() {
 		return false;
+	}
+	@Override
+	public int ScoreForPlayer(commonPlayer p) {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 
 

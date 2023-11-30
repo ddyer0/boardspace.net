@@ -476,7 +476,7 @@ public class GounkiViewer extends CCanvas<GounkiCell,GounkiBoard> implements Gou
  		drawPlayerStuff(gc,(vstate==GounkiState.PUZZLE_STATE),ourSelect,HighlightColor,rackBackGroundColor);
 
         standardGameMessage(gc,messageRotation,
-        		vstate==GounkiState.GAMEOVER_STATE?gameOverMessage():s.get(vstate.getDescription()),
+        		vstate==GounkiState.GAMEOVER_STATE?gameOverMessage(gb):s.get(vstate.getDescription()),
         		vstate!=GounkiState.PUZZLE_STATE,
         		gb.whoseTurn,stateRect);
         DrawSampleChipPool(gc,gb.whoseTurn,iconRect);

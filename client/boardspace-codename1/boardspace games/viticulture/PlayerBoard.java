@@ -608,6 +608,8 @@ public class PlayerBoard
 		{
 			c.copyFrom(d);
 		}
+		colorIndex = other.colorIndex;
+		scoreEvents.copyFrom(other.scoreEvents);
         cashDisplay.copyFrom(other.cashDisplay);
 		papaResolved = other.papaResolved;
 		wakeupPosition = bb.getCell(other.wakeupPosition);

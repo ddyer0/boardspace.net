@@ -618,7 +618,7 @@ public class CrossfireViewer extends CCanvas<CrossfireCell,CrossfireBoard> imple
  
         // draw the avatars
             standardGameMessage(gc,messageRotation,
-            		state==CrossfireState.GAMEOVER_STATE?gameOverMessage():s.get(state.getDescription()),
+            		state==CrossfireState.GAMEOVER_STATE?gameOverMessage(gb):s.get(state.getDescription()),
             				state!=CrossfireState.PUZZLE_STATE,
             				gb.whoseTurn,
             				stateRect);

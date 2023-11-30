@@ -730,7 +730,7 @@ public class OnedayBoard extends RBoard<OnedayCell> implements BoardProtocol,One
     /* return the score for the player in the range 10-100
      * sum of squares of run lengths
      */
-    int scoreForPlayer(int pl)
+    public int scoreForPlayer(int pl)
     {	if(resigned[pl]) { return(0); }
     	int finalv=0;
     	int start = 0;

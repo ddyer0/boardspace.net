@@ -484,7 +484,7 @@ public class TakojudoViewer extends CCanvas<TakojudoCell,TakojudoBoard> implemen
 
  
         standardGameMessage(gc,messageRotation,
-        		vstate==TakojudoState.GAMEOVER_STATE?gameOverMessage():s.get(vstate.getDescription()),
+        		vstate==TakojudoState.GAMEOVER_STATE?gameOverMessage(gb):s.get(vstate.getDescription()),
         				vstate!=TakojudoState.PUZZLE_STATE,
         				gb.whoseTurn,
         				stateRect);

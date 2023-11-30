@@ -157,7 +157,7 @@ class BreakingAwayBoard extends RBoard<BreakingAwayCell> implements BoardProtoco
     public void SetDrawState() { throw G.Error("Not expected"); }
     private Variation variation = Variation.Standard;
 	public BreakingAwayCell cycles[][] = null;		// this is the main root of cycle state
-    public int pointsPerPlayer[]= null;
+    public int scoreForPlayer[]= null;
     public int ridersAcrossFinish = 0;
     public int ridersAcrossSprint1 = 0;
     public int ridersAcrossSprint2 = 0;
@@ -201,7 +201,7 @@ class BreakingAwayBoard extends RBoard<BreakingAwayCell> implements BoardProtoco
 			{
 			if(from<=FINISH_LINE) 
 				{ if(ridersAcrossFinish<FINISHPOINTS.length)
-					{pointsPerPlayer[pl]+= FINISHPOINTS[ridersAcrossFinish];
+					{scoreForPlayer[pl]+= FINISHPOINTS[ridersAcrossFinish];
 					}
 				  ridersAcrossFinish++;
 				}
@@ -210,7 +210,7 @@ class BreakingAwayBoard extends RBoard<BreakingAwayCell> implements BoardProtoco
 		{
 		if(from<=SPRINT2_LINE) 
 			{ if(ridersAcrossSprint2<SPRINTPOINTS.length)
-				{pointsPerPlayer[pl]+= SPRINTPOINTS[ridersAcrossSprint2];
+				{scoreForPlayer[pl]+= SPRINTPOINTS[ridersAcrossSprint2];
 				}
 			  ridersAcrossSprint2++;
 			}
@@ -219,7 +219,7 @@ class BreakingAwayBoard extends RBoard<BreakingAwayCell> implements BoardProtoco
 		{
 		if(from<=SPRINT1_LINE) 
 			{ if(ridersAcrossSprint1<SPRINTPOINTS.length)
-				{pointsPerPlayer[pl]+= SPRINTPOINTS[ridersAcrossSprint1];
+				{scoreForPlayer[pl]+= SPRINTPOINTS[ridersAcrossSprint1];
 				}
 			  ridersAcrossSprint1++;
 			}
@@ -234,7 +234,7 @@ class BreakingAwayBoard extends RBoard<BreakingAwayCell> implements BoardProtoco
 			if(from<=FINISH_LINE) 
 				{ ridersAcrossFinish--;
 				  if(ridersAcrossFinish<FINISHPOINTS.length)
-					{pointsPerPlayer[pl]-= FINISHPOINTS[ridersAcrossFinish];
+					{scoreForPlayer[pl]-= FINISHPOINTS[ridersAcrossFinish];
 					}
 				  
 				}
@@ -244,7 +244,7 @@ class BreakingAwayBoard extends RBoard<BreakingAwayCell> implements BoardProtoco
 		if(from<=SPRINT2_LINE) 
 			{ ridersAcrossSprint2--;
 			  if(ridersAcrossSprint2<SPRINTPOINTS.length)
-				{pointsPerPlayer[pl]-= SPRINTPOINTS[ridersAcrossSprint2];
+				{scoreForPlayer[pl]-= SPRINTPOINTS[ridersAcrossSprint2];
 				}
 			  
 			}
@@ -255,7 +255,7 @@ class BreakingAwayBoard extends RBoard<BreakingAwayCell> implements BoardProtoco
 		if(from<=SPRINT1_LINE) 
 			{ ridersAcrossSprint1--;
 			  if(ridersAcrossSprint1<SPRINTPOINTS.length)
-				{pointsPerPlayer[pl]-= SPRINTPOINTS[ridersAcrossSprint1];
+				{scoreForPlayer[pl]-= SPRINTPOINTS[ridersAcrossSprint1];
 				}
 			  
 			}
@@ -501,7 +501,7 @@ class BreakingAwayBoard extends RBoard<BreakingAwayCell> implements BoardProtoco
 		AR.setValue(ridersInRow,0);
 		win = new boolean[npl];
 		cycles = new BreakingAwayCell[players_in_game][CYCLES_PER_PLAYER];
-		pointsPerPlayer = new int[players_in_game];
+		scoreForPlayer = new int[players_in_game];
 		ridersAcrossSprint1 = 0;
 		ridersAcrossSprint2 = 0;
 		ridersAcrossFinish = 0;
@@ -577,7 +577,7 @@ class BreakingAwayBoard extends RBoard<BreakingAwayCell> implements BoardProtoco
 	 */
 	public void sameboard(BreakingAwayBoard from_b) {
 		super.sameboard(from_b);
-		G.Assert(AR.sameArrayContents(pointsPerPlayer,from_b.pointsPerPlayer),"points match");
+		G.Assert(AR.sameArrayContents(scoreForPlayer,from_b.scoreForPlayer),"points match");
 		G.Assert(AR.sameArrayContents(ridersInRow,from_b.ridersInRow),"riders match");
 		G.Assert( (timeStep==from_b.timeStep)
 					&& (maxTimeStep == from_b.maxTimeStep),"timeStep matches");
@@ -626,7 +626,7 @@ class BreakingAwayBoard extends RBoard<BreakingAwayCell> implements BoardProtoco
 			long nv = r.nextLong();
 			v ^= ((doneAdjusting[i])?1:0)*nv;
 			long pv = r.nextLong();
-			v += pointsPerPlayer[i]*pv;
+			v += scoreForPlayer[i]*pv;
 		}
 		
 		
@@ -660,7 +660,7 @@ class BreakingAwayBoard extends RBoard<BreakingAwayCell> implements BoardProtoco
 		ridersAcrossFinish = from_b.ridersAcrossFinish;
 		undoMovement.clear();
 		AR.copy(ridersInRow,from_b.ridersInRow);
-		AR.copy(pointsPerPlayer,from_b.pointsPerPlayer);
+		AR.copy(scoreForPlayer,from_b.scoreForPlayer);
 		AR.copy(doneAdjusting,from_b.doneAdjusting);
 		AR.copy(doneAdjustingUI,from_b.doneAdjustingUI);
 		AR.copy(visibleInMainUI,from_b.visibleInMainUI);
@@ -1337,10 +1337,10 @@ class BreakingAwayBoard extends RBoard<BreakingAwayCell> implements BoardProtoco
 	}
 
 	double rawScoreForPlayer(int pl)
-	{		return(pointsPerPlayer[pl]);
+	{		return(scoreForPlayer[pl]);
 	}
 	double simpleEvaluation(int pl, boolean print) 
-	{ 	double val = pointsPerPlayer[pl]*100;	
+	{ 	double val = scoreForPlayer[pl]*100;	
 		double position = 0.0;
 		double potential = 0.0;
 		double draft = 0.0;

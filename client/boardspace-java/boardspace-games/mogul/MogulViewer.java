@@ -248,12 +248,7 @@ public class MogulViewer extends CCanvas<MogulCell,MogulBoard> implements MogulC
     generalRefresh();
     return(boardW*boardH);
     }
-    
-    public int ScoreForPlayer(commonPlayer pl)
-    {
-    	return(b.trueScore(pl.boardIndex));
-    }
- 
+
     //
     // sprites are normally a game piece that is "in the air" being moved
     // around.  This is called when dragging your own pieces, and also when
@@ -550,7 +545,7 @@ public class MogulViewer extends CCanvas<MogulCell,MogulBoard> implements MogulC
             if(cell.height()>0)
             	{ 	
             		for(int i=0;i<nPlayers;i++) 
-            		{ int vp = gb.trueScore(i); 
+            		{ int vp = gb.scoreForPlayer(i); 
             		  if(gb.getCell(vp)==cell) { max = Math.max(vp,max); }
             		}
             		HitPoint.setHelpText(any,unit,xpos,ypos,s.get(PointCount,max)); 
@@ -643,7 +638,7 @@ public class MogulViewer extends CCanvas<MogulCell,MogulBoard> implements MogulC
 
 
         standardGameMessage(gc,messageRotation,
-        		vstate==MogulState.Gameover?gameOverMessage():s.get(vstate.getDescription()),
+        		vstate==MogulState.Gameover?gameOverMessage(gb):s.get(vstate.getDescription()),
         				vstate!=MogulState.Puzzle,
         				gb.whoseTurn,
         				stateRect);
@@ -996,7 +991,7 @@ private void playSounds(commonMove m)
     	GC.setFont(gc,myfont);
     	if(remoteViewer<0) { GC.fillRect(gc,rackBackGroundColor,r); }
     	standardGameMessage(gc,
-        		vstate==MogulState.Gameover?gameOverMessage():s.get(vstate.getDescription()),
+        		vstate==MogulState.Gameover?gameOverMessage(b):s.get(vstate.getDescription()),
         				vstate!=MogulState.Puzzle,
         				b.whoseTurn,
         				stateRect);

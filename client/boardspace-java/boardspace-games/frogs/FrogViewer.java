@@ -102,13 +102,7 @@ public class FrogViewer extends CCanvas<FrogCell,FrogBoard> implements FrogConst
     private Rectangle chipRect[] = addRect("chip",4);
 	
      
-    /**
-     * return a score for the player in a multiplayer game. 
-     */
-    public int ScoreForPlayer(commonPlayer p)
-    {	return(WinForPlayer(p)?11:10-b.numberOfGroups(p.boardIndex));
-    }
-    
+  
     public synchronized void preloadImages()
     {	FrogPiece.preloadImages(loader,ImageDir);
 	    if (textures == null)
@@ -457,7 +451,7 @@ public class FrogViewer extends CCanvas<FrogCell,FrogBoard> implements FrogConst
 		
 
         standardGameMessage(gc,messageRotation,
-            		state==FrogState.GAMEOVER_STATE?gameOverMessage():s.get(state.getDescription()),
+            		state==FrogState.GAMEOVER_STATE?gameOverMessage(gb):s.get(state.getDescription()),
             				state!=FrogState.PUZZLE_STATE,
             				gb.whoseTurn,
             				stateRect);

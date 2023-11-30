@@ -531,7 +531,7 @@ public class Warp6Viewer extends CCanvas<Warp6Cell,Warp6Board> implements Warp6C
 
         }
         standardGameMessage(gc,messageRotation,
-        		vstate==Warp6State.GAMEOVER_STATE?gameOverMessage():s.get(vstate.getDescription()),
+        		vstate==Warp6State.GAMEOVER_STATE?gameOverMessage(gb):s.get(vstate.getDescription()),
         				vstate!=Warp6State.PUZZLE_STATE,
         				gb.whoseTurn,
         				stateRect);
