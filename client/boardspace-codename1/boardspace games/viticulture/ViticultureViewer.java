@@ -373,7 +373,7 @@ public class ViticultureViewer extends CCanvas<ViticultureCell,ViticultureBoard>
         
         scoreRect.setValue(true);	// turn it on
         //believed to work, but the display on android is too glitchy
-        useDirectDrawing(!G.isAndroid()); 
+        //useDirectDrawing(!G.isAndroid()); 
         doInit(false);
         adjustPlayers(players_in_game);
         ready = true;
