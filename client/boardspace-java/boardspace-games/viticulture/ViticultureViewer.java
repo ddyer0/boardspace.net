@@ -1279,7 +1279,7 @@ private void drawPlayerBoard(Graphics gc,
       
       if(BACKGROUND_OPTIMIZATION) 
       { drawBackgroundElements(gc,null,gb,brect,null,null,dummyTargets); 
-      backgroundDigest = backgroundDigest();
+      backgroundDigest = backgroundDigest(gb);
     }}
       GC.unsetRotatedContext(gc,null);
       
@@ -1290,7 +1290,7 @@ private void drawPlayerBoard(Graphics gc,
 	
 	private long backgroundDigest = 0;
 	static long FIXEDRANDOM = 22684745;
-    public long backgroundDigest()
+    public long backgroundDigest(ViticultureBoard gb)
     {	Random r = new Random(FIXEDRANDOM);
     	long v = 0;
     	// include the animation height in the digest so the digest will change when an animation
@@ -1298,9 +1298,9 @@ private void drawPlayerBoard(Graphics gc,
     	for(ViticultureCell c : backgroundCells) { v ^= DigestA(r,c); }
     	for(ViticultureCell c : deckCells) { v ^= DigestA(r,c);  }
     	
-    	for(int i=0;i<mainBoard.nPlayers();i++)
+    	for(int i=0;i<gb.nPlayers();i++)
     	{
-    		PlayerBoard pb = mainBoard.pbs[i];
+    		PlayerBoard pb = gb.pbs[i];
     		v ^= DigestA(r,pb.vines);
     		
             v ^= DigestA(r,pb.redGrape);
@@ -5120,7 +5120,7 @@ private void drawPlayerBoard(Graphics gc,
     }
     public void drawFixedElements(Graphics gc,boolean complete)
     {
-    	complete |= (backgroundDigest()!=backgroundDigest)
+    	complete |= (backgroundDigest(disB(gc))!=backgroundDigest)
     				|| pendingFullRepaint;
     	super.drawFixedElements(gc,complete);
     }

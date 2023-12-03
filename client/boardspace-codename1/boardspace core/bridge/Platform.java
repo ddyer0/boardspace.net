@@ -97,18 +97,23 @@ class ErrorTrace extends Error
 public abstract class Platform implements Config{
 	  
 	 protected static InstallerPackage installerPackage = NativeLookup.create(InstallerPackage.class);
+	 
+	 private static Object makeObject = new Object();
 	 /**
 	 * synchronized because two processes (lobby and loadthread for example) may try
 	 * to create the first instance of a class at the same time, leading to conflicts
 	 * creating required classes
 	 */
-		public static synchronized Object MakeInstance(String classname)
+	public static Object MakeInstance(String classname)
 	{	String expname = "";
 	    try
 	    {	expname = G.expandClassName(classname);
 	    	Class<?>cl = G.classForName(expname,false);
 	    	if(cl==null) { throw new ClassNotFoundException(); }
+	    	synchronized (makeObject)
+	    	{
 	        return (cl.newInstance()); //was clazz.newInstance()
+	    	}
 	    }
 	    catch (Exception e)
 	    {
@@ -167,19 +172,50 @@ public abstract class Platform implements Config{
 			return(getFont(f,size));	// convert to a truetype font
 			//return(new Font(0, style ,size));
 		}
+	    static Hashtable<Font,Integer> fontUid = new Hashtable<Font,Integer>();
+	    static Hashtable<Integer,Font> uidFont = new Hashtable<Integer,Font>();
+	    static Hashtable<Integer,Font> derivedFont = new Hashtable<Integer,Font>();
+	    static int fontcount = 0;
+	    static int derivedFontCode(Font f, int size, int style)
+	    {
+	    	return getUid(f)+style*0x10000+size*0x100000;
+	    }
+	    static int getUid(Font f)
+	    {	synchronized (fontUid)
+	    	{
+	    	Integer id = fontUid.get(f);
+	    	if(id==null)
+	    	{
+	    		id = fontcount++;
+	    		fontUid.put(f,id);
+	    		uidFont.put(id,f);
+	    	}
+	    	return id;
+	    	}
+	    }
+	    // a lot of trouble is caused because codename1 doesn't reliably cache derived fonts
+		public static Font deriveFont(Font f, int size, int style)
+		{	int code = derivedFontCode(f,size,style);
+			Font derived = derivedFont.get(code);
+			if(derived==null)
+			{
+			derived = f.derive(size,style);
+			derivedFont.put(code,derived);
+			}	
+			return derived;
+		}
 		
 		public static Font getFont(Font f,int size)
 		{	if(!G.Advise(size>0,"not a zero size font")) { size = 1; }
-			Font fd = f.derive(size,f.getStyle());
+			Font fd = deriveFont(f,size,f.getStyle());
 			if(GetPixelSize(fd)==size) { return(fd); }
-
 			fontSize.put(fd,size);
 			return(fd);
 		}
 		
 		public static  Font getFont(Font f,Style style,int size)
 		{	if(!G.Advise(size>0,"not a zero size font")) { size = 1; }
-			Font fd = f.derive(size<=0?getFontSize(f):size,style.s);
+			Font fd = deriveFont(f,size<=0?getFontSize(f):size,style.s);
 			if(GetPixelSize(fd)==size) { return(fd); }
 			fontSize.put(fd,size);
 			return(fd);
@@ -322,15 +358,15 @@ public abstract class Platform implements Config{
 		int requestedHeight = originalHeight;
 		int style = f.getStyle();
 		  // this papers over a bug where a font with size 0 is stuck in the cache
-		Font f1 = f.derive(requestedHeight,f.getStyle());
-		if(f1==f) { requestedHeight++; f1=f.derive(requestedHeight,style); }
+		Font f1 = deriveFont(f,requestedHeight,f.getStyle());
+		if(f1==f) { requestedHeight++; f1=deriveFont(f,requestedHeight,style); }
 		while(f1.getHeight()>originalHeight) 
 			{ requestedHeight--; 
-			  f1 = f1.derive(requestedHeight, style);
+			  f1 = deriveFont(f,requestedHeight, style);
 			}
 		while(f1.getHeight()<originalHeight)
 			{ requestedHeight--;
-			  f1 = f1.derive(requestedHeight,style);
+			  f1 = deriveFont(f,requestedHeight,style);
 			}
 		siz = f1.getPixelSize();
 		fontSize.put(f,requestedHeight);
@@ -352,8 +388,8 @@ public abstract class Platform implements Config{
 			if(isttf && sz==-1)
 				{ int oldh = f.getHeight();
 				  // this papers over a bug where a font with size 0 is stuck in the cache
-				  Font f1 = f.derive(oldh,f.getStyle());
-				  if(f1==f) { f1=f.derive(oldh+1,f.getStyle()); }
+				  Font f1 = deriveFont(f,oldh,f.getStyle());
+				  if(f1==f) { f1=deriveFont(f,oldh+1,f.getStyle()); }
 				  f = f1;
 				}
 			else {

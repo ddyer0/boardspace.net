@@ -276,6 +276,8 @@ public abstract class SystemGraphics {
 	{
 		return FontMetrics.getFontMetrics(this);
 	}
+	public Font getFont() { return graphics.getFont(); }
+	
 	public void drawArrow(int ox, int oy, int dest_x,  int dest_y, int ticksize,double thickness)
 	{
 		Stroke s = new Stroke((float)thickness,Stroke.CAP_ROUND,Stroke.JOIN_ROUND,4);

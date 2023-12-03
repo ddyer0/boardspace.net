@@ -2023,7 +2023,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
                 myFrame.addAction(to,deferredEvents);
             }
         }
-  
+ 
         if (extraactions)
         {
             testswitch = myFrame.addAction("test switch",deferredEvents);

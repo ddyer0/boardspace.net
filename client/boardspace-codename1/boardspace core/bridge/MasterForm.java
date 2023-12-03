@@ -366,12 +366,14 @@ public void addToMenus(JButton m)
 		}
 		return(null);
 	}
-	
+	/*
 	public void pointerHover(int x[],int y[])
 	{	//as of 12/2022, this is called on the simulator but not on real devices
 		//G.print("Form Hover ",x[0]," ",y[0]);
 		super.pointerHover(x,y);
 	}
+	
+	*/
 	/*
 	private String toString(int ar[])
 	{

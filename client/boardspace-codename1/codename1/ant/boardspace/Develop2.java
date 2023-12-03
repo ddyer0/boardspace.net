@@ -18,7 +18,7 @@ package ant.boardspace;
 
 
 
-public class DevelopAnt extends com.boardspace.Launch {
+public class Develop2 extends com.boardspace.Launch {
 	public boolean isDevelopmentVersion() { return(true); }
 	public void init(Object context)
 	{

@@ -105,12 +105,13 @@ static final public String getPlatformSubtype()
 {
 	 return G.isCheerpj() ? " cheerpj" : isTable() ? " sometable" : "";
 }
+static private Object makeObject = new Object();
 /**
  * synchronized because two processes (lobby and loadthread for example) may try
  * to create the first instance of a class at the same time, leading to conflicts
  * creating required classes
  */
-public static synchronized Object MakeInstance(String classname)
+public static Object MakeInstance(String classname)
 {
 	String expname = "";
     expname = G.expandClassName(classname);
@@ -129,7 +130,10 @@ public static synchronized Object MakeInstance(String classname)
     else
     {
     try {
+    	synchronized (makeObject)
+    	{
     	return cl.newInstance();
+    	}
     }
     catch (Exception e)
     {	throw G.Error("Makeinstance "+expname+":"+e.toString()); 

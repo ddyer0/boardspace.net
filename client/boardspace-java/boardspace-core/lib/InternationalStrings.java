@@ -287,7 +287,7 @@ public abstract class InternationalStrings implements Config
     	String sub  = at.nextToken();
     	String base = get(sub);
     	for(int i=1;at.hasMoreTokens();i++)
-    	{	String target = "#"+i;
+    	{	String target = targetString(i);
     		int index = base.indexOf(target);
     		String tok = at.nextToken();
     		if(index>=0)
@@ -387,17 +387,28 @@ public abstract class InternationalStrings implements Config
         String str = get(sub);
         return(subst(str,args));
     }
-    
+    static String targets[] = {"#0","#1","#2","#3","#4","#5","#6","#7","#8","#9","#10"};
+    static String targetString(int n)
+    {
+    	if(n>=0 && n<targets.length) { return targets[n]; }
+    	return "#"+n;
+    }
     /** substitute parameters in str after str has been found in the dictionary
      *  or when str is not supposed to be in the dictionary
      * @param str
      * @param args
      * @return
      */
-    public String subst(String str,String...args)
-    {
+    public String subst(String str0,String...args)
+    {	String str = str0;
         for(int argn=1; argn<=args.length; argn++)
-        {  String target = "#" + argn;
+        {  String target = targetString(argn);
+           str = substOne(str,target,args[argn-1]);
+        }
+        return str;
+    }
+    public String substOne(String str,String target,String arg)
+    {
            int index = str.indexOf(target);
            // strings encoded with &#123; can look like #1 #2 etc.  This avoid them.
            // but it's still not completely correct
@@ -405,7 +416,6 @@ public abstract class InternationalStrings implements Config
            if (index >= 0)
            {
         	String rest = str.substring(index + target.length());
-        	String arg = args[argn-1];
         	// pluralize 
         	if((rest.length()>2) && (rest.charAt(0)=='{'))
         	{
@@ -419,9 +429,8 @@ public abstract class InternationalStrings implements Config
             str = (str.substring(0, index) + arg + rest);
            }
            else {   Plog.log.addLog("missing index for ",target, " in \"" , str , "\""); }
-        }
         return (str);
-    }
+}
     /**
      * get with one integer argument, so save the ugliness of ""+n
      * @param sub
@@ -447,7 +456,7 @@ public abstract class InternationalStrings implements Config
     {	if(str==null) { return(null); }
     	String text = get(str);
     	if(text.indexOf("#1")<0) { return(text); }
-    	return(get(str,arg));
+    	return(substOne(str,"#1","#"+arg));
     }
     
     /**
@@ -463,7 +472,7 @@ public abstract class InternationalStrings implements Config
     {	if(str==null) { return(null); }
     	String text = get(str);
     	if(text.indexOf("#1")<0) { return(text); }
-    	return(get(str,arg));
+    	return(substOne(str,"#1",arg));
     }
     
     public String name = DefaultLanguageName;
@@ -523,7 +532,7 @@ public abstract class InternationalStrings implements Config
     		else if("".equals(line)) { savedKey = null; }
     		else {
        			// test for an ad hoc case
-    			// char []seq = new char[] { 'x', '\\','u','0','0','9','2','\\','u','0','0','9','3','\\','u','0','0','9','4','x'};
+    			//char []seq = new char[] { 'x', '\\','u','0','0','9','2','\\','u','0','0','9','3','\\','u','0','0','9','4','x'};
        		    //			String str = new String(seq);
     			//line = G.utfDecode(str);
     			line = G.utfDecode(line);

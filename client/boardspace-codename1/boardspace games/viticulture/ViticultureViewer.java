@@ -86,13 +86,12 @@ public class ViticultureViewer extends CCanvas<ViticultureCell,ViticultureBoard>
     boolean showBuildings = false;
     boolean showOptions = false;
     
-    public void testSwitch()
+	boolean skip = false;
+   public void testSwitch()
     {	super.testSwitch();
-    	//BACKGROUND_OPTIMIZATION = !BACKGROUND_OPTIMIZATION;
-    	//G.print("Now "+BACKGROUND_OPTIMIZATION);
-    	//generalRefresh();
-    	
-    }
+		skip = !skip;
+		G.print("skip all"+skip);
+   }
     // this is used mainly to position the check boxes on cards
     // that offer choices
     static class Loc
@@ -428,7 +427,7 @@ public class ViticultureViewer extends CCanvas<ViticultureCell,ViticultureBoard>
        	double aspects[] = new double[]{ 1.2 , 1.5, 2.2, 2.5, 1.8};
        	setLocalBoundsV(x,y,width,height,aspects);
     }
-
+    
     public double setLocalBoundsA(int x, int y, int width, int height,double aspect)
     {	G.SetRect(fullRect, x, y, width, height);
     	int nPlayers = nPlayers();
@@ -583,7 +582,7 @@ public class ViticultureViewer extends CCanvas<ViticultureCell,ViticultureBoard>
     		HitPoint highlight,HitPoint highlightAll,Hashtable<ViticultureCell,Viticulturemovespec>targets,
     		double[][]fieldsLoc,
     		double xstep,double ystep,String label,ViticultureCell... fields )
-    {
+    {	if(skip) { return false; }
         int w = G.Width(br);
         int h = G.Height(br);
         int x = G.Left(br);
@@ -596,7 +595,7 @@ public class ViticultureViewer extends CCanvas<ViticultureCell,ViticultureBoard>
         }
         
         boolean some = false;
-        boolean showLabels = ViticultureChip.INDEX.equals(label);
+        boolean showLabels = gc!=null && ViticultureChip.INDEX.equals(label);
         for(int i=0;i<fields.length;i++)
         {
         	double loc[] = fieldsLoc[i];
@@ -611,7 +610,6 @@ public class ViticultureViewer extends CCanvas<ViticultureCell,ViticultureBoard>
         	}
         	ViticultureCell c = fields[i];
         	boolean selectable = c.isSelectable() && gb.legalToHit(c,targets);
-        	String thisLabel = showLabels ? ""+(i+(9-fields.length+1)) : label;
         	ViticultureChip top = c.topChip();
         	boolean actPrevious = (gb.resetState==ViticultureState.TakeActionPrevious);
         	boolean isWorkerPlace = selectable && ((c.contentType==ChipType.Worker) 
@@ -627,6 +625,7 @@ public class ViticultureViewer extends CCanvas<ViticultureCell,ViticultureBoard>
 			  GC.frameRect(gc, Color.red, xpos-ss,ypos-ss,ss*2,ss*2);
 			}
 			HitPoint drawHit = selectable ? highlight : null;
+        	String thisLabel = showLabels&&(c.height()>0) ? ""+(i+(9-fields.length+1)) : label;
         	if(drawStack(gc,state,pl,c,drawHit,highlightAll,sz,xpos,ypos,0,xstep,ystep,thisLabel))
         	{	some = true;
         		int ind = drawHit.hit_index;
@@ -770,7 +769,7 @@ public class ViticultureViewer extends CCanvas<ViticultureCell,ViticultureBoard>
 		}
 	}
     private boolean drawStack(Graphics gc,ViticultureState state,commonPlayer pl,ViticultureCell c,HitPoint highlight,HitPoint highlightAll,int sz,int xpos,int ypos,int liftSteps,double xstep,double ystep,String label)
-    {
+    {	
      	boolean selected = drawStack(gc,c,highlight,sz,xpos,ypos, 0, xstep,ystep, label);
      	if(selected)
     	{	
@@ -1116,7 +1115,7 @@ private void drawPlayerBoard(Graphics gc,
         ViticultureState state = gb.resetState;
         // never let him hit the card display on the player board
         drawArray(gc,false,state,pl,gb,br,state==ViticultureState.Puzzle ? highlight : null,highlightAll,targets,cardsLoc, 0.1, -0.02, ViticultureChip.BACK,pb.cards);
-        drawArray(gc,false,state,pl,gb,br,highlight,highlightAll,targets,cashLoc, 0.05, 0.0, ""+pb.cash,pb.cashDisplay);
+        drawArray(gc,false,state,pl,gb,br,highlight,highlightAll,targets,cashLoc, 0.05, 0.0, pb.cashString(),pb.cashDisplay);
 
         
         if(r!=null)
@@ -1283,7 +1282,7 @@ private void drawPlayerBoard(Graphics gc,
       
       if(BACKGROUND_OPTIMIZATION) 
       { drawBackgroundElements(gc,null,gb,brect,null,null,dummyTargets); 
-      backgroundDigest = backgroundDigest();
+      backgroundDigest = backgroundDigest(gb);
     }}
       GC.unsetRotatedContext(gc,null);
       
@@ -1294,7 +1293,7 @@ private void drawPlayerBoard(Graphics gc,
 	
 	private long backgroundDigest = 0;
 	static long FIXEDRANDOM = 22684745;
-    public long backgroundDigest()
+    public long backgroundDigest(ViticultureBoard gb)
     {	Random r = new Random(FIXEDRANDOM);
     	long v = 0;
     	// include the animation height in the digest so the digest will change when an animation
@@ -1302,9 +1301,9 @@ private void drawPlayerBoard(Graphics gc,
     	for(ViticultureCell c : backgroundCells) { v ^= DigestA(r,c); }
     	for(ViticultureCell c : deckCells) { v ^= DigestA(r,c);  }
     	
-    	for(int i=0;i<mainBoard.nPlayers();i++)
+    	for(int i=0;i<gb.nPlayers();i++)
     	{
-    		PlayerBoard pb = mainBoard.pbs[i];
+    		PlayerBoard pb = gb.pbs[i];
     		v ^= DigestA(r,pb.vines);
     		
             v ^= DigestA(r,pb.redGrape);
@@ -5124,7 +5123,7 @@ private void drawPlayerBoard(Graphics gc,
     }
     public void drawFixedElements(Graphics gc,boolean complete)
     {
-    	complete |= (backgroundDigest()!=backgroundDigest)
+    	complete |= (backgroundDigest(disB(gc))!=backgroundDigest)
     				|| pendingFullRepaint;
     	super.drawFixedElements(gc,complete);
     }

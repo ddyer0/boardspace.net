@@ -1268,7 +1268,7 @@ public abstract class commonCanvas extends exCanvas
 	    		GC.draw_anim(gc,ar,G.Width(ar)/2,pl.lastInputTime,pl.progress);
 		    	}
     
-	    	String timeString = G.timeString(ptime)+" ";
+	    	String timeString = G.timeString(ptime);
 	    	GC.printTimeC(gc, pl.timeRect,timeString, 
 	    				   review?Color.blue:Color.black,null, standardBoldFont());
 	    	 
@@ -3408,8 +3408,11 @@ public abstract class commonCanvas extends exCanvas
         	throw G.Error("Hit unknown vcr token %s",hitObject);
         	}
         }
+        saveDisplayBoard();
+        repaint();
         return (rval);
     	}
+    
     }
     public void scrollFarForward()
     {
@@ -3804,6 +3807,7 @@ public abstract class commonCanvas extends exCanvas
    public boolean doRemoteScrollTo(int whence)
    {	
 	   boolean v = doScroll(whence,"remote");
+	   saveDisplayBoard();
 	   repaint();
 	   return v;
 	   
@@ -7814,8 +7818,9 @@ public void useStoryBuffer(String tok,StringTokenizer his)
 		
 		doScrollTo(FORWARD_TO_END);
 		
-        
+		saveDisplayBoard();
  
+
 
 	}
 }

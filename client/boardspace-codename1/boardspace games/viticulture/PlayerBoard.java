@@ -271,6 +271,12 @@ public class PlayerBoard
 	ViticultureChip flashChip = null;
 	boolean papaResolved = false;
 	int cash;
+	String cashString = null;
+	int cashStringVal = -1;
+	public String cashString() { 
+		if((cashStringVal!=cash) || (cashString==null)) { cashStringVal = cash; cashString=G.concat(cash); }
+		return cashString;
+	}
 	int score;
 	int wineSalePoints;
 	int wineOrderPoints;
