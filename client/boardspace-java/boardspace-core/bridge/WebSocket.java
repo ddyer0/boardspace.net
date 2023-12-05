@@ -1,19 +1,27 @@
-package lib;
+package bridge;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetAddress;
 
-import bridge.NativeWebSocket;
+import lib.G;
+import lib.SocketProxy;
 
-public class WebSocket extends NativeWebSocket implements SocketProxy
+public class WebSocket implements SocketProxy
 {
   int socket = -1;
+  
+  public native String read(int sock); // poll this to read
+  public native void send(int sock,String message);
+  public native boolean isConnected(int socket);   
+  public native  int connect(String host,int socket);
+
   public WebSocket(String host,int port)
-  {	  G.print("create websocket");
+  {	  G.print("create websocket",host,port);
 	  socket = connect(host,port);
 	  while(!isConnected(socket)) { G.print("waiting for connection"); G.doDelay(500); }
+	  G.print("connected websocket ",host,port);
   }
   
   private String pending = null;

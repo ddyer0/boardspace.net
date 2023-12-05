@@ -25,6 +25,7 @@ import java.io.OutputStream;
 import bridge.ClientSocket;
 import bridge.Config;
 import bridge.Utf8OutputStream;
+import bridge.WebSocket;
 /**
  * this contains network code common to the legacy strings network,
  * and the mixed string/binary packet used by the vnc network

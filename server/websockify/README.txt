@@ -42,3 +42,6 @@ systemctl daemon-reload
 systemctl enable websockify.service
 systemctl start websockify.service
 
+log files with any output from websockify are found in /var/log/messages
+
+

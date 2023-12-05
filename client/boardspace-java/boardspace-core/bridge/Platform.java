@@ -105,7 +105,7 @@ static final public String getPlatformSubtype()
 {
 	 return G.isCheerpj() ? " cheerpj" : isTable() ? " sometable" : "";
 }
-static private Object makeObject = new Object();
+static private Object makeObject = null;
 /**
  * synchronized because two processes (lobby and loadthread for example) may try
  * to create the first instance of a class at the same time, leading to conflicts
@@ -116,7 +116,7 @@ public static Object MakeInstance(String classname)
 	String expname = "";
     expname = G.expandClassName(classname);
     Plog.log.addLog("MakeInstance ",expname);
-   
+    if(makeObject==null) { makeObject = new Object(); }
     Class<?>cl = G.classForName(expname,false);
     if(cl==null) 
     		{ 
