@@ -14,13 +14,6 @@
 	<natures>
 		<nature>org.eclipse.m2e.core.maven2Nature</nature>
 	</natures>
-	<linkedResources>
-		<link>
-			<name>codename1</name>
-			<type>2</type>
-			<location>F:/github/boardspace.net/client/boardspace-codename1/codename1</location>
-		</link>
-	</linkedResources>
 	<filteredResources>
 		<filter>
 			<id>1643414471994</id>

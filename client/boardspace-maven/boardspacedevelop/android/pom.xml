@@ -25,12 +25,9 @@
         <resources>
 
             <resource>
-                <directory>src/main/java</directory>
+                <directory>../../../boardspace-codename1/native/android/</directory>
             </resource>
-            <resource>
-                <directory>src/main/resources</directory>
-            </resource>
-        </resources>
+         </resources>
         <plugins>
             <plugin>
                 <groupId>com.codenameone</groupId>

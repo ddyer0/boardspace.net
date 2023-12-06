@@ -2,15 +2,15 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-      <groupId>com.boardspace</groupId>
-      <artifactId>boardspacerelease</artifactId>
+      <groupId>dev.boardspace</groupId>
+      <artifactId>boardspacedevelop</artifactId>
       <version>1.0-SNAPSHOT</version>
   </parent>
-  <groupId>com.boardspace</groupId>
-  <artifactId>boardspacerelease-ios</artifactId>
+  <groupId>dev.boardspace</groupId>
+  <artifactId>boardspacedevelop-ios</artifactId>
   <version>1.0-SNAPSHOT</version>
 
-  <name>boardspacerelease-ios</name>
+  <name>boardspacedevelop-ios</name>
   
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -23,7 +23,7 @@
     <build>
         <resources>
             <resource>
-                <directory>src/main/objectivec</directory>
+                <directory>../../../boardspace-codename1/native/ios/</directory>
             </resource>
             <resource>
                 <directory>src/main/resources</directory>

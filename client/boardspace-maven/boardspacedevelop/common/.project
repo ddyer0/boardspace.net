@@ -11,8 +11,13 @@
 			</arguments>
 		</buildCommand>
 		<buildCommand>
-			<name>org.eclipse.m2e.core.maven2Builder</name>
+			<name>org.eclipse.ui.externaltools.ExternalToolBuilder</name>
+			<triggers>full,incremental,</triggers>
 			<arguments>
+				<dictionary>
+					<key>LaunchConfigHandle</key>
+					<value>&lt;project&gt;/.externalToolBuilders/org.eclipse.m2e.core.maven2Builder.launch</value>
+				</dictionary>
 			</arguments>
 		</buildCommand>
 	</buildSpec>
@@ -24,27 +29,81 @@
 		<link>
 			<name>boardspace core</name>
 			<type>2</type>
-			<location>F:/github/boardspace.net/client/boardspace-codename1/boardspace core</location>
+			<location>G:/share/projects/boardspace-codename1/boardspace core</location>
 		</link>
 		<link>
 			<name>boardspace games</name>
 			<type>2</type>
-			<location>F:/github/boardspace.net/client/boardspace-codename1/boardspace games</location>
+			<location>G:/share/projects/boardspace-codename1/boardspace games</location>
 		</link>
 		<link>
 			<name>codename1</name>
 			<type>2</type>
-			<location>F:/github/boardspace.net/client/boardspace-codename1/codename1</location>
+			<location>G:/share/projects/boardspace-codename1/codename1</location>
 		</link>
 	</linkedResources>
 	<filteredResources>
 		<filter>
-			<id>1643340519813</id>
+			<id>1701368684575</id>
 			<name></name>
 			<type>22</type>
 			<matcher>
 				<id>org.eclipse.ui.ide.multiFilter</id>
 				<arguments>1.0-name-matches-false-false-*.bak</arguments>
+			</matcher>
+		</filter>
+		<filter>
+			<id>1701368684582</id>
+			<name></name>
+			<type>10</type>
+			<matcher>
+				<id>org.eclipse.ui.ide.multiFilter</id>
+				<arguments>1.0-name-matches-false-false-cvs</arguments>
+			</matcher>
+		</filter>
+		<filter>
+			<id>1701368795627</id>
+			<name>boardspace core</name>
+			<type>10</type>
+			<matcher>
+				<id>org.eclipse.ui.ide.multiFilter</id>
+				<arguments>1.0-name-matches-false-false-cvs</arguments>
+			</matcher>
+		</filter>
+		<filter>
+			<id>1701368795630</id>
+			<name>boardspace core</name>
+			<type>6</type>
+			<matcher>
+				<id>org.eclipse.ui.ide.multiFilter</id>
+				<arguments>1.0-name-matches-false-false-*.bak</arguments>
+			</matcher>
+		</filter>
+		<filter>
+			<id>1701368893427</id>
+			<name>boardspace games</name>
+			<type>6</type>
+			<matcher>
+				<id>org.eclipse.ui.ide.multiFilter</id>
+				<arguments>1.0-name-matches-false-false-*.bak</arguments>
+			</matcher>
+		</filter>
+		<filter>
+			<id>1701368893430</id>
+			<name>boardspace games</name>
+			<type>10</type>
+			<matcher>
+				<id>org.eclipse.ui.ide.multiFilter</id>
+				<arguments>1.0-name-matches-false-false-cvs</arguments>
+			</matcher>
+		</filter>
+		<filter>
+			<id>1701851956559</id>
+			<name>src</name>
+			<type>14</type>
+			<matcher>
+				<id>org.eclipse.ui.ide.multiFilter</id>
+				<arguments>1.0-name-matches-false-false-*</arguments>
 			</matcher>
 		</filter>
 	</filteredResources>
