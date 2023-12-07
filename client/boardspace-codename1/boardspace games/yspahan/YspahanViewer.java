@@ -629,7 +629,7 @@ public class YspahanViewer extends CCanvas<YspahanCell,YspahanBoard> implements 
 				boolean picked = gb.pickedObject!=null;
 				if(drawCardStack(gc,gb,c,r,highlight,anyone,true,
 						!picked 
-							&& !getActivePlayer().spectator
+							&& !isSpectator()
 							&& (G.offline()||(allowed_to_edit || hidden || (getUIPlayerIndex()==player)))))
 				{	// allow looking at cards at any time, but be careful not to make moves
 					// for the other player!

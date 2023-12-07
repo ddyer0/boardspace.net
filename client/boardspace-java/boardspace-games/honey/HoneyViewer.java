@@ -670,7 +670,7 @@ public void setLetterColor(Graphics gc,HBoard gb,HoneyCell cell)
     private int bigX = 0;
     private int bigY = 0;
     
-    private boolean iAmSpectator() { return getActivePlayer().spectator; }
+    private boolean iAmSpectator() { return isSpectator(); }
 
     public void redrawBoard(Graphics gc, HitPoint selectPos)
     {  HoneyBoard gb = disB(gc);

@@ -621,7 +621,7 @@ public class MogulViewer extends CCanvas<MogulCell,MogulBoard> implements MogulC
         drawHiddenWindows(gc, highlight);		// draw before the main screen draw, so the animations will see the main
 		
 		for(int i=0;i<nPlayers;i++)
-		{	boolean isSpectator = getActivePlayer().spectator;
+		{	boolean isSpectator = isSpectator();
 			boolean show = allowed_to_edit
 							|| ((isSpectator||isPassAndPlay)
 								 ? false

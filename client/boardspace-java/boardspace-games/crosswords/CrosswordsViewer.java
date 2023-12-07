@@ -1208,7 +1208,7 @@ public void setLetterColor(Graphics gc,CrosswordsBoard gb,CrosswordsCell cell)
       	{  
     	   int ap = allowed_to_edit|G.offline() ? gb.whoseTurn : getActivePlayer().boardIndex;
     	   // generally prevent spectators seeing tiles, unless openracks or gameover
-    	   boolean censorSpectator = !gb.openRacks && !gb.openRack[ap] && getActivePlayer().spectator&&!allowed_to_edit;
+    	   boolean censorSpectator = !gb.openRacks && !gb.openRack[ap] && isSpectator()&&!allowed_to_edit;
     	   drawRack(gc,gb,bigRack,gb.getPlayerRack(ap),gb.getPlayerMappedRack(ap),gb.getRackMap(ap),gb.getMapPick(ap),
     			   	censorSpectator,
     			   	censorSpectator ? null : selectPos,

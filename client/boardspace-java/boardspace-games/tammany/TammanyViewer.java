@@ -902,7 +902,7 @@ public class TammanyViewer extends CCanvas<TammanyCell,TammanyBoard> implements 
        int nPlayers = gb.nPlayers();
        TammanyState state = gb.getState();
        boolean moving = hasMovingObject(selectPos);
-       boolean simultaneous = !getActivePlayer().spectator && state.simultaneousTurnsAllowed();
+       boolean simultaneous = !isSpectator() && state.simultaneousTurnsAllowed();
        boolean ourMove = OurMove() || simultaneous;
   
        // 

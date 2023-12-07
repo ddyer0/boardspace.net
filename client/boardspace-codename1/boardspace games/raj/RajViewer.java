@@ -343,7 +343,7 @@ public class RajViewer extends CCanvas<RajCell,RajBoard> implements RajConstants
      		double vsize = hscale+(stackHeight*vscale)*unit+unit*2;
      		double vstep = vsize/(stackHeight+1);
      		int boxtop = cy - (int)(vsize)+unit*2;
-            boolean canHitCards = (allowed_to_edit||(!getActivePlayer().spectator && (G.offline()||(getActivePlayer().boardIndex==pl)))) 
+            boolean canHitCards = (allowed_to_edit||(!isSpectator() && (G.offline()||(getActivePlayer().boardIndex==pl)))) 
             			? gb.LegalToHitCards(unplayed):false;    
             // a little assist for the robot
             Rectangle boxRect = new Rectangle(cx-unit,boxtop,unit*2,(int)(vstep*stackHeight));
@@ -420,7 +420,7 @@ public class RajViewer extends CCanvas<RajCell,RajBoard> implements RajConstants
     	if(xp>0 && yp>0)
     	{
     	RajChip ch = RajChip.getChip(obj);
-    	if(ch.isCard() &&  (G.offline() || (reviewOnly || (!getActivePlayer().spectator && (bb.playerOwning(ch.cardColor())==getActivePlayer().boardIndex)))))
+    	if(ch.isCard() &&  (G.offline() || (reviewOnly || (!isSpectator() && (bb.playerOwning(ch.cardColor())==getActivePlayer().boardIndex)))))
     		{ drawCardFace(g,new Rectangle(xp-CELLSIZE,yp-5*CELLSIZE/3,CELLSIZE*2,CELLSIZE*3),ch);
     		}
     	else { ch.drawChip(g,this,CELLSIZE*2, xp, yp, null); }
@@ -508,7 +508,7 @@ public class RajViewer extends CCanvas<RajCell,RajBoard> implements RajConstants
         RajState state = gb.getState();
         boolean anyhit = G.offline() 
         				|| (reviewOnly && ((state==RajState.CONFIRM_CARD_STATE) || (state==RajState.PLAY_STATE)));
-        boolean hitCell = !getActivePlayer().spectator
+        boolean hitCell = !isSpectator()
         					&& !isQuietTime(state)
         					&& gb.LegalToHitBoard(closestCell,anyhit);
         boolean moving = (movingObjectIndex()>=0);
@@ -546,7 +546,7 @@ public class RajViewer extends CCanvas<RajCell,RajBoard> implements RajConstants
     // this is non-standard, but for Raj the moving obects are per-player
     // this allows simultaneous card moves to display properly
     public int getMovingObject(HitPoint highlight)
-    {	return(getActivePlayer().spectator?NothingMoving:movingObjectIndex()); 
+    {	return(isSpectator()?NothingMoving:movingObjectIndex()); 
     }
 
     /**
@@ -830,7 +830,7 @@ public class RajViewer extends CCanvas<RajCell,RajBoard> implements RajConstants
     if(!(id instanceof RajId))
     	{	if(remoteIndex>=0) {}
     		else if((id==DefaultId.HitNoWhere)
-    			&& !getActivePlayer().spectator 
+    			&& !isSpectator() 
     			&& !G.offline() 
     			&& simultaneous_turns_allowed())
     		{

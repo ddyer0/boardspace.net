@@ -342,7 +342,7 @@ public class MagnetViewer extends CCanvas<MagnetCell,MagnetBoard> implements Mag
     	int x = x0;
     	int y = G.Top(r)+2*realw/3;
     	commonPlayer pl = getActivePlayer();
-    	boolean skipEmpty = pl.spectator || (pl.boardIndex!=player);
+    	boolean skipEmpty = pl.isSpectator() || (pl.boardIndex!=player);
     	boolean setupPhase = !gb.setupDone[player];
     	for(int i=0;i<row.length;i++)
     	{
@@ -488,7 +488,7 @@ public class MagnetViewer extends CCanvas<MagnetCell,MagnetBoard> implements Mag
     	case Puzzle: 	return(false); 
     	default:
     		{
-    			return(activePlayer.spectator || (chip.playerIndex()!=activePlayer.boardIndex));
+    			return(activePlayer.isSpectator() || (chip.playerIndex()!=activePlayer.boardIndex));
     		}
     	}
     }

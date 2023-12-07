@@ -542,7 +542,7 @@ public class PalabraViewer extends CCanvas<PalabraCell,PalabraBoard> implements 
      		double vsize = hscale+(stackHeight*vscale)*CELLSIZE+CELLSIZE*2;
      		double vstep = vsize/(stackHeight+1);
      		int boxtop = cy - (int)(vsize)+CELLSIZE*2;
-            boolean canHitCards = (allowed_to_edit||(!getActivePlayer().spectator && (getActivePlayer().boardIndex==pl))) ? gb.LegalToHitCards(unplayed):false;    
+            boolean canHitCards = (allowed_to_edit||(!isSpectator() && (getActivePlayer().boardIndex==pl))) ? gb.LegalToHitCards(unplayed):false;    
             // a little assist for the robot
             Rectangle boxRect = new Rectangle(cx-CELLSIZE,boxtop,CELLSIZE*2,(int)(vstep*stackHeight));
 
@@ -674,7 +674,7 @@ public class PalabraViewer extends CCanvas<PalabraCell,PalabraBoard> implements 
     // this is non-standard, but for Raj the moving obects are per-player
     // this allows simultaneous card moves to display properly
     public int getMovingObject(HitPoint highlight)
-    {	return(getActivePlayer().spectator?NothingMoving:movingObjectIndex()); 
+    {	return(isSpectator()?NothingMoving:movingObjectIndex()); 
     }
 
     /**
@@ -871,7 +871,7 @@ public class PalabraViewer extends CCanvas<PalabraCell,PalabraBoard> implements 
     {
     CellId id = hp.hitCode;
     if(!(id instanceof PalabraId))
-    	{	if((id==DefaultId.HitNoWhere) && !getActivePlayer().spectator && simultaneous_turns_allowed())
+    	{	if((id==DefaultId.HitNoWhere) && !isSpectator() && simultaneous_turns_allowed())
     		{
     			String dn = bb.unDropMove();
     			if(dn!=null) { PerformAndTransmit(dn); }

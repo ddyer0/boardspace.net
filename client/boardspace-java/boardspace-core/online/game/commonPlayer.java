@@ -70,7 +70,9 @@ public class commonPlayer implements Opcodes,lib.CompareTo<commonPlayer>
     public boolean readyToPlay = false; //tiles have been chosen etc
     public long readyToPlayTime = 0;	// time at which readytoplay became true
     public boolean startedToPlay = false;	// actually running the game loop
-    public boolean spectator; //true if we are a spectator	
+    private boolean spectator; //true if we are a spectator	
+    public boolean isSpectator() { return spectator; }
+    public void setIsSpectator(boolean v) { spectator = v; }
     public String playerString=null;
     public String playerString() 
     	{ return("P"+boardIndex);
@@ -321,6 +323,7 @@ public class commonPlayer implements Opcodes,lib.CompareTo<commonPlayer>
         reviewTime = p.reviewTime;
         //System.out.println( trueName+" is now "+order); 
         spectator = false;
+        
     }
 
     public synchronized void setRobotWait(String reason, String context)

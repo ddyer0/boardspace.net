@@ -2447,7 +2447,7 @@ private Color playerBackground[] = {
     }
     private boolean useRecruitGui(EuphoriaState state,EuphoriaBoard gb)
     {
-        boolean simultaneous = !getActivePlayer().spectator && state.simultaneousTurnsAllowed();
+        boolean simultaneous = !isSpectator() && state.simultaneousTurnsAllowed();
         int pl = selectedRecruitPlayer(gb);
         boolean ourMove = OurMove() || simultaneous;
  
@@ -2528,7 +2528,7 @@ private Color playerBackground[] = {
        // if it is not our move, we can't click on the board or related supplies.
        // we accomplish this by suppressing the highlight pointer.
        //
-       boolean simultaneous = !reviewMode() && !getActivePlayer().spectator && state.simultaneousTurnsAllowed();
+       boolean simultaneous = !reviewMode() && !isSpectator() && state.simultaneousTurnsAllowed();
        boolean ourMove = OurMove() || simultaneous;
        boolean recruitGui = useRecruitGui(gb.getState(),gb);
        boolean recruitOverlay = globalRecruits!=null;

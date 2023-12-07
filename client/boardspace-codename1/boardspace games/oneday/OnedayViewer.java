@@ -1089,7 +1089,7 @@ public class OnedayViewer extends CCanvas<OnedayCell,OnedayBoard> implements One
 	 			drawSingleStack(gc,gb,sta,true,allowed_to_edit?gb.whoseTurn:getActivePlayer().boardIndex,startingCardRect,ot,null,
 	 					-0.005,0);
  			}
-			if(!getActivePlayer().spectator || mutable_game_record)
+			if(!isSpectator() || mutable_game_record)
 	 		{
 			int who = allowed_to_edit?gb.whoseTurn:getActivePlayer().boardIndex;
 			String msg = s.get(CardsForDescription,prettyName(who));
@@ -1102,7 +1102,7 @@ public class OnedayViewer extends CCanvas<OnedayCell,OnedayBoard> implements One
 	 			drawCardRack(gc,gb,gb.playerBoard[i].rack,
 	 					true,	// always show backs in the small rack
 	 					i,playerChipRect[i],ot,
-	 					(mutable_game_record||((i==getActivePlayer().boardIndex)&&!getActivePlayer().spectator))?highlight:null,
+	 					(mutable_game_record||((i==getActivePlayer().boardIndex)&&!isSpectator()))?highlight:null,
 	 					allowed_to_edit,null);
 	 		}}
 	 		

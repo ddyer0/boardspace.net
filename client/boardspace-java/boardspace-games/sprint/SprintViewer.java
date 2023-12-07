@@ -1021,7 +1021,7 @@ public void setLetterColor(Graphics gc,SingleBoard gb,SprintCell cell)
     private int bigX = 0;
     private int bigY = 0;
     
-    private boolean iAmSpectator() { return getActivePlayer().spectator; }
+    private boolean iAmSpectator() { return isSpectator(); }
 
     public void redrawBoard(Graphics gc, HitPoint selectPos)
     {  SprintBoard gb = disB(gc);

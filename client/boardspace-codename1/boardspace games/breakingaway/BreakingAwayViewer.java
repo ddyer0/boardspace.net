@@ -843,7 +843,7 @@ public class BreakingAwayViewer extends CCanvas<BreakingAwayCell,BreakingAwayBoa
         if(gb.nPlayers()>0)
         {
    		GC.setFont(gc,largeBoldFont()); 
-   		if(reviewOnly || !getActivePlayer().spectator)
+   		if(reviewOnly || !isSpectator())
    		{	int pl = getUIPlayerIndex();
    			boolean show = planned ? b.visibleInMainUI[pl] : true;
    			

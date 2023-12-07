@@ -451,7 +451,7 @@ static String SWOOSH = ImageDir + "swoosh"+ Config.SoundFormat;
         return (super.encodeScreenZone(x,y,p));
     }
     /** true if the current player is a spectator in a live game */
-    public boolean isSpectator() { return(getActivePlayer().spectator); }
+    public boolean isSpectator() { return(isSpectator()); }
  
     private void drawStoryBox(Graphics gc,ImagineBoard gb,int who,Rectangle r,Rectangle legend,HitPoint highlight0)
     {	ImagineState state = gb.getState();
@@ -1557,7 +1557,7 @@ static String SWOOSH = ImageDir + "swoosh"+ Config.SoundFormat;
     	commonPlayer pl = getActivePlayer();
     	int myPlayer = pl.boardIndex;
     	
-    	 if(!pl.spectator && initialized && !reviewMode() && (bb.whoseTurn==myPlayer))
+    	 if(!pl.isSpectator() && initialized && !reviewMode() && (bb.whoseTurn==myPlayer))
          {   if(bb.readyToScore()) { PerformAndTransmit("Score"); }
          	 else if(bb.readyToProceed()) {	 PerformAndTransmit("Commit"); }
          }

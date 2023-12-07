@@ -150,7 +150,7 @@ public void ViewerRun(int wait)
 		return(censoring()
 				&& (G.offline() 
 						? p.publicCensoring 
-						: (getActivePlayer().spectator
+						: (isSpectator()
 								|| (p.index!=getActivePlayer().boardIndex))));
 	}
 	public boolean censoring(commonMove m)
@@ -854,7 +854,7 @@ public void ViewerRun(int wait)
         			HitPoint select = (canHitCard(uis,i) && (G.offline() || (i==(ap.boardIndex))))?highlight:null;
         			drawBidCard(gc,pl,select,r,witnessing,	
         					witnessing
-        						? ob==null || (G.offline() ? ob.publicCensoring : (ap.spectator || (ap.boardIndex!=obIndex))) 
+        						? ob==null || (G.offline() ? ob.publicCensoring : (isSpectator() || (ap.boardIndex!=obIndex))) 
         						: censoring(pl)); 
         		}
 			x += stepx;

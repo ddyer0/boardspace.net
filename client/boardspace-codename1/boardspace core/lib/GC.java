@@ -812,6 +812,8 @@ public class GC {
 	 {	int cx = G.centerX(r);
 	 	int cy = G.centerY(r);
 	 	Rectangle cr = r;
+	 	if(G.Width(cr)>0 && G.Height(cr)>0)
+	 	{
 	 	double rotation2 = rotation + G.autoRotate(r);
 	 	if(rotation2!=0)
 	 	{
@@ -827,6 +829,8 @@ public class GC {
 	 		  G.setRotation(highlight,-rotation2,cx,cy);
 	 		}
 	 	return(v);
+	 }
+	 	return false;
 	 }
 
 	/**

@@ -306,7 +306,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     	{	
     	hasGameFocus = on;
     	if(v!=null) { v.setHasGameFocus(on); }
-        if (!my.spectator)
+        if (!my.isSpectator())
         {
             focuschanged = System.currentTimeMillis();
             if (on)
@@ -350,7 +350,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
             10)));
     }
     private void discardGame()
-    {	if(!my.spectator)
+    {	if(!my.isSpectator())
     	{
     	String gameId = ("".equals(UIDstring) ? "*" : UIDstring);
     	sendMessage(NetConn.SEND_REMOVE_GAME + gameId);
@@ -361,7 +361,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     }
     private void ServerRemove()
     {
-        if (!my.spectator)
+        if (!my.isSpectator())
         {	discardGame();
             
             int cpc = focusPercent();
@@ -697,7 +697,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     	my = new commonPlayer(0); 
     	my.primary = true; //mark it as "us"
     	my.launchUser = (LaunchUser)info.get(ConnectionManager.LAUNCHUSER);
-        my.spectator =  info.getBoolean(OnlineConstants.SPECTATOR,false);
+        my.setIsSpectator(info.getBoolean(OnlineConstants.SPECTATOR,false));
     	info.put(OnlineConstants.MYPLAYER,my);			// required by the viewer
         usePNP = G.offline();
         launchUsers = (LaunchUser[])info.get(ConnectionManager.LAUNCHUSERS);
@@ -797,7 +797,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
         myFrame.setDoSound(doSound);
 
         robot = (Bot)info.get(OnlineConstants.ROBOTGAME);
-        if (!my.spectator && robot!=null)
+        if (!my.isSpectator() && robot!=null)
         {	
 
         	// if we're being set up as a robot game, then some player is designated
@@ -814,7 +814,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
         {
             ExtendOptions();
         }
-        if(!G.offline() && (reviewOnly || (!my.spectator && !tournamentMode) || chatOnly))
+        if(!G.offline() && (reviewOnly || (!my.isSpectator() && !tournamentMode) || chatOnly))
     	{ privateMode = myFrame.addOption(s.get(PrivateRoomMessage), false,deferredEvents);
     	}
 
@@ -824,7 +824,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
         theChat.setHideInputField(true);
         }
          
-        if (my.spectator)
+        if (my.isSpectator())
         {
             startRecorded = true;
             started_as_spectator = true;
@@ -908,7 +908,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     	    	}
             
   
-            setGameState(my.spectator ? ConnectionState.SPECTATE : ConnectionState.CONNECTED);
+            setGameState(my.isSpectator() ? ConnectionState.SPECTATE : ConnectionState.CONNECTED);
 
             my.localIP = myNetConn.getLocalAddress();
             connectionTimeout=0;
@@ -988,7 +988,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
           
             sendMessage(NetConn.SEND_MYNAME + my.userName + " " + my.uid);
 
-            if (my.spectator)
+            if (my.isSpectator())
             {
                 sendMyName(); //to everyone
                 if(!chatOnly && !skipGetStory) 	// if we're  a reviewer, the first game selection can beat us here
@@ -1026,7 +1026,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
                 setUserMessage(Color.red, s.get(WaitForOpponents));
  
                 //tell the other player we're here
-               	if(!my.spectator)
+               	if(!my.isSpectator())
               		{
                		registerLocalPlayers();
                		}
@@ -1210,14 +1210,14 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
         	{ playedGameOverSound = true; 
         	  v.stopRobots();
         	}
-        theChat.setSpectator(my.spectator);
-        setGameState( my.spectator ? ConnectionState.SPECTATE
+        theChat.setSpectator(my.isSpectator());
+        setGameState( my.isSpectator() ? ConnectionState.SPECTATE
         				: ((commonPlayer.numberOfVacancies(playerConnections) > 0)&&!gameo)
         					? ConnectionState.LIMBO 
         					: ConnectionState.NOTMYTURN);
         changeActionMenus();
         v.startPlaying();   
-        if(!my.spectator) { restartRobots(); }
+        if(!my.isSpectator()) { restartRobots(); }
         startplaying_called = true;
         started_playing = true;
     }
@@ -1312,7 +1312,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
 
     private void sendMyName()
     { //guests have to send both names
-           if (!my.spectator)
+           if (!my.isSpectator())
             {
                 sendInfo(NetConn.SEND_GROUP, my.info); //send other stuff before name
             }
@@ -1347,7 +1347,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
             sendMessage(NetConn.SEND_MESSAGE_TO + toindex + " "+KEYWORD_IMNAMED+" " + my.userName + " " +
                 my.IP + " 0 "/*was cookie, now obsolete*/ + my.localIP + " " + my.uid);
 
-            if (!my.spectator)
+            if (!my.isSpectator())
             {
                 sendInfo(NetConn.SEND_MESSAGE_TO + toindex + " ", my.info); //send other stuff before name
             }
@@ -1445,7 +1445,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
 		            else if (tchat)
 		            {	String trimmed = msgstr.trim();
 		                if(tournamentMode
-		                	&& !my.spectator
+		                	&& !my.isSpectator()
 		                	&& !GameOver()
 		            		&& (NEWSPECTATOR.equalsIgnoreCase(trimmed)
 		            				|| LEAVEROOM.equalsIgnoreCase(trimmed)))
@@ -1568,7 +1568,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
 
                     if (GameOver())
                     {
-                        FinishUp(!my.spectator && ismyrobot);
+                        FinishUp(!my.isSpectator() && ismyrobot);
                     }
                 }}
             }
@@ -1678,7 +1678,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
 	            String player = theChat.getUserName(playerID);
 	            int where = G.IntToken(myST);
                 //System.out.println(my.trueName+" Scroll "+where);
-                if (my.spectator || useJointReview || reviewOnly || GameOver())
+                if (my.isSpectator() || useJointReview || reviewOnly || GameOver())
                 {
                     if (where != GET_CURRENT_POSITION) //-2 means just tell us
                     {	//if(my.spectator) { System.out.println("Scrollto "+where); }
@@ -1878,11 +1878,12 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     		}}}
     }
     private void restartGame()
-    {	if(my.spectator) { setGameState(ConnectionState.SPECTATE); } 	
+    {	boolean spectator = my.isSpectator();
+    	if(spectator) { setGameState(ConnectionState.SPECTATE); } 	
     	else if (commonPlayer.numberOfVacancies(playerConnections) == 0)
         {	//G.print("My "+my);
         	v.startPlaying();		// inform the viewer that we're good to go
-        	if(!my.spectator) { restartRobots(); }
+        	if(!spectator) { restartRobots(); }
             setGameState((whoseTurn == my) ? ConnectionState.MYTURN : ConnectionState.NOTMYTURN);
             theChat.postMessage(ChatInterface.LOBBYCHANNEL, ChatInterface.KEYWORD_CHAT,
                 s.get(ResumeGameMessage));
@@ -1892,7 +1893,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
             setGameState(ConnectionState.LIMBO);
         }
 
-        if (!my.spectator)
+        if (!spectator)
         {
             changeActionMenus();
         }
@@ -1936,7 +1937,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     
     private void letRoboTakeOver(commonPlayer p)
     {
-        if (!my.spectator && (p.robotPlayer == null))
+        if (!my.isSpectator() && (p.robotPlayer == null))
         {
         	Bot weak = v.salvageRobot();
         	theChat.postMessage(ChatInterface.LOBBYCHANNEL, ChatInterface.KEYWORD_CHAT,
@@ -1995,7 +1996,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
         //from the unsynchronized action of removing them
         removeActions();
 
-        if (my.spectator && extraactions)
+        if (my.isSpectator() && extraactions)
         {
             if (nva != 0)
             {
@@ -2102,7 +2103,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
                 }
             }
         if (myNetConn.can_reconnect && !myNetConn.do_not_reconnect)
-        {   my.spectator = myNetConn.reconnecting = true;
+        {   my.setIsSpectator(myNetConn.reconnecting = true);
             setGameState(ConnectionState.UNCONNECTED);
         }
         else
@@ -2209,6 +2210,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
      	//G.print(my+" beplayer "+p);
  
         // effect of changing our communication channel to the original channel
+    	if(my.isSpectator()) { v.resetBounds(); }
         my.bePlayer(p);
 
         //System.out.println("After : "+my.channel);
@@ -2252,7 +2254,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
             if (newp != null)
             {	String colr = newp.colourString();
                 String playcolor = s.get(colr);
-				if(!my.spectator)
+				if(!my.isSpectator())
 				{
 				// send our time and the time we have for the player resuming
 				sendMessage(NetConn.SEND_GROUP+OnlineConstants.TIME+" " + my.elapsedTime);
@@ -2367,7 +2369,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
 
             setPlayerName(player, "(" + tn + ")", false);
             
-            if(my.spectator
+            if(my.isSpectator()
             	&& player.uid.equals(my.uid)
             	&& !isPoisonedGuest					// don't let guests take over when they notice a guest has left
             	)
@@ -2513,7 +2515,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
                 commonPlayer.reorderPlayers(playerConnections);			// make sure the players are properly ordered before 
 
                 int vacancies = commonPlayer.numberOfVacancies(playerConnections);
-                setGameState(my.spectator  ? ConnectionState.SPECTATE : (vacancies!=0)?ConnectionState.LIMBO:ConnectionState.NOTMYTURN);
+                setGameState(my.isSpectator()  ? ConnectionState.SPECTATE : (vacancies!=0)?ConnectionState.LIMBO:ConnectionState.NOTMYTURN);
                 whoseTurn = null; //force new turn
                 SetWhoseTurn();
  
@@ -2525,7 +2527,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
                 	// reached the player.  The symptom here would have been
                 	// that the game was restored as a "won by" game, but never
                 	// goes away no matter how many times you restart it.
-                	 FinishUp(!my.spectator);
+                	 FinishUp(!my.isSpectator());
                 }
             }
         	catch (ThreadDeath err) { throw err;}
@@ -2790,7 +2792,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     	int rev = 0;
     	if(b!=null) { rev = b.getMaxRevisionLevel(); }
     	v.startPlaying();
-    	theChat.setSpectator(my.spectator);
+    	theChat.setSpectator(my.isSpectator());
     	if(b!=null) 
     		{ int rev2 = b.getActiveRevisionLevel(); 
     		  mplog(msg+" "+rev+" "+rev2);
@@ -3545,7 +3547,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
         whoseTurn = p;
         if ((gameState!=ConnectionState.LIMBO) && gameState.isActive())
         {
-            if ((p == my) && (!my.spectator) && allPlayersReady(true))
+            if ((p == my) && (!my.isSpectator()) && allPlayersReady(true))
             {
                 setGameState(ConnectionState.MYTURN);
             }
@@ -3646,7 +3648,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
         if(!reviewOnly && !GameOver())
         {
         if ((whoseTurn != null) 
-        		&& !whoseTurn.spectator
+        		&& !whoseTurn.isSpectator()
         		&& (whoseTurn.robotStarted()))
 	        {
 	            startRobotTurn(whoseTurn);
@@ -3666,7 +3668,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     private void doMYTURN(String cmd,StringTokenizer localST,String fullMsg)
     {
         initialized = true;
-        G.Assert(!my.spectator, "never the spectator's turn!");
+        G.Assert(!my.isSpectator(), "never the spectator's turn!");
 
         if(!reviewOnly && !GameOver())
         	{
@@ -3721,7 +3723,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     }
     boolean isTournamentPlayer()
     {
-    	return tournamentMode && !my.spectator;
+    	return tournamentMode && !my.isSpectator();
     }
     private void ExtendOptions()
     {
@@ -3749,7 +3751,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     }
     private void startPrimaryRobot()
     {
-    	if (!my.spectator)
+    	if (!my.isSpectator())
         {
     		boolean robo = G.getBoolean(OnlineConstants.ROBOT, false);
             if (robo)
@@ -3772,7 +3774,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
 
         if(myNetConn!=null)
         {
-        myNetConn.Connect((my.spectator ? "Spectator " : "Game ")+" "+gameInfo.gameName,
+        myNetConn.Connect((my.isSpectator() ? "Spectator " : "Game ")+" "+gameInfo.gameName,
         					sharedInfo.getString(GAMESERVERNAME,sharedInfo.getString(SERVERNAME)),
         					sharedInfo.getInt(LOBBYPORT,-1));
         setGameState(ConnectionState.UNCONNECTED);
@@ -3784,7 +3786,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
         else
         { // this starts an offline game against a robot
           initialized=true;	// start the mice
-          if(!my.spectator && (robotPosition>=0))
+          if(!my.isSpectator() && (robotPosition>=0))
           {
           commonPlayer vplayers[] = v.getPlayers();
           // we are always the robot master when offline
@@ -3810,7 +3812,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
 
     private void setPlayerName(commonPlayer p, String name, boolean istrue)
     {
-        if ((p != my) || my.spectator || reviewOnly)
+        if ((p != my) || my.isSpectator() || reviewOnly)
         { //if we are a spectator, or we're a player and this is not setting our name
             p.setPlayerName(name, istrue,this);
         }
@@ -3822,7 +3824,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     private void sendPlayerTimes()
     {	for(commonPlayer p : playerConnections)
     	{
-    	if((p==my && !p.spectator) || iRunThisRobot(p))
+    	if((p==my && !p.isSpectator()) || iRunThisRobot(p))
     	{
 		String tmsg = ((p==my) ? NetConn.SEND_GROUP : NetConn.SEND_AS_ROBOT_ECHO+p.channel+" ")
 								+ OnlineConstants.TIME+" " + p.elapsedTime + " " + p.clock + " " + p.ping;
@@ -3869,7 +3871,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
         String pm = msg.toString();
         
         sendMessage(pm);
-    	if(!(my.spectator || (!gameState.isActive())))
+    	if(!(my.isSpectator() || (!gameState.isActive())))
     			{
     			sendPlayerTimes();
     			}
@@ -3881,7 +3883,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
      private void DoTime()
     {
         long currentT = G.Date();
-        int timeindex = (my.spectator || GameOver() || (gameState == ConnectionState.LIMBO))
+        int timeindex = (my.isSpectator() || GameOver() || (gameState == ConnectionState.LIMBO))
             ? SPECTIMEOUT : PLAYTIMEOUT;
 
 
@@ -4017,7 +4019,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
             if(selectorFrame!=null) { G.moveToFront(selectorFrame); } 
 
             if (!chatOnly && !G.offline())
-            {	String pfile1 = my.spectator 
+            {	String pfile1 = my.isSpectator() 
             				? "spectator.txt" 
             				: (gameNameString.toLowerCase()+"-"+"player.txt");
                 showNews =  pfile1;
@@ -4087,7 +4089,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
                     }
                     else if(!reviewOnly)
                     {	// don't let spectators time out during the game, if there was one
-                    	if(my.spectator) { doTouch(); }
+                    	if(my.isSpectator()) { doTouch(); }
 
                     }
 

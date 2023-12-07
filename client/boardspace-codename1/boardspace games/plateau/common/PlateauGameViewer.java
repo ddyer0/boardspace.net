@@ -389,7 +389,7 @@ public class PlateauGameViewer extends commonCanvas implements PlateauConstants,
         		|| mutable_game_record 
         		|| G.offline() 
         			? eyeRects[idx].isOn()
-        			: (!getActivePlayer().spectator && (getActivePlayer().boardIndex == idx)))
+        			: (!isSpectator() && (getActivePlayer().boardIndex == idx)))
         		? idx 
         		: -1);
     }

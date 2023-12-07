@@ -211,6 +211,7 @@ public interface ViewerProtocol extends ViewGameProtocol
 	 * @return
 	 */
 	public RecordingStrategy gameRecordingMode();
+	public void resetBounds();
 	
 
 }

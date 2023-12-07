@@ -342,6 +342,8 @@ public class Graphics extends SystemGraphics
 		int top = G.Top(r);
 		int w = G.Width(r);
 		int h = G.Height(r);
+		if(w>0 && h>0)
+		{
     	int bsize = bevel>=0 ? bevel : h/4;
         if(fillColor!=null)
          	{setColor(fillColor);
@@ -351,15 +353,18 @@ public class Graphics extends SystemGraphics
         {
          setColor(frameColor);
          drawRoundRect(left,top,w-1,h-1,bsize,bsize);
-        }
+        }}
 	}
 	public void drawRoundTextButton(Rectangle r,int bevel,Text text,Color textColor,Color frameColor,Color BackgroundColor)
 	{	int left = G.Left(r);
 		int top = G.Top(r);
 		int height = G.Height(r);
 		int width = G.Width(r);
+		if(width>0 && height>0)
+		{
     	drawRoundButton(r,bevel,frameColor,BackgroundColor); 
         text.draw(this, true, left+1, top+1, width-2, height-2, textColor, null);
+		}
 	}
 
 	public void drawTextButton(Rectangle r, Text text, Color textColor, Color frameColor, Color BackgroundColor)
@@ -367,8 +372,11 @@ public class Graphics extends SystemGraphics
 		int top = G.Top(r);
 		int w = G.Width(r);
 		int h = G.Height(r);
+		if(w>0 && h>0)
+		{
         drawButton(left,top,w,h,frameColor, BackgroundColor);
         text.draw(this, true, left + 2,top + 2, w - 4, h - 4,  textColor, null);
+		}
 
    }
 	/**

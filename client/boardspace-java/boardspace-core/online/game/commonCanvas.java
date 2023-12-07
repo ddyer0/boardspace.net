@@ -1885,6 +1885,16 @@ public abstract class commonCanvas extends exCanvas
     	}
     	return(false);
     }
+    
+    /**
+     * return true if the currently active player is a spectator in a live game
+     * 
+     * @return
+     */
+    public boolean isSpectator() 
+    {commonPlayer p = getActivePlayer();
+    	return p!=null && p.isSpectator(); 
+    }
     /**
      * true if we're not in review mode and we're the active player
      * @return true if it is our move as a player, including simultaneous moves by players
@@ -1894,7 +1904,7 @@ public abstract class commonCanvas extends exCanvas
     	commonPlayer who = whoseTurn();
     	return(!reviewMode()
     			&& (ap!=null)
-    			&& !ap.spectator 
+    			&& !ap.isSpectator() 
     			&& (who!=null)
     			&& (simultaneous_turns_allowed()
     					|| isALocalPlayer(who)
@@ -2292,7 +2302,7 @@ public abstract class commonCanvas extends exCanvas
   * players edit and rehash the game.   
   */
     public void setEditable()
-    {	if(!getActivePlayer().spectator) { allowed_to_edit = true; }
+    {	if(!isSpectator()) { allowed_to_edit = true; }
     	mutable_game_record = true;
     }
     /**
@@ -3423,7 +3433,7 @@ public abstract class commonCanvas extends exCanvas
     public void leaveLockedReviewMode()
     { if( reviewMode()			// and may not even realize it.
     	  && !mutable_game_record
-    	  && !getActivePlayer().spectator) 
+    	  && !isSpectator()) 
     		{ scrollFarForward(); }
     }
     /**
@@ -4378,7 +4388,7 @@ public abstract class commonCanvas extends exCanvas
             			} 
             	}
             if(mode==replayMode.Live) { verifyGameRecord(); }
-            if (transmit && (allowed_to_edit || !getActivePlayer().spectator))
+            if (transmit && (allowed_to_edit || !isSpectator()))
             {	if(m.elapsedTime()<=0)
             	{
             	// this may not have been done yet if the game is messing with "replaymode" 
@@ -4935,7 +4945,7 @@ public abstract class commonCanvas extends exCanvas
     public boolean canTrackMouse()
     {	return( reviewOnly 
     			|| ( started
-    				&& ( l.my.spectator 
+    				&& ( l.my.isSpectator() 
     					? mutable_game_record		// inhibit spectator tracking during live games
     					: true
     					)));
@@ -5133,7 +5143,7 @@ public abstract class commonCanvas extends exCanvas
         setActivePlayer((commonPlayer)info.get(OnlineConstants.MYPLAYER));
         G.Assert(getActivePlayer()!=null,"my player not supplied");
 
-        if (!getActivePlayer().spectator)
+        if (!isSpectator())
         {
             hidden.resignAction = myFrame.addAction(s.get(RESIGN),deferredEvents);
         }
@@ -5810,7 +5820,7 @@ public abstract class commonCanvas extends exCanvas
     	{
      	long newtime = (p.elapsedTime + increment);
         p.setElapsedTime(newtime);
-        if(!p.spectator) { doTime(p,myFrame.doSound()); }
+        if(!p.isSpectator()) { doTime(p,myFrame.doSound()); }
     	}
     }
     public void doTruncate()

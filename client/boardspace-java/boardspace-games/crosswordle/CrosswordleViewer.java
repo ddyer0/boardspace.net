@@ -683,7 +683,7 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
       	{  
     	   //int ap = allowed_to_edit|G.offline() ? gb.whoseTurn : getActivePlayer().boardIndex;
     	   // generally prevent spectators seeing tiles, unless openracks or gameover
-    	   //boolean censorSpectator =  !gb.openRack[ap] && getActivePlayer().spectator&&!allowed_to_edit;
+    	   //boolean censorSpectator =  !gb.openRack[ap] && isSpectator()&&!allowed_to_edit;
       	}
      
        GC.setFont(gc,standardBoldFont());
@@ -909,7 +909,7 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
     	commonPlayer ap = getActivePlayer();
     	statStr = null;
        	ap.setElapsedTime(0);
-       	ap.spectator = false;
+       	ap.setIsSpectator(false);
        	setScored(false);
        	gameOver = false;
        	allowed_to_edit = false;
@@ -1143,8 +1143,7 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
 		boolean done = bb.canBeGuessed(theWord);
 		if(done) 
 			{ 
-			commonPlayer ap = getActivePlayer();
-			if(allowed_to_edit || !ap.spectator) { PerformAndTransmit("Play "+theWord); } 
+			if(allowed_to_edit || !isSpectator()) { PerformAndTransmit("Play "+theWord); } 
 			inputField.setText("");
 			}
 	}

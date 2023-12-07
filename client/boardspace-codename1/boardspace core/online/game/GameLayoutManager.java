@@ -2240,8 +2240,9 @@ public class GameLayoutManager  implements Opcodes
     		if(nrep==0 || (rep[0]==null)) { placeDoneEdit(boxW,maxW,done,edit); }
     		else
     		{
+    		boolean spectator = client.isSpectator();
     		int marginSize = rects.marginSize;
-    		boolean hasButton = edit!=null || done!=null;
+    		boolean hasButton = !(spectator && !alwaysPlaceDone) && (edit!=null || done!=null);
     		int buttonH1 = hasButton ? boxW/2+marginSize : 0;
     		int buttonH2 = hasButton ? maxW/2+marginSize : 0;
     		Rectangle r = new Rectangle();
@@ -2254,15 +2255,23 @@ public class GameLayoutManager  implements Opcodes
     		int hszw2 = szw2 * (nrep+1);
     		int hszh = buttonH1;
     		int hszh2 = buttonH2;
-    		
     		RectangleSpec spec = placeRectangle(Purpose.DoneEditRep,r,
     					szw,szh,szw2,szh2,		// vertical format with done/edit side by side
     					hszw,hszh,hszw2,hszh2,	// horizontal format with everything flat
     				BoxAlignment.Center,true);
     		if(spec!=null)
     		{
-    		spec.rect2 = done;
-    		spec.rect3 = edit;
+    		if(hasButton)
+    		{
+    		spec.rect2 = done ;
+    		spec.rect3 = edit ;
+    		}
+    		else
+    		{	// if we're a spectator, done and edit/undo are not needed
+    			spec.rect2 = spec.rect3 = null;
+    			if(done!=null) { G.SetRect(done,0,0,0,0); }
+    			if(edit!=null) { G.SetRect(edit,0,0,0,0); }
+    		}
     		spec.rectList = rep;
     		rects.splitDoneEditRep(spec);  		
     		}}
@@ -2289,17 +2298,27 @@ public class GameLayoutManager  implements Opcodes
     	}
     }
     public void placeDoneEdit(int boxW,int maxW,Rectangle done,Rectangle edit)
+    {		boolean spectator =  client.isSpectator();
+    		if((done!=null)
+    				&& (edit!=null) 
+    				&& (plannedSeating() || spectator)
+    				&& !alwaysPlaceDone) 
     {		
-    		if((done!=null) && (edit!=null) && plannedSeating() && !alwaysPlaceDone) { 
     			G.SetRect(done, 0,0,0,0);
+    			// spectators don't need an edit (or undo) button
+    			if(spectator) { G.SetRect(edit,0,0,0,0); }
+    			else {
     			int undoW = boxW*2/3;
     			placeRectangle(Purpose.Edit,edit,undoW,undoW,undoW,undoW,BoxAlignment.Center,true);
     		} 
+    		}
     		else
     		{
-    	    if(done==null && (edit!=null)) { placeRectangle(Purpose.Edit,edit,boxW,boxW/2,maxW,maxW/2,BoxAlignment.Center,true); }
+    	    if(done==null && (edit!=null)) 
+    	    	{ placeRectangle(Purpose.Edit,edit,boxW,boxW/2,maxW,maxW/2,BoxAlignment.Center,true); 
+    	    	}
     		if(edit==null && (done!=null)) 
-    			{ 	if(plannedSeating()&&!alwaysPlaceDone) { G.SetRect(done,0,0,0,0); }
+    			{ 	if(plannedSeating()&& client.isSpectator()&&!alwaysPlaceDone) { G.SetRect(done,0,0,0,0); }
 	    			else
 	    			{
 	    				placeRectangle(Purpose.Done,done,boxW,boxW/2,maxW,maxW/2,BoxAlignment.Center,true);
