@@ -3,7 +3,7 @@
   <dontWrapJar>false</dontWrapJar>
   <headerType>gui</headerType>
   <jar>G:\share\projects\boardspace-html\htdocs\java\v102\boardspace.jar</jar>
-  <outfile>G:\share\projects\boardspace-html\htdocs\java\launcher\boardspace.exe</outfile>
+  <outfile>G:\share\projects\boardspace-java\deploy-and-sign\pc-signing\unsigned\boardspace.exe</outfile>
   <errTitle>Java wasn&apos;t found on your computer</errTitle>
   <cmdLine></cmdLine>
   <chdir>.</chdir>
