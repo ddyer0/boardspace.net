@@ -131,7 +131,6 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
 	private boolean hasGameFocus = true;
 	private boolean sendFocusMessage = false;
     private FileSelector selector = null;
-    private String gameTypeString = null; 	// short name code used in several places
     private String gameNameString = null;	// pretty name used for help files
     private Thread gameThread = null;
     private boolean skipGetStory = false;	// skip the story when we get to it
@@ -229,7 +228,6 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     private int robotMasterOrder = -1;	// play order for the robot master
 
     
-    public boolean usePNP = false;		// in pass-n-play mode
     public LaunchUser[] launchUsers = null;
    
     static private final String gameOverSoundName = SOUNDPATH + "chat" + SoundFormat;
@@ -693,15 +691,30 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     	playerConnections = new commonPlayer[playersInGame];
     	Session.Mode gameMode = Session.Mode.findMode(sharedInfo.getString(OnlineConstants.MODE,Session.Mode.Game_Mode.modeName));
         chatOnly = gameMode==Session.Mode.Chat_Mode;
-        gameTypeId = info.getString(OnlineConstants.GAMETYPEID,"xx");
+        gameTypeId = info.getString(OnlineConstants.GAMETYPEID,gameInfo==null ? "xx" : gameInfo.id);
     	my = new commonPlayer(0); 
     	my.primary = true; //mark it as "us"
     	my.launchUser = (LaunchUser)info.get(ConnectionManager.LAUNCHUSER);
         my.setIsSpectator(info.getBoolean(OnlineConstants.SPECTATOR,false));
-    	info.put(OnlineConstants.MYPLAYER,my);			// required by the viewer
-        usePNP = G.offline();
+        String myUid = "D"+G.getIdentity();
+        my.uid = myUid;
+        String myName = prefs.get(loginNameKey,"anonymous");
+        my.setPlayerName(myName,false,null);
+        info.put(OnlineConstants.MYPLAYER,my);			// required by the viewer
         launchUsers = (LaunchUser[])info.get(ConnectionManager.LAUNCHUSERS);
        
+        if(launchUsers==null)
+        {
+        	LaunchUserStack ls = new LaunchUserStack();
+        	User myUser = new User();
+        	myUser.name=myName;
+       	    myUser.publicName=myName;
+       	    myUser.serverIndex=-1;
+       	    myUser.uid=myUid;      	    
+        	my.launchUser = ls.addUser(myUser,0,0);
+        	launchUsers = ls.toArray();
+        }
+        
         super.init(info,frame);		// viewer is created here
         
         CreateChat(info.getBoolean(OnlineConstants.CHATFRAMED,false) || G.smallFrame());
@@ -730,7 +743,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
          }
 
         // reviewOnly means we're not playing, but we might or might not be connected
-        reviewOnly = gameMode==Session.Mode.Review_Mode || info.getBoolean(REVIEWONLY,false);
+        reviewOnly = (gameMode==Session.Mode.Review_Mode) || info.getBoolean(REVIEWONLY,false);
        
         
         skipGetStory = false;
@@ -753,12 +766,10 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     		  	{ 
     		  	  myCanvas.setTheChat(theChat,chatFrame!=null);
     		  	}
-   
     		}
     	// this will be used to give robots access to the game object
         info.put(GAME, this);
         // used in reporting game results and naming saved games
-        gameTypeString = info.getString(OnlineConstants.GAMETYPEID,"xx");
         gameNameString = info.getString(GameInfo.GAMENAME,"gamename");
         // session >=0 means we're a game with a connection
         sessionNum = info.getInt(ConnectionManager.SESSION,-1);
@@ -767,10 +778,23 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
         serverFile = G.getString(FileSelector.SERVERFILE, "");
         selectedGame = G.getString(FileSelector.SELECTEDGAME, "");
          
+        unrankedMode = gameMode==Session.Mode.Unranked_Mode;
+        masterMode = gameMode==Session.Mode.Master_Mode;
+		tournamentMode = info.getBoolean(OnlineConstants.TOURNAMENTMODE,false);
+        isGuest = info.getBoolean(OnlineConstants.GUEST,false);
+        UIDstring = info.getString(OnlineConstants.GAMEUID,"");
+        if("".equals(UIDstring) && G.offline())
+        {
+        	UIDstring = "UU!"+gameTypeId+"-offline-"+playersInGame;
+        }
+        doNotRecord = G.getBoolean(OnlineConstants.DONOTRECORD, false);
+        doSound = info.getBoolean(OnlineConstants.SOUND,true);
+        myFrame.setDoSound(doSound);
+        serverName = info.getString(SERVERNAME);
+
         if(sessionNum>0)
         {
         // setup a connected game
-        serverName = info.getString(SERVERNAME);
         if(!G.offline())
 	        {
 	        myNetConn = new ConnectionManager(info);
@@ -787,15 +811,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
         }
         }
         // G.print("init "+my);
-        unrankedMode = gameMode==Session.Mode.Unranked_Mode;
-        masterMode = gameMode==Session.Mode.Master_Mode;
-		tournamentMode = info.getBoolean(OnlineConstants.TOURNAMENTMODE);
-        isGuest = info.getBoolean(OnlineConstants.GUEST);
-        UIDstring = info.getString(OnlineConstants.GAMEUID);
-        doNotRecord = G.getBoolean(OnlineConstants.DONOTRECORD, false);
-        doSound = info.getBoolean(OnlineConstants.SOUND);
-        myFrame.setDoSound(doSound);
-
+ 
         robot = (Bot)info.get(OnlineConstants.ROBOTGAME);
         if (!my.isSpectator() && robot!=null)
         {	
@@ -2458,7 +2474,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
          //G.print(""+my+" init from history "+robotMasterPosition);
          v.stopRobots();
          sendRegister(my.getOrder(),my.getPosition(),my.userName,my.uid,my.channel,0);
-         if(usePNP)
+         if(G.offline())
          {	// register the other users that share this connection
            for(commonPlayer p : playerConnections)
            {
@@ -2735,7 +2751,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     {
         if (!doNotRecord && !startRecorded)
         {   
-        	String args = "?game=" + gameTypeString +"&start=" + my.uid + "&u1=" + my.uid;
+        	String args = "?game=" + gameTypeId +"&start=" + my.uid + "&u1=" + my.uid;
         	int idx = 2;
         	// record the start for ourselves and any robots we run
         	for(int i=0;i<playerConnections.length;i++)
@@ -2788,6 +2804,8 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     	for(int i=0;i<playerConnections.length;i++)
     	{	msg+=" "+playerConnections[i];
     	}
+    	if(v!=null)
+    	{
     	BoardProtocol b = v.getBoard();
     	int rev = 0;
     	if(b!=null) { rev = b.getMaxRevisionLevel(); }
@@ -2797,6 +2815,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     		{ int rev2 = b.getActiveRevisionLevel(); 
     		  mplog(msg+" "+rev+" "+rev2);
     		}
+    	}
     	startplaying_called = true;
     	started_playing = true;
      	startPrimaryRobot();
@@ -2881,18 +2900,6 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     	{
     		sendRegister(1,1,Bot.Automa.name,Bot.Automa.uid,0,0);
     	}
-    	if(usePNP)
-        {	// register the other users that share this connection
-     	   for(LaunchUser otherUser : launchUsers)
-     	   {
-     		   if((otherUser!=my.launchUser)&&(otherUser.host.equals(my.launchUser.host)))
-     		   {  // the 0 channel makes this user look like a robot
-     			  // to the registration code. It has no socket of its own
-     			  // but piggyback's on the main player
-     			  regPlayer(otherUser,otherUser.order,otherUser.order,0);
-     		   }
-     	   }
-        }
     }
     public void registerOfflinePlayers()
     {	int idx=0;
@@ -3105,7 +3112,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
         int digest = (int)v.Digest();		// digest is int for downstream use
         int mid = (int)midDigest;
         boolean allwin = true;
-        String gametype = gameTypeString;
+        String gametype = gameTypeId;
         String mode = modeString();
         String tm = tournamentMode ? "&tournament=1" : "";
         StringBuilder urlStr = new StringBuilder();
@@ -3174,15 +3181,16 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     {
         String mode = modeString();
         StringBuilder urlStr = new StringBuilder();
-        commonPlayer p = commonPlayer.firstPlayer(playerConnections);
+        commonPlayer p = my;
         String urank = unrankedMode ? "&nr1=true" : "";
         G.append(urlStr,
-        		"&key=" , myNetConn.sessionKey ,
+        		"&key=" , myNetConn==null ? "0" : myNetConn.sessionKey ,
         		"&session=",sessionNum ,
         		"&sock=" , sharedInfo.getInt(OnlineConstants.LOBBYPORT,-1) , 
         		"&game=" , gameTypeId ,
         		"&mode=" ,mode , 
-        		"&u1=",p.uid,
+        		"&u1=", p.uid,
+        		"&p1=", p.trueName(),
         		"&s1=", v.ScoreForPlayer(p),
         		"&t1=", ((int) (p.elapsedTime / 1000)),
         		urank,
@@ -3283,7 +3291,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
         int realPCtr = 1;
         int digest = (int)v.Digest();
         int mid = (int)midDigest;
-        String gametype = gameTypeString;
+        String gametype = gameTypeId;
         String mode = modeString();
         String tm = tournamentMode ? "&tournament=1" : "";
         StringBuilder urlStr = new StringBuilder();
@@ -3498,8 +3506,23 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
             sendit = true;
           }
     	}
-    	if(myNetConn!=null && sendit)
+    	if(sendit)
     	{	ScoringMode sm = gameInfo.scoringMode();
+    		if(G.offline())
+    		{
+        		
+        		switch(sm)
+        		{
+        		case SM_Single:
+		            String baseUrl = recordKeeper1OfflineURL;
+		            String urlStr = getUrlStr1();      
+		            urlStr = "params=" + XXTEA.combineParams(urlStr, XXTEA.getTeaKey());
+		            sendTheResult(serverName,web_server_sockets,baseUrl+"?"+urlStr);    			
+        			break;
+        		default: break;
+        		}
+    		}
+    		else {
     		switch(sm)
     		{
     		case SM_Multi:
@@ -3530,6 +3553,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
 		    	}
 		    	break;
 	    	default: G.Error("Scoring mode %s not expected",sm);
+    		}
     		}
     	}
     	

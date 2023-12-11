@@ -20,9 +20,11 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.StringTokenizer;
 import bridge.FontMetrics;
+
+import bridge.Config;
 import bridge.JMenu;
 import bridge.JMenuItem;
-import bridge.Config;
+
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -457,7 +459,7 @@ public abstract class InternationalStrings implements Config
     {	if(str==null) { return(null); }
     	String text = get(str);
     	if(text.indexOf("#1")<0) { return(text); }
-    	return(substOne(str,"#1","#"+arg));
+    	return(substOne(text,"#1",""+arg));
     }
     
     /**
@@ -473,7 +475,7 @@ public abstract class InternationalStrings implements Config
     {	if(str==null) { return(null); }
     	String text = get(str);
     	if(text.indexOf("#1")<0) { return(text); }
-    	return(substOne(str,"#1",arg));
+    	return(substOne(text,"#1",arg));
     }
 
     public String name = DefaultLanguageName;

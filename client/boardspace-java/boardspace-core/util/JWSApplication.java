@@ -158,8 +158,11 @@ public class JWSApplication implements Config,Runnable,LobbyConstants
             					? server.getHostName()
             					: isTable 
             						? UDPService.getPlaytableName()
-            						: G.getString(GameInfo.GAMETYPE,
-            								G.getTranslations().get(offlineLauncher?LauncherName :LobbyName));
+            						: gt != null 
+            							? gt 
+            							: gn!=null
+            								? gn 
+            								: G.getTranslations().get(offlineLauncher?LauncherName :LobbyName);
             ExtendedHashtable sharedInfo = G.getGlobals();
             myL.init(sharedInfo,fr);
             // create the free standing frame
@@ -294,11 +297,14 @@ public class JWSApplication implements Config,Runnable,LobbyConstants
 			if(lang!=null) { G.putGlobal(G.LANGUAGE,lang); }
 	    	Http.setHostName(serverName);
 	    	String vc = G.getString(OnlineConstants.VIEWERCLASS,null);
-	    	boolean gb = G.getBoolean(OnlineConstants.REVIEWONLY,false);
+	    	boolean offline = G.getBoolean(OnlineConstants.OFFLINE,false);
+	    	boolean gb = offline || G.getBoolean(OnlineConstants.REVIEWONLY,false);
+	    	boolean isTable = G.isTable();
+	    	G.setOffline(gb);
 	    	if(!gb &&  vc==null)
-	        {	boolean isTable = G.isTable();
-	    		G.setOffline(isTable);
-	    		boolean startoff = isTable;
+	        {	
+	    		boolean startoff = isTable || offline;
+	    		G.setOffline(startoff);
 			  	do { 
 			  		startoff = G.offline();
 			  		if(G.offline()) { runOffline(serverName); }

@@ -43,8 +43,9 @@ public interface LoaderConfig {
 	 */
     static final String errorURL = "/cgi-bin/error.cgi";	
     
-	static final String MiniloaderVersion = "1.4";
+	static final String MiniloaderVersion = "1.5";
 				// version 1.4 adds a retry in copyurl
+				// version 1.5 adds a -setup arg that sends the rest of args to the app
 	
     static final String MiniloaderId = "miniloader=version-"+MiniloaderVersion;
 

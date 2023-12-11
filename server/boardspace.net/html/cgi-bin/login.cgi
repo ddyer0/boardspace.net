@@ -125,6 +125,7 @@ sub print_jws_applet()
       $pclass,$played,$timec,$bannermode) = @_;
   my $language=$languageName."Strings";
   my $use_class_dir = param('classes');
+  my $cheerpj = lc(param('cheerpj')) eq 'true';
   my $test = (param('test') eq 'true') && !($'class_dir eq $'test_class_dir);
   my $testserver = $test ? "testserver=true\n" : "";
   my $stealth = (($bannermode eq 'S')&&(param('stealth') eq 'true'))
@@ -162,11 +163,14 @@ sub print_jws_applet()
   &finishQuery($sth);
   }
 	if($fav) { $fav = "favorites=$fav\n"; }
-   my $port = $test ? $'test_server_port : $'game_server_port;
+   my $port = $cheerpj
+		? ($test ? $'cheerpj_test_server_port : $'cheerpj_game_server_port)
+		: ($test ? $'test_server_port : $'game_server_port);
    my $msg = utfEncode("$banner$fav$testserver$dd
 codebase=/$'java_dir/$use_class_dir/
 documentbase=/$languageName/
 servername=$ENV{'HTTP_HOST'}
+gameservername=$'ip_name
 localIP=$ENV{'REMOTE_ADDR'}
 serverKey=$'serverKey
 lobbyportnumber=$port

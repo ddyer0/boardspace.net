@@ -266,13 +266,13 @@ print <<ENDBODY
   <script src="$'cheerpj">
 </script>
 <script src="/js/site.js"> </script>
+<script src="/js/cheerpj.js"></script>
 </head>
 <body background="/images/background-image.jpg">
 <meta charset="utf-8">
-
  <script>
       async function myInit() {
-      await cheerpjInit();
+      await initNatives();
       cheerpjCreateDisplay(-1,-1,document.body);
       cheerpjRunMain("util.JWSApplication", "/app/java/jws/OnlineLobby.jar",
                         "servername","$host",

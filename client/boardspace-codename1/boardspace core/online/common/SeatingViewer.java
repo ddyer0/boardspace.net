@@ -308,12 +308,7 @@ public class SeatingViewer extends exCanvas implements LobbyConstants
 		if(sess.players[0]==null) { sess.players[0]=users.primaryUser(); }
 
 		for(int i=0;i<nseats;i++)
-		{
-			LaunchUser u = new LaunchUser();
-			u.order = i;
-			u.seat = i;
-			u.user = sess.players[i];
-			lusers.push(u);
+		{	lusers.addUser(sess.players[i],i,i);
 		}
 		
 		sess.selectedFirstPlayerIndex = firstPlayerIndex;

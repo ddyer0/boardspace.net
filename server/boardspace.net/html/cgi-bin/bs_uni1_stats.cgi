@@ -13,6 +13,8 @@
 #  `time1` int(11) NOT NULL,
 #  `mode` enum('normal','hard') NOT NULL,
 #  `uid` int(11) NOT NULL AUTO_INCREMENT,
+#  `deviceid` char(16),
+#  `nickname` char(16),
 #  PRIMARY KEY (`uid`)
 #) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 #
@@ -48,9 +50,10 @@ sub timestr()
 
 sub personalSummary()
 {
-    my ($dbh,$u1,$variation,$mode) = @_;
- 
-    my $q = "select count(uid),sum(time1),sum(score1) from sp_record where player1=$u1 and variation=$variation and mode=$mode";
+    my ($dbh,$offline,$u1,$variation,$mode) = @_;
+    my $selector = $offline ? "deviceid=$u1" : "player1=$u1" ;
+    my $counter = $offline ? "count(deviceid)" : "count(uid)";
+    my $q = "select $counter,sum(time1),sum(score1) from sp_record where $selector and variation=$variation and mode=$mode";
     my $sth = &query($dbh,$q);
     my ($count,$sumtime,$sumscore) = &nextArrayRow($sth);
     &finishQuery($sth);
@@ -89,7 +92,7 @@ sub personalSummary()
     print "end true\n";     
 }
 sub puzzleSummary()
-{   my ($dbh,$puzzleid) = @_;
+{   my ($dbh,$offline,$puzzleid) = @_;
 
     my $q = "select count(score1),sum(score1),sum(time1) from sp_record where puzzleid=$puzzleid and score1>0";
     my $sth = &query($dbh,$q);
@@ -150,7 +153,8 @@ sub doit()
   my $variation = $dbh->quote(param("variation"));		# puzzle type
   my $puzzleid = $dbh->quote(param("puzzleid"));	# the actual puzzle text
   my $mode = (param("hard") eq ('true')) ? "'hard'" : "'normal'";		# if hard puzzle group
-
+  my $offline = &param('offline') eq 'true';
+ 
   if($u1 eq 'null')
   { $u1 = &getUid($dbh,$p1);
   }
@@ -169,8 +173,8 @@ sub doit()
   }
   &finishQuery($sth);
 
-  &puzzleSummary($dbh,$puzzleid);
-  &personalSummary($dbh,$u1,$variation,$mode);
+  &puzzleSummary($dbh,$offline,$puzzleid);
+  &personalSummary($dbh,$offline,$u1,$variation,$mode);
 
   &disconnect($dbh);
 

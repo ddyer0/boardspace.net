@@ -57,9 +57,8 @@ import udp.PlaytableStack;
 {
 	 static final long serialVersionUID = 1L;
 
-	 public static final String nameKey = keyPrefix + "namekey";
-	 public static final String passKey = keyPrefix + "passKey";
-	 public static final String savePassKey = keyPrefix + "savePassKey";
+	 public static final String passKey = loginKeyPrefix + "passKey";
+	 public static final String savePassKey = loginKeyPrefix + "savePassKey";
 	 public static final String countryKey = regPrefix + "countryKey";
 	 public static final String realNameKey = regPrefix + "realName";
 	 
@@ -363,7 +362,7 @@ import udp.PlaytableStack;
 		 	  countryField.select(s.get("Planet Earth"));
 		 	}
 		 else {
-			 prefs.put(nameKey,name);
+			 prefs.put(loginNameKey,name);
 			 prefs.put(passKey,"");
 			 prefs.put(langKey,language);
 			 prefs.put(countryKey,country);
@@ -566,7 +565,7 @@ import udp.PlaytableStack;
 		 nameField.setActionCommand(OK);
 		 panel.add(nameLabel);
 		 panel.add(nameField);
-		 if(name==null) { name = prefs.get(nameKey,""); }
+		 if(name==null) { name = prefs.get(loginNameKey,""); }
 		 if(name==null) { name = ""; }
 		 nameField.setText(name); 
 		 
@@ -1020,7 +1019,7 @@ import udp.PlaytableStack;
         	{boolean savePass = G.getState(savePasswordField);
         	 if(!isGuest)
         	 {
-        	 prefs.put(nameKey,name);
+        	 prefs.put(loginNameKey,name);
         	 prefs.put(passKey,savePass? obfuscate(password,name+SALT) : "");
         	 // use strings, because standard java doesn't support booleans
         	 prefs.put(savePassKey,""+(savePass?"true":"false"));

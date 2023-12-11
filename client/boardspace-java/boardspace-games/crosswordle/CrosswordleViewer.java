@@ -17,7 +17,6 @@
 package crosswordle;
 
 import static crosswordle.CrosswordleMovespec.*;
-
 import java.awt.*;
 
 import online.common.*;
@@ -1161,7 +1160,6 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
 	private String statCaption = "Caption";
 	
 	public void doShowStats()
-	{	if(!G.offline())
 	{	
         String baseUrl = statsURL;
         commonPlayer pl = getPlayerOrTemp(0);
@@ -1171,9 +1169,11 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
         String hards = (hardButton.isOn()?"true":"false");
         String vname = bb.variation.name();
         String urlStr = 
+        // for offline games, pl is manipulated with device uid as pl.uid and pl.trueName set to the nickname
         G.concat(
         		"&p1=",pl.trueName(),
          		"&u1=",pl.uid,
+         		"&offline=",G.offline(),
     			"&puzzleid=",bb.getSolution(key),
     			"&variation=",vname,
     			"&hard=",hards);
@@ -1182,7 +1182,6 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
        
         statStr = null;
         urlResult = Http.postAsyncUrl(serverName,baseUrl,urlStr,null);
-	}
 	}
 	public void MouseDown(HitPoint p)
 	{	
@@ -1234,14 +1233,7 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
         	statStr = null;
         	break;
         case ShowStats:
-        	if(G.offline()) 
-        		{
-        		G.infoBox(s.get(OfflineCaption),s.get(OfflineExplanation));
-        		}
-        	else
-        		{
-        	doShowStats();
-        		}
+         	doShowStats();
         	break;
         case ToggleEasy:
         	hardButton.toggle();
@@ -1541,6 +1533,7 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
     {	long key = bb.randomKey;
     	String v = G.concat(
     			"&puzzleid=",bb.getSolution(key),
+    			"&offline=",G.offline(),
     			"&variation=",bb.variation.name(),
     			"&hard=",((key&1)==0?"false":"true"),
     			"&puzzledate=",dateRect.dateString(),

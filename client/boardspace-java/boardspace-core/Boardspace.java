@@ -850,10 +850,16 @@ public class Boardspace extends URLClassLoader implements Runnable,LoaderConfig
 	{	boolean fastExit = false;
 		String runtimeServer = null;
 		try {
+		int setupIndex = args.length;
 		for(int i=0;i<args.length;i++)
 		{	//log("arg "+i+" "+args[i]);
 			if("-v".equals(args[i])) 		// verbose output as a pop-up
 				{ CacheInfo.verbose = verbose = true; }
+			else if("-setup".equals(args[i]))
+			{
+				setupIndex = i+1;
+				i = args.length;
+			}
 			else if("-vt".equals(args[i])) 	// verbose output to terminal 
 				{ CacheInfo.verbose = verbose = true; out = System.out; }
 			else if("-testserver".equals(args[i]))	// connect to the test server instead of the main server
@@ -878,7 +884,7 @@ public class Boardspace extends URLClassLoader implements Runnable,LoaderConfig
 				{ debug="swat".equalsIgnoreCase(args[i+1]); i++; }
 			else 
 			{
-			String msg = "Options are -v -vt -slow -testserver -testversion -foreground -uncache\n-server <servername> -allowpreload <true|false> -debug <password> -hostname <host>";
+			String msg = "Options are -v -vt -slow -testserver -testversion -foreground -uncache\n-server <servername> -allowpreload <true|false> -debug <password> -hostname <host> -setup <rest of args>";
 			out.println(msg);
 			showMessage("Loader Message",msg);
 			fastExit=true; 
@@ -933,6 +939,10 @@ public class Boardspace extends URLClassLoader implements Runnable,LoaderConfig
 		t.setPriority(Thread.MIN_PRIORITY);
 		t.start();		// load the rest of the classes in background
 			
+		while(setupIndex<args.length)
+		{	// pass the rest of the args directly to the program
+			System.setProperty("mainargs-"+argnum++,args[setupIndex++]);
+		}
 		if(base==null) { 
 			out.print("loadClass for base "+runClass+ " is null");
 		}

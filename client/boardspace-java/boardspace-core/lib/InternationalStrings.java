@@ -18,6 +18,7 @@ package lib;
 
 import java.awt.*;
 import java.util.*;
+
 import bridge.Config;
 import bridge.JMenu;
 import bridge.JMenuItem;
@@ -456,7 +457,7 @@ public abstract class InternationalStrings implements Config
     {	if(str==null) { return(null); }
     	String text = get(str);
     	if(text.indexOf("#1")<0) { return(text); }
-    	return(substOne(str,"#1","#"+arg));
+    	return(substOne(text,"#1",""+arg));
     }
     
     /**
@@ -472,7 +473,7 @@ public abstract class InternationalStrings implements Config
     {	if(str==null) { return(null); }
     	String text = get(str);
     	if(text.indexOf("#1")<0) { return(text); }
-    	return(substOne(str,"#1",arg));
+    	return(substOne(text,"#1",arg));
     }
     
     public String name = DefaultLanguageName;

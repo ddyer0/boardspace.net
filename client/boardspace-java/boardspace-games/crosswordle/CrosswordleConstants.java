@@ -46,8 +46,6 @@ public interface CrosswordleConstants
 	static String Sofar = "#1 solutions so far for this puzzle, average time #2";
 	static String SolvedType = "#1 solved #2 puzzles of this type, average time #3";
 	static String SolutionsFor = "Solutions for #1 for #2";
-	static String OfflineCaption = "You are offline";
-	static String OfflineExplanation = "OfflineExplanation";
 	enum LetterColor 
 	{ 
 	  Blank, Yellow, Green, NewYellow, NewGreen ;
@@ -164,7 +162,6 @@ public interface CrosswordleConstants
     	        PuzzleN,
     	        StatsHelp,
     	        NoSolutions,
-				OfflineCaption,
  
     		};
     		String CrosswordsStringPairs[][] = 
@@ -175,7 +172,6 @@ public interface CrosswordleConstants
     			{"Crosswordle-55_variation","Crosswordle 5x5"},
     			{"Crosswordle-65_variation","Crosswordle 6x5"},
     			{"Crosswordle-66_variation","Crosswordle 6x6"},
-    			{OfflineExplanation,"Stats are only available online\nIf you want to collect and see your stats, play online\n"},
     		};
 
     		InternationalStrings.put(CrosswordsStringPairs);

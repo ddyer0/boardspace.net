@@ -20,4 +20,13 @@ import lib.OStack;
 
 public class LaunchUserStack extends OStack<LaunchUser>
 {	public LaunchUser[] newComponentArray(int sz) { return(new LaunchUser[sz]);	}
+	public LaunchUser addUser(User u,int seat,int order)
+	{
+		LaunchUser lu = new LaunchUser();
+		lu.user = u;
+		lu.seat = seat;
+		lu.order = order;
+		push(lu);
+		return lu;
+	}
 }

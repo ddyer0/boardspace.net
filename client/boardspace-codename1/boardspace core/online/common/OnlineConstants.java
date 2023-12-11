@@ -159,6 +159,7 @@ public interface OnlineConstants extends Config {
     static final String AutoDoneEverywhere = "Automatic \"Done\"";
     static final String BoardMaxEverywhere = "Maximize Board Size";
     static final String VIEWERCLASS = "viewerclass";
+    static final String OFFLINE = "offline";
     static final String REVIEWONLY = "reviewonly";
 	static final String PREFERREDGAME = "PreferredGame";
     

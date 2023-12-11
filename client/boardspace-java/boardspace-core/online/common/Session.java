@@ -835,7 +835,7 @@ public class Session implements LobbyConstants
 	    }}
 	    return(launchName);
 		}
-
+	
 	void SetGameState(SessionState newState)
 	  { 
 	    if(state!=newState)
