@@ -2,7 +2,7 @@
 	Copyright 2006-2023 by Dave Dyer
 
     This file is part of the Boardspace project.
-
+    
     Boardspace is free software: you can redistribute it and/or modify it under the terms of 
     the GNU General Public License as published by the Free Software Foundation, 
     either version 3 of the License, or (at your option) any later version.
@@ -12,7 +12,7 @@
     See the GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License along with Boardspace.
-    If not, see https://www.gnu.org/licenses/.
+    If not, see https://www.gnu.org/licenses/. 
  */
 package crosswordle;
  
@@ -36,7 +36,7 @@ package crosswordle;
   *
   */
  
- 
+
  class CrosswordleBoard extends squareBoard<CrosswordleCell> implements BoardProtocol
  {	static int REVISION = 101;			// 100 represents the initial version of the game
  										// 101 adds the interpretation of the low bit of randomkey as "hard"
@@ -47,7 +47,6 @@ package crosswordle;
  	private CrosswordleState board_state = CrosswordleState.Puzzle;	
  	private CrosswordleState unresign = null;	// remembers the orignal state when "resign" is hit
  	private StateStack robotState = new StateStack();
- 	public int robotVocabulary = 999999;		//	size of the robot's vocabulary
  	public CrosswordleState getState() { return(board_state); }
  	StringStack gameEvents = new StringStack();
  	InternationalStrings s = G.getTranslations();
@@ -129,8 +128,7 @@ package crosswordle;
  
  
 		 dictionary = di;
-		 robotVocabulary = dictionary.orderedSize;
-  
+ 
 	 }
 	
 	 public String gameType() { return(gametype+" "+players_in_game+" "+randomKey+" "+revision); }
@@ -265,7 +263,6 @@ package crosswordle;
 		 pickedObject = from_b.pickedObject;
 		 resetState = from_b.resetState;
 		 AR.copy(score,from_b.score);
-		 robotVocabulary = from_b.robotVocabulary;
 		 guesses.copyFrom(from_b.guesses);
 		 lastPicked = null;
 		 solution = from_b.solution;
@@ -291,7 +288,6 @@ package crosswordle;
 		 G.Assert(variation==from_b.variation,"variation matches");
 		 G.Assert(pickedObject==from_b.pickedObject, "picked Object mismatch");
 		 G.Assert(chipsOnBoard==from_b.chipsOnBoard,"chipsOnBoard mismatch");
-		 G.Assert(robotVocabulary==from_b.robotVocabulary,"robotVocabulary mismatch");
 		 G.Assert(AR.sameArrayContents(score,from_b.score),"score mismatch");
 		 G.Assert(guesses.sameContents(from_b.guesses),"guesses mismatch");
 		 
@@ -343,7 +339,6 @@ package crosswordle;
 		 v ^= Digest(r,revision);
 		 v ^= Digest(r,chipsOnBoard);
 		 v ^= Digest(r,score);
-		 v ^= Digest(r,robotVocabulary);
 		 v ^= guesses.Digest(r);
 		 v ^= r.nextLong()*(board_state.ordinal()*10+whoseTurn);
 		 return (v);
@@ -617,11 +612,6 @@ package crosswordle;
 		 }
 	 }
  
-	 public void setVocabulary(double value) {
-		 Dictionary dict = Dictionary.getInstance();
-		 robotVocabulary = (int)(dict.totalSize*value);
-	 }
-
 	 private void setNextStateAfterDone(replayMode replay)
 	 {	
 			   switch(board_state)
@@ -958,7 +948,6 @@ package crosswordle;
  }
  public void initRobotValues(CrosswordlePlay rob,int vocab)
  {	robot = rob;
- 	robotVocabulary = vocab;
  }
  
 

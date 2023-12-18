@@ -40,7 +40,8 @@ public class Session implements LobbyConstants
     	{
     	ConnectionManager.SERVERKEY,
         G.LANGUAGE,
-        OnlineConstants.LOBBYPORT,
+        LOBBYPORT,	
+        REALPORT,
         SERVERNAME,
         ConnectionManager.USERNAME,
         ConnectionManager.UID,

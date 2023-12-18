@@ -208,7 +208,7 @@ public class Builder implements CrosswordleConstants
 		if(base!=null)
 		{
 			int index = (int)(date%base.length);
-			G.print(PuzzleN,index," ",base[index]);
+			G.print(PuzzleN,index);
 			return base[index];
 		
 		}

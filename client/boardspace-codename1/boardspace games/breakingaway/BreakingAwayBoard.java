@@ -193,6 +193,10 @@ class BreakingAwayBoard extends RBoard<BreakingAwayCell> implements BoardProtoco
    			}
    		return(val);
    }
+   public int scoreForPlayer(int p)
+   {
+	   return scoreForPlayer[p];
+   }
     //
     // award points for crossing the sprint and finish lines
     //

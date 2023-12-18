@@ -1059,7 +1059,7 @@ public void setLetterColor(Graphics gc,SingleBoard gb,SprintCell cell)
        commonPlayer pl = getPlayerOrTemp(pboard.whoseTurn);
        double messageRotation = pl.messageRotation();
        {    
-       standardGameMessage(gc,gb,stateRect,state);
+       standardGameMessage(gc,stateRect,state);
       	
        
        String msg = pboard.invalidReason==null ? s.get(SprintVictoryCondition) : s.get(pboard.invalidReason);
@@ -1164,10 +1164,10 @@ public void setLetterColor(Graphics gc,SingleBoard gb,SprintCell cell)
         }
  
     }
-    public void standardGameMessage(Graphics gc,SprintBoard gb,Rectangle stateRect,SprintState state)
+    public void standardGameMessage(Graphics gc,Rectangle stateRect,SprintState state)
     {
         standardGameMessage(gc,
-   				state==SprintState.Gameover?gameOverMessage(gb):s.get(state.description()),
+   				state==SprintState.Gameover?gameOverMessage(bb):s.get(state.description()),
    				(state!=SprintState.Puzzle) && !state.simultaneousTurnsAllowed(),
    				bb.whoseTurn,
    				stateRect);

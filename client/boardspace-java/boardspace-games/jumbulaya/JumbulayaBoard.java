@@ -543,7 +543,6 @@ class JumbulayaBoard extends squareBoard<JumbulayaCell> implements BoardProtocol
 
 
        	dictionary = di;
-        robotVocabulary = dictionary.orderedSize;
  
     }
     private void initRackMap(int [][]map)
@@ -2867,7 +2866,7 @@ private void addWords(WordStack ws,CommonMoveStack all)
 
 public void setVocabulary(double value) {
 	Dictionary dict = Dictionary.getInstance();
-	robotVocabulary = (int)(dict.totalSize*value);
+	robotVocabulary = (int)(dict.size()*value);
 }
 
 public void validateMap(int forplayer,String msg)

@@ -21,6 +21,7 @@ public class NewsReader extends Thread implements Runnable
     ChatInterface myChat = null;
     String postMessage = null;
     String postFile = null;
+    public boolean finished = false;
     public String postMessageHost = null;
     public NewsReader(ChatInterface chat, String file, String message)
     {	super("NewsReader");
@@ -46,5 +47,6 @@ public class NewsReader extends Thread implements Runnable
     	catch (Throwable err)
     	{	Http.postError(this, "news reader for "+postFile, err);
     	}
+    	finally { finished = true; }
     	}
 }

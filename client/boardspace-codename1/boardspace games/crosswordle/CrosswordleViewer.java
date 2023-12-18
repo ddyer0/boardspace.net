@@ -98,6 +98,7 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
 	private Rectangle keyboardRect = addRect("keyboard");
 	private Rectangle keytextRect = addRect("keytext");
 	private Rectangle logoRect = addRect("logo");
+	private Rectangle crossRect = addRect("cross");
 	private Toggle statsRect = new Toggle(this,"stats",CrosswordleChip.stats,CrosswordleId.ShowStats,false,StatsHelp);
 
 	private TextButton hardButton = addButton(
@@ -255,6 +256,7 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
     	int fh = standardFontSize();
     	int minLogW = fh*12;	
     	int logow = fh*30;
+    	int crossw = fh*40;
        	int minChatW = Math.min(fh*55,width-fh*2);
        	int vcrw = fh*16;
         int margin = fh/2;
@@ -276,6 +278,10 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
     	layout.placeTheChat(chatRect, minChatW, chatHeight,minChatW*2,3*chatHeight/2);
       	layout.placeRectangle(keytextRect,minChatW,minChatW/3+stateH*3,BoxAlignment.Bottom);
     	layout.placeRectangle(logoRect,logow,logow/4,BoxAlignment.Top);
+      	if(G.isCheerpj())
+      	{
+      		layout.placeRectangle(crossRect,crossw,fh*4,BoxAlignment.Bottom);
+      	}
        	int ll = G.Left(logoRect);
     	int lt = G.Top(logoRect);
     	int lw = G.Width(logoRect);	
@@ -739,6 +745,17 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
         inputField.redrawBoard(gc,selectPos);
         keys.draw(gc,selectPos);
         CrosswordleChip.logo.getImage().centerImage(gc,logoRect);
+        if(G.Width(crossRect)>0)
+        {
+        	GC.setFont(gc,largeBoldFont());
+        	if(GC.handleSquareButton(gc, crossRect,selectPos,
+        			"For faster loading and more games\n install the app",
+        			Color.white,null))
+        		{
+        		selectPos.hitCode = CrosswordleId.GetApp;
+        		}
+        	
+        }
         // draw the vcr controls, last so the pop-up version will be above everything else
         drawVcrGroup(nonDragSelect, gc);
         
@@ -1186,7 +1203,7 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
     			"&hard=",hards);
         statCaption = s.get(SolutionsFor,vname,dateString);
         urlStr = "params=" + XXTEA.combineParams(urlStr, XXTEA.getTeaKey());
-       
+        G.print("Stats "+urlStr);
         statStr = null;
         urlResult = Http.postAsyncUrl(serverName,baseUrl,urlStr,null);
 		}
@@ -1235,6 +1252,9 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
             {
             	throw G.Error("Hit Unknown object " + hitCode);
             }
+        	break;
+        case GetApp:
+        	G.showDocument(Http.httpProtocol+"//"+Http.getHostName()+OnlineConstants.getAppUrl);
         	break;
         case CloseStats:
         	statStr = null;

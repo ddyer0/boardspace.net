@@ -142,7 +142,7 @@ class HBoard extends hexBoard<HoneyCell> implements BoardProtocol,HoneyConstants
         Random r = new Random(235256);
        	drawPile = new HoneyCell(r,null);
        	dictionary = di;
-        robotVocabulary = dictionary.orderedSize;
+        robotVocabulary = dictionary.orderedSize();
  
     }
     
@@ -530,7 +530,7 @@ class HBoard extends hexBoard<HoneyCell> implements BoardProtocol,HoneyConstants
 
     public void setVocabulary(double value) {
     	Dictionary dict = Dictionary.getInstance();
-    	robotVocabulary = (int)(dict.totalSize*value);
+    	robotVocabulary = (int)(dict.size()*value);
     }
     private void setNextStateAfterDone(replayMode replay)
     {	

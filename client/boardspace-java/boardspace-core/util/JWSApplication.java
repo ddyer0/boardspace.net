@@ -260,7 +260,6 @@ public class JWSApplication implements Config,Runnable,LobbyConstants
 		
 		public void runOffline(String serverName)
 		{	
-			OfflineGames.pruneOfflineGames(90);
 			// the global state table can be contaminated during play.  In case of 
 			// a loop around, we save the original contents and restore it.
 			ExtendedHashtable savedGlobals = G.getGlobals().copy();
@@ -301,13 +300,14 @@ public class JWSApplication implements Config,Runnable,LobbyConstants
 	    	boolean gb = offline || G.getBoolean(OnlineConstants.REVIEWONLY,false);
 	    	boolean isTable = G.isTable();
 	    	G.setOffline(gb);
+	    	if(gb) { OfflineGames.pruneOfflineGames(90);}
 	    	if(!gb &&  vc==null)
 	        {	
 	    		boolean startoff = isTable || offline;
 	    		G.setOffline(startoff);
 			  	do { 
 			  		startoff = G.offline();
-			  		if(G.offline()) { runOffline(serverName); }
+			  		if(startoff) { runOffline(serverName); }
 			  		else { runLogin(serverName); }
 			  	} while(startoff!=G.offline());
 	        }

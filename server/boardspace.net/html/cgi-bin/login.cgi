@@ -163,9 +163,10 @@ sub print_jws_applet()
   &finishQuery($sth);
   }
 	if($fav) { $fav = "favorites=$fav\n"; }
+   my $actualPort = ($test ? $'test_server_port : $'game_server_port);
    my $port = $cheerpj
 		? ($test ? $'cheerpj_test_server_port : $'cheerpj_game_server_port)
-		: ($test ? $'test_server_port : $'game_server_port);
+		: $actualPort;
    my $msg = utfEncode("$banner$fav$testserver$dd
 codebase=/$'java_dir/$use_class_dir/
 documentbase=/$languageName/
@@ -174,6 +175,7 @@ gameservername=$'ip_name
 localIP=$ENV{'REMOTE_ADDR'}
 serverKey=$'serverKey
 lobbyportnumber=$port
+reallobbyportnumber=$actualPort
 robotlobby=solo
 username=$pname
 time-correction=$timec

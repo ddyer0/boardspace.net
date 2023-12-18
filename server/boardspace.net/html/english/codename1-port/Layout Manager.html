@@ -2,8 +2,7 @@
 <html><head>
     <meta http-equiv="content-type" content="text/html; charset=UTF-8">
     <title>Evolution of a Layout Manager</title></head>
-
-  <body alink="#ee0000" bgcolor="#eeeeff" link="#0000ee" text="#000000" vlink="#551a8b">
+<body alink="#ee0000" bgcolor="#eeeeff" link="#0000ee" text="#000000" vlink="#551a8b">
     <h1 align="center">Evolution of a Layout Manager</h1>
     <p><br>
     </p>
@@ -13,65 +12,69 @@ time, as the game space evolved and the requirements for game screen
 layouts became more complex, the basic construction of &nbsp;layouts
 has changed several times.<br>
     </p>
-    <h2>The Problem Space: </h2>
-    <table border="0" cellpadding="2" cellspacing="2" width="100%">
+    <h2> </h2>
+    <table style="width: 839px; height: 718px;" border="0" cellpadding="2" cellspacing="2">
       <tbody>
         <tr>
-          <td valign="top">&nbsp;It's
-alll about rectangles, man. &nbsp;The game window is a rectangle, the
+          <td colspan="2" valign="top"><h2 style="text-align: center;">The Problem Space:</h2>It's
+alll about rectangles. &nbsp;The game window is a rectangle, the
 board is a rectangle, most of the other items in a game window are
-naturally rectangles. &nbsp; From there, the problem gets a lot more
+naturally rectangles. &nbsp;From there, the problem gets a lot more
 complicated. &nbsp; Some rectangles have to be a certain size, or
 should be placed near other items. &nbsp;Some are optional. &nbsp;Some
 are fixed size, or have a minimum size, or can reasonably expand to
-fill the space available.
-          </td><td><img style="width: 916px; height: 721px;" alt="rectangles" src="rectangles.jpg"></td>
+fill the space available.<br><br><div style="text-align: center;">&nbsp;
+          <img style="width: 729px; height: 574px;" alt="rectangles" src="rectangles.jpg"></div></td>
           
         </tr>
       </tbody>
     </table>
     <br>
-    <h2>In the beginning: </h2>
-    <table border="0" cellpadding="2" cellspacing="2" width="100%">
+    <h2> </h2>
+    <table style="width: 840px; height: 815px;" border="0" cellpadding="2" cellspacing="2">
       <tbody>
         <tr>
-          <td valign="top">In
-the beginning I had a basic template for all (about 3 ...) games.
-&nbsp; The window was rectangular, with a chat window on top, a board
+          <td valign="top"><h2 style="text-align: center;">In the beginning:</h2>In
+the beginning I had a basic template for all (about 3 at the time) games.
+&nbsp; The window was rectangular, with a chat window on top, <br>a board
 in the lower left, game specific information to the right, &nbsp;and
-maybe some additional information below the board.<br><br>To scale and
+maybe some additional information below the board.<br><br><div style="text-align: center;"><img style="width: 679px; height: 516px;" alt="simple board" src="basic%20board.jpg"><br></div>To scale and
 locate all the elements, I used the board grid as a sort of unit for
-allocation. &nbsp;And lay out the other items by size and location
+allocation. &nbsp;And lay out the other items by size and<br>location
 based on the cell size of the board. &nbsp; Plateau seen at the left,
-would need a 4x4 grid for the board, or 5x5 with borders all the way
+would need a 4x4 grid for the board, or 5x5 with borders all<br>the way
 around. &nbsp; The chat should be about 10 cells (twice as wide as the
-board) and the game log 3 cells wide. &nbsp; Player stuff about 5 cells
+board) and the game log 3 cells wide. &nbsp; Player stuff about<br>5 cells
 wide and 3 cells high (per player) ... and so on. &nbsp;Add up all the
-vertical and horizontal cell counts, do some simple arithmetic, and
+vertical and horizontal cell counts, do some simple arithmetic,<br>and
 come up with a pixel count for &nbsp;a cell. &nbsp;Then lay out the
-rectangles accordingly.<br><br>This worked pretty well at first. &nbsp;The scheme produced reasably full screens with relatively little wasted space.<br><br><br>
-          </td><td><img style="width: 780px; height: 592px;" alt="simple board" src="basic%20board.jpg"></td>
+rectangles accordingly.<br><br>This worked pretty well at first. &nbsp;The scheme produced reasably full screens with relatively little wasted space.<br><br>
+          </td><td><br></td>
           
         </tr>
       </tbody>
     </table>
-    <br><h2>Wide and Tall boards (3 basic layouts instead of 1)</h2><br><br><table style="text-align: left; width: 100%;" border="1" cellpadding="2" cellspacing="2"><tbody><tr><td><br>Next,
+    <br><br><table style="text-align: left; width: 1012px; height: 631px;" border="1" cellpadding="2" cellspacing="2"><tbody><tr><td><h2 style="text-align: center;">Wide and Tall boards (3 basic layouts instead of 1)</h2><br>Next,
 it became obvious that sometimes people preferred (or were constrained)
 to use very wide or very tall window shapes. &nbsp;The basic plan,
 above, didn't produce good results. &nbsp;The basic board plan evolved
 to include "wide mode" and "tall mode" windows. &nbsp; Wide mode
 windows (seen below) had the board occupying essentially all the
 vertical space, with player information adjacent, and the chat window
-filling space at the right. &nbsp; Tall mode windows (seen at the
-right) had the board occupy substantially all horizontal space, with
-the &nbsp;chat above and the player information below the board. &nbsp;
-<br>Initially, the choice of wide/normal/tall was ad-hoc based on the
-aspect ratio of the window, but the overall method was the same.</td><td colspan="1" rowspan="2"><img style="width: 582px; height: 796px;" alt="tall board" src="tall%20board.jpg"></td></tr><tr><td><img style="width: 1239px; height: 589px;" alt="wide baord" src="wide%20board.jpg"></td></tr></tbody></table><br><h2>No Chat boards (6 basic designs per game)</h2><table style="text-align: left; width: 100%;" border="1" cellpadding="2" cellspacing="2"><tbody><tr><td><br>Some
+filling space at the right. &nbsp; Tall mode windows (seen below) had the board occupy substantially all horizontal space, with
+the chat above and the player information below the board. &nbsp;
+Initially, the choice of wide/normal/tall was ad-hoc based on the
+aspect ratio of the window, but the overall method was the same.<br><br>&nbsp;<img style="width: 350px; height: 479px;" alt="tall board" src="tall%20board.jpg" align="top"> &nbsp; &nbsp; <img style="width: 617px; height: 375px;" alt="wide baord" src="wide%20board.jpg"><br></td><td><br></td></tr></tbody></table><br><br><br><table style="text-align: left; width: 1058px; height: 1090px;" border="1" cellpadding="2" cellspacing="2"><tbody><tr><td colspan="2"><h2 style="text-align: center;">No Chat boards (6 basic designs per game)</h2><div style="text-align: left; margin-left: 80px;">Some
 very small screens just don't have room for a chat area, so it's moved
-to a separate window. &nbsp;In a lot of games, the chat is pretty
-surpufluous - no one chats with a robot. &nbsp;So removing the chat can
+to a separate window. &nbsp;In a lot of games, <br>particularly games played against robots, the chat is pretty
+surpufluous - no one chats with a robot. &nbsp;So removing the<br>chat can
 free up a lot of real estate, but the business of deciding where all
-the boxes are going to go is getting pretty complex. &nbsp; The
+the boxes are going to go is becoming complex<br><br>The
 algorithm is the same - place the boxes relative to one another, add up
-the number of cells needed, do arithmetic to determine the cell size.</td><td></td></tr><tr><td style="text-align: center;"><img style="width: 889px; height: 687px;" alt="normal no chat" src="normal%20no%20chat%20board.jpg"></td><td colspan="1" rowspan="2"><img style="width: 569px; height: 696px;" alt="tall no chat" src="tall%20no%20chat%20board.jpg"></td></tr><tr><td><img style="width: 1461px; height: 686px;" alt="wide no chat" src="wide%20no%20chat%20board.jpg"></td></tr></tbody></table><br>
+the number of cells needed, do arithmetic to <br>determine the cell size.<br></div><img style="width: 415px; height: 508px;" alt="tall no chat" src="tall%20no%20chat%20board.jpg"> &nbsp; &nbsp;<img style="width: 579px; height: 447px;" alt="normal no chat" src="normal%20no%20chat%20board.jpg"><br><br><img style="width: 820px; height: 385px;" alt="wide no chat" src="wide%20no%20chat%20board.jpg"><br></td></tr></tbody></table><br><table style="text-align: left; width: 777px; height: 1009px;" border="1" cellpadding="2" cellspacing="2"><tbody><tr><td><h2 style="text-align: center;">Multiple Players</h2>Accomodating
+games with up to 6 players introduced complication. &nbsp;A game with 6
+players&nbsp; has very different space requirements than the same game
+with only 2 players; and depending on the amount of per-player
+information, the best layout can vary a lot. &nbsp;Think: 1-3 columns
+right of the board. &nbsp;1-3 columns or below the board.<br><br><img style="width: 696px; height: 329px;" alt="six right" src="six-right.jpg"><br><br><img style="width: 698px; height: 521px;" alt="six below" src="six-below.jpg"><br></td></tr></tbody></table><br>
   </body></html>

@@ -65,7 +65,7 @@ public class UserManager implements LobbyConstants
 	public void loadOfflineUsers()
 	{
 		Preferences prefs = Preferences.userRoot();
-		String primaryname = prefs.get(CommonConfig.loginNameKey,null);
+		String primaryname = prefs.get(loginNameKey,null);
 		if(primaryname!=null) 
 			{ changeOfflineUser(primaryname,false);
 			}
@@ -74,7 +74,7 @@ public class UserManager implements LobbyConstants
 		}
 		for(int i=0;i<UserManager.MAX_OFFLINE_USERS;i++)
 		{
-			String name = prefs.get(CommonConfig.loginNameKey+"-"+i,null);
+			String name = prefs.get(loginNameKey+"-"+i,null);
 			if((name!=null)&&!name.equalsIgnoreCase(primaryname))
 			{	
 				addUser(UserManager.OFFLINE_USERID+i,name,""+(UserManager.OFFLINE_USERID+i),true);
@@ -173,7 +173,7 @@ public void changeOfflineUser(String newname,boolean remove)
 	int slot = -1;
 	for(int i=0;i<UserManager.MAX_OFFLINE_USERS;i++)
 	{
-		String name = prefs.get(CommonConfig.loginNameKey+"-"+i,null);
+		String name = prefs.get(loginNameKey+"-"+i,null);
 		if(name!=null)
 		{	if(name.equalsIgnoreCase(newname))
 			{
@@ -185,7 +185,7 @@ public void changeOfflineUser(String newname,boolean remove)
 		else if(slot==-1) { slot = i; }
 	}
 	if(slot>=0)
-	{	changeUser(prefs,CommonConfig.loginNameKey+"-"+slot,UserManager.OFFLINE_USERID+slot,newname,remove);
+	{	changeUser(prefs,loginNameKey+"-"+slot,UserManager.OFFLINE_USERID+slot,newname,remove);
 	}}
 }
 

@@ -131,8 +131,10 @@ public class JWSApplication implements Config,LobbyConstants
     {	try {
         Http.setDefaultProtocol(G.getString(PROTOCOL,null));
         InternationalStrings.initLanguage();
-        boolean isViewer = (G.getString(GameInfo.GAMENAME,null)!=null)
-        					|| (G.getString(GameInfo.GAMETYPE, null)!=null);
+        String gn = G.getString(GameInfo.GAMENAME,null);
+        String gt = G.getString(GameInfo.GAMETYPE, null);
+        boolean isViewer = (gn!=null)
+        					|| (gt!=null);
         if(isViewer) { G.setOffline(true); }
     	boolean offline = G.offline() ;
         boolean isVNC = G.getBoolean(G.VNCCLIENT,false);
@@ -142,11 +144,12 @@ public class JWSApplication implements Config,LobbyConstants
         String classname = isViewer
         					? "G:game.Game" 
         					: isVNC|isTable|offlineLauncher
-        						? "online.common.commonPanel"
+        						? "lib.commonPanel"
         					: G.getString(DefaultGameClass,"online.common.commonLobby");
- 
+        G.print("StartLframe "+classname);
         G.setIdString(""+G.getCodeBase());
         commonPanel myL = (commonPanel) G.MakeInstance(classname);
+        G.print("Myl "+myL);
         if (myL != null)
         {	XFrame fr = new XFrame();
     	 	
@@ -154,8 +157,11 @@ public class JWSApplication implements Config,LobbyConstants
             					? server.getHostName()
             					: isTable 
             						? UDPService.getPlaytableName()
-            						: G.getString(GameInfo.GAMETYPE,
-            								G.getTranslations().get(offlineLauncher?LauncherName :LobbyName));
+            						: gt != null 
+            							? gt 
+            							: gn!=null
+            								? gn 
+            								: G.getTranslations().get(offlineLauncher?LauncherName :LobbyName);
             ExtendedHashtable sharedInfo = G.getGlobals();
             myL.init(sharedInfo,fr);
             // create the free standing frame
@@ -196,14 +202,14 @@ public class JWSApplication implements Config,LobbyConstants
             fr.setInitialBounds(fx,fy,fw,fh );
                       
       	 	if(fr!=null) { fr.setVisible(true); } 
+      	 	G.print("running "+myL);
             myL.run();
-            if(fr!=null) { fr.remove(); }
-            
             //System.out.println("root start");
           }
     }
     	catch (Throwable e)
-    	{	Http.postError(null,"FrameLauncher outer run",e);
+    	{	G.print("Error in FrameLauncher outer loop ",e,e.getStackTrace());
+    		Http.postError(null,"FrameLauncher outer run",e);
     	}	
     }
 
@@ -221,7 +227,9 @@ public class JWSApplication implements Config,LobbyConstants
 			// the global state table can be contaminated during play.  In case of 
 			// a loop around, we save the original contents and restore it.
 			ExtendedHashtable savedGlobals = G.getGlobals().copy();
-	    	UDPService.start(false);	// listen for tables
+			
+			// remove this for cheerpj debugging, it doesn't work and doesn't cause a trap
+			if(!G.isCheerpj()) { UDPService.start(false);	} // listen for tables
 		  	G.doDelay(1000);
 			UDPService.stop();
 			Login login = new Login();
@@ -251,7 +259,6 @@ public class JWSApplication implements Config,LobbyConstants
 		
 		public void runOffline(String serverName)
 		{	
-			OfflineGames.pruneOfflineGames(90);
 	    	// the global state table can be contaminated during play.  In case of 
 			// a loop around, we save the original contents and restore it.
 			ExtendedHashtable savedGlobals = G.getGlobals().copy();
@@ -276,7 +283,7 @@ public class JWSApplication implements Config,LobbyConstants
 			G.setGlobalDefaultFont();	// set a reasonable global default
 			// copy the web start parameters
 			for(int i=0; i<args.length-1; i+=2)
-			{	String par = args[i].toLowerCase();
+			{	String par = (args[i].toLowerCase());
 				String arg = args[i+1];
 				if(arg!=null) 
 					{ G.putGlobal(par,arg);
@@ -311,11 +318,14 @@ public class JWSApplication implements Config,LobbyConstants
 	    	String lang=prefs.get(langKey,"english"); 
 			if(lang!=null) { G.putGlobal(G.LANGUAGE,lang); }
 	    	Http.setHostName(serverName);
+			boolean offline = G.getBoolean(OFFLINE,false) || G.isTable();
+			
+	    	G.setOffline(offline);
+	    	if(offline) { OfflineGames.pruneOfflineGames(90);}
+	    	
 	    	DataCache.construct();
 	        if(G.getString(OnlineConstants.VIEWERCLASS,null)==null)
-	        {	boolean isTable = G.isTable();
-			  	G.setOffline(isTable);
-
+	        {	
 			  	do { 
 			  		boolean wasOff = G.offline();
 			  		if(wasOff)
@@ -328,7 +338,7 @@ public class JWSApplication implements Config,LobbyConstants
 			  		}
 			  	if(G.offline()==wasOff) { 
 			  		// didn't change modes, revert to the default
-			  		G.setOffline(isTable);
+			  		G.setOffline(offline);
 			  	}}
 			  	while(G.isCodename1());
 	        }

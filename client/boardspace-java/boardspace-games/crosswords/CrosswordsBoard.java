@@ -417,9 +417,8 @@ class CrosswordsBoard extends rectBoard<CrosswordsCell> implements BoardProtocol
        	doInit(init,key,players,rev); // do the initialization 
 
 
-       	dictionary = di;
-        robotVocabulary = dictionary.orderedSize;
- 
+       	dictionary = di; 
+
     }
     private void initRackMap(int [][]map)
     {	int full = map[0].length;
@@ -1088,7 +1087,7 @@ class CrosswordsBoard extends rectBoard<CrosswordsCell> implements BoardProtocol
 
     public void setVocabulary(double value) {
     	Dictionary dict = Dictionary.getInstance();
-    	robotVocabulary = (int)(dict.totalSize*value);
+    	robotVocabulary = (int)(dict.size()*value);
     }
 
     private boolean rackIsEmpty(int who)
@@ -2412,7 +2411,7 @@ class CrosswordsBoard extends rectBoard<CrosswordsCell> implements BoardProtocol
  // have to add one to the max size word for each additional intercept.
  // 
  private void checkCrossWords(CellStack fromPlaces,CrosswordsCell rack[],long letterMask,double baseProgress,double progressFraction)
- {	int totalsize = dictionary.totalSize;
+ {	int totalsize = dictionary.size();
  	int usedSize = 0;
 	for(int wordlen=2;wordlen<=rackSize+1;wordlen++)
  	{	DictionaryHash sub = dictionary.getSubdictionary(wordlen);

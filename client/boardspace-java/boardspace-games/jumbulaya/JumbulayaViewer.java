@@ -92,8 +92,7 @@ public class JumbulayaViewer extends CCanvas<JumbulayaCell,JumbulayaBoard> imple
     private TextButton checkWordsButton = addButton(JustWordsMessage,JumbulayaId.CheckWords,
     		JustWordsHelp,
 						HighlightColor, rackBackGroundColor);
-    private Slider vocabularyRect = new Slider(VocabularyMessage,JumbulayaId.Vocabulary,0,1,
-    		JumbulayaPlay.vocabularyPart(online.search.RobotProtocol.DUMBOT_LEVEL));
+    private Slider vocabularyRect = new Slider(VocabularyMessage,JumbulayaId.Vocabulary,0,1,0);
     private TextButton checkJumbulayaButton = addButton(JumbulayasMessage,JumbulayaId.CheckJumbulayas,
     		CheckJumbulayaHelp,
 			HighlightColor, rackBackGroundColor);
@@ -153,7 +152,7 @@ public class JumbulayaViewer extends CCanvas<JumbulayaCell,JumbulayaBoard> imple
         // useDirectDrawing();
         doInit(false);
         adjustPlayers(players_in_game);
-        
+        vocabularyRect.setValue(JumbulayaPlay.vocabularyPart(online.search.RobotProtocol.DUMBOT_LEVEL));
         if(G.debug()) { saveScreen = myFrame.addAction("Save Board Image",deferredEvents); }
 
     }

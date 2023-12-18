@@ -53,7 +53,6 @@ class SingleBoard extends infiniteSquareBoard<SprintCell> implements BoardProtoc
 	private SprintState board_state = SprintState.Puzzle;	
 	private SprintState unresign = null;	// remembers the orignal state when "resign" is hit
 	private StateStack robotState = new StateStack();
-	public int robotVocabulary = 999999;		//	size of the robot's vocabulary
 	public SprintState getState() { return(board_state); }
     StringStack gameEvents = new StringStack();
     InternationalStrings s = G.getTranslations();
@@ -162,7 +161,6 @@ class SingleBoard extends infiniteSquareBoard<SprintCell> implements BoardProtoc
        	doInit(init,key,1,rev); // do the initialization 
 
        	dictionary = di;
-        robotVocabulary = dictionary.orderedSize;
  
     }
     private void initRackMap()
@@ -323,7 +321,6 @@ class SingleBoard extends infiniteSquareBoard<SprintCell> implements BoardProtoc
         copyFrom(unplacedTiles,from_b.unplacedTiles);
         score=from_b.score;
         highScore = from_b.highScore;
-        robotVocabulary = from_b.robotVocabulary;
         lastPicked = null;
         tilesPlaced = from_b.tilesPlaced;
         unplacedCount = from_b.unplacedCount;
@@ -349,7 +346,6 @@ class SingleBoard extends infiniteSquareBoard<SprintCell> implements BoardProtoc
         G.Assert(variation==from_b.variation,"variation matches");
         G.Assert(pickedObject==from_b.pickedObject, "picked Object mismatch");
         G.Assert(chipsOnBoard==from_b.chipsOnBoard,"chipsOnBoard mismatch");
-        G.Assert(robotVocabulary==from_b.robotVocabulary,"robotVocabulary mismatch");
         G.Assert(sameContents(rack,from_b.rack),"rack mismatch");
         G.Assert(score==from_b.score,"score mismatch");
         G.Assert(highScore==from_b.highScore,"highscore mismatch");
@@ -419,7 +415,6 @@ class SingleBoard extends infiniteSquareBoard<SprintCell> implements BoardProtoc
 		v ^= Digest(r,score);
 		//G.print("d2 "+v);
 		v ^= Digest(r,highScore);
-		v ^= Digest(r,robotVocabulary);
 		v ^= Digest(r,unplacedTiles);
 		v ^= Digest(r,unplacedCount);
 		v ^= Digest(r,tilesPlaced);
@@ -669,11 +664,6 @@ class SingleBoard extends infiniteSquareBoard<SprintCell> implements BoardProtoc
 			validate(true);
             break;
         }
-    }
-
-    public void setVocabulary(double value) {
-    	Dictionary dict = Dictionary.getInstance();
-    	robotVocabulary = (int)(dict.totalSize*value);
     }
 
     public boolean rackIsFull()
@@ -1362,7 +1352,6 @@ class SingleBoard extends infiniteSquareBoard<SprintCell> implements BoardProtoc
  }
  public void initRobotValues(SprintPlay rob,int vocab)
  {	robot = rob;
- 	robotVocabulary = vocab;
  }
  //
  // get the string for a pull move for chip

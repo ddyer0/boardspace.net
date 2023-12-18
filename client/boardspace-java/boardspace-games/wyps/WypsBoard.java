@@ -434,7 +434,27 @@ class WypsBoard extends hexBoard<WypsCell> implements BoardProtocol,WypsConstant
 										// revision 103 makes rack size same as handsize, not rack size
 										// revision 104 changes the way draw tiles works when the draw pile is empty
 	public int getMaxRevisionLevel() { return(REVISION); }
-	static DictionaryHash privateDictionary = new DictionaryHash(1); 
+	static DictionaryHash privateDictionaryInternal = new DictionaryHash(1); 
+    private static boolean privateDictionaryInited = false;
+    private void initPrivateDictionary()
+    {
+		// make sure the single letters are there
+    	for(char code = 'a'; code<='z'; code++)
+    	{	String letter = ""+code;
+    		if(dictionary.get(letter)==null)
+    		{	Entry e = new Entry(letter);
+    			e.setDefinition("Not really a word, but allowed");
+    			privateDictionaryInternal.put(letter,e);
+    		}
+    	}
+    	privateDictionaryInited = true;
+    }
+	private DictionaryHash privateDictionary()
+	{
+		if(!privateDictionaryInited) { privateDictionaryInited = true; initPrivateDictionary(); }
+		return privateDictionaryInternal;
+		
+	}
 	static final int MAX_PLAYERS = 2;
 	int rackSize = 7;		// the number of filled slots in the rack.  Actual rack has some empty slots
 	int handSize = 7;
@@ -564,24 +584,17 @@ class WypsBoard extends hexBoard<WypsCell> implements BoardProtocol,WypsConstant
        	mapTarget = new int[MAX_PLAYERS];
 		openRack = new boolean[MAX_PLAYERS];		// part of the user interface
 
-		// make sure the single letters are there
-    	for(char code = 'a'; code<='z'; code++)
-    	{	String letter = ""+code;
-    		if(dictionary.get(letter)==null)
-    		{	Entry e = new Entry(letter);
-    			e.setDefinition("Not really a word, but allowed");
-    			privateDictionary.put(letter,e);
-    		}
-    	}
+
     	rackMap = new int[MAX_PLAYERS][rackSize+2];
     	Random r = new Random(657642547);
     	drawPile = new WypsCell(r,WypsId.DrawPile);
     	 
        	doInit(init,key,players,rev); // do the initialization 
 
-        robotVocabulary = dictionary.orderedSize;
  
     }
+
+    
     private void initRackMap(int [][]map)
     {	int full = map[0].length;
     	int max = revision<103 ? full : handSize;
@@ -1427,7 +1440,7 @@ class WypsBoard extends hexBoard<WypsCell> implements BoardProtocol,WypsConstant
     		// end of the line, we either have a word or not
     		String word = builder.toString();
     		Entry e = dictionary.get(word);
-    		if(sz==1 && e==null) { e = privateDictionary.get(word); }	// allow the single letters
+    		if(sz==1 && e==null) { e = privateDictionary().get(word); }	// allow the single letters
     		if(e!=null)
     			{ 	words.recordCandidate("built",new Template(buildCells.toArray()),e);
     				rval = true;
@@ -2206,7 +2219,7 @@ public int checkDictionaryWords(DictionaryHash subDictionary,WypsCell rack[],lon
 	 if(wordLen==1)
 	 {
 		// in rare cases, there may be no words at all.  Single letters are legal.
-		checkDictionaryWords(privateDictionary,rack,letterMask,template,true);
+		checkDictionaryWords(privateDictionary(),rack,letterMask,template,true);
 	 }
  	}
 

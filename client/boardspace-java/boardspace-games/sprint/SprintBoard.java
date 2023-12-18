@@ -56,7 +56,6 @@ class SprintBoard extends BaseBoard implements BoardProtocol
 	SprintCell drawPile = null;
 	SprintVariation variation = SprintVariation.Sprint;
 	private SprintState board_state = SprintState.Puzzle;	
-	public int robotVocabulary = 999999;		//	size of the robot's vocabulary
 	public SprintState getState() { return(board_state); }
     StringStack gameEvents = new StringStack();
     InternationalStrings s = G.getTranslations();
@@ -116,7 +115,6 @@ class SprintBoard extends BaseBoard implements BoardProtocol
     public SprintBoard(String init,int players,long key,int map[],Dictionary di,int rev) // default constructor
     {
        	dictionary = di;
-        robotVocabulary = dictionary.orderedSize;
 
         setColorMap(map, players);
     	// allocate the rack map once and for all, it's not used in the board
@@ -225,7 +223,6 @@ class SprintBoard extends BaseBoard implements BoardProtocol
         for(int i=0;i<pbs.length;i++) { pbs[i].copyFrom(from_b.pbs[i]); }
         board_state = from_b.board_state;
         drawPile.copyFrom(from_b.drawPile);
-        robotVocabulary = from_b.robotVocabulary;
         lastActivePlayer = from_b.lastActivePlayer;
         endgamePlayer = from_b.endgamePlayer;
         lastPicked = null;
@@ -247,7 +244,6 @@ class SprintBoard extends BaseBoard implements BoardProtocol
         for(int i=0;i<pbs.length;i++) { pbs[i].sameboard(from_b.pbs[i]); }
         
         G.Assert(variation==from_b.variation,"variation matches");
-        G.Assert(robotVocabulary==from_b.robotVocabulary,"robotVocabulary mismatch");
         G.Assert(drawPile.sameContents(from_b.drawPile),"drawPile mismatch");
         G.Assert(lastActivePlayer==from_b.lastActivePlayer,"lastActivePlayer mismatch");
         G.Assert(endgamePlayer==from_b.endgamePlayer,"endgamePlayer mismatch");
@@ -276,7 +272,6 @@ class SprintBoard extends BaseBoard implements BoardProtocol
 		// many games will want to digest pickedSource too
 		// v ^= cell.Digest(r,pickedSource);
 		v ^= Digest(r,drawPile);
-		v ^= Digest(r,robotVocabulary);
 		v ^= Digest(r,lastActivePlayer);
 		v ^= Digest(r,endgamePlayer);
 		v ^= r.nextLong()*(board_state.ordinal()*10+whoseTurn);
@@ -330,11 +325,6 @@ class SprintBoard extends BaseBoard implements BoardProtocol
     	{	return(ch.chipNumber()); 
     	}
       	return (NothingMoving);
-    }
-
-    public void setVocabulary(double value) {
-    	Dictionary dict = Dictionary.getInstance();
-    	robotVocabulary = (int)(dict.totalSize*value);
     }
 
    SingleBoard pbs[] = null;

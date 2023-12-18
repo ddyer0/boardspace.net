@@ -1032,19 +1032,8 @@ public abstract class Platform implements Config{
     }
     
 	public static String getHostUID()
-	{	Preferences prefs = Preferences.userRoot();
-		String uid = prefs.get("globaluserid",null);
-		if(uid!=null)
-		{
-			long time = Long.parseLong(uid);
-			if(time%104535636!=132) { uid = null; }	// invalid!
-		}
-		if(uid==null) 
-		{	long time = System.currentTimeMillis();
-			time = time-time%104535636+132;	// tiny fig leaf of authentication
-			uid = ""+time;
-			prefs.put("globaluserid",uid);
-		}
+	{	
+		String uid = G.globalUserid();
 		return(uid+"|"+getPlatformName());
 	}
 /*

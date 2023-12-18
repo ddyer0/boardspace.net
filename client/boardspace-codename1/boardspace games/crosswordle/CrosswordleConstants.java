@@ -45,6 +45,8 @@ public interface CrosswordleConstants
 	static String Sofar = "#1 solutions so far for this puzzle, average time #2";
 	static String SolvedType = "#1 solved #2 puzzles of this type, average time #3";
 	static String SolutionsFor = "Solutions for #1 for #2";
+	static String LoadMessage = "For faster loading and more games install the app";
+	
 	enum LetterColor 
 	{ 
 	  Blank, Yellow, Green, NewYellow, NewGreen ;
@@ -96,6 +98,7 @@ public interface CrosswordleConstants
     	Lock,
        	Definition,
     	Restart,
+    	GetApp,
     	Blank, InputField, Playword, ToggleEasy, CloseStats;
     	public String shortName() { return(name()); }
 
@@ -155,6 +158,7 @@ public interface CrosswordleConstants
     			SolutionsFor,
     			SolvedMessage,
     	    	YouSolved,
+    	    	LoadMessage,
     	    	Sofar,
     	        RestartMessage,
     	    	HardPuzzles,EasyPuzzles,

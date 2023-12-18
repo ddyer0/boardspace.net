@@ -25,7 +25,8 @@ import lib.UniversalConstants;
 public interface CommonConfig extends UniversalConstants {
 	static final String DEFAULT_SERVERNAME = "Boardspace.net";
 	static boolean TIMEDROBOTS = false;
-	
+	static final String cheerpjTextFile = "cheerpj.txt";
+
 	static String PRELOAD = "preload";		// key for a "preload" option passed from the miniloader
 	static boolean PRELOAD_DEFAULT = true;	// still true
 
@@ -69,6 +70,7 @@ public interface CommonConfig extends UniversalConstants {
 	static final String messagesUrl = "/cgi-bin/messageboard.cgi";
 	static final String forumsUrl = "/BB/";
 	static final String tournamentUrl = "/cgi-bin/tournament-signup.cgi";
+	static final String getAppUrl = "/english/login-jws.shtml";
 	static final String postRegisterUrl = "/cgi-bin/bs_register.cgi" ;	// where to send a registration form
 
 	static final String DataCacheUrl = "/cgi-bin/applettag.cgi?tagname=appdata";

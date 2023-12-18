@@ -41,6 +41,7 @@ public class OfflineGames {
 	{	String dir = OfflineGames.incompleteGameDirectory();
 		File fdir = new File(dir);
 		fdir.mkdir();
+		//G.print("Created directory "+fdir);
 		final long now = G.Date();
 		final long bugfixdate = 1625964193960L;	// june 30 2021 + 60 days
 		final long date = now-daysold*1000*60*60*24;	// 1000*60*24 milliseconds per day

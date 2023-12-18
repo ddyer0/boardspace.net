@@ -251,6 +251,8 @@ public class commonLobby extends commonPanel
 	static final String ROBOTMAXSESSION = "robotmaxsession";
 	static final String ROBOTLAUNCHPLAYERS = "robotlaunchplayers";
     static final String newsTextFile = "news.txt";
+    static final String guestTextFile = "guest.txt";
+     
     static final String KEYWORD_USERMENU = "usermenu";
 	static final String PLAYERCLASS = "playerClass";  
 	static final int CONSENSUAL_MUTE_COUNT = 3;
@@ -636,7 +638,7 @@ private void SetMyName(String theName,boolean nomsg,String uid)
   if(isGuest) 
     { if(!shownGuest)
       {
-      if(!G.offline()) { showNews="guest.txt"; }
+      if(!G.offline()) { newsStack.push(guestTextFile); }
       shownGuest=true;
       }
       guestname=(s.get(GuestNameMessage)+me.serverIndex); 
@@ -1821,9 +1823,11 @@ private boolean processEchoRoomtype(String messType,StringTokenizer localST)
 
     theChat.postMessage(ChatInterface.LOBBYCHANNEL,ChatInterface.KEYWORD_CHAT,WelcomeMessage);
     
+    if(G.isCheerpj()) { newsStack.push(cheerpjTextFile); }
+
     if(!me.isGuest && !me.isNewbie) 
       {showHostMessages = Http.getHostName();
-       if(!G.offline()) { showNews=newsTextFile; }
+       if(!G.offline()) { newsStack.push(newsTextFile); }
       }
     
 

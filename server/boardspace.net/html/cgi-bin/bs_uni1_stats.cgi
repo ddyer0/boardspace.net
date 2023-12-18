@@ -61,7 +61,7 @@ sub personalSummary()
 
     print "personalsolved $count personaltime $ts\n";
 
-    my $q = "select count(score1),score1 from sp_record where player1=$u1 and variation=$variation and mode=$mode and score1>0 group by score1 order by score1 asc";
+    my $q = "select count(score1),score1 from sp_record where $selector and variation=$variation and mode=$mode and score1>0 group by score1 order by score1 asc";
     my $sth = &query($dbh,$q);
     my $nr = &numRows($sth);
     my $last = 3;
@@ -148,17 +148,17 @@ sub doit()
   my $dbh = &connect();              # connect to local mysqld
   if($dbh)
   {
-  my $p1 = $dbh->quote(param("p1"));
+  my $p1 = &quote($dbh,param("p1"));
   my $u1 = &param("u1");		# uid
-  my $variation = $dbh->quote(param("variation"));		# puzzle type
-  my $puzzleid = $dbh->quote(param("puzzleid"));	# the actual puzzle text
+  my $variation = &quote($dbh,param("variation"));		# puzzle type
+  my $puzzleid = &quote($dbh,param("puzzleid"));	# the actual puzzle text
   my $mode = (param("hard") eq ('true')) ? "'hard'" : "'normal'";		# if hard puzzle group
   my $offline = &param('offline') eq 'true';
  
   if($u1 eq 'null')
   { $u1 = &getUid($dbh,$p1);
   }
-  $u1 = $dbh->quote($u1);
+  $u1 = &quote($dbh,$u1);
 
   my $q = "select uid,gmtdate,time1,score1 from sp_record where player1=$u1 and puzzleid=$puzzleid and mode=$mode";
   my $sth = &query($dbh,$q);

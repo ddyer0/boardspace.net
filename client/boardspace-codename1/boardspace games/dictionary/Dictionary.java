@@ -61,13 +61,14 @@ public class Dictionary implements Config
 	static DictionaryHash wordlen[];	// subdictionaries
 	static boolean loaded = false;		// true if loaded from the data file
 	static boolean definitionsLoaded = false;
+	static boolean definitionsAllLoaded = false;
 	static int definitionStringSize = 0;
 	static int definitionByteSize = 0;
 	static int definitionCount = 0;
 	
 	static Dictionary instance = null;	// the canonical instance of the full sized dictionary
-	public int orderedSize;					// the break between formally ordered words and "all the rest" of rare words.
-	public int totalSize;						// the number of words in the dictionary
+	private int orderedSize;				// the break between formally ordered words and "all the rest" of rare words.
+	private int totalSize;				// the number of words in the dictionary
 	
 	/*
 	 * get a sub dictionary of words of a specified length
@@ -99,6 +100,8 @@ public class Dictionary implements Config
 		wordlen = new DictionaryHash[MAXLEN+1];
 		for(int i=1;i<=MAXLEN;i++) {  wordlen[i] = new DictionaryHash(i); }
 		}
+		new Thread(new Runnable() 
+		{ public void run() { 
 		try {
 		load();
 		loadDefinitions();
@@ -107,22 +110,43 @@ public class Dictionary implements Config
 		{
 			Http.postError(this,"Loading Dictionary",e);
 		}
+		}}).start();
 	}
-	public int size() { return(totalSize); }
-	
+	public void waitForLoaded() 
+	{
+		while(!loaded) 
+			{ G.doDelay(100); 
+			}
+	}
+	public void waitForDefinitions()
+	{
+		while(!definitionsAllLoaded) { G.doDelay(100); }
+	}
+	public int size() { 
+		waitForLoaded();
+		return(totalSize); 
+	}
+	public int orderedSize() {
+		waitForLoaded();
+		return orderedSize;
+	}
 	public Entry get(String w)
+	{	waitForLoaded();
+		return getInternal(w);
+	}
+	private Entry getInternal(String w)
 	{
 		int len = w.length();
 		if(len>0 && len<=MAXLEN) { return(wordlen[len].get(w)) ; }
 		return(null);
 	}
-	public void put(String w,Entry e)
+	private void put(String w,Entry e)
 	{
 		int len = w.length();
 		if(len>=1 && len<=MAXLEN) { wordlen[len].put(w,e); }
 		else { G.Error("Length out of range for %s", w); }
 	}
-	public boolean isAlphabetic(int ch)
+	private boolean isAlphabetic(int ch)
 	{
 		return (((ch>='A')&&(ch<='Z'))
 				|| (ch=='-')
@@ -150,7 +174,7 @@ public class Dictionary implements Config
 	 * that are extensions of existing words.
 	 * 
 	 */
-	public int load(String file,boolean extensions,boolean inorder)
+	private int load(String file,boolean extensions,boolean inorder)
 	{	int loaded = 0;
 		try {
 			G.print("Loading "+file);
@@ -184,7 +208,7 @@ public class Dictionary implements Config
 		while( (word = stream.readToWhitespace(true))!=null)
 		{	
 			byte[] def = stream.readBinaryLine();
-			Entry e = get(word);
+			Entry e = getInternal(word);
 			if(e==null)
 			{	G.print("Non word "+word);
 			}
@@ -217,7 +241,7 @@ public class Dictionary implements Config
 		{	int ind = msg.indexOf('\t');
 			String word = msg.substring(0,ind).toLowerCase();
 			String def = msg.substring(ind+1);
-			Entry e = get(word);
+			Entry e = getInternal(word);
 			if(e==null)
 			{	G.print("Non word "+word);
 			}
@@ -270,17 +294,17 @@ public class Dictionary implements Config
 				{ orderedSize = loaded; 
 				}
 			else
-			if(get(msg)==null)
+			if(getInternal(msg)==null)
 			{	if(extensions)
 					{
 					int len = msg.length();
 					boolean keep = false;
 					for(int lim=len-2;!keep && lim>0;lim--)
 						{
-						if(get(msg.substring(0,lim))!=null) 
+						if(getInternal(msg.substring(0,lim))!=null) 
 							{ keep = true; 
 							}
-						if(get(msg.substring(len-lim))!=null) 
+						if(getInternal(msg.substring(len-lim))!=null) 
 							{ keep = true; }
 						}
 					if(keep) { put(msg,new Entry(msg)); loaded++; }
@@ -333,7 +357,7 @@ public class Dictionary implements Config
 		int msize = size();
 			String msg = null;
 			while( (msg = readToken(stream))!=null)
-			{	Entry existing = get(msg);
+			{	Entry existing = getInternal(msg);
 				total++;
 				if(existing!=null)
 				{
@@ -391,9 +415,8 @@ public class Dictionary implements Config
 		if(!definitionsLoaded)
 		{
 			definitionsLoaded = true;
-			new Thread(new Runnable() { public void run() { loadDefinitionsAlways(DictionaryDefsDir+"worddefsa.txt.gz");}}).start(); 
-			//G.print("size is "+size());
-			//removeFakes();
+			loadDefinitionsAlways(DictionaryDefsDir+"worddefsa.txt.gz");
+			definitionsAllLoaded = true;
 		}	
 	}
 	public void load()
@@ -427,8 +450,8 @@ public class Dictionary implements Config
 	loadAlways(DictionaryDir+"wordsinorder.txt.gz",true);
 	//G.print("size is "+size());
 	//removeFakes();
-	G.print("final size is "+size());
 	loaded = true;
+	G.print("final size is "+size());
 	}
 		
 	}

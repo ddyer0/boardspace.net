@@ -127,8 +127,7 @@ public class CrosswordsViewer extends CCanvas<CrosswordsCell,CrosswordsBoard> im
     private TextButton checkWordsButton = addButton(JustWordsMessage,CrosswordsId.CheckWords,
     		JustWordsHelp,
 						HighlightColor, rackBackGroundColor);
-    private Slider vocabularyRect = new Slider(VocabularyMessage,CrosswordsId.Vocabulary,0,1,
-    		CrosswordsPlay.vocabularyPart(online.search.RobotProtocol.DUMBOT_LEVEL));
+    private Slider vocabularyRect = new Slider(VocabularyMessage,CrosswordsId.Vocabulary,0,1,0);
 
 /**
  * this is called during initialization to load all the images. Conventionally,
@@ -172,6 +171,9 @@ public class CrosswordsViewer extends CCanvas<CrosswordsCell,CrosswordsBoard> im
         // useDirectDrawing();
         doInit(false);
         adjustPlayers(players_in_game);
+        
+        // defer this as long as possible to give the dictionary time to load
+        vocabularyRect.setValue(CrosswordsPlay.vocabularyPart(online.search.RobotProtocol.DUMBOT_LEVEL));
         
         if(G.debug()) { saveScreen = myFrame.addAction("Save Board Image",deferredEvents); }
 
@@ -345,7 +347,6 @@ public class CrosswordsViewer extends CCanvas<CrosswordsCell,CrosswordsBoard> im
         setProgressRect(progressRect,goalRect);
         positionTheChat(chatRect,chatBackgroundColor,rackBackGroundColor);
         labelFont = largeBoldFont();
-        
         return(boardW*boardH+bigRackH*boardW);
     }
     boolean vertical = false;
@@ -1888,7 +1889,6 @@ public void setLetterColor(Graphics gc,CrosswordsBoard gb,CrosswordsCell cell)
     	GC.Text(gc, true, whoRect, Color.black, null, s.get(ServiceName,prettyName(index)));
     	CrosswordsState state = bb.getState();
     	GC.setFont(gc, myfont);
-    	
     	standardGameMessage(gc,bb,stateRect,state);
     	boolean hide = bb.hiddenVisible[index];
     	drawRack(gc,bb,rackRect,rack,prack,hiddenRack,hiddenMapPick,hide,hp,bb.whoseTurn!=index);

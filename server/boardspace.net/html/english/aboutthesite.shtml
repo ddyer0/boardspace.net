@@ -3,9 +3,7 @@
 <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1"><title>About the Site</title>
 
 <script src="/js/site.js">
-</script>
-</head>
-
+</script></head>
 <body style="color: rgb(0, 0, 0); background-color: rgb(255, 255, 255); background-image: url(/images/background-image.jpg);" alink="#000099" link="#000099" vlink="#990099">
 <h1 style="text-align: center;"><img alt="boardspace.net" src="../images/master-logo.jpg" style="width: 600px; height: 100px;"></h1>
 <h1 style="text-align: center;">About the Site</h1>
@@ -103,7 +101,7 @@ help,&nbsp; lets talk.</li>
 take to make a site
 like this?<br>
 </span>No actual spit or baling wire is involved.
-Here's <a href="sitecomponents.html">the rundown</a>.<br>
+Here's <a href="sitecomponents.html">the rundown</a> in general terms. &nbsp;If you're a programmer, it's all open source on <a href="https://github.com/ddyer0/boardspace.net">Github</a><br>
 </li>
 </ul>
 <br>
@@ -119,8 +117,8 @@ document.write("space.net'>gamemaste<n>r@board<n>space.net</a>");
 </script></font>
 </td>
 <td style="vertical-align: top; text-align: center;"><a href="http://netmap.efxservices.com/cgi-bin/mapper/displaymap.pl?client=1036">
-<div id="google_translate_element"></div>
-<script type="text/javascript">
+</a><div id="google_translate_element"></div>
+<a href="http://netmap.efxservices.com/cgi-bin/mapper/displaymap.pl?client=1036"><script type="text/javascript">
 function googleTranslateElementInit() {
 new google.translate.TranslateElement({pageLanguage: 'en', layout: google.translate.TranslateElement.InlineLayout.SIMPLE}, 'google_translate_element');
 }

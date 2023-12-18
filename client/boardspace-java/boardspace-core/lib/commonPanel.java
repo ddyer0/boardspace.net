@@ -50,7 +50,8 @@ public class commonPanel extends FullscreenPanel
 	public DeferredEventManager deferredEvents = new DeferredEventManager(this);
     public String showVoice = null; //sound file to play
     public String showHostMessages = null;
-    public String showNews = null;	//text file to print to chat
+    public NewsReader newsReader = null;
+    public StringStack newsStack = new StringStack();
     
     public LFrameProtocol myFrame = null; 		//the frame we live in
     public InternationalStrings s = null;		// translation strings
@@ -236,12 +237,12 @@ public class commonPanel extends FullscreenPanel
 
 
         {  // print a news file
-		      String sn = showNews;
-		      if(sn!=null) 
-		        { showNews=null; 
-		          NewsReader nr = new NewsReader(theChat,"/"+G.getString(G.LANGUAGE,DefaultLanguageName)+"/"+sn,null);
-		          nr.postMessageHost=showHostMessages;
-		          nr.start(); 
+		      if((newsReader!=null) && newsReader.finished) { newsReader=null; }
+		      else if(newsStack.size()>0)
+		      {   String showNews=newsStack.pop(); 
+		          newsReader = new NewsReader(theChat,"/"+G.getString(G.LANGUAGE,DefaultLanguageName)+"/"+showNews,null);
+		          newsReader.postMessageHost=showHostMessages;
+		          newsReader.start(); 
 		        }
         }
 	      { // give a welcome message

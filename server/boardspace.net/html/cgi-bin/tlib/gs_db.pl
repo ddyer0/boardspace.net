@@ -137,7 +137,12 @@ sub datestring()
 	$year+=1900;
 	return "$day/$month/$year:";
 }
-
+sub quote()
+{
+  my ($dbh,$item) = @_;
+  if($dbh && $item) { return $dbh->quote($item); }
+  return "''";
+}
 # disconnect from the database
 sub disconnect()
 {	my ($dbh) = @_;
@@ -265,15 +270,23 @@ sub finishQuery()
 	if($sth) 
 		{ $'lastquery{$sth} = 0; 
 		  $'lastdbh{$sth}= 0;
-		  $sth->finish() || &logError("finish",""); $sth=1; }
+		  $sth->finish() || &logError("finish","");
+		}
+	# return the actual $sth, which can still be used to
+	# retrieve the last uid created by auto increment
 	return($sth);
 }
 
+sub last_insert_id()
+{ my ($sth) = @_;
+  return $sth->{'mysql_insertid'};
+}
+	
 # return true for a sucessful command
 sub commandQuery()
 {	my ($dbh,$com) = @_;
 	my $sth=&query($dbh,$com);
-	return(&finishQuery($sth));
+	return &finishQuery($sth);
 }
 #
 # validate a user name and password.  This is the simple version, some places

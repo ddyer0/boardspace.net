@@ -52,7 +52,6 @@ import java.util.Comparator;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.TimeZone;
-
 import javax.swing.JCheckBox;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
@@ -334,6 +333,7 @@ public static Object MakeInstance(String classname)
 		catch (NullPointerException err) { Plog.log.addLog("getMacAddress ",err); }
 		catch (UnknownHostException err) {}
 		catch (SocketException err) {}
+
 		return(null);
 	}
 	
@@ -636,6 +636,7 @@ public static Object MakeInstance(String classname)
 	public static int getIdentity()
 	{
 		String id = getHostUID();
+		G.print("hostid is ",id);
 		return(G.hashChecksum(id,id.length())); 
 	}
     /** get the current local offset from GMT in minutes */
@@ -664,7 +665,10 @@ public static Object MakeInstance(String classname)
 	    else if (env.containsKey("HOSTNAME"))
 	        return env.get("HOSTNAME");
 	    else
-	        return "Unknown Computer";
+	    {	
+			String uid = G.globalUserid();
+	        return "Computer-"+uid;
+	    }
 	}
 
 	private static Font defaultFont = null;

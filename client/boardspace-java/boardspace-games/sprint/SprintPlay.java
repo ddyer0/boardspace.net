@@ -148,19 +148,19 @@ public class SprintPlay extends commonRobot<SprintBoard> implements Runnable,
         default: throw G.Error("Not expecting strategy "+strategy);
         case -100:	// old dumbot, before shift in pruning and randomization 
         case SMARTBOT_LEVEL:
-        	vocabularySize = dict.orderedSize;
+        	vocabularySize = dict.orderedSize();
         	timeLimit = 30;
         	break;
         case WEAKBOT_LEVEL:
-        	vocabularySize = dict.orderedSize/5;
+        	vocabularySize = dict.orderedSize()/5;
         	timeLimit = 10;
         	break;
 		case DUMBOT_LEVEL:
-			vocabularySize = dict.orderedSize/2;
+			vocabularySize = dict.orderedSize()/2;
 			timeLimit = 15;
 			break;
 		case BESTBOT_LEVEL:
-			vocabularySize = dict.totalSize;
+			vocabularySize = dict.size();
 			timeLimit = 20;
 			break;
 		case MONTEBOT_LEVEL: 
@@ -234,17 +234,17 @@ public void PrepareToMove(int playerIndex)
   {	Dictionary dict =  Dictionary.getInstance();
   	switch(robot)
   	{
-  	case RANDOMBOT_LEVEL: return(dict.orderedSize);
-  	case SMARTBOT_LEVEL: return(dict.orderedSize);
-  	case WEAKBOT_LEVEL:  return(dict.orderedSize/10);
-  	case DUMBOT_LEVEL: return(dict.orderedSize/5);
-  	case BESTBOT_LEVEL: return(dict.totalSize);
+  	case RANDOMBOT_LEVEL: return(dict.orderedSize());
+  	case SMARTBOT_LEVEL: return(dict.orderedSize());
+  	case WEAKBOT_LEVEL:  return(dict.orderedSize()/10);
+  	case DUMBOT_LEVEL: return(dict.orderedSize()/5);
+  	case BESTBOT_LEVEL: return(dict.size());
   	default: throw G.Error("Not expecting "+robot);
   	}
   }
   static double vocabularyPart(int robot)
   {
-  	return((double)vocabularySize(robot)/Dictionary.getInstance().totalSize);
+  	return((double)vocabularySize(robot)/Dictionary.getInstance().size());
   }
   
  }

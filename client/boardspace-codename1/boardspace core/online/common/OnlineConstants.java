@@ -165,6 +165,7 @@ public interface OnlineConstants extends Config {
     
 	// these are expected parameters from the login transaction
 	static final String LOBBYPORT = "lobbyportnumber";	// port to connect
+	static final String REALPORT = "reallobbyportnumber";	// port for scoring check
 	static final String UIDRANKING = "uidranking";		// user uid and ranking associations
 	static final String FAVORITES = "favorites";		// recently played games
 	static final String LATITUDE = "latitude";

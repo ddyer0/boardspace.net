@@ -380,8 +380,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
 
     private String modeString()
     {
-        String mode = "";
-
+        String mode = unrankedMode ? "unranked" : "normal";
         return (mode);
     }
 
@@ -684,6 +683,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
  */
     public void init(ExtendedHashtable info,LFrameProtocol frame)
     {  	sharedInfo = info;
+    	boolean offline = G.offline();
     	gameInfo = info.getGameInfo();
     	int defPlayers = gameInfo==null ? 2 : gameInfo.minPlayers;
     	int playersInGame = info.getInt(OnlineConstants.PLAYERS_IN_GAME,defPlayers);
@@ -694,17 +694,32 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
         gameTypeId = info.getString(OnlineConstants.GAMETYPEID,gameInfo==null ? "xx" : gameInfo.id);
     	my = new commonPlayer(0); 
     	my.primary = true; //mark it as "us"
-    	my.launchUser = (LaunchUser)info.get(ConnectionManager.LAUNCHUSER);
-        my.setIsSpectator(info.getBoolean(OnlineConstants.SPECTATOR,false));
-        String myUid = "D"+G.getIdentity();
-        my.uid = myUid;
-        String myName = prefs.get(loginNameKey,"anonymous");
-        my.setPlayerName(myName,false,null);
-        info.put(OnlineConstants.MYPLAYER,my);			// required by the viewer
+    	LaunchUser lu = my.launchUser = (LaunchUser)info.get(ConnectionManager.LAUNCHUSER);
         launchUsers = (LaunchUser[])info.get(ConnectionManager.LAUNCHUSERS);
-       
-        if(launchUsers==null)
+        my.setIsSpectator(info.getBoolean(OnlineConstants.SPECTATOR,false));
+        //
+        // the online lobby and offline launcher both provide LaunchUsers, but the direct
+        // launch does not.  We want the commonPlayer to look the same regardless how it
+        // was initialized.  For online games, "uid" will end up as the player uid from
+        // the database.  For offline games, it will end up being the device identity
+        // plus tags to make it unique and repeatable.
+        // in particular, the offline launcher has player "uids" that are arbitrary and
+        // shouldn't be passed to online scoring (as for crosswordle)
+        //
+        if(lu!=null)
         {
+        my.uid = offline ? "D"+G.getIdentity()+"-"+lu.order : lu.user.uid;	// user id
+        my.setPlayerName(lu.user.name,true,null); 	
+        my.setPlayerName(lu.user.publicName,false,null);
+        my.setOrder(lu.order); 	// move order
+        }
+        else {
+        String myName = prefs.get(loginNameKey,"anonymous");
+            my.setOrder(0);
+            my.setPlayerName(myName,false,null);
+            String myUid = "D"+G.getIdentity()+"-0";
+            my.uid = myUid;
+       
         	LaunchUserStack ls = new LaunchUserStack();
         	User myUser = new User();
         	myUser.name=myName;
@@ -714,6 +729,10 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
         	my.launchUser = ls.addUser(myUser,0,0);
         	launchUsers = ls.toArray();
         }
+        
+    	info.put(OnlineConstants.MYPLAYER,my);			// required by the viewer
+       
+ 
         
         super.init(info,frame);		// viewer is created here
         
@@ -783,7 +802,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
 		tournamentMode = info.getBoolean(OnlineConstants.TOURNAMENTMODE,false);
         isGuest = info.getBoolean(OnlineConstants.GUEST,false);
         UIDstring = info.getString(OnlineConstants.GAMEUID,"");
-        if("".equals(UIDstring) && G.offline())
+        if("".equals(UIDstring) && offline)
         {
         	UIDstring = "UU!"+gameTypeId+"-offline-"+playersInGame;
         }
@@ -795,21 +814,12 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
         if(sessionNum>0)
         {
         // setup a connected game
-        if(!G.offline())
+        if(!offline)
 	        {
 	        myNetConn = new ConnectionManager(info);
 	        info.put(exCanvas.NETCONN,myNetConn);
 	        }
-        LaunchUser lu = (LaunchUser)info.get(ConnectionManager.LAUNCHUSER);
-        {my.launchUser = lu;
-        if(lu!=null)
-        {
-        my.uid = lu.user.uid;	// user id
-        my.trueName = lu.user.name;
-        my.userName = lu.user.publicName;
-        my.setOrder(lu.order); 	// move order
-        }
-        }
+
         // G.print("init "+my);
  
         robot = (Bot)info.get(OnlineConstants.ROBOTGAME);
@@ -830,7 +840,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
         {
             ExtendOptions();
         }
-        if(!G.offline() && (reviewOnly || (!my.isSpectator() && !tournamentMode) || chatOnly))
+        if(!offline && (reviewOnly || (!my.isSpectator() && !tournamentMode) || chatOnly))
     	{ privateMode = myFrame.addOption(s.get(PrivateRoomMessage), false,deferredEvents);
     	}
 
@@ -852,7 +862,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
             startDirectory(dir); 
         }
         if(v!=null) { v.addObserver(this); }
-        if(G.offline()) { setGameState(ConnectionState.NOTMYCHOICE); }
+        if(offline) { setGameState(ConnectionState.NOTMYCHOICE); }
     }
     // game directory on the web site, generally /gameame/gamenamegames/
     public String webGameDirectory()
@@ -2884,7 +2894,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     {
    		 //G.print("Reg "+otherUser);
     	 sendRegister(order,pos /* eliminate seat as a consideration */,otherUser.user.publicName,otherUser.user.uid,chan,getGameRevision());
- 		 v.addLocalPlayer(otherUser);
+    	 v.addLocalPlayer(otherUser);
     	 // register the robot before we register our color, so the bot
     	 // will echo and be set up before we become ready to play.
     	 if(otherUser.order==robotMasterOrder)
@@ -2915,6 +2925,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     public commonPlayer createPlayer(int channel,String name,int order,String uid)
     {	// the time paramter is "understands time" and is obsolete, all active client versions understand
         commonPlayer p = getPlayer(channel);
+        if(G.offline() && uid.equals(my.uid)) { p = my; }
         if (p != null)
         {
         	//System.out.println("Old player "+channel+" "+my.channel);
@@ -3181,14 +3192,17 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     {
         String mode = modeString();
         StringBuilder urlStr = new StringBuilder();
-        commonPlayer p = my;
+        commonPlayer p = v.getPlayers()[0];
         String urank = unrankedMode ? "&nr1=true" : "";
+        // note that "mode" is supplied in the notes
         G.append(urlStr,
         		"&key=" , myNetConn==null ? "0" : myNetConn.sessionKey ,
         		"&session=",sessionNum ,
-        		"&sock=" , sharedInfo.getInt(OnlineConstants.LOBBYPORT,-1) , 
+        		// realport and lobbyport are normally the same, but in cheerpj the lobby port
+        		// may be a proxy port.  This port is used by the scoring script to connect
+        		// and check if the game is actually in progress.
+        		"&sock=" , sharedInfo.getInt(REALPORT,-1) , 
         		"&game=" , gameTypeId ,
-        		"&mode=" ,mode , 
         		"&u1=", p.uid,
         		"&p1=", p.trueName(),
         		"&s1=", v.ScoreForPlayer(p),
@@ -3200,7 +3214,6 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
         appendNotes(urlStr);
         
         String str = urlStr.toString();
-
         return (str);
     }
 
@@ -3343,8 +3356,11 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
         		G.append(urlStr ,"&nr",realPCtr,"=true");
         	}
         }
+		// realport and lobbyport are normally the same, but in cheerpj the lobby port
+		// may be a proxy port.  This port is used by the scoring script to connect
+		// and check if the game is actually in progress.
         G.append(urlStr,"&key=" , myNetConn.sessionKey , "&session=" , sessionNum,
-        				"&sock=" , sharedInfo.getInt(OnlineConstants.LOBBYPORT,-1) ,"&mode=" , mode , tm);
+        				"&sock=" , sharedInfo.getInt(REALPORT,-1) ,"&mode=" , mode , tm);
         appendNotes(urlStr);
         String str = urlStr.toString();
         /*
@@ -4041,12 +4057,15 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
             myFrame.setVisible(true);
             if(v!=null) { v.setVisible(true); }
             if(selectorFrame!=null) { G.moveToFront(selectorFrame); } 
+            
+            if(G.isCheerpj())
+            { newsStack.push(cheerpjTextFile); }
 
             if (!chatOnly && !G.offline())
             {	String pfile1 = my.isSpectator() 
             				? "spectator.txt" 
             				: (gameNameString.toLowerCase()+"-"+"player.txt");
-                showNews =  pfile1;
+                newsStack.push(pfile1);
                 //feature not used, avoid unnecessary waits
                 //showVoice = my.spectator ? "spectator" + SoundFormat : "player" + SoundFormat;;
             }

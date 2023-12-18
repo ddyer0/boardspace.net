@@ -354,7 +354,7 @@ import udp.PlaytableStack;
 		 	  countryField.select(s.get("Planet Earth"));
 		 	}
 		 else {
-			 prefs.put(CommonConfig.loginNameKey,name);
+			 prefs.put(loginNameKey,name);
 			 prefs.put(passKey,"");
 			 prefs.put(langKey,language);
 			 prefs.put(countryKey,country);

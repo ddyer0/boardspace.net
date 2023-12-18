@@ -133,19 +133,19 @@ public class WypsPlay extends commonRobot<WypsBoard> implements Runnable, WypsCo
         default: throw G.Error("Not expecting strategy "+strategy);
         case -100:	// old dumbot, before shift in pruning and randomization 
         case SMARTBOT_LEVEL:
-        	vocabularySize = dict.orderedSize;
+        	vocabularySize = dict.orderedSize();
         	timeLimit = 30;
         	break;
         case WEAKBOT_LEVEL:
-        	vocabularySize = dict.orderedSize/5;
+        	vocabularySize = dict.orderedSize()/5;
         	timeLimit = 10;
         	break;
 		case DUMBOT_LEVEL:
-			vocabularySize = dict.orderedSize/2;
+			vocabularySize = dict.orderedSize()/2;
 			timeLimit = 15;
 			break;
 		case BESTBOT_LEVEL:
-			vocabularySize = dict.totalSize;
+			vocabularySize = dict.size();
 			timeLimit = 20;
 			break;
 		case MONTEBOT_LEVEL: 

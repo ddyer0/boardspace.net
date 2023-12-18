@@ -131,17 +131,17 @@ static int vocabularySize(int robot)
 {	Dictionary dict =  Dictionary.getInstance();
 	switch(robot)
 	{
-	case RANDOMBOT_LEVEL: return(dict.orderedSize);
-	case SMARTBOT_LEVEL: return(dict.orderedSize);
-	case WEAKBOT_LEVEL:  return(dict.orderedSize/10);
-	case DUMBOT_LEVEL: return(dict.orderedSize/5);
-	case BESTBOT_LEVEL: return(dict.totalSize);
+	case RANDOMBOT_LEVEL: return(dict.orderedSize());
+	case SMARTBOT_LEVEL: return(dict.orderedSize());
+	case WEAKBOT_LEVEL:  return(dict.orderedSize()/10);
+	case DUMBOT_LEVEL: return(dict.orderedSize()/5);
+	case BESTBOT_LEVEL: return(dict.size());
 	default: throw G.Error("Not expecting "+robot);
 	}
 }
 static double vocabularyPart(int robot)
 {
-	return((double)vocabularySize(robot)/Dictionary.getInstance().totalSize);
+	return((double)vocabularySize(robot)/Dictionary.getInstance().size());
 }
 /** prepare the robot, but don't start making moves.  G is the game object, gboard
  * is the real game board.  The real board shouldn't be changed.  Evaluator and Strategy

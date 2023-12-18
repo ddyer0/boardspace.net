@@ -138,7 +138,7 @@ public class BreakingAwayViewer extends CCanvas<BreakingAwayCell,BreakingAwayBoa
     private Rectangle cycleRect[] = addRect("cycle",6);
     private Rectangle chipRect[] = addRect("chip",6);
 
-     
+
     public synchronized void preloadImages()
     {	BreakingAwayPiece.preloadImages(loader,ImageDir);
 	    if (artwork == null)
