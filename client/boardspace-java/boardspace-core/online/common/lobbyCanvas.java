@@ -1006,6 +1006,7 @@ public class lobbyCanvas extends exCanvas implements LobbyConstants, CanvasProto
 	    boolean robo = ((session.mode==Session.Mode.Unranked_Mode)
 	    				|| (session.mode==Session.Mode.Game_Mode))
 	    				&& G.allowRobots()
+	    				&& (session.getSubmode()!=JoinMode.Tournament_Mode)
 	    				&& (session.includeRobot()!=null)
 	    				&& (playersInSession<maxp) 
 	    				&& (G.TimedRobots() || !session.getSubmode().isTimed())

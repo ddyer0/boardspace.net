@@ -19,7 +19,6 @@ package online.common;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
-import common.CommonConfig;
 import lib.ChatInterface;
 import lib.G;
 import lib.InternationalStrings;

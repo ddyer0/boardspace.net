@@ -30,5 +30,5 @@ public interface GameLayoutClient
 	void SetupVcrRects(int left, int top, int width, int height);
 	boolean isZoomed();
 	void positionTheChat(Rectangle actual, Color back,Color fore);
-	boolean isSpectator();
+	boolean canUseDone();
 }

@@ -694,7 +694,12 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     	my.primary = true; //mark it as "us"
     	LaunchUser lu = my.launchUser = (LaunchUser)info.get(ConnectionManager.LAUNCHUSER);
         launchUsers = (LaunchUser[])info.get(ConnectionManager.LAUNCHUSERS);
-        my.setIsSpectator(info.getBoolean(OnlineConstants.SPECTATOR,false));
+        
+        // reviewOnly means we're not playing, but we might or might not be connected
+        reviewOnly = (gameMode==Session.Mode.Review_Mode) || info.getBoolean(REVIEWONLY,false);
+       
+
+        my.setIsSpectator(reviewOnly || info.getBoolean(OnlineConstants.SPECTATOR,false));
         //
         // the online lobby and offline launcher both provide LaunchUsers, but the direct
         // launch does not.  We want the commonPlayer to look the same regardless how it
@@ -759,10 +764,6 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
            }
          }
 
-        // reviewOnly means we're not playing, but we might or might not be connected
-        reviewOnly = (gameMode==Session.Mode.Review_Mode) || info.getBoolean(REVIEWONLY,false);
-       
-        
         skipGetStory = false;
     	recordedHistory = "";
         
@@ -2835,7 +2836,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     public void doNOTMYCHOICE(String cmd,StringTokenizer localST,String fullMsg)
     { // state 3
     	boolean offline = G.offline();
-        if (offline || allPlayersReady(false))
+        if (offline || allPlayersReady(false) || reviewOnly)
         {    
             if(offline && !reviewOnly)
         	{ // note 9/2021 
@@ -3188,7 +3189,6 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     // get the scoring string for a 1 player game
     private String getUrlStr1()
     {
-        String mode = modeString();
         StringBuilder urlStr = new StringBuilder();
         commonPlayer p = v.getPlayers()[0];
         String urank = unrankedMode ? "&nr1=true" : "";

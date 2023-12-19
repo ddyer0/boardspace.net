@@ -39,7 +39,8 @@ public class Session implements LobbyConstants
     	{
     	ConnectionManager.SERVERKEY,
         G.LANGUAGE,
-        OnlineConstants.LOBBYPORT,
+        LOBBYPORT,	
+        REALPORT,
         SERVERNAME,
         ConnectionManager.USERNAME,
         ConnectionManager.UID,
@@ -307,6 +308,7 @@ public class Session implements LobbyConstants
     public void setSubmode(JoinMode m)
     {
     	submode = m;
+    	resetRobotname(false);
     }
     public JoinMode getSubmode() { return submode; }
     
@@ -631,6 +633,7 @@ public class Session implements LobbyConstants
 	    boolean canAddRobot = G.allowRobots() 
 	    						&& (playersInSession < maxPlayers)
 	    						&& (mode != Mode.Tournament_Mode)
+	    						&& (submode != JoinMode.Tournament_Mode)
 	    						&& (mode != Mode.Master_Mode);
 	    return(canAddRobot);
     }

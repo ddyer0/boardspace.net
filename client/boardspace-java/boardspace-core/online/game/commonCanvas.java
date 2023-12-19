@@ -1891,8 +1891,13 @@ public abstract class commonCanvas extends exCanvas
      * 
      * @return
      */
-    public boolean isSpectator() 
-    {commonPlayer p = getActivePlayer();
+    public boolean canUseDone() 
+    {	if(reviewOnly) { return true; }
+     	return !isSpectator();
+    }
+    public boolean isSpectator()
+    {
+    	commonPlayer p = getActivePlayer();
     	return p!=null && p.isSpectator(); 
     }
     /**
@@ -2302,7 +2307,7 @@ public abstract class commonCanvas extends exCanvas
   * players edit and rehash the game.   
   */
     public void setEditable()
-    {	if(!isSpectator()) { allowed_to_edit = true; }
+    {	if(canUseDone()) { allowed_to_edit = true; }
     	mutable_game_record = true;
     }
     /**
@@ -2615,8 +2620,9 @@ public abstract class commonCanvas extends exCanvas
     	{
     		if(p!=null) { p.setTimeIsInactive(true); }
     	}
-    	resetBounds();
     	startedOnce = started = true;
+    	saveDisplayBoard();
+    	resetBounds();
     	wake();
     }
 
@@ -3433,7 +3439,7 @@ public abstract class commonCanvas extends exCanvas
     public void leaveLockedReviewMode()
     { if( reviewMode()			// and may not even realize it.
     	  && !mutable_game_record
-    	  && !isSpectator()) 
+    	  && canUseDone()) 
     		{ scrollFarForward(); }
     }
     /**
@@ -4388,7 +4394,7 @@ public abstract class commonCanvas extends exCanvas
             			} 
             	}
             if(mode==replayMode.Live) { verifyGameRecord(); }
-            if (transmit && (allowed_to_edit || !isSpectator()))
+            if (transmit && (allowed_to_edit || canUseDone()))
             {	if(m.elapsedTime()<=0)
             	{
             	// this may not have been done yet if the game is messing with "replaymode" 
@@ -5143,7 +5149,7 @@ public abstract class commonCanvas extends exCanvas
         setActivePlayer((commonPlayer)info.get(OnlineConstants.MYPLAYER));
         G.Assert(getActivePlayer()!=null,"my player not supplied");
 
-        if (!isSpectator())
+        if (canUseDone())
         {
             hidden.resignAction = myFrame.addAction(s.get(RESIGN),deferredEvents);
         }

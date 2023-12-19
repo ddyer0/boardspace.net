@@ -256,11 +256,11 @@ public class CrosswordsViewer extends CCanvas<CrosswordsCell,CrosswordsBoard> im
        	// ground the size of chat and logs in the font, which is already selected
     	// to be appropriate to the window size
     	int fh = standardFontSize();
-    	int minLogW = boardMax ? 0 : fh*18;	
+    	int minLogW = boardMax ? 0 : fh*22;	
        	int minChatW = fh*35;	
        	int vcrw = fh*16;
         int margin = fh/2;
-        int buttonW = (G.isCodename1()?8:6)*fh;
+        int buttonW = 8*fh;
         int stateH = fh*5/2;
         // this does the layout of the player boxes, and leaves
     	// a central hole for the board.
@@ -270,7 +270,7 @@ public class CrosswordsViewer extends CCanvas<CrosswordsCell,CrosswordsBoard> im
     			0.6,	// 60% of space allocated to the board
     			aspect,	// aspect ratio for the board
     			fh*(plannedSeating()?3:2),	// min cell size
-    			fh*4,	// maximum cell size
+    			fh*(plannedSeating()?4:2.5),	// maximum cell size
     			0.2		// preference for the designated layout, if any
     			);
         // place the chat and log automatically, preferring to place

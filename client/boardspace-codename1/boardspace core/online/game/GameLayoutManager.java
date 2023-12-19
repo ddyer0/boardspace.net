@@ -2240,9 +2240,9 @@ public class GameLayoutManager  implements Opcodes
     		if(nrep==0 || (rep[0]==null)) { placeDoneEdit(boxW,maxW,done,edit); }
     		else
     		{
-    		boolean spectator = client.isSpectator();
+    		boolean canUseDone = client.canUseDone();
     		int marginSize = rects.marginSize;
-    		boolean hasButton = !(spectator && !alwaysPlaceDone) && (edit!=null || done!=null);
+    		boolean hasButton = (canUseDone || alwaysPlaceDone) && (edit!=null || done!=null);
     		int buttonH1 = hasButton ? boxW/2+marginSize : 0;
     		int buttonH2 = hasButton ? maxW/2+marginSize : 0;
     		Rectangle r = new Rectangle();
@@ -2298,15 +2298,15 @@ public class GameLayoutManager  implements Opcodes
     	}
     }
     public void placeDoneEdit(int boxW,int maxW,Rectangle done,Rectangle edit)
-    {		boolean spectator =  client.isSpectator();
+    {		boolean canUseDone =  client.canUseDone();
     		if((done!=null)
     				&& (edit!=null) 
-    				&& (plannedSeating() || spectator)
+    				&& (plannedSeating() || !canUseDone)
     				&& !alwaysPlaceDone) 
     {		
     			G.SetRect(done, 0,0,0,0);
     			// spectators don't need an edit (or undo) button
-    			if(spectator) { G.SetRect(edit,0,0,0,0); }
+    			if(!canUseDone) { G.SetRect(edit,0,0,0,0); }
     			else {
     			int undoW = boxW*2/3;
     			placeRectangle(Purpose.Edit,edit,undoW,undoW,undoW,undoW,BoxAlignment.Center,true);
@@ -2318,7 +2318,7 @@ public class GameLayoutManager  implements Opcodes
     	    	{ placeRectangle(Purpose.Edit,edit,boxW,boxW/2,maxW,maxW/2,BoxAlignment.Center,true); 
     	    	}
     		if(edit==null && (done!=null)) 
-    			{ 	if(plannedSeating()&& client.isSpectator()&&!alwaysPlaceDone) { G.SetRect(done,0,0,0,0); }
+    			{ 	if(plannedSeating()&& !client.canUseDone()&&!alwaysPlaceDone) { G.SetRect(done,0,0,0,0); }
 	    			else
 	    			{
 	    				placeRectangle(Purpose.Done,done,boxW,boxW/2,maxW,maxW/2,BoxAlignment.Center,true);

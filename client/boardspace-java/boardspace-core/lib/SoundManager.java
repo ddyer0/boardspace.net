@@ -23,7 +23,6 @@ import java.util.Hashtable;
 @SuppressWarnings("deprecation")
 public class SoundManager implements Runnable 
 {	private static SoundManager theInstance = null;
-	private static Thread RAThread=null;
 	private  boolean exit = false;
     private int readPtr = 0;
     private  int writePtr = 0;
@@ -121,7 +120,7 @@ public class SoundManager implements Runnable
 	        }
 	        catch (Throwable err)
 	        {	G.print("LoadAClip Failed for ",name, " ", err);
-	            Http.postError(RAThread, "LoadAClip Failed for " + name, err);
+	            Http.postError(theInstance, "LoadAClip Failed for " + name, err);
 	        }
 
 	        return (v);
@@ -151,32 +150,9 @@ public class SoundManager implements Runnable
 	    		}
 	    	return(theInstance);
 	    }
-	    //
-	    // earlier versions of sound manager had a tendency to die unexpectedly,
-	    // so we have a check to see if it's running ok.  The "isAlive()" test
-	    // is itself a bit flakey, it can fail when the thread is just starting.
-	    // consequently, the recommended procedure is to call getInstance() well
-	    // before any actual sound clips are loaded.
-	    //
-	    public void fixRAThread()
-	    {
-	        if (!exit)
-	        {
-	            if ((RAThread == null) || !RAThread.isAlive())
-	            {
-	                exit = true;
-	                theInstance=null;
-	                if (RAThread != null)
-	                {	RAThread = null;
-	                    Http.postError(RAThread, "RAThread died", null);
-	                }
-	            }
-	        }
-	    }
 
 	    public void playASoundClip(String clipName, boolean doc,int delay)
 	    { //System.out.println("play "+clipName);
-	        fixRAThread();
 	        if(!exit)
 	        {
 	        URL u = G.getUrl(clipName,doc);
@@ -227,8 +203,7 @@ public class SoundManager implements Runnable
     {	
         try {
         //System.out.println("run");
-        RAThread = Thread.currentThread();
-        G.setThreadName(RAThread,"Root");
+        G.setThreadName(Thread.currentThread(),"Sound");
         for (; !exit;)
         {	final AudioClip clip = getAClip();
                 if (clip != null)
@@ -240,6 +215,7 @@ public class SoundManager implements Runnable
        catch (Throwable err) 
         { Http.postError(this,"in round manager run()",err); 
         }
+        finally { theInstance=null; }
     }
 
     public static void stop()

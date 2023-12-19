@@ -51,6 +51,7 @@ import lib.SoundManager;
 import lib.TimeControl;
 import lib.commonPanel;
 import lib.exCanvas;
+import online.common.Session.JoinMode;
 import online.game.sgf.export.sgf_names;
 
 /** general notes about the lobby class.
@@ -2219,12 +2220,12 @@ private boolean processEchoRoomtype(String messType,StringTokenizer localST)
 public void setRoomSubMode(Session sess,Session.JoinMode submode)
 { 
   if((submode != sess.getSubmode()))
-  { 
-  	sess.setSubmode(submode); 
-    sess.resetRobotname(false);
-  	sendLobbyInfo(sess,KEYWORD_IMIN,true);
+  { sess.setSubmode(submode); 
+    sendLobbyInfo(sess,KEYWORD_IMIN,true);
   }
 }
+
+
 private String sendImin(Session sess,String key2,boolean own)
 {	User me = users.primaryUser();
 	int myloc = me.playLocation();
@@ -2309,6 +2310,17 @@ public void setRoomType(Session sess,Session.Mode mode,GameInfo g,boolean forced
      String mstring = sess.gameIndex + " " + mode.ordinal()+" "+((g==null)?0:g.publicID);   
      sess.pendingMode = mode;  
      sendMessage(NetConn.SEND_SET_ROOMTYPE + mstring); 
+     switch(mode)
+    	 {
+    	 default: break;
+    	 case Tournament_Mode:
+    		 setRoomSubMode(sess,JoinMode.Tournament_Mode);
+    		 break;
+    	 case Game_Mode:
+    	 case Master_Mode:
+    	 case Unranked_Mode:
+    		 setRoomSubMode(sess,JoinMode.Open_Mode);
+     	}
      }
      sess.setCurrentGame(g,G.debug()||isTestServer,isPassAndPlay());
      
