@@ -153,8 +153,7 @@ public class JumbulayaViewer extends CCanvas<JumbulayaCell,JumbulayaBoard> imple
         // later, some variant is created, or the game code base is re purposed as the basis
         // for another game.
         bb = new JumbulayaBoard(type,players_in_game,randomKey,getStartingColorMap(),dictionary,JumbulayaBoard.REVISION);
-        // some problems with the animation
-        // useDirectDrawing();
+        useDirectDrawing(true);
         doInit(false);
         adjustPlayers(players_in_game);
         vocabularyRect.setValue(JumbulayaPlay.vocabularyPart(online.search.RobotProtocol.DUMBOT_LEVEL));
@@ -760,7 +759,7 @@ public class JumbulayaViewer extends CCanvas<JumbulayaCell,JumbulayaBoard> imple
     public void drawFixedElements(Graphics gc,boolean complete)
     {	commonPlayer pl = getPlayerOrTemp(bb.whoseTurn);
     	if(!lockOption) { effectiveBoardRotation = (boardRotation*Math.PI/2+pl.displayRotation); }
-    	complete |= (DRAWBACKGROUNDTILES && (digestFixedTiles()!=fixedTileDigest))
+    	complete |= (DRAWBACKGROUNDTILES && (digestFixedTiles(disB(gc))!=fixedTileDigest))
     			     || pendingFullRefresh;
     	super.drawFixedElements(gc,complete);
     }
@@ -803,16 +802,16 @@ public class JumbulayaViewer extends CCanvas<JumbulayaCell,JumbulayaBoard> imple
     // and draw those with the background.  On PCs this is hardly noticable, 
     // but on mobiles if makes a big difference.
     // This digest determines when the background has changed, and needs to be redrawn.
-    public long digestFixedTiles()
+    public long digestFixedTiles(JumbulayaBoard gb)
     {	Random r = new Random(FIXEDRANDOM);
     	long v = 0;
-    	for(JumbulayaCell cell = bb.allCells; cell!=null; cell=cell.next)
+    	for(JumbulayaCell cell = gb.allCells; cell!=null; cell=cell.next)
         {	if(cell.fromRack)
         	{
         	v ^= cell.Digest(r);
         	}
         }
-    	int tilesLeft = bb.drawPile.height();
+    	int tilesLeft = gb.drawPile.height();
     	v ^= (tilesLeft*r.nextLong());
     	v ^= G.rotationQuarterTurns(effectiveBoardRotation)*r.nextLong();
     	return(v);

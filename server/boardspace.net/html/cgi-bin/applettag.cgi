@@ -376,7 +376,7 @@ sub print_appdata()
 	my (@jars) = &list_dir($dir);
 	print "version,1,$host\n";
 	foreach my $jar (@jars)
-	{ if( index(lc($jar),".res")>0)
+	{ if( (index(lc($jar),".raw")>0) || (index(lc($jar),".res")>0) || (index(lc($jar),".gz")>0) || (index(lc($jar),".zip")>0))
 		{
 		my $modtime = (stat("$dir$jar"))[9]; 
 		print "$modtime,$host$jar\n"; 

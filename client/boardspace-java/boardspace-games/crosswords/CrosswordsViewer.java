@@ -162,8 +162,7 @@ public class CrosswordsViewer extends CCanvas<CrosswordsCell,CrosswordsBoard> im
         // for another game.
         bb = new CrosswordsBoard(type,players_in_game,randomKey,getStartingColorMap(),dictionary,CrosswordsBoard.REVISION);
         robotGame = sharedInfo.get(OnlineConstants.ROBOTGAME)!=null;
-        // some problems with the animation
-        // useDirectDrawing();
+        useDirectDrawing(true);
         doInit(false);
         adjustPlayers(players_in_game);
         
@@ -786,7 +785,7 @@ public class CrosswordsViewer extends CCanvas<CrosswordsCell,CrosswordsBoard> im
     public void drawFixedElements(Graphics gc,boolean complete)
     {	commonPlayer pl = getPlayerOrTemp(bb.whoseTurn);
     	if(!lockOption) { effectiveBoardRotation = (boardRotation*Math.PI/2+pl.displayRotation); }
-    	complete |= (DRAWBACKGROUNDTILES && (digestFixedTiles()!=fixedTileDigest))
+    	complete |= (DRAWBACKGROUNDTILES && (digestFixedTiles(disB(gc))!=fixedTileDigest))
     			     || pendingFullRefresh;
     	super.drawFixedElements(gc,complete);
     }
@@ -850,16 +849,16 @@ public class CrosswordsViewer extends CCanvas<CrosswordsCell,CrosswordsBoard> im
     // and draw those with the background.  On PCs this is hardly noticable, 
     // but on mobiles if makes a big difference.
     // This digest determines when the background has changed, and needs to be redrawn.
-    public long digestFixedTiles()
+    public long digestFixedTiles(CrosswordsBoard gb)
     {	Random r = new Random(FIXEDRANDOM);
     	long v = 0;
-    	for(CrosswordsCell cell = bb.allCells; cell!=null; cell=cell.next)
+    	for(CrosswordsCell cell = gb.allCells; cell!=null; cell=cell.next)
         {	if(cell.isFixed)
         	{
         	v ^= cell.Digest(r);
         	}
         }
-    	int tilesLeft = bb.drawPile.height();
+    	int tilesLeft = gb.drawPile.height();
     	v ^= (tilesLeft*r.nextLong());
     	v ^= G.rotationQuarterTurns(effectiveBoardRotation)*r.nextLong();
     	return(v);
@@ -982,7 +981,6 @@ public void setLetterColor(Graphics gc,CrosswordsBoard gb,CrosswordsCell cell)
             boolean drawhighlight = (hitCell && (cell==closestCell));
          	int ypos = G.Bottom(brect) - gb.cellToY(cell);
             int xpos = G.Left(brect) + gb.cellToX(cell);
-            
             if (drawhighlight)
              { // checking for pointable position
             	 StockArt.SmallO.drawChip(gc,this,gb.cellSize()*5,xpos,ypos,null);                

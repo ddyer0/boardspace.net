@@ -127,12 +127,12 @@ public class RepaintManager implements VncScreenInterface,Config
 	public boolean drawLockRequired = G.isCodename1();		// lock is required for direct drawing
 	private int repaintReadyCount = 0;
 	public boolean deferSprites() { return(deferSprites && (repaintStrategy!=RepaintStrategy.Deferred)); }
-	boolean useFixedBackground = true; 
+	public boolean useBackgroundBitmap = true; 
 	public boolean trigger = true;
 	public String showTimers() { return timers.show(); }
 	public enum RepaintStrategy {
 		Direct_SingleBuffer(0,30,"Direct Single Buffer"),
-		Direct_Unbuffered(0,0,"Direct Unbuffered"),		// used by android textwindow and ios
+		Direct_Unbuffered(0,5,"Direct Unbuffered"),		// used by android textwindow and ios
 		Deferred(0,0,"Deferred Single Buffer"),
 		Deferred_Unbuffered(0,0,"Deferred Unbuffered"),
 		// single buffer strategy, if the viewing buffer is not ready to reuse, repaint anyway, schedule another repaint after it is ready
@@ -355,7 +355,7 @@ public class RepaintManager implements VncScreenInterface,Config
 			G.isCodename1() 
 				? (G.isIOS()
 						? RepaintStrategy.Direct_Unbuffered 
-						: RepaintStrategy.DoubleBuffer)
+						: RepaintStrategy.Direct_Unbuffered)// was DoubleBuffered
 					: RepaintStrategy.Deferred;
 	private XImage allFixed = null; 		// for drawing unchanging elements of the board
 	private XImage viewBuffer = null; 	// for drawing the main board offscreen
@@ -921,7 +921,7 @@ public class RepaintManager implements VncScreenInterface,Config
 	        				  : Image.createImage(w,h);
 	        	if(im==null)
 	        	{setRepaintStrategy(RepaintStrategy.Direct_Unbuffered);
-	        	 useFixedBackground = false;
+	        	 useBackgroundBitmap = false;
 	        	 helper.setLowMemory("CreateImage "+w+"x"+h+" failed with null");
 	        	}
 	        	else if(fillColor!=null){
@@ -934,7 +934,7 @@ public class RepaintManager implements VncScreenInterface,Config
 	        catch (Throwable err)
 	        { imageErrors++;
 	          setRepaintStrategy(RepaintStrategy.Direct_Unbuffered);
-	          useFixedBackground = false;
+	          useBackgroundBitmap = false;
 	          helper.setLowMemory("CreateImage "+w+"x"+h+" failed with "+err);
 	          if(imageErrors<3)
 	          {
@@ -964,7 +964,7 @@ public class RepaintManager implements VncScreenInterface,Config
 	     */
 	    public boolean createAllFixed(int w, int h)
 	    {	boolean newv=false;
-	    	if(!useFixedBackground)
+	    	if(!useBackgroundBitmap)
 	    	{	setAllFixed(null);	// release the old first
 	    		return(false);
 	    	}
@@ -1610,7 +1610,7 @@ public class RepaintManager implements VncScreenInterface,Config
     		}
     		else if(target==fixedBackgroundChoice)
 	    	{
-	    		useFixedBackground = fixedBackgroundChoice.getState();
+	    		useBackgroundBitmap = fixedBackgroundChoice.getState();
 	    	}
 	    	else if(target==showBitmapsChoice)
 	    	{
@@ -1635,7 +1635,7 @@ public class RepaintManager implements VncScreenInterface,Config
 	    	setBuffer.add(useVolatileChoice);
 	    	
 	    	fixedBackgroundChoice = new JCheckBoxMenuItem("use background bitmap");
-	    	fixedBackgroundChoice.setState(useFixedBackground);
+	    	fixedBackgroundChoice.setState(useBackgroundBitmap);
 	    	fixedBackgroundChoice.addItemListener(deferredEvents);
 	    	setBuffer.add(fixedBackgroundChoice);
 	    	

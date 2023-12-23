@@ -16,10 +16,7 @@
  */
 package dictionary;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-
-import lib.G;
+import lib.ByteOutputStream;
 
 /**
  * This version by ddyer, Sep 29 2020
@@ -170,6 +167,12 @@ public class Smaz {
     	while(from<to) { if((tfrom>=tlim) || (slot[from++]!=target[tfrom++])) { return(false); }}
     	return(true);
     }
+    private static boolean slotsEqual(byte[]slot,int from,int to,ByteOutputStream target,int tfrom)
+    {	int tlim = target.size();
+    	while(from<to) { if((tfrom>=tlim) || (slot[from++]!=target.elementAt(tfrom++))) { return(false); }}
+    	return(true);
+    }
+
     public static byte[] compress(String inString) {
     	return compress(inString.getBytes());
     }
@@ -294,6 +297,9 @@ public class Smaz {
 
 
 */
+    private static ByteOutputStream verb = new ByteOutputStream();
+    private static ByteOutputStream output = new ByteOutputStream();
+    
     /**
      * Returns compressed byte array for the specified string
      *
@@ -303,8 +309,8 @@ public class Smaz {
     public static byte[] compress(byte[] inString) {
         confirmOnlyAscii(inString);
 
-        ByteArrayOutputStream verb = new ByteArrayOutputStream();
-        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        verb.reset();
+        output.reset();
 
         int limit = inString.length;
         int index = 0;
@@ -352,7 +358,7 @@ public class Smaz {
                         // Add verbatim data if needed
                         if (verb.size() > 0) {
                             // output the verbatim data now
-                            outputVerb(output, verb.toByteArray());
+                            outputVerb(output, verb);
                             verb.reset();
                         }
 
@@ -382,7 +388,102 @@ public class Smaz {
             // throw the verbatim buffer to the output queue
             int verbLength = verb.size();
             if (verbLength == 256 || verbLength > 0 && inlen == 0) {
-                outputVerb(output, verb.toByteArray());
+                outputVerb(output, verb);
+                verb.reset();
+            }
+
+        }
+        return output.toByteArray();
+    }
+
+   /**
+     * Returns compressed byte array for the specified string
+     *
+     * @param inString
+     * @return byte array
+     */
+    public static byte[] compress(ByteOutputStream inString) {
+
+    	verb.reset();
+    	output.reset();
+
+        int limit = inString.size();
+        int index = 0;
+         // loop through input looking for matches in codebook
+        while (index<limit) {
+            int h1, h2, h3;
+        
+            {int tempIndex = index;
+	            h1 = h2 = inString.elementAt(tempIndex++) << 3;
+	            if (tempIndex<limit) { h2 += inString.elementAt(tempIndex++); }
+	            if (tempIndex<limit) {
+	                h3 = h2 ^ inString.elementAt(tempIndex++);
+	            } else {
+	                h3 = 0;
+	            }
+        	}
+            int inlen = limit-index;
+            int j = 7;
+            if (j > inlen) j = inlen;
+
+            boolean found = false;
+
+
+            /* Try to lookup substrings into the codebook, starting from the
+             * longer to the shorter substrings */
+            for (; j > 0; j--) {
+                byte[] slot;
+                if (j == 1) {
+                    slot = CODEBOOK[h1 % 241];
+                } else if (j == 2) {
+                    slot = CODEBOOK[h2 % 241];
+                } else {
+                    slot = CODEBOOK[h3 % 241];
+                }
+
+                int slotLength = slot.length;
+                int slotIndex = 0;
+                int slotEndIndex = slotIndex + j + 1;
+                while (slotLength > 0 && slotEndIndex <= slotLength) {
+                    if (slot[slotIndex] == j
+                    		&& (inlen >= j) 
+                    		&& slotsEqual(slot,slotIndex+1,slotEndIndex,inString,index))
+                    {
+                        // Match found in codebook
+                        // Add verbatim data if needed
+                        if (verb.size() > 0) {
+                            // output the verbatim data now
+                            outputVerb(output, verb);
+                            verb.reset();
+                        }
+
+                        // Add encoded data and ditch unnecessary part of input string
+                        int bb = slot[slot[slotIndex] + 1 + slotIndex];
+                        output.write(bb);
+                        index += j;
+                        found = true;
+                        break;
+                    } else {
+                        slotIndex++;
+                        slotEndIndex = slotIndex + j + 1;
+                    }
+                }
+            }
+
+            // match not found, add to verbatim
+            if (!found) {
+                if (inlen > 0) {
+                    verb.write(inString.elementAt(index));
+                    index++;
+                    inlen--;
+                }
+            }
+
+            // If the verbatim buffer is getting too long or we're at the end of the doc
+            // throw the verbatim buffer to the output queue
+            int verbLength = verb.size();
+            if (verbLength == 256 || verbLength > 0 && inlen == 0) {
+                outputVerb(output, verb);
                 verb.reset();
             }
 
@@ -391,18 +492,14 @@ public class Smaz {
     }
 
 
-    static private void outputVerb(ByteArrayOutputStream baos, byte str[]) {
-       if (str.length == 1) {
+    static private void outputVerb(ByteOutputStream baos, ByteOutputStream str) {
+       if (str.size() == 1) {
             baos.write(254);
-            baos.write(str[0]);
+            baos.write(str.elementAt(0));
         } else {
             baos.write(255);
-            baos.write(str.length);
-            try {
+            baos.write(str.size());
                 baos.write(str);
-            } catch (IOException e) {
-                G.print("Error outputting verbatim data", e);
-            }
         }
     }
 

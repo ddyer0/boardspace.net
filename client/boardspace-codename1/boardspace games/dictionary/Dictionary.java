@@ -32,13 +32,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
+
+import lib.ByteOutputStream;
 import lib.G;
 import lib.Http;
 import lib.Utf8Reader;
 
 /**
  * the main dictionary class.  This uses a set of subdictionaries segregated by word length
- * so it's possible to get ennumerators for words of lenght N
+ * so it's possible to get enumerators for words of length N
  * @author Ddyer
  *
  * steps to build a dictionary file
@@ -50,10 +52,7 @@ import lib.Utf8Reader;
  * 
  */
 public class Dictionary implements Config
-{  	static final String DictionaryDir = 
-		G.isCodename1()
-			? "/appdata/dictionarydefs/"
-			: "/dictionary/words/";
+{  	
 	static final byte[] COMPRESSED_DICTIONARY_MAGIC = { 0x32, 0x12, 0x58, 0x4a};
 	
 	public static final int MAXLEN = 15;
@@ -82,17 +81,18 @@ public class Dictionary implements Config
 	 * get the canonical dictionary
 	 * @return
 	 */
-	public static Dictionary getInstance()
+	public synchronized static Dictionary getInstance()
 	{
 		if(instance==null)
-		{ instance = new Dictionary();
+		{ 
+			instance = new Dictionary();
 		}
 		return(instance);
 	}
 	/*
-	 * constructor
+	 * constructor, don't call, use Dictionary.getInstance()
 	 */
-	public Dictionary()
+	private Dictionary()
 	{
 
 		if(wordlen==null)
@@ -177,7 +177,7 @@ public class Dictionary implements Config
 	private int load(String file,boolean extensions,boolean inorder)
 	{	int loaded = 0;
 		try {
-			G.print("Loading "+file);
+			G.print("Loading ",file);
 			InputStream rawStream = G.getResourceAsStream(file);
 			if(rawStream!=null)
 			{
@@ -205,27 +205,36 @@ public class Dictionary implements Config
 		String word = null;
 		G.print("loading definitions");
 		long loadtime = 0;	//  1374mS
+		long inctime = 0;
+		boolean cheer = G.isCheerpj();
+		ByteOutputStream def = new ByteOutputStream();
+		long now = G.nanoTime();
 		while( (word = stream.readToWhitespace(true))!=null)
 		{	
-			byte[] def = stream.readBinaryLine();
+			stream.readBinaryLine(def);
 			Entry e = getInternal(word);
 			if(e==null)
 			{	G.print("Non word "+word);
 			}
 			else 
-			{ long now = G.nanoTime();
+			{ 
 			  int size = e.setCompressedDefinition(def);
-			  long later = G.nanoTime();
-			  loadtime += (later-now);
 			  definitionByteSize += size;
-			  definitionStringSize += def.length;
+			  definitionStringSize += def.size();
 			  definitionCount++;
+			  
 			  //if(definitionCount%1000==0) { G.print("Defs "+definitionCount+" "+(loadtime/1000000));}
 			  //String redef = e.getDefinition();
 			  //G.Assert(def.equals(redef),"def mismatch\n%s\n%s",def,redef);
 			}
 		}
-		G.print(G.format("loaded %d definitions, %smS string size %s byte size %s",definitionCount,(loadtime/1000000),definitionStringSize,definitionByteSize));
+		long later = G.nanoTime();
+		  
+		long dif = (later-now);
+		loadtime += dif;
+		G.print(G.format("loaded %d definitions, %smS string size %sK byte size %sK",
+				definitionCount,(loadtime/1000000),
+				definitionStringSize/1024,definitionByteSize/1024));
 	}
 	/*
 	 * this is the simple version that loads the same file, but stores the definitions
@@ -415,7 +424,7 @@ public class Dictionary implements Config
 		if(!definitionsLoaded)
 		{
 			definitionsLoaded = true;
-			loadDefinitionsAlways(DictionaryDefsDir+"worddefsa.txt.gz");
+			loadDefinitionsAlways(DictionaryDir+"worddefsa.txt.gz");
 			definitionsAllLoaded = true;
 		}	
 	}

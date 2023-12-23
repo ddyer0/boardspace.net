@@ -21,6 +21,8 @@ public class ByteOutputStream
 	private int lim;
 	private byte data[];
 	
+	public byte elementAt(int n) { return data[n]; }
+	
 	public ByteOutputStream()
 	{
 		this(32);
@@ -53,7 +55,10 @@ public class ByteOutputStream
 		}
 	return null;
 	}
-
+	public void write(ByteOutputStream m)
+	{
+		write(m.data,0,m.size());
+	}
 	public void write(int b)  {
 		expand();
 		data[size++] = (byte)b;

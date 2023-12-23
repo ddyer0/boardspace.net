@@ -220,8 +220,7 @@ public class Utf8Reader extends Reader
 	// naked eol characters that arise as part of the character
 	// encoding
 	//
-	ByteOutputStream bytesout = null;
-	public byte[] readBinaryLine() throws IOException
+	public ByteOutputStream readBinaryLine(ByteOutputStream bytesout) throws IOException
 	{	readline = true;
 		if(bytesout==null) {  bytesout = new ByteOutputStream(); } else { bytesout.reset(); }
 		int ch;
@@ -236,7 +235,7 @@ public class Utf8Reader extends Reader
 		if(ch=='\r') { ch = getByte(); if(ch!='\n') { peekByte = ch; }}
 		linen++;
 		if(charn==0) { return(null); }
-		return(bytesout.toByteArray());
+		return(bytesout);
 	}
 
 

@@ -4006,11 +4006,25 @@ private void drawPlayerBoard(Graphics gc,
 
 		String msg = state.activity.getName();
 		String tmsg = s.get(msg,nToTake);
-		GC.Text(gc,false, mleft,centerY+h/2-step/2,step,step/3,Color.blue,null,tmsg);
+		int bot = centerY+h/2-step/2;
+		GC.Text(gc,false, mleft,bot,step,step/3,Color.blue,null,tmsg);
 	
+		// display the player's current green cards for reference
+		int left = mleft+step*3/2;
+		ViticultureCell c = pb.cards;
+		for(int i=pb.cards.height()-1; i>=0;i--)
+		{
+			ViticultureChip ch = c.chipAtIndex(i);
+			if(ch.type==ChipType.GreenCard)
+			{
+				ch.drawChip(gc,this,highlightAll,ViticultureId.ShowBigChip,step/3,left,bot+step/20,null);
+				left += step/2;
+			}
+		}
+		
 		if(cost>pb.cash)
 		{
-			GC.Text(gc,true, mleft+step,doneRowCenter,totalW-mleft-doneWidth*2,step/3,Color.yellow,null,s.get(TooExpensive,pb.cash));
+			GC.Text(gc,true, mleft+step/4,doneRowCenter,totalW-mleft-doneWidth*2,step/3,Color.yellow,null,s.get(TooExpensive,pb.cash));
 		}
 		
        	if(G.offline()  && !cardBacks)
@@ -4023,7 +4037,7 @@ private void drawPlayerBoard(Graphics gc,
 		String cardMessage = AvailableCardsMessage;
 		GC.Text(gc, true, xp+totalW/20, yp, cardW,step/2,Color.black,null,cardMessage);
 		int cardStep = Math.min(cardH/3,(int)( cardW/Math.max(3, (nCards+1))));
-		int cardY = yp+(int)(step*1.3);
+		int cardY = yp+(int)(step*1.2);
 
 		
 		if(drawStack(gc,state,null, cardDisplay,

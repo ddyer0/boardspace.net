@@ -86,11 +86,12 @@ public class ViticultureViewer extends CCanvas<ViticultureCell,ViticultureBoard>
     boolean showBuildings = false;
     boolean showOptions = false;
     
-	boolean skip = false;
    public void testSwitch()
     {	super.testSwitch();
-		skip = !skip;
-		G.print("skip all"+skip);
+    	//BACKGROUND_OPTIMIZATION = !BACKGROUND_OPTIMIZATION;
+    	//G.print("Now "+BACKGROUND_OPTIMIZATION);
+    	//generalRefresh();
+    	
    }
     // this is used mainly to position the check boxes on cards
     // that offer choices
@@ -582,7 +583,7 @@ public class ViticultureViewer extends CCanvas<ViticultureCell,ViticultureBoard>
     		HitPoint highlight,HitPoint highlightAll,Hashtable<ViticultureCell,Viticulturemovespec>targets,
     		double[][]fieldsLoc,
     		double xstep,double ystep,String label,ViticultureCell... fields )
-    {	if(skip) { return false; }
+    {
         int w = G.Width(br);
         int h = G.Height(br);
         int x = G.Left(br);
@@ -595,7 +596,7 @@ public class ViticultureViewer extends CCanvas<ViticultureCell,ViticultureBoard>
         }
         
         boolean some = false;
-        boolean showLabels = gc!=null && ViticultureChip.INDEX.equals(label);
+        boolean showLabels = ViticultureChip.INDEX.equals(label);
         for(int i=0;i<fields.length;i++)
         {
         	double loc[] = fieldsLoc[i];
@@ -610,6 +611,7 @@ public class ViticultureViewer extends CCanvas<ViticultureCell,ViticultureBoard>
         	}
         	ViticultureCell c = fields[i];
         	boolean selectable = c.isSelectable() && gb.legalToHit(c,targets);
+        	String thisLabel = showLabels ? ""+(i+(9-fields.length+1)) : label;
         	ViticultureChip top = c.topChip();
         	boolean actPrevious = (gb.resetState==ViticultureState.TakeActionPrevious);
         	boolean isWorkerPlace = selectable && ((c.contentType==ChipType.Worker) 
@@ -625,7 +627,6 @@ public class ViticultureViewer extends CCanvas<ViticultureCell,ViticultureBoard>
 			  GC.frameRect(gc, Color.red, xpos-ss,ypos-ss,ss*2,ss*2);
 			}
 			HitPoint drawHit = selectable ? highlight : null;
-        	String thisLabel = showLabels&&(c.height()>0) ? ""+(i+(9-fields.length+1)) : label;
         	if(drawStack(gc,state,pl,c,drawHit,highlightAll,sz,xpos,ypos,0,xstep,ystep,thisLabel))
         	{	some = true;
         		int ind = drawHit.hit_index;
@@ -1115,7 +1116,7 @@ private void drawPlayerBoard(Graphics gc,
         ViticultureState state = gb.resetState;
         // never let him hit the card display on the player board
         drawArray(gc,false,state,pl,gb,br,state==ViticultureState.Puzzle ? highlight : null,highlightAll,targets,cardsLoc, 0.1, -0.02, ViticultureChip.BACK,pb.cards);
-        drawArray(gc,false,state,pl,gb,br,highlight,highlightAll,targets,cashLoc, 0.05, 0.0, pb.cashString(),pb.cashDisplay);
+        drawArray(gc,false,state,pl,gb,br,highlight,highlightAll,targets,cashLoc, 0.05, 0.0, ""+pb.cash,pb.cashDisplay);
 
         
         if(r!=null)
@@ -4009,11 +4010,25 @@ private void drawPlayerBoard(Graphics gc,
 
 		String msg = state.activity.getName();
 		String tmsg = s.get(msg,nToTake);
-		GC.Text(gc,false, mleft,centerY+h/2-step/2,step,step/3,Color.blue,null,tmsg);
+		int bot = centerY+h/2-step/2;
+		GC.Text(gc,false, mleft,bot,step,step/3,Color.blue,null,tmsg);
+	
+		// display the player's current green cards for reference
+		int left = mleft+step*3/2;
+		ViticultureCell c = pb.cards;
+		for(int i=pb.cards.height()-1; i>=0;i--)
+		{
+			ViticultureChip ch = c.chipAtIndex(i);
+			if(ch.type==ChipType.GreenCard)
+			{
+				ch.drawChip(gc,this,highlightAll,ViticultureId.ShowBigChip,step/3,left,bot+step/20,null);
+				left += step/2;
+			}
+		}
 	
 		if(cost>pb.cash)
 		{
-			GC.Text(gc,true, mleft+step,doneRowCenter,totalW-mleft-doneWidth*2,step/3,Color.yellow,null,s.get(TooExpensive,pb.cash));
+			GC.Text(gc,true, mleft+step/4,doneRowCenter,totalW-mleft-doneWidth*2,step/3,Color.yellow,null,s.get(TooExpensive,pb.cash));
 		}
 		
        	if(G.offline()  && !cardBacks)
@@ -4026,7 +4041,7 @@ private void drawPlayerBoard(Graphics gc,
 		String cardMessage = AvailableCardsMessage;
 		GC.Text(gc, true, xp+totalW/20, yp, cardW,step/2,Color.black,null,cardMessage);
 		int cardStep = Math.min(cardH/3,(int)( cardW/Math.max(3, (nCards+1))));
-		int cardY = yp+(int)(step*1.3);
+		int cardY = yp+(int)(step*1.2);
 
 		
 		if(drawStack(gc,state,null, cardDisplay,

@@ -88,7 +88,6 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
 	static final String ImageDir = "/crosswordle/images/";
      // colors
     private Color HighlightColor = new Color(0.2f, 0.95f, 0.75f);
-    private Color GridColor = Color.black;
     private Color chatBackgroundColor = new Color(235,235,235);
     private Color rackBackGroundColor = new Color(192,192,192);
     private Color boardBackgroundColor = new Color(220,165,155);
@@ -190,7 +189,8 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
         bb = new CrosswordleBoard(type,players_in_game,dateRect.getTime(),getStartingColorMap(),dictionary,CrosswordleBoard.REVISION);
         //robotGame = sharedInfo.get(exHashtable.ROBOTGAME)!=null;
         // some problems with the animation
-        // useDirectDrawing();
+        useDirectDrawing(true);
+        painter.useBackgroundBitmap = false;
         doInit(false);
         adjustPlayers(players_in_game);
         inputField.singleLine = true;
@@ -467,56 +467,15 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
     public void drawFixedElements(Graphics gc)
     { 
      CrosswordleChip.backgroundTile.image.tileImage(gc, fullRect);   
-      GC.setRotatedContext(gc,largerBoardRect,null,effectiveBoardRotation);
-      drawFixedBoard(gc,boardRect);
-      GC.unsetRotatedContext(gc,null);  
-     }
-    public void drawFixedElements(Graphics gc,boolean complete)
-    {	commonPlayer pl = getPlayerOrTemp(bb.whoseTurn);
-    	if(!lockOption) { effectiveBoardRotation = (boardRotation*Math.PI/2+pl.displayRotation); }
-    	super.drawFixedElements(gc,complete);
-    }
-
-    // land here after rotating the board drawing context if appropriate
-    public void drawFixedBoard(Graphics gc,Rectangle brect)
-    {	CrosswordleBoard gb = disB(gc);
         boolean reviewBackground = reviewMode()&&!mutable_game_record;
         if(reviewBackground)
         {	 
-         CrosswordleChip.backgroundReviewTile.image.tileImage(gc,brect);   
+         CrosswordleChip.backgroundReviewTile.image.tileImage(gc,boardRect);   
         }
 	  	// drawing the empty board requires detailed board coordinate information
 	  	// games with less detailed dependency in the fixed background may not need
 	  	// this. 
-	  	setDisplayParameters(gb,brect);
-	      // if the board is one large graphic, for which the visual target points
-	      // are carefully matched with the abstract grid
-	      //G.centerImage(gc,images[BOARD_INDEX], brect,this);
-	  	if(remoteViewer<0)
-	  	{
-	      // draw a picture of the board. In this version we actually draw just the grid
-	      // to draw the cells, set gb.Drawing_Style in the board init method.  Create a
-	      // DrawGridCoord(Graphics gc, Color clt,int xpos, int ypos, int cellsize,String txt)
-	      // on the board to fine tune the exact positions of the text
-	      gb.DrawGrid(gc, brect, use_grid, boardBackgroundColor, GridColor, GridColor, GridColor);
-
-	      // draw the tile grid.  The positions are determined by the underlying board
-	      // object, and the tile itself if carefully crafted to tile the pushfight board
-	      // when drawn this way.  For games with simple graphics, we could use the
-	      // simpler loop for(Cell c = b.allCells; c!=null; c=c.next) {}
-	      // but for more complex graphics with overlapping shadows or stacked
-	      // objects, this double loop is useful if you need to control the
-	      // order the objects are drawn in.
-	      for(CrosswordleCell c = gb.allCells; c!=null; c=c.next)
-	      {
-	    	  int ypos = G.Bottom(brect) - gb.cellToY(c.col, c.row);
-	    	  int xpos = G.Left(brect) + gb.cellToX(c.col, c.row);
-	    	  int ind = c.row&1|c.col&2;
-	    	  CrosswordleChip.Letter[ind].drawChip(gc,this,CELLSIZE*2/3,xpos,ypos,null);  
-	    	  //GC.Text(gc,""+ind,xpos,ypos);
-	      }     
-	  	}
-	//      draw
+	  	setDisplayParameters(disB(gc),boardRect);
     }
 
 
@@ -749,7 +708,7 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
         {
         	GC.setFont(gc,largeBoldFont());
         	if(GC.handleSquareButton(gc, crossRect,selectPos,
-        			"For faster loading and more games\n install the app",
+        			s.get(LoadMessage),
         			Color.white,null))
         		{
         		selectPos.hitCode = CrosswordleId.GetApp;

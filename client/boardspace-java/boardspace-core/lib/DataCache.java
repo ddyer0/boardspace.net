@@ -144,7 +144,8 @@ class CacheInfo implements Config
 	{
 		for(String str : blackList)
 		{
-			if(str.equals(name)) { return true; }
+			if(str.equals(name)) 
+				{ return true; }
 		}
 		return false;
 	}
@@ -410,7 +411,8 @@ public class DataCache implements Runnable,Config
 			String specs[] = G.split(firstLine,',');
 			String name = specs.length>=3 ? specs[2] : "";
 			for(File f :cachedFiles)
-			{	String cacheName = f.getName();
+			{
+				String cacheName = f.getName();
 				String className = name+cacheName;
 				fileCache.put(cacheName,new CacheInfo(cacheTime,className,cacheName,true));
 			}
@@ -444,7 +446,12 @@ public class DataCache implements Runnable,Config
 			String className = parts[1];
 			File f = mismatch ? null : exists(className,cacheTime,cachedFiles);
 			String cacheName = new File(className).getName();
-			fileCache.put(cacheName,new CacheInfo(cacheTime,className,cacheName,f!=null));
+			CacheInfo info = new CacheInfo(cacheTime,className,cacheName,f!=null);
+			fileCache.put(cacheName,info);
+			if(info.blacklisted && f!=null)
+			{
+				f.delete();
+			}
 			}}
 			//
 			// if the server is internally misconfigured, and delivers no details of the jars

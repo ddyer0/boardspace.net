@@ -16,6 +16,7 @@
  */
 package dictionary;
 
+import lib.ByteOutputStream;
 import lib.CompareTo;
 import lib.G;
 
@@ -38,7 +39,10 @@ public class Entry implements CompareTo<Entry>
 	// this is called directly from the definition loader to avoid the thrashing of making a
 	// string and then turning it back into bytes then turning both into garbage.
 	//
-	public int setCompressedDefinition(byte s[]) { definitionData = Smaz.compress(s); return(definitionData.length); }
+	public int setCompressedDefinition(ByteOutputStream s) 
+	{ definitionData = Smaz.compress(s); 
+	  return(definitionData.length); 
+	}
 	
 
 	public int setDefinition(String words)

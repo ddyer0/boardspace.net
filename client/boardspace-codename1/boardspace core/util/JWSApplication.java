@@ -323,11 +323,11 @@ public class JWSApplication implements Config,LobbyConstants
 	    	G.setOffline(offline);
 	    	if(offline) { OfflineGames.pruneOfflineGames(90);}
 	    	
-	    	DataCache.construct();
 	        if(G.getString(OnlineConstants.VIEWERCLASS,null)==null)
 	        {	
 			  	do { 
 			  		boolean wasOff = G.offline();
+			    	DataCache.construct();
 			  		if(wasOff)
 			  		{	
 			  			runOffline(serverName);

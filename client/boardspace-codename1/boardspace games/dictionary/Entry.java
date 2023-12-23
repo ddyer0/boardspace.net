@@ -16,6 +16,7 @@
  */
 package dictionary;
 
+import lib.ByteOutputStream;
 import lib.CompareTo;
 import lib.G;
 
@@ -32,7 +33,16 @@ public class Entry implements CompareTo<Entry>
 	public int order;				// order of this word in a word frequency list 
 	public long letterMask;		// mask indicating which letters are used in the word
 	private byte definitionData[] = null;
-	public int setCompressedDefinition(byte s[]) { definitionData = Smaz.compress(s); return(definitionData.length); }
+	
+	//
+	// set a definition from a byte array which corresponds to the utf8 byte array of a string.
+	// this is called directly from the definition loader to avoid the thrashing of making a
+	// string and then turning it back into bytes then turning both into garbage.
+	//
+	public int setCompressedDefinition(ByteOutputStream s) 
+	{ definitionData = Smaz.compress(s); 
+	  return(definitionData.length); 
+	}
 	
 
 	public int setDefinition(String words)
