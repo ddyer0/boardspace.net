@@ -650,6 +650,11 @@ class CrosswordsBoard extends rectBoard<CrosswordsCell> implements BoardProtocol
         for(Option o : Option.values()) { setOptionValue(o,from_b.getOptionValue(o)); }
         seedLocation = getCell(from_b.seedLocation);
         getCell(occupiedCells,from_b.occupiedCells);
+        words.copyFrom(from_b.words);
+        AR.copy(mapPick,from_b.mapPick);
+        AR.copy(mapTarget,from_b.mapTarget);
+        AR.copy(rackMap,from_b.rackMap);
+        copyFrom(mappedRack,from_b.mappedRack);
         sameboard(from_b); 
     }
 
@@ -980,6 +985,14 @@ class CrosswordsBoard extends rectBoard<CrosswordsCell> implements BoardProtocol
     	}
       	return (NothingMoving);
     }
+    private CrosswordsCell getMapItem(CrosswordsCell c[],int item)
+    {
+       	for(int i=0;i<c.length;i++)
+    	{
+    		if(c[i].row==item) { return c[i]; }
+    	}
+       	throw G.Error("Item %d not found",item);
+    }
    /**
      * get the cell represented by a source code, and col,row
      * @param source
@@ -995,6 +1008,8 @@ class CrosswordsBoard extends rectBoard<CrosswordsCell> implements BoardProtocol
         	throw G.Error("Not expecting source " + source);
         case DrawPile:
         	return(drawPile);
+        case RackMap:
+        	return getMapItem(mappedRack[col-'A'],row);
         case Rack:
         	return(rack[col-'A'][row]);
         case BoardLocation:

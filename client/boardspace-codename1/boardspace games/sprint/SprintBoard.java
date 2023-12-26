@@ -226,6 +226,7 @@ class SprintBoard extends BaseBoard implements BoardProtocol
         lastActivePlayer = from_b.lastActivePlayer;
         endgamePlayer = from_b.endgamePlayer;
         lastPicked = null;
+        
         sameboard(from_b); 
     }
 

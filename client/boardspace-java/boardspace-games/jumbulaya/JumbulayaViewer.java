@@ -128,6 +128,7 @@ public class JumbulayaViewer extends CCanvas<JumbulayaCell,JumbulayaBoard> imple
     	// for games with more than two players, the default players list should be 
     	// adjusted to the actual number, adjusted by the min and max
        	int players_in_game = info.getInt(OnlineConstants.PLAYERS_IN_GAME,chipRects.length);
+        painter.useBackgroundBitmap = false;
     	// 
     	// for games that require some random initialization, the random key should be
     	// captured at this point and passed to the the board init too.
@@ -519,7 +520,10 @@ public class JumbulayaViewer extends CCanvas<JumbulayaCell,JumbulayaBoard> imple
       	setLetterColor(gc,gb,mc);
       	//print("Draw "+idx+" "+c+" "+top+" @ "+cx);
     	mc.drawChip(gc, this, top, tileSize, cx, cy, censor ? JumbulayaChip.BACK : null);
-       	if(c!=null) { c.copyCurrentCenter(mc);	}// set the center so animations look right
+       	if(c!=null) 
+       		{ // set the center so animations look right
+       		  bb.getCell(c).copyCurrentCenter(mc);
+       		}
        	}
 
     	if(canDrop && top==null)
@@ -586,7 +590,6 @@ public class JumbulayaViewer extends CCanvas<JumbulayaCell,JumbulayaBoard> imple
     	}
 		cx += xstep;
 		}
-
     }
 
     private void DrawScore(Graphics gc, Rectangle r, commonPlayer pl, HitPoint highlight,JumbulayaBoard gb)
@@ -747,7 +750,7 @@ public class JumbulayaViewer extends CCanvas<JumbulayaCell,JumbulayaBoard> imple
       GC.unsetRotatedContext(gc,null);  
       if(remoteViewer<0 && DRAWBACKGROUNDTILES)
       {		GC.setRotatedContext(gc,drawPileRect,null,effectiveBoardRotation);
-    		drawDrawPile(gc,null,bb);
+    		drawDrawPile(gc,null,disB(gc));
     		GC.unsetRotatedContext(gc,null);  
       }
      }
@@ -934,19 +937,7 @@ public void setLetterColor(Graphics gc,JumbulayaBoard gb,JumbulayaCell cell)
           highlight.arrow = (empty||picked) ? StockArt.DownArrow : StockArt.UpArrow;
           highlight.awidth = CELLSIZE;
         }
-        if(closestCell!=null && all!=null && !gb.isDest(closestCell))
-        {	for(int lim=gb.words.size()-1; lim>=0; lim--)
-        	{
-        	Word word = gb.words.elementAt(lim);
-        	if(word.seed==closestCell)
-        	{	all.hitCode = JumbulayaId.Definition;
-        		all.hitObject = closestCell;
-        		all.setHelpText(s.get(GetDefinitionMessage,word.name));
-        	}
-        	}
-        	if(definitionCell!=closestCell) { definitionCell = null; }
-        	
-        }
+
         // this enumerates the cells in the board in an arbitrary order.  A more
         // conventional double xy loop might be needed if the graphics overlap and
         // depend on the shadows being cast correctly.
@@ -976,11 +967,6 @@ public void setLetterColor(Graphics gc,JumbulayaBoard gb,JumbulayaCell cell)
           }
         
         }
-        
-        if(definitionCell!=null)
-        {
-        	drawDefinition(gc,gb,all);
-        }
     }
     
     private String definitionString()
@@ -998,39 +984,6 @@ public void setLetterColor(Graphics gc,JumbulayaBoard gb,JumbulayaCell cell)
     	return(s.get(JumbulayaVictoryCondition));
     }
     
-    public void drawDefinition(Graphics gc,JumbulayaBoard gb,HitPoint hp)
-    {
-    	JumbulayaCell target = definitionCell;
-    	StringBuilder message = new StringBuilder();
-    	WordStack words = gb.words;
-    	FontMetrics fm = G.getFontMetrics(standardPlainFont());
-    	int targetWidth = G.Width(boardRect)/2;
-    	if(target!=null && words!=null && hp!=null)
-    	{	for(int lim=words.size()-1; lim>=0; lim--)
-    		{
-    		Word word = words.elementAt(lim);
-    		if(word.seed==target)
-    			{
-    			Entry e = dictionary.get(word.name);
-    			if(e!=null)
-    				{
-    				message.append(word.name);
-    				message.append(": ");
-    				String def = e.getDefinition();
-    				if(def!=null)
-    				{
-    				String split = s.lineSplit(def,fm,targetWidth);
-    				message.append(split);
-    				}
-    				else { message.append("No definition available"); }
-    				message.append("\n\n");
-    				}
-    			}
-    		}
-    	String m = message.toString();
-    	hp.setHelpText(m);
-    	}
-    }
 
     public boolean canStartJumbulaya(JumbulayaBoard gb,int forPlayer)
     {	JumbulayaState state = gb.getState();
@@ -1512,7 +1465,7 @@ public void verifyGameRecord()
         	sendRack(hp);
         	break;
         case Definition:
-        	definitionCell = hitCell(hp);
+        	definitionCell = bb.getCell(hitCell(hp));
         	break;
         case CheckJumbulayas:
         	// check unrestricted by winning, but use the vocabulary limit

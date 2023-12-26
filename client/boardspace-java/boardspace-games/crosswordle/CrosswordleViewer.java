@@ -162,11 +162,13 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
     	// for games with more than two players, the default players list should be 
     	// adjusted to the actual number, adjusted by the min and max
        	int players_in_game = info.getInt(OnlineConstants.PLAYERS_IN_GAME,1);
-    	// 
+        painter.useBackgroundBitmap = false;
+        
+        // 
     	// for games that require some random initialization, the random key should be
     	// captured at this point and passed to the the board init too.
         //int randomKey = info.getInt(OnlineConstants.RANDOMSEED,-1);
-        
+               
         super.init(info,frame);
         if(G.debug())
         {	// initialize the translations when debugging, so there
@@ -183,7 +185,6 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
         //robotGame = sharedInfo.get(exHashtable.ROBOTGAME)!=null;
         // some problems with the animation
         useDirectDrawing(true);
-        painter.useBackgroundBitmap = false;
         doInit(false);
         adjustPlayers(players_in_game);
         inputField.singleLine = true;

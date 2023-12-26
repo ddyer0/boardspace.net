@@ -2,7 +2,7 @@
 	Copyright 2006-2023 by Dave Dyer
 
     This file is part of the Boardspace project.
-    
+    a
     Boardspace is free software: you can redistribute it and/or modify it under the terms of 
     the GNU General Public License as published by the Free Software Foundation, 
     either version 3 of the License, or (at your option) any later version.
@@ -143,6 +143,7 @@ public class CrosswordsViewer extends CCanvas<CrosswordsCell,CrosswordsBoard> im
     	// for games with more than two players, the default players list should be 
     	// adjusted to the actual number, adjusted by the min and max
        	int players_in_game = info.getInt(OnlineConstants.PLAYERS_IN_GAME,chipRects.length);
+        painter.useBackgroundBitmap = false;
     	// 
     	// for games that require some random initialization, the random key should be
     	// captured at this point and passed to the the board init too.
@@ -564,7 +565,7 @@ public class CrosswordsViewer extends CCanvas<CrosswordsCell,CrosswordsBoard> im
       	setLetterColor(gc,gb,mc);
       	//print("Draw "+idx+" "+c+" "+top+" @ "+cx);
     	mc.drawChip(gc, this, top, tileSize, cx, cy, censor ? CrosswordsChip.BACK : null);
-    	if(c!=null) { c.copyCurrentCenter(mc);	}// set the center so animations look right
+    	if(c!=null) { bb.getCell(c).copyCurrentCenter(mc);	}// set the center so animations look right
        	}
 
     	if(canDrop && top==null)
@@ -778,7 +779,7 @@ public class CrosswordsViewer extends CCanvas<CrosswordsCell,CrosswordsBoard> im
       GC.unsetRotatedContext(gc,null);  
       if((remoteViewer<0) && DRAWBACKGROUNDTILES)
       {		GC.setRotatedContext(gc,drawPileRect,null,effectiveBoardRotation);
-    		drawDrawPile(gc,null,bb);
+    		drawDrawPile(gc,null,disB(gc));
     		GC.unsetRotatedContext(gc,null);  
       }
      }
@@ -960,14 +961,15 @@ public void setLetterColor(Graphics gc,CrosswordsBoard gb,CrosswordsCell cell)
         }
         definitionCell = null;
         if(closestCell!=null && all!=null && !gb.isADest(closestCell))
-        {	for(int lim=gb.words.size()-1; lim>=0; lim--)
+        {	CrosswordsCell cc = bb.getCell(closestCell);
+        	for(int lim=gb.words.size()-1; lim>=0; lim--)
         	{
         	Word word = gb.words.elementAt(lim);
-        	if(!resolve && (word.seed==closestCell))
+        	if(!resolve && (word.seed==cc))
         	{	all.hitCode = CrosswordsId.Definition;
-        		all.hitObject = closestCell;
+        		all.hitObject = cc;
         		all.setHelpText(s.get(GetDefinitionMessage,word.name));
-        		definitionCell = closestCell;
+        		definitionCell = cc;
         	}
         	}
         }
@@ -1268,7 +1270,7 @@ public void setLetterColor(Graphics gc,CrosswordsBoard gb,CrosswordsCell cell)
         standardGameMessage(gc,
    				state==CrosswordsState.Gameover?gameOverMessage(gb):s.get(state.description()),
    				state!=CrosswordsState.Puzzle,
-   				bb.whoseTurn,
+   				gb.whoseTurn,
    				stateRect);
 
     }
@@ -1567,6 +1569,7 @@ public void setLetterColor(Graphics gc,CrosswordsBoard gb,CrosswordsCell cell)
         	bb.setVocabulary(vocabularyRect.value);
         	break;
         case Definition:
+        	// getCell was already done
         	definitionCell = hitCell(hp);
         	break;
         case CheckWords:

@@ -122,6 +122,7 @@ public class SprintViewer extends CCanvas<SprintCell,SprintBoard> implements Spr
     	// for games with more than two players, the default players list should be 
     	// adjusted to the actual number, adjusted by the min and max
        	int players_in_game = info.getInt(OnlineConstants.PLAYERS_IN_GAME,chipRects.length);
+        painter.useBackgroundBitmap = false;
     	// 
     	// for games that require some random initialization, the random key should be
     	// captured at this point and passed to the the board init too.
@@ -147,7 +148,7 @@ public class SprintViewer extends CCanvas<SprintCell,SprintBoard> implements Spr
         // for another game.
         bb = new SprintBoard(type,players_in_game,randomKey,getStartingColorMap(),dictionary,SprintBoard.REVISION);
         // some problems with the animation
-        // useDirectDrawing();
+        useDirectDrawing(true);
         doInit(false);
         adjustPlayers(players_in_game);
         
@@ -825,10 +826,11 @@ public void setLetterColor(Graphics gc,SingleBoard gb,SprintCell cell)
         }
         definitionCell = null;
         if(closestCell!=null && all!=null && !all.isUp)
-        {	for(int lim=gb.words.size()-1; lim>=0; lim--)
+        {	
+        	for(int lim=gb.words.size()-1; lim>=0; lim--)
         	{
         	Word word = gb.words.elementAt(lim);
-        	if(word.seed==closestCell)
+        	if(gb.getCell(word.seed)==closestCell)
         	{	all.hitCode = SprintId.Definition;
         		all.hitObject = closestCell;
         		all.setHelpText(s.get(GetDefinitionMessage,word.name));
@@ -978,7 +980,7 @@ public void setLetterColor(Graphics gc,SingleBoard gb,SprintCell cell)
     	{	for(int lim=words.size()-1; lim>=0; lim--)
     		{
     		Word word = words.elementAt(lim);
-    		if(word.seed==target)
+    		if(gb.getCell(word.seed)==target)
     			{
     			Entry e = dictionary.get(word.name);
     			if(e!=null)

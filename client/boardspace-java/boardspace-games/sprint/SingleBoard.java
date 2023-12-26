@@ -326,6 +326,13 @@ class SingleBoard extends infiniteSquareBoard<SprintCell> implements BoardProtoc
         unplacedCount = from_b.unplacedCount;
         getCell(occupiedCells,from_b.occupiedCells);
         drawPile.copyFrom(from_b.drawPile);
+        
+        words.copyFrom(from_b.words);
+        mapPick = from_b.mapPick;
+        mapTarget=from_b.mapTarget;
+        AR.copy(rackMap,from_b.rackMap);
+        copyFrom(mappedRack,from_b.mappedRack);
+        
         sameboard(from_b); 
     }
 

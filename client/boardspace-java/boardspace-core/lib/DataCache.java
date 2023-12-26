@@ -18,7 +18,7 @@ package lib;
 
 import java.io.ByteArrayOutputStream;
 
-/** datacache, based on miniloader but with twists.
+/** datacache, based on jar file cache, but with twists.
  * 
  * The motivation for this is to reduce the size of the build, without otherwise
  * affecting the behavior of the app.  Maintenance for the cache is triggered
@@ -28,16 +28,45 @@ import java.io.ByteArrayOutputStream;
  * this is currently used to maintain a local copy of codename1 resources used
  * by a few games: the dictionary for word games, the images for Imagine, and
  * all the artwork for Black Death.
+ * 
+ * If offline, the current cache is undisturbed, so the content is all available from
+ * the last time the app was run in an online environment.
+ * 
+ * This data cache could theoretically be used to supply dynamically changing content,
+ * but it's not primarily used that way.  The contents of the cache directory is 
+ * assumed to be slowly-evolving, if changing at all.
+ * 
+ * Overall architecture:
+ * 
+ *  - some directory on the web server contains the master copy of the cached files.
+ *  currently, this is /java/appdata/
+ *  
+ *  - /cgi-bin/applettag.cgi provides a list of files to be downloaded.  This filters
+ *  in only the interesting files that might appear in that directory, currently only
+ * .res, .zip, .gz and .raw files. 
  *   
+ *   - the cache building process compares the files in the cache with the list and downloads
+ *   the changed files.  It also deletes local copies of the any files that have been "blacklisted",
+ *   which is not bad, just designates formerly cached files that are no longer used by the app.
+ *   
+ *   - the download process is by ordinary https requests to the server, with fallback to http
+ *   and retries for random failures.
+ *   
+ *   - the resource manager recognizes and redirects requests for resources, which the app thinks
+ *   are embedded in it, to the cache instead.  The goal is that the app thinks everything is 
+ *   embedded in resources.   These redirected requests are checked against the background process
+ *   of reloading the cache, just in case the files haven't been loaded yet.
+ *    
  * @author Ddyer
  *
  */
-import javax.swing.JOptionPane;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
+
 
 import bridge.Config;
 
+import javax.swing.JOptionPane;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;

@@ -4021,7 +4021,7 @@ private void drawPlayerBoard(Graphics gc,
 			ViticultureChip ch = c.chipAtIndex(i);
 			if(ch.type==ChipType.GreenCard)
 			{
-				ch.drawChip(gc,this,highlightAll,ViticultureId.ShowBigChip,step/3,left,bot+step/20,null);
+				ch.drawChip(gc,this,censor ? null : highlightAll,ViticultureId.ShowBigChip,step/3,left,bot+step/20,cardLabel);
 				left += step/2;
 			}
 		}

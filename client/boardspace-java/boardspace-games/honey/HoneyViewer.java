@@ -112,6 +112,7 @@ public class HoneyViewer extends CCanvas<HoneyCell,HoneyBoard> implements HoneyC
     	// for games with more than two players, the default players list should be 
     	// adjusted to the actual number, adjusted by the min and max
        	int players_in_game = info.getInt(OnlineConstants.PLAYERS_IN_GAME,chipRects.length);
+        painter.useBackgroundBitmap = false;
     	// 
     	// for games that require some random initialization, the random key should be
     	// captured at this point and passed to the the board init too.
@@ -137,7 +138,7 @@ public class HoneyViewer extends CCanvas<HoneyCell,HoneyBoard> implements HoneyC
         // for another game.
         bb = new HoneyBoard(type,players_in_game,randomKey,getStartingColorMap(),dictionary,HoneyBoard.REVISION);
         // some problems with the animation
-        // useDirectDrawing();
+        useDirectDrawing(true);
         doInit(false);
         adjustPlayers(players_in_game);
         

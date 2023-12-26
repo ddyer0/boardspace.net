@@ -123,6 +123,7 @@ public class WypsViewer extends CCanvas<WypsCell,WypsBoard> implements WypsConst
     	// for games with more than two players, the default players list should be 
     	// adjusted to the actual number, adjusted by the min and max
        	int players_in_game = info.getInt(OnlineConstants.PLAYERS_IN_GAME,chipRects.length);
+        painter.useBackgroundBitmap = false;
     	// 
     	// for games that require some random initialization, the random key should be
     	// captured at this point and passed to the the board init too.
@@ -143,7 +144,7 @@ public class WypsViewer extends CCanvas<WypsCell,WypsBoard> implements WypsConst
         bb = new WypsBoard(type,players_in_game,randomKey,getStartingColorMap(),dictionary,WypsBoard.REVISION);
         robotGame = sharedInfo.get(OnlineConstants.ROBOTGAME)!=null;
         // flickers background, keep off 5/13/2022
-        // useDirectDrawing(G.isIOS());
+        useDirectDrawing(true);
         doInit(false);
         adjustPlayers(players_in_game);
         
@@ -480,7 +481,7 @@ public class WypsViewer extends CCanvas<WypsCell,WypsBoard> implements WypsConst
       	setLetterColor(gc,gb,mc);
       	//print("Draw "+idx+" "+c+" "+top+" @ "+cx);
     	mc.drawChip(gc, this, top, tileSize, cx, cy, censor ? WypsChip.BACK : null);
-       	if(c!=null) { c.copyCurrentCenter(mc);	}// set the center so animations look right
+       	if(c!=null) { bb.getCell(c).copyCurrentCenter(mc);	}// set the center so animations look right
 
     	}
     	
@@ -667,7 +668,7 @@ public class WypsViewer extends CCanvas<WypsCell,WypsBoard> implements WypsConst
     {	WypsBoard gb = disB(gc);
     	commonPlayer pl = getPlayerOrTemp(gb.whoseTurn);
     	if(!lockOption) { effectiveBoardRotation = (boardRotation*Math.PI/2+pl.displayRotation); }
-    	complete |= (DRAWBACKGROUNDTILES && (digestFixedTiles()!=fixedTileDigest))
+    	complete |= (DRAWBACKGROUNDTILES && (digestFixedTiles(disB(gc))!=fixedTileDigest))
     				|| pendingFullRefresh;
     	super.drawFixedElements(gc,complete);
     }
@@ -728,16 +729,16 @@ public class WypsViewer extends CCanvas<WypsCell,WypsBoard> implements WypsConst
     // and draw those with the background.  On PCs this is hardly noticable, 
     // but on mobiles if makes a big difference.
     // This digest determines when the background has changed, and needs to be redrawn.
-    public long digestFixedTiles()
+    public long digestFixedTiles(WypsBoard gb)
     {	Random r = new Random(FIXEDRANDOM);
     	long v = 0;
-    	for(WypsCell cell = bb.allCells; cell!=null; cell=cell.next)
+    	for(WypsCell cell = gb.allCells; cell!=null; cell=cell.next)
         {	if(cell.isFixed)
         	{
         	v ^= cell.Digest(r);
         	}
         }
-    	int tilesLeft = bb.drawPile.height();
+    	int tilesLeft = gb.drawPile.height();
     	v ^= (tilesLeft*r.nextLong());
     	v ^= G.rotationQuarterTurns(effectiveBoardRotation)*r.nextLong();
     	return(v);

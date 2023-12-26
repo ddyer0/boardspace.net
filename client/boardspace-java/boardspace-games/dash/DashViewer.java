@@ -43,7 +43,7 @@ import lib.StockArt;
  * 
  * Change History
  *
- * May 2007 initial work in progress. 
+ * Dash is a race game based on the truchet board.  Think of it as an octiles variant.
  *
 
  
@@ -98,6 +98,7 @@ public class DashViewer extends CCanvas<DashCell,DashBoard> implements DashConst
     public void init(ExtendedHashtable info,LFrameProtocol frame)
     {
         super.init(info,frame);
+ 
         MouseColors = CheMouseColors;
         MouseDotColors = CheMouseDotColors;
         b = new DashBoard(info.getString(GameInfo.GAMETYPE, "Dash"),

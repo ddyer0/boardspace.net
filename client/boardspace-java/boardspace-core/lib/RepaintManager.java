@@ -1589,10 +1589,10 @@ public class RepaintManager implements VncScreenInterface,Config
 	    	}
 	   	
 	    }
-	    public JCheckBoxMenuItem showBitmapsChoice = null;
-	    public JCheckBoxMenuItem slowZoomChoice = null;
-	    public JCheckBoxMenuItem fixedBackgroundChoice = null;
-	    public JCheckBoxMenuItem useVolatileChoice = null;
+	    private JCheckBoxMenuItem showBitmapsChoice = null;
+	    private JCheckBoxMenuItem slowZoomChoice = null;
+	    private JCheckBoxMenuItem fixedBackgroundChoice = null;
+	    private JCheckBoxMenuItem useVolatileChoice = null;
 
 
 	    public boolean handleDeferredEvent(Object target)

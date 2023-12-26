@@ -725,6 +725,10 @@ class JumbulayaBoard extends squareBoard<JumbulayaCell> implements BoardProtocol
         isPass = from_b.isPass;
         nPasses = from_b.nPasses;
         for(Option o : Option.values()) { setOptionValue(o,from_b.getOptionValue(o)); }
+        AR.copy(mapPick,from_b.mapPick);
+        AR.copy(mapTarget,from_b.mapTarget);
+        AR.copy(rackMap,from_b.rackMap);
+        copyFrom(mappedRack,from_b.mappedRack);
         sameboard(from_b); 
     }
 
@@ -1059,6 +1063,15 @@ class JumbulayaBoard extends squareBoard<JumbulayaCell> implements BoardProtocol
     	}
       	return (NothingMoving);
     }
+    
+    private JumbulayaCell getMapItem(JumbulayaCell c[],int item)
+    {
+       	for(int i=0;i<c.length;i++)
+    	{
+    		if(c[i].row==item) { return c[i]; }
+    	}
+       	throw G.Error("Item %d not found",item);
+    }
    /**
      * get the cell represented by a source code, and col,row
      * @param source
@@ -1076,6 +1089,8 @@ class JumbulayaBoard extends squareBoard<JumbulayaCell> implements BoardProtocol
         	return(claimed[row-1]);
         case PlayerCell:
         	return(playerCell[row]);
+        case RackMap:
+        	return getMapItem(mappedRack[col-'A'],row);
         case DrawPile:
         	return(drawPile);
         case Rack:
@@ -1323,7 +1338,6 @@ class JumbulayaBoard extends squareBoard<JumbulayaCell> implements BoardProtocol
     }
     
     StringBuilder builder = new StringBuilder();
-	WordStack words = new WordStack();
 	
 	public String invalidReason=null;
 	public Word previousWord = null;
