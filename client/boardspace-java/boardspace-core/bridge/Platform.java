@@ -630,7 +630,10 @@ public static Object MakeInstance(String classname)
 
 	
 	public static AudioClip getAudioClip(URL url)
-	{	return Applet.newAudioClip(url); 
+	{	
+		if(G.isCheerpj()) 
+			{ return new Cheerpj(url); }
+		return Applet.newAudioClip(url); 
 	}
 	
 	public static int getIdentity()

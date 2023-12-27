@@ -153,7 +153,7 @@ public class SoundManager implements Runnable
 
 	    public void playASoundClip(String clipName, boolean doc,int delay)
 	    { //System.out.println("play "+clipName);
-	        if(!exit)
+	    	if(!exit)
 	        {
 	        URL u = G.getUrl(clipName,doc);
 	        if(GetCachedClip(u)!=null)	// get it loaded now
@@ -162,7 +162,7 @@ public class SoundManager implements Runnable
 	        }}
 	    }
 	    public static void playASoundClip(String clipName,int delay )
-	    {
+	    {	
 	    	getInstance().playASoundClip(clipName,false,delay);
 	    }
 

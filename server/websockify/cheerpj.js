@@ -11,36 +11,52 @@ function touchTest()
    if( !mouse && isTouchEnabled())
 { alert("touch interfaces are not supported yet,\nplease use the boardspace.net app");
 }
+
+
 }
 
 let sockets = [];
 let nsockets = 0;  
+let clips = [];
 
 async function initNatives()
 {   
-    await cheerpjInit(
-    { 	natives: {
+    await cheerpjInit( 
+    { 	clipboardMode: "system" ,
+	natives: {
+
+	Java_bridge_Cheerpj_playSound(lib,_this,cl)
+	{
+ 	 var clip = clips[cl];
+ 	 if(!clip) { 
+		clip = new Audio(cl);
+		clips[cl] = clip;
+		//alert("new clip "+cl);
+		}
+	 //alert("play "+cl);
+ 	 clip.play();
+	},
 	Java_bridge_Cheerpj_getWidth(lib,_this) { 
 	     return document.body.clientWidth; 
          }
 	,Java_bridge_Cheerpj_getHeight(lib,_this) {
 	     return document.body.clientHeight; 
 	 },
-         async Java_lib_WebSocket_read(lib,_this,sock) {
+         async Java_bridge_WebSocket_read(lib,_this,sock) {
               let socket = sockets[sock];
 	      const m = socket.message;
 	      socket.message = null;
 	      return m;
 	    },
-         async Java_lib_WebSocket_send(lib,_this,sock,message) {
+         async Java_bridge_WebSocket_send(lib,_this,sock,message) {
               let socket = sockets[sock];
 	      socket.send(message);
 	    },
-	Java_lib_WebSocket_isConnected(lib,_this,sock)
+	Java_bridge_WebSocket_isConnected(lib,_this,sock)
 	{ let socket = sockets[sock];
 	  return socket.connok;
 	},
-	 Java_lib_WebSocket_connect(lib,_this,host,socket)
+	 Java_bridge_WebSocket_connect(lib,_this,host,socket)
 	    {  let target = "wss://" + host + ":" + socket +"/gameserver";
 	       console.log("make socket "+target );
                let sock = new WebSocket(target);
@@ -61,7 +77,7 @@ async function initNatives()
 	       });
                  return n;
 	    }
-	}
+         }
     });
 }
 

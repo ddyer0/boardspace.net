@@ -11,10 +11,13 @@ function touchTest()
    if( !mouse && isTouchEnabled())
 { alert("touch interfaces are not supported yet,\nplease use the boardspace.net app");
 }
+
+
 }
 
 let sockets = [];
 let nsockets = 0;  
+let clips = [];
 
 async function initNatives()
 {   
@@ -22,6 +25,17 @@ async function initNatives()
     { 	clipboardMode: "system" ,
 	natives: {
 
+	Java_bridge_Cheerpj_playSound(lib,_this,cl)
+	{
+ 	 var clip = clips[cl];
+ 	 if(!clip) { 
+		clip = new Audio(cl);
+		clips[cl] = clip;
+		//alert("new clip "+cl);
+		}
+	 //alert("play "+cl);
+ 	 clip.play();
+	},
 	Java_bridge_Cheerpj_getWidth(lib,_this) { 
 	     return document.body.clientWidth; 
          }
