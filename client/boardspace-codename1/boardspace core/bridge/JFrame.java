@@ -1,28 +1,93 @@
-/*
-	Copyright 2006-2023 by Dave Dyer
-
-    This file is part of the Boardspace project.
-
-    Boardspace is free software: you can redistribute it and/or modify it under the terms of 
-    the GNU General Public License as published by the Free Software Foundation, 
-    either version 3 of the License, or (at your option) any later version.
-    
-    Boardspace is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
-    without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
-    See the GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License along with Boardspace.
-    If not, see https://www.gnu.org/licenses/.
- */
 package bridge;
 
-public class JFrame extends Frame {
+import lib.CanvasRotater;
+import lib.DeferredEventManager;
+import lib.G;
+import lib.Image;
+import lib.TopFrameProtocol;
 
-	public JFrame() 
-		{ super(); 
-		}
-	public JFrame(String tab) 
-		{ super(tab); 
-		}
+/** this android version is not expected to be used becuase the underlying os
+ * doesn't support overlapping windows well.
+ */
+public class JFrame extends Frame implements TopFrameProtocol
+{
+	public JFrame() { super(); }
+	public JFrame(String name) { super(name); }
 	
+	@Override
+	public Image getIconAsImage() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void removeFromMenuBar(JMenu actions) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void changeImageIcon(Image icon) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void addToMenuBar(JMenu m, DeferredEventManager l) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void addToMenuBar(JMenu m) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setCloseable(boolean b) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public CanvasRotater getCanvasRotater() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setHasSavePanZoom(boolean v) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setEnableRotater(boolean v) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setCanSavePanZoom(DeferredEventManager v) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void packAndCenter() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public Container getParentContainer() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	public void addC(ProxyWindow w) {
+		G.Error("Not expected");
+		
+	}
+
 }

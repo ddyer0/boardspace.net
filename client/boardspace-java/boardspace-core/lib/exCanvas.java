@@ -375,7 +375,7 @@ public abstract class exCanvas extends Canvas
         	  setSX(getSX());
         	  setSY(getSY());	// clip scrolling when the geometry changes
         	  imageCache.clearCachedImages();
-        	  doNullLayout(null);
+        	  doNullLayout();
         	}
     }  
     private Rectangle getZoomedBounds()
@@ -529,7 +529,7 @@ public abstract class exCanvas extends Canvas
     				{ 
     					G.setDefaultFontSize(val);
     					G.setGlobalDefaultFont();
-    					doNullLayout(null);  
+    					doNullLayout();  
     					generalRefresh();
     					item.setSelected(true);
     					
@@ -1975,7 +1975,10 @@ graphics when using a touch screen.
 	{      
 
 		if(hp!=null)
-		{	if(hp.arrow!=null)
+		{	// viticulture uses StockArt.Eye as an arrow icon, which obscures the stuff
+			// we're trying to see.  Other things uses as an arrow icon tend to be placed
+			// off-center, but still aren't likely to contribute to zoomed images
+			if((hp.arrow!=null)&&!touchZoomInProgress())
 			{
 			if(G.Advise(hp.awidth>0,"Stock art size must be visible"))
 			{
@@ -2068,7 +2071,7 @@ graphics when using a touch screen.
 		}
 	}
 	
-	public void doNullLayout(Container parent)
+	public void doNullLayout()
 	{	l.needLocalBounds = true;
 	}
 	public void realNullLayout()
@@ -2235,7 +2238,8 @@ graphics when using a touch screen.
 		// sx, sy are real screen coordinates.
 		// zoom is not a factor to consider
 		if(useSimpleMenu || (getCanvasRotation()!=0) || popup.useSimpleMenu()) 
-			{ menu = new SimpleMenu(this,popup,sx,sy); 
+			{ 
+			menu = new SimpleMenu(this,popup,sx,sy); 
 			}
 		 else { 
 			 painter.showMenu(popup,myFrame.getMenuParent(),sx,sy);
@@ -2250,6 +2254,7 @@ graphics when using a touch screen.
 		  // at present, that's anytime an even is generated.
 		if(!m.drawMenu(gc, hp,getSX(),getSY())) 
 			{ menu = null; }
+		repaint(100);
 		}
 	}
 		

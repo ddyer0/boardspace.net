@@ -86,7 +86,7 @@ public class ComboBox<T> extends com.codename1.ui.ComboBox<T> implements AwtComp
             popupDialog.setTransitionInAnimator(CommonTransitions.createEmpty());
             popupDialog.setTransitionOutAnimator(CommonTransitions.createEmpty());
             popupDialog.setLayout(new BorderLayout());
-            popupDialog.addComponent(BorderLayout.CENTER, l);
+            popupDialog.add(BorderLayout.CENTER, l);
             return popupDialog;
      }
 	@SuppressWarnings("rawtypes")

@@ -56,8 +56,6 @@ class HBoard extends hexBoard<HoneyCell> implements BoardProtocol,HoneyConstants
 	public HoneyState getState() { return(board_state); }
     StringStack gameEvents = new StringStack();
     InternationalStrings s = G.getTranslations();
-    HoneyCell drawPile = null;
-    CellStack selectedCells = new CellStack();
    	
  	void logGameEvent(String str,String... args)
  	{	//if(!robotBoard)
@@ -139,8 +137,6 @@ class HBoard extends hexBoard<HoneyCell> implements BoardProtocol,HoneyConstants
         setColorMap(map, 1);
         boardIndex = bi;
         gametype = init;
-        Random r = new Random(235256);
-       	drawPile = new HoneyCell(r,null);
        	dictionary = di;
         robotVocabulary = dictionary.orderedSize();
  
@@ -195,10 +191,10 @@ class HBoard extends hexBoard<HoneyCell> implements BoardProtocol,HoneyConstants
         animationStack.clear();
         moveNumber = 1;
 
-		for(HoneyCell c = allCells; c!=null; c=c.next)
-		{	c.addChip(drawPile.removeTop());
-		}
-		selectedCells.clear();
+		nonWords.clear();
+		words.clear();
+		commonWords.clear();
+		
         // note that firstPlayer is NOT initialized here
     }
     
@@ -227,12 +223,12 @@ class HBoard extends hexBoard<HoneyCell> implements BoardProtocol,HoneyConstants
         score=from_b.score;
         robotVocabulary = from_b.robotVocabulary;
         lastPicked = null;
-        drawPile.copyFrom(from_b.drawPile);
-        getCell(selectedCells,from_b.selectedCells);
+        words.copyFrom(from_b.words);
+        nonWords.copyFrom(from_b.nonWords);
+        commonWords.copyFrom(from_b.commonWords);
+        
         sameboard(from_b); 
     }
-
-    
 
     public void sameboard(BoardProtocol f) { sameboard((HBoard)f); }
 
@@ -250,8 +246,6 @@ class HBoard extends hexBoard<HoneyCell> implements BoardProtocol,HoneyConstants
         G.Assert(pickedObject==from_b.pickedObject, "picked Object mismatch");
         G.Assert(robotVocabulary==from_b.robotVocabulary,"robotVocabulary mismatch");
         G.Assert(score==from_b.score,"score mismatch");
-        G.Assert(drawPile.sameContents(from_b.drawPile),"drawPile mismatch");
-        G.Assert(sameCells(selectedCells,from_b.selectedCells),"selected cells mismatch");
         // this is a good overall check that all the copy/check/digest methods
         // are in sync, although if this does fail you'll no doubt be at a loss
         // to explain why.
@@ -310,11 +304,11 @@ class HBoard extends hexBoard<HoneyCell> implements BoardProtocol,HoneyConstants
 		v ^= Digest(r,score);
 		//G.print("d2 "+v);
 		v ^= Digest(r,robotVocabulary);
-		v ^= Digest(r,drawPile);
 		v ^= Digest(r,board_state);
 		v ^= Digest(r,boardIndex);
-		v ^= Digest(r,selectedCells);
 		//G.print("dx "+v);
+		v ^= words.Digest(r);
+		v ^= Digest(r,nonWords);
        return (v);
     }
 
@@ -555,12 +549,11 @@ class HBoard extends hexBoard<HoneyCell> implements BoardProtocol,HoneyConstants
     	return((whoseTurn+1)%players_in_game);
     }
      
-    StringBuilder builder = new StringBuilder();
     boolean isNew = false;	// the word in the builder includes a new letter
 	Hashtable<String,HWord> wordsUsed = new Hashtable<String,HWord>();
 	HWordStack words = new HWordStack();
 	HWordStack nonWords = new HWordStack();
-	HWordStack candidateWords = new HWordStack();
+	HWordStack commonWords = new HWordStack();
 	
 	public String invalidReason=null;
 	/* 
@@ -571,7 +564,6 @@ class HBoard extends hexBoard<HoneyCell> implements BoardProtocol,HoneyConstants
 	 */
    synchronized boolean validate(boolean andScore)
     {
-    	builder.setLength(0);
     	words.clear();
     	nonWords.clear();
     	boolean connected = false;//validateBoard();
@@ -581,146 +573,38 @@ class HBoard extends hexBoard<HoneyCell> implements BoardProtocol,HoneyConstants
     	else if(!allwords) { invalidReason = NotWords; }
     	else invalidReason = null;
     	if(andScore) 
-    		{ findWordCaps(); 
+    		{ 
     		  int sc = 0;
     		  for(int i=0;i<words.size(); i++) { sc += (words.elementAt(i).points - WordPenalty); }
     		  score = sc;
-    		  markNonWords();
     		}
      	return( connected 
     			&& allwords 
     			&& (invalidReason==null) // can't make valid words in 2 directions
     			&& (duplicate==null));
     }
-    private void markNonWords()
-    {
-    	for(int lim = nonWords.size()-1; lim>=0; lim--)
-		  {
-			HWord w = nonWords.elementAt(lim);
-			HoneyCell c = w.seed;
-			int direction = w.direction;
-			while(c!=null && c.topChip()!=null)
-			{
-				c.nonWord = true;
-				c = c.exitTo(direction);
-			}
-		  }
-    }
+
    	CellStack endCaps = new CellStack();	// cells at the end of words
    	CellStack startCaps = new CellStack(); 	// cells at the start of words
-   	
-   	// startCaps and endCaps contain all the cells at the ends of words
-   	// the cells themselves contain an iterator of the words that share
-   	// that endpoint.  Normally there is only one, but words from all
-   	// directions could theoretically share an end or beginning
-   	private void findWordCaps()
-   	{	sweep_counter++;
-   		endCaps.clear();
-   		startCaps.clear();
-   		for(int lim = words.size()-1; lim>=0; lim--)
-   		{
-   			HWord w = words.elementAt(lim);
-   			HoneyCell c = w.seed;
-   			int direction = w.direction;
-   			int opp = direction+CELL_HALF_TURN;
-  			int mask = (1<<direction)|(1<<opp);
-   			HoneyCell beg = c.exitTo(opp);
-   			if(beg!=null)
-   			{ if(beg.sweep_counter!=sweep_counter) 
-   				{ beg.wordDirections = 0;
-   				  beg.sweep_counter = sweep_counter;
-   				  beg.wordHead = null;
-   				}
-   			  beg.wordDirections |= mask;
-   			  beg.addWordHead(w);
-   			  startCaps.pushNew(beg); beg.wordDirections |= (1<<direction); 
-   			}
-   			
-   			while((c = c.exitTo(direction))!=null)
-   			{	if(c.topChip()==null) 
-   				{ if(c.sweep_counter!=sweep_counter) 
-   					{ c.wordDirections = 0; 
-   					  c.sweep_counter = sweep_counter;
-   					  c.wordHead = null;
-   					}
-   				  endCaps.pushNew(c);
-   				  c.wordDirections |= (1<<direction); 
-   				  c.wordDirections |= mask;
-   				  c.addWordHead(w);
-   				  break; 
-   				}
-		
-   			}
-   		}
-   	}
 
-   	// 
-   	// collect a word from a starting cell with a given direction
-   	// 
-    private String collectWord(HoneyCell from,int direction)
-    {
-    	builder.setLength(0);
-    	int n=0;
-    	isNew = false;
-    	HoneyCell c = from;
-    	while(c!=null) 
-    	{
-    		HoneyChip top = c.topChip();
-    		if(top==null) {  break; }
-    		builder.append(top.lcChar);
-    		n++;
-    		isNew |= isADest(c);			// keep track of new words for scoring and connection testing
-    		c = c.exitTo(direction);
-    	}
-    	// leave builder primed with the letters, so it can be reversed
-    	//G.print("Collect from "+from+" "+direction+" "+builder.toString());
-    	return(n>1 ? builder.toString() : null);
-    }
- 
-    int wordMultiplier = 1;
-    HoneyCell wordBonus[] = new HoneyCell[4];
-    // score a word on the board.  wordMultiplier and wordBonus are
+   	// score a word on the board.  wordMultiplier and wordBonus are
     // used as scratch variables during the scoring.
-    private int scoreWord(HoneyCell from,int direction)
+    private int scoreWord(CellStack from)
     {	int score = 0;
-    	builder.setLength(0);
-    	wordMultiplier = 1;
-    	isNew = false;
-    	HoneyCell c = from;
-    	AR.setValue(wordBonus, null);
-    	while(c!=null) 
-    	{	
+    	for(int i=0,lim=from.size(); i<lim; i++)
+    	{	HoneyCell c = from.elementAt(i);
     		HoneyChip top = c.topChip();
     		if(top==null) {  break; }
-    		c.wordDirections |= (1<<direction);
-    		builder.append(top.lcChar);
     		isNew |= isADest(c);
-    		if(isADest(c))
-    		{	// only score bonuses for new letters
-    			score += scoreLetter(c,top);
-    		}
-    		else { 
-    			score += top.value;
-    		}
-    		c = c.exitTo(direction);
-    	}
-    	score *= wordMultiplier;
+    		score += top.value;
+     	}
     	return(score);
-    }
-
-    // score a letter on the board, and change wordMultiplier as a side
-    // effect.  This is used both for scoring actually placed words and
-    // for proposed words that are not yet on the board
-    // wordBonus and wordMultiplier are used as scratch
-    private int scoreLetter(HoneyCell c,HoneyChip top)
-    {	int letterScore = top.value;
-		return(letterScore);
     }
 
     private void addWord(HWord word)
     {
     	words.push(word); 
-    	word.points = scoreWord(word.seed,word.direction); 
+    	word.points = scoreWord(word.seed); 
     }
 
 
@@ -778,20 +662,7 @@ class HBoard extends hexBoard<HoneyCell> implements BoardProtocol,HoneyConstants
 
             break;
         case MOVE_SELECT:
-    	{
-    	HoneyCell c = getCell(m.from_col,m.from_row);
-    	HoneyCell top = selectedCells.top();
-    		if(c==top) {}
-    		else if(selectedCells.contains(c)) 
-    				{	
-    				setState(HoneyState.MultiUse); 			
-    				}
-    		else if(top==null || c.isAdjacentTo(top))
-    		{	selectedCells.push(c);
-   				c.selected = true;
-    		}
-    		else { setState(HoneyState.NotAdjacent); }
-    	}
+    	G.Error("not expected");
     	break;
 
        case MOVE_RESIGN:
@@ -916,61 +787,6 @@ class HBoard extends hexBoard<HoneyCell> implements BoardProtocol,HoneyConstants
         	setWhoseTurn(m.player);
         }
  }
-
- private int findLetter(HoneyCell fromRack[],char ch,boolean blank)
- {
-	 for (int lim = fromRack.length-1; lim>=0; lim--)
-	 {
-		 HoneyCell c = fromRack[lim];
-		 if(c.sweep_counter!=sweep_counter)
-		 {	HoneyChip top = c.topChip();
-		 	if(top!=null && top.lcChar==ch)
-		 	{	if(top.lcChar==ch) { return lim; }
-		 	}
-		 }	 
-	 }
-	 return(-1);
- }
- // we have already verified the placement to be legal, now score the
- // word considering the new letters we will place.
- // this does not check for illegal honey
- // one complication is that the search for words using blanks
- // involves "temporarily" placing the actual letter in the rack
- private int scoreWord(String word,HoneyCell from,int direction,HoneyCell fromRack[])
- {	
-	int score = 0;
-	sweep_counter++;
-	wordMultiplier = 1;
-	AR.setValue(wordBonus, null);
-	HoneyCell c = from;
- 	for(int idx = 0,lastIdx = word.length(); idx<lastIdx; idx++)
- 	{	
-	 	HoneyChip ch = c.topChip();
-	 	if(ch==null)
-	 	{	// we'll place this letter, so it scores
-	 		char letter = word.charAt(idx);
-	 		int rackidx = findLetter(fromRack,letter,false);	// find as a real letter
-	 		if(rackidx>=0)
-	 			{
-	 			
-	 			score += scoreLetter(c,HoneyChip.getLetter(letter));
-	 			fromRack[rackidx].sweep_counter = sweep_counter;	// mark it used
-	 			}
-	 		else {
-	 			int blankIdx = findLetter(fromRack,letter,true);
-	 			G.Assert(blankIdx>=0,"blank letter not found");
-	 			fromRack[blankIdx].sweep_counter = sweep_counter;
-	 		}
-	 	}
-	 	else { 
-	 		score += ch.value;
-	 	}
-		c = c.exitTo(direction);
- 	}
- 	
- 	return(score*wordMultiplier);
- }
- 
 
  CommonMoveStack  GetListOfMoves()
  {	CommonMoveStack all = new CommonMoveStack();

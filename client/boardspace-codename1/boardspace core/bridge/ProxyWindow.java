@@ -116,7 +116,7 @@ public abstract class ProxyWindow implements SizeProvider,EventListener,AwtCompo
 	// trampoline methods
 	public Container add(Component c) { theComponent.add(c); return(null); }
 	public void setVisible(boolean to) { theComponent.setVisible(to); }
-	public void setLayout(Layout l) { theComponent.setLayout(l); }
+	public void setLayout(LayoutManager l) { theComponent.setLayout((Layout)l); }
 	public void setEnabled(boolean b) {  theComponent.setEnabled(b); } 
 	
 	public Style getStyle() { return theComponent.getStyle(); }

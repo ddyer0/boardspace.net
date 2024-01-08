@@ -29,7 +29,6 @@ import common.CommonConfig;
 
 import java.util.StringTokenizer;
 import java.util.Vector;
-import bridge.JFrame;
 import bridge.XPasswordField;
 import lib.Image;
 import lib.Base64;
@@ -37,6 +36,7 @@ import lib.G;
 import lib.Http;
 import lib.InternationalStrings;
 import lib.SimpleObserver;
+import lib.TopFrameProtocol;
 import lib.UrlResult;
 import lib.XFrame;
 import lib.XXTEA;
@@ -190,7 +190,7 @@ import udp.PlaytableStack;
 	 private JCheckBox develop2xOption = null;
 	 private SimpleObserver observer = null;
 	 public boolean finished = false;
-	 private JFrame controllingFrame; 		//the controlling frame, needed for dialogs
+	 private TopFrameProtocol controllingFrame; 		//the controlling frame, needed for dialogs
 	 
 	 private XPasswordField passwordField;	// the password
 	 private XPasswordField passwordField2;	// second copy for registration
@@ -219,7 +219,7 @@ import udp.PlaytableStack;
 	 private JLabel errorText = null;
 	 private JButton[] serverButtons = null; 
 	 // constructor
-	public PasswordCollector(JFrame f,SimpleObserver o) 
+	public PasswordCollector(TopFrameProtocol f,SimpleObserver o) 
 	 {	 //PlatformLogger l = PlatformLogger.getLogger("java.util.prefs");
 	 	 //l.setLevel(Level.SEVERE);	// quench a warning message
 		 controllingFrame = f;
@@ -731,11 +731,11 @@ import udp.PlaytableStack;
 	 }
 	 private void autoSize()
 	 {
-       	Insets ins = controllingFrame.getInsets();
+       	//Insets ins = controllingFrame.getInsets();
     	Dimension ps = getPreferredSize();
-    	Dimension newps = new Dimension((int)(ps.getWidth()+ins.left+ins.right),
-    							(int)(ps.getHeight()+ins.top+ins.bottom));
-    	controllingFrame.setSize(newps);
+    	//Dimension newps = new Dimension((int)(ps.getWidth()+ins.left+ins.right),
+    	//						(int)(ps.getHeight()+ins.top+ins.bottom));
+    	controllingFrame.setSize(ps);
 	 }
 	 //
 	 // create the structure for a "login" panel
@@ -1004,12 +1004,12 @@ import udp.PlaytableStack;
        	isGuest = false;
     	if(language==null) { initLanguage(); }
     	//Create and set up the window.
-        JFrame frame = new XFrame(s.get(LogInTo,(isTest ? "test for " : "")
+        XFrame frame = new XFrame(s.get(LogInTo,(isTest ? "test for " : "")
         		+(host.startsWith("www")?host:G.Capitalize(host))));
         //Create and set up the content pane.
         Image icon = Image.getImage(IMAGEPATH+icon_image_name);
         frame.setIconAsImage(icon);
-        final PasswordCollector newContentPane = new PasswordCollector(frame,parent);
+        final PasswordCollector newContentPane = new PasswordCollector(frame.getFrame(),parent);
         
         newContentPane.setOpaque(true); //content panes must be opaque
         frame.setContentPane(newContentPane);
@@ -1030,8 +1030,8 @@ import udp.PlaytableStack;
         });
 		   
         //Display the window.
-        frame.pack();
-        frame.setLocationRelativeTo(null);
+        frame.packAndCenter();
+        
         frame.setVisible(true);
         frame.repaint();
         return(newContentPane);

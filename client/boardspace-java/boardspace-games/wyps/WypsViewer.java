@@ -309,7 +309,7 @@ public class WypsViewer extends CCanvas<WypsCell,WypsBoard> implements WypsConst
     	int doneW = plannedSeating()? unitsize*4 : 0;
     	G.SetRect(done,G.Right(box)+unitsize/2,G.Top(box)+unitsize/2,doneW,doneW/2);
     	G.union(box, done);
-    	int unith = (rackSize-2)*unitsize;
+    	int unith = (rackSize-2)*unitsize*(plannedSeating()?4:1);
        	G.SetRect(chip,	x,	G.Bottom(box),	unith*3*7/4,unith);
         G.union(box, chip);
     	pl.displayRotation = rotation;

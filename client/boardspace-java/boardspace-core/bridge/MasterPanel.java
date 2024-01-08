@@ -18,8 +18,7 @@ package bridge;
 
 import java.awt.Container;
 import lib.Image;
-
-import lib.XFrame;
+import lib.TopFrameProtocol;
 
 @SuppressWarnings("serial")
 public class MasterPanel extends Container {
@@ -27,7 +26,7 @@ public class MasterPanel extends Container {
 	public MasterPanel(MasterForm masterForm) {
 	}
 
-	public void setTabName(XFrame xFrame, String name,Image im) {
+	public void setTabName(TopFrameProtocol xFrame, String name,Image im) {
 		
 	}
 

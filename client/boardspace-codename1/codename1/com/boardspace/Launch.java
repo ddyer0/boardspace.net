@@ -27,6 +27,7 @@ import bridge.Color;
 import bridge.Frame;
 import bridge.FullScreen;
 import bridge.FullscreenPanel;
+import bridge.LayoutManager;
 import common.GameInfo;
 import bridge.Config;
 
@@ -59,8 +60,8 @@ class Splash extends FullscreenPanel implements FullScreen,Runnable,Config
 	public Splash(Image im) 
 	{ splash = im;
 	  frame = new Frame(); 
-	  frame.setLayout(new NullLayout(frame));
-	  frame.add(this);
+	  frame.setLayout((LayoutManager)new NullLayout(frame));
+	  frame.addC(this);
 	}
 
 	public void paint(Graphics gr)
@@ -111,6 +112,7 @@ class BoardspaceLauncher implements Runnable,stuff
         		 "develophost",developHost,
         		 "development",""+develop,
         		 "extraactions",""+develop,
+        		 "playtable","true",
         		 //"playtable","true",
         		 G.DEBUG,""+develop,
         		};

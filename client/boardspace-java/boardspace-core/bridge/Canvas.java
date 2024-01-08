@@ -98,7 +98,7 @@ public abstract class Canvas extends java.awt.Canvas
 	public void requestFocus(TextContainer p) { requestFocus(); }
 	
 	// support for rotater buttons
-	CanvasRotater rotater = null;
+	CanvasRotater rotater = new CanvasRotater();
 	public CanvasRotater getCanvasRotater() { return rotater; }
 
 	public int getCanvasRotation()

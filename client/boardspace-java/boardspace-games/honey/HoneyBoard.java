@@ -51,7 +51,6 @@ class HoneyBoard extends BaseBoard implements BoardProtocol
 	 * it contains the tiles yet to be drawn.
 	 * 
 	 */
-	HoneyCell drawPile = null;
 	HoneyVariation variation = HoneyVariation.HoneyComb;
 	private HoneyState board_state = HoneyState.Puzzle;	
 	public HoneyState getState() { return(board_state); }
@@ -117,10 +116,7 @@ class HoneyBoard extends BaseBoard implements BoardProtocol
     	// allocate the rack map once and for all, it's not used in the board
     	// only as part of the UI.
 
-      	Random r = new Random(2975564);
-       	drawPile = new HoneyCell(r,null);
-
-       	doInit(init,key,players,rev); // do the initialization 
+        doInit(init,key,players,rev); // do the initialization 
 
 
  
@@ -162,17 +158,7 @@ class HoneyBoard extends BaseBoard implements BoardProtocol
 		case HoneyComb:
 			break;
 		}
-     	Random r = new Random(randomKey+100);
-    	drawPile.reInit();
-    	for(HoneyChip c : HoneyChip.letters)
-    	{
-    		drawPile.addChip(c);
-    	}
-   	
-    	drawPile.shuffle(r);
-  	
-    	for(HBoard p : pbs) { p.drawPile.copyFrom(drawPile); p.doInit(); }
-    	
+   	    	
  		setState(HoneyState.Puzzle);
 	    	    
 	    whoseTurn = FIRST_PLAYER_INDEX;
@@ -206,7 +192,6 @@ class HoneyBoard extends BaseBoard implements BoardProtocol
         super.copyFrom(from_b);
         for(int i=0;i<pbs.length;i++) { pbs[i].copyFrom(from_b.pbs[i]); }
         board_state = from_b.board_state;
-        drawPile.copyFrom(from_b.drawPile);
         lastActivePlayer = from_b.lastActivePlayer;
         lastPicked = null;
         sameboard(from_b); 
@@ -227,7 +212,6 @@ class HoneyBoard extends BaseBoard implements BoardProtocol
         for(int i=0;i<pbs.length;i++) { pbs[i].sameboard(from_b.pbs[i]); }
         
         G.Assert(variation==from_b.variation,"variation matches");
-        G.Assert(drawPile.sameContents(from_b.drawPile),"drawPile mismatch");
         G.Assert(lastActivePlayer==from_b.lastActivePlayer,"lastActivePlayer mismatch");
         // this is a good overall check that all the copy/check/digest methods
         // are in sync, although if this does fail you'll no doubt be at a loss
@@ -253,7 +237,6 @@ class HoneyBoard extends BaseBoard implements BoardProtocol
         for(HBoard p : pbs) { v ^= p.Digest(r); }
 		// many games will want to digest pickedSource too
 		// v ^= cell.Digest(r,pickedSource);
-		v ^= Digest(r,drawPile);
 		v ^= Digest(r,lastActivePlayer);
 		v ^= r.nextLong()*(board_state.ordinal()*10+whoseTurn);
         return (v);
@@ -339,18 +322,8 @@ class HoneyBoard extends BaseBoard implements BoardProtocol
     }
  public void restartTimer()
  {
- 	drawTimer = G.Date()+(drawPile.height()==0 ? FinalDrawTime : NextDrawTime);
+ 	drawTimer = G.Date()+ FinalDrawTime;
  }
- public int pullCount()
- {
-	 return 2;
- }
-
- public int nextTileCount()
- {
-	 return Math.max(0,drawPile.height()-pullCount());
- }
- public int tilesLeft() { return drawPile.height(); }
  
  public HBoard getPlayerBoard(int p)
  {

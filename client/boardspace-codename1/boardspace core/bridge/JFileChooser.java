@@ -18,9 +18,9 @@ package bridge;
 
 import lib.FileSelector;
 import lib.G;
+import lib.LFrameProtocol;
 import lib.SimpleObservable;
 import lib.SimpleObserver;
-import lib.XFrame;
 
 public class JFileChooser  implements SimpleObserver
 {	public static String FILES = "files";
@@ -33,7 +33,7 @@ public class JFileChooser  implements SimpleObserver
 	String caption = null;
 	boolean forSave = false;
 	boolean allowDirs = false;
-	XFrame selectorFrame = null;
+	LFrameProtocol selectorFrame = null;
 
 	// constructor
 	public JFileChooser(String string)

@@ -27,8 +27,8 @@ public class Container extends Component
 {
 	public Insets getInsets() { return(new Insets(0,0,0,0)); }
 	
-	public Container(Layout x) { super(x); }
-	public Container() { super(); }
+	public Container(Layout x) { super(x);  }
+	public Container() { super();  }
 	public void validate() {}
 
 	public void paint(Graphics g)
@@ -54,11 +54,11 @@ public class Container extends Component
 	{	try { super.add(c);  }
 		catch (Throwable err) { Http.postError(this,"adding component "+c,err); }
 	}
-	public com.codename1.ui.Container add(com.codename1.ui.Component c)
+	
+	public void addC(com.codename1.ui.Component c)
 	{  	final com.codename1.ui.Component cc = c;
 		G.runInEdt(new Runnable() { public void run() { supadd(cc); }});
 		setShouldCalcPreferredSize(true);
-	    return(this);
 	}
 
 	public void suprem(com.codename1.ui.Component c) 
@@ -72,7 +72,7 @@ public class Container extends Component
 	{	final com.codename1.ui.Component cc = c;
 		G.runInEdt(new Runnable() { public void run() { suprem(cc); }});
 	}
-	public void addComponent(int index,com.codename1.ui.Component c)
+	public void addC(int index,com.codename1.ui.Component c)
 	{
 		final com.codename1.ui.Component cc = c;
 		G.runInEdt(new Runnable() { public void run() { supadd(index,cc); }}); 
@@ -83,7 +83,7 @@ public class Container extends Component
 	}
 	public void supadd(int index,com.codename1.ui.Component c )
 	{
-		super.addComponent(index,c);
+		super.add(index,c);
 	}
 	public void remove(com.codename1.ui.Component c)
 	{	removeComponent(c);
@@ -100,7 +100,7 @@ public class Container extends Component
 		return m.getComponentIndex(m.getComponent());
 	}
 
-	public void add(ProxyWindow c) { add(c.getComponent()); }
+	public void add(ProxyWindow c) { addC(c.getComponent()); }
 
 	 public void paintComponentBackground(Graphics g)
 	 {	//System.out.println("container paintcomponentbackground");

@@ -35,9 +35,9 @@ public class ComponentProxy extends Component implements FullScreen,NullLayoutPr
 	    // setFocusable(true);
 	    mouse.setAwtComponent(c); 
 	}
-	public void doNullLayout(Container p)
+	public void doNullLayout()
 	{
-		client.doNullLayout(p);
+		client.doNullLayout();
 	}
 	public boolean pinch(double f,int x,int y) 
 	{ 

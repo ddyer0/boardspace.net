@@ -37,6 +37,7 @@ public class JPopupMenu extends javax.swing.JPopupMenu implements NativeMenuInte
 	{
 		if(window instanceof Container) { ((Container)window).remove(this); }
 	}
+
 	public void show(Component invoker, int x, int y) 
 	{	// this is an attempt to paper over some glitches with JPopupMenu
 		// which seems to be not entirely thread safe.  The crashes occur

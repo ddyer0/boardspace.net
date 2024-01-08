@@ -102,7 +102,23 @@ public static boolean isRealWindroid() { return false; }
 
 static final public String getPlatformSubtype()
 {
-	 return G.isCheerpj() ? " cheerpj" : isTable() ? " sometable" : "";
+	 return isJavadroid() 
+			 ? "javadroid" 
+			 : G.isCheerpj() 
+			   ? " cheerpj" 
+			   : isTable() 
+			     ? " sometable" : "";
+}
+
+static final public boolean isJavadroid()
+{
+	String prop = System.getProperty("jre.vendor");
+	return "Android-Coobbi".equals(prop)||G.getBoolean("javadroid",false);
+}
+
+static public boolean useTabInterface()
+{
+	return isJavadroid();
 }
 static private Object makeObject = null;
 /**
@@ -523,10 +539,10 @@ public static Object MakeInstance(String classname)
     static public boolean canRepaintLocally(Component p) { return(true); }
     static public boolean isCompletelyVisible(Component p) { return(true); }
     static public boolean isPartlyVisible(Component p) { return(true); }
-    static public void moveToFront(Component p) 
+    static public void moveToFront(Object p) 
     	{ if(p==null) {}
     	  else if(p instanceof Frame) { ((Frame)p).toFront(); }
-    	  else { moveToFront(p.getParent());}
+    	  else if(p instanceof Component) { moveToFront(((Component)p).getParent());}
     	}
 
 	

@@ -18,6 +18,7 @@ package lib;
 
 import bridge.*;
 
+import com.codename1.ui.Component;
 import com.codename1.ui.geom.Point;
 import com.codename1.ui.geom.Rectangle;
 import java.util.Calendar;
@@ -1966,7 +1967,7 @@ public static String expandClassName(String classname)
 		{
 			XFrame f = new XFrame("Console");
 			TextArea ta = new TextArea();
-			f.add(ta);
+			f.addC(ta);
 			ta.setEditable(false);
 			setPrinter(TextPrintStream.getPrinter(new Utf8OutputStream(),ta));
 			print("Legacy Debug Log stream");
@@ -1996,24 +1997,11 @@ public static String expandClassName(String classname)
     /**
      * create a simple console window that will be the target of {@link #print}
      */
-	static public XFrame createChatFrame()
-	{	
-		XFrame f = new XFrame("Chat");
-		ChatInterface chat = CreateChat(true,f,null,true);
-		ChatWindow w = new ChatWindow(f,getGlobals(),chat);
-		f.add(w);
-		w.setVisible(true);
-		f.setVisible(true);
-		return f;
-	}
-    /**
-     * create a simple console window that will be the target of {@link #print}
-     */
 	static public XFrame createInputFrame(JTextComponent to)
 	{	
 		XFrame f = new XFrame("Text Input");
 		TextInputWindow in = new TextInputWindow(getGlobals(),f,to);
-		f.add(in);
+		f.getFrame().addC(in);
 		in.setVisible(true);
 		f.setVisible(true);
 		return f;
@@ -2218,6 +2206,7 @@ public static String expandClassName(String classname)
 		int dy = y-cy;
 		return((int)(cy+sina*dx+cosa*dy));
     }
+
     public static void show(Component window, MenuInterface menu, int x, int y) throws AccessControlException
 	{
 		NativeMenuInterface nativeMenu = menu.getNativeMenu();

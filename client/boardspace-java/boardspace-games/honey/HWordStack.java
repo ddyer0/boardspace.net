@@ -17,17 +17,24 @@
 package honey;
 
 import dictionary.Entry;
+import lib.Digestable;
 import lib.OStack;
+import lib.Random;
 
 /*
  * in addition to the standard stack, this class has some features
  * to assist collecting plausible moves.
  */
-public class HWordStack extends OStack<HWord>
+public class HWordStack extends OStack<HWord> implements Digestable
 {
 	public HWord[] newComponentArray(int sz) {
 		return new HWord[sz];
 	}	
+	public long Digest(Random r)
+	{	long v = 0;
+		for(int lim=size(),i=0; i<lim; i++) { v += elementAt(i).Digest(r)*(i+1);  }
+		return v;
+	}
 	public int bestScore = 0;				// best score so far
 	public int leastScore = 0;				// the lowest score currently in the stack
 	
@@ -60,34 +67,6 @@ public class HWordStack extends OStack<HWord>
 		remove(w,true);
 		}
 	}
-	// record a candidate word if it is a plausible candidate.
-	// trim the active list to the prescribed size
-	public HWord recordCandidate(String message,HoneyCell c,String s,int direction,int score,Entry e)
-	{	if(score>=bestScore*threshold && score>leastScore)
-		{
-		for(int lim=size()-1;lim>=0;lim--)
-		{
-			HWord entry = elementAt(lim);
-			if(entry.name.equals(e.word) && entry.seed==c) 
-			{
-				return(null);
-			}
-		}
-		trimToSize();
-		HWord w = new HWord(c,s,direction);
-		push(w);
-		w.entry = e;
-		w.points = score;
-		w.comment = message;
-		prevBestScore = bestScore;
-		bestScore = Math.max(score, bestScore);
-		accepted++;
-		return(w);
-		}
-		declined++;
-		return(null);
-	}
-
 
 	public void trimToSize()
 	{

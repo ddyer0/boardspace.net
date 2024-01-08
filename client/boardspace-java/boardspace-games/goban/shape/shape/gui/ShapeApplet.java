@@ -2,7 +2,6 @@ package goban.shape.shape.gui;
 
 import java.net.*;
 import java.applet.Applet;
-import java.awt.Container;
 import java.awt.Dimension;
 import lib.Image;
 import java.io.*;
@@ -55,9 +54,6 @@ public class ShapeApplet extends Applet implements NullLayoutProtocol
 		
 	}
 	public void doNullLayout() {	}
-	public void doNullLayout(Container parent)
-	{
-	}
 
 	static final void main(String args[])
 	{

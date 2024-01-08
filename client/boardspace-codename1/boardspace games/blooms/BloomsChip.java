@@ -122,7 +122,7 @@ public class BloomsChip extends chip<BloomsChip> implements CommonConfig
     /* plain images with no mask can be noted by naming them -nomask */
     static public BloomsChip backgroundTile = new BloomsChip("background-tile-nomask",null);
     static public BloomsChip backgroundReviewTile = new BloomsChip("background-review-tile-nomask",null);
-    static public BloomsChip Icon = new BloomsChip("hex-icon-nomask",null);
+    static public BloomsChip Icon = new BloomsChip("icon-nomask",null);
    
     static public BloomsChip getChip(BloomsId id)
     {

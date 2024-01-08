@@ -116,13 +116,13 @@ sub doit()
   if($unranked || $serverless || $offline || &checkServer(param('u1')))
   {	my $nr =0;
 	my $selector = $offline ? "deviceid=$deviceid" : "player1=$u1";
- 	my $q = "select gmtdate from sp_record where $selector and puzzleid=$puzzleid and mode=$mode";
+ 	my $q = "select uid,gmtdate from sp_record where $selector and puzzleid=$puzzleid and mode=$mode";
 	my $sth = &query($dbh,$q);
   	my $nr = &numRows($sth);
-	#print "q: $q\n";
+
 	if($nr>0)
 	{
-	my ($gmtdate) = &nextArrayRow($sth);
+	my ($uid,$gmtdate) = &nextArrayRow($sth);
 	&finishQuery($sth);
  	print "You already solved this puzzle on $gmtdate\n";
 	}

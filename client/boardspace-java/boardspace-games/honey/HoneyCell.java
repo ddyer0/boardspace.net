@@ -19,12 +19,27 @@ package honey;
 import lib.Random;
 import lib.StackIterator;
 import honey.HoneyConstants.HoneyId;
+import lib.Digestable;
 import lib.OStack;
 import online.game.*;
 
-class CellStack extends OStack<HoneyCell>
+class CellStack extends OStack<HoneyCell> implements Digestable
 {
 	public HoneyCell[] newComponentArray(int n) { return(new HoneyCell[n]); }
+	public String getWord()
+	{	StringBuilder b = new StringBuilder();
+		for(int i=0,lim=size(); i<lim; i++)
+		{	HoneyCell c = elementAt(i);
+			HoneyChip chip = c.topChip();
+			b.append(chip.contentsString());
+		}
+		return b.toString();
+	}
+	public long Digest(Random r)
+	{	long v = 0;
+		for(int lim=size(),i=0; i<lim; i++) { v += elementAt(i).Digest(r)*(i+1);  }
+		return v;
+	}
 }
 /**
  * specialized cell used for the game pushfight, not for all games using a pushfight board.
@@ -39,7 +54,6 @@ class CellStack extends OStack<HoneyCell>
 public class HoneyCell extends stackCell<HoneyCell,HoneyChip>
 {	
 	int sweep_counter;		// the sweep counter for which blob is accurate
-	int wordDirections = 0;				// mask of directions where words exist
 	boolean nonWord = false;
 	StackIterator<HWord> wordHead;
 	Object parent = null;
@@ -76,7 +90,6 @@ public class HoneyCell extends stackCell<HoneyCell,HoneyChip>
 	{	super.reInit();
 		nonWord = false;
 		selected = false;
-		wordDirections = 0;
 	}
 	// constructor a cell not on the board, with a chip.  Used to construct the pool chips
 	public HoneyCell(HoneyChip cont)
@@ -98,7 +111,6 @@ public class HoneyCell extends stackCell<HoneyCell,HoneyChip>
 		super.copyFrom(other);
 		nonWord = other.nonWord;
 		selected = other.selected;
-		wordDirections = other.wordDirections;
 	}
 	
 	public HoneyChip[] newComponentArray(int size) {

@@ -91,8 +91,7 @@ public class LPanel extends FullscreenPanel implements WindowListener,LobbyConst
 
 
     public void setSize(int w,int h)
-    {
-    	if(theFrame!=null) { theFrame.setSize(w,h); }
+    {	setBounds(getX(),getY(),w,h);
     }
  
 

@@ -20,7 +20,6 @@ package util;
 import com.codename1.ui.Component;
 import lib.Image;
 import com.codename1.ui.geom.Dimension;
-import com.codename1.ui.layouts.Insets;
 import com.codename1.ui.layouts.Layout;
 
 import bridge.*;
@@ -34,6 +33,7 @@ import lib.G;
 import lib.Http;
 import lib.InternationalStrings;
 import lib.SimpleObserver;
+import lib.TopFrameProtocol;
 import lib.UrlResult;
 import lib.XFrame;
 import lib.XXTEA;
@@ -185,7 +185,6 @@ import udp.PlaytableStack;
 		 case Rejection:	configureForRejection(); break;	// version too old
 		 case Confirmation: configureForConfirmation(); break;	// confirm after register
 		 }
-		 if(!G.isCodename1()) { autoSize(); }
 		 repaint();
 	 }
 
@@ -194,7 +193,7 @@ import udp.PlaytableStack;
 	 private Checkbox develop2xOption = null;
 	 private SimpleObserver observer = null;
 	 public boolean finished = false;
-	 private JFrame controllingFrame; 		//the controlling frame, needed for dialogs
+	 private TopFrameProtocol controllingFrame; 		//the controlling frame, needed for dialogs
 	 
 	 private XPasswordField passwordField;	// the password
 	 private XPasswordField passwordField2;	// second copy for registration
@@ -223,14 +222,13 @@ import udp.PlaytableStack;
 	 private JLabel errorText = null;
 	 private JButton[] serverButtons = null; 
 	 // constructor
-	public PasswordCollector(JFrame f,SimpleObserver o) 
+	public PasswordCollector(TopFrameProtocol f,SimpleObserver o) 
 	 {	 //PlatformLogger l = PlatformLogger.getLogger("java.util.prefs");
 	 	 //l.setLevel(Level.SEVERE);	// quench a warning message
 		 controllingFrame = f;
 		 BoxLayout bl = new BoxLayout(this,BoxLayout.Y_AXIS);
 		 bl.setAlign(Component.CENTER);
 		 setLayout(bl);
-
 		 observer = o;
 		 if(isAcceptableVersion())
 		 	{
@@ -418,17 +416,17 @@ import udp.PlaytableStack;
 		 JLabel nameLabel2 = new JLabel(s.get(SuccessMessage2));
 		 nameLabel.setUIID("LoginLabel");
 		 nameLabel2.setUIID("LoginLabel");
-		 panel.add(nameLabel);
-		 panel.add(nameLabel2);
+		 panel.addC(nameLabel);
+		 panel.addC(nameLabel2);
 		 return(panel);
 	 }
 	 private void configureForConfirmation()
 	 { 	
 	 	disposeMainPanel();	// get rid of any previous
 		JPanel vpanel = mainPanel = subPanel();
-		vpanel.add(createSuccessPanel());
-		vpanel.add(createConfirmedPanel());
-		add(vpanel);
+		vpanel.addC(createSuccessPanel());
+		vpanel.addC(createConfirmedPanel());
+		addC(vpanel);
 	 }
 	 //
 	 // configure the form for a "register" panel.
@@ -450,22 +448,22 @@ import udp.PlaytableStack;
 	 	passwordField.setText(password);
 	 	
 
-		vpanel.add(createUsernamePanel(false));
-		vpanel.add(passPane);
-		vpanel.add(passPane2);
+		vpanel.addC(createUsernamePanel(false));
+		vpanel.addC(passPane);
+		vpanel.addC(passPane2);
 		
-		vpanel.add(createRealNamePanel());
-		vpanel.add(createEmailPanel());
-		vpanel.add(createCountryPanel());
-		vpanel.add(createLanguagePanel());
-	 	vpanel.add(createErrorPanel());
+		vpanel.addC(createRealNamePanel());
+		vpanel.addC(createEmailPanel());
+		vpanel.addC(createCountryPanel());
+		vpanel.addC(createLanguagePanel());
+	 	vpanel.addC(createErrorPanel());
 		}
 		else {
-		 	vpanel.add(createErrorPanel());
+		 	vpanel.addC(createErrorPanel());
 			changeMessage(s.get(NocontactMessage,Http.getHostName()));
 		}
-		vpanel.add(createRegisterButtonPanel());
-	 	add(vpanel);
+		vpanel.addC(createRegisterButtonPanel());
+	 	addC(vpanel);
 	 }
 	 
 	 public JPanel createPasswordPanel(String txt, boolean includeSave)
@@ -474,7 +472,7 @@ import udp.PlaytableStack;
 		 JLabel label = new JLabel(s.get(txt));
 		 label.setUIID("LoginLabel");
 		 label.setLabelFor(passwordField);
-		 pane.add(label);
+		 pane.addC(label);
 
 		 
 		 passwordField = new XPasswordField(13);
@@ -482,7 +480,7 @@ import udp.PlaytableStack;
 		 passwordField.addActionListener(this);
 		 passwordField.setUIID("LoginTextField");
 
-		 pane.add(passwordField);
+		 pane.addC(passwordField);
 		 
 		 if(includeSave)
 		 {	String passw = s.get(SavePassword);
@@ -496,7 +494,7 @@ import udp.PlaytableStack;
 		 		if(!"".equals(p)) { pass = unobfuscate(p,name+SALT); }
 		 		}
 			 if(pass!=null) { passwordField.setText(pass); }
-			 pane.add(savePasswordField);
+			 pane.addC(savePasswordField);
 		 }
 		 return(pane);
 	 }
@@ -510,8 +508,8 @@ import udp.PlaytableStack;
 		 realNameField = new XTextField(25);
 		 realNameField.setUIID("LoginTextField");
 		 realNameField.setText(realName);
-		 panel.add(nameLabel);
-		 panel.add(realNameField);
+		 panel.addC(nameLabel);
+		 panel.addC(realNameField);
 		 
 		 return(panel);
 	 }
@@ -522,7 +520,7 @@ import udp.PlaytableStack;
 	 	errorText.setFocusable(false);
 	 	errorText.setForeground(Color.red);
 	 	//errorText.setWidth(80);
-	 	panel.add(errorText);
+	 	panel.addC(errorText);
 	 	return(panel);
 	 }
 
@@ -535,11 +533,11 @@ import udp.PlaytableStack;
 		 emailField.setUIID("LoginTextField");
 
 		 emailField.setText(email);
-		 panel.add(nameLabel);
-		 panel.add(emailField);
+		 panel.addC(nameLabel);
+		 panel.addC(emailField);
 		 JLabel promise = new JLabel(s.get(YourEmailPromise));
 		 promise.setUIID("LoginLabel");
-		 panel.add(promise);
+		 panel.addC(promise);
 		 
 		 return(panel);
 		 
@@ -550,7 +548,7 @@ import udp.PlaytableStack;
 		 finalRegisterButton = new JButton(FINALREGISTER);
 		 finalRegisterButton.setActionCommand(FINALREGISTER);
 		 finalRegisterButton.addActionListener(this);
-		 panel.add(finalRegisterButton);
+		 panel.addC(finalRegisterButton);
 		 return(panel);
 	 }
 
@@ -563,8 +561,8 @@ import udp.PlaytableStack;
 		 nameField.setUIID("LoginTextField");
 
 		 nameField.setActionCommand(OK);
-		 panel.add(nameLabel);
-		 panel.add(nameField);
+		 panel.addC(nameLabel);
+		 panel.addC(nameField);
 		 if(name==null) { name = prefs.get(loginNameKey,""); }
 		 if(name==null) { name = ""; }
 		 nameField.setText(name); 
@@ -576,7 +574,7 @@ import udp.PlaytableStack;
 			   Component.setSameSize(nameField,loginAsGuestField);
 			   loginAsGuestField.addItemListener(this);
 			   // this papers over a codename1 bug that broke checkmarks with labels
-			   panel.add(loginAsGuestField);
+			   panel.addC(loginAsGuestField);
 			 }
 		 	else { loginAsGuestField = null ; }
 		 
@@ -593,12 +591,12 @@ import udp.PlaytableStack;
 
 		 langField = new Choice<String>();
 		 langField.setUIID("LoginChoice");
-		 panel.add(llab);
+		 panel.addC(llab);
 		 llab.setLabelFor(langField);
 		 for(String ll : InternationalStrings.languages) 
 			 { langField.add(s.get(ll));
 			 }
-		 panel.add(langField);
+		 panel.addC(langField);
 		 langField.select(s.get((lang==null)?"english":lang));
 		 langField.addActionListener(this);
 		 //Lay out everything.
@@ -612,18 +610,18 @@ import udp.PlaytableStack;
 		 llab.setUIID("LoginLabel");
 		 countryField = new Choice<String>();
 		 countryField.setUIID("LoginChoice");
-		 panel.add(llab);
+		 panel.addC(llab);
 		 llab.setLabelFor(countryField);
 		 for(int i=1;i<countries.length; i++) 	// skip element 0
 			 { countryField.add(countries[i]);
 			 }
-		 panel.add(countryField);
+		 panel.addC(countryField);
 		 if(!"".equals(country)) { countryField.select(country); }
 		 if(countryField.getSelectedItem()==null) { countryField.select(0); }
 		 countryField.addItemListener(this);
 		 JLabel country = new JLabel(s.get(CountryString));
 		 country.setUIID("LoginLabel");
-		 panel.add(country);
+		 panel.addC(country);
 		 return(panel);
 	 }
 	 private Component createAppstoreButton()
@@ -659,7 +657,7 @@ import udp.PlaytableStack;
 		 linkField.addItem(new StringPair(s.get(ForgotPassword),	 host+recoverPasswordUrl));
 		 linkField.addItem(new StringPair(s.get(AccountManagement),
 				 host+editURL+"?editable=true&pname="+nameField.getText().trim()));
-		 panel.add(linkField);
+		 panel.addC(linkField);
 		 
 		 linkField.addItemListener(this);
 			 //Lay out everything.
@@ -679,9 +677,9 @@ import udp.PlaytableStack;
 	 	registerAccountButton = new JButton(rega);
 	 	registerAccountButton.setActionCommand(rega);
 	 	registerAccountButton.addActionListener(this);
- 		p.add(registerAccountButton);
- 		p.add(createFeedbackButton());
- 		p.add(createVisitButton());
+ 		p.addC(registerAccountButton);
+ 		p.addC(createFeedbackButton());
+ 		p.addC(createVisitButton());
 	 	return(p);
 	 }
 	 public boolean isAcceptableVersion()
@@ -728,17 +726,17 @@ import udp.PlaytableStack;
 			va += " ("+s.get(VersionPreferredMessage,prefVersion)+")";
 			}
 		va += " "+G.build;
-		p.add(new Label(va));
+		p.addC(new Label(va));
 		if(G.isCodename1()
 				&& 	!G.isRealInfinityTable()
 				&& (!G.isIOS() || (appversionD<=prefVersionD)))
-			{ p.add(createAppstoreButton()); 
+			{ p.addC(createAppstoreButton()); 
 	 		}
 		}
 		else 
 		{ 
 		va += " "+G.build;
-		p.add(new Label(va)); 
+		p.addC(new Label(va)); 
 		}
 	 	return(p);
 	 }
@@ -749,7 +747,7 @@ import udp.PlaytableStack;
  		 reviewButton = new JButton(rega);
  		 reviewButton.setActionCommand(rega);
  		 reviewButton.addActionListener(this);
- 		 p.add(reviewButton);
+ 		 p.addC(reviewButton);
  		 int nservers = PlaytableStack.getNServers();
  		 serverButtons = null;
  		 if(nservers>0)
@@ -760,18 +758,11 @@ import udp.PlaytableStack;
  			   	JButton button = serverButtons[i] = new JButton(msg);
 			   	button.setActionCommand(msg);
  			   	button.addActionListener(this);
-  			   	p.add(button);
+  			   	p.addC(button);
  			   }}
   		 return(p);
 	 }
-	 private void autoSize()
-	 {	
-       	Insets ins = controllingFrame.getInsets();
-    	Dimension ps = getPreferredSize();
-    	Dimension newps = new Dimension((int)(ps.getWidth()+ins.left+ins.right),
-    							(int)(ps.getHeight()+ins.top+ins.bottom));
-    	controllingFrame.setSize(newps);
-	 }
+
 	 //
 	 // create the structure for a "login" panel
 	 //
@@ -791,18 +782,18 @@ import udp.PlaytableStack;
 		vpanel.setLayout(bv);
 		if(development)
 		{
-			vpanel.add(createHostPanel(G.getString(DEVELOPHOST,null)));
+			vpanel.addC(createHostPanel(G.getString(DEVELOPHOST,null)));
 		}
-		vpanel.add(userPanel);
-		vpanel.add(passPane); 
-		vpanel.add(createLanguagePanel());
-		vpanel.add(createLoginButtonPanel());
-		vpanel.add(createRegisterPanel());
-		vpanel.add(createReviewPanel());
-		vpanel.add(createVersionPanel());
+		vpanel.addC(userPanel);
+		vpanel.addC(passPane); 
+		vpanel.addC(createLanguagePanel());
+		vpanel.addC(createLoginButtonPanel());
+		vpanel.addC(createRegisterPanel());
+		vpanel.addC(createReviewPanel());
+		vpanel.addC(createVersionPanel());
 		adjustGuestPassword(isGuest || guestName.equalsIgnoreCase(name),false);
 
-		add(vpanel);
+		addC(vpanel);
 	 }
 
 	 //
@@ -816,9 +807,9 @@ import udp.PlaytableStack;
 	 	JPanel vpanel = mainPanel = subPanel();
 	 	TextArea text = new TextArea();
 	 	text.setText(s.get(VersionRejectedMessage));
-		vpanel.add(text);
-		if(!G.isRealInfinityTable()) { vpanel.add(createAppstoreButton()); } 
-		add(vpanel);
+		vpanel.addC(text);
+		if(!G.isRealInfinityTable()) { vpanel.addC(createAppstoreButton()); } 
+		addC(vpanel);
 	 }
 
 	 
@@ -856,14 +847,14 @@ import udp.PlaytableStack;
 		 okButton = new JButton(ok);
 		 okButton.setActionCommand(ok);
 		 okButton.addActionListener(this);
-		 p.add(okButton);
+		 p.addC(okButton);
 		 }
 		 {
 	     String can = s.get(cancel);
 		 cancelButton = new JButton(can);
 		 cancelButton.setActionCommand(can);
 		 cancelButton.addActionListener(this);
-		 p.add(cancelButton);       
+		 p.addC(cancelButton);       
 		 }
 		 return p;
     }
@@ -875,14 +866,14 @@ import udp.PlaytableStack;
 		  Checkbox ch = new Checkbox(G.getBoolean("develophostoption",false));
 		  ch.addItemListener(this);
 		  developHostOption = ch;
-		  p.add(ch);
-		  p.add(new Label(host));
+		  p.addC(ch);
+		  p.addC(new Label(host));
 		  Checkbox ch1 = new Checkbox(false);
 		  develop2xOption = ch1;
 		  G.dpiMultiplier = 1;
 		  ch1.addItemListener(this);
-		  p.add(ch1);
-		  p.add(new Label("2x"));
+		  p.addC(ch1);
+		  p.addC(new Label("2x"));
 		 }
 		 return p;
     } 
@@ -895,14 +886,14 @@ import udp.PlaytableStack;
 		 registerButton = new JButton(ok);
 		 registerButton.setActionCommand(REGISTER);
 		 registerButton.addActionListener(this);
-		 p.add(registerButton);
+		 p.addC(registerButton);
 		 }
 		 {
 	     String can = s.get(cancel);
 		 cancelButton = new JButton(can);
 		 cancelButton.setActionCommand(cancel);
 		 cancelButton.addActionListener(this);
-		 p.add(cancelButton);       
+		 p.addC(cancelButton);       
 		 }
 		 return p;
     }
@@ -1059,6 +1050,7 @@ import udp.PlaytableStack;
     	G.runInEdt(new Runnable() { public void run() { createGui(parent,result); }});
     	return(result[0]);
     }
+
     public static void createGui(SimpleObserver parent,PasswordCollector[]result)
     {
     	String host = Http.getHostName();
@@ -1072,16 +1064,19 @@ import udp.PlaytableStack;
     	//Create and set up the window.
         XFrame frame = new XFrame(s.get(LogInTo,(isTest ? "test for " : "")
         		+(host.startsWith("www")?host:G.Capitalize(host))));
-        frame.enableRotater = false;
+        //
+        // I want this to be G.isTable(), but actually doing the
+        // rotation depends on being a standard window based on exCanvas
+        //
+        frame.setEnableRotater(false);
         //Create and set up the content pane.
         Image icon = Image.getImage(IMAGEPATH+CommonConfig.icon_image_name);
         frame.setIconAsImage(icon);
-        final PasswordCollector newContentPane = new PasswordCollector(frame,parent);
+        final PasswordCollector newContentPane = new PasswordCollector(frame.getFrame(),parent);
         newContentPane.getInsets();
         newContentPane.setOpaque(true); //content panes must be opaque
         frame.setContentPane(newContentPane);
         frame.addWindowListener(newContentPane);
-        
         // large screen devices with lots of pixels held vertically
         // were configuring themselves with giant fonts and scrolling
         // in the X direction
@@ -1097,8 +1092,6 @@ import udp.PlaytableStack;
         });
 
         //Display the window.
-        frame.pack();
-        frame.setLocationRelativeTo(null);
         frame.setVisible(true);
         frame.repaint();
 

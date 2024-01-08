@@ -284,14 +284,14 @@ public class FileSelector extends FullscreenPanel
         add(dirListPanel);	// directory list
         dirListPanel.add(new JScrollPane(dirList));
         }
-        add(filterPanel);	// name filter   
+        add(filterPanel);	// name filter     
         if(G.isCodename1())
         {
         	add(gameList);        	
         }
         else {
        	gameListPanel = new JPanel();
-       	gameListPanel.add(new JScrollPane(gameList));
+        gameListPanel.add(new JScrollPane(gameList));
        	gameListPanel.setLayout(new BoxLayout(gameListPanel,BoxLayout.X_AXIS));
         add(gameListPanel);
         }
@@ -1006,10 +1006,10 @@ public class FileSelector extends FullscreenPanel
 				}
 		}
 
-	public XFrame startDirectory(String frameName,boolean closeable)
+	public LFrameProtocol startDirectory(String frameName,boolean closeable)
 	{
 		XFrame f = new XFrame(s.get(frameName));
-		f.add(this);
+		f.addC(this);
 		f.addWindowListener(this);
 		f.setCloseable(closeable);	// keep it open, will be closed with the main frame.
 		if(!G.isCodename1()) 
@@ -1017,6 +1017,8 @@ public class FileSelector extends FullscreenPanel
 		 double scale = G.getDisplayScale();
 		 f.setBounds( 0, 0, (int)(scale*450), (int)(scale*430)); 
 		}
+    	f.setIconAsImage(StockArt.GameSelectorIcon.image);
+
 		f.setVisible(true);
 		return(f);
 	}

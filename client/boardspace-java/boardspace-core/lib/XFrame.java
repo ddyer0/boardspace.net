@@ -16,29 +16,29 @@
  */
 package lib;
 
+import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Label;
+import java.awt.LayoutManager;
 import java.awt.Rectangle;
-import java.awt.event.ActionEvent;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.security.AccessControlException;
 import java.util.prefs.Preferences;
 
 import bridge.Config;
-import bridge.JFrame;
 import bridge.JMenu;
 import bridge.JMenuItem;
+import bridge.JFrame;
 
 import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JMenuBar;
 import bridge.JPopupMenu;
 
 import bridge.MasterForm;
 import bridge.XJMenu;
 
-public class XFrame extends JFrame implements WindowListener,SizeProvider,LFrameProtocol
+public class XFrame implements WindowListener,SizeProvider,LFrameProtocol
 {
 	/**
 	 * 
@@ -46,55 +46,38 @@ public class XFrame extends JFrame implements WindowListener,SizeProvider,LFrame
 	@SuppressWarnings("unused")
 	private static final long serialVersionUID = 01L;
     static final String FRAMEBOUNDS = "framebounds";
-	private boolean useMenuBar = !G.isCodename1();		// if true, use the local menu bar
-	private boolean closeable = true;
-	public void setCloseable(boolean v) { closeable = v; }
-	public boolean getCloseable() { return(closeable); }
-	public JMenuBar jMenuBar = null;
-	JPopupMenu popupMenuBar = null;
-	public DeferredEventManager canSavePanZoom = null;
-	public boolean hasSavePanZoom = false;
-	
-    
-    private InternationalStrings s = null;
-    static final String SoundMessage = "Sound";
-    static final String OptionsMessage = "Options";
-    static final String ActionsMessage = "Actions";
-
-    public static String XFrameMessages[] = {
-            OptionsMessage,
-            ActionsMessage,
-           SoundMessage,
-
-    };
     private JCheckBoxMenuItem soundCheckBox = null;
     private JMenu options = null;
     private JMenu actions = null;
+	private TopFrameProtocol myFrame = null;
 
-	public void setCanSavePanZoom(DeferredEventManager m) 
-	{ 	canSavePanZoom = m;
-		MasterForm.getMasterPanel().adjustTabStyles(); 
-	}
-	public void setHasSavePanZoom(boolean v) 
-	{ hasSavePanZoom = v; 
-	  MasterForm.getMasterPanel().adjustTabStyles(); 
-	}
+    private InternationalStrings s = null;
 	Label title;
 	String name="Unnamed";
 	/** constructor */
 	public XFrame(String string) 
-	{ 	super(string);
-		setJMenuBar(new JMenuBar()); 
+	{ 	myFrame = G.useTabInterface() ? new TabFrame(string) : new JFrame(string); //new TabFrame(string);
 		initStuff(string);
 	}
 	/** constructor */
 	public XFrame()
-	{	super();
-		setJMenuBar(new JMenuBar()); 
+	{	myFrame = G.useTabInterface() ? new TabFrame() : new JFrame();//new TabFrame();
 		initStuff("");
 
 
 	}
+	
+	static final String SoundMessage = "Sound";
+	static final String OptionsMessage = "Options";
+	static final String ActionsMessage = "Actions";
+
+	public static String XFrameMessages[] = {
+	            OptionsMessage,
+	            ActionsMessage,
+	           SoundMessage,
+
+	    };
+
 	private void initStuff(String n)
 	{ name = n;
 	  s = G.getTranslations();
@@ -107,7 +90,7 @@ public class XFrame extends JFrame implements WindowListener,SizeProvider,LFrame
       soundCheckBox = new JCheckBoxMenuItem(s.get(SoundMessage),Config.Default.getBoolean(Config.Default.sound));
 	  addWindowListener(this);
 	  title = new Label(name);
-	  setOpaque(false);
+	  myFrame.setOpaque(false);
  	}
 	
 	public void setVisible(boolean v)
@@ -117,117 +100,22 @@ public class XFrame extends JFrame implements WindowListener,SizeProvider,LFrame
 			 double scale = G.getDisplayScale();
 			 int w = (int)(scale*450);
 			 int h = (int)(scale*430);
-			 setBounds( 0, 0, w, h); 
+			 myFrame.setBounds( 0, 0, w, h); 
 		}
-		super.setVisible(v);
+		myFrame.setVisible(v);
 	}
 
 	public void setTitle(String n) 
 	{ name = n;
 	  if(title==null) { title = new Label(name); }
 	  if(n!=null && G.isSimulator()) { title.setText(n+" "+getWidth()+"x"+getHeight()); }
-	  MasterForm.getMasterPanel().setTabName(this,name,getIconAsImage());
+	  MasterForm.getMasterPanel().setTabName(myFrame,name,myFrame.getIconAsImage());
 	}
 	public String getTitle()
 	{
 		return(name);
 	}
 
-	
-	public boolean hasCommand(String cmd)
-	{	if(("rotate".equals(cmd) || "twist3".equals(cmd) || "twist".equals(cmd))) { return(enableRotater); }
-		if("close".equals(cmd)) { return(true); }
-		if("actionmenu".equals(cmd)) 
-			{ return(popupMenuBar!=null); 
-			}
-		if("savepanzoom".equals(cmd)) { return(canSavePanZoom!=null); }
-		if("restorepanzoom".equals(cmd)) { return(hasSavePanZoom); }
-		return(false);
-	}
-	
-	// this is used in the codename1 branch
-	public void buttonMenuBar(ActionEvent evt,int x,int y)
-	{	String cmd = evt.getActionCommand().toString();
-		if("twist3".equals(cmd))
-		{
-			if(rotater!=null) { rotater.setCanvasRotation(rotater.getCanvasRotation()+1);revalidate();  }			
-		}
-		else if("twist".equals(cmd))
-		{
-			if(rotater!=null) { rotater.setCanvasRotation(rotater.getCanvasRotation()-1); revalidate(); }
-		}
-		else if("rotate".equals(cmd))
-		{
-			if(rotater!=null) { rotater.setCanvasRotation(rotater.getCanvasRotation()+2); revalidate(); }
-		}
-		else if("actionmenu".equals(cmd))
-			{if(popupMenuBar!=null)
-		{
-			try 
-			{ 
-				popupMenuBar.show(this,
-						MasterForm.translateX(this, x),
-						MasterForm.translateY(this, y)
-						);
-			} catch (AccessControlException e) {}
-			}}
-		else if("close".equals(cmd))
-		{
-			if(getCloseable()) 
-				{ dispose(); 
-				}
-		}
-		else if("savepanzoom".equals(cmd) || "restorepanzoom".equals(cmd))
-		{	if(canSavePanZoom!=null)
-			{	canSavePanZoom.deferActionEvent(evt);
-		}
-	}
-		else if(G.debug()) {
-			Http.postError(this,"unexpected action event: "+cmd,null);
-		}
-	}
-
-	public void setJMenuBar(JMenuBar m) { jMenuBar = m; super.setJMenuBar(m); }
-	public void addToMenuBar(JMenu m)
-	{
-		addToMenuBar(m,null);
-	}
-	public void addToMenuBar(JMenu m,DeferredEventManager l)
-	{	
-		if(useMenuBar)
-		{	if(jMenuBar==null) {  setJMenuBar(new JMenuBar()); }
-			m.setVisible(true);
-			if(jMenuBar.getComponentIndex(m)<0)
-				{
-				jMenuBar.add(m);
-				}
-		}
-		else {
-			boolean isNew = popupMenuBar==null;
-			if(isNew) 
-				{ popupMenuBar=new JPopupMenu();
-				 
-				}
-			if(popupMenuBar.getComponentIndex(m)<0)
-				{
-				popupMenuBar.add(m);
-				}
-			if(isNew) {  MasterForm.getMasterPanel().adjustTabStyles(); }
-		}
-		if(l!=null) { m.addItemListener(l); }
-	}
-
-	
-	private void removeFromMenuBar(JMenu m)
-	{	
-		if(useMenuBar)
-		{
-			if(jMenuBar!=null) { jMenuBar.remove(m); }
-		}
-		else {
-			if(popupMenuBar!=null) { popupMenuBar.remove(m); }
-		}
-	}
 	
 	private Rectangle oldBounds = null;
 	private int minimumWidth=300;
@@ -245,11 +133,12 @@ public class XFrame extends JFrame implements WindowListener,SizeProvider,LFrame
 	public void expand()
 	{
 		if(oldBounds!=null)
-		{ setBounds(G.Left(oldBounds),G.Top(oldBounds),G.Width(oldBounds),G.Height(oldBounds));
+		{ myFrame.setBounds(G.Left(oldBounds),G.Top(oldBounds),G.Width(oldBounds),G.Height(oldBounds));
 		  oldBounds = null; 
 		}
 		else 
-		{ Container parent = getParent();
+		{ 
+		Container parent = myFrame.getParentContainer();
 		// parent can legitimately be null if the window is closing
 		if(parent!=null)
 			{
@@ -257,13 +146,13 @@ public class XFrame extends JFrame implements WindowListener,SizeProvider,LFrame
 			int h = parent.getHeight();
 			oldBounds = new Rectangle(getX(),getY(),getWidth(),getHeight());
 			title.setText(name+" "+getWidth()+"x"+getHeight());
-			setBounds(0,0,Math.max(minimumWidth,w),Math.max(minimumHeight,h));
+			myFrame.setBounds(0,0,Math.max(minimumWidth,w),Math.max(minimumHeight,h));
 			if(minimumWidth>w || minimumHeight>h)
 			{
 				G.print("Oversize "+name+" "+minimumWidth+"x"+minimumHeight+" "+w+"x"+h);
 			}
 			}
-		}
+	}
 	}
 
 
@@ -281,7 +170,7 @@ public class XFrame extends JFrame implements WindowListener,SizeProvider,LFrame
 	{	killed=true;
 		if(!disposed)
 		{	disposed = true;	
-		super.dispose();		
+		myFrame.dispose();		
 	}
 	}
 
@@ -307,7 +196,7 @@ public class XFrame extends JFrame implements WindowListener,SizeProvider,LFrame
 	
 	// for lframeprotocol
 	public void show(MenuInterface menu, int x, int y) throws AccessControlException {
-		G.show(this, menu, x, y);		
+		G.show((Component)myFrame, menu, x, y);		
 	}
 	int lastKnownWidth = -1;
 	int lastKnownHeight = -1;
@@ -325,7 +214,7 @@ public class XFrame extends JFrame implements WindowListener,SizeProvider,LFrame
 	}
 	public void setInitialBounds(int inx,int iny,int inw,int inh)
 	{
-		if(G.isCodename1()) 
+		if(G.useTabInterface()) 
 			{ expand(inw,inh);
 			} 
 			else 
@@ -355,7 +244,7 @@ public class XFrame extends JFrame implements WindowListener,SizeProvider,LFrame
 	            fh = Math.max(lastKnownHeight/5,Math.min(fh,lastKnownHeight));
 	            fx = Math.max(0,Math.min(lastKnownWidth-fw,fx));
 	            fy = Math.max(0,Math.min(lastKnownHeight-fh,fy));
-				setBounds(fx,fy,fw,fh);   			
+				myFrame.setBounds(fx,fy,fw,fh);   			
 			} 	
 	}
 
@@ -446,7 +335,7 @@ public class XFrame extends JFrame implements WindowListener,SizeProvider,LFrame
  
                 if (actions.getItemCount() == 0)
                 {
-                	removeFromMenuBar(actions);
+                	myFrame.removeFromMenuBar(actions);
                  }
             }
            	catch (Throwable err)
@@ -467,7 +356,7 @@ public class XFrame extends JFrame implements WindowListener,SizeProvider,LFrame
  
                 if (actions.getItemCount() == 0)
                 {
-                	removeFromMenuBar(actions);
+                	myFrame.removeFromMenuBar(actions);
                 }
             }
            	catch (Throwable err)
@@ -491,11 +380,11 @@ public class XFrame extends JFrame implements WindowListener,SizeProvider,LFrame
         if(!dontKill) { killed = true; setVisible(false);}
         //
         // record the default position and size
-        if(!G.isCodename1())
+        if(!G.useTabInterface())
         {
             String suffix = "-"+ getTitle();
 	       	Preferences prefs = Preferences.userRoot();
-        	Rectangle dim = getBounds();
+        	Rectangle dim = myFrame.getBounds();
         	prefs.put(FRAMEBOUNDS+suffix,
         			""+G.Left(dim)+","+G.Top(dim)+","+G.Width(dim)+","+G.Height(dim));
         	
@@ -515,10 +404,68 @@ public class XFrame extends JFrame implements WindowListener,SizeProvider,LFrame
 		return this;
 	}
 
-	// support for rotater buttons
-	private CanvasRotater rotater = new CanvasRotater();
-	public boolean enableRotater = true;
-	public CanvasRotater getCanvasRotater() { return rotater; }
+	public void addWindowListener(WindowListener who) {
+		myFrame.addWindowListener(who);
+		
+	}
 
-
+	public void revalidate() {
+		myFrame.revalidate();
+		
+	}
+	public void setIconAsImage(Image icon) {
+		myFrame.changeImageIcon(icon);
+	}
+	public int getWidth() {
+		return myFrame.getWidth();
+	}
+	public int getHeight() {
+		return myFrame.getHeight();
+	}
+	public int getX() {
+		return myFrame.getX();
+	}
+	public int getY() {
+		return myFrame.getY();
+	}
+	public void addC(Component p)
+	{	 myFrame.addC(p);
+	}
+	public void addC(String where,Component p)
+	{
+		 myFrame.addC(where,p);
+	}
+	public void repaint() { myFrame.repaint(); }
+	public Container getContentPane() { return myFrame.getContentPane(); }
+	public void setBounds(int x,int y,int w,int h) { myFrame.setBounds(x,y,w,h); }
+	public void setOpaque(boolean v) { myFrame.setOpaque(v); }
+	public void setLayout(LayoutManager x) { myFrame.setLayout(x); }
+	public void setContentPane(Container p) { myFrame.setContentPane(p); }
+	public TopFrameProtocol getFrame() { return myFrame; }
+	public void setSize(int x,int y) { myFrame.setSize(x,y);}
+	public void addToMenuBar(JMenu m) {
+		myFrame.addToMenuBar(m);
+	}
+	public void addToMenuBar(JMenu m, DeferredEventManager l) {
+		myFrame.addToMenuBar(m,l);
+	}
+	public void setCanSavePanZoom(DeferredEventManager v) {
+		myFrame.setCanSavePanZoom(v);
+	}
+	public void setHasSavePanZoom(boolean v) {
+		myFrame.setHasSavePanZoom(v);
+	}
+	public CanvasRotater getCanvasRotater() {
+		return myFrame.getCanvasRotater();
+	}
+	public void setCloseable(boolean b) {
+		myFrame.setCloseable(b);
+	}
+	public void setEnableRotater(boolean v) { myFrame.setEnableRotater(v); }
+	public void packAndCenter() 
+	{	// finish, position and center the frame.
+		myFrame.packAndCenter();
+		
+	}
+	
 }

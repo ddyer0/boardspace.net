@@ -123,7 +123,7 @@ public class TextDisplayFrame extends XFrame implements ActionListener,ItemListe
         // Show window
         area.setFont(G.getFont(fname, fstyle, fsize));
 
-        add(area);
+        addC(area);
         area.setVisible(true);
         
         selectAllItem.addActionListener(this);
@@ -152,7 +152,7 @@ public class TextDisplayFrame extends XFrame implements ActionListener,ItemListe
         }
         // this makes the popup menu on the toolbar appear immediately
 		MasterForm.getMasterPanel().adjustTabStyles(); 
-		doNullLayout(this);
+		doNullLayout();
         area.setVisible(true);
         area.startProcess();
         setVisible(true);
@@ -247,18 +247,17 @@ public class TextDisplayFrame extends XFrame implements ActionListener,ItemListe
         area.setText(s);
         repaint();
     }
-
-	public void doNullLayout(Container parent)
+   
+	public void doNullLayout()
 	{	
 		if(area!=null)
 		{
-		Container main = parent==null ? this : parent;
+		Container main = (Container)getFrame();
 		int w = main.getWidth();
 		int h = main.getHeight();
 		int x = main.getX();
 		int y = main.getY();
-		Container content = getContentPane();
-		if(content!=null) { content.setBounds(x,y,w-x,h-y); }
+		setBounds(x,y,w-x,h-y); 
 		area.setBounds(0,0,w-x,h-y);
 		}
 	}

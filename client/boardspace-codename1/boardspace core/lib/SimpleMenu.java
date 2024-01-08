@@ -125,7 +125,7 @@ public class SimpleMenu {
 			}
 			if(G.pointInRect(hp, xpos,ypos,w,h))
 			{ GC.frameRect(gc,Color.blue,xpos,ypos,w-2,h+2);
-			  if(hp.isUp)
+			if(downSeen && hp.isUp)
 			{	
 			ActionListener listen[] = mi.getActionListeners();
 				

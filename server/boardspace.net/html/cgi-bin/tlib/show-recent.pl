@@ -17,7 +17,7 @@ sub show_recent()
 		. " order by topic_time desc limit $number";
 	my $sth = &query($dbh,$q);
 	my $num = &numRows($sth);
-	print "<h3><a  type='location/rss+xml' type='application/rss+xm' target=_new href=/cgi-bin/rss.cgi><img src=/images/feed-icon-14x14.png></a>";
+	print "<h3><a  type='location/rss+xml' type='application/rss+xm' href=/cgi-bin/rss.cgi><img src=/images/feed-icon-14x14.png></a>";
 	print " Recent topics on the <a href='/BB/'>forums</a></h3>";
 	print "<table border=1>";
 	my $forum = &trans('Forum');
@@ -25,8 +25,8 @@ sub show_recent()
 	print "<tr><td><b>$forum</b></td><td><b>$topic</b></td></tr>";
 	while($num-->0)
 	{ my ($post,$forum,$fid,$tid) = &nextArrayRow($sth);
-	  print "<tr><td><a target=_new href='/BB/viewforum.php?f=$fid'>$forum</a></td><td>"
-		. "<a target=_new href='/BB/viewtopic.php?t=$tid'>$post</a></td></tr>\n";
+	  print "<tr><td><a href='/BB/viewforum.php?f=$fid'>$forum</a></td><td>"
+		. "<a href='/BB/viewtopic.php?t=$tid'>$post</a></td></tr>\n";
 	 }
 	 &finishQuery($sth);
 	 }

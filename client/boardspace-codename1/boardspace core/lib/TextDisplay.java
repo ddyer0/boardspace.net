@@ -120,7 +120,7 @@ public class TextDisplay extends XFrame implements ActionListener,ItemListener,C
         // Show window
         area.setFont(G.getFont(fname, fstyle, fsize));
 
-        add(area);
+        addC(area);
         
         selectAllItem.addActionListener(this);
         fontMenu.addActionListener(this);

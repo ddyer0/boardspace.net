@@ -168,6 +168,10 @@ public class Menu extends JMenuItem implements ActionListener,SizeProvider,Nativ
 			 Http.postError(this,"showing menu",err); 
 		}
 	}
+	public void show(Component par,int xx,int yy) throws AccessControlException
+	{
+		show(par instanceof com.codename1.ui.Container ? (com.codename1.ui.Container)par : par.getParent(),xx,yy);
+	}
 	public void show(com.codename1.ui.Container par, int xx, int yy) throws AccessControlException
 		{final Menu jMenu = this;
 		 final com.codename1.ui.Container parent = par;
@@ -298,9 +302,10 @@ public class Menu extends JMenuItem implements ActionListener,SizeProvider,Nativ
 		 	}};
 		 G.runInEdt(m);
 	}
-	public void hide(bridge.Component par)
-	{
-		par.removeComponent(getMenu());
+
+	public void hide(Component par)
+	{   com.codename1.ui.Container p = par.getParent();
+		if(p!=null) { p.removeComponent(getMenu()); }
 	}
 
 	public NativeMenuInterface getSubmenu() { return(this); }

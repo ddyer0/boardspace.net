@@ -10,11 +10,20 @@ public class Cheerpj implements AudioClip
     public native int getWidth();
     public native int getHeight();
     public native void playSound(String sound);
-    
+    /**
+     * screen width and height are used to trigger rescaling the windows
+     * to remain visible when the user resizes his browser window.
+     * @return
+     */
     public static int getScreenWidth()
     {	
     	return getInstance().getWidth();
     }
+    /**
+     * screen width and height are used to trigger rescaling the windows
+     * to remain visible when the user resizes his browser window.
+     * @return
+     */
     public static int getScreenHeight()
     {	
     	return getInstance().getHeight();
@@ -29,6 +38,15 @@ public class Cheerpj implements AudioClip
     }
 	
     String clipName = null;
+    /**
+     * Cheerpj plays sounds using browser's native clip mechanism.  This is a simplified
+     * interface that uses a single folder /java/sound/ to hold all the sounds used by
+     * any of the games.  Also, browsers don't understand the .au format that java
+     * uses, so .wav files are used instead.  Fortunately we already had .wav versions
+     * prepared for the codename1 branch.
+     * 
+     * @param clip
+     */
     public Cheerpj(URL clip)
     {	String nam = clip.getFile();
     	int ind = nam.lastIndexOf('.');
@@ -42,14 +60,6 @@ public class Cheerpj implements AudioClip
 		//G.print("Actual Play "+this);
 		getInstance().playSound(clipName);
 	}
-	@Override
-	public void loop() {
-		// TODO Auto-generated method stub
-		
-	}
-	@Override
-	public void stop() {
-		// TODO Auto-generated method stub
-		
-	}
+	public void loop() {}
+	public void stop() {}
 }

@@ -511,28 +511,28 @@ class ConfigFrame extends MyFrame implements ActionListener {
 		} // for
 		
 		// add message about format
-		addComponent( new Label(
+		addC( new Label(
 			"Following parameters must in integer format",
 			Label.CENTER), 0, 0, 4, 1);			
 
 		for (int i=0; i < 2*INT_INPUTS; i += 2) {
-			addComponent(labels[i/2], (i%4), (i/4) + 1, 1, 1);
-			addComponent(fields[i/2], (i+1)%4, (i/4) + 1, 1, 1);
+			addC(labels[i/2], (i%4), (i/4) + 1, 1, 1);
+			addC(fields[i/2], (i+1)%4, (i/4) + 1, 1, 1);
 		} // for
 
-		addComponent( new Label(
+		addC( new Label(
 			"Following parameters must in double format",
 			Label.CENTER), 0, 5, 4, 1);
 		
 		for (int i=2*INT_INPUTS; i < 2*INPUT_COUNT; i += 2) {
-			addComponent(labels[i/2], 
+			addC(labels[i/2], 
 					(i%4), (i/4) + 4, 1, 1);
-			addComponent(fields[i/2], 
+			addC(fields[i/2], 
 					(i+1)%4, (i/4) + 4, 1, 1);
 		} // for
 		
 		ok.addActionListener(this);
-		addComponent(ok, 2, 7, 2, 1);
+		addC(ok, 2, 7, 2, 1);
 		
 		// error.setResizable(false);
 		error.setSize(350, 125);
@@ -707,7 +707,7 @@ class MyFrame extends Frame
 	} // MyFrame()
 
 	// should set gc.fill before calling this
-	public void addComponent(Component c, int column, 
+	public void addC(Component c, int column, 
 			int row, int width, int height) {
 		gc.gridx = column;
 		gc.gridy = row;
@@ -721,7 +721,7 @@ class MyFrame extends Frame
 		// restore the defaults
 		gc.fill = GridBagConstraints.NONE;
 		gc.anchor = GridBagConstraints.CENTER;
-	} // addComponent()
+	} // addC()
 
 	// to be overridden
 	public void actionPerformed( ActionEvent _e ) {
@@ -867,13 +867,13 @@ class ErrorFrame extends MyFrame {
 		gc.fill = GridBagConstraints.BOTH;
 		gc.weightx = 1.0;
 		gc.weighty = 1.0;
-		// addComponent(scroller, 0, 0, 4, 3);
-		addComponent(c, 0, 0, 4, 3);
+		// addC(scroller, 0, 0, 4, 3);
+		addC(c, 0, 0, 4, 3);
 				
-		addComponent(epoch_label, 0, 3, 1, 1);
-		addComponent(epoch, 1, 3, 1, 1);
-		addComponent(error_label, 2, 3, 1, 1);
-		addComponent(error, 3, 3, 1, 1);
+		addC(epoch_label, 0, 3, 1, 1);
+		addC(epoch, 1, 3, 1, 1);
+		addC(error_label, 2, 3, 1, 1);
+		addC(error, 3, 3, 1, 1);
 		
 		setResizable(false);
 
@@ -1130,13 +1130,13 @@ class NetFrame extends MyFrame {
 		gc.fill = GridBagConstraints.BOTH;
 		gc.weightx = 1.0;
 		gc.weighty = 1.0;
-		addComponent(scroll, 0, 0, 5, 5);
+		addC(scroll, 0, 0, 5, 5);
 
 		l = new Label("Seconds per update");
-		addComponent(l, 0, 6, 1, 1);
+		addC(l, 0, 6, 1, 1);
 
 		time = new TextField("5", 5);
-		addComponent(time, 3, 6, 1, 1);
+		addC(time, 3, 6, 1, 1);
 
 		setHelpText(help);
 		setDescText(desc);
@@ -1823,22 +1823,22 @@ class ClickFrame extends MyFrame implements ActionListener {
 		// gc.weightx = 1.0;
 		// gc.weighty = 1.0;
 		
-		// addComponent(scroll, 0, 0, 2, 3);
-		addComponent(c, 0, 0, 2, 5);
+		// addC(scroll, 0, 0, 2, 3);
+		addC(c, 0, 0, 2, 5);
 		
 		l = new Label("Correct Output", Label.CENTER);
-		addComponent(l, 2, 0, 2, 1);
+		addC(l, 2, 0, 2, 1);
 		
 		t = new TextField("", 10);
-		addComponent(t, 2, 1, 2, 1);
+		addC(t, 2, 1, 2, 1);
 		
 		b = new Button("Add to training data");
-		addComponent(b, 2, 2, 2, 1);
+		addC(b, 2, 2, 2, 1);
 		b.addActionListener(this);
 		b.setSize(b.getWidth(), b.getHeight());
 		
 		mode_change = new Button("Mode Change");
-		addComponent(mode_change, 2, 3, 2, 1);
+		addC(mode_change, 2, 3, 2, 1);
 		mode_change.addActionListener(this);
 		
 		//setResizable(false);

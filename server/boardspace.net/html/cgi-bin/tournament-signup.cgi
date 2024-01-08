@@ -21,6 +21,8 @@
 # 1/2021 changed the authentication for admin mode to use an individual
 # user permission in the database.
 #
+# 12/2023 added "team" logic
+#
 use CGI::Carp qw( fatalsToBrowser );
 use CGI qw(:standard);
 use Mysql;
@@ -41,17 +43,37 @@ use Crypt::Tea;
 #
 my %timezones;
 my %names;
+my %teams;
 my %lcuids;
 my %emails;
 my %ranks;
 my %notes;
 my %hasmatch;		#has a match assigned in the current group
 
+my %teamnames;
+my %teamdescription;
+
 my @alluids;
 my $adminKey = "";
 my $admin_user = "";
 my $admin_user_password = "";
 
+#
+# load info about teams
+#
+sub fill_team_info()
+{   my ($dbh,$tournament) = @_;
+    my $qt = $dbh->quote($tournament);
+    my $q = "select uid,name,description from team where tournamentid=$qt";
+    my $sth = &query($dbh,$q);
+    my $nr = &numRows($sth);
+    while($nr-- > 0)
+    {  my ($uid,$name,$desc) = &nextArrayRow($sth);
+	   $teamnames{$uid} = $name;
+	   $teamdescription{$uid} = $desc;
+	}
+    &finishQuery($sth);
+}
 
 #
 # fill names and uids with the mappings for a given tournament
@@ -61,7 +83,7 @@ sub fill_player_info()
 	my $qvar = $dbh->quote($variation);
 	$names{-1} = &trans("TBA");
 	$names{-2} = &trans("[admin]");
-	
+
 	if($forced || ($#alluids <= 0))
 	{
 	my @uids;
@@ -70,7 +92,7 @@ sub fill_player_info()
 	my $jo = $variation ? "rank desc, " : "";
 	my $jw = $variation ? " and (ranking.variation=$qvar or ranking.variation is null) " : "";
 	my $jv = $variation ? " ,ranking.value as rank " : "";
-    my $q = "SELECT player_name,timezone_offset,players.uid,e_mail,e_mail_bounce $jv from participant "
+    my $q = "SELECT player_name,timezone_offset,players.uid,e_mail,e_mail_bounce,team $jv from participant "
 		. " left join players on participant.pid = players.uid "
 		. " $jr where tid=$qt $jw"
 		. " order by $jo player_name asc";
@@ -80,9 +102,10 @@ sub fill_player_info()
 
 	while($nr-- > 0)
 	{
-	my ($name,$timezone,$uid,$email,$bounce, $val) = &nextArrayRow($sth);
+	my ($name,$timezone,$uid,$email,$bounce,$team, $val) = &nextArrayRow($sth);
 	my $textnotes = "";
 	$names{$uid} = $name;
+	$teams{$uid} = $team;
 	$timezones{$uid} = $timezone;
 	$lcuids{lc($name)} = $uid;
 	$emails{$uid} = $email;
@@ -239,7 +262,6 @@ sub printEditLink()
 	print "<input type=hidden name=tournamentid value='$thistid'>\n";
 	print "</form></font>\n";
 	print "<a href='javascript:{}' onclick='document.getElementById(\"$formname\").submit(); return false;'>$message</a>\n";
-
 }
 
 sub printDetailLink()
@@ -250,6 +272,7 @@ sub printDetailLink()
 	print "<a href='javascript:{}' onclick='document.getElementById(\"$formname\").submit(); return false;'>$message</a>\n";
 	print "</center></font>\n";
 }
+    
 sub printDetailMatchForm()
 {
 	my ($tournamentid,$admin) = @_;
@@ -309,7 +332,7 @@ sub printEditmatchLink()
 
 sub printTournamentLink()
 {	my ($message,$tid,$admin,$past) = @_;
-	my $formname = "showtournament$past$tid";
+	my $formname = "showtournament-${past}x$tid";
 	my $pastclause = $past ? "1" : "0";
 	my $arg = $tid>0 ? "?tournamentid=$tid" : "";
 	print "<font size=1><form method=post action=\"$ENV{'SCRIPT_NAME'}$arg\" id='$formname'>\n";
@@ -321,15 +344,32 @@ sub printTournamentLink()
 	print "<a href='javascript:{}' onclick='document.getElementById(\"$formname\").submit(); return false;'>$message </a>\n";
 }
 
+sub printEditTeamForm()
+{
+	my ($tid,$admin) = @_;
+	my $arg = $tid>0 ? "?tournamentid=$tid" : "";
+	print "<font size=1><form method=post action=\"$ENV{'SCRIPT_NAME'}\" method=post' id='editteams'>\n";
+	&printHiddenAdmin($admin);
+	print "<input type=hidden name=operation value='editteams'>\n";
+	print "<input type=hidden name=tournamentid value='$tid'>\n";
+	print "</form>";
+}
+
+sub printEditTeamLink()
+{
+   my $editteam = &trans("Edit Teams");
+   print "<input type=button name='editteam' value='$editteam' onclick='document.getElementById(\"editteams\").submit(); return false;'>\n";
+}
+
 
 #
 # list the active or scheduled tournaments.  
 # If a particular tournament id is supplied, list details
 # if admin is supplied, add more editing options
 #
-sub show_tournaments
-{ my ($dbh,$uid,$fromname,$passwd,$historic,$tid,$admin) = @_;
-  print "<!-- show_tournaments() --!>\n";
+sub showTournaments
+{ my ($dbh,$uid,$fromname,$fromteam,$passwd,$historic,$tid,$admin) = @_;
+  print "<!-- showTournaments --!>\n";
 
   my $qu = $dbh->quote($uid>0 ? $uid : -1);
   my $qtid = $dbh->quote($tid);
@@ -380,9 +420,7 @@ sub show_tournaments
 	   }
        if($uid>0) { my $yes = ($myplayers==1) ? "Yes" : "";  print "<td>$yes</td>" }
        print"<td align=center>$nplayers</td><td>";
-       my $qpname = encode_entities($fromname);
-       my $qpasswd = encode_entities($passwd);
-	   my $adm= $admin ? "&t2admin=$admin" : "";
+       my $adm= $admin ? "&t2admin=$admin" : "";
 	   &printTournamentLink($messid,$thistid,$admin,$historic);
        
        print "</td><td>$thisstat</td><td>$start</td></tr>\n";
@@ -396,6 +434,8 @@ sub show_tournaments
          
 		 my @ids = &fill_player_info($dbh,$tid,'');
 
+	         &fill_team_info($dbh,$tid);
+	 
 		 print "<tr><td><b>"
 			. &trans("Players")
 			. ":</b><br>"
@@ -403,7 +443,9 @@ sub show_tournaments
 			. "</td><td colspan=2>";
 		 for my $pl (@ids)
 		 {	my $n = $names{$pl};
-			print "<a href=\"javascript:editlink('$n',0)\">$n</a>&nbsp; ";
+			my $t = $teams{$pl};
+			my $team = $t ? "[" . $teamnames{$t} . "]" : "";
+			print "<a href=\"javascript:editlink('$n',0)\">$n</a>$team&nbsp; ";
 		 }
 		 print "</td></tr>";
            
@@ -439,16 +481,18 @@ sub show_tournaments
 	 
 	 if($tid>0)
 	 {	# show details for a particular tournament
-		 &show_current_matches($dbh,$tid,$admin);
-	 }
 
-	 #
+	     	 #
 	 # show the "add me" form if this is a signup tournament
 	 #
-	if($admin || $activestatus) 
-		{   print "<hr>\n";
-			&show_input_form($dbh,$fromname,$passwd,$tid,$admin); 
+	 if($admin || $activestatus)
+	 {   print "<hr>\n";
+             &showInputForm($dbh,$uid,$fromname,$fromteam,$passwd,$tid,$admin); 
 		}
+
+
+		 &show_current_matches($dbh,$tid,$admin);
+	 }
 
   }else
   {  print "<p>No current tournaments<p>";
@@ -456,10 +500,10 @@ sub show_tournaments
 }
 
 
-sub show_tournament_selector()
+sub printTournamentSelector()
 {
   my ($dbh,$default,$include_active) = @_;
-  print "<!-- show_tournament_selector() --!>\n";
+  print "<!-- printTournamentSelector --!>\n";
   my $act = $include_active ? " or status='active' or status='completed' " : "";
   my $q = "SELECT uid,description from tournament where status='signup' $act";
   my $sth = &query($dbh,$q);
@@ -490,17 +534,34 @@ sub print_form_header()
 #
 # show the "add me" form
 #
-sub show_input_form()
-{ my ($dbh,$fromname,$passwd,$default,$admin) = @_;
+sub showInputForm()
+{ my ($dbh,$fromuser,$fromname,$fromteam,$passwd,$tid,$admin) = @_;
   $fromname = encode_entities($fromname);
-
-  print "<!-- show_input_form() --!>\n";
+  my $qtid = $dbh->quote($tid);
+  my $q = "select description,if(teams=0,'No','Yes') from tournament where uid=$qtid";
+  my $sth = &query($dbh,$q);
+  my ($description,$teams) = &nextArrayRow($sth);
+  &finishQuery($sth);
+  
+  my $forced = &param('forcednewteam');
+  if($forced)
+  {  my $quid=$dbh->quote($fromuser);
+     my $qteam = $dbh->quote($forced);
+     my $q = "update participant set team=$qteam where tid=$qtid and p`id=$quid";
+     print "Q forced $q<br>";
+     &commandQuery($dbh,$q);
+  }
+  print "<!-- showInputForm --!>\n";
   print "<input type=hidden name=operation value=''>\n";
   print "<p>"
-	. &trans("Use this form to <b>join a tournament</b> (or remove yourself)")
+	. &trans("Use this form to join <b>$description</b> (or remove yourself)")
 	. "<br>\n";
-  &print_form_header($admin);
-  print "<table><tr><td>"
+  &print_form_header($admin,'',"maininputform");
+  print "<table><tr>";
+  print "<td><input type=hidden name=tournamentid value=$qtid><input type=checkbox name=subscribe checked>"
+	. &trans("I plan to play")
+	. "\n</td>";
+  print "<td>&nbsp;"
 	. &trans("Player") . ": ";
   print "<input type=text name=fromname value='$fromname' size=20>\n";
   if(!$admin)
@@ -509,20 +570,56 @@ sub show_input_form()
 	print "<input type=password name=passwd value='$passwd' SIZE=20 MAXLENGTH=25>\n";
 	}
   print "</td>";
+  if(!$admin)
+  {
   print "<td>"
 	. &trans("Not registered at Boardspace.net?")
 	. "  <a href='/english/register.shtml'>"
 	. &trans("Register")
 	. "</a> "
 	. &trans("here")
-	. ".</td>";
+      . ".</td>";
+  }
   print "</tr>";
   print "<tr><td>";
-  &show_tournament_selector($dbh,$default,$admin?1:0);
-  print "<td><input type=checkbox name=subscribe checked>"
-	. &trans("I plan to play")
-	. "\n</td>";
+  if($teams eq 'Yes')
+  {
+      my @teams = &collectTeamInfo($dbh,$tid);
+      my $sname = "newteamforuser0";
+      &printUserTeamSelector($sname,0,&trans("select your team"),$fromteam,@teams);
+      print "<tr>";
+      &printTeamRow(0,-1,-1,"..or start a new team..","Team Name","Team Description");
+      my $teamid = &printTeamRow($dbh,$tid,0,'','','');
+      if($teamid!=0) {
+	  my $qteam = $dbh->quote($teamid);
+	  my $quid = $dbh->quote($fromuser);
+	  my $qterm = $dbh->quote($tid);
+	  #
+	  # delete any team the user previously created
+	  #
+	  my $q = "delete from team where tournamentid=$qterm and owner=$quid";
+ # print"Q del $q<br>";
+	  &commandQuery($dbh,$q);
+	  #
+	  # say this user created this team
+	  #
+	  my $q = "update team set owner=$quid where uid=$qteam";
+ # print"Q up team $q <br>";
+	  &commandQuery($dbh,$q);
+	  #
+	  # make the user's team this team
+	  #
+	  my $q = "update participant set team=$qteam where pid=$quid and tid=$qterm";
+ # print "Q: up part $q<br>";
+	  &commandQuery($dbh,$q);
+	  print "<script>document.getElementById(\"showtournament-x$tid\").submit();</script>";
+      }
+
+      print "</tr>\n";
+  }
   print "</td></tr></table>\n";
+
+  
   print "<input type=submit name=doit value=\""
   . &trans('Sign Me Up')
   . "\">\n";
@@ -550,7 +647,7 @@ sub elgibleParticipant()
 }
 
 sub processInputForm
-{  my ($dbh,$fromname,$passwd,$tournamentid,$subscribe,$admin) = @_;
+{  my ($dbh,$newteam,$fromname,$passwd,$tournamentid,$subscribe,$admin) = @_;
    my ($uid,$bounce) = &logon($dbh,$fromname,$passwd,$admin);
    if($uid>0)
    { if($tournamentid>0)
@@ -574,7 +671,8 @@ sub processInputForm
        }
         else
         {
-        my $q = "replace into participant set tid=$qtid,pid=$quid";
+        my $teaminfo = $newteam ? ",team=" . $dbh->quote($newteam) : "";
+        my $q = "replace into participant set tid=$qtid,pid=$quid$teaminfo";
         &commandQuery($dbh,$q);  
         }}
         else
@@ -643,8 +741,10 @@ sub show_player_info()
 		my $email = $emails{$id};
 		my $rank = $ranks{$id};
 		my $note = $notes{$id};
+		my $t = $teams{$id};
+		my $tt = $t ? "[$teamnames{$t}]" : "";
 		$row++;
-		print "<tr><td>$row &nbsp;</td><td><a href=\"javascript:editlink('$name',1)\">$name</a></td><td>"
+		print "<tr><td>$row &nbsp;</td><td><a href=\"javascript:editlink('$name',1)\">$name$tt</a></td><td>"
 		. &obfuscateHTML($email)
 		. "</td>";
 		print "<td>$rank</td><td>$note</td></tr>\n";
@@ -665,7 +765,7 @@ sub print_status_selector()
 	print "</select>";
 }
 sub print_player_selector()
-{	my ($sname,$default,$defaultname,@players) = @_;
+{	my ($sname,$default,$defaultname,@play) = @_;
 	print "<select name=$sname>";
 	if(!$default)
 	{	print "<option value=0 selected>Select Player</option>\n";
@@ -676,10 +776,14 @@ sub print_player_selector()
 	$sel = ($default eq "-1") ? "selected" : "";
 	print "<option value=-1 $sel>TBA</option>\n";
 	}
-	for my $pl (@players)
+
+	for my $pl (@play)
 	{
 	my $nam = ($pl eq $default) ? $defaultname : $names{$pl};
 	my $sel = ($pl eq $default) ? "selected" : "";
+	my $t = $teams{$pl};
+	my $tt = $t ? "[$teamnames{$t}]" : "";
+	$nam = "$nam$tt";
 	if ($hasmatch{$pl}) { $nam = "[$nam]"; };
 	print "<option value='$pl' $sel>$nam</option>\n";
 	}
@@ -704,7 +808,7 @@ sub show_blank_match_form()
 
 # this version fills a row for the matchparticipant table
 sub show_filled_playerinfo()
-{	my ($dbh,$admin,$closed,$row,$matchid,$matchplayerid,$pn,$pl1,$name1,@ids) = @_;
+{	my ($dbh,$admin,$closed,$row,$matchid,$matchplayerid,$pn,$pl1,$name1,$team1,@ids) = @_;
 
 	my $en1 = &uri_escape($name1);
 	my $plname1 = $names{$pl1};
@@ -723,7 +827,7 @@ sub show_filled_playerinfo()
 	{
 	# print this as a GET link
 	my $p1msg = ($closed || ($pl1 == -1)) ? "<td>$name1</td>"
-		:"<td><a href=$ENV{'SCRIPT_NAME'}?operation=editmatch&fromname=$plname1&matchid=$matchid>$name1</td></a>\n";
+		:"<td><a href=$ENV{'SCRIPT_NAME'}?operation=editmatch&fromname=$plname1&matchid=$matchid>$name1</a>$team1</td>\n";
 	print $p1msg;
 	}
 	print "</td>";
@@ -931,6 +1035,8 @@ sub show_matches_in_group()
 		}	    
 	}
 	my $name1 = $names{$pl1};
+	my $t = $teams{$pl1};
+	my $tt = $t ? "<br>[$teamnames{$t}]" : "";
 
 	if($pl1!=0)
 		{
@@ -971,8 +1077,8 @@ sub show_matches_in_group()
 			if($player1_points!='') { $points .= "<br>$name1 : $player1_points\n"; }
 
 		if($admin && $name1 && $found{$pl1}) 
-			{ $name1 = "$name1 (duplicate)"; 
-			}
+		{ $name1 = "$name1 (duplicate)";
+		}
 		$found{$pl1}=$pl1;
 
 		}
@@ -996,7 +1102,7 @@ sub show_matches_in_group()
 	}
 	else
 	{
-	&show_filled_playerinfo($dbh,$admin,$closed,$nrows,$matchid,$uid,$pn,$pl1,$name1,@ids);
+	&show_filled_playerinfo($dbh,$admin,$closed,$nrows,$matchid,$uid,$pn,$pl1,$name1,$tt,@ids);
 	}
 	
 	}
@@ -1158,10 +1264,8 @@ sub creatematches()
 		{
 		my $qpl1 = $dbh->quote($pl1);
 		my $q = "INSERT INTO matchrecord SET tournament=$qtour,tournament_group=$qgroup";
-		&commandQuery($dbh,$q);	
-		my $q3 = "select last_insert_id() from matchrecord";
-		my $sth = &query($dbh,$q3);
-		my ($mid) = &nextArrayRow($sth);
+		my $sth = &commandQuery($dbh,$q);	
+		my $mid = &last_insert_id($sth);
 		&finishQuery($sth);
 		if($mid>0)
 		{
@@ -1230,7 +1334,7 @@ sub show_admin_panel()
 	&print_form_header($admin);
 	print "<table>\n";
 	print "<tr><td>";
-	&show_tournament_selector($dbh,$tournamentid,1);
+	&printTournamentSelector($dbh,$tournamentid,1);
 	print "</td><td>\n";
 	print "<select name=operation>";
 	print "<option value='subscribe' selected>"
@@ -1287,7 +1391,7 @@ sub do_edit_tournament()
 	  &commandQuery($dbh,"delete from matchrecord where tournament=$qt");
 	  &commandQuery($dbh,"delete from matchparticipant where tournament=$qt");
 	  &commandQuery($dbh,"delete from matchgroup where uid=$qt");
-	  &show_tournaments($dbh,0,'','',0,'',$admin);
+	  &showTournaments($dbh,0,'',0,'',0,'',$admin);
 
 	}
 	else
@@ -1301,8 +1405,11 @@ sub do_edit_tournament()
 	my $qvariation = $dbh->quote($variation);
 	my $format = $dbh->quote(&param('tournament_format'));
 	my $qgame_threshold = $dbh->quote(&param('game_threshold'));
+	my $useTeams = &param('useteams');
+	my $tset = ($useTeams eq 'Yes') ? "teams=1," : "teams=0,";
 	my $sets = "set status=$status, longdescription=$longdescription,game_threshold=$qgame_threshold,"
-		. "start=$start,end=$end,variation=$qvariation,"
+	        . "start=$start,end=$end,variation=$qvariation,"
+	    . $tset
 		. "format=$format,description=$description";
 	my $q = ($tournamentid<0)
 			? "insert into tournament $sets"
@@ -1332,7 +1439,7 @@ sub show_edit_tournament()
 	print "<!-- show_edit_tournament() --!>\n";
 
 	my $qt = $dbh->quote($tournamentid);
-	my $q = "select status,longdescription,start,end,variation,game_threshold,format,description "
+	my $q = "select status,longdescription,start,end,variation,game_threshold,format,description,if(teams=0,'No','Yes')  "
 		. " from tournament where uid=$qt";
 	my @allstat = &get_enum_choices($dbh,'tournament','status');
 	my @allformat = &get_enum_choices($dbh,'tournament','format');
@@ -1340,10 +1447,12 @@ sub show_edit_tournament()
 	my $sth = &query($dbh,$q);
 	if($sth)
 	{
-	my ($status,$longdescription,$start,$end,$variation,$game_threshold,$format,$description)
+	my ($status,$longdescription,$start,$end,$variation,$game_threshold,$format,$description,$useTeams)
 				= &nextArrayRow($sth);
+
+	&printEditTeamForm($tournamentid,$admin);
 	
-    &print_form_header($admin);
+	&print_form_header($admin);
 	print "<input type=hidden name=operation value=doedittournament>\n";
 	print "<input type=hidden name=tournamentid value=$tournamentid>\n";
 		print "<table>";
@@ -1365,7 +1474,22 @@ sub show_edit_tournament()
 		print &get_selector_string('tournament_variation',$variation,@allvars);
 		print "</td></tr>\n";
 
-		print "<tr><td>Registration Threshold</td><td>";
+	print "<tr>";
+	print "<td>Teams</td>";
+	print "<td>";
+	print &get_selector_string('useteams',$useTeams,('No','Yes'));
+
+	if($useTeams eq 'Yes')
+	{  
+	    &printEditTeamLink();
+	}
+	
+	print "</td>";
+	print "</tr>\n";
+	
+	print "<tr>";
+
+		print "<td>Registration Threshold</td><td>";
 		print &get_selector_string('game_threshold',$game_threshold,('0','1','2','3','4','5','6','7','8','9','10'));
 		print "</td></tr>";
 		
@@ -1910,6 +2034,239 @@ sub matchclosed()
 	return($status eq 'closed'); 
 }
 
+sub printTeamRow()
+{
+	my($dbh,$tournamentid,$teamuid,$left,$name,$description,$owner) = @_;
+
+	if($tournamentid<0)
+	{
+	# header only
+        print "<td>" . &trans($left) . "</td>"		;
+	print "<td><center>" . &trans($name) . "</center></td>\n";
+	print "<td><center>" . &trans($description) . "</center></td>\n";
+	print "<td>$owner</td>\n";
+        return;
+	}
+
+	# when editing there is a new description and/or name
+	my $newname = &param("name$teamuid");
+	my $newdescription = &param("descr$teamuid");
+	my $upd = "";
+	my $newuid = 0;
+	my $comma = "";
+
+	my $delete = &param("delete$teamuid") eq 'yes';
+	if($delete && $teamuid>0)
+	{ my $quid = $dbh->quote($teamuid);
+	  &commandQuery($dbh,"delete from team where uid=$quid");
+	  &commandQuery($dbh,"update participant set team=null where team=$quid");
+	}
+	else
+	{
+	    if($dbh)
+	    {
+	if($newname && !($name eq $newname))
+		 { my $qn = $dbh->quote($newname);
+                   $upd .= "name=$qn"; 
+	           $name=$newname; 
+                   $comma=",";
+	         }
+
+	if($newdescription && ! ($description eq $newdescription))
+	{ my $qn = $dbh->quote($newdescription);
+	  my $qtid = $dbh->quote($tournamentid);
+          $upd .= $comma . "description=$qn";
+          $description = $newdescription;
+          $comma=",";  
+        }
+
+	# update or create a new record
+	if(! ($upd eq ''))
+	{
+	    if($teamuid==0)
+		{  my $qtid = $dbh->quote($tournamentid);
+		   my $q = "insert into team set $upd,tournamentid=$qtid ";
+		   my $sth = &commandQuery($dbh,$q);
+		   # this was the blank row, being filled in.  This will cause the
+		   # row to be presented with the new uid for editing
+		   $teamuid = &last_insert_id($sth);
+		   $newuid = 1;
+		}
+	else { 
+	 my $quid = $dbh->quote($teamuid);
+	 my $q = "update team set $upd where uid=$quid";
+         my $sth = &commandQuery($dbh,$q);
+	 my $teamuid = &last_insert_id($sth);
+	}}
+	    } #end of #dbh
+
+	# the actual printing.  uid <=0 creates a blank row
+	print "<tr>";
+	if($teamuid>0) { print "<td><input type=checkbox name=delete$teamuid value='yes'></td>"; }
+	else { print "<td></td>\n"; }
+	
+	print "<td><input type=hidden name=uid$teamuid value=$teamuid><input type=text name=name$teamuid value=\"" . &encode_entities($name). "\"</td>\n";
+  	print "<td><input type=text size=60 name=descr$teamuid value=\"" . &encode_entities($description) . "\"</td>\n";
+        print "<td>$owner</td>\n";
+	
+	} #end of not delete
+	
+	print "</tr>\n";
+	# we added a new row, so print a replacement blank row
+	if($newuid) { &printTeamRow(0,$tournamentid,0,'','','',''); }
+
+	return $teamuid;
+}
+
+# print the team selector for a partular player, identified by selectorname
+#
+#  selectorname, current value, ((uid,teamname)...(uid,teamname))
+#
+sub printTeamSelector()
+{	my ($sname,$default,@teams) = @_;
+	print "<select name=$sname>";
+
+	if(!$default)
+	{	print "<option value=0 selected>Select Team</option>\n";
+	}
+	for my $p (@teams)
+	{
+        my ($pl,$nam) = @$p;
+	my $sel = ($pl eq $default) ? "selected" : "";
+	print "<option value='$pl' $sel>$nam</option>\n";
+	}
+	print "</select>";
+}
+#
+# print a player name and his team selector
+#
+sub printUserTeamSelector()
+{   my ($sname,$uid,$name,$team,@teams) = @_;
+    print "<tr>";
+    print "<td>$name</td>";
+    print "<td>";
+    &printTeamSelector($sname,$team,@teams);
+    print "<td>";
+    print "</tr>";
+}
+#
+# this is used to make sure a team hasn't been deleted in the current pass
+#
+sub alist_contains()
+{  my ($target,@teams) = @_;
+   for my $p (@teams)
+   {  my ($t) = @$p;
+      if($t == $target) { return 1; }
+   }
+   return 0;
+}
+sub collectTeamInfo()
+{   my ($dbh,$tid) = @_;
+    my $qtid = $dbh->quote($tid);
+    # collect the current team list
+    my $q = "select uid,name,description from team where tournamentid=$qtid order by uid";
+    my $sth = &query($dbh,$q);
+    my $nr = &numRows($sth);
+    my @teams;
+    while($nr-- > 0)
+    {  my ($uid,$name,$description) = &nextArrayRow($sth);
+       my @ua = ($uid,$name);
+       push(@teams,\@ua);
+    }
+    &finishQuery($sth);
+    return @teams;
+}
+#
+# assign players to teams
+#
+sub doTeamAssignments()
+{
+    my ($dbh,$tid) = @_;
+    my $ass = &trans("Assign players to teams");
+    print "<h2>$ass</h2>";
+    # handle the players team assignments
+    my @teams = &collectTeamInfo($dbh,$tid);
+    my $qtid = $dbh->quote($tid);    
+    # for the participants of the current tournament
+    my $q = "select team,pid,player_name from participant left join players on participant.pid=players.uid where tid=$qtid order by team";
+    #print "Q: $q<br>\n";
+    my $sth = &query($dbh,$q);
+    my $nr = &numRows($sth);
+
+    print "<table>";
+    while($nr-- > 0)
+    {   my ($team,$uid,$name) = &nextArrayRow($sth);
+	my $sname = "newteamfor$uid";
+	# update the value
+	my $newval = &param($sname);
+	if($newval && &alist_contains($newval,@teams) && !($newval eq $team))
+	{   my $quid = $dbh->quote($uid);
+	    my $qteam = $dbh->quote($newval);
+	    my $qtour = $dbh->quote($tid);
+	    my $q = "update participant set team=$qteam where pid=$quid and tid=$qtour";
+	    &commandQuery($dbh,$q);
+	    $team = $newval;
+	}
+	&printUserTeamSelector($sname,$uid,$name,$team,@teams);
+    }
+    print "</table>";
+
+}
+
+#
+# handle the team creation and deletion
+#
+sub doTeamIdentities()
+{
+    my ($dbh,$tournamentid) = @_;
+    my $qtid = $dbh->quote($tournamentid);
+    my $q = "select team.uid,name,description,player_name from team left join players on team.owner=players.uid where tournamentid=$qtid order by team.uid";
+    my $sth = &query($dbh,$q);
+    my $nr = &numRows($sth);
+    my $seq=0;
+    print "<table>";
+    &printTeamRow($dbh,-1,-1,"","Team Name","Team Description","Owner");
+    while($nr-- > 0)
+	{
+	my ($uid,$name,$description,$owner) = &nextArrayRow($sth);
+	&printTeamRow($dbh,$tournamentid,$uid,"",$name,$description,$owner);
+	}
+    &printTeamRow($dbh,$tournamentid,0,'','','');
+
+    print "</table>\n";
+}
+
+#
+# team creation, deletion, and player assignment to teams
+#
+sub doEditTeams()
+{
+    my ($dbh,$tournamentid,$admin) = @_;
+
+    my $qtid = $dbh->quote($tournamentid);
+    my $q = "SELECT description from tournament where tournament.uid=$qtid";
+    my $sth = &query($dbh,$q);
+    my ($tdesc) = &nextArrayRow($sth);
+    &finishQuery($sth);
+    
+    my $emessage = &trans("Editing teams for #1",$tdesc);
+
+    print "<center><h2>$emessage</h2></center>\n";
+
+    &print_form_header($admin);
+
+    &doTeamIdentities($dbh,$tournamentid);
+    &doTeamAssignments($dbh,$tournamentid);
+
+    
+    print "<input type=hidden name='operation' value='editteams'>\n";
+    print "<input type=hidden name='tournamentid' value=$qtid>\n";
+    my $editt = &trans('Edit Teams');
+    print "<input type=submit name='doit' value = '$editt'>\n";
+    print "</form>";
+    
+}
+
 # --------------------------------------------
 &init();
 
@@ -1921,13 +2278,14 @@ sub do_tournamentboard()
 { 
   #&printForm();
   my $fromname = param('fromname');
-  	 $fromname = &despace(substr($fromname,0,25));
+     $fromname = &despace(substr($fromname,0,25));
+  my $fromteam = param('fromteam');
+     $fromteam = &despace(substr($fromteam,0,25));
   my $passwd = param('passwd');
-	 $passwd = &despace(substr($passwd,0,25));
+     $passwd = &despace(substr($passwd,0,25));
   my $tournamentid = param('tournamentid') || "0";
   my $subscribe = param('subscribe');
-
-  
+  my $newteam = param('newteamforuser0');
   #
   # key the admin process by a t2admin parameter or
   # by invalid (usually by timestamp) previous admin info
@@ -1958,12 +2316,13 @@ sub do_tournamentboard()
   my $past = &param('past');
   if(lc($operation) eq 'subscribe') { $operation=''; };
 
+  my $adminok = $'tournament_password
+                        && $admin
+			&& ($admin eq $'tournament_password)
+			&& (&logon_admin($dbh,$admin,$admin_user,$admin_user_password)!=0);
   if($admin)
 	{
 	my $isnew = !$admininfo;
-	my $adminok = $'tournament_password
-					&& ($admin eq $'tournament_password)
-					&& (&logon_admin($dbh,$admin,$admin_user,$admin_user_password)!=0);
 	if($admin_user && ($isnew || !$adminok))
 	{	my $su = $adminok ? "successful " : "FAILED ";
 		&log_event($'tournament_log,$ENV{'SCRIPT_NAME'},"$su admin login by $admin_user");
@@ -1975,15 +2334,15 @@ sub do_tournamentboard()
 			else { $admin = ""; }
 		}
 	}
-
+ # print "op = $operation<p>";
    if(&allow_ip_access($dbh,$ENV{'REMOTE_ADDR'})>=0)
     { 	
-	&print_header($admin); 
+	&print_header($admin);
 	if(($operation eq '') || ($operation eq 'showtournament'))
 		{if($fromname && ($passwd || $admin)) 
-			{ $uid = &processInputForm($dbh,$fromname,$passwd,$tournamentid,$subscribe,$admin);
+			{ $uid = &processInputForm($dbh,$newteam,$fromname,$passwd,$tournamentid,$subscribe,$admin);
 			}
-		&show_tournaments($dbh,$uid,$fromname,$passwd,$past,$tournamentid,$admin);
+		 &showTournaments($dbh,$uid,$fromname,$newteam,$passwd,$past,$tournamentid,$admin);
 		}
 	   elsif($operation eq 'getadminpassword')
 	   {
@@ -1994,6 +2353,13 @@ sub do_tournamentboard()
 
 		&show_getadminpassword($dbh,$admin);
 	   }
+	   elsif($operation eq 'editteams')
+	   {
+	    if($adminok)
+	    { 
+	      &doEditTeams($dbh,$tournamentid,$admin);
+	    }
+	   }
 	   elsif($operation eq 'showinfo')
 	   {	&show_player_info($dbh,$tournamentid);
 	   }
@@ -2003,7 +2369,7 @@ sub do_tournamentboard()
 	   elsif ($operation eq 'creatematch')
 	   {	my $sortkey = param('sortkey');
 			&creatematches($dbh,$tournamentid,$group,$sortkey,$admin);
-		    &show_tournaments($dbh,$uid,$fromname,$passwd,0,$tournamentid,$admin);
+		    &showTournaments($dbh,$uid,$fromname,$fromteam,$passwd,0,$tournamentid,$admin);
 	   }
 	   elsif ($operation eq 'doeditmatch')
 	   {
@@ -2041,7 +2407,7 @@ sub do_tournamentboard()
 				 }
 			$idx++;
 			}
-			&show_tournaments($dbh,$uid,$fromname,$passwd,0,$tournamentid,$admin);
+			&showTournaments($dbh,$uid,$fromname,$fromteam,$passwd,0,$tournamentid,$admin);
 	   }
 	   elsif ($operation eq 'editmatch')
 	   {	my $matchid = param('matchid');

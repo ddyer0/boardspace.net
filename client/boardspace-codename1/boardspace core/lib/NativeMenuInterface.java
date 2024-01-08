@@ -17,7 +17,7 @@
 package lib;
 
 import bridge.AccessControlException;
-import bridge.Component;
+import com.codename1.ui.Component;
 
 public interface NativeMenuInterface {
 	public int getItemCount();

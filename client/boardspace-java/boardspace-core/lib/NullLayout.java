@@ -35,15 +35,15 @@ public class NullLayout implements LayoutManager
         return dim;
     }
  
-    /* Required by LayoutManager. */
-    public Dimension minimumLayoutSize(Container parent) {
+/* Required by LayoutManager. */
+public Dimension minimumLayoutSize(Container parent) {
         Dimension dim = new Dimension(1, 1);
         return dim;
-    }
+}
 
     public void layoutContainer( Container parent) 
     {	
-     	expectedParent.doNullLayout(parent);
+     	expectedParent.doNullLayout();
     }
 	public Dimension getPreferredSize(Container parent) { return(new Dimension(parent.getWidth(),parent.getHeight())); }
 

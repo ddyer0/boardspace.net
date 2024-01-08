@@ -162,7 +162,7 @@ public class commonPanel extends FullscreenPanel
 	    		ChatWindow cw = new ChatWindow(myFrame,sharedInfo,theChat);
 	    		commonPanel panel = new commonPanel();
 	    		panel.setCanvas(cw);
-	    		f.add(panel);
+	    		f.addC(panel);
 	    		panel.start();
 	    	}
 			else 

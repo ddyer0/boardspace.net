@@ -20,7 +20,6 @@ import com.codename1.ui.BrowserComponent;
 import com.codename1.ui.events.ActionEvent;
 import com.codename1.ui.events.ActionListener;
 import com.codename1.ui.events.BrowserNavigationCallback;
-import com.codename1.ui.layouts.BorderLayout;
 import lib.G;
 import lib.XFrame;
 /**
@@ -84,19 +83,19 @@ public class Browser extends XFrame implements BrowserNavigationCallback,ActionL
 	public Browser(String name,String initialUrl)
 	{
 		super(name);
-		enableRotater = false;
+		setEnableRotater(false);
     	setLayout(new BorderLayout());
-		add(BorderLayout.CENTER,b);
+		addC(BorderLayout.CENTER,b);
 		BoxLayout bl = new BoxLayout(top,BoxLayout.X_AXIS);
-		top.add(back);
-		top.add(url);
+		top.addC(back);
+		top.addC(url);
 		top.setLayout(bl);
 	    url.setActionCommand(OK);
 		url.addActionListener(this);
 		back.setActionCommand(BACK);
 		back.addActionListener(this);
 				
-		add(BorderLayout.NORTH,top);
+		addC(BorderLayout.NORTH,top);
 		if(G.debug()) { b.setDebugMode(true); }
 		url.setText(initialUrl);
 		url.setEditable(true);

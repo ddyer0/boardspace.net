@@ -573,7 +573,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
         }
 	    if (selectorFrame != null)
 	    {
-	        Frame ss = selectorFrame;
+	        LFrameProtocol ss = selectorFrame;
 	        selectorFrame = null;
 	        ss.dispose();
 	    }
@@ -4811,7 +4811,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
     //
     //dummy method will be overridden
     //
-    private XFrame selectorFrame = null;
+    private LFrameProtocol selectorFrame = null;
 
     /* called when the file browser has changed */
     private SimpleObservable dirObserver = null;

@@ -58,6 +58,7 @@ import vnc.VNCService;
 // TODO: position letters selected by the side screen off-center if on the board
 // TODO: rethink on-board rotation, maybe use only the main rotater
 // TODO: maybe rotate the game log to face the player
+// TODO: add a personal "rotate to me" button in planned mode
 //
 /**
  *  Initial work Sept 2020 

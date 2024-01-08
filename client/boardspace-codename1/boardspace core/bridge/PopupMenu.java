@@ -18,8 +18,10 @@ package bridge;
 
 public class PopupMenu extends Menu {
 	private boolean showing = false;
-	public PopupMenu() { super(); }
-	public PopupMenu(String m) { super(m); }
+	public PopupMenu() 
+		{ super(); }
+	public PopupMenu(String m)
+		{ super(m); }
 	
 	// this "light weight popup" stuff relates to using native menus
 	// rather than java widgets.

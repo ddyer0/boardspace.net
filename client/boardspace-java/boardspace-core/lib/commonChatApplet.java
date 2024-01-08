@@ -357,8 +357,9 @@ public class commonChatApplet extends FullscreenPanel
     	if(see!=isVisible())
     	{	
     	super.setVisible(see);
-    	if(see) { hasUnseenContent=false; }
-			theFrame.revalidate();
+    	if(see) 
+    		{ hasUnseenContent=false; }
+			  //theFrame.revalidate();
     		}
     }
     private void setNameFields(boolean on)
@@ -687,7 +688,7 @@ public class commonChatApplet extends FullscreenPanel
 		muted = b;
 	}
 	public void addTo(Container c) { c.add(this); }
-	public void addto(XFrame f) { f.add(this); }
+	public void addto(XFrame f) { f.addC(this); }
 	public void moveToFront() { G.moveToFront(this); }
 	
 	public void PostNews(String showNews)
@@ -762,7 +763,7 @@ public class commonChatApplet extends FullscreenPanel
 		return false;
 	}
 
-	public void doNullLayout(Container parent) {
+	public void doNullLayout() {
 		//System.out.println("chat layout");
 		setLocalBounds(0,0,getWidth(),getHeight());
 	}

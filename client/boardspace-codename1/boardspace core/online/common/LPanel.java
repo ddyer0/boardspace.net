@@ -63,7 +63,7 @@ public class LPanel extends FullscreenPanel implements WindowListener,LobbyConst
         	frame.setTitle(inStr);	// defer this until after the menus are added
         }
         
-        add(theLobby);
+        addC(theLobby);
     }
     
     /**
@@ -88,8 +88,7 @@ public class LPanel extends FullscreenPanel implements WindowListener,LobbyConst
 
 
     public void setSize(int w,int h)
-    {
-    	if(theFrame!=null) { theFrame.setSize(w,h); }
+    {	setBounds(getX(),getY(),w,h);
     }
 
 

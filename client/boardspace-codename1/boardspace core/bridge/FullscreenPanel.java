@@ -32,14 +32,14 @@ public class FullscreenPanel extends JPanel implements FullScreen,NullLayoutProt
 	{ setOpaque(false);
 	  setLayout(new NullLayout(this)); 
 	}
-	public void doNullLayout(Container parent)
+	public void doNullLayout()
 	{
 		setLocalBounds(0,0,getWidth(),getHeight());
 	}
 
-	public com.codename1.ui.Container add(Component p)
+	public void addC(Component p)
 	{
-		return super.add(p);
+		add(p);
 	}
 	
 	//

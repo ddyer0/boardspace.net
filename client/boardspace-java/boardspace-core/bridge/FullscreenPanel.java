@@ -17,7 +17,6 @@
 package bridge;
 
 import java.awt.Component;
-import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Panel;
 import java.awt.event.WindowEvent;
@@ -49,7 +48,7 @@ public class FullscreenPanel extends Panel implements FullScreen,MenuParentInter
 		setLayout(new NullLayout(this)); 
 		//setOpaque(false);
 	}
-	public void doNullLayout(Container parent)
+	public void doNullLayout()
 	{
 		setLocalBounds(0,0,getWidth(),getHeight());
 	}

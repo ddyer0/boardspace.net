@@ -18,7 +18,9 @@ package honey;
 
 import dictionary.Entry;
 import lib.CompareTo;
+import lib.Digestable;
 import lib.G;
+import lib.Random;
 import lib.StackIterator;
 
 /**
@@ -30,11 +32,10 @@ import lib.StackIterator;
  * @author Ddyer
  *
  */
-public class HWord implements StackIterator<HWord>,CompareTo<HWord>
+public class HWord implements StackIterator<HWord>,CompareTo<HWord>,Digestable
 {
 	String name;			// the actual word
-	HoneyCell seed;	// starting point
-	int direction=-1;		// scan direction
+	CellStack seed = new CellStack();	// starting point
 	int points=-1;			// the value of the word when played
 	String comment = null;	// for the word search
 	Entry entry;
@@ -43,8 +44,6 @@ public class HWord implements StackIterator<HWord>,CompareTo<HWord>
 	  b.append("<word ");
 	  b.append(name);
 	  b.append(" ");
-	  b.append(seed.col);
-	  b.append(seed.row);
 	  if(comment!=null)
 	  {	  b.append(" ");
 		  b.append(comment);
@@ -58,55 +57,14 @@ public class HWord implements StackIterator<HWord>,CompareTo<HWord>
 	  b.append(">");
 	  return(b.toString());
 	}
-	public HoneyCell lastLetter()
+
+
+	public HWord(CellStack s, String n, int di)
 	{
-		HoneyCell s = seed;
-		for(int lim=name.length()-1; lim>0; lim--)
-		{
-			s = s.exitTo(direction);
-		}
-		return(s);
-	}
-	public int reverseDirection()
-	{
-		int n = seed.geometry.n;
-		return((direction+n/2)%n);
-	}
-	public boolean sameWord(HWord other)
-	{
-		if(name.equals(other.name))
-		{
-			if(seed.sameCell(other.seed) && direction==other.direction ) 
-				{ return(true); 
-				}
-			if(seed.sameCell(other.lastLetter()) && (direction==other.reverseDirection()))
-				{//G.print("Palindrone "+this);
-				 return(true); 
-				}
-		}
-		return(false);
-	}
-	public HWord(HoneyCell s, String n, int di)
-	{
-		seed = s;
+		seed.copyFrom(s);
 		name = n;
-		direction = di%s.geometry.n;
 	}
 	
-	// true if this word and target word share a cell
-	public boolean connectsTo(HWord target,int sweep)
-	{
-		// return true if this word and the target word share structure
-		{HoneyCell c = seed;
-		// mark the letters
-		while(c!=null && (c.topChip()!=null)) { c.sweep_counter = sweep; c = c.exitTo(direction); }
-		}
-		{
-		HoneyCell c = seed;
-		while(c!=null && (c.topChip()!=null)) { if(c.sweep_counter==sweep) { return(true); } c=c.exitTo(direction); }
-		return(false);
-		}
-	}
 
 	public int size() {
 		return(1);
@@ -142,5 +100,9 @@ public class HWord implements StackIterator<HWord>,CompareTo<HWord>
 
 	public int altCompareTo(HWord o) {
 		return G.signum(o.points-points);
+	}
+	
+	public long Digest(Random r) {
+		return seed.Digest(r);
 	}
 }

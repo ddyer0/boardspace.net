@@ -220,7 +220,7 @@ public bridge.Container getMenus() { return(menus); }
 
 public void addToMenus(JButton m)
 {	m.setUIID("ButtonMasterForm");
-	masterForm.getMenus().add(m);
+	masterForm.getMenus().addC(m);
 }
 	
 	public void show()

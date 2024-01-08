@@ -36,7 +36,6 @@ import lib.HitPoint;
 import lib.LFrameProtocol;
 import lib.StockArt;
 import lib.TextButton;
-import lib.Random;
 import online.game.*;
 import online.game.sgf.sgf_node;
 import online.game.sgf.sgf_property;
@@ -82,10 +81,13 @@ public class HoneyViewer extends CCanvas<HoneyCell,HoneyBoard> implements HoneyC
     private Rectangle scoreRects[] = addZoneRect("playerScore",MAX_PLAYERS);
     private Rectangle eyeRects[] = addZoneRect("PlayerEye",MAX_PLAYERS);
     private Rectangle noticeRects[] = addRect("notice",MAX_PLAYERS);
-    private Rectangle pullTimer = addRect("pull");
     private Rectangle noticeRect = addRect("notice");
     private Color ZoomColor = new Color(0.0f,0.0f,1.0f);
-
+    private Rectangle pullTimer = addRect("pull");
+    private Rectangle wordsRect = addRect("words");
+    private Rectangle nonwordsRect = addRect("nonwords");
+    private Rectangle commonWordsRect = addRect("commonWords");
+    
 	private TextButton endgameButton = addButton(EndGameAction,HoneyId.EndGame,EndGameDescription,
 			HighlightColor, rackBackGroundColor,boardBackgroundColor);
 
@@ -239,6 +241,13 @@ public class HoneyViewer extends CCanvas<HoneyCell,HoneyBoard> implements HoneyC
        	layout.alwaysPlaceDone = false;
        	layout.placeDoneEditRep(buttonW,buttonW*4/3,endgameButton,editRect,noticeRect);
        	layout.alwaysPlaceDone = true;
+      	layout.placeRectangle(wordsRect,buttonW*4,buttonW*4,BoxAlignment.Center);
+      	// split it into two side by side rectangles
+      	int w = G.Width(wordsRect);
+      	G.SetWidth(wordsRect,w/2-1);
+      	G.AlignTop(commonWordsRect,G.Right(wordsRect),wordsRect);
+      	
+      	layout.placeRectangle(nonwordsRect,buttonW,buttonW/2,BoxAlignment.Edge);
       	layout.placeRectangle(pullTimer,buttonW*2,buttonW*2,BoxAlignment.Center);
     	layout.placeTheVcr(this,vcrw,vcrw*3/2);
        	
@@ -338,7 +347,7 @@ public class HoneyViewer extends CCanvas<HoneyCell,HoneyBoard> implements HoneyC
     	if(state!=HoneyState.Gameover)
     	{
     	GC.setFont(gc,standardBoldFont());
-    	String mess = (state==HoneyState.Endgame)||(gb.tilesLeft()==0) ? EndGameMessage : NextDrawMessage;
+    	String mess = EndGameMessage ;
     	GC.Text(gc,true,l,t,w,w/4,Color.black,null,s.get(mess));
     	
     	long now = G.Date();
@@ -350,7 +359,6 @@ public class HoneyViewer extends CCanvas<HoneyCell,HoneyBoard> implements HoneyC
     	}
     	GC.frameRect(gc,Color.black,r);
     }
-
     private void DrawScore(Graphics gc, Rectangle r, commonPlayer pl, HitPoint highlight,HBoard pboard)
     {	
     	int val = pboard.score();
@@ -472,7 +480,6 @@ public class HoneyViewer extends CCanvas<HoneyCell,HoneyBoard> implements HoneyC
      }
     public void drawFixedElements(Graphics gc,boolean complete)
     {	
-    	complete |= pendingFullRefresh;
     	super.drawFixedElements(gc,complete);
     }
 
@@ -495,18 +502,7 @@ public class HoneyViewer extends CCanvas<HoneyCell,HoneyBoard> implements HoneyC
 
     }
 
-    static long FIXEDRANDOM = 346572435;
-    long fixedTileDigest = 0;
-    private boolean pendingFullRefresh = false;
-    public void drawFixedTiles(Graphics gc,Rectangle brect,HoneyBoard gb)
-    {	Random r = new Random(FIXEDRANDOM);
-    	long v = 0;
-    	pendingFullRefresh = !spritesIdle();
 
-    	int tilesLeft = gb.tilesLeft();
-    	v ^= (tilesLeft*r.nextLong());
-        fixedTileDigest=v;
-    }
     /**
      * translate the mouse coordinate x,y into a size-independent representation
      * presumably based on the cell grid.  This is used to transmit our mouse
@@ -527,7 +523,7 @@ public void setLetterColor(Graphics gc,HBoard gb,HoneyCell cell)
     HoneyChip ch = cell.topChip();
     if(ch!=null)
 	    {
-	    Color col =  cell.nonWord 
+	    Color col =  !currentPath.contains(cell) 
 	    				? Color.black
 	    				: tempLetterColor
 	    					;
@@ -536,7 +532,13 @@ public void setLetterColor(Graphics gc,HBoard gb,HoneyCell cell)
 	    }
     }
 }
-	HoneyCell definitionCell = null;
+	CellStack currentPath = new CellStack();
+	
+	private void drawWordList(Graphics gc,HBoard gb,Rectangle brect,HitPoint highlight,HitPoint all)
+	{
+		GC.fillRect(gc,Color.gray,brect);
+		GC.frameRect(gc,Color.black,brect);
+	}
     /**
 	 * draw the board and the chips on it.  This is also called when not actually drawing, to
 	 * track the mouse.
@@ -547,7 +549,7 @@ public void setLetterColor(Graphics gc,HBoard gb,HoneyCell cell)
      * @param highlight	the mouse location
      */
     public void drawBoardElements(Graphics gc, HBoard gb, Rectangle brect, HitPoint highlight,HitPoint all)
-    {	 
+    {	// for this game, the board is immutable, so gb is the home board rather than a copy
  		boolean censor = all==null;
     	boolean draggingBoard = draggingBoard(); 
     	boolean canHit = !draggingBoard && G.pointInRect(highlight,brect);
@@ -566,26 +568,15 @@ public void setLetterColor(Graphics gc,HBoard gb,HoneyCell cell)
         boolean hitCell = canHit && gb.LegalToHitBoard(closestCell,moving);
         if(hitCell)
         { // note what we hit, row, col, and cell
-          boolean empty = closestCell.isEmpty();
-          boolean picked = (gb.pickedObject!=null);
-          highlight.hitCode = (empty||picked) ? HoneyId.EmptyBoard : HoneyId.BoardLocation;
+          highlight.hitCode = HoneyId.BoardLocation;
           highlight.hitObject = closestCell;
-          highlight.arrow = (empty||picked) ? StockArt.DownArrow : StockArt.UpArrow;
+          if(highlight.down) 
+          	{ 
+          	  currentPath.pushNew(closestCell); 
+          	}
           highlight.awidth = cs;
         }
-        definitionCell = null;
-        if(closestCell!=null && all!=null && !all.isUp)
-        {	for(int lim=gb.words.size()-1; lim>=0; lim--)
-        	{
-        	HWord word = gb.words.elementAt(lim);
-        	if(word.seed==closestCell)
-        	{	all.hitCode = HoneyId.Definition;
-        		all.hitObject = closestCell;
-        		all.setHelpText(s.get(GetDefinitionMessage,word.name));
-        		definitionCell = closestCell;
-        	}
-        	}
-        }
+
         // this enumerates the cells in the board in an arbitrary order.  A more
         // conventional double xy loop might be needed if the graphics overlap and
         // depend on the shadows being cast correctly.
@@ -613,10 +604,7 @@ public void setLetterColor(Graphics gc,HBoard gb,HoneyCell cell)
 	        //}
           }
         }
-        if(definitionCell!=null)
-        {
-        	drawDefinition(gc,gb,all,brect);
-        }
+        //drawDefinition(gc,gb,all,brect);
         doBoardDrag(brect,all,cs,HoneyId.InvisibleDragBoard);
        // GC.Text(gc,false,G.Left(brect),G.Top(brect),300,100,Color.blue,null,""+gb);
         GC.setClip(gc,oldClip);
@@ -625,35 +613,25 @@ public void setLetterColor(Graphics gc,HBoard gb,HoneyCell cell)
      }
     
     
-    public void drawDefinition(Graphics gc,HBoard gb,HitPoint hp,Rectangle brect)
+    public void drawDefinition(Graphics gc,HWord word,HitPoint hp,Rectangle brect)
     {	
-    	HoneyCell target = definitionCell;
     	StringBuilder message = new StringBuilder();
-    	HWordStack words = gb.words;
-    	FontMetrics fm = G.getFontMetrics(standardPlainFont());
-    	int targetWidth = G.Width(brect)/2;
-    	if(target!=null && words!=null && hp!=null)
-    	{	for(int lim=words.size()-1; lim>=0; lim--)
-    		{
-    		HWord word = words.elementAt(lim);
-    		if(word.seed==target)
-    			{
-    			Entry e = dictionary.get(word.name);
-    			if(e!=null)
-    				{
-    				message.append(word.name);
-    				message.append(": ");
-    				String def = e.getDefinition();
-    				if(def!=null)
-    				{
-    				String split = s.lineSplit(def,fm,targetWidth);
-    				message.append(split);
-    				}
-    				else { message.append("No definition available"); }
-    				message.append("\n\n");
-    				}
-    			}
+    	Entry e = dictionary.get(word.name);
+    	if(e!=null)
+    	{
+    		message.append(word.name);
+    		message.append(": ");
+    		String def = e.getDefinition();
+    		if(def!=null)
+    		{	FontMetrics fm = GC.getFontMetrics(gc);
+    			String split = s.lineSplit(def,fm,G.Width(brect));
+    			message.append(split);
     		}
+    		else 
+    		{ 
+    		message.append("No definition available"); }
+    		message.append("\n\n");
+
     	String m = message.toString();
     	hp.setHelpText(m);
     	}
@@ -661,11 +639,10 @@ public void setLetterColor(Graphics gc,HBoard gb,HoneyCell cell)
 
     private void drawNotice(Graphics gc,Rectangle r,HoneyBoard gb)
     {
-    	if(!gb.GameOver() && (gb.tilesLeft()==0))
-		{	
-		 	String msg =  LastTurnMessage ;
-			GC.Text(gc, true, r,Color.blue,null, msg);
-		}
+
+    	String msg =  LastTurnMessage ;
+    	GC.Text(gc, true, r,Color.blue,null, msg);
+
     }
     private String bigString = null;
     private int bigX = 0;
@@ -742,13 +719,18 @@ public void setLetterColor(Graphics gc,HBoard gb,HoneyCell cell)
   		// and is pretty expensive, so we shouldn't do it in the mouse-only case  
   		   setDisplayParameters(pboard,boardRect,false);
   		}
+     	
        if(!planned)
        {
-       drawBoardElements(gc, pboard, boardRect, ourTurnSelect,selectPos);
+       // draw using the home board, not one of the copies.
+       drawBoardElements(gc, bb.getPlayerBoard(pboard.boardIndex), boardRect, ourTurnSelect,selectPos);
        }
        GC.setFont(gc,standardBoldFont());
        zoomRect.draw(gc,nonDragSelect);
-     
+       drawWordList(gc,pboard,wordsRect,ourTurnSelect,selectPos);
+       drawWordList(gc,pboard,nonwordsRect,ourTurnSelect,selectPos);
+       drawWordList(gc,pboard,commonWordsRect,ourTurnSelect,selectPos);
+       
        GC.setFont(gc,standardBoldFont());
        
 
@@ -974,13 +956,16 @@ public void setLetterColor(Graphics gc,HBoard gb,HoneyCell cell)
  	    switch(hitObject)
 	    {
 	    default: break;
+	    case BoardLocation:
+	    	currentPath.clear();
+	    	HBoard h = bb.getPlayerBoard(getActivePlayer().boardIndex);
+	    	currentPath.pushNew(h.getCell(hitCell(hp)));
+	    	hp.dragging = true;
+	    	break;
 	    case ZoomSlider:
         case InvisibleDragBoard:
 			break;
-        case BoardLocation:
-	        HoneyCell hitCell = hitCell(hp);
-	    	PerformAndTransmit("Select "+getViewPlayer()+" "+hitCell.col+" "+hitCell.row);
-	    	break;
+
         } 
         }
     }
@@ -1002,7 +987,6 @@ public void setLetterColor(Graphics gc,HBoard gb,HoneyCell cell)
 
        	if(!(id instanceof HoneyId))  
        		{   missedOneClick = performStandardActions(hp,missedOneClick);
-       			definitionCell = null;
        		}
         else {
         missedOneClick = false;
@@ -1010,6 +994,7 @@ public void setLetterColor(Graphics gc,HBoard gb,HoneyCell cell)
 
         switch (hitCode)
         {
+        	
         default:
         	if (performStandardButtons(hitCode, hp)) {}
         	else if (performVcrButton(hitCode, hp)) {}	// handle anything in the vcr group
@@ -1018,6 +1003,7 @@ public void setLetterColor(Graphics gc,HBoard gb,HoneyCell cell)
             	throw G.Error("Hit Unknown object " + hp);
             }
         	break;
+        	
         case Switch:
         	PerformAndTransmit("switch "+hp.hit_index,mutable_game_record,replayMode.Live);
         	break;
@@ -1028,10 +1014,10 @@ public void setLetterColor(Graphics gc,HBoard gb,HoneyCell cell)
         case InvisibleDragBoard:
 			break;
         case PullAction:
-        	PerformAndTransmit("Pull "+getViewPlayer()+" "+bb.nextTileCount());
+        	G.Error("Not expected");
         	break;
         case Definition:
-        	definitionCell = hitCell(hp);
+        	G.Error("Not expected");
         	break;
         case EyeOption:
         	{
@@ -1059,8 +1045,10 @@ public void setLetterColor(Graphics gc,HBoard gb,HoneyCell cell)
         case BoardLocation:	// we hit an occupied part of the board 
         	{
             HoneyCell hitObject = hitCell(hp);
- 			PerformAndTransmit(G.concat("Pickb ",getViewPlayer()," ",G.printCol(hitObject.col)," ",hitObject.row));
-        	}
+            HBoard h = bb.getPlayerBoard(getActivePlayer().boardIndex);
+            String currentWord = currentPath.getWord();
+            G.infoBox("word",currentWord);
+         	}
 			break;
 			
         }
@@ -1202,24 +1190,12 @@ public void setLetterColor(Graphics gc,HBoard gb,HoneyCell cell)
           		if(gameRecordingMode()==RecordingStrategy.None) { break; }
         		if(pullTimeExpired(bb))
         		{
-	        		if(bb.tilesLeft()==0)
-	        		{	     		
         			PerformAndTransmit("EndGame "+getViewPlayer());
-        			break;
-	        		}
         		}
-        		else { break; }
+        		break;
 				//$FALL-THROUGH$
 			case Confirm: 
-        		if(bb.revision<102)
-        		{
-        		int nt = bb.nextTileCount();
-        		PerformAndTransmit(G.concat("Pull ",getViewPlayer()," ",nt));
-        		}
-        		else if(bb.tilesLeft()>0)
-        		{
-        			PerformAndTransmit(G.concat("PullStart ",getViewPlayer()));
-         		}
+        		G.Error("Not expected");
         		break;
 
           	case Endgame:

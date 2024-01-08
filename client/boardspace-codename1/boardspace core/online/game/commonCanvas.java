@@ -5882,9 +5882,18 @@ public abstract class commonCanvas extends exCanvas
      * this requires some care, especially when board-level objects
      * are visible to the user interface, such as cells or player sub boards.
      * 
-     * Common problems when enabling this feature involve animations where the 
-     * animation origin or destination is not set, usually on cells used only in the UI
-     * This generally means the cell copyFrom operation wasn't called as part of board copyFrom.  
+     * Common problems when enabling this feature 
+     * 
+     * animations where the animation origin or destination is not set, 
+     * usually on cells used only in the UI
+     * 
+     * Missed UI events because some cells on the board, which are used only in the UI
+     * are not copied to the copy boards.
+     * 
+     * Missed UI events where the display code uses a cell from the display board, and the activation code
+     * in stopdragging uses the actual board.  Fix this by basing the actions on cell.col and cell.row
+     * or by using <board>.getCell(x) to get the board's original cell.
+     * 
      */
     public void useDirectDrawing(boolean unbuffered)
     	{

@@ -21,45 +21,34 @@ import lib.Http;
 import lib.NullLayout;
 import lib.NullLayoutProtocol;
 import lib.PinchEvent;
-import lib.Image;
+
+import com.codename1.ui.Component;
 import com.codename1.ui.geom.Dimension;
 import com.codename1.ui.geom.Rectangle;
+import com.codename1.ui.layouts.Layout;
 
 public class Frame extends Window implements NullLayoutProtocol,
 	MouseMotionListener,MouseListener
 {	boolean resizable = false;
 	public void setResizable(boolean n) { resizable = n; }
 	Container glassPane = new FullscreenPanel();
+	public String getTitle() { return(getName()); }
 
 	public void setJMenuBar(JMenuBar m){}
 	
-	Image iconImage = null;
-	public void setIconAsImage(Image im) 
-	{ iconImage = im;
-	  MasterForm.getMasterPanel().setTabName(this,getTitle(),iconImage);
-	}
-	
-	public String getTitle() { return(getName()); }
-	public com.codename1.ui.Image getIconImage() 
-	{ return(iconImage!=null ? iconImage.getImage() : null); 
-	}
-	public Image getIconAsImage() 
-	{ 
 
-	  return(iconImage); 
-	}
 	// tabname appears in the master frame, as the selectable name of the frame.
 	public String tabName = null;
 	public String tabName() { return(tabName); }
 	public void setTabName(String g) { tabName = g; }
 	public void init()
-	{
+	{	
 		setOpaque(true);
 		glassPane.setLayout(new NullLayout((NullLayoutProtocol)glassPane));
-		setLayout(new NullLayout(this));
+		setLayout((LayoutManager)new NullLayout(this));
 		glassPane.setSize(getWidth(),getHeight());
-		super.add(glassPane);
-		MasterForm.getMasterPanel().add(this);
+		super.addC(glassPane);
+		MasterForm.getMasterPanel().addC(this);
 	}
 	public Frame() 
 	{ 	super();
@@ -70,7 +59,7 @@ public class Frame extends Window implements NullLayoutProtocol,
 		tabName=n;
 		init();
 	}
-	public void doNullLayout(Container parent)
+	public void doNullLayout()
 	{	int w = getWidth();
 		int h = getHeight();
 		setLocalBounds(0,0,w,h);
@@ -85,8 +74,9 @@ public class Frame extends Window implements NullLayoutProtocol,
 		}
 		//else { G.Error("glasspane is null "+this+" "+w+"x"+h); }
 	}
-	public com.codename1.ui.Container add(com.codename1.ui.Component c) 
-	{ return glassPane.add(c); 
+
+	public void addC(com.codename1.ui.Component c) 
+	{  glassPane.addC(c); 
 	}
 	public void remove(com.codename1.ui.Component c)
 	{	c.setVisible(false);
@@ -94,7 +84,7 @@ public class Frame extends Window implements NullLayoutProtocol,
 	}
 	public void setContentPane(Container newContentPane) 
 	{	super.removeComponent(glassPane);
-		super.add(newContentPane);
+		super.addC(newContentPane);
 		glassPane = newContentPane;	
 	}
 	public Container getContentPane()
@@ -182,7 +172,7 @@ public class Frame extends Window implements NullLayoutProtocol,
 	
 	public void setLocationRelativeTo(Object object) {
 		Rectangle targetBounds = MasterForm.getMasterPanel().getBounds();
-		if(object instanceof Component) { targetBounds = ((Component)object).getBounds(); }
+		if(object instanceof Component) { targetBounds = ((Component)object).getBounds(new Rectangle()); }
 		int cx = targetBounds.getX()+targetBounds.getWidth()/2;
 		int cy = targetBounds.getY()+targetBounds.getHeight()/2;
 		int newx = cx - getWidth()/2;
@@ -213,5 +203,20 @@ public class Frame extends Window implements NullLayoutProtocol,
 	public void mousePinched(PinchEvent e) {
 		
 	}
-	
+	public void setLayout(LayoutManager x) {
+		super.setLayout((Layout)x); 
+	}
+
+	public void addC(String where, Component p) {
+		glassPane.add(where,p);
+	}
+	public com.codename1.ui.Container add(String where,Component c)
+	{	G.Error("not expected");
+		return super.add(where,c);
+	}
+	public com.codename1.ui.Container add(Component c)
+	{
+		return super.add(c);
+	}
+
 }

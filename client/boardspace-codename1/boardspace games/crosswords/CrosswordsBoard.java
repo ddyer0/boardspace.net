@@ -655,6 +655,7 @@ class CrosswordsBoard extends rectBoard<CrosswordsCell> implements BoardProtocol
         AR.copy(mapTarget,from_b.mapTarget);
         AR.copy(rackMap,from_b.rackMap);
         copyFrom(mappedRack,from_b.mappedRack);
+        AR.copy(openRack,from_b.openRack);
         sameboard(from_b); 
     }
 

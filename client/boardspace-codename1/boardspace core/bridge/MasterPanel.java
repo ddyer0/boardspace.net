@@ -23,7 +23,8 @@ import lib.G;
 import lib.GC;
 import lib.NullLayout;
 import lib.NullLayoutProtocol;
-import lib.XFrame;
+import lib.TabFrame;
+import lib.TopFrameProtocol;
 
 import com.codename1.ui.Command;
 import com.codename1.ui.Component;
@@ -43,7 +44,7 @@ import com.codename1.ui.plaf.Style;
 public class MasterPanel extends JPanel implements NullLayoutProtocol,ActionListener,Config
 {	public boolean fancyPaint = true;
 	public boolean useFakePaint = false;
-	private boolean useTabs = true;		// if true use the tab and menu bars supplied by the masterform
+	private boolean useTabs = G.useTabInterface();		// if true use the tab and menu bars supplied by the masterform
 	MasterForm masterForm ;
 	Image menuImage = Image.getImage(IMAGEPATH + "menubar-nomask.png");
 	Image closeImage = Image.getImage(IMAGEPATH + "closebox-nomask.png");
@@ -82,16 +83,18 @@ public class MasterPanel extends JPanel implements NullLayoutProtocol,ActionList
 		{	masterForm.addToMenus(m);
 		}
 	}
-	public com.codename1.ui.Container add(Frame cc)
-	{	com.codename1.ui.Container c = super.add(cc);
-		addTab(cc,cc.tabName(),cc.getIconAsImage());
-		return(c);
+	public void addC(com.codename1.ui.Component cc)
+	{	super.addC(cc);
+		if(cc instanceof TopFrameProtocol) 
+			{ 
+			  addTab((TopFrameProtocol)cc); 
+			}
 	}
 
 	public void remove(com.codename1.ui.Component cc)
 	{	Component top = getTopWindow();
 		super.remove(cc);
-		removeTab((Frame)cc);
+		if(cc instanceof TopFrameProtocol) { removeTab((TopFrameProtocol)cc); }
 		if(cc==top)
 		{	Component newtop = getTopWindow();
 			if(newtop!=null)
@@ -153,7 +156,10 @@ public class MasterPanel extends JPanel implements NullLayoutProtocol,ActionList
 		}
 		cc.setVisible(true);
 	}
-	
+	public void moveToFront(TopFrameProtocol cc)
+	{
+		moveToFront((Component)cc);
+	}
 	public Component getMyChildContaining(Component c)
 	{	return(MasterForm.getMyChildContaining(this, c));
 	}
@@ -382,60 +388,70 @@ public class MasterPanel extends JPanel implements NullLayoutProtocol,ActionList
 	// the masterpanel (that's us) has as compoents.  Here we manage
 	// that list and keep it in sync with our actual compoenents.
 	//
-	private Hashtable<Frame,Button> tabFrames = new Hashtable<Frame,Button>();
+	private Hashtable<TopFrameProtocol,Button> tabFrames = new Hashtable<TopFrameProtocol,Button>();
 	
 	// add a new frame to the tab list
-	public void addTab(Frame f,String title,Image icon)
+	public void addTab(TopFrameProtocol f)
 	{	if (useTabs)
 		{
-		Container tabs = masterForm.getTabs();
-		if ((icon!=null) || (title!=null) && !"".equals(title))
-		{
-		Button l = icon==null?new Button(title):new Button(icon);
-		l.setUIID("ButtonMasterForm");
-		//l.setFont(menuFont);
-		tabFrames.put(f,l);
-		l.addActionListener(this);
-		tabs.add(l);
-		}
-		adjustTabStyles();
-		tabs.revalidate();
+		setTabName(f,f.tabName(),f.getIconAsImage());
 		}
 	}
-	
+
+	public Image getTabImage(Image im)
+	{	Image res[] = new Image[1];
+		if(im!=null)
+		{	
+			Container tabs = masterForm.getTabs();
+			int h = tabs.getHeight()*2/3;
+			Runnable r = new Runnable(){ public void run() 
+			{
+			int imw = im.getWidth();
+			int imh = im.getHeight();
+			int neww = (int)(imw*((double)h/imh));
+			res[0] = im.getScaledInstance(neww, h,Image.ScaleType.SCALE_SMOOTH);	
+			}};
+			G.runInEdt(r);	
+		}
+		return res[0];		
+	}
+
+	private Button getTabButton(TopFrameProtocol f,Image im,String newName)
+	{
+		Button b = null;
+		if(im!=null)
+		{	
+			b = new Button(im);
+			b.setUIID("ButtonMasterForm");
+		}
+		else
+		{	b = new Button(newName==null ? newName : "");
+		}
+		return b;
+	}
+
 	// change the name of a tab.  This is done when one of the frames
 	// changes its name.
-	public void setTabName(Frame f,String newName,Image im)
-	{	G.runInEdt(new Runnable() { public void run() { 
-		Button l = tabFrames.get(f);
-		Image icon = null;
-
-		if(l==null) { addTab(f,newName,icon); }
-		else
-		{
-		if(im!=null)
-		{
-			int h = l.getHeight();
-			int neww = (int)(im.getWidth()*((double)h/im.getHeight()));
-			icon = im.getScaledInstance(neww, h,Image.ScaleType.SCALE_SMOOTH);
-		}
-		if(newName!=null)
-		{
-			l.setText(icon==null?newName:"");
-			if(icon!=null) { l.setIcon(icon.getImage()); }
-			revalidate();
-		}}}}
-		);
+	public void setTabName(TopFrameProtocol f,String newName,Image im)
+	{	Button old = tabFrames.get(f);
+		Button b = getTabButton(f,im,newName);
+		Container tabs = masterForm.getTabs();
+		if(old!=null) { tabs.remove(old); }
+		tabs.addC(b);
+		tabFrames.put(f,b);
+		b.addActionListener(this);
+		adjustTabStyles();
+		masterForm.getTabs().revalidate();		
 	}
 	// 
 	// when we click on one of the tab buttons, select the corresponding frame
 	//
-	public void selectFrame(Frame fr)
+	public void selectFrame(TopFrameProtocol fr)
 	{	moveToFront(fr);
 	}
 	public boolean handleTabAction(Object ob)
-	{	for(Enumeration<Frame>frames = tabFrames.keys(); frames.hasMoreElements(); )
-		{ Frame fr = frames.nextElement();
+	{	for(Enumeration<TopFrameProtocol>frames = tabFrames.keys(); frames.hasMoreElements(); )
+		{ TopFrameProtocol fr = frames.nextElement();
 		  Button b = tabFrames.get(fr);
 		  if(b==ob)
 		  {	selectFrame(fr);
@@ -444,19 +460,19 @@ public class MasterPanel extends JPanel implements NullLayoutProtocol,ActionList
 		}
 		return(false);
 	}
+	
 	public Component getTopWindow()
 	{
 		int cc = getComponentCount();
 		return(cc<=0 ? null : safeGetComponentAt(cc-1));
 	}
 
-
 	public void buttonTopWindow(ActionEvent evt,String cmd)
 	{
 		Component f = getTopWindow();
-		if(f instanceof XFrame)
+		if(f instanceof TabFrame)
 		{
-			XFrame fr = (XFrame) f;
+			TabFrame fr = (TabFrame) f;
 			if(handleTabAction(evt.getSource())) {}
 			else {	fr.buttonMenuBar(evt,evt.getX(),evt.getY()); }
 		}
@@ -464,9 +480,9 @@ public class MasterPanel extends JPanel implements NullLayoutProtocol,ActionList
 		
 
 	// clean up when one of the frames is closed out.
-	public void removeTab(com.codename1.ui.Component f)
+	public void removeTab(TopFrameProtocol f)
 	{	
-		Button l = tabFrames.get(f);
+		Button l = tabFrames.remove(f);
 		Container tabs = masterForm.getTabs();
 		if(l!=null) 
 			{ tabs.removeComponent(l); 
@@ -476,16 +492,16 @@ public class MasterPanel extends JPanel implements NullLayoutProtocol,ActionList
 	public void adjustTabStyles()
 	{
 		Component front = getTopWindow();
-		for(Enumeration<Frame>frames = tabFrames.keys(); frames.hasMoreElements(); )
-		{	Frame f = frames.nextElement();
+		for(Enumeration<TopFrameProtocol>frames = tabFrames.keys(); frames.hasMoreElements(); )
+		{	TopFrameProtocol f = frames.nextElement();
 			Button l = tabFrames.get(f);
 			if(l!=null)
 			{	Style st = l.getStyle();
 				st.setOpacity(f==front?255:128);
 			}
 		}
-		if(front instanceof XFrame)
-		{	XFrame f = (XFrame)front;
+		if(front instanceof TabFrame)
+		{	TabFrame f = (TabFrame)front;
 			for(JButton b :  playtableButtons )
 			{	Command com = b.getCommand();
 				boolean v = f.hasCommand(com.toString());
@@ -502,7 +518,7 @@ public class MasterPanel extends JPanel implements NullLayoutProtocol,ActionList
 		buttonTopWindow(evt,evt.getActionCommand());
 	}
 	
-	public void doNullLayout(Container parent)
+	public void doNullLayout()
 	{
 		setLocalBounds(0,0,getWidth(),getHeight());
 	}
@@ -531,4 +547,6 @@ public class MasterPanel extends JPanel implements NullLayoutProtocol,ActionList
 			}
 		}
 	}
-}
+	
+	}
+	

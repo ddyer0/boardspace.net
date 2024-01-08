@@ -263,7 +263,10 @@ param();
 		{ $unbounce=1;
 		   $q .= " (status='ok') AND  (no_email='' OR no_email is NULL)  AND (e_mail_bounce>0)";
 		}
-		elsif ($method eq 'email-translators')
+		elsif ($method eq 'email-tournament-managers')
+		{  $q .= " (status='ok') AND  (is_tournament_manager ='Yes') ";
+		}
+  		elsif ($method eq 'email-translators')
 		{  $q .= " (status='ok') AND  (is_translator ='Yes') ";
 		}
         elsif ($method eq 'email-all')
@@ -379,6 +382,8 @@ param();
       &printOption($method,'email-all',"To all players by Email");
 	  &printOption($method,'email-bounce',"To players with bouncing Email");
 	  &printOption($method,'email-translators',"To translators by Email");
+	  &printOption($method,'email-tournament-managers',"To tournament managers by Email");
+
       print "</select>";
       }
    else 

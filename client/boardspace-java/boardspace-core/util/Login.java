@@ -124,7 +124,6 @@ public class Login implements SimpleObserver,Config
     @SuppressWarnings("deprecation")
 	public boolean initFromWebStart()
     {	boolean captured = false;
-    
     	boolean exit = false;
     	{
     	while(!exit)

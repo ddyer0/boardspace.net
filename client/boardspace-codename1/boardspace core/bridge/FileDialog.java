@@ -17,9 +17,9 @@
 package bridge;
 
 import lib.G;
+import lib.LFrameProtocol;
 import lib.SimpleObservable;
 import lib.SimpleObserver;
-import lib.XFrame;
 import lib.FileSelector;
 import lib.FileSelector.FileSelectorResult;
 
@@ -33,7 +33,7 @@ public class FileDialog implements SimpleObserver
 	String selectedFile = null;
 	String caption = null;
 	boolean forSave = false;
-	XFrame selectorFrame = null;
+	LFrameProtocol selectorFrame = null;
 
 	public FileDialog(Frame f,String string,  int key) 
 	{ 	forSave = (key==SAVE);
