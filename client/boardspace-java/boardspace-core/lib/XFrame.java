@@ -442,9 +442,8 @@ public class XFrame implements WindowListener,SizeProvider,LFrameProtocol
 	public void setLayout(LayoutManager x) { myFrame.setLayout(x); }
 	public void setContentPane(Container p) { myFrame.setContentPane(p); }
 	public TopFrameProtocol getFrame() { return myFrame; }
-	public void setSize(int x,int y) { myFrame.setSize(x,y);}
 	public void addToMenuBar(JMenu m) {
-		myFrame.addToMenuBar(m);
+		myFrame.addToMenuBar(m,null);
 	}
 	public void addToMenuBar(JMenu m, DeferredEventManager l) {
 		myFrame.addToMenuBar(m,l);

@@ -27,7 +27,7 @@ import bridge.MasterForm;
 import bridge.MasterPanel;
 import bridge.ProxyWindow;
 
-public class TabFrame extends Frame implements TopFrameProtocol {
+public class TabFrame extends Frame implements TopFrameProtocol,SizeProvider {
 	public TabFrame() 
 		{ super(); 
 		}

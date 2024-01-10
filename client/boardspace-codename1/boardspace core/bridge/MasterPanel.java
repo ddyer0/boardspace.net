@@ -83,6 +83,7 @@ public class MasterPanel extends JPanel implements NullLayoutProtocol,ActionList
 		{	masterForm.addToMenus(m);
 		}
 	}
+
 	public void addC(com.codename1.ui.Component cc)
 	{	super.addC(cc);
 		if(cc instanceof TopFrameProtocol) 
@@ -90,7 +91,7 @@ public class MasterPanel extends JPanel implements NullLayoutProtocol,ActionList
 			  addTab((TopFrameProtocol)cc); 
 			}
 	}
-
+	
 	public void remove(com.codename1.ui.Component cc)
 	{	Component top = getTopWindow();
 		super.remove(cc);
@@ -266,23 +267,7 @@ public class MasterPanel extends JPanel implements NullLayoutProtocol,ActionList
 		}
 		return(false);
 	}
-	public void setY(int y)
-	{	//Http.postError(this, Http.stackTrace("MP y "+y+" "+MasterForm.getMasterForm()),null);
-		super.setY(y);
-		
-	}
-	public void setWidth(int w)
-	{	
-		super.setWidth(w);
-	}
-	public void setHeight(int n)
-	{	//if(n!=getHeight()) { G.print(Http.stackTrace("panel set height "+n)); }
-		super.setHeight(n);
-	}
-	public void setSize(Dimension d)
-	{	//G.print("panel set size "+d);
-		super.setSize(d);
-	}
+
 	// don't call this directly, use MasterForm.canRepaintLocally(x);
 	protected boolean canRepaintLocally(Component c)
 	{	if((!fancyPaint || !overlappingWindows()) && isCompletelyVisible(c)) { return(true); }
@@ -310,8 +295,8 @@ public class MasterPanel extends JPanel implements NullLayoutProtocol,ActionList
 	{	int w = getWidth();
 		int h = getHeight();
 		if((offScreen!=null) 
-				&& (offScreen.getImage().getWidth()==w)
-				&& (offScreen.getImage().getHeight()==h))
+				&& (offScreen.getWidth()==w)
+				&& (offScreen.getHeight()==h))
 		{ }
 		else { offScreen = lib.Image.createImage(w,h); }
 		if(offScreen==null) { G.print("create offscreen "+w+","+h+" failed");}
@@ -388,7 +373,7 @@ public class MasterPanel extends JPanel implements NullLayoutProtocol,ActionList
 	// the masterpanel (that's us) has as compoents.  Here we manage
 	// that list and keep it in sync with our actual compoenents.
 	//
-	private Hashtable<TopFrameProtocol,Button> tabFrames = new Hashtable<TopFrameProtocol,Button>();
+	private Hashtable<TopFrameProtocol,JButton> tabFrames = new Hashtable<TopFrameProtocol,JButton>();
 	
 	// add a new frame to the tab list
 	public void addTab(TopFrameProtocol f)
@@ -416,16 +401,16 @@ public class MasterPanel extends JPanel implements NullLayoutProtocol,ActionList
 		return res[0];		
 	}
 
-	private Button getTabButton(TopFrameProtocol f,Image im,String newName)
+	private JButton getTabButton(TopFrameProtocol f,Image im,String newName)
 	{
-		Button b = null;
+		JButton b = null;
 		if(im!=null)
 		{	
-			b = new Button(im);
+			b = new JButton(im);
 			b.setUIID("ButtonMasterForm");
 		}
 		else
-		{	b = new Button(newName==null ? newName : "");
+		{	b = new JButton(newName==null ? newName : "");
 		}
 		return b;
 	}
@@ -433,8 +418,8 @@ public class MasterPanel extends JPanel implements NullLayoutProtocol,ActionList
 	// change the name of a tab.  This is done when one of the frames
 	// changes its name.
 	public void setTabName(TopFrameProtocol f,String newName,Image im)
-	{	Button old = tabFrames.get(f);
-		Button b = getTabButton(f,im,newName);
+	{	JButton old = tabFrames.get(f);
+		JButton b = getTabButton(f,im,newName);
 		Container tabs = masterForm.getTabs();
 		if(old!=null) { tabs.remove(old); }
 		tabs.addC(b);

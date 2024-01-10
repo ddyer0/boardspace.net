@@ -112,8 +112,7 @@ class BoardspaceLauncher implements Runnable,stuff
         		 "develophost",developHost,
         		 "development",""+develop,
         		 "extraactions",""+develop,
-        		 "playtable","true",
-        		 //"playtable","true",
+         		 //"playtable","true",
         		 G.DEBUG,""+develop,
         		};
         util.JWSApplication.runLobby(params);

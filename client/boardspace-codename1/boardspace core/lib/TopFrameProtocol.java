@@ -47,9 +47,7 @@ public interface TopFrameProtocol {
 	void repaint();
 
 	void addToMenuBar(JMenu m, DeferredEventManager l);
-
-	void addToMenuBar(JMenu m);
-
+	
 	void setCloseable(boolean b);
 
 	CanvasRotater getCanvasRotater();
@@ -61,8 +59,6 @@ public interface TopFrameProtocol {
 	void setCanSavePanZoom(DeferredEventManager v);
 
 	void setLayout(LayoutManager x);
-
-	void setSize(int x, int y);
 
 	Container getContentPane();
 

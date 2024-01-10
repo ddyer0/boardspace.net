@@ -47,6 +47,7 @@ import javax.imageio.metadata.IIOMetadataNode;
 import javax.imageio.stream.ImageOutputStream;
 
 import lib.G;
+import lib.Graphics;
 import lib.Image;
 import lib.Plog;
 
@@ -660,4 +661,15 @@ public static Image getVolatileImage(Component c,int width,int height)
     	return(im);
    }
    public boolean isEncoded() { return false; }
+   
+   // 
+   // allow images to act as icons
+   //
+   public void paintIcon(Component c, java.awt.Graphics g, int x, int y) {
+		g.drawImage(this.getImage(),x,y,c);
+	}
+   public void paintIcon(Component c, Graphics g, int x, int y) {
+		g.getGraphics().drawImage(this.getImage(),x,y,c);
+	}
+	
 }

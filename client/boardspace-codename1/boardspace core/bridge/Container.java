@@ -56,8 +56,8 @@ public class Container extends Component
 	}
 	
 	public void addC(com.codename1.ui.Component c)
-	{  	final com.codename1.ui.Component cc = c;
-		G.runInEdt(new Runnable() { public void run() { supadd(cc); }});
+	{ 
+		G.runInEdt(new Runnable() { public void run() { supadd(c); }});
 		setShouldCalcPreferredSize(true);
 	}
 
@@ -74,8 +74,7 @@ public class Container extends Component
 	}
 	public void addC(int index,com.codename1.ui.Component c)
 	{
-		final com.codename1.ui.Component cc = c;
-		G.runInEdt(new Runnable() { public void run() { supadd(index,cc); }}); 
+		G.runInEdt(new Runnable() { public void run() { supadd(index,c); }}); 
 	}
 	public void paintBackgrounds(Graphics g)
 	{

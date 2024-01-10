@@ -18,6 +18,7 @@ package lib;
 
 import com.codename1.ui.geom.Rectangle;
 
+import bridge.Icon;
 import bridge.SystemImage;
 /**
  * this is a wrapper class for the system Image class, which allows us to do
@@ -29,7 +30,7 @@ import bridge.SystemImage;
  * @author Ddyer
  *
  */
-public class Image extends SystemImage implements Drawable,CompareTo<Image>
+public class Image extends SystemImage implements Drawable,CompareTo<Image>,Icon
 {
 	public void rotateCurrentCenter(double amount,int x,int y,int cx,int cy) {};
  	public double activeAnimationRotation() { return(0); }
@@ -631,4 +632,14 @@ public class Image extends SystemImage implements Drawable,CompareTo<Image>
 		 }
 		 else { return this; }
 		 }
+
+    public int getIconWidth() {
+		return getWidth();
+	}
+	
+	public int getIconHeight() {
+		
+		return getHeight();
+	}
+
 }

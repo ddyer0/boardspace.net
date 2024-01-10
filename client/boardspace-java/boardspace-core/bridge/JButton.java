@@ -16,34 +16,29 @@
  */
 package bridge;
 
-import lib.Graphics;
+import lib.Image;
 
-import lib.AwtComponent;
+@SuppressWarnings("serial")
+public class JButton extends javax.swing.JButton 
+{	String commandString = null;
+	Image image = null;
+	public JButton(String label) { super(label); commandString=label; }
 
-
-
-public interface Icon
-{
-
-    /**
-     * Draw the icon at the specified location.  Icon implementations
-     * may use the Component argument to get properties useful for
-     * painting, e.g. the foreground or background color.
-     */
-    void paintIcon(AwtComponent c, Graphics g, int x, int y);
-
-    /**
-     * Returns the icon's width.
-     *
-     * @return an int specifying the fixed width of the icon.
-     */
-    int getIconWidth();
-
-    /**
-     * Returns the icon's height.
-     *
-     * @return an int specifying the fixed height of the icon.
-     */
-    int getIconHeight();
- 
+	public JButton(Image label) { super(label); image = label;  }
+	
+	public JButton(String com,Image image) { super(image); commandString = com; }
+	
+	public String getCommandString() 
+	{	if(commandString!=null) { return(commandString); } 
+		return "unknown"; 
+	}
+	public String toString() { return("<button "+commandString+" "+isVisible()+">"); }
+	public void setVisible(boolean v)
+	{
+		boolean change = v!=isVisible();
+		super.setVisible(v);
+		if(change) 
+			{ repaint(); }
+	}
 }
+

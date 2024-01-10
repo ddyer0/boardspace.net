@@ -54,6 +54,11 @@ public class MasterForm extends Form implements com.codename1.ui.events.ActionLi
 	String appname = "unnamed";
 	private com.codename1.ui.Container titleBar;
 	boolean recordEvents = true;
+	
+	public com.codename1.ui.Container add(com.codename1.ui.Component c)
+	{
+		return super.add(c);
+	}
 	//
 	// this is for an experiment in progress, to catch keys by pulling
 	// them into an invisible text window.

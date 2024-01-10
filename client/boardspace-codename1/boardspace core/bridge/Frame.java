@@ -36,16 +36,13 @@ public class Frame extends Window implements NullLayoutProtocol,
 
 	public void setJMenuBar(JMenuBar m){}
 	
-
 	// tabname appears in the master frame, as the selectable name of the frame.
 	public String tabName = null;
 	public String tabName() { return(tabName); }
 	public void setTabName(String g) { tabName = g; }
 	public void init()
-	{	
+	{	super.setLayout((Layout)new NullLayout(this));
 		setOpaque(true);
-		glassPane.setLayout(new NullLayout((NullLayoutProtocol)glassPane));
-		setLayout((LayoutManager)new NullLayout(this));
 		glassPane.setSize(getWidth(),getHeight());
 		super.addC(glassPane);
 		MasterForm.getMasterPanel().addC(this);
@@ -204,7 +201,7 @@ public class Frame extends Window implements NullLayoutProtocol,
 		
 	}
 	public void setLayout(LayoutManager x) {
-		super.setLayout((Layout)x); 
+		glassPane.setLayout((Layout)x); 
 	}
 
 	public void addC(String where, Component p) {
@@ -216,7 +213,7 @@ public class Frame extends Window implements NullLayoutProtocol,
 	}
 	public com.codename1.ui.Container add(Component c)
 	{
-		return super.add(c);
+		return glassPane.add(c);
 	}
 
 }

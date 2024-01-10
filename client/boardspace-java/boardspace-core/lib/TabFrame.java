@@ -19,29 +19,31 @@ package lib;
 
 import java.awt.Container;
 import java.awt.event.ActionEvent;
+import java.awt.event.WindowListener;
 import java.security.AccessControlException;
 
 import javax.swing.JMenuBar;
 
-import bridge.JFrame;
 import bridge.JMenu;
+import bridge.JPanel;
 import bridge.JPopupMenu;
 import bridge.MasterForm;
+import bridge.MasterPanel;
 import bridge.ProxyWindow;
 
 @SuppressWarnings("serial")
-public class TabFrame extends JFrame implements TopFrameProtocol,SizeProvider {
-
+public class TabFrame extends JPanel implements TopFrameProtocol,SizeProvider {
+	
 	public TabFrame() 
 		{ super(); 
 		}
 	public Container getParentContainer() { return (Container)getParent(); }
 	public TabFrame(String tab) 
-		{ super(tab); 
+		{ super(tab);
 		}
 	// support for rotater buttons
 	private CanvasRotater rotater = new CanvasRotater();
-	public boolean enableRotater = true;
+	private boolean enableRotater = true;
 	public CanvasRotater getCanvasRotater() { return rotater; }
 	public void setEnableRotater(boolean v) { enableRotater = v;}
 	public DeferredEventManager canSavePanZoom = null;
@@ -162,7 +164,8 @@ public class TabFrame extends JFrame implements TopFrameProtocol,SizeProvider {
 	private Image iconImage = null;
 	
 	public void changeImageIcon(Image im) 
-	{ iconImage = im;
+	{ MasterPanel p =  MasterForm.getMasterPanel();
+	  iconImage = p.getTabImage(im);
 	  MasterForm.getMasterPanel().setTabName(this,getTitle(),iconImage);
 	}
 	
@@ -176,21 +179,11 @@ public class TabFrame extends JFrame implements TopFrameProtocol,SizeProvider {
 		// nothing needed for this implementation
 	}
 	
-
-	public void setOpaque(boolean b) {
-	}
-
-	public Container getContentPane() {
-		G.Error("Not expected");
-		return null;
-	}
-
-	@Override
 	public String tabName() {
 		return getName();
-	}	@Override
+	}	
 	public void addC(ProxyWindow w) {
-		G.Error("Not expected");
+		addC(w.getComponent());
 	}
 
 }

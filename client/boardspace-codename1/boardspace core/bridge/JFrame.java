@@ -38,11 +38,6 @@ public class JFrame extends Frame implements TopFrameProtocol
 		
 	}
 
-	@Override
-	public void addToMenuBar(JMenu m) {
-		// TODO Auto-generated method stub
-		
-	}
 
 	@Override
 	public void setCloseable(boolean b) {

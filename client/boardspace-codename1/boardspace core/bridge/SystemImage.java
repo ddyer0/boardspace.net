@@ -645,4 +645,7 @@ public boolean isEncoded()
 {	return image instanceof EncodedImage;
 }
 
+public void paintIcon(AwtComponent c, Graphics g, int x, int y) {
+	g.getGraphics().drawImage(this.getImage(),x,y);
+}
 }

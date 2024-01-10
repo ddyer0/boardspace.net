@@ -16,21 +16,72 @@
  */
 package bridge;
 
+import java.awt.Component;
 import java.awt.Container;
+import java.awt.Rectangle;
+
+import javax.swing.BoxLayout;
+import javax.swing.JMenuBar;
+
 import lib.Graphics;
 import lib.G;
 import lib.Http;
 import lib.SizeProvider;
 
 @SuppressWarnings("serial")
-public class MasterForm extends Container {
+public class MasterForm extends JFrame {
 
 	/**
 	 * 
 	 */
 	private static MasterForm masterForm = null;
 	private static MasterPanel masterPanel = null;
-	public MasterForm(String name) {}
+	private String appname = "";
+	private Container tabs = new Container();
+	private Container menus = new Container();
+	private Container centers = new Container();
+	private JMenuBar titleBar = null;
+	//Spacer spacer = new Spacer();
+	public MasterForm(String app) 
+	{
+		super(app);
+		new BoxLayout(this,BoxLayout.Y_AXIS);
+		appname = app; 
+		new BoxLayout(this,BoxLayout.Y_AXIS);
+		tabs.setLayout(new TabLayout());
+		menus.setLayout(new TabLayout());
+		centers.setLayout(new TabLayout());
+		titleBar =new JMenuBar();
+		setJMenuBar(titleBar);
+	
+		new BoxLayout(titleBar,BoxLayout.X_AXIS);
+		  
+		titleBar.add("West",tabs);
+		titleBar.add("East",menus);
+		titleBar.add("Center",centers);  
+
+	}
+
+	public void addToMenus(JButton m)
+	{	
+		masterForm.getMenus().add(m);
+	}
+	
+    public Rectangle getSafeArea() {
+        
+        return new Rectangle(0,0,G.getScreenWidth(),G.getScreenHeight());
+    }
+	public static Component getMyChildContaining(Component p,Component c)
+	{	if(p==c) { return(null); }
+		Component par = c.getParent();
+		if(par==p) { return(c); }
+		else { if(par==null) { return(null); }
+			   return(getMyChildContaining(p,par));
+		}
+	}
+	public Container getTabs() { return(tabs); }
+	public Container getMenus() { return(menus); }
+
 	public static MasterForm getMasterForm()
 	{
 		if(masterForm==null) { masterForm=new MasterForm(Config.APPNAME); }

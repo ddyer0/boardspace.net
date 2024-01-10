@@ -36,7 +36,7 @@ import lib.TopFrameProtocol;
 @SuppressWarnings("serial")
 public class JFrame extends javax.swing.JFrame implements TopFrameProtocol,SizeProvider
 {	
-	private boolean useMenuBar = !G.isCodename1();		// if true, use the local menu bar
+	private boolean useMenuBar = true;		// if true, use the local menu bar
 	private boolean closeable = true;
 	public void setCloseable(boolean v) { closeable = v; }
 	public boolean getCloseable() { return(closeable); }
