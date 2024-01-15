@@ -18,9 +18,13 @@ package bridge;
 
 import java.awt.Component;
 import java.awt.Container;
+import java.awt.Dimension;
 import java.awt.LayoutManager;
 import java.awt.event.ActionEvent;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.security.AccessControlException;
+import java.util.prefs.Preferences;
 
 import javax.swing.JMenuBar;
 
@@ -34,7 +38,26 @@ import lib.SizeProvider;
 import lib.TopFrameProtocol;
 
 @SuppressWarnings("serial")
-public class JFrame extends javax.swing.JFrame implements TopFrameProtocol,SizeProvider
+class JBar extends JMenuBar
+{
+	public void paint(java.awt.Graphics gc)
+	{
+		super.paint(gc);
+	}
+	public void setBounds(int x,int y,int w,int h)
+	{
+		super.setBounds(x,y,w,h);
+	}
+	public Dimension getPreferredSize()
+	{
+		Dimension s = super.getPreferredSize();
+		int h = (int)(2.5*G.getFontSize(G.getGlobalDefaultFont()));
+		return new Dimension((int)s.getWidth(),(int)Math.max(h,s.getHeight()));
+		
+	}
+}
+@SuppressWarnings("serial")
+public class JFrame extends javax.swing.JFrame implements TopFrameProtocol,SizeProvider,Config,WindowListener
 {	
 	private boolean useMenuBar = true;		// if true, use the local menu bar
 	private boolean closeable = true;
@@ -55,9 +78,11 @@ public class JFrame extends javax.swing.JFrame implements TopFrameProtocol,SizeP
 	public JFrame(String name) 
 	{ 
 	  super(name); 
+	  addWindowListener(this);
 	}
 	public JFrame() 
 	{ super();
+	  addWindowListener(this);
 	}
 	
 	private CanvasRotater rotater = new CanvasRotater();
@@ -164,7 +189,9 @@ public class JFrame extends javax.swing.JFrame implements TopFrameProtocol,SizeP
 		}
 	}
 
-	public void setJMenuBar(JMenuBar m) { jMenuBar = m; super.setJMenuBar(m); }
+	public void setJMenuBar(JMenuBar m)
+	{ jMenuBar = m; super.setJMenuBar(m); 
+	}
 	public void addToMenuBar(JMenu m)
 	{
 		addToMenuBar(m,null);
@@ -174,7 +201,7 @@ public class JFrame extends javax.swing.JFrame implements TopFrameProtocol,SizeP
 	public void addToMenuBar(JMenu m,DeferredEventManager l)
 	{	
 		if(useMenuBar)
-		{	if(jMenuBar==null) {  setJMenuBar(new JMenuBar()); }
+		{	if(jMenuBar==null) {  setJMenuBar(new JBar()); }
 			m.setVisible(true);
 			if(jMenuBar.getComponentIndex(m)<0)
 				{
@@ -218,5 +245,70 @@ public class JFrame extends javax.swing.JFrame implements TopFrameProtocol,SizeP
 		G.Error("Not expected");
 		
 	}
+	private int lastKnownWidth = -1;
+	private int lastKnownHeight = -1;
+	public void screenResized()
+	{	if(G.isCheerpj())
+		{int w = lastKnownWidth;
+		int h = lastKnownHeight;
+		lastKnownWidth = G.getScreenWidth();
+		lastKnownHeight = G.getScreenHeight();
+		if(lastKnownWidth!=w || lastKnownHeight!=h)
+		  {
+		   setInitialBounds(getX(),getY(),getWidth(),getHeight());
+		  }
+		}
+	}
+	public void setInitialBounds(int inx,int iny,int inw,int inh)
+	{
+		int fx = inx;
+		int fy = iny;
+		int fw = inw;
+		int fh = inh;
+        Preferences prefs = Preferences.userRoot();
+        String suffix ="-"+getTitle();
+        String bounds = prefs.get(FRAMEBOUNDS+suffix,null);
+        if(bounds!=null) { 
+        	String split[] = G.split(bounds,',');
+        	if(split!=null && split.length==4)
+        	{
+        		fx = G.IntToken(split[0]);
+        		fy = G.IntToken(split[1]);
+        		fw = G.IntToken(split[2]);
+        		fh = G.IntToken(split[3]);
+        	}
+        	
+        }
+        //
+        // make sure the bounds are minimally acceptable
+        lastKnownWidth = G.getScreenWidth();
+        lastKnownHeight = G.getScreenHeight();
+        fw = Math.max(lastKnownWidth/5,Math.min(fw,lastKnownWidth));
+        fh = Math.max(lastKnownHeight/5,Math.min(fh,lastKnownHeight));
+        fx = Math.max(0,Math.min(lastKnownWidth-fw,fx));
+        fy = Math.max(0,Math.min(lastKnownHeight-fh,fy));
+		setBounds(fx,fy,fw,fh);   			
+	} 	
+
+	public void windowClosing(WindowEvent e) {
+        String suffix = "-"+ getTitle();
+       	Preferences prefs = Preferences.userRoot();
+    	prefs.put(FRAMEBOUNDS+suffix,G.concat(getX(),",",getY(),",",getWidth(),",",getHeight()));
+	}
+	public void windowOpened(WindowEvent e) { }
+	public void windowClosed(WindowEvent e) { }
+	public void windowIconified(WindowEvent e) { }
+	public void windowDeiconified(WindowEvent e) { }
+	public void windowActivated(WindowEvent e) { }
+ 	public void windowDeactivated(WindowEvent e) {	}
+ 	
+ 	public void setSize(int w,int h)
+ 	{	super.setSize(w,h);
+ 	}
+
+ 	public void moveToFront() {
+		MasterForm.moveToFront(this);
+	}
+ 	
 
 }

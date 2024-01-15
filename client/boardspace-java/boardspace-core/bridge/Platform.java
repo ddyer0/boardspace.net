@@ -23,8 +23,6 @@ import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
-import java.awt.Frame;
-
 import lib.LFrameProtocol;
 import lib.Plog;
 import lib.commonChatApplet;
@@ -97,6 +95,8 @@ public abstract class Platform implements Config
  	protected static InstallerPackage installerPackage =  (InstallerPackage)MakeNative(InstallerPackage.class);
   
 public static boolean isRealLastGameBoard() { return false; }
+
+// running android app under windows
 public static boolean isRealWindroid() { return false; }
 
 
@@ -536,16 +536,15 @@ public static Object MakeInstance(String classname)
     // these methods are used in Codename1, here they just give the 
     // correct responses so the flow in exCanvas ignores them.
     // they're here so exCanvas can refer to G rather than MasterForm
-    static public boolean canRepaintLocally(Component p) { return(true); }
-    static public boolean isCompletelyVisible(Component p) { return(true); }
-    static public boolean isPartlyVisible(Component p) { return(true); }
-    static public void moveToFront(Object p) 
-    	{ if(p==null) {}
-    	  else if(p instanceof Frame) { ((Frame)p).toFront(); }
-    	  else if(p instanceof Component) { moveToFront(((Component)p).getParent());}
-    	}
+    // they're here so exCanvas can refer to G rather than MasterForm
+    static public boolean canRepaintLocally(Component p) { return(MasterForm.canRepaintLocally(p)); }
+    static public boolean isCompletelyVisible(Component p) { return(MasterForm.isCompletelyVisible(p)); }
+    static public boolean isPartlyVisible(Component p) { return(MasterForm.isPartlyVisible(p)); }
 
-	
+  //  static public boolean canRepaintLocally(Component p) { return(true); }
+  //  static public boolean isCompletelyVisible(Component p) { return(true); }
+  //  static public boolean isPartlyVisible(Component p) { return(true); }
+ 	
     public static final URL getResourceUrl(String xname,boolean doc)
     {
     	if(G.isResourceName(xname,doc)) 

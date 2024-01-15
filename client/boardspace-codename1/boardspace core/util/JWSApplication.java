@@ -151,7 +151,7 @@ public class JWSApplication implements Config,LobbyConstants
         commonPanel myL = (commonPanel) G.MakeInstance(classname);
         G.print("Myl "+myL);
         if (myL != null)
-        {	XFrame fr = new XFrame();
+        {
     	 	
             String rootname = isVNC
             					? server.getHostName()
@@ -162,7 +162,8 @@ public class JWSApplication implements Config,LobbyConstants
             							: gn!=null
             								? gn 
             								: G.getTranslations().get(offlineLauncher?LauncherName :LobbyName);
-            ExtendedHashtable sharedInfo = G.getGlobals();
+        	XFrame fr = new XFrame(rootname);
+        	ExtendedHashtable sharedInfo = G.getGlobals();
             myL.init(sharedInfo,fr);
             // create the free standing frame
             new LPanel(rootname, fr,myL);

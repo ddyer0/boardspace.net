@@ -19,9 +19,7 @@ package lib;
 
 import java.awt.Container;
 import java.awt.event.ActionEvent;
-import java.awt.event.WindowListener;
 import java.security.AccessControlException;
-
 import javax.swing.JMenuBar;
 
 import bridge.JMenu;
@@ -32,7 +30,9 @@ import bridge.MasterPanel;
 import bridge.ProxyWindow;
 
 @SuppressWarnings("serial")
-public class TabFrame extends JPanel implements TopFrameProtocol,SizeProvider {
+public class TabFrame extends JPanel 
+	implements TopFrameProtocol,SizeProvider
+{
 	
 	public TabFrame() 
 		{ super(); 
@@ -47,7 +47,7 @@ public class TabFrame extends JPanel implements TopFrameProtocol,SizeProvider {
 	public CanvasRotater getCanvasRotater() { return rotater; }
 	public void setEnableRotater(boolean v) { enableRotater = v;}
 	public DeferredEventManager canSavePanZoom = null;
-	private boolean useMenuBar = !G.isCodename1();		// if true, use the local menu bar
+	private boolean useMenuBar = false;		// if true, use the local menu bar
 	public JMenuBar jMenuBar = null;
 
 	JPopupMenu popupMenuBar = null;
@@ -122,7 +122,7 @@ public class TabFrame extends JPanel implements TopFrameProtocol,SizeProvider {
 
 	// this is used in the codename1 branch
 	public void buttonMenuBar(ActionEvent evt,int x,int y)
-	{	String cmd = evt.getActionCommand().toString();
+	{	String cmd = evt.getActionCommand();
 		if("twist3".equals(cmd))
 		{
 			if(rotater!=null) { rotater.setCanvasRotation(rotater.getCanvasRotation()+1);revalidate();  }			
@@ -184,6 +184,27 @@ public class TabFrame extends JPanel implements TopFrameProtocol,SizeProvider {
 	}	
 	public void addC(ProxyWindow w) {
 		addC(w.getComponent());
+	}
+
+	public void setInitialBounds(int inx,int iny,int inw,int inh)
+	{
+		Container parent = getParentContainer();
+		// parent can legitimately be null if the window is closing
+		if(parent!=null)
+		{
+			int w = parent.getWidth();
+			int h = parent.getHeight();
+			setBounds(0,0,Math.max(300,w),Math.max(300,h));
+		}
+
+
+	}
+	public void moveToFront() {
+		MasterForm.moveToFront(this);
+		
+	}
+	public void setTitle(String n) {
+		MasterForm.getMasterPanel().setTabName(this,n,getIconAsImage());
 	}
 
 }

@@ -65,4 +65,6 @@ public interface CanvasProtocol extends DeferredEventHandler
    public void wake();
    public ExtendedHashtable getSharedInfo(); 
    public boolean setTouched(boolean v);
+
+public void resetBounds();
  }

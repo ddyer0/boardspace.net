@@ -40,7 +40,6 @@ import com.codename1.ui.Font;
 
 import lib.LFrameProtocol;
 import lib.Plog;
-import lib.TopFrameProtocol;
 import com.codename1.ui.URLImage.ImageAdapter;
 import com.codename1.ui.geom.Dimension;
 import com.codename1.ui.geom.Point;
@@ -138,15 +137,6 @@ public abstract class Platform implements Config{
 	   {
 		   return(getFontMetrics(G.getFont(c.getStyle())));
 	   }
-    static public void moveToFront(LFrameProtocol f) 
-       { moveToFront(f.getFrame()); 		
-       }
-    static public void moveToFront(Component c)
-	   {
-		   MasterForm.moveToFront(c);
-	   }
-    static public void moveToFront(TopFrameProtocol x) 
-    { MasterForm.moveToFront((Component)x); }
     
     static public FontMetrics getFontMetrics(bridge.Component c,Font f) 
 	   {

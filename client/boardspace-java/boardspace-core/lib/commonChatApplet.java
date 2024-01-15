@@ -689,7 +689,7 @@ public class commonChatApplet extends FullscreenPanel
 	}
 	public void addTo(Container c) { c.add(this); }
 	public void addto(XFrame f) { f.addC(this); }
-	public void moveToFront() { G.moveToFront(this); }
+	public void moveToFront() { G.print("move to front"); }
 	
 	public void PostNews(String showNews)
     {

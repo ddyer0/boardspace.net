@@ -88,26 +88,20 @@ public class MasterPanel extends JPanel implements NullLayoutProtocol,ActionList
 		}
 	}
 	public void addC(Component cc)
-	{	super.add(cc);
+	{	super.add(cc,0);
 		if(cc instanceof TopFrameProtocol) 
 			{ 
 			  addTab((TopFrameProtocol)cc); 
 			}
 	}
 
-	public void remove(Component cc)
-	{	Component top = getTopWindow();
-		super.remove(cc);
+	public void remove(int n)
+	{
+		Component cc = getComponent(n);
+		super.remove(n);
 		if(cc instanceof TopFrameProtocol) { removeTab((TopFrameProtocol)cc); }
-		if(cc==top)
-		{	Component newtop = getTopWindow();
-			if(newtop!=null)
-				{newtop.setVisible(true);
-				 newtop.repaint();
-				}
-		}
+	
 	}
-
 	/**
 	 * move c or whichever of its parents is relevant to the back
 	 * @param c
@@ -117,8 +111,8 @@ public class MasterPanel extends JPanel implements NullLayoutProtocol,ActionList
 		cc.setVisible(false);
 		if(c!=null)
 			{
-			remove(c);
-			add(c);
+			super.remove(getComponentZOrder(c));
+			super.add(c,0);
 			}
 	}
 
@@ -137,11 +131,13 @@ public class MasterPanel extends JPanel implements NullLayoutProtocol,ActionList
 	 * @param c
 	 */
 	public void moveToFront(Component cc)
-	{	Component c = getMyParent(cc);
+	{	
+		Component c = getMyParent(cc);
 		if(c!=null && c!=getTopWindow())
 		{
-		remove(c);
-		add(c);
+		super.remove(getComponentZOrder(c));
+		super.add(c,0);
+		c.setVisible(true);
 		}
 		cc.setVisible(true);
 	}
@@ -210,6 +206,7 @@ public class MasterPanel extends JPanel implements NullLayoutProtocol,ActionList
 	}
 	public boolean isCompletelyVisible(Component target)
 	{	if(this==target) { return(true); }
+		if(!useTabs) { return true; }
 		Component child = getMyChildContaining(target);
 		if(child==null) 
 			{ //printParents("vis",target);
@@ -222,16 +219,19 @@ public class MasterPanel extends JPanel implements NullLayoutProtocol,ActionList
 			Component other = safeGetComponentAt(cc);
 			if(other!=null)
 			{
-			if(other==child) { return(true); }
+			if(other==child) 
+				{ return(true); }
 			Rectangle otherRect = getClippedComponentBounds(other,other);
-			if(otherRect.intersects(targetRect)) { return(false); }
+			if(otherRect.intersects(targetRect)) 
+				{ return(false); }
 			}
 		}
 		return(false);
 	}
 
 	public boolean isPartlyVisible(Component target)
-	{	Component child = getMyChildContaining(target);
+	{	if(!useTabs) { return true; }
+		Component child = getMyChildContaining(target);
 		if(child==null)  { return(false); }
 		Rectangle targetRect = getClippedComponentBounds(target,child);
 		for(int cc = getComponentCount()-1; cc>=0; cc--)
@@ -268,6 +268,7 @@ public class MasterPanel extends JPanel implements NullLayoutProtocol,ActionList
 		}
 		return(false);
 	}
+	
 	private Graphics topLevelGraphics = null;
 	protected boolean canRepaintLocally(Graphics g)
 	{
@@ -303,6 +304,7 @@ public class MasterPanel extends JPanel implements NullLayoutProtocol,ActionList
 	{			
 		Image off = null;
 		paintFromTop = true;
+		
 		if(	fancyPaint 
 				&& overlappingWindows()
 				&& ((off=createOffScreen())!=null))
@@ -317,6 +319,7 @@ public class MasterPanel extends JPanel implements NullLayoutProtocol,ActionList
 			{ //String msg = "standard paint from the top "+overlappingWindows();
 			  //msg = componentsSummary(msg);
 			  //G.print(msg);
+			  
 			  super.paint(g); 
 			}
 		paintFromTop = false;
@@ -364,8 +367,8 @@ public class MasterPanel extends JPanel implements NullLayoutProtocol,ActionList
 		{	
 			b = new JButton(im);
 		}
-		else
-		{	b = new JButton(newName==null ? newName : "");
+		else 
+		{	b = new JButton(newName!=null ? newName : "unnamed");
 		}
 		return b;
 	}
@@ -404,7 +407,7 @@ public class MasterPanel extends JPanel implements NullLayoutProtocol,ActionList
 	public Component getTopWindow()
 	{
 		int cc = getComponentCount();
-		return(cc<=0 ? null : safeGetComponentAt(cc-1));
+		return(cc<=0 ? null : safeGetComponentAt(0));
 	}
 
 	public void buttonTopWindow(ActionEvent evt,String cmd)
@@ -414,7 +417,13 @@ public class MasterPanel extends JPanel implements NullLayoutProtocol,ActionList
 		{
 			TabFrame fr = (TabFrame) f;
 			if(handleTabAction(evt.getSource())) {}
-			else {	fr.buttonMenuBar(evt,-1,-1); }
+			else {
+				JButton b = (JButton)evt.getSource();
+				int x = G.getAbsoluteX(b);
+				int y = G.getAbsoluteY(b);
+				int w = b.getWidth();
+				int h = b.getHeight();
+				fr.buttonMenuBar(evt,x+w/2,y+h); }
 		}
 	}
 		
@@ -451,6 +460,7 @@ public class MasterPanel extends JPanel implements NullLayoutProtocol,ActionList
 		else {
 			for(JButton b :  playtableButtons ) { b.setVisible(false); }
 		}
+		MasterForm.getMasterForm().getJMenuBar().repaint();
 	}
 
 	public void actionPerformed(ActionEvent evt) 
@@ -475,15 +485,26 @@ public class MasterPanel extends JPanel implements NullLayoutProtocol,ActionList
 			Component c = getComponent(nc);
 			int cw = c.getWidth();
 			int ch = c.getHeight();
-			if((c instanceof FullScreen)
+			if((c instanceof TopFrameProtocol)
 					&& ((cw!=w)||(ch!=h)))
-			{	Dimension minSz = ((FullScreen)c).getMinimumSize();
-				int aw = Math.max((int)minSz.getWidth(),w);
-				int ah = Math.max((int)minSz.getHeight(),h);
-				c.setBounds(x,0,aw,ah);
+			{	
+				c.setBounds(x,0,w,h);
 			}
 		}
 	}
 	
+	public void remove(Component cc)
+	{	Component top = getTopWindow();
+		super.remove(cc);
+		if(cc instanceof TopFrameProtocol) { removeTab((TopFrameProtocol)cc); }
+		if(cc==top)
+		{	Component newtop = getTopWindow();
+			if(newtop!=null)
+				{newtop.setVisible(true);
+				 newtop.repaint();
+				}
+		}
+	}
+
 	}
 	

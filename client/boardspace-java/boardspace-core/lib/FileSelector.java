@@ -1009,7 +1009,7 @@ public class FileSelector extends FullscreenPanel
 	public LFrameProtocol startDirectory(String frameName,boolean closeable)
 	{
 		XFrame f = new XFrame(s.get(frameName));
-		f.addC(this);
+		f.setContentPane(this);
 		f.addWindowListener(this);
 		f.setCloseable(closeable);	// keep it open, will be closed with the main frame.
 		if(!G.isCodename1()) 

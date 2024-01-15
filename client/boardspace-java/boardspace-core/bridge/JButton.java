@@ -26,8 +26,12 @@ public class JButton extends javax.swing.JButton
 
 	public JButton(Image label) { super(label); image = label;  }
 	
-	public JButton(String com,Image image) { super(image); commandString = com; }
-	
+	public JButton(String com,Image image)
+		{ super(null,image);
+		  commandString = com; 
+		  setActionCommand(com);
+		}
+
 	public String getCommandString() 
 	{	if(commandString!=null) { return(commandString); } 
 		return "unknown"; 
@@ -40,5 +44,6 @@ public class JButton extends javax.swing.JButton
 		if(change) 
 			{ repaint(); }
 	}
+
 }
 

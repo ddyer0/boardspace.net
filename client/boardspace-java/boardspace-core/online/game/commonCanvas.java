@@ -44,7 +44,6 @@ import lib.*;
 import lib.RepaintManager.RepaintStrategy;
 import lib.SimpleSprite.Movement;
 import lib.TimeControl.TimeId;
-import online.common.LPanel;
 import online.common.LaunchUser;
 import online.common.LaunchUserStack;
 import online.common.OnlineConstants;
@@ -1155,19 +1154,21 @@ public abstract class commonCanvas extends exCanvas
 	    private void doTreeViewer(boolean uct)
 	    {   
 	    	commonPanel panel = new commonPanel();
-	    	LFrameProtocol frame;
+	    	String name = uct ?  "UCT search tree viewer"
+	    				: "AlphaBeta search tree viewer";
+	    	
+	    	XFrame frame = new XFrame(name);
 	    	if(uct)
 	    		{
 	    		treeViewer = (UCTTreeViewer)G.MakeInstance("online.search.UCTTreeViewer");
-	    		frame = LPanel.newLFrame("UCT search tree viewer",panel);
 	    		}
 	    	else {
 		    	treeViewer = (AlphaTreeViewer)G.MakeInstance("online.search.AlphaTreeViewer");
-		    	frame = LPanel.newLFrame("AlphaBeta search tree viewer",panel);	    		
 	    	}
 	    	treeViewer.init(sharedInfo,frame);
 	    	treeViewer.setCanvas(commonCanvas.this);
 	    	panel.setCanvas(treeViewer);
+	    	frame.setContentPane(panel);
 	    	treeViewer.setVisible(true);
 	    	
 	    	frame.setInitialBounds(100,100,(int)(SCALE*800),(int)(SCALE*600));
@@ -1997,11 +1998,14 @@ public abstract class commonCanvas extends exCanvas
     	// when it calls disB.  This prevents the new board
     	// from being swapped in until usingCopyBoard is null
     	Thread current = Thread.currentThread();
+    	Thread prev = l.displayThread;
     	//recursion is normal if in touch magnifier
-    	G.Assert(l.displayThread==null || l.displayThread==current, "multi threaded! %s and now %s",l.displayThread,current);
+    	G.Assert(gc==null || ( prev==null)
+    				, "multi threaded! %s and now %s",prev,current);
+    		
     	G.Assert(!G.debug() || G.isEdt(), "not edt!");
     	try {
-    		l.displayThread = current;
+    		if(gc!=null) { l.displayThread = current; }
     		
     		if(remoteViewer>=0)
     			{ 
@@ -2016,7 +2020,12 @@ public abstract class commonCanvas extends exCanvas
     	if(l.gameOverlayEnabled) { drawGameOverlay(gc,p); }
     }
     	finally {
+    		Thread later = l.displayThread;
+    		if(gc!=null)
+    		{
+    		G.Assert(later==current,"changed from "+current+" to "+later);
     		l.displayThread = null;
+    		}
     	}
    }
     private commonPlayer otherPlayerTimeExpired(commonPlayer my)
@@ -2622,6 +2631,9 @@ public abstract class commonCanvas extends exCanvas
     	}
     	startedOnce = started = true;
     	saveDisplayBoard();
+        if((hidden.resignAction==null) && canUseDone()) 
+        { hidden.resignAction = myFrame.addAction(s.get(RESIGN),deferredEvents);    	   
+ 	   	}
     	resetBounds();
     	wake();
     }
@@ -5154,7 +5166,7 @@ public abstract class commonCanvas extends exCanvas
             hidden.resignAction = myFrame.addAction(s.get(RESIGN),deferredEvents);
         }
 
-        if(!G.isCodename1())
+        if(!G.useTabInterface())
         {
 
         l.paperclipMenu = new IconMenu(StockArt.PaperClip.image);

@@ -131,7 +131,7 @@ public class RepaintManager implements VncScreenInterface,Config
 	public boolean trigger = true;
 	public String showTimers() { return timers.show(); }
 	public enum RepaintStrategy {
-		Direct_SingleBuffer(0,30,"Direct Single Buffer"),
+		Direct_SingleBuffer(0,G.isCodename1()?30:0,"Direct Single Buffer"),
 		Direct_Unbuffered(0,5,"Direct Unbuffered"),		// used by android textwindow and ios
 		Deferred(0,0,"Deferred Single Buffer"),
 		Deferred_Unbuffered(0,0,"Deferred Unbuffered"),
@@ -356,7 +356,9 @@ public class RepaintManager implements VncScreenInterface,Config
 				? (G.isIOS()
 						? RepaintStrategy.Direct_Unbuffered 
 						: RepaintStrategy.Direct_Unbuffered)// was DoubleBuffered
-					: RepaintStrategy.Deferred;
+					: G.isJavadroid()
+						? RepaintStrategy.Direct_SingleBuffer
+						: RepaintStrategy.Deferred;//RepaintStrategy.Direct_SingleBuffer; //RepaintStrategy.Deferred;
 	private XImage allFixed = null; 		// for drawing unchanging elements of the board
 	private XImage viewBuffer = null; 	// for drawing the main board offscreen
 	private XImage drawBuffer = null;	// for optional double buffering 
@@ -470,7 +472,8 @@ public class RepaintManager implements VncScreenInterface,Config
 				case ReadyToSee: 
 					if(expired)
 					{
-					if(expired) { doActualRepaint();	} // trigger paint in buffered modes
+					if(expired) 
+						{ doActualRepaint();	} // trigger paint in buffered modes
 					next = null;	// fully handled
 					}
 					else { exit = true; }
@@ -709,7 +712,6 @@ public class RepaintManager implements VncScreenInterface,Config
 		}
 		return(got);
 	}
-	
 	// return true if the buffer was drawn
 	// if false is returned, a timer has been set
 	private boolean drawBufferIfReady(Graphics g,XImage back)
@@ -727,7 +729,8 @@ public class RepaintManager implements VncScreenInterface,Config
     		return(true);
 		  }
 		  else 
-		  { addTimer(now,delay,RefreshReason.ReadyToSee,"buffer not ready");
+		  { 
+		    addTimer(now,delay,RefreshReason.ReadyToSee,"buffer not ready");
 		    return(false);
 		  }
 	}
@@ -837,6 +840,7 @@ public class RepaintManager implements VncScreenInterface,Config
        	case Direct_SingleBuffer:
     		//GC.fillRect(g,fill,0,0,10,client.getHeight());
        		helper.resetLocalBoundsIfNeeded();
+       		
        		triggerEvent = null;
        		{
        		String msg = null;
@@ -846,9 +850,9 @@ public class RepaintManager implements VncScreenInterface,Config
   				if(back.unseen())
   					{	
   						boolean nowSeen = drawBufferIfReady(g,back);
-  						if(!nowSeen || !paintNeeded) 
+  						if(nowSeen) 
   							{ if(showBitmaps) { showBitmaps(g,"buffer not ready"); } 
-  							  return; 
+  							  if(!paintNeeded) { return; } 
   							}
   					}
 

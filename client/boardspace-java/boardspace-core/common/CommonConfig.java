@@ -146,6 +146,7 @@ public interface CommonConfig extends UniversalConstants {
     static final String androidAppStoreUrl = "https://play.google.com/store/apps/details?id="+installerPackageName;
     static final String iosAppStoreUrl = "https://itunes.apple.com/us/app/id1089274351";
 	static final String APPNAME = "Boardspace.net";
+    static final String FRAMEBOUNDS = "framebounds";
 	static Preferences prefs = Preferences.userRoot();
 	
 	// defaults that are remembered between sessions

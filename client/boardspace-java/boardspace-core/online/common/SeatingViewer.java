@@ -49,6 +49,7 @@ import lib.Random;
 import lib.StockArt;
 import lib.TextButton;
 import lib.TextContainer;
+import lib.XFrame;
 import lib.commonPanel;
 import lib.exCanvas;
 import online.common.SeatingChart.Seating;
@@ -1334,13 +1335,13 @@ public class SeatingViewer extends exCanvas implements LobbyConstants
     private AuxViewer doViewer(ExtendedHashtable sharedInfo)
     {  
     	commonPanel panel = (commonPanel)new commonPanel();
-    	LFrameProtocol frame;
+    	XFrame frame = new XFrame("VNC viewer");
     	AuxViewer viewer = (AuxViewer)new vnc.AuxViewer();
     	if(viewer!=null)
     	{
-    	frame = LPanel.newLFrame("VNC viewer",panel);
     	viewer.init(sharedInfo,frame);
     	panel.setCanvas(viewer);
+    	frame.setContentPane(panel);
     	viewer.setVisible(true);
     	double scale = G.getDisplayScale();
     	frame.setInitialBounds(100,100,(int)(scale*800),(int)(scale*600));
@@ -1446,15 +1447,15 @@ public class SeatingViewer extends exCanvas implements LobbyConstants
     static public SeatingViewer doSeatingViewer(ExtendedHashtable sharedInfo)
     {  
     	commonPanel panel = new commonPanel();
-    	LFrameProtocol frame;
+    	XFrame frame = new XFrame("Offline Launcher");
     	SeatingViewer viewer = (SeatingViewer)G.MakeInstance("online.common.SeatingViewer");
     	if(viewer!=null)
     	{
-    	frame = LPanel.newLFrame("Game Selector",panel);
     	viewer.init(sharedInfo,frame);
     	panel.setCanvas(viewer);
     	viewer.setVisible(true);
     	double scale = G.getDisplayScale();
+    	frame.setContentPane(panel);
     	frame.setInitialBounds(100,100,(int)(scale*800),(int)(scale*600));
     	frame.setVisible(true);
     	panel.start();

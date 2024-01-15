@@ -560,8 +560,6 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
         return (touch);
     }
 
-
-
     public void kill()
     {
         exitFlag = true;
@@ -633,7 +631,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
         		&& !"".equals(serverFile) 
         		)
             {	skipGetStory = true;	// if there's a story on the way, ignore it.
-        		G.moveToFront(this); 
+        		myFrame.moveToFront(); 
                 v.doLoadUrl(serverFile, selectedGame);
                 
             }
@@ -4054,7 +4052,9 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
             setVisible(true);
             myFrame.setVisible(true);
             if(v!=null) { v.setVisible(true); }
-            if(selectorFrame!=null) { G.moveToFront(selectorFrame); } 
+            if(selectorFrame!=null) 
+            	{ selectorFrame.moveToFront(); 
+            	} 
 
             if(G.isCheerpj())
             { newsStack.push(cheerpjTextFile); }

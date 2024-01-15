@@ -19,8 +19,6 @@ package lib;
 import bridge.*;
 
 import com.codename1.ui.Component;
-import com.codename1.ui.geom.Dimension;
-import com.codename1.ui.geom.Rectangle;
 
 public class XFrame implements WindowListener,SizeProvider,LFrameProtocol
 {
@@ -29,14 +27,12 @@ public class XFrame implements WindowListener,SizeProvider,LFrameProtocol
 	 */
 	@SuppressWarnings("unused")
 	private static final long serialVersionUID = 01L;
-    static final String FRAMEBOUNDS = "framebounds";
     private JCheckBoxMenuItem soundCheckBox = null;
     private JMenu options = null;
     private JMenu actions = null;
 	private TopFrameProtocol myFrame = null;
 
     private InternationalStrings s = null;
-	Label title;
 	String name="Unnamed";
 	/** constructor */
 	public XFrame(String string) 
@@ -73,7 +69,6 @@ public class XFrame implements WindowListener,SizeProvider,LFrameProtocol
       actions = new XJMenu(s.get(ActionsMessage),true);
       soundCheckBox = new JCheckBoxMenuItem(s.get(SoundMessage),Config.Default.getBoolean(Config.Default.sound));
 	  addWindowListener(this);
-	  title = new Label(name);
 	  myFrame.setOpaque(false);
 	}
 	
@@ -91,9 +86,7 @@ public class XFrame implements WindowListener,SizeProvider,LFrameProtocol
 
 	public void setTitle(String n) 
 	{ name = n;
-	  if(title==null) { title = new Label(name); }
-	  if(n!=null && G.isSimulator()) { title.setText(n+" "+getWidth()+"x"+getHeight()); }
-	  MasterForm.getMasterPanel().setTabName(myFrame,name,myFrame.getIconAsImage());
+	  myFrame.setTitle(n);
 	}
 	public String getTitle()
 	{
@@ -101,45 +94,6 @@ public class XFrame implements WindowListener,SizeProvider,LFrameProtocol
 	}
 
 	
-	private Rectangle oldBounds = null;
-	private int minimumWidth=300;
-	private int minimumHeight=300;
-	public void expand(int minw,int minh)
-	{	//minimumWidth = minw;		// this was an exeriment to set minimums greater than available size
-		//minimumHeight = minh;		// which created scrollable frames
-		expand();
-	}
-	public Dimension getMinimumSize()
-	{
-		return(new Dimension(minimumWidth,minimumHeight));
-	}
-
-	public void expand()
-	{		
-		if(oldBounds!=null)
-		{ myFrame.setBounds(G.Left(oldBounds),G.Top(oldBounds),G.Width(oldBounds),G.Height(oldBounds));
-		  oldBounds = null; 
-		}
-		else 
-		{ 
-		Container parent = myFrame.getParentContainer();
-		// parent can legitimately be null if the window is closing
-		if(parent!=null)
-			{
-			int w = parent.getWidth();
-			int h = parent.getHeight();
-			oldBounds = new Rectangle(getX(),getY(),getWidth(),getHeight());
-			title.setText(name+" "+getWidth()+"x"+getHeight());
-			myFrame.setBounds(0,0,Math.max(minimumWidth,w),Math.max(minimumHeight,h));
-			if(minimumWidth>w || minimumHeight>h)
-			{
-				G.print("Oversize "+name+" "+minimumWidth+"x"+minimumHeight+" "+w+"x"+h);
-			}
-			}
-		}
-	}
-	
-
 	public void windowOpened(WindowEvent e) {
 		
 	}
@@ -197,39 +151,7 @@ public class XFrame implements WindowListener,SizeProvider,LFrameProtocol
 		}
 	}
 	public void setInitialBounds(int inx,int iny,int inw,int inh)
-	{
-		if(G.useTabInterface()) 
-			{ expand(inw,inh);
-			} 
-			else 
-			{ 	int fx = inx;
-				int fy = iny;
-				int fw = inw;
-				int fh = inh;
-	            Preferences prefs = Preferences.userRoot();
-	            String suffix ="-"+getTitle();
-	            String bounds = prefs.get(FRAMEBOUNDS+suffix,null);
-	            if(bounds!=null) { 
-	            	String split[] = G.split(bounds,',');
-	            	if(split!=null && split.length==4)
-	            	{
-	            		fx = G.IntToken(split[0]);
-	            		fy = G.IntToken(split[1]);
-	            		fw = G.IntToken(split[2]);
-	            		fh = G.IntToken(split[3]);
-	            	}
-	            	
-	            }
-	            //
-	            // make sure the bounds are minimally acceptable
-	            lastKnownWidth = G.getScreenWidth();
-	            lastKnownHeight = G.getScreenHeight();
-	            fw = Math.max(lastKnownWidth/5,Math.min(fw,lastKnownWidth));
-	            fh = Math.max(lastKnownHeight/5,Math.min(fh,lastKnownHeight));
-	            fx = Math.max(0,Math.min(lastKnownWidth-fw,fx));
-	            fy = Math.max(0,Math.min(lastKnownHeight-fh,fy));
-				myFrame.setBounds(fx,fy,fw,fh);   			
-			} 	
+	{	myFrame.setInitialBounds(inx,iny,inw,inh);
 	}
 
 	public boolean doSound() {
@@ -362,18 +284,8 @@ public class XFrame implements WindowListener,SizeProvider,LFrameProtocol
     { 
         pleaseKill = true;			// remember some tried to do it
         if(!dontKill) { killed = true; setVisible(false);}
-        //
-        // record the default position and size
-        if(!G.useTabInterface())
-        {
-            String suffix = "-"+ getTitle();
-	       	Preferences prefs = Preferences.userRoot();
-        	Rectangle dim = myFrame.getBounds();
-        	prefs.put(FRAMEBOUNDS+suffix,
-        			""+G.Left(dim)+","+G.Top(dim)+","+G.Width(dim)+","+G.Height(dim));
         	
         }
-     }
 
     public void setDontKill(boolean v)
     {
@@ -449,6 +361,9 @@ public class XFrame implements WindowListener,SizeProvider,LFrameProtocol
 	{	// finish, position and center the frame.
 		myFrame.packAndCenter();
 		
+	}
+	public void moveToFront() {
+		myFrame.moveToFront();
 	}
 
 }

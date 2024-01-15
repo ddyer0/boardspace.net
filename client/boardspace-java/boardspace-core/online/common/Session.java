@@ -31,6 +31,7 @@ import lib.StringStack;
 import lib.TimeControl;
 import lib.commonPanel;
 import lib.TimeControl.Kind;
+import lib.XFrame;
 import lib.InternationalStrings;
 import lib.LFrameProtocol;
 public class Session implements LobbyConstants
@@ -675,7 +676,11 @@ public class Session implements LobbyConstants
 	
 		 commonPanel theGame = (commonPanel)G.MakeInstance("G:game.Game");
 		 String frameName = G.isCodename1()?framename : s.get(WebsiteMessage,framename);
-		 LFrameProtocol frame = playFrame = LPanel.newLFrame(frameName,theGame);
+		 XFrame frame =  new XFrame();
+		 frame.setContentPane(theGame);
+		 frame.setTitle(frameName);
+		 playFrame = frame;
+		 	//LPanel.newLFrame(frameName,theGame);
 		 //System.out.println("Sess " + sess.seedSet+" order " + sess.myOrder);
 		  GameInfo GI = currentGame;
 		  

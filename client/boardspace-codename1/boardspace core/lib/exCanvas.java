@@ -359,11 +359,11 @@ public abstract class exCanvas extends ProxyWindow
     public void resetBounds()
      {  l.needLocalBounds = true;
      }
-    public void setBounds(int l, int t, int w, int h)
+    public void setBounds(int left, int t, int w, int h)
     {	int oldw = getWidth();
     	int oldh = getHeight();
-    	super.setBounds(l,t,w,h);
-        if((w>0)&&(h>0) && ((oldw!=w)||(oldh!=h))) 
+    	super.setBounds(left,t,w,h);
+        if((w>0)&&(h>0) && (l.needLocalBounds || (oldw!=w)||(oldh!=h))) 
         	{ // changing orientation unzooms
         	  if(oldw<oldh != w<h) { setGlobalZoom(0,0); }
         	  setSX(getSX());
@@ -2067,6 +2067,7 @@ graphics when using a touch screen.
    
 	public void doNullLayout()
 	{	l.needLocalBounds = true;
+		repaint();	// trigger a repaint which will do the actual layout
 	}
 	public void realNullLayout()
 	{
@@ -2081,7 +2082,6 @@ graphics when using a touch screen.
   	  	double fac = zoom*G.adjustWindowFontSize(w,h);
   	  	adjustStandardFonts(fac*G.defaultFontSize);
 	  
-  	  	l.needLocalBounds = false;
   	  	setLocalBoundsSync(0,0,ww,hh);
   	  	initialized=true; 
   	  	generalRefresh();	// discard background and repaint too
@@ -2095,7 +2095,8 @@ graphics when using a touch screen.
      * is drawn
      */
     public void paint(Graphics g)
-    {  	GC.setFont(g,getDefaultFont());
+    {   
+    	GC.setFont(g,getDefaultFont());
     	painter.paint(g);
     }
     public void update(Graphics g)

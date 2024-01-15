@@ -134,7 +134,9 @@ public class commonPanel extends FullscreenPanel
         if (can != null)
         {	int h = inHeight - localChatHeight;
         	int y = inY+localChatHeight;
+        	can.resetBounds();
         	can.setBounds(inX, y, inWidth,h);
+            
         }
     }
 
@@ -175,7 +177,7 @@ public class commonPanel extends FullscreenPanel
 			}
 			f.setCloseable(false);
 			f.setVisible(true);	
-			G.moveToFront(this);
+			f.moveToFront();
 			}
         }
     }

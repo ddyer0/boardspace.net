@@ -35,7 +35,6 @@ import lib.StringStack;
 import lib.UrlResult;
 import lib.XFrame;
 import lib.commonPanel;
-import online.common.LPanel;
 import online.common.LobbyConstants;
 import online.common.OnlineConstants;
 import rpc.RpcReceiver;
@@ -152,8 +151,7 @@ public class JWSApplication implements Config,Runnable,LobbyConstants
         commonPanel myL = (commonPanel) G.MakeInstance(classname);
         G.print("Myl "+myL);
         if (myL != null)
-        {	XFrame fr = new XFrame();
-    	 	
+        {	   	 	
             String rootname = isVNC
             					? server.getHostName()
             					: isTable 
@@ -163,11 +161,12 @@ public class JWSApplication implements Config,Runnable,LobbyConstants
             							: gn!=null
             								? gn 
             								: G.getTranslations().get(offlineLauncher?LauncherName :LobbyName);
+            XFrame fr = new XFrame(rootname);
             ExtendedHashtable sharedInfo = G.getGlobals();
             myL.init(sharedInfo,fr);
             // create the free standing frame
-            new LPanel(rootname, fr,myL);
-             
+            //new LPanel(rootname, fr,myL);
+            
             if(isVNC|isTable|offlineLauncher)
             	{ 
             	  if(isVNC && server.isRpc())
@@ -200,10 +199,10 @@ public class JWSApplication implements Config,Runnable,LobbyConstants
             fw = (int)(sc*G.getInt(OnlineConstants.FRAMEWIDTH,offlineLauncher?1000 : DEFAULTWIDTH));
             fh = (int)(sc*G.getInt(OnlineConstants.FRAMEHEIGHT,offlineLauncher ? 700 : DEFAULTHEIGHT));
             }
+            fr.setContentPane(myL);
             fr.setInitialBounds(fx,fy,fw,fh );
-                      
-      	 	if(fr!=null) { fr.setVisible(true); } 
-      	 	G.print("running "+myL);
+            fr.setVisible(true);
+     	 	G.print("running "+myL);
             myL.run();
             //System.out.println("root start");
           }
@@ -309,7 +308,7 @@ public class JWSApplication implements Config,Runnable,LobbyConstants
 			  		startoff = G.offline();
 			  		if(startoff) { runOffline(serverName); }
 			  		else { runLogin(serverName); }
-			  	} while(startoff!=G.offline());
+			  	} while(startoff!=G.offline() || G.isCheerpj() || G.isJavadroid());
 	        }
 	        else 
 	        { 	

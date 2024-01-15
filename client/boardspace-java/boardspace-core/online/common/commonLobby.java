@@ -322,8 +322,8 @@ public class commonLobby extends commonPanel
   
   private JCheckBoxMenuItem flushInput = null;
   private JCheckBoxMenuItem flushOutput = null;
-
-  JMenuItem doFlip = null;
+  private JMenuItem doFlip = null;
+  private JMenuItem startLauncher = null;
   private long hearbeatTime=0;      //when we started the last ping
 
   public String frameName;
@@ -458,6 +458,7 @@ public void init(ExtendedHashtable info,LFrameProtocol frame)
     {
         flushInput = myFrame.addOption("flush input",false,deferredEvents);
         flushOutput = myFrame.addOption("flush output",false,deferredEvents);
+        startLauncher = myFrame.addAction("start offline launcher",deferredEvents);
     }
     setGameTime();
     SetNumberOfUsers(serverNumberOfUsers);
@@ -2380,6 +2381,10 @@ public void ClearOtherInviteBox(Session sess)
 	myNetConn.setFlushOutput(flushOutput.getState()); 
 	return(true);
 	}
+    else if(target==startLauncher)
+    {
+    	SeatingViewer.doSeatingViewer(sharedInfo);
+    }
     else if (target==autoDone)
     {
     	Default.setBoolean((Default.autodone),autoDone.getState());

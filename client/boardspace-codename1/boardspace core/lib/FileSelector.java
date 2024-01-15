@@ -59,7 +59,6 @@ public class FileSelector extends FullscreenPanel
 	public static final String SERVERFILE = "serverfile";
 	public static final String SELECTEDGAME = "selectedgame";
 	public void wake() { G.wake(this); }
-
 	public class FileSelectorResult
 	{
 		public String opcode;	// load or save
@@ -997,7 +996,7 @@ public class FileSelector extends FullscreenPanel
 	public LFrameProtocol startDirectory(String frameName,boolean closeable)
 	{
 		XFrame f = new XFrame(s.get(frameName));
-		f.addC(this);
+		f.setContentPane(this);
 		f.addWindowListener(this);
 		f.setCloseable(closeable);	// keep it open, will be closed with the main frame.
 		if(!G.isCodename1()) 

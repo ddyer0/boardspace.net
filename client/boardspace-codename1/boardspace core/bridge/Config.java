@@ -27,7 +27,6 @@ public interface Config extends CommonConfig{
     
     // this is intended only fordebugging event triggering, not for actual use.
     static boolean WAITFOREVER = false;
-
 	static final String SoundFormat = ".wav";
     static final String SPLASHSCREENIMAGE = IMAGEPATH + "homepage-splash.jpg";
     static final String SMALL_MAP_LOC_URL = IMAGEPATH + "earthshadesmall.jpg";	

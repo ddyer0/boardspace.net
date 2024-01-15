@@ -53,6 +53,7 @@ import udp.PlaytableStack;
 	 public String toString() { return name;}
 	 public StringPair(String n,String v) { name = n; value = v; }
  }
+
  public class PasswordCollector extends JPanel
 						   implements ActionListener,ItemListener,WindowListener,
 						   Config
@@ -224,6 +225,7 @@ import udp.PlaytableStack;
 	 	 //l.setLevel(Level.SEVERE);	// quench a warning message
 		 controllingFrame = f;
 		 observer = o;
+		 setLayout(new GridBagLayout());
 		 if(isAcceptableVersion())
 		 	{
 			 reconfigure(Screen.Login);

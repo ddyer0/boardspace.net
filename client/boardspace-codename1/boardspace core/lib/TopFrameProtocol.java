@@ -74,4 +74,10 @@ public interface TopFrameProtocol {
 
 	Container getParentContainer();
 
+	void setInitialBounds(int inx, int iny, int inw, int inh);
+
+	void moveToFront();
+
+	void setTitle(String n);
+
 }

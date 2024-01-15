@@ -69,7 +69,7 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
 	implements CrosswordleConstants, GameLayoutClient
 {	static final long serialVersionUID = 1000;
 	static final String Crosswordle_SGF = "Crosswordle"; // sgf game name
-	boolean useKeyboard = G.isCodename1();
+	boolean useKeyboard = G.isCodename1()||G.isJavadroid();
 	KeyboardLayout Minimal =new KeyboardLayout(0.085,0.085*3,new String[][]
 			{				
 		 {"Q","W","E","R","T","Y","U","I","O","P"},

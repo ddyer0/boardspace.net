@@ -20,6 +20,7 @@ import lib.ErrorX;
 import lib.G;
 import lib.Http;
 import lib.SizeProvider;
+import lib.TopFrameProtocol;
 
 import java.util.Vector;
 
@@ -151,7 +152,10 @@ public class MasterForm extends Form implements com.codename1.ui.events.ActionLi
 			eos.stopEditing(); 
 			}
 	}
-	
+	public void setVisible(boolean v)
+	{
+		super.setVisible(v);
+	}
 	public void paint(com.codename1.ui.Graphics g)
 	{
 		int w = getWidth();
@@ -322,7 +326,7 @@ public void addToMenus(JButton m)
 	public static boolean isEmpty()
 	{	return(masterPanel!=null ? (masterPanel.getComponentCount()==0) : true);
 	}
-	public static void moveToFront(com.codename1.ui.Component c)
+	public static void moveToFront(TopFrameProtocol c)
 	{	if(masterPanel!=null) { masterPanel.moveToFront(c); }
 	}
 	// the size of the master frame height available to users.

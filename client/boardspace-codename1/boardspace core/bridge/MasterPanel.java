@@ -105,27 +105,6 @@ public class MasterPanel extends JPanel implements NullLayoutProtocol,ActionList
 		}
 	}
 
-	/**
-	 * move c or whichever of its parents is relevant to the back
-	 * @param c
-	 */
-	public void moveToBack(Component cc)
-	{	Component c = getMyParent(cc);
-		cc.setVisible(false);
-		if(c!=null)
-			{
-			int ind = getComponentIndex(c);
-			if(ind>=0) 
-			{
-				G.runInEdt(new Runnable() { public void run() {
-					c.setVisible(false);
-					suprem(c);
-					supadd(0,c);
-					adjustTabStyles();
-					repaint();
-				}});
-			}}
-	}
 
 	/**
 	 * get the one of my children which is c or one of it's parents
@@ -137,29 +116,15 @@ public class MasterPanel extends JPanel implements NullLayoutProtocol,ActionList
 		if(par==null) { return(null); }
 		return(getMyParent(par));
 	}
-	/**
-	 * move this window or whichever of its parents in relevant to the front 
-	 * @param c
-	 */
-	public void moveToFront(Component cc)
-	{	Component c = getMyParent(cc);
-		if(c!=null && c!=getTopWindow())
-		{
-		G.runInEdt(new Runnable() { public void run () {
-		int ind = getComponentIndex(c);
-		int count = getComponentCount();
-		if(ind>=0 && ind<count-1)
-		{	suprem(c);
-			supadd(c);
-			adjustTabStyles();
-			repaint();
-		}}});
-		}
-		cc.setVisible(true);
-	}
+
 	public void moveToFront(TopFrameProtocol cc)
-	{
-		moveToFront((Component)cc);
+	{	if(cc!=getTopWindow())
+		{
+		suprem((Component)cc);
+		supadd((Component)cc);
+		adjustTabStyles();
+		repaint();
+		}
 	}
 	public Component getMyChildContaining(Component c)
 	{	return(MasterForm.getMyChildContaining(this, c));

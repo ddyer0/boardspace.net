@@ -84,5 +84,18 @@ public class JFrame extends Frame implements TopFrameProtocol
 		G.Error("Not expected");
 		
 	}
+	@Override
+	public void setInitialBounds(int inx, int iny, int inw, int inh) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void moveToFront() {
+		MasterForm.moveToFront(this);
+	}
+
+	public void setTitle(String n) {
+		
+	}
 
 }

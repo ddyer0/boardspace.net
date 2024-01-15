@@ -67,4 +67,5 @@ public interface LFrameProtocol extends MenuParentInterface
 	public void setIconAsImage(Image icon);
 	public CanvasRotater getCanvasRotater();
 	public TopFrameProtocol getFrame();
+	public void moveToFront();
 }
