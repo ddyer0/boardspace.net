@@ -17,7 +17,7 @@
 package bridge;
 
 import java.awt.Component;
-import java.awt.Dimension;
+import java.awt.Container;
 import java.awt.Panel;
 import java.awt.event.WindowEvent;
 import java.security.AccessControlException;
@@ -36,7 +36,7 @@ import lib.NullLayout;
 //if it ever has to skip a frame refresh due to process interlocks.
 //
 import lib.NullLayoutProtocol;
-public class FullscreenPanel extends Panel implements FullScreen,MenuParentInterface,NullLayoutProtocol
+public class FullscreenPanel extends Panel implements MenuParentInterface,NullLayoutProtocol
 {
 	/**
 	 * 
@@ -59,12 +59,15 @@ public class FullscreenPanel extends Panel implements FullScreen,MenuParentInter
 			Component c = getComponent(nc);
 			int cw = c.getWidth();
 			int ch = c.getHeight();
-			if((c instanceof FullScreen)
-					&& ((cw!=w)||(ch!=h)))
-			{	Dimension minSz = ((FullScreen)c).getMinimumSize();
-				int aw = Math.max((int)minSz.getWidth(),w);
-				int ah = Math.max((int)minSz.getHeight(),h);
-				((FullScreen)c).setBounds(0, 0, aw, ah);
+			if((cw!=w)||(ch!=h))
+			{	// set the size of components to be full size
+				c.setBounds(0, 0, w, h);
+				// if the component isn't a frame, invoke nulllayout if appropriate
+				if(!(c instanceof Container)
+					&& c instanceof NullLayoutProtocol)
+				{
+					((NullLayoutProtocol)c).doNullLayout();
+				}
 			}
 		}
 	}

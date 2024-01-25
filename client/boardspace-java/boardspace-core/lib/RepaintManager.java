@@ -1523,7 +1523,8 @@ public class RepaintManager implements VncScreenInterface,Config
 	    // until the UI us set up.
 	    //
 	    public void justSleep(int howLong)
-	    {	setBoundsNonPaint();
+	    {	
+	    	setBoundsNonPaint();
 	    	if(howLong>=0)
 	    	{
 	    	if(shutdown)

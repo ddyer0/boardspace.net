@@ -30,7 +30,6 @@ import bridge.JFrame;
 import javax.swing.JCheckBoxMenuItem;
 import bridge.JPopupMenu;
 
-import bridge.MasterForm;
 import bridge.XJMenu;
 
 public class XFrame implements WindowListener,SizeProvider,LFrameProtocol,Config

@@ -684,7 +684,7 @@ public class TabGameViewer extends CCanvas<TabCell,TabGameBoard> implements TabC
 			switch(state)
 			{
 				default:
-					throw G.Error("Not expecting hit in state %s",state);
+					throw G.Error("Not expecting %s in state %s",hitCode,state);
 				case CONFIRM_STATE:
 				case PLAY_STATE:
 				case CONFIRM_NOSWAP_STATE:

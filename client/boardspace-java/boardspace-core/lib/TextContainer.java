@@ -307,7 +307,6 @@ public class TextContainer extends Rectangle implements AppendInterface,KeyListe
     	// the negative width keeps the scroll bar from doing any scroll actions in the main text area
     	// which handles it by itself
     	Rectangle messageRect = new Rectangle(left, top, inWidth-barWidth, inHeight);
-		
     	scrollBar.InitScrollDimensions(
 	  			 left+inWidth-barWidth, 
 	  			 messageRect,
@@ -550,7 +549,7 @@ public class TextContainer extends Rectangle implements AppendInterface,KeyListe
 			  {	// if the carat position is in the last line
 				  Rectangle beforeCarat = GC.getStringBounds(g,fm, line,0,caratBeforeLine);
 				  int pos = lineX+(int)beforeCarat.getWidth();
-			  GC.drawLine(g, pos ,lineY-fm.getHeight(), pos ,lineY); 
+				  GC.drawLine(g, pos ,lineY-fm.getHeight(), pos ,lineY); 
 			}
 		}
 	}
@@ -760,7 +759,6 @@ public class TextContainer extends Rectangle implements AppendInterface,KeyListe
 			selectionEnd = Math.max(selectionStart,selectionEnd);
 		
 		}
-		GC.frameRect(g,Color.black,x,y,width,height);
 		if(isIn) { hp.hitCode = defaultId; }
 		caratSelecting = false;
 		GC.setClip(g,oldclip);

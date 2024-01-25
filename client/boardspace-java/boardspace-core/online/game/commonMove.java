@@ -24,7 +24,6 @@ import online.search.UCTNode;
 
 import java.io.PrintStream;
 import java.util.*;
-
 import lib.*;
 
 /**
@@ -113,7 +112,7 @@ class FinalFilter implements online.game.commonMove.MoveFilter
 }
 
 
-public abstract class commonMove implements lib.CompareTo<commonMove> , Opcodes, StackIterator<commonMove>
+public abstract class commonMove implements lib.CompareTo<commonMove> , Opcodes, StackIterator<commonMove>, SequenceElement
 {	
 	public enum EStatus 
 	{
@@ -245,6 +244,7 @@ public abstract class commonMove implements lib.CompareTo<commonMove> , Opcodes,
     // to the Copy_Slots and same_move_p methods
     //
     public int player=-1;			// board index of the player who made this move
+    public int player() { return player; }
 	public int op=-1;				// move opcode
     //
     // these are used by the search driver, but since that vastly dominates
@@ -811,4 +811,13 @@ public abstract class commonMove implements lib.CompareTo<commonMove> , Opcodes,
 	// this is available for debugging, return true if this is a move "of interest"
 	public boolean visit() { return(false); };
 	public String indexString() { int ind = index();  return (ind<0 ? "" : ind+" "); }
+	
+	// this is used to keep some moves out of the game log
+	public boolean ignoredInLogs()
+	{	return op==MOVE_START;
+	}
+    public Text censoredMoveText(commonCanvas v,BoardProtocol b)
+    {	// default treatment
+    	return(shortMoveText(v));
+    }
 }

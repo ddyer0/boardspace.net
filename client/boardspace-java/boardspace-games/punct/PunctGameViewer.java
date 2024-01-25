@@ -823,7 +823,7 @@ public class PunctGameViewer extends CCanvas<punctCell,PunctGameBoard> implement
 			switch(state)
 			{
 				default:
-					throw G.Error("Not expecting hit in state %s",state);
+					throw G.Error("Not expecting %s in state %s",hitObject,state);
 				case CONFIRM_STATE:
 				case DRAW_STATE:
 				case PLAY_STATE:

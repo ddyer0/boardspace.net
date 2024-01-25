@@ -4071,7 +4071,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
             }
             long checkTime = 0;
             boolean hadMessage = true;
-  
+            
             for (;!exitFlag;)
             {	
                 try
@@ -4113,7 +4113,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
 
                      }
 
-
+                    
                     if (GameOver())
                     {
                         if (!playedGameOverSound && !reviewOnly && doSound)
@@ -4142,7 +4142,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
                     {
                         doTouch();
                     }
-                   
+
                     sendMouseMessage(); //if any
                     if(sendFocusMessage)
                     	{ sendMessage(NetConn.SEND_GROUP+KEYWORD_FOCUS+" " + hasGameFocus + " " + focuschanged);
@@ -4248,7 +4248,7 @@ public class Game extends commonPanel implements PlayConstants,OnlineConstants,D
                 }
             	catch (ThreadDeath err) { throw err;}
                 catch (Throwable err)
-                {
+                {  
                     handleError("inside game main loop", fullMsg, err, true);
                 }
             }

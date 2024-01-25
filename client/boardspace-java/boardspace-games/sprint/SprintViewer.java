@@ -384,6 +384,7 @@ public class SprintViewer extends CCanvas<SprintCell,SprintBoard> implements Spr
     	long rem = lim - now;
     	String tim = lim<0 ? "" : G.briefTimeString(Math.abs(rem));
     	if(rem<0) { tim = "-"+tim; }
+    	GC.setFont(gc,largeBoldFont());
     	GC.Text(gc,true,l,t+w/4,w,h-w/4,Color.blue,null,tim);
     	}
     	GC.frameRect(gc,Color.black,r);

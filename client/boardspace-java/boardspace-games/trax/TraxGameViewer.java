@@ -808,7 +808,7 @@ public class TraxGameViewer extends commonCanvas implements TraxConstants, GameL
 			switch(state)
 			{
 				default:
-					throw G.Error("Not expecting hit in state %s",state);
+					throw G.Error("Not expecting EmptyBoard in state %s",state);
 				case GAMEOVER_STATE:
 				case RESIGN_STATE:
 					break;

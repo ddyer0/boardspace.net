@@ -22,13 +22,12 @@ import javax.swing.JCheckBoxMenuItem;
 
 import bridge.*;
 
-import java.awt.Container;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
-public class TextDisplayFrame extends XFrame implements ActionListener,ItemListener,NullLayoutProtocol,Config
+public class TextDisplayFrame extends XFrame implements ActionListener,ItemListener,Config
 {
     /**
 	 * 
@@ -57,8 +56,9 @@ public class TextDisplayFrame extends XFrame implements ActionListener,ItemListe
 
     public TextDisplayFrame(String title) 
     {	super(title);
-     	setLayout(new NullLayout(this));
     	setOpaque(false);
+    	double scale = G.getDisplayScale();
+    	setInitialBounds(100,100,(int)(scale*800),(int)(scale*600));
         // Initialize
         //if(!"Console".equalsIgnoreCase(title)) { area.setReport(true); }
         fname = "Monospaced";
@@ -158,9 +158,6 @@ public class TextDisplayFrame extends XFrame implements ActionListener,ItemListe
         {
             sizeItems[i].addItemListener(this);
         }
-        // this makes the popup menu on the toolbar appear immediately
-		MasterForm.getMasterPanel().adjustTabStyles(); 
-		doNullLayout();
         area.setVisible(true);
         area.startProcess();
         setVisible(true);
@@ -255,21 +252,6 @@ public class TextDisplayFrame extends XFrame implements ActionListener,ItemListe
         area.setText(s);
         repaint();
     }
-
-	public void doNullLayout()
-	{	
-		if(area!=null)
-		{
-		Container main = (Container)getFrame();
-			int w = main.getWidth();
-			int h = main.getHeight();
-			int x = main.getX();
-			int y = main.getY();
-		setBounds(x,y,w-x,h-y); 
-		area.setBounds(0,0,w-x,h-y);
-		}
-	}
-
 
 	public TextPrintStream getPrinter()
 	{	return(area.getPrinter());

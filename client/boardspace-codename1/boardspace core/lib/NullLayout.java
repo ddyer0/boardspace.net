@@ -29,6 +29,8 @@ public class NullLayout extends Layout implements LayoutManager
 	public NullLayout(NullLayoutProtocol parent) 
 	{ expectedParent = parent; 
 	}
+	public NullLayoutProtocol expectedParent() { return expectedParent; }
+	
     /* Required by LayoutManager. */
     public void addLayoutComponent(String name, Component comp)    {  }
 
@@ -41,17 +43,18 @@ public class NullLayout extends Layout implements LayoutManager
     return dim;
     }
 
-/* Required by LayoutManager. */
-public Dimension minimumLayoutSize(Container parent) {
+    /* Required by LayoutManager. */
+    public Dimension minimumLayoutSize(Container parent) {
     Dimension dim = new Dimension(1, 1);
     return dim;
 }
 
-    public void layoutContainer( Container parent) 
+	public void layoutContainer( Container parent) 
     {	
      	expectedParent.doNullLayout();
     }
-	public Dimension getPreferredSize(Container parent) { return(new Dimension(parent.getWidth(),parent.getHeight())); }
-
+	public Dimension getPreferredSize(Container parent)
+	{ return(new Dimension(parent.getWidth(),parent.getHeight())); 
+	}
 
 }

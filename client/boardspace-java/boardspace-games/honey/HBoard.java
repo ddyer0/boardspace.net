@@ -27,7 +27,7 @@ import online.game.cell.Geometry;
 import dictionary.Dictionary;
 
 /**
- * Initial work September 2020
+ * Initial work September 2023
  *  
  * This shares a lot with Crosswords and other word games.
  * if any features or bug fixes occur, evaluate them too.
@@ -90,10 +90,6 @@ class HBoard extends hexBoard<HoneyCell> implements BoardProtocol,HoneyConstants
 	{	return mapTarget;
 	}
 
-	private int rackMap[] = new int[rackSize+rackSpares];
-	public int[] getRackMap()
-	{	return rackMap;
-	}
 
 	public boolean hiddenVisible = false;
 	int score = 0;
@@ -135,6 +131,8 @@ class HBoard extends hexBoard<HoneyCell> implements BoardProtocol,HoneyConstants
         Grid_Style = CrosswordsGRIDSTYLE;
         isTorus=false;
         setColorMap(map, 1);
+       	win = new boolean[1];
+       	randomKey = key;
         boardIndex = bi;
         gametype = init;
        	dictionary = di;
@@ -160,6 +158,7 @@ class HBoard extends hexBoard<HoneyCell> implements BoardProtocol,HoneyConstants
     	adjustRevision(rev);
     	players_in_game = players;
     	win = new boolean[players];
+    	setColorMap(getColorMap(),players);
 		variation = HoneyVariation.findVariation(gtype);
 		G.Assert(variation!=null,WrongInitError,gtype);
     	gametype = gtype;
@@ -174,8 +173,12 @@ class HBoard extends hexBoard<HoneyCell> implements BoardProtocol,HoneyConstants
  		
  		construct(variation.firstincol,variation.nincol);
     	Random r = new Random(randomKey+100);
-    	r.nextLong();//  use one random, for compatibility
-     	
+    	for(HoneyCell c = allCells; c!=null; c=c.next)
+    	{
+    		int n = r.nextInt(HoneyChip.letters.length-1);	// 25 letter alphabet
+    		if(n=='q'-'a') { n++; }	// skip q
+    		c.addChip(HoneyChip.letters[n]);
+    	}
     	
     	mapPick = -1;
        	mapTarget = -1;
@@ -226,7 +229,7 @@ class HBoard extends hexBoard<HoneyCell> implements BoardProtocol,HoneyConstants
         words.copyFrom(from_b.words);
         nonWords.copyFrom(from_b.nonWords);
         commonWords.copyFrom(from_b.commonWords);
-        
+        myCommonWords.copyFrom(from_b.myCommonWords);
         sameboard(from_b); 
     }
 
@@ -400,26 +403,7 @@ class HBoard extends hexBoard<HoneyCell> implements BoardProtocol,HoneyConstants
     	return(droppedDest);
     }
 
-    
-    // 
-    // drop the floating object.
-    //
-    private void dropObject(HoneyCell c)
-    {
-        
-       switch (c.rackLocation())
-        {
-        default:
-        	throw G.Error("Not expecting dest " + c.rackLocation);
-        case BoardLocation:	// already filled board slot, which can happen in edit mode
-        case EmptyBoard:
-            droppedDest = c;
-           	SetBoard(c,pickedObject);
-        	lastDroppedObject = pickedObject;
-            pickedObject = null;
-            break;
-        }
-     }
+
     //
     // true if c is the place where something was dropped and not yet confirmed.
     // this is used to mark the one square where you can pick up a marker.
@@ -465,26 +449,7 @@ class HBoard extends hexBoard<HoneyCell> implements BoardProtocol,HoneyConstants
     {
     	return((c==null)?null:getCell(c.rackLocation(),c.col,c.row));
     }
-	// pick something up.  Note that when the something is the board,
-    // the board location really becomes empty, and we depend on unPickObject
-    // to replace the original contents if the pick is cancelled.
-    private void pickObject(HoneyCell c)
-    {	pickedSource = c;
-        switch (c.rackLocation())
-        {
-        default:
-        	throw G.Error("Not expecting rackLocation " + c.rackLocation);
-		case BoardLocation:
-        	{
-        	HoneyChip po = c.topChip();
-            lastPicked = pickedObject = po;
-         	lastDroppedObject = null;
-			SetBoard(c,null);
-        	}
-            break;
 
-        }
-    }
     //	
     //true if cell is the place where something was picked up.  This is used
     // by the board display to provide a visual marker where the floating chip came from.
@@ -492,35 +457,7 @@ class HBoard extends hexBoard<HoneyCell> implements BoardProtocol,HoneyConstants
     public boolean isASource(HoneyCell c)
     {	return(pickedSource==c);
     }
-    //
-    // in the actual game, picks are optional; allowed but redundant.
-    //
-
-    private void setNextStateAfterDrop(replayMode replay)
-    {	
-        switch (board_state)
-        {
-        default:
-        	throw G.Error("Not expecting drop in state " + board_state);
-        case Gameover:
-        	break;
-        case Confirm:
-        case Endgame:
-        case EndingGame:
-        case Play:
-        	if(validate(true)) 
-        		{ 	
-        			setState(HoneyState.Confirm); 
-        		}
-        	else { setState(HoneyState.Play); }
-        	moveNumber++;
-			break;
-        case Puzzle:
-			acceptPlacement();
-			validate(true);
-            break;
-        }
-    }
+ 
 
     public void setVocabulary(double value) {
     	Dictionary dict = Dictionary.getInstance();
@@ -554,35 +491,10 @@ class HBoard extends hexBoard<HoneyCell> implements BoardProtocol,HoneyConstants
 	HWordStack words = new HWordStack();
 	HWordStack nonWords = new HWordStack();
 	HWordStack commonWords = new HWordStack();
+	HWordStack myCommonWords = new HWordStack();
 	
 	public String invalidReason=null;
-	/* 
-	 * this validates that all the lines on the board are words, and are all
-	 * connected, the list of new words, the list of words, and the list of non words.
-	 * if andScore is true, it also calculates the score change and the lists
-	 * of word caps.
-	 */
-   synchronized boolean validate(boolean andScore)
-    {
-    	words.clear();
-    	nonWords.clear();
-    	boolean connected = false;//validateBoard();
-    	boolean allwords = (nonWords.size()==0);
-    	HWord duplicate = null;
-    	if( !connected) { invalidReason = NotConnected;}
-    	else if(!allwords) { invalidReason = NotWords; }
-    	else invalidReason = null;
-    	if(andScore) 
-    		{ 
-    		  int sc = 0;
-    		  for(int i=0;i<words.size(); i++) { sc += (words.elementAt(i).points - WordPenalty); }
-    		  score = sc;
-    		}
-     	return( connected 
-    			&& allwords 
-    			&& (invalidReason==null) // can't make valid words in 2 directions
-    			&& (duplicate==null));
-    }
+
 
    	CellStack endCaps = new CellStack();	// cells at the end of words
    	CellStack startCaps = new CellStack(); 	// cells at the start of words
@@ -601,57 +513,81 @@ class HBoard extends hexBoard<HoneyCell> implements BoardProtocol,HoneyConstants
     	return(score);
     }
 
-    private void addWord(HWord word)
-    {
-    	words.push(word); 
-    	word.points = scoreWord(word.seed); 
-    }
-
-
     private void doDone(replayMode replay)
     {
         acceptPlacement();
-        validate(true);
         
          
         if (board_state==HoneyState.Resign)
         {
             win[nextPlayer()] = true;
-    		setState(HoneyState.Gameover);
+    		setGameOver();
         }
         else
         {	
-         setState(HoneyState.Gameover);
- 
-         }
+         setGameOver();
+        }
     }
 	public boolean notStarted()
 	{
 		return((droppedDest==null) && (pickedSource==null));
 	}
-
-	// when receive a move that includes a rack map slot, it may
-	// not be accurate since we don't track the opposing players 
-	// rack.
-	private void setRackMap(int rackMap[],int slot,int v)
-	{	if(rackMap[slot]!=-1)
-		{	for(int i=0;i<rackMap.length;i++)
-			{
-				if(rackMap[i]==-1) { rackMap[i] = v; return; }
-			}
-			G.Error("No empty slot found");
+	private void addWordTo(HWordStack which,Honeymovespec m,boolean rejectCommon)
+	{
+    	CellStack seed = new CellStack();
+    	Tokenizer tok = new Tokenizer(m.path,",");
+    	while(tok.hasMoreElements())
+    	{
+    		char col = G.parseCol(tok.nextElement());
+    		int row = G.IntToken(tok.nextElement());
+    		seed.push(getCell(col,row));
+    	}
+    	HWord newword = new HWord(seed,m.word);
+    	if(rejectCommon && commonWords.contains(newword)) {}
+    	else { 
+    		which.pushNew(newword); 
+    		if(which==words)
+    		{
+    		int ss = scoreWord(newword.seed); 
+    		newword.points = ss;
+    		score += ss;
+    		}
+    	}
+ 	}
+	public void makeCommon(HWord w)
+	{
+		HWord a = (HWord)words.remove(w,true);
+		if(a!=null)
+		{
+			score -= a.points;
+			myCommonWords.pushNew(w);
 		}
-		rackMap[slot] = v; 
-
+		commonWords.pushNew(w);
 	}
-	
+	// we tried to add a previously know common word
+	public void makeMyCommon(HWord w)
+	{	myCommonWords.pushNew(w);
+	}
+
+	public HWord findWord(String w)
+	{	return words.find(w);
+	}
+	public HWord findCommonWord(String w)
+	{	return commonWords.find(w);
+	}
+
     public boolean Execute(commonMove mm,replayMode replay)
     {	Honeymovespec m = (Honeymovespec)mm;
         if(replay!=replayMode.Replay) { animationStack.clear(); }
         //G.print("E "+m+" for "+whoseTurn+" "+board_state);
         switch (m.op)
         {
- 
+        case MOVE_REJECTWORD:
+        	addWordTo(nonWords,m,false);
+        	break;
+        case MOVE_PLAYWORD:
+        	addWordTo(words,m,true);
+        	break;
         case MOVE_START:
             setWhoseTurn(m.player);
             acceptPlacement();
@@ -661,10 +597,15 @@ class HBoard extends hexBoard<HoneyCell> implements BoardProtocol,HoneyConstants
             setNextStateAfterDone(replay);
 
             break;
+        case MOVE_ENDED:
+        	doDone(replay);
+        	break;
         case MOVE_SELECT:
-    	G.Error("not expected");
-    	break;
-
+	    	G.Error("not expected");
+	    	break;
+        case MOVE_ENDGAME:
+        	if(board_state!=HoneyState.Gameover) { setState(HoneyState.EndingGame); }
+            break;
        case MOVE_RESIGN:
     	   	setState(unresign==null?HoneyState.Resign:unresign);
             break;
@@ -791,7 +732,6 @@ class HBoard extends hexBoard<HoneyCell> implements BoardProtocol,HoneyConstants
  CommonMoveStack  GetListOfMoves()
  {	CommonMoveStack all = new CommonMoveStack();
     recordProgress(0);
-    validate(false);
     switch(board_state)
     {
     default: throw G.Error("Not expecting ", board_state);

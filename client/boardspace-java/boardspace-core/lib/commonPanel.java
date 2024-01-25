@@ -260,7 +260,7 @@ public class commonPanel extends FullscreenPanel
 		      }
        
 	    CanvasProtocol can =myCanvas;
-  
+
 	    if(theChat!=null)
 	    {	// try hard to notice messages being posted to the web site
         	String err = G.getPostedError();
@@ -272,7 +272,7 @@ public class commonPanel extends FullscreenPanel
 	    }
         if (can != null)
         {
-        	can.ViewerRun(wait); 
+	       	can.ViewerRun(wait); 
 
         }
         else if(wait>0)

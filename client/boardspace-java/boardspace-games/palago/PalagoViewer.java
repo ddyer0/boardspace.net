@@ -757,7 +757,7 @@ public class PalagoViewer extends CCanvas<PalagoCell,PalagoBoard> implements Pal
 			switch(state)
 			{
 				default:
-					throw G.Error("Not expecting hit in state %s",state);
+					throw G.Error("Not expecting EmptyBoard in state %s",state);
 				case CONFIRM_STATE:
 				case PLAY_STATE:
 				case PLAY2_STATE:

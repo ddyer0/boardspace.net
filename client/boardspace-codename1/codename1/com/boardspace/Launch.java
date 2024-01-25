@@ -25,7 +25,6 @@ import online.common.OnlineConstants;
 import util.JWSApplication;
 import bridge.Color;
 import bridge.Frame;
-import bridge.FullScreen;
 import bridge.FullscreenPanel;
 import bridge.LayoutManager;
 import common.GameInfo;
@@ -53,7 +52,7 @@ interface stuff {
 	public boolean debug = false;	// for development version only
 }
 
-class Splash extends FullscreenPanel implements FullScreen,Runnable,Config
+class Splash extends FullscreenPanel implements Runnable,Config
 {	Image splash ;
 	Frame frame;
 	

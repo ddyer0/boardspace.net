@@ -59,7 +59,7 @@ public abstract class BaseBoard implements Opcodes,Digestable
 	
 	public int whoseTurn = -1; 		// player index who is to move next
 	public int players_in_game = 2; // 2-6 players are supported
-	private int colorMap[] = AR.intArray(players_in_game);
+	private int colorMap[] = null;
 	public int[] getColorMap() { setColorMap(players_in_game); return(colorMap); }
 	public void setColorMap(int map[], int players)
 	{	if(players>0) { players_in_game = players; }
@@ -167,13 +167,20 @@ public abstract class BaseBoard implements Opcodes,Digestable
 	 * copy all relevant fields of this board from from_b
 	 * @param from_b
 	 */
-	public void copyFrom(BaseBoard from_b)
-	{	G.Assert(from_b != this, "can clone from myself");
-		name = "copy "+from_b.name;
-		doInit(from_b);
-		whoseTurn = from_b.whoseTurn;
-		moveNumber = from_b.moveNumber;
-		permissiveReplay = from_b.permissiveReplay;
+	public void copyFrom(BaseBoard b)
+	{	G.Assert(b != this, "can clone from myself");
+		name = "copy "+b.name;
+		players_in_game = b.players_in_game;
+		revision = b.revision;
+		clientRevisionLevel = b.clientRevisionLevel;
+		if(colorMap!=null && (colorMap.length!=b.colorMap.length)) { colorMap = new int[b.colorMap.length]; }
+		if(win.length!=b.win.length) { win = new boolean[b.win.length]; }
+		doInit(b.gametype,b.randomKey);
+		AR.copy(colorMap,b.colorMap);
+		AR.copy(win,b.win);
+		whoseTurn = b.whoseTurn;
+		moveNumber = b.moveNumber;
+		permissiveReplay = b.permissiveReplay;
 	}
 	
 	public long Digest(Random r)
@@ -184,16 +191,6 @@ public abstract class BaseBoard implements Opcodes,Digestable
 		return v;
 	}
 	
-	public final void doInit(BaseBoard b)
-	{	players_in_game = b.players_in_game;
-		revision = b.revision;
-		clientRevisionLevel = b.clientRevisionLevel;
-		if(colorMap.length!=b.colorMap.length) { colorMap = new int[b.colorMap.length]; }
-		if(win.length!=b.win.length) { win = new boolean[b.win.length]; }
-		doInit(b.gametype,b.randomKey);
-		AR.copy(colorMap,b.colorMap);
-		AR.copy(win,b.win);
-	}
 	/**
 	 * assert that all relevant fields of this board are the same as from_b
 	 * @param from_b

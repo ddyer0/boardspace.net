@@ -58,6 +58,7 @@ public class NamedClasses {
 
     
     	// game classes
+    	classes.put("honey.HoneyViewer",honey.HoneyViewer.class);
     	classes.put("trench.TrenchViewer",trench.TrenchViewer.class);
     	classes.put("trike.TrikeViewer",trike.TrikeViewer.class);
     	classes.put("sprint.SprintViewer",sprint.SprintViewer.class);

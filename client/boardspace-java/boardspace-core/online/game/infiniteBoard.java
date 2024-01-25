@@ -60,7 +60,8 @@ public abstract class infiniteBoard<CELLTYPE extends cell<CELLTYPE>> extends fBo
 	public int nrows = 19;
 	
 	public boolean createNewCells = true;
-
+	public CELLTYPE initialCells = null;
+	
 	public boolean includeInBoundingBox(CELLTYPE c)
 	{
 		return (!(c.topChip()==null) 
@@ -135,7 +136,7 @@ public abstract class infiniteBoard<CELLTYPE extends cell<CELLTYPE>> extends fBo
 		if(c==null && createNewCells && !isTorus)
 		{
 			c = createInitialCell(col,row);
-			//G.print("add "+c);
+			//G.print("add "+c+" "+this);
 			linkAdjacentCells(c);			
 			addedCells.push(keyfor(col,row));
 		}
@@ -156,12 +157,7 @@ public abstract class infiniteBoard<CELLTYPE extends cell<CELLTYPE>> extends fBo
     	}
     	return(row);
     }
-    private int boardCellCount()
-    {	int n = 0;
-    	CELLTYPE c = allCells;
-    	while (c!=null) { n++; c=c.next; }
-    	return n;
-    }
+ 
     private void removeAddedCell()
     {
     	int key = addedCells.pop();
@@ -179,24 +175,14 @@ public abstract class infiniteBoard<CELLTYPE extends cell<CELLTYPE>> extends fBo
 		setIsTorus(other.isTorus);
 		// first discard the extra cells in this copy
 	 	IStack added = other.addedCells;
-	 	CELLTYPE oac = other.allCells;
-	 	if(oac==null || !(allCells.sameCellLocation(oac) && (added.size()==addedCells.size())))
-	 	{	int otherc = other.boardCellCount();
-	 		int ourc = boardCellCount();
-	 		while (ourc>otherc)
-	 		{	removeAddedCell();
-	 			ourc--;
-	 		}
-	 		if(otherc==ourc && allCells!=null)
-	 		{
-	 		while(!allCells.sameCellLocation(oac))
-	 		{	removeAddedCell();
-	 			ourc--;
-	 			oac = oac.next;	 			
-	 		}}
+
+	 	// remove the added cells from this board
+	 	while(addedCells.size()>0)
+	 	{
+	 		removeAddedCell();
 	 	}
-	 	
-		// next create the extra cells added to the board so far
+
+		// next create the extra cells added to the other boardxs
 	 	for(int i=addedCells.size(),lim=added.size(); i<lim; i++)
 	 	{
 	 		int key = added.elementAt(i);
@@ -247,6 +233,7 @@ public abstract class infiniteBoard<CELLTYPE extends cell<CELLTYPE>> extends fBo
             	createInitialCell(thiscol,row);
             }            	
         }
+        initialCells = allCells;
         
         G.Assert(geometry==allCells.geometry,"board geometry should match cell geometry");
 

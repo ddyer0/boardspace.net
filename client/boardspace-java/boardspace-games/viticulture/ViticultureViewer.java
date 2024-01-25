@@ -3650,7 +3650,7 @@ private void drawPlayerBoard(Graphics gc,
 		{
 			{String msg = state.activity.getName();
 			String tmsg = oracleMode ? s.get(OracleCardsMessage2)
-							: s.get0or1(msg,nToDiscard);
+							: s.get0or1(msg,Math.abs(nToDiscard));
 			GC.Text(gc,false, mleft,top,step,step/3,Color.blue,null,tmsg);
 			}
        	if(showWines)
@@ -6408,7 +6408,7 @@ private void drawPlayerBoard(Graphics gc,
 		}
 
     }
-    public Text censoredMoveText(commonMove m,int idx)
+    public Text censoredMoveText(SequenceElement m,int idx)
     {
     	Text str = ((Viticulturemovespec)m).censoredMoveText(this,mainBoard);
     	str.colorize(null,gameMoveText());

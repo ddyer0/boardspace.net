@@ -605,7 +605,7 @@ public class TriadViewer extends CCanvas<TriadCell,TriadBoard> implements TriadC
 			switch(state)
 			{
 				default:
-					throw G.Error("Not expecting hit in state %s",state);
+					throw G.Error("Not expecting EmptyBoard in state %s",state);
 				case DROP_STATE:
 					PerformAndTransmit("Dropb "+bb.getPlayerChip(bb.bunny_player).colorName+" "+hitObject.col+" "+hitObject.row);
 					break;

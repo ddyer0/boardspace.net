@@ -791,7 +791,7 @@ public class CrossfireViewer extends CCanvas<CrossfireCell,CrossfireBoard> imple
 			switch(state)
 			{
 				default:
-					throw G.Error("Not expecting hit in state %s",state);
+					throw G.Error("Not expecting EmptyBoard in state %s",state);
 				case CONFIRM_STATE:
 				case PLAY_STATE:
 				case PUZZLE_STATE:

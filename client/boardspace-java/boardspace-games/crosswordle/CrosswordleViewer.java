@@ -158,7 +158,7 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
 	 * info contains all the goodies from the environment.
 	 * */
     public void init(ExtendedHashtable info,LFrameProtocol frame)
-    {	
+    {	G.print("crosswordle init");
     	// for games with more than two players, the default players list should be 
     	// adjusted to the actual number, adjusted by the min and max
        	int players_in_game = info.getInt(OnlineConstants.PLAYERS_IN_GAME,1);
@@ -181,6 +181,7 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
         // are current strictly 2 player and no-randomization.  It will make it easier when
         // later, some variant is created, or the game code base is re purposed as the basis
         // for another game.
+        G.print("create board");
         bb = new CrosswordleBoard(type,players_in_game,dateRect.getTime(),getStartingColorMap(),dictionary,CrosswordleBoard.REVISION);
         //robotGame = sharedInfo.get(exHashtable.ROBOTGAME)!=null;
         // some problems with the animation
@@ -190,7 +191,8 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
         inputField.singleLine = true;
         inputField.addObserver(this);
         if(G.debug()) { saveScreen = myFrame.addAction("Save Board Image",deferredEvents); }
-
+        G.print("crosswordle init done");
+        
     }
     JMenuItem saveScreen;
     /** 
@@ -1415,7 +1417,15 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
     
  public void ViewerRun(int wait)
    {	
+
+	    if(G.isCheerpj()) { G.print("crosswordle viewerrun "+this);}
+
+
         super.ViewerRun(wait);
+
+        if(G.isCheerpj()) { G.print("super viewerrun "+this);}
+
+
         if(ourActiveMove()) { updateInput(); }
         if(urlResult!=null && urlResult.text!=null)
         {
@@ -1427,6 +1437,7 @@ public class CrosswordleViewer extends CCanvas<CrosswordleCell,CrosswordleBoard>
         	doShowStats();
         
         }
+        if(G.isCheerpj()) { G.print("super viewerrun exit"+this);}
    }
     /**
      * returns true if the game is over "right now", but also maintains 

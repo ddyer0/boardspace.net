@@ -490,6 +490,10 @@ synchronized(allGames) {
 				new double[]{0.5,0.05},
 				"chess.ChessViewer","/chess/english/ultima-rules.html","about_chess.html",
 				null,false, WhiteOverBlack));	  
+	  put(new GameInfo(784,ES.test,118,"AC",AncientGames,"Chess","Atomic Chess",OneBotPlus,
+				new double[]{0.5,0.05},
+				"chess.ChessViewer","/chess/english/atomic-rules.html","about_atomic.html",
+				null,false, WhiteOverBlack));	  
 	}
 	{ 
 	put(new GameInfo(753,ES.game,74,"GO",AncientGames,"Go","Go-9",NoBots,null,
@@ -586,6 +590,13 @@ synchronized(allGames) {
 			new double[]{1.0,0.01},
 			"checkerboard.CheckerGameViewer","/checkers/english/rules_of_checkers_english.pdf","about_checkers.html",
 			 null,false, WhiteOverBlack));
+	 g.distinctVariations = true;
+	 
+	 g = put(new GameInfo(762,ES.test,119,"AD",AncientGames,"Checkers","AntiDraughts",
+				OneBotPlus,
+				new double[]{1.0,0.01},
+				"checkerboard.CheckerGameViewer","/checkers/english/International%20Checkers%20Rules.html","about_antidraughts.html",
+				 null,false, WhiteOverBlack));
 	 g.distinctVariations = true;
 
 	}
@@ -1382,7 +1393,7 @@ synchronized(allGames) {
 	String pRules = "/honey/english/rules.html";
 	String pViewer = "honey.HoneyViewer";  
 	
-	GameInfo mm = put(new GameInfo(2105,ES.test,117,"SC",WordGames,"HoneyComb","HoneyComb",
+	GameInfo mm = put(new GameInfo(2105,ES.game,117,"HC",WordGames,"HoneyComb","HoneyComb",
 			NoBots,//ThreeBotsPlus,
 			new double[]{0.1,1.0,1.0,0.01},
 			pViewer,pRules,"about_honeycomb.html",

@@ -106,7 +106,8 @@ July 2006 added repeatedPositions related functions
 // TODO: game records can acquire inconsistent times when editing with more than one player, which causes a flood of logged errors
 //
 public abstract class commonCanvas extends exCanvas 
-	implements OnlineConstants,PlayConstants,ViewerProtocol,CanvasProtocol,sgf_names,ActionListener,Opcodes,PlacementProvider,VncEventInterface
+	implements OnlineConstants,PlayConstants,ViewerProtocol,CanvasProtocol,sgf_names,ActionListener,Opcodes,PlacementProvider,
+		VncEventInterface
 { // state shared with parent frame
     // aux sliders
     public static final String LiftExplanation = "spread stacks for easy viewing";
@@ -5750,11 +5751,11 @@ public abstract class commonCanvas extends exCanvas
      * @param index the current index into the move history
      * @return a Text object
      */
-    public Text censoredMoveText(commonMove sp,int index)
+    public Text censoredMoveText(SequenceElement sp,int index)
     {
     	return(shortMoveText(sp));
     }
-    public Text shortMoveText(commonMove sp) {
+    public Text shortMoveText(SequenceElement sp) {
 		return sp.shortMoveText(this);
 	}
     /**
@@ -6907,7 +6908,6 @@ public abstract class commonCanvas extends exCanvas
         }
         }  
 
-
     public void ViewerRun(int waitTime)
     {	useInitialization();
     	if(initialized)
@@ -6927,7 +6927,7 @@ public abstract class commonCanvas extends exCanvas
             	}
          }
 
-         boolean spritesIdle =  spritesIdle();
+        boolean spritesIdle =  spritesIdle();
         boolean idle = spritesIdle && SoundManager.soundIdle();
        
         if(!spritesIdle) 
@@ -6988,7 +6988,7 @@ public abstract class commonCanvas extends exCanvas
         	}
         
     	}
-		if(saveDisplayBoardNeeded)
+    	if(saveDisplayBoardNeeded)
 		{
 			saveDisplayBoardNeeded = false;
 			saveDisplayBoard();
@@ -7002,7 +7002,7 @@ public abstract class commonCanvas extends exCanvas
         		l.handleDeferredMessages();	
         	}
         super.ViewerRun(waitTime);
-
+        
     }
 
     /**
@@ -7197,9 +7197,7 @@ public HitPoint MouseMotion(int eventX, int eventY, MouseState upcode)
 	p.dragging =  newDrag;			//p.dragging indicates if something is being dragged
 	p.inStandard = drag!=null ? drag.inStandard : false;
     p.hitCode = p.dragging ? drag.hitCode : DefaultId.HitNoWhere;			//if dragging, lock the hitCode on the drag
-    
-    gameLog.doMouseMotion(eventX, eventY, upcode);
-    
+     
     if(p.dragging && (p.hitCode==VcrId.Slider))				// special treatment of the vcr slider
     	{   			  
     	drawVcrSlider(p,null);
@@ -8173,7 +8171,7 @@ public void verifyGameRecord()
 	      		double down = h/cs;
 	      		double center_x = (G.Left(anySelect)-G.Left(mo))*across;
 	      	    double center_y = (G.Top(anySelect)-G.Top(mo))*down;
-	      	    double z = zoomRect.value/2.5;
+	      	    double z = zoomRect==null ? 1 : zoomRect.value/2.5;
 	      	    // wrap the board center so the virtual board is 2x real board.  This allows
 	      	    // things to scroll all the way off before they start appearing on the opposite edge.
 	      	    board_center_x = G.rangeLimit(board_center_x+(center_x / w),across*z);

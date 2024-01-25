@@ -34,7 +34,7 @@ import com.codename1.ui.geom.Dimension;
 // this is unused as long as we don't reinstate the window based chat
 
 public class TextArea extends com.codename1.ui.TextArea 
-	implements ActionProvider,FullScreen,AwtComponent,AppendInterface,ActionListener
+	implements ActionProvider,AwtComponent,AppendInterface,ActionListener
 {	
 	public Color getBackground() { return(new Color(getStyle().getBgColor())); }
 	public Color getForeground() { return(new Color(getStyle().getFgColor())); }

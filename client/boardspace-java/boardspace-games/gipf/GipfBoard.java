@@ -1082,6 +1082,17 @@ public class GipfBoard extends hexBoard<GipfCell> implements BoardProtocol,GipfC
         }
 	
     }
+    private void moveToRack(GipfCell c)
+    {
+    	dropOnRack(c);
+    	switch(board_state)
+    	{
+    	case SLIDE_STATE:	setState(GipfState.PLACE_STATE); break;
+    	case SLIDE_GIPF_STATE: setState(GipfState.PLACE_GIPF_STATE); break;
+    	case PUZZLE_STATE: finalizePlacement(); break;
+    	default: break;
+    	}
+    }
     public boolean Execute(commonMove mm,replayMode replay)
     {	Gipfmovespec m = (Gipfmovespec)mm;
         //G.print("E "+mm);
@@ -1114,14 +1125,8 @@ public class GipfBoard extends hexBoard<GipfCell> implements BoardProtocol,GipfC
         	}
         	else
         	{
-        	dropOnRack(c);
-        	switch(board_state)
-        	{
-        	case SLIDE_STATE:	setState(GipfState.PLACE_STATE); break;
-        	case SLIDE_GIPF_STATE: setState(GipfState.PLACE_GIPF_STATE); break;
-        	case PUZZLE_STATE: finalizePlacement(); break;
-        	default: break;
-        	}}}
+        	moveToRack(c);
+        	}}
         	break;
         case MOVE_SLIDE:
         	{ GipfCell src = getCell(m.from_col,m.from_row);
@@ -1156,8 +1161,17 @@ public class GipfBoard extends hexBoard<GipfCell> implements BoardProtocol,GipfC
         	case SLIDE_GIPF_STATE:
          	case SLIDE_STATE:
         		if(dest.isEdgeCell()) 
-        			{ if(pickedObject==null) {unDropObject();  dropOnBoard(dest);  } 
-        				else { 	dropOnBoard(dest); }
+        			{ if(pickedObject==null) 
+        				{unDropObject();  
+        				 dropOnBoard(dest);  
+        				 } 
+        				else
+        					{ 	
+        					moveToRack(reserve[whoseTurn]); 
+        					pickFromRack(reserve[whoseTurn]);
+        					dropOnBoard(dest); 
+        					setState((dest.height()==2)?GipfState.SLIDE_GIPF_STATE:GipfState.SLIDE_STATE); 
+        					}
         			}
         			else 
         			{ int psize =  preservationStack.size();

@@ -17,7 +17,7 @@
 package bridge;
 
 
-public class Window extends Container implements FullScreen {
+public class Window extends Container  {
 
 
 }

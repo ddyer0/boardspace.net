@@ -292,8 +292,11 @@ public class RajViewer extends CCanvas<RajCell,RajBoard> implements RajConstants
         }
         return(val);
     }
-    public Text censoredMoveText(commonMove sp,int index)
-     {
+    public Text censoredMoveText(SequenceElement sp,int idx)
+    {	return censoredMoveText((commonMove) sp,idx);
+    }
+    public Text censoredMoveText(commonMove sp,int idx)
+    {
     	commonMove last = History.top();
     	String mv = last.getSliderNumString();
     	String spnum = sp.getSliderNumString();
@@ -859,7 +862,7 @@ public class RajViewer extends CCanvas<RajCell,RajBoard> implements RajConstants
 			switch(state)
 			{	case CONFIRM_CARD_STATE:
 				default:
-					throw G.Error("Not expecting hit in state %s",state);
+					throw G.Error("Not expecting %s in state %s",hitCode,state);
 				case CONFIRM_STATE:
 				case PLAY_STATE:
 				case PUZZLE_STATE:

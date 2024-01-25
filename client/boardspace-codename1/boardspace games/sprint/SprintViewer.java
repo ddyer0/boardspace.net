@@ -129,6 +129,7 @@ public class SprintViewer extends CCanvas<SprintCell,SprintBoard> implements Spr
     	// for games with more than two players, the default players list should be 
     	// adjusted to the actual number, adjusted by the min and max
        	int players_in_game = info.getInt(OnlineConstants.PLAYERS_IN_GAME,chipRects.length);
+        painter.useBackgroundBitmap = false;
     	// 
     	// for games that require some random initialization, the random key should be
     	// captured at this point and passed to the the board init too.
@@ -390,6 +391,7 @@ public class SprintViewer extends CCanvas<SprintCell,SprintBoard> implements Spr
     	long rem = lim - now;
     	String tim = lim<0 ? "" : G.briefTimeString(Math.abs(rem));
     	if(rem<0) { tim = "-"+tim; }
+    	GC.setFont(gc,largeBoldFont());
     	GC.Text(gc,true,l,t+w/4,w,h-w/4,Color.blue,null,tim);
     	}
     	GC.frameRect(gc,Color.black,r);

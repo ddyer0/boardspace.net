@@ -724,7 +724,7 @@ public class GipfViewer extends CCanvas<GipfCell,GipfBoard> implements GipfConst
 					PerformAndTransmit(RESET);	// doing a proper unwind at this point is just too complicated
 					break;
 					// otherwise drop into error
-				default: throw G.Error("Not expecting hit in state %s",b.getState());
+				default: throw G.Error("Not expecting %s in state %s",hitObject,b.getState());
 				case DESIGNATE_CAPTURE_OR_DONE_STATE:
 	    		case DESIGNATE_CAPTURE_STATE:
 	    		case PRECAPTURE_STATE:

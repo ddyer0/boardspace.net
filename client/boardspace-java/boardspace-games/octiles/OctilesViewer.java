@@ -473,7 +473,7 @@ public class OctilesViewer extends CCanvas<OctilesCell,OctilesBoard> implements 
         	}
         
     }
-    public Text censoredMoveText(commonMove sp,int idx)
+    public Text censoredMoveText(SequenceElement sp,int idx)
     {	OctilesMovespec next = ((idx+1<History.size())
     									? (OctilesMovespec)History.elementAt(idx+1) 
     									: null);

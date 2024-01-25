@@ -57,8 +57,6 @@ class HoneyBoard extends BaseBoard implements BoardProtocol
     StringStack gameEvents = new StringStack();
     InternationalStrings s = G.getTranslations();
     
-    int startingTiles = 20;	// reloaded from the variation
-    int maxTiles = 40;		// reloaded from the variation
     long drawTimer = -1;
     int lastActivePlayer  = -1;
  	void logGameEvent(String str,String... args)
@@ -112,7 +110,6 @@ class HoneyBoard extends BaseBoard implements BoardProtocol
     {
        	dictionary = di;
 
-        setColorMap(map, players);
     	// allocate the rack map once and for all, it's not used in the board
     	// only as part of the UI.
 
@@ -139,6 +136,9 @@ class HoneyBoard extends BaseBoard implements BoardProtocol
     {	randomKey = key;
     	adjustRevision(rev);
     	players_in_game = players;
+    	win = new boolean[players];
+        setColorMap(getColorMap(), players);
+
     	if(pbs==null || pbs.length!=players)
     	{	pbs = new HBoard[players];
     		for(int i=0;i<players;i++)
@@ -146,18 +146,14 @@ class HoneyBoard extends BaseBoard implements BoardProtocol
     		pbs[i] = new HBoard(gtype, i, key,getColorMap(),dictionary,rev);
     		}
     	}
+    	for(HBoard h : pbs)
+    		{
+    			h.doInit(h.gametype,h.randomKey,h.players_in_game,h.revision);
+    		}
      	win = new boolean[players];
 		variation = HoneyVariation.findVariation(gtype);
 		G.Assert(variation!=null,WrongInitError,gtype);
     	gametype = gtype;
-	    maxTiles = variation.maxTiles;
-	    startingTiles = 0;
-		switch(variation)
-		{
-		default: throw G.Error("Not expecting variation %s",variation);
-		case HoneyComb:
-			break;
-		}
    	    	
  		setState(HoneyState.Puzzle);
 	    	    
@@ -188,12 +184,13 @@ class HoneyBoard extends BaseBoard implements BoardProtocol
      * the board that is being displayed.
      *  */
     public void copyFrom(HoneyBoard from_b)
-    {
+    {	doInit(from_b.gametype,from_b.randomKey,from_b.players_in_game,from_b.revision);
         super.copyFrom(from_b);
         for(int i=0;i<pbs.length;i++) { pbs[i].copyFrom(from_b.pbs[i]); }
         board_state = from_b.board_state;
         lastActivePlayer = from_b.lastActivePlayer;
         lastPicked = null;
+        drawTimer = from_b.drawTimer;
         sameboard(from_b); 
     }
 
@@ -309,6 +306,54 @@ class HoneyBoard extends BaseBoard implements BoardProtocol
         	break;
         case MOVE_SWITCH:
         	break;
+        case MOVE_ENDGAME:
+	    	{
+	    	for(HBoard pb : pbs) { pb.Execute(mm,replay); }
+	    	setState(HoneyState.EndingGame);
+	    	}
+	    	break;
+        case MOVE_ENDED:
+	    	{
+	    	HBoard pb = pbs[m.player];
+	    	pb.Execute(mm,replay);
+	    	boolean all = true;
+	    	for(HBoard p : pbs) { all &= (p.getState()==HoneyState.Gameover); }
+	    	lastActivePlayer = m.player;
+	    	if(all) 
+	    		{ setState(HoneyState.Gameover); 
+	    		}
+	    	}
+	    	break;
+        case MOVE_PLAYWORD:
+        	{
+        		HBoard pb = pbs[m.player];
+        		String word = m.word;
+        		HWord common = pb.findCommonWord(word);
+          		boolean isCommon = false;
+          		
+          		if(common==null)
+        		{
+           			for(HBoard p : pbs)
+        			{	if(p!=pb)
+        				{
+        				HWord w = p.findWord(word);
+        				if(w!=null) { common = w; isCommon=true; }
+        				}
+        			}
+           			if(isCommon) 
+           				{ // a previously seen word for someone
+           				for(HBoard p : pbs) { p.makeCommon(common); }
+           				}
+           			else {
+           				// a new word
+           				pb.Execute(mm,replay);
+           			}}
+          		else {
+          			// previously known to be a common word, we just added it
+          			pb.makeMyCommon(common);
+          		}
+        		}
+        	break;
          default:
         	HBoard pb = pbs[m.player];
         	int mn = pb.moveNumber();
@@ -320,11 +365,7 @@ class HoneyBoard extends BaseBoard implements BoardProtocol
         
         return (true);
     }
- public void restartTimer()
- {
- 	drawTimer = G.Date()+ FinalDrawTime;
- }
- 
+
  public HBoard getPlayerBoard(int p)
  {
 	 return pbs[p];

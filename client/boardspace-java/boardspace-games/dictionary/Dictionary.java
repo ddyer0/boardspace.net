@@ -113,14 +113,28 @@ public class Dictionary implements Config
 		}}).start();
 	}
 	public void waitForLoaded() 
-	{
+	{	int n = 0;
 		while(!loaded) 
-			{ G.doDelay(100); 
+			{ if(n>0) { G.print("Wait for loaded "+n); }
+			  G.doDelay(100); 
+			  n++;
 			}
+		if(n>1)
+		{
+			G.print("done waiting");
+		}
 	}
 	public void waitForDefinitions()
-	{
-		while(!definitionsAllLoaded) { G.doDelay(100); }
+	{	int n = 0;
+		while(!definitionsAllLoaded) 
+			{ if(n>0) { G.print("Wait for definitions "+n); }
+			  G.doDelay(100);  
+			  n++;
+			}
+		if(n>1)
+		{
+			G.print("done waiting");
+		}
 	}
 	public int size() { 
 		waitForLoaded();

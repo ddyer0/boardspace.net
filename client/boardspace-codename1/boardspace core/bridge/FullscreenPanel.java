@@ -16,7 +16,6 @@
  */
 package bridge;
 
-import com.codename1.ui.geom.Dimension;
 import lib.G;
 import lib.Graphics;
 import lib.MenuInterface;
@@ -26,7 +25,7 @@ import lib.NullLayoutProtocol;
 
 import com.codename1.ui.Component;
 
-public class FullscreenPanel extends JPanel implements FullScreen,NullLayoutProtocol,MenuParentInterface
+public class FullscreenPanel extends JPanel implements NullLayoutProtocol,MenuParentInterface
 {
 	public FullscreenPanel() 
 	{ setOpaque(false);
@@ -86,12 +85,12 @@ public class FullscreenPanel extends JPanel implements FullScreen,NullLayoutProt
 			Component c = getComponentAt(nc);
 			int cw = c.getWidth();
 			int ch = c.getHeight();
-			if((c instanceof FullScreen)
-					&& ((cw!=w)||(ch!=h)))
-			{	Dimension minSz = ((FullScreen)c).getMinimumSize();
-				int aw = Math.max(minSz.getWidth(),w);
-				int ah = Math.max(minSz.getHeight(),h);
-				((FullScreen)c).setBounds(0, 0, aw, ah);
+			if(((cw!=w)||(ch!=h)))
+			{	c.setX(0);
+				c.setY(0);
+				c.setWidth(w);
+				c.setHeight(h);
+				
 			}
 		}
 	}

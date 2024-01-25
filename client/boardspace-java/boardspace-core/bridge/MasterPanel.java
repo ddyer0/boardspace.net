@@ -182,8 +182,8 @@ public class MasterPanel extends JPanel implements NullLayoutProtocol,ActionList
 		try { return(getComponent(i)); }
 		catch (IndexOutOfBoundsException err) { return(null); }
 	}
-	/*
-	 * public void printParents(String msg,com.codename1.ui.Component p)
+	
+	public void printParents(String msg,Component p)
 	{
 		if(p.getParent()!=null)
 		{
@@ -192,7 +192,6 @@ public class MasterPanel extends JPanel implements NullLayoutProtocol,ActionList
 			G.print(msg);
 		}
 	}
-		 */
 
 	public boolean isInFront(Component target)
 	{	Component child = getMyChildContaining(target);

@@ -25,7 +25,7 @@ import lib.NullLayoutProtocol;
 // this window is the "real" window, paired with a "fake" ProxyWindow which is not connected
 // directly to the window system.
 //
-public class ComponentProxy extends Component implements FullScreen,NullLayoutProtocol
+public class ComponentProxy extends Component implements NullLayoutProtocol
 {	ProxyWindow client;
 	
 	public ComponentProxy(ProxyWindow c) 

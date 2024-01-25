@@ -36,7 +36,7 @@ import lib.RepaintManager.RepaintStrategy;
  *
  */
 @SuppressWarnings("serial")
-public class TextWindow extends Canvas implements MouseListener,MouseMotionListener,MouseWheelListener,RepaintHelper,WindowListener
+public class TextWindow extends Canvas implements MouseListener,MouseMotionListener,MouseWheelListener,RepaintHelper,WindowListener,NullLayoutProtocol 
 {
 	TextContainer area = new TextContainer("");
 	RepaintManager painter = new RepaintManager(this,
@@ -53,6 +53,7 @@ public class TextWindow extends Canvas implements MouseListener,MouseMotionListe
 	}
 	public TextWindow(LFrameProtocol f)
 	{	super(f);
+		setLayout(new NullLayout(this));
 		painter.hasRunLoop = painter.drawLockRequired = false;
 		addMouseMotionListener(this);
 		addMouseListener(this);
@@ -70,10 +71,7 @@ public class TextWindow extends Canvas implements MouseListener,MouseMotionListe
 		// the time.  This may be tied to volatile bitmaps.
 		repaint(1000);
 	}
-	public void setBounds(int l,int t,int w,int h)
-	{	super.setBounds(l, t, w, h);
-		area.setBounds(l, t, w, h);
-	}
+	
 	public void setFont(Font f)
 	{	super.setFont(f);;
 		area.setFont(f);
@@ -216,5 +214,10 @@ public class TextWindow extends Canvas implements MouseListener,MouseMotionListe
 
 	public void startProcess() {
 		// this is a dummy, we have no process.  TextMouseWindow has a process
+	}
+
+	public void doNullLayout()
+	{
+		area.setBounds(getX()+1,getY()+1,getWidth()-3,getHeight()-3);
 	}
 }

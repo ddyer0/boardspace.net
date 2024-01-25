@@ -38,14 +38,32 @@ Head_end
 sub active_tournaments()
 {	my ($dbh) = @_;
 	my @val;
-	my $q = "SELECT uid,description from tournament where (status='signup' or status='active')";
+	my $q = "SELECT uid,description,teams from tournament where (status='signup' or status='active')";
 	my $sth = &query($dbh,$q);
 	my $numrows = &numRows($sth);
 	while($numrows-- > 0)
 	{
-	my ($id,$desc) = &nextArrayRow($sth);
+	my ($id,$desc,$team) = &nextArrayRow($sth);
 	push @val,$id;
 	push @val,$desc;
+	push @val,$team
+	}
+	&finishQuery($sth);
+	return(@val);
+}
+
+sub active_teams()
+{	my ($dbh,$tid) = @_;
+	my @val;
+	my $qtid = $dbh->quote($tid);
+	my $q = "SELECT uid,name from team where tournamentid=$qtid";
+	my $sth = &query($dbh,$q);
+	my $numrows = &numRows($sth);
+	while($numrows-- > 0)
+	{
+	my ($uid,$name) = &nextArrayRow($sth);
+	push @val,$uid;
+	push @val,$name;
 	}
 	&finishQuery($sth);
 	return(@val);
@@ -186,13 +204,15 @@ param();
 
 		if (substr($method,0,11) eq "tournament-")
 		{$unbounce=1;
-		my $tid0 = substr($method,11);
-		my $tid = $tid0;
+		my ($tt,$tid,$team) = split '-',$method;
 		my $qtid = $dbh->quote($tid);
+		my $qteam = $dbh->quote($team);
 		my $tv = $dbh->quote(&tournament_variation($dbh,$tid));
+		my $teamsel = ($team eq 'x') ? "" : "and team=$qteam";
 		$q = "SELECT player_name,e_mail,e_mail_bounce from participant left join players "
 				. " on participant.pid=players.uid"
-				. " where tid=$qtid";
+				. " where tid=$qtid $teamsel";
+	#print "Q: $q<p>";
 		}
         else { &die("No delivery code for $method<br>"); }
   
@@ -266,9 +286,21 @@ param();
 
 	  my @tes = @tournaments;
 	  while( $#tes > 0)
-	  {my $tdes = pop @tes;
+	  {
+           my $teams = pop @tes;
+	   my $tdes = pop @tes;
 	   my $tid = pop @tes;
-	   &printOption($method,"tournament-$tid","To $tdes");
+ 	   &printOption($method,"tournament-$tid-x","To $tdes");
+	   if($teams)
+		{
+		my @teamoptions =  &active_teams($dbh,$tid);
+		while( $#teamoptions > 0)
+		{
+		  my $tname = pop @teamoptions;
+		  my $uid = pop @teamoptions;
+		  &printOption($method,"tournament-$tid-$uid","To $tdes Team $tname");
+		}
+             }
 	  }
 
       print "</select>";

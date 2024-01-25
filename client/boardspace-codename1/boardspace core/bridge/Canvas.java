@@ -36,6 +36,7 @@ public class Canvas extends Component implements WindowListener,MouseListener,Mo
 		myFrame = frame;
 		rotater = frame.getCanvasRotater();
 	}
+
 	public void init(ExtendedHashtable h,LFrameProtocol f)
 	{
 		myFrame = f;

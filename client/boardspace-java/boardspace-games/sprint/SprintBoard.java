@@ -218,13 +218,14 @@ class SprintBoard extends BaseBoard implements BoardProtocol
      * the board that is being displayed.
      *  */
     public void copyFrom(SprintBoard from_b)
-    {
+    {	doInit(from_b.gametype,from_b.randomKey,from_b.players_in_game,from_b.revision);
         super.copyFrom(from_b);
         for(int i=0;i<pbs.length;i++) { pbs[i].copyFrom(from_b.pbs[i]); }
         board_state = from_b.board_state;
         drawPile.copyFrom(from_b.drawPile);
         lastActivePlayer = from_b.lastActivePlayer;
         endgamePlayer = from_b.endgamePlayer;
+        drawTimer = from_b.drawTimer;
         lastPicked = null;
         
         sameboard(from_b); 

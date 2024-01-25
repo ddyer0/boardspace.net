@@ -34,6 +34,7 @@ import lib.G;
 import lib.GC;
 import lib.HitPoint;
 import lib.LFrameProtocol;
+import lib.MouseState;
 import lib.StockArt;
 import lib.TextButton;
 import online.game.*;
@@ -63,10 +64,11 @@ public class HoneyViewer extends CCanvas<HoneyCell,HoneyBoard> implements HoneyC
 	private Color newLetterColor = new Color(0.25f,0.25f,1.0f);
     private Color tempLetterColor = new Color(0.1f,0.5f,0.1f);
     private Dictionary dictionary = Dictionary.getInstance();
-    private int rackSize = 2;
-    private int plannedRackSize = 4;
     public String deskBellSoundName = SOUNDPATH + "rdkbell" + SoundFormat;
-    
+    private GameLog gameLog1 = new GameLog(this);
+    private GameLog gameLog2 = new GameLog(this);
+    private GameLog gameLog3 = new GameLog(this);
+   
     // private state
     private HoneyBoard bb = null; //the board from which we are displaying
     
@@ -77,12 +79,7 @@ public class HoneyViewer extends CCanvas<HoneyCell,HoneyBoard> implements HoneyC
     //
     // zones ought to be mostly irrelevant if there is only one board layout.
     //
-    private Rectangle chipRects[] = addZoneRect("chips",MAX_PLAYERS);
     private Rectangle scoreRects[] = addZoneRect("playerScore",MAX_PLAYERS);
-    private Rectangle eyeRects[] = addZoneRect("PlayerEye",MAX_PLAYERS);
-    private Rectangle noticeRects[] = addRect("notice",MAX_PLAYERS);
-    private Rectangle noticeRect = addRect("notice");
-    private Color ZoomColor = new Color(0.0f,0.0f,1.0f);
     private Rectangle pullTimer = addRect("pull");
     private Rectangle wordsRect = addRect("words");
     private Rectangle nonwordsRect = addRect("nonwords");
@@ -113,7 +110,7 @@ public class HoneyViewer extends CCanvas<HoneyCell,HoneyBoard> implements HoneyC
     {	
     	// for games with more than two players, the default players list should be 
     	// adjusted to the actual number, adjusted by the min and max
-       	int players_in_game = info.getInt(OnlineConstants.PLAYERS_IN_GAME,chipRects.length);
+       	int players_in_game = info.getInt(OnlineConstants.PLAYERS_IN_GAME,scoreRects.length);
         painter.useBackgroundBitmap = false;
     	// 
     	// for games that require some random initialization, the random key should be
@@ -126,12 +123,6 @@ public class HoneyViewer extends CCanvas<HoneyCell,HoneyBoard> implements HoneyC
         	// will be console chatter about strings not in the list yet.
         	HoneyConstants.putStrings();
         }
-        zoomRect = addSlider(TileSizeMessage,s.get(TileSizeMessage),HoneyId.ZoomSlider);
-        zoomRect.min=0.5;
-        zoomRect.max=2;
-        zoomRect.value=INITIAL_TILE_SCALE;
-        zoomRect.barColor=ZoomColor;
-        zoomRect.highlightColor = HighlightColor;   
 
         String type = info.getString(GameInfo.GAMETYPE, HoneyVariation.HoneyComb.name);
         // recommended procedure is to supply players and randomkey, even for games which
@@ -159,10 +150,6 @@ public class HoneyViewer extends CCanvas<HoneyCell,HoneyBoard> implements HoneyC
         bb.doInit(bb.gametype);						// initialize the board
         if(!preserve_history)
     	{ 
-        	if(!preserve_history) 
-   	 		{ zoomRect.setValue(INITIAL_TILE_SCALE);
-   	 		  board_center_x =  board_center_y = 0; 
-   	 		}
         	// the color determines the first player
         	startFirstPlayer();
         	//
@@ -181,14 +168,8 @@ public class HoneyViewer extends CCanvas<HoneyCell,HoneyBoard> implements HoneyC
 
     public double aspects[] = {0.7,1.0,1.4};
     public void setLocalBounds(int x,int y,int w,int h)
-    {	rackSize = plannedSeating()?5:2;
-    	do {
+    {
     		setLocalBoundsV(x,y,w,h,aspects);
-    		int boardw = G.Width(boardRect);
-    		int dim = Math.min(w, h);
-    		if(boardw>dim*0.75) { break; }
-    		rackSize--;
-    	} while(rackSize>=3);
     }
 	/**
 	 * this is the main method to do layout of the board and other widgets.  I don't
@@ -239,7 +220,7 @@ public class HoneyViewer extends CCanvas<HoneyCell,HoneyBoard> implements HoneyC
     	layout.placeTheChat(chatRect, minChatW, chatHeight,minChatW*2,3*chatHeight/2);
     	//layout.placeRectangle(logRect,minLogW, minLogW, minLogW*3/2, minLogW*3/2,BoxAlignment.Edge,true);
        	layout.alwaysPlaceDone = false;
-       	layout.placeDoneEditRep(buttonW,buttonW*4/3,endgameButton,editRect,noticeRect);
+       	layout.placeDoneEditRep(buttonW,buttonW*4/3,endgameButton,editRect);
        	layout.alwaysPlaceDone = true;
       	layout.placeRectangle(wordsRect,buttonW*4,buttonW*4,BoxAlignment.Center);
       	// split it into two side by side rectangles
@@ -247,8 +228,8 @@ public class HoneyViewer extends CCanvas<HoneyCell,HoneyBoard> implements HoneyC
       	G.SetWidth(wordsRect,w/2-1);
       	G.AlignTop(commonWordsRect,G.Right(wordsRect),wordsRect);
       	
-      	layout.placeRectangle(nonwordsRect,buttonW,buttonW/2,BoxAlignment.Edge);
-      	layout.placeRectangle(pullTimer,buttonW*2,buttonW*2,BoxAlignment.Center);
+      	layout.placeRectangle(nonwordsRect,buttonW*2,buttonW*3/2,BoxAlignment.Edge);
+      	layout.placeRectangle(pullTimer,buttonW*2,buttonW,BoxAlignment.Center);
     	layout.placeTheVcr(this,vcrw,vcrw*3/2);
        	
        	       	
@@ -275,9 +256,7 @@ public class HoneyViewer extends CCanvas<HoneyCell,HoneyBoard> implements HoneyC
     	//
         int stateY = boardY-stateH;
         int stateX = boardX;
-    	int zoomW = stateH*4;
     	G.placeRow(stateX,stateY,boardW ,stateH,stateRect,annotationMenu,noChatRect);
-    	G.placeRight(stateRect, zoomRect, zoomW);
     	
     	G.SetRect(boardRect,boardX,boardY,boardW,boardH);
     	G.SetRect(goalRect,boardX,boardY+boardH-stateH,boardW,stateH);
@@ -312,27 +291,18 @@ public class HoneyViewer extends CCanvas<HoneyCell,HoneyBoard> implements HoneyC
     {	commonPlayer pl = getPlayerOrTemp(player);
     	boolean planned = plannedSeating();
     	
-    	Rectangle chip = chipRects[player];
     	Rectangle score = scoreRects[player];
-    	Rectangle eye = eyeRects[player];
     	int scoreW = unitsize*3;
     	int scoreH = unitsize*2;
     	G.SetRect(score,x,y,scoreW,scoreH);
-    	G.SetRect(eye, x, y+scoreH, unitsize*2, unitsize*2);
     	Rectangle box =  pl.createRectangularPictureGroup(x+scoreW,y,unitsize);
     	Rectangle done = doneRects[player];
-    	Rectangle notice = noticeRects[player];
     	
     	int doneW = planned ? unitsize*4 : 0;
     	int donel = G.Right(box)+unitsize/2;
     	G.SetRect(done,donel,G.Top(box)+unitsize/2,doneW,doneW/2);
-    	G.SetRect(notice, donel , G.Bottom(done),doneW*2,doneW/4);
-    	G.union(box, done,score,eye,notice);
-    	int unitw = (planned ? (plannedRackSize*2) : rackSize)*unitsize;
-    	int unith = (planned ? plannedRackSize : rackSize)*unitsize;
-       	G.SetRect(chip,	x,	G.Bottom(box),	unitw*3, unith*3);
-        G.union(box, chip);
-    	pl.displayRotation = rotation;
+    	G.union(box, done,score);
+     	pl.displayRotation = rotation;
     	return(box);
     }
     private void drawPullTimer(Graphics gc,HitPoint highliht,HoneyBoard gb)
@@ -346,7 +316,7 @@ public class HoneyViewer extends CCanvas<HoneyCell,HoneyBoard> implements HoneyC
     	GC.fillRect(gc,Color.lightGray,r);
     	if(state!=HoneyState.Gameover)
     	{
-    	GC.setFont(gc,standardBoldFont());
+    	GC.setFont(gc,largeBoldFont());
     	String mess = EndGameMessage ;
     	GC.Text(gc,true,l,t,w,w/4,Color.black,null,s.get(mess));
     	
@@ -534,11 +504,7 @@ public void setLetterColor(Graphics gc,HBoard gb,HoneyCell cell)
 }
 	CellStack currentPath = new CellStack();
 	
-	private void drawWordList(Graphics gc,HBoard gb,Rectangle brect,HitPoint highlight,HitPoint all)
-	{
-		GC.fillRect(gc,Color.gray,brect);
-		GC.frameRect(gc,Color.black,brect);
-	}
+
     /**
 	 * draw the board and the chips on it.  This is also called when not actually drawing, to
 	 * track the mouse.
@@ -550,9 +516,11 @@ public void setLetterColor(Graphics gc,HBoard gb,HoneyCell cell)
      */
     public void drawBoardElements(Graphics gc, HBoard gb, Rectangle brect, HitPoint highlight,HitPoint all)
     {	// for this game, the board is immutable, so gb is the home board rather than a copy
- 		boolean censor = all==null;
-    	boolean draggingBoard = draggingBoard(); 
-    	boolean canHit = !draggingBoard && G.pointInRect(highlight,brect);
+    	commonPlayer ap = getPlayerOrTemp(getActivePlayer().boardIndex);
+    	long time =  ap.elapsedTime;
+    	boolean leadin = !mutable_game_record && time<5000;
+    	if(leadin) { highlight=null; }
+     	boolean canHit = G.pointInRect(highlight,brect);
     	int cs = Math.max(5,(int)gb.cellSize());
     	Rectangle oldClip = GC.combinedClip(gc,brect);
     	//GC.fillRect(gc,new Color(0.8f,0.8f,0.85f),brect);
@@ -595,7 +563,7 @@ public void setLetterColor(Graphics gc,HBoard gb,HoneyCell cell)
              }
  
             setLetterColor(gc,gb,cell);
-            cell.drawStack(gc,this,null,cs,xpos,ypos,1,1,censor ? HoneyChip.BACK : null);
+            cell.drawStack(gc,this,null,cs,xpos,ypos,1,1,null);
 	        
 	        //if(!censor && G.debug() && cell.topChip()==null)
 	        //{	// draw a grid of other cells
@@ -604,9 +572,16 @@ public void setLetterColor(Graphics gc,HBoard gb,HoneyCell cell)
 	        //}
           }
         }
-        //drawDefinition(gc,gb,all,brect);
-        doBoardDrag(brect,all,cs,HoneyId.InvisibleDragBoard);
-       // GC.Text(gc,false,G.Left(brect),G.Top(brect),300,100,Color.blue,null,""+gb);
+        if(leadin)
+        {	String secs = ""+ ( ((5000-time)/1000)+1);
+        	Font cf = G.getFont(largeBoldFont(),200);
+        	GC.setFont(gc,cf);
+        	int ww = G.Width(brect)/5;
+        	GC.Text(gc,true,G.Left(brect),G.Top(brect),ww,ww,Color.black,null,secs);
+        	GC.setFont(gc,largeBoldFont());
+        	repaint(200);
+        }
+
         GC.setClip(gc,oldClip);
 		GC.frameRect(gc,Color.black,brect);
 
@@ -637,19 +612,16 @@ public void setLetterColor(Graphics gc,HBoard gb,HoneyCell cell)
     	}
     }
 
-    private void drawNotice(Graphics gc,Rectangle r,HoneyBoard gb)
-    {
-
-    	String msg =  LastTurnMessage ;
-    	GC.Text(gc, true, r,Color.blue,null, msg);
-
-    }
     private String bigString = null;
     private int bigX = 0;
     private int bigY = 0;
     
     private boolean iAmSpectator() { return isSpectator(); }
 
+    public void drawGameLog(Graphics gc,GameLog log,String caption,HitPoint hp,Rectangle r,HWordStack words)
+    {   log.banner = s.get(caption,words.size());
+    	log.redrawGameLog(gc, hp, r, Color.black, boardBackgroundColor,standardBoldFont(),standardBoldFont(),words);
+    }
     public void redrawBoard(Graphics gc, HitPoint selectPos)
     {  HoneyBoard gb = disB(gc);
        HBoard pboard = currentPlayerBoard(gb);
@@ -669,7 +641,6 @@ public void setLetterColor(Graphics gc,HBoard gb,HoneyCell cell)
        // hit anytime nothing is being moved, even if not our turn or we are a spectator
        HitPoint nonDragSelect = (moving && !reviewMode()) ? null : selectPos;
        
-       //gameLog.redrawGameLog2(gc, nonDragSelect, logRect,Color.black, boardBackgroundColor,standardBoldFont(),standardBoldFont());
        
        GC.frameRect(gc, Color.black, logRect);
        // this does most of the work, but other functions also use contextRotation to rotate
@@ -700,7 +671,6 @@ public void setLetterColor(Graphics gc,HBoard gb,HoneyCell cell)
    					HighlightColor, rackBackGroundColor);
     	   }
     	   GC.setFont(gc, largeBoldFont());
-    	   drawNotice(gc,noticeRects[player],gb);
     	   if((mutable_game_record || iAmSpectator()) && G.pointInRect(selectPos,pl1.playerBox))
     	   {
     		   selectPos.hitCode = HoneyId.Switch;
@@ -726,11 +696,10 @@ public void setLetterColor(Graphics gc,HBoard gb,HoneyCell cell)
        drawBoardElements(gc, bb.getPlayerBoard(pboard.boardIndex), boardRect, ourTurnSelect,selectPos);
        }
        GC.setFont(gc,standardBoldFont());
-       zoomRect.draw(gc,nonDragSelect);
-       drawWordList(gc,pboard,wordsRect,ourTurnSelect,selectPos);
-       drawWordList(gc,pboard,nonwordsRect,ourTurnSelect,selectPos);
-       drawWordList(gc,pboard,commonWordsRect,ourTurnSelect,selectPos);
-       
+       drawGameLog(gc,gameLog1,JustWordsMessage,nonDragSelect,wordsRect,pboard.words);
+       drawGameLog(gc, gameLog2,NonWordsMessage,nonDragSelect, nonwordsRect,pboard.nonWords);
+       drawGameLog(gc,gameLog3,SharedWordsMessage,nonDragSelect, commonWordsRect,pboard.myCommonWords);
+  
        GC.setFont(gc,standardBoldFont());
        
 
@@ -746,7 +715,6 @@ public void setLetterColor(Graphics gc,HBoard gb,HoneyCell cell)
 					endgameButton.draw(gc,buttonSelect);
 					}
 				}
-			drawNotice(gc,noticeRect,gb);
 			
 			
 			handleEditButton(gc,messageRotation,editRect,buttonSelect,selectPos,HighlightColor, rackBackGroundColor);
@@ -756,13 +724,7 @@ public void setLetterColor(Graphics gc,HBoard gb,HoneyCell cell)
 		// if the state is Puzzle, present the player names as start buttons.
 		// in any case, pass the mouse location so tooltips will be attached.
         drawPlayerStuff(gc,(state==HoneyState.Puzzle),buttonSelect,HighlightColor,rackBackGroundColor);
-  
- 
-        
-        
-             //      DrawRepRect(gc,pl.displayRotation,Color.black,b.Digest(),repRect);
-        
-        
+          
         // draw the vcr controls, last so the pop-up version will be above everything else
         drawVcrGroup(nonDragSelect, gc);
         
@@ -833,7 +795,12 @@ public void setLetterColor(Graphics gc,HBoard gb,HoneyCell cell)
 		return (true);
     }
     
-
+    public HitPoint MouseMotion(int eventX, int eventY, MouseState upcode)
+    {	//gameLog1.doMouseMotion(eventX, eventY, upcode);
+    	//gameLog2.doMouseMotion(eventX, eventY, upcode);
+    	//gameLog3.doMouseMotion(eventX, eventY, upcode);
+    	return super.MouseMotion(eventX,eventY,upcode);
+    }
      HBoard currentPlayerBoard(HoneyBoard gb)
      {
     	 return gb.getPlayerBoard(getViewPlayer());
@@ -868,6 +835,7 @@ public void setLetterColor(Graphics gc,HBoard gb,HoneyCell cell)
  {
 	 switch(mm.op)
 	 {
+	 case MOVE_PLAYWORD:
 	 case MOVE_SELECT:
 		 playASoundClip(light_drop,100);
 		 break;
@@ -913,7 +881,14 @@ public void setLetterColor(Graphics gc,HBoard gb,HoneyCell cell)
  */
       public commonMove EditHistory(commonMove nmove)
       {	  // some damaged games ended up with naked "drop", this lets them pass 
-    	  commonMove rval = EditHistory(nmove,false);   	     
+    	  switch(nmove.op)
+    	  {
+    	  case MOVE_SWITCH:
+    		  return(null);
+    	  default: break;
+    	  }
+
+    	  commonMove rval = EditHistory(nmove,false);
     	  return(rval);
       }
       public long setDigest(commonMove m)
@@ -1000,11 +975,12 @@ public void setLetterColor(Graphics gc,HBoard gb,HoneyCell cell)
         	else if (performVcrButton(hitCode, hp)) {}	// handle anything in the vcr group
             else
             {
-            	throw G.Error("Hit Unknown object " + hp);
+            	throw G.Error("Hit Unknown object %s" , hp);
             }
         	break;
         	
         case Switch:
+        	// switch point of view to a different player
         	PerformAndTransmit("switch "+hp.hit_index,mutable_game_record,replayMode.Live);
         	break;
         case EndGame:
@@ -1013,11 +989,9 @@ public void setLetterColor(Graphics gc,HBoard gb,HoneyCell cell)
         case ZoomSlider:
         case InvisibleDragBoard:
 			break;
-        case PullAction:
-        	G.Error("Not expected");
-        	break;
+ 
         case Definition:
-        	G.Error("Not expected");
+        	G.Error("%s Not expected",hitCode);
         	break;
         case EyeOption:
         	{
@@ -1042,13 +1016,17 @@ public void setLetterColor(Graphics gc,HBoard gb,HoneyCell cell)
             	}
         	}
         	break;
+        	
         case BoardLocation:	// we hit an occupied part of the board 
         	{
-            HoneyCell hitObject = hitCell(hp);
             HBoard h = bb.getPlayerBoard(getActivePlayer().boardIndex);
-            String currentWord = currentPath.getWord();
-            G.infoBox("word",currentWord);
-         	}
+            String currentWord = currentPath.getWord().toLowerCase();
+            Entry w = dictionary.get(currentWord);
+            //G.infoBox("word",""+w);
+            PerformAndTransmit(G.concat(w!=null ? "playword " : "rejectword ",
+            		h.boardIndex," "+currentWord," ",currentPath.getPath())); 
+            currentPath.clear();
+        	}
 			break;
 			
         }
@@ -1195,7 +1173,7 @@ public void setLetterColor(Graphics gc,HBoard gb,HoneyCell cell)
         		break;
 				//$FALL-THROUGH$
 			case Confirm: 
-        		G.Error("Not expected");
+        		G.Error("State %s Not expected",state);
         		break;
 
           	case Endgame:

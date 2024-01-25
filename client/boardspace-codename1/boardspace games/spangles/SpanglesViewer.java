@@ -600,7 +600,7 @@ public class SpanglesViewer extends CCanvas<SpanglesCell,SpanglesBoard> implemen
 			switch(state)
 			{
 				default:
-					throw G.Error("Not expecting hit in state %s",state);
+					throw G.Error("Not expecting EmptyBoard in state %s",state);
 				case PLAY_STATE:
 					if(bb.pickedObject==null)
 						{ PerformAndTransmit("Dropb "+G.printCol(hitObject.col)+" "+hitObject.row+" "+bb.whoseTurn);

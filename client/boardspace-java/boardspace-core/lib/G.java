@@ -2321,5 +2321,25 @@ public static String expandClassName(String classname)
 		public static boolean defaultUseKeyboard() {
 			return useKeyboardSet ? useKeyboard :  isCodename1() || (isCheerpj() && isTouchInterface());
 		}
+		
+		public static int compareTo(String s1,String s2)
+		{
+			if(s1==null)
+			{
+				return s2==null ? 0 : -1;
+			}
+			if(s2==null) { return 1; }
+			int l1 = s1.length();
+			int l2 = s2.length();
+			int lim = Math.min(l1,l2);
+			for(int i=0;i<lim;i++)
+			{
+				int dif = s2.charAt(i) - s1.charAt(i);
+				if(dif!=0) { return dif; }
+			}
+			return l1==l2 ? 0 
+					: l1<l2 ? -1 : 1;
+		
+		}
 }
  	

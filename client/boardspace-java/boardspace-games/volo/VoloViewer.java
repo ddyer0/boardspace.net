@@ -834,7 +834,7 @@ public class VoloViewer extends CCanvas<VoloCell,VoloBoard> implements VoloConst
 			switch(state)
 			{
 				default:
-					throw G.Error("Not expecting hit in state %s",state);
+					throw G.Error("Not expecting EmptyBoard in state %s",state);
 				case LAND_FLOCK_STATE:
 					{	Hashtable<VoloCell,VoloMovespec> slideDests = bb.getSlideDests();
 						VoloMovespec spec = slideDests.get(bb.getCell(hitObject));

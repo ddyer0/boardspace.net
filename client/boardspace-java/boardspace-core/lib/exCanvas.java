@@ -1746,8 +1746,8 @@ graphics when using a touch screen.
          */
         public void ViewerRun(int waitTime)
         {	
-        	 l.runSteps++;
-             runThread=Thread.currentThread();
+        	l.runSteps++;
+        	runThread=Thread.currentThread();
             if(runThread==null) { runThread = Thread.currentThread(); }
             if((theChat!=null) && theChat.doRepeat()) { repaint(20,"fling"); }
             if(initialized) 
@@ -1759,7 +1759,7 @@ graphics when using a touch screen.
             	}
             else 
             	{ 
-            	  painter.justSleep(waitTime); 
+           	  painter.justSleep(waitTime); 
             	}
             while(deferredEvents.handleDeferredEvent(this)) {};
         }

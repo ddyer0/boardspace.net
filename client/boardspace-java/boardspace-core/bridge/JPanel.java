@@ -2,10 +2,10 @@ package bridge;
 
 import java.awt.Component;
 import java.awt.Container;
-import java.awt.LayoutManager;
 import java.awt.Panel;
 import java.awt.event.WindowListener;
 import java.util.ArrayList;
+
 import lib.NullLayout;
 import lib.NullLayoutProtocol;
 
@@ -22,9 +22,12 @@ public class JPanel extends Panel implements NullLayoutProtocol
 		init();
 	}
 	public void setOpaque(boolean v) {}
-
+	public void setBounds(int x,int y,int w,int h)
+	{
+		super.setBounds(x,y,w,h);
+	}
 	public void init()
-	{	super.setLayout((LayoutManager)new NullLayout(this));
+	{	setLayout(new NullLayout(this));
 	}
 
 	public void addC(Component p) {

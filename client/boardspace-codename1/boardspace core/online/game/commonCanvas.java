@@ -5740,11 +5740,11 @@ public abstract class commonCanvas extends exCanvas
      * @param index the current index into the move history
      * @return a Text object
      */
-    public Text censoredMoveText(commonMove sp,int index)
+    public Text censoredMoveText(SequenceElement sp,int index)
     {
     	return(shortMoveText(sp));
     }
-    public Text shortMoveText(commonMove sp) {
+    public Text shortMoveText(SequenceElement sp) {
 		return sp.shortMoveText(this);
     }
     /**
@@ -6897,7 +6897,6 @@ public abstract class commonCanvas extends exCanvas
            }
     }  
 
-
     public void ViewerRun(int waitTime)
     {	useInitialization();
     	if(initialized)
@@ -7187,8 +7186,6 @@ public HitPoint MouseMotion(int eventX, int eventY, MouseState upcode)
 	p.dragging =  newDrag;			//p.dragging indicates if something is being dragged
 	p.inStandard = drag!=null ? drag.inStandard : false;
     p.hitCode = p.dragging ? drag.hitCode : DefaultId.HitNoWhere;			//if dragging, lock the hitCode on the drag
-    
-    gameLog.doMouseMotion(eventX, eventY, upcode);
     
     if(p.dragging && (p.hitCode==VcrId.Slider))				// special treatment of the vcr slider
     	{   			  
@@ -8163,7 +8160,7 @@ public void verifyGameRecord()
 	      		double down = h/cs;
 	      		double center_x = (G.Left(anySelect)-G.Left(mo))*across;
 	      	    double center_y = (G.Top(anySelect)-G.Top(mo))*down;
-	      	    double z = zoomRect.value/2.5;
+	      	    double z = zoomRect==null ? 1 : zoomRect.value/2.5;
 	      	    // wrap the board center so the virtual board is 2x real board.  This allows
 	      	    // things to scroll all the way off before they start appearing on the opposite edge.
 	      	    board_center_x = G.rangeLimit(board_center_x+(center_x / w),across*z);

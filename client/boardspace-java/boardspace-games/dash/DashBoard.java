@@ -164,10 +164,9 @@ class DashBoard extends rectBoard<DashCell> implements BoardProtocol,DashConstan
         	playerChip[i] = color.chip;
         }
  
-        boolean reverse = map[0]!=0;
-		int row = 1;
+ 		int row = 1;
     	{	int invrow = boardSize-row;
-			for(int colnum=2,idx=0;colnum<boardSize-2;idx++,colnum+=2)
+			for(int colnum=2;colnum<boardSize-2;colnum+=2)
 			{	char col = (char)('A'+(boardSize-colnum-1)+((row&1)^1));
 				char invcol = (char)('A'+colnum-1+(invrow&1));
         		DashCell c = getCell(col,row);

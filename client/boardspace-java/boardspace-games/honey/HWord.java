@@ -22,6 +22,11 @@ import lib.Digestable;
 import lib.G;
 import lib.Random;
 import lib.StackIterator;
+import lib.Text;
+import lib.TextChunk;
+import online.game.BoardProtocol;
+import online.game.SequenceElement;
+import online.game.commonCanvas;
 
 /**
  * class representing a word on the board, starting at some cell
@@ -32,7 +37,7 @@ import lib.StackIterator;
  * @author Ddyer
  *
  */
-public class HWord implements StackIterator<HWord>,CompareTo<HWord>,Digestable
+public class HWord implements StackIterator<HWord>,CompareTo<HWord>,Digestable,SequenceElement
 {
 	String name;			// the actual word
 	CellStack seed = new CellStack();	// starting point
@@ -58,8 +63,7 @@ public class HWord implements StackIterator<HWord>,CompareTo<HWord>,Digestable
 	  return(b.toString());
 	}
 
-
-	public HWord(CellStack s, String n, int di)
+	public HWord(CellStack s, String n)
 	{
 		seed.copyFrom(s);
 		name = n;
@@ -95,14 +99,46 @@ public class HWord implements StackIterator<HWord>,CompareTo<HWord>,Digestable
 	}
 
 	public int compareTo(HWord o) {
-		return G.signum(points-o.points);
+		return G.compareTo(name,o.name);
 	}
 
 	public int altCompareTo(HWord o) {
-		return G.signum(o.points-points);
+		return -compareTo(o);
 	}
 	
 	public long Digest(Random r) {
 		return seed.Digest(r);
+	}
+
+	public boolean ignoredInLogs() {
+		return false;
+	}
+
+	public int player() {
+		return 0;
+	}
+
+	public String[] gameEvents() {
+		return null;
+	}
+
+	public boolean getLineBreak() {
+		return true;
+	}
+
+	public Text shortMoveText(commonCanvas canvas) {
+		return TextChunk.create(name+" ("+points+")");
+	}
+
+	public int nVariations() {
+		return 0;
+	}
+
+	public String getSliderNumString() {
+		return "";
+	}
+
+	public Text censoredMoveText(commonCanvas canvas, BoardProtocol bb) {
+		return shortMoveText(canvas);
 	}
 }

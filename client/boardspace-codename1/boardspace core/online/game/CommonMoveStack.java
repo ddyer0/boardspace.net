@@ -26,9 +26,10 @@ import online.game.BaseBoard.BoardState;
  * @author Ddyer
  *
  */
-public class CommonMoveStack extends OStack<commonMove>  
+public class CommonMoveStack extends OStack<commonMove> implements SequenceStack
 {	public commonMove[] newComponentArray(int sz) { return(new commonMove[sz]); }
 	public int viewStep=-1;					// scrollback position
+	public int viewStep() { return viewStep; }
 	public int viewMoveNumber = -1;
 	public int sliderPosition=-1;
 	public commonPlayer viewTurn = null;	// player whose turn it was when we entered review mode

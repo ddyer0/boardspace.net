@@ -34,6 +34,7 @@ import lib.G;
 import lib.Graphics;
 import lib.Http;
 import lib.Image;
+import lib.NullLayoutProtocol;
 import lib.SizeProvider;
 import lib.TopFrameProtocol;
 
@@ -78,10 +79,12 @@ public class JFrame extends javax.swing.JFrame implements TopFrameProtocol,SizeP
 	public JFrame(String name) 
 	{ 
 	  super(name); 
+	  setContentPane(new FullscreenPanel());
 	  addWindowListener(this);
 	}
 	public JFrame() 
 	{ super();
+	  setContentPane(new FullscreenPanel());
 	  addWindowListener(this);
 	}
 	
@@ -120,7 +123,7 @@ public class JFrame extends javax.swing.JFrame implements TopFrameProtocol,SizeP
 	public int getRotatedLeft() { return getX(); }
 	public int getRotatedTop() { return getY(); }
 	public void addC(Component p) {
-		add(p);		
+			add(p);	
 	}
 	public void addC(String where, Component p) {
 		add(where,p);
@@ -309,6 +312,6 @@ public class JFrame extends javax.swing.JFrame implements TopFrameProtocol,SizeP
  	public void moveToFront() {
 		MasterForm.moveToFront(this);
 	}
- 	
+
 
 }

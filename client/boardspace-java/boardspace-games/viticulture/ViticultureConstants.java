@@ -920,12 +920,12 @@ public interface ViticultureConstants
 			return 2;
 		case Discard1ForOracle:
 		case DiscardGreen:
-		case TakeYellowOrBlue:
 			return 1;
 		case Discard3CardsAnd1WineFor3VP:
 			return 3;
 		case Discard4CardsFor3:
 			return 4;
+		case TakeYellowOrBlue:
 		default: return(-1);
 		}
 	}

@@ -1609,6 +1609,10 @@ public class ContainerViewer extends CCanvas<ContainerCell,ContainerBoard> imple
     	}
     	return(false);
     }
+    public Text censoredMoveText(SequenceElement sp,int idx)
+    {
+    	return censoredMoveText((commonMove)sp,idx);
+    }
     public Text censoredMoveText(commonMove sp,int idx)
     {	
     	if(sp.op==MOVE_BID)

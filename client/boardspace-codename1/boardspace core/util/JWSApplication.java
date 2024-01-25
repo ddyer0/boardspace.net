@@ -33,7 +33,6 @@ import lib.SoundManager;
 import lib.UrlResult;
 import lib.XFrame;
 import lib.commonPanel;
-import online.common.LPanel;
 import online.common.LobbyConstants;
 import online.common.OnlineConstants;
 import rpc.RpcReceiver;
@@ -165,9 +164,8 @@ public class JWSApplication implements Config,LobbyConstants
         	XFrame fr = new XFrame(rootname);
         	ExtendedHashtable sharedInfo = G.getGlobals();
             myL.init(sharedInfo,fr);
-            // create the free standing frame
-            new LPanel(rootname, fr,myL);
-             
+            fr.setContentPane(myL);
+            
             if(isVNC|isTable|offlineLauncher)
             	{ 
             	  if(isVNC && server.isRpc())

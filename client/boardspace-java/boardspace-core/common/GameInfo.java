@@ -1382,7 +1382,7 @@ synchronized(allGames) {
 	String pRules = "/honey/english/rules.html";
 	String pViewer = "honey.HoneyViewer";  
 	
-	GameInfo mm = put(new GameInfo(2105,ES.test,117,"SC",WordGames,"HoneyComb","HoneyComb",
+	GameInfo mm = put(new GameInfo(2105,ES.game,117,"HC",WordGames,"HoneyComb","HoneyComb",
 			NoBots,//ThreeBotsPlus,
 			new double[]{0.1,1.0,1.0,0.01},
 			pViewer,pRules,"about_honeycomb.html",

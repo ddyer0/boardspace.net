@@ -973,7 +973,8 @@ private GenericNetwork createF8PC()
     			ncells+1				// 18 fully connected layer 	
    				);	// learn with all sigmoid nodes
    }
-  private GenericNetwork createF8PCB()
+  @SuppressWarnings("unused")
+private GenericNetwork createF8PCB()
   {	int ncells = board.nCells();
   	return new GenericNetwork(
   				"NAME F8PCB"

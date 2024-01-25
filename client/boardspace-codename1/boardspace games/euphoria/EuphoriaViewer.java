@@ -2369,7 +2369,7 @@ private Color playerBackground[] = {
    		TextGlyph.create("Subterran","xx",EuphoriaChip.Subterran,this,escale),
    		TextGlyph.create("Icarite","xx",EuphoriaChip.Icarite,this,escale),
     };
-    public Text censoredMoveText(commonMove m,int idx)
+    public Text censoredMoveText(SequenceElement m,int idx)
     {
     	Text str = ((EuphoriaMovespec)m).censoredMoveText(this,logState,bb);
     	str.colorize(s,gameMoveText);

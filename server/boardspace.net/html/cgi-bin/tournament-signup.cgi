@@ -368,7 +368,7 @@ sub printEditTeamLink()
 # if admin is supplied, add more editing options
 #
 sub showTournaments
-{ my ($dbh,$uid,$fromname,$fromteam,$passwd,$historic,$tid,$admin) = @_;
+{ my ($dbh,$uid,$fromname,$fromteam,$passwd,$historic,$tid,$playeremails,$admin) = @_;
   print "<!-- showTournaments --!>\n";
 
   my $qu = $dbh->quote($uid>0 ? $uid : -1);
@@ -485,6 +485,8 @@ sub showTournaments
 	     	 #
 	 # show the "add me" form if this is a signup tournament
 	 #
+	 &findByEmail($dbh,$admin,$playeremails);
+
 	 if($admin || $activestatus)
 	 {   print "<hr>\n";
              &showInputForm($dbh,$uid,$fromname,$fromteam,$passwd,$tid,$admin); 
@@ -569,6 +571,11 @@ sub showInputForm()
 	print "</td><td>" . &trans("Your Password") . ": ";
 	print "<input type=password name=passwd value='$passwd' SIZE=20 MAXLENGTH=25>\n";
 	}
+else 	{
+	print "</td><td>" .&trans("or find players by email") . ":";
+	print "<input type=text name=playeremails value='' SIZE=80 MAXLENGTH=500>\n";
+	}
+
   print "</td>";
   if(!$admin)
   {
@@ -646,6 +653,43 @@ sub elgibleParticipant()
 	return($played>=$threshold)
 }
 
+sub findByEmail()
+{
+	my ($dbh,$admin,$playeremails) = @_;
+
+	if($admin && $playeremails)
+	{
+	print "<table>";
+	my (@names) = split /,/,$playeremails;
+	while(@names)
+	{
+	my $name = pop(@names);
+	$name =~ s/^\s+|\s+$//g; # trim spaces
+	my $qname = $dbh->quote($name);
+	my $q = "select player_name,full_name,e_mail,if(e_mail_bounce,'<b>(bouncing)</b>','') from players where status='ok' && e_mail = $qname";
+	my $sth = &query($dbh,$q);
+	my $nr = &numRows($sth);
+	if($nr > 0)
+	{
+	while($nr-- > 0)
+		{
+		my ($pname,$name,$em,$bo) = &nextArrayRow($sth);
+		$name = encode_entities(&utfDecode($name));
+		print "<tr>";
+		print "<td><b>$pname</b></td>";
+		print "<td>'$name'</td>";
+		print "<td>$em$bo</td>";
+		print "</tr>\n";
+		}}
+	else { 
+	 print "<tr><td></td><td></td><td><b>$name</b></td><td></td></tr>\n";
+	}
+	&finishQuery($sth);
+	}
+
+	print "</table>";
+	}
+}
 sub processInputForm
 {  my ($dbh,$newteam,$fromname,$passwd,$tournamentid,$subscribe,$admin) = @_;
    my ($uid,$bounce) = &logon($dbh,$fromname,$passwd,$admin);
@@ -1391,7 +1435,7 @@ sub do_edit_tournament()
 	  &commandQuery($dbh,"delete from matchrecord where tournament=$qt");
 	  &commandQuery($dbh,"delete from matchparticipant where tournament=$qt");
 	  &commandQuery($dbh,"delete from matchgroup where uid=$qt");
-	  &showTournaments($dbh,0,'',0,'',0,'',$admin);
+	  &showTournaments($dbh,0,'',0,'',0,'','',$admin);
 
 	}
 	else
@@ -1854,7 +1898,7 @@ sub do_edit_match()
 	&commandQuery($dbh,$q2);
 	#print "q: $q2<br>";
 	}
-	if($email) { &sendMatchNotify($dbh,$matchid); } else { print "No emails sent<br>"; }
+	if($email) { &sendMatchNotify($dbh,$matchid,$com); } else { print "No emails sent<br>"; }
 
 }
 
@@ -2279,6 +2323,7 @@ sub do_tournamentboard()
   #&printForm();
   my $fromname = param('fromname');
      $fromname = &despace(substr($fromname,0,25));
+  my $playeremails = param('playeremails');
   my $fromteam = param('fromteam');
      $fromteam = &despace(substr($fromteam,0,25));
   my $passwd = param('passwd');
@@ -2342,7 +2387,7 @@ sub do_tournamentboard()
 		{if($fromname && ($passwd || $admin)) 
 			{ $uid = &processInputForm($dbh,$newteam,$fromname,$passwd,$tournamentid,$subscribe,$admin);
 			}
-		 &showTournaments($dbh,$uid,$fromname,$newteam,$passwd,$past,$tournamentid,$admin);
+		 &showTournaments($dbh,$uid,$fromname,$newteam,$passwd,$past,$tournamentid,$playeremails,$admin);
 		}
 	   elsif($operation eq 'getadminpassword')
 	   {
@@ -2369,7 +2414,7 @@ sub do_tournamentboard()
 	   elsif ($operation eq 'creatematch')
 	   {	my $sortkey = param('sortkey');
 			&creatematches($dbh,$tournamentid,$group,$sortkey,$admin);
-		    &showTournaments($dbh,$uid,$fromname,$fromteam,$passwd,0,$tournamentid,$admin);
+		    &showTournaments($dbh,$uid,$fromname,$fromteam,$passwd,0,$tournamentid,'',$admin);
 	   }
 	   elsif ($operation eq 'doeditmatch')
 	   {
@@ -2407,7 +2452,7 @@ sub do_tournamentboard()
 				 }
 			$idx++;
 			}
-			&showTournaments($dbh,$uid,$fromname,$fromteam,$passwd,0,$tournamentid,$admin);
+			&showTournaments($dbh,$uid,$fromname,$fromteam,$passwd,0,$tournamentid,'',$admin);
 	   }
 	   elsif ($operation eq 'editmatch')
 	   {	my $matchid = param('matchid');

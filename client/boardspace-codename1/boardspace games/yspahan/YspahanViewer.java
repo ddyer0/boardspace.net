@@ -925,7 +925,7 @@ public class YspahanViewer extends CCanvas<YspahanCell,YspahanBoard> implements 
     		TextGlyph.create("Camels","xx",YspahanChip.getMiscChip(ymisc.camel),this,new double[]{1.0,1.5,0,-0.3}),
     		TextGlyph.create("Gold","xx",YspahanChip.getMiscChip(ymisc.gold),this,new double[]{1.0,1.5,0,-0.3}),
    };
-    public Text censoredMoveText(commonMove m,int idx)
+    public Text censoredMoveText(SequenceElement m,int idx)
     {
     	String str = ((YspahanMovespec)m).censoredMoveString(logState,b);
     	Text chunk = TextChunk.create(str);

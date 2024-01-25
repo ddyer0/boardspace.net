@@ -76,6 +76,7 @@ public class SprintCell extends stackCell<SprintCell,SprintChip>
 		nonWord = false;
 		wordDirections = 0;
 	}
+
 	// constructor a cell not on the board, with a chip.  Used to construct the pool chips
 	public SprintCell(SprintChip cont)
 	{	super();
